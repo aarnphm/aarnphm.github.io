@@ -2,7 +2,7 @@
 date: "2025-10-17"
 description: and building a nano inference engine
 id: notes
-modified: 2025-11-05 20:00:55 GMT-05:00
+modified: 2025-11-06 06:06:53 GMT-05:00
 slides: true
 tags:
   - seed
@@ -72,8 +72,6 @@ graph TB
                 E2[running queue]
                 F[KV cache manager]
             end
-
-            G[SOM]
         end
 
         C[output processor]
@@ -114,7 +112,6 @@ graph TB
     style D fill:#c8e6c9,stroke:#333,stroke-width:2px
     style SCHED fill:#e1f5fe,stroke:#333,stroke-width:2px
     style F fill:#ffe0b2,stroke:#333,stroke-width:2px
-    style G fill:#f5f5f5,stroke:#333,stroke-width:2px
     style C fill:#fce4ec,stroke:#333,stroke-width:2px
     style CPU fill:#f5f5f5,stroke:#333,stroke-width:1px,stroke-dasharray: 5 5
     style GPU fill:#f5f5f5,stroke:#333,stroke-width:1px,stroke-dasharray: 5 5
@@ -129,7 +126,9 @@ graph TB
 - **KV cache manager**: maintains block pool (CPU) mapped to paged memory (GPU)
 - **output processor**: `EngineCoreOutputs` → `RequestOutput`
 
-## PagedAttention
+## Paged Attention
+
+see also: [[thoughts/Attention#Paged Attention|formal definitions]]
 
 > to address **the fragmentation problem**
 
@@ -187,8 +186,6 @@ logical blocks    physical blocks
 4. update `req_to_blocks` mapping
 
 result: **95% memory efficiency**.
-
-![[thoughts/Attention#Paged Attention#{collapsed: true}]]
 
 ## continuous batching
 
@@ -402,9 +399,9 @@ attention metadata:
 - num_actual_tokens = 3  # only computing for new tokens!
 ```
 
-the key insight: `reshape_and_cache_flash` updates paged memory using slot_mapping. specialized attention kernels use this metadata to fetch the right KVs without caring about non-contiguous storage.
+- `reshape_and_cache_flash` updates paged memory using slot_mapping. specialized attention kernels use this metadata to fetch the right KVs without caring about non-contiguous storage.
 
-## vs other engines
+## comparison
 
 | engine       | throughput | integration | notes                                                                             |
 | ------------ | ---------- | ----------- | --------------------------------------------------------------------------------- |
@@ -413,7 +410,7 @@ the key insight: `reshape_and_cache_flash` updates paged memory using slot_mappi
 | TGI          | 0.55× vLLM | good        | better HF ecosystem                                                               |
 | TensorRT-LLM | similar    | complex     | lower latency if optimized                                                        |
 | SGLang       | similar    | complex     | higher throughput in _1 example_                                                  |
-| nanovllm     | similar    | simple      | working on this, but simpler version of vllm                                      |
+| nanovllm     | similar    | simple      | working on this, but simpler version of vllm 🫢                                   |
 
 ## features
 
@@ -425,7 +422,9 @@ vllm -> bunch of pre-baked optimization.
 
 imagine someone sends a 32k token prompt while you're serving 50 users generating responses. without chunking, that one prefill hogs the GPU for an entire step - everyone else waits.
 
-the fix is simple: cap tokens per step.
+> [!important] the fix
+>
+> cap tokens per step!
 
 ```python
 max_per_step = 512  # typically
@@ -535,7 +534,8 @@ constrained decoding via finite state machines. think: "only generate valid JSON
 stateDiagram-v2
     [*] --> Positive
     [*] --> Negative
-    Positive --> o
+    Positive --> P
+    P --> o
     o --> s
     s --> i
     i --> t
@@ -543,7 +543,8 @@ stateDiagram-v2
     i2 --> v
     v --> e
     e --> [*]
-    Negative --> e2
+    Negative --> N
+    N --> e2
     e2 --> g
     g --> a
     a --> t2
@@ -728,6 +729,8 @@ for i, (p_l, p_d) in enumerate(zip(large_probs, draft_probs)):
   else:
     break  # reject and resample from large model
 ```
+
+![[thoughts/Speculative decoding#von Neumann acceptance-rejection]]
 
 > you always maintain the large model's distribution.
 > the draft model just helps you get there faster.

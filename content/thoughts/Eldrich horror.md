@@ -1,8 +1,8 @@
 ---
 date: "2025-11-05"
-description: also known as _Lovecraftian horror_
+description: also known as <em>Lovecraftian horror</em>
 id: Eldrich horror
-modified: 2025-11-05 05:50:04 GMT-05:00
+modified: 2025-11-06 05:54:59 GMT-05:00
 tags:
   - seed
 title: Eldrich horror
@@ -10,7 +10,11 @@ title: Eldrich horror
 
 > emphasises the horror of the unknownable and incomprehensible more than gore or other elements of shock.
 
+<figure class="float-right">
+
 ![[thoughts/images/cthulhu lovecraft.png|1934 drawing by Lovecraft of Cthulhu]]
+
+</figure>
 
 hallmark of H. P. Lovecraft is cosmicism, but in a sense different from existing gothic and supernatural fiction.
 

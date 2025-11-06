@@ -75,11 +75,16 @@ function stripHtml(html: string): string {
 /**
  * Build search index from stream data
  */
+function isStreamHost(): boolean {
+  return typeof window !== "undefined" && window.location.hostname === "stream.aarnphm.xyz"
+}
+
 async function buildSearchIndex() {
   if (isIndexBuilt) return
 
   try {
-    const response = await fetch("/streams.jsonl")
+    const endpoint = isStreamHost() ? `${window.location.origin}/streams.jsonl` : "/streams.jsonl"
+    const response = await fetch(endpoint)
     if (!response.ok) {
       console.error("[StreamSearch] Failed to load stream data:", response.statusText)
       return
@@ -389,7 +394,9 @@ function updateSearchStatus(message: string) {
  */
 async function initStreamSearch() {
   const currentPath = window.location.pathname
-  if (currentPath !== "/stream") return
+  const isStreamPage =
+    currentPath === "/stream" || currentPath.startsWith("/stream/") || isStreamHost()
+  if (!isStreamPage) return
 
   // Pre-build index for instant search
   await buildSearchIndex()
@@ -400,7 +407,10 @@ async function initStreamSearch() {
   if (!form || !searchInput) return
 
   const focusShortcutHandler = (event: KeyboardEvent) => {
-    if (!event.metaKey || event.key !== ".") return
+    const key = event.key.toLowerCase()
+    const isMetaDot = event.metaKey && key === "."
+    const isCommandK = (event.metaKey || event.ctrlKey) && key === "k"
+    if (!isMetaDot && !isCommandK) return
 
     const target = event.target as Element | null
     if (target) {
@@ -411,11 +421,15 @@ async function initStreamSearch() {
     }
 
     event.preventDefault()
+    event.stopPropagation()
+    event.stopImmediatePropagation()
+
     searchInput.focus()
     searchInput.select()
   }
 
-  document.addEventListener("keydown", focusShortcutHandler)
+  const focusListenerOptions: AddEventListenerOptions = { capture: true }
+  document.addEventListener("keydown", focusShortcutHandler, focusListenerOptions)
 
   // Handle input changes with debounce
   const handleInput = () => {
@@ -440,7 +454,7 @@ async function initStreamSearch() {
   window.addCleanup(() => {
     searchInput.removeEventListener("input", handleInput)
     form.removeEventListener("submit", handleSubmit)
-    document.removeEventListener("keydown", focusShortcutHandler)
+    document.removeEventListener("keydown", focusShortcutHandler, focusListenerOptions)
     if (searchTimeout !== null) {
       window.clearTimeout(searchTimeout)
       searchTimeout = null

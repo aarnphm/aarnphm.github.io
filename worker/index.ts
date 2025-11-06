@@ -739,14 +739,6 @@ export default {
       })
     }
 
-    // permanent redirect d.aarnphm.xyz -> aarnphm.xyz/dating
-    if (url.hostname === "d.aarnphm.xyz") {
-      return Response.redirect("https://aarnphm.xyz/dating/slides", 301)
-    }
-    if (url.hostname === "arena.aarnphm.xyz") {
-      return Response.redirect("https://aarnphm.xyz/arena", 301)
-    }
-
     // rendering supported code files as text/plain
     const assetsMatch = url.pathname.match(
       /.+\.(py|go|java|c|cpp|cxx|cu|cuh|h|hpp|ts|tsx|jsx|yaml|yml|rs|m|sql|sh|zig|lua)$/i,

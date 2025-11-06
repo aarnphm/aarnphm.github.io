@@ -5,7 +5,7 @@ aliases:
 date: "2022-01-25"
 description: Liste de projets, d'idées, d'écrits auxquels on reviendra.
 id: ideas
-modified: 2025-10-29 02:14:21 GMT-04:00
+modified: 2025-11-06 06:16:49 GMT-05:00
 tags:
   - technical
   - evergreen
@@ -14,11 +14,12 @@ title: ideas.
 
 ## lettres
 
-- [[thoughts/love]] (wip)
+- on [[thoughts/love]]
+  - [[posts/love]]
   - self-healing and love
-  - selfish
-- growth after [[movies/How To Make Millions before Grandma Dies| death]]
-- education and pedagogical implications on next generations
+  - [[posts/abundance|hermeneutics love]]
+- growth after [[movies/How To Make Millions before Grandma Dies|death]]
+- education and #r/pedagogy implications on next generations
 - recommendation system and word2vec
 - social interactions a la carte.
 - Lychian [[movies#to watch.]]
@@ -76,11 +77,11 @@ title: ideas.
       - for code, just use something like ast-grep or any auxillary ast index for structural merges
       - patches/changes are first-class objectives, maybe something like https://pijul.org/manual/theory.html
       - commits are more of a manifest/metadata
-
 - disappearing text
   - For svg: [codepen](https://codepen.io/Mikhail-Bespalov/pen/yLmpxOG)
-
-https://x.com/aarnphm_/status/1844775079286120682
+- yet another DSL
+  - DSL for ML framework is the new JS framework battle
+- https://x.com/aarnphm_/status/1844775079286120682
 
 ## écriture
 

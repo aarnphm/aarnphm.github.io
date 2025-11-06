@@ -1457,11 +1457,15 @@ document.addEventListener("nav", () => {
     const inputFocused = document.activeElement === searchInput
 
     if (searchOpen && results.length > 0) {
-      if (key === "arrowdown" || (!e.shiftKey && key === "tab")) {
+      if (
+        key === "ArrowDown" ||
+        (!e.shiftKey && key === "Tab") ||
+        (key === "n" && (e.ctrlKey || e.metaKey))
+      ) {
         e.preventDefault()
         if (
           !e.shiftKey &&
-          key === "tab" &&
+          key === "Tab" &&
           resultFocused &&
           activeResultIndex === results.length - 1
         ) {
@@ -1475,7 +1479,11 @@ document.addEventListener("nav", () => {
         return
       }
 
-      if (key === "arrowup" || (e.shiftKey && key === "tab")) {
+      if (
+        key === "ArrowUp" ||
+        (e.shiftKey && key === "Tab") ||
+        (key === "p" && (e.ctrlKey || e.metaKey))
+      ) {
         e.preventDefault()
         if (!resultFocused || activeResultIndex === null) {
           setActiveResult(results.length - 1)
