@@ -111,6 +111,30 @@ Think of it like circuit analysis in mechanistic interpretability. When Anthropi
 
 Similarly: hermeneutic love has these interacting components (among others). Identifying them helps understanding. But love escapes formalization. The equation is pedagogical scaffold, not discovered law.
 
+## the philosophical stack
+
+The equation above compresses several philosophical traditions:
+
+**Hermeneutics (Gadamer):** The interpretive circle isn't vicious but productive. You can't grasp individual actions without knowing whole character, but you can only build that understanding through accumulated interpretation. The circle spirals outward through time. Fusion of horizons creates novel semantic space that belongs to neither person alone.
+
+**Phenomenology (Merleau-Ponty, Levinas):** Bodies understand bodies through their own bodily being—intercorporeality. But the face of the other makes an ethical demand before any conceptual understanding. The other isn't an object to be known but a subject making a claim. Misinterpretation isn't just epistemic error but ethical failure.
+
+**Active Inference (Friston):** "Duets for one"—two coupled systems each trying to minimize prediction error about the other. You don't just model me; you respond to my model of you, which feeds back into my model of you modeling me. This creates something neither individual system could generate alone.
+
+**Ethics of Friendship (Aristotle, Foucault, Derrida):** Aristotle said genuine friendship requires "a bushel of salt together"—shared meals as metonym for accumulated time. Foucault argued friendship must be invented "from A to Z" because it remains formless, outside institutional scripts. Derrida wrote about "respectful separation" stretched out in philía—the friend keeps the friend at a distance necessary for genuine acknowledgment.
+
+**Temporal Ontology (Heidegger, Marcel):** Being is always becoming. Understanding changes what's understood. Creative fidelity means remaining committed to the interpretive project as they change, staying attuned to who they're becoming rather than who they were.
+
+**Social Cognition (Tomasello, Cavell):** We-intentions are genuinely joint commitments that don't belong to either person but to the relationship itself. Cavell distinguishes knowledge (epistemic certainty) from acknowledgment (responsive engagement with the other's claim on you).
+
+## why formalization matters
+
+These philosophical traditions converge on a claim: genuine understanding requires maintaining productive distance. Romance as culturally constructed often collapses that distance through merger language ("two becoming one," possession, exclusivity demands). Friendship preserves it.
+
+The formalization makes this structure visible and testable. If hermeneutic love has these components, we can ask: What happens when you optimize for $I(D)$ while minimizing $P(L)$? You get friendship that rivals or exceeds romantic intensity while preserving the interpretive distance necessary for understanding.
+
+This isn't just rationalization after romantic rejection. It's recognizing that the relationship structure matters. Some connections are pure enough to be interpretable by functions—and when you can see the structure clearly, you can choose the form that preserves what actually matters.
+
 ## references
 
 - Gadamer, H-G. _Truth and Method_ (fusion of horizons, hermeneutic circle)
@@ -122,3 +146,7 @@ Similarly: hermeneutic love has these interacting components (among others). Ide
 - Varela, F. et al. _The Embodied Mind_ (coupled dynamical systems, enactive cognition)
 - Derrida, J. _Politics of Friendship_ (respectful separation in philía)
 - Marcel, G. _Creative Fidelity_ (commitment to the other's becoming)
+- Aristotle. _Nicomachean Ethics_ Books VIII-IX (three forms of philia)
+- Foucault, M. "Friendship as a Way of Life" (friendship as formless invention)
+- Cavell, S. _The Claim of Reason_ (knowledge vs acknowledgment)
+- Wittgenstein, L. _Philosophical Investigations_ (private language argument, forms of life)

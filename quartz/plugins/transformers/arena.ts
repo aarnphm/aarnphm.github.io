@@ -261,11 +261,17 @@ const isLi = (node: RootContent | ElementContent): node is Element =>
 const getFirstTextContent = (node: Element): string => {
   for (const child of node.children) {
     if (child.type === "text") {
-      return child.value
+      const value = child.value.trim()
+      if (value.length > 0) {
+        return value
+      }
+      continue
     }
     if (isElement(child)) {
       const text = getFirstTextContent(child)
-      if (text) return text
+      if (text.trim().length > 0) {
+        return text
+      }
     }
   }
   return ""

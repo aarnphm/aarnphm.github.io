@@ -41,7 +41,7 @@ cssclasses:
 date: "2024-10-24"
 description: My run-down version of are[dot]na
 id: are.na
-modified: 2025-11-06 07:06:36 GMT-05:00
+modified: 2025-11-06 08:42:26 GMT-05:00
 permalinks:
   - /website
   - /tweets
@@ -117,6 +117,9 @@ title: are.na
     - tags: [fruit]
 
 ## tweets
+
+- [meta]:
+  - view: list
 
 - https://x.com/johannes_hage/status/1986326790697300462 -- PrimeRL was also rejected at NeurIPS
   - [meta]:
@@ -3034,6 +3037,10 @@ title: are.na
   - [meta]:
     - date: 11/05/2025
     - tags: [empathy]
+  - Two camp when talking about [[thoughts/Empathy]]:
+	- simulation theory: "putting yourself into another shoe"
+	- theory theory: "mindreading"
+  - She argues that empathy as "the experience of foreign consciousness in general", i.e: doesn't have to have shared experience, but rather a locust of their own subjectivity.
 - https://www.youtube.com/watch?v=WyofKBRpRqU -- Merleau-Ponty on the World of Perception & the World of Science (1948)
   - [meta]:
     - date: 11/05/2025
@@ -3359,6 +3366,10 @@ title: are.na
 
 ## design
 
+- https://www.humans-machines.com/-- Humans Machine
+  - [meta]:
+    - date: 11/06/2025
+    - tags: [studio, product]
 - https://galshir.com/
   - [meta]:
     - date: 10/09/2025

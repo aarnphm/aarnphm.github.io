@@ -835,6 +835,8 @@ interface SearchIndexItem {
   content: string
   highlighted: boolean
   hasModalInDom: boolean
+  tags?: string[]
+  matchedTags?: string[]
 }
 
 let searchIndex: SearchIndexItem[] = []
@@ -881,6 +883,7 @@ async function buildSearchIndex(scope: "channel" | "index"): Promise<SearchIndex
           content: block.content,
           highlighted: block.highlighted,
           hasModalInDom: block.hasModalInDom,
+          tags: block.tags,
         })
       })
   } else {
@@ -897,6 +900,7 @@ async function buildSearchIndex(scope: "channel" | "index"): Promise<SearchIndex
         content: block.content,
         highlighted: block.highlighted,
         hasModalInDom: block.hasModalInDom,
+        tags: block.tags,
       })
     })
   }
@@ -904,46 +908,114 @@ async function buildSearchIndex(scope: "channel" | "index"): Promise<SearchIndex
   return index
 }
 
+function parseSearchQuery(query: string): { tagQueries: string[]; regularTerms: string[] } {
+  const tagQueries: string[] = []
+  let remainingQuery = query
+
+  const tagPatternRegex = /#([^#]+?)(?=\s*#|\s*r\/|$)|r\/([^\s#]+(?:\s+[^\s#]+)*?)(?=\s*#|\s*r\/|$)/g
+  let match
+
+  while ((match = tagPatternRegex.exec(query)) !== null) {
+    const tagText = (match[1] || match[2] || "").trim()
+    if (tagText.length > 0) {
+      tagQueries.push(tagText)
+      remainingQuery = remainingQuery.replace(match[0], " ")
+    }
+  }
+
+  const regularTerms = remainingQuery
+    .trim()
+    .split(/\s+/)
+    .filter((term) => term.length > 0)
+
+  return { tagQueries, regularTerms }
+}
+
 function performSearch(query: string, index: SearchIndexItem[]): SearchIndexItem[] {
   const lowerQuery = query.toLowerCase().trim()
   if (lowerQuery.length < 2) return []
 
-  // Tokenize search query for better matching
-  const tokens = tokenizeTerm(lowerQuery)
+  const { tagQueries, regularTerms } = parseSearchQuery(lowerQuery)
+  const tokens = tokenizeTerm(regularTerms.join(" "))
 
-  // Score each item based on token matches
   const scoredResults = index
     .map((item) => {
       const lowerTitle = item.title.toLowerCase()
       const lowerContent = item.content.toLowerCase()
+      const itemTags = item.tags || []
+      const matchedTags: string[] = []
 
       let score = 0
       let titleMatchCount = 0
       let contentMatchCount = 0
+      let tagMatchCount = 0
 
-      // Check each token
+      // Tag-specific queries (# or r/ prefix)
+      for (const tagQuery of tagQueries) {
+        const lowerTagQuery = tagQuery.toLowerCase()
+        for (const tag of itemTags) {
+          const lowerTag = tag.toLowerCase()
+          if (lowerTag === lowerTagQuery) {
+            score += 25
+            tagMatchCount++
+            if (!matchedTags.includes(tag)) {
+              matchedTags.push(tag)
+            }
+          } else if (lowerTag.includes(lowerTagQuery)) {
+            score += 20
+            tagMatchCount++
+            if (!matchedTags.includes(tag)) {
+              matchedTags.push(tag)
+            }
+          }
+        }
+      }
+
+      // Regular terms match tags
+      for (const term of regularTerms) {
+        const lowerTerm = term.toLowerCase()
+        for (const tag of itemTags) {
+          const lowerTag = tag.toLowerCase()
+          if (lowerTag === lowerTerm) {
+            score += 18
+            tagMatchCount++
+            if (!matchedTags.includes(tag)) {
+              matchedTags.push(tag)
+            }
+          } else if (lowerTag.includes(lowerTerm)) {
+            score += 15
+            tagMatchCount++
+            if (!matchedTags.includes(tag)) {
+              matchedTags.push(tag)
+            }
+          }
+        }
+      }
+
+      // Check each token for title and content matches
       for (const token of tokens) {
         const tokenLower = token.toLowerCase()
 
-        // Title matches are weighted higher
         if (lowerTitle.includes(tokenLower)) {
           titleMatchCount++
           score += 10
         }
 
-        // Content matches
         if (lowerContent.includes(tokenLower)) {
           contentMatchCount++
           score += 5
         }
       }
 
-      // Boost for exact phrase match
-      if (lowerTitle.includes(lowerQuery)) {
-        score += 20
-      }
-      if (lowerContent.includes(lowerQuery)) {
-        score += 10
+      // Boost for exact phrase match in title/content
+      if (regularTerms.length > 0) {
+        const regularQuery = regularTerms.join(" ").toLowerCase()
+        if (lowerTitle.includes(regularQuery)) {
+          score += 20
+        }
+        if (lowerContent.includes(regularQuery)) {
+          score += 10
+        }
       }
 
       // Boost for highlighted items
@@ -954,19 +1026,25 @@ function performSearch(query: string, index: SearchIndexItem[]): SearchIndexItem
       // Must have at least one match
       if (score === 0) return null
 
-      return { item, score, titleMatchCount, contentMatchCount }
+      const resultItem = { ...item }
+      if (matchedTags.length > 0) {
+        resultItem.matchedTags = matchedTags
+      }
+
+      return { item: resultItem, score, titleMatchCount, contentMatchCount, tagMatchCount }
     })
     .filter((result): result is NonNullable<typeof result> => result !== null)
     .sort((a, b) => {
-      // Sort by score descending
       if (b.score !== a.score) return b.score - a.score
 
-      // Tie-breaker: more title matches first
+      if (b.tagMatchCount !== a.tagMatchCount) {
+        return b.tagMatchCount - a.tagMatchCount
+      }
+
       if (b.titleMatchCount !== a.titleMatchCount) {
         return b.titleMatchCount - a.titleMatchCount
       }
 
-      // Tie-breaker: more content matches
       return b.contentMatchCount - a.contentMatchCount
     })
 
@@ -1007,6 +1085,20 @@ function renderSearchResults(
     title.className = "arena-search-result-title"
     title.innerHTML = searchQuery ? highlight(searchQuery, result.title) : result.title
     resultItem.appendChild(title)
+
+    if (result.matchedTags && result.matchedTags.length > 0) {
+      const tagsContainer = document.createElement("ul")
+      tagsContainer.className = "arena-search-result-tags"
+
+      result.matchedTags.forEach((tag) => {
+        const tagBadge = document.createElement("li")
+        tagBadge.className = "arena-search-result-tag-badge"
+        tagBadge.innerHTML = searchQuery ? highlight(searchQuery, tag) : tag
+        tagsContainer.appendChild(tagBadge)
+      })
+
+      resultItem.appendChild(tagsContainer)
+    }
 
     if (scope === "index" && result.channelName) {
       const badge = document.createElement("span")

@@ -1138,9 +1138,7 @@ export const TopLinks = {
   workshop: "/lectures",
   arena: "/arena",
   stream: "/stream",
-  craft: "/thoughts/craft",
   livres: "/antilibrary",
-  movies: "/cinematheque",
 }
 
 type AliasLinkProp = {
@@ -1331,14 +1329,6 @@ const ElementComponent = (() => {
               url="https://livingalonealone.com"
             >
               {substackIcon}
-            </AliasLink>
-            <AliasLink
-              newTab
-              classes={["external"]}
-              name="bluesky"
-              url="https://bsky.app/profile/aarnphm.xyz"
-            >
-              {bskyIcon}
             </AliasLink>
             <AliasLink newTab name="rss" url="/index.xml">
               {rssIcon}

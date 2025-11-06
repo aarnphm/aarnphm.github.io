@@ -5,7 +5,7 @@ aliases:
 date: "2022-01-25"
 description: Liste de projets, d'idées, d'écrits auxquels on reviendra.
 id: ideas
-modified: 2025-11-06 06:16:49 GMT-05:00
+modified: 2025-11-06 07:36:54 GMT-05:00
 tags:
   - technical
   - evergreen
@@ -18,8 +18,8 @@ title: ideas.
   - [[posts/love]]
   - self-healing and love
   - [[posts/abundance|hermeneutics love]]
-- growth after [[movies/How To Make Millions before Grandma Dies|death]]
-- education and #r/pedagogy implications on next generations
+- growth after [[movies/How To Make Millions Before Grandma Dies|death]]
+- [[thoughts/education]] and #r/pedagogy implications on next generations
 - recommendation system and word2vec
 - social interactions a la carte.
 - Lychian [[movies#to watch.]]

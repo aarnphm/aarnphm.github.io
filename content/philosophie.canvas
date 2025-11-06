@@ -1,0 +1,12 @@
+{
+	"nodes":[
+		{"id":"8233d289568327ec","type":"group","x":-600,"y":-580,"width":2060,"height":1380,"label":"L'existentialisme"},
+		{"id":"f63032e5ca92c1f0","type":"text","text":"inquiry that explore individual's struggle to lead an [[thoughts/authentic|authentic life]] despite the apparent [[thoughts/Camus#the absurd man|absurdity]] of [[thoughts/existence|existence]]\n\nThe school of philosophy that emerged as a backdrop of WWII, where entire generation was confronted with the anxiety-provoking given of death, freedom, and meaninglessness.","x":-580,"y":-400,"width":250,"height":400},
+		{"id":"02d0db935e88a86d","type":"file","file":"thoughts/Existentialism.md","x":-140,"y":-400,"width":460,"height":440},
+		{"id":"882f7a4405e37c43","type":"file","file":"thoughts/Camus.md","x":920,"y":-520,"width":400,"height":400}
+	],
+	"edges":[
+		{"id":"ec768f511070be18","fromNode":"f63032e5ca92c1f0","fromSide":"right","toNode":"02d0db935e88a86d","toSide":"left"},
+		{"id":"ba9f728dd331eb28","fromNode":"02d0db935e88a86d","fromSide":"right","toNode":"882f7a4405e37c43","toSide":"left","label":"absurd hero"}
+	]
+}

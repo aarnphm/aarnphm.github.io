@@ -2,34 +2,44 @@
 date: "2023-07-29"
 description: a knowledge distillation and learning process
 id: writing
-modified: 2025-11-01 05:14:35 GMT-04:00
+modified: 2025-11-06 08:05:14 GMT-05:00
 tags:
   - sapling
   - evergreen
 title: Writing
 ---
 
-## why writing?
+## why
 
-> Writing as _crystallised_ thought, a way of expressing the labyrinth of interconnected, messy, and incoherent ideas in my mind. It is a form of [knowledge distillation](https://jzhao.xyz/thoughts/knowledge-distillation) (Jacky on [writing](https://jzhao.xyz/thoughts/writing))
+> Writing as _crystallised_ thought, a way of expressing the labyrinth of interconnected, messy, and incoherent ideas in my mind. It is a form of [knowledge distillation](https://jzhao.xyz/thoughts/knowledge-distillation)
+>
+> —Jacky
 
 Writing is an exploration, an excavation of self and the world in this painfully intricate dance. It is a way to bridge the chasm between ideas, to extend a filament of one consciousness to others. It is an extension of self, a second brain, where bounded by constraining nets of syntax and grammar, providing grounds for freedom of expression and articulate one's interests and curiosity.
 
-> The thing I like about writing is that it’s quite literally [_thinking_](https://www.henrikkarlsson.xyz/p/writing-to-think)—a way for me access my own interiority and construct something from it. What I write is all mine, it’s a living thing, it’s an extension of me that wanders out into the world. It is desire turned inwards instead of outwards, focused instead of displaced. It’s a way to access self-knowledge and self-respect. (Ava on [how to avoid half-heartedness](https://www.avabear.xyz/p/how-to-avoid-half-heartedness)) ^ava-writing
+> The thing I like about writing is that it’s quite literally [_thinking_](https://www.henrikkarlsson.xyz/p/writing-to-think)—a way for me access my own interiority and construct something from it. What I write is all mine, it’s a living thing, it’s an extension of me that wanders out into the world. It is desire turned inwards instead of outwards, focused instead of displaced. It’s a way to access self-knowledge and self-respect. ^ava-writing
+>
+> —Ava, [how to avoid half-heartedness](https://www.avabear.xyz/p/how-to-avoid-half-heartedness)
 
-The modality of [[thoughts/Language#representation.|text]] essentially creates a universal interface that allows individuals from diverse backgrounds and contexts to form intricate networks of thoughts.
-
-Andy Matuschak's on [[books|books]] and writing:
-
-> Writing is perhaps the greatest of human inventions, binding together people who never knew each other, citizens of distant epochs. Books break the shackles of time. A book is proof that humans are capable of working magic.
-
-> What I am doing right now, writing this essay, is, technically, **a linear walk through the [[thoughts/Networked Thoughts|network]] of my ideas**. That is what writing is: turning a net into a line. But it is also very concretely what I do, since I have _externalised_ my ideas in a [note-taking system](https://obsidian.md/) where the thoughts are linked with [[thoughts/Hypertext|hyperlinks]] (Henrik Karlsson, [Reader-generated Essay](https://www.lesswrong.com/posts/ZtMsyMP5F7zzP8Gvc/reader-generated-essays))
-
-At its core, writing endeavours to transmute the [[thoughts/Chaos|chaos]] of [[thoughts/Existentialism|existence]] into discernible narratives, offering a conduit for shared understanding amidst the inherent disarray of life. Such a form of [looseness in mutation](https://subconscious.substack.com/p/hypertext-montage)
+<figure class="float-right">
 
 ![[thoughts/images/henrik-writing.webp]]
 
-- from [David Perell](https://x.com/phokarlsson/status/1955644184674566411)
+—from [David Perell](https://x.com/phokarlsson/status/1955644184674566411)
+
+</figure>
+
+The modality of [[thoughts/Language#representation.|text]] essentially creates a universal interface that allows individuals from diverse backgrounds and contexts to form intricate networks of thoughts.
+
+> Writing is perhaps the greatest of human inventions, binding together people who never knew each other, citizens of distant epochs. Books break the shackles of time. A book is proof that humans are capable of working magic.
+>
+> —Andy Matuschak, on [[books|books]] and writing
+
+> What I am doing right now, writing this essay, is, technically, **a linear walk through the [[thoughts/Networked Thoughts|network]] of my ideas**. That is what writing is: turning a net into a line. But it is also very concretely what I do, since I have _externalised_ my ideas in a [note-taking system](https://obsidian.md/) where the thoughts are linked with [[thoughts/Hypertext|hyperlinks]]
+>
+> —Henrik Karlsson, [Reader-generated Essay](https://www.lesswrong.com/posts/ZtMsyMP5F7zzP8Gvc/reader-generated-essays)
+
+At its core, writing endeavours to transmute the [[thoughts/Chaos|chaos]] of [[thoughts/Existentialism|existence]] into discernible narratives, offering a conduit for shared understanding amidst the inherent disarray of life. Such a form of [looseness in mutation](https://subconscious.substack.com/p/hypertext-montage)
 
 ## as playground.
 
@@ -113,8 +123,12 @@ The search query metaphor reveals something profound about the tension between w
 
 I keep coming back to this idea: most writing advice assumes you already know what you want to say and just need help saying it better. But what if you don't know what you want to say? What if the writing is how you find out? Then accessibility becomes a kind of {{sidenotes[premature optimization ]: Donald Knuth famously said "premature optimization is the root of all evil" about programming. The same principle applies to writing—optimizing for readers before you've optimized for thinking is backwards.}}.
 
-See also: https://www.youtube.com/watch?v=FGqbUHOTog8&ab_channel=buildspace, and https://www.henrikkarlsson.xyz/p/writing-to-think
+![[https://www.youtube.com/watch?v=FGqbUHOTog8&ab_channel=buildspace]]
 
-## protocol.
+## protocol
 
 > Why do you build software for writing over protocol such as file?
+
+> _File over app_ is a philosophy: if you want to create digital artifacts that last, they must be files you can control, in formats that are easy to retrieve and read. Use tools that give you this freedom.
+>
+> —kepano, [File over app](https://stephango.com/file-over-app)

@@ -5,7 +5,7 @@ aliases:
 date: "2022-04-22"
 description: practicing the act of digital gardening.
 id: _index
-modified: 2025-11-04 22:01:07 GMT-05:00
+modified: 2025-11-06 07:53:52 GMT-05:00
 tags:
   - evergreen
   - fruit
@@ -23,7 +23,7 @@ currently, I'm working at a [startup](https://bentoml.com) building #ml serving 
   *  me
     * me either [[/posts|writing]],
       * me either [[/posts|writing]], working on [[thoughts/work|open-source projects]],
-      * and spending too much time fixing this [site](https://aarnphm.xyz/view-source),
+      * and spending too much time [[thoughts/craft|fixing]] this [site](https://aarnphm.xyz/view-source),
         * or commiting to the bit.
         * I enjoy
           * I enjoy long walks,
