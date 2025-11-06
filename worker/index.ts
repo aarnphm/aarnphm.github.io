@@ -601,6 +601,38 @@ export default {
       case "/api/embed": {
         return handleEmbedRequest(request, apiHeaders, env)
       }
+      case "/_plausible/event": {
+        if (method !== "POST") {
+          return new Response("method not allowed", {
+            status: 405,
+            headers: { ...apiHeaders, Allow: "POST, OPTIONS" },
+          })
+        }
+
+        const upstreamHeaders = new Headers(request.headers)
+        const requestOrigin = new URL(request.url).origin
+        upstreamHeaders.set("Origin", requestOrigin)
+
+        const upstream = await fetch("https://plausible.io/api/event", {
+          method: "POST",
+          headers: upstreamHeaders,
+          body: request.body,
+        })
+
+        const headers = new Headers(upstream.headers)
+        const origin = request.headers.get("Origin") ?? requestOrigin
+        headers.set("Access-Control-Allow-Origin", origin)
+        headers.set("Access-Control-Allow-Methods", "POST, OPTIONS")
+        headers.set("Access-Control-Allow-Headers", "content-type")
+        headers.set("Vary", "Origin")
+        headers.set("Cache-Control", "no-store")
+
+        return new Response(upstream.body, {
+          headers,
+          status: upstream.status,
+          statusText: upstream.statusText,
+        })
+      }
       case "/api/secrets": {
         if (method !== "GET") {
           return new Response("method not allowed", {

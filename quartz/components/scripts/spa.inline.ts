@@ -376,7 +376,7 @@ class StackedNoteManager {
     const txt = await response.text()
     const html = p.parseFromString(txt, "text/html")
     normalizeRelativeURLs(html, url)
-    transformStreamInternalLinks(html)
+    transformHostInternalLinks(html)
 
     // check if the page is protected
     const protectedArticle = html.querySelector('article[data-protected="true"]')
@@ -465,7 +465,7 @@ class StackedNoteManager {
     const noteContent = document.createElement("div")
     noteContent.className = "stacked-content"
     noteContent.append(...contents)
-    transformStreamInternalLinks(noteContent)
+    transformHostInternalLinks(noteContent)
 
     await this.loadData().then((allFiles) => {
       // NOTE: some pages are auto-generated, so we don't have access here in allFiles
@@ -489,7 +489,7 @@ class StackedNoteManager {
     const links = [...noteContent.getElementsByClassName("internal")] as HTMLAnchorElement[]
 
     for (const link of links) {
-      if ("noPopover" in link.dataset) continue
+      if ("routerIgnore" in link.dataset) continue
 
       const href = link.href
       const slug = link.dataset.slug as string
@@ -581,7 +581,7 @@ class StackedNoteManager {
     const slug = note.dataset.slug!
     const noteTitle = note.querySelector(".stacked-title") as HTMLDivElement
     const noteContent = note.querySelector(".stacked-content") as HTMLDivElement
-    transformStreamInternalLinks(noteContent)
+    transformHostInternalLinks(noteContent)
 
     if (!noteTitle || !noteContent) {
       console.warn(`missing title or content for note ${slug}`)
@@ -602,7 +602,7 @@ class StackedNoteManager {
     const links = [...noteContent.getElementsByClassName("internal")] as HTMLAnchorElement[]
 
     for (const link of links) {
-      if ("noPopover" in link.dataset) continue
+      if ("routerIgnore" in link.dataset) continue
 
       const href = link.href
       const linkSlug = link.dataset.slug as string
@@ -885,11 +885,8 @@ class StackedNoteManager {
 }
 
 const STREAM_HOSTNAME = "stream.aarnphm.xyz"
+const NOTES_HOSTNAME = "notes.aarnphm.xyz"
 const APEX_ORIGIN = "https://aarnphm.xyz"
-
-function isStreamHost() {
-  return typeof window !== "undefined" && window.location.hostname === STREAM_HOSTNAME
-}
 
 function normalizeStreamPath(raw: string): string | null {
   if (!raw) return null
@@ -911,33 +908,43 @@ function normalizeStreamPath(raw: string): string | null {
   }
 }
 
-function transformStreamInternalLinks(root: Document | Element) {
-  if (!isStreamHost()) return
+function transformHostInternalLinks(root: Document | Element) {
+  if (typeof window === "undefined") return
+  const host = window.location.hostname
+
   const anchors = root.querySelectorAll<HTMLAnchorElement>("a.internal")
   anchors.forEach((anchor) => {
-    if ("noPopover" in anchor.dataset) return
+    if (host === STREAM_HOSTNAME) {
+      const preferred = anchor.dataset.slug ?? anchor.getAttribute("href") ?? ""
+      const normalizedPath = normalizeStreamPath(preferred)
+      if (!normalizedPath) return
 
-    const preferred = anchor.dataset.slug ?? anchor.getAttribute("href") ?? ""
-    const normalizedPath = normalizeStreamPath(preferred)
-    if (!normalizedPath) return
-
-    const absoluteHref = `${APEX_ORIGIN}${normalizedPath.startsWith("/") ? normalizedPath : `/${normalizedPath}`}`
-    if (anchor.getAttribute("href") !== absoluteHref) {
-      anchor.setAttribute("href", absoluteHref)
+      const absoluteHref = `${APEX_ORIGIN}${
+        normalizedPath.startsWith("/") ? normalizedPath : `/${normalizedPath}`
+      }`
+      if (anchor.getAttribute("href") !== absoluteHref) {
+        anchor.setAttribute("href", absoluteHref)
+      }
+      anchor.dataset.noPopover = "true"
+      anchor.dataset.routerIgnore = "true"
+    } else if (host === NOTES_HOSTNAME) {
+      anchor.dataset.noPopover = "true"
     }
-    anchor.dataset.noPopover = "true"
-    anchor.dataset.routerIgnore = "true"
   })
 
-  const transcludeRefs = root.querySelectorAll<HTMLElement>(".transclude-ref[data-href]")
-  transcludeRefs.forEach((ref) => {
-    const preferred = ref.dataset.slug ?? ref.dataset.href ?? ""
-    const normalizedPath = normalizeStreamPath(preferred)
-    if (!normalizedPath) return
-    const absoluteHref = `${APEX_ORIGIN}${normalizedPath.startsWith("/") ? normalizedPath : `/${normalizedPath}`}`
-    ref.dataset.href = absoluteHref
-    ref.dataset.routerIgnore = "true"
-  })
+  if (host === STREAM_HOSTNAME) {
+    const transcludeRefs = root.querySelectorAll<HTMLElement>(".transclude-ref[data-href]")
+    transcludeRefs.forEach((ref) => {
+      const preferred = ref.dataset.slug ?? ref.dataset.href ?? ""
+      const normalizedPath = normalizeStreamPath(preferred)
+      if (!normalizedPath) return
+      const absoluteHref = `${APEX_ORIGIN}${
+        normalizedPath.startsWith("/") ? normalizedPath : `/${normalizedPath}`
+      }`
+      ref.dataset.href = absoluteHref
+      ref.dataset.routerIgnore = "true"
+    })
+  }
 }
 
 const stacked = new StackedNoteManager()
@@ -977,7 +984,7 @@ async function navigate(url: URL, isBack: boolean = false) {
 
   const html = p.parseFromString(contents, "text/html")
   normalizeRelativeURLs(html, url)
-  transformStreamInternalLinks(html)
+  transformHostInternalLinks(html)
 
   let title = html.querySelector("title")?.textContent
   if (title) {
@@ -995,7 +1002,7 @@ async function navigate(url: URL, isBack: boolean = false) {
   // morph body
   startViewTransition(() => {
     micromorph(document.body, html.body)
-    transformStreamInternalLinks(document)
+    transformHostInternalLinks(document)
 
     // scroll into place and add history
     if (!isBack) {
@@ -1027,7 +1034,7 @@ window.spaNavigate = navigate
 window.notifyNav = notifyNav
 
 document.addEventListener("nav", () => {
-  transformStreamInternalLinks(document)
+  transformHostInternalLinks(document)
 })
 
 function createRouter() {

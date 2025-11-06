@@ -114,7 +114,8 @@ function addGlobalPageResources(ctx: BuildCtx, componentResources: ComponentReso
     componentResources.afterDOMLoaded.push(`
       const plausibleScript = document.createElement("script")
       plausibleScript.src = "${plausibleHost}/js/script.outbound-links.manual.js"
-      plausibleScript.setAttribute("data-domain", [location.hostname, "notes.aarnphm.xyz"].join(','))
+      plausibleScript.setAttribute("data-domain", [location.hostname, "notes.aarnphm.xyz", "stream.aarnphm.xyz"].join(','))
+      plausibleScript.setAttribute("data-api", "/_plausible/event")
       plausibleScript.defer = true
       plausibleScript.onload = () => {
         window.plausible = window.plausible || function () { (window.plausible.q = window.plausible.q || []).push(arguments); };
