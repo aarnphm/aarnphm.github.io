@@ -48,6 +48,10 @@ custom_domain = true
 pattern = "notes.aarnphm.xyz"
 custom_domain = true
 
+[[routes]]
+pattern = "stream.aarnphm.xyz"
+custom_domain = true
+
 [assets]
 directory = "./public/"
 binding = "ASSETS"

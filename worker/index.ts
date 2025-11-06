@@ -446,15 +446,25 @@ export default {
       })
     }
 
+    // Internal rewrite for stream domain -> prepend /stream to pathname
+    if (url.hostname === "stream.aarnphm.xyz") {
+      const rewritten = new URL(url)
+      rewritten.hostname = new URL(resolveBaseUrl(env, request)).hostname
+      rewritten.pathname = `/stream${url.pathname === "/" ? "" : url.pathname}`
+      const newReq = new Request(rewritten.toString(), request)
+      const resp = await env.ASSETS.fetch(newReq)
+      return withHeaders(resp, {
+        "X-Frame-Options": null,
+        "Content-Security-Policy": "frame-ancestors 'self' *",
+      })
+    }
+
     // permanent redirect d.aarnphm.xyz -> aarnphm.xyz/dating
     if (url.hostname === "d.aarnphm.xyz") {
       return Response.redirect("https://aarnphm.xyz/dating/slides", 301)
     }
     if (url.hostname === "arena.aarnphm.xyz") {
       return Response.redirect("https://aarnphm.xyz/arena", 301)
-    }
-    if (url.hostname === "stream.aarnphm.xyz") {
-      return Response.redirect("https://aarnphm.xyz/stream", 301)
     }
 
     // rendering supported code files as text/plain
@@ -644,7 +654,13 @@ export default {
 
       // check referer to prevent hotlinking
       const referer = request.headers.get("Referer")
-      const allowedHosts = ["aarnphm.xyz", "notes.aarnphm.xyz", "localhost", "127.0.0.1"]
+      const allowedHosts = [
+        "aarnphm.xyz",
+        "notes.aarnphm.xyz",
+        "stream.aarnphm.xyz",
+        "localhost",
+        "127.0.0.1",
+      ]
 
       if (referer) {
         try {
