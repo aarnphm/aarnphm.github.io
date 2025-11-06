@@ -2,7 +2,7 @@
 date: "2025-10-17"
 description: and building a nano inference engine
 id: notes
-modified: 2025-11-05 18:18:45 GMT-05:00
+modified: 2025-11-05 20:00:55 GMT-05:00
 slides: true
 tags:
   - seed
@@ -615,12 +615,12 @@ result:
 - request_C can only sample 'a'-'z'
 ```
 
-**with speculative decoding** (numspec=3):
+**with speculative decoding** (num_speculative_tokens=3):
 
 ```
 additional complexity: each speculative token needs its own FSM state
 
-bitmask shape: [batch_size, numspec + 1, vocab_size // 32]
+bitmask shape: [batch_size, num_speculative_tokens + 1, vocab_size // 32]
                [3, 4, 1000]
 
 request_A:
@@ -629,7 +629,7 @@ request_A:
   position 2 (spec_2):   bitmask[0][2] = state if spec_1,2 accepted
   position 3 (spec_3):   bitmask[0][3] = state if spec_1,2,3 accepted
 
-total bitmask memory: batch_size × (numspec + 1) × (vocab_size // 32) × 4 bytes
+total bitmask memory: batch_size × (num_speculative_tokens + 1) × (vocab_size // 32) × 4 bytes
                     = 3 × 4 × 1000 × 4 = 48KB (small overhead)
 ```
 
@@ -639,7 +639,7 @@ total bitmask memory: batch_size × (numspec + 1) × (vocab_size // 32) × 4 byt
 - XGrammar compiles FSM and fills bits based on current state
 - post-forward pass: expand and mask logits to `-∞`
 - post-sampling: advance FSM state with sampled token
-- with speculative decoding: maintain `numspec + 1` FSM states per request
+- with speculative decoding: maintain `num_speculative_tokens + 1` FSM states per request
 
 ## speculative decoding
 
@@ -656,7 +656,7 @@ step 3: sample t4 from large model
 
 **KV cache allocation** (the clever part):
 
-vLLM allocates **numspec + 1** blocks in a speculative branch:
+vLLM allocates **num_speculative_tokens + 1** blocks in a speculative branch:
 
 ```
 main KV cache (verified tokens):
@@ -666,7 +666,7 @@ main KV cache (verified tokens):
                     │
                     ├─ fork point
                     ↓
-spec branch (numspec=3):
+spec branch (num_speculative_tokens=3):
 ┌───────────────────────────────────────┐
 │ [+1 block] [spec 1] [spec 2] [spec 3] │
 └───────────────────────────────────────┘
@@ -674,12 +674,12 @@ spec branch (numspec=3):
    verified  draft    draft    draft
 ```
 
-**why numspec + 1?**
+**why num_speculative_tokens + 1?**
 
-- **numspec blocks**: for speculative tokens from draft model
+- **num_speculative_tokens blocks**: for speculative tokens from draft model
 - **+1 block**: for verified token, ensures forward progress even if all rejected
 
-**concrete example** (numspec=3):
+**concrete example** (num_speculative_tokens=3):
 
 ```
 step 1: allocate spec branch
@@ -727,35 +727,6 @@ for i, (p_l, p_d) in enumerate(zip(large_probs, draft_probs)):
     accepted_tokens.append(draft_tokens[i])
   else:
     break  # reject and resample from large model
-```
-
-**reference counting**:
-
-```python
-class SpeculativeKVManager:
-  def allocate_spec_branch(self, seq_id, numspec):
-    blocks = []
-    for _ in range(numspec + 1):
-      blk = free_blocks.pop()
-      blk.ref_count = 1
-      blk.is_speculative = True
-      blocks.append(blk)
-    spec_blocks[seq_id] = blocks
-    return blocks
-
-  def commit_accepted(self, seq_id, num_accepted):
-    # move spec blocks to main sequence
-    for i in range(num_accepted):
-      spec_blocks[seq_id][i].is_speculative = False
-      verified_blocks[seq_id].append(spec_blocks[seq_id][i])
-
-  def free_rejected(self, seq_id, num_accepted, numspec):
-    # free remaining spec blocks
-    for i in range(num_accepted, numspec + 1):
-      blk = spec_blocks[seq_id][i]
-      blk.ref_count -= 1
-      if blk.ref_count == 0:
-        free_blocks.append(blk)
 ```
 
 > you always maintain the large model's distribution.
@@ -996,8 +967,6 @@ for batch_size in [1, 2, 4, 8, 16, 32]:
     model.forward(dummy_input[batch_size])
 ```
 
-**replay benefits**:
-
 - 25-40% latency reduction
 - eliminates kernel launch overhead
 - limitation: requires static shapes
@@ -1026,6 +995,6 @@ num_scheduler_steps: 10 # lookahead scheduling
 - A10G/A30: cost-effective for ≤13B
 - H100: 2× A100 performance
 
-## `<|end ftext|>`
+## `<|endoftext|>`
 
 Thank you for coming, you can find the slides at `https://workshop.aarnphm.xyz/440/notes/slides`

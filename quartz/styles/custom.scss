@@ -260,22 +260,12 @@ h6 {
 
 pre.poetry {
   border: none;
-  padding: 0;
+  padding: 1rem;
   position: unset;
-  font-family: ITCGaramondStdLtCond, var(--bodyFont);
+  font-family: var(--bodyFont);
 
   &[data-language="vi"] {
     font-family: "Playfair Display" !important;
-
-    @media all and ($desktop) {
-      font-size: 1.275rem;
-    }
-  }
-
-  @media all and ($desktop) {
-    font-size: 1.675rem;
-    line-height: 2.25rem;
-    letter-spacing: -0.0275rem;
   }
 }
 
