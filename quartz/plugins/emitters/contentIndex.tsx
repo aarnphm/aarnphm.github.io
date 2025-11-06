@@ -632,7 +632,11 @@ Expires: ${expiresDate.toISOString()}
       })
 
       // inform Chrome to yield correct information
-      if (process.env.NODE_ENV === "development" || process.env.NODE_ENV === "test") {
+      if (
+        process.env.NODE_ENV === "development" ||
+        process.env.NODE_ENV === "test" ||
+        ctx.argv.watch
+      ) {
         // https://chromium.googlesource.com/devtools/devtools-frontend/+/main/docs/ecosystem/automatic_workspace_folders.md
         const slug = joinSegments(".well-known", "appspecific", "com.chrome.devtools") as FullSlug
         const root = path.resolve(path.dirname(ctx.argv.directory)) as FilePath

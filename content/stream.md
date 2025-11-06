@@ -2,7 +2,7 @@
 date: "2025-10-24"
 description: a microblog within a blog, at the middle of the night.
 id: stream
-modified: 2025-11-05 05:48:08 GMT-05:00
+modified: 2025-11-06 01:50:50 GMT-05:00
 tags:
   - seed
   - fruit
@@ -69,7 +69,7 @@ Late night work listening to Dreyfus' lectures hits like smoking a good joint on
   - tags:
     - math
 
-```sms
+```poem
 Try as you may,
 
 you just can't get away,

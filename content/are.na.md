@@ -41,7 +41,7 @@ cssclasses:
 date: "2024-10-24"
 description: My run-down version of are[dot]na
 id: are.na
-modified: 2025-11-05 22:59:02 GMT-05:00
+modified: 2025-11-06 01:50:01 GMT-05:00
 permalinks:
   - /website
   - /tweets
@@ -51,8 +51,6 @@ socials:
   curius: /curius
   home: /
 tags:
-  - technical
-  - seed
   - evergreen
 title: are.na
 ---
@@ -3722,14 +3720,6 @@ title: are.na
   - [meta]:
     - date: 05/23/2025
     - tags: [fruit]
-- https://notes.aarnphm.xyz/notes?stackedNotes=bm90ZXM&stackedNotes=dGhvdWdodHMvbWVjaGFuaXN0aWMtaW50ZXJwcmV0YWJpbGl0eQ&stackedNotes=dGhvdWdodHMvY29udHJhc3RpdmUtcmVwcmVzZW50YXRpb24tbGVhcm5pbmc&stackedNotes=dGhvdWdodHMvYXV0b2VuY29kZXJz&stackedNotes=dGhvdWdodHMvRW1iZWRkaW5n&stackedNotes=dGhvdWdodHMvbGF0ZW50LXNwYWNl&stackedNotes=dGhvdWdodHMvcmVwcmVzZW50YXRpb25z&stackedNotes=dGhvdWdodHMvTkZB&stackedNotes=dGhvdWdodHMvREZB&stackedNotes=dGhvdWdodHMvQ29tcGlsZXI&stackedNotes=dGhvdWdodHMvTUxJUg&stackedNotes=bGVjdHVyZXMvMi93aHk&stackedNotes=dGhvdWdodHMvbm9ybQ&stackedNotes=bGVjdHVyZXMvNDExL25vdGVz&stackedNotes=dGhvdWdodHMvbGluZ3Vpc3RpYy1yZWxhdGl2aXR5&stackedNotes=dGhvdWdodHMvZW1lcmdlbnQtYmVoYXZpb3Vy&stackedNotes=dGhvdWdodHMvcmVkdWN0aW9uaXNt&stackedNotes=dGhvdWdodHMvSW5uZXItcHJvZHVjdC1zcGFjZQ&stackedNotes=dGhvdWdodHMvRnJldWQ&stackedNotes=dGhvdWdodHMvaGVybWVuZXV0aWNz&stackedNotes=dGhvdWdodHMvbXVvbg&stackedNotes=dGhvdWdodHMvRXVsZXIncy1pZGVudGl0eQ&stackedNotes=dGhvdWdodHMvcGxheQ -- mech-interp trails
-  - [meta]:
-    - date: 10/02/2025
-    - tags: [interpretability]
-- https://notes.aarnphm.xyz/notes?stackedNotes=bm90ZXM&stackedNotes=dGhvdWdodHMvSW50ZXJuZXQ&stackedNotes=dGhvdWdodHMvRGV0ZXJtaW5pc20&stackedNotes=dGhvdWdodHMvdW5pdmVyc2l0eS90d2VudHktZm91ci10d2VudHktZml2ZS9lbmdpbmVlci00YTAzL2xpdGVyYXR1cmUtcmV2aWV3&stackedNotes=cG9zdHMvY2hhdGdwdA&stackedNotes=dGhvdWdodHMvT0NJ&stackedNotes=dGhvdWdodHMvQ29udGVudC1hZGRyZXNzYWJsZS1zdG9yYWdl&stackedNotes=dGhvdWdodHMvYW50aHJvcGljLXNhZmV0eS1mZWxsb3c&stackedNotes=dGhvdWdodHMvTmlldHpzY2hl&stackedNotes=dGhvdWdodHMvb3B0aW1pemF0aW9u&stackedNotes=dGhvdWdodHMvTExNcw&stackedNotes=dGhvdWdodHMvZXRoaWNz&stackedNotes=dGhvdWdodHMvYWVzdGhldGljLXZhbHVl&stackedNotes=dGhvdWdodHMvUGhpbG9zb3BoeS1hbmQtTmlldHpzY2hl&stackedNotes=dGhvdWdodHMvZGlhbGVjdGljcw&stackedNotes=dGhvdWdodHMvcmVhc29u&stackedNotes=dGhvdWdodHMvQ2FtdXM&stackedNotes=cG9zdHMvMjAyNA&stackedNotes=cXVvdGVz&stackedNotes=dGhvdWdodHMvSGVsbWhvbHR6LWRlY29tcG9zaXRpb24&stackedNotes=dGhvdWdodHMvTW9udGUtQ2FybG8&stackedNotes=dGhvdWdodHMvQ2hvbGVza3ktZGVjb21wb3NpdGlvbg&stackedNotes=dGhvdWdodHMvdW5pdmVyc2l0eS90d2VudHktZm91ci10d2VudHktZml2ZS9zZndyLTRtbDMvQmlhcy1hbmQtaW50ZXJjZXB0&stackedNotes=dGhvdWdodHMvZW1lcmdlbnQtYmVoYXZpb3Vy&stackedNotes=cG9zdHMvc3RydWN0dXJlZC1kZWNvZGluZw&stackedNotes=dGhvdWdodHMvVHJhbnNmb3JtZXJz&stackedNotes=dGhvdWdodHMvRW1iZWRkaW5n&stackedNotes=dGhvdWdodHMvY29udHJhc3RpdmUtcmVwcmVzZW50YXRpb24tbGVhcm5pbmc&stackedNotes=dGhvdWdodHMvQ2F1Y2h5LW1vbWVudHVtLWVxdWF0aW9u&stackedNotes=dGhvdWdodHMvVGVuc29yLWZpZWxk&stackedNotes=dGhvdWdodHMvbWFuaWZvbGQ&stackedNotes=dGhvdWdodHMvUHJvZ3Jlc3NpdmUtZGlzY2xvc3VyZQ&stackedNotes=dGhvdWdodHMvR2lsZXMtRGVsZXV6ZQ&stackedNotes=dGhvdWdodHMvQXV0b3JlZ3Jlc3NpdmUtbW9kZWxz&stackedNotes=dGhvdWdodHMvTGxhbWEtMw&stackedNotes=dGhvdWdodHMvZGlzcGxhY2VtZW50&stackedNotes=dGhvdWdodHMvY29uc3RyYWluZWQtZGVjb2Rpbmc&stackedNotes=dGhvdWdodHMvUGFyZXRvLWRpc3RyaWJ1dGlvbg&stackedNotes=cG9zdHMvUXVlc3Rpb25zLWFib3V0LU1ldGFwaHlzaWNz&stackedNotes=dGhvdWdodHMvQWdlbmN5&stackedNotes=cG9zdHMvY29ycG9yYXRlLXBlcnNvbmhvb2Q&stackedNotes=dGhvdWdodHMvVmVyeS1TbGVuZGVyLURpZmZlcmVuY2Vz&stackedNotes=dGhvdWdodHMvQXJpc3RvdGxl&stackedNotes=dGhvdWdodHMvbWVjaGFuaXN0aWMtaW50ZXJwcmV0YWJpbGl0eQ -- interesting trails
-  - [meta]:
-    - date: 09/02/2025
-    - tags: [fruit, philosophy]
 - https://www.unco.edu/campus-recreation/pdf/intramural-sports/spring20/running-pace-chart.pdf -- Running pace chart [**]
   - [meta]:
     - date: 07/04/2025
@@ -3907,6 +3897,10 @@ title: are.na
 
 ## technical
 
+- https://www.ling.upenn.edu/~kroch/courses/lx400/Gallistel-King_chaps1-9.pdf -- Memory and the Computational Brain [**]
+  - [meta]:
+    - date: 11/06/2025
+    - tags: [programming, memory, computational biology]
 - https://www.tensortonic.com -- ML programming problems
   - [meta]:
     - date: 11/05/2025

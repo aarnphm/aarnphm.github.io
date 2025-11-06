@@ -76,7 +76,7 @@ export default ((opts?: Partial<TagContentOptions>) => {
               return (
                 <div>
                   <h2>
-                    <a class="internal tag-link" href={`../tags/${tag}`}>
+                    <a class="internal tag-link" data-no-popover href={`../tags/${tag}`}>
                       {tag}
                     </a>
                   </h2>

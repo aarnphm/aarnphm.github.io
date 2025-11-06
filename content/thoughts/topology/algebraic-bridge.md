@@ -2,11 +2,11 @@
 date: "2025-11-01"
 description: bridge from point-set topology to algebraic topology (homology/homotopy) ahead of mit 18.906 and beyond.
 id: topology-algebraic-bridge
-modified: 2025-11-02 04:17:34 GMT-05:00
+modified: 2025-11-06 01:52:25 GMT-05:00
 tags:
   - math
   - topology
-  - algebraic-topology
+  - algebraic topology
 title: algebraic view
 ---
 

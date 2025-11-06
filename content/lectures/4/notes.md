@@ -2,11 +2,11 @@
 date: "2025-09-05"
 description: 1/n of acceptance-rejection
 id: notes
-modified: 2025-10-29 02:14:23 GMT-04:00
+modified: 2025-11-06 01:53:56 GMT-05:00
 tags:
   - seed
   - workshop
-title: supplement to 0.4
+title: supplement to 0.400
 transclude:
   title: false
 ---

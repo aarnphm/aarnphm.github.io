@@ -7,7 +7,7 @@ aliases:
 date: "2024-10-30"
 description: and reverse engineering neural networks.
 id: mechanistic interpretability
-modified: 2025-11-05 04:29:18 GMT-05:00
+modified: 2025-11-06 01:32:51 GMT-05:00
 permalinks:
   - /mechinterp
   - /interpretability
@@ -34,7 +34,7 @@ To attack the _curse of dimensionality_, the question remains: _==how do we hope
 
 ## open problems
 
-see also:https://www.neuronpedia.org/graph/info#section-directions-for-future-work ,@sharkey2025openproblemsmechanisticinterpretability
+see also: [neuronpedia aug 25 landscape reports](https://www.neuronpedia.org/graph/info#section-directions-for-future-work), @sharkey2025openproblemsmechanisticinterpretability
 
 - differentiate between "reverse engineering" versus "concept-based"
   - reverse engineer:

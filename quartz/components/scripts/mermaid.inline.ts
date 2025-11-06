@@ -123,9 +123,13 @@ class DiagramPanZoom {
   private resetTransform() {
     this.scale = 1
     const svg = this.content.querySelector("svg")!
+    const containerRect = this.container.getBoundingClientRect()
+    const svgRect = svg.getBoundingClientRect()
+
+    // center the svg within the container
     this.currentPan = {
-      x: svg.getBoundingClientRect().width / 2,
-      y: svg.getBoundingClientRect().height / 2,
+      x: (containerRect.width - svgRect.width) / 2,
+      y: (containerRect.height - svgRect.height) / 2,
     }
     this.updateTransform()
   }
@@ -144,77 +148,113 @@ const cssVars = [
 ] as const
 
 let mermaidImport = undefined
-document.addEventListener("nav", async () => {
-  // Skip mermaid rendering in stacked notes view - causes memory issues
-  const stackedContainer = document.getElementById("stacked-notes-container")
-  if (stackedContainer?.classList.contains("active")) return
+let isSetup = false
+let textMapping: WeakMap<HTMLElement, string> = new WeakMap()
+let panZoomInstances: WeakMap<HTMLElement, DiagramPanZoom> = new WeakMap()
+let popupObserver: MutationObserver | null = null
+let setupDiagrams: WeakSet<HTMLElement> = new WeakSet()
 
-  const nodes = document.querySelectorAll<HTMLDivElement>("pre:has(code.mermaid)")
+async function renderMermaidDiagrams() {
+  const isSlides = document.documentElement.getAttribute("data-slides") === "true"
+  let nodes: NodeListOf<HTMLDivElement>
+  if (isSlides) {
+    const activeSlide = document.querySelector(".slide.active")
+    if (!activeSlide) return
+    nodes = activeSlide.querySelectorAll<HTMLDivElement>("pre:has(code.mermaid)")
+  } else {
+    nodes = document.querySelectorAll<HTMLDivElement>("pre:has(code.mermaid)")
+  }
   if (nodes.length === 0) return
 
   mermaidImport ||= await import(
     // @ts-ignore
     "https://cdnjs.cloudflare.com/ajax/libs/mermaid/11.12.0/mermaid.esm.min.mjs"
   )
-  // The actual mermaid instance is the default export
   const mermaid: Mermaid = mermaidImport.default
 
-  const textMapping: WeakMap<HTMLElement, string> = new WeakMap()
+  // de-init any other diagrams
   for (const node of nodes) {
     const n = node.querySelector("code.mermaid") as HTMLDivElement
-    // Preserve exact source text (innerText may collapse whitespace)
-    textMapping.set(n, n.textContent ?? "")
-  }
-
-  async function renderMermaid() {
-    // de-init any other diagrams
-    for (const node of nodes) {
-      const n = node.querySelector("code.mermaid") as HTMLDivElement
-      // Reset mermaid processing on the actual code node
-      n.removeAttribute("data-processed")
-      const oldText = textMapping.get(n)
-      if (oldText !== undefined) {
-        n.textContent = oldText
-      }
+    n.removeAttribute("data-processed")
+    const oldText = textMapping.get(n)
+    if (oldText !== undefined) {
+      n.textContent = oldText
     }
-
-    const computedStyleMap = cssVars.reduce(
-      (acc, key) => {
-        acc[key] = window.getComputedStyle(document.documentElement).getPropertyValue(key)
-        return acc
-      },
-      {} as Record<(typeof cssVars)[number], string>,
-    )
-
-    const darkMode = document.documentElement.getAttribute("saved-theme") === "dark"
-    mermaid.initialize({
-      startOnLoad: false,
-      securityLevel: "loose",
-      theme: darkMode ? "dark" : "base",
-      themeVariables: {
-        fontFamily: computedStyleMap["--codeFont"],
-        primaryColor: computedStyleMap["--light"],
-        primaryTextColor: computedStyleMap["--darkgray"],
-        primaryBorderColor: computedStyleMap["--tertiary"],
-        lineColor: computedStyleMap["--darkgray"],
-        secondaryColor: computedStyleMap["--secondary"],
-        tertiaryColor: computedStyleMap["--tertiary"],
-        clusterBkg: computedStyleMap["--light"],
-        edgeLabelBackground: computedStyleMap["--highlight"],
-      },
-    })
-
-    await mermaid.run({
-      nodes: [...nodes].map((n) => n.querySelector("code.mermaid") as HTMLDivElement),
-    })
   }
 
-  await renderMermaid()
-  document.addEventListener("themechange", renderMermaid)
-  window.addCleanup(() => document.removeEventListener("themechange", renderMermaid))
+  const computedStyleMap = cssVars.reduce(
+    (acc, key) => {
+      acc[key] = window.getComputedStyle(document.documentElement).getPropertyValue(key)
+      return acc
+    },
+    {} as Record<(typeof cssVars)[number], string>,
+  )
 
+  const darkMode = document.documentElement.getAttribute("saved-theme") === "dark"
+  mermaid.initialize({
+    startOnLoad: false,
+    securityLevel: "loose",
+    theme: darkMode ? "dark" : "base",
+    themeVariables: {
+      fontFamily: computedStyleMap["--codeFont"],
+      primaryColor: computedStyleMap["--light"],
+      primaryTextColor: computedStyleMap["--darkgray"],
+      primaryBorderColor: computedStyleMap["--tertiary"],
+      lineColor: computedStyleMap["--darkgray"],
+      secondaryColor: computedStyleMap["--secondary"],
+      tertiaryColor: computedStyleMap["--tertiary"],
+      clusterBkg: computedStyleMap["--light"],
+      edgeLabelBackground: computedStyleMap["--highlight"],
+    },
+  })
+
+  await mermaid.run({
+    nodes: [...nodes].map((n) => n.querySelector("code.mermaid") as HTMLDivElement),
+  })
+}
+
+async function setupMermaid() {
+  // Skip mermaid rendering in stacked notes view - causes memory issues
+  const stackedContainer = document.getElementById("stacked-notes-container")
+  if (stackedContainer?.classList.contains("active")) return
+
+  const isSlides = document.documentElement.getAttribute("data-slides") === "true"
+  let nodes: NodeListOf<HTMLDivElement>
+  if (isSlides) {
+    const activeSlide = document.querySelector(".slide.active")
+    if (!activeSlide) return
+    nodes = activeSlide.querySelectorAll<HTMLDivElement>("pre:has(code.mermaid)")
+  } else {
+    nodes = document.querySelectorAll<HTMLDivElement>("pre:has(code.mermaid)")
+  }
+  if (nodes.length === 0) return
+
+  // preserve original text content for all mermaid blocks on the page
+  const allNodes = document.querySelectorAll<HTMLDivElement>("pre:has(code.mermaid)")
+  for (const node of allNodes) {
+    const n = node.querySelector("code.mermaid") as HTMLDivElement
+    if (!textMapping.has(n)) {
+      textMapping.set(n, n.textContent ?? "")
+    }
+  }
+
+  await renderMermaidDiagrams()
+
+  // only set up event listeners once
+  if (!isSetup) {
+    document.addEventListener("themechange", renderMermaidDiagrams)
+    window.addCleanup(() => {
+      document.removeEventListener("themechange", renderMermaidDiagrams)
+      popupObserver?.disconnect()
+    })
+    isSetup = true
+  }
+
+  // set up pan-zoom controls for each mermaid diagram (only once per diagram)
   for (let i = 0; i < nodes.length; i++) {
     const pre = nodes[i]
+    if (setupDiagrams.has(pre)) continue
+
     const codeBlock = pre.querySelector("code.mermaid") as HTMLDivElement
     const clipboardBtn = pre.querySelector(".clipboard-button") as HTMLElement | null
     const expandBtn = pre.querySelector(".expand-button") as HTMLElement | null
@@ -246,7 +286,6 @@ document.addEventListener("nav", async () => {
       continue
     }
 
-    let panZoom: DiagramPanZoom | null = null
     function showMermaid() {
       const container = popupContainer!.querySelector("#mermaid-space") as HTMLElement
       const content = popupContainer!.querySelector(".mermaid-content") as HTMLElement
@@ -262,21 +301,54 @@ document.addEventListener("nav", async () => {
       container.style.cursor = "grab"
 
       // Initialize pan-zoom after showing the popup
-      panZoom = new DiagramPanZoom(container, content)
+      const panZoom = new DiagramPanZoom(container, content)
+      panZoomInstances.set(popupContainer!, panZoom)
     }
 
     function hideMermaid() {
       popupContainer?.classList.remove("active")
+      const panZoom = panZoomInstances.get(popupContainer!)
       panZoom?.cleanup()
-      panZoom = null
+      panZoomInstances.delete(popupContainer!)
     }
 
     expandBtn.addEventListener("click", showMermaid)
     registerEscapeHandler(popupContainer, hideMermaid)
 
     window.addCleanup(() => {
+      const panZoom = panZoomInstances.get(popupContainer!)
       panZoom?.cleanup()
       expandBtn.removeEventListener("click", showMermaid)
     })
+
+    setupDiagrams.add(pre)
   }
-})
+
+  // set up observer to cleanup pan-zoom instances when popups close (only once)
+  if (!popupObserver) {
+    popupObserver = new MutationObserver((mutations) => {
+      for (const mutation of mutations) {
+        if (
+          mutation.type === "attributes" &&
+          mutation.attributeName === "class" &&
+          mutation.target instanceof HTMLElement &&
+          mutation.target.id === "mermaid-container"
+        ) {
+          if (!mutation.target.classList.contains("active")) {
+            const panZoom = panZoomInstances.get(mutation.target)
+            panZoom?.cleanup()
+            panZoomInstances.delete(mutation.target)
+          }
+        }
+      }
+    })
+
+    // observe all mermaid containers for class changes
+    document.querySelectorAll("#mermaid-container").forEach((container) => {
+      popupObserver!.observe(container, { attributes: true, attributeFilter: ["class"] })
+    })
+  }
+}
+document.addEventListener("nav", setupMermaid)
+document.addEventListener("content-decrypted", setupMermaid)
+document.addEventListener("slide-change", setupMermaid)
