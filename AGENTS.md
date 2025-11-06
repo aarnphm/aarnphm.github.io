@@ -94,3 +94,4 @@ This repository powers a Quartz-based digital garden with custom plugins, a Clou
 - Do not commit secrets; use `.env` locally and `wrangler.toml`/CF secrets for Worker.
 - Large binaries go through Git LFS; keep `public/` reproducible via `pnpm bundle`.
 - Node >= 22, pnpm 9; Python 3.11, Rust nightly, Go 1.23, C++21, CUDA 12.8++, Lean4, Triton 3.4+, CUTLASS 4.2.0+, CuTeDSL in Python.
+- When thinking hard about a problem, make sure to use sequential-thinking and uses at least around minimum of seven or more steps.
