@@ -4,7 +4,7 @@ import { debounce } from "./util"
 const SIDENOTE_WIDTH = 17 // rem
 const SPACING = 1 // rem
 const GAP = 1 // rem
-const MIN_DESKTOP_WIDTH = 1500 // px - minimum width for side-by-side sidenotes
+const MIN_DESKTOP_WIDTH = 1400 // px - minimum width for side-by-side sidenotes
 
 // convert rem to pixels
 function remToPx(rem: number): number {
@@ -71,6 +71,31 @@ class SidenoteManager {
     this.initialize()
   }
 
+  private cleanupHandlers(state: SidenoteState) {
+    if (state.clickHandler) {
+      state.label.removeEventListener("click", state.clickHandler, { capture: true } as any)
+      state.clickHandler = undefined
+    }
+    if (state.keyHandler) {
+      state.label.removeEventListener("keydown", state.keyHandler)
+      state.keyHandler = undefined
+    }
+  }
+
+  private setActiveState(state: SidenoteState, active: boolean) {
+    state.span.classList.toggle("active", active)
+    state.label.classList.toggle("active", active)
+  }
+
+  private setExpandedState(state: SidenoteState, expanded: boolean) {
+    const { label, content } = state
+    label.setAttribute("aria-expanded", expanded.toString())
+    content.style.display = expanded ? "block" : "none"
+    content.setAttribute("aria-hidden", (!expanded).toString())
+    this.setActiveState(state, expanded)
+    state.inlineExpanded = expanded
+  }
+
   private measureContentHeight(content: HTMLElement): number {
     // temporarily display offscreen to measure
     const originalDisplay = content.style.display
@@ -120,21 +145,12 @@ class SidenoteManager {
     this.lastBottomRight = 0
 
     this.sidenotes.forEach((state) => {
-      const { span, label, content } = state
+      const { label, content } = state
 
-      const currentExpanded =
+      state.inlineExpanded =
         label.getAttribute("aria-expanded") === "true" || content.style.display === "block"
-      state.inlineExpanded = currentExpanded
 
-      // remove inline mode attributes and handlers
-      if (state.clickHandler) {
-        label.removeEventListener("click", state.clickHandler, { capture: true } as any)
-        state.clickHandler = undefined
-      }
-      if (state.keyHandler) {
-        label.removeEventListener("keydown", state.keyHandler)
-        state.keyHandler = undefined
-      }
+      this.cleanupHandlers(state)
 
       label.removeAttribute("role")
       label.removeAttribute("tabindex")
@@ -144,11 +160,8 @@ class SidenoteManager {
       label.style.cursor = ""
       label.style.userSelect = ""
 
-      // remove active classes
-      span.classList.remove("active")
-      label.classList.remove("active")
+      this.setActiveState(state, false)
 
-      // reset content
       content.style.display = "none"
       content.style.position = ""
       content.classList.remove("sidenote-left", "sidenote-right", "sidenote-inline")
@@ -159,61 +172,37 @@ class SidenoteManager {
   private positionSideToSide(state: SidenoteState): boolean {
     const { span, label, content } = state
     const labelRect = label.getBoundingClientRect()
-
-    // measure content height accurately
     const contentHeight = this.measureContentHeight(content)
-
-    // calculate vertical position
     const scrollTop = window.scrollY || document.documentElement.scrollTop
     const topPosition = labelRect.top + scrollTop
 
-    // check footer collision
     const footer = document.querySelector("footer")
     const footerTop = footer ? footer.getBoundingClientRect().top + scrollTop : Infinity
+    if (topPosition + contentHeight > footerTop) return false
 
-    const wouldCollideWithFooter = topPosition + contentHeight > footerTop
-
-    if (wouldCollideWithFooter) {
-      return false // fall back to inline
-    }
-
-    // check if right side would overlap with active sidepanel
-    // when sidepanel is active (fixed position on right), it blocks all right-side sidenotes
     const wouldOverlapSidepanel = !!document.querySelector(".sidepanel-container.active")
 
-    // check if left side is allowed
     const allowLeft = span.getAttribute("data-allow-left") !== "false"
-
-    // determine side with priority: left → right → inline
-    let side: "left" | "right" | null = null
+    const gap = remToPx(GAP)
     const leftSpace = topPosition - this.lastBottomLeft
     const rightSpace = topPosition - this.lastBottomRight
 
-    // try left first (if allowed)
-    if (allowLeft && leftSpace >= contentHeight + remToPx(GAP)) {
+    let side: "left" | "right"
+    if (allowLeft && leftSpace >= contentHeight + gap) {
       side = "left"
-    }
-    // if left doesn't work (or not allowed), try right
-    if (side === null && !wouldOverlapSidepanel && rightSpace >= contentHeight + remToPx(GAP)) {
+    } else if (!wouldOverlapSidepanel && rightSpace >= contentHeight + gap) {
       side = "right"
-    }
-    // neither side works
-    if (side === null) {
-      return false // fall back to inline
+    } else {
+      return false
     }
 
-    // apply positioning
     content.classList.add(`sidenote-${side}`)
     content.style.display = "block"
     content.setAttribute("aria-hidden", "false")
 
-    // update tracking
     const bottomPosition = topPosition + contentHeight
-    if (side === "left") {
-      this.lastBottomLeft = bottomPosition
-    } else {
-      this.lastBottomRight = bottomPosition
-    }
+    if (side === "left") this.lastBottomLeft = bottomPosition
+    else this.lastBottomRight = bottomPosition
 
     state.side = side
     state.inlineExpanded = false
@@ -221,23 +210,14 @@ class SidenoteManager {
   }
 
   private positionInline(state: SidenoteState) {
-    const { span, label, content } = state
+    const { label, content } = state
 
-    // ensure handlers are cleaned up first
-    if (state.clickHandler) {
-      label.removeEventListener("click", state.clickHandler)
-      state.clickHandler = undefined
-    }
-    if (state.keyHandler) {
-      label.removeEventListener("keydown", state.keyHandler)
-      state.keyHandler = undefined
-    }
+    this.cleanupHandlers(state)
 
     content.classList.add("sidenote-inline")
     content.style.display = "none"
     content.style.position = "static"
 
-    // set up interactivity - make label fully clickable
     label.style.cursor = "pointer"
     label.style.userSelect = "none"
     label.setAttribute("role", "button")
@@ -247,22 +227,7 @@ class SidenoteManager {
 
     const toggle = () => {
       const isExpanded = label.getAttribute("aria-expanded") === "true"
-      const newExpandedState = !isExpanded
-
-      content.style.display = newExpandedState ? "block" : "none"
-      label.setAttribute("aria-expanded", newExpandedState.toString())
-      content.setAttribute("aria-hidden", (!newExpandedState).toString())
-
-      // toggle active class based on expanded state
-      if (newExpandedState) {
-        span.classList.add("active")
-        label.classList.add("active")
-      } else {
-        span.classList.remove("active")
-        label.classList.remove("active")
-      }
-
-      state.inlineExpanded = newExpandedState
+      this.setExpandedState(state, !isExpanded)
     }
 
     const onClick = (e: MouseEvent) => {
@@ -280,28 +245,13 @@ class SidenoteManager {
       }
     }
 
-    // store and attach handlers with capture phase to ensure we catch it first
     state.clickHandler = onClick
     state.keyHandler = onKeyDown
 
     label.addEventListener("click", onClick, { capture: true })
     label.addEventListener("keydown", onKeyDown)
 
-    // set initial state
-    const shouldExpand = state.inlineExpanded ?? false
-    label.setAttribute("aria-expanded", shouldExpand.toString())
-
-    if (shouldExpand) {
-      content.style.display = "block"
-      content.setAttribute("aria-hidden", "false")
-      span.classList.add("active")
-      label.classList.add("active")
-    } else {
-      content.style.display = "none"
-      content.setAttribute("aria-hidden", "true")
-      span.classList.remove("active")
-      label.classList.remove("active")
-    }
+    this.setExpandedState(state, state.inlineExpanded ?? false)
   }
 
   public layout() {
@@ -329,36 +279,14 @@ function setupSidenotes() {
 
   const debouncedLayout = debounce(() => manager.layout(), 100)
 
-  // only recalculate on scroll if in side-by-side mode (for footer collision detection)
-  // inline mode doesn't need scroll-based recalculation
-  // also don't recalculate when sidepanel is active to preserve inline state
-  const debouncedScrollLayout = debounce(() => {
-    const sidepanel = document.querySelector(".sidepanel-container")
-    const sidepanelActive = sidepanel?.classList.contains("active")
-    const mode = getLayoutMode()
-
-    if (mode !== "inline" && !sidepanelActive) {
-      manager.layout()
-    }
-  }, 100)
-
   window.addEventListener("resize", debouncedLayout, { passive: true })
-  document.addEventListener("scroll", debouncedScrollLayout, { passive: true })
 
   // watch for sidepanel state changes
   const sidepanel = document.querySelector(".sidepanel-container")
   let observer: MutationObserver | null = null
 
   if (sidepanel) {
-    observer = new MutationObserver((mutations) => {
-      for (const mutation of mutations) {
-        if (mutation.type === "attributes" && mutation.attributeName === "class") {
-          debouncedLayout()
-          break
-        }
-      }
-    })
-
+    observer = new MutationObserver(() => debouncedLayout())
     observer.observe(sidepanel, {
       attributes: true,
       attributeFilter: ["class"],
@@ -367,7 +295,6 @@ function setupSidenotes() {
 
   window.addCleanup(() => {
     window.removeEventListener("resize", debouncedLayout)
-    document.removeEventListener("scroll", debouncedScrollLayout)
     if (observer) {
       observer.disconnect()
     }

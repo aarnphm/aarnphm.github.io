@@ -164,6 +164,7 @@ type TreeProps = {
   description?: string
   children?: ComponentChildren
   compact?: boolean
+  asTitle?: boolean
 }
 
 const MethodologyTreeImpl: QuartzMdxComponent<TreeProps> = ({
@@ -171,6 +172,7 @@ const MethodologyTreeImpl: QuartzMdxComponent<TreeProps> = ({
   description,
   children,
   compact = false,
+  asTitle = true,
 }) => {
   const childArray = toChildArray(children).filter(Boolean)
   const steps = childArray.filter(isStepVNode)
@@ -187,7 +189,7 @@ const MethodologyTreeImpl: QuartzMdxComponent<TreeProps> = ({
     <section class={`methodology-tree${compact ? " compact" : ""}`}>
       {(title || description) && (
         <header class="tree-header">
-          {title && <h4>{title}</h4>}
+          {title && (asTitle ? <h4>{title}</h4> : <p>{title}</p>)}
           {description && <p>{description}</p>}
         </header>
       )}

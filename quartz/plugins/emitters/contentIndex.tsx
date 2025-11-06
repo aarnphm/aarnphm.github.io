@@ -314,7 +314,11 @@ export const ContentIndex: QuartzEmitterPlugin<Partial<Options>> = (opts) => {
           const links = (file.data.links ?? []).filter((link) => {
             // @ts-ignore
             const targetFile = content.find(([_, f]) => f.data.slug === link)?.[1]
-            if (targetFile?.data.frontmatter?.noindex === true) return false
+            if (
+              targetFile?.data.frontmatter?.noindex === true ||
+              targetFile?.data.frontmatter?.protected === true
+            )
+              return false
 
             return true
           })
