@@ -446,12 +446,24 @@ export default {
       })
     }
 
-    // Internal rewrite for stream domain -> prepend /stream to pathname
+    // Internal rewrite for stream domain -> serve /stream documents and root assets
     if (url.hostname === "stream.aarnphm.xyz") {
-      const rewritten = new URL(url)
-      rewritten.hostname = new URL(resolveBaseUrl(env, request)).hostname
-      rewritten.pathname = `/stream${url.pathname === "/" ? "" : url.pathname}`
-      const newReq = new Request(rewritten.toString(), request)
+      const base = new URL(resolveBaseUrl(env, request))
+      if (base.hostname === url.hostname && base.hostname.startsWith("stream.")) {
+        base.hostname = base.hostname.replace(/^stream\./, "")
+      }
+      const isDocument = shouldTreatAsDocument(url.pathname)
+      const needsStreamPrefix = isDocument && !url.pathname.startsWith("/stream")
+      const targetPath =
+        needsStreamPrefix && url.pathname !== "/"
+          ? `/stream${url.pathname}`
+          : needsStreamPrefix
+            ? "/stream"
+            : url.pathname
+      base.pathname = targetPath
+      base.search = url.search
+      base.hash = url.hash
+      const newReq = new Request(base.toString(), request)
       const resp = await env.ASSETS.fetch(newReq)
       return withHeaders(resp, {
         "X-Frame-Options": null,
