@@ -433,83 +433,6 @@ export default {
       if (stacked) return stacked
     }
 
-    // Internal rewrite for notes domain root -> /notes?stackedNotes=<encoded>
-    if (url.hostname === "notes.aarnphm.xyz" && url.pathname === "/") {
-      const slug = "notes"
-      const rewritten = new URL(`/${slug}`, url)
-      rewritten.searchParams.set("stackedNotes", btoa(slug).replace(/=+$/, ""))
-      const newReq = new Request(rewritten.toString(), request)
-      const resp = await env.ASSETS.fetch(newReq)
-      return withHeaders(resp, {
-        "X-Frame-Options": null,
-        "Content-Security-Policy": "frame-ancestors 'self' *",
-      })
-    }
-
-    // Internal rewrite for stream domain -> dedupe /stream prefix and serve canonical content
-    if (url.hostname === "stream.aarnphm.xyz" && !url.pathname.startsWith("/fonts/")) {
-      const streamPrefix = "/stream"
-      let sanitizedPathname = url.pathname
-
-      if (sanitizedPathname === streamPrefix || sanitizedPathname === `${streamPrefix}/`) {
-        sanitizedPathname = "/"
-      } else if (sanitizedPathname.startsWith(`${streamPrefix}/`)) {
-        sanitizedPathname = sanitizedPathname.slice(streamPrefix.length) || "/"
-      }
-
-      if (sanitizedPathname !== url.pathname) {
-        const redirectUrl = new URL(url)
-        redirectUrl.pathname = sanitizedPathname
-        return Response.redirect(redirectUrl.toString(), 308)
-      }
-
-      const pathname = sanitizedPathname
-
-      const base = new URL(resolveBaseUrl(env, request))
-      if (base.hostname === url.hostname && base.hostname.startsWith("stream.")) {
-        base.hostname = base.hostname.replace(/^stream\./, "")
-      }
-      const isDocument = shouldTreatAsDocument(pathname)
-      const needsStreamPrefix = isDocument && !pathname.startsWith("/stream")
-      const targetPath =
-        needsStreamPrefix && pathname !== "/"
-          ? `/stream${pathname}`
-          : needsStreamPrefix
-            ? "/stream"
-            : pathname
-      base.pathname = targetPath
-      base.search = url.search
-      base.hash = url.hash
-      const newReq = new Request(base.toString(), request)
-      const resp = await env.ASSETS.fetch(newReq)
-      return withHeaders(resp, {
-        "X-Frame-Options": null,
-        "Content-Security-Policy": "frame-ancestors 'self' *",
-      })
-    }
-
-    // permanent redirect d.aarnphm.xyz -> aarnphm.xyz/dating
-    if (url.hostname === "d.aarnphm.xyz") {
-      return Response.redirect("https://aarnphm.xyz/dating/slides", 301)
-    }
-    if (url.hostname === "arena.aarnphm.xyz") {
-      return Response.redirect("https://aarnphm.xyz/arena", 301)
-    }
-
-    // rendering supported code files as text/plain
-    const assetsMatch = url.pathname.match(
-      /.+\.(py|go|java|c|cpp|cxx|cu|cuh|h|hpp|ts|tsx|jsx|yaml|yml|rs|m|sql|sh|zig|lua)$/i,
-    )
-    if (assetsMatch) {
-      const originResp = await env.ASSETS.fetch(request)
-      return withHeaders(originResp, {
-        "Content-Type": "text/plain; charset=utf-8",
-        "X-Content-Type-Options": "nosniff",
-        "X-Frame-Options": "DENY",
-        "Cache-Control": "no-store, no-cache, must-revalidate",
-      })
-    }
-
     const apiHeaders: Record<string, string> = {
       "Cache-Control": "s-maxage=300, stale-while-revalidate=59",
       ...buildCorsHeaders(env, request),
@@ -772,6 +695,70 @@ export default {
       ctx.waitUntil(cache.put(cacheKey, response.clone()))
 
       return response
+    }
+
+    // Internal rewrite for stream domain -> dedupe /stream prefix and serve canonical content
+    if (url.hostname === "stream.aarnphm.xyz" && !url.pathname.startsWith("/fonts/")) {
+      const streamPrefix = "/stream"
+      let sanitizedPathname = url.pathname
+
+      if (sanitizedPathname === streamPrefix || sanitizedPathname === `${streamPrefix}/`) {
+        sanitizedPathname = "/"
+      } else if (sanitizedPathname.startsWith(`${streamPrefix}/`)) {
+        sanitizedPathname = sanitizedPathname.slice(streamPrefix.length) || "/"
+      }
+
+      if (sanitizedPathname !== url.pathname) {
+        const redirectUrl = new URL(url)
+        redirectUrl.pathname = sanitizedPathname
+        return Response.redirect(redirectUrl.toString(), 308)
+      }
+
+      const pathname = sanitizedPathname
+
+      const base = new URL(resolveBaseUrl(env, request))
+      if (base.hostname === url.hostname && base.hostname.startsWith("stream.")) {
+        base.hostname = base.hostname.replace(/^stream\./, "")
+      }
+      const isDocument = shouldTreatAsDocument(pathname)
+      const needsStreamPrefix = isDocument && !pathname.startsWith("/stream")
+      const targetPath =
+        needsStreamPrefix && pathname !== "/"
+          ? `/stream${pathname}`
+          : needsStreamPrefix
+            ? "/stream"
+            : pathname
+      base.pathname = targetPath
+      base.search = url.search
+      base.hash = url.hash
+      const newReq = new Request(base.toString(), request)
+      const resp = await env.ASSETS.fetch(newReq)
+      return withHeaders(resp, {
+        "X-Frame-Options": null,
+        "Content-Security-Policy": "frame-ancestors 'self' *",
+      })
+    }
+
+    // permanent redirect d.aarnphm.xyz -> aarnphm.xyz/dating
+    if (url.hostname === "d.aarnphm.xyz") {
+      return Response.redirect("https://aarnphm.xyz/dating/slides", 301)
+    }
+    if (url.hostname === "arena.aarnphm.xyz") {
+      return Response.redirect("https://aarnphm.xyz/arena", 301)
+    }
+
+    // rendering supported code files as text/plain
+    const assetsMatch = url.pathname.match(
+      /.+\.(py|go|java|c|cpp|cxx|cu|cuh|h|hpp|ts|tsx|jsx|yaml|yml|rs|m|sql|sh|zig|lua)$/i,
+    )
+    if (assetsMatch) {
+      const originResp = await env.ASSETS.fetch(request)
+      return withHeaders(originResp, {
+        "Content-Type": "text/plain; charset=utf-8",
+        "X-Content-Type-Options": "nosniff",
+        "X-Frame-Options": "DENY",
+        "Cache-Control": "no-store, no-cache, must-revalidate",
+      })
     }
 
     // Deny non-GET/HEAD for other paths

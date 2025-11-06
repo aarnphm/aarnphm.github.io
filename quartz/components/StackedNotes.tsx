@@ -1,9 +1,7 @@
 import { QuartzComponent, QuartzComponentConstructor } from "./types"
-import { h } from "preact"
 // @ts-ignore
 import script from "./scripts/matuschak.inline"
 import style from "./styles/matuschak.scss"
-import { svgOptions } from "./svg"
 
 export default (() => {
   const StackedNotes: QuartzComponent = () => {
@@ -47,20 +45,6 @@ export default (() => {
             </svg>
           </div>
         </span>
-        {h(
-          "span",
-          {
-            type: "button",
-            class: "stacked-copy",
-            tabindex: -1,
-            "aria-hidden": "true",
-            "aria-label": "copy stacked notes URL",
-            title: "copy stacked notes URL",
-          },
-          h("svg", { ...svgOptions, viewbox: "0 -8 24 24", width: 16, height: 16 }, [
-            h("use", { href: "#github-copy" }),
-          ]),
-        )}
       </div>
     )
   }

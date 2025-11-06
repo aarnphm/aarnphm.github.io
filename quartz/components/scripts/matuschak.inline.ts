@@ -9,7 +9,6 @@ document.addEventListener("nav", async (ev) => {
   const header = document.getElementsByClassName("header")[0] as HTMLElement
 
   if (!button || !container || !header) return
-  const copyStacked = header.querySelector("span.stacked-copy") as HTMLElement
 
   const switchCheckState = async () => {
     const isChecked = button.getAttribute("aria-checked") === "true"
@@ -31,31 +30,6 @@ document.addEventListener("nav", async (ev) => {
       window.stacked.destroy()
       window.location.reload()
     }
-  }
-
-  if (copyStacked) {
-    function onClick() {
-      const stackedNotes = window.stacked.getChain()
-      let source = stackedNotes
-      if (window.location.hostname.startsWith("notes.aarnphm.xyz"))
-        source = `https://notes.aarnphm.xyz/?${stackedNotes}`
-
-      navigator.clipboard.writeText(source).then(
-        () => {
-          copyStacked.blur()
-          const use = copyStacked?.querySelector("svg") as SVGElement
-          if (!use) return
-          use.innerHTML = '<use href="#github-check"></use>'
-          setTimeout(() => {
-            use.innerHTML = '<use href="#github-copy"></use>'
-          }, 2000)
-        },
-        (error) => console.error(error),
-      )
-    }
-
-    copyStacked.addEventListener("click", onClick)
-    window.addCleanup(() => copyStacked.removeEventListener("click", onClick))
   }
 
   if (window.location.hostname.startsWith("notes.aarnphm.xyz")) return
