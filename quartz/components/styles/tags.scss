@@ -45,3 +45,11 @@ ul.tags > li {
   margin: 0;
   overflow-wrap: normal;
 }
+
+section[class~="byline"] {
+  ul.tags,
+  menu.tags,
+  menu.tags > li > ul {
+    max-width: 12rem;
+  }
+}
