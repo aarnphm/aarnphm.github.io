@@ -2,7 +2,7 @@
 date: "2024-02-29"
 description: existential crises,angst, courage, and ultimate freedom
 id: Existentialism
-modified: 2025-11-06 09:58:23 GMT-05:00
+modified: 2025-11-06 12:44:28 GMT-05:00
 tags:
   - philosophy
 title: Existentialism

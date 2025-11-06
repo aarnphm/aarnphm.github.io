@@ -8,7 +8,7 @@ import { encode } from "./util"
 const CURIUS_HOST = "https://curius.app"
 export const CURIUS = `${CURIUS_HOST}/aaron-pham`
 const externalLinkRegex = /^(?:https?:\/\/)?(?:www\.)?([^\/]+)/
-export const PINNED_FOLLOWING_IDS = [3971, 1296, 1294] as const
+export const PINNED_FOLLOWING_IDS = [3971, 1296] as const
 
 export const fetchLinksHeaders: RequestInit = {
   method: "GET",
