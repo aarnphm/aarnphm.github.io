@@ -1,4 +1,5 @@
 import { Node as UnistNode, Data as UnistData, Parent } from "unist"
+import type { WikilinkData } from "../../../util/wikilinks"
 
 /**
  * jcast - JSON Canvas Abstract Syntax Tree
@@ -72,6 +73,16 @@ export interface JcastData extends UnistData {
   canvas?: Partial<JsonCanvasNode> & Partial<JsonCanvasEdge>
 
   /**
+   * Wikilinks extracted from text content along with resolved metadata
+   */
+  wikilinks?: JcastResolvedWikilink[]
+
+  /**
+   * Text content with wikilinks rewritten to standard markdown links
+   */
+  resolvedText?: string
+
+  /**
    * Graph relationship metadata
    */
   edges?: string[] // IDs of connected edges
@@ -103,6 +114,13 @@ export interface JcastData extends UnistData {
    */
   computedPosition?: { x: number; y: number } // Position after layout algorithm
   renderOrder?: number // Z-index for rendering
+}
+
+export interface JcastResolvedWikilink {
+  link: WikilinkData
+  resolvedSlug?: string
+  resolvedHref?: string
+  missing?: boolean
 }
 
 /**

@@ -75,7 +75,7 @@ export const CanvasPage: QuartzEmitterPlugin<Partial<FullPageLayout>> = (userOpt
           const slug = slugifyFilePath(canvasFile as FilePath, true) as FullSlug
 
           const canvasContent = await fs.readFile(src, "utf-8")
-          const jcast = await processCanvasFile(canvasContent, ctx, allFiles)
+          const jcast = await processCanvasFile(canvasContent, ctx, allFiles, slug)
 
           const bounds = jcast.data.bounds
           const width = bounds ? bounds.maxX - bounds.minX + 200 : 1200 // add padding
@@ -96,6 +96,14 @@ export const CanvasPage: QuartzEmitterPlugin<Partial<FullPageLayout>> = (userOpt
           for (const [, node] of jcast.data.nodeMap) {
             if (node.data?.resolved?.slug) {
               linkedSlugs.push(simplifySlug(node.data.resolved.slug as FullSlug))
+            }
+
+            if (node.data?.wikilinks) {
+              for (const link of node.data.wikilinks) {
+                if (link.resolvedSlug) {
+                  linkedSlugs.push(simplifySlug(link.resolvedSlug as FullSlug))
+                }
+              }
             }
           }
 

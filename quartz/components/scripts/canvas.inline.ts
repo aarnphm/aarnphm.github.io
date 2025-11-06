@@ -26,6 +26,58 @@ function parseMarkdown(text: string): string {
   }
 }
 
+function renderTextNodeContent(node: NodeData): string {
+  const source = node.resolvedText ?? node.text ?? ""
+  const html = parseMarkdown(source)
+
+  if (!node.wikilinks || node.wikilinks.length === 0) {
+    return `<div class="node-text">${html}</div>`
+  }
+
+  const doc = htmlParser.parseFromString(html, "text/html")
+  const anchors = Array.from(doc.body.querySelectorAll("a"))
+  const remaining = [...node.wikilinks]
+
+  anchors.forEach((anchor) => {
+    const href = anchor.getAttribute("href") ?? ""
+    const idx = remaining.findIndex((link) => link.resolvedHref === href)
+    const match = idx >= 0 ? remaining.splice(idx, 1)[0] : undefined
+
+    if (!match) {
+      return
+    }
+
+    if (match.resolvedHref) {
+      anchor.classList.add("internal")
+      if (match.resolvedSlug) {
+        const slug = match.resolvedSlug.startsWith("/")
+          ? match.resolvedSlug
+          : `/${match.resolvedSlug}`
+        anchor.dataset.slug = slug
+      }
+    }
+
+    if (match.missing) {
+      anchor.classList.add("is-missing")
+    }
+  })
+
+  normalizeRelativeURLs(doc, window.location.href)
+
+  return `<div class="node-text">${doc.body.innerHTML}</div>`
+}
+
+interface CanvasResolvedWikilink {
+  raw: string
+  target?: string
+  anchor?: string
+  alias?: string
+  embed?: boolean
+  resolvedSlug?: string
+  resolvedHref?: string
+  missing?: boolean
+}
+
 interface CanvasNode {
   id: string
   type: "text" | "file" | "link" | "group"
@@ -44,6 +96,8 @@ interface CanvasNode {
   resolvedHref?: string
   description?: string
   content?: string
+  resolvedText?: string
+  wikilinks?: CanvasResolvedWikilink[]
 }
 
 interface CanvasEdge {
@@ -493,6 +547,8 @@ async function renderCanvas(container: HTMLElement) {
         resolvedHref: meta.href ?? n.resolvedHref,
         description: meta.description ?? n.description,
         content: meta.content ?? n.content,
+        resolvedText: meta.resolvedText ?? n.resolvedText,
+        wikilinks: meta.wikilinks ?? n.wikilinks,
         fx: cfg.useManualPositions ? n.x : undefined,
         fy: cfg.useManualPositions ? n.y : undefined,
       }
@@ -736,8 +792,7 @@ async function renderCanvas(container: HTMLElement) {
       .attr("class", "node-content")
       .html((d) => {
         if (d.type === "text") {
-          // parse markdown for text nodes
-          return `<div class="node-text">${parseMarkdown(d.text || "")}</div>`
+          return renderTextNodeContent(d)
         } else if (d.type === "file") {
           const hasDescription =
             typeof d.description === "string" && d.description.trim().length > 0

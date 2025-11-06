@@ -4,13 +4,18 @@ import { visit } from "unist-util-visit"
 import { parseJsonCanvas } from "./jcast"
 import { JcastCanvas, isJcastCanvasNode } from "./jcast/types"
 import { visitJcast } from "./jcast/visitor"
-import { slugifyFilePath, slugAnchor, FilePath } from "../../util/path"
+import { slugifyFilePath, slugAnchor, FilePath, FullSlug, resolveRelative } from "../../util/path"
 import { h } from "hastscript"
 import { BuildCtx } from "../../util/ctx"
 import { QuartzPluginData } from "../vfile"
 import fs from "fs/promises"
 import path from "path"
 import { glob } from "../../util/glob"
+import {
+  createWikilinkRegex,
+  extractWikilinks,
+  resolveWikilinkTarget,
+} from "../../util/wikilinks"
 
 export interface CanvasOptions {
   /**
@@ -66,11 +71,44 @@ async function writeCanvasMetaAsset(
 
 function collectCanvasMeta(jcast: JcastCanvas): Record<string, any> {
   const meta: Record<string, any> = {}
+
   for (const [id, node] of jcast.data.nodeMap) {
-    if (node.data?.resolved) {
-      meta[id] = node.data.resolved
+    if (!node.data) {
+      continue
+    }
+
+    const entry: Record<string, any> = {}
+
+    if (node.data.resolved) {
+      entry.slug = node.data.resolved.slug
+      entry.href = node.data.resolved.href
+      entry.displayName = node.data.resolved.displayName
+      if (node.data.resolved.description) {
+        entry.description = node.data.resolved.description
+      }
+      if (node.data.resolved.content) {
+        entry.content = node.data.resolved.content
+      }
+    }
+
+    if (node.data.resolvedText) {
+      entry.resolvedText = node.data.resolvedText
+    }
+
+    if (node.data.wikilinks && node.data.wikilinks.length > 0) {
+      entry.wikilinks = node.data.wikilinks.map((w) => ({
+        ...w.link,
+        resolvedSlug: w.resolvedSlug,
+        resolvedHref: w.resolvedHref,
+        missing: Boolean(w.missing),
+      }))
+    }
+
+    if (Object.keys(entry).length > 0) {
+      meta[id] = entry
     }
   }
+
   return meta
 }
 
@@ -153,7 +191,7 @@ export const JsonCanvas: QuartzTransformerPlugin<Partial<CanvasOptions>> = (user
                 }
 
                 const canvasContent = await fs.readFile(canvasPath, "utf-8")
-                const jcast = await processCanvasFile(canvasContent, ctx, undefined)
+                const jcast = await processCanvasFile(canvasContent, ctx, undefined, slug as FullSlug)
                 const meta = collectCanvasMeta(jcast)
                 const metaPath = await writeCanvasMetaAsset(ctx, slug, meta)
 
@@ -208,7 +246,8 @@ export const JsonCanvas: QuartzTransformerPlugin<Partial<CanvasOptions>> = (user
 export async function processCanvasFile(
   canvasContent: string,
   ctx: BuildCtx,
-  allFiles?: QuartzPluginData[],
+  allFiles: QuartzPluginData[] | undefined,
+  currentSlug: FullSlug,
 ): Promise<JcastCanvas> {
   const jcast = parseJsonCanvas(canvasContent)
 
@@ -217,74 +256,132 @@ export async function processCanvasFile(
     if (!isJcastCanvasNode(node)) return
 
     const canvasNode = node.data?.canvas
-    if (!canvasNode || canvasNode.type !== "file") return
+    if (!canvasNode) return
 
-    let filePath = canvasNode.file
-    if (!filePath) return
+    if (canvasNode.type === "file") {
+      let filePath = canvasNode.file
+      if (!filePath) return
 
-    // Optional subpath (e.g., "#Heading" or "^block-id") provided by Obsidian Canvas
-    // Obsidian stores anchors separately in `subpath`. In some cases, users may
-    // have persisted the `#anchor` inside `file` – handle both robustly.
-    let rawSubpath = canvasNode.subpath || ""
-    if (!rawSubpath && filePath.includes("#")) {
-      const idx = filePath.indexOf("#")
-      rawSubpath = filePath.slice(idx)
-      filePath = filePath.slice(0, idx)
+      // Optional subpath (e.g., "#Heading" or "^block-id") provided by Obsidian Canvas
+      // Obsidian stores anchors separately in `subpath`. In some cases, users may
+      // have persisted the `#anchor` inside `file` – handle both robustly.
+      let rawSubpath = canvasNode.subpath || ""
+      if (!rawSubpath && filePath.includes("#")) {
+        const idx = filePath.indexOf("#")
+        rawSubpath = filePath.slice(idx)
+        filePath = filePath.slice(0, idx)
+      }
+
+      // normalize and resolve file path following wikilink procedures
+      let normalizedPath = filePath.trim()
+
+      // ensure .md extension if not present and not already another extension
+      if (!normalizedPath.includes(".")) {
+        normalizedPath = normalizedPath + ".md"
+      }
+
+      // convert to slug using same logic as wikilinks
+      const slug = slugifyFilePath(normalizedPath as FilePath)
+      const fileExists = ctx.allSlugs?.includes(slug)
+
+      // extract display name (just the filename without extension)
+      const displayName = normalizedPath.split("/").pop()?.replace(/\.md$/, "") || filePath
+
+      // find the actual file to get its description and content
+      const targetFile = allFiles?.find((f) => f.slug === slug)
+      const description = targetFile?.frontmatter?.description || ""
+
+      // Normalize subpath to an anchor Obsidian-style
+      let resolvedAnchor = ""
+      if (rawSubpath) {
+        // rawSubpath could be "#Heading", "#Heading#Sub", or "^block-id" (with or without leading '#')
+        let sp = rawSubpath.trim()
+        // Ensure leading marker is present
+        if (!sp.startsWith("#") && !sp.startsWith("^")) {
+          sp = "#" + sp
+        }
+        if (sp.startsWith("^")) {
+          // Block reference – store as #^id
+          resolvedAnchor = `#${sp}`
+        } else {
+          // Heading anchor – may contain nested headings; follow Obsidian's last-segment behavior
+          const withoutHash = sp.slice(1)
+          const lastSegment = withoutHash.split("#").pop()!.trim()
+          const slugged = slugAnchor(lastSegment)
+          resolvedAnchor = `#${slugged}`
+        }
+      }
+
+      if (node.data) {
+        node.data.resolvedPath = slug
+        node.data.fileExists = fileExists
+        // keep normalized path in raw canvas data for round-tripping
+        if (node.data.canvas) {
+          node.data.canvas.file = normalizedPath
+        }
+        // structured resolved info
+        node.data.resolved = {
+          slug,
+          href: resolvedAnchor ? `${slug}${resolvedAnchor}` : slug,
+          displayName,
+          description,
+        }
+      }
+      return
     }
 
-    // normalize and resolve file path following wikilink procedures
-    let normalizedPath = filePath.trim()
-
-    // ensure .md extension if not present and not already another extension
-    if (!normalizedPath.includes(".")) {
-      normalizedPath = normalizedPath + ".md"
-    }
-
-    // convert to slug using same logic as wikilinks
-    const slug = slugifyFilePath(normalizedPath as FilePath)
-    const fileExists = ctx.allSlugs?.includes(slug)
-
-    // extract display name (just the filename without extension)
-    const displayName = normalizedPath.split("/").pop()?.replace(/\.md$/, "") || filePath
-
-    // find the actual file to get its description and content
-    const targetFile = allFiles?.find((f) => f.slug === slug)
-    const description = targetFile?.frontmatter?.description || ""
-
-    // Normalize subpath to an anchor Obsidian-style
-    let resolvedAnchor = ""
-    if (rawSubpath) {
-      // rawSubpath could be "#Heading", "#Heading#Sub", or "^block-id" (with or without leading '#')
-      let sp = rawSubpath.trim()
-      // Ensure leading marker is present
-      if (!sp.startsWith("#") && !sp.startsWith("^")) {
-        sp = "#" + sp
+    if (canvasNode.type === "text") {
+      const rawText = canvasNode.text ?? ""
+      if (!rawText) {
+        return
       }
-      if (sp.startsWith("^")) {
-        // Block reference – store as #^id
-        resolvedAnchor = `#${sp}`
-      } else {
-        // Heading anchor – may contain nested headings; follow Obsidian's last-segment behavior
-        const withoutHash = sp.slice(1)
-        const lastSegment = withoutHash.split("#").pop()!.trim()
-        const slugged = slugAnchor(lastSegment)
-        resolvedAnchor = `#${slugged}`
-      }
-    }
 
-    if (node.data) {
-      node.data.resolvedPath = slug
-      node.data.fileExists = fileExists
-      // keep normalized path in raw canvas data for round-tripping
-      if (node.data.canvas) {
-        node.data.canvas.file = normalizedPath
+      const wikilinks = extractWikilinks(rawText)
+      if (wikilinks.length === 0) {
+        return
       }
-      // structured resolved info
-      node.data.resolved = {
-        slug,
-        href: resolvedAnchor ? `${slug}${resolvedAnchor}` : slug,
-        displayName,
-        description,
+
+      const resolvedLinks = wikilinks.map((link) => {
+        const resolved = resolveWikilinkTarget(link, currentSlug)
+        if (!resolved) {
+          return {
+            link,
+            missing: true,
+          }
+        }
+
+        const baseHref = resolveRelative(currentSlug, resolved.slug)
+        const href = resolved.anchor ? `${baseHref}${resolved.anchor}` : baseHref
+
+        return {
+          link,
+          resolvedSlug: resolved.slug,
+          resolvedHref: href,
+          missing: false,
+        }
+      })
+
+      const regex = createWikilinkRegex()
+      let idx = 0
+
+      const rewrittenText = rawText.replace(regex, (value) => {
+        const info = resolvedLinks[idx++]
+        if (!info) {
+          return value
+        }
+
+        const display = (info.link.alias ?? info.link.target ?? value).trim()
+        if (!info.resolvedHref) {
+          return display.length > 0 ? display : info.link.raw
+        }
+
+        const label = display.length > 0 ? display : info.resolvedHref
+        return `[${label}](${info.resolvedHref})`
+      })
+
+      if (node.data) {
+        node.data.wikilinks = resolvedLinks
+        node.data.resolvedText = rewrittenText
       }
     }
   })
