@@ -73,8 +73,23 @@ function hydrateCollapsibleHeaders() {
     const parent = button.parentElement as HTMLElement | null
     if (!parent || !parent.dataset.href) continue
 
-    const href = parent.dataset.href
-    const navigate = () => window.spaNavigate(new URL(href, window.location.toString()))
+    const navigate = () => {
+      const href = parent.dataset.href
+      if (!href) return
+      let targetUrl: URL
+      try {
+        targetUrl = new URL(href, window.location.toString())
+      } catch {
+        return
+      }
+
+      if (targetUrl.origin !== window.location.origin) {
+        window.location.assign(targetUrl.toString())
+        return
+      }
+
+      window.spaNavigate(targetUrl)
+    }
 
     button.addEventListener("click", navigate)
     window.addCleanup?.(() => button.removeEventListener("click", navigate))

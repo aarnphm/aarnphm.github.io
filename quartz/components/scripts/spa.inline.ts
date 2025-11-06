@@ -903,7 +903,7 @@ function normalizeStreamPath(raw: string): string | null {
     const search = parsed.search ?? ""
     let pathname = parsed.pathname.replace(/^\/+/, "")
     if (pathname === "") return `/${search}${hash}`
-    pathname = sluggify(pathname).toLowerCase()
+    pathname = sluggify(pathname)
     const normalizedPath = `/${pathname}`
     return `${normalizedPath}${search}${hash}`
   } catch {
@@ -927,6 +927,16 @@ function transformStreamInternalLinks(root: Document | Element) {
     }
     anchor.dataset.noPopover = "true"
     anchor.dataset.routerIgnore = "true"
+  })
+
+  const transcludeRefs = root.querySelectorAll<HTMLElement>(".transclude-ref[data-href]")
+  transcludeRefs.forEach((ref) => {
+    const preferred = ref.dataset.slug ?? ref.dataset.href ?? ""
+    const normalizedPath = normalizeStreamPath(preferred)
+    if (!normalizedPath) return
+    const absoluteHref = `${APEX_ORIGIN}${normalizedPath.startsWith("/") ? normalizedPath : `/${normalizedPath}`}`
+    ref.dataset.href = absoluteHref
+    ref.dataset.routerIgnore = "true"
   })
 }
 

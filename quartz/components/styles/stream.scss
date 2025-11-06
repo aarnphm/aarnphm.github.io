@@ -9,7 +9,7 @@
     position: static !important;
   }
 
-  .page-header {
+  .page-header:not(.popover *) {
     padding-top: 0 !important;
   }
 
