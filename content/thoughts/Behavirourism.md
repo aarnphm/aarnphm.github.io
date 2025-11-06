@@ -2,7 +2,7 @@
 date: "2024-02-07"
 description: an ideology that somewhat contributes to an illogical world we live in.
 id: Behavirourism
-modified: 2025-10-29 02:15:17 GMT-04:00
+modified: 2025-11-06 02:44:35 GMT-05:00
 tags:
   - philosophy
 title: Behavirourism
@@ -14,7 +14,7 @@ Observable behavior is all that matters. Mind is a black box; if you can't measu
 
 This works for training pigeons. For understanding persons? Catastrophically incomplete.
 
-see also: [[thoughts/functionalism]], [[thoughts/hermeneutics]], [[thoughts/attention]]
+see also: [[thoughts/functionalism]], [[thoughts/hermeneutics]], [[thoughts/Attention|attention]]
 
 ## framework
 
