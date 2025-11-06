@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+git lfs pull && git lfs checkout
+
 NODE_ENV=production pnpm exec quartz/bootstrap-cli.mjs build --concurrency 10 --bundleInfo --verbose
 
 fd --glob "*.ddl" public -x rm
