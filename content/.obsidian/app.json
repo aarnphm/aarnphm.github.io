@@ -18,7 +18,7 @@
   "newFileFolderPath": "thoughts",
   "attachmentFolderPath": "thoughts/images",
   "showLineNumber": false,
-  "readableLineLength": true,
+  "readableLineLength": false,
   "strictLineBreaks": true,
   "showInlineTitle": true,
   "rightToLeft": false,

@@ -41,7 +41,7 @@ cssclasses:
 date: "2024-10-24"
 description: My run-down version of are[dot]na
 id: are.na
-modified: 2025-11-05 06:31:45 GMT-05:00
+modified: 2025-11-05 22:59:02 GMT-05:00
 permalinks:
   - /website
   - /tweets
@@ -71,15 +71,15 @@ title: are.na
 - https://sublimeinternet.substack.com/p/the-ai-debate-is-not-about-art-its -- The AI debate is about money
   - [meta]:
     - date: 10/05/2025
-    - tags: [fruit]
+    - tags: [capitalism]
 - https://www.lesswrong.com/posts/HiTjDZyWdLEGCDzqu/?commentId=MPNF8uSsi9mvZLxqz -- Gwern on distilling Opus 3.5 into Claude 3.6 instead of releasing Opus 3.5
   - [meta]:
     - date: 03/08/2025
-    - tags: [fruit]
+    - tags: [distillation]
 - https://www.dwarkesh.com/p/gwern-branwen -- Gwern Branwen - How an Anonymous Researcher Predicted AI's Trajectory
   - [meta]:
     - date: 08/13/2025
-    - tags: [fruit]
+    - tags: [reseacher]
   - > By writing, you are voting on the future of the Shoggoth using one of the few currencies it acknowledges: tokens it has to predict. If you aren't writing, you are abdicating the future or your role in it. If you think it's enough to just be a good citizen, to vote for your favorite politician, to pick up litter and recycle, the future doesn't care about you.
   - > There are ways to influence the Shoggoth more, but not many. If you don't already occupy a handful of key roles or work at a frontier lab, your influence rounds off to 0, far more than ever before. If there are values you have which are not expressed yet in text, if there are things you like or want, if they aren't reflected online, then to the AI they don't exist. That is dangerously close to won't exist.
   - > But yes, you are also creating a sort of immortality for yourself personally. You aren't just creating a persona, you are creating your future self too. What self are you showing the LLMs, and how will they treat you in the future?
@@ -120,6 +120,10 @@ title: are.na
 
 ## tweets
 
+- https://x.com/mike64_t/status/1986232971230388370 -- ParaRNN debates and JAX implementations [**]
+  - [meta]:
+    - date: 11/05/2025
+    - tags: [llm]
 - https://x.com/cHHillee/status/1949470943291805832 -- torchtitan fork at Thinking Machine Labs
   - [meta]:
     - date: 10/31/2025
@@ -3011,6 +3015,10 @@ title: are.na
 
 ## philosophy
 
+- https://www.youtube.com/watch?v=14zv0c7cQmo -- Edith Stein's philosophy of empathy
+  - [meta]:
+    - date: 11/05/2025
+    - tags: [empathy]
 - https://www.youtube.com/watch?v=WyofKBRpRqU -- Merleau-Ponty on the World of Perception & the World of Science (1948)
   - [meta]:
     - date: 11/05/2025
@@ -4302,6 +4310,10 @@ title: are.na
 
 ## papers
 
+- https://arxiv.org/abs/2412.01784
+  - [meta]:
+    - date: 11/05/2025
+    - tags: [interpretability]
 - https://arxiv.org/abs/2404.03715
   - [meta]:
     - date: 10/28/2025

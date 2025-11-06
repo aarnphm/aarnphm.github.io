@@ -31,7 +31,7 @@ This repository powers a Quartz-based digital garden with custom plugins, a Clou
 
 - **Static Site Generator:** Quartz 4.0 with extensive customization
 - **Runtime:** Node.js >= 22, pnpm 9 package manager
-- **Deployment:** Cloudflare Pages + Worker
+- **Deployment:** Cloudflare Worker
 - **Content:** Markdown with Obsidian-flavored syntax, LaTeX math, citations
 - **Additional Languages:** Python 3.11, Rust nightly, Go 1.23, C++21, CUDA 12.8+, CUTLASS 4.0, CuTeDSL Python.
 
@@ -70,9 +70,9 @@ React-like components in `quartz/components/` using Preact:
 - All headings must be in lowercase.
 - If you think any sentences are more suitable as sidenotes, then use the following syntax:
   ```markdown
-  {{sidenotes[<some_labels>]: <some_text_here>}}
+  <Some sentence in english talking about> {{sidenotes[<some_labels>]: <some_text_here>}}
   ```
-  See @content/thoughts/love.md#L54 for example.
+  See @content/thoughts/love.md#L58 for example.
 - Make sure to use callouts, embedded links accordingly. For example:
 
   ```markdown
@@ -82,9 +82,8 @@ React-like components in `quartz/components/` using Preact:
   And this is a [[thoughts/Attention|Attention]] as a internal wikilinks.
   ```
 
-- When parsing frontmatter, if there is an entry `claude`, make sure to also consider it for additional instructions of any given files
 - All math equation should be written with LaTeX, with KaTeX flavor
-- For block-form, it should be formatted with `$$` with new lines. For inline `$<content>$` will do
+- For block-form, it should be formatted with `$$\n<content>\n$$`. For inline `$<content>$`
 
 **Academic References:**
 For arxiv papers, fetch BibTeX entries:
