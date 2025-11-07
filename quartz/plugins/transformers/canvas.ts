@@ -125,7 +125,7 @@ export const JsonCanvas: QuartzTransformerPlugin = () => {
                   "data-canvas-file": canvasFile,
                   "data-canvas-slug": canvasSlug,
                   "data-canvas-title": canvasTitle,
-                  style: "display: flex; justify-content: center; margin: 2rem 0;",
+                  style: "display: flex; justify-content: center; align-items: center;",
                 }
 
                 // strip .canvas extension from slug for the link
@@ -140,7 +140,6 @@ export const JsonCanvas: QuartzTransformerPlugin = () => {
                       href: linkHref,
                       "data-no-popover": true,
                       class: "canvas-embed-link",
-                      style: "text-decoration: none; color: inherit;",
                     },
                     children: [
                       {
