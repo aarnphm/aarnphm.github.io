@@ -6,7 +6,7 @@ import yaml from "js-yaml"
 export const ObsidianBases: QuartzTransformerPlugin = () => {
   return {
     name: "ObsidianBases",
-    markdownPlugins(_ctx) {
+    markdownPlugins() {
       return [
         () => {
           return async (tree: Root, file) => {

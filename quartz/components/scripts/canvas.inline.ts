@@ -26,6 +26,8 @@ function parseMarkdown(text: string): string {
   }
 }
 
+const EDGE_LABEL_LINE_HEIGHT = 1.2
+
 function renderTextNodeContent(node: NodeData): string {
   const source = node.resolvedText ?? node.text ?? ""
   const html = parseMarkdown(source)
@@ -320,6 +322,7 @@ async function renderCanvas(container: HTMLElement) {
     const g = svg.append("g")
     const groupNodeGroup = g.append("g").attr("class", "group-nodes")
     const edgeGroup = g.append("g").attr("class", "edges")
+    const edgeLabelGroup = g.append("g").attr("class", "edge-labels")
     const nodeGroup = g.append("g").attr("class", "nodes")
 
     // track focused node for scroll behavior
@@ -634,36 +637,95 @@ async function renderCanvas(container: HTMLElement) {
       })
 
     // render edges
-    const edge = edgeGroup.selectAll("g.edge").data(links).join("g").attr("class", "edge")
+    const edge = edgeGroup
+      .selectAll<SVGGElement, LinkData>("g.edge")
+      .data(links, (d: any) => d.id)
+      .join(
+        (enter) => {
+          const edgeEnter = enter.append("g").attr("class", "edge")
+          edgeEnter
+            .append("path")
+            .attr("stroke", (d) => d.color || "var(--gray)")
+            .attr("stroke-width", 2)
+            .attr("fill", "none")
+            .attr("marker-end", "url(#arrowhead)")
+          return edgeEnter
+        },
+        (update) => update,
+        (exit) => exit.remove(),
+      )
 
     edge
-      .append("path")
+      .select("path")
       .attr("stroke", (d) => d.color || "var(--gray)")
       .attr("stroke-width", 2)
       .attr("fill", "none")
       .attr("marker-end", "url(#arrowhead)")
 
-    // edge labels with background
-    const edgeLabel = edge
-      .filter((d): d is LinkData & { label: string } => d !== null && d.label !== undefined)
-      .append("g")
-      .attr("class", "edge-label-group")
+    const labeledLinks = links.filter(
+      (d): d is LinkData & { label: string } =>
+        d !== null && typeof d.label === "string" && d.label.trim().length > 0,
+    )
 
-    edgeLabel
-      .append("rect")
-      .attr("class", "edge-label-bg")
-      .attr("fill", "var(--light)")
-      .attr("stroke", "var(--gray)")
-      .attr("stroke-width", 1)
-      .attr("rx", 4)
-      .attr("ry", 4)
+    const edgeLabels = edgeLabelGroup
+      .selectAll<SVGGElement, LinkData>("g.edge-label-group")
+      .data(labeledLinks, (d: any) => d.id)
+      .join(
+        (enter) => {
+          const labelGroup = enter
+            .append("g")
+            .attr("class", "edge-label-group")
+            .style("pointer-events", "none")
 
-    edgeLabel
-      .append("text")
-      .attr("class", "edge-label")
-      .attr("text-anchor", "middle")
-      .attr("dy", "0.3em")
-      .text((d) => d.label || "")
+          labelGroup
+            .append("rect")
+            .attr("class", "edge-label-bg")
+            .attr("fill", "var(--light)")
+            .attr("stroke", "var(--gray)")
+            .attr("stroke-width", 1)
+            .attr("rx", 4)
+            .attr("ry", 4)
+            .style("pointer-events", "none")
+
+          labelGroup
+            .append("text")
+            .attr("class", "edge-label")
+            .attr("text-anchor", "middle")
+            .attr("dominant-baseline", "middle")
+            .style("pointer-events", "none")
+
+          return labelGroup
+        },
+        (update) => update,
+        (exit) => exit.remove(),
+      )
+
+    edgeLabels.select("text").each(function (d) {
+      const textSelection = select(this as SVGTextElement)
+      const raw = typeof d.label === "string" ? d.label : ""
+      const lines = raw.split(/\r?\n/)
+      const normalized = lines.length > 0 ? lines : [raw]
+      const totalLines = normalized.length
+      const offset = ((totalLines - 1) * EDGE_LABEL_LINE_HEIGHT) / 2
+      const offsetStr = `${-offset.toFixed(3)}em`
+      const lineStepStr = `${EDGE_LABEL_LINE_HEIGHT.toFixed(3)}em`
+      textSelection.text(null)
+      textSelection
+        .selectAll("tspan")
+        .data(normalized)
+        .join("tspan")
+        .attr("x", 0)
+        .attr("dy", (_, i) => {
+          if (totalLines === 1) {
+            return "0em"
+          }
+          if (i === 0) {
+            return offsetStr
+          }
+          return lineStepStr
+        })
+        .text((line) => (line.length === 0 ? "\u00A0" : line))
+    })
 
     // add arrowhead marker
     svg
@@ -995,7 +1057,7 @@ async function renderCanvas(container: HTMLElement) {
       })
 
       // update edge labels - position at curve midpoint
-      edge.selectAll(".edge-label-group").attr("transform", (d: any) => {
+      edgeLabels.attr("transform", (d: any) => {
         const sourceCenterX = d.source.x + d.source.width / 2
         const sourceCenterY = d.source.y + d.source.height / 2
         const targetCenterX = d.target.x + d.target.width / 2
@@ -1033,13 +1095,13 @@ async function renderCanvas(container: HTMLElement) {
       })
 
       // size background rectangles to fit text
-      edge.selectAll(".edge-label-group").each(function () {
+      edgeLabels.each(function () {
         const group = this as SVGGElement
         const text = group.querySelector("text") as SVGTextElement
         const bg = group.querySelector("rect") as SVGRectElement
         if (text && bg) {
           const bbox = text.getBBox()
-          const padding = 6
+          const padding = 4
           bg.setAttribute("x", String(bbox.x - padding))
           bg.setAttribute("y", String(bbox.y - padding))
           bg.setAttribute("width", String(bbox.width + padding * 2))
@@ -1057,13 +1119,13 @@ async function renderCanvas(container: HTMLElement) {
 
     // size edge label backgrounds after initial render
     setTimeout(() => {
-      edge.selectAll(".edge-label-group").each(function () {
+      edgeLabels.each(function () {
         const group = this as SVGGElement
         const text = group.querySelector("text") as SVGTextElement
         const bg = group.querySelector("rect") as SVGRectElement
         if (text && bg) {
           const bbox = text.getBBox()
-          const padding = 6
+          const padding = 4
           bg.setAttribute("x", String(bbox.x - padding))
           bg.setAttribute("y", String(bbox.y - padding))
           bg.setAttribute("width", String(bbox.width + padding * 2))

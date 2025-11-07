@@ -99,14 +99,3 @@ export default ((userOpts?: Partial<CanvasConfig>) => {
 
   return Canvas
 }) satisfies QuartzComponentConstructor<CanvasConfig>
-
-/**
- * Standalone canvas viewer component for embedded canvases
- */
-export const CanvasEmbed: QuartzComponent = ({ displayClass }: QuartzComponentProps) => {
-  return (
-    <div class={classNames(displayClass, "canvas-embed")}>
-      <div class="canvas-embed-inner" />
-    </div>
-  )
-}

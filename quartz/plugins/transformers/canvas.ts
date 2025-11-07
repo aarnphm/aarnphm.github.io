@@ -1,77 +1,192 @@
 import { QuartzTransformerPlugin } from "../types"
-import { Element } from "hast"
 import { visit } from "unist-util-visit"
 import { parseJsonCanvas } from "./jcast"
 import { JcastCanvas, isJcastCanvasNode } from "./jcast/types"
 import { visitJcast } from "./jcast/visitor"
 import { slugifyFilePath, slugAnchor, FilePath, FullSlug, resolveRelative } from "../../util/path"
-import { h } from "hastscript"
 import { BuildCtx } from "../../util/ctx"
-import { QuartzPluginData } from "../vfile"
-import fs from "fs/promises"
 import path from "path"
-import { glob } from "../../util/glob"
 import {
   createWikilinkRegex,
   extractWikilinks,
   resolveWikilinkTarget,
+  Wikilink,
 } from "../../util/wikilinks"
 
-export interface CanvasOptions {
-  /**
-   * Enable embedding canvases in markdown via ![[file.canvas]]
-   */
-  enableEmbeds: boolean
+export const JsonCanvas: QuartzTransformerPlugin = () => {
+  return {
+    name: "JsonCanvas",
+    markdownPlugins() {
+      return [
+        () => {
+          return (tree, file) => {
+            // handle canvas wikilink embeds (for any file)
+            visit(tree, "wikilink", (node: Wikilink) => {
+              const wikilink = node.data?.wikilink
+              if (!wikilink?.target) return
 
-  /**
-   * Resolve file nodes to actual markdown files
-   */
-  resolveFileNodes: boolean
+              if (!wikilink.target.endsWith(".canvas")) return
+              if (wikilink.embed) {
+                const hProperties: Record<string, any> = {
+                  "data-canvas-file": wikilink.target,
+                  "data-canvas-anchor": wikilink.anchor,
+                  "data-canvas-title": wikilink.target,
+                  "data-canvas-embed": true,
+                  "data-slug": wikilink.target.replace(".canvas", ""),
+                }
+                node.data = { ...node.data!, hName: "div", hProperties }
+              }
+            })
 
-  /**
-   * Default width for embedded canvases
-   */
-  defaultWidth: number
+            const isCanvasFile = file.path?.endsWith(".canvas")
 
-  /**
-   * Default height for embedded canvases
-   */
-  defaultHeight: number
+            if (!isCanvasFile) {
+              file.data.jsonCanvas = false
+              return
+            }
+
+            // Mark as bases file
+            file.data.jsonCanvas = true
+            // clear tree to prevent markdown parsing of JSON content
+            tree.children = []
+          }
+        },
+      ]
+    },
+    htmlPlugins(ctx) {
+      return [
+        () => async (tree, file) => {
+          const slug = file.data.slug as FullSlug
+
+          if (file.data.jsonCanvas) {
+            try {
+              const canvasContent = String(file.value)
+              const jcast = await processCanvasFile(canvasContent, ctx, slug)
+
+              // store raw content for emitter to copy to output
+              file.data.canvasContent = canvasContent
+
+              // store processed canvas data
+              file.data.canvas = jcast
+
+              // extract links for graph
+              const linkedSlugs: string[] = []
+              for (const [, node] of jcast.data.nodeMap) {
+                if (node.data?.resolved?.slug) {
+                  linkedSlugs.push(node.data.resolved.slug)
+                }
+                if (node.data?.wikilinks) {
+                  for (const link of node.data.wikilinks) {
+                    if (link.resolvedSlug) {
+                      linkedSlugs.push(link.resolvedSlug)
+                    }
+                  }
+                }
+              }
+              file.data.links = linkedSlugs as any[]
+
+              // extract searchable text
+              const textContent: string[] = []
+              const fileNodes: string[] = []
+              for (const [, node] of jcast.data.nodeMap) {
+                const canvasNode = node.data?.canvas
+                if (!canvasNode) continue
+
+                if (canvasNode.type === "text" && canvasNode.text) {
+                  textContent.push(canvasNode.text)
+                } else if (canvasNode.type === "file" && canvasNode.file) {
+                  fileNodes.push(canvasNode.file)
+                }
+              }
+
+              const searchableContent = [
+                ...textContent,
+                ...fileNodes.map((f) => path.basename(f, ".md")),
+              ].join(" ")
+
+              file.data.text = searchableContent
+            } catch (error) {
+              console.error(`Failed to process canvas ${file.data.slug}:`, error)
+            }
+            return
+          }
+
+          visit(tree, "element", (node) => {
+            if (node.properties?.["data-canvas-embed"] === true) {
+              try {
+                const canvasFile = node.properties["data-canvas-file"]
+                const canvasTitle = node.properties["data-canvas-title"] || canvasFile
+                const canvasSlug = node.properties["data-slug"]
+
+                // transform into skeleton embed container
+                node.tagName = "div"
+                node.properties = {
+                  class: "canvas-embed-container",
+                  "data-canvas-file": canvasFile,
+                  "data-canvas-slug": canvasSlug,
+                  "data-canvas-title": canvasTitle,
+                  style: "display: flex; justify-content: center; margin: 2rem 0;",
+                }
+
+                // strip .canvas extension from slug for the link
+                const linkHref = canvasSlug || canvasFile?.replace(/\.canvas$/, "") || ""
+
+                // create skeleton preview with link
+                node.children = [
+                  {
+                    type: "element",
+                    tagName: "a",
+                    properties: {
+                      href: linkHref,
+                      "data-no-popover": true,
+                      class: "canvas-embed-link",
+                      style: "text-decoration: none; color: inherit;",
+                    },
+                    children: [
+                      {
+                        type: "element",
+                        tagName: "div",
+                        properties: { class: "canvas-embed-skeleton" },
+                        children: [
+                          {
+                            type: "element",
+                            tagName: "div",
+                            properties: { class: "canvas-embed-title" },
+                            children: [{ type: "text", value: canvasTitle }],
+                          },
+                          {
+                            type: "element",
+                            tagName: "div",
+                            properties: { class: "canvas-embed-preview" },
+                            children: [{ type: "text", value: "click to view canvas" }],
+                          },
+                        ],
+                      },
+                    ],
+                  },
+                ]
+              } catch (error) {
+                const target =
+                  node.properties?.["data-canvas-file"] || node.properties?.["data-canvas-title"]
+                console.error(`Failed to embed canvas ${target}:`, error)
+                node.tagName = "div"
+                node.properties = {
+                  class: "canvas-embed-error",
+                  style:
+                    "color: var(--gray); padding: 1em; border: 1px solid var(--lightgray); border-radius: 4px;",
+                }
+                node.children = [{ type: "text", value: `Failed to load canvas: ${target}` }]
+              }
+            }
+          })
+        },
+      ]
+    },
+  }
 }
 
-const defaultOptions: CanvasOptions = {
-  enableEmbeds: true,
-  resolveFileNodes: true,
-  defaultWidth: 800,
-  defaultHeight: 600,
-}
-
-async function writeCanvasAsset(
-  ctx: BuildCtx,
-  slug: string,
-  suffix: string,
-  payload: unknown,
-): Promise<string> {
-  const normalizedSlug = slug.replace(/\\/g, "/")
-  const relativePath = `${normalizedSlug}${suffix}`
-  const outputPath = path.join(ctx.argv.output, relativePath)
-  await fs.mkdir(path.dirname(outputPath), { recursive: true })
-  const data = typeof payload === "string" ? payload : JSON.stringify(payload)
-  await fs.writeFile(outputPath, data, "utf-8")
-  return `/${relativePath}`
-}
-
-async function writeCanvasMetaAsset(
-  ctx: BuildCtx,
-  slug: string,
-  meta: Record<string, any>,
-): Promise<string> {
-  return writeCanvasAsset(ctx, slug, ".meta.json", meta)
-}
-
-function collectCanvasMeta(jcast: JcastCanvas): Record<string, any> {
+export function collectCanvasMeta(jcast: JcastCanvas): Record<string, any> {
   const meta: Record<string, any> = {}
-
   for (const [id, node] of jcast.data.nodeMap) {
     if (!node.data) {
       continue
@@ -112,141 +227,9 @@ function collectCanvasMeta(jcast: JcastCanvas): Record<string, any> {
   return meta
 }
 
-export const JsonCanvas: QuartzTransformerPlugin<Partial<CanvasOptions>> = (userOpts) => {
-  const opts = { ...defaultOptions, ...userOpts }
-
-  return {
-    name: "Canvas",
-    markdownPlugins() {
-      return [
-        () => {
-          return (tree, _file) => {
-            visit(tree, "wikilink", (node: any) => {
-              const wikilink = node.data?.wikilink
-              if (!wikilink?.target) return
-
-              if (!wikilink.target.endsWith(".canvas")) return
-
-              const hProperties: Record<string, any> = {
-                "data-canvas-file": wikilink.target,
-                "data-canvas-anchor": wikilink.anchor,
-                "data-canvas-title": wikilink.target,
-              }
-              if (wikilink.embed) {
-                hProperties["data-canvas-embed"] = true
-              }
-
-              node.data = { ...node.data, hName: "div", hProperties }
-            })
-          }
-        },
-      ]
-    },
-    htmlPlugins(ctx: BuildCtx) {
-      // build a map of canvas slugs to file paths
-      let canvasFileMap: Map<string, string> | null = null
-
-      return [
-        () => {
-          return async (tree, _file) => {
-            if (!canvasFileMap) {
-              canvasFileMap = new Map()
-              const canvasFiles = await glob("**/*.canvas", ctx.argv.directory, [
-                ...ctx.cfg.configuration.ignorePatterns,
-              ])
-
-              for (const canvasFile of canvasFiles) {
-                // convert file path to slug (same as emitter does)
-                const slug = slugifyFilePath(canvasFile as any, true)
-                const fullPath = path.join(ctx.argv.directory, canvasFile)
-                canvasFileMap.set(slug, fullPath)
-              }
-            }
-
-            const canvasEmbeds: Array<{ node: Element; target: string; title?: string }> = []
-
-            visit(tree, "element", (node: Element) => {
-              if (node.properties?.["data-canvas-embed"] === true) {
-                canvasEmbeds.push({
-                  node,
-                  target: node.properties["data-canvas-file"] as string,
-                  title: node.properties["data-canvas-title"] as string | undefined,
-                })
-              }
-            })
-
-            for (const { node, target, title } of canvasEmbeds) {
-              try {
-                let targetPath = target
-                if (!targetPath.endsWith(".canvas")) {
-                  targetPath = targetPath + ".canvas"
-                }
-
-                const slug = slugifyFilePath(targetPath as FilePath, true)
-                const canvasPath = canvasFileMap.get(slug)
-
-                if (!canvasPath) {
-                  console.warn(`Canvas embed not found: ${target} (slug: ${slug})`)
-                  continue
-                }
-
-                const canvasContent = await fs.readFile(canvasPath, "utf-8")
-                const jcast = await processCanvasFile(canvasContent, ctx, undefined, slug as FullSlug)
-                const meta = collectCanvasMeta(jcast)
-                const metaPath = await writeCanvasMetaAsset(ctx, slug, meta)
-
-                const embedConfig = {
-                  drag: true,
-                  zoom: true,
-                  forceStrength: 0.3,
-                  linkDistance: 150,
-                  collisionRadius: 50,
-                  useManualPositions: true,
-                  showInlineContent: false,
-                  showPreviewOnHover: true,
-                  previewMaxLength: 300,
-                }
-
-                node.tagName = "div"
-                node.properties = {
-                  class: "canvas-embed-container",
-                  "data-canvas": `${slug}.canvas`,
-                  "data-meta": metaPath,
-                  "data-cfg": JSON.stringify(embedConfig),
-                  "data-canvas-bounds": JSON.stringify(jcast.data.bounds),
-                  "data-canvas-title": title || path.basename(canvasPath, ".canvas"),
-                  style: `width: ${opts.defaultWidth}px; height: ${opts.defaultHeight}px;`,
-                }
-                node.children = [
-                  {
-                    type: "element",
-                    tagName: "div",
-                    properties: { class: "canvas-loading" },
-                    children: [{ type: "text", value: "Loading canvas..." }],
-                  } as Element,
-                ]
-              } catch (error) {
-                console.error(`Failed to embed canvas ${target}:`, error)
-                node.tagName = "div"
-                node.properties = {
-                  class: "canvas-embed-error",
-                  style:
-                    "color: var(--gray); padding: 1em; border: 1px solid var(--lightgray); border-radius: 4px;",
-                }
-                node.children = [{ type: "text", value: `Failed to load canvas: ${target}` }]
-              }
-            }
-          }
-        },
-      ]
-    },
-  }
-}
-
 export async function processCanvasFile(
   canvasContent: string,
   ctx: BuildCtx,
-  allFiles: QuartzPluginData[] | undefined,
   currentSlug: FullSlug,
 ): Promise<JcastCanvas> {
   const jcast = parseJsonCanvas(canvasContent)
@@ -287,10 +270,6 @@ export async function processCanvasFile(
       // extract display name (just the filename without extension)
       const displayName = normalizedPath.split("/").pop()?.replace(/\.md$/, "") || filePath
 
-      // find the actual file to get its description and content
-      const targetFile = allFiles?.find((f) => f.slug === slug)
-      const description = targetFile?.frontmatter?.description || ""
-
       // Normalize subpath to an anchor Obsidian-style
       let resolvedAnchor = ""
       if (rawSubpath) {
@@ -324,7 +303,6 @@ export async function processCanvasFile(
           slug,
           href: resolvedAnchor ? `${slug}${resolvedAnchor}` : slug,
           displayName,
-          description,
         }
       }
       return
@@ -389,56 +367,10 @@ export async function processCanvasFile(
   return jcast
 }
 
-/**
- * Render jcast to hast element for embedding
- */
-export async function renderCanvasToHast(
-  ctx: BuildCtx,
-  slug: string,
-  jcast: JcastCanvas,
-  options?: {
-    width?: number
-    height?: number
-    title?: string
-  },
-): Promise<Element> {
-  const { title } = options || {}
-
-  // collect resolved metadata per node (do not mutate raw canvas JSON)
-  const meta = collectCanvasMeta(jcast)
-  const metaPath = await writeCanvasMetaAsset(ctx, slug, meta)
-
-  // default canvas configuration
-  const defaultConfig = {
-    drag: true,
-    zoom: true,
-    forceStrength: 0.3,
-    linkDistance: 150,
-    collisionRadius: 50,
-    useManualPositions: true,
-    showInlineContent: false,
-    showPreviewOnHover: true,
-    previewMaxLength: 300,
-  }
-
-  const container = h(
-    "div.canvas-container",
-    {
-      "data-canvas": `${slug}.canvas`,
-      "data-meta": metaPath,
-      "data-cfg": JSON.stringify(defaultConfig),
-      "data-canvas-bounds": JSON.stringify(jcast.data.bounds),
-      "data-canvas-title": title || "",
-      style: `position: relative;`,
-    },
-    [h("div.canvas-loading", "Loading canvas...")],
-  )
-
-  return container as Element
-}
-
 declare module "vfile" {
   interface DataMap {
     canvas?: JcastCanvas
+    jsonCanvas?: boolean
+    canvasContent?: string
   }
 }

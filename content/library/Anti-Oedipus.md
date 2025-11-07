@@ -14,5 +14,3 @@ tags:
 title: Anti-Oedipus
 year-finished: "-"
 ---
-
-related: [[thoughts/Giles Deleuze]]

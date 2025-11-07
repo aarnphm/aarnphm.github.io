@@ -90,7 +90,9 @@ async function buildQuartz(argv: Argv, mut: Mutex, clientRefresh: () => void) {
 
   perf.addEvent("glob")
   const allFiles = await glob("**/*.*", argv.directory, cfg.configuration.ignorePatterns)
-  const markdownPaths = allFiles.filter((fp) => fp.endsWith(".md") || fp.endsWith(".base")).sort()
+  const markdownPaths = allFiles
+    .filter((fp) => fp.endsWith(".md") || fp.endsWith(".base") || fp.endsWith(".canvas"))
+    .sort()
   console.log(
     `Found ${markdownPaths.length} input files from \`${argv.directory}\` in ${perf.timeSince("glob")}`,
   )
@@ -243,7 +245,7 @@ async function rebuild(changes: ChangeEvent[], clientRefresh: () => void, buildD
     // manually track non-markdown files as processed files only
     // contains markdown files
     const fileExt = path.extname(file)
-    if (change === "add" && fileExt !== ".md" && fileExt !== ".base") {
+    if (change === "add" && fileExt !== ".md" && fileExt !== ".base" && fileExt !== ".canvas") {
       contentMap.set(file as FilePath, {
         type: "other",
       })

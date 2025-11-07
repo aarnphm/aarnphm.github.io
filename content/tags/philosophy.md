@@ -10,3 +10,5 @@ title: philosophy
 - Evolutionary Theory ("On the Origin of Species" by Charles Darwin, 1859)
 - [[thoughts/Memetics Theory]] ("The Selfish Gene" by Richard Dawkins, 1976)
 - The Intentional Stance (by Daniel Dennett, 1987)
+
+![[philosophie.canvas]]

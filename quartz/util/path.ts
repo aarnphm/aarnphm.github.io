@@ -137,6 +137,7 @@ export function normalizeHastElement(rawEl: HastElement, curBase: FullSlug, newB
   const el = clone(rawEl) // clone so we dont modify the original page
   _rebaseHastElement(el, "src", curBase, newBase)
   _rebaseHastElement(el, "href", curBase, newBase)
+  _rebaseHastElement(el, "dataCanvasFile", curBase, newBase)
   if (el.children) {
     el.children = el.children.map((child) =>
       normalizeHastElement(child as HastElement, curBase, newBase),

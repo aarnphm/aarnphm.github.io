@@ -1,6 +1,7 @@
 @use "sass:map";
 @use "sass:list";
 @use "./base.scss";
+@use "./width.scss";
 @use "./variables.scss" as *;
 @use "./mixin.scss" as *;
 @use "./pages/menu.scss";
@@ -981,8 +982,12 @@ body[data-slug="influence"] {
     }
   }
 }
-a.prefix-left-gap {
-  margin-left: 0.2em;
+
+[data-slug="stream"] {
+  pre.poetry {
+    margin-top: 0;
+    padding-top: 0;
+  }
 }
 
 .published {

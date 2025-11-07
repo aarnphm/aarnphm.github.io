@@ -795,8 +795,6 @@ export const BasePage: QuartzEmitterPlugin<Partial<FullPageLayout>> = (userOpts)
     // TODO:
     async *partialEmit() {},
     async *emit(ctx, content, resources) {
-      if (ctx.argv.watch && !ctx.argv.force) return []
-
       const allFiles = content.map((c) => c[1].data)
 
       for (const [_tree, file] of content) {

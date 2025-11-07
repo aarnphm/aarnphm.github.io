@@ -14,5 +14,3 @@ tags:
 title: A Thousand Plateaus
 year-finished: "-"
 ---
-
-related: [[thoughts/Giles Deleuze]]

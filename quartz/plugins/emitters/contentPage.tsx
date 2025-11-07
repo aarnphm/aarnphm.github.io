@@ -87,6 +87,7 @@ export const ContentPage: QuartzEmitterPlugin<Partial<FullPageLayout>> = (userOp
           slug.endsWith("/index") ||
           slug.startsWith("tags/") ||
           file.data.bases ||
+          file.data.jsonCanvas ||
           file.data.streamData
         )
           continue

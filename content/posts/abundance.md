@@ -3,7 +3,7 @@ date: "2025-11-05"
 description: interpretable functions of love.
 draft: true
 id: abundance
-modified: 2025-11-05 22:53:17 GMT-05:00
+modified: 2025-11-06 15:43:01 GMT-05:00
 tags:
   - sapling
   - love
@@ -14,10 +14,17 @@ title: you can just be friends with them.
 
 ## the equation
 
-If I were to formalize hermeneutic love (knowing full well that love escapes formalization), it might look like:
+hermeneutic love can be formalized as follows:
 
 $$
-F_{\text{herm}} = \alpha I(D) + \beta W(M,H) + \gamma R(C) + \delta B(G) - \lambda P(L)
+\begin{equation}
+\begin{aligned}
+F_{\text{herm}} &= I(D) + W(M,H) + R(C) + B(G) - P(L) \\
+\\
+&= 4D(1-D) + M \cdot (1+H) \\
+&\:\: + \frac{1}{1+e^{-k(C-C_0)}} + \int \max(G(t), 0) \, dt - \alpha L^2
+\end{aligned}
+\end{equation}
 $$
 
 where:
