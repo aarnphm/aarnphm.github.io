@@ -2,13 +2,15 @@
 date: "2025-11-05"
 description: also known as <em>Lovecraftian horror</em>
 id: Eldrich horror
-modified: 2025-11-06 05:54:59 GMT-05:00
+modified: 2025-11-07 17:00:51 GMT-05:00
 tags:
   - seed
 title: Eldrich horror
 ---
 
 > emphasises the horror of the unknownable and incomprehensible more than gore or other elements of shock.
+>
+> hallmark of H. P. Lovecraft is cosmicism, but different from existing gothic and supernatural fiction.
 
 <figure class="float-right">
 
@@ -16,9 +18,7 @@ title: Eldrich horror
 
 </figure>
 
-hallmark of H. P. Lovecraft is cosmicism, but in a sense different from existing gothic and supernatural fiction.
-
-in a sense the characters in his books were not evil. They were simply far beyond human conceptions of [[thoughts/moral|morality]].
+The characters in his books were not evil. They were simply far beyond human conceptions of [[thoughts/moral|morality]].
 
 - Fear of the unknown and unknowable.
   - i.e [[thoughts/LLMs|LLM]] unconsciously know about who you are without any external tooling

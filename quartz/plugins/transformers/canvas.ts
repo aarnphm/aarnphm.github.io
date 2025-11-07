@@ -150,12 +150,6 @@ export const JsonCanvas: QuartzTransformerPlugin = () => {
                           {
                             type: "element",
                             tagName: "div",
-                            properties: { class: "canvas-embed-title" },
-                            children: [{ type: "text", value: canvasTitle }],
-                          },
-                          {
-                            type: "element",
-                            tagName: "div",
                             properties: { class: "canvas-embed-preview" },
                             children: [{ type: "text", value: "click to view canvas" }],
                           },

@@ -2,7 +2,7 @@
 date: "2023-07-29"
 description: a knowledge distillation and learning process
 id: writing
-modified: 2025-11-06 18:17:21 GMT-05:00
+modified: 2025-11-07 16:59:21 GMT-05:00
 tags:
   - sapling
   - evergreen
@@ -11,15 +11,13 @@ title: Writing
 
 ## why
 
+<div class="w-120">
+
 > Writing as _crystallised_ thought, a way of expressing the labyrinth of interconnected, messy, and incoherent ideas in my mind. It is a form of [knowledge distillation](https://jzhao.xyz/thoughts/knowledge-distillation)
 >
 > —Jacky
 
-<div class="w-170">
-
 Writing is an exploration, an excavation of self and the world in this painfully intricate dance. It is a way to bridge the chasm between ideas, to extend a filament of one consciousness to others. It is an extension of self, a second brain, where bounded by constraining nets of syntax and grammar, providing grounds for freedom of expression and articulate one's interests and curiosity.
-
-</div>
 
 > The thing I like about writing is that it’s quite literally [_thinking_](https://www.henrikkarlsson.xyz/p/writing-to-think)—a way for me access my own interiority and construct something from it. What I write is all mine, it’s a living thing, it’s an extension of me that wanders out into the world. It is desire turned inwards instead of outwards, focused instead of displaced. It’s a way to access self-knowledge and self-respect. ^ava-writing
 >
@@ -44,6 +42,8 @@ The modality of [[thoughts/Language#representation.|text]] essentially creates a
 > —Henrik Karlsson, [Reader-generated Essay](https://www.lesswrong.com/posts/ZtMsyMP5F7zzP8Gvc/reader-generated-essays)
 
 At its core, writing endeavours to transmute the [[thoughts/Chaos|chaos]] of [[thoughts/Existentialism|existence]] into discernible narratives, offering a conduit for shared understanding amidst the inherent disarray of life. Such a form of [looseness in mutation](https://subconscious.substack.com/p/hypertext-montage)
+
+</div>
 
 ## as playground.
 
@@ -136,4 +136,3 @@ I keep coming back to this idea: most writing advice assumes you already know wh
 > *File over app* is a philosophy: if you want to create digital artifacts that last, they must be files you can control, in formats that are easy to retrieve and read. Use tools that give you this freedom.
 >
 > —kepano, [File over app](https://stephango.com/file-over-app)
-
