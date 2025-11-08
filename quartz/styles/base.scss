@@ -121,7 +121,7 @@ a {
   color: var(--darkgray);
   cursor: pointer;
 
-  &:hover {
+  &:not(:has(> [data-rehype-pretty-code-figure])):hover {
     background: var(--dark);
     color: var(--light);
     opacity: 1;
@@ -630,7 +630,7 @@ ol.overflow {
 .grid {
   display: grid;
   grid-template-columns: 0 calc(var(--kern) * 5) repeat(9, 1fr) calc(var(--kern) * 5) 0;
-  --grid-center-width: calc(100vw - (var(--kern) * 5) - (var(--kern) * 3));
+  --grid-center-width: calc(100vw - (var(--kern) * 5) - (var(--kern) * 4));
   --grid-col-width: calc(var(--grid-center-width) / 9);
 }
 

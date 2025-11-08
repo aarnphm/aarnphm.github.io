@@ -307,6 +307,35 @@ export const ContentIndex: QuartzEmitterPlugin<Partial<Options>> = (opts) => {
           slug = "arena" as FullSlug
         }
 
+        // handle canvas files separately - always index them
+        if (file.data.canvas) {
+          const jcast = file.data.canvas
+          const searchableContent = file.data.text ?? ""
+          const renderedSlug = slug.replace(".canvas", "") as FullSlug
+
+          linkIndex.set(renderedSlug, {
+            slug: renderedSlug,
+            title: file.data.frontmatter?.title ?? path.basename(file.data.filePath!, ".canvas"),
+            links: file.data.links ?? [],
+            filePath: file.data.filePath!,
+            fileName: file.data.filePath!,
+            tags: ["canvas", ...(file.data.frontmatter?.tags ?? [])],
+            aliases: file.data.frontmatter?.aliases ?? [],
+            content: sanitizeXml(searchableContent),
+            richContent: "",
+            date: date,
+            readingTime: {
+              minutes: Math.max(1, Math.ceil(searchableContent.split(/\s+/).length / 200)),
+              words: searchableContent.split(/\ks+/).filter((w) => w.length > 0).length,
+            },
+            layout: file.data.frontmatter?.pageLayout ?? "default",
+            description:
+              file.data.frontmatter?.description ?? `Canvas with ${jcast.data.nodeMap.size} nodes`,
+            fileData: file.data,
+          })
+          continue
+        }
+
         if (opts?.includeEmptyFiles || (file.data.text && file.data.text !== "")) {
           const links = (file.data.links ?? []).filter((link) => {
             // @ts-ignore
@@ -380,32 +409,6 @@ export const ContentIndex: QuartzEmitterPlugin<Partial<Options>> = (opts) => {
                 })
               }
             }
-          }
-
-          if (file.data.canvas) {
-            const slug = file.data.slug!
-
-            const jcast = file.data.canvas
-            const searchableContent = file.data.text ?? ""
-
-            linkIndex.set(slug, {
-              slug,
-              title: `${slug}.canvas`,
-              links: file.data.links ?? [],
-              filePath: file.data.filePath!,
-              fileName: file.data.filePath!,
-              tags: ["canvas"],
-              aliases: [],
-              content: sanitizeXml(searchableContent),
-              richContent: "",
-              date: new Date(),
-              readingTime: {
-                minutes: 1,
-                words: searchableContent.split(/\s+/).length,
-              },
-              layout: "default",
-              description: `Canvas with ${jcast.data.nodeMap.size} nodes`,
-            })
           }
         }
       }

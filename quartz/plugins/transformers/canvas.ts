@@ -118,44 +118,44 @@ export const JsonCanvas: QuartzTransformerPlugin = () => {
                 const canvasTitle = node.properties["data-canvas-title"] || canvasFile
                 const canvasSlug = node.properties["data-slug"]
 
-                // transform into skeleton embed container
+                // strip .canvas extension for slug and link
+                const linkHref = canvasSlug || canvasFile?.replace(/\.canvas$/, "") || ""
+                const resourceBase = linkHref.startsWith("/") ? linkHref : `/${linkHref}`
+
+                // embed configuration: static preview, no interaction
+                const embedConfig = {
+                  drag: false,
+                  zoom: false,
+                  forceStrength: 0,
+                  linkDistance: 150,
+                  collisionRadius: 50,
+                  useManualPositions: true,
+                  showInlineContent: false,
+                  showPreviewOnHover: false,
+                  previewMaxLength: 0,
+                }
+
+                // transform into full canvas embed container
                 node.tagName = "div"
                 node.properties = {
                   class: "canvas-embed-container",
-                  "data-canvas-file": canvasFile,
-                  "data-canvas-slug": canvasSlug,
+                  "data-canvas": `${resourceBase}.canvas.json`,
+                  "data-meta": `${resourceBase}.meta.json`,
+                  "data-cfg": JSON.stringify(embedConfig),
                   "data-canvas-title": canvasTitle,
-                  style: "display: flex; justify-content: center; align-items: center;",
+                  "data-embed": "true",
+                  "data-navigate-to": linkHref,
+                  style:
+                    "position: relative; width: 100%; height: clamp(400px, 50vh, 800px); cursor: pointer; margin: 2rem auto;",
                 }
 
-                // strip .canvas extension from slug for the link
-                const linkHref = canvasSlug || canvasFile?.replace(/\.canvas$/, "") || ""
-
-                // create skeleton preview with link
+                // loading placeholder
                 node.children = [
                   {
                     type: "element",
-                    tagName: "a",
-                    properties: {
-                      href: linkHref,
-                      "data-no-popover": true,
-                      class: "canvas-embed-link",
-                    },
-                    children: [
-                      {
-                        type: "element",
-                        tagName: "div",
-                        properties: { class: "canvas-embed-skeleton" },
-                        children: [
-                          {
-                            type: "element",
-                            tagName: "div",
-                            properties: { class: "canvas-embed-preview" },
-                            children: [{ type: "text", value: "click to view canvas" }],
-                          },
-                        ],
-                      },
-                    ],
+                    tagName: "div",
+                    properties: { class: "canvas-loading" },
+                    children: [{ type: "text", value: "loading canvas..." }],
                   },
                 ]
               } catch (error) {

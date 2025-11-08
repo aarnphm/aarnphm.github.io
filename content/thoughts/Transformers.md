@@ -2,7 +2,7 @@
 date: "2024-02-07"
 description: and the backbone of the current language models/ai progress.
 id: Transformers
-modified: 2025-10-29 02:15:37 GMT-04:00
+modified: 2025-11-07 21:30:45 GMT-05:00
 tags:
   - ml
   - technical
@@ -54,7 +54,7 @@ Let number of tokens $N$, embedding dim to $d$, we have embeddings $E \in R^{N\t
 
 The idea of Q,K,V is to project with the embeddings to create $W_q, W_k, W_v$
 
-![[thoughts/Attention]]
+![[thoughts/Attention#{collapsed: true}]]
 
 ## memory limitations.
 
@@ -74,7 +74,7 @@ Either compute-bound (batch inference, saturated usage) or memory-bound (latency
 
 ![[thoughts/PD disaggregated serving#Prefill/Decode]]
 
-![[thoughts/Speculative decoding]]
+![[thoughts/Speculative decoding#{collapsed: true}]]
 
 ### sampling
 

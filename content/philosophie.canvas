@@ -21,6 +21,6 @@
 		{"id":"8337aad04ffeb1e1","fromNode":"faae35c17725308d","fromSide":"left","toNode":"57dc7e7efe90ccec","toSide":"right"},
 		{"id":"edeacf613071bae3","fromNode":"57dc7e7efe90ccec","fromSide":"left","toNode":"02d0db935e88a86d","toSide":"bottom"},
 		{"id":"023364a8b8a25a35","fromNode":"faae35c17725308d","fromSide":"bottom","toNode":"e2d90b7520dfdb42","toSide":"top"},
-		{"id":"21679d0fa78d5f2c","fromNode":"e0165401786f31f2","fromSide":"left","toNode":"e2d90b7520dfdb42","toSide":"right","label":"desiring productions\n\n\nspatio-temporal dynamisms"}
+		{"id":"21679d0fa78d5f2c","fromNode":"e0165401786f31f2","fromSide":"left","toNode":"e2d90b7520dfdb42","toSide":"right","label":"desiring productions\n\nspatio-temporal dynamisms"}
 	]
 }

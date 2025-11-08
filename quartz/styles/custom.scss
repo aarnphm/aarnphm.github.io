@@ -1060,3 +1060,54 @@ body[data-slug="influence"] {
     display: none;
   }
 }
+
+// canvas embed styles
+.canvas-embed-container {
+  position: relative;
+  display: block;
+  margin: 2rem auto;
+  border: 1px solid var(--lightgray);
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--light);
+  transition: border-color 0.2s ease;
+
+  &:hover {
+    border-color: var(--secondary);
+  }
+
+  // loading state
+  .canvas-loading {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: var(--gray);
+    font-size: 0.9rem;
+    z-index: 100;
+  }
+
+  // click overlay
+  .canvas-embed-overlay {
+    &:hover {
+      background: rgba(0, 0, 0, 0.02);
+    }
+  }
+
+  // make SVG fill container
+  svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+}
+
+// error state
+.canvas-embed-error {
+  margin: 2rem auto;
+  padding: 1.5rem;
+  text-align: center;
+  border-radius: 8px;
+  background: var(--lightgray);
+  color: var(--darkgray);
+}

@@ -21,7 +21,7 @@ import {
   resolveRelative,
 } from "../util/path"
 import { clone } from "../util/clone"
-import { githubSvg, substackSvg, bskySvg, twitterSvg, svgOptions, QuartzIcon } from "./svg"
+import { githubSvg, substackSvg, twitterSvg, svgOptions, QuartzIcon } from "./svg"
 import { EXIT, visit } from "unist-util-visit"
 import { Root, Element, ElementContent, Node, Text } from "hast"
 import { i18n } from "../i18n"
@@ -722,7 +722,6 @@ export function transcludeFinal(
   }
 
   const { dynalist, skipTranscludes } = opts
-  const isLanding = slug === "index"
 
   const pruneLeadingHeading = (nodes: ElementContent[]): ElementContent[] => {
     let removed = false
@@ -1125,7 +1124,7 @@ export function transcludeFinal(
     fileData.readingTime = { ...fileData.readingTime, words: stats.words, minutes: stats.minutes }
   }
 
-  if (isLanding) {
+  if (slug === "index") {
     visit(root, { tagName: "a" }, (node: Element) => {
       node.properties["data-no-popover"] = true
     })
@@ -1255,7 +1254,7 @@ const HyperlinksComponent = ((props?: { children: JSX.Element[] }) => {
   return Hyperlink
 }) satisfies QuartzComponentConstructor
 
-const ElementComponent = (() => {
+const ElementComponent = ((enableRecents: boolean = false) => {
   const Content = ContentConstructor()
   const RecentNotes = NotesComponent({
     header: "récentes",
@@ -1300,7 +1299,6 @@ const ElementComponent = (() => {
     )
     const githubIcon = svgToJsx(githubSvg)
     const twitterIcon = svgToJsx(twitterSvg)
-    const bskyIcon = svgToJsx(bskySvg)
     const substackIcon = svgToJsx(substackSvg)
 
     const Hyperlink = HyperlinksComponent({
@@ -1354,10 +1352,12 @@ const ElementComponent = (() => {
     return (
       <div class="content-container">
         <Content {...componentData} />
-        <section class="notes-outer">
-          <RecentNotes {...componentData} />
-          <RecentPosts {...componentData} />
-        </section>
+        {enableRecents && (
+          <section class="notes-outer">
+            <RecentNotes {...componentData} />
+            <RecentPosts {...componentData} />
+          </section>
+        )}
         <Hyperlink {...componentData} />
       </div>
     )
@@ -1491,6 +1491,7 @@ export function renderPage(
   components: RenderComponents,
   pageResources: StaticResources,
   isFolderTag?: boolean,
+  isBoxy: boolean = false,
 ): string {
   // make a deep copy of the tree so we don't remove the transclusion references
   // for the file cached in contentMap in build.ts
@@ -1594,7 +1595,7 @@ export function renderPage(
       beforeBody: [],
       pageBody: (props: QuartzComponentProps) => {
         const { displayClass } = props
-        const Element = ElementComponent()
+        const Element = ElementComponent(false)
 
         return (
           <div class={classNames(displayClass, "landing")}>
@@ -1668,6 +1669,10 @@ export function renderPage(
   const isBase = componentData.fileData.bases ?? false
   const isCanvas = componentData.fileData.filePath?.endsWith(".canvas") ?? false
 
+  const contentAttrs = {
+    "data-plain": !isBoxy,
+  }
+
   return (
     `<!DOCTYPE html>` +
     render(
@@ -1728,6 +1733,7 @@ export function renderPage(
                   "page-content",
                   slug === "index" ? "side-col" : isArena ? "all-col" : "grid all-col",
                 )}
+                {...contentAttrs}
               >
                 {sidebar.length > 0 && (
                   <aside class="aside-container left-col">

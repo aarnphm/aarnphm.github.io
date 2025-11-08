@@ -27,6 +27,12 @@ function parseMarkdown(text: string): string {
 }
 
 const EDGE_LABEL_LINE_HEIGHT = 1.2
+// mark synthetic mouseleave events so bubbling back to the node does not recurse forever
+const SYNTHETIC_MOUSELEAVE_FLAG = Symbol("canvasSyntheticMouseleave")
+
+type SyntheticMouseEvent = MouseEvent & {
+  [SYNTHETIC_MOUSELEAVE_FLAG]?: boolean
+}
 
 function renderTextNodeContent(node: NodeData): string {
   const source = node.resolvedText ?? node.text ?? ""
@@ -168,6 +174,8 @@ async function renderCanvas(container: HTMLElement) {
   const dataAttr = container.getAttribute("data-canvas")
   const cfgAttr = container.getAttribute("data-cfg")
   const metaAttr = container.getAttribute("data-meta")
+  const isEmbed = container.getAttribute("data-embed") === "true"
+  const navigateTo = container.getAttribute("data-navigate-to")
 
   if (!dataAttr || dataAttr.trim().length === 0) return
 
@@ -194,98 +202,102 @@ async function renderCanvas(container: HTMLElement) {
     const width = container.clientWidth || 800
     const height = container.clientHeight || 600
 
-    // create toolbar
-    const toolbar = document.createElement("div")
-    toolbar.className = "canvas-controls"
-    toolbar.innerHTML = `
-      <div class="canvas-control-group">
-        <button class="canvas-control-item" data-action="zoom-in" aria-label="Zoom in" title="Zoom in">
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="M12 5v14"></path></svg>
-        </button>
-        <button class="canvas-control-item" data-action="zoom-reset" aria-label="Reset zoom" title="Reset zoom">
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8"></path><path d="M21 3v5h-5"></path></svg>
-        </button>
-        <button class="canvas-control-item" data-action="zoom-fit" aria-label="Zoom to fit" title="Zoom to fit">
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3"></path><path d="M21 8V5a2 2 0 0 0-2-2h-3"></path><path d="M3 16v3a2 2 0 0 0 2 2h3"></path><path d="M16 21h3a2 2 0 0 0 2-2v-3"></path></svg>
-        </button>
-        <button class="canvas-control-item" data-action="zoom-out" aria-label="Zoom out" title="Zoom out">
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path></svg>
-        </button>
-      </div>
-      <div class="canvas-control-group">
-        <button class="canvas-control-item" data-action="help" aria-label="Canvas help" title="Canvas help">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><path d="M12 17h.01"></path></svg>
-        </button>
-      </div>
-    `
-    container.appendChild(toolbar)
+    // create toolbar and help modal (skip for embeds)
+    let toolbar: HTMLElement | null = null
+    let helpModal: HTMLElement | null = null
 
-    // create help modal
-    const helpModal = document.createElement("div")
-    helpModal.className = "canvas-help-modal"
-    helpModal.innerHTML = `
-      <div class="canvas-help-backdrop"></div>
-      <div class="canvas-help-content">
-        <div class="canvas-help-header">
-          <h2>Canvas help</h2>
-          <button class="canvas-help-close" aria-label="Close">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg>
+    if (!isEmbed) {
+      toolbar = document.createElement("div")
+      toolbar.className = "canvas-controls"
+      toolbar.innerHTML = `
+        <div class="canvas-control-group">
+          <button class="canvas-control-item" data-action="zoom-in" aria-label="Zoom in" title="Zoom in">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="M12 5v14"></path></svg>
+          </button>
+          <button class="canvas-control-item" data-action="zoom-reset" aria-label="Reset zoom" title="Reset zoom">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8"></path><path d="M21 3v5h-5"></path></svg>
+          </button>
+          <button class="canvas-control-item" data-action="zoom-fit" aria-label="Zoom to fit" title="Zoom to fit">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3"></path><path d="M21 8V5a2 2 0 0 0-2-2h-3"></path><path d="M3 16v3a2 2 0 0 0 2 2h3"></path><path d="M16 21h3a2 2 0 0 0 2-2v-3"></path></svg>
+          </button>
+          <button class="canvas-control-item" data-action="zoom-out" aria-label="Zoom out" title="Zoom out">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path></svg>
           </button>
         </div>
-        <div class="canvas-help-body">
-          <div class="canvas-help-section">
-            <h3>pan</h3>
-            <div class="canvas-help-row">
-              <span>Pan vertically</span>
-              <span class="canvas-help-keys"><kbd>Scroll</kbd></span>
-            </div>
-            <div class="canvas-help-row">
-              <span>Pan horizontally</span>
-              <span class="canvas-help-keys"><kbd>Shift</kbd> <kbd>Scroll</kbd></span>
-            </div>
+        <div class="canvas-control-group">
+          <button class="canvas-control-item" data-action="help" aria-label="Canvas help" title="Canvas help">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><path d="M12 17h.01"></path></svg>
+          </button>
+        </div>
+      `
+      container.appendChild(toolbar)
+
+      helpModal = document.createElement("div")
+      helpModal.className = "canvas-help-modal"
+      helpModal.innerHTML = `
+        <div class="canvas-help-backdrop"></div>
+        <div class="canvas-help-content">
+          <div class="canvas-help-header">
+            <h2>Canvas help</h2>
+            <button class="canvas-help-close" aria-label="Close">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg>
+            </button>
           </div>
-          <div class="canvas-help-section">
-            <h3>zoom</h3>
-            <div class="canvas-help-row">
-              <span>Zoom</span>
-              <span class="canvas-help-keys"><kbd>⌘/Ctrl</kbd> <kbd>Scroll</kbd></span>
+          <div class="canvas-help-body">
+            <div class="canvas-help-section">
+              <h3>pan</h3>
+              <div class="canvas-help-row">
+                <span>Pan vertically</span>
+                <span class="canvas-help-keys"><kbd>Scroll</kbd></span>
+              </div>
+              <div class="canvas-help-row">
+                <span>Pan horizontally</span>
+                <span class="canvas-help-keys"><kbd>Shift</kbd> <kbd>Scroll</kbd></span>
+              </div>
             </div>
-            <div class="canvas-help-row">
-              <span>Zoom to fit</span>
-              <span class="canvas-help-keys"><kbd>Shift</kbd> <kbd>1</kbd></span>
+            <div class="canvas-help-section">
+              <h3>zoom</h3>
+              <div class="canvas-help-row">
+                <span>Zoom</span>
+                <span class="canvas-help-keys"><kbd>⌘/Ctrl</kbd> <kbd>Scroll</kbd></span>
+              </div>
+              <div class="canvas-help-row">
+                <span>Zoom to fit</span>
+                <span class="canvas-help-keys"><kbd>Shift</kbd> <kbd>1</kbd></span>
+              </div>
             </div>
-          </div>
-          <div class="canvas-help-section">
-            <h3>navigation</h3>
-            <div class="canvas-help-row">
-              <span>Focus node</span>
-              <span class="canvas-help-keys"><kbd>Click</kbd> on content</span>
-            </div>
-            <div class="canvas-help-row">
-              <span>Open node</span>
-              <span class="canvas-help-keys"><kbd>Click</kbd> outside content</span>
-            </div>
-            <div class="canvas-help-row">
-              <span>Open from content</span>
-              <span class="canvas-help-keys"><kbd>⌘/Ctrl</kbd> <kbd>Click</kbd></span>
-            </div>
-            <div class="canvas-help-row">
-              <span>Open in side panel</span>
-              <span class="canvas-help-keys"><kbd>Alt</kbd> <kbd>Click</kbd></span>
-            </div>
-            <div class="canvas-help-row">
-              <span>Scroll node content</span>
-              <span class="canvas-help-keys">Focus node, then <kbd>Scroll</kbd></span>
-            </div>
-            <div class="canvas-help-row">
-              <span>Defocus node</span>
-              <span class="canvas-help-keys"><kbd>Esc</kbd></span>
+            <div class="canvas-help-section">
+              <h3>navigation</h3>
+              <div class="canvas-help-row">
+                <span>Focus node</span>
+                <span class="canvas-help-keys"><kbd>Click</kbd> on content</span>
+              </div>
+              <div class="canvas-help-row">
+                <span>Open node</span>
+                <span class="canvas-help-keys"><kbd>Click</kbd> outside content</span>
+              </div>
+              <div class="canvas-help-row">
+                <span>Open from content</span>
+                <span class="canvas-help-keys"><kbd>⌘/Ctrl</kbd> <kbd>Click</kbd></span>
+              </div>
+              <div class="canvas-help-row">
+                <span>Open in side panel</span>
+                <span class="canvas-help-keys"><kbd>Alt</kbd> <kbd>Click</kbd></span>
+              </div>
+              <div class="canvas-help-row">
+                <span>Scroll node content</span>
+                <span class="canvas-help-keys">Focus node, then <kbd>Scroll</kbd></span>
+              </div>
+              <div class="canvas-help-row">
+                <span>Defocus node</span>
+                <span class="canvas-help-keys"><kbd>Esc</kbd></span>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    `
-    container.appendChild(helpModal)
+      `
+      container.appendChild(helpModal)
+    }
 
     // create SVG
     const svg = select(container)
@@ -414,26 +426,46 @@ async function renderCanvas(container: HTMLElement) {
       { passive: false },
     )
 
-    // setup help modal
-    const helpBackdrop = helpModal.querySelector(".canvas-help-backdrop")
-    const helpClose = helpModal.querySelector(".canvas-help-close")
-
+    // setup help modal (only for non-embeds)
     const showHelp = () => {
-      helpModal.classList.add("is-visible")
-      isHelpOpen = true
+      if (helpModal) {
+        helpModal.classList.add("is-visible")
+        isHelpOpen = true
+      }
     }
 
     const hideHelp = () => {
-      helpModal.classList.remove("is-visible")
-      isHelpOpen = false
+      if (helpModal) {
+        helpModal.classList.remove("is-visible")
+        isHelpOpen = false
+      }
     }
 
-    if (helpBackdrop) {
-      helpBackdrop.addEventListener("click", hideHelp)
+    if (helpModal) {
+      const helpBackdrop = helpModal.querySelector(".canvas-help-backdrop")
+      const helpClose = helpModal.querySelector(".canvas-help-close")
+
+      if (helpBackdrop) {
+        helpBackdrop.addEventListener("click", hideHelp)
+      }
+
+      if (helpClose) {
+        helpClose.addEventListener("click", hideHelp)
+      }
     }
 
-    if (helpClose) {
-      helpClose.addEventListener("click", hideHelp)
+    // for embeds: add click overlay to navigate to full canvas page
+    if (isEmbed && navigateTo) {
+      const overlay = document.createElement("div")
+      overlay.className = "canvas-embed-overlay"
+      overlay.style.cssText =
+        "position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1000; cursor: pointer;"
+      overlay.setAttribute("aria-label", `view full canvas: ${navigateTo}`)
+      overlay.addEventListener("click", () => {
+        const path = navigateTo.startsWith("/") ? navigateTo : `/${navigateTo}`
+        window.spaNavigate(new URL(path, window.location.origin))
+      })
+      container.appendChild(overlay)
     }
 
     // setup toolbar controls
@@ -1134,23 +1166,54 @@ async function renderCanvas(container: HTMLElement) {
       })
     }, 100)
 
-    // Center / fit to view using bounds from data-canvas-bounds
+    // Center / fit to view using bounds from data-canvas-bounds or calculate from nodes
     const boundsAttr = container.getAttribute("data-canvas-bounds")
-    if (boundsAttr) {
-      try {
-        const b = JSON.parse(boundsAttr) as {
+    let bounds:
+      | {
           minX: number
           minY: number
           maxX: number
           maxY: number
         }
-        const contentW = Math.max(1, b.maxX - b.minX)
-        const contentH = Math.max(1, b.maxY - b.minY)
+      | undefined
+
+    if (boundsAttr) {
+      try {
+        bounds = JSON.parse(boundsAttr)
+      } catch {}
+    } else if (isEmbed) {
+      // calculate bounds from canvas nodes for embeds
+      let minX = Infinity
+      let minY = Infinity
+      let maxX = -Infinity
+      let maxY = -Infinity
+
+      for (const node of nodes) {
+        const x1 = node.x
+        const y1 = node.y
+        const x2 = node.x + node.width
+        const y2 = node.y + node.height
+
+        minX = Math.min(minX, x1)
+        minY = Math.min(minY, y1)
+        maxX = Math.max(maxX, x2)
+        maxY = Math.max(maxY, y2)
+      }
+
+      if (isFinite(minX) && isFinite(minY) && isFinite(maxX) && isFinite(maxY)) {
+        bounds = { minX, minY, maxX, maxY }
+      }
+    }
+
+    if (bounds) {
+      try {
+        const contentW = Math.max(1, bounds.maxX - bounds.minX)
+        const contentH = Math.max(1, bounds.maxY - bounds.minY)
         const padding = 40
         const kRaw = Math.min((width - padding) / contentW, (height - padding) / contentH)
         const k = Math.max(0.1, Math.min(4, kRaw))
-        const cx = (b.minX + b.maxX) / 2
-        const cy = (b.minY + b.maxY) / 2
+        const cx = (bounds.minX + bounds.maxX) / 2
+        const cy = (bounds.minY + bounds.maxY) / 2
         const tx = width / 2 - k * cx
         const ty = height / 2 - k * cy
         initialTransform = zoomIdentity.translate(tx, ty).scale(k)
@@ -1276,7 +1339,14 @@ async function renderCanvas(container: HTMLElement) {
               ".node-content a.canvas-popover-link",
             ) as HTMLAnchorElement | null
             if (link) {
-              link.dispatchEvent(new MouseEvent("mouseleave", { bubbles: true }))
+              const mouseleaveEvent = event as SyntheticMouseEvent
+              if (mouseleaveEvent[SYNTHETIC_MOUSELEAVE_FLAG]) {
+                return
+              }
+
+              const synthetic = new MouseEvent("mouseleave", { bubbles: true }) as SyntheticMouseEvent
+              synthetic[SYNTHETIC_MOUSELEAVE_FLAG] = true
+              link.dispatchEvent(synthetic)
             }
           }
         })
@@ -1413,6 +1483,9 @@ function cleanCanvasPreviewElement<T extends HTMLElement>(element: T): T {
     "section[data-references], section[data-footnotes], [data-skip-preview], .telescopic-container",
   )
   removable.forEach((node) => node.remove())
+
+  const iconSelector = 'svg[data-icon="github"], svg[data-icon="twitter"]'
+  element.querySelectorAll<SVGElement>(iconSelector).forEach((node) => node.remove())
   return element
 }
 

@@ -5,7 +5,7 @@ aliases:
 date: "2022-04-22"
 description: practicing the act of digital gardening.
 id: _index
-modified: 2025-11-06 07:53:52 GMT-05:00
+modified: 2025-11-07 21:05:20 GMT-05:00
 tags:
   - evergreen
   - fruit
@@ -14,16 +14,16 @@ title: Aaron's notes
 
 hi my name is aaron. I'm best reached via [twitter](https://twitter.com/aarnphm_) or [email](mailto:contact@aarnphm.xyz).
 
-currently, I'm working at a [startup](https://bentoml.com) building #ml serving systems, where I mainly focus on [[thoughts/LLMs|LLM]] [[thoughts/vllm|inference engine]].
+as far as [[thoughts/craft|work]] goes, I'm working at a [startup](https://bentoml.com) building #ml serving systems, where I mainly focus on [[thoughts/LLMs|LLM]] [[thoughts/vllm|inference engine]].
 
 ```telescopic id="thoughts"
-* I try to be
+* as far as life goes, I try to be
 * present.
   * present, but you will find
   *  me
-    * me either [[/posts|writing]],
-      * me either [[/posts|writing]], working on [[thoughts/work|open-source projects]],
-      * and spending too much time [[thoughts/craft|fixing]] this [site](https://aarnphm.xyz/view-source),
+    * me working on [[thoughts/work|open-source projects]],
+      * me working on [[thoughts/work|open-source projects]],
+      * and spending too much time fixing this [site](https://aarnphm.xyz/view-source),
         * or commiting to the bit.
         * I enjoy
           * I enjoy long walks,
@@ -35,7 +35,7 @@ currently, I'm working at a [startup](https://bentoml.com) building #ml serving 
                     * collecting watches (horology)
                       * folktronica
                         * Miles David and the Quintet
-                          * Miles David and the Quintet, Focault and Wittgenstein's,
+                          * Miles David and the Quintet, Focault and [[thoughts/Wittgenstein]]'s,
                           * _my 3 qt stainless clad [saucier](https://madeincookware.com/products/saucier/3-quart) that I use for_
                           * everything,
                             * everything from searing
@@ -70,19 +70,22 @@ currently, I'm working at a [startup](https://bentoml.com) building #ml serving 
 
 ```telescopic id="research"
 * as far as
-* [[research]] interests go, I'm working
-* on interpretability.
+* [[research]] interests goes, I'm working
+* on interpretability
   * on interpretability ([[thoughts/mechanistic interpretability|inner working]] of a neural network)
   * of large ML system.
     * of large [[thoughts/Machine learning|ML]] system (inference engine [[thoughts/optimization|optimization]]).
-  * <br /><br />On a higher level, I care
+  * <br /><br />as far as purpose goes, I'm an engineer at heart, but
+  * I care
   * about building
-    * about building [[thoughts/papers/Tools for Conviviality by Ivan Illich.pdf|tools]]
-    * that extend
-    * our agency
-      * our agency to follow what one is drawn towards
-        * our agency as a medium of [[thoughts/representations|expression]]
-          * our [[thoughts/Agency|agency]] to fulfil one's [[thoughts/desire]] in life.
+    * about building [[thoughts/papers/Tools for Conviviality by Ivan Illich.pdf|malleable tools]]
+    * and tinkering with
+    * abstract concepts
+      * abstract concepts that one is innately draw towards.
+        * abstract concepts that explains our own [[thoughts/representations|expression]].
+          * abstract concepts that define the vastness of our minds and the world surrounding us.
 ```
 
 as far as [[thoughts/aesthetic value|aesthetic]] goes, i like my [[antilibrary|books]] and collect [[images|images]] I come across online, and this [[/dating|doc]] if you are interested ✨
+
+as far as #evergreen notes goes, here are [[/thoughts|what's on my mind]], and some [[/posts|writing]] pieces as of late.

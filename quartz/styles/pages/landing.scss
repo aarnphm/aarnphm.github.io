@@ -35,7 +35,7 @@ body[data-slug="index"] {
     }
   }
 
-  .page-content {
+  .page-content:not([data-plain="true"]) {
     margin: 1rem 0;
     border: 1px solid var(--gray);
     padding: 0 2rem;
@@ -84,6 +84,7 @@ body[data-slug="index"] {
 }
 
 .hyperlinks {
+  border-top: 1px solid var(--lightgray);
   margin-bottom: 1rem;
 }
 
