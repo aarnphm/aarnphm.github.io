@@ -96,7 +96,7 @@ function initCharacter() {
   characterDiv.className = "lydia-character"
 
   // Random variant selection
-  const variants = [drawAlienVariant1, drawAlienVariant2, drawAlienVariant3]
+  const variants = [drawAlienVariant1, drawAlienVariant2]
   const randomVariant = variants[Math.floor(Math.random() * variants.length)]
 
   characterDiv.innerHTML = randomVariant()
@@ -108,38 +108,53 @@ function initCharacter() {
   if (!alien) return
 
   const eyes = alien.querySelectorAll(".alien-eye")
+  if (!eyes.length) return
 
-  timelineContainer.addEventListener("mousemove", (e: MouseEvent) => {
+  const lookRange = 3
+
+  const handlePointerMove = (event: PointerEvent) => {
+    if (!document.body.contains(characterDiv)) {
+      cleanupEyeTracking()
+      return
+    }
+
     const rect = characterDiv.getBoundingClientRect()
     const centerX = rect.left + rect.width / 2
     const centerY = rect.top + rect.height / 2
 
-    const angle = Math.atan2(e.clientY - centerY, e.clientX - centerX)
-    const distance = Math.min(
-      Math.sqrt(Math.pow(e.clientX - centerX, 2) + Math.pow(e.clientY - centerY, 2)),
-      100,
-    )
+    const angle = Math.atan2(event.clientY - centerY, event.clientX - centerX)
+    const rotation = (angle * 180) / Math.PI / 20
 
-    // Rotate alien slightly toward cursor
-    const rotation = (angle * 180) / Math.PI
-    const tilt = Math.min(distance / 10, 8)
+    alien.style.transform = `rotate(${rotation}deg)`
 
-    alien.style.transform = `rotate(${rotation / 20}deg)`
+    const offsetX = Math.cos(angle) * lookRange
+    const offsetY = Math.sin(angle) * lookRange
 
-    // Move eyes to look at cursor
     eyes.forEach((eye) => {
-      const offsetX = Math.cos(angle) * 2
-      const offsetY = Math.sin(angle) * 2
       eye.setAttribute("transform", `translate(${offsetX}, ${offsetY})`)
     })
-  })
+  }
 
-  timelineContainer.addEventListener("mouseleave", () => {
+  const resetEyes = () => {
     alien.style.transform = "rotate(0deg)"
-    eyes.forEach((eye) => {
-      eye.setAttribute("transform", "translate(0, 0)")
-    })
-  })
+    eyes.forEach((eye) => eye.setAttribute("transform", "translate(0, 0)"))
+  }
+
+  const handleNav = (event: CustomEventMap["nav"]) => {
+    if (event.detail?.url !== "lyd") {
+      cleanupEyeTracking()
+    }
+  }
+
+  function cleanupEyeTracking() {
+    document.body.removeEventListener("pointermove", handlePointerMove)
+    document.body.removeEventListener("pointerleave", resetEyes)
+    document.removeEventListener("nav", handleNav)
+  }
+
+  document.body.addEventListener("pointermove", handlePointerMove)
+  document.body.addEventListener("pointerleave", resetEyes)
+  document.addEventListener("nav", handleNav)
 }
 
 function drawAlienVariant1(): string {
@@ -216,44 +231,6 @@ function drawAlienVariant2(): string {
       <!-- Spots -->
       <rect x="24" y="24" width="4" height="4" fill="#FFB8B8"/>
       <rect x="36" y="24" width="4" height="4" fill="#FFB8B8"/>
-    </svg>
-  `
-}
-
-function drawAlienVariant3(): string {
-  return `
-    <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
-      <!-- Pixel art blob alien -->
-      <!-- Organic boxy shape -->
-      <rect x="24" y="12" width="16" height="4" fill="#FFE0B8"/>
-      <rect x="20" y="16" width="24" height="4" fill="#FFE0B8"/>
-      <rect x="16" y="20" width="32" height="20" fill="#FFE0B8"/>
-      <rect x="20" y="40" width="24" height="4" fill="#FFE0B8"/>
-      <rect x="24" y="44" width="16" height="4" fill="#FFE0B8"/>
-
-      <!-- Three eyes in a row -->
-      <g class="alien-eye">
-        <rect x="20" y="26" width="6" height="6" fill="#4A3A2C"/>
-        <rect x="22" y="28" width="2" height="2" fill="#FFF"/>
-      </g>
-      <g class="alien-eye">
-        <rect x="29" y="24" width="6" height="8" fill="#4A3A2C"/>
-        <rect x="31" y="26" width="2" height="4" fill="#FFF"/>
-      </g>
-      <g class="alien-eye">
-        <rect x="38" y="26" width="6" height="6" fill="#4A3A2C"/>
-        <rect x="40" y="28" width="2" height="2" fill="#FFF"/>
-      </g>
-
-      <!-- Smile -->
-      <rect x="24" y="36" width="4" height="2" fill="#4A3A2C"/>
-      <rect x="28" y="38" width="8" height="2" fill="#4A3A2C"/>
-      <rect x="36" y="36" width="4" height="2" fill="#4A3A2C"/>
-
-      <!-- Floating pixels -->
-      <rect x="12" y="18" width="2" height="2" fill="#FFB8B8" opacity="0.6"/>
-      <rect x="50" y="20" width="2" height="2" fill="#FFB8B8" opacity="0.6"/>
-      <rect x="14" y="38" width="2" height="2" fill="#FFB8B8" opacity="0.6"/>
     </svg>
   `
 }
