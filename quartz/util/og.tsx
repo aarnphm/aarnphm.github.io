@@ -11,10 +11,7 @@ import readingTime from "reading-time"
 import { i18n } from "../i18n"
 import { styleText } from "util"
 import { parseWikilink, resolveWikilinkTarget } from "../util/wikilinks"
-import { render } from "preact-render-to-string"
-import { resolveRelative, FullSlug } from "../util/path"
-import { fromHtmlIsomorphic } from "hast-util-from-html-isomorphic"
-import { htmlToJsx } from "./jsx"
+import { FullSlug } from "../util/path"
 
 const defaultHeaderWeight = [700]
 const defaultBodyWeight = [400]
@@ -22,29 +19,34 @@ const defaultBodyWeight = [400]
 const headerFontLocal = joinSegments("static", "GT-Sectra-Display-Regular.woff")
 const bodyFontLocal = joinSegments("static", "GT-Sectra-Book.woff")
 
+/**
+ * Strip HTML tags from text for use in OG images
+ */
+function stripHtml(text: string): string {
+  return text.replace(/<[^>]*>/g, "")
+}
+
 export const renderDescription = (description: string | undefined, slug: string) => {
   if (!description) {
     return ""
   }
 
-  const parsed = parseWikilink(description)
+  // Strip HTML tags first for OG image compatibility
+  const cleanDescription = stripHtml(description)
+
+  const parsed = parseWikilink(cleanDescription)
   if (!parsed) {
-    return description
+    return cleanDescription
   }
 
   const resolved = resolveWikilinkTarget(parsed, slug as FullSlug)
   if (!resolved) {
-    return parsed.alias ?? parsed.target ?? description
+    return parsed.alias ?? parsed.target ?? cleanDescription
   }
 
-  const hrefBase = resolveRelative(slug as FullSlug, resolved.slug)
-  const href = parsed.anchor ? `${hrefBase}${parsed.anchor}` : hrefBase
-
-  return render(
-    <a href={href} class="internal" data-no-popover data-slug={resolved.slug}>
-      {parsed.alias ?? parsed.target ?? description}
-    </a>,
-  )
+  // For OG images, just return the text without creating anchor elements
+  // Satori has strict layout rules and doesn't handle nested elements well
+  return parsed.alias ?? parsed.target ?? cleanDescription
 }
 
 export async function getSatoriFonts(
@@ -296,6 +298,9 @@ export const defaultImage: SocialImageOptions["imageStructure"] = ({
   const bodyFont = getFontSpecificationName(cfg.theme.typography.body)
   const headerFont = getFontSpecificationName(cfg.theme.typography.header)
 
+  // Render description as plain text (renderDescription now strips HTML and returns text)
+  const descriptionText = renderDescription(description, fileData.slug!) || description
+
   return (
     <div
       style={{
@@ -381,12 +386,7 @@ export const defaultImage: SocialImageOptions["imageStructure"] = ({
             textOverflow: "ellipsis",
           }}
         >
-          {htmlToJsx(
-            fileData.filePath!,
-            fromHtmlIsomorphic(renderDescription(description, fileData.slug!) ?? "", {
-              fragment: true,
-            }),
-          ) ?? description}
+          {descriptionText}
         </p>
       </div>
       <div

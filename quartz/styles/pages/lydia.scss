@@ -269,6 +269,7 @@
 
   .timeline-marker {
     position: relative;
+    cursor: pointer;
     width: 18px;
     height: 18px;
     background: var(--light);
@@ -300,17 +301,6 @@
         height: 16px;
       }
     }
-
-    &:hover {
-      background: var(--secondary);
-      border-color: var(--tertiary);
-      transform: scale(1.15);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-
-      svg {
-        color: var(--light);
-      }
-    }
   }
 
   .timeline-item[data-type="place"] .timeline-marker {
@@ -319,11 +309,6 @@
     svg {
       color: var(--foam);
     }
-
-    &:hover {
-      background: var(--foam);
-      border-color: var(--pine);
-    }
   }
 
   .timeline-item[data-type="food"] .timeline-marker {
@@ -331,11 +316,6 @@
 
     svg {
       color: var(--gold);
-    }
-
-    &:hover {
-      background: var(--gold);
-      border-color: var(--rose);
     }
   }
 
@@ -354,7 +334,6 @@
     transition: all 0.45s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
     cursor: pointer;
-    animation: floatBloom 16s ease-in-out infinite alternate;
 
     @media all and ($mobile) {
       max-width: 100%;
@@ -679,14 +658,4 @@
 body[data-layout="lydia"] {
   background-color: #fff7ef;
   background-image: radial-gradient(circle at top, rgba(255, 224, 196, 0.25), transparent 60%);
-}
-
-@keyframes floatBloom {
-  0% {
-    transform: translateY(0) scale(1);
-  }
-
-  100% {
-    transform: translateY(-6px) scale(1.01);
-  }
 }

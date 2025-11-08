@@ -136,4 +136,4 @@ Then update `content/References.bib` and reference as `[@entryname]` in markdown
 - Keep `public/` directory reproducible via `pnpm bundle`
 - Use `wrangler.toml` and Cloudflare secrets for Worker configuration
 - Please never run bundle or build. I will always running dev.ts so just either inspect the running process, instead of spawning your own.
-- We should NEVER use fs in @quartz/plugins/transformers/ (transformers should only be RESPONSIBLE for transforming hast/ast/mdast trees). If we need posteriori edits make sure to do it in @quartz/components/renderPage.tsx or during @quartz/plugins/emitters/ phase.
+- We should NEVER use fs in @quartz/plugins/transformers/ (transformers should only be RESPONSIBLE for transforming hast/ast/mdast trees). If we need posteriori edits make sure to do it in renderPage.tsx or during @quartz/plugins/emitters/ phase.

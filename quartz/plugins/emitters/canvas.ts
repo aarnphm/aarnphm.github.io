@@ -104,8 +104,9 @@ export const CanvasPage: QuartzEmitterPlugin<Partial<FullPageLayout>> = (userOpt
           frontmatter: {
             title: `${slug}.canvas`,
             tags: ["canvas"],
-            pageLayout: "default" as any,
+            pageLayout: "default",
           },
+          description: `Canvas of ${slug}`,
           htmlAst: tree,
           text: file.data.text ?? "",
           links: linkedSlugs,

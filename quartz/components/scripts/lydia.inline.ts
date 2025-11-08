@@ -197,40 +197,51 @@ function drawAlienVariant1(): string {
 function drawAlienVariant2(): string {
   return `
     <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
-      <!-- Pixel art squid alien -->
+      <!-- Pixel art squid alien (cute version) -->
       <!-- Head -->
-      <rect x="20" y="12" width="24" height="4" fill="#E8A474"/>
-      <rect x="16" y="16" width="32" height="16" fill="#E8A474"/>
-      <rect x="20" y="32" width="24" height="4" fill="#E8A474"/>
+      <rect x="20" y="12" width="24" height="4" fill="#F5D5C8"/>
+      <rect x="16" y="16" width="32" height="16" fill="#F5D5C8"/>
+      <rect x="20" y="32" width="24" height="4" fill="#F5D5C8"/>
 
-      <!-- Eyes -->
+      <!-- Eyes (bigger and rounder for cuteness) -->
       <g class="alien-eye">
-        <rect x="20" y="20" width="6" height="8" fill="#4A3A2C"/>
-        <rect x="22" y="22" width="2" height="4" fill="#FFF"/>
+        <rect x="19" y="19" width="8" height="10" fill="#5C4A3D"/>
+        <rect x="21" y="21" width="4" height="6" fill="#FFF"/>
+        <rect x="23" y="22" width="2" height="3" fill="#E8F4FF"/>
       </g>
       <g class="alien-eye">
-        <rect x="38" y="20" width="6" height="8" fill="#4A3A2C"/>
-        <rect x="40" y="22" width="2" height="4" fill="#FFF"/>
+        <rect x="37" y="19" width="8" height="10" fill="#5C4A3D"/>
+        <rect x="39" y="21" width="4" height="6" fill="#FFF"/>
+        <rect x="41" y="22" width="2" height="3" fill="#E8F4FF"/>
       </g>
 
-      <!-- Tentacles (blocky) -->
-      <rect x="16" y="36" width="4" height="8" fill="#E8A474"/>
-      <rect x="14" y="44" width="4" height="8" fill="#E8A474"/>
+      <!-- Spots that follow eyes -->
+      <g class="alien-eye">
+        <rect x="28" y="24" width="3" height="3" fill="#FFD4E0"/>
+        <rect x="33" y="24" width="3" height="3" fill="#FFD4E0"/>
+      </g>
 
-      <rect x="24" y="36" width="4" height="12" fill="#E8A474"/>
-      <rect x="24" y="48" width="4" height="6" fill="#E8A474"/>
+      <!-- Blush marks (static, for coziness) -->
+      <rect x="13" y="24" width="4" height="4" fill="#FFCCD5" opacity="0.6"/>
+      <rect x="47" y="24" width="4" height="4" fill="#FFCCD5" opacity="0.6"/>
 
-      <rect x="30" y="36" width="4" height="16" fill="#E8A474"/>
+      <!-- Tentacles (softer colors) -->
+      <rect x="16" y="36" width="4" height="8" fill="#F5D5C8"/>
+      <rect x="14" y="44" width="4" height="8" fill="#E8C4B8"/>
 
-      <rect x="36" y="36" width="4" height="12" fill="#E8A474"/>
-      <rect x="36" y="48" width="4" height="6" fill="#E8A474"/>
+      <rect x="24" y="36" width="4" height="12" fill="#F5D5C8"/>
+      <rect x="24" y="48" width="4" height="6" fill="#E8C4B8"/>
 
-      <rect x="44" y="36" width="4" height="8" fill="#E8A474"/>
-      <rect x="46" y="44" width="4" height="8" fill="#E8A474"/>
+      <rect x="30" y="36" width="4" height="16" fill="#F5D5C8"/>
 
-      <!-- Spots -->
-      <rect x="24" y="24" width="4" height="4" fill="#FFB8B8"/>
-      <rect x="36" y="24" width="4" height="4" fill="#FFB8B8"/>
+      <rect x="36" y="36" width="4" height="12" fill="#F5D5C8"/>
+      <rect x="36" y="48" width="4" height="6" fill="#E8C4B8"/>
+
+      <rect x="44" y="36" width="4" height="8" fill="#F5D5C8"/>
+      <rect x="46" y="44" width="4" height="8" fill="#E8C4B8"/>
+
+      <!-- Little heart detail on head -->
+      <rect x="30" y="14" width="4" height="2" fill="#FFB8C8"/>
     </svg>
   `
 }

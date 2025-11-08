@@ -67,23 +67,27 @@ async function processOgImage(
     fileData.frontmatter?.description ??
     unescapeHTML(fileData.description?.trim() ?? i18n(cfg.locale).propertyDefaults.description)
 
-  const stream = await generateSocialImage(
-    {
-      title,
-      description,
-      fonts,
-      cfg,
-      fileData,
-    },
-    fullOptions,
-  )
+  try {
+    const stream = await generateSocialImage(
+      {
+        title,
+        description,
+        fonts,
+        cfg,
+        fileData,
+      },
+      fullOptions,
+    )
 
-  return write({
-    ctx,
-    content: stream,
-    slug: `${slug}-og-image` as FullSlug,
-    ext: ".webp",
-  })
+    return write({
+      ctx,
+      content: stream,
+      slug: `${slug}-og-image` as FullSlug,
+      ext: ".webp",
+    })
+  } catch (error) {
+    throw new Error(`Failed to generate OG image for slug "${slug}": ${error}`)
+  }
 }
 
 export const CustomOgImagesEmitterName = "CustomOgImages"

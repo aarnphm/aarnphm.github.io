@@ -3,9 +3,9 @@ aliases:
   - about
   - me
 date: "2022-04-22"
-description: practicing the act of digital gardening.
+description: my working notes, as a form of a digital garden
 id: _index
-modified: 2025-11-07 21:05:20 GMT-05:00
+modified: 2025-11-08 06:43:11 GMT-05:00
 tags:
   - evergreen
   - fruit
