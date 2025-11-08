@@ -41,6 +41,7 @@
     position: fixed;
     inset: 0;
     background-image:
+      radial-gradient(circle at 50% 50%, transparent 40%, rgba(255, 200, 160, 0.15) 100%),
       radial-gradient(circle at 18% 15%, rgba(255, 221, 197, 0.7), transparent 60%),
       radial-gradient(circle at 82% 5%, rgba(210, 225, 255, 0.55), transparent 65%),
       linear-gradient(
@@ -53,19 +54,21 @@
       ),
       url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160' viewBox='0 0 160 160'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23noise)' opacity='0.2'/%3E%3C/svg%3E");
     background-size:
+      100% 100%,
       140% 140%,
       150% 150%,
       100% 100%,
       220px 220px;
     background-position:
+      center,
       20% 10%,
       82% 5%,
       center,
       0 0;
-    background-blend-mode: screen, color-dodge, normal, multiply;
+    background-blend-mode: soft-light, screen, color-dodge, normal, multiply;
     z-index: -1;
     opacity: var(--mask-opacity, 0.95);
-    transition: opacity 0.2s ease-out;
+    transition: opacity 0.3s ease-in-out;
     mix-blend-mode: soft-light;
     pointer-events: none;
   }
@@ -86,12 +89,14 @@
     border-radius: 0px;
     box-shadow:
       0 20px 60px rgba(255, 173, 134, 0.25),
-      0 10px 30px rgba(99, 74, 54, 0.1);
+      0 10px 30px rgba(232, 164, 120, 0.15),
+      inset 0 1px 0 rgba(255, 255, 255, 0.5);
     margin: 6rem auto;
     max-width: 800px;
     transition:
-      background 0.4s ease,
-      box-shadow 0.4s ease;
+      background 0.5s ease-in-out,
+      box-shadow 0.5s ease-in-out,
+      transform 0.3s ease-in-out;
 
     @media all and ($mobile) {
       padding: 1.5rem;
@@ -155,6 +160,45 @@
 
       @media all and ($mobile) {
         left: 20px;
+      }
+    }
+
+    // Container for character
+    .lydia-character {
+      position: absolute;
+      top: 2rem;
+      right: -6rem;
+      width: 100px;
+      height: 100px;
+      z-index: 100;
+      opacity: 0.85;
+      filter: drop-shadow(0 4px 8px rgba(255, 180, 140, 0.3));
+      animation: characterFloat 6s ease-in-out infinite alternate;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+
+      @media all and ($mobile) {
+        width: 70px;
+        height: 70px;
+        top: 1rem;
+        right: -4rem;
+      }
+
+      &:hover {
+        opacity: 1;
+      }
+
+      svg {
+        width: 100%;
+        height: 100%;
+        transition: transform 0.2s ease-out;
+        image-rendering: pixelated;
+        image-rendering: -moz-crisp-edges;
+        image-rendering: crisp-edges;
+
+        .alien-eye {
+          transition: transform 0.15s ease-out;
+        }
       }
     }
   }
@@ -304,9 +348,10 @@
     border-radius: 0px;
     border: 1px solid rgba(255, 206, 194, 0.4);
     box-shadow:
-      0 10px 30px rgba(211, 170, 143, 0.25),
-      0 3px 10px rgba(87, 62, 44, 0.08);
-    transition: all 0.35s ease;
+      0 10px 30px rgba(255, 200, 160, 0.22),
+      0 4px 12px rgba(232, 164, 120, 0.15),
+      inset 0 1px 0 rgba(255, 255, 255, 0.4);
+    transition: all 0.45s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
     cursor: pointer;
     animation: floatBloom 16s ease-in-out infinite alternate;
@@ -346,12 +391,16 @@
     &:hover {
       border-color: rgba(255, 189, 156, 0.8);
       box-shadow:
-        0 18px 40px rgba(255, 182, 146, 0.3),
-        0 6px 20px rgba(87, 62, 44, 0.15);
+        0 18px 40px rgba(255, 182, 146, 0.35),
+        0 6px 20px rgba(232, 164, 120, 0.25),
+        inset 0 0 40px rgba(255, 220, 180, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.6);
       transform: translateY(-4px);
 
       img {
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        box-shadow:
+          0 4px 12px rgba(255, 160, 100, 0.25),
+          0 2px 6px rgba(0, 0, 0, 0.15);
       }
     }
   }
@@ -614,6 +663,16 @@
       visibility: visible;
       opacity: 1;
     }
+  }
+}
+
+@keyframes characterFloat {
+  0% {
+    transform: translateY(0) rotate(-2deg);
+  }
+
+  100% {
+    transform: translateY(-10px) rotate(2deg);
   }
 }
 

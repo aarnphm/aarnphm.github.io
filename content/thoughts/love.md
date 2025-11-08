@@ -1,13 +1,13 @@
 ---
 aliases:
   - dilectio
-  - lyd
+  - lydn
   - nb
   - living
 date: "2025-10-04"
 description: choosing to give your full, continuously.
 id: love
-modified: 2025-10-30 19:35:17 GMT-04:00
+modified: 2025-11-08 05:11:28 GMT-05:00
 socials:
   essay: /posts/love
 tags:
