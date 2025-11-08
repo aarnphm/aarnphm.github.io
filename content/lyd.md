@@ -1,21 +1,17 @@
 ---
-title: welcome to toronto, lydia
 date: "2025-11-08"
-id: lydia
 description: a city guide for a friend
-pageLayout: lydia
+id: lyd
+modified: 2025-11-08 02:32:31 GMT-05:00
 noindex: true
+pageLayout: lydia
 tags:
   - toronto
   - evergreen
+title: welcome to toronto
 ---
 
-<div class="hero-section">
-  <div class="hero-content">
-    <h1 class="hero-title">welcome to toronto</h1>
-    <p class="hero-subtitle">a city of neighborhoods, stories, and endless discovery</p>
-  </div>
-</div>
+_a city of neighborhoods, stories, and endless discovery_
 
 ## about toronto.
 
@@ -103,18 +99,10 @@ One of North America's largest museums, showcasing art, culture, and natural his
 
 ## food & coffee.
 
-Toronto's food scene is incredibly diverse. Here are a few favorites:
+few favorites:
 
 - **dinette triple crown** - cozy brunch spot in little portugal
 - **pai** - exceptional thai food in the entertainment district
 - **st. lawrence market** - historic market with amazing peameal bacon sandwiches
 - **uncle tetsu's** - japanese cheesecake that melts in your mouth
 - **balzac's coffee** - local roaster with multiple locations across the city
-
-## getting around.
-
-The TTC (Toronto Transit Commission) operates the subway, streetcars, and buses. Get a PRESTO card for easy payment across all transit modes. The city is also very walkable, especially in downtown neighborhoods.
-
----
-
-hope you enjoy exploring this beautiful city! feel free to reach out if you need any recommendations.

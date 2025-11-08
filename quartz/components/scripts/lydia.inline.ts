@@ -1,38 +1,51 @@
-// Scrolling mask effect for CN Tower background
+import { getFullSlug } from "../../util/path"
+
 function initScrollMask() {
-  const heroSection = document.querySelector(".hero-section") as HTMLElement
-  if (!heroSection) return
+  const root = document.querySelector("[data-slug='lyd']") as HTMLElement
+  if (!root) return
 
   function updateMaskOpacity() {
     const scrollY = window.scrollY
+    const documentHeight = document.documentElement.scrollHeight
     const viewportHeight = window.innerHeight
-
-    // Calculate opacity based on scroll position
-    // Fade from 1 to 0 as user scrolls through the first viewport
-    const opacity = Math.max(0, 1 - scrollY / viewportHeight)
-
-    const afterElement = heroSection
-    if (afterElement) {
-      afterElement.style.setProperty("--mask-opacity", opacity.toString())
-    }
+    
+    // Calculate scroll progress (0 to 1)
+    const maxScroll = documentHeight - viewportHeight
+    const scrollProgress = Math.min(scrollY / maxScroll, 1)
+    
+    // Calculate opacity: start at 1, fade to 0.3 as user scrolls
+    // This reveals more of the background image
+    const opacity = Math.max(0.3, 1 - scrollProgress * 0.7)
+    
+    // Update the CSS custom property
+    root.style.setProperty("--mask-opacity", opacity.toString())
   }
 
   // Initial check
   updateMaskOpacity()
 
-  // Update on scroll
-  window.addEventListener("scroll", updateMaskOpacity, { passive: true })
+  // Update on scroll with throttling for better performance
+  let ticking = false
+  window.addEventListener("scroll", () => {
+    if (!ticking) {
+      window.requestAnimationFrame(() => {
+        updateMaskOpacity()
+        ticking = false
+      })
+      ticking = true
+    }
+  }, { passive: true })
 }
 
 // Initialize when DOM is ready
 document.addEventListener("nav", () => {
-  const isLydiaPage = document.body.getAttribute("data-slug") === "lydia"
-  if (isLydiaPage) {
+  const slug = getFullSlug(window)
+  if (slug === "lyd") {
     initScrollMask()
   }
 })
 
 // Also run on initial page load
-if (document.body.getAttribute("data-slug") === "lydia") {
+if (getFullSlug(window) === "lyd") {
   initScrollMask()
 }

@@ -1,81 +1,114 @@
 @use "../variables.scss" as *;
 @use "../mixin.scss" as *;
 
-[data-slug="lydia"] {
-  // Hero section with CN Tower background
-  .hero-section {
+[data-slug="lyd"] {
+  position: relative;
+  min-height: 100vh;
+  --mask-opacity: 1;
+
+  .page-footer {
+    display: none;
+  }
+
+  // CN Tower full-height fixed background
+  &::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: url("/thoughts/images/cn.jpg");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    z-index: -2;
+  }
+
+  // Scrolling mask overlay that reveals the image
+  &::after {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(
+      to bottom,
+      var(--light) 0%,
+      rgba(250, 250, 250, 0.95) 20%,
+      rgba(250, 250, 250, 0.8) 50%,
+      rgba(250, 250, 250, 0.6) 80%,
+      rgba(250, 250, 250, 0.3) 100%
+    );
+    z-index: -1;
+    opacity: var(--mask-opacity, 1);
+    transition: opacity 0.1s ease-out;
+    mix-blend-mode: normal;
+  }
+
+  // Content container
+  .page-content {
     position: relative;
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
-    margin: -2rem -2rem 4rem -2rem;
-    --mask-opacity: 1;
+    z-index: 1;
+  }
 
-    // CN Tower background with mask effect
-    &::before {
-      content: "";
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background-image: url("https://images.unsplash.com/photo-1517935706615-2717063c2225?q=80&w=2865&auto=format&fit=crop");
-      background-size: cover;
-      background-position: center;
-      background-repeat: no-repeat;
-      background-attachment: fixed;
-      z-index: -2;
+  article {
+    background: rgba(250, 250, 250, 0.92);
+    backdrop-filter: blur(8px);
+    padding: 3rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.1);
+    margin: 2rem auto;
+    max-width: 900px;
+    transition: background 0.3s ease;
+
+    @media all and ($mobile) {
+      padding: 1.5rem;
+      margin: 1rem;
+      background: rgba(250, 250, 250, 0.95);
     }
 
-    // Scrolling gradient mask overlay
-    &::after {
-      content: "";
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: linear-gradient(
-        to bottom,
-        rgba(0, 0, 0, 0.4) 0%,
-        rgba(0, 0, 0, 0.2) 50%,
-        var(--light) 100%
-      );
-      z-index: -1;
-      opacity: var(--mask-opacity, 1);
-      transition: opacity 0.1s ease-out;
+    // Title styling
+    h1 {
+      font-size: 3.5rem;
+      font-weight: 800;
+      margin: 0 0 0.5rem 0;
+      text-transform: lowercase;
+      color: var(--dark);
+
+      @media all and ($mobile) {
+        font-size: 2rem;
+      }
     }
 
-    .hero-content {
-      text-align: center;
-      color: white;
-      padding: 2rem;
-      text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.7);
+    // Subtitle
+    > p:first-of-type {
+      font-size: 1.3rem;
+      font-style: italic;
+      color: var(--darkgray);
+      margin-bottom: 3rem;
 
-      .hero-title {
-        font-size: 4.5rem;
-        font-weight: 800;
-        margin: 0;
-        letter-spacing: -0.02em;
-        text-transform: lowercase;
-
-        @media all and ($mobile) {
-          font-size: 2.5rem;
-        }
+      @media all and ($mobile) {
+        font-size: 1.1rem;
       }
+    }
 
-      .hero-subtitle {
-        font-size: 1.5rem;
-        font-weight: 300;
-        margin-top: 1rem;
-        font-style: italic;
+    h2 {
+      margin-top: 4rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 2px solid var(--lightgray);
+      text-transform: lowercase;
 
-        @media all and ($mobile) {
-          font-size: 1rem;
-        }
+      &:first-of-type {
+        margin-top: 2rem;
       }
+    }
+
+    h3 {
+      text-transform: lowercase;
+      color: var(--secondary);
+      margin-top: 2rem;
     }
   }
 
@@ -199,11 +232,12 @@
   .timeline-content {
     flex: 1;
     max-width: 45%;
-    background: var(--light);
+    background: rgba(250, 250, 250, 0.95);
+    backdrop-filter: blur(4px);
     padding: 1.5rem;
     border-radius: 8px;
     border: 1px solid var(--lightgray);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     transition: all 0.3s ease;
 
     @media all and ($mobile) {
@@ -226,7 +260,7 @@
 
     &:hover {
       border-color: var(--secondary);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
       transform: translateY(-2px);
     }
   }
@@ -243,44 +277,20 @@
       font-family: var(--codeFont);
     }
   }
-
-  // Adjust content sections
-  article {
-    h2 {
-      margin-top: 4rem;
-      padding-bottom: 0.5rem;
-      border-bottom: 2px solid var(--lightgray);
-    }
-
-    h3 {
-      text-transform: lowercase;
-      color: var(--secondary);
-      margin-top: 2rem;
-    }
-  }
-
-  // Scrolling effect
-  @supports (animation-timeline: scroll()) {
-    .hero-section::after {
-      animation: fade-mask linear;
-      animation-timeline: scroll();
-      animation-range: 0vh 100vh;
-    }
-
-    @keyframes fade-mask {
-      from {
-        opacity: 1;
-      }
-      to {
-        opacity: 0;
-      }
-    }
-  }
 }
 
-// Fallback scrolling effect using JavaScript
+// Body-level styling for the lydia layout
 body[data-layout="lydia"] {
+  // Ensure proper spacing
+  .page-content {
+    min-height: 100vh;
+  }
+
   .page-footer {
     margin-top: 4rem;
+    background: rgba(250, 250, 250, 0.92);
+    backdrop-filter: blur(8px);
+    padding: 2rem;
+    border-radius: 8px;
   }
 }
