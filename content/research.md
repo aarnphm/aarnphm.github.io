@@ -2,12 +2,11 @@
 date: "2025-08-12"
 description: and my interests.
 id: research
-modified: 2025-11-04 22:01:29 GMT-05:00
+modified: 2025-11-07 21:41:07 GMT-05:00
 tags:
   - fruit
 title: research
 transclude:
-  dynalist: false
   title: false
 ---
 
@@ -19,9 +18,7 @@ At any social function, I often introduce myself to new people by saying I work 
 
 It dawned on me that we inference engineers should do a better job explaining our role to others. So here is my dialectic attempt at clarifying what I do, in a Q&A format.
 
----
-
-#### **Q**: _What is inference actually?_
+### **Q**: _What is inference actually?_
 
 **A**: Etymology of the word "inference" refers to steps in logical reasoning, moving from premises to logical consequences; to "carry forward." It is usually divided into either _deduction_ (deriving conclusions from given premises), or _induction_ (inferring general rules from a priori observations). But most of the time these two methods are interchangeable. In statistical inference, we draw conclusions about a population (or underlying probability distribution) given a set of data.
 
@@ -29,7 +26,7 @@ From the objective of world [[thoughts/representations]], mathematicians and eng
 
 ![[posts/images/shogoth-gpt.webp|Shogoth as GPTs. RLHF, or any methods whatsoever, is an injection of rules into these systems]]
 
-#### **Q**: _What is MLSys and what is an inference system?_
+### **Q**: _What is MLSys and what is an inference system?_
 
 **A**: I've been thinking about this distinction a lot. Well, to make a car run, you need a lot of components in addition to the engine: driving wheels, transmission, suspensions, exhaust, drive shaft etc.
 
@@ -49,7 +46,7 @@ Inference system has to solve a different class of problems.
 - Where training can take hours or days, inference has to be within milliseconds.
 - Where training happens in controlled environments with known workloads, inference faces all kinds of weirdness in production: unpredictable request patterns, varying input sizes, resource constraints that can change, _literally_ by the milliseconds.
 
-#### **Q**: _Why is building efficient inference engines so hard?_
+### **Q**: _Why is building efficient inference engines so hard?_
 
 **A**: The fundamental problem with large language models nowadays is they are pretty inefficient. Because they are trained to perform [[thoughts/Autoregressive models|autoregressive]] objective [^ntp], they require a lot of resources to run optimally.
 
@@ -73,7 +70,7 @@ Then there's also the kernel problem [^kernel]. Deep learning comprises a lot of
 
 [^kernel-solution]: FlashAttention showed us that memory bandwidth, not compute, is often the bottleneck. So we fuse operations, we quantize weights, we rewrite algorithms to minimize memory transfers. There are compilers/DSLs such as Triton, CUTLASS, torch.compile, CuTe DSL, tile-lang, all aiming to solve these problems of generating the fastest GEMM, GEMV kernels.
 
-#### **Q**: _Can you walk through what actually happens during inference?_
+### **Q**: _Can you walk through what actually happens during inference?_
 
 **A**: Let's trace a request through vLLM, since it's become something of a reference [architecture](https://blog.vllm.ai/2025/09/05/anatomy-of-vllm.html).
 
@@ -91,7 +88,7 @@ But here's where it gets interesting: speculative decoding might kick in. Instea
 
 Throughout all this, there's scheduling decisions. Preemption might kick in if a higher-priority request arrives. Memory pressure might trigger recomputation instead of caching. The continuous batcher is constantly reordering, merging, splitting requests to maximize throughput without violating latency SLAs.
 
-#### **Q**: _What are the key architectural decisions that actually matter?_
+### **Q**: _What are the key architectural decisions that actually matter?_
 
 **A**: After spending time with various engines — vLLM, TGI, lmdeploy, SGLang — certain patterns emerge.
 
@@ -111,7 +108,7 @@ TGI's custom kernels for specific model architectures consistently beat generic 
 
 Traditionally, you had clean layers: serving framework, inference engine, kernel library. SGLang is taking a slightly different approach where they vertically integrate from the Kubernetes layers -> router -> scheduler -> memory management -> kernels. Or FlashInfer, which bundles kernels with scheduling logic. The most interesting optimizations happen when you can co-design across layers.
 
-#### **Q**: _Where is this all heading?_
+### **Q**: _Where is this all heading?_
 
 **A**: A few of my own speculation, take it as you will.
 
@@ -135,7 +132,7 @@ These chips are optimized for different points in the design space. Groq removes
 
 Tools like nsight for profiling, Triton/CUTLASS for kernel writing, torch.compile for graph optimization — they're lowering the barrier to entry. You don't need to be a CUDA wizard anymore to write fast kernels. Well, it helps, but it's not required.
 
-#### **Q**: _What should I actually study to work on this?_
+### **Q**: _What should I actually study to work on this?_
 
 **A**: Start with the systems papers, not the ML papers. I also found myself doing this a lot, when starting up. Read the PagedAttention paper until you understand why paging matters. Read FlashAttention until you understand the memory hierarchy. Read Orca until you understand scheduling. Honestly, read up your computer science theory class 😅
 
@@ -147,19 +144,19 @@ And honestly? Read code. The vLLM codebase is particularly instructive — well,
 
 The field is moving fast enough that by the time you read this, half the systems I mentioned might be obsolete. But the principles — thinking about memory hierarchies, scheduling under constraints, trading compute for bandwidth, specialization versus generalization — are eternal. Well, as eternal as anything gets in this field.
 
-#### **Q**: _Where do things usually break/have room for improvement?_
+### **Q**: _Where do things usually break/have room for improvement?_
 
 **A**: Three places: compute and efficiency (speed, memory, energy), scaling laws (how performance grows with resources), and interpretability (understanding behavior).
 
-#### **Q**: _Is this also about saving money?_
+### **Q**: _Is this also about saving money?_
 
 **A**: Yes and no. Efficiency also makes experiences feel instant, enables on-device use, and shortens iteration cycles so ideas ship faster. See [[thoughts/Speculative decoding]] and [[thoughts/quantization]]. But cost-saving is a huge motivator. But then so does everything else in life 😅
 
-#### **Q**: _What’s the point of interpretability? Why look inside models if they “work”?_
+### **Q**: _What’s the point of interpretability? Why look inside models if they “work”?_
 
 **A**: To debug, build trust, and design better systems. Peeking inside reveals features and circuits; [[thoughts/mechanistic interpretability]] to models is what a debugger is to our software system. It gives lenses into how things work internally. The [[thoughts/Connectionist network|models']] subspaces are extremely complex, insofar that we must know/understand/build intuition of how it works.
 
-#### **Q**: _Enough yapping, can you give me some starter points?_
+### **Q**: _Enough yapping, can you give me some starter points?_
 
 **A**: Pick a concrete question tied to an outcome you care about, choose a simple baseline, and change one thing at a time. Keep notes. A few places I would recommend to get started with:
 
@@ -175,8 +172,6 @@ The field is moving fast enough that by the time you read this, half the systems
 ---
 
 ## For ML folks
-
-<br />
 
 > My research interests lie on emergent properties of speculative decoding on large language models.
 
