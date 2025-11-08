@@ -24,7 +24,7 @@ const bodyFontLocal = joinSegments("static", "GT-Sectra-Book.woff")
 
 export const renderDescription = (description: string | undefined, slug: string) => {
   if (!description) {
-    return null
+    return ""
   }
 
   const parsed = parseWikilink(description)
@@ -386,7 +386,7 @@ export const defaultImage: SocialImageOptions["imageStructure"] = ({
             fromHtmlIsomorphic(renderDescription(description, fileData.slug!) ?? "", {
               fragment: true,
             }),
-          )}
+          ) ?? description}
         </p>
       </div>
       <div
@@ -399,7 +399,6 @@ export const defaultImage: SocialImageOptions["imageStructure"] = ({
           borderTop: `1px solid ${cfg.theme.colors[colorScheme].lightgray}`,
         }}
       >
-        {/* Left side - Date and Reading Time */}
         <div
           style={{
             display: "flex",
@@ -442,8 +441,6 @@ export const defaultImage: SocialImageOptions["imageStructure"] = ({
             {readingTimeText}
           </div>
         </div>
-
-        {/* Right side - Tags */}
         <div
           style={{
             display: "flex",
