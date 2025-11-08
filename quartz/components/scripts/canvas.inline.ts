@@ -1344,7 +1344,9 @@ async function renderCanvas(container: HTMLElement) {
                 return
               }
 
-              const synthetic = new MouseEvent("mouseleave", { bubbles: true }) as SyntheticMouseEvent
+              const synthetic = new MouseEvent("mouseleave", {
+                bubbles: true,
+              }) as SyntheticMouseEvent
               synthetic[SYNTHETIC_MOUSELEAVE_FLAG] = true
               link.dispatchEvent(synthetic)
             }

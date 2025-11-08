@@ -3038,8 +3038,8 @@ title: are.na
     - date: 11/05/2025
     - tags: [empathy]
   - Two camp when talking about [[thoughts/Empathy]]:
-	- simulation theory: "putting yourself into another shoe"
-	- theory theory: "mindreading"
+  - simulation theory: "putting yourself into another shoe"
+  - theory theory: "mindreading"
   - She argues that empathy as "the experience of foreign consciousness in general", i.e: doesn't have to have shared experience, but rather a locust of their own subjectivity.
 - https://www.youtube.com/watch?v=WyofKBRpRqU -- Merleau-Ponty on the World of Perception & the World of Science (1948)
   - [meta]:

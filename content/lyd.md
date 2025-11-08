@@ -2,7 +2,7 @@
 date: "2025-11-08"
 description: a city of neighborhoods, stories, and endless discovery, a guide, for a friend
 id: lyd
-modified: 2025-11-08 04:28:24 GMT-05:00
+modified: 2025-11-08 05:01:35 GMT-05:00
 noindex: true
 pageLayout: lydia
 tags:
@@ -22,7 +22,6 @@ transclude:
       </svg>
     </div>
     <div class="timeline-content">
-      <h3>founding of york</h3>
       <img src="/thoughts/images/york-1793.ignore.jpg" alt="Map of York in 1793 showing the original settlement" />
     </div>
   </div>
@@ -47,7 +46,6 @@ transclude:
       </svg>
     </div>
     <div class="timeline-content">
-      <h3>battle of york</h3>
       <img src="/thoughts/images/battle-of-york-1813.ignore.jpg" alt="US ships arriving in York harbor before the Battle of York, 1813" />
     </div>
   </div>
@@ -63,6 +61,17 @@ transclude:
       <p>915 Dupont Street. A cozy neighborhood cafe serving exceptional coffee and pastries in a warm, intimate setting.</p>
     </div>
   </div>
+  <div class="timeline-item timeline-left" data-type="food">
+    <div class="timeline-marker">
+      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M11 9H9V2H7v7H5V2H3v7c0 2.12 1.66 3.84 3.75 3.97V22h2.5v-9.03C11.34 12.84 13 11.12 13 9V2h-2v7zm5-3v8h2.5v8H21V2c-2.76 0-5 2.24-5 4z" fill="currentColor"/>
+      </svg>
+    </div>
+    <div class="timeline-content">
+      <h3>henry's</h3>
+      <p>Intimate French bistro specializing in charcuterie, house-made terrines, and an expertly curated wine list. A hidden gem for European-style dining.</p>
+    </div>
+  </div>
 
   <div class="timeline-item" data-year="1834" data-type="history" data-hover-text="When York became Toronto on March 6, 1834, the population was only 9,000. The name 'Toronto' likely derives from the Mohawk 'tkaronto' meaning 'where there are trees standing in the water.' William Lyon Mackenzie, a fiery Scottish-born journalist and reformer, became the first mayor." data-map-url="https://www.toronto.ca/ext/archives/s0725/s0725_it0083.jpg">
     <div class="timeline-marker">
@@ -72,7 +81,6 @@ transclude:
       </svg>
     </div>
     <div class="timeline-content">
-      <h3>city of toronto incorporated</h3>
       <img src="/thoughts/images/toronto-1834.ignore.jpg" alt="Historical map of Toronto in 1834" />
     </div>
   </div>
@@ -97,7 +105,6 @@ transclude:
       </svg>
     </div>
     <div class="timeline-content">
-      <h3>the great fire</h3>
       <img src="/thoughts/images/great-fire-1904.ignore.jpg" alt="Bay Street looking north after the Great Fire of 1904" />
     </div>
   </div>
@@ -122,7 +129,6 @@ transclude:
       </svg>
     </div>
     <div class="timeline-content">
-      <h3>hurricane hazel</h3>
       <img src="/thoughts/images/hurricane-hazel-1954.ignore.jpg" alt="Flooded neighborhood in aftermath of Hurricane Hazel" />
     </div>
   </div>
@@ -135,7 +141,7 @@ transclude:
     </div>
     <div class="timeline-content">
       <h3>ratelier</h3>
-      <p>Intimate French bistro specializing in charcuterie, house-made terrines, and an expertly curated wine list. A hidden gem for European-style dining.</p>
+      <p>Modern art galleries blend with cozy coffee shops. Hosting perfume workshops.</p>
     </div>
   </div>
 
@@ -159,7 +165,6 @@ transclude:
       </svg>
     </div>
     <div class="timeline-content">
-      <h3>cn tower opens</h3>
       <img src="/thoughts/images/cn-tower-1976.ignore.jpg" alt="CN Tower under construction in the 1970s" />
     </div>
   </div>
@@ -184,7 +189,6 @@ transclude:
       </svg>
     </div>
     <div class="timeline-content">
-      <h3>megacity amalgamation</h3>
       <img src="/thoughts/images/toronto-amalgamation-1988.ignore.jpg" alt="Toronto amalgamation in 1988" /> </div>
   </div>
 
@@ -208,7 +212,6 @@ transclude:
       </svg>
     </div>
     <div class="timeline-content">
-      <h3>cultural renaissance</h3>
       <img src="/thoughts/images/toronto-skyline-2010.ignore.jpg" alt="Modern Toronto skyline reflecting the city's cultural renaissance" />
     </div>
   </div>
@@ -221,7 +224,7 @@ transclude:
     </div>
     <div class="timeline-content">
       <h3>st. lawrence market & balzac's coffee</h3>
-      <p>Historic market with amazing peameal bacon sandwiches. Don't miss Balzac's Coffee, a local roaster with locations across the city.</p>
+      <p>Historic market with amazing peameal bacon sandwiches. Balzac's Coffee, a local roaster with locations across the city.</p>
     </div>
   </div>
 </div>

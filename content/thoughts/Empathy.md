@@ -12,4 +12,3 @@ Stein:
 
 - basis for intersubjective experience, not be treated as thing, but a person
 - a direct perception, as the mode of perceiving other persons as persons
-

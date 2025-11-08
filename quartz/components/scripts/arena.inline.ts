@@ -912,7 +912,8 @@ function parseSearchQuery(query: string): { tagQueries: string[]; regularTerms: 
   const tagQueries: string[] = []
   let remainingQuery = query
 
-  const tagPatternRegex = /#([^#]+?)(?=\s*#|\s*r\/|$)|r\/([^\s#]+(?:\s+[^\s#]+)*?)(?=\s*#|\s*r\/|$)/g
+  const tagPatternRegex =
+    /#([^#]+?)(?=\s*#|\s*r\/|$)|r\/([^\s#]+(?:\s+[^\s#]+)*?)(?=\s*#|\s*r\/|$)/g
   let match
 
   while ((match = tagPatternRegex.exec(query)) !== null) {

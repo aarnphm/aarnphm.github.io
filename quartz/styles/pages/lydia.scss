@@ -6,6 +6,9 @@
   position: relative;
   min-height: 100vh;
   --mask-opacity: 1;
+  background-color: #fffaf3;
+  isolation: isolate;
+  padding-bottom: clamp(6rem, 12vh, 12rem);
 
   .figure-caption,
   a[data-role="anchor"],
@@ -28,29 +31,43 @@
     background-position: center top;
     background-repeat: no-repeat;
     z-index: -2;
+    opacity: 0.75;
+    filter: saturate(0.82) brightness(1.05) contrast(0.95);
   }
 
   // Scrolling mask overlay that reveals the image
   &::after {
     content: "";
     position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: linear-gradient(
-      to bottom,
-      rgba(250, 250, 250, 0.85) 0%,
-      rgba(250, 250, 250, 0.7) 20%,
-      rgba(250, 250, 250, 0.55) 40%,
-      rgba(250, 250, 250, 0.4) 60%,
-      rgba(250, 250, 250, 0.25) 80%,
-      rgba(250, 250, 250, 0.15) 100%
-    );
+    inset: 0;
+    background-image:
+      radial-gradient(circle at 18% 15%, rgba(255, 221, 197, 0.7), transparent 60%),
+      radial-gradient(circle at 82% 5%, rgba(210, 225, 255, 0.55), transparent 65%),
+      linear-gradient(
+        to bottom,
+        rgba(255, 250, 244, 0.95) 0%,
+        rgba(255, 244, 229, 0.78) 25%,
+        rgba(250, 236, 225, 0.65) 55%,
+        rgba(244, 229, 214, 0.45) 80%,
+        rgba(240, 222, 210, 0.35) 100%
+      ),
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160' viewBox='0 0 160 160'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23noise)' opacity='0.2'/%3E%3C/svg%3E");
+    background-size:
+      140% 140%,
+      150% 150%,
+      100% 100%,
+      220px 220px;
+    background-position:
+      20% 10%,
+      82% 5%,
+      center,
+      0 0;
+    background-blend-mode: screen, color-dodge, normal, multiply;
     z-index: -1;
-    opacity: var(--mask-opacity, 1);
-    transition: opacity 0.1s ease-out;
-    mix-blend-mode: normal;
+    opacity: var(--mask-opacity, 0.95);
+    transition: opacity 0.2s ease-out;
+    mix-blend-mode: soft-light;
+    pointer-events: none;
   }
 
   // Content container
@@ -61,30 +78,36 @@
   }
 
   article {
-    grid-column: 3/8;
-    background: rgba(255, 252, 240, 0.65);
-    backdrop-filter: blur(10px);
+    grid-column: 2/8;
+    background: linear-gradient(135deg, rgba(255, 249, 237, 0.9), rgba(255, 233, 218, 0.85));
+    border: 1px solid rgba(255, 214, 189, 0.4);
+    backdrop-filter: blur(14px);
     padding: 0 3rem;
     border-radius: 0px;
-    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.1);
-    margin: 2rem auto;
-    max-width: 900px;
-    transition: background 0.3s ease;
+    box-shadow:
+      0 20px 60px rgba(255, 173, 134, 0.25),
+      0 10px 30px rgba(99, 74, 54, 0.1);
+    margin: 6rem auto;
+    max-width: 800px;
+    transition:
+      background 0.4s ease,
+      box-shadow 0.4s ease;
 
     @media all and ($mobile) {
       padding: 1.5rem;
       margin: 1rem;
-      background: rgba(255, 252, 240, 0.65);
+      border-radius: 0px;
+      background: rgba(255, 249, 240, 0.92);
       grid-column: 1/-1;
     }
 
     // Title styling
     h1 {
-      font-size: 3.5rem;
+      font-size: 3.25rem;
       font-weight: 800;
       margin: 0 0 0.5rem 0;
       text-transform: lowercase;
-      color: var(--dark);
+      color: #4a3a2c;
 
       @media all and ($mobile) {
         font-size: 2rem;
@@ -93,10 +116,10 @@
 
     // Subtitle
     > p:first-of-type {
-      font-size: 1.3rem;
+      font-size: 1.2rem;
       font-style: italic;
-      color: var(--darkgray);
-      margin-bottom: 3rem;
+      color: #7c6a58;
+      margin-bottom: 2.5rem;
 
       @media all and ($mobile) {
         font-size: 1.1rem;
@@ -117,7 +140,7 @@
   // Timeline styling
   .timeline-container {
     position: relative;
-    padding: 2rem 0 6rem 0;
+    padding: 3rem 0 7rem 0;
 
     // Timeline center line
     &::before {
@@ -127,7 +150,7 @@
       top: 0;
       bottom: 0;
       width: 2px;
-      background: var(--gray);
+      background: rgba(195, 176, 155, 0.4);
       transform: translateX(-50%);
 
       @media all and ($mobile) {
@@ -275,15 +298,18 @@
   .timeline-content {
     flex: 1;
     max-width: 45%;
-    background: rgba(255, 252, 240, 0.95);
-    backdrop-filter: blur(6px);
-    padding: 1.5rem;
+    background: linear-gradient(135deg, rgba(255, 251, 244, 0.96), rgba(255, 236, 224, 0.92));
+    backdrop-filter: blur(8px);
+    padding: 1.75rem;
     border-radius: 0px;
-    border: 1px solid var(--lightgray);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    transition: all 0.3s ease;
+    border: 1px solid rgba(255, 206, 194, 0.4);
+    box-shadow:
+      0 10px 30px rgba(211, 170, 143, 0.25),
+      0 3px 10px rgba(87, 62, 44, 0.08);
+    transition: all 0.35s ease;
     position: relative;
     cursor: pointer;
+    animation: floatBloom 16s ease-in-out infinite alternate;
 
     @media all and ($mobile) {
       max-width: 100%;
@@ -292,13 +318,14 @@
 
     h3 {
       font-size: 1.3rem;
-      color: var(--dark);
+      color: #4f3f31;
       text-transform: lowercase;
+      margin-bottom: 0.85rem;
     }
 
     p {
-      line-height: 1.6;
-      color: var(--darkgray);
+      line-height: 1.65;
+      color: #6c5b4a;
       margin: 0;
     }
 
@@ -317,9 +344,11 @@
     }
 
     &:hover {
-      border-color: var(--secondary);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-      transform: translateY(-2px);
+      border-color: rgba(255, 189, 156, 0.8);
+      box-shadow:
+        0 18px 40px rgba(255, 182, 146, 0.3),
+        0 6px 20px rgba(87, 62, 44, 0.15);
+      transform: translateY(-4px);
 
       img {
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
@@ -327,24 +356,248 @@
     }
   }
 
-  .timeline-item[data-type="place"] .timeline-content:hover {
-    border-color: var(--foam);
+  // Decorative flowers on timeline items
+  .timeline-item:nth-child(1) .timeline-content::before {
+    content: "";
+    position: absolute;
+    top: -15px;
+    right: -15px;
+    width: 40px;
+    height: 40px;
+    background-image: url("/thoughts/images/flowers-1762546860297.ignore.png");
+    background-size: contain;
+    background-repeat: no-repeat;
+    transform: rotate(15deg);
+    opacity: 0.9;
+    pointer-events: none;
+    z-index: 2;
+
+    @media all and ($mobile) {
+      width: 30px;
+      height: 30px;
+      top: -10px;
+      right: -10px;
+    }
   }
 
-  .timeline-item[data-type="food"] .timeline-content:hover {
-    border-color: var(--gold);
+  .timeline-item:nth-child(3) .timeline-content::after {
+    content: "";
+    position: absolute;
+    bottom: -14px;
+    left: -14px;
+    width: 36px;
+    height: 36px;
+    background-image: url("/thoughts/images/flowers-1762553547674.ignore.png");
+    background-size: contain;
+    background-repeat: no-repeat;
+    transform: rotate(-20deg);
+    opacity: 0.88;
+    pointer-events: none;
+    z-index: 2;
+
+    @media all and ($mobile) {
+      width: 28px;
+      height: 28px;
+      bottom: -10px;
+      left: -10px;
+    }
+  }
+
+  .timeline-item:nth-child(5) .timeline-content::before {
+    content: "";
+    position: absolute;
+    top: -16px;
+    left: -16px;
+    width: 38px;
+    height: 38px;
+    background-image: url("/thoughts/images/flowers-1762567287860.ignore.png");
+    background-size: contain;
+    background-repeat: no-repeat;
+    transform: rotate(25deg);
+    opacity: 0.87;
+    pointer-events: none;
+    z-index: 2;
+
+    @media all and ($mobile) {
+      width: 30px;
+      height: 30px;
+      top: -11px;
+      left: -11px;
+    }
+  }
+
+  .timeline-item:nth-child(7) .timeline-content::after {
+    content: "";
+    position: absolute;
+    bottom: -13px;
+    right: -13px;
+    width: 41px;
+    height: 41px;
+    background-image: url("/thoughts/images/flowers-1762574749363.ignore.png");
+    background-size: contain;
+    background-repeat: no-repeat;
+    transform: rotate(-30deg);
+    opacity: 0.86;
+    pointer-events: none;
+    z-index: 2;
+
+    @media all and ($mobile) {
+      width: 31px;
+      height: 31px;
+      bottom: -9px;
+      right: -9px;
+    }
+  }
+
+  .timeline-item:nth-child(9) .timeline-content::before {
+    content: "";
+    position: absolute;
+    top: -17px;
+    right: -17px;
+    width: 44px;
+    height: 44px;
+    background-image: url("/thoughts/images/flowers-1762577418149.ignore.png");
+    background-size: contain;
+    background-repeat: no-repeat;
+    transform: rotate(35deg);
+    opacity: 0.9;
+    pointer-events: none;
+    z-index: 2;
+
+    @media all and ($mobile) {
+      width: 32px;
+      height: 32px;
+      top: -12px;
+      right: -12px;
+    }
+  }
+
+  .timeline-item:nth-child(11) .timeline-content::after {
+    content: "";
+    position: absolute;
+    bottom: -11px;
+    left: -11px;
+    width: 37px;
+    height: 37px;
+    background-image: url("/thoughts/images/flowers-1762589996181.ignore.png");
+    background-size: contain;
+    background-repeat: no-repeat;
+    transform: rotate(-18deg);
+    opacity: 0.89;
+    pointer-events: none;
+    z-index: 2;
+
+    @media all and ($mobile) {
+      width: 29px;
+      height: 29px;
+      bottom: -8px;
+      left: -8px;
+    }
+  }
+
+  .timeline-item:nth-child(13) .timeline-content::before {
+    content: "";
+    position: absolute;
+    top: -18px;
+    left: -18px;
+    width: 45px;
+    height: 45px;
+    background-image: url("/thoughts/images/flowers-1762546860297.ignore.png");
+    background-size: contain;
+    background-repeat: no-repeat;
+    transform: rotate(42deg);
+    opacity: 0.91;
+    pointer-events: none;
+    z-index: 2;
+
+    @media all and ($mobile) {
+      width: 33px;
+      height: 33px;
+      top: -12px;
+      left: -12px;
+    }
+  }
+
+  .timeline-item:nth-child(15) .timeline-content::after {
+    content: "";
+    position: absolute;
+    bottom: -12px;
+    right: -12px;
+    width: 39px;
+    height: 39px;
+    background-image: url("/thoughts/images/flowers-1762553547674.ignore.png");
+    background-size: contain;
+    background-repeat: no-repeat;
+    transform: rotate(-22deg);
+    opacity: 0.88;
+    pointer-events: none;
+    z-index: 2;
+
+    @media all and ($mobile) {
+      width: 30px;
+      height: 30px;
+      bottom: -8px;
+      right: -8px;
+    }
+  }
+
+  .timeline-item:nth-child(17) .timeline-content::before {
+    content: "";
+    position: absolute;
+    top: -14px;
+    right: -14px;
+    width: 40px;
+    height: 40px;
+    background-image: url("/thoughts/images/flowers-1762567287860.ignore.png");
+    background-size: contain;
+    background-repeat: no-repeat;
+    transform: rotate(28deg);
+    opacity: 0.87;
+    pointer-events: none;
+    z-index: 2;
+
+    @media all and ($mobile) {
+      width: 30px;
+      height: 30px;
+      top: -10px;
+      right: -10px;
+    }
+  }
+
+  .timeline-item[data-type="place"] .timeline-content {
+    border-color: rgba(134, 189, 182, 0.55);
+
+    &:hover {
+      border-color: rgba(134, 189, 182, 0.9);
+      box-shadow:
+        0 18px 40px rgba(134, 189, 182, 0.35),
+        0 6px 20px rgba(87, 62, 44, 0.12);
+    }
+  }
+
+  .timeline-item[data-type="food"] .timeline-content {
+    border-color: rgba(255, 209, 150, 0.55);
+
+    &:hover {
+      border-color: rgba(255, 209, 150, 0.85);
+      box-shadow:
+        0 18px 40px rgba(255, 209, 150, 0.35),
+        0 6px 20px rgba(87, 62, 44, 0.12);
+    }
   }
 
   .lydia-modal {
     position: absolute;
-    background: rgba(var(--dark-rgb, 25, 25, 25), 0.95);
-    color: var(--light);
+    background: rgba(255, 247, 236, 0.95);
+    color: #4a3a2c;
     padding: 1rem 1.5rem;
     border-radius: 0px;
-    font-size: 0.85rem;
+    font-size: 0.9rem;
     line-height: 1.5;
     max-width: 400px;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+    box-shadow:
+      0 20px 40px rgba(255, 189, 156, 0.35),
+      0 6px 18px rgba(77, 56, 40, 0.15);
     z-index: 1000;
     pointer-events: none;
     visibility: hidden;
@@ -353,7 +606,7 @@
 
     @media all and ($mobile) {
       max-width: 280px;
-      font-size: 0.8rem;
+      font-size: 0.85rem;
       padding: 0.75rem 1rem;
     }
 
@@ -361,5 +614,20 @@
       visibility: visible;
       opacity: 1;
     }
+  }
+}
+
+body[data-layout="lydia"] {
+  background-color: #fff7ef;
+  background-image: radial-gradient(circle at top, rgba(255, 224, 196, 0.25), transparent 60%);
+}
+
+@keyframes floatBloom {
+  0% {
+    transform: translateY(0) scale(1);
+  }
+
+  100% {
+    transform: translateY(-6px) scale(1.01);
   }
 }
