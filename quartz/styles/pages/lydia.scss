@@ -1,5 +1,6 @@
 @use "../variables.scss" as *;
 @use "../mixin.scss" as *;
+@use "./lydia-frame-decorations.scss";
 
 [data-slug="lyd"] {
   display: flow-root;
@@ -27,7 +28,7 @@
     position: absolute;
     inset: 0;
     background-image: url("/thoughts/images/cn.ignore.jpg");
-    background-size: auto 100%;
+    background-size: cover;
     background-position: center top;
     background-repeat: no-repeat;
     z-index: -2;
@@ -66,7 +67,7 @@
       center,
       0 0;
     background-blend-mode: soft-light, screen, color-dodge, normal, multiply;
-    z-index: -1;
+    z-index: 0;
     opacity: var(--mask-opacity, 0.95);
     transition: opacity 0.3s ease-in-out;
     mix-blend-mode: soft-light;
@@ -614,6 +615,94 @@
     }
   }
 
+  .lydia-map-tooltip {
+    position: fixed;
+    top: 0;
+    left: 0;
+    min-width: 240px;
+    max-width: 320px;
+    padding: 1rem 1.25rem 1.1rem;
+    background: rgba(255, 247, 236, 0.97);
+    border: 1px solid rgba(255, 214, 189, 0.7);
+    box-shadow:
+      0 20px 40px rgba(255, 182, 146, 0.28),
+      0 8px 20px rgba(74, 58, 44, 0.12),
+      inset 0 1px 0 rgba(255, 255, 255, 0.6);
+    border-radius: 0px;
+    pointer-events: none;
+    opacity: 0;
+    visibility: hidden;
+    transition:
+      opacity 0.16s ease,
+      visibility 0.16s ease;
+    z-index: 40;
+  }
+
+  .lydia-map-tooltip.active {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .lydia-map-title {
+    margin: 0 0 0.35rem 0;
+    font-weight: 700;
+    text-transform: lowercase;
+    color: #4a3a2c;
+  }
+
+  .lydia-map-meta {
+    display: flex;
+    gap: 1.25rem;
+    font-family: var(--codeFont);
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    color: #7c6a58;
+  }
+
+  .lydia-map-label strong {
+    font-weight: 600;
+    margin-left: 0.35rem;
+    color: #4a3a2c;
+  }
+
+  .lydia-map-status {
+    margin: 0.4rem 0 0.6rem 0;
+    font-size: 0.85rem;
+    color: #6c5b4a;
+  }
+
+  .lydia-map-canvas {
+    width: 100%;
+    height: 160px;
+    border: 1px solid rgba(74, 58, 44, 0.25);
+    border-radius: 0px;
+    overflow: hidden;
+    background: linear-gradient(120deg, rgba(255, 249, 240, 0.8), rgba(255, 236, 224, 0.65));
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05);
+  }
+
+  .lydia-map-canvas canvas,
+  .lydia-map-canvas .mapboxgl-canvas {
+    filter: grayscale(1) contrast(1.1) saturate(0.2);
+  }
+
+  @media all and ($mobile) {
+    .lydia-map-tooltip {
+      max-width: min(92vw, 320px);
+      min-width: 220px;
+      padding: 0.85rem 1rem 1rem;
+    }
+
+    .lydia-map-meta {
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+
+    .lydia-map-canvas {
+      height: 140px;
+    }
+  }
+
   .lydia-modal {
     position: absolute;
     background: rgba(255, 247, 236, 0.95);
@@ -643,6 +732,7 @@
       opacity: 1;
     }
   }
+
 }
 
 @keyframes characterFloat {
@@ -655,7 +745,29 @@
   }
 }
 
+@keyframes particleFall {
+  0% {
+    transform: translateY(0) scale(0) rotate(0deg);
+    opacity: 0;
+  }
+
+  10% {
+    opacity: 1;
+    transform: translateY(10px) scale(1) rotate(45deg);
+  }
+
+  90% {
+    opacity: 0.7;
+  }
+
+  100% {
+    transform: translateY(100vh) scale(0.5) rotate(180deg);
+    opacity: 0;
+  }
+}
+
 body[data-layout="lydia"] {
   background-color: #fff7ef;
   background-image: radial-gradient(circle at top, rgba(255, 224, 196, 0.25), transparent 60%);
+  transition: background-color 1s ease-in-out;
 }

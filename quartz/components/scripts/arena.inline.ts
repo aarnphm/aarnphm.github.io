@@ -1,5 +1,6 @@
 import { fetchCanonical, tokenizeTerm, highlight } from "./util"
 import { normalizeRelativeURLs } from "../../util/path"
+import { loadMapbox } from "./mapboxClient"
 
 let currentBlockIndex = 0
 let totalBlocks = 0
@@ -16,12 +17,8 @@ type SubstackEmbedResponse = {
 const SUBSTACK_EMBED_ENDPOINT = `/api/embed`
 const substackEmbedCache = new Map<string, Promise<SubstackEmbedResponse>>()
 
-const MAPBOX_SCRIPT_SRC = "https://api.mapbox.com/mapbox-gl-js/v3.15.0/mapbox-gl.js"
-const MAPBOX_TOKEN_ENDPOINT = "/api/secrets?key=MAPBOX_API_KEY"
 const SUBSTACK_POST_REGEX = /^https?:\/\/[^/]+\/p\/[^/]+/i
 
-let mapboxTokenPromise: Promise<string | null> | null = null
-let mapboxReady: Promise<any | null> | null = null
 const mapInstances = new WeakMap<HTMLElement, any>()
 let scrollLockState: { x: number; y: number } | null = null
 
@@ -73,83 +70,6 @@ function escapeHtml(value: string): string {
   })
 }
 
-async function fetchMapboxToken(): Promise<string | null> {
-  try {
-    const response = await fetch(MAPBOX_TOKEN_ENDPOINT, {
-      method: "GET",
-      headers: { Accept: "application/json" },
-      credentials: "same-origin",
-    })
-    if (!response.ok) {
-      return null
-    }
-
-    const payload = (await response.json().catch(() => null)) as { value?: unknown } | null
-    if (!payload || typeof payload.value !== "string") {
-      return null
-    }
-
-    const token = payload.value.trim()
-    return token.length > 0 ? token : null
-  } catch (error) {
-    console.error(error)
-    return null
-  }
-}
-
-async function getMapboxToken(): Promise<string | null> {
-  if (!mapboxTokenPromise) {
-    mapboxTokenPromise = fetchMapboxToken()
-  }
-
-  const token = await mapboxTokenPromise
-  if (!token) {
-    mapboxTokenPromise = Promise.resolve(null)
-  }
-  return token
-}
-
-async function loadMapboxLibrary(): Promise<any | null> {
-  const token = await getMapboxToken()
-  if (!token) return null
-
-  const applyToken = (mapboxgl: any | null) => {
-    if (mapboxgl && mapboxgl.Map) {
-      if (window.mapboxgl && window.mapboxgl.accessToken !== token) {
-        window.mapboxgl.accessToken = token
-      }
-      return mapboxgl
-    }
-    return null
-  }
-
-  const immediate = applyToken(window.mapboxgl ?? null)
-  if (immediate) {
-    return immediate
-  }
-
-  if (!mapboxReady) {
-    const script = document.querySelector<HTMLScriptElement>(`script[src="${MAPBOX_SCRIPT_SRC}"]`)
-    if (script) {
-      mapboxReady = new Promise((resolve) => {
-        const resolveWithMap = () => resolve(window.mapboxgl ?? null)
-        const state = (script as any).readyState as string | undefined
-        if (state === "complete" || state === "loaded") {
-          resolveWithMap()
-        } else {
-          script.addEventListener("load", resolveWithMap, { once: true })
-          script.addEventListener("error", () => resolve(null), { once: true })
-        }
-      })
-    } else {
-      mapboxReady = Promise.resolve(null)
-    }
-  }
-
-  const loaded = await mapboxReady
-  return applyToken(loaded)
-}
-
 function renderMapFallback(node: HTMLElement, message: string) {
   node.dataset.mapStatus = "error"
   node.classList.add("arena-map-error")
@@ -189,7 +109,7 @@ function hydrateMapboxMaps(root: HTMLElement) {
     node.textContent = "loading map…"
   })
 
-  loadMapboxLibrary()
+  loadMapbox()
     .then((mapboxgl) => {
       if (!mapboxgl) {
         mapNodes.forEach((node) => renderMapFallback(node, "map unavailable"))

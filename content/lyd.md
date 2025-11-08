@@ -2,13 +2,13 @@
 date: "2025-11-08"
 description: a city of neighborhoods, stories, and endless discovery, a guide, for a friend
 id: lyd
-modified: 2025-11-08 05:01:35 GMT-05:00
+modified: 2025-11-08 07:31:54 GMT-05:00
 noindex: true
 pageLayout: lydia
 tags:
   - toronto
   - evergreen
-title: welcome to toronto
+title: postcards, toronto.
 transclude:
   dynalist: false
 ---
@@ -26,7 +26,7 @@ transclude:
     </div>
   </div>
 
-  <div class="timeline-item timeline-left" data-type="place">
+  <div class="timeline-item timeline-left" data-type="place" data-lat="43.65404" data-lon="-79.40043">
     <div class="timeline-marker">
       <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" fill="currentColor"/>
@@ -50,7 +50,7 @@ transclude:
     </div>
   </div>
 
-  <div class="timeline-item timeline-left" data-type="food">
+  <div class="timeline-item timeline-left" data-type="food" data-lat="43.669991" data-lon="-79.429848">
     <div class="timeline-marker">
       <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M11 9H9V2H7v7H5V2H3v7c0 2.12 1.66 3.84 3.75 3.97V22h2.5v-9.03C11.34 12.84 13 11.12 13 9V2h-2v7zm5-3v8h2.5v8H21V2c-2.76 0-5 2.24-5 4z" fill="currentColor"/>
@@ -61,7 +61,7 @@ transclude:
       <p>915 Dupont Street. A cozy neighborhood cafe serving exceptional coffee and pastries in a warm, intimate setting.</p>
     </div>
   </div>
-  <div class="timeline-item timeline-left" data-type="food">
+  <div class="timeline-item timeline-left" data-type="food" data-lat="43.645043" data-lon="-79.416021">
     <div class="timeline-marker">
       <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M11 9H9V2H7v7H5V2H3v7c0 2.12 1.66 3.84 3.75 3.97V22h2.5v-9.03C11.34 12.84 13 11.12 13 9V2h-2v7zm5-3v8h2.5v8H21V2c-2.76 0-5 2.24-5 4z" fill="currentColor"/>
@@ -85,7 +85,7 @@ transclude:
     </div>
   </div>
 
-  <div class="timeline-item timeline-left" data-type="place">
+  <div class="timeline-item timeline-left" data-type="place" data-lat="43.649994" data-lon="-79.359634">
     <div class="timeline-marker">
       <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" fill="currentColor"/>
@@ -109,7 +109,7 @@ transclude:
     </div>
   </div>
 
-  <div class="timeline-item timeline-left" data-type="food">
+  <div class="timeline-item timeline-left" data-type="food" data-lat="43.648654" data-lon="-79.374684">
     <div class="timeline-marker">
       <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M11 9H9V2H7v7H5V2H3v7c0 2.12 1.66 3.84 3.75 3.97V22h2.5v-9.03C11.34 12.84 13 11.12 13 9V2h-2v7zm5-3v8h2.5v8H21V2c-2.76 0-5 2.24-5 4z" fill="currentColor"/>
@@ -133,7 +133,7 @@ transclude:
     </div>
   </div>
 
-  <div class="timeline-item timeline-left" data-type="food">
+  <div class="timeline-item timeline-left" data-type="food" data-lat="43.647938" data-lon="-79.383555">
     <div class="timeline-marker">
       <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M11 9H9V2H7v7H5V2H3v7c0 2.12 1.66 3.84 3.75 3.97V22h2.5v-9.03C11.34 12.84 13 11.12 13 9V2h-2v7zm5-3v8h2.5v8H21V2c-2.76 0-5 2.24-5 4z" fill="currentColor"/>
@@ -145,7 +145,7 @@ transclude:
     </div>
   </div>
 
-  <div class="timeline-item timeline-left" data-type="place">
+  <div class="timeline-item timeline-left" data-type="place" data-lat="43.655388" data-lon="-79.45683">
     <div class="timeline-marker">
       <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" fill="currentColor"/>
@@ -169,7 +169,7 @@ transclude:
     </div>
   </div>
 
-  <div class="timeline-item timeline-left" data-type="food">
+  <div class="timeline-item timeline-left" data-type="food" data-lat="43.646956" data-lon="-79.424032">
     <div class="timeline-marker">
       <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M11 9H9V2H7v7H5V2H3v7c0 2.12 1.66 3.84 3.75 3.97V22h2.5v-9.03C11.34 12.84 13 11.12 13 9V2h-2v7zm5-3v8h2.5v8H21V2c-2.76 0-5 2.24-5 4z" fill="currentColor"/>
@@ -192,7 +192,7 @@ transclude:
       <img src="/thoughts/images/toronto-amalgamation-1988.ignore.jpg" alt="Toronto amalgamation in 1988" /> </div>
   </div>
 
-  <div class="timeline-item timeline-left" data-type="place">
+  <div class="timeline-item timeline-left" data-type="place" data-lat="43.667795" data-lon="-79.394212">
     <div class="timeline-marker">
       <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" fill="currentColor"/>
@@ -216,7 +216,7 @@ transclude:
     </div>
   </div>
 
-  <div class="timeline-item timeline-left" data-type="food">
+  <div class="timeline-item timeline-left" data-type="food" data-lat="43.647781" data-lon="-79.371609">
     <div class="timeline-marker">
       <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M2 21h19v-3H2v3zM20 8H4V6h16v2zm-1-5H5l-2 2h18l-2-2zM18 14.5c0 1.93-1.57 3.5-3.5 3.5S11 16.43 11 14.5s1.57-3.5 3.5-3.5 3.5 1.57 3.5 3.5z" fill="currentColor"/>
