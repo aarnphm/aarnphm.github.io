@@ -2,7 +2,7 @@
 date: "2024-12-08"
 description: zettelkasten, contact[at]aarnphm[dot]xyz
 id: notes
-modified: 2025-11-05 02:57:28 GMT-05:00
+modified: 2025-11-07 21:45:32 GMT-05:00
 tags:
   - seed
 title: procedural notes.
@@ -21,6 +21,6 @@ or check out some [[thoughts/work|crafts]] I've been working on for the past whi
 You might be interested in [[thoughts/mechanistic interpretability|interpretable ml]],
 or high performance [[thoughts/vllm|inference]] [[thoughts/LLMs|LLM]] engine, or #math notes, or a gentle introduction to [[thoughts/Attention|attention mechanism]] in [[thoughts/Transformers|transformer]] model.
 
-There are also #tags/philosophy notes that I think about quite often. I consider myself to be in the rationalist camp, but I'm relatively influenced by [[thoughts/Wittgenstein|Wittgenstein's writing]] as well as [[thoughts/Philosophy and Nietzsche|Friedrich Nietzsche]]
+There are also #tags/philosophy notes that I think about quite often. I consider myself to be within the rationalist camp, and I'm influenced by [[thoughts/Wittgenstein|Wittgenstein's writing]] as well as [[thoughts/Philosophy and Nietzsche|Friedrich Nietzsche]]
 
 :wave: you can reach out to me on [twitter](https://twitter.com/aarnphm_)
