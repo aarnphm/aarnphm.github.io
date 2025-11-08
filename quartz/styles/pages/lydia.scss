@@ -2,25 +2,30 @@
 @use "../mixin.scss" as *;
 
 [data-slug="lyd"] {
+  display: flow-root;
   position: relative;
   min-height: 100vh;
   --mask-opacity: 1;
 
+  .figure-caption,
+  a[data-role="anchor"],
+  .header-content,
   .page-footer {
     display: none;
   }
 
-  // CN Tower full-height fixed background
+  h2,
+  h3 {
+    margin: 0;
+  }
+
   &::before {
     content: "";
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-image: url("/thoughts/images/cn.jpg");
-    background-size: cover;
-    background-position: center;
+    position: absolute;
+    inset: 0;
+    background-image: url("/thoughts/images/cn.ignore.jpg");
+    background-size: auto 100%;
+    background-position: center top;
     background-repeat: no-repeat;
     z-index: -2;
   }
@@ -35,11 +40,12 @@
     bottom: 0;
     background: linear-gradient(
       to bottom,
-      var(--light) 0%,
-      rgba(250, 250, 250, 0.95) 20%,
-      rgba(250, 250, 250, 0.8) 50%,
-      rgba(250, 250, 250, 0.6) 80%,
-      rgba(250, 250, 250, 0.3) 100%
+      rgba(250, 250, 250, 0.85) 0%,
+      rgba(250, 250, 250, 0.7) 20%,
+      rgba(250, 250, 250, 0.55) 40%,
+      rgba(250, 250, 250, 0.4) 60%,
+      rgba(250, 250, 250, 0.25) 80%,
+      rgba(250, 250, 250, 0.15) 100%
     );
     z-index: -1;
     opacity: var(--mask-opacity, 1);
@@ -51,13 +57,15 @@
   .page-content {
     position: relative;
     z-index: 1;
+    min-height: 100vh;
   }
 
   article {
-    background: rgba(250, 250, 250, 0.92);
-    backdrop-filter: blur(8px);
-    padding: 3rem;
-    border-radius: 8px;
+    grid-column: 3/8;
+    background: rgba(255, 252, 240, 0.65);
+    backdrop-filter: blur(10px);
+    padding: 0 3rem;
+    border-radius: 0px;
     box-shadow: 0 4px 24px rgba(0, 0, 0, 0.1);
     margin: 2rem auto;
     max-width: 900px;
@@ -66,7 +74,8 @@
     @media all and ($mobile) {
       padding: 1.5rem;
       margin: 1rem;
-      background: rgba(250, 250, 250, 0.95);
+      background: rgba(255, 252, 240, 0.65);
+      grid-column: 1/-1;
     }
 
     // Title styling
@@ -91,32 +100,24 @@
 
       @media all and ($mobile) {
         font-size: 1.1rem;
+        grid-column: 1/-1;
       }
     }
 
     h2 {
-      margin-top: 4rem;
-      padding-bottom: 0.5rem;
-      border-bottom: 2px solid var(--lightgray);
       text-transform: lowercase;
-
-      &:first-of-type {
-        margin-top: 2rem;
-      }
     }
 
     h3 {
       text-transform: lowercase;
       color: var(--secondary);
-      margin-top: 2rem;
     }
   }
 
   // Timeline styling
   .timeline-container {
     position: relative;
-    margin: 4rem 0;
-    padding: 2rem 0;
+    padding: 2rem 0 6rem 0;
 
     // Timeline center line
     &::before {
@@ -126,7 +127,7 @@
       top: 0;
       bottom: 0;
       width: 2px;
-      background: var(--lightgray);
+      background: var(--gray);
       transform: translateX(-50%);
 
       @media all and ($mobile) {
@@ -137,7 +138,7 @@
 
   .timeline-item {
     position: relative;
-    margin: 3rem 0;
+    margin: 6rem 0;
     display: flex;
     align-items: center;
 
@@ -145,73 +146,48 @@
       margin-left: 40px;
     }
 
-    // Alternate left/right layout
-    &:nth-child(odd) {
-      flex-direction: row;
+    // Default: right side (history items)
+    flex-direction: row;
 
-      .timeline-content {
-        margin-left: 2rem;
-        text-align: left;
+    .timeline-content {
+      margin-left: 2rem;
+      text-align: left;
 
-        @media all and ($mobile) {
-          margin-left: 0;
-        }
-      }
-
-      .timeline-marker::before {
-        left: 100%;
-        margin-left: 1rem;
+      @media all and ($mobile) {
+        margin-left: 0;
       }
     }
 
-    &:nth-child(even) {
+    // Left side items (places & food)
+    &.timeline-left {
       flex-direction: row-reverse;
 
       .timeline-content {
+        margin-left: 0;
         margin-right: 2rem;
         text-align: right;
 
         @media all and ($mobile) {
           text-align: left;
           margin-right: 0;
-          margin-left: 0;
         }
-      }
-
-      .timeline-marker::before {
-        right: 100%;
-        margin-right: 1rem;
       }
 
       @media all and ($mobile) {
         flex-direction: row;
       }
-    }
-  }
 
-  .timeline-marker {
-    position: relative;
-    width: 24px;
-    height: 24px;
-    background: var(--secondary);
-    border: 4px solid var(--light);
-    border-radius: 50%;
-    box-shadow: 0 0 0 4px var(--lightgray);
-    flex-shrink: 0;
-    z-index: 1;
-    transition: all 0.3s ease;
-
-    @media all and ($mobile) {
-      position: absolute;
-      left: -32px;
+      // Hide year label for left items
+      &::before {
+        display: none;
+      }
     }
 
-    // Year label
-    &::before {
+    // Year label for history items only
+    &[data-type="history"]::before {
       content: attr(data-year);
       position: absolute;
-      top: 50%;
-      transform: translateY(-50%);
+      left: calc(60% + 2rem);
       font-size: 0.9rem;
       font-weight: 600;
       color: var(--gray);
@@ -222,23 +198,92 @@
         display: none;
       }
     }
+  }
+
+  .timeline-marker {
+    position: relative;
+    width: 18px;
+    height: 18px;
+    background: var(--light);
+    border: 2px solid var(--secondary);
+    border-radius: 50%;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    flex-shrink: 0;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+
+    @media all and ($mobile) {
+      position: absolute;
+      left: -30px;
+      width: 18px;
+      height: 18px;
+    }
+
+    svg {
+      width: 16px;
+      height: 16px;
+      color: var(--secondary);
+      transition: all 0.3s ease;
+
+      @media all and ($mobile) {
+        width: 16px;
+        height: 16px;
+      }
+    }
 
     &:hover {
-      background: var(--tertiary);
-      transform: scale(1.2);
+      background: var(--secondary);
+      border-color: var(--tertiary);
+      transform: scale(1.15);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+
+      svg {
+        color: var(--light);
+      }
+    }
+  }
+
+  .timeline-item[data-type="place"] .timeline-marker {
+    border-color: var(--foam);
+
+    svg {
+      color: var(--foam);
+    }
+
+    &:hover {
+      background: var(--foam);
+      border-color: var(--pine);
+    }
+  }
+
+  .timeline-item[data-type="food"] .timeline-marker {
+    border-color: var(--gold);
+
+    svg {
+      color: var(--gold);
+    }
+
+    &:hover {
+      background: var(--gold);
+      border-color: var(--rose);
     }
   }
 
   .timeline-content {
     flex: 1;
     max-width: 45%;
-    background: rgba(250, 250, 250, 0.95);
-    backdrop-filter: blur(4px);
+    background: rgba(255, 252, 240, 0.95);
+    backdrop-filter: blur(6px);
     padding: 1.5rem;
-    border-radius: 8px;
+    border-radius: 0px;
     border: 1px solid var(--lightgray);
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     transition: all 0.3s ease;
+    position: relative;
+    cursor: pointer;
 
     @media all and ($mobile) {
       max-width: 100%;
@@ -246,51 +291,75 @@
     }
 
     h3 {
-      margin: 0 0 0.5rem 0;
       font-size: 1.3rem;
       color: var(--dark);
       text-transform: lowercase;
     }
 
     p {
-      margin: 0;
       line-height: 1.6;
       color: var(--darkgray);
+      margin: 0;
+    }
+
+    img {
+      width: 100%;
+      height: auto;
+      border-radius: 0px;
+      display: block;
+      object-fit: cover;
+      max-height: 300px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+      @media all and ($mobile) {
+        max-height: 200px;
+      }
     }
 
     &:hover {
       border-color: var(--secondary);
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
       transform: translateY(-2px);
+
+      img {
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      }
     }
   }
 
-  // Add year labels on mobile
-  @media all and ($mobile) {
-    .timeline-item::before {
-      content: attr(data-year);
-      position: absolute;
-      left: -70px;
-      font-size: 0.85rem;
-      font-weight: 600;
-      color: var(--gray);
-      font-family: var(--codeFont);
+  .timeline-item[data-type="place"] .timeline-content:hover {
+    border-color: var(--foam);
+  }
+
+  .timeline-item[data-type="food"] .timeline-content:hover {
+    border-color: var(--gold);
+  }
+
+  .lydia-modal {
+    position: absolute;
+    background: rgba(var(--dark-rgb, 25, 25, 25), 0.95);
+    color: var(--light);
+    padding: 1rem 1.5rem;
+    border-radius: 0px;
+    font-size: 0.85rem;
+    line-height: 1.5;
+    max-width: 400px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+    z-index: 1000;
+    pointer-events: none;
+    visibility: hidden;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+
+    @media all and ($mobile) {
+      max-width: 280px;
+      font-size: 0.8rem;
+      padding: 0.75rem 1rem;
     }
-  }
-}
 
-// Body-level styling for the lydia layout
-body[data-layout="lydia"] {
-  // Ensure proper spacing
-  .page-content {
-    min-height: 100vh;
-  }
-
-  .page-footer {
-    margin-top: 4rem;
-    background: rgba(250, 250, 250, 0.92);
-    backdrop-filter: blur(8px);
-    padding: 2rem;
-    border-radius: 8px;
+    &.active {
+      visibility: visible;
+      opacity: 1;
+    }
   }
 }

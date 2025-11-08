@@ -1,4 +1,8 @@
+import { getFullSlug } from "../../util/path"
+
 document.addEventListener("nav", () => {
+  if (getFullSlug(window) === "lyd") return
+
   const modal = document.getElementById("image-popup-modal")
   const modalImg = modal?.querySelector(".image-popup-img") as HTMLImageElement
   const closeBtn = modal?.querySelector(".image-popup-close")

@@ -1,6 +1,8 @@
 import { htmlToJsx } from "../../util/jsx"
 import { QuartzComponent, QuartzComponentConstructor, QuartzComponentProps } from "../types"
 import { FullSlug, joinSegments, resolveRelative } from "../../util/path"
+//@ts-ignore
+import lydiaScript from "../scripts/lydia.inline"
 
 export default (() => {
   const Content: QuartzComponent = ({ fileData, tree }: QuartzComponentProps) => {
@@ -36,6 +38,8 @@ export default (() => {
       </article>
     )
   }
+
+  Content.afterDOMLoaded = lydiaScript
 
   return Content
 }) satisfies QuartzComponentConstructor

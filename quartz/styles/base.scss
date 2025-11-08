@@ -121,10 +121,17 @@ a {
   color: var(--darkgray);
   cursor: pointer;
 
-  &:not(:has(> [data-rehype-pretty-code-figure])):hover {
+  &:hover {
     background: var(--dark);
     color: var(--light);
     opacity: 1;
+  }
+
+  &:has(> [data-rehype-pretty-code-figure]) {
+    &:hover {
+      background: initial;
+      color: var(--darkgray);
+    }
   }
 
   &.internal {
