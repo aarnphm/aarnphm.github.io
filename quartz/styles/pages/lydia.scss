@@ -1,0 +1,286 @@
+@use "../variables.scss" as *;
+@use "../mixin.scss" as *;
+
+[data-slug="lydia"] {
+  // Hero section with CN Tower background
+  .hero-section {
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    margin: -2rem -2rem 4rem -2rem;
+    --mask-opacity: 1;
+
+    // CN Tower background with mask effect
+    &::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-image: url("https://images.unsplash.com/photo-1517935706615-2717063c2225?q=80&w=2865&auto=format&fit=crop");
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+      z-index: -2;
+    }
+
+    // Scrolling gradient mask overlay
+    &::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(
+        to bottom,
+        rgba(0, 0, 0, 0.4) 0%,
+        rgba(0, 0, 0, 0.2) 50%,
+        var(--light) 100%
+      );
+      z-index: -1;
+      opacity: var(--mask-opacity, 1);
+      transition: opacity 0.1s ease-out;
+    }
+
+    .hero-content {
+      text-align: center;
+      color: white;
+      padding: 2rem;
+      text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.7);
+
+      .hero-title {
+        font-size: 4.5rem;
+        font-weight: 800;
+        margin: 0;
+        letter-spacing: -0.02em;
+        text-transform: lowercase;
+
+        @media all and ($mobile) {
+          font-size: 2.5rem;
+        }
+      }
+
+      .hero-subtitle {
+        font-size: 1.5rem;
+        font-weight: 300;
+        margin-top: 1rem;
+        font-style: italic;
+
+        @media all and ($mobile) {
+          font-size: 1rem;
+        }
+      }
+    }
+  }
+
+  // Timeline styling
+  .timeline-container {
+    position: relative;
+    margin: 4rem 0;
+    padding: 2rem 0;
+
+    // Timeline center line
+    &::before {
+      content: "";
+      position: absolute;
+      left: 50%;
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      background: var(--lightgray);
+      transform: translateX(-50%);
+
+      @media all and ($mobile) {
+        left: 20px;
+      }
+    }
+  }
+
+  .timeline-item {
+    position: relative;
+    margin: 3rem 0;
+    display: flex;
+    align-items: center;
+
+    @media all and ($mobile) {
+      margin-left: 40px;
+    }
+
+    // Alternate left/right layout
+    &:nth-child(odd) {
+      flex-direction: row;
+
+      .timeline-content {
+        margin-left: 2rem;
+        text-align: left;
+
+        @media all and ($mobile) {
+          margin-left: 0;
+        }
+      }
+
+      .timeline-marker::before {
+        left: 100%;
+        margin-left: 1rem;
+      }
+    }
+
+    &:nth-child(even) {
+      flex-direction: row-reverse;
+
+      .timeline-content {
+        margin-right: 2rem;
+        text-align: right;
+
+        @media all and ($mobile) {
+          text-align: left;
+          margin-right: 0;
+          margin-left: 0;
+        }
+      }
+
+      .timeline-marker::before {
+        right: 100%;
+        margin-right: 1rem;
+      }
+
+      @media all and ($mobile) {
+        flex-direction: row;
+      }
+    }
+  }
+
+  .timeline-marker {
+    position: relative;
+    width: 24px;
+    height: 24px;
+    background: var(--secondary);
+    border: 4px solid var(--light);
+    border-radius: 50%;
+    box-shadow: 0 0 0 4px var(--lightgray);
+    flex-shrink: 0;
+    z-index: 1;
+    transition: all 0.3s ease;
+
+    @media all and ($mobile) {
+      position: absolute;
+      left: -32px;
+    }
+
+    // Year label
+    &::before {
+      content: attr(data-year);
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--gray);
+      white-space: nowrap;
+      font-family: var(--codeFont);
+
+      @media all and ($mobile) {
+        display: none;
+      }
+    }
+
+    &:hover {
+      background: var(--tertiary);
+      transform: scale(1.2);
+    }
+  }
+
+  .timeline-content {
+    flex: 1;
+    max-width: 45%;
+    background: var(--light);
+    padding: 1.5rem;
+    border-radius: 8px;
+    border: 1px solid var(--lightgray);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+
+    @media all and ($mobile) {
+      max-width: 100%;
+      margin-left: 0 !important;
+    }
+
+    h3 {
+      margin: 0 0 0.5rem 0;
+      font-size: 1.3rem;
+      color: var(--dark);
+      text-transform: lowercase;
+    }
+
+    p {
+      margin: 0;
+      line-height: 1.6;
+      color: var(--darkgray);
+    }
+
+    &:hover {
+      border-color: var(--secondary);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      transform: translateY(-2px);
+    }
+  }
+
+  // Add year labels on mobile
+  @media all and ($mobile) {
+    .timeline-item::before {
+      content: attr(data-year);
+      position: absolute;
+      left: -70px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--gray);
+      font-family: var(--codeFont);
+    }
+  }
+
+  // Adjust content sections
+  article {
+    h2 {
+      margin-top: 4rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 2px solid var(--lightgray);
+    }
+
+    h3 {
+      text-transform: lowercase;
+      color: var(--secondary);
+      margin-top: 2rem;
+    }
+  }
+
+  // Scrolling effect
+  @supports (animation-timeline: scroll()) {
+    .hero-section::after {
+      animation: fade-mask linear;
+      animation-timeline: scroll();
+      animation-range: 0vh 100vh;
+    }
+
+    @keyframes fade-mask {
+      from {
+        opacity: 1;
+      }
+      to {
+        opacity: 0;
+      }
+    }
+  }
+}
+
+// Fallback scrolling effect using JavaScript
+body[data-layout="lydia"] {
+  .page-footer {
+    margin-top: 4rem;
+  }
+}

@@ -2,25 +2,25 @@
 date: "2024-12-08"
 description: zettelkasten, contact[at]aarnphm[dot]xyz
 id: notes
-modified: 2025-11-07 21:45:32 GMT-05:00
+modified: 2025-11-08 02:12:48 GMT-05:00
 tags:
   - seed
 title: procedural notes.
 ---
 
-You have stumbled upon my working notes, as do to all paths of this [[thoughts/Digital garden|digital garden]]. This is pretty much inspired by [Andy's working notes](https://andymatuschak.org/)
+Hi, I'm aaron. This is my working notes. This is inspired by [Andy's working notes](https://notes.andymatuschak.org/)
 
-Much of these notes/writings are written for my own consumption, a sort of #evergreen notes.
-If any of these doesn't make sense for you, it is probably because I didn't write it for you.
+Much of these notes/writings are written for my own consumption, i.e. #evergreen notes.
+If any of these doesn't make sense for you, welp, touche 😅
 
-My only ask for https://notes.aarnphm.xyz is to treat the sites as it. Most of other functionalities can be found on the <a href="https://aarnphm.xyz" target="_blank">main site</a>
+The notes were started out as a [[thoughts/Digital garden|digital garden]] of sort (they still are) based on [Quartz](https://quartz.jzhao.xyz/). You can find out more about me <a href="https://aarnphm.xyz" target="_blank">on this spot of the internet.</a>
 
-You can start from some related [[/thoughts|topics]] that has been on my mind these days,
-or check out some [[thoughts/work|crafts]] I've been working on for the past while.
+There are some relevant [[/thoughts|notes]] that I've been thinking about recently, or check out some [[thoughts/work|of the work]] I've done in the past.
 
-You might be interested in [[thoughts/mechanistic interpretability|interpretable ml]],
-or high performance [[thoughts/vllm|inference]] [[thoughts/LLMs|LLM]] engine, or #math notes, or a gentle introduction to [[thoughts/Attention|attention mechanism]] in [[thoughts/Transformers|transformer]] model.
+You might be interested in [[thoughts/mechanistic interpretability|interpretability]],
+high performance [[thoughts/vllm|inference]] [[thoughts/LLMs|LLM]] engine, #math notes, #philosophy notes,
+or [[posts/structured decoding|structured generations in inference engine]]
 
-There are also #tags/philosophy notes that I think about quite often. I consider myself to be within the rationalist camp, and I'm influenced by [[thoughts/Wittgenstein|Wittgenstein's writing]] as well as [[thoughts/Philosophy and Nietzsche|Friedrich Nietzsche]]
+I consider myself to be within the rationalist camp, and I'm influenced by [[thoughts/Wittgenstein|Wittgenstein]] as well as [[thoughts/Philosophy and Nietzsche|Nietzsche]] (Nietzsche's books are what I considered #evergreen books, i.e living in my bags permanently)
 
-:wave: you can reach out to me on [twitter](https://twitter.com/aarnphm_)
+:wave: you can also reach out via [twitter](https://twitter.com/aarnphm_) or [email](mailto:contact@aarnphm.xyz), I love to always meet new people!

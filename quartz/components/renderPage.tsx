@@ -41,6 +41,8 @@ import curiusScript from "./scripts/curius.inline"
 import curiusFriendScript from "./scripts/curius-friends.inline"
 //@ts-ignore
 import curiusNavigationScript from "./scripts/curius-navigation.inline"
+//@ts-ignore
+import lydiaScript from "./scripts/lydia.inline"
 import { htmlToJsx } from "../util/jsx"
 import Content from "./pages/Content"
 import { BuildCtx } from "../util/ctx"
@@ -664,6 +666,11 @@ export const pageResources = (
       },
       {
         script: collapseHeaderScript,
+        loadTime: "afterDOMReady",
+        contentType: "inline",
+      },
+      {
+        script: lydiaScript,
         loadTime: "afterDOMReady",
         contentType: "inline",
       },
