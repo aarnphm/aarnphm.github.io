@@ -1,13 +1,12 @@
 ---
 date: "2025-11-01"
 description: bridge from topological manifolds to smooth manifolds, morse theory, and differential structures.
-id: differential-foundations
-modified: 2025-11-02 04:17:47 GMT-05:00
+id: differential foundations
+modified: 2025-11-09 01:42:21 GMT-05:00
 tags:
   - math
   - topology
-  - differential-geometry
-  - stub
+  - differential geometry
 title: differential foundations
 ---
 

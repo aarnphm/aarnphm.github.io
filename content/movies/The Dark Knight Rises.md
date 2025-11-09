@@ -1,6 +1,7 @@
 ---
 category: christopher nolan
 date: "2024-02-07"
+description: revolution and reckoning—batman broken in a pit, gotham burning above, the trilogy's attempt to reconcile hope with the violence required to preserve it.
 director: Christopher Nolan
 id: the-dark-knight-rises
 modified: 2025-10-29 02:14:57 GMT-04:00
@@ -9,7 +10,7 @@ status: recurring
 studio: christopher nolan
 tags:
   - movies
-  - christopher-nolan
+  - dir/christopher nolan
 title: The Dark Knight Rises
 year: 2012
 ---

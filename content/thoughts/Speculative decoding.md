@@ -8,7 +8,7 @@ id: Speculative decoding
 modified: 2025-11-03 07:25:07 GMT-05:00
 tags:
   - ml
-  - serving
+  - inference
   - technical
 title: Speculative decoding
 ---

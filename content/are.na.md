@@ -41,7 +41,7 @@ cssclasses:
 date: "2024-10-24"
 description: My run-down version of are[dot]na
 id: are.na
-modified: 2025-11-08 08:09:30 GMT-05:00
+modified: 2025-11-09 04:06:40 GMT-05:00
 permalinks:
   - /website
   - /tweets
@@ -1196,6 +1196,18 @@ title: are.na
 
 ## essay
 
+- https://jacobin.com/2023/01/nicos-poulantzas-revolutionary-reformism-democratic-socialism-state-theory -- Nicos Poulantzas Was a Vital Theorist of Democratic Socialism
+  - [meta]:
+    - date: 11/09/2025
+    - tags: [politics]
+- https://web.mit.edu/sts.035/www/PDFs/think.pdf -- As we may think
+  - [meta]:
+    - date: 11/09/2025
+    - tags: [fruit]
+- https://archive.ph/5669x -- Is Having a Boyfriend Embarrassing Now?
+  - [meta]:
+    - date: 11/09/2025
+    - tags: [love]
 - https://alexanderobenauer.com/think/1/ -- The Interfaces With Which We Think
   - [meta]:
     - date: 11/05/2025
@@ -1929,6 +1941,10 @@ title: are.na
 - [meta]:
   - view: list
 
+- https://diffusion-scaling.github.io -- Diffusion Beats Autoregressive in Data-Constrained Settings
+  - [meta]:
+    - date: 11/09/2025
+    - tags: [inference]
 - https://deepmind.google/blog/alphaevolve-a-gemini-powered-coding-agent-for-designing-advanced-algorithms/ -- AlphaEvolve [**]
   - [meta]:
     - date: 11/06/2025
@@ -3445,6 +3461,10 @@ title: are.na
 
 ## video
 
+- https://www.youtube.com/watch?v=cjZvFY6__qw -- I Skied Down Mount Everest (world first, no oxygen)
+  - [meta]:
+    - date: 11/09/2025
+    - tags: [ads]
 - https://www.youtube.com/watch?v=XCBqoisl_1M -- The Evil Design of Auschwitz
   - [meta]:
     - date: 10/29/2025
@@ -4340,6 +4360,19 @@ title: are.na
 
 ## papers
 
+- https://www.arxiv.org/abs/2509.25149
+  - [meta]:
+    - date: 11/09/2025
+    - tags: [training, nvfp4]
+- https://arxiv.org/abs/2309.00667
+  - [meta]:
+    - date: 11/09/2025
+    - tags: [alignment]
+  - #interpretability on LLM's situational awareness
+- https://arxiv.org/abs/2510.20075
+  - [meta]:
+    - date: 11/09/2025
+    - tags: [interpretability]
 - https://arxiv.org/abs/2412.01784
   - [meta]:
     - date: 11/05/2025
@@ -4403,11 +4436,12 @@ title: are.na
 - https://arxiv.org/abs/2501.15225
   - [meta]:
     - date: 10/06/2025
-    - tags: [fruit]
+    - tags: [inference, long context]
 - https://arxiv.org/abs/2401.08383
   - [meta]:
     - date: 10/06/2025
-    - tags: [fruit]
+    - tags: [inference, moe]
+  - Inter-Layer Expert Affinity
 - https://arxiv.org/abs/2305.15054
   - [meta]:
     - date: 10/06/2025

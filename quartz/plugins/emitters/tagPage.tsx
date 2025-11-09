@@ -38,7 +38,12 @@ function computeTagInfo(
         tag,
         defaultProcessedContent({
           slug: joinSegments("tags", tag) as FullSlug,
-          frontmatter: { title, tags: [], pageLayout: "default" },
+          frontmatter: {
+            title,
+            tags: [],
+            pageLayout: "default",
+            description: `generated tags/${tag}`,
+          },
         }),
       ]
     }),

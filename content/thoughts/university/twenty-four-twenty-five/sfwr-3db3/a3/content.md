@@ -1,10 +1,9 @@
 ---
 date: "2024-11-24"
 id: content
-modified: 2025-10-29 02:16:03 GMT-04:00
+modified: 2025-11-09 01:40:53 GMT-05:00
 tags:
   - sfwr3db3
-  - assignment
 title: DB design, concurrency and transaction
 ---
 

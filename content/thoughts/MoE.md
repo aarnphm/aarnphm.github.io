@@ -6,7 +6,7 @@ modified: 2025-10-29 02:15:29 GMT-04:00
 tags:
   - seed
   - ml
-  - serving
+  - inference
 title: MoE
 ---
 

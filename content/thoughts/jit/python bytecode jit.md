@@ -2,12 +2,10 @@
 date: "2025-10-05"
 description: building a JIT compiler in Python, from simple AST lowering to IR-based optimization
 id: python-bytecode-jit
-modified: 2025-10-29 02:15:48 GMT-04:00
+modified: 2025-11-09 01:38:09 GMT-05:00
 tags:
   - compilers
-  - python
-  - jit
-  - bytecode
+  - technical
 title: simple JIT compiler
 ---
 
@@ -47,7 +45,10 @@ from ctypes import POINTER, c_float, c_int
 jit = TinyCJIT(verbose=True)
 
 
-@jit(restype=None, argtypes=[POINTER(c_float), POINTER(c_float), POINTER(c_float), c_int])
+@jit(
+  restype=None,
+  argtypes=[POINTER(c_float), POINTER(c_float), POINTER(c_float), c_int],
+)
 def vector_add(a, b, out, n):
   for i in range(n):
     out[i] = a[i] + b[i]

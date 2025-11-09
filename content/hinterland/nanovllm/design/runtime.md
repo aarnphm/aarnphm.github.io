@@ -2,10 +2,8 @@
 date: "2025-10-31"
 description: runtime and scheduler design for nanovllm
 id: runtime
-modified: 2025-10-31 10:52:00 GMT-04:00
+modified: 2025-11-09 01:29:53 GMT-05:00
 tags:
-  - runtime
-  - scheduler
   - nanovllm
 title: runtime
 ---
@@ -20,15 +18,15 @@ title: runtime
 
 ## pipeline layout
 
-- **prefill stage**: tokenize, allocate pagedattention blocks, attempt prefix cache hits, materialize kv slots, and capture cudagraphs when batch is stable
+- **prefill stage**: tokenize, allocate PagedAttention blocks, attempt prefix cache hits, materialize kv slots, and capture cudagraphs when batch is stable
 - **decode stage**: reuse captured graphs or fall back to piecewise mode; streaming tokens back to the frontend over sse
 - **speculative branch**: optional draft model runs in parallel event loop, sharing tokenizer and kv allocator; accepts fallback when verification fails
 - **disaggregation**: scheduler can park decode-only requests onto dedicated workers while prefill-heavy requests stay on main worker, controlled by config toggles
-- **chunked prefill**: batch builder slices long prompts into block-aligned segments so prefix cache reuse aligns with pagedattention block boundaries
+- **chunked prefill**: batch builder slices long prompts into block-aligned segments so prefix cache reuse aligns with PagedAttention block boundaries
 
 ## caching strategy
 
-- pagedattention allocator mirrors vllm v1 with fixed block size; we parametrize block counts via config and expose live usage metrics
+- PagedAttention allocator mirrors vllm v1 with fixed block size; we parametrize block counts via config and expose live usage metrics
 - prefix cache uses sha256 hashes per full block when multi-tenant flag is true, otherwise default python hash for speed
 - hybrid kv cache groups layers by attention type and hidden size; we precompute grouping during model load and reuse across requests
 - eviction uses lru on block ids with reference counting; background sweeper trims cold blocks once gpu memory watermark exceeds 85%

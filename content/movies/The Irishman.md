@@ -1,6 +1,7 @@
 ---
 category: martin scorsese
 date: "2024-02-07"
+description: three and a half hours of regret slowed to the pace of old age—a hitman in a nursing home realizing loyalty bought him nothing but an empty room.
 director: Martin Scorsese
 id: the-irishman
 modified: 2025-10-29 02:14:58 GMT-04:00
@@ -9,7 +10,7 @@ status: recurring
 studio: martin scorsese
 tags:
   - movies
-  - martin-scorsese
+  - dir/martin scorsese
 title: The Irishman
 year: 2019
 ---

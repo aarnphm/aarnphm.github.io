@@ -4,4 +4,4 @@ description: mathematics, tools for thinking
 title: math
 ---
 
-Everything related to maths
+I do read quite abit of maths during downtime, and this includes some notes I have while getting snipped on certain topics.

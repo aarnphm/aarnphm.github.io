@@ -1,8 +1,8 @@
 ---
 date: "2025-11-01"
-description: fundamental group, covering spaces, van kampen crafted around mit 18.901 weeks 8–11.
-id: topology-fundamental-group
-modified: 2025-11-01 17:10:00 gmt-04:00
+description: covering spaces, van kampen crafted around mit 18.901 weeks 8–11.
+id: fundamental group
+modified: 2025-11-09 01:08:26 GMT-05:00
 tags:
   - math
   - topology

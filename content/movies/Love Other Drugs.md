@@ -1,6 +1,7 @@
 ---
 category: general
 date: "2024-02-07"
+description: viagra salesman falling for parkinson's patient—zwick filming pharmaceutical capitalism alongside romance, anne hathaway refusing pity while jake gyllenhaal learns love means staying when disease makes everything harder, not easier.
 director: Edward Zwick
 id: love-other-drugs
 modified: 2025-10-29 02:14:52 GMT-04:00

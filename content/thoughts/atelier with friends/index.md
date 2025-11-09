@@ -1,12 +1,12 @@
 ---
 date: "2024-03-07"
 id: index
-modified: 2025-10-29 02:15:40 GMT-04:00
+modified: 2025-11-09 00:03:55 GMT-05:00
 tags:
   - menu
   - evergreen
   - folder
-title: atelier with friends.
+title: atelier with friends
 ---
 
 Somewhat impromptu supper club hosted by yours truly. See also [[thoughts/Dishes|dishes]] for a comprehensive repertoire.

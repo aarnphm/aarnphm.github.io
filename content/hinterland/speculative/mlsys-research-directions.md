@@ -2,12 +2,9 @@
 date: "2025-10-06"
 draft: true
 id: mlsys-research-directions
-modified: 2025-10-29 02:14:20 GMT-04:00
+modified: 2025-11-09 01:29:31 GMT-05:00
 tags:
   - mlsys
-  - inference
-  - research
-  - systems
 title: survey notes
 ---
 

@@ -1,6 +1,7 @@
 ---
 category: general
 date: "2024-02-07"
+description: desire in italian sunlight—a summer compressed into the shape of first love, guadagnino filming peaches and statues as classical surrogates for unspoken longing.
 director: Luca Guadagnino
 id: call-me-by-your-name
 modified: 2025-10-29 02:14:47 GMT-04:00

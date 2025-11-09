@@ -1,6 +1,7 @@
 ---
 category: vintage
 date: "2024-02-07"
+description: murder as publicity stunt—marshall's jazz-age musical where courtroom becomes stage, murderesses performing innocence for cameras, fame so fleeting the acquittal barely registers before the next scandal.
 director: Rob Marshall
 id: chicago
 modified: 2025-10-29 02:15:03 GMT-04:00

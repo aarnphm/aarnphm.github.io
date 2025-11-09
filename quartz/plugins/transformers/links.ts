@@ -80,6 +80,20 @@ const ALLOWED_EXTENSIONS = [
   ".txt",
 ]
 
+const FALSE_LIKE_STRINGS = new Set(["false", "0", "no", "off"])
+
+function metadataDisablesPopover(metadata?: Record<string, any>): boolean {
+  if (!metadata) return false
+  const value = metadata.popover ?? metadata.noPopover ?? metadata["no-popover"]
+  if (value === undefined) return false
+  if (typeof value === "boolean") return value === false
+  if (typeof value === "number") return value === 0
+  if (typeof value === "string") {
+    return FALSE_LIKE_STRINGS.has(value.trim().toLowerCase())
+  }
+  return false
+}
+
 /**
  * Match arXiv URLs such as:
  *  - https://arxiv.org/abs/1712.05877
@@ -108,6 +122,7 @@ interface LinkContext {
   ext: string
   isExternal: boolean
   node: Element
+  metadata?: Record<string, any>
 }
 
 export const CrawlLinks: QuartzTransformerPlugin<Partial<Options>> = (userOpts) => {
@@ -140,6 +155,7 @@ export const CrawlLinks: QuartzTransformerPlugin<Partial<Options>> = (userOpts) 
                 // insert a span element into node.children
                 let dest = node.properties.href as RelativeURL
                 const ext: string = path.extname(dest).toLowerCase()
+                const metadata = JSON.parse((node.properties?.["data-metadata"] ?? "{}") as string)
 
                 // Check for protocol-based URLs (mailto:, tel:, etc.)
                 const hasProtocol = /^[a-zA-Z][a-zA-Z0-9+.-]*:/.test(dest)
@@ -154,6 +170,7 @@ export const CrawlLinks: QuartzTransformerPlugin<Partial<Options>> = (userOpts) 
                       ? true
                       : isAbsoluteUrl(dest, { httpOnly: false }) || hasProtocol,
                   node,
+                  metadata,
                 }
 
                 // Link type checks
@@ -399,6 +416,11 @@ export const CrawlLinks: QuartzTransformerPlugin<Partial<Options>> = (userOpts) 
                   dest.startsWith("#") ||
                   hasProtocol
                 )
+
+                if (isInternal && metadataDisablesPopover(ctx.metadata)) {
+                  node.properties["data-no-popover"] = true
+                }
+
                 if (isInternal) {
                   if (ext.includes("pdf")) {
                     // we use CF middleware for fetch from Git LFS, for now

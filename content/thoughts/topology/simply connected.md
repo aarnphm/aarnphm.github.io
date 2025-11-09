@@ -2,11 +2,11 @@
 date: "2025-11-01"
 description: why simple connectivity is the right condition for poincaré conjecture and why homology alone doesn't suffice.
 id: simply-connected
-modified: 2025-11-01 17:45:00 GMT-04:00
+modified: 2025-11-09 01:43:35 GMT-05:00
 tags:
   - math
   - topology
-  - fundamental-group
+  - fundamental group
 title: simple connectivity
 ---
 

@@ -1,8 +1,8 @@
 ---
 date: "2025-11-01"
-description: point-set topology scaffolding (munkres ch. 2–5) aligned with mit 18.901 weeks 1–3.
-id: topology-point-set
-modified: 2025-11-01 17:07:00 gmt-04:00
+description: scaffolding (munkres ch. 2–5).
+id: point set
+modified: 2025-11-09 01:07:38 GMT-05:00
 tags:
   - math
   - topology

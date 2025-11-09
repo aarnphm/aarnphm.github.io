@@ -2,10 +2,10 @@
 date: "2024-02-07"
 description: and how we learn.
 id: education
-modified: 2025-10-29 02:15:44 GMT-04:00
+modified: 2025-11-09 03:13:40 GMT-05:00
 tags:
   - seed
-  - pedagogy
+  - r/pedagogy
 title: education
 ---
 

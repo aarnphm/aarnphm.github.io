@@ -2,12 +2,14 @@
 date: "2025-10-31"
 description: framing for the nanovllm architecture slice
 id: overview
-modified: 2025-10-31 10:45:00 GMT-04:00
+modified: 2025-11-09 01:30:15 GMT-05:00
 tags:
-  - design
   - nanovllm
 title: overview
 ---
+
+- [[hinterland/nanovllm/design/runtime]]
+- [[hinterland/nanovllm/design/roadmap]]
 
 ## scope
 
@@ -28,7 +30,7 @@ title: overview
 
 - **frontend**: an http server exposing `/v1/chat/completions`, streaming tokens via server-sent events, enforcing request limits, and translating openai payloads into internal request objects
 - **scheduler**: an always-on async loop that scores, batches, and dispatches requests; owns admission control, cuda graph mode selection, and prefill/decode disaggregation
-- **runtime**: thin wrappers over torch modules that manage pagedattention kernels, prefix cache lookup, speculative decode drafting, and potential disk-backed offload when memory runs thin
+- **runtime**: thin wrappers over torch modules that manage PagedAttention kernels, prefix cache lookup, speculative decode drafting, and potential disk-backed offload when memory runs thin
 - **kv store**: hybrid kv cache manager wiring (paged pages + attention-specific grouping) plus prefix cache hashing; assumes sha256 hashing when multi-tenant isolation toggles on
 - **model registry**: minimal loader supporting qwen3-next hybrid moe, minimax m2, deepseek-r1, and r1-distill-llama checkpoints with shared tokenizer policies
 - **observability**: structured logs, scheduler metrics, and cuda graph mode counters exposed per request class
@@ -46,9 +48,4 @@ title: overview
 - cuda graphs coverage depends on backend attention kernels; we will gate support behind capability probes
 - hybrid kv cache heuristics may waste memory for large moe layers; we need profiling gates before launch
 - speculative decoding requires stable draft models with matched tokenization; expect guarded rollout
-- pagedattention and cutedsl kernels must compile cleanly with nightly nvcc; we mirror the vllm build flags
-
-## references
-
-- [[hinterland/nanovllm/design/runtime]]
-- [[hinterland/nanovllm/design/roadmap]]
+- PagedAttention and cutedsl kernels must compile cleanly with nightly nvcc; we mirror the vllm build flags

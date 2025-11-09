@@ -2,13 +2,12 @@
 date: "2025-06-01"
 description: "tw: addiction"
 id: dundurn
-modified: 2025-10-29 02:15:11 GMT-04:00
+modified: 2025-11-09 01:44:58 GMT-05:00
 socials:
   substack: https://open.substack.com/pub/livingalone/p/apartment-two-twenty?r=1z8i4s&utm_campaign=post&utm_medium=web&showWelcomeOnShare=true
 tags:
   - home
   - fiction
-  - shorts
   - writing
 title: apartment two twenty
 ---

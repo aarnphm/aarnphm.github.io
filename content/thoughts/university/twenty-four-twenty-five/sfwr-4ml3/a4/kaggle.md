@@ -2,10 +2,9 @@
 date: "2024-12-03"
 description: "CIFAR Challenge: Classify the World of Objects!"
 id: kaggle
-modified: 2025-10-29 02:16:09 GMT-04:00
+modified: 2025-11-09 01:41:53 GMT-05:00
 tags:
   - sfwr4ml3
-  - competition
 title: CIFAR100 with CNN
 ---
 
@@ -20,9 +19,13 @@ Last attempt: 0.4477 on CIFAR100
 ```python
 num_epochs = 30
 batch_size = 128
-optimizer = optim.SGD(model.parameters(), lr=0.001, momentum=0.9, weight_decay=1e-4)
+optimizer = optim.SGD(
+  model.parameters(), lr=0.001, momentum=0.9, weight_decay=1e-4
+)
 criterion = nn.CrossEntropyLoss(label_smoothing=0.1)
-scheduler = optim.lr_scheduler.CosineAnnealingWarmRestarts(optimizer, T_0=5, T_mult=2, eta_min=1e-6)
+scheduler = optim.lr_scheduler.CosineAnnealingWarmRestarts(
+  optimizer, T_0=5, T_mult=2, eta_min=1e-6
+)
 ```
 
 Transformations for train and test respectively:
@@ -35,7 +38,10 @@ train = transforms.Compose([
   transforms.Normalize(CIFAR100_MEAN, CIFAR100_STD),
 ])
 
-test = transforms.Compose([transforms.ToTensor(), transforms.Normalize(CIFAR100_MEAN, CIFAR100_STD)])
+test = transforms.Compose([
+  transforms.ToTensor(),
+  transforms.Normalize(CIFAR100_MEAN, CIFAR100_STD),
+])
 ```
 
 Model: fine tuned version of EfficientNetV2 trained on ImageNet21k from [@tan2021efficientnetv2smallermodelsfaster]
@@ -108,29 +114,48 @@ def get_dataloaders(batch_size):
     transforms.Normalize(CIFAR100_MEAN, CIFAR100_STD),
   ])
 
-  transform_test = transforms.Compose([transforms.ToTensor(), transforms.Normalize(CIFAR100_MEAN, CIFAR100_STD)])
+  transform_test = transforms.Compose([
+    transforms.ToTensor(),
+    transforms.Normalize(CIFAR100_MEAN, CIFAR100_STD),
+  ])
 
-  train_dataset = torchvision.datasets.CIFAR100(root='./data', train=True, download=True, transform=transform_train)
-  train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True, num_workers=4)
+  train_dataset = torchvision.datasets.CIFAR100(
+    root='./data', train=True, download=True, transform=transform_train
+  )
+  train_loader = DataLoader(
+    train_dataset, batch_size=batch_size, shuffle=True, num_workers=4
+  )
 
-  test_dataset = torchvision.datasets.CIFAR100(root='./data', train=False, download=True, transform=transform_test)
-  test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False, num_workers=4)
+  test_dataset = torchvision.datasets.CIFAR100(
+    root='./data', train=False, download=True, transform=transform_test
+  )
+  test_loader = DataLoader(
+    test_dataset, batch_size=batch_size, shuffle=False, num_workers=4
+  )
 
   return train_loader, test_loader
 
 
 def _holistic_patch(model, num_features=100):
-  model.classifier[1] = nn.Linear(model.classifier[1].in_features, num_features)
+  model.classifier[1] = nn.Linear(
+    model.classifier[1].in_features, num_features
+  )
 
 
 # Load EfficientNetV2 model
 def init_model(variants: Literal['S', 'M', 'L'] = 'S', patch=_holistic_patch):
   if variants == 'S':
-    model = models.efficientnet_v2_s(weights=models.EfficientNet_V2_S_Weights.DEFAULT)
+    model = models.efficientnet_v2_s(
+      weights=models.EfficientNet_V2_S_Weights.DEFAULT
+    )
   elif variants == 'M':
-    model = models.efficientnet_v2_m(weights=models.EfficientNet_V2_M_Weights.DEFAULT)
+    model = models.efficientnet_v2_m(
+      weights=models.EfficientNet_V2_M_Weights.DEFAULT
+    )
   elif variants == 'L':
-    model = models.efficientnet_v2_l(weights=models.EfficientNet_V2_L_Weights.DEFAULT)
+    model = models.efficientnet_v2_l(
+      weights=models.EfficientNet_V2_L_Weights.DEFAULT
+    )
   patch(model)
   model.variants = variants
   model = model.to(device)
@@ -155,13 +180,25 @@ def save_checkpoint(model, accuracy, model_prefix, basedir='./model'):
   if hasattr(model, 'variants'):
     variants = model.variants
 
-  filepath = os.path.join(basedir, f'{model_prefix}_{variants}_{accuracy:.2f}_{timestamp}.safetensors')
+  filepath = os.path.join(
+    basedir,
+    f'{model_prefix}_{variants}_{accuracy:.2f}_{timestamp}.safetensors',
+  )
   save_model(model, filepath)
   print(f'Model checkpoint saved to {filepath}.')
 
 
 # Train the model
-def train(model, train_loader, criterion, optimizer, scheduler, num_epochs, *, ncols=100):
+def train(
+  model,
+  train_loader,
+  criterion,
+  optimizer,
+  scheduler,
+  num_epochs,
+  *,
+  ncols=100,
+):
   best_accuracy = 0.0
   train_losses = []
   train_accuracies = []
@@ -172,7 +209,9 @@ def train(model, train_loader, criterion, optimizer, scheduler, num_epochs, *, n
     correct = 0
     total = 0
 
-    with tqdm(enumerate(train_loader), total=len(train_loader), ncols=ncols) as bar:
+    with tqdm(
+      enumerate(train_loader), total=len(train_loader), ncols=ncols
+    ) as bar:
       for i, (images, labels) in bar:
         images, labels = images.to(device), labels.to(device)
 
@@ -198,7 +237,9 @@ def train(model, train_loader, criterion, optimizer, scheduler, num_epochs, *, n
     epoch_acc = 100 * correct / total
     train_losses.append(epoch_loss)
     train_accuracies.append(epoch_acc)
-    print(f'Epoch [{epoch + 1}/{num_epochs}], Loss: {epoch_loss:.4f}, Accuracy: {epoch_acc:.2f}%')
+    print(
+      f'Epoch [{epoch + 1}/{num_epochs}], Loss: {epoch_loss:.4f}, Accuracy: {epoch_acc:.2f}%'
+    )
 
     # Evaluate the model on test set after each epoch
     test_acc = evaluate(model, test_loader)
@@ -273,15 +314,27 @@ def validations(model, test_loader, classes, num_examples=16):
   for R in range(4):
     for C in range(4):
       image_np = SAMPLES[i].cpu().numpy().transpose(1, 2, 0)
-      image_np = image_np * np.array((0.2675, 0.2565, 0.2761)) + np.array((0.5071, 0.4867, 0.4408))  # Unnormalize
+      image_np = image_np * np.array((0.2675, 0.2565, 0.2761)) + np.array((
+        0.5071,
+        0.4867,
+        0.4408,
+      ))  # Unnormalize
       image_np = np.clip(image_np, 0, 1)
       ax[R, C].imshow(image_np)
-      ax[R, C].set_title('Actual: ' + classes[LABELS[i]], fontsize=16).set_color('k')
-      ax[R, C].set_ylabel(PREDS[i], fontsize=16, rotation=0, labelpad=25).set_color('m')
+      ax[R, C].set_title(
+        'Actual: ' + classes[LABELS[i]], fontsize=16
+      ).set_color('k')
+      ax[R, C].set_ylabel(
+        PREDS[i], fontsize=16, rotation=0, labelpad=25
+      ).set_color('m')
       if LABELS[i] == LABELS[i]:
-        ax[R, C].set_xlabel('Predicted: ' + classes[LABELS[i]], fontsize=16).set_color('b')
+        ax[R, C].set_xlabel(
+          'Predicted: ' + classes[LABELS[i]], fontsize=16
+        ).set_color('b')
       else:
-        ax[R, C].set_xlabel('Predicted: ' + classes[LABELS[i]], fontsize=16).set_color('r')
+        ax[R, C].set_xlabel(
+          'Predicted: ' + classes[LABELS[i]], fontsize=16
+        ).set_color('r')
       ax[R, C].set_xticks([])
       ax[R, C].set_yticks([])
       i += 1
@@ -291,10 +344,22 @@ def validations(model, test_loader, classes, num_examples=16):
 
 if __name__ == '__main__':
   model = init_model(variants='L')
-  optimizer = optim.SGD(model.parameters(), lr=lr, momentum=0.9, weight_decay=1e-4)
+  optimizer = optim.SGD(
+    model.parameters(), lr=lr, momentum=0.9, weight_decay=1e-4
+  )
   criterion = nn.CrossEntropyLoss(label_smoothing=0.1)  # Add label smoothing
-  scheduler = optim.lr_scheduler.CosineAnnealingWarmRestarts(optimizer, T_0=5, T_mult=2, eta_min=1e-6)
-  train(model, train_loader, criterion, optimizer, scheduler, num_epochs, ncols=ncols)
+  scheduler = optim.lr_scheduler.CosineAnnealingWarmRestarts(
+    optimizer, T_0=5, T_mult=2, eta_min=1e-6
+  )
+  train(
+    model,
+    train_loader,
+    criterion,
+    optimizer,
+    scheduler,
+    num_epochs,
+    ncols=ncols,
+  )
   evaluate(model, test_loader)
 ```
 

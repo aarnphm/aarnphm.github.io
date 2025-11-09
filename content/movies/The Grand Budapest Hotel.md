@@ -1,6 +1,7 @@
 ---
 category: wes anderson
 date: "2024-02-07"
+description: nostalgia for a europe that maybe never existed, told through impossible architecture and fastidious manners masking the violence closing in.
 director: Wes Anderson
 id: the-grand-budapest-hotel
 modified: 2025-10-29 02:14:58 GMT-04:00
@@ -9,7 +10,7 @@ status: recurring
 studio: wes anderson
 tags:
   - movies
-  - wes-anderson
+  - dir/wes anderson
 title: The Grand Budapest Hotel
 year: 2014
 ---

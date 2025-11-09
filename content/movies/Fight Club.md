@@ -1,6 +1,7 @@
 ---
 category: buster
 date: "2024-02-07"
+description: masculinity as psychotic break—fincher filming ikea catalogs and bare-knuckle therapy, the twist obvious if you're paying attention, misread as endorsement anyway.
 director: David Fincher
 id: fight-club
 modified: 2025-10-29 02:14:50 GMT-04:00

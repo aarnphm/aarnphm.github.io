@@ -1,7 +1,7 @@
 ---
 date: "2024-02-18"
 id: Chaos
-modified: 2025-10-29 02:15:09 GMT-04:00
+modified: 2025-11-09 01:36:44 GMT-05:00
 signature: from twenty three aaron
 socialDescription: on growing one year older. And a few things I learned growing up in a foreign land.
 socials:
@@ -10,7 +10,6 @@ socials:
 tags:
   - sapling
   - growth
-  - self
 title: Chaos is intuitive yet disheveled.
 ---
 

@@ -1,6 +1,7 @@
 ---
 category: general
 date: "2024-02-07"
+description: holocaust-surviving architect building monuments for the industrialist who exploits him—corbet filming lászló's american dream curdling into nightmare, brutal modernist structures rising from immigrant genius while wealthy patron demands ownership of everything including the artist's soul, three hours proving capitalism devours what it cannot understand.
 director: Brady Corbet
 id: the-brutalist
 modified: 2025-10-29 02:14:57 GMT-04:00

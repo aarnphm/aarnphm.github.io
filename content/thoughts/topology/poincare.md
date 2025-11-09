@@ -1,14 +1,12 @@
 ---
 date: "2025-11-01"
-description: multi-year roadmap from point-set topology to understanding perelman's proof of the poincaré conjecture.
-id: poincare-roadmap
-modified: 2025-11-02 04:18:11 GMT-05:00
+description: point-set topology to understanding perelman's proof of the poincaré conjecture.
+id: poincare
+modified: 2025-11-09 01:08:02 GMT-05:00
 tags:
   - math
   - topology
-  - poincare
-  - evergreen
-title: poincaré conjecture roadmap
+title: poincaré conjecture
 ---
 
 ## the statement

@@ -1,13 +1,18 @@
 ---
 date: "2025-11-01"
-description: tracker for mit 18.901 fall 2025 problem sets with solution outlines.
+description: introduction to topology
 id: topology-mit-18-901-psets
-modified: 2025-11-02 04:17:55 GMT-05:00
+modified: 2025-11-09 01:12:38 GMT-05:00
+socials:
+  ocw: https://ocw.mit.edu/courses/18-901-introduction-to-topology-fall-2004/
 tags:
   - math
   - topology
-title: mit 18.901 problem sets
+title: mit 18.901
 ---
+
+- hub: [[thoughts/topology|topology hub]].
+- supporting notes: [[thoughts/topology/point-set|point-set]], [[thoughts/topology/separation|separation]], [[thoughts/topology/compactness|compactness]], [[thoughts/topology/fundamental-group|fundamental group]].
 
 ## schedule
 
@@ -31,8 +36,3 @@ title: mit 18.901 problem sets
 - download statements from mit ocw; mirror in local `psets/` folder.
 - log solution outlines and common pitfalls per set.
 - file complete solutions externally; reference here for internal indexing only.
-
-## links
-
-- hub: [[thoughts/topology|topology hub]].
-- supporting notes: [[thoughts/topology/point-set|point-set]], [[thoughts/topology/separation|separation]], [[thoughts/topology/compactness|compactness]], [[thoughts/topology/fundamental-group|fundamental group]].

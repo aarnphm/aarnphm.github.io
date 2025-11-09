@@ -2,7 +2,7 @@
 date: "2023-07-29"
 description: a knowledge distillation and learning process
 id: writing
-modified: 2025-11-07 16:59:21 GMT-05:00
+modified: 2025-11-09 02:14:10 GMT-05:00
 tags:
   - sapling
   - evergreen
@@ -16,6 +16,10 @@ title: Writing
 > Writing as _crystallised_ thought, a way of expressing the labyrinth of interconnected, messy, and incoherent ideas in my mind. It is a form of [knowledge distillation](https://jzhao.xyz/thoughts/knowledge-distillation)
 >
 > —Jacky
+
+> [When I write] I grieve for my own lack of talent and intelligence. Every. Single. Time. Were I smarter, more gifted, I could pin down a closer facsimile of the wonders I see. I believe, more than anything, that this grief of constantly having to face down our own inadequacies is what keeps people from being writers. Forgiveness, therefore, is key.
+>
+> —Ann Patchett
 
 Writing is an exploration, an excavation of self and the world in this painfully intricate dance. It is a way to bridge the chasm between ideas, to extend a filament of one consciousness to others. It is an extension of self, a second brain, where bounded by constraining nets of syntax and grammar, providing grounds for freedom of expression and articulate one's interests and curiosity.
 

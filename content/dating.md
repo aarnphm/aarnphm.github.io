@@ -7,7 +7,7 @@ aliases:
 date: "2025-08-09"
 description: just another fish in the sea.
 id: dating
-modified: 2025-11-06 07:31:16 GMT-05:00
+modified: 2025-11-09 00:25:06 GMT-05:00
 noindex: true
 pageLayout: letter
 slides: true
@@ -250,7 +250,7 @@ design
 - I find essay and fiction formats very refreshing.
   - I'm heavily influenced by Michel Foucault, Albert Camus, Ludwig Wittgenstein, Franz Kafka, Raymond Carver, and a few more researchers (that I can proudly call them my friends)
 - I also maintain a [[books|antilibrary]] of literature that I've enjoyed.
-- I read [[are.na#papers|papers]] and math textbooks for fun sometimes.
+- I read [[/arena/papers|papers]] and #math textbooks for fun sometimes.
   - Yes, I know, it is a thing.
 
 </section>

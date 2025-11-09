@@ -2,14 +2,12 @@
 date: "2025-10-04"
 description: what neural networks are, ontologically speaking
 id: Connectionist network
-modified: 2025-10-29 02:15:19 GMT-04:00
+modified: 2025-11-09 01:34:05 GMT-05:00
 pageLayout: technical
 signature: with abundance of love and joy - Aaron
 tags:
   - philosophy
   - ml
-  - stream
-  - microblog
 title: connectionist networks
 ---
 

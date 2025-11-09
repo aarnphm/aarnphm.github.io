@@ -7,7 +7,7 @@ permalinks:
   - /vllm
 tags:
   - ml
-  - serving
+  - inference
   - technical
 title: vLLM
 ---

@@ -2,12 +2,21 @@
 date: "2025-10-24"
 description: a microblog within a blog, at the middle of the night.
 id: stream
-modified: 2025-11-06 01:50:50 GMT-05:00
+modified: 2025-11-09 01:34:29 GMT-05:00
 tags:
   - seed
   - fruit
   - evergreen
 title: stream
+---
+
+- [meta]:
+  - date: 2025-11-09 01:34:25 GMT-05:00
+  - tags:
+    - technical
+
+![[thoughts/Connectionist network]]
+
 ---
 
 - [meta]:

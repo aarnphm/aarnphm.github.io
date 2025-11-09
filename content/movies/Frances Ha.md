@@ -1,6 +1,7 @@
 ---
 category: general
 date: "2024-02-07"
+description: millennial aimlessness in black and white—gerwig's dancer drifting through brooklyn, baumbach filming the gap between who you dream you'll become and who rent checks force you to be.
 director: Noah Baumbach
 id: frances-ha
 modified: 2025-10-29 02:14:50 GMT-04:00

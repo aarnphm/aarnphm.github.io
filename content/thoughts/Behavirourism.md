@@ -87,13 +87,11 @@ Behaviorism's mistake is that it treats methodological restriction (study observ
 
 ## [[thoughts/Wittgenstein|wittgensteinian]] intervention
 
-> what are the _criteria_ for saying someone loves another, attends to them, understands them?
+See [[thoughts/love#criteria]] for the full discussion of how criteria work in recognizing love.
 
-Criteria are behavioral—but not reducible to reflex. You can tell someone loves another by: how they talk about them, what they notice, how they respond under stress, whether they stay when it's hard, whether their attention tracks the other's concerns.
+The point for behaviorism: you can tell someone loves another through observable patterns—how they talk about them, what they notice, whether they stay when it's hard. These criteria are public, behavioral. But they're not reductive. Behavior shows love without being identical to it.
 
-These are observable. But they're not stimulus-response. They're _patterns of engagement_ that make sense only within a practice, a form of life. Love is a language-game. You learn it by participating, not by collecting reinforcement data.
-
-Behaviorism mistakes criteria (public, behavioral) for reduction (nothing but behavior). From Wittgenstein that we learn criteria shows what's going on without ==being== what's going on. One can use behavior to recognize love, but love isn't identical to behavior.
+Wittgenstein lets you accept that criteria must be observable while rejecting behaviorist eliminativism. The patterns make sense only within a practice, a form of life. You learn love by participating, not by mapping stimulus-response functions. Criteria reveal what's happening without exhausting what's happening. This is the gap behaviorism can't close.
 
 ## tl;dr
 

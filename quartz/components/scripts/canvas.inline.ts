@@ -22,7 +22,7 @@ function parseMarkdown(text: string): string {
     return marked.parse(text, { async: false }) as string
   } catch (error) {
     console.error("Failed to parse markdown:", error)
-    return escapeHtml(text)
+    return wrapTextHtml(text)
   }
 }
 
@@ -891,11 +891,11 @@ async function renderCanvas(container: HTMLElement) {
           const hasDescription =
             typeof d.description === "string" && d.description.trim().length > 0
           const fallbackSource = hasDescription ? d.description! : "Loading preview..."
-          const fallback = escapeHtml(fallbackSource)
+          const fallback = wrapTextHtml(fallbackSource)
           const placeholderAttr = hasDescription ? "" : ' data-placeholder="true"'
           return `<div class="node-file-content" data-loading="true"${placeholderAttr}>${fallback}</div>`
         } else if (d.type === "link") {
-          return `<div class="node-link"><span class="link-icon">🔗</span> ${escapeHtml(
+          return `<div class="node-link"><span class="link-icon">🔗</span> ${wrapTextHtml(
             d.url || "",
           )}</div>`
         }
@@ -1246,7 +1246,7 @@ async function renderCanvas(container: HTMLElement) {
           // show description or full popover
           if (d.description) {
             // simple tooltip with description
-            tooltip.html(escapeHtml(d.description)).style("visibility", "visible")
+            tooltip.html(wrapTextHtml(d.description)).style("visibility", "visible")
           } else {
             // show a lightweight popover with the page's .popover-hint contents
             const pointer = event as MouseEvent
@@ -1491,7 +1491,7 @@ function cleanCanvasPreviewElement<T extends HTMLElement>(element: T): T {
   return element
 }
 
-function escapeHtml(text: string): string {
+function wrapTextHtml(text: string): string {
   const div = document.createElement("div")
   div.textContent = text
   return div.innerHTML

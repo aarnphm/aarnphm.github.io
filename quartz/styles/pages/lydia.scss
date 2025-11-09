@@ -2,7 +2,7 @@
 @use "../mixin.scss" as *;
 @use "./lydia-frame-decorations.scss";
 
-[data-slug="lyd"]:not([class~="suggestion-item"]) {
+body[data-slug="lyd"] {
   display: flow-root;
   position: relative;
   min-height: 100vh;

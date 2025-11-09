@@ -5,7 +5,7 @@ aliases:
 date: "2022-04-22"
 description: my working notes, as a form of a digital garden
 id: _index
-modified: 2025-11-08 06:43:11 GMT-05:00
+modified: 2025-11-09 03:18:52 GMT-05:00
 tags:
   - evergreen
   - fruit
@@ -73,19 +73,19 @@ as far as [[thoughts/craft|work]] goes, I'm working at a [startup](https://bento
 * [[research]] interests goes, I'm working
 * on interpretability
   * on interpretability ([[thoughts/mechanistic interpretability|inner working]] of a neural network)
-  * of large ML system.
-    * of large [[thoughts/Machine learning|ML]] system (inference engine [[thoughts/optimization|optimization]]).
-  * <br /><br />as far as purpose goes, I'm an engineer at heart, but
-  * I care
-  * about building
-    * about building [[thoughts/papers/Tools for Conviviality by Ivan Illich.pdf|malleable tools]]
-    * and tinkering with
-    * abstract concepts
-      * abstract concepts that one is innately draw towards.
-        * abstract concepts that explains our own [[thoughts/representations|expression]].
-          * abstract concepts that define the vastness of our minds and the world surrounding us.
+* and ML system.
+  * and [[thoughts/Machine learning|ML]] system (inference engine [[thoughts/optimization|optimization]]).
+* <br /><br />as far as goals goes, I'm an engineer at heart, but
+* I care
+* about building
+  * about building [[thoughts/papers/Tools for Conviviality by Ivan Illich.pdf|malleable tools]]
+  * and tinkering with
+  * abstract concepts
+    * abstract concepts that one is innately draw towards.
+      * abstract concepts that explains our own [[thoughts/representations|expression]].
+        * abstract concepts that define the vastness of our minds and the world surrounding us.
 ```
 
-as far as [[thoughts/aesthetic value|aesthetic]] goes, i like my [[antilibrary|books]] and collect [[images|images]] I come across online, and this [[/dating|doc]] if you are interested ✨
+as far as [[thoughts/aesthetic value|aesthetic]] goes, i enjoy my [[antilibrary|books]], watching [[cinematheque|cinema]], and [[images|images]] I come across online, and this [[/dating|doc]] if you are interested ✨
 
 as far as #evergreen notes goes, here are [[/thoughts|what's on my mind]], and some [[/posts|writing]] pieces as of late.

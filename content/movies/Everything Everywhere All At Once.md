@@ -1,6 +1,7 @@
 ---
 category: a24
 date: "2024-02-07"
+description: the multiverse as immigrant generational trauma—nihilism shaped like a bagel, absurdity as the only response to infinite meaninglessness, choosing kindness anyway.
 director: Daniel Scheinert, Daniel Kwan
 id: everything-everywhere-all-at-once
 modified: 2025-10-29 02:14:49 GMT-04:00

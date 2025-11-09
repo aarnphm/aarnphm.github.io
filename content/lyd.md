@@ -2,11 +2,11 @@
 date: "2025-11-08"
 description: a city of neighborhoods, stories, and endless discovery, a guide, for a friend
 id: lyd
-modified: 2025-11-08 07:31:54 GMT-05:00
+modified: 2025-11-09 01:31:25 GMT-05:00
 noindex: true
 pageLayout: lydia
 tags:
-  - toronto
+  - postcards
   - evergreen
 title: postcards, toronto.
 transclude:

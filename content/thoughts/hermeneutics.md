@@ -2,11 +2,11 @@
 date: "2025-10-03"
 description: the study of interpretation
 id: hermeneutics
-modified: 2025-10-29 02:15:46 GMT-04:00
+modified: 2025-11-09 03:41:15 GMT-05:00
 socials:
   sep: https://plato.stanford.edu/entries/hermeneutics/
 tags:
-  - seed
+  - pattern
   - philosophy
 title: hermeneutics
 ---
@@ -25,7 +25,7 @@ Hermeneutics is the practice of interpretation. Not just text, but persons, prac
 
 What does it mean to understand someone? Not to know facts about them—that's behavioral observation. To understand is to grasp _how_ they make sense of things, what distinctions matter to them, what possibilities they see. This requires entering their horizon of meaning.
 
-## ethical practice
+## [[thoughts/ethics|ethical]] practice
 
 Gadamer: understanding is practical wisdom (_phronesis_), not theoretical knowledge. [@gadamer1960truth] You don't apply universal principles; you interpret particular situations. What matters here? What does this context call for? This is ethical judgment, not calculation.
 
@@ -37,15 +37,14 @@ Axel Honneth: self-realization depends on being recognized. [@honneth1995struggl
 
 Interpretive justice: who gets to interpret whom? Whose framework counts as legitimate? Hermeneutics can perpetuate power (imposing interpretation) or resist it (recognizing interpretive authority, expanding horizons).
 
-For [[/posts/love|love]] as hermeneutic commitment, see [[thoughts/love]].
+For [[/posts/love|love]] as hermeneutic commitment, see [[thoughts/love#hermeneutics|this section]].
 
 ## what it's not
 
-Not: projecting your needs onto them and calling it understanding.
-Not: "reading their mind" or claiming privileged access.
-Not: understanding _about_ them (facts, categories) instead of understanding _them_ (their horizon).
-
-Not: assuming understanding is stable. People change. Your fusion of horizons must be redone, continuously. This is why love is a practice, not a possession.
+- projecting your needs onto them and calling it understanding.
+- "reading their mind" or claiming privileged access.
+- understanding _about_ them (facts, categories) instead of understanding _them_ (their horizon).
+- assuming understanding is stable. People change. Your fusion of horizons must be redone, continuously. This is why love is a practice, not a possession.
 
 ## connection to [[thoughts/functionalism|functionalism]]
 
@@ -57,13 +56,15 @@ Functionalism works for [[thoughts/LLMs]], for control systems, for role-playing
 
 This is the limit of compression: you can't compress a person to a model without losing what makes them a person. Attention resists compression. [@karlsson2025reading]
 
-## wittgensteinian coda
+## [[thoughts/Wittgenstein|Wittgensteinian]] coda
 
 > what does understanding _look like_ in practice?
 
-Understanding as a language-game: the criteria are public (attention, responsiveness, staying with difficulty), but the significance is first-person (this particular person, this particular horizon, this particular text).
+Understanding as language-game: criteria are public (attention, responsiveness, staying with difficulty), but significance is first-person (this particular person, this horizon, this text).
 
-Interpretation is use. You understand someone when you can participate in their form of life, when their distinctions guide your action. Not perfect understanding—working understanding. Good enough to stay in the circle.
+Interpretation is use. You understand when you can participate in their form of life, when their distinctions guide your action. Not perfect understanding—working understanding. Good enough to stay in the circle.
+
+For detailed discussion of how criteria work in practice, see [[thoughts/love#criteria]].
 
 cf: understanding = fusion of horizons through sustained attention. ethical practice requires phronesis (practical wisdom), recognition (narrative authority), interpretive justice. practice, not theory. criteria, not essence.
 

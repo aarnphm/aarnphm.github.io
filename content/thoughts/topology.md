@@ -2,7 +2,7 @@
 date: "2025-11-01"
 description: evergreen hub for topology study anchored on munkres and mit 18.901.
 id: topology
-modified: 2025-11-02 04:17:24 GMT-05:00
+modified: 2025-11-09 01:43:56 GMT-05:00
 tags:
   - math
   - topology
@@ -33,12 +33,12 @@ see also: {{sidenotes[munkres' topology]: james munkres, _topology_ (2nd ed.)}}
 
 ### year 1 (current)
 
-- [[thoughts/topology/point-set|point-set]] — definitions, bases, subspaces, product/quotient constructions, sample mit pset solutions.
+- [[thoughts/topology/point set|point-set topology]] — definitions, bases, subspaces, product/quotient constructions, sample mit pset solutions.
 - [[thoughts/topology/separation|separation]] — $t_0$ through normality, urysohn, tietze extension, metrization heuristics.
 - [[thoughts/topology/compactness|compactness]] — compact, sequentially compact, lindelöf, local compactness, applications.
-- [[thoughts/topology/fundamental-group|fundamental group]] — loop spaces, van kampen, covering theory case studies.
-- [[thoughts/topology/algebraic-bridge|algebraic bridge]] — homology theory, chain complexes, stepping stones toward mit 18.906.
-- [[thoughts/topology/simply-connected|simple connectivity]] — why $\pi_1=0$ is the right condition, poincaré homology sphere counterexample.
+- [[thoughts/topology/fundamental group|fundamental group]] — loop spaces, van kampen, covering theory case studies.
+- [[thoughts/topology/algebraic bridge|algebraic bridge]] — homology theory, chain complexes, stepping stones toward mit 18.906.
+- [[thoughts/topology/simply connected|simple connectivity]] — why $\pi_1=0$ is the right condition, poincaré homology sphere counterexample.
 
 ### extended roadmap (years 2-4)
 

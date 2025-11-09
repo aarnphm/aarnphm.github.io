@@ -7,7 +7,7 @@ aliases:
 date: "2025-10-04"
 description: choosing to give your full, continuously.
 id: love
-modified: 2025-11-08 05:11:28 GMT-05:00
+modified: 2025-11-09 03:54:56 GMT-05:00
 socials:
   essay: /posts/love
 tags:
@@ -19,19 +19,34 @@ tags:
 title: dilectio
 ---
 
-Love is not a feeling that happens to you. It's a discipline, a practice, a continuous choice to attend to someone despite no guarantees. You choose to stay in the hermeneutic circle, to keep interpreting generously, to refuse instrumental understanding. [@kierkegaard1847worksoflove; @fromm1956art; @hooks2000love]
+Love is not a feeling that happens to you.
 
-> [!summary] tl;dr
+It's a discipline, a practice, a continuous choice to attend to someone despite no {{sidenotes[guarantees.]: You choose to stay in the hermeneutic circle, to keep interpreting generously, to refuse instrumental understanding. [@kierkegaard1847worksoflove; @fromm1956art; @hooks2000love]}}
+
+> [!summary] decomposable functions
 >
-> love = choice + attention + practice. not conditioned response, not feeling, not possession. you decide to make someone central, to give them your interpretive attention, to stay with difficulty. ethics of care: particularity over universality, relational self, context-sensitive responsiveness. criteria: how they talk about them, what they notice, whether they stay when it's hard. resists compression—you can't love someone you've reduced to a function.
+> choice + [[thoughts/Attention|attention]] + practice.
+>
+> not conditioned response, not feeling, not possession. you decide to make someone central, to give them your interpretive attention, to stay with difficulty.
+
+ethics of care: particularity over universality, relational self, context-sensitive responsiveness.
+
+criteria: how they talk about them, what they notice, whether they stay when it's hard. resists compression—you can't love someone you've reduced to a function.
 
 ## not a feeling
 
-If love were a feeling, it would be subject to extinction. Withdraw reinforcement, love disappears. Add punishment, love turns to avoidance. This is [[thoughts/Behavirourism|behaviorism's]] prediction: love is just positive reinforcement schedule.
+If love were a feeling:
 
-Empirical failure: abusive relationships don't end quickly (high punishment). Secure relationships aren't just well-tuned reinforcement. People stay through illness, depression, long separation—all conditions that break behavioral contingencies.
+- it would be subject to _extinction_.
+- Withdraw reinforcement, love disappears.
+- Add punishment, love turns to avoidance.
 
-Existentialist alternative: love is choice, not response. [@kierkegaard1847worksoflove; @fromm1956art; @hooks2000love] You commit not because they reinforce you but because you _decide_ to make them central. This decision persists despite absence of guarantees, despite changes, failures, disappointments.
+> This is [[thoughts/Behavirourism|behaviorism's]] prediction: love is just positive reinforcement schedule.
+
+abusive relationships don't end quickly (high punishment). Secure relationships aren't just well-tuned reinforcement. People stay through illness, depression, long separation—all conditions that break behavioral contingencies.
+
+[[thoughts/Existentialism|existentialist]] argues "love is choice, not a response within communications". [@kierkegaard1847worksoflove; @fromm1956art; @hooks2000love]
+You commit not because they reinforce you but because you _decide_ to make them central. This decision persists despite absence of guarantees, despite changes, failures, disappointments.
 
 Kierkegaard: love is duty you give yourself. "You shall love" makes love free—it's independent of the object's behavior. [@kierkegaard1847worksoflove] Not duty imposed from outside (that would be behaviorism: external reinforcement), but duty you choose. They can change; you chose this, you remain.
 

@@ -5,7 +5,7 @@ id: distributed inference
 modified: 2025-10-29 02:15:44 GMT-04:00
 tags:
   - llm
-  - serving
+  - inference
 title: distributed inference
 ---
 
