@@ -340,13 +340,25 @@ async function hydrateInternalHost(host: HTMLElement) {
     const isPdf = /\.pdf(?:[?#].*)?$/i.test(urlWithoutHash.pathname)
 
     if (isPdf) {
-      // Handle PDF files
+      // Handle PDF files - fetch from internal URL and create blob
       preview.innerHTML = ""
       preview.classList.add("arena-modal-embed-pdf")
       preview.dataset.pdfStatus = "loading"
+      renderPdfLoading(preview)
 
       try {
-        await createPdfViewer(preview, urlWithoutHash.toString())
+        const response = await fetchCanonical(urlWithoutHash)
+        if (!response.ok) {
+          throw new Error(`fetch failed: ${response.status}`)
+        }
+
+        const blob = await response.blob()
+        const blobUrl = URL.createObjectURL(blob)
+
+        // Store blob URL for cleanup
+        preview.dataset.pdfBlobUrl = blobUrl
+
+        await createPdfViewer(preview, blobUrl)
         preview.dataset.pdfStatus = "loaded"
         host.dataset.internalStatus = "loaded"
       } catch (pdfError) {
@@ -595,12 +607,14 @@ async function createPdfViewer(container: HTMLElement, pdfUrl: string): Promise<
     a.click()
   })
 
-  const proxyUrl = `/api/pdf-proxy?url=${encodeURIComponent(pdfUrl)}`
+  // Use CORS proxy for external PDFs, direct blob URLs for internal PDFs
+  const isBlobUrl = pdfUrl.startsWith("blob:")
+  const loadUrl = isBlobUrl ? pdfUrl : `/api/pdf-proxy?url=${encodeURIComponent(pdfUrl)}`
 
   window.pdfjsLib.GlobalWorkerOptions.workerSrc = `${PDFJS_CDN}/pdf.worker.min.mjs`
 
   // Load PDF
-  return window.pdfjsLib.getDocument(proxyUrl).promise.then((pdf: any) => {
+  return window.pdfjsLib.getDocument(loadUrl).promise.then((pdf: any) => {
     pdfDoc = pdf
     pdfInstances.set(container, pdfDoc)
     totalPages = pdf.numPages
@@ -655,6 +669,14 @@ function cleanupPdfs(root: HTMLElement) {
       }
     }
     pdfInstances.delete(node)
+
+    // Cleanup blob URLs for internal PDFs
+    const blobUrl = node.dataset.pdfBlobUrl
+    if (blobUrl) {
+      URL.revokeObjectURL(blobUrl)
+      delete node.dataset.pdfBlobUrl
+    }
+
     node.dataset.pdfStatus = ""
   })
 }
