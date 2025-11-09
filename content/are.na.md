@@ -41,7 +41,7 @@ cssclasses:
 date: "2024-10-24"
 description: My run-down version of are[dot]na
 id: are.na
-modified: 2025-11-09 04:06:40 GMT-05:00
+modified: 2025-11-09 05:08:21 GMT-05:00
 permalinks:
   - /website
   - /tweets
@@ -1204,7 +1204,7 @@ title: are.na
   - [meta]:
     - date: 11/09/2025
     - tags: [fruit]
-- https://archive.ph/5669x -- Is Having a Boyfriend Embarrassing Now?
+- https://archive.ph/5669x -- Is Having a Boyfriend Embarrassing Now? [--]
   - [meta]:
     - date: 11/09/2025
     - tags: [love]
@@ -1234,7 +1234,7 @@ title: are.na
   - [meta]:
     - date: 11/03/2025
     - tags: [biology, history]
-- https://archive.ph/iMdvd -- Some People Can’t See Mental Images. The Consequences Are Profound
+- https://archive.ph/iMdvd -- Some People Can’t See Mental Images. The Consequences Are Profound [--]
   - [meta]:
     - date: 11/02/2025
     - tags: [friend]
@@ -1440,7 +1440,7 @@ title: are.na
     - date: 10/05/2025
     - tags: [fruit]
   - i.e: the evolution of anisogamy
-- [[thoughts/papers/Augmenting Human Intellect, A Conceptual Framework - D.C Engelbart, 1962.pdf]] -- "Augmenting Human Intellect", Douglas Engelbart [**]
+- [[thoughts/papers/Augmenting Human Intellect.pdf]] -- Augmenting Human Intellect, A Conceptual Framework - D.C Engelbart, 1962 [**]
   - [meta]:
     - date: 10/28/2025
     - tags: [fruit]
@@ -1508,7 +1508,7 @@ title: are.na
   - [meta]:
     - date: 01/17/2025
     - tags: [fruit]
-- https://archive.ph/XsuTV -- Handwritten blog [**]
+- https://archive.ph/XsuTV -- Handwritten blog [**] [--]
   - [meta]:
     - date: 01/17/2025
     - tags: [fruit]
@@ -1553,7 +1553,7 @@ title: are.na
   - [meta]:
     - date: 03/05/2025
     - tags: [fruit]
-- https://www.oaktreecapital.com/docs/default-source/memos/on-bubble-watch.pdf?sfvrsn=ab105466_4 -- On Bubble Watch and Stock market
+- https://www.oaktreecapital.com/docs/default-source/memos/on-bubble-watch.pdf -- On Bubble Watch and Stock market
   - [meta]:
     - date: 03/05/2025
     - tags: [fruit]
@@ -1587,7 +1587,7 @@ title: are.na
   - [meta]:
     - date: 04/09/2025
     - tags: [fruit]
-- https://archive.ph/YNZI0 -- Elon wants what he can't have: Wikipedia
+- https://archive.ph/YNZI0 -- Elon wants what he can't have: Wikipedia [--]
   - [meta]:
     - date: 04/27/2025
     - tags: [fruit]
@@ -1856,7 +1856,7 @@ title: are.na
   - [meta]:
     - date: 10/03/2025
     - tags: [fruit]
-- https://archive.ph/MegKQ -- How AI is changing the office
+- https://archive.ph/MegKQ -- How AI is changing the office [--]
   - [meta]:
     - date: 10/02/2025
     - tags: [fruit]
@@ -2004,11 +2004,11 @@ title: are.na
   - [meta]:
     - date: 10/27/2025
     - tags: [fruit]
-- https://www.anthropic.com/research/reasoning-models-dont-say-think -- Reasoning models don't always say what they think
+- https://assets.anthropic.com/m/71876fabef0f0ed4/original/reasoning_models_paper.pdf -- Reasoning models don't always say what they think
   - [meta]:
     - date: 10/09/2025
     - tags: [interpretability]
-  - https://assets.anthropic.com/m/71876fabef0f0ed4/original/reasoning_models_paper.pdf
+  - see also: https://www.anthropic.com/research/reasoning-models-dont-say-think
 - https://transformer-circuits.pub/2025/faithfulness-toy-model/index.html -- A Toy Model of Mechanistic (Un)Faithfulness
   - [meta]:
     - date: 10/27/2025
@@ -4360,7 +4360,7 @@ title: are.na
 
 ## papers
 
-- https://www.arxiv.org/abs/2509.25149
+- https://arxiv.org/abs/2509.25149
   - [meta]:
     - date: 11/09/2025
     - tags: [training, nvfp4]

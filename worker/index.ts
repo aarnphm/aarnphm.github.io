@@ -524,6 +524,64 @@ export default {
       case "/api/embed": {
         return handleEmbedRequest(request, apiHeaders, env)
       }
+      case "/api/pdf-proxy": {
+        const pdfUrl = url.searchParams.get("url")
+        if (!pdfUrl) {
+          return new Response("missing url parameter", {
+            status: 400,
+            headers: { ...apiHeaders, "Content-Type": "text/plain" },
+          })
+        }
+
+        let targetUrl: URL
+        try {
+          targetUrl = new URL(pdfUrl)
+        } catch {
+          return new Response("invalid url", {
+            status: 400,
+            headers: { ...apiHeaders, "Content-Type": "text/plain" },
+          })
+        }
+
+        // Only allow HTTP(S)
+        if (targetUrl.protocol !== "https:" && targetUrl.protocol !== "http:") {
+          return new Response("unsupported protocol", {
+            status: 400,
+            headers: { ...apiHeaders, "Content-Type": "text/plain" },
+          })
+        }
+
+        try {
+          const pdfResponse = await fetch(targetUrl.toString(), {
+            method: "GET",
+            cf: {
+              cacheTtl: 3600,
+              cacheEverything: true,
+            },
+          })
+
+          if (!pdfResponse.ok) {
+            return new Response(`upstream error: ${pdfResponse.status}`, {
+              status: 502,
+              headers: { ...apiHeaders, "Content-Type": "text/plain" },
+            })
+          }
+
+          return new Response(pdfResponse.body, {
+            status: 200,
+            headers: {
+              "Content-Type": "application/pdf",
+              "Access-Control-Allow-Origin": "*",
+              "Cache-Control": "public, max-age=3600",
+            },
+          })
+        } catch (err: any) {
+          return new Response(`proxy error: ${err?.message ?? "unknown"}`, {
+            status: 502,
+            headers: { ...apiHeaders, "Content-Type": "text/plain" },
+          })
+        }
+      }
       case "/_plausible/event": {
         if (method !== "POST") {
           return new Response("method not allowed", {

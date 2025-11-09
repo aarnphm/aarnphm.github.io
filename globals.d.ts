@@ -26,5 +26,6 @@ export declare global {
     }
     mermaid: typeof import("mermaid/dist/mermaid").default
     mapboxgl: any
+    pdfjsLib: any
   }
 }

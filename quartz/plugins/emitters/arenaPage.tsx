@@ -297,11 +297,20 @@ export const ArenaPage: QuartzEmitterPlugin<Partial<FullPageLayout>> = (userOpts
     },
     externalResources: () => ({
       additionalHead: [
+        <script src={"https://api.mapbox.com/mapbox-gl-js/v3.15.0/mapbox-gl.js"} defer />,
         <link
           href={"https://api.mapbox.com/mapbox-gl-js/v3.15.0/mapbox-gl.css"}
           rel="stylesheet"
         />,
-        <script src={"https://api.mapbox.com/mapbox-gl-js/v3.15.0/mapbox-gl.js"} defer />,
+        <script
+          src={"https://cdnjs.cloudflare.com/ajax/libs/pdf.js/5.4.54/pdf.min.mjs"}
+          defer
+          type="module"
+        />,
+        <link
+          href={"https://cdnjs.cloudflare.com/ajax/libs/pdf.js/5.4.54/pdf_viewer.min.css"}
+          rel="stylesheet"
+        />,
       ],
     }),
   }

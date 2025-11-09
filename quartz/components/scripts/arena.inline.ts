@@ -333,8 +333,34 @@ async function hydrateInternalHost(host: HTMLElement) {
 
   try {
     const targetUrl = new URL(href, window.location.origin)
-    targetUrl.hash = ""
-    const response = await fetchCanonical(targetUrl)
+    const urlWithoutHash = new URL(targetUrl.toString())
+    urlWithoutHash.hash = ""
+
+    // Check if this is a PDF by URL extension
+    const isPdf = /\.pdf(?:[?#].*)?$/i.test(urlWithoutHash.pathname)
+
+    if (isPdf) {
+      // Handle PDF files
+      preview.innerHTML = ""
+      preview.classList.add("arena-modal-embed-pdf")
+      preview.dataset.pdfStatus = "loading"
+
+      try {
+        await createPdfViewer(preview, urlWithoutHash.toString())
+        preview.dataset.pdfStatus = "loaded"
+        host.dataset.internalStatus = "loaded"
+      } catch (pdfError) {
+        console.error("PDF load error:", pdfError)
+        const filename = urlWithoutHash.pathname.split("/").pop() || "document.pdf"
+        renderPdfError(preview, urlWithoutHash.toString(), filename)
+        preview.dataset.pdfStatus = "error"
+        host.dataset.internalStatus = "error"
+      }
+      return
+    }
+
+    // Handle HTML content
+    const response = await fetchCanonical(urlWithoutHash)
     if (!response.ok) {
       throw new Error(`status ${response.status}`)
     }
@@ -392,6 +418,244 @@ function hydrateInternalHosts(root: HTMLElement) {
   const hosts = root.querySelectorAll<HTMLElement>(".arena-modal-internal-host[data-internal-href]")
   hosts.forEach((host) => {
     void hydrateInternalHost(host)
+  })
+}
+
+// PDF.js integration
+const PDFJS_CDN = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/5.4.54"
+const pdfInstances = new WeakMap<HTMLElement, any>()
+
+function renderPdfLoading(container: HTMLElement) {
+  container.innerHTML = ""
+  const spinner = document.createElement("span")
+  spinner.className = "arena-loading-spinner"
+  spinner.setAttribute("role", "status")
+  spinner.setAttribute("aria-label", "Loading PDF")
+  container.appendChild(spinner)
+}
+
+function renderPdfError(container: HTMLElement, pdfUrl: string, filename: string) {
+  container.innerHTML = ""
+  const errorDiv = document.createElement("div")
+  errorDiv.className = "arena-pdf-error"
+  const message = document.createElement("p")
+  message.textContent = "unable to display PDF in browser"
+  const link = document.createElement("a")
+  link.href = pdfUrl
+  link.download = filename
+  link.className = "arena-pdf-download-link"
+  link.textContent = "download PDF →"
+  errorDiv.appendChild(message)
+  errorDiv.appendChild(link)
+  container.appendChild(errorDiv)
+}
+
+async function createPdfViewer(container: HTMLElement, pdfUrl: string): Promise<void> {
+  let pdfDoc: any = null
+  let currentPage = 1
+  let totalPages = 0
+  let scale = 3.0
+  let rendering = false
+
+  // Find existing pre-rendered elements or create them
+  let controls = container.querySelector(".arena-pdf-controls") as HTMLElement
+  let canvas = container.querySelector(".arena-pdf-canvas") as HTMLCanvasElement
+  const spinner = container.querySelector(".arena-loading-spinner") as HTMLElement
+
+  if (!controls || !canvas) {
+    // Fallback: create elements if they don't exist (for internal PDFs)
+    canvas = document.createElement("canvas")
+    canvas.className = "arena-pdf-canvas"
+
+    controls = document.createElement("div")
+    controls.className = "arena-pdf-controls"
+    controls.innerHTML = `
+      <div class="arena-pdf-controls-group">
+        <button type="button" class="arena-pdf-btn arena-pdf-prev" disabled>
+          <svg width="12" height="12" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M8.84182 3.13514C9.04327 3.32401 9.05348 3.64042 8.86462 3.84188L5.43521 7.49991L8.86462 11.1579C9.05348 11.3594 9.04327 11.6758 8.84182 11.8647C8.64036 12.0535 8.32394 12.0433 8.13508 11.8419L4.38508 7.84188C4.20477 7.64955 4.20477 7.35027 4.38508 7.15794L8.13508 3.15794C8.32394 2.95648 8.64036 2.94628 8.84182 3.13514Z" fill="currentColor"/>
+          </svg>
+        </button>
+        <span class="arena-pdf-page-info">
+          <input type="number" class="arena-pdf-page-input" value="1" min="1"/> / <span class="arena-pdf-total">0</span>
+        </span>
+        <button type="button" class="arena-pdf-btn arena-pdf-next" disabled>
+          <svg width="12" height="12" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M6.1584 3.13508C6.35985 2.94621 6.67627 2.95642 6.86514 3.15788L10.6151 7.15788C10.7954 7.3502 10.7954 7.64949 10.6151 7.84182L6.86514 11.8418C6.67627 12.0433 6.35985 12.0535 6.1584 11.8646C5.95694 11.6757 5.94673 11.3593 6.1356 11.1579L9.565 7.49985L6.1356 3.84182C5.94673 3.64036 5.95694 3.32394 6.1584 3.13508Z" fill="currentColor"/>
+          </svg>
+        </button>
+      </div>
+      <div class="arena-pdf-controls-group">
+        <button type="button" class="arena-pdf-btn arena-pdf-zoom-out" title="Zoom out">
+          <svg width="12" height="12" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M3.5 7C3.22386 7 3 7.22386 3 7.5C3 7.77614 3.22386 8 3.5 8H11.5C11.7761 8 12 7.77614 12 7.5C12 7.22386 11.7761 7 11.5 7H3.5Z" fill="currentColor"/>
+          </svg>
+        </button>
+        <span class="arena-pdf-zoom-level">300%</span>
+        <button type="button" class="arena-pdf-btn arena-pdf-zoom-in" title="Zoom in">
+          <svg width="12" height="12" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M8 2.75C8 2.47386 7.77614 2.25 7.5 2.25C7.22386 2.25 7 2.47386 7 2.75V7H2.75C2.47386 7 2.25 7.22386 2.25 7.5C2.25 7.77614 2.47386 8 2.75 8H7V12.25C7 12.5261 7.22386 12.75 7.5 12.75C7.77614 12.75 8 12.5261 8 12.25V8H12.25C12.5261 8 12.75 7.77614 12.75 7.5C12.75 7.22386 12.5261 7 12.25 7H8V2.75Z" fill="currentColor"/>
+          </svg>
+        </button>
+        <button type="button" class="arena-pdf-btn arena-pdf-download" title="Download PDF">
+          <svg width="12" height="12" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M7.50005 1.04999C7.74858 1.04999 7.95005 1.25146 7.95005 1.49999V8.41359L10.1819 6.18179C10.3576 6.00605 10.6425 6.00605 10.8182 6.18179C10.994 6.35753 10.994 6.64245 10.8182 6.81819L7.81825 9.81819C7.64251 9.99392 7.35759 9.99392 7.18185 9.81819L4.18185 6.81819C4.00611 6.64245 4.00611 6.35753 4.18185 6.18179C4.35759 6.00605 4.64251 6.00605 4.81825 6.18179L7.05005 8.41359V1.49999C7.05005 1.25146 7.25152 1.04999 7.50005 1.04999ZM2.5 10C2.77614 10 3 10.2239 3 10.5V12C3 12.5539 3.44565 13 3.99635 13H11.0012C11.5529 13 12 12.5528 12 12V10.5C12 10.2239 12.2239 10 12.5 10C12.7761 10 13 10.2239 13 10.5V12C13 13.1041 12.1062 14 11.0012 14H3.99635C2.89019 14 2 13.103 2 12V10.5C2 10.2239 2.22386 10 2.5 10Z" fill="currentColor"/>
+          </svg>
+        </button>
+      </div>
+    `
+
+    const canvasWrapper = document.createElement("div")
+    canvasWrapper.className = "arena-pdf-canvas-wrapper"
+    canvasWrapper.appendChild(canvas)
+
+    container.innerHTML = ""
+    container.appendChild(controls)
+    container.appendChild(canvasWrapper)
+  }
+
+  const ctx = canvas.getContext("2d")
+
+  function renderPageAtIndex(pageNum: number) {
+    if (rendering || !pdfDoc) return
+
+    rendering = true
+    const pageInput = controls.querySelector(".arena-pdf-page-input") as HTMLInputElement
+
+    pdfDoc
+      .getPage(pageNum)
+      .then((page: any) => {
+        const viewport = page.getViewport({ scale })
+        canvas.height = viewport.height
+        canvas.width = viewport.width
+
+        const renderContext = {
+          canvasContext: ctx,
+          viewport: viewport,
+        }
+
+        return page.render(renderContext).promise
+      })
+      .then(() => {
+        rendering = false
+        currentPage = pageNum
+        if (pageInput) pageInput.value = String(currentPage)
+        updateControls()
+      })
+      .catch((err: Error) => {
+        console.error("PDF render error:", err)
+        rendering = false
+      })
+  }
+
+  function updateControls() {
+    const prevBtn = controls.querySelector(".arena-pdf-prev") as HTMLButtonElement
+    const nextBtn = controls.querySelector(".arena-pdf-next") as HTMLButtonElement
+    const zoomLevel = controls.querySelector(".arena-pdf-zoom-level") as HTMLSpanElement
+
+    if (prevBtn) prevBtn.disabled = currentPage <= 1
+    if (nextBtn) nextBtn.disabled = currentPage >= totalPages
+    if (zoomLevel) zoomLevel.textContent = `${Math.round(scale * 100)}%`
+  }
+
+  // Event handlers
+  controls.querySelector(".arena-pdf-prev")?.addEventListener("click", () => {
+    if (currentPage > 1) renderPageAtIndex(currentPage - 1)
+  })
+
+  controls.querySelector(".arena-pdf-next")?.addEventListener("click", () => {
+    if (currentPage < totalPages) renderPageAtIndex(currentPage + 1)
+  })
+
+  const pageInput = controls.querySelector(".arena-pdf-page-input") as HTMLInputElement
+  pageInput?.addEventListener("change", (e) => {
+    const target = e.target as HTMLInputElement
+    const page = Number.parseInt(target.value, 10)
+    if (page >= 1 && page <= totalPages) {
+      renderPageAtIndex(page)
+    } else {
+      target.value = String(currentPage)
+    }
+  })
+
+  controls.querySelector(".arena-pdf-zoom-in")?.addEventListener("click", () => {
+    scale = Math.min(scale + 0.25, 3.0)
+    renderPageAtIndex(currentPage)
+  })
+
+  controls.querySelector(".arena-pdf-zoom-out")?.addEventListener("click", () => {
+    scale = Math.max(scale - 0.25, 0.5)
+    renderPageAtIndex(currentPage)
+  })
+
+  controls.querySelector(".arena-pdf-download")?.addEventListener("click", () => {
+    const a = document.createElement("a")
+    a.href = pdfUrl
+    a.download = container.dataset.pdfFilename || "document.pdf"
+    a.click()
+  })
+
+  const proxyUrl = `/api/pdf-proxy?url=${encodeURIComponent(pdfUrl)}`
+
+  window.pdfjsLib.GlobalWorkerOptions.workerSrc = `${PDFJS_CDN}/pdf.worker.min.mjs`
+
+  // Load PDF
+  return window.pdfjsLib.getDocument(proxyUrl).promise.then((pdf: any) => {
+    pdfDoc = pdf
+    pdfInstances.set(container, pdfDoc)
+    totalPages = pdf.numPages
+    const totalSpan = controls.querySelector(".arena-pdf-total")
+    if (totalSpan) totalSpan.textContent = String(totalPages)
+    pageInput?.setAttribute("max", String(totalPages))
+
+    // Show controls and hide spinner
+    controls.style.display = ""
+    if (spinner) spinner.style.display = "none"
+
+    renderPageAtIndex(1)
+  })
+}
+
+function hydratePdfEmbeds(root: HTMLElement) {
+  const nodes = root.querySelectorAll<HTMLElement>(
+    ".arena-modal-embed-pdf[data-pdf-url]:not([data-pdf-status])",
+  )
+
+  nodes.forEach((node) => {
+    const pdfUrl = node.dataset.pdfUrl
+    if (!pdfUrl) return
+
+    node.dataset.pdfStatus = "loading"
+    renderPdfLoading(node)
+
+    const filename = node.dataset.pdfFilename || "document.pdf"
+
+    createPdfViewer(node, pdfUrl)
+      .then(() => {
+        if (!node.isConnected) return
+        node.dataset.pdfStatus = "loaded"
+      })
+      .catch((err) => {
+        console.error("PDF load error:", err)
+        if (!node.isConnected) return
+        renderPdfError(node, pdfUrl, filename)
+        node.dataset.pdfStatus = "error"
+      })
+  })
+}
+
+function cleanupPdfs(root: HTMLElement) {
+  root.querySelectorAll<HTMLElement>(".arena-modal-embed-pdf[data-pdf-status]").forEach((node) => {
+    const instance = pdfInstances.get(node)
+    if (instance?.destroy) {
+      try {
+        instance.destroy()
+      } catch (err) {
+        console.error(err)
+      }
+    }
+    pdfInstances.delete(node)
+    node.dataset.pdfStatus = ""
   })
 }
 
@@ -630,6 +894,7 @@ async function showModal(blockId: string) {
   hydrateSubstackEmbeds(modalBody)
   hydrateInternalHosts(modalBody)
   hydrateMapboxMaps(modalBody)
+  hydratePdfEmbeds(modalBody)
 
   const sidebar = modalBody.querySelector(".arena-modal-sidebar") as HTMLElement | null
   const hasConnections = modalBody.querySelector(".arena-modal-connections") !== null
@@ -656,6 +921,7 @@ function closeModal() {
     const modalBody = modal.querySelector(".arena-modal-body") as HTMLElement | null
     if (modalBody) {
       cleanupMaps(modalBody)
+      cleanupPdfs(modalBody)
     }
     modal.classList.remove("active")
     unlockPageScroll()
