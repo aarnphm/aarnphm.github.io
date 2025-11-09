@@ -30,4 +30,10 @@
   --line-height: 1.4;
   --line-px: calc(var(--line-height) * var(--font-size));
   --sidepanel-padding: 14px;
+
+  // telescope
+  --telescope-highlight: rgb(252, 193, 146);
+  --telescope-highlight-hover: rgb(249, 174, 119);
+  --telescope-text-color: var(--dark);
+  --telescope-border: #888;
 }

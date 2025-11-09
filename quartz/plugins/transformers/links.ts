@@ -17,6 +17,7 @@ import { filterEmbedTwitter, twitterUrlRegex } from "./twitter"
 import { h, s } from "hastscript"
 import {
   anthropicSvg,
+  bentomlHoverSvg,
   bentomlSvg,
   ycSvg,
   bskySvg,
@@ -183,6 +184,13 @@ export const CrawlLinks: QuartzTransformerPlugin<Partial<Options>> = (userOpts) 
                   isGoogleDrive: dest.includes("drive.google.com"),
                 }
 
+                if (linkTypes.isBentoml) {
+                  if (!classes.includes("bentoml-link")) {
+                    classes.push("bentoml-link")
+                  }
+                  ctx.node.properties.dataLinkVendor = "bentoml"
+                }
+
                 if (
                   linkTypes.isWikipedia &&
                   node.children.length === 1 &&
@@ -320,7 +328,7 @@ export const CrawlLinks: QuartzTransformerPlugin<Partial<Options>> = (userOpts) 
                       createIconElement("/static/favicons/neovim.svg", "Neovim"),
                     )
                   } else if (linkTypes.isBentoml) {
-                    ctx.node.children.push(bentomlSvg)
+                    ctx.node.children.push(bentomlSvg, bentomlHoverSvg)
                   } else if (linkTypes.isYoutube) {
                     ctx.node.children.push(youtubeSvg)
                   } else if (linkTypes.isGwern) {

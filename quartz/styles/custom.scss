@@ -317,16 +317,20 @@ a {
 
   &.internal.tag-link {
     text-decoration: none;
-    padding: 0.1em 0.4em;
-    margin: 0 0.1em;
-    border: 1px solid var(--gray);
-    border-radius: 0px;
-    font-size: 0.9em;
+    display: inline;
+    padding: 0 3px;
+    margin: -1px;
+    box-shadow:
+      0px 1px 0px 1px var(--light) inset,
+      0px 1px 0px 2px var(--telescope-border) inset;
 
     &:hover {
-      background-color: var(--light);
-      border-color: var(--dark);
-      color: var(--iris);
+      box-shadow:
+        0px 1px 0px 0px var(--light) inset,
+        0px 1px 0px 1px var(--telescope-border) inset;
+      border-bottom: 1px solid var(--telescope-border);
+      color: var(--darkgray);
+      background: initial;
     }
   }
 
@@ -890,6 +894,26 @@ p.quotes {
 img.inline-icons {
   margin: 0;
   border-radius: 0;
+}
+
+a.bentoml-link {
+  display: inline;
+  align-items: center;
+  gap: 0.2em;
+
+  [data-icon="bentoml-white"] {
+    display: none;
+  }
+
+  &:hover [data-icon="bentoml"],
+  &:focus-visible [data-icon="bentoml"] {
+    display: none;
+  }
+
+  &:hover [data-icon="bentoml-white"],
+  &:focus-visible [data-icon="bentoml-white"] {
+    display: inline;
+  }
 }
 
 .nolist {

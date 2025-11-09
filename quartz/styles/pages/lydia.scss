@@ -2,7 +2,7 @@
 @use "../mixin.scss" as *;
 @use "./lydia-frame-decorations.scss";
 
-[data-slug="lyd"] {
+[data-slug="lyd"]:not([class~="suggestion-item"]) {
   display: flow-root;
   position: relative;
   min-height: 100vh;
@@ -98,6 +98,10 @@
       background 0.5s ease-in-out,
       box-shadow 0.5s ease-in-out,
       transform 0.3s ease-in-out;
+
+    @media all and ($tablet) {
+      grid-column: 1/-1;
+    }
 
     @media all and ($mobile) {
       padding: 1.5rem;
@@ -732,7 +736,6 @@
       opacity: 1;
     }
   }
-
 }
 
 @keyframes characterFloat {

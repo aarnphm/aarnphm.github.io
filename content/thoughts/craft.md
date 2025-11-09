@@ -6,7 +6,7 @@ comments: false
 date: "2021-12-22"
 description: and a celebration for the act of making.
 id: craft
-modified: 2025-11-04 04:00:57 GMT-05:00
+modified: 2025-11-08 15:25:03 GMT-05:00
 permalinks:
   - /thoughts/work
   - /craft
@@ -32,6 +32,8 @@ You can find internal monologue under [[/posts/]] index.
     - polyalphabetic cipher with deterministic reversible transformations includes a Fiestel network structure with MurmurHash3 mixing of 32-bit avalanche mixer
     - Source: [site but password protected](https://nicky.day/)
       ![[thoughts/images/nb-day.webp]]
+- postcards, a collections of cards for all the places I have lived at.
+  - [[lyd|Toronto, CA]]
 
 ## open source.
 

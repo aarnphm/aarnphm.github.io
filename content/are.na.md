@@ -41,7 +41,7 @@ cssclasses:
 date: "2024-10-24"
 description: My run-down version of are[dot]na
 id: are.na
-modified: 2025-11-06 08:42:26 GMT-05:00
+modified: 2025-11-08 08:09:30 GMT-05:00
 permalinks:
   - /website
   - /tweets
@@ -2565,6 +2565,10 @@ title: are.na
 
 ## opinions
 
+- https://joincolossus.com/article/inside-cursor/ -- Inside Cursor
+  - [meta]:
+    - date: 11/08/2025
+    - tags: [work culture]
 - https://andymasley.substack.com/p/individual-ai-use-is-not-bad-for -- Using ChatGPT is not bad for the environment [**]
   - [meta]:
     - date: 11/04/2025
