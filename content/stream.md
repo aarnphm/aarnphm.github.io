@@ -2,7 +2,7 @@
 date: "2025-10-24"
 description: a microblog within a blog, at the middle of the night.
 id: stream
-modified: 2025-11-09 01:34:29 GMT-05:00
+modified: 2025-11-09 06:19:30 GMT-05:00
 tags:
   - seed
   - fruit
@@ -15,7 +15,12 @@ title: stream
   - tags:
     - technical
 
-![[thoughts/Connectionist network]]
+
+I've been thinking about connectionist networks lately (or for the past two years or so), and there's something deeply unsettling about how we talk about them. Not unsettling in a bad way—more like that productive discomfort you get when you realize the categories you've been using don't quite map onto reality.
+
+The whole connectionist project started as a rejection, really. A rejection of the idea that intelligence is symbol manipulation all the way down. Back in 1986, when Rumelhart and McClelland dropped their PDP volumes [@rumelhart1986parallel], they weren't just proposing a new computational architecture—they were making an ontological claim about what cognition _is_.
+
+![[thoughts/Connectionist network#{collapsed: true}]]
 
 ---
 

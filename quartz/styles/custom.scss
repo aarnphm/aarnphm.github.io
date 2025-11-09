@@ -916,6 +916,26 @@ a.bentoml-link {
   }
 }
 
+a.github-link {
+  display: inline;
+  align-items: center;
+  gap: 0.2em;
+
+  [data-icon="github-white"] {
+    display: none;
+  }
+
+  &:hover [data-icon="github"],
+  &:focus-visible [data-icon="github"] {
+    display: none;
+  }
+
+  &:hover [data-icon="github-white"],
+  &:focus-visible [data-icon="github-white"] {
+    display: inline;
+  }
+}
+
 [saved-theme="dark"] {
   a.bentoml-link {
     [data-icon="bentoml"] {
@@ -937,6 +957,30 @@ a.bentoml-link {
 
       svg {
         fill: #000;
+      }
+    }
+  }
+
+  a.github-link {
+    [data-icon="github"] {
+      display: none;
+    }
+
+    [data-icon="github-white"] {
+      display: inline;
+    }
+
+    &:hover,
+    &:focus-visible {
+      [data-icon="github-white"] {
+        display: none;
+      }
+      [data-icon="github"] {
+        display: inline;
+
+        svg {
+          fill: #000;
+        }
       }
     }
   }

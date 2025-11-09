@@ -23,6 +23,7 @@ import {
   bskySvg,
   doiSvg,
   githubSvg,
+  githubWhiteSvg,
   substackSvg,
   svgOptions,
   twitterSvg,
@@ -208,6 +209,13 @@ export const CrawlLinks: QuartzTransformerPlugin<Partial<Options>> = (userOpts) 
                   ctx.node.properties.dataLinkVendor = "bentoml"
                 }
 
+                if (linkTypes.isGithub) {
+                  if (!classes.includes("github-link")) {
+                    classes.push("github-link")
+                  }
+                  ctx.node.properties.dataLinkVendor = "github"
+                }
+
                 if (
                   linkTypes.isWikipedia &&
                   node.children.length === 1 &&
@@ -363,7 +371,7 @@ export const CrawlLinks: QuartzTransformerPlugin<Partial<Options>> = (userOpts) 
                   } else if (linkTypes.isOpenai) {
                     ctx.node.children.push(openaiSvg)
                   } else if (linkTypes.isGithub) {
-                    ctx.node.children.push(githubSvg)
+                    ctx.node.children.push(githubSvg, githubWhiteSvg)
                   } else if (linkTypes.isSubstack) {
                     ctx.node.children.push(substackSvg)
                   } else if (linkTypes.isTwitter) {

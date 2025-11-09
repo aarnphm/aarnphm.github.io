@@ -2,22 +2,20 @@
 date: "2025-10-04"
 description: what neural networks are, ontologically speaking
 id: Connectionist network
-modified: 2025-11-09 01:34:05 GMT-05:00
+modified: 2025-11-09 06:26:24 GMT-05:00
 pageLayout: technical
 signature: with abundance of love and joy - Aaron
 tags:
   - philosophy
   - ml
 title: connectionist networks
+transclude:
+  title: false
 ---
-
-I've been thinking about connectionist networks lately (or for the past two years or so), and there's something deeply unsettling about how we talk about them. Not unsettling in a bad way—more like that productive discomfort you get when you realize the categories you've been using don't quite map onto reality.
-
-The whole connectionist project started as a rejection, really. A rejection of the idea that intelligence is symbol manipulation all the way down. Back in 1986, when Rumelhart and McClelland dropped their PDP volumes [@rumelhart1986parallel], they weren't just proposing a new computational architecture—they were making an ontological claim about what cognition _is_.
 
 ## the distributed hypothesis
 
-Here's the thing that still gets me: in a connectionist network, a concept doesn't live anywhere. Take the classic example—your grandmother. In symbolic AI, there'd be a GRANDMOTHER node somewhere, maybe with pointers to ELDERLY, FEMALE, FAMILY.
+in a connectionist network, a concept doesn't live anywhere. Take the classic example—your grandmother. In symbolic AI, there'd be a GRANDMOTHER node somewhere, maybe with pointers to ELDERLY, FEMALE, FAMILY.
 
 Your grandmother is a pattern of activation across thousands of units in a neural network. She reconstructed from thousands/thousands of intricate layers. Every time you think of her, the network performs this little miracle of reassembly from distributed fragments. The representation is:
 
@@ -29,7 +27,7 @@ where $\mathbf{r}$ isn't "grandmother" but a high-dimensional vector that someho
 
 The network doesn't _have_ [[thoughts/representations]]; it _does_ the representation.
 
-## what [[thoughts/FFN#backpropagation]] actually means
+## what [[thoughts/FFN#backpropagation|backpropagation]] actually means
 
 Everyone knows backprop as an optimization algorithm. Chain rule, [[thoughts/gradient descent]], update weights. But consider what it implies ontologically.
 
@@ -227,11 +225,11 @@ A few questions on my mind:
 
 4. **Causality**: Can networks learn causal relationships, or just correlations? Recent work on causal representation learning suggests maybe, but the jury's still out.
 
-5. **Consciousness**: If consciousness emerges from information integration patterns, what prevents artificial networks from being conscious? Or are they already, in some primitive sense?
+5. **Consciousness**: If consciousness emerges from information integration patterns, what prevents artificial networks from being conscious? Or are they already, in some {{sidenotes[primitive sense?]: discussion on consciousness should be focus on <b>subjective experience</b> of the machines, instead of discussing philosophy of it all.}}
 
 These aren't just technical questions—they're questions about the nature of mind, intelligence, and understanding itself.
 
-## coda: the connectionist wager
+## coda
 
 The connectionist project is ultimately a wager: that intelligence can emerge from simple units following simple rules, that representation can be distributed and reconstructive rather than localized and stored, that learning can be nothing more than weight adjustment yet give rise to understanding.
 

@@ -41,7 +41,7 @@ cssclasses:
 date: "2024-10-24"
 description: My run-down version of are[dot]na
 id: are.na
-modified: 2025-11-09 05:43:47 GMT-05:00
+modified: 2025-11-09 06:09:33 GMT-05:00
 permalinks:
   - /website
   - /tweets
@@ -1389,7 +1389,7 @@ title: are.na
   - [meta]:
     - date: 10/09/2025
     - tags: [fruit]
-- https://www.lightspeedmagazine.com/fiction/state-change/ -- State change
+- https://www.lightspeedmagazine.com/fiction/state-change/ -- State change [--]
   - [meta]:
     - date: 10/09/2025
     - tags: [fruit]

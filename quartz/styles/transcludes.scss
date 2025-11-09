@@ -34,7 +34,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 0.75rem 1rem;
+  padding: 0.75rem 2rem 1rem 1rem;
   color: var(--darkgray);
   cursor: pointer;
   user-select: none;
@@ -75,7 +75,7 @@
 }
 
 .transclude-content {
-  padding: 0 1rem 1rem 1rem;
+  padding: 0 2rem 1rem 1rem;
   transition: opacity 0.2s cubic-bezier(0.02, 0.01, 0.47, 1);
   overflow: hidden;
 
