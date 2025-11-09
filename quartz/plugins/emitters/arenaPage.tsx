@@ -307,10 +307,6 @@ export const ArenaPage: QuartzEmitterPlugin<Partial<FullPageLayout>> = (userOpts
           defer
           type="module"
         />,
-        <link
-          href={"https://cdnjs.cloudflare.com/ajax/libs/pdf.js/5.4.54/pdf_viewer.min.css"}
-          rel="stylesheet"
-        />,
       ],
     }),
   }
