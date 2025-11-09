@@ -765,7 +765,6 @@ function createModalDataFromJson(block: ArenaBlockSearchable, channelSlug: strin
       `
     : ""
 
-  // Determine embed content
   let mainContentHtml = ""
   if (block.embedHtml) {
     mainContentHtml = block.embedHtml
@@ -779,7 +778,7 @@ function createModalDataFromJson(block: ArenaBlockSearchable, channelSlug: strin
     mainContentHtml = `
       <div class="arena-iframe-error">
         <div class="arena-iframe-error-content">
-          <p>unable to embed content</p>
+          <p>embedded content unavailable</p>
           <a href="${block.url}" target="_blank" rel="noopener noreferrer" class="arena-iframe-error-link">
             open in new tab →
           </a>

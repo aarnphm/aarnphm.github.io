@@ -2,7 +2,7 @@
 date: "2023-07-29"
 description: a knowledge distillation and learning process
 id: writing
-modified: 2025-11-09 02:14:10 GMT-05:00
+modified: 2025-11-09 09:32:52 GMT-05:00
 tags:
   - sapling
   - evergreen
@@ -131,7 +131,7 @@ The search query metaphor reveals something profound about the tension between w
 
 I keep coming back to this idea: most writing advice assumes you already know what you want to say and just need help saying it better. But what if you don't know what you want to say? What if the writing is how you find out? Then accessibility becomes a kind of {{sidenotes[premature optimization ]: Donald Knuth famously said "premature optimization is the root of all evil" about programming. The same principle applies to writing—optimizing for readers before you've optimized for thinking is backwards.}}.
 
-![[https://www.youtube.com/watch?v=FGqbUHOTog8&ab_channel=buildspace]]
+![[https://www.youtube-nocookie.com/embed/FGqbUHOTog8?si=svR4lBUhMk_ZJdK6]]
 
 ## protocol
 

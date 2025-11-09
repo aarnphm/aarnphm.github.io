@@ -1,6 +1,6 @@
 import { QuartzTransformerPlugin } from "../types"
 import { Element } from "hast"
-import { Html } from "mdast"
+import { Html, Link, Paragraph, PhrasingContent } from "mdast"
 import { Parent } from "unist"
 import { visit } from "unist-util-visit"
 import { unescapeHTML } from "../../util/escape"
@@ -34,6 +34,25 @@ const cache = new Map<string, string>()
 
 const fallbackHtml = (url: string) =>
   `<p class="twitter-fallback">Link to original <a href="${url}">tweet</a>.</p>`
+
+const isWhitespaceNode = (node: PhrasingContent) => {
+  if (node.type !== "text") return false
+  return node.value.trim() === ""
+}
+
+const isNakedLink = (parent: Paragraph, child: Link) => {
+  const meaningfulChildren = parent.children.filter((node) => !isWhitespaceNode(node))
+  if (meaningfulChildren.length !== 1 || meaningfulChildren[0] !== child) {
+    return false
+  }
+
+  const linkText = child.children
+    .map((node) => (node.type === "text" ? node.value : ""))
+    .join("")
+    .trim()
+
+  return linkText.length === 0 || linkText === child.url
+}
 
 export async function fetchTwitterEmbed(url: string, locale: string): Promise<string> {
   const cacheKey = `twitter:${locale}:${url}`
@@ -70,8 +89,6 @@ export const Twitter: QuartzTransformerPlugin = () => ({
     return src
   },
   markdownPlugins({ cfg, argv }) {
-    if (argv.watch && !argv.force) return []
-
     const locale = cfg.configuration.locale.split("-")[0] ?? "en"
     return [
       () => async (tree, file) => {
@@ -90,10 +107,14 @@ export const Twitter: QuartzTransformerPlugin = () => ({
           parent.children.splice(index, 1, { type: "html", value } as Html)
         }
 
-        visit(tree, "paragraph", (node) => {
+        visit(tree, "paragraph", (node: Paragraph) => {
           for (let i = 0; i < node.children.length; i++) {
             const child = node.children[i]
-            if (child.type === "link" && twitterUrlRegex.test(child.url)) {
+            if (
+              child.type === "link" &&
+              twitterUrlRegex.test(child.url) &&
+              isNakedLink(node, child)
+            ) {
               promises.push(fetchEmbedded(node, i, child.url, locale))
             }
           }

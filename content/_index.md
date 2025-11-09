@@ -5,7 +5,7 @@ aliases:
 date: "2022-04-22"
 description: my working notes, as a form of a digital garden
 id: _index
-modified: 2025-11-09 07:37:28 GMT-05:00
+modified: 2025-11-09 10:46:04 GMT-05:00
 tags:
   - evergreen
   - fruit
@@ -80,10 +80,10 @@ as far as [[thoughts/craft|work]] goes, I'm working at a [startup](https://bento
 * about building
   * about building [[thoughts/papers/Tools for Conviviality by Ivan Illich.pdf|malleable tools]]
   * and pondering about
-  * abstract concepts
-    * abstract concepts that one is innately draw towards.
-      * abstract concepts that explains our own [[thoughts/representations|expression]].
-        * abstract concepts that explains the world surrounding us.
+  * metaphyics
+    * [[thoughts/Metaphysics|metaphysics]], Markovian
+    * properties
+      * properties of our [[thoughts/representations|expression]].
 ```
 
 as far as [[thoughts/aesthetic value|aesthetic]] goes, i enjoy my [[antilibrary|books]], watching [[cinematheque|cinema]], and [[images|images]] I come across online, and this [[/dating|doc]] if you are interested ✨

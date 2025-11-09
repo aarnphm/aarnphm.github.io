@@ -189,6 +189,17 @@ const parseLinkTitle = (text: string): { url: string; title?: string } | undefin
 const stripTrailingMarkers = (value: string): string =>
   value.replace(TRAILING_MARKERS_PATTERN, "").trim()
 
+const isGithubUrl = (rawUrl: string): boolean => {
+  if (!rawUrl) return false
+  try {
+    const { hostname } = new URL(rawUrl)
+    const normalized = hostname.toLowerCase()
+    return normalized === "github.com" || normalized.endsWith(".github.com")
+  } catch {
+    return rawUrl.toLowerCase().includes("github.com/")
+  }
+}
+
 // Get text content from li excluding nested ul elements
 const getTextContentExcludingNestedUl = (li: Element): string => {
   let text = ""
@@ -431,7 +442,7 @@ export const Arena: QuartzTransformerPlugin = () => {
               const trailingMatch = textContent.match(TRAILING_MARKERS_PATTERN)
               const trailingSection = trailingMatch ? trailingMatch[0] : ""
               const highlighted = HIGHLIGHT_MARKER.test(trailingSection)
-              const embedDisabled = EMBED_DISABLED_MARKER.test(trailingSection)
+              const embedDisabledFromMarker = EMBED_DISABLED_MARKER.test(trailingSection)
               const strippedContent = stripTrailingMarkers(textContent)
 
               // find first <a> element
@@ -495,13 +506,15 @@ export const Arena: QuartzTransformerPlugin = () => {
               const fallbackContent = titleCandidate || strippedContent || url || ""
               const blockId = `block-${blockCounter++}`
 
+              const blockEmbedDisabled = embedDisabledFromMarker || (url ? isGithubUrl(url) : false)
+
               const block: ArenaBlock = {
                 id: blockId,
                 content: fallbackContent,
                 title: titleCandidate,
                 url,
                 highlighted,
-                embedDisabled,
+                embedDisabled: blockEmbedDisabled,
               }
 
               // handle nested list

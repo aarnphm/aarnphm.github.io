@@ -41,7 +41,7 @@ cssclasses:
 date: "2024-10-24"
 description: My run-down version of are[dot]na
 id: are.na
-modified: 2025-11-09 08:56:24 GMT-05:00
+modified: 2025-11-09 11:14:58 GMT-05:00
 permalinks:
   - /website
   - /tweets
@@ -267,6 +267,11 @@ title: are.na
 
 ## website
 
+- https://www.sacred.computer/ -- Terminal-based React components
+  - [meta]:
+    - date: 11/09/2025
+    - tags: [design]
+  - #design
 - https://girl.surgery/website_vibes/ -- Image vibes
   - [meta]:
     - date: 11/09/2025
@@ -664,6 +669,14 @@ title: are.na
 
 ## people
 
+- http://www.aaronsw.com/weblog/ -- Aaron Swartz
+  - [meta]:
+    - date: 11/09/2025
+    - tags: [sociologist]
+- https://girl.surgery/ -- Sophia's blog
+  - [meta]:
+    - date: 11/09/2025
+    - tags: [personal]
 - https://en.wikipedia.org/wiki/Erich_Fromm -- Erich Fromm
   - [meta]:
     - date: 11/05/2025
@@ -1200,7 +1213,19 @@ title: are.na
 
 ## essay
 
-- https://nickbostrom.com/papers/vulnerable.pdf -- [[thoughts/The Vulnerable World Hypothesis]], Nick Bostrom [**]
+- https://www.nypl.org/blog/2022/07/25/into-woods-video-game -- 'Into the Woods': The Video Game
+  - [meta]:
+    - date: 11/09/2025
+    - tags: [game]
+- https://www.bbc.com/future/article/20240206-why-flirting-might-be-good-for-your-relationship -- How to be a good flirt, according to science [--]
+  - [meta]:
+    - date: 11/09/2025
+    - tags: [dating]
+- http://www.aaronsw.com/weblog/tdk -- What Happens in The Dark Knight
+  - [meta]:
+    - date: 11/09/2025
+    - tags: [essay, movie]
+- https://nickbostrom.com/papers/vulnerable.pdf -- [[thoughts/The Vulnerable World Hypothesis]], Nick Bostrom
   - [meta]:
     - date: 11/09/2025
     - tags: [alignment, singularity]
@@ -1951,6 +1976,18 @@ title: are.na
 - [meta]:
   - view: list
 
+- https://github.com/Dao-AILab/flash-attention/blob/main/flash_attn/cute/flash_fwd_sm100.py -- FlashAttention 4 CuTE kernels for B200 [**]
+  - [meta]:
+    - date: 11/09/2025
+    - tags: [kernel]
+- https://michaelnielsen.org/reinventing_explanation/ -- Reinventing Explanation
+  - [meta]:
+    - date: 11/09/2025
+    - tags: [visualization]
+- https://colah.github.io/posts/2015-09-Visual-Information/ -- Visual Information Theory [**]
+  - [meta]:
+    - date: 11/09/2025
+    - tags: [visualization]
 - https://github.com/bitsandbytes-foundation/bitsandbytes/blob/63f538a4e492017dd4a52edfde142c4ca818d401/bitsandbytes/backends/triton/kernels_4bit.py#L155 -- 4bit blockwise triton kernels
   - [meta]:
     - date: 11/09/2025
@@ -3475,10 +3512,14 @@ title: are.na
 
 ## video
 
+- https://www.youtube.com/watch?v=98LdFA-_zfA -- Christopher Alexander - Patterns in Architecture
+  - [meta]:
+    - date: 11/09/2025
+    - tags: [architecture]
 - https://www.youtube.com/watch?v=cjZvFY6__qw -- I Skied Down Mount Everest (world first, no oxygen)
   - [meta]:
     - date: 11/09/2025
-    - tags: [ads]
+    - tags: [extreme sports]
 - https://www.youtube.com/watch?v=XCBqoisl_1M -- The Evil Design of Auschwitz
   - [meta]:
     - date: 10/29/2025
@@ -4228,6 +4269,10 @@ title: are.na
 
 ## math
 
+- https://www.youtube.com/watch?v=4Iejh8qTPJ4 -- Chris Skinner, The Birch--Swinnerton-Dyer Conjecture: a millennium prize problem at 25
+  - [meta]:
+    - date: 11/09/2025
+    - tags: [conjecture, pde]
 - https://www.youtube.com/watch?v=HpRi3OQtyLk -- Refined THH Over ku and Habiro Cohomology - Ferdinand Wagner
   - [meta]:
     - date: 11/04/2025

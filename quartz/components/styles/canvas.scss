@@ -125,9 +125,6 @@ $canvas-accents: (
   a {
     color: var(--secondary);
     text-decoration: underline;
-    &:hover {
-      color: var(--tertiary);
-    }
   }
 
   blockquote {

@@ -351,6 +351,10 @@ body[data-arena-subpage="true"] {
   flex-direction: column;
   cursor: pointer;
 
+  &:focus-visible {
+    outline: var(--secondary);
+  }
+
   &:hover {
     border-color: var(--secondary);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);

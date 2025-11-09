@@ -2,7 +2,7 @@
 date: "2024-02-28"
 description: and absurdism, create value by revolting against the nothingness of life.
 id: Camus
-modified: 2025-11-06 09:58:35 GMT-05:00
+modified: 2025-11-09 10:17:57 GMT-05:00
 tags:
   - philosophy
 title: Camus
@@ -16,7 +16,7 @@ Of the absurd [[thoughts/reason|reasoning]] and [[thoughts/Existentialism|existe
 
 ### Absurd and suicide
 
-Suicide is the solution for the absurd:
+[Suicide](https://docs.google.com/document/d/14XZJtJcMGzD4ZY6AgaTzobunndRvXZMGUybA6JIQOj4/edit?tab=t.0) is the solution for the absurd:
 
 - People never died because of ontological arguments
 - Suicide is often the result of people who didn't find worth in the living

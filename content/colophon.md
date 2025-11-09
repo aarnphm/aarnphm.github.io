@@ -3,7 +3,7 @@ date: "2024-12-10"
 description: nobby designer word for "the design of the current site"
 id: colophon
 lang: en
-modified: 2025-11-09 03:44:46 GMT-05:00
+modified: 2025-11-09 09:26:56 GMT-05:00
 socials:
   twitter: https://x.com/aarnphm_/status/1861550609834402129
 tags:
@@ -12,7 +12,7 @@ tags:
 title: colophon
 ---
 
-**#technical** -- a [heavily modified fork](https://en.wikipedia.org/wiki/Ship_of_Theseus) of [Quartz](https://quartz.jzhao.xyz/), hosted with Cloudflare Workers, with support for arXiV file pulling, [telescopic](https://github.com/jackyzha0/telescopic-text) [[/index|text]], a [note view](https://notes.aarnphm.xyz/notes?stackedNotes=bm90ZXM), [[singularity.canvas|JSONCanvas supports]], [[cinematheque.base|Obsidian Bases support]] hierarchical grid layout, reader view with custom [[/thoughts|folder]] and [[/tags|tags]] view, nested [[/index.xml|rss]] [[/posts/index.xml|feed]], sidenotes, sidepanels [^sidepanel], modified [Flexoki](https://stephango.com/flexoki). I also host all of the LFS on Cloudflare R2, and have a middleware as a proxy client.
+**#technical** -- a [heavily modified fork](https://en.wikipedia.org/wiki/Ship_of_Theseus) of [Quartz](https://quartz.jzhao.xyz/), hosted with Cloudflare Workers, with support for arXiV file pulling, [telescopic](https://github.com/jackyzha0/telescopic-text) [[/index|text]], a [note view](https://notes.aarnphm.xyz/notes?stackedNotes=bm90ZXM), [[/singularity|JSONCanvas supports]], [[cinematheque.base|Obsidian Bases support]] hierarchical grid layout, reader view with custom [[/thoughts|folder]] and [[/tags|tags]] view, nested [[/index.xml|rss]] [[/posts/index.xml|feed]], sidenotes, sidepanels [^sidepanel], modified [Flexoki](https://stephango.com/flexoki). I also host all of the LFS on Cloudflare R2, and have a middleware as a proxy client.
 
 [^sidepanel]: You can hold <kbd>alt+click</kbd> on any internal links to [popover](https://x.com/aarnphm_/status/1884954569341272345) a side panel 😃
 

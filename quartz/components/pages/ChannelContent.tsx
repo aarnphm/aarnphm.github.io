@@ -209,7 +209,7 @@ const ArenaModalMainContent = ({
     content = (
       <div class="arena-iframe-error">
         <div class="arena-iframe-error-content">
-          <p>unable to embed content</p>
+          <p>embedded content unavailable</p>
           <a
             href={targetUrl}
             target="_blank"
