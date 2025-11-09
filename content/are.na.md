@@ -41,7 +41,7 @@ cssclasses:
 date: "2024-10-24"
 description: My run-down version of are[dot]na
 id: are.na
-modified: 2025-11-09 05:08:21 GMT-05:00
+modified: 2025-11-09 05:21:35 GMT-05:00
 permalinks:
   - /website
   - /tweets
@@ -1440,7 +1440,7 @@ title: are.na
     - date: 10/05/2025
     - tags: [fruit]
   - i.e: the evolution of anisogamy
-- [[thoughts/papers/Augmenting Human Intellect.pdf]] -- Augmenting Human Intellect, A Conceptual Framework - D.C Engelbart, 1962 [**]
+- [[thoughts/papers/Augmenting-Human-Intellect.pdf]] -- Augmenting Human Intellect, A Conceptual Framework - D.C Engelbart, 1962 [**]
   - [meta]:
     - date: 10/28/2025
     - tags: [fruit]
