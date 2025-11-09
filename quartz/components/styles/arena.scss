@@ -742,9 +742,9 @@ body[data-arena-subpage="true"] {
     display: flex;
     flex-direction: column;
     min-height: 500px;
-    background: var(--lightgray);
     border-radius: 4px;
     overflow: hidden;
+    gap: 1rem;
   }
 
   .arena-pdf-controls {
@@ -819,6 +819,12 @@ body[data-arena-subpage="true"] {
     font-size: 0.85rem;
     background: var(--light);
 
+    &::-webkit-outer-spin-button,
+    &::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+
     &:focus {
       outline: 2px solid var(--secondary);
       outline-offset: 1px;
@@ -891,6 +897,7 @@ body[data-arena-subpage="true"] {
     overflow-x: hidden;
     padding: 1.5rem;
     background: var(--light);
+    gap: 1rem;
 
     &::-webkit-scrollbar {
       width: 8px;
@@ -1644,11 +1651,6 @@ span.tag-link:hover {
   .arena-search-result-channel-badge {
     background: var(--darkgray);
     color: var(--light);
-  }
-
-  // PDF viewer dark mode
-  .arena-modal-embed-pdf {
-    background: var(--darkgray);
   }
 
   .arena-pdf-controls {

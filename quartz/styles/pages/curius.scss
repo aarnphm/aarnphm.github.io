@@ -557,7 +557,8 @@ svg.favorite-icon {
 
 .curius-pagination {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end;
+  gap: 2rem;
   align-items: center;
   margin-top: 2rem;
   padding: 1rem 0;
