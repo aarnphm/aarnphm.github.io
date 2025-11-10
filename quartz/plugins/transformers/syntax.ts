@@ -84,12 +84,12 @@ export const SyntaxHighlighting: QuartzTransformerPlugin<Partial<Options>> = (us
                   )
                   if (hasDisable) {
                     preEl.properties = preEl.properties ?? {}
-                    ;(preEl.properties as any)["data-disable-line-number"] = "true"
+                    preEl.properties["data-disable-line-number"] = "true"
                     // Also mirror on the parent wrapper (figure/div) if present
                     const parentEl = _parent as Element | undefined
                     if (parentEl && typeof parentEl.tagName === "string") {
                       parentEl.properties = parentEl.properties ?? {}
-                      ;(parentEl.properties as any)["data-disable-line-number"] = "true"
+                      parentEl.properties["data-disable-line-number"] = "true"
                     }
                   }
                 } catch {}

@@ -41,7 +41,7 @@ cssclasses:
 date: "2024-10-24"
 description: My run-down version of are[dot]na
 id: are.na
-modified: 2025-11-10 05:55:50 GMT-05:00
+modified: 2025-11-10 06:29:52 GMT-05:00
 permalinks:
   - /website
   - /tweets
@@ -122,6 +122,10 @@ title: are.na
 - [meta]:
   - view: list
 
+- https://x.com/karpathy/status/1864023344435380613 -- Story behind [[thoughts/Attention]] development
+  - [meta]:
+    - date: 11/10/2025
+    - tags: [llm]
 - https://x.com/johannes_hage/status/1986326790697300462 -- PrimeRL was also rejected at NeurIPS
   - [meta]:
     - date: 11/07/2025

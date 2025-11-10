@@ -17,7 +17,6 @@ interface MapConfig {
   clustering: boolean
 }
 
-
 function formatPropertyValue(value: any): string {
   if (value === undefined || value === null) return ""
   if (Array.isArray(value)) {
@@ -280,7 +279,8 @@ async function initializeMap(container: HTMLElement) {
   }
 
   // store map instance for cleanup
-  ;(container as any)._mapInstance = map
+  // @ts-ignore
+  container._mapInstance = map
 }
 
 function initBaseMaps() {

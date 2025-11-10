@@ -71,13 +71,13 @@ function setupBaseViewSelector() {
 
     // filter views based on search
     function filterViews(query: string) {
-      const items = viewList.querySelectorAll(".bases-toolbar-menu-item")
+      const items = viewList.querySelectorAll<HTMLElement>(".bases-toolbar-menu-item")
       const lowerQuery = query.toLowerCase()
 
       items.forEach((item) => {
         const viewName = (item.getAttribute("data-view-name") || "").toLowerCase()
         const matches = viewName.includes(lowerQuery)
-        ;(item as HTMLElement).style.display = matches ? "" : "none"
+        item.style.display = matches ? "" : "none"
       })
     }
 

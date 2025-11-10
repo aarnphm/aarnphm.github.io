@@ -253,7 +253,7 @@ async function filterStreamEntries(query: string) {
   }
 
   const trimmedQuery = query.trim()
-  const streamEntries = document.querySelectorAll(".stream-entry")
+  const streamEntries = document.querySelectorAll<HTMLElement>(".stream-entry")
 
   // Clear existing highlights
   clearHighlights()
@@ -261,7 +261,7 @@ async function filterStreamEntries(query: string) {
   // If no query, show all entries
   if (!trimmedQuery) {
     streamEntries.forEach((entry) => {
-      ;(entry as HTMLElement).style.display = ""
+      entry.style.display = ""
     })
     updateSearchStatus("")
     return
@@ -276,7 +276,7 @@ async function filterStreamEntries(query: string) {
   if (isTagQuery) {
     if (tagTokens.length === 0) {
       streamEntries.forEach((entry) => {
-        ;(entry as HTMLElement).style.display = ""
+        entry.style.display = ""
       })
       updateSearchStatus("type a tag name after '#'")
       return
@@ -325,7 +325,7 @@ async function filterStreamEntries(query: string) {
     streamEntries.forEach((entry) => {
       const entryId = (entry as HTMLElement).dataset.entryId
       if (entryId && matchedEntryIds.has(entryId)) {
-        ;(entry as HTMLElement).style.display = ""
+        entry.style.display = ""
 
         // Highlight matches in content
         const contentEl = entry.querySelector(".stream-entry-content") as HTMLElement
@@ -341,7 +341,7 @@ async function filterStreamEntries(query: string) {
         }
         visibleCount++
       } else {
-        ;(entry as HTMLElement).style.display = "none"
+        entry.style.display = "none"
       }
     })
 

@@ -10,12 +10,15 @@ interface HeadingInfo {
 
 let modal: HTMLElement | null = null
 let isOpen = false
-let headings: HeadingInfo[] = []
+let allHeadings: HeadingInfo[] = []
+let filteredHeadings: HeadingInfo[] = []
 let currentIndex = 0
 let isSecondaryMode = false
 let secondaryGroups: Record<string, number[]> = {}
 let secondaryExtmarks: HTMLElement[] = []
 let secondaryKeys: string[] = []
+let searchInput: HTMLInputElement | null = null
+let searchQuery = ""
 
 const SECONDARY_CHOICE_KEYS = [
   "a",
@@ -60,6 +63,33 @@ function shouldIgnoreShortcutTarget(target: EventTarget | null): boolean {
   if (el.closest(".stream-search-container")) return true
 
   return false
+}
+
+function getVisibleHeadings(): HeadingInfo[] {
+  return filteredHeadings.length > 0 || searchQuery.trim().length > 0
+    ? filteredHeadings
+    : allHeadings
+}
+
+function updateFilteredHeadings() {
+  const query = searchQuery.trim().toLowerCase()
+  if (query.length === 0) {
+    filteredHeadings = [...allHeadings]
+  } else {
+    filteredHeadings = allHeadings.filter((heading) =>
+      heading.text.toLowerCase().includes(query),
+    )
+  }
+
+  const visible = getVisibleHeadings()
+  secondaryGroups = buildLetterGroups(visible)
+  if (visible.length === 0) {
+    currentIndex = 0
+  } else if (currentIndex >= visible.length) {
+    currentIndex = visible.length - 1
+  }
+
+  renderHeadings()
 }
 
 function extractHeadings(): HeadingInfo[] {
@@ -130,7 +160,17 @@ function renderHeadings() {
 
   listContainer.innerHTML = ""
 
-  headings.forEach((heading, index) => {
+  const visible = getVisibleHeadings()
+
+  if (visible.length === 0) {
+    const empty = document.createElement("div")
+    empty.className = "heading-item heading-item-empty"
+    empty.textContent = "no headings match"
+    listContainer.appendChild(empty)
+    return
+  }
+
+  visible.forEach((heading, index) => {
     const item = document.createElement("div")
     item.className = "heading-item"
     item.dataset.index = index.toString()
@@ -155,7 +195,7 @@ function updateActiveItem() {
   if (!items) return
 
   items.forEach((item, index) => {
-    item.classList.toggle("active", index === currentIndex)
+    item.classList.toggle("active", index === currentIndex && !item.classList.contains("heading-item-empty"))
   })
 
   // Scroll active item into view
@@ -166,9 +206,10 @@ function updateActiveItem() {
 }
 
 function jumpToHeading(index: number) {
-  if (index < 0 || index >= headings.length) return
+  const visible = getVisibleHeadings()
+  if (index < 0 || index >= visible.length) return
 
-  const heading = headings[index]
+  const heading = visible[index]
   closeModal()
 
   // Calculate proper scroll position to center the heading
@@ -221,7 +262,8 @@ function enterSecondaryMode(letter: string) {
   const listContainer = modal?.querySelector(".headings-list")
   if (!listContainer) return
 
-  const middle = Math.ceil(headings.length / 2)
+  const visible = getVisibleHeadings()
+  const middle = Math.ceil(visible.length / 2)
   indices.sort((a, b) => {
     const distA = Math.abs(a - middle)
     const distB = Math.abs(b - middle)
@@ -244,7 +286,7 @@ function enterSecondaryMode(letter: string) {
     const item = listContainer.querySelector(`[data-index="${index}"]`) as HTMLElement
     if (!item) return
 
-    const text = item.textContent || ""
+    const text = visible[index]?.uniqueText || item.textContent || ""
     const keyIndex = findKeyLetterIndex(text, key)
 
     if (keyIndex !== -1) {
@@ -314,11 +356,17 @@ function handleLetterKey(letter: string) {
 function openModal() {
   if (isOpen) return
 
-  headings = extractHeadings()
-  if (headings.length === 0) return
+  allHeadings = extractHeadings()
+  if (allHeadings.length === 0) return
 
-  secondaryGroups = buildLetterGroups(headings)
+  searchQuery = ""
+  if (searchInput) {
+    searchInput.value = ""
+  }
+
+  filteredHeadings = [...allHeadings]
   currentIndex = 0
+  updateFilteredHeadings()
   isOpen = true
 
   if (!modal) {
@@ -327,8 +375,6 @@ function openModal() {
 
   if (modal) {
     modal.style.display = "flex"
-    renderHeadings()
-
     // Focus the modal for keyboard handling
     const modalContent = modal.querySelector(".headings-modal") as HTMLElement
     modalContent?.focus()
@@ -352,6 +398,10 @@ function closeModal() {
 function handleKeyDown(e: KeyboardEvent) {
   if (!isOpen) return
 
+  if (searchInput && e.target === searchInput) {
+    return
+  }
+
   if (isSecondaryMode) {
     // Secondary mode keys are handled by their own listener
     return
@@ -371,7 +421,7 @@ function handleKeyDown(e: KeyboardEvent) {
     case "ArrowDown":
     case "j":
       e.preventDefault()
-      currentIndex = Math.min(currentIndex + 1, headings.length - 1)
+      currentIndex = Math.min(currentIndex + 1, Math.max(getVisibleHeadings().length - 1, 0))
       updateActiveItem()
       break
 
@@ -382,9 +432,23 @@ function handleKeyDown(e: KeyboardEvent) {
       updateActiveItem()
       break
 
+    case "/":
+      e.preventDefault()
+      if (searchInput) {
+        searchInput.focus()
+        searchInput.select()
+      }
+      break
+
     default:
       // Handle letter keys
-      if (e.key.length === 1 && e.key.match(/[a-z]/i) && !e.ctrlKey && !e.metaKey) {
+      if (
+        e.key.length === 1 &&
+        e.key.match(/[a-z]/i) &&
+        !e.ctrlKey &&
+        !e.metaKey &&
+        e.key !== "/"
+      ) {
         const letter = e.key.toLowerCase()
         if (letter !== "j" && letter !== "k") {
           // Don't interfere with navigation
@@ -443,6 +507,57 @@ document.addEventListener("nav", () => {
       modalContent.setAttribute("tabindex", "-1")
     }
 
+    const header = modal.querySelector(".headings-modal-header")
+    if (header && !header.querySelector(".headings-modal-search")) {
+      const searchWrapper = document.createElement("div")
+      searchWrapper.className = "headings-modal-search"
+
+      const input = document.createElement("input")
+      input.type = "search"
+      input.placeholder = "search headings (/)"
+      input.autocomplete = "off"
+      input.spellcheck = false
+
+      input.addEventListener("input", () => {
+        searchQuery = input.value
+        updateFilteredHeadings()
+        currentIndex = 0
+        updateActiveItem()
+      })
+
+      input.addEventListener("keydown", (event) => {
+        if (event.key === "Escape") {
+          event.stopPropagation()
+          if (input.value) {
+            input.value = ""
+            searchQuery = ""
+            updateFilteredHeadings()
+            currentIndex = 0
+            updateActiveItem()
+          } else {
+            closeModal()
+          }
+        } else if (event.key === "ArrowDown") {
+          event.preventDefault()
+          currentIndex = Math.min(currentIndex + 1, getVisibleHeadings().length - 1)
+          updateActiveItem()
+        } else if (event.key === "ArrowUp") {
+          event.preventDefault()
+          currentIndex = Math.max(currentIndex - 1, 0)
+          updateActiveItem()
+        } else if (event.key === "Enter") {
+          event.preventDefault()
+          jumpToHeading(currentIndex)
+        }
+      })
+
+      searchWrapper.appendChild(input)
+      header.appendChild(searchWrapper)
+      searchInput = input
+    } else if (header) {
+      searchInput = header.querySelector(".headings-modal-search input") as HTMLInputElement | null
+    }
+
     // Register escape handler
     registerEscapeHandler(modal, closeModal)
 
@@ -470,7 +585,9 @@ document.addEventListener("nav", () => {
   // Reset state
   isOpen = false
   isSecondaryMode = false
-  headings = []
+  allHeadings = []
+  filteredHeadings = []
+  searchQuery = ""
   currentIndex = 0
   clearSecondaryMode()
 

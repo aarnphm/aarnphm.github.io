@@ -132,9 +132,9 @@ class AudioPlayer {
   private togglePlay = (): void => {
     if (this.audio.paused) {
       // pause all other audio players
-      document.querySelectorAll(".audio-embed audio").forEach((otherAudio) => {
-        if (otherAudio !== this.audio && !(otherAudio as HTMLAudioElement).paused) {
-          ;(otherAudio as HTMLAudioElement).pause()
+      document.querySelectorAll<HTMLAudioElement>(".audio-embed audio").forEach((otherAudio) => {
+        if (otherAudio !== this.audio && !otherAudio.paused) {
+          otherAudio.pause()
         }
       })
 

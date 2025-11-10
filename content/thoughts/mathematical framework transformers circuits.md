@@ -1,12 +1,12 @@
 ---
 date: "2025-09-15"
 description: Anthropic, 2021
-id: Transformer Circuits Framework
-modified: 2025-10-29 02:15:49 GMT-04:00
+id: mathematical framework transformers circuits
+modified: 2025-11-10 06:36:51 GMT-05:00
 tags:
   - ml
   - interpretability
-title: A Mathematical Framework for Transformer Circuits
+title: mathematical framework for transformer circuits
 ---
 
 The framework treats a transformer as linear updates to a shared residual stream, making algebraic structure explicit and suggesting “privileged” feature bases for interpretation.
@@ -16,7 +16,7 @@ see also:
 - [[thoughts/induction heads]], superposition, logit lens
 - Matrix perspectives and decompositions: [[thoughts/Singular Value Decomposition|SVD]], [[thoughts/Attention]], [[thoughts/Vector calculus#Jacobian matrix|Jacobian]].
 
-## residual stream as a [[/tags/linalg]] space
+## residual stream as a #linalg space
 
 For token position $t$, the residual vector $r^{(\ell)}_t\in\mathbb R^d$ evolves via skip connections as
 

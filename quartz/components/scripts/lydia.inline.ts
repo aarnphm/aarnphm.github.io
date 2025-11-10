@@ -92,7 +92,7 @@ function initPictureFrameDecorations() {
   const historyItems = root.querySelectorAll(".timeline-item[data-type='history']")
 
   historyItems.forEach((item, index) => {
-    const content = item.querySelector(".timeline-content") as HTMLElement
+    const content = item.querySelector<HTMLElement>(".timeline-content") as HTMLElement
     if (!content) return
 
     // Check if decorations already exist
@@ -142,7 +142,8 @@ function initPictureFrameDecorations() {
 
     content.addEventListener("animationend", (e) => {
       if ((e.target as HTMLElement).classList.contains("particle")) {
-        ;(e.target as HTMLElement).remove()
+        // @ts-ignore
+        e.target?.remove()
       }
     })
   })
@@ -368,7 +369,6 @@ function formatCoordinate(value: number, axis: "lat" | "lon"): string {
   const direction = axis === "lat" ? (value >= 0 ? "N" : "S") : value >= 0 ? "E" : "W"
   return `${Math.abs(value).toFixed(4)} ${direction}`
 }
-
 
 function initTimelineLocationPreview() {
   const root = document.querySelector("[data-slug='lyd']") as HTMLElement | null

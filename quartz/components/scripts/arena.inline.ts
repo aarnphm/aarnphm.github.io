@@ -1830,7 +1830,7 @@ document.addEventListener("nav", () => {
 
       if (key === "enter" && resultFocused) {
         e.preventDefault()
-        ;(document.activeElement as HTMLElement)?.click()
+        document.activeElement?.click()
         return
       }
     }
