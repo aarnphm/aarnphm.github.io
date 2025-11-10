@@ -581,6 +581,7 @@ body {
   & > * {
     padding-right: 1rem;
     padding-left: 1rem;
+    padding-block: 1rem;
 
     &:last-child {
       border-left: 1px solid var(--lightgray);
