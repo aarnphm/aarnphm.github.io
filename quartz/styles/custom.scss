@@ -1151,14 +1151,17 @@ body[data-slug="influence"] {
     position: static;
     border-bottom: 0;
   }
+}
 
-  .page-footer {
+[data-slug="terms-of-service"],
+[data-slug="privacy-policy"] {
+  section[class~="header"],
+  .page-footer,
+  .byline {
     display: none;
   }
 }
 
-// ----- marker highlighting -----
-// rough-notation handles the visual styling
 .marker {
   display: inline;
 }

@@ -41,7 +41,7 @@ cssclasses:
 date: "2024-10-24"
 description: My run-down version of are[dot]na
 id: are.na
-modified: 2025-11-09 11:28:30 GMT-05:00
+modified: 2025-11-09 22:27:55 GMT-05:00
 permalinks:
   - /website
   - /tweets
@@ -268,6 +268,15 @@ title: are.na
 
 ## website
 
+- https://pattern.kitchen/
+  - [meta]:
+    - date: 11/09/2025
+    - tags: [pattern]
+  - peruse a panoply of pattern languages...
+- https://hyperlink.academy/
+  - [meta]:
+    - date: 11/09/2025
+    - tags: [pedagogy]
 - https://www.sacred.computer/ -- Terminal-based React components
   - [meta]:
     - date: 11/09/2025
@@ -670,6 +679,11 @@ title: are.na
 
 ## people
 
+- https://schlage.town/ -- Brendan Schlagel
+  - [meta]:
+    - date: 11/09/2025
+    - tags: [fruit]
+  - leaflet
 - http://www.aaronsw.com/weblog/ -- Aaron Swartz
   - [meta]:
     - date: 11/09/2025

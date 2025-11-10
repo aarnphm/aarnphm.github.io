@@ -19,9 +19,9 @@ export const sharedPageComponents: SharedLayout = {
   footer: Component.Footer({
     layout: "minimal",
     links: {
+      "CC BY-NC-SA": "https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en",
       github: "https://github.com/aarnphm",
       twitter: "https://twitter.com/aarnphm_",
-      feed: "/index.xml",
     },
   }),
 }

@@ -1335,6 +1335,12 @@ const ElementComponent = ((enableRecents: boolean = false) => {
         </section>,
         <section class="boring-legal">
           <address class="clickable-container">
+            <AliasLink
+              newTab
+              classes={["external"]}
+              name="CC BY-NC-SA"
+              url="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en"
+            />
             <AliasLink newTab classes={["external"]} name="notes" url="https://notes.aarnphm.xyz" />
             <AliasLink isInternal enablePopover={false} name="colophon" url="/colophon" />
             <AliasLink isInternal enablePopover={false} name="privacy" url="/privacy-policy" />

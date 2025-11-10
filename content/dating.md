@@ -7,7 +7,7 @@ aliases:
 date: "2025-08-09"
 description: just another fish in the sea.
 id: dating
-modified: 2025-11-09 00:25:06 GMT-05:00
+modified: 2025-11-09 23:43:56 GMT-05:00
 noindex: true
 pageLayout: letter
 slides: true
@@ -32,15 +32,21 @@ I'm hoping to find a wonderful woman to be my partner [^partner], someone I can 
 
 Here's 30 second about me. By all means explore the rest of the documents.
 
-I'm a [[thoughts/LLMs|software]] engineer working on language models, but do have a knack for cooking: I make fresh pasta (tortellini, tagliatelle) every Sunday, velouté and beef stocks from time to time. I collect vinyl, climb V5s, and read math textbooks.
+I'm an [[thoughts/images/onion.webp|onion.]] [^onion]
 
-I'm a bit obsessive with my work, especially [[thoughts/Machine learning|machine learning]] model. It is all I think about these days, other than caring for my friends and people in my life ofc.
+I work on [[thoughts/LLMs|large laguage models]], and I like to cook: I make fresh pasta (tortellini, tagliatelle) every Sunday, velouté and beef stocks from time to time. I collect vinyl, climb V5s, and read math textbooks.
 
-Friends say I'm the 3am call who shows up. My [love language](https://en.wikipedia.org/wiki/The_Five_Love_Languages) is physical touch. My Myers-Briggs is ENTJ-A, though it swings to INTJ-T a lot of times. You can also find the [[personality|personality report]] from Clearer Thinking's [Ultimate Personality Test](https://www.clearerthinking.org/tools/the-ultimate-personality-test)
+[^onion]: Apparently according to ["What vegetable are you?"](https://sophie006liu.github.io/vegetal/). Which is somewhat hilarious given that I actually love [[thoughts/images/onionnnnnnnnnn.webp|onion]]!
 
-I moved continents at a young age, and learnt very early on that _solitude makes presence precious_.
+I'm a bit obsessive with my [[thoughts/craft|craft]], especially when thinking about [[thoughts/Machine learning|stochastic]] model. It is all I do these days, other than caring for my friends and people in my life (obv)
 
-I like <span style="text-decoration: underline;">Rachmaninoff</span> and garage culture, and spending time delving into random rabbit-hole. I also practice "managed obsession" [^managed-obesssion]
+I'm the 3am call who shows up. My [love language](https://en.wikipedia.org/wiki/The_Five_Love_Languages) is physical touch. I'm ["securely attached"](https://en.wikipedia.org/wiki/Attachment_theory#Attachment_styles_in_adults:~:text=%5B116%5D-,Securely%20attached,-%5Bedit%5D). My Myers-Briggs is ENTJ-A, though it swings to INTJ-T a lot of times. You can also find the [[personality|personality report]] from Clearer Thinking's [Ultimate Personality Test](https://www.clearerthinking.org/tools/the-ultimate-personality-test)
+
+I moved continents at a young age, and learnt very early on that _solitude makes presence precious_.a
+
+I actually like the em dash (—) and parentheticals and non-sequiturs.
+
+I listen to quite a bit of <span style="text-decoration: underline;">Rachmaninoff</span> and UK garage, and often caught myself rabbit-holing on random #math topics. I also practice "managed obsession" [^managed-obesssion]
 
 Looking for someone equally comfortable discussing Wittgenstein (or [[thoughts/Philosophy and Nietzsche|Nietzsche]]) over homemade pasta, high empathy, witty and sharp, non-avoidance attachment style, to plan spontaneous cabin escapes.
 

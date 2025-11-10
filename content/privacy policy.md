@@ -10,6 +10,9 @@ permalinks:
 tags:
   - evergreen
 title: Privacy Policy
+transclude:
+  title: false
+  dynalist: false
 ---
 
 **Effective date**: February 21, 2025

@@ -2,7 +2,7 @@
 date: "2025-01-06"
 description: and all the things I found interesting on the internet.
 id: images
-modified: 2025-11-04 04:16:42 GMT-05:00
+modified: 2025-11-09 23:07:37 GMT-05:00
 tags:
   - seed
 title: images
@@ -116,3 +116,7 @@ transclude:
 ![[thoughts/images/donna-tartt.webp|donna tartt]]
 ![[thoughts/images/elsa-schiaparelli.webp|elsa schiaparelli]]
 ![[thoughts/images/georgia-okeeffe.webp|georgia o'keeffe]]
+
+## me
+
+![[thoughts/images/onion.webp|onion id]]
