@@ -2,7 +2,7 @@
 date: "2025-09-10"
 description: 2/n some more notes on EAGLE and MTP
 id: notes
-modified: 2025-11-06 01:53:48 GMT-05:00
+modified: 2025-11-10 09:10:32 GMT-05:00
 socials:
   youtube: https://youtu.be/sSdoETRQQHY
 tags:
@@ -365,10 +365,10 @@ Only $\Delta\_{\parallel}$ influences logits: $W\Delta=W\Delta\_{\parallel}$ and
 
 > [!important] Consequence
 >
-> - With finite capacity/data, optimizing $\mathcal{L}\_{\text{E1}}$ allocates learning budget to drive **both** components small, wasting sample capacity on $\Delta\_{\perp}$ (logit‑irrelevant directions).
+> - With finite capacity/data, optimizing $\mathcal{L}_{\text{E1}}$ allocates learning budget to drive **both** components small, wasting sample capacity on $\Delta_{\perp}$ (logit‑irrelevant directions).
 > - The effective regression dimension is $d$, not $\mathrm{rank}(W)\le d$; generalization/sample complexity scales with the larger $d$.
 
-> [!math] Proposition 3.1 (sample‑complexity gap)
+> [!propos] 3.1 (sample‑complexity gap)
 >
 > Suppose locally the CE term is quadratic in the logit error $\delta\ell=W\Delta$ with Hessian $H\succ 0$. Then the joint objective behaves like
 >
@@ -422,7 +422,7 @@ Teacher‑forced training (only ground‑truth contexts) suffers **exposure bias
   - it mixes in the draft's predicted tokens as inputs so training matches test‑time usage.
   - This is the same fix that underlies **scheduled sampling** and **DAgger** in sequence prediction/imitation learning. [@bengio2015scheduledsamplingsequenceprediction]
 
-> [!math] Proposition 3.2 (distribution‑matching reduces compounding error)
+> [!propos] 3.2 (distribution‑matching reduces compounding error)
 >
 > Let $\rho\_{\text{TF}}$ be the teacher‑forced state distribution and $\rho\_\theta$ the draft’s induced distribution.
 >
@@ -503,26 +503,6 @@ For random‑design least squares, the **minimax excess risk** is $\Theta(d/n)$;
 
 Hence the penalty on $\Delta_{\perp}$ induces the $\Theta((d-r)/n)$ overhead. (See also [minimax risk for linear least squares](https://projecteuclid.org/journals/annals-of-statistics/volume-50/issue-4/Exact-minimax-risk-for-linear-least-squares-and-the-lower/10.1214/22-AOS2181.full), [lecture notes](https://www.stat.berkeley.edu/~ryantibs/statlearn-s23/lectures/review.pdf), [distribution-free robust linear regression](https://jaouadmourtada.github.io/files/slides/robust-linear-slides.pdf)) $\boxed{}$
 
-```text
-┌──────────────────────────────────────────────────────┐
-│ Lemma A: Nullspace Penalty – Feature Regression      │
-│------------------------------------------------------│
-│ W ∈ ℝ^{V×d}, feature error Δ = Δ∥ + Δ⊥ with          │
-│ Δ∥ ∈ Row(W)⊤ (logit-relevant), Δ⊥ ∈ Null(W)          │
-│ (logit-irrelevant, WΔ⊥ = 0).                         │
-│                                                      │
-│ Objective includes both feature loss ‖Δ∥‖²+‖Δ⊥‖²     │
-│ and CE(logits), which depends only on Δ∥.            │
-│                                                      │
-│ Therefore: feature regression wastes capacity on     │
-│ Δ⊥. Sample complexity scales like Θ(d/n) vs. Θ(r/n)  │
-│ if only Δ∥ is needed (r = rank(W) ≤ d).              │
-│                                                      │
-│ ⇒ EAGLE-3 drops feature loss → avoids Δ⊥ → scales    │
-│ better with data. ([arxiv.org/abs/2503.01840])       │
-└──────────────────────────────────────────────────────┘
-```
-
 > [!math] Lemma 3.4, H–M–L features strictly improve Bayes cross-entropy
 >
 > _(when informative)_
@@ -554,23 +534,6 @@ $$
 
 i.e., $= \mathbb{E}[H(Y\mid Z)] + \mathbb{E}[\mathrm{KL}(\cdot)]$, minimized at $q=p$. Hence the optimum equals conditional entropy. Monotonicity of conditional entropy gives $H(Y\mid Z_H)\ge H(Y\mid Z_H,Z_M,Z_L)$, with a strict drop whenever the added features convey conditional mutual information about $Y$. (identity) $\boxed{}$
 
-```text
-┌──────────────────────────────────────────────────────┐
-│ Lemma B: H–M–L Fusion Lowers Bayes Cross-Entropy     │
-│------------------------------------------------------│
-│ Predict Y = x_{t+1} using features Z_H (top),        │
-│ optionally with Z_M, Z_L.                            │
-│ Bayes-optimal CE = E[H(Y | Z)].                      │
-│ Since conditioning reduces entropy:                  │
-│ H(Y | Z_H, Z_M, Z_L) ≤ H(Y | Z_H),                   │
-│ with strict if Z_M or Z_L add mutual information.    │
-│                                                      │
-│ ⇒ Multi-layer fusion provides strictly better        │
-│ signal for draft on small capacity.                  │
-│ (Motivates EAGLE-3 fused features.)                  │
-└──────────────────────────────────────────────────────┘
-```
-
 > [!math] Lemma 3.5, acceptance = $1-\mathrm{TV}(p,q)$, hence CE↓ ⇒ TV↓ ⇒ acceptance↑
 >
 > In one‑step lossless speculative decoding that proposes $x\sim q$ and accepts with probability $\alpha(x)=\min\{1,p(x)/q(x)\}$ (the standard correction),
@@ -598,20 +561,6 @@ $$
 
 Formal analyses of speculative decoding express expected rejections/acceptance directly in terms of TV; see Yin et al. (Theorem 1), which ties unbiasedness and efficiency to $\mathrm{TV}(p,q)$. Pinsker then gives the KL→TV bound. $\boxed{}$
 
-```text
-┌──────────────────────────────────────────────────────┐
-│ Lemma C: Acceptance = 1 – TV; CE ↓ ⇒ Acceptance ↑    │
-│------------------------------------------------------│
-│ Lossless speculative decoding acceptance =           │
-│ E_{x∼q}[ min(1, p(x)/q(x)) ] = ∑_x min(p(x), q(x)) = │
-│ 1 – TV(p, q).                                        │
-│ By Pinsker: TV(p, q) ≤ √[½ KL(p‖q)].                 │
-│ ⇒ Lower KL → lower TV → higher acceptance probability│
-│                                                      │
-│ EAGLE-3 reduces CE/KL by design → acceptance jumps.  │
-└──────────────────────────────────────────────────────┘
-```
-
 **Consequence for EAGLE‑3.** Since EAGLE‑3 trains the draft on tokens directly (dropping feature loss) and feeds H–M–L inputs plus training‑time test (below), it directly reduces CE/KL between draft and target next‑token laws, hence reduces TV, hence raises acceptance multiplicatively across steps—exactly what their scaling curve shows.
 
 > [!math] Lemma 3.6 Training‑time test (on‑policy rollouts) controls compounding error
@@ -623,24 +572,6 @@ Formal analyses of speculative decoding express expected rejections/acceptance d
 > If instead we aggregate training data under $\rho_\theta$ (by mixing in the model’s own predictions during training—**training‑time test** / scheduled sampling / DAgger), the on‑policy risk is bounded by the training risk plus no‑regret terms that **do not** scale with horizon; compounding error is controlled.
 
 See also @bengio2015scheduledsamplingsequenceprediction
-
-```text
-┌──────────────────────────────────────────────────────┐
-│ Lemma D: Training-Time Test (TTT) Controls Drift     │
-│------------------------------------------------------│
-│ Standard next-token training suffers *exposure bias* │
-│ (teacher-forced states ≠ test-time draft states),    │
-│ leading to compounding error.                        │
-│ DAgger / Scheduled Sampling instead train on         │
-│ model-induced distributions – they offer no-regret   │
-│ guarantees: on-policy risk bounded ∝ training risk,  │
-│ *without growing with horizon*.                      │
-│                                                      │
-│ ⇒ EAGLE-3 uses TTT (simulated rollouts during        │
-│ training) to match test-time state distribution,     │
-│ stabilizing multi-step forecasting. ([arxiv.org])    │
-└──────────────────────────────────────────────────────┘
-```
 
 ## MTP
 

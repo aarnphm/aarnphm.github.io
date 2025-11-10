@@ -152,7 +152,7 @@
   height: 100vh;
   display: none;
   overflow: hidden;
-  backdrop-filter: blur(5px);
+  backdrop-filter: blur(12px);
 
   &.active {
     display: flex;

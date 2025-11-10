@@ -3,22 +3,22 @@ created: "2025-10-01"
 date: "2025-10-01"
 description: Functional roles, computational hermeneutics, autopoietic critiques
 id: functionalism
-modified: 2025-10-29 02:15:45 GMT-04:00
+modified: 2025-11-10 09:49:06 GMT-05:00
 published: "2003-03-05"
 socials:
   sep: https://plato.stanford.edu/entries/functionalism/
   wikipedia: https://en.wikipedia.org/wiki/Functionalism_(philosophy_of_mind)
 tags:
-  - seed
   - philosophy
+  - pattern
 title: functionalism
 ---
 
-see also: [[thoughts/identity]], [[thoughts/representations]], [[thoughts/emergent behaviour]]
+see also: [[thoughts/representations]], [[thoughts/emergent behaviour]]
 
 Mental states are job descriptions. Pain, belief, attention—each defined by what it does, not what it's made of. If something takes the right inputs, updates correctly, and produces the right outputs, it counts as that mental state. Neurons, transistors, code: irrelevant. [@levin2024functionalism] retains the explanatory bite of [[thoughts/identity|type-identity theory]] while preserving the empirical humility of [[thoughts/Behavirourism|behaviourism]], and it scales across nervous tissue, synthetic controllers, and commoditised inference engines like [[thoughts/LLMs]].
 
-> [!summary] eli5
+> [!summary] ELI5
 >
 > minds are defined by what they do, not what they’re made of.
 >
@@ -68,7 +68,7 @@ Energy and timing constraints challenge pure substrate independence: real comput
 - zombies: functional duplicates without experience are conceivable; if metaphysically possible, functionalism misses something. [@chalmers1996consciousmind] [wiki](https://en.wikipedia.org/wiki/Philosophical_zombie)
 - liberalism vs chauvinism: unrefined role specs risk over-inclusion (thermostats “believe”) or over-exclusion (alien silicon minds). [wiki](<https://en.wikipedia.org/wiki/Functionalism_(philosophy_of_mind)>)
 
-### sep critiques
+### critiques
 
 - qualia underdetermination: absent/inverted qualia show second-order role specs don’t fix phenomenal character. [@levin2024functionalism]
 - triviality/disjunction worry: overly permissive role descriptions become gerrymandered disjunctions that any complex system satisfies, draining explanatory power. [@levin2024functionalism]
@@ -125,4 +125,4 @@ empirical/engineering handle:
   - RLHF = error-driven role refinement (adjust based on feedback).
   - constraints: energy/latency differ from biology; grounding requires counterfactual tests; no autopoietic closure (no self-model, no viability maintenance).
 
-> minds are control patterns, not materials. you can port them if error dynamics, update rules, and self-maintenance stay fixed. engineering thesis, not metaphysics. use when useful. [@levin2024functionalism; @friston2017computationalnosology]
+> minds are control patterns. you can port them if error dynamics, update rules, and self-maintenance stay fixed. [@levin2024functionalism; @friston2017computationalnosology]

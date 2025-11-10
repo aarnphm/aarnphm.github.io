@@ -101,7 +101,7 @@ function buildFallbackDescriptors(
     const slug = joinSegments(...traversed) as FullSlug
     const isLast = idx === slugParts.length - 1
     descriptors.push({
-      displayName: isLast ? fileTitle ?? segment : segment,
+      displayName: isLast ? (fileTitle ?? segment) : segment,
       slug,
     })
     current = undefined

@@ -2,13 +2,14 @@
 date: "2024-02-19"
 description: on personal identity
 id: identity
-modified: 2025-10-29 02:15:47 GMT-04:00
+modified: 2025-11-10 09:47:34 GMT-05:00
+socials:
+  sep: https://plato.stanford.edu/entries/identity/
 tags:
   - philosophy
+  - pattern
 title: type-identity theory
 ---
-
-see also: https://plato.stanford.edu/entries/identity/
 
 Personal identity is a structure you enact.
 

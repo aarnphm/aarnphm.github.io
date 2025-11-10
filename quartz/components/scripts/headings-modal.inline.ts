@@ -76,9 +76,7 @@ function updateFilteredHeadings() {
   if (query.length === 0) {
     filteredHeadings = [...allHeadings]
   } else {
-    filteredHeadings = allHeadings.filter((heading) =>
-      heading.text.toLowerCase().includes(query),
-    )
+    filteredHeadings = allHeadings.filter((heading) => heading.text.toLowerCase().includes(query))
   }
 
   const visible = getVisibleHeadings()
@@ -195,7 +193,10 @@ function updateActiveItem() {
   if (!items) return
 
   items.forEach((item, index) => {
-    item.classList.toggle("active", index === currentIndex && !item.classList.contains("heading-item-empty"))
+    item.classList.toggle(
+      "active",
+      index === currentIndex && !item.classList.contains("heading-item-empty"),
+    )
   })
 
   // Scroll active item into view

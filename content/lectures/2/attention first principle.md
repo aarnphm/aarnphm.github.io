@@ -2,7 +2,7 @@
 date: "2025-08-21"
 description: Self-attention from first principles with formal properties and efficient variants.
 id: attention
-modified: 2025-10-29 02:14:22 GMT-04:00
+modified: 2025-11-10 09:24:30 GMT-05:00
 tags:
   - seed
   - ml
@@ -41,7 +41,7 @@ $$
 \mathrm{Attn}(Q,K,V)=\sigma\!\left(\frac{QK^\top}{\sqrt{d_k}}\right)V,\quad \sigma=\text{row-softmax}.
 $$
 
-> [!abstract] Proposition 1 (Permutation Equivariance).
+> [!propos] 1 (Permutation Equivariance).
 >
 > Without positional encodings, for any permutation matrix $P\in\mathbb{R}^{n\times n}$,
 >
@@ -51,7 +51,7 @@ $$
 
 Proof. $PQ(PK)^\top=PQK^\top P^\top$ and row-wise softmax satisfies $\sigma_{\text{row}}(PZP^\top)=P\,\sigma_{\text{row}}(Z)\,P^\top$ (since $P$ is orthogonal and permutes both rows and columns consistently, preserving row-wise normalization). Multiply by $PV$ on the right to complete the proof.
 
-> [!abstract] Proposition 2 (Variance Scaling).
+> [!propos] 2 (Variance Scaling).
 >
 > Let $q,k\in\mathbb{R}^d$ with $\mathbb{E}[q]=\mathbb{E}[k]=0$, $\mathrm{Cov}(q)=\Sigma_q$, $\mathrm{Cov}(k)=\Sigma_k$, and $q\perp k$. For $S=q^\top k$ and $Z=S/\sqrt{d}$,
 >
@@ -65,7 +65,7 @@ Proof. Use $\mathbb{E}[S]=0$ and $\mathbb{E}[S^2]=\operatorname{tr}(\Sigma_q\Sig
 
 ## kernel regression
 
-> [!abstract] Proposition 3 (Exact RBF Weights under Normalization).
+> [!propos] 3 (Exact RBF Weights under Normalization).
 >
 > Fix $q\in\mathbb{R}^d$ and keys $\{k_j\}_{j=1}^n$. If $\|q\|=\alpha$ and $\|k_j\|=\beta$ for all $j$, then scaled dot-product attention at temperature $T$ yields
 >

@@ -252,14 +252,6 @@ h6 {
   }
 }
 
-[data-slug*="stream"],
-[data-slug="index"] {
-  .search-button,
-  #light-toggle {
-    visibility: hidden;
-  }
-}
-
 pre.poetry {
   border: none;
   padding: 1rem;
@@ -476,8 +468,6 @@ hr {
   margin: 0;
 }
 
-// ----- id customization -----
-
 #quartz-root {
   isolation: isolate;
 }
@@ -603,14 +593,30 @@ body {
 }
 
 .callout {
-  border-radius: 0px;
+  --callout-color: inherit;
+  border: 0px solid light-dark(rgba(32, 94, 166, 0.25), rgba(67, 133, 190, 0.25));
+  border-top-left-radius: 0px;
+  border-top-right-radius: 0px;
+  border-bottom-left-radius: 0px;
+  border-bottom-right-radius: 0px;
+  border-start-start-radius: 0px;
+  border-start-end-radius: 0px;
+  border-end-start-radius: 0px;
+  border-end-end-radius: 0px;
+
   --callout-icon-math: url("data:image/svg+xml,%3C%3Fxml version='1.0' encoding='utf-8'%3F%3E%3Csvg width='800px' height='800px' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M12.1873 4.14049C11.2229 3.41714 9.84236 4.0695 9.78883 5.27389L9.71211 7H12C12.5523 7 13 7.44772 13 8C13 8.55228 12.5523 9 12 9H9.62322L9.22988 17.8501C9.0996 20.7815 5.63681 22.261 3.42857 20.3287L3.34151 20.2526C2.92587 19.8889 2.88375 19.2571 3.24743 18.8415C3.61112 18.4259 4.24288 18.3837 4.65852 18.7474L4.74558 18.8236C5.69197 19.6517 7.17602 19.0176 7.23186 17.7613L7.62125 9H6C5.44772 9 5 8.55228 5 8C5 7.44772 5.44772 7 6 7H7.71014L7.7908 5.18509C7.9157 2.37483 11.1369 0.852675 13.3873 2.54049L13.6 2.69999C14.0418 3.03136 14.1314 3.65817 13.8 4.09999C13.4686 4.54182 12.8418 4.63136 12.4 4.29999L12.1873 4.14049Z' fill='%23212121'/%3E%3Cpath d='M13.082 13.0462C13.3348 12.9071 13.6525 13.0103 13.7754 13.2714L14.5879 14.9979L11.2928 18.2929C10.9023 18.6834 10.9023 19.3166 11.2928 19.7071C11.6834 20.0977 12.3165 20.0977 12.707 19.7071L15.493 16.9212L16.2729 18.5786C16.9676 20.0548 18.8673 20.4808 20.1259 19.4425L20.6363 19.0214C21.0623 18.6699 21.1228 18.0397 20.7713 17.6136C20.4198 17.1876 19.7896 17.1272 19.3636 17.4787L18.8531 17.8998C18.6014 18.1074 18.2215 18.0222 18.0825 17.727L16.996 15.4182L19.707 12.7071C20.0976 12.3166 20.0976 11.6834 19.707 11.2929C19.3165 10.9024 18.6834 10.9024 18.2928 11.2929L16.0909 13.4948L15.585 12.4198C14.9708 11.1144 13.3822 10.5985 12.1182 11.2937L11.518 11.6238C11.0341 11.89 10.8576 12.498 11.1237 12.982C11.3899 13.4659 11.998 13.6424 12.4819 13.3762L13.082 13.0462Z' fill='%23212121'/%3E%3C/svg%3E");
+  --callout-icon-theorem: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJjdXJyZW50Q29sb3IiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiBzdHlsZT0icG9pbnRlci1ldmVudHM6IGF1dG87Ij48cGF0aCBkPSJNMyAyMWMzIDAgNy0xIDctOFY1YzAtMS4yNS0uNzU2LTIuMDE3LTItMkg0Yy0xLjI1IDAtMiAuNzUtMiAxLjk3MlYxMWMwIDEuMjUuNzUgMiAyIDIgMSAwIDEgMCAxIDF2MWMwIDEtMSAyLTIgMnMtMSAuMDA4LTEgMS4wMzFWMjBjMCAxIDAgMSAxIDF6IiBzdHlsZT0icG9pbnRlci1ldmVudHM6IGF1dG87Ii8+PHBhdGggZD0iTTE1IDIxYzMgMCA3LTEgNy04VjVjMC0xLjI1LS43NTctMi4wMTctMi0yaC00Yy0xLjI1IDAtMiAuNzUtMiAxLjk3MlYxMWMwIDEuMjUuNzUgMiAyIDJoLjc1YzAgMi4yNS4yNSA0LTIuNzUgNHYzYzAgMSAwIDEgMSAxeiIvPjwvc3ZnPg==");
+  --callout-icon-abstract: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJjdXJyZW50Q29sb3IiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiBzdHlsZT0icG9pbnRlci1ldmVudHM6IGF1dG87Ij48cmVjdCB4PSI4IiB5PSIyIiB3aWR0aD0iOCIgaGVpZ2h0PSI0IiByeD0iMSIgcnk9IjEiLz48cGF0aCBkPSJNMTYgNGgyYTIgMiAwIDAgMSAyIDJ2MTRhMiAyIDAgMCAxLTIgMkg2YTIgMiAwIDAgMS0yLTJWNmEyIDIgMCAwIDEgMi0yaDIiLz48cGF0aCBkPSJNMTIgMTFoNCIvPjxwYXRoIGQ9Ik0xMiAxNmg0Ii8+PHBhdGggZD0iTTggMTFoLjAxIi8+PHBhdGggZD0iTTggMTZoLjAxIi8+PC9zdmc+");
+  --callout-icon-propos: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI4MDBweCIgaGVpZ2h0PSI4MDBweCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHlsZT0icG9pbnRlci1ldmVudHM6IGF1dG87Ij4KPHBhdGggZD0iTTEwIDE2LjU4NFYxOC45OTk2QzEwIDIwLjEwNDIgMTAuODk1NCAyMC45OTk2IDEyIDIwLjk5OTZDMTMuMTA0NiAyMC45OTk2IDE0IDIwLjEwNDIgMTQgMTguOTk5NkwxNCAxNi41ODRNMTIgM1Y0TTE4LjM2NDMgNS42MzU3NEwxNy42NTcyIDYuMzQyODVNNS42MzU3NCA1LjYzNTc0TDYuMzQyODUgNi4zNDI4NU00IDEySDNNMjEgMTJIMjBNMTcgMTJDMTcgMTQuNzYxNCAxNC43NjE0IDE3IDEyIDE3QzkuMjM4NTggMTcgNyAxNC43NjE0IDcgMTJDNyA5LjIzODU4IDkuMjM4NTggNyAxMiA3QzE0Ljc2MTQgNyAxNyA5LjIzODU4IDE3IDEyWiIgc3Ryb2tlPSIjMDAwMDAwIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPgo8L3N2Zz4=");
 
   &[data-callout] {
     --color: rgba(156, 207, 216, 1);
     --border: rgba(156, 207, 216, 0.46);
     --bg: rgba(156, 207, 216, 0.14);
   }
+  &[data-callout="proposition"],
+  &[data-callout="propos"],
+  &[data-callout="theorem"],
   &[data-callout="math"],
   &[data-callout="abstract"] {
     --color: var(--pine);
@@ -653,6 +659,342 @@ body {
   }
   &[data-callout="math"] {
     --callout-icon: var(--callout-icon-math);
+  }
+  &[data-callout="abstract"] {
+    --callout-icon: var(--callout-icon-abstract);
+  }
+  &[data-callout="theorem"] {
+    --callout-icon: var(--callout-icon-theorem);
+  }
+  &[data-callout="proposition"],
+  &[data-callout="propos"] {
+    --callout-icon: var(--callout-icon-propos);
+  }
+}
+
+.callout .callout-title {
+  border: 0px light-dark(rgb(32, 94, 166), rgb(67, 133, 190));
+  border-top-left-radius: 0px;
+  border-top-right-radius: 0px;
+  border-bottom-left-radius: 0px;
+  border-bottom-right-radius: 0px;
+  border-start-start-radius: 0px;
+  border-start-end-radius: 0px;
+  border-end-start-radius: 0px;
+  border-end-end-radius: 0px;
+}
+
+.callout .callout-title .callout-icon {
+  fill: inherit;
+  stroke: inherit;
+}
+
+.callout .callout-title > .callout-title-inner > p {
+  color: light-dark(rgb(32, 94, 166), rgb(67, 133, 190));
+  font-weight: 600;
+}
+
+.callout > .callout-content {
+  background-color: rgba(0, 0, 0, 0);
+  padding: 0px;
+}
+
+.callout[data-callout="note"] {
+  --callout-color: inherit;
+  background-color: light-dark(rgba(32, 94, 166, 0.1), rgba(67, 133, 190, 0.1));
+  border: 0px solid light-dark(rgba(32, 94, 166, 0.25), rgba(67, 133, 190, 0.25));
+  border-top-left-radius: 4px;
+  border-top-right-radius: 4px;
+  border-bottom-left-radius: 4px;
+  border-bottom-right-radius: 4px;
+  border-start-start-radius: 4px;
+  border-start-end-radius: 4px;
+  border-end-start-radius: 4px;
+  border-end-end-radius: 4px;
+}
+
+.callout[data-callout="note"] .callout-title .callout-icon {
+  fill: none;
+  stroke: rgb(67, 133, 190);
+}
+
+.callout[data-callout="abstract"] {
+  --callout-color: inherit;
+  background-color: light-dark(rgba(36, 131, 123, 0.1), rgba(58, 169, 159, 0.1));
+  border: 0px solid light-dark(rgba(36, 131, 123, 0.25), rgba(58, 169, 159, 0.25));
+  border-top-left-radius: 4px;
+  border-top-right-radius: 4px;
+  border-bottom-left-radius: 4px;
+  border-bottom-right-radius: 4px;
+  border-start-start-radius: 4px;
+  border-start-end-radius: 4px;
+  border-end-start-radius: 4px;
+  border-end-end-radius: 4px;
+}
+
+.callout[data-callout="abstract"] .callout-title .callout-icon {
+  fill: none;
+  stroke: rgb(58, 169, 159);
+}
+
+.callout[data-callout="info"] {
+  --callout-color: inherit;
+  background-color: light-dark(rgba(32, 94, 166, 0.1), rgba(67, 133, 190, 0.1));
+  border: 0px solid light-dark(rgba(32, 94, 166, 0.25), rgba(67, 133, 190, 0.25));
+  border-top-left-radius: 4px;
+  border-top-right-radius: 4px;
+  border-bottom-left-radius: 4px;
+  border-bottom-right-radius: 4px;
+  border-start-start-radius: 4px;
+  border-start-end-radius: 4px;
+  border-end-start-radius: 4px;
+  border-end-end-radius: 4px;
+}
+
+.callout[data-callout="info"] .callout-title .callout-icon {
+  fill: none;
+  stroke: rgb(67, 133, 190);
+}
+
+.callout[data-callout="todo"] {
+  --callout-color: inherit;
+  background-color: light-dark(rgba(32, 94, 166, 0.1), rgba(67, 133, 190, 0.1));
+  border: 0px solid light-dark(rgba(32, 94, 166, 0.25), rgba(67, 133, 190, 0.25));
+  border-top-left-radius: 4px;
+  border-top-right-radius: 4px;
+  border-bottom-left-radius: 4px;
+  border-bottom-right-radius: 4px;
+  border-start-start-radius: 4px;
+  border-start-end-radius: 4px;
+  border-end-start-radius: 4px;
+  border-end-end-radius: 4px;
+}
+
+.callout[data-callout="todo"] .callout-title .callout-icon {
+  fill: none;
+  stroke: rgb(67, 133, 190);
+}
+
+.callout[data-callout="tip"] {
+  --callout-color: inherit;
+  background-color: light-dark(rgba(36, 131, 123, 0.1), rgba(58, 169, 159, 0.1));
+  border: 0px solid light-dark(rgba(36, 131, 123, 0.25), rgba(58, 169, 159, 0.25));
+  border-top-left-radius: 4px;
+  border-top-right-radius: 4px;
+  border-bottom-left-radius: 4px;
+  border-bottom-right-radius: 4px;
+  border-start-start-radius: 4px;
+  border-start-end-radius: 4px;
+  border-end-start-radius: 4px;
+  border-end-end-radius: 4px;
+}
+
+.callout[data-callout="tip"] .callout-title .callout-icon {
+  fill: none;
+  stroke: rgb(58, 169, 159);
+}
+
+.callout[data-callout="success"] {
+  --callout-color: inherit;
+  background-color: light-dark(rgba(102, 128, 11, 0.1), rgba(135, 154, 57, 0.1));
+  border: 0px solid light-dark(rgba(102, 128, 11, 0.25), rgba(135, 154, 57, 0.25));
+  border-top-left-radius: 4px;
+  border-top-right-radius: 4px;
+  border-bottom-left-radius: 4px;
+  border-bottom-right-radius: 4px;
+  border-start-start-radius: 4px;
+  border-start-end-radius: 4px;
+  border-end-start-radius: 4px;
+  border-end-end-radius: 4px;
+}
+
+.callout[data-callout="success"] .callout-title .callout-icon {
+  fill: none;
+  stroke: rgb(135, 154, 57);
+}
+
+.callout[data-callout="question"] {
+  --callout-color: inherit;
+  background-color: light-dark(rgba(188, 82, 21, 0.1), rgba(218, 112, 44, 0.1));
+  border: 0px solid light-dark(rgba(188, 82, 21, 0.25), rgba(218, 112, 44, 0.25));
+  border-top-left-radius: 4px;
+  border-top-right-radius: 4px;
+  border-bottom-left-radius: 4px;
+  border-bottom-right-radius: 4px;
+  border-start-start-radius: 4px;
+  border-start-end-radius: 4px;
+  border-end-start-radius: 4px;
+  border-end-end-radius: 4px;
+}
+
+.callout[data-callout="question"] .callout-title .callout-icon {
+  fill: none;
+  stroke: rgb(218, 112, 44);
+}
+
+.callout[data-callout="warning"] {
+  --callout-color: inherit;
+  background-color: light-dark(rgba(188, 82, 21, 0.1), rgba(218, 112, 44, 0.1));
+  border: 0px solid light-dark(rgba(188, 82, 21, 0.25), rgba(218, 112, 44, 0.25));
+  border-top-left-radius: 4px;
+  border-top-right-radius: 4px;
+  border-bottom-left-radius: 4px;
+  border-bottom-right-radius: 4px;
+  border-start-start-radius: 4px;
+  border-start-end-radius: 4px;
+  border-end-start-radius: 4px;
+  border-end-end-radius: 4px;
+}
+
+.callout[data-callout="warning"] .callout-title .callout-icon {
+  fill: none;
+  stroke: rgb(218, 112, 44);
+}
+
+.callout[data-callout="danger"] {
+  --callout-color: inherit;
+  background-color: light-dark(rgba(175, 48, 41, 0.1), rgba(209, 77, 65, 0.1));
+  border: 0px solid light-dark(rgba(175, 48, 41, 0.25), rgba(209, 77, 65, 0.25));
+  border-top-left-radius: 4px;
+  border-top-right-radius: 4px;
+  border-bottom-left-radius: 4px;
+  border-bottom-right-radius: 4px;
+  border-start-start-radius: 4px;
+  border-start-end-radius: 4px;
+  border-end-start-radius: 4px;
+  border-end-end-radius: 4px;
+}
+
+.callout[data-callout="danger"] .callout-title .callout-icon {
+  fill: none;
+  stroke: rgb(209, 77, 65);
+}
+
+.callout[data-callout="failure"] {
+  --callout-color: inherit;
+  background-color: light-dark(rgba(175, 48, 41, 0.1), rgba(209, 77, 65, 0.1));
+  border: 0px solid light-dark(rgba(175, 48, 41, 0.25), rgba(209, 77, 65, 0.25));
+  border-top-left-radius: 4px;
+  border-top-right-radius: 4px;
+  border-bottom-left-radius: 4px;
+  border-bottom-right-radius: 4px;
+  border-start-start-radius: 4px;
+  border-start-end-radius: 4px;
+  border-end-start-radius: 4px;
+  border-end-end-radius: 4px;
+}
+
+.callout[data-callout="failure"] .callout-title .callout-icon {
+  fill: none;
+  stroke: rgb(135, 133, 128);
+}
+
+.callout[data-callout="bug"] {
+  --callout-color: inherit;
+  background-color: light-dark(rgba(175, 48, 41, 0.1), rgba(209, 77, 65, 0.1));
+  border: 0px solid light-dark(rgba(175, 48, 41, 0.25), rgba(209, 77, 65, 0.25));
+  border-top-left-radius: 4px;
+  border-top-right-radius: 4px;
+  border-bottom-left-radius: 4px;
+  border-bottom-right-radius: 4px;
+  border-start-start-radius: 4px;
+  border-start-end-radius: 4px;
+  border-end-start-radius: 4px;
+  border-end-end-radius: 4px;
+}
+
+.callout[data-callout="bug"] .callout-title .callout-icon {
+  fill: none;
+  stroke: rgb(209, 77, 65);
+}
+
+.callout[data-callout="example"] {
+  --callout-color: inherit;
+  background-color: light-dark(rgba(94, 64, 157, 0.1), rgba(139, 126, 200, 0.1));
+  border: 0px solid light-dark(rgba(94, 64, 157, 0.25), rgba(139, 126, 200, 0.25));
+  border-top-left-radius: 4px;
+  border-top-right-radius: 4px;
+  border-bottom-left-radius: 4px;
+  border-bottom-right-radius: 4px;
+  border-start-start-radius: 4px;
+  border-start-end-radius: 4px;
+  border-end-start-radius: 4px;
+  border-end-end-radius: 4px;
+}
+
+.callout[data-callout="example"] .callout-title .callout-icon {
+  fill: none;
+  stroke: rgb(206, 205, 195);
+}
+
+.callout[data-callout="quote"] {
+  --callout-color: inherit;
+  background-color: rgba(158, 158, 158, 0.1);
+  border: 0px solid rgba(158, 158, 158, 0.25);
+  border-top-left-radius: 4px;
+  border-top-right-radius: 4px;
+  border-bottom-left-radius: 4px;
+  border-bottom-right-radius: 4px;
+  border-start-start-radius: 4px;
+  border-start-end-radius: 4px;
+  border-end-start-radius: 4px;
+  border-end-end-radius: 4px;
+}
+
+.callout[data-callout="quote"] .callout-title .callout-icon {
+  fill: none;
+  stroke: rgb(158, 158, 158);
+}
+
+blockquote.callout {
+  .callout-title > .callout-title-inner > p {
+    color: var(--color);
+  }
+  &[data-callout] {
+    --color: rgb(var(--callout-info));
+  }
+  &[data-callout="note"] {
+    --color: rgb(var(--callout-default));
+  }
+  &[data-callout="proposition"],
+  &[data-callout="propos"],
+  &[data-callout="theorem"],
+  &[data-callout="math"],
+  &[data-callout="abstract"] {
+    --color: rgb(var(--callout-summary));
+  }
+  &[data-callout="info"] {
+    --color: rgb(var(--callout-info));
+  }
+  &[data-callout="todo"] {
+    --color: rgb(var(--callout-todo));
+  }
+  &[data-callout="tip"] {
+    --color: rgb(var(--callout-tip));
+  }
+  &[data-callout="success"] {
+    --color: rgb(var(--callout-success));
+  }
+  &[data-callout="question"] {
+    --color: rgb(var(--callout-question));
+  }
+  &[data-callout="warning"] {
+    --color: rgb(var(--callout-warning));
+  }
+  &[data-callout="failure"] {
+    --color: rgb(var(--callout-fail));
+  }
+  &[data-callout="danger"] {
+    --color: rgb(var(--callout-bug));
+  }
+  &[data-callout="bug"] {
+    --color: rgb(var(--callout-bug));
+  }
+  &[data-callout="example"] {
+    --color: rgb(var(--callout-example));
+  }
+  &[data-callout="quote"] {
+    --color: rgb(var(--callout-quote));
   }
 }
 
@@ -1142,6 +1484,14 @@ body[data-slug="influence"] {
   .page-footer,
   .byline {
     display: none;
+  }
+}
+
+[data-slug*="stream"],
+[data-slug="index"] {
+  .search-button,
+  #light-toggle {
+    visibility: hidden;
   }
 }
 

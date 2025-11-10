@@ -7,7 +7,7 @@ aliases:
 date: "2025-08-09"
 description: just another fish in the sea.
 id: dating
-modified: 2025-11-10 06:48:09 GMT-05:00
+modified: 2025-11-10 09:25:02 GMT-05:00
 noindex: true
 slides: true
 tags:
@@ -148,11 +148,7 @@ One cannot be a friend to many people in the sense of having friendship of the p
 
 I love my friends deeply—so much that I'd willingly take a bullet for any of them, at any moment. There are no ulterior motives here; everything I do comes from genuine intention. When I find something really cool and share it with someone, it's because they're the first person who comes to mind. Part of me wishes that one day I'll be able to give each of them the time and energy they truly deserve.
 
-<figure class="float-right">
-
 ![[thoughts/images/C8F817FA-8961-4287-8318-B45FCA5D7E67.webp|A scene in "Lost in Translation (2003)". I do sometimes, think about the time I wronged my friends. But it happened for a reason, and we learnt to grow from our mistakes.]]
-
-</figure>
 
 So, yes, I _care_. I care a lot about people, both in its abstract and physical form. I try my hardest to amplify those around me and give them space to grow and achieve what they want in _life_ (also another thing my dear mom taught me 🙂)
 

@@ -2,7 +2,7 @@
 date: "2025-06-16"
 description: and inference go distributed
 id: pd disaggregated serving
-modified: 2025-10-29 02:15:31 GMT-04:00
+modified: 2025-11-10 09:59:09 GMT-05:00
 tags:
   - ml
 title: p/d disaggregation
@@ -243,6 +243,11 @@ make sure:
 > [!note]
 > nixl provides a high‑throughput, low‑latency kv transfer layer (rdma/rocev2 capable) surfaced in vllm via `NixlConnector` and as the transport behind `LMCacheConnectorV1`. lmcache is a kv service/client that stores and retrieves kv pages remotely, integrating with vllm’s lookupbuffer. names and flags evolve; consult vllm production‑stack docs. [@vllm-prodstack]
 
+> [!important] failure handling
+>
+> - on transient connector failure, re‑run a short tail of prefill on decode as fallback.
+> - version skew: map model sha → kv namespace in lmcache to avoid mixing kv from different checkpoints.
+
 ### when to use
 
 - high‑bandwidth fabric (infiniband/rocev2) available and cross‑node p/d disagg is required.
@@ -264,11 +269,6 @@ co‑locate endpoints with decode pools (same rack/tor) to minimize cross‑rack
 - shard by sequence or page‑range to spread traffic across endpoints.
 - monitor: rdma qp errors, retransmits, per‑connector queue depth, insert/drop_select latencies.
 
-### failure handling
-
-- on transient connector failure, re‑run a short tail of prefill on decode as fallback.
-- version skew: map model sha → kv namespace in lmcache to avoid mixing kv from different checkpoints.
-
 > [!links]
 > vllm production‑stack and connector docs: [@vllm-prodstack; @vllm-disagg-docs]
 
@@ -276,6 +276,11 @@ co‑locate endpoints with decode pools (same rack/tor) to minimize cross‑rack
 
 > [!important]
 > nixl rides on rdma (ib or rocev2) to move kv pages with low latency and high throughput. solid rdma hygiene matters more than almost any single model flag when p/d traffic crosses nodes.
+
+> [!important] failure handling
+>
+> - on link flaps or endpoint loss, allow decode to re‑run a short tail of prefill; retry connector after backoff.
+> - keep strict mapping of model sha → kv namespace to prevent cross‑checkpoint kv mixing.
 
 ### rdma
 
@@ -304,8 +309,3 @@ co‑locate endpoints with decode pools (same rack/tor) to minimize cross‑rack
 - burn‑in: run rdma perftest (ib_read_bw/ib_write_bw) between candidate nodes; record p50/p99 and max throughput.
 - counters: check `ethtool -S`, `ibstat`, and nic vendor tools for pause frames, retransmits, congestion events.
 - end‑to‑end: measure ttft deltas with and without nixl; ensure improvements persist under realistic burst patterns.
-
-### failure handling
-
-- on link flaps or endpoint loss, allow decode to re‑run a short tail of prefill; retry connector after backoff.
-- keep strict mapping of model sha → kv namespace to prevent cross‑checkpoint kv mixing.
