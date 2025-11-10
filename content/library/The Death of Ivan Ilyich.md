@@ -10,5 +10,5 @@ subcategory: life
 tags:
   - fiction
 title: The Death of Ivan Ilyich
-year-finished: 2021
+finished: 2021
 ---

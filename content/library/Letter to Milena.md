@@ -10,7 +10,7 @@ subcategory: Kafka
 tags:
   - fiction
 title: Letter to Milena
-year-finished: 2025
+finished: 2025
 ---
 
 see also [[thoughts/pdfs/letter-to-milena.pdf]]

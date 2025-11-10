@@ -10,5 +10,5 @@ subcategory: love
 tags:
   - fiction
 title: The end of the affair
-year-finished: 2024
+finished: 2024
 ---

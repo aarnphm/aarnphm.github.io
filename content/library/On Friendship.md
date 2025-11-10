@@ -10,5 +10,5 @@ subcategory: love
 tags:
   - philosophy
 title: On Friendship
-year-finished: 2025
+finished: 2025
 ---

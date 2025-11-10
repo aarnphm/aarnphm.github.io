@@ -10,5 +10,5 @@ subcategory: productivity
 tags:
   - non-fiction
 title: Digital Minimalism
-year-finished: 2024
+finished: 2024
 ---

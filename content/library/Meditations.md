@@ -10,5 +10,5 @@ subcategory: life
 tags:
   - philosophy
 title: Meditations
-year-finished: 2024
+finished: 2024
 ---

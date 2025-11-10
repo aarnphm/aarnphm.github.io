@@ -10,7 +10,7 @@ subcategory: life
 tags:
   - fiction
 title: Godfather
-year-finished: 2021
+finished: 2021
 ---
 
 Also includes The Sicilian.

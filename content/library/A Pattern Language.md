@@ -9,7 +9,7 @@ external-url: https://patternlanguage.cc/
 id: A Pattern Language
 modified: 2025-10-29 02:14:26 GMT-04:00
 posters: "[[library/posters/a-pattern-language.jpg]]"
-status: to-read
+status: to read
 subcategory: communal
 tags:
   - non-fiction

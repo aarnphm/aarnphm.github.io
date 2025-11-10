@@ -10,5 +10,5 @@ subcategory: life
 tags:
   - fiction
 title: Slaughterhouse-Five
-year-finished: 2025
+finished: 2025
 ---

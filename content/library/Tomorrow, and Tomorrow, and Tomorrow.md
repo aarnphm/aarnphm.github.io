@@ -10,5 +10,5 @@ subcategory: life
 tags:
   - fiction
 title: Tomorrow, and Tomorrow, and Tomorrow
-year-finished: 2024
+finished: 2024
 ---

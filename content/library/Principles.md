@@ -10,5 +10,5 @@ subcategory: money
 tags:
   - non-fiction
 title: Principles
-year-finished: 2025
+finished: 2025
 ---

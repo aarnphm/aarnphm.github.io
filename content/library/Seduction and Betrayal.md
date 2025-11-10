@@ -6,7 +6,7 @@ external-url: https://www.penguinrandomhouse.ca/books/643010/seduction-and-betra
 id: Seduction and Betrayal
 modified: 2025-10-29 02:14:36 GMT-04:00
 posters: "[[library/posters/seduction-and-betrayal.jpg]]"
-status: to-read
+status: to read
 subcategory: love
 tags:
   - non-fiction

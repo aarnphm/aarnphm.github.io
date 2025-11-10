@@ -10,5 +10,5 @@ subcategory: de Beauvoir
 tags:
   - philosophy
 title: The Second Sex
-year-finished: 2025
+finished: 2025
 ---

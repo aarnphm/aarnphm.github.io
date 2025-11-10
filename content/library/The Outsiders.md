@@ -10,5 +10,5 @@ subcategory: money
 tags:
   - non-fiction
 title: "The Outsiders: Eight Unconventional CEOs and Their Radically Rational Blueprint for Success"
-year-finished: 2022
+finished: 2022
 ---

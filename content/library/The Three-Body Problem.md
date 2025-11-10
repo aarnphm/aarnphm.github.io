@@ -10,5 +10,5 @@ subcategory: progress
 tags:
   - fiction
 title: The Three-Body Problem
-year-finished: 2024
+finished: 2024
 ---

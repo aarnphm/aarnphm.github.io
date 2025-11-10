@@ -6,7 +6,7 @@ id: Das Passagen-Werk
 modified: 2025-10-29 02:14:28 GMT-04:00
 pdf-path: "[[thoughts/pdf/The Archades Project - Walter Benjamin.pdf]]"
 posters: "[[library/posters/das-passagen-werk.jpg]]"
-status: to-read
+status: to read
 subcategory: design
 tags:
   - philosophy

@@ -10,5 +10,5 @@ subcategory: existentialism
 tags:
   - philosophy
 title: Resistance, Rebellion, and Death
-year-finished: 2025
+finished: 2025
 ---

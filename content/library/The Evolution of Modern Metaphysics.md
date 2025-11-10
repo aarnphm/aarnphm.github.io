@@ -10,5 +10,5 @@ subcategory: metaphysics
 tags:
   - philosophy
 title: "The Evolution of Modern Metaphysics: Making Sense of Things"
-year-finished: 2025
+finished: 2025
 ---

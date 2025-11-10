@@ -23,7 +23,7 @@ views:
       property: category
       direction: DESC
     order:
-      - category
+      - file.basename
       - date
       - seealso
     sort:
@@ -31,15 +31,13 @@ views:
         direction: DESC
       - property: title
         direction: ASC
-      - property: category
-        direction: ASC
       - property: seealso
         direction: ASC
     summaries: {}
     columnSize:
       note.title: 401
       note.date: 147
-      note.seealso: 125
+      note.notebook: 125
     cardSize: 320
     image: note.posters
   - type: table
@@ -51,10 +49,14 @@ views:
       - title
       - date
       - status
-      - year-finished
+      - finished
       - subcategory
       - seealso
     sort:
+      - property: title
+        direction: DESC
+      - property: seealso
+        direction: ASC
       - property: status
         direction: ASC
       - property: date
@@ -62,7 +64,7 @@ views:
     columnSize:
       note.title: 401
       note.date: 147
-      note.seealso: 125
+      note.subcategory: 172
   - type: table
     name: philosophy
     filters:
@@ -96,7 +98,8 @@ views:
     columnSize:
       note.title: 401
       note.date: 147
-      note.seealso: 125
+      note.subcategory: 172
+      file.backlinks: 222
   - type: table
     name: top of mind
     filters:
@@ -105,7 +108,7 @@ views:
         - and:
             - category == "philosophy"
             - '!subcategory.containsAny("Aurelius", "Descartes")'
-            - status.containsAny("to-read", "evergreen")
+            - status.containsAny("to read", "evergreen")
     order:
       - file.name
       - file.tags

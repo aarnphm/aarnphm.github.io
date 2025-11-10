@@ -13,6 +13,6 @@ title: Value
 > [!important] Axiology
 > concerns about the goodness of all varieties, encompasses the nature of value, where it came from.
 
-![[thoughts/moral|Moral]]
+![[thoughts/moral|moral]]
 
-![[thoughts/aesthetic value|Aesthetic]]
+![[thoughts/aesthetic value|aesthetic value]]

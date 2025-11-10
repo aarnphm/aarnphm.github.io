@@ -10,5 +10,5 @@ subcategory: Kafka
 tags:
   - fiction
 title: The Trial
-year-finished: 2024
+finished: 2024
 ---

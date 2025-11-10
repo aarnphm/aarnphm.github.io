@@ -10,5 +10,5 @@ subcategory: programming
 tags:
   - non-fiction
 title: "Working in Public: The Making and Maintenance of Open Source Software"
-year-finished: 2021
+finished: 2021
 ---

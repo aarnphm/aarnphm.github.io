@@ -10,5 +10,5 @@ subcategory: life
 tags:
   - fiction
 title: Kafka on the Shore
-year-finished: 2022
+finished: 2022
 ---

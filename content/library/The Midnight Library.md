@@ -10,5 +10,5 @@ subcategory: love
 tags:
   - fiction
 title: The Midnight Library
-year-finished: 2023
+finished: 2023
 ---

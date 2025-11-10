@@ -10,5 +10,5 @@ subcategory: love
 tags:
   - fiction
 title: Essays in Love
-year-finished: 2024
+finished: 2024
 ---

@@ -10,5 +10,5 @@ subcategory: Nietzsche
 tags:
   - philosophy
 title: The Birth of Tragedy
-year-finished: 2024
+finished: 2024
 ---

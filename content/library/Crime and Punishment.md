@@ -10,5 +10,5 @@ subcategory: Dostoevsky
 tags:
   - fiction
 title: Crime and Punishment
-year-finished: 2025
+finished: 2025
 ---

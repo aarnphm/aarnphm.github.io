@@ -10,5 +10,5 @@ subcategory: life
 tags:
   - non-fiction
 title: The Subtle Art of Not Giving a Fuck
-year-finished: 2023
+finished: 2023
 ---

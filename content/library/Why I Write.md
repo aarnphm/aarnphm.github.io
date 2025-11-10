@@ -10,5 +10,5 @@ subcategory: life
 tags:
   - non-fiction
 title: Why I Write
-year-finished: 2023
+finished: 2023
 ---

@@ -12,7 +12,7 @@ subcategory: love
 tags:
   - poetry
 title: The Applicant
-year-finished: 2025
+finished: 2025
 ---
 
 ```poetry

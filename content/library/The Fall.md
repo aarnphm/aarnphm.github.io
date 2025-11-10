@@ -10,5 +10,5 @@ subcategory: existentialism
 tags:
   - fiction
 title: The Fall
-year-finished: 2025
+finished: 2025
 ---

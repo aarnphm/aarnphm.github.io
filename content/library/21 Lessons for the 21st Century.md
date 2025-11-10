@@ -10,5 +10,5 @@ subcategory: progress
 tags:
   - non-fiction
 title: 21 Lessons for the 21st Century
-year-finished: 2022
+finished: 2022
 ---

@@ -10,5 +10,5 @@ subcategory: Kafka
 tags:
   - fiction
 title: The Castle
-year-finished: 2025
+finished: 2025
 ---

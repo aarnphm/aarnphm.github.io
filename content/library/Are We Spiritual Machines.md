@@ -6,7 +6,7 @@ external-url: https://onlinebooks.library.upenn.edu/webbin/book/lookupid?key=olb
 id: Are We Spiritual Machines
 modified: 2025-10-29 02:14:27 GMT-04:00
 posters: "[[library/posters/are-we-spiritual-machines.jpg]]"
-status: to-read
+status: to read
 subcategory: ai
 tags:
   - non-fiction

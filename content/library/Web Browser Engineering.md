@@ -13,5 +13,5 @@ subcategory: programming
 tags:
   - non-fiction
 title: Web Browser Engineering
-year-finished: 2025
+finished: 2025
 ---

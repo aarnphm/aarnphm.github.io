@@ -5,8 +5,8 @@ date: "2025-10-07"
 id: Metaphysical myths, mathematical Practice
 modified: 2025-10-29 02:14:32 GMT-04:00
 posters: "[[library/posters/metaphysical-myths-mathematical-practice.jpg]]"
-seealso: "[[thoughts/Epistemology]]"
-status: to-read
+notebook: "[[thoughts/Epistemology]]"
+status: to read
 subcategory: metaphysics
 tags:
   - philosophy

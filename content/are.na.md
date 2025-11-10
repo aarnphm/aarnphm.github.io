@@ -41,7 +41,7 @@ cssclasses:
 date: "2024-10-24"
 description: My run-down version of are[dot]na
 id: are.na
-modified: 2025-11-09 11:14:58 GMT-05:00
+modified: 2025-11-09 11:28:30 GMT-05:00
 permalinks:
   - /website
   - /tweets
@@ -84,37 +84,38 @@ title: are.na
 - https://x.com/gwern/status/1959511089961636341 -- Gwen's creative discourse
   - [meta]:
     - date: 10/02/2025
-    - tags: [fruit]
+    - tags: [poem]
 - https://x.com/Miles_Brundage/status/1967385510974009500 -- transition to fortune cookies
   - [meta]:
     - date: 10/03/2025
-    - tags: [fruit]
+    - tags: [life]
 - https://x.com/divya_venn/status/1956105667871412685 -- No one talks about how being avoidant can benefit you in every relationship other than your romantic one
   - [meta]:
     - date: 10/03/2025
-    - tags: [fruit]
+    - tags: [love, relationship]
 - https://x.com/ryolu_/status/1973794203416383594 -- Love is attention
   - [meta]:
     - date: 10/03/2025
-    - tags: [fruit]
+    - tags: [love]
 - https://x.com/noampomsky/status/1974221039782568262 -- when you spend enough time with people who felt alive, it rewires your sense of what life is
   - [meta]:
     - date: 10/03/2025
-    - tags: [fruit]
+    - tags: [love, life, friendship]
   - https://x.com/noampomsky/status/1974246778133250450
 - https://x.com/roryisconfused/status/1973491704704671918 -- God takes a sort of aesthetic pleasure in us, that He enjoys our charms and our ways.
   - [meta]:
     - date: 10/03/2025
-    - tags: [fruit]
+    - tags: [metaphysics, diety]
 - https://www.lesswrong.com/posts/WBw8dDkAWohFjWQSk/the-cluster-structure-of-thingspace -- Cluster structure of thingspace [**]
   - [meta]:
     - date: 09/04/2025
-    - tags: [fruit]
+    - tags: [love, friendship]
   - "Radial categories" are how cognitive psychologists describe the non-Aristotelian boundaries of words.
+  - [[thoughts/love#thingspace|notes]]
 - https://www.multiamory.com/podcast/339-the-smorgasbord-of-relationships -- The smorgasbord of relationship
   - [meta]:
     - date: 09/04/2025
-    - tags: [fruit]
+    - tags: [friendship, love]
 
 ## tweets
 
@@ -159,7 +160,7 @@ title: are.na
 - https://x.com/jeremyphoward/status/1980973242438570325 -- Learning math through the act of working through ML problems.
   - [meta]:
     - date: 10/24/2025
-    - tags: [fruit]
+    - tags: [math]
   - imitation learning
   - see also: https://x.com/TacoCohen/status/1981278509663129912
 - https://x.com/joincolossus/status/1981323901192843612 -- Taste in Math
@@ -791,45 +792,45 @@ title: are.na
 - https://www.linkedin.com/in/thakkarv/ -- Vijay Thakkar
   - [meta]:
     - date: 10/05/2025
-    - tags: [fruit]
+    - tags: [cuda]
   - CUTLASS 4.0
 - https://www.ivanzhao.me/ -- Ivan Zhao
   - [meta]:
     - date: 10/05/2025
-    - tags: [fruit]
+    - tags: [minimalism]
 - https://spencer.place/ -- Spencher Chang [**]
   - [meta]:
     - date: 10/05/2025
-    - tags: [fruit]
+    - tags: [digital garden]
 - https://calv.info/about -- Calvin French-Owen
   - [meta]:
     - date: 09/15/2025
-    - tags: [fruit]
+    - tags: [essayist]
   - Calvin, as in Calvin and Hobbes
 - https://www.sholis.com/ -- Brian Sholis
   - [meta]:
     - date: 10/02/2025
-    - tags: [fruit]
+    - tags: [text]
 - https://jzhao.xyz/ -- Jacky Zhao [**]
   - [meta]:
     - date: 10/02/2025
-    - tags: [fruit]
+    - tags: [garden]
   - daylightcomputer's inspired but in pure CSS and HTML
   - source: https://github.com/jackyzha0/sunlit
 - https://jacobleech.com/ -- Jacob Leech
   - [meta]:
     - date: 10/02/2025
-    - tags: [fruit]
+    - tags: [graphics, caligraphy]
   - warm, graphics, animation smooth
 - https://langworth.com/ -- Ian Langworth
   - [meta]:
     - date: 10/02/2025
-    - tags: [fruit]
+    - tags: [portfolio]
   - wait terminal go brrr
 - https://www.alanagoyal.com/notes
   - [meta]:
     - date: 10/02/2025
-    - tags: [fruit]
+    - tags: [personal notes]
   - Apple Notes-inspired portfolio
   - https://github.com/alanagoyal/alanagoyal, mostly just react-markdown and React 19 Server Component.
 - https://henry.codes/ -- Henry Desroches
@@ -1976,6 +1977,10 @@ title: are.na
 - [meta]:
   - view: list
 
+- https://www.youtube.com/watch?v=kkfLHmujzO8 -- A Stylised History of Mech Interp
+  - [meta]:
+    - date: 11/09/2025
+    - tags: [interpretability]
 - https://github.com/Dao-AILab/flash-attention/blob/main/flash_attn/cute/flash_fwd_sm100.py -- FlashAttention 4 CuTE kernels for B200 [**]
   - [meta]:
     - date: 11/09/2025
@@ -3104,11 +3109,16 @@ title: are.na
 
 ## philosophy
 
+- https://www.youtube.com/watch?v=xL_sMXfzzyA -- A Conversation with Bertrand Russell (1952)
+  - [meta]:
+    - date: 11/05/2025
+    - tags: [life]
+  - Living in a world of ancients empires, atomic bomb
 - https://www.youtube.com/watch?v=14zv0c7cQmo -- Edith Stein's philosophy of empathy
   - [meta]:
     - date: 11/05/2025
     - tags: [empathy]
-  - Two camp when talking about [[thoughts/Empathy]]:
+  - two camps when talking about [[thoughts/Empathy]]:
   - simulation theory: "putting yourself into another shoe"
   - theory theory: "mindreading"
   - She argues that empathy as "the experience of foreign consciousness in general", i.e: doesn't have to have shared experience, but rather a locust of their own subjectivity.

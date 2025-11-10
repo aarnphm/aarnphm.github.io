@@ -425,7 +425,7 @@ body[data-arena-subpage="true"] {
 
 // When both indicators are present, offset the PDF indicator
 .arena-block-connections-indicator + .arena-block-pdf-indicator {
-  right: 2rem;
+  top: 2rem;
 }
 
 .arena-channel-grid[data-view-mode="list"] .arena-block-connections-indicator {
@@ -476,7 +476,7 @@ body[data-arena-subpage="true"] {
 }
 
 .arena-block-content {
-  padding: 1rem;
+  padding: 1rem 2rem 1rem 1rem;
   flex: 1;
   display: inline-block;
 }

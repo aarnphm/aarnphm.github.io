@@ -10,5 +10,5 @@ subcategory: productivity
 tags:
   - non-fiction
 title: Deep Work
-year-finished: 2024
+finished: 2024
 ---

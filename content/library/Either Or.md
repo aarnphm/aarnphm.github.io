@@ -10,5 +10,5 @@ subcategory: Kierkegaard
 tags:
   - philosophy
 title: Either/Or
-year-finished: 2024
+finished: 2024
 ---

@@ -56,6 +56,7 @@ export interface Options {
   enableYouTubeEmbed: boolean
   enableInlineFootnotes: boolean
   enableImageGrid: boolean
+  enableMarker: boolean
 }
 
 const defaultOptions: Options = {
@@ -72,6 +73,7 @@ const defaultOptions: Options = {
   enableYouTubeEmbed: true,
   enableInlineFootnotes: true,
   enableImageGrid: true,
+  enableMarker: true,
 }
 
 const calloutMapping = {
@@ -196,6 +198,17 @@ const tagRegex = new RegExp(
   /(?<=^| )#((?:[-_\p{L}\p{Emoji}\p{M}\d])+(?:\/[-_\p{L}\p{Emoji}\p{M}\d]+)*)/gu,
 )
 const blockReferenceRegex = new RegExp(/\^([-_A-Za-z0-9]+)$/g)
+const markerRegex = new RegExp(/::([^:]+)\{(h[1-7])\}::/g)
+
+const intensityColorMap: Record<string, string> = {
+  h1: "rose",
+  h2: "love",
+  h3: "lime",
+  h4: "gold",
+  h5: "pine",
+  h6: "foam",
+  h7: "iris",
+}
 
 export const checkMermaidCode = ({ tagName, properties }: Element) =>
   tagName === "code" &&
@@ -290,6 +303,19 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options>>
               (_value: string, ...capture: string[]) => {
                 const [inner] = capture
                 return { type: "html", value: `<mark>${inner}</mark>` }
+              },
+            ])
+          }
+
+          if (opts.enableMarker) {
+            replacements.push([
+              markerRegex,
+              (_value: string, ...capture: string[]) => {
+                const [text, intensity] = capture
+                return {
+                  type: "html",
+                  value: `<span class="marker marker-${intensity}">${text}</span>`,
+                }
               },
             ])
           }

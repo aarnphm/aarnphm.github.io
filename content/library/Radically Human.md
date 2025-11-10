@@ -12,5 +12,5 @@ subcategory: programming
 tags:
   - non-fiction
 title: "Radically Human: How New Technology Is Transforming Business and Shaping Our Future"
-year-finished: 2023
+finished: 2023
 ---

@@ -10,5 +10,5 @@ subcategory: Plato
 tags:
   - philosophy
 title: The Republic
-year-finished: 2023
+finished: 2023
 ---

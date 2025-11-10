@@ -10,5 +10,5 @@ subcategory: Nietzsche
 tags:
   - philosophy
 title: Why I Am So Wise
-year-finished: 2023
+finished: 2023
 ---

@@ -10,5 +10,5 @@ subcategory: productivity
 tags:
   - non-fiction
 title: Dopamine Nation
-year-finished: 2023
+finished: 2023
 ---

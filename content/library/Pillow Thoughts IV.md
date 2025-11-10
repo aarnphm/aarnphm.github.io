@@ -10,5 +10,5 @@ subcategory: love
 tags:
   - poetry
 title: Pillow Thoughts IV
-year-finished: 2023
+finished: 2023
 ---

@@ -10,5 +10,5 @@ subcategory: Machiavelli
 tags:
   - philosophy
 title: The Prince
-year-finished: 2025
+finished: 2025
 ---

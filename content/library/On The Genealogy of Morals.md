@@ -10,5 +10,5 @@ subcategory: Nietzsche
 tags:
   - philosophy
 title: On The Genealogy of Morals
-year-finished: 2025
+finished: 2025
 ---

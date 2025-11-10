@@ -10,5 +10,5 @@ subcategory: Plato
 tags:
   - philosophy
 title: Symposium
-year-finished: 2023
+finished: 2023
 ---

@@ -10,5 +10,5 @@ subcategory: progress
 tags:
   - non-fiction
 title: "The Triple Helix: Gene, Organism, and Environment"
-year-finished: 2024
+finished: 2024
 ---

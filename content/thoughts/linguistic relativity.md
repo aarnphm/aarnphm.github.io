@@ -3,7 +3,7 @@ created: "2025-10-01"
 date: "2025-10-01"
 description: Language shapes thought—classical Sapir-Whorf hypothesis finds unexpected validation in language models, where linguistic structure creates measurable emergent properties.
 id: linguistic relativity
-modified: 2025-10-29 02:15:49 GMT-04:00
+modified: 2025-11-09 20:27:14 GMT-05:00
 tags:
   - seed
 title: linguistic relativity
@@ -17,7 +17,7 @@ Contemporary research reveals that despite multilingual training, large reasonin
 >
 > The strong form—linguistic determinism—claimed language determines and limits thought. This has been rejected. Modern evidence supports a weaker form: linguistic structures influence perception and reasoning without strictly constraining them. In [[thoughts/LLMs|language model]], these effects emerge from training dynamics (i.e stochastic prediction) rather than hardcoded constraints, offering new ways to operationalize Whorfian effects through embeddings, neuron activation patterns, and cross-lingual transfer performance.
 
-## emergent properties in language models
+## [[thoughts/emergent behaviour|emergent properties]] in language models
 
 ### linguistic structure and model behavior
 

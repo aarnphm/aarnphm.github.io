@@ -10,7 +10,7 @@ subcategory: life
 tags:
   - fiction
 title: Dune
-year-finished: 2022
+finished: 2022
 ---
 
 Dune series.

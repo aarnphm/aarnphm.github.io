@@ -10,5 +10,5 @@ subcategory: Kierkegaard
 tags:
   - philosophy
 title: Fear and Trembling
-year-finished: 2024
+finished: 2024
 ---

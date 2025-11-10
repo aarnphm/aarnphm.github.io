@@ -10,5 +10,5 @@ subcategory: Weil
 tags:
   - philosophy
 title: The Need For Roots
-year-finished: 2025
+finished: 2025
 ---

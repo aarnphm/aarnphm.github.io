@@ -10,5 +10,5 @@ subcategory: love
 tags:
   - fiction
 title: Out of Love
-year-finished: 2023
+finished: 2023
 ---

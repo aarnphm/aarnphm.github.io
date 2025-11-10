@@ -20,6 +20,8 @@ import protectedScript from "../../components/scripts/protected.inline"
 //@ts-ignore
 import audioScript from "../../components/scripts/audio.inline"
 import audioStyle from "../../components/styles/audio.scss"
+// @ts-ignore
+import markerScript from "../../components/scripts/marker.inline"
 import { BuildCtx } from "../../util/ctx"
 import { QuartzComponent } from "../../components/types"
 import type { QuartzMdxComponent } from "../../components/mdx/registry"
@@ -107,6 +109,7 @@ function addGlobalPageResources(ctx: BuildCtx, componentResources: ComponentReso
     pseudoScript,
     protectedScript,
     audioScript,
+    markerScript,
   )
 
   if (cfg.analytics?.provider === "plausible") {

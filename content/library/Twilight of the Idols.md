@@ -10,5 +10,5 @@ subcategory: Nietzsche
 tags:
   - philosophy
 title: Twilight of the Idols
-year-finished: 2024
+finished: 2024
 ---

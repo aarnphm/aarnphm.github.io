@@ -10,5 +10,5 @@ subcategory: Kierkegaard
 tags:
   - philosophy
 title: The Lily of the Field and the Bird of the Air
-year-finished: 2024
+finished: 2024
 ---
