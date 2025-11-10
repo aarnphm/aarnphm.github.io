@@ -2,14 +2,14 @@
 date: "2024-06-12"
 description: en sein.
 id: being
-modified: 2025-10-29 02:15:41 GMT-04:00
+modified: 2025-11-10 06:58:46 GMT-05:00
 tags:
   - seed
   - philosophy
 title: being.
 ---
 
-What is being as a part of [[thoughts/Epistemology|epistemology]]?
+> What is being as a part of [[thoughts/Epistemology|epistemology]]?
 
 ## why do we practice art?
 

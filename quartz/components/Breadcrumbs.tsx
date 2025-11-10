@@ -2,7 +2,7 @@ import { QuartzComponent, QuartzComponentConstructor, QuartzComponentProps } fro
 import breadcrumbsStyle from "./styles/breadcrumbs.scss"
 // @ts-ignore
 import script from "./scripts/breadcrumbs.inline"
-import { FullSlug, SimpleSlug, resolveRelative, simplifySlug } from "../util/path"
+import { FullSlug, SimpleSlug, joinSegments, resolveRelative, simplifySlug } from "../util/path"
 import { classNames } from "../util/lang"
 import { trieFromAllFiles } from "../util/ctx"
 
@@ -57,11 +57,57 @@ const defaultOptions: BreadcrumbOptions = {
   trailingWindow: 2,
 }
 
+type BreadcrumbNodeDescriptor = {
+  displayName: string
+  slug: FullSlug
+}
+
 function formatCrumb(displayName: string, baseSlug: FullSlug, currentSlug: SimpleSlug): CrumbData {
   return {
     displayName: displayName.replaceAll("-", " "),
     path: resolveRelative(baseSlug, currentSlug),
   }
+}
+
+function nodeToDescriptor(node: { displayName: string; slug: FullSlug }): BreadcrumbNodeDescriptor {
+  return {
+    displayName: node.displayName,
+    slug: node.slug,
+  }
+}
+
+function buildFallbackDescriptors(
+  trie: ReturnType<typeof trieFromAllFiles>,
+  slugParts: string[],
+  fileTitle?: string,
+): BreadcrumbNodeDescriptor[] {
+  const descriptors: BreadcrumbNodeDescriptor[] = [nodeToDescriptor(trie)]
+  let current: ReturnType<typeof trieFromAllFiles> | undefined = trie
+  const traversed: string[] = []
+
+  slugParts.forEach((segment, idx) => {
+    if (!segment) {
+      return
+    }
+
+    traversed.push(segment)
+    const child = current?.children.find((c) => c.slugSegment === segment)
+    if (child) {
+      descriptors.push(nodeToDescriptor(child))
+      current = child
+      return
+    }
+
+    const slug = joinSegments(...traversed) as FullSlug
+    const isLast = idx === slugParts.length - 1
+    descriptors.push({
+      displayName: isLast ? fileTitle ?? segment : segment,
+      slug,
+    })
+    current = undefined
+  })
+
+  return descriptors
 }
 
 export default ((opts?: Partial<BreadcrumbOptions>) => {
@@ -73,21 +119,27 @@ export default ((opts?: Partial<BreadcrumbOptions>) => {
     ctx,
   }: QuartzComponentProps) => {
     const trie = (ctx.trie ??= trieFromAllFiles(allFiles))
-    const slugParts = fileData.slug!.split("/")
+    const slugParts = fileData.slug!.split("/").filter((part) => part.length > 0)
     const pathNodes = trie.ancestryChain(slugParts)
+    let nodeDescriptors: BreadcrumbNodeDescriptor[]
+    if (pathNodes) {
+      nodeDescriptors = pathNodes.map((node) => nodeToDescriptor(node))
+    } else {
+      nodeDescriptors = buildFallbackDescriptors(trie, slugParts, fileData.frontmatter?.title)
+    }
 
-    if (!pathNodes) {
+    if (nodeDescriptors.length === 0) {
       return null
     }
 
-    const crumbs: CrumbData[] = pathNodes.map((node, idx) => {
+    const crumbs: CrumbData[] = nodeDescriptors.map((node, idx) => {
       const crumb = formatCrumb(node.displayName, fileData.slug!, simplifySlug(node.slug))
       if (idx === 0) {
         crumb.displayName = options.rootName
       }
 
       // For last node (current page), set empty path
-      if (idx === pathNodes.length - 1) {
+      if (idx === nodeDescriptors.length - 1) {
         crumb.path = ""
       }
 

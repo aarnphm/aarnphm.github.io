@@ -2,7 +2,7 @@
 date: "2024-10-10"
 description: A list of cheatsheet of whatever that fits with my workflow
 id: cheatsheet
-modified: 2025-10-29 02:14:20 GMT-04:00
+modified: 2025-11-10 08:15:03 GMT-05:00
 tags:
   - evergreen
   - math
@@ -24,9 +24,9 @@ $$
 
 - SAXPY: single-precision a \* x plus y
 - BLAS: Basic Linear Algebra Subprograms
-  - l1: scalar,vector,vector-vector ops
-  - l2: matrix-vector ops
-  - l3: matrix-matrix ops
+  - L1: scalar,vector,vector-vector ops
+  - L2: matrix-vector ops
+  - L3: matrix-matrix ops
   - ![[thoughts/images/BLAS.webp]]
 
 ## words
@@ -42,3 +42,5 @@ $$
 - aspersion
 - vim
 - sibilant
+- nomenclature
+- paratactic

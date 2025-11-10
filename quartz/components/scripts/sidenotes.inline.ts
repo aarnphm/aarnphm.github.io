@@ -58,7 +58,6 @@ interface SidenoteState {
   side?: "left" | "right"
   clickHandler?: (e: MouseEvent) => void
   keyHandler?: (e: KeyboardEvent) => void
-  inlineExpanded?: boolean
 }
 
 class SidenoteManager {
@@ -93,7 +92,6 @@ class SidenoteManager {
     content.style.display = expanded ? "block" : "none"
     content.setAttribute("aria-hidden", (!expanded).toString())
     this.setActiveState(state, expanded)
-    state.inlineExpanded = expanded
   }
 
   private measureContentHeight(content: HTMLElement): number {
@@ -147,9 +145,6 @@ class SidenoteManager {
     this.sidenotes.forEach((state) => {
       const { label, content } = state
 
-      state.inlineExpanded =
-        label.getAttribute("aria-expanded") === "true" || content.style.display === "block"
-
       this.cleanupHandlers(state)
 
       label.removeAttribute("role")
@@ -164,6 +159,8 @@ class SidenoteManager {
 
       content.style.display = "none"
       content.style.position = ""
+      content.style.left = ""
+      content.style.right = ""
       content.classList.remove("sidenote-left", "sidenote-right", "sidenote-inline")
       content.setAttribute("aria-hidden", "true")
     })
@@ -200,12 +197,40 @@ class SidenoteManager {
     content.style.display = "block"
     content.setAttribute("aria-hidden", "false")
 
+    // check if this sidenote is inside collapse-shell
+    const isInCollapseShell = !!content.closest(".collapse-shell")
+
+    if (!isInCollapseShell) {
+      // position relative to article bounds with 1rem spacing
+      const article = document.querySelector(".page-content > article") as HTMLElement
+      if (article) {
+        const spacing = remToPx(1) // 1rem spacing
+        const sidenoteWidth = remToPx(SIDENOTE_WIDTH)
+
+        // get article position
+        const articleRect = article.getBoundingClientRect()
+        const offsetParent = content.offsetParent as HTMLElement
+        const parentRect = offsetParent
+          ? offsetParent.getBoundingClientRect()
+          : { left: 0, right: 0 }
+
+        if (side === "left") {
+          // position to the left of article's left edge with 1rem gap
+          const leftPosition = articleRect.left - parentRect.left - sidenoteWidth - 1.5 * spacing
+          content.style.left = `${leftPosition}px`
+        } else {
+          // position to the right of article's right edge with 1rem gap
+          const rightPosition = parentRect.right - articleRect.right - sidenoteWidth - spacing
+          content.style.right = `${rightPosition}px`
+        }
+      }
+    }
+
     const bottomPosition = topPosition + contentHeight
     if (side === "left") this.lastBottomLeft = bottomPosition
     else this.lastBottomRight = bottomPosition
 
     state.side = side
-    state.inlineExpanded = false
     return true
   }
 
@@ -251,7 +276,8 @@ class SidenoteManager {
     label.addEventListener("click", onClick, { capture: true })
     label.addEventListener("keydown", onKeyDown)
 
-    this.setExpandedState(state, state.inlineExpanded ?? false)
+    // always start collapsed
+    this.setExpandedState(state, false)
   }
 
   public layout() {

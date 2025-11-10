@@ -2,7 +2,7 @@
 date: "2025-10-05"
 description: RISC-V based AI accelerators with programmable architecture
 id: Tenstorrent
-modified: 2025-10-29 02:15:36 GMT-04:00
+modified: 2025-11-10 08:39:32 GMT-05:00
 tags:
   - ml
   - asic
@@ -14,7 +14,7 @@ Jim Keller's company (legendary chip designer, AMD, Tesla, Intel), the man need 
 
 RISC-V cores, explicit SRAM management, Ethernet fabric. no automatic caching, no hidden schedulers [@pizzini2025tenstorrent; @vasiljevic2024blackhole].
 
-see also: [[thoughts/GPU programming]], [[thoughts/MLIR]], [[thoughts/Compiler]]
+see also: [[thoughts/GPU programming]], [[thoughts/MLIR]], [[thoughts/Compiler]], [[thoughts/pdfs/88_HC2024.Tenstorrent.Jasmina.Davor.v7.pdf|Jasmina's talk at HotChip]]
 
 ## execution model comparison
 

@@ -107,7 +107,9 @@ transclude:
 
 ![[thoughts/images/books.webp|A list of books]]
 
-## authors
+![[thoughts/images/marriage is a long conversation.png|Marriage is a long conversation]]
+
+![[thoughts/images/billionaire emails be like.png|email threads between Thiel, Zuckerberg, Clegg]]
 
 ![[thoughts/images/joan-didion.webp|joan didion]]
 ![[thoughts/images/susan-sontag.webp|susan sontag]]
@@ -116,7 +118,5 @@ transclude:
 ![[thoughts/images/donna-tartt.webp|donna tartt]]
 ![[thoughts/images/elsa-schiaparelli.webp|elsa schiaparelli]]
 ![[thoughts/images/georgia-okeeffe.webp|georgia o'keeffe]]
-
-## me
 
 ![[thoughts/images/onion.webp|onion id]]

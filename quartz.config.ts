@@ -105,13 +105,7 @@ const config: QuartzConfig = {
       // Convert code-file transcludes to code blocks before highlighting
       Plugin.CodeViewer(),
       Plugin.Twitter(),
-      Plugin.SyntaxHighlighting({
-        theme: {
-          light: "rose-pine-dawn",
-          dark: "rose-pine",
-        },
-        keepBackground: true,
-      }),
+      Plugin.SyntaxHighlighting({ keepBackground: true }),
       Plugin.Citations({ bibliography: "./content/References.bib" }),
       Plugin.ObsidianBases(),
       Plugin.JsonCanvas(),

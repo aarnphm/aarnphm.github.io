@@ -7,7 +7,7 @@ aliases:
 date: "2025-08-09"
 description: just another fish in the sea.
 id: dating
-modified: 2025-11-10 04:36:07 GMT-05:00
+modified: 2025-11-10 06:48:09 GMT-05:00
 noindex: true
 slides: true
 tags:
@@ -333,8 +333,9 @@ if this sounds like _you_
 I'd love to:
 
 1. take you out on a picnic date where we can rent a vhs and eat strawberry, or
-2. we can go bouldering, grab food, then spend the night watching "paris, texas", or
-3. rent a cabin near lake simcoe, and enjoy the nature.
+2. checking out #places around Toronto, or
+3. we can go bouldering, grab food, then spend the night watching "paris, texas", or
+4. rent a cabin near lake simcoe, and enjoy the nature.
 
 ![[thoughts/images/3DA0F7DF-8F9B-47D8-BAA7-114429E5C359_1_105_c.webp]]
 ![[thoughts/images/0181AD4F-3C0A-4D99-9AF5-9145AFE56E22.webp]]

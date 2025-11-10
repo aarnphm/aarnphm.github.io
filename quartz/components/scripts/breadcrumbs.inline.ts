@@ -137,8 +137,30 @@ function setupOverflow(container: HTMLElement) {
   })
 }
 
-document.addEventListener("nav", () => {
+function ensureBreadcrumbContainer(): HTMLElement | null {
+  const existing = document.querySelector<HTMLElement>(".breadcrumb-container")
+  if (existing) {
+    return existing
+  }
+
+  const header = document.querySelector<HTMLElement>(".header-content")
+  if (!header) {
+    return null
+  }
+
+  const container = document.createElement("nav")
+  container.classList.add("breadcrumb-container")
+  container.setAttribute("aria-label", "breadcrumbs")
+  header.insertAdjacentElement("afterbegin", container)
+  return container
+}
+
+function hydrateBreadcrumbs() {
+  ensureBreadcrumbContainer()
   document
     .querySelectorAll<HTMLElement>(".breadcrumb-overflow")
     .forEach((container) => setupOverflow(container))
-})
+}
+
+document.addEventListener("nav", hydrateBreadcrumbs)
+document.addEventListener("content-decrypted", hydrateBreadcrumbs)

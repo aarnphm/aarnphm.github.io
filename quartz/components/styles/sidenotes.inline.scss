@@ -88,6 +88,19 @@ $sidenote-content-border-width: 0.075rem;
   display: inline-block;
 }
 
+// reset positioning when nested within collapse-header
+.collapse-shell > * {
+  .sidenote-content {
+    &.sidenote-right {
+      right: -$sidenote-offset-right;
+    }
+
+    &.sidenote-left {
+      left: -$sidenote-offset-left;
+    }
+  }
+}
+
 .sidenote-content {
   display: none;
   position: absolute;
@@ -111,11 +124,11 @@ $sidenote-content-border-width: 0.075rem;
   }
 
   &.sidenote-right {
-    right: -$sidenote-offset-right;
+    right: calc($sidenote-offset-right / 2) + 0.5;
   }
 
   &.sidenote-left {
-    left: -$sidenote-offset-left;
+    left: calc($sidenote-offset-left / 2) - 0.5;
   }
 
   &.sidenote-inline {

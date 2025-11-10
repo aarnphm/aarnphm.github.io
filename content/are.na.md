@@ -41,7 +41,7 @@ cssclasses:
 date: "2024-10-24"
 description: My run-down version of are[dot]na
 id: are.na
-modified: 2025-11-10 06:29:52 GMT-05:00
+modified: 2025-11-10 06:56:40 GMT-05:00
 permalinks:
   - /website
   - /tweets
@@ -111,7 +111,7 @@ title: are.na
     - date: 09/04/2025
     - tags: [love, friendship]
   - "Radial categories" are how cognitive psychologists describe the non-Aristotelian boundaries of words.
-  - [[thoughts/love#thingspace|notes]]
+  - see also: [[thoughts/love#thingspace|notes]]
 - https://www.multiamory.com/podcast/339-the-smorgasbord-of-relationships -- The smorgasbord of relationship
   - [meta]:
     - date: 09/04/2025

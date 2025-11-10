@@ -7,7 +7,7 @@ aliases:
 date: "2025-10-04"
 description: choosing to give your full, continuously.
 id: love
-modified: 2025-11-09 03:54:56 GMT-05:00
+modified: 2025-11-10 07:10:12 GMT-05:00
 socials:
   essay: /posts/love
 tags:
@@ -17,11 +17,13 @@ tags:
   - technical
   - fruit
 title: dilectio
+transclude:
+  headings: false
 ---
 
 Love is not a feeling that happens to you.
 
-It's a discipline, a practice, a continuous choice to attend to someone despite no {{sidenotes[guarantees.]: You choose to stay in the hermeneutic circle, to keep interpreting generously, to refuse instrumental understanding. [@kierkegaard1847worksoflove; @fromm1956art; @hooks2000love]}}
+It's a discipline, a practice, a continuous choice to attend to someone despite no {{sidenotes<inline: true>[guarantees.]: You choose to stay in the hermeneutic circle, to keep interpreting generously, to refuse instrumental understanding. [@kierkegaard1847worksoflove; @fromm1956art; @hooks2000love]}}
 
 > [!summary] decomposable functions
 >
@@ -92,9 +94,7 @@ You bring your world, they bring theirs. Understanding emerges where they meetâ€
 
 When someone says "you don't understand me," they're rightâ€”understanding must be achieved, maintained, renewed. It's never automatic. [@hooks2000love]
 
-This takes time. You can't speed-read a person. Deep reading is the model: return to difficult passages, sit with what resists you, let your categories be disrupted. [^book]
-
-[^book]: @karlsson2025reading, highly recommend this posts from Henrik Karlsson
+This takes time. You can't speed-read a person. Deep {{sidenotes[reading]: see also [@karlsson2025reading] on how he reads}} is the model: return to difficult passages, sit with what resists you, let your categories be disrupted.
 
 ## what it's not
 
