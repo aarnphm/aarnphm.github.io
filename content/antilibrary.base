@@ -12,8 +12,6 @@ filters:
 properties:
   file.tags:
     displayName: tags
-  note.seealso:
-    displayName: notebooks
   file.basename:
     displayName: notes
 views:
@@ -25,13 +23,13 @@ views:
     order:
       - file.basename
       - date
-      - seealso
+      - notebook
     sort:
       - property: date
         direction: DESC
       - property: title
         direction: ASC
-      - property: seealso
+      - property: notebook
         direction: ASC
     summaries: {}
     columnSize:
@@ -51,11 +49,11 @@ views:
       - status
       - finished
       - subcategory
-      - seealso
+      - notebook
     sort:
       - property: title
         direction: DESC
-      - property: seealso
+      - property: notebook
         direction: ASC
       - property: status
         direction: ASC
@@ -80,9 +78,9 @@ views:
       - author
       - subcategory
       - file.backlinks
-      - seealso
+      - notebook
     sort:
-      - property: seealso
+      - property: notebook
         direction: ASC
       - property: date
         direction: DESC
@@ -148,7 +146,7 @@ views:
     order:
       - file.name
       - author
-      - seealso
+      - notebook
     sort:
       - property: file.name
         direction: ASC

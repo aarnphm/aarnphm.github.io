@@ -127,6 +127,7 @@ Eternal return is distinct return of outward movement, distinct contemplation of
 ### The dice-throw
 
 The game as two set of movement
+
 - Earth is where the dice is thrown and sky is when the dice is thrown back
 - The dice-throw affirm becoming and it affirms the being of becoming
 

@@ -106,3 +106,33 @@ export async function loadMapbox(): Promise<any | null> {
   const loaded = await mapboxReady
   return applyToken(loaded)
 }
+
+export function applyMonochromeMapPalette(map: any) {
+  try {
+    const layers = map.getStyle()?.layers ?? []
+    layers.forEach((layer: any) => {
+      try {
+        if (layer.type === "background") {
+          map.setPaintProperty(layer.id, "background-color", "#fff9f3")
+        } else if (layer.type === "fill") {
+          const isWater = layer.id.includes("water")
+          map.setPaintProperty(layer.id, "fill-color", isWater ? "#e2e8ee" : "#fef6ee")
+          map.setPaintProperty(layer.id, "fill-opacity", isWater ? 0.96 : 0.85)
+        } else if (layer.type === "line") {
+          map.setPaintProperty(layer.id, "line-color", "#cbbfb1")
+          map.setPaintProperty(layer.id, "line-opacity", 0.35)
+        } else if (layer.type === "symbol") {
+          map.setPaintProperty(layer.id, "text-color", "#7c7468")
+          map.setPaintProperty(layer.id, "icon-color", "#7c7468")
+        } else if (layer.type === "circle") {
+          map.setPaintProperty(layer.id, "circle-color", "#7c7468")
+          map.setPaintProperty(layer.id, "circle-opacity", 0.4)
+        }
+      } catch {
+        // ignore layers without matching paint properties
+      }
+    })
+  } catch (error) {
+    console.error(error)
+  }
+}

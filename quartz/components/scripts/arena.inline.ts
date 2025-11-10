@@ -1,6 +1,6 @@
 import { fetchCanonical, tokenizeTerm, highlight } from "./util"
 import { normalizeRelativeURLs } from "../../util/path"
-import { loadMapbox } from "./mapboxClient"
+import { loadMapbox, applyMonochromeMapPalette } from "./mapboxClient"
 
 let currentBlockIndex = 0
 let totalBlocks = 0
@@ -132,7 +132,7 @@ function hydrateMapboxMaps(root: HTMLElement) {
         try {
           const map = new mapboxgl.Map({
             container: node,
-            style: "mapbox://styles/mapbox/streets-v12",
+            style: "mapbox://styles/mapbox/light-v11",
             center: [lon, lat],
             zoom: 15,
             attributionControl: false,
@@ -156,6 +156,7 @@ function hydrateMapboxMaps(root: HTMLElement) {
           marker.addTo(map)
 
           map.once("load", () => {
+            applyMonochromeMapPalette(map)
             node.dataset.mapStatus = "loaded"
             node.classList.remove("arena-map-error")
             try {

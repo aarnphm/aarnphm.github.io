@@ -2,7 +2,7 @@
 author:
   - Pavel Panchekha
   - Chris Harrelson
-category: non-fiction
+category: non fiction
 date: "2025-08-13"
 external-url: https://browser.engineering/onepage.html
 id: Web Browser Engineering
@@ -11,7 +11,7 @@ posters: "[[library/posters/web-browser-engineering.jpg]]"
 status: finished
 subcategory: programming
 tags:
-  - non-fiction
+  - non fiction
 title: Web Browser Engineering
 finished: 2025
 ---

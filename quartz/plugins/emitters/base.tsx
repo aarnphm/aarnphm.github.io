@@ -2,6 +2,7 @@ import { QuartzEmitterPlugin } from "../types"
 import { QuartzComponentProps } from "../../components/types"
 import { pageResources, renderPage } from "../../components/renderPage"
 import { FullPageLayout } from "../../cfg"
+import { BuildCtx } from "../../util/ctx"
 import {
   pathToRoot,
   resolveRelative,
@@ -22,6 +23,7 @@ import { QuartzPluginData } from "../vfile"
 import { Root } from "hast"
 import { h } from "hastscript"
 import { createWikilinkRegex } from "../../util/wikilinks"
+import { StaticResources } from "../../util/resources"
 
 const wikilinkRegex = createWikilinkRegex()
 const INLINE_WIKILINK_REGEX = createWikilinkRegex()
@@ -775,6 +777,186 @@ function buildCards(
   return h("div.base-card-grid", varStyle ? { style: varStyle } : {}, cards)
 }
 
+// build map view
+function buildMap(
+  files: QuartzPluginData[],
+  view: BaseView,
+  currentSlug: FullSlug,
+  allFiles: QuartzPluginData[],
+  properties?: Record<string, PropertyConfig>,
+): any {
+  // strip note. prefix if present (same pattern as buildTableCell)
+  let coordinatesProp = view.coordinates || "coordinates"
+  if (coordinatesProp.startsWith("note.")) {
+    coordinatesProp = coordinatesProp.replace("note.", "")
+  }
+
+  const markers: any[] = []
+
+  // extract markers from files with valid coordinates
+  for (const file of files) {
+    const coordsValue = resolvePropertyValue(file, coordinatesProp, allFiles)
+    if (!coordsValue || !Array.isArray(coordsValue) || coordsValue.length < 2) {
+      continue
+    }
+
+    const lat = parseFloat(String(coordsValue[0]))
+    const lon = parseFloat(String(coordsValue[1]))
+
+    if (isNaN(lat) || isNaN(lon)) {
+      continue
+    }
+
+    const title = getFileDisplayName(file) ?? fallbackNameFromSlug((file.slug || "") as FullSlug)
+    const slug = (file.slug || "") as FullSlug
+
+    // collect popup metadata from view.order
+    const popupFields: Record<string, any> = {}
+    const order = view.order || []
+    for (const field of order) {
+      if (field === "title" || field === "file.title" || field === "note.title") continue
+      const value = resolvePropertyValue(file, field, allFiles)
+      if (value !== undefined && value !== null && value !== "") {
+        popupFields[field] = value
+      }
+    }
+
+    // get marker customization - strip note. prefix
+    let iconProp = view.markerIcon
+    if (iconProp && iconProp.startsWith("note.")) {
+      iconProp = iconProp.replace("note.", "")
+    }
+    let colorProp = view.markerColor
+    if (colorProp && colorProp.startsWith("note.")) {
+      colorProp = colorProp.replace("note.", "")
+    }
+
+    const icon = iconProp ? resolvePropertyValue(file, iconProp, allFiles) : undefined
+    const color = colorProp ? resolvePropertyValue(file, colorProp, allFiles) : undefined
+
+    markers.push({
+      lat,
+      lon,
+      title,
+      slug,
+      icon: icon ? String(icon) : undefined,
+      color: color ? String(color) : undefined,
+      popupFields,
+    })
+  }
+
+  // prepare map configuration
+  const config = {
+    defaultZoom: view.defaultZoom ?? 12,
+    defaultCenter: view.defaultCenter,
+    clustering: view.clustering !== false, // default true
+  }
+
+  // create container with data attributes
+  const attrs: Record<string, any> = {
+    "data-markers": JSON.stringify(markers),
+    "data-config": JSON.stringify(config),
+    "data-current-slug": currentSlug,
+  }
+
+  // add properties metadata for display names
+  if (properties) {
+    attrs["data-properties"] = JSON.stringify(properties)
+  }
+
+  return h("div.base-map", attrs)
+}
+
+function resolveViewSlug(baseSlug: FullSlug, viewName: string, viewIndex: number): FullSlug {
+  if (viewIndex === 0) {
+    return baseSlug
+  }
+  const slugifiedName = slugifyFilePath((viewName + ".tmp") as FilePath, true)
+  return joinSegments(baseSlug, slugifiedName) as FullSlug
+}
+
+async function* emitBaseViewsForFile(
+  ctx: BuildCtx,
+  baseFileData: QuartzPluginData,
+  allFiles: QuartzPluginData[],
+  resources: StaticResources,
+  layout: FullPageLayout,
+) {
+  if (!baseFileData.bases || !baseFileData.basesConfig || !baseFileData.slug) {
+    return
+  }
+
+  const config = baseFileData.basesConfig
+  const baseSlug = baseFileData.slug as FullSlug
+
+  const allViews = config.views.map((view, idx) => ({
+    name: view.name,
+    type: view.type,
+    slug: resolveViewSlug(baseSlug, view.name, idx),
+  }))
+
+  const baseMatchedFiles = evaluateFilter(config.filters, allFiles)
+
+  for (const [viewIndex, view] of config.views.entries()) {
+    const slug = resolveViewSlug(baseSlug, view.name, viewIndex)
+
+    let matchedFiles = baseMatchedFiles
+    if (view.filters) {
+      matchedFiles = evaluateFilter(view.filters, matchedFiles)
+    }
+
+    const sortedFiles = applySorting(matchedFiles, view.sort, allFiles)
+    const limitedFiles = view.limit ? sortedFiles.slice(0, view.limit) : sortedFiles
+
+    let tree: Root
+    if (view.type === "table") {
+      const tableNode = buildTable(limitedFiles, view, slug, allFiles, config.properties)
+      tree = { type: "root", children: [tableNode] }
+    } else if (view.type === "list") {
+      const listNode = buildList(limitedFiles, view, slug, allFiles, config.properties)
+      tree = { type: "root", children: [listNode] }
+    } else if (view.type === "card" || view.type === "cards") {
+      const cardsNode = buildCards(limitedFiles, view, slug, allFiles)
+      tree = { type: "root", children: [cardsNode] }
+    } else if (view.type === "map") {
+      const mapNode = buildMap(limitedFiles, view, slug, allFiles, config.properties)
+      tree = { type: "root", children: [mapNode] }
+    } else {
+      console.warn(`[BaseViewPage] Unsupported view type: ${view.type}`)
+      continue
+    }
+
+    const fileData: QuartzPluginData = { ...baseFileData }
+    fileData.slug = slug
+    fileData.htmlAst = tree
+
+    if (fileData.frontmatter) {
+      fileData.frontmatter = {
+        ...fileData.frontmatter,
+        title: `${baseFileData.frontmatter?.title || baseSlug} - ${view.name}`,
+        pageLayout: fileData.frontmatter.pageLayout || "default",
+      }
+    }
+
+    fileData.basesMetadata = { baseSlug, currentView: view.name, allViews }
+
+    const cfg = ctx.cfg.configuration
+    const externalResources = pageResources(pathToRoot(slug), resources, ctx)
+    const componentData: QuartzComponentProps = {
+      ctx,
+      fileData,
+      externalResources,
+      cfg,
+      children: [],
+      tree,
+      allFiles,
+    }
+
+    const content = renderPage(ctx, slug, componentData, layout, externalResources, false)
+    yield write({ ctx, content, slug, ext: ".html" })
+  }
+}
+
 export const BasePage: QuartzEmitterPlugin<Partial<FullPageLayout>> = (userOpts) => {
   const opts: FullPageLayout = {
     ...sharedPageComponents,
@@ -792,109 +974,70 @@ export const BasePage: QuartzEmitterPlugin<Partial<FullPageLayout>> = (userOpts)
     getQuartzComponents() {
       return [Head, ...header, ...beforeBody, pageBody, ...afterBody, ...sidebar, Footer]
     },
-    // TODO:
-    async *partialEmit() {},
+    async *partialEmit(ctx, content, resources, changeEvents) {
+      const allFiles = content.map((c) => c[1].data)
+      const baseFilesBySlug = new Map<FullSlug, QuartzPluginData>()
+
+      for (const [, file] of content) {
+        if (file.data.bases && file.data.basesConfig && file.data.slug) {
+          baseFilesBySlug.set(file.data.slug as FullSlug, file.data)
+        }
+      }
+
+      if (baseFilesBySlug.size === 0) {
+        return
+      }
+
+      const slugsToRebuild = new Set<FullSlug>()
+      let rebuildAllBases = false
+
+      for (const changeEvent of changeEvents) {
+        if (changeEvent.file) {
+          const data = changeEvent.file.data
+          if (data.bases && data.slug) {
+            slugsToRebuild.add(data.slug as FullSlug)
+          } else {
+            rebuildAllBases = true
+          }
+          continue
+        }
+
+        if (changeEvent.type === "delete") {
+          rebuildAllBases = true
+          continue
+        }
+
+        const changedPath = changeEvent.path
+        for (const [slug, baseData] of baseFilesBySlug.entries()) {
+          const deps = (baseData.codeDependencies as string[] | undefined) ?? []
+          if (deps.includes(changedPath)) {
+            slugsToRebuild.add(slug)
+          }
+        }
+      }
+
+      if (rebuildAllBases) {
+        for (const slug of baseFilesBySlug.keys()) {
+          slugsToRebuild.add(slug)
+        }
+      }
+
+      if (slugsToRebuild.size === 0) {
+        return
+      }
+
+      for (const slug of slugsToRebuild) {
+        const baseData = baseFilesBySlug.get(slug)
+        if (!baseData) continue
+        yield* emitBaseViewsForFile(ctx, baseData, allFiles, resources, opts)
+      }
+    },
     async *emit(ctx, content, resources) {
       const allFiles = content.map((c) => c[1].data)
 
-      for (const [_tree, file] of content) {
-        // Only process files marked as .base files
-        if (!file.data.bases || !file.data.basesConfig) continue
-
-        const config = file.data.basesConfig
-        const baseSlug = file.data.slug!
-
-        // Build view metadata for all views
-        const allViews = config.views.map((v, idx) => {
-          if (idx === 0) {
-            return {
-              name: v.name,
-              type: v.type,
-              slug: baseSlug,
-            }
-          }
-          // Slugify view name for subsequent views
-          const slugifiedName = slugifyFilePath((v.name + ".tmp") as FilePath, true)
-          return {
-            name: v.name,
-            type: v.type,
-            slug: joinSegments(baseSlug, slugifiedName) as FullSlug,
-          }
-        })
-
-        // Generate one page per view
-        for (const [viewIndex, view] of config.views.entries()) {
-          // Construct view slug
-          // First view renders at base slug, others at base/slugified-viewname
-          let slug: FullSlug
-          if (viewIndex === 0) {
-            slug = baseSlug
-          } else {
-            // Slugify view name for URL-safe path
-            const slugifiedName = slugifyFilePath((view.name + ".tmp") as FilePath, true)
-            slug = joinSegments(baseSlug, slugifiedName) as FullSlug
-          }
-
-          // Evaluate base-level filters first
-          let matchedFiles = evaluateFilter(config.filters, allFiles)
-
-          // Apply view-level filters (AND combination with base filters)
-          if (view.filters) {
-            matchedFiles = evaluateFilter(view.filters, matchedFiles)
-          }
-
-          // Apply sorting
-          const sortedFiles = applySorting(matchedFiles, view.sort, allFiles)
-
-          // Apply limit if specified
-          const limitedFiles = view.limit ? sortedFiles.slice(0, view.limit) : sortedFiles
-
-          // Build view content based on type
-          let tree: Root
-          if (view.type === "table") {
-            const tableNode = buildTable(limitedFiles, view, slug, allFiles, config.properties)
-            tree = { type: "root", children: [tableNode] }
-          } else if (view.type === "list") {
-            const listNode = buildList(limitedFiles, view, slug, allFiles, config.properties)
-            tree = { type: "root", children: [listNode] }
-          } else if (view.type === "card" || view.type === "cards") {
-            const cardsNode = buildCards(limitedFiles, view, slug, allFiles)
-            tree = { type: "root", children: [cardsNode] }
-          } else {
-            console.warn(`[BaseViewPage] Unsupported view type: ${view.type}`)
-            continue
-          }
-
-          // Create file data for this view
-          const fileData = { ...file.data }
-          fileData.slug = slug
-          fileData.htmlAst = tree
-          if (fileData.frontmatter) {
-            fileData.frontmatter = {
-              ...fileData.frontmatter,
-              title: `${file.data.frontmatter?.title || baseSlug} - ${view.name}`,
-              pageLayout: fileData.frontmatter.pageLayout || "default",
-            }
-          }
-
-          // Add base metadata for dropdown navigation
-          fileData.basesMetadata = { baseSlug, currentView: view.name, allViews }
-
-          const cfg = ctx.cfg.configuration
-          const externalResources = pageResources(pathToRoot(slug), resources, ctx)
-          const componentData: QuartzComponentProps = {
-            ctx,
-            fileData,
-            externalResources,
-            cfg,
-            children: [],
-            tree,
-            allFiles,
-          }
-          const content = renderPage(ctx, slug, componentData, opts, externalResources, false)
-
-          yield write({ ctx, content, slug, ext: ".html" })
-        }
+      for (const [, file] of content) {
+        if (!file.data.bases || !file.data.basesConfig || !file.data.slug) continue
+        yield* emitBaseViewsForFile(ctx, file.data, allFiles, resources, opts)
       }
     },
   }

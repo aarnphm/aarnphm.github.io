@@ -1,6 +1,6 @@
 ---
 author: Milton Friedman
-category: non-fiction
+category: non fiction
 date: 2024-11-27
 description: how do we think about jobs and money
 id: Capitalism and Freedom

@@ -1,6 +1,22 @@
 @use "../base.scss";
 @use "../variables.scss" as *;
 
+body[data-is-canvas="true"],
+body[data-layout="letter"],
+body[data-layout="letter-poem"],
+body[data-slug="index"],
+body[data-slides="true"] {
+  .darkmode,
+  .search-button {
+    visibility: hidden !important;
+  }
+
+  section[class~="header"] {
+    position: static;
+    border-bottom: 0;
+  }
+}
+
 body[data-slides="true"],
 body[data-layout="letter-poem"],
 body[data-layout="letter"] {
@@ -30,6 +46,10 @@ body[data-layout="letter-poem"] {
 }
 
 body[data-slides="true"] {
+  .page-footer {
+    display: grid !important;
+  }
+
   section[class~="page-header"]:not(.popover *) {
     display: none !important;
   }

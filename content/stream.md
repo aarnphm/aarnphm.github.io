@@ -2,12 +2,23 @@
 date: "2025-10-24"
 description: a microblog within a blog, at the middle of the night.
 id: stream
-modified: 2025-11-09 06:19:30 GMT-05:00
+modified: 2025-11-10 04:30:37 GMT-05:00
 tags:
   - seed
   - fruit
   - evergreen
 title: stream
+---
+
+- [meta]:
+  - date: 2025-11-10 04:30:10 GMT-05:00
+  - tags:
+    - fruit
+
+> Each pattern describes a problem which occurs over and over again in our environment, and then describes the core of the solution to that problem, in such a way that you can use the solution a million times over, without ever doing it the same way.
+>
+> —[[library/A Pattern Language]], p. x
+
 ---
 
 - [meta]:

@@ -109,6 +109,21 @@ const icons = {
       <path d="m6 6 12 12" />
     </svg>
   ),
+  map: (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    >
+      <path d="M15 6v12a3 3 0 1 0 3-3H6a3 3 0 1 0 3 3V6a3 3 0 1 0-3 3h12a3 3 0 1 0-3-3" />
+    </svg>
+  ),
 }
 
 // icon mapping for view types
@@ -118,6 +133,7 @@ const viewTypeIcons: Record<string, any> = {
   gallery: icons.table,
   board: icons.table,
   calendar: icons.table,
+  map: icons.map,
 }
 
 const BaseViewSelector: QuartzComponent = ({ fileData, displayClass }: QuartzComponentProps) => {

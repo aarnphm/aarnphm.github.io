@@ -17,7 +17,7 @@ export interface PropertyConfig {
 }
 
 export interface BaseView {
-  type: "table" | "list" | "gallery" | "board" | "calendar" | "card" | "cards"
+  type: "table" | "list" | "gallery" | "board" | "calendar" | "card" | "cards" | "map"
   name: string
   order?: string[] // column IDs for table view
   sort?: BaseSortConfig[]
@@ -30,6 +30,13 @@ export interface BaseView {
   image?: string
   cardSize?: number
   nestedProperties?: boolean
+  // map-specific options:
+  coordinates?: string // property path for location data (e.g., "note.coordinates")
+  markerIcon?: string // property for marker icons
+  markerColor?: string // property for marker colors
+  defaultZoom?: number // initial zoom level (1-20, default: 12)
+  defaultCenter?: [number, number] // fallback center [lat, lon] if no markers
+  clustering?: boolean // enable marker clustering (default: true)
   [key: string]: any
 }
 
@@ -249,11 +256,42 @@ function hasArithmeticOperators(str: string): boolean {
 
 // parse value from string to proper type
 // note: now() and today() return Date objects (not timestamps) for compatibility with date arithmetic
+export function parseDuration(durationStr: string): number {
+  const str = durationStr.toLowerCase().trim()
+
+  const asNumber = Number(str)
+  if (!isNaN(asNumber)) {
+    return asNumber
+  }
+
+  let totalMs = 0
+  const patterns = [
+    { regex: /(\d+(?:\.\d+)?)\s*(?:ms|milliseconds?)/g, multiplier: 1 },
+    { regex: /(\d+(?:\.\d+)?)\s*(?:s|secs?|seconds?)/g, multiplier: 1000 },
+    { regex: /(\d+(?:\.\d+)?)\s*(?:m|mins?|minutes?)/g, multiplier: 60 * 1000 },
+    { regex: /(\d+(?:\.\d+)?)\s*(?:h|hrs?|hours?)/g, multiplier: 60 * 60 * 1000 },
+    { regex: /(\d+(?:\.\d+)?)\s*(?:d|days?)/g, multiplier: 24 * 60 * 60 * 1000 },
+    { regex: /(\d+(?:\.\d+)?)\s*(?:w|weeks?)/g, multiplier: 7 * 24 * 60 * 60 * 1000 },
+    { regex: /(\d+(?:\.\d+)?)\s*(?:mo|months?)/g, multiplier: 30 * 24 * 60 * 60 * 1000 },
+    { regex: /(\d+(?:\.\d+)?)\s*(?:y|yrs?|years?)/g, multiplier: 365 * 24 * 60 * 60 * 1000 },
+  ]
+
+  for (const { regex, multiplier } of patterns) {
+    let match
+    while ((match = regex.exec(str)) !== null) {
+      const value = parseFloat(match[1])
+      totalMs += value * multiplier
+    }
+  }
+
+  return totalMs
+}
+
 function parseValue(val: string): string | number | boolean | Date {
   const trimmed = val.trim()
 
   // handle function calls
-  const funcMatch = trimmed.match(/^(now|today|date)\(/)
+  const funcMatch = trimmed.match(/^(now|today|date|duration|number)\(/)
   if (funcMatch) {
     const funcName = funcMatch[1]
     if (funcName === "now") {
@@ -274,6 +312,23 @@ function parseValue(val: string): string | number | boolean | Date {
         const d = new Date(dateStr)
         if (!isNaN(d.getTime())) {
           return d
+        }
+      }
+    }
+    if (funcName === "duration") {
+      const argMatch = trimmed.match(/^duration\((.+)\)$/)
+      if (argMatch) {
+        const rawArg = argMatch[1].trim().replace(/^['"]|['"]$/g, "")
+        return parseDuration(rawArg)
+      }
+    }
+    if (funcName === "number") {
+      const argMatch = trimmed.match(/^number\((.+)\)$/)
+      if (argMatch) {
+        const rawArg = argMatch[1].trim().replace(/^['"]|['"]$/g, "")
+        const coerced = Number(rawArg)
+        if (!isNaN(coerced)) {
+          return coerced
         }
       }
     }

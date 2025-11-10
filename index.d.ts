@@ -19,7 +19,7 @@ declare const semanticCfg: import("./quartz/cfg").GlobalConfiguration["semanticS
 // base view metadata for dropdown navigation
 interface BaseViewMetadata {
   name: string
-  type: "table" | "list" | "gallery" | "board" | "calendar" | "card" | "cards"
+  type: "table" | "list" | "gallery" | "board" | "calendar" | "card" | "cards" | "map"
   slug: FullSlug
 }
 

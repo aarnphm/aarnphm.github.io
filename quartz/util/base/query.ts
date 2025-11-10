@@ -1,5 +1,5 @@
 import { QuartzPluginData } from "../../plugins/vfile"
-import { ComparisonOp, compileExpression } from "./types"
+import { ComparisonOp, compileExpression, parseDuration } from "./types"
 import { simplifySlug, FullSlug } from "../path"
 
 // filter AST types matching obsidian bases syntax
@@ -111,6 +111,73 @@ export function resolvePropertyValue(
   }
 
   return file.frontmatter?.[key]
+}
+
+function normalizeLinkTarget(raw: unknown): string | undefined {
+  if (typeof raw !== "string") {
+    return undefined
+  }
+
+  let slug = raw.trim()
+  if (!slug) {
+    return undefined
+  }
+
+  if (slug.startsWith("!")) {
+    slug = slug.slice(1)
+  }
+
+  if (slug.startsWith("[[") && slug.endsWith("]]")) {
+    slug = slug.slice(2, -2)
+  }
+
+  slug = slug.replace(/\.md$/i, "")
+  slug = slug.replace(/\\/g, "/")
+  slug = slug.replace(/^\/+/, "")
+
+  try {
+    return simplifySlug(slug as FullSlug)
+  } catch {
+    return slug.toLowerCase()
+  }
+}
+
+function findFileByNormalizedSlug(
+  normalized: string | undefined,
+  allFiles: QuartzPluginData[],
+): QuartzPluginData | undefined {
+  if (!normalized) {
+    return undefined
+  }
+
+  return allFiles.find((candidate) => {
+    if (!candidate.slug) {
+      return false
+    }
+    const candidateSlug = normalizeLinkTarget(candidate.slug as string)
+    return candidateSlug === normalized
+  })
+}
+
+function parseRegexInput(pattern: string): RegExp | null {
+  if (!pattern) {
+    return null
+  }
+
+  let source = pattern
+  let flags = ""
+
+  const literalMatch = pattern.match(/^\/(.*)\/([gimsuy]*)$/)
+  if (literalMatch) {
+    source = literalMatch[1]
+    flags = literalMatch[2]
+  }
+
+  try {
+    return new RegExp(source, flags)
+  } catch {
+    return null
+  }
 }
 
 // evaluate filter against all files, return matching subset
@@ -298,6 +365,22 @@ function parseComparison(
   }
 }
 
+// evaluate an argument that might contain a function call
+function evaluateArgument(arg: string): string {
+  const trimmed = arg.trim()
+
+  // check for link() function call
+  const linkMatch = trimmed.match(/^link\(["']?(.+?)["']?\)$/)
+  if (linkMatch) {
+    const target = linkMatch[1]
+    // return wikilink format to match frontmatter
+    return `[[${target}]]`
+  }
+
+  // return the arg as-is for other cases
+  return arg
+}
+
 // method call predicate builder for property.method(args) syntax
 function buildMethodCall(
   property: string,
@@ -307,6 +390,9 @@ function buildMethodCall(
 ): FilePredicate {
   return (file, allFiles) => {
     const propValue = resolvePropertyValue(file, property, allFiles)
+
+    // evaluate args to handle function calls like link()
+    const evaluatedArgs = args.map(evaluateArgument)
 
     switch (method) {
       case "toString": {
@@ -320,12 +406,26 @@ function buildMethodCall(
         return negated ? false : true
       }
 
+      case "contains": {
+        if (evaluatedArgs.length === 0) {
+          return negated ? true : false
+        }
+        const [needle] = evaluatedArgs
+        let result = false
+        if (Array.isArray(propValue)) {
+          result = propValue.includes(needle)
+        } else if (typeof propValue === "string") {
+          result = propValue.includes(String(needle))
+        }
+        return negated ? !result : result
+      }
+
       case "containsAny": {
         let result = false
         if (Array.isArray(propValue)) {
-          result = args.some((arg) => propValue.includes(arg))
+          result = evaluatedArgs.some((arg) => propValue.includes(arg))
         } else if (typeof propValue === "string") {
-          result = args.some((arg) => propValue.includes(String(arg)))
+          result = evaluatedArgs.some((arg) => propValue.includes(String(arg)))
         }
         return negated ? !result : result
       }
@@ -333,25 +433,25 @@ function buildMethodCall(
       case "containsAll": {
         let result = false
         if (Array.isArray(propValue)) {
-          result = args.every((arg) => propValue.includes(arg))
+          result = evaluatedArgs.every((arg) => propValue.includes(arg))
         } else if (typeof propValue === "string") {
-          result = args.every((arg) => propValue.includes(String(arg)))
+          result = evaluatedArgs.every((arg) => propValue.includes(String(arg)))
         }
         return negated ? !result : result
       }
 
       case "startsWith": {
         let result = false
-        if (typeof propValue === "string" && args.length > 0) {
-          result = propValue.startsWith(String(args[0]))
+        if (typeof propValue === "string" && evaluatedArgs.length > 0) {
+          result = propValue.startsWith(String(evaluatedArgs[0]))
         }
         return negated ? !result : result
       }
 
       case "endsWith": {
         let result = false
-        if (typeof propValue === "string" && args.length > 0) {
-          result = propValue.endsWith(String(args[0]))
+        if (typeof propValue === "string" && evaluatedArgs.length > 0) {
+          result = propValue.endsWith(String(evaluatedArgs[0]))
         }
         return negated ? !result : result
       }
@@ -361,13 +461,22 @@ function buildMethodCall(
           propValue === undefined ||
           propValue === null ||
           propValue === "" ||
-          (Array.isArray(propValue) && propValue.length === 0)
+          (Array.isArray(propValue) && propValue.length === 0) ||
+          (typeof propValue === "object" &&
+            propValue !== null &&
+            !Array.isArray(propValue) &&
+            Object.keys(propValue).length === 0)
+        return negated ? !result : result
+      }
+
+      case "isTruthy": {
+        const result = Boolean(propValue)
         return negated ? !result : result
       }
 
       case "isType": {
-        if (args.length === 0) return negated ? true : false
-        const typeArg = args[0].toLowerCase()
+        if (evaluatedArgs.length === 0) return negated ? true : false
+        const typeArg = evaluatedArgs[0].toLowerCase()
         let result = false
 
         switch (typeArg) {
@@ -400,7 +509,7 @@ function buildMethodCall(
       case "replace": {
         // replace(search, replacement) - used for transformation, not filtering
         // for filtering purposes, check if value is a string
-        const result = typeof propValue === "string" && args.length >= 2
+        const result = typeof propValue === "string" && evaluatedArgs.length >= 2
         return negated ? !result : result
       }
 
@@ -419,13 +528,13 @@ function buildMethodCall(
       case "slice": {
         // slice(start, end) - for filtering, check if value is string or array
         const result =
-          (typeof propValue === "string" || Array.isArray(propValue)) && args.length >= 1
+          (typeof propValue === "string" || Array.isArray(propValue)) && evaluatedArgs.length >= 1
         return negated ? !result : result
       }
 
       case "split": {
         // split(delimiter) - for filtering, check if string with delimiter
-        const result = typeof propValue === "string" && args.length >= 1
+        const result = typeof propValue === "string" && evaluatedArgs.length >= 1
         return negated ? !result : result
       }
 
@@ -462,7 +571,7 @@ function buildMethodCall(
 
       case "toFixed": {
         // toFixed(decimals) - for filtering, check if number
-        const result = typeof propValue === "number" && args.length >= 1
+        const result = typeof propValue === "number" && evaluatedArgs.length >= 1
         return negated ? !result : result
       }
 
@@ -474,13 +583,23 @@ function buildMethodCall(
       }
 
       case "reverse": {
-        // reverse array - for filtering, check if array
-        const result = Array.isArray(propValue)
+        const result = typeof propValue === "string" || Array.isArray(propValue)
         return negated ? !result : result
       }
 
       case "sort": {
         // sort array - for filtering, check if array
+        const result = Array.isArray(propValue)
+        return negated ? !result : result
+      }
+
+      case "flat": {
+        const result = Array.isArray(propValue)
+        return negated ? !result : result
+      }
+
+      case "map":
+      case "filter": {
         const result = Array.isArray(propValue)
         return negated ? !result : result
       }
@@ -500,47 +619,65 @@ function buildMethodCall(
         return negated ? !result : result
       }
 
+      case "title": {
+        const result = typeof propValue === "string"
+        return negated ? !result : result
+      }
+
+      case "keys": {
+        const result =
+          typeof propValue === "object" && propValue !== null && !Array.isArray(propValue)
+        return negated ? !result : result
+      }
+
+      case "values": {
+        const result =
+          typeof propValue === "object" && propValue !== null && !Array.isArray(propValue)
+        return negated ? !result : result
+      }
+
+      case "matches": {
+        if (typeof propValue !== "string" || evaluatedArgs.length === 0) {
+          return negated ? true : false
+        }
+        const regex = parseRegexInput(evaluatedArgs[0])
+        const result = regex ? regex.test(propValue) : false
+        return negated ? !result : result
+      }
+
+      case "linksTo": {
+        if (evaluatedArgs.length === 0) {
+          return negated ? true : false
+        }
+        const normalizedTarget = normalizeLinkTarget(evaluatedArgs[0])
+        if (!normalizedTarget) {
+          return negated ? true : false
+        }
+
+        const values = Array.isArray(propValue) ? propValue : [propValue]
+        const result = values.some((val) => {
+          if (typeof val !== "string") {
+            return false
+          }
+          const normalizedValue = normalizeLinkTarget(val)
+          return normalizedValue === normalizedTarget
+        })
+        return negated ? !result : result
+      }
+
+      case "asFile": {
+        if (typeof propValue !== "string") {
+          return negated ? true : false
+        }
+        const normalized = normalizeLinkTarget(propValue)
+        const exists = Boolean(findFileByNormalizedSlug(normalized, allFiles))
+        return negated ? !exists : exists
+      }
+
       default:
         throw new Error(`Unknown method: ${method}`)
     }
   }
-}
-
-// parse duration string to milliseconds
-// supports formats like: "7 days", "3 hours", "30 minutes", "5 seconds"
-// or combined: "1 day 12 hours", "2h 30m", etc.
-function parseDuration(durationStr: string): number {
-  const str = durationStr.toLowerCase().trim()
-
-  // if it's just a number, treat as milliseconds
-  const directNum = Number(str)
-  if (!isNaN(directNum)) {
-    return directNum
-  }
-
-  let totalMs = 0
-
-  // regex to match patterns like "7 days", "3h", "30 minutes", etc.
-  const patterns = [
-    { regex: /(\d+(?:\.\d+)?)\s*(?:ms|milliseconds?)/g, multiplier: 1 },
-    { regex: /(\d+(?:\.\d+)?)\s*(?:s|secs?|seconds?)/g, multiplier: 1000 },
-    { regex: /(\d+(?:\.\d+)?)\s*(?:m|mins?|minutes?)/g, multiplier: 60 * 1000 },
-    { regex: /(\d+(?:\.\d+)?)\s*(?:h|hrs?|hours?)/g, multiplier: 60 * 60 * 1000 },
-    { regex: /(\d+(?:\.\d+)?)\s*(?:d|days?)/g, multiplier: 24 * 60 * 60 * 1000 },
-    { regex: /(\d+(?:\.\d+)?)\s*(?:w|weeks?)/g, multiplier: 7 * 24 * 60 * 60 * 1000 },
-    { regex: /(\d+(?:\.\d+)?)\s*(?:mo|months?)/g, multiplier: 30 * 24 * 60 * 60 * 1000 },
-    { regex: /(\d+(?:\.\d+)?)\s*(?:y|yrs?|years?)/g, multiplier: 365 * 24 * 60 * 60 * 1000 },
-  ]
-
-  for (const { regex, multiplier } of patterns) {
-    let match
-    while ((match = regex.exec(str)) !== null) {
-      const value = parseFloat(match[1])
-      totalMs += value * multiplier
-    }
-  }
-
-  return totalMs
 }
 
 // helper to parse and evaluate a value expression
@@ -570,6 +707,20 @@ function parseValueExpression(expr: string, file: QuartzPluginData): any {
 // function registry - maps filter function names to predicates
 function parseFunction(name: string, args: string[]): FilePredicate {
   const registry: Record<string, (...args: string[]) => FilePredicate> = {
+    icon:
+      (...params: string[]) =>
+      () =>
+        params.length > 0,
+    image:
+      (...params: string[]) =>
+      () =>
+        params.length > 0,
+    file: (target?: string) => (_file, allFiles) => {
+      const normalized = normalizeLinkTarget(target)
+      return Boolean(findFileByNormalizedSlug(normalized, allFiles))
+    },
+
+    "file.asLink": () => (file) => Boolean(file.slug),
     "file.hasTag": (...tags: string[]) => {
       let matchCount = 0
       return (file, _allFiles) => {

@@ -1,6 +1,7 @@
 import test, { describe } from "node:test"
 import assert from "node:assert"
 import { evaluateFilter, BaseFilter, resolvePropertyValue } from "./query"
+import { parseFilter } from "./types"
 import { QuartzPluginData } from "../../plugins/vfile"
 import { FullSlug } from "../path"
 
@@ -615,6 +616,52 @@ describe("base query engine", () => {
         createMockFile({}, "page1", ["target-page", "other-page"]),
         createMockFile({}, "page2", ["some-page"]),
         createMockFile({}, "page3", ["target-page"]),
+      ]
+      const result = evaluateFilter(filter, files)
+      assert.strictEqual(result.length, 2)
+    })
+  })
+
+  describe("method helpers", () => {
+    test("string.contains returns matches", () => {
+      const filter = parseFilter('title.contains("test")')
+      const files = [
+        createMockFile({ title: "test case" }),
+        createMockFile({ title: "example" }),
+        createMockFile({ title: "contest" }),
+      ]
+      const result = evaluateFilter(filter, files)
+      assert.strictEqual(result.length, 2)
+    })
+
+    test("link.linksTo resolves wikilinks", () => {
+      const filter = parseFilter('note.related.linksTo("[[library/book]]")')
+      const files = [
+        createMockFile({ related: "[[library/book]]" }),
+        createMockFile({ related: "[[posts/note]]" }),
+        createMockFile({ related: "library/book" }),
+      ]
+      const result = evaluateFilter(filter, files)
+      assert.strictEqual(result.length, 2)
+    })
+
+    test("matches handles regex literals", () => {
+      const filter = parseFilter('title.matches("^se")')
+      const files = [
+        createMockFile({ title: "seed" }),
+        createMockFile({ title: "notes" }),
+        createMockFile({ title: "section" }),
+      ]
+      const result = evaluateFilter(filter, files)
+      assert.strictEqual(result.length, 2)
+    })
+
+    test("duration() values participate in comparisons", () => {
+      const filter = parseFilter('note.age >= duration("2 hours")')
+      const files = [
+        createMockFile({ age: 30 * 60 * 1000 }),
+        createMockFile({ age: 2 * 60 * 60 * 1000 }),
+        createMockFile({ age: 5 * 60 * 60 * 1000 }),
       ]
       const result = evaluateFilter(filter, files)
       assert.strictEqual(result.length, 2)

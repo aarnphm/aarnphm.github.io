@@ -7,9 +7,8 @@ aliases:
 date: "2025-08-09"
 description: just another fish in the sea.
 id: dating
-modified: 2025-11-09 23:43:56 GMT-05:00
+modified: 2025-11-10 04:36:07 GMT-05:00
 noindex: true
-pageLayout: letter
 slides: true
 tags:
   - evergreen

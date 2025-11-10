@@ -1,6 +1,6 @@
 ---
 author: François Fleuret
-category: non-fiction
+category: non fiction
 date: "2022-08-21"
 external-url: https://fleuret.org/public/lbdl.pdf
 id: The Little Book of Deep Learning
@@ -10,7 +10,7 @@ notebook: "[[thoughts/deep learning]]"
 status: finished
 subcategory: ml
 tags:
-  - non-fiction
+  - non fiction
 title: The Little Book of Deep Learning
 finished: 2024
 ---

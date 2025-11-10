@@ -41,7 +41,7 @@ cssclasses:
 date: "2024-10-24"
 description: My run-down version of are[dot]na
 id: are.na
-modified: 2025-11-09 22:27:55 GMT-05:00
+modified: 2025-11-10 05:55:50 GMT-05:00
 permalinks:
   - /website
   - /tweets
@@ -268,6 +268,10 @@ title: are.na
 
 ## website
 
+- https://patternlanguage.cc/README -- [[library/A Pattern Language]]
+  - [meta]:
+    - date: 11/10/2025
+    - tags: [communal]
 - https://pattern.kitchen/
   - [meta]:
     - date: 11/09/2025
@@ -679,10 +683,14 @@ title: are.na
 
 ## people
 
+- https://departure.blog -- Sylvia
+  - [meta]:
+    - date: 11/09/2025
+    - tags: [nyc]
 - https://schlage.town/ -- Brendan Schlagel
   - [meta]:
     - date: 11/09/2025
-    - tags: [fruit]
+    - tags: [nyc]
   - leaflet
 - http://www.aaronsw.com/weblog/ -- Aaron Swartz
   - [meta]:
@@ -1123,11 +1131,17 @@ title: are.na
 
 ## places
 
-- https://maps.app.goo.gl/8cZo64RZkG5R4n2T6 -- PIKA @ MIT
+- https://maps.app.goo.gl/7xSaomXDfgBJh4Yr7 -- Reservoir Lounge
+  - [meta]:
+    - date: 11/10/2025
+    - tags: [jazz]
+    - coord: [-79.3745828, 43.6485848]
+- https://maps.app.goo.gl/8cZo64RZkG5R4n2T6 -- PIKA
   - [meta]:
     - date: 10/05/2025
     - tags: [communal]
     - coord: [-71.1107316, 42.3565554]
+    - title: PIKA @ MIT
   - https://pika.mit.edu/
 - https://maps.app.goo.gl/xx36MxJmbtx2pmH88 -- Rooms Coffee | 135 Ossington
   - [meta]:
@@ -1149,17 +1163,19 @@ title: are.na
     - date: 08/05/2025
     - tags: [fruit]
     - coord: [-79.4030583, 43.667092]
-- https://maps.app.goo.gl/qsBcJ8dVfog1Mev87 -- Coco's neighborhood coffee shop
+- https://maps.app.goo.gl/qsBcJ8dVfog1Mev87 -- Coco neighborhood coffee shop
   - [meta]:
     - date: 08/05/2025
     - tags: [coffee shop]
     - coord: [-79.4157885, 43.651432]
-- https://maps.app.goo.gl/ubajUb5KrB9XgJTL7 -- Bevy @ TheCombine
+    - title: Coco's neighborhood coffee shop
+- https://maps.app.goo.gl/ubajUb5KrB9XgJTL7 -- Bevy at TheCombine
   - [meta]:
     - date: 08/05/2025
     - tags: [fruit]
     - coord: [-79.3888161, 43.6451208]
-- https://maps.app.goo.gl/vJY9DPf98uF5jTyk9 -- Isle of Coffee (Queen)
+    - title: Bevy @ TheCombine
+- https://maps.app.goo.gl/vJY9DPf98uF5jTyk9 -- Isle of Coffee
   - [meta]:
     - date: 08/05/2025
     - tags: [coffee shop]
@@ -1184,11 +1200,12 @@ title: are.na
     - date: 08/05/2025
     - tags: [coffee shop]
     - coord: [-79.4027094, 43.6566835]
-- https://maps.app.goo.gl/SMMTH1d1PSDTF7zcA -- Milky’s Cloud Room
+- https://maps.app.goo.gl/SMMTH1d1PSDTF7zcA -- Milky Cloud Room
   - [meta]:
     - date: 08/05/2025
     - tags: [coffee shop]
     - coord: [-79.407265, 43.6442978]
+    - title: Milky's Cloud Room
 - https://maps.app.goo.gl/vuXxq7aVDUG7jw7s8 -- Found Coffee on College
   - [meta]:
     - date: 08/05/2025
@@ -1203,7 +1220,7 @@ title: are.na
   - [meta]:
     - date: 08/05/2025
     - tags: [coffee shop]
-    - coord: [-119.5015218, 43.7320823]
+    - coord: [-79.38570733361347, 43.66649229071298]
 - https://maps.app.goo.gl/UMuTjTkmKwN7cvTE6 -- Stakt Market
   - [meta]:
     - date: 08/05/2025
@@ -1215,11 +1232,12 @@ title: are.na
     - tags: [coffee shop]
     - coord: [-122.4225186, 37.7749123]
   - https://loquatsf.com/
-- https://maps.app.goo.gl/u6y6eV5fz7FvGzXg8 -- Bernhardt's
+- https://maps.app.goo.gl/u6y6eV5fz7FvGzXg8 -- Bernhardt
   - [meta]:
     - date: 10/27/2025
     - tags: [restaurant]
     - coord: [-79.4271727, 43.647259]
+    - title: Bernhardt's
 - https://maps.app.goo.gl/KNogvcLy3xhJsGgM7 -- Ratelier [**]
   - [meta]:
     - date: 10/27/2025
@@ -1228,6 +1246,10 @@ title: are.na
 
 ## essay
 
+- https://slatestarcodex.com/2015/04/21/universal-love-said-the-cactus-person/ -- Universal love, said the cactus person
+  - [meta]:
+    - date: 11/10/2025
+    - tags: [acl, ssc, love]
 - https://www.nypl.org/blog/2022/07/25/into-woods-video-game -- 'Into the Woods': The Video Game
   - [meta]:
     - date: 11/09/2025

@@ -1,5 +1,5 @@
 import { getFullSlug } from "../../util/path"
-import { loadMapbox } from "./mapboxClient"
+import { loadMapbox, applyMonochromeMapPalette } from "./mapboxClient"
 
 function initScrollMask() {
   const root = document.querySelector("[data-slug='lyd']") as HTMLElement
@@ -369,35 +369,6 @@ function formatCoordinate(value: number, axis: "lat" | "lon"): string {
   return `${Math.abs(value).toFixed(4)} ${direction}`
 }
 
-function setupMonochromeMapPalette(map: any) {
-  try {
-    const layers = map.getStyle()?.layers ?? []
-    layers.forEach((layer: any) => {
-      try {
-        if (layer.type === "background") {
-          map.setPaintProperty(layer.id, "background-color", "#fff9f3")
-        } else if (layer.type === "fill") {
-          const isWater = layer.id.includes("water")
-          map.setPaintProperty(layer.id, "fill-color", isWater ? "#e2e8ee" : "#fef6ee")
-          map.setPaintProperty(layer.id, "fill-opacity", isWater ? 0.96 : 0.85)
-        } else if (layer.type === "line") {
-          map.setPaintProperty(layer.id, "line-color", "#cbbfb1")
-          map.setPaintProperty(layer.id, "line-opacity", 0.35)
-        } else if (layer.type === "symbol") {
-          map.setPaintProperty(layer.id, "text-color", "#7c7468")
-          map.setPaintProperty(layer.id, "icon-color", "#7c7468")
-        } else if (layer.type === "circle") {
-          map.setPaintProperty(layer.id, "circle-color", "#7c7468")
-          map.setPaintProperty(layer.id, "circle-opacity", 0.4)
-        }
-      } catch {
-        // Certain layers may not expose the paint property we try to adjust—ignore those safely.
-      }
-    })
-  } catch (error) {
-    console.error(error)
-  }
-}
 
 function initTimelineLocationPreview() {
   const root = document.querySelector("[data-slug='lyd']") as HTMLElement | null
@@ -485,7 +456,7 @@ function initTimelineLocationPreview() {
           if (map.doubleClickZoom) map.doubleClickZoom.disable()
           if (map.touchZoomRotate) map.touchZoomRotate.disable()
 
-          map.once("load", () => setupMonochromeMapPalette(map))
+          map.once("load", () => applyMonochromeMapPalette(map))
 
           return { map, marker }
         })

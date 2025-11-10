@@ -542,8 +542,6 @@ body {
   border: 0px solid var(--lightgray);
   border-top-width: 1px;
   border-bottom-width: 1px;
-
-  padding: 1.25rem 0;
   margin-bottom: 2.5rem;
 }
 
@@ -1134,22 +1132,6 @@ body[data-slug="influence"] {
   &:not([data-title])::before,
   &[data-title=""]::before {
     content: "slip";
-  }
-}
-
-[data-is-canvas="true"],
-[data-layout="letter"],
-[data-layout="letter-poem"],
-[data-slug="index"],
-[data-slides="true"] {
-  .darkmode,
-  .search-button {
-    visibility: hidden !important;
-  }
-
-  section[class~="header"] {
-    position: static;
-    border-bottom: 0;
   }
 }
 

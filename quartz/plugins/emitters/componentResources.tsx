@@ -12,6 +12,8 @@ import clipboardScript from "../../components/scripts/clipboard.inline"
 import clipboardStyle from "../../components/styles/clipboard.scss"
 // @ts-ignore
 import pseudoScript from "../../components/scripts/clipboard-pseudo.inline"
+// @ts-ignore
+import baseMapScript from "../../components/scripts/base-map.inline"
 import pseudoStyle from "../../components/styles/pseudocode.scss"
 // @ts-ignore
 import notFoundScript from "../../components/scripts/404.inline"
@@ -110,6 +112,7 @@ function addGlobalPageResources(ctx: BuildCtx, componentResources: ComponentReso
     protectedScript,
     audioScript,
     markerScript,
+    baseMapScript,
   )
 
   if (cfg.analytics?.provider === "plausible") {

@@ -1,6 +1,6 @@
 ---
 author: Elizabeth Hardwick
-category: non-fiction
+category: non fiction
 date: "2025-10-07"
 external-url: https://www.penguinrandomhouse.ca/books/643010/seduction-and-betrayal-by-elizabeth-hardwick-introduction-by-joan-didion/9780940322783
 id: Seduction and Betrayal
@@ -9,6 +9,6 @@ posters: "[[library/posters/seduction-and-betrayal.jpg]]"
 status: to read
 subcategory: love
 tags:
-  - non-fiction
+  - non fiction
 title: Seduction and Betrayal
 ---
