@@ -1250,6 +1250,10 @@ title: are.na
 
 ## essay
 
+- https://sarvasvkulpati.com/words-for-love -- English doesn't ahve enough words for #love
+  - [meta]:
+    - date: 11/10/2025
+    - tags: [love]
 - https://slatestarcodex.com/2015/04/21/universal-love-said-the-cactus-person/ -- Universal love, said the cactus person
   - [meta]:
     - date: 11/10/2025
