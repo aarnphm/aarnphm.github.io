@@ -2,9 +2,8 @@
 date: "2025-09-26"
 description: made with gpt-5 and claude
 id: deep research
-modified: 2025-11-09 01:41:30 GMT-05:00
+modified: 2025-11-11 06:58:38 GMT-05:00
 tags:
-  - seed
   - workshop
 title: supplement for supplement for 0.412
 ---

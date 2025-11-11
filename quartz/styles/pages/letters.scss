@@ -37,6 +37,12 @@ body[data-layout="letter"] {
   }
 }
 
+body[data-layout="letter-nf"] {
+  .page-footer {
+    display: none;
+  }
+}
+
 body[data-layout="letter-poem"] {
   background-color: white;
 

@@ -2,10 +2,9 @@
 date: "2025-09-12"
 description: linear algebra applications for transformers
 id: notes
-modified: 2025-10-29 02:14:24 GMT-04:00
+modified: 2025-11-11 06:58:34 GMT-05:00
 slides: true
 tags:
-  - seed
   - workshop
   - linalg
 title: supplement to 0.412

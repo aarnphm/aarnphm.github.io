@@ -220,6 +220,13 @@ A natural cluster, a group of things highly similar to each other, may have no s
 
 > When you draw a boundary around a group of extensional points empirically clustered in thingspace, you may find at least one exception to every simple intensional rule you can invent.
 
+## universal love.
+
+_from [Universal love, said the cactus person](https://slatestarcodex.com/2015/04/21/universal-love-said-the-cactus-person/)_
+
+
+---
+
 ## questionaire
 
 see also: https://www.nytimes.com/2015/01/09/style/no-37-big-wedding-or-small.html, and the [research journal](https://journals.sagepub.com/doi/pdf/10.1177/0146167297234003)

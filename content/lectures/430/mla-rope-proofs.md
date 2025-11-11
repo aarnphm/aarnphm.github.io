@@ -1,11 +1,11 @@
 ---
 date: "2025-10-17"
+description: a basic theorem proof
 id: mla-rope-proofs
-modified: 2025-10-29 02:14:25 GMT-04:00
+modified: 2025-11-11 06:56:02 GMT-05:00
 tags:
   - ml
-  - seed
-title: proof et al.
+title: proof for MLA RoPE
 ---
 
 ### motivation
@@ -58,9 +58,11 @@ where $W^{DQ} \in \mathbb{R}^{d_c' \times d}$ and $W_i^{UQ} \in \mathbb{R}^{d_h 
 
 ### memory reduction proof
 
-**theorem:** MLA reduces KV cache size by a factor of $\frac{n_h \cdot d_h}{d_c}$.
+> [!theorem] 1.1
+>
+> MLA reduces KV cache size by a factor of $\frac{n_h \cdot d_h}{d_c}$.
 
-**proof:**
+_proof:_
 
 standard MHA stores per token:
 
@@ -99,7 +101,9 @@ this exceeds the stated 5-13% range because DeepSeek actually uses additional co
 
 ### computational complexity
 
-**theorem:** MLA requires more FLOPs but achieves higher throughput due to memory bandwidth savings.
+> [!theorem] 1.2
+>
+> MLA requires more FLOPs but achieves higher throughput due to memory bandwidth savings.
 
 let $n$ be sequence length. standard attention performs:
 
@@ -157,9 +161,11 @@ this eliminates the need to explicitly compute and store $\mathbf{k}_t^{(i)}, \m
 
 ### algebraic equivalence proof
 
-**theorem:** MLA produces identical outputs to an equivalent MHA with constrained weight structure.
+> [!theorem] 1.3
+>
+> MLA produces identical outputs to an equivalent MHA with constrained weight structure.
 
-**proof:**
+_proof:_
 
 standard MHA computes:
 
@@ -207,7 +213,9 @@ for some function $g$ depending only on relative position $m - n$.
 
 treat 2D embeddings as complex numbers: $\mathbf{x} = (x_0, x_1) \leftrightarrow x_0 + i x_1$.
 
-**proposition 1 (modulus invariance):** $|f(\mathbf{x}, m)| = |\mathbf{x}|$.
+> [!theorem] 2.1 (modulus invariance)
+>
+> $|f(\mathbf{x}, m)| = |\mathbf{x}|$.
 
 _proof:_ setting $m = n$ in the requirement:
 
@@ -217,7 +225,9 @@ $$
 
 the right side depends only on $\mathbf{x}$, so $|f(\mathbf{x}, m)|^2 = |\mathbf{x}|^2$. $\square$
 
-**proposition 2 (rotation structure):** $f(\mathbf{x}, m) = \mathbf{x} e^{i m \theta}$ for some constant $\theta \in \mathbb{R}$.
+> [!theorem] 2.2 (rotation structure)
+>
+> $f(\mathbf{x}, m) = \mathbf{x} e^{i m \theta}$ for some constant $\theta \in \mathbb{R}$.
 
 _proof:_ write $f(\mathbf{x}, m) = |\mathbf{x}| e^{i(\phi(\mathbf{x}) + \psi(m))}$ where $\phi$ depends on $\mathbf{x}$ and $\psi$ depends on $m$.
 
@@ -278,9 +288,11 @@ where $\text{base} = 10{,}000$ (standard) or $\text{base} = 5 \times 10^6$ (Deep
 
 ### relative position property proof
 
-**theorem:** RoPE attention scores depend only on relative position.
+> [!theorem] 2.3
+>
+> RoPE attention scores depend only on relative position.
 
-**proof:**
+_proof:_
 
 queries and keys at positions $m, n$ after RoPE:
 
@@ -423,9 +435,11 @@ queries are recomputed each step so they don't accumulate in cache.
 
 ### expressiveness
 
-**theorem:** MLA with rank $d_c$ can approximate any attention mechanism with bounded approximation error.
+> [!theorem] 3.1
+>
+> MLA with rank $d_c$ can approximate any attention mechanism with bounded approximation error.
 
-**sketch:** by singular value decomposition, any matrix $W \in \mathbb{R}^{m \times n}$ can be written:
+_sketch:_ by singular value decomposition, any matrix $W \in \mathbb{R}^{m \times n}$ can be written:
 
 $$
 W = \sum_{i=1}^{\min(m,n)} \sigma_i \mathbf{u}_i \mathbf{v}_i^T
@@ -443,9 +457,11 @@ MLA learns this factorization end-to-end, potentially finding better low-rank ap
 
 ### length generalization
 
-**theorem:** RoPE generalizes to sequences longer than training.
+> [!theorem] 3.2
+>
+> RoPE generalizes to sequences longer than training.
 
-**intuition:** rotation angles $m\theta_j$ scale linearly with position. frequencies $\theta_j$ decay exponentially across dimensions, providing both fine-grained (small $j$, large $\theta_j$) and coarse-grained (large $j$, small $\theta_j$) position signals.
+_intuition:_ rotation angles $m\theta_j$ scale linearly with position. frequencies $\theta_j$ decay exponentially across dimensions, providing both fine-grained (small $j$, large $\theta_j$) and coarse-grained (large $j$, small $\theta_j$) position signals.
 
 for positions $m > m_{\text{train}}$, rotations continue smoothly, unlike learned absolute embeddings that have no defined behavior beyond training range.
 

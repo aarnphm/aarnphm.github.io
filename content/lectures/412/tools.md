@@ -2,7 +2,7 @@
 date: "2025-09-26"
 description: helper scripts for lecture 0.412
 id: tools
-modified: 2025-10-29 02:14:24 GMT-04:00
+modified: 2025-11-11 07:00:11 GMT-05:00
 tags:
   - workshop
   - linalg
@@ -12,15 +12,18 @@ title: tools for 0.412
 
 ## scripts
 
-- `content/lectures/412/latent_projection.py`: isolate a head, compute $W_{OV}$, and report spectral decay plus cache reconstruction error. works with local checkpoints or Hugging Face repos (pass `--hf-repo Qwen/Qwen3-0.6B --auto-infer`).
+![[content/lectures/412/latent_projection.py]]
 
 > [!note] usage
+>
 > Local file: `python content/lectures/412/latent_projection.py --weights /path/to/state_dict.pt --num-heads 16 --layer 4 --head 3 --latent-dim 8`
 >
 > Hugging Face: `python content/lectures/412/latent_projection.py --hf-repo Qwen/Qwen3-0.6B --auto-infer --layer 4 --head 3 --latent-dim 32`
 >
-> - inspect `W_{OV}` rank and compare to latent dimension.
+> - isolate a head, compute $W_{OV}$, compare to latent dimension.
+> - report spectral decay plus cache reconstruction error.
 > - plug the singular spectrum back into [[lectures/412/notes#multi-head latent attention (mla)]] to quantify cache compression loss.
+> - works with local checkpoints or Hugging Face repos (pass `--hf-repo Qwen/Qwen3-0.6B --auto-infer`).
 > - add `--plot` to save the singular-value and cumulative-energy curves (optionally override path with `--plot-path`).
 > - add `--prompt "The true meaning of life is absurdity, and suffering" --heatmap` to snapshot an attention heatmap for that text (requires Hugging Face repo access).
 

@@ -245,6 +245,7 @@ const config: QuartzConfig = {
       Plugin.BasePage(),
       Plugin.StreamPage(),
       Plugin.StreamIndex(),
+      Plugin.Masonry(),
       Plugin.CanvasPage(),
     ],
   },

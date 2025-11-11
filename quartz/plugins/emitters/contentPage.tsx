@@ -88,7 +88,8 @@ export const ContentPage: QuartzEmitterPlugin<Partial<FullPageLayout>> = (userOp
           slug.startsWith("tags/") ||
           file.data.bases ||
           file.data.jsonCanvas ||
-          file.data.streamData
+          file.data.streamData ||
+          file.data.frontmatter?.layout === "masonry"
         )
           continue
         yield processContent(ctx, tree, file.data, allFiles, opts, resources)
@@ -100,22 +101,9 @@ export const ContentPage: QuartzEmitterPlugin<Partial<FullPageLayout>> = (userOp
       // find all slugs that changed or were added
       const changedSlugs = new Set<string>()
       for (const changeEvent of changeEvents) {
-        // If it's a markdown file change, add its own slug
-        if (changeEvent.file) {
-          if (changeEvent.type === "add" || changeEvent.type === "change") {
-            changedSlugs.add(changeEvent.file.data.slug!)
-          }
-          continue
-        }
-        // Non-markdown file changed: re-emit any page that depends on it
+        if (!changeEvent.file) continue
         if (changeEvent.type === "add" || changeEvent.type === "change") {
-          const changedPath = changeEvent.path
-          for (const [_, vf] of content) {
-            const deps = (vf.data.codeDependencies as string[] | undefined) ?? []
-            if (deps.includes(changedPath)) {
-              changedSlugs.add(vf.data.slug!)
-            }
-          }
+          changedSlugs.add(changeEvent.file.data.slug!)
         }
       }
 

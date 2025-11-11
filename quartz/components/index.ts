@@ -12,6 +12,7 @@ import FolderContent from "./pages/FolderContent"
 import ArenaIndex from "./pages/ArenaIndex"
 import ChannelContent from "./pages/ChannelContent"
 import NotFound from "./pages/404"
+import MasonryPage from "./pages/MasonryPage"
 import ArticleTitle from "./ArticleTitle"
 import Darkmode from "./Darkmode"
 import Head from "./Head"
@@ -39,6 +40,7 @@ import BaseViewSelector from "./BaseViewSelector"
 import CanvasContainer from "./Canvas"
 
 export {
+  MasonryPage,
   CanvasContainer,
   Flex,
   Palette,

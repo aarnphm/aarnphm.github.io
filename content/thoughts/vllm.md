@@ -2,17 +2,26 @@
 date: "2024-09-09"
 description: efficient LLM serving engine.
 id: vllm
-modified: 2025-11-03 05:03:10 GMT-05:00
+modified: 2025-11-10 15:39:25 GMT-05:00
 permalinks:
   - /vllm
 tags:
   - ml
   - inference
   - technical
+  - evergreen
 title: vLLM
 ---
 
 see also: [[thoughts/Attention#paged attention|paged attention]], [[thoughts/PD disaggregated serving|pd disaggregation]], [2024 in review](https://docs.google.com/presentation/d/1Z78ljqPIg7_KZ7ZAqKO4VDjKG-ytbkbZ/edit#slide=id.p1) [@kwon2023efficient]
+
+---
+
+## context parallelism
+
+![[thoughts/context parallelism]]
+
+---
 
 ## KV-Compress
 
@@ -77,12 +86,22 @@ Reasoning for v2:
 - support sliding windows attention
 - lookahead slot for [[thoughts/Speculative decoding]]
 
-![[thoughts/Speculative decoding]]
+---
+
+## speculative decoding
+
+![[thoughts/Speculative decoding#{collapsed: true}]]
 
 ## continuous batching
 
 ![[thoughts/Continuous batching]]
 
-![[thoughts/structured outputs|structured outputs v1]]
+---
+
+## structured outputs
+
+![[thoughts/structured outputs#{collapsed: true}|structured outputs v1]]
+
+---
 
 [^ref]

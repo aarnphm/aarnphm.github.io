@@ -5,7 +5,7 @@ aliases:
 date: "2022-04-22"
 description: my working notes, as a form of a digital garden
 id: _index
-modified: 2025-11-09 10:46:04 GMT-05:00
+modified: 2025-11-11 07:37:39 GMT-05:00
 tags:
   - evergreen
   - fruit
@@ -24,7 +24,7 @@ as far as [[thoughts/craft|work]] goes, I'm working at a [startup](https://bento
     * me working on [[thoughts/work|open-source projects]],
       * me working on [[thoughts/work|open-source projects]],
       * and spending too much time fixing this [site](https://aarnphm.xyz/view-source),
-        * or commiting to the bit.
+        * and commiting to the bit.
         * I enjoy
           * I enjoy long walks,
           * nerd-snipping on the next [[/tags/math|math]] topics,
@@ -79,11 +79,7 @@ as far as [[thoughts/craft|work]] goes, I'm working at a [startup](https://bento
 * I care
 * about building
   * about building [[thoughts/papers/Tools for Conviviality by Ivan Illich.pdf|malleable tools]]
-  * and pondering about
-  * metaphyics
-    * [[thoughts/Metaphysics|metaphysics]], Markovian
-    * properties
-      * properties of our [[thoughts/representations|expression]].
+  * and pondering about [[thoughts/Metaphysics|metaphysics]].
 ```
 
 as far as [[thoughts/aesthetic value|aesthetic]] goes, i enjoy my [[antilibrary|books]], watching [[cinematheque|cinema]], and [[images|images]] I come across online, and this [[/dating|doc]] if you are interested ✨

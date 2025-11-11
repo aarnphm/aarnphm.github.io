@@ -2,12 +2,10 @@
 date: "2025-10-17"
 description: Deploying DeepSeek R1
 id: notes
-modified: 2025-11-05 16:39:01 GMT-05:00
+modified: 2025-11-11 06:57:40 GMT-05:00
 slides: true
 tags:
-  - seed
   - workshop
-  - gpu
 title: supplement to 0.430
 transclude:
   title: false
@@ -24,7 +22,7 @@ see also: [[thoughts/Attention#Multi-head Latent Attention]], [[thoughts/LLMs]],
 by locally I mean:
 
 - 8xH200
-- Data-center grade GPUs setup
+- Data-center grade #gpu setup
 
 s/o: vLLM, newsystems
 

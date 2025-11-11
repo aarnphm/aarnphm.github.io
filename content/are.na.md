@@ -41,7 +41,7 @@ cssclasses:
 date: "2024-10-24"
 description: My run-down version of are[dot]na
 id: are.na
-modified: 2025-11-10 06:56:40 GMT-05:00
+modified: 2025-11-11 07:10:40 GMT-05:00
 permalinks:
   - /website
   - /tweets
@@ -272,6 +272,14 @@ title: are.na
 
 ## website
 
+- https://alivetheory.net/ -- alive internet theory
+  - [meta]:
+    - date: 11/10/2025
+    - tags: [intraweb, design]
+- https://harvardfilmarchive.org/ -- Harvard Film Archive
+  - [meta]:
+    - date: 11/10/2025
+    - tags: [film]
 - https://patternlanguage.cc/README -- [[library/A Pattern Language]]
   - [meta]:
     - date: 11/10/2025
@@ -1250,11 +1258,24 @@ title: are.na
 
 ## essay
 
+- https://read.isabelunraveled.com/p/let-yourself-be-loved -- let yourself be loved
+  - [meta]:
+    - date: 11/11/2025
+    - tags: [love]
+  - > Relationship are co-created.
+- https://ncase.me/remember/ -- How to remember anything forever-ish [**]
+  - [meta]:
+    - date: 11/11/2025
+    - tags: [web comics, spaced repetition]
+- https://jasmi.news/p/china-2025 -- 🌻 america against china against america
+  - [meta]:
+    - date: 11/11/2025
+    - tags: [politics]
 - https://sarvasvkulpati.com/words-for-love -- English doesn't ahve enough words for #love
   - [meta]:
     - date: 11/10/2025
     - tags: [love]
-- https://slatestarcodex.com/2015/04/21/universal-love-said-the-cactus-person/ -- Universal love, said the cactus person
+- https://slatestarcodex.com/2015/04/21/universal-love-said-the-cactus-person/ -- Universal love, said the cactus person [**]
   - [meta]:
     - date: 11/10/2025
     - tags: [acl, ssc, love]
@@ -2021,6 +2042,15 @@ title: are.na
 - [meta]:
   - view: list
 
+- https://cursor.com/blog/semsearch -- Improving #agent with semantic search
+  - [meta]:
+    - date: 11/11/2025
+    - tags: [inference, search]
+- https://distill.pub/ -- distillpub [**]
+  - [meta]:
+    - date: 11/10/2025
+    - tags: [interpretability]
+  - now defunct
 - https://www.youtube.com/watch?v=kkfLHmujzO8 -- A Stylised History of Mech Interp
   - [meta]:
     - date: 11/09/2025
@@ -2796,7 +2826,11 @@ title: are.na
 
 ## life is literature
 
-- - https://clarkesworldmagazine.com/kritzer_05_23 -- Better living through algorithms
+- https://static1.squarespace.com/static/5b3a3c2596e76feeba40905e/t/5b46366570a6add65490e050/1531328102222/1977workingItOut.pdf -- Reflections on "Learning to Work"
+  - [meta]:
+    - date: 11/11/2025
+    - tags: [culture]
+- https://clarkesworldmagazine.com/kritzer_05_23 -- Better living through algorithms
   - [meta]:
     - date: 10/23/2025
     - tags: [short, literature]
@@ -3491,7 +3525,11 @@ title: are.na
 
 ## design
 
-- https://www.humans-machines.com/-- Humans Machine
+- https://www.affinity.studio/ -- Affinity, by Canva
+  - [meta]:
+    - date: 11/11/2025
+    - tags: [product]
+- https://www.humans-machines.com/ -- Humans Machine
   - [meta]:
     - date: 11/06/2025
     - tags: [studio, product]

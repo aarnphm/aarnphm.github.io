@@ -252,11 +252,13 @@ h6 {
   }
 }
 
+pre.poem,
 pre.poetry {
   border: none;
   padding: 1rem;
   position: unset;
   font-family: var(--bodyFont);
+  background: inherit;
 
   &[data-language="vi"] {
     font-family: "Playfair Display" !important;
@@ -1487,6 +1489,7 @@ body[data-slug="influence"] {
   }
 }
 
+[data-layout="masonry"],
 [data-slug*="stream"],
 [data-slug="index"] {
   .search-button,

@@ -2,9 +2,8 @@
 date: "2025-09-30"
 description: matmul and GPU quirks
 id: index
-modified: 2025-10-29 02:14:25 GMT-04:00
+modified: 2025-11-11 06:58:06 GMT-05:00
 tags:
-  - seed
   - ml
   - linalg
 title: 0[dot]420

@@ -2,9 +2,8 @@
 date: "2025-08-21"
 description: attention and math
 id: notes
-modified: 2025-11-06 01:54:03 GMT-05:00
+modified: 2025-11-11 07:02:44 GMT-05:00
 tags:
-  - seed
   - workshop
 title: supplement to 0.200
 ---

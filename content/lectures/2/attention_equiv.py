@@ -1,5 +1,6 @@
 # Attention ≈ Entropic kernel regression demo
-# ----------------------------------------------------
+# -------------------------------------------
+#
 # This script shows the mathematical equivalence between
 # dot-product softmax attention and an RBF kernel smoother
 # when Q and K are L2-normalized (same norm per row).

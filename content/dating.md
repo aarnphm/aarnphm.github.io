@@ -7,7 +7,7 @@ aliases:
 date: "2025-08-09"
 description: just another fish in the sea.
 id: dating
-modified: 2025-11-10 09:25:02 GMT-05:00
+modified: 2025-11-11 05:24:57 GMT-05:00
 noindex: true
 slides: true
 tags:
@@ -43,9 +43,9 @@ I'm the 3am call who shows up. My [love language](https://en.wikipedia.org/wiki/
 
 I moved continents at a young age, and learnt very early on that _solitude makes presence precious_.a
 
-I actually like the em dash (—) and parentheticals and non-sequiturs.
+I like the em-dash (—) (contrary to recent popular beliefs), and parentheticals and non-sequiturs.
 
-I listen to quite a bit of <span style="text-decoration: underline;">Rachmaninoff</span> and UK garage, and often caught myself rabbit-holing on random #math topics. I also practice "managed obsession" [^managed-obesssion]
+I listen to quite a bit of <span style="text-decoration: underline;">Rachmaninoff</span> and garage/drill, and often find myself rabbit-holing on random #math topics. I also practice "managed obsession" [^managed-obesssion]
 
 Looking for someone equally comfortable discussing Wittgenstein (or [[thoughts/Philosophy and Nietzsche|Nietzsche]]) over homemade pasta, high empathy, witty and sharp, non-avoidance attachment style, to plan spontaneous cabin escapes.
 

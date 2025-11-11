@@ -83,6 +83,10 @@ ul#helper {
 
     scrollbar-width: none;
 
+    body[data-slug="index"] & {
+      border-top-width: 1px;
+    }
+
     &::-webkit-scrollbar {
       display: none;
     }

@@ -3,6 +3,7 @@ date: "2025-01-06"
 description: and all the things I found interesting on the internet.
 id: images
 modified: 2025-11-09 23:07:37 GMT-05:00
+layout: masonry
 tags:
   - seed
 title: images
@@ -120,3 +121,6 @@ transclude:
 ![[thoughts/images/georgia-okeeffe.webp|georgia o'keeffe]]
 
 ![[thoughts/images/onion.webp|onion id]]
+
+![[thoughts/images/the actual spectrum itself.png]]
+![[thoughts/images/a spectrum of a star.png]]

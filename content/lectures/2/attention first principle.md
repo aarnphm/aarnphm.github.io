@@ -2,9 +2,8 @@
 date: "2025-08-21"
 description: Self-attention from first principles with formal properties and efficient variants.
 id: attention
-modified: 2025-11-10 09:24:30 GMT-05:00
+modified: 2025-11-11 07:02:17 GMT-05:00
 tags:
-  - seed
   - ml
 title: attention primer
 ---

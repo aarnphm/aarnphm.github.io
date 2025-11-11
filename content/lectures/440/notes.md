@@ -2,10 +2,9 @@
 date: "2025-10-17"
 description: and building a nano inference engine
 id: notes
-modified: 2025-11-06 06:06:53 GMT-05:00
+modified: 2025-11-11 06:55:26 GMT-05:00
 slides: true
 tags:
-  - seed
   - workshop
 title: supplement to 0.440
 transclude:

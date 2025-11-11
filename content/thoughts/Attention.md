@@ -3,7 +3,7 @@ abstract: The reason for Attention comparing to LSTM is that its ability to enco
 date: "2024-02-07"
 description: and posteriori information retrieval.
 id: Attention
-modified: 2025-10-29 02:15:16 GMT-04:00
+modified: 2025-11-10 15:34:23 GMT-05:00
 tags:
   - technical
   - llm

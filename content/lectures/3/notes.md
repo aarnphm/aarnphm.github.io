@@ -2,11 +2,10 @@
 date: "2025-08-28"
 description: and more notes
 id: notes
-modified: 2025-11-06 01:54:10 GMT-05:00
+modified: 2025-11-11 07:01:37 GMT-05:00
 socials:
   youtube: https://youtu.be/DDLlOqQ46HE
 tags:
-  - seed
   - workshop
 title: supplement to 0.300
 transclude:

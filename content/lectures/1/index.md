@@ -2,9 +2,8 @@
 date: "2025-08-14"
 description: overview of transformers
 id: index
-modified: 2025-10-29 02:14:22 GMT-04:00
+modified: 2025-11-11 07:02:59 GMT-05:00
 tags:
-  - seed
   - ml
 title: 0[dot]1
 ---

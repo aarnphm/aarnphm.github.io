@@ -12,7 +12,6 @@ import {
   joinSegments,
   pathToRoot,
   simplifySlug,
-  slugifyFilePath,
 } from "../../util/path"
 import { defaultListPageLayout, sharedPageComponents } from "../../../quartz.layout"
 import { FolderContent } from "../../components"
@@ -143,15 +142,9 @@ export const FolderPage: QuartzEmitterPlugin<Partial<FolderPageOptions>> = (user
       // Find all folders that need to be updated based on changed files
       const affectedFolders: Set<SimpleSlug> = new Set()
       for (const changeEvent of changeEvents) {
-        // Prefer slug from VFile if available (markdown)
-        let baseSlug: FullSlug | undefined = changeEvent.file?.data.slug as FullSlug | undefined
-        // For non-markdown or missing VFile, derive from path
-        if (!baseSlug) {
-          baseSlug = slugifyFilePath(changeEvent.path)
-        }
-        if (!baseSlug) continue
-
-        const folders = _getFolders(baseSlug).filter(
+        if (!changeEvent.file) continue
+        const slug = changeEvent.file.data.slug!
+        const folders = _getFolders(slug).filter(
           (folderName) => folderName !== "." && folderName !== "tags",
         )
         folders.forEach((folder) => affectedFolders.add(folder))

@@ -2,11 +2,10 @@
 date: "2025-09-10"
 description: 2/n some more notes on EAGLE and MTP
 id: notes
-modified: 2025-11-10 09:10:32 GMT-05:00
+modified: 2025-11-11 07:01:02 GMT-05:00
 socials:
   youtube: https://youtu.be/sSdoETRQQHY
 tags:
-  - seed
   - workshop
 title: supplement to 0.410
 transclude:

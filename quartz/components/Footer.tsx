@@ -5,7 +5,7 @@ import { i18n } from "../i18n"
 import { classNames } from "../util/lang"
 import { Date as DateComponent, getDate } from "./Date"
 
-type FooterLayout = "default" | "minimal" | "poetry" | "menu" | "curius"
+type FooterLayout = "default" | "minimal" | "poetry" | "menu" | "curius" | "masonry"
 
 interface Options {
   layout?: FooterLayout
@@ -120,6 +120,8 @@ export default ((userOpts?: Options) => {
         return <MinimalFooter />
       } else if (layout === "poetry" || layout === "menu") {
         return <DateFooter />
+      } else if (layout === "masonry") {
+        return <></>
       } else {
         return <DefaultFooter />
       }

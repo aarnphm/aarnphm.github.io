@@ -21,7 +21,7 @@ import {
   resolveRelative,
 } from "../util/path"
 import { clone } from "../util/clone"
-import { githubSvg, substackSvg, twitterSvg, svgOptions, QuartzIcon } from "./svg"
+import { svgOptions, QuartzIcon } from "./svg"
 import { EXIT, visit } from "unist-util-visit"
 import { Root, Element, ElementContent, Node, Text } from "hast"
 import { i18n } from "../i18n"
@@ -1133,13 +1133,6 @@ export function transcludeFinal(
   return root
 }
 
-export const TopLinks = {
-  workshop: "/lectures",
-  arena: "/arena",
-  stream: "/stream",
-  livres: "/antilibrary",
-}
-
 type AliasLinkProp = {
   name?: string
   url?: string
@@ -1268,69 +1261,26 @@ const ElementComponent = ((enableRecents: boolean = false) => {
   })
 
   const Element: QuartzComponent = (componentData: QuartzComponentProps) => {
-    const svgToJsx = (hast: Element): JSX.Element =>
-      //@ts-ignore
-      htmlToJsx(componentData.fileData.filePath!, hast)
-
-    const rssIcon = svgToJsx(
-      s(
-        "svg",
-        {
-          version: "1.1",
-          xmlns: "http://www.w3.org/2000/svg",
-          viewbox: "0 0 8 8",
-          width: 8,
-          height: 8,
-          role: "img",
-          stroke: "none",
-          "data-icon": "rss",
-        },
-        s("rect", { width: 8, height: 8, rx: 1.5, style: "fill:#F78422;" }),
-        s("circle", { cx: 2, cy: 6, r: 1, style: "fill:#FFFFFF;" }),
-        s("path", {
-          d: "m 1,4 a 3,3 0 0 1 3,3 h 1 a 4,4 0 0 0 -4,-4 z",
-          style: "fill:#FFFFFF;",
-        }),
-        s("path", {
-          d: "m 1,2 a 5,5 0 0 1 5,5 h 1 a 6,6 0 0 0 -6,-6 z",
-          style: "fill:#FFFFFF;",
-        }),
-      ),
-    )
-    const githubIcon = svgToJsx(githubSvg)
-    const twitterIcon = svgToJsx(twitterSvg)
-    const substackIcon = svgToJsx(substackSvg)
-
     const Hyperlink = HyperlinksComponent({
       children: [
         <section style={{ marginTop: "0.9em" }}>
           <em>jardin</em>
           <address class="clickable-container">
-            {Object.entries(TopLinks).map(([name, url]) => (
-              <AliasLink isInternal enablePopover={false} key={name} name={name} url={url} />
-            ))}
-          </address>
-        </section>,
-        <section style={{ marginTop: "0.9em" }}>
-          <em>média</em>
-          <address class="clickable-container">
-            <AliasLink newTab classes={["external"]} name="github" url="https://github.com/aarnphm">
-              {githubIcon}
-            </AliasLink>
-            <AliasLink newTab classes={["external"]} name="twitter" url="https://x.com/aarnphm_">
-              {twitterIcon}
-            </AliasLink>
+            <AliasLink newTab classes={["external"]} name="notes" url="https://notes.aarnphm.xyz" />
             <AliasLink
               newTab
               classes={["external"]}
-              name="substack"
-              url="https://livingalonealone.com"
-            >
-              {substackIcon}
-            </AliasLink>
-            <AliasLink newTab name="rss" url="/index.xml">
-              {rssIcon}
-            </AliasLink>
+              name="stream"
+              url="https://stream.aarnphm.xyz"
+            />
+            <AliasLink
+              newTab
+              classes={["external"]}
+              name="workshop"
+              url="https://workshop.aarnphm.xyz"
+            />
+            <AliasLink newTab classes={["external"]} name="arena" url="https://arena.aarnphm.xyz" />
+            <AliasLink newTab name="rss" url="/index.xml" />
           </address>
         </section>,
         <section class="boring-legal">
@@ -1341,7 +1291,6 @@ const ElementComponent = ((enableRecents: boolean = false) => {
               name="CC BY-NC-SA"
               url="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en"
             />
-            <AliasLink newTab classes={["external"]} name="notes" url="https://notes.aarnphm.xyz" />
             <AliasLink isInternal enablePopover={false} name="colophon" url="/colophon" />
             <AliasLink isInternal enablePopover={false} name="privacy" url="/privacy-policy" />
             <AliasLink

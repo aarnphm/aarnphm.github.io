@@ -2,10 +2,9 @@
 date: "2025-09-12"
 description: linear algebra notes
 id: notes
-modified: 2025-10-29 02:14:24 GMT-04:00
+modified: 2025-11-11 07:00:35 GMT-05:00
 slides: true
 tags:
-  - seed
   - workshop
   - linalg
 title: supplement to 0.411
@@ -1142,7 +1141,9 @@ NumPy (use Fortran order to match the column‑major “vec” in formulas):
 import numpy as np
 
 
-def kron_apply_vec(A: np.ndarray, B: np.ndarray, x: np.ndarray, n: int, p: int) -> np.ndarray:
+def kron_apply_vec(
+  A: np.ndarray, B: np.ndarray, x: np.ndarray, n: int, p: int
+) -> np.ndarray:
   """Return y = (B.T ⊗ A) vec(X) without forming B.T ⊗ A.
   Shapes: A ∈ R^{m×n}, B ∈ R^{p×q}, x = vec(X) with X ∈ R^{n×p} (column-major vec).
   """
@@ -1170,7 +1171,9 @@ PyTorch (emulates column‑major vec via transpose views):
 import torch
 
 
-def kron_apply_vec_torch(A: torch.Tensor, B: torch.Tensor, x: torch.Tensor, n: int, p: int) -> torch.Tensor:
+def kron_apply_vec_torch(
+  A: torch.Tensor, B: torch.Tensor, x: torch.Tensor, n: int, p: int
+) -> torch.Tensor:
   """y = (B.T ⊗ A) vec(X) with X ∈ R^{n×p}, using BLAS-backed matmuls internally."""
   m = A.shape[0]
   q = B.shape[1]

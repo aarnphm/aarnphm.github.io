@@ -5,7 +5,7 @@ aliases:
 date: "2022-01-25"
 description: Liste de projets, d'idées, d'écrits auxquels on reviendra.
 id: ideas
-modified: 2025-11-06 07:36:54 GMT-05:00
+modified: 2025-11-11 07:05:19 GMT-05:00
 tags:
   - technical
   - evergreen
@@ -87,3 +87,15 @@ title: ideas.
 
 - bazil: A [Bazel](https://bazel.build/) for the unversed
   - Bazel is hard to get started with
+
+## companies.
+
+<div class="nolist">
+
+- torontocompute
+  - https://x.com/aarnphm_/status/1844775079286120682
+  - > [!note]- funding
+    >
+    > I'm looking for interests within Canada. Would love to [chat](mailto:contact@aarnphm.xyz)!
+
+</div>
