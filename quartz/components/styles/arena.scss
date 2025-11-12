@@ -100,6 +100,7 @@ body[data-arena-subpage="true"] {
   }
 }
 
+.arena-channel-row-preview-text,
 .arena-modal-title,
 .arena-block-content {
   a.internal {
@@ -259,6 +260,12 @@ body[data-arena-subpage="true"] {
 .arena-channel-controls .arena-search {
   margin: 0;
   flex: 1 1 320px;
+}
+
+@media all and ($mobile) {
+  .arena-channel-controls .arena-search {
+    flex-basis: auto;
+  }
 }
 
 .arena-view-toggle {

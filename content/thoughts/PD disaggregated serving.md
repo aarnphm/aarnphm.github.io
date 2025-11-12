@@ -8,29 +8,28 @@ tags:
 title: p/d disaggregation
 ---
 
-the idea: let an [[thoughts/vllm|inference engine]] split prefill and [[thoughts/Transformers#inference.|decode]] onto different workers and scale their ratio independently. this keeps time‑to‑first‑token (ttft) low while maintaining inter‑token latency (itl) at steady throughput.
+the idea: let an [[thoughts/vllm|inference engine]] split prefill and [[thoughts/Transformers#inference.|decode]] onto different workers and scale their ratio independently. this keeps time‑to‑first‑token (TTFT) low while maintaining inter‑token latency (ITL) at steady throughput.
 
 see also:
 
-- [[thoughts/distributed inference|distributed inference]] for [[thoughts/LLMs|llms]], [[thoughts/Speculative decoding|speculative decoding]], [[thoughts/Attention#multi-head latent attention|mla]], [[thoughts/vllm|vllm]].
+- [[thoughts/distributed inference|distributed inference]]
 - vllm disaggregated prefilling docs and blog. [@vllm-disagg-docs; @vllm-disagg-blog]
 - vllm production‑stack tutorial for p/d disagg. [@vllm-prodstack]
 - mooncake paper and sglang docs. [@qin2024mooncakekvcachecentricdisaggregatedarchitecture; @sglang-docs]
 
 ## prefill/decode
 
-quick summary:
-
 - prefill: run attention over the prompt to build kv cache blocks.
 - decode: generate tokens autoregressively using cached kv.
 
 ## why p/d disaggregation
 
-- workload mismatch: prefill is compute‑heavy; decode is memory/kv‑cache heavy with smaller matmuls.
+- different SLO objectives: prefill is compute‑heavy; decode is memory/kv‑cache heavy with smaller matmuls.
 - interference: monolithic engines suffer ttft spikes when long‑prefill arrivals collide with decode batches.
 - elasticity: bursts are prefill‑dominated; decoupling lets you scale the prefill tier elastically and keep decode warm.
 
 > [!important] goal
+>
 > decouple resource bottlenecks and scheduling so ttft stays low under bursty arrivals without sacrificing itl or throughput.
 
 ## patterns

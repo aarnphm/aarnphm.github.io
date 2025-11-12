@@ -19,11 +19,13 @@ views:
     name: gallery
     groupBy:
       property: category
-      direction: DESC
+      direction: ASC
     order:
       - file.basename
       - date
       - notebook
+      - category
+      - tags
     sort:
       - property: date
         direction: DESC
@@ -51,14 +53,14 @@ views:
       - subcategory
       - notebook
     sort:
+      - property: date
+        direction: DESC
       - property: title
         direction: DESC
       - property: notebook
         direction: ASC
       - property: status
         direction: ASC
-      - property: date
-        direction: DESC
     columnSize:
       note.title: 401
       note.date: 147

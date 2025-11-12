@@ -773,7 +773,7 @@ ol.overflow {
 
 @media all and ($tablet) {
   .side-col {
-    grid-column: 3/7;
+    grid-column: 3/8;
   }
 }
 
@@ -790,6 +790,22 @@ ol.overflow {
 [data-slug*="tags/"] {
   .full-col {
     grid-column: 5/10;
+  }
+}
+
+@media all and ($tablet) {
+  [data-slug*="tags/"] {
+    .full-col {
+      grid-column: 3/-3;
+    }
+  }
+}
+
+@media all and ($mobile) {
+  [data-slug*="tags/"] {
+    .full-col {
+      grid-column: 3/-3;
+    }
   }
 }
 

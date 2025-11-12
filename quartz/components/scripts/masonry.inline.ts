@@ -88,93 +88,126 @@ function loadImage(img: HTMLImageElement): Promise<void> {
   })
 }
 
+function shuffleArray<T>(array: T[]): T[] {
+  const shuffled = [...array]
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1))
+    ;[shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]
+  }
+  return shuffled
+}
+
 function positionImages(
   images: HTMLImageElement[],
   container: HTMLElement,
   containerWidth: number,
-) {
+): { cancel: () => void } {
   const positioned: ImagePosition[] = []
-  let containerHeight = 1000
+  let containerHeight = 600
+  let intervalId: ReturnType<typeof setInterval> | undefined
 
-  for (let i = 0; i < images.length; i++) {
-    const img = images[i]
+  // shuffle images for random placement order
+  const shuffledImages = shuffleArray(images)
+
+  // trigger loading for all images first
+  for (let i = 0; i < shuffledImages.length; i++) {
+    const img = shuffledImages[i]
     const src = img.dataset.src
     if (!src) continue
 
-    // set src to trigger loading if not already set
     if (!img.src) {
       img.src = src
     }
   }
 
+  function cancel() {
+    if (intervalId !== undefined) {
+      clearInterval(intervalId)
+      intervalId = undefined
+    }
+  }
+
   // wait for all images to load
-  const loadPromises = images.map((img) => loadImage(img).catch(() => {}))
+  const loadPromises = shuffledImages.map((img) => loadImage(img).catch(() => {}))
 
   Promise.all(loadPromises).then(() => {
-    for (let i = 0; i < images.length; i++) {
-      const img = images[i]
+    let i = 0
+
+    // place images incrementally with visual feedback
+    intervalId = setInterval(() => {
+      if (i >= shuffledImages.length) {
+        clearInterval(intervalId!)
+        intervalId = undefined
+
+        // set final container height
+        let maxBottom = 0
+        for (let j = 0; j < positioned.length; j++) {
+          const bottom = positioned[j].y + positioned[j].height
+          if (bottom > maxBottom) {
+            maxBottom = bottom
+          }
+        }
+        container.style.height = `${maxBottom + 20}px`
+        return
+      }
+
+      const img = shuffledImages[i]
       const naturalWidth = img.naturalWidth
       const naturalHeight = img.naturalHeight
 
       if (naturalWidth === 0 || naturalHeight === 0) {
         img.style.display = "none"
-        continue
+        i++
+        return
       }
 
       const dims = calculateTargetDimensions(naturalWidth, naturalHeight, containerWidth)
 
       let positioned_successfully = false
-      let attempts = 0
-      const maxAttempts = 100
 
-      while (!positioned_successfully && attempts < maxAttempts) {
-        const x = Math.floor(Math.random() * (containerWidth - dims.width))
-        const y = Math.floor(Math.random() * (containerHeight - dims.height))
+      while (!positioned_successfully) {
+        const maxAttempts = 50
+        const wMax = containerWidth - dims.width
+        const hMax = containerHeight - dims.height
 
-        const pos: ImagePosition = {
-          x,
-          y,
-          width: dims.width,
-          height: dims.height,
-          element: img,
+        for (let attempt = 0; attempt < maxAttempts; attempt++) {
+          const x = Math.floor(Math.random() * wMax)
+          const y = Math.floor(Math.random() * hMax)
+
+          const pos: ImagePosition = {
+            x,
+            y,
+            width: dims.width,
+            height: dims.height,
+            element: img,
+          }
+
+          if (!checkCollision(pos, positioned)) {
+            positioned.push(pos)
+            positioned_successfully = true
+
+            // apply position to image
+            img.style.position = "absolute"
+            img.style.left = `${pos.x}px`
+            img.style.top = `${pos.y}px`
+            img.style.width = `${pos.width}px`
+            img.style.height = `${pos.height}px`
+            img.classList.add("positioned")
+            break
+          }
         }
 
-        if (!checkCollision(pos, positioned)) {
-          positioned.push(pos)
-          positioned_successfully = true
+        // if couldn't position after max attempts, expand container height
+        if (!positioned_successfully) {
+          containerHeight += 50
         }
-
-        attempts++
       }
 
-      // if we couldn't position after max attempts, expand container height
-      if (!positioned_successfully) {
-        containerHeight += 50
-        i-- // retry this image
-        continue
-      }
-
-      // apply position to image
-      const pos = positioned[positioned.length - 1]
-      img.style.position = "absolute"
-      img.style.left = `${pos.x}px`
-      img.style.top = `${pos.y}px`
-      img.style.width = `${pos.width}px`
-      img.style.height = `${pos.height}px`
-      img.classList.add("positioned")
-    }
-
-    // set final container height
-    let maxBottom = 0
-    for (let i = 0; i < positioned.length; i++) {
-      const bottom = positioned[i].y + positioned[i].height
-      if (bottom > maxBottom) {
-        maxBottom = bottom
-      }
-    }
-
-    container.style.height = `${maxBottom + 20}px`
+      i++
+    }, 100)
   })
+
+  return { cancel }
 }
 
 function setupCaptionModal(images: HTMLImageElement[], modal: HTMLElement) {
@@ -222,7 +255,7 @@ function initMasonry() {
 
   const containerWidth = container.getBoundingClientRect().width
 
-  positionImages(images, container, containerWidth)
+  let currentPositioning = positionImages(images, container, containerWidth)
   setupCaptionModal(images, modal)
 
   // handle resize with ResizeObserver for better detection
@@ -238,6 +271,11 @@ function initMasonry() {
 
       lastWidth = newWidth
 
+      // cancel any ongoing positioning
+      if (currentPositioning) {
+        currentPositioning.cancel()
+      }
+
       if (resizeTimeout !== undefined) {
         window.clearTimeout(resizeTimeout)
       }
@@ -249,7 +287,7 @@ function initMasonry() {
           img.style.opacity = "0"
         })
 
-        positionImages(images, container, newWidth)
+        currentPositioning = positionImages(images, container, newWidth)
       }, 150)
     }
   })

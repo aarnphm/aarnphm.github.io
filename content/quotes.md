@@ -3,7 +3,7 @@ aliases:
   - advice
 date: "2024-01-23"
 id: quotes
-modified: 2025-11-04 22:10:17 GMT-05:00
+modified: 2025-11-11 08:37:47 GMT-05:00
 socialDescription: A collection of quotes, wisdom, and advice.
 tags:
   - evergreen
@@ -14,9 +14,19 @@ transclude:
   title: false
 ---
 
-<!-- NOTE: /quotes is pretty special such that each entry `p` will be formatted after render. For heading use `h3` -->
-
 ## On life.
+
+> An idiot admires complexity, a genius admires simplicity, a physicist tries to make it simple. For an idiot, the more complicated something is, the more he will admire it. If you make something so clusterfucked he can’t understand it, he’s gonna think you’re a god because you made it so complicated nobody can understand it. That’s how they write journals in academics, they try to make it so complicated people think you’re a genius.
+> 
+> —Terry Davis
+
+> We see losers making it every day, no reason you or me can’t.
+>
+> —[alexine](https://x.com/alexinexxx)
+
+> The First [Friend] is the alter ego, the man who first reveals to you that you are not alone in the world by turning out (beyond hope) to share all your most secret delights. There is nothing to be overcome in making him your friend; he and you join like raindrops on a window. But the Second Friend is the man who disagrees with you about everything. He is not so much the alter ego as the antiself. Of course he shares your interests; otherwise he would not become your friend at all. But he has approached them all at a different angle. He has read all the right books but has got the wrong thing out of every one. It is as if he spoke your language but mispronounced it. How can he be so nearly right and yet, invariably, just not right? He is as fascinating (and infuriating) as a woman. When you set out to correct his heresies, you will find that he forsooth to correct yours! And then you go at it, hammer and tongs, far into the night, night after night, or walking through fine country that neither gives a glance to, each learning the weight of the other’s punches, and often more like mutually respectful enemies than friends. Actually (though it never seems so at the time) you modify one another’s thought; out of this perpetual dogfight a community of mind and a deep affection emerge.
+>
+> —C.S Lewis
 
 > If you love a flower, don't pick it up. Because if you pick it up it dies, and it ceases to be what you love. So, if you love a flower, let it be. Love is not about possession; love is about appreciation.
 >

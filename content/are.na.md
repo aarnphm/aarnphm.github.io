@@ -41,7 +41,7 @@ cssclasses:
 date: "2024-10-24"
 description: My run-down version of are[dot]na
 id: are.na
-modified: 2025-11-11 07:10:40 GMT-05:00
+modified: 2025-11-11 16:48:54 GMT-05:00
 permalinks:
   - /website
   - /tweets
@@ -122,6 +122,11 @@ title: are.na
 - [meta]:
   - view: list
 
+- https://x.com/ch402/status/1564631228166201345 -- Chris Olah's dating doc
+  - [meta]:
+    - date: 11/11/2025
+    - tags: [relationship]
+  - He's no longer single, but an inspiration for [[dating]]
 - https://x.com/karpathy/status/1864023344435380613 -- Story behind [[thoughts/Attention]] development
   - [meta]:
     - date: 11/10/2025
@@ -298,10 +303,15 @@ title: are.na
     - date: 11/09/2025
     - tags: [design]
   - #design
-- https://girl.surgery/website_vibes/ -- Image vibes
+- https://girl.surgery/website_vibes/ -- Image vibes [**]
   - [meta]:
     - date: 11/09/2025
     - tags: [masonry]
+  - Quartz version can be found [[images|here]]
+- [[lyd]] -- postcards, toronto
+  - [meta]:
+    - date: 11/04/2025
+    - tags: [friend, love]
 - https://nicky.day -- hpbd nicky!
   - [meta]:
     - date: 11/04/2025
@@ -695,6 +705,16 @@ title: are.na
 
 ## people
 
+- https://brianlovin.com/ -- Brian Lovin
+  - [meta]:
+    - date: 11/11/2025
+    - tags: [fruit]
+  - Campsite, Notion
+- https://venkateshrao.com/ -- Venkatesh Rao
+  - [meta]:
+    - date: 11/11/2025
+    - tags: [fruit]
+  - columnist
 - https://departure.blog -- Sylvia
   - [meta]:
     - date: 11/09/2025
@@ -1258,11 +1278,26 @@ title: are.na
 
 ## essay
 
-- https://read.isabelunraveled.com/p/let-yourself-be-loved -- let yourself be loved
+- https://www.ystrickler.com/the-dark-forest-theory-of-the-internet/ -- The dark forest theory of the internet
   - [meta]:
     - date: 11/11/2025
-    - tags: [love]
-  - > Relationship are co-created.
+    - tags: [fruit]
+- https://jalexine.github.io/on-doing-things.html -- On doing things [**]
+  - [meta]:
+    - date: 11/11/2025
+    - tags: [pedagogy]
+  - You can just do things btw.
+  - see also: https://docs.google.com/spreadsheets/d/10X-el41KoDluiC4ffXGL1wMDT8R2moOGPvdHE4j65nk/edit?gid=0#gid=0
+- https://colah.github.io/posts/2020-05-University/ -- Do I Need to Go to University?
+  - [meta]:
+    - date: 11/11/2025
+    - tags: [pedagogy]
+  - Instead of asking “Is university good?”, ask “Do I have something more compelling to do?”
+- https://www.brendanschlagel.com/2017/11/05/canonize-creating-personal-canon-template/ -- Canonize: Creating a Personal Canon Template
+  - [meta]:
+    - date: 11/11/2025
+    - tags: [self]
+  - The idea of a "personal canon" is an \_encapsulation in list form of those things that ::shaped you [as a person]::.
 - https://ncase.me/remember/ -- How to remember anything forever-ish [**]
   - [meta]:
     - date: 11/11/2025
@@ -2042,7 +2077,7 @@ title: are.na
 - [meta]:
   - view: list
 
-- https://cursor.com/blog/semsearch -- Improving #agent with semantic search
+- https://cursor.com/blog/semsearch -- Improving agent with semantic search
   - [meta]:
     - date: 11/11/2025
     - tags: [inference, search]
@@ -2746,10 +2781,15 @@ title: are.na
   - [meta]:
     - date: 10/16/2025
     - tags: [technology]
-- https://ai-2027.com/ -- AI 2027
+- https://ai-2027.com/ -- AI 2027 [**]
   - [meta]:
     - date: 10/28/2025
     - tags: [prediction, speculation]
+  - https://x.com/eli_lifland/status/1908671788630106366
+  - https://thezvi.substack.com/p/analyzing-a-critique-of-the-ai-2027
+  - https://www.lesswrong.com/posts/PAYfmG2aRbdb74mEp/a-deep-critique-of-ai-2027-s-bad-timeline-models
+  - https://www.lesswrong.com/posts/gyT8sYdXch5RWdpjx/ai-2027-responses
+  - https://vitalik.eth.limo/general/2025/07/10/2027.html
 - https://www.overcomingbias.com/p/what-cost-varietyhtml -- What Cost Variety?
   - [meta]:
     - date: 10/24/2025
@@ -2826,6 +2866,11 @@ title: are.na
 
 ## life is literature
 
+- https://read.isabelunraveled.com/p/let-yourself-be-loved -- let yourself be loved [**]
+  - [meta]:
+    - date: 11/11/2025
+    - tags: [love]
+  - > Relationship are co-created.
 - https://static1.squarespace.com/static/5b3a3c2596e76feeba40905e/t/5b46366570a6add65490e050/1531328102222/1977workingItOut.pdf -- Reflections on "Learning to Work"
   - [meta]:
     - date: 11/11/2025
@@ -3383,6 +3428,10 @@ title: are.na
 
 ## stream
 
+- https://www.ribbonfarm.com/ -- Ribbonfarm [**]
+  - [meta]:
+    - date: 11/11/2025
+    - tags: [essay, life]
 - https://hpmor.com/ -- Harry Potter and the Methods of Rationality [**]
   - [meta]:
     - date: 10/29/2025
@@ -3525,6 +3574,10 @@ title: are.na
 
 ## design
 
+- https://www.nb.no/en/ -- National Library of Norway
+  - [meta]:
+    - date: 11/11/2025
+    - tags: [informatics]
 - https://www.affinity.studio/ -- Affinity, by Canva
   - [meta]:
     - date: 11/11/2025
@@ -4361,10 +4414,6 @@ title: are.na
 
 ## math
 
-- https://www.youtube.com/watch?v=4Iejh8qTPJ4 -- Chris Skinner, The Birch--Swinnerton-Dyer Conjecture: a millennium prize problem at 25
-  - [meta]:
-    - date: 11/09/2025
-    - tags: [conjecture, pde]
 - https://www.youtube.com/watch?v=HpRi3OQtyLk -- Refined THH Over ku and Habiro Cohomology - Ferdinand Wagner
   - [meta]:
     - date: 11/04/2025
@@ -4372,7 +4421,7 @@ title: are.na
 - https://www.youtube.com/watch?v=4Iejh8qTPJ4 -- Chris Skinner, The Birch--Swinnerton-Dyer Conjecture: a millennium prize problem at 25
   - [meta]:
     - date: 11/03/2025
-    - tags: [problem, conjecture]
+    - tags: [problem, conjecture, pde]
 - https://www.youtube.com/watch?v=BaDxv5Z4LkU -- An update on [[thoughts/Navier-Stokes equations|Navier-Stokes]] Problem
   - [meta]:
     - date: 10/31/2025
@@ -4511,6 +4560,10 @@ title: are.na
 
 ## papers
 
+- https://arxiv.org/abs/2507.07120
+  - [meta]:
+    - date: 11/11/2025
+    - tags: [parallelism]
 - https://arxiv.org/abs/2509.23202
   - [meta]:
     - date: 11/09/2025
