@@ -242,8 +242,9 @@ section[class~="header"] {
 }
 
 footer {
-  margin-top: 1rem;
   margin-bottom: 2rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--gray);
 }
 
 input[type="checkbox"] {
@@ -847,6 +848,7 @@ body[data-is-base="true"] {
 
 .page-content {
   text-transform: lowercase;
+  margin-bottom: 2rem;
 
   & article {
     & li:has(> input[type="checkbox"]) {

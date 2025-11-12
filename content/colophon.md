@@ -3,7 +3,7 @@ date: "2024-12-10"
 description: nobby designer word for "the design of the current site"
 id: colophon
 lang: en
-modified: 2025-11-09 22:46:54 GMT-05:00
+modified: 2025-11-12 13:00:21 GMT-05:00
 socials:
   twitter: https://x.com/aarnphm_/status/1861550609834402129
 tags:
@@ -29,3 +29,93 @@ title: colophon
 [^license]: This is not really a huge enforcer per-say, given that [not saying it](https://choosealicense.com/no-permission/) means "oh ALL RIGHTS RESERVED". These are mostly for my own [[notes|consumption]], and if you find it helpful then feel free to use it, just a quick mention would be appreciated 🫶
 
 **plugins** -- Most of additional items I wrote for this website follow [unified](https://unifiedjs.com/) ecosystem and can be exported as a standalone {{sidenotes[plugins.]: We are working on a few integrations separating out logics and improving general [Quartz ecosystem](https://github.com/quartz-community), stay tuned.}}
+
+## a rather non-exhaustive lists
+
+_of plugins that exists on this vault_
+
+Also to run this with `pnpm exec tsx quartz/scripts/dev.ts > /tmp/quartz-dev.log 2>&1 &`
+
+For a more compact highlights, see [[thoughts/craft#^quartz|this list]]
+
+### parser
+
+some remark parsers for wikilinks, callouts, that supports general OFM compatibility
+
+see [ofm-wikilinks](https://github.com/aarnphm/aarnphm.github.io/tree/main/quartz/extensions/micromark-extension-ofm-wikilinks/) and [ofm-sidenotes](https://github.com/aarnphm/aarnphm.github.io/tree/main/quartz/extensions/micromark-extension-ofm-sidenotes) for more information.
+
+### [telescopic-text](https://github.com/jackyzha0/telescopic-text)
+
+Support a small subsets of the features, with wikilinks parsing
+
+````
+```telescopic
+* reading
+  * reading a lot of Nietzsche,
+  * hosting functions,
+    * go on longs walks,
+    * building [[thoughts/work|open-source project]],
+    * this [pan](https://example.com)
+```
+````
+
+### TikZ support
+
+to use in {{sidenotes[conjunction]: Currently, there is a few pgfplots bug upstream in node port, so to remove the graph from target rendering add `alt` as the URI svg (see examples below).}} with [obsidian-tikzjax](https://github.com/artisticat1/obsidian-tikzjax/)
+
+````
+```tikz
+\usepackage{tikz-cd}
+\begin{document}
+\begin{tikzcd}
+\pi^{-1}(U) \arrow[r, "\varphi"] \arrow[d, "\pi"'] & U \times F \arrow[ld, "proj_1"] \\
+U &
+\end{tikzcd}
+\end{document}
+```
+
+```tikz alt="data:image/svg+xml..."
+```
+````
+
+### pseudocode support
+
+````
+```pseudo
+\begin{algorithm}
+\caption{LLM token sampling}
+\begin{algorithmic}
+\Function{sample}{$L$}
+\State $s \gets ()$
+\For{$i \gets 1, L$}
+\State $\alpha \gets \text{LM}(s, \theta)$
+\State Sample $s \sim \text{Categorical}(\alpha)$
+\If{$s = \text{EOS}$}
+\State \textbf{break}
+\EndIf
+\State $s \gets \text{append}(s, s)$
+\EndFor
+\State \Return $s$
+\EndFunction
+\end{algorithmic}
+\end{algorithm}
+```
+````
+
+The target render should also include a copy button
+
+### collapsible header
+
+inspired by https://dynalist.io/
+
+### Gaussian-scaling TOC
+
+inspired by https://press.stripe.com
+
+### reader view
+
+_press cmd/ctrl+b_
+
+### sidepanel view
+
+_press cmd/ctrl+click on any internal links_

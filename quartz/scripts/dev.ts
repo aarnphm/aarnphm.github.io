@@ -92,8 +92,8 @@ function resolveRuntimeConfig(argv: string[]): RuntimeConfig {
     "quartz/bootstrap-cli.mjs",
     "build",
     "--concurrency",
-    "8",
-    "--serve",
+    "10",
+    "--watch",
     "--verbose",
     "--port",
     String(effectivePort),
@@ -104,7 +104,7 @@ function resolveRuntimeConfig(argv: string[]): RuntimeConfig {
     pnpmDevArgs.push("--force")
   }
   const wranglerArgs = ["dlx", "wrangler", "dev", "--port", String(wranglerPort)]
-  const pnpmDevRetryLimit = retry ?? 2
+  const pnpmDevRetryLimit = retry ?? 1
   return {
     port: effectivePort,
     wsPort,

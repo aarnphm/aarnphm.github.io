@@ -7,7 +7,7 @@ aliases:
 date: "2025-08-09"
 description: just another fish in the sea.
 id: dating
-modified: 2025-11-11 05:24:57 GMT-05:00
+modified: 2025-11-12 12:55:38 GMT-05:00
 noindex: true
 slides: true
 tags:
@@ -162,11 +162,9 @@ I have the attention-span of a three-year-old, but an old soul (some said). So I
 
 bouldering
 
-- I climb V3-V5 most days. I still have a lot to improve, technique and strength-wise. My goal is to comfortably climb V7-V8 [^climbing].
+- I climb V3-V5 most days. I still have a lot to improve, technique and strength-wise. My goal is to comfortably climb {{sidenotes[V7-V8.]: Grading varies from gym-to-gym. I mostly climb at Joe's Rock, which their grading systems somewhat follows [Olympic standard for grades](https://en.wikipedia.org/wiki/Sport_climbing_at_the_Summer_Olympics)}}
 
 </section>
-
-[^climbing]: Grading varies from gym-to-gym. I mostly climb at Joe's Rock, which their grading systems somewhat follows [Olympic standard for grades](https://en.wikipedia.org/wiki/Sport_climbing_at_the_Summer_Olympics)
 
 <section data-activities>
 
@@ -178,16 +176,12 @@ cooking
 - I [[thoughts/atelier with friends|host]] dinners regularly, mostly centered around French and Italian cuisine.
   - These are usually four-course meals for 4-6 people, and at the end, you can pay me _whatever you think the meal is worth_.
   - I try to accommodate allergies and dietary restrictions, though the range of food I cook can make that challenging.
-- Every week I make fresh tortellini [^stuff-pasta], Velouté [^mother-sauce], and tagliatelle [^shape]—this is my form of therapy.
+- Every week I make fresh {{sidenotes[tortellini]:rotation of fillings includes ricotta-based, mushroom, and meat-based. I try to make this at least once a month, depending on how busy life gets.}}, {{sidenotes[Velouté]: Considered one of the "mother sauces" by legendary chef Auguste Escoffier. There are many sauces that use Velouté as bases icymi.}}, and tagliatelle [^shape]—this is my form of therapy.
 - I'm conscious about what I eat and try to substitute for organic ingredients when possible.
 - I do follow a carnivore diet myself, but I'm happy to cook anything.
-- I learned how to [[uses#cookware.|cook]] through books (Alice Waters and Thomas Keller's), observing chef [^stage] friends, and my mom.
+- I learned how to [[uses#cookware.|cook]] through books (Alice Waters and Thomas Keller's), {{sidenotes[chef]: I'm looking for opportunity to stage in Toronto. If you know of a gig, please [let me know](mailto:contact@aarnphm.xyz). I'm also extensively applying for these positions, but will need to take my current work schedule into consideration as well.}} friends, and my mom.
 
 </section>
-
-[^mother-sauce]: Considered one of the "mother sauces" by legendary chef Auguste Escoffier
-
-[^stuff-pasta]: rotation of fillings includes ricotta-based, mushroom, and meat-based. I try to make this at least once a month, depending on how busy life gets.
 
 [^shape]:
     The pasta I make varies in shape, but it's always uovo pasta—egg-based pasta made with a mix of 00-flour and semolina flour. I usually go for 80-20, but you can go without semolina. Note that semolina is based on durum wheat, so for folks that got allergy, I tend to exclude semolina.
@@ -203,14 +197,12 @@ cooking
 
     You can use a food processor to mix the dough (this is the most efficient way to do this, if you are short in time). However, I prefer the traditional way, which is making a well, and develop the gluten by hand.
 
-[^stage]: I want to stage at a restaurant nearby, but having trouble to find a gig to do so.
-
 <section data-activities>
 
-vinyl/[[movies|movies]]
+[[mixed#vinyl|vinyl]]/[[cinematheque.base|movies]]
 
-- I collect [[mixed#vinyl]] and produced throwaway tunes in my free time.
-  ![[posts/images/2023-flac-1.mp3|ID 1]]
+- I collect vinyl and produced throwaway tunes in my free time.
+  ![[posts/images/2023-flac-1.mp3|ID 1 (2023)]]
 - Music is a huge part of my life—I honestly wouldn't be able to function without it.
 - I prefer classical orchestra, a mix of blues and jazz, 80s rock, and I have a deep appreciation for house and garage culture.
   - Rach 3, Rhapsody on Paganini
@@ -261,11 +253,9 @@ design
 photography
 
 - I used to own a FX3 for film-related projects, but sold it two years ago to buy cookware 😅
-- A7III w/ a bunch of [[thoughts/lenses|lenses]] and rigs [^photography-portfolio]
+- A7III w/ a bunch of [[thoughts/lenses|lenses]] and {{sidenotes[rigs]: One day I would clean-up and polish my photography portfolio.}}
 
 </section>
-
-[^photography-portfolio]: One day I would clean-up and polish my photography portfolio.
 
 ---
 
@@ -279,18 +269,17 @@ I would say that free will is nothing but our conscious experience of deciding w
 
 possible deal-breakers
 
-1. Historically speaking, my relationship has been, _complicated_ [^poly]. I found that my work schedule fits well with that style of romantic attachment, and I'm definitely not the jealous type. Though my previous partner and I ended on a sour note, I'm more than happy with the growth.
+1. Historically speaking, my past relationships have been {{sidenotes[polyamorous.]: I believe partners should provide certain functions to each others, and being in relationships shouldn't be a constraint that prevent you from exploring something different and _new_. <br/><br/>However, I'm open to monogamy. Note that if for monogamy, I will see it as a 100% commitment, and won't take infidelity lightly.}} I found that my work schedule fits well with that style of romantic attachment, and I'm definitely not the jealous type. Though my previous partner and I ended on a sour note, I'm more than happy with the growth.
 2. I don't want kids, _yet_, at least for the next five years.
    - We are young still, many things yet to be explored.
+   - I want to be focused on my work and dedication to my [[thoughts/craft|craft]].
    - That said, I'd make it work for the _right_ person.
-3. I care deeply about my friends, and I believe that as partners, we don't have to do everything together. I definitely want to spend the majority of my time with you, but I'll need "boys" time.
-4. Most of my friends are female. I have very clear boundaries with friends, but I want all my female friendships—especially with N, C, Si—to remain strong.
-5. I currently live in Toronto, Canada. I'm open to long-distance (but prefer not to) if there's a good chance we'd end up in the same city, assuming everything goes well! San Francisco, Berkeley, San Jose, New York, and Boston are all possibilities.
+3. I care deeply about my friends, and I believe that as partners, we don't have to do everything {{sidenotes[together.]: I definitely want to spend the majority of my time with you, but I'll need "boys" time.}}
+4. Most of my friends are female. I have very clear boundaries with friends, but I want all my female friendships—especially with N, C, Si, L—to remain strong.
+5. I currently live in Toronto, Canada. I'm open to long-distance (but prefer not to) if there's a good chance we'd end up in the same city, assuming everything goes well! San Francisco, Berkeley, New York, and Boston are all possibilities.
    - I do plan to move back to the US in the future, in the next 5-7 years.
 
 </section>
-
-[^poly]: I believe partners should provide certain functions to each others, and being in relationships shouldn't be a constraint that prevent you from exploring something different and _new_. Hence, my past relationships have mostly been polyamorous. However, I'm open to monogamy. Note that if for monogamy, I will see it as a 100% commitment, and won't take infidelity lightly.
 
 <section data-compat>
 

@@ -11,7 +11,6 @@ import "@citation-js/plugin-bibtex"
 import "@citation-js/plugin-doi"
 import fs from "node:fs"
 import path from "node:path"
-import { createHash } from "node:crypto"
 import { QUARTZ } from "../../util/path"
 
 const URL_PATTERN = /https?:\/\/[^\s<>)"]+/g
@@ -74,18 +73,18 @@ const LINK_TYPES: LinkType[] = [
 interface CachedCitationEntry {
   title: string
   bibkey: string
+  lastVerified: number
+  inBibFile: boolean
 }
 
 interface CitationsCachePayload {
-  hash: string
+  papers: Record<string, CachedCitationEntry>
   documents: Record<string, string[]>
-  metadata: Record<string, CachedCitationEntry>
 }
 
 interface CacheState {
   documents: Map<string, string[]>
-  metadata: Map<string, CachedCitationEntry>
-  hash: string
+  papers: Map<string, CachedCitationEntry>
   dirty: boolean
 }
 
@@ -109,27 +108,20 @@ function sanitizeLinks(links: string[] | undefined): string[] {
 function loadCachePayload(): CitationsCachePayload {
   ensureCacheDir()
   if (!fs.existsSync(citationsCacheFile)) {
-    return { hash: "", documents: {}, metadata: {} }
+    return { papers: {}, documents: {} }
   }
 
   try {
     const raw = fs.readFileSync(citationsCacheFile, "utf8")
-    const parsed = JSON.parse(raw) as Partial<CitationsCachePayload>
+    const parsed = JSON.parse(raw) as any
+
     return {
-      hash: typeof parsed.hash === "string" ? parsed.hash : "",
+      papers: parsed.papers ?? {},
       documents: parsed.documents ?? {},
-      metadata: parsed.metadata ?? {},
     }
   } catch {
-    return { hash: "", documents: {}, metadata: {} }
+    return { papers: {}, documents: {} }
   }
-}
-
-function computeDocumentsHash(documents: Map<string, string[]>): string {
-  const ordered = Array.from(documents.entries())
-    .map(([doc, links]) => [doc, sanitizeLinks(links)] as const)
-    .sort(([a], [b]) => a.localeCompare(b))
-  return createHash("sha256").update(JSON.stringify(ordered)).digest("hex")
 }
 
 const cacheState: CacheState = (() => {
@@ -140,22 +132,22 @@ const cacheState: CacheState = (() => {
     documents.set(doc, sanitizeLinks(links))
   }
 
-  const metadata = new Map<string, CachedCitationEntry>()
-  for (const [id, value] of Object.entries(payload.metadata)) {
-    if (value && typeof value.title === "string" && typeof value.bibkey === "string") {
-      metadata.set(normalizeArxivId(id), { title: value.title, bibkey: value.bibkey })
+  const papers = new Map<string, CachedCitationEntry>()
+  for (const [id, value] of Object.entries(payload.papers)) {
+    if (
+      value &&
+      typeof value.title === "string" &&
+      typeof value.bibkey === "string" &&
+      typeof value.lastVerified === "number" &&
+      typeof value.inBibFile === "boolean"
+    ) {
+      papers.set(normalizeArxivId(id), value)
     }
   }
 
-  const initialHash =
-    payload.hash && typeof payload.hash === "string" && payload.hash.length > 0
-      ? payload.hash
-      : computeDocumentsHash(documents)
-
   return {
     documents,
-    metadata,
-    hash: initialHash,
+    papers,
     dirty: false,
   }
 })()
@@ -167,14 +159,13 @@ function persistCacheState() {
   const documentsEntries = Array.from(cacheState.documents.entries())
     .map(([doc, links]) => [doc, sanitizeLinks(links)] as const)
     .sort(([a], [b]) => a.localeCompare(b))
-  const metadataEntries = Array.from(cacheState.metadata.entries()).sort(([a], [b]) =>
+  const papersEntries = Array.from(cacheState.papers.entries()).sort(([a], [b]) =>
     a.localeCompare(b),
   )
 
   const payload: CitationsCachePayload = {
-    hash: cacheState.hash,
+    papers: Object.fromEntries(papersEntries),
     documents: Object.fromEntries(documentsEntries),
-    metadata: Object.fromEntries(metadataEntries),
   }
 
   fs.writeFileSync(citationsCacheFile, JSON.stringify(payload, null, 2), "utf8")
@@ -193,9 +184,9 @@ function pruneMetadata() {
   }
 
   let removed = false
-  for (const id of Array.from(cacheState.metadata.keys())) {
+  for (const id of Array.from(cacheState.papers.keys())) {
     if (!activeIds.has(id)) {
-      cacheState.metadata.delete(id)
+      cacheState.papers.delete(id)
       removed = true
     }
   }
@@ -347,8 +338,7 @@ async function fetchArxivMetadata(id: string): Promise<ArxivMeta> {
 
   const res = await fetch(queryUrl, {
     headers: {
-      "User-Agent":
-        "Mozilla/5.0 (compatible; QuartzArxivTransformer/1.0; +https://github.com/aarnphm)",
+      "User-Agent": "QuartzArxivTransformer/1.0 (+https://github.com/aarnphm)",
     },
   })
 
@@ -543,33 +533,6 @@ export const Citations: QuartzTransformerPlugin<Options> = (opts?: Options) => {
           cacheState.dirty = true
         }
 
-        const nextHash = computeDocumentsHash(cacheState.documents)
-        if (nextHash !== cacheState.hash) {
-          cacheState.hash = nextHash
-          cacheState.dirty = true
-        }
-
-        const previousDocIds = new Set<string>(
-          previousLinksSanitized
-            .map((link) => extractArxivId(link))
-            .filter((id): id is string => Boolean(id))
-            .map((id) => normalizeArxivId(id)),
-        )
-
-        const idsToFetch = new Set<string>()
-        if (docChanged) {
-          for (const id of docIds) {
-            if (!previousDocIds.has(id) && !cacheState.metadata.has(id)) {
-              idsToFetch.add(id)
-            }
-          }
-        }
-        for (const id of docIds) {
-          if (!cacheState.metadata.has(id)) {
-            idsToFetch.add(id)
-          }
-        }
-
         if (docChanged) {
           pruneMetadata()
         }
@@ -581,32 +544,48 @@ export const Citations: QuartzTransformerPlugin<Options> = (opts?: Options) => {
           return
         }
 
-        const refetched = new Set<string>()
+        const VERIFICATION_TTL = 24 * 60 * 60 * 1000 // 24 hours
+        const now = Date.now()
+
         for (const { node, index, parent, id } of arxivNodes) {
-          let entry = cacheState.metadata.get(id)
+          const cachedEntry = cacheState.papers.get(id)
 
-          let needsFetch = idsToFetch.has(id) && !refetched.has(id)
-          if (!entry) {
-            needsFetch = true
-          }
+          // check if cached entry is fresh and verified
+          const needsVerification =
+            !cachedEntry ||
+            !cachedEntry.inBibFile ||
+            now - cachedEntry.lastVerified > VERIFICATION_TTL
 
-          let meta: ArxivMeta | undefined
-          if (needsFetch) {
-            refetched.add(id)
-            meta = await fetchArxivMetadata(id)
-          }
+          let entry: CachedCitationEntry
+          if (needsVerification) {
+            // verify against References.bib
+            const result = await ensureBibEntry(bibliography, id)
+            const bibkey = result.key
 
-          const { key: bibkey } = await ensureBibEntry(bibliography, id)
+            // fetch metadata if this is a new entry
+            if (!cachedEntry) {
+              const meta = await fetchArxivMetadata(id)
+              entry = {
+                title: meta.title,
+                bibkey,
+                lastVerified: now,
+                inBibFile: true,
+              }
+            } else {
+              // update verification timestamp
+              entry = {
+                ...cachedEntry,
+                bibkey,
+                lastVerified: now,
+                inBibFile: true,
+              }
+            }
 
-          if (!entry || needsFetch) {
-            const title = meta ? meta.title : (entry?.title ?? `arXiv:${id}`)
-            entry = { title, bibkey }
-            cacheState.metadata.set(id, entry)
+            cacheState.papers.set(id, entry)
             cacheState.dirty = true
-          } else if (entry.bibkey !== bibkey) {
-            entry = { ...entry, bibkey }
-            cacheState.metadata.set(id, entry)
-            cacheState.dirty = true
+          } else {
+            // trust cached entry (we know it exists because needsVerification is false)
+            entry = cachedEntry
           }
 
           node.children = [{ type: "text", value: entry.title } as Text]

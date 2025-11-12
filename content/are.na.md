@@ -41,7 +41,7 @@ cssclasses:
 date: "2024-10-24"
 description: My run-down version of are[dot]na
 id: are.na
-modified: 2025-11-11 16:48:54 GMT-05:00
+modified: 2025-11-12 13:38:12 GMT-05:00
 permalinks:
   - /website
   - /tweets
@@ -1278,10 +1278,15 @@ title: are.na
 
 ## essay
 
+- https://lydianottingham.substack.com/p/the-k-values-of-speculative-kinship -- The K-values of Speculative Kinship [**]
+  - [meta]:
+    - date: 11/12/2025
+    - tags: [love, kindship]
+  - > Sometimes you love someone so much they feel like family, though you don’t share any known ancestors and it’s by no means clear you’ll co-parent with them. ^coparent
 - https://www.ystrickler.com/the-dark-forest-theory-of-the-internet/ -- The dark forest theory of the internet
   - [meta]:
     - date: 11/11/2025
-    - tags: [fruit]
+    - tags: [web, connectedness]
 - https://jalexine.github.io/on-doing-things.html -- On doing things [**]
   - [meta]:
     - date: 11/11/2025
@@ -2746,6 +2751,10 @@ title: are.na
 
 ## opinions
 
+- https://archive.ph/eswxi -- The Divider [--]
+  - [meta]:
+    - date: 11/11/2025
+    - tags: [pedagogy]
 - https://joincolossus.com/article/inside-cursor/ -- Inside Cursor
   - [meta]:
     - date: 11/08/2025
@@ -3428,6 +3437,10 @@ title: are.na
 
 ## stream
 
+- https://www.inkhaven.blog/fall-25 -- Inkhaven, Fall 25 [**]
+  - [meta]:
+    - date: 11/12/2025
+    - tags: [blogroll]
 - https://www.ribbonfarm.com/ -- Ribbonfarm [**]
   - [meta]:
     - date: 11/11/2025

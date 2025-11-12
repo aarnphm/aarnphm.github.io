@@ -41,4 +41,3 @@ Then we will need shard along $T$ dimension. `dcp` size should be in range of $[
 i.e: interleaved storage of KV cache where we reuse the TP's `process_group`
 
 for a token at index $n$, its KV cach is stored on GPU rank $\text{cp\_rank} = n \% \text{cp\_world\_size}$
-

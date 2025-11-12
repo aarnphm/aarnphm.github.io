@@ -3,7 +3,7 @@ aliases:
   - advice
 date: "2024-01-23"
 id: quotes
-modified: 2025-11-11 08:37:47 GMT-05:00
+modified: 2025-11-12 12:40:15 GMT-05:00
 socialDescription: A collection of quotes, wisdom, and advice.
 tags:
   - evergreen
@@ -16,8 +16,10 @@ transclude:
 
 ## On life.
 
+![[are.na#^coparent]]
+
 > An idiot admires complexity, a genius admires simplicity, a physicist tries to make it simple. For an idiot, the more complicated something is, the more he will admire it. If you make something so clusterfucked he can’t understand it, he’s gonna think you’re a god because you made it so complicated nobody can understand it. That’s how they write journals in academics, they try to make it so complicated people think you’re a genius.
-> 
+>
 > —Terry Davis
 
 > We see losers making it every day, no reason you or me can’t.

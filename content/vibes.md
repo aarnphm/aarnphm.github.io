@@ -1,24 +1,12 @@
 ---
 date: "2024-10-10"
-description: A list of cheatsheet of whatever that fits with my workflow
+description: A collections of words and terms that lives within my vernacular
 id: cheatsheet
-modified: 2025-11-10 08:15:03 GMT-05:00
+modified: 2025-11-12 13:13:15 GMT-05:00
 tags:
   - evergreen
-  - math
-title: cheatsheet
+title: lists
 ---
-
-$$
-\begin{aligned}
-\text{Big O(micron)} &: O \text{ or } \mathcal{O} \\
-\text{Big Omega} &: \Omega \\
-\text{Big Theta} &: \Theta \\
-\text{Small O(micron)} &: o \\
-\text{Small Omega} &: \omega \\
-\text{On the order of}: &: \sim
-\end{aligned}
-$$
 
 ## term
 
@@ -28,6 +16,16 @@ $$
   - L2: matrix-vector ops
   - L3: matrix-matrix ops
   - ![[thoughts/images/BLAS.webp]]
+- $$
+  \begin{aligned}
+  \text{Big O(micron)} &: O \text{ or } \mathcal{O} \\
+  \text{Big Omega} &: \Omega \\
+  \text{Big Theta} &: \Theta \\
+  \text{Small O(micron)} &: o \\
+  \text{Small Omega} &: \omega \\
+  \text{On the order of}: &: \sim
+  \end{aligned}
+  $$
 
 ## words
 
@@ -44,3 +42,4 @@ $$
 - sibilant
 - nomenclature
 - paratactic
+- blogasphere

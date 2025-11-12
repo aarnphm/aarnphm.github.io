@@ -50,6 +50,14 @@
   }
 }
 
+a[data-breadcrumbs] {
+  max-width: 320px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  display: inline-block;
+}
+
 .breadcrumb-overflow {
   position: relative;
 

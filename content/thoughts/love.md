@@ -224,7 +224,6 @@ A natural cluster, a group of things highly similar to each other, may have no s
 
 _from [Universal love, said the cactus person](https://slatestarcodex.com/2015/04/21/universal-love-said-the-cactus-person/)_
 
-
 ---
 
 ## questionaire

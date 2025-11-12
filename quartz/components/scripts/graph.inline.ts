@@ -102,6 +102,7 @@ async function renderGraph(graph: HTMLElement, fullSlug: FullSlug) {
     zoom: enableZoom,
     depth,
     scale,
+    opacityScale,
     repelForce,
     centerForce,
     linkDistance,
@@ -298,12 +299,13 @@ async function renderGraph(graph: HTMLElement, fullSlug: FullSlug) {
     })
   }
 
+  const defaultScale = 1 / scale
+  const activeScale = defaultScale * 1.1
+
   function renderLabels() {
     tweens.get("label")?.stop()
     const tweenGroup = new TweenGroup()
 
-    const defaultScale = 1 / scale
-    const activeScale = defaultScale * 1.1
     for (const n of nodeRenderData) {
       const nodeId = n.simulationData.id
       const isCurrentlyHover = hoveredNodeId === nodeId
@@ -400,7 +402,7 @@ async function renderGraph(graph: HTMLElement, fullSlug: FullSlug) {
       },
       resolution: window.devicePixelRatio * 4,
     })
-    label.scale.set(1 / scale)
+    label.scale.set(defaultScale)
 
     const isTagNode = nodeId.startsWith("tags/")
     const gfx = new Graphics({
@@ -505,20 +507,44 @@ async function renderGraph(graph: HTMLElement, fullSlug: FullSlug) {
     }
   }
 
+  function handleZoomBehaviour(x: number, y: number, scale: number) {
+    stage.scale.set(scale, scale)
+    stage.position.set(x, y)
+
+    // zoom adjusts opacity of labels too
+    const currentOpacityScale = scale * opacityScale
+    let alpha = Math.max((currentOpacityScale - 1) / 3.75, 0)
+    const activeNodes = nodeRenderData.filter((n) => n.active).flatMap((n) => n.label)
+
+    for (const label of labelsContainer.children) {
+      if (!activeNodes.includes(label)) {
+        label.alpha = alpha
+      }
+    }
+  }
+
+  const initialScale = scale
+  const initialX = width / 2 - (width / 2) * scale
+  const initialY = height / 2 - (height / 2) * scale
+
   if (enableZoom) {
-    select<HTMLCanvasElement, NodeData>(app.canvas).call(
-      zoom<HTMLCanvasElement, NodeData>()
-        .extent([
-          [0, 0],
-          [width, height],
-        ])
-        .scaleExtent([0.25, 4])
-        .on("zoom", ({ transform }) => {
-          currentTransform = transform
-          stage.scale.set(transform.k, transform.k)
-          stage.position.set(transform.x, transform.y)
-        }),
-    )
+    const zoomBehaviour = zoom<HTMLCanvasElement, NodeData>()
+      .extent([
+        [0, 0],
+        [width, height],
+      ])
+      .scaleExtent([0.25, 4])
+      .on("zoom", ({ transform }) => {
+        currentTransform = transform
+        handleZoomBehaviour(transform.x, transform.y, transform.k)
+      })
+
+    // initialize zoom with default scale and centered
+    const canvasSelection = select<HTMLCanvasElement, NodeData>(app.canvas).call(zoomBehaviour)
+    const initialTransform = zoomIdentity.translate(initialX, initialY).scale(initialScale)
+    canvasSelection.call(zoomBehaviour.transform, initialTransform)
+  } else {
+    handleZoomBehaviour(initialX, initialY, initialScale)
   }
 
   let stopAnimation = false

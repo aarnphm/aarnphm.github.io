@@ -147,4 +147,3 @@ Practical upshot: when [[thoughts/LLMs]] produce fluent text, answer questions, 
 ---
 
 Searle's provocation remains: syntax alone is never sufficient for semantics. Either functional organization includes more than syntax (embodiment, history, causation), or understanding requires more than functional organization. Pick one. But you have to pick.
-

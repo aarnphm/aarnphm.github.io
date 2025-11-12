@@ -103,7 +103,7 @@ body[data-arena-subpage="true"] {
 .arena-channel-row-preview-text,
 .arena-modal-title,
 .arena-block-content {
-  a.internal {
+  a.internal:not([data-bib]) {
     margin-left: 0.2em;
   }
 }

@@ -5,7 +5,7 @@ aliases:
 date: "2022-04-22"
 description: my working notes, as a form of a digital garden
 id: _index
-modified: 2025-11-11 07:37:39 GMT-05:00
+modified: 2025-11-12 12:47:58 GMT-05:00
 tags:
   - evergreen
   - fruit
@@ -51,7 +51,7 @@ as far as [[thoughts/craft|work]] goes, I'm working at a [startup](https://bento
                                 * on repeats
                                   * on repeats, [[thoughts/atelier with friends|hosting]] functions.
                                     * and [[thoughts/Scents|scents]].
-                                * <br /><br /> Beige and <span class="rose">rosé</span> are my two favourite
+                                * Beige and <span class="rose">rosé</span> are my two favourite
                                 * colours.
                                   * colours.
                                   * Cooking
