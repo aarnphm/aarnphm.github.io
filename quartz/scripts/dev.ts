@@ -60,6 +60,7 @@ interface CliOptions {
   help: boolean
   retry: number | null
   force: boolean
+  serve: boolean
 }
 
 function assertBasePort(candidate: number): void {
@@ -72,7 +73,7 @@ function assertBasePort(candidate: number): void {
 }
 
 function resolveRuntimeConfig(argv: string[]): RuntimeConfig {
-  const { port, help, retry, force } = parseCliOptions(argv)
+  const { port, help, retry, force, serve } = parseCliOptions(argv)
   if (help) {
     printHelp()
     process.exit(0)
@@ -93,7 +94,7 @@ function resolveRuntimeConfig(argv: string[]): RuntimeConfig {
     "build",
     "--concurrency",
     "10",
-    "--watch",
+    serve ? "--serve" : "--watch",
     "--verbose",
     "--port",
     String(effectivePort),
@@ -121,6 +122,7 @@ function parseCliOptions(argv: string[]): CliOptions {
   let help = false
   let force = false
   let retry: number | null = null
+  let serve = false
   for (let index = 0; index < argv.length; index += 1) {
     const token = argv[index]
     if (token === "--") {
@@ -158,8 +160,11 @@ function parseCliOptions(argv: string[]): CliOptions {
     if (token === "--force") {
       force = true
     }
+    if (token === "--serve") {
+      serve = true
+    }
   }
-  return { port, help, retry, force }
+  return { port, help, retry, force, serve }
 }
 
 function parsePortValue(raw: string): number {
