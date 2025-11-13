@@ -2,7 +2,7 @@
 date: "2024-12-08"
 description: zettelkasten, contact[at]aarnphm[dot]xyz
 id: notes
-modified: 2025-11-08 02:12:48 GMT-05:00
+modified: 2025-11-12 19:06:22 GMT-05:00
 tags:
   - seed
 title: procedural notes.
@@ -21,6 +21,6 @@ You might be interested in [[thoughts/mechanistic interpretability|interpretabil
 high performance [[thoughts/vllm|inference]] [[thoughts/LLMs|LLM]] engine, #math notes, #philosophy notes,
 or [[posts/structured decoding|structured generations in inference engine]]
 
-I consider myself to be within the rationalist camp, and I'm influenced by [[thoughts/Wittgenstein|Wittgenstein]] as well as [[thoughts/Philosophy and Nietzsche|Nietzsche]] (Nietzsche's books are what I considered #evergreen books, i.e living in my bags permanently)
+I'm influenced by [[thoughts/Wittgenstein|Wittgenstein]] as well as [[thoughts/Philosophy and Nietzsche|Nietzsche]] (Nietzsche's books are what I considered #evergreen books, i.e living in my bags permanently)
 
 :wave: you can also reach out via [twitter](https://twitter.com/aarnphm_) or [email](mailto:contact@aarnphm.xyz), I love to always meet new people!

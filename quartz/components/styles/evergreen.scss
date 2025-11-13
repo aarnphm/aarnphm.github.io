@@ -9,6 +9,9 @@
 .evergreen-content {
   position: sticky;
   top: calc(var(--kern) * 4);
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
 }
 
 .note-tags {

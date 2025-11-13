@@ -449,6 +449,8 @@ export default {
         return Response.redirect("https://github.com/aarnphm", 301)
       case "/substack":
         return Response.redirect("https://substack.com/@aarnphm", 301)
+      case "/stream":
+        return Response.redirect("https://stream.aarnphm.xyz", 308)
       case "/.lfsconfig":
         return new Response(null, { status: 404 })
       case "/.well-known/oauth-protected-resource": {

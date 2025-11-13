@@ -41,7 +41,7 @@ cssclasses:
 date: "2024-10-24"
 description: My run-down version of are[dot]na
 id: are.na
-modified: 2025-11-12 13:38:12 GMT-05:00
+modified: 2025-11-12 18:59:29 GMT-05:00
 permalinks:
   - /website
   - /tweets
@@ -705,15 +705,21 @@ title: are.na
 
 ## people
 
+- https://zhijing-jin.com/home/ -- Zhijing Jin
+  - [meta]:
+    - date: 11/12/2025
+    - tags: [interpretability]
+  - Assistant Professor @ UofT
+  - causal inference, adversarial training on #llm
 - https://brianlovin.com/ -- Brian Lovin
   - [meta]:
     - date: 11/11/2025
-    - tags: [fruit]
+    - tags: [designer]
   - Campsite, Notion
 - https://venkateshrao.com/ -- Venkatesh Rao
   - [meta]:
     - date: 11/11/2025
-    - tags: [fruit]
+    - tags: [blogosphere]
   - columnist
 - https://departure.blog -- Sylvia
   - [meta]:

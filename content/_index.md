@@ -5,19 +5,19 @@ aliases:
 date: "2022-04-22"
 description: my working notes, as a form of a digital garden
 id: _index
-modified: 2025-11-12 12:47:58 GMT-05:00
+modified: 2025-11-12 19:02:57 GMT-05:00
 tags:
-  - evergreen
+  - sapling
   - fruit
 title: Aaron's notes
 ---
 
-hi my name is aaron. I'm best reached via [twitter](https://twitter.com/aarnphm_) or [email](mailto:contact@aarnphm.xyz).
+Hi, my name is aaron. I'm best reached via [twitter](https://twitter.com/aarnphm_) or [email](mailto:contact@aarnphm.xyz).
 
-as far as [[thoughts/craft|work]] goes, I'm working at a [startup](https://bentoml.com) building #ml serving systems, where I mainly focus on [[thoughts/LLMs|LLM]] [[thoughts/vllm|inference engine]].
+I'm [[thoughts/craft|working]] at a [startup](https://bentoml.com) building #ml serving systems, where I mainly focus on [[thoughts/LLMs|LLM]] [[thoughts/vllm|inference engine]].
 
 ```telescopic id="thoughts"
-* as far as life goes, I try to be
+* I try to be
 * present.
   * present, but you will find
   *  me
@@ -68,20 +68,8 @@ as far as [[thoughts/craft|work]] goes, I'm working at a [startup](https://bento
                                                 * about their intrinsic [[thoughts/Agency|drive]].
 ```
 
-```telescopic id="research"
-* as far as
-* [[research]] interests goes, I'm working
-* on interpretability
-  * on interpretability ([[thoughts/mechanistic interpretability|inner working]] of a neural network)
-* and ML system.
-  * and [[thoughts/Machine learning|ML]] system (inference engine [[thoughts/optimization|optimization]]).
-* <br /><br />as far as goals goes, I'm an engineer at heart, but
-* I care
-* about building
-  * about building [[thoughts/papers/Tools for Conviviality by Ivan Illich.pdf|malleable tools]]
-  * and pondering about [[thoughts/Metaphysics|metaphysics]].
-```
+I would like to do [[research]] at some point. I'm interested in [[thoughts/mechanistic interpretability|emergent properties]] in #ml system.
 
-as far as [[thoughts/aesthetic value|aesthetic]] goes, i enjoy my [[antilibrary|books]], watching [[cinematheque|cinema]], and [[images|images]] I come across online, and this [[/dating|doc]] if you are interested ✨
+As far as [[thoughts/aesthetic value|aesthetic]] goes, I enjoy my [[antilibrary|books]], watching [[cinematheque|cinema]], and [[images|images]] I come across online, and this [[/dating|doc]] if you are interested ✨
 
-as far as #evergreen notes goes, here are [[/thoughts|what's on my mind]], and some [[/posts|writing]] pieces as of late.
+As far as #evergreen notes, here are [[/thoughts|what's on my mind]], and some [[/posts|writing]] pieces as of late.
