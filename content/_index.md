@@ -5,7 +5,7 @@ aliases:
 date: "2022-04-22"
 description: my working notes, as a form of a digital garden
 id: _index
-modified: 2025-11-12 19:02:57 GMT-05:00
+modified: 2025-11-12 23:38:14 GMT-05:00
 tags:
   - sapling
   - fruit
@@ -70,6 +70,6 @@ I'm [[thoughts/craft|working]] at a [startup](https://bentoml.com) building #ml 
 
 I would like to do [[research]] at some point. I'm interested in [[thoughts/mechanistic interpretability|emergent properties]] in #ml system.
 
-As far as [[thoughts/aesthetic value|aesthetic]] goes, I enjoy my [[antilibrary|books]], watching [[cinematheque|cinema]], and [[images|images]] I come across online, and this [[/dating|doc]] if you are interested ✨
+As far as [[thoughts/aesthetic value|aesthetic]] goes, I enjoy my [[antilibrary|books]], watching [[cinematheque|cinema]], and [[vibes|images]] I come across online. This is my [[/dating|date-me doc]] if you are interested ✨
 
 As far as #evergreen notes, here are [[/thoughts|what's on my mind]], and some [[/posts|writing]] pieces as of late.

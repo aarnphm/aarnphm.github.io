@@ -7,7 +7,7 @@ comments: false
 date: "2024-01-23"
 description: a thank you letter.
 id: influence
-modified: 2025-10-29 02:14:22 GMT-04:00
+modified: 2025-11-12 23:50:12 GMT-05:00
 permalinks:
   - /thanks
 tags:
@@ -30,10 +30,11 @@ The following lists of people who I owed a lot. I would separate from top-to-bot
 - [Rabs](https://linktr.ee/rabiasohail), for your trust, kindness and being so damn ==real== :smiley:
 - [Gourob](https://x.com/PodderGourob), for your trust in my abilities.
 - [Parth](https://x.com/thanosthinking), for your trust.
-- Chi, for your care and endless laughter.
-- Nicole, for being the one that stay while the rest of the world walk away.
-- Jesse, for your endurance, for reminding me that I don't have to walk through this dark forest alone.
-- Mimi and TA, for being anchors to my fading roots, [[thoughts/being|being]] Vietnamese, and _frozen grapes influencer_.
+- L, for your trust and love.
+- C, for your care and endless laughter.
+- N, for being the one that stay while the rest of the world walk away.
+- J, for your endurance, for reminding me that I don't have to walk through this dark forest alone.
+- M and TA, for being anchors to my fading roots, [[thoughts/being|being]] Vietnamese, and _frozen grapes influencer_.
 - my mom, for being the coolest human being, albeit with some minor hiccups (but you know, generational difference).
 - my dad, for his silence, love through actions.
 - my brother, for being nothing less but an inspiration for me to always keep pushing forward.

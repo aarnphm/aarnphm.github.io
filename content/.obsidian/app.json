@@ -17,7 +17,7 @@
   "newLinkFormat": "absolute",
   "newFileFolderPath": "thoughts",
   "attachmentFolderPath": "thoughts/images",
-  "showLineNumber": false,
+  "showLineNumber": true,
   "readableLineLength": false,
   "strictLineBreaks": true,
   "showInlineTitle": true,

@@ -41,7 +41,7 @@ cssclasses:
 date: "2024-10-24"
 description: My run-down version of are[dot]na
 id: are.na
-modified: 2025-11-12 18:59:29 GMT-05:00
+modified: 2025-11-13 00:47:09 GMT-05:00
 permalinks:
   - /website
   - /tweets
@@ -122,6 +122,22 @@ title: are.na
 - [meta]:
   - view: list
 
+- https://x.com/motorhomelabs/status/1988582129404682538 -- The schadenfreude of fresh college students getting rescinded
+  - [meta]:
+    - date: 11/12/2025
+    - tags: [job market]
+- https://x.com/cloneofsimo/status/1988752407799689616 -- Gaussian is the best form of signal and noise provider
+  - [meta]:
+    - date: 11/12/2025
+    - tags: [math]
+- https://x.com/gormankind/status/1988714956095901949 -- design @ Stanford
+  - [meta]:
+    - date: 11/12/2025
+    - tags: [design]
+- https://x.com/patrickc/status/1903928714368622917 -- Declining mathematics skills in students
+  - [meta]:
+    - date: 11/12/2025
+    - tags: [pedagogy]
 - https://x.com/ch402/status/1564631228166201345 -- Chris Olah's dating doc
   - [meta]:
     - date: 11/11/2025
@@ -189,7 +205,8 @@ title: are.na
 - https://x.com/sama/status/1870541247049580570 -- L plus ratio from @sama
   - [meta]:
     - date: 10/23/2025
-    - tags: [fruit]
+    - tags: [meme]
+  - https://x.com/airkatakana/status/1870167828403490880?s=20
 - https://x.com/made_in_cosmos/status/1975564721790329301 -- Movies are better when sex are hinted via metaphor
   - [meta]:
     - date: 10/07/2025
@@ -197,86 +214,100 @@ title: are.na
 - https://x.com/PI010101/status/1974909578983907490 -- GPT-5 found a counterexample to the NICD-with-erasures majority optimality (Simons list, p.25).
   - [meta]:
     - date: 10/06/2025
-    - tags: [fruit]
+    - tags: [model]
 - https://x.com/oxidist/status/1825247129155031198 -- New set of human every 150 years.
   - [meta]:
     - date: 10/05/2025
-    - tags: [fruit]
+    - tags: [anthropology]
 - https://x.com/DavidSHolz/status/1974909666154119495 -- Robots and cage fighting
   - [meta]:
     - date: 10/05/2025
-    - tags: [fruit]
+    - tags: [technoptimist]
 - https://x.com/davidbessis/status/1849442615176950202 -- finite complex reflection arrangement
   - [meta]:
     - date: 10/03/2025
-    - tags: [fruit]
+    - tags: [math]
 - https://x.com/twaniimals/status/1836560827756740626 -- moo deng go brr
   - [meta]:
     - date: 10/03/2025
-    - tags: [fruit]
-- https://x.com/Griveau/status/1851937688988889514 -- time machine rent free
+    - tags: [animal]
+- https://x.com/Griveau/status/1851937688988889514 -- time machine UI
   - [meta]:
     - date: 10/03/2025
-    - tags: [fruit]
+    - tags: [ux]
 - https://twitter.com/melissa/status/1877951245912334484 -- Lies about health
   - [meta]:
     - date: 10/03/2025
-    - tags: [fruit]
+    - tags: [biohacking]
 - https://x.com/CanadaKaz/status/1851653777633247673 -- say the thing, ask more
   - [meta]:
     - date: 10/03/2025
-    - tags: [fruit]
-- https://x.com/noampomsky/status/1860856607607050633 -- Ava on Iain McGilchrist of attention being a moral act
+    - tags: [life]
+- https://x.com/noampomsky/status/1860856607607050633 -- Ava on Iain McGilchrist of attention being a moral act [**]
   - [meta]:
     - date: 10/03/2025
-    - tags: [fruit]
+    - tags: [love]
 - https://x.com/m_kaytweets/status/1801627208517140625 -- Liking things that are "you" thing
   - [meta]:
     - date: 10/03/2025
-    - tags: [fruit]
+    - tags: [love]
 - https://x.com/noampomsky/status/1876151263882350630 -- Ava on practicality over unreasonable romantic dreamy thing
   - [meta]:
     - date: 10/03/2025
-    - tags: [fruit]
+    - tags: [love]
 - https://x.com/phokarlsson/status/1876314921765634337 -- HK on mirror as apostle
   - [meta]:
     - date: 10/03/2025
-    - tags: [fruit]
+    - tags: [reading]
 - https://x.com/cremieuxrecueil/status/1826452344881516729 -- National Toxicology Report on fluoride in US
   - [meta]:
     - date: 10/03/2025
-    - tags: [fruit]
+    - tags: [public health]
 - https://x.com/cremieuxrecueil/status/1876097710610338066 -- five capacities type in human psyche
   - [meta]:
     - date: 10/03/2025
-    - tags: [fruit]
+    - tags: [psychoanalysis]
 - https://x.com/ruzhaoart/status/1876149783997677605 -- Jacky's sister on traditional art
   - [meta]:
     - date: 10/03/2025
-    - tags: [fruit]
+    - tags: [art]
 - https://x.com/melkuo/status/1835775713410269621 -- 2024 Canada's housing market
   - [meta]:
     - date: 10/03/2025
-    - tags: [fruit]
+    - tags: [policies]
 - https://x.com/poetengineer__/status/1895397439852695708 -- a measured heart
   - [meta]:
     - date: 10/03/2025
-    - tags: [fruit]
+    - tags: [love, engineering, poetic]
 - https://x.com/mots_pod/status/1974637749383946252 -- hey look at my neovim config!
   - [meta]:
     - date: 10/04/2025
-    - tags: [fruit]
+    - tags: [cs]
 - https://x.com/philosophymeme0/status/1974201644440301891?s=46&t=E_gPjnJKDBGnwpVrE7Z-WQ -- Socrates peer pressuring his friends to go out
   - [meta]:
     - date: 10/05/2025
-    - tags: [fruit]
+    - tags: [meme]
 - https://x.com/healdps/status/1974440443460149517?s=46&t=E_gPjnJKDBGnwpVrE7Z-WQ -- Dog core
   - [meta]:
     - date: 10/05/2025
-    - tags: [fruit]
+    - tags: [animal]
 
 ## website
 
+- https://georgefrancis.dev/
+  - [meta]:
+    - date: 11/13/2025
+    - tags: [minimalism]
+- https://suboptimalism.neocities.org/lit/uslit -- the united states of literature
+  - [meta]:
+    - date: 11/13/2025
+    - tags: [books]
+  - see also: [[antilibrary.base]]
+- https://ribo.zone/ -- ribose
+  - [meta]:
+    - date: 11/13/2025
+    - tags: [design]
+  - their notes: https://notes.ribo.zone/
 - https://alivetheory.net/ -- alive internet theory
   - [meta]:
     - date: 11/10/2025
@@ -342,14 +373,6 @@ title: are.na
   - [meta]:
     - date: 10/27/2025
     - tags: [research]
-- https://felixdorner.de/
-  - [meta]:
-    - date: 10/06/2025
-    - tags: [fruit]
-- https://gerhard.xyz/
-  - [meta]:
-    - date: 10/06/2025
-    - tags: [fruit]
 - https://nof1.ai/ -- Alpha Arena [**]
   - [meta]:
     - date: 10/24/2025
@@ -379,18 +402,14 @@ title: are.na
   - [meta]:
     - date: 10/15/2025
     - tags: [interpretability]
-- https://smoothbrains.net/
-  - [meta]:
-    - date: 10/15/2025
-    - tags: [fruit]
-- https://cuahsi.shinyapps.io/macrosheds/
+- https://cuahsi.shinyapps.io/macrosheds/ -- Watershed ecosystem science
   - [meta]:
     - date: 10/09/2025
-    - tags: [fruit]
+    - tags: [geology]
 - https://ita.toys/
   - [meta]:
     - date: 10/09/2025
-    - tags: [fruit]
+    - tags: [fashion]
 - https://christophlocher.com/
   - [meta]:
     - date: 10/07/2025
@@ -402,11 +421,11 @@ title: are.na
 - https://www.cosmos.so/public-work -- Public Work, Cosmos [**]
   - [meta]:
     - date: 10/06/2025
-    - tags: [fruit]
+    - tags: [masonry]
 - https://smallweb.cc/ -- smallweb [**]
   - [meta]:
     - date: 10/06/2025
-    - tags: [fruit]
+    - tags: [blogroll, blogosphere]
 - https://deadsimplesites.com/ -- dead simple sites
   - [meta]:
     - date: 10/06/2025
@@ -414,297 +433,281 @@ title: are.na
 - https://farayan.me/dappled -- Dappled light
   - [meta]:
     - date: 10/05/2025
-    - tags: [fruit]
+    - tags: [light]
   - Similar to https://github.com/jackyzha0/sunlit
   - but in `@react-three/drei`
   - https://farayan.me/
 - https://reh.at/about -- Rehat
   - [meta]:
     - date: 10/05/2025
-    - tags: [fruit]
+    - tags: [artist, photography]
 - https://press.stripe.com/ -- Stripe Press, Idea for Progress
   - [meta]:
     - date: 10/05/2025
-    - tags: [fruit]
+    - tags: [books]
 - https://daylightcomputer.com/ -- Daylight Computer
   - [meta]:
     - date: 10/02/2025
-    - tags: [fruit]
+    - tags: [devices]
 - https://walzr.com/IMG_0001 -- Send to YouTube in Photos app
   - [meta]:
     - date: 01/20/2025
-    - tags: [fruit]
+    - tags: [memory]
 - https://shapefarm.net/ -- Shape Farm
   - [meta]:
     - date: 10/02/2025
-    - tags: [fruit]
+    - tags: [studio, game design]
   - clean aesthetics with nice hierarchical components
-- https://ertdfgcvb.xyz/ -- ertdfgcvb
-  - [meta]:
-    - date: 10/02/2025
-    - tags: [fruit]
   - cool ascii animations
 - https://typicalmitul.com/montreal-in-motion -- Montreal in Lens
   - [meta]:
     - date: 01/20/2025
-    - tags: [fruit]
-- http://pressanykey.today/ -- Press Any Key
-  - [meta]:
-    - date: 10/02/2025
-    - tags: [fruit]
-  - cool visualisation of typing process
+    - tags: [photography]
 - https://perfume-area.com/reviews/page:2 -- PERFUME AREA
   - [meta]:
     - date: 10/02/2025
-    - tags: [fruit]
+    - tags: [perfume]
   - arena for perfume
 - https://clock.vvhuang.com/ -- Prague Astronomical Clock
   - [meta]:
     - date: 10/02/2025
-    - tags: [fruit]
+    - tags: [horology]
   - the graphic for the clock is nice
 - https://handyarrows.com/ -- Hand-draw arrow
   - [meta]:
     - date: 10/03/2025
-    - tags: [fruit]
+    - tags: [web poetic]
   - Arrowssssss
 - https://brand.dropbox.com/ -- Dropbox brand design
   - [meta]:
     - date: 10/03/2025
-    - tags: [fruit]
+    - tags: [design, landing]
   - Cool brand design from Dropbox, by daybreak studio
 - https://tomcritchlow.com/wiki/
   - [meta]:
     - date: 10/02/2025
-    - tags: [fruit]
+    - tags: [evergreen]
   - Wikitext [[thoughts/Digital garden|garden]]
 - https://pudding.cool/2023/09/invisible-epidemic/
   - [meta]:
     - date: 10/02/2025
-    - tags: [fruit]
+    - tags: [animation]
   - cool timeline scaling transition
 - https://www.chinatownjs.nyc/ -- Chinatown.js
   - [meta]:
     - date: 10/02/2025
-    - tags: [fruit]
-- https://www.benkuhn.net/outliers/ -- Searching for outliers
-  - [meta]:
-    - date: 10/02/2025
-    - tags: [fruit]
-- https://negative.sanctuary.computer/ -- Studio Carbon Negative
-  - [meta]:
-    - date: 10/02/2025
-    - tags: [fruit]
-  - landing poggies
+    - tags: [ux]
 - https://cogtoolslab.github.io/ -- cognitive tools lab
   - [meta]:
     - date: 05/23/2025
-    - tags: [fruit]
+    - tags: [cognition]
   - cognitive tools lab
   - reverse engineering the human cognitive toolkit, by Prof. Judith Fan
 - https://everythingiseverything.nyc/map/ -- everything is everything NYC
   - [meta]:
     - date: 10/02/2025
-    - tags: [fruit]
+    - tags: [maps]
   - Bagel places, in NYC
 - https://www.rockstargames.com/VI -- Grand Theft Auto VI
   - [meta]:
     - date: 10/02/2025
-    - tags: [fruit]
+    - tags: [design]
   - GTA VI when?
 - https://html.energy/events.html -- HTML Energy
   - [meta]:
     - date: 10/02/2025
-    - tags: [fruit]
+    - tags: [plaintext]
 - https://devouringdetails.com/ -- Devouring Details [**]
   - [meta]:
     - date: 10/02/2025
-    - tags: [fruit]
-- https://solarprotocol.net -- Solar Protocol
-  - [meta]:
-    - date: 08/03/2025
-    - tags: [fruit]
+    - tags: [design]
 - https://archive.jakedowsmith.com/rosemarybutcher.com -- Rosemary Butcher
   - [meta]:
     - date: 08/03/2025
-    - tags: [fruit]
+    - tags: [design]
   - Timeline visualisation
 - https://motherfuckingwebsite.com
   - [meta]:
     - date: 10/02/2025
-    - tags: [fruit]
+    - tags: [plaintext]
   - This is a motherfucking website
   - > "Good design is as little design as possible." - some German mtf
 - https://www.sfsystemsclub.com -- SF Systems Club
   - [meta]:
     - date: 08/03/2025
-    - tags: [fruit]
+    - tags: [third space]
 - https://www.curatingcraft.com -- Curating Craft
   - [meta]:
     - date: 08/03/2025
-    - tags: [fruit]
+    - tags: [design]
   - by Daybreak
 - https://www.yooksel.com/ -- Yooksel
   - [meta]:
     - date: 10/02/2025
-    - tags: [fruit]
+    - tags: [people]
 - https://www.goodfire.ai/ -- Goodfire AI
   - [meta]:
     - date: 08/07/2025
-    - tags: [fruit]
+    - tags: [ai]
 - https://nice.rocks -- nice.rocks
   - [meta]:
     - date: 10/02/2025
-    - tags: [fruit]
+    - tags: [rocks]
 - https://www.philosophyofprogress.com/ -- Philosophy of Progress
   - [meta]:
     - date: 08/12/2025
-    - tags: [fruit]
+    - tags: [philosophy]
 - https://browser.engineering/onepage.html -- Web Browser Engineering
   - [meta]:
     - date: 08/13/2025
-    - tags: [fruit]
-- https://yismailuofa.github.io/ -- youssef ismail
-  - [meta]:
-    - date: 10/02/2025
-    - tags: [fruit]
-- https://dougalves.work/ -- Doug–Alves
-  - [meta]:
-    - date: 10/02/2025
-    - tags: [fruit]
-- https://www.makingsoftware.com/ -- Making Software
-  - [meta]:
-    - date: 10/02/2025
-    - tags: [fruit]
-  - https://www.makingsoftware.com/chapters/color-spaces-models-and-gamuts -- Color space
+    - tags: [design]
 - https://fieldsofchess.com/ -- Fields of Chess
   - [meta]:
     - date: 10/02/2025
-    - tags: [fruit]
-- https://www.luerzersarchive.com/ -- Lürzer's Archive
-  - [meta]:
-    - date: 10/02/2025
-    - tags: [fruit]
+    - tags: [game]
 - https://eyeondesign.aiga.org/ -- AIGA Eye on Design
   - [meta]:
     - date: 10/02/2025
-    - tags: [fruit]
+    - tags: [design, visual]
 - https://www.oneclub.org/awards/adcawards/-archive/awards/2025/all/all/select -- ADC Awards
   - [meta]:
     - date: 10/02/2025
-    - tags: [fruit]
-- https://www.lydianottingham.com/ -- Lydia Nottingham [**]
-  - [meta]:
-    - date: 10/02/2025
-    - tags: [fruit]
-  - 🫶
-- https://farayan.me/dappled -- Dappled Light
-  - [meta]:
-    - date: 10/02/2025
-    - tags: [fruit]
+    - tags: [design, awards]
 - https://www.tiat.place/ -- tiat.place
   - [meta]:
     - date: 10/02/2025
-    - tags: [fruit]
+    - tags: [thirdspace]
 - https://posthog.com/ -- PostHog
   - [meta]:
     - date: 10/02/2025
-    - tags: [fruit]
+    - tags: [tools, analytics]
 - https://reducing-suffering.org/ -- Essays on Reducing Suffering
   - [meta]:
     - date: 10/02/2025
-    - tags: [fruit]
+    - tags: [philosophy, ethics]
 - https://1a3orn.com/ -- 1a3orn
   - [meta]:
     - date: 10/02/2025
-    - tags: [fruit]
+    - tags: [portfolio, web]
 - https://laurent.fyi/ -- laurent del rey
   - [meta]:
     - date: 10/02/2025
-    - tags: [fruit]
+    - tags: [design, web]
 - https://shen.land -- shen.land
   - [meta]:
     - date: 10/02/2025
-    - tags: [fruit]
+    - tags: [portfolio, web]
 - https://particularly.online/ -- particularly.online
   - [meta]:
     - date: 10/02/2025
-    - tags: [fruit]
+    - tags: [collections, web]
   - epilepsy warning
 - https://mitul.ca/ -- Mitul Shah
   - [meta]:
     - date: 10/02/2025
-    - tags: [fruit]
+    - tags: [design, photography]
 - https://chimcisaac.co/ -- Chi McIsaac
   - [meta]:
     - date: 10/02/2025
-    - tags: [fruit]
+    - tags: [engineering, portfolio]
 - https://www.ethansmith2000.com/blog -- Ethan Smith
   - [meta]:
     - date: 10/02/2025
-    - tags: [fruit]
+    - tags: [blog, portfolio]
 - https://sander.ai/ -- Sander Dieleman
   - [meta]:
     - date: 10/02/2025
-    - tags: [fruit]
+    - tags: [ai, research]
 - https://messenger.abeto.co/ -- Messenger
   - [meta]:
     - date: 10/02/2025
-    - tags: [fruit]
+    - tags: [tools, web]
 - https://www.tedsummer.com/#root/Ted-Summer -- Ted Summer
   - [meta]:
     - date: 10/02/2025
-    - tags: [fruit]
+    - tags: [portfolio, web]
 - https://www.yudhister.me/ -- Yudhister Kumar
   - [meta]:
     - date: 10/02/2025
-    - tags: [fruit]
+    - tags: [portfolio, web]
 - https://isleofany.com -- Isle of Any
   - [meta]:
     - date: 10/02/2025
-    - tags: [fruit]
+    - tags: [studio, creative]
 - https://solderneer.me/ -- solderneer
   - [meta]:
     - date: 10/02/2025
-    - tags: [fruit]
+    - tags: [neurotech, electronics]
   - Another Quartz in the wild!
 - https://www.memoria.day/ -- Memoria
   - [meta]:
     - date: 10/02/2025
-    - tags: [fruit]
+    - tags: [memory, cognition]
 - https://www.kran.ai -- Esben Kran
   - [meta]:
     - date: 10/02/2025
-    - tags: [fruit]
+    - tags: [ai, safety]
 - https://www.johnnylin.co/ -- Johnny Lin
   - [meta]:
     - date: 10/02/2025
-    - tags: [fruit]
+    - tags: [portfolio, web]
 - https://100r.ca/site/weathering_software_winter.html -- Weathering Software Winter
   - [meta]:
     - date: 10/02/2025
-    - tags: [fruit]
+    - tags: [essay, resilience]
 - https://mkodama.org/ -- Miles Kodama
   - [meta]:
     - date: 10/03/2025
-    - tags: [fruit]
+    - tags: [portfolio, web]
 - https://luckysoap.com/statements/handmadeweb.html -- Handmade Web
   - [meta]:
     - date: 10/04/2025
-    - tags: [fruit]
+    - tags: [web poetic, manifesto]
   - > I evoke the term 'handmade web' to refer to web pages coded by hand rather than by software; web pages made and maintained by individuals rather than by businesses or corporations; web pages which are provisional, temporary, or one-of-a-kind;
   - > In The Web We Lost (2012), Anil Dash writes: "In the early days of the social web, there was a broad expectation that regular people might own their own identities by having their own websites, instead of being dependent on a few big sites to host their online identity."
 - https://wireframes.internet.dev/ -- INTDEV showcase
   - [meta]:
     - date: 10/04/2025
-    - tags: [fruit]
+    - tags: [design, showcase]
 - https://asteriskmag.com/ -- Asterisk Magazine [**]
   - [meta]:
     - date: 10/05/2025
-    - tags: [fruit]
+    - tags: [magazine, progress]
 
 ## people
 
+- https://scyy.fi/ -- Sarabet Chang Yuye
+  - [meta]:
+    - date: 11/12/2025
+    - tags: [blogger]
+- https://vgel.me/ -- Theia
+  - [meta]:
+    - date: 11/12/2025
+    - tags: [reseacher]
+  - AI researcher, linguistics, blogroll
+- https://yismailuofa.github.io/ -- youssef ismail
+  - [meta]:
+    - date: 10/02/2025
+    - tags: [friend]
+- https://dougalves.work/ -- Doug–Alves
+  - [meta]:
+    - date: 10/02/2025
+    - tags: [designer]
+- https://www.lydianottingham.com/ -- Lydia Nottingham
+  - [meta]:
+    - date: 10/02/2025
+    - tags: [rationalist]
+    - pinned: true
+  - https://lydia.ml/
+  - https://lydianottingham.substack.com/
+- https://felixdorner.de/ -- Felix Dorner
+  - [meta]:
+    - date: 10/06/2025
+    - tags: [designer, minimalism]
+- https://gerhard.xyz/ -- Gerhard
+  - [meta]:
+    - date: 10/06/2025
+    - tags: [designer, minimalism]
 - https://zhijing-jin.com/home/ -- Zhijing Jin
   - [meta]:
     - date: 11/12/2025
@@ -813,7 +816,7 @@ title: are.na
 - https://mattbrooks.xyz/ -- Matt Brooks
   - [meta]:
     - date: 10/21/2025
-    - tags: [fruit]
+    - tags: [ai safety]
   - Lydia's friend
 - https://cs.stanford.edu/~quocle/ -- Quoc V. Le
   - [meta]:
@@ -824,30 +827,30 @@ title: are.na
 - https://abrandenberger.github.io/ -- Anna Brandenberger
   - [meta]:
     - date: 10/06/2025
-    - tags: [fruit]
+    - tags: [researcher]
   - cool book list: https://abrandenberger.github.io/library/
 - https://jiha-kim.github.io/ -- Jiha Kim
   - [meta]:
     - date: 10/06/2025
-    - tags: [fruit]
+    - tags: [mathematician, engineer]
 - https://www.jeremykun.com/about/ -- Jeremy Kun
   - [meta]:
     - date: 10/06/2025
-    - tags: [fruit]
-  - FHE
+    - tags: [engineer]
+  - FHE, Google
 - https://www.yudhister.me/ -- Yudhister
   - [meta]:
     - date: 10/05/2025
-    - tags: [fruit]
-- https://oak-hu.github.io/ -- Oak Hu
+    - tags: [rationalist]
+- https://0ak.hu/ -- Oak Hu
   - [meta]:
     - date: 10/05/2025
-    - tags: [fruit]
+    - tags: [rationalist, philosophy]
   - Another Quartz in the wild
 - https://logangraves.com/index -- Logan Graves [**]
   - [meta]:
     - date: 10/05/2025
-    - tags: [fruit]
+    - tags: [interpretability]
   - Very much utilitarian, html-based, simple site/blogroll.
 - https://www.linkedin.com/in/thakkarv/ -- Vijay Thakkar
   - [meta]:
@@ -893,74 +896,70 @@ title: are.na
     - tags: [personal notes]
   - Apple Notes-inspired portfolio
   - https://github.com/alanagoyal/alanagoyal, mostly just react-markdown and React 19 Server Component.
-- https://henry.codes/ -- Henry Desroches
-  - [meta]:
-    - date: 10/02/2025
-    - tags: [fruit]
-  - very much text-dominant black/white
 - https://www.ruth-zhao.com -- Ruth Zhao [**]
   - [meta]:
     - date: 10/03/2025
-    - tags: [fruit]
+    - tags: [designer, ux]
   - map world
 - https://chia.design/ -- Chia Amisola
   - [meta]:
     - date: 10/02/2025
-    - tags: [fruit]
+    - tags: [design]
 - https://tinnei.com/ -- Tinnei / 10A
   - [meta]:
     - date: 10/02/2025
-    - tags: [fruit]
+    - tags: [artist]
 - https://www.tylerxhobbs.com/works/categories/digital -- Tyler Hobbs
   - [meta]:
     - date: 10/02/2025
-    - tags: [fruit]
+    - tags: [design]
   - utilitarian design
 - https://leimao.github.io/ -- Lei Mao's Log Book
   - [meta]:
     - date: 10/02/2025
-    - tags: [fruit]
+    - tags: [gpus, kernels]
 - https://www.lei.chat -- Lei's Chat
   - [meta]:
     - date: 10/02/2025
-    - tags: [fruit]
+    - tags: [gpus, kernels]
   - AI [[thoughts/Compiler]] ([[thoughts/GPU programming#AMD]])
 - https://ampersand.pm/ -- &pm (Morgan.)
   - [meta]:
     - date: 10/02/2025
-    - tags: [fruit]
+    - tags: [design]
   - met at [HTML Day](html.green)
 - https://www.chloeyan.me/ -- Chloe Yan
   - [meta]:
     - date: 10/02/2025
-    - tags: [fruit]
+    - tags: [design, web poetic]
 - https://shashwathsantosh.com/ -- Shashwath Santosh
   - [meta]:
     - date: 10/02/2025
-    - tags: [fruit]
+    - tags: [designer]
+  - Gemini Robotics
 - https://michaelnotebook.com/ -- Michael Nielsen
   - [meta]:
     - date: 10/05/2025
-    - tags: [fruit]
+    - tags: [rationalist, writer]
 - https://nicholas.carlini.com/ -- Nicholas Carlini
   - [meta]:
     - date: 09/02/2025
-    - tags: [fruit]
+    - tags: [safety]
   - Security/Adversarial against LLMs
 - https://blog.jacobvosmaer.nl/ -- Jacob Vosmaer
   - [meta]:
     - date: 08/22/2025
-    - tags: [fruit]
+    - tags: [audio engineer]
 - https://en.wikipedia.org/wiki/John_Galliano -- John Galliano
   - [meta]:
     - date: 05/31/2025
-    - tags: [fruit]
+    - tags: [high fashion]
     - legendary [[thoughts/fashion]] designer
     - past: creative director @ Maison Margiela
 - https://en.wikipedia.org/wiki/Daniel_Dennett -- Daniel Dennett
   - [meta]:
     - date: 07/04/2025
-    - tags: [fruit]
+    - tags: [philosopher]
   - Philosophy of the minds
 - https://plato.stanford.edu/entries/merleau-ponty/ -- Maurice Merleau-Ponty [**]
   - [meta]:
@@ -970,36 +969,36 @@ title: are.na
 - https://en.wikipedia.org/wiki/John_Carmack -- John Carmack
   - [meta]:
     - date: 07/04/2025
-    - tags: [fruit]
+    - tags: [engineer]
 - https://en.wikipedia.org/wiki/Chlo%C3%AB_Sevigny -- Chloë Sevigny
   - [meta]:
     - date: 07/04/2025
-    - tags: [fruit]
+    - tags: [actress]
 - https://www.poetryfoundation.org/poets/john-berryman -- John Berryman
   - [meta]:
     - date: 07/08/2025
-    - tags: [fruit]
+    - tags: [poets]
 - https://en.wikipedia.org/wiki/Sol_LeWitt -- Sol Lewitt
   - [meta]:
     - date: 07/09/2025
-    - tags: [fruit]
+    - tags: [writer]
   - His [letter](https://borisinjac.com/sol-lewitts-letter-eva-hesse/) to Eva Hesse [^sol-lewitts-letter]
 - https://en.wikipedia.org/wiki/William_James -- Willian James
   - [meta]:
     - date: 07/13/2025
-    - tags: [fruit]
+    - tags: [psychologist]
   - father of American psychology
   - [[thoughts/Epistemology|epistemology]], psychology, and [[thoughts/Metaphysics|metaphysics]]
 - https://en.wikipedia.org/wiki/L._E._J._Brouwer -- L. E. J. Brouwer
   - [meta]:
     - date: 07/13/2025
-    - tags: [fruit]
+    - tags: [mathematician]
   - Dutch mathematician who worked on topology, set theory and complex analysis
   - known for philosophy of _intuition_, a constructivist school of mathematics which argues that math is a _cognitive construct_ rather than a type of **objective truth**.
 - https://en.wikipedia.org/wiki/Ludwig_Boltzmann -- Ludwig Boltzmann
   - [meta]:
     - date: 07/13/2025
-    - tags: [fruit]
+    - tags: [mathematician, physics]
   - Boltzmann machine, classical thermodynamics, and current definition of [[thoughts/Entropy|entropy]]:
     $$
     S = k_B \ln \Omega
@@ -1008,24 +1007,24 @@ title: are.na
 - https://plato.stanford.edu/entries/frege/ -- Gottlob Frege
   - [meta]:
     - date: 07/13/2025
-    - tags: [fruit]
+    - tags: [philosopher]
 - https://plato.stanford.edu/entries/russell/ -- Bertrand Russell
   - [meta]:
     - date: 07/13/2025
-    - tags: [fruit]
+    - tags: [philosopher, mathematician]
 - https://web.stanford.edu/~cm5/overview.html -- Ciprian Manolescu
   - [meta]:
     - date: 07/29/2025
-    - tags: [fruit]
+    - tags: [mathematician, professor]
   - Floer homology and dimension-4 topology
 - https://thezvi.wordpress.com/ -- Zvi Mowshowitz
   - [meta]:
     - date: 08/02/2025
-    - tags: [fruit]
+    - tags: [writer, ai safety]
 - https://www.nytimes.com/2025/07/31/science/mary-k-gaillard-dead.html?camp=7JFJX -- Mary K. Gaillard
   - [meta]:
     - date: 08/02/2025
-    - tags: [fruit]
+    - tags: [physicist]
 - https://www.neelnanda.io/about -- Neel Nanda
   - [meta]:
     - date: 08/02/2025
@@ -1038,117 +1037,114 @@ title: are.na
 - https://nickm.com/ -- Nick Montfort
   - [meta]:
     - date: 10/02/2025
-    - tags: [fruit]
+    - tags: [professor]
   - MIT, Digital Media Lab
   - _Output: An Anthology of Computer-Generated Text, 1953-2023_
 - https://www.trudy.computer -- Trudy Painter
   - [meta]:
     - date: 10/02/2025
-    - tags: [fruit]
+    - tags: [designer]
   - Gizmo
   - prev: Google Creative Lab + MIT
 - https://omar.website -- Omar Rizwan
   - [meta]:
     - date: 08/03/2025
-    - tags: [fruit]
+    - tags: [interface, web]
   - Folk Computer, TabFS, https://x.com/rsnous
 - https://www.katrinaromulo.com -- Katrina Romulo
   - [meta]:
     - date: 08/03/2025
-    - tags: [fruit]
+    - tags: [designer]
   - Brand Designer
   - work: hyper!, halia
 - https://turntrout.com/welcome -- Alex Turner
   - [meta]:
     - date: 08/03/2025
-    - tags: [fruit, interpretability]
+    - tags: [interpretability]
   - [[thoughts/mechanistic interpretability|scalable alignment]] researcher
 - https://marijnhaverbeke.nl/blog -- Marijn Haverbeke
   - [meta]:
     - date: 08/03/2025
-    - tags: [fruit]
+    - tags: [engineer]
   - CodeMirror
 - https://connorlowe.com/ -- Connor Lowe
   - [meta]:
     - date: 08/03/2025
-    - tags: [fruit]
+    - tags: [designer]
 - https://henry.codes/ -- Henry Desroches
   - [meta]:
-    - date: 08/04/2025
-    - tags: [fruit]
+    - date: 10/02/2025
+    - tags: [css, utilitarian]
+  - very much text-dominant black/white
 - https://jennywen.ca/ -- Jenny Wen
   - [meta]:
     - date: 08/04/2025
-    - tags: [fruit]
+    - tags: [designer]
   - Figma
 - https://www.thibaut.cool/ -- Thibaut Crépelle
   - [meta]:
     - date: 08/04/2025
-    - tags: [fruit]
+    - tags: [motion designer]
 - https://en.wikipedia.org/wiki/Harry_Nyquist -- Harry Nyquist
   - [meta]:
     - date: 08/10/2025
-    - tags: [fruit]
+    - tags: [information theory]
   - Communication theory, stability of feedback amplifiers
   - Johnson–Nyquist noise
   - Nyquist–Shannon sampling theorem
 - https://iquilezles.org/ -- Inigo Quilez
   - [meta]:
     - date: 08/14/2025
-    - tags: [fruit]
+    - tags: [engineer]
   - shadertoy
-- https://apossible.com/
-  - [meta]:
-    - date: 08/16/2025
-    - tags: [fruit]
 - https://www.linkedin.com/in/lukaszkaiser/ -- Lukasz Kaiser
   - [meta]:
     - date: 08/21/2025
-    - tags: [fruit]
+    - tags: [rationalist]
   - OpenAI, logic and automaton
 - https://www.lesswrong.com/users/neil-warren -- Neil Warren
   - [meta]:
     - date: 09/22/2025
-    - tags: [fruit]
+    - tags: [writer]
 - https://en.wikipedia.org/wiki/A._C._Grayling -- A. C. Grayling
   - [meta]:
     - date: 08/28/2025
-    - tags: [fruit]
+    - tags: [philosopher]
   - Epistemological Scepticism and Transcendental Arguments (1981)
 - https://en.wikipedia.org/wiki/Paul_Samuelson -- Paul Samuelson
   - [meta]:
     - date: 09/10/2025
-    - tags: [fruit]
+    - tags: [economist]
   - Economist, advisor to JFK
   - columnist on Chicago School with [[library/Capitalism and Freedom|Milton Friedman]]
 - https://www.timdavis.com/ -- Tim Davis
   - [meta]:
     - date: 09/18/2025
-    - tags: [fruit]
+    - tags: [CEO]
   - Modular, CEO
 - https://www.nondot.org/sabre/ -- Chris Lattner
   - [meta]:
     - date: 09/18/2025
-    - tags: [fruit]
+    - tags: [engineer]
   - He's that talented, no need for introduction
   - LLVM, Clang, MLIR, Swift, TPUs
   - https://x.com/clattner_llvm
 - https://www.vilinskyy.com/ -- Alexander Vilinskyy
   - [meta]:
     - date: 09/26/2025
-    - tags: [fruit]
+    - tags: [engineer]
 - https://jnnnthnn.com/ -- Jonathan Unikowski
   - [meta]:
     - date: 09/30/2025
-    - tags: [fruit]
+    - tags: [designer, engineer]
 - https://wesleyac.com/ -- wesley.
   - [meta]:
     - date: 10/02/2025
-    - tags: [fruit]
+    - tags: [writer]
 - https://www.tomeveritt.se -- Tom Everitt
   - [meta]:
     - date: 10/04/2025
-    - tags: [fruit]
+    - tags: [researcher]
   - Staff Research Scientist, DeepMind
   - [@everitt2025evaluatinggoaldirectednesslargelanguage]
 
@@ -1284,6 +1280,39 @@ title: are.na
 
 ## essay
 
+- https://buttondown.com/greengaybles/archive/tender-masculinity -- Tender Masculinity
+  - [meta]: 
+    - date: 11/13/2025 
+    - tags: [love]
+- https://blamensir.neocities.org/guide
+  - [meta]: 
+    - date: 11/13/2025 
+    - tags: [medieval]
+- https://docs.google.com/document/d/14XZJtJcMGzD4ZY6AgaTzobunndRvXZMGUybA6JIQOj4/edit?tab=t.0 -- On suicide [**]
+  - [meta]: 
+    - date: 11/12/2025 
+    - tags: [absurdism]
+- https://www.makingsoftware.com/ -- Making Software
+  - [meta]:
+    - date: 10/02/2025
+    - tags: [cs, design]
+  - https://www.makingsoftware.com/chapters/color-spaces-models-and-gamuts -- Color space
+- https://www.benkuhn.net/outliers/ -- Searching for outliers
+  - [meta]:
+    - date: 10/02/2025
+    - tags: [search]
+- https://www.lesswrong.com/posts/RryyWNmJNnLowbhfC/please-don-t-throw-your-mind-away -- Please don't throw your mind away [**]
+  - [meta]:
+    - date: 11/12/2025
+    - tags: [dialectic]
+- https://smoothbrains.net/ -- speculative neuroscience, psychedelics, and phenomenology [**]
+  - [meta]:
+    - date: 10/15/2025
+    - tags: [blogosphere]
+- https://www.ethansmith2000.com/post/where-are-you -- Where are you?
+  - [meta]:
+    - date: 11/11/2025
+    - tags: [perception]
 - https://lydianottingham.substack.com/p/the-k-values-of-speculative-kinship -- The K-values of Speculative Kinship [**]
   - [meta]:
     - date: 11/12/2025
@@ -1351,7 +1380,7 @@ title: are.na
 - https://web.mit.edu/sts.035/www/PDFs/think.pdf -- As we may think
   - [meta]:
     - date: 11/09/2025
-    - tags: [fruit]
+    - tags: [perception, brain]
 - https://archive.ph/5669x -- Is Having a Boyfriend Embarrassing Now? [--]
   - [meta]:
     - date: 11/09/2025
@@ -2088,6 +2117,11 @@ title: are.na
 - [meta]:
   - view: list
 
+- https://hazyresearch.stanford.edu/blog/2025-11-09-amd-brr -- HipKitten, AMD version of ThunderKitten
+  - [meta]:
+    - date: 11/12/2025
+    - tags: [kernels]
+  - https://x.com/AIatAMD/status/1988704659742003555
 - https://cursor.com/blog/semsearch -- Improving agent with semantic search
   - [meta]:
     - date: 11/11/2025
@@ -2730,30 +2764,18 @@ title: are.na
   - [meta]:
     - date: 09/29/2025
     - tags: [fruit]
-- https://www.ethansmith2000.com/post/where-are-you -- Where are you?
-  - [meta]:
-    - date: 09/29/2025
-    - tags: [fruit]
 - https://github.com/pranjalssh/fast.cu -- fast kernels, in [[thoughts/GPU programming|CUDA]]
   - [meta]:
     - date: 10/02/2025
-    - tags: [fruit]
+    - tags: [kernel]
 - https://hazyresearch.stanford.edu/blog/2025-09-28-tp-llama-main -- We Bought the Whole GPU, So We're Damn Well Going to Use the Whole GPU
   - [meta]:
     - date: 10/03/2025
-    - tags: [fruit]
-
-  ```python
-  import torch
-
-  qk_scores_short = torch.randn(2048)
-  qk_scores_long = torch.randn(128000)
-
-  max_v = torch.max(qk_scores_short.max(), qk_scores_long.max())
-  qk_scores_short[0] = max_val
-  qk_scores_long[0] = max_val
-  qk_scores_short.softmax(0)[0], qk_scores_long.softmax(0)[0]
-  ```
+    - tags: [inference]
+- https://hazyresearch.stanford.edu/blog/2025-05-27-no-bubbles -- Look Ma, No Bubbles! Designing a Low-Latency Megakernel for Llama-1B [**]
+  - [meta]:
+    - date: 11/12/2025
+    - tags: [kernel, inference]
 
 ## opinions
 
@@ -2881,6 +2903,10 @@ title: are.na
 
 ## life is literature
 
+- https://www.sherryning.com/p/what-do-we-deserve-in-love -- What do we deserve in love?
+  - [meta]:
+    - date: 11/12/2025
+    - tags: [love]
 - https://read.isabelunraveled.com/p/let-yourself-be-loved -- let yourself be loved [**]
   - [meta]:
     - date: 11/11/2025
@@ -3551,7 +3577,7 @@ title: are.na
 - https://investors.palantir.com/news-details/2025/Palantir-Reports-Q2-2025-U-S--Comm-Revenue-Growth-of-93-YY-and-Revenue-Growth-of-48-YY-Guides-Q3-Revenue-to-50-YY-Raises-FY-2025-Revenue-Guidance-to-45-YY-and-U-S--Comm-Revenue-Guidance-to-85-YY-Crushing-Consensus-Expectations/ -- Palantir Q3 Earnings 2025 Reports
   - [meta]:
     - date: 08/05/2025
-    - tags: [fruit]
+    - tags: [military complex]
   - $1Bn in Revenue, 45% Y/Y
 
 ## poetry
@@ -3567,19 +3593,19 @@ title: are.na
 - https://griffinpoetryprize.com/poem/crossroads-gluck -- Crossroads by Louise Glück
   - [meta]:
     - date: 10/23/2025
-    - tags: [fruit]
+    - tags: [life]
 - http://www.phys.unm.edu/~tw/fas/yits/archive/eberhart_thegroundhog.html -- The Groundhog by Richard Eberthart
   - [meta]:
     - date: 04/09/2025
-    - tags: [fruit]
+    - tags: [life]
 - http://www.phys.unm.edu/~tw/fas/yits/archive/oliver_wildgeese.html -- Wild [[posts/goose friend|Geese]] by Mary Oliver
   - [meta]:
     - date: 04/09/2025
-    - tags: [fruit]
+    - tags: [imagery, love]
 - https://www.imdb.com/title/tt3783958/ -- La La Land
   - [meta]:
     - date: 10/03/2025
-    - tags: [fruit]
+    - tags: [love]
   - > Here’s to the ones who dream
     > Foolish as they may seem
     >
@@ -3593,6 +3619,43 @@ title: are.na
 
 ## design
 
+- https://maxbittker.github.io/broider/ -- border
+  - [meta]:
+    - date: 11/13/2025
+    - tags: [design, css]
+- https://www.tetragrammaton.com/ -- Tetragrammaton
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [design]
+- https://studio.4o4.space/ -- STUDIO 4o4
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [studio]
+- https://basement.studio/ -- basement.studio
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [studio]
+- https://tatianabilbao.com -- Tatiana Bilbao Estudio
+  - [meta]:
+    - date: 10/03/2025
+    - tags: [studio]
+- https://apossible.com/
+  - [meta]:
+    - date: 08/16/2025
+    - tags: [studio]
+- https://www.luerzersarchive.com/ -- Lürzer's Archive
+  - [meta]:
+    - date: 10/02/2025
+    - tags: [design]
+- https://negative.sanctuary.computer/ -- Studio Carbon Negative
+  - [meta]:
+    - date: 10/02/2025
+    - tags: [design]
+  - landing poggies
+- https://ertdfgcvb.xyz/ -- ertdfgcvb
+  - [meta]:
+    - date: 10/02/2025
+    - tags: [studio]
 - https://www.nb.no/en/ -- National Library of Norway
   - [meta]:
     - date: 11/11/2025
@@ -3624,39 +3687,23 @@ title: are.na
 - https://www.are.na/editorial/are-nas-new-web-client-sander-is-now-available-for-everyone -- Are.na's web client, Sander.
   - [meta]:
     - date: 08/03/2025
-    - tags: [fruit]
+    - tags: [client]
 - https://jonwhitestudio.com/ -- Jon White Studio
   - [meta]:
     - date: 08/03/2025
-    - tags: [fruit]
+    - tags: [studio]
 - https://www.commarts.com/ -- Communication Arts
   - [meta]:
     - date: 10/02/2025
-    - tags: [fruit]
+    - tags: [arts]
 - https://x.com/zachlieberman/status/1963683642011455980 -- Speculative drawing
   - [meta]:
     - date: 10/03/2025
-    - tags: [fruit]
-- https://www.tetragrammaton.com/ -- Tetragrammaton
-  - [meta]:
-    - date: 10/03/2025
-    - tags: [fruit]
-- https://studio.4o4.space/ -- STUDIO 4o4
-  - [meta]:
-    - date: 10/03/2025
-    - tags: [fruit]
-- https://basement.studio/ -- basement.studio
-  - [meta]:
-    - date: 10/03/2025
-    - tags: [fruit]
-- https://tatianabilbao.com -- Tatiana Bilbao Estudio
-  - [meta]:
-    - date: 10/03/2025
-    - tags: [fruit]
+    - tags: [drawing]
 - https://barnsworthburning.net/ -- barnsworthburning
   - [meta]:
     - date: 10/03/2025
-    - tags: [fruit]
+    - tags: [designer]
 
 ## cooking
 
@@ -3925,6 +3972,10 @@ title: are.na
 
 ## protocol
 
+- https://solarprotocol.net -- Solar Protocol
+  - [meta]:
+    - date: 08/03/2025
+    - tags: [hash]
 - [Willow](https://willowprotocol.org/specs/index.html#specifications) -- protocol for synchronisable data store
   - [meta]:
     - date: 01/20/2025
@@ -4002,7 +4053,8 @@ title: are.na
 - https://x.com/rsnous/status/1446211454378524692 -- "We do not lose texts because of catastrophic events that wipe out all copies of them. We lose texts because they stop being copied."
   - [meta]:
     - date: 08/28/2025
-    - tags: [fruit]
+    - tags: [history]
+  - https://old.reddit.com/r/AskHistorians/comments/5t6op5/facts_about_the_library_of_alexandria/
 - https://www.dandad.org/en/d-ad-masterclass-creative-courses/ -- D&AD Masterclasses
   - [meta]:
     - date: 10/02/2025
@@ -4172,6 +4224,10 @@ title: are.na
 
 ## technical
 
+- https://float.exposed/0x44bf9400 -- Floating point representations [**]
+  - [meta]:
+    - date: 11/12/2025
+    - tags: [programming, floating number]
 - https://www.ling.upenn.edu/~kroch/courses/lx400/Gallistel-King_chaps1-9.pdf -- Memory and the Computational Brain [**]
   - [meta]:
     - date: 11/06/2025
@@ -4433,6 +4489,14 @@ title: are.na
 
 ## math
 
+- https://www.youtube.com/watch?v=FfT5VTfHj_s -- Stanford AA228 Decision Making Under Uncertainty | Autumn 2025 | Bayesian Structure Learning
+  - [meta]:
+    - date: 11/13/2025
+    - tags: [statistics]
+- https://www.youtube.com/watch?v=0641zdeGsN8 -- 2025 Hamilton Lecture: 'My romance with the warped side of our universe'
+  - [meta]:
+    - date: 11/12/2025
+    - tags: [string theory, topology]
 - https://www.youtube.com/watch?v=HpRi3OQtyLk -- Refined THH Over ku and Habiro Cohomology - Ferdinand Wagner
   - [meta]:
     - date: 11/04/2025

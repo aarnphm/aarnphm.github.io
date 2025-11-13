@@ -211,6 +211,7 @@ declare module "vfile" {
       title: string
       pageLayout: ContentLayout
     } & Partial<{
+        masonry: string[]
         priority: number | undefined
         permalinks: string[]
         tags: string[]

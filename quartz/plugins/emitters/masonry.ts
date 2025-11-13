@@ -13,6 +13,9 @@ import { MasonryPage, Footer as FooterConstructor } from "../../components/"
 import { StaticResources } from "../../util/resources"
 import { BuildCtx } from "../../util/ctx"
 import { VFile } from "vfile"
+import { parseWikilink, resolveWikilinkTarget } from "../../util/wikilinks"
+import path from "path"
+import fs from "fs"
 
 export interface MasonryImage {
   src: string
@@ -83,6 +86,63 @@ export const Masonry: QuartzEmitterPlugin<Partial<FullPageLayout>> = (userOpts) 
   }
 }
 
+function extractImagesFromTree(tree: Node): MasonryImage[] {
+  const images: MasonryImage[] = []
+  visit(tree as Root, "element", (node: any) => {
+    if (node.tagName === "img" && node.properties?.src) {
+      images.push({
+        src: node.properties.src as string,
+        alt: (node.properties.alt as string) || "",
+      })
+    }
+  })
+  return images
+}
+
+function deduplicateImages(images: MasonryImage[]): MasonryImage[] {
+  const seen = new Set<string>()
+  const deduplicated: MasonryImage[] = []
+
+  for (const img of images) {
+    if (!seen.has(img.src)) {
+      seen.add(img.src)
+      deduplicated.push(img)
+    }
+  }
+
+  return deduplicated
+}
+
+function extractImagesFromDirectory(dirPath: string, contentRoot: string): MasonryImage[] {
+  const images: MasonryImage[] = []
+  const fullPath = path.join(contentRoot, dirPath)
+
+  try {
+    if (!fs.existsSync(fullPath) || !fs.statSync(fullPath).isDirectory()) {
+      return images
+    }
+
+    const files = fs.readdirSync(fullPath)
+    const imageExtensions = [".jpg", ".jpeg", ".png", ".gif", ".webp", ".svg"]
+
+    for (const file of files) {
+      const ext = path.extname(file).toLowerCase()
+      if (imageExtensions.includes(ext)) {
+        // construct the src path relative to the site root
+        const relativePath = path.join(dirPath, file).replace(/\\/g, "/")
+        images.push({
+          src: `/${relativePath}`,
+          alt: path.basename(file, ext),
+        })
+      }
+    }
+  } catch (e) {
+    // ignore errors
+  }
+
+  return images
+}
+
 async function processMasonry(
   ctx: BuildCtx,
   tree: Node,
@@ -93,18 +153,61 @@ async function processMasonry(
 ) {
   const { cfg } = ctx
   const slug = file.data.slug!
-  // extract images from the tree
-  const images: MasonryImage[] = []
-  visit(tree as Root, "element", (node: any) => {
-    if (node.tagName === "img" && node.properties?.src) {
-      images.push({
-        src: node.properties.src as string,
-        alt: (node.properties.alt as string) || "",
-      })
+
+  // extract images from the current page
+  const currentPageImages = extractImagesFromTree(tree)
+
+  // extract images from frontmatter masonry references
+  const referencedImages: MasonryImage[] = []
+  const masonryRefs = file.data.frontmatter?.masonry as string[] | undefined
+
+  if (masonryRefs && Array.isArray(masonryRefs)) {
+    for (const ref of masonryRefs) {
+      // parse wikilink like "[[posts/images]]"
+      const parsed = parseWikilink(ref)
+      if (!parsed) continue
+
+      // check if it's a directory reference
+      const targetPath = parsed.target
+      const fullPath = path.join(ctx.argv.directory, targetPath)
+
+      if (fs.existsSync(fullPath) && fs.statSync(fullPath).isDirectory()) {
+        // extract images from directory
+        const dirImages = extractImagesFromDirectory(targetPath, ctx.argv.directory)
+        referencedImages.push(...dirImages)
+      } else {
+        // try to resolve as a file reference
+        const resolved = resolveWikilinkTarget(parsed, slug)
+        if (!resolved) continue
+
+        // find the referenced file
+        const referencedFile = allFiles.find((f) => f.slug === resolved.slug)
+        if (!referencedFile?.tree) continue
+
+        // extract images from referenced file
+        const refImages = extractImagesFromTree(referencedFile.tree)
+        referencedImages.push(...refImages)
+      }
     }
+  }
+
+  // combine and deduplicate images
+  const allImages = deduplicateImages([...currentPageImages, ...referencedImages])
+
+  // write images JSON file
+  const imagesJsonSlug = `${slug}.images` as FullSlug
+  await write({
+    ctx,
+    content: JSON.stringify(allImages),
+    slug: imagesJsonSlug,
+    ext: ".json",
   })
 
-  const fileData: QuartzPluginData = { ...file.data, masonryImages: images }
+  const fileData: QuartzPluginData = {
+    ...file.data,
+    masonryImages: allImages,
+    masonryJsonPath: `/${slug}.images.json`,
+  }
 
   const externalResources = pageResources(pathToRoot(slug), resources, ctx)
   const componentData: QuartzComponentProps = {
@@ -121,4 +224,11 @@ async function processMasonry(
 
   // write HTML page to output
   return write({ ctx, content: html, slug, ext: ".html" })
+}
+
+declare module "vfile" {
+  interface DataMap {
+    masonryImages: MasonryImage[]
+    masonryJsonPath: string
+  }
 }

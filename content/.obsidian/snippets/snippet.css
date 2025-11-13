@@ -25,3 +25,7 @@ span[class*="rose"] {
     list-style-type: none;
   }
 }
+
+.status-bar {
+  display: none;
+}

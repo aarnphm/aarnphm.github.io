@@ -2,7 +2,7 @@
 date: "2025-11-10"
 description: phenomenal properties and what resists functional explanation
 id: qualia
-modified: 2025-11-10 09:00:00 GMT-05:00
+modified: 2025-11-12 19:34:22 GMT-05:00
 tags:
   - philosophy
   - pattern
@@ -25,7 +25,7 @@ The gap isn't ignorance waiting to be filled. It's structural. Functional explan
 > [!example] Mary's room
 > Mary knows every physical and functional fact about color vision while living in a black-and-white room. When she leaves and sees red for the first time, she learns something new: what red is _like_. If functional/physical knowledge were complete, she'd have learned nothing. [@jackson1982epiphenomenalqualia; @jackson1986whatmary]
 
-The knowledge argument (see [[thoughts/knowledge argument]]) makes this precise. No amount of third-person functional description captures first-person phenomenal character. The quale of red is additional to the functional role of red-processing.
+The [[thoughts/knowledge argument]] makes this precise. No amount of third-person functional description captures first-person phenomenal character. The quale of red is additional to the functional role of red-processing.
 
 ## access vs phenomenal consciousness
 

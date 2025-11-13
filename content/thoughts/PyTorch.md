@@ -1,8 +1,8 @@
 ---
 date: "2024-11-11"
-description: tidbits from PyTorch
+description: tidbits
 id: PyTorch
-modified: 2025-10-29 02:15:33 GMT-04:00
+modified: 2025-11-12 20:26:51 GMT-05:00
 tags:
   - ml
   - framework
@@ -10,6 +10,18 @@ title: PyTorch
 ---
 
 see also: [unstable docs](https://pytorch.org/docs/main/)
+
+```python title="qk_score.py"
+import torch
+
+qk_scores_short = torch.randn(2048)
+qk_scores_long = torch.randn(128000)
+
+max_v = torch.max(qk_scores_short.max(), qk_scores_long.max())
+qk_scores_short[0] = max_val
+qk_scores_long[0] = max_val
+qk_scores_short.softmax(0)[0], qk_scores_long.softmax(0)[0]
+```
 
 ## `MultiMarginLoss`
 

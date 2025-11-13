@@ -13,8 +13,8 @@ async function convertMedia(contentDir: string) {
         "android-chrome-*",
         "apple-touch-icon.png",
         "favicon-*",
-        "movies/posters/",
-        "library/posters/",
+        "**/movies",
+        "**/library",
       ],
       absolute: true,
     })

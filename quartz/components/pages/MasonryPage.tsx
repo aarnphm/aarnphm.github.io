@@ -4,11 +4,10 @@ import style from "../styles/masonry.scss"
 import script from "../scripts/masonry.inline"
 
 export default (() => {
-  const MasonryPage: QuartzComponent = (props: QuartzComponentProps) => {
-    const { fileData } = props
-
-    // get images from the data passed by emitter
-    const images = (fileData as any).masonryImages || []
+  const MasonryPage: QuartzComponent = ({ fileData }: QuartzComponentProps) => {
+    // get JSON path from emitter
+    const jsonPath = fileData.masonryJsonPath
+    const images = fileData.masonryImages || []
 
     if (images.length === 0) {
       return (
@@ -20,18 +19,7 @@ export default (() => {
 
     return (
       <article class="masonry-container all-col">
-        <div class="masonry-grid" id="masonry-grid">
-          {images.map((img: { src: string; alt: string }, idx: number) => (
-            <img
-              data-src={img.src}
-              data-caption={img.alt}
-              data-index={idx}
-              class="masonry-image"
-              loading="lazy"
-              alt={img.alt}
-            />
-          ))}
-        </div>
+        <div class="masonry-grid" id="masonry-grid" data-json-path={jsonPath}></div>
         <div class="masonry-caption-modal" id="masonry-caption-modal"></div>
       </article>
     )

@@ -2,7 +2,7 @@
 date: "2025-10-24"
 description: a microblog within a blog, at the middle of the night.
 id: stream
-modified: 2025-11-10 04:30:37 GMT-05:00
+modified: 2025-11-13 01:59:11 GMT-05:00
 tags:
   - seed
   - fruit
@@ -10,12 +10,65 @@ tags:
 title: stream
 ---
 
+
+- [meta]:
+  - date: 2025-11-13 01:08:39 GMT-05:00
+  - tags:
+    - love
+
+> It's possible to love men without rage. There are thousands of ways to love men.
+>
+> —Lidia Yuknavitch, The Chronology of Water
+
+## on suicide
+
+- [meta]:
+  - date: 2025-11-13 01:01:11 GMT-05:00
+  - tags:
+    - philosophy
+    - death
+
+I was reading [On suicide](https://docs.google.com/document/d/14XZJtJcMGzD4ZY6AgaTzobunndRvXZMGUybA6JIQOj4/edit?tab=t.0) by [Alexey Guzey](https://guzey.com/)
+
+> When I was in high school, I spent a year trying to kill myself. I just couldn't do it. At some point I decided to make my life as bad as I possibly could, but nothing worked. No matter how much I tried, I still ::wanted to be alive more{h4}:: than I [_wanted to be dead_].
+
+The deontological arguments of life presupposes the feeling of interconnectedness. I think that if one acknowledges that no one wants one in life, then one might conclude that one's life is not worth living. [[thoughts/Philosophy and Kant|Kant]] would argue that you must "kill yourself" if you're worried about your rational faculties being compromised to the degree you'll be no longer a [[thoughts/moral|moral]] agent.
+
+> **I wonder how much of this is due to the lack of imagination. If you're suicidal, it's very difficult to imagine life getting better.**
+
+The conventional idealisation of suicide treats your cognitive behaviour with certain reasoning error here. You're depressed, so your cognition is impaired, such that you realized life isn't worth living anymore, which then concludes that suicide is the real solution. Kant said in Groundwork 4:422:
+
+> The impulse to end life and the impulse to further life contradict each other.
+
+But I'm troubled by how close this gets to "just shake it off" or "try something new!" as if suicidal depression were boredom with your routine. The difference, maybe, is that the conventional advice assumes you can white-knuckle through by force of [[thoughts/Will|will]] or positive thinking. Guzey's point is darker: you can't think your way out, and you probably can't will your way out either. You need an external disruption large enough to short-circuit the entire system. Which is less hopeful than it sounds—it means you're not in control of your own recovery. You're waiting for something to happen that breaks the pattern, or you're throwing yourself at random experiences hoping one of them will.
+
+The wanting to live that exists underneath reasons, that persists even when
+you've eliminated every reason you can name. Whether that's the body asserting itself, or some pre-rational attachment to [[thoughts/being|being]], or just biochemistry doing its thing.
+
+What brought me back wasn't a good argument for living. It was N's voice, L's conversations, the way light looked one morning, the prospect of missing something I hadn't experienced yet. The stuff that doesn't make sense in the ledger of reasons but somehow weighs more than the whole column of evidence against continuing.
+
+I think, subconsciously, we all have a moral duty to continue to {{sidenotes[live,]: go outside, look at trees, eat an onion sandwich, buy some sourdough}} and only when you have exhausted all possible solutions, then suicide is the last reasonable solutions to end the absurd life.
+
+
+---
+
+- [meta]:
+  - date: 2025-11-12 21:33:51 GMT-05:00
+  - tags:
+    - life
+
+> But Kurt Vonnegut writes about the difference between two kinds of teams. A granfalloon is a team of people pushed together for some ordinary human purpose, like learning medicine or running a hospital psychiatry department. They may get to know each other well. They may like each other. But in the end, the purpose will be achieved, and they’ll go their separate ways.
+>
+> —Scott Alexander, [To the Great City](https://perma.cc/G5UP-PD2N)
+
+---
+
 - [meta]:
   - date: 2025-11-10 04:30:10 GMT-05:00
   - tags:
-    - fruit
+    - pattern
 
-> Each pattern describes a problem which occurs over and over again in our environment, and then describes the core of the solution to that problem, in such a way that you can use the solution a million times over, without ever doing it the same way.
+> Each #pattern describes a problem which occurs over and over again in our environment, and then describes the core of the solution to that problem, in such a way that you can use the solution a million times over, without ever doing it the same way.
 >
 > —[[library/A Pattern Language]], p. x
 
@@ -25,7 +78,6 @@ title: stream
   - date: 2025-11-09 01:34:25 GMT-05:00
   - tags:
     - technical
-
 
 I've been thinking about connectionist networks lately (or for the past two years or so), and there's something deeply unsettling about how we talk about them. Not unsettling in a bad way—more like that productive discomfort you get when you realize the categories you've been using don't quite map onto reality.
 
@@ -151,7 +203,8 @@ I find myself the most productive while procrastinating other tasks.
 - [meta]:
   - date: 2025-10-26 01:41:59 GMT-04:00
   - tags:
-    - life
+    - death
+    - philosophy
 
 [[thoughts/Camus]] begins with suicide in [[library/The Myth of Sisyphus]], more or less a demonstration of how absurd life really is. He used suicide as a scape goat of people who don't have enough courage to deal with the hardship of life being thrown at them, and considered suicide as cowardice.
 
@@ -171,16 +224,14 @@ My work is not that special, my contributions to the collectives projects are te
 
 The question becomes dangerous when it stops being theoretical. When it moves from mind to body. When the weight becomes physical rather than philosophical. Then one must interrupt the process. Call someone. Leave the room. The distinction is administrative: one is philosophy, the other is emergency. Emergency requires different procedures entirely.
 
----
+## Why Superhuman AI Would Kill Us All
 
 - [meta]:
   - date: 2025-10-25 23:26:00 GMT-04:00
   - tags:
     - llm
 
-> Why Superhuman AI Would Kill Us All
->
-> --[Eliezer Yudkowsky](https://www.youtube.com/watch?v=nRvAt4H7d7E)
+--[Eliezer Yudkowsky](https://www.youtube.com/watch?v=nRvAt4H7d7E)
 
 Yudkowsky's full argument on eschatology isn't productive whatsoever. Feels a lot more science fiction writing, where he claims that this systems will end up "wanting to do their stuff without wanting to take the pills that [we offer to] makes them to do stuff that we _wants_ them to do instead."
 

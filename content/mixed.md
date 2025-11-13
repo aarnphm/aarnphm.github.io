@@ -16,6 +16,7 @@ transclude:
 ## digital
 
 - ![[https://music.youtube.com/playlist?list=PLsRPzRsbp3lBIs6ATkkwQna75qslAZKLF&si=BczKaJFf8_uhSWZy]]
+- ![[https://music.youtube.com/playlist?list=PLsRPzRsbp3lBbddid9loYh6o9gz004N7k&si=MBTa6UT63IIo5xHt]]
 - Love In Us All by Pharaoh Sanders
 - https://capitald.bandcamp.com/album/songs-pt-2
   - 415, or Boss

@@ -1,14 +1,24 @@
+interface ImageData {
+  src: string
+  alt: string
+}
+
 interface ImagePosition {
   x: number
   y: number
   width: number
   height: number
-  element: HTMLImageElement
+  element: HTMLElement
 }
 
 interface ImageDimensions {
   width: number
   height: number
+}
+
+interface CachedMasonry {
+  positions: Map<number, ImagePosition>
+  containerHeight: number
 }
 
 function checkCollision(pos: ImagePosition, positioned: ImagePosition[]): boolean {
@@ -88,177 +98,273 @@ function loadImage(img: HTMLImageElement): Promise<void> {
   })
 }
 
-function shuffleArray<T>(array: T[]): T[] {
-  const shuffled = [...array]
-  for (let i = shuffled.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1))
-    ;[shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]
+function findPosition(
+  dims: ImageDimensions,
+  positioned: ImagePosition[],
+  containerWidth: number,
+  containerHeight: number,
+): { x: number; y: number; newHeight: number } | null {
+  const maxAttempts = 50
+  let currentHeight = containerHeight
+
+  while (true) {
+    const wMax = containerWidth - dims.width
+    const hMax = currentHeight - dims.height
+
+    for (let attempt = 0; attempt < maxAttempts; attempt++) {
+      const x = Math.floor(Math.random() * wMax)
+      const y = Math.floor(Math.random() * hMax)
+
+      const pos: ImagePosition = {
+        x,
+        y,
+        width: dims.width,
+        height: dims.height,
+        element: null as any,
+      }
+
+      if (!checkCollision(pos, positioned)) {
+        return { x, y, newHeight: currentHeight }
+      }
+    }
+
+    // if couldn't position after max attempts, expand container height
+    currentHeight += 50
   }
-  return shuffled
 }
 
-function positionImages(
-  images: HTMLImageElement[],
-  container: HTMLElement,
+function positionImage(
+  img: HTMLImageElement,
+  idx: number,
+  positioned: ImagePosition[],
   containerWidth: number,
-): { cancel: () => void } {
-  const positioned: ImagePosition[] = []
-  let containerHeight = 600
-  let intervalId: ReturnType<typeof setInterval> | undefined
+  containerHeight: number,
+): { position: ImagePosition; newHeight: number } {
+  const naturalWidth = img.naturalWidth
+  const naturalHeight = img.naturalHeight
 
-  // shuffle images for random placement order
-  const shuffledImages = shuffleArray(images)
-
-  // trigger loading for all images first
-  for (let i = 0; i < shuffledImages.length; i++) {
-    const img = shuffledImages[i]
-    const src = img.dataset.src
-    if (!src) continue
-
-    if (!img.src) {
-      img.src = src
-    }
+  if (naturalWidth === 0 || naturalHeight === 0) {
+    img.style.display = "none"
+    const pos: ImagePosition = { x: 0, y: 0, width: 0, height: 0, element: img }
+    return { position: pos, newHeight: containerHeight }
   }
 
-  function cancel() {
-    if (intervalId !== undefined) {
-      clearInterval(intervalId)
-      intervalId = undefined
-    }
+  const dims = calculateTargetDimensions(naturalWidth, naturalHeight, containerWidth)
+  const result = findPosition(dims, positioned, containerWidth, containerHeight)
+
+  if (!result) {
+    img.style.display = "none"
+    const pos: ImagePosition = { x: 0, y: 0, width: 0, height: 0, element: img }
+    return { position: pos, newHeight: containerHeight }
   }
 
-  // wait for all images to load
-  const loadPromises = shuffledImages.map((img) => loadImage(img).catch(() => {}))
+  const pos: ImagePosition = {
+    x: result.x,
+    y: result.y,
+    width: dims.width,
+    height: dims.height,
+    element: img,
+  }
 
-  Promise.all(loadPromises).then(() => {
-    let i = 0
+  // apply position to image instantly
+  img.style.position = "absolute"
+  img.style.left = `${pos.x}px`
+  img.style.top = `${pos.y}px`
+  img.style.width = `${pos.width}px`
+  img.style.height = `${pos.height}px`
+  img.classList.add("positioned")
 
-    // place images incrementally with visual feedback
-    intervalId = setInterval(() => {
-      if (i >= shuffledImages.length) {
-        clearInterval(intervalId!)
-        intervalId = undefined
+  return { position: pos, newHeight: result.newHeight }
+}
 
-        // set final container height
-        let maxBottom = 0
-        for (let j = 0; j < positioned.length; j++) {
-          const bottom = positioned[j].y + positioned[j].height
-          if (bottom > maxBottom) {
-            maxBottom = bottom
-          }
-        }
-        container.style.height = `${maxBottom + 20}px`
-        return
-      }
+function setupCaptionModal(img: HTMLImageElement, modal: HTMLElement, caption: string) {
+  const onMouseEnter = () => {
+    modal.textContent = caption
+    modal.classList.add("visible")
+  }
 
-      const img = shuffledImages[i]
-      const naturalWidth = img.naturalWidth
-      const naturalHeight = img.naturalHeight
+  const onMouseMove = (e: MouseEvent) => {
+    modal.style.left = `${e.clientX}px`
+    modal.style.top = `${e.clientY + 20}px`
+  }
 
-      if (naturalWidth === 0 || naturalHeight === 0) {
-        img.style.display = "none"
-        i++
-        return
-      }
+  const onMouseLeave = () => {
+    modal.classList.remove("visible")
+  }
 
-      const dims = calculateTargetDimensions(naturalWidth, naturalHeight, containerWidth)
+  img.addEventListener("mouseenter", onMouseEnter)
+  img.addEventListener("mousemove", onMouseMove)
+  img.addEventListener("mouseleave", onMouseLeave)
 
-      let positioned_successfully = false
+  window.addCleanup(() => {
+    img.removeEventListener("mouseenter", onMouseEnter)
+    img.removeEventListener("mousemove", onMouseMove)
+    img.removeEventListener("mouseleave", onMouseLeave)
+  })
+}
 
-      while (!positioned_successfully) {
-        const maxAttempts = 50
-        const wMax = containerWidth - dims.width
-        const hMax = containerHeight - dims.height
+function getCacheKey(): string {
+  const slug = document.body.dataset.slug || ""
+  return `masonry:${slug}`
+}
 
-        for (let attempt = 0; attempt < maxAttempts; attempt++) {
-          const x = Math.floor(Math.random() * wMax)
-          const y = Math.floor(Math.random() * hMax)
+function saveCache(positions: ImagePosition[], containerHeight: number) {
+  const cacheKey = getCacheKey()
+  const posMap = new Map<number, ImagePosition>()
 
-          const pos: ImagePosition = {
-            x,
-            y,
-            width: dims.width,
-            height: dims.height,
-            element: img,
-          }
-
-          if (!checkCollision(pos, positioned)) {
-            positioned.push(pos)
-            positioned_successfully = true
-
-            // apply position to image
-            img.style.position = "absolute"
-            img.style.left = `${pos.x}px`
-            img.style.top = `${pos.y}px`
-            img.style.width = `${pos.width}px`
-            img.style.height = `${pos.height}px`
-            img.classList.add("positioned")
-            break
-          }
-        }
-
-        // if couldn't position after max attempts, expand container height
-        if (!positioned_successfully) {
-          containerHeight += 50
-        }
-      }
-
-      i++
-    }, 100)
+  positions.forEach((pos, idx) => {
+    posMap.set(idx, {
+      x: pos.x,
+      y: pos.y,
+      width: pos.width,
+      height: pos.height,
+      element: null as any,
+    })
   })
 
-  return { cancel }
-}
+  const cache: CachedMasonry = {
+    positions: posMap,
+    containerHeight,
+  }
 
-function setupCaptionModal(images: HTMLImageElement[], modal: HTMLElement) {
-  for (let i = 0; i < images.length; i++) {
-    const img = images[i]
-    const caption = img.dataset.caption
-
-    if (!caption) continue
-
-    const onMouseEnter = () => {
-      modal.textContent = caption
-      modal.classList.add("visible")
-    }
-
-    const onMouseMove = (e: MouseEvent) => {
-      modal.style.left = `${e.clientX}px`
-      modal.style.top = `${e.clientY + 20}px`
-    }
-
-    const onMouseLeave = () => {
-      modal.classList.remove("visible")
-    }
-
-    img.addEventListener("mouseenter", onMouseEnter)
-    img.addEventListener("mousemove", onMouseMove)
-    img.addEventListener("mouseleave", onMouseLeave)
-
-    window.addCleanup(() => {
-      img.removeEventListener("mouseenter", onMouseEnter)
-      img.removeEventListener("mousemove", onMouseMove)
-      img.removeEventListener("mouseleave", onMouseLeave)
-    })
+  try {
+    sessionStorage.setItem(cacheKey, JSON.stringify(Array.from(posMap.entries())))
+    sessionStorage.setItem(`${cacheKey}:height`, String(containerHeight))
+  } catch (e) {
+    // ignore quota errors
   }
 }
 
-function initMasonry() {
+function loadCache(): CachedMasonry | null {
+  const cacheKey = getCacheKey()
+
+  try {
+    const posData = sessionStorage.getItem(cacheKey)
+    const heightData = sessionStorage.getItem(`${cacheKey}:height`)
+
+    if (!posData || !heightData) return null
+
+    const entries = JSON.parse(posData) as Array<[number, ImagePosition]>
+    const positions = new Map<number, ImagePosition>(entries)
+    const containerHeight = Number(heightData)
+
+    return { positions, containerHeight }
+  } catch (e) {
+    return null
+  }
+}
+
+async function initMasonry() {
   const container = document.getElementById("masonry-grid")
   if (!container) return
 
   const modal = document.getElementById("masonry-caption-modal")
   if (!modal) return
 
-  const images = Array.from(container.querySelectorAll<HTMLImageElement>(".masonry-image"))
-  if (images.length === 0) return
+  const jsonPath = container.dataset.jsonPath
+  if (!jsonPath) return
+
+  let imageData: ImageData[]
+  try {
+    const response = await fetch(jsonPath)
+    if (!response.ok) {
+      console.error("Failed to fetch masonry data", response.statusText)
+      return
+    }
+    imageData = await response.json()
+  } catch (e) {
+    console.error("Failed to load masonry data", e)
+    return
+  }
+
+  if (imageData.length === 0) return
 
   const containerWidth = container.getBoundingClientRect().width
+  const cache = loadCache()
 
-  let currentPositioning = positionImages(images, container, containerWidth)
-  setupCaptionModal(images, modal)
+  const positioned: ImagePosition[] = []
+  let containerHeight = cache?.containerHeight || 600
+  const loadedImages = new Set<number>()
 
-  // handle resize with ResizeObserver for better detection
+  // create img elements upfront without loading them
+  const images: HTMLImageElement[] = []
+  for (let i = 0; i < imageData.length; i++) {
+    const data = imageData[i]
+    const img = document.createElement("img")
+    img.alt = data.alt
+    img.className = "masonry-image"
+    img.dataset.src = data.src
+    img.dataset.caption = data.alt
+    img.dataset.index = String(i)
+    img.style.position = "absolute"
+    container.appendChild(img)
+    images.push(img)
+  }
+
+  // set initial container height
+  container.style.height = `${containerHeight}px`
+
+  // setup intersection observer
+  const observer = new IntersectionObserver(
+    (entries) => {
+      for (const entry of entries) {
+        if (entry.isIntersecting) {
+          const img = entry.target as HTMLImageElement
+          const idx = Number(img.dataset.index)
+
+          if (loadedImages.has(idx)) continue
+          loadedImages.add(idx)
+
+          // set src to trigger loading
+          img.src = img.dataset.src!
+
+          loadImage(img)
+            .then(() => {
+              const result = positionImage(img, idx, positioned, containerWidth, containerHeight)
+              positioned.push(result.position)
+              containerHeight = result.newHeight
+
+              // update container height
+              let maxBottom = 0
+              for (let j = 0; j < positioned.length; j++) {
+                const bottom = positioned[j].y + positioned[j].height
+                if (bottom > maxBottom) {
+                  maxBottom = bottom
+                }
+              }
+              container.style.height = `${maxBottom + 20}px`
+
+              // setup caption
+              if (img.dataset.caption) {
+                setupCaptionModal(img, modal, img.dataset.caption)
+              }
+
+              // save cache periodically
+              if (positioned.length % 10 === 0) {
+                saveCache(positioned, containerHeight)
+              }
+            })
+            .catch(() => {
+              img.style.display = "none"
+            })
+
+          observer.unobserve(img)
+        }
+      }
+    },
+    { rootMargin: "200px" },
+  )
+
+  // observe all images
+  images.forEach((img) => observer.observe(img))
+
+  // cleanup
+  window.addCleanup(() => {
+    observer.disconnect()
+    saveCache(positioned, containerHeight)
+  })
+
+  // handle resize with ResizeObserver
   let resizeTimeout: number | undefined
   let lastWidth = containerWidth
 
@@ -271,23 +377,23 @@ function initMasonry() {
 
       lastWidth = newWidth
 
-      // cancel any ongoing positioning
-      if (currentPositioning) {
-        currentPositioning.cancel()
-      }
-
       if (resizeTimeout !== undefined) {
         window.clearTimeout(resizeTimeout)
       }
 
       resizeTimeout = window.setTimeout(() => {
-        // reset positions
-        images.forEach((img) => {
-          img.classList.remove("positioned")
-          img.style.opacity = "0"
-        })
+        // clear cache on resize
+        const cacheKey = getCacheKey()
+        sessionStorage.removeItem(cacheKey)
+        sessionStorage.removeItem(`${cacheKey}:height`)
 
-        currentPositioning = positionImages(images, container, newWidth)
+        // reset and reinitialize
+        container.innerHTML = ""
+        positioned.length = 0
+        loadedImages.clear()
+
+        // re-run init
+        initMasonry()
       }, 150)
     }
   })
