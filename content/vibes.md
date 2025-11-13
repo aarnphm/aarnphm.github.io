@@ -157,6 +157,6 @@ transclude:
 
 ![[thoughts/images/taste in web.webp|taste, by @anotherbrowsertab]]
 
-![[thoughts/images/vastlands.png|you are loved, and free, by @danallison]]
+![[thoughts/images/vastlands.webp|you are loved, and free, by @danallison]]
 
-![[thoughts/images/smiley.png|smiley]]
+![[thoughts/images/smiley.webp|smiley]]

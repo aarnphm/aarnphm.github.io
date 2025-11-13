@@ -14,7 +14,7 @@ socials:
   "third night": https://open.substack.com/pub/livingalone/p/third-night?r=1z8i4s&utm_campaign=post&utm_medium=web&showWelcomeOnShare=true
 ---
 
-![[posts/images/Still Life with Flowers in a Glass Vase, 1650.png|Still Life with Flowers in a Glass Vase, Jan Davidsz. de Heem, 1650-1683]]
+![[posts/images/Still Life with Flowers in a Glass Vase, 1650.webp|Still Life with Flowers in a Glass Vase, Jan Davidsz. de Heem, 1650-1683]]
 
 ```poetry
 sit with the splinter
@@ -48,7 +48,7 @@ mourn nothing.
 ***
 ```
 
-![[posts/images/two grils waffle house.png|1900-1916, Library of Congress prints and Photographs Division Washington, DC]]
+![[posts/images/two grils waffle house.webp|1900-1916, Library of Congress prints and Photographs Division Washington, DC]]
 
 ```poetry
 
@@ -97,7 +97,7 @@ lying awake at four in the morning,
 ***
 ```
 
-![[posts/images/rose.png|rose in a vase, Hertzberg, John, 1948-1958, maintained by Swedish National Museum of Science and Technology]]
+![[posts/images/rose.webp|rose in a vase, Hertzberg, John, 1948-1958, maintained by Swedish National Museum of Science and Technology]]
 
 ```poetry
 
@@ -149,7 +149,7 @@ distance,
 
 ```
 
-![[posts/images/the red tree.png|The Red Tree, Piet Mondrian, 1872-1944]]
+![[posts/images/the red tree.webp|The Red Tree, Piet Mondrian, 1872-1944]]
 
 ```poetry
 
