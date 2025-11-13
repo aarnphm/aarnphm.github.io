@@ -53,7 +53,7 @@
     "@myriaddreamin/typst.ts": "^0.6.0",
     "@napi-rs/simple-git": "^0.1.22",
     "@tweenjs/tween.js": "^25.0.0",
-    "agents": "^0.2.21",
+    "agents": "^0.2.23",
     "ansi-truncate": "^1.4.0",
     "async-mutex": "^0.5.0",
     "chokidar": "^4.0.3",
@@ -149,7 +149,7 @@
     "zod": "^4.1.12"
   },
   "devDependencies": {
-    "@cloudflare/workers-types": "^4.20251111.0",
+    "@cloudflare/workers-types": "^4.20251113.0",
     "@modelcontextprotocol/inspector": "^0.17.2",
     "@types/d3": "^7.4.3",
     "@types/hast": "^3.0.4",
@@ -162,7 +162,7 @@
     "@types/unist": "^3.0.3",
     "@types/ws": "^8.18.1",
     "@types/yargs": "^17.0.34",
-    "@typescript/native-preview": "7.0.0-dev.20251112.1",
+    "@typescript/native-preview": "7.0.0-dev.20251113.1",
     "bibtex-tidy": "^1.14.0",
     "esbuild": "^0.27.0",
     "mermaid": "^11.12.1",
@@ -173,7 +173,7 @@
     "ts-morph": "^27.0.2",
     "tsx": "^4.20.6",
     "typescript": "^5.9.3",
-    "wrangler": "^4.47.0"
+    "wrangler": "^4.48.0"
   },
   "packageManager": "pnpm@9.6.0+sha512.38dc6fba8dba35b39340b9700112c2fe1e12f10b17134715a4aa98ccf7bb035e76fd981cf0bb384dfa98f8d6af5481c2bef2f4266a24bfa20c34eb7147ce0b5e"
 }
