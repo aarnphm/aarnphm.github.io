@@ -2,7 +2,7 @@
 date: "2024-10-10"
 description: A collections of words and terms that lives within my vernacular
 id: word
-modified: 2025-11-12 22:13:43 GMT-05:00
+modified: 2025-11-13 05:48:00 GMT-05:00
 tags:
   - evergreen
 title: lists
@@ -43,3 +43,4 @@ title: lists
 - nomenclature
 - paratactic
 - blogasphere
+- saudade

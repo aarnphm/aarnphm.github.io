@@ -139,7 +139,7 @@ export const JsonCanvas: QuartzTransformerPlugin = () => {
                 node.tagName = "div"
                 node.properties = {
                   class: "canvas-embed-container",
-                  "data-canvas": `${resourceBase}.canvas.json`,
+                  "data-canvas": `${resourceBase}.canvas`,
                   "data-meta": `${resourceBase}.meta.json`,
                   "data-cfg": JSON.stringify(embedConfig),
                   "data-canvas-title": canvasTitle,

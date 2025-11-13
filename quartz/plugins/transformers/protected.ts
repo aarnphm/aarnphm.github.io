@@ -1,6 +1,4 @@
-import crypto from "crypto"
 import { QuartzTransformerPlugin } from "../types"
-import { Root } from "hast"
 import content from "../../components/styles/protected.scss"
 
 function getPasswordForPage(file: any): string {

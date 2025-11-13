@@ -37,6 +37,7 @@ export default (() => {
       if (!val) return val
       if (val.startsWith("#")) return val
       if (val.startsWith("mailto:") || val.startsWith("tel:") || val.startsWith("data:")) return val
+      if (val.startsWith("/static")) return val
       if (isAbsoluteURL(val)) return val
 
       try {

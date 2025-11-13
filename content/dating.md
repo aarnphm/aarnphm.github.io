@@ -7,7 +7,7 @@ aliases:
 date: "2025-08-09"
 description: just another fish in the sea.
 id: dating
-modified: 2025-11-13 00:39:43 GMT-05:00
+modified: 2025-11-13 04:46:17 GMT-05:00
 noindex: true
 slides: true
 tags:
@@ -276,7 +276,8 @@ possible deal-breakers
    - That said, I'd make it work for the _right_ person.
 3. I care deeply about my friends, and I believe that as partners, we don't have to do everything {{sidenotes[together.]: I definitely want to spend the majority of my time with you, but I'll need "boys" time.}}
 4. Most of my friends are female. I have very clear boundaries with friends, but I want all my female friendships—especially with N, C, Si—to remain strong.
-5. I currently live in Toronto, Canada. I'm open to long-distance (but prefer not to) if there's a good chance we'd end up in the same city, assuming everything goes well! San Francisco, Berkeley, New York, and Boston are all possibilities.
+5. There are a few special people in my {{sidenotes[life,]:I won't disclosed here to respect their privacy}} that I would also like to maintain strong connections {{sidenotes[with.]: Meaning, I would make plans to fly over and see them from time to time.}}
+6. I'm currently reside in Toronto, Canada. I'm open to long-distance (but prefer not to) if there's a good chance we'd end up in the same city, assuming everything goes well! San Francisco, Berkeley, New York, and Boston are all possibilities.
    - I do plan to move back to the US in the future, in the next 5-7 years.
 
 </section>

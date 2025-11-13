@@ -2,7 +2,7 @@
 date: "2025-10-24"
 description: a microblog within a blog, at the middle of the night.
 id: stream
-modified: 2025-11-13 01:59:11 GMT-05:00
+modified: 2025-11-13 05:48:00 GMT-05:00
 tags:
   - seed
   - fruit
@@ -10,6 +10,15 @@ tags:
 title: stream
 ---
 
+- [meta]:
+  - date: 2025-11-13 05:44:12 GMT-05:00
+  - tags:
+    - love
+    - feeling
+
+Love sucks. love hurts. love prevails. I want to be loved. and I want to be heart-broken. I'm once again, perplexed by my own feelings, a sense of _saudade_
+
+---
 
 - [meta]:
   - date: 2025-11-13 01:08:39 GMT-05:00
@@ -42,12 +51,13 @@ The conventional idealisation of suicide treats your cognitive behaviour with ce
 
 But I'm troubled by how close this gets to "just shake it off" or "try something new!" as if suicidal depression were boredom with your routine. The difference, maybe, is that the conventional advice assumes you can white-knuckle through by force of [[thoughts/Will|will]] or positive thinking. Guzey's point is darker: you can't think your way out, and you probably can't will your way out either. You need an external disruption large enough to short-circuit the entire system. Which is less hopeful than it sounds—it means you're not in control of your own recovery. You're waiting for something to happen that breaks the pattern, or you're throwing yourself at random experiences hoping one of them will.
 
-The wanting to live that exists underneath reasons, that persists even when
-you've eliminated every reason you can name. Whether that's the body asserting itself, or some pre-rational attachment to [[thoughts/being|being]], or just biochemistry doing its thing.
+The wanting to live that exists underneath reasons, that persists even when you've eliminated every reason you can name. Whether that's the body asserting itself, or some pre-rational attachment to [[thoughts/being|being]], or just biochemistry doing its thing.
 
 What brought me back wasn't a good argument for living. It was N's voice, L's conversations, the way light looked one morning, the prospect of missing something I hadn't experienced yet. The stuff that doesn't make sense in the ledger of reasons but somehow weighs more than the whole column of evidence against continuing.
 
 I think, subconsciously, we all have a moral duty to continue to {{sidenotes[live,]: go outside, look at trees, eat an onion sandwich, buy some sourdough}} and only when you have exhausted all possible solutions, then suicide is the last reasonable solutions to end the absurd life.
+
+I'm once again, thinking about suicide.
 
 
 ---

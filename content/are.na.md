@@ -41,7 +41,7 @@ cssclasses:
 date: "2024-10-24"
 description: My run-down version of are[dot]na
 id: are.na
-modified: 2025-11-13 00:47:09 GMT-05:00
+modified: 2025-11-13 02:41:16 GMT-05:00
 permalinks:
   - /website
   - /tweets
@@ -1280,17 +1280,21 @@ title: are.na
 
 ## essay
 
+- https://offhandquibbles.substack.com/p/philosophy-is-kinda-autistic-hj-pos -- Philosophy is kinda autistic
+  - [meta]:
+    - date: 11/13/2025
+    - tags: [metaphysics]
 - https://buttondown.com/greengaybles/archive/tender-masculinity -- Tender Masculinity
-  - [meta]: 
-    - date: 11/13/2025 
+  - [meta]:
+    - date: 11/13/2025
     - tags: [love]
 - https://blamensir.neocities.org/guide
-  - [meta]: 
-    - date: 11/13/2025 
+  - [meta]:
+    - date: 11/13/2025
     - tags: [medieval]
 - https://docs.google.com/document/d/14XZJtJcMGzD4ZY6AgaTzobunndRvXZMGUybA6JIQOj4/edit?tab=t.0 -- On suicide [**]
-  - [meta]: 
-    - date: 11/12/2025 
+  - [meta]:
+    - date: 11/12/2025
     - tags: [absurdism]
 - https://www.makingsoftware.com/ -- Making Software
   - [meta]:
@@ -2779,6 +2783,10 @@ title: are.na
 
 ## opinions
 
+- https://substack.com/@ellieanderphd/note/c-176537495?r=1z8i4s&utm_medium=ios -- How to read philosophy 
+  - [meta]:
+    - date: 11/13/2025
+    - tags: [philosophy]
 - https://archive.ph/eswxi -- The Divider [--]
   - [meta]:
     - date: 11/11/2025
@@ -3619,6 +3627,10 @@ title: are.na
 
 ## design
 
+- https://s-p.studio/ -- Special projects
+  - [meta]:
+    - date: 11/13/2025
+    - tags: [agency, studio]
 - https://maxbittker.github.io/broider/ -- border
   - [meta]:
     - date: 11/13/2025

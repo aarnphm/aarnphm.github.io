@@ -60,7 +60,6 @@ export const CanvasPage: QuartzEmitterPlugin<Partial<FullPageLayout>> = (userOpt
         const jscastMetadata = collectCanvasMeta(jcast)
 
         yield write({ ctx, content: JSON.stringify(jscastMetadata), slug, ext: ".meta.json" })
-        yield write({ ctx, content: file.data.canvasContent, slug, ext: ".canvas.json" })
 
         // default canvas configuration
         const defaultConfig = {
@@ -80,7 +79,7 @@ export const CanvasPage: QuartzEmitterPlugin<Partial<FullPageLayout>> = (userOpt
         const canvasElement = h(
           "div.canvas-container",
           {
-            "data-canvas": `${resourceBase}.canvas.json`,
+            "data-canvas": `${resourceBase}.canvas`,
             "data-meta": `${resourceBase}.meta.json`,
             "data-cfg": JSON.stringify(defaultConfig),
             "data-canvas-bounds": JSON.stringify(jcast.data.bounds),
