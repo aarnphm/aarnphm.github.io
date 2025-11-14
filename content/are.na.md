@@ -41,7 +41,7 @@ cssclasses:
 date: "2024-10-24"
 description: My run-down version of are[dot]na
 id: are.na
-modified: 2025-11-14 12:55:15 GMT-05:00
+modified: 2025-11-14 16:28:35 GMT-05:00
 permalinks:
   - /website
   - /tweets
@@ -294,6 +294,10 @@ title: are.na
 
 ## website
 
+- https://www.redqueen.bio/
+  - [meta]:
+    - date: 11/14/2025
+    - tags: [ai]
 - https://georgefrancis.dev/
   - [meta]:
     - date: 11/13/2025
@@ -3815,6 +3819,11 @@ title: are.na
 
 ## video
 
+- https://www.youtube.com/watch?v=OQUV6kEKwlk
+  - [meta]:
+    - date: 10/12/2025
+    - tags: [life]
+  - Felix, also known as PewDiePie.
 - https://www.youtube.com/watch?v=98LdFA-_zfA -- Christopher Alexander - Patterns in Architecture
   - [meta]:
     - date: 11/09/2025
@@ -4094,6 +4103,11 @@ title: are.na
 
 ## resources
 
+- https://linear.axler.net/LADR4e.pdf -- Linear Algebra Done right [**]
+  - [meta]:
+    - date: 11/14/2025
+    - tags: [books]
+    - pinned: true
 - https://www.gap-map.org/?sort=rank -- Gap Map
   - [meta]:
     - date: 04/27/2025
@@ -4976,11 +4990,3 @@ title: are.na
   - [meta]:
     - date: 10/11/2025
     - tags: [system, inference]
-
-## life
-
-- https://www.youtube.com/watch?v=OQUV6kEKwlk
-  - [meta]:
-    - date: 10/12/2025
-    - tags: [life]
-  - Felix, also known as PewDiePie.
