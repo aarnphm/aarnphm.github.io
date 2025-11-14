@@ -1,6 +1,6 @@
 # CLAUDE.md
 
-This repository powers a Quartz-based digital garden with custom plugins, a Cloudflare Worker. Follow these guidelines to keep changes consistent and easy to review. There are additional tools/implementation both in Rust, Python, C, C++ under @content/. Make sure to use the best practices for best performance system-level wise.
+This repository powers a Quartz-based digital garden with custom plugins and a Cloudflare Worker. Follow these guidelines to keep changes consistent and maintainable. Additional tools and implementations in Rust, Python, C, C++, and other languages live under `content/`. Use best practices for optimal system-level performance.
 
 ## Development Commands
 
@@ -19,9 +19,8 @@ This repository powers a Quartz-based digital garden with custom plugins, a Clou
 
 **Core Structure:**
 
-- `quartz/` - TypeScript source for CLI, plugins, and components, built on top of remark/rehype/unist, mdast,hast ecosystem and best practices
-  - For all `.inline.ts` script, make sure not to use any `const` argument, as it will get stripped with esbuild. Make sure that function and variables
-    should be replicated and become stateless. If we need persistent state, then use `localStorage` or `sessionStorage`.
+- `quartz/` - TypeScript source for CLI, plugins, and components, built on remark/rehype/unist, mdast, and hast ecosystems
+  - For all `.inline.ts` scripts: avoid `const` arguments (esbuild strips them). Keep functions and variables stateless. Use `localStorage` or `sessionStorage` for persistent state.
 - `content/` - Markdown notes, academic papers, assets, library implementations, tool monorepo.
   - `content/hinterland` - Special projects
 - `worker/` - Cloudflare Worker TypeScript
@@ -56,8 +55,8 @@ React-like components in `quartz/components/` using Preact:
 - PascalCase.tsx naming (e.g., ExplorerNode.tsx)
 - Utilities use camelCase (e.g., path.ts, fileTrie.ts)
 - 2-space indentation, ES modules
-- If you are writing buttons, most case prefer `span[type="button"]` over button. But make sure to ask for confirmation.
-- Please never write a unist processor within `markdownPlugins` or `htmlPlugins` to avoid recursion of nested processor, and use existing parsing structurewe from Quartz.
+- For interactive buttons, prefer `<span role="button">` over `<button>`. Ask for confirmation before implementing.
+- Never write a unist processor within `markdownPlugins` or `htmlPlugins` to avoid recursion of nested processors. Use existing parsing structure from Quartz.
 
 ## Content Guidelines
 
@@ -67,12 +66,9 @@ React-like components in `quartz/components/` using Preact:
 - Obsidian-style callouts and embedded links
 - All math equations in LaTeX format
 - Citations via `[@reference]` syntax linking to References.bib
-- All headings must be in lowercase.
-- If you think any sentences are more suitable as sidenotes, then use the following syntax:
-  ```markdown
-  <Some sentence in english talking about> {{sidenotes[<some_labels>]: <some_text_here>}}
-  ```
-  See @content/thoughts/love.md#L58 for example.
+- All headings must be in lowercase
+- For sidenotes, use: `Main text {{sidenotes[label]: sidenote content}}`
+  - Example: See `content/thoughts/love.md:58`
 - Make sure to use callouts, embedded links accordingly. For example:
 
   ```markdown
@@ -86,13 +82,10 @@ React-like components in `quartz/components/` using Preact:
 - For block-form, it should be formatted with `$$\n<content>\n$$`. For inline `$<content>$`
 
 **Academic References:**
-For arxiv papers, fetch BibTeX entries:
 
-```bash
-curl https://arxiv.org/bibtex/<id>
-```
-
-Then update `content/References.bib` and reference as `[@entryname]` in markdown.
+- Fetch arXiv BibTeX: `curl https://arxiv.org/bibtex/<id>`
+- Add entries to `content/References.bib`
+- Reference in markdown: `[@entryname]`
 
 **File Organization:**
 
@@ -121,19 +114,93 @@ Then update `content/References.bib` and reference as `[@entryname]` in markdown
 - Go: Use gofmt conventions
 - C/C++: Modern C++21 standards
 - CUDA: Compatible with 12.8+ and Triton 3.4+
-- If you need to write any lean prof, do it under @content/provers/ and compile with lean4 accordingly.
+- If you need to write any Lean proofs, do it under `content/provers/` and compile with lean4 accordingly.
 
 ## Testing and Quality Assurance
 
 - Tests live beside utilities: `quartz/util/*.test.ts`
 - Run full validation with `pnpm check` before commits
-- TypeScript strict mode enabled with `throwOnError: true` for KaTeX
-- No secrets in commits; use `.env` locally and Cloudflare secrets for Worker
+- TypeScript strict mode enabled
+- KaTeX configured with `throwOnError: true`
 
-## Security Notes
+## Build and Deployment Constraints
 
-- Large binaries managed through Git LFS
+- **Never run** `pnpm bundle` or `pnpm build` directly - the dev server (`dev.ts`) is always running. Inspect the running process instead.
+- Large binaries are managed through Git LFS
 - Keep `public/` directory reproducible via `pnpm bundle`
 - Use `wrangler.toml` and Cloudflare secrets for Worker configuration
-- Please never run bundle or build. I will always running dev.ts so just either inspect the running process, instead of spawning your own.
-- We should NEVER use fs in @quartz/plugins/transformers/ (transformers should only be RESPONSIBLE for transforming hast/ast/mdast trees). If we need posteriori edits make sure to do it in renderPage.tsx or during @quartz/plugins/emitters/ phase.
+- No secrets in commits; use `.env` locally
+
+## Plugin Development Constraints
+
+- **NEVER** use `fs` in `quartz/plugins/transformers/` - transformers should ONLY transform hast/ast/mdast trees
+- For file I/O operations, use `renderPage.tsx` or `quartz/plugins/emitters/` phase
+- Avoid recursion by not creating unist processors within `markdownPlugins` or `htmlPlugins`
+
+## Skills Integration
+
+This repository supports Claude Code skills for specialized workflows. Skills live in `.claude/skills/` and provide domain-specific functionality.
+
+### Available Skills (Planned)
+
+**Content Management:**
+- `citation-manager` - Manage academic citations and References.bib
+  - Add citations from arXiv, DOI, or BibTeX
+  - Format and validate References.bib
+  - Insert citation references in markdown files
+
+- `content-creator` - Create properly formatted markdown notes
+  - Generate new notes with correct frontmatter
+  - Apply consistent formatting (lowercase headings, wikilinks, etc.)
+  - Add callouts, sidenotes, and math equations
+
+**Development:**
+- `plugin-dev` - Develop and test Quartz plugins
+  - Scaffold new transformers, emitters, or filters
+  - Test plugins with sample content
+  - Validate against existing plugin patterns
+
+- `deployment-helper` - Manage Cloudflare Worker deployments
+  - Run validation pipeline (`pnpm check`)
+  - Deploy to Cloudflare with `wrangler`
+  - Verify deployment status
+
+**Academic Workflow:**
+- `academic-paper` - Fetch and organize academic papers
+  - Download papers from arXiv
+  - Extract and add BibTeX entries
+  - Organize PDFs in `content/thoughts/papers/`
+  - Create summary notes with proper citations
+
+### Creating New Skills
+
+Skills are stored in `.claude/skills/<skill-name>/skill.md` and follow this structure:
+
+```markdown
+# Skill Name
+
+Brief description of what this skill does.
+
+## When to Use
+
+- Use case 1
+- Use case 2
+
+## Instructions
+
+1. Step-by-step instructions
+2. Commands to run
+3. Files to check
+
+## Examples
+
+Example workflows
+```
+
+### Skill Best Practices
+
+- Keep skills focused on single domains (citations, content, deployment)
+- Use existing tools and commands defined in `package.json`
+- Follow the code style guidelines in this document
+- Test skills with representative examples
+- Document any dependencies or prerequisites
