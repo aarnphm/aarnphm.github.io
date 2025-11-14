@@ -1,0 +1,299 @@
+# Academic Paper
+
+Fetch, organize, and create notes for academic papers with proper citations.
+
+## When to Use
+
+- User provides an arXiv URL or ID
+- User wants to add a paper to the digital garden
+- User requests to create reading notes for a paper
+- User needs to organize academic papers and citations
+- User wants to link papers with proper bibliography entries
+
+## Instructions
+
+### Complete Academic Paper Workflow
+
+This skill combines citation management, file organization, and note creation into a cohesive workflow.
+
+### Step 1: Extract Paper Information
+
+From arXiv URL/ID:
+```
+Examples:
+- https://arxiv.org/abs/2301.00001
+- https://arxiv.org/pdf/2301.00001.pdf
+- arxiv:2301.00001
+- 2301.00001
+
+Extract ID: 2301.00001
+```
+
+### Step 2: Fetch BibTeX Entry
+
+```bash
+curl https://arxiv.org/bibtex/2301.00001
+```
+
+Parse the returned BibTeX to extract:
+- Citation key (e.g., `author2023title`)
+- Title
+- Authors
+- Year
+- Abstract URL
+- Categories/tags
+
+### Step 3: Add to References.bib
+
+1. Read `content/References.bib`
+2. Check for duplicates (by key, DOI, or eprint)
+3. Append new BibTeX entry
+4. Run `pnpm format` to organize and validate
+
+### Step 4: Download PDF (Optional)
+
+If user wants to keep the PDF:
+
+```bash
+# Download to content/thoughts/papers/
+curl -L https://arxiv.org/pdf/2301.00001.pdf -o content/thoughts/papers/2301.00001.pdf
+```
+
+Naming convention: `<arxiv-id>.pdf`
+
+### Step 5: Create Reading Notes
+
+Generate a markdown file in `content/thoughts/papers/` or `content/thoughts/`:
+
+**Frontmatter template:**
+```yaml
+---
+id: <citation-key>
+title: <paper-title>
+date: "<YYYY-MM-DD>"
+tags:
+  - paper
+  - <domain-tags>
+  - reading
+description: <brief-summary>
+authors:
+  - <author1>
+  - <author2>
+arxiv: "<arxiv-id>"
+---
+```
+
+**Content template:**
+```markdown
+## summary
+
+Brief summary of the paper [@citation-key].
+
+## key contributions
+
+- Contribution 1
+- Contribution 2
+- Contribution 3
+
+## methodology
+
+Description of methods used...
+
+## results
+
+Key findings...
+
+## thoughts
+
+Personal reflections and connections to other work...
+
+## related work
+
+- [[thoughts/related-paper-1]]
+- [[thoughts/related-paper-2]]
+
+## citations
+
+Full citation: [@citation-key]
+```
+
+### Step 6: Link to Existing Content (Optional)
+
+If the paper relates to existing notes:
+1. Search for relevant notes in `content/thoughts/`
+2. Suggest adding wikilinks or citations
+3. Update related notes with cross-references
+
+## Examples
+
+### Example 1: Full Workflow - ArXiv Paper
+
+```
+User: Add the paper https://arxiv.org/abs/1706.03762 to my notes
+
+Steps:
+1. Extract ID: 1706.03762
+2. Fetch BibTeX: curl https://arxiv.org/bibtex/1706.03762
+3. Parse:
+   - Key: vaswani2017attention
+   - Title: Attention is All You Need
+   - Authors: Vaswani et al.
+   - Year: 2017
+4. Add to References.bib
+5. Run: pnpm format
+6. Ask user: "Would you like me to download the PDF and create reading notes?"
+
+If yes:
+7. Download: curl -L https://arxiv.org/pdf/1706.03762.pdf -o content/thoughts/papers/1706.03762.pdf
+8. Create: content/thoughts/attention-is-all-you-need.md
+   With frontmatter and structure
+9. Respond: "Created reading notes at content/thoughts/attention-is-all-you-need.md.
+   Use [@vaswani2017attention] to cite this paper."
+```
+
+### Example 2: Quick Citation Only
+
+```
+User: Just add arxiv:2301.00001 to my bibliography
+
+Steps:
+1. Fetch BibTeX: curl https://arxiv.org/bibtex/2301.00001
+2. Add to References.bib
+3. Run: pnpm format
+4. Respond: "Added citation with key 'author2023title'. Use [@author2023title] to cite."
+```
+
+### Example 3: Create Notes for Existing Citation
+
+```
+User: Create reading notes for the attention paper in my bibliography
+
+Steps:
+1. Search References.bib for "attention"
+2. Find: vaswani2017attention
+3. Extract metadata from BibTeX entry
+4. Create: content/thoughts/attention-is-all-you-need.md
+5. Populate with template and metadata
+6. Respond: "Created reading notes. The paper can be cited with [@vaswani2017attention]."
+```
+
+### Example 4: Link Papers to Existing Notes
+
+```
+User: Add the transformer paper to my notes on neural networks
+
+Steps:
+1. Add paper following steps 1-5
+2. Read content/thoughts/neural-networks.md
+3. Find appropriate location to add reference
+4. Add wikilink or citation
+5. Update neural-networks.md with:
+   "Recent work on transformers [@vaswani2017attention] shows that..."
+6. Respond with changes made
+```
+
+## Notes
+
+### File Organization
+
+**Papers:**
+- PDFs: `content/thoughts/papers/<arxiv-id>.pdf`
+- Notes: `content/thoughts/<descriptive-name>.md` or `content/thoughts/papers/<descriptive-name>.md`
+
+**Bibliography:**
+- Single file: `content/References.bib`
+- Automatically formatted by `pnpm format`
+- Sorted by: type, year, eprint
+- Duplicates handled automatically
+
+### Citation Key Conventions
+
+ArXiv papers typically use:
+- `<first-author><year><keyword>` (e.g., `vaswani2017attention`)
+- Automatically generated by arXiv BibTeX endpoint
+- Sometimes includes `arxiv` prefix or eprint number
+
+Always confirm the key after adding to References.bib.
+
+### Tags for Academic Papers
+
+Common tags to use:
+- `paper` (always include)
+- Domain: `machine-learning`, `nlp`, `computer-vision`, etc.
+- Type: `reading`, `reference`, `implementation`
+- Status: `to-read`, `reading`, `completed`
+- Topics: specific concepts from the paper
+
+### Integration with Other Skills
+
+**Use `citation-manager` for:**
+- Adding citations from DOI or other sources
+- Validating References.bib
+- Managing bibliography
+
+**Use `content-creator` for:**
+- Proper markdown formatting
+- Adding callouts, sidenotes, math equations
+- Linking between notes
+
+### Advanced Features
+
+**Extracting metadata:**
+- Some papers include additional metadata in BibTeX
+- Categories, DOI, journal information
+- Can be used for enhanced frontmatter
+
+**Automatic summarization:**
+- If available, use arXiv abstract
+- Extract from PDF first page
+- User can refine later
+
+**Cross-referencing:**
+- Link papers that cite each other
+- Create relationship maps
+- Build knowledge graphs
+
+### arXiv Specific Features
+
+**arXiv ID formats:**
+- Old: `cs/0123456` (category/number)
+- New: `2301.00001` (YYMM.NNNNN)
+- Both work with arXiv API
+
+**arXiv categories:**
+- cs.AI, cs.LG, cs.CL (Computer Science)
+- stat.ML (Statistics)
+- math.XX (Mathematics)
+- Use as tags in frontmatter
+
+**arXiv URLs:**
+- Abstract: `https://arxiv.org/abs/<id>`
+- PDF: `https://arxiv.org/pdf/<id>.pdf`
+- BibTeX: `https://arxiv.org/bibtex/<id>`
+- Source: `https://arxiv.org/e-print/<id>`
+
+## Workflow Variations
+
+### Minimal Workflow (Citation Only)
+1. Fetch BibTeX
+2. Add to References.bib
+3. Format
+
+### Standard Workflow (Citation + Notes)
+1. Fetch BibTeX
+2. Add to References.bib
+3. Format
+4. Create note with template
+5. Link to related content
+
+### Complete Workflow (Citation + PDF + Notes)
+1. Fetch BibTeX
+2. Add to References.bib
+3. Format
+4. Download PDF
+5. Create detailed notes
+6. Extract key points
+7. Link to related content
+8. Add to reading list
+
+Choose workflow based on user needs and context.

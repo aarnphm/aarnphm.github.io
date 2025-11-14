@@ -200,7 +200,8 @@ successful_*.txt
 bentofile.yaml
 cmd.txt
 checkpoints
-.claude
+.claude/*
+!.claude/skills/
 .gemini
 .cursor
 content/arena_hast.json
