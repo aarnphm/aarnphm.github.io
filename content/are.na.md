@@ -41,7 +41,7 @@ cssclasses:
 date: "2024-10-24"
 description: My run-down version of are[dot]na
 id: are.na
-modified: 2025-11-14 16:28:35 GMT-05:00
+modified: 2025-11-15 17:00:08 GMT-05:00
 permalinks:
   - /website
   - /tweets
@@ -294,6 +294,15 @@ title: are.na
 
 ## website
 
+- https://thecompendium.cards/c/half-baked/ -- The Compendium [**]
+  - [meta]:
+    - date: 11/15/2025
+    - tags: [ux]
+  - slides-like exploration for data/notes taking
+- https://busterbenson.com/life-in-weeks -- Life in Weeks
+  - [meta]:
+    - date: 11/15/2025
+    - tags: [timeline]
 - https://www.redqueen.bio/
   - [meta]:
     - date: 11/14/2025
@@ -680,6 +689,18 @@ title: are.na
 
 ## people
 
+- https://tw.boffosocko.com/#. -- Chris Aldrich
+  - [meta]:
+    - date: 11/15/2025
+    - tags: [ux, cybernetics]
+- https://gordonbrander.com/ -- Gordon Brander
+  - [meta]:
+    - date: 11/15/2025
+    - tags: [ux, interface]
+- https://azlen.me/ -- Azlen
+  - [meta]:
+    - date: 11/15/2025
+    - tags: [interface, interaction]
 - https://herbiebradley.com/ -- herbie
   - [meta]:
     - date: 11/14/2025
@@ -1305,6 +1326,15 @@ title: are.na
 
 ## essay
 
+- https://newsletter.squishy.computer/p/deep-future -- Deep Future
+  - [meta]:
+    - date: 11/15/2025
+    - tags: [scenarios, planning, ai]
+  - https://deepfuture.now/#features
+- https://newscience.org/faq/ -- What's wrong with academia?
+  - [meta]:
+    - date: 11/15/2025
+    - tags: [research]
 - https://www.lesswrong.com/posts/6ZnznCaTcbGYsCmqu/the-rise-of-parasitic-ai -- The Rise of Parasitic AI
   - [meta]:
     - date: 11/14/2025
@@ -4330,6 +4360,10 @@ title: are.na
 
 ## technical
 
+- https://pdb101.rcsb.org/motm/121 -- Molecule of the Month: Ribosome
+  - [meta]:
+    - date: 11/15/2025
+    - tags: [biology]
 - https://kcsrk.info/papers/system_effects_feb_18.pdf -- Concurrent System Programming with Effect Handlers [**]
   - [meta]:
     - date: 11/14/2025
@@ -4602,6 +4636,10 @@ title: are.na
 
 ## math
 
+- https://en.wikipedia.org/wiki/Submodular_set_function -- Submodular set function
+  - [meta]:
+    - date: 11/15/2025
+    - tags: [sets, tcs]
 - https://www.youtube.com/watch?v=FfT5VTfHj_s -- Stanford AA228 Decision Making Under Uncertainty | Autumn 2025 | Bayesian Structure Learning
   - [meta]:
     - date: 11/13/2025

@@ -2,12 +2,30 @@
 date: "2025-10-24"
 description: a microblog within a blog, at the middle of the night.
 id: stream
-modified: 2025-11-13 11:34:35 GMT-05:00
+modified: 2025-11-15 17:05:25 GMT-05:00
 tags:
-  - seed
   - fruit
   - evergreen
 title: stream
+---
+
+
+- [meta]:
+  - date: 2025-11-15 12:36:29 GMT-05:00
+  - tags:
+    - life
+
+There is a particular familiarity
+
+---
+
+- [meta]:
+  - date: 2025-11-15 01:58:17 GMT-05:00
+  - tags:
+    - love
+
+Why does this hurts so bad? We aren't even in a relationship.
+
 ---
 
 - [meta]:
@@ -48,9 +66,9 @@ Love sucks. love hurts. love prevails. I want to be loved. and yet, all I got ar
 
 I was reading [On suicide](https://docs.google.com/document/d/14XZJtJcMGzD4ZY6AgaTzobunndRvXZMGUybA6JIQOj4/edit?tab=t.0) by [Alexey Guzey](https://guzey.com/)
 
-> When I was in high school, I spent a year trying to kill myself. I just couldn't do it. At some point I decided to make my life as bad as I possibly could, but nothing worked. No matter how much I tried, I still ::wanted to be alive more{h4}:: than I [_wanted to be dead_].
+> When I was in high school, I spent a year trying to kill myself. I just couldn't do it. At some point I decided to make my life as bad as I possibly could, but nothing worked. No matter how much I tried, I still ==wanted to be alive more== than I [_wanted to be dead_].
 
-The deontological arguments of life presupposes the feeling of interconnectedness. I think that if one acknowledges that no one wants one in life, then one might conclude that one's life is not worth living. [[thoughts/Philosophy and Kant|Kant]] would argue that you must "kill yourself" if you're worried about your rational faculties being compromised to the degree you'll be no longer a [[thoughts/moral|moral]] agent.
+The deontological arguments of life ::presupposes the feeling of interconnectedness{h5}::. I think that if one acknowledges that no one wants one in life, then one might conclude that one's life is not worth living. [[thoughts/Philosophy and Kant|Kant]] would argue that you must "kill yourself" if you're worried about your rational faculties being compromised to the degree you'll be no longer a [[thoughts/moral|moral]] agent.
 
 > **I wonder how much of this is due to the lack of imagination. If you're suicidal, it's very difficult to imagine life getting better.**
 
