@@ -1,5 +1,6 @@
 import path from "node:path"
 import { promises as fs } from "node:fs"
+import { execSync } from "node:child_process"
 import matter from "gray-matter"
 
 interface Coordinates {
@@ -527,14 +528,17 @@ async function main() {
   let updated = 0
   let skipped = 0
   let missingAddress = 0
+  const changedFiles: string[] = []
   for (const entry of places) {
     const result = await writePlace(entry, existingIndex)
     if (!result.changed) {
       skipped += 1
     } else if (result.existed) {
       updated += 1
+      changedFiles.push(result.path)
     } else {
       created += 1
+      changedFiles.push(result.path)
     }
     if (result.hasAddress) {
       continue
@@ -546,6 +550,17 @@ async function main() {
   )
   if (missingAddress > 0) {
     console.warn(`Unable to resolve addresses for ${missingAddress} place(s).`)
+  }
+  if (changedFiles.length > 0) {
+    console.log(`Formatting ${changedFiles.length} changed file(s) with prettier...`)
+    try {
+      execSync(`pnpm prettier --write ${changedFiles.map((f) => `"${f}"`).join(" ")}`, {
+        cwd: process.cwd(),
+        stdio: "inherit",
+      })
+    } catch (error) {
+      console.warn("Failed to run prettier:", error)
+    }
   }
 }
 

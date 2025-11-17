@@ -29,6 +29,7 @@ export interface ArenaBlock {
   internalSlug?: string
   internalHref?: string
   internalHash?: string
+  internalTitle?: string
   tags?: string[]
   embedDisabled?: boolean
 }
@@ -104,6 +105,9 @@ export interface ArenaBlockSearchable {
 
   /** Internal note anchor fragment */
   internalHash?: string
+
+  /** Internal title fragment */
+  internalTitle?: string
 
   /** Associated tags for filtering and search */
   tags?: string[]
@@ -848,6 +852,7 @@ export const Arena: QuartzTransformerPlugin = () => {
                 | {
                     slug: string
                     href: string
+                    title: string
                     hash?: string
                   }
                 | undefined => {
@@ -871,6 +876,7 @@ export const Arena: QuartzTransformerPlugin = () => {
                         slug,
                         href: canonicalHref,
                         hash: anchor && anchor.length > 0 ? anchor : undefined,
+                        title: toString(el),
                       }
                     }
                   }
@@ -892,6 +898,7 @@ export const Arena: QuartzTransformerPlugin = () => {
                 block.internalSlug = internalLinkInfo.slug
                 block.internalHref = internalLinkInfo.href
                 block.internalHash = internalLinkInfo.hash
+                block.internalTitle = internalLinkInfo.title
               }
 
               return block

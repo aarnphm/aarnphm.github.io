@@ -9,7 +9,7 @@ coordinates:
   - "-79.3515725"
 date: "2025-08-05"
 id: Isle of Coffee
-modified: "2025-11-10 05:42:48 GMT-05:00"
+modified: "2025-11-15 21:15:12 GMT-05:00"
 rating: 5
 tags:
   - places

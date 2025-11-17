@@ -7,12 +7,13 @@ aliases:
 date: "2025-08-09"
 description: just another fish in the sea.
 id: dating
-modified: 2025-11-13 04:46:17 GMT-05:00
+modified: 2025-11-17 15:03:13 GMT-05:00
 noindex: true
 slides: true
 tags:
   - evergreen
   - love
+  - fruit
 title: dating me.
 ---
 

@@ -41,7 +41,7 @@ cssclasses:
 date: "2024-10-24"
 description: My run-down version of are[dot]na
 id: are.na
-modified: 2025-11-15 17:00:08 GMT-05:00
+modified: 2025-11-17 09:28:41 GMT-05:00
 permalinks:
   - /website
   - /tweets
@@ -122,6 +122,10 @@ title: are.na
 - [meta]:
   - view: list
 
+- https://x.com/visakanv/status/1893981593322045500 -- one of the difficult things about writing a good essay is figuring out what to leave out so it's more manageable for readers
+  - [meta]:
+    - date: 11/17/2025
+    - tags: [writing]
 - https://x.com/motorhomelabs/status/1988582129404682538 -- The schadenfreude of fresh college students getting rescinded
   - [meta]:
     - date: 11/12/2025
@@ -689,6 +693,19 @@ title: are.na
 
 ## people
 
+- http://www.catb.org/~esr/ -- Eric S. Raymond
+  - [meta]:
+    - date: 11/17/2025
+    - tags: [programmer]
+- https://www.poetryfoundation.org/poets/robert-desnos -- Robert Desnos
+  - [meta]:
+    - date: 11/17/2025
+    - tags: [poets]
+  - French, _Deuil pour deuil (1924)_, _La Liberté ou l'amour! (1927)_
+- https://miles.land/ -- R. Miles McCain
+  - [meta]:
+    - date: 11/16/2025
+    - tags: [safety]
 - https://tw.boffosocko.com/#. -- Chris Aldrich
   - [meta]:
     - date: 11/15/2025
@@ -1209,6 +1226,16 @@ title: are.na
 
 ## places
 
+- https://maps.app.goo.gl/nQBRM1Mws2JdM9vQA -- Bar Niro
+  - [meta]:
+    - date: 11/15/2025
+    - tags: [wine bar]
+    - coord: [-79.4295031, 43.6495912]
+- https://maps.app.goo.gl/Fqrk6Gvx1JeV5cXGA -- Augusta Coffee Bar
+  - [meta]:
+    - date: 11/15/2025
+    - tags: [coffee shop]
+    - coord: [-79.4044516, 43.6544546]
 - https://maps.app.goo.gl/7xSaomXDfgBJh4Yr7 -- Reservoir Lounge
   - [meta]:
     - date: 11/10/2025
@@ -1220,6 +1247,7 @@ title: are.na
     - tags: [communal]
     - coord: [-71.1107316, 42.3565554]
     - title: PIKA @ MIT
+    - sidebar: false
   - https://pika.mit.edu/
 - https://maps.app.goo.gl/xx36MxJmbtx2pmH88 -- Rooms Coffee | 135 Ossington
   - [meta]:
@@ -1309,6 +1337,7 @@ title: are.na
     - date: 09/10/2025
     - tags: [coffee shop]
     - coord: [-122.4225186, 37.7749123]
+    - sidebar: false
   - https://loquatsf.com/
 - https://maps.app.goo.gl/u6y6eV5fz7FvGzXg8 -- Bernhardt
   - [meta]:
@@ -1326,6 +1355,28 @@ title: are.na
 
 ## essay
 
+- https://www.juliaharms.com/blog/physics-mutations -- On Physics of Mutation
+  - [meta]:
+    - date: 11/17/2025
+      tags: [physics, biology]
+  - How does thermodynamics generate the _self-organized_ dynamics that ::enable{h5}:: life?
+  - why must replication mechanisms work this way to function?
+- https://www.theparisreview.org/blog/2018/04/11/illicit-love-letters-albert-camus-and-maria-casares/ -- Illicit Love Letters: [[thoughts/Camus|Albert Camus]] and Maria Casares
+  - [meta]:
+    - date: 11/16/2025
+    - tags: [love]
+- https://www.late-review.com/p/ways-of-not-seeing -- ways of not seeing
+  - [meta]:
+    - date: 11/15/2025
+    - tags: [perception]
+- https://mingyuan.substack.com/p/theres-too-much-world-for-a-person -- There's too much world for a person to know
+  - [meta]:
+    - date: 11/15/2025
+    - tags: [epistemology]
+- https://ishitagrad.substack.com/p/on-deaths-and-breakups -- On deaths and breakups
+  - [meta]:
+    - date: 11/15/2025
+    - tags: [life, relationship]
 - https://newsletter.squishy.computer/p/deep-future -- Deep Future
   - [meta]:
     - date: 11/15/2025
@@ -1352,11 +1403,11 @@ title: are.na
   - [meta]:
     - date: 11/14/2025
     - tags: [life, love]
-- https://substack.com/home/post/p-172579886 -- Marry the First Person You Date
+- https://drunkwisconsin.substack.com/p/marry-the-first-person-you-date -- Marry the First Person You Date
   - [meta]:
     - date: 11/13/2025
     - tags: [love]
-- https://substack.com/inbox/post/176719929 -- Miss your train or lose the love of your life
+- https://jeninamendz.substack.com/p/miss-your-train-or-lose-the-love -- Miss your train or lose the love of your life
   - [meta]:
     - date: 11/13/2025
     - tags: [love]
@@ -1411,7 +1462,7 @@ title: are.na
     - date: 11/12/2025
     - tags: [love, kindship]
     - pinned: true
-  - > Sometimes you love someone so much they feel like family, though you don’t share any known ancestors and it’s by no means clear you’ll co-parent with them. ^coparent
+  - ![[quotes#^coparent]]
 - https://www.ystrickler.com/the-dark-forest-theory-of-the-internet/ -- The dark forest theory of the internet
   - [meta]:
     - date: 11/11/2025
@@ -1487,7 +1538,7 @@ title: are.na
     - tags: [interfaces]
     - pinned: true
   - #design
-- https://andymatuschak.org/hmwl/ -- How Might we learn? [**]
+- https://andymatuschak.org/hmwl/ -- How might we learn? [**]
   - [meta]:
     - date: 11/05/2025
     - tags: [pedagogy, ai]
@@ -2215,6 +2266,10 @@ title: are.na
 - [meta]:
   - view: list
 
+- https://www.youtube.com/watch?v=woo_J0RKcpQ -- Assessing skeptical views of interpretability research
+  - [meta]:
+    - date: 11/15/2025
+    - tags: [interpretability]
 - https://cdn.openai.com/pdf/41df8f28-d4ef-43e9-aed2-823f9393e470/circuit-sparsity-paper.pdf -- Weight-sparse transformers have interpretable circuits
   - [meta]:
     - date: 11/14/2025
@@ -3849,6 +3904,10 @@ title: are.na
 
 ## video
 
+- https://www.youtube.com/watch?v=pHqcHzxx6I8 -- Making GPUs Actually Fast: A Deep Dive into Training Performance, at Jane Street
+  - [meta]:
+    - date: 11/16/2025
+    - tags: [training, gpu]
 - https://www.youtube.com/watch?v=OQUV6kEKwlk
   - [meta]:
     - date: 10/12/2025
@@ -4592,6 +4651,16 @@ title: are.na
 
 ## firms
 
+- https://atomicsemi.com/
+  - [meta]:
+    - date: 11/15/2025
+    - tags: [lithography]
+  - Jim Keller's company
+  - see also: [[thoughts/Tenstorrent]]
+- https://fundomo.com/
+  - [meta]:
+    - date: 11/15/2025
+    - tags: [vc]
 - https://www.mto.com/ -- Munger, Tolles & Olson LLP
   - [meta]:
     - date: 10/29/2025
@@ -4794,6 +4863,10 @@ title: are.na
 
 ## papers
 
+- https://arxiv.org/pdf/2301.04709
+  - [meta]:
+    - date: 11/15/2025
+    - tags: [interpretability]
 - https://arxiv.org/abs/2511.05408
   - [meta]:
     - date: 11/14/2025

@@ -32,7 +32,14 @@
 
         &:last-of-type {
           margin-top: 0.8rem;
+          margin-left: 1rem;
           margin-bottom: 0;
+          font-style: italic;
+
+          &:before {
+            content: "—";
+            margin-right: 0;
+          }
         }
       }
     }

@@ -927,12 +927,25 @@ async function showModal(blockId: string) {
   const collapseBtn = modal?.querySelector(".arena-modal-collapse") as HTMLElement | null
 
   if (sidebar) {
-    if (hasConnections) {
-      sidebar.classList.remove("collapsed")
-      collapseBtn?.classList.remove("active")
-    } else {
+    let shouldCollapse = !hasConnections
+
+    // Check for sidebar metadata
+    if (arenaSearchData) {
+      const blockData = arenaSearchData.blocks.find((b) => b.id === blockId)
+      if (blockData?.metadata?.sidebar) {
+        const sidebarValue = blockData.metadata.sidebar.toLowerCase().trim()
+        if (sidebarValue === "false" || sidebarValue === "0") {
+          shouldCollapse = true
+        }
+      }
+    }
+
+    if (shouldCollapse) {
       sidebar.classList.add("collapsed")
       collapseBtn?.classList.add("active")
+    } else {
+      sidebar.classList.remove("collapsed")
+      collapseBtn?.classList.remove("active")
     }
   }
 
@@ -1689,6 +1702,38 @@ document.addEventListener("nav", () => {
       if (sidebar) {
         sidebar.classList.toggle("collapsed")
         collapseBtn?.classList.toggle("active")
+
+        // Resize maps after layout change - wait for CSS transition
+        const modalBody = modal?.querySelector(".arena-modal-body") as HTMLElement | null
+        if (modalBody) {
+          const resizeMaps = () => {
+            modalBody
+              .querySelectorAll<HTMLElement>(".arena-modal-map[data-map-initialized='1']")
+              .forEach((mapNode) => {
+                const map = mapInstances.get(mapNode)
+                if (map) {
+                  try {
+                    map.resize()
+                  } catch (error) {
+                    console.error(error)
+                  }
+                }
+              })
+          }
+
+          const onTransitionEnd = (event: TransitionEvent) => {
+            if (event.target === sidebar && event.propertyName === "width") {
+              sidebar.removeEventListener("transitionend", onTransitionEnd)
+              requestAnimationFrame(resizeMaps)
+            }
+          }
+
+          sidebar.addEventListener("transitionend", onTransitionEnd)
+          setTimeout(() => {
+            sidebar.removeEventListener("transitionend", onTransitionEnd)
+            requestAnimationFrame(resizeMaps)
+          }, 500)
+        }
       }
       return
     }
@@ -1794,6 +1839,52 @@ document.addEventListener("nav", () => {
       return
     }
 
+    if ((e.metaKey || e.ctrlKey) && key === "b") {
+      const modal = document.getElementById("arena-modal")
+      if (modal?.classList.contains("active")) {
+        e.preventDefault()
+        const sidebar = modal.querySelector(".arena-modal-sidebar") as HTMLElement | null
+        const collapseBtn = modal.querySelector(".arena-modal-collapse") as HTMLElement | null
+        if (sidebar) {
+          sidebar.classList.toggle("collapsed")
+          collapseBtn?.classList.toggle("active")
+
+          // Resize maps after layout change - wait for CSS transition
+          const modalBody = modal.querySelector(".arena-modal-body") as HTMLElement | null
+          if (modalBody) {
+            const resizeMaps = () => {
+              modalBody
+                .querySelectorAll<HTMLElement>(".arena-modal-map[data-map-initialized='1']")
+                .forEach((mapNode) => {
+                  const map = mapInstances.get(mapNode)
+                  if (map) {
+                    try {
+                      map.resize()
+                    } catch (error) {
+                      console.error(error)
+                    }
+                  }
+                })
+            }
+
+            const onTransitionEnd = (event: TransitionEvent) => {
+              if (event.target === sidebar && event.propertyName === "width") {
+                sidebar.removeEventListener("transitionend", onTransitionEnd)
+                requestAnimationFrame(resizeMaps)
+              }
+            }
+
+            sidebar.addEventListener("transitionend", onTransitionEnd)
+            setTimeout(() => {
+              sidebar.removeEventListener("transitionend", onTransitionEnd)
+              requestAnimationFrame(resizeMaps)
+            }, 100)
+          }
+        }
+        return
+      }
+    }
+
     const results = getSearchResults()
     const searchContainer = document.getElementById("arena-search-container")
     const searchOpen = Boolean(searchContainer && searchContainer.classList.contains("active"))
@@ -1859,6 +1950,32 @@ document.addEventListener("nav", () => {
         closeModal()
       }
       return
+    }
+
+    // Handle PDF page navigation with Shift+Arrow
+    if (e.shiftKey && (e.key === "ArrowLeft" || e.key === "ArrowRight")) {
+      const modal = document.getElementById("arena-modal")
+      const modalBody = modal?.querySelector(".arena-modal-body")
+      const pdfViewer = modalBody?.querySelector(".arena-modal-embed-pdf[data-pdf-status='loaded']")
+
+      if (pdfViewer) {
+        e.preventDefault()
+        const controls = pdfViewer.querySelector(".arena-pdf-controls")
+        if (controls) {
+          if (e.key === "ArrowLeft") {
+            const prevBtn = controls.querySelector(".arena-pdf-prev") as HTMLButtonElement
+            if (prevBtn && !prevBtn.disabled) {
+              prevBtn.click()
+            }
+          } else {
+            const nextBtn = controls.querySelector(".arena-pdf-next") as HTMLButtonElement
+            if (nextBtn && !nextBtn.disabled) {
+              nextBtn.click()
+            }
+          }
+        }
+        return
+      }
     }
 
     if (e.key === "ArrowLeft") {

@@ -2,20 +2,28 @@
 date: "2025-10-24"
 description: a microblog within a blog, at the middle of the night.
 id: stream
-modified: 2025-11-15 17:05:25 GMT-05:00
+modified: 2025-11-17 14:55:30 GMT-05:00
 tags:
   - fruit
   - evergreen
 title: stream
 ---
 
+- [meta]:
+  - date: 2025-11-17 14:55:06 GMT-05:00
+  - tags:
+    - love
+
+![[quotes#^hopeless]]
+
+---
 
 - [meta]:
   - date: 2025-11-15 12:36:29 GMT-05:00
   - tags:
     - life
 
-There is a particular familiarity
+Got on a call with middle school friends, seeing my old Vietnamese teacher, B—there's warmth in it. Good memories, honestly. But I'm glad I left when I did.
 
 ---
 

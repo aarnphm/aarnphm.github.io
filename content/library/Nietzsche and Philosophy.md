@@ -10,6 +10,7 @@ posters: "[[library/posters/nietzsche-and-philosophy.jpg]]"
 notebook: "[[thoughts/Philosophy and Nietzsche]]"
 status: evergreen
 subcategory: Nietzsche
+external-url: https://antilogicalism.com/wp-content/uploads/2017/07/nietzsche-and-philosophy.pdf
 tags:
   - philosophy
 title: Nietzsche and Philosophy

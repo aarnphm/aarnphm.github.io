@@ -282,8 +282,8 @@ body[data-arena-subpage="true"] {
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
-  padding: 0.75rem;
-  padding-block: 0.75rem !important;
+  padding: 10px;
+  padding-block: 10px !important;
   font-size: 0.85rem;
   font-family: var(--bodyFont);
   text-transform: lowercase;
@@ -390,7 +390,6 @@ body[data-arena-subpage="true"] {
 
   &.highlighted {
     border-color: var(--tertiary);
-    border-width: 2px;
 
     &:hover {
       border-color: var(--tertiary);
@@ -993,9 +992,6 @@ body[data-arena-subpage="true"] {
   flex-direction: column;
   gap: 2rem;
   min-width: 0;
-  transition:
-    transform 0.3s ease,
-    opacity 0.3s ease;
   transform: translateX(0);
 
   @media all and ($mobile) {
@@ -1327,7 +1323,7 @@ span.tag-link:hover {
   .arena-search-input {
     width: 100%;
     box-sizing: border-box;
-    padding: 0.75rem 0 0.75rem 1rem;
+    padding: 10px 0 10px 12px;
     border: 1px solid var(--lightgray);
     border-radius: 0px;
     font-size: 14px;

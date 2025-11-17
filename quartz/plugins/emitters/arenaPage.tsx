@@ -141,6 +141,7 @@ function serializeBlock(
   if (block.internalSlug) searchable.internalSlug = block.internalSlug
   if (block.internalHref) searchable.internalHref = block.internalHref
   if (block.internalHash) searchable.internalHash = block.internalHash
+  if (block.internalTitle) searchable.internalTitle = block.internalTitle
   if (block.tags) searchable.tags = block.tags
 
   // Serialize ElementContent to HTML strings
