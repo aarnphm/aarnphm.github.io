@@ -62,7 +62,7 @@
     "fast-xml-parser": "^5.3.2",
     "flexsearch": "^0.8.212",
     "github-slugger": "^2.0.0",
-    "globby": "^15.0.0",
+    "globby": "^16.0.0",
     "gray-matter": "^4.0.3",
     "hast-util-find-and-replace": "^5.0.1",
     "hast-util-from-html": "^2.0.3",
@@ -149,7 +149,7 @@
     "zod": "^4.1.12"
   },
   "devDependencies": {
-    "@cloudflare/workers-types": "^4.20251113.0",
+    "@cloudflare/workers-types": "^4.20251117.0",
     "@modelcontextprotocol/inspector": "^0.17.2",
     "@types/d3": "^7.4.3",
     "@types/hast": "^3.0.4",
@@ -162,7 +162,7 @@
     "@types/unist": "^3.0.3",
     "@types/ws": "^8.18.1",
     "@types/yargs": "^17.0.35",
-    "@typescript/native-preview": "7.0.0-dev.20251114.1",
+    "@typescript/native-preview": "7.0.0-dev.20251117.1",
     "bibtex-tidy": "^1.14.0",
     "esbuild": "^0.27.0",
     "mermaid": "^11.12.1",
