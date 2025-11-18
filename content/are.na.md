@@ -1372,6 +1372,10 @@ title: are.na
 
 ## essay
 
+- https://how.complexsystems.fail -- How complex systems fail [**]
+  - [meta]:
+    - date: 11/18/2025
+      tags: [physics, biology]
 - https://www.juliaharms.com/blog/physics-mutations -- On Physics of Mutation
   - [meta]:
     - date: 11/17/2025
@@ -3824,6 +3828,10 @@ title: are.na
 
 ## design
 
+- https://www.tonik.com -- Tonik
+  - [meta]:
+    - date: 11/18/2025
+    - tags: [studio]
 - https://s-p.studio/ -- Special projects
   - [meta]:
     - date: 11/13/2025
