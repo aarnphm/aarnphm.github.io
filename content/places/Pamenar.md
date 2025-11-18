@@ -7,14 +7,14 @@ categories:
 coordinates:
   - "43.6566835"
   - "-79.4027094"
-date: "2025-08-05"
-id: Cafe Pamenar
+date: "2025-11-17"
+id: Pamenar
 modified: "2025-11-17 19:39:13 GMT-05:00"
 rating: 5
 tags:
   - places
-title: Cafe Pamenar
+title: Pamenar
 type:
   - "[[thoughts/coffee shop]]"
-url: "https://maps.app.goo.gl/gPjjBhKiaVG1KYtU7"
+url: "https://maps.app.goo.gl/KfkZvSeUqzMUe5rs9"
 ---

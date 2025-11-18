@@ -164,3 +164,5 @@ transclude:
 ![[thoughts/images/london, 9am.png|shoreditch, london, 9am]]
 
 ![[thoughts/images/proof by magic.png|proof by magic]]
+
+![[thoughts/images/we are so back not really.png|we are so back, hmm not really]]

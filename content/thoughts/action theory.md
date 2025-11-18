@@ -1,9 +1,8 @@
 ---
 date: "2025-11-12"
 id: action theory
-modified: 2025-11-12 18:59:46 GMT-05:00
+modified: 2025-11-18 05:16:57 GMT-05:00
 tags:
-  - philosophy
   - pattern
 title: action theory
 ---

@@ -3,7 +3,7 @@ aliases:
   - advice
 date: "2024-01-23"
 id: quotes
-modified: 2025-11-17 14:54:52 GMT-05:00
+modified: 2025-11-18 04:08:33 GMT-05:00
 socialDescription: A collection of quotes, wisdom, and advice.
 tags:
   - evergreen
@@ -13,6 +13,10 @@ transclude:
   dynalist: false
   title: false
 ---
+
+> My fundamental philosophical trait is "lazy stoicism": I just do not care about stuff I do not control because that'd be too much work to do so.
+>
+> [François Fleuret](https://x.com/francoisfleuret/status/1990697253921837517)
 
 > Love is awful. It’s awful. It’s painful. It’s frightening. It makes you doubt yourself, judge yourself, distance yourself from the other people in your life. It makes you selfish. It makes you creepy, makes you obsessed with your hair, makes you cruel, makes you say and do things you never thought you would do. It’s all any of us want, and it’s hell when we get there. So no wonder it’s something we don’t want to do on our own. I was taught if we’re born with love then life is about choosing the right place to put it. People talk about that a lot, feeling right, when it feels right it’s easy. But I’m not sure that’s true. It takes strength to know what’s right. And love isn’t something that weak people do. Being a romantic takes a hell of a lot of hope. I think what they mean is, when you find somebody that you love, it feels like hope. ^hopeless
 >

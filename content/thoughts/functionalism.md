@@ -3,7 +3,7 @@ created: "2025-10-01"
 date: "2025-10-01"
 description: Functional roles, computational hermeneutics, autopoietic critiques
 id: functionalism
-modified: 2025-11-10 09:49:06 GMT-05:00
+modified: 2025-11-18 05:16:34 GMT-05:00
 published: "2003-03-05"
 socials:
   sep: https://plato.stanford.edu/entries/functionalism/
@@ -60,42 +60,22 @@ Energy and timing constraints challenge pure substrate independence: real comput
 
 ### objections
 
-- absent qualia: a system could have the right role without any feel at all; functional equivalence does not force phenomenality. [wiki](<https://en.wikipedia.org/wiki/Functionalism_(philosophy_of_mind)>)
-- inverted qualia: same role, different qualia mapping (your red = my green) with no functional difference; role underdetermines phenomenology. [@shoemaker1982invertedspectrum] [wiki](<https://en.wikipedia.org/wiki/Functionalism_(philosophy_of_mind)>)
-- china brain: a nation-simulated controller could realize the role; does that entail consciousness? if not, role ≠ mind. [@block1978troublesfunctionalism] [wiki](https://en.wikipedia.org/wiki/Chinese_room#The_Chinese_Nation_and_the_Chinese_Room)
-- chinese room: pure symbol-shuffling can pass functional tests without understanding; syntax isn’t semantics. [@searle1980minds] [wiki](https://en.wikipedia.org/wiki/Chinese_room)
-- knowledge argument: mary learns a new fact (what-red-is-like) despite knowing all functional/physical facts; functional story is not complete. [@jackson1982epiphenomenalqualia; @jackson1986whatmary] [wiki](https://en.wikipedia.org/wiki/Knowledge_argument)
-- zombies: functional duplicates without experience are conceivable; if metaphysically possible, functionalism misses something. [@chalmers1996consciousmind] [wiki](https://en.wikipedia.org/wiki/Philosophical_zombie)
-- liberalism vs chauvinism: unrefined role specs risk over-inclusion (thermostats “believe”) or over-exclusion (alien silicon minds). [wiki](<https://en.wikipedia.org/wiki/Functionalism_(philosophy_of_mind)>)
+- absent qualia: a system could have the right role without any feel at all; functional equivalence does not force phenomenality.
+- [[thoughts/inverted spectrum|inverted]] qualia: same role, different qualia mapping (your red = my green) with no functional difference; role underdetermines phenomenology. [@shoemaker1982invertedspectrum]
+- china brain: a nation-simulated controller could realize the role; does that entail consciousness? if not, role ≠ mind. [@block1978troublesfunctionalism]
+- [[thoughts/chinese room]]: pure symbol-shuffling can pass functional tests without understanding; syntax isn’t semantics. [@searle1980minds]
+- [[thoughts/knowledge argument]]: mary learns a new fact (what-red-is-like) despite knowing all functional/physical facts; functional story is not complete. [@jackson1982epiphenomenalqualia; @jackson1986whatmary]
+- [[thoughts/philosophical zombies|zombies]]: functional duplicates without experience are conceivable; if metaphysically possible, functionalism misses something. [@chalmers1996consciousmind]
+- liberalism vs chauvinism: unrefined role specs risk over-inclusion (thermostats “believe”) or over-exclusion (alien silicon minds).
 
 ### critiques
 
-- qualia underdetermination: absent/inverted qualia show second-order role specs don’t fix phenomenal character. [@levin2024functionalism]
+- [[thoughts/qualia]] underdetermination: absent/inverted qualia show second-order role specs don’t fix phenomenal character. [@levin2024functionalism]
 - triviality/disjunction worry: overly permissive role descriptions become gerrymandered disjunctions that any complex system satisfies, draining explanatory power. [@levin2024functionalism]
 - liberalism/chauvinism tension: tighten the role and you exclude plausible minds; loosen it and you ascribe minds too widely; the fix requires principled role constraints. [@levin2024functionalism]
 - holism and fixation: functional roles are fixed by networks of roles; individuation risks circularity unless anchored by empirical psycho-functional theory. [@levin2024functionalism]
 - narrow vs wide content: externalist arguments imply some mental contents depend on environment; purely internal role specs can’t capture wide content. [@levin2024functionalism]
 - implementation sensitivity: if neuroscientific constraints (temporal codes, oscillatory binding) are partly constitutive, pure substrate-neutral roles are incomplete; add structural/dynamical invariants. [@levin2024functionalism]
-
-## chinese room
-
-- setup: a non-chinese speaker in a room follows a giant rulebook to map input symbols to output symbols so well that outside observers think they’re conversing in chinese. internally, it’s only syntax; no “understanding.” [@searle1980minds; @cole2023chineseroom] [wiki](https://en.wikipedia.org/wiki/Chinese_room)
-- Searle’s claim is that syntax ==is not== semantics. Executing the right transition table is not sufficient for understanding; thus, bare computational/role equivalence underdetermines mentality. [@searle1980minds]
-- pressure on functionalism: if a system perfectly instantiates the i/o role and internal transitions yet lacks understanding, role individuation looks incomplete.
-
-functional replies:
-
-- systems reply: the “person + book + room” composite realizes the understanding, not the person alone; you mislocate the subject. [wiki](https://en.wikipedia.org/wiki/Chinese_room)
-- robot reply: couple the controller to a body and sensorimotor loop; semantics is partially fixed by world-involving use (teleosemantic/enactive flavor). role must include embodied control. [@levin2024functionalism]
-- brain-simulator reply: simulate the causal structure of a native speaker’s brain at sufficient granularity; if functional isomorphism holds, semantics rides along. [wiki](https://en.wikipedia.org/wiki/Chinese_room)
-- internalization reply: memorize the whole book; now the person implements the system. many infer understanding emerges at scale; searle denies, but this exposes the intuition pump.
-
-empirical/engineering handle:
-
-- widen the role: test counterfactual generalization, transfer, grounded reference, and off-nominal control. if the system’s error dynamics and reference-resolving behavior match a speaker’s across interventions, treat the role as semantics-fixing.
-- embed normative constraints: add objectives for truth-tracking, action-sensitivity, and learning under uncertainty (precision-weighted updates). if performance and adaptation match, the “syntax-only” critique weakens in practice. [@friston2017computationalnosology; @parr2018computationalneuropsychology]
-- note: this operationalizes functionalism as rich, embodied, control-theoretic roles—close to psycho-functional and predictive variants above.
-- note: this moves from "does it understand?" (philosophical) to "does it generalize, ground, and recover like a speaker?" (engineering). criteria replace essence. wittgenstein's "meaning is use" applied to AI.
 
 ## notes
 

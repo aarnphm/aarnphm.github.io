@@ -41,7 +41,7 @@ cssclasses:
 date: "2024-10-24"
 description: My run-down version of are[dot]na
 id: are.na
-modified: 2025-11-17 09:28:41 GMT-05:00
+modified: 2025-11-18 06:07:35 GMT-05:00
 permalinks:
   - /website
   - /tweets
@@ -122,6 +122,10 @@ title: are.na
 - [meta]:
   - view: list
 
+- https://x.com/esrtweet/status/1889785599340486802 -- emdash defence against LLM-generations
+  - [meta]:
+    - date: 11/17/2025
+    - tags: [writing]
 - https://x.com/visakanv/status/1893981593322045500 -- one of the difficult things about writing a good essay is figuring out what to leave out so it's more manageable for readers
   - [meta]:
     - date: 11/17/2025
@@ -298,6 +302,10 @@ title: are.na
 
 ## website
 
+- https://www.schlaugh.com/~posts
+  - [meta]:
+    - date: 11/18/2025
+    - tags: [social media]
 - https://thecompendium.cards/c/half-baked/ -- The Compendium [**]
   - [meta]:
     - date: 11/15/2025
@@ -693,6 +701,10 @@ title: are.na
 
 ## people
 
+- https://sophie.garden/
+  - [meta]:
+    - date: 11/18/2025
+    - tags: [portfolio]
 - http://www.catb.org/~esr/ -- Eric S. Raymond
   - [meta]:
     - date: 11/17/2025
@@ -1226,6 +1238,11 @@ title: are.na
 
 ## places
 
+- https://maps.app.goo.gl/KfkZvSeUqzMUe5rs9 -- Pamenar
+  - [meta]:
+    - date: 11/17/2025
+    - tags: [coffee shop]
+    - coord: [-79.4027094, 43.6566835]
 - https://maps.app.goo.gl/nQBRM1Mws2JdM9vQA -- Bar Niro
   - [meta]:
     - date: 11/15/2025
@@ -2266,6 +2283,22 @@ title: are.na
 - [meta]:
   - view: list
 
+- https://www.youtube.com/watch?v=78Xa8VkH7-g -- Causal [[thoughts/mechanistic interpretability|Mechanistic Interpretability]], Atticus Geiger
+  - [meta]:
+    - date: 11/18/2025
+    - tags: [interpretability]
+  - > understanding neural networks through their causal mechanism
+  - [[thoughts/mechanistic interpretability#steering|activations]] steering
+    - Golden Gate Claude
+      ![[thoughts/images/diff steering.png]]
+    - circa AxBench [@wu2025axbenchsteeringllmssimple]
+    - harmonic means of:
+      - coherence
+      - prompt following
+      - steering effects
+  - Causal Mediation
+  - Causal Abstraction
+  - Designing Counterfactuals
 - https://www.youtube.com/watch?v=woo_J0RKcpQ -- Assessing skeptical views of interpretability research
   - [meta]:
     - date: 11/15/2025
@@ -3436,6 +3469,10 @@ title: are.na
 
 ## philosophy
 
+- https://www.youtube.com/watch?v=qX6NztnPU-4 -- A 97-Year-Old Philosopher Faces His Own Death
+  - [meta]:
+    - date: 11/18/2025
+    - tags: [eschatology]
 - https://www.youtube.com/watch?v=xL_sMXfzzyA -- A Conversation with Bertrand Russell (1952)
   - [meta]:
     - date: 11/05/2025
@@ -4712,7 +4749,7 @@ title: are.na
 - https://www.youtube.com/watch?v=FfT5VTfHj_s -- Stanford AA228 Decision Making Under Uncertainty | Autumn 2025 | Bayesian Structure Learning
   - [meta]:
     - date: 11/13/2025
-    - tags: [statistics]
+    - tags: [statistics, todo, ml]
 - https://www.youtube.com/watch?v=0641zdeGsN8 -- 2025 Hamilton Lecture: 'My romance with the warped side of our universe'
   - [meta]:
     - date: 11/12/2025

@@ -2,14 +2,12 @@
 date: "2025-11-10"
 description: what Mary learns and what physicalism misses
 id: knowledge-argument
-modified: 2025-11-10 09:00:00 GMT-05:00
+modified: 2025-11-18 05:16:48 GMT-05:00
 socials:
   sep: https://plato.stanford.edu/entries/qualia-knowledge/
   wikipedia: https://en.wikipedia.org/wiki/Knowledge_argument
 tags:
-  - philosophy
   - pattern
-  - consciousness
 title: knowledge argument
 ---
 
