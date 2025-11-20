@@ -4,6 +4,7 @@ author:
   - Gerald Jay Sussman
 category: non fiction
 date: "2025-10-06"
+description: classic computer science text using scheme to teach abstraction, recursion, interpreters, and how to think about programs as building blocks.
 external-url: https://web.mit.edu/6.001/6.037/sicp.pdf
 id: Structure and Interpretation of Computer Programs
 modified: 2025-10-29 02:14:36 GMT-04:00

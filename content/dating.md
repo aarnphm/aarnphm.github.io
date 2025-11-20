@@ -7,7 +7,7 @@ aliases:
 date: "2025-08-09"
 description: just another fish in the sea.
 id: dating
-modified: 2025-11-19 06:56:34 GMT-05:00
+modified: 2025-11-19 18:08:51 GMT-05:00
 noindex: true
 slides: true
 tags:
@@ -50,7 +50,7 @@ I listen to quite a bit of <span style="text-decoration: underline;">Rachmaninof
 
 Looking for someone equally comfortable discussing Wittgenstein (or [[thoughts/Philosophy and Nietzsche|Nietzsche]]) over homemade pasta, high empathy, witty and sharp, non-avoidance attachment style, to plan spontaneous cabin escapes.
 
-[^managed-obesssion]: more of a time-block allocation technique. This phrase is colloquially an extension of [spaced repetition](https://apps.ankiweb.net/). I spend around 15-30 mins a day working on something I care about deeply. Right now, it is [[thoughts/Tractatus|Tractatus Logico-Philosophicus]] by [[thoughts/Wittgenstein]], and building rhizomatic tooling.
+[^managed-obesssion]: more of a time-block allocation technique. This phrase is colloquially an extension of [spaced repetition](https://apps.ankiweb.net/). I spend around 15-30 mins a day working on something I care about deeply. Right now, it is [[library/Tractatus Logico-Philosophicus]] by [[thoughts/Wittgenstein]], and building rhizomatic tooling.
 
 five years plan: No kids, for now. I value my relationship with my female friends. I'm based in Toronto, but US-bound eventually.
 

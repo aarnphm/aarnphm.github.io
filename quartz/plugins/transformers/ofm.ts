@@ -225,7 +225,10 @@ const tagRegex = new RegExp(
   /(?<=^| )#((?:[-_\p{L}\p{Emoji}\p{M}\d])+(?:\/[-_\p{L}\p{Emoji}\p{M}\d]+)*)/gu,
 )
 const blockReferenceRegex = new RegExp(/\^([-_A-Za-z0-9]+)$/g)
-const markerRegex = new RegExp(/::([^:]+)\{(h[1-7])\}::/g)
+// Allow both ::text{hN}:: and bare ::text:: (defaults to h3)
+const markerRegex = new RegExp(/::([^:]+?)(?:\{(h[1-7])\})?::/g)
+// bare marker without explicit intensity, defaults to h3
+const bareMarkerRegex = new RegExp(/::([^:{}]+?)::/g)
 
 const intensityColorMap: Record<string, string> = {
   h1: "rose",
@@ -335,6 +338,19 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options>>
           }
 
           if (opts.enableMarker) {
+            // handle bare ::text:: markers with default intensity h2
+            replacements.push([
+              bareMarkerRegex,
+              (_value: string, ...capture: string[]) => {
+                const [text] = capture
+                return {
+                  type: "html",
+                  value: `<span class="marker marker-h2">${text}</span>`,
+                }
+              },
+            ])
+
+            // handle explicit ::text{hN}:: markers
             replacements.push([
               markerRegex,
               (_value: string, ...capture: string[]) => {

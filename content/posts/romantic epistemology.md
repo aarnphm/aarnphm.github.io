@@ -3,7 +3,7 @@ date: "2025-11-16"
 description: on romantic epistemology
 draft: true
 id: romantic epistemology
-modified: 2025-11-19 14:24:53 GMT-05:00
+modified: 2025-11-20 12:27:13 GMT-05:00
 pageLayout: letter
 tags:
   - philosophy

@@ -2,7 +2,7 @@
   "showFrontmatter": true,
   "alwaysUpdateLinks": true,
   "showUnsupportedFiles": true,
-  "spellcheck": false,
+  "spellcheck": true,
   "vimMode": true,
   "promptDelete": true,
   "pdfExportSettings": {
@@ -17,7 +17,7 @@
   "newLinkFormat": "absolute",
   "newFileFolderPath": "thoughts",
   "attachmentFolderPath": "thoughts/images",
-  "showLineNumber": true,
+  "showLineNumber": false,
   "readableLineLength": false,
   "strictLineBreaks": true,
   "showInlineTitle": true,

@@ -2,7 +2,7 @@
 date: "2025-10-23"
 description: from Clearer Thinking.
 id: personality
-modified: 2025-11-04 06:28:25 GMT-05:00
+modified: 2025-11-19 18:07:58 GMT-05:00
 noindex: true
 pageLayout: letter
 slides: true
@@ -288,6 +288,6 @@ from [this test](https://programs.clearerthinking.org/philosophical_beliefs.html
 - **Teletransporter: Leads to Survival**
   - would use a teletransporter; destroying and recreating your body doesn't kill you, just moves 'you'. see also [[thoughts/identity]].
 - **Truth: Deflationary Truth**
-  - truth has no metaphysical reality; "truth" is a useful logical tool but not an external reality. see also [[thoughts/Tractatus]].
+  - truth has no metaphysical reality; "truth" is a useful [[library/Tractatus Logico-Philosophicus|logical]] tool but not an external reality.
 - **Zombies: The Idea is Conceivable-but-Impossible**
-  - can imagine philosophical zombies but don't believe they're possible; consciousness necessarily accompanies human-like behavior. see also [[thoughts/functionalism]].
+  - can imagine [[thoughts/philosophical zombies]] but don't believe they're possible; consciousness necessarily accompanies human-like behavior. see also [[thoughts/functionalism]]

@@ -1,26 +1,30 @@
 ---
-author: Ludwig Wittgenstein
+author: "[[thoughts/Wittgenstein|Ludwig Wittgenstein]]"
 category: philosophy
 date: "2025-10-07"
 description: latter Wittgenstein
 external-url: https://static1.squarespace.com/static/54889e73e4b0a2c1f9891289/t/564b61a4e4b04eca59c4d232/1447780772744/Ludwig.Wittgenstein.-.Philosophical.Investigations.pdf
 id: Philosophical Investigations
-modified: 2025-11-19 GMT-05:00
+modified: 2025-11-19 18:10:42 GMT-05:00
 posters: "[[library/posters/philosophical-investigations.jpg]]"
+seealso:
+  - "[[library/Tractatus Logico-Philosophicus]]"
+  - "[[thoughts/forms of life|forms of life]]"
+  - "[[library/Civilisation and its Discontents|Civilisation and its Discontents]]"
 status: current
-subcategory: Wittgenstein
+subcategory: languages
 tags:
   - philosophy
 title: Philosophical Investigations
 ---
 
-see also: [[thoughts/Wittgenstein|Wittgenstein]], [[thoughts/Tractatus|Tractatus]], [[thoughts/forms of life|forms of life]], [[library/Civilisation and its Discontents|Civilisation and its Discontents]]
+W abandoned the picture theory of the [[library/Tractatus Logico-Philosophicus|TLP]] for a therapeutic approach to philosophical problems.
 
-wittgenstein's later philosophy, abandoning the picture theory of the [[thoughts/Tractatus|Tractatus]] for a therapeutic approach to philosophical problems. the investigations doesn't present a systematic theory but dissolves confusions by examining how language actually works in practice.
+PI dissolves confusions by examining how language actually works in practice.
 
 ## the turn from tractatus
 
-early wittgenstein (tractatus): language works by picturing reality. propositions have logical form that mirrors structure of facts. meaning is correspondence between linguistic elements and worldly elements.
+early wittgenstein (Tractatus): language works by picturing reality. propositions have logical form that mirrors structure of facts. meaning is correspondence between linguistic elements and worldly elements.
 
 later wittgenstein (PI): this picture-theory itself is confusion arising from looking at language in wrong way. meaning isn't hidden logical structure but visible use in practices. "don't think, but look!" (PI §66).
 

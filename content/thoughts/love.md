@@ -7,7 +7,7 @@ aliases:
 date: "2025-10-04"
 description: choosing to give your full, continuously.
 id: love
-modified: 2025-11-10 07:10:12 GMT-05:00
+modified: 2025-11-20 12:58:43 GMT-05:00
 socials:
   essay: /posts/love
 tags:
@@ -34,6 +34,14 @@ It's a discipline, a practice, a continuous choice to attend to someone despite 
 ethics of care: particularity over universality, relational self, context-sensitive responsiveness.
 
 criteria: how they talk about them, what they notice, whether they stay when it's hard. resists compression—you can't love someone you've reduced to a function.
+
+## Sternberg's triangular theory of love
+
+he argues that there are three components to love:
+
+- intimacy
+- challenge
+- commitment
 
 ## not a feeling
 

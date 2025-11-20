@@ -1,11 +1,11 @@
 ---
-author: Sigmund Freud
+author: "[[thoughts/Freud|Sigmund Freud]]"
 category: philosophy
 date: "2022-08-21"
 description: Freudian theory of egos within societal contract
 finished: 2023
 id: Civilisation and its Discontents
-modified: 2025-11-19 15:04:55 GMT-05:00
+modified: 2025-11-19 18:01:20 GMT-05:00
 posters: "[[library/posters/civilisation-and-its-discontents.jpg]]"
 status: finished
 subcategory: society

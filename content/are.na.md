@@ -41,7 +41,7 @@ cssclasses:
 date: "2024-10-24"
 description: My run-down version of are[dot]na
 id: are.na
-modified: 2025-11-19 09:41:35 GMT-05:00
+modified: 2025-11-20 13:09:04 GMT-05:00
 permalinks:
   - /website
   - /tweets
@@ -302,6 +302,10 @@ title: are.na
 
 ## website
 
+- https://lego.masonjwang.com/
+  - [meta]:
+    - date: 11/20/2025
+    - tags: [web]
 - https://www.schlaugh.com/~posts
   - [meta]:
     - date: 11/18/2025
@@ -1110,7 +1114,7 @@ title: are.na
 - https://rosszurowski.com/ -- Ross Zurowski
   - [meta]:
     - date: 08/03/2025
-    - tags: [fruit]
+    - tags: [designer]
 - https://nickm.com/ -- Nick Montfort
   - [meta]:
     - date: 10/02/2025
@@ -1288,7 +1292,7 @@ title: are.na
 - https://maps.app.goo.gl/EvYLaxoUAhqXejhj6 -- Alternity
   - [meta]:
     - date: 08/05/2025
-    - tags: [fruit]
+    - tags: [coffee shop]
     - coord: [-79.4030583, 43.667092]
 - https://maps.app.goo.gl/qsBcJ8dVfog1Mev87 -- Coco neighborhood coffee shop
   - [meta]:
@@ -1299,7 +1303,7 @@ title: are.na
 - https://maps.app.goo.gl/ubajUb5KrB9XgJTL7 -- Bevy at TheCombine
   - [meta]:
     - date: 08/05/2025
-    - tags: [fruit]
+    - tags: [coffee shop]
     - coord: [-79.3888161, 43.6451208]
     - title: Bevy @ TheCombine
 - https://maps.app.goo.gl/vJY9DPf98uF5jTyk9 -- Isle of Coffee
@@ -1351,7 +1355,7 @@ title: are.na
 - https://maps.app.goo.gl/UMuTjTkmKwN7cvTE6 -- Stakt Market
   - [meta]:
     - date: 08/05/2025
-    - tags: [fruit]
+    - tags: [market]
     - coord: [-79.4016875, 43.6408185]
 - https://maps.app.goo.gl/Ewq92uvU7EiAL5HF8 -- Loquat SF
   - [meta]:
@@ -1376,6 +1380,18 @@ title: are.na
 
 ## essay
 
+- https://thereader.mitpress.mit.edu/in-praise-of-useless-robots -- In praise of useless robots
+  - [meta]:
+    - date: 11/20/2025
+    - tags: [robotic]
+- https://read.asimov.com/ -- Read Something Wonderful (About Biology)
+  - [meta]:
+    - date: 11/20/2025
+    - tags: [biology]
+- https://notes.jordanscales.com/emails -- My Career as a Series of Emails
+  - [meta]:
+    - date: 11/19/2025
+    - tags: [life]
 - https://befriendjamin.substack.com/p/call-them-rationalists -- Call Them Rationalist
   - [meta]:
     - date: 11/19/2025
@@ -1388,7 +1404,7 @@ title: are.na
   - [meta]:
     - date: 11/17/2025
     - tags: [physics, biology]
-  - How does thermodynamics generate the _self-organized_ dynamics that ::enable{h5}:: life?
+  - How does thermodynamics generate the _self-organized_ dynamics that ==enable== life?
   - why must replication mechanisms work this way to function?
 - https://www.theparisreview.org/blog/2018/04/11/illicit-love-letters-albert-camus-and-maria-casares/ -- Illicit Love Letters: [[thoughts/Camus|Albert Camus]] and Maria Casares
   - [meta]:
@@ -1740,18 +1756,18 @@ title: are.na
   - [meta]:
     - date: 10/12/2025
     - tags: [life]
-- https://chrislakin.blog/p/flaky-breakthroughs -- Flaky breakthrough
+- https://chrislakin.blog/p/flaky-breakthroughs -- Flaky breakthrough [**]
   - [meta]:
     - date: 10/09/2025
-    - tags: [fruit]
+    - tags: [productivity]
 - https://www.lightspeedmagazine.com/fiction/state-change/ -- State change [--]
   - [meta]:
     - date: 10/09/2025
-    - tags: [fruit]
-- https://www.experimental-history.com/p/thank-you-for-being-annoying -- Thank you for beinrg annoying
+    - tags: [culture]
+- https://www.experimental-history.com/p/thank-you-for-being-annoying -- Thank you for being annoying
   - [meta]:
     - date: 10/09/2025
-    - tags: [fruit]
+    - tags: [life]
 - https://ellululu.substack.com/p/the-art-of-asking -- The art of asking
   - [meta]:
     - date: 10/07/2025
@@ -1780,7 +1796,7 @@ title: are.na
 - https://read.isabelunraveled.com/p/paris -- Paris diaries, part 2 [**]
   - [meta]:
     - date: 10/06/2025
-    - tags: [fruit, self]
+    - tags: [self]
 - https://read.isabelunraveled.com/p/show-up -- Just show up [**]
   - [meta]:
     - date: 10/06/2025
@@ -1788,32 +1804,32 @@ title: are.na
 - https://read.isabelunraveled.com/p/confidence -- Confidence Comes from Taking Care of Yourself
   - [meta]:
     - date: 10/06/2025
-    - tags: [fruit]
+    - tags: [life]
 - https://offhandquibbles.substack.com/p/why-have-sex -- Why Have Sex?
   - [meta]:
     - date: 10/05/2025
-    - tags: [fruit]
+    - tags: [anisogamy]
   - i.e: the evolution of anisogamy
 - [[thoughts/papers/Augmenting-Human-Intellect.pdf]] -- Augmenting Human Intellect, A Conceptual Framework - D.C Engelbart, 1962 [**]
   - [meta]:
     - date: 10/28/2025
-    - tags: [fruit]
+    - tags: [hci]
   - source: https://www.dougengelbart.org/pubs/papers/scanned/Doug_Engelbart-AugmentingHumanIntellect.pdf, https://www.dougengelbart.org/pubs/augment-3906.html
 - https://www.cs.virginia.edu/~robins/YouAndYourResearch.html -- You and Your Research, Richard Hamming [**]
   - [meta]:
     - date: 10/05/2025
-    - tags: [fruit]
+    - tags: [research]
   - > One lesson was sufficient to educate my boss as to why I didn't want to do big jobs that displaced exploratory research and why I was justified in not doing crash jobs which absorb all the research computing facilities. I wanted instead to use the facilities to compute a large number of small problems. Again, in the early days, I was limited in computing capacity and it was clear, in my area, that a 'mathematician had no use for machines.' But I needed more machine capacity. Every time I had to tell some scientist in some other area, "No I can't; I haven't the machine capacity," he complained. I said "Go tell your Vice President that Hamming needs more computing capacity." After a while I could see what was happening up there at the top; many people said to my Vice President, "Your man needs more computing capacity." I got it!
   - > The people who do great work with less ability but who are committed to it, get more done that those who have great skill and dabble in it, who work during the day and go home and do other things and come back and work the next day.
 - https://www.benkuhn.net/thinkrealhard/ -- Think real hard
   - [meta]:
     - date: 10/05/2025
-    - tags: [fruit]
+    - tags: [life, logics]
   - > In retrospect, I wish those people had just told me “think real hard.” I was looking for an easy way out—One Weird Trick to Programming Better—but programming is too hard for that.
 - https://michaelnielsen.org/blog/principles-of-effective-research/ -- Principles of Effective Research [**]
   - [meta]:
     - date: 10/05/2025
-    - tags: [fruit]
+    - tags: [research]
   - > The #philosophy underlying the essay is based on a famous quote attributed to [[thoughts/Aristotle]]: “We are what we repeatedly do. Excellence, then, is not an act but a habit.” Underlying all our habits are models (often unconscious) of how the world works.
   - > [[research|Research]] is, of course, only a part of life, and must be understood in relation to the rest of life
   - > Effective people are proactive and take personal responsibility for the events in their lives.
@@ -1827,66 +1843,66 @@ title: are.na
 - https://www.benkuhn.net/pjm/ -- How I've run major projects
   - [meta]:
     - date: 10/05/2025
-    - tags: [fruit]
+    - tags: [productivity]
   - > Even more importantly than freeing up time, clearing my schedule made sure the project was the top idea in my mind. If I don’t do that, it’s easy for me to let projects “go on autopilot,” where I keep them running but don’t proactively make time to think through things like whether we should change goals, add or drop priorities, or do other “non-obvious” things.
 - https://newsletter.squishy.computer/p/all-you-need-is-links -- All you need is links [**]
   - [meta]:
     - date: 10/05/2025
-    - tags: [fruit]
+    - tags: [hyperlinks]
       -![[thoughts/images/hyperlinks.webp]]
 - https://cybermonk.substack.com/p/i-am -- I am
   - [meta]:
     - date: 05/23/2025
-    - tags: [fruit]
+    - tags: [being]
 - https://blog.scottstevenson.net/p/how-to-finally-make-something-a16c8db7ba2a -- How to finally make something
   - [meta]:
     - date: 05/23/2025
-    - tags: [fruit]
+    - tags: [productivity]
 - http://www.aaronsw.com/weblog/theoryofchange -- Theory of Change
   - [meta]:
     - date: 05/23/2025
-    - tags: [fruit]
+    - tags: [metaphysics]
 - https://thesolarmonk.com/posts/a-spacebar-for-the-web -- vintage, letter type
   - [meta]:
     - date: 01/17/2025
-    - tags: [fruit]
+    - tags: [hyperlinks]
 - https://retool.com/visual-basic -- ASCII effects and procedural arrangement
   - [meta]:
     - date: 01/17/2025
-    - tags: [fruit]
+    - tags: [web]
 - https://www.tylerxhobbs.com/words/flow-fields -- flow feel
   - [meta]:
     - date: 01/17/2025
-    - tags: [fruit]
+    - tags: [design]
 - https://maalvika.substack.com/p/tiktoks-boyfriend-tests-and-the-spectacle -- tiktok boyfriend test and spectacle of modern love
   - [meta]:
     - date: 01/17/2025
-    - tags: [fruit]
+    - tags: [love]
 - https://archive.ph/XsuTV -- Handwritten blog [**] [--]
   - [meta]:
     - date: 01/17/2025
-    - tags: [fruit]
+    - tags: [web]
   - source: https://handwritten.blog/2022-10-01-hyperlinks-in-handwriting.html (dns problems)
 - https://www.muckrock.com/news/archives/2015/jul/21/nothing-indicate-nothing-indicate-subject-had-any-/ -- Paul Erdős, he is just a mathematician that really [[/tags/love|love]] math
   - [meta]:
     - date: 01/20/2025
-    - tags: [fruit]
+    - tags: [math, life]
 - https://matthewstrom.com/writing/generative-art-og-images/ -- Generative OG with [Brownian motion](https://en.wikipedia.org/wiki/Brownian_motion)
   - [meta]:
     - date: 01/20/2025
-    - tags: [fruit]
+    - tags: [design]
 - https://docs.google.com/document/d/1h1vw4-t9Es4p2qQkZblnWcJDo6uEc6Yu61AxaLB5hKo/edit -- Atlantis
   - [meta]:
     - date: 04/09/2025
-    - tags: [fruit]
+    - tags: [fiction]
 - https://foundersatwork.posthaven.com/the-social-radar-what-i-did-at-y-combinator -- Social radar, by Jess Livingston
   - [meta]:
     - date: 05/30/2025
-    - tags: [fruit]
+    - tags: [productivity]
 - https://jameslin.bio/jolie -- Love, with a friend
   - [meta]:
     - date: 02/20/2025
-    - tags: [fruit]
+    - tags: [love]
 - https://www.paulgraham.com/good.html -- Be good
   - [meta]:
     - date: 02/21/2025
@@ -2986,6 +3002,10 @@ title: are.na
 
 ## opinions
 
+- https://www.mozillafoundation.org/en/nothing-personal/the-post-naive-internet-era/ -- Welcome to the Post-Naive Internet era
+  - [meta]:
+    - date: 11/20/2025
+    - tags: [internet]
 - https://substack.com/@ellieanderphd/note/c-176537495?r=1z8i4s&utm_medium=ios -- How to read philosophy
   - [meta]:
     - date: 11/13/2025
@@ -3054,31 +3074,31 @@ title: are.na
 - https://blog.aayushg.com/conviction/ -- Conviction is the scarcest resource [**]
   - [meta]:
     - date: 10/02/2025
-    - tags: [fruit]
+    - tags: [life, ideology]
 - https://danluu.com/ballmer/ -- Steve Ballmer was an underrated CEO
   - [meta]:
     - date: 05/23/2025
-    - tags: [fruit]
+    - tags: [leaders]
 - https://www.dwarkesh.com/p/questions-about-ai?open=false -- Questions about AI, by Dwarkesh
   - [meta]:
     - date: 05/23/2025
-    - tags: [fruit]
+    - tags: [ai, longtermism]
 - https://epoch.ai/gradient-updates/most-ai-value-will-come-from-broad-automation-not-from-r-d -- Most AI value will come from broad automation, not from R&D
   - [meta]:
     - date: 05/23/2025
-    - tags: [fruit]
+    - tags: [interpretability]
 - https://www.thefp.com/p/a-fifth-of-american-adults-cant-read-i-teach-them -- A fifth of American Adults Can't Read. Here's How to Teach Them.
   - [meta]:
     - date: 05/23/2025
-    - tags: [fruit]
+    - tags: [pedagogy]
 - https://paulgraham.com/95.html -- PG's 95% of great programmers in
   - [meta]:
     - date: 05/23/2025
-    - tags: [fruit]
+    - tags: [productivity]
 - https://paulgraham.com/woke.html -- Origin of Wokeness
   - [meta]:
     - date: 05/23/2025
-    - tags: [fruit]
+    - tags: [society]
 - https://www.noahpinion.blog/p/will-data-centers-crash-the-economy -- Will data centers crash the economy?
   - [meta]:
     - date: 08/04/2025
@@ -3685,6 +3705,10 @@ title: are.na
 
 ## stream
 
+- https://www.humaninvariant.com/ -- Human Invariant
+  - [meta]:
+    - date: 11/20/2025
+    - tags: [columnist]
 - https://namelessvirtue.com/ -- The Nameless Virtue
   - [meta]:
     - date: 11/19/2025
@@ -3832,7 +3856,7 @@ title: are.na
   - [meta]:
     - date: 04/09/2025
     - tags: [imagery, love]
-- https://www.imdb.com/title/tt3783958/ -- La La Land
+- https://www.imdb.com/title/tt3783958/ -- La La Land [--]
   - [meta]:
     - date: 10/03/2025
     - tags: [love]

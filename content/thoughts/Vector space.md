@@ -1,7 +1,8 @@
 ---
 date: "2024-12-10"
+description: also known as linear space, a set of vectors.
 id: Vector space
-modified: 2025-10-29 02:15:38 GMT-04:00
+modified: 2025-11-20 12:30:52 GMT-05:00
 tags:
   - math
 title: Vector space
@@ -17,7 +18,7 @@ We can then take a look for a set of $G$ of a $F$-vector space $V$, the followin
 
 ### linear combination
 
-> $a_{1} \mathbf{g}_1 + a_{2} \mathbf{g}_2 + \cdots + a_{n} \mathbf{g}_n$
+$a_{1} \mathbf{g}_1 + a_{2} \mathbf{g}_2 + \cdots + a_{n} \mathbf{g}_n$
 
 where scalars $a_1, \ldots a_{n}$ is the _coefficient_ of the linear combination
 

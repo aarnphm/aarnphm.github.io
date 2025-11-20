@@ -79,8 +79,8 @@ views:
       - status
       - author
       - subcategory
-      - file.backlinks
       - notebook
+      - file.backlinks
     sort:
       - property: notebook
         direction: ASC

@@ -218,7 +218,7 @@ const config: QuartzConfig = {
             "thoughts/love",
             "thoughts/LLMs",
             "thoughts/Connectionist network",
-            "thoughts/Tractatus",
+            "library/Tractatus Logico-Philosophicus",
             "thoughts/Transformers",
             "thoughts/Camus",
             "thoughts/Attention",

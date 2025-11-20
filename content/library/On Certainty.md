@@ -1,12 +1,13 @@
 ---
-author: Ludwig Wittgenstein
+author: "[[thoughts/Wittgenstein|Ludwig Wittgenstein]]"
 category: philosophy
 date: "2025-09-18"
+description: late wittgenstein notes on knowledge and doubt, examining hinge propositions that sit beneath justification and make inquiry possible.
 id: On Certainty
-modified: 2025-11-19 11:56:44 GMT-05:00
+modified: 2025-11-19 18:11:14 GMT-05:00
 posters: "[[library/posters/on-certainty.jpg]]"
-status: to read
-subcategory: Wittgenstein
+status: current
+subcategory: skepticism
 tags:
   - philosophy
 title: On Certainty

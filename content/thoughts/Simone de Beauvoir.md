@@ -1,7 +1,8 @@
 ---
 date: "2025-11-17"
+description: French existentialist philosopher, writer, social theorist, and feminist activist.
 id: Simone de Beauvoir
-modified: 2025-11-17 15:01:53 GMT-05:00
+modified: 2025-11-19 17:40:52 GMT-05:00
 tags:
   - philosophy
 title: Simone de Beauvoir

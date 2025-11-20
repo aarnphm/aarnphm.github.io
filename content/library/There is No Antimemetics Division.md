@@ -2,6 +2,7 @@
 author: qntm
 category: fiction
 date: "2025-11-11"
+description: weird fiction about a secret organization fighting self erasing ideas, mixing horror, bureaucracy, and play with memory.
 id: There is No Antimemetics Division
 modified: 2025-11-15 04:02:04 GMT-05:00
 posters: "[[library/posters/anti-memetic-warfare.jpeg]]"
