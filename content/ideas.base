@@ -1,0 +1,47 @@
+summaries:
+  missing: values.filter(value.isType("null")).length
+filters:
+  and:
+    - file.inFolder("projects")
+properties:
+  file.tags:
+    displayName: tags
+views:
+  - type: table
+    name: all
+    groupBy:
+      property: category
+      direction: ASC
+    order:
+      - title
+      - date
+      - subcategory
+      - notebook
+    sort:
+      - property: date
+        direction: DESC
+      - property: title
+        direction: ASC
+      - property: notebook
+        direction: ASC
+      - property: status
+        direction: ASC
+    columnSize:
+      note.title: 401
+      note.date: 147
+      note.subcategory: 172
+  - type: list
+    name: dynalist
+    groupBy:
+      property: category
+      direction: ASC
+    order:
+      - file.name
+      - subcategory
+      - status
+    sort:
+      - property: file.name
+        direction: ASC
+    markers: bullet
+    indentProperties: true
+    separator: ","

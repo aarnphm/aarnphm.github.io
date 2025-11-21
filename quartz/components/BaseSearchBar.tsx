@@ -9,7 +9,7 @@ function BaseSearchBar({ displayClass, fileData }: QuartzComponentProps) {
     return null
   }
   return (
-    <div class={classNames(displayClass, "search")} style="margin: 1rem 0;grid-column: 3/4;">
+    <div class={classNames(displayClass, "search")} style="margin: 1rem 0;grid-column: 4/5;">
       <div id="base-search-bar">
         <input
           type="text"

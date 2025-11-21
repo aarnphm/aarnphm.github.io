@@ -166,3 +166,6 @@ transclude:
 ![[thoughts/images/proof by magic.png|proof by magic]]
 
 ![[thoughts/images/we are so back not really.png|we are so back, hmm not really]]
+
+![[thoughts/images/love me for myself.png|the paradox is that when I accept myself just as I am, I change—@henrikkarlsson]]
+

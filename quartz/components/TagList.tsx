@@ -9,9 +9,7 @@ import style from "./styles/tags.scss"
 export default (() => {
   const TagList: QuartzComponent = ({ cfg, fileData, displayClass }: QuartzComponentProps) => {
     const tags = fileData.frontmatter?.tags
-    const linkLookup = fileData.frontmatterLinkLookup as
-      | Record<string, FrontmatterLink>
-      | undefined
+    const linkLookup = fileData.frontmatterLinkLookup as Record<string, FrontmatterLink> | undefined
     const currentSlug = fileData.slug as FullSlug | undefined
     const baseDir = pathToRoot(fileData.slug!)
 
@@ -60,7 +58,7 @@ export default (() => {
               <h2>média</h2>
               <ul>
                 {Object.entries(fileData.frontmatter?.socials).map(([social, link]) => {
-                  const linkValue = typeof link === "string" ? link : link?.toString?.() ?? ""
+                  const linkValue = typeof link === "string" ? link : (link?.toString?.() ?? "")
                   const wikiLink = linkLookup?.[linkValue]
                   const isInternal = Boolean(wikiLink) || linkValue.startsWith("/")
                   const href = wikiLink ? buildHref(wikiLink) : linkValue

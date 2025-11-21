@@ -75,6 +75,7 @@ nmap zM :foldall<CR>
 " Go Into Link
 exmap openlink obcommand editor:open-link-in-new-leaf
 nmap go :openlink<CR>
+nmap gl :openlink<CR>
 nmap gd :openlink<CR>
 " [g]oto [f]ile (= Follow Link under cursor)
 exmap followLinkUnderCursor obcommand editor:follow-link

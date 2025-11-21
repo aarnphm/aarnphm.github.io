@@ -1,9 +1,10 @@
 ---
 date: "2025-03-25"
+description: assemblage that admits connectsion between any constituent elements
 id: Rhizome
-modified: 2025-10-29 02:15:33 GMT-04:00
+modified: 2025-11-21 16:14:37 GMT-05:00
 tags:
-  - seed
+  - pattern
 title: Rhizome
 ---
 

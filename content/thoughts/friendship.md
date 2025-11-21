@@ -2,7 +2,7 @@
 comments: true
 date: "2024-06-22"
 id: friendship
-modified: 2025-11-09 03:42:02 GMT-05:00
+modified: 2025-11-21 12:54:39 GMT-05:00
 tags:
   - love
   - pattern
@@ -42,7 +42,9 @@ Still, I hold out hope that true friendship may yet be possible - a meeting of s
 
 ## of mutual caring.
 
-> To care about something is generally to find it worthwhile or valuable in some way; caring about one’s friend is no exception. A central difference among the various accounts of mutual caring is the way in which these accounts understand the kind of evaluation implicit therein - [SEP](https://plato.stanford.edu/entries/friendship/)
+> To care about something is generally to find it worthwhile or valuable in some way; caring about one’s friend is no exception. A central difference among the various accounts of mutual caring is the way in which these accounts understand the kind of evaluation implicit therein
+>
+> —[SEP](https://plato.stanford.edu/entries/friendship/)
 
 However, people are more afraid of commitment, and they are even more afraid of being hurt. Who wouldn't? We have seen too much, borne witness to the cruelties that humans can inflict upon one another.
 

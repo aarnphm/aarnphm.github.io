@@ -2,11 +2,20 @@
 date: "2025-10-24"
 description: a microblog within a blog, at the middle of the night.
 id: stream
-modified: 2025-11-20 13:07:51 GMT-05:00
+modified: 2025-11-21 12:43:50 GMT-05:00
 tags:
   - fruit
   - evergreen
 title: stream
+---
+
+- [meta]:
+  - date: 2025-11-21 12:43:25 GMT-05:00
+  - tags:
+    - relationship
+
+I'm have no desire of making new friends in Toronto anymore. Everything felt so superficial here.
+
 ---
 
 - [meta]:

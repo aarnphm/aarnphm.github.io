@@ -20,15 +20,18 @@ seealso:
 ---
 
 C1: ego and sense of self within the societal context
+
 - oceanic feeling - ignorance for the existence of others
 - cant seem to separate himself from the sense of reality
 
 C2: the meaning of happiness?
+
 - his discontent against personal freedom and societal restrictions
 - the sense of guilt? guilty for not following societal norms
 - eros and thanatos
 
 C3: what are the core purposes of this biological beings we called self?
+
 - freud argues the human psyche is not a single monolith, rather comprises of complex interplay of the following components:
 - id: primal, instinctive part of self, seeking immediate gratification of pleasure
 - ego: logical, rational conscious part of the psyche

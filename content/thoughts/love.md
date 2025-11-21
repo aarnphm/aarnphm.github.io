@@ -27,7 +27,7 @@ Love is not a feeling that happens to you.
 It's a discipline, a practice, a continuous choice to attend to someone despite there are no {{sidenotes<inline: true>[guarantees.]: You choose to stay in the hermeneutic circle, to keep interpreting generously, to refuse instrumental understanding. [@kierkegaard1847worksoflove; @fromm1956art; @hooks2000love]}} for reciprocation.
 
 > [!summary] decomposable functions
-> 
+>
 > love = choice + [[thoughts/Attention|attention]] + practice.
 
 Contrary to popular beliefs, love is _not_ conditioned response. You decide to make someone ::central:: to your being, and adapt your [[#boxes]] around them.

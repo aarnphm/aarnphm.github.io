@@ -1,8 +1,8 @@
 ---
 date: "2025-02-14"
-description: on loneliness, Jungian-Bottonian love, and belongings.
+description: on loneliness, Jungian love, and belongings.
 id: love
-modified: 2025-10-29 02:15:11 GMT-04:00
+modified: 2025-11-21 12:36:41 GMT-05:00
 socials:
   substack: https://open.substack.com/pub/livingalone/p/jung-bottonian-love?r=1z8i4s&utm_campaign=post&utm_medium=web&showWelcomeOnShare=true
 tags:
@@ -45,7 +45,7 @@ when it is in truth a yearning for a sense of home—a state of being where one 
 
 The notion that _[love is about belonging](https://substack.com/home/post/p-154936413)_ challenges the popular narrative that it is a transaction or a fleeting emotional high.
 Instead, it proposes that love is an enduring, almost sacred, commitment to self-recognition and mutual acceptance. This understanding reframes our loneliness:
-isolation is _not_ a lack of love, but rather a disconnection from the fundamental truth that we **belong**.
+isolation stems from a disconnection from the fundamental truth that we **belong** instead of a _lack of love_.
 
 ## a projection of the Anima/Animus
 
@@ -71,11 +71,11 @@ For instance, an individual going through post-divorce isolation [^example] or a
 The body will not allow itself to be exposed to annihilation. It’s prepared to annihilate itself to avoid that
 ```
 
-[^example]: I come across this threads on [r/Jung ](https://www.reddit.com/r/Jung/comments/195ecoy/going_through_divorce_unbearable_sorrow_please/)
+[^example]: I come across this threads on [r/Jung](https://www.reddit.com/r/Jung/comments/195ecoy/going_through_divorce_unbearable_sorrow_please/)
 
 Yet these walls, while temporarily numbing pain, perpetuate a cycle of alienation. By refusing to engage with the shadow’s raw material—grief, rage, longing—the individual stagnates, mistaking the atrophy of emotional risk for "strength".
 
-Jungian belonging transcends social affiliation; it is rooted in the collective unconscious—the shared reservoir of archetypes and primordial symbols that bind humanity. When emotional walls block access to this deeper stratum,
+Jungian belonging is rooted in the collective unconscious—the shared reservoir of archetypes and primordial symbols that bind humanity. When emotional walls block access to this deeper stratum,
 individuals experience belonging as an intellectual concept rather than an embodied reality.
 As such, a recurring dream of "packing a suitcase" with unresolved urgency epitomises this disconnect: the psyche yearns for symbolic "homecoming" but remains trapped in superficial preparations.
 
@@ -88,7 +88,7 @@ through betrayal or loss, confront her own repressed assertiveness—a step towa
 
 Alain de Botton’s assertion that love is a fundamental human requirement stems from his analysis of existential loneliness—"the tax we pay for consciousness".
 Yet the anguish of feeling "out of love" arises not from love’s absence but from a misalignment between our idealised projections of connection and the raw, unvarnished reality of relationship.
-De Botton frames loneliness as an inevitable byproduct of self-awareness, a tax levied by our capacity to reflect on existence.
+Botton frames loneliness as an inevitable byproduct of self-awareness, a tax levied by our capacity to reflect on existence.
 Romanticism, he argues, sold humanity a dangerous myth: that a soulmate could resolve this existential solitude. When reality fails to meet this ideal—as it
 invariably does—many retreat into emotional isolation, interpreting disillusionment as proof of love’s impossibility rather than its maturation.
 
@@ -96,12 +96,11 @@ invariably does—many retreat into emotional isolation, interpreting disillusio
 What must endure isn't "love" but friendship and trust.
 ```
 
-Jungian-Bottonian implies that love as an antidote to modernity’s existential despair. Alain de Botton secularises the dynamic flow of love, as the “democracy of doubt”. Here, love becomes
-a [[thoughts/Camus#the rebel|rebellion]] against nihilism, not through grand gestures but through daily acts of attention: the way a hand adjusts to another’s in the dark,
-or the pause before voicing a difficult truth.
+Jungian love implies that love as an antidote to modernity’s existential despair. While Botton secularises the dynamic flow of love, as the “democracy of doubt”. Here, love becomes a [[thoughts/Camus#the rebel|rebellion]] against nihilism, not through grand gestures but through daily acts of attention: the way a hand adjusts to another’s in the dark, or the pause before voicing a difficult truth.
 
-Alain Badiou’s warning against [algorithmic dating](https://aeon.co/videos/defend-love-as-a-real-risky-adventure-philosopher-alain-badiou-on-modern-romance) resonates here: by sanitising love of risk, we sterilise its transformative potential. The surge in “religious but not spiritual” affiliations reflects a hunger for transcendent meaning—a void
-that Jungian belonging fills through engagement with archetypal narratives, while de Botton advocates for secular rituals (like shared meals or curated art) to cultivate communal grace. Both solutions reject individualism’s isolation, proposing instead that love is **"the quiet revolution of mutual becoming"**
+Alain Badiou’s warning against [algorithmic dating](https://aeon.co/videos/defend-love-as-a-real-risky-adventure-philosopher-alain-badiou-on-modern-romance) can also be seen as a sanitisation love of risk, as we sterilise its transformative potential.
+
+The surge in “religious but not spiritual” affiliations therefore, reflects a hunger for transcendent meaning—a void that Jungian belonging fills through engagement with archetypal narratives, while a secular rituals (like shared meals or curated art) should be highlighted to cultivate communal grace. Both solutions reject individualism’s isolation, proposing instead that love is **"the quiet revolution of mutual becoming"**
 
 ## interpretation.
 
@@ -115,9 +114,7 @@ Belonging begins with recognising that we are enough as we are, even in our mess
 I have a hard time internalising the idea of loving myself, simply because:
 
 - Humans are innately egotistical, and only you can look after the self. If you just sit there and thinks someone would help you heal or teach you to change your oil, then idea of life is somewhat naive from your point of view.
-  Self-love should emerge naturally from this arrangement. Yet I find myself perpetually turned outward, my hands extended in offering. My instinct is to give, to pour,
-  to fill other vessels while my own runs dry—a peculiar form of selfishness disguised as generosity. In the spaces between caring for others, I've somehow misplaced the grammar of self-regard, forgotten how to form those small,
-  essential sentences: _I need some rest._
+- Self-love should emerge naturally from this arrangement. Yet I find myself perpetually turned outward, my hands extended in offering. My instinct is to give, to pour, to fill other vessels while my own runs dry—a peculiar form of selfishness disguised as generosity. In the spaces between caring for others, I've somehow misplaced the grammar of self-regard, forgotten how to form those small, essential sentences: _I need some rest._
 - To find love is to find a friend, but I'm too protective of my friendship to allow myself falling in love.
 - My manager once said, "Too much opportunity creates analysis paralysis." Same with love. When you approach relationships like a kid at Build-A-Bear Workshop (I’ll take the loyalty of a Golden Retriever, the wit of a Twitter troll, and… ooh, let’s stuff in some trauma resilience!), you end up with a Frankenstein’s monster of unmet expectations
 - This is not permanent, but currently dealing with [[posts/her|grief]] of losing a friend [^friend]
@@ -141,7 +138,7 @@ That there's a difference between being lonely and being lost?
 
 But then there are moments like finding that envelope. Small reminders that even in isolation, we're tethered to each other in ways we can't always see. That love isn't just romantic partnership or family bonds - it's also the anonymous kindness of leaving messages for strangers to find.
 
-I don't know if love is coming. But I know this: every day I choose to get up, to walk to this coffee shop, to sit among other humans pursuing their own solitudes. And maybe that's its own kind of love. Maybe belonging isn't something we find but something we practice, like patience or hope.
+I don't know if #love is coming. But I know this: every day I choose to get up, to walk to this coffee shop, to sit among other humans pursuing their own solitudes. And maybe that's its own kind of love. Maybe belonging isn't something we find but something we practice, like patience or hope.
 
 The envelope sits on my desk now, a small spot of red against white papers. I could spend hours theorising about who left it, analysing the meaning behind the message. Instead, I let it be what it is: a reminder that even in a world that often feels too big and too empty, someone took the time to write three words and leave them where they might be found.
 
