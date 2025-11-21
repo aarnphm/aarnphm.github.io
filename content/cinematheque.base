@@ -27,7 +27,7 @@ properties:
     displayName: studio
   note.runtime:
     displayName: runtime
-  note.watched-date:
+  note.watched:
     displayName: watched date
 views:
   - type: cards
@@ -42,7 +42,7 @@ views:
         direction: DESC
       - property: rating
         direction: DESC
-      - property: watched-date
+      - property: watched
         direction: DESC
       - property: title
         direction: ASC
@@ -97,18 +97,18 @@ views:
       and:
         - status == "finished"
     groupBy:
-      property: watched-date
+      property: watched
       direction: DESC
     order:
       - title
       - year
       - director
       - rating
-      - watched-date
+      - watched
       - category
       - notes
     sort:
-      - property: watched-date
+      - property: watched
         direction: DESC
       - property: rating
         direction: DESC
@@ -133,7 +133,7 @@ views:
       - director
       - rating
       - category
-      - watched-date
+      - watched
     sort:
       - property: director
         direction: ASC
@@ -205,7 +205,7 @@ views:
       - director
       - rating
       - status
-      - watched-date
+      - watched
     sort:
       - property: studio
         direction: ASC
@@ -230,7 +230,7 @@ views:
       - year
       - director
       - category
-      - watched-date
+      - watched
     sort:
       - property: rating
         direction: DESC

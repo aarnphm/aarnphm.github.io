@@ -3,7 +3,7 @@ author: Sylvia Plath
 category: poetry
 date: "2025-05-31"
 description: by Sylvia Plath
-external-url: https://www.poetryfoundation.org/poems/57419/the-applicant
+external: https://www.poetryfoundation.org/poems/57419/the-applicant
 id: The Applicant
 modified: 2025-10-29 02:14:37 GMT-04:00
 posters: "[[library/posters/the-applicant.jpg]]"

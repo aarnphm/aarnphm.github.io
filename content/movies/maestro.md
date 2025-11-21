@@ -12,6 +12,6 @@ studio: netflix
 tags:
   - movies
 title: Maestro
-watched-date: "2024-02-20"
+watched: "2024-02-20"
 year: 2023
 ---

@@ -207,6 +207,7 @@ a {
           .byline {
             display: none;
 
+            div.first,
             menu.tags {
               grid-column: 1 / 1;
             }

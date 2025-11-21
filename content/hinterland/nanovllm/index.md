@@ -3,7 +3,7 @@ date: "2025-10-30"
 description: a nano implementation of vLLM and inference-engine alike
 id: index
 modified: 2025-11-09 01:48:14 GMT-05:00
-pageLayout: A|L
+layout: A|L
 tags:
   - seed
   - inference

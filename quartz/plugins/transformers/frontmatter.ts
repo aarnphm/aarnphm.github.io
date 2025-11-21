@@ -101,6 +101,24 @@ function collectFrontmatterLinks(
   return Object.keys(result).length > 0 ? result : undefined
 }
 
+function buildFrontmatterLinkLookup(
+  links: Record<string, FrontmatterLink[]> | undefined,
+): Record<string, FrontmatterLink> | undefined {
+  if (!links) return undefined
+
+  const lookup: Record<string, FrontmatterLink> = {}
+
+  for (const group of Object.values(links)) {
+    for (const link of group) {
+      if (!lookup[link.raw]) {
+        lookup[link.raw] = link
+      }
+    }
+  }
+
+  return Object.keys(lookup).length > 0 ? lookup : undefined
+}
+
 export const FrontMatter: QuartzTransformerPlugin = () => ({
   name: "FrontMatter",
   markdownPlugins: ({ cfg, allSlugs }) => [
@@ -201,6 +219,10 @@ export const FrontMatter: QuartzTransformerPlugin = () => ({
           )
           if (frontmatterLinks) {
             file.data.frontmatterLinks = frontmatterLinks
+            const lookup = buildFrontmatterLinkLookup(frontmatterLinks)
+            if (lookup) {
+              file.data.frontmatterLinkLookup = lookup
+            }
           }
         }
 
@@ -252,5 +274,6 @@ declare module "vfile" {
         authors: string[]
       }>
     frontmatterLinks?: Record<string, FrontmatterLink[]>
+    frontmatterLinkLookup?: Record<string, FrontmatterLink>
   }
 }

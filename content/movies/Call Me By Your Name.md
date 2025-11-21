@@ -12,6 +12,6 @@ studio: sony
 tags:
   - movies
 title: Call Me By Your Name
-watched-date: "2024-03-10"
+watched: "2024-03-10"
 year: 2017
 ---

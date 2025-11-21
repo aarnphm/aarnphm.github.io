@@ -3,7 +3,7 @@ date: "2024-12-10"
 description: and vLLM integration with XGrammar
 id: structured decoding
 modified: 2025-11-09 01:35:15 GMT-05:00
-pageLayout: technical
+layout: technical
 socials:
   bentoml blog: https://bentoml.com/blog/structured-decoding-in-vllm-a-gentle-introduction
   hackernews: https://news.ycombinator.com/item?id=42711051

@@ -12,6 +12,6 @@ studio: 20th century fox
 tags:
   - movies
 title: Love & Other Drugs
-watched-date: "2024-02-25"
+watched: "2024-02-25"
 year: 2010
 ---

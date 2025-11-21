@@ -12,6 +12,6 @@ studio: touchstone
 tags:
   - movies
 title: Dead Poets Society
-watched-date: "2024-01-20"
+watched: "2024-01-20"
 year: 1989
 ---

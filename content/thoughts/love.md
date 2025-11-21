@@ -9,7 +9,8 @@ description: choosing to give your full, continuously.
 id: love
 modified: 2025-11-20 12:58:43 GMT-05:00
 socials:
-  essay: /posts/love
+  essay: "[[posts/love|mutual becoming]]"
+  hermeneutics: "[[posts/romantic epistemology|romantic epistemology]]"
 tags:
   - evergreen
   - love
@@ -23,17 +24,13 @@ transclude:
 
 Love is not a feeling that happens to you.
 
-It's a discipline, a practice, a continuous choice to attend to someone despite no {{sidenotes<inline: true>[guarantees.]: You choose to stay in the hermeneutic circle, to keep interpreting generously, to refuse instrumental understanding. [@kierkegaard1847worksoflove; @fromm1956art; @hooks2000love]}}
+It's a discipline, a practice, a continuous choice to attend to someone despite there are no {{sidenotes<inline: true>[guarantees.]: You choose to stay in the hermeneutic circle, to keep interpreting generously, to refuse instrumental understanding. [@kierkegaard1847worksoflove; @fromm1956art; @hooks2000love]}} for reciprocation.
 
 > [!summary] decomposable functions
->
-> choice + [[thoughts/Attention|attention]] + practice.
->
-> not conditioned response, not feeling, not possession. you decide to make someone central, to give them your interpretive attention, to stay with difficulty.
+> 
+> love = choice + [[thoughts/Attention|attention]] + practice.
 
-ethics of care: particularity over universality, relational self, context-sensitive responsiveness.
-
-criteria: how they talk about them, what they notice, whether they stay when it's hard. resists compression—you can't love someone you've reduced to a function.
+Contrary to popular beliefs, love is _not_ conditioned response. You decide to make someone ::central:: to your being, and adapt your [[#boxes]] around them.
 
 ## Sternberg's triangular theory of love
 
@@ -42,6 +39,12 @@ he argues that there are three components to love:
 - intimacy
 - challenge
 - commitment
+
+## boxes
+
+I think there are a few boxes we can categorise our feelings towards a person:
+
+-
 
 ## not a feeling
 

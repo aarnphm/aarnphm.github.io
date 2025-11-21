@@ -2,7 +2,7 @@
 category: technology
 date: 2025-10-29
 description: collection of essays and projects on ai, art, and politics, exploring how machine systems unsettle authorship, control, and resistance.
-external-url: https://www.creativeapplications.net/books/the-ai-anarchies-book
+external: https://www.creativeapplications.net/books/the-ai-anarchies-book
 id: The AI Anarchies Book
 modified: 2025-10-29 02:14:37 GMT-04:00
 posters: "[[library/posters/ai-anarchy.png]]"

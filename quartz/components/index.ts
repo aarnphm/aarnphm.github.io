@@ -6,6 +6,7 @@ import Reader from "./Reader"
 import Toolbar from "./Toolbar"
 import Palette from "./Palette"
 import Keybind from "./Keybind"
+import BaseSearchBar from "./BaseSearchBar"
 import Content from "./pages/Content"
 import TagContent from "./pages/TagContent"
 import FolderContent from "./pages/FolderContent"
@@ -36,6 +37,7 @@ import Grid from "./Grid"
 import SlidesContent from "./SlidesContent"
 import HeadingsConstructor from "./Headings"
 import CodeCopy from "./CodeCopy"
+import SeealsoTree from "./SeealsoTree"
 import BaseViewSelector from "./BaseViewSelector"
 import CanvasContainer from "./Canvas"
 
@@ -71,6 +73,7 @@ export {
   Footer,
   DesktopOnly,
   MobileOnly,
+  BaseSearchBar,
   RecentNotes,
   NotFound,
   Breadcrumbs,
@@ -79,5 +82,6 @@ export {
   Grid,
   HeadingsConstructor,
   CodeCopy,
+  SeealsoTree,
   BaseViewSelector,
 }

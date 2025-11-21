@@ -4,9 +4,8 @@ date: "2024-02-07"
 description: evolution as silent symphony—kubrick filming human transcendence through monoliths and machines, hal's calm voice more human than the humans it murders.
 director: Stanley Kubrick
 id: 2001-a-space-odyssey
-modified: 2025-10-29 09:38:13 GMT-04:00
+modified: 2025-11-21 06:01:07 GMT-05:00
 posters: "[[movies/posters/2001-a-space-odyssey.jpg]]"
-runtime: 139
 status: recurring
 studio: mgm
 tags:

@@ -80,6 +80,9 @@ nmap gd :openlink<CR>
 exmap followLinkUnderCursor obcommand editor:follow-link
 nmap gf :followLinkUnderCursor<CR>
 
+exmap openheading obcommand obsidian-headings:heading-gh-navigator
+nmap gh :openheading<CR>
+
 """""""""""""""""""""""""""""""""""""""""""""""" "
 """""""""""" All Available Commands """""""""""" "
 " :obcommand and <opt + cmd + i> to open console "

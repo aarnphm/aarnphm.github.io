@@ -1,10 +1,10 @@
 ---
 date: "2024-02-12"
+description: on past love.
 id: to the past lovers
 lang: en-US
-modified: 2025-10-29 02:15:13 GMT-04:00
-poem: true
-socialDescription: on past love.
+layout: letter
+modified: 2025-11-21 06:06:35 GMT-05:00
 tags:
   - sapling
   - poetry

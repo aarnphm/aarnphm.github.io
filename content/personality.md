@@ -4,7 +4,7 @@ description: from Clearer Thinking.
 id: personality
 modified: 2025-11-19 18:07:58 GMT-05:00
 noindex: true
-pageLayout: letter
+layout: letter
 slides: true
 tags:
   - evergreen

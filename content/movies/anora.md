@@ -12,6 +12,6 @@ studio: neon
 tags:
   - movies
 title: Anora
-watched-date: "2024-11-15"
+watched: "2024-11-15"
 year: 2024
 ---

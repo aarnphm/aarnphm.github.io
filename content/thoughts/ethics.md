@@ -31,6 +31,12 @@ What should you do? Normative ethics provides frameworks for answering. Three ma
 
 Plus care ethics (relationships matter). Each offers different criteria for right action.
 
+There is also an argument about [[#normative excellence]] versus [[#absolute excellence]] where certain values are aligned based on personal goals.
+
+### normative excellence
+
+### absolute excellence
+
 ### deontology
 
 Kant: morality comes from reason, not consequences or feelings. [@kant1785groundwork] Act only according to principles you can will as universal law. Respect persons as ends in themselves, never merely as means.

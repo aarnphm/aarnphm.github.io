@@ -13,6 +13,6 @@ tags:
   - movies
   - shows
 title: Normal People
-watched-date: "2024-03-01"
+watched: "2024-03-01"
 year: 2020
 ---

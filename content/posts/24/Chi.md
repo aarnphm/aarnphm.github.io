@@ -4,7 +4,7 @@ description: an unexpected turn of events.
 id: Chi
 modified: 2025-10-29 02:15:07 GMT-04:00
 noindex: true
-pageLayout: letter
+layout: letter
 signature: with love and prosperity - Aaron
 tags:
   - friend

@@ -4,7 +4,7 @@ description: for Stripe, but shouldn't affect general sites interaction
 id: terms of service
 modified: 2025-10-29 02:15:15 GMT-04:00
 noindex: true
-pageLayout: technical
+layout: technical
 permalinks:
   - /tos
 tags:

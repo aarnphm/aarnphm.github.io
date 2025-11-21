@@ -12,6 +12,6 @@ studio: ifc films
 tags:
   - movies
 title: Frances Ha
-watched-date: "2024-03-20"
+watched: "2024-03-20"
 year: 2012
 ---

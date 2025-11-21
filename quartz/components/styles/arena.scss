@@ -962,10 +962,12 @@ body[data-arena-subpage="true"] {
     overflow-y: auto;
     overflow-x: hidden;
     padding: 1.5rem;
+    border-radius: 4px;
     background: var(--light);
     gap: 1rem;
 
     &::-webkit-scrollbar {
+      display: none;
       width: 8px;
     }
 

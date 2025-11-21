@@ -12,6 +12,6 @@ studio: mubi
 tags:
   - movies
 title: The Substance
-watched-date: "2024-10-15"
+watched: "2024-10-15"
 year: 2024
 ---

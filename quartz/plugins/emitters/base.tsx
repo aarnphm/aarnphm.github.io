@@ -15,7 +15,7 @@ import {
   isAbsoluteURL,
 } from "../../util/path"
 import { defaultContentPageLayout, sharedPageComponents } from "../../../quartz.layout"
-import { Content, BaseViewSelector } from "../../components"
+import { Content, BaseSearchBar, BaseViewSelector } from "../../components"
 import { write } from "./helpers"
 import { evaluateFilter, resolvePropertyValue } from "../../util/base/query"
 import { BaseView, BaseGroupBy, PropertyConfig } from "../../util/base/types"
@@ -963,7 +963,7 @@ export const BasePage: QuartzEmitterPlugin<Partial<FullPageLayout>> = (userOpts)
     ...defaultContentPageLayout,
     ...userOpts,
     pageBody: Content(),
-    beforeBody: [BaseViewSelector()],
+    beforeBody: [BaseViewSelector(), BaseSearchBar()],
     afterBody: [],
   }
 

@@ -4,7 +4,7 @@ description: intuition for latent mapping
 id: index
 modified: 2025-10-31 02:47:08 GMT-04:00
 noindex: true
-pageLayout: L->ET|A
+layout: L->ET|A
 tags:
   - seed
   - ml

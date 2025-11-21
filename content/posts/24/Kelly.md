@@ -4,7 +4,7 @@ description: and a view from a distant friend.
 id: Kelly
 modified: 2025-10-29 02:15:08 GMT-04:00
 noindex: true
-pageLayout: letter
+layout: letter
 signature: with love and prosperity - Aaron
 tags:
   - friend

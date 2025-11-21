@@ -12,6 +12,6 @@ studio: general
 tags:
   - movies
 title: La Haine
-watched-date: "2024-02-10"
+watched: "2024-02-10"
 year: 1995
 ---

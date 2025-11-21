@@ -12,6 +12,6 @@ studio: amazon studios
 tags:
   - movies
 title: Manchester by the Sea
-watched-date: "2024-02-15"
+watched: "2024-02-15"
 year: 2016
 ---

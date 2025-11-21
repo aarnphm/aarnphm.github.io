@@ -12,6 +12,6 @@ studio: searchlight
 tags:
   - movies
 title: Poor Things
-watched-date: "2024-03-15"
+watched: "2024-03-15"
 year: 2023
 ---

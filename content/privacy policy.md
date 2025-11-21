@@ -4,7 +4,7 @@ description: for Stripe, but shouldn't affect general sites interaction
 id: privacy policy
 modified: 2025-11-19 09:53:27 GMT-05:00
 noindex: true
-pageLayout: technical
+layout: technical
 permalinks:
   - /privacy
 tags:

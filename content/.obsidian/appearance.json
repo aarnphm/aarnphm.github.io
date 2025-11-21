@@ -2,9 +2,9 @@
   "accentColor": "",
   "cssTheme": "Minimal",
   "interfaceFontFamily": "PP Neue Montreal,Berkeley Mono",
-  "textFontFamily": "Berkeley Mono,PP Neue Montreal",
+  "textFontFamily": "Space Grotesk,Berkeley Mono,PP Neue Montreal,Darker Grotesque",
   "monospaceFontFamily": "Berkeley Mono",
-  "baseFontSize": 15,
+  "baseFontSize": 16,
   "translucency": false,
   "showViewHeader": true,
   "enabledCssSnippets": [

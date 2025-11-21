@@ -4,7 +4,7 @@ aliases:
 date: "2024-01-23"
 id: quotes
 modified: 2025-11-19 14:38:30 GMT-05:00
-socialDescription: A collection of quotes, wisdom, and advice.
+description: A collection of quotes, wisdom, and advice.
 tags:
   - evergreen
   - fruit

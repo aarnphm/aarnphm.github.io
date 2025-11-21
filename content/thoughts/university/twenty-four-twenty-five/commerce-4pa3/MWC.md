@@ -5,7 +5,7 @@ date: "2025-02-06"
 description: and world congress
 id: MWC
 modified: 2025-10-29 02:15:59 GMT-04:00
-pageLayout: technical
+layout: technical
 permalinks:
   - /mwc
 tags:

@@ -3,8 +3,7 @@ date: "2024-02-05"
 description: and on ways we focus on others.
 draft: true
 id: social interactions
-modified: 2025-11-04 18:25:22 GMT-05:00
-socialDescription: and on how we seek energy.
+modified: 2025-11-21 06:08:11 GMT-05:00
 tags:
   - evergreen
 title: interactions.

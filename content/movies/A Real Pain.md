@@ -12,6 +12,6 @@ studio: searchlight pictures
 tags:
   - movies
 title: A Real Pain
-watched-date: "2024-11-20"
+watched: "2024-11-20"
 year: 2024
 ---

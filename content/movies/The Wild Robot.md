@@ -12,6 +12,6 @@ studio: dreamworks
 tags:
   - movies
 title: The Wild Robot
-watched-date: "2024-11-01"
+watched: "2024-11-01"
 year: 2024
 ---

@@ -1,3 +1,4 @@
+import { concatenateResources } from "../util/resources"
 import { QuartzComponent, QuartzComponentConstructor, QuartzComponentProps } from "./types"
 
 export default ((...components: QuartzComponent[]) => {
@@ -13,8 +14,9 @@ export default ((...components: QuartzComponent[]) => {
   }
 
   Byline.displayName = "Byline"
-  Byline.css = Components.map((Inner) => Inner.css ?? "").join("\n")
-  Byline.beforeDOMLoaded = Components.map((Inner) => Inner.beforeDOMLoaded ?? "").join("\n")
-  Byline.afterDOMLoaded = Components.map((Inner) => Inner.afterDOMLoaded ?? "").join("\n")
+
+  Byline.afterDOMLoaded = concatenateResources(...Components.map((c) => c.afterDOMLoaded))
+  Byline.beforeDOMLoaded = concatenateResources(...Components.map((c) => c.beforeDOMLoaded))
+  Byline.css = concatenateResources(...Components.map((c) => c.css))
   return Byline
 }) satisfies QuartzComponentConstructor<any>

@@ -12,6 +12,6 @@ studio: a24
 tags:
   - movies
 title: The Brutalist
-watched-date: "2024-11-25"
+watched: "2024-11-25"
 year: 2024
 ---

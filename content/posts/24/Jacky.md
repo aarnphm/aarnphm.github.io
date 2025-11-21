@@ -4,7 +4,7 @@ description: and a lens from a distant friend.
 id: Jacky
 modified: 2025-11-17 15:04:08 GMT-05:00
 noindex: true
-pageLayout: letter
+layout: letter
 signature: with care and appreciation - Aaron
 tags:
   - friend

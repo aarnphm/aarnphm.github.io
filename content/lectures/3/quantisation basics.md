@@ -2,11 +2,11 @@
 date: "2025-08-28"
 description: and kv compression
 id: quantisation basics
-modified: 2025-11-11 07:02:00 GMT-05:00
+modified: 2025-11-21 06:00:35 GMT-05:00
 tags:
   - llm
 title: quantisation basics
-transpile:
+transclude:
   title: false
 ---
 

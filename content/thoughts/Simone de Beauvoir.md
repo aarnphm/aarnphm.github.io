@@ -2,7 +2,7 @@
 date: "2025-11-17"
 description: French existentialist philosopher, writer, social theorist, and feminist activist.
 id: Simone de Beauvoir
-modified: 2025-11-19 17:40:52 GMT-05:00
+modified: 2025-11-20 15:13:28 GMT-05:00
 tags:
   - philosophy
 title: Simone de Beauvoir
@@ -10,7 +10,7 @@ title: Simone de Beauvoir
 
 ## on same-sex friendship and lesbian relationships in Les Inseparables
 
-_by Madeleine Banatvala_
+_by [Madeleine Banatvala](https://sgsahresearch.com/portfolio/madeleine-banatvala/)_
 
 Adrienne Rich's "lesbian continuum"
 

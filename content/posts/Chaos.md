@@ -3,7 +3,7 @@ date: "2024-02-18"
 id: Chaos
 modified: 2025-11-09 01:36:44 GMT-05:00
 signature: from twenty three aaron
-socialDescription: on growing one year older. And a few things I learned growing up in a foreign land.
+description: on growing one year older. And a few things I learned growing up in a foreign land.
 socials:
   substack: https://open.substack.com/pub/livingalone/p/chaos-has-and-always-be-a-driven?r=1z8i4s&utm_campaign=post&utm_medium=web&showWelcomeOnShare=true
   twitter: https://x.com/aarnphm_/status/1763686849782907196

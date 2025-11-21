@@ -30,7 +30,18 @@ export const sharedPageComponents: SharedLayout = {
 export const defaultContentPageLayout: PageLayout = {
   beforeBody: [
     Component.ArticleTitle(),
-    Component.Byline(Component.TagList(), Component.ContentMeta()),
+    Component.Byline(
+      Component.Flex({
+        classNames: ["first"],
+        components: [
+          { Component: Component.TagList(), grow: true, align: "start" },
+          { Component: Component.SeealsoTree(), align: "start" },
+        ],
+        direction: "column",
+        gap: "0.5rem",
+      }),
+      Component.ContentMeta(),
+    ),
   ],
   sidebar: [Component.DesktopOnly(Component.TableOfContents()), Component.Reader()],
 }

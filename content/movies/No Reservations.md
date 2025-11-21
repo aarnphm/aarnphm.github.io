@@ -12,6 +12,6 @@ studio: warner bros
 tags:
   - movies
 title: No Reservations
-watched-date: "2024-01-15"
+watched: "2024-01-15"
 year: 2007
 ---

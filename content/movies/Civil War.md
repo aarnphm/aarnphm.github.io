@@ -12,6 +12,6 @@ studio: a24
 tags:
   - movies
 title: Civil War
-watched-date: "2024-05-10"
+watched: "2024-05-10"
 year: 2024
 ---

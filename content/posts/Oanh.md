@@ -3,8 +3,7 @@ date: "2024-09-25"
 description: I saw a dog and a duck sitting on a bench the other day. And on growth after death.
 draft: true
 id: Oanh
-modified: 2025-10-29 02:15:09 GMT-04:00
-socialDescription: On growth after death.
+modified: 2025-11-21 06:07:08 GMT-05:00
 tags:
   - fruit
 title: I saw a dog and a duck sitting on a bench the other day.

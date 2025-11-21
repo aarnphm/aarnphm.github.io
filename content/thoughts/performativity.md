@@ -2,18 +2,20 @@
 id: performativity
 tags:
   - philosophy
-  - social-theory
-  - sapling
+  - pattern
 date: "2025-11-19"
 modified: 2025-11-19 GMT-05:00
 title: performativity
+description: language can function as a form of social action and have the effect of change.
+seealso:
+  - "[[thoughts/identity|identity]]"
+  - "[[library/Civilisation and its Discontents|C&D]]"
+  - "[[thoughts/repression|repression]]"
 ---
 
-see also: [[thoughts/identity|identity]], [[library/Civilisation and its Discontents|Civilisation and its Discontents]], [[thoughts/repression|repression]], [[thoughts/Freud|Freud]]
+captures how we enact rather {{sidenotes[than express]: you become yourself through the performaces rather than having a "self" that represents yourself. <br/><br/>This performance constitutes to who you are, and it blends with your _authentic self_.}} [[thoughts/identity|identity]]
 
-performativity captures how we enact rather than express identity. you don't have a self that you then present to others—you become yourself through performances. the performance isn't secondary to some authentic core; it partially constitutes who you are.
-
-## freud: civilization requires performance
+## civilisation requires performance
 
 [[library/Civilisation and its Discontents#performativity as structural necessity|freud's account]]: civilization forces performance out of structural necessity. the tripartite psyche means you can never simply "be yourself"—that would mean expressing id impulses directly, which civilization prohibits.
 

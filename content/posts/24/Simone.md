@@ -4,7 +4,7 @@ description: and a year of reconnection.
 id: Simone
 modified: 2025-10-29 02:15:08 GMT-04:00
 noindex: true
-pageLayout: letter
+layout: letter
 signature: with warmth and friendship - Aaron.
 tags:
   - friend

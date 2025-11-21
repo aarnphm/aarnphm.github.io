@@ -76,6 +76,14 @@
   normal,
   "/static/"
 );
+@include font-face(
+  "Space Groteskque",
+  "SpaceGrotesk-VariableFont_wght.ttf",
+  "ttf",
+  normal,
+  normal,
+  "/static/"
+);
 
 // fonts from KV (/fonts/)
 @include font-face("PP Neue Montreal", "PPNeueMontreal-Thin.woff2", "woff2", normal, 100);
@@ -259,10 +267,20 @@ h6 {
 pre.poem,
 pre.poetry {
   border: none;
-  padding: 1rem;
   position: unset;
-  font-family: var(--bodyFont);
+  font-family:
+    "Space Groteskque",
+    Gill Sans,
+    Gill Sans MT,
+    Calibri,
+    sans-serif,
+    var(--bodyFont);
   background: inherit;
+  font-size: 1rem;
+  line-height: 2;
+  -webkit-text-size-adjust: 100%;
+  font-feature-settings: normal;
+  font-variation-settings: normal;
 
   &[data-language="vi"] {
     font-family: "Playfair Display" !important;
@@ -586,6 +604,7 @@ body {
 }
 
 @media all and ($mobile) {
+  div.first,
   menu.tags {
     grid-column: 3/6;
   }

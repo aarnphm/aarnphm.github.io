@@ -3,7 +3,7 @@ author: "[[thoughts/Wittgenstein|Ludwig Wittgenstein]]"
 category: philosophy
 date: "2025-10-07"
 description: latter Wittgenstein
-external-url: https://static1.squarespace.com/static/54889e73e4b0a2c1f9891289/t/564b61a4e4b04eca59c4d232/1447780772744/Ludwig.Wittgenstein.-.Philosophical.Investigations.pdf
+external: https://static1.squarespace.com/static/54889e73e4b0a2c1f9891289/t/564b61a4e4b04eca59c4d232/1447780772744/Ludwig.Wittgenstein.-.Philosophical.Investigations.pdf
 id: Philosophical Investigations
 modified: 2025-11-19 18:10:42 GMT-05:00
 posters: "[[library/posters/philosophical-investigations.jpg]]"

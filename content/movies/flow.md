@@ -12,6 +12,6 @@ studio: dream well studio
 tags:
   - movies
 title: Flow
-watched-date: "2024-11-10"
+watched: "2024-11-10"
 year: 2024
 ---

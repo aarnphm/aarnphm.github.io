@@ -3,7 +3,7 @@ date: "2025-10-05"
 description: educational JIT compiler implementations in Python
 id: bytecode-jit-readme
 modified: 2025-10-29 02:15:48 GMT-04:00
-pageLayout: L->ET|A
+layout: L->ET|A
 tags:
   - seed
   - compilers

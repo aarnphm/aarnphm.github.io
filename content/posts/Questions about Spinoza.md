@@ -2,8 +2,7 @@
 date: "2023-11-30"
 description: and on Spinoza's Ethics.
 id: Questions about Spinoza
-modified: 2025-10-29 02:15:10 GMT-04:00
-socialDescription: On Spinoza's Ethics.
+modified: 2025-11-21 06:07:44 GMT-05:00
 tags:
   - philosophy
   - fruit

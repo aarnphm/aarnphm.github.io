@@ -452,7 +452,13 @@ async function setupSearch(
     const paletteOpen = document.querySelector("search#palette-container") as HTMLDivElement
     if (paletteOpen && paletteOpen.classList.contains("active")) return
 
+    const isBasePage = document.body?.dataset?.isBase === "true"
+
     if ((e.key === "/" || e.key === "k") && (e.ctrlKey || e.metaKey) && !e.shiftKey) {
+      if (isBasePage && e.key.toLowerCase() === "k") {
+        // let base views use ctrl/cmd+k for in-base search
+        return
+      }
       e.preventDefault()
       const searchBarOpen = container.classList.contains("active")
       searchBarOpen ? hideSearch() : showSearch("basic")

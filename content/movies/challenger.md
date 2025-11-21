@@ -12,6 +12,6 @@ studio: amazon mgm
 tags:
   - movies
 title: Challenger
-watched-date: "2024-04-01"
+watched: "2024-04-01"
 year: 2024
 ---

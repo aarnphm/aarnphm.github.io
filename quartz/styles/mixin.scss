@@ -1,6 +1,24 @@
 @use "sass:list";
 @use "sass:meta";
+@use "sass:string";
 @use "./variables.scss" as *;
+
+@function normalize-font-format($format) {
+  // Map common aliases and ensure the CSS format() receives a quoted string
+  @if meta.type-of($format) == "string" {
+    $fmt: string.to-lower-case($format);
+
+    @if $fmt == "ttf" {
+      $fmt: "truetype";
+    } @else if $fmt == "otf" {
+      $fmt: "opentype";
+    }
+
+    @return string.quote($fmt);
+  }
+
+  @return $format;
+}
 
 @mixin iconStyles {
   margin-left: auto;
@@ -99,13 +117,14 @@
       @for $i from 1 through list.length($filename) {
         $src: list.append(
           $src,
-          url("#{$path}#{list.nth($filename, $i)}") format(#{list.nth($format, $i)}),
+          url("#{$path}#{list.nth($filename, $i)}")
+            format(normalize-font-format(list.nth($format, $i))),
           comma
         );
       }
       src: $src;
     } @else {
-      src: url("#{$path}#{$filename}") format($format);
+      src: url("#{$path}#{$filename}") format(normalize-font-format($format));
     }
   }
 }

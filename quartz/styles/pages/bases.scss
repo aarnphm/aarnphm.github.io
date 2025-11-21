@@ -379,6 +379,7 @@
 }
 
 .mapboxgl-popup-close-button {
+  display: none;
   font-size: 20px;
   padding: 4px 8px;
   color: var(--darkgray);

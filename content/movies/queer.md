@@ -12,6 +12,6 @@ studio: a24
 tags:
   - movies
 title: Queer
-watched-date: "2024-11-30"
+watched: "2024-11-30"
 year: 2024
 ---

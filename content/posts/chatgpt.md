@@ -6,7 +6,7 @@ id: chatgpt
 modified: 2025-10-29 02:15:10 GMT-04:00
 permalinks:
   - /chatgpt
-socialDescription: And its implication on how we assess learning. an overview.
+description: And its implication on how we assess learning. an overview.
 tags:
   - engineer4a03
   - fruit
