@@ -9,7 +9,7 @@ coordinates:
   - "-79.4157885"
 date: "2025-08-05"
 id: Coco's neighborhood coffee shop
-modified: "2025-11-17 19:39:13 GMT-05:00"
+modified: "2025-11-22 10:02:19 GMT-05:00"
 rating: 5
 tags:
   - places

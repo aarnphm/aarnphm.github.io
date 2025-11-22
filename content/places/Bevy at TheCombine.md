@@ -9,12 +9,13 @@ coordinates:
   - "-79.3888161"
 date: "2025-08-05"
 id: Bevy @ TheCombine
-modified: "2025-11-17 19:39:13 GMT-05:00"
+modified: "2025-11-22 10:02:19 GMT-05:00"
 rating: 5
 tags:
   - places
 title: Bevy @ TheCombine
 type:
   - "[[thoughts/fruit]]"
+  - "[[thoughts/coffee shop]]"
 url: "https://maps.app.goo.gl/ubajUb5KrB9XgJTL7"
 ---

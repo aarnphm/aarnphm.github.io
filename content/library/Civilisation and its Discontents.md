@@ -45,7 +45,7 @@ _circa social interaction and the psyche_
 
 ### the tripartite structure in social context
 
-freud's id/ego/superego model is fundamentally about navigating social existence, of psyche-under-socialization:
+freud's id/ego/superego model is fundamentally about navigating social existence, of psyche-under-socialisation:
 
 **id as private incommunicable**:
 

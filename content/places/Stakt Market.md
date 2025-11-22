@@ -9,12 +9,13 @@ coordinates:
   - "-79.4016875"
 date: "2025-08-05"
 id: Stakt Market
-modified: "2025-11-17 19:39:13 GMT-05:00"
+modified: "2025-11-22 10:02:19 GMT-05:00"
 rating: 5
 tags:
   - places
 title: Stakt Market
 type:
   - "[[thoughts/fruit]]"
+  - "[[thoughts/market]]"
 url: "https://maps.app.goo.gl/UMuTjTkmKwN7cvTE6"
 ---

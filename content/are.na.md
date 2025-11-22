@@ -41,7 +41,7 @@ cssclasses:
 date: "2024-10-24"
 description: My run-down version of are[dot]na
 id: are.na
-modified: 2025-11-21 16:43:37 GMT-05:00
+modified: 2025-11-22 10:02:12 GMT-05:00
 permalinks:
   - /website
   - /tweets
@@ -118,6 +118,10 @@ title: are.na
 - [meta]:
   - view: list
 
+- https://x.com/cath_land/status/1838890779135152624 -- painting of portraits
+  - [meta]:
+    - date: 11/21/2025
+    - tags: [arts]
 - https://x.com/karpathy/status/1991910395720925418 -- Intelligence approximation [**]
   - [meta]:
     - date: 11/21/2025
@@ -1261,6 +1265,11 @@ title: are.na
 
 ## places
 
+- https://maps.app.goo.gl/cZPBbBoATjQT48MH6 -- FIKA Toronto
+  - [meta]:
+    - date: 11/22/2025
+    - tags: [coffee shop]
+    - coord: [-79.4030177, 43.6535814]
 - https://maps.app.goo.gl/KfkZvSeUqzMUe5rs9 -- Pamenar
   - [meta]:
     - date: 11/17/2025
@@ -2357,6 +2366,15 @@ title: are.na
 - [meta]:
   - view: list
 
+- https://www.youtube.com/watch?v=xcpEl0cGCC4 -- CUDA + ThunderKittens, but increasingly drunk.
+  - [meta]:
+    - date: 11/22/2025
+    - tags: [kernel]
+    - pinned: true
+- https://allenai.org/blog/olmo3 -- Olmo 3 model release
+  - [meta]:
+    - date: 11/21/2025
+    - tags: [training, model release, architecture]
 - https://docs.google.com/document/d/1p-ggQV3vVWIQuCccXEl1fD0thJOgXimlbBpGk6FI32I/edit?tab=t.0 -- MATS 10.0 [**]
   - [meta]:
     - date: 11/21/2025
@@ -3206,6 +3224,10 @@ title: are.na
 
 ## life is literature
 
+- https://writetobrain.com/olfactory -- We induced Smells with ultrasound [**]
+  - [meta]:
+    - date: 11/22/2025
+    - tags: [advancement, longtermism]
 - https://www.sherryning.com/p/what-do-we-deserve-in-love -- What do we deserve in love?
   - [meta]:
     - date: 11/12/2025
@@ -3964,6 +3986,10 @@ title: are.na
 
 ## design
 
+- https://www.jhourney.io/ -- Jhourney
+  - [meta]:
+    - date: 11/21/2025
+    - tags: [design, company]
 - https://www.are.na/andrea-fanelli/maison-margiela-invitations -- Maison Margiela invitations [**]
   - [meta]:
     - date: 11/21/2025
@@ -4617,6 +4643,10 @@ title: are.na
 
 ## technical
 
+- https://x.com/rtwlz/status/1991855290413937049 -- Epstein emails
+  - [meta]:
+    - date: 11/22/2025
+    - tags: [meme]
 - https://thebookofshaders.com/ -- The Book of Shaders
   - [meta]:
     - date: 11/20/2025
