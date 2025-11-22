@@ -1,16 +1,16 @@
 ---
 author: Gilles Deleuze
 category: philosophy
-date: 2025-08-13
+date: "2025-08-13"
 description: being and multiplicity
+external: https://antilogicalism.com/wp-content/uploads/2017/07/nietzsche-and-philosophy.pdf
 finished: "2025"
 id: Nietzsche and Philosophy
-modified: 2025-11-09 20:26:18 GMT-05:00
-posters: "[[library/posters/nietzsche-and-philosophy.jpg]]"
+modified: 2025-11-22 11:40:30 GMT-05:00
 notebook: "[[thoughts/Philosophy and Nietzsche]]"
+posters: "[[library/posters/nietzsche-and-philosophy.jpg]]"
 status: evergreen
 subcategory: Nietzsche
-external: https://antilogicalism.com/wp-content/uploads/2017/07/nietzsche-and-philosophy.pdf
 tags:
   - philosophy
 title: Nietzsche and Philosophy
@@ -185,9 +185,7 @@ The will in power is the synthesis itself, and in the synthesis in relation to t
 N oppose will to power to Schopenhauerian will to live, only because of the extreme generality of the latter. (P.51)
 
 ```quotes
-The concept of force is, by nature, victorious because the relation of force to force, understood conceptually, is one of domination: when two forces are related one is dominant and the other is dominated.
-
-(Even God and the universe are caught in a relation of domination, however debatable the interpretation of such a relation may be in this case.)
+The concept of force is, by nature, victorious because the relation of force to force, understood conceptually, is one of domination: when two forces are related one is dominant and the other is dominated. (Even God and the universe are caught in a relation of domination, however debatable the interpretation of such a relation may be in this case.)
 ```
 
 > Nevertheless, this victorious concept of force needs a _complement_ and this complement is _internal_, an internal will. It would not be victorious without such an addition. This is because relations of forces remain indeterminate unless an element which is capable of determining them from a double point of view is added to force itself.

@@ -3,7 +3,7 @@ date: "2024-12-10"
 description: nobby designer word for "the design of the current site"
 id: colophon
 lang: en
-modified: 2025-11-21 14:12:26 GMT-05:00
+modified: 2025-11-22 10:23:09 GMT-05:00
 socials:
   twitter: https://x.com/aarnphm_/status/1861550609834402129
 tags:
@@ -44,11 +44,19 @@ tail -f .dev.log
 
 For a more compact highlights, see [[thoughts/craft#^quartz|this list]]
 
+### vim bindings
+
+- `f` to navigate the sites on keyboards.
+- `gh` for navigating ToC (supports j/k/Ctrl-n/Ctrl-p scrolling)
+- `Cmd/Ctrl+'` for shortcuts helpers
+
 ### parser
 
 some remark parsers for wikilinks, callouts, that supports general OFM compatibility
 
 see [ofm-wikilinks](https://github.com/aarnphm/aarnphm.github.io/tree/main/quartz/extensions/micromark-extension-ofm-wikilinks/) and [ofm-sidenotes](https://github.com/aarnphm/aarnphm.github.io/tree/main/quartz/extensions/micromark-extension-ofm-sidenotes) for more information.
+
+Supports [[cinematheque|Bases]] [API](https://help.obsidian.md/bases) and [[singularity.canvas|JSON]] [Canvas](https://help.obsidian.md/plugins/canvas)
 
 ### [telescopic-text](https://github.com/jackyzha0/telescopic-text)
 
@@ -159,8 +167,6 @@ U &
 > ```
 > ````
 
-The target render should also include a copy button
-
 ### collapsible header
 
 inspired by https://dynalist.io/
@@ -168,6 +174,10 @@ inspired by https://dynalist.io/
 ### Gaussian-scaling TOC
 
 inspired by https://press.stripe.com
+
+> [!NOTE]
+>
+> Currently, this only works on Chrome and on Desktop.
 
 ### reader view
 

@@ -269,12 +269,11 @@ pre.poetry {
   border: none;
   position: unset;
   font-family:
-    "Space Groteskque",
+    var(--titleFont),
     Gill Sans,
     Gill Sans MT,
     Calibri,
-    sans-serif,
-    var(--bodyFont);
+    sans-serif;
   background: inherit;
   font-size: 1rem;
   line-height: 2;
@@ -1518,6 +1517,13 @@ body[data-slug="influence"] {
   .search-button,
   #light-toggle {
     visibility: hidden;
+  }
+}
+
+[data-slug="index"],
+[data-slug="dating"] {
+  body {
+    text-transform: lowercase;
   }
 }
 

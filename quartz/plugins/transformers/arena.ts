@@ -23,8 +23,8 @@ export interface ArenaBlock {
   embedHtml?: string
   metadata?: Record<string, string>
   coordinates?: {
-    lon: number
     lat: number
+    lon: number
   }
   internalSlug?: string
   internalHref?: string
@@ -93,8 +93,8 @@ export interface ArenaBlockSearchable {
 
   /** Geographic coordinates for map rendering */
   coordinates?: {
-    lon: number
     lat: number
+    lon: number
   }
 
   /** Internal note slug reference if block links internally */
@@ -228,7 +228,7 @@ const cloneElementContent = <T extends ElementContent>(node: T): T => {
 
 const COORDINATE_NUMBER_PATTERN = /-?\d+(?:\.\d+)?/g
 
-const parseCoordinateMetadata = (value: string): { lon: number; lat: number } | null => {
+const parseCoordinateMetadata = (value: string): { lat: number; lon: number } | null => {
   if (!value) return null
 
   const matches = value.match(COORDINATE_NUMBER_PATTERN)
@@ -236,8 +236,8 @@ const parseCoordinateMetadata = (value: string): { lon: number; lat: number } | 
     return null
   }
 
-  const lon = Number.parseFloat(matches[0])
-  const lat = Number.parseFloat(matches[1])
+  const lat = Number.parseFloat(matches[0])
+  const lon = Number.parseFloat(matches[1])
 
   if (!Number.isFinite(lon) || !Number.isFinite(lat)) {
     return null

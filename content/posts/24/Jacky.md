@@ -2,9 +2,9 @@
 date: "2024-12-27"
 description: and a lens from a distant friend.
 id: Jacky
-modified: 2025-11-17 15:04:08 GMT-05:00
-noindex: true
 layout: letter
+modified: 2025-11-22 11:39:54 GMT-05:00
+noindex: true
 signature: with care and appreciation - Aaron
 tags:
   - friend
@@ -14,7 +14,9 @@ title: to jacky
 ![[posts/images/C9027171-50E7-4331-A5EC-EA2FD90AC43E_1_105_c.webp]]
 
 ```quotes
-But no matter the medicinal virtues of being a true friend or sustaining a long close relationship with another, the ultimate touchstone of friendship is not improvement, neither of the self nor of the other, the ultimate touchstone is ==witness==, the privilege of having been seen by someone and the equal privilege of being granted the sight of the essence of another, to have walked with them and to have believed in them, and sometimes just to have accompanied them for however brief a span, on a journey impossible to accomplish alone. —David Whyte
+But no matter the medicinal virtues of being a true friend or sustaining a long close relationship with another, the ultimate touchstone of friendship is not improvement, neither of the self nor of the other, the ultimate touchstone is ==witness==, the privilege of having been seen by someone and the equal privilege of being granted the sight of the essence of another, to have walked with them and to have believed in them, and sometimes just to have accompanied them for however brief a span, on a journey impossible to accomplish alone.
+
+David Whyte
 ```
 
 Hope you are enjoying your break and having some time off.

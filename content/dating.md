@@ -7,7 +7,7 @@ aliases:
 date: "2025-08-09"
 description: just another fish in the sea.
 id: dating
-modified: 2025-11-19 18:08:51 GMT-05:00
+modified: 2025-11-22 16:31:26 GMT-05:00
 noindex: true
 slides: true
 tags:
@@ -32,11 +32,11 @@ I'm hoping to find a wonderful woman to be my partner [^partner], someone I can 
 
 Here's 30 second about me. By all means explore the rest of the documents.
 
-I'm an [[thoughts/images/onion.webp|onion.]] [^onion]
+According to ["what vegetable are you?"](https://sophie006liu.github.io/vegetal/), I'm an [[thoughts/images/onion.webp|onion.]] [^onion]
 
 I work on [[thoughts/LLMs|large laguage models]], and I like to cook: I make fresh pasta (tortellini, tagliatelle) every Sunday, velouté and beef stocks from time to time. I collect vinyl, climb V5s, and read math textbooks.
 
-[^onion]: Apparently according to ["What vegetable are you?"](https://sophie006liu.github.io/vegetal/). Which is somewhat hilarious given that I actually love [[thoughts/images/onionnnnnnnnnn.webp|onion]]!
+[^onion]: This is somewhat hilarious given that I actually love [[thoughts/images/onionnnnnnnnnn.webp|onion]]!
 
 I'm a bit obsessive with my [[thoughts/craft|craft]], especially when thinking about [[thoughts/Machine learning|stochastic]] model. It is all I do these days, other than caring for my friends and people in my life (obv)
 
@@ -46,11 +46,7 @@ I moved continents at a young age, and learnt very early on that _solitude makes
 
 I like the em-dash (—) (contrary to recent popular beliefs), and parentheticals and non-sequiturs.
 
-I listen to quite a bit of <span style="text-decoration: underline;">Rachmaninoff</span> and garage/drill, and often find myself rabbit-holing on random #math topics. I also practice "managed obsession" [^managed-obesssion]
-
-Looking for someone equally comfortable discussing Wittgenstein (or [[thoughts/Philosophy and Nietzsche|Nietzsche]]) over homemade pasta, high empathy, witty and sharp, non-avoidance attachment style, to plan spontaneous cabin escapes.
-
-[^managed-obesssion]: more of a time-block allocation technique. This phrase is colloquially an extension of [spaced repetition](https://apps.ankiweb.net/). I spend around 15-30 mins a day working on something I care about deeply. Right now, it is [[library/Tractatus Logico-Philosophicus]] by [[thoughts/Wittgenstein]], and building rhizomatic tooling.
+I listen to quite a bit of <span style="text-decoration: underline;">Rachmaninoff</span> and garage/drill, and often find myself rabbit-holing on random #math topics.
 
 five years plan: No kids, for now. I value my relationship with my female friends. I'm based in Toronto, but US-bound eventually.
 
@@ -61,15 +57,21 @@ five years plan: No kids, for now. I value my relationship with my female friend
 Here is my friends' attestation of me:
 
 ```quotes
-Caring, inquisitive, loyal, thoughtful  -- N
+Caring, inquisitive, loyal, thoughtful
+
+N
 ```
 
 ```quotes
-[Aaron] is someone with very kind and warm energy. I always appreciate seeing you. -- T
+[Aaron] is someone with very kind and warm energy. I always appreciate seeing you.
+
+T
 ```
 
 ```quotes
-I think that Aaron is someone I trust to be there for me at the drop of a hat, no matter if it’s 3pm on a sunday or 3am on a weeknight. [aaron] is very attentive and will do everything in his power to make you feel loved and cared for. He’s willing to go to great lengths to make people feel special and he has great taste and great musings that promise good conversations and a good time. -- C
+I think that Aaron is someone I trust to be there for me at the drop of a hat, no matter if it’s 3pm on a sunday or 3am on a weeknight. [Aaron] is very attentive and will do everything in his power to make you feel loved and cared for. He’s willing to go to great lengths to make people feel special and he has great taste and great musings that promise good conversations and a good time.
+
+C
 ```
 
 I'm a _honest_ person, and I'm not afraid to admit to mistakes. I'm sure I'll make _even more mistakes_, but no one is ✨ _perfect_ ✨ and we only have one life to live 🙂
@@ -263,7 +265,9 @@ photography
 ## compatibility.
 
 ```quotes
-I would say that free will is nothing but our conscious experience of deciding what to do, which I know I am experiencing as I write this review, and this experience is not invalidated by the reflection that physical laws made it inevitable that I would want to make these decisions. -- Steven Weinberg
+I would say that free will is nothing but our conscious experience of deciding what to do, which I know I am experiencing as I write this review, and this experience is not invalidated by the reflection that physical laws made it inevitable that I would want to make these decisions.
+
+Steven Weinberg
 ```
 
 <section data-compat>

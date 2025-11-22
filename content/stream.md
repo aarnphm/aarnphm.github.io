@@ -2,11 +2,21 @@
 date: "2025-10-24"
 description: a microblog within a blog, at the middle of the night.
 id: stream
-modified: 2025-11-21 12:43:50 GMT-05:00
+modified: 2025-11-22 14:19:31 GMT-05:00
 tags:
   - fruit
   - evergreen
 title: stream
+---
+
+- [meta]:
+  - date: 2025-11-22 14:18:52 GMT-05:00
+  - tags:
+    - life
+    - relationship
+
+I got a cup of hot chocolate today. It reminded me of L, and somehow, we carry fragments of them within you without knowing so.
+
 ---
 
 - [meta]:

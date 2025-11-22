@@ -83,7 +83,7 @@ function parseCoordinate(value?: string): Coordinates | undefined {
   if (parts.length < 2) {
     return undefined
   }
-  const [lon, lat] = parts
+  const [lat, lon] = parts
   return { lat, lon }
 }
 

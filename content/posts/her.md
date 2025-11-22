@@ -2,7 +2,7 @@
 date: "2025-01-03"
 description: and confusion.
 id: her
-modified: 2025-10-29 02:15:11 GMT-04:00
+modified: 2025-11-22 11:38:57 GMT-05:00
 noindex: true
 socials:
   bluesky: https://bsky.app/profile/aarnphm.xyz/post/3lf5wpveltc2z
@@ -15,7 +15,9 @@ title: her.
 ---
 
 ```quotes
-There is nothing more truly artistic than to love people. -– Vincent van Gogh
+There is nothing more truly artistic than to love people.
+
+Vincent van Gogh
 ```
 
 ## perception of a partner

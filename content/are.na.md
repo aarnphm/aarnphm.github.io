@@ -41,7 +41,7 @@ cssclasses:
 date: "2024-10-24"
 description: My run-down version of are[dot]na
 id: are.na
-modified: 2025-11-22 10:02:12 GMT-05:00
+modified: 2025-11-22 17:02:40 GMT-05:00
 permalinks:
   - /website
   - /tweets
@@ -1265,36 +1265,88 @@ title: are.na
 
 ## places
 
+- https://maps.app.goo.gl/5LZH4dg9NcdKxb8WA -- Hanmoto [**]
+  - [meta]:
+    - date: 11/22/2025
+    - tags: [restaurant]
+    - coord: [43.6489495, -79.4216355]
+- https://maps.app.goo.gl/BdnNkGtSwhyxvPgk6 -- Bang Bang Ice Cream
+  - [meta]:
+    - date: 11/22/2025
+    - tags: [deserts]
+    - coord: [43.64674, -79.4186459]
+- https://maps.app.goo.gl/P4WD53TBFVFZoVvMA -- Lambo's [**]
+  - [meta]:
+    - date: 11/22/2025
+    - tags: [sandwich shop]
+    - coord: [43.6508061, -79.4172506]
+- https://maps.app.goo.gl/ctWNUv4ppVePAphD6 -- Cafe Belem
+  - [meta]:
+    - date: 11/22/2025
+    - tags: [coffee shop]
+    - coord: [43.6536022, -79.4134644]
+- https://maps.app.goo.gl/KaySo8WamRLTedAf8 -- Sellers & Newel Books
+  - [meta]:
+    - date: 11/22/2025
+    - tags: [bookstore, vintage]
+    - coord: [43.6552721, -79.4201953]
+- https://maps.app.goo.gl/szVKFD51BukWL44X9 -- Balfour Books [**]
+  - [meta]:
+    - date: 11/22/2025
+    - tags: [bookstore, vintage]
+    - coord: [43.6564852, -79.4086992]
+    - pinned: true
+- https://maps.app.goo.gl/wfCGR5tm7hXgM1oN7 -- Mahjong Bar
+  - [meta]:
+    - date: 11/22/2025
+    - tags: [bar]
+    - coord: [43.6495676, -79.4276998]
+- https://maps.app.goo.gl/dmafeztZvP1PS7CW8 -- The Old York Tavern [**]
+  - [meta]:
+    - date: 11/22/2025
+    - tags: [brunch]
+    - coord: [43.6422174, -79.4051655]
+    - pinned: true
+- https://maps.app.goo.gl/UoyDgXDCpTtn61Td7 -- Wang Lang
+  - [meta]:
+    - date: 11/22/2025
+    - tags: [restaurant]
+    - coord: [43.64391, -79.4007988]
+- https://maps.app.goo.gl/cysQ2XLjN4xyWrm4A -- Raku
+  - [meta]:
+    - date: 11/22/2025
+    - tags: [ramen shop]
+    - coord: [43.6482265, -79.399447]
 - https://maps.app.goo.gl/cZPBbBoATjQT48MH6 -- FIKA Toronto
   - [meta]:
     - date: 11/22/2025
     - tags: [coffee shop]
-    - coord: [-79.4030177, 43.6535814]
+    - coord: [43.6535814, -79.4030177]
 - https://maps.app.goo.gl/KfkZvSeUqzMUe5rs9 -- Pamenar
   - [meta]:
     - date: 11/17/2025
     - tags: [coffee shop]
-    - coord: [-79.4027094, 43.6566835]
+    - coord: [43.6566835, -79.4027094]
 - https://maps.app.goo.gl/nQBRM1Mws2JdM9vQA -- Bar Niro
   - [meta]:
     - date: 11/15/2025
     - tags: [wine bar]
-    - coord: [-79.4295031, 43.6495912]
+    - coord: [43.6495912, -79.4295031]
 - https://maps.app.goo.gl/Fqrk6Gvx1JeV5cXGA -- Augusta Coffee Bar
   - [meta]:
     - date: 11/15/2025
     - tags: [coffee shop]
-    - coord: [-79.4044516, 43.6544546]
+    - coord: [43.6544546, -79.4044516]
 - https://maps.app.goo.gl/7xSaomXDfgBJh4Yr7 -- Reservoir Lounge
   - [meta]:
     - date: 11/10/2025
     - tags: [jazz]
-    - coord: [-79.3745828, 43.6485848]
+    - coord: [43.6485848, -79.3745828]
 - https://maps.app.goo.gl/8cZo64RZkG5R4n2T6 -- PIKA
   - [meta]:
     - date: 10/05/2025
     - tags: [communal]
-    - coord: [-71.1107316, 42.3565554]
+    - coord: [42.3565554, -71.1107316]
     - title: PIKA @ MIT
     - sidebar: false
   - https://pika.mit.edu/
@@ -1302,104 +1354,104 @@ title: are.na
   - [meta]:
     - date: 08/05/2025
     - tags: [coffee shop]
-    - coord: [-79.4197269, 43.6472513]
+    - coord: [43.6472513, -79.4197269]
 - https://maps.app.goo.gl/2XPzgLkTRUxQLQNa8 -- Rooms Coffee | 915 Dupont
   - [meta]:
     - date: 08/05/2025
     - tags: [coffee shop]
-    - coord: [-79.4297616, 43.6700986]
+    - coord: [43.6700986, -79.4297616]
 - https://maps.app.goo.gl/xF1CbAPUZy4E2YkV7 -- Rooms Coffee | 17 Baldwin
   - [meta]:
     - date: 08/05/2025
     - tags: [coffee shop]
-    - coord: [-79.3953671, 43.6559416]
+    - coord: [43.6559416, -79.3953671]
 - https://maps.app.goo.gl/EvYLaxoUAhqXejhj6 -- Alternity
   - [meta]:
     - date: 08/05/2025
     - tags: [coffee shop]
-    - coord: [-79.4030583, 43.667092]
+    - coord: [43.667092, -79.4030583]
 - https://maps.app.goo.gl/qsBcJ8dVfog1Mev87 -- Coco neighborhood coffee shop
   - [meta]:
     - date: 08/05/2025
     - tags: [coffee shop]
-    - coord: [-79.4157885, 43.651432]
+    - coord: [43.651432, -79.4157885]
     - title: Coco's neighborhood coffee shop
 - https://maps.app.goo.gl/ubajUb5KrB9XgJTL7 -- Bevy at TheCombine
   - [meta]:
     - date: 08/05/2025
     - tags: [coffee shop]
-    - coord: [-79.3888161, 43.6451208]
+    - coord: [43.6451208, -79.3888161]
     - title: Bevy @ TheCombine
 - https://maps.app.goo.gl/vJY9DPf98uF5jTyk9 -- Isle of Coffee
   - [meta]:
     - date: 08/05/2025
     - tags: [coffee shop]
-    - coord: [-79.3515725, 43.658965]
+    - coord: [43.658965, -79.3515725]
 - https://maps.app.goo.gl/FGGHtR1rzxX8LTxSA -- Mofer Coffee on Queen
   - [meta]:
     - date: 08/05/2025
     - tags: [coffee shop]
-    - coord: [-79.4175998, 43.6442662]
+    - coord: [43.6442662, -79.4175998]
 - https://maps.app.goo.gl/6AdrB7FgTMoXgsUs5 -- Page One Coffee + Bar
   - [meta]:
     - date: 08/05/2025
     - tags: [coffee shop]
-    - coord: [-79.3762526, 43.65792]
+    - coord: [43.65792, -79.3762526]
 - https://maps.app.goo.gl/noRrgPejGf4CYG556 -- 10 DEAN | Waverley
   - [meta]:
     - date: 08/05/2025
     - tags: [coffee shop]
-    - coord: [-79.4002914, 43.6583573]
+    - coord: [43.6583573, -79.4002914]
 - https://maps.app.goo.gl/gPjjBhKiaVG1KYtU7 -- Cafe Pamenar
   - [meta]:
     - date: 08/05/2025
     - tags: [coffee shop]
-    - coord: [-79.4027094, 43.6566835]
+    - coord: [43.6566835, -79.4027094]
 - https://maps.app.goo.gl/SMMTH1d1PSDTF7zcA -- Milky Cloud Room
   - [meta]:
     - date: 08/05/2025
     - tags: [coffee shop]
-    - coord: [-79.407265, 43.6442978]
+    - coord: [43.6442978, -79.407265]
     - title: Milky's Cloud Room
 - https://maps.app.goo.gl/vuXxq7aVDUG7jw7s8 -- Found Coffee on College
   - [meta]:
     - date: 08/05/2025
     - tags: [coffee shop]
-    - coord: [-79.4026381, 43.6576525]
+    - coord: [43.6576525, -79.4026381]
 - https://maps.app.goo.gl/6yrQaRN4fr1fDMFC6 -- Carbonic Coffee
   - [meta]:
     - date: 08/05/2025
     - tags: [coffee shop]
-    - coord: [-79.393523, 43.655848]
+    - coord: [43.655848, -79.393523]
 - https://maps.app.goo.gl/24Lth72sDeicpzco7 -- Nabulu Coffee
   - [meta]:
     - date: 08/05/2025
     - tags: [coffee shop]
-    - coord: [-79.38570733361347, 43.66649229071298]
+    - coord: [43.66649229071298, -79.38570733361347]
 - https://maps.app.goo.gl/UMuTjTkmKwN7cvTE6 -- Stakt Market
   - [meta]:
     - date: 08/05/2025
     - tags: [market]
-    - coord: [-79.4016875, 43.6408185]
+    - coord: [43.6408185, -79.4016875]
 - https://maps.app.goo.gl/Ewq92uvU7EiAL5HF8 -- Loquat SF
   - [meta]:
     - date: 09/10/2025
     - tags: [coffee shop]
-    - coord: [-122.4225186, 37.7749123]
+    - coord: [37.7749123, -122.4225186]
     - sidebar: false
   - https://loquatsf.com/
 - https://maps.app.goo.gl/u6y6eV5fz7FvGzXg8 -- Bernhardt
   - [meta]:
     - date: 10/27/2025
     - tags: [restaurant]
-    - coord: [-79.4271727, 43.647259]
+    - coord: [43.647259, -79.4271727]
     - title: Bernhardt's
     - pinned: true
 - https://maps.app.goo.gl/KNogvcLy3xhJsGgM7 -- Ratelier [**]
   - [meta]:
     - date: 10/27/2025
     - tags: [coffee shop]
-    - coord: [-79.4146086, 43.6456113]
+    - coord: [43.6456113, -79.4146086]
     - pinned: true
 
 ## essay

@@ -3,7 +3,7 @@ date: "2025-10-15"
 description: coup de foudre
 draft: true
 id: lost
-modified: 2025-10-29 02:15:11 GMT-04:00
+modified: 2025-11-22 11:40:04 GMT-05:00
 tags:
   - love
   - growth
@@ -11,7 +11,9 @@ title: lost, and then found.
 ---
 
 ```quotes
-I would recognize you in total darkness, were you mute and I deaf. I would recognize you in another lifetime entirely, in different bodies, different times. And I would love you in all of this, until the very last star in the sky burnt out into oblivion. -- sana, @greeningingreen
+I would recognize you in total darkness, were you mute and I deaf. I would recognize you in another lifetime entirely, in different bodies, different times. And I would love you in all of this, until the very last star in the sky burnt out into oblivion.
+
+@greeningingreen
 ```
 
 I don't know how to eloquently put this to words, to capture how I felt. Why does this hurt more than the actual breakup?

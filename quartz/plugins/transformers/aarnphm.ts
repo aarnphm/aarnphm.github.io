@@ -10,6 +10,7 @@ import { fromMarkdown } from "mdast-util-from-markdown"
 import content from "../../components/styles/signatures.scss"
 import { toHtml } from "hast-util-to-html"
 import { toHast } from "mdast-util-to-hast"
+import { wikilink, wikilinkFromMarkdown } from "../../extensions/micromark-extension-ofm-wikilinks"
 // @ts-ignore
 import wcScript from "../../components/scripts/wc.inline.ts"
 
@@ -342,18 +343,25 @@ export const Aarnphm: QuartzTransformerPlugin<Partial<Options>> = (userOpts) => 
               return toHtml(target, { allowDangerousHtml: true })
             }
 
-            const transformQuotes = (target: HtmlElement) => {
-              const hast = (
-                toHast(fromMarkdown((target.children[0] as Text).value.replace(/--/g, "—")), {
-                  allowDangerousHtml: true,
-                }) as HtmlRoot
-              ).children[0] as HtmlElement
-              target = {
-                ...target,
-                ...hast,
+            const transformQuotes = (value: string) => {
+              const mdast = fromMarkdown(value.trim().replace(/--/g, "—"), {
+                extensions: [wikilink()],
+                mdastExtensions: [wikilinkFromMarkdown()],
+              })
+              const hast = toHast(mdast, { allowDangerousHtml: true }) as HtmlRoot
+              const children = (hast.children as HtmlElement["children"]).filter((child) => {
+                if (child.type !== "text") return true
+                return (child.value as string).trim() !== ""
+              })
+
+              const blockquote: HtmlElement = {
+                type: "element",
+                tagName: "blockquote",
                 properties: { className: ["quotes"] },
+                children,
               }
-              return toHtml(target, { allowDangerousHtml: true })
+
+              return toHtml(blockquote, { allowDangerousHtml: true })
             }
 
             const transformSMS = (target: HtmlElement) => {
@@ -369,8 +377,7 @@ export const Aarnphm: QuartzTransformerPlugin<Partial<Options>> = (userOpts) => 
                 opts.code.poetry ? transformPoetry(createBaseElement(node), lang) : node.value,
               poem: (node: Code) =>
                 opts.code.poetry ? transformPoetry(createBaseElement(node), lang) : node.value,
-              quotes: (node: Code) =>
-                opts.code.quotes ? transformQuotes(createBaseElement(node)) : node.value,
+              quotes: (node: Code) => (opts.code.quotes ? transformQuotes(node.value) : node.value),
               sms: (node: Code) =>
                 opts.code.sms ? transformSMS(createBaseElement(node)) : node.value,
             }

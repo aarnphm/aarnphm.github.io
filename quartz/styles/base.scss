@@ -17,6 +17,9 @@ body {
   font-size: var(--font-size);
   font-style: normal;
   font-weight: $normalWeight;
+  font-synthesis: style;
+  font-kerning: normal;
+  word-spacing: 0;
 }
 
 html {

@@ -2,7 +2,7 @@
 date: "2024-10-07"
 description: How we understand machine learning system is how we can move towards a safe futures, yet the road ahead lies many troubles to overcome. A literature review into the inception of the field, as well as where do we go from here.
 id: literature review
-modified: 2025-11-21 06:00:49 GMT-05:00
+modified: 2025-11-22 11:42:26 GMT-05:00
 noindex: true
 tags:
   - engineer4a03
@@ -14,7 +14,9 @@ See also [[posts/chatgpt|essays on ChatGPT]], [[thoughts/university/twenty-four-
 ## introduction.
 
 ```quotes
-To understand how AI is fundamentally political, we need to go beyond neural nets and statistical pattern recognition to instead ask _what_ is being optimized, and _for whom_, and _who_ gets to decide. Then we can trace the implications of those choices. -- Kate Crawford
+To understand how AI is fundamentally political, we need to go beyond neural nets and statistical pattern recognition to instead ask _what_ is being optimized, and _for whom_, and _who_ gets to decide. Then we can trace the implications of those choices.
+
+Kate Crawford
 ```
 
 1979's "Star-Trek: the Motion Picture" centered around the antagonist, V'Ger, an artificial entity that have outgrown its original programs, sought annihilation upon planet Earth. At the core,
@@ -41,7 +43,9 @@ as well as the ethical implications of AI systems. It will then conclude and pos
 ## growth.
 
 ```quotes
-Mathematicians wish to treat matters of perception mathematically, and make themselves ridiculous [...] the mind [...] does it tacitly, naturally, and without technical rules. -- Pascal, Pensées
+Mathematicians wish to treat matters of perception mathematically, and make themselves ridiculous [...] the mind [...] does it tacitly, naturally, and without technical rules.
+
+Pascal, [[library/Pensees|Pensées]]
 ```
 
 The inception of [[thoughts/Machine learning|AI]] might well begin when the belief of a total formalisation of knowledge must be possible[^2]. From Plato's

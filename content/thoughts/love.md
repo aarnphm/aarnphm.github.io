@@ -42,9 +42,20 @@ he argues that there are three components to love:
 
 ## boxes
 
-I think there are a few boxes we can categorise our feelings towards a person:
+I think there are a few boxes we can decompose our feelings into interpretable components, such that at least, one can compartmentalise these:
 
--
+- [[#hermeneutics nature]]
+- [[#passion]]
+- [[#cohabitation]]
+- [[#future projections]]
+
+### hermeneutics nature
+
+### passion
+
+### cohabitation
+
+### future projections
 
 ## not a feeling
 

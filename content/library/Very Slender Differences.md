@@ -3,15 +3,15 @@ author: Samuel Johnson
 category: fiction
 date: "2025-01-01"
 description: An essay in The Idler
+finished: 2025
 id: Very Slender Differences
-modified: 2025-10-29 02:14:44 GMT-04:00
+modified: 2025-11-22 11:39:41 GMT-05:00
 posters: "[[library/posters/very-slender-differences.jpg]]"
 status: finished
 subcategory: friendship
 tags:
   - fiction
 title: Very Slender Differences
-finished: 2025
 ---
 
 Life has no pleasure higher or nobler than that of [[thoughts/friendship]]. It is painful to consider that this sublime enjoyment may be impaired or destroyed by innumerable causes, and that there is no human possession of which the duration is less certain.
@@ -35,5 +35,7 @@ Friendship has other enemies. Suspicion is always hardening the cautious and dis
 The most fatal disease of friendship is gradual decay, or dislike hourly increased by causes too slender for complaint and too numerous for removal. Those who are angry may be reconciled; those who have been injured may receive a recompense; but when the desire of pleasing and willingness to be pleased is silently diminished, the renovation of friendship is hopeless, as, when the vital powers sink into languor, there is no longer any use of the physician.
 
 ```quotes
-In real friendship the judgment, the genius, the prudence of each party become the common property of both. -- Maria Edgeworth, 1787
+In real friendship the judgment, the genius, the prudence of each party become the common property of both.
+
+Maria Edgeworth, _1787_
 ```

@@ -2,15 +2,15 @@
 aliases:
   - images
 date: "2025-01-06"
-description: and all the things I found interesting on the internet.
-id: images
+description: inspired by https://girl.surgery/website_vibes/, interesting things on the internet
+id: vibes
 layout: masonry
 masonry:
   - "[[posts/images]]"
 modified: 2025-11-19 11:45:28 GMT-05:00
 tags:
-  - seed
-title: vibes, inspired by https://girl.surgery/website_vibes/
+  - evergreen
+title: vibes
 transclude:
   title: false
 ---

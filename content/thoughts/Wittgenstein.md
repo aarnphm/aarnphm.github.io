@@ -2,7 +2,7 @@
 date: "2025-10-04"
 description: language games, pictures of states, proposition
 id: Wittgenstein
-modified: 2025-10-29 02:15:39 GMT-04:00
+modified: 2025-11-22 11:41:34 GMT-05:00
 tags:
   - seed
   - philosophy
@@ -10,7 +10,7 @@ title: Wittgenstein
 ---
 
 ```quotes
-The world is the collection of facts, not of things. -- LW.
+The world is the collection of facts, not of things.j
 ```
 
 Wittgenstein's notebooks in essence, a snapshot of his thinking. I very much enjoyed reading through a few of his notebook, albeit it wasn't fully represented his thoughts while he was alive.
