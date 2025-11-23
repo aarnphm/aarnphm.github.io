@@ -4,7 +4,7 @@ description: on romantic epistemology
 draft: true
 id: romantic epistemology
 layout: letter
-modified: 2025-11-21 12:29:09 GMT-05:00
+modified: 2025-11-22 18:37:17 GMT-05:00
 tags:
   - philosophy
   - pattern
@@ -17,9 +17,6 @@ There are two types of love:
 
 - Type I: exploration of common interests that leads to common outcomes/results/connections to achieve a common goal (procreation, happiness)
 - Type II: convictions from formative experience that developed from personal tastes/[[thoughts/aesthetic value|aesthetic]] to determine ones' relationship to another human being.
-
-> [!NOTE]
-> what is life?
 
 ---
 

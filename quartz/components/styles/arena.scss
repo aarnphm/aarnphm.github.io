@@ -230,6 +230,10 @@ body[data-arena-subpage="true"] {
     -webkit-box-orient: vertical;
     overflow: hidden;
     text-overflow: ellipsis;
+
+    p {
+      margin: 0;
+    }
   }
 
   &.highlighted {
@@ -509,6 +513,7 @@ body[data-arena-subpage="true"] {
   display: flex;
   flex-direction: column;
   gap: 0;
+  outline: none;
 }
 
 .arena-channel-grid[data-view-mode="list"] .arena-block-clickable {
@@ -1303,7 +1308,7 @@ span.tag-link:hover {
     font-size: 0.9rem;
     line-height: 1.5;
 
-    a.arena-wikilink-trail-anchor {
+    .arena-wikilink-trail-anchor {
       color: var(--secondary);
       text-decoration: none;
       transition: color 0.2s ease;
@@ -1312,6 +1317,14 @@ span.tag-link:hover {
         text-decoration: underline;
         color: var(--tertiary);
       }
+    }
+  }
+}
+
+[saved-theme="dark"] {
+  .arena-wikilink-trail-anchor {
+    &:hover {
+      background: var(--light);
     }
   }
 }

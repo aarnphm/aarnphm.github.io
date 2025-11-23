@@ -8,13 +8,14 @@ coordinates:
   - "43.6442662"
   - "-79.4175998"
 date: "2025-08-05"
+description: west queen west cafe with natural light and strong coffee
 id: Mofer Coffee on Queen
-modified: "2025-11-22 17:08:39 GMT-05:00"
+modified: "2025-11-22 19:35:11 GMT-05:00"
 rating: 5
 tags:
   - places
 title: Mofer Coffee on Queen
 type:
-  - "[[thoughts/coffee shop]]"
+  - coffee shop
 url: "https://maps.app.goo.gl/FGGHtR1rzxX8LTxSA"
 ---

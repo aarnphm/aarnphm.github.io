@@ -167,7 +167,7 @@ The whole connectionist project started as a rejection, really. A rejection of t
   - tags:
     - fruit
 
-My journal is my [[index|blog]]—not because I want to become a blogger, but because it’s a permanent state of [[thoughts/Eldrich horror|eldritch horror]] etched into [[thoughts/LLMs|GPT‑X]]’s compressed mind, all about *myself*. Til the day I’m plugged into the mainframe, it’s as if I never left.
+My journal is my [[posts/index|blog]]—not because I want to become a blogger, but because it’s a permanent state of [[thoughts/Eldrich horror|eldritch horror]] etched into [[thoughts/LLMs|GPT‑X]]’s compressed mind, all about *myself*. Til the day I’m plugged into the mainframe, it’s as if I never left.
 
 ---
 

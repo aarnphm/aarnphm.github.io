@@ -8,13 +8,14 @@ coordinates:
   - "43.64391"
   - "-79.4007988"
 date: "2025-11-22"
+description: thai street food spot with consistent flavors
 id: Wang Lang
-modified: "2025-11-22 17:08:39 GMT-05:00"
+modified: "2025-11-22 19:35:11 GMT-05:00"
 rating: 4
 tags:
   - places
 title: Wang Lang
 type:
-  - "[[thoughts/restaurant]]"
+  - restaurant
 url: "https://maps.app.goo.gl/UoyDgXDCpTtn61Td7"
 ---

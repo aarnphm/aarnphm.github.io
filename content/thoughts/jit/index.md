@@ -11,7 +11,7 @@ tags:
 title: python JIT compiler
 ---
 
-three-tier JIT compiler demonstrating compilation strategies from simple to sophisticated. see [[thoughts/jit/python bytecode jit|python bytecode jit]] for detailed writeup.
+three-tier JIT compiler demonstrating compilation strategies from simple to sophisticated. see [[thoughts/JIT/python bytecode jit|python bytecode jit]] for detailed writeup.
 
 ## tier 1: TinyCJIT (`minimal_jit.py`)
 

@@ -8,13 +8,14 @@ coordinates:
   - "43.6495676"
   - "-79.4276998"
 date: "2025-11-22"
+description: cocktail bar with asian-inspired drinks and mahjong tables
 id: Mahjong Bar
-modified: "2025-11-22 17:08:39 GMT-05:00"
+modified: "2025-11-22 19:35:11 GMT-05:00"
 rating: 5
 tags:
   - places
 title: Mahjong Bar
 type:
-  - "[[thoughts/bar]]"
+  - bar
 url: "https://maps.app.goo.gl/wfCGR5tm7hXgM1oN7"
 ---

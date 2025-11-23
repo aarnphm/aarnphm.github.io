@@ -6,14 +6,14 @@ coordinates:
   - "43.6485848"
   - "-79.3745828"
 date: "2025-11-10"
+description: underground jazz club with live music and vintage atmosphere
 id: Reservoir Lounge
-modified: "2025-11-22 17:08:39 GMT-05:00"
+modified: "2025-11-22 19:35:11 GMT-05:00"
 rating: 5
 tags:
   - places
 title: Reservoir Lounge
 type:
-  - "[[thoughts/lounge]]"
-  - "[[thoughts/jazz]]"
+  - jazz
 url: "https://maps.app.goo.gl/7xSaomXDfgBJh4Yr7"
 ---

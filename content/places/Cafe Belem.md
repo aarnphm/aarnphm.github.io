@@ -8,13 +8,14 @@ coordinates:
   - "43.6536022"
   - "-79.4134644"
 date: "2025-11-22"
+description: portuguese cafe with proper pastel de nata
 id: Cafe Belem
-modified: "2025-11-22 17:08:39 GMT-05:00"
+modified: "2025-11-22 19:35:11 GMT-05:00"
 rating: 5
 tags:
   - places
 title: Cafe Belem
 type:
-  - "[[thoughts/coffee shop]]"
+  - coffee shop
 url: "https://maps.app.goo.gl/ctWNUv4ppVePAphD6"
 ---

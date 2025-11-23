@@ -8,13 +8,14 @@ coordinates:
   - "43.6700986"
   - "-79.4297616"
 date: "2025-08-05"
+description: dupont location with quieter mornings and dedicated regulars
 id: Rooms Coffee | 915 Dupont
-modified: "2025-11-22 17:08:39 GMT-05:00"
+modified: "2025-11-22 19:35:11 GMT-05:00"
 rating: 5
 tags:
   - places
 title: Rooms Coffee | 915 Dupont
 type:
-  - "[[thoughts/coffee shop]]"
+  - coffee shop
 url: "https://maps.app.goo.gl/2XPzgLkTRUxQLQNa8"
 ---

@@ -8,14 +8,14 @@ coordinates:
   - "43.6408185"
   - "-79.4016875"
 date: "2025-08-05"
+description: food hall with rotating vendors and communal seating
 id: Stakt Market
-modified: "2025-11-22 17:08:39 GMT-05:00"
+modified: "2025-11-22 19:35:11 GMT-05:00"
 rating: 5
 tags:
   - places
 title: Stakt Market
 type:
-  - "[[thoughts/fruit]]"
-  - "[[thoughts/market]]"
+  - market
 url: "https://maps.app.goo.gl/UMuTjTkmKwN7cvTE6"
 ---

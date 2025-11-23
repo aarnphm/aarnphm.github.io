@@ -99,7 +99,7 @@ vs Numba: comparable runtime (both produce native code), TinyCJIT 3-5× faster c
 
 ### BLAS benchmarks
 
-[[thoughts/jit/blas.py]] compares TinyCJIT vs Numba on linear algebra kernels. bandwidth-bound ops (saxpy, dot): competitive. compute-bound (gemm): Numba wins via better vectorization.
+[[thoughts/JIT/blas.py]] compares TinyCJIT vs Numba on linear algebra kernels. bandwidth-bound ops (saxpy, dot): competitive. compute-bound (gemm): Numba wins via better vectorization.
 
 ## tier 2: IRCompiler — SSA-based optimization
 
@@ -224,10 +224,10 @@ real-world strategy: profile at runtime, tier up on hot paths. this demo uses st
 
 ## implementation
 
-- [[thoughts/jit/minimal_jit.py]] — TinyCJIT implementation
-- [[thoughts/jit/ir_compiler.py]] — IRCompiler with SSA IR
-- [[thoughts/jit/compiler.py]] — unified Compiler with adaptive dispatch
-- [[thoughts/jit/ir.py]] — IR data structures and optimization passes
+- [[thoughts/JIT/minimal_jit.py]] — TinyCJIT implementation
+- [[thoughts/JIT/ir_compiler.py]] — IRCompiler with SSA IR
+- [[thoughts/JIT/compiler.py]] — unified Compiler with adaptive dispatch
+- [[thoughts/JIT/ir.py]] — IR data structures and optimization passes
 
 ## references
 

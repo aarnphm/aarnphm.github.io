@@ -20,7 +20,6 @@ interface PlaceEntry {
 const ARENA_FILE = path.join(process.cwd(), "content", "are.na.md")
 const PLACES_DIR = path.join(process.cwd(), "content", "places")
 const CATEGORY_LINK = "[[places to go]]"
-const TYPE_NAMESPACE = "thoughts"
 const DEFAULT_TAGS = ["places"]
 const DEFAULT_RATING = 5
 const NOMINATIM_ENDPOINT = "https://nominatim.openstreetmap.org/reverse"
@@ -296,7 +295,7 @@ function formatTypeTag(tag: string): string | undefined {
   if (trimmed.startsWith("[[") && trimmed.endsWith("]]")) {
     return trimmed
   }
-  return `[[${TYPE_NAMESPACE}/${trimmed}]]`
+  return `${trimmed}`
 }
 
 function buildTypeList(tags: string[], existingType: unknown): string[] {
@@ -365,6 +364,9 @@ function buildFrontmatter(
     data.date = entry.date
   } else if (typeof existing.date === "string") {
     data.date = existing.date
+  }
+  if (typeof existing.description === "string" && existing.description.trim().length > 0) {
+    data.description = existing.description.trim()
   }
   data.id = entry.title
   data.modified = formatModified(new Date())

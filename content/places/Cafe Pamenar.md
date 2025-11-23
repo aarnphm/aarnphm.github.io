@@ -8,13 +8,14 @@ coordinates:
   - "43.6566835"
   - "-79.4027094"
 date: "2025-08-05"
+description: kensington hidden gem with middle eastern coffee traditions
 id: Cafe Pamenar
-modified: "2025-11-22 17:08:39 GMT-05:00"
+modified: "2025-11-22 19:35:11 GMT-05:00"
 rating: 5
 tags:
   - places
 title: Cafe Pamenar
 type:
-  - "[[thoughts/coffee shop]]"
+  - coffee shop
 url: "https://maps.app.goo.gl/gPjjBhKiaVG1KYtU7"
 ---

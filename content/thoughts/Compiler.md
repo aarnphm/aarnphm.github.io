@@ -9,7 +9,7 @@ tags:
 title: Compiler
 ---
 
-see also: [[thoughts/jit/numba_jit.py|numba jit]], [[thoughts/jit/minimal_jit.py|minimal jit]], [[thoughts/XLA|XLA]], [[thoughts/MLIR|MLIR]], [[thoughts/Autograd|autograd]]
+see also: [[thoughts/JIT/numba_jit.py|numba jit]], [[thoughts/JIT/minimal_jit.py|minimal jit]], [[thoughts/XLA|XLA]], [[thoughts/MLIR|MLIR]], [[thoughts/Autograd|autograd]]
 
 ## compilation pipeline
 
@@ -217,7 +217,7 @@ def compute(x):
 # subsequent: cached native function
 ```
 
-see [[thoughts/jit/numba_jit.py|numba demo]] for 10-100x speedups on numerical code.
+see [[thoughts/JIT/numba_jit.py|numba demo]] for 10-100x speedups on numerical code.
 
 pypy uses meta-tracing - traces the interpreter executing user code, not user code directly. records operations on python objects, compiles traces to machine code. typical speedup 5-20x over cpython.
 
@@ -236,7 +236,7 @@ y = x + 0  # eliminate identity operation
 z = y * 1  # same
 ```
 
-see [[thoughts/jit/minimal_jit.py|minimal jit]] for educational implementation. achieves 1.5-2x speedup through profiling, constant folding, dead code elimination. limited by interpreter overhead - can't generate native code, can't vectorize, python object overhead remains.
+see [[thoughts/JIT/minimal_jit.py|minimal jit]] for educational implementation. achieves 1.5-2x speedup through profiling, constant folding, dead code elimination. limited by interpreter overhead - can't generate native code, can't vectorize, python object overhead remains.
 
 ## intermediate representations
 
@@ -377,7 +377,7 @@ forward must analysis - intersection of paths. enables common subexpression elim
 
 **common subexpression elimination**: global value numbering on ssa. assign value numbers to expressions - if two expressions have same value number and both available, eliminate redundant computation.
 
-see [[thoughts/jit/python bytecode jit.md]] for constant folding and dead code elimination on python bytecode.
+see [[thoughts/JIT/python bytecode jit]] for constant folding and dead code elimination on python bytecode.
 
 ## backend code generation
 

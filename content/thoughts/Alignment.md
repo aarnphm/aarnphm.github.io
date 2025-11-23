@@ -5,6 +5,7 @@ id: Alignment
 modified: 2025-10-29 02:15:15 GMT-04:00
 tags:
   - ml
+  - alignment
 title: Alignment
 ---
 
@@ -41,3 +42,12 @@ _published by [Anthropic](https://assets.anthropic.com/m/24a47b00f10301cd/origin
 The idea is to create a standard for risk mitigation strategy when AI system advances. Essentially create a scale to judge "how capable a system can cause harm"
 
 ![[thoughts/images/alignment-asl-scale.webp]]
+
+## trustworthy and untrustworthy models
+
+also known as _scheming and deceptive alignment_
+
+cf _Buck Shlegeris_ and _Ryan Greenblatt_, the goal is:
+
+- distinguish ::capability for scheming{h5}:: versus ==in-fact scheming==
+- difference between _active planners_, _sleeper agents_ and _opportunists_

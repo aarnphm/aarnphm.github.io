@@ -1279,7 +1279,7 @@ const ElementComponent = ((enableRecents: boolean = false) => {
               name="workshop"
               url="https://workshop.aarnphm.xyz"
             />
-            <AliasLink newTab name="arena" url="/arena" />
+            <AliasLink isInternal name="arena" url="/arena" />
             <AliasLink newTab name="rss" url="/index.xml" />
           </address>
         </section>,

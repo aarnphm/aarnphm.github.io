@@ -117,9 +117,9 @@ My approach to problems has stayed consistent since I learned arithmetic: ==don'
 
 [^work]: I should say I've been very fortunate professionally, working at a startup meant tackling loosely-defined problems and developing my own research and engineering [[thoughts/taste]].
 
-[^obsession]: Allocating 15-20 minutes a day to _one_ problem, without distraction. These days it's often 30-60 minute stints for me. Claude, Gemini, GPT-5, Kimi K2, GLM, DeepSeek R1 have all become useful "researchers"/"curators"/"verifiers" that helps me delve into a rabbit-hole.
+[^obsession]: Allocating 15-20 minutes a day to _one_ problem, without distraction. These days it's often 30-60 minute stints for me. I have a squad of Claude and Claude Code (for general discoverability), Gemini (large context handling), GPT-5 and Codex (raw intelligence), Kimi K2 + GLM 4.6 (raw agentic tool calling) that I built as my own "researchers"/"curators"/"verifiers". These tools has becoming a very good discovery tools for me.
 
-I might not be good at something initially, but this modus operandi has allowed me to work on what's probably the hardest [problem](https://github.com/vllm-project/vllm) of our time--_scaling intelligence_
+I might not be good at something initially, but i find being autistic enough to care about a specific domain (_scaling [[thoughts/AGI|intelligence]]_) has got me to a spot that make 5-year-old Aaron proud.
 
 > I know that the next section on my research interest can be a bit long, feel free to skip it [[dating#personal life.|to the next topic]]! Otherwise hopefully it captures topics I'm currently fascinated with (as of oct, 2025)
 
@@ -143,10 +143,12 @@ My mom says I was always shy growing up. These days I'm much more social, though
 
 [^being-human]: Regardless, this was life-changing, as it taught me a lot about [[thoughts/being]] _human_.
 
-[[influence|Friends]] mean the world to me. I'd go so far as to say that my understanding of relationships—of care itself—has been shaped entirely by my friendships. In _Nicomachean Ethics, VIII_, Aristotle wrote:
+[[influence|Friends]] mean the world to me. I'd go so far as to say that my understanding of relationships—of care itself—has been shaped entirely by my friendships:
 
-```sms
+```quotes
 One cannot be a friend to many people in the sense of having friendship of the perfect type with them, just as one cannot be in love with many people at once (for love is a sort of excess of feeling, and it is the nature of such only to be felt towards one person); and it is not easy for many people at the same time to please the same person very greatly, or perhaps even to be good in his eyes.
+
+Aristotle, _Nicomachean Ethics, VIII_
 ```
 
 I love my friends deeply—so much that I'd willingly take a bullet for any of them, at any moment. There are no ulterior motives here; everything I do comes from genuine intention. When I find something really cool and share it with someone, it's because they're the first person who comes to mind. Part of me wishes that one day I'll be able to give each of them the time and energy they truly deserve.
@@ -278,6 +280,7 @@ possible deal-breakers
 2. I don't want kids, _yet_, at least for the next five years.
    - We are young still, many things yet to be explored.
    - I want to be focused on my work and dedication to my [[thoughts/craft|craft]].
+   - I will pursue academia at some points, or at least working on my independent [[research]].
    - That said, I'd make it work for the _right_ person.
 3. I care deeply about my friends, and I believe that as partners, we don't have to do everything {{sidenotes[together.]: I definitely want to spend the majority of my time with you, but I'll need "boys" time.}}
 4. Most of my friends are female. I have very clear boundaries with friends, but I want all my female friendships—especially with N, C, Si—to remain strong.
@@ -294,7 +297,7 @@ what i'm offering in a relationship
 1. I'm cautiously optimistic, sometimes a bit self-deprecating.
 2. My attachment style has always been ["securely attached"](https://en.wikipedia.org/wiki/Attachment_theory#Attachment_styles_in_adults:~:text=%5B116%5D-,Securely%20attached,-%5Bedit%5D), though I found that my previous partner was ["anxious-preoccupied"](https://en.wikipedia.org/wiki/Attachment_theory#Attachment_styles_in_adults:~:text=%5B118%5D-,Anxious%2Dpreoccupied,-%5Bedit%5D), which is a bit easier to give them "word of affirmation". I'm a caregiver at heart, so I definitely want to look after you.
 3. I will cook for you. You don't have to come into the kitchen, but you're more than welcome to join.
-4. My [love languages](https://en.wikipedia.org/wiki/The_Five_Love_Languages) are physical touch, gifts, and quality time. I think of a life _partner_ as someone you're mutually supportive of and committed to—someone you're building something together with.
+4. My [love languages](https://en.wikipedia.org/wiki/The_Five_Love_Languages) are physical touch, and quality time. I think of a life _partner_ as someone you're mutually supportive of and committed to—someone you're building something together with.
 5. I will get you flowers.
 6. I will write letters to you.
 
@@ -312,8 +315,9 @@ By all means, this is _not all checkbox that I'm looking for_, but good signals 
 4. confidence or being in stem is _sooooooo attractive to me_
 5. non-avoidance attachment style
 6. spontaneous and adventurous soul
-7. si vous parlez français, fantastique je t'aime
-8. open-minded, with a bit of je ne sais quoi, fabuleuse
+7. have her own opinions on most things
+8. si vous parlez français, fantastique je t'aime
+9. open-minded, with a bit of je ne sais quoi, fabuleuse
 
 </section>
 
@@ -326,7 +330,7 @@ I'd love to:
 1. take you out on a picnic date where we can rent a vhs and eat strawberry, or
 2. checking out #places around Toronto, or
 3. we can go bouldering, grab food, then spend the night watching "paris, texas", or
-4. rent a cabin near lake simcoe, and enjoy the nature.
+4. go for a walk in hyde park, and enjoy the nature.
 
 ![[thoughts/images/3DA0F7DF-8F9B-47D8-BAA7-114429E5C359_1_105_c.webp]]
 ![[thoughts/images/0181AD4F-3C0A-4D99-9AF5-9145AFE56E22.webp]]

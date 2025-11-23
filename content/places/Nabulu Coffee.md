@@ -8,13 +8,14 @@ coordinates:
   - "43.66649229071298"
   - "-79.38570733361347"
 date: "2025-08-05"
+description: church-wellesley cafe with ethiopian coffee ceremonies
 id: Nabulu Coffee
-modified: "2025-11-22 17:08:39 GMT-05:00"
+modified: "2025-11-22 19:35:11 GMT-05:00"
 rating: 5
 tags:
   - places
 title: Nabulu Coffee
 type:
-  - "[[thoughts/coffee shop]]"
+  - coffee shop
 url: "https://maps.app.goo.gl/24Lth72sDeicpzco7"
 ---

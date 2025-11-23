@@ -42,9 +42,9 @@ views:
     markerColor: formula.Type color
   - type: table
     name: wip
-    filters:
-      and:
-        - list(type).contains(this)
+    groupBy:
+      property: type
+      direction: ASC
     order:
       - file.name
       - rating

@@ -8,13 +8,14 @@ coordinates:
   - "43.6456113"
   - "-79.4146086"
 date: "2025-10-27"
+description: tiny trinity bellwoods cafe with carefully sourced beans
 id: Ratelier
-modified: "2025-11-22 17:08:39 GMT-05:00"
+modified: "2025-11-22 19:35:11 GMT-05:00"
 rating: 5
 tags:
   - places
 title: Ratelier
 type:
-  - "[[thoughts/coffee shop]]"
+  - coffee shop
 url: "https://maps.app.goo.gl/KNogvcLy3xhJsGgM7"
 ---

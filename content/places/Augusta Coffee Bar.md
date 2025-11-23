@@ -8,13 +8,14 @@ coordinates:
   - "43.6544546"
   - "-79.4044516"
 date: "2025-11-15"
+description: kensington market staple with neighborhood feel
 id: Augusta Coffee Bar
-modified: "2025-11-22 17:08:39 GMT-05:00"
+modified: "2025-11-22 19:35:11 GMT-05:00"
 rating: 5
 tags:
   - places
 title: Augusta Coffee Bar
 type:
-  - "[[thoughts/coffee shop]]"
+  - coffee shop
 url: "https://maps.app.goo.gl/Fqrk6Gvx1JeV5cXGA"
 ---

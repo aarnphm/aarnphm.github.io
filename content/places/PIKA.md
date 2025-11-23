@@ -8,13 +8,14 @@ coordinates:
   - "42.3565554"
   - "-71.1107316"
 date: "2025-10-05"
+description: mit co-op living space with creative energy and communal dinners
 id: PIKA @ MIT
-modified: "2025-11-22 17:08:39 GMT-05:00"
+modified: "2025-11-22 19:35:11 GMT-05:00"
 rating: 5
 tags:
   - places
 title: PIKA @ MIT
 type:
-  - "[[thoughts/communal]]"
+  - communal
 url: "https://maps.app.goo.gl/8cZo64RZkG5R4n2T6"
 ---

@@ -8,13 +8,14 @@ coordinates:
   - "43.6535814"
   - "-79.4030177"
 date: "2025-11-22"
+description: swedish cafe culture in kensington market
 id: FIKA Toronto
-modified: "2025-11-22 17:08:39 GMT-05:00"
+modified: "2025-11-22 19:35:11 GMT-05:00"
 rating: 5
 tags:
   - places
 title: FIKA Toronto
 type:
-  - "[[thoughts/coffee shop]]"
+  - coffee shop
 url: "https://maps.app.goo.gl/cZPBbBoATjQT48MH6"
 ---

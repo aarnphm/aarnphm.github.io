@@ -2,10 +2,11 @@
 comments: true
 date: "2024-06-22"
 id: friendship
-modified: 2025-11-21 12:54:39 GMT-05:00
+modified: 2025-11-22 20:10:14 GMT-05:00
 tags:
   - love
   - pattern
+  - friend
 title: friendship
 ---
 
@@ -25,7 +26,11 @@ https://twitter.com/patriciamou_/status/1758354933521478126
 
 Trust requires vulnerability - the courage to show up as our authentic selves, to share our hopes and fears without guarantee. When we have faith in each other's core intentions, even as we stumble and err, we weave a web of trust that can withstand the tempests of misunderstanding.
 
-> ... because old friends may feel like strangers once substantial time has passed. Consistent with this possibility, several of the barriers that participants endorsed when thinking about reaching out to old friends are similar to the barriers that make people reluctant to talk to strangers. _People are surprisingly hesitant to reach out to old friend_ - [Communication Psychology](https://www.nature.com/articles/s44271-024-00075-8)
+```quotes
+... because old friends may feel like strangers once substantial time has passed. Consistent with this possibility, several of the barriers that participants endorsed when thinking about reaching out to old friends are similar to the barriers that make people reluctant to talk to strangers. _People are surprisingly hesitant to reach out to old friend_
+
+[Communication Psychology](https://www.nature.com/articles/s44271-024-00075-8)
+```
 
 reaching out feels... weird. In this age of tally, being genuine, would be the ONLY metrics that is important to maintaining relationship.
 
@@ -42,9 +47,11 @@ Still, I hold out hope that true friendship may yet be possible - a meeting of s
 
 ## of mutual caring.
 
-> To care about something is generally to find it worthwhile or valuable in some way; caring about one’s friend is no exception. A central difference among the various accounts of mutual caring is the way in which these accounts understand the kind of evaluation implicit therein
->
-> —[SEP](https://plato.stanford.edu/entries/friendship/)
+```quotes
+To care about something is generally to find it worthwhile or valuable in some way; caring about one’s friend is no exception. A central difference among the various accounts of mutual caring is the way in which these accounts understand the kind of evaluation implicit therein
+
+[SEP](https://plato.stanford.edu/entries/friendship/)
+```
 
 However, people are more afraid of commitment, and they are even more afraid of being hurt. Who wouldn't? We have seen too much, borne witness to the cruelties that humans can inflict upon one another.
 

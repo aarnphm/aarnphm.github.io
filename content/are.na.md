@@ -41,7 +41,7 @@ cssclasses:
 date: "2024-10-24"
 description: My run-down version of are[dot]na
 id: are.na
-modified: 2025-11-22 17:02:40 GMT-05:00
+modified: 2025-11-22 19:55:05 GMT-05:00
 permalinks:
   - /website
   - /tweets
@@ -118,6 +118,10 @@ title: are.na
 - [meta]:
   - view: list
 
+- https://x.com/Yuchenj_UW/status/1916537786519425124 -- Future of programming is here
+  - [meta]:
+    - date: 11/22/2025
+    - tags: [meme]
 - https://x.com/cath_land/status/1838890779135152624 -- painting of portraits
   - [meta]:
     - date: 11/21/2025
@@ -710,6 +714,11 @@ title: are.na
 
 ## people
 
+- https://x.com/RyanPGreenblatt -- Ryan Greenblatt
+  - [meta]:
+    - date: 11/22/2025
+    - tags: [researcher, alignment]
+  - chief scientist at Redwood Research
 - https://en.wikipedia.org/wiki/Colin_Campbell_(sociologist) -- Colin Campbell
   - [meta]:
     - date: 11/21/2025
@@ -1265,6 +1274,51 @@ title: are.na
 
 ## places
 
+- https://maps.app.goo.gl/3Yr25p5LbGfBw12Q9 -- Bar Prima
+  - [meta]:
+    - date: 11/22/2025
+    - tags: [restaurant]
+    - coord: [43.6431257, -79.4230246]
+- https://maps.app.goo.gl/TQVTDjZzKt5SPTLR7 -- Bar Poet
+  - [meta]:
+    - date: 11/22/2025
+    - tags: [restaurant]
+    - coord: [43.6431257, -79.4230246]
+- https://maps.app.goo.gl/9fYEX28pSGzd665F9 -- Harriet's Rooftop
+  - [meta]:
+    - date: 11/22/2025
+    - tags: [restaurant]
+    - coord: [43.6430582, -79.4018187]
+  - At 1's Hotel, Flora Lounge is pretty nice as well.
+- https://maps.app.goo.gl/ndMJ47Vk3pXu5Yyz9 -- Cafe Renee [**]
+  - [meta]:
+    - date: 11/22/2025
+    - tags: [restaurant]
+    - coord: [43.6452821, -79.4011935]
+    - pinned: true
+    - title: Cafe Renée
+- https://maps.app.goo.gl/ycCvm2pdLqRpMCuZA -- Chubby's Jamaican Kitchen
+  - [meta]:
+    - date: 11/22/2025
+    - tags: [restaurant]
+    - coord: [43.6443953, -79.4006169]
+- https://maps.app.goo.gl/vrdhF4JNipS8txQk6 -- Le Select Bistro [**]
+  - [meta]:
+    - date: 11/22/2025
+    - tags: [restaurant]
+    - coord: [43.6441297, -79.3981767]
+    - pinned: true
+    - title: Le Seléct Bistro
+- https://maps.app.goo.gl/fayqgamt2Ny6JbZq8 -- NEO COFFEE BAR KING X SPADINA
+  - [meta]:
+    - date: 11/22/2025
+    - tags: [coffee shop]
+    - coord: [43.6441297, -79.3981767]
+- https://maps.app.goo.gl/9TFk5fBx9KWPbFmy7 -- TIFF Lightbox
+  - [meta]:
+    - date: 11/22/2025
+    - tags: [theatre]
+    - coord: [43.6473074, -79.3937604]
 - https://maps.app.goo.gl/5LZH4dg9NcdKxb8WA -- Hanmoto [**]
   - [meta]:
     - date: 11/22/2025
@@ -1288,12 +1342,12 @@ title: are.na
 - https://maps.app.goo.gl/KaySo8WamRLTedAf8 -- Sellers & Newel Books
   - [meta]:
     - date: 11/22/2025
-    - tags: [bookstore, vintage]
+    - tags: [bookstore]
     - coord: [43.6552721, -79.4201953]
 - https://maps.app.goo.gl/szVKFD51BukWL44X9 -- Balfour Books [**]
   - [meta]:
     - date: 11/22/2025
-    - tags: [bookstore, vintage]
+    - tags: [bookstore]
     - coord: [43.6564852, -79.4086992]
     - pinned: true
 - https://maps.app.goo.gl/wfCGR5tm7hXgM1oN7 -- Mahjong Bar
@@ -1315,7 +1369,7 @@ title: are.na
 - https://maps.app.goo.gl/cysQ2XLjN4xyWrm4A -- Raku
   - [meta]:
     - date: 11/22/2025
-    - tags: [ramen shop]
+    - tags: [restaurant]
     - coord: [43.6482265, -79.399447]
 - https://maps.app.goo.gl/cZPBbBoATjQT48MH6 -- FIKA Toronto
   - [meta]:
@@ -1330,7 +1384,7 @@ title: are.na
 - https://maps.app.goo.gl/nQBRM1Mws2JdM9vQA -- Bar Niro
   - [meta]:
     - date: 11/15/2025
-    - tags: [wine bar]
+    - tags: [bar]
     - coord: [43.6495912, -79.4295031]
 - https://maps.app.goo.gl/Fqrk6Gvx1JeV5cXGA -- Augusta Coffee Bar
   - [meta]:
@@ -1342,6 +1396,11 @@ title: are.na
     - date: 11/10/2025
     - tags: [jazz]
     - coord: [43.6485848, -79.3745828]
+- https://maps.app.goo.gl/48anqx3p5vqN5k6EA -- The Rex Hotel
+  - [meta]:
+    - date: 11/22/2025
+    - tags: [jazz]
+    - coord: [43.6505964, -79.3885233]
 - https://maps.app.goo.gl/8cZo64RZkG5R4n2T6 -- PIKA
   - [meta]:
     - date: 10/05/2025
@@ -1456,6 +1515,30 @@ title: are.na
 
 ## essay
 
+- https://www.personalcanon.com/p/ten-thousand-takes-on-tech-culture -- ten thousand takes on tech, culture, criticism, and bait
+  - [meta]:
+    - date: 11/22/2025
+    - tags: [technoculture, podcast]
+- https://graydon2.dreamwidth.org/193447.html -- Always bet on text [**]
+  - [meta]:
+    - date: 11/22/2025
+    - tags: [web]
+  - > _text is the most powerful, useful, effective communication technology ever_, period.
+- https://www.astralcodexten.com/p/your-review-dating-men-in-the-bay -- Dating men in the Bay [**]
+  - [meta]:
+    - date: 11/22/2025
+    - tags: [life, manhood]
+  - The argument is that men lost their ways in understanding their manhood, i.e their designated role were gone/morphed into new categories by modern Western society.
+  - Goal to craft a new map:
+    - Encourage positive male role models to provide detailed directions on how to "become a man"
+    - Stigmatize sexist behavior toward men
+    - Remind men of their worth
+    - Encourage en to discuss the issues they face, and **listen to them**
+    - Openly acknowledge that mena nd women share some biological differences, and embrace the beauty of this diversity.
+- https://internetprincess.substack.com/p/home-for-the-holidays -- home for the holidays
+  - [meta]:
+    - date: 11/22/2025
+    - tags: [grief, life]
 - https://www.sunday.ai/journal/no-robot-data -- ACT-1: A Robot Foundation Model Trained on Zero Robot Data
   - [meta]:
     - date: 11/21/2025
@@ -1671,7 +1754,7 @@ title: are.na
 - https://www.ling.upenn.edu/~kroch/courses/lx400/Gallistel-King_chaps1-9.pdf -- Memory and Computational Brain
   - [meta]:
     - date: 11/20/2025
-    - tags: [cognitive]
+    - tags: [cognitive, read later]
 - https://nickbostrom.com/papers/vulnerable.pdf -- [[thoughts/The Vulnerable World Hypothesis]], Nick Bostrom
   - [meta]:
     - date: 11/09/2025
@@ -2364,6 +2447,7 @@ title: are.na
   - [meta]:
     - date: 10/03/2025
     - tags: [ai, alignment]
+  - see also: [[thoughts/Alignment#trustworthy and untrustworthy models|on trustworthiness of models]]
 - https://www.betonit.ai/p/shes-the-one -- She's the One
   - [meta]:
     - date: 10/04/2025
@@ -2418,12 +2502,36 @@ title: are.na
 - [meta]:
   - view: list
 
+- https://www.alignmentforum.org/posts/d9FJHawgkiMSPjagR/ai-control-improving-safety-despite-intentional-subversion -- AI Control: Improving Safety Despite Intentional Subversion
+  - [meta]:
+    - date: 11/22/2025
+    - tags: [alignment]
+- https://www.chinatalk.media/p/the-zai-playbook -- The Z.ai playbook
+  - [meta]:
+    - date: 11/22/2025
+    - tags: [models, podcast]
+- https://assets.anthropic.com/m/74342f2c96095771/original/Natural-emergent-misalignment-from-reward-hacking-paper.pdf -- From shortcuts to sabotage: natural emergent misalignment from reward hacking
+  - [meta]:
+    - date: 11/22/2025
+    - tags: [alignment, emergent properties]
+  - newsroom: https://www.anthropic.com/research/emergent-misalignment-reward-hacking
+  - ![[thoughts/images/learning reward hacks generalization.png|Learning reward hacks on production coding environments generalises to a range of misaligned behaviours]]
+- https://alechelbling.com/UnderstandingIsomap/ -- A Visual Introduction to Dimensionality Reduction with Isomap
+  - [meta]:
+    - date: 11/22/2025
+    - tags: [visualisation]
+  - built upon the [[thoughts/Manifold hypothesis|Manifold hypothesis]], where it seeks to create a low-dimensional embedding of data that preserves its local similarity structure. (this pattern is central to something like t-SNE and UMAP)
+  - steps:
+    - construct a graph between points that capture local structure
+    - measure the "geodesic" distance between all pairs of points in this graph ^[these distances approximate the true manifold distances between points]
+    - apply multi-dimensional scaling to project the high-dimensional data into a lower-dimensional embeddings that preserves the distance
+  - leverages [[thoughts/MDS]]
 - https://www.youtube.com/watch?v=xcpEl0cGCC4 -- CUDA + ThunderKittens, but increasingly drunk.
   - [meta]:
     - date: 11/22/2025
     - tags: [kernel]
     - pinned: true
-- https://allenai.org/blog/olmo3 -- Olmo 3 model release
+- https://allenai.org/blog/olmo3 -- Olmo 3 model release [--]
   - [meta]:
     - date: 11/21/2025
     - tags: [training, model release, architecture]
@@ -2486,11 +2594,11 @@ title: are.na
 - https://michaelnielsen.org/reinventing_explanation/ -- Reinventing Explanation
   - [meta]:
     - date: 11/09/2025
-    - tags: [visualization]
+    - tags: [visualisation]
 - https://colah.github.io/posts/2015-09-Visual-Information/ -- Visual Information Theory [**]
   - [meta]:
     - date: 11/09/2025
-    - tags: [visualization]
+    - tags: [visualisation]
 - https://github.com/bitsandbytes-foundation/bitsandbytes/blob/63f538a4e492017dd4a52edfde142c4ca818d401/bitsandbytes/backends/triton/kernels_4bit.py#L155 -- 4bit blockwise triton kernels
   - [meta]:
     - date: 11/09/2025
@@ -4741,7 +4849,7 @@ title: are.na
 - https://cel.cs.brown.edu/ -- Cognitive Engineering Lab [**]
   - [meta]:
     - date: 10/30/2025
-    - tags: [visualization]
+    - tags: [visualisation]
   - i.e: cognitive engineering
   - https://cel.cs.brown.edu/paper/ownership-conceptual-model/
   - https://rust-book.cs.brown.edu/
