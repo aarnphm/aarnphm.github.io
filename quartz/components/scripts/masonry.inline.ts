@@ -282,111 +282,110 @@ async function initMasonry() {
 
   if (imageData.length === 0) return
 
-  // shuffle images
   const shuffledData = shuffleArray([...imageData])
-
   const containerWidth = container.getBoundingClientRect().width
   const positioned: ImagePosition[] = []
   let containerHeight = 600
 
-  // preload all images to get dimensions
-  const imageElements: HTMLImageElement[] = []
-  const imageDimensions: ImageDimensions[] = []
+  container.style.height = `${containerHeight}px`
 
-  for (let i = 0; i < shuffledData.length; i++) {
-    const data = shuffledData[i]
-    const tempImg = new Image()
-    tempImg.src = data.src
+  // load and position images incrementally
+  let loadedCount = 0
+  const batchSize = 10
 
-    try {
-      await loadImage(tempImg)
-      const dims = calculateTargetDimensions(
-        tempImg.naturalWidth,
-        tempImg.naturalHeight,
-        containerWidth,
-      )
-      imageDimensions.push(dims)
-    } catch (e) {
-      // use fallback dimensions if image fails to load
-      imageDimensions.push({ width: 200, height: 200 })
-    }
+  async function loadAndPositionBatch(startIdx: number) {
+    const endIdx = Math.min(startIdx + batchSize, shuffledData.length)
 
-    imageElements.push(tempImg)
-  }
+    for (let i = startIdx; i < endIdx; i++) {
+      const data = shuffledData[i]
+      const tempImg = new Image()
+      tempImg.src = data.src
 
-  // position all images
-  for (let i = 0; i < shuffledData.length; i++) {
-    const data = shuffledData[i]
-    const dims = imageDimensions[i]
+      let dims: ImageDimensions
+      try {
+        await loadImage(tempImg)
+        dims = calculateTargetDimensions(
+          tempImg.naturalWidth,
+          tempImg.naturalHeight,
+          containerWidth,
+        )
+      } catch {
+        dims = { width: 200, height: 200 }
+      }
 
-    // find position for this image
-    let placed = false
-    while (!placed) {
-      const wMax = containerWidth - dims.width
-      const hMax = containerHeight - dims.height
+      // position this image
+      let placed = false
+      while (!placed) {
+        const wMax = containerWidth - dims.width
+        const hMax = containerHeight - dims.height
 
-      for (let attempt = 0; attempt < 50; attempt++) {
-        const x = Math.floor(Math.random() * wMax)
-        const y = Math.floor(Math.random() * hMax)
+        for (let attempt = 0; attempt < 50; attempt++) {
+          const x = Math.floor(Math.random() * wMax)
+          const y = Math.floor(Math.random() * hMax)
 
-        const pos: ImagePosition = {
-          x,
-          y,
-          width: dims.width,
-          height: dims.height,
-          element: null as any,
-        }
-
-        if (!checkCollision(pos, positioned)) {
-          // create and position the display image
-          const img = document.createElement("img")
-          img.alt = data.alt
-          img.className = "masonry-image"
-          img.dataset.src = data.src
-          img.dataset.caption = data.alt
-          img.style.position = "absolute"
-          img.style.left = `${x}px`
-          img.style.top = `${y}px`
-          img.style.width = `${dims.width}px`
-          img.style.height = `${dims.height}px`
-          img.loading = "lazy"
-          img.classList.add("positioned")
-
-          pos.element = img
-          positioned.push(pos)
-          container.appendChild(img)
-
-          if (data.alt) {
-            setupCaptionModal(img, modal, data.alt)
+          const pos: ImagePosition = {
+            x,
+            y,
+            width: dims.width,
+            height: dims.height,
+            element: null as any,
           }
 
-          placed = true
-          break
+          if (!checkCollision(pos, positioned)) {
+            const img = document.createElement("img")
+            img.alt = data.alt
+            img.className = "masonry-image"
+            img.src = data.src
+            img.dataset.caption = data.alt
+            img.style.position = "absolute"
+            img.style.left = `${x}px`
+            img.style.top = `${y}px`
+            img.style.width = `${dims.width}px`
+            img.style.height = `${dims.height}px`
+            img.classList.add("positioned")
+
+            pos.element = img
+            positioned.push(pos)
+            container.appendChild(img)
+
+            if (data.alt) {
+              setupCaptionModal(img, modal, data.alt)
+            }
+
+            placed = true
+            break
+          }
+        }
+
+        if (!placed) {
+          containerHeight += 50
         }
       }
 
-      if (!placed) {
-        containerHeight += 50
+      loadedCount++
+
+      // update container height after each image
+      let maxBottom = 0
+      for (let j = 0; j < positioned.length; j++) {
+        const bottom = positioned[j].y + positioned[j].height
+        if (bottom > maxBottom) {
+          maxBottom = bottom
+        }
       }
+      container.style.height = `${maxBottom + 20}px`
+    }
+
+    // continue with next batch
+    if (endIdx < shuffledData.length) {
+      requestAnimationFrame(() => loadAndPositionBatch(endIdx))
+    } else {
+      // all images loaded, save cache
+      saveCache(positioned, containerHeight)
     }
   }
 
-  // update final container height
-  let maxBottom = 0
-  for (let j = 0; j < positioned.length; j++) {
-    const bottom = positioned[j].y + positioned[j].height
-    if (bottom > maxBottom) {
-      maxBottom = bottom
-    }
-  }
-  container.style.height = `${maxBottom + 20}px`
-
-  // now set the src on all images to trigger lazy loading
-  const allImages = container.querySelectorAll("img.masonry-image")
-  for (let i = 0; i < allImages.length; i++) {
-    const img = allImages[i] as HTMLImageElement
-    img.src = img.dataset.src!
-  }
+  // start loading batches
+  loadAndPositionBatch(0)
 
   // cleanup
   window.addCleanup(() => {
@@ -401,7 +400,6 @@ async function initMasonry() {
     for (const entry of entries) {
       const newWidth = entry.contentRect.width
 
-      // only recalculate if width actually changed
       if (Math.abs(newWidth - lastWidth) < 1) continue
 
       lastWidth = newWidth
@@ -411,15 +409,12 @@ async function initMasonry() {
       }
 
       resizeTimeout = window.setTimeout(() => {
-        // clear cache on resize
         const cacheKey = getCacheKey()
         sessionStorage.removeItem(cacheKey)
         sessionStorage.removeItem(`${cacheKey}:height`)
 
-        // reset and reinitialize
         container.innerHTML = ""
 
-        // re-run init
         initMasonry()
       }, 150)
     }

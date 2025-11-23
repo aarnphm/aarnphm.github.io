@@ -41,7 +41,7 @@ cssclasses:
 date: "2024-10-24"
 description: My run-down version of are[dot]na
 id: are.na
-modified: 2025-11-22 19:55:05 GMT-05:00
+modified: 2025-11-22 21:22:50 GMT-05:00
 permalinks:
   - /website
   - /tweets
@@ -2502,6 +2502,10 @@ title: are.na
 - [meta]:
   - view: list
 
+- https://cdn.openai.com/pdf/4a25f921-e4e0-479a-9b38-5367b47e8fd0/early-science-acceleration-experiments-with-gpt-5.pdf -- Early science acceleration experiments with GPT-5
+  - [meta]:
+    - date: 11/22/2025
+    - tags: [advancement]
 - https://www.alignmentforum.org/posts/d9FJHawgkiMSPjagR/ai-control-improving-safety-despite-intentional-subversion -- AI Control: Improving Safety Despite Intentional Subversion
   - [meta]:
     - date: 11/22/2025

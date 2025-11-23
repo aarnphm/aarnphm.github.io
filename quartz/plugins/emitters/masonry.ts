@@ -2,7 +2,7 @@ import { QuartzEmitterPlugin } from "../types"
 import { QuartzComponentProps } from "../../components/types"
 import { pageResources, renderPage } from "../../components/renderPage"
 import { FullPageLayout } from "../../cfg"
-import { pathToRoot } from "../../util/path"
+import { pathToRoot, slugifyFilePath, FilePath } from "../../util/path"
 import { defaultContentPageLayout, sharedPageComponents } from "../../../quartz.layout"
 import { write } from "./helpers"
 import { visit } from "unist-util-visit"
@@ -116,28 +116,20 @@ function deduplicateImages(images: MasonryImage[]): MasonryImage[] {
 function extractImagesFromDirectory(dirPath: string, contentRoot: string): MasonryImage[] {
   const images: MasonryImage[] = []
   const fullPath = path.join(contentRoot, dirPath)
+  const imageExtensions = [".jpg", ".jpeg", ".png", ".gif", ".webp", ".svg"]
 
-  try {
-    if (!fs.existsSync(fullPath) || !fs.statSync(fullPath).isDirectory()) {
-      return images
+  const files = fs.readdirSync(fullPath)
+
+  for (const file of files) {
+    const ext = path.extname(file).toLowerCase()
+    if (imageExtensions.includes(ext)) {
+      const relativePath = path.join(dirPath, file).replace(/\\/g, "/")
+      const slugifiedPath = slugifyFilePath(relativePath as FilePath, true)
+      images.push({
+        src: `/${slugifiedPath}${ext}`,
+        alt: path.basename(file, ext),
+      })
     }
-
-    const files = fs.readdirSync(fullPath)
-    const imageExtensions = [".jpg", ".jpeg", ".png", ".gif", ".webp", ".svg"]
-
-    for (const file of files) {
-      const ext = path.extname(file).toLowerCase()
-      if (imageExtensions.includes(ext)) {
-        // construct the src path relative to the site root
-        const relativePath = path.join(dirPath, file).replace(/\\/g, "/")
-        images.push({
-          src: `/${relativePath}`,
-          alt: path.basename(file, ext),
-        })
-      }
-    }
-  } catch (e) {
-    // ignore errors
   }
 
   return images
@@ -163,31 +155,27 @@ async function processMasonry(
 
   if (masonryRefs && Array.isArray(masonryRefs)) {
     for (const ref of masonryRefs) {
-      // parse wikilink like "[[posts/images]]"
       const parsed = parseWikilink(ref)
       if (!parsed) continue
 
-      // check if it's a directory reference
       const targetPath = parsed.target
-      const fullPath = path.join(ctx.argv.directory, targetPath)
 
-      if (fs.existsSync(fullPath) && fs.statSync(fullPath).isDirectory()) {
-        // extract images from directory
-        const dirImages = extractImagesFromDirectory(targetPath, ctx.argv.directory)
+      // try directory extraction first
+      const dirImages = extractImagesFromDirectory(targetPath, ctx.argv.directory)
+      if (dirImages.length > 0) {
         referencedImages.push(...dirImages)
-      } else {
-        // try to resolve as a file reference
-        const resolved = resolveWikilinkTarget(parsed, slug)
-        if (!resolved) continue
-
-        // find the referenced file
-        const referencedFile = allFiles.find((f) => f.slug === resolved.slug)
-        if (!referencedFile?.tree) continue
-
-        // extract images from referenced file
-        const refImages = extractImagesFromTree(referencedFile.tree)
-        referencedImages.push(...refImages)
+        continue
       }
+
+      // fall back to file reference
+      const resolved = resolveWikilinkTarget(parsed, slug)
+      if (!resolved) continue
+
+      const referencedFile = allFiles.find((f) => f.slug === resolved.slug)
+      if (!referencedFile?.tree) continue
+
+      const refImages = extractImagesFromTree(referencedFile.tree)
+      referencedImages.push(...refImages)
     }
   }
 
