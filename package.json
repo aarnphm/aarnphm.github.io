@@ -47,13 +47,13 @@
     "@cloudflare/workers-oauth-provider": "^0.1.0",
     "@floating-ui/dom": "^1.7.4",
     "@huggingface/transformers": "^3.8.0",
-    "@modelcontextprotocol/sdk": "^1.22.0",
+    "@modelcontextprotocol/sdk": "^1.23.0",
     "@myriaddreamin/rehype-typst": "^0.6.0",
     "@myriaddreamin/typst-ts-node-compiler": "^0.6.0",
     "@myriaddreamin/typst.ts": "^0.6.0",
     "@napi-rs/simple-git": "^0.1.22",
     "@tweenjs/tween.js": "^25.0.0",
-    "agents": "^0.2.23",
+    "agents": "^0.2.24",
     "ansi-truncate": "^1.4.0",
     "async-mutex": "^0.5.0",
     "chokidar": "^4.0.3",
@@ -76,7 +76,7 @@
     "hast-util-to-text": "^4.0.2",
     "hast-util-whitespace": "^3.0.0",
     "hastscript": "^9.0.1",
-    "hono": "^4.10.6",
+    "hono": "^4.10.7",
     "is-absolute-url": "^5.0.0",
     "js-yaml": "^4.1.1",
     "katex": "^0.16.25",
@@ -87,7 +87,7 @@
     "mdast-util-gfm": "^3.1.0",
     "mdast-util-math": "^3.0.0",
     "mdast-util-phrasing": "^4.1.0",
-    "mdast-util-to-hast": "^13.2.0",
+    "mdast-util-to-hast": "^13.2.1",
     "mdast-util-to-markdown": "^2.1.2",
     "mdast-util-to-string": "^4.0.0",
     "micromark-factory-space": "^2.0.1",
@@ -146,10 +146,10 @@
     "ws": "^8.18.3",
     "xml-formatter": "^3.6.7",
     "yargs": "^18.0.0",
-    "zod": "^4.1.12"
+    "zod": "^4.1.13"
   },
   "devDependencies": {
-    "@cloudflare/workers-types": "^4.20251121.0",
+    "@cloudflare/workers-types": "^4.20251126.0",
     "@modelcontextprotocol/inspector": "^0.17.2",
     "@types/d3": "^7.4.3",
     "@types/hast": "^3.0.4",
@@ -162,7 +162,7 @@
     "@types/unist": "^3.0.3",
     "@types/ws": "^8.18.1",
     "@types/yargs": "^17.0.35",
-    "@typescript/native-preview": "7.0.0-dev.20251121.1",
+    "@typescript/native-preview": "7.0.0-dev.20251126.1",
     "bibtex-tidy": "^1.14.0",
     "esbuild": "^0.27.0",
     "mermaid": "^11.12.1",
@@ -173,7 +173,7 @@
     "ts-morph": "^27.0.2",
     "tsx": "^4.20.6",
     "typescript": "^5.9.3",
-    "wrangler": "^4.50.0"
+    "wrangler": "^4.51.0"
   },
   "packageManager": "pnpm@9.6.0+sha512.38dc6fba8dba35b39340b9700112c2fe1e12f10b17134715a4aa98ccf7bb035e76fd981cf0bb384dfa98f8d6af5481c2bef2f4266a24bfa20c34eb7147ce0b5e"
 }
