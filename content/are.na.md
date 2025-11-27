@@ -41,7 +41,7 @@ cssclasses:
 date: "2024-10-24"
 description: My run-down version of are[dot]na
 id: are.na
-modified: 2025-11-26 13:37:47 GMT-05:00
+modified: 2025-11-26 22:19:52 GMT-05:00
 permalinks:
   - /website
   - /tweets
@@ -50,6 +50,7 @@ socials:
   are.na: https://www.are.na/aaron-pham/channels
   curius: /curius
   home: /
+  print: https://print.are.na/
 tags:
   - evergreen
 title: are.na
@@ -321,6 +322,10 @@ title: are.na
 
 ## website
 
+- https://www.mackenziechild.me/
+  - [meta]:
+    - date: 11/26/2025
+    - tags: [design, web]
 - https://lego.masonjwang.com/
   - [meta]:
     - date: 11/20/2025
