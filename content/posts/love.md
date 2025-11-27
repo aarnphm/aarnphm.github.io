@@ -3,7 +3,7 @@ alt: valentine
 date: "2025-02-14"
 description: on loneliness, Jungian love, and belongings.
 id: love
-modified: 2025-11-25 09:26:50 GMT-05:00
+modified: 2025-11-27 15:30:31 GMT-05:00
 socials:
   substack: https://open.substack.com/pub/livingalone/p/jung-bottonian-love?r=1z8i4s&utm_campaign=post&utm_medium=web&showWelcomeOnShare=true
 tags:
@@ -55,7 +55,9 @@ This projection creates the illusion of "completeness," as the beloved becomes a
 Jung described this dynamic as a "religious search" for wholeness, where the lover unconsciously seeks to reunite with the lost halves of their psyche through another.
 
 ```quotes
-Where love rules, there is no **will to power**; and where power predominates, there love is lacking. The one is the shadow of the other.
+Where love rules, there is no power [**will to power**]; and where power predominates, there love is lacking. The one is the shadow of the other.
+
+Carl Jung, CW 18, §1153
 ```
 
 However, such projections are inherently _unstable_. When relationships falter under the weight of unmet archetypal expectations, the disillusioned [[thoughts/Freud#The Ego and the Id|ego]] often retreats into shame or resentment,
@@ -70,6 +72,8 @@ For instance, an individual going through post-divorce isolation [^example] or a
 
 ```quotes
 The body will not allow itself to be exposed to annihilation. It’s prepared to annihilate itself to avoid that
+
+r/Jung, [reddit](https://www.reddit.com/r/Jung/comments/1c69gsf/defeating_shame_shame_is_a_soul_eating_emotion/)
 ```
 
 [^example]: I come across this threads on [r/Jung](https://www.reddit.com/r/Jung/comments/195ecoy/going_through_divorce_unbearable_sorrow_please/)
@@ -154,11 +158,14 @@ Here's are some media, quotes, and unstructured thoughts. I hope you might find 
 <div class="nolist">
 
 - ![[posts/images/zuck.webp|Zuck]]
-- Ian McEwan once said:
-  ```quotes
+- ```quotes
   The way a hand adjusts to another’s in the dark, the pause before a difficult truth
+
+  Ian McEwan
   ```
+
   Once can said that essence of love lies within the granular act of attention. Love, is the _antidote_ to solipsism: To project is human, to _retract_ that projection and see others is divine.
+
 - Belonging is a _verb_. It thrives not in static harmony but in the messy, glorious work of mutual revision.
 - **Thérèse and Isabelle**, _by Violette Leduc_
   - an authentic read on queer loves, by a French author. This is the first book that I read in French, let's just say that Claude is my translator's partner.

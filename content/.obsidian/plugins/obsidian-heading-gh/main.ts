@@ -9,7 +9,6 @@ const SECONDARY_KEYS = [
   "d",
   "f",
   "l",
-  ";",
   "h",
   "g",
   "u",

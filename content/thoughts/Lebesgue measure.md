@@ -3,7 +3,7 @@ created: "2025-10-29"
 date: "2025-10-29"
 description: Definition, properties, and examples of Lebesgue measure on $R^n$
 id: Lebesgue measure
-modified: 2025-11-03 05:21:22 GMT-05:00
+modified: 2025-11-27 16:10:36 GMT-05:00
 published: "2001-09-30"
 source: https://en.wikipedia.org/wiki/Lebesgue_measure
 tags:
@@ -116,7 +116,9 @@ If a set has Hausdorff dimension $<n$ (with respect to the Euclidean metric), th
 
 To show that $A$ is measurable, one often finds a “nicer” set $B$ with symmetric difference $(A\setminus B)\cup(B\setminus A)$ null, and then builds $B$ from open/closed sets via countable unions/intersections.
 
-Because Lebesgue measure is complete, adjoining all subsets of null sets strictly enlarges the Borel $\sigma$-algebra, and numerous non-Borel sets become measurable.[@karagila2013lebesguemeasurable] There are also many intermediate $\sigma$-algebras between the Borel and Lebesgue completions, obtained by adjoining carefully chosen families of sets [@karagila2012sigmaalgebra].
+Because Lebesgue measure is complete, adjoining all subsets of null sets strictly enlarges the Borel $\sigma$-algebra, and numerous non-Borel sets become measurable.[@karagila2013lebesguemeasurable] There are also many intermediate $\sigma$-algebras between the Borel and Lebesgue completions, obtained by adjoining carefully chosen families of sets
+
+see also: https://math.stackexchange.com/questions/142381/is-there-a-sigma-algebra-on-mathbbr-strictly-between-the-borel-and-lebes
 
 ## construction of the lebesgue measure
 

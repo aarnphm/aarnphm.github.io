@@ -174,10 +174,17 @@
     }
 
     blockquote {
-      border-left: 2px solid var(--secondary);
-      padding-left: 1rem;
-      margin: 0;
-      color: var(--gray);
+      &:not([class~="quotes"]) {
+        border-left: 2px solid var(--secondary);
+        padding-left: 1rem;
+        margin: 0;
+        color: var(--gray);
+      }
+
+      &.quotes {
+        padding-bottom: 2rem;
+        padding-left: 0rem;
+      }
     }
   }
 

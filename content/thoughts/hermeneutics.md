@@ -9,6 +9,12 @@ tags:
   - pattern
   - philosophy
 title: hermeneutics
+seealso:
+  - "[[thoughts/love|love]]"
+  - "[[thoughts/functionalism|functionalism]]"
+  - "[[thoughts/Behavirourism|Behavirourism]]"
+  - "[[thoughts/ethics|ethics]]"
+  - "[[thoughts/Attention|Attention]]"
 ---
 
 Understanding is not finding; it's making. You enter another's world not by observing from outside but by participating. The hermeneutic circle: you can't grasp the whole without the parts, can't grasp the parts without the whole. You're always already inside.
@@ -67,5 +73,3 @@ Interpretation is use. You understand when you can participate in their form of 
 For detailed discussion of how criteria work in practice, see [[thoughts/love#criteria]].
 
 cf: understanding = fusion of horizons through sustained attention. ethical practice requires phronesis (practical wisdom), recognition (narrative authority), interpretive justice. practice, not theory. criteria, not essence.
-
-see also: [[thoughts/love]], [[thoughts/functionalism]], [[thoughts/Behavirourism]], [[thoughts/ethics]], [[thoughts/attention]]

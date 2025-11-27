@@ -1,0 +1,72 @@
+.heading-gh-bg {
+  background: transparent !important;
+}
+
+.heading-gh-modal {
+  position: fixed;
+  top: 10%;
+  right: 16px;
+  left: auto;
+  transform: none;
+  margin: 0;
+  width: clamp(280px, 32vw, 420px);
+  max-height: 70vh;
+  padding: 10px;
+  border-radius: 10px;
+  box-shadow: var(--shadow-s);
+  background: var(--modal-background, var(--background-primary));
+  overflow: hidden;
+}
+
+.heading-gh-body {
+  position: relative;
+  display: block;
+}
+
+@media (max-width: 800px) {
+  .heading-gh-modal {
+    top: auto;
+    bottom: 12px;
+    left: 12px;
+    right: 12px;
+    width: auto;
+    max-width: none;
+    max-height: 60vh;
+  }
+}
+
+.heading-gh-modal .heading-gh-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-height: 60vh;
+  overflow: auto;
+  padding: 12px 8px;
+}
+
+.heading-gh-modal .heading-gh-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-radius: 6px;
+  padding: 4px 6px;
+  line-height: 1.4;
+}
+
+.heading-gh-modal .heading-gh-item.is-active {
+  background: var(--background-modifier-hover);
+}
+
+.heading-gh-modal .heading-gh-hint {
+  width: 16px;
+  text-align: center;
+  color: var(--text-accent);
+  font-weight: 700;
+  text-transform: lowercase;
+}
+
+.heading-gh-modal .heading-gh-text {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

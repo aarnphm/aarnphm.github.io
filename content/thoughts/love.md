@@ -9,7 +9,7 @@ aliases:
 date: "2025-10-04"
 description: choosing to give your full, continuously.
 id: love
-modified: 2025-11-25 14:21:23 GMT-05:00
+modified: 2025-11-27 15:21:50 GMT-05:00
 socials:
   essay: "[[posts/love|mutual becoming]]"
   hermeneutics: "[[posts/romantic epistemology|romantic epistemology]]"
@@ -118,7 +118,7 @@ You bring your world, they bring theirs. Understanding emerges where they meetâ€
 
 When someone says "you don't understand me," they're rightâ€”understanding must be achieved, maintained, renewed. It's never automatic. [@hooks2000love]
 
-This takes time. You can't speed-read a person. Deep {{sidenotes[reading]: see also [@karlsson2025reading] on how he reads}} is the model: return to difficult passages, sit with what resists you, let your categories be disrupted.
+This takes time. You can't speed-read a person. Deep [reading](https://www.henrikkarlsson.xyz/p/how-i-read) is the model: return to difficult passages, sit with what resists you, let your categories be disrupted.
 
 ## what it's not
 
