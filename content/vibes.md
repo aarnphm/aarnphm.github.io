@@ -8,7 +8,7 @@ layout: masonry
 masonry:
   - "[[posts/images]]"
   - "[[thoughts/images]]"
-modified: 2025-11-22 20:37:34 GMT-05:00
+modified: 2025-11-27 11:26:28 GMT-05:00
 tags:
   - evergreen
 title: vibes
@@ -16,7 +16,4 @@ transclude:
   title: false
 ---
 
-a large collections of images of my own, and on the internet.
-
 See also: https://girl.surgery/website_vibes/, https://guzey.com/vibes/
-

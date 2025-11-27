@@ -41,7 +41,7 @@ cssclasses:
 date: "2024-10-24"
 description: My run-down version of are[dot]na
 id: are.na
-modified: 2025-11-26 22:19:52 GMT-05:00
+modified: 2025-11-27 10:22:40 GMT-05:00
 permalinks:
   - /website
   - /tweets
@@ -1554,6 +1554,10 @@ title: are.na
 
 ## essay
 
+- https://kk.org/thetechnium/1000-true-fans/ -- 1000 True Fans
+  - [meta]:
+    - date: 11/27/2025
+    - tags: [life, productivity]
 - https://www.lesswrong.com/posts/qehggwKRMEyWqvjZG/reflections-on-neuralese -- Reflections on Neuralese
   - [meta]:
     - date: 11/26/2025
@@ -2585,7 +2589,7 @@ title: are.na
     - date: 11/22/2025
     - tags: [alignment, emergent properties]
   - newsroom: https://www.anthropic.com/research/emergent-misalignment-reward-hacking
-  - ![[thoughts/images/learning reward hacks generalization.png|Learning reward hacks on production coding environments generalises to a range of misaligned behaviours]]
+  - ![[thoughts/images/learning reward hacks generalization.webp|Learning reward hacks on production coding environments generalises to a range of misaligned behaviours]]
 - https://alechelbling.com/UnderstandingIsomap/ -- A Visual Introduction to Dimensionality Reduction with Isomap
   - [meta]:
     - date: 11/22/2025
@@ -2621,7 +2625,7 @@ title: are.na
   - > understanding neural networks through their causal mechanism
   - [[thoughts/mechanistic interpretability#steering|activations]] steering
     - Golden Gate Claude
-      ![[thoughts/images/diff steering.png]]
+      ![[thoughts/images/diff steering.webp]]
     - circa AxBench [@wu2025axbenchsteeringllmssimple]
     - harmonic means of:
       - coherence
@@ -4674,6 +4678,10 @@ title: are.na
 
 ## resources
 
+- https://ia601300.us.archive.org/12/items/RobertiAudi_The.Cambridge.Dictionary.of.Philosophy/Robert.Audi_The.Cambridge.Dictionary.of.Philosophy.pdf -- Cambridge Dictionary of Philosophy
+  - [meta]:
+    - date: 11/27/2025
+    - tags: [philosophy]
 - https://linear.axler.net/LADR4e.pdf -- Linear Algebra Done right [**]
   - [meta]:
     - date: 11/14/2025
@@ -5395,6 +5403,11 @@ title: are.na
 - [meta]:
   - view: list
 
+- https://arxiv.org/abs/2511.21631
+  - [meta]:
+    - date: 11/27/2025
+    - tags: [vlm, rl, moe]
+  - Hmm, scaling interleaved MRoPE
 - https://arxiv.org/abs/2412.06769
   - [meta]:
     - date: 11/26/2025

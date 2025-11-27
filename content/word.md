@@ -4,7 +4,8 @@ cssclasses:
 date: "2024-10-10"
 description: A collections of words and terms that lives within my vernacular
 id: word
-modified: 2025-11-27 00:10:26 GMT-05:00
+layout: technical
+modified: 2025-11-27 09:22:33 GMT-05:00
 tags:
   - evergreen
 title: lists
@@ -28,10 +29,10 @@ title: lists
 - aspersion
 - vim
 - sibilant
-- nomenclature
-- inundation
 - {{sidenotes[quine]: is a computer program that takes no input and produces a copy of its own _source code_ as its only output.}}
 - {{sidenotes[endogenous]: having an internal cause or origin}}
+- nomenclature
+- inundation
 - {{sidenotes[joie de vivre]: exuberant enjoyment of life}}
 - paratactic
 - blogosphere

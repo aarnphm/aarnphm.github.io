@@ -5,6 +5,7 @@
     border-bottom: 0;
     padding-bottom: 0;
     position: static;
+    height: 0;
   }
 
   .page-footer {
@@ -14,7 +15,7 @@
 
 .masonry-container {
   width: 100%;
-  padding: 2rem 0;
+  padding: 0;
   min-height: 50vh;
 
   &.all-col {
@@ -34,7 +35,6 @@
   opacity: 0;
   object-fit: cover;
   cursor: pointer;
-  border-radius: 0px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 
   &.positioned {
