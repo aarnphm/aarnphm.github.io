@@ -1580,8 +1580,12 @@ title: are.na
     - coord: [43.6456113, -79.4146086]
     - pinned: true
 
-## essay
+# essay
 
+- https://mingyuan.substack.com/p/youre-always-stressed-your-mind-is -- # You’re always stressed, your mind is always busy, you never have enough time
+  - [meta]:
+    - date: 11/27/2025
+    - tags: [life]
 - https://namelessvirtue.com/2025/11/26/youll-never-believe-where-blood-is-made/ -- You'll never believe where blood is made
   - [meta]:
     - date: 11/27/2025
@@ -2609,6 +2613,11 @@ title: are.na
 - [meta]:
   - view: list
 
+- https://nanjiang.cs.illinois.edu/cs542/ -- Statistical Reinforcement Learning [**]
+  - [meta]:
+    - date: 11/27/2025
+    - tags: [rl, courses]
+    - pinned: true
 - https://github.com/HazyResearch/cartridges
   - [meta]:
     - date: 11/27/2025
@@ -2688,6 +2697,7 @@ title: are.na
   - [[thoughts/mechanistic interpretability#steering|activations]] steering
     - Golden Gate Claude
       ![[thoughts/images/diff steering.webp]]
+    - See also: Eiffel Towel [Llama](https://github.com/scienceetonnante/eiffel-tower-llama) and the [blogpost](https://huggingface.co/spaces/dlouapre/eiffel-tower-llama)
     - circa AxBench [@wu2025axbenchsteeringllmssimple]
     - harmonic means of:
       - coherence
@@ -3370,6 +3380,10 @@ title: are.na
 
 ## opinions
 
+- https://www.lesswrong.com/posts/ajT6q5aMokagfthvG/hire-or-become-a-thinking-assistant -- Hire (or Become) a Thinking Assistant
+  - [meta]:
+    - date: 11/27/2025
+    - tags: [research, metacognition]
 - https://etsd.tech/posts/rtfc -- Read the f\*\*\* code
   - [meta]:
     - date: 08/07/2025

@@ -34,7 +34,7 @@ export function JSResourceToScriptElement(resource: JSResource, preserve?: boole
         key={resource.src}
         src={resource.src}
         type={scriptType}
-        spa-preserve={spaPreserve}
+        data-persist={spaPreserve}
         async={resource.async}
         crossOrigin={resource.crossOrigin}
       />
@@ -45,7 +45,7 @@ export function JSResourceToScriptElement(resource: JSResource, preserve?: boole
       <script
         key={randomUUID()}
         type={scriptType}
-        spa-preserve={spaPreserve}
+        data-persist={spaPreserve}
         crossOrigin={resource.crossOrigin}
         dangerouslySetInnerHTML={{ __html: content }}
       />
@@ -64,7 +64,7 @@ export function CSSResourceToStyleElement(resource: CSSResource, preserve?: bool
         href={resource.content}
         rel="stylesheet"
         type="text/css"
-        spa-preserve={spaPreserve}
+        data-persist={spaPreserve}
       />
     )
   }
