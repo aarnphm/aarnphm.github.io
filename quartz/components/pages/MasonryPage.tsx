@@ -1,4 +1,3 @@
-import { htmlToJsx } from "../../util/jsx"
 import type { QuartzComponent, QuartzComponentConstructor, QuartzComponentProps } from "../types"
 import style from "../styles/masonry.scss"
 // @ts-ignore
@@ -6,12 +5,11 @@ import script from "../scripts/masonry.inline"
 import { classNames } from "../../util/lang"
 
 export default (() => {
-  const MasonryPage: QuartzComponent = ({ fileData, tree, displayClass }: QuartzComponentProps) => {
+  const MasonryPage: QuartzComponent = ({ fileData, displayClass }: QuartzComponentProps) => {
     // get JSON path from emitter
     const jsonPath = fileData.masonryJsonPath
     const images = fileData.masonryImages || []
 
-    const content = htmlToJsx(fileData.filePath!, tree)
     const classes: string[] = fileData.frontmatter?.cssclasses ?? []
 
     if (images.length === 0) {
@@ -26,7 +24,6 @@ export default (() => {
             "popover-hint",
           )}
         >
-          <section class="main-col">{content}</section>
           <div class="masonry-empty all-col">no images found</div>
         </article>
       )
@@ -43,7 +40,6 @@ export default (() => {
           "grid",
         )}
       >
-        <section class="main-col">{content}</section>
         <div class="masonry-grid all-col" id="masonry-grid" data-json-path={jsonPath}></div>
         <div class="masonry-caption-modal" id="masonry-caption-modal"></div>
       </article>
