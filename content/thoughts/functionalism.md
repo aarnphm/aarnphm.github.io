@@ -3,8 +3,10 @@ created: "2025-10-01"
 date: "2025-10-01"
 description: Functional roles, computational hermeneutics, autopoietic critiques
 id: functionalism
-modified: 2025-11-19 15:04:44 GMT-05:00
-published: "2003-03-05"
+modified: 2025-11-27 17:53:37 GMT-05:00
+seealso:
+  - "[[thoughts/representations|representations]]"
+  - "[[thoughts/emergent behaviour|emergent behaviour]]"
 socials:
   sep: https://plato.stanford.edu/entries/functionalism/
   wikipedia: https://en.wikipedia.org/wiki/Functionalism_(philosophy_of_mind)
@@ -12,9 +14,6 @@ tags:
   - philosophy
   - pattern
 title: functionalism
-seealso:
-  - "[[thoughts/representations|representations]]"
-  - "[[thoughts/emergent behaviour|emergent behaviour]]"
 ---
 
 when I think about mind-like systems (brains, inference stack), often the question "what role is this playing in the overall control loop?" instead of "what is this made of?" comes up.

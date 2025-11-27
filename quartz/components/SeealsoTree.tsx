@@ -5,8 +5,8 @@ import { FullSlug, resolveRelative } from "../util/path"
 import type { FrontmatterLink } from "../plugins/transformers/frontmatter"
 import { JSX } from "preact"
 
-const MAX_DEPTH = 3
-const MAX_CHILDREN_PER_NODE = 4
+const MAX_DEPTH = 5
+const MAX_CHILDREN_PER_NODE = 5
 
 function getDisplayTitle(
   slug: FullSlug,
@@ -68,7 +68,7 @@ export default (() => {
     const visited = new Set<FullSlug>([currentSlug])
     const lines: JSX.Element[] = []
     const nbsp = "\u00a0"
-    const padAfterLabel = nbsp.repeat(4)
+    const padAfterLabel = nbsp.repeat(2)
     const segmentPad = nbsp.repeat(3)
     const segmentWithBar = `│${segmentPad}`
     const segmentEmpty = `${nbsp}${segmentPad}`
@@ -140,8 +140,7 @@ export default (() => {
     topLevel.forEach((link, idx) => addBranch(link, 0, idx === topLevel.length - 1, []))
 
     return (
-      <section class={classNames(displayClass, "seealso-tree")}>
-        <h2>aussi</h2>
+      <section class={classNames(displayClass, "seealso-tree", "main-col")}>
         <p class="seealso-tree-lines">{lines}</p>
       </section>
     )

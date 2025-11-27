@@ -26,6 +26,8 @@ views:
       - notebook
       - category
       - tags
+      - posters
+      - status
     sort:
       - property: date
         direction: DESC

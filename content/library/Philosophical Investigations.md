@@ -8,9 +8,9 @@ id: Philosophical Investigations
 modified: 2025-11-19 18:10:42 GMT-05:00
 posters: "[[library/posters/philosophical-investigations.jpg]]"
 seealso:
-  - "[[library/Tractatus Logico-Philosophicus]]"
+  - "[[library/Tractatus Logico-Philosophicus|TLP]]"
   - "[[thoughts/forms of life|forms of life]]"
-  - "[[library/Civilisation and its Discontents|Civilisation and its Discontents]]"
+  - "[[library/Civilisation and its Discontents|C&D]]"
 status: current
 subcategory: languages
 tags:
