@@ -2,7 +2,7 @@
 date: "2025-10-24"
 description: a microblog within a blog, at the middle of the night.
 id: stream
-modified: 2025-11-26 13:17:03 GMT-05:00
+modified: 2025-11-26 21:49:47 GMT-05:00
 tags:
   - fruit
   - evergreen
@@ -13,8 +13,9 @@ title: stream
   - date: 2025-11-25 13:15:26 GMT-05:00
   - tags:
     - love
+    - emotions
 
-I have a towel that I used for hosting guests. However, I had yet to find myself putting this for laundry. Partly, I want those feelings for L to rot away, and engulfed itself into that it would have to throw away one day.
+there's a towel i used for when L stayed over. still haven't washed it. keeping it means keeping the rot—letting those feelings decay until the whole thing becomes unbearable enough that throwing it away becomes a necessity rather than being a choice.
 
 ---
 
