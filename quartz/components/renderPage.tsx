@@ -1791,15 +1791,15 @@ export function renderPage(
         </body>
         {pageResources.js
           .filter((resource) => resource.loadTime === "afterDOMReady")
-          .map((res) => JSResourceToScriptElement(res))}
+          .map((res) => JSResourceToScriptElement(res, true))}
         {/* Cloudflare Web Analytics */}
-        {!ctx.argv.serve && (
+        {!ctx.argv.serve && !ctx.argv.watch && (
           <script
             defer
             src={"https://static.cloudflareinsights.com/beacon.min.js"}
             data-cf-beacon='{"token": "3b6a9ecda4294f8bb5770c2bfb44078c"}'
             crossOrigin={"anonymous"}
-            spa-preserve={true}
+            data-persist={true}
           />
         )}
         {/* End Cloudflare Web Analytics */}
