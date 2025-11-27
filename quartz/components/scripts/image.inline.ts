@@ -22,15 +22,44 @@ document.addEventListener("nav", () => {
     document.body.style.overflow = "hidden"
   }
 
-  // Add click handlers to all images in content
+  const imageHandlers = new WeakMap<HTMLImageElement, () => void>()
+
+  function setupImageHandler(img: HTMLImageElement) {
+    if (imageHandlers.has(img)) return
+
+    img.style.cursor = "pointer"
+    const popup = () => openModal(img.src, img.alt)
+    img.addEventListener("click", popup)
+    imageHandlers.set(img, popup)
+  }
+
+  // Add click handlers to all existing images
   const contentImages = document.querySelectorAll("img")
   for (const img of contentImages) {
     if (img instanceof HTMLImageElement) {
-      img.style.cursor = "pointer"
-      const popup = () => openModal(img.src, img.alt)
-      img.addEventListener("click", popup)
-      window.addCleanup(() => img.removeEventListener("click", popup))
+      setupImageHandler(img)
     }
+  }
+
+  // Watch for masonry images being added incrementally
+  const masonryContainer = document.querySelector(".masonry-grid")
+  let observer: MutationObserver | undefined
+
+  if (masonryContainer) {
+    observer = new MutationObserver((mutations) => {
+      for (const mutation of mutations) {
+        for (const node of mutation.addedNodes) {
+          if (node instanceof HTMLImageElement) {
+            setupImageHandler(node)
+          }
+        }
+      }
+    })
+
+    observer.observe(masonryContainer, {
+      childList: true,
+      subtree: true,
+    })
   }
 
   function keyboardHandler(e: any) {
@@ -40,9 +69,23 @@ document.addEventListener("nav", () => {
   closeBtn.addEventListener("click", closeModal)
   backdrop.addEventListener("click", closeModal)
   document.addEventListener("keydown", keyboardHandler)
+
   window.addCleanup(() => {
     closeBtn.removeEventListener("click", closeModal)
     backdrop.removeEventListener("click", closeModal)
     document.removeEventListener("keydown", keyboardHandler)
+
+    if (observer) {
+      observer.disconnect()
+    }
+
+    for (const img of contentImages) {
+      if (img instanceof HTMLImageElement) {
+        const handler = imageHandlers.get(img)
+        if (handler) {
+          img.removeEventListener("click", handler)
+        }
+      }
+    }
   })
 })

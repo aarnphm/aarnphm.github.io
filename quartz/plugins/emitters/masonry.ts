@@ -2,7 +2,7 @@ import { QuartzEmitterPlugin } from "../types"
 import { QuartzComponentProps } from "../../components/types"
 import { pageResources, renderPage } from "../../components/renderPage"
 import { FullPageLayout } from "../../cfg"
-import { pathToRoot, slugifyFilePath, FilePath } from "../../util/path"
+import { pathToRoot, slugifyFilePath, FilePath, FullSlug } from "../../util/path"
 import { defaultContentPageLayout, sharedPageComponents } from "../../../quartz.layout"
 import { write } from "./helpers"
 import { visit } from "unist-util-visit"
@@ -16,10 +16,34 @@ import { VFile } from "vfile"
 import { parseWikilink, resolveWikilinkTarget } from "../../util/wikilinks"
 import path from "path"
 import fs from "fs"
+import { imageSize } from "image-size"
+
+const MaxInputSize = 512 * 1024
+
+async function imageSizeFromFile(filePath: string): Promise<{ width?: number; height?: number }> {
+  let handle: fs.promises.FileHandle | undefined
+  try {
+    handle = await fs.promises.open(path.resolve(filePath), "r")
+    const { size } = await handle.stat()
+    if (size <= 0) {
+      return { width: undefined, height: undefined }
+    }
+    const inputSize = Math.min(size, MaxInputSize)
+    const input = new Uint8Array(inputSize)
+    await handle.read(input, 0, inputSize, 0)
+    return imageSize(input)
+  } catch {
+    return { width: 800, height: 600 }
+  } finally {
+    await handle?.close()
+  }
+}
 
 export interface MasonryImage {
   src: string
   alt: string
+  width: number
+  height: number
 }
 
 export const Masonry: QuartzEmitterPlugin<Partial<FullPageLayout>> = (userOpts) => {
@@ -86,16 +110,71 @@ export const Masonry: QuartzEmitterPlugin<Partial<FullPageLayout>> = (userOpts) 
   }
 }
 
-function extractImagesFromTree(tree: Node): MasonryImage[] {
+async function extractImagesFromTree(tree: Node, contentRoot: string): Promise<MasonryImage[]> {
   const images: MasonryImage[] = []
+  const imageNodes: Array<{
+    src: string
+    alt: string
+    width?: number
+    height?: number
+    needsSize: boolean
+    sourcePath?: string
+  }> = []
+
   visit(tree as Root, "element", (node: any) => {
     if (node.tagName === "img" && node.properties?.src) {
-      images.push({
-        src: node.properties.src as string,
-        alt: (node.properties.alt as string) || "",
-      })
+      const imgPath = node.properties.src as string
+      const cleanPath = imgPath.startsWith("/") ? imgPath.slice(1) : imgPath
+      const sourcePath = path.join(contentRoot, cleanPath)
+
+      if (node.properties.width && node.properties.height) {
+        imageNodes.push({
+          src: imgPath,
+          alt: (node.properties.alt as string) || "",
+          width: parseInt(node.properties.width),
+          height: parseInt(node.properties.height),
+          needsSize: false,
+        })
+      } else if (fs.existsSync(sourcePath)) {
+        imageNodes.push({
+          src: imgPath,
+          alt: (node.properties.alt as string) || "",
+          needsSize: true,
+          sourcePath,
+        })
+      } else {
+        imageNodes.push({
+          src: imgPath,
+          alt: (node.properties.alt as string) || "",
+          width: 800,
+          height: 600,
+          needsSize: false,
+        })
+      }
     }
   })
+
+  await Promise.all(
+    imageNodes.map(async (node) => {
+      if (node.needsSize && node.sourcePath) {
+        const dimensions = await imageSizeFromFile(node.sourcePath)
+        images.push({
+          src: node.src,
+          alt: node.alt,
+          width: dimensions.width || 800,
+          height: dimensions.height || 600,
+        })
+      } else {
+        images.push({
+          src: node.src,
+          alt: node.alt,
+          width: node.width || 800,
+          height: node.height || 600,
+        })
+      }
+    }),
+  )
+
   return images
 }
 
@@ -113,24 +192,36 @@ function deduplicateImages(images: MasonryImage[]): MasonryImage[] {
   return deduplicated
 }
 
-function extractImagesFromDirectory(dirPath: string, contentRoot: string): MasonryImage[] {
-  const images: MasonryImage[] = []
+async function extractImagesFromDirectory(
+  dirPath: string,
+  contentRoot: string,
+): Promise<MasonryImage[]> {
   const fullPath = path.join(contentRoot, dirPath)
   const imageExtensions = [".jpg", ".jpeg", ".png", ".gif", ".webp", ".svg"]
 
   const files = fs.readdirSync(fullPath)
-
-  for (const file of files) {
+  const imageFiles = files.filter((file) => {
     const ext = path.extname(file).toLowerCase()
-    if (imageExtensions.includes(ext)) {
+    return imageExtensions.includes(ext)
+  })
+
+  const images = await Promise.all(
+    imageFiles.map(async (file) => {
+      const ext = path.extname(file).toLowerCase()
       const relativePath = path.join(dirPath, file).replace(/\\/g, "/")
       const slugifiedPath = slugifyFilePath(relativePath as FilePath, true)
-      images.push({
+      const filePath = path.join(fullPath, file)
+
+      const dimensions = await imageSizeFromFile(filePath)
+
+      return {
         src: `/${slugifiedPath}${ext}`,
         alt: path.basename(file, ext),
-      })
-    }
-  }
+        width: dimensions.width || 800,
+        height: dimensions.height || 600,
+      }
+    }),
+  )
 
   return images
 }
@@ -147,7 +238,7 @@ async function processMasonry(
   const slug = file.data.slug!
 
   // extract images from the current page
-  const currentPageImages = extractImagesFromTree(tree)
+  const currentPageImages = await extractImagesFromTree(tree, ctx.argv.directory)
 
   // extract images from frontmatter masonry references
   const referencedImages: MasonryImage[] = []
@@ -161,7 +252,7 @@ async function processMasonry(
       const targetPath = parsed.target
 
       // try directory extraction first
-      const dirImages = extractImagesFromDirectory(targetPath, ctx.argv.directory)
+      const dirImages = await extractImagesFromDirectory(targetPath, ctx.argv.directory)
       if (dirImages.length > 0) {
         referencedImages.push(...dirImages)
         continue
@@ -174,7 +265,7 @@ async function processMasonry(
       const referencedFile = allFiles.find((f) => f.slug === resolved.slug)
       if (!referencedFile?.tree) continue
 
-      const refImages = extractImagesFromTree(referencedFile.tree)
+      const refImages = await extractImagesFromTree(referencedFile.tree, ctx.argv.directory)
       referencedImages.push(...refImages)
     }
   }

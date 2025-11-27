@@ -5,7 +5,7 @@ date: "2024-01-23"
 description: A collection of quotes, wisdom, and advice.
 id: quotes
 layout: letter
-modified: 2025-11-25 18:11:11 GMT-05:00
+modified: 2025-11-27 09:22:45 GMT-05:00
 tags:
   - evergreen
   - fruit
@@ -14,6 +14,10 @@ transclude:
   dynalist: false
   title: false
 ---
+
+> [_a priori_] is belief or claim is said to be justified a priori if its epistemic justification, the reason or warrant for thinking it to be true, does not depend at all on sensory or introspective or other sorts of experience; whereas if its justification does depend at least in part on such experience, it is said to be justified a posteriori or empirically. This specific distinction has to do only with the justification of the belief, and not at all with how the constituent concepts are acquired; thus it is no objection to a claim of a priori justificatory status for a particular belief that experience is required for the acquisition of some of the constituent concepts.
+>
+> [[thoughts/pdfs/Robert.Audi_The.Cambridge.Dictionary.of.Philosophy.pdf|Cambridge Dictionary of Philosophy]]
 
 > Research is what I'm doing when I don't know what I'm doing.
 >

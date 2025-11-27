@@ -59,6 +59,7 @@ async function convertMedia(contentDir: string) {
     const mdFiles = await globby(["**/*.md"], {
       cwd: contentDir,
       absolute: true,
+      ignore: ["**/movies", "**/library", "**/lyd.md"],
     })
 
     console.log(styleText("blue", `\nUpdating ${mdFiles.length} markdown files...`))
