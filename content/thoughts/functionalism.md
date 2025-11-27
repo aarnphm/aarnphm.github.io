@@ -12,11 +12,14 @@ tags:
   - philosophy
   - pattern
 title: functionalism
+seealso:
+  - "[[thoughts/representations|representations]]"
+  - "[[thoughts/emergent behaviour|emergent behaviour]]"
 ---
 
-see also: [[thoughts/representations]], [[thoughts/emergent behaviour]]
+when I think about mind-like systems (brains, inference stack), often the question "what role is this playing in the overall control loop?" instead of "what is this made of?" comes up.
 
-i’ve started using functionalism as a default lens on mind-like systems: when i look at brains, code, or serving stacks, i mostly ask “what role is this playing in the overall control loop?” instead of “what is this made of?”.
+with this framing, mental states are defined via categories and their purposes. If something takes the right inputs and produce the right outputs, then it is a _correct_ mental states
 
 in that frame, mental states are job descriptions. pain, belief, attention—each defined by what they do, not what they're made of. if something takes the right inputs, updates correctly, and produces the right outputs, it counts as that mental state. neurons, transistors, code: irrelevant. [@levin2024functionalism] feels like it keeps the explanatory bite of [[thoughts/identity|type-identity theory]] while preserving the empirical humility of [[thoughts/Behavirourism|behaviourism]], and it scales across nervous tissue, synthetic controllers, and commoditised inference engines like [[thoughts/LLMs]].
 

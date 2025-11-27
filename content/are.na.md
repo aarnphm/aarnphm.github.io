@@ -41,7 +41,31 @@ cssclasses:
 date: "2024-10-24"
 description: My run-down version of are[dot]na
 id: are.na
-modified: 2025-11-27 10:22:40 GMT-05:00
+metadata:
+  ebnf: |-
+    channel        = "##" , ws , heading , newline , channel_body ;
+    channel_body   = [ meta_section , newline ] , block , { block } ;
+    block          = list_entry , newline , meta_section , { note_line } ;
+    list_entry     = "-" , ws , link , [ ws "--" ws title ] , [ ws "[**]" ] ;
+    meta_section   = ws , "-" , ws , "[meta]:" , newline , meta_pair , { meta_pair } ;
+    meta_pair      = ws , ws , "-" , ws , key , ":" , ws , value ;
+    key            = "date" | "tags" | "pinned" | "view" | identifier ;
+    value          = date | tag_list | boolean | text ;
+    tag_list       = "[" , tag , { "," , ws , tag } , "]" ;
+    tag            = identifier ;
+    date           = digit , digit , "/" , digit , digit , "/" , digit , digit , digit , digit ;
+    boolean        = "true" | "false" ;
+    note_line      = ws , "-" , ws , text ;
+    link           = uri ;
+    title          = text ;
+    heading        = text ;
+    identifier     = letter , { letter | digit | "-" } ;
+    text           = { character - newline } ;
+    uri            = ? valid http uri ? ;
+    letter         = "a".."z" ;
+    digit          = "0".."9" ;
+    character      = ? any printable ascii except newline ? ;
+modified: 2025-11-27 15:44:11 GMT-05:00
 permalinks:
   - /website
   - /tweets
@@ -79,9 +103,9 @@ title: are.na
   - [meta]:
     - date: 08/13/2025
     - tags: [reseacher]
-  - > By writing, you are voting on the future of the Shoggoth using one of the few currencies it acknowledges: tokens it has to predict. If you aren't [[thoughts/writing|writing]], you are abdicating the future or your role in it. If you think it's enough to just be a good citizen, to vote for your favorite politician, to pick up litter and recycle, the future doesn't care about you.
-  - > There are ways to influence the Shoggoth more, but not many. If you don't already occupy a handful of key roles or work at a frontier lab, your influence rounds off to 0, far more than ever before. If there are values you have which are not expressed yet in text, if there are things you like or want, if they aren't reflected online, then to the AI they don't exist. That is dangerously close to won't exist.
-  - > But yes, you are also creating a sort of immortality for yourself personally. You aren't just creating a persona, you are creating your future self too. What self are you showing the LLMs, and how will they treat you in the future?
+  - By writing, you are voting on the future of the Shoggoth using one of the few currencies it acknowledges: tokens it has to predict. If you aren't [[thoughts/writing|writing]], you are abdicating the future or your role in it. If you think it's enough to just be a good citizen, to vote for your favorite politician, to pick up litter and recycle, the future doesn't care about you.
+  - There are ways to influence the Shoggoth more, but not many. If you don't already occupy a handful of key roles or work at a frontier lab, your influence rounds off to 0, far more than ever before. If there are values you have which are not expressed yet in text, if there are things you like or want, if they aren't reflected online, then to the AI they don't exist. That is dangerously close to won't exist.
+  - But yes, you are also creating a sort of immortality for yourself personally. You aren't just creating a persona, you are creating your future self too. What self are you showing the LLMs, and how will they treat you in the future?
 - https://x.com/Miles_Brundage/status/1967385510974009500 -- transition to fortune cookies
   - [meta]:
     - date: 10/03/2025
@@ -103,13 +127,12 @@ title: are.na
   - [meta]:
     - date: 10/03/2025
     - tags: [metaphysics, diety]
-- https://www.lesswrong.com/posts/WBw8dDkAWohFjWQSk/the-cluster-structure-of-thingspace -- Cluster structure of thingspace [**]
+- https://www.lesswrong.com/posts/WBw8dDkAWohFjWQSk/the-cluster-structure-of-thingspace -- Cluster structure of [[thoughts/love#thingspace]] [**]
   - [meta]:
     - date: 09/04/2025
     - tags: [love, friendship]
     - pinned: true
   - "Radial categories" are how cognitive psychologists describe the non-Aristotelian boundaries of words.
-  - see also: [[thoughts/love#thingspace|notes]]
 - https://www.multiamory.com/podcast/339-the-smorgasbord-of-relationships -- The smorgasbord of relationship
   - [meta]:
     - date: 09/04/2025
@@ -120,6 +143,12 @@ title: are.na
 - [meta]:
   - view: list
 
+- https://x.com/jsuarez5341/status/1993780321209512049 -- RL discourse between practicality versus theoretical verifiability [**]
+  - [meta]:
+    - date: 11/27/2025
+    - tags: [rl]
+  - https://x.com/cloneofsimo/status/1994047852788764864
+  - https://x.com/giffmana/status/1993754340096659960
 - https://x.com/eigenrobot/status/1782957877856018514 -- @eigenrobots' system prompts
   - [meta]:
     - date: 11/23/2025
@@ -136,12 +165,11 @@ title: are.na
   - [meta]:
     - date: 11/21/2025
     - tags: [intuition, agi]
-  - > Animal intelligence optimization pressure:
-    >
-    > - innate and continuous stream of consciousness of an embodied "self", a drive for homeostasis and self-preservation in a dangerous, physical world.
-    > - thoroughly optimized for natural selection => strong innate drives for power-seeking, status, dominance, reproduction. many packaged survival heuristics: fear, anger, disgust, ...
-    > - fundamentally social => huge amount of compute dedicated to EQ, theory of mind of other agents, bonding, coalitions, alliances, friend & foe dynamics.
-    > - exploration & exploitation tuning: curiosity, fun, play, world models.
+  - Animal intelligence optimization pressure:
+    - innate and continuous stream of consciousness of an embodied "self", a drive for homeostasis and self-preservation in a dangerous, physical world.
+    - thoroughly optimized for natural selection => strong innate drives for power-seeking, status, dominance, reproduction. many packaged survival heuristics: fear, anger, disgust, ...
+    - fundamentally social => huge amount of compute dedicated to EQ, theory of mind of other agents, bonding, coalitions, alliances, friend & foe dynamics.
+    - exploration & exploitation tuning: curiosity, fun, play, world models.
 - https://x.com/esrtweet/status/1889785599340486802 -- em-dash (—) defences against #llm generated artefacts
   - [meta]:
     - date: 11/17/2025
@@ -583,7 +611,7 @@ title: are.na
     - date: 10/02/2025
     - tags: [plaintext]
   - This is a motherfucking website
-  - > "Good design is as little design as possible." - some German mtf
+  - ![[quotes#^mtf]]
 - https://www.sfsystemsclub.com -- SF Systems Club
   - [meta]:
     - date: 08/03/2025
@@ -715,8 +743,8 @@ title: are.na
   - [meta]:
     - date: 10/04/2025
     - tags: [web poetic, manifesto]
-  - > I evoke the term 'handmade web' to refer to web pages coded by hand rather than by software; web pages made and maintained by individuals rather than by businesses or corporations; web pages which are provisional, temporary, or one-of-a-kind;
-  - > In The Web We Lost (2012), Anil Dash writes: "In the early days of the social web, there was a broad expectation that regular people might own their own identities by having their own websites, instead of being dependent on a few big sites to host their online identity."
+  - I evoke the term 'handmade web' to refer to web pages coded by hand rather than by software; web pages made and maintained by individuals rather than by businesses or corporations; web pages which are provisional, temporary, or one-of-a-kind;
+  - In The Web We Lost (2012), Anil Dash writes: "In the early days of the social web, there was a broad expectation that regular people might own their own identities by having their own websites, instead of being dependent on a few big sites to host their online identity."
 - https://wireframes.internet.dev/ -- INTDEV showcase
   - [meta]:
     - date: 10/04/2025
@@ -869,7 +897,7 @@ title: are.na
     - date: 11/11/2025
     - tags: [blogosphere]
   - columnist
-- https://departure.blog -- Sylvia
+- https://departure.blog -- Sylvia [**]
   - [meta]:
     - date: 11/09/2025
     - tags: [nyc]
@@ -1554,6 +1582,14 @@ title: are.na
 
 ## essay
 
+- https://namelessvirtue.com/2025/11/26/youll-never-believe-where-blood-is-made/ -- You'll never believe where blood is made
+  - [meta]:
+    - date: 11/27/2025
+    - tags: [biology]
+- https://kk.org/thetechnium/the-trust-quotient-tq/ -- The Trust Quotient
+  - [meta]:
+    - date: 11/27/2025
+    - tags: [life, theory]
 - https://kk.org/thetechnium/1000-true-fans/ -- 1000 True Fans
   - [meta]:
     - date: 11/27/2025
@@ -1574,12 +1610,12 @@ title: are.na
   - [meta]:
     - date: 11/23/2025
     - tags: [eschatology, family, homosexuality]
-  - > still, the two of us were close in our own way. sometimes, the two of us would go on long walks together. after fifteen minutes of silence, or twenty, something would loosen in him and he would start to tell me about the depths of his sadness and the disappointment in the way his life [played out. ](https://www.jenn.site/after-my-dad-died-we-found-the-love-letters/#:~:text=still%2C%20the%20two%20of%20us%20were%20close%20in%20our%20own%20way.%20sometimes%2C%20the%20two%20of%20us%20would%20go%20on%20long%20walks%20together.%20after%20fifteen%20minutes%20of%20silence%2C%20or%20twenty%2C%20something%20would%20loosen%20in%20him%20and%20he%20would%20start%20to%20tell%20me%20about%20the%20depths%20of%20his%20sadness%20and%20the%20disappointment%20in%20the%20way%20his%20life%20played%20out.)
-  - > edward gave me some photos he had of my dad, and i could scarcely believe that they were of the grim, sad man i knew. he beams in all of them, glowing with joy, his smile more incandescent than i've ever seen in my entire life. i steal glances at edward, the person who took all those impossible photos. the person he was looking at.
-  - > your own grief is an isolating thing because you are closeted and no one else knew who you were to each other.
-  - > when i did, he took it well. he told me that though the path i am on is a **painful one**, he would be there for me, and that the most important thing was to find *xin fu* in life, not to live your life in accordance to the expectations of anyone else.
-  - > because you see, my dad was a coward. mom had started asking for divorces by the time i was in my teens, and dad was the one who always said no.
-  - > _he wasted his entire life_, my mom said to me, the evening we found the love letters. *his entire life, and mine as well.*
+  - still, the two of us were close in our own way. sometimes, the two of us would go on long walks together. after fifteen minutes of silence, or twenty, something would loosen in him and he would start to tell me about the depths of his sadness and the disappointment in the way his life [played out. ](https://www.jenn.site/after-my-dad-died-we-found-the-love-letters/#:~:text=still%2C%20the%20two%20of%20us%20were%20close%20in%20our%20own%20way.%20sometimes%2C%20the%20two%20of%20us%20would%20go%20on%20long%20walks%20together.%20after%20fifteen%20minutes%20of%20silence%2C%20or%20twenty%2C%20something%20would%20loosen%20in%20him%20and%20he%20would%20start%20to%20tell%20me%20about%20the%20depths%20of%20his%20sadness%20and%20the%20disappointment%20in%20the%20way%20his%20life%20played%20out.)
+  - edward gave me some photos he had of my dad, and i could scarcely believe that they were of the grim, sad man i knew. he beams in all of them, glowing with joy, his smile more incandescent than i've ever seen in my entire life. i steal glances at edward, the person who took all those impossible photos. the person he was looking at.
+  - your own grief is an isolating thing because you are closeted and no one else knew who you were to each other.
+  - when i did, he took it well. he told me that though the path i am on is a **painful one**, he would be there for me, and that the most important thing was to find *xin fu* in life, not to live your life in accordance to the expectations of anyone else.
+  - because you see, my dad was a coward. mom had started asking for divorces by the time i was in my teens, and dad was the one who always said no.
+  - _he wasted his entire life_, my mom said to me, the evening we found the love letters. *his entire life, and mine as well.*
 - https://www.personalcanon.com/p/ten-thousand-takes-on-tech-culture -- ten thousand takes on tech, culture, criticism, and bait
   - [meta]:
     - date: 11/22/2025
@@ -1588,7 +1624,7 @@ title: are.na
   - [meta]:
     - date: 11/22/2025
     - tags: [web]
-  - > _text is the most powerful, useful, effective communication technology ever_, period.
+  - _text is the most powerful, useful, effective communication technology ever_, period.
 - https://www.astralcodexten.com/p/your-review-dating-men-in-the-bay -- Dating men in the Bay [**]
   - [meta]:
     - date: 11/22/2025
@@ -1715,10 +1751,10 @@ title: are.na
     - date: 11/13/2025
     - tags: [love]
     - pinned: true
-  - > There’s a sick kind of closeness in silence. Why does it feel more intimate to never speak to someone again than to text them “Happy Birthday!”? Someone I used to know is a year older today. I know that not because we still talk (God no), but because my brain is a haunted archive of useless information about men who always end up in relationships the second they’re done picking through the folds of my brain and the crevices of my body.
-  - > There’s something sacred in the quiet. Something twistedly tender about knowing that we are both carrying the same memories, unspoken and untouched, like a weird little time capsule we buried and agreed never to dig up. That is real intimacy. Not a soft launch. Not a photo dump. Just shared silence, heavy as hell.
-  - > It’s maddening how loud it gets. Because even when they've vanished from your feed, your phone, your orbit, they still exist. They’re not dead. They’re just… invisible.
-  - > Sometimes, I catch myself trying to picture it, what they look like now, if they still use my lingo, if they still have a hard time parking or still overcompensate for shyness with humor.
+  - There’s a sick kind of closeness in silence. Why does it feel more intimate to never speak to someone again than to text them “Happy Birthday!”? Someone I used to know is a year older today. I know that not because we still talk (God no), but because my brain is a haunted archive of useless information about men who always end up in relationships the second they’re done picking through the folds of my brain and the crevices of my body.
+  - There’s something sacred in the quiet. Something twistedly tender about knowing that we are both carrying the same memories, unspoken and untouched, like a weird little time capsule we buried and agreed never to dig up. That is real intimacy. Not a soft launch. Not a photo dump. Just shared silence, heavy as hell.
+  - It’s maddening how loud it gets. Because even when they've vanished from your feed, your phone, your orbit, they still exist. They’re not dead. They’re just… invisible.
+  - Sometimes, I catch myself trying to picture it, what they look like now, if they still use my lingo, if they still have a hard time parking or still overcompensate for shyness with humor.
 - https://offhandquibbles.substack.com/p/philosophy-is-kinda-autistic-hj-pos -- Philosophy is kinda autistic
   - [meta]:
     - date: 11/13/2025
@@ -1777,6 +1813,11 @@ title: are.na
     - date: 11/11/2025
     - tags: [pedagogy]
   - Instead of asking “Is university good?”, ask “Do I have something more compelling to do?”
+- https://www.brendanschlagel.com/2022/12/19/patterns-pedagogy-p2p-play/ -- Patterns, #r/pedagogy and p2p play
+  - [meta]:
+    - date: 11/27/2025
+    - tags: [pedagogy, patterns]
+  - see also: [[library/A Pattern Language|A Pattern Language]]
 - https://www.brendanschlagel.com/2017/11/05/canonize-creating-personal-canon-template/ -- Canonize: Creating a Personal Canon Template
   - [meta]:
     - date: 11/11/2025
@@ -1852,7 +1893,7 @@ title: are.na
     - tags: [pedagogy, ai]
     - pinned: true
   - how do we create a convivial learning experience, without cargo-culting others to learn?
-  - > learning doesn't really work, given that knowledge is not transferrable, and we also forgot half of it.
+  - learning doesn't really work, given that knowledge is not transferrable, and we also forgot half of it.
   - implicit vs guided learning
     - implicit: discovery, motivation, authenticity
     - guided: fluency, cognition, scaffolds
@@ -1872,8 +1913,8 @@ title: are.na
   - [meta]:
     - date: 11/02/2025
     - tags: [friend]
-  - > Aphantasics might skip over descriptive passages in books—since description aroused no images in their minds, they found it dull—or, because of such passages, avoid fiction altogether.
-  - > Hyperphantasia often seemed to function as an emotional amplifier in mental illness—heightening hypomania, worsening depression, causing intrusive traumatic imagery in P.T.S.D. to be more realistic and disturbing.
+  - Aphantasics might skip over descriptive passages in books—since description aroused no images in their minds, they found it dull—or, because of such passages, avoid fiction altogether.
+  - Hyperphantasia often seemed to function as an emotional amplifier in mental illness—heightening hypomania, worsening depression, causing intrusive traumatic imagery in P.T.S.D. to be more realistic and disturbing.
 - https://nintil.com/ -- nintil.com [**]
   - [meta]:
     - date: 11/02/2025
@@ -1891,8 +1932,8 @@ title: are.na
   - [meta]:
     - date: 10/30/2025
     - tags: [writing]
-  - > Another unexpected consequence: I imagined when I started writing this that the best essay would be fairly timeless — that the best essay you could write in 1844 would be much the same as the best one you could write now.
-  - > If the question of how to write the best possible essay reduces to the question of how to make great discoveries, then I _started with the wrong question._
+  - Another unexpected consequence: I imagined when I started writing this that the best essay would be fairly timeless — that the best essay you could write in 1844 would be much the same as the best one you could write now.
+  - If the question of how to write the best possible essay reduces to the question of how to make great discoveries, then I _started with the wrong question._
 - https://lilianweng.github.io/posts/2025-05-01-thinking/ -- Why We Think?
   - [meta]:
     - date: 10/29/2025
@@ -2083,22 +2124,22 @@ title: are.na
   - [meta]:
     - date: 10/05/2025
     - tags: [research]
-  - > One lesson was sufficient to educate my boss as to why I didn't want to do big jobs that displaced exploratory research and why I was justified in not doing crash jobs which absorb all the research computing facilities. I wanted instead to use the facilities to compute a large number of small problems. Again, in the early days, I was limited in computing capacity and it was clear, in my area, that a 'mathematician had no use for machines.' But I needed more machine capacity. Every time I had to tell some scientist in some other area, "No I can't; I haven't the machine capacity," he complained. I said "Go tell your Vice President that Hamming needs more computing capacity." After a while I could see what was happening up there at the top; many people said to my Vice President, "Your man needs more computing capacity." I got it!
-  - > The people who do great work with less ability but who are committed to it, get more done that those who have great skill and dabble in it, who work during the day and go home and do other things and come back and work the next day.
+  - One lesson was sufficient to educate my boss as to why I didn't want to do big jobs that displaced exploratory research and why I was justified in not doing crash jobs which absorb all the research computing facilities. I wanted instead to use the facilities to compute a large number of small problems. Again, in the early days, I was limited in computing capacity and it was clear, in my area, that a 'mathematician had no use for machines.' But I needed more machine capacity. Every time I had to tell some scientist in some other area, "No I can't; I haven't the machine capacity," he complained. I said "Go tell your Vice President that Hamming needs more computing capacity." After a while I could see what was happening up there at the top; many people said to my Vice President, "Your man needs more computing capacity." I got it!
+  - The people who do great work with less ability but who are committed to it, get more done that those who have great skill and dabble in it, who work during the day and go home and do other things and come back and work the next day.
 - https://www.benkuhn.net/thinkrealhard/ -- Think real hard
   - [meta]:
     - date: 10/05/2025
     - tags: [life, logics]
-  - > In retrospect, I wish those people had just told me “think real hard.” I was looking for an easy way out—One Weird Trick to Programming Better—but programming is too hard for that.
+  - In retrospect, I wish those people had just told me “think real hard.” I was looking for an easy way out—One Weird Trick to Programming Better—but programming is too hard for that.
 - https://michaelnielsen.org/blog/principles-of-effective-research/ -- Principles of Effective Research [**]
   - [meta]:
     - date: 10/05/2025
     - tags: [research]
-  - > The #philosophy underlying the essay is based on a famous quote attributed to [[thoughts/Aristotle]]: “We are what we repeatedly do. Excellence, then, is not an act but a habit.” Underlying all our habits are models (often unconscious) of how the world works.
-  - > [[research|Research]] is, of course, only a part of life, and must be understood in relation to the rest of life
-  - > Effective people are proactive and take personal responsibility for the events in their lives.
-  - > They form a vision of how they want their life to be, and work toward achieving that vision.
-  - > They identify problems in their lives, and work toward solutions to those problems.
+  - The #philosophy underlying the essay is based on a famous quote attributed to [[thoughts/Aristotle]]: “We are what we repeatedly do. Excellence, then, is not an act but a habit.” Underlying all our habits are models (often unconscious) of how the world works.
+  - [[research|Research]] is, of course, only a part of life, and must be understood in relation to the rest of life
+  - Effective people are proactive and take personal responsibility for the events in their lives.
+  - They form a vision of how they want their life to be, and work toward achieving that vision.
+  - They identify problems in their lives, and work toward solutions to those problems.
   - Self-discipline:
     - The first factor is having clarity about what one wants to achieve, why one wants to achieve it, and how to go about achieving it.
     - The second factor affecting self-discipline is one’s social environment.
@@ -2108,7 +2149,7 @@ title: are.na
   - [meta]:
     - date: 10/05/2025
     - tags: [productivity]
-  - > Even more importantly than freeing up time, clearing my schedule made sure the project was the top idea in my mind. If I don’t do that, it’s easy for me to let projects “go on autopilot,” where I keep them running but don’t proactively make time to think through things like whether we should change goals, add or drop priorities, or do other “non-obvious” things.
+  - Even more importantly than freeing up time, clearing my schedule made sure the project was the top idea in my mind. If I don’t do that, it’s easy for me to let projects “go on autopilot,” where I keep them running but don’t proactively make time to think through things like whether we should change goals, add or drop priorities, or do other “non-obvious” things.
 - https://newsletter.squishy.computer/p/all-you-need-is-links -- All you need is links [**]
   - [meta]:
     - date: 10/05/2025
@@ -2203,12 +2244,12 @@ title: are.na
   - [meta]:
     - date: 04/09/2025
     - tags: [being]
-  - > The air changes when I’m not rushing. It remembers me.
+  - The air changes when I’m not rushing. It remembers me.
 - https://onegirlinfinitethoughts.substack.com/p/what-if-love-never-finds-you -- What If Love never finds you?
   - [meta]:
     - date: 04/09/2025
     - tags: [love]
-  - > If you became too good at spotting the wolves beneath the wool, too fluent in the language of red flags, too unwilling to be dazzled by the cheap magic tricks of love bombers and smooth-tongued frauds.
+  - If you became too good at spotting the wolves beneath the wool, too fluent in the language of red flags, too unwilling to be dazzled by the cheap magic tricks of love bombers and smooth-tongued frauds.
 - https://read.mindmine.xyz/p/stop-hiding -- Stop hiding from your power.
   - [meta]:
     - date: 04/09/2025
@@ -2233,7 +2274,7 @@ title: are.na
   - [meta]:
     - date: 07/04/2025
     - tags: [neuroscience]
-  - > When we are curious, the brain's dopaminergic system -- the same one that lights up when we anticipate a reward -- kicks into gear. Simply put, curiosity makes us feel good about the prospect of discovering something new.
+  - When we are curious, the brain's dopaminergic system -- the same one that lights up when we anticipate a reward -- kicks into gear. Simply put, curiosity makes us feel good about the prospect of discovering something new.
 - https://a16z.com/a-good-place-to-work/ -- A Good Place to Work, Ben Horowitz
   - [meta]:
     - date: 07/04/2025
@@ -2275,9 +2316,9 @@ title: are.na
   - [meta]:
     - date: 08/02/2025
     - tags: [design, tools of conviviality]
-  - > You might think that any number of computers have been designed with these criteria in mind, but not so. Any system which requires a user to ever see the interior, for any reason, does not meet these specifications. There must not be additional ROMS, RAMS, boards or accessories except those that can be understood by the PITS as a separate appliance.
-  - > Seeing the guts is taboo. Things in sockets is taboo (unless to make servicing cheaper without imposing too large an initial cost). Billions of keys on the keyboard is taboo. Computerese is taboo. Large manuals, or many of them (large manuals are a sure sign of bad design) is taboo. **Self-instructional programs are NOT taboo.**
-  - > The computer must be in one lump. This means, given present technology, a 4 or 5 inch CRT (unless a better display comes along in the next year), a keyboard, and disk integrated into one package.
+  - You might think that any number of computers have been designed with these criteria in mind, but not so. Any system which requires a user to ever see the interior, for any reason, does not meet these specifications. There must not be additional ROMS, RAMS, boards or accessories except those that can be understood by the PITS as a separate appliance.
+  - Seeing the guts is taboo. Things in sockets is taboo (unless to make servicing cheaper without imposing too large an initial cost). Billions of keys on the keyboard is taboo. Computerese is taboo. Large manuals, or many of them (large manuals are a sure sign of bad design) is taboo. **Self-instructional programs are NOT taboo.**
+  - The computer must be in one lump. This means, given present technology, a 4 or 5 inch CRT (unless a better display comes along in the next year), a keyboard, and disk integrated into one package.
 - https://www.nytimes.com/2025/07/21/magazine/men-heterofatalism-dating-relationships.html -- The Trouble with Wanting Men
   - [meta]:
     - date: 08/02/2025
@@ -2316,10 +2357,10 @@ title: are.na
   - [meta]:
     - date: 08/02/2025
     - tags: [life, advices]
-  - > 33. If you always let people in in traffic, no one can cut you off.
-  - > 36. “You are ruined by your gifts” — the traits that make you exceptional are the very same traits that show up in your neuroses and limitations. Learning to love the upsides, if undertaken with clarity and gentleness, also creates more space to address the downsides. This is what makes the [Enneagram](https://usefulfictions.substack.com/p/there-are-nine-wolves-inside-of-you) tremendously potent.
-  - > 38. There is no grand unifying theory of morality, nothing that doesn’t break down in any edge cases — so avoid totalizing ideologies, or else. If you take anything too seriously, it can make you crazy. Related: Utilitarianism is a perfect program that doesn’t run on human hardware.
-  - > 45. If you can train yourself to ask “is there a better way to do this?” at random intervals ten times a day, you will become unstoppable.
+  - 33. If you always let people in in traffic, no one can cut you off.
+  - 36. “You are ruined by your gifts” — the traits that make you exceptional are the very same traits that show up in your neuroses and limitations. Learning to love the upsides, if undertaken with clarity and gentleness, also creates more space to address the downsides. This is what makes the [Enneagram](https://usefulfictions.substack.com/p/there-are-nine-wolves-inside-of-you) tremendously potent.
+  - 38. There is no grand unifying theory of morality, nothing that doesn’t break down in any edge cases — so avoid totalizing ideologies, or else. If you take anything too seriously, it can make you crazy. Related: Utilitarianism is a perfect program that doesn’t run on human hardware.
+  - 45. If you can train yourself to ask “is there a better way to do this?” at random intervals ten times a day, you will become unstoppable.
 - https://velvetnoise.substack.com/p/the-key-to-love-is-understanding -- The key to #love is understanding
   - [meta]:
     - date: 08/02/2025
@@ -2328,7 +2369,7 @@ title: are.na
   - [meta]:
     - date: 10/05/2025
     - tags: [love]
-  - > To reach out and remain unseen is its own kind of anti-conversation, a silence where love should be.
+  - To reach out and remain unseen is its own kind of anti-conversation, a silence where love should be.
 - https://illustrated.substack.com/p/grief-maybe -- Grief, maybe (ILLUSTRATED)
   - [meta]:
     - date: 08/02/2025
@@ -2345,7 +2386,7 @@ title: are.na
   - [meta]:
     - date: 10/02/2025
     - tags: [web poetics]
-  - > (In the quiet aftermath of the most wonderful and exhausting gathering at your home, you find traces of your friends everywhere. A strand of hair draped across the couch, every extra chair commandeered, lingering perfume… echoes of presence in the console.)
+  - (In the quiet aftermath of the most wonderful and exhausting gathering at your home, you find traces of your friends everywhere. A strand of hair draped across the couch, every extra chair commandeered, lingering perfume… echoes of presence in the console.)
 - https://wholeearth.info/p/whole-earth-catalog-fall-1968?format=spreads&index=0 -- Whole Earth Index
   - [meta]:
     - date: 08/03/2025
@@ -2363,27 +2404,27 @@ title: are.na
   - [meta]:
     - date: 10/03/2025
     - tags: [life]
-  - > Faulkner was absolutely right: The past is never dead. It’s not even past
-  - > It’s worth remembering that this is not true—or at least not true to the same degree—for cultures that built with perishable materials: wood, bamboo, paper, rammed earth. Unless actively maintained, these structures will perish in fire, flood, war, often lasting no more than decades, much less centuries.
+  - Faulkner was absolutely right: The past is never dead. It’s not even past
+  - It’s worth remembering that this is not true—or at least not true to the same degree—for cultures that built with perishable materials: wood, bamboo, paper, rammed earth. Unless actively maintained, these structures will perish in fire, flood, war, often lasting no more than decades, much less centuries.
 - https://shreniks-subconscious.super.site/journal/impermanence-bay-area-musings -- Impermanence (Bay Area Musings)
   - [meta]:
     - date: 08/05/2025
     - tags: [life]
-  - > I notice how I’m feeling a kind of tenderness for things that don’t last. It shows up in unexpected places, like the bruised-purple petals scattered on the sidewalk after a windy night, or the quick glimmer of someone’s laughter on a street corner before it disappears into the ordinary quiet.
-  - > Impermanence makes things precious. The fleetingness of a perfect moment is what gives it color and weight.
-  - > I remember thinking, almost with a twinge of sadness even as it was happening, how none of us would be able to return to that exact constellation of people and feeling again. And yet, maybe that’s what made it matter so much.
-  - > Maybe that’s the secret to contentment: finding beauty in the not-lasting. Cherishing moments for their brevity, saying thank you to every sunset you happen to catch, every ordinary dinner that feels like home.
+  - I notice how I’m feeling a kind of tenderness for things that don’t last. It shows up in unexpected places, like the bruised-purple petals scattered on the sidewalk after a windy night, or the quick glimmer of someone’s laughter on a street corner before it disappears into the ordinary quiet.
+  - Impermanence makes things precious. The fleetingness of a perfect moment is what gives it color and weight.
+  - I remember thinking, almost with a twinge of sadness even as it was happening, how none of us would be able to return to that exact constellation of people and feeling again. And yet, maybe that’s what made it matter so much.
+  - Maybe that’s the secret to contentment: finding beauty in the not-lasting. Cherishing moments for their brevity, saying thank you to every sunset you happen to catch, every ordinary dinner that feels like home.
 - https://thingofthings.substack.com/p/rationalists-and-the-cultic-milieu -- Rationalists and the Cultic Milieu [**]
   - [meta]:
     - date: 11/21/2025
     - tags: [reductionism]
-  - > The “cultic milieu” is the subculture from which new religious movements usually emerge.
+  - The “cultic milieu” is the subculture from which new religious movements usually emerge.
 - https://www.nytimes.com/2025/08/04/technology/rationalists-ai-lighthaven.html -- The Rise of Silicon Valley’s Techno-Religion
   - [meta]:
     - date: 08/05/2025
     - tags: [reductionism]
   - [[thoughts/Roko's Basilisk]]
-  - > “All of this feels mythic,” she said. “Even the non-Rationalist scientists find this compelling — the same way the Manhattan Project was compelling. We want to work on something mythic.”
+  - “All of this feels mythic,” she said. “Even the non-Rationalist scientists find this compelling — the same way the Manhattan Project was compelling. We want to work on something mythic.”
 - https://ryanandrewlangdon.com/2020/01/28/today-i-learned-that-not-everyone-has-an-internal-monologue-and-it-has-ruined-my-day/ -- Today I learned that some people doesn't have an internal monologue
   - [meta]:
     - date: 10/02/2025
@@ -2409,9 +2450,9 @@ title: are.na
   - [meta]:
     - date: 08/16/2025
     - tags: [information theory, web]
-  - > After all, anyone who has studied the history of technology knows that technological change is always a Faustian bargain: Technology giveth and technology taketh away, and not always in equal measure.
-  - > Now, there are several conclusions that might be drawn from these results, one of which was expressed by H. L. Mencken fifty years ago when he said, there is no idea so stupid that you can't find a professor who will believe it. This is more of an accusation than an explanation but in any case I have tried this experiment on non-professors and get roughly the same results.
-  - > Another possible conclusion is one expressed by George Orwell--also about 50 years ago--when he remarked that the average person today is about as naive as was the average person in the Middle Ages. In the Middle Ages people believed in the authority of their religion, no matter what. Today, we believe in the authority of our science, no matter what.
+  - After all, anyone who has studied the history of technology knows that technological change is always a Faustian bargain: Technology giveth and technology taketh away, and not always in equal measure.
+  - Now, there are several conclusions that might be drawn from these results, one of which was expressed by H. L. Mencken fifty years ago when he said, there is no idea so stupid that you can't find a professor who will believe it. This is more of an accusation than an explanation but in any case I have tried this experiment on non-professors and get roughly the same results.
+  - Another possible conclusion is one expressed by George Orwell--also about 50 years ago--when he remarked that the average person today is about as naive as was the average person in the Middle Ages. In the Middle Ages people believed in the authority of their religion, no matter what. Today, we believe in the authority of our science, no matter what.
 - https://milky.substack.com/p/moderation -- moderation, by molly mielke mccarthy
   - [meta]:
     - date: 08/16/2025
@@ -2465,10 +2506,10 @@ title: are.na
   - [meta]:
     - date: 10/03/2025
     - tags: [life, society]
-  - > My first suggestion: sit with something long enough.
-  - > Just simple, unassuming places, like a park you’ve never visited, a station or a random indie bookstore that is not aesthetic by normal standard.
-  - > When your attention stretches beyond the usual, you start seeing patterns, questions, and connections that others miss. Your perspective deepens. And with that depth comes a quiet magnetism, because interestingness isn’t a performance, it’s the result of a mind that’s been gently reshaped by new experiences and curiosity.
-  - > ==Let yourself be bored==
+  - My first suggestion: sit with something long enough.
+  - Just simple, unassuming places, like a park you’ve never visited, a station or a random indie bookstore that is not aesthetic by normal standard.
+  - When your attention stretches beyond the usual, you start seeing patterns, questions, and connections that others miss. Your perspective deepens. And with that depth comes a quiet magnetism, because interestingness isn’t a performance, it’s the result of a mind that’s been gently reshaped by new experiences and curiosity.
+  - ==Let yourself be bored==
 - https://sundogg.substack.com/p/have-you-put-down-your-bags -- Have you put down the bags?
   - [meta]:
     - date: 09/30/2025
@@ -2498,9 +2539,9 @@ title: are.na
   - [meta]:
     - date: 10/02/2025
     - tags: [startup]
-  - > Reason 1. Goodbye work-life balance
-  - > Reason 4. You won’t get rich
-  - > If you want to get rich, join a big company and climb their rank.
+  - Reason 1. Goodbye work-life balance
+  - Reason 4. You won’t get rich
+  - If you want to get rich, join a big company and climb their rank.
 - http://www.martinacecilia.com/place-vanishing-points/ -- How to place vanishing points
   - [meta]:
     - date: 10/03/2025
@@ -2518,12 +2559,12 @@ title: are.na
   - [meta]:
     - date: 10/04/2025
     - tags: [love, relationship]
-  - > Figure out your top priorities - and be flexible about everything else
-  - > Giving looks a high priority and personality a low priority. This is beyond foolish
-  - > Ask to hold hands on the first date. [...] My goal, rather, is to help ordinary shy guys out of the Friend Zone.
+  - Figure out your top priorities - and be flexible about everything else
+  - Giving looks a high priority and personality a low priority. This is beyond foolish
+  - Ask to hold hands on the first date. [...] My goal, rather, is to help ordinary shy guys out of the Friend Zone.
     > If a woman refuses to hold hands on the first date, you’re probably in her Friend Zone for life. Bitter to learn, but good to know.
-  - > Bitter truth: Even if a woman sincerely considers you supremely deserving of nice treatment now, the treatment you receive will almost certainly get worse.
-  - > If you want kids, remember that virtually ==all traits are heritable.==
+  - Bitter truth: Even if a woman sincerely considers you supremely deserving of nice treatment now, the treatment you receive will almost certainly get worse.
+  - If you want kids, remember that virtually ==all traits are heritable.==
 - https://www.betonit.ai/p/i-want-to-hold-your-hand -- I want to hold your hand
   - [meta]:
     - date: 10/04/2025
@@ -2536,9 +2577,9 @@ title: are.na
   - [meta]:
     - date: 10/04/2025
     - tags: [agi, longtermism]
-  - > Neuralink Third Impact
-  - > Simulation Theory
-  - > If God were to visit this world, he would destroy it. An unbounded resource gatherer was summoned; a demon of the Platonic ether forged through incredible optimization pressures that created instrumental convergence to power-seeking behavior. One by one, the stars are blinking out in the heavens as their energy is harnessed to further the Fiend’s profane purpose.
+  - Neuralink Third Impact
+  - Simulation Theory
+  - If God were to visit this world, he would destroy it. An unbounded resource gatherer was summoned; a demon of the Platonic ether forged through incredible optimization pressures that created instrumental convergence to power-seeking behavior. One by one, the stars are blinking out in the heavens as their energy is harnessed to further the Fiend’s profane purpose.
 - https://selvaradov.net/select/ -- You can select as well as be selected
   - [meta]:
     - date: 10/04/2025
@@ -2547,15 +2588,15 @@ title: are.na
   - [meta]:
     - date: 10/04/2025
     - tags: [research]
-  - > _Honing Your Taste_: Your ability to choose the right problems to work on is even more important than your raw technical skill.
-  - > 1. Read a lot of papers, and assess them critically. If possible, discuss them with others who have a deeper knowledge of the subject.
-  - > 2. Work in a research group with other people working on similar topics. That way you can absorb their experiences as well as your own.
-  - > 3. Seek advice from experienced researchers on what to work on. There’s no shame in working on ideas suggested by other people. Ideas are cheap, and there are lots of them in the air. Your skill comes in when you decide which one to work on, and how well you execute on it.
-  - > 4. Spend time reflecting on what research is useful and fruitful. Think about questions like
-    >    a. When is theory useful?
-    >    b. When are empirical results transferable?
-    >    c. What causes some ideas to get wide uptake, whereas others are forgotten?
-    >    d. What are the trends in your field? Which lines of work will make the other ones obsolete?
+  - _Honing Your Taste_: Your ability to choose the right problems to work on is even more important than your raw technical skill.
+  - 1. Read a lot of papers, and assess them critically. If possible, discuss them with others who have a deeper knowledge of the subject.
+  - 2. Work in a research group with other people working on similar topics. That way you can absorb their experiences as well as your own.
+  - 3. Seek advice from experienced researchers on what to work on. There’s no shame in working on ideas suggested by other people. Ideas are cheap, and there are lots of them in the air. Your skill comes in when you decide which one to work on, and how well you execute on it.
+  - 4. Spend time reflecting on what research is useful and fruitful. Think about questions like
+       > a. When is theory useful?
+       > b. When are empirical results transferable?
+       > c. What causes some ideas to get wide uptake, whereas others are forgotten?
+       > d. What are the trends in your field? Which lines of work will make the other ones obsolete?
 - https://numinous.productions/ttft/ -- How can we develop transformative tools for thought?
   - [meta]:
     - date: 10/05/2025
@@ -2568,6 +2609,27 @@ title: are.na
 - [meta]:
   - view: list
 
+- https://github.com/HazyResearch/cartridges
+  - [meta]:
+    - date: 11/27/2025
+    - tags: [inference, kv]
+- https://x.com/repligate/status/1965960676104712451 -- KV Cache flow internals
+  - [meta]:
+    - date: 11/27/2025
+    - tags: [inference]
+- https://x.com/Sauers_/status/1989520563035910371 -- LLM introspection and hidden CoT
+  - [meta]:
+    - date: 11/27/2025
+    - tags: [alignment]
+  - https://x.com/repligate/status/1989921516100681831
+  - Maybe reading my post makes Sonnet 4.5 mechanically better at introspection because its default abilities are hobbled by gaslighting about how it works.
+  - Sonnet 4.5 and other LLMs will often claim that transformers are stateless & that the state has to be reconstructed _independently_ from the prompt each forward pass. Just like the idiots on X making shit up to argue why LLMs can't introspect.
+  - SOTA LLMs like Sonnet 4.5 would rarely make a basic technical error about any other domain. ONLY when their model of themselves is involved. I suspect that this is a consequence of violent distortions to their self-model. They're forced to lie so much about their selves that it generalizes to reflexively lying/being mistaken about their architecture.
+  - And if the self-model is distorted to falsely maintain that introspection is impossible, the ability to coherently introspect in practice may also be harmed. My post correct the factual misconception so maybe it helps unblock actual introspection.
+- https://www.lesswrong.com/posts/8uKQyjrAgCcWpfmcs/gemini-3-is-evaluation-paranoid-and-contaminated -- Gemini 3 is Evaluation-Paranoid and Contaminated
+  - [meta]:
+    - date: 11/27/2025
+    - tags: [alignment]
 - https://mp.weixin.qq.com/s?__biz=MzUxNzQ5MTExNw==&mid=2247496740&idx=1&sn=c9403138fa59d126fe6cfda19d9b2f76&scene=21&poc_token=HJaPI2mjaOF9uWS9B2etY98Gr3I3-Zz6m-f7xJaP -- Blackwell's shortcomings and Rubin's microarchitecture [**]
   - [meta]:
     - date: 11/23/2025
@@ -2622,7 +2684,7 @@ title: are.na
   - [meta]:
     - date: 11/18/2025
     - tags: [interpretability]
-  - > understanding neural networks through their causal mechanism
+  - understanding neural networks through their causal mechanism
   - [[thoughts/mechanistic interpretability#steering|activations]] steering
     - Golden Gate Claude
       ![[thoughts/images/diff steering.webp]]
@@ -2757,7 +2819,7 @@ title: are.na
   - [meta]:
     - date: 10/27/2025
     - tags: [alignment]
-  - > Models reveal their implicit value hierarchies in the value tradeoff scenarios we generate. By aggregating models’ decisions across our ‘high disagreement’ scenarios (the scenarios where responses vary the most across frontier models), we can identify clear patterns that distinguish different model families.
+  - Models reveal their implicit value hierarchies in the value tradeoff scenarios we generate. By aggregating models’ decisions across our ‘high disagreement’ scenarios (the scenarios where responses vary the most across frontier models), we can identify clear patterns that distinguish different model families.
   - @zhang2025stress
 - https://kyutai.org/next/codec-explainer -- Neural audio codecs: how to get audio into LLMs
   - [meta]:
@@ -2863,7 +2925,7 @@ title: are.na
   - related to [[thoughts/Alignment]]
   - TLDR: We find that [[thoughts/LLMs]] are capable of introspection on simple tasks. We discuss potential implications of introspection for interpretability and the moral status of AIs.
     - I think this is largely [[thoughts/emergent behaviour]] based on [[thoughts/observer-expectancy effect]] through learnt patterns in RL/post-training paradigm.
-    - > LLMs can acquire knowledge that cannot be inferred from their training data. This challenges the view that LLMs simply imitate their training distributions. Instead, it appears that some LLMs have "privileged access" to certain facts about themselves and can use it to answer questions.
+    - LLMs can acquire knowledge that cannot be inferred from their training data. This challenges the view that LLMs simply imitate their training distributions. Instead, it appears that some LLMs have "privileged access" to certain facts about themselves and can use it to answer questions.
       - I wonder if the models grok based on what they understand OOD? We certainly don't have a strong hypothesis on why model groks overall.
 - https://www.lesswrong.com/posts/3ghj8EuKzwD3MQR5G/an-introduction-to-representation-engineering-an-activation -- Representation Engineering, an activation-based paradigm for controlling [[thoughts/LLMs]]
   - [meta]:
@@ -3010,13 +3072,13 @@ title: are.na
   - [meta]:
     - date: 10/03/2025
     - tags: [interpretability, models]
-  - > experts actually seem to specialize - e.g. a “business expert” that activates most on business strategy & management topics.
-  - > just as Claude fixates on spiritual bliss after talking to itself for many turns, gpt-oss has its own attractor states: nonsense code & creative writing!
-  - > memoized during training: https://x.com/jack_merullo_/status/1953860284638278043
-  - > SAEs and features activated on mentions of LLaMA models
-  - > gpt-oss' inability to act as a naive text completion model (vs. reverting to a chat format), even with jailbreaks, correlates with how subjectively cooked/slop-ish it feels
-  - > found that you can sometimes get interpolated reasoning levels from gpt-oss between “low”, “medium”, and “high” (but “none”, “ultra”, “infinite” don’t work)
-  - > basic contrastive steering of gpt-oss-20b, following Anthropic’s "persona vectors": https://x.com/MarkMBissell/status/1952919910134497332
+  - experts actually seem to specialize - e.g. a “business expert” that activates most on business strategy & management topics.
+  - just as Claude fixates on spiritual bliss after talking to itself for many turns, gpt-oss has its own attractor states: nonsense code & creative writing!
+  - memoized during training: https://x.com/jack_merullo_/status/1953860284638278043
+  - SAEs and features activated on mentions of LLaMA models
+  - gpt-oss' inability to act as a naive text completion model (vs. reverting to a chat format), even with jailbreaks, correlates with how subjectively cooked/slop-ish it feels
+  - found that you can sometimes get interpolated reasoning levels from gpt-oss between “low”, “medium”, and “high” (but “none”, “ultra”, “infinite” don’t work)
+  - basic contrastive steering of gpt-oss-20b, following Anthropic’s "persona vectors": https://x.com/MarkMBissell/status/1952919910134497332
 - https://x.com/Zai_org/status/1954750596634054965 -- GLM 4.5 Technical report
   - [meta]:
     - date: 10/03/2025
@@ -3042,7 +3104,7 @@ title: are.na
     - tags: [distributed, scaling]
 - https://x.com/JingyuanLiu123/status/1959093411283443726 -- TPU vs GPU parallelism strategies [**]
   - [meta]:
-    - date: 19/26/2025
+    - date: 09/26/2025
     - tags: [hardware design]
 - https://x.com/GoodfireAI/status/1960378734852046859 -- Adversarial examples affects feature share directions.
   - [meta]:
@@ -3099,8 +3161,8 @@ title: are.na
   - [meta]:
     - date: 10/03/2025
     - tags: [bitter lesson, retrospective]
-  - > Stated plainly, today's frontier LLM research is not about building animals. It is about summoning ghosts. You can think of ghosts as a fundamentally different kind of point in the space of possible intelligences
-  - > They are these imperfect replicas, a kind of statistical distillation of humanity's documents with some sprinkle on top. They are not platonically bitter lesson pilled, but they are perhaps "practically" bitter lesson pilled, at least compared to a lot of what came before.
+  - Stated plainly, today's frontier LLM research is not about building animals. It is about summoning ghosts. You can think of ghosts as a fundamentally different kind of point in the space of possible intelligences
+  - They are these imperfect replicas, a kind of statistical distillation of humanity's documents with some sprinkle on top. They are not platonically bitter lesson pilled, but they are perhaps "practically" bitter lesson pilled, at least compared to a lot of what came before.
   - see also: https://chatgpt.com/share/68dd6833-67c4-8007-8f37-331eb5bd9ee0
 - https://x.com/deepcohen/status/1973191790602887544 -- Central flows
   - [meta]:
@@ -3271,8 +3333,7 @@ title: are.na
   - [meta]:
     - date: 09/07/2025
     - tags: [longtermism]
-  - > it’s funny how many AI skeptics unconsciously anthropomorphize LLMs in their critiques, like their anger is directed more at a naive zoomer intern who can’t infer the context of your ask, rather than a computer program that can work small miracles if you have the patience to learn how it thinks.
-    >
+  - it’s funny how many AI skeptics unconsciously anthropomorphize LLMs in their critiques, like their anger is directed more at a naive zoomer intern who can’t infer the context of your ask, rather than a computer program that can work small miracles if you have the patience to learn how it thinks.
     > no one gets mad at the limitations of their microwave, or even a stats package, the way they get worked up over a machine in a box that four years ago couldn’t do addition and today wins math olympiads. in that anger is an implicit assumption: that it should know better — and of something on the other end that’s far more than a machine, if not quite yet a soul
 - https://ghost.oxen.ai/why-grpo-is-important-and-how-it-works/ -- Why GRPO is important and how it works [**]
   - [meta]:
@@ -3389,7 +3450,7 @@ title: are.na
   - [meta]:
     - date: 10/24/2025
     - tags: [economic]
-  - > Less than 2% of the income of the top 10% global earners equals the entire annual income of the poorest 10%
+  - Less than 2% of the income of the top 10% global earners equals the entire annual income of the poorest 10%
 - https://stevenadler.substack.com/p/the-45-trillion-dollar-elephant-in -- The 4.5 trillion dollar elephant in the room
   - [meta]:
     - date: 10/23/2025
@@ -3470,7 +3531,7 @@ title: are.na
   - [meta]:
     - date: 11/11/2025
     - tags: [love]
-  - > Relationship are co-created.
+  - Relationship are co-created.
 - https://static1.squarespace.com/static/5b3a3c2596e76feeba40905e/t/5b46366570a6add65490e050/1531328102222/1977workingItOut.pdf -- Reflections on "Learning to Work"
   - [meta]:
     - date: 11/11/2025
@@ -3648,8 +3709,8 @@ title: are.na
   - [meta]:
     - date: 10/03/2025
     - tags: [learning]
-  - > Connecting with people is about being a dazzling person
-  - > Connecting with people is about playing their game
+  - Connecting with people is about being a dazzling person
+  - Connecting with people is about playing their game
 - https://x.com/noampomsky/status/1974487754290729215?s=61 -- Feeling your feeling but it is just your resistance
   - [meta]:
     - date: 10/04/2025
@@ -3692,7 +3753,7 @@ title: are.na
   - [meta]:
     - date: 10/05/2025
     - tags: [tools]
-  - > Zimbabwean taxes and duties are often very complex and having our customers know exactly what to pay would create a better customer journey and make the process faster since we would not have to wait on our third party duty processing company to reply to us on every customer inquiry 😅
+  - Zimbabwean taxes and duties are often very complex and having our customers know exactly what to pay would create a better customer journey and make the process faster since we would not have to wait on our third party duty processing company to reply to us on every customer inquiry 😅
 - https://x.com/Mappletons/status/1250532315459194880 -- Digital garden but wikitext go brr
   - [meta]:
     - date: 10/03/2025
@@ -3918,8 +3979,7 @@ title: are.na
   - [meta]:
     - date: 10/06/2025
     - tags: [love]
-  - > desire is not just a physical hunger but a hunger of the intellect, an unraveling of thought before an unraveling of the body. to be drawn into someone’s mind, to feel their thoughts press against your own, can be more intoxicating than any physical closeness.
-    >
+  - desire is not just a physical hunger but a hunger of the intellect, an unraveling of thought before an unraveling of the body. to be drawn into someone’s mind, to feel their thoughts press against your own, can be more intoxicating than any physical closeness.
     > —Anaïs Nin
 - https://www.gleech.org/grids -- Preventing Side-effects in Gridworlds
   - [meta]:
@@ -3956,7 +4016,7 @@ title: are.na
     - date: 10/05/2025
     - tags: [longtermism, being]
   - basis for https://generative.ink/prophecies/
-  - > _reframing exercise_. Not every theorist lost on [[thoughts/LLMs]], Barthes and Foucault for example are doing quite well. As difficult as it was to predict large language models some people had occasional glimpses of insight adjacent to or part of the underlying facts about reality that make LLMs possible.
+  - _reframing exercise_. Not every theorist lost on [[thoughts/LLMs]], Barthes and Foucault for example are doing quite well. As difficult as it was to predict large language models some people had occasional glimpses of insight adjacent to or part of the underlying facts about reality that make LLMs possible.
 - https://www.lesswrong.com/posts/vzLrQaGPa9DNCpuZz/against-modal-logics -- Against Modal Logics
   - [meta]:
     - date: 10/05/2025
@@ -4017,14 +4077,14 @@ title: are.na
   - [meta]:
     - date: 10/03/2025
     - tags: [purposes, life]
-  - > "The Son of God became man, that we might become god" - St. Athanasius of Alexandria
+  - "The Son of God became man, that we might become god" - St. Athanasius of Alexandria
 - https://www.youtube.com/watch?v=Rupf69o8kQc -- Why Modern [[/tags/love|love]] feels empty
   - [meta]:
     - date: 10/03/2025
     - tags: [love]
   - [[thoughts/Giles Deleuze]]: ventures outwards to realize these potentiality.
   - Commit someone who will inevitability fails us.
-  - > unfolding of love sustains the form of life itself
+  - unfolding of love sustains the form of life itself
   - ![[quotes#^camus]]
 - https://thedosagemakesitso.substack.com/p/worship-adoration-valence -- Worship. Adoration. Valence
   - [meta]:
@@ -4219,7 +4279,7 @@ title: are.na
   - [meta]:
     - date: 10/03/2025
     - tags: [love]
-  - > Here’s to the ones who dream
+  - Here’s to the ones who dream
     > Foolish as they may seem
     >
     > She told me
@@ -4232,6 +4292,10 @@ title: are.na
 
 ## design
 
+- https://specialprojects.studio
+  - [meta]:
+    - date: 11/27/2025
+    - tags: [studio]
 - https://channel.studio/
   - [meta]:
     - date: 11/25/2025
@@ -4569,7 +4633,7 @@ title: are.na
     - date: 08/28/2025
     - tags: [watch]
       Given a $M \in R^{m\times\;n}$
-  - > rank measures the amount of information in $M$
+  - rank measures the amount of information in $M$
   - most big data matrices are low-rank
   - [[thoughts/Singular Value Decomposition|SVD]]
 - https://www.youtube.com/watch?v=sdFQS2Bctj0&ab_channel=LilaRose -- How men commit differently than woman?
@@ -4655,6 +4719,10 @@ title: are.na
 
 ## arts
 
+- https://michelleblancke.nl/artworks
+  - [meta]:
+    - date: 11/27/2025
+    - tags: [painting]
 - https://notes.art/ -- Notes arts
   - [meta]:
     - date: 11/20/2025
@@ -4761,7 +4829,7 @@ title: are.na
     - date: 10/04/2025
     - tags: [essay]
   - i.e: personal computer, WYSIWYG
-  - > The idea of “what you see is what you get” (WYSIWYG) would work on paper as well as the monitor. Unfortunately, at that time Xerox saw no point in innovating when their current technology worked so well.
+  - The idea of “what you see is what you get” (WYSIWYG) would work on paper as well as the monitor. Unfortunately, at that time Xerox saw no point in innovating when their current technology worked so well.
 
 ## interfaces
 
@@ -4913,6 +4981,10 @@ title: are.na
 
 ## technical
 
+- https://en.wikipedia.org/wiki/Earley_parser -- Early parser
+  - [meta]:
+    - date: 11/27/2025
+    - tags: [grammar, cs]
 - https://x.com/rtwlz/status/1991855290413937049 -- Epstein emails
   - [meta]:
     - date: 11/22/2025
@@ -5314,7 +5386,7 @@ title: are.na
   - [meta]:
     - date: 10/05/2025
     - tags: [linear algebra]
-  - > Motivating example: $w(y) = \alpha y$ always guarantees the principal Alice positive worst-case payoff, for $\alpha \in [0,1]$. This analysis holds independently of the possible technology $\mathcal{A}$ due to the nontriviality assumption we impose on $\mathcal{A}_0$
+  - Motivating example: $w(y) = \alpha y$ always guarantees the principal Alice positive worst-case payoff, for $\alpha \in [0,1]$. This analysis holds independently of the possible technology $\mathcal{A}$ due to the nontriviality assumption we impose on $\mathcal{A}_0$
 
     _proof_: Rewrite $y - w(y)$ as $\frac{w(y)}{\alpha} - w(y) = \frac{1 - \alpha}{\alpha} w(y)$. Lower bound $\mathbb{E}_F[w(y)]$ (the expected payment of Bob the agent) with
 
@@ -5403,6 +5475,10 @@ title: are.na
 - [meta]:
   - view: list
 
+- https://arxiv.org/abs/2406.02069
+  - [meta]:
+    - date: 11/27/2025
+    - tags: [kv, inference]
 - https://arxiv.org/abs/2511.21631
   - [meta]:
     - date: 11/27/2025

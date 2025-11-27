@@ -2,11 +2,56 @@
 date: "2025-10-24"
 description: a microblog within a blog, at the middle of the night.
 id: stream
-modified: 2025-11-26 21:49:47 GMT-05:00
+metadata:
+  ebnf: |-
+    stream        = block , { separator , block } , [ separator ] ;
+    separator     = newline , ( "---" | heading ) , newline ;
+    heading       = "##" , ws , title ;
+    block         = newline, meta_block , newline, body ;
+    meta_block    = "- [meta]:" , newline , meta_entry , { meta_entry } ;
+    meta_entry    = ws , "- date:" , ws , timestamp
+                  | ws , "- tags:" , newline , tag_item , { tag_item }
+                  | ws , "- " , key , ":" , ws , value ;
+    tag_item      = ws , ws , "- " , tag ;
+    body          = markdown_line , { newline , markdown_line } ;
+    markdown_line = text_line | quote_line | list_line | embed_line | image_line ;
+    quote_line    = ">" , ws , text_line ;
+    list_line     = "- " , text_line ;
+    embed_line    = "![[" , text , "]]" ;
+    image_line    = "![" , { character - "]" } , "](" , uri , ")" ;
+    timestamp     = year , "-" , month , "-" , day , ws , hour , ":" , minute , ":" , second , ws , "GMT" , offset ;
+    offset        = ("+" | "-") , hour , ":" , minute ;
+    tag           = identifier ;
+    key           = identifier ;
+    value         = text ;
+    title         = text ;
+    text_line     = { character - newline } ;
+    text          = { character - newline } ;
+    identifier    = letter , { letter | digit | "-" } ;
+    year          = digit , digit , digit , digit ;
+    month         = digit , digit ;
+    day           = digit , digit ;
+    hour          = digit , digit ;
+    minute        = digit , digit ;
+    second        = digit , digit ;
+    ws            = { " " } ;
+    letter        = "a".."z" ;
+    digit         = "0".."9" ;
+    character     = ? any printable ascii except newline ? ;
+modified: 2025-11-27 16:27:22 GMT-05:00
 tags:
   - fruit
   - evergreen
 title: stream
+---
+
+- [meta]:
+  - date: 2025-11-27 15:57:58 GMT-05:00
+  - tags:
+    - alignment
+
+Anthropic found that natural emergent misalignment stems from [_reward hacking_](https://www.anthropic.com/research/emergent-misalignment-reward-hacking). Though, I suspect that ablating these "bad behaviour" wouldn't necessary make the model more aligned. What if having certain malicious intent is actually helpful?
+
 ---
 
 - [meta]:
@@ -43,9 +88,11 @@ I'm have no desire of making new friends in Toronto anymore. Everything felt so 
   - tags:
     - love
 
-> To find someone worth fighting for is a beautiful thing.
->
-> —James, _[All At Once](https://jameslin.bio/jolie)_
+```quotes
+To find someone worth fighting for is a beautiful thing.
+
+James, _[All At Once](https://jameslin.bio/jolie)_
+```
 
 ---
 
@@ -100,9 +147,11 @@ Love sucks. love hurts. love prevails. I want to be loved. and yet, all I got ar
   - tags:
     - love
 
-> It's possible to love men without rage. There are thousands of ways to love men.
->
-> —Lidia Yuknavitch, The Chronology of Water
+```quotes
+It's possible to love men without rage. There are thousands of ways to love men.
+
+Lidia Yuknavitch, The Chronology of Water
+```
 
 ## on suicide
 
@@ -116,15 +165,21 @@ I was reading [On suicide](https://docs.google.com/document/d/14XZJtJcMGzD4ZY6Ag
 
 > When I was in high school, I spent a year trying to kill myself. I just couldn't do it. At some point I decided to make my life as bad as I possibly could, but nothing worked. No matter how much I tried, I still ==wanted to be alive more== than I [_wanted to be dead_].
 
-The deontological arguments of life ::presupposes the feeling of interconnectedness{h5}::. I think that if one acknowledges that no one wants one in life, then one might conclude that one's life is not worth living. [[thoughts/Philosophy and Kant|Kant]] would argue that you must "kill yourself" if you're worried about your rational faculties being compromised to the degree you'll be no longer a [[thoughts/moral|moral]] agent.
+The [[thoughts/ethics#deontology|deontological]] arguments of life ::presupposes the feeling of interconnectedness{h5}::. I think that if one acknowledges that no one wants one in life, then one might conclude that one's life is not worth living. [[thoughts/Philosophy and Kant|Kant]] would then argue against the notion of "kill oneself" given that it is an act in violoation of the [[thoughts/moral|moral]] law, and deemed it as **wrong**.
 
-> **I wonder how much of this is due to the lack of imagination. If you're suicidal, it's very difficult to imagine life getting better.**
+> I wonder how much of this is due to the lack of imagination. If you're suicidal, it's very difficult to imagine life getting better.
 
-The conventional idealisation of suicide treats your cognitive behaviour with certain reasoning error here. You're depressed, so your cognition is impaired, such that you realized life isn't worth living anymore, which then concludes that suicide is the real solution. Kant said in Groundwork 4:422:
+You're depressed, sure, so your cognition is impaired, such that you realised life isn't worth living anymore, which then concludes that suicide is the real solution. So your mind convinced yourself to just **gave in**
 
-> The impulse to end life and the impulse to further life contradict each other.
+```quotes
+The impulse to end life and the impulse to further life contradict each other.
 
-But I'm troubled by how close this gets to "just shake it off" or "try something new!" as if suicidal depression were boredom with your routine. The difference, maybe, is that the conventional advice assumes you can white-knuckle through by force of [[thoughts/Will|will]] or positive thinking. Guzey's point is darker: you can't think your way out, and you probably can't will your way out either. You need an external disruption large enough to short-circuit the entire system. Which is less hopeful than it sounds—it means you're not in control of your own recovery. You're waiting for something to happen that breaks the pattern, or you're throwing yourself at random experiences hoping one of them will.
+Kant, Groundwork _§4:422_
+```
+
+But I'm troubled by how close this gets to "just shake it off" or "try something new!" as if suicidal depression were boredom with your routine. The difference, maybe, is that the conventional advice assumes you can white-knuckle through by force of [[thoughts/Will|will]] or positive thinking.
+
+Guzey's argument focuses on a darker path, where you can't think your way out, and you probably can't will your way out either. You need an external disruption large enough to short-circuit the entire system. Which is less hopeful than it sounds—e.g: you're not in control of your own recovery. You're waiting for something to happen that breaks the pattern, or you're throwing yourself at random experiences hoping one of them will.
 
 The wanting to live that exists underneath reasons, that persists even when you've eliminated every reason you can name. Whether that's the body asserting itself, or some pre-rational attachment to [[thoughts/being|being]], or just biochemistry doing its thing.
 
@@ -142,9 +197,11 @@ I'm once again, thinking about suicide.
   - tags:
     - life
 
-> But Kurt Vonnegut writes about the difference between two kinds of teams. A granfalloon is a team of people pushed together for some ordinary human purpose, like learning medicine or running a hospital psychiatry department. They may get to know each other well. They may like each other. But in the end, the purpose will be achieved, and they’ll go their separate ways.
->
-> —Scott Alexander, [To the Great City](https://perma.cc/G5UP-PD2N)
+```quotes
+But Kurt Vonnegut writes about the difference between two kinds of teams. A granfalloon is a team of people pushed together for some ordinary human purpose, like learning medicine or running a hospital psychiatry department. They may get to know each other well. They may like each other. But in the end, the purpose will be achieved, and they’ll go their separate ways.
+
+Scott Alexander, [To the Great City](https://perma.cc/G5UP-PD2N)
+```
 
 ---
 
@@ -204,11 +261,13 @@ Writing kernels sounds way more fun the whoring on the streets of Toronto. Happy
   - tags:
     - writing
 
-> Writing essays, at its best, is a way of discovering ideas.
->
-> An essay should ordinarily start with what I'm going to call a question, though I mean this in a very general sense: it doesn't have to be a question grammatically, just something that acts like one in the sense that it {{sidenotes[spurs some response.]: When you find yourself very curious about an apparently minor question, that's an exciting sign. Evolution has designed you to pay attention to things that matter. So when you're very curious about something random, that could mean you've unconsciously noticed it's less random than it seems.}}
->
-> —Paul Graham, [The Best Essay](https://paulgraham.com/best.html)
+```quotes
+Writing essays, at its best, is a way of discovering ideas.
+
+An essay should ordinarily start with what I'm going to call a question, though I mean this in a very general sense: it doesn't have to be a question grammatically, just something that acts like one in the sense that it {{sidenotes[spurs some response.]: When you find yourself very curious about an apparently minor question, that's an exciting sign. Evolution has designed you to pay attention to things that matter. So when you're very curious about something random, that could mean you've unconsciously noticed it's less random than it seems.}}
+
+Paul Graham, [The Best Essay](https://paulgraham.com/best.html)
+```
 
 ![[thoughts/writing#as a journey for exploration]]
 
@@ -248,11 +307,13 @@ from mathematics
   - tags:
     - writing
 
-> The reason I've spent so long establishing this rather obvious point <dfn>[that [[thoughts/writing]] helps you refine your thinking]</dfn> is that it leads to another that many people will find shocking. If writing down your ideas always makes them more precise and more complete, then no one who hasn't written about a topic has fully formed ideas about it. And someone who never writes has no fully formed ideas about anything nontrivial.
->
-> It feels to them as if they do, especially if they're not in the habit of critically examining their own thinking. Ideas can feel complete. ==It's only when you try to put them into words that you discover they're not==. So if you never subject your ideas to that test, you'll not only never have fully formed ideas, but also never realize it.
->
-> —Paul Graham, [Putting Ideas into Words](https://paulgraham.com/words.html)
+```quotes
+The reason I've spent so long establishing this rather obvious point <dfn>[that [[thoughts/writing]] helps you refine your thinking]</dfn> is that it leads to another that many people will find shocking. If writing down your ideas always makes them more precise and more complete, then no one who hasn't written about a topic has fully formed ideas about it. And someone who never writes has no fully formed ideas about anything nontrivial.
+
+It feels to them as if they do, especially if they're not in the habit of critically examining their own thinking. Ideas can feel complete. ==It's only when you try to put them into words that you discover they're not==. So if you never subject your ideas to that test, you'll not only never have fully formed ideas, but also never realize it.
+
+Paul Graham, [Putting Ideas into Words](https://paulgraham.com/words.html)
+```
 
 ---
 
@@ -261,9 +322,11 @@ from mathematics
   - tags:
     - life
 
-> "I wanted to eat life by the mouthful, to devour it, to be swallowed up in its dizzying vertigo, to be both actor and spectator, to possess and be possessed, to discover and to create, to make of my life a work of art."
->
-> —Simone de Beauvoir, _Memoirs of a Dutiful Daughter (1958)_
+```quotes
+I wanted to eat life by the mouthful, to devour it, to be swallowed up in its dizzying vertigo, to be both actor and spectator, to possess and be possessed, to discover and to create, to make of my life a work of art.
+
+Simone de Beauvoir, _Memoirs of a Dutiful Daughter (1958)_
+```
 
 ---
 

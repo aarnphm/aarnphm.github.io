@@ -10,7 +10,9 @@ title: Wittgenstein
 ---
 
 ```quotes
-The world is the collection of facts, not of things.j
+The world is the collection of facts, not of things.
+
+Wittgenstein
 ```
 
 Wittgenstein's notebooks in essence, a snapshot of his thinking. I very much enjoyed reading through a few of his notebook, albeit it wasn't fully represented his thoughts while he was alive.

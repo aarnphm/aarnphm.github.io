@@ -8,5 +8,7 @@
   "maps",
   "obsidian-citation-plugin",
   "obsidian-importer",
-  "obsidian-headings"
+  "obsidian-headings",
+  "obsidian-metadata",
+  "hot-reload"
 ]
