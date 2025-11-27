@@ -2,7 +2,7 @@
 date: "2023-07-29"
 description: a knowledge distillation and learning process
 id: writing
-modified: 2025-11-09 09:32:52 GMT-05:00
+modified: 2025-11-27 17:57:35 GMT-05:00
 tags:
   - sapling
   - evergreen
@@ -62,7 +62,7 @@ At its core, writing endeavours to transmute the [[thoughts/Chaos|chaos]] of [[t
 Writing is also a playground for nurturing your ["baby idea"](https://substack.com/inbox/post/140191029#footnote-5-140191029). The mind are often overwhelming, and I found the act of writing therapeutic, and help organize and control inner [[thoughts/Entropy|entropy]]:
 
 ```quotes
-I notice this change most when I try to write. I think working a lot has made me a worse writer. 90 percent of the words I consume and produce in a week are emails, strategy docs, research reports, and documentation—text designed to be as digestible as possible for a busy, distracted end user. My prose has tightened, the excess trimmed. Information efficiency is paramount. I write like the 12 dollar desk salad, the bar that packs 20 grams of protein and plastic into one 200-calorie brick. But good writing, like a good meal, needs fat. It should indulge readers, is meant to be chewed and enjoyed, affording a generous escape from the prosaic and mundane. 
+I notice this change most when I try to write. I think working a lot has made me a worse writer. 90 percent of the words I consume and produce in a week are emails, strategy docs, research reports, and documentation—text designed to be as digestible as possible for a busy, distracted end user. My prose has tightened, the excess trimmed. Information efficiency is paramount. I write like the 12 dollar desk salad, the bar that packs 20 grams of protein and plastic into one 200-calorie brick. But good writing, like a good meal, needs fat. It should indulge readers, is meant to be chewed and enjoyed, affording a generous escape from the prosaic and mundane.
 
 Jasmine Sun, [audience of one](https://jasmine.substack.com/p/audience-of-one)
 ```
@@ -104,8 +104,8 @@ Excerpt from _George Orwell[^orwell]'s [[library/Why I Write]]_
 [^orwell]: Orwell is often known for his democratic socialism, and opposed for totalitarianism. But his [[thoughts/Will to Truth|will to truth]] is fundamental to his writing, a true [[thoughts/representations|representation]] of intellectual honesty. In the context of totalitarianism, Orwell pointed out that such regimes demand the continuous alteration of the past and probably a disbelief in the very existence of [objective truth](https://www.goodreads.com/book/show/35610790-orwell-on-truth). He saw the danger in a society that drifts from the truth, stating that it will hate those who speak it.
 
 Sheer egoism
-- > But there is also the minority of gifted, willful people who are determined to live their own lives to the end, and writers belong in this class. 
-- > Serious writers, I should say, are on the whole more vain and self-centered than journalists, though less interested in money.
+- But there is also the minority of gifted, willful people who are determined to live their own lives to the end, and writers belong in this class.
+- Serious writers, I should say, are on the whole more vain and self-centered than journalists, though less interested in money.
 
 Aesthetic enthusiasm
 - Perception of beauty in the external world, or, on the other hand, in words and their right arrangement
@@ -117,7 +117,6 @@ Historical impulse
 
 Political purpose
 - Desire to push the world in a certain direction, to alter other peoples' idea of the kind of society that they should strive after.
-
 
 ```quotes
 If you're thinking without writing, you only think you're thinking.
@@ -159,4 +158,4 @@ _https://jsomers.net/blog/more-people-should-write_
 
 > You should write because when you know that you're _going to write_, it changes the way you live.
 
-> Writing needn’t be a formal enterprise to have this effect. You don’t have to write _well_.
+> Writing needn’t be a formal enterprise to have this effect. You don’t have to write *well*.
