@@ -7,23 +7,27 @@ tags:
   - philosophy
   - pattern
 title: forms of life
+seealso:
+  - "[[thoughts/Wittgenstein|Wittgenstein]]"
+  - "[[library/Philosophical Investigations|PI]]"
+  - "[[library/Civilisation and its Discontents|C&D]]"
 ---
-
-see also: [[thoughts/Wittgenstein|Wittgenstein]], [[library/Philosophical Investigations|Philosophical Investigations]], [[library/Civilisation and its Discontents|Civilisation and its Discontents]]
 
 forms of life (_Lebensformen_) is [[thoughts/Wittgenstein|wittgenstein's]] term for the bedrock of meaning. they're the shared practices, ways of going on, patterns of living that ground language games and make meaning possible.
 
 ## conceptually
 
-> what has to be accepted, the given, is—so one could say—forms of life
->
-> _[[library/Philosophical Investigations|PI §226]]_
+```quotes
+what has to be accepted, the given, is—so one could say—forms of life
+
+_[[library/Philosophical Investigations|PI §226]]_
+```
 
 forms of life are what's given, ie: this is the atomic units of being.
 
 > when you ask "why do we use words this way?" eventually you reach: "this is just what we do."
 
-"the speaking of language is part of an activity, or of a form of life" (PI §23). language isn't abstract system of symbols but embedded in practices, ways of living. to understand meaning, you must understand the form of life in which language functions.
+"the speaking of language is part of an activity, or of a form of life" (PI §23). [[thoughts/Language|Language]] isn't abstract system of symbols but embedded in practices, ways of living. to understand meaning, you must understand the form of life in which language functions.
 
 "can only say: this language-game is played" (PI §654). no ultimate justification. the practice exists; we participate in it; that's bedrock.
 

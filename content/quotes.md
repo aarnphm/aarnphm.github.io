@@ -15,6 +15,10 @@ transclude:
   title: false
 ---
 
+> I think we ought to read only the kind of books that wound and stab us. If the book we’re reading doesn’t wake us up with a blow on the head, what are we reading it for? So that it will make us happy, as you write? Good Lord, we would be happy precisely if we had no books, and the kind of books that make us happy are the kind we could write ourselves if we had to. But we need the books that affect us like a disaster, that grieve us deeply, like the death of someone we loved more than ourselves, like being banished into forests far from everyone, like a suicide. A book must be the axe for the frozen sea inside us. That is my belief.
+>
+> Franz Kafka, [_letter to Oskar Pollak_](https://languagehat.com/kafka-on-books/), January 27<sup>th</sup>, 1904
+
 > Good design is as little design as possible. ^mtf
 >
 > some German motherfucker

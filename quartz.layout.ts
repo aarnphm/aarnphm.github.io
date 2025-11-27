@@ -33,10 +33,7 @@ export const defaultContentPageLayout: PageLayout = {
     Component.Byline(
       Component.Flex({
         classNames: ["first"],
-        components: [
-          { Component: Component.TagList(), grow: true, align: "start" },
-          { Component: Component.SeealsoTree(), align: "start" },
-        ],
+        components: [{ Component: Component.TagList(), grow: true, align: "start" }],
         direction: "column",
         gap: "0.5rem",
       }),

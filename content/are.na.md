@@ -1580,7 +1580,7 @@ title: are.na
     - coord: [43.6456113, -79.4146086]
     - pinned: true
 
-# essay
+## essay
 
 - https://mingyuan.substack.com/p/youre-always-stressed-your-mind-is -- # You’re always stressed, your mind is always busy, you never have enough time
   - [meta]:
@@ -4760,6 +4760,10 @@ title: are.na
 
 ## resources
 
+- https://www.themarginalian.org/index.php/2014/06/06/kafka-on-books-and-reading/ -- Letters to Friends, Family, and Editors
+  - [meta]:
+    - date: 11/27/2025
+    - tags: [reading]
 - https://ia601300.us.archive.org/12/items/RobertiAudi_The.Cambridge.Dictionary.of.Philosophy/Robert.Audi_The.Cambridge.Dictionary.of.Philosophy.pdf -- Cambridge Dictionary of Philosophy
   - [meta]:
     - date: 11/27/2025
