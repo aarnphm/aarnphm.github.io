@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2025-11-28 16:47:34 GMT-05:00
+modified: 2025-11-28 16:53:29 GMT-05:00
 permalinks:
   - /website
   - /tweets
@@ -3424,6 +3424,10 @@ title: are.na
 
 ## opinions
 
+- https://archive.ph/pZrGT -- How close is humanity to the edge?
+  - [meta]:
+    - date: 11/28/2025
+    - tags: [existentialism]
 - https://www.lesswrong.com/posts/ajT6q5aMokagfthvG/hire-or-become-a-thinking-assistant -- Hire (or Become) a Thinking Assistant
   - [meta]:
     - date: 11/27/2025
