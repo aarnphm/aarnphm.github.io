@@ -38,7 +38,7 @@ metadata:
     letter        = "a".."z" ;
     digit         = "0".."9" ;
     character     = ? any printable ascii except newline ? ;
-modified: 2025-11-28 16:46:32 GMT-05:00
+modified: 2025-11-28 17:05:31 GMT-05:00
 tags:
   - fruit
   - evergreen
@@ -458,8 +458,3 @@ Generation without guarantee. Creation without cosmic permission. Love without e
 The visceral feeling of returning to a place you once lived. Those familiar streets you'd walk daily without really noticing. The tiny brick that used to catch your shoe—gone now. New shops sprouting up, the decommissioned church turned taco spot. The coffee shop with its familiar faces, where you just walk by and smile at each other, no words needed. That bar you used to haunt.
 
 What gets me is seeing the old faces, the same constellation of people I used to orbit. Five months in my new Toronto apartment (which I love, truly), but it feels like years have passed. Time does this strange thing – warps around you when you leave. For me, whole epochs have unfolded. For them, Tuesday follows Monday follows Sunday. The uncanny valley of temporal perception: you've moved through time at different speeds, yet here you both are, occupying the same present moment.
-
-- [meta]:
-  - date: 2025-11-28 16:11:37 GMT-05:00
-  - tags:
-    - fruit
