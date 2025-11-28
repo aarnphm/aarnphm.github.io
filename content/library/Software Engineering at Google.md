@@ -14,5 +14,8 @@ tags:
   - computing
 title: "Software Engineering at Google: Lessons Learned from Programming Over Time"
 finished:
-author: Hyrum Wright, Titus Winters, and Tom Manshreck
+author:
+  - Hyrum Wright
+  - Titus Winters
+  - Tom Manshreck
 ---

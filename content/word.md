@@ -2,10 +2,10 @@
 cssclasses:
   - nolist
 date: "2024-10-10"
-description: A collections of words and terms that lives within my vernacular
+description: a bag of chips/words/vernacular
 id: word
 layout: technical
-modified: 2025-11-27 09:22:33 GMT-05:00
+modified: 2025-11-28 16:24:44 GMT-05:00
 tags:
   - evergreen
 title: lists
@@ -27,6 +27,7 @@ title: lists
 - firmament
 - nipper
 - aspersion
+- eudaimonia
 - vim
 - sibilant
 - {{sidenotes[quine]: is a computer program that takes no input and produces a copy of its own _source code_ as its only output.}}

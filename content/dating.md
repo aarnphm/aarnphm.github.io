@@ -7,7 +7,7 @@ aliases:
 date: "2025-08-09"
 description: just another fish in the sea.
 id: dating
-modified: 2025-11-22 16:31:26 GMT-05:00
+modified: 2025-11-28 16:12:54 GMT-05:00
 noindex: true
 slides: true
 tags:
@@ -121,7 +121,7 @@ My approach to problems has stayed consistent since I learned arithmetic: ==don'
 
 I might not be good at something initially, but i find being autistic enough to care about a specific domain (_scaling [[thoughts/AGI|intelligence]]_) has got me to a spot that make 5-year-old Aaron proud.
 
-> I know that the next section on my research interest can be a bit long, feel free to skip it [[dating#personal life.|to the next topic]]! Otherwise hopefully it captures topics I'm currently fascinated with (as of oct, 2025)
+> I know that the next section on my research interest can be a bit long, feel free to skip it [[#personal life.|to the next topic]]! Otherwise hopefully it captures topics I'm currently fascinated with (as of oct, 2025)
 
 ![[research#{collapsed: true}|research interests]]
 
@@ -331,6 +331,8 @@ I'd love to:
 2. checking out #places around Toronto, or
 3. we can go bouldering, grab food, then spend the night watching "paris, texas", or
 4. go for a walk in hyde park, and enjoy the nature.
+5. we can [trade blogpost](https://kami.bearblog.dev/lets-trade-blogposts/)
+6. Something else
 
 ![[thoughts/images/3DA0F7DF-8F9B-47D8-BAA7-114429E5C359_1_105_c.webp]]
 ![[thoughts/images/0181AD4F-3C0A-4D99-9AF5-9145AFE56E22.webp]]

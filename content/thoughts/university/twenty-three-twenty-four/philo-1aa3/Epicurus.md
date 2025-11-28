@@ -8,7 +8,7 @@ tags:
 title: Epicurus
 ---
 
-[[thoughts/university/twenty-three-twenty-four/philo-1aa3/Socrates|Socrates]] ideas:
+[[thoughts/Socrates|Socrates]] ideas:
 
 - care for self -> happiness and virtue are problems of knowledge
 - Idealism: Being is Idea; fundamental reality is immaterial, spiritual, and rational

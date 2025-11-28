@@ -3,7 +3,7 @@ date: "2024-12-08"
 description: zettelkasten, contact[at]aarnphm[dot]xyz
 id: notes
 layout: technical
-modified: 2025-11-25 16:56:57 GMT-05:00
+modified: 2025-11-28 14:40:08 GMT-05:00
 tags:
   - evergreen
 title: procedural notes.
@@ -24,6 +24,7 @@ Here are a few things that I like:
 - [[thoughts/Determinism|determinism]]
 - [[thoughts/hermeneutics]]
 - [[thoughts/functionalism]]
+- Michel Foucault's The Archaeology of Knowledge
 - [[thoughts/mechanistic interpretability|interpretability megalist]]
 - high performance [[thoughts/vllm|inference]] [[thoughts/LLMs|LLMs]] engine
 - dimension-3 #topology
@@ -31,3 +32,5 @@ Here are a few things that I like:
 - Synchronizität (synchronicity)
 
 :wave: you can also reach out via [twitter](https://twitter.com/aarnphm_) or [email](mailto:contact@aarnphm.xyz), I always love meeting new people!
+
+If you are familiar with PGP encryption, you can use this key to send me email: `gpg --locate-keys contact@aarnphm.xyz`

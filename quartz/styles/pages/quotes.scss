@@ -1,4 +1,8 @@
 [data-slug="quotes"] {
+  header {
+    height: 0;
+  }
+
   & article {
     & > blockquote:not(.twitter-tweet) {
       border-left: none;

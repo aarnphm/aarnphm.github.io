@@ -8,7 +8,7 @@ tags:
 title: Plato
 ---
 
-See also [[thoughts/university/twenty-three-twenty-four/philo-1aa3/Socrates]]
+See also [[thoughts/Socrates]]
 
 # Apology
 

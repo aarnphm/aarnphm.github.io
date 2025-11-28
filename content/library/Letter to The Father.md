@@ -9,4 +9,6 @@ description: A collection of letters that Kafka wrote for his father, never to b
 title: Letter to The Father
 posters: "[[library/posters/letter-to-his-father.jpg]]"
 pdf: https://images.pcmac.org/Uploads/Bellevue/Bellevue/Departments/DocumentsSubCategories/Documents/letter-to-my-father.pdf
+status: current
+subcategory: arts
 ---

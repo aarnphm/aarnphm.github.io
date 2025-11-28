@@ -11,7 +11,7 @@ title: Symposium
 ### Q1.
 
 ex: Th.
-E. dialogue shows [[thoughts/university/twenty-three-twenty-four/philo-1aa3/Socrates|Socrates]] view that philosophy necessary for a good life
+E. dialogue shows [[thoughts/Socrates|Socrates]] view that philosophy necessary for a good life
 
 E. definition of piety and S's objection for it. --> discussion in Apology about relation between philosophy and good life
 

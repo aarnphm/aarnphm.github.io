@@ -1,7 +1,7 @@
 ---
 author: David Hume
 category: philosophy
-date: "2025-09-18"
+date: 2025-09-18
 description: an attempt to build a science of human nature, explaining mind, morality, and causation through experience and habit.
 id: A Treatise of Human Nature
 modified: 2025-10-29 02:14:26 GMT-04:00
@@ -11,4 +11,5 @@ subcategory: empiricism
 tags:
   - philosophy
 title: A Treatise of Human Nature
+notebook:
 ---

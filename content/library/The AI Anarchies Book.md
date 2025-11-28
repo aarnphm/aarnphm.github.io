@@ -12,7 +12,10 @@ tags:
 title: The AI Anarchies Book
 status: to read
 subcategory: llms
-author: Clara Herrmann, Elise Misao Hunchuck, Maya Indira Ganesh
+author:
+  - Clara Herrmann
+  - Elise Misao Hunchuck
+  - Maya Indira Ganesh
 ---
 
 see also: https://www.creativeapplications.net/books/the-ai-anarchies-book

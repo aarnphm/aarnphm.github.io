@@ -1,6 +1,6 @@
 ---
 author: M. A. Amstrong
-category: topology
+category: math
 date: 2025-11-09
 description: introductory textbook on point set topology, building intuition for continuity, connectedness, compactness, and basic constructions.
 external: https://math.mit.edu/~hrm/palestine/armstrong-basic-topology.pdf
@@ -12,5 +12,5 @@ tags:
   - topology
 title: Basic Topology
 status: current
-subcategory: algebraic
+subcategory: topology
 ---

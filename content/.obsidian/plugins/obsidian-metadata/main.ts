@@ -1,7 +1,7 @@
 import { Notice, Plugin, TFile, parseYaml } from "obsidian";
 
 // Minimal grammar dispatcher; future grammars can be added by name.
-type GrammarKind = "stream" | "channel";
+type GrammarKind = "stream" | "channel" | "quotes";
 
 type Lines = string[];
 
@@ -30,11 +30,13 @@ function detectGrammar(ebnf: string): GrammarKind | null {
   const name = match[1].toLowerCase();
   if (name === "stream") return "stream";
   if (name === "channel") return "channel";
+  if (name === "quotes") return "quotes";
   return null;
 }
 
 function deriveRequiredKeys(ebnf: string, grammar: GrammarKind): Set<string> {
   const required = new Set<string>(["date", "tags"]);
+  if (grammar === "quotes") return new Set();
   if (grammar === "stream") return required;
   for (const key of extractLiteralKeys(ebnf, "key")) {
     if (key === "date" || key === "tags") required.add(key);
@@ -96,6 +98,38 @@ function trimTrailingEmptyLines(lines: Lines) {
   while (lines.length > 0 && lines[lines.length - 1].trim() === "") {
     lines.pop();
   }
+}
+
+function isQuoteLine(line: string): boolean {
+  return line.trimStart().startsWith(">");
+}
+
+function stripQuotePrefix(line: string): string {
+  const trimmed = line.trim();
+  if (!trimmed.startsWith(">")) return trimmed;
+  return trimmed.slice(1).replace(/^ /, "");
+}
+
+function formatQuoteLine(text: string): string {
+  const trimmed = stripQuotePrefix(text);
+  return trimmed.length === 0 ? ">" : `> ${trimmed}`;
+}
+
+function normalizeQuoteBlock(block: Lines): Lines {
+  const nonEmpty = block.filter((line) => line.trim() !== "");
+  const allBlockquoted = nonEmpty.every((line) => isQuoteLine(line));
+  const hasCite = nonEmpty.length >= 2;
+  if (allBlockquoted && hasCite) return block;
+
+  const cleaned = block.map(stripQuotePrefix);
+  const citePlaceholder = "[cite]";
+  const cite = cleaned.length >= 2 ? cleaned.pop() ?? citePlaceholder : citePlaceholder;
+  const quoteLines = cleaned.length > 0 ? cleaned : [""];
+
+  const normalized: Lines = quoteLines.map(formatQuoteLine);
+  normalized.push(">");
+  normalized.push(formatQuoteLine(cite.trim() === "" ? citePlaceholder : cite));
+  return normalized;
 }
 
 type StreamTokenKind =
@@ -537,7 +571,9 @@ export default class MetadataValidatorPlugin extends Plugin {
     const updated =
       grammar === "stream"
         ? this.enforceStream(content, metaKeys)
-        : this.enforceArena(content, metaKeys);
+        : grammar === "channel"
+          ? this.enforceArena(content, metaKeys)
+          : this.enforceQuotes(content);
     if (!updated || updated === content) return;
 
     this.writing.add(file.path);
@@ -603,6 +639,40 @@ export default class MetadataValidatorPlugin extends Plugin {
 
     trimTrailingEmptyLines(lines);
     const updated = lines.join("\n") + (endsWithNewline ? "\n" : "");
+    return updated === text ? null : updated;
+  }
+
+  private enforceQuotes(text: string): string | null {
+    const endsWithNewline = text.endsWith("\n");
+    const lines = text.split(/\r?\n/);
+    const fmEnd = findFrontmatterEnd(lines);
+    const bodyStart = fmEnd >= 0 ? fmEnd + 1 : 0;
+    if (bodyStart >= lines.length) return null;
+
+    const head = lines.slice(0, bodyStart);
+    const body = lines.slice(bodyStart);
+
+    const normalized: Lines = [];
+    let block: Lines = [];
+    const flush = () => {
+      if (block.length === 0) return;
+      normalized.push(...normalizeQuoteBlock(block));
+      block = [];
+    };
+
+    for (const line of body) {
+      if (line.trim() === "") {
+        flush();
+        normalized.push("");
+      } else {
+        block.push(line);
+      }
+    }
+    flush();
+
+    trimTrailingEmptyLines(normalized);
+
+    const updated = [...head, ...normalized].join("\n") + (endsWithNewline ? "\n" : "");
     return updated === text ? null : updated;
   }
 }

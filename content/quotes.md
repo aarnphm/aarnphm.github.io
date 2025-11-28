@@ -5,9 +5,25 @@ date: "2024-01-23"
 description: A collection of quotes, wisdom, and advice.
 id: quotes
 layout: letter
-modified: 2025-11-27 14:55:46 GMT-05:00
+metadata:
+  ebnf: |-
+    quotes       = quote_block , { blank_line , quote_block } , [ blank_line ] ;
+    quote_block  = quote_lines , newline , cite_line ;
+    quote_lines  = quote_line , { newline , quote_line } ;
+    quote_line   = ">" , [ ws , text_line ] ;
+    cite_line    = text_line ;
+    blank_line   = newline , newline ;
+    text_line    = { character - newline } ;
+    ws           = { " " } ;
+    character    = ? any printable ascii except newline ? ;
+modified: 2025-11-28 16:20:36 GMT-05:00
+seealso:
+  - "[[word|dictionary]]"
+  - "[[research|wip]]"
+  - "[[influence|people canon]]"
+socials:
+  notes: https://notes.aarnphm.xyz
 tags:
-  - evergreen
   - fruit
 title: conseil
 transclude:
@@ -15,9 +31,17 @@ transclude:
   title: false
 ---
 
+> If I can stop one heart from breaking, [I shall not live in vain]
+>
+> Emily Dickinson
+
+> There is no conceivable professional [[library/The Prince|advantage]] for me in talking to you
+>
+> Johnathan Franzen
+
 > I think we ought to read only the kind of books that wound and stab us. If the book we’re reading doesn’t wake us up with a blow on the head, what are we reading it for? So that it will make us happy, as you write? Good Lord, we would be happy precisely if we had no books, and the kind of books that make us happy are the kind we could write ourselves if we had to. But we need the books that affect us like a disaster, that grieve us deeply, like the death of someone we loved more than ourselves, like being banished into forests far from everyone, like a suicide. A book must be the axe for the frozen sea inside us. That is my belief.
 >
-> Franz Kafka, [_letter to Oskar Pollak_](https://languagehat.com/kafka-on-books/), January 27<sup>th</sup>, 1904
+> Franz Kafka, [_letter to Oskar Pollak_](https://languagehat.com/kafka-on-books/), January 27<sup>th</sup>, 1904
 
 > Good design is as little design as possible. ^mtf
 >

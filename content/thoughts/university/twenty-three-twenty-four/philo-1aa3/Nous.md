@@ -11,7 +11,7 @@ Notes: [[thoughts/university/twenty-three-twenty-four/philo-1aa3/All.pdf|notes]]
 
 Reference: [[thoughts/university/twenty-three-twenty-four/philo-1aa3/1A3Reader(2019).pdf|text]]
 
-### [[thoughts/university/twenty-three-twenty-four/philo-1aa3/Socrates|Socrates]]'s Idea of Good
+### [[thoughts/Socrates|Socrates]]'s Idea of Good
 
 - Something is good when it contributes to the flourish of human being
 - Deny democracy
@@ -119,7 +119,7 @@ Every act is chosen, voluntary.
 No moral luck. Whether life goes well or ill is completely in our control.
 Suffering is a kind of error, a cognitive mistake, due to wrong judgment and false belief.
 
-[[thoughts/university/twenty-three-twenty-four/philo-1aa3/Descartes|Descartes]]
+[[thoughts/Descartes|Descartes]]
 
 Muller-Lyer Illusion
 
@@ -152,7 +152,7 @@ _Impliciations_
 
 - Mental perceptions vs. Physical causation
 
-[[thoughts/university/twenty-three-twenty-four/philo-1aa3/Sphinoza|Sphinoza]]
+[[thoughts/Sphinoza|Sphinoza]]
 
 Deus sive Nature
 

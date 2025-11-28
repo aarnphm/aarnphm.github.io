@@ -13,7 +13,7 @@ Closely connected to [[thoughts/Value|value]] theory, or rather a systematic ana
 
 [[thoughts/Philosophy and Kant|Kantian]] ethics presupposes that there is a universal moral law that applies to all rational beings, or his deontological ethics framework that based on "categorical imperative".
 
-This is different from [[thoughts/university/twenty-three-twenty-four/philo-1aa3/John Stuart Mill|Mill's utilitarianism]], who argued actions are right insofar as they promote happiness and wrong insofar that they produce a _reverse_ of happiness.
+This is different from [[thoughts/John Stuart Mill|Mill's utilitarianism]], who argued actions are right insofar as they promote happiness and wrong insofar that they produce a _reverse_ of happiness.
 
 [[thoughts/Philosophy and Nietzsche|Nietzsche]] critiqued conventional moral theories, and argued for reevaluation of [[thoughts/Value|value]]. He believed that traditional morality stifled the full potential of human excellence, seen through BGE or "On the Genealogy of Moral".
 
@@ -99,7 +99,7 @@ See also [[thoughts/Philosophy and Kant]], [[thoughts/hermeneutics]] (contrast: 
 
 Outcome is all that matters. Right action = action producing best consequences. Judge acts by results, not intentions or rules.
 
-**Utilitarianism** (Bentham, [[thoughts/university/twenty-three-twenty-four/philo-1aa3/John Stuart Mill|Mill]]): maximize utility. [@mill1863utilitarianism]
+**Utilitarianism** (Bentham, [[thoughts/John Stuart Mill|Mill]]): maximize utility. [@mill1863utilitarianism]
 
 - Bentham: utility = pleasure minus pain. Hedonic calculus: intensity, duration, certainty, propinquity, fecundity, purity, extent.
 - Mill: qualitative pleasures differ. Better to be Socrates dissatisfied than fool satisfied. Higher pleasures (intellectual, moral, aesthetic) > lower pleasures (bodily).

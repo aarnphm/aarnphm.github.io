@@ -1,7 +1,7 @@
 ---
 author: Gilles Deleuze
 category: philosophy
-date: "2025-08-13"
+date: 2025-08-13
 description: being and multiplicity
 external: https://antilogicalism.com/wp-content/uploads/2017/07/nietzsche-and-philosophy.pdf
 finished: "2025"
@@ -10,7 +10,7 @@ modified: 2025-11-22 11:40:30 GMT-05:00
 notebook: "[[thoughts/Philosophy and Nietzsche]]"
 posters: "[[library/posters/nietzsche-and-philosophy.jpg]]"
 status: evergreen
-subcategory: Nietzsche
+subcategory: multiplicity
 tags:
   - philosophy
 title: Nietzsche and Philosophy
