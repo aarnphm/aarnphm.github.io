@@ -31,17 +31,27 @@ class DiagramPanZoom {
     const mouseMoveHandler = this.onMouseMove.bind(this)
     const mouseUpHandler = this.onMouseUp.bind(this)
     const resizeHandler = this.resetTransform.bind(this)
+    // Touch drag events
+    const touchStartHandler = this.onTouchStart.bind(this)
+    const touchMoveHandler = this.onTouchMove.bind(this)
+    const touchEndHandler = this.onTouchEnd.bind(this)
 
     this.container.addEventListener("mousedown", mouseDownHandler)
     document.addEventListener("mousemove", mouseMoveHandler)
     document.addEventListener("mouseup", mouseUpHandler)
     window.addEventListener("resize", resizeHandler)
+    this.container.addEventListener("touchstart", touchStartHandler, { passive: false })
+    document.addEventListener("touchmove", touchMoveHandler, { passive: false })
+    document.addEventListener("touchend", touchEndHandler)
 
     this.cleanups.push(
       () => this.container.removeEventListener("mousedown", mouseDownHandler),
       () => document.removeEventListener("mousemove", mouseMoveHandler),
       () => document.removeEventListener("mouseup", mouseUpHandler),
       () => window.removeEventListener("resize", resizeHandler),
+      () => this.container.removeEventListener("touchstart", touchStartHandler),
+      () => document.removeEventListener("touchmove", touchMoveHandler),
+      () => document.removeEventListener("touchend", touchEndHandler),
     )
   }
 
@@ -100,6 +110,30 @@ class DiagramPanZoom {
     this.container.style.cursor = "grab"
   }
 
+  private onTouchStart(e: TouchEvent) {
+    if (e.touches.length !== 1) return
+    this.isDragging = true
+    const touch = e.touches[0]
+    this.startPan = { x: touch.clientX - this.currentPan.x, y: touch.clientY - this.currentPan.y }
+  }
+
+  private onTouchMove(e: TouchEvent) {
+    if (!this.isDragging || e.touches.length !== 1) return
+    e.preventDefault() // Prevent scrolling
+
+    const touch = e.touches[0]
+    this.currentPan = {
+      x: touch.clientX - this.startPan.x,
+      y: touch.clientY - this.startPan.y,
+    }
+
+    this.updateTransform()
+  }
+
+  private onTouchEnd() {
+    this.isDragging = false
+  }
+
   private zoom(delta: number) {
     const newScale = Math.min(Math.max(this.scale + delta, this.MIN_SCALE), this.MAX_SCALE)
 
@@ -124,12 +158,14 @@ class DiagramPanZoom {
     this.scale = 1
     const svg = this.content.querySelector("svg")!
     const containerRect = this.container.getBoundingClientRect()
-    const svgRect = svg.getBoundingClientRect()
+    const rect = svg.getBoundingClientRect()
+    const width = rect.width / this.scale
+    const height = rect.height / this.scale
 
-    // center the svg within the container
+    this.scale = 1
     this.currentPan = {
-      x: (containerRect.width - svgRect.width) / 2,
-      y: (containerRect.height - svgRect.height) / 2,
+      x: (containerRect.width - width) / 2,
+      y: (containerRect.height - height) / 2,
     }
     this.updateTransform()
   }

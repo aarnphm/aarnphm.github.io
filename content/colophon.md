@@ -20,7 +20,7 @@ title: colophon
 
 **accessibility** -- follow ARIA spec. I tried to modify a few value in rose-pine to add a bit more contrast. Press <span style="text-transform: uppercase"><kbd>D</kbd></span> anywhere to toggle between light and dark mode.
 
-**components** -- I added support for rendering [[thoughts/Vector calculus#gradient|tikz graph]], [[thoughts/Transformers#Feynman-Kac|pseudocode]] support, [dynalist](https://dynalist.io)-inspired [[thoughts/mechanistic interpretability#inference|collapsible header]], a few customised [[posts/new#^ending|signature]], tiny [transformers plugins](https://github.com/aarnphm/aarnphm.github.io/blob/main/quartz/plugins/transformers/aarnphm.ts), micromarks extensions for [wikilinks](https://github.com/aarnphm/aarnphm.github.io/tree/main/quartz/extensions/micromark-extension-ofm-wikilinks), [sidenotes](https://github.com/aarnphm/aarnphm.github.io/tree/main/quartz/extensions/micromark-extension-ofm-sidenotes), [[posts/25/n-bday|protected notes]], and additional supports of [`renderPage.tsx`](https://github.com/aarnphm/aarnphm.github.io/blob/f2006d75ca76263ffe880b43d7c8bac27aefc6ac/quartz/components/renderPage.tsx#L1487)
+**components** -- I added support for rendering [[thoughts/Vector calculus#gradient|tikz graph]], [[thoughts/Transformers#Feynman-Kac|pseudocode]] support, [dynalist](https://dynalist.io)-inspired [[thoughts/mechanistic interpretability#inference|collapsible header]], a few customised [[posts/new#^ending|signature]], tiny [transformers plugins](https://github.com/aarnphm/aarnphm.github.io/blob/main/quartz/plugins/transformers/aarnphm.ts), micromarks extensions for [wikilinks](https://github.com/aarnphm/aarnphm.github.io/tree/main/quartz/extensions/micromark-extension-ofm-wikilinks), [sidenotes](https://github.com/aarnphm/aarnphm.github.io/tree/main/quartz/extensions/micromark-extension-ofm-sidenotes), [[posts/25/n-bday|protected notes]], and additional supports of [`renderPage.tsx`](https://github.com/aarnphm/aarnphm.github.io/blob/main/quartz/components/renderPage.tsx#L1487)
 
 **usage** -- Some daily drivers that has found [[uses|its way]] into my life. But I use [Obsidian](https://obsidian.md/) for note-taking and Apple Notes while I'm on the go, in conjunction with [neovim](https://neovim.io/) for all my [[thoughts/craft|work-related shenanigans]].
 
@@ -68,10 +68,10 @@ Support a small subsets of the features, with wikilinks parsing
   * reading a lot of
     * Nietzsche,
     * Wittgenstein,
-  * hosting functions,
-    * go on longs walks,
-    * building [[thoughts/work|open-source project]],
-    * this [pan](https://example.com)
+		 * hosting functions,
+	 * and, go on longs walks,
+	   * building [[thoughts/work|open-source project]],
+	    * this [pan](https://example.com)
 ```
 
 > [!summary]- code
@@ -83,10 +83,10 @@ Support a small subsets of the features, with wikilinks parsing
 >   * reading a lot of
 >     * Nietzsche,
 >     * Wittgenstein,
->   * hosting functions,
->     * go on longs walks,
->     * building [[thoughts/work|open-source project]],
->     * this [pan](https://example.com)
+> 		 * hosting functions,
+> 	 * and, go on longs walks,
+> 	   * building [[thoughts/work|open-source project]],
+> 	    * this [pan](https://example.com)
 > ```
 > ````
 
