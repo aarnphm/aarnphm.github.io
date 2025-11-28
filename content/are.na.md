@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2025-11-27 15:44:11 GMT-05:00
+modified: 2025-11-28 16:47:34 GMT-05:00
 permalinks:
   - /website
   - /tweets
@@ -143,6 +143,14 @@ title: are.na
 - [meta]:
   - view: list
 
+- https://x.com/noampomsky/status/1994484395873636408 -- The smoke screen of attachment theory
+  - [meta]:
+    - date: 11/28/2025
+    - tags: [relationship]
+- https://x.com/michael_nielsen/status/1994416305685115124
+  - [meta]:
+    - date: 11/28/2025
+    - tags: [computing]
 - https://x.com/jsuarez5341/status/1993780321209512049 -- RL discourse between practicality versus theoretical verifiability [**]
   - [meta]:
     - date: 11/27/2025
@@ -752,6 +760,11 @@ title: are.na
 
 ## people
 
+- https://www.nytimes.com/2018/11/15/obituaries/herbert-fingarette-dead.html -- Herbert Fingarette
+  - [meta]:
+    - date: 11/28/2025
+    - tags: [philosopher]
+  - against alcoholism, eschatology
 - https://gwern.net -- Gwern
   - [meta]:
     - date: 11/25/2025
@@ -1582,6 +1595,28 @@ title: are.na
 
 ## essay
 
+- https://tecunningham.github.io/posts/2025-10-19-forecasts-of-AI-growth.html -- Forecasts of AI & Economics growth
+  - [meta]:
+    - date: 11/28/2025
+    - tags: [longtermism, ai]
+- https://archive.is/ilTr1 -- How to spot a genius
+  - [meta]:
+    - date: 11/28/2025
+    - tags: [intelligence]
+  - Prodigies also need access to clusters of high-ability peers. A study by Ufuk Akcigit of the University of Chicago, John Grigsby of Princeton University and Tom Nicholas of Harvard finds that America’s golden age of innovation was fuelled by migration: inventors left their home states in search of denser networks.
+  - Thomas Edison, born poor in rural Ohio, moved to New Jersey to build Menlo Park laboratory, where inventors could collaborate.
+- https://sharif.io/pain -- Choose your pain [**]
+  - [meta]:
+    - date: 11/28/2025
+    - tags: [hedonia]
+- https://archive.is/1w2bs -- Scott Alexander's Antichrist Lecture
+  - [meta]:
+    - date: 11/28/2025
+    - tags: [theology]
+- https://www.experimental-history.com/p/bag-of-words-have-mercy-on-us -- Bag of words have mercy on us
+  - [meta]:
+    - date: 11/28/2025
+    - tags: [ml, llm]
 - https://mingyuan.substack.com/p/youre-always-stressed-your-mind-is -- # You’re always stressed, your mind is always busy, you never have enough time
   - [meta]:
     - date: 11/27/2025
@@ -1654,7 +1689,7 @@ title: are.na
     - date: 11/21/2025
     - tags: [research]
     - pinned: true
-- https://tarneo.fr/posts/minimal_web/ -- Bringing back the minimal web
+- https://tarneo.fr/posts/minimal_web/ -- Bringing back the minimal web [**]
   - [meta]:
     - date: 11/20/2025
     - tags: [web]
@@ -2613,6 +2648,15 @@ title: are.na
 - [meta]:
   - view: list
 
+- https://github.com/facebookresearch/coconut -- Training Large Language Model to Reason in a Continuous Latent Space
+  - [meta]:
+    - date: 11/28/2025
+    - tags: [ml]
+  - see also @hao2025traininglargelanguagemodels
+- https://www.artfintel.com/p/reinforcement-learning-and-general -- Reinforcement learning and general intelligence
+  - [meta]:
+    - date: 11/28/2025
+    - tags: [rl, intelligence]
 - https://nanjiang.cs.illinois.edu/cs542/ -- Statistical Reinforcement Learning [**]
   - [meta]:
     - date: 11/27/2025
@@ -3912,6 +3956,7 @@ title: are.na
   - [meta]:
     - date: 11/18/2025
     - tags: [eschatology]
+  - article from The Atlantic: https://www.theatlantic.com/video/index/604840/being-97/
 - https://www.youtube.com/watch?v=xL_sMXfzzyA -- A Conversation with Bertrand Russell (1952)
   - [meta]:
     - date: 11/05/2025
@@ -3988,7 +4033,7 @@ title: are.na
   - [meta]:
     - date: 10/08/2025
     - tags: [rationalist]
-  - after Decartes, [[thoughts/university/twenty-three-twenty-four/philo-1aa3/Sphinoza]]
+  - after Decartes, [[thoughts/Sphinoza]]
 - https://caitlynrichardson.substack.com/p/can-intellectual-intimacy-replace -- can intellectual intimacy replace physical desire? [**]
   - [meta]:
     - date: 10/06/2025
@@ -4107,6 +4152,15 @@ title: are.na
 
 ## stream
 
+- https://bookshelf.town/shelf -- communal bookshelf
+  - [meta]:
+    - date: 11/28/2025
+    - tags: [books, reading list]
+- https://worksinprogress.co/ -- Work in Progress
+  - [meta]:
+    - date: 11/28/2025
+    - tags: [progress]
+    - pinned: true
 - https://x.com/MarvinKeilbach/status/1993424805794922580 -- self-improvement
   - [meta]:
     - date: 11/26/2025
@@ -4269,6 +4323,18 @@ title: are.na
 
 ## poetry
 
+- https://www.poetryfoundation.org/poets/emily-dickinson -- Emily Dickinson
+  - [meta]:
+    - date: 11/28/2025
+    - tags: [love]
+  - Here's for the broken heart
+    > If I can stop one heart from breaking,
+    > I shall not live in vain;
+    > If I can ease one life the aching,
+    > Or cool one pain,
+    > Or help one fainting robin
+    > Unto his nest again,
+    > I shall not live in vain.
 - https://gwern.net/blog/2025/silver-bird -- Gwern's codual with GPT-5 and Sonnet 4.5 for evaluating poem's writing capabilities
   - [meta]:
     - date: 11/05/2025
@@ -4306,6 +4372,14 @@ title: are.na
 
 ## design
 
+- https://refero.design/
+  - [meta]:
+    - date: 11/28/2025
+    - tags: [components]
+- https://and-now.co.uk/
+  - [meta]:
+    - date: 11/28/2025
+    - tags: [studio, agency]
 - https://specialprojects.studio
   - [meta]:
     - date: 11/27/2025
@@ -4456,6 +4530,10 @@ title: are.na
 
 ## video
 
+- https://www.youtube.com/watch?v=YrHGbCyAqOU -- Theories of Schrödinger's heterosexuality
+  - [meta]:
+    - date: 11/28/2025
+    - tags: [sex, absurdism]
 - https://www.youtube.com/watch?v=f21YJ5pjPog -- Why Mojang struggles to design Ecologies
   - [meta]:
     - date: 11/26/2025
@@ -4733,6 +4811,24 @@ title: are.na
 
 ## arts
 
+- https://www.rijksmuseum.nl/en -- Rijks museum
+  - [meta]:
+    - date: 11/28/2025
+    - tags: [arts]
+    - pinned: true
+- https://www.loc.gov/ -- Library of Congress
+  - [meta]:
+    - date: 11/28/2025
+    - tags: [history]
+- https://www.metmuseum.org/art/collection/search?showOnly=openAccess -- Met's Open Access
+  - [meta]:
+    - date: 11/28/2025
+    - tags: [registry]
+    - pinned: true
+- https://www.europeana.eu/en -- Europeana
+  - [meta]:
+    - date: 11/28/2025
+    - tags: [registry]
 - https://michelleblancke.nl/artworks
   - [meta]:
     - date: 11/27/2025
@@ -4999,6 +5095,14 @@ title: are.na
 
 ## technical
 
+- https://codepen.io/Mikhail-Bespalov/pen/yLmpxOG -- disappearing svg
+  - [meta]:
+    - date: 11/28/2025
+    - tags: [svg, turbulence]
+- https://2color.github.io/content-defined-chunking-vis/ -- CDC demo
+  - [meta]:
+    - date: 11/28/2025
+    - tags: [distributed systems, cdc]
 - https://en.wikipedia.org/wiki/Earley_parser -- Early parser
   - [meta]:
     - date: 11/27/2025
@@ -5266,7 +5370,7 @@ title: are.na
   - [meta]:
     - date: 11/23/2025
     - tags: [vc]
-- https://www.1517fund.com/post/thesis
+- https://www.1517fund.com/post/thesis -- A Very specific thesis
   - [meta]:
     - date: 11/21/2025
     - tags: [funds]

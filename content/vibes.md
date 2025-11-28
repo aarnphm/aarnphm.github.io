@@ -8,9 +8,8 @@ layout: masonry
 masonry:
   - "[[posts/images]]"
   - "[[thoughts/images]]"
-  - "[[movies/posters]]"
   - "[[library/posters]]"
-modified: 2025-11-28 12:26:42 GMT-05:00
+modified: 2025-11-28 12:30:09 GMT-05:00
 tags:
   - evergreen
 title: vibes

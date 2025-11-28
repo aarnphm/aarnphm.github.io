@@ -7,7 +7,7 @@ id: The Critique of Pure Reason
 modified: 2025-10-29 02:14:38 GMT-04:00
 posters: "[[library/posters/the-critique-of-pure-reason.jpg]]"
 status: evergreen
-subcategory: Kant
+subcategory: analytics
 tags:
   - philosophy
 title: The Critique of Pure Reason

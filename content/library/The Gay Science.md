@@ -9,7 +9,7 @@ pdf: "[[thoughts/papers/The Gay Science by Friedrich Nietzsche.pdf]]"
 posters: "[[library/posters/the-gay-science.jpg]]"
 notebook: "[[thoughts/Philosophy and Nietzsche#The Gay Science]]"
 status: evergreen
-subcategory: Nietzsche
+subcategory: metaphysics
 tags:
   - philosophy
 title: The Gay Science

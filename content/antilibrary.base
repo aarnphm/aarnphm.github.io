@@ -39,7 +39,6 @@ views:
     columnSize:
       note.title: 401
       note.date: 147
-      note.notebook: 125
     cardSize: 320
     image: note.posters
   - type: table
@@ -54,19 +53,17 @@ views:
       - finished
       - subcategory
       - notebook
+      - author
     sort:
-      - property: date
-        direction: DESC
-      - property: title
-        direction: DESC
-      - property: notebook
-        direction: ASC
       - property: status
         direction: ASC
+      - property: date
+        direction: DESC
     columnSize:
       note.title: 401
       note.date: 147
       note.subcategory: 172
+      note.author: 234
   - type: table
     name: philosophy
     filters:

@@ -17,7 +17,7 @@ Theology, acquainted with Greek philosophy
 
 _Twilight of the Idols, 1889_
 
-## Problem of [[thoughts/university/twenty-three-twenty-four/philo-1aa3/Socrates|Socrates]].
+## Problem of [[thoughts/Socrates|Socrates]].
 
 **Decadent: in decline, decay. "Doing a bad thing carefully."**
 
@@ -76,7 +76,7 @@ Critiques in Christianity,
 
 Security with "herd mentality"
 
-Regards as sign of decline, docile (democracy, or [[thoughts/university/twenty-three-twenty-four/philo-1aa3/John Stuart Mill|John Stuart Mill]]'s instution)
+Regards as sign of decline, docile (democracy, or [[thoughts/John Stuart Mill|John Stuart Mill]]'s instution)
 
 > Obstacles that are good for us: Becomes who we are
 
@@ -99,7 +99,7 @@ Arguments against morality: One rule for everything
 
 Judge everything by one rules: Morality reduces human to [[singularity.canvas|singularity]]
 
-Object to Kant's Morals, but not [[thoughts/university/twenty-three-twenty-four/philo-1aa3/John Stuart Mill|John Stuart Mill]]'s Utilitarianism
+Object to Kant's Morals, but not [[thoughts/John Stuart Mill|John Stuart Mill]]'s Utilitarianism
 
 Respect for others is imposed on us => refused to embrace
 

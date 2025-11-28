@@ -25,7 +25,7 @@ Tony Hope
 2. Philosophical consideration
 
    Enlightenment thinkers with the likes of Kant upheld human autonomy as fundamental [[thoughts/moral]] imperatives. [[thoughts/Philosophy and Kant|Kantian]] ethics suggests that
-   using patient data solely as a means to an end, without their informed consent, is ethically problematic [@Kant1785KANGFT]. John Stuart [[thoughts/university/twenty-three-twenty-four/philo-1aa3/John Stuart Mill|Mill]]’s harm principle further
+   using patient data solely as a means to an end, without their informed consent, is ethically problematic [@Kant1785KANGFT]. John Stuart [[thoughts/John Stuart Mill|Mill]]’s harm principle further
    supports protecting private information to prevent harm and maintain trust.
 
 3. Contemporary implications

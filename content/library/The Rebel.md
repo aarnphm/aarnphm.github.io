@@ -1,6 +1,6 @@
 ---
-author: Albert Camus
-category: philosophy
+author: "[[thoughts/Camus|Albert Camus]]"
+category: fiction
 date: 2025-10-06
 description: philosophical essay on rebellion that asks how one can affirm justice while rejecting murderous revolution and nihilism.
 id: The Rebel
@@ -11,7 +11,5 @@ subcategory: existentialism
 tags:
   - philosophy
 title: The Rebel
-finished:
+finished: 2025
 ---
-
-related: [[thoughts/Camus]]

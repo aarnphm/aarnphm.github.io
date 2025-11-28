@@ -7,7 +7,7 @@ id: Beyond Good and Evil
 modified: 2025-10-29 02:14:27 GMT-04:00
 posters: "[[library/posters/beyond-good-and-evil.jpg]]"
 status: evergreen
-subcategory: Nietzsche
+subcategory: ethics
 tags:
   - philosophy
 title: Beyond Good and Evil

@@ -38,11 +38,20 @@ metadata:
     letter        = "a".."z" ;
     digit         = "0".."9" ;
     character     = ? any printable ascii except newline ? ;
-modified: 2025-11-27 16:27:22 GMT-05:00
+modified: 2025-11-28 16:46:32 GMT-05:00
 tags:
   - fruit
   - evergreen
 title: stream
+---
+
+- [meta]:
+  - date: 2025-11-28 16:11:39 GMT-05:00
+  - tags:
+    - writing
+
+![[thoughts/writing#as a journey for exploration|writing]]
+
 ---
 
 - [meta]:
@@ -165,7 +174,7 @@ I was reading [On suicide](https://docs.google.com/document/d/14XZJtJcMGzD4ZY6Ag
 
 > When I was in high school, I spent a year trying to kill myself. I just couldn't do it. At some point I decided to make my life as bad as I possibly could, but nothing worked. No matter how much I tried, I still ==wanted to be alive more== than I [_wanted to be dead_].
 
-The [[thoughts/ethics#deontology|deontological]] arguments of life ::presupposes the feeling of interconnectedness{h5}::. I think that if one acknowledges that no one wants one in life, then one might conclude that one's life is not worth living. [[thoughts/Philosophy and Kant|Kant]] would then argue against the notion of "kill oneself" given that it is an act in violoation of the [[thoughts/moral|moral]] law, and deemed it as **wrong**.
+The [[thoughts/ethics#deontology|deontological]] arguments of life _presupposes_ the feeling of ::interconnectedness{h5}::. I think that if one acknowledges that no one wants one in life, then one might conclude that one's life is not worth living. [[thoughts/Philosophy and Kant|Kant]] would then argue against the notion of "kill oneself" given that it is an act in violation of the [[thoughts/moral|moral]] law, and deemed it as **wrong**.
 
 > I wonder how much of this is due to the lack of imagination. If you're suicidal, it's very difficult to imagine life getting better.
 
@@ -449,3 +458,8 @@ Generation without guarantee. Creation without cosmic permission. Love without e
 The visceral feeling of returning to a place you once lived. Those familiar streets you'd walk daily without really noticing. The tiny brick that used to catch your shoe—gone now. New shops sprouting up, the decommissioned church turned taco spot. The coffee shop with its familiar faces, where you just walk by and smile at each other, no words needed. That bar you used to haunt.
 
 What gets me is seeing the old faces, the same constellation of people I used to orbit. Five months in my new Toronto apartment (which I love, truly), but it feels like years have passed. Time does this strange thing – warps around you when you leave. For me, whole epochs have unfolded. For them, Tuesday follows Monday follows Sunday. The uncanny valley of temporal perception: you've moved through time at different speeds, yet here you both are, occupying the same present moment.
+
+- [meta]:
+  - date: 2025-11-28 16:11:37 GMT-05:00
+  - tags:
+    - fruit
