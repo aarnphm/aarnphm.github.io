@@ -1,14 +1,15 @@
 ---
 date: "2023-11-08"
+description: fathers of Western philosophical tradition.
 id: Plato
-modified: 2025-10-29 02:15:32 GMT-04:00
+modified: 2025-11-28 17:22:16 GMT-05:00
+seealso:
+  - "[[thoughts/Socrates]]"
 tags:
   - philosophy
   - philos1aa3
 title: Plato
 ---
-
-See also [[thoughts/Socrates]]
 
 # Apology
 

@@ -2,15 +2,18 @@
 date: "2025-03-25"
 description: multi-level intermediate representation for compiler infrastructure
 id: MLIR
-modified: 2025-10-29 02:15:28 GMT-04:00
+modified: 2025-11-28 17:21:14 GMT-05:00
+seealso:
+  - "[[thoughts/Compiler]]"
+  - "[[thoughts/XLA]]"
+  - "[[thoughts/PyTorch]]"
+  - "[[thoughts/GPU programming]]"
 tags:
   - ml
   - compilers
   - infrastructure
 title: MLIR
 ---
-
-See also: [[thoughts/Compiler]], [[thoughts/XLA]], [[thoughts/PyTorch]], [[thoughts/GPU programming]]
 
 Good blogpost write up:
 

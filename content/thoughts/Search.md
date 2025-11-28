@@ -2,7 +2,9 @@
 date: "2024-02-07"
 description: to go or look through (a place) carefully
 id: Search
-modified: 2025-10-29 02:15:35 GMT-04:00
+modified: 2025-11-28 17:20:37 GMT-05:00
+seealso:
+  - "[[thoughts/PageRank|PageRank]]"
 tags:
   - seed
   - technical
@@ -17,8 +19,4 @@ The search results are generally presented in a line of results, often referred 
 
 Some search engines also mine data available in databases or open directories. Unlike web directories, which are maintained only by human editors, search engines also maintain real-time information by running an algorithm on a web crawler.
 
-## query
-
-See also [[thoughts/PageRank|PageRank]]
-
-### HITS algorithm
+## HITS algorithm

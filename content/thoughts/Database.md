@@ -1,11 +1,11 @@
 ---
 date: "2024-02-09"
 id: Database
-modified: 2025-10-29 02:15:20 GMT-04:00
+modified: 2025-11-28 17:22:34 GMT-05:00
 noindex: true
+seealso:
+  - "[[thoughts/university/twenty-four-twenty-five/sfwr-3db3/DBMS|notes on DBMS]]"
 tags:
   - technical
 title: Database
 ---
-
-See also [[thoughts/university/twenty-four-twenty-five/sfwr-3db3/DBMS|introduction]]
