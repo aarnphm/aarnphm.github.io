@@ -104,18 +104,22 @@ Excerpt from _George Orwell[^orwell]'s [[library/Why I Write]]_
 [^orwell]: Orwell is often known for his democratic socialism, and opposed for totalitarianism. But his [[thoughts/Will to Truth|will to truth]] is fundamental to his writing, a true [[thoughts/representations|representation]] of intellectual honesty. In the context of totalitarianism, Orwell pointed out that such regimes demand the continuous alteration of the past and probably a disbelief in the very existence of [objective truth](https://www.goodreads.com/book/show/35610790-orwell-on-truth). He saw the danger in a society that drifts from the truth, stating that it will hate those who speak it.
 
 Sheer egoism
+
 - But there is also the minority of gifted, willful people who are determined to live their own lives to the end, and writers belong in this class.
 - Serious writers, I should say, are on the whole more vain and self-centered than journalists, though less interested in money.
 
 Aesthetic enthusiasm
+
 - Perception of beauty in the external world, or, on the other hand, in words and their right arrangement
 - Pleasure in the impact of one sound on another, in the firmness of good prose or the rhythm of a good story
 - Desire to share an experience which one feels is valuable and ought not to be missed.
 
 Historical impulse
+
 - Seeing things as they are, to find out true facts and store them up for the use of posterity.
 
 Political purpose
+
 - Desire to push the world in a certain direction, to alter other peoples' idea of the kind of society that they should strive after.
 
 ```quotes
