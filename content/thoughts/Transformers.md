@@ -2,14 +2,17 @@
 date: "2024-02-07"
 description: and the backbone of the current language models/ai progress.
 id: Transformers
-modified: 2025-11-07 21:30:45 GMT-05:00
+modified: 2025-11-28 17:17:56 GMT-05:00
+seealso:
+  - "[[thoughts/LLMs|LLMs]]"
+  - "[[thoughts/Embedding|embedding]]"
+socials:
+  visualisation: https://bbycroft.net/llm
 tags:
   - ml
   - technical
 title: Transformers
 ---
-
-See also: [[thoughts/LLMs|LLMs]], [[thoughts/Embedding|embedding]], [visualisation from Brendan Bycroft](https://bbycroft.net/llm)
 
 > A multi-layer perceptron (MLP) architecture built on top of a [[thoughts/Attention#Muti-head Attention|multi-head attention]] mechanism [@vaswani2023attentionneed] to signal high entropy tokens to be amplified and less important tokens to be diminished.
 

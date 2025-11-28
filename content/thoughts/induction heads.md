@@ -2,7 +2,10 @@
 date: "2025-01-18"
 description: and mathematical framework of transformers
 id: induction heads
-modified: 2025-10-29 02:15:47 GMT-04:00
+modified: 2025-11-28 17:15:30 GMT-05:00
+seealso:
+  - "[[thoughts/Transformers|Transformers]]"
+  - "[[thoughts/LLMs|LLMs]]"
 tags:
   - interpretability
   - ml
@@ -12,8 +15,6 @@ transclude:
 ---
 
 notes from [@elhage2021mathematical; @olsson2022context]
-
-see also: [[thoughts/Transformers]]
 
 ## virtual weights
 
