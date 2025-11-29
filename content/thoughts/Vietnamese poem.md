@@ -6,13 +6,12 @@ date: "2024-11-18"
 description: dedicated to my roots, Vietnamese born.
 id: Vietnamese poem
 lang: vi-VN
-modified: 2025-10-29 02:15:38 GMT-04:00
+modified: 2025-11-28 17:34:32 GMT-05:00
 noindex: true
 permalinks:
   - /vietnam
 tags:
-  - seed
-  - poem
+  - poetry
 title: Vietnamese poem
 transclude:
   dynalist: false

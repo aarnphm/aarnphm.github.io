@@ -10,6 +10,8 @@ tags:
   - technical
 title: Crafting Interpreter
 status: to read
-subcategory: compilers
+subcategory:
+  - compilers
+  - ir
 author: Robert Nystrom
 ---

@@ -8,7 +8,9 @@ modified: 2025-11-03 03:36:53 GMT-05:00
 posters: "[[library/posters/swe-books.jpeg]]"
 notebook:
 status: to read
-subcategory: software engineering
+subcategory:
+  - software
+  - engineering
 tags:
   - technical
   - computing

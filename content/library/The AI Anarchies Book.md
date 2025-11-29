@@ -11,7 +11,9 @@ tags:
   - non fiction
 title: The AI Anarchies Book
 status: to read
-subcategory: llms
+subcategory:
+  - llms
+  - longtermism
 author:
   - Clara Herrmann
   - Elise Misao Hunchuck

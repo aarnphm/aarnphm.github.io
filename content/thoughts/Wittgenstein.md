@@ -4,20 +4,23 @@ description: language games, pictures of states, proposition
 id: Wittgenstein
 modified: 2025-11-22 11:41:34 GMT-05:00
 tags:
-  - seed
   - philosophy
 title: Wittgenstein
+seealso:
+  - "[[library/Tractatus Logico-Philosophicus|TLP]]"
+  - "[[library/Philosophical Investigations|PI]]"
+  - "[[library/On Certainty|certainty]]"
 ---
 
 ```quotes
 The world is the collection of facts, not of things.
 
-Wittgenstein
+W
 ```
 
-Wittgenstein's notebooks in essence, a snapshot of his thinking. I very much enjoyed reading through a few of his notebook, albeit it wasn't fully represented his thoughts while he was alive.
+Wittgenstein's notebooks represent a snapshot of his thinking. I very much enjoyed reading through a few of his notebook, albeit we knew that a lot of it were lost during war time.
 
-Tractatus concludes that language is the boundary condition of cognition, not just a tool for representing it. i.e: You can't think outside what you can say.
+[[library/Tractatus Logico-Philosophicus|TLP]] concludes that language is the boundary condition of cognition, not just a tool for representing it. i.e: You can't think outside what you can say.
 
 The notebooks don't show much of evolution of his idea, insofar as iteration of old ideas: "The limits of my language mean the limits of my world".
 
@@ -268,5 +271,3 @@ comparison to psychoanalysis:
 - both emphasize how language can mislead or reveal
 
 but tension: wittgenstein skeptical of depth psychology, hidden causes, unconscious mental processes. his therapy works at level of grammar and concepts, not drives and repressions.
-
-## Wittgensteinian

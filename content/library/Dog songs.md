@@ -7,7 +7,9 @@ id: Dog songs
 modified: 2025-10-29 02:14:28 GMT-04:00
 posters: "[[library/posters/dog-songs.jpg]]"
 status: to read
-subcategory: animal
+subcategory:
+  - animal
+  - dog
 tags:
   - poetry
 title: Dog songs

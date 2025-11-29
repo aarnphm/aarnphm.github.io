@@ -20,6 +20,8 @@ There are two types of love:
 
 ---
 
+https://read.isabelunraveled.com/p/let-yourself-be-loved
+
 draft:
 
 you meet someone and within hours the world reorganizes around them. conversations extend past midnight, silences become comfortable, you notice how they hold their coffee cup. something shifts—not gradually but suddenly, like aspect-dawning. the duck becomes a rabbit. {{sidenotes[reorganization]: i've watched friends describe this moment and it's always the same disorientation. they'll say "we just talked about books for three hours" as if that explains anything, as if everyone doesn't talk about books. what they mean is: the ordinary became charged. sitting on a park bench felt more significant than their last vacation. the reorganization isn't about the person—it's about how the world appears when filtered through thinking about them.}}

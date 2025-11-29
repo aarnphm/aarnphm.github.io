@@ -7,7 +7,9 @@ id: Pillow Thoughts IV
 modified: 2025-10-29 02:14:34 GMT-04:00
 posters: "[[library/posters/pillow-thoughts-iv.jpg]]"
 status: finished
-subcategory: relationship
+subcategory:
+  - relationship
+  - grief
 tags:
   - poetry
 title: Pillow Thoughts IV
