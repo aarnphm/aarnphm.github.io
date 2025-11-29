@@ -1,11 +1,10 @@
 ---
 date: "2025-08-16"
 id: feelings
-modified: 2025-10-29 02:15:11 GMT-04:00
 layout: letter-poem
+modified: 2025-11-28 17:34:39 GMT-05:00
 tags:
-  - seed
-  - poem
+  - poetry
 title: making
 ---
 

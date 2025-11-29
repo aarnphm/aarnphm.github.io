@@ -31,6 +31,18 @@ transclude:
   title: false
 ---
 
+> There are only two industries that call their customers ‘users’: illegal drugs and software.
+>
+> Edward Tufte
+
+> Arguing that you don’t care about the right to privacy because you have nothing to hide is no different than saying you don’t care about free speech because you have nothing to say.
+>
+> Edward Snowden
+
+> Capitalism is the extraordinary belief that the nastiest of men for the nastiest of motives will somehow work together for the benefit of all.
+>
+> John Maynard Keynes
+
 > If I can stop one heart from breaking, [I shall not live in vain]
 >
 > Emily Dickinson

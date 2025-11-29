@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2025-11-28 16:53:29 GMT-05:00
+modified: 2025-11-29 02:13:04 GMT-05:00
 permalinks:
   - /website
   - /tweets
@@ -143,6 +143,10 @@ title: are.na
 - [meta]:
   - view: list
 
+- https://x.com/jiratickets/status/1991597531005087913?s=20 -- Ratioed CS clickbait post
+  - [meta]:
+    - date: 11/29/2025
+    - tags: [cs, meme]
 - https://x.com/noampomsky/status/1994484395873636408 -- The smoke screen of attachment theory
   - [meta]:
     - date: 11/28/2025
@@ -358,6 +362,10 @@ title: are.na
 
 ## website
 
+- https://www.bldgblog.com/
+  - [meta]:
+    - date: 11/28/2025
+    - tags: [landscape, urbanism]
 - https://www.mackenziechild.me/
   - [meta]:
     - date: 11/26/2025
@@ -760,6 +768,10 @@ title: are.na
 
 ## people
 
+- https://zoeloukia.bearblog.dev/
+  - [meta]:
+    - date: 11/28/2025
+    - tags: [torontonian, blogger]
 - https://www.nytimes.com/2018/11/15/obituaries/herbert-fingarette-dead.html -- Herbert Fingarette
   - [meta]:
     - date: 11/28/2025
@@ -1595,6 +1607,29 @@ title: are.na
 
 ## essay
 
+- https://www.avabear.xyz/p/the-friendship-theory-of-everything -- The friendship theory of everything [**]
+  - [meta]:
+    - date: 11/29/2025
+    - tags: [relationship, eudamonia]
+  - Tenets:
+    1.  You accept that in choosing who you spend time with you choose who you are.
+    2.  Almost everyone who’s unhappy is unhappy because they feel isolated. The best cure for isolation is a strong friend group. So much of happiness is having someone you can get a last-minute dinner with on a Monday night, or ask to water your plants while you’re gone for a week. The opposite of loneliness, as it were.
+    3.  You try your best to move to where your favorite people are. You do not agonize over whether this is, in fact, The Best City in the World. You do not Complain Relentlessly about Everything You Dislike About It. You simply suck it up and accept that if you like the people around you, everything else will work out.
+    4.  You ask your friends to live close to you, though you accept that they might not want to. You say, Let’s all stay in California together. I want my kids to grow up with your kids.
+    5.  When you value friendships more, they also get more fraught. I think this is what Rhaina Cohen referred to as “the problems of having community versus not having community.” When we ask for more from friendship, we also get more disappointment, conflict, mismatch. There is no such thing as closeness without friction.
+    6.  Befriending people who are good communicators can make you a better communicator. Befriending people who are trustworthy makes you more trusting. Secure attachment can be a learned thing.
+    7.  People will have periods when they disappear; people have times when they let you down. When you know someone for many many years you will have so many ups and downs. As with any kind of love, the most important thing is that you both keep coming back.
+    8.  It’s okay to pursue and cherish romantic love, but sacrificing platonic love for it leads to [disconnection and atomization](https://www.nytimes.com/2023/06/09/podcasts/ezra-klein-podcast-transcript-kristen-ghodsee.html).
+    9.  You show up: you go to your friends’ birthday parties. You ask them to read your writing. You make an effort to make nice with whoever they date.
+    10. Your friends will change you, even in ways you initially reject. That’s a good thing. You will acquire new opinions and hobbies; you will find yourself into uncomfortable situations; you will learn to like the people they like.
+- https://www.lesswrong.com/posts/eJGptPbbFPZGLpjsp/highly-opinionated-advice-on-how-to-write-ml-papers -- Neel's highly opinionated advice on how to write ml papers
+  - [meta]:
+    - date: 11/29/2025
+    - tags: [ml, research]
+- https://www.jmeiners.com/think-in-math/ -- Think in Math. Write in Code
+  - [meta]:
+    - date: 11/28/2025
+    - tags: [determinism, logic]
 - https://tecunningham.github.io/posts/2025-10-19-forecasts-of-AI-growth.html -- Forecasts of AI & Economics growth
   - [meta]:
     - date: 11/28/2025
@@ -1609,7 +1644,7 @@ title: are.na
   - [meta]:
     - date: 11/28/2025
     - tags: [hedonia]
-- https://archive.is/1w2bs -- Scott Alexander's Antichrist Lecture
+- https://archive.is/1w2bs -- Scott Alexander's Antichrist Lecture [**]
   - [meta]:
     - date: 11/28/2025
     - tags: [theology]
@@ -2168,7 +2203,7 @@ title: are.na
 - https://www.benkuhn.net/thinkrealhard/ -- Think real hard
   - [meta]:
     - date: 10/05/2025
-    - tags: [life, logics]
+    - tags: [life, logic]
   - In retrospect, I wish those people had just told me “think real hard.” I was looking for an easy way out—One Weird Trick to Programming Better—but programming is too hard for that.
 - https://michaelnielsen.org/blog/principles-of-effective-research/ -- Principles of Effective Research [**]
   - [meta]:
@@ -3424,6 +3459,10 @@ title: are.na
 
 ## opinions
 
+- https://www.mechanize.work/blog/the-upcoming-gpt-3-moment-for-rl/ -- The GPT-3 moment for RL
+  - [meta]:
+    - date: 11/28/2025
+    - tags: [rl, ml, scaling]
 - https://archive.ph/pZrGT -- How close is humanity to the edge?
   - [meta]:
     - date: 11/28/2025
@@ -3951,6 +3990,10 @@ title: are.na
 
 ## philosophy
 
+- http://sl4.org/crocker.html -- Crocker's Rules
+  - [meta]:
+    - date: 11/28/2025
+    - tags: [philosophy, interaction]
 - https://bennycheung.github.io/spatial-reasoning-in-agi -- Spatial Reasoning in AGI
   - [meta]:
     - date: 11/18/2025
@@ -4156,6 +4199,10 @@ title: are.na
 
 ## stream
 
+- https://aworkinglibrary.com/reading/ -- A working library, by Mandy Brown
+  - [meta]:
+    - date: 11/28/2025
+    - tags: [books, reading list]
 - https://bookshelf.town/shelf -- communal bookshelf
   - [meta]:
     - date: 11/28/2025
@@ -5099,6 +5146,14 @@ title: are.na
 
 ## technical
 
+- https://mattstromawn.com/writing/generative-art-og-images/ -- Generative OG art
+  - [meta]:
+    - date: 11/29/2025
+    - tags: [generative art, web]
+- https://georgefrancis.dev/writing/voronoi-grids/ -- Voronoi Grids
+  - [meta]:
+    - date: 11/29/2025
+    - tags: [generative art]
 - https://codepen.io/Mikhail-Bespalov/pen/yLmpxOG -- disappearing svg
   - [meta]:
     - date: 11/28/2025

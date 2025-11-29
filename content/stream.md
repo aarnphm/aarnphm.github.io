@@ -273,12 +273,10 @@ Writing kernels sounds way more fun the whoring on the streets of Toronto. Happy
 ```quotes
 Writing essays, at its best, is a way of discovering ideas.
 
-An essay should ordinarily start with what I'm going to call a question, though I mean this in a very general sense: it doesn't have to be a question grammatically, just something that acts like one in the sense that it {{sidenotes[spurs some response.]: When you find yourself very curious about an apparently minor question, that's an exciting sign. Evolution has designed you to pay attention to things that matter. So when you're very curious about something random, that could mean you've unconsciously noticed it's less random than it seems.}}
-
 Paul Graham, [The Best Essay](https://paulgraham.com/best.html)
 ```
 
-![[thoughts/writing#as a journey for exploration]]
+> An essay should ordinarily start with what I'm going to call a question, though I mean this in a very general sense: it doesn't have to be a question grammatically, just something that acts like one in the sense that it {{sidenotes[spurs some response.]: When you find yourself very curious about an apparently minor question, that's an exciting sign. Evolution has designed you to pay attention to things that matter. So when you're very curious about something random, that could mean you've unconsciously noticed it's less random than it seems.}}
 
 ---
 

@@ -1,5 +1,8 @@
 ---
 author: "[[thoughts/Wittgenstein|Ludwig Wittgenstein]]"
+aliases:
+  - certainty
+  - OC
 category: philosophy
 date: 2025-09-18
 description: late wittgenstein notes on knowledge and doubt, examining hinge propositions that sit beneath justification and make inquiry possible.
