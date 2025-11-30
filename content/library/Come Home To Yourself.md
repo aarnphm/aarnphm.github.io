@@ -11,6 +11,6 @@ subcategory:
   - love
   - self
 tags:
-  - poetry
+  - belonging
 title: Come Home To Yourself
 ---

@@ -6,7 +6,7 @@ director: Alan J. Pakula
 id: all-the-presidents-men
 modified: 2025-10-29 02:14:45 GMT-04:00
 posters: "[[movies/posters/all-the-presidents-men.jpg]]"
-status: to-watch
+status: to watch
 studio: warner bros
 tags:
   - movies

@@ -6,7 +6,7 @@ director: Yorgos Lanthimos
 id: kinds-of-kindness
 modified: 2025-10-29 02:14:52 GMT-04:00
 posters: "[[movies/posters/kinds-of-kindness.jpg]]"
-status: to-watch
+status: to watch
 studio: searchlight
 tags:
   - movies

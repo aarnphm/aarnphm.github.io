@@ -8,7 +8,7 @@ modified: 2025-10-29 02:14:37 GMT-04:00
 posters: "[[library/posters/ai-anarchy.png]]"
 notebook: "[[thoughts/LLMs|LLMs]]"
 tags:
-  - non fiction
+  - llm
 title: The AI Anarchies Book
 status: to read
 subcategory:

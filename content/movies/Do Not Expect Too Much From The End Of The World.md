@@ -6,7 +6,7 @@ director: Radu Jude
 id: do-not-expect-too-much-from-the-end-of-the-world
 modified: 2025-10-29 02:14:48 GMT-04:00
 posters: "[[movies/posters/do-not-expect-too-much-from-the-end-of-the-world.jpg]]"
-status: to-watch
+status: to watch
 studio: general
 tags:
   - movies

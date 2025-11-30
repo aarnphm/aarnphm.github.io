@@ -6,7 +6,7 @@ director: J.C. Chandor
 id: all-is-lost
 modified: 2025-10-29 02:14:45 GMT-04:00
 posters: "[[movies/posters/all-is-lost.jpg]]"
-status: to-watch
+status: to watch
 studio: lionsgate
 tags:
   - movies

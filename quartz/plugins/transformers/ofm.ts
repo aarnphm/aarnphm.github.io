@@ -846,9 +846,12 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options>>
 
               const baseProperties = {
                 class: "external-embed youtube",
-                allow: "fullscreen",
+                allow:
+                  "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share",
                 frameborder: 0,
                 width: "600px",
+                referrerpolicy: "strict-origin-when-cross-origin",
+                allowfullscreen: true,
               }
 
               node.tagName = "iframe"

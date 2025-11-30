@@ -1,6 +1,7 @@
 ---
 tags:
-  - poetry
+  - love
+  - self
 date: 2025-11-28
 notebook:
 category: poetry

@@ -6,7 +6,7 @@ director: Wim Wenders
 id: paris-texas
 modified: 2025-10-29 02:14:54 GMT-04:00
 posters: "[[movies/posters/paris-texas.jpg]]"
-status: to-watch
+status: to watch
 studio: general
 tags:
   - movies

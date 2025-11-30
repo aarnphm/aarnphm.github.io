@@ -6,7 +6,7 @@ director: Rachel Lambert
 id: sometimes-i-think-about-dying
 modified: 2025-10-29 02:14:56 GMT-04:00
 posters: "[[movies/posters/sometimes-i-think-about-dying.jpg]]"
-status: to-watch
+status: to watch
 studio: general
 tags:
   - movies

@@ -28,6 +28,8 @@ views:
       - tags
       - posters
       - status
+      - author
+      - subcategory
     sort:
       - property: date
         direction: DESC
@@ -54,16 +56,29 @@ views:
       - subcategory
       - notebook
       - author
+      - tags
+      - posters
     sort:
-      - property: status
+      - property: tags
         direction: ASC
       - property: date
         direction: DESC
+      - property: subcategory
+        direction: DESC
+      - property: finished
+        direction: ASC
+      - property: file.tags
+        direction: ASC
+      - property: status
+        direction: ASC
+    summaries:
+      date: Latest
     columnSize:
       note.title: 401
       note.date: 147
       note.subcategory: 172
-      note.author: 234
+      note.author: 205
+      note.tags: 179
   - type: table
     name: philosophy
     filters:

@@ -8,7 +8,8 @@ modified: 2025-10-29 02:14:43 GMT-04:00
 posters: "[[library/posters/thus-spoke-zarathustra.jpg]]"
 status: to read
 subcategory: metaphysics
+external: https://www.gutenberg.org/files/1998/1998-h/1998-h.htm
 tags:
   - philosophy
-title: Thus Spoke Zarathustra
+title: Thus Spake Zarathustra
 ---

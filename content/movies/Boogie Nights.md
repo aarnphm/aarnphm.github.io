@@ -6,7 +6,7 @@ director: Paul Thomas Anderson
 id: boogie-nights
 modified: 2025-10-29 02:14:47 GMT-04:00
 posters: "[[movies/posters/boogie-nights.jpg]]"
-status: to-watch
+status: to watch
 studio: Paul Thomas Anderson
 tags:
   - movies

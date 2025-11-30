@@ -6,7 +6,7 @@ director: Robert Eggers
 id: nosferatu
 modified: 2025-10-29 02:15:05 GMT-04:00
 posters: "[[movies/posters/nosferatu.jpg]]"
-status: to-watch
+status: to watch
 studio: focus features
 tags:
   - movies

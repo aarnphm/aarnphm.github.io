@@ -6,7 +6,7 @@ director: Paul Thomas Anderson
 id: the-master
 modified: 2025-10-29 02:14:59 GMT-04:00
 posters: "[[movies/posters/the-master.jpg]]"
-status: to-watch
+status: to watch
 studio: null
 tags:
   - seed
