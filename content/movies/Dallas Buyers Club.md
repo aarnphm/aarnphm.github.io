@@ -6,7 +6,7 @@ director: Jean-Marc Vallée
 id: dallas-buyers-club
 modified: 2025-10-29 02:14:48 GMT-04:00
 posters: "[[movies/posters/dallas-buyers-club.jpg]]"
-status: to-watch
+status: to watch
 studio: general
 tags:
   - movies

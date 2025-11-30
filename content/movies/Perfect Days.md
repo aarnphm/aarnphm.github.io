@@ -6,7 +6,7 @@ director: Wim Wenders
 id: perfect-days
 modified: 2025-11-27 11:04:38 GMT-05:00
 posters: "[[movies/posters/perfect-days.jpg]]"
-status: to-watch
+status: to watch
 studio: general
 tags:
   - movies

@@ -11,7 +11,8 @@ subcategory:
   - relationship
   - grief
 tags:
-  - poetry
+  - grief
+  - love
 title: Pillow Thoughts IV
 finished: 2023
 ---

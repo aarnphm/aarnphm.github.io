@@ -6,7 +6,7 @@ director: Jane Schoenbrun
 id: i-saw-the-tv-glow
 modified: 2025-10-29 02:14:51 GMT-04:00
 posters: "[[movies/posters/i-saw-the-tv-glow.jpg]]"
-status: to-watch
+status: to watch
 studio: a24
 tags:
   - seed

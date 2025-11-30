@@ -1,6 +1,6 @@
 ---
 tags:
-  - poetry
+  - self
 title: The Voice of Robert Desnos
 date: 2025-11-29
 status: finished

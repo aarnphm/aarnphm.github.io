@@ -6,7 +6,7 @@ director: sean baker
 id: the-florida-project
 modified: 2025-10-29 02:14:58 GMT-04:00
 posters: "[[movies/posters/the-florida-project.jpg]]"
-status: to-watch
+status: to watch
 studio: a24
 tags:
   - movies

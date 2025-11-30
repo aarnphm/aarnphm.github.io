@@ -11,6 +11,7 @@ subcategory:
   - animal
   - dog
 tags:
-  - poetry
+  - prose
+  - being
 title: Dog songs
 ---

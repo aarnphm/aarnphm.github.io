@@ -6,7 +6,7 @@ director: Andrew Haigh
 id: all-of-us-stranger
 modified: 2025-10-29 02:14:45 GMT-04:00
 posters: "[[movies/posters/all-of-us-stranger.jpg]]"
-status: to-watch
+status: to watch
 studio: searchlight pictures
 tags:
   - movies

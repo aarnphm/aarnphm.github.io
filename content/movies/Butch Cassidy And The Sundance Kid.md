@@ -6,7 +6,7 @@ director: George Roy Hill
 id: butch-cassidy-and-the-sundance-kid
 modified: 2025-10-29 02:14:47 GMT-04:00
 posters: "[[movies/posters/butch-cassidy-and-the-sundance-kid.jpg]]"
-status: to-watch
+status: to watch
 studio: general
 tags:
   - movies

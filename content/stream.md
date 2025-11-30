@@ -38,11 +38,22 @@ metadata:
     letter        = "a".."z" ;
     digit         = "0".."9" ;
     character     = ? any printable ascii except newline ? ;
-modified: 2025-11-28 17:05:31 GMT-05:00
+modified: 2025-11-29 22:32:47 GMT-05:00
 tags:
   - fruit
   - evergreen
 title: stream
+---
+
+## on omnipotence paradox
+
+- [meta]:
+  - date: 2025-11-29 13:01:53 GMT-05:00
+  - tags:
+    - ontology
+
+The concept of an all-powerful being that is
+
 ---
 
 - [meta]:
@@ -50,7 +61,7 @@ title: stream
   - tags:
     - writing
 
-![[thoughts/writing#as a journey for exploration|writing]]
+![[thoughts/writing#as a journey for exploration]]
 
 ---
 
@@ -288,7 +299,7 @@ Paul Graham, [The Best Essay](https://paulgraham.com/best.html)
 
 Late night work listening to Dreyfus' lectures hits like smoking a good joint on a Friday night.
 
-![[https://youtu.be/usxvyf3xqcQ?si=wrria3i7tSqYvGQk]]
+![[https://www.youtube-nocookie.com/embed/usxvyf3xqcQ]]
 
 ---
 

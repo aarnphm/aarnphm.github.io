@@ -6,7 +6,7 @@ director: Pat Boonnitipat
 id: How To Make Millions Before Grandma Dies
 modified: 2025-11-06 07:36:47 GMT-05:00
 posters: "[[movies/posters/how-to-make-millions-before-grandma-dies.jpg]]"
-status: to-watch
+status: to watch
 studio: general
 tags:
   - movies

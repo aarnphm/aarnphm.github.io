@@ -6,7 +6,7 @@ director: stephen chbosky
 id: the-perks-of-being-a-wallflower
 modified: 2025-10-29 02:14:59 GMT-04:00
 posters: "[[movies/posters/the-perks-of-being-a-wallflower.jpg]]"
-status: to-watch
+status: to watch
 studio: general
 tags:
   - movies

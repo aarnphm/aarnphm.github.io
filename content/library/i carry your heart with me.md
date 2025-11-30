@@ -13,7 +13,7 @@ subcategory:
   - love
   - absurdism
 tags:
-  - poetry
+  - love
 title: "[i carry your heart with me(i carry it in]"
 ---
 

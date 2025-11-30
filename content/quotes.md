@@ -16,7 +16,7 @@ metadata:
     text_line    = { character - newline } ;
     ws           = { " " } ;
     character    = ? any printable ascii except newline ? ;
-modified: 2025-11-28 16:20:36 GMT-05:00
+modified: 2025-11-29 10:52:41 GMT-05:00
 seealso:
   - "[[word|dictionary]]"
   - "[[research|wip]]"
@@ -131,9 +131,9 @@ transclude:
 >
 > Marco Pierre White
 
-> I desire violently and I wait
+> I desire violently and I wait ^violent
 >
-> Anaïs Nin, from _The Voice_ ^violent
+> Anaïs Nin, from _The Voice_
 
 > The loneliest people are the kindest. The saddest people smile the brightest. The most damaged people are the wisest. All because they don't wish to see anyone else suffer the way they did.
 >

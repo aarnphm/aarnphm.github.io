@@ -1607,6 +1607,10 @@ title: are.na
 
 ## essay
 
+- https://archive.md/e2qt0 -- Elizabeth Bishop, The Art of Poetry No. 27 [--]
+  - [meta]:
+    - date: 11/29/2025
+    - tags: [poetry, interview]
 - https://www.avabear.xyz/p/the-friendship-theory-of-everything -- The friendship theory of everything [**]
   - [meta]:
     - date: 11/29/2025
@@ -4423,6 +4427,10 @@ title: are.na
 
 ## design
 
+- https://x.com/msimoni/status/1994711734037234065 -- Tufte's on visual design and stroke-width of border
+  - [meta]:
+    - date: 11/29/2025
+    - tags: [design]
 - https://refero.design/
   - [meta]:
     - date: 11/28/2025

@@ -6,7 +6,7 @@ director: george roy hill
 id: the-sting
 modified: 2025-10-29 02:15:00 GMT-04:00
 posters: "[[movies/posters/the-sting.jpg]]"
-status: to-watch
+status: to watch
 studio: general
 tags:
   - movies

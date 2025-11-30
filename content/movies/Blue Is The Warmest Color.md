@@ -6,7 +6,7 @@ director: Abdellatif Kechiche
 id: blue-is-the-warmest-color
 modified: 2025-10-29 02:14:46 GMT-04:00
 posters: "[[movies/posters/blue-is-the-warmest-color.jpg]]"
-status: to-watch
+status: to watch
 studio: general
 tags:
   - movies
