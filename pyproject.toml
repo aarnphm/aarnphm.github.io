@@ -16,7 +16,7 @@ minibpe = { path = "content/thoughts/tsfm/lecture-2-exercise" }
 minigpt = { path = "content/thoughts/tsfm/lecture-3-exercise" }
 
 [tool.uv.workspace]
-members = ["content/hinterland/nanovllm"]
+members = ["content/hinterland/tinyvllm"]
 
 [tool.hatch.version]
 source = "nodejs"

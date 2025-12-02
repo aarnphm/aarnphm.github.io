@@ -9,6 +9,7 @@ posters: "[[library/posters/the-idiot.jpg]]"
 status: to read
 subcategory: dostoevskian
 tags:
-  - fiction
+  - absurdism
+  - being
 title: The Idiot
 ---

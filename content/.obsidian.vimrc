@@ -83,6 +83,9 @@ nmap gf :followLinkUnderCursor<CR>
 
 exmap openheading obcommand obsidian-headings:heading-gh-navigator
 nmap gh :openheading<CR>
+exmap insertsidenotes obcommand obsidian-sidenotes:insert-sidenote-template
+nmap gsn :insertsidenotes<CR>
+vmap gsn :insertsidenotes<CR>
 
 """""""""""""""""""""""""""""""""""""""""""""""" "
 """""""""""" All Available Commands """""""""""" "

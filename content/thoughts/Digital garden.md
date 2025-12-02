@@ -30,4 +30,6 @@ See also: [post](https://maggieappleton.com/garden-history) and [introduction](h
 
 ## The garden and the stream
 
-[Source](https://hapgood.us/2015/10/17/the-garden-and-the-stream-a-technopastoral/)
+[source](https://hapgood.us/2015/10/17/the-garden-and-the-stream-a-technopastoral/)
+
+> I don’t want people to get hung up on the technology angle. I think sometimes people hear “Federated Thingamabob” and just sort of tune out thinking “Oh, he’s talking about a feature of Federated Thingamabob.” But I’m not. I’m really not. I’m talking about a different way to think your online activity, no matter what tool you use. And relevant to this conference, I’m talking about a different way of collaborating as well.

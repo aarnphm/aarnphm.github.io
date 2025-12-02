@@ -14,7 +14,7 @@ status: current
 subcategory: skepticism
 tags:
   - philosophy
-title: Über Gewißheit
+title: Über Gewißheit (OC)
 translator: P. M. S. Hacker
 ---
 

@@ -1,6 +1,6 @@
 ---
 address: "52 Wellington St E, Toronto, ON M5E 1C7"
-categories:
+category:
   - "[[places to go]]"
 coordinates:
   - "43.6485848"

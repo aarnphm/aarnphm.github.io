@@ -2,7 +2,7 @@
 address: >-
   Gayley's Cafe, 1424, Dundas Street West, Little Portugal, Davenport, Toronto,
   Golden Horseshoe, Ontario, M6J 1Y5, Canada
-categories:
+category:
   - "[[places to go]]"
 coordinates:
   - "43.6495912"

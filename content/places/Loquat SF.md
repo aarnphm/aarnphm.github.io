@@ -2,7 +2,7 @@
 address: >-
   182;186;190;194;198, Gough Street, Civic Center, Western Addition, San
   Francisco, California, 94102, United States of America
-categories:
+category:
   - "[[places to go]]"
 coordinates:
   - "37.7749123"

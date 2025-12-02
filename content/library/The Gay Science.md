@@ -7,13 +7,18 @@ id: The Gay Science
 modified: 2025-10-29 02:14:39 GMT-04:00
 pdf: "[[thoughts/papers/The Gay Science by Friedrich Nietzsche.pdf]]"
 posters: "[[library/posters/the-gay-science.jpg]]"
-notebook: "[[thoughts/Philosophy and Nietzsche#The Gay Science]]"
+notebook: "[[thoughts/Philosophy and Nietzsche#The Gay Science|field notes on Gay Science]]"
 status: evergreen
 subcategory: metaphysics
 tags:
   - philosophy
 title: The Gay Science
 finished:
+translator:
+  - Walter Kaufmann
+aliases:
+  - gay science
+  - joyful
 ---
 
 related: [[thoughts/Philosophy and Nietzsche]]

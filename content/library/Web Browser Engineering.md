@@ -3,7 +3,7 @@ author:
   - Pavel Panchekha
   - Chris Harrelson
 category: non fiction
-date: "2025-08-13"
+date: 2025-08-13
 description: book that implements a toy browser step by step, teaching parsing, layout, rendering, and browser architecture by building.
 external: https://browser.engineering/onepage.html
 id: Web Browser Engineering
@@ -12,7 +12,7 @@ posters: "[[library/posters/web-browser-engineering.jpg]]"
 status: finished
 subcategory: programming
 tags:
-  - non fiction
+  - technical
 title: Web Browser Engineering
 finished: 2025
 ---

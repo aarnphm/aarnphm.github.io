@@ -1,7 +1,7 @@
 ---
 author: Samuel Johnson
 category: fiction
-date: "2025-01-01"
+date: 2025-01-01
 description: An essay in The Idler
 finished: 2025
 id: Very Slender Differences
@@ -10,7 +10,8 @@ posters: "[[library/posters/very-slender-differences.jpg]]"
 status: finished
 subcategory: friendship
 tags:
-  - fiction
+  - essays
+  - o/relationship
 title: Very Slender Differences
 ---
 

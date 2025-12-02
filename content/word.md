@@ -5,7 +5,7 @@ date: "2024-10-10"
 description: a bag of chips/words/vernacular
 id: word
 layout: technical
-modified: 2025-11-28 22:11:21 GMT-05:00
+modified: 2025-11-30 16:41:22 GMT-05:00
 tags:
   - evergreen
 title: lists
@@ -46,3 +46,6 @@ title: lists
 - [POSIWID](https://en.wikipedia.org/wiki/The_purpose_of_a_system_is_what_it_does)
 - sacrament
 - {{sidenotes[liminal space]:the in-between/transition state of being, see also [[thoughts/aesthetic value|easthetics]]}}
+- muggy
+- {{sidenotes[polyphony]: a feature of narrative, which includes a diversity of simultaneous points of view and voices}}
+- dasein

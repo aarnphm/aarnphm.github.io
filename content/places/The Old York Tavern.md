@@ -2,7 +2,7 @@
 address: >-
   636, Wellington Street West, West Queen West, Spadina—Fort York, Toronto,
   Golden Horseshoe, Ontario, M5V 1G4, Canada
-categories:
+category:
   - "[[places to go]]"
 coordinates:
   - "43.6422174"

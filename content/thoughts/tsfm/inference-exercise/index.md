@@ -13,4 +13,4 @@ title: BYOIE
 
 The goal is to write a simple inference engine.
 
-see [[hinterland/nanovllm]] for an example.
+see [[hinterland/tinyvllm]] for an example.

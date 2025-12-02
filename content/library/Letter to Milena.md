@@ -1,15 +1,17 @@
 ---
 author: Franz Kafka
-category: fiction
-date: "2025-10-06"
+category: letters
+date: 2025-10-06
 description: letters from kafka to milena that chart intense, self doubting love across distance, illness, and impossibility.
 id: Letter to Milena
 modified: 2025-10-31 07:25:19 GMT-04:00
 posters: "[[library/posters/letter-to-milena.jpg]]"
 status: finished
-subcategory: Kafka
+subcategory:
+  - relationship
 tags:
-  - fiction
+  - love
+  - o/life
 title: Letter to Milena
 finished: 2025
 ---

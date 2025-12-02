@@ -1,0 +1,10 @@
+{
+	"id": "obsidian-sidenotes",
+	"name": "Obsidian Sidenotes",
+	"version": "1.0.0",
+	"minAppVersion": "0.15.0",
+	"description": "Display sidenotes",
+	"author": "aarnphm",
+	"authorUrl": "https://aarnphm.xyz",
+	"isDesktopOnly": false
+}

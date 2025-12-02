@@ -1,6 +1,7 @@
 ---
 tags:
   - self
+  - aesthetics
 title: The Voice of Robert Desnos
 date: 2025-11-29
 status: finished
@@ -15,6 +16,7 @@ translator: William Kulik
 year: 1936
 category: poetry
 posters: "[[library/posters/the-voice-of-robert-desnos.png]]"
+id: The Voice of Robert Desnos
 ---
 
 ```poetry

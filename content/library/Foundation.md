@@ -8,7 +8,9 @@ modified: 2025-10-29 02:14:30 GMT-04:00
 posters: "[[library/posters/foundation.jpg]]"
 subcategory: dystopian
 tags:
-  - seed
+  - p/sf
+  - r/sociology
+  - dystopian
 title: Foundation
 status: finished
 finished: 2025

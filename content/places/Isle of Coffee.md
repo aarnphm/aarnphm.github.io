@@ -2,7 +2,7 @@
 address: >-
   3, Munro Street, South Riverdale, Toronto—Danforth, Toronto, Golden Horseshoe,
   Ontario, M4M 1G3, Canada
-categories:
+category:
   - "[[places to go]]"
 coordinates:
   - "43.658965"

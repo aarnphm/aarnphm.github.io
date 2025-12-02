@@ -3,16 +3,19 @@ abstract: I want to think about my life as being RLHF by the people I surround m
 aliases:
   - thanks
   - cool people
+  - people cannon
+  - influence
 comments: false
 date: "2024-01-23"
 description: a thank you letter.
 id: influence
-modified: 2025-11-12 23:50:12 GMT-05:00
+modified: 2025-11-30 17:01:49 GMT-05:00
 permalinks:
   - /thanks
 tags:
   - growth
   - love
+  - evergreen
 title: affecter.
 ---
 
@@ -40,7 +43,7 @@ The following lists of people who I owed a lot. I would separate from top-to-bot
 - my brother, for being nothing less but an inspiration for me to always keep pushing forward.
 - Anh Q and chi L, for being the ==True North== that light the path whenever I felt loss.
 
-\*\*
+\*\*\*
 
 - [Hank and John](https://www.youtube.com/@vlogbrothers), banger writing and videos
 - [Kieran](https://www.fourtet.net/), folktronica, or just pure vibes

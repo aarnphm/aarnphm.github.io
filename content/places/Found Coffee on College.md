@@ -2,7 +2,7 @@
 address: >-
   324, College Street, University, University—Rosedale, Toronto, Golden
   Horseshoe, Ontario, M5T 1S5, Canada
-categories:
+category:
   - "[[places to go]]"
 coordinates:
   - "43.6576525"

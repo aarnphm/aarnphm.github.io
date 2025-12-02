@@ -2,7 +2,7 @@
 address: >-
   1364, Dundas Street West, Little Portugal, Davenport, Toronto, Golden
   Horseshoe, Ontario, M6J 3J9, Canada
-categories:
+category:
   - "[[places to go]]"
 coordinates:
   - "43.6495676"

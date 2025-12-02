@@ -2,7 +2,7 @@
 address: >-
   Beverley School, 17, Baldwin Street, Kensington-Chinatown,
   University—Rosedale, Toronto, Golden Horseshoe, Ontario, M5T 1L4, Canada
-categories:
+category:
   - "[[places to go]]"
 coordinates:
   - "43.6559416"

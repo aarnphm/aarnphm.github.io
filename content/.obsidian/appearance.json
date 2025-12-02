@@ -8,7 +8,8 @@
   "translucency": false,
   "showViewHeader": false,
   "enabledCssSnippets": [
-    "snippet"
+    "snippet",
+    "gallery"
   ],
   "baseFontSizeAction": true,
   "theme": "system",

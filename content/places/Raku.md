@@ -2,7 +2,7 @@
 address: >-
   456, Queen Street West, Kensington-Chinatown, Spadina—Fort York, Toronto,
   Golden Horseshoe, Ontario, M5V 2A8, Canada
-categories:
+category:
   - "[[places to go]]"
 coordinates:
   - "43.6482265"

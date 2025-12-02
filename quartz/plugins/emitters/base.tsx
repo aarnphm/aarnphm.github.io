@@ -712,9 +712,20 @@ function buildCards(
     const cardChildren = []
     if (imageUrl) {
       cardChildren.push(
-        h("a.base-card-image-link", { href, "data-slug": slug }, [
-          h("img.base-card-image", { src: imageUrl, alt: title, loading: "lazy" }),
-        ]),
+        h(
+          "a.base-card-image-link",
+          {
+            href,
+            "data-slug": slug,
+            style: {
+              "background-image": `url(${imageUrl})`,
+              "background-size": "cover",
+              top: "0px",
+              "inset-inline": "0px",
+            },
+          },
+          [],
+        ),
       )
     }
 

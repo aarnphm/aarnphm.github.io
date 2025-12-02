@@ -2,7 +2,7 @@
 address: >-
   Toronto Western Hospital Parking, Leonard Avenue, Kensington Market,
   University—Rosedale, Toronto, Golden Horseshoe, Ontario, M5T 2S8, Canada
-categories:
+category:
   - "[[places to go]]"
 coordinates:
   - "43.6544546"

@@ -2,7 +2,7 @@
 address: >-
   Cafe Pamenar, 307, Augusta Avenue, Kensington Market, University—Rosedale,
   Toronto, Golden Horseshoe, Ontario, M5T 2M1, Canada
-categories:
+category:
   - "[[places to go]]"
 coordinates:
   - "43.6566835"

@@ -2,7 +2,7 @@
 address: >-
   128, Mutual Street, Downtown Yonge East, Toronto Centre, Toronto, Golden
   Horseshoe, Ontario, M5B 2R7, Canada
-categories:
+category:
   - "[[places to go]]"
 coordinates:
   - "43.65792"

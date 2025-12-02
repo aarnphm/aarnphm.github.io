@@ -2,7 +2,7 @@
 address: >-
   110;112, Henry Street, Cambridgeport, Cambridge, Middlesex County,
   Massachusetts, 02139, United States of America
-categories:
+category:
   - "[[places to go]]"
 coordinates:
   - "42.3565554"

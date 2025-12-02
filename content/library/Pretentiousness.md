@@ -10,7 +10,7 @@ notebook: "[[thoughts/fashion#pretentious.|]]"
 status: finished
 subcategory: being
 tags:
-  - non fiction
+  - aesthetics
 title: "Pretentiousness: Why it Matters"
 finished: 2023
 ---

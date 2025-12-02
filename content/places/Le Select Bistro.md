@@ -2,7 +2,7 @@
 address: >-
   468, Wellington Street West, Wellington Place, Spadina—Fort York, Toronto,
   Golden Horseshoe, Ontario, M5V 1E3, Canada
-categories:
+category:
   - "[[places to go]]"
 coordinates:
   - "43.6441297"

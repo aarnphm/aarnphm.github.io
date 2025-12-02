@@ -2,7 +2,7 @@
 address: >-
   16, Rolyat Street, Trinity-Bellwoods, Spadina—Fort York, Toronto, Golden
   Horseshoe, Ontario, M6H 1Y3, Canada
-categories:
+category:
   - "[[places to go]]"
 coordinates:
   - "43.6489495"

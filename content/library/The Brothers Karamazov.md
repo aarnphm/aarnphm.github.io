@@ -9,6 +9,7 @@ posters: "[[library/posters/the-brothers-karamazov.jpg]]"
 status: to read
 subcategory: dostoevskian
 tags:
-  - fiction
+  - absurdism
+  - r/pain
 title: The Brothers Karamazov
 ---

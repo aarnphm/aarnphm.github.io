@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2025-11-29 02:13:04 GMT-05:00
+modified: 2025-12-02 17:06:22 GMT-05:00
 permalinks:
   - /website
   - /tweets
@@ -143,6 +143,14 @@ title: are.na
 - [meta]:
   - view: list
 
+- https://x.com/niplav_site/status/1925694385380872405 -- Prompting Claude as the last humanistic projects
+  - [meta]:
+    - date: 12/01/2025
+    - tags: [llm, being]
+- https://x.com/simonsarris/status/1995573475088707776 -- Be weird
+  - [meta]:
+    - date: 12/01/2025
+    - tags: [autonomy]
 - https://x.com/jiratickets/status/1991597531005087913?s=20 -- Ratioed CS clickbait post
   - [meta]:
     - date: 11/29/2025
@@ -206,11 +214,12 @@ title: are.na
   - [meta]:
     - date: 11/12/2025
     - tags: [pedagogy]
-- https://x.com/ch402/status/1564631228166201345 -- Chris Olah's dating doc
+- https://x.com/ch402/status/1564631228166201345 -- Chris Olah's dating doc [**]
   - [meta]:
     - date: 11/11/2025
     - tags: [relationship]
   - He's no longer single, but an inspiration for [[dating]]
+  - see also: https://colah.github.io/personal/dating/
 - https://x.com/karpathy/status/1864023344435380613 -- Story behind [[thoughts/Attention]] development
   - [meta]:
     - date: 11/10/2025
@@ -768,6 +777,21 @@ title: are.na
 
 ## people
 
+- https://en.wikipedia.org/wiki/Jean_Baudrillard -- Jean Baudrillard
+  - [meta]:
+    - date: 11/30/2025
+    - tags: [sociology, philosopher]
+- https://en.wikipedia.org/wiki/Hal_Abelson -- Hal Abelson
+  - [meta]:
+    - date: 11/30/2025
+    - tags: [cs]
+  - see [[library/Structure and Interpretation of Computer Programs|sicp]]
+- https://en.wikipedia.org/wiki/John_Eccles_(neurophysiologist) -- Sir John Eccles
+  - [meta]:
+    - date: 11/29/2025
+    - tags: [neurophysiologist]
+  - synapse,
+  - see also [[library/The Understanding of the Brain|_The Understanding of the Brain_ (1973)]]
 - https://zoeloukia.bearblog.dev/
   - [meta]:
     - date: 11/28/2025
@@ -925,7 +949,7 @@ title: are.na
 - https://departure.blog -- Sylvia [**]
   - [meta]:
     - date: 11/09/2025
-    - tags: [nyc]
+    - tags: [nyc, blogger]
 - https://schlage.town/ -- Brendan Schlagel
   - [meta]:
     - date: 11/09/2025
@@ -1607,6 +1631,18 @@ title: are.na
 
 ## essay
 
+- https://lexploress.substack.com/p/the-people-to-keep-and-treasure -- the people to keep, and treasure
+  - [meta]:
+    - date: 12/02/2025
+    - tags: [relationship, friends]
+- https://archive.is/1mIGi -- "Agency" needs nuance [--]
+  - [meta]:
+    - date: 12/01/2025
+    - tags: [agency]
+- https://sarvasvkulpati.com/midwit -- Midwits
+  - [meta]:
+    - date: 12/01/2025
+    - tags: [being]
 - https://archive.md/e2qt0 -- Elizabeth Bishop, The Art of Poetry No. 27 [--]
   - [meta]:
     - date: 11/29/2025
@@ -1799,10 +1835,11 @@ title: are.na
   - [meta]:
     - date: 11/15/2025
     - tags: [research]
-- https://www.lesswrong.com/posts/6ZnznCaTcbGYsCmqu/the-rise-of-parasitic-ai -- The Rise of Parasitic AI
+- https://www.lesswrong.com/posts/6ZnznCaTcbGYsCmqu/the-rise-of-parasitic-ai -- The Rise of Parasitic AI [**]
   - [meta]:
     - date: 11/14/2025
     - tags: [alignment]
+    - pinned: true
   - #llm <span style="margin-left:-0.2em;">-induced</span> psychosis
 - https://namelessvirtue.com/2025/11/13/a-paradox-of-cultural-heritage/ -- A paradox of cultural heritage
   - [meta]:
@@ -1837,7 +1874,7 @@ title: are.na
   - [meta]:
     - date: 11/13/2025
     - tags: [metaphysics]
-- https://buttondown.com/greengaybles/archive/tender-masculinity -- Tender Masculinity
+- https://buttondown.com/greengaybles/archive/tender-masculinity -- Tender Masculinity [**]
   - [meta]:
     - date: 11/13/2025
     - tags: [love]
@@ -2687,6 +2724,32 @@ title: are.na
 - [meta]:
   - view: list
 
+- https://www.alignmentforum.org/posts/StENzDcD3kpfGJssR/a-pragmatic-vision-for-interpretability -- A Pragmatic Vision for Interpretability
+  - [meta]:
+    - date: 12/01/2025
+    - tags: [interpretability, north star]
+    - later: true
+  - Models are far more interesting: A critical part of this project was having a model exhibiting severe eval aware behaviour in practice
+  - The value of proxy tasks: The ultimate goal is to be able to suppress eval awareness on highly capable future models. We can’t study these directly, but Sonnet 4.5 was one of the best proxies available.
+    - This is one of the best ways we can think of to predict which methods will work for suppressing eval awareness in future models.
+  - Pursue comparative advantage: This was a well-chosen problem. Often baselines like fine-tuning or improving our data suffice. But it is very difficult to construct sufficiently realistic data for eval-awareness, at least long-term, while steering has complementary strengths
+  - Further, this was a project best done by mech interp researchers, despite not being mech interp - the key result was an application, not about understanding, but “working with model internals” is a skill we have built
+  - _Method minimalism_: Despite the enormous research effort the field has invested into [[thoughts/sparse autoencoder|sparse autoencoders]], the best method was a steering vector derived from a single contrastive pair of prompts.
+  - Partial understanding sufficed: The researchers had a highly incomplete understanding of what was happening with Sonnet, yet steering vectors were highly effective. We do not need to achieve deep understanding to do impactful work
+- https://machinelearning.apple.com/research/elegnt-expressive-functional-movement -- ELEGNT: Expressive and Functional Movement Design for Non-Anthropomorphic Robot
+  - [meta]:
+    - date: 12/01/2025
+    - tags: [robots]
+    - later: true
+- https://docs.google.com/document/d/e/2PACX-1vTG_14sE1SLYHCcjDmh8X3yFFIdlqTpo37MlJ-Tba_pHWDr5xgU4EAzC2tIxFEsKi2qLlhB1ssoBhFn/pub -- AI research interviews [**]
+  - [meta]:
+    - date: 12/01/2025
+    - tags: [interviews]
+    - pinned: true
+- https://htihle.github.io/weirdml.html -- WeirdML
+  - [meta]:
+    - date: 11/30/2025
+    - tags: [datasets]
 - https://github.com/facebookresearch/coconut -- Training Large Language Model to Reason in a Continuous Latent Space
   - [meta]:
     - date: 11/28/2025
@@ -2789,10 +2852,16 @@ title: are.na
   - Causal Mediation
   - Causal Abstraction
   - Designing Counterfactuals
-- https://www.youtube.com/watch?v=woo_J0RKcpQ -- Assessing skeptical views of interpretability research
+- https://www.youtube.com/watch?v=woo_J0RKcpQ -- Assessing skeptical views of interpretability research [**]
   - [meta]:
     - date: 11/15/2025
     - tags: [interpretability]
+  - [Interpretability cannot be achieved in any meaningful sense](https://web.stanford.edu/~cgpotts/blog/interp/#c1)
+  - [Analysis is overrated](https://web.stanford.edu/~cgpotts/blog/interp/#c2)
+  - [Interpretability is merely analysis](https://web.stanford.edu/~cgpotts/blog/interp/#c3)
+  - [Interpretability is not leading to improvements](https://web.stanford.edu/~cgpotts/blog/interp/#c4)
+  - [The Bitter Lesson says that interpretability won’t lead to lasting improvements](https://web.stanford.edu/~cgpotts/blog/interp/#c5)
+  - [Interpretability is not helping with AI safety](https://web.stanford.edu/~cgpotts/blog/interp/#c6)
 - https://cdn.openai.com/pdf/41df8f28-d4ef-43e9-aed2-823f9393e470/circuit-sparsity-paper.pdf -- Weight-sparse transformers have interpretable circuits
   - [meta]:
     - date: 11/14/2025
@@ -3463,6 +3532,10 @@ title: are.na
 
 ## opinions
 
+- https://www.nytimes.com/2025/11/29/opinion/pianist-music-performance-perfection.html -- The Quest for Perfection Is Stunting Our Society
+  - [meta]:
+    - date: 11/30/2025
+    - tags: [metalearning]
 - https://www.mechanize.work/blog/the-upcoming-gpt-3-moment-for-rl/ -- The GPT-3 moment for RL
   - [meta]:
     - date: 11/28/2025
@@ -3624,6 +3697,10 @@ title: are.na
 
 ## life is literature
 
+- https://www.avabear.xyz/p/how-to-be-happy-in-san-francisco -- How to be Happy in San Francisco
+  - [meta]:
+    - date: 11/30/2025
+    - tags: [life, eudamonia]
 - https://writetobrain.com/olfactory -- We induced Smells with ultrasound [**]
   - [meta]:
     - date: 11/22/2025
@@ -3994,6 +4071,36 @@ title: are.na
 
 ## philosophy
 
+- https://www.earlymoderntexts.com/assets/pdfs/descartes1619_1.pdf -- Selected Correspondence of Descartes [**]
+  - [meta]:
+    - date: 12/02/2025
+    - tags: [letter]
+    - pinned: true
+- https://www.youtube.com/watch?v=D_j8mDpRDzs&t=0s -- A. J. Ayer on the Concept of a Person (1961)
+  - [meta]:
+    - date: 12/02/2025
+    - tags: [metaphysics, being]
+- https://nickbostrom.com/posthuman.pdf -- Why I want to be a Posthuman when I Grow Up
+  - [meta]:
+    - date: 12/01/2025
+    - tags: [longtermism]
+    - later: true
+  - Extreme human enhancement could result in “posthuman” modes of being.
+  - After offering some definitions and conceptual clarification, I argue for two theses:
+    - First, some posthuman modes of being would be very worthwhile.
+    - Second, it could be very good for human beings to become posthuman.
+- http://web.dfc.unibo.it/buzzetti/SFMcorso2005-06sp/materiali/veldhuis.pdf -- Ordained and Absolute Power in Scotus’ Ordinatio I 44
+  - [meta]:
+    - date: 12/01/2025
+    - tags: [theology]
+- https://www.youtube.com/watch?v=ojll25IWOn8 -- Whitehead on the Ingression of Novel Form, by Matt Segall
+  - [meta]:
+    - date: 11/30/2025
+    - tags: [progress]
+- https://www.youtube.com/watch?v=AFSa0bCbBMU&t=0s -- The Death and Infinite, Gorgeous Resurrection of Hope
+  - [meta]:
+    - date: 11/30/2025
+    - tags: [eschatology]
 - http://sl4.org/crocker.html -- Crocker's Rules
   - [meta]:
     - date: 11/28/2025
@@ -4915,6 +5022,10 @@ title: are.na
 
 ## resources
 
+- https://www.atlasobscura.com/articles/illluminated-manuscript-calligraphy-guide -- Dazzling, Exuberant Renaissance Caligraphy Guide
+  - [meta]:
+    - date: 12/02/2025
+    - tags: [typography, fonts, renaissance]
 - https://www.themarginalian.org/index.php/2014/06/06/kafka-on-books-and-reading/ -- Letters to Friends, Family, and Editors
   - [meta]:
     - date: 11/27/2025
@@ -5154,6 +5265,11 @@ title: are.na
 
 ## technical
 
+- https://mcyoung.xyz/2025/10/21/ssa-1 -- Why SSA?
+  - [meta]:
+    - date: 12/01/2025
+    - tags: [compilers]
+    - later: true
 - https://mattstromawn.com/writing/generative-art-og-images/ -- Generative OG art
   - [meta]:
     - date: 11/29/2025
@@ -5178,10 +5294,11 @@ title: are.na
   - [meta]:
     - date: 11/22/2025
     - tags: [meme]
-- https://thebookofshaders.com/ -- The Book of Shaders
+- https://thebookofshaders.com/ -- The Book of Shaders [**]
   - [meta]:
     - date: 11/20/2025
     - tags: [design]
+    - pinned: true
 - https://www.humanetech.com/ -- Center for Human Technology
   - [meta]:
     - date: 11/20/2025
@@ -5232,6 +5349,10 @@ title: are.na
   - [meta]:
     - date: 10/29/2025
     - tags: [styling, web]
+- https://www.edwardtufte.com/notebook/et-booklet-visual-design-of-the-user-interface/ -- ET booklet: Visual Design of the User Interface
+  - [meta]:
+    - date: 12/01/2025
+    - tags: [design]
 - https://deepmind.google/discover/blog/alphaevolve-a-gemini-powered-coding-agent-for-designing-advanced-algorithms/
   - [meta]:
     - date: 10/28/2025
@@ -5503,6 +5624,18 @@ title: are.na
 
 ## math
 
+- https://math.mit.edu/~goemans/18433S13/matching-notes.pdf -- Lectures notes on bipartite matching
+  - [meta]:
+    - date: 12/02/2025
+    - tags: [graph theory, optimization]
+- https://leokayser.github.io/assets/pdf/papers/Groebner_Bases_and_Their_Complexity.pdf -- Groebner Bases and their Complexity
+  - [meta]:
+    - date: 11/30/2025
+    - tags: [linear algebra, cs]
+- https://www.feynmanlectures.caltech.edu/II_18.html -- The Maxwell Equations
+  - [meta]:
+    - date: 11/30/2025
+    - tags: [physics]
 - https://en.wikipedia.org/wiki/Submodular_set_function -- Submodular set function
   - [meta]:
     - date: 11/15/2025
@@ -5664,6 +5797,23 @@ title: are.na
 - [meta]:
   - view: list
 
+- https://arxiv.org/abs/2410.22264
+  - [meta]:
+    - date: 12/01/2025
+    - tags: [lora, meta-learning]
+- https://arxiv.org/abs/2511.20102
+  - [meta]:
+    - date: 12/01/2025
+    - tags: [attention]
+    - later: true
+- https://arxiv.org/abs/2109.13916
+  - [meta]:
+    - date: 12/01/2025
+    - tags: [interpretability]
+- [[thoughts/pdfs/DeepSeek-V3.2.pdf]] -- DeepSeek V3.2 Technical Report
+  - [meta]:
+    - date: 12/01/2025
+    - tags: [models, attention, dsa]
 - https://arxiv.org/abs/2406.02069
   - [meta]:
     - date: 11/27/2025

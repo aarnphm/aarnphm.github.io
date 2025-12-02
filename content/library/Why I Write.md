@@ -9,7 +9,8 @@ posters: "[[library/posters/why-i-write.jpg]]"
 status: finished
 subcategory: writing
 tags:
-  - non fiction
+  - writing
+  - being
 title: Why I Write
 finished: 2023
 notebook: "[[thoughts/writing|writing]]"

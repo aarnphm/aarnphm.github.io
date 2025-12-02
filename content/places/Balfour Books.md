@@ -2,7 +2,7 @@
 address: >-
   Balfour Books, 468, College Street, Palmerston-Little Italy,
   University—Rosedale, Toronto, Golden Horseshoe, Ontario, M6G 1A1, Canada
-categories:
+category:
   - "[[places to go]]"
 coordinates:
   - "43.6564852"

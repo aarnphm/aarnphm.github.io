@@ -2,7 +2,7 @@
 address: >-
   501, Adelaide Street West, Wellington Place, Spadina—Fort York, Toronto,
   Golden Horseshoe, Ontario, M5V 0N8, Canada
-categories:
+category:
   - "[[places to go]]"
 coordinates:
   - "43.6452821"
