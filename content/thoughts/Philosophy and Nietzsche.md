@@ -7,9 +7,9 @@ tags:
   - philosophy
   - seed
 title: Nietzschean
+seealso:
+  - "[[thoughts/Nietzsche|Nietzsche's life]]"
 ---
-
-See also: Nietzsche's [[thoughts/Nietzsche|Life]] and overall influence
 
 ![[library/Nietzsche and Philosophy]]
 
@@ -30,7 +30,7 @@ Mentions the Death of God and start the introduction to the doctrine of eternal 
 
 ## On Genealogy of Morals
 
-## Thus Spoke Zarathustra
+## Thus Spake Zarathustra
 
 Consciousness is what you make of it. The values you gather through experience are curated largely based on your environment, and Zarathustra guides you on acting morally.
 People are innately good, but circumstances make them act a certain way.

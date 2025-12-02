@@ -35,6 +35,13 @@ In the Being (Sein, ontological) of this being (Seiendes, ontical) it is related
 
 This is what distinguishes Dasein from any other being (Seiendes) - it is fully related to its own Being(Sein) and therefore privileged for an analysis of Being(Sein).
 
+The word dasein:
+
+- das + seiendes
+- to exists is to stand outside ourselves
+- able to ask myself "who I am"
+- rooted in my ==situated-ness== in the world
+
 ### tenet
 
 Two core characteristics of dasein:

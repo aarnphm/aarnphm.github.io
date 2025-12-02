@@ -11,7 +11,7 @@ transclude:
   title: false
 ---
 
-see also: [[thoughts/vllm]], [[thoughts/LLMs]], [[thoughts/tsfm/inference-exercise|BYOIE]], [[thoughts/Transformers|Transformers]], [[thoughts/Attention|Attention]], [[hinterland/nanovllm]]
+see also: [[thoughts/vllm]], [[thoughts/LLMs]], [[thoughts/tsfm/inference-exercise|BYOIE]], [[thoughts/Transformers|Transformers]], [[thoughts/Attention|Attention]], [[hinterland/tinyvllm]]
 
 > here's what we're doing today: understanding how inference engines actually work.
 >
@@ -409,7 +409,7 @@ attention metadata:
 | TGI          | 0.55× vLLM | good        | better HF ecosystem                                                               |
 | TensorRT-LLM | similar    | complex     | lower latency if optimized                                                        |
 | SGLang       | similar    | complex     | higher throughput in _1 example_                                                  |
-| nanovllm     | similar    | simple      | working on this, but simpler version of vllm 🫢                                   |
+| tinyvllm     | similar    | simple      | working on this, but simpler version of vllm 🫢                                   |
 
 ## features
 

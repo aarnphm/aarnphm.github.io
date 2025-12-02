@@ -2,9 +2,16 @@
 date: "2024-02-19"
 description: on personal identity
 id: identity
-modified: 2025-11-19 12:02:45 GMT-05:00
+modified: 2025-12-01 22:34:12 GMT-05:00
+seealso:
+  - "[[thoughts/hermeneutics]]"
+  - "[[thoughts/love]]"
+  - "[[thoughts/functionalism]]"
+  - "[[thoughts/Freud]]"
+  - "[[thoughts/Wittgenstein]]"
+  - "[[thoughts/ethics]]"
 socials:
-  sep: https://plato.stanford.edu/entries/identity/
+  pg: https://paulgraham.com/identity.html
 tags:
   - philosophy
   - pattern
@@ -263,6 +270,6 @@ This is why love requires practice, not just feeling. Why it demands attention, 
 
 The most selfish thing you can do is love well. The self you serve is not separate from the other you love. Recognizing this doesn't diminish love. It reveals love's true structure: mutual constitution, reciprocal becoming, the only kind of selfishness that works.
 
----
+## keep your identity small
 
-see also: [[thoughts/hermeneutics]], [[thoughts/love]], [[thoughts/functionalism]], [[thoughts/Freud]], [[thoughts/Wittgenstein]], [[thoughts/ethics]]
+source: https://paulgraham.com/identity.html

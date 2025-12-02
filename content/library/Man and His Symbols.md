@@ -10,5 +10,6 @@ status: current
 subcategory: psychology
 tags:
   - philosophy
+  - psychology
 title: Man and His Symbols
 ---

@@ -2,7 +2,7 @@
 address: >-
   Mofer Coffee, 1001, Queen Street West, West Queen West, Spadina—Fort York,
   Toronto, Golden Horseshoe, Ontario, M6J 1H4, Canada
-categories:
+category:
   - "[[places to go]]"
 coordinates:
   - "43.6442662"

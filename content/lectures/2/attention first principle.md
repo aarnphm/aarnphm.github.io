@@ -2,7 +2,7 @@
 date: "2025-08-21"
 description: Self-attention from first principles with formal properties and efficient variants.
 id: attention
-modified: 2025-11-11 07:02:17 GMT-05:00
+modified: 2025-12-02 16:38:57 GMT-05:00
 tags:
   - ml
 title: attention primer
@@ -72,7 +72,9 @@ Proof. Use $\mathbb{E}[S]=0$ and $\mathbb{E}[S^2]=\operatorname{tr}(\Sigma_q\Sig
 > w_j(q)=\frac{\exp(-\|q-k_j\|^2/(2\sigma^2))}{\sum_{\ell}\exp(-\|q-k_\ell\|^2/(2\sigma^2))}\quad\text{with}\quad \sigma^2=T\sqrt{d}.
 > $$
 >
-> Hence $o(q)=\sum_j w_j(q)v_j$ is the Nadaraya–Watson estimator with Gaussian kernel.
+> Hence $o(q)=\sum_j w_j(q)v_j$ is the Nadaraya–Watson estimator with Gaussian kernel. [^tweet]
+
+[^tweet]: funny enough, recently i came across this tweets https://x.com/chastronomic/status/1995604876823593374
 
 Proof. Use polarization $\langle q,k_j\rangle = \tfrac12(\|q\|^2+\|k_j\|^2-\|q-k_j\|^2)$, cancel row-constants in softmax, and match with $K_\sigma(x,y)=\exp(-\|x-y\|^2/(2\sigma^2))$; identify $\sigma^2=T\sqrt{d}$. For small norm variation, the multiplicative deviation is controlled by $\exp(\|k_j\|^2/(2T\sqrt{d}))$ before renormalization.
 

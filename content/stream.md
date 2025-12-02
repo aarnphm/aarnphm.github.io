@@ -38,12 +38,19 @@ metadata:
     letter        = "a".."z" ;
     digit         = "0".."9" ;
     character     = ? any printable ascii except newline ? ;
-modified: 2025-11-29 22:32:47 GMT-05:00
+modified: 2025-12-02 17:41:27 GMT-05:00
 tags:
   - fruit
   - evergreen
 title: stream
 ---
+
+- [meta]:
+  - date: 2025-11-30 11:01:47 GMT-05:00
+  - tags:
+    - fruit
+
+![[quotes#^shed]]
 
 ## on omnipotence paradox
 
@@ -51,8 +58,133 @@ title: stream
   - date: 2025-11-29 13:01:53 GMT-05:00
   - tags:
     - ontology
+    - philosophy
 
-The concept of an all-powerful being that is
+can an omnipotent being create a stone so heavy they cannot lift it? if yes, then they cannot lift it—failure of omnipotence. if no, they cannot create it—failure of omnipotence. either way, {{sidenotes[omnipotence fails.]: atheological arguments use this not primarily as evidence against god's existence but to show "omnipotence" as traditionally conceived may be incoherent.}}
+
+the paradox reveals that "maximal power" might be conceptually malformed, like "set of all sets" or "north of the north pole." not difficult to achieve but impossible to coherently {{sidenotes[specify.]: it is _impossible_ to create an uncreated object—not because of limited power but because the phrase doesn't describe a possible state of affairs.}}
+
+SEP's definition of _omnipotence_ follows:
+
+> Omnipotence is maximal power.
+
+This [comment](https://philosophy.stackexchange.com/a/34397) states that what we are often referring about the paradox is synonymous to a _absolutist proposition_. The three resolutions are as follow:
+
+1. The notion of an absolutely immovable physical object is logically incoherent.
+   - To be a physical object means being subject to physical forces, which means having some finite mass or hardness.
+   - By definition, anything exceeding that could move or alter it.
+   - The concept of an unliftable object is {{sidenotes[self-contradictory.]: [Aquinas](https://en.wikipedia.org/wiki/Thomas_Aquinas) in _Summa Theologica_ I, Q.25, Art.3 argues inability to do contradictory things "does not signify a defect of power" (_non significant defectum potentiae_). Apparent "inabilities" like inability to sin represent perfection of power, not deficiency. Self-contradictory pseudo-tasks aren't genuine objects of power.}}
+   - This is Thomistic scholasticism view of the paradox. (or _pseudo-task dissolution_)
+2. That any limitation on God is a form of self-restraint rather than fundamental limitation.
+   - In other words, God can create an object God says God cannot move, and God won’t move it
+   - But not because it is {{sidenotes[immovable]: People that take this view and think there’s a God would be committed to a form of voluntarism.}} per se but instead ==immovable per volens.==
+   - This in turn can also be extended by Descartes' argument where _logical necessities themselves are contingent on divine will_
+   - Decartes' letters to Mersenne (1630) would emphasize that _god could have made it false that twice four equal eights_ if he wishes so [^letter-to-mersenne]
+3. That God can impose self limitations that stand permanently.
+   - In other words, God can make a rock God cannot lift.
+   - Again, the origin wouldn't be that the rock has infinite mass but that God can manufacture the rock and bind a condition on God's own self to not be able to {{sidenotes[pick up the rock.]: The closest pre-modern candidate for this can be traced back to Lurianic Kabbalah's _tzimtzum_ (divine contraction, 1570s Safed), where the Infinite (_Ein Sof_) withdraws to create "vacant space" for finite existence. But then, _tikkun_ (repair) implies eventual restoration, and _reshimu_ (residual trace) suggests God never fully withdraws. Which implies there are resistant from making it absolute.<br/><br/>More importantly, the _potentia absoluta_ vs _potentia ordinata_ distinction (originated by Hugh of St. Cher in 1230s commentary on Lombard's _Sentences_, later refined by [Scotus](https://plato.stanford.edu/entries/duns-scotus/#ProExiGod) and [Ockham](https://plato.stanford.edu/entries/ockham/)) holds that God _reliably would not_ deviate from ordained commitments due to divine faithfulness, not that God _could not_. This implies God _chooses_ not to intervene with such objects, rather than inability to do so.}}
+   - (see the footnotes for _postmodern_[^postmodern] interpretation)
+
+[^letter-to-mersenne]:
+    Don’t hesitate to assert and proclaim everywhere that it’s God who has laid
+    down these laws in nature just as a king lays down laws in
+    his kingdom. There’s not one of them that we can’t grasp if
+    we focus our mind on it. They are all inborn in our minds,
+    just as a king would, if he could, imprint his laws on the
+    hearts of all his subjects.
+
+    God’s greatness, on the other hand,
+    is something that we can’t •grasp even though we •know it.
+
+    But our judging it to be beyond our grasp makes us esteem
+    it all the more; just as a king has more majesty when he is
+    less familiarly known by his subjects, provided they don’t
+    get the idea that they have no king—they must know him
+    enough to be in no doubt about that.
+
+    You may say:
+    - ‘If God had established these truths he would have been able to change them, as a king changes his laws.’
+    To this the answer is:
+    - He can change them, if his will can change.
+    - ‘But I understand them to be eternal and unchangeable.’
+    - And so is God, in my judgment.
+    - ‘But his will is free.’
+    - Yes, but his power is beyond our grasp. In general we can say that God can do everything that we can grasp, but not that he can’t do what is beyond our grasp. It would be rash to think that our imagination reaches as far as his power.
+
+[^postmodern]:
+
+    The current disagreement surrounds whether the limitation is considered _voluntary_ or _essential_.
+
+    19th century German kenoticism (Thomasius, Gess, Ebrard) developed systematic kenotic Christology from Philippians 2:5-8:
+    ```quotes
+    <br/>5 In your relationships with one another, have the same mindset as Christ Jesus:
+
+    6 Who, being in very nature[a] God,
+        did not consider equality with God something to be used to his own advantage;
+
+    7 rather, he made himself nothing
+        by taking the very nature[b] of a servant,
+        being made in human likeness.
+
+    8 And being found in appearance as a man,
+        he humbled himself
+        by becoming obedient to death—
+            even death on a cross!
+
+    Philippians 2:5-8
+    ```
+
+    Here, the logos divested "relative" attributes (omnipresence, omniscience, omnipotence) but retained "immanent" ones (holiness, love, truth) during Incarnation. Critically: _temporary_, ending with Resurrection. The limitation is real but bounded—a divine hiatus, not a permanent restructuring. Orthodox critics (Chalcedonian) argue this creates a "binity problem": if Christ divests divine attributes, the Trinity breaks during Incarnation. The second Person takes leave from Godhead. If Father and Spirit retain omniscience while Son doesn't, they can't share the same substance. Thomasius relocates the two-natures problem rather than solving it.
+
+Can a genuinely free being make an _irrevocable_ choice?
+- If revocable, the limitation isn't permanent (Thomasius).
+- If irrevocable, has freedom been compromised (Polkinghorne)?
+- This paradox of self-binding runs through political philosophy (constitutionalism—can one generation bind the next?), personal ethics (promising—can you obligate your future self?), and now theology—without clean resolution.
+- The voluntarist and essentialist positions may be unstable in ways that mirror the original omnipotence paradox they sought to escape.
+
+> If God can limit divine attributes, then why assume any are essential to begin with?
+
+I wonder if we should omnipotence via **act-theory** (ability to perform any logically consistent action) or **result-theory** (ability to actualize any possible state of affairs)? Result theories handle the paradox where "there being a stone an omnipotent being cannot lift" isn't a possible state of affairs, therefore the _inability_ to actualize it is no limitation. But result theories carry heavy metaphysical commitments that they require omnipotent beings exist **necessarily** and may constrain human freedom.
+
+The paradox reveals more about how we think about power than about divine attributes. We model omnipotence on human power "only without limitations"—but maybe the category doesn't scale. Maybe maximal power is QUALITATIVELY different, not quantitatively maximal. Maybe "maximal power" as conceived in agent-causal term is incoherent at infinite {{sidenotes[extension.]: J.L. Cowan (1965, 1974) argues any attempt to resolve the stone paradox "must fail"—the concept itself is definitively broken. Anthony Kenny's _the god of the philosophers_ (1979) concludes "there can be no such being as the god of traditional natural theology." not "we need better definitions" but "abandon the project."}}
+
+If anyone is familiar with [[thoughts/Wittgenstein#Russell's paradox and the vicious circle principle|Russell's paradox]], then the similarity is uncanny here. "set of all sets that don't contain themselves" generates the paradox via self-reference. Type theory only relay replaces the naive concept with a more restricted versions, i.e ==there is no universal set==.
+Similarly, "god can do anything" generates the stone paradox through self-references. if the solutions for Russell's paradox is conceptually malformed, then the  same would hold for "maximal power". [^cantor]
+
+[^cantor]:
+		Patrick Grim extends this via Cantor, where any set of truths has more subsets than members, each corresponding to a unique truth.
+
+    There's no totality of truths—truth "explodes beyond any attempt to capture it." if omnipotence means power over all possible states of affairs, and there's no ==totality of possible states of affairs== (by analogy to cantor), omnipotence is malformed.
+
+		You can have very extensive power, but "maximal" or "unlimited" may be incoherent the way "set of all sets" is incoherent.
+
+    Cantor distinguished absolute infinity _in deo_ from mathematical transfinite, arguing absolute infinity is "logically inconsistent" and belongs to speculative theology, not mathematics. he avoided treating the mathematical universe as a set, recognizing the paradoxes this generates.
+
+What makes something a "task"?
+
+Tasks presuppose:
+- initial conditions
+- final conditions
+- causal pathway between them
+- possibility of failure
+
+"Create a stone you cannot lift" presupposes you have lifting capacity $C$, stones can have weight $W > C$, creating something doesn't change $C$.
+But for maximal power, there IS no $C$—no upper bound.
+So "stone too heavy to lift" isn't a pseudo-task (aquinas) or ill-formed question (Frankfurt, The Logic of Omnipotence, 1964), but a **CATEGORY ERROR**.
+
+How would one reconceptualising divine power? If "omnipotence" is incoherent, what should replace it?
+
+Tillich placed god as "ground of being" rather than powerful agent. Omnipotence then becomes a symbol expressing "the power of [[thoughts/being|being]] which resists nonbeing"—not ability to perform tasks but condition-of-possibility.
+
+Heidegger's onto-theology critique treated god as _causa sui_ or highest being is bankrupt. The entire framework of "god has power X" is malformed. God isn't a being among beings to which predicates apply.
+
+Caputo's weak theology then explicitly deconstructs divine omnipotence. God understood through Greek metaphysical attributes (immutability, omnipotence, omniscience) should be deconstructed. The name "god" harbors an event rather than naming a powerful being.
+
+We can then shift from "god can do X" to "god grounds the possibility of X." Power-as-condition rather than power-as-capacity. This dissolves the stone paradox bc it's not asking "can the condition-of-possibility create something impossible?"—impossibilities aren't in the domain at all. I understand that the cost of this would make god _metaphysically distant from history/agency_. If you want a god who does things in history (answers prayers, performs miracles), then you're stuck with omni-attributes and their paradoxes (which is fine). But I find these concepts/positions of God makes more sense for the logical brain.
+
+Kenotic theology tries to have both—a god who acts in history but isn't bound by classical omnis—but as we show above, every version either relocates the problem (voluntary kenosis) or diminishes God to where "deity" seems honorific (essential kenosis). There might not BE a stable middle ground.
+
+I then come to the conclusion where the omnipotence paradox is a genuine antinomy (in the Kantian sense)—concepts applied beyond their legitimate domain generate contradictions. Therefore, the right response isn't solving it within the framework but abandoning the framework for once. Standard solutions (pseudo-task dissolution, voluntarism, kenosis, Frankfurt) either deny one horn or simply relocate the problem. (big cope really)
 
 ---
 
@@ -87,7 +219,7 @@ there's a towel i used for when L stayed over. still haven't washed it. keeping 
 - [meta]:
   - date: 2025-11-22 14:18:52 GMT-05:00
   - tags:
-    - life
+    - o/life
     - relationship
 
 I got a cup of hot chocolate today. It reminded me of L, and somehow, we carry fragments of them within you without knowing so.
@@ -128,7 +260,7 @@ James, _[All At Once](https://jameslin.bio/jolie)_
 - [meta]:
   - date: 2025-11-15 12:36:29 GMT-05:00
   - tags:
-    - life
+    - o/life
 
 Got on a call with middle school friends, seeing my old Vietnamese teacher, B—there's warmth in it. Good memories, honestly. But I'm glad I left when I did.
 
@@ -215,7 +347,7 @@ I'm once again, thinking about suicide.
 - [meta]:
   - date: 2025-11-12 21:33:51 GMT-05:00
   - tags:
-    - life
+    - o/life
 
 ```quotes
 But Kurt Vonnegut writes about the difference between two kinds of teams. A granfalloon is a team of people pushed together for some ordinary human purpose, like learning medicine or running a hospital psychiatry department. They may get to know each other well. They may like each other. But in the end, the purpose will be achieved, and they’ll go their separate ways.
@@ -261,7 +393,7 @@ My journal is my [[posts/index|blog]]—not because I want to become a blogger, 
 - [meta]:
   - date: 2025-11-04 21:11:21 GMT-05:00
   - tags:
-    - life
+    - o/life
 
 I find myself using my mechanical keyboards less and less nowadays, using my laptop keyboard instead. This might have to do with the mode of focus the laptop keyboard puts me into—something about focusing on the work itself rather than the tools. Partially because of the wrist pain from long sessions of working at my desk 🐙
 
@@ -270,7 +402,7 @@ I find myself using my mechanical keyboards less and less nowadays, using my lap
 - [meta]:
   - date: 2025-10-31 18:24:43 GMT-04:00
   - tags:
-    - life
+    - o/life
 
 Writing kernels sounds way more fun the whoring on the streets of Toronto. Happy Halloween 🎃 though.
 
@@ -338,7 +470,7 @@ Paul Graham, [Putting Ideas into Words](https://paulgraham.com/words.html)
 - [meta]:
   - date: 2025-10-27 15:01:07 GMT-04:00
   - tags:
-    - life
+    - o/life
 
 ```quotes
 I wanted to eat life by the mouthful, to devour it, to be swallowed up in its dizzying vertigo, to be both actor and spectator, to possess and be possessed, to discover and to create, to make of my life a work of art.
@@ -421,7 +553,7 @@ The frame requires that one assume worst case at every branch, assume maximum ca
   - date: 2025-10-24 01:23:00 GMT-04:00
   - tags:
     - theology
-    - life
+    - o/life
 
 "God exists" – we say it like we're saying "the table exists." Same grammatical structure, same verb, same declaration of being. But [[thoughts/Wittgenstein|Wittgensteinians]] would tell you these are entirely different language games. Different forms of life enacted through identical syntax.
 

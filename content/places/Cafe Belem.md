@@ -2,7 +2,7 @@
 address: >-
   44, Mansfield Avenue, Trinity-Bellwoods, University—Rosedale, Toronto, Golden
   Horseshoe, Ontario, M6J 2N8, Canada
-categories:
+category:
   - "[[places to go]]"
 coordinates:
   - "43.6536022"

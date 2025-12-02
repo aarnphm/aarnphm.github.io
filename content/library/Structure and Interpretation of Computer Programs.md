@@ -2,8 +2,10 @@
 author:
   - Harold Abelson
   - Gerald Jay Sussman
-category: non fiction
-date: "2025-10-06"
+aliases:
+  - sicp
+category: technology
+date: 2025-10-06
 description: classic computer science text using scheme to teach abstraction, recursion, interpreters, and how to think about programs as building blocks.
 external: https://web.mit.edu/6.001/6.037/sicp.pdf
 id: Structure and Interpretation of Computer Programs
@@ -12,6 +14,7 @@ posters: "[[library/posters/structure-and-interpretation-of-computer-programs.jp
 status: current
 subcategory: programming
 tags:
-  - non fiction
+  - theory
+  - compiler
 title: Structure and Interpretation of Computer Programs
 ---

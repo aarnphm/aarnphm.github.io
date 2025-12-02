@@ -9,6 +9,6 @@ posters: "[[library/posters/mediocracy.jpg]]"
 status: to read
 subcategory: politics
 tags:
-  - non fiction
+  - politics
 title: "Mediocracy: The Politics of the Extreme Centre"
 ---

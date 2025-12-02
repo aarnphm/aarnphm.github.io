@@ -322,5 +322,14 @@
       ],
       "key": "B"
     }
+  ],
+  "obsidian-sidenotes:insert-sidenote-template": [
+    {
+      "modifiers": [
+        "Mod",
+        "Shift"
+      ],
+      "key": "S"
+    }
   ]
 }

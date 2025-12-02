@@ -10,6 +10,7 @@ status: finished
 subcategory: economic
 tags:
   - economic
+  - finance
 title: Capitalism and Freedom
 finished: 2025
 ---

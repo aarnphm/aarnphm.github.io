@@ -1,6 +1,6 @@
 ---
 address: "28 Bathurst St, Toronto, ON M5V 0C6, Canada"
-categories:
+category:
   - "[[places to go]]"
 coordinates:
   - "43.6442978"

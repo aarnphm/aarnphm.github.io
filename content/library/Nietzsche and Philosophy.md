@@ -4,10 +4,10 @@ category: philosophy
 date: 2025-08-13
 description: being and multiplicity
 external: https://antilogicalism.com/wp-content/uploads/2017/07/nietzsche-and-philosophy.pdf
-finished: "2025"
+finished: 2025
 id: Nietzsche and Philosophy
 modified: 2025-11-22 11:40:30 GMT-05:00
-notebook: "[[thoughts/Philosophy and Nietzsche]]"
+notebook: "[[thoughts/Philosophy and Nietzsche|Nietzche]]"
 posters: "[[library/posters/nietzsche-and-philosophy.jpg]]"
 status: evergreen
 subcategory: multiplicity

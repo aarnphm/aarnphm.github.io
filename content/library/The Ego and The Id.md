@@ -10,7 +10,7 @@ posters: "[[library/posters/the-ego-and-the-id.jpg]]"
 status: finished
 subcategory: psychology
 tags:
-  - psychoanalysis
+  - psychology
 title: The Ego and The Id
 ---
 

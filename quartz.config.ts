@@ -192,6 +192,7 @@ const config: QuartzConfig = {
             ".csv",
             ".webp",
             ".jpg",
+            ".avif",
             ".jpeg",
             ".png",
             ".mp4",

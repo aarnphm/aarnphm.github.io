@@ -9,7 +9,7 @@ posters: "[[library/posters/building-a-character.jpg]]"
 status: finished
 subcategory: acting
 tags:
-  - non fiction
+  - being
 title: Building A Character
 finished: 2025
 ---

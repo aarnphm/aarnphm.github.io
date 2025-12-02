@@ -9,7 +9,7 @@ posters: "[[library/posters/the-subtle-art-of-not-giving-a-fuck.jpg]]"
 status: finished
 subcategory: living
 tags:
-  - non fiction
+  - o/life
 title: The Subtle Art of Not Giving a Fuck
 finished: 2023
 ---

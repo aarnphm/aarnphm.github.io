@@ -1,5 +1,6 @@
 summaries:
   missing: values.filter(value.isType("null")).length
+  Range: (values.filter(value.isType("date")).reduce(if(value > acc || acc == null, value, acc), null) - values.filter(value.isType("date")).reduce(if(value < acc || acc == null, value, acc), null))
 filters:
   or:
     - file.hasTag("book")
@@ -14,19 +15,19 @@ properties:
     displayName: tags
   file.basename:
     displayName: notes
+  note.finished:
+    displayName: year
 views:
   - type: cards
     name: gallery
     groupBy:
       property: category
-      direction: ASC
+      direction: DESC
     order:
       - file.basename
       - date
       - notebook
-      - category
       - tags
-      - posters
       - status
       - author
       - subcategory
@@ -47,32 +48,36 @@ views:
     name: all
     groupBy:
       property: category
-      direction: DESC
+      direction: ASC
     order:
       - title
       - date
+      - tags
       - status
       - finished
       - subcategory
-      - notebook
       - author
-      - tags
       - posters
     sort:
-      - property: tags
-        direction: ASC
+      - property: finished
+        direction: DESC
       - property: date
         direction: DESC
+      - property: status
+        direction: DESC
+      - property: title
+        direction: ASC
+      - property: tags
+        direction: ASC
       - property: subcategory
         direction: DESC
-      - property: finished
-        direction: ASC
       - property: file.tags
-        direction: ASC
-      - property: status
         direction: ASC
     summaries:
       date: Latest
+      subcategory: Unique
+      title: Empty
+      status: Empty
     columnSize:
       note.title: 401
       note.date: 147
@@ -169,3 +174,58 @@ views:
     markers: bullet
     indentProperties: true
     separator: ","
+  - type: table
+    name: editors
+    groupBy:
+      property: status
+      direction: ASC
+    order:
+      - id
+      - title
+      - date
+      - tags
+      - status
+      - finished
+      - subcategory
+      - author
+      - posters
+      - category
+      - translator
+      - notebook
+      - aliases
+      - pdf
+    sort:
+      - property: date
+        direction: DESC
+      - property: aliases
+        direction: DESC
+      - property: pdf
+        direction: ASC
+      - property: category
+        direction: DESC
+      - property: posters
+        direction: ASC
+      - property: file.basename
+        direction: ASC
+      - property: tags
+        direction: ASC
+      - property: file.tags
+        direction: ASC
+    summaries:
+      date: Range
+      subcategory: Unique
+      title: Unique
+      status: Empty
+      finished: Empty
+    columnSize:
+      note.id: 307
+      note.title: 401
+      note.date: 147
+      note.tags: 302
+      note.status: 98
+      note.subcategory: 172
+      note.author: 205
+      note.posters: 410
+      note.translator: 128
+      note.aliases: 131
+      note.pdf: 280

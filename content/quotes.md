@@ -16,7 +16,7 @@ metadata:
     text_line    = { character - newline } ;
     ws           = { " " } ;
     character    = ? any printable ascii except newline ? ;
-modified: 2025-11-29 10:52:41 GMT-05:00
+modified: 2025-12-01 20:18:40 GMT-05:00
 seealso:
   - "[[word|dictionary]]"
   - "[[research|wip]]"
@@ -30,6 +30,26 @@ transclude:
   dynalist: false
   title: false
 ---
+
+> I know now that psychoanalysis would make sense for me only if I were really serious about the strange possibility of no longer writing, which during the completion of Malte I often dangled in front of my nose as a kind of relief. Then one might let one’s devils be exorcised, since in daily life they are truly just disturbing and painful. And if it happened that the angels left too, one would have to understand this as a further simplification and tell oneself that in the new profession (which?), there would certainly be no use for them.
+>
+> [Rainer Maria Rilke](https://en.wikipedia.org/wiki/Rainer_Maria_Rilke), letter to Lou Andreas-Salomé (tr. S. Mitchell)
+
+> Because when I read, I don’t really read; I pop a beautiful sentence into my mouth and suck it like a fruit drop, or I sip it like a liqueur until the thought dissolves in me like alcohol, infusing brain and [[thoughts/love|heart]] and coursing on through the veins to the root of each blood vessel.
+>
+> Bohumil Hrabal
+
+> Überhaupt hat der Fortschritt das an sich, daß er viel größer ausschaut, als er {{sidenotes[wirklich ist.]: "The trouble about progress is that it always look much greater than it really is"}}
+>
+> Johann Nestroy, [[library/Philosophical Investigations|[introduction to PI]]]
+
+> if you’re afraid of anger you can set yourself up as a caretaker in unhelpful ways. I think two important things to say to your partner are “I see it from your perspective” and “What can I do to help?” but if you think your job is to make sure your loved one is never upset you’ll experience constant failure
+>
+> Ava, [@noampomsky](https://x.com/noampomsky/status/1995211651881345536)
+
+> We shed as we pick up, like travellers who must carry everything in their arms, and what we let fall will be picked up by those behind. The procession is very long and life is very short. We die on the march. But there is nothing outside the march so nothing can be lost to it ^shed
+>
+> Tom Stoppard
 
 > There are only two industries that call their customers ‘users’: illegal drugs and software.
 >

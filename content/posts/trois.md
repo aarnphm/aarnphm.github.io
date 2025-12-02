@@ -5,7 +5,7 @@ id: trois
 modified: 2025-10-29 02:15:13 GMT-04:00
 tags:
   - fruit
-  - life
+  - o/life
 title: trois
 ---
 

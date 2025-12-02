@@ -11,7 +11,7 @@ notebook:
 status: finished
 subcategory: existentialism
 tags:
-  - fiction
+  - philosophy
 title: The Stranger
 finished: 2024
 ---

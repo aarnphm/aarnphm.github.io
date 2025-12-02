@@ -13,5 +13,6 @@ subcategory:
   - intelligence
 tags:
   - o/life
+  - llm
 title: Are We Spiritual Machines?
 ---

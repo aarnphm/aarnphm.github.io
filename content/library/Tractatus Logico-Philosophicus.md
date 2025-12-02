@@ -4,7 +4,7 @@ aliases:
   - tractatus
   - TLP
 category: philosophy
-date: "2025-10-07"
+date: 2025-10-07
 description: Wittgenstein's picture theory of language and its uncanny resonance with modern LLM latent spaces
 id: Tractatus Logico-Philosophicus
 modified: 2025-11-19 18:06:54 GMT-05:00
@@ -14,10 +14,11 @@ seealso:
   - "[[thoughts/Negation]]"
   - "[[thoughts/Compositionality]]"
 status: current
-subcategory: languages
+subcategory:
+  - languages
+  - llms
 tags:
   - philosophy
-  - llm
 title: Tractatus Logico-Philosophicus
 ---
 

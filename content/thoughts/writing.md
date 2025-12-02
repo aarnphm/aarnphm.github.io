@@ -152,9 +152,13 @@ I keep coming back to this idea where most writing advice assumes you already kn
 
 > Why do you build software for writing over protocol such as file?
 
-> *File over app* is a philosophy: if you want to create digital artifacts that last, they must be files you can control, in formats that are easy to retrieve and read. Use tools that give you this freedom.
->
-> —kepano, [File over app](https://stephango.com/file-over-app)
+```quotes
+*File over app* is a philosophy: if you want to create digital artifacts that last, they must be files you can control, in formats that are easy to retrieve and read. Use tools that give you this freedom.
+
+kepano, _[File over app](https://stephango.com/file-over-app)_
+```
+
+[Zvi](https://substack.com/@thezvi) also wrote a [blogpost](https://thezvi.substack.com/p/on-writing-1) on some prolific characters structure their arguments in essays, including, but not limited to, PG, Andreesen, Visakan Veerasamy (ribbonfarm), Matt Yglesias, etc.
 
 ## more people should write
 

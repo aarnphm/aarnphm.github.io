@@ -128,7 +128,7 @@ You can find internal monologue under [[/posts/]] index.
         - [[lectures/412/notes|412. linear algebra in transformers]]
       - [[lectures/420/notes|420. matmul and GPU quirks]]
       - [[lectures/430/notes|430. Deploying DeepSeek R1]]
-      - [[lectures/440/notes|440. nanovllm]]
+      - [[lectures/440/notes|440. tinyvllm]]
 - vLLM Toronto Meetup, 2025
   - Source: [slides](https://docs.google.com/presentation/d/1IYJYmJcu9fLpID5N5RbW_vO0XLo0CGOR14IXOjB61V8/edit?slide=id.g375ced4d028_0_43#slide=id.g375ced4d028_0_43)
     ![[thoughts/images/707B74A0-FAEB-47A1-827F-A8B13777F438_1_105_c.webp]]

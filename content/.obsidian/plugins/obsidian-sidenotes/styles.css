@@ -1,0 +1,62 @@
+.sidenote {
+  position: relative;
+  display: inline;
+}
+
+.sidenote-label {
+  font-size: 0.8em;
+  color: var(--text-accent);
+  border-bottom: 1px dashed var(--text-accent);
+  padding: 0.05rem 0.2rem;
+  line-height: 1.2;
+  cursor: pointer;
+  user-select: none;
+}
+
+.sidenote-label[data-auto] {
+  opacity: 0.7;
+}
+
+.sidenote-content {
+  display: none;
+  max-width: min(26rem, 70vw);
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.5rem;
+  background: var(--background-secondary);
+  border-left: 2px solid var(--text-accent);
+  box-shadow: var(--shadow-s, 0 2px 6px rgba(0, 0, 0, 0.08));
+  font-size: 0.95em;
+  line-height: 1.5;
+  z-index: 10;
+}
+
+.sidenote.open .sidenote-content {
+  display: block;
+}
+
+.sidenote-content.sidenote-right {
+  margin-left: 0.35rem;
+}
+
+.sidenote-content.sidenote-left {
+  margin-right: 0.35rem;
+  border-left: none;
+  border-right: 2px solid var(--text-accent);
+}
+
+.sidenote-content.sidenote-inline {
+  background: color-mix(in srgb, var(--background-secondary) 85%, var(--background-primary));
+  border: 1px dashed var(--background-modifier-border);
+  padding: 0.35rem 0.6rem;
+  box-shadow: none;
+  font-size: 0.9em;
+  color: var(--text-muted);
+}
+
+.sidenote-internal {
+  margin-top: 0.35rem;
+  padding-top: 0.35rem;
+  border-top: 1px solid var(--background-modifier-border);
+  font-size: 0.85em;
+  color: var(--text-muted);
+}

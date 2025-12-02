@@ -1,6 +1,6 @@
 filters:
   and:
-    - categories.containsAny(link("places to go"))
+    - category.containsAny(link("places to go"))
 formulas:
   Type icon: list(type)[0].asFile().properties.icon
   Type color: list(type)[0].asFile().properties.color

@@ -11,7 +11,8 @@ notebook: "[[thoughts/deep learning|omnipotent]]"
 status: finished
 subcategory: ml
 tags:
-  - non fiction
+  - ml
+  - llm
 title: The Little Book of Deep Learning
 finished: 2024
 ---

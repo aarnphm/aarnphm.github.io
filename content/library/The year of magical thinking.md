@@ -9,7 +9,8 @@ posters: "[[library/posters/the-year-of-magical-thinking.jpg]]"
 status: to read
 subcategory: life
 tags:
-  - fiction
+  - r/pain
+  - love
 title: The year of magical thinking
 finished:
 ---
