@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2025-12-02 17:06:22 GMT-05:00
+modified: 2025-12-03 09:09:40 GMT-05:00
 permalinks:
   - /website
   - /tweets
@@ -143,6 +143,10 @@ title: are.na
 - [meta]:
   - view: list
 
+- https://x.com/thegoodtimeline/status/1995557717843316795 -- Janus' interview [**]
+  - [meta]:
+    - date: 12/03/2025
+    - tags: [longtermism]
 - https://x.com/niplav_site/status/1925694385380872405 -- Prompting Claude as the last humanistic projects
   - [meta]:
     - date: 12/01/2025

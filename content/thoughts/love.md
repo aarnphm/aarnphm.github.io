@@ -9,7 +9,7 @@ aliases:
 date: "2025-10-04"
 description: choosing to give your full, continuously.
 id: love
-modified: 2025-12-01 17:44:34 GMT-05:00
+modified: 2025-12-03 09:33:23 GMT-05:00
 socials:
   essay: "[[posts/love|mutual becoming]]"
   hermeneutics: "[[posts/romantic epistemology|romantic epistemology]]"
@@ -258,6 +258,48 @@ _so I made this list for [Malaika](https://malaikaaiyar.me/)_
 | :------------------------------------- | ---------------------------------------------------------------------------: |
 | Tender Masculinity                     |               https://buttondown.com/greengaybles/archive/tender-masculinity |
 | Universal love, said the cactus person | https://slatestarcodex.com/2015/04/21/universal-love-said-the-cactus-person/ |
+
+## hw
+
+see also: [[thoughts/pdfs/The neurobiology of love.pdf]], [[thoughts/pdfs/The power of love on the human brain.pdf]], and [[thoughts/pdfs/Love-realted changes in the brain.pdf]]
+
+regional homogeneity (ReHo) and functional connectivity (FC) across an "in-love" group (LG, N=34, currently intensely in love) and an "ended-love" group (ELG, N=32, ended romantic relationship) and a "single" group (SG, N=32, never fallen in love), shows that:
+
+- ReHo of left dorsal anterior cingulate cortex (dACC) was significantly increased in LG (compared to ELG and SG)
+- ReHo of left dACC was positively correlated with length of time in love in LG, and negatively correlated with the lovelorn duration since breakup in ELG
+- FC within the reward, motivation, and emoation relgulation network (dACC, insula, caudate, amygdala) as well as FC in social cognition network (temporo-parietal junctions, posteriori cingulate cortex, etc.) was significantly increaed in the LG
+- FC was positively correlated with duration of love in the LG but negatively correlated with the lovelorn duration of time since breakup in the ELG.
+
+I found from all of these study that majority of participants are largely female, which dictates whether the data are either skewed or simply biased towards the females' psychology comparing to men.
+
+The regions activated by romantic love—the medial insula, anterior cingulate, hippocampus, striatum, and nucleus accumbens—are rich in specific neuromodulators that drive the attachment process. Zeki identifies four key chemical players that drive this activation: dopamine, oxytocin, vasopressin, and nerve growth factor.
+
+Zeki frames this as a "push-pull mechanism" where love simultaneously activates reward circuitry while suppressing critical social assessment networks.
+the deactivation of mentalizing regions (TPJ, mPFC) is particularly interesting—theory of mind requires distinguishing self from other, but "unity-in-love" phenomenologically involves merging that boundary.
+
+the prairie vs montane vole comparison is _crucial_ for understanding mechanism:
+
+- prairie voles: monogamous, high oxytocin/vasopressin receptor density in reward centers.
+- montane voles: promiscuous, sparse receptors.
+- blocking OT/VP release makes prairie voles promiscuous; supplementing doesn't make montane voles monogamous bc no receptor substrate.
+
+> This suggests love's neurochemistry requires both the ligand AND the receptor architecture.
+
+Bianchi-Demicheli et al. propose that because romantic love activates subcortical reward and motivation systems (as detailed by Zeki and Song), it acts as a goal-directed drive that can facilitate cognitive behavior. The theory posits that the state of being in love creates a "top-down" cognitive facilitation. The intense motivational state primes the brain to process information relevant to the goal (the partner) more efficiently. This processing advantage is not limited to conscious tasks but extends to unconscious, subliminal processing, suggesting that the motivation to love fundamentally alters information processing speeds.
+
+A unique and poignant contribution of Song et al. is the inclusion of the "Ended-Love" Group (ELG)—individuals who had recently experienced a breakup. This group provides a critical window into the neurobiology of grief, withdrawal, and recovery, offering a physiological basis for the intense suffering associated with heartbreak.
+
+- The study found distinct neural signatures that differentiated the ELG from both the in-love and single groups. Most notably, **ReHo in the bilateral caudate nucleus was significantly reduced** in the ELG compared to both the in-love and single groups.
+- The caudate nucleus is central to reward expectation, goal-directed behavior, and the dopaminergic reward pathway. Its hypo-activity in the ELG likely reflects a "reward withdrawal" state analogous to drug withdrawal.
+- In a relationship, the partner serves as a potent reward stimulus, driving dopaminergic activity in the caudate.
+- When the relationship ends, this source of dopamine is abruptly removed, leading to a downregulation of activity in this region.
+- This neurophysiological "crash" manifests psychologically as the ==anhedonia, lethargy, and lack of motivation== often seen in heartbreak.
+
+While Song et al. does not explicitly detail a clinical "recovery protocol," the data points to specific mechanisms of natural recovery. The caudate nucleus has been implicated in anxiety relief systems; deep brain stimulation of the caudate has been shown to improve symptoms of anxiety and major depression. The study suggests that the elevated FC observed in certain pathways of the ELG (specifically between the dACC and regions like the insula and amygdala, compared to the Single group) might represent an adaptive, compensatory mechanism.
+
+> The brain is attempting to regulate the distress of social loss.
+
+These study underscore the evolutionary imperative of love: ==love is not a luxury but survival mechanism==. Bianchi-Demicheli's findings somewhat confirmed a broader principle where **motivational states are big cognitive enhancers**. If love can speed up lexical decision making via top-down processing,then other intense motivational states—passion for work, art, survival—likely recruit similar neural architectures to boost performance.
 
 ---
 
