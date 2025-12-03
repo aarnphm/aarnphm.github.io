@@ -38,11 +38,20 @@ metadata:
     letter        = "a".."z" ;
     digit         = "0".."9" ;
     character     = ? any printable ascii except newline ? ;
-modified: 2025-12-02 17:41:27 GMT-05:00
+modified: 2025-12-03 09:33:42 GMT-05:00
 tags:
   - fruit
   - evergreen
 title: stream
+---
+
+- [meta]:
+  - date: 2025-12-03 09:33:42 GMT-05:00
+  - tags:
+    - fruit
+
+![[thoughts/love#hw]]
+
 ---
 
 - [meta]:
