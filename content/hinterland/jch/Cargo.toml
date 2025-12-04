@@ -1,0 +1,12 @@
+[package]
+name = "jch"
+version = "0.1.0"
+edition = "2024"
+
+[lib]
+name = "jump_consistent_hash"
+path = "src/lib.rs"
+
+[[bin]]
+name = "jch"
+path = "src/lib.rs"

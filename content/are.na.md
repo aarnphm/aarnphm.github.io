@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2025-12-03 09:09:40 GMT-05:00
+modified: 2025-12-04 17:36:29 GMT-05:00
 permalinks:
   - /website
   - /tweets
@@ -143,6 +143,14 @@ title: are.na
 - [meta]:
   - view: list
 
+- https://x.com/lauramatsue/status/1996269264853205158 -- What you most fall in love with in the beginning states of romance
+  - [meta]:
+    - date: 12/04/2025
+    - tags: [love]
+- https://x.com/_Dave__White_/status/1947461492783386827 -- OpenAI IMO news hits mathematicians
+  - [meta]:
+    - date: 12/04/2025
+    - tags: [logic]
 - https://x.com/thegoodtimeline/status/1995557717843316795 -- Janus' interview [**]
   - [meta]:
     - date: 12/03/2025
@@ -781,6 +789,10 @@ title: are.na
 
 ## people
 
+- https://en.wikipedia.org/wiki/Ana%C3%AFs_Nin -- Anaïs Nin
+  - [meta]:
+    - date: 12/04/2025
+    - tags: [essayist, novelist]
 - https://en.wikipedia.org/wiki/Jean_Baudrillard -- Jean Baudrillard
   - [meta]:
     - date: 11/30/2025
@@ -1635,6 +1647,10 @@ title: are.na
 
 ## essay
 
+- https://drive.google.com/file/d/1va1j76NRdpgSy6mnEcYFi3Vc3Gt-jyvD/edit -- Dear Graduates
+  - [meta]:
+    - date: 12/03/2025
+    - tags: [graduations, life lesson]
 - https://lexploress.substack.com/p/the-people-to-keep-and-treasure -- the people to keep, and treasure
   - [meta]:
     - date: 12/02/2025
@@ -2728,6 +2744,10 @@ title: are.na
 - [meta]:
   - view: list
 
+- https://lilianweng.github.io/posts/2022-09-08-ntk/ -- Some Math behind Neural Tangent Kernel
+  - [meta]:
+    - date: 12/04/2025
+    - tags: [ntk, kernels]
 - https://www.alignmentforum.org/posts/StENzDcD3kpfGJssR/a-pragmatic-vision-for-interpretability -- A Pragmatic Vision for Interpretability
   - [meta]:
     - date: 12/01/2025
@@ -3264,6 +3284,10 @@ title: are.na
   - [meta]:
     - date: 10/03/2025
     - tags: [development]
+- https://blog.ezyang.com/2025/08/state-of-torch-compile-august-2025 -- The state of torch.compile for training (Aug 2025)
+  - [meta]:
+    - date: 12/03/2025
+    - tags: [compilers, scaling]
 - https://blog.ezyang.com/2025/08/the-parallelism-mesh-zoo/ -- The Parallelism Mesh Zoo
   - [meta]:
     - date: 10/06/2025
@@ -4075,6 +4099,12 @@ title: are.na
 
 ## philosophy
 
+- https://www.youtube.com/watch?v=aaZbCctlll4 -- What is it Like to be a Bat? - The hard problem of consciousness
+  - [meta]:
+    - date: 12/03/2025
+    - tags: [dualism, physicalism, consciousness]
+    - later: true
+  - Attack on Physicalism
 - https://www.earlymoderntexts.com/assets/pdfs/descartes1619_1.pdf -- Selected Correspondence of Descartes [**]
   - [meta]:
     - date: 12/02/2025
@@ -5269,6 +5299,10 @@ title: are.na
 
 ## technical
 
+- https://cs.pomona.edu/~jcoa2018/f20/cs190/papers/moral.pdf -- The Moral Character of Crypto
+  - [meta]:
+    - date: 12/03/2025
+    - tags: [cryptography]
 - https://mcyoung.xyz/2025/10/21/ssa-1 -- Why SSA?
   - [meta]:
     - date: 12/01/2025
@@ -5628,6 +5662,10 @@ title: are.na
 
 ## math
 
+- https://www.youtube.com/watch?v=nygzk8FU8MQ -- Robert Lipshitz - Computing a square on Khovanov homology
+  - [meta]:
+    - date: 12/03/2025
+    - tags: [homology]
 - https://math.mit.edu/~goemans/18433S13/matching-notes.pdf -- Lectures notes on bipartite matching
   - [meta]:
     - date: 12/02/2025

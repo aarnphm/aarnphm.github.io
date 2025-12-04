@@ -5,7 +5,7 @@ aliases:
 date: "2022-04-22"
 description: my working notes, as a form of a digital garden
 id: _index
-modified: 2025-11-28 14:39:25 GMT-05:00
+modified: 2025-12-04 17:38:57 GMT-05:00
 tags:
   - sapling
   - fruit
@@ -68,4 +68,4 @@ I'm [[thoughts/craft|working]] at a [startup](https://bentoml.com) building #ml 
                                                 * about their intrinsic [[thoughts/Agency|drive]].
 ```
 
-I would like to do [[research]] at some point. As far as [[thoughts/aesthetic value|aesthetic]] goes, I spend a lot of time [reading](https://en.wikipedia.org/wiki/Close_reading) [[antilibrary|books]], watching [[cinematheque|cinema]], and [[vibes|collecting images]] on the internet ==outside of work==. This is my [[/dating|date-me doc]] if you are interested ✨
+I would like to do [[research]] at some point. As far as [[thoughts/aesthetic value|aesthetic]] goes, I spend a lot of time [reading](https://en.wikipedia.org/wiki/Close_reading) [[antilibrary|books]], watching [[cinematheque|cinema]], and [[vibes|collecting images]] on the internet ==outside of work==. This is my [[/dating|about-me doc]] if you are interested ✨

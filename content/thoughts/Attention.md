@@ -3,7 +3,7 @@ abstract: The reason for Attention comparing to LSTM is that its ability to enco
 date: "2024-02-07"
 description: and posteriori information retrieval.
 id: Attention
-modified: 2025-11-23 17:25:43 GMT-05:00
+modified: 2025-12-03 20:37:00 GMT-05:00
 tags:
   - technical
   - llm
@@ -512,11 +512,11 @@ low-rank joint compression for attention ==keys and values== to reduce KV cache 
 
 $$
 \begin{align}
-    \boxed{\textcolor{blue}{\mathbf{c}_t^{KV}}} &= W^{DKV} \mathbf{h}_t, \tag{1} \\
-    [\mathbf{k}_{t,1}^{C}; \mathbf{k}_{t,2}^{C}; \dots; \mathbf{k}_{t, n_h}^{C}] &= \mathbf{k}_t^C = W^{UK} \mathbf{c}_t^{KV}, \tag{2} \\
-    \boxed{\textcolor{blue}{\mathbf{k}_t^{R}}} &= \mathrm{RoPE}(W^{KR} \mathbf{h}_t), \tag{3} \\
-    \mathbf{k}_{i,t} &= [\mathbf{k}_{t,i}^{C}; \mathbf{k}_t^{R}], \tag{4} \\
-    [\mathbf{v}_{t,1}^{C}; \mathbf{v}_{t,2}^{C}; \dots; \mathbf{v}_{t,n_h}^{C}] &= \mathbf{v}_t^{C} = W^{UV} \mathbf{c}_t^{KV}. \tag{5}
+    \boxed{\textcolor{blue}{\mathbf{c}_t^{KV}}} &= W^{DKV} \mathbf{h}_t\quad \quad \tag{1} \\
+    [\mathbf{k}_{t,1}^{C}; \mathbf{k}_{t,2}^{C}; \dots; \mathbf{k}_{t, n_h}^{C}] &= \mathbf{k}_t^C = W^{UK} \mathbf{c}_t^{KV}\quad \quad \tag{2} \\
+    \boxed{\textcolor{blue}{\mathbf{k}_t^{R}}} &= \mathrm{RoPE}(W^{KR} \mathbf{h}_t)\quad \quad \tag{3} \\
+    \mathbf{k}_{i,t} &= [\mathbf{k}_{t,i}^{C}; \mathbf{k}_t^{R}]\quad \quad \tag{4} \\
+    [\mathbf{v}_{t,1}^{C}; \mathbf{v}_{t,2}^{C}; \dots; \mathbf{v}_{t,n_h}^{C}] &= \mathbf{v}_t^{C} = W^{UV} \mathbf{c}_t^{KV} \quad \quad \tag{5}
 \end{align}
 $$
 
@@ -542,18 +542,17 @@ $$
 >
 > Both $\textcolor{blue}{\mathbf{c}_t^{KV}}$ and $\textcolor{blue}{\mathbf{k}_t^{R}}$ should be cached to reduce KV cache while maintaining performance with [[#Multi-head Attention|MHA]]
 
-> [!motivation] why latent compression matters
 > MLA recognises that most of the information inside $K$ and $V$ lies in a low-dimensional manifold. By learning shared latent codes ($\mathbf{c}_t^{KV}$ and $\mathbf{c}_t^{Q}$) and lightweight up-projections, the model keeps the expressivity of many heads without storing every head explicitly. This decouples compute (which stays similar) from memory footprint (which shrinks drastically), enabling deployment on GPUs with limited KV cache.
 
 For attention ==queries==, we can perform the same operation:
 
 $$
-\begin{align}
+\begin{aligned}
 \mathbf{c}_t^{Q} &= W^{DQ} \mathbf{h}_t \\
 [\mathbf{q}_{t,1}^{C}; \mathbf{q}_{t,2}^{C}; \dots; \mathbf{q}_{t, n_h}^{C}] &= \mathbf{q}_t^C = W^{UQ} \mathbf{c}_t^{Q} \\
 [\mathbf{q}_{t,1}^{R}; \mathbf{q}_{t,2}^{R}; \dots; \mathbf{q}_{t, n_h}^{R}] &= \mathrm{RoPE}(W^{QR} \mathbf{c}_t^Q) \\
 \mathbf{q}_{i,t} &= [\mathbf{q}_{t,i}^{C}; \mathbf{q}_t^{R}]
-\end{align}
+\end{aligned}
 $$
 
 - $c_t^Q$ is the compressed latent of queries
@@ -567,8 +566,8 @@ $$
 >
 > $$
 > \begin{align}
->     \mathbf{o}_{t,i} &= \sum_{j=1}^{t} \mathrm{Softmax}_j (\frac{q_{t,i}^T k_{j,i}}{\sqrt{d_h + d_h^R}}) v_{j_i}^C, \tag{10} \\
->     \mathbf{u}_t &= \mathbf{W}^O [o_{t,1}; o_{t,2}; \dots; o_{t, n_h}] \tag{11}
+>     \mathbf{o}_{t,i} &= \sum_{j=1}^{t} \mathrm{Softmax}_j (\frac{q_{t,i}^T k_{j,i}}{\sqrt{d_h + d_h^R}}) v_{j_i}^C\quad \quad \tag{10} \\
+>     \mathbf{u}_t &= \mathbf{W}^O [o_{t,1}; o_{t,2}; \dots; o_{t, n_h}] \quad \tag{11}
 > \end{align}
 > $$
 

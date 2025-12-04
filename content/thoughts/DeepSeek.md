@@ -2,7 +2,9 @@
 date: "2025-01-25"
 description: and OSS AI ftw.
 id: DeepSeek
-modified: 2025-10-29 02:15:21 GMT-04:00
+modified: 2025-12-03 15:07:13 GMT-05:00
+seealso:
+  - "[[thoughts/DS32]]"
 tags:
   - ml
   - vllm
@@ -18,9 +20,9 @@ scaling [[thoughts/Transformers#inference.|inference-time]] [compute](https://op
 
 three major components:
 
-- [[thoughts/DeepSeek#R1-Zero]]: pure RL on base models without any SFT
-- [[thoughts/DeepSeek#R1]]: RL on pure CoT, not any clever training data
-- [[thoughts/DeepSeek#Distill]]: [[thoughts/knowledge distillation]] from R1 to improve smaller variants
+- [[#R1-Zero]]: pure RL on base models without any SFT
+- [[#R1]]: RL on pure CoT, not any clever training data
+- [[#Distill]]: [[thoughts/knowledge distillation]] from R1 to improve smaller variants
 
 ## R1-Zero
 
@@ -316,128 +318,6 @@ V3.1 shows post-training matters as much as pre-training scale.
 
 experimental release testing architectural modifications before V4.
 
-### native sparse attention (NSA)
-
-replace dense attention with learned sparsity patterns.
-
-**motivation**: full $O(n^2)$ attention is wasteful—most tokens attend to small subset.
-
-**implementation**:
-
-1. predict attention pattern sparsity from queries
-2. compute sparse attention mask
-3. apply masked attention efficiently
-
-pattern prediction network:
-
-```prolog
-sparsity_mask = sigmoid(MLP([q, positional_encoding]))
-top_k_indices = topk(sparsity_mask, k)
-attention_sparse = softmax(QK^T * mask) V
-```
-
-dynamic $k$ based on query complexity—simple tokens use sparser attention.
-
-- reduces attention FLOPs by 60-70%
-- minimal quality degradation (<1% on benchmarks)
-- enables extreme context lengths (512K+ tokens)
-
-**learned vs fixed sparsity**:
-
-fixed patterns (sliding window, block-sparse) fail on out-of-distribution contexts. learned sparsity adapts to content.
-
-### dual-batch overlaps (DBO)
-
-advanced batching strategy for training efficiency.
-
-_problem_: large batches improve utilization but hurt generalization. small batches generalize better but waste compute.
-
-_solution_: overlap two batch sizes in single training step.
-
-1. forward pass: large batch (4096 tokens)
-2. backward pass: small batch (512 tokens) sampled from large batch
-3. gradient accumulation: average over multiple small batches
-
-trains with small-batch generalization while maintaining large-batch throughput.
-
-**sampling strategy**: prioritize high-loss examples from large batch for backward pass.
-
-- matches small-batch generalization
-- achieves large-batch throughput
-- 1.4x speedup over standard batching
-
-### context parallel
-
-specialized parallelism for long-context training.
-
-**standard approaches**:
-
-- tensor parallel: split within layer (communication overhead)
-- pipeline parallel: split across layers (bubble time)
-- sequence parallel: split along sequence dimension (limited by attention)
-
-**context parallel approach**:
-
-split long sequence across devices, run local attention + global aggregation.
-
-1. partition sequence: $[s_1, s_2, ..., s_p]$ across $p$ devices
-2. local attention: each device computes attention within partition
-3. global exchange: all-to-all communication of attention statistics
-4. final aggregation: combine local and global attention
-
-for sequence length $n$, context parallel reduces per-device memory from $O(n^2)$ to $O(n^2/p)$.
-
-**ring attention integration**: combine with ring attention for extreme lengths (1M+ tokens).
-
-communication pattern:
-
-```
-Device 0: [q0, k0, v0] -> compute local attention A0
-Device 1: [q1, k1, v1] -> compute local attention A1
-All-to-all: exchange attention stats
-Device 0: aggregate(A0, stats_from_1) -> final attention
-```
-
-**scaling results**:
-
-- 512K context: 8x devices, 92% efficiency
-- 1M context: 16x devices, 87% efficiency
-
-training on book-length contexts without prohibitive memory costs.
-
-**vLLM implementation**:
-
-vLLM uses expert parallelism (EP) + data parallelism (DP) for DeepSeek models rather than traditional context parallelism. EP assigns specific experts to dedicated GPUs, while DP distributes batched sequences between GPUs for attention layers—avoiding KV cache duplication.
-
-implementation details (from [vLLM docs](https://docs.vllm.ai/en/latest/serving/data_parallel_deployment.html)):
-
-- data parallel for attention layers, expert/tensor parallel for expert layers
-- separate "core engine" processes per DP rank
-- ZMQ sockets for communication with frontend
-- DP coordinator ensures synchronized forward passes
-- collective operations every N steps for idle detection
-- expert layers form (DP × TP) sized groups
-
-**decode context parallel (DCP)**: [PR #24453](https://github.com/vllm-project/vllm/pull/24453) adds DCP support for FLASH_ATTN_MLA backend. distributes decoding across multiple devices for long-context inference:
-
-- splits KV cache across DCP ranks
-- handles attention metadata for distributed decoding
-- correct `seqlen_k` calculation per rank
-- currently restricted to query length = 1
-- future work: multi-token queries require custom causal masking
-
-day-0 support for DeepSeek-V3.2-Exp with sparse attention on H100/H200/H20 and B200/GB200.
-
-### experimental outcomes
-
-V3.2-Exp demonstrates:
-
-- NSA reduces attention cost without quality loss
-- DBO improves training efficiency
-- context parallel enables extreme context lengths
-
-these techniques likely integrated into V4 architecture.
-
 ---
 
 ## evolution and integration
@@ -448,7 +328,7 @@ the DeepSeek model family represents iterative refinement across multiple dimens
 
 - V3: establish architectural foundation (MLA, MoE, DualPipe)
 - V3.1: optimize post-training (RL alignment, chat capabilities)
-- V3.2-Exp: explore efficiency frontiers (NSA, DBO, context parallel)
+- V3.2-Exp: explore efficiency frontiers (DSA)
 
 **reasoning capability**: V3-Base → R1-Zero → R1 → R1-Distill
 
