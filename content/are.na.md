@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2025-12-04 17:36:29 GMT-05:00
+modified: 2025-12-04 20:26:22 GMT-05:00
 permalinks:
   - /website
   - /tweets
@@ -143,6 +143,15 @@ title: are.na
 - [meta]:
   - view: list
 
+- https://x.com/noampomsky/status/1996720230077550769?s=20 -- micromanaging relationship
+  - [meta]:
+    - date: 12/04/2025
+    - tags: [relationship]
+- https://x.com/nstlgiaxpress/status/1996571267982360902 -- aesthetically pleasing source of income creative people
+  - [meta]:
+    - date: 12/04/2025
+    - tags: [meme]
+  - but also true: https://x.com/noampomsky/status/1996661688075276794
 - https://x.com/lauramatsue/status/1996269264853205158 -- What you most fall in love with in the beginning states of romance
   - [meta]:
     - date: 12/04/2025
@@ -1647,6 +1656,10 @@ title: are.na
 
 ## essay
 
+- https://etymology.substack.com/p/feeling-without-thinking -- feeling without thinking
+  - [meta]:
+    - date: 12/04/2025
+    - tags: [etymology]
 - https://drive.google.com/file/d/1va1j76NRdpgSy6mnEcYFi3Vc3Gt-jyvD/edit -- Dear Graduates
   - [meta]:
     - date: 12/03/2025
@@ -2744,6 +2757,15 @@ title: are.na
 - [meta]:
   - view: list
 
+- https://www.lesswrong.com/posts/beREnXhBnzxbJtr8k/mech-interp-is-not-pre-paradigmatic -- Mech interp is not pre-paradigmatic
+  - [meta]:
+    - date: 12/04/2025
+    - tags: [metaethics, interpretability]
+  - i.e Having a Kuhnian crisis
+- https://x.com/Lari_island/status/1996414137333956654 -- Conversation with Opus 3 compaction windows
+  - [meta]:
+    - date: 12/04/2025
+    - tags: [visualisation, cot]
 - https://lilianweng.github.io/posts/2022-09-08-ntk/ -- Some Math behind Neural Tangent Kernel
   - [meta]:
     - date: 12/04/2025
@@ -4705,6 +4727,10 @@ title: are.na
 
 ## cooking
 
+- https://docs.google.com/document/d/1N1hNks4PCebMHqy7gkhyhtmwOIIThoDEahGh4bsifgU/edit?tab=t.0 -- Fusion
+  - [meta]:
+    - date: 12/04/2025
+    - tags: [dishes]
 - https://www.youtube.com/playlist?list=PLsRPzRsbp3lAjVXIcvZPDqPiMNuO__ge1 -- My never-ending yt playlists
   - [meta]:
     - date: 11/14/2025
