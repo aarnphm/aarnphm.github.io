@@ -1,5 +1,3 @@
-// day 4: paper rolls
-//
 // the grid contains paper rolls (@) and empty spaces (.). a forklift can access
 // a roll if it has fewer than 4 adjacent rolls in the 8 surrounding cells
 // (Moore neighborhood).
@@ -55,11 +53,11 @@ func findAccessible(grid []string, rows, cols int) [][2]int {
 	return accessible
 }
 
-func part1(grid []string, rows, cols int) int {
+func p1(grid []string, rows, cols int) int {
 	return len(findAccessible(grid, rows, cols))
 }
 
-func part2(grid []string, rows, cols int) int {
+func p2(grid []string, rows, cols int) int {
 	// copy grid since we mutate it
 	g := make([]string, len(grid))
 	copy(g, grid)
@@ -100,6 +98,6 @@ func main() {
 	}
 	cols := len(grid[0])
 
-	fmt.Println("part 1:", part1(grid, rows, cols))
-	fmt.Println("part 2:", part2(grid, rows, cols))
+	fmt.Println("p1:", p1(grid, rows, cols))
+	fmt.Println("p2:", p2(grid, rows, cols))
 }
