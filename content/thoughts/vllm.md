@@ -104,7 +104,6 @@ implementation details (from [vLLM docs](https://docs.vllm.ai/en/latest/serving/
 
 day-0 support for DeepSeek-V3.2-Exp with sparse attention on H100/H200/H20 and B200/GB200.
 
-
 ---
 
 ## KV-Compress

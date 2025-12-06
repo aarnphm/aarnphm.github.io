@@ -10,7 +10,7 @@ coordinates:
 date: "2025-08-05"
 description: west queen west cafe with natural light and strong coffee
 id: Mofer Coffee on Queen
-modified: "2025-11-22 19:35:11 GMT-05:00"
+modified: "2025-12-06 16:47:59 GMT-05:00"
 rating: 5
 tags:
   - places

@@ -10,7 +10,7 @@ coordinates:
 date: "2025-11-15"
 description: intimate wine bar on dundas with natural wines and low lighting
 id: Bar Niro
-modified: "2025-11-22 19:35:11 GMT-05:00"
+modified: "2025-12-06 16:47:59 GMT-05:00"
 rating: 5
 tags:
   - places

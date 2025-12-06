@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2025-12-04 20:26:22 GMT-05:00
+modified: 2025-12-06 17:09:42 GMT-05:00
 permalinks:
   - /website
   - /tweets
@@ -143,6 +143,10 @@ title: are.na
 - [meta]:
   - view: list
 
+- https://x.com/dearvotion/status/1997096571847299503?s=20 -- RIP Frank Gehry
+  - [meta]:
+    - date: 12/06/2025
+    - tags: [obituary]
 - https://x.com/noampomsky/status/1996720230077550769?s=20 -- micromanaging relationship
   - [meta]:
     - date: 12/04/2025
@@ -798,6 +802,11 @@ title: are.na
 
 ## people
 
+- https://www.youtube.com/@PhiloofAlexandria -- Daniel Bonevac
+  - [meta]:
+    - date: 12/05/2025
+    - tags: [professor]
+  - philsopher, lecturer
 - https://en.wikipedia.org/wiki/Ana%C3%AFs_Nin -- Anaïs Nin
   - [meta]:
     - date: 12/04/2025
@@ -1491,6 +1500,16 @@ title: are.na
     - tags: [bookstore]
     - coord: [43.6564852, -79.4086992]
     - pinned: true
+- https://maps.app.goo.gl/QSTKHNGjq1XGkHgLA -- Buca Osteria & Bar
+  - [meta]:
+    - date: 12/06/2025
+    - tags: [italian]
+    - coord: [43.6721727, -79.3898525]
+- https://maps.app.goo.gl/zhUD9XoDfsD8x361A -- PAI
+  - [meta]:
+    - date: 12/06/2025
+    - tags: [thai]
+    - coord: [43.6489907, -79.3900004]
 - https://maps.app.goo.gl/wfCGR5tm7hXgM1oN7 -- Mahjong Bar
   - [meta]:
     - date: 11/22/2025
@@ -1517,6 +1536,12 @@ title: are.na
     - date: 11/22/2025
     - tags: [coffee shop]
     - coord: [43.6535814, -79.4030177]
+- https://maps.app.goo.gl/SPPYffw1iVr9S8LWA -- The Jean Darlene Piano Room [**]
+  - [meta]:
+    - date: 12/06/2025
+    - tags: [jazz]
+    - coord: [43.6491785, -79.424054]
+    - pinned: true
 - https://maps.app.goo.gl/KfkZvSeUqzMUe5rs9 -- Pamenar
   - [meta]:
     - date: 11/17/2025
@@ -1542,6 +1567,16 @@ title: are.na
     - date: 11/22/2025
     - tags: [jazz]
     - coord: [43.6505964, -79.3885233]
+- https://maps.app.goo.gl/UgMkYbuHWampcXcg6 -- DROM Taberna
+  - [meta]:
+    - date: 12/06/2025
+    - tags: [live music]
+    - coord: [43.6460345, -79.4116657]
+- https://maps.app.goo.gl/1TY3HD3zJgExWDje7 -- Handlebar
+  - [meta]:
+    - date: 12/06/2025
+    - tags: [jazz]
+    - coord: [43.6470437, -79.4121211]
 - https://maps.app.goo.gl/8cZo64RZkG5R4n2T6 -- PIKA
   - [meta]:
     - date: 10/05/2025
@@ -1653,9 +1688,19 @@ title: are.na
     - tags: [coffee shop]
     - coord: [43.6456113, -79.4146086]
     - pinned: true
+- https://maps.app.goo.gl/PjD3dY3vfpr2v7st5 -- Susie's Rise & Dine
+  - [meta]:
+    - date: 10/27/2025
+    - tags: [diner]
+    - coord: [43.6554828, -79.4115051]
 
 ## essay
 
+- https://internetprincess.substack.com/p/resident-evil -- Resident evil
+  - [meta]:
+    - date: 12/06/2025
+    - tags: [love, life]
+  - It’s so weird, I text my friend, presumptively, to watch a stranger have what will obviously be one of the singular most beautiful moments of their entire life. I love the city for this, most of the time, for its vast de-privatization of sentiment — I like bearing witness to the best and worst of other people, and I like the knowledge that I am witnessed in return.
 - https://etymology.substack.com/p/feeling-without-thinking -- feeling without thinking
   - [meta]:
     - date: 12/04/2025
@@ -5082,6 +5127,10 @@ title: are.na
 
 ## resources
 
+- https://flowingdata.com/2025/12/02/who-makes-a-higher-salary-and-the-jobs-they-work/ -- Who earns a higher salary than you and the jobs they work
+  - [meta]:
+    - date: 12/06/2025
+    - tags: [data, visualization]
 - https://www.atlasobscura.com/articles/illluminated-manuscript-calligraphy-guide -- Dazzling, Exuberant Renaissance Caligraphy Guide
   - [meta]:
     - date: 12/02/2025

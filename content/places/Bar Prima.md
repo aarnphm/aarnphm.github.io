@@ -10,7 +10,7 @@ coordinates:
 date: "2025-11-22"
 description: aperitivo bar in the theatre centre with italian wines
 id: Bar Prima
-modified: "2025-11-22 19:35:11 GMT-05:00"
+modified: "2025-12-06 16:47:58 GMT-05:00"
 rating: 5
 tags:
   - places
