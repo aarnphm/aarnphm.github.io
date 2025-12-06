@@ -10,7 +10,7 @@ coordinates:
 date: "2025-11-22"
 description: japanese izakaya with thoughtful sake list and cozy atmosphere
 id: Hanmoto
-modified: "2025-11-22 19:35:11 GMT-05:00"
+modified: "2025-12-06 16:47:58 GMT-05:00"
 rating: 5
 tags:
   - places

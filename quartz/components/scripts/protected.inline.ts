@@ -6,58 +6,22 @@ interface EncryptedPayload {
 
 const unlockTimers = new Map<string, number>()
 
-const getLocalStorage = (): Storage | null => {
-  try {
-    if (typeof window === "undefined" || !("localStorage" in window)) {
-      return null
-    }
-    return window.localStorage
-  } catch {
-    return null
-  }
-}
-
 const unlockKey = (slug: string): string => `protected-until:${slug}`
 
-const readUnlockUntil = (slug: string): number | null => {
-  const storage = getLocalStorage()
-  if (!storage) return null
-
-  const raw = storage.getItem(unlockKey(slug))
+function readUnlockUntil(slug: string) {
+  const raw = window.localStorage.getItem(unlockKey(slug))
   if (!raw) return null
 
   const unlockUntil = parseInt(raw, 10)
   if (Number.isNaN(unlockUntil)) {
-    storage.removeItem(unlockKey(slug))
+    window.localStorage.removeItem(unlockKey(slug))
     return null
   }
 
   return unlockUntil
 }
 
-const writeUnlockUntil = (slug: string, unlockUntil: number): void => {
-  const storage = getLocalStorage()
-  if (!storage) return
-
-  try {
-    storage.setItem(unlockKey(slug), unlockUntil.toString())
-  } catch {
-    // localStorage may be unavailable (private mode, quota, etc.)
-  }
-}
-
-const clearUnlockUntil = (slug: string): void => {
-  const storage = getLocalStorage()
-  if (!storage) return
-
-  try {
-    storage.removeItem(unlockKey(slug))
-  } catch {
-    // localStorage may be unavailable (private mode, quota, etc.)
-  }
-}
-
-const clearUnlockTimer = (slug: string): void => {
+function clearUnlockTimer(slug: string) {
   const timerId = unlockTimers.get(slug)
   if (typeof timerId === "number") {
     window.clearTimeout(timerId)
@@ -141,7 +105,7 @@ function reLockContent(article: Element, slug: string): void {
   }
 
   clearUnlockTimer(slug)
-  clearUnlockUntil(slug)
+  window.localStorage.removeItem(unlockKey(slug))
 }
 
 const scheduleReLock = (article: Element, slug: string, unlockUntil: number): void => {
@@ -167,7 +131,7 @@ document.addEventListener("nav", () => {
       if (unlockUntil && unlockUntil > Date.now()) {
         scheduleReLock(article, slug, unlockUntil)
       } else {
-        clearUnlockUntil(slug)
+        window.localStorage.removeItem(unlockKey(slug))
         clearUnlockTimer(slug)
       }
     }
@@ -236,7 +200,7 @@ document.addEventListener("nav", () => {
 
         if (slug) {
           const unlockUntil = Date.now() + DECRYPTION_TTL
-          writeUnlockUntil(slug, unlockUntil)
+          window.localStorage.setItem(unlockKey(slug), unlockUntil.toString())
           scheduleReLock(article, slug, unlockUntil)
         }
 

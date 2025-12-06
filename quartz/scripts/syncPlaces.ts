@@ -356,7 +356,7 @@ function buildFrontmatter(
   } else if (typeof existing.address === "string" && existing.address.trim().length > 0) {
     data.address = existing.address.trim()
   }
-  data.categories = Array.from(categories)
+  data.category = Array.from(categories)
   if (coordinates) {
     data.coordinates = coordinates
   }
