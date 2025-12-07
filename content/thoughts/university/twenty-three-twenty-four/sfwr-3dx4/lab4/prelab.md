@@ -1,5 +1,6 @@
 ---
 date: "2024-03-20"
+description: prelab on root locus plotting, pole and zero locations, gain parameter effects, breakaway points, asymptotes, and controller design using pencil-and-paper method.
 id: prelab
 modified: 2025-10-29 02:16:23 GMT-04:00
 tags:

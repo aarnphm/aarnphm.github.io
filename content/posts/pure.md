@@ -1,5 +1,6 @@
 ---
 date: "2025-10-21"
+description: draft reflection on workaholism, yearning, and the twilight space between wanting and waiting, where attention becomes devotion and longing becomes faith.
 draft: true
 id: pure
 modified: 2025-11-04 18:25:23 GMT-05:00

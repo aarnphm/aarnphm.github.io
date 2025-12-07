@@ -1,5 +1,6 @@
 ---
 date: "2024-01-20"
+description: information system for labor allocation where wealth accumulation without alignment leads to temporal and capital constraints.
 id: monetary
 modified: 2025-10-29 02:15:50 GMT-04:00
 tags:

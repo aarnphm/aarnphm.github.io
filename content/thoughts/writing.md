@@ -2,7 +2,7 @@
 date: "2023-07-29"
 description: a knowledge distillation and learning process
 id: writing
-modified: 2025-11-27 17:57:35 GMT-05:00
+modified: 2025-12-07 01:15:51 GMT-05:00
 tags:
   - sapling
   - evergreen
@@ -162,7 +162,7 @@ kepano, _[File over app](https://stephango.com/file-over-app)_
 
 ## more people should write
 
-_https://jsomers.net/blog/more-people-should-write_
+see also: _https://jsomers.net/blog/more-people-should-write_, _https://newsletter.danielpaleka.com/p/writing-in-public-is-still-underrated_
 
 > You should write because when you know that you're _going to write_, it changes the way you live.
 

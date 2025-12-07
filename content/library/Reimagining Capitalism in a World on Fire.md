@@ -12,5 +12,6 @@ tags:
   - finance
   - economic
 title: Reimagining Capitalism in a World on Fire
+year: 2020
 finished: 2024
 ---

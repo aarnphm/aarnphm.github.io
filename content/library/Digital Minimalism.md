@@ -11,5 +11,6 @@ subcategory: productivity
 tags:
   - protocol
 title: Digital Minimalism
+year: 2019
 finished: 2024
 ---

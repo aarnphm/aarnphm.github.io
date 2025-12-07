@@ -12,4 +12,5 @@ tags:
   - dystopian
   - r/shorts
 title: Oblivion
+year: 2004
 ---

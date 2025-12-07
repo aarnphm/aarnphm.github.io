@@ -1,5 +1,6 @@
 ---
 date: "2024-02-12"
+description: instruction-tuned language models performing tasks without examples, outperforming larger models through improved zero-shot generalization.
 id: zero-shot learning
 modified: 2025-10-29 02:16:24 GMT-04:00
 tags:

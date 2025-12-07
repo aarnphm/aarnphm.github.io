@@ -13,4 +13,5 @@ tags:
 title: There is No Antimemetics Division
 socials:
   ribbonfarm: https://www.ribbonfarm.com/2024/05/02/there-is-no-antimemetics-division-by-qntm/
+year: 2020
 ---

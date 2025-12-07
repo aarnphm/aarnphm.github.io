@@ -13,4 +13,8 @@ tags:
 title: Basic Topology
 status: current
 subcategory: topology
+year: 1983
+notebook: "[[thoughts/topology|topology]]"
+aliases:
+  - topology
 ---

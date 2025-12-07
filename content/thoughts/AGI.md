@@ -1,5 +1,6 @@
 ---
 date: "2024-02-07"
+description: artificial general intelligence capable of understanding any intellectual task humans can, with ability to learn and improve itself beyond human capabilities.
 id: AGI
 modified: 2025-11-01 00:29:12 GMT-04:00
 tags:

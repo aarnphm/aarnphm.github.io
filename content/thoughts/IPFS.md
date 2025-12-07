@@ -1,5 +1,6 @@
 ---
 date: "2024-02-08"
+description: decentralized storage and delivery network built on p2p networking and content-addressable storage using content identifiers.
 id: IPFS
 modified: 2025-10-29 02:15:25 GMT-04:00
 tags:

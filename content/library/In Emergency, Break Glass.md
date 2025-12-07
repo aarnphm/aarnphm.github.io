@@ -11,5 +11,6 @@ subcategory: being
 tags:
   - philosophy
 title: "In Emergency, Break Glass: What Nietzsche Can Teach Us About Joyful Living in a Tech-Saturated World"
+year: 2023
 finished: 2023
 ---

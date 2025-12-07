@@ -1,6 +1,7 @@
 ---
 author: Friedrich Nietzsche
 category: philosophy
+language: german
 date: 2025-08-13
 description: what is good and evil, what is consider morally good and wrong.
 id: Beyond Good and Evil
@@ -11,7 +12,8 @@ subcategory: ethics
 tags:
   - philosophy
 title: Beyond Good and Evil
-finished:
+year: 1886
+finished: 2024
 ---
 
 tl/dr: N critiques the herd mentality, rather he challenges the rigid moral bindings. We all know his attack against Christianity, in a similar fashion as we are observing in technical [[thoughts/Determinism|determinism]] [^advances]

@@ -1,5 +1,6 @@
 ---
 date: "2024-01-24"
+description: control system block diagrams with cascade form, parallel form, feedback loops, summing junctions, and transfer function reduction techniques.
 id: Block Diagrams
 modified: 2025-10-29 02:16:20 GMT-04:00
 tags:

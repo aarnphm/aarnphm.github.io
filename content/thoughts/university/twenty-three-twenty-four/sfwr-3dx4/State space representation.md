@@ -1,5 +1,6 @@
 ---
 date: "2024-01-24"
+description: state space representation using time-domain technique, converting transfer functions to controller canonical and observer canonical forms.
 id: State space representation
 modified: 2025-10-29 02:16:21 GMT-04:00
 tags:

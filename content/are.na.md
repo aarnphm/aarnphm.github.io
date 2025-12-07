@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2025-12-06 17:09:42 GMT-05:00
+modified: 2025-12-07 11:28:27 GMT-05:00
 permalinks:
   - /website
   - /tweets
@@ -1696,6 +1696,12 @@ title: are.na
 
 ## essay
 
+- https://www.nytimes.com/2025/12/03/magazine/chatbot-writing-style.html -- Why does AI write like... that?
+  - [meta]:
+    - date: 12/07/2025
+    - tags: [llm, distribution]
+  - No A.I. has ever stood over a huge windswept view all laid out for its pleasure, or sat down hungrily to a great heap of food. They will never be able to understand the small, strange way in which these two experiences are the same. Everything they know about the world comes to them through statistical correlations within large quantities of words.
+  - Researchers found that most people vastly prefer A.I.-generated poetry to the actual works of Shakespeare, T.S. Eliot and Emily Dickinson. It’s more beautiful. It’s more emotive. It’s more likely to mention deep, touching things, like quietness or echoes. It’s more of what poetry ought to be.
 - https://internetprincess.substack.com/p/resident-evil -- Resident evil
   - [meta]:
     - date: 12/06/2025
@@ -3627,6 +3633,15 @@ title: are.na
 
 ## opinions
 
+- https://epilepsywarning.com/megachurch-time -- MEGACHURCH TIME!
+  - [meta]:
+    - date: 12/07/2025
+    - tags: [signaling]
+  - The internet, which increasingly creates reality, speaks now like a 4 note song. Staccato. Michael Burry. Michael Burry. Big Short. Michael Burry. Trump is viral again today. Trump is viral again today. It's not x it's y. Trump is viral again today.
+  - Incentive structures create an equilibrium where exactly one signal at a time is surfaced by any feed of content:
+    - A poster or corporation, optimizing for engagement, should use the most universal symbol to boost relatability and exposure.
+    - A content sorting algorithm should surface things which are being posted about a lot, which the users are sharing with friends, and pick the most viral piece of content
+    - A user should share the biggest meme of the day with friends, to relate to them.
 - https://www.nytimes.com/2025/11/29/opinion/pianist-music-performance-perfection.html -- The Quest for Perfection Is Stunting Our Society
   - [meta]:
     - date: 11/30/2025
@@ -4166,6 +4181,10 @@ title: are.na
 
 ## philosophy
 
+- https://academics.hamilton.edu/documents/themundanityofexcellence.pdf -- THE MUNDANITY OF EXCELLENCE: ANETHNOGRAPHIC REPORT ON STRATIFICATION AND OLYMPIC SWIMMERS
+  - [meta]:
+    - date: 12/06/2025
+    - tags: [excellency]
 - https://www.youtube.com/watch?v=aaZbCctlll4 -- What is it Like to be a Bat? - The hard problem of consciousness
   - [meta]:
     - date: 12/03/2025
@@ -5082,6 +5101,10 @@ title: are.na
 
 ## arts
 
+- https://www.wallpaper.com/architecture/renzo-piano-exhibition-preview-royal-academy-london -- Renzo Piano Building Workshop retrospective to open at London's Royal Academy of Arts
+  - [meta]:
+    - date: 12/07/2025
+    - tags: [workspace]
 - https://www.rijksmuseum.nl/en -- Rijks museum
   - [meta]:
     - date: 11/28/2025

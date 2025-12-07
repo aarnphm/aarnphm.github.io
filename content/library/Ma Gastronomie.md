@@ -1,6 +1,7 @@
 ---
 author: Fernand Point
 category: non fiction
+language: french
 date: 2025-08-13
 description: classic french cookbook and memoir from chef fernand point, celebrating generous, intuitive cooking and the art of hospitality.
 id: Ma Gastronomie
@@ -11,6 +12,7 @@ subcategory: cooking
 tags:
   - cooking
 title: Ma Gastronomie
+year: 1969
 finished: 2025
 ---
 

@@ -1,5 +1,6 @@
 ---
 date: "2024-01-10"
+description: compensation fundamentals including total rewards, internal alignment, external competitiveness, employee contributions, and strategic pay policies.
 id: Pay model
 modified: 2025-10-29 02:16:12 GMT-04:00
 tags:

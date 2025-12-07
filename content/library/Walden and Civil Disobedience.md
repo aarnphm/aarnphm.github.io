@@ -12,5 +12,6 @@ tags:
   - philosophy
   - r/theology
 title: Walden and Civil Disobedience
+year: 1854
 finished: 2025
 ---

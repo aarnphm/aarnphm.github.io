@@ -12,4 +12,5 @@ subcategory: hedonia
 tags:
   - philosophy
 title: The Conquest of Happiness
+year: 1930
 ---

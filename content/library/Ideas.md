@@ -5,6 +5,7 @@ tags:
 id: Ideas
 title: '"Ideas: General Introduction to Pure Phenomenology"'
 date: 2025-11-30
+description: foundational text of transcendental phenomenology, outlining the method of eidetic reduction and the study of consciousness as pure subjectivity.
 status: to read
 finished:
 subcategory:
@@ -21,4 +22,5 @@ notebook:
 aliases:
   - phenomenology
 pdf: https://cdn.preterhuman.net/texts/thought_and_writing/philosophy/Husserl,%20Edmund/Husserl%20-%20Ideas%20Pertaining%20To%20A%20Pure%20Phenomenology%20And%20To%20A%20Phenomenological%20Philosophy%20II.pdf
+year: 1913
 ---

@@ -1,5 +1,6 @@
 ---
 id: guilt
+description: internalized aggression turned inward as civilization's self-policing mechanism, explored through freud, linguistic phenomenology, and alternatives in care and recognition ethics.
 tags:
   - philosophy
   - psychoanalysis

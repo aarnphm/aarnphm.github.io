@@ -1,6 +1,7 @@
 ---
 author: Plato
 category: philosophy
+language: ancient greek
 date: 2022-08-21
 description: an account of socrates on trial, defending a life of questioning, virtue, and philosophy against the demands of athens.
 id: Apology
@@ -11,5 +12,6 @@ subcategory: regrets
 tags:
   - philosophy
 title: Apology
+year: "~399 BC"
 finished: 2023
 ---

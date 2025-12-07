@@ -8,6 +8,7 @@ coordinates:
   - "43.6554828"
   - "-79.4115051"
 date: "2025-10-27"
+description: college street diner with all-day breakfast and retro charm
 id: Susie's Rise & Dine
 modified: "2025-12-06 16:47:59 GMT-05:00"
 rating: 5

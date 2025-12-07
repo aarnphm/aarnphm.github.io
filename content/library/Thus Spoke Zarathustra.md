@@ -12,4 +12,5 @@ external: https://www.gutenberg.org/files/1998/1998-h/1998-h.htm
 tags:
   - philosophy
 title: Thus Spake Zarathustra
+year: 1883
 ---

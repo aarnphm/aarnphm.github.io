@@ -13,4 +13,5 @@ subcategory: money
 tags:
   - o/business
 title: "The Outsiders: Eight Unconventional CEOs and Their Radically Rational Blueprint for Success"
+year: 2012
 ---

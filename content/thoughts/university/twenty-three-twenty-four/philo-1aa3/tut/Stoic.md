@@ -1,5 +1,6 @@
 ---
 date: "2023-11-05"
+description: stoicism from epictetus's enchiridion on control, what belongs to us versus others, false belief as source of harm, maintaining tranquility.
 id: Stoic
 modified: 2025-10-29 02:16:18 GMT-04:00
 tags:

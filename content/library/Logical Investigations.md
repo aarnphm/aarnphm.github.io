@@ -1,6 +1,7 @@
 ---
 author: Edmund Husserl
 category: philosophy
+language: german
 date: 2025-10-26
 description: husserl early phenomenological work, analyzing meaning, intentionality, and logic to ground philosophy in rigorous description of consciousness.
 id: Logical Investigations
@@ -11,4 +12,5 @@ subcategory: phenomenology
 tags:
   - philosophy
 title: Logical Investigations
+year: 1900
 ---

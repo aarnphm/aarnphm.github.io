@@ -18,6 +18,7 @@ author:
   - Clara Herrmann
   - Elise Misao Hunchuck
   - Maya Indira Ganesh
+year: 2024
 ---
 
 see also: https://www.creativeapplications.net/books/the-ai-anarchies-book

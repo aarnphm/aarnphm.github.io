@@ -1,5 +1,6 @@
 ---
 date: "2024-12-16"
+description: analysis of first-order and second-order system responses, time constants, and rise time calculations.
 id: system response
 modified: 2025-10-29 02:16:07 GMT-04:00
 tags:

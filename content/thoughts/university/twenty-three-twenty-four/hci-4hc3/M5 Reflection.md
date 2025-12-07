@@ -1,5 +1,6 @@
 ---
 date: "2025-10-29"
+description: reflection on high-fidelity prototype creation for mosaic project emphasizing accessibility, extensibility, personalization, and modular design systems.
 draft: true
 id: M5 Reflection
 modified: 2025-10-29 02:16:15 GMT-04:00

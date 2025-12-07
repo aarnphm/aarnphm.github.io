@@ -12,5 +12,6 @@ subcategory:
 tags:
   - philosophy
 title: The Trial
+year: 1925
 finished: 2024
 ---

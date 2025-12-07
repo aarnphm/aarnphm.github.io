@@ -1,5 +1,6 @@
 ---
 date: "2024-10-07"
+description: assignment on ordinary least squares regression comparing homogeneous versus non-homogeneous models with overfitting analysis.
 id: content
 modified: 2025-10-29 02:16:08 GMT-04:00
 tags:

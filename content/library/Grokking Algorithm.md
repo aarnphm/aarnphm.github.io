@@ -12,4 +12,5 @@ subcategory: computing
 tags:
   - algorithm
 title: Grokking Algorithm
+year: 2016
 ---

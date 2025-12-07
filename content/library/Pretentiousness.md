@@ -12,5 +12,6 @@ subcategory: being
 tags:
   - aesthetics
 title: "Pretentiousness: Why it Matters"
+year: 2016
 finished: 2023
 ---

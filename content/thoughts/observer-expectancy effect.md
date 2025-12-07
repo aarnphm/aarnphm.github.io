@@ -1,5 +1,6 @@
 ---
 date: "2024-02-07"
+description: phenomenon where observer's prejudices and expectations unconsciously influence the behavior of subjects being observed.
 id: observer-expectancy effect
 modified: 2025-10-29 02:15:51 GMT-04:00
 tags:

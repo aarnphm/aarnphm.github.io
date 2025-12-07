@@ -1,5 +1,6 @@
 ---
 date: "2024-01-09"
+description: collection of scattered thoughts, ideas, and concepts explored through essays and reflections on philosophy, technology, and writing.
 id: index
 modified: 2025-10-29 02:15:47 GMT-04:00
 tags:

@@ -15,8 +15,6 @@ properties:
     displayName: tags
   file.basename:
     displayName: notes
-  note.finished:
-    displayName: year
 views:
   - type: cards
     name: gallery
@@ -184,8 +182,9 @@ views:
       - title
       - date
       - tags
-      - status
       - finished
+      - year
+      - status
       - subcategory
       - author
       - posters
@@ -195,6 +194,8 @@ views:
       - aliases
       - pdf
     sort:
+      - property: finished
+        direction: DESC
       - property: date
         direction: DESC
       - property: aliases
@@ -222,7 +223,7 @@ views:
       note.title: 401
       note.date: 147
       note.tags: 302
-      note.status: 98
+      note.status: 83
       note.subcategory: 172
       note.author: 205
       note.posters: 410

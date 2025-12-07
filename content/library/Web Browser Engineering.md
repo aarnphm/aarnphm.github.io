@@ -14,5 +14,6 @@ subcategory: programming
 tags:
   - technical
 title: Web Browser Engineering
+year: 2023
 finished: 2025
 ---

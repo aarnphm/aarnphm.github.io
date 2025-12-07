@@ -1,5 +1,6 @@
 ---
 date: "2024-01-08"
+description: data structures and algorithms course covering complexity analysis, sorting, trees, graphs, hashing with weekly assignments through winter term.
 id: index
 modified: 2025-10-29 02:16:20 GMT-04:00
 tags:

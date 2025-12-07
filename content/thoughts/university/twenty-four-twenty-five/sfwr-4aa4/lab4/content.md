@@ -1,5 +1,6 @@
 ---
 date: "2024-10-04"
+description: lab on threaded led control using embedded c programming across three parts.
 id: content
 modified: 2025-10-29 02:16:06 GMT-04:00
 tags:

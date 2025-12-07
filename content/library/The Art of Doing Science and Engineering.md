@@ -12,4 +12,5 @@ tags:
   - research
   - o/life
 title: "The Art of Doing Science and Engineering: Learning to Learn"
+year: 1997
 ---

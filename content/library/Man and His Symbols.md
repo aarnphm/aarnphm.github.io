@@ -6,10 +6,11 @@ description: jungian exploration of symbols and dreams, explaining how images fr
 id: Man and His Symbols
 modified: 2025-10-29 02:14:32 GMT-04:00
 posters: "[[library/posters/man-and-his-symbols.jpg]]"
-status: current
+status: to read
 subcategory: psychology
 tags:
   - philosophy
   - psychology
 title: Man and His Symbols
+year: 1964
 ---

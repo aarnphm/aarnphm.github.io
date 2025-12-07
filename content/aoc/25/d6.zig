@@ -6,7 +6,7 @@ const Input = struct {
     max_width: usize,
 };
 
-fn parseInput() Input {
+fn parse() Input {
     const data = @embedFile("d6.txt");
     var lines = std.mem.splitScalar(u8, data, '\n');
     var input: Input = .{ .rows = undefined, .row_count = 0, .max_width = 0 };
@@ -34,7 +34,7 @@ fn isSeparator(input: *const Input, col: usize) bool {
     return true;
 }
 
-fn getOperation(input: *const Input, start_col: usize, end_col: usize) u8 {
+fn operation(input: *const Input, start_col: usize, end_col: usize) u8 {
     if (input.row_count > 4) {
         const end = @min(end_col, input.rows[4].len);
         if (start_col < end) {
@@ -48,7 +48,7 @@ fn getOperation(input: *const Input, start_col: usize, end_col: usize) u8 {
 
 // p1: each row has one number per problem (read horizontally)
 fn p1() u128 {
-    const input = parseInput();
+    const input = parse();
     var total: u128 = 0;
     var col: usize = 0;
 
@@ -71,7 +71,7 @@ fn p1() u128 {
             }
         }
 
-        const op = getOperation(&input, start_col, col);
+        const op = operation(&input, start_col, col);
         var result: u128 = if (op == '*') 1 else 0;
         for (numbers) |maybe_n| {
             if (maybe_n) |n| {
@@ -86,7 +86,7 @@ fn p1() u128 {
 
 // p2: each character column is a number (digits read top-to-bottom)
 fn p2() u128 {
-    const input = parseInput();
+    const input = parse();
     var total: u128 = 0;
     var col: usize = 0;
 
@@ -97,7 +97,7 @@ fn p2() u128 {
         const start_col = col;
         while (col < input.max_width and !isSeparator(&input, col)) col += 1;
 
-        const op = getOperation(&input, start_col, col);
+        const op = operation(&input, start_col, col);
         var result: u128 = if (op == '*') 1 else 0;
 
         // each character column in [start_col, col) is a separate number

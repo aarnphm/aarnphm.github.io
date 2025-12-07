@@ -1,5 +1,6 @@
 ---
 date: "2024-02-01"
+description: economic optimization framework with decision variables, constraints, objective functions, feasible sets, and optimal value determination.
 id: Optimization
 modified: 2025-10-29 02:16:13 GMT-04:00
 tags:

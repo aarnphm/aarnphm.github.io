@@ -1,6 +1,7 @@
 ---
 author: Martin Heidegger
 category: philosophy
+language: german
 date: 2025-10-06
 description: heidegger explores being, temporality, and everyday life, asking what it means for dasein to exist in the world.
 id: Being and Time
@@ -16,6 +17,8 @@ tags:
   - philosophy
   - r/metaphysics
 title: Being and Time
+year: 1927
+translator:
 ---
 
 ![[thoughts/being#Heidegger's Being and Time]]

@@ -1,5 +1,6 @@
 ---
 date: "2024-02-28"
+description: pay surveys, market competitors, external competitiveness, broadbanding, and employee benefits including flexible work arrangements and parental leave.
 id: Designing Pay Levels  and Employee Benefits
 modified: 2025-10-29 02:16:11 GMT-04:00
 tags:

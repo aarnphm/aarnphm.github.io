@@ -1,6 +1,7 @@
 ---
 author: Marcus Aurelius
 category: philosophy
+language: ancient greek
 date: 2022-08-21
 description: stoic notebook of personal reflections on virtue, duty, and impermanence, written by a roman emperor reminding himself how to live.
 id: Meditations
@@ -11,5 +12,6 @@ subcategory: being
 tags:
   - philosophy
 title: Meditations
+year: "~ 180"
 finished: 2024
 ---

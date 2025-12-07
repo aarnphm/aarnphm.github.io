@@ -14,5 +14,6 @@ tags:
   - ml
   - llm
 title: The Little Book of Deep Learning
+year: 2023
 finished: 2024
 ---

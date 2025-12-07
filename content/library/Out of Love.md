@@ -12,5 +12,6 @@ tags:
   - love
   - o/life
 title: Out of Love
+year: 2021
 finished: 2023
 ---

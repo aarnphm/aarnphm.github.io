@@ -12,6 +12,7 @@ tags:
   - economic
   - finance
 title: Capitalism and Freedom
+year: 1962
 finished: 2025
 ---
 

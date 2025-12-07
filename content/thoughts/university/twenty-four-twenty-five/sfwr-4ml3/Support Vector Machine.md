@@ -1,5 +1,6 @@
 ---
 date: "2024-11-11"
+description: support vector machines maximizing margin through hard-margin and soft-margin formulations with euclidean distance hyperplanes.
 id: Support Vector Machine
 modified: 2025-10-29 02:16:08 GMT-04:00
 tags:

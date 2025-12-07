@@ -1,6 +1,7 @@
 ---
 author: Milan Kundera
 category: philosophy
+language: czech
 date: "2025-10-06"
 description: collection of kundera stories about love, desire, and humiliation, exposing comic cruelty in everyday romantic games.
 id: RISIBLES AMOURS

@@ -11,4 +11,5 @@ subcategory: being
 tags:
   - philosophy
 title: A Conflict of Visions
+year: 1987
 ---

@@ -12,4 +12,5 @@ tags:
   - capitalism
   - economic
 title: Free to Choose
+year: 1980
 ---

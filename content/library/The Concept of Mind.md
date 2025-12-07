@@ -11,4 +11,5 @@ subcategory: hermeneutics
 tags:
   - philosophy
 title: The Concept of Mind
+year: 1949
 ---

@@ -1,5 +1,6 @@
 ---
 date: "2023-09-11"
+description: sequential programming with correctness assertions, sequential composition rules, arrays as partial functions, and loop invariants for verification.
 id: Sequential programming
 modified: 2025-10-29 02:16:20 GMT-04:00
 tags:

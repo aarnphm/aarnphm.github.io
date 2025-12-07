@@ -1,5 +1,6 @@
 ---
 date: "2024-01-07"
+description: intelligence as tool for thought built atop human intelligence rather than replacing it, questioning whether next-token prediction constitutes true intelligence.
 id: Intelligence amplification
 modified: 2025-10-29 02:15:25 GMT-04:00
 tags:

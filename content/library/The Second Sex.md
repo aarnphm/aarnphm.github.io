@@ -1,6 +1,7 @@
 ---
 author: "[[thoughts/Simone de Beauvoir|Simone de Beauvoir]]"
 category: philosophy
+language: french
 date: "2025-10-06"
 description: the oppresion of women in society
 finished: 2025
@@ -12,6 +13,7 @@ subcategory: feminism
 tags:
   - philosophy
 title: Le Deuxième Sexe
+year: 1949
 ---
 
 ## The Woman in Love

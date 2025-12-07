@@ -12,5 +12,6 @@ tags:
   - love
   - o/relationship
 title: The end of the affair
+year: 1951
 finished: 2024
 ---

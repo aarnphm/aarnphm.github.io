@@ -4,6 +4,7 @@ tags:
 date: 2025-11-27
 notebook:
 category: letters
+language: german
 author: Franz Kafka
 description: A collection of letters that Kafka wrote for his father, never to be seen by his own father.
 title: Letter to The Father
@@ -12,4 +13,5 @@ pdf: https://images.pcmac.org/Uploads/Bellevue/Bellevue/Departments/DocumentsSub
 status: current
 subcategory: arts
 id: Letter to The Father
+year: 1952
 ---

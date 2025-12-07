@@ -12,6 +12,7 @@ tags:
   - r/sociology
   - dystopian
 title: Foundation
+year: 1951
 status: finished
 finished: 2025
 ---

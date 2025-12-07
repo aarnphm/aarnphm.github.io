@@ -15,4 +15,5 @@ subcategory: communal
 tags:
   - r/pattern
 title: "A Pattern Language: Towns, Building, Construction"
+year: 1977
 ---

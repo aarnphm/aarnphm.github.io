@@ -1,6 +1,7 @@
 ---
 category: letters
 date: "2022-01-25"
+description: curated film watchlist exploring lynch's work and its threads through cinema, anchored in cinematheque.
 id: lychian watchlist
 modified: 2025-11-21 12:09:30 GMT-05:00
 notebook: "[[cinematheque]]"

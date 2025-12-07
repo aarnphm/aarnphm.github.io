@@ -1,5 +1,6 @@
 ---
 date: "2025-10-06"
+description: comprehensive survey of efficient llm serving across disaggregated architectures, throughput optimization, kv cache, moe acceleration, and long-context interpretability with concrete research directions.
 draft: true
 id: mlsys-research-directions
 modified: 2025-11-09 01:29:31 GMT-05:00

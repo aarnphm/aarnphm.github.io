@@ -1,6 +1,7 @@
 ---
 author: Arthur Schopenhauer
 category: philosophy
+language: german
 date: 2025-10-07
 description: schopenhauer metaphysics that sees the world as representation for us and as blind will in itself, stressing suffering, art, and compassion.
 id: The World as Will and Representation
@@ -12,4 +13,5 @@ subcategory: nihilism
 tags:
   - philosophy
 title: The World as Will and Representation
+year: 1818
 ---

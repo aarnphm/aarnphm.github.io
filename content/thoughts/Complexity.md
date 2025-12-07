@@ -1,5 +1,6 @@
 ---
 date: "2024-12-01"
+description: cyclomatic complexity as proxy metric for software complexity, derived from control-flow graphs, and lehman's laws of software evolution.
 id: Complexity
 modified: 2025-10-29 02:15:19 GMT-04:00
 tags:

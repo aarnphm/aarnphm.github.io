@@ -1,5 +1,6 @@
 ---
 date: "2024-03-08"
+description: midterm review covering dfas, nfas, product construction, subset construction, quotient construction, and regular expressions.
 id: midterm
 modified: 2025-10-29 02:16:01 GMT-04:00
 tags:

@@ -11,5 +11,6 @@ subcategory: theology
 tags:
   - philosophy
 title: The Lily of the Field and the Bird of the Air
+year: 1849
 finished: 2024
 ---

@@ -1,6 +1,7 @@
 ---
 author: "[[thoughts/Camus|Abert Camus]]"
 category: fiction
+language: french
 date: 2025-10-06
 description: unfinished, autobiographical novel about childhood in colonial algeria, exploring poverty, family, and the search for origin.
 id: The First Man
@@ -11,5 +12,6 @@ subcategory: existentialism
 tags:
   - philosophy
 title: The First Man
+year: 1994
 finished: 2025
 ---

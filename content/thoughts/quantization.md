@@ -1,5 +1,6 @@
 ---
 date: "2024-02-05"
+description: reducing neural network memory and compute through low-precision data types like int8 and fp16, using calibration and rounding schemes.
 id: quantization
 modified: 2025-10-29 02:15:52 GMT-04:00
 tags:

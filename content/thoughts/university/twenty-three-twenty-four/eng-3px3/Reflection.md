@@ -1,5 +1,6 @@
 ---
 date: "2024-02-12"
+description: inter-group reflection on prefab housing project discussing robot outsourcing versus in-house development and sensitivity analysis considerations.
 draft: true
 id: Reflection
 modified: 2025-10-29 02:16:14 GMT-04:00

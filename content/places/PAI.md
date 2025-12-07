@@ -8,6 +8,7 @@ coordinates:
   - "43.6489907"
   - "-79.3900004"
 date: "2025-12-06"
+description: northern thai with proper khao soi and bold flavors
 id: PAI
 modified: "2025-12-06 16:47:59 GMT-05:00"
 rating: 5

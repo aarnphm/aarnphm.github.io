@@ -1,6 +1,7 @@
 ---
 author: "[[thoughts/Camus|Albert Camus]]"
 category: fiction
+language: french
 date: 2025-08-10
 description: monologue of a former lawyer in amsterdam, dissecting his own hypocrisy and guilt while quietly indicting bourgeois morality.
 finished: 2025
@@ -13,4 +14,5 @@ tags:
   - philosophy
   - o/life
 title: The Fall
+year: 1956
 ---

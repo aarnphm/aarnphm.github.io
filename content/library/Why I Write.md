@@ -12,6 +12,7 @@ tags:
   - writing
   - being
 title: Why I Write
+year: 1946
 finished: 2023
 notebook: "[[thoughts/writing|writing]]"
 ---

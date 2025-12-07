@@ -11,4 +11,5 @@ subcategory: life
 tags:
   - p/sf
 title: The Uninhabitable Earth
+year: 2019
 ---

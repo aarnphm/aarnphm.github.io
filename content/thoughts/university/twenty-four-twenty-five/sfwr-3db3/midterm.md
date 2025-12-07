@@ -1,5 +1,6 @@
 ---
 date: "2024-10-23"
+description: midterm review covering entity-relationship models, sql queries, constraints, weak entities, and b-plus tree indexes.
 id: midterm
 modified: 2025-10-29 02:16:03 GMT-04:00
 tags:

@@ -13,4 +13,5 @@ tags:
   - money
   - capitalism
 title: Principles
+year: 2017
 ---

@@ -12,6 +12,7 @@ subcategory: love
 tags:
   - love
 title: The Applicant
+year: 1965
 finished: 2025
 ---
 

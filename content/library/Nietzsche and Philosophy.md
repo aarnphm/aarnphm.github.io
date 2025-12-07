@@ -1,6 +1,7 @@
 ---
 author: Gilles Deleuze
 category: philosophy
+language: french
 date: 2025-08-13
 description: being and multiplicity
 external: https://antilogicalism.com/wp-content/uploads/2017/07/nietzsche-and-philosophy.pdf
@@ -14,6 +15,7 @@ subcategory: multiplicity
 tags:
   - philosophy
 title: Nietzsche and Philosophy
+year: 1962
 ---
 
 _by [[thoughts/Giles Deleuze|Giles Deleuze]]_

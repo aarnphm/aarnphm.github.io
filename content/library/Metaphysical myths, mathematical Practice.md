@@ -12,4 +12,5 @@ subcategory: mathematics
 tags:
   - philosophy
 title: "Metaphysical myths, mathematical Practice: The Ontology and Epistemology of the Exact Science"
+year: 1994
 ---

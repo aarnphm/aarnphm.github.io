@@ -1,5 +1,6 @@
 ---
 date: "2024-10-10"
+description: control systems engineering course with labs on pid controllers, transfer functions, state space design, root locus, and stability analysis.
 id: index
 modified: 2025-10-29 02:16:22 GMT-04:00
 tags:

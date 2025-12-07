@@ -1,6 +1,7 @@
 ---
 author: Franz Kafka
 category: letters
+language: german
 date: 2025-10-06
 description: letters from kafka to milena that chart intense, self doubting love across distance, illness, and impossibility.
 id: Letter to Milena
@@ -13,6 +14,7 @@ tags:
   - love
   - o/life
 title: Letter to Milena
+year: 1952
 finished: 2025
 ---
 

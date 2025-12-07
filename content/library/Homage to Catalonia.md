@@ -11,4 +11,5 @@ subcategory: life
 tags:
   - dystopian
 title: Homage to Catalonia
+year: 1938
 ---

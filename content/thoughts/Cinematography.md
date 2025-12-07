@@ -1,5 +1,6 @@
 ---
 date: "2023-09-11"
+description: notes on film equipment, anamorphic lenses, camera formats, and compositional techniques including planimetric composition and lighting.
 id: Cinematography
 modified: 2025-10-29 02:15:18 GMT-04:00
 tags:

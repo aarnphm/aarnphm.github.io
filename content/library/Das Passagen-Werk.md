@@ -1,6 +1,7 @@
 ---
 author: Walter Benjamin
 category: philosophy
+language: german
 date: 2025-10-07
 description: fragmentary study of nineteenth century parisian arcades, using notes and quotations to trace capitalism, memory, and modern urban life.
 id: Das Passagen-Werk
@@ -12,6 +13,7 @@ subcategory: design
 tags:
   - philosophy
 title: Das Passagen-Werk
+year: 1982
 ---
 
 Also known as The Arcades Project.

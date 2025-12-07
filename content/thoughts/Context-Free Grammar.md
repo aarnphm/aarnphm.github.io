@@ -1,5 +1,6 @@
 ---
 date: "2025-04-22"
+description: formal grammar defined as 4-tuple with non-terminals, terminals, production rules, and start symbol, recognized by pushdown automata.
 id: Context-Free Grammar
 modified: 2025-10-29 02:15:19 GMT-04:00
 tags:

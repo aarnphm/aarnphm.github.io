@@ -17,4 +17,5 @@ tags:
   - theory
   - compiler
 title: Structure and Interpretation of Computer Programs
+year: 1985
 ---

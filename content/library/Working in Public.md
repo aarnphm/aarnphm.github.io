@@ -13,4 +13,5 @@ tags:
   - technical
   - o/opensource
 title: "Working in Public: The Making and Maintenance of Open Source Software"
+year: 2020
 ---

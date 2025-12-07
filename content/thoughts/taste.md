@@ -1,5 +1,6 @@
 ---
 date: "2024-02-19"
+description: aesthetic judgment shaped by internal value systems rather than outsourced approval from committees and social norms.
 id: taste
 modified: 2025-10-29 02:15:54 GMT-04:00
 tags:

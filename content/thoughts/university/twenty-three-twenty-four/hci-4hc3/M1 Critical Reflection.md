@@ -1,5 +1,6 @@
 ---
 date: "2024-01-14"
+description: reflection on team collaboration for mosaic project improvement covering user study coordination, ux design leadership, and requirements generation.
 draft: true
 id: M1 Critical Reflection
 modified: 2025-10-29 02:16:15 GMT-04:00

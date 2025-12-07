@@ -2,14 +2,14 @@
 date: "2025-10-04"
 description: language games, pictures of states, proposition
 id: Wittgenstein
-modified: 2025-11-22 11:41:34 GMT-05:00
-tags:
-  - philosophy
-title: Wittgenstein
+modified: 2025-12-07 01:16:00 GMT-05:00
 seealso:
   - "[[library/Tractatus Logico-Philosophicus|TLP]]"
   - "[[library/Philosophical Investigations|PI]]"
   - "[[library/On Certainty|certainty]]"
+tags:
+  - philosophy
+title: Wittgenstein
 ---
 
 ```quotes
