@@ -2,6 +2,7 @@
 author:
   - "[[thoughts/Camus|Abert Camus]]"
 category: fiction
+language: french
 date: 2022-08-21
 description: spare novel about meursault, who reacts blankly to death and crime, dramatizing absurdity, indifference, and social judgment.
 id: The Stranger
@@ -13,5 +14,6 @@ subcategory: existentialism
 tags:
   - philosophy
 title: The Stranger
+year: 1942
 finished: 2024
 ---

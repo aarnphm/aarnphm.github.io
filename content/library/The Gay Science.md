@@ -1,6 +1,7 @@
 ---
 author: Friedrich Nietzsche
 category: philosophy
+language: german
 date: 2025-08-13
 description: aphoristic work where nietzsche plays with song, experiment, and thought, introducing themes like eternal recurrence and the death of god.
 id: The Gay Science
@@ -13,12 +14,13 @@ subcategory: metaphysics
 tags:
   - philosophy
 title: The Gay Science
-finished:
+finished: 2025
 translator:
   - Walter Kaufmann
 aliases:
   - gay science
   - joyful
+year: 1882
 ---
 
 related: [[thoughts/Philosophy and Nietzsche]]

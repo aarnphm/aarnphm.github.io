@@ -12,4 +12,5 @@ tags:
   - novel
   - dystopian
 title: Robinson Crusoe
+year: 1719
 ---

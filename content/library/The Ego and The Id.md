@@ -1,6 +1,7 @@
 ---
 author: "[[thoughts/Freud|Sigmund Freud]]"
 category: philosophy
+language: german
 date: 2025-05-31
 description: freud text that introduces the structural model of id, ego, and superego, linking conflict, repression, and neurosis.
 finished: 2025
@@ -12,6 +13,7 @@ subcategory: psychology
 tags:
   - psychology
 title: The Ego and The Id
+year: 1923
 ---
 
 > The state of consciousness is very transitory

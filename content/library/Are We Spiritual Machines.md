@@ -15,4 +15,5 @@ tags:
   - o/life
   - llm
 title: Are We Spiritual Machines?
+year: 2001
 ---

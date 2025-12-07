@@ -3,6 +3,7 @@ author: "[[thoughts/Wittgenstein|Ludwig Wittgenstein]]"
 aliases:
   - PI
 category: philosophy
+language: german
 date: 2025-10-07
 description: latter Wittgenstein
 external: https://static1.squarespace.com/static/54889e73e4b0a2c1f9891289/t/564b61a4e4b04eca59c4d232/1447780772744/Ludwig.Wittgenstein.-.Philosophical.Investigations.pdf
@@ -20,6 +21,10 @@ subcategory:
 tags:
   - philosophy
 title: Philosophical Investigations
+year: 1953
+translator:
+  - P. M. S. Hacker
+  - Joachim Schulte
 ---
 
 W abandoned the picture theory of the [[library/Tractatus Logico-Philosophicus|TLP]] for a therapeutic approach to philosophical problems.

@@ -1,5 +1,6 @@
 ---
 date: "2024-02-12"
+description: constructive communication with llms through quality prompts, including chain-of-thought and least-to-most prompting strategies.
 id: prompt engineering
 modified: 2025-10-29 02:15:52 GMT-04:00
 tags:

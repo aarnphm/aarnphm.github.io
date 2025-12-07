@@ -14,5 +14,6 @@ tags:
   - aesthetics
   - p/sf
 title: Slaughterhouse-Five
+year: 1969
 finished: 2025
 ---

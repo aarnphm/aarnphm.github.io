@@ -13,6 +13,7 @@ tags:
   - essays
   - o/relationship
 title: Very Slender Differences
+year: 1758
 ---
 
 Life has no pleasure higher or nobler than that of [[thoughts/friendship]]. It is painful to consider that this sublime enjoyment may be impaired or destroyed by innumerable causes, and that there is no human possession of which the duration is less certain.

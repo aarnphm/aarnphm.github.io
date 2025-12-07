@@ -12,4 +12,5 @@ tags:
   - fruit
   - novel
 title: Play It as It Lays
+year: 1970
 ---

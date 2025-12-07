@@ -11,6 +11,7 @@ subcategory: life
 tags:
   - o/life
 title: Godfather
+year: 1969
 finished: 2021
 ---
 

@@ -12,4 +12,5 @@ tags:
   - r/progress
   - llm
 title: "Scientific Freedom: The Elixir of Civilization"
+year: 2008
 ---

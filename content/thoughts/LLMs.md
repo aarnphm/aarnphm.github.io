@@ -3,7 +3,7 @@ abstract: large language models will probably be the most important piece of tec
 date: "2024-02-07"
 description: a mathematical framework for intelligence
 id: LLMs
-modified: 2025-11-03 04:58:32 GMT-05:00
+modified: 2025-12-07 01:20:54 GMT-05:00
 tags:
   - sapling
   - ml
@@ -71,11 +71,13 @@ See also: [All the better to see you with](https://www.kernelmag.io/2/all-the-be
 
 https://twitter.com/paulg/status/1761801995302662175
 
-### machine-assisted writings
+### machine-assisted [[thoughts/writing]]
 
 source: [creative fiction with GPT-3](https://gwern.net/gpt-3)
 
 Idea: use [[thoughts/mechanistic interpretability#sparse autoencoders]] to guide ideas generations
+
+The idea from [writing for LLMs](https://gwern.net/llm-writing) means once your writing/thoughts were embedded within the models' [[thoughts/latent space]]
 
 ### Good-enough
 

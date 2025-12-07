@@ -1,6 +1,7 @@
 ---
 author: Alain Deneault
 category: non fiction
+language: french
 date: 2025-10-07
 description: critique of how mediocre norms capture politics, culture, and institutions, rewarding conformity and management speak over real thinking.
 id: Mediocracy
@@ -11,4 +12,5 @@ subcategory: politics
 tags:
   - politics
 title: "Mediocracy: The Politics of the Extreme Centre"
+year: 2015
 ---

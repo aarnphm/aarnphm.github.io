@@ -1,6 +1,7 @@
 ---
 author: "[[thoughts/Freud|Sigmund Freud]]"
 category: philosophy
+language: german
 date: 2024-12-23
 description: freud explores repetition, trauma, and the death drive, extending psychoanalysis beyond simple pursuit of pleasure.
 finished: 2024
@@ -12,4 +13,5 @@ subcategory: hedonia
 tags:
   - psychology
 title: Beyond The Pleasure Principle
+year: 1920
 ---

@@ -12,5 +12,6 @@ tags:
   - philosophy
   - r/pain
 title: Crime and Punishment
+year: 1866
 finished: 2025
 ---

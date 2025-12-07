@@ -11,6 +11,7 @@ subcategory: life
 tags:
   - p/sf
 title: Dune
+year: 1965
 finished: 2022
 ---
 

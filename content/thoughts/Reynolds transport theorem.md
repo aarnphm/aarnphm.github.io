@@ -1,5 +1,6 @@
 ---
 date: "2024-11-27"
+description: three-dimensional generalization of leibniz integral rule for differentiating integrals over time-dependent regions with moving boundaries.
 id: Reynolds transport theorem
 modified: 2025-10-29 02:15:33 GMT-04:00
 tags:

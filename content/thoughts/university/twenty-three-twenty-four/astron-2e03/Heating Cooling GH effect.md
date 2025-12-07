@@ -1,5 +1,6 @@
 ---
 date: "2024-02-26"
+description: greenhouse effect toy model relating surface temperature to atmospheric layers through radiative equilibrium.
 id: Heating Cooling GH effect
 modified: 2025-10-29 02:16:11 GMT-04:00
 tags:

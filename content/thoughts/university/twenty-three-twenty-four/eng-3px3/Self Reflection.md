@@ -1,5 +1,6 @@
 ---
 date: "2024-02-12"
+description: personal reflection on prefab housing automation project covering team contributions, challenges faced, and learning outcomes from economic analysis.
 draft: true
 id: Self Reflection
 modified: 2025-10-29 02:16:14 GMT-04:00

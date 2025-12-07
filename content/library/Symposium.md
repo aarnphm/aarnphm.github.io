@@ -1,6 +1,7 @@
 ---
 author: Plato
 category: philosophy
+language: ancient greek
 date: 2022-08-21
 description: dialogue where guests give speeches on eros, exploring different ideas of love, beauty, and the ladder toward the form.
 id: Symposium
@@ -11,5 +12,6 @@ subcategory: love
 tags:
   - philosophy
 title: Symposium
+year: "~385 BC"
 finished: 2023
 ---

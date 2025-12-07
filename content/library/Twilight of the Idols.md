@@ -1,6 +1,7 @@
 ---
 author: Friedrich Nietzsche
 category: philosophy
+language: german
 date: 2025-01-05
 description: late, sharp summary of nietzsche ideas, smashing idols of morality, philosophy, and culture in short, polemical sections.
 id: Twilight of the Idols
@@ -11,5 +12,6 @@ subcategory: society
 tags:
   - philosophy
 title: Twilight of the Idols
+year: 1889
 finished: 2024
 ---

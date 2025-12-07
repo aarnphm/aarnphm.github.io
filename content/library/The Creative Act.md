@@ -13,4 +13,5 @@ subcategory:
 tags:
   - r/creative
 title: "The Creative Act: A Way of Being"
+year: 2023
 ---

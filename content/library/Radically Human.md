@@ -13,5 +13,6 @@ subcategory: programming
 tags:
   - o/business
 title: "Radically Human: How New Technology Is Transforming Business and Shaping Our Future"
+year: 2022
 finished: 2023
 ---

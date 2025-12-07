@@ -8,6 +8,7 @@ coordinates:
   - "43.6470437"
   - "-79.4121211"
 date: "2025-12-06"
+description: trinity bellwoods venue with local jazz and world music
 id: Handlebar
 modified: "2025-12-06 16:47:59 GMT-05:00"
 rating: 5

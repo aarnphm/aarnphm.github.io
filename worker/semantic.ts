@@ -70,7 +70,7 @@ class SemanticSearchEngine {
   }
 
   async initialize() {
-    const res = await fetch("/embeddings/manifest.json")
+    const res = await fetch("https://aarnphm.xyz/embeddings/manifest.json")
     if (!res.ok) {
       throw new Error(`failed to fetch manifest: ${res.status}`)
     }

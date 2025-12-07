@@ -11,5 +11,6 @@ subcategory: empiricism
 tags:
   - philosophy
 title: A Treatise of Human Nature
+year: 1739
 notebook:
 ---

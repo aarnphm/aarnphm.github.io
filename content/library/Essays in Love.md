@@ -12,5 +12,6 @@ tags:
   - love
   - aesthetics
 title: Essays in Love
+year: 1993
 finished: 2024
 ---

@@ -12,4 +12,5 @@ tags:
   - novel
   - love
 title: Sea of Tranquility
+year: 2022
 ---

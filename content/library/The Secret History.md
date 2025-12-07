@@ -12,5 +12,6 @@ tags:
   - p/sf
   - r/sociology
 title: The Secret History
+year: 1992
 finished:
 ---

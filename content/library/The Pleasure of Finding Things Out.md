@@ -12,4 +12,5 @@ tags:
   - technical
   - research
 title: The Pleasure of Finding Things Out
+year: 1999
 ---

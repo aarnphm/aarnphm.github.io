@@ -1,5 +1,6 @@
 ---
 date: "2024-11-27"
+description: topological space locally resembling euclidean space, generalizing curves and surfaces to arbitrary dimensions with differential structure.
 id: manifold
 modified: 2025-10-29 02:15:49 GMT-04:00
 tags:

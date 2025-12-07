@@ -1,5 +1,6 @@
 ---
 date: "2024-10-29"
+description: course on engineering ethics covering literature review and case study analysis.
 id: index
 modified: 2025-10-29 02:16:00 GMT-04:00
 tags:

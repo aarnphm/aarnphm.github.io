@@ -1,5 +1,6 @@
 ---
 date: "2024-02-09"
+description: personal hypertext system where notes and ideas grow organically over time, contrasting the garden metaphor with the stream in knowledge cultivation.
 id: Digital garden
 modified: 2025-10-29 02:15:20 GMT-04:00
 tags:

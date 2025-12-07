@@ -11,5 +11,6 @@ subcategory: power
 tags:
   - philosophy
 title: The Prince
+year: 1532
 finished: 2025
 ---

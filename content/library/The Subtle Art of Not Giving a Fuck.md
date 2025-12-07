@@ -11,5 +11,6 @@ subcategory: living
 tags:
   - o/life
 title: The Subtle Art of Not Giving a Fuck
+year: 2016
 finished: 2023
 ---

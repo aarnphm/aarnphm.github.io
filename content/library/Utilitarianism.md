@@ -13,4 +13,5 @@ subcategory: hedonia
 tags:
   - philosophy
 title: Utilitarianism
+year: 1863
 ---

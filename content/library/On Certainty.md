@@ -16,6 +16,7 @@ tags:
   - philosophy
 title: Über Gewißheit (OC)
 translator: P. M. S. Hacker
+year: 1969
 ---
 
 _Majority of the notes for this translation of On Certainty is taken from P. M. S. Hacker's translation of LW's notebooks[^wiley-edition]._

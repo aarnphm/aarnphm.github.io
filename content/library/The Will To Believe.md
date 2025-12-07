@@ -12,4 +12,5 @@ subcategory: ontology
 tags:
   - philosophy
 title: The Will To Believe
+year: 1896
 ---

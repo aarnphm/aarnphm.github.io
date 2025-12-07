@@ -1,6 +1,7 @@
 ---
 author: Michel Foucault
 category: philosophy
+language: french
 date: "2025-09-18"
 description: foucault study of ancient ethics that treats care of the self as a practice of freedom, attention, and embodied discipline.
 id: The Care of the Self
@@ -13,4 +14,5 @@ subcategory:
 tags:
   - philosophy
 title: The Care of the Self
+year: 1984
 ---

@@ -11,4 +11,5 @@ subcategory: hermeneutics
 tags:
   - philosophy
 title: Naked Lunch
+year: 1959
 ---

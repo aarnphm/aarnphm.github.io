@@ -1,5 +1,6 @@
 ---
 date: "2024-01-24"
+description: lab on pid controller design for dc motor with transfer functions for angular velocity and position, final value theorem, and steady-state analysis.
 id: content
 modified: 2025-10-29 02:16:22 GMT-04:00
 tags:

@@ -4,6 +4,7 @@ tags:
   - aesthetics
 title: The Voice of Robert Desnos
 date: 2025-11-29
+description: surrealist poem invoking forces of nature and humanity through repetitive calls, ending with the silence of unrequited love despite the speaker's commanding voice.
 status: finished
 finished: 2025
 subcategory:

@@ -1,5 +1,6 @@
 ---
 date: "2024-02-28"
+description: lab on voltage-controlled electromechanical systems analyzing dc motor dc gain patterns and linear relationship between input voltage and gain.
 id: content
 modified: 2025-10-29 02:16:23 GMT-04:00
 tags:

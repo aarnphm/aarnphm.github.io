@@ -1,6 +1,7 @@
 ---
 author: "[[thoughts/Freud|Sigmund Freud]]"
 category: philosophy
+language: german
 date: "2022-08-21"
 description: Freudian theory of egos within societal contract
 finished: 2023
@@ -17,6 +18,7 @@ seealso:
   - "[[thoughts/identity|identity]]"
   - "[[thoughts/love|love]]"
   - "[[thoughts/hermeneutics|hermeneutics]]"
+year: 1930
 ---
 
 C1: ego and sense of self within the societal context

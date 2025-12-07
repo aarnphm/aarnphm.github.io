@@ -6,9 +6,11 @@ description: popular psychology book contrasting fixed and growth mindsets, argu
 id: Mindset
 modified: 2025-10-29 02:14:32 GMT-04:00
 posters: "[[library/posters/mindset.jpg]]"
-status: to read
+status: finished
 subcategory: productivity
 tags:
   - biology
 title: Mindset
+year: 2006
+finished: 2025
 ---

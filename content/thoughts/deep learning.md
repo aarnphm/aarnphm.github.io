@@ -1,5 +1,6 @@
 ---
 date: "2024-01-11"
+description: neural networks learning hierarchical representations by detecting patterns from simple edges to complex features across layers.
 id: deep learning
 modified: 2025-10-29 02:15:43 GMT-04:00
 tags:

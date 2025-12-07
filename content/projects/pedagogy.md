@@ -1,6 +1,7 @@
 ---
 category: letters
 date: "2022-01-25"
+description: exploring education discourse and pedagogical approaches that might shape future generations.
 id: pedagogy
 modified: 2025-11-25 09:28:57 GMT-05:00
 notebook: "[[thoughts/education]]"

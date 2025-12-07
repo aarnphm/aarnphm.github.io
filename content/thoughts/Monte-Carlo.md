@@ -1,6 +1,7 @@
 ---
 comments: true
 date: "2024-04-12"
+description: search algorithm using random sampling, including tree search with selection, expansion, simulation, and backpropagation phases.
 id: Monte-Carlo
 modified: 2025-10-29 02:15:29 GMT-04:00
 tags:

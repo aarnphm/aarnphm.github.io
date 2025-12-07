@@ -11,4 +11,5 @@ subcategory: conviviality
 tags:
   - philosophy
 title: Intuition Pumps and Other Tools for Thinking
+year: 2013
 ---

@@ -1,5 +1,6 @@
 ---
 date: "2024-03-05"
+description: prelab on root mean square calculations for square wave, sawtooth, and sine wave signals, cutoff frequency of low-pass filters from bode plots.
 id: prelab
 modified: 2025-10-29 02:16:22 GMT-04:00
 tags:

@@ -14,5 +14,6 @@ tags:
   - grief
   - love
 title: Pillow Thoughts IV
+year: 2019
 finished: 2023
 ---

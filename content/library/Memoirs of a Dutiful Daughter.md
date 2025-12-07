@@ -6,6 +6,7 @@ tags:
 id: Memoirs of a Dutiful Daughter
 title: Memoirs of a Dutiful Daughter
 date: 2025-12-06
+description: first volume of de beauvoir's autobiography, tracing her youth in bourgeois paris, rejection of catholicism, and early intellectual development leading to her relationship with sartre.
 status: current
 finished:
 subcategory:
@@ -22,4 +23,5 @@ notebook:
 aliases:
   - daughters
 pdf:
+year: 1958
 ---

@@ -11,4 +11,5 @@ subcategory: utopia
 tags:
   - philosophy
 title: "Orwell's Revenge: The 1984 Palimpsest"
+year: 1994
 ---

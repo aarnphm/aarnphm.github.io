@@ -1,5 +1,6 @@
 ---
 date: "2024-02-01"
+description: marginal analysis and sensitivity analysis techniques for evaluating net value function changes with respect to input parameters and conversion factors.
 id: Sensitivity analysis
 modified: 2025-10-29 02:16:14 GMT-04:00
 tags:

@@ -1,5 +1,6 @@
 ---
 date: "2024-01-08"
+description: philosophical position on causation and predictability, drawing from hume's argument.
 id: Determinism
 modified: 2025-10-29 02:15:21 GMT-04:00
 tags:

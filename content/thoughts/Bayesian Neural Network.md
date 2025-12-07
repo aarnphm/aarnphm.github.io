@@ -1,5 +1,6 @@
 ---
 date: "2025-03-22"
+description: applying bayesian inference to learn probability distributions over neural networks, mitigating overfitting and enabling learning from small datasets.
 id: Bayesian Neural Network
 modified: 2025-10-29 02:15:16 GMT-04:00
 tags:

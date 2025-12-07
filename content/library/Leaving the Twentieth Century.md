@@ -11,4 +11,5 @@ subcategory: progress
 tags:
   - o/revolution
 title: "Leaving the Twentieth Century: Situationist Revolutions"
+year: 1974
 ---

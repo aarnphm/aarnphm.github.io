@@ -8,6 +8,7 @@ coordinates:
   - "43.6721727"
   - "-79.3898525"
 date: "2025-12-06"
+description: yorkville italian with housemade pasta and serious wine list
 id: Buca Osteria & Bar
 modified: "2025-12-06 16:47:58 GMT-05:00"
 rating: 5

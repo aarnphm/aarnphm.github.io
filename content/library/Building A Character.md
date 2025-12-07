@@ -11,5 +11,6 @@ subcategory: acting
 tags:
   - being
 title: Building A Character
+year: 1950
 finished: 2025
 ---

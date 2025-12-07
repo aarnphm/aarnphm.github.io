@@ -11,5 +11,6 @@ subcategory: progress
 tags:
   - biology
 title: "The Triple Helix: Gene, Organism, and Environment"
+year: 2000
 finished: 2024
 ---

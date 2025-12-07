@@ -1,5 +1,6 @@
 ---
 date: "2024-01-08"
+description: public tool for understanding private life through wittgenstein's language-games, where llms represent massive corpus of human knowledge and patient interaction.
 id: Language
 modified: 2025-11-09 02:37:16 GMT-05:00
 tags:

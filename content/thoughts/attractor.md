@@ -1,5 +1,6 @@
 ---
 date: "2024-03-25"
+description: set of points in a dynamical system exhibiting chaotic behavior, creating patterns that explain phenomena from weather to migration.
 id: attractor
 modified: 2025-10-29 02:15:41 GMT-04:00
 tags:

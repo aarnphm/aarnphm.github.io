@@ -12,4 +12,5 @@ tags:
   - love
   - absurdism
 title: Flowers for Algernon
+year: 1966
 ---

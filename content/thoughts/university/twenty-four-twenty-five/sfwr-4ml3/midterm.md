@@ -1,5 +1,6 @@
 ---
 date: "2024-10-28"
+description: midterm review covering probability density functions, linear regression, ordinary least squares, bias, and overfitting.
 id: midterm
 modified: 2025-10-29 02:16:09 GMT-04:00
 tags:

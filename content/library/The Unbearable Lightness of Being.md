@@ -1,6 +1,7 @@
 ---
 author: Milan Kundera
 category: fiction
+language: czech
 date: 2025-03-05
 description: novel set in prague that weaves love affairs, politics, and philosophy around questions of lightness, weight, and choice.
 external: https://www.cs.cmu.edu/~yangke/lightness.html
@@ -12,4 +13,5 @@ subcategory: being
 tags:
   - philosophy
 title: The Unbearable Lightness of Being
+year: 1984
 ---

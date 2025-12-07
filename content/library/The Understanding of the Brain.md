@@ -4,6 +4,7 @@ aliases:
 author: John Eccles
 category: philosophy
 date: "2025-11-29"
+description: presentation of eccles' three worlds interactionist dualism with popper, arguing that reality consists of matter, consciousness, and objective knowledge in constant interaction.
 id: The Understanding of the Brain
 modified: 2025-11-30 00:21:45 GMT-05:00
 posters: "[[library/posters/the-understanding-of-the-brain.jpg]]"
@@ -14,6 +15,7 @@ subcategory:
 tags:
   - philosophy
 title: The Understanding of the Brain
+year: 1973
 ---
 
 |                                                                                                                    |                                                                                                                 |                                                                                       |

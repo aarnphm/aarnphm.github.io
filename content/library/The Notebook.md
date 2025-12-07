@@ -11,4 +11,5 @@ subcategory: progress
 tags:
   - writing
 title: "The Notebook: A History of Thinking on Paper"
+year: 2023
 ---

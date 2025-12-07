@@ -14,4 +14,5 @@ subcategory:
 tags:
   - philosophy
 title: Why I Am So Wise
+year: 1908
 ---

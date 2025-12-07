@@ -1,5 +1,6 @@
 ---
 date: "2024-04-03"
+description: prelab on steady state error analysis with pid controller, static error constants for position, velocity, acceleration, step, ramp, and parabolic inputs.
 id: prelab
 modified: 2025-10-29 02:16:23 GMT-04:00
 tags:

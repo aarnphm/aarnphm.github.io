@@ -1,5 +1,6 @@
 ---
 date: "2025-09-30"
+description: comprehensive build instructions for cuda programming examples covering basic kernels, cute dsl, vectorization, matrix multiplication, memory coalescing, and paged attention.
 id: build
 modified: 2025-10-29 02:14:24 GMT-04:00
 tags:

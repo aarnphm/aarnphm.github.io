@@ -13,4 +13,5 @@ subcategory: relationship
 tags:
   - philosophy
 title: On Friendship
+year: 1580
 ---

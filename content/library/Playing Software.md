@@ -11,4 +11,5 @@ subcategory: programming
 tags:
   - technical
 title: "Playing Software: Homo Ludens in Computational Culture"
+year: 2023
 ---

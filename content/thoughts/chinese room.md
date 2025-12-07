@@ -2,7 +2,7 @@
 date: "2025-11-10"
 description: syntax, semantics, and whether computation is sufficient for understanding
 id: chinese room
-modified: 2025-11-10 11:49:13 GMT-05:00
+modified: 2025-12-07 01:16:24 GMT-05:00
 socials:
   sep: https://plato.stanford.edu/entries/chinese-room/
   wikipedia: https://en.wikipedia.org/wiki/Chinese_room
@@ -12,7 +12,7 @@ tags:
 title: chinese room
 ---
 
-when i think about the chinese room, i mostly imagine myself as the person in the room and ask: \"would i feel like i understand chinese here?\" the answer is always no, and that’s where the pressure comes from.
+when i think about the chinese room, i mostly imagine myself as the person in the room and ask: "would i feel like i understand chinese here?" the answer is always no, and that’s where the pressure comes from.
 
 setup: i'm in a room with a rulebook. chinese symbols come in through a slot. i look them up in the rulebook, follow the instructions, pass symbols back out. the rulebook is so good that outside observers think they're having a fluent conversation with a chinese speaker. but i don't understand chinese. i'm just shuffling symbols according to rules. syntax, not semantics.
 

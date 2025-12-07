@@ -12,5 +12,6 @@ tags:
   - r/pain
   - love
 title: The year of magical thinking
+year: 2005
 finished:
 ---

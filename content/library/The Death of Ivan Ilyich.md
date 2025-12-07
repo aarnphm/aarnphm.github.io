@@ -1,6 +1,7 @@
 ---
 author: Leo Tolstoy
 category: fiction
+language: russian
 date: 2022-08-21
 description: novella about a dying judge confronting the emptiness of his conventional life, moving from denial to a late, painful honesty.
 id: The Death of Ivan Ilyich
@@ -12,5 +13,6 @@ tags:
   - absurdism
   - philosophy
 title: The Death of Ivan Ilyich
+year: 1886
 finished: 2021
 ---

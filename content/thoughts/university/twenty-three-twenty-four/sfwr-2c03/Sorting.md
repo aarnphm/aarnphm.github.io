@@ -1,5 +1,6 @@
 ---
 date: "2024-01-24"
+description: sorting algorithms including selection sort, insertion sort, merge sort, quicksort with complexity analysis and lower bounds for comparison-based sorting.
 id: Sorting
 modified: 2025-10-29 02:16:18 GMT-04:00
 tags:

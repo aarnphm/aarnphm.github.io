@@ -3,6 +3,7 @@ author:
   - Gilles Deleuze
   - Félix Guattari
 category: philosophy
+language: french
 date: 2025-08-16
 description: dense philosophical cartography of flows, assemblages, and rhizomes, asking how desire and power organize social and psychic life.
 id: A Thousand Plateaus
@@ -13,5 +14,6 @@ subcategory: hermeneutics
 tags:
   - philosophy
 title: A Thousand Plateaus
-finished:
+year: 1980
+finished: 2025
 ---

@@ -1,5 +1,6 @@
 ---
 date: "2024-11-18"
+description: space-optimized prefix trie where single-child nodes merge with parents, enabling o(k) lookup, insertion, and deletion operations.
 id: Radix tree
 modified: 2025-10-29 02:15:33 GMT-04:00
 tags:

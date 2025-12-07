@@ -1,5 +1,6 @@
 ---
 date: "2024-02-09"
+description: assignment on transfer functions of continuous-time systems with rlc circuit analysis using laplace domain, impedance calculations, and voltage divider rule.
 id: content
 modified: 2025-10-29 02:16:21 GMT-04:00
 tags:
