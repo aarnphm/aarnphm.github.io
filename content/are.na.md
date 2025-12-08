@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2025-12-07 11:28:27 GMT-05:00
+modified: 2025-12-08 00:46:41 GMT-05:00
 permalinks:
   - /website
   - /tweets
@@ -5397,6 +5397,10 @@ title: are.na
 
 ## technical
 
+- https://compute-cost.com/#XQAAAQBKEAAAAAAAAAAzmUoc/gnU0/0SvGenu/XJYlsuVB0IN6qhxykmU7W7DiMUx8Wy7xQJkNO5umd981PzT16IEWntnuv58WX8KO5E3hsDPPkmg/c8iu3OxDo+fBWmzk2RrS7sZRPmQtEelWI6fo+c6DPzs0rJsGpvJ/+zWATpjxjDZdc9l+Q8sDXQo8ntTBKgZHKyKuRUKufoLeb2m0Wi1Wdy1NVXzeAFh3kPTSnDacO/Gbl1kH6ur9QjUGEImXxPvJ8BEjQ+tPeDZus9URqiqehE93auJmVrmoVyv9xcL9ujpiZAkCvIwYVry7Q4zpakN+gJ8cxMdstnHAa82mb8WBp7JGM/VOHuvQIaWjlr362AlNneXg9JXlDTk+26b1qxZJzfe9729Cx2qe7ye08XnA0vHHTF1QgExGfKjFdyctGlbYNr3Ay/2W2GsbZ0wrtwZSliFo3UiOZ3MSEwtszUAHUO1y8OSdLqTMF4heGp3bxxg16vGr25tn5/MpQINA7MvTYYPUiQX/xWMDkr/9IpiLLi4UBZEWtWrYdGIpallpIuNG/OmnnSwSfG18HRWLyYXYVI3QEinBCUnDfIV1RV/MkgUMMhQRi7BXWHLRKtnnRFs+HlIaWRG1kUzwEsMiMPXYR94Hx6LCfrhRQh4gArAKS21hWgGOi6Sz43mYE+fkEzCnBSQV5z/tFWAaVEmbYP9gDPWD7syKRFSH9HNWmgz7hZGJkBaBLkbIH+rIvtMaiAsPuI9eI2rOMb4wGbBpGvlqf7Y+8KU+1oBwTYFjLg+PvqfvrfWMrUCCvDuARveR+bdM9CHzMfuCq3VQPAZ9U9rGhx/YKHcutDm0QTwA/YhKYOnN/Ab5K5i9VpHEkHWm1a5mvYh1IqSF2Sf7DOeCwH/D5uu1kAUaemmHWsOwp2dzjlgv2WGUJWxq2LlyXPRcEcVY6HhRq0c5FrXZoooNsPipbcfvW/tepgGLcJaU1uRMApjYDXYejDFhoG9sRhSd299h18nuuTcwQI1jwczur4Pt3Jnq9esERMYH+OVXYUH9qjgWn/+2PzCQ== -- Compute Cost calculator
+  - [meta]:
+    - date: 12/08/2025
+    - tags: [compute]
 - https://cs.pomona.edu/~jcoa2018/f20/cs190/papers/moral.pdf -- The Moral Character of Crypto
   - [meta]:
     - date: 12/03/2025
