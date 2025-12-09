@@ -2,7 +2,7 @@
 date: "2024-02-19"
 description: on personal identity
 id: identity
-modified: 2025-12-01 22:34:12 GMT-05:00
+modified: 2025-12-08 19:46:41 GMT-05:00
 seealso:
   - "[[thoughts/hermeneutics]]"
   - "[[thoughts/love]]"
@@ -28,7 +28,7 @@ Identity is fundamentally relational (not substantial), processual (not static),
 
 ## phenomenology
 
-_merleau-ponty_
+cf [[library/Phenomenology of Perception|Phenomenology of Perception]]
 
 ### the body-subject
 
@@ -273,3 +273,15 @@ The most selfish thing you can do is love well. The self you serve is not separa
 ## keep your identity small
 
 source: https://paulgraham.com/identity.html
+
+> Do religion and politics have something in common that explains this similarity? One possible explanation is that they deal with questions that have no definite answers, so there's no back pressure on people's opinions. Since no one can be proven wrong, every opinion is equally valid, and sensing this, everyone lets fly with theirs.
+
+The similarity between religion and politics is that you only need a strong conviction towards an opinion to become "domain-expert".
+
+> I think what religion and politics have in common is that they become part of people's identity, and people can never have a fruitful argument about something that's part of their identity. By definition they're partisan.
+
+Which topics engage people's identity depends on the people, not the topic. Because the point at which this happens depends on the people rather than the topic, it's a mistake to conclude that because a question tends to provoke religious wars, it must have no answer[^example].
+
+[^example]: For example, the question of the relative merits of programming languages often degenerates into a religious war, because so many programmers identify as X programmers or Y programmers. This sometimes leads people to conclude the question must be unanswerable—that all languages are equally good. Obviously that's false: anything else people make can be well or badly designed; why should this be uniquely impossible for programming languages? And indeed, you can have a fruitful discussion about the relative merits of programming languages, so long as you exclude people who respond from identity.
+
+> More generally, you can have a fruitful discussion about a topic only if it doesn't engage the identities of any of the participants.

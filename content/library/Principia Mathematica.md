@@ -17,7 +17,6 @@ author:
 posters: "[[library/posters/Principia Mathematica.jpg]]"
 category:
   - philosophy
-  - math
 translator:
 year: 1910
 notebook:
@@ -26,7 +25,6 @@ pdf:
 ---
 
 three volume.
-
 
 ## vol 1.
 

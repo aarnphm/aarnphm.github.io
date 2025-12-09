@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2025-12-08 00:46:41 GMT-05:00
+modified: 2025-12-09 00:58:23 GMT-05:00
 permalinks:
   - /website
   - /tweets
@@ -143,10 +143,18 @@ title: are.na
 - [meta]:
   - view: list
 
-- https://x.com/dearvotion/status/1997096571847299503?s=20 -- RIP Frank Gehry
+- https://x.com/cloneofsimo/status/1998194256729772169 -- amortizing reasoning chain
   - [meta]:
-    - date: 12/06/2025
-    - tags: [obituary]
+    - date: 12/09/2025
+    - tags: [inference, complexity]
+- https://x.com/chrisbarber/status/1996236745990688896?s=20 -- NeurIPS 2025 hiring list
+  - [meta]:
+    - date: 12/08/2025
+    - tags: [jobs]
+- https://x.com/natesolon/status/1998118066195157089?s=46&t=E_gPjnJKDBGnwpVrE7Z-WQ -- Having hobby as chess [**]
+  - [meta]:
+    - date: 12/08/2025
+    - tags: [hobby, chess]
 - https://x.com/noampomsky/status/1996720230077550769?s=20 -- micromanaging relationship
   - [meta]:
     - date: 12/04/2025
@@ -802,6 +810,25 @@ title: are.na
 
 ## people
 
+- https://en.wikipedia.org/wiki/Gunpei_Yokoi -- Gunpei Yokoi
+  - [meta]:
+    - date: 12/08/2025
+    - tags: [game designer]
+  - ==Lateral Thinking with Withered Technology==
+- https://www.nytimes.com/2025/11/29/theater/tom-stoppard-dead.html -- Tom Stoppard
+  - [meta]:
+    - date: 12/08/2025
+    - tags: [obituary, playwrite]
+- https://x.com/dearvotion/status/1997096571847299503?s=20 -- Frank Gehry
+  - [meta]:
+    - date: 12/06/2025
+    - tags: [obituary, architect]
+- https://en.wikipedia.org/wiki/Nicolas_Bourbaki -- Nicolas Bourbaki
+  - [meta]:
+    - date: 12/08/2025
+    - tags: [pseudonym, mathematicians]
+  -  *Éléments*, [[thoughts/topology/algebraic bridge|algebraic topology]] and spectral theory
+  - Bourbaki's treatment of Lie groups and Lie algebras included uncharacteristic illustrations, such as graphs of finite [Coxeter systems](https://en.wikipedia.org/wiki/Coxeter_systems "Coxeter systems")
 - https://www.youtube.com/@PhiloofAlexandria -- Daniel Bonevac
   - [meta]:
     - date: 12/05/2025
@@ -1696,17 +1723,45 @@ title: are.na
 
 ## essay
 
+- https://www.lesswrong.com/posts/2rDdKiCoeqXmh9zb9/i-m-scared -- I'm scared.
+  - [meta]:
+    - date: 12/08/2025
+    - tags: [rationalism]
+- https://www.lesswrong.com/posts/vsBw66gQwNXYX6KAK/choose-to-be-happy -- Choose to be happy
+  - [meta]:
+    - date: 12/08/2025
+    - tags: [eudaimonia]
+- https://internetprincess.substack.com/p/against-narrative -- against narrative
+  - [meta]:
+    - date: 12/08/2025
+    - tags: [love]
+- https://www.dreamsongs.com/WorseIsBetter.html -- Worse is better
+  - [meta]:
+    - date: 12/08/2025
+    - tags: [progress, performance, ai]
+  - The concept known as "worse is better" holds that in software making (and perhaps in other arenas as well) it is better to start with a minimal creation and grow it as needed. Christopher Alexander might call this "piecemeal growth." This is the story of the evolution of that concept.
+- https://gwern.net/llm-writing -- Writing for LLMs, Gwern
+  - [meta]:
+    - date: 12/08/2025
+    - tags: [writing]
 - https://www.nytimes.com/2025/12/03/magazine/chatbot-writing-style.html -- Why does AI write like... that?
   - [meta]:
     - date: 12/07/2025
     - tags: [llm, distribution]
   - No A.I. has ever stood over a huge windswept view all laid out for its pleasure, or sat down hungrily to a great heap of food. They will never be able to understand the small, strange way in which these two experiences are the same. Everything they know about the world comes to them through statistical correlations within large quantities of words.
   - Researchers found that most people vastly prefer A.I.-generated poetry to the actual works of Shakespeare, T.S. Eliot and Emily Dickinson. It’s more beautiful. It’s more emotive. It’s more likely to mention deep, touching things, like quietness or echoes. It’s more of what poetry ought to be.
-- https://internetprincess.substack.com/p/resident-evil -- Resident evil
+- https://internetprincess.substack.com/p/resident-evil -- Resident evil [**]
   - [meta]:
     - date: 12/06/2025
     - tags: [love, life]
   - It’s so weird, I text my friend, presumptively, to watch a stranger have what will obviously be one of the singular most beautiful moments of their entire life. I love the city for this, most of the time, for its vast de-privatization of sentiment — I like bearing witness to the best and worst of other people, and I like the knowledge that I am witnessed in return.
+  - Like any good woman should, I feel uncomfortable with my own instinctive [[thoughts/Skepticism|skepticism]] on the matter
+  - I only realized after I dropped out of school that while I honestly did like physics — I actually even loved it, sometimes — I think some part of my attraction to the field was a fantasy I’d cooked up in the anxious anticipatory muck of pre-puberty that if I could get smart enough, smart enough in the right way, then I might be able to escape the functional category of *girl*.
+  - Or, perhaps more accurately, my fantasy was that I could dominate it, instead of being the one dominated — that my impending womanhood could be a trick I pulled instead of a trick that got pulled on me. (My pubescent breasts were inflating in front of my eyes like God’s whoopee cushion, a setup stretching out in front of me towards an unforeseen but guaranteed punchline.)
+  - Maybe it’s only embarrassing to be a girl, I thought, if you’re stupid — if you confirm the stereotype instead of subvert it.
+  - It’s hard to write about stuff like that without sounding like I was offended by it, because really I wasn’t. I could produce a laundry list of those banal academic misogynies, most of them way worse than that one and also less funny, many of them meaning almost nothing to me
+  - And I don’t think I really did drop out because I was a woman, or even because school was too hard, because I couldn’t hack it — I think I just dropped out because I wanted to kill myself, which was maybe a little bit because of the woman stuff but also surely because of a complex web of factors I can still neither understand nor satisfyingly quantify.
+  - https://www.youtube.com/watch?v=3z5dO_jx5Q0
 - https://etymology.substack.com/p/feeling-without-thinking -- feeling without thinking
   - [meta]:
     - date: 12/04/2025
@@ -1834,7 +1889,7 @@ title: are.na
     - Remind men of their worth
     - Encourage en to discuss the issues they face, and **listen to them**
     - Openly acknowledge that mena nd women share some biological differences, and embrace the beauty of this diversity.
-- https://internetprincess.substack.com/p/home-for-the-holidays -- home for the holidays
+- https://internetprincess.substack.com/p/home-for-the-holidays -- home for the holidays [**]
   - [meta]:
     - date: 11/22/2025
     - tags: [grief, life]
@@ -2808,6 +2863,18 @@ title: are.na
 - [meta]:
   - view: list
 
+- https://pub.sakana.ai/ctm/ -- Continuous Thought Machines
+  - [meta]:
+    - date: 12/08/2025
+    - tags: [ai]
+- https://www.youtube.com/watch?v=WJS2YDZO-vc&t=0s -- Build to Last, Chris Lattner talks with Jeremy Howard
+  - [meta]:
+    - date: 12/08/2025
+    - tags: [podcasts]
+- https://www.lesswrong.com/posts/YDF7XhMThhNfHfim9/ai-safety-needs-great-engineers -- AI Saftey Needs Great Engineers
+  - [meta]:
+    - date: 12/08/2025
+    - tags: [alignment]
 - https://www.lesswrong.com/posts/beREnXhBnzxbJtr8k/mech-interp-is-not-pre-paradigmatic -- Mech interp is not pre-paradigmatic
   - [meta]:
     - date: 12/04/2025
@@ -4010,6 +4077,11 @@ title: are.na
 
 ## computer science
 
+- https://www.cs.mcgill.ca/~dprecup/courses/AI/Materials/turing1950.pdf -- Computing Machinery and Intelligence [**]
+  - [meta]:
+    - date: 12/08/2025
+    - tags: [cs, theory]
+    - pinned: true
 - https://fab.cba.mit.edu/classes/MAS.863/ -- How To Make (almost) Anything [**]
   - [meta]:
     - date: 11/02/2025
@@ -4181,6 +4253,23 @@ title: are.na
 
 ## philosophy
 
+- https://www.youtube.com/watch?v=1KemhfmAsg8&list=PLhP9EhPApKE9tiKyeqdbeCMhVzb-JwAc1&t=1502s -- Debate on Mind-Brain Relation: Searle vs Eccles (1984)
+  - [meta]:
+    - date: 12/08/2025
+    - tags: [functionalism, dualism]
+- https://www.youtube.com/watch?v=ItaA-JDvDXY&t=2279s -- Is the Mind a Physical Thing? (Tim Crane)
+  - [meta]:
+    - date: 12/08/2025
+    - tags: [functionalism]
+- https://andyljones.com/posts/horses.html -- Horses
+  - [meta]:
+    - date: 12/08/2025
+    - tags: [progress, llm]
+- https://askell.io/files/Askell-PhD-Thesis.pdf -- Pareto Principles in Infinite Ethics
+  - [meta]:
+    - date: 12/08/2025
+    - tags: [ethics, ml]
+  - abstract: https://askell.io/publication/pareto-principles-in-infinite-ethics
 - https://academics.hamilton.edu/documents/themundanityofexcellence.pdf -- THE MUNDANITY OF EXCELLENCE: ANETHNOGRAPHIC REPORT ON STRATIFICATION AND OLYMPIC SWIMMERS
   - [meta]:
     - date: 12/06/2025
@@ -4430,6 +4519,10 @@ title: are.na
 
 ## stream
 
+- https://theanarchistlibrary.org/special/index -- The Anarchist Library
+  - [meta]:
+    - date: 12/08/2025
+    - tags: [reading, independence]
 - https://aworkinglibrary.com/reading/ -- A working library, by Mandy Brown
   - [meta]:
     - date: 11/28/2025
@@ -5764,6 +5857,10 @@ title: are.na
 
 ## math
 
+- https://www.youtube.com/watch?v=eEGNdjdxeG8&t=38s -- Linial--Meshulam Complexes, Michael Chapman
+  - [meta]:
+    - date: 12/08/2025
+    - tags: [topology]
 - https://www.youtube.com/watch?v=nygzk8FU8MQ -- Robert Lipshitz - Computing a square on Khovanov homology
   - [meta]:
     - date: 12/03/2025
@@ -5941,6 +6038,10 @@ title: are.na
 - [meta]:
   - view: list
 
+- https://arxiv.org/abs/2407.08516
+  - [meta]:
+    - date: 12/08/2025
+    - tags: [emergent, paradigm]
 - https://arxiv.org/abs/2410.22264
   - [meta]:
     - date: 12/01/2025
