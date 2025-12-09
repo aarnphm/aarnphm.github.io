@@ -12,6 +12,6 @@ subcategory: being
 tags:
   - philosophy
 title: Meditations
-year: "~ 180"
+year: 180
 finished: 2024
 ---

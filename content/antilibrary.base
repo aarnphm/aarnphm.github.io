@@ -1,6 +1,8 @@
 summaries:
   missing: values.filter(value.isType("null")).length
   Range: (values.filter(value.isType("date")).reduce(if(value > acc || acc == null, value, acc), null) - values.filter(value.isType("date")).reduce(if(value < acc || acc == null, value, acc), null))
+  read this year: values.filter(value == true).reduce(acc + 1, 0)
+  Unchecked: values.filter(value == false).length
 filters:
   or:
     - file.hasTag("book")
@@ -10,6 +12,9 @@ filters:
             - file.hasTag("evergreen", "meta")
         - not:
             - file.inFolder("library/posters")
+formulas:
+  "2024": note.finished == 2024
+  "2025": note.finished == 2025
 properties:
   file.tags:
     displayName: tags
@@ -42,6 +47,35 @@ views:
       note.date: 147
     cardSize: 320
     image: note.posters
+  - type: cards
+    name: subcategory
+    groupBy:
+      property: subcategory
+      direction: DESC
+    order:
+      - file.basename
+      - date
+      - notebook
+      - tags
+      - status
+      - author
+      - category
+      - finished
+    sort:
+      - property: date
+        direction: DESC
+      - property: title
+        direction: ASC
+      - property: notebook
+        direction: ASC
+    summaries: {}
+    columnSize:
+      note.title: 401
+      note.date: 147
+    cardSize: 350
+    image: note.posters
+    imageAspectRatio: 1.5
+    imageFit: contain
   - type: table
     name: all
     groupBy:
@@ -192,10 +226,17 @@ views:
       - translator
       - notebook
       - aliases
-      - pdf
+      - formula.2025
+      - formula.2024
     sort:
+      - property: formula.2025
+        direction: ASC
+      - property: formula.2024
+        direction: DESC
       - property: finished
         direction: DESC
+      - property: year
+        direction: ASC
       - property: date
         direction: DESC
       - property: aliases
@@ -217,16 +258,18 @@ views:
       subcategory: Unique
       title: Unique
       status: Empty
-      finished: Empty
+      finished: Filled
+      formula.2025: read this year
+      formula.2024: read this year
     columnSize:
       note.id: 307
       note.title: 401
       note.date: 147
       note.tags: 302
+      note.finished: 134
       note.status: 83
       note.subcategory: 172
       note.author: 205
       note.posters: 410
-      note.translator: 128
+      note.translator: 253
       note.aliases: 131
-      note.pdf: 280

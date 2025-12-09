@@ -2,7 +2,7 @@
 date: "2025-10-09"
 description: flow of goods and services from supplier through manufacturer and retailer to consumer, including vehicle routing optimization.
 id: supply chain management
-modified: 2025-10-29 02:15:58 GMT-04:00
+modified: 2025-12-08 17:15:56 GMT-05:00
 noindex: true
 tags:
   - commerce4qa3

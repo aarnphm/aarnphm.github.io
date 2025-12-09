@@ -9,7 +9,7 @@ aliases:
 date: "2025-10-04"
 description: choosing to give your full, continuously.
 id: love
-modified: 2025-12-03 09:33:23 GMT-05:00
+modified: 2025-12-08 21:00:26 GMT-05:00
 socials:
   essay: "[[posts/love|mutual becoming]]"
   hermeneutics: "[[posts/romantic epistemology|romantic epistemology]]"
@@ -258,6 +258,8 @@ _so I made this list for [Malaika](https://malaikaaiyar.me/)_
 | :------------------------------------- | ---------------------------------------------------------------------------: |
 | Tender Masculinity                     |               https://buttondown.com/greengaybles/archive/tender-masculinity |
 | Universal love, said the cactus person | https://slatestarcodex.com/2015/04/21/universal-love-said-the-cactus-person/ |
+
+https://internetprincess.substack.com/p/against-narrative
 
 ## hw
 
