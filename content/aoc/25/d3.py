@@ -22,17 +22,21 @@ def max_subsequence(line: str, k: int) -> int:
   if len(stack) > k:
     stack = stack[:k]
 
-  return int("".join(str(x) for x in stack))
+  return int(''.join(str(x) for x in stack))
 
 
 def total_output(lines, k) -> int:
   total = 0
-  for line in lines: total += max_subsequence(line.strip(), k)
+  for line in lines:
+    total += max_subsequence(line.strip(), k)
   return total
 
 
 def sol() -> tuple[int, int]:
-  with Path(__file__).with_suffix(".txt").open() as f:lines = f.readlines()
+  with Path(__file__).with_suffix('.txt').open() as f:
+    lines = f.readlines()
   return total_output(lines, 2), total_output(lines, 12)
 
-if __name__ == "__main__": print(sol())
+
+if __name__ == '__main__':
+  print(sol())

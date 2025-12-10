@@ -4,6 +4,6 @@ description: study of language structure, meaning, and use through phonology, sy
 id: linguistic
 modified: 2025-10-29 02:15:49 GMT-04:00
 tags:
-  - seed
+  - pattern
 title: linguistic
 ---

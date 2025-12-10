@@ -48,17 +48,6 @@ let
     y1 = min pa.y pb.y;
     y2 = max pa.y pb.y;
 
-    # check if edge is relevant to rectangle (coordinates in bounds)
-    edgeRelevant = edge: let
-      horizontal = edge.a.y == edge.b.y;
-    in
-      if horizontal
-      then y1 <= edge.a.y && edge.a.y <= y2
-      else x1 <= edge.a.x && edge.a.x <= x2;
-
-    relevantEdges = lib.filter edgeRelevant edges;
-    numRelevant = builtins.length relevantEdges;
-
     cutThrough = edge: let
       horizontal = edge.a.y == edge.b.y;
       # horizontal edge
@@ -76,7 +65,7 @@ let
       hCross || vCross;
   in
     # require at least 3 polygon edges in rectangle's coordinate range
-    numRelevant >= 3 && !(lib.any cutThrough edges);
+    !(lib.any cutThrough edges);
 
   validAreas =
     lib.concatMap (

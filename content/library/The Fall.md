@@ -12,7 +12,6 @@ status: finished
 subcategory: existentialism
 tags:
   - philosophy
-  - o/life
 title: The Fall
 year: 1956
 ---

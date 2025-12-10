@@ -31,6 +31,14 @@ transclude:
   title: false
 ---
 
+> I always have such need to merely talk to you. Even when I have nothing to talk about - with you I just seem to go right ahead and sort of invent it. I _invent_ it for you.
+>
+> **Virginia Woolf**, from a letter to **Vita Sackville West**
+
+> Only those who will risk going too far can possibly find out how far one can go
+>
+> T.S. Eliot
+
 > I know now that psychoanalysis would make sense for me only if I were really serious about the strange possibility of no longer writing, which during the completion of Malte I often dangled in front of my nose as a kind of relief. Then one might let one’s devils be exorcised, since in daily life they are truly just disturbing and painful. And if it happened that the angels left too, one would have to understand this as a further simplification and tell oneself that in the new profession (which?), there would certainly be no use for them.
 >
 > [Rainer Maria Rilke](https://en.wikipedia.org/wiki/Rainer_Maria_Rilke), letter to Lou Andreas-Salomé (tr. S. Mitchell)

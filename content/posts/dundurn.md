@@ -184,7 +184,7 @@ _May 29th, 2025_
 
 Hi everyone, hope everyone is doing well.
 
-https://x.com/aarnphm_/status/1929630631786614946
+https://x.com/aarnphm/status/1929630631786614946
 
 I had a bit of trouble publishing this one given that between moving and other life events, but finally got some pockets of time to finish this.
 

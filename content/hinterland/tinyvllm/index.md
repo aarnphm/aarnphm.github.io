@@ -2,8 +2,8 @@
 date: "2025-10-30"
 description: a nano implementation of vLLM and inference-engine alike
 id: index
-modified: 2025-11-09 01:48:14 GMT-05:00
 layout: A|L
+modified: 2025-12-09 14:02:01 GMT-05:00
 tags:
   - seed
   - inference
@@ -64,3 +64,5 @@ goal:
 - validate cuda graphs, PagedAttention, and prefix cache assumptions against `~/workspace/vllm`
 - sketch async scheduler interfaces and batch planner based on overview doc
 - wire openai-compatible frontend with streaming sse and structured outputs
+
+see also: https://github.com/GeeeekExplorer/nano-vllm/blob/main/nanovllm/engine/llm_engine.py

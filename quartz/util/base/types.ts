@@ -1,56 +1,98 @@
 import { BaseFilter } from "./query"
 import { QuartzPluginData } from "../../plugins/vfile"
 
-// comparison operators for filter expressions
 export type ComparisonOp = "==" | "!=" | ">" | "<" | ">=" | "<=" | "contains" | "!contains"
 
-// base file structure
-export interface BaseFile {
+export type BasesConfigFileFilter =
+  | string
+  | { and: BasesConfigFileFilter[] }
+  | { or: BasesConfigFileFilter[] }
+  | { not: BasesConfigFileFilter[] }
+
+export interface FormulaDefinition {
+  expression: string
+  property?: string
+  operator?: ComparisonOp
+  value?: string | number | boolean | Date
+}
+
+export type BuiltinSummaryType =
+  | "count"
+  | "sum"
+  | "average"
+  | "avg"
+  | "min"
+  | "max"
+  | "range"
+  | "unique"
+  | "filled"
+  | "missing"
+  | "earliest"
+  | "latest"
+
+export interface SummaryDefinition {
+  type: "builtin" | "formula"
+  builtinType?: BuiltinSummaryType
+  formulaRef?: string
+  expression?: string
+}
+
+export interface BasesConfigFile {
   filters: BaseFilter
-  views: BaseView[]
+  views: BasesConfigFileView[]
   properties?: Record<string, PropertyConfig>
   summaries?: Record<string, string>
+  formulas?: Record<string, FormulaDefinition>
+}
+
+export type BaseFile = BasesConfigFile
+
+export interface ViewSummaryConfig {
+  columns: Record<string, SummaryDefinition>
 }
 
 export interface PropertyConfig {
   displayName?: string
 }
 
-export interface BaseView {
+export interface BasesConfigFileView {
   type: "table" | "list" | "gallery" | "board" | "calendar" | "card" | "cards" | "map"
   name: string
-  order?: string[] // column IDs for table view
-  sort?: BaseSortConfig[]
+  order?: string[]
+  sort?: BasesSortConfig[]
   columnSize?: Record<string, number>
-  groupBy?: string | BaseGroupBy
+  groupBy?: string | BasesGroupByConfig
   limit?: number
   filters?: BaseFilter
-  // optional/custom view options (kept flexible for forward compatibility)
-  // common ones used in this repo:
+  summaries?: Record<string, string> | ViewSummaryConfig
   image?: string
   cardSize?: number
   nestedProperties?: boolean
-  // map-specific options:
-  coordinates?: string // property path for location data (e.g., "note.coordinates")
-  markerIcon?: string // property for marker icons
-  markerColor?: string // property for marker colors
-  defaultZoom?: number // initial zoom level (1-20, default: 12)
-  defaultCenter?: [number, number] // fallback center [lat, lon] if no markers
-  clustering?: boolean // enable marker clustering (default: true)
+  coordinates?: string
+  markerIcon?: string
+  markerColor?: string
+  defaultZoom?: number
+  defaultCenter?: [number, number]
+  clustering?: boolean
   [key: string]: any
 }
 
-export interface BaseSortConfig {
+export type BaseView = BasesConfigFileView
+
+export interface BasesSortConfig {
   property: string
   direction: "ASC" | "DESC"
 }
 
-export interface BaseGroupBy {
+export type BaseSortConfig = BasesSortConfig
+
+export interface BasesGroupByConfig {
   property: string
   direction: "ASC" | "DESC"
 }
 
-// resolved data for rendering
+export type BaseGroupBy = BasesGroupByConfig
+
 export interface BaseTableData {
   view: BaseView
   rows: QuartzPluginData[]
@@ -656,16 +698,9 @@ function parseFilterAtom(raw: string): BaseFilter {
   throw new Error(`Invalid filter string: ${trimmed}`)
 }
 
-// parse raw YAML object into typed BaseFilter
 export function parseFilter(raw: any): BaseFilter {
-  // handle string-based expressions
   if (typeof raw === "string") {
-    // check if expression contains inline boolean operators (&& or ||)
-    if (raw.includes("&&") || raw.includes("||")) {
-      return parseFilterWithBoolean(raw)
-    }
-
-    // fallback to atomic parsing
+    if (raw.includes("&&") || raw.includes("||")) return parseFilterWithBoolean(raw)
     return parseFilterAtom(raw)
   }
 
@@ -673,49 +708,74 @@ export function parseFilter(raw: any): BaseFilter {
     throw new Error("Invalid filter: must be an object or string")
   }
 
-  // check for logical operators
   if ("and" in raw && Array.isArray(raw.and)) {
-    return {
-      type: "and",
-      conditions: raw.and.map(parseFilter),
-    }
+    return { type: "and", conditions: raw.and.map(parseFilter) }
   }
-
   if ("or" in raw && Array.isArray(raw.or)) {
-    return {
-      type: "or",
-      conditions: raw.or.map(parseFilter),
-    }
+    return { type: "or", conditions: raw.or.map(parseFilter) }
   }
-
   if ("not" in raw && Array.isArray(raw.not)) {
-    return {
-      type: "not",
-      conditions: raw.not.map(parseFilter),
-    }
+    return { type: "not", conditions: raw.not.map(parseFilter) }
   }
 
   throw new Error(`Invalid filter structure: ${JSON.stringify(raw)}`)
 }
 
-// parse YAML views array
-export function parseViews(raw: any): BaseView[] {
-  if (!Array.isArray(raw)) {
-    throw new Error("Views must be an array")
+export function parseFormula(_name: string, expression: string): FormulaDefinition {
+  const trimmed = expression.trim()
+  const comparisonMatch = trimmed.match(/^([\w.]+)\s*(==|!=|>=|<=|>|<)\s*(.+)$/)
+
+  if (comparisonMatch) {
+    const [, property, operator, valueStr] = comparisonMatch
+    return {
+      expression: trimmed,
+      property: property.trim(),
+      operator: operator.trim() as ComparisonOp,
+      value: parseFormulaValue(valueStr.trim()),
+    }
   }
 
+  return { expression: trimmed }
+}
+
+function parseFormulaValue(val: string): string | number | boolean {
+  const trimmed = val.trim()
+
+  if (
+    (trimmed.startsWith('"') && trimmed.endsWith('"')) ||
+    (trimmed.startsWith("'") && trimmed.endsWith("'"))
+  ) {
+    return trimmed.slice(1, -1)
+  }
+
+  if (trimmed === "true") return true
+  if (trimmed === "false") return false
+
+  const num = Number(trimmed)
+  if (!isNaN(num)) return num
+
+  return trimmed
+}
+
+export function parseFormulas(raw: any): Record<string, FormulaDefinition> | undefined {
+  if (!raw || typeof raw !== "object") return undefined
+
+  const formulas: Record<string, FormulaDefinition> = {}
+  for (const [name, expression] of Object.entries(raw)) {
+    if (typeof expression === "string") formulas[name] = parseFormula(name, expression)
+  }
+
+  return Object.keys(formulas).length > 0 ? formulas : undefined
+}
+
+export function parseViews(raw: any): BaseView[] {
+  if (!Array.isArray(raw)) throw new Error("Views must be an array")
+
   return raw.map((v) => {
-    if (!v || typeof v !== "object") {
-      throw new Error("Each view must be an object")
-    }
+    if (!v || typeof v !== "object") throw new Error("Each view must be an object")
+    if (!v.type || !v.name) throw new Error("Each view must have 'type' and 'name' fields")
 
-    if (!v.type || !v.name) {
-      throw new Error("Each view must have 'type' and 'name' fields")
-    }
-
-    // Preserve any additional properties on the view (e.g., image, cardSize, nestedProperties)
-    // while normalizing the known/parsed fields.
-    const parsed: BaseView = {
+    return {
       ...v,
       type: v.type,
       name: v.name,
@@ -725,8 +785,61 @@ export function parseViews(raw: any): BaseView[] {
       groupBy: v.groupBy,
       limit: v.limit,
       filters: v.filters ? parseFilter(v.filters) : undefined,
+      summaries: v.summaries,
+    } as BaseView
+  })
+}
+
+const BUILTIN_SUMMARY_TYPES: BuiltinSummaryType[] = [
+  "count",
+  "sum",
+  "average",
+  "avg",
+  "min",
+  "max",
+  "range",
+  "unique",
+  "filled",
+  "missing",
+  "earliest",
+  "latest",
+]
+
+export function parseViewSummaries(
+  viewSummaries: Record<string, string> | ViewSummaryConfig | undefined,
+  topLevelSummaries?: Record<string, string>,
+): ViewSummaryConfig | undefined {
+  if (!viewSummaries || typeof viewSummaries !== "object") return undefined
+
+  if ("columns" in viewSummaries && typeof viewSummaries.columns === "object") {
+    return viewSummaries as ViewSummaryConfig
+  }
+
+  const columns: Record<string, SummaryDefinition> = {}
+
+  for (const [column, summaryValue] of Object.entries(viewSummaries)) {
+    if (typeof summaryValue !== "string") continue
+
+    const normalized = summaryValue.toLowerCase().trim()
+
+    if (BUILTIN_SUMMARY_TYPES.includes(normalized as BuiltinSummaryType)) {
+      columns[column] = { type: "builtin", builtinType: normalized as BuiltinSummaryType }
+      continue
     }
 
-    return parsed
-  })
+    if (topLevelSummaries && summaryValue in topLevelSummaries) {
+      columns[column] = {
+        type: "formula",
+        formulaRef: summaryValue,
+        expression: topLevelSummaries[summaryValue],
+      }
+      continue
+    }
+
+    if (summaryValue.includes("(") || summaryValue.includes(".")) {
+      columns[column] = { type: "formula", expression: summaryValue }
+    }
+  }
+
+  return Object.keys(columns).length > 0 ? { columns } : undefined
 }

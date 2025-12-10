@@ -13,13 +13,10 @@
   line-height: 1.5;
 
   thead {
-    border-bottom: 2px solid var(--gray);
-
     th {
       padding: 0.75rem 1rem;
       text-align: left;
       font-weight: 600;
-      color: var(--darkgray);
       white-space: nowrap;
       background: var(--light);
       position: sticky;
@@ -84,6 +81,81 @@
         font-size: 0.85em;
         color: var(--darkgray);
         white-space: nowrap;
+      }
+
+      &.base-summary-cell {
+        font-weight: 600;
+        color: var(--darkgray);
+        font-size: 0.9em;
+        font-variant-numeric: tabular-nums;
+      }
+
+      .base-checkbox {
+        --checkbox-size: 15px;
+        --checkbox-radius: 4px;
+        --checkbox-border-color: var(--gray);
+        --checkbox-border-color-hover: var(--darkgray);
+        --checkbox-color: var(--secondary);
+        --checkbox-color-hover: var(--secondary);
+        --checkbox-marker-color: var(--light);
+
+        -webkit-appearance: none;
+        appearance: none;
+        border-radius: var(--checkbox-radius);
+        border: 1px solid var(--checkbox-border-color);
+        flex-shrink: 0;
+        padding: 0;
+        margin: 0;
+        width: var(--checkbox-size);
+        height: var(--checkbox-size);
+        position: relative;
+        transition: box-shadow 0.15s ease-in-out;
+        vertical-align: middle;
+        cursor: default;
+
+        &[disabled] {
+          pointer-events: none;
+        }
+
+        &:checked {
+          background-color: var(--checkbox-color);
+          border-color: var(--checkbox-color);
+
+          &::after {
+            content: "";
+            top: -2px;
+            position: absolute;
+            width: var(--checkbox-size);
+            height: var(--checkbox-size);
+            display: block;
+            inset-inline-start: -2px;
+            rotate: -45deg;
+            background-color: var(--checkbox-marker-color);
+            -webkit-mask-position: 52% 52%;
+            -webkit-mask-size: 65%;
+            -webkit-mask-repeat: no-repeat;
+            -webkit-mask-image: url("data:image/svg+xml,%3Csvg width='12px' height='10px' viewBox='0 0 12 8' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath fill='%23000' d='M8.1043257,14.0367999 L4.52468714,10.5420499 C4.32525014,10.3497722 4.32525014,10.0368095 4.52468714,9.8424863 L5.24777413,9.1439454 C5.44721114,8.95166768 5.77142411,8.95166768 5.97086112,9.1439454 L8.46638057,11.5903727 L14.0291389,6.1442083 C14.2285759,5.95193057 14.5527889,5.95193057 14.7522259,6.1442083 L15.4753129,6.84377194 C15.6747499,7.03604967 15.6747499,7.35003511 15.4753129,7.54129009 L8.82741268,14.0367999 C8.62797568,14.2290777 8.3037627,14.2290777 8.1043257,14.0367999' transform='translate(-4,-6)'/%3E%3C/svg%3E");
+          }
+        }
+      }
+    }
+  }
+
+  tfoot {
+    border-top: 2px solid var(--gray);
+    background: var(--highlight);
+
+    .base-summary-row {
+      td {
+        padding: 0.5rem 1rem;
+        font-weight: 600;
+        color: var(--darkgray);
+        font-size: 0.9em;
+        font-variant-numeric: tabular-nums;
+      }
+
+      &:hover {
+        background: var(--highlight);
       }
     }
   }

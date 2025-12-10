@@ -9,156 +9,82 @@ tags:
 title: linguistic relativity
 ---
 
-the sapir-whorf hypothesis—that language shapes thought—keeps getting dismissed and then vindicated. 20th century debates focused on whether linguistic structure constrains human cognition. now llms provide unusually clear evidence: different languages, training corpora, and prompt languages produce systematically different reasoning patterns [@ray2025linguistic].
+the sapir-whorf hypothesis—that language shapes thought—spent most of the 20th century getting beaten up by linguists. chomsky's universal grammar won. language was surface phenomena, thought was universal mentalese underneath.
 
-despite multilingual training, large reasoning models predominantly "think" in one or two hub languages—usually english and chinese—regardless of input language. but they still show language-specific behavior. linguistic relativity operates at multiple levels simultaneously: training corpus composition, prompt language, internal representation space, output generation.
+then we built [[thoughts/LLMs|language models]] and watched them develop the exact cognitive distortions whorf described.
 
-> [!important] towards [[thoughts/emergent behaviour|emergent properties]] from [[thoughts/Determinism|determinism]]
->
-> the strong form—linguistic determinism—claimed language determines and limits thought.
-> This is now largely rejected with modern cognitive science and linguistics study.
->
-> However, the weaker form holds: linguistic structures influence perception and reasoning without strictly constraining them.
+give gpt-4o mini the same culturally salient prompt across 13 typologically diverse languages and you get systematically different reasoning patterns [@ray2025linguistic]. not translation differences—different THOUGHTS. the models don't translate concepts between languages; they maintain separate [[lectures/411/notes#Isomorphisms, adjoints, invariant subspaces|subspaces]] for each input language, like distinct cognitive frames.
 
-in [[thoughts/LLMs|language models]], these effects emerge from training dynamics (stochastic prediction) rather than hardcoded constraints. we can now operationalize whorfian effects through embeddings, neuron activation patterns, cross-lingual transfer performance.
+here's what's wild: despite multilingual training, large reasoning models predominantly "think" in one or two hub languages—usually english or chinese—regardless of what you prompt them in.[^language] ask deepseek-r1 a question in swahili and its internal monologue {{sidenotes[still runs]: the training distribution creates gravitational wells in representation space}} in english or chinese before translating back.
 
-## [[thoughts/emergent behaviour|emergent properties]] in language models
+[^language]: probably bc stochastically these languages dominate the training corpus, creating stronger attractors in the model's latent space
 
-### linguistic structure and model behavior
+linguistic relativity operates simultaneously across training corpus composition, prompt language, internal representation space, output generation. whorf claimed we dissect nature along lines laid down by our native languages. language models dissect prompts along lines laid down by their training distributions—and those lines are measurable through neuron activation patterns, embedding geometries, cross-lingual transfer performance.
 
-gpt-4o mini generating responses to culturally salient prompts across 13 typologically diverse languages shows measurable linguistic relativity in AI-generated text [@ray2025linguistic]. significant variation in semantic alignment across language pairs.
+## how linguistic structure creates behavior
 
-the models probably don't translate concepts but instead maintain [[lectures/411/notes#Isomorphisms, adjoints, invariant subspaces|subspaces]] of concepts per input language.
+crack open a multilingual model with [[thoughts/sparse autoencoder|sparse autoencoders]] and you find something strange: both language-agnostic and language-specific neurons coexisting in the same network. prompts with identical meanings across languages activate similar circuits—but the model also maintains dedicated neurons for vocabulary, grammar, idioms in each language.
 
-### language-specific neurons and shared representations
+this isn't planned. compression during pre-training forces models toward shared cross-lingual representations (cheaper to store one concept than seven), but the training dynamics also carve out language-specific regions. cross-lingual neuron overlap correlates strongly with zero-shot transfer performance; when overlap degrades during certain pre-training phases, so does the model's ability to transfer knowledge between languages.
 
-multilingual models contain both language-agnostic and language-specific regions. [[thoughts/sparse autoencoder|saes]] on haiku 3.5 show prompts with identical meaning across languages activate similar circuits, but models still maintain language-specific neurons for vocabulary, grammar, idioms:
+grammatical features like number and semantic roles don't distribute globally—they localize in specific embedding regions. the model's internal organization mirrors the structure of the languages it learned.
 
-- cross-lingual neuron overlap correlates strongly with zero-shot transfer performance
-- compression during pre-training forces shared cross-lingual representations over separate language-specific ones
-- implicit alignment degrades in certain pre-training phases
-- grammatical features (number, semantic roles) localize in specific embedding regions rather than distributing globally
+watch a model reason through a hard problem and you'll see it mix languages mid-thought. test across 15 languages × 7 difficulty levels × 18 subject areas and every factor influences language mixing in reasoning traces [@languagemixing2025]. script composition matters most: models have an internal preference for latin script, so they keep slipping into latin-alphabet reasoning even when you prompt them in arabic or mandarin.
 
-### language mixing in reasoning
+force a model to reason in scripts matching the input language and accuracy improves; mismatched scripts degrade performance [@bilingualreasoning2024]. deepseek-r1 and qwq-32b show human-like language mixing in their reasoning chains—switching languages when the problem gets hard, defaulting to their "native" scripts under cognitive load. these patterns emerge from interactions between task difficulty, script types, model architecture. nobody programmed this behavior; it arose from training dynamics, like aphasia patterns in stroke victims.
 
-15 languages × 7 difficulty levels × 18 subject areas: all factors influence language mixing in reasoning traces [@languagemixing2025]. script composition aligns with internal representations—models have an internal preference for latin script, which explains why they mix into latin-script reasoning even when prompted in other languages.
+## where language carves up reality
 
-forcing models to reason in scripts matching the input language improves accuracy; mismatched scripts degrade performance [@bilingualreasoning2024]. linguistic relativity affects not just outputs but internal reasoning—deepseek-r1 and qwq-32b show human-like language mixing in reasoning chains, patterns emerging from interaction between task difficulty, script types, model architecture.
+in the 1950s brown and lenneberg tested whether having words for colors affects how you SEE them. zuni speakers who use one word for green and blue struggled to distinguish shades within that merged category. your language's color vocabulary literally shapes color memory and recognition.
 
-## domain-specific evidence: humans and models
+gpt-4 replicates this. prompt it in english vs russian about color perception and you get cross-linguistic variation matching human psycholinguistic patterns. the model has no retina, no perceptual constraints—but training on russian text (which distinguishes синий/blue from голубой/light-blue at the basic color term level) creates the same cognitive distinctions that russian speakers show.
 
-### color perception
+spatial reasoning breaks even harder. some languages encode space through absolute directions—speakers of guugu yimithirr (aboriginal australian language) track cardinal directions constantly, saying things like "there's an ant on your southwest foot." other languages use relative frames ("left/right" depends on perspective). the comfort benchmark {{sidenotes[tests this]: consistent multilingual frame of reference test across languages}} and models fail catastrophically: english dominance in resolving spatial ambiguities, failure to accommodate multiple frames of reference, zero adherence to language-specific conventions.
 
-brown and lenneberg's classic work tested whether codability of color terms affects memory and recognition—zuni speakers grouping green/blue struggled distinguishing within that category. gpt-4 replicates cross-linguistic variation in english vs russian color perception, showing human-like color-concept associations.
+time works similarly. english and swedish use distance metaphors ("long meeting"), spanish uses quantity ("big meeting"), mandarin employs vertical metaphors (上个月/up-month for "last month"). these aren't just vocabulary differences—they correlate with duration judgments in both humans and models. test temporal causal reasoning across english, italian, russian, japanese and the perfect times benchmark shows models inheriting the temporal reasoning patterns of their training language distributions.
 
-linguistic relativity effects in color cognition emerge in models through training data rather than perceptual constraints, but mirror human psycholinguistic patterns anyway.
+## what this means for building systems
 
-### spatial reasoning
+ask a model a question in english and it answers correctly. ask the EXACT same question in swahili or igbo and it fails. performance consistently declines from english → local languages → other foreign languages, with english-centric models showing a 3-4% average performance advantage across all languages.
 
-comfort benchmark (consistent multilingual frame of reference test) shows poor robustness across languages in spatial tasks:
+this isn't just a quality problem—it's an epistemological one. training corpora bias creates measurable "worldview" in models. prompt claude in english and you get western liberal perspectives; prompt the same model in different languages and different {{sidenotes[perspectives emerge]: models show greater cultural alignment when prompted in a culture's dominant language}}. popular llms exhibit western cultural bias, favoring self-expression values from english-speaking and protestant european countries [@culturalbias2024]. misalignment is most pronounced for underrepresented personas and culturally sensitive topics.
 
-- english dominance in resolving spatial ambiguities
-- failure to accommodate multiple frames of reference
-- zero adherence to language-specific/cultural conventions
+anthropological prompting—having the model explicitly reason through cultural context—improves alignment for 71-81% of countries and territories [@culturalbias2024]. but this just papers over the deeper issue: linguistic relativity in models isn't just semantic differences. it's entire cultural worldviews encoded in training distributions, activated by choice of prompt language.
 
-languages differ in spatial encoding—some use absolute directions (guugu yimithirr), others relative frames. models struggle with this diversity, defaulting to english-like reasoning.
+grammatical structure matters too. languages with grammatical gender (spanish, french) show pronounced gender bias in their models, with male-to-female ratios in training data ranging 4:1 to 6:1. the grammatical categories themselves propagate social biases—not through explicit encoding but through the distributions of contexts where gendered words appear.
 
-### temporal reasoning
+program-of-thought fine-tuning (using code-like intermediate steps) substantially enhances multilingual reasoning, outperforming chain-of-thought. reasoning scaffolding interacts with linguistic structure in ways nobody fully understands yet.
 
-perfect times benchmark (english, italian, russian, japanese) shows models struggle with human-like temporal causal reasoning. languages encode time differently—english/swedish use distance metaphors ("long meeting"), spanish uses quantity ("big meeting"), mandarin employs vertical metaphors. these correlate with duration judgments in both humans and models.
+## how we got here
 
-time representation in embeddings varies by training language distribution.
+[[thoughts/Plato|plato]]'s _cratylus_ asked whether reality is embedded in language—whether words capture eternal forms or just conventional labels. his _seventh letter_ claimed ultimate truth is inexpressible in words, suggesting language might constrain rather than convey thought. st. augustine disagreed: language was merely labels applied to pre-existing concepts. this view persisted through the middle ages. for [[thoughts/Philosophy and Kant|kant]], language was one of several tools humans use to experience the world, not constitutive of thought itself.
 
-## practical implications for AI systems
+then came the german romantics. late 18th century, ideas about national characters (_volksgeister_) motivated new thinking about language. johann georg hamann: "the lineaments of their language will thus correspond to the direction of their mentality." wilhelm von humboldt (1820) went further—language as the fabric of thought, with thoughts produced through internal dialog using native grammar. linguistic diversity IS diversity of worldviews; languages create individual perspectives through lexical categories, grammatical structures, syntactic patterns.
 
-### cross-lingual transfer and alignment
+across the atlantic, franz boas challenged european assumptions that some languages were superior. all languages can express the same content by different means, though the form of language is molded by culture. edward sapir drew on humboldt but explicitly rejected strong [[thoughts/Determinism|determinism]]: "it would be naïve to imagine that any analysis of experience is dependent on pattern expressed in language."
 
-models correctly answer questions in english but fail with identical questions in swahili, igbo, other low-resource languages. performance consistently declines from english → local languages → other foreign languages. english-centric models display 3-4% average performance advantage across languages.
-
-proposed solutions: prealign (multilingual alignment before pre-training), alignx (advance multilingual representation alignment), code-switched fine-tuning to bridge english/low-resource gaps.
-
-### cultural bias and worldview
-
-training corpora bias creates measurable "worldview" in models. english prompts align with western liberal viewpoints; the same model shows different perspectives in different languages. popular llms exhibit western cultural bias, favoring self-expression values from english-speaking/protestant european countries [@culturalbias2024].
-
-models show greater cultural alignment when prompted in a culture's dominant language. misalignment is more pronounced for underrepresented personas and culturally sensitive topics.
-
-anthropological prompting—leveraging anthropological reasoning for cultural alignment—improves alignment for 71-81% of countries/territories [@culturalbias2024]. linguistic relativity in models isn't just semantic differences but cultural worldviews encoded from training data.
-
-### grammatical structure and reasoning
-
-program-of-thought fine-tuning substantially enhances multilingual reasoning, outperforming chain-of-thought. reasoning scaffolding interacts with linguistic structure.
-
-grammatical gender effects appear in models: gender bias is pronounced in gendered languages (spanish, french), with male-to-female ratios in training data ranging 4:1 to 6:1. grammatical categories propagate social biases.
-
-## historical foundations
-
-### ancient philosophy
-
-the idea that [[thoughts/Language|language]] and thought are intertwined is ancient. [[thoughts/Plato|plato]]'s _cratylus_ explores whether conceptions of reality are embedded in language—a question central to [[thoughts/Epistemology|epistemology]]. plato may have held that the world consists of eternal ideas and language should represent these accurately, though his _seventh letter_ claims ultimate truth is inexpressible in words.
-
-st. augustine argued language was merely labels applied to pre-existing concepts. this view persisted through the middle ages. for [[thoughts/Philosophy and Kant|kant]], language was one of several methods humans use to experience the world, not constitutive of thought itself.
-
-### german romantic philosophers
-
-late 18th/early 19th century: ideas of different national characters (_volksgeister_) motivated german romanticism and early ethnic nationalism. johann georg hamann discussed the "genius" of a language: "the lineaments of their language will thus correspond to the direction of their mentality."
-
-wilhelm von humboldt (1820) proposed language as the fabric of thought—thoughts produced through internal dialog using native grammar. linguistic diversity is a diversity of worldviews, with languages creating individual perspectives through lexical/grammatical categories, conceptual organization, syntactic models.
-
-### american anthropology
-
-franz boas challenged the idea that some languages are superior to others. all languages can express the same content by different means, though the form of language is molded by culture.
-
-edward sapir drew on humboldt but explicitly rejected strong [[thoughts/Determinism|determinism]]: "it would be naïve to imagine that any analysis of experience is dependent on pattern expressed in language." language and culture are not intrinsically associated.
-
-benjamin lee whorf, sapir's student, studied native american languages:
+his student benjamin lee whorf studied native american languages and radicalized the claim:
 
 > we dissect nature along lines laid down by our native language ... all observers are not led by the same physical evidence to the same picture of the universe, unless their linguistic backgrounds are similar.
 
-whorf's claims about hopi time conceptualization—that hopi treats time as a single process rather than countable instances—remain contested.
+whorf's claims about hopi time conceptualization—that hopi treats time as a single process rather than countable instances—became the paradigm case. also the most contested. ekkehart malotki later challenged this with extensive data, though relativists maintain whorf's actual claim concerned different conceptualization rather than {{sidenotes[absence]: whether hopi LACKS time concepts vs conceptualizes them differently matters a lot for the strong/weak distinction}} of time concepts.
 
-### formalization and testing
+the 1960s brought chomsky and universal grammar. innate linguistic structures, differences between languages as surface phenomena. relativity got ridiculed for two decades. steven pinker proposed "mentalese"—a language of thought distinct from natural language—and accused relativists of strawmanning whorf.
 
-roger brown and eric lenneberg reformulated linguistic relativity as testable hypothesis through color perception experiments—whether codability of color terms affects memory and recognition. zuni speakers grouping green/blue struggled distinguishing within that category.
+late 1980s: new research on color perception, spatial reasoning, time conceptualization found broad support for non-deterministic versions. current consensus before llms: language influences certain cognitive processes in non-trivial ways, but doesn't determine them.
 
-brown formulated the well-known weak/strong versions:
+## the debate reborn in silicon
 
-- **weak**: structural differences between languages paralleled by nonlinguistic cognitive differences
-- **strong**: one's native language strongly influences or fully determines worldview
+chomsky's universal grammar predicted models should converge on shared representations—thought is thought, language is just surface syntax. whorf predicted language-specific processing—different languages create different cognitive patterns.
 
-### universalism and critiques
+[[thoughts/LLMs|language models]] do BOTH.
 
-1960s emphasis on universal grammar—particularly chomsky's work on innate linguistic structures—disfavored linguistic relativity. universalists argued for largely innate structures where differences between languages are surface phenomena. from the 1960s–1980s this view dominated, and relativity was often ridiculed.
+universal aspects: shared cross-lingual neuron activation for equivalent concepts, successful transfer learning between languages, compression forcing convergent representations. relativistic aspects: language-specific neurons for grammar and idioms, systematic performance gaps across languages, culture-dependent outputs activated by prompt language choice.
 
-ekkehart malotki challenged whorf's hopi time claims with extensive data, though relativists maintain whorf's actual claim concerned different conceptualization rather than absence of time concepts.
+some things are universal (perceptual basics like color categories, fundamental spatial relations), others shaped by linguistic structure (fine-grained color discrimination, frame-of-reference preferences, temporal reasoning patterns). this mirrors human cognition perfectly—which suggests the old debate missed something. maybe universalism and relativism aren't opposites but different levels of the same system.
 
-steven pinker argues thought is independent of language, proposing "mentalese"—a language of thought distinct from natural language. relativists have accused universalists of misrepresenting whorf through strawman arguments.
+here's what's genuinely NEW: compression during pre-training forces multilingual alignment that wasn't explicitly programmed. models develop internal "hub" languages for reasoning without being instructed. language mixing patterns emerge from interactions between task difficulty, script types, model architecture—qualitative changes in how models represent and process linguistic information, analogous to how human language acquisition shapes cognitive development.
 
-from the late 1980s, new research found broad support for non-deterministic versions. current consensus: language influences certain cognitive processes in non-trivial ways, but other processes develop from connectionist factors.
+these aren't scaling effects. they're [[thoughts/emergent behaviour|emergent properties]] of the training dynamics.
 
-see also: Language-Specific Neurons (ACL 2024, arXiv:2402.16438), Cross-lingual Transfer of Reward Models (arXiv:2410.18027), COMFORT spatial reasoning benchmark, Perfect Times temporal reasoning benchmark.
-
-## dispute
-
-the debate between universalists (chomsky's universal grammar) and relativists finds new expression in language models. universal grammar predicts models should converge on shared representations; linguistic relativity predicts language-specific processing. both occur.
-
-models exhibit:
-
-- **universal aspects**: shared cross-lingual neuron activation for equivalent concepts, transfer learning success
-- **relativistic aspects**: language-specific neurons, performance gaps across languages, culture-dependent outputs
-
-this dual nature mirrors human cognition—some aspects universal (perceptual universals in color, basic spatial relations), others shaped by linguistic structure (fine-grained color discrimination, frame-of-reference preferences, temporal reasoning).
-
-### emergent abilities and linguistic structure
-
-the "emergent abilities" debate—whether capabilities appear suddenly at scale or result from metric choices—connects to linguistic relativity. wei et al. (2022) defined emergent abilities as unpredictable capabilities at scale; schaeffer et al. (2023) argued these may be measurement artifacts.
-
-but language-specific behavior in models suggests genuine emergence: compression during pre-training forces multilingual alignment that wasn't explicitly programmed. models develop internal "hub" languages for reasoning without being told to. language mixing patterns emerge from interaction between task difficulty, script types, model architecture.
-
-The are more qualitative changes in how models represent and process linguistic information, analogous to how human language acquisition shapes cognitive development instead of simple scaling effects.
-
-### programming languages and notation
-
-kenneth e. iverson argued notations are tools of thought; more powerful notations aid thinking. paul graham's "blub paradox" observes that thinking in a language can obscure awareness of more expressive ones.
-
-in ai systems, this manifests as models defaulting to english or latin-script reasoning even when prompted in other languages. the training distribution creates a "notational preference" that shapes internal computation—a computational version of whorf's claim that we dissect nature along lines laid down by our languages.
+kenneth e. iverson argued notations are tools of thought; more powerful notations aid thinking. paul graham's "blub paradox": thinking IN a language obscures awareness of more expressive ones. in ai systems this manifests as models defaulting to english or latin-script reasoning even when prompted in other languages. the training distribution creates a "notational preference" that shapes internal computation—whorf's claim about dissecting nature along linguistic lines, but now measurable in embedding geometries and neuron activations.

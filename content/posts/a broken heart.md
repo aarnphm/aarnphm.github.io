@@ -8,7 +8,7 @@ socials:
   facebook: https://www.facebook.com/share/19ghibetuE/
   substack: https://open.substack.com/pub/livingalone/p/the-mountain-in-topanga?r=1z8i4s&utm_campaign=post&utm_medium=web&showWelcomeOnShare=true
   threads: https://www.threads.net/@aarnphm/post/DEm-K-MupOI?xmt=AQGzRHMdXH5DSfLXjFzaP7AaiQrOnZuBcssNa-ebWN5QLw
-  twitter: https://x.com/aarnphm_/status/1877365322182705313
+  twitter: https://x.com/aarnphm/status/1877365322182705313
 tags:
   - love
   - fiction

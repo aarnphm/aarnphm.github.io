@@ -5,14 +5,14 @@ aliases:
 date: "2022-04-22"
 description: my working notes, as a form of a digital garden
 id: _index
-modified: 2025-12-04 17:38:57 GMT-05:00
+modified: 2025-12-10 16:14:22 GMT-05:00
 tags:
   - sapling
   - fruit
 title: Aaron's notes
 ---
 
-Hi, my name is Aaron. I'm best reached via [twitter](https://twitter.com/aarnphm_) or [email](mailto:contact@aarnphm.xyz).
+Hi, my name is Aaron. I'm best reached via [twitter](https://twitter.com/aarnphm) or [email](mailto:contact@aarnphm.xyz).
 
 I'm [[thoughts/craft|working]] at a [startup](https://bentoml.com) building #ml serving systems, where I mainly focus on [[thoughts/LLMs|LLM]] [[thoughts/vllm|inference engine]].
 

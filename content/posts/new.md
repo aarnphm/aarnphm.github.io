@@ -7,7 +7,7 @@ id: new
 modified: 2025-10-29 02:15:12 GMT-04:00
 socials:
   substack: https://open.substack.com/pub/livingalone/p/i-saw-a-disstrack-dropped-at-a-hackathon?r=1z8i4s&utm_campaign=post&utm_medium=web&showWelcomeOnShare=true
-  twitter: https://x.com/aarnphm_/status/1841401912815464735
+  twitter: https://x.com/aarnphm/status/1841401912815464735
 tags:
   - fruit
 title: I saw a disstrack dropped at a hackathon.
@@ -82,9 +82,9 @@ A hackathon should be the infrastructure layer so that everyone can play.
 
 ### implications from New Build.
 
-New Build tackled addresses some problems and challenges pretty well, such as the [draft mechanics](https://x.com/aarnphm_/status/1839714935963607405) which introduces some [[thoughts/Entropy|entropy]], but fell short in terms of prizes incentives.
+New Build tackled addresses some problems and challenges pretty well, such as the [draft mechanics](https://x.com/aarnphm/status/1839714935963607405) which introduces some [[thoughts/Entropy|entropy]], but fell short in terms of prizes incentives.
 
-_K and I were chatting about how New Build felt like extended [New Office Hours](https://x.com/aarnphm_/status/1775641922029162773), which is a good first step in cultivating spaces for play\_
+_K and I were chatting about how New Build felt like extended [New Office Hours](https://x.com/aarnphm/status/1775641922029162773), which is a good first step in cultivating spaces for play\_
 
 New Build represents what Toronto has to offer, a first step to solve the "human capital flight" (often refers as "brain drain") in Canada.
 

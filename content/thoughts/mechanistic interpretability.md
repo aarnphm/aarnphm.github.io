@@ -76,7 +76,7 @@ Application in the wild: [Goodfire](https://goodfire.ai/) and [Transluce](https:
 
 > [!question]- How we would do inference with SAE?
 >
-> https://x.com/aarnphm_/status/1839016131321016380
+> https://x.com/aarnphm/status/1839016131321016380
 
 idea: treat SAEs as a logit bias, similar to [[thoughts/structured outputs]]
 

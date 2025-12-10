@@ -1,5 +1,13 @@
 import { QuartzPluginData } from "../../plugins/vfile"
-import { ComparisonOp, compileExpression, parseDuration } from "./types"
+import {
+  ComparisonOp,
+  compileExpression,
+  parseDuration,
+  FormulaDefinition,
+  SummaryDefinition,
+  ViewSummaryConfig,
+  BuiltinSummaryType,
+} from "./types"
 import { simplifySlug, FullSlug } from "../path"
 
 // filter AST types matching obsidian bases syntax
@@ -111,6 +119,67 @@ export function resolvePropertyValue(
   }
 
   return file.frontmatter?.[key]
+}
+
+// evaluate a formula definition against a file, returning the computed value
+export function evaluateFormula(
+  formula: FormulaDefinition,
+  file: QuartzPluginData,
+  allFiles: QuartzPluginData[] = [],
+): any {
+  // if we have a parsed comparison formula, evaluate it
+  if (formula.property && formula.operator !== undefined && formula.value !== undefined) {
+    const propValue = resolvePropertyValue(file, formula.property, allFiles)
+
+    // normalize values for comparison
+    const normalizeValue = (val: any): any => {
+      if (val instanceof Date) return val.getTime()
+      if (typeof val === "string" && /^\d{4}-\d{2}-\d{2}/.test(val)) {
+        const parsed = new Date(val)
+        if (!isNaN(parsed.getTime())) return parsed.getTime()
+      }
+      return val
+    }
+
+    const normalizedProp = normalizeValue(propValue)
+    const normalizedTarget = normalizeValue(formula.value)
+
+    switch (formula.operator) {
+      case "==":
+        return normalizedProp === normalizedTarget
+      case "!=":
+        return normalizedProp !== normalizedTarget
+      case ">":
+        return (
+          typeof normalizedProp === "number" &&
+          typeof normalizedTarget === "number" &&
+          normalizedProp > normalizedTarget
+        )
+      case "<":
+        return (
+          typeof normalizedProp === "number" &&
+          typeof normalizedTarget === "number" &&
+          normalizedProp < normalizedTarget
+        )
+      case ">=":
+        return (
+          typeof normalizedProp === "number" &&
+          typeof normalizedTarget === "number" &&
+          normalizedProp >= normalizedTarget
+        )
+      case "<=":
+        return (
+          typeof normalizedProp === "number" &&
+          typeof normalizedTarget === "number" &&
+          normalizedProp <= normalizedTarget
+        )
+      default:
+        return undefined
+    }
+  }
+
+  // fallback: return undefined for unparsed expressions
+  return undefined
 }
 
 function normalizeLinkTarget(raw: unknown): string | undefined {
@@ -862,4 +931,238 @@ function parseFunction(name: string, args: string[]): FilePredicate {
   }
 
   return factory(...args)
+}
+
+// compute summary value for a column across all matching files
+export function computeColumnSummary(
+  column: string,
+  files: QuartzPluginData[],
+  summary: SummaryDefinition,
+  allFiles: QuartzPluginData[] = [],
+): string | number | undefined {
+  if (files.length === 0) {
+    return undefined
+  }
+
+  // collect all values for this column
+  const values: any[] = files.map((file) => resolvePropertyValue(file, column, allFiles))
+
+  if (summary.type === "builtin" && summary.builtinType) {
+    return computeBuiltinSummary(values, summary.builtinType)
+  }
+
+  if (summary.type === "formula" && summary.expression) {
+    return computeFormulaSummary(values, summary.expression)
+  }
+
+  return undefined
+}
+
+// compute built-in summary aggregations
+function computeBuiltinSummary(
+  values: any[],
+  type: BuiltinSummaryType,
+): string | number | undefined {
+  switch (type) {
+    case "count":
+      return values.length
+
+    case "sum": {
+      const nums = values.filter((v) => typeof v === "number")
+      if (nums.length === 0) return undefined
+      return nums.reduce((acc, v) => acc + v, 0)
+    }
+
+    case "average":
+    case "avg": {
+      const nums = values.filter((v) => typeof v === "number")
+      if (nums.length === 0) return undefined
+      const sum = nums.reduce((acc, v) => acc + v, 0)
+      return Math.round((sum / nums.length) * 100) / 100
+    }
+
+    case "min": {
+      const comparable = values.filter(
+        (v) => typeof v === "number" || v instanceof Date || typeof v === "string",
+      )
+      if (comparable.length === 0) return undefined
+      const normalized = comparable.map((v) => (v instanceof Date ? v.getTime() : v))
+      const min = Math.min(...normalized.filter((v) => typeof v === "number"))
+      if (isNaN(min)) {
+        // string comparison
+        const strings = comparable.filter((v) => typeof v === "string") as string[]
+        if (strings.length === 0) return undefined
+        return strings.sort()[0]
+      }
+      // check if original values were dates
+      if (comparable.some((v) => v instanceof Date)) {
+        return new Date(min).toISOString().split("T")[0]
+      }
+      return min
+    }
+
+    case "max": {
+      const comparable = values.filter(
+        (v) => typeof v === "number" || v instanceof Date || typeof v === "string",
+      )
+      if (comparable.length === 0) return undefined
+      const normalized = comparable.map((v) => (v instanceof Date ? v.getTime() : v))
+      const max = Math.max(...normalized.filter((v) => typeof v === "number"))
+      if (isNaN(max)) {
+        const strings = comparable.filter((v) => typeof v === "string") as string[]
+        if (strings.length === 0) return undefined
+        return strings.sort().reverse()[0]
+      }
+      if (comparable.some((v) => v instanceof Date)) {
+        return new Date(max).toISOString().split("T")[0]
+      }
+      return max
+    }
+
+    case "range": {
+      const comparable = values.filter(
+        (v) => typeof v === "number" || v instanceof Date || typeof v === "string",
+      )
+      if (comparable.length === 0) return undefined
+      const normalized = comparable.map((v) => (v instanceof Date ? v.getTime() : v))
+      const nums = normalized.filter((v) => typeof v === "number")
+      if (nums.length === 0) return undefined
+      const min = Math.min(...nums)
+      const max = Math.max(...nums)
+      if (comparable.some((v) => v instanceof Date)) {
+        return `${new Date(min).toISOString().split("T")[0]} - ${new Date(max).toISOString().split("T")[0]}`
+      }
+      return `${min} - ${max}`
+    }
+
+    case "unique": {
+      const nonNull = values.filter((v) => v !== undefined && v !== null && v !== "")
+      const unique = new Set(nonNull.map((v) => (v instanceof Date ? v.toISOString() : String(v))))
+      return unique.size
+    }
+
+    case "filled": {
+      const filled = values.filter((v) => v !== undefined && v !== null && v !== "")
+      return filled.length
+    }
+
+    case "missing": {
+      const missing = values.filter((v) => v === undefined || v === null || v === "")
+      return missing.length
+    }
+
+    case "earliest": {
+      const dates = values.filter(
+        (v) =>
+          v instanceof Date ||
+          (typeof v === "string" && /^\d{4}-\d{2}-\d{2}/.test(v)) ||
+          typeof v === "number",
+      )
+      if (dates.length === 0) return undefined
+      const timestamps = dates.map((v) => {
+        if (v instanceof Date) return v.getTime()
+        if (typeof v === "string") return new Date(v).getTime()
+        return v
+      })
+      const earliest = Math.min(...timestamps)
+      return new Date(earliest).toISOString().split("T")[0]
+    }
+
+    case "latest": {
+      const dates = values.filter(
+        (v) =>
+          v instanceof Date ||
+          (typeof v === "string" && /^\d{4}-\d{2}-\d{2}/.test(v)) ||
+          typeof v === "number",
+      )
+      if (dates.length === 0) return undefined
+      const timestamps = dates.map((v) => {
+        if (v instanceof Date) return v.getTime()
+        if (typeof v === "string") return new Date(v).getTime()
+        return v
+      })
+      const latest = Math.max(...timestamps)
+      return new Date(latest).toISOString().split("T")[0]
+    }
+
+    default:
+      return undefined
+  }
+}
+
+// compute formula-based summary
+// supports expressions like: values.filter(value.isType("null")).length
+function computeFormulaSummary(values: any[], expression: string): string | number | undefined {
+  try {
+    // parse common formula patterns
+    // pattern: values.filter(value.isType("null")).length -> count nulls
+    const isTypeNullMatch = expression.match(
+      /values\.filter\(value\.isType\(['"](null|undefined)['"]\)\)\.length/,
+    )
+    if (isTypeNullMatch) {
+      return values.filter((v) => v === null || v === undefined).length
+    }
+
+    // pattern: values.filter(value == true).reduce(acc + 1, 0)
+    const filterTrueMatch = expression.match(
+      /values\.filter\(value\s*==\s*true\)\.reduce\(acc\s*\+\s*1,\s*0\)/,
+    )
+    if (filterTrueMatch) {
+      return values.filter((v) => v === true).length
+    }
+
+    // pattern: values.filter(value == false).reduce(acc + 1, 0)
+    const filterFalseMatch = expression.match(
+      /values\.filter\(value\s*==\s*false\)\.reduce\(acc\s*\+\s*1,\s*0\)/,
+    )
+    if (filterFalseMatch) {
+      return values.filter((v) => v === false).length
+    }
+
+    // pattern: values.reduce(acc + value, 0) -> sum
+    const sumMatch = expression.match(/values\.reduce\(acc\s*\+\s*value,\s*0\)/)
+    if (sumMatch) {
+      const nums = values.filter((v) => typeof v === "number")
+      return nums.reduce((acc, v) => acc + v, 0)
+    }
+
+    // pattern: values.length
+    if (expression.trim() === "values.length") {
+      return values.length
+    }
+
+    // pattern: values.filter(value => ...).length
+    const filterLengthMatch = expression.match(/values\.filter\(.+\)\.length/)
+    if (filterLengthMatch) {
+      // for now, return count of non-null values as fallback
+      return values.filter((v) => v !== null && v !== undefined).length
+    }
+
+    return undefined
+  } catch {
+    return undefined
+  }
+}
+
+// compute all summaries for a view
+export function computeViewSummaries(
+  columns: string[],
+  files: QuartzPluginData[],
+  summaryConfig: ViewSummaryConfig | undefined,
+  allFiles: QuartzPluginData[] = [],
+): Record<string, string | number | undefined> {
+  const results: Record<string, string | number | undefined> = {}
+
+  if (!summaryConfig?.columns) {
+    return results
+  }
+
+  for (const column of columns) {
+    const summary = summaryConfig.columns[column]
+    if (summary) {
+      results[column] = computeColumnSummary(column, files, summary, allFiles)
+    }
+  }
+
+  return results
 }

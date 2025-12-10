@@ -1,6 +1,12 @@
 import { QuartzTransformerPlugin } from "../types"
 import { Root } from "mdast"
-import { parseFilter, parseViews, BaseFile, PropertyConfig } from "../../util/base/types"
+import {
+  parseFilter,
+  parseViews,
+  parseFormulas,
+  BaseFile,
+  PropertyConfig,
+} from "../../util/base/types"
 import yaml from "js-yaml"
 
 export const ObsidianBases: QuartzTransformerPlugin = () => {
@@ -68,6 +74,7 @@ export const ObsidianBases: QuartzTransformerPlugin = () => {
                 views: parseViews(parsed.views),
                 properties,
                 summaries: parsed.summaries,
+                formulas: parseFormulas(parsed.formulas),
               }
               file.data.basesConfig = config
 
@@ -79,6 +86,7 @@ export const ObsidianBases: QuartzTransformerPlugin = () => {
                 file.data.frontmatter = {
                   title: file.path?.replace(".base", "").split("/").pop() || "",
                   pageLayout: "default" as const,
+                  description: `bases renderer of ${file.data.slug}`,
                 }
               }
               const existingTags = (file.data.frontmatter.tags as string[]) || []

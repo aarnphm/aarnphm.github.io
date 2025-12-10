@@ -145,7 +145,7 @@ document.addEventListener("nav", async (e) => {
       name: "x.com (formerly Twitter)",
       auxInnerHtml: `<svg width="1em" height="1em"><use href="#twitter-icon" /></svg>`,
       onClick: () => {
-        window.location.href = "https://x.com/aarnphm_"
+        window.location.href = "https://x.com/aarnphm"
       },
     },
     {

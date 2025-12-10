@@ -28,7 +28,7 @@ see also: [[thoughts/vllm]], [[thoughts/LLMs]], [[thoughts/tsfm/inference-exerci
 
 s/o: Michael Goin (RedHat), Nick Hill (RedHat), Simon Go (Berkeley), and [blog post from Aleksa](https://blog.vllm.ai/2025/09/05/anatomy-of-vllm.html)
 
-[@aarnphm_]
+[@aarnphm]
 
 ## agenda
 

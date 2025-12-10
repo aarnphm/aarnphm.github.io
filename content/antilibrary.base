@@ -1,8 +1,6 @@
 summaries:
   missing: values.filter(value.isType("null")).length
-  Range: (values.filter(value.isType("date")).reduce(if(value > acc || acc == null, value, acc), null) - values.filter(value.isType("date")).reduce(if(value < acc || acc == null, value, acc), null))
   read this year: values.filter(value == true).reduce(acc + 1, 0)
-  Unchecked: values.filter(value == false).length
 filters:
   or:
     - file.hasTag("book")
@@ -13,6 +11,9 @@ filters:
         - not:
             - file.inFolder("library/posters")
 formulas:
+  "2021": note.finished == 2021
+  "2022": note.finished == 2022
+  "2023": note.finished == 2023
   "2024": note.finished == 2024
   "2025": note.finished == 2025
 properties:
@@ -107,9 +108,7 @@ views:
         direction: ASC
     summaries:
       date: Latest
-      subcategory: Unique
-      title: Empty
-      status: Empty
+      subcategory: unique
     columnSize:
       note.title: 401
       note.date: 147
@@ -165,6 +164,9 @@ views:
       - file.tags
       - date
       - status
+    sort:
+      - property: status
+        direction: ASC
   - type: table
     name: wip
     filters:
@@ -228,15 +230,22 @@ views:
       - aliases
       - formula.2025
       - formula.2024
+      - formula.2023
+      - formula.2022
+      - formula.2021
     sort:
-      - property: formula.2025
-        direction: ASC
-      - property: formula.2024
-        direction: DESC
       - property: finished
         direction: DESC
-      - property: year
-        direction: ASC
+      - property: formula.2025
+        direction: DESC
+      - property: formula.2024
+        direction: DESC
+      - property: formula.2023
+        direction: DESC
+      - property: formula.2022
+        direction: DESC
+      - property: formula.2021
+        direction: DESC
       - property: date
         direction: DESC
       - property: aliases
@@ -254,13 +263,16 @@ views:
       - property: file.tags
         direction: ASC
     summaries:
-      date: Range
-      subcategory: Unique
-      title: Unique
-      status: Empty
-      finished: Filled
+      date: range
+      subcategory: unique
+      title: unique
+      finished: filled
       formula.2025: read this year
       formula.2024: read this year
+      formula.2023: read this year
+      formula.2022: read this year
+      formula.2021: read this year
+      tags: missing
     columnSize:
       note.id: 307
       note.title: 401
