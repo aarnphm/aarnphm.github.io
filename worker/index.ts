@@ -444,7 +444,7 @@ export default {
       case "/view-source":
         return Response.redirect("https://github.com/aarnphm/aarnphm.github.io", 301)
       case "/view-profile":
-        return Response.redirect("https://x.com/aarnphm_", 301)
+        return Response.redirect("https://x.com/aarnphm", 301)
       case "/github":
         return Response.redirect("https://github.com/aarnphm", 301)
       case "/substack":

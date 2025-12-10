@@ -15,13 +15,15 @@ title: Agency
 
 [[thoughts/Chaos|Chaos]] allows for agency, but too much [[thoughts/Entropy|entropy]] can create problems.
 
+<div class="w-140"></div>
+
 ## Self-determination theory
 
-see also: <https://selfdeterminationtheory.org/theory/>
+see https://selfdeterminationtheory.org/theory/
 
 ## having a shit blog has made me feel abundant
 
-source: [Escaping Flatland](https://www.henrikkarlsson.xyz/p/having-a-shit-blog-has-made-me-feel)
+_from https://www.henrikkarlsson.xyz/p/having-a-shit-blog-has-made-me-feel_
 
 ## agency as machine
 
@@ -32,3 +34,9 @@ Agency as an extension of end-users rather than the systems itself
 ![[thoughts/images/complex-takes-away-agency.webp]]
 
 > Instruments of _superagency_
+
+## fragments
+
+excerpt from _https://www.henrikkarlsson.xyz/p/agentic-fragments_ and _https://www.henrikkarlsson.xyz/p/agency_
+
+> Their way of appropriating the world was fundamentally different from mine: everything around them was something they could take apart and put back together. If they didn’t like how the light fell in their living room, they moved the windows. If they needed a lathe, they disassembled a hammer drill and turned it into a lathe. Their world was filled with affordances that I didn’t see. Where I saw a sweater, she saw a thread temporarily shaped as one—it could just as well be a scarf, a pair of socks, a hat, or six gloves. She saw more degrees of freedom than I did, and acted on it.

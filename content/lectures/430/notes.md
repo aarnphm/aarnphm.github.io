@@ -2,7 +2,7 @@
 date: "2025-10-17"
 description: Deploying DeepSeek R1
 id: notes
-modified: 2025-11-11 06:57:40 GMT-05:00
+modified: 2025-12-10 16:15:28 GMT-05:00
 slides: true
 tags:
   - workshop
@@ -26,7 +26,7 @@ by locally I mean:
 
 s/o: vLLM, newsystems
 
-[@aarnphm_]
+[@aarnphm]
 
 ## agenda
 

@@ -51,7 +51,7 @@
               <span>evergreen</span>
             </a> notes. <br />If any of these doesn't make sense for
             you, it is probably because I didn't write it for you. The main atom feed can be a bit spammy, but there is also sub-folder atom feed (if you want to follow specific topics), which is usually more sporadic. <br /> 👋 you can reach out to me on <a
-              href="https://twitter.com/aarnphm_" target="_blank">twitter</a> (Yep, I refused to call it
+              href="https://twitter.com/aarnphm" target="_blank">twitter</a> (Yep, I refused to call it
             call it X) </p>
         </xsl:otherwise>
       </xsl:choose>

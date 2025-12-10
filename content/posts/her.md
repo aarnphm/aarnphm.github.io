@@ -7,7 +7,7 @@ noindex: true
 socials:
   bluesky: https://bsky.app/profile/aarnphm.xyz/post/3lf5wpveltc2z
   substack: https://open.substack.com/pub/livingalone/p/her?r=1z8i4s&utm_campaign=post&utm_medium=web&showWelcomeOnShare=true
-  twitter: https://x.com/aarnphm_/status/1876647451886584297
+  twitter: https://x.com/aarnphm/status/1876647451886584297
 tags:
   - love
   - growth

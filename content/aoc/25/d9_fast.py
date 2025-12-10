@@ -2,19 +2,23 @@ from pathlib import Path
 from bisect import bisect_left, bisect_right
 from collections import defaultdict
 
+
 def parse(path: str) -> list[tuple[int, int]]:
   return [tuple(map(int, line.split(','))) for line in Path(path).read_text().strip().split('\n')]
 
+
 def area(p1: tuple[int, int], p2: tuple[int, int]) -> int:
   return (abs(p2[0] - p1[0]) + 1) * (abs(p2[1] - p1[1]) + 1)
+
 
 def p1(points: list[tuple[int, int]]) -> int:
   # optimization: only need to check pairs once, area is symmetric
   best = 0
   for i, p1 in enumerate(points):
-    for p2 in points[i+1:]:
+    for p2 in points[i + 1 :]:
       best = max(best, area(p1, p2))
   return best
+
 
 def p2(points: list[tuple[int, int]]) -> int:
   n = len(points)
@@ -52,25 +56,15 @@ def p2(points: list[tuple[int, int]]) -> int:
     return True
 
   # sort pairs by area descending, early termination on first valid
-  pairs = sorted(
-    ((area(points[i], points[j]), i, j) for i in range(n) for j in range(i + 1, n)),
-    reverse=True
-  )
+  pairs = sorted(((area(points[i], points[j]), i, j) for i in range(n) for j in range(i + 1, n)), reverse=True)
 
   for a, i, j in pairs:
     if rect_valid(points[i], points[j]):
       return a
   return 0
 
+
 if __name__ == '__main__':
-  from time import perf_counter
   points = parse('d9.txt')
-
-  t0 = perf_counter()
-  r1 = p1(points)
-  t1 = perf_counter()
-  r2 = p2(points)
-  t2 = perf_counter()
-
-  print(f'p1: {r1} ({(t1-t0)*1000:.2f}ms)')
-  print(f'p2: {r2} ({(t2-t1)*1000:.2f}ms)')
+  print(f'p1: {p1(points)}')
+  print(f'p2: {p2(points)}')

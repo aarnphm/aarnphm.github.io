@@ -11,7 +11,6 @@ status: finished
 subcategory: Kafka
 tags:
   - philosophy
-  - o/life
 title: The metamorphosis
 year: 1915
 finished: 2024

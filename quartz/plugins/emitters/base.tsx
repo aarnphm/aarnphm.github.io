@@ -17,8 +17,20 @@ import {
 import { defaultContentPageLayout, sharedPageComponents } from "../../../quartz.layout"
 import { Content, BaseSearchBar, BaseViewSelector } from "../../components"
 import { write } from "./helpers"
-import { evaluateFilter, resolvePropertyValue } from "../../util/base/query"
-import { BaseView, BaseGroupBy, PropertyConfig } from "../../util/base/types"
+import {
+  evaluateFilter,
+  resolvePropertyValue,
+  evaluateFormula,
+  computeViewSummaries,
+} from "../../util/base/query"
+import {
+  BaseView,
+  BaseGroupBy,
+  PropertyConfig,
+  FormulaDefinition,
+  ViewSummaryConfig,
+  parseViewSummaries,
+} from "../../util/base/types"
 import { QuartzPluginData } from "../vfile"
 import { Root } from "hast"
 import { h } from "hastscript"
@@ -220,6 +232,16 @@ function getPropertyDisplayName(
     .trim()
 }
 
+// render a boolean value as a checkbox (obsidian behavior)
+function renderBooleanCheckbox(value: boolean): any {
+  return h("input", {
+    type: "checkbox",
+    checked: value ? true : undefined,
+    disabled: true,
+    class: "base-checkbox",
+  })
+}
+
 // Helper functions for table building
 function buildTableHead(columns: string[], properties?: Record<string, PropertyConfig>): any {
   return h(
@@ -233,11 +255,30 @@ function buildTableCell(
   column: string,
   currentSlug: FullSlug,
   allFiles: QuartzPluginData[],
+  formulas?: Record<string, FormulaDefinition>,
 ): any {
   const fallbackSlugSegment = file.slug?.split("/").pop() || ""
   const fallbackTitle =
     getFileBaseName(file.filePath as string | undefined) ||
     fallbackSlugSegment.replace(/\.[^/.]+$/, "").replace(/-/g, " ")
+
+  // handle formula.* columns
+  if (column.startsWith("formula.")) {
+    const formulaName = column.slice("formula.".length)
+    const formula = formulas?.[formulaName]
+    if (!formula) {
+      return h("td", {}, "")
+    }
+
+    const value = evaluateFormula(formula, file, allFiles)
+    if (typeof value === "boolean") {
+      return h("td", {}, [renderBooleanCheckbox(value)])
+    }
+    if (value === undefined || value === null) {
+      return h("td", {}, "")
+    }
+    return h("td", {}, String(value))
+  }
 
   if (column === "title" || column === "file.title" || column === "note.title") {
     const resolvedTitle =
@@ -293,7 +334,7 @@ function buildTableCell(
 
   if (column.startsWith("note.")) {
     const actualColumn = column.replace("note.", "")
-    return buildTableCell(file, actualColumn, currentSlug, allFiles)
+    return buildTableCell(file, actualColumn, currentSlug, allFiles, formulas)
   }
 
   let value: any
@@ -329,6 +370,11 @@ function buildTableCell(
   if (typeof value === "string") {
     const rendered = renderInlineString(value, currentSlug, allFiles)
     return h("td", {}, rendered)
+  }
+
+  // render boolean values as checkboxes (obsidian behavior)
+  if (typeof value === "boolean") {
+    return h("td", {}, [renderBooleanCheckbox(value)])
   }
 
   return h("td", {}, String(value))
@@ -417,6 +463,36 @@ function groupFiles(
   return sortedGroups
 }
 
+// build summary row (tfoot) for table
+function buildTableSummaryRow(
+  columns: string[],
+  files: QuartzPluginData[],
+  summaryConfig: ViewSummaryConfig | undefined,
+  allFiles: QuartzPluginData[],
+): any | undefined {
+  if (!summaryConfig?.columns || Object.keys(summaryConfig.columns).length === 0) {
+    return undefined
+  }
+
+  const summaryValues = computeViewSummaries(columns, files, summaryConfig, allFiles)
+
+  // check if we have any summary values to display
+  const hasValues = Object.values(summaryValues).some((v) => v !== undefined)
+  if (!hasValues) {
+    return undefined
+  }
+
+  const cells = columns.map((col) => {
+    const value = summaryValues[col]
+    if (value === undefined) {
+      return h("td.base-summary-cell", {}, "")
+    }
+    return h("td.base-summary-cell", {}, String(value))
+  })
+
+  return h("tfoot", [h("tr.base-summary-row", cells)])
+}
+
 // build table with optional grouping
 function buildTable(
   files: QuartzPluginData[],
@@ -424,24 +500,29 @@ function buildTable(
   currentSlug: FullSlug,
   allFiles: QuartzPluginData[],
   properties?: Record<string, { displayName?: string }>,
+  formulas?: Record<string, FormulaDefinition>,
+  topLevelSummaries?: Record<string, string>,
 ): any {
   const columns = view.order || []
 
-  // apply groupBy if specified
+  // parse view summaries with top-level formula references
+  const summaryConfig = parseViewSummaries(view.summaries, topLevelSummaries)
+
+  // apply groupBy if specified - skip summaries for grouped tables
   if (view.groupBy) {
     const groups = groupFiles(files, view.groupBy)
     const allRows: any[] = []
 
     for (const [groupName, groupFiles] of groups) {
-      // add group header row
       const groupHeader = h("tr.base-group-header", [
         h("td", { colspan: columns.length }, groupName),
       ])
       allRows.push(groupHeader)
 
-      // add data rows for this group
       for (const file of groupFiles) {
-        const cells = columns.map((col) => buildTableCell(file, col, currentSlug, allFiles))
+        const cells = columns.map((col) =>
+          buildTableCell(file, col, currentSlug, allFiles, formulas),
+        )
         allRows.push(h("tr", cells))
       }
     }
@@ -453,13 +534,15 @@ function buildTable(
 
   // no grouping - standard table
   const rows = files.map((f) => {
-    const cells = columns.map((col) => buildTableCell(f, col, currentSlug, allFiles))
+    const cells = columns.map((col) => buildTableCell(f, col, currentSlug, allFiles, formulas))
     return h("tr", cells)
   })
 
   const tbody = h("tbody", rows)
   const thead = h("thead", buildTableHead(columns, properties))
-  return h("table.base-table", [thead, tbody])
+  const tfoot = buildTableSummaryRow(columns, files, summaryConfig, allFiles)
+  const tableChildren = tfoot ? [thead, tbody, tfoot] : [thead, tbody]
+  return h("table.base-table", tableChildren)
 }
 
 // build list view
@@ -689,7 +772,19 @@ function buildCards(
 
         let displayValue: any
         if (Array.isArray(value)) {
-          displayValue = value.join(", ")
+          // render wikilinks in each array item
+          const parts: any[] = []
+          value.forEach((item, idx) => {
+            if (typeof item === "string") {
+              parts.push(...renderInlineString(item, currentSlug, allFiles))
+            } else {
+              parts.push(String(item))
+            }
+            if (idx < value.length - 1) {
+              parts.push(", ")
+            }
+          })
+          displayValue = parts
         } else if (value instanceof Date) {
           displayValue = value.toISOString().split("T")[0]
         } else if (typeof value === "string") {
@@ -921,7 +1016,15 @@ async function* emitBaseViewsForFile(
 
     let tree: Root
     if (view.type === "table") {
-      const tableNode = buildTable(limitedFiles, view, slug, allFiles, config.properties)
+      const tableNode = buildTable(
+        limitedFiles,
+        view,
+        slug,
+        allFiles,
+        config.properties,
+        config.formulas,
+        config.summaries,
+      )
       tree = { type: "root", children: [tableNode] }
     } else if (view.type === "list") {
       const listNode = buildList(limitedFiles, view, slug, allFiles, config.properties)

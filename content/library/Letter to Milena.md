@@ -12,7 +12,6 @@ subcategory:
   - relationship
 tags:
   - love
-  - o/life
 title: Letter to Milena
 year: 1952
 finished: 2025

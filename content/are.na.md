@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2025-12-09 00:58:23 GMT-05:00
+modified: 2025-12-10 16:15:07 GMT-05:00
 permalinks:
   - /website
   - /tweets
@@ -3956,7 +3956,7 @@ title: are.na
   - [meta]:
     - date: 10/03/2025
     - tags: [work]
-- https://x.com/aarnphm_/status/1956238570353504615 -- Seeing N
+- https://x.com/aarnphm/status/1956238570353504615 -- Seeing N
   - [meta]:
     - date: 10/03/2025
     - tags: [friends]
@@ -4048,10 +4048,13 @@ title: are.na
   - [meta]:
     - date: 08/28/2025
     - tags: [love]
-- https://velvetnoise.substack.com/p/some-parts-of-you-only-emerge-for -- some parts of you only emerge from certain people
+- https://velvetnoise.substack.com/p/some-parts-of-you-only-emerge-for -- some parts of you only emerge from certain people [**]
   - [meta]:
     - date: 08/28/2025
     - tags: [love, being]
+    - pinned: true
+  - I think this discipline, to look with imagined [[thoughts/love|love]], can be a form of democratic tenderness.
+  - Love asks for heat. Left cold, we harden into our existing shape. But under the steady warmth of attention, we soften, loosen, and take on new form. The right gaze reorganises the self; you begin to recognise yourself more clearly in their eyes, and they in yours. Each becomes more singular by being seen, a longing to inhabit the silhouette cast by someone else’s radical faith.
 - https://velvetnoise.substack.com/p/in-defence-of-yearning -- in defence of yearning [**]
   - [meta]:
     - date: 10/23/2025
@@ -4519,6 +4522,11 @@ title: are.na
 
 ## stream
 
+- https://gutenberg.org/ -- Gutenberg [**]
+  - [meta]:
+    - date: 12/09/2025
+    - tags: [books]
+    - pinned: true
 - https://theanarchistlibrary.org/special/index -- The Anarchist Library
   - [meta]:
     - date: 12/08/2025

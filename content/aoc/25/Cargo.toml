@@ -1,0 +1,15 @@
+[package]
+name = "aoc25"
+version = "0.1.0"
+edition = "2021"
+
+[[bin]]
+name = "d10"
+path = "d10.rs"
+
+[[bin]]
+name = "d5"
+path = "d5.rs"
+
+[dependencies]
+regex = "1"

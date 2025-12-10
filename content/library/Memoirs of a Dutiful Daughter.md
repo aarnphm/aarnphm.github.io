@@ -2,7 +2,6 @@
 tags:
   - philosophy
   - love
-  - o/life
 id: Memoirs of a Dutiful Daughter
 title: Memoirs of a Dutiful Daughter
 date: 2025-12-06
