@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2025-12-10 16:15:07 GMT-05:00
+modified: 2025-12-10 21:54:21 GMT-05:00
 permalinks:
   - /website
   - /tweets
@@ -404,6 +404,10 @@ title: are.na
 
 ## website
 
+- https://neal.fun/size-of-life/ -- SIze of Life [**]
+  - [meta]:
+    - date: 12/10/2025
+    - tags: [visualisation]
 - https://www.bldgblog.com/
   - [meta]:
     - date: 11/28/2025
@@ -810,6 +814,10 @@ title: are.na
 
 ## people
 
+- https://madhusriram.com/pages/about-me -- Madhu
+  - [meta]:
+    - date: 12/10/2025
+    - tags: [writer]
 - https://en.wikipedia.org/wiki/Gunpei_Yokoi -- Gunpei Yokoi
   - [meta]:
     - date: 12/08/2025
@@ -1723,6 +1731,18 @@ title: are.na
 
 ## essay
 
+- https://befriendjamin.substack.com/p/963-words -- 963 words
+  - [meta]:
+    - date: 12/10/2025
+    - tags: [wordlist]
+- https://croissanthology.com/archiving -- Causal archiving
+  - [meta]:
+    - date: 12/10/2025
+    - tags: [garden, internet]
+- https://contraptions.venkateshrao.com/p/be-slightly-monstrous -- Be Slightly Monstrous
+  - [meta]:
+    - date: 12/10/2025
+    - tags: [essay, thesis, writing]
 - https://www.lesswrong.com/posts/2rDdKiCoeqXmh9zb9/i-m-scared -- I'm scared.
   - [meta]:
     - date: 12/08/2025
@@ -3700,6 +3720,16 @@ title: are.na
 
 ## opinions
 
+- https://archive.ph/nd6eo -- "Buy Nothing" Was Their Everything. [--]
+  - [meta]:
+    - date: 12/10/2025
+    - tags: [fruit]
+- https://archive.is/h83uG -- Artificial intelligence is a familiar-looking monster [--]
+  - [meta]:
+    - date: 12/10/2025
+    - tags: [ai]
+  - Behind the Shoggoth
+  - The modern world has been built by and within monsters, which crush individuals without remorse or hesitation, settling their bulk heavily on some groups, and feather-light on others. We eke out freedom by setting one against another, deploying bureaucracy to limit market excesses, democracy to hold bureaucrats accountable, and markets and bureaucracies to limit democracy’s monstrous tendencies. How will the newest shoggoth change the balance, and which politics might best direct it to the good? We need to start finding out. ■
 - https://epilepsywarning.com/megachurch-time -- MEGACHURCH TIME!
   - [meta]:
     - date: 12/07/2025
@@ -4256,6 +4286,17 @@ title: are.na
 
 ## philosophy
 
+- https://archive.ph/iin7Z -- Martha Nussbaum, The Philosopher of Feelings [--] [**]
+  - [meta]:
+    - date: 12/10/2025
+    - tags: [aging, inequality, family]
+    - pinned: true
+  - In the lecture, she described how the Roman philosopher Seneca, at the end of each day, reflected on his misdeeds before saying to himself, “This time I pardon you.” The sentence brought Nussbaum to tears. She worried that her ability to work was an act of subconscious aggression, a sign that she didn’t love her mother enough. I shouldn’t be away lecturing, she thought. I shouldn’t have been a philosopher. Nussbaum sensed that her mother saw her work as cold and detached, a posture of invulnerability. “We aren’t very loving creatures, apparently, when we philosophize,” Nussbaum has written.
+  - Nussbaum gave her lecture on mercy shortly after her mother’s funeral. She felt that her mother would have preferred that she forgo work for a few weeks, but when Nussbaum isn’t working she feels guilty and lazy, so she revised the lecture until she thought that it was one of the best she had ever written. She imagined her talk as a kind of reparation: the lecture was about the need to recognize how hard it is, even with the best intentions, to live a virtuous life.
+  - A few years later, Nussbaum returned to her relationship with her mother in a dramatic dialogue that she wrote for Oxford University’s Philosophical Dialogues Competition, which she won. In the dialogue, a mother accuses her daughter, a renowned moral philosopher, of being ruthless. “You just don’t know what emotions are,” the mother says. Her father tells her, “Aren’t you a philosopher because you want, really, to live inside your own mind most of all? And not to need, not to love, anyone?” Her mother asks, “Isn’t it just because you don’t want to admit that thinking doesn’t control everything?”
+  - The philosopher begs for forgiveness. “Why do you hate my thinking so much, Mommy?” she asks. “What can I say or write that will make you stop looking at me that way?”
+  - Nussbaum is drawn to the idea that creative urgency—and the commitment to be good—derives from the awareness that we harbor aggression toward the people we love. A sixty-nine-year-old professor of law and philosophy at the University of Chicago (with appointments in classics, political science, Southern Asian studies, and the divinity school), Nussbaum has published twenty-four books and five hundred and nine papers and received fifty-seven honorary degrees. In 2014, she became the second woman to give the John Locke Lectures, at Oxford, the most eminent lecture series in philosophy. Last year, she received the Inamori Ethics Prize, an award for ethical leaders who improve the condition of mankind.
+  - She soon drifted toward ancient philosophy, where she could follow Aristotle, who asked the basic question “How should a human live?” She realized that philosophy attracted a “logic-chopping type of person,” nearly always male. She came to believe that she understood Nietzsche’s thinking when he wrote that no great philosopher had ever been married. “I think what he was saying is that most philosophers have been in flight from human existence,” she said. “They just haven’t wanted to be entangled.” She rejected the idea, dominant in contemporary philosophy, that emotions were “unthinking energies that simply push the person around.” Instead, she resurrected a version of the Stoic theory that makes no division between thought and feeling. She gave emotions a central role in moral philosophy, arguing that they are cognitive in nature: they embody judgments about the world.
 - https://www.youtube.com/watch?v=1KemhfmAsg8&list=PLhP9EhPApKE9tiKyeqdbeCMhVzb-JwAc1&t=1502s -- Debate on Mind-Brain Relation: Searle vs Eccles (1984)
   - [meta]:
     - date: 12/08/2025
@@ -5202,6 +5243,10 @@ title: are.na
 
 ## arts
 
+- https://liquidities.xyz/
+  - [meta]:
+    - date: 12/10/2025
+    - tags: [art, motion]
 - https://www.wallpaper.com/architecture/renzo-piano-exhibition-preview-royal-academy-london -- Renzo Piano Building Workshop retrospective to open at London's Royal Academy of Arts
   - [meta]:
     - date: 12/07/2025
@@ -5786,6 +5831,10 @@ title: are.na
 
 ## organizations
 
+- https://www.internetbackyard.com/ -- Internet Backyard
+  - [meta]:
+    - date: 12/10/2025
+    - tags: [funds]
 - https://research.antikythera.org/ -- Antikythera
   - [meta]:
     - date: 11/25/2025
