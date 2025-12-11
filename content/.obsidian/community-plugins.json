@@ -9,5 +9,6 @@
   "obsidian-headings",
   "obsidian-metadata",
   "hot-reload",
-  "obsidian-sidenotes"
+  "obsidian-sidenotes",
+  "obsidian-tikzjax"
 ]

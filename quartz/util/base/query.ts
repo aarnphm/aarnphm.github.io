@@ -1092,6 +1092,7 @@ function computeBuiltinSummary(
 
 // compute formula-based summary
 // supports expressions like: values.filter(value.isType("null")).length
+// XXX: This is mostly monkeypatched together. Proper implementation would require a small jit.
 function computeFormulaSummary(values: any[], expression: string): string | number | undefined {
   try {
     // parse common formula patterns
