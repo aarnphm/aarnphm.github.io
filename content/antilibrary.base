@@ -168,7 +168,7 @@ views:
       - property: status
         direction: ASC
   - type: table
-    name: wip
+    name: to read
     filters:
       and:
         - '!status.containsAny("finished", "evergreen")'

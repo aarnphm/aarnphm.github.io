@@ -1,6 +1,5 @@
 module IntSet = Set.Make(Int)
 
-(* rational arithmetic *)
 type rational = { num: int; den: int }
 
 let gcd a b =
