@@ -40,5 +40,6 @@
     "movies/posters/"
   ],
   "uriCallbacks": true,
-  "useTab": true
+  "useTab": true,
+  "openBehavior": ""
 }

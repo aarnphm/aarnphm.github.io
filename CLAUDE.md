@@ -1,5 +1,3 @@
-# CLAUDE.md
-
 This repository powers a Quartz-based digital garden with custom plugins, a Cloudflare Worker. Follow these guidelines to keep changes consistent and easy to review. There are additional tools/implementation both in Rust, Python, C, C++ under @content/. Make sure to use the best practices for best performance system-level wise.
 
 ## Development Commands
