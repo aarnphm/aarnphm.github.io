@@ -8,13 +8,13 @@ modified: 2025-10-29 02:15:23 GMT-04:00
 permalinks:
   - /gpus
 tags:
-  - seed
   - ml
   - hardware
 title: GPU
+socials:
+  history: https://fabiensanglard.net/cuda/
+  glossary: https://modal.com/gpu-glossary/device-hardware/cuda-device-architecture
 ---
-
-see also: [modal glossary](https://modal.com/gpu-glossary/device-hardware/cuda-device-architecture)
 
 > uccl project: https://github.com/uccl-project/uccl
 
