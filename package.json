@@ -166,6 +166,7 @@
     "@typescript/native-preview": "7.0.0-dev.20251211.1",
     "bibtex-tidy": "^1.14.0",
     "esbuild": "^0.27.1",
+    "eslint": "^9.39.1",
     "mermaid": "^11.12.2",
     "micromark": "^4.0.2",
     "micromark-util-types": "^2.0.2",

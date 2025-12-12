@@ -5,8 +5,6 @@ import Slugger from "github-slugger"
 import { externalLinkRegex } from "./ofm"
 import { fetchTwitterEmbed, twitterUrlRegex } from "./twitter"
 import { splitAnchor, transformLink, stripSlashes, FullSlug } from "../../util/path"
-import { writeFileSync } from "node:fs"
-import { join } from "node:path"
 import { createWikilinkRegex, parseWikilink, resolveWikilinkTarget } from "../../util/wikilinks"
 import { buildYouTubeEmbed } from "../../util/youtube"
 
@@ -19,6 +17,7 @@ export interface ArenaBlock {
   subItems?: ArenaBlock[]
   highlighted?: boolean
   pinned?: boolean
+  later?: boolean
   htmlNode?: ElementContent
   embedHtml?: string
   metadata?: Record<string, string>
@@ -84,6 +83,9 @@ export interface ArenaBlockSearchable {
 
   /** Whether block is pinned to the top of the channel */
   pinned: boolean
+
+  /** Whether block is set to read for later */
+  later: boolean
 
   /** Prerendered embed HTML (Twitter, YouTube iframe, etc) */
   embedHtml?: string
@@ -551,6 +553,17 @@ export const Arena: QuartzTransformerPlugin = () => {
                     }
                   }
 
+                  const laterValue = block.metadata?.later
+                  if (laterValue !== undefined && depth === 0) {
+                    const normalizedLater = laterValue.toLowerCase().trim()
+                    if (normalizedLater === "true" || normalizedLater === "yes") {
+                      block.later = true
+                      delete block.metadata?.later
+                    } else if (normalizedLater === "false" || normalizedLater === "no") {
+                      delete block.metadata?.later
+                    }
+                  }
+
                   if (block.metadata && Object.keys(block.metadata).length === 0) {
                     delete block.metadata
                   }
@@ -998,15 +1011,6 @@ export const Arena: QuartzTransformerPlugin = () => {
             }
 
             file.data.arenaData = { channels }
-
-            if (ctx.argv.watch && ctx.argv.force) {
-              try {
-                const debugPath = join(process.cwd(), "content", "arena_hast.json")
-                writeFileSync(debugPath, JSON.stringify(tree, null, 2))
-              } catch {
-                // ignore write failures during debugging
-              }
-            }
           }
         },
       ]

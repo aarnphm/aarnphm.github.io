@@ -2,12 +2,12 @@
 date: "2024-02-07"
 description: and the backbone of the current language models/ai progress.
 id: Transformers
-modified: 2025-11-28 17:17:56 GMT-05:00
+modified: 2025-12-12 12:19:41 GMT-05:00
 seealso:
   - "[[thoughts/LLMs|LLMs]]"
   - "[[thoughts/Embedding|embedding]]"
 socials:
-  visualisation: https://bbycroft.net/llm
+  updates: https://magazine.sebastianraschka.com/p/beyond-standard-llms
 tags:
   - ml
   - technical

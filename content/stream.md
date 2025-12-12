@@ -45,10 +45,29 @@ tags:
 title: stream
 ---
 
+## on learning through presence
+
+- [meta]:
+  - date: 2025-12-12 12:40:40 GMT-05:00
+  - tags:
+    - process
+
+> When you show up in person, you feel like you don't belong. You quickly learn that others have a deep and rich shared cultural history that has spanned over the better part of a decade, while you are a newcomer. You try your best: you connect with people during [late night conversations](https://www.humaninvariant.com/blog/conversations) you would have never connected with otherwise, and maybe even plan to throw a joint party together in New York.
+
+> You learn what it feels like to use a typewriter because somebody else cared enough to give you the opportunity to experience that feeling and made it happen. You use that opportunity to ponder [the market structure of writing implements](https://www.humaninvariant.com/blog/lowercase) and to write an endearing note to the people who have given you the opportunity to learn more about yourself. While doing so, you learn what the sound of a bell means when typing on a typewriter.
+
+> You learn that having the courage to care is the scarcest resource in the world. You can [predict the future you want by caring enough to build it](https://www.humaninvariant.com/blog/worldbuilding).
+
+> Most importantly, you learn that the ability and desire to care is built through presence.
+
+I think 
+
+---
+
 - [meta]:
   - date: 2025-12-03 09:33:42 GMT-05:00
   - tags:
-    - fruit
+    - love
 
 ![[thoughts/love#hw]]
 
@@ -57,7 +76,7 @@ title: stream
 - [meta]:
   - date: 2025-11-30 11:01:47 GMT-05:00
   - tags:
-    - fruit
+    - life
 
 ![[quotes#^shed]]
 

@@ -129,6 +129,7 @@ function serializeBlock(
     content: block.content,
     highlighted: block.highlighted ?? false,
     pinned: block.pinned ?? false,
+    later: block.later ?? false,
     hasModalInDom,
   }
 

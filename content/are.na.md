@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2025-12-11 22:56:11 GMT-05:00
+modified: 2025-12-12 12:38:38 GMT-05:00
 permalinks:
   - /website
   - /tweets
@@ -408,6 +408,10 @@ title: are.na
 
 ## website
 
+- https://www.macintoshrepository.org/ -- Macintosh Repository
+  - [meta]:
+    - date: 12/12/2025
+    - tags: [ux, archival]
 - https://daringfireball.net/ -- Daring Fireball
   - [meta]:
     - date: 12/11/2025
@@ -822,6 +826,10 @@ title: are.na
 
 ## people
 
+- https://danluu.com/ -- Dan Luu
+  - [meta]:
+    - date: 12/12/2025
+    - tags: [writer]
 - https://madhusriram.com/pages/about-me -- Madhu
   - [meta]:
     - date: 12/10/2025
@@ -1739,6 +1747,11 @@ title: are.na
 
 ## essay
 
+- https://www.humaninvariant.com/blog/presence -- On Learning through Presence
+  - [meta]:
+    - date: 12/12/2025
+    - tags: [perserverance]
+    - later: true
 - https://caitlynrichardson.substack.com/p/the-discourse-i-refuse-to-participate -- The discourse i refuse to participate in.
   - [meta]:
     - date: 12/11/2025
@@ -1792,6 +1805,7 @@ title: are.na
   - [meta]:
     - date: 12/08/2025
     - tags: [writing, llm]
+    - later: true
   - This is hard because LLMs are still advancing so fast. If I had written this in 2020, aimed at the original `davinci`, it would now be hopelessly obsolete; and the (still-unreleased and presumably still improving) o1 or [GPT-5](https://openai.com/gpt-5/) might render much of this moot. Perhaps there is not really anything a human can write now for LLMs beyond brute factual observations not yet recorded anywhere in black-and-white, or researchers at the frontier documenting their most esoteric findings, and we should drop “writing for LLMs” as a goal entirely, and write for all the other reasons there are to write? Still, I’m going to give it a try.
 - https://www.nytimes.com/2025/12/03/magazine/chatbot-writing-style.html -- Why does AI write like... that?
   - [meta]:
@@ -1858,6 +1872,7 @@ title: are.na
   - [meta]:
     - date: 11/28/2025
     - tags: [determinism, logic]
+    - later: true
 - https://tecunningham.github.io/posts/2025-10-19-forecasts-of-AI-growth.html -- Forecasts of AI & Economics growth
   - [meta]:
     - date: 11/28/2025
@@ -1866,6 +1881,7 @@ title: are.na
   - [meta]:
     - date: 11/28/2025
     - tags: [intelligence]
+    - later: true
   - Prodigies also need access to clusters of high-ability peers. A study by Ufuk Akcigit of the University of Chicago, John Grigsby of Princeton University and Tom Nicholas of Harvard finds that America’s golden age of innovation was fuelled by migration: inventors left their home states in search of denser networks.
   - Thomas Edison, born poor in rural Ohio, moved to New Jersey to build Menlo Park laboratory, where inventors could collaborate.
 - https://sharif.io/pain -- Choose your pain [**]
@@ -1912,6 +1928,7 @@ title: are.na
   - [meta]:
     - date: 11/23/2025
     - tags: [eschatology, family, homosexuality]
+    - later: true
   - still, the two of us were close in our own way. sometimes, the two of us would go on long walks together. after fifteen minutes of silence, or twenty, something would loosen in him and he would start to tell me about the depths of his sadness and the disappointment in the way his life [played out. ](https://www.jenn.site/after-my-dad-died-we-found-the-love-letters/#:~:text=still%2C%20the%20two%20of%20us%20were%20close%20in%20our%20own%20way.%20sometimes%2C%20the%20two%20of%20us%20would%20go%20on%20long%20walks%20together.%20after%20fifteen%20minutes%20of%20silence%2C%20or%20twenty%2C%20something%20would%20loosen%20in%20him%20and%20he%20would%20start%20to%20tell%20me%20about%20the%20depths%20of%20his%20sadness%20and%20the%20disappointment%20in%20the%20way%20his%20life%20played%20out.)
   - edward gave me some photos he had of my dad, and i could scarcely believe that they were of the grim, sad man i knew. he beams in all of them, glowing with joy, his smile more incandescent than i've ever seen in my entire life. i steal glances at edward, the person who took all those impossible photos. the person he was looking at.
   - your own grief is an isolating thing because you are closeted and no one else knew who you were to each other.
@@ -2341,6 +2358,7 @@ title: are.na
   - [meta]:
     - date: 10/21/2025
     - tags: [research]
+    - later: true
   - What is 4 R's of Graduate School? - Reading, aRithmetic, Research, and wRiting
   - Reading
   - Studying
@@ -2912,6 +2930,15 @@ title: are.na
 - [meta]:
   - view: list
 
+- https://turntrout.com/self-fulfilling-misalignment -- Self-Fulfilling Misalignment Data Might Be Poisoning Our AI Model
+  - [meta]:
+    - date: 12/12/2025
+    - tags: [alignment]
+    - later: true
+- https://openai.com/index/gdpval/ -- GDPval
+  - [meta]:
+    - date: 12/12/2025
+    - tags: [evaluation, benchmark]
 - https://www.alignmentforum.org/posts/N4P9LSa6B2KyQtG5d/circuit-discovery-through-chain-of-thought-using-policy -- Circuit discovery through chain of thought using policy gradients
   - [meta]:
     - date: 12/11/2025
@@ -2953,7 +2980,7 @@ title: are.na
   - [meta]:
     - date: 12/04/2025
     - tags: [ntk, kernels]
-- https://www.alignmentforum.org/posts/StENzDcD3kpfGJssR/a-pragmatic-vision-for-interpretability -- A Pragmatic Vision for Interpretability
+- https://www.alignmentforum.org/posts/StENzDcD3kpfGJssR/a-pragmatic-vision-for-interpretability -- A Pragmatic Vision for Interpretability [**]
   - [meta]:
     - date: 12/01/2025
     - tags: [interpretability, north star]
@@ -5623,6 +5650,11 @@ title: are.na
 
 ## technical
 
+- https://people.freebsd.org/~lstewart/articles/cpumemory.pdf -- What every programmer should know about Memory [**]
+  - [meta]:
+    - date: 12/12/2025
+    - tags: [systems, os]
+    - pinned: true
 - [[aoc/25/d11.cu]] -- Day 11 implementation of AOC 2025 in CUDA
   - [meta]:
     - date: 12/11/2025

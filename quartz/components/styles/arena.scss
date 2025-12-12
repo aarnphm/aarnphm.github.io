@@ -370,6 +370,10 @@ body[data-arena-subpage="true"] {
   }
 }
 
+.arena-later-section .arena-block {
+  background: color-mix(in srgb, var(--light) 92%, var(--lightgray));
+}
+
 .arena-block {
   position: relative;
   background: var(--light);
