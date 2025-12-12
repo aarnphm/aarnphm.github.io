@@ -10,9 +10,10 @@ tags:
   - vllm
   - inference
 title: DeepSeek
+socials:
+ open-r1: https://github.com/huggingface/open-r1
+ paper: "[[thoughts/papers/2501.12948v1.pdf|pdf]]"
 ---
-
-https://github.com/huggingface/open-r1, [model](https://huggingface.co/deepseek-ai/DeepSeek-R1), [[thoughts/papers/2501.12948v1.pdf|pdf]] [@deepseekai2025deepseekr1incentivizingreasoningcapability]
 
 _reasoning and distill variants trained on high-quality RL data_
 

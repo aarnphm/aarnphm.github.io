@@ -3,7 +3,7 @@ abstract: large language models will probably be the most important piece of tec
 date: "2024-02-07"
 description: a mathematical framework for intelligence
 id: LLMs
-modified: 2025-12-07 01:20:54 GMT-05:00
+modified: 2025-12-11 03:04:04 GMT-05:00
 tags:
   - sapling
   - ml

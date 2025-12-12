@@ -1,0 +1,1162 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>manual for the wound</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Kalam:wght@300;400;700&family=Caveat:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #fffcf0;
+        --bg-2: #f2f0e5;
+        --ui: #e6e4d9;
+        --ui-2: #dad8ce;
+        --ui-3: #cecdc3;
+
+        --tx: #100f0f;
+        --tx-2: #6f6e69;
+        --tx-3: #878580;
+
+        --orange: #da702c;
+        --yellow: #d0a215;
+        --red: #d14d41;
+
+        --font-write: "Kalam", cursive;
+        --font-hand: "Caveat", cursive;
+
+        --ease: cubic-bezier(0.4, 0, 0.2, 1);
+        --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: var(--font-write);
+        background:
+    /* Notebook lines */
+          repeating-linear-gradient(
+            transparent,
+            transparent 27px,
+            rgba(16, 15, 15, 0.03) 27px,
+            rgba(16, 15, 15, 0.03) 28px
+          ),
+          /* Subtle grain texture */
+          url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"),
+          var(--bg);
+        background-attachment: fixed;
+        background-blend-mode: normal, overlay, normal;
+        color: var(--tx);
+        min-height: 100vh;
+        padding: 2rem;
+        font-size: 16px;
+        line-height: 1.8;
+        font-weight: 300;
+      }
+
+      /* Paper texture overlay */
+      body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        background: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+        opacity: 0.025;
+        pointer-events: none;
+        z-index: 1000;
+      }
+
+      /* Header */
+      .header {
+        text-align: center;
+        padding: 3rem 1rem 4rem;
+        max-width: 600px;
+        margin: 0 auto;
+        position: relative;
+      }
+
+      /* Worn paper edge at bottom of header */
+      .header::after {
+        content: "";
+        position: absolute;
+        bottom: 1rem;
+        left: 10%;
+        right: 10%;
+        height: 1px;
+        background: linear-gradient(
+          90deg,
+          transparent 0%,
+          var(--ui-2) 15%,
+          var(--ui-3) 30%,
+          transparent 35%,
+          var(--ui-2) 45%,
+          var(--ui-3) 55%,
+          transparent 60%,
+          var(--ui-2) 70%,
+          var(--ui-3) 85%,
+          transparent 100%
+        );
+      }
+
+      .ascii-deco {
+        font-family: monospace;
+        font-size: 0.65rem;
+        line-height: 1.15;
+        color: var(--tx-2);
+        margin-bottom: 1rem;
+        white-space: pre;
+      }
+
+      .ascii-sub {
+        font-family: monospace;
+        font-size: 0.55rem;
+        line-height: 1.2;
+        color: var(--tx-3);
+        margin-top: 2rem;
+        white-space: pre;
+        opacity: 0.7;
+      }
+
+      .title {
+        font-family: var(--font-hand);
+        font-size: clamp(2.5rem, 8vw, 4.5rem);
+        font-weight: 400;
+        color: var(--tx);
+        line-height: 1;
+        margin-bottom: 0.5rem;
+      }
+
+      .subtitle {
+        font-family: var(--font-write);
+        font-size: 1rem;
+        color: var(--tx-2);
+        font-weight: 300;
+      }
+
+      /* Book Stack */
+      .book-stack {
+        max-width: 650px;
+        margin: 0 auto;
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+        padding-bottom: 4rem;
+      }
+
+      /* Individual Book */
+      .book {
+        background:
+    /* Coffee stain / age spots */
+          radial-gradient(ellipse at 85% 15%, rgba(139, 90, 43, 0.04) 0%, transparent 50%),
+          radial-gradient(ellipse at 10% 80%, rgba(139, 90, 43, 0.03) 0%, transparent 40%),
+          /* Paper fold lines */
+          linear-gradient(135deg, transparent 48%, rgba(16, 15, 15, 0.02) 50%, transparent 52%),
+          linear-gradient(225deg, transparent 48%, rgba(16, 15, 15, 0.015) 50%, transparent 52%),
+          /* Worn edges gradient */
+          linear-gradient(
+              to right,
+              rgba(16, 15, 15, 0.02) 0%,
+              transparent 3%,
+              transparent 97%,
+              rgba(16, 15, 15, 0.02) 100%
+            ),
+          /* Base paper color */ var(--bg-2);
+        border-radius: 1px 3px 4px 1px;
+        cursor: pointer;
+        transition: all 0.4s var(--ease);
+        position: relative;
+
+        /* Stacked paper effect */
+        box-shadow:
+    /* Page edges */
+          -1px 0 0 0 #eae8dd,
+          -2px 1px 0 0 #e7e5da,
+          -3px 2px 0 0 #e4e2d7,
+          /* Stack shadow */ 0 1px 0 0 var(--ui),
+          0 2px 0 0 var(--ui-2),
+          0 3px 0 0 var(--ui-3),
+          0 6px 12px rgba(16, 15, 15, 0.08);
+      }
+
+      /* Paper edge on left - ragged */
+      .book::before {
+        content: "";
+        position: absolute;
+        left: -4px;
+        top: 2px;
+        bottom: -2px;
+        width: 4px;
+        background: linear-gradient(to right, #d5d3c8, #e8e6db);
+        border-radius: 1px 0 0 1px;
+        z-index: -1;
+        /* Ragged edge effect */
+        clip-path: polygon(
+          0% 0%,
+          100% 0%,
+          100% 5%,
+          80% 7%,
+          100% 10%,
+          100% 15%,
+          70% 18%,
+          100% 22%,
+          100% 28%,
+          85% 30%,
+          100% 35%,
+          100% 42%,
+          75% 45%,
+          100% 50%,
+          100% 55%,
+          80% 58%,
+          100% 62%,
+          100% 68%,
+          70% 72%,
+          100% 78%,
+          100% 82%,
+          85% 85%,
+          100% 90%,
+          100% 95%,
+          75% 97%,
+          100% 100%,
+          0% 100%
+        );
+      }
+
+      /* Torn top edge */
+      .book::after {
+        content: "";
+        position: absolute;
+        top: -2px;
+        left: 5%;
+        right: 5%;
+        height: 4px;
+        background: var(--bg-2);
+        clip-path: polygon(
+          0% 100%,
+          5% 40%,
+          10% 100%,
+          15% 50%,
+          20% 100%,
+          25% 30%,
+          30% 100%,
+          35% 60%,
+          40% 100%,
+          45% 40%,
+          50% 100%,
+          55% 50%,
+          60% 100%,
+          65% 30%,
+          70% 100%,
+          75% 60%,
+          80% 100%,
+          85% 40%,
+          90% 100%,
+          95% 50%,
+          100% 100%
+        );
+      }
+
+      .book:hover:not(.expanded) {
+        box-shadow:
+          -1px 0 0 0 #eae8dd,
+          -2px 1px 0 0 #e7e5da,
+          -3px 2px 0 0 #e4e2d7,
+          0 1px 0 0 var(--ui),
+          0 2px 0 0 var(--ui-2),
+          0 3px 0 0 var(--ui-3),
+          0 12px 25px rgba(16, 15, 15, 0.15);
+      }
+
+      .book.expanded {
+        margin-top: 1.5rem;
+        margin-bottom: 1.5rem;
+        box-shadow:
+          -1px 0 0 0 #eae8dd,
+          -2px 1px 0 0 #e7e5da,
+          -3px 2px 0 0 #e4e2d7,
+          -4px 3px 0 0 #e1dfd4,
+          0 1px 0 0 var(--ui),
+          0 2px 0 0 var(--ui-2),
+          0 3px 0 0 var(--ui-3),
+          0 4px 0 0 var(--ui),
+          0 15px 35px rgba(16, 15, 15, 0.15);
+      }
+
+      .book.expanded:first-child {
+        margin-top: 0;
+      }
+
+      /* Unique wear on each book - scattered like papers on a desk */
+      .book:nth-child(1) {
+        transform: rotate(-2.5deg) translateX(-15px);
+        z-index: 4;
+      }
+
+      .book:nth-child(1)::after {
+        clip-path: polygon(
+          0% 100%,
+          3% 50%,
+          8% 100%,
+          12% 30%,
+          18% 100%,
+          22% 60%,
+          28% 100%,
+          33% 40%,
+          38% 100%,
+          44% 55%,
+          50% 100%,
+          56% 35%,
+          62% 100%,
+          68% 50%,
+          73% 100%,
+          78% 40%,
+          83% 100%,
+          88% 55%,
+          93% 100%,
+          97% 45%,
+          100% 100%
+        );
+      }
+
+      .book:nth-child(2) {
+        transform: rotate(1.8deg) translateX(25px);
+        z-index: 3;
+      }
+
+      .book:nth-child(2)::before {
+        clip-path: polygon(
+          0% 0%,
+          100% 0%,
+          100% 8%,
+          70% 10%,
+          100% 15%,
+          100% 22%,
+          80% 25%,
+          100% 30%,
+          100% 38%,
+          65% 42%,
+          100% 48%,
+          100% 55%,
+          75% 60%,
+          100% 65%,
+          100% 72%,
+          85% 75%,
+          100% 80%,
+          100% 88%,
+          70% 92%,
+          100% 100%,
+          0% 100%
+        );
+      }
+
+      .book:nth-child(3) {
+        transform: rotate(-1.2deg) translateX(-8px);
+        z-index: 2;
+      }
+
+      .book:nth-child(3)::after {
+        clip-path: polygon(
+          0% 100%,
+          6% 45%,
+          11% 100%,
+          17% 55%,
+          23% 100%,
+          28% 35%,
+          34% 100%,
+          39% 60%,
+          45% 100%,
+          51% 40%,
+          56% 100%,
+          62% 50%,
+          67% 100%,
+          73% 35%,
+          78% 100%,
+          84% 55%,
+          89% 100%,
+          94% 40%,
+          100% 100%
+        );
+      }
+
+      .book:nth-child(4) {
+        transform: rotate(2.2deg) translateX(18px);
+        z-index: 1;
+      }
+
+      /* Dog-eared corner on last book */
+      .book:nth-child(4) .book-spine::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 24px;
+        height: 24px;
+        background: linear-gradient(135deg, transparent 50%, var(--ui) 50%);
+        box-shadow: -1px 1px 3px rgba(16, 15, 15, 0.12);
+      }
+
+      /* More dramatic hover angles */
+      .book:nth-child(1):hover:not(.expanded) {
+        transform: rotate(-1deg) translateX(5px) translateY(-3px);
+      }
+
+      .book:nth-child(2):hover:not(.expanded) {
+        transform: rotate(2.5deg) translateX(35px) translateY(-3px);
+      }
+
+      .book:nth-child(3):hover:not(.expanded) {
+        transform: rotate(-0.5deg) translateX(10px) translateY(-3px);
+      }
+
+      .book:nth-child(4):hover:not(.expanded) {
+        transform: rotate(3deg) translateX(30px) translateY(-3px);
+      }
+
+      /* When expanded, straighten out but keep slight angle */
+      .book:nth-child(1).expanded {
+        transform: rotate(-0.5deg) translateX(0);
+        z-index: 10;
+      }
+
+      .book:nth-child(2).expanded {
+        transform: rotate(0.3deg) translateX(0);
+        z-index: 10;
+      }
+
+      .book:nth-child(3).expanded {
+        transform: rotate(-0.2deg) translateX(0);
+        z-index: 10;
+      }
+
+      .book:nth-child(4).expanded {
+        transform: rotate(0.4deg) translateX(0);
+        z-index: 10;
+      }
+
+      /* Book Spine (collapsed state) */
+      .book-spine {
+        padding: 1rem 1.5rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-left: 3px solid var(--ui-2);
+        transition: all 0.3s var(--ease);
+        position: relative;
+      }
+
+      /* Tape effect on first book */
+      .book:nth-child(1) .book-spine::before {
+        content: "";
+        position: absolute;
+        top: -5px;
+        left: 20%;
+        width: 50px;
+        height: 18px;
+        background: rgba(255, 253, 240, 0.7);
+        border: 1px solid rgba(16, 15, 15, 0.05);
+        transform: rotate(-2deg);
+        box-shadow: 0 1px 2px rgba(16, 15, 15, 0.05);
+      }
+
+      /* Paper clip on second book */
+      .book:nth-child(2) .book-spine::before {
+        content: "📎";
+        position: absolute;
+        top: -8px;
+        right: 15%;
+        font-size: 1.2rem;
+        transform: rotate(15deg);
+        opacity: 0.6;
+      }
+
+      .book:hover .book-spine {
+        border-left-color: var(--orange);
+      }
+
+      .book.expanded .book-spine {
+        border-left-color: var(--orange);
+        border-bottom: 1px dashed var(--ui-2);
+      }
+
+      .spine-title {
+        font-family: var(--font-write);
+        font-size: 1.1rem;
+        color: var(--tx-2);
+        transition: color 0.3s var(--ease);
+      }
+
+      .book:hover .spine-title,
+      .book.expanded .spine-title {
+        color: var(--tx);
+      }
+
+      .spine-mark {
+        font-size: 1rem;
+        color: var(--tx-3);
+        transition: all 0.3s var(--ease);
+      }
+
+      .book:hover .spine-mark {
+        color: var(--orange);
+        transform: rotate(15deg);
+      }
+
+      .book.expanded .spine-mark {
+        color: var(--orange);
+      }
+
+      /* Book Content (expanded state) */
+      .book-content {
+        max-height: 0;
+        overflow: hidden;
+        opacity: 0;
+        transition: all 0.5s var(--ease);
+        padding: 0 1.5rem;
+        position: relative;
+      }
+
+      .book.expanded .book-content {
+        max-height: 2000px;
+        opacity: 1;
+        padding: 1.5rem 1.5rem 1.5rem 2rem;
+      }
+
+      /* Notebook margin line */
+      .book.expanded .book-content::before {
+        content: "";
+        position: absolute;
+        left: 1rem;
+        top: 0.5rem;
+        bottom: 0.5rem;
+        width: 1px;
+        background: rgba(214, 78, 65, 0.15);
+      }
+
+      /* Smudge marks */
+      .book.expanded .book-content::after {
+        content: "";
+        position: absolute;
+        bottom: 3rem;
+        right: 2rem;
+        width: 40px;
+        height: 25px;
+        background: radial-gradient(ellipse, rgba(100, 90, 80, 0.04) 0%, transparent 70%);
+        transform: rotate(-15deg);
+      }
+
+      /* ASCII decorations */
+      .ascii-corner {
+        font-family: monospace;
+        font-size: 0.5rem;
+        line-height: 1.15;
+        color: var(--tx-2);
+        opacity: 0.6;
+        white-space: pre;
+        text-align: right;
+        margin-bottom: 1.5rem;
+        padding: 0.5rem;
+        background: var(--bg);
+        border-radius: 4px;
+        display: inline-block;
+        float: right;
+        margin-left: 1rem;
+      }
+
+      .ascii-bottom {
+        font-family: monospace;
+        font-size: 0.55rem;
+        line-height: 1.2;
+        color: var(--tx-3);
+        opacity: 0.5;
+        text-align: center;
+        margin-top: 2.5rem;
+        padding-top: 1.5rem;
+        border-top: 1px dashed var(--ui-2);
+        white-space: pre;
+      }
+
+      /* Poem text */
+      .poem-text {
+        position: relative;
+        /* Subtle ruled lines */
+        background: repeating-linear-gradient(
+          transparent,
+          transparent 27px,
+          rgba(16, 15, 15, 0.025) 27px,
+          rgba(16, 15, 15, 0.025) 28px
+        );
+        background-attachment: local;
+        padding: 0.5rem 0;
+      }
+
+      .stanza {
+        margin-bottom: 1.5rem;
+      }
+
+      .stanza:last-child {
+        margin-bottom: 0;
+      }
+
+      .line {
+        display: block;
+        color: var(--tx);
+        transition: color 0.2s var(--ease);
+      }
+
+      .line:hover {
+        color: var(--orange);
+      }
+
+      .indent-1 {
+        margin-left: 1.5rem;
+      }
+      .indent-2 {
+        margin-left: 3rem;
+      }
+      .indent-3 {
+        margin-left: 4.5rem;
+      }
+
+      /* Hand-drawn underline effect on some lines */
+      .stanza:first-child .line:first-child {
+        position: relative;
+      }
+
+      .stanza:first-child .line:first-child::after {
+        content: "";
+        position: absolute;
+        bottom: 2px;
+        left: 0;
+        right: 30%;
+        height: 1px;
+        background: linear-gradient(
+          90deg,
+          transparent 0%,
+          rgba(16, 15, 15, 0.15) 10%,
+          rgba(16, 15, 15, 0.2) 30%,
+          rgba(16, 15, 15, 0.15) 60%,
+          transparent 100%
+        );
+        transform: rotate(-0.5deg);
+      }
+
+      /* Footer */
+      .footer {
+        text-align: center;
+        padding: 3rem 1rem;
+        margin-top: 2rem;
+      }
+
+      .ascii-footer {
+        font-family: monospace;
+        font-size: 0.5rem;
+        line-height: 1.2;
+        color: var(--tx-2);
+        opacity: 0.6;
+        white-space: pre;
+      }
+
+      /* Responsive */
+      @media (max-width: 600px) {
+        body {
+          padding: 1rem;
+        }
+
+        .header {
+          padding: 2rem 0.5rem 3rem;
+        }
+
+        .book-spine {
+          padding: 0.8rem 1rem;
+        }
+
+        .book.expanded .book-content {
+          padding: 1rem;
+        }
+
+        .indent-1 {
+          margin-left: 1rem;
+        }
+        .indent-2 {
+          margin-left: 2rem;
+        }
+        .indent-3 {
+          margin-left: 3rem;
+        }
+
+        .ascii-corner {
+          display: none;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        * {
+          transition-duration: 0.01ms !important;
+        }
+      }
+
+      ::selection {
+        background: var(--orange);
+        color: var(--bg);
+      }
+    </style>
+  </head>
+  <body>
+    <header class="header">
+      <pre class="ascii-deco" aria-hidden="true">
+        ✦  ˚  ·  ˚  ✦
+            *411
+      ╭───────────────╮
+      │   ┌─────┐     │
+      │   │  ♡  │  ～ │
+      │   └─────┘     │
+      │    dear you,  │
+      │      ...      │
+      ╰───────────────╯
+           strspok
+        ~  ·  ★  ·  ~
+    </pre
+      >
+      <h1 class="title">a manual</h1>
+      <p class="subtitle">on love, loss & the archive of touch</p>
+      <pre class="ascii-sub" aria-hidden="true">
+    ╭─────╮   ╭─────╮   ╭─────╮   ╭─────╮
+    │  ~  │   │  ★  │   │  ✦  │   │  ✧  │
+    ╰──┬──╯   ╰──┬──╯   ╰──┬──╯   ╰──┬──╯
+       │         │         │         │
+    ───┴─────────┴─────────┴─────────┴───
+         four letters, one wound
+    </pre
+      >
+    </header>
+
+    <main class="book-stack">
+      <article class="book" data-book="prelude">
+        <div class="book-spine">
+          <span class="spine-title">prelude</span>
+          <span class="spine-mark">~</span>
+        </div>
+        <div class="book-content">
+          <pre class="ascii-corner" aria-hidden="true">
+      ·  ˚
+    ╱ ▽  ╲    a splinter
+   │ ouch │   waiting to
+    ╲ △  ╱    be named
+      ·
+        </pre
+          >
+          <div class="poem-text">
+            <p class="stanza">
+              <span class="line">sit with the splinter</span>
+              <span class="line indent-1">until it names itself.</span>
+            </p>
+            <p class="stanza">
+              <span class="line">do not polish the ache</span>
+              <span class="line indent-1">into a lesson.</span>
+            </p>
+            <p class="stanza">
+              <span class="line">let the room stay dark.</span>
+              <span class="line">listen for the hinge</span>
+              <span class="line indent-1">that closes.</span>
+            </p>
+            <p class="stanza">
+              <span class="line">if another door appears</span>
+              <span class="line">it will be because</span>
+              <span class="line indent-1">we built it after mourning.</span>
+            </p>
+            <p class="stanza">
+              <span class="line">do not</span>
+              <span class="line indent-1">inventory the damage.</span>
+              <span class="line">do not</span>
+              <span class="line indent-1">make a museum</span>
+              <span class="line indent-2">of what touched you.</span>
+            </p>
+            <p class="stanza">
+              <span class="line">build nothing.</span>
+              <span class="line">mourn nothing.</span>
+              <span class="line indent-1">let the wound breathe</span>
+            </p>
+            <p class="stanza">
+              <span class="line indent-1">its own language,</span>
+            </p>
+            <p class="stanza">
+              <span class="line indent-2">neither hello nor goodbye.</span>
+            </p>
+          </div>
+          <pre class="ascii-bottom" aria-hidden="true">
+    ～ · ～ · ～ · ～
+      wounds breathe
+    ～ · ～ · ～ · ～
+        </pre
+          >
+        </div>
+      </article>
+
+      <article class="book" data-book="first">
+        <div class="book-spine">
+          <span class="spine-title">i. the first night</span>
+          <span class="spine-mark">★</span>
+        </div>
+        <div class="book-content">
+          <pre class="ascii-corner" aria-hidden="true">
+    ˚ · breath · ˚
+
+      ∿∿∿∿∿∿∿
+    ～～～～～～～～
+      in · · out
+    ～～～～～～～～
+      ∿∿∿∿∿∿∿
+
+    one. two.. three...
+        </pre
+          >
+          <div class="poem-text">
+            <p class="stanza">
+              <span class="line">the first night</span>
+              <span class="line">where I notice your breath</span>
+              <span class="line indent-1">that holds a different cadence</span>
+              <span class="line indent-2">than your words.</span>
+            </p>
+            <p class="stanza">
+              <span class="line">I'd memorized the spacing</span>
+              <span class="line indent-1">between your sentences—</span>
+              <span class="line indent-1">three seconds,</span>
+              <span class="line indent-1">one.</span>
+              <span class="line indent-2">two..</span>
+              <span class="line indent-3">three...</span>
+              <span class="line indent-1">then your thought.</span>
+            </p>
+            <p class="stanza">
+              <span class="line">but your lung took longer,</span>
+              <span class="line indent-1">hesitated on the inhale</span>
+              <span class="line indent-1">as if you were reading something over.</span>
+            </p>
+            <p class="stanza">
+              <span class="line">the ceiling sustains your tender voice</span>
+              <span class="line indent-1">like water in cupped palms.</span>
+              <span class="line indent-1">We hold each others,</span>
+              <span class="line indent-1">with such care.</span>
+              <span class="line indent-1">Your arm across my stomach,</span>
+              <span class="line indent-2">heavy as lineage,</span>
+              <span class="line indent-2">getting heavier by the minutes.</span>
+            </p>
+            <p class="stanza">
+              <span class="line">my grandmother's grandmothers,</span>
+              <span class="line">generations ago,</span>
+              <span class="line">is a name i don't know.</span>
+              <span class="line">but in four generations,</span>
+              <span class="line indent-1">our blood could meet,</span>
+              <span class="line indent-2">in some child's marrow,</span>
+              <span class="line indent-3">as in we both know,</span>
+              <span class="line indent-3">our love exists within a subspace</span>
+              <span class="line indent-3">that transcends the need of procreation.</span>
+            </p>
+            <p class="stanza">
+              <span class="line">lying awake at four in the morning,</span>
+              <span class="line indent-1">when you were asleep,</span>
+              <span class="line indent-2">my mind wonders and perform genetic math</span>
+              <span class="line indent-2">because your shoulder blade</span>
+              <span class="line indent-3">fits against my ribs</span>
+              <span class="line indent-3">the way a drawer closes</span>
+              <span class="line indent-3">when the house settles.</span>
+            </p>
+          </div>
+          <pre class="ascii-bottom" aria-hidden="true">
+       ╭──────────╮
+       │ 4:00 AM  │
+       │  ★ · ★   │
+       │ awake    │
+       ╰──────────╯
+        </pre
+          >
+        </div>
+      </article>
+
+      <article class="book" data-book="second">
+        <div class="book-spine">
+          <span class="spine-title">ii. the second night</span>
+          <span class="spine-mark">✦</span>
+        </div>
+        <div class="book-content">
+          <pre class="ascii-corner" aria-hidden="true">
+        ♡        ♡
+       ╱ ╲      ╱ ╲
+      ╱   ╲    ╱   ╲
+     ╱  ·  ╲  ╱  ·  ╲
+     ╲      ╲╱      ╱
+      ╲    crack   ╱
+       ╲   ╱  ╲   ╱
+        ╲ ╱    ╲ ╱
+         ♡      ♡
+     (breaking apart)
+        </pre
+          >
+          <div class="poem-text">
+            <p class="stanza">
+              <span class="line">the second night</span>
+              <span class="line">where some loves make you an orphan</span>
+              <span class="line indent-1">to your own life,</span>
+              <span class="line indent-2">as in you wake up</span>
+              <span class="line indent-3">and the room is the wrong size.</span>
+              <span class="line indent-3">the air tastes of almond,</span>
+              <span class="line indent-3">and the view of you,</span>
+              <span class="line indent-3">no longer exists within your peripheral vision.</span>
+            </p>
+            <p class="stanza">
+              <span class="line">tracing over your face—the brows,</span>
+              <span class="line indent-1">the veins,</span>
+              <span class="line indent-1">your cheeks,</span>
+              <span class="line indent-1">your lips,</span>
+              <span class="line indent-1">—as if i'm building a variational autoencoder</span>
+              <span class="line indent-2">by hand</span>
+              <span class="line indent-1">for reconstructing</span>
+              <span class="line indent-1">you</span>
+              <span class="line indent-2">at least the shape of you</span>
+              <span class="line indent-1">and store it in corner</span>
+              <span class="line indent-2">of the heart.</span>
+            </p>
+            <p class="stanza">
+              <span class="line">love with discretion,</span>
+              <span class="line indent-1">where we exists within a basis</span>
+              <span class="line indent-2">that are linearly dependent.</span>
+            </p>
+            <p class="stanza">
+              <span class="line">Not again,</span>
+              <span class="line">I'm losing my mind</span>
+              <span class="line indent-1">staring into the abyss,</span>
+              <span class="line indent-2">and counting your heartbeat,</span>
+              <span class="line indent-2">124bpm of irregularity.</span>
+              <span class="line indent-2">against your ribs with my cheek.</span>
+            </p>
+            <p class="stanza">
+              <span class="line">your sweat,</span>
+              <span class="line indent-1">dried into my hair part.</span>
+              <span class="line indent-1">I couldn't find the word for this</span>
+              <span class="line indent-1">that doesn't звучить stupid</span>
+              <span class="line indent-1">when i say it out loud.</span>
+            </p>
+            <p class="stanza">
+              <span class="line">distance,</span>
+              <span class="line indent-1">is where it all ends.</span>
+              <span class="line indent-2">but i won't mind traversing such length,</span>
+              <span class="line indent-2">and reorder components of the self</span>
+              <span class="line indent-2">to fit within your overton window.</span>
+              <span class="line indent-2">i'm not changing myself,</span>
+              <span class="line indent-2">rather turning on/off components,</span>
+              <span class="line indent-2">an act of reordering,</span>
+              <span class="line indent-1">for</span>
+              <span class="line indent-2">us</span>
+              <span class="line indent-3">whatever that may be</span>
+              <span class="line indent-1">to exist,</span>
+              <span class="line indent-2">within the early morning of the Canadian winter</span>
+              <span class="line indent-2">and the dawn overlooking the Bay bridge.</span>
+            </p>
+          </div>
+          <pre class="ascii-bottom" aria-hidden="true">
+      ✦ · · · · · · · ✦
+        124 bpm  ♡～
+       ╭─────────────╮
+       │ ∿∿∿∿∿∿∿∿∿∿∿ │
+       │  irregular  │
+       ╰─────────────╯
+      ✦ · · · · · · · ✦
+        </pre
+          >
+        </div>
+      </article>
+
+      <article class="book" data-book="third">
+        <div class="book-spine">
+          <span class="spine-title">iii. the third night</span>
+          <span class="spine-mark">✧</span>
+        </div>
+        <div class="book-content">
+          <pre class="ascii-corner" aria-hidden="true">
+      · _ · _ · _ ·
+          gone
+      · _ · _ · _ ·
+
+       ╭─────────╮
+       │ ░░░░░░░ │
+       │ ░ bed ░ │
+       │ ░░░░░░░ │
+       │ ░░░▓░░░ │ ← empty
+       │ ░░░░░░░ │    pillow
+       ╰─────────╯
+        </pre
+          >
+          <div class="poem-text">
+            <p class="stanza">
+              <span class="line">the third night</span>
+              <span class="line indent-1">doesn't arrive.</span>
+              <span class="line">you are now</span>
+              <span class="line indent-1">gone.</span>
+              <span class="line indent-1">i think i'm losing my mind,</span>
+              <span class="line indent-2">yet again.</span>
+            </p>
+            <p class="stanza">
+              <span class="line indent-1">watching the shadow from the streetlight</span>
+              <span class="line indent-2">moving across plaster like a sundial,</span>
+              <span class="line indent-2">marking of nothingness.</span>
+            </p>
+            <p class="stanza">
+              <span class="line">the body holds its own archive</span>
+              <span class="line indent-1">where your thumb pondering within my palms,</span>
+              <span class="line indent-1">where you lightly pressed upon my chest,</span>
+              <span class="line indent-2">a phantom indent,</span>
+              <span class="line indent-2">the way old vinyl holds grooves</span>
+              <span class="line indent-2">even after they've been thrown away.</span>
+            </p>
+            <p class="stanza">
+              <span class="line">I catch myself,</span>
+              <span class="line indent-1">leaving a pillow on the right side of the bed,</span>
+              <span class="line indent-2">faithful to its prior distribution,</span>
+              <span class="line indent-2">sampling from a probability space,</span>
+              <span class="line indent-2">that no longer includes you.</span>
+            </p>
+            <p class="stanza">
+              <span class="line">when morning breaks,</span>
+              <span class="line indent-2">and light filters through blinds,</span>
+              <span class="line indent-1">before my brain comes online</span>
+              <span class="line indent-3">and overwrites it,</span>
+              <span class="line">my breath has yours for five seconds,</span>
+              <span class="line">and my brain retrieving snapshots</span>
+              <span class="line indent-1">of your cheekbones,</span>
+              <span class="line indent-2">your lips,</span>
+              <span class="line indent-2">your collarbone—</span>
+              <span class="line indent-3">as i catalogue every shadow,</span>
+              <span class="line indent-3">every glimmer of light</span>
+              <span class="line indent-3">like marking pages in a book</span>
+              <span class="line indent-3">I fear I'll forget to read again.</span>
+            </p>
+            <p class="stanza">
+              <span class="line">this is how it feels</span>
+              <span class="line indent-1">to memorize someone like scripture,</span>
+              <span class="line indent-1">to hold onto one heartbeat rhythms—</span>
+              <span class="line indent-1">the vital signs of</span>
+              <span class="line indent-2">another lifetime</span>
+              <span class="line indent-1">we could choose,</span>
+              <span class="line indent-1">but haven't,</span>
+              <span class="line indent-2">at least not yet.</span>
+            </p>
+            <p class="stanza">
+              <span class="line">we are here</span>
+              <span class="line indent-1">for this sliver</span>
+              <span class="line indent-1">of eternity—</span>
+              <span class="line">enough to fill</span>
+              <span class="line indent-1">but never finish</span>
+              <span class="line indent-1">the ache we started</span>
+              <span class="line">on the first night,</span>
+              <span class="line">when the world</span>
+              <span class="line">slowed down</span>
+              <span class="line indent-1">just enough</span>
+              <span class="line indent-2">for your breath</span>
+              <span class="line indent-2">to synchronize with my pulse,</span>
+            </p>
+            <p class="stanza">
+              <span class="line">I'm watching what remains</span>
+              <span class="line indent-1">of myself</span>
+              <span class="line indent-2">arrange itself</span>
+              <span class="line indent-2">into a structure—</span>
+              <span class="line">something between scar tissue</span>
+              <span class="line indent-1">and foundation,</span>
+              <span class="line indent-1">weight-bearing,</span>
+              <span class="line indent-1">permanent,</span>
+              <span class="line indent-2">yours.</span>
+            </p>
+          </div>
+          <pre class="ascii-bottom" aria-hidden="true">
+          ✧
+        ╱   ╲
+       ╱     ╲
+      ╱ yours ╲
+     ╱ · · · · ╲
+    ╱───────────╲
+   permanent. weight-bearing.
+        ✧ · ✧
+        </pre
+          >
+        </div>
+      </article>
+    </main>
+
+    <footer class="footer">
+      <pre class="ascii-footer" aria-hidden="true">
+
+    ╭─────────────────────────────╮
+    │                             │
+    │    ♡ thank you for          │
+    │      reading these          │
+    │        letters ♡            │
+    │                             │
+    │   ～ · ★ · ✦ · ✧ · ～       │
+    │                             │
+    │      let's go exploring     │
+    │            ↓                │
+    │          ╱ ╲                │
+    │         ╱   ╲               │
+    │        ╱_____╲              │
+    │           │                 │
+    │          ╱╲                 │
+    │         ╱  ╲                │
+    │                             │
+    ╰─────────────────────────────╯
+
+    </pre
+      >
+    </footer>
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const books = document.querySelectorAll(".book")
+
+        books.forEach((book) => {
+          book.addEventListener("click", (e) => {
+            // Don't toggle if clicking on expanded content (allow text selection)
+            if (book.classList.contains("expanded") && e.target.closest(".book-content")) {
+              return
+            }
+
+            const isExpanded = book.classList.contains("expanded")
+
+            // Close all other books
+            books.forEach((b) => {
+              if (b !== book) {
+                b.classList.remove("expanded")
+              }
+            })
+
+            // Toggle current book
+            book.classList.toggle("expanded")
+
+            // Scroll into view if expanding
+            if (!isExpanded) {
+              setTimeout(() => {
+                book.scrollIntoView({ behavior: "smooth", block: "nearest" })
+              }, 100)
+            }
+          })
+        })
+
+        // Close book when clicking outside
+        document.addEventListener("click", (e) => {
+          if (!e.target.closest(".book")) {
+            books.forEach((book) => book.classList.remove("expanded"))
+          }
+        })
+
+        // Keyboard navigation
+        document.addEventListener("keydown", (e) => {
+          if (e.key === "Escape") {
+            books.forEach((book) => book.classList.remove("expanded"))
+          }
+        })
+      })
+    </script>
+  </body>
+</html>
