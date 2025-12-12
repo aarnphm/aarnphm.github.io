@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2025-12-12 12:38:38 GMT-05:00
+modified: 2025-12-12 14:58:27 GMT-05:00
 permalinks:
   - /website
   - /tweets
@@ -408,6 +408,10 @@ title: are.na
 
 ## website
 
+- https://fugitivetexts.net/acts/
+  - [meta]:
+    - date: 12/12/2025
+    - tags: [generative arts, poems]
 - https://www.macintoshrepository.org/ -- Macintosh Repository
   - [meta]:
     - date: 12/12/2025
@@ -826,6 +830,15 @@ title: are.na
 
 ## people
 
+- https://philpeople.org/profiles/sarah-richmond -- Sarah Richmond
+  - [meta]:
+    - date: 12/12/2025
+    - tags: [philosopher, sartre]
+  - Sartre scholars, and she translated [[library/Being and Nothingness]]
+- https://www.davidson.edu/people/mark-sample -- Mark Sample
+  - [meta]:
+    - date: 12/12/2025
+    - tags: [professor, digital media]
 - https://danluu.com/ -- Dan Luu
   - [meta]:
     - date: 12/12/2025
@@ -1747,6 +1760,11 @@ title: are.na
 
 ## essay
 
+- https://www.asimov.press/p/gentle-romance -- The Gentle Romance
+  - [meta]:
+    - date: 12/12/2025
+    - tags: [longtermism, ai, love]
+    - later: true
 - https://www.humaninvariant.com/blog/presence -- On Learning through Presence
   - [meta]:
     - date: 12/12/2025
@@ -5346,6 +5364,10 @@ title: are.na
 
 ## arts
 
+- https://www.dezeen.com/2025/12/11/grand-ring-osaka-expo-2025-burned-fuel -- Most of world's largest wooden structure The Grand Ring to be burned as "chips for fuel"
+  - [meta]:
+    - date: 12/12/2025
+    - tags: [architecture]
 - https://liquidities.xyz/
   - [meta]:
     - date: 12/10/2025
@@ -5650,6 +5672,16 @@ title: are.na
 
 ## technical
 
+- https://fabiensanglard.net/cuda/ -- History of NVIDIA stream multiprocessor
+  - [meta]:
+    - date: 12/12/2025
+    - tags: [gpu]
+    - later: true
+  - see also: [[thoughts/GPU programming|gpu programming]]
+- https://www.csc.liv.ac.uk/~epa/surveyhtml.html -- Survey on two-dimensional packing
+  - [meta]:
+    - date: 12/12/2025
+    - tags: [bin packing, optimization]
 - https://people.freebsd.org/~lstewart/articles/cpumemory.pdf -- What every programmer should know about Memory [**]
   - [meta]:
     - date: 12/12/2025
@@ -6302,6 +6334,7 @@ title: are.na
   - [meta]:
     - date: 10/27/2025
     - tags: [rl]
+    - later: true
 - https://arxiv.org/abs/2504.13181
   - [meta]:
     - date: 10/27/2025

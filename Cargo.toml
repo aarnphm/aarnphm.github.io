@@ -1,8 +1,21 @@
 [package]
 name = "garden"
 version = "0.1.0"
-edition = "2021"
+edition = "2024"
 
+[[bin]]
+name = "lc"
+path = "content/puzzle/lc/cli/src/main.rs"
 
 [dependencies]
-aoc25 = { path = "./content/aoc/25/" }
+aoc25 = { path = "./content/puzzle/aoc/25/" }
+lc = { path = "./content/puzzle/lc/cli" }
+jch = { path = "./content/hinterland/jch" }
+
+[workspace]
+members = [
+  "content/puzzle/aoc/25",
+  "content/puzzle/lc/cli",
+  "content/hinterland/jch",
+]
+resolver = "2"
