@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2025-12-10 21:54:21 GMT-05:00
+modified: 2025-12-11 22:56:11 GMT-05:00
 permalinks:
   - /website
   - /tweets
@@ -143,6 +143,10 @@ title: are.na
 - [meta]:
   - view: list
 
+- https://x.com/samjvuong/status/1997058409997410507 -- Building brands and pedagogical systems
+  - [meta]:
+    - date: 12/11/2025
+    - tags: [companies, building]
 - https://x.com/cloneofsimo/status/1998194256729772169 -- amortizing reasoning chain
   - [meta]:
     - date: 12/09/2025
@@ -404,7 +408,11 @@ title: are.na
 
 ## website
 
-- https://neal.fun/size-of-life/ -- SIze of Life [**]
+- https://daringfireball.net/ -- Daring Fireball
+  - [meta]:
+    - date: 12/11/2025
+    - tags: [politics]
+- https://neal.fun/size-of-life/ -- Size of Life [**]
   - [meta]:
     - date: 12/10/2025
     - tags: [visualisation]
@@ -1731,6 +1739,26 @@ title: are.na
 
 ## essay
 
+- https://caitlynrichardson.substack.com/p/the-discourse-i-refuse-to-participate -- The discourse i refuse to participate in.
+  - [meta]:
+    - date: 12/11/2025
+    - tags: [life, being]
+- https://www.lesswrong.com/posts/3EzbtNLdcnZe8og8b/the-void-1 -- the void [**]
+  - [meta]:
+    - date: 12/11/2025
+    - tags: [llm, nature]
+- https://thegoldenhour.substack.com/p/how-do-you-live-in-time
+  - [meta]:
+    - date: 12/11/2025
+    - tags: [life]
+- https://gwern.net/speedrunning -- Speed run is not such a waste of talent
+  - [meta]:
+    - date: 12/11/2025
+    - tags: [productivity]
+- https://tomcritchlow.com/2019/04/04/the-strategic-independent/ -- Strategic Independent
+  - [meta]:
+    - date: 12/11/2025
+    - tags: [productivity, working]
 - https://befriendjamin.substack.com/p/963-words -- 963 words
   - [meta]:
     - date: 12/10/2025
@@ -1760,10 +1788,11 @@ title: are.na
     - date: 12/08/2025
     - tags: [progress, performance, ai]
   - The concept known as "worse is better" holds that in software making (and perhaps in other arenas as well) it is better to start with a minimal creation and grow it as needed. Christopher Alexander might call this "piecemeal growth." This is the story of the evolution of that concept.
-- https://gwern.net/llm-writing -- Writing for LLMs, Gwern
+- https://gwern.net/llm-writing -- Writing for LLMs so they listen, Gwern [**]
   - [meta]:
     - date: 12/08/2025
-    - tags: [writing]
+    - tags: [writing, llm]
+  - This is hard because LLMs are still advancing so fast. If I had written this in 2020, aimed at the original `davinci`, it would now be hopelessly obsolete; and the (still-unreleased and presumably still improving) o1 or [GPT-5](https://openai.com/gpt-5/) might render much of this moot. Perhaps there is not really anything a human can write now for LLMs beyond brute factual observations not yet recorded anywhere in black-and-white, or researchers at the frontier documenting their most esoteric findings, and we should drop “writing for LLMs” as a goal entirely, and write for all the other reasons there are to write? Still, I’m going to give it a try.
 - https://www.nytimes.com/2025/12/03/magazine/chatbot-writing-style.html -- Why does AI write like... that?
   - [meta]:
     - date: 12/07/2025
@@ -2883,6 +2912,22 @@ title: are.na
 - [meta]:
   - view: list
 
+- https://www.alignmentforum.org/posts/N4P9LSa6B2KyQtG5d/circuit-discovery-through-chain-of-thought-using-policy -- Circuit discovery through chain of thought using policy gradients
+  - [meta]:
+    - date: 12/11/2025
+    - tags: [interpretability, ablation]
+- https://www.alignmentforum.org/posts/Ywzk9vwMhAAPxMqSW/current-llms-seem-to-rarely-detect-cot-tampering -- Current LLMs seem to rarely detect CoT tampering
+  - [meta]:
+    - date: 12/11/2025
+    - tags: [interpretability, pragmatism]
+- https://x.com/AnthropicAI/status/1998479605272031731 -- Selective Gradient Masking
+  - [meta]:
+    - date: 12/11/2025
+    - tags: [ablation, attribution, interpretability]
+- https://alignment.openai.com/sae-latent-attribution/ -- Debugging misaligned completions with [[thoughts/sparse autoencoder|SAE]] latent [[thoughts/Attribution parameter decomposition|attribution]]
+  - [meta]:
+    - date: 12/11/2025
+    - tags: []
 - https://pub.sakana.ai/ctm/ -- Continuous Thought Machines
   - [meta]:
     - date: 12/08/2025
@@ -3373,6 +3418,10 @@ title: are.na
     - date: 10/03/2025
     - tags: [model architecture]
   - see also: https://rupeshks.cc/blog/skip.html
+- https://rupeshks.cc/blog/skip.html -- Weighted Skip Connections are Not Harmful for Deep Nets
+  - [meta]:
+    - date: 12/11/2025
+    - tags: [interpretability, scaling]
 - https://x.com/VictorTaelin/status/1897108466243641399 -- Claude Code optimize HVM3 to 328 MIPs per M4 Core
   - [meta]:
     - date: 10/03/2025
@@ -3904,6 +3953,21 @@ title: are.na
 
 ## life is literature
 
+- https://www.avabear.xyz/p/the-point-of-it-all -- The point of it all [**]
+  - [meta]:
+    - date: 12/11/2025
+    - tags: [love, relationship, pleasure]
+- https://www.avabear.xyz/p/chapter-2-prioritize-your-favorite -- prioritise your favourite people
+  - [meta]:
+    - date: 12/11/2025
+    - tags: [hedonia, friendship]
+  - > When I want to be transformed, I [chase my reading](https://www.overcomingbias.com/p/chase-your-readinghtml), to use Robin Hanson’s phrase. “Hunting has two main modes: searching and chasing,” Hanson writes. “With searching you look for something to chase. With chasing, in contrast, you have a focus of attention that drives your actions.” Searching is when I’m reading without a clear aim and continue to read even if I’m unsure about what the author is trying to achieve. Chasing is when I have a question I’m pursuing.
+  - Though this is the most basic question there is, you’d be surprised by how many people have a total inability to articulate **what they like in people**.
+  - That’s totally okay. There’s no need to sit down and make a list. If you’re in your teens or early 20s, the best way to search for people you like is to **meet a lot of people and see which ones you feel particularly alive in the presence of.**
+  - If you *have* met a lot of people, it might be productive to try to find the commonalities between them. **So: take out a piece of paper, and write down the names of everyone in your life, past or present, who you felt extremely alive around.** What do they have in common?
+  - To me, there are two parts of the chase:
+  1. The actual act of befriending someone great (which we’ll talk about more in-depth next chapter.)
+  2. Continuing to chase and deepen the relationship.
 - https://www.avabear.xyz/p/how-to-be-happy-in-san-francisco -- How to be Happy in San Francisco
   - [meta]:
     - date: 11/30/2025
@@ -4286,6 +4350,18 @@ title: are.na
 
 ## philosophy
 
+- https://en.wikipedia.org/wiki/Instrumental_convergence -- Instrumental convergence
+  - [meta]:
+    - date: 12/11/2025
+    - tags: [progress, singularity]
+- https://www.youtube.com/watch?v=UBnu5EWMYqY -- Derrida on Husserl's Phenomenology of Intersubjectivity
+  - [meta]:
+    - date: 12/11/2025
+    - tags: [continential philosophy, metaphysics]
+- https://ellieanderphd.substack.com/p/simone-de-beauvoir-the-woman-in-love -- [[thoughts/Simone de Beauvoir]], the Woman in Love
+  - [meta]:
+    - date: 12/11/2025
+    - tags: [love, relationship]
 - https://archive.ph/iin7Z -- Martha Nussbaum, The Philosopher of Feelings [--] [**]
   - [meta]:
     - date: 12/10/2025
@@ -5296,6 +5372,10 @@ title: are.na
 
 ## resources
 
+- https://castle.princeton.edu/optimallearning/ -- Optimal Learning
+  - [meta]:
+    - date: 12/11/2025
+    - tags: [information, visualisation]
 - https://flowingdata.com/2025/12/02/who-makes-a-higher-salary-and-the-jobs-they-work/ -- Who earns a higher salary than you and the jobs they work
   - [meta]:
     - date: 12/06/2025
@@ -5543,6 +5623,14 @@ title: are.na
 
 ## technical
 
+- [[aoc/25/d11.cu]] -- Day 11 implementation of AOC 2025 in CUDA
+  - [meta]:
+    - date: 12/11/2025
+    - tags: [code, puzzle]
+- https://condu.it/thought/10k-hours -- How we collected 10000 hours of neuro-language data in our basement
+  - [meta]:
+    - date: 12/11/2025
+    - tags: [neuroscience]
 - https://compute-cost.com/#XQAAAQBKEAAAAAAAAAAzmUoc/gnU0/0SvGenu/XJYlsuVB0IN6qhxykmU7W7DiMUx8Wy7xQJkNO5umd981PzT16IEWntnuv58WX8KO5E3hsDPPkmg/c8iu3OxDo+fBWmzk2RrS7sZRPmQtEelWI6fo+c6DPzs0rJsGpvJ/+zWATpjxjDZdc9l+Q8sDXQo8ntTBKgZHKyKuRUKufoLeb2m0Wi1Wdy1NVXzeAFh3kPTSnDacO/Gbl1kH6ur9QjUGEImXxPvJ8BEjQ+tPeDZus9URqiqehE93auJmVrmoVyv9xcL9ujpiZAkCvIwYVry7Q4zpakN+gJ8cxMdstnHAa82mb8WBp7JGM/VOHuvQIaWjlr362AlNneXg9JXlDTk+26b1qxZJzfe9729Cx2qe7ye08XnA0vHHTF1QgExGfKjFdyctGlbYNr3Ay/2W2GsbZ0wrtwZSliFo3UiOZ3MSEwtszUAHUO1y8OSdLqTMF4heGp3bxxg16vGr25tn5/MpQINA7MvTYYPUiQX/xWMDkr/9IpiLLi4UBZEWtWrYdGIpallpIuNG/OmnnSwSfG18HRWLyYXYVI3QEinBCUnDfIV1RV/MkgUMMhQRi7BXWHLRKtnnRFs+HlIaWRG1kUzwEsMiMPXYR94Hx6LCfrhRQh4gArAKS21hWgGOi6Sz43mYE+fkEzCnBSQV5z/tFWAaVEmbYP9gDPWD7syKRFSH9HNWmgz7hZGJkBaBLkbIH+rIvtMaiAsPuI9eI2rOMb4wGbBpGvlqf7Y+8KU+1oBwTYFjLg+PvqfvrfWMrUCCvDuARveR+bdM9CHzMfuCq3VQPAZ9U9rGhx/YKHcutDm0QTwA/YhKYOnN/Ab5K5i9VpHEkHWm1a5mvYh1IqSF2Sf7DOeCwH/D5uu1kAUaemmHWsOwp2dzjlgv2WGUJWxq2LlyXPRcEcVY6HhRq0c5FrXZoooNsPipbcfvW/tepgGLcJaU1uRMApjYDXYejDFhoG9sRhSd299h18nuuTcwQI1jwczur4Pt3Jnq9esERMYH+OVXYUH9qjgWn/+2PzCQ== -- Compute Cost calculator
   - [meta]:
     - date: 12/08/2025
@@ -5914,6 +6002,10 @@ title: are.na
 
 ## math
 
+- https://mathcs.holycross.edu/~ahwang/print/calc.pdf -- Calculus for Matehmaticians, Computer Scientists, and Physicists
+  - [meta]:
+    - date: 12/11/2025
+    - tags: [abstract algebra]
 - https://www.youtube.com/watch?v=eEGNdjdxeG8&t=38s -- Linial--Meshulam Complexes, Michael Chapman
   - [meta]:
     - date: 12/08/2025
@@ -6095,6 +6187,10 @@ title: are.na
 - [meta]:
   - view: list
 
+- https://www.nature.com/articles/s41598-023-38351-y -- Forecasting the progression of human civilization on the Kardashev Scale through 2060 with a machine learning approach
+  - [meta]:
+    - date: 12/11/2025
+    - tags: [progress]
 - https://arxiv.org/abs/2407.08516
   - [meta]:
     - date: 12/08/2025

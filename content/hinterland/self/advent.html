@@ -1,0 +1,615 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>12 days of existentialism</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Space+Mono:ital@0;1&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --void: #0a0a0c;
+        --abyss: #141418;
+        --smoke: #2a2a32;
+        --ash: #4a4a55;
+        --fog: #7a7a88;
+        --mist: #a8a8b5;
+        --paper: #e8e8ec;
+        --dread-red: #8b3a3a;
+        --absurd-blue: #3a5a8b;
+        --nausea-green: #3a6b5a;
+
+        --font-serif: "EB Garamond", Georgia, serif;
+        --font-mono: "Space Mono", monospace;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: var(--font-serif);
+        background: var(--void);
+        color: var(--paper);
+        min-height: 100vh;
+        padding: 2rem;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+
+      header {
+        text-align: center;
+        padding: 3rem 0 4rem;
+      }
+
+      h1 {
+        font-size: clamp(2.5rem, 8vw, 5rem);
+        font-weight: 400;
+        letter-spacing: -0.02em;
+        line-height: 1;
+        margin-bottom: 0.5rem;
+      }
+
+      h1 .accent {
+        font-style: italic;
+        color: var(--dread-red);
+      }
+
+      .subtitle {
+        font-family: var(--font-mono);
+        font-size: 0.8rem;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+        color: var(--fog);
+        margin-top: 1.5rem;
+      }
+
+      .epigraph {
+        font-style: italic;
+        color: var(--mist);
+        margin-top: 2rem;
+        font-size: 1.1rem;
+        max-width: 500px;
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      .epigraph cite {
+        display: block;
+        margin-top: 0.5rem;
+        font-size: 0.85rem;
+        color: var(--fog);
+        font-style: normal;
+      }
+
+      .calendar-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 1px;
+        padding: 2rem 0;
+        background: var(--smoke);
+      }
+
+      .day-card {
+        aspect-ratio: 1;
+        background: var(--abyss);
+        position: relative;
+        cursor: pointer;
+        overflow: hidden;
+        transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      }
+
+      .day-card:hover {
+        background: var(--smoke);
+        z-index: 10;
+      }
+
+      .day-card::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(135deg, transparent 60%, rgba(139, 58, 58, 0.1) 100%);
+        pointer-events: none;
+        opacity: 0;
+        transition: opacity 0.4s ease;
+      }
+
+      .day-card:hover::before {
+        opacity: 1;
+      }
+
+      .day-number {
+        position: absolute;
+        top: 1.5rem;
+        left: 1.5rem;
+        font-family: var(--font-mono);
+        font-size: 0.8rem;
+        color: var(--fog);
+        letter-spacing: 0.1em;
+      }
+
+      .day-symbol {
+        position: absolute;
+        top: 1.5rem;
+        right: 1.5rem;
+        font-size: 1.2rem;
+        color: var(--ash);
+        opacity: 0.6;
+      }
+
+      .day-content {
+        position: absolute;
+        inset: 0;
+        padding: 1.5rem;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+        opacity: 0;
+        transform: translateY(10px);
+        transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      }
+
+      .day-card:hover .day-content,
+      .day-card.revealed .day-content {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      .day-card.revealed {
+        background: var(--smoke);
+      }
+
+      .day-card.revealed .day-number {
+        color: var(--mist);
+      }
+
+      .day-card.revealed .day-symbol {
+        color: var(--dread-red);
+        opacity: 1;
+      }
+
+      .day-title {
+        font-size: 1.4rem;
+        font-weight: 500;
+        margin-bottom: 0.5rem;
+        color: var(--paper);
+      }
+
+      .day-thinker {
+        font-family: var(--font-mono);
+        font-size: 0.7rem;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--dread-red);
+      }
+
+      .day-locked {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .day-locked svg {
+        width: 28px;
+        height: 28px;
+        color: var(--ash);
+        opacity: 0.3;
+      }
+
+      .day-card.revealed .day-locked {
+        display: none;
+      }
+
+      .modal {
+        position: fixed;
+        inset: 0;
+        background: rgba(10, 10, 12, 0.95);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.4s ease;
+        z-index: 1000;
+        padding: 2rem;
+      }
+
+      .modal.open {
+        opacity: 1;
+        pointer-events: all;
+      }
+
+      .modal-content {
+        background: var(--abyss);
+        border: 1px solid var(--smoke);
+        max-width: 600px;
+        width: 100%;
+        max-height: 85vh;
+        overflow-y: auto;
+        padding: 3rem;
+        position: relative;
+        transform: scale(0.95) translateY(20px);
+        transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      }
+
+      .modal.open .modal-content {
+        transform: scale(1) translateY(0);
+      }
+
+      .modal-close {
+        position: absolute;
+        top: 1.5rem;
+        right: 1.5rem;
+        background: none;
+        border: none;
+        font-size: 1.5rem;
+        cursor: pointer;
+        color: var(--fog);
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: color 0.3s ease;
+      }
+
+      .modal-close:hover {
+        color: var(--paper);
+      }
+
+      .modal-day {
+        font-family: var(--font-mono);
+        font-size: 0.7rem;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+        color: var(--dread-red);
+        margin-bottom: 1rem;
+      }
+
+      .modal-title {
+        font-size: 2.5rem;
+        font-weight: 400;
+        margin-bottom: 0.5rem;
+        line-height: 1.1;
+      }
+
+      .modal-thinker {
+        font-family: var(--font-mono);
+        font-size: 0.75rem;
+        letter-spacing: 0.1em;
+        color: var(--fog);
+        margin-bottom: 2rem;
+        padding-bottom: 2rem;
+        border-bottom: 1px solid var(--smoke);
+      }
+
+      .modal-body {
+        font-size: 1.1rem;
+        line-height: 1.85;
+        color: var(--mist);
+      }
+
+      .modal-body p + p {
+        margin-top: 1.2em;
+      }
+
+      .modal-quote {
+        font-style: italic;
+        font-size: 1.25rem;
+        color: var(--paper);
+        padding: 1.5rem;
+        border-left: 3px solid var(--dread-red);
+        margin: 2rem 0;
+        background: rgba(139, 58, 58, 0.08);
+      }
+
+      footer {
+        text-align: center;
+        padding: 4rem 0 2rem;
+        color: var(--fog);
+      }
+
+      footer p {
+        font-family: var(--font-mono);
+        font-size: 0.75rem;
+        letter-spacing: 0.1em;
+      }
+
+      .reset-btn {
+        margin-top: 1.5rem;
+        font-family: var(--font-mono);
+        font-size: 0.7rem;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        background: transparent;
+        border: 1px solid var(--smoke);
+        color: var(--fog);
+        padding: 0.6rem 1.5rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .reset-btn:hover {
+        border-color: var(--dread-red);
+        color: var(--dread-red);
+      }
+
+      .progress {
+        display: flex;
+        justify-content: center;
+        gap: 0.4rem;
+        margin-bottom: 2rem;
+      }
+
+      .progress-dot {
+        width: 6px;
+        height: 6px;
+        background: var(--smoke);
+        transition: all 0.3s ease;
+      }
+
+      .progress-dot.filled {
+        background: var(--dread-red);
+      }
+
+      .experience-nav {
+        position: fixed;
+        top: 2rem;
+        right: 2rem;
+        display: flex;
+        gap: 1.5rem;
+        z-index: 100;
+      }
+
+      .experience-nav a {
+        font-family: var(--font-mono);
+        font-size: 0.7rem;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        text-decoration: none;
+        color: var(--fog);
+        transition: color 0.3s ease;
+      }
+
+      .experience-nav a:hover {
+        color: var(--paper);
+      }
+
+      .experience-nav a.active {
+        color: var(--dread-red);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <h1>12 days of <span class="accent">existentialism</span></h1>
+        <p class="subtitle">on being, nothingness, and the absurd</p>
+        <p class="epigraph">
+          "Man is condemned to be free; because once thrown into the world, he is responsible for
+          everything he does."
+          <cite>— Jean-Paul Sartre</cite>
+        </p>
+      </header>
+
+      <div class="progress" id="progress"></div>
+
+      <div class="calendar-grid" id="calendar"></div>
+
+      <footer>
+        <p>click each day to confront the void</p>
+        <button class="reset-btn" onclick="resetCalendar()">reset</button>
+      </footer>
+    </div>
+
+    <nav class="experience-nav">
+      <a href="index.html">manual</a>
+      <a href="advent.html" class="active">night</a>
+    </nav>
+
+    <div class="modal" id="modal">
+      <div class="modal-content">
+        <button class="modal-close" onclick="closeModal()">×</button>
+        <div class="modal-day" id="modalDay"></div>
+        <h2 class="modal-title" id="modalTitle"></h2>
+        <p class="modal-thinker" id="modalThinker"></p>
+        <div class="modal-body" id="modalBody"></div>
+      </div>
+    </div>
+
+    <script>
+      const days = [
+        {
+          title: "existence precedes essence",
+          thinker: "Jean-Paul Sartre",
+          symbol: "∅",
+          content: `<p>You are not born with a predetermined purpose. Unlike a hammer, which is designed before it exists, humans exist first—and then must create their own meaning.</p>
+        <div class="modal-quote">"We are left alone, without excuse. That is what I mean when I say that man is condemned to be free."</div>
+        <p>There is no cosmic blueprint for who you should become. The terrifying freedom is that you must choose, constantly, who you are becoming.</p>`,
+        },
+        {
+          title: "the absurd",
+          thinker: "Albert Camus",
+          symbol: "◎",
+          content: `<p>The absurd arises from the confrontation between human beings who desperately seek meaning and a universe that offers none. We cry out for answers into a silent void.</p>
+        <div class="modal-quote">"The absurd is born of this confrontation between the human need and the unreasonable silence of the world."</div>
+        <p>Yet Camus saw three responses: suicide (rejected), religious hope (philosophical suicide), or acceptance—living fully despite the absurd. One must imagine Sisyphus happy.</p>`,
+        },
+        {
+          title: "angst",
+          thinker: "Søren Kierkegaard",
+          symbol: "≈",
+          content: `<p>Angst is not fear of something specific—it is dread of freedom itself. When we truly confront our absolute freedom, when we realize that nothing constrains our choices, we feel vertigo.</p>
+        <div class="modal-quote">"Anxiety is the dizziness of freedom."</div>
+        <p>Standing at the edge of possibility, we experience the weight of our own existence. Every moment is a precipice.</p>`,
+        },
+        {
+          title: "being-toward-death",
+          thinker: "Martin Heidegger",
+          symbol: "→",
+          content: `<p>Authentic existence requires confronting our own mortality. Not in morbid fascination, but in recognition that death individualizes us—no one can die my death for me.</p>
+        <div class="modal-quote">"As soon as man comes to life, he is at once old enough to die."</div>
+        <p>When we truly grasp our finitude, the everyday distractions fall away. We are called back to what genuinely matters.</p>`,
+        },
+        {
+          title: "bad faith",
+          thinker: "Jean-Paul Sartre",
+          symbol: "◇",
+          content: `<p>Bad faith is lying to ourselves—pretending we have no choice when we do, or that we are fully free when we face real constraints. It is the comfortable evasion of responsibility.</p>
+        <div class="modal-quote">"Bad faith seeks to flee what it can not flee, to flee what it is."</div>
+        <p>The waiter who performs his role so completely he forgets he chose it. The person who says "I had no choice" when they simply didn't want to face the consequences of choosing otherwise.</p>`,
+        },
+        {
+          title: "the other",
+          thinker: "Jean-Paul Sartre",
+          symbol: "◈",
+          content: `<p>When another person looks at me, I am suddenly objectified—I become a thing in their world. Their gaze reveals my existence to myself, but also threatens to define me.</p>
+        <div class="modal-quote">"Hell is other people."</div>
+        <p>This famous line is often misunderstood. It's not that others are inherently torturous, but that we are forever caught between our self-image and how others see us.</p>`,
+        },
+        {
+          title: "authenticity",
+          thinker: "Martin Heidegger",
+          symbol: "●",
+          content: `<p>To live authentically is to own your existence—to choose deliberately rather than drifting with "the they," the anonymous crowd that thinks and does what "one" thinks and does.</p>
+        <div class="modal-quote">"Everyone is the other, and no one is himself."</div>
+        <p>Authenticity isn't about being different for its own sake, but about genuinely owning your choices rather than hiding behind what "they" say or do.</p>`,
+        },
+        {
+          title: "freedom and responsibility",
+          thinker: "Simone de Beauvoir",
+          symbol: "⊕",
+          content: `<p>Freedom is not abstract—it exists in concrete situations, and my freedom is intertwined with others'. To will my own freedom, I must will the freedom of all.</p>
+        <div class="modal-quote">"One is not born, but rather becomes, a woman."</div>
+        <p>De Beauvoir extended existentialism to show how we are made into what society expects, yet retain the possibility of transcendence—of becoming more than we are told we can be.</p>`,
+        },
+        {
+          title: "nausea",
+          thinker: "Jean-Paul Sartre",
+          symbol: "∿",
+          content: `<p>Nausea is the visceral confrontation with existence itself—the sudden realization that things simply are, without reason, without necessity. Pure, contingent being.</p>
+        <div class="modal-quote">"I exist. It's sweet, so sweet, so slow. And light: you'd think it floated all by itself."</div>
+        <p>In these moments, the familiar becomes strange. A tree root, a hand, a face—all become alien, terrifying in their sheer thereness.</p>`,
+        },
+        {
+          title: "the eternal return",
+          thinker: "Friedrich Nietzsche",
+          symbol: "∞",
+          content: `<p>What if you had to live this exact life, with every pain and joy, infinitely? The eternal return is a test: can you affirm your existence so completely you would will it to repeat forever?</p>
+        <div class="modal-quote">"Was that life? Well then, once more!"</div>
+        <p>This is not a metaphysical claim but an ethical challenge. It asks: are you living in a way you could affirm eternally?</p>`,
+        },
+        {
+          title: "the leap of faith",
+          thinker: "Søren Kierkegaard",
+          symbol: "↑",
+          content: `<p>Reason can only take us so far. At some point, if we are to live meaningfully, we must leap—commit to something beyond what logic can justify.</p>
+        <div class="modal-quote">"Life can only be understood backwards; but it must be lived forwards."</div>
+        <p>Whether the leap is toward faith, love, or any genuine commitment—it requires risking everything without guarantee.</p>`,
+        },
+        {
+          title: "radical freedom",
+          thinker: "Jean-Paul Sartre",
+          symbol: "✦",
+          content: `<p>In every moment, you are free. Even in chains, you choose how to bear them. This is both liberation and burden—you cannot escape responsibility by claiming circumstance.</p>
+        <div class="modal-quote">"Freedom is what we do with what is done to us."</div>
+        <p>There are no excuses. What you do next is yours alone. The weight of existence rests entirely on your shoulders. And yet—this is the only ground from which genuine meaning can grow.</p>`,
+        },
+      ]
+
+      const calendar = document.getElementById("calendar")
+      const progress = document.getElementById("progress")
+      const modal = document.getElementById("modal")
+      const revealedDays = JSON.parse(localStorage.getItem("existAdventRevealed") || "[]")
+
+      function renderCalendar() {
+        calendar.innerHTML = ""
+        progress.innerHTML = ""
+
+        days.forEach((day, index) => {
+          const isRevealed = revealedDays.includes(index)
+
+          const dot = document.createElement("div")
+          dot.className = `progress-dot ${isRevealed ? "filled" : ""}`
+          progress.appendChild(dot)
+
+          const card = document.createElement("div")
+          card.className = `day-card ${isRevealed ? "revealed" : ""}`
+          card.innerHTML = `
+          <span class="day-number">${String(index + 1).padStart(2, "0")}</span>
+          <span class="day-symbol">${day.symbol}</span>
+          <div class="day-content">
+            <h3 class="day-title">${day.title}</h3>
+            <p class="day-thinker">${day.thinker}</p>
+          </div>
+          ${
+            !isRevealed
+              ? `
+          <div class="day-locked">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <circle cx="12" cy="12" r="10"/>
+              <path d="M12 8v4l2 2"/>
+            </svg>
+          </div>
+          `
+              : ""
+          }
+        `
+
+          card.addEventListener("click", () => openModal(index))
+          calendar.appendChild(card)
+        })
+      }
+
+      function openModal(index) {
+        const day = days[index]
+
+        if (!revealedDays.includes(index)) {
+          revealedDays.push(index)
+          localStorage.setItem("existAdventRevealed", JSON.stringify(revealedDays))
+          renderCalendar()
+        }
+
+        document.getElementById("modalDay").textContent = `Day ${index + 1}`
+        document.getElementById("modalTitle").textContent = day.title
+        document.getElementById("modalThinker").textContent = day.thinker
+        document.getElementById("modalBody").innerHTML = day.content
+
+        modal.classList.add("open")
+        document.body.style.overflow = "hidden"
+      }
+
+      function closeModal() {
+        modal.classList.remove("open")
+        document.body.style.overflow = ""
+      }
+
+      modal.addEventListener("click", (e) => {
+        if (e.target === modal) closeModal()
+      })
+
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") closeModal()
+      })
+
+      function resetCalendar() {
+        localStorage.removeItem("existAdventRevealed")
+        revealedDays.length = 0
+        renderCalendar()
+      }
+
+      renderCalendar()
+    </script>
+  </body>
+</html>
