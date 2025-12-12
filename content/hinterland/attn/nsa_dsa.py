@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import math
-from typing import Optional, Tuple
+from typing import Tuple
 
 def apply_rotary_pos_emb(x: torch.Tensor, cos: torch.Tensor, sin: torch.Tensor) -> torch.Tensor:
     """standard rope: rotates pairs of dimensions by position-dependent angles"""
@@ -431,17 +431,4 @@ def cache_size_analysis():
 # cache_size_analysis() returns:
 # {'MHA': ~238 GB, 'MQA': ~1.86 GB, 'GQA-8': ~14.9 GB, 'MLA': ~4.2 GB}
 # MLA sits between MQA and GQA-8, but preserves per-head diversity via decompression
-```
-
----
-
-the critical architectural distinctions:
-
-**NSA vs DSA:**
-- NSA uses a three-branch gated architecture where block selection happens AFTER compression scoring. the compressed branch produces coarse attention patterns that guide which blocks get selected for fine-grained attention.
-- DSA uses the "lightning indexer" - a separate low-rank projection path (q^I, k^I with dim ~32) that runs in parallel and cheaply scores relevance. this avoids the sequential dependency of compress-then-select.
-
-**why decoupled RoPE:**
-the mathematical impossibility is straightforward. if K = W_K @ c_KV where c_KV is your cached latent, you want to cache c_KV and apply RoPE at inference time. but:
-```
-RoPE(K) = RoPE(W_K @ c_KV) ≠ W_K @ RoPE(c_KV)
+if __name__ == "__main__": print(cache_size_analysis())
