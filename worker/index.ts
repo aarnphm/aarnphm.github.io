@@ -266,6 +266,16 @@ function resolveBaseUrl(env: Env, request: Request): string {
   return u.toString().replace(/\/$/, "")
 }
 
+function isLocalHostname(hostname: string): boolean {
+  const normalized = hostname.toLowerCase()
+  return (
+    normalized === "localhost" ||
+    normalized === "127.0.0.1" ||
+    normalized === "::1" ||
+    normalized.endsWith(".localhost")
+  )
+}
+
 function getAllowedOrigin(env: Env, request: Request): string | null {
   const origin = request.headers.get("Origin")
   if (!origin) return null
@@ -450,6 +460,7 @@ export default {
       case "/substack":
         return Response.redirect("https://substack.com/@aarnphm", 301)
       case "/stream":
+        if (isLocalHostname(url.hostname)) break
         return Response.redirect("https://stream.aarnphm.xyz", 308)
       case "/.lfsconfig":
         return new Response(null, { status: 404 })

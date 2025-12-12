@@ -31,6 +31,18 @@ transclude:
   title: false
 ---
 
+> I am shivering, reading cold northeastern prose
+> 
+> and there is a word for what I do
+> 
+> but I do it anyway,
+> 
+> carefully setting dinner on the table uncooked,
+> 
+> before setting the table on fire.
+>
+> David Berman, _Of Things Found Where They Are Not Supposed To Be_
+
 > I always have such need to merely talk to you. Even when I have nothing to talk about - with you I just seem to go right ahead and sort of invent it. I _invent_ it for you.
 >
 > **Virginia Woolf**, from a letter to **Vita Sackville West**

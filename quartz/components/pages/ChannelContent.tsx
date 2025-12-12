@@ -326,8 +326,12 @@ export default (() => {
       .filter((b) => b.pinned === true)
       .sort((a, b) => arenaBlockTimestamp(b) - arenaBlockTimestamp(a))
 
+    const laterBlocks = channel.blocks
+      .filter((b) => b.later === true && b.pinned !== true)
+      .sort((a, b) => arenaBlockTimestamp(b) - arenaBlockTimestamp(a))
+
     const regularBlocks = channel.blocks
-      .filter((b) => !b.pinned)
+      .filter((b) => b.pinned !== true && b.later !== true)
       .sort((a, b) => arenaBlockTimestamp(b) - arenaBlockTimestamp(a))
 
     const channelViewPreferenceRaw = channel.metadata?.["view"] ?? channel.metadata?.["layout"]
@@ -789,9 +793,13 @@ export default (() => {
           <div class="arena-view-toggle" role="group" aria-label="Toggle channel layout">
             <button
               type="button"
-              class={classNames("arena-view-toggle-button", !isListDefault ? "active" : undefined)}
+              class={classNames(
+                displayClass,
+                "arena-view-toggle-button",
+                !isListDefault ? "active" : "",
+              )}
               data-view-mode="grid"
-              aria-pressed={(!isListDefault).toString()}
+              aria-pressed={!isListDefault}
             >
               <svg
                 width="16"
@@ -811,9 +819,13 @@ export default (() => {
             </button>
             <button
               type="button"
-              class={classNames("arena-view-toggle-button", isListDefault ? "active" : undefined)}
+              class={classNames(
+                displayClass,
+                "arena-view-toggle-button",
+                isListDefault ? "active" : "",
+              )}
               data-view-mode="list"
-              aria-pressed={isListDefault.toString()}
+              aria-pressed={isListDefault}
             >
               <svg
                 width="16"
@@ -844,6 +856,22 @@ export default (() => {
               data-view-default={defaultViewMode}
             >
               {pinnedBlocks.map((block, idx) => renderBlock(block, idx))}
+            </div>
+          </>
+        )}
+        {laterBlocks.length > 0 && (
+          <>
+            <div class="arena-section-header">
+              <h3>later</h3>
+            </div>
+            <div
+              class="arena-channel-grid arena-later-section"
+              data-view-mode="list"
+              data-view-default="list"
+            >
+              {laterBlocks.map((block, idx) =>
+                renderBlock(block, idx + pinnedBlocks.length + regularBlocks.length),
+              )}
             </div>
           </>
         )}
