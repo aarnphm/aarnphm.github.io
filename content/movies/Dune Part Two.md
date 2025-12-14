@@ -1,6 +1,6 @@
 ---
 category: thriller
-date: "2024-02-07"
+date: 2024-02-07
 description: Paul Atreides unites with Chani and the Fremen while seeking revenge against the conspirators who destroyed his family
 director: Denis Villeneuve
 id: dune-part-two
@@ -9,7 +9,6 @@ posters: "[[movies/posters/dune-part-two.jpg]]"
 status: recurring
 studio: warner bros
 tags:
-  - movies
   - thriller
 title: "Dune: Part Two"
 year: 2024

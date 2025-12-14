@@ -59,6 +59,8 @@ views:
       - status
       - studio
     sort:
+      - property: director
+        direction: DESC
       - property: status
         direction: DESC
       - property: title
@@ -257,3 +259,37 @@ views:
       - property: status
         direction: ASC
     nestedProperties: true
+  - type: table
+    name: editors
+    groupBy:
+      property: year
+      direction: DESC
+    order:
+      - file.name
+      - director
+      - status
+      - studio
+      - tags
+      - watched
+      - year
+      - rating
+      - category
+      - description
+      - posters
+      - title
+    sort:
+      - property: rating
+        direction: DESC
+      - property: tags
+        direction: DESC
+      - property: director
+        direction: DESC
+      - property: status
+        direction: DESC
+      - property: title
+        direction: ASC
+    columnSize:
+      file.name: 369
+      note.director: 200
+      note.studio: 193
+      note.tags: 155

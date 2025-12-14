@@ -1,6 +1,6 @@
 ---
 category: christopher nolan
-date: "2024-02-07"
+date: 2024-02-07
 description: memory as the only thread connecting us to ourselves, and what happens when that thread frays—identity becomes a story we tell, unreliable and reconstructed each morning.
 director: Christopher Nolan
 id: memento
@@ -10,7 +10,6 @@ status: recurring
 studio: christopher nolan
 tags:
   - movies
-  - dir/christopher nolan
 title: Memento
 year: 2000
 ---

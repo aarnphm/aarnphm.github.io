@@ -191,6 +191,7 @@ const config: QuartzConfig = {
             ".cjs",
             ".mjs",
             ".scala",
+            ".html",
             ".hs",
             ".ml",
             ".cu",

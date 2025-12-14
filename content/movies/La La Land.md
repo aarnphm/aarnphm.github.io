@@ -1,6 +1,6 @@
 ---
 category: thriller
-date: "2024-02-07"
+date: 2024-02-07
 description: jazz purist and actress choosing dreams over each other—chazelle filming los angeles as musical fantasy where ambition wins, the epilogue showing the life they could have had if love mattered more than success.
 director: Damien Chazelle
 id: la-la-land
@@ -9,7 +9,6 @@ posters: "[[movies/posters/la-la-land.jpg]]"
 status: recurring
 studio: general
 tags:
-  - movies
   - thriller
 title: La La Land
 year: 2016

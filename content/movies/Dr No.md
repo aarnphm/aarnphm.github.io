@@ -1,6 +1,6 @@
 ---
 category: bond
-date: "2024-02-07"
+date: 2024-02-07
 description: connery inventing the template—first bond film establishing the martinis and misogyny, ursula andress emerging from water, sixty years of franchise born from this exact calibration of cool.
 director: Terence Young
 id: dr-no
@@ -9,7 +9,6 @@ posters: "[[movies/posters/dr-no.jpg]]"
 status: recurring
 studio: bond
 tags:
-  - movies
   - bond
 title: Dr. No
 year: 1962

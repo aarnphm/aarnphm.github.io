@@ -1,6 +1,6 @@
 ---
 category: martin scorsese
-date: "2024-02-07"
+date: 2024-02-07
 description: catholic guilt in little italy—scorsese's breakout, where community is both sanctuary and prison, sin tallied against an accounting that never balances.
 director: Martin Scorsese
 id: mean-streets
@@ -10,7 +10,6 @@ status: recurring
 studio: martin scorsese
 tags:
   - movies
-  - dir/martin scorsese
 title: Mean Streets
 year: 1973
 ---

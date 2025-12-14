@@ -1,6 +1,6 @@
 ---
 category: thriller
-date: "2024-02-07"
+date: 2024-02-07
 description: drummer pushed to breaking point by abusive instructor—chazelle filming simmons' fletcher hurling chairs and insults while teller bleeds on drums, jazz school as psychological warfare, asking whether greatness requires cruelty or just makes cruelty feel justified.
 director: Damien Chazelle
 id: whiplash
@@ -9,7 +9,6 @@ posters: "[[movies/posters/whiplash.jpg]]"
 status: recurring
 studio: general
 tags:
-  - movies
   - thriller
 title: Whiplash
 year: 2014

@@ -1,6 +1,6 @@
 ---
 category: wes anderson
-date: "2024-02-07"
+date: 2024-02-07
 description: three brothers on a train through india carrying their father's luggage, literal and otherwise—spiritual tourism as avoidance of actual reconciliation.
 director: Wes Anderson
 id: the-darjeeling-limited
@@ -10,7 +10,6 @@ status: recurring
 studio: wes anderson
 tags:
   - movies
-  - dir/wes anderson
 title: The Darjeeling Limited
 year: 2007
 ---

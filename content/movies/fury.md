@@ -1,6 +1,6 @@
 ---
 category: thriller
-date: "2024-02-07"
+date: 2024-02-07
 description: sherman tank crew grinding through final days of wwii—ayer filming war as exhausting brutality, brad pitt's veterans forcing clerk logan lerman to kill, masculinity measured in cruelty, tank becoming coffin they refuse to abandon.
 director: David Ayer
 id: fury
@@ -9,7 +9,6 @@ posters: "[[movies/posters/fury.jpg]]"
 status: recurring
 studio: general
 tags:
-  - movies
   - thriller
 title: Fury
 year: 2014

@@ -1,6 +1,6 @@
 ---
 category: christopher nolan
-date: "2024-02-07"
+date: 2024-02-07
 description: the weight of knowing you've changed the world irreversibly—prometheus stealing fire, then spending the rest of his life watching it burn.
 director: Christopher Nolan
 id: oppenheimer
@@ -10,7 +10,6 @@ status: recurring
 studio: christopher nolan
 tags:
   - movies
-  - dir/christopher nolan
 title: Oppenheimer
 year: 2023
 ---
