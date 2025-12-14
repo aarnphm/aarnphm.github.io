@@ -1,6 +1,6 @@
 ---
 category: bond
-date: "2024-02-07"
+date: 2024-02-07
 description: moore battling soviet general's nuclear plot—glen filming bond infiltrating smuggler's circus in india, cold war espionage wrapped in fabergé eggs and deadly blue-ringed octopus, the thirteenth bond balancing spectacle with practical stunts.
 director: John Glen
 id: octopussy
@@ -9,7 +9,6 @@ posters: "[[movies/posters/octopussy.webp]]"
 status: recurring
 studio: bond
 tags:
-  - movies
   - bond
 title: Octopussy
 year: 1983

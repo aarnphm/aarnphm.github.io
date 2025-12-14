@@ -1,6 +1,6 @@
 ---
 category: vintage
-date: "2024-02-07"
+date: 2024-02-07
 description: the american dream as criminal enterprise—fast money and faster living masking the rot underneath, scorsese seducing you with the glamour then leaving you with the betrayal.
 director: Martin Scorsese
 id: goodfellas
@@ -9,9 +9,7 @@ posters: "[[movies/posters/goodfellas.jpg]]"
 status: recurring
 studio: warner bros
 tags:
-  - movies
   - vintage
-  - dir/martin scorsese
 title: Goodfellas
 year: 1990
 ---

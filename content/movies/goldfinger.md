@@ -1,6 +1,6 @@
 ---
 category: bond
-date: "2024-02-07"
+date: 2024-02-07
 description: bond perfected—connery at peak cool stopping auric goldfinger from irradiating fort knox, pussy galore painted gold, aston martin with ejector seat, shirley bassey wailing about midas touch, the template every spy film still copies.
 director: Guy Hamilton
 id: goldfinger
@@ -9,7 +9,6 @@ posters: "[[movies/posters/goldfinger.jpg]]"
 status: recurring
 studio: bond
 tags:
-  - movies
   - bond
 title: Goldfinger
 year: 1964

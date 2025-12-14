@@ -1,6 +1,6 @@
 ---
 category: wes anderson
-date: "2024-02-07"
+date: 2024-02-07
 description: grief disguised as documentary—a fading oceanographer hunting the shark that killed his partner, symmetry and stop-motion fish unable to mask the emptiness.
 director: Wes Anderson
 id: the-life-aquatic-with-steve-zissou
@@ -10,7 +10,6 @@ status: recurring
 studio: wes anderson
 tags:
   - movies
-  - dir/wes anderson
 title: The Life Aquatic with Steve Zissou
 year: 2004
 ---

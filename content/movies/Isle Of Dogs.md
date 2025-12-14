@@ -1,6 +1,6 @@
 ---
 category: wes anderson
-date: "2024-02-07"
+date: 2024-02-07
 description: dogs exiled to an island of trash, stop-motion fur matted with grime—loyalty persisting through authoritarian cruelty, anderson's bleakest fable.
 director: Wes Anderson
 id: isle-of-dogs
@@ -10,7 +10,6 @@ status: recurring
 studio: wes anderson
 tags:
   - movies
-  - dir/wes anderson
 title: Isle of Dogs
 year: 2018
 ---

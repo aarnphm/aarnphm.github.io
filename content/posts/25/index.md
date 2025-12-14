@@ -2,7 +2,7 @@
 date: "2025-10-03"
 description: a few gratitude word I want to send to friends.
 id: index
-modified: 2025-11-13 02:55:53 GMT-05:00
+modified: 2025-12-12 18:48:50 GMT-05:00
 noindex: true
 tags:
   - friend

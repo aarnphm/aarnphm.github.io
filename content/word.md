@@ -5,7 +5,7 @@ date: "2024-10-10"
 description: a bag of chips/words/vernacular
 id: word
 layout: technical
-modified: 2025-11-30 16:41:22 GMT-05:00
+modified: 2025-12-12 17:41:59 GMT-05:00
 tags:
   - evergreen
 title: lists
@@ -49,3 +49,4 @@ title: lists
 - muggy
 - {{sidenotes[polyphony]: a feature of narrative, which includes a diversity of simultaneous points of view and voices}}
 - dasein
+- [amatonormativity](https://elizabethbrake.com/amatonormativity)

@@ -1,6 +1,6 @@
 ---
 category: christopher nolan
-date: "2024-02-07"
+date: 2024-02-07
 description: nolan's debut—a writer stalking strangers to steal their stories, identity blurring between observer and observed until neither knows who's manipulating whom.
 director: Christopher Nolan
 id: following
@@ -10,7 +10,6 @@ status: recurring
 studio: christopher nolan
 tags:
   - movies
-  - dir/christopher nolan
 title: Following
 year: 1998
 ---

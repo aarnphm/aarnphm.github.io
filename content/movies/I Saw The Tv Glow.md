@@ -1,6 +1,6 @@
 ---
 category: general
-date: "2024-02-07"
+date: 2024-02-07
 description: trans allegory disguised as 90s nostalgia horror—schoenbrun filming the terror of knowing your true self but choosing to stay buried, tv show offering escape then demanding you recognize it as real.
 director: Jane Schoenbrun
 id: i-saw-the-tv-glow
@@ -9,7 +9,7 @@ posters: "[[movies/posters/i-saw-the-tv-glow.jpg]]"
 status: to watch
 studio: a24
 tags:
-  - seed
+  - movies
 title: I Saw the TV Glow
 year: 2024
 ---

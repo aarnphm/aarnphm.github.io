@@ -1,6 +1,6 @@
 ---
 category: wes anderson
-date: "2024-02-07"
+date: 2024-02-07
 description: mid-life crisis in stop-motion—a fox domesticated then feral again, roald dahl's irreverence meeting anderson's geometric melancholy.
 director: Wes Anderson
 id: fantastic-mr-fox
@@ -10,7 +10,6 @@ status: recurring
 studio: wes anderson
 tags:
   - movies
-  - dir/wes anderson
 title: Fantastic Mr. Fox
 year: 2009
 ---

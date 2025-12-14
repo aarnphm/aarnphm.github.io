@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2025-12-12 14:58:27 GMT-05:00
+modified: 2025-12-14 02:44:41 GMT-05:00
 permalinks:
   - /website
   - /tweets
@@ -143,6 +143,14 @@ title: are.na
 - [meta]:
   - view: list
 
+- https://x.com/francoisfleuret/status/1999736997611499899
+  - [meta]:
+    - date: 12/14/2025
+    - tags: [meme]
+- https://x.com/milk__ape/status/1999521624148578555/
+  - [meta]:
+    - date: 12/12/2025
+    - tags: [meme]
 - https://x.com/samjvuong/status/1997058409997410507 -- Building brands and pedagogical systems
   - [meta]:
     - date: 12/11/2025
@@ -830,6 +838,29 @@ title: are.na
 
 ## people
 
+- https://plato.stanford.edu/entries/rawls/ -- John Rawls
+  - [meta]:
+    - date: 12/14/2025
+    - tags: [philosopher]
+  - political liberalism, liberal tradition
+- https://philosophy.uchicago.edu/faculty/nussbaum -- Martha C. Nussbaum
+  - [meta]:
+    - date: 12/14/2025
+    - tags: [philosopher, professor]
+  - [[thoughts/ethics]], feminist philosophy, Roman philosophy
+- https://plato.stanford.edu/entries/ramsey/ -- Frank Ramsey
+  - [meta]:
+    - date: 12/14/2025
+    - tags: [economist, philosopher]
+  - recommend this writeup from [Gavin Leech](https://www.gleech.org/frank)
+- https://croissanthology.com/ -- Croissanthology
+  - [meta]:
+    - date: 12/13/2025
+    - tags: [alignment, rationalist]
+- https://wiki.xxiivv.com/site/home.html -- Devine Lu Linvega
+  - [meta]:
+    - date: 12/12/2025
+    - tags: [web poetic]
 - https://philpeople.org/profiles/sarah-richmond -- Sarah Richmond
   - [meta]:
     - date: 12/12/2025
@@ -1760,6 +1791,29 @@ title: are.na
 
 ## essay
 
+- https://internetprincess.substack.com/p/crisis-of-faith -- Crisis of faith
+  - [meta]:
+    - date: 12/13/2025
+    - tags: [eschatology, grief]
+  - see also: [on omnipotence paradox](https://stream.aarnphm.xyz/stream/on/2025/11/29)
+- https://internetprincess.substack.com/p/choosing-to-walk -- Choosing to walk
+  - [meta]:
+    - date: 12/13/2025
+    - tags: [rtq, ai, writing]
+    - later: true
+- https://nabeelqu.substack.com/p/understanding -- How to Understand Thing [**]
+  - [meta]:
+    - date: 12/12/2025
+    - tags: [pedagogy, ontology]
+    - pinned: true
+- https://www.lesswrong.com/posts/Tnpp3cyEHMGthjGAf/seven-ways-to-become-unstoppably-agentic?curius=5402 -- Seven ways to become unstoppably agentic
+  - [meta]:
+    - date: 12/12/2025
+    - tags: [agency]
+- https://100r.ca/site/shining_sand.html -- Shining Place Built Upon The Sand
+  - [meta]:
+    - date: 12/12/2025
+    - tags: [wasm, functional]
 - https://www.asimov.press/p/gentle-romance -- The Gentle Romance
   - [meta]:
     - date: 12/12/2025
@@ -1810,10 +1864,12 @@ title: are.na
   - [meta]:
     - date: 12/08/2025
     - tags: [eudaimonia]
-- https://internetprincess.substack.com/p/against-narrative -- against narrative
+- https://internetprincess.substack.com/p/against-narrative -- against narrative [**]
   - [meta]:
     - date: 12/08/2025
-    - tags: [love]
+    - tags: [love, grief]
+    - later: true
+  - In Susan Sontag’s seminal essay "Against Interpretation," she argues for prioritizing the sensuous experience of art over the attempt to determine what it represents. Rather than trying to plumb it for a message or a meaning, Sontag wants us to try and reckon with art’s ability to evoke overwhelming, frightening, unintelligible feeling — to develop an "erotics, rather than a hermeneutics, of art." This is hard because it is painful, and valuable because it is hard. “Real art has the capacity to make us nervous,” she writes. “By reducing the work of art to its content and then interpreting that, one tames the work of art. Interpretation makes art manageable, conformable."
 - https://www.dreamsongs.com/WorseIsBetter.html -- Worse is better
   - [meta]:
     - date: 12/08/2025
@@ -1825,6 +1881,7 @@ title: are.na
     - tags: [writing, llm]
     - later: true
   - This is hard because LLMs are still advancing so fast. If I had written this in 2020, aimed at the original `davinci`, it would now be hopelessly obsolete; and the (still-unreleased and presumably still improving) o1 or [GPT-5](https://openai.com/gpt-5/) might render much of this moot. Perhaps there is not really anything a human can write now for LLMs beyond brute factual observations not yet recorded anywhere in black-and-white, or researchers at the frontier documenting their most esoteric findings, and we should drop “writing for LLMs” as a goal entirely, and write for all the other reasons there are to write? Still, I’m going to give it a try.
+  - see also: [[thoughts/writing#for shoggoth]]
 - https://www.nytimes.com/2025/12/03/magazine/chatbot-writing-style.html -- Why does AI write like... that?
   - [meta]:
     - date: 12/07/2025
@@ -1977,6 +2034,8 @@ title: are.na
   - [meta]:
     - date: 11/22/2025
     - tags: [grief, life]
+    - pinned: true
+  - They drove each other crazy and called on the phone every day. When her mother died a few years ago, I watched time warp and stretch around her. The stress of a loss makes everyone feel weary and old, of course, but I always felt as though the loss of her mother aged my mom in a way that was both far less tangible and much more real: she was no longer forever young in comparison to someone else, no longer still a baby in somebody’s heart and mind.
 - https://www.sunday.ai/journal/no-robot-data -- ACT-1: A Robot Foundation Model Trained on Zero Robot Data
   - [meta]:
     - date: 11/21/2025
@@ -2948,6 +3007,17 @@ title: are.na
 - [meta]:
   - view: list
 
+- https://joecarlsmith.com/2025/08/18/giving-ais-safe-motivations -- Giving AI safe motivations
+  - [meta]:
+    - date: 12/13/2025
+    - tags: [interpretability, alignment]
+    - later: true
+  - see also: [[thoughts/Alignment#giving AI safe motivations]]
+- https://www.youtube.com/watch?v=DR7F7ZDAAtE -- Can Interpretability Control Model Training?
+  - [meta]:
+    - date: 12/12/2025
+    - tags: [interpretability, mats]
+    - later: true
 - https://turntrout.com/self-fulfilling-misalignment -- Self-Fulfilling Misalignment Data Might Be Poisoning Our AI Model
   - [meta]:
     - date: 12/12/2025
@@ -3542,6 +3612,7 @@ title: are.na
   - [meta]:
     - date: 12/03/2025
     - tags: [compilers, scaling]
+    - later: true
 - https://blog.ezyang.com/2025/08/the-parallelism-mesh-zoo/ -- The Parallelism Mesh Zoo
   - [meta]:
     - date: 10/06/2025
@@ -3814,6 +3885,10 @@ title: are.na
 
 ## opinions
 
+- https://www.lesswrong.com/posts/HjHqxzn3rnH7T45hp/do-you-even-have-a-system-prompt-psa -- Do you even have a system prompt? (PSA/repo)
+  - [meta]:
+    - date: 12/12/2025
+    - tags: [llm]
 - https://archive.ph/nd6eo -- "Buy Nothing" Was Their Everything. [--]
   - [meta]:
     - date: 12/10/2025
@@ -3998,6 +4073,25 @@ title: are.na
 
 ## life is literature
 
+- https://internetprincess.substack.com/p/the-ends-of-empathy -- The end of empathy
+  - [meta]:
+    - date: 12/13/2025
+    - tags: [homelessness, commentary]
+    - later: true
+  - rtq's response to Fealey's The Invisible Man
+  - she did mention about how this complexed feeling wrt to seeing reactions to Fealey's essay on Reddit would make her struggled for a long time. In a sense, it is an uncomplicated feeling about grief and empathy.
+- https://archive.ph/FqPhn -- The Invisible Man [**]
+  - [meta]:
+    - date: 12/13/2025
+    - tags: [life, homelessness, empathy]
+    - pinned: true
+  - The officers are civil, but every encounter causes me apprehension and stress. I’m innocent of any wrongdoing, but the interaction between a citizen and law enforcement is unbalanced by nature.
+  - They are part of an apparatus that can take away a person’s freedom. I know it, and they certainly know it. When you’re homeless, you are even more vulnerable. You have no place to go, no kitchen table to sit at while you drink your beer, invisible to them. You’re always on their turf. It’s unnerving.
+- https://internetprincess.substack.com/p/machine-yearning -- Machine yearning
+  - [meta]:
+    - date: 12/13/2025
+    - tags: [writing]
+    - later: true
 - https://www.avabear.xyz/p/the-point-of-it-all -- The point of it all [**]
   - [meta]:
     - date: 12/11/2025
@@ -4006,7 +4100,7 @@ title: are.na
   - [meta]:
     - date: 12/11/2025
     - tags: [hedonia, friendship]
-  - > When I want to be transformed, I [chase my reading](https://www.overcomingbias.com/p/chase-your-readinghtml), to use Robin Hanson’s phrase. “Hunting has two main modes: searching and chasing,” Hanson writes. “With searching you look for something to chase. With chasing, in contrast, you have a focus of attention that drives your actions.” Searching is when I’m reading without a clear aim and continue to read even if I’m unsure about what the author is trying to achieve. Chasing is when I have a question I’m pursuing.
+  - > When I want to be transformed, I [chase my reading](https://www.overcomingbias.com/p/chase-your-readinghtml), to use Robin Hanson’s phrase. “Hunting has two main modes: searching and chasing,” Hanson writes. “With searching you look for something to chase. With chasing, in contrast, you have a focus of attention that drives your actions.” Searching is when I’m reading without a clear aim and continue to read even if I’m unsure about what the author is trying to achieve. Chasing is when I have a question I’m pursuing.
   - Though this is the most basic question there is, you’d be surprised by how many people have a total inability to articulate **what they like in people**.
   - That’s totally okay. There’s no need to sit down and make a list. If you’re in your teens or early 20s, the best way to search for people you like is to **meet a lot of people and see which ones you feel particularly alive in the presence of.**
   - If you *have* met a lot of people, it might be productive to try to find the commonalities between them. **So: take out a piece of paper, and write down the names of everyone in your life, past or present, who you felt extremely alive around.** What do they have in common?
@@ -4395,6 +4489,24 @@ title: are.na
 
 ## philosophy
 
+- https://www.astralcodexten.com/p/bounded-distrust -- Bounded Distrust [**]
+  - [meta]:
+    - date: 12/13/2025
+    - tags: [philosophy, truth]
+    - later: true
+  - Zvi's response: https://thezvi.substack.com/p/on-bounded-distrust
+- https://personal.lse.ac.uk/bradleyr/pdf/Ramsey.dialectica.pdf -- Ramsey's [[thoughts/representations|Representation]] Theorem
+  - [meta]:
+    - date: 12/13/2025
+    - tags: [representation, metaphysics]
+- https://libcom.org/article/reflections-war-simone-weil -- Reflection on War, Simone Weil
+  - [meta]:
+    - date: 12/12/2025
+    - tags: [war, existentialism]
+- https://www.youtube.com/watch?v=quIGiQNCPtE -- Walter Kaufmann on Oedipus & the Death of Tragedy (1974)
+  - [meta]:
+    - date: 12/12/2025
+    - tags: [love, tragic, prejudice]
 - https://en.wikipedia.org/wiki/Instrumental_convergence -- Instrumental convergence
   - [meta]:
     - date: 12/11/2025
@@ -4684,6 +4796,19 @@ title: are.na
 
 ## stream
 
+- https://www.hyperstitionai.com/ -- Hypersition
+  - [meta]:
+    - date: 12/12/2025
+    - tags: [generative, llm, poem]
+- https://forum.effectivealtruism.org/ -- EA Forum [**]
+  - [meta]:
+    - date: 12/12/2025
+    - tags: [longtermism, think tank, philosophy]
+    - pinned: true
+- https://100r.ca/site/index.html -- Hundredrabbits
+  - [meta]:
+    - date: 12/12/2025
+    - tags: [fruit]
 - https://gutenberg.org/ -- Gutenberg [**]
   - [meta]:
     - date: 12/09/2025
@@ -5083,6 +5208,14 @@ title: are.na
 
 ## video
 
+- https://www.youtube.com/watch?v=ZtpWTJ7Jsh8 -- George Hotz, I'll still crush you.
+  - [meta]:
+    - date: 12/12/2025
+    - tags: [conviction]
+- https://www.youtube.com/watch?v=WJS2YDZO-vc&t=503s -- Build To Last, Chris Lattner and Jeremy Howard
+  - [meta]:
+    - date: 12/12/2025
+    - tags: [longtermism, mojo]
 - https://www.youtube.com/watch?v=YrHGbCyAqOU -- Theories of Schrödinger's heterosexuality
   - [meta]:
     - date: 11/28/2025
@@ -5346,9 +5479,6 @@ title: are.na
   - [meta]:
     - date: 10/02/2025
     - tags: [truthsystems]
-
-## protocol
-
 - https://solarprotocol.net -- Solar Protocol
   - [meta]:
     - date: 08/03/2025
@@ -5364,6 +5494,14 @@ title: are.na
 
 ## arts
 
+- https://x.com/S_Conradi/status/1999588652255416630 -- The Hofstadter [[posts/Chaos|chaotic]] Heart Sequence
+  - [meta]:
+    - date: 12/13/2025
+    - tags: [generative arts, algorithmic]
+- https://hotlines.rime.ai/
+  - [meta]:
+    - date: 12/12/2025
+    - tags: [agi, creative, zine]
 - https://www.dezeen.com/2025/12/11/grand-ring-osaka-expo-2025-burned-fuel -- Most of world's largest wooden structure The Grand Ring to be burned as "chips for fuel"
   - [meta]:
     - date: 12/12/2025
@@ -5421,6 +5559,23 @@ title: are.na
 
 ## resources
 
+- https://en.wikipedia.org/wiki/Exit,_Voice,_and_Loyalty_Model -- Exit, Voice, and Loyalty Model
+  - [meta]:
+    - date: 12/13/2025
+    - tags: [politics, model]
+  - Albert Hirschman's theory
+  - $N = \{ \text{Citizen}, \text{Government} \}$
+  - Citizen moves first
+  - three actions: $\{ \text{exit}, \text{voice}, \text{loyalty} \}$
+  - if $\text{voice}$ then $\text{Government}$ can either $\text{respond}$ or $\text{ignore}$
+    - if $\text{Government}$ choose $\text{ignore}$ then $\text{Citizen}$ can choose either $\text{exit}$ or $\text{loyalty}$
+  - Formally:
+    - history set: $$H = \{ \emptyset, (\text{exit}), (\text{voice}), (\text{loyalty}), (\text{voice, respond}), (\text{voice, ignore}), (\text{voice, ignore, exit}), (\text{voice, ignore, loyalty}) \}$$
+    - terminal set: $$Z = \{ (\text{exit}), (\text{loyalty}), (\text{voice, respond}), (\text{voice, ignore}), (\text{voice, ignore, exit}), (\text{voice, ignore, loyalty}) \}$$
+    - This is given by player function: $$P(\emptyset ) = \text{Citizen}, P(\text{voice}) = \text{Government}, P(\text{voice, ignore}) = \text{Citizen}$$
+    - utility function of $\text{Citizen}$: $u_{C}(\text{exit}) = E$ $u_{C}(\text{loyalty}) = 0$, $u_{C}(\text{voice, respond}) = 1 - c$, $u_{C}(\text{voice,ignore,exit}) = E - c$, $u_{C}(\text{voice,ignore,loyalty}) = 0 - c$
+    - i.e: _citizen_ incurs a cost of $c$ whenever they choose to raise their $\text{voice}$ and when _government_ respond then payout = 1
+    - payoff function of $\text{Government}$: $u_{G}(\text{exit}) = 1$ $u_{G}(\text{loyalty}) = 1 + L$, $u_{G}(\text{voice, respond}) = L$, $u_{G}(\text{voice,ignore,exit}) = 1$, $u_{G}(\text{voice,ignore,loyalty}) = 1 + L$
 - https://castle.princeton.edu/optimallearning/ -- Optimal Learning
   - [meta]:
     - date: 12/11/2025
@@ -5672,6 +5827,10 @@ title: are.na
 
 ## technical
 
+- https://wiki.xxiivv.com/site/rewriting.html -- Rewriting languages are typically made of rules and an initial state [**]
+  - [meta]:
+    - date: 12/12/2025
+    - tags: [language design, fsm]
 - https://fabiensanglard.net/cuda/ -- History of NVIDIA stream multiprocessor
   - [meta]:
     - date: 12/12/2025
@@ -6251,6 +6410,18 @@ title: are.na
 - [meta]:
   - view: list
 
+- https://arxiv.org/abs/2512.09742
+  - [meta]:
+    - date: 12/13/2025
+    - tags: [alignment, contrastive]
+  - Effects of contrastive steering in actions, based on [[thoughts/sparse autoencoder|SAE]] features
+  - What does this say about grokking in general?
+  - see also: https://x.com/OwainEvans_UK/status/1999172920506269783
+- https://arxiv.org/abs/2511.21689
+  - [meta]:
+    - date: 12/13/2025
+    - tags: [tools, benchmark]
+    - later: true
 - https://www.nature.com/articles/s41598-023-38351-y -- Forecasting the progression of human civilization on the Kardashev Scale through 2060 with a machine learning approach
   - [meta]:
     - date: 12/11/2025

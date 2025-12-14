@@ -1,6 +1,6 @@
 ---
 category: martin scorsese
-date: "2024-02-07"
+date: 2024-02-07
 description: three hours of unchecked id—excess as religion, scorsese abandoning moral judgment to let you marinate in the depravity until you're complicit.
 director: Martin Scorsese
 id: the-wolf-of-wall-street
@@ -10,7 +10,6 @@ status: recurring
 studio: martin scorsese
 tags:
   - movies
-  - dir/martin scorsese
 title: The Wolf of Wall Street
 year: 2013
 ---

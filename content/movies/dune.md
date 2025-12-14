@@ -1,6 +1,6 @@
 ---
 category: buster
-date: "2024-02-07"
+date: 2024-02-07
 description: desert prophecy filmed like religious text—villeneuve translating herbert's ecology and imperialism into sand-scoured frames, politics as planetary inev itability.
 director: Denis Villeneuve
 id: dune
@@ -9,9 +9,7 @@ posters: "[[movies/posters/dune.jpg]]"
 status: recurring
 studio: warner bros
 tags:
-  - movies
   - buster
-  - dir/denis villeneuve
 title: Dune
 year: 2021
 ---

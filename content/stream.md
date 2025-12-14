@@ -38,11 +38,20 @@ metadata:
     letter        = "a".."z" ;
     digit         = "0".."9" ;
     character     = ? any printable ascii except newline ? ;
-modified: 2025-12-03 09:33:42 GMT-05:00
+modified: 2025-12-12 18:37:07 GMT-05:00
 tags:
   - fruit
   - evergreen
 title: stream
+---
+
+- [meta]:
+  - date: 2025-12-12 18:36:27 GMT-05:00
+  - tags:
+    - process
+
+![[thoughts/Agency#seven ways to become unstoppably agentic]]
+
 ---
 
 ## on learning through presence
@@ -60,7 +69,7 @@ title: stream
 
 > Most importantly, you learn that the ability and desire to care is built through presence.
 
-I think 
+I think
 
 ---
 

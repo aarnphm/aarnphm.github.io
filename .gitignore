@@ -5,7 +5,10 @@ dist
 public
 prof
 tsconfig.tsbuildinfo
-.obsidian
+content/.obsidian
+!./content/.obsidian/plugins/obsidian-heading-gh/
+!./content/.obsidian/plugins/obsidian-metadata/
+!./content/.obsidian/plugins/obsidian-flit/
 .quartz-cache
 .replit
 replit.nix
