@@ -2,10 +2,11 @@
 date: "2025-12-13"
 description: and logical coherency
 id: rationality
-modified: 2025-12-13 17:24:37 GMT-05:00
+modified: 2025-12-14 19:11:26 GMT-05:00
 seealso:
   - "[[thoughts/functionalism]]"
 socials:
+  jcarlsmith: https://joecarlsmith.com/category/rationality/
   lw: https://www.lesswrong.com/w/lesswrong-canon-on-rationality
 tags:
   - pattern
