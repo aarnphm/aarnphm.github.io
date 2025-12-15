@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2025-12-14 02:44:41 GMT-05:00
+modified: 2025-12-14 19:12:40 GMT-05:00
 permalinks:
   - /website
   - /tweets
@@ -838,6 +838,10 @@ title: are.na
 
 ## people
 
+- https://maxbo.me/
+  - [meta]:
+    - date: 12/14/2025
+    - tags: [web artist]
 - https://plato.stanford.edu/entries/rawls/ -- John Rawls
   - [meta]:
     - date: 12/14/2025
@@ -4128,7 +4132,7 @@ title: are.na
   - [meta]:
     - date: 11/11/2025
     - tags: [culture]
-- https://clarkesworldmagazine.com/kritzer_05_23 -- Better living through algorithms
+- https://clarkesworldmagazine.com/kritzer_05_23 -- Better living through algorithms [**]
   - [meta]:
     - date: 10/23/2025
     - tags: [short, literature]
@@ -4796,6 +4800,12 @@ title: are.na
 
 ## stream
 
+- https://joecarlsmith.com/category/crazy-train/ -- Crazy Train
+  - [meta]:
+    - date: 12/14/2025
+    - tags: [quantitative, philosophy]
+    - later: true
+  - Bayesian-oriented, scope-sensitive philosophy—how big/strange the world can be, and much could be at _stake_ in our impac on it
 - https://www.hyperstitionai.com/ -- Hypersition
   - [meta]:
     - date: 12/12/2025
@@ -6410,6 +6420,20 @@ title: are.na
 - [meta]:
   - view: list
 
+- https://arxiv.org/abs/2502.11089
+  - [meta]:
+    - date: 12/14/2025
+    - tags: [inference]
+  - see also [[lectures/430/notes#native sparse attention]]
+- https://arxiv.org/abs/2501.00070
+  - [meta]:
+    - date: 12/14/2025
+    - tags: [interpretability]
+    - later: true
+- https://arxiv.org/abs/2310.16410
+  - [meta]:
+    - date: 12/14/2025
+    - tags: [distillation]
 - https://arxiv.org/abs/2512.09742
   - [meta]:
     - date: 12/13/2025

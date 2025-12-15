@@ -9,7 +9,7 @@ aliases:
 date: "2025-10-04"
 description: choosing to give your full, continuously.
 id: love
-modified: 2025-12-09 15:08:17 GMT-05:00
+modified: 2025-12-14 18:47:21 GMT-05:00
 socials:
   essay: "[[posts/love|mutual becoming]]"
   hermeneutics: "[[posts/romantic epistemology|romantic epistemology]]"
@@ -262,6 +262,7 @@ _so I made this list for [Malaika](https://malaikaaiyar.me/)_
 - https://internetprincess.substack.com/p/against-narrative
 - https://velvetnoise.substack.com/p/some-parts-of-you-only-emerge-for
 - https://www.edwardluperart.com/post/love-and-fear-on-the-musashi-plain-kajita-hanko-s-masterpiece-from-the-tales-of-ise (M sent me this actually)
+- https://pmc.ncbi.nlm.nih.gov/articles/PMC4191624/pdf/emss-59635.pdf -- Neuroreductionism about Sex and Love
 
 ## hw
 
