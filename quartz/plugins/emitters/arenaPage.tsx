@@ -216,6 +216,44 @@ async function emitSearchIndex(ctx: BuildCtx, searchIndex: ArenaSearchIndex) {
   })
 }
 
+async function processChannelJson(ctx: BuildCtx, channel: ArenaChannel) {
+  const slug = joinSegments("arena", channel.slug, "json") as FullSlug
+  const baseUrl = ctx.cfg.configuration.baseUrl ?? "aarnphm.xyz"
+
+  const output: Record<string, Record<string, unknown>> = {}
+
+  for (const block of channel.blocks) {
+    const url = block.url ?? (block.internalSlug ? `https://${baseUrl}/${block.internalSlug}` : null)
+    if (!url) continue
+
+    const entry: Record<string, unknown> = {}
+
+    if (block.title) entry.title = block.title
+    if (block.tags && block.tags.length > 0) entry.tags = block.tags
+    if (block.metadata?.date) entry.date = block.metadata.date
+    if (block.metadata?.accessed) entry.accessed = block.metadata.accessed
+    if (block.pinned) entry.pinned = true
+    if (block.later) entry.later = true
+    if (block.highlighted) entry.highlighted = true
+
+    if (block.metadata) {
+      const skip = new Set(["date", "accessed", "tags", "pinned", "later"])
+      for (const [k, v] of Object.entries(block.metadata)) {
+        if (!skip.has(k) && v) entry[k] = v
+      }
+    }
+
+    output[url] = entry
+  }
+
+  return write({
+    ctx,
+    content: JSON.stringify(output, null, 2),
+    slug,
+    ext: "",
+  })
+}
+
 export const ArenaPage: QuartzEmitterPlugin<Partial<FullPageLayout>> = (userOpts) => {
   const filteredHeader = sharedPageComponents.header.filter((component) => {
     const name = component.displayName || component.name || ""
@@ -263,6 +301,11 @@ export const ArenaPage: QuartzEmitterPlugin<Partial<FullPageLayout>> = (userOpts
 
         for (const channel of file.data.arenaData.channels) {
           yield processChannel(ctx, channel, file.data, allFiles, channelOpts, resources)
+
+          const jsonEnabled = channel.metadata?.json === "true" || channel.metadata?.json === true
+          if (jsonEnabled) {
+            yield processChannelJson(ctx, channel)
+          }
         }
 
         // Build and emit search index JSON after all channels are processed
@@ -291,6 +334,11 @@ export const ArenaPage: QuartzEmitterPlugin<Partial<FullPageLayout>> = (userOpts
 
         for (const channel of file.data.arenaData.channels) {
           yield processChannel(ctx, channel, file.data, allFiles, channelOpts, resources)
+
+          const jsonEnabled = channel.metadata?.json === "true" || channel.metadata?.json === true
+          if (jsonEnabled) {
+            yield processChannelJson(ctx, channel)
+          }
         }
 
         // Build and emit search index JSON after all channels are processed

@@ -831,6 +831,16 @@ export default {
         headers: { Allow: "GET, HEAD, OPTIONS" },
       })
 
+    // arena channel json routes
+    const arenaJsonMatch = url.pathname.match(/^\/arena\/([^/]+)\/json$/)
+    if (arenaJsonMatch) {
+      const originResp = await env.ASSETS.fetch(request)
+      return withHeaders(originResp, {
+        "Content-Type": "application/json",
+        ...apiHeaders,
+      })
+    }
+
     // PDF redirect to R2 / LFS
     if (url.pathname.endsWith(".pdf")) {
       const rawUrl = `https://raw.githubusercontent.com/aarnphm/aarnphm.github.io/refs/heads/main/content${url.pathname}`

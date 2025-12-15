@@ -1,0 +1,4 @@
+{
+  "retryLimit": 999,
+  "tailLines": 200
+}

@@ -2,7 +2,11 @@
 date: "2025-10-17"
 description: Deploying DeepSeek R1
 id: notes
-modified: 2025-12-10 16:15:28 GMT-05:00
+modified: 2025-12-15 17:01:53 GMT-05:00
+seealso:
+  - "[[thoughts/Attention#Multi-head Latent Attention]]"
+  - "[[thoughts/LLMs]]"
+  - "[[lectures/430/mla-rope-proofs|MLA proof]]"
 slides: true
 tags:
   - workshop
@@ -10,8 +14,6 @@ title: supplement to 0.430
 transclude:
   title: false
 ---
-
-see also: [[thoughts/Attention#Multi-head Latent Attention]], [[thoughts/LLMs]], [[lectures/430/mla-rope-proofs|MLA proof]]
 
 > the goal is run DeepSeek generations of models "locally":
 >
@@ -42,7 +44,7 @@ s/o: vLLM, newsystems
 
 ## standard attention memory
 
-the problem: traditional multi-head attention stores separate K, V matrices for each head. for a 671B model serving long contexts, the KV cache becomes the bottleneck.
+traditional multi-head attention stores separate K, V matrices for each head. for a 671B model serving long contexts, the KV cache becomes the bottleneck.
 
 ```
 per layer: n_heads × seq_len × head_dim × 2 (K and V)
@@ -331,9 +333,9 @@ combined (union of all branches):
 ■ = compute attention    □ = skip entirely
 ```
 
-why blocks? tensor cores need continuous memory access. scattered token reads kill throughput. blocks align with GPU hardware (FlashAttention compatibility).
+tensor cores need continuous memory access—scattered token reads kill throughput. blocks align with GPU hardware (FlashAttention compatibility).
 
-> use cheap compressed attention scores to guide expensive fine-grained selection. don't compute full $O(n^2)$ to decide what to compute.
+cheap compressed attention scores guide expensive fine-grained selection—don't compute full $O(n^2)$ to decide what to compute.
 
 **training from scratch**:
 
@@ -380,11 +382,7 @@ stage 2: fine-grained attention (expensive)
 └─────────────────────────────────────────┘
 ```
 
-**why this works**:
-
-- stage 1 is $O(n^2)$ but cheap: FP8, limited heads (2-4), low precision
-- stage 2 is expensive but sparse: $O(n \times k)$ where k=2048
-- total cost dominated by stage 2, which is now 16× smaller (2048 vs 32k)
+stage 1 runs $O(n^2)$ but cheap: FP8, limited heads (2-4), low precision. stage 2 is expensive but sparse: $O(n \times k)$ where k=2048. total cost dominated by stage 2, now 16× smaller (2048 vs 32k).
 
 **FP8 precision** (e4m3 and e5m2 formats):
 
@@ -400,11 +398,7 @@ e5m2 (5-bit exponent, 2-bit mantissa):
 └─ use: gradients, dynamic range scenarios
 ```
 
-why FP8 for indexer?
-
-- 2× faster matmul vs BF16 (tensor core throughput)
-- 2× less memory bandwidth (critical for attention)
-- acceptable error for importance ranking (not final output)
+FP8 for indexer: 2× faster matmul vs BF16, 2× less memory bandwidth, acceptable error for importance ranking (not final output).
 
 **limited indexer heads** (2-4 vs 128 full heads):
 
@@ -450,12 +444,7 @@ FP8 GEMM library powering deepseek-v3/r1 training and inference.
 **naming convention**: $D = C + A \times B$ (matrix multiply-accumulate)
 **layout**: NT (A non-transposed, B transposed)
 
-**key features**:
-
-1. **dense GEMM**: standard matrix multiplication
-2. **MoE grouped GEMM**: multiple expert matrices
-3. **fine-grained scaling**: per-block quantization
-4. **JIT compilation**: runtime kernel optimization
+dense GEMM (standard matrix multiplication), MoE grouped GEMM (multiple expert matrices), fine-grained scaling (per-block quantization), JIT compilation (runtime kernel optimization).
 
 **quantization strategy**:
 
@@ -491,15 +480,7 @@ tokens routed to each expert: [t0_count, t1_count, ...]
 
 ## deepep
 
-expert-parallel communication library. the core primitive for distributing experts across GPUs.
-
-**the problem**:
-
-- 256 experts won't fit on one GPU
-- tokens need to route to experts on different devices
-- requires efficient cross-GPU communication
-
-**solution**: two-phase communication
+expert-parallel communication library for distributing 256 experts across GPUs. two-phase communication:
 
 **phase 1: dispatch**
 
@@ -586,7 +567,7 @@ buffer lifecycle:
 └─────────────────────────────────────────────┘
 ```
 
-why persistent buffers? malloc/free during forward pass kills performance. pre-allocate once, reuse across layers.
+malloc/free during forward pass kills performance—pre-allocate once, reuse across layers.
 
 **SM allocation strategy**:
 
@@ -607,14 +588,14 @@ H200 has 132 SMs total. deepep typically uses 24 SMs for communication:
 ```
 without overlap:
 ───│ shared expert │──│ all-to-all │──│ routed expert │──│ all-to-all │──
-   └──────────────┘  └────────────┘  └───────────────┘  └────────────┘
+   └───────────────┘  └────────────┘  └───────────────┘  └────────────┘
                      idle compute    doing work         idle compute
 
 with deepep overlap:
 ───│ shared expert │──────────────────│ routed expert │──────────────────
    │               │                  │               │
-   │  all-to-all  │                  │  all-to-all  │
-   └──────────────┘                  └───────────────┘
+   │  all-to-all   │                  │  all-to-all   │
+   └───────────────┘                  └───────────────┘
     dispatch recv overlaps           combine send overlaps
     with shared compute              with next layer
 ```
@@ -645,29 +626,13 @@ vllm automatically:
 - overlaps communication with shared expert compute
 - handles multi-node setups via NCCL fallback
 
-**common issues**:
-
-**high all-to-all latency**:
-
-- check NVLink topology: `nvidia-smi topo -m` (should show all NV12 or NV18)
-- verify P2P enabled: `nvidia-smi nvlink -s` (all links UP)
-- profile with nsys: `nsys profile --trace=cuda,nvtx,osrt`
-
-**OOM during dispatch**:
-
-- reduce buffer size: `DEEPEP_BUFFER_SIZE=134217728` (128 MB)
-- lower concurrent layers: vllm batches MoE layers when memory tight
-
-**poor overlap**:
-
-- shared expert too small (< 5ms compute): overlap doesn't help
-- increase batch size: more compute to hide communication
+debugging: high all-to-all latency → check NVLink topology (`nvidia-smi topo -m`, should show NV12 or NV18), verify P2P enabled (`nvidia-smi nvlink -s`), profile with nsys. OOM during dispatch → reduce buffer size to 128 MB, lower concurrent layers. poor overlap → shared expert too small (<5ms compute), increase batch size.
 
 ## eplb
 
 expert parallelism load balancer. solves the problem: different experts get different token loads.
 
-**the imbalance problem**:
+the imbalance:
 
 ```
 without load balancing:
@@ -677,7 +642,7 @@ GPU 1: E1 ███████████ 110%  GPU 3: E5 ████░░�
                               bottleneck: some GPUs idle while others overloaded
 ```
 
-why does this happen? tokens route via learned gating network. some experts become "specialists" (high load), others get fewer tokens. the router isn't aware of hardware constraints.
+tokens route via learned gating network—some experts become "specialists" (high load), others get fewer tokens. the router isn't aware of hardware constraints.
 
 **concrete example** (DeepSeek-V3, coding workload, 256 experts):
 
@@ -910,7 +875,7 @@ with EPLB:
 - latency (p99): 52 ms (1.6× faster)
 ```
 
-the key: eliminate tail latency by balancing the slowest GPU.
+eliminate tail latency by balancing the slowest GPU.
 
 **integration**:
 
@@ -936,7 +901,7 @@ replicas = stats['expert_replicas']
 
 prefill-decode disaggregation. separate processing phases run on independent GPU pools.
 
-**motivation**: different latency requirements
+different latency requirements:
 
 ```
 prefill:  compute KV cache for input tokens
@@ -1068,7 +1033,7 @@ the disaggregation isn't just for massive clusters. it's worthwhile even on a si
 
 hide communication cost behind computation using microbatch pipelining.
 
-**the problem**: expert parallelism requires all-to-all communication
+expert parallelism requires all-to-all communication:
 
 ```
 naive execution:
@@ -1076,7 +1041,7 @@ naive execution:
             idle             gpu busy      idle
 ```
 
-**solution**: overlap with two microbatches
+overlap with two microbatches:
 
 **prefill phase**:
 
@@ -1092,7 +1057,7 @@ timeline:
 
 alternate between microbatch A and B. while computing A, communicate B's all-to-all.
 
-**key requirement**: balance attention load across microbatches. if A has 2× tokens of B, less overlap benefit.
+balance attention load across microbatches—if A has 2× tokens of B, less overlap benefit.
 
 **decode phase**: 5-stage pipeline
 
@@ -1113,9 +1078,7 @@ stage 5: attention step 2
          (scores × v, output projection)
 ```
 
-**benefit**: communication becomes nearly free when compute is sufficient to hide it. on deepseek-v3, reduces effective communication cost by ~60%.
-
-**practical consideration**: requires careful tensor lifecycle management. vllm and sglang handle this automatically with their deepep integration.
+communication becomes nearly free when compute is sufficient to hide it—reduces effective communication cost by ~60% on deepseek-v3. requires careful tensor lifecycle management; vllm and sglang handle this automatically with their deepep integration.
 
 ## putting it together: 8xH200 deployment
 
@@ -1137,106 +1100,54 @@ vllm serve deepseek-ai/DeepSeek-V3 \
   --trust-remote-code
 ```
 
-**what each flag does**:
+| flag                                      | effect                                                                                                                     |
+| ----------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| `VLLM_ALL2ALL_BACKEND=deepep_low_latency` | optimized expert communication ([docs](https://github.com/vllm-project/vllm/blob/main/docs/design/moe_kernel_features.md)) |
+| `VLLM_USE_DEEP_GEMM=1`                    | FP8 GEMM kernels                                                                                                           |
+| `--tensor-parallel-size 1`                | no TP (preserves MLA benefits)                                                                                             |
+| `--enable-expert-parallel`                | distribute 256 experts across 8 GPUs                                                                                       |
+| `--data-parallel-size 8`                  | multiple concurrent requests                                                                                               |
+| `--enable-chunked-prefill`                | process long inputs in chunks                                                                                              |
+| `--max-num-batched-tokens 8192`           | batch size for throughput                                                                                                  |
 
-- `VLLM_ALL2ALL_BACKEND=deepep_low_latency`: use optimized expert communication
-  - see also: https://github.com/vllm-project/vllm/blob/main/docs/design/moe_kernel_features.md
-- `VLLM_USE_DEEP_GEMM=1`: enable FP8 GEMM kernels
-- `--tensor-parallel-size 1`: no TP (preserves MLA benefits)
-- `--enable-expert-parallel`: distribute 256 experts across 8 GPUs
-- `--data-parallel-size 8`: support multiple concurrent requests
-- `--enable-chunked-prefill`: process long inputs in chunks
-- `--max-num-batched-tokens 8192`: batch size for throughput
+memory per GPU: ~85 GB weights (FP8) + ~4 GB KV cache (MLA compressed) + ~10 GB activations = ~100 GB total (fits 141 GB H200).
 
-**memory breakdown** (approximate per GPU):
+| metric                 | target                   |
+| ---------------------- | ------------------------ |
+| prefill throughput     | 5000-7000 tok/s per GPU  |
+| decode throughput      | 1500-2000 tok/s per GPU  |
+| TPOT                   | 40-60ms at moderate load |
+| expert load imbalance  | <20%                     |
+| GPU utilization        | 70-85%                   |
+| communication overhead | <15% of total time       |
 
-```
-model weights (FP8):     ~85 GB
-KV cache (per request):  ~4 GB (with MLA compression)
-activation memory:       ~10 GB
-total per GPU:           ~100 GB (fits in 141 GB H200)
-```
-
-**expected performance**:
-
-- prefill throughput: 5000-7000 tokens/s per GPU
-- decode throughput: 1500-2000 tokens/s per GPU
-- TPOT (time per output token): 40-60ms at moderate load
-
-**monitoring**:
-
-```python
-# watch for these metrics
-expert_load_imbalance: should stay < 20%
-gpu_utilization: target 70-85%
-kv_cache_usage: monitor per-request
-communication_overhead: should be < 15% of total time
-```
-
-knobs:
-
-1. `--max-num-batched-tokens`: higher = more throughput, more memory
-2. `--max-model-len`: longer contexts = larger KV cache
-3. `--gpu-memory-utilization`: default 0.9, adjust if OOM
-4. expert replication via EPLB: automatic, but can profile loads
-
-**common issues**:
-
-**OOM during prefill**:
-
-- reduce `--max-num-batched-tokens`
-- enable chunked prefill (already set)
-- lower `--max-model-len` if not using full context
-
-**high latency**:
-
-- check expert load balance (some GPUs idle?)
-- reduce concurrent requests
-- verify NVLink topology (should be all-to-all)
-
-**low throughput**:
-
-- increase batch size
-- check if communication-bound (profile with nsys)
-- verify deepgemm is active (check logs)
-
-**next steps**:
-
-1. **baseline**: run with defaults, measure your workload
-2. **profile**: use `nsys profile` to find bottlenecks
-3. **tune**: adjust batch sizes and memory settings
-4. **scale**: if need more capacity, move to multi-node with PD disaggregation
-
-## references and resources
-
-- DeepSeek-V3 Technical Report: https://arxiv.org/abs/2412.19437
-- FlashMLA Repository: https://github.com/deepseek-ai/FlashMLA
-- vLLM Documentation: https://docs.vllm.ai/
-- vLLM DeepSeek Recipes: https://docs.vllm.ai/projects/recipes/en/latest/DeepSeek/
-- SGLang DeepSeek Usage: https://docs.sglang.ai/basic_usage/deepseek.html
+tuning: `--max-num-batched-tokens` (throughput vs memory), `--max-model-len` (context vs KV cache), `--gpu-memory-utilization` (default 0.9). debugging with `nsys profile`.
 
 ## model variants
 
-- **DeepSeek-V3** (Dec 2024): Base 671B model with MLA + DeepSeekMoE
-- **DeepSeek-R1** (Jan 2025): Reasoning model with RL training
-- **DeepSeek-V3.1** (Feb 2025): Improved version with optimizations
-- **DeepSeek-V3.2-Exp** (Sep 2025): Adds sparse attention (DSA) for long contexts
+| model             | date     | notes                        |
+| ----------------- | -------- | ---------------------------- |
+| DeepSeek-V3       | Dec 2024 | base 671B, MLA + DeepSeekMoE |
+| DeepSeek-R1       | Jan 2025 | reasoning model, RL training |
+| DeepSeek-V3.1     | Feb 2025 | optimizations                |
+| DeepSeek-V3.2-Exp | Sep 2025 | adds sparse attention (DSA)  |
 
-each variant requires slightly different configuration in vLLM. check the recipes for specifics.
+## hardware
 
-## hardware requirements
+| tier        | config                 | notes           |
+| ----------- | ---------------------- | --------------- |
+| minimum     | 8×H100 (80GB) + NVLink |                 |
+| recommended | 8×H200 (141GB)         | long context    |
+| fallback    | 16×A100                | requires tuning |
 
-**minimum for V3 inference:**
+optimal: Hopper (H100/H200) for FlashMLA + DeepGEMM, full NVLink (NV12/NV18), CUDA 12.3+.
 
-- 8×H100 (80GB) with NVLink
-- 8×H200 (141GB) recommended for long context
-- 16×A100 works but requires more careful tuning
+## references
 
-**optimal:**
-
-- Hopper architecture (H100/H200) for FlashMLA and DeepGEMM
-- Full NVLink topology (NV12 or NV18)
-- CUDA 12.3+ for all optimizations
+- [DeepSeek-V3 paper](https://arxiv.org/abs/2412.19437)
+- [FlashMLA](https://github.com/deepseek-ai/FlashMLA)
+- [vLLM docs](https://docs.vllm.ai/) / [DeepSeek recipes](https://docs.vllm.ai/projects/recipes/en/latest/DeepSeek/)
+- [SGLang DeepSeek](https://docs.sglang.ai/basic_usage/deepseek.html)
 
 ## `<|endoftext|>`
 
