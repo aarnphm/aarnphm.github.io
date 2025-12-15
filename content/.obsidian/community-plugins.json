@@ -10,5 +10,7 @@
   "obsidian-metadata",
   "hot-reload",
   "obsidian-sidenotes",
-  "obsidian-tikzjax"
+  "obsidian-tikzjax",
+  "obsidian-quartz-runner",
+  "quartz-runner"
 ]

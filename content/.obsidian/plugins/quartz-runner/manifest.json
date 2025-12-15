@@ -1,0 +1,10 @@
+{
+	"id": "quartz-runner",
+	"name": "Quartz Runner",
+	"version": "1.0.0",
+	"minAppVersion": "0.15.0",
+	"description": "start quartz dev (quartz/scripts/dev.ts) from the command palette",
+	"author": "aarnphm",
+	"authorUrl": "https://aarnphm.xyz",
+	"isDesktopOnly": true
+}

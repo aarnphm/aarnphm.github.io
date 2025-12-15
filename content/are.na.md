@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2025-12-14 19:12:40 GMT-05:00
+modified: 2025-12-15 17:12:44 GMT-05:00
 permalinks:
   - /website
   - /tweets
@@ -143,6 +143,22 @@ title: are.na
 - [meta]:
   - view: list
 
+- https://x.com/jessemhan/status/2000659168773202340 -- mechanized proof for definition of a mathematicians to be then widen
+  - [meta]:
+    - date: 12/15/2025
+    - tags: [mathematics, terrence tao]
+- https://x.com/LydNot/status/1999219527993938318 -- Emergent misalignment argues incompetent and evil are more closely aligned
+  - [meta]:
+    - date: 12/15/2025
+    - tags: [alignment]
+- https://x.com/LydNot/status/1999252701574730016 -- Alignment problem is a predictability problem
+  - [meta]:
+    - date: 12/15/2025
+    - tags: [alignment]
+- https://x.com/JeffDean/status/1998453396001657217
+  - [meta]:
+    - date: 12/14/2025
+    - tags: [distillation, training]
 - https://x.com/francoisfleuret/status/1999736997611499899
   - [meta]:
     - date: 12/14/2025
@@ -416,6 +432,10 @@ title: are.na
 
 ## website
 
+- https://gds-viewer.tinytapeout.com/?pdk=sky130A&model=https%3A%2F%2Fwilliamzhang20.github.io%2FTPUv2%2F%2Ftinytapeout.oas -- TinyTPUv2
+  - [meta]:
+    - date: 12/15/2025
+    - tags: [hardware]
 - https://fugitivetexts.net/acts/
   - [meta]:
     - date: 12/12/2025
@@ -838,6 +858,16 @@ title: are.na
 
 ## people
 
+- https://substack.com/@befriendjamin -- Befriendjamin
+  - [meta]:
+    - date: 12/15/2025
+    - tags: [fruit]
+  - reddit: https://www.reddit.com/user/Befriendjamin
+- https://www.alexaltair.com/ -- Alex Altair
+  - [meta]:
+    - date: 12/15/2025
+    - tags: [researcher, alignment]
+  - lw: https://www.lesswrong.com/users/alex_altair
 - https://maxbo.me/
   - [meta]:
     - date: 12/14/2025
@@ -4265,7 +4295,7 @@ title: are.na
   - [meta]:
     - date: 04/09/2025
     - tags: [being, growth]
-- https://aeon.co/essays/simone-de-beauvoirs-authentic-love-is-a-project-of-equals -- Simone de Beavoir's "Love is a joint project"
+- https://aeon.co/essays/simone-de-beauvoirs-authentic-love-is-a-project-of-equals -- Simone de Beavoir's "Love is a joint project" [**]
   - [meta]:
     - date: 04/09/2025
     - tags: [love, philosophy]
@@ -4499,6 +4529,7 @@ title: are.na
     - tags: [philosophy, truth]
     - later: true
   - Zvi's response: https://thezvi.substack.com/p/on-bounded-distrust
+  - How to Bounded distrust: https://thezvi.substack.com/p/how-to-bounded-distrust
 - https://personal.lse.ac.uk/bradleyr/pdf/Ramsey.dialectica.pdf -- Ramsey's [[thoughts/representations|Representation]] Theorem
   - [meta]:
     - date: 12/13/2025
@@ -4800,6 +4831,10 @@ title: are.na
 
 ## stream
 
+- https://writings.stephenwolfram.com/category/ruliology/ -- Ruliology
+  - [meta]:
+    - date: 12/15/2025
+    - tags: [shapes, behaviour]
 - https://joecarlsmith.com/category/crazy-train/ -- Crazy Train
   - [meta]:
     - date: 12/14/2025
@@ -4893,6 +4928,7 @@ title: are.na
     - date: 11/12/2025
     - tags: [blogroll]
     - pinned: true
+  - https://inkhaven.onrender.com/
 - https://www.ribbonfarm.com/ -- Ribbonfarm [**]
   - [meta]:
     - date: 11/11/2025
@@ -5550,7 +5586,7 @@ title: are.na
   - [meta]:
     - date: 11/20/2025
     - tags: [drawing]
-- https://www.edwardluperart.com/post/love-and-fear-on-the-musashi-plain-kajita-hanko-s-masterpiece-from-the-tales-of-ise -- Love and Fear on the Musashi Plain: Kajita Hanko's Masterpiece from the Tales of Ise
+- https://www.edwardluperart.com/post/love-and-fear-on-the-musashi-plain-kajita-hanko-s-masterpiece-from-the-tales-of-ise -- Love and Fear on the Musashi Plain: Kajita Hanko's Masterpiece from the Tales of Ise [**]
   - [meta]:
     - date: 11/20/2025
     - tags: [drawing]
@@ -5837,6 +5873,10 @@ title: are.na
 
 ## technical
 
+- https://github.com/databricks/megablocks -- Megablocks
+  - [meta]:
+    - date: 12/15/2025
+    - tags: [training, moe]
 - https://wiki.xxiivv.com/site/rewriting.html -- Rewriting languages are typically made of rules and an initial state [**]
   - [meta]:
     - date: 12/12/2025
@@ -6419,7 +6459,134 @@ title: are.na
 
 - [meta]:
   - view: list
+  - json: true
 
+- https://2012.cccg.ca/papers/paper67.pdf -- Packing Trominoes is NP-Complete, #P-Complete and ASP-Complete
+  - [meta]:
+    - date: 12/15/2025
+    - tags: [cs, bin packing]
+    - later: true
+- https://arxiv.org/abs/2505.17120
+  - [meta]:
+    - date: 12/14/2025
+    - tags: [interpretability, recursion]
+    - later: true
+- https://arxiv.org/abs/2505.15813
+  - [meta]:
+    - date: 12/14/2025
+    - tags: [in-context learning, meta-learning]
+    - later: true
+- https://arxiv.org/abs/2206.00759
+  - [meta]:
+    - date: 12/14/2025
+    - tags: [interpretability, theory, classifier]
+    - later: true
+- https://arxiv.org/abs/2507.05526
+  - [meta]:
+    - date: 12/14/2025
+    - tags: [interpretability, causal reasoning]
+    - later: true
+- https://arxiv.org/abs/2505.12075
+  - [meta]:
+    - date: 12/14/2025
+    - tags: [in-context learning, behaviour]
+    - later: true
+- https://arxiv.org/abs/2411.01783
+  - [meta]:
+    - date: 12/14/2025
+    - tags: [inference, context parallelism]
+    - later: true
+- https://arxiv.org/abs/1803.04585
+  - [meta]:
+    - date: 12/14/2025
+    - tags: [law, cs, economics]
+    - later: true
+  - Goodhart's Law: failure modes for overoptimizastion of systems on the basis of metrics, to determine whether or not further optimization is either ineffective or ==harmful==
+  - Variants of Goodhart's Law:
+    - Regressional Goodhart: select for true goal and the difference between the proxy and the goal
+      $$
+      M = G + \operatoname{normal}(\mu, \sigma^2)
+      $$
+    - Extremal Goodhart: worlds in which proxy takes an extreme value _may be very different_ from the ordinary worlds in which the relationship between the proxy and the goal was observed.
+      - Model insufficiency:
+        $$M = G(s_i) + G^{'}(s_i)$$
+      - Change in Regime:
+        $$
+        G = \begin{cases}
+          M + x, & \text{where } M \le a \\
+          M + y, & \text{where } M > a \\
+        \end{cases}
+        $$
+    - Causal Goodhart: causal path between proxy and goal is ::indirect{h4}::, intervening can change the relationship between the measure and the proxy.
+      ![[thoughts/images/causal-goodhart.png]]
+      - Shared Cause Intervention
+      - Intermediary Intervention
+      - Metric Manipulation
+- https://arxiv.org/abs/2310.04363
+  - [meta]:
+    - date: 12/14/2025
+    - tags: [inference, scaling]
+- https://arxiv.org/abs/2406.11717
+  - [meta]:
+    - date: 12/14/2025
+    - tags: [rejection sampling, interpretability]
+    - later: true
+- https://arxiv.org/abs/2507.08218
+  - [meta]:
+    - date: 12/14/2025
+    - tags: [interpretability, OOD]
+    - later: true
+- https://arxiv.org/abs/2303.05514
+  - [meta]:
+    - date: 12/14/2025
+    - tags: [physics, scenarios]
+    - later: true
+- https://arxiv.org/abs/1810.09113
+  - [meta]:
+    - date: 12/14/2025
+    - tags: [theory, distance]
+    - later: true
+- https://arxiv.org/abs/2212.07677
+  - [meta]:
+    - date: 12/14/2025
+    - tags: [training, double descent]
+    - pinned: true
+- https://arxiv.org/abs/2506.10892
+  - [meta]:
+    - date: 12/14/2025
+    - tags: [diffusion, theory]
+    - later: true
+- https://arxiv.org/abs/2412.06769
+  - [meta]:
+    - date: 12/14/2025
+    - tags: [continual learning]
+    - later: true
+- https://arxiv.org/abs/1704.01444
+  - [meta]:
+    - date: 12/14/2025
+    - tags: [representation]
+    - later: true
+- https://arxiv.org/abs/2510.05056
+  - [meta]:
+    - date: 12/14/2025
+    - tags: [representation, interpretability]
+    - later: true
+- https://arxiv.org/abs/2507.12638
+  - [meta]:
+    - date: 12/14/2025
+    - tags: [distilation, fine-tuning]
+- https://arxiv.org/abs/2508.21258
+  - [meta]:
+    - date: 12/14/2025
+    - tags: [interpretability]
+- https://arxiv.org/abs/2511.04694
+  - [meta]:
+    - date: 12/14/2025
+    - tags: [cot, reasoning, anchors]
+- https://arxiv.org/abs/2512.02556
+  - [meta]:
+    - date: 12/14/2025
+    - tags: [models]
 - https://arxiv.org/abs/2502.11089
   - [meta]:
     - date: 12/14/2025
@@ -6500,6 +6667,7 @@ title: are.na
   - [meta]:
     - date: 11/11/2025
     - tags: [parallelism]
+    - pinned: true
 - https://arxiv.org/abs/2509.23202
   - [meta]:
     - date: 11/09/2025

@@ -39,7 +39,7 @@ export interface ArenaChannel {
   slug: string
   blocks: ArenaBlock[]
   titleHtmlNode?: ElementContent
-  metadata?: Record<string, string>
+  metadata?: Record<string, string | boolean>
   tags?: string[]
 }
 
