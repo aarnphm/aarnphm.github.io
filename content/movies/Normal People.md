@@ -10,7 +10,8 @@ rating: 8.5
 status: finished
 studio: bbc
 tags:
-  - shows
+  - love
+  - o/relationship
 title: Normal People
 watched: 2024-03-01
 year: 2020

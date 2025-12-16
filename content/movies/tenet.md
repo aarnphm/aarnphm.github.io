@@ -9,7 +9,9 @@ posters: "[[movies/posters/tenet.jpg]]"
 status: recurring
 studio: christopher nolan
 tags:
-  - movies
+  - recursion
+  - time
 title: Tenet
 year: 2020
+rating: 9.2
 ---

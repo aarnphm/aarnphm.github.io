@@ -1,11 +1,11 @@
 import { App, PluginSettingTab, Setting } from "obsidian"
-import type ObsidianQuartzRunner from "./main"
+import type QuartzRunner from "./main"
 import { DEFAULT_SETTINGS, type QuartzRunnerSettings } from "./settings"
 
 export class QuartzRunnerSettingTab extends PluginSettingTab {
-	plugin: ObsidianQuartzRunner
+	plugin: QuartzRunner
 
-	constructor(app: App, plugin: ObsidianQuartzRunner) {
+	constructor(app: App, plugin: QuartzRunner) {
 		super(app, plugin)
 		this.plugin = plugin
 	}

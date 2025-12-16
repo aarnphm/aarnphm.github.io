@@ -1,6 +1,6 @@
 ---
 category: general
-date: "2024-02-07"
+date: 2024-02-07
 description: disability as performance versus lived experience—schimberg casting adam pearson alongside sebastian stan in prosthetics, asking which mask is more authentic when everyone's performing normalcy.
 director: Aaron Schimberg
 id: a-different-man
@@ -9,7 +9,7 @@ posters: "[[movies/posters/a-different-man.jpg]]"
 status: to watch
 studio: a24
 tags:
-  - movies
+  - a24
 title: A Different Man
 year: 2024
 ---

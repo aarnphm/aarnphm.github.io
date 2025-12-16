@@ -7,7 +7,7 @@ import {
   type VNode,
 } from "preact"
 import style from "../styles/methodologyTree.scss"
-// @ts-ignore: inline scripts are bundled as strings
+//@ts-ignore
 import script from "../scripts/methodology-tree.inline"
 import {
   registerMdxComponent,

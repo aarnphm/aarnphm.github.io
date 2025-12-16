@@ -9,7 +9,8 @@ posters: "[[movies/posters/dune.jpg]]"
 status: recurring
 studio: warner bros
 tags:
-  - buster
+  - utopia
+  - p/sf
 title: Dune
 year: 2021
 ---

@@ -2,7 +2,7 @@
 date: "2024-01-30"
 description: a branch of [[/thoughts/Value|value]] theory concerning what makes things aesthetically good or valuable
 id: aesthetic value
-modified: 2025-11-03 07:09:49 GMT-05:00
+modified: 2025-12-16 06:13:24 GMT-05:00
 socials:
   sep: https://plato.stanford.edu/entries/aesthetic-concept/
 tags:
@@ -25,13 +25,13 @@ the field splits on five fault lines:
 - one fundamental aesthetic value (beauty) or irreducible plurality (sublimity, elegance, grace)?
 - does aesthetic experience reveal pre-existing value or constitute it?
 
-Running theory: fitting attitude theories, response-dependence accounts, and value pluralism contest the terrain.
+fitting attitude theories, response-dependence accounts, and value pluralism contest this terrain.
 
 ## relationships
 
 aesthetic value sits among:
 
-- moral value (rightness, virtue, duty)
+- [[thoughts/moral]] value (rightness, virtue, duty)
 - [[thoughts/Epistemology|epistemic]] value (knowledge, justified belief, understanding)
 - prudential value (well-being, good-for, welfare)
 - economic value (utility, preference-satisfaction)
@@ -51,11 +51,11 @@ aesthetic value sits among:
 
 ### aesthetic hedonism
 
-aesthetic value derives from pleasure. beautiful objects are those productive of aesthetic pleasure; sublime experiences valuable for complex pleasure-pain dynamics.
+aesthetic value derived from pleasure. this camp posits that beautiful objects produce aesthetic pleasure, such that sublime experiences are valuable for their complex pleasure-pain dynamics.
 
-challenge: not all aesthetic value is pleasurable. tragic art, disturbing performances, difficult music—aesthetically valuable yet painful. the sublime involves discomfort. horror genre trades on unpleasant affect.
+However, not all aesthetic value is _pleasurable_. We see tragic art, disturbing performances, difficult music—aesthetically valuable yet painful. the sublime involves discomfort. horror trades on unpleasant affect.
 
-sophisticated hedonism: distinguish aesthetic pleasure (contemplative, disinterested) from bodily pleasure. but this smuggles in non-hedonic criteria—what makes pleasure _aesthetic_ if not its object's formal properties?
+sophisticated hedonists distinguish aesthetic pleasure (contemplative, disinterested) from bodily pleasure. this smuggles in non-hedonic criteria though—what makes pleasure _aesthetic_ if not its object's formal properties?
 
 ### fitting attitude theories
 
@@ -65,9 +65,9 @@ something has aesthetic value if it _merits_ particular responses—admiration, 
 - sublime experiences merit awe and wonder
 - elegant solutions merit intellectual admiration
 
-"wrong kind of reasons" problem: demon threatens you unless you admire mud. the threat gives reason to admire but doesn't make mud admirable. responses distinguish _right_ vs _wrong_ kind of reasons—only reasons bearing on object's features confer value, not external incentives.
+the "wrong kind of reasons" problem: a demon threatens you unless you admire mud. the threat gives reason to admire but doesn't make mud admirable. only reasons bearing on the object's features confer value, not external incentives.
 
-fitting attitudes offer middle ground between crude subjectivism (anything anyone likes is valuable) and mysterious objectivism (values as queer non-natural properties).
+fitting attitudes sit between crude subjectivism (anything anyone likes is valuable) and mysterious objectivism (values as queer non-natural properties).
 
 ### network theory
 
@@ -75,25 +75,29 @@ value emerges from successful performance within social practices. aesthetic val
 
 emphasizes institutional and cultural dimensions. what counts as valuable shifts across practices—western classical music vs gamelan, renaissance painting vs contemporary installation.
 
-challenge: seems too relativistic. can practices themselves be criticized? or does this collapse to "whatever the practice says is valuable, is valuable"?
+seems too relativistic though. can practices themselves be criticized? or does this collapse to "whatever the practice says is valuable, is valuable"?
 
 ### primitivism about aesthetic value
 
 aesthetic value is sui generis, irreducible, fundamental. cannot be analyzed in terms of pleasure, fitting attitudes, or social practices [@moore1903principia].
 
-moore's influence: goodness (including aesthetic goodness) is simple, unanalyzable property. attempts to define it commit naturalistic fallacy.
+moore's influence: goodness (including aesthetic goodness) is a simple, unanalyzable property. attempts to define it commit the naturalistic fallacy.
 
-cost: explanatory sterility. "why is this beautiful?" "it just has the property of beauty." question-begging.
+the cost is explanatory sterility. "why is this beautiful?" "it just has the property of beauty." question-begging. but it does respect phenomenology—aesthetic value _feels_ primitive, not derivative.
 
-benefit: respects phenomenology. aesthetic value feels primitive, not derivative.
+## [[thoughts/Metaphysics|metaphysics]]
 
-## [[thoughts/Metaphysics|metaphysical]] foundations
+_what kind of thing IS aesthetic value?_
+
+Where does it live—objects, minds, relations—between them?
+
+how would we constrains what theories of aesthetic value that can be coherent.
 
 ### realism vs anti-realism
 
-**realism:** values exist independently of human responses. aesthetic properties are objective features objects genuinely {{sidenotes[possess.]: mackie's challenge: values would be "metaphysically queer"—objectively prescriptive, motivating by their mere apprehension. would require special faculty of aesthetic perception. "to-be-appreciated-ness somehow built into" the property [@mackie1977ethics].}}
+realism: values exist independently of human responses. aesthetic properties are objective features objects genuinely {{sidenotes[possess.]: mackie's challenge: values would be "metaphysically queer"—objectively prescriptive, motivating by their mere apprehension. would require a special faculty of aesthetic perception. "to-be-appreciated-ness somehow built into" the property [@mackie1977ethics].}}
 
-**anti-realism:** values constituted by (ideal) responses. nothing is beautiful apart from its capacity to produce certain experiences in appropriately sensitive {{sidenotes[perceivers.]: challenge: explaining normativity. if beauty just is whatever produces pleasure in ideal observers, why should non-ideal observers care? why does "this is beautiful" make normative claim on us?}}
+[anti-realism](https://www.youtube.com/watch?v=jt-9NS--o8Q): values constituted by (ideal) responses. nothing is beautiful apart from its capacity to produce certain experiences in appropriately sensitive {{sidenotes[perceivers.]: the problem is explaining normativity. if beauty just is whatever produces pleasure in ideal observers, why should non-ideal observers care? why does "this is beautiful" make a normative claim on us?}}
 
 ### response-dependence
 
@@ -109,7 +113,7 @@ aesthetic properties necessarily depend on non-aesthetic properties. no aestheti
 
 two paintings can't differ in beauty unless they differ in color, composition, brushwork, subject matter. aesthetic supervenes on non-aesthetic.
 
-challenge for non-naturalism: explaining this dependence without reduction. if beauty is non-natural property, why does it _always_ come packaged with particular natural properties?
+the problem for non-naturalism: explaining this dependence without reduction. if beauty is a non-natural property, why does it _always_ come packaged with particular natural properties?
 
 ## historical positions
 
@@ -117,15 +121,15 @@ challenge for non-naturalism: explaining this dependence without reduction. if b
 
 _(1724-1804)_
 
-beauty: disinterested pleasure claiming universal validity [@kant1790critique].
+beauty is disinterested pleasure claiming universal validity [@kant1790critique].
 
-"disinterested": not based on desire or utility. aesthetic contemplation brackets practical interests—don't ask "can i eat this?" or "will it sell?" just perceive form.
+"disinterested" means not based on desire or utility. aesthetic contemplation brackets practical interests—don't ask "can i eat this?" or "will it sell?" just perceive form.
 
-"subjective universality": judgment grounded in pleasure (subjective) yet claims validity for all (universal). "ought to agree" without invoking concepts or rules.
+"subjective universality" means judgment grounded in pleasure (subjective) yet claiming validity for all (universal). you "ought to agree" without invoking concepts or rules.
 
 free play between imagination and understanding. imagination synthesizes sensory manifold; understanding seeks concepts. in aesthetic experience they harmonize without determining concept—pleasurable cognitive activity.
 
-sublime: reason's superiority over nature. mathematically sublime (magnitude overwhelming imagination) vs dynamically sublime (might that reason grasps as inferior to moral law).
+the sublime concerns reason's superiority over nature. mathematically sublime (magnitude overwhelming imagination) vs dynamically sublime (might that reason grasps as inferior to moral law).
 
 aesthetic as bridge between nature and freedom, symbol of morality.
 
@@ -161,9 +165,9 @@ beauty = easy aesthetic contemplation, tranquility. sublime = difficult aestheti
 
 _(1844-1900)_
 
-rejects disinterested aesthetic appreciation. focus on artist's creative experience, not spectator's passive reception.
+rejects disinterested aesthetic appreciation. focuses on the artist's creative experience, not the spectator's passive reception.
 
-"aesthetics is applied physiology"—embodied, life-affirming activity. apollonian (form, order, representation, dream) vs dionysian (expression, chaos, non-representation, intoxication).
+"aesthetics is applied physiology"—embodied, life-affirming activity. the apollonian (form, order, representation, dream) vs the dionysian (expression, chaos, non-representation, intoxication).
 
 aesthetic justification of existence: "only as aesthetic phenomenon is existence and the world eternally justified." not moral justification—aesthetic.
 
@@ -173,13 +177,13 @@ art as life-affirmation. "we have art so that we do not perish from the truth." 
 
 _(1859-1952)_
 
-art as experience: dynamic temporal process with rhythm, development, consummation [@dewey1934art].
+art as experience: a dynamic temporal process with rhythm, development, consummation [@dewey1934art].
 
-continuity between aesthetic and ordinary experience. aesthetic qualities emerge in practical and intellectual activities—mechanic finding elegant solution, scientist appreciating theory's beauty.
+continuity between aesthetic and ordinary experience. aesthetic qualities emerge in practical and intellectual activities—a mechanic finding an elegant solution, a scientist appreciating theory's beauty.
 
-rejects "museum conception" placing art on "remote pedestal." art serves life—expanding perception, enriching experience, facilitating growth.
+rejects the "museum conception" placing art on a "remote pedestal." art serves life—expanding perception, enriching experience, facilitating growth.
 
-pragmatist criterion: values art for consequences. but aesthetic experience valuable in itself _and_ instrumentally—not contradiction but recognition that intrinsic and extrinsic value coexist.
+pragmatist criterion: values art for consequences. aesthetic experience is valuable in itself _and_ instrumentally—not a contradiction but recognition that intrinsic and extrinsic value coexist.
 
 ### Collingwood
 
@@ -189,68 +193,64 @@ art as expression of emotion (expressionist theory) [@collingwood1938principles]
 
 expression ≠ arousal or description. expression = becoming conscious of emotion through creative articulation. imagination transforms inchoate feelings into conscious experiences.
 
-art vs craft: craft has predetermined end (make chair, build house), planned execution. art spontaneous, end discovered through process. artist doesn't know what emotion will be expressed until expressing it.
+art vs craft: craft has a predetermined end (make chair, build house), planned execution. art is spontaneous, the end discovered through process. the artist doesn't know what emotion will be expressed until expressing it.
 
-value in authentic emotional expression. fake art (commercial entertainment, propaganda) manipulates emotion without genuine expression.
+value lies in authentic emotional expression. fake art (commercial entertainment, propaganda) manipulates emotion without genuine expression.
 
 ## debates
 
-There are some arguments between [[#objectivity and normativity]] and [[#value pluralism and incommensurability]]
-
 ### objectivity and normativity
 
-aesthetic judgments claim correctness beyond individual preference. "this is beautiful" asserts more than "i like this"—makes normative claim.
+aesthetic judgments claim correctness beyond individual preference. "this is beautiful" asserts more than "i like this"—it makes a normative claim.
 
-yet grounded in subjective responses. no aesthetic perception without pleasure/displeasure, emotional engagement, phenomenal character.
+yet they're grounded in subjective responses. no aesthetic perception without pleasure/displeasure, emotional engagement, phenomenal character.
 
-fitting attitudes, response-dependence, ideal observer theories attempt reconciliation. objectivity through normative facts about appropriate responses or idealized convergence.
+fitting attitudes, response-dependence, and ideal observer theories attempt reconciliation. objectivity through normative facts about appropriate responses or idealized convergence.
 
 ### aesthetic testimony
 
 can aesthetic judgments be transmitted through testimony?
 
-acquaintance principle: aesthetic judgments must be based on first-hand perceptual experience. can't know painting is beautiful merely on others' say-so—must see it yourself [@nguyen2020].
+the acquaintance principle: aesthetic judgments must be based on first-hand perceptual experience. you can't know a painting is beautiful merely on others' say-so—you must see it yourself [@nguyen2020].
 
-aesthetic autonomy: forming own judgments vs deferring to experts. testimony threatens autonomy—passive reception vs active engagement.
+aesthetic autonomy: forming your own judgments vs deferring to experts. testimony threatens autonomy—passive reception vs active engagement.
 
-implications for aesthetic epistemology: if testimony blocked, how do we learn aesthetic truths? trial and error? cultivation of sensibility?
+if testimony is blocked, how do we learn aesthetic truths? trial and error? cultivation of sensibility?
 
 ### value pluralism and incommensurability
 
 multiple irreducible aesthetic values: beauty, sublimity, elegance, grace, balance, unity, intensity, delicacy, power.
 
-incommensurability: values not comparable on common scale. can't reduce all aesthetic worth to single metric. ranking all artworks by unified standard "foolish, boring, stultifying."
+incommensurability: values aren't comparable on a common scale. you can't reduce all aesthetic worth to a single metric. ranking all artworks by a unified standard is "foolish, boring, stultifying."
 
-genuine conflicts without determinate resolution. beautiful vs powerful, elegant vs intense—may conflict without one being correct answer.
+genuine conflicts arise without determinate resolution. beautiful vs powerful, elegant vs intense—these may conflict without there being a correct answer.
 
 ### aesthetic vs non-aesthetic properties
 
-aesthetic {{sidenotes[properties]: sibley: aesthetic concepts aren't condition-governed [@sibley1959aesthetic]. no rules: "if it has properties F, G, H, then it's graceful." requires taste—perceptual sensitivity plus conceptual understanding}} supervene on non-aesthetic properties (form, color, sound, movement). but relationship isn't reduction.
+aesthetic {{sidenotes[properties]: sibley: aesthetic concepts aren't condition-governed [@sibley1959aesthetic]. no rules like "if it has properties F, G, H, then it's graceful." it requires taste—perceptual sensitivity plus conceptual understanding}} supervene on non-aesthetic properties (form, color, sound, movement). but the relationship isn't reduction.
 
 ## intrinsic vs extrinsic
 
-**intrinsic:** valuable in itself, for its own sake. moore's isolation test—would it be good even if it existed alone in universe?
+**intrinsic:** valuable in itself, for its own sake. moore's isolation test—would it be good even if it existed alone in the universe?
 
 **extrinsic:**
 
 - _instrumental_: valuable as means to other goods
-- _contributory_: valuable as part of larger valuable whole
+- _contributory_: valuable as part of a larger valuable whole
 - _final_: valued as end, not means (overlaps with intrinsic)
 
-traditional view: aesthetic contemplation valued for own sake (intrinsic). dewey: aesthetic experience valuable for life-enhancement (both intrinsic and instrumental).
+traditional view: aesthetic contemplation is valued for its own sake (intrinsic). dewey: aesthetic experience is valuable for life-enhancement (both intrinsic and instrumental).
 
 ## beauty vs aesthetic value
 
-beauty is _one_ aesthetic value among others. sublimity, elegance, grace, balance, unity—all aesthetic values not reducible to beauty.
+beauty is _one_ aesthetic value among others. sublimity, elegance, grace, balance, unity—all aesthetic values, none reducible to beauty.
 
-historical dominance of beauty reflects bias, not metaphysical necessity. contemporary aesthetics pluralistic about values. [@zangwill2001metaphysics; @nehamas2007promise]
+the historical dominance of beauty reflects bias, not metaphysical necessity. contemporary aesthetics is pluralistic about values. [@zangwill2001metaphysics; @nehamas2007promise]
 
 ## subjective vs objective
 
-crude subjectivism: beauty is whatever anyone finds pleasant. problems: no disagreement possible, no normativity, no learning.
+crude subjectivism: beauty is whatever anyone finds pleasant. no disagreement possible, no normativity, no learning.
 
-crude objectivism: beauty is natural property objects possess. problems: mackie's queerness objection, explaining response-dependence intuitions.
+crude objectivism: beauty is a natural property objects possess. runs into mackie's queerness objection, struggles to explain response-dependence intuitions.
 
-sophisticated positions: response-dependence (objective yet constituted by ideal responses), fitting attitudes (objective normative facts about merited responses), Kant's subjective universality (subjective basis, objective claim).
-
-[^ref]
+sophisticated positions thread the needle: response-dependence (objective yet constituted by ideal responses), fitting attitudes (objective normative facts about merited responses), kant's subjective universality (subjective basis, objective claim).

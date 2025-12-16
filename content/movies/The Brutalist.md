@@ -1,6 +1,6 @@
 ---
 category: general
-date: "2024-02-07"
+date: 2024-02-07
 description: holocaust-surviving architect building monuments for the industrialist who exploits him—corbet filming lászló's american dream curdling into nightmare, brutal modernist structures rising from immigrant genius while wealthy patron demands ownership of everything including the artist's soul, three hours proving capitalism devours what it cannot understand.
 director: Brady Corbet
 id: the-brutalist
@@ -10,8 +10,8 @@ rating: 8.2
 status: finished
 studio: a24
 tags:
-  - movies
+  - a24
 title: The Brutalist
-watched: "2024-11-25"
+watched: 2024-11-25
 year: 2024
 ---

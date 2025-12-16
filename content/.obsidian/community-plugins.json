@@ -2,7 +2,6 @@
   "table-editor-obsidian",
   "obsidian-vimrc-support",
   "obsidian-minimal-settings",
-  "pseudocode-in-obs",
   "obsidian-latex-suite",
   "maps",
   "obsidian-citation-plugin",
@@ -10,7 +9,5 @@
   "obsidian-metadata",
   "hot-reload",
   "obsidian-sidenotes",
-  "obsidian-tikzjax",
-  "obsidian-quartz-runner",
-  "quartz-runner"
+  "obsidian-quartz-runner"
 ]

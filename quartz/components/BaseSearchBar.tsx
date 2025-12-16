@@ -1,5 +1,5 @@
 import { QuartzComponentConstructor, QuartzComponentProps } from "./types"
-import searchBarStyle from "./styles/search.scss"
+import style from "./styles/search.scss"
 // @ts-ignore
 import script from "./scripts/base-search.inline"
 import { classNames } from "../util/lang"
@@ -9,7 +9,7 @@ function BaseSearchBar({ displayClass, fileData }: QuartzComponentProps) {
     return null
   }
   return (
-    <div class={classNames(displayClass, "search")} style="margin: 1rem 0;grid-column: 4/5;">
+    <div class={classNames(displayClass, "search", "bases-search")}>
       <div id="base-search-bar">
         <input
           type="text"
@@ -39,7 +39,7 @@ function BaseSearchBar({ displayClass, fileData }: QuartzComponentProps) {
   )
 }
 
-BaseSearchBar.css = searchBarStyle
+BaseSearchBar.css = style
 BaseSearchBar.afterDOMLoaded = script
 
 export default (() => BaseSearchBar) satisfies QuartzComponentConstructor

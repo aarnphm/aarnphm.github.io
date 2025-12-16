@@ -9,7 +9,8 @@ posters: "[[movies/posters/dune-part-two.jpg]]"
 status: recurring
 studio: warner bros
 tags:
-  - thriller
+  - utopia
+  - p/sf
 title: "Dune: Part Two"
 year: 2024
 ---

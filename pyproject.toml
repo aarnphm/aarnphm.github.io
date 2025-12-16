@@ -29,7 +29,7 @@ only-include = ["content"]
 packages = ["content"]
 
 [tool.pyright]
-pythonVersion = "3.11"
+pythonVersion = "3.12"
 typeCheckingMode = "strict"
 verboseOutput = true
 useLibraryCodeForTypes = true
@@ -49,7 +49,7 @@ MYPY = true
 
 [tool.mypy]
 pretty = true
-python_version = "3.11"
+python_version = "3.12"
 show_error_codes = true
 strict = true
 ignore_missing_imports = true
@@ -103,7 +103,7 @@ root = "./"
 
 [tool.ty.environment]
 python = "./.venv"
-python-version = "3.11"
+python-version = "3.12"
 
 [dependency-groups]
 dev = [
@@ -123,7 +123,7 @@ dev = [
   "jupyterlab-vim>=4.1.4",
   "pytest>=8.4.2",
   "huggingface-hub[cli]>=0.35.3",
-  "bentoml>=1.4.25",
+  "bentoml>=1.4.30",
   "pyupgrade>=3.20.0",
   "ruff>=0.13.3",
   "ty>=0.0.1a21",

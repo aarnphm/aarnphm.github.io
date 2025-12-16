@@ -1,6 +1,7 @@
 ---
 tags:
-  - movies
+  - love
+  - o/relationship
 director:
   - David Freyne
 status: to watch

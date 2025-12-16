@@ -2,7 +2,7 @@
 date: "2024-01-08"
 description: public tool for understanding private life through wittgenstein's language-games, where llms represent massive corpus of human knowledge and patient interaction.
 id: Language
-modified: 2025-11-09 02:37:16 GMT-05:00
+modified: 2025-12-16 03:01:26 GMT-05:00
 tags:
   - seed
 title: Language
@@ -21,6 +21,10 @@ circa [[movies/Philosophical Investigations]] by [[thoughts/Wittgenstein]]
 - Conflict arose when pictures are not aligned, often lead to context collapse.
 
 Possibly the most salient feature of [[thoughts/LLMs|LLMs]] is that the system is surprising patient per each interactions with humans.
+
+https://x.com/paulg/status/2000259667965165638
+
+![[thoughts/Wittgenstein#^limit]]
 
 ## [[thoughts/representations|representations]]
 

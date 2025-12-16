@@ -1,9 +1,9 @@
 import { Notice } from "obsidian"
-import type ObsidianQuartzRunner from "./main"
+import type QuartzRunner from "./main"
 import { followQuartzLogs, startQuartzDev, stopQuartzDev } from "./runner/quartzDev"
 import { resolveGitRoot } from "./runner/resolveGitRoot"
 
-export function registerQuartzRunnerCommands(plugin: ObsidianQuartzRunner): void {
+export function registerQuartzRunnerCommands(plugin: QuartzRunner): void {
 	plugin.addCommand({
 		id: "quartz-stop-dev",
 		name: "quartz: stop dev server",

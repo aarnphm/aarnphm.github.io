@@ -9,7 +9,7 @@ aliases:
 date: "2025-10-04"
 description: choosing to give your full, continuously.
 id: love
-modified: 2025-12-15 17:11:39 GMT-05:00
+modified: 2025-12-16 07:27:32 GMT-05:00
 socials:
   essay: "[[posts/love|mutual becoming]]"
   hermeneutics: "[[posts/romantic epistemology|romantic epistemology]]"
@@ -66,7 +66,7 @@ I propose a box model where one can decompose our feelings into interpretable co
 If love were a feeling, then:
 
 - it would be subject to _extinction_.
-- it requires certain {{sidenotes[_reinforcement_]: This is prevalent within psychology, where}}.
+- it requires certain {{sidenotes[reinforcement]: This is prevalent within psychology, where}}.
 - Add punishment, love turns to avoidance.
 
 > This is [[thoughts/Behavirourism|behaviorism's]] prediction, where love is just _positive reinforcement_ {{sidenotes[schedule.]: abusive relationships don't end quickly (high punishment). Secure relationships aren't just well-tuned reinforcement. People stay through illness, depression, long separation—all conditions that break behavioral contingencies.}}
@@ -264,6 +264,8 @@ _so I made this list for [Malaika](https://malaikaaiyar.me/)_
 - https://www.edwardluperart.com/post/love-and-fear-on-the-musashi-plain-kajita-hanko-s-masterpiece-from-the-tales-of-ise (M sent me this actually)
 - https://pmc.ncbi.nlm.nih.gov/articles/PMC4191624/pdf/emss-59635.pdf -- Neuroreductionism about Sex and Love
 - https://aeon.co/essays/simone-de-beauvoirs-authentic-love-is-a-project-of-equals -- Authentic Love
+- https://www.youtube.com/watch?v=Guvmpf6fU7s -- Phenomenology on love and auto-affection, Dr. Ellie Anderson
+- https://www.youtube.com/watch?v=8mQPuEnOsYM -- Simone de Beauvoir on love and open relationship
 
 ## hw
 

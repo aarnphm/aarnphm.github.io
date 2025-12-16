@@ -10,7 +10,6 @@ status: finished
 subcategory: life
 tags:
   - addiction
-  - a/dfw
 title: Infinite Jest
 year: 1996
 finished: 2022
