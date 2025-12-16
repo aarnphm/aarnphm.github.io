@@ -2,7 +2,7 @@
 date: "2025-11-10"
 description: conceivability, possibility, and the limits of functionalism
 id: philosophical-zombies
-modified: 2025-12-11 19:55:22 GMT-05:00
+modified: 2025-12-16 06:00:19 GMT-05:00
 seealso:
   - "[[thoughts/functionalism]]"
   - "[[thoughts/qualia]]"
@@ -13,6 +13,7 @@ seealso:
 socials:
   sep: https://plato.stanford.edu/entries/zombies/
   wikipedia: https://en.wikipedia.org/wiki/Philosophical_zombie
+  yt: https://www.youtube.com/watch?v=VLzmYjviDsk
 tags:
   - pattern
 title: philosophical zombies

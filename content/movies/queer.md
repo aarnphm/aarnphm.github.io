@@ -1,6 +1,6 @@
 ---
 category: general
-date: "2024-02-07"
+date: 2024-02-07
 description: burroughs' early confessional novel as fever dream—guadagnino filming daniel craig's william lee pursuing beautiful young man through mexico city cantinas, insisting on being queer and masculine simultaneously, ayahuasca hallucinations colliding past and future into broken love story.
 director: Luca Guadagnino
 id: queer
@@ -10,8 +10,8 @@ rating: 7.3
 status: finished
 studio: a24
 tags:
-  - movies
+  - a24
 title: Queer
-watched: "2024-11-30"
+watched: 2024-11-30
 year: 2024
 ---

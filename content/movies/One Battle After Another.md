@@ -9,7 +9,7 @@ posters: "[[movies/posters/one-battle-after-another.jpg]]"
 status: to watch
 studio: warner
 tags:
-  - movies
+  - absurdism
 title: One Battle After Another
 year: 2025
 rating: 7.4

@@ -2,7 +2,7 @@
 date: "2025-10-04"
 description: language games, pictures of states, proposition
 id: Wittgenstein
-modified: 2025-12-08 19:39:43 GMT-05:00
+modified: 2025-12-16 03:00:52 GMT-05:00
 seealso:
   - "[[library/Tractatus Logico-Philosophicus|TLP]]"
   - "[[library/Philosophical Investigations|PI]]"
@@ -22,7 +22,7 @@ Wittgenstein's notebooks represent a snapshot of his thinking. I very much enjoy
 
 [[library/Tractatus Logico-Philosophicus|TLP]] concludes that language is the boundary condition of cognition, not just a tool for representing it. i.e: You can't think outside what you can say.
 
-The notebooks don't show much of evolution of his idea, insofar as iteration of old ideas: "The limits of my language mean the limits of my world".
+The notebooks don't show much of evolution of his idea, insofar as iteration of old ideas: "The limits of my language mean the limits of my world". ^limit
 
 He also posthumously suggested that one "understands" his work by recognizing the "insanity" of language itself and the limitations of what can be said, ultimately leading to a state where one can "pass over in silence" what cannot be clearly spoken.
 

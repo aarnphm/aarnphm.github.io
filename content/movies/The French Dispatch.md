@@ -9,7 +9,7 @@ posters: "[[movies/posters/the-french-dispatch.jpg]]"
 status: recurring
 studio: wes anderson
 tags:
-  - movies
+  - o/life
 title: The French Dispatch
 year: 2021
 ---

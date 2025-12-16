@@ -7,7 +7,10 @@
     height: auto;
     display: grid;
     gap: 0.5em;
-    grid-template-columns: repeat(2, 1fr);
+
+    @media all and ($desktop) {
+      grid-template-columns: repeat(2, 1fr);
+    }
 
     a[data-backlink] {
       border: 1px solid var(--gray);

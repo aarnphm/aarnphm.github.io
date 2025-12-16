@@ -9,7 +9,8 @@ posters: "[[movies/posters/the-irishman.jpg]]"
 status: recurring
 studio: martin scorsese
 tags:
-  - movies
+  - family
+  - film
 title: The Irishman
 year: 2019
 ---

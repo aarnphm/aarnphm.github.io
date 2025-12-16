@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2025-12-15 17:12:44 GMT-05:00
+modified: 2025-12-16 07:31:08 GMT-05:00
 permalinks:
   - /website
   - /tweets
@@ -143,6 +143,16 @@ title: are.na
 - [meta]:
   - view: list
 
+- https://x.com/karpathy/status/1998236299862659485 -- Python's programming horror
+  - [meta]:
+    - date: 12/16/2025
+    - tags: [engineering]
+  - The pseudorandom generator in Python: https://github.com/python/cpython/blob/main/Modules/_randommodule.c#L321C13-L321C30
+- https://x.com/svlevine/status/1999700819915190310 -- Action chunking
+  - [meta]:
+    - date: 12/15/2025
+    - tags: [continual learning]
+    - later: true
 - https://x.com/jessemhan/status/2000659168773202340 -- mechanized proof for definition of a mathematicians to be then widen
   - [meta]:
     - date: 12/15/2025
@@ -858,6 +868,10 @@ title: are.na
 
 ## people
 
+- https://simonsarris.com -- Simon Sarris
+  - [meta]:
+    - date: 12/16/2025
+    - tags: [writer, philosopher]
 - https://substack.com/@befriendjamin -- Befriendjamin
   - [meta]:
     - date: 12/15/2025
@@ -1825,6 +1839,49 @@ title: are.na
 
 ## essay
 
+- [meta]:
+  - json: true
+
+- https://www.henrikkarlsson.xyz/p/agency -- On agency
+  - [meta]:
+    - date: 12/16/2025
+    - tags: [agency]
+  - ![[thoughts/Agency#fragments]]
+- https://spencer.place/experiments/100posts/quiet-confidence/ -- quiet confidence
+  - [meta]:
+    - date: 12/16/2025
+    - tags: [styling, life]
+  - Quiet confidence is when you’re able to naturally take your time, take up proper space, and be unapologetically yourself without putting down anyone else or manufacturing dependence.
+  - Quiet confidence is the stable foundation of self-belief that emanates around one who has a core of trust in themselves.
+- https://www.applieddivinitystudies.com/trying/ -- No One is Even Trying
+  - [meta]:
+    - date: 12/16/2025
+    - tags: [work, productivity]
+- https://www.henrikkarlsson.xyz/p/diaries -- The paradox is that when I accept myself just as I am, I change.
+  - [meta]:
+    - date: 12/16/2025
+    - tags: [love]
+- https://archive.is/U1aZ6 -- Why I Run
+  - [meta]:
+    - date: 12/16/2025
+    - tags: [motivation, sports]
+- https://jason.ml/motivation -- Why I do what I do
+  - [meta]:
+    - date: 12/16/2025
+    - tags: [longtermism, motivation]
+- https://michaelnotebook.com/df/index.html -- Discovery fiction, Michael Nielsen
+  - [meta]:
+    - date: 12/16/2025
+    - tags: [research, process]
+    - later: true
+- https://sotaletters.substack.com/p/a-message-from-number-10 -- Message from [[puzzle/sota-number-10|10 Downing Street]]
+  - [meta]:
+    - date: 12/16/2025
+    - tags: [puzzle, recruiting]
+- https://queue.acm.org/detail.cfm?id=1039523 -- Conversation with Alan Kay [**]
+  - [meta]:
+    - date: 12/15/2025
+    - tags: [design, conversation]
 - https://internetprincess.substack.com/p/crisis-of-faith -- Crisis of faith
   - [meta]:
     - date: 12/13/2025
@@ -1840,7 +1897,7 @@ title: are.na
     - date: 12/12/2025
     - tags: [pedagogy, ontology]
     - pinned: true
-- https://www.lesswrong.com/posts/Tnpp3cyEHMGthjGAf/seven-ways-to-become-unstoppably-agentic?curius=5402 -- Seven ways to become unstoppably agentic
+- https://www.lesswrong.com/posts/Tnpp3cyEHMGthjGAf/seven-ways-to-become-unstoppably-agentic -- Seven ways to become unstoppably agentic
   - [meta]:
     - date: 12/12/2025
     - tags: [agency]
@@ -1856,7 +1913,7 @@ title: are.na
 - https://www.humaninvariant.com/blog/presence -- On Learning through Presence
   - [meta]:
     - date: 12/12/2025
-    - tags: [perserverance]
+    - tags: [perseverance]
     - later: true
 - https://caitlynrichardson.substack.com/p/the-discourse-i-refuse-to-participate -- The discourse i refuse to participate in.
   - [meta]:
@@ -2165,7 +2222,7 @@ title: are.na
   - [meta]:
     - date: 11/14/2025
     - tags: [dating]
-- https://www.benkuhn.net/abyss -- Staring into the abyss as a core life skill
+- https://www.benkuhn.net/abyss -- Staring into the abyss as a core life skill [**]
   - [meta]:
     - date: 11/14/2025
     - tags: [life, love]
@@ -2558,7 +2615,7 @@ title: are.na
     - tags: [research]
   - One lesson was sufficient to educate my boss as to why I didn't want to do big jobs that displaced exploratory research and why I was justified in not doing crash jobs which absorb all the research computing facilities. I wanted instead to use the facilities to compute a large number of small problems. Again, in the early days, I was limited in computing capacity and it was clear, in my area, that a 'mathematician had no use for machines.' But I needed more machine capacity. Every time I had to tell some scientist in some other area, "No I can't; I haven't the machine capacity," he complained. I said "Go tell your Vice President that Hamming needs more computing capacity." After a while I could see what was happening up there at the top; many people said to my Vice President, "Your man needs more computing capacity." I got it!
   - The people who do great work with less ability but who are committed to it, get more done that those who have great skill and dabble in it, who work during the day and go home and do other things and come back and work the next day.
-- https://www.benkuhn.net/thinkrealhard/ -- Think real hard
+- https://www.benkuhn.net/thinkrealhard/ -- Think real hard [**]
   - [meta]:
     - date: 10/05/2025
     - tags: [life, logic]
@@ -2577,7 +2634,7 @@ title: are.na
     - The second factor affecting self-discipline is one’s social environment.
       - Access to a social environment which encourages and supports the development of research skills and research excellence
     - The third factor affecting self-discipline is a special kind of honesty, honesty to oneself, about oneself.
-- https://www.benkuhn.net/pjm/ -- How I've run major projects
+- https://www.benkuhn.net/pjm/ -- How I've run major projects [**]
   - [meta]:
     - date: 10/05/2025
     - tags: [productivity]
@@ -3041,6 +3098,52 @@ title: are.na
 - [meta]:
   - view: list
 
+- https://www.youtube.com/watch?v=MEoGt_cxNSs&t=55s -- Modular Tech Talk: Max Graph Compilation
+  - [meta]:
+    - date: 12/16/2025
+    - tags: [serving, inference]
+  - Alternatives to CUDA Graph, but on Mojo stack here
+  - Mojo/PyTorch -> RMO (Relaxed MO) -> MO (Modular Operator) -> MOGG (Modular Generator) -> MGP (Modular Primitives) -> MEF (Modular Execution Format)
+  - Graph API:
+    - Similar to Tensorflow / JAX
+    - Symbolic Shape System:
+
+      ```mlir
+      mo.graph @fake_example_with_poison(%arg0: tensor<[?,?,?], f32>, %arg1: tensor<[?,?,?], f32>) {
+        %res = concat_inner_dim(%arg0, %arg1):
+              (tensor<[?,?,?], f32>, tensor<[?,?,?], f32>)
+              -> tensor<[?,?,?], f32>
+        ...
+      }
+
+      mo.graph @fake_example_with_poison(%arg0: tensor<[a,b,c], f32>, %arg1: tensor<[a,b,d], f32>) {
+        %res = concat_inner_dim(%arg0, %arg1):
+              (tensor<[a,b,c], f32>, tensor<[a,b,d], f32>)
+              -> tensor<[a,b,c + d], f32>
+        ...
+      }
+      ```
+
+- https://www.youtube.com/watch?v=6hqMFXbugGo&t=74s -- Modular Tech Talk: MAX Pipelines Architecture
+  - [meta]:
+    - date: 12/16/2025
+    - tags: [serving, inference]
+  - alternatives to [[thoughts/vllm|vLLM]], but somewhat similar workflow to construct model runner with Graph instead of CUDA Graph
+- https://x.com/eliebakouch/status/2000609468812284110 -- LatentMoE
+  - [meta]:
+    - date: 12/16/2025
+    - tags: [scaling, byte-level, moe]
+- https://www.youtube.com/watch?v=q-yo6TPRPVk -- In-Context Learning & "Model Systems" Interpretability, Ekdeep Singh Lubana
+  - [meta]:
+    - date: 12/16/2025
+    - tags: [interpretability]
+    - later: true
+- https://www.lesswrong.com/posts/vpNG99GhbBoLov9og/claude-4-5-opus-soul-document -- Claude 4.5 Opus' Soul Document
+  - [meta]:
+    - date: 12/15/2025
+    - tags: [ontology, interpretability]
+  - gist: https://gist.github.com/Richard-Weiss/efe157692991535403bd7e7fb20b6695
+  - Amanda Askell of Anthropic soft confirming some of the content here, and such doc should only be taken as a soft-lossy depiction of this docs during pre-training: https://x.com/AmandaAskell/status/1995610567923695633
 - https://joecarlsmith.com/2025/08/18/giving-ais-safe-motivations -- Giving AI safe motivations
   - [meta]:
     - date: 12/13/2025
@@ -3084,7 +3187,7 @@ title: are.na
 - https://www.youtube.com/watch?v=WJS2YDZO-vc&t=0s -- Build to Last, Chris Lattner talks with Jeremy Howard
   - [meta]:
     - date: 12/08/2025
-    - tags: [podcasts]
+    - tags: [podcasts, longtermism, mojo]
 - https://www.lesswrong.com/posts/YDF7XhMThhNfHfim9/ai-safety-needs-great-engineers -- AI Saftey Needs Great Engineers
   - [meta]:
     - date: 12/08/2025
@@ -3919,6 +4022,14 @@ title: are.na
 
 ## opinions
 
+- https://timdettmers.com/2025/12/10/why-agi-will-not-happen/ -- Why AGI will not happen
+  - [meta]:
+    - date: 12/16/2025
+    - tags: [agi, scaling]
+- https://danfu.org/notes/agi/ -- Yes, AGI can happen, from a computational perspective
+  - [meta]:
+    - date: 12/16/2025
+    - tags: [agi, scaling]
 - https://www.lesswrong.com/posts/HjHqxzn3rnH7T45hp/do-you-even-have-a-system-prompt-psa -- Do you even have a system prompt? (PSA/repo)
   - [meta]:
     - date: 12/12/2025
@@ -4194,7 +4305,7 @@ title: are.na
 - https://x.com/VividVoid_/status/1828461484277461447 -- philosophical wisdom
   - [meta]:
     - date: 10/03/2025
-    - tags: [gm]
+    - tags: [meme, philia]
 - https://x.com/melissa/status/1883821342354768109 -- Melissa on fairness within marriage
   - [meta]:
     - date: 10/03/2025
@@ -4523,6 +4634,53 @@ title: are.na
 
 ## philosophy
 
+- [meta]:
+  - json: true
+
+- https://www.youtube.com/watch?v=V-4R0uuyUm4 -- Derrida and Montaigne on Mourning the Friend
+  - [meta]:
+    - date: 12/16/2025
+    - tags: [continential, ontology, friend]
+- https://www.youtube.com/watch?v=kH785oawwkk -- Hilary Putnam on the Philosophy of Science (1977)
+  - [meta]:
+    - date: 12/16/2025
+    - tags: [naturalism, ontology]
+- https://www.youtube.com/watch?v=fSBh-iuPHjQ -- How boring activities can make you feel alive again
+  - [meta]:
+    - date: 12/16/2025
+    - tags: [boredom, philosophy]
+- https://www.youtube.com/watch?v=oCVtU3uW2jI -- W. V. Quine on Necessary Truth (1963)
+  - [meta]:
+    - date: 12/16/2025
+    - tags: [truth, rationalism, naturalism]
+- https://www.youtube.com/watch?v=R9UZyaX0EAo -- Creativity in Science, Ernest Nagel (1968)
+  - [meta]:
+    - date: 12/16/2025
+    - tags: [naturalism]
+    - later: true
+- https://www.youtube.com/watch?v=bP9znCxhHcQ -- What has Become of #philosophy, A. J. Ayler
+  - [meta]:
+    - date: 12/16/2025
+    - tags: [ontology, epistemology]
+- https://www.youtube.com/watch?v=grp0RDCwQP4 -- The Experience Machine
+  - [meta]:
+    - date: 12/16/2025
+    - tags: [love, hedonism]
+- https://www.benkuhn.net/attention/ -- Attention is your scarcest resource
+  - [meta]:
+    - date: 12/16/2025
+    - tags: [productivity, intention]
+- https://www.benkuhn.net/listen/ -- To listen well, get curious [**]
+  - [meta]:
+    - date: 12/16/2025
+    - tags: [learning]
+  - Recently, I realized why people keep giving this weird-seeming advice. Good listeners do often reflect words back—but not because they read it in a book somewhere. Rather, it’s cargo cult advice: it teaches you to imitate the surface appearance of good listening, but misses what’s actually important, the thing that’s generating that surface appearance.
+  - The generator is curiosity.
+  - When done this way, reflective listening feels validating rather than alienating. It's a way of demonstrating that I care a lot about what someone has to say.
+- https://moontowermeta.com/berksons-paradox/ -- Berkson's Paradox
+  - [meta]:
+    - date: 12/16/2025
+    - tags: [statistics]
 - https://www.astralcodexten.com/p/bounded-distrust -- Bounded Distrust [**]
   - [meta]:
     - date: 12/13/2025
@@ -4601,6 +4759,7 @@ title: are.na
   - [meta]:
     - date: 12/02/2025
     - tags: [metaphysics, being]
+    - pinned: true
 - https://nickbostrom.com/posthuman.pdf -- Why I want to be a Posthuman when I Grow Up
   - [meta]:
     - date: 12/01/2025
@@ -4831,6 +4990,25 @@ title: are.na
 
 ## stream
 
+- https://www.youtube.com/watch?v=EvHRQhMX7_w -- Stanford CS224R Deep Reinforcement Learning | Spring 2025
+  - [meta]:
+    - date: 12/16/2025
+    - tags: [rl, stream]
+    - later: true
+- https://guzey.com/people/ -- People who are going to change the world
+  - [meta]:
+    - date: 12/16/2025
+    - tags: [people, interesting]
+    - pinned: true
+- https://patrickcollison.com/people -- List of People, by Patrick Collison
+  - [meta]:
+    - date: 12/16/2025
+    - tags: [people, interesting]
+    - pinned: true
+- https://docs.google.com/document/d/1zl33fxKigWN4Hd1AWOxopuvzQZfPpMUwGTLbB07dXzU/edit?tab=t.0 -- christine’s list of lists
+  - [meta]:
+    - date: 12/16/2025
+    - tags: [threads, notes]
 - https://writings.stephenwolfram.com/category/ruliology/ -- Ruliology
   - [meta]:
     - date: 12/15/2025
@@ -5088,6 +5266,10 @@ title: are.na
 
 ## design
 
+- https://www.adaline.ai/
+  - [meta]:
+    - date: 12/16/2025
+    - tags: [typography, motion]
 - https://x.com/msimoni/status/1994711734037234065 -- Tufte's on visual design and stroke-width of border
   - [meta]:
     - date: 11/29/2025
@@ -5099,7 +5281,7 @@ title: are.na
 - https://and-now.co.uk/
   - [meta]:
     - date: 11/28/2025
-    - tags: [studio, agency]
+    - tags: [studio]
 - https://specialprojects.studio
   - [meta]:
     - date: 11/27/2025
@@ -5254,14 +5436,33 @@ title: are.na
 
 ## video
 
+- https://www.youtube.com/watch?v=tf6N2NjT5vM&t=108s -- my way into difficult philo text : spinoza, hegel, marx & co.
+  - [meta]:
+    - date: 12/16/2025
+    - tags: [reading, process, education]
+- https://www.youtube.com/watch?v=PzZTIH0WKaU&t=80s -- The Best Cinematography I've Ever Seen [**]
+  - [meta]:
+    - date: 12/16/2025
+    - tags: [film, cinematography]
+- https://www.youtube.com/watch?v=xIN7FHkQr04 -- between leveling up. seoul diaries
+  - [meta]:
+    - date: 12/16/2025
+    - tags: [life, twenties]
+- https://www.youtube.com/watch?v=XmsKvzivDjA -- Why Smart People Struggle with Feelings
+  - [meta]:
+    - date: 12/16/2025
+    - tags: [love, rationalist, angst]
+  - Pretending to be scoundrel such that she won't love him (Søren Kierkegaard)
+  - How do we know what to do?
+  - Life can only be understood backwards, but it must be lived forwards.
+- https://www.youtube.com/watch?v=3XnJCEDW7pg&t=273s -- men are not chic
+  - [meta]:
+    - date: 12/16/2025
+    - tags: [fashion, metaculture]
 - https://www.youtube.com/watch?v=ZtpWTJ7Jsh8 -- George Hotz, I'll still crush you.
   - [meta]:
     - date: 12/12/2025
     - tags: [conviction]
-- https://www.youtube.com/watch?v=WJS2YDZO-vc&t=503s -- Build To Last, Chris Lattner and Jeremy Howard
-  - [meta]:
-    - date: 12/12/2025
-    - tags: [longtermism, mojo]
 - https://www.youtube.com/watch?v=YrHGbCyAqOU -- Theories of Schrödinger's heterosexuality
   - [meta]:
     - date: 11/28/2025
@@ -5500,6 +5701,10 @@ title: are.na
 
 ## tools
 
+- https://near.blog/productivity-tips/ -- Productivity tips
+  - [meta]:
+    - date: 12/16/2025
+    - tags: [enhancement drugs, recreational]
 - https://www.youtube.com/watch?v=dmeRQN9z504 -- Why all learning tools fail?
   - [meta]:
     - date: 11/01/2025
@@ -5540,6 +5745,10 @@ title: are.na
 
 ## arts
 
+- https://archive.ph/gyXym -- Enduring images of 2025 [--]
+  - [meta]:
+    - date: 12/16/2025
+    - tags: [reflection]
 - https://x.com/S_Conradi/status/1999588652255416630 -- The Hofstadter [[posts/Chaos|chaotic]] Heart Sequence
   - [meta]:
     - date: 12/13/2025
@@ -5873,6 +6082,15 @@ title: are.na
 
 ## technical
 
+- https://github.com/zhaochenyang20/Awesome-ML-SYS-Tutorial -- RL Infra notes
+  - [meta]:
+    - date: 12/16/2025
+    - tags: [inference, scaling]
+- https://github.com/zechenzhangAGI/AI-research-SKILLs/tree/main -- Claude Skills for AI Research
+  - [meta]:
+    - date: 12/15/2025
+    - tags: [foundry]
+  - have some vLLM skills, pretty neat
 - https://github.com/databricks/megablocks -- Megablocks
   - [meta]:
     - date: 12/15/2025
@@ -6275,6 +6493,9 @@ title: are.na
 
 ## math
 
+- [meta]:
+  - json: true
+
 - https://mathcs.holycross.edu/~ahwang/print/calc.pdf -- Calculus for Matehmaticians, Computer Scientists, and Physicists
   - [meta]:
     - date: 12/11/2025
@@ -6461,6 +6682,14 @@ title: are.na
   - view: list
   - json: true
 
+- https://research.nvidia.com/labs/nemotron/files/NVIDIA-Nemotron-3-White-Paper.pdf -- Nemotron 3
+  - [meta]:
+    - date: 12/16/2025
+    - tags: [architecture, byte-level]
+- https://donsheehy.net/research/sheehy05complexity.pdf -- The Complexity of Domino Tiling Problems
+  - [meta]:
+    - date: 12/16/2025
+    - tags: [cs, optimization]
 - https://2012.cccg.ca/papers/paper67.pdf -- Packing Trominoes is NP-Complete, #P-Complete and ASP-Complete
   - [meta]:
     - date: 12/15/2025

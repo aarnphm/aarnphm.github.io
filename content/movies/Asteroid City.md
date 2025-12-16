@@ -9,7 +9,7 @@ posters: "[[movies/posters/asteroid-city.jpg]]"
 status: recurring
 studio: wes anderson
 tags:
-  - movies
+  - absurdism
 title: Asteroid City
 year: 2023
 ---

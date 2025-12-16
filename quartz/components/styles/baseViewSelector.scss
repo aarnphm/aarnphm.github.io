@@ -1,11 +1,32 @@
 @use "../../styles/variables.scss" as *;
 
+.bases-search {
+  margin: 1rem 0;
+  grid-column: 4/5;
+
+  @media all and ($tablet) {
+    grid-column: 3/-1;
+  }
+
+  @media all and ($mobile) {
+    grid-column: 3/-1;
+  }
+}
+
 .bases-toolbar {
   position: relative;
   display: inline-block;
   margin: 1rem 0;
   font-family: var(--bodyFont);
   grid-column: 3/4;
+
+  @media all and ($tablet) {
+    grid-column: 3/-1;
+  }
+
+  @media all and ($mobile) {
+    grid-column: 3/-1;
+  }
 
   .sidepanel-container &,
   .popover & {
@@ -72,7 +93,7 @@
 
   .menu-scroll {
     position: absolute;
-    top: calc(100% + 0.25rem);
+    top: calc(100% + 0.5rem);
     left: 0;
     z-index: 1000;
     max-height: 400px;
@@ -271,12 +292,11 @@
   }
 }
 
-@media (max-width: 768px) {
+@media all and ($mobile) {
   .bases-toolbar {
     .menu-scroll {
       min-width: 240px;
       left: auto;
-      right: 0;
     }
   }
 }

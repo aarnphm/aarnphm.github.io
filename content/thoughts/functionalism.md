@@ -3,7 +3,7 @@ created: "2025-10-01"
 date: "2025-10-01"
 description: Functional roles, computational hermeneutics, autopoietic critiques
 id: functionalism
-modified: 2025-11-27 17:53:37 GMT-05:00
+modified: 2025-12-16 04:46:30 GMT-05:00
 seealso:
   - "[[thoughts/representations|representations]]"
   - "[[thoughts/emergent behaviour|emergent behaviour]]"
@@ -16,11 +16,13 @@ tags:
 title: functionalism
 ---
 
-when I think about mind-like systems (brains, inference stack), often the question "what role is this playing in the overall control loop?" instead of "what is this made of?" comes up.
+One question often comes up when discussing mind-like systems (brains, inference stack) is "what role is this playing in the overall control loop?".
 
-with this framing, mental states are defined via categories and their purposes. If something takes the right inputs and produce the right outputs, then it is a _correct_ mental states
+with this framing, mental states are defined via categories and their purposes. If something takes the right inputs and produce the right outputs, then it is a _correct_ mental states.
 
-in that frame, mental states are job descriptions. pain, belief, attention—each defined by what they do, not what they're made of. if something takes the right inputs, updates correctly, and produces the right outputs, it counts as that mental state. neurons, transistors, code: irrelevant. [@levin2024functionalism] feels like it keeps the explanatory bite of [[thoughts/identity|type-identity theory]] while preserving the empirical humility of [[thoughts/Behavirourism|behaviourism]], and it scales across nervous tissue, synthetic controllers, and commoditised inference engines like [[thoughts/LLMs]].
+Pain, belief, [[thoughts/Attention|attention]]—each defined by what they do, not what they're made of. if something takes the right inputs, updates correctly, and produces the right outputs, it counts as that mental state.
+
+@levin2024functionalism feels like it keeps the explanatory bite of [[thoughts/identity|type-identity theory]] while preserving the empirical humility of [[thoughts/Behavirourism|behaviourism]], and it scales across nervous tissue, synthetic controllers, and commoditised inference engines like [[thoughts/LLMs]].
 
 > [!summary]
 >
@@ -67,7 +69,7 @@ in that frame, mental states are job descriptions. pain, belief, attention—eac
 From a [[thoughts/Philosophy and Kant|Kant]] perspective, functionalism presupposes a "unified subject" to individuate roles, but roles are supposed to _define_ what a subject is:
 
 - This creates a circular dependencies [@mccormick2003kantfunctionalism]
-- [[thoughts/emboded cognition]] and enactivist programs argue that _if function is divorced from constitutive sensorimotor participation, then it re-imports disembodied symbol manipulation under a {{sidenotes[new names??]: autopoietic refinements absorb this pressure by baking bodily viability into the role [@allen2018autopoiesis]}}_
+- [[thoughts/emboded cognition]] and enactivist programs argue that _if function is divorced from constitutive sensorimotor participation, then it re-imports disembodied symbol manipulation under a {{sidenotes[new names?]: autopoietic refinements absorb this pressure by baking bodily viability into the role [@allen2018autopoiesis]}}_
 
 Energy and timing constraints challenge pure substrate independence:
 

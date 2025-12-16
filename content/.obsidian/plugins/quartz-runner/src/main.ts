@@ -3,7 +3,7 @@ import { DEFAULT_SETTINGS, type QuartzRunnerSettings } from "./settings"
 import { QuartzRunnerSettingTab } from "./settingsTab"
 import { registerQuartzRunnerCommands } from "./registerCommands"
 
-export default class ObsidianQuartzRunner extends Plugin {
+export default class QuartzRunner extends Plugin {
 	settings: QuartzRunnerSettings
 
 	async onload(): Promise<void> {
