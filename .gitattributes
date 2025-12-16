@@ -20,3 +20,8 @@ content/thoughts/Summer[[:space:]]fellows.md filter=lfs diff=lfs merge=lfs -text
 content/posts/a[[:space:]]manual[[:space:]]for[[:space:]]the[[:space:]]wounds.md filter=lfs diff=lfs merge=lfs -text
 content/hinterland/self/index.md filter=lfs diff=lfs merge=lfs -text
 content/hinterland/self/intake[[:space:]]form.md filter=lfs diff=lfs merge=lfs -text
+.claude/agents/editorial-voice-writer.md filter=lfs diff=lfs merge=lfs -text
+.claude/agents/inference-optimization-engineer.md filter=lfs diff=lfs merge=lfs -text
+.claude/agents/math-prover.md filter=lfs diff=lfs merge=lfs -text
+.claude/agents/quartz-typescript-specialist.md filter=lfs diff=lfs merge=lfs -text
+.claude/agents/researcher.md filter=lfs diff=lfs merge=lfs -text

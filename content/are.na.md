@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2025-12-16 07:31:08 GMT-05:00
+modified: 2025-12-16 08:34:32 GMT-05:00
 permalinks:
   - /website
   - /tweets
@@ -868,6 +868,14 @@ title: are.na
 
 ## people
 
+- https://alwaysa.li/
+  - [meta]:
+    - date: 12/16/2025
+    - tags: [designer, motion]
+- https://andyljones.com/ -- Andy Jones
+  - [meta]:
+    - date: 12/16/2025
+    - tags: [researcher, rl]
 - https://simonsarris.com -- Simon Sarris
   - [meta]:
     - date: 12/16/2025
@@ -1842,6 +1850,26 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://mingyuan.substack.com/p/a-glimpse-of-the-other-side -- A glimpse of the other side
+  - [meta]:
+    - date: 12/16/2025
+    - tags: [life]
+    - later: true
+- https://mindingourway.com/half-assing-it-with-everything-youve-got/ -- Half-assing it with everything you've got
+  - [meta]:
+    - date: 12/16/2025
+    - tags: [advice, policy, pedagogy]
+  - Say you're a college student, and you have a paper due. The quality of the paper will depend upon the amount of effort you put in. We'll say that you know the project pretty well: you can get an A with only moderate effort, and with significant effort you could produce something much better than the usual A-grade paper. The education environment implicitly attempts to convince students that their preferences point ever rightward along this line. Parents and teachers say things like "you should put in your best effort," and they heap shame upon people who don't strive to push ever rightward along the quality line.
+  - The first group (the "slackers") rejects the implication that quality=preferences. These are the people who don't care about the class, who complain constantly about the useless pointless work they have to do, who half-ass the assignment and turn in something that either barely passes or fails entirely. Slackers tend to resent the authority forcing them to write the paper.
+  - The second group (the "tryers") are the ones who accept the premise that quality=preferences, and strive ever rightwards on the quality line. Tryers include people of all ability levels: some struggle as hard as they can just to get a C, others flaunt their ability to produce masterpieces. Some try to curry favor with the teacher, others are perfectionists who simply can't allow themselves to turn in anything less than their best effort. Some of them are scrupulous people, who feel guilty even after getting an A, because they know they could have done better, and think they should have. Some are humble, some are show-offs, but all of them are pushing rightward.
+  - > If you want to be highly effective, remember what you're fighting for.
+  - Your preferences are to ==hit the quality target with minimum effort.==
+  - If you're trying to learn the material to the fullest, then mine the assignment for all its knowledge, and don't fret about your grade. Anything else is wasted motion.
+- https://guzey.com/how-to-make-friends-over-the-internet/ -- How to make friends over the internet
+  - [meta]:
+    - date: 12/16/2025
+    - tags: [relationship, friends]
+    - Make friends over the internet with people who are great at things you’re interested in. The internet is one of the biggest advantages you have over prior generations. Leverage it.
 - https://www.henrikkarlsson.xyz/p/agency -- On agency
   - [meta]:
     - date: 12/16/2025
@@ -2110,6 +2138,11 @@ title: are.na
     - date: 11/22/2025
     - tags: [web]
   - _text is the most powerful, useful, effective communication technology ever_, period.
+- https://www.astralcodexten.com/p/suddenly-trait-based-embryo-selection -- Suddenly, Trait-Based Embryo Selection
+  - [meta]:
+    - date: 12/16/2025
+    - tags: [genome systems]
+    - later: true
 - https://www.astralcodexten.com/p/your-review-dating-men-in-the-bay -- Dating men in the Bay [**]
   - [meta]:
     - date: 11/22/2025
@@ -3196,6 +3229,7 @@ title: are.na
   - [meta]:
     - date: 12/04/2025
     - tags: [metaethics, interpretability]
+    - later: true
   - i.e Having a Kuhnian crisis
 - https://x.com/Lari_island/status/1996414137333956654 -- Conversation with Opus 3 compaction windows
   - [meta]:
@@ -6082,6 +6116,17 @@ title: are.na
 
 ## technical
 
+- https://github.com/pytorch/helion
+  - [meta]:
+    - date: 12/16/2025
+    - tags: [gpu, kernels]
+  - Similar to CuteDSL, but similar primitives.
+  - It does autotuning but most masking is implicit in Helion.
+  - PyTorch with tiles
+- https://gist.githubusercontent.com/XInTheDark/6fef041cb3edfe054b507813a03cb47d/raw/e95e5f47f0fa6998bdfd3a39734af5fdf1e079b3/claude_dr_prompt.md -- Deep Research prompt example, Claude
+  - [meta]:
+    - date: 12/16/2025
+    - tags: [tooling]
 - https://github.com/zhaochenyang20/Awesome-ML-SYS-Tutorial -- RL Infra notes
   - [meta]:
     - date: 12/16/2025
@@ -6682,6 +6727,10 @@ title: are.na
   - view: list
   - json: true
 
+- https://gwern.net/doc/psychology/vision/1985-murphy.pdf -- Looking Out from the Isolator: David's Perception of the World
+  - [meta]:
+    - date: 12/16/2025
+    - tags: [mind, dualism, psychology]
 - https://research.nvidia.com/labs/nemotron/files/NVIDIA-Nemotron-3-White-Paper.pdf -- Nemotron 3
   - [meta]:
     - date: 12/16/2025
