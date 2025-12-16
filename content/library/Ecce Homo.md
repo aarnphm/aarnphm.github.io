@@ -14,4 +14,6 @@ tags:
 title: Ecce Homo
 year: 1908
 finished: 2024
+translator:
+  - Walter Kaufmann
 ---

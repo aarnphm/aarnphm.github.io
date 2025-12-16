@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2025-12-16 08:34:32 GMT-05:00
+modified: 2025-12-16 16:30:16 GMT-05:00
 permalinks:
   - /website
   - /tweets
@@ -1850,6 +1850,10 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://convergentthinking.sh/posts/people-are-the-new-oil/ -- People are the new oil
+  - [meta]:
+    - date: 12/16/2025
+    - tags: [workplace]
 - https://mingyuan.substack.com/p/a-glimpse-of-the-other-side -- A glimpse of the other side
   - [meta]:
     - date: 12/16/2025
@@ -3131,6 +3135,10 @@ title: are.na
 - [meta]:
   - view: list
 
+- https://colinqiyangli.github.io/dqc/ -- Decoupled Q-Chunking
+  - [meta]:
+    - date: 12/16/2025
+    - tags: [rl, continual learning]
 - https://www.youtube.com/watch?v=MEoGt_cxNSs&t=55s -- Modular Tech Talk: Max Graph Compilation
   - [meta]:
     - date: 12/16/2025

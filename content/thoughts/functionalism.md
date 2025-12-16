@@ -3,7 +3,7 @@ created: "2025-10-01"
 date: "2025-10-01"
 description: Functional roles, computational hermeneutics, autopoietic critiques
 id: functionalism
-modified: 2025-12-16 04:46:30 GMT-05:00
+modified: 2025-12-16 16:18:34 GMT-05:00
 seealso:
   - "[[thoughts/representations|representations]]"
   - "[[thoughts/emergent behaviour|emergent behaviour]]"
@@ -22,7 +22,7 @@ with this framing, mental states are defined via categories and their purposes. 
 
 Pain, belief, [[thoughts/Attention|attention]]—each defined by what they do, not what they're made of. if something takes the right inputs, updates correctly, and produces the right outputs, it counts as that mental state.
 
-@levin2024functionalism feels like it keeps the explanatory bite of [[thoughts/identity|type-identity theory]] while preserving the empirical humility of [[thoughts/Behavirourism|behaviourism]], and it scales across nervous tissue, synthetic controllers, and commoditised inference engines like [[thoughts/LLMs]].
+@levin2024functionalism feels like it keeps the explanatory bite of [[thoughts/identity|type-identity theory]] while preserving the empirical humility of [[thoughts/Behavirourism|behaviourism]], and it scales across nervous tissue, synthetic controllers, and commoditised inference engines (cf [[thoughts/vllm|vLLM]])
 
 > [!summary]
 >
@@ -30,7 +30,9 @@ Pain, belief, [[thoughts/Attention|attention]]—each defined by what they do, n
 >
 > if something takes the right inputs, updates itself in the right way, and produces the right outputs, i’m inclined to treat it as having that mental state—whether it’s neurons or code.
 >
-> so i try to think in terms of "job descriptions" (roles in a control loop) rather than "materials" (neurons vs silicon). pain, for example, is the role that drives avoidance, learning from damage, and reporting harm, not a particular molecule.
+> so i try to think in terms of "job descriptions" (roles in a control loop) rather than "materials" (neurons vs silicon).
+>
+> pain, _for example_, is the ::role{h5}:: that drives avoidance, learning from damage, and reporting harm, not a particular molecule.
 
 ## invariants
 
@@ -43,7 +45,8 @@ Pain, belief, [[thoughts/Attention|attention]]—each defined by what they do, n
   - Ablation studies test whether features play their hypothesized roles across architectures—validating multiple realization. [@geiger2025causalabstraction]
 
 > [!example] Computational [[thoughts/hermeneutics]]
-> Understanding = ability to transform meanings correctly. A concept is a rule for moving between language-games. Proof-terms make the rule explicit. [@fuenmayor2019computationalhermeneutic]
+>
+> Understanding is the ability to transform meanings correctly. A concept is a rule for moving between language-games. Proof-terms make the rule explicit. [@fuenmayor2019computationalhermeneutic]
 
 ## variants
 
