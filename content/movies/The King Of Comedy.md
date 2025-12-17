@@ -9,7 +9,9 @@ posters: "[[movies/posters/the-king-of-comedy.jpg]]"
 status: to watch
 studio: martin scorsese
 tags:
-  - movies
+  - comedy
+  - psychology
+  - film
 title: The King of Comedy
 year: 1982
 ---

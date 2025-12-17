@@ -10,7 +10,8 @@ posters: "[[movies/posters/the-perks-of-being-a-wallflower.jpg]]"
 status: to watch
 studio: general
 tags:
-  - movies
+  - psychology
+  - o/life
 title: The Perks of Being a Wallflower
 year: 2012
 ---

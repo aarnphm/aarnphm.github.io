@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2025-12-16 16:30:16 GMT-05:00
+modified: 2025-12-17 04:46:12 GMT-05:00
 permalinks:
   - /website
   - /tweets
@@ -143,6 +143,10 @@ title: are.na
 - [meta]:
   - view: list
 
+- https://x.com/willdepue/status/2001024738584674398 -- How to think about scaling intelligence, from Ilya
+  - [meta]:
+    - date: 12/16/2025
+    - tags: [scaling, longtermism]
 - https://x.com/karpathy/status/1998236299862659485 -- Python's programming horror
   - [meta]:
     - date: 12/16/2025
@@ -442,6 +446,17 @@ title: are.na
 
 ## website
 
+- [meta]:
+  - json: true
+
+- https://jalammar.github.io/assets/neurips_2025.html -- NeurIPS 2025 Papers
+  - [meta]:
+    - date: 12/17/2025
+    - tags: [visualisation]
+- https://www.tooooools.app/
+  - [meta]:
+    - date: 12/16/2025
+    - tags: [tools, converter]
 - https://gds-viewer.tinytapeout.com/?pdk=sky130A&model=https%3A%2F%2Fwilliamzhang20.github.io%2FTPUv2%2F%2Ftinytapeout.oas -- TinyTPUv2
   - [meta]:
     - date: 12/15/2025
@@ -868,6 +883,12 @@ title: are.na
 
 ## people
 
+- https://philosophy.utoronto.ca/directory/imogen-dickie/ -- Imogen Dickie
+  - [meta]:
+    - date: 12/17/2025
+    - tags: [philosopher, professor]
+  - Philosophy of Mind, Philosophy of Language
+  - Recommended by Michele
 - https://alwaysa.li/
   - [meta]:
     - date: 12/16/2025
@@ -1850,6 +1871,61 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://altered.substack.com/p/goodbye-self -- The grief of losing your sense of self is like getting to Heaven and being upset they don't have your favorite flavor of La Croix
+  - [meta]:
+    - date: 12/17/2025
+    - tags: [grief, love]
+    - later: true
+- https://www.gleech.org/barriers -- Ways we can fail to answer
+  - [meta]:
+    - date: 12/17/2025
+    - tags: [curiosity, knowledge]
+  - Conceptual problems (the question is not a question) (i.e. category error)
+  - Logical problems (the question has no answer) (i.e. antinomy)
+  - Ontic problems (the answer is literally inaccessible) (i.e. Computational intractability)
+  - Epistemic (we cannot get at the answer) (i.e. [[posts/Chaos]], Computational irreducibility)
+  - ??? (the question is logical and/or ontic and/or epistemic idk) (i.e. Observer effects)
+    - Hysteresis: we can’t answer it because we weren’t there at the start and the system remembers. (e.g. What’s the magnetic moment of this material at field strength H? When will this old rope snap? At what temperature will this water freeze?)
+- https://davidbau.com/archives/2025/12/09/in_defense_of_curiosity.html -- In defense of Curiosity
+  - [meta]:
+    - date: 12/17/2025
+    - tags: [research, taste]
+- https://gwern.net/everything -- Everything is Correlated
+  - [meta]:
+    - date: 12/17/2025
+    - tags: [causal reasoning, anthropology]
+- https://www.tommydixon.ca/p/text-remains-the-loveliest-medium -- Text remains the loveliest medium [**]
+  - [meta]:
+    - date: 12/17/2025
+    - tags: [writing, love]
+- https://www.science.org/doi/10.1126/science.aec9014 -- Mathematics is hard for mathematicians to understand too
+  - [meta]:
+    - date: 12/17/2025
+    - tags: [metaculture, pedagogy]
+- https://gwern.net/blog/2025/better-llm-writing -- Towards Better [[thoughts/LLMs]] Creative Writing
+  - [meta]:
+    - date: 12/17/2025
+    - tags: [writing, ai, generative arts]
+    - later: true
+- https://www.humaninvariant.com/blog/career -- Career Advice that Doesn't Suck
+  - [meta]:
+    - date: 12/17/2025
+    - tags: [life, effective work]
+  - Working multiple jobs for a period of time and using the earnings to have a period of unemployment (what I’m doing currently).
+    - This has enabled me to prevent myself from
+    - (1) being anesthetized by my job and becoming complacent, and
+    - (2) giving myself full latitude to work on projects in-depth, not as perpetual half-assed “side projects”.
+  - Two super intense deep work days per week where I go zero to one with no distractions.
+  - Doing way more and trying way harder; [no one is even trying.](https://www.applieddivinitystudies.com/trying/)
+  - Reading long-form books regularly, within _1-3 intensive_ subject deep dives per year on specific topics or classics.
+- https://www.lesswrong.com/posts/isSBwfgRY6zD6mycc/eliezer-s-unteachable-methods-of-sanity -- Eliezer's Unteachable Methods of Sanity
+  - [meta]:
+    - date: 12/17/2025
+    - tags: [life, advice]
+- https://worksinprogress.co/issue/why-science-needs-outsiders -- Why science needs outliers
+  - [meta]:
+    - date: 12/17/2025
+    - tags: [progress]
 - https://convergentthinking.sh/posts/people-are-the-new-oil/ -- People are the new oil
   - [meta]:
     - date: 12/16/2025
@@ -2035,7 +2111,7 @@ title: are.na
   - [meta]:
     - date: 12/02/2025
     - tags: [relationship, friends]
-- https://archive.is/1mIGi -- "Agency" needs nuance [--]
+- https://archive.is/1mIGi -- "Agency" needs nuance [--] [**]
   - [meta]:
     - date: 12/01/2025
     - tags: [agency]
@@ -2047,6 +2123,7 @@ title: are.na
   - [meta]:
     - date: 11/29/2025
     - tags: [poetry, interview]
+    - later: true
 - https://www.avabear.xyz/p/the-friendship-theory-of-everything -- The friendship theory of everything [**]
   - [meta]:
     - date: 11/29/2025
@@ -2594,10 +2671,6 @@ title: are.na
   - [meta]:
     - date: 10/09/2025
     - tags: [culture]
-- https://www.experimental-history.com/p/thank-you-for-being-annoying -- Thank you for being annoying
-  - [meta]:
-    - date: 10/09/2025
-    - tags: [life]
 - https://ellululu.substack.com/p/the-art-of-asking -- The art of asking
   - [meta]:
     - date: 10/07/2025
@@ -3044,6 +3117,10 @@ title: are.na
   - [meta]:
     - date: 10/03/2025
     - tags: [friends, relationship]
+- https://theshadowedarchive.substack.com/p/an-existential-guide-to-loneliness -- An Existential Guide to: Loneliness
+  - [meta]:
+    - date: 12/17/2025
+    - tags: [dread, lonesome]
 - https://static1.squarespace.com/static/5e17b4d3834ea27accf7ef85/t/6837d373c8563c07dea5e115/1748489076368/Anderson%2C+Phenomenology+and+the+Ethics+of+Love+article+Symposium.pdf -- Love Symposium
   - [meta]:
     - date: 11/21/2025
@@ -3130,11 +3207,60 @@ title: are.na
   - By Andy Matuschak and Michael Nielsen
   - https://notation.app/n/d1VOwqGv5DbHdDLf
 
+## courses
+
+- https://ocw.mit.edu/courses/18-04-complex-variables-with-applications-spring-2018/ -- Complex Variables with Applications
+  - [meta]:
+    - date: 12/17/2025
+    - tags: [complex analysis]
+- https://nanjiang.cs.illinois.edu/cs542/ -- CS542 Statistical Reinforcement Learning
+  - [meta]:
+    - date: 12/17/2025
+    - tags: [rl]
+    - later: true
+
 ## machine learning
 
 - [meta]:
   - view: list
 
+- https://jacobgw.com/blog/ml/2024/12/12/interp-latent.html -- Creating Interpretable Latent Spaces with Gradient Routing
+  - [meta]:
+    - date: 12/17/2025
+    - tags: [interpretability, latent space]
+- https://jacobgw.com/blog/ml/2024/07/14/melbo-ortho.html -- I found >800 orthogonal "write code" steering vectors
+  - [meta]:
+    - date: 12/17/2025
+    - tags: [interpretability, search]
+- https://nlp.stanford.edu/~manning/dissertations/Bowman-Sam-thesis-final-2016.pdf -- MODELING NATURAL LANGUAGE SEMANTICS IN LEARNED REPRESENTATIONS
+  - [meta]:
+    - date: 12/17/2025
+    - tags: [iclr]
+    - later: true
+- https://helentoner.substack.com/p/taking-jaggedness-seriously -- Taking Jaggedness Seriously
+  - [meta]:
+    - date: 12/17/2025
+    - tags: [alignment]
+  - I'm usually a big skeptic on Helen Toner's work, but jcarlsmith recommends to read this one. And I respect jcarlsmith a ton.
+  - https://www.youtube.com/watch?v=avxO7ZEJH4w
+- https://bmk.sh/2019/12/31/The-Decade-of-Deep-Learning/ -- The Decade of Deep Learning
+  - [meta]:
+    - date: 12/17/2025
+    - tags: [ml, ontology]
+- https://www.antischeming.ai/cot-transcripts -- Chain-of-Thought Transcript
+  - [meta]:
+    - date: 12/17/2025
+    - tags: [safety, alignment, anchoring]
+    - later: true
+- https://github.com/NVIDIA-NeMo/Emerging-Optimizers
+  - [meta]:
+    - date: 12/17/2025
+    - tags: [training, algorithm]
+- https://www.alignmentforum.org/posts/Ldrss6o3tiKT6NdMm/my-research-process-understanding-and-cultivating-research -- Neel's Cultivating Research Taste [**]
+  - [meta]:
+    - date: 12/17/2025
+    - tags: [research]
+    - pinned: true
 - https://colinqiyangli.github.io/dqc/ -- Decoupled Q-Chunking
   - [meta]:
     - date: 12/16/2025
@@ -3148,7 +3274,6 @@ title: are.na
   - Graph API:
     - Similar to Tensorflow / JAX
     - Symbolic Shape System:
-
       ```mlir
       mo.graph @fake_example_with_poison(%arg0: tensor<[?,?,?], f32>, %arg1: tensor<[?,?,?], f32>) {
         %res = concat_inner_dim(%arg0, %arg1):
@@ -3164,7 +3289,6 @@ title: are.na
         ...
       }
       ```
-
 - https://www.youtube.com/watch?v=6hqMFXbugGo&t=74s -- Modular Tech Talk: MAX Pipelines Architecture
   - [meta]:
     - date: 12/16/2025
@@ -4064,6 +4188,20 @@ title: are.na
 
 ## opinions
 
+- https://daystareld.com/blog/orson-scott-card/ -- Orson Scott Card
+  - [meta]:
+    - date: 12/17/2025
+    - tags: [homosexuality]
+- https://www.humaninvariant.com/blog/titles -- Title Arbitrage as Status Engineering
+  - [meta]:
+    - date: 12/17/2025
+    - tags: [work]
+  - > New titles increase the status of certain jobs that are core to company success.
+  - > Fewer labels reduces siloing, allowing talented employees to contribute across functions and naturally shift into new areas of work.
+- https://www.lesswrong.com/posts/auKWgpdiBwreB62Kh/sam-marks-s-shortform?commentId=Gnx45bn64qdGgXrKS -- Sam Mark, Thoughts on self-report training for honesty
+  - [meta]:
+    - date: 12/17/2025
+    - tags: [research, rl]
 - https://timdettmers.com/2025/12/10/why-agi-will-not-happen/ -- Why AGI will not happen
   - [meta]:
     - date: 12/16/2025
@@ -4260,6 +4398,19 @@ title: are.na
 
 ## life is literature
 
+- https://www.experimental-history.com/p/thank-you-for-being-annoying -- Thank you for being annoying [**]
+  - [meta]:
+    - date: 10/09/2025
+    - tags: [life, love]
+    - pinned: true
+- https://www.experimental-history.com/p/i-wanted-to-be-a-teacher-but-they?r=qx0i -- I wanted to be a teacher but they made me a cop
+  - [meta]:
+    - date: 12/17/2025
+    - tags: [life, fiction]
+- https://guzey.com/impact/ -- On Impact
+  - [meta]:
+    - date: 12/17/2025
+    - tags: [progress]
 - https://internetprincess.substack.com/p/the-ends-of-empathy -- The end of empathy
   - [meta]:
     - date: 12/13/2025
@@ -4479,10 +4630,14 @@ title: are.na
   - [meta]:
     - date: 10/23/2025
     - tags: [life]
-- https://www.gleech.org/stopping -- What's stopping you?
+- https://www.gleech.org/stopping -- What's Stopping You?
   - [meta]:
     - date: 08/28/2025
     - tags: [productivity, agency]
+- https://www.neelnanda.io/blog/44-agency -- Neel's What's Stopping You?
+  - [meta]:
+    - date: 12/17/2025
+    - tags: [agency, research]
 - https://www.sherryning.com/p/goodbye-august -- Goodbye August
   - [meta]:
     - date: 08/28/2025
@@ -4679,6 +4834,41 @@ title: are.na
 - [meta]:
   - json: true
 
+- http://web.dfc.unibo.it/buzzetti/SFMcorso2005-06sp/materiali/veldhuis.pdf -- Ordained and Absolute Power in Scotus’ Ordinatio I 44, Henri Veldhuis
+  - [meta]:
+    - date: 12/17/2025
+    - tags: [theology]
+- https://academic.oup.com/hgs/article/36/1/46/6542909 -- From Particularism to Mass Murder: Nazi Morality, Antisemitism, and Cognitive Dissonance
+  - [meta]:
+    - date: 12/17/2025
+    - tags: [fascist, morality]
+    - later: true
+- https://joecarlsmith.com/2021/09/30/sia-ssa-part-1-learning-from-the-fact-that-you-exist -- Learning from the fact that you exist
+  - [meta]:
+    - date: 12/17/2025
+    - tags: [perception, theology]
+- [[thoughts/papers/The+normativity+of+meaning+without+the+normativity.pdf]] -- The normativity of meaning with the normativity
+  - [meta]:
+    - date: 12/17/2025
+    - tags: [being, semantic normativity]
+    - later: true
+- https://www.youtube.com/watch?v=g3f-Lfm8KNg -- A. J. Ayer's Emotivist Theory of [[thoughts/moral|Moral]] language
+  - [meta]:
+    - date: 12/17/2025
+    - tags: [moral, ethics]
+    - later: true
+- https://www.lesswrong.com/posts/KdgD8wD8TYT2kbESj/the-moral-copernican-principle -- The Moral Copernican Principle
+  - [meta]:
+    - date: 12/17/2025
+    - tags: [ethics]
+    - later: true
+- https://www.lesswrong.com/s/YshDJ9ECCgkwoNsBc/p/ksatPnddyZjHwZWwG -- Mnestics
+  - [meta]:
+    - date: 12/17/2025
+    - tags: [amnesia, memory]
+  - from [[library/There is No Antimemetics Division]] our heroes must fight a great evil, monsters that make you forget they exist. In the course of such adventures, they find it necessary to imbibe "mnestics" (opposite of amnesiac), drugs for remembering
+  - _Take. your. mnestic_
+  - ![[quotes#^mnestics]]
 - https://www.youtube.com/watch?v=V-4R0uuyUm4 -- Derrida and Montaigne on Mourning the Friend
   - [meta]:
     - date: 12/16/2025
@@ -5032,6 +5222,28 @@ title: are.na
 
 ## stream
 
+- https://without.boats/ -- Without boats, dreams dry up
+  - [meta]:
+    - date: 12/17/2025
+    - tags: [programming]
+    - pinned: true
+- https://www.gleech.org/ai2025 -- AI in 2025: gestalt
+  - [meta]:
+    - date: 12/17/2025
+    - tags: [ai, llm, longtermism, safety]
+  - Do confident short timelines make sense? [lw](https://www.lesswrong.com/posts/5tqFT3bcTekvico4d/do-confident-short-timelines-make-sense)
+  - much more impressive, but not proportionally more useful. i.e bringin more in-distribution rather than generalizing very far.
+  - pretraining is pretty disappointing, given post-training is a lot more efficient.
+- https://www.lesswrong.com/w/bayes-rule?l=1zq -- Bayes' rule
+  - [meta]:
+    - date: 12/17/2025
+    - tags: [lw]
+  - the law of probability governing _the strength of evidence_
+- https://www.lesswrong.com/posts/Kyc5dFDzBg4WccrbK/an-intuitive-explanation-of-solomonoff-induction -- An Intuitive Explanation of Solomonoff Induction
+  - [meta]:
+    - date: 12/17/2025
+    - tags: [rationalism, realism, philosophy]
+    - later: true
 - https://www.youtube.com/watch?v=EvHRQhMX7_w -- Stanford CS224R Deep Reinforcement Learning | Spring 2025
   - [meta]:
     - date: 12/16/2025
@@ -5478,6 +5690,18 @@ title: are.na
 
 ## video
 
+- https://www.youtube.com/watch?v=Pk8Sn2JRup8 -- The Price of Becoming Exceptional (And Why It's Worth It)
+  - [meta]:
+    - date: 12/17/2025
+    - tags: [discipline, routine, dedication]
+- https://www.youtube.com/watch?v=LJuKALOACAg -- a peaceful life in a new city ~ sf
+  - [meta]:
+    - date: 12/17/2025
+    - tags: [girlhood]
+- https://www.youtube.com/watch?v=toucZU7RQAk -- a quiet morning in november
+  - [meta]:
+    - date: 12/17/2025
+    - tags: [aesthetics]
 - https://www.youtube.com/watch?v=tf6N2NjT5vM&t=108s -- my way into difficult philo text : spinoza, hegel, marx & co.
   - [meta]:
     - date: 12/16/2025
@@ -5787,6 +6011,15 @@ title: are.na
 
 ## arts
 
+- https://www.youtube.com/watch?v=_nfMSscxBhQ -- How I Tricked Myself Into Believing I Could
+  - [meta]:
+    - date: 12/17/2025
+    - tags: [work, arts]
+- https://www.youtube.com/watch?v=sdSMcLgdaJ0 -- Art in the AI Bubble: Guns, Fences, and the Farm Crisis
+  - [meta]:
+    - date: 12/17/2025
+    - tags: [metaculture]
+    - later: true
 - https://archive.ph/gyXym -- Enduring images of 2025 [--]
   - [meta]:
     - date: 12/16/2025
@@ -6119,11 +6352,19 @@ title: are.na
 - https://youtu.be/IVA2bK9qjzE?si=D5niDuHTAksgu_Nl -- David Deutsch: AGI, the origins of quantum computing, and the future of humanity [**]
   - [meta]:
     - date: 10/03/2025
-    - tags: [iva2bk9qjze]
+    - tags: [agi]
   - You are valuable economically, because you are different.
 
 ## technical
 
+- https://cursor.com/blog/kernels -- 1.5x faster MoE training with custom MXFP8 kernels
+  - [meta]:
+    - date: 12/17/2025
+    - tags: [training, kernels]
+- https://www.youtube.com/watch?v=kccs9xk09rw -- TinyTPU [**]
+  - [meta]:
+    - date: 12/17/2025
+    - tags: [asic, design]
 - https://github.com/pytorch/helion
   - [meta]:
     - date: 12/16/2025
@@ -6275,6 +6516,10 @@ title: are.na
   - [meta]:
     - date: 10/28/2025
     - tags: [ai, recursion]
+- https://gist.github.com/jbreckmckye/32587f2907e473dd06d68b0362fb0048 -- The Cloudflare outage was a good thing
+  - [meta]:
+    - date: 12/17/2025
+    - tags: [engineering]
 - https://thundergolfer.com/blog/aws-us-east-1-outage-oct20 -- AWS US-East 1 outage
   - [meta]:
     - date: 10/28/2025
@@ -6553,6 +6798,7 @@ title: are.na
   - [meta]:
     - date: 12/11/2025
     - tags: [abstract algebra]
+    - later: true
 - https://www.youtube.com/watch?v=eEGNdjdxeG8&t=38s -- Linial--Meshulam Complexes, Michael Chapman
   - [meta]:
     - date: 12/08/2025
@@ -6735,6 +6981,12 @@ title: are.na
   - view: list
   - json: true
 
+- https://people.math.harvard.edu/~siu/math230a/sectional_ricci_curvature_manifold_diameter.pdf -- Sectional and Ricci Curvature, Variations of Arc-Length
+  and Diameter of Riemannian Manifold
+  - [meta]:
+    - date: 12/17/2025
+    - tags: [manifold, topology]
+    - later: true
 - https://gwern.net/doc/psychology/vision/1985-murphy.pdf -- Looking Out from the Isolator: David's Perception of the World
   - [meta]:
     - date: 12/16/2025
@@ -6804,7 +7056,7 @@ title: are.na
         \end{cases}
         $$
     - Causal Goodhart: causal path between proxy and goal is ::indirect{h4}::, intervening can change the relationship between the measure and the proxy.
-      ![[thoughts/images/causal-goodhart.png]]
+      ![[thoughts/images/causal-goodhart.webp]]
       - Shared Cause Intervention
       - Intermediary Intervention
       - Metric Manipulation
@@ -6937,10 +7189,11 @@ title: are.na
   - [meta]:
     - date: 11/26/2025
     - tags: [cot, llm]
-- https://www.usenix.org/system/files/conference/atc14/atc14-paper-ongaro.pdf -- Raft consensus algorithm
+- https://www.usenix.org/system/files/conference/atc14/atc14-paper-ongaro.pdf -- Raft consensus algorithm [**]
   - [meta]:
     - date: 11/23/2025
     - tags: [crdt, distributed system]
+    - pinned: true
 - https://arxiv.org/pdf/2301.04709
   - [meta]:
     - date: 11/15/2025

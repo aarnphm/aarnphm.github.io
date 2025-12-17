@@ -9,7 +9,9 @@ posters: "[[movies/posters/oppenheimer.jpg]]"
 status: recurring
 studio: christopher nolan
 tags:
-  - movies
+  - technical
+  - history
+  - politics
 title: Oppenheimer
 year: 2023
 ---

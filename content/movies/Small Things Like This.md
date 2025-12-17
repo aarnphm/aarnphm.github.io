@@ -9,7 +9,9 @@ posters: "[[movies/posters/small-things-like-this.jpg]]"
 status: to watch
 studio: general
 tags:
-  - movies
+  - history
+  - politics
+  - o/life
 title: Small Things Like This
 year: 2024
 ---

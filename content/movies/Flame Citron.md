@@ -9,7 +9,8 @@ posters: "[[movies/posters/flame-citron.jpg]]"
 status: to watch
 studio: general
 tags:
-  - movies
+  - history
+  - thriller
 title: Flame & Citron
 year: 2008
 ---

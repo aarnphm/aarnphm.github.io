@@ -9,7 +9,9 @@ posters: "[[movies/posters/fantastic-mr-fox.jpg]]"
 status: recurring
 studio: wes anderson
 tags:
-  - movies
+  - animation
+  - family
+  - comedy
 title: Fantastic Mr. Fox
 year: 2009
 ---

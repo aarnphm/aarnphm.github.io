@@ -9,7 +9,9 @@ posters: "[[movies/posters/the-dark-knight-rises.jpg]]"
 status: recurring
 studio: christopher nolan
 tags:
-  - movies
+  - action
+  - thriller
+  - politics
 title: The Dark Knight Rises
 year: 2012
 ---

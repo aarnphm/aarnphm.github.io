@@ -9,7 +9,8 @@ posters: "[[movies/posters/paterson.jpg]]"
 status: to watch
 studio: general
 tags:
-  - movies
+  - poetry
+  - o/life
 title: Paterson
 year: 2016
 ---

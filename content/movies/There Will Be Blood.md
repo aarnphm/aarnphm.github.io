@@ -9,7 +9,8 @@ posters: "[[movies/posters/there-will-be-blood.jpg]]"
 status: to watch
 studio: paul thomas anderson
 tags:
-  - movies
+  - finance
+  - politics
 title: There Will Be Blood
 year: 2007
 ---

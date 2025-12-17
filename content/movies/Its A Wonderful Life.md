@@ -9,7 +9,8 @@ posters: "[[movies/posters/its-a-wonderful-life.jpg]]"
 status: to watch
 studio: rko
 tags:
-  - movies
+  - vintage
+  - o/life
 title: It's a wonderful life
 year: 1946
 ---

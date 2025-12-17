@@ -9,7 +9,8 @@ posters: "[[movies/posters/blue-is-the-warmest-color.jpg]]"
 status: to watch
 studio: general
 tags:
-  - movies
+  - love
+  - o/relationship
 title: Blue is the Warmest Color
 year: 2013
 ---

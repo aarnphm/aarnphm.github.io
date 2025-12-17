@@ -9,7 +9,8 @@ posters: "[[movies/posters/batman-begins.jpg]]"
 status: recurring
 studio: christopher nolan
 tags:
-  - movies
+  - action
+  - thriller
 title: Batman Begins
 year: 2005
 ---

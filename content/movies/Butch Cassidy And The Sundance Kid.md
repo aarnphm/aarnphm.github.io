@@ -9,7 +9,8 @@ posters: "[[movies/posters/butch-cassidy-and-the-sundance-kid.jpg]]"
 status: to watch
 studio: general
 tags:
-  - movies
+  - vintage
+  - friend
 title: Butch Cassidy and the Sundance Kid
 year: 1969
 ---

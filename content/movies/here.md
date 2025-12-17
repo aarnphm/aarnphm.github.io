@@ -10,7 +10,9 @@ rating: 6.9
 status: finished
 studio: sony
 tags:
-  - movies
+  - time
+  - meta
+  - technical
 title: Here
 watched: "2024-11-05"
 year: 2024

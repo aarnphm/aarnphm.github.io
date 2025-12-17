@@ -9,7 +9,8 @@ posters: "[[movies/posters/mean-streets.jpg]]"
 status: recurring
 studio: martin scorsese
 tags:
-  - movies
+  - vintage
+  - o/life
 title: Mean Streets
 year: 1973
 ---

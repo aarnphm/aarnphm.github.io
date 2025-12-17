@@ -9,7 +9,8 @@ posters: "[[movies/posters/amour.jpg]]"
 status: to watch
 studio: general
 tags:
-  - movies
+  - love
+  - o/life
 title: Amour
 year: 2012
 ---

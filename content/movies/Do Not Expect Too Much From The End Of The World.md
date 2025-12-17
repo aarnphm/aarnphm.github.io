@@ -9,7 +9,9 @@ posters: "[[movies/posters/do-not-expect-too-much-from-the-end-of-the-world.jpg]
 status: to watch
 studio: general
 tags:
-  - movies
+  - politics
+  - absurdism
+  - meta
 title: Do Not Expect Too Much from the End of the World
 year: 2023
 ---

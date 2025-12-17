@@ -2,7 +2,6 @@ public
 node_modules
 .quartz-cache
 .mypy_cache
-# content
 .venv
 safari.css
 *.pdf
@@ -20,3 +19,4 @@ worker-configuration.d.ts
 *.bin
 **/embeddings/*.json
 content/stream.md
+content/are.na.md

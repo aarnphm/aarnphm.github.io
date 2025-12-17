@@ -9,7 +9,9 @@ posters: "[[movies/posters/inception.jpg]]"
 status: recurring
 studio: christopher nolan
 tags:
-  - movies
+  - thriller
+  - recursion
+  - technical
 title: Inception
 year: 2010
 ---

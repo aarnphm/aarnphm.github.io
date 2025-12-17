@@ -10,7 +10,8 @@ rating: 7.4
 status: finished
 studio: ifc films
 tags:
-  - movies
+  - friend
+  - o/life
 title: Frances Ha
 watched: "2024-03-20"
 year: 2012

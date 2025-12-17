@@ -11,7 +11,8 @@ posters: "[[movies/posters/late-night-with-the-devil.jpg]]"
 status: to watch
 studio: general
 tags:
-  - movies
+  - thriller
+  - meta
 title: Late Night with The Devil
 year: 2024
 ---

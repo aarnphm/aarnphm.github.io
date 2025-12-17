@@ -9,7 +9,9 @@ posters: "[[movies/posters/killing-of-the-sacred-deer.jpg]]"
 status: to watch
 studio: general
 tags:
-  - movies
+  - thriller
+  - absurdism
+  - psychology
 title: Killing of the Sacred Deer
 year: 2017
 ---

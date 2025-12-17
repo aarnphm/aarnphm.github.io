@@ -10,7 +10,9 @@ rating: 7.8
 status: finished
 studio: mubi
 tags:
-  - movies
+  - thriller
+  - psychology
+  - politics
 title: The Substance
 watched: "2024-10-15"
 year: 2024

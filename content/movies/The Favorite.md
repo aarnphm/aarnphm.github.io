@@ -9,7 +9,9 @@ posters: "[[movies/posters/the-favorite.jpg]]"
 status: to watch
 studio: general
 tags:
-  - movies
+  - politics
+  - comedy
+  - absurdism
 title: The Favorite
 year: 2018
 ---

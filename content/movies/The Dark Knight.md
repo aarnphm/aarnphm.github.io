@@ -9,7 +9,8 @@ posters: "[[movies/posters/the-dark-knight.jpg]]"
 status: recurring
 studio: christopher nolan
 tags:
-  - movies
+  - action
+  - thriller
 title: The Dark Knight
 year: 2008
 ---

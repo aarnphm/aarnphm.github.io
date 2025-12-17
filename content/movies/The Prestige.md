@@ -9,7 +9,8 @@ posters: "[[movies/posters/the-prestige.jpg]]"
 status: recurring
 studio: christopher nolan
 tags:
-  - movies
+  - thriller
+  - technical
 title: The Prestige
 year: 2006
 ---

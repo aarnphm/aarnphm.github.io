@@ -9,7 +9,8 @@ posters: "[[movies/posters/following.jpg]]"
 status: recurring
 studio: christopher nolan
 tags:
-  - movies
+  - thriller
+  - psychology
 title: Following
 year: 1998
 ---

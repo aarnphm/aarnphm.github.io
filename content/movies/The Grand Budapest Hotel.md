@@ -9,7 +9,9 @@ posters: "[[movies/posters/the-grand-budapest-hotel.jpg]]"
 status: recurring
 studio: wes anderson
 tags:
-  - movies
+  - vintage
+  - comedy
+  - politics
 title: The Grand Budapest Hotel
 year: 2014
 ---

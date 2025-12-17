@@ -9,7 +9,8 @@ posters: "[[movies/posters/the-life-aquatic-with-steve-zissou.jpg]]"
 status: recurring
 studio: wes anderson
 tags:
-  - movies
+  - comedy
+  - o/life
 title: The Life Aquatic with Steve Zissou
 year: 2004
 ---

@@ -9,7 +9,8 @@ posters: "[[movies/posters/nosferatu.jpg]]"
 status: to watch
 studio: focus features
 tags:
-  - movies
+  - thriller
+  - love
 title: Nosferatu
 year: 2024
 ---

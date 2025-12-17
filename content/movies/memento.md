@@ -9,7 +9,9 @@ posters: "[[movies/posters/memento.jpg]]"
 status: recurring
 studio: christopher nolan
 tags:
-  - movies
+  - thriller
+  - psychology
+  - recursion
 title: Memento
 year: 2000
 ---

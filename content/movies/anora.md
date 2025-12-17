@@ -10,7 +10,8 @@ rating: 7.9
 status: finished
 studio: neon
 tags:
-  - movies
+  - comedy
+  - politics
 title: Anora
 watched: "2024-11-15"
 year: 2024

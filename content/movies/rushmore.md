@@ -9,7 +9,8 @@ posters: "[[movies/posters/rushmore.jpg]]"
 status: recurring
 studio: wes anderson
 tags:
-  - movies
+  - comedy
+  - o/life
 title: Rushmore
 year: 1998
 ---

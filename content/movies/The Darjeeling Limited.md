@@ -9,7 +9,8 @@ posters: "[[movies/posters/the-darjeeling-limited.jpg]]"
 status: recurring
 studio: wes anderson
 tags:
-  - movies
+  - family
+  - o/relationship
 title: The Darjeeling Limited
 year: 2007
 ---

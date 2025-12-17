@@ -9,7 +9,9 @@ posters: "[[movies/posters/the-royal-tenenbaums.jpg]]"
 status: recurring
 studio: wes anderson
 tags:
-  - movies
+  - family
+  - comedy
+  - psychology
 title: The Royal Tenenbaums
 year: 2001
 ---

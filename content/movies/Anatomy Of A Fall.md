@@ -9,7 +9,9 @@ posters: "[[movies/posters/anatomy-of-a-fall.jpg]]"
 status: to watch
 studio: neon
 tags:
-  - movies
+  - thriller
+  - o/relationship
+  - psychology
 title: Anatomy of a Fall
 year: 2023
 ---

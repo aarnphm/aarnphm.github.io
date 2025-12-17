@@ -264,9 +264,9 @@ views:
         direction: ASC
     summaries:
       date: range
-      subcategory: unique
+      subcategory: Filled
       title: unique
-      finished: filled
+      finished: Filled
       formula.2025: read this year
       formula.2024: read this year
       formula.2023: read this year
@@ -278,11 +278,12 @@ views:
       note.id: 307
       note.title: 401
       note.date: 147
-      note.tags: 302
-      note.finished: 134
+      note.tags: 225
+      note.finished: 98
       note.status: 83
       note.subcategory: 172
       note.author: 205
       note.posters: 410
-      note.translator: 253
-      note.aliases: 131
+      note.translator: 211
+      note.notebook: 179
+      note.aliases: 136

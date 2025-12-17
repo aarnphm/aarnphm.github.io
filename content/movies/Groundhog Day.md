@@ -10,7 +10,9 @@ posters: "[[movies/posters/groundhog-day.jpg]]"
 status: to watch
 studio: general
 tags:
-  - movies
+  - time
+  - comedy
+  - o/life
 title: Groundhog Day
 year: 1993
 ---

@@ -10,7 +10,8 @@ posters: "[[movies/posters/zodiac.jpg]]"
 status: to watch
 studio: david fincher
 tags:
-  - movies
+  - thriller
+  - psychology
 title: Zodiac
 year: 2007
 ---

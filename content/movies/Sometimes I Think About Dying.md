@@ -9,7 +9,9 @@ posters: "[[movies/posters/sometimes-i-think-about-dying.jpg]]"
 status: to watch
 studio: general
 tags:
-  - movies
+  - o/life
+  - psychology
+  - love
 title: Sometimes I Think About Dying
 year: 2023
 ---

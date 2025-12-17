@@ -9,7 +9,8 @@ posters: "[[movies/posters/before-sunrise.jpg]]"
 status: to watch
 studio: columbia pictures
 tags:
-  - movies
+  - love
+  - o/relationship
 title: Before Sunrise
 year: 1995
 ---

@@ -16,7 +16,7 @@ metadata:
     text_line    = { character - newline } ;
     ws           = { " " } ;
     character    = ? any printable ascii except newline ? ;
-modified: 2025-12-01 20:18:40 GMT-05:00
+modified: 2025-12-17 02:45:40 GMT-05:00
 seealso:
   - "[[word|dictionary]]"
   - "[[research|wip]]"
@@ -31,17 +31,33 @@ transclude:
   title: false
 ---
 
+> “Do you know what a poem is, Esther?' 
+> 
+> No, what?' I would say. 
+> 
+> A piece of dust.' 
+> 
+> Then, just as he was smiling and starting to look proud, I would say, 'So are the cadavers you cut up. So are the people you think you're curing. They're dust as dust as dust. I reckon a good poem lasts a whole lot longer than a hundred of those people put together.' 
+> 
+> And of course Buddy wouldn't have any answer to that, because what I said was true. People were made of nothing so much as dust, and I couldn't see that doctoring all that dust was a bit better than writing poems people would remember and repeat to themselves when they were unhappy or sick or couldn't sleep.
+>
+> Sylvia Plath, _The Bell Jar_
+
+> Humans can forget anything. It's okay to forget some things, because we are mortal and finite. But some things we have to remember. It's important that we remember. Write to yourself something which will make you remember. ^mnestics
+>
+> [[library/There Is No Antimemetics Division]]
+
 > I am shivering, reading cold northeastern prose
-> 
+>
 > and there is a word for what I do
-> 
+>
 > but I do it anyway,
-> 
+>
 > carefully setting dinner on the table uncooked,
-> 
+>
 > before setting the table on fire.
 >
-> David Berman, _Of Things Found Where They Are Not Supposed To Be_
+> David Berman, _Of Things Found Where They Are Not Supposed To Be_
 
 > I always have such need to merely talk to you. Even when I have nothing to talk about - with you I just seem to go right ahead and sort of invent it. I _invent_ it for you.
 >

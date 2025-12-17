@@ -9,7 +9,9 @@ posters: "[[movies/posters/eyes-wide-shut.jpg]]"
 status: to watch
 studio: warner bros
 tags:
-  - movies
+  - o/relationship
+  - thriller
+  - psychology
 title: Eyes Wide Shut
 year: 1999
 ---

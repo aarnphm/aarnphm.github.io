@@ -9,7 +9,8 @@ posters: "[[movies/posters/dunkirk.jpg]]"
 status: recurring
 studio: christopher nolan
 tags:
-  - movies
+  - history
+  - thriller
 title: Dunkirk
 year: 2017
 ---

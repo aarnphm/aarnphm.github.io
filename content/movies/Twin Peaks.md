@@ -9,7 +9,9 @@ posters: "[[movies/posters/twin-peaks.jpg]]"
 status: to watch
 studio: abc
 tags:
-  - movies
+  - shows
+  - thriller
+  - absurdism
 title: Twin Peaks
 year: 1990
 ---

@@ -9,7 +9,8 @@ posters: "[[movies/posters/blue-jasmine.jpg]]"
 status: to watch
 studio: sony
 tags:
-  - movies
+  - psychology
+  - politics
 title: Blue Jasmine
 year: 2013
 ---

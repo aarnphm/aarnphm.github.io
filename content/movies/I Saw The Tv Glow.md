@@ -9,7 +9,9 @@ posters: "[[movies/posters/i-saw-the-tv-glow.jpg]]"
 status: to watch
 studio: a24
 tags:
-  - movies
+  - a24
+  - thriller
+  - psychology
 title: I Saw the TV Glow
 year: 2024
 ---

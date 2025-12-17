@@ -10,7 +10,9 @@ posters: "[[movies/posters/three-days-of-the-condor.jpg]]"
 status: to watch
 studio: general
 tags:
-  - movies
+  - vintage
+  - thriller
+  - politics
 title: Three Days of the Condor
 year: 1975
 ---

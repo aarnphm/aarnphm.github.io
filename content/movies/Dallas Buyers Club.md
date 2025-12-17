@@ -9,7 +9,8 @@ posters: "[[movies/posters/dallas-buyers-club.jpg]]"
 status: to watch
 studio: general
 tags:
-  - movies
+  - biology
+  - politics
 title: Dallas Buyers Club
 year: 2013
 ---
