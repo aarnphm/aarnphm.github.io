@@ -9,7 +9,8 @@ posters: "[[movies/posters/evil-does-not-exists.jpg]]"
 status: to watch
 studio: general
 tags:
-  - movies
+  - r/environment
+  - politics
 title: Evil Does Not Exists
 year: 2023
 ---

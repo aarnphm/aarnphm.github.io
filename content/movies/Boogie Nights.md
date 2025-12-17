@@ -9,7 +9,8 @@ posters: "[[movies/posters/boogie-nights.jpg]]"
 status: to watch
 studio: Paul Thomas Anderson
 tags:
-  - movies
+  - family
+  - film
 title: Boogie Nights
 year: 1997
 ---

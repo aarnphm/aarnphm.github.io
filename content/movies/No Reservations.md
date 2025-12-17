@@ -10,7 +10,9 @@ rating: 6.6
 status: finished
 studio: warner bros
 tags:
-  - movies
+  - family
+  - love
+  - o/relationship
 title: No Reservations
 watched: "2024-01-15"
 year: 2007

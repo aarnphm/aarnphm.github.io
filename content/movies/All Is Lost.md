@@ -9,7 +9,7 @@ posters: "[[movies/posters/all-is-lost.jpg]]"
 status: to watch
 studio: lionsgate
 tags:
-  - movies
+  - o/life
 title: All Is Lost
 year: 2013
 ---

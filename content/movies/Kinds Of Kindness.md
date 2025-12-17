@@ -9,7 +9,9 @@ posters: "[[movies/posters/kinds-of-kindness.jpg]]"
 status: to watch
 studio: searchlight
 tags:
-  - movies
+  - absurdism
+  - psychology
+  - o/relationship
 title: Kinds of Kindness
 year: 2024
 ---

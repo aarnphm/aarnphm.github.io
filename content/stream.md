@@ -38,7 +38,7 @@ metadata:
     letter        = "a".."z" ;
     digit         = "0".."9" ;
     character     = ? any printable ascii except newline ? ;
-modified: 2025-12-12 18:37:07 GMT-05:00
+modified: 2025-12-17 04:44:33 GMT-05:00
 tags:
   - fruit
   - evergreen
@@ -61,7 +61,11 @@ title: stream
   - tags:
     - process
 
+from [on learning through presence](https://www.humaninvariant.com/blog/presence):
+
 > When you show up in person, you feel like you don't belong. You quickly learn that others have a deep and rich shared cultural history that has spanned over the better part of a decade, while you are a newcomer. You try your best: you connect with people during [late night conversations](https://www.humaninvariant.com/blog/conversations) you would have never connected with otherwise, and maybe even plan to throw a joint party together in New York.
+
+> You learn more about the shape of the life you want, the types of relationships you want with certain people, and the sacrifices you are willing to make to be ambitious. You learn that ambient ambition is real, and what it really means to love what you do, when you witness someone over twice your age work into the night and enjoy every moment.
 
 > You learn what it feels like to use a typewriter because somebody else cared enough to give you the opportunity to experience that feeling and made it happen. You use that opportunity to ponder [the market structure of writing implements](https://www.humaninvariant.com/blog/lowercase) and to write an endearing note to the people who have given you the opportunity to learn more about yourself. While doing so, you learn what the sound of a bell means when typing on a typewriter.
 
@@ -69,7 +73,11 @@ title: stream
 
 > Most importantly, you learn that the ability and desire to care is built through presence.
 
-I think
+there's a striking prior when comparing [[thoughts/writing|writing]] with presence. both are processes where the transformation happens _during_ the act of doing it, rather than afterwards. You're thinking out loud when you write, and often times thoughts are then a lossy collections of ideas that you've scribbled onto the pages, and soonthereafter realising half of them, are {{sidenotes[wrong.]: I don't mean in the literall sense, but rather an incoherent/illogical collections of word-pile-that-you-vomit-out-onto-the-page.}} presence sort of work the same way here _(or at least from the blog)_ where you discover it by noticing which conversations make you lean in, which type of energy you want to absorb, which futures you find yourself involuntarily imagining.
+
+You can believe in this to your hearts' content, but I think they both look like search algorithms running on wetware-presence searches possibility-space for the life-shape that fits with your lived experience. The result of such a product is merely an evidence that such _process_ occurred.
+
+I wonder if this is why reading essays and consuming YouTube videos produce little lasting change if you aren't really put an effort in actually studying the subject at hand. In a sense, you're watching the residue/product of someone else's search process, instead of running your own. The illegible inputs—the drafts, the small talk, the wrong turns—contain the actual epistemic work, which is completely removed from the final products, is the thing that ::matters:: the most.
 
 ---
 
@@ -97,7 +105,7 @@ I think
     - ontology
     - philosophy
 
-can an omnipotent being create a stone so heavy they cannot lift it? if yes, then they cannot lift it—failure of omnipotence. if no, they cannot create it—failure of omnipotence. either way, {{sidenotes[omnipotence fails.]: atheological arguments use this not primarily as evidence against god's existence but to show "omnipotence" as traditionally conceived may be incoherent.}}
+can an [omnipotent](https://iep.utm.edu/omnipote/) being create a stone so heavy they cannot lift it? if yes, then they cannot lift it—failure of omnipotence. if no, they cannot create it—failure of omnipotence. either way, {{sidenotes[omnipotence fails.]: atheological arguments use this not primarily as evidence against god's existence but to show "omnipotence" as traditionally conceived may be incoherent.}}
 
 the paradox reveals that "maximal power" might be conceptually malformed, like "set of all sets" or "north of the north pole." not difficult to achieve but impossible to coherently {{sidenotes[specify.]: it is _impossible_ to create an uncreated object—not because of limited power but because the phrase doesn't describe a possible state of affairs.}}
 

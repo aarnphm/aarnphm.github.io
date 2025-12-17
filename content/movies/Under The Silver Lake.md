@@ -9,7 +9,9 @@ posters: "[[movies/posters/under-the-silver-lake.jpg]]"
 status: to watch
 studio: general
 tags:
-  - movies
+  - thriller
+  - absurdism
+  - meta
 title: Under The Silver Lake
 year: 2018
 ---

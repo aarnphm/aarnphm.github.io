@@ -9,7 +9,8 @@ posters: "[[movies/posters/2001-a-space-odyssey.jpg]]"
 status: recurring
 studio: mgm
 tags:
-  - movies
+  - p/sf
+  - technical
 title: "2001: A Space Odyssey"
 year: 1968
 ---

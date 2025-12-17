@@ -9,7 +9,9 @@ posters: "[[movies/posters/moonrise-kingdom.jpg]]"
 status: recurring
 studio: wes anderson
 tags:
-  - movies
+  - love
+  - family
+  - comedy
 title: Moonrise Kingdom
 year: 2012
 ---

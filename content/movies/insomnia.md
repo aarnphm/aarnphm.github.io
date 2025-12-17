@@ -9,7 +9,8 @@ posters: "[[movies/posters/insomnia.jpg]]"
 status: recurring
 studio: christopher nolan
 tags:
-  - movies
+  - thriller
+  - psychology
 title: Insomnia
 year: 2002
 ---

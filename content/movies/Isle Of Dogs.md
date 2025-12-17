@@ -9,7 +9,9 @@ posters: "[[movies/posters/isle-of-dogs.jpg]]"
 status: recurring
 studio: wes anderson
 tags:
-  - movies
+  - animation
+  - politics
+  - absurdism
 title: Isle of Dogs
 year: 2018
 ---

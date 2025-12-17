@@ -10,7 +10,8 @@ rating: 8.1
 status: finished
 studio: touchstone
 tags:
-  - movies
+  - university
+  - o/life
 title: Dead Poets Society
 watched: "2024-01-20"
 year: 1989

@@ -10,7 +10,8 @@ posters: "[[movies/posters/the-sting.jpg]]"
 status: to watch
 studio: general
 tags:
-  - movies
+  - vintage
+  - thriller
 title: The Sting
 year: 1973
 ---

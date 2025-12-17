@@ -9,7 +9,8 @@ posters: "[[movies/posters/all-the-presidents-men.jpg]]"
 status: to watch
 studio: warner bros
 tags:
-  - movies
+  - vintage
+  - politics
 title: All the President's Men
 year: 1976
 ---

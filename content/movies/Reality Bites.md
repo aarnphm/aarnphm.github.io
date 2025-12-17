@@ -8,7 +8,8 @@ modified: 2025-11-25 02:14:48 GMT-04:00
 posters: "[[movies/posters/reality-bites.jpg]]"
 status: recurring
 tags:
-  - movies
+  - o/life
+  - o/relationship
 year: 1994
 studio: universal
 director: Ben Stiller

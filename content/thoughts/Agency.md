@@ -2,7 +2,7 @@
 date: "2024-02-07"
 description: considered to be a study of action theory
 id: agency
-modified: 2025-12-12 18:56:49 GMT-05:00
+modified: 2025-12-17 02:55:42 GMT-05:00
 tags:
   - pattern
   - philosophy
@@ -67,7 +67,7 @@ Just have a low bar for asking with help is a ==learnable mindset==. Though this
 Note down rejections, for _maximise the rejection_
 
 - evidence that you are properly exploring the space
-- if you apply more, then you will ::likely get more acceptances:: as well as rejections.
+- if you apply more, then you will _likely get more acceptances_ as well as rejections.
 - lowers the expected cost of applying and _asking for things_
 - fun??
   - re: true, in a sense you are playing with boundaries of yourself. To then update your world model about yourself.
@@ -82,7 +82,7 @@ Note down rejections, for _maximise the rejection_
 
 _godsend for people with high potential_
 
-re: see also [Guzey's advice on what to do with your life](https://guzey.com/personal/what-should-you-do-with-your-life/) and this [example](https://docs.google.com/document/d/1A3JGj2t6QpFhsEp3mP-WIu0xaAzgscP675x7Z60si-w/edit?tab=t.0)
+re: see also [Guzey's advice on what to do with your life](https://guzey.com/personal/what-should-you-do-with-your-life/) and this [practice in action](https://docs.google.com/document/d/1A3JGj2t6QpFhsEp3mP-WIu0xaAzgscP675x7Z60si-w/edit?tab=t.0)
 
 > 5. Seek forgiveness rather than permission
 

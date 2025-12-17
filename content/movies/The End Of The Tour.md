@@ -9,7 +9,8 @@ posters: "[[movies/posters/the-end-of-the-tour.jpg]]"
 status: to watch
 studio: general
 tags:
-  - movies
+  - writing
+  - o/life
 title: The End of The Tour
 year: 2015
 ---

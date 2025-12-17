@@ -9,7 +9,8 @@ posters: "[[movies/posters/all-of-us-stranger.jpg]]"
 status: to watch
 studio: searchlight pictures
 tags:
-  - movies
+  - love
+  - o/life
 title: All of Us Stranger
 year: 2023
 ---

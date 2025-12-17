@@ -9,7 +9,8 @@ posters: "[[movies/posters/chungking-express.jpg]]"
 status: to watch
 studio: general
 tags:
-  - movies
+  - love
+  - o/relationship
 title: Chungking Express
 year: 1994
 ---

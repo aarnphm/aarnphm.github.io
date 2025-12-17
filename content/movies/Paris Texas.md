@@ -9,7 +9,8 @@ posters: "[[movies/posters/paris-texas.jpg]]"
 status: to watch
 studio: general
 tags:
-  - movies
+  - love
+  - o/life
 title: Paris, Texas
 year: 1984
 ---

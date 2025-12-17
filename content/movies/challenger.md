@@ -10,7 +10,9 @@ rating: 7.2
 status: finished
 studio: amazon mgm
 tags:
-  - movies
+  - love
+  - o/relationship
+  - psychology
 title: Challenger
 watched: "2024-04-01"
 year: 2024

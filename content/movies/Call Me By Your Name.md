@@ -10,7 +10,8 @@ rating: 7.9
 status: finished
 studio: sony
 tags:
-  - movies
+  - love
+  - o/relationship
 title: Call Me By Your Name
 watched: "2024-03-10"
 year: 2017

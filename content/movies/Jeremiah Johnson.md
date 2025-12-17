@@ -10,7 +10,8 @@ posters: "[[movies/posters/jeremiah-johnson.jpg]]"
 status: to watch
 studio: general
 tags:
-  - movies
+  - vintage
+  - o/life
 title: Jeremiah Johnson
 year: 1972
 ---

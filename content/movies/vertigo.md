@@ -9,7 +9,9 @@ posters: "[[movies/posters/vertigo.jpg]]"
 status: to watch
 studio: paramount
 tags:
-  - movies
+  - vintage
+  - thriller
+  - psychology
 title: Vertigo
 year: 1958
 ---

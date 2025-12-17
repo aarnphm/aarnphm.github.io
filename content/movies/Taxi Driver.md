@@ -9,7 +9,9 @@ posters: "[[movies/posters/taxi-driver.jpg]]"
 status: recurring
 studio: martin scorsese
 tags:
-  - movies
+  - vintage
+  - thriller
+  - psychology
 title: Taxi Driver
 year: 1976
 ---

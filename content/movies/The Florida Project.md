@@ -10,7 +10,9 @@ posters: "[[movies/posters/the-florida-project.jpg]]"
 status: to watch
 studio: a24
 tags:
-  - movies
+  - a24
+  - family
+  - o/life
 title: The Florida Project
 year: 2017
 ---

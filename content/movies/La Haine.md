@@ -10,7 +10,8 @@ rating: 8.1
 status: finished
 studio: general
 tags:
-  - movies
+  - politics
+  - thriller
 title: La Haine
 watched: "2024-02-10"
 year: 1995

@@ -10,7 +10,8 @@ rating: 8
 status: finished
 studio: searchlight pictures
 tags:
-  - movies
+  - history
+  - psychology
 title: A Real Pain
 watched: "2024-11-20"
 year: 2024

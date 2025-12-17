@@ -9,7 +9,9 @@ posters: "[[movies/posters/eternal-sunshine-of-the-spotless-mind.jpg]]"
 status: to watch
 studio: focus features
 tags:
-  - movies
+  - love
+  - o/relationship
+  - technical
 title: Eternal Sunshine of the Spotless Mind
 year: 2004
 ---

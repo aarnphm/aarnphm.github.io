@@ -9,7 +9,8 @@ posters: "[[movies/posters/the-big-lebowski.jpg]]"
 status: to watch
 studio: general
 tags:
-  - movies
+  - comedy
+  - absurdism
 title: The Big Lebowski
 year: 1998
 ---

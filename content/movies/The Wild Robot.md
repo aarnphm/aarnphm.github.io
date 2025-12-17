@@ -10,7 +10,9 @@ rating: 8.3
 status: finished
 studio: dreamworks
 tags:
-  - movies
+  - animation
+  - family
+  - technical
 title: The Wild Robot
 watched: "2024-11-01"
 year: 2024

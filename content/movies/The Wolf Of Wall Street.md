@@ -9,7 +9,8 @@ posters: "[[movies/posters/the-wolf-of-wall-street.jpg]]"
 status: recurring
 studio: martin scorsese
 tags:
-  - movies
+  - finance
+  - psychology
 title: The Wolf of Wall Street
 year: 2013
 ---

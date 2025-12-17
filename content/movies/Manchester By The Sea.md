@@ -10,7 +10,9 @@ rating: 8.6
 status: finished
 studio: amazon studios
 tags:
-  - movies
+  - family
+  - psychology
+  - o/life
 title: Manchester by the Sea
 watched: "2024-02-15"
 year: 2016

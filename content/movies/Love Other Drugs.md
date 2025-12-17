@@ -10,7 +10,9 @@ rating: 6.7
 status: finished
 studio: 20th century fox
 tags:
-  - movies
+  - love
+  - o/relationship
+  - biology
 title: Love & Other Drugs
 watched: "2024-02-25"
 year: 2010

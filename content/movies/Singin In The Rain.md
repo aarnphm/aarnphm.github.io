@@ -11,7 +11,10 @@ posters: "[[movies/posters/singin-in-the-rain.jpg]]"
 status: to watch
 studio: mgm
 tags:
-  - movies
+  - vintage
+  - music
+  - comedy
+  - meta
 title: Singin' in the Rain
 year: 1952
 ---

@@ -9,7 +9,9 @@ posters: "[[movies/posters/interstellar.jpg]]"
 status: recurring
 studio: christopher nolan
 tags:
-  - movies
+  - p/sf
+  - technical
+  - time
 title: Interstellar
 year: 2014
 ---

@@ -9,7 +9,8 @@ posters: "[[movies/posters/perfect-days.jpg]]"
 status: to watch
 studio: general
 tags:
-  - movies
+  - o/life
+  - philosophy
 title: Perfect Days
 year: 2023
 ---
