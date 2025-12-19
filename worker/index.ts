@@ -276,6 +276,18 @@ function isLocalHostname(hostname: string): boolean {
   )
 }
 
+function isLoopbackIp(ip: string): boolean {
+  const normalized = ip.trim().toLowerCase()
+  return normalized === "127.0.0.1" || normalized === "::1" || normalized === "0:0:0:0:0:0:0:1"
+}
+
+function getRequestHostname(request: Request, fallbackUrl: URL): string {
+  const hostHeader = request.headers.get("X-Forwarded-Host") ?? request.headers.get("Host")
+  const hostValue = hostHeader?.split(",")[0]?.trim() ?? ""
+  if (hostValue.length > 0) return new URL(`http://${hostValue}`).hostname
+  return fallbackUrl.hostname
+}
+
 function getAllowedOrigin(env: Env, request: Request): string | null {
   const origin = request.headers.get("Origin")
   if (!origin) return null
@@ -416,6 +428,12 @@ type Env = {
 export default {
   async fetch(request, env, ctx): Promise<Response> {
     const url = new URL(request.url)
+    const requestHostname = getRequestHostname(request, url)
+    const connectingIp = request.headers.get("CF-Connecting-IP") ?? ""
+    const localRequest =
+      isLocalHostname(requestHostname) ||
+      isLocalHostname(url.hostname) ||
+      isLoopbackIp(connectingIp)
     const method = request.method.toUpperCase()
 
     const provider = new OAuthProvider({
@@ -460,7 +478,7 @@ export default {
       case "/substack":
         return Response.redirect("https://substack.com/@aarnphm", 301)
       case "/stream":
-        if (isLocalHostname(url.hostname)) break
+        if (localRequest) break
         return Response.redirect("https://stream.aarnphm.xyz", 308)
       case "/.lfsconfig":
         return new Response(null, { status: 404 })
