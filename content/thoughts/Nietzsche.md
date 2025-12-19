@@ -2,14 +2,14 @@
 date: "2023-11-30"
 description: the man that was most mistakenly understood
 id: Nietzsche
-modified: 2025-11-06 13:52:03 GMT-05:00
+modified: 2025-12-17 23:40:37 GMT-05:00
+seealso:
+  - "[[thoughts/Philosophy and Nietzsche|Deleuze intepretation of Nietzche]]"
 tags:
   - philosophy
   - philos1aa3
 title: Nietzsche's Life
 ---
-
-see also [[thoughts/Philosophy and Nietzsche|Deleuze intepretation of Nietzche]]
 
 _1844-1900_
 

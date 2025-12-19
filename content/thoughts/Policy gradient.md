@@ -1,11 +1,14 @@
 ---
 created: "2025-12-17"
 date: "2025-12-17"
-description: "Policy gradient RL methods: REINFORCE, baselines, TRPO, PPO, natural gradient"
+description: Class of reinforcement learning algorithms.
 id: Policy gradient
-modified: 2025-12-17 00:59:20 GMT-05:00
+modified: 2025-12-18 03:41:14 GMT-05:00
 published: "2017-03-01"
+seealso:
+  - "[[thoughts/Reinforcement learning]]"
 socials:
+  lillog: https://lilianweng.github.io/posts/2018-04-08-policy-gradient/
   wikipedia: https://en.wikipedia.org/wiki/Policy_gradient_method
 tags:
   - ml
@@ -14,37 +17,24 @@ tags:
 title: Policy gradient
 ---
 
-_Class of reinforcement learning algorithms._
+a sub-class of policy optimization methods. Unlike value-based methods (which learn a value function to derive a policy), policy optimization methods directly learn a ::policy function:: $\pi$ that selects actions without consulting a value function.
 
-**Policy gradient methods** are a class of **reinforcement learning** algorithms.
+For policy gradient to apply, the policy function is parameterized as a differentiable $\pi_\theta$ with parameters $\theta$.
 
-Policy gradient methods are a sub-class of policy optimization methods. Unlike value-based methods (which learn a value function to derive a policy), policy optimization methods directly learn a **policy function** $\pi$ that selects actions without consulting a value function. For policy gradient to apply, the policy function is parameterized as a differentiable $\pi_\theta$ with parameters $\theta$.
-
-## Overview
+## overview
 
 In policy-based RL, the **actor** is a parameterized policy function $\pi_\theta$, where $\theta$ are the parameters of the actor. The actor takes the state $s$ and produces a probability distribution
 
 $$
-\pi_\theta(\cdot\mid s).
+\pi_\theta(\cdot\mid s)
 $$
 
-- **Discrete actions:**
+- Discrete actions:
+  $$\sum_a \pi_\theta(a\mid s)=1$$
+- Continuous actions:
+  $$\int_a \pi_\theta(a\mid s)\,\mathrm da=1$$
 
-$$
-\sum_a \pi_\theta(a\mid s)=1.
-$$
-
-- **Continuous actions:**
-
-$$
-\int_a \pi_\theta(a\mid s)\,\mathrm da=1.
-$$
-
-The goal of policy optimization is to find $\theta$ that maximizes the expected episodic reward
-
-$$
-J(\theta)=\mathbb E_{\pi_\theta}\left[\sum_{t\in 0:T}\gamma^t R_t\;\Big|\;S_0=s_0\right],
-$$
+The goal of policy optimization is to find $\theta$ that maximizes the expected episodic reward $$J(\theta)=\mathbb E_{\pi_\theta}\left[\sum_{t\in 0:T}\gamma^t R_t\;\Big|\;S_0=s_0\right]$$
 
 where:
 
@@ -53,21 +43,27 @@ where:
 - $s_0$ is the starting state,
 - $T$ is the time horizon (possibly infinite).
 
-The **policy gradient** is
+The **policy gradient** is $$\nabla_\theta J(\theta)$$
 
-$$
-\nabla_\theta J(\theta).
-$$
+Different policy gradient methods stochastically estimate $\nabla_\theta J(\theta)$ in different ways.
 
-Different policy gradient methods stochastically estimate $\nabla_\theta J(\theta)$ in different ways. The goal is to iteratively maximize $J(\theta)$ by **gradient ascent**; since the key part is stochastic estimation, these are also studied under "Monte Carlo gradient estimation".
+The goal is to iteratively maximize $J(\theta)$ by **gradient ascent**; since the key part is stochastic estimation, these are also studied under "Monte Carlo gradient estimation".
+
+Topics/papers:
+
+- Deep reinforcement learning
+- Actor-critic method
+- [@sutton1999policygradientmethodsreinforcement]
+- [@mohamed2020montecarlogradientestimation]
+- [@williams1992simplestatisticalgradientfollowing]
+- [@stiennon2020learningsummarizehumanfeedback]
+- [@shani2019adaptivetrustregionpolicy]
 
 ---
 
 ## REINFORCE
 
-### Policy gradient
-
-The **REINFORCE algorithm** (Williams, 1992) was the first policy gradient method. It is based on the identity
+The **REINFORCE algorithm** [@williams1992simplestatisticalgradientfollowing] was the first policy gradient method. It is based on the identity
 
 $$
 \nabla_\theta J(\theta)=\mathbb E_{\pi_\theta}\left[\sum_{t\in 0:T}\nabla_\theta\ln\pi_\theta(A_t\mid S_t)\;\sum_{t\in 0:T}(\gamma^t R_t)\;\Big|\;S_0=s_0\right],
@@ -79,23 +75,21 @@ $$
 \nabla_\theta J(\theta)=\mathbb E_{\pi_\theta}\left[\sum_{t\in 0:T}\nabla_\theta\ln\pi_\theta(A_t\mid S_t)\;\sum_{\tau\in t:T}(\gamma^\tau R_\tau)\;\Big|\;S_0=s_0\right].
 $$
 
-#### Lemma
+> [!math] Lemma
+>
+> The expectation of the score function is zero, conditional on any present or past state. For any $0\le i\le j\le T$ and any state $s_i$,
+>
+> $$
+> \mathbb E_{\pi_\theta}\left[\nabla_\theta\ln\pi_\theta(A_j\mid S_j)\;\Big|\;S_i=s_i\right]=0.
+> $$
+>
+> Further, if $\Psi_i$ is a random variable independent of $A_i,S_{i+1},A_{i+1},\dots$, then
+>
+> $$
+> \mathbb E_{\pi_\theta}\left[\nabla_\theta\ln\pi_\theta(A_j\mid S_j)\cdot\Psi_i\;\Big|\;S_i=s_i\right]=0.
+> $$
 
-**Lemma.** The expectation of the score function is zero, conditional on any present or past state. For any $0\le i\le j\le T$ and any state $s_i$,
-
-$$
-\mathbb E_{\pi_\theta}\left[\nabla_\theta\ln\pi_\theta(A_j\mid S_j)\;\Big|\;S_i=s_i\right]=0.
-$$
-
-Further, if $\Psi_i$ is a random variable independent of $A_i,S_{i+1},A_{i+1},\dots$, then
-
-$$
-\mathbb E_{\pi_\theta}\left[\nabla_\theta\ln\pi_\theta(A_j\mid S_j)\cdot\Psi_i\;\Big|\;S_i=s_i\right]=0.
-$$
-
-**Proof sketch (as stated):** use the log-derivative trick (score function trick).
-
-#### Proof of the two identities (as stated)
+_Proof sketch (as stated)_: use the log-derivative trick (score function trick).
 
 Applying the log-derivative trick:
 
@@ -135,23 +129,15 @@ where $n$ ranges over $N$ rollout trajectories from $\pi_\theta$.
 
 The score function $\nabla_\theta\ln\pi_\theta(A_t\mid S_t)$ can be interpreted as the direction in parameter space that increases the probability of taking action $A_t$ in state $S_t$.
 
-### Algorithm
+### algorithm
 
 REINFORCE is a loop:
 
 1. Roll out $N$ trajectories using policy $\pi_{\theta_t}$.
 2. Compute the gradient estimate
-
-   $$
-   g_i\leftarrow \frac1N\sum_{n=1}^N\left[\sum_{t\in 0:T}\nabla_{\theta_t}\ln\pi_\theta(A_{t,n}\mid S_{t,n})\sum_{\tau\in t:T}(\gamma^\tau R_{\tau,n})\right].
-   $$
-
+   $$g_i\leftarrow \frac1N\sum_{n=1}^N\left[\sum_{t\in 0:T}\nabla_{\theta_t}\ln\pi_\theta(A_{t,n}\mid S_{t,n})\sum_{\tau\in t:T}(\gamma^\tau R_{\tau,n})\right]$$
 3. Update by gradient ascent
-
-   $$
-   \theta_{i+1}\leftarrow \theta_i+\alpha_i g_i,
-   $$
-
+   $$\theta_{i+1}\leftarrow \theta_i+\alpha_i g_i,$$
    where $\alpha_i$ is the learning rate at step $i$.
 
 ---
@@ -231,13 +217,13 @@ Additional examples (similar proofs):
 
 - $\gamma^t\left(R_t+\gamma R_{t+1}+\gamma^2 V^{\pi_\theta}(S_{t+2})-V^{\pi_\theta}(S_t)\right)$ (2-step TD).
 - $\gamma^t\left(\sum_{k=0}^{n-1}\gamma^k R_{t+k}+\gamma^n V^{\pi_\theta}(S_{t+n})-V^{\pi_\theta}(S_t)\right)$ (n-step TD).
-- $\gamma^t\sum_{n=1}^\infty \frac{\lambda^{n-1}}{1-\lambda}\cdot\left(\sum_{k=0}^{n-1}\gamma^k R_{t+k}+\gamma^n V^{\pi_\theta}(S_{t+n})-V^{\pi_\theta}(S_t)\right)$ (TD($\lambda$), **GAE**).
+- $\gamma^t\sum_{n=1}^\infty \frac{\lambda^{n-1}}{1-\lambda}\cdot\left(\sum_{k=0}^{n-1}\gamma^k R_{t+k}+\gamma^n V^{\pi_\theta}(S_{t+n})-V^{\pi_\theta}(S_t)\right)$ (TD($\lambda$), **GAE**) [@schulman2015highdimensionalcontinuouscontrolusing].
 
 ---
 
 ## Natural policy gradient
 
-The **natural policy gradient** method (Kakade, 2001) aims to provide a coordinate-free update (unlike standard policy gradient updates, which depend on the choice of parameters $\theta$).
+The **natural policy gradient** method [@kakade2001naturalpolicygradient] aims to provide a coordinate-free update (unlike standard policy gradient updates, which depend on the choice of parameters $\theta$).
 
 ### Motivation
 
@@ -303,7 +289,7 @@ Inverting $F(\theta)$ is computationally intensive in high dimensions; practical
 
 ## Trust Region Policy Optimization (TRPO)
 
-**TRPO** extends natural policy gradient by enforcing a trust-region constraint on policy updates (Schulman et al., 2015). It uses a line search and KL constraint to keep updates within a region where the approximations hold.
+**TRPO** extends natural policy gradient by enforcing a trust-region constraint on policy updates [@schulman2015trustregionpolicyoptimization]. It uses a line search and KL constraint to keep updates within a region where the approximations hold.
 
 ### Formulation
 
@@ -358,7 +344,7 @@ TRPO then:
 
 ## Proximal Policy Optimization (PPO)
 
-**PPO** avoids computing $F(\theta)$ and $F(\theta)^{-1}$ by using clipped probability ratios.
+**PPO** avoids computing $F(\theta)$ and $F(\theta)^{-1}$ by using clipped probability ratios [@schulman2017proximalpolicyoptimizationalgorithms].
 
 Instead of constrained maximization, PPO uses the clipped objective:
 
@@ -387,7 +373,7 @@ $$
 
 ### Group Relative Policy Optimization (GRPO)
 
-**GRPO** is a PPO variant that omits the value function estimator $V$. For each state $s$, sample $G$ actions $a_1,\dots,a_G\sim \pi_{\theta_t}$ and compute the group-relative advantage
+**GRPO** is a PPO variant that omits the value function estimator $V$ [@shao2024deepseekmathpushinglimitsmathematical]. For each state $s$, sample $G$ actions $a_1,\dots,a_G\sim \pi_{\theta_t}$ and compute the group-relative advantage
 
 $$
 A^{\pi_{\theta_t}}(s,a_j)=\frac{r(s,a_j)-\mu}{\sigma},
@@ -410,13 +396,13 @@ $$
 
 TRPO, PPO, and natural policy gradient share the idea of updating along the policy gradient while keeping updates stable via a distance to the previous policy.
 
-Mirror Descent (proximal optimization) updates $\mathbf x_t$ via
+Mirror Descent (proximal optimization) updates $\mathbf x_t$ via [@nemirovski1983problemcomplexity].
 
 $$
 \mathbf x_{t+1}\in\arg\min_{\mathbf x\in\mathcal C}\;\nabla f(\mathbf x_t)^T(\mathbf x-\mathbf x_t)+\frac1{\eta_t}B_\omega(\mathbf x,\mathbf x_t).
 $$
 
-This motivates MDPO. With KL as the Bregman divergence:
+This motivates MDPO [@tomar2020mirrordescentpolicyoptimization]. With KL as the Bregman divergence:
 
 $$
 \pi_{t+1}\in\arg\max_\pi\;\mathbb E_{s,a\sim \pi}\big[A^{\pi_t}(s,a)\big]-\frac1{\eta_t}D_{\mathrm{KL}}(\pi\|\pi_t).
@@ -429,24 +415,3 @@ $$
 $$
 
 This objective can be used with techniques like PPO clipping; the KL penalty also appears in the original PPO paper.
-
-## See also
-
-- Reinforcement learning
-- Deep reinforcement learning
-- Actor-critic method
-
-## References
-
-1. Sutton et al. (1999) _Policy Gradient Methods for Reinforcement Learning with Function Approximation_.
-2. Mohamed et al. (2020) _Monte Carlo Gradient Estimation in Machine Learning_.
-3. Williams (1992) _Simple statistical gradient-following algorithms for connectionist reinforcement learning_.
-4. Schulman et al. (2018) _High-Dimensional Continuous Control Using Generalized Advantage Estimation_.
-5. Kakade (2001) _A Natural Policy Gradient_.
-6. Schulman et al. (2015) _Trust region policy optimization_.
-7. Schulman et al. (2017) _Proximal Policy Optimization Algorithms_.
-8. Stiennon et al. (2020) _Learning to summarize with human feedback_.
-9. Shao et al. (2024) _DeepSeekMath: Pushing the Limits of Mathematical Reasoning in Open Language Models_.
-10. Nemirovsky & Yudin (1983) _Problem Complexity and Method Efficiency in Optimization_.
-11. Shani et al. (2020) _Adaptive Trust Region Policy Optimization_.
-12. Tomar et al. (2020) _Mirror Descent Policy Optimization_.

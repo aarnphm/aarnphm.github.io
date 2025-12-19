@@ -2,7 +2,7 @@
 date: "2024-02-07"
 description: considered to be a study of action theory
 id: agency
-modified: 2025-12-17 02:55:42 GMT-05:00
+modified: 2025-12-18 03:33:41 GMT-05:00
 tags:
   - pattern
   - philosophy
@@ -111,3 +111,11 @@ Wasil presents:
 - two traits are valuable:
   - considering wide action spaces
   - taking weird ideas serious
+
+## agency and taste
+
+[The Agency Gap](https://benjamincongdon.me/blog/2025/07/31/The-Agency-Gap/) and _[Impact, agency, and taste](https://www.benkuhn.net/impact/)_
+
+To [dwell](https://tsvibt.github.io/theory/pages/bl_24_08_01_14_01_47_609192.html) is to surrender your will to become even more agentic.
+
+> Without taste, you’re likely to work toward the wrong thing. Without agency, even if you work toward the right thing, you’re likely to get nowhere.

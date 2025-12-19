@@ -5,7 +5,7 @@ id: mathematical framework transformers circuits
 modified: 2025-11-10 06:36:51 GMT-05:00
 tags:
   - ml
-  - interpretability
+  - interp
 title: mathematical framework for transformer circuits
 ---
 

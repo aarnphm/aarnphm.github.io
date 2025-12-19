@@ -10,7 +10,7 @@ coordinates:
 date: "2025-11-22"
 description: modern king west coffee bar with clean lines
 id: NEO COFFEE BAR KING X SPADINA
-modified: "2025-12-06 16:47:58 GMT-05:00"
+modified: "2025-12-18 17:09:29 GMT-05:00"
 rating: 5
 tags:
   - places

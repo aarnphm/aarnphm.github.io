@@ -2,7 +2,7 @@
 date: "2024-02-07"
 description: criteria for judging right and wrong actions, encompassing deontological ethics, utilitarianism, and virtue ethics.
 id: moral
-modified: 2025-10-29 02:15:50 GMT-04:00
+modified: 2025-12-18 03:36:04 GMT-05:00
 tags:
   - philosophy
 title: Moral
@@ -19,3 +19,7 @@ Most notable are Kant's [[thoughts/Philosophy and Kant|deontological ethics]], u
 Considering what is right, which provides the account of wrongness, permissibility.important
 
 One can think moral as the compass encapsulates the "range" of what people ought to or ought not to do, when one's actions can either cause harm or invoke benefits to other [[thoughts/being]]
+
+## skepticism versus objectivism
+
+{{TODO}} [_from Jeffrey Kaplan_](https://www.youtube.com/watch?v=_bEZM3xyDtc)

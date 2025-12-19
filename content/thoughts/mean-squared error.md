@@ -8,7 +8,7 @@ published: "2003-03-26"
 source: https://en.wikipedia.org/wiki/Mean_squared_error
 tags:
   - seed
-  - clippings
+
 title: Mean squared error
 ---
 

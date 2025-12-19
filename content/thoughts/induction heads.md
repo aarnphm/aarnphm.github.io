@@ -7,7 +7,7 @@ seealso:
   - "[[thoughts/Transformers|Transformers]]"
   - "[[thoughts/LLMs|LLMs]]"
 tags:
-  - interpretability
+  - interp
   - ml
 title: induction heads
 transclude:

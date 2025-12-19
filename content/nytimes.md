@@ -2,7 +2,7 @@
 date: "2025-10-27"
 description: from nytimes
 id: nytimes
-modified: 2025-12-17 04:57:44 GMT-05:00
+modified: 2025-12-17 05:01:21 GMT-05:00
 tags:
   - seed
   - games
@@ -45,6 +45,16 @@ Puzzle #885
 🟨🟨🟨🟨
 🟪🟪🟪🟪
 🟩🟩🟩🟩
+```
+
+```text
+Connections
+Puzzle #920
+🟩🟩🟨🟩
+🟨🟨🟨🟨
+🟦🟦🟦🟦
+🟩🟩🟩🟩
+🟪🟪🟪🟪
 ```
 
 ## wordle

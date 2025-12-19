@@ -1,6 +1,7 @@
 summaries:
   missing: values.filter(value.isType("null")).length
   read this year: values.filter(value == true).reduce(acc + 1, 0)
+  Filled: values.filter(!value.isType("null")).length
 filters:
   or:
     - file.hasTag("book")
@@ -226,6 +227,7 @@ views:
       - posters
       - category
       - translator
+      - description
       - notebook
       - aliases
       - formula.2025
@@ -235,6 +237,8 @@ views:
       - formula.2021
     sort:
       - property: finished
+        direction: DESC
+      - property: tags
         direction: DESC
       - property: formula.2025
         direction: DESC
@@ -257,8 +261,6 @@ views:
       - property: posters
         direction: ASC
       - property: file.basename
-        direction: ASC
-      - property: tags
         direction: ASC
       - property: file.tags
         direction: ASC

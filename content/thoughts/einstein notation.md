@@ -3,14 +3,11 @@ created: "2025-09-17"
 date: "2025-09-17"
 description: Shorthand notation for tensor operations using repeated indices to imply summation
 id: einstein notation
-modified: 2025-10-29 02:15:45 GMT-04:00
+modified: 2025-12-18 01:35:52 GMT-05:00
 published: "2003-03-12"
 source: https://en.wikipedia.org/wiki/Einstein_notation
 tags:
-  - seed
-  - clippings
   - math
-title: einstein notation
 ---
 
 > a notational convention that implies summation over a set of indexed terms in a formula, achieving brevity.

@@ -8,7 +8,7 @@ published: "2004-01-17"
 source: synthesis
 tags:
   - seed
-  - clippings
+
 title: tracing garbage collection
 ---
 

@@ -17,7 +17,7 @@ seealso:
   - Market failure
 tags:
   - seed
-  - clippings
+
   - democracy
 title: Arrow's impossibility theorem
 ---

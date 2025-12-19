@@ -2,7 +2,7 @@
 date: "2024-02-07"
 description: and learning machine
 id: Machine learning
-modified: 2025-12-15 16:53:59 GMT-05:00
+modified: 2025-12-18 03:19:38 GMT-05:00
 tags:
   - ml
   - sapling
@@ -26,7 +26,7 @@ Some main exploration:
   - hyperparameter tuning
 - [[thoughts/ensemble learning]]
 - Recommender systems
-- Reinforcement learning
+- [[thoughts/Reinforcement learning]]
   - Q-learning
   - Policy Gradient
   - [[thoughts/Monte-Carlo|Monte-Carlo]] Tree Search

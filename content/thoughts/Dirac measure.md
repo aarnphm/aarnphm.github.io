@@ -8,7 +8,7 @@ published: "2004-09-26"
 source: https://en.wikipedia.org/wiki/Dirac_measure
 tags:
   - math
-  - clippings
+
 title: Dirac measure
 ---
 

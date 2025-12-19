@@ -223,7 +223,8 @@ async function processChannelJson(ctx: BuildCtx, channel: ArenaChannel) {
   const output: Record<string, Record<string, unknown>> = {}
 
   for (const block of channel.blocks) {
-    const url = block.url ?? (block.internalSlug ? `https://${baseUrl}/${block.internalSlug}` : null)
+    const url =
+      block.url ?? (block.internalSlug ? `https://${baseUrl}/${block.internalSlug}` : null)
     if (!url) continue
 
     const entry: Record<string, unknown> = {}

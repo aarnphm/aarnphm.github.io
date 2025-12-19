@@ -17,6 +17,7 @@ category:
 translator:
 notebook:
 aliases:
+description: a love letter to mathematics, and the way of living as a mathematician
 ---
 
 ```poetry

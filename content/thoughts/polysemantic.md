@@ -6,7 +6,7 @@ modified: 2025-10-29 02:15:52 GMT-04:00
 socials:
   circuits: https://transformer-circuits.pub/2023/monosemantic-features/index.html
 tags:
-  - interpretability
+  - interp
   - llm
 title: Polysemantic
 ---

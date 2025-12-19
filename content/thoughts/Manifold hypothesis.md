@@ -3,16 +3,16 @@ created: "2025-08-28"
 date: "2025-09-15"
 description: "The manifold hypothesis: high-dimensional real-world data lies on low-dimensional latent manifolds, enabling effective ML through interpolation."
 id: Manifold hypothesis
-modified: 2025-10-29 02:15:28 GMT-04:00
+modified: 2025-12-18 01:36:52 GMT-05:00
 published: "2021-08-27"
 source: https://en.wikipedia.org/wiki/Manifold_hypothesis
 tags:
-  - seed
-  - clippings
+  - theory
+
 title: Manifold hypothesis
 ---
 
-The **manifold hypothesis** posits that many high-dimensional datasets occurring in the real world actually lie along low-dimensional **latent manifolds** inside that high-dimensional space.
+posits that many high-dimensional datasets occurring in the real world actually lie along low-dimensional **latent manifolds** inside that high-dimensional space.
 
 As a consequence, many datasets that initially appear to require many variables for description can actually be described by a comparatively small number of variables, linked to the local coordinate system of the underlying manifold.
 

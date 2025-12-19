@@ -3,7 +3,7 @@ abstract: The subfield of alignment, or reverse engineering neural network. In a
 aliases:
   - mechinterp
   - reveng neural net
-  - interpretability
+  - interp
 date: "2024-10-30"
 description: and reverse engineering neural networks.
 id: mechanistic interpretability
@@ -15,7 +15,7 @@ tags:
   - ml
   - alignment
   - llm
-  - interpretability
+  - interp
 title: mechanistic interpretability
 ---
 

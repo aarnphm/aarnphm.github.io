@@ -52,7 +52,6 @@ cf _Buck Shlegeris_ and _Ryan Greenblatt_, the goal is:
 - distinguish ::capability for scheming{h5}:: versus ==in-fact scheming==
 - difference between _active planners_, _sleeper agents_ and _opportunists_
 
-
 ## giving AI safe motivations
 
 _https://joecarlsmith.com/2025/08/18/giving-ais-safe-motivations_

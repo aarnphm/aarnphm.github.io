@@ -8,7 +8,7 @@ published: "2006-07-04"
 source: https://en.wikipedia.org/wiki/Byte-pair_encoding
 tags:
   - seed
-  - clippings
+
 title: byte-pair encoding
 transclude:
   title: false
