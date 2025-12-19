@@ -136,11 +136,23 @@ export default (() => {
                         : renderInlineText(channel.name)}
                     </a>
                   </h2>
-                  <span class="arena-channel-row-count">
-                    {channel.blocks.length - limits > 0
-                      ? channel.blocks.length - limits
-                      : channel.blocks.length}
-                  </span>
+                  <div class="arena-channel-row-metadata">
+                    {(channel.metadata?.json === "true" || channel.metadata?.json === true) && (
+                      <a
+                        href={resolveRelative(currentSlug, `${channelPath}/json` as FullSlug)}
+                        class="arena-channel-json-link"
+                        title="JSON export available"
+                        data-no-popover
+                      >
+                        <span>{"{ }"}</span>
+                      </a>
+                    )}
+                    <span class="arena-channel-row-count">
+                      {channel.blocks.length - limits > 0
+                        ? channel.blocks.length - limits
+                        : channel.blocks.length}
+                    </span>
+                  </div>
                 </div>
                 <div class="arena-channel-row-preview">
                   {[...channel.blocks]

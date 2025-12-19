@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2025-12-19 03:22:59 GMT-05:00
+modified: 2025-12-19 09:00:03 GMT-05:00
 permalinks:
   - /website
   - /tweets
@@ -886,6 +886,9 @@ title: are.na
     - tags: [design, showcase]
 
 ## people
+
+- [meta]:
+  - json: true
 
 - https://philosophy.utoronto.ca/directory/imogen-dickie/ -- Imogen Dickie
   - [meta]:
@@ -3276,6 +3279,7 @@ title: are.na
 
 - [meta]:
   - view: list
+  - json: true
 
 - https://www.pi.website/research/human_to_robot -- Emergence of Human to Robot Transfer in VLAs
   - [meta]:
@@ -6718,7 +6722,7 @@ title: are.na
   - [meta]:
     - date: 10/06/2025
     - tags: [programming, distributed]
-- https://henryhmko.github.io/posts/tpu/tpu.html -- [[thoughts/TPU|TPU]] Deep Dive [**]
+- https://henryhmko.github.io/posts/tpu/tpu.html -- [[thoughts/TPU|TPU]] Deep Dive
   - [meta]:
     - date: 10/06/2025
     - tags: [asic]
