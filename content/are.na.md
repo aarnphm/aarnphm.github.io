@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2025-12-18 22:36:33 GMT-05:00
+modified: 2025-12-19 03:22:59 GMT-05:00
 permalinks:
   - /website
   - /tweets
@@ -5795,6 +5795,10 @@ title: are.na
 
 ## video
 
+- https://www.youtube.com/watch?v=x_y691nZztE -- I did love you...
+  - [meta]:
+    - date: 12/19/2025
+    - tags: [relationship, love, play]
 - https://www.youtube.com/watch?v=80EEpYieMgE&list=RD80EEpYieMgE -- I Still Exist. [**]
   - [meta]:
     - date: 12/18/2025

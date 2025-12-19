@@ -3,7 +3,7 @@ created: "2025-10-01"
 date: "2025-10-01"
 description: Functional roles, computational hermeneutics, autopoietic critiques
 id: functionalism
-modified: 2025-12-16 16:18:34 GMT-05:00
+modified: 2025-12-19 07:14:20 GMT-05:00
 seealso:
   - "[[thoughts/representations|representations]]"
   - "[[thoughts/emergent behaviour|emergent behaviour]]"

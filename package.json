@@ -12,7 +12,7 @@
     "url": "https://github.com/aarnphm/aarnphm.github.io.git"
   },
   "scripts": {
-    "bundle": "pnpm exec quartz/bootstrap-cli.mjs build --concurrency 4 --bundleInfo --verbose",
+    "bundle": "pnpm exec quartz/bootstrap-cli.mjs build --concurrency 10 --bundleInfo --verbose",
     "bundle:dev": "CF_PAGES=1 NODE_ENV=development pnpm bundle",
     "prod": "NODE_ENV=production pnpm bundle",
     "test": "tsx --test",

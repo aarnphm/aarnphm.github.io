@@ -83,8 +83,8 @@
   font-family: $font-family;
   font-weight: 600;
   line-height: 1.2;
-  letter-spacing: if($uppercase, 0.08em, normal);
-  text-transform: if($uppercase, uppercase, none);
+  letter-spacing: if(sass($uppercase): 0.08em; else: normal);
+  text-transform: if(sass($uppercase): uppercase; else: none);
   background-color: $bg;
   color: $fg;
   border: 1px solid $border-color;
