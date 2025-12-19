@@ -150,7 +150,7 @@
     "zod": "^4.2.1"
   },
   "devDependencies": {
-    "@cloudflare/workers-types": "^4.20251217.0",
+    "@cloudflare/workers-types": "^4.20251219.0",
     "@modelcontextprotocol/inspector": "^0.18.0",
     "@types/d3": "^7.4.3",
     "@types/hast": "^3.0.4",
