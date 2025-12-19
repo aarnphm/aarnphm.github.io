@@ -1,6 +1,8 @@
-# CLAUDE.md
+# aarnphm's garden
 
-this repo powers a quartz-based digital garden with custom plugins and a cloudflare worker. it also contains tools and implementations in rust, python, go, c, and c++ under `content/` directory.
+this repo powers a Quartz-based digital garden with custom plugins and a Cloudflare worker. It also contains tools and implementations in Rust, Python, Go, C, C++, OCaml.
+
+This means: no fallbacks, no hacks, no shortcuts. Production-grade, Google-quality code that at all times demonstrates a maniacal obsession with elegant minimalism.
 
 ## non-negotiables
 
