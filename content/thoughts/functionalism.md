@@ -3,7 +3,7 @@ created: "2025-10-01"
 date: "2025-10-01"
 description: Functional roles, computational hermeneutics, autopoietic critiques
 id: functionalism
-modified: 2025-12-19 07:14:20 GMT-05:00
+modified: 2025-12-19 07:16:38 GMT-05:00
 seealso:
   - "[[thoughts/representations|representations]]"
   - "[[thoughts/emergent behaviour|emergent behaviour]]"
@@ -126,8 +126,6 @@ Energy and timing constraints challenge pure substrate independence:
 
 - [[thoughts/LLMs]] [[thoughts/vllm|inference]] as functional role:
   - [[thoughts/Autoregressive models|autoregressive]] generation = predictive control (predict, update, iterate).
-  - [[thoughts/Attention]] = precision-weighting (which context matters).
-  - RLHF = error-driven role refinement (adjust based on feedback).
+  - [[thoughts/Attention|attention]] = precision-weighting (which context matters).
+  - [[thoughts/Reinforcement learning#RLHF|RLHF]] = error-driven role refinement (adjust based on feedback).
   - constraints: energy/latency differ from biology; grounding requires counterfactual tests; no autopoietic closure (no self-model, no viability maintenance).
-
-> minds are control patterns. you can port them if error dynamics, update rules, and self-maintenance stay fixed. [@levin2024functionalism; @friston2017computationalnosology]

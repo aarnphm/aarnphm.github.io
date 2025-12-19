@@ -178,8 +178,28 @@ body[data-arena-subpage="true"] {
     color: var(--darkgray);
   }
 
+  .arena-channel-row-metadata {
+    display: flex;
+    align-items: center;
+    gap: 0.5em;
+    font-family: var(--codeFont);
+    font-size: 0.7rem;
+  }
+
+  .arena-channel-json-link {
+    color: var(--gray);
+    opacity: 0.6;
+    transition:
+      opacity 0.2s ease,
+      color 0.2s ease;
+
+    &:hover {
+      opacity: 1;
+      color: var(--secondary);
+    }
+  }
+
   .arena-channel-row-count {
-    font-size: 0.9rem;
     color: var(--gray);
     font-weight: 400;
   }
