@@ -5,6 +5,7 @@ tags:
 id: Regarding the Pain of Others
 title: Regarding the Pain of Others
 date: 2025-12-17
+description: sontag's follow-up essay on photography and war, examining how images of suffering are read differently and why compassion wears thin with exposure.
 finished:
 year: 2003
 status: to read

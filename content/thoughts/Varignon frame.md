@@ -8,7 +8,7 @@ published: "2005-06-06"
 source: https://en.wikipedia.org/wiki/Varignon_frame
 tags:
   - math
-  - clippings
+
 title: Varignon frame
 ---
 

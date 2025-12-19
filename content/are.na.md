@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2025-12-17 04:46:12 GMT-05:00
+modified: 2025-12-18 22:36:33 GMT-05:00
 permalinks:
   - /website
   - /tweets
@@ -449,6 +449,10 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://fliparealcoin.com/
+  - [meta]:
+    - date: 12/17/2025
+    - tags: [mechanistic, bayesian]
 - https://jalammar.github.io/assets/neurips_2025.html -- NeurIPS 2025 Papers
   - [meta]:
     - date: 12/17/2025
@@ -1596,6 +1600,11 @@ title: are.na
 
 ## places
 
+- https://maps.app.goo.gl/3T93xsip4wVikdKJ9 -- Misha Coffee
+  - [meta]:
+    - date: 12/18/2025
+    - tags: [coffee shop]
+    - coord: [38.8883236, -77.1514396]
 - https://maps.app.goo.gl/3Yr25p5LbGfBw12Q9 -- Bar Prima
   - [meta]:
     - date: 11/22/2025
@@ -1871,6 +1880,29 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://www.recurse.com/social-rules -- Recurse's social rules
+  - [meta]:
+    - date: 12/17/2025
+    - tags: [communal]
+  - There’s another part of no subtle -isms: all discussions of -isms and politics at RC should be opt-in, like in the politics channel on Zulip, in a one-on-one conversation, or in a clearly described event in a private room at the Hub and/or on Zoom. Conversations about -isms can be distracting and draining, especially for people from marginalized groups, and what's an intellectual exercise for one person can have real material consequences for another.
+- https://haleynahman.substack.com/p/229-living-to-please-your-future -- Living to please your future self
+  - [meta]:
+    - date: 12/17/2025
+    - tags: [agency]
+- https://haleynahman.substack.com/p/95-are-you-baby-a-litmus-test -- Are you a baby? A litmus test
+  - [meta]:
+    - date: 12/17/2025
+    - tags: [life, growth]
+- https://blog.glitch.com/post/goodbye-glitch -- Until we meet again
+  - [meta]:
+    - date: 12/17/2025
+    - tags: [software, eos]
+  - Makes me think about the longevity of tangible software that we use daily.
+  - File triumphs over hosting solutions here.
+- https://syllabusproject.org/syllabus-for-taking-an-internet-walk/ -- Taking an Internet Walk
+  - [meta]:
+    - date: 12/17/2025
+    - tags: [web, internet, interfaces]
 - https://altered.substack.com/p/goodbye-self -- The grief of losing your sense of self is like getting to Heaven and being upset they don't have your favorite flavor of La Croix
   - [meta]:
     - date: 12/17/2025
@@ -1950,11 +1982,31 @@ title: are.na
     - date: 12/16/2025
     - tags: [relationship, friends]
     - Make friends over the internet with people who are great at things you’re interested in. The internet is one of the biggest advantages you have over prior generations. Leverage it.
-- https://www.henrikkarlsson.xyz/p/agency -- On agency
+- https://www.henrikkarlsson.xyz/p/agency -- On agency [**]
   - [meta]:
     - date: 12/16/2025
     - tags: [agency]
   - ![[thoughts/Agency#fragments]]
+- https://www.henrikkarlsson.xyz/p/agentic-fragments -- Agentic fragments [**]
+  - [meta]:
+    - date: 12/17/2025
+    - tags: [agency]
+- https://www.henrikkarlsson.xyz/p/autenticity -- Rationality is an underrated way to be authentic [**]
+  - [meta]:
+    - date: 12/17/2025
+    - tags: [rationalism, authenticity]
+- https://www.henrikkarlsson.xyz/p/the-newness-of-depth -- The newness of depth [**]
+  - [meta]:
+    - date: 12/17/2025
+    - tags: [being, series]
+- https://www.henrikkarlsson.xyz/p/modular-life-meaningful-work -- Modular life, meaningful work [**]
+  - [meta]:
+    - date: 12/17/2025
+    - tags: [being, series]
+- https://www.henrikkarlsson.xyz/p/living-80-years-you-can-have-8-lives -- Living 80 years, you can have 8 lives [**]
+  - [meta]:
+    - date: 12/17/2025
+    - tags: [being, series]
 - https://spencer.place/experiments/100posts/quiet-confidence/ -- quiet confidence
   - [meta]:
     - date: 12/16/2025
@@ -3045,10 +3097,11 @@ title: are.na
   - [meta]:
     - date: 08/16/2025
     - tags: [eschatology]
-- https://web.archive.org/web/20031029211844/http://www.frostbytes.com/~jimf/informing.html -- Informing Ourselves To Death
+- https://web.archive.org/web/20031029211844/http://www.frostbytes.com/~jimf/informing.html -- Informing Ourselves To Death [**]
   - [meta]:
     - date: 08/16/2025
     - tags: [information theory, web]
+    - pinned: true
   - After all, anyone who has studied the history of technology knows that technological change is always a Faustian bargain: Technology giveth and technology taketh away, and not always in equal measure.
   - Now, there are several conclusions that might be drawn from these results, one of which was expressed by H. L. Mencken fifty years ago when he said, there is no idea so stupid that you can't find a professor who will believe it. This is more of an accusation than an explanation but in any case I have tried this experiment on non-professors and get roughly the same results.
   - Another possible conclusion is one expressed by George Orwell--also about 50 years ago--when he remarked that the average person today is about as naive as was the average person in the Middle Ages. In the Middle Ages people believed in the authority of their religion, no matter what. Today, we believe in the authority of our science, no matter what.
@@ -3134,7 +3187,7 @@ title: are.na
   - [meta]:
     - date: 10/02/2025
     - tags: [books, pedagogy]
-- https://emotional.codes/dtr/ -- Defining the Relationship
+- https://emotional.codes/dtr/ -- Defining the Relationship [**]
   - [meta]:
     - date: 10/02/2025
     - tags: [relationship, life]
@@ -3224,6 +3277,30 @@ title: are.na
 - [meta]:
   - view: list
 
+- https://www.pi.website/research/human_to_robot -- Emergence of Human to Robot Transfer in VLAs
+  - [meta]:
+    - date: 12/18/2025
+    - tags: [emergent, vla, inference]
+  - pdf: https://www.pi.website/download/human_to_robot.pdf
+- https://x.com/MattLeighton5/status/2001333749313867892 --  Non-Markovian History Dependence
+  - [meta]:
+    - date: 12/18/2025
+    - tags: [markovian, causal]
+    - later: true
+- https://x.com/TransluceAI/status/2001714182761398721 -- Predictive Concept Decoder (PCD)
+  - [meta]:
+    - date: 12/18/2025
+    - tags: [interpretability]
+    - later: true
+- https://x.com/vllm_project/status/2001695354983723361 -- vLLM's WideEP, DeepEP all-to-all, DBO, and EPLB benchmark
+  - [meta]:
+    - date: 12/18/2025
+    - tags: [performance, optimization]
+  - see also: https://blog.vllm.ai/2025/12/17/large-scale-serving.html
+- https://blog.google/technology/developers/t5gemma-2/ -- T5Gemma releases (2025)
+  - [meta]:
+    - date: 12/18/2025
+    - tags: [models, encoder-decoder, release]
 - https://jacobgw.com/blog/ml/2024/12/12/interp-latent.html -- Creating Interpretable Latent Spaces with Gradient Routing
   - [meta]:
     - date: 12/17/2025
@@ -3241,7 +3318,7 @@ title: are.na
   - [meta]:
     - date: 12/17/2025
     - tags: [alignment]
-  - I'm usually a big skeptic on Helen Toner's work, but jcarlsmith recommends to read this one. And I respect jcarlsmith a ton.
+  - I'm usually a big skeptic on Helen Toner's work, but [@jkcarlsmith](https://x.com/jkcarlsmith) recommends to read this one. And I respect jcarlsmith a ton.
   - https://www.youtube.com/watch?v=avxO7ZEJH4w
 - https://bmk.sh/2019/12/31/The-Decade-of-Deep-Learning/ -- The Decade of Deep Learning
   - [meta]:
@@ -4188,6 +4265,15 @@ title: are.na
 
 ## opinions
 
+- https://www.lesswrong.com/posts/yw9B5jQazBKGLjize/ai-safety-undervalues-founders -- AI safety undervalues founders, Ryan Kidd
+  - [meta]:
+    - date: 12/18/2025
+    - tags: [building, company, safety, alignment]
+- https://collabfund.com/blog/how-this-all-happened/ -- How This All Happened
+  - [meta]:
+    - date: 12/17/2025
+    - tags: [history, capitalism]
+    - later: true
 - https://daystareld.com/blog/orson-scott-card/ -- Orson Scott Card
   - [meta]:
     - date: 12/17/2025
@@ -4398,6 +4484,10 @@ title: are.na
 
 ## life is literature
 
+- https://splishsplash.online/p/beautiful-places -- Beautiful places
+  - [meta]:
+    - date: 12/18/2025
+    - tags: [landscape, joy]
 - https://www.experimental-history.com/p/thank-you-for-being-annoying -- Thank you for being annoying [**]
   - [meta]:
     - date: 10/09/2025
@@ -4407,6 +4497,13 @@ title: are.na
   - [meta]:
     - date: 12/17/2025
     - tags: [life, fiction]
+- https://www.benkuhn.net/impact/ -- Impact, agency, and taste
+  - [meta]:
+    - date: 12/18/2025
+    - tags: [agency, progress]
+    - later: true
+    - notes:
+      - [[thoughts/Agency#agency and taste]]
 - https://guzey.com/impact/ -- On Impact
   - [meta]:
     - date: 12/17/2025
@@ -4619,7 +4716,7 @@ title: are.na
   - [meta]:
     - date: 08/28/2025
     - tags: [love]
-- https://velvetnoise.substack.com/p/some-parts-of-you-only-emerge-for -- some parts of you only emerge from certain people [**]
+- https://velvetnoise.substack.com/p/some-parts-of-you-only-emerge-for -- some parts of you only emerge for certain people [**]
   - [meta]:
     - date: 08/28/2025
     - tags: [love, being]
@@ -5222,6 +5319,10 @@ title: are.na
 
 ## stream
 
+- https://shallowreview.ai/overview -- Technical AI Safety, 2025
+  - [meta]:
+    - date: 12/18/2025
+    - tags: [alignment, research, review]
 - https://without.boats/ -- Without boats, dreams dry up
   - [meta]:
     - date: 12/17/2025
@@ -5471,6 +5572,10 @@ title: are.na
 
 ## poetry
 
+- https://urlpoetry.club/ -- URL Poetry Club
+  - [meta]:
+    - date: 12/17/2025
+    - tags: [web poetics]
 - https://www.poetryfoundation.org/poets/emily-dickinson -- Emily Dickinson
   - [meta]:
     - date: 11/28/2025
@@ -5690,6 +5795,14 @@ title: are.na
 
 ## video
 
+- https://www.youtube.com/watch?v=80EEpYieMgE&list=RD80EEpYieMgE -- I Still Exist. [**]
+  - [meta]:
+    - date: 12/18/2025
+    - tags: [absurdism, grief]
+- https://www.youtube.com/watch?v=_lgqofIJIws -- Life is art
+  - [meta]:
+    - date: 12/18/2025
+    - tags: [indie]
 - https://www.youtube.com/watch?v=Pk8Sn2JRup8 -- The Price of Becoming Exceptional (And Why It's Worth It)
   - [meta]:
     - date: 12/17/2025
@@ -5967,7 +6080,13 @@ title: are.na
 
 ## tools
 
-- https://near.blog/productivity-tips/ -- Productivity tips
+- https://vega.github.io/ -- Vega
+  - [meta]:
+    - date: 12/18/2025
+    - tags: [graph, visualisation]
+  - see also: https://altair-viz.github.io/index.html
+  - example notebook: https://colab.research.google.com/drive/1XEs0v9vq1bmpWiqHcYnnU-8tJ-b9Abq3
+- https://near.blog/productivity-tips/ -- Productivity tips [**]
   - [meta]:
     - date: 12/16/2025
     - tags: [enhancement drugs, recreational]
@@ -6011,6 +6130,15 @@ title: are.na
 
 ## arts
 
+- https://www.youtube.com/watch?v=k8kjPxrXuFU -- The Pandemonium of 1841
+  - [meta]:
+    - date: 12/18/2025
+    - tags: [arts, theology]
+- https://www.personalcanon.com/p/exercises-in-style-bill-beckleys -- exercises in style: bill beckley's "cake story"
+  - [meta]:
+    - date: 12/18/2025
+    - tags: [fiction]
+    - later: true
 - https://www.youtube.com/watch?v=_nfMSscxBhQ -- How I Tricked Myself Into Believing I Could
   - [meta]:
     - date: 12/17/2025
@@ -6226,6 +6354,10 @@ title: are.na
 
 ## fonts
 
+- https://foundry.gardedesign.se/
+  - [meta]:
+    - date: 12/18/2025
+    - tags: [foundry]
 - https://emilysneddon.com/fran-sans-essay -- Fran sans fonts
   - [meta]:
     - date: 11/25/2025
@@ -6357,6 +6489,15 @@ title: are.na
 
 ## technical
 
+- https://lorienpsych.com/2021/06/05/depression/ -- Depression [**]
+  - [meta]:
+    - date: 12/18/2025
+    - tags: [psychology]
+    - pinned: true
+- https://wildempty.wordpress.com/2025/01/15/a-website-is-a-performance/ -- A Website is a performance
+  - [meta]:
+    - date: 12/17/2025
+    - tags: [js, web, optimization]
 - https://cursor.com/blog/kernels -- 1.5x faster MoE training with custom MXFP8 kernels
   - [meta]:
     - date: 12/17/2025
@@ -6794,6 +6935,19 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://tsvibt.github.io/theory/pages/bl_24_07_25_09_52_56_652909.html -- Algebraicness
+  - [meta]:
+    - date: 12/18/2025
+    - tags: [complexity theory]
+    - later: true
+- https://web.archive.org/web/20220913080819/https://forum.azimuthproject.org/discussion/2247/lecture-44-chapter-3-categories-functors-and-natural-transformations/p1 -- Categories, Functors, and Natural Transformations
+  - [meta]:
+    - date: 12/18/2025
+    - tags: [category theory]
+- https://www.umsu.de/blog/2025/823 -- Gödel, Mechanism, Paradox
+  - [meta]:
+    - date: 12/17/2025
+    - tags: [set theory]
 - https://mathcs.holycross.edu/~ahwang/print/calc.pdf -- Calculus for Matehmaticians, Computer Scientists, and Physicists
   - [meta]:
     - date: 12/11/2025
@@ -6981,6 +7135,35 @@ title: are.na
   - view: list
   - json: true
 
+- https://arxiv.org/abs/2501.19393
+  - [meta]:
+    - date: 12/17/2025
+    - tags: [scaling, mamba, hybrid attention]
+- https://arxiv.org/abs/2307.08691
+  - [meta]:
+    - date: 12/17/2025
+    - tags: [fa2, optimization, kernels]
+- https://arxiv.org/abs/2507.19427
+  - [meta]:
+    - date: 12/17/2025
+    - tags: [models, disaggregation, architecture]
+- https://arxiv.org/abs/2112.05682
+  - [meta]:
+    - date: 12/17/2025
+    - tags: [optimization, memory, attention]
+- https://arxiv.org/abs/1701.06538
+  - [meta]:
+    - date: 12/17/2025
+    - tags: [moe]
+  - see also: [[thoughts/MoE]]
+- https://arxiv.org/abs/1904.10509
+  - [meta]:
+    - date: 12/17/2025
+    - tags: [long context, inference]
+- https://arxiv.org/abs/1911.02150
+  - [meta]:
+    - date: 12/17/2025
+    - tags: [speculative decoding]
 - https://people.math.harvard.edu/~siu/math230a/sectional_ricci_curvature_manifold_diameter.pdf -- Sectional and Ricci Curvature, Variations of Arc-Length
   and Diameter of Riemannian Manifold
   - [meta]:

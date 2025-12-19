@@ -8,7 +8,7 @@ published: "2001-09-30"
 source: https://en.wikipedia.org/wiki/Lebesgue_measure
 tags:
   - math
-  - clippings
+
 title: Lebesgue measure
 ---
 

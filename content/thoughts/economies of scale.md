@@ -8,7 +8,7 @@ published: "2002-01-21"
 source: https://en.wikipedia.org/wiki/Economies_of_scale
 tags:
   - seed
-  - clippings
+
 title: economies of scale
 ---
 

@@ -8,7 +8,7 @@ published: "2005-11-08"
 source: https://en.wikipedia.org/wiki/Landauer%27s_principle
 tags:
   - seed
-  - clippings
+
   - physics
 title: Landauer's principle
 ---

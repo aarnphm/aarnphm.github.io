@@ -9,7 +9,7 @@ source: https://en.wikipedia.org/wiki/Rayleigh_quotient
 tags:
   - math
   - seed
-  - clippings
+
 title: Rayleigh quotient
 ---
 

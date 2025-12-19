@@ -21,4 +21,3 @@ available skills:
 Note that for each of these skills, make sure to choose accordingly based on given tasks that you are doing.
 
 when thinking hard about a problem, use extended thinking with at least seven explicit steps before proposing a change.
-

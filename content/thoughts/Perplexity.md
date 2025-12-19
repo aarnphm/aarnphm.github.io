@@ -3,12 +3,12 @@ created: "2025-09-14"
 date: "2025-09-14"
 description: information theory measure of uncertainty in probability distributions, used in NLP for evaluating language models.
 id: Perplexity
-modified: 2025-10-29 02:15:32 GMT-04:00
+modified: 2025-12-18 01:42:11 GMT-05:00
 published: "2006-04-04"
 source: https://en.wikipedia.org/wiki/Perplexity
 tags:
-  - seed
-  - clippings
+  - ml
+  - stats
 title: perplexity
 ---
 

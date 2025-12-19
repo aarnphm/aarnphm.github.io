@@ -4,7 +4,7 @@ description: autonomous path-finding for causal influence in neural networks
 id: circuit tracing
 modified: 2025-11-05 04:29:32 GMT-05:00
 tags:
-  - interpretability
+  - interp
   - ml
 title: circuit tracing
 transclude:

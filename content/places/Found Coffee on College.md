@@ -10,7 +10,7 @@ coordinates:
 date: "2025-08-05"
 description: bright corner cafe perfect for morning rituals
 id: Found Coffee on College
-modified: "2025-12-06 16:47:59 GMT-05:00"
+modified: "2025-12-18 17:09:29 GMT-05:00"
 rating: 5
 tags:
   - places

@@ -3,7 +3,9 @@ date: "2025-10-30"
 description: a nano implementation of vLLM and inference-engine alike
 id: index
 layout: A|L
-modified: 2025-12-12 14:27:08 GMT-05:00
+modified: 2025-12-17 15:33:11 GMT-05:00
+socials:
+  minisgl: https://github.com/sgl-project/mini-sglang
 tags:
   - inference
   - vllm
@@ -26,7 +28,7 @@ goal:
 - Prefix Caching
   - chunked prefill
 - PagedAttention
-  - CuTEdsl kernels
+  - [[thoughts/cutedsl|CuTeDSL]] kernels
 - parallelism
   - tensor parallelism
   - expert parallelism

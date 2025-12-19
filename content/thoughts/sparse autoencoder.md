@@ -5,7 +5,7 @@ id: sparse autoencoder
 modified: 2025-11-21 14:01:43 GMT-05:00
 tags:
   - ml
-  - interpretability
+  - interp
 title: sparse autoencoder
 transclude:
   title: false

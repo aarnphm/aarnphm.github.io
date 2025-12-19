@@ -4,7 +4,7 @@ description: and mechanisms of components.
 id: Attribution parameter decomposition
 modified: 2025-11-05 01:24:38 GMT-05:00
 tags:
-  - interpretability
+  - interp
 title: Attribution parameter decomposition
 ---
 

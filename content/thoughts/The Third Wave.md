@@ -9,7 +9,7 @@ socials:
   source: https://theanarchistlibrary.org/library/ron-jones-the-third-wave-1967-an-account
 tags:
   - seed
-  - clippings
+
 title: The Third Wave
 ---
 

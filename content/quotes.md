@@ -31,14 +31,14 @@ transclude:
   title: false
 ---
 
-> “Do you know what a poem is, Esther?' 
-> 
-> No, what?' I would say. 
-> 
-> A piece of dust.' 
-> 
-> Then, just as he was smiling and starting to look proud, I would say, 'So are the cadavers you cut up. So are the people you think you're curing. They're dust as dust as dust. I reckon a good poem lasts a whole lot longer than a hundred of those people put together.' 
-> 
+> “Do you know what a poem is, Esther?'
+>
+> No, what?' I would say.
+>
+> A piece of dust.'
+>
+> Then, just as he was smiling and starting to look proud, I would say, 'So are the cadavers you cut up. So are the people you think you're curing. They're dust as dust as dust. I reckon a good poem lasts a whole lot longer than a hundred of those people put together.'
+>
 > And of course Buddy wouldn't have any answer to that, because what I said was true. People were made of nothing so much as dust, and I couldn't see that doctoring all that dust was a bit better than writing poems people would remember and repeat to themselves when they were unhappy or sick or couldn't sleep.
 >
 > Sylvia Plath, _The Bell Jar_

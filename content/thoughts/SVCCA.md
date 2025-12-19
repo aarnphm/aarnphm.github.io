@@ -5,7 +5,7 @@ id: SVCCA
 modified: 2025-10-29 02:15:34 GMT-04:00
 tags:
   - ml
-  - interpretability
+  - interp
 title: SVCCA
 ---
 

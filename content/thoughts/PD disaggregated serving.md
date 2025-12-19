@@ -2,10 +2,11 @@
 date: "2025-06-16"
 description: and inference go distributed
 id: pd disaggregated serving
-modified: 2025-11-10 09:59:09 GMT-05:00
+modified: 2025-12-17 23:40:12 GMT-05:00
 tags:
   - ml
-title: p/d disaggregation
+  - gpu
+title: P/D disaggregation
 ---
 
 the idea: let an [[thoughts/vllm|inference engine]] split prefill and [[thoughts/Transformers#inference.|decode]] onto different workers and scale their ratio independently. this keeps time‑to‑first‑token (TTFT) low while maintaining inter‑token latency (ITL) at steady throughput.
@@ -13,54 +14,55 @@ the idea: let an [[thoughts/vllm|inference engine]] split prefill and [[thoughts
 see also:
 
 - [[thoughts/distributed inference|distributed inference]]
-- vllm disaggregated prefilling docs and blog. [@vllm-disagg-docs; @vllm-disagg-blog]
-- vllm production‑stack tutorial for p/d disagg. [@vllm-prodstack]
+- vLLM disaggregated prefilling docs and blog. [@vllm-disagg-docs; @vllm-disagg-blog]
+- vLLM production‑stack tutorial for p/d disagg. [@vllm-prodstack]
 - mooncake paper and sglang docs. [@qin2024mooncakekvcachecentricdisaggregatedarchitecture; @sglang-docs]
 
 ## prefill/decode
 
-- prefill: run attention over the prompt to build kv cache blocks.
-- decode: generate tokens autoregressively using cached kv.
+- prefill: compute-intensive (calculate attention matrix)
+- decode: memory-intensive (generate tokens [[thoughts/Autoregressive models|autoregressively]] using cached KV)
 
-## why p/d disaggregation
+why:
 
-- different SLO objectives: prefill is compute‑heavy; decode is memory/kv‑cache heavy with smaller matmuls.
-- interference: monolithic engines suffer ttft spikes when long‑prefill arrivals collide with decode batches.
+- interference: monolithic engines suffer TTFT spikes when long‑prefill arrivals collide with decode batches.
 - elasticity: bursts are prefill‑dominated; decoupling lets you scale the prefill tier elastically and keep decode warm.
 
 > [!important] goal
 >
 > decouple resource bottlenecks and scheduling so ttft stays low under bursty arrivals without sacrificing itl or throughput.
 
+### ratio calculation
+
 ## patterns
 
 1. monolithic with smarter scheduling
 
-- chunked prefill and scheduling inside one engine (no cross‑instance kv transfer). simple ops; limited isolation. supported by vllm (chunked prefill).
+- chunked prefill and scheduling inside one engine (no cross‑instance kv transfer). simple ops; limited isolation. supported by vLLM (chunked prefill).
 
-2. intra‑gpu disaggregation
+2. intra‑GPU disaggregation
 
 - share a gpu across prefill and decode workers (time‑slice or sm partition). better isolation than monolithic; still contend for memory/sm.
 
-3. inter‑instance disaggregation (sota)
+3. inter‑instance disaggregation (SOTA)
 
 - dedicated prefill tier and decode tier; kv blocks from prefill are transferred to decode. strongest isolation and elastic scaling; requires fast kv transport and careful routing.
 
-## wip
+## papers
 
-- distserve (osdi’24): separates prefill/decode with online admission and kv sharing; reports up to 7.4× more requests or 12.6× tighter slo while meeting latency targets. [@distserve2024osdi]
-- vllm disaggregated prefilling: two‑instance design with connector/lookupbuffer; docs note it does not improve throughput but can control tail itl and tune ttft/itl independently. [@vllm-disagg-docs]
+- distserve: separates prefill/decode with online admission and kv sharing; reports up to 7.4× more requests or 12.6× tighter slo while meeting latency targets. [@distserve2024osdi]
+- vLLM disaggregated prefilling: two‑instance design with connector/lookupbuffer; docs note it does not improve throughput but can control tail itl and tune ttft/itl independently. [@vllm-disagg-docs]
 - sglang mooncake: kv‑centric disaggregated serving; focuses on kv placement/transfer and page‑level management. [@qin2024mooncakekvcachecentricdisaggregatedarchitecture; @sglang-docs]
 - adrenaline (2025): overlaps network/compute and offloads attention; complementary to p/d disagg. [@adrenaline2025]
-- nexus (2025): proactive intra‑gpu disagg with scheduling; >10× ttft reduction at similar throughput. [@nexus2025]
+- nexus (2025): proactive intra‑GPU disagg with scheduling; >10× ttft reduction at similar throughput. [@nexus2025]
 - ecoserve (2025): partially disaggregated serving over commodity ethernet with near‑optimal batching. [@ecoserve2025]
 - banaserve (2025): dynamic migration and learning‑based control under non‑stationary loads. [@banaserve2025]
 - spad (2025): hardware/software co‑design for disaggregated attention. [@spad2025]
 
 > [!tip] deployment strategy
 >
-> - start prefill‑only vllm (bigger max batch, dp heavy, ep as needed)
-> - start decode‑only vllm (continuous batching, ep for moe, tune dp)
+> - start prefill‑only vLLM (bigger max batch, dp heavy, ep as needed)
+> - start decode‑only vLLM (continuous batching, ep for moe, tune dp)
 > - enable kv transfer connector and verify fabric throughput/latency
 > - measure ttft/itl; tune prefill:decode worker ratio (e.g., 1:2, 1:3)
 > - keep a monolithic pool as safety net during ramp
@@ -126,14 +128,14 @@ where $B_{\text{net}}$ is end‑to‑end bandwidth between prefill and decode wo
 ### failure modes
 
 - version skew: kv produced by model `A@sha1` must not be consumed by `A@sha2`.
-- partial kv: ensure atomicity on `insert`; consumers should never see partial blocks (vllm’s lookupbuffer `insert/drop_select` semantics). [@vllm-disagg-docs]
+- partial kv: ensure atomicity on `insert`; consumers should never see partial blocks (vLLM’s lookupbuffer `insert/drop_select` semantics). [@vllm-disagg-docs]
 - retries: on connector failure, either re‑run tail‑prefill on decode or replay prefill after backoff.
 
 ## reference commands
 
 > [!note]
 >
-> exact flags evolve; consult docs/examples for your vllm version. the json shown below is the `--kv-transfer-config` payload. [@vllm-disagg-docs; @vllm-prodstack]
+> exact flags evolve; consult docs/examples for your vLLM version. the json shown below is the `--kv-transfer-config` payload. [@vllm-disagg-docs; @vllm-prodstack]
 
 prefill‑only instance (shared storage):
 
@@ -160,7 +162,7 @@ vllm serve $MODEL \
   }'
 ```
 
-rdma‑based (lmcache + nixl) sketch:
+RDMA‑based (lmcache + nixl) sketch:
 
 ```bash
 export ENGINE_NAME=lmcache-pd
