@@ -72,6 +72,7 @@ const Layout = {
   defn: "L->EAT",
   etas: "L->ET|A",
   alsp: "A|L",
+  lovp: "L",
 } as const
 
 type FolderLayout = (typeof Layout)[keyof typeof Layout]
@@ -383,6 +384,15 @@ export default ((opts?: Partial<FolderContentOptions>) => {
               <PageList {...listProps} />
             </section>
           </div>
+        )
+
+      case Layout.lovp:
+        return (
+          <>
+            <section class={baseListClass}>
+              <PageList {...listProps} />
+            </section>
+          </>
         )
 
       default:
