@@ -7,7 +7,7 @@ id: the-darjeeling-limited
 modified: 2025-10-29 02:14:56 GMT-04:00
 posters: "[[movies/posters/the-darjeeling-limited.jpg]]"
 status: recurring
-studio: wes anderson
+studio:
 tags:
   - family
   - o/relationship

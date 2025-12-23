@@ -24,7 +24,7 @@ properties:
   note.category:
     displayName: category
   note.studio:
-    displayName: studio
+    displayName: distribution
   note.runtime:
     displayName: runtime
   note.watched:
@@ -265,6 +265,7 @@ views:
       property: year
       direction: DESC
     order:
+      - title
       - file.name
       - director
       - status
@@ -276,20 +277,26 @@ views:
       - category
       - description
       - posters
-      - title
     sort:
+      - property: studio
+        direction: ASC
+      - property: status
+        direction: DESC
+      - property: watched
+        direction: DESC
+      - property: category
+        direction: ASC
+      - property: file.name
+        direction: DESC
       - property: rating
         direction: DESC
       - property: tags
         direction: DESC
       - property: director
         direction: DESC
-      - property: status
-        direction: DESC
       - property: title
         direction: ASC
     columnSize:
-      file.name: 369
+      file.name: 253
       note.director: 200
-      note.studio: 193
       note.tags: 155

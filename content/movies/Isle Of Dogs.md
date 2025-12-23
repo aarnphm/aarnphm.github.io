@@ -7,7 +7,7 @@ id: isle-of-dogs
 modified: 2025-10-29 02:14:51 GMT-04:00
 posters: "[[movies/posters/isle-of-dogs.jpg]]"
 status: recurring
-studio: wes anderson
+studio:
 tags:
   - animation
   - politics

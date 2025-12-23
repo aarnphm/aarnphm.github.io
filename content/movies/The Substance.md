@@ -1,6 +1,6 @@
 ---
-category: general
-date: "2024-02-07"
+category:
+date: 2024-02-07
 description: aging actress injecting herself to birth younger doppelganger—fargeat filming demi moore's body horror nightmare, society's beauty standards literalized into grotesque splitting, feminist rage expressed through gore proving you can't escape yourself no matter how perfect the replacement.
 director: Coralie Fargeat
 id: the-substance
@@ -14,6 +14,6 @@ tags:
   - psychology
   - politics
 title: The Substance
-watched: "2024-10-15"
+watched: 2024-10-15
 year: 2024
 ---

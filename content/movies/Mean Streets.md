@@ -7,7 +7,7 @@ id: mean-streets
 modified: 2025-10-29 02:14:53 GMT-04:00
 posters: "[[movies/posters/mean-streets.jpg]]"
 status: recurring
-studio: martin scorsese
+studio:
 tags:
   - vintage
   - o/life

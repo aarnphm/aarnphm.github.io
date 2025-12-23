@@ -2,7 +2,7 @@
 date: "2023-10-18"
 description: the state of being.
 id: play
-modified: 2025-10-29 02:15:51 GMT-04:00
+modified: 2025-12-20 06:26:21 GMT-05:00
 tags:
   - seed
   - philosophy
@@ -59,7 +59,11 @@ Graeber on [What's the point of we can't have fun](https://davidgraeber.org/arti
 
 > Why does the existence of action carried out for the sheer pleasure of acting, the exertion of powers for the sheer pleasure of exerting them, strike us as mysterious? What does it tell us about ourselves that we instinctively assume that it is?
 
-- “Man plays only when he is in the full sense of the word a man” (Friedrich Schiller, 1795)
+```quotes
+Man plays only when he is in the full sense of the word a man
+
+Friedrich Schiller, 1795
+```
 
 ### [[tags/philosophy|philosophy]]
 

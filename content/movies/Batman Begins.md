@@ -7,7 +7,7 @@ id: batman-begins
 modified: 2025-10-29 02:14:46 GMT-04:00
 posters: "[[movies/posters/batman-begins.jpg]]"
 status: recurring
-studio: christopher nolan
+studio:
 tags:
   - action
   - thriller

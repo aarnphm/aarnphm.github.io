@@ -7,7 +7,7 @@ id: interstellar
 modified: 2025-10-29 02:15:04 GMT-04:00
 posters: "[[movies/posters/interstellar.jpg]]"
 status: recurring
-studio: christopher nolan
+studio:
 tags:
   - p/sf
   - technical

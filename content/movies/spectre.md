@@ -7,7 +7,7 @@ id: spectre
 modified: 2025-10-29 02:15:06 GMT-04:00
 posters: "[[movies/posters/spectre.jpg]]"
 status: recurring
-studio: bond
+studio:
 tags:
   - bond
 title: Spectre

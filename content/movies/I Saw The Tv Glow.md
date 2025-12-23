@@ -1,5 +1,6 @@
 ---
-category: general
+category:
+  - horror
 date: 2024-02-07
 description: trans allegory disguised as 90s nostalgia horror—schoenbrun filming the terror of knowing your true self but choosing to stay buried, tv show offering escape then demanding you recognize it as real.
 director: Jane Schoenbrun
@@ -14,6 +15,8 @@ tags:
   - psychology
 title: I Saw the TV Glow
 year: 2024
+watched: 2025-08-05
+rating: 7.3
 ---
 
 What makes a [Lychian] (https://en.wikipedia.org/wiki/David_Lynch) movie?

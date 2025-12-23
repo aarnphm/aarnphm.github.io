@@ -7,7 +7,7 @@ id: dunkirk
 modified: 2025-10-29 02:15:03 GMT-04:00
 posters: "[[movies/posters/dunkirk.jpg]]"
 status: recurring
-studio: christopher nolan
+studio:
 tags:
   - history
   - thriller

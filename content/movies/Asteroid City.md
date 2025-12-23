@@ -7,7 +7,7 @@ id: asteroid-city
 modified: 2025-10-29 02:14:46 GMT-04:00
 posters: "[[movies/posters/asteroid-city.jpg]]"
 status: recurring
-studio: wes anderson
+studio:
 tags:
   - absurdism
 title: Asteroid City

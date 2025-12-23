@@ -7,7 +7,7 @@ id: the-king-of-comedy
 modified: 2025-10-29 02:14:59 GMT-04:00
 posters: "[[movies/posters/the-king-of-comedy.jpg]]"
 status: to watch
-studio: martin scorsese
+studio:
 tags:
   - comedy
   - psychology

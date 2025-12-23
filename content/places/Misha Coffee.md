@@ -8,9 +8,11 @@ coordinates:
   - "38.8883236"
   - "-77.1514396"
 date: "2025-12-18"
-description: local coffee shop in arlington with highly personal service and attention to detail.
+description: >-
+  local coffee shop in arlington with highly personal service and attention to
+  detail.
 id: Misha Coffee
-modified: "2025-12-18 17:09:29 GMT-05:00"
+modified: "2025-12-22 21:07:25 GMT-05:00"
 rating: 5
 tags:
   - places

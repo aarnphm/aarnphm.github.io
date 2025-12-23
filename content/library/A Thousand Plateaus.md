@@ -16,4 +16,5 @@ tags:
 title: A Thousand Plateaus
 year: 1980
 finished: 2025
+pdf: https://files.libcom.org/files/A%20Thousand%20Plateaus.pdf
 ---

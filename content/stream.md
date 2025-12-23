@@ -38,11 +38,30 @@ metadata:
     letter        = "a".."z" ;
     digit         = "0".."9" ;
     character     = ? any printable ascii except newline ? ;
-modified: 2025-12-17 04:44:33 GMT-05:00
+modified: 2025-12-23 04:41:20 GMT-05:00
 tags:
   - fruit
   - evergreen
 title: stream
+---
+
+- [meta]:
+  - date: 2025-12-23 03:50:33 GMT-05:00
+  - tags:
+    - eschatology
+
+_tw: death_
+
+If I'm away, I want to be remembered as _a loving friend_. Not as a 1% delta in Blackwell kernels. Not as a footnote in structured outputs. Not as another unit in the scaling war. Just a friend: the kind who noticed the human in front of them.
+
+If I'm away, I'm sorry for the externalities. I'm sorry for the unfinished loops—calls not returned, goodbyes deferred, care I postponed until it expired. I'm sorry for not saying goodbye to my parents. I'm sorry if your last interaction with me is just logistics and entropy. I'm sorry for the rotten food in the fridge that you'll have to clean. I'm sorry that the smell of rotten flesh will be the last thing you've remembered me by.
+
+If I'm away, I'm not sorry in the sense of conceding that the universe gets to assign me a moral score. I did the best I could with the compute I had. If there's a capital-G-agent-or-man-or-being running evaluation, it can inspect the source code; if there isn't, then guilt is just a heuristic firing after the fact. I'm not sorry, because I just need some quiet times, sometimes.
+
+If I'm away, please don't be sad in the way that freezes your future. Grief is a computation; run it to completion, then spend the rest of your life-budget on living. Death doesn't get to claim a second tax in the currency of your attention. Please don't be sad, because life is the existence of suffering, and the call of the eternal life.
+
+Finally, if I'm away, treat my savings like an allocation problem. Put it toward cancer research. Sell the farm so the animals get continuity. Liquidate the S&P 500 if you need liquidity. Pay whatever taxes you legally must (yes, the state will still take its bite). If you want a ritual, put a small fraction on red and salute the god of variance. Then go look after your people. Don't reserve part of your heart for me. I don't deserve any part of it.
+
 ---
 
 - [meta]:

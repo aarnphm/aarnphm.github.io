@@ -1,6 +1,7 @@
 ---
-category: general
-date: "2024-02-07"
+category:
+  - gothic
+date: 2024-02-07
 description: eggers remaking murnau's silent masterpiece—gothic romance told through female protagonist's eyes, skarsgård's orlok obsessed with depp's ellen, choosing feminist fairy tale over adventure story, filming vampire lore as tale of love and obsession without tragic anti-hero sentimentality.
 director: Robert Eggers
 id: nosferatu
@@ -13,4 +14,6 @@ tags:
   - love
 title: Nosferatu
 year: 2024
+watched: 2025-05-13
+rating: 7.2
 ---

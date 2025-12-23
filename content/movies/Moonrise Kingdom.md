@@ -7,7 +7,7 @@ id: moonrise-kingdom
 modified: 2025-10-29 02:14:53 GMT-04:00
 posters: "[[movies/posters/moonrise-kingdom.jpg]]"
 status: recurring
-studio: wes anderson
+studio:
 tags:
   - love
   - family

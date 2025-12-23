@@ -7,7 +7,7 @@ id: the-life-aquatic-with-steve-zissou
 modified: 2025-10-29 02:14:59 GMT-04:00
 posters: "[[movies/posters/the-life-aquatic-with-steve-zissou.jpg]]"
 status: recurring
-studio: wes anderson
+studio:
 tags:
   - comedy
   - o/life
