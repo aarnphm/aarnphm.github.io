@@ -7,7 +7,7 @@ title: The Presentation of Self in Everyday Life
 date: 2025-12-22
 finished:
 year: 1956
-status:
+status: to read
 subcategory:
   - being
   - self

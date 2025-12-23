@@ -7,7 +7,7 @@ date: 2025-12-18
 description: scifi romp where a deliverer stumbles into a secret society protecting a parallel earth dominated by giant kaiju, told with the pace of a marvel screenplay.
 finished:
 year: 2022
-status: to read
+status: finished
 subcategory:
   - absurdism
 author:
