@@ -10,7 +10,7 @@ coordinates:
 date: "2025-11-22"
 description: classic brunch spot with generous portions and weekend waits
 id: The Old York Tavern
-modified: "2025-12-18 17:09:29 GMT-05:00"
+modified: "2025-12-22 21:07:25 GMT-05:00"
 rating: 5
 tags:
   - places

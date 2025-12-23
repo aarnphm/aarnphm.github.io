@@ -1,8 +1,3 @@
----
-date: "2025-12-12"
-id: jacky
-modified: 2025-12-12 18:48:51 GMT-05:00
-tags:
-  - seed
-title: jacky
----
+version https://git-lfs.github.com/spec/v1
+oid sha256:cbb135ffd78f676ceb11832236b9990a14627c9d22d8fca08f912d55f6466053
+size 3978

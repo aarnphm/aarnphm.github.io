@@ -7,7 +7,7 @@ id: following
 modified: 2025-10-29 02:15:03 GMT-04:00
 posters: "[[movies/posters/following.jpg]]"
 status: recurring
-studio: christopher nolan
+studio:
 tags:
   - thriller
   - psychology

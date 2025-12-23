@@ -7,7 +7,7 @@ id: casino-royale
 modified: 2025-10-29 02:14:47 GMT-04:00
 posters: "[[movies/posters/casino-royale.jpg]]"
 status: recurring
-studio: bond
+studio:
 tags:
   - bond
 title: Casino Royale

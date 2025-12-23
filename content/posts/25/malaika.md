@@ -1,8 +1,3 @@
----
-date: "2025-12-12"
-id: malaika
-modified: 2025-12-12 18:49:00 GMT-05:00
-tags:
-  - seed
-title: malaika
----
+version https://git-lfs.github.com/spec/v1
+oid sha256:f47c03fa9444d008cae959488180f4f68036c0f6515da52a671ac65f153ecead
+size 143

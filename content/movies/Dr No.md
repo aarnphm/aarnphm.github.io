@@ -7,7 +7,7 @@ id: dr-no
 modified: 2025-10-29 02:14:48 GMT-04:00
 posters: "[[movies/posters/dr-no.jpg]]"
 status: recurring
-studio: bond
+studio:
 tags:
   - bond
 title: Dr. No

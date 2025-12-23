@@ -7,7 +7,7 @@ id: the-prestige
 modified: 2025-10-29 02:14:59 GMT-04:00
 posters: "[[movies/posters/the-prestige.jpg]]"
 status: recurring
-studio: christopher nolan
+studio:
 tags:
   - thriller
   - technical

@@ -1,6 +1,6 @@
 ---
-category: general
-date: "2024-02-07"
+category:
+date: 2024-02-07
 description: two cousins metabolizing inherited trauma differently on a holocaust tour—eisenberg asking whether performative pain or suppressed pain does more damage, neither answer comfortable.
 director: Jesse Eisenberg
 id: a-real-pain
@@ -13,6 +13,6 @@ tags:
   - history
   - psychology
 title: A Real Pain
-watched: "2024-11-20"
+watched: 2024-11-20
 year: 2024
 ---

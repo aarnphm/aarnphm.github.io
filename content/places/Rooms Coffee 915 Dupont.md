@@ -10,7 +10,7 @@ coordinates:
 date: "2025-08-05"
 description: dupont location with quieter mornings and dedicated regulars
 id: Rooms Coffee | 915 Dupont
-modified: "2025-12-18 17:09:29 GMT-05:00"
+modified: "2025-12-22 21:07:25 GMT-05:00"
 rating: 5
 tags:
   - places

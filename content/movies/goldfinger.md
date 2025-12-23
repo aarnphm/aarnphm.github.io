@@ -6,8 +6,8 @@ director: Guy Hamilton
 id: goldfinger
 modified: 2025-10-29 02:15:04 GMT-04:00
 posters: "[[movies/posters/goldfinger.jpg]]"
-status: recurring
-studio: bond
+status: finished
+studio:
 tags:
   - bond
 title: Goldfinger

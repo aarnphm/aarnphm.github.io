@@ -10,7 +10,7 @@ coordinates:
 date: "2025-08-05"
 description: ossington outpost with more space for lingering
 id: Rooms Coffee | 135 Ossington
-modified: "2025-12-18 17:09:29 GMT-05:00"
+modified: "2025-12-22 21:07:25 GMT-05:00"
 rating: 5
 tags:
   - places

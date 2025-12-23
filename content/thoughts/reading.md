@@ -2,18 +2,20 @@
 date: "2025-12-13"
 description: and knowledge diffusion
 id: reading
-modified: 2025-12-13 17:01:06 GMT-05:00
+modified: 2025-12-20 05:46:28 GMT-05:00
 tags:
   - pattern
   - evergreen
 title: reading
 ---
 
-A lot of what you [[thoughts/writing|write]] are diffused from what you read. I pretty much spend a lot of my waking hours [[antilibrary|reading]] books (when I'm not working ofc) that I find intellectually interesting and satisfy that itch in the corner of my brain.
+A lot of what you [[thoughts/writing|write]] are diffused from what you read. I pretty much spend a lot of my waking hours [[antilibrary|reading]] books (when I'm not working ofc) that is intellectually stimulated and I find interesting. I also do perform [close reading](https://en.wikipedia.org/wiki/Close_reading).
 
-This collection of notes aren't necessarily about how I read, because I'm not yet _sure_ how I read. More/less a collection of how people I follow read.
+I'm not yet _sure_ how I read. But this is more/less a collection of how people I follow read. Inspired by [Zvi's on writing](https://thezvi.substack.com/p/on-writing-1)
 
-This stream between [Matuschak and Dwarkesh](https://www.youtube.com/watch?v=OFuu4pesKf0) on Matuschak's pedagogical process of studying _hard problem_ (in this case quantum mechanics) are pretty good case study of [close reading](https://en.wikipedia.org/wiki/Close_reading) that I think resemble a lot of my reading workflow as well.
+> [!note]
+>
+> Andy Matuschak [recorded a video w/ Dwarkesh](https://www.youtube.com/watch?v=OFuu4pesKf0) that demonstrate his process of studying _hard problem_ (in this case quantum mechanics), which is a good case study of [close reading](https://en.wikipedia.org/wiki/Close_reading)
 
 ## how rtq read
 

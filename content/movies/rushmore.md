@@ -7,7 +7,7 @@ id: rushmore
 modified: 2025-10-29 02:15:05 GMT-04:00
 posters: "[[movies/posters/rushmore.jpg]]"
 status: recurring
-studio: wes anderson
+studio:
 tags:
   - comedy
   - o/life

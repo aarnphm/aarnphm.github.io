@@ -7,7 +7,7 @@ id: taxi-driver
 modified: 2025-10-29 02:14:56 GMT-04:00
 posters: "[[movies/posters/taxi-driver.jpg]]"
 status: recurring
-studio: martin scorsese
+studio:
 tags:
   - vintage
   - thriller

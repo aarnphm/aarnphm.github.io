@@ -7,7 +7,7 @@ aliases:
 date: "2025-08-09"
 description: just another fish in the sea.
 id: dating
-modified: 2025-11-28 16:12:54 GMT-05:00
+modified: 2025-12-20 13:00:03 GMT-05:00
 noindex: true
 slides: true
 tags:
@@ -23,7 +23,10 @@ I hate dating apps. I know it's a numbers game, but I got lazy and tired of the 
 
 I'm hoping to find a wonderful woman to be my partner [^partner], someone I can share a life with for many years to come ♥
 
-[^partner]: And I meant, [wife](https://en.wikipedia.org/wiki/Wife).
+[^partner]:
+    And I meant, [wife](https://en.wikipedia.org/wiki/Wife). In terms of spousal responsibility, because i believe that marriage and polyamory are orthogonal axes.
+
+    I argue that the definition of wife in the polycule is closely related to a nesting partner—a person that you cohabitate with (hierarchical is also implied here.)
 
 ![[thoughts/images/selfie-1.webp]]
 ![[thoughts/images/me-in-park.webp]]
@@ -40,7 +43,9 @@ I work on [[thoughts/LLMs|large laguage models]], and I like to cook: I make fre
 
 I'm a bit obsessive with my [[thoughts/craft|craft]], especially when thinking about [[thoughts/Machine learning|stochastic]] model. It is all I do these days, other than caring for my friends and people in my life (obv)
 
-I'm the 3am call who shows up. My [love language](https://en.wikipedia.org/wiki/The_Five_Love_Languages) is physical touch. I'm ["securely attached"](https://en.wikipedia.org/wiki/Attachment_theory#Attachment_styles_in_adults:~:text=%5B116%5D-,Securely%20attached,-%5Bedit%5D). My Myers-Briggs is ENTJ-A, though it swings to INTJ-T a lot of times. You can also find the [[personality|personality report]] from Clearer Thinking's [Ultimate Personality Test](https://www.clearerthinking.org/tools/the-ultimate-personality-test)
+I'm the 3am call who shows up. I'm poly, but open to monogamy. My [love language](https://en.wikipedia.org/wiki/The_Five_Love_Languages) is physical touch. I'm ["securely attached"](https://en.wikipedia.org/wiki/Attachment_theory#Attachment_styles_in_adults:~:text=%5B116%5D-,Securely%20attached,-%5Bedit%5D).
+
+My Myers-Briggs is ENTJ-A, though it swings to INTJ-T a lot of times. You can also find the [[personality|personality report]] from Clearer Thinking's [Ultimate Personality Test](https://www.clearerthinking.org/tools/the-ultimate-personality-test)
 
 I moved continents at a young age, and learnt very early on that _solitude makes presence precious_.
 

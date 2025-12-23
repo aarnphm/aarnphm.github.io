@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2025-12-19 09:00:03 GMT-05:00
+modified: 2025-12-23 04:48:13 GMT-05:00
 permalinks:
   - /website
   - /tweets
@@ -143,6 +143,12 @@ title: are.na
 - [meta]:
   - view: list
 
+- https://x.com/voooooogel/status/2001764163207479336 -- Claude dilemma while running a business
+  - [meta]:
+    - date: 12/20/2025
+    - tags: [tweets, agentic, behavioural]
+  - Claude running a business: https://x.com/AnthropicAI/status/2001686777124278281
+  - WSJ: https://x.com/voooooogel/status/2001725746658906520
 - https://x.com/willdepue/status/2001024738584674398 -- How to think about scaling intelligence, from Ilya
   - [meta]:
     - date: 12/16/2025
@@ -449,6 +455,19 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://arthshaha.com/play -- play
+  - [meta]:
+    - date: 12/22/2025
+    - tags: [canvas, investigation]
+- https://htmlparser.info/
+  - [meta]:
+    - date: 12/21/2025
+    - tags: [parser, rules]
+- https://www.stripe.press/tacit -- Tacit
+  - [meta]:
+    - date: 12/21/2025
+    - tags: [nous]
+    - pinned: true
 - https://fliparealcoin.com/
   - [meta]:
     - date: 12/17/2025
@@ -890,6 +909,26 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://www.oscardumlao.com/
+  - [meta]:
+    - date: 12/22/2025
+    - tags: [designer]
+- https://billysweeney.com/
+  - [meta]:
+    - date: 12/22/2025
+    - tags: [designer]
+- https://laurelschwulst.com/
+  - [meta]:
+    - date: 12/22/2025
+    - tags: [designer, progressive]
+- https://bruce-cao.com/ -- Bruce Cao
+  - [meta]:
+    - date: 12/22/2025
+    - tags: [designer]
+- https://skunnavakkam.github.io/ -- Sudarsh
+  - [meta]:
+    - date: 12/21/2025
+    - tags: [neurobiology, alignment]
 - https://philosophy.utoronto.ca/directory/imogen-dickie/ -- Imogen Dickie
   - [meta]:
     - date: 12/17/2025
@@ -1877,12 +1916,74 @@ title: are.na
     - date: 10/27/2025
     - tags: [diner]
     - coord: [43.6554828, -79.4115051]
+- https://maps.app.goo.gl/mvVfWEPSqNNUsjVN7 -- La Plume
+  - [meta]:
+    - date: 12/22/2025
+    - tags: [restaurant, speakeasy]
+    - coord: [43.6432746, -79.3986369]
+    - pinned: true
 
 ## essay
 
 - [meta]:
   - json: true
 
+- https://jason.ml/hpmor
+  - [meta]:
+    - date: 12/23/2025
+      - tags: [longtermism, agi]
+  - https://x.com/sama/status/1621621724507938816 -- Yud's impact on AGI
+- https://www.atvbt.com/21-facts-about-throwing-good-parties/ -- 21 facts about throwing good parties
+  - [meta]:
+    - date: 12/23/2025
+    - tags: [community]
+- https://x.com/ivanhzhao/status/2003192654545539400 -- Steam, Steel, and Infinite Mind
+  - [meta]:
+    - date: 12/23/2025
+    - tags: [silicon, longtermism]
+- https://www.avabear.xyz/p/radical-fun -- Radical fun [**]
+  - [meta]:
+    - date: 12/23/2025
+    - tags: [friendship]
+- https://kk.org/thetechnium/scenius-or-comm/ -- Scenius, or Communal Genius
+  - [meta]:
+    - date: 12/22/2025
+    - tags: [being, phenomenology]
+    - later: true
+- https://www.lesswrong.com/posts/FMkQtPvzsriQAow5q/the-correct-response-to-uncertainty-is-not-half-speed -- The correct response to undcertainty is *not* half-speed
+  - [meta]:
+    - date: 12/21/2025
+    - tags: [progress, epistemology]
+  - I wasn't sure if I was a good enough writer to write a given doc myself, or if I should try to outsource it.  So, I sat there kind-of-writing it while also fretting about whether the task was correct.
+    - (Solution:  Take a minute out to think through heuristics.  Then, either: (1) write the post at full speed; or (2) try to outsource it; or (3) write full force for some fixed time period, and then pause and evaluate.)
+  - I wasn't sure (back in early 2012) that CFAR was worthwhile.  So, I kind-of worked on it.
+  - An old friend came to my door unexpectedly, and I was tempted to hang out with her, but I also thought I should finish my work.  So I kind-of hung out with her while feeling bad and distracted about my work.
+  - A friend of mine, when teaching me math, seems to mumble specifically those words that he doesn't expect me to understand (in a sort of compromise between saying them and not saying them)...
+- http://pdf-objects.com/files/00-On-Keeping-a-Notebook.pdf -- Joan Didion, _On Keeping a Notebook_
+  - [meta]:
+    - date: 12/21/2025
+    - tags: [writing]
+    - later: true
+- https://aligned.substack.com/p/alignment-mvp -- A minimal viable product for alignment
+  - [meta]:
+    - date: 12/21/2025
+    - tags: [alignment, products]
+- https://www.henrikkarlsson.xyz/p/self-help-for-cocoons -- Self-help for cocoons
+  - [meta]:
+    - date: 12/21/2025
+    - tags: [epistemology, learning]
+- https://www.forethought.org/research/the-first-type-of-transformative-ai -- The first type of transformative AI
+  - [meta]:
+    - date: 12/21/2025
+    - tags: [longtermism, ai]
+- https://www.paulgraham.com/essay.html -- The Age of the Essay
+  - [meta]:
+    - date: 12/21/2025
+    - tags: [writing]
+- https://www.lesswrong.com/s/pCxX5sReHdrwb4aHE/p/w39LsdhGFvTQmgBAQ -- Willpower is exhausting, use content blockers
+  - [meta]:
+    - date: 12/21/2025
+    - tags: [intentionality, will]
 - https://www.recurse.com/social-rules -- Recurse's social rules
   - [meta]:
     - date: 12/17/2025
@@ -3247,6 +3348,7 @@ title: are.na
   - [meta]:
     - date: 10/04/2025
     - tags: [research]
+    - pinned: true
   - _Honing Your Taste_: Your ability to choose the right problems to work on is even more important than your raw technical skill.
   - 1. Read a lot of papers, and assess them critically. If possible, discuss them with others who have a deeper knowledge of the subject.
   - 2. Work in a research group with other people working on similar topics. That way you can absorb their experiences as well as your own.
@@ -3281,6 +3383,27 @@ title: are.na
   - view: list
   - json: true
 
+- https://transformer-circuits.pub/2025/linebreaks/index.html -- When Models Manipulate Manifolds: The Geometry of a Counting Task
+  - [meta]:
+    - date: 12/21/2025
+    - tags: [interpretability, manifolds]
+    - later: true
+- https://alignmentpretraining.ai/ -- Alignment Pretraining
+  - [meta]:
+    - date: 12/21/2025
+    - tags: [interpretability, training]
+  - pretraining intervention
+  - https://x.com/Turn_Trout/status/2002623635501297802
+- https://www.youtube.com/watch?v=Aroazwb_QW8 -- Bitter Lesson-Pilled Interpretability, Neel Nanda
+  - [meta]:
+    - date: 12/21/2025
+    - tags: [interpretability]
+    - later: true
+  - [Activation Oracles](https://arxiv.org/abs/2512.15674)
+    - https://x.com/OwainEvans_UK/status/2001715774105522195
+  - [Predictive Concept Decoder](https://arxiv.org/abs/2512.15712)
+    - https://x.com/TransluceAI/status/2001714182761398721
+    - https://transluce.org/pcd
 - https://www.pi.website/research/human_to_robot -- Emergence of Human to Robot Transfer in VLAs
   - [meta]:
     - date: 12/18/2025
@@ -4269,6 +4392,10 @@ title: are.na
 
 ## opinions
 
+- https://x.com/demishassabis/status/2003097405026193809 -- Demis' on building an augmented brains
+  - [meta]:
+    - date: 12/23/2025
+    - tags: [mind-body dualism, silicon, ai]
 - https://www.lesswrong.com/posts/yw9B5jQazBKGLjize/ai-safety-undervalues-founders -- AI safety undervalues founders, Ryan Kidd
   - [meta]:
     - date: 12/18/2025
@@ -4935,6 +5062,16 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://www.youtube.com/watch?v=utXoYDrl3KY -- How to Want To Live Again
+  - [meta]:
+    - date: 12/21/2025
+    - tags: [psychology]
+  - autonomy
+    - sense of **freewill** (individual experience their behaviours as an expression of self)
+  - competence
+    - ongoing interaction with one's environment (seek challenges, maintain and enhance skills)
+  - relatedness
+    - feeling connected to others, caring for and being cared for (sense of belonging)
 - http://web.dfc.unibo.it/buzzetti/SFMcorso2005-06sp/materiali/veldhuis.pdf -- Ordained and Absolute Power in Scotus’ Ordinatio I 44, Henri Veldhuis
   - [meta]:
     - date: 12/17/2025
@@ -5323,6 +5460,14 @@ title: are.na
 
 ## stream
 
+- https://x.com/kaseyklimes/status/1791082088420069408 -- host gathering
+  - [meta]:
+    - date: 12/22/2025
+    - tags: [play, community]
+- https://x.com/schlagetown/status/1494348599165128720 -- Threads on [[thoughts/play]]
+  - [meta]:
+    - date: 12/22/2025
+    - tags: [play, exploration]
 - https://shallowreview.ai/overview -- Technical AI Safety, 2025
   - [meta]:
     - date: 12/18/2025
@@ -5573,6 +5718,7 @@ title: are.na
     - date: 08/05/2025
     - tags: [military complex]
   - $1Bn in Revenue, 45% Y/Y
+  - Alex Karp's [letters](https://www.palantir.com/q3-2025-letter/en/)
 
 ## poetry
 
@@ -5799,6 +5945,11 @@ title: are.na
 
 ## video
 
+- https://www.youtube.com/watch?v=PUv66718DII -- Bret Victor, Inventing on Principle [**]
+  - [meta]:
+    - date: 12/21/2025
+    - tags: [tacit, strategy, interface]
+    - pinned: true
 - https://www.youtube.com/watch?v=x_y691nZztE -- I did love you...
   - [meta]:
     - date: 12/19/2025
@@ -6497,6 +6648,31 @@ title: are.na
 
 ## technical
 
+- https://www.seangoedecke.com/seeing-like-a-software-company/ -- Seeing like a software company
+  - [meta]:
+    - date: 12/23/2025
+    - tags: [company, productivity]
+    - later: true
+- https://lucumr.pocoo.org/2025/12/22/a-year-of-vibes/ -- A year of vibes (2025)
+  - [meta]:
+    - date: 12/23/2025
+    - tags: [engineering, retrieval, reflection]
+- https://annas-archive.li/blog/backing-up-spotify.html -- Backing Spotify
+  - [meta]:
+    - date: 12/23/2025
+    - tags: [archival]
+- https://andre.arko.net/2025/09/28/stupid-jj-tricks/ -- `jj` tricks
+  - [meta]:
+    - date: 12/22/2025
+    - tags: [tools, cheatsheet]
+- https://simonwillison.net/2025/Dec/18/code-proven-to-work/ -- Your job is to deliver code you have proven to work
+  - [meta]:
+    - date: 12/21/2025
+    - tags: [productivity]
+- https://abseil.io/fast/hints.html -- Performance Hints
+  - [meta]:
+    - date: 12/20/2025
+    - tags: [engineering, practice]
 - https://lorienpsych.com/2021/06/05/depression/ -- Depression [**]
   - [meta]:
     - date: 12/18/2025
@@ -6857,6 +7033,10 @@ title: are.na
 
 ## organizations
 
+- https://obvious.com -- Obvious Ventures
+  - [meta]:
+    - date: 12/21/2025
+    - tags: [funds, vc]
 - https://www.internetbackyard.com/ -- Internet Backyard
   - [meta]:
     - date: 12/10/2025
@@ -7143,6 +7323,20 @@ title: are.na
   - view: list
   - json: true
 
+- https://arxiv.org/abs/2512.15712
+  - [meta]:
+    - date: 12/21/2025
+    - tags: [interpretability]
+    - later: true
+- https://arxiv.org/abs/2512.15674
+  - [meta]:
+    - date: 12/21/2025
+    - tags: [interpretability]
+    - later: true
+- https://arxiv.org/abs/1609.09106
+  - [meta]:
+    - date: 12/20/2025
+    - tags: [network, highway network]
 - https://arxiv.org/abs/2501.19393
   - [meta]:
     - date: 12/17/2025

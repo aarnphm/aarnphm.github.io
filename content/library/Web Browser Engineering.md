@@ -9,11 +9,11 @@ external: https://browser.engineering/onepage.html
 id: Web Browser Engineering
 modified: 2025-10-29 02:14:43 GMT-04:00
 posters: "[[library/posters/web-browser-engineering.jpg]]"
-status: finished
+status: manuals
 subcategory: programming
 tags:
   - technical
 title: Web Browser Engineering
 year: 2023
-finished: 2025
+finished: 2024
 ---

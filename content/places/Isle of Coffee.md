@@ -10,7 +10,7 @@ coordinates:
 date: "2025-08-05"
 description: leslieville cafe with strong community vibes
 id: Isle of Coffee
-modified: "2025-12-18 17:09:29 GMT-05:00"
+modified: "2025-12-22 21:07:25 GMT-05:00"
 rating: 5
 tags:
   - places
