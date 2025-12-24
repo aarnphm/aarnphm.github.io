@@ -1,5 +1,7 @@
 ---
 category:
+  - populism
+  - social politics
 date: 2024-02-07
 description: journalists chasing the fall of dc like war tourists—garland filming american collapse while studiously avoiding why it happened, more interested in what we photograph than what we become.
 director: Alex Garland

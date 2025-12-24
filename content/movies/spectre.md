@@ -6,6 +6,7 @@ director: Sam Mendes
 id: spectre
 modified: 2025-10-29 02:15:06 GMT-04:00
 posters: "[[movies/posters/spectre.jpg]]"
+rating: 6.8
 status: recurring
 studio:
 tags:

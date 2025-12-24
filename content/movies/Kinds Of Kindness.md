@@ -1,5 +1,7 @@
 ---
 category:
+  - actors
+  - anthology
 date: 2024-02-07
 description: three stories about control and devotion—lanthimos anthology filming emma stone and jesse plemons in abusive relationships with bosses, spouses, and cult leaders, kindness revealing itself as cruelty wearing different masks.
 director: Yorgos Lanthimos

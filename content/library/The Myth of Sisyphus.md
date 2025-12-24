@@ -8,7 +8,7 @@ id: The Myth of Sisyphus
 modified: 2025-10-29 02:14:40 GMT-04:00
 posters: "[[library/posters/the-myth-of-sisyphus.jpg]]"
 notebook: "[[thoughts/Camus#The Myth of Sisyphus|field notes]]"
-status: finished
+status: evergreen
 subcategory: absurdism
 tags:
   - philosophy

@@ -1,5 +1,8 @@
 ---
 category:
+  - drama
+  - love
+  - competition
 date: 2024-02-07
 description: tennis as foreplay between three people who can't separate competition from desire—guadagnino filming zendaya orchestrating two former best friends against each other, sweat and ambition the only honest language left.
 director: Luca Guadagnino

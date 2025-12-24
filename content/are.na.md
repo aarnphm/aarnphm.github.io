@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2025-12-23 04:48:13 GMT-05:00
+modified: 2025-12-24 00:57:17 GMT-05:00
 permalinks:
   - /website
   - /tweets
@@ -909,6 +909,22 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://plato.stanford.edu/entries/frantz-fanon/ -- Frantz Fanon
+  - [meta]:
+    - date: 12/23/2025
+    - tags: [colonial, political theory]
+- https://benanderson.work/ -- Ben Anderson
+  - [meta]:
+    - date: 12/23/2025
+    - tags: [researcher, ai]
+- https://en.wikipedia.org/wiki/Jacques_Lacan -- Jacques Lacan
+  - [meta]:
+    - date: 12/23/2025
+    - tags: [psychoanalyst, love]
+- https://en.wikipedia.org/wiki/Hannah_Arendt -- Hannah Arendt
+  - [meta]:
+    - date: 12/23/2025
+    - tags: [political theorist, philosopher]
 - https://www.oscardumlao.com/
   - [meta]:
     - date: 12/22/2025
@@ -1928,7 +1944,38 @@ title: are.na
 - [meta]:
   - json: true
 
-- https://jason.ml/hpmor
+- https://archive.is/W4aBo -- My Family’s Slave [--]
+  - [meta]:
+    - date: 12/23/2025
+    - tags: [life, race]
+- https://www.seangoedecke.com/ai-and-informal-science/ -- We are in the "gentleman scientist" era of AI research
+  - [meta]:
+    - date: 12/23/2025
+    - tags: [research, direction, agi]
+- https://nadia.xyz/idea-machines -- Idea machines [**]
+  - [meta]:
+    - date: 12/23/2025
+    - tags: [philosophy, longtermism]
+- https://www.yudkowsky.net/other/fiction/the-sword-of-good -- The Sword of Good
+  - [meta]:
+    - date: 12/23/2025
+    - tags: [fiction, being]
+- https://sfalexandria.com/posts/rileys-ideas/ -- Training the Idea Muscle
+  - [meta]:
+    - date: 12/23/2025
+    - tags: [strategy]
+  - another banger from aadil
+  - > If you reject your own ideas, then the part of the brain that comes up with ideas is going to stop. You just do it and do it and do it, and you sort it out later.
+- https://x.com/jackclarkSF/status/2003526145380151614 -- Silent Sirens, Flashing For Us All
+  - [meta]:
+    - date: 12/23/2025
+    - tags: [longtermism, life]
+    - later: true
+- https://www.themarginalian.org/2016/10/20/proust-on-reading/ -- Proust on why we read
+  - [meta]:
+    - date: 12/23/2025
+    - tags: [reading, learning]
+- https://jason.ml/hpmor -- HPMOR
   - [meta]:
     - date: 12/23/2025
       - tags: [longtermism, agi]
@@ -3383,6 +3430,16 @@ title: are.na
   - view: list
   - json: true
 
+- https://x.com/simon_mo_/status/2003608328757457036?s=20 -- Noam being Noam at CAI
+  - [meta]:
+    - date: 12/23/2025
+    - tags: [pretraining, engineering]
+  - blogpost: https://blog.character.ai/squinch/
+- https://gau-nernst.github.io/tcgen05/ -- tcgen05 for dummies
+  - [meta]:
+    - date: 12/23/2025
+    - tags: [gpu, compilers]
+    - later: true
 - https://transformer-circuits.pub/2025/linebreaks/index.html -- When Models Manipulate Manifolds: The Geometry of a Counting Task
   - [meta]:
     - date: 12/21/2025
@@ -4392,6 +4449,10 @@ title: are.na
 
 ## opinions
 
+- https://simonwillison.net/2025/Dec/18/code-proven-to-work/ -- Your job is to deliver code you have proven to work
+  - [meta]:
+    - date: 12/21/2025
+    - tags: [productivity]
 - https://x.com/demishassabis/status/2003097405026193809 -- Demis' on building an augmented brains
   - [meta]:
     - date: 12/23/2025
@@ -4615,6 +4676,18 @@ title: are.na
 
 ## life is literature
 
+- https://x.com/JayaGup10/status/2003525933534179480 -- AI’s trillion-dollar opportunity: Context graphs
+  - [meta]:
+    - date: 12/23/2025
+    - tags: [scaling]
+- https://x.com/BjarturTomas/status/2003277909063270479 -- The Company Man
+  - [meta]:
+    - date: 12/23/2025
+    - tags: [fiction, writing]
+- https://www.huffpost.com/entry/death-parent-dad-secrets_n_63d97715e4b01e92886da131 -- I Thought Uncovering My Father's Deepest Secrets Would Make Us Closer. I Was Wrong.
+  - [meta]:
+    - date: 12/23/2025
+    - tags: [eschatology, obituary, grief]
 - https://splishsplash.online/p/beautiful-places -- Beautiful places
   - [meta]:
     - date: 12/18/2025
@@ -5062,6 +5135,16 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://www.youtube.com/watch?v=rHKwIYsPXLg -- Consciousness in Artificial Intelligence | John Searle | Talks at Google
+  - [meta]:
+    - date: 12/23/2025
+    - tags: [functionalism]
+  - [[thoughts/functionalism]]
+- https://www.youtube.com/watch?v=29AgSo6KOtI -- Why Now? A Quest in Metaphysics
+  - [meta]:
+    - date: 12/23/2025
+    - tags: [metaphysics]
+  - i.e: [[thoughts/singularity hypothesis|singularity hypothesis]]
 - https://www.youtube.com/watch?v=utXoYDrl3KY -- How to Want To Live Again
   - [meta]:
     - date: 12/21/2025
@@ -5460,6 +5543,16 @@ title: are.na
 
 ## stream
 
+- https://github.com/oliverbenns/john-carmack-plan/tree/master/archive -- John Carmack's Quake Plan [**]
+  - [meta]:
+    - date: 12/24/2025
+    - tags: [engineering]
+- https://x.com/gwern/status/2003603498236281142 -- hardware as hedging, AI fiction coauthors
+  - [meta]:
+    - date: 12/23/2025
+    - tags: [writing, tools, symbotic]
+  - see also: https://www.reddit.com/r/mlscaling/comments/1eyophn/hardware_hedging_against_scaling_regime_shifts/
+  - https://www.reddit.com/r/writers/comments/1ppaxri/comment/nvc2pny/
 - https://x.com/kaseyklimes/status/1791082088420069408 -- host gathering
   - [meta]:
     - date: 12/22/2025
@@ -6648,6 +6741,11 @@ title: are.na
 
 ## technical
 
+- https://smoothbrains.net/posts/2025-10-17-fractional-fourier-transforms.html -- Here time turns into space: Does consciousness implement the fractional Fourier transform?
+  - [meta]:
+    - date: 12/23/2025
+    - tags: [math]
+    - later: true
 - https://www.seangoedecke.com/seeing-like-a-software-company/ -- Seeing like a software company
   - [meta]:
     - date: 12/23/2025
@@ -6665,10 +6763,6 @@ title: are.na
   - [meta]:
     - date: 12/22/2025
     - tags: [tools, cheatsheet]
-- https://simonwillison.net/2025/Dec/18/code-proven-to-work/ -- Your job is to deliver code you have proven to work
-  - [meta]:
-    - date: 12/21/2025
-    - tags: [productivity]
 - https://abseil.io/fast/hints.html -- Performance Hints
   - [meta]:
     - date: 12/20/2025
@@ -7033,6 +7127,14 @@ title: are.na
 
 ## organizations
 
+- https://www.osv.llc/ -- O'Shaughnessy Ventures
+  - [meta]:
+    - date: 12/23/2025
+    - tags: [vc]
+- https://afterimage.id/ -- Afterimage
+  - [meta]:
+    - date: 12/23/2025
+    - tags: [angels]
 - https://obvious.com -- Obvious Ventures
   - [meta]:
     - date: 12/21/2025

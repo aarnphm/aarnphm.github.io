@@ -8,6 +8,7 @@ director:
 id: singin-in-the-rain
 modified: 2025-10-29 02:14:55 GMT-04:00
 posters: "[[movies/posters/singin-in-the-rain.jpg]]"
+rating: 8.3
 status: to watch
 studio: mgm
 tags:

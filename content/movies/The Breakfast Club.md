@@ -6,6 +6,7 @@ director: John Hughes
 id: the-breakfast-club
 modified: 2025-10-29 02:14:56 GMT-04:00
 posters: "[[movies/posters/the-breakfast-club.jpg]]"
+rating: 7.8
 status: recurring
 studio: general
 tags:

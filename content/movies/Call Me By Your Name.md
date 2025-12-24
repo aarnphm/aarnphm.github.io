@@ -1,6 +1,9 @@
 ---
-category: general
-date: "2024-02-07"
+category:
+  - love
+  - relationship
+  - drama
+date: 2024-02-07
 description: desire in italian sunlight—a summer compressed into the shape of first love, guadagnino filming peaches and statues as classical surrogates for unspoken longing.
 director: Luca Guadagnino
 id: call-me-by-your-name
@@ -13,6 +16,6 @@ tags:
   - love
   - o/relationship
 title: Call Me By Your Name
-watched: "2024-03-10"
+watched: 2024-03-10
 year: 2017
 ---

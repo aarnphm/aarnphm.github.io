@@ -1,6 +1,9 @@
 ---
-category: general
-date: "2024-02-07"
+category:
+  - life
+  - drama
+  - grief
+date: 2024-02-07
 description: janitor returning to hometown after brother's death—lonergan revealing through flashbacks the fire that killed his children, grief so complete it erases the possibility of redemption, casey affleck frozen in a past he can't forgive himself for living through.
 director: Kenneth Lonergan
 id: manchester-by-the-sea
@@ -14,6 +17,6 @@ tags:
   - psychology
   - o/life
 title: Manchester by the Sea
-watched: "2024-02-15"
+watched: 2024-02-15
 year: 2016
 ---

@@ -1,11 +1,14 @@
 ---
-category: christopher nolan
+category:
+  - thriller
+  - drama
 date: 2024-02-07
 description: memory as the only thread connecting us to ourselves, and what happens when that thread frays—identity becomes a story we tell, unreliable and reconstructed each morning.
 director: Christopher Nolan
 id: memento
 modified: 2025-10-29 02:15:05 GMT-04:00
 posters: "[[movies/posters/memento.jpg]]"
+rating: 8.4
 status: recurring
 studio:
 tags:

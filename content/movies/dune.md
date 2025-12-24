@@ -6,6 +6,7 @@ director: Denis Villeneuve
 id: dune
 modified: 2025-10-29 02:15:03 GMT-04:00
 posters: "[[movies/posters/dune.jpg]]"
+rating: 8
 status: recurring
 studio: warner bros
 tags:

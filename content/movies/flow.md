@@ -1,5 +1,7 @@
 ---
 category:
+  - arts
+  - absurdism
 date: 2024-02-07
 description: wordless animation of cat surviving apocalyptic flood—zilbalodis filming climate catastrophe through animal eyes, capybara and lemur on boat together, no humans explaining anything, survival requiring trust between species that normally wouldn't cooperate.
 director: Gints Zilbalodis

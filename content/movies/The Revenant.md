@@ -6,6 +6,7 @@ director: Alejandro González Iñárritu
 id: the-revenant
 modified: 2025-10-29 02:14:59 GMT-04:00
 posters: "[[movies/posters/the-revenant.jpg]]"
+rating: 8
 status: recurring
 studio: general
 tags:

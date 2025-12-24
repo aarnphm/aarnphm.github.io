@@ -6,6 +6,7 @@ director: Philip Barantini
 id: Boiling Point
 modified: 2025-10-29 02:14:47 GMT-04:00
 posters: "[[movies/posters/boiling-point.jpg]]"
+rating: 7.5
 status: to watch
 studio: ascendant films
 tags:

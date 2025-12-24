@@ -6,6 +6,7 @@ director: Frank Darabont
 id: shawshank-redemption
 modified: 2025-10-29 02:14:55 GMT-04:00
 posters: "[[movies/posters/shawshank-redemption.jpg]]"
+rating: 9.3
 status: recurring
 studio: general
 tags:

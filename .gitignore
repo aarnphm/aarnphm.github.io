@@ -217,6 +217,6 @@ quartz/styles/themes
 are.na-meta.json
 .dev.*
 .lfsconfig
-titles.txt
+*.txt
 settings.local.json
 content/hinterland/research
