@@ -2,7 +2,7 @@
 date: "2025-06-16"
 description: and inference go distributed
 id: pd disaggregated serving
-modified: 2025-12-17 23:40:12 GMT-05:00
+modified: 2025-12-23 19:22:17 GMT-05:00
 tags:
   - ml
   - gpu
@@ -33,6 +33,10 @@ why:
 > decouple resource bottlenecks and scheduling so ttft stays low under bursty arrivals without sacrificing itl or throughput.
 
 ### ratio calculation
+
+_notation are borrowed from [Jax's scaling book](https://jax-ml.github.io/scaling-book/)_
+
+Computation math
 
 ## patterns
 

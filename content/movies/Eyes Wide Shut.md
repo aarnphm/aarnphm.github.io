@@ -1,11 +1,15 @@
 ---
-category: general
-date: "2024-02-07"
+category:
+  - thriller
+  - relationship
+  - drama
+date: 2024-02-07
 description: marriage as masked orgy—kubrick's final film exploring sexual jealousy through cruise's nightlong odyssey, his wife's confession about desire unraveling everything he thought he knew about fidelity.
 director: Stanley Kubrick
 id: eyes-wide-shut
 modified: 2025-10-29 02:14:49 GMT-04:00
 posters: "[[movies/posters/eyes-wide-shut.jpg]]"
+rating: 7.5
 status: to watch
 studio: warner bros
 tags:

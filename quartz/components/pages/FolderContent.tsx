@@ -98,6 +98,8 @@ const parseFolderLayout = (input: unknown): FolderLayout => {
       return Layout.etas
     case Layout.alsp:
       return Layout.alsp
+    case Layout.lovp:
+      return Layout.lovp
     default:
       return Layout.defn
   }
@@ -388,11 +390,11 @@ export default ((opts?: Partial<FolderContentOptions>) => {
 
       case Layout.lovp:
         return (
-          <>
-            <section class={baseListClass}>
+          <div class="folder-layout folder-layout--l">
+            <section class={listClassName}>
               <PageList {...listProps} />
             </section>
-          </>
+          </div>
         )
 
       default:

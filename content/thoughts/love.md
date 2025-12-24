@@ -14,7 +14,7 @@ gemini:
     4a0fc1cd7b2da549: love, nihilism, mega deep research threads
     d7f06bc496ea82ea: Tractatus Amor-Politicus
 id: love
-modified: 2025-12-22 19:00:57 GMT-05:00
+modified: 2025-12-23 22:40:52 GMT-05:00
 socials:
   essay: "[[posts/love|mutual becoming]]"
   hermeneutics: "[[posts/romantic epistemology|romantic epistemology]]"
@@ -271,6 +271,7 @@ _so I made this list for [Malaika](https://malaikaaiyar.me/)_
 - https://aeon.co/essays/simone-de-beauvoirs-authentic-love-is-a-project-of-equals -- Authentic Love
 - https://www.youtube.com/watch?v=Guvmpf6fU7s -- Phenomenology on love and auto-affection, Dr. Ellie Anderson
 - https://www.youtube.com/watch?v=8mQPuEnOsYM -- Simone de Beauvoir on love and open relationship
+- https://www.youtube.com/watch?v=5Cj4H4FBwho -- Reflection on love
 
 ## hw
 

@@ -1,5 +1,7 @@
 ---
 category:
+  - absurdism
+  - being
 date: 2024-02-07
 description: disability as performance versus lived experience—schimberg casting adam pearson alongside sebastian stan in prosthetics, asking which mask is more authentic when everyone's performing normalcy.
 director: Aaron Schimberg

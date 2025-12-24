@@ -1,5 +1,7 @@
 ---
-category: a24
+category:
+  - buster
+  - actions
 date: 2024-02-07
 description: the multiverse as immigrant generational trauma—nihilism shaped like a bagel, absurdity as the only response to infinite meaninglessness, choosing kindness anyway.
 director:
@@ -8,6 +10,7 @@ director:
 id: everything-everywhere-all-at-once
 modified: 2025-10-29 02:14:49 GMT-04:00
 posters: "[[movies/posters/everything-everywhere-all-at-once.jpg]]"
+rating: 7.7
 status: recurring
 studio: a24
 tags:

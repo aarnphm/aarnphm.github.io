@@ -1,5 +1,8 @@
 ---
 category:
+  - relationship
+  - growing up
+  - brotherhood
 date: 2024-02-07
 description: two cousins metabolizing inherited trauma differently on a holocaust tour—eisenberg asking whether performative pain or suppressed pain does more damage, neither answer comfortable.
 director: Jesse Eisenberg

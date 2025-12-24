@@ -161,7 +161,8 @@ li.section-li {
 
 .folder-layout {
   &--et-a,
-  &--a-l {
+  &--a-l,
+  &--l {
     grid-column: 5/10;
   }
 
@@ -230,6 +231,12 @@ li.section-li {
     @media all and ($mobile) {
       flex-direction: column;
       gap: calc(var(--kern) * 2);
+    }
+  }
+
+  &--l {
+    section {
+      padding-right: 0;
     }
   }
 }

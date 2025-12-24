@@ -236,9 +236,9 @@ views:
       - formula.2022
       - formula.2021
     sort:
-      - property: date
-        direction: DESC
       - property: finished
+        direction: DESC
+      - property: date
         direction: DESC
       - property: tags
         direction: DESC

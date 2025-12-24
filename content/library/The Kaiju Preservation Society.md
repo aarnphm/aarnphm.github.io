@@ -5,7 +5,7 @@ id: The Kaiju Preservation Society
 title: The Kaiju Preservation Society
 date: 2025-12-18
 description: scifi romp where a deliverer stumbles into a secret society protecting a parallel earth dominated by giant kaiju, told with the pace of a marvel screenplay.
-finished:
+finished: 2025
 year: 2022
 status: finished
 subcategory:

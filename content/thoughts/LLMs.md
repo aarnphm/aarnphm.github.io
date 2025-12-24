@@ -3,7 +3,7 @@ abstract: large language models will probably be the most important piece of tec
 date: "2024-02-07"
 description: a mathematical framework for intelligence
 id: LLMs
-modified: 2025-12-11 03:04:04 GMT-05:00
+modified: 2025-12-24 00:56:35 GMT-05:00
 tags:
   - sapling
   - ml
@@ -20,7 +20,7 @@ title: LLMs
 
 Have "capabilities" to understand [[thoughts/NLP|natural language]].
 
-Exhibits [[thoughts/emergent behaviour]] of [[thoughts/intelligence|intelligence]], but probably not [[thoughts/AGI|AGI]] due to [[thoughts/observer-expectancy effect]].
+Exhibits [[thoughts/emergent behaviour]] of [[thoughts/intelligence|intelligence]], but probably not [[thoughts/AGI|AGI]] due to [[thoughts/observer-expectancy effect]]. ^emergent
 
 One way or another is a form of [[thoughts/Behavirourism|behaviourism]], through [[thoughts/Machine learning|reinforcement learning]]. It is being "told" what is good or bad, and thus act accordingly towards the users. However, this induces [[thoughts/confirmation bias]] where one aligns and contains his/her prejudices towards the problem.
 

@@ -12,6 +12,6 @@ description: In an afterlife where souls have one week to decide where to spend 
 title: Eternity
 rating: 7.2
 category:
-  - a24
+  - eschatology
 watched: 2025-12-13
 ---

@@ -6,6 +6,7 @@ director: Charlie Brooker
 id: black-mirror
 modified: 2025-10-29 02:14:46 GMT-04:00
 posters: "[[movies/posters/black-mirror.jpg]]"
+rating: 8.7
 status: recurring
 studio: netflix
 tags:

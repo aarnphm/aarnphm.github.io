@@ -6,6 +6,7 @@ director: Damien Chazelle
 id: la-la-land
 modified: 2025-10-29 02:14:53 GMT-04:00
 posters: "[[movies/posters/la-la-land.jpg]]"
+rating: 8
 status: recurring
 studio: general
 tags:

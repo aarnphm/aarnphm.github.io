@@ -1,5 +1,7 @@
 ---
 category:
+  - being
+  - love
 date: 2024-02-07
 description: shipwrecked service robot becoming mother to orphaned gosling—sanders filming lupita nyong'o's roz learning kindness from wilderness, dreamworks animation asking what makes someone a parent, proving love rewrites programming.
 director: Chris Sanders

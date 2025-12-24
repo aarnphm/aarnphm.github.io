@@ -6,6 +6,7 @@ director: Stanley Kubrick
 id: 2001-a-space-odyssey
 modified: 2025-11-21 06:01:07 GMT-05:00
 posters: "[[movies/posters/2001-a-space-odyssey.jpg]]"
+rating: 8.3
 status: recurring
 studio: mgm
 tags:

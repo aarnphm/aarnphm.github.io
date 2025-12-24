@@ -6,6 +6,7 @@ director: Francis Ford Coppola
 id: godfather
 modified: 2025-10-29 02:15:04 GMT-04:00
 posters: "[[movies/posters/godfather.jpg]]"
+rating: 9.2
 status: recurring
 studio: paramount
 tags:

@@ -1,6 +1,9 @@
 ---
-category: general
-date: "2024-02-07"
+category:
+  - life
+  - comedy
+  - drama
+date: 2024-02-07
 description: millennial aimlessness in black and white—gerwig's dancer drifting through brooklyn, baumbach filming the gap between who you dream you'll become and who rent checks force you to be.
 director: Noah Baumbach
 id: frances-ha
@@ -13,6 +16,6 @@ tags:
   - friend
   - o/life
 title: Frances Ha
-watched: "2024-03-20"
+watched: 2024-03-20
 year: 2012
 ---
