@@ -2,9 +2,9 @@
 date: "2024-10-11"
 description: generative poetry using rita grammar rules to create infinite variations of dog-themed verses.
 id: infinite poem
-modified: 2025-10-29 02:14:21 GMT-04:00
+modified: 2025-12-24 23:21:53 GMT-05:00
 tags:
-  - seed
+  - pattern
 title: infinite poem
 ---
 

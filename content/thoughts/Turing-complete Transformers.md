@@ -2,7 +2,7 @@
 date: "2024-01-30"
 description: well, here we go again.
 id: Turing-complete Transformers
-modified: 2025-10-29 02:15:37 GMT-04:00
+modified: 2025-12-24 18:21:52 GMT-05:00
 tags:
   - seed
   - ml
@@ -18,3 +18,12 @@ More specialised on given tasks, and prove to be Turing-complete?
 ![[posts/images/shogoth-gpt.webp|Shogoth as GPTs]]
 
 > Speculatively, people might think GPT-4 without any guardrails _could_ pass the Turing-test. A more important question is "What is the Turing-test equivalent for pseudo-intelligence system?"
+
+John Searle famously said:
+
+```quotes
+
+Turing machine is not to be found in nature. They're to be found in our _interpretations_ of nature.
+
+John Searle
+```

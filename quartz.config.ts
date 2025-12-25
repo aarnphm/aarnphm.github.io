@@ -221,7 +221,12 @@ const config: QuartzConfig = {
             "linalg",
             "pattern",
           ],
-          lg: ["thoughts/mechanistic interpretability", "thoughts/vllm"],
+          lg: [
+            "thoughts/mechanistic interpretability",
+            "thoughts/vllm",
+            "thoughts/reading",
+            "thoughts/writing",
+          ],
           sm: [
             "thoughts/love",
             "thoughts/LLMs",

@@ -2,11 +2,10 @@
 date: "2024-02-07"
 description: to go or look through (a place) carefully
 id: Search
-modified: 2025-11-28 17:20:37 GMT-05:00
+modified: 2025-12-24 23:26:39 GMT-05:00
 seealso:
   - "[[thoughts/PageRank|PageRank]]"
 tags:
-  - seed
   - technical
 title: Search
 ---

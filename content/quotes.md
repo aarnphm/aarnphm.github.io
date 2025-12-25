@@ -16,7 +16,7 @@ metadata:
     text_line    = { character - newline } ;
     ws           = { " " } ;
     character    = ? any printable ascii except newline ? ;
-modified: 2025-12-21 10:27:05 GMT-05:00
+modified: 2025-12-24 16:40:46 GMT-05:00
 seealso:
   - "[[word|dictionary]]"
   - "[[research|wip]]"
@@ -30,6 +30,10 @@ transclude:
   dynalist: false
   title: false
 ---
+
+> Love is giving something you don't have to someone who doesn't want it.
+>
+> Jacques Lacan
 
 > Essayer is the French verb meaning "to try" and an _essai_ is an attempt. An essay is something you write to try to figure something out [...] In a real essay, you don't take a position and defend it. You notice a door that's ajar, and you open it and walk in to see what's inside.
 >

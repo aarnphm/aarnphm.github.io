@@ -1,12 +1,10 @@
 ---
-author:
-  - "[[Contributors to Wikimedia projects]]"
 created: "2025-12-01"
 date: "2025-12-01"
 description: "Arrow’s theorem: no ranked rule satisfies Pareto, IIA, and non-dictatorship."
 external: https://en.wikipedia.org/wiki/Arrow%27s_impossibility_theorem
 id: Arrow's impossibility theorem
-modified: 2025-12-01 22:09:09 GMT-05:00
+modified: 2025-12-24 23:26:56 GMT-05:00
 published: "2002-09-22"
 seealso:
   - Comparison of electoral systems
@@ -16,8 +14,7 @@ seealso:
   - May's theorem
   - Market failure
 tags:
-  - seed
-
+  - politics
   - democracy
 title: Arrow's impossibility theorem
 ---
