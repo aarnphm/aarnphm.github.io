@@ -3,15 +3,13 @@ date: "2025-10-21"
 description: draft reflection on workaholism, yearning, and the twilight space between wanting and waiting, where attention becomes devotion and longing becomes faith.
 draft: true
 id: pure
-modified: 2025-11-04 18:25:23 GMT-05:00
+modified: 2025-12-24 23:23:27 GMT-05:00
 tags:
   - seed
 title: pure
 ---
 
 One thing I realised that I'm pretty much a workaholic, although I do have the constant feeling of not able to do enough. Work, though satisfying, does keep me awake at night. Mainly because the degree of care I put into honing my craft that exhibits sort of a tensions where I must keep going to
-
-friendship is about giving enough [[thoughts/Attention|attention]]
 
 I preemptedly book a staycation during reading week, because why not do things more spontaneously if you can afford to do so?
 

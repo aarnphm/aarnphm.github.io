@@ -5,7 +5,7 @@ date: "2024-10-10"
 description: a bag of chips/words/vernacular
 id: word
 layout: technical
-modified: 2025-12-23 19:29:18 GMT-05:00
+modified: 2025-12-24 17:39:21 GMT-05:00
 tags:
   - evergreen
 title: lists
@@ -59,3 +59,5 @@ title: lists
     - Access `A(y, x)`
   - Note that for transpose, we should use col-major instead.
   - see also: https://en.wikipedia.org/wiki/Row-_and_column-major_order
+- polysyllabic
+  - [[thoughts/Epistemology]] versus [[thoughts/Ontology]]

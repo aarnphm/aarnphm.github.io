@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2025-12-24 00:57:17 GMT-05:00
+modified: 2025-12-24 23:16:34 GMT-05:00
 permalinks:
   - /website
   - /tweets
@@ -5800,8 +5800,12 @@ title: are.na
     - date: 10/03/2025
     - tags: [links]
 
-## fiduciary reports
+## finances
 
+- https://manual.compoundplanning.com/chapters/tender-offers -- Tender offers
+  - [meta]:
+    - date: 12/24/2025
+    - tags: [acquisition]
 - https://quartr.com/insights/business-philosophy/collection-jeff-bezos-shareholder-letters -- Collection: Jeff Bezos Shareholder Letters
   - [meta]:
     - date: 11/01/2025

@@ -3,9 +3,9 @@ date: "2025-10-29"
 description: reflection on user requirements generation for mosaic portal emphasizing qualitative insights, user empathy, and human-centered design principles.
 draft: true
 id: M3 Reflection
-modified: 2025-10-29 02:16:15 GMT-04:00
+modified: 2025-12-24 23:24:59 GMT-05:00
 tags:
-  - seed
+  - reflection
 title: M3 Reflection
 ---
 

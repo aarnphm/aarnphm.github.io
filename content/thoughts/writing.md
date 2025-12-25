@@ -2,7 +2,9 @@
 date: "2023-07-29"
 description: a knowledge distillation and learning process
 id: writing
-modified: 2025-12-21 15:23:37 GMT-05:00
+modified: 2025-12-24 23:31:39 GMT-05:00
+seealso:
+  - "[[posts|collections of my personal writing]]"
 tags:
   - pattern
   - evergreen

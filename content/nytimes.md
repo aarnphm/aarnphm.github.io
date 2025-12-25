@@ -2,9 +2,8 @@
 date: "2025-10-27"
 description: from nytimes
 id: nytimes
-modified: 2025-12-17 05:01:21 GMT-05:00
+modified: 2025-12-24 23:21:47 GMT-05:00
 tags:
-  - seed
   - games
 title: games
 ---
