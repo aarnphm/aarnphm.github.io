@@ -38,11 +38,21 @@ metadata:
     letter        = "a".."z" ;
     digit         = "0".."9" ;
     character     = ? any printable ascii except newline ? ;
-modified: 2025-12-23 04:41:20 GMT-05:00
+modified: 2025-12-29 02:50:59 GMT-05:00
 tags:
   - fruit
   - evergreen
 title: stream
+---
+
+- [meta]:
+  - date: 2025-12-29 02:48:33 GMT-05:00
+  - tags:
+    - llm
+    - love
+
+I want to build my own [[thoughts/LLMs|ghost]], and I want a qwen3-aarnphm to be an autistic psychopath. But I'm afraid I don't know how to encode the mixed feelings of love and relationship towards friends onto the latent space.
+
 ---
 
 - [meta]:

@@ -2,7 +2,7 @@
 date: "2024-02-07"
 description: and the backbone of the current language models/ai progress.
 id: Transformers
-modified: 2025-12-12 12:19:41 GMT-05:00
+modified: 2025-12-30 19:56:35 GMT-05:00
 seealso:
   - "[[thoughts/LLMs|LLMs]]"
   - "[[thoughts/Embedding|embedding]]"
@@ -75,7 +75,7 @@ $$
 
 Either compute-bound (batch inference, saturated usage) or memory-bound (latency)
 
-![[thoughts/PD disaggregated serving#Prefill/Decode]]
+![[thoughts/PD disaggregated serving#prefill/decode]]
 
 ![[thoughts/Speculative decoding#{collapsed: true}]]
 
