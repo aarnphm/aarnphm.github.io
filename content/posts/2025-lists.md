@@ -3,7 +3,7 @@ date: "2025-12-31"
 description: on contigency, convictions, and Tractatus.
 id: 2025-lists
 layout: technical
-modified: 2025-12-31 15:59:08 GMT-05:00
+modified: 2025-12-31 16:21:50 GMT-05:00
 seealso:
   - "[[posts/2025|hyperabundance]]"
 signature: Your present self
@@ -125,9 +125,9 @@ Jacques Lacan
   - _2.023_ the infrastructure cannot be transferred. it's specific to the dyad. when i started dating again, i kept misreading cues bc my interpretive machinery was calibrated to the wrong person.
   - _2.024_ hence deep relationships have high switching costs. you're losing years of accumulated interpretive capital.
   - _2.025_ this year i discovered feelings that didn't fit inside English grammatical structures.
-    - _2.0241_ there's a thing that's not-quite-love and not-quite-friendship and not-quite-desire. it's the feeling of being seen by someone whose attention itself constitutes you differently. L looked at me and I became a version of myself that only existed in her gaze.
-    - _2.0242_ aristotle: "affection is no less present for inanimate things, but loving in return involves choice, and choice comes from an active condition." the greeks had more words. we have to gesture.
-    - _2.0243_ the speechlessness wasn't failure. it was encounter with what genuinely exceeds the pictorial capacity of language.
+    - _2.0251_ there's a thing that's not-quite-love and not-quite-friendship and not-quite-desire. it's the feeling of being seen by someone whose attention itself constitutes you differently. L looked at me and I became a version of myself that only existed in her gaze.
+    - _2.0252_ aristotle: "affection is no less present for inanimate things, but loving in return involves choice, and choice comes from an active condition." the greeks had more words. we have to gesture.
+    - _2.0253_ the speechlessness wasn't failure. it was encounter with what genuinely exceeds the pictorial capacity of language.
   - _2.026_ what cannot be said can be shown—through practice, presence, the body's testimony over time.
 - _2.03_ love emerges from sustained deployment of interpretive infrastructure.
   - _2.031_ sustained attention toward a person generates understanding of their particularity. you learn not "what women want" or "what people need" but what THIS person, with THIS history, in THIS moment, requires.
