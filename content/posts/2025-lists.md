@@ -3,7 +3,7 @@ date: "2025-12-31"
 description: on contigency, convictions, and Tractatus.
 id: 2025-lists
 layout: technical
-modified: 2025-12-31 15:45:02 GMT-05:00
+modified: 2025-12-31 15:58:00 GMT-05:00
 seealso:
   - "[[posts/2025|hyperabundance]]"
 signature: Your present self
@@ -19,7 +19,7 @@ Dear [[posts/2024]] me,
 
 Some letter reminded you of the good times in San Francisco, others calcified as if they were frozen in time. However, the general theme seemed to be a deep sense of appreciation and platonic [[thoughts/love]] that you had for people in general. You did build yourself a routine, a version of yourself that 2017 Aaron would be proud (and even now, we are more than contempt with our own growth, and it didn't seem to slow down at anytime soon.). Yet, some unresolved sediment did come up, more like questions you'd shelved without answering, which has permeates through and through.
 
-This year is a bit different. Inspired by [[library/Tractatus Logico-Philosophicus|our favorite book]] this year, the numbered propositions borrow wittgenstein's form but not his project—this is list is largely phenomenological observation. The gaps between claims are intentional: some "therefores" gesture rather than entail, and the ladder is more mnemonic than deductive.
+This year is a bit different. Inspired by [[library/Tractatus Logico-Philosophicus|our favorite book]] this year, I borrowed Wittgenstein's form —note that this list is largely phenomenological. The gaps between claims are intentional: some "therefores" gesture rather than entail, and the ladder is more mnemonic than deductive.
 
 ![[posts/images/IMG_2315.webp]]
 ![[posts/images/IMG_2316.webp]]
@@ -383,10 +383,6 @@ Jacques Lacan
   - _9.42_ skin in the game changes how you read founders.
 - _9.5_ the triathlon.
 - _9.6_ the 10k at 9:30 pace.
-
-[^4]: for the most thorough treatment of "what to do when ability-to-do-work is no longer scarce but ability-to-want-the-right-things still is," see lydia's VPP framework.
-
-[^5]: near's "LLMs are strangely shaped tools" remains the best short piece on this.
 
 [^6]: this is the thesis of the hyperabundance essay. conviction and taste are perception-we've-determined-valuable.
 
