@@ -3,10 +3,13 @@ date: "2025-12-31"
 description: on contigency, convictions, and Tractatus.
 id: 2025-lists
 layout: technical
-modified: 2025-12-31 16:49:30 GMT-05:00
+modified: 2025-12-31 17:03:52 GMT-05:00
 seealso:
   - "[[posts/2025|hyperabundance]]"
 signature: Your present self
+socials:
+  substack: https://open.substack.com/pub/livingalone/p/2025-mode-of-essence?r=1z8i4s&utm_campaign=post&utm_medium=web&showWelcomeOnShare=true
+  twitter: https://x.com/aarnphm/status/2006486410820452511
 tags:
   - growth
   - sapling
