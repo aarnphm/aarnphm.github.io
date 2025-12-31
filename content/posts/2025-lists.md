@@ -3,7 +3,7 @@ date: "2025-12-31"
 description: on contigency, convictions, and Tractatus.
 id: 2025-lists
 layout: technical
-modified: 2025-12-31 16:21:50 GMT-05:00
+modified: 2025-12-31 16:49:30 GMT-05:00
 seealso:
   - "[[posts/2025|hyperabundance]]"
 signature: Your present self
@@ -141,7 +141,6 @@ Jacques Lacan
     - _2.121_ aristotle: philia requires sustained attention to the friend's good.
     - _2.122_ murdoch: morality begins with a just and loving gaze directed upon individual reality.
     - _2.123_ hooks: love is verb. you cannot love what you have not attended to.
-  - _2.13_ they're pointing at the same elephant bc the elephant is biological, not cultural.
 
 - _2.2_ love cannot be propositionally verified.
   - _2.21_ scott alexander's [cactus person](https://slatestarcodex.com/2015/04/21/universal-love-said-the-cactus-person/): the narrator asks DMT entities to factor a number—to provide propositional proof of their reality.
@@ -243,8 +242,9 @@ Jacques Lacan
   - _4.31_ the feeling of what i like in perfume translates to the feeling of what i like in activation space. persona vectors, counterfactual drift, the geometry of concept.
   - _4.32_ train a lot of muscle working with PyTorch, kernels, and spark a lot more interests in hardware knowledge, for me.
   - _4.33_ Did quite a bit of experiment. Most of them are throwaway
-    - _4.321_ maybe I should publish failed experiments. This might produce valuable learning, perhaps.
-  - _4.33_ tinyvllm needs finishing. a few research projects to test taste and vision.
+    - _4.331_ maybe I should publish failed experiments. This might produce valuable learning, perhaps.
+
+- _4.4_ tinyvllm needs finishing. a few research projects to test taste and vision.
 
 ![[posts/images/study for end.webp|Study of End (Ende), Käthe Kollwitz (1896)]]
 
@@ -253,7 +253,6 @@ Jacques Lacan
 - _5.1_ conviction and taste are what remain valuable in [[posts/2025|hyperabundance]].[^6]
   - _5.11_ if you know what you like and think about it critically, it shows up in how you work. there's no separating aesthetic from output. Just do the things you find beautiful.
   - _5.12_ discipline also helps in curating taste. A lot of ideas I have this year come from pushing weights and climbing.
-    - _5.121_ This stems from aesthetic product from getting leaner.
   - _5.13_ hit the gym and bouldering way more this year. working toward triathlon, proper eating/sleeping/working schedule.
 
 - _5.2_ transparency and straightforwardness work.
@@ -332,7 +331,7 @@ Jacques Lacan
 
 ![[thoughts/images/metabolism.webp|Kikutake's sketches on biomimetic architectural movement (metabolism)]]
 
-## 8. [[antilibrary|books]] that constitutes to character-building.
+## 8. [[antilibrary|books and reading]] that constitutes to character-building.
 
 - _8.1_ [_Tractatus Logico-Philosophicus_](https://www.gutenberg.org/files/5740/5740-pdf.pdf) by Ludwig Wittgenstein. I like the structure of the book and stole it for this document, as well as the permission to shut up about love.
   - _8.11_ wittgenstein's ladder: you climb propositions until the propositions dissolve. what remains is not nothing—it's the mystical that "makes itself manifest" (6.522). he told his publisher the book's point was ethical: "i have managed in my book to put everything firmly into place by being silent about it."
