@@ -409,7 +409,8 @@ blockquote.twitter-tweet {
   margin-right: 0.5rem !important;
 }
 
-p.text {
+p.text,
+div.text {
   padding-top: 1.5rem;
   padding-bottom: 1.5rem;
   padding-left: 1rem;
@@ -1579,5 +1580,23 @@ pre {
 
     background-color: transparent;
     color: var(--code-normal);
+  }
+}
+
+[data-slug="posts/2025-lists"] {
+  ul,
+  ol {
+    list-style-type: none;
+  }
+
+  li > p {
+    &:first-of-type {
+      margin-bottom: 0;
+    }
+  }
+
+  ul,
+  ol {
+    padding-inline-start: 20px;
   }
 }

@@ -10,6 +10,4 @@ tags:
 title: turbulence
 ---
 
-![[posts/images/time files.webp|Time Flies, Acrylics on panel by Carol Aust]]
-
 ![[posts/images/love-in-life.webp|Nothing personal, James Baldwin]]

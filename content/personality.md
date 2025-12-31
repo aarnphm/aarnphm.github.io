@@ -290,4 +290,4 @@ from [this test](https://programs.clearerthinking.org/philosophical_beliefs.html
 - **Truth: Deflationary Truth**
   - truth has no metaphysical reality; "truth" is a useful [[library/Tractatus Logico-Philosophicus|logical]] tool but not an external reality.
 - **Zombies: The Idea is Conceivable-but-Impossible**
-  - can imagine [[thoughts/philosophical zombies]] but don't believe they're possible; consciousness necessarily accompanies human-like behavior. see also [[thoughts/functionalism]]
+  - can imagine [[thoughts/philosophical zombies|p-zombies]] but don't believe they're possible; consciousness necessarily accompanies human-like behavior. see also [[thoughts/functionalism]]

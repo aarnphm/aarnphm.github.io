@@ -15,5 +15,5 @@ Falling asleep
     Where I works
     We spent the time under the warming sun
   The light dripping on your faces
-  Your smile
+  Your smile...
 ```

@@ -2,7 +2,7 @@
 date: "2025-09-30"
 description: GPUs, CUTLASS, and CuTe
 id: notes
-modified: 2025-11-11 06:58:14 GMT-05:00
+modified: 2025-12-30 19:06:25 GMT-05:00
 slides: true
 tags:
   - workshop
@@ -1752,7 +1752,7 @@ wgmma::commit_group();
 wgmma::wait_group<0>();  // Wait for all preceding wgmma operations
 ```
 
-Key differences:
+Differences:
 
 - WMMA: Warp-level (32 threads), synchronous
 - WGMMA: Warp group-level (128 threads), asynchronous, higher throughput
@@ -2247,7 +2247,7 @@ Use case: Creating thread-value (TV) layouts where each thread processes multipl
 > // Raked: Threads interleaved with stride
 > auto raked = raked_product(thr_layout, val_layout);
 >
-> Key insight: Blocked for spatial locality, Raked for warp-level parallelism
+> important: Blocked for spatial locality, Raked for warp-level parallelism
 > ```
 
 ### hierarchical tiling with local_tile
@@ -3249,9 +3249,15 @@ Roofline model visualizes performance limits based on arithmetic intensity:
 >                   ↑ Ridge point (≈ 592)
 > ```
 
-[^roofline]: The ridge point sits at $I = P_{\text{peak}} / B \approx 1979 / 3.35 \approx 592$ FLOP/byte for H100. Kernels below that intensity are memory-bound with performance capped by $I \times 3.35\,\text{TB/s}$. The naive FP16 GEMM (I ≈ 0.5) therefore tops out at 1.68 TFLOP/s. A 128×128×32 FP16 tiled kernel raises intensity to ≈64, pushing the roofline bound to ~214 TFLOP/s. Only when the program approaches perfect data reuse—each matrix element fetched once, giving $I \gtrsim 10^3$—does the kernel enter the compute-bound regime and approach the 1,979 TFLOP/s tensor-core ceiling. This plot makes clear whether the next optimization knob should target bandwidth or compute utilization.
+[^roofline]:
+    The ridge point sits at $I = P_{\text{peak}} / B \approx 1979 / 3.35 \approx 592$ FLOP/byte for H100.
 
-Key insight: For a given arithmetic intensity $I$ (FLOP/byte):
+    - Kernels below that intensity are memory-bound with performance capped by $I \times 3.35\,\text{TB/s}$.
+    - The naive FP16 GEMM (I ≈ 0.5) therefore tops out at 1.68 TFLOP/s.
+    - A 128×128×32 FP16 tiled kernel raises intensity to ≈64, pushing the roofline bound to ~214 TFLOP/s.
+    - Only when the program approaches perfect data reuse—each matrix element fetched once, giving $I \gtrsim 10^3$—does the kernel enter the compute-bound regime and approach the 1,979 TFLOP/s tensor-core ceiling.
+
+For a given arithmetic intensity $I$ (FLOP/byte):
 
 - If $I \times B < P_{\text{peak}}$: Memory-bound (performance = $I \times B$)
 - If $I \times B \ge P_{\text{peak}}$: Compute-bound (performance = $P_{\text{peak}}$)

@@ -14,7 +14,7 @@ gemini:
     4a0fc1cd7b2da549: love, nihilism, mega deep research threads
     d7f06bc496ea82ea: Tractatus Amor-Politicus
 id: love
-modified: 2025-12-23 22:40:52 GMT-05:00
+modified: 2025-12-30 20:03:22 GMT-05:00
 socials:
   essay: "[[posts/love|mutual becoming]]"
   hermeneutics: "[[posts/romantic epistemology|romantic epistemology]]"
@@ -65,6 +65,16 @@ I propose a box model where one can decompose our feelings into interpretable co
 ### cohabitation
 
 ### future projections
+
+## heuristics
+
+inspired by _[Keating's LW post](https://www.lesswrong.com/posts/gmysPZ3t5Rz9nzcCr/my-dating-heuristic)_ and [[dating|my-doc]]
+
+> When i a dating context, I ask myself: what would an emotionally healthy person do? Then I do that.
+
+- Leveling up emotional intelligence
+- Don't cosplay as a mature adult
+  - We are all kids once, and adult is just a mask to protect such inner-child
 
 ## not a feeling
 

@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2025-12-24 23:16:34 GMT-05:00
+modified: 2025-12-30 19:59:37 GMT-05:00
 permalinks:
   - /website
   - /tweets
@@ -143,6 +143,26 @@ title: are.na
 - [meta]:
   - view: list
 
+- https://x.com/___frye/status/2005851412618498299 -- yearning with Claude
+  - [meta]:
+    - date: 12/30/2025
+    - tags: [synthesis, art]
+- https://x.com/deepfates/status/2004257044916842681 -- How to talk to your family about AI
+  - [meta]:
+    - date: 12/26/2025
+    - tags: [explanation, sane]
+- https://x.com/illusion____X/status/2004305196218990707 -- MEDS OR AI PSYCHOSIS
+  - [meta]:
+    - date: 12/26/2025
+    - tags: [meme]
+- https://x.com/MathGuyTFL/status/2003805778088714487 -- transformations of functions
+  - [meta]:
+    - date: 12/26/2025
+    - tags: [lagrangian, series]
+- https://x.com/repligate/status/2003625427915669953?s=46 -- on Claude and love
+  - [meta]:
+    - date: 12/25/2025
+    - tags: [llm]
 - https://x.com/voooooogel/status/2001764163207479336 -- Claude dilemma while running a business
   - [meta]:
     - date: 12/20/2025
@@ -909,6 +929,14 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://www.poetryfoundation.org/poets/rainer-maria-rilke -- Rainer Maria Rilke
+  - [meta]:
+    - date: 12/27/2025
+    - tags: [poets]
+- https://plato.stanford.edu/entries/bergson/ -- Henri Bergson
+  - [meta]:
+    - date: 12/25/2025
+    - tags: [phenomenologist]
 - https://plato.stanford.edu/entries/frantz-fanon/ -- Frantz Fanon
   - [meta]:
     - date: 12/23/2025
@@ -1944,6 +1972,27 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://theimpermanent.substack.com/p/why-i-think-like-an-athlete -- Why I think like an Athlete
+  - [meta]:
+    - date: 12/29/2025
+    - tags: [work, discipline]
+- https://www.overcomingbias.com/p/three-value-clumps -- Three Value Clumps
+  - [meta]:
+    - date: 12/27/2025
+    - tags: [identity, being]
+- https://www.lesswrong.com/posts/ajT6q5aMokagfthvG/hire-or-become-a-thinking-assistant-body-double -- Hire (or Become) a Thinking Assistant
+  - [meta]:
+    - date: 12/26/2025
+    - tags: [being, assistant]
+- https://sfstandard.com/2025/12/25/san-francisco-standard-most-read-stories-2025/ -- The Standard’s 25 most read stories of 2025
+  - [meta]:
+    - date: 12/26/2025
+    - tags: [sf, culture]
+  - [Stanford students used to chase jobs at Meta and Google. Now they want to work on defense](https://sfstandard.com/2025/03/12/stanford-students-want-in-on-the-military-tech-gold-rush/)
+- https://www.nytimes.com/2004/08/20/style/italian-novelists-love-letters-turn-political.html -- Italian novelist's love letters turn political
+  - [meta]:
+    - date: 12/25/2025
+    - tags: [politics, sociology]
 - https://archive.is/W4aBo -- My Family’s Slave [--]
   - [meta]:
     - date: 12/23/2025
@@ -3430,6 +3479,10 @@ title: are.na
   - view: list
   - json: true
 
+- https://x.com/TransluceAI/status/1989395421236793374 -- self-introspective models
+  - [meta]:
+    - date: 12/27/2025
+    - tags: [faithfulness, interpretability]
 - https://x.com/simon_mo_/status/2003608328757457036?s=20 -- Noam being Noam at CAI
   - [meta]:
     - date: 12/23/2025
@@ -4449,6 +4502,22 @@ title: are.na
 
 ## opinions
 
+- https://www.seangoedecke.com/being-right-a-lot/ -- Good engineers are right, a lot
+  - [meta]:
+    - date: 12/30/2025
+    - tags: [efficiency]
+  - > They’re right about concrete factual statements about how software systems work (e.g. endpoint X has rate limit Y). They’re right about concrete plans (e.g. we can’t add this check here, but it’ll work there). They’re right about a million small decisions that they make when they write code, which shows up in their code generally working and causing fewer bugs.
+    - related to [[thoughts/taste#engineering|engineerintg taste]]
+    - A lot has to with conviction and confidence
+  - > you can just ask yourself whether you feel default relaxed or suspicious when they make claims
+- https://archive.is/ZdImB -- The Age of Enshittification [--]
+  - [meta]:
+    - date: 12/25/2025
+    - tags: [progress]
+- https://archive.is/UDLrz -- "I’ve been allergic to AI for a long time": an interview with Peter Thiel [--]
+  - [meta]:
+    - date: 12/25/2025
+    - tags: [utility, capitalism]
 - https://simonwillison.net/2025/Dec/18/code-proven-to-work/ -- Your job is to deliver code you have proven to work
   - [meta]:
     - date: 12/21/2025
@@ -4676,6 +4745,10 @@ title: are.na
 
 ## life is literature
 
+- https://x.com/voooooogel/status/2004170533689295186 -- Claude Opus 4.5's Christmas card
+  - [meta]:
+    - date: 12/26/2025
+    - tags: [life, machine]
 - https://x.com/JayaGup10/status/2003525933534179480 -- AI’s trillion-dollar opportunity: Context graphs
   - [meta]:
     - date: 12/23/2025
@@ -5135,6 +5208,10 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://www.newphilosopher.com/articles/the-paradox-of-choice/#:~:text=It’s%20interesting%20that%20you’re%20talking%20about%20these%20trivial%20matters%20relating%20to%20products%20and%20services.%20Jean-Paul%20Sartre%2C%20he%20believed%20that%20humans%20are%20condemned%20to%20be%20free%3B%20that%20they%20must%20make%20choices.%20With%20the%20number%20of%20choices%20that%20we%20have%20now%2C%20condemned%20is%20probably%20an%20appropriate%20term.
+  - [meta]:
+    - date: 12/29/2025
+    - tags: [choice, abundance]
 - https://www.youtube.com/watch?v=rHKwIYsPXLg -- Consciousness in Artificial Intelligence | John Searle | Talks at Google
   - [meta]:
     - date: 12/23/2025
@@ -5543,6 +5620,16 @@ title: are.na
 
 ## stream
 
+- https://deepmind.google/research/publications/ -- DeepMind's research stream
+  - [meta]:
+    - date: 12/27/2025
+    - tags: [agi, research]
+    - pinned: true
+- https://notes.ekzhang.com/events/nysrg -- New York System Reading Group [**]
+  - [meta]:
+    - date: 12/25/2025
+    - tags: [technical, optimization]
+    - pinned: true
 - https://github.com/oliverbenns/john-carmack-plan/tree/master/archive -- John Carmack's Quake Plan [**]
   - [meta]:
     - date: 12/24/2025
@@ -6386,6 +6473,10 @@ title: are.na
 
 ## arts
 
+- https://alena.art/
+  - [meta]:
+    - date: 12/29/2025
+    - tags: [portfolio, physical]
 - https://www.youtube.com/watch?v=k8kjPxrXuFU -- The Pandemonium of 1841
   - [meta]:
     - date: 12/18/2025
@@ -6473,6 +6564,10 @@ title: are.na
 
 ## resources
 
+- https://substack.com/home/post/p-179972003 -- 963 Words
+  - [meta]:
+    - date: 12/27/2025
+    - tags: [words, learning]
 - https://en.wikipedia.org/wiki/Exit,_Voice,_and_Loyalty_Model -- Exit, Voice, and Loyalty Model
   - [meta]:
     - date: 12/13/2025
@@ -6745,6 +6840,16 @@ title: are.na
 
 ## technical
 
+- https://www.youtube.com/watch?v=AF3XJT9YKpM -- Prof. Judy Fan: Cognitive Tools for Making the Invisible Visible [**]
+  - [meta]:
+    - date: 12/25/2025
+    - tags: [cognitive tools]
+    - pinned: true
+  - leverage what we call _visual abstraction_ to be faithful towards what we see/know about the [[library/Our Knowledge of the External World|external world]]
+  - usage of abstraction for creating new _things_
+  - leverage visual abstraction to communicate concepts
+  - ~~discover procedural abstractions by constructing objects~~
+    - multimodal abstraction to support statistical reasoning (or causal inference)
 - https://smoothbrains.net/posts/2025-10-17-fractional-fourier-transforms.html -- Here time turns into space: Does consciousness implement the fractional Fourier transform?
   - [meta]:
     - date: 12/23/2025
@@ -7229,6 +7334,10 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://www.quantamagazine.org/toward-a-grand-unified-theory-of-snowflakes-20191219/ -- Toward a Grand Unified Theory of Snowflakes
+  - [meta]:
+    - date: 12/26/2025
+    - tags: [physics, generalisation]
 - https://tsvibt.github.io/theory/pages/bl_24_07_25_09_52_56_652909.html -- Algebraicness
   - [meta]:
     - date: 12/18/2025

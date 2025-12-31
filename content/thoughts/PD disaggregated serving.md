@@ -1,22 +1,21 @@
 ---
+aliases:
+  - pd
 date: "2025-06-16"
 description: and inference go distributed
 id: pd disaggregated serving
-modified: 2025-12-23 19:22:17 GMT-05:00
+modified: 2025-12-30 23:05:15 GMT-05:00
+seealso:
+  - "[[thoughts/distributed inference|distributed inference]]"
 tags:
   - ml
   - gpu
 title: P/D disaggregation
 ---
 
-the idea: let an [[thoughts/vllm|inference engine]] split prefill and [[thoughts/Transformers#inference.|decode]] onto different workers and scale their ratio independently. this keeps time‑to‑first‑token (TTFT) low while maintaining inter‑token latency (ITL) at steady throughput.
+let an [[thoughts/vllm|inference engine]] split prefill and [[thoughts/Transformers#inference.|decode]] onto different workers and scale their ratio independently. this keeps time‑to‑first‑token (TTFT) low while maintaining inter‑token latency (ITL) at steady throughput.
 
-see also:
-
-- [[thoughts/distributed inference|distributed inference]]
-- vLLM disaggregated prefilling docs and blog. [@vllm-disagg-docs; @vllm-disagg-blog]
-- vLLM production‑stack tutorial for p/d disagg. [@vllm-prodstack]
-- mooncake paper and sglang docs. [@qin2024mooncakekvcachecentricdisaggregatedarchitecture; @sglang-docs]
+see also: [@vllm-disagg-docs; @vllm-disagg-blog; @qin2024mooncakekvcachecentricdisaggregatedarchitecture]
 
 ## prefill/decode
 
@@ -30,13 +29,215 @@ why:
 
 > [!important] goal
 >
-> decouple resource bottlenecks and scheduling so ttft stays low under bursty arrivals without sacrificing itl or throughput.
+> decouple resource bottlenecks and scheduling so TTFT stays low under bursty arrivals without sacrificing ITL or throughput.
+
+### goodput
+
+[blogpost](https://hao-ai-lab.github.io/blogs/distserve/) [@distserve2024osdi]
+
+_note: the author noted to use [M/G/1](https://en.wikipedia.org/wiki/M/D/1_queue) to verify TTFT analysis on prefill/decode instance._ [^q-formula]
+
+[^q-formula]: the average wait time in a queue is calculated using Pollaczek-Khinchine formula:
+
+    $$
+    W = \frac{\lambda E[S^{2}]}{2(1-\rho)}
+    $$
+
+    Collary from M/D/1:
+
+    - The random arrival $M$ is under the assumption that it arrives according to Poisson process with rate $R$
+    - Assumption: a uniform input lengths, denoted as $D$. However, this doesn't really hold true in a heterogenous setup with variable input lengths. Therefore we treat this calculation as upper bound.
+    - We consider single server/single instance here, hence 1
+
+    Now, $\rho = \text{Arrival rate} \times \text{Average service time} = RD$
+
+    For the deterministic arrival rate, $E[S] = D$, variance is 0, hence $E[S^2] = D^2$
+
+$$
+\text{Average}_{TTFT} = D + \frac{RD^2}{2(1-RD)}
+$$
+
+They also made a distinction between inter-op (pipeline parallelism) versus intra-op (tensor parallelism)
+(low traffic versus high traffic, first is better for high traffic, later is for low traffic)
+
+$$
+\begin{aligned}
+\text{Avg}\_\text{TTFT}_{\text{inter}} &= D + \frac{RD^2}{2 \cdot \text{n\_gpus}^{2} (1 - RD / \text{n\_gpus})} \\
+\text{Avg}\_\text{TTFT}_{\text{intra}} &= \frac{D}{K} + \frac{RD^2}{2K(K - RD)}
+\end{aligned}
+$$
+
+- inter-op:
+  - exec time: total latency of $D_{s} \approx D$ (ignoring communication overhead) given request has to go through all available GPUs
+  - queuing delay: bottlenecked by $D_m \approx D/\text{n\_gpus}$
+- intra-op:
+  - exec time: reduce execution time by $K$, where $1 < K < \text{n\_gpus}$, hence new execution time is $D/K$
+  - queuing delay: dropped to $D/K$
 
 ### ratio calculation
 
-_notation are borrowed from [Jax's scaling book](https://jax-ml.github.io/scaling-book/)_
+_notation are borrowed from [Jax's scaling book](https://jax-ml.github.io/scaling-book/)_ and some notes from Brendan's talk at [[thoughts/tsfm/index|Tangent's lecture]] on [Scaling MoE](https://tsfm.ca/schedule)
 
-Computation math
+There are some work from Bytedance: https://arxiv.org/abs/2508.19559
+
+| Notation | Description                            | Notes                      |
+| -------- | -------------------------------------- | -------------------------- |
+| $D$      | Model hidden size $d_{\text{model}}$   |                            |
+| $F$      | FFW/MLP dimensions $d_{\text{ff}}$     |                            |
+| $N$      | number of attention head `n_attn_head` |                            |
+| $L$      | Number of Layer                        |                            |
+| $K$      | KV Heads                               | $N$ for MHA, $K<N$ for GQA |
+| $H$      | dimensions per head $d_{\text{head}}$  |                            |
+| $S$      | dtype number of bytes/float            |                            |
+
+Now, we consider the memory required to store KV per single tokens is:
+
+$$
+M_{kv} = 2 \cdot S \cdot H \cdot K \cdot L
+$$
+
+note: _We mostly consider bfloat16_, hence the memory required per token is $M_{kv} = 2 \cdot H \cdot K \cdot L$
+
+> [!important] terminology
+>
+> For FLOPs/math we consider $$T_{\text{math}} = \frac{\text{computation FLOPs}}{\text{Accelerator FLOPs/s}}$$
+>
+> Whereas for communication we consider $$T_{\text{comms}} = \frac{\text{communication bytes}}{\text{Network/memory bandwidth bytes/s}}$$
+>
+> We care about _lower and upper bound_ inference time:
+>
+> $$
+> \begin{aligned}
+> T_{\text{lower}} &= \operatorname{max}(T_{\text{math}}, T_{\text{comms}}) \\
+> T_{\text{upper}} &= T_{\text{math}} + T_{\text{comms}}
+> \end{aligned}
+> $$
+>
+> For MoE inference time upper bound:
+>
+> $$
+> T_{\text{MoE}} \approx T_{\text{dispatch}} + T_{\text{experts(grouped GEMM)}} + T_{\text{combine}}
+> $$
+>
+> | notation          | description                     |
+> | ----------------- | ------------------------------- |
+> | $k$               | routed experts                  |
+> | $E_{\text{tot}}$  | total experts                   |
+> | $E_{\text{gpu}}$  | routed experts on this GPUs     |
+> | $E_{\text{node}}$ | routed experts on this node     |
+> | $B_{\text{gpu}}$  | MoE layer input tokens per GPUs |
+
+Now, prefill is compute-bound ($T_{\text{math}} > T_{\text{comms}}$), decode is comms-bound ($T_{\text{math}} < T_{\text{comms}}$) [^ai]
+
+Some napkin math:
+
+- $$\text{Intensity}(\text{dot product}) =  \frac{N + N - 1}{2N + 2N + 2} \to \frac{1}{2}$$
+  - $N$ is the vector length
+- $$\text{Intensity}(\text{matmul}) = \frac{2NMK}{2NM + 2MK + 2NK} = \frac{NMK}{NM+MK+NK}$$
+  - for matrix A [NxM] and matrix B [MxK]
+  - For [[thoughts/Transformers]]
+- see also: [[lectures/420/notes#roofline model|roofline analysis]] [^roofline]
+
+[^ai]: Arithmetic Intensity is considered with $\frac{\text{Computation FLOPs}}{\text{Communication Bytes}}$, so when we discussing bounds, we care about $\text{Intensity}(\text{Computation})$ versus $\text{Intensity}(\text{Accelerator})$ (collary from above definition)
+
+[^roofline]: This is usually useful when we discuss accelerator peak FLOPs on the scale of amortized FLOPs/s versus AI (on log scale)
+
+> [!important] Goal
+>
+> This is a _constrained optimization_ problem, where our goal is to maximize [[#goodput|Goodput]] of any given MoE deployment. Meaning, our objective functions are as follows:
+>
+> $$
+> \text{Maximize } \frac{\text{Goodput}(n_{p}, n_{d})}{n_{p} \cdot \text{Cost}_{p} + n_{d} \cdot \text{Cost}_{d}}
+> $$
+>
+> Where $n_{p}$ denotes the number of prefill node and $n_{d}$ is the number of decode node [^terminology]
+>
+> The cost for prefill and decode refers to the _normalized cost_ of prefill/decode hardware it is running on (i.e: B200, MI355x, [[thoughts/Tenstorrent#blackhole (third gen, sampling)|Blackhole]], [[thoughts/TPU|TPUv7]], etc.)
+
+[^terminology]: The term "node" here refer to [k8s node](https://kubernetes.io/docs/concepts/architecture/nodes/) that is different from the number of parallelism per node. In the case of DeepSeek V3, we assume that each node contains enough [[thoughts/GPU programming|memory bandwidth]] to successfully run a model.
+
+Now, constraints are followed with:
+
+1. TTFT Latency (prefill): $t_{p} + t_{x} \leq \text{TTFT}_{\text{target}}$ ($t_{p}$ is the time to first-token, and $t_{x}$ is the KV Cache transfer latency) [^tx-notes]. Formally:
+   $$
+   t_p(\text{S}, P_{\text{active}}, n_{p}) + t_{x}(KV, BW_{\text{net}}) \le \text{TTFT}_{\text{target}}
+   $$
+   - network bound, but MLA helps alleviate this.
+2. TPOT Latency (decode): $t_{d}$ must satisfy requirements of the stream:
+   $$
+   t_d(P_\text{active}, cc_{d}, B, n_{d}) \le \text{TPOT}_{\text{target}}
+   $$
+   - memory bound $B$ required to load the active weights and batch of KV (i.e memory movement from HBM to tensor cores)
+3. Memory Capacity Wall: total memory footprint on decode nodes:
+   $$
+   cc_{d} \cdot M_{kv} \cdot  (\text{S} + \text{OSL}) + \text{Weight} \le \text{VRAM}_{total}
+   $$
+
+[^tx-notes]: This depends on attention mechanism and attention implementations, as well as inter-op and intra-op parallelism (i.e IB or NVLink). On newer hardware and most linear attention implementation/kernels we can assume that IB/NVLink wouldn't make a lot of different, even in the case of long context inference (will mention a bit later)
+
+> [!equation] optimal ratio
+>
+> $$
+> R_{P/D} = \frac{n_{p}}{n_{d}} = \frac{\Phi_{\text{prefill}} \cdot \text{S} \cdot \text{RPS}}{T_{\text{prefill, SLO}}} : \frac{\Phi_{\text{decode}} \cdot \text{OSL} \cdot \text{RPS}}{T_{\text{decode, SLO}}}
+> $$
+>
+> With:
+>
+> - prefill scaling factor $\Phi_{\text{prefill}}$ estimated as $D \times (12H^2 + 2SH)$ accounting for linear projection and quadratic scaling attention with sequence length $S$
+> - decode scaling factor $\Phi_{\text{decode}}$ estimated as $\frac{P_\text{active} + \text{KV size}}{B}$, as time required to laod data from HBM for 1 token.
+
+#### pool throughputs
+
+Now, to calculate the efficiency of the node, we must calculate the _maximal rate_ of both prefill/decode nodes. The goal is to either ==maximize AI== or ==minimize $T_{\text{comms}}$==
+
+**A. Prefill Throughput ($\lambda_{p}$)**
+
+Now, for an input sequence length $S$, the time to process the prompt on device with peak compute $C$, with compute utilization factor $U_{pf}$ (usually in the range of 0.7-0.9):
+
+$$
+t_p = \frac{2 \cdot P_\text{active}}{C \cdot  U_{pf}} = \frac{2 \cdot  L(3NK + 4DNH) \cdot S}{C \cdot U_{pf}}
+$$
+
+For a single request: $\lambda_p = \frac{1}{t_p}$
+
+For a concurrent requests $cc_{p}$, we have:
+
+$$
+\lambda_{p} = \frac{cc_{p}}{t_p(cc_{p})}
+$$
+
+**B. Decode Throughput ($\lambda_{d}$)**
+
+Now, time to generate one token for which the active weights $P_{\text{active}}$ with KV Cache loaded from HBM to compute core at memory bandwidth $B$:
+
+$$
+t_d = \frac{2 \cdot P + (B_{\text{sz}} * S * M_{kv})}{B} = \frac{2 \cdot L(3NK + 4DNH) + (cc_{d} \cdot S \cdot M_{kv})}{B}
+$$
+
+For a decoding batch: $\lambda_{d} = \frac{cc_{d}}{\text{OSL} \cdot t_{d}}$
+
+**C. P/D Ratio**
+
+> $$
+> R_{P/D} = \frac{n_{p}}{n_{d}} = \frac{\lambda_{p}}{\lambda_{d}} = \frac{cc_{d} \cdot t_p}{\text{OSL} \cdot t_d}
+> $$
+
+**D. Transfer speed tradeoff**
+
+| feature             | NVLink 5.0 (Blackwell)         | InfiniBand NDR (400G)          |
+| ------------------- | ------------------------------ | ------------------------------ |
+| Bandwidth           | 1.8TB/s                        | 50GB/s (per port)              |
+| Latency             | nanoseconds (sub-microseconds) | microseconds (<600ns for RDMA) |
+| Transfer time (1GB) | $\approx 0.5\text{ms}$         | $\approx 20 \text{ms}$         |
+
+note that this will makes a noticeable difference in dense models, but most MLA uses a linear attention/MLA, which makes transferring over IB a lot feasible (~150ms for DeepSeek)
+
+> [!todo]
+>
+> DeepSeek V3 theoretical B200/MI355x and future hardware, P/D ideal versus aggregated serving?
+> requirements:
+
+#### [[thoughts/MoE|MoE]] latency calculation
 
 ## patterns
 

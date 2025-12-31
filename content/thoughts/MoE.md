@@ -2,9 +2,11 @@
 date: "2025-08-13"
 description: Mixture of Expert
 id: MoE
-modified: 2025-10-29 02:15:29 GMT-04:00
+modified: 2025-12-29 17:54:05 GMT-05:00
+seealso:
+  - "[[thoughts/muon|muon]]"
+  - "[[thoughts/optimization#muon]]"
 tags:
-  - seed
   - ml
   - inference
 title: MoE
@@ -65,4 +67,3 @@ evaluation snapshot
 > - practical notes: https://kellerjordan.github.io/posts/muon/
 > - reference implementation: https://github.com/KellerJordan/Muon
 > - optimizer discussion: [@liu2025muonscalablellmtraining]
-> - notes: [[thoughts/muon|muon]], [[thoughts/optimization#muon]]
