@@ -3,7 +3,7 @@ date: "2025-12-31"
 description: on contigency, convictions, and Tractatus.
 id: 2025-lists
 layout: technical
-modified: 2025-12-31 15:58:00 GMT-05:00
+modified: 2025-12-31 15:59:08 GMT-05:00
 seealso:
   - "[[posts/2025|hyperabundance]]"
 signature: Your present self
@@ -262,7 +262,7 @@ Jacques Lacan
   - _5.23_ the push/pull model needs some refinement. be truthful without performing "here's my heart, do as you will."
   - _5.24_ i think i need to be a bit more selfish. can't be good to everyone.
 
-- _5.3_ being autistic (or appearing more autistic than you are) is the performative-male version of academics.
+- _5.3_ being autistic (or appearing more autistic than you are) is the performative-male version for technologists.
   - _5.31_ it's ok. you're not that unique. neither am i.
   - _5.32_ because we all know, there aren't any original thoughts anymore.
 
