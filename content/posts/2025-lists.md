@@ -2,8 +2,8 @@
 date: "2025-12-31"
 description: on contigency, convictions, and Tractatus.
 id: 2025-lists
-layout: technical
-modified: 2025-12-31 17:03:52 GMT-05:00
+layout: technical-tractatus
+modified: 2025-12-31 20:31:46 GMT-05:00
 seealso:
   - "[[posts/2025|hyperabundance]]"
 signature: Your present self
@@ -43,27 +43,23 @@ Jacques Lacan
   - _1.011_ an example of a brute fact is _the rock is heavy_, where as _this paper is money_ is considered institutional.
   - _1.012_ Searle: institutional facts requires **status function** (X counts as Y in context C). In our example above, the paper counts as currency in the economic system. The sound counts as a promise in the speech act. The neural firing pattern counts as grief in the embodied life.
   - _1.013_ status function are **not** {{sidenotes[epiphenomenal]: something that's a secondary byproduct of a main process, having no real effects on that process. for example, a steam whistle on a train. thoughts/feeling are caused by brain activity but don't cause anything physical, only serving as "conscious overflow" with no causal power.}} because they have causal powers that brute facts alone cannot explain. for example, money moves armies, money advances technological progress. promises bind futures goals and targets. grief reshapes our neuroplasticity.
-- _1.02_ Searle's account requires collective intentionality. We must all agree that the paper is money for it to function as money
+- _1.02_ Searle's account requires _collective intentionality_. We must all agree that the paper is money for it to function as money
   - _1.021_ but the pillow on the right side of my bed counts as her-side without collective agreement
   - _1.022_ therefore, a subset of status function, in which I call _personal status function_, where "X counts as Y for _this body_ in context C"
   - _1.023_ personal status function require no collective recognition, but only subjective recognition, or the body's ongoing self-interpretation
-- _1.03_ personal status function are pre-reflective constitution
-  - _1.031_ merleau-ponty's motor intentionality states that the body understands its environment before cognition represents it. i.e: the doorknob affords turning before you think "this is a doorknob".
-  - _1.032_ the body constitutes its world as meaningful prior to and independent of explicit judgement.
+- _1.03_ personal status function are {{sidenotes[pre-reflective constitution]: merleau-ponty's motor intentionality: the body understands its environment before cognition represents it. the doorknob affords turning before you think "this is a doorknob." constitution happens prior to and independent of explicit judgement.}}
 - _1.04_ self-interpretation implies capacity for self-modification of beliefs and values
   - _1.041_ if you can interpret yourself, then it is implied you can reinterpret yourself.
   - _1.042_ self-modification requires continuity. There will be values considered as invariance to evaluate whether transformation is considered good/bad.
   - _1.043_ radical conversion destabilises because it attempts too much reconstitution at once. You can't build a house an ever-changing foundations.
 - _1.05_ personal status functions require ongoing maintenance to persist and therefore dynamic.
-  - _1.051_ phenomenological perspective of ready-to-hand requires ongoing concernful dealing. the hammer is ready-to-hand only while being used. when use ceases, it becomes present-at-hand—an object with properties rather than a toward-which.
-  - _1.052_ constitution is a collection of activity that operates within the external world. The pillow is her-side only while the body keeps constituting it as such.
-  - _1.053_ when engagement withdraws, the status function becomes available for either dissolution or transformation.
+  - _1.051_ constitution is {{sidenotes[ready-to-hand]: heidegger's phenomenology: the hammer is ready-to-hand only while being used. when use ceases, it becomes present-at-hand—an object with properties rather than a toward-which.}} activity that operates within the external world. The pillow is her-side only while the body keeps constituting it as such.
+  - _1.052_ when engagement withdraws, the status function becomes available for either dissolution or transformation.
 - _1.06_ maintenance requires resources, and resources are bounded. [^bounded-rationality]
   - _1.061_ Herbert Simon stated that organisms satisfice or maximise their utility function rather than optimize for a given objectives. In terms of our brain, it cannot maintain infinite status functions simultaneously, given our cognitive resources are finite.
   - _1.062_ corollary: one cannot maintain infinite status functions. there is competition for the maintenance resource.
   - _1.063_ We form certain heuristics in which it provides a skeleton that is universal towards different facets for our mode of existence.
-  - _1.064_ Gigerenzer's ecological rationality states that the heuristics is considered an adaptation to bounded resources. fast-and-frugal allocation rules adapted to ecological context.
-  - _1.065_ which status functions persist is determined by heuristic resource allocation under bounded constraints.
+  - _1.064_ which status functions persist is determined by {{sidenotes[ecological rationality]: gigerenzer's thesis: heuristics are adaptations to bounded resources. fast-and-frugal allocation rules adapted to ecological context.}} heuristic resource allocation under bounded constraints.
 - _1.07_ attention is the phenomenological name for the resource being allocated.
   - _1.071_ attention (broadly construed—not just conscious focus) is what the body directs toward maintaining a constitution.
   - _1.072_ attention is scarce. directing it toward X means not directing it toward Y.
@@ -123,14 +119,12 @@ Jacques Lacan
   - _2.013_ this is why love is not solipsistic projection. the other person has to be real enough to resist your interpretations. N did this constantly—refused my frame, offered her own.
 - _2.02_ attention is a good primitive.
   - _2.021_ love, understanding, [[thoughts/intelligence|intelligence]]—they all decompose into sustained attention applied to an object. you cannot deeply understand what you haven't attended to. you cannot love what you haven't seen.
-  - _2.022_ sustained attention generates a **interpretive infrastructure**, or the learned mappings between surface behavior and latent state.
-    - _2.0221_ after two years you learn what her silence means when it's thinking vs when it's withdrawing. you learn the specific quality of voice that means she's tired vs the one that means she's hurt. this is expensive to build.
+  - _2.022_ sustained attention generates an {{sidenotes[interpretive infrastructure]: the learned mappings between surface behavior and latent state. after two years you learn what her silence means when it's thinking vs when it's withdrawing. you learn the specific quality of voice that means she's tired vs the one that means she's hurt. this is expensive to build.}}
   - _2.023_ the infrastructure cannot be transferred. it's specific to the dyad. when i started dating again, i kept misreading cues bc my interpretive machinery was calibrated to the wrong person.
   - _2.024_ hence deep relationships have high switching costs. you're losing years of accumulated interpretive capital.
   - _2.025_ this year i discovered feelings that didn't fit inside English grammatical structures.
     - _2.0251_ there's a thing that's not-quite-love and not-quite-friendship and not-quite-desire. it's the feeling of being seen by someone whose attention itself constitutes you differently. L looked at me and I became a version of myself that only existed in her gaze.
-    - _2.0252_ aristotle: "affection is no less present for inanimate things, but loving in return involves choice, and choice comes from an active condition." the greeks had more words. we have to gesture.
-    - _2.0253_ the speechlessness wasn't failure. it was encounter with what genuinely exceeds the pictorial capacity of language.
+    - _2.0252_ the speechlessness wasn't failure. it was encounter with what genuinely exceeds the {{sidenotes[pictorial capacity]: aristotle: "affection is no less present for inanimate things, but loving in return involves choice, and choice comes from an active condition." the greeks had more words. we have to gesture.}} of language.
   - _2.026_ what cannot be said can be shown—through practice, presence, the body's testimony over time.
 - _2.03_ love emerges from sustained deployment of interpretive infrastructure.
   - _2.031_ sustained attention toward a person generates understanding of their particularity. you learn not "what women want" or "what people need" but what THIS person, with THIS history, in THIS moment, requires.
@@ -190,10 +184,8 @@ Jacques Lacan
   - _3.022_ you can tell where someone used to believe by watching where they hesitate, i.e: the watermark shows through.
   - _3.023_ this is why belief revision feels like loss. you're overwriting something that still shows through.
 - _3.03_ Wittgenstein implies _meaning emerges from use_.
-  - _3.031_ For him, the thing that the word stands for does not give the meaning of the word.
-  - _3.032_ "god exists" gets spoken like "the table exists," but these are different language games wearing the same grammar.
-  - _3.033_ the omnipotence paradox dissolves once you notice you're asking whether grammar can lift more than grammar can lift.
-  - _3.034_ to understand a belief, ask: what work does it do? what form of life does it belong to?
+  - _3.031_ "god exists" gets spoken like "the table exists," but these are {{sidenotes[different language games]: for wittgenstein, the thing that the word stands for does not give the meaning of the word. the omnipotence paradox dissolves once you notice you're asking whether grammar can lift more than grammar can lift.}} wearing the same grammar.
+  - _3.032_ to understand a belief, ask: what work does it do? what form of life does it belong to?
 
 - _3.1_ There are some core beliefs with respect to the existence of big-capital-G man for me.
   - _3.11_ I now believe the feeling-of-being-held is a real phenomenon, even if the map is mostly water there.
@@ -236,9 +228,9 @@ Jacques Lacan
   - _4.12_ you still need to learn how systems work, because software engineering is not all about writing code. Understanding monads and concurrency systems is different from writing Go code.
     - _4.121_ Again, semantic is different from syntax.
 
-- _4.2_ Claude/Codex/Gemini can do a small part of my job. i still have to run a mental deslop filter.
+- _4.2_ Claude/Codex/Gemini can do some part of my job now. though i still have to run a mental deslop filter.
   - _4.21_ the 80/20 point: last 20% of quality requires 80% of supervision. but that 80% of work that's now trivial? that's the story.
-  - _4.22_ make versions you like. i have a psychopath claude, a thinking assistant, a writing partner. shape them into lossy compressions of yourself.
+  - _4.22_ make versions you like. i have a psychopath claude, a thinking assistant, and a deep researcher. shape them into lossy compressions of yourself.
   - _4.23_ don't use them to summarize. there's learning in making the compression yourself.
 
 - _4.3_ Any type of interpretability work is worth doing.
@@ -293,11 +285,9 @@ Jacques Lacan
   - _6.23_ then the other thing: the sf rationalist reflex, the clean reductionism, the way love gets audited for "what can you provide."
   - _6.24_ not bc she's cruel—afaict it's bc she's going through something that makes softness expensive. when you're in survival mode, you ration feeling.
 
-- _6.3_ dealing with grief can follow two separate paths.
-  - _6.31_ descartes in _The Passions of the Soul_: passions are bodily signals, or perceptions caused by the body acting on the soul. grief is a reflex that kicks when the mind believes it lost a good.
-  - _6.32_ c.s. lewis in _a grief observed_ implies grief as claustrophobic fear, god as the door that won't open. the pain is the price of love. the price isn't negotiable.
-  - _6.33_ the emotionally mature move is to take it seriously without obeying it.
-  - _6.34_ a third failure mode neither covers: curating the loss into something presentable. you catalog the damage, narrate it cleanly, extract lessons. the wound never breathes bc you've already framed it for the wall.
+- _6.3_ dealing with grief can follow {{sidenotes[two philosophical paths]: descartes in _The Passions of the Soul_: passions are bodily signals, perceptions caused by the body acting on the soul. grief is a reflex when the mind believes it lost a good. c.s. lewis in _a grief observed_: grief as claustrophobic fear, god as the door that won't open. the pain is the price of love. the price isn't negotiable.}}
+  - _6.31_ the emotionally mature move is to take it seriously without obeying it.
+  - _6.32_ a third failure mode neither covers: curating the loss into something presentable. you catalog the damage, narrate it cleanly, extract lessons. the wound never breathes bc you've already framed it for the wall.
 
 - _6.4_ a museum is just grief wearing a blazer. the instruction is not to inventory.
   - _6.41_ let the wound breathe its own language—neither hello nor goodbye.
@@ -312,7 +302,7 @@ Jacques Lacan
   - _7.011_ we're here to build toward good outcomes.
   - _7.012_ edward said: humanism is an "exigent, resistant, intransigent art"—acknowledging tragic limitations rather than transcending them. toni morrison: biological generation, earthly embodiment, freedom within constraints.
 
-- _7.1_ longtermism is misguided, but meliorism lives.[^7]
+- _7.1_ longtermism is misguided, but ==meliorism== lives.[^7]
   - _7.11_ speculative longtermism deprioritizes present suffering for cosmic potential. transhumanism, space expansionism, total utilitarianism—all treat people as containers of value rather than ends.
   - _7.12_ ramsey's 1928 original asked: how much should a nation save? capital accumulation, material inheritance, what you leave behind. not probability distributions over far futures.
   - _7.13_ meliorism: the world can be improved through human effort. salvation is neither inevitable nor impossible.

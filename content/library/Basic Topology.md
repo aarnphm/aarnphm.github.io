@@ -1,20 +1,20 @@
 ---
+aliases:
+  - topology
 author: M. A. Amstrong
 category: math
-date: 2025-11-09
+date: "2025-11-09"
 description: introductory textbook on point set topology, building intuition for continuity, connectedness, compactness, and basic constructions.
-external: https://math.mit.edu/~hrm/palestine/armstrong-basic-topology.pdf
 id: Basic Topology
-modified: 2025-11-09 08:55:13 GMT-05:00
+modified: 2025-12-31 20:03:29 GMT-05:00
+notebook: "[[thoughts/topology|topology]]"
+pdf: https://math.mit.edu/~hrm/palestine/armstrong-basic-topology.pdf
 posters: "[[library/posters/Basic Topology.png]]"
+status: current
+subcategory: topology
 tags:
   - math
   - topology
 title: Basic Topology
-status: current
-subcategory: topology
 year: 1983
-notebook: "[[thoughts/topology|topology]]"
-aliases:
-  - topology
 ---

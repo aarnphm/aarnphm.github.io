@@ -230,6 +230,8 @@ views:
       - description
       - notebook
       - aliases
+      - external
+      - pdf
       - formula.2025
       - formula.2024
       - formula.2023
