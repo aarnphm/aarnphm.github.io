@@ -1,14 +1,16 @@
 ---
-author: "[[thoughts/Wittgenstein|Ludwig Wittgenstein]]"
 aliases:
   - tractatus
   - TLP
+author: "[[thoughts/Wittgenstein|Ludwig Wittgenstein]]"
 category: philosophy
-language: german
-date: 2025-10-07
+date: "2025-10-07"
 description: Wittgenstein's picture theory of language and its uncanny resonance with modern LLM latent spaces
+finished: 2025
 id: Tractatus Logico-Philosophicus
-modified: 2025-11-19 18:06:54 GMT-05:00
+language: german
+modified: 2025-12-31 20:02:47 GMT-05:00
+pdf: https://www.gutenberg.org/files/5740/5740-pdf.pdf
 posters: "[[library/posters/tractatus-logico-philosophicus.jpg]]"
 seealso:
   - "[[thoughts/Wittgenstein]]"
@@ -21,10 +23,9 @@ subcategory:
 tags:
   - philosophy
 title: Tractatus Logico-Philosophicus
-year: 1921
-finished: 2025
 translator:
   - Michael Beaney
+year: 1921
 ---
 
 > [!tip] reading posture

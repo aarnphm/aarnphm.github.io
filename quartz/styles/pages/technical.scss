@@ -1,11 +1,8 @@
 @use "../base.scss";
 @use "../variables.scss" as *;
 
+body[data-layout="technical-tractatus"],
 body[data-layout="technical"] {
-  .sidenotes {
-    display: none;
-  }
-
   .page-footer {
     padding: 0;
 

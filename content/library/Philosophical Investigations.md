@@ -1,14 +1,14 @@
 ---
-author: "[[thoughts/Wittgenstein|Ludwig Wittgenstein]]"
 aliases:
   - PI
+author: "[[thoughts/Wittgenstein|Ludwig Wittgenstein]]"
 category: philosophy
-language: german
-date: 2025-10-07
+date: "2025-10-07"
 description: latter Wittgenstein
-external: https://static1.squarespace.com/static/54889e73e4b0a2c1f9891289/t/564b61a4e4b04eca59c4d232/1447780772744/Ludwig.Wittgenstein.-.Philosophical.Investigations.pdf
 id: Philosophical Investigation
-modified: 2025-11-19 18:10:42 GMT-05:00
+language: german
+modified: 2025-12-31 20:02:45 GMT-05:00
+pdf: https://static1.squarespace.com/static/54889e73e4b0a2c1f9891289/t/564b61a4e4b04eca59c4d232/1447780772744/Ludwig.Wittgenstein.-.Philosophical.Investigations.pdf
 posters: "[[library/posters/philosophical-investigations.jpg]]"
 seealso:
   - "[[library/Tractatus Logico-Philosophicus|TLP]]"
@@ -21,10 +21,10 @@ subcategory:
 tags:
   - philosophy
 title: Philosophical Investigations
-year: 1953
 translator:
   - P. M. S. Hacker
   - Joachim Schulte
+year: 1953
 ---
 
 W abandoned the picture theory of the [[library/Tractatus Logico-Philosophicus|TLP]] for a therapeutic approach to philosophical problems.

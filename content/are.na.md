@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2025-12-30 19:59:37 GMT-05:00
+modified: 2025-12-31 19:54:13 GMT-05:00
 permalinks:
   - /website
   - /tweets
@@ -1972,6 +1972,10 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://www.visakanv.com/blog/relationships -- relationship are challenging and a lot of work
+  - [meta]:
+    - date: 12/31/2025
+    - tags: [love, being]
 - https://theimpermanent.substack.com/p/why-i-think-like-an-athlete -- Why I think like an Athlete
   - [meta]:
     - date: 12/29/2025
@@ -5564,7 +5568,7 @@ title: are.na
   - [meta]:
     - date: 04/09/2025
     - tags: [philosophy]
-- https://joecarlsmith.com/2023/02/16/why-should-ethical-anti-realists-do-ethics -- Why should ethical anti-realists do ethics?
+- https://joecarlsmith.com/2023/02/16/why-should-ethical-anti-realists-do-ethics -- Why should ethical anti-realists do ethics? [**]
   - [meta]:
     - date: 04/09/2025
     - tags: [ai, metaethics]
@@ -5620,6 +5624,10 @@ title: are.na
 
 ## stream
 
+- https://idealistscollective.org/
+  - [meta]:
+    - date: 12/31/2025
+    - tags: [collections]
 - https://deepmind.google/research/publications/ -- DeepMind's research stream
   - [meta]:
     - date: 12/27/2025
