@@ -28,6 +28,7 @@ export type ContentLayout =
   | "default"
   | "letter"
   | "technical"
+  | "technical-tractatus"
   | "reflection"
   | "letter-poem"
   | "L->ET|A"
