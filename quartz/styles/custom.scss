@@ -1582,21 +1582,3 @@ pre {
     color: var(--code-normal);
   }
 }
-
-[data-slug="posts/2025-lists"] {
-  ul,
-  ol {
-    list-style-type: none;
-  }
-
-  li > p {
-    &:first-of-type {
-      margin-bottom: 0;
-    }
-  }
-
-  ul,
-  ol {
-    padding-inline-start: 20px;
-  }
-}
