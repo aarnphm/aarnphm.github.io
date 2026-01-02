@@ -2,9 +2,10 @@
 date: "2025-08-31"
 description: research exploring speculative decoding techniques for mixture-of-experts models to improve inference efficiency.
 id: index
-modified: 2025-12-12 14:27:37 GMT-05:00
+modified: 2026-01-02 02:22:32 GMT-05:00
 tags:
-  - folder
+  - inference
+  - pattern
 title: SpecMoE
 ---
 

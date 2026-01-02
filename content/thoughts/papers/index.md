@@ -4,10 +4,10 @@ aliases:
 date: "2024-01-20"
 description: local cache of research papers currently reading, in progress, or permanently open in safari tabs.
 id: index
-modified: 2025-11-09 03:10:01 GMT-05:00
+modified: 2026-01-02 02:21:18 GMT-05:00
 noindex: true
 tags:
-  - folder
+  - pattern
 title: papers
 ---
 

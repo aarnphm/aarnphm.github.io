@@ -3,7 +3,7 @@ date: "2025-12-31"
 description: on contigency, convictions, and Tractatus.
 id: 2025-lists
 layout: technical-tractatus
-modified: 2026-01-01 00:31:57 GMT-05:00
+modified: 2026-01-02 04:07:45 GMT-05:00
 seealso:
   - "[[posts/2025|hyperabundance]]"
 signature: Your present self
@@ -353,26 +353,26 @@ Jacques Lacan
 - _8.7_ [_HPMOR_](https://hpmor.com/) by Eliezer Yudkowsky remains the text that first taught me to notice confusion and being super transparent with my own thoughts.
 - _8.8_ the technical papers—EAGLE variants, distserve, flashattention progression—constitute to this practice of close reading.
 - _8.9_ the vibe-list of essays that I particularly enjoyed this year:
-  - _8.91_ [_Radical Fun_](https://www.avabear.xyz/p/radical-fun) by Ava: fun is fundamentally about connection, and friendship is the primary gateway to meaningful fun. fun is a skill requiring intentional cultivation—not passive consumption of easy dopamine. friends provide perspective, connection, and aspiration. challenges hyperabundance culture's default of easy entertainment. love for friends is as serious as romantic love, requiring "time, patience, repetition and yearning." this is the friendship theory of everything—love for friends using the same circuitry.
-  - _8.92_ [_Presence_](https://www.humaninvariant.com/blog/presence) by Human Invariant: physical presence exposes the "illegible" aspects of people and knowledge that cannot be transmitted through polished online work products. the ability and desire to care is built through presence. "the real updates to your life don't come from reading words online" but from embodied presence—a form of deep attention that cannot be replicated digitally. your true friends are those willing to cross bridges to see you.
-  - _8.93_ [_Please Don't Throw Your Mind Away_](https://www.lesswrong.com/posts/RryyWNmJNnLowbhfC/please-don-t-throw-your-mind-away) on LessWrong: warns against suppressing "playful thinking" in favor of urgent, goal-directed productivity. when people arrive at the x-risk community, they feel pressure to orient everything around backchained goals, causing them to throw away natural curiosity. meditation on attention to self—preserving quality of mental processes against external urgency. meaning cannot be fully derived from external goals; some must emerge from letting the mind follow its own interests.
-  - _8.94_ [_Productivity_](https://guzey.com/productivity/) by Alexey Guzey: all productivity systems eventually break down; the goal should be creating sustainable rhythms rather than fighting impulses. context and intentionality matter enormously—novel locations temporarily restore rule-following ability. addresses managing attention in environments designed to distract. the solution isn't blocking distractions but creating predictable structure. productivity should emerge from alignment between what you want and what you do, not willpower suppression.
-  - _8.95_ [_Why Have Sex_](https://offhandquibbles.substack.com/p/why-have-sex) by Offhand Quibbles: complicates the simple-pleasure model of intimacy. in the same register as ava's friendship piece—the things that matter require skill and sustained engagement, not passive reception.
-  - _8.96_ [_A Constellation of Lookers_](https://www.henrikkarlsson.xyz/p/a-constellation-of-lookers) by Henrik Karlsson: local artists who spent their lives looking intensely at their landscape form a "constellation" connected by their shared need to contemplate their lifeworld, though they never knew each other. sustained looking as a form of love and meaning-making. the act of giving sustained attention transforms both looker and what is seen. those who attend deeply to reality may feel alone but are secretly part of a pattern visible across time.
+  - [_Radical Fun_](https://www.avabear.xyz/p/radical-fun) by Ava: fun is fundamentally about connection, and friendship is the primary gateway to meaningful fun. fun is a skill requiring intentional cultivation—not passive consumption of easy dopamine. friends provide perspective, connection, and aspiration. challenges hyperabundance culture's default of easy entertainment. love for friends is as serious as romantic love, requiring "time, patience, repetition and yearning." this is the friendship theory of everything—love for friends using the same circuitry.
+  - [_Presence_](https://www.humaninvariant.com/blog/presence) by Human Invariant: physical presence exposes the "illegible" aspects of people and knowledge that cannot be transmitted through polished online work products. the ability and desire to care is built through presence. "the real updates to your life don't come from reading words online" but from embodied presence—a form of deep attention that cannot be replicated digitally. your true friends are those willing to cross bridges to see you.
+  - [_Please Don't Throw Your Mind Away_](https://www.lesswrong.com/posts/RryyWNmJNnLowbhfC/please-don-t-throw-your-mind-away) on LessWrong: warns against suppressing "playful thinking" in favor of urgent, goal-directed productivity. when people arrive at the x-risk community, they feel pressure to orient everything around backchained goals, causing them to throw away natural curiosity. meditation on attention to self—preserving quality of mental processes against external urgency. meaning cannot be fully derived from external goals; some must emerge from letting the mind follow its own interests.
+  - [_Productivity_](https://guzey.com/productivity/) by Alexey Guzey: all productivity systems eventually break down; the goal should be creating sustainable rhythms rather than fighting impulses. context and intentionality matter enormously—novel locations temporarily restore rule-following ability. addresses managing attention in environments designed to distract. the solution isn't blocking distractions but creating predictable structure. productivity should emerge from alignment between what you want and what you do, not willpower suppression.
+  - [_Why Have Sex_](https://offhandquibbles.substack.com/p/why-have-sex) by Offhand Quibbles: complicates the simple-pleasure model of intimacy. in the same register as ava's friendship piece—the things that matter require skill and sustained engagement, not passive reception.
+  - [_A Constellation of Lookers_](https://www.henrikkarlsson.xyz/p/a-constellation-of-lookers) by Henrik Karlsson: local artists who spent their lives looking intensely at their landscape form a "constellation" connected by their shared need to contemplate their lifeworld, though they never knew each other. sustained looking as a form of love and meaning-making. the act of giving sustained attention transforms both looker and what is seen. those who attend deeply to reality may feel alone but are secretly part of a pattern visible across time.
 
 ## 9. twenty six plans
 
 - _9.1_ the degree requires one more course. completion is a status function that unlocks other status functions.
-  - _9.11_ the credential matters less than the forcing function. deadlines constitute commitment.
+  - the credential matters less than the forcing function. deadlines constitute commitment.
 - _9.2_ the music. maybe the sax.
-  - _9.21_ instruments are attention-training devices with acoustic feedback. you cannot fake presence to a horn.
-  - _9.22_ jazz improvisation is real-time status-function constitution—each phrase counts as meaningful only in context of what preceded it.
+  - instruments are attention-training devices with acoustic feedback. you cannot fake presence to a horn.
+  - jazz improvisation is real-time status-function constitution—each phrase counts as meaningful only in context of what preceded it.
 - _9.3_ the spontaneity. life's been chaos-within-stable-frame. time to do shit for the plot.
-  - _9.31_ stability enables depth (1.2) but calcifies without perturbation. the frame needs occasional shock.
-  - _9.32_ saying yes to things that don't optimize for anything. the rotation-of-crops warning (8.6) applies to experiences, not just partners.
+  - stability enables depth (1.2) but calcifies without perturbation. the frame needs occasional shock.
+  - saying yes to things that don't optimize for anything. the rotation-of-crops warning (8.6) applies to experiences, not just partners.
 - _9.4_ the angel investing.
-  - _9.41_ capital allocation as attention allocation. you bet on people whose constitution you trust.
-  - _9.42_ skin in the game changes how you read founders.
+  - capital allocation as attention allocation. you bet on people whose constitution you trust.
+  - skin in the game changes how you read founders.
 - _9.5_ the triathlon.
 - _9.6_ the 10k at 9:30 pace.
 

@@ -2,10 +2,9 @@
 date: "2024-03-07"
 description: impromptu supper club gathering recipes and menus for shared meals with friends.
 id: index
-modified: 2025-11-23 16:16:56 GMT-05:00
+modified: 2026-01-02 02:21:04 GMT-05:00
 tags:
   - menu
-  - folder
 title: atelier with friends
 ---
 

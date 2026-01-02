@@ -165,16 +165,6 @@ const config: QuartzConfig = {
       Plugin.LLMText(),
       Plugin.FolderPage({
         pageBody: Component.FolderContent({
-          sort: (a: QuartzPluginData, b: QuartzPluginData): number => {
-            // Check if either file has a folder tag
-            const aHasFolder = a.frontmatter?.tags?.includes("folder") ?? false
-            const bHasFolder = b.frontmatter?.tags?.includes("folder") ?? false
-
-            // If one has folder tag and other doesn't, prioritize the one with folder tag
-            if (aHasFolder && !bHasFolder) return -1
-            else if (!aHasFolder && bHasFolder) return 1
-            else return byDateAndAlphabetical(configuration)(a, b)
-          },
           include: [
             ".pdf",
             ".py",

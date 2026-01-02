@@ -2,9 +2,8 @@
 date: "2024-02-07"
 description: explaining complex phenomena through minimal parts, compressing reality into simpler ontological and theoretical frameworks.
 id: reductionism
-modified: 2025-11-10 06:58:37 GMT-05:00
+modified: 2026-01-02 03:48:26 GMT-05:00
 tags:
-  - seed
   - psychology
 title: reductionism
 ---

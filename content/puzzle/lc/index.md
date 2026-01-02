@@ -2,9 +2,9 @@
 date: "2025-12-12"
 description: solutions et al., and runners
 id: index
-modified: 2025-12-12 15:02:39 GMT-05:00
+modified: 2026-01-02 02:20:32 GMT-05:00
 tags:
-  - folder
+  - puzzle
 title: leetcode
 ---
 

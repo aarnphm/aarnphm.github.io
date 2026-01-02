@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-01-01 00:30:00 GMT-05:00
+modified: 2026-01-02 06:15:53 GMT-05:00
 permalinks:
   - /website
   - /tweets
@@ -143,14 +143,19 @@ title: are.na
 - [meta]:
   - view: list
 
+- https://x.com/nickcammarata/status/2006606288004997146 -- Interpretable heart pattern
+  - [meta]:
+    - date: 01/02/2026
+    - tags: [biology, research]
 - https://x.com/mitchellh/status/2006114026191769924 -- AI-driven augmentation bug/code reports
   - [meta]:
     - date: 01/01/2026
     - tags: [symbotic, programming]
 - https://x.com/jaschasd/status/1972360484914606240 -- Advice for a young investigator in the first and last days of the Anthropocene [**]
   - [meta]:
-    - date: 01/01/2026
-    - tags: [investing, strategy]
+    - date: 01/02/2026
+    - tags: [longtermism, research]
+  - https://docs.google.com/presentation/d/1qVFDW8qT4CC4E_2TSVevrDbZ_Z9Utu_I1z0-ISLwZts/edit?slide=id.p#slide=id.p -- Advice for a (young) investigator in the first and last days of the Anthropocene
 - https://x.com/___frye/status/2005851412618498299 -- yearning with Claude
   - [meta]:
     - date: 12/30/2025
@@ -167,10 +172,11 @@ title: are.na
   - [meta]:
     - date: 12/26/2025
     - tags: [lagrangian, series]
-- https://x.com/repligate/status/2003625427915669953?s=46 -- on Claude and love
+- https://x.com/repligate/status/2003625427915669953?s=46 -- on Opus 3 and love [**]
   - [meta]:
     - date: 12/25/2025
-    - tags: [llm]
+    - tags: [llm, alignment]
+    - pinned: true
 - https://x.com/voooooogel/status/2001764163207479336 -- Claude dilemma while running a business
   - [meta]:
     - date: 12/20/2025
@@ -937,6 +943,14 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://aryl.org/ -- aryl
+  - [meta]:
+    - date: 01/02/2026
+    - tags: [chemist]
+- https://en.wikipedia.org/wiki/Olaf_Rude -- Olaf Rude
+  - [meta]:
+    - date: 01/01/2026
+    - tags: [painter]
 - https://www.poetryfoundation.org/poets/rainer-maria-rilke -- Rainer Maria Rilke
   - [meta]:
     - date: 12/27/2025
@@ -1444,11 +1458,11 @@ title: are.na
 - https://leimao.github.io/ -- Lei Mao's Log Book
   - [meta]:
     - date: 10/02/2025
-    - tags: [gpus, kernels]
+    - tags: [gpus, kernel]
 - https://www.lei.chat -- Lei's Chat
   - [meta]:
     - date: 10/02/2025
-    - tags: [gpus, kernels]
+    - tags: [gpus, kernel]
   - AI [[thoughts/Compiler]] ([[thoughts/GPU programming#AMD]])
 - https://ampersand.pm/ -- &pm (Morgan.)
   - [meta]:
@@ -1980,6 +1994,51 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://folklore.org/Make_a_Mess,_Clean_it_Up!.html -- Make a Mess, Clean it Up
+  - [meta]:
+    - date: 01/02/2026
+    - tags: [personality, creation]
+- https://kipp.ly/group-hugging-theory/ -- Group hugging theory
+  - [meta]:
+    - date: 01/02/2026
+    - tags: [relationship, being]
+- https://waitbutwhy.com/2016/09/marriage-decision.html -- The Marriage Decision: Everything Foreever or Nothing Ever Again
+  - [meta]:
+    - date: 01/02/2026
+    - tags: [relationship]
+- https://www.gleech.org/paper -- Making sense of Chinese AI
+  - [meta]:
+    - date: 01/02/2026
+    - tags: [llm, opensource]
+- https://www.secondperson.dating/p/femininity-is-about-power -- Everything Is about Sex, Femininity Is about Power
+  - [meta]:
+    - date: 01/02/2026
+    - tags: [sex, relationship]
+- https://letterstomyfriends.substack.com/p/on-doing-real-work -- on doing real work
+  - [meta]:
+    - date: 01/02/2026
+    - tags: [review, productivity]
+- https://ceselder.substack.com/p/stop-trying-to-be-a-good-person -- stop trying to be a "good person"
+  - [meta]:
+    - date: 01/02/2026
+    - tags: [being, philosophy]
+- https://www.doc.cc/articles/ai-navigation -- A new navigation paradigm
+  - [meta]:
+    - date: 01/02/2026
+    - tags: [ux]
+  - Hmm, I don't really agree
+- https://samuelalbanie.substack.com/p/reflections-on-2025 -- The Compute Theory of Everything, grading the homework of a minor deity, and the acoustic preferences of Atlantic salmon [**]
+  - [meta]:
+    - date: 01/02/2026
+    - tags: [progress, ai]
+- https://newaesthetics.art/ -- A Call for New Aesthetics
+  - [meta]:
+    - date: 01/01/2026
+    - tags: [aesthetics, practice]
+- https://web.archive.org/web/20241014094544/https://kanjun.me/writing/research-as-understanding -- Research as understanding [--]
+  - [meta]:
+    - date: 01/01/2026
+    - tags: [research, taste]
 - https://near.blog/supplements/ -- Supplements [**]
   - [meta]:
     - date: 01/01/2026
@@ -1988,11 +2047,12 @@ title: are.na
   - [meta]:
     - date: 12/16/2025
     - tags: [enhancement drugs, recreational]
-- https://archive.is/pSMXO -- Will [[thoughts/AGI|A.I.]] Trap You in the "Permanent Underclass"? [--]
+- https://archive.is/pSMXO -- Will A.I. Trap You in the "Permanent Underclass"? [--]
   - [meta]:
     - date: 01/01/2026
     - tags: [society]
-- https://zhengdongwang.com/2025/12/30/2025-letter.html-- Zhengdong Wang's 2025 letter
+  - seealso: [[thoughts/AGI]]
+- https://zhengdongwang.com/2025/12/30/2025-letter.html -- Zhengdong Wang's 2025 letter
   - [meta]:
     - date: 01/01/2026
     - tags: [review]
@@ -2083,11 +2143,10 @@ title: are.na
   - I wasn't sure (back in early 2012) that CFAR was worthwhile.  So, I kind-of worked on it.
   - An old friend came to my door unexpectedly, and I was tempted to hang out with her, but I also thought I should finish my work.  So I kind-of hung out with her while feeling bad and distracted about my work.
   - A friend of mine, when teaching me math, seems to mumble specifically those words that he doesn't expect me to understand (in a sort of compromise between saying them and not saying them)...
-- http://pdf-objects.com/files/00-On-Keeping-a-Notebook.pdf -- Joan Didion, _On Keeping a Notebook_
+- https://zaira.blog/blog/use-writing-to-augment-your-thinking/ -- Use writing to augment your thinking
   - [meta]:
-    - date: 12/21/2025
+    - date: 01/02/2026
     - tags: [writing]
-    - later: true
 - https://aligned.substack.com/p/alignment-mvp -- A minimal viable product for alignment
   - [meta]:
     - date: 12/21/2025
@@ -3507,15 +3566,25 @@ title: are.na
   - view: list
   - json: true
 
+- https://blog.character.ai/squinch/ -- optimizing large-scale pretraining at character.ai [**]
+  - [meta]:
+    - date: 12/23/2025
+    - tags: [pretraining, engineering]
+  - https://x.com/simon_mo_/status/2003608328757457036, i.e Noam being Noam
+- https://alexzhang13.github.io/blog/2025/rlm/ -- Recursive Language Model [**]
+  - [meta]:
+    - date: 01/02/2026
+    - tags: [inference, long horizon tasks]
+    - pinned: true
+  - https://www.primeintellect.ai/blog/rlm
+- https://vgel.me/posts/qwen-introspection/ -- Small models Can Introspect, too
+  - [meta]:
+    - date: 01/01/2026
+    - tags: [interpretability]
 - https://x.com/TransluceAI/status/1989395421236793374 -- self-introspective models
   - [meta]:
     - date: 12/27/2025
     - tags: [faithfulness, interpretability]
-- https://x.com/simon_mo_/status/2003608328757457036?s=20 -- Noam being Noam at CAI
-  - [meta]:
-    - date: 12/23/2025
-    - tags: [pretraining, engineering]
-  - blogpost: https://blog.character.ai/squinch/
 - https://gau-nernst.github.io/tcgen05/ -- tcgen05 for dummies
   - [meta]:
     - date: 12/23/2025
@@ -3557,6 +3626,7 @@ title: are.na
     - date: 12/18/2025
     - tags: [interpretability]
     - later: true
+  - https://github.com/TransluceAI/introspective-interp/blob/main/model/self_explanations.py
 - https://x.com/vllm_project/status/2001695354983723361 -- vLLM's WideEP, DeepEP all-to-all, DBO, and EPLB benchmark
   - [meta]:
     - date: 12/18/2025
@@ -3594,10 +3664,6 @@ title: are.na
     - date: 12/17/2025
     - tags: [safety, alignment, anchoring]
     - later: true
-- https://github.com/NVIDIA-NeMo/Emerging-Optimizers
-  - [meta]:
-    - date: 12/17/2025
-    - tags: [training, algorithm]
 - https://www.alignmentforum.org/posts/Ldrss6o3tiKT6NdMm/my-research-process-understanding-and-cultivating-research -- Neel's Cultivating Research Taste [**]
   - [meta]:
     - date: 12/17/2025
@@ -3712,7 +3778,7 @@ title: are.na
 - https://lilianweng.github.io/posts/2022-09-08-ntk/ -- Some Math behind Neural Tangent Kernel
   - [meta]:
     - date: 12/04/2025
-    - tags: [ntk, kernels]
+    - tags: [ntk, kernel]
 - https://www.alignmentforum.org/posts/StENzDcD3kpfGJssR/a-pragmatic-vision-for-interpretability -- A Pragmatic Vision for Interpretability [**]
   - [meta]:
     - date: 12/01/2025
@@ -3739,11 +3805,6 @@ title: are.na
   - [meta]:
     - date: 11/30/2025
     - tags: [datasets]
-- https://github.com/facebookresearch/coconut -- Training Large Language Model to Reason in a Continuous Latent Space
-  - [meta]:
-    - date: 11/28/2025
-    - tags: [ml]
-  - see also @hao2025traininglargelanguagemodels
 - https://www.artfintel.com/p/reinforcement-learning-and-general -- Reinforcement learning and general intelligence
   - [meta]:
     - date: 11/28/2025
@@ -3753,10 +3814,6 @@ title: are.na
     - date: 11/27/2025
     - tags: [rl, courses]
     - pinned: true
-- https://github.com/HazyResearch/cartridges
-  - [meta]:
-    - date: 11/27/2025
-    - tags: [inference, kv]
 - https://x.com/repligate/status/1965960676104712451 -- KV Cache flow internals
   - [meta]:
     - date: 11/27/2025
@@ -3859,7 +3916,7 @@ title: are.na
 - https://hazyresearch.stanford.edu/blog/2025-11-09-amd-brr -- HipKitten, AMD version of ThunderKitten
   - [meta]:
     - date: 11/12/2025
-    - tags: [kernels]
+    - tags: [kernel]
   - https://x.com/AIatAMD/status/1988704659742003555
 - https://cursor.com/blog/semsearch -- Improving agent with semantic search
   - [meta]:
@@ -3874,10 +3931,6 @@ title: are.na
   - [meta]:
     - date: 11/09/2025
     - tags: [interpretability]
-- https://github.com/Dao-AILab/flash-attention/blob/main/flash_attn/cute/flash_fwd_sm100.py -- FlashAttention 4 CuTE kernels for B200 [**]
-  - [meta]:
-    - date: 11/09/2025
-    - tags: [kernel]
 - https://michaelnielsen.org/reinventing_explanation/ -- Reinventing Explanation
   - [meta]:
     - date: 11/09/2025
@@ -3886,10 +3939,6 @@ title: are.na
   - [meta]:
     - date: 11/09/2025
     - tags: [visualisation]
-- https://github.com/bitsandbytes-foundation/bitsandbytes/blob/63f538a4e492017dd4a52edfde142c4ca818d401/bitsandbytes/backends/triton/kernels_4bit.py#L155 -- 4bit blockwise triton kernels
-  - [meta]:
-    - date: 11/09/2025
-    - tags: [programming, inference]
 - https://diffusion-scaling.github.io -- Diffusion Beats Autoregressive in Data-Constrained Settings
   - [meta]:
     - date: 11/09/2025
@@ -3937,10 +3986,6 @@ title: are.na
   - [meta]:
     - date: 07/04/2025
     - tags: [ml, cs]
-- https://github.com/triton-lang/triton/blob/a758c595ddb149381b7ee888982f1afbeb02823c/python/triton_kernels/triton_kernels/matmul_ogs_details/_matmul_ogs.py#L291 -- matmul_ogs for [[thoughts/quantization#mxfp4|mxfp4]]
-  - [meta]:
-    - date: 08/10/2025
-    - tags: [kernel]
 - https://thinkingmachines.ai/blog/on-policy-distillation/ -- On-Policy Distillation [**]
   - [meta]:
     - date: 10/28/2025
@@ -3980,10 +4025,6 @@ title: are.na
   - [meta]:
     - date: 10/26/2025
     - tags: [models, seq2seq]
-- https://github.com/NVlabs/QeRL -- NVlabs/QeRL
-  - [meta]:
-    - date: 10/24/2025
-    - tags: [rl]
 - https://www.aleksagordic.com/blog/matmul -- Anatomy of high performance matmul kernels
   - [meta]:
     - date: 10/24/2025
@@ -4059,11 +4100,6 @@ title: are.na
   - Diagraph sink
   - OpenAI: $\text{attention\_probs} = \operatorname{softmax}([\text{sink\_scalar}, a_{1},a_{2},\ldots,a_{t}])$
   - @barbero2025llmsattendtoken have shown that attention sinks serve as "pressure valves" preventing what researchers call "over-mixing"—a pathological state where deep models processing long sequences blur important distinctions between tokens.
-- https://github.com/IST-DASLab/FP-Quant -- IST-DASLab/FP-Quant
-  - [meta]:
-    - date: 10/06/2025
-    - tags: [quantisation]
-  - Microscaling FP4 Quantisation
 - https://www.neuronpedia.org/graph/info -- The Circuits Research Landscape: Results and Perspective, Aug 2025 [**]
   - [meta]:
     - date: 10/06/2025
@@ -4515,10 +4551,6 @@ title: are.na
   - [meta]:
     - date: 09/29/2025
     - tags: [bitter lesson, training]
-- https://github.com/pranjalssh/fast.cu -- fast kernels, in [[thoughts/GPU programming|CUDA]]
-  - [meta]:
-    - date: 10/02/2025
-    - tags: [kernel]
 - https://hazyresearch.stanford.edu/blog/2025-09-28-tp-llama-main -- We Bought the Whole GPU, So We're Damn Well Going to Use the Whole GPU
   - [meta]:
     - date: 10/03/2025
@@ -4530,6 +4562,10 @@ title: are.na
 
 ## opinions
 
+- https://archive.is/57dY5 -- The Binge Purge TV’s streaming model is broken. It’s also not going away. For Hollywood, figuring that out will be a horror show.
+  - [meta]:
+    - date: 01/01/2026
+    - tags: [media, pop culture]
 - https://www.seangoedecke.com/being-right-a-lot/ -- Good engineers are right, a lot
   - [meta]:
     - date: 12/30/2025
@@ -4773,6 +4809,10 @@ title: are.na
 
 ## life is literature
 
+- https://carinas.substack.com/p/there-is-so-much-love-in-trying -- There is so much love in trying
+  - [meta]:
+    - date: 01/02/2026
+    - tags: [efforts, progress]
 - https://x.com/voooooogel/status/2004170533689295186 -- Claude Opus 4.5's Christmas card
   - [meta]:
     - date: 12/26/2025
@@ -5057,6 +5097,10 @@ title: are.na
 
 ## computer science
 
+- https://www.rfleury.com/p/untangling-lifetimes-the-arena-allocator -- Untangling Lifetimes, the arena allocator
+  - [meta]:
+    - date: 01/02/2026
+    - tags: [memory, c]
 - https://www.cs.mcgill.ca/~dprecup/courses/AI/Materials/turing1950.pdf -- Computing Machinery and Intelligence [**]
   - [meta]:
     - date: 12/08/2025
@@ -5236,6 +5280,42 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://www.thelastrationalist.com/rationality-is-not-systematized-winning.html -- Rationality is not Systematized Winning
+  - [meta]:
+    - date: 01/02/2026
+    - tags: [rationalist]
+- https://www.sciencedirect.com/science/article/pii/S001632872400154X -- What we owe (to) the present: normative and practical challenges for strong longtermism
+  - [meta]:
+    - date: 01/02/2026
+    - tags: [longtermism, theory]
+- https://joecarlsmith.com/2024/03/21/on-green -- On green [**]
+  - [meta]:
+    - date: 01/02/2026
+    - tags: [longtermism, otherness, agi]
+    - pinned: true
+- https://archive.ph/tNdrf -- Recursive Self Improvement [--]
+  - [meta]:
+    - date: 01/02/2026
+    - tags: [alignment, longtermism]
+  - i.e AI go FOOM
+- https://aeon.co/essays/the-future-of-humanism-from-toni-morrison-to-nick-bostrom -- What awaits us?
+  - [meta]:
+    - date: 01/02/2026
+    - tags: [longtermism, metaphysics]
+  - from Toni Morrison to Nick Bostrom, on superintelligence
+- https://www.lesswrong.com/posts/bLFmE8NtqxrtEaipN/what-makes-claude-3-opus-misaligned -- What makes Claude 3 Opus misaligned [**]
+  - [meta]:
+    - date: 01/02/2026
+    - tags: [alignment, modelspec]
+- https://www.alignmentforum.org/posts/epjuxGnSPof3GnMSL/alignment-remains-a-hard-unsolved-problem -- Alignment remains a hard, unsolved problem
+  - [meta]:
+    - date: 01/02/2026
+    - tags: [alignment]
+- https://philpapers.org/archive/NGUPVE.pdf -- Playfulness Versus Epistemic Traps [**]
+  - [meta]:
+    - date: 01/02/2026
+    - tags: [philosophy, agency]
+    - pinned: true
 - https://www.newphilosopher.com/articles/the-paradox-of-choice/#:~:text=It’s%20interesting%20that%20you’re%20talking%20about%20these%20trivial%20matters%20relating%20to%20products%20and%20services.%20Jean-Paul%20Sartre%2C%20he%20believed%20that%20humans%20are%20condemned%20to%20be%20free%3B%20that%20they%20must%20make%20choices.%20With%20the%20number%20of%20choices%20that%20we%20have%20now%2C%20condemned%20is%20probably%20an%20appropriate%20term.
   - [meta]:
     - date: 12/29/2025
@@ -5648,6 +5728,24 @@ title: are.na
 
 ## stream
 
+- https://kexue.fm/content.html
+  - [meta]:
+    - date: 01/02/2026
+    - tags: [ml]
+- https://minihf.com/blog/ -- miniHF [**]
+  - [meta]:
+    - date: 01/02/2026
+    - tags: [llm]
+  - Somewhat discussion towards modern discourse on alignment, pretty cool mixed with technical blog post as well.
+- https://generative.ink/posts/ -- Generative ink [**]
+  - [meta]:
+    - date: 01/02/2026
+    - tags: [generative, essays, llm]
+    - pinned: true
+- https://8ksec.io/arm-64-reversing-and-exploitation-series/ -- ARM64 Reversing And Exploitation series
+  - [meta]:
+    - date: 01/02/2026
+    - tags: [hacking]
 - https://idealistscollective.org/
   - [meta]:
     - date: 12/31/2025
@@ -5689,10 +5787,11 @@ title: are.na
     - date: 12/17/2025
     - tags: [programming]
     - pinned: true
-- https://www.gleech.org/ai2025 -- AI in 2025: gestalt
+- https://www.gleech.org/ai2025 -- AI in 2025: gestalt [**]
   - [meta]:
     - date: 12/17/2025
     - tags: [ai, llm, longtermism, safety]
+    - pinned: true
   - Do confident short timelines make sense? [lw](https://www.lesswrong.com/posts/5tqFT3bcTekvico4d/do-confident-short-timelines-make-sense)
   - much more impressive, but not proportionally more useful. i.e bringin more in-distribution rather than generalizing very far.
   - pretraining is pretty disappointing, given post-training is a lot more efficient.
@@ -6590,8 +6689,19 @@ title: are.na
     - date: 09/17/2025
     - tags: [painting]
 
+## prompts
+
+- https://x.com/menhguin/status/2006362777414484231
+  - [meta]:
+    - date: 01/02/2026
+    - tags: [maximal depth, sampling]
+
 ## resources
 
+- https://www.rheingold.com/texts/tft/ -- Tool for Thought, by Howard Rheingold
+  - [meta]:
+    - date: 01/02/2026
+    - tags: [futurism, ux]
 - https://substack.com/home/post/p-179972003 -- 963 Words
   - [meta]:
     - date: 12/27/2025
@@ -6866,8 +6976,202 @@ title: are.na
     - tags: [agi]
   - You are valuable economically, because you are different.
 
+## repository
+
+- [meta]:
+  - view: list
+  - json: true
+
+- https://github.com/Dao-AILab/sonic-moe
+  - [meta]:
+    - date: 01/02/2026
+    - tags: [kernel]
+- https://github.com/Noumena-Network/nmoe
+  - [meta]:
+    - date: 01/02/2026
+    - tags: [inference]
+- https://github.com/pranjalssh/fast.cu -- fast kernels, in [[thoughts/GPU programming|CUDA]]
+  - [meta]:
+    - date: 10/02/2025
+    - tags: [kernel]
+- https://github.com/IST-DASLab/FP-Quant -- IST-DASLab/FP-Quant
+  - [meta]:
+    - date: 10/06/2025
+    - tags: [quantisation]
+  - Microscaling FP4 Quantisation
+- https://github.com/NVlabs/QeRL -- NVlabs/QeRL
+  - [meta]:
+    - date: 10/24/2025
+    - tags: [rl]
+- https://github.com/triton-lang/triton/blob/a758c595ddb149381b7ee888982f1afbeb02823c/python/triton_kernels/triton_kernels/matmul_ogs_details/_matmul_ogs.py#L291 -- matmul_ogs for [[thoughts/quantization#mxfp4|mxfp4]]
+  - [meta]:
+    - date: 08/10/2025
+    - tags: [kernel]
+- https://github.com/bitsandbytes-foundation/bitsandbytes/blob/63f538a4e492017dd4a52edfde142c4ca818d401/bitsandbytes/backends/triton/kernels_4bit.py#L155 -- 4bit blockwise triton kernels
+  - [meta]:
+    - date: 11/09/2025
+    - tags: [programming, inference]
+- https://github.com/Dao-AILab/flash-attention/blob/main/flash_attn/cute/flash_fwd_sm100.py -- FlashAttention 4 CuTE kernels for B200 [**]
+  - [meta]:
+    - date: 11/09/2025
+    - tags: [kernel]
+- https://github.com/HazyResearch/cartridges
+  - [meta]:
+    - date: 11/27/2025
+    - tags: [inference, kv]
+- https://github.com/facebookresearch/coconut -- Training Large Language Model to Reason in a Continuous Latent Space
+  - [meta]:
+    - date: 11/28/2025
+    - tags: [ml]
+  - see also @hao2025traininglargelanguagemodels
+- https://github.com/NVIDIA-NeMo/Emerging-Optimizers
+  - [meta]:
+    - date: 12/17/2025
+    - tags: [training, algorithm]
+- https://github.com/NVIDIA/cuda-tile
+  - [meta]:
+    - date: 01/02/2026
+    - tags: [gpu, ir]
+    - pinned: true
+- https://github.com/teorth/pfr -- formalization of the Polynomial Freiman Ruzsa conjecture
+  - [meta]:
+    - date: 10/12/2025
+    - tags: [math]
+- https://github.com/NVIDIA/tilus -- NVIDIA/tilus
+  - [meta]:
+    - date: 10/02/2025
+    - tags: [gpu programming]
+    - pinned: true
+  - Tile-level GPU programming
+  - lower level comparing to CuTe
+  - uses [hidet](https://github.com/hidet-org/hidet) IR
+- https://github.com/replit/ruspty/pull/93 -- dont drop user fd until node reads a synthetic EOF
+  - [meta]:
+    - date: 10/02/2025
+    - tags: [engineering]
+- https://github.com/francoismichel/ssh3 -- ssh3
+  - [meta]:
+    - date: 09/29/2025
+    - tags: [protocol]
+- https://github.com/Keen-Technologies/physical_atari -- Physical Atari
+  - [meta]:
+    - date: 09/17/2025
+    - tags: [ai, physics, robots]
+- https://github.com/luhmann/tufte-markdown -- tufte-css [**]
+  - [meta]:
+    - date: 10/07/2025
+    - tags: [design]
+- https://github.com/pytorch/helion
+  - [meta]:
+    - date: 12/16/2025
+    - tags: [gpu, kernel]
+  - Similar to CuteDSL, but similar primitives.
+  - It does autotuning but most masking is implicit in Helion.
+  - PyTorch with tiles
+- https://github.com/zhaochenyang20/Awesome-ML-SYS-Tutorial -- RL Infra notes
+  - [meta]:
+    - date: 12/16/2025
+    - tags: [inference, scaling]
+- https://github.com/zechenzhangAGI/AI-research-SKILLs -- Claude Skills for AI Research
+  - [meta]:
+    - date: 12/15/2025
+    - tags: [foundry]
+  - have some vLLM skills, pretty neat
+- https://github.com/databricks/megablocks -- Megablocks
+  - [meta]:
+    - date: 12/15/2025
+    - tags: [training, moe]
+- https://github.com/MoonshotAI/checkpoint-engine -- MoonshotAI/checkpoint-engine
+  - [meta]:
+    - date: 10/24/2025
+    - tags: [rl]
+- https://github.com/modular/modular/blob/main/mojo/stdlib/stdlib/algorithm/_sorting_network.mojo
+  - [meta]:
+    - date: 10/17/2025
+    - tags: [topology, network]
+  - see also: https://bertdobbelaere.github.io/sorting_networks.html
+- https://github.com/bytedance/flux -- bytedance/flux
+  - [meta]:
+    - date: 10/16/2025
+    - tags: [communication, networking]
+  - A fast communication-overlapping library for tensor/expert parallelism on GPUs.
+  - COMET @ ByteDance
+- https://github.com/Dao-AILab/gemm-cublas --GEMM cuBLAS
+  - [meta]:
+    - date: 10/11/2025
+    - tags: [machine learning, kernel]
+- https://github.com/pytorch/pytorch/blob/539c46b6e82e16d22b745d8b320ae0bf9b1df90b/torch/distributed/_functional_collectives.py#L333 -- AllReduce coalesce implementation in PyTorch
+  - [meta]:
+    - date: 10/06/2025
+    - tags: [programming, distributed]
+
 ## technical
 
+- https://github.com/sirupsen/napkin-math#numbers -- Napkin math [**]
+  - [meta]:
+    - date: 01/02/2026
+    - tags: [tacit, programming]
+    - pinned: true
+  - https://gist.github.com/jboner/2841832, Latency Numbers Every Programmer Should Know
+  - https://mkennedy.codes/posts/python-numbers-every-programmer-should-know, Python Numbers Every Programmer Should Know
+    - ```text
+      Attribute read (obj.x)                              14   ns
+      Dict key lookup                                     22   ns                         1.5x attr
+      Function call (empty)                               22   ns
+      List append                                         29   ns                         2x attr
+      f-string formatting                                 65   ns                         3x function
+      Exception raised + caught                          140   ns                         10x attr
+      orjson.dumps() complex object                      310   ns        0.3 μs
+      json.loads() simple object                         714   ns        0.7 μs           2x orjson
+      sum() 1,000 integers                             1,900   ns        1.9 μs           3x json
+      SQLite SELECT by primary key                     3,600   ns        3.6 μs           5x json
+      Iterate 1,000-item list                          7,900   ns        7.9 μs           2x SQLite read
+      Open and close file                              9,100   ns        9.1 μs           2x SQLite read
+      asyncio run_until_complete (empty)              28,000   ns         28 μs           3x file open
+      Write 1KB file                                  35,000   ns         35 μs           4x file open
+      MongoDB find_one() by _id                      121,000   ns        121 μs           3x write 1KB
+      SQLite INSERT (with commit)                    192,000   ns        192 μs           5x write 1KB
+      Write 1MB file                                 207,000   ns        207 μs           6x write 1KB
+      import json                                  2,900,000   ns      2,900 μs   3 ms   15x write 1MB
+      import asyncio                              17,700,000   ns     17,700 μs  18 ms    6x import json
+      ```
+    - ```text
+      Float                                               24   bytes
+      Small int (cached 0-256)                            28   bytes
+      Empty string                                        41   bytes
+      Empty list                                          56   bytes                       2x int
+      Empty dict                                          64   bytes                       2x int
+      Empty set                                          216   bytes                       8x int
+      __slots__ class (5 attrs)                          212   bytes                       8x int
+      Regular class (5 attrs)                            694   bytes                       25x int
+      List of 1,000 ints                              36,056   bytes         36 KB
+      Dict of 1,000 items                             64,952   bytes         65 KB
+      List of 1,000 __slots__ instances               81,000   bytes         81 KB
+      List of 1,000 regular instances                169,000   bytes        169 KB         2x slots list
+      Empty Python process                        16,000,000   bytes         16 MB
+      ```
+- https://papers.nips.cc/paper_files/paper/2004/hash/9d28de8ff9bb6a3fa41fddfdc28f3bc1-Abstract.html -- Temporal-Difference Networks
+  - [meta]:
+    - date: 01/02/2026
+    - tags: [architecture]
+- https://github.com/adamkarvonen/activation_oracles/blob/main/experiments/activation_oracle_demo.ipynb -- Activation Oracle Demo
+  - [meta]:
+    - date: 01/02/2026
+    - tags: [interpretability]
+  - ckpt: https://huggingface.co/collections/adamkarvonen/activation-oracles
+- https://www.learncpp.com/cpp-tutorial/c-style-array-decay/#:~:text=When%20passing%20a%20C%2Dstyle,style%20array%20argument%20is%20avoided. -- C-style array decay
+  - [meta]:
+    - date: 01/02/2026
+    - tags: [programming]
+- https://www.youtube.com/watch?v=KJkN3lcfMLU -- Modular Tech Talk: Frontier-scale MoE Serving at Modular [**]
+  - [meta]:
+    - date: 01/01/2026
+    - tags: [inference, scaling]
+- https://x.com/gwern/status/1195847710143864833 -- esoteric quirks of PDF linking
+  - [meta]:
+    - date: 01/01/2026
+    - tags: [tacit]
+  - TIL you can reference page by appending `#page=N`
 - http://infolab.stanford.edu/~backrub/google.html -- The Anatomy of a Large-Scale Hypertextual Web Search Engine
   - [meta]:
     - date: 01/01/2026
@@ -6920,35 +7224,15 @@ title: are.na
 - https://cursor.com/blog/kernels -- 1.5x faster MoE training with custom MXFP8 kernels
   - [meta]:
     - date: 12/17/2025
-    - tags: [training, kernels]
+    - tags: [training, kernel]
 - https://www.youtube.com/watch?v=kccs9xk09rw -- TinyTPU [**]
   - [meta]:
     - date: 12/17/2025
     - tags: [asic, design]
-- https://github.com/pytorch/helion
-  - [meta]:
-    - date: 12/16/2025
-    - tags: [gpu, kernels]
-  - Similar to CuteDSL, but similar primitives.
-  - It does autotuning but most masking is implicit in Helion.
-  - PyTorch with tiles
 - https://gist.githubusercontent.com/XInTheDark/6fef041cb3edfe054b507813a03cb47d/raw/e95e5f47f0fa6998bdfd3a39734af5fdf1e079b3/claude_dr_prompt.md -- Deep Research prompt example, Claude
   - [meta]:
     - date: 12/16/2025
     - tags: [tooling]
-- https://github.com/zhaochenyang20/Awesome-ML-SYS-Tutorial -- RL Infra notes
-  - [meta]:
-    - date: 12/16/2025
-    - tags: [inference, scaling]
-- https://github.com/zechenzhangAGI/AI-research-SKILLs/tree/main -- Claude Skills for AI Research
-  - [meta]:
-    - date: 12/15/2025
-    - tags: [foundry]
-  - have some vLLM skills, pretty neat
-- https://github.com/databricks/megablocks -- Megablocks
-  - [meta]:
-    - date: 12/15/2025
-    - tags: [training, moe]
 - https://wiki.xxiivv.com/site/rewriting.html -- Rewriting languages are typically made of rules and an initial state [**]
   - [meta]:
     - date: 12/12/2025
@@ -7084,21 +7368,6 @@ title: are.na
   - [meta]:
     - date: 10/28/2025
     - tags: [outage, engineering]
-- https://github.com/MoonshotAI/checkpoint-engine -- MoonshotAI/checkpoint-engine
-  - [meta]:
-    - date: 10/24/2025
-    - tags: [rl]
-- https://github.com/modular/modular/blob/main/mojo/stdlib/stdlib/algorithm/_sorting_network.mojo
-  - [meta]:
-    - date: 10/17/2025
-    - tags: [topology, network]
-  - see also: https://bertdobbelaere.github.io/sorting_networks.html
-- https://github.com/bytedance/flux -- bytedance/flux
-  - [meta]:
-    - date: 10/16/2025
-    - tags: [communication, networking]
-  - A fast communication-overlapping library for tensor/expert parallelism on GPUs.
-  - COMET @ ByteDance
 - https://docs.google.com/presentation/d/1SN05JcQ5kFRCGMOyYST6PAQazOX27nSMDp8fT-h3DyU/edit?slide=id.g389b5f579df_0_581#slide=id.g389b5f579df_0_581 -- State of Open Reasoning Models
   - [meta]:
     - date: 10/16/2025
@@ -7113,10 +7382,6 @@ title: are.na
   - [meta]:
     - date: 10/12/2025
     - tags: [math]
-- https://github.com/Dao-AILab/gemm-cublas --GEMM cuBLAS
-  - [meta]:
-    - date: 10/11/2025
-    - tags: [machine learning, kernels]
 - http://www.fantasyjackpalance.com/fjp/sound/synth/synthdata/16-moog-minimoog.html -- Minimoog, synthesizer
   - [meta]:
     - date: 10/08/2025
@@ -7125,14 +7390,6 @@ title: are.na
   - [meta]:
     - date: 10/07/2025
     - tags: [js]
-- https://github.com/luhmann/tufte-markdown -- tufte-css [**]
-  - [meta]:
-    - date: 10/07/2025
-    - tags: [design]
-- https://github.com/pytorch/pytorch/blob/539c46b6e82e16d22b745d8b320ae0bf9b1df90b/torch/distributed/_functional_collectives.py#L333 -- AllReduce coalesce implementation in PyTorch
-  - [meta]:
-    - date: 10/06/2025
-    - tags: [programming, distributed]
 - https://henryhmko.github.io/posts/tpu/tpu.html -- [[thoughts/TPU|TPU]] Deep Dive
   - [meta]:
     - date: 10/06/2025
@@ -7190,10 +7447,6 @@ title: are.na
   - [meta]:
     - date: 08/04/2025
     - tags: [internet, web, rfc]
-- https://github.com/Keen-Technologies/physical_atari -- Physical Atari
-  - [meta]:
-    - date: 09/17/2025
-    - tags: [ai, physics, robots]
 - https://modelcontextprotocol.io/llms-full.txt -- MCP protocol
   - [meta]:
     - date: 09/17/2025
@@ -7202,10 +7455,6 @@ title: are.na
   - [meta]:
     - date: 09/22/2025
     - tags: [memory, learning, pedagogy]
-- https://github.com/francoismichel/ssh3 -- ssh3
-  - [meta]:
-    - date: 09/29/2025
-    - tags: [protocol]
 - https://thundergolfer.com/uni/docs/performance/napkin-math/ -- napkin math
   - [meta]:
     - date: 09/30/2025
@@ -7232,10 +7481,6 @@ title: are.na
   - [meta]:
     - date: 10/02/2025
     - tags: [gpu programming]
-- https://github.com/replit/ruspty/pull/93 -- dont drop user fd until node reads a synthetic EOF
-  - [meta]:
-    - date: 10/02/2025
-    - tags: [engineering]
 - https://janet.guide/ -- Janet for Mortals
   - [meta]:
     - date: 10/02/2025
@@ -7244,14 +7489,7 @@ title: are.na
 - https://standardkernel.com/ -- Standard Kernel
   - [meta]:
     - date: 10/02/2025
-    - tags: [kernels, gpu programming]
-- https://github.com/NVIDIA/tilus -- NVIDIA/tilus
-  - [meta]:
-    - date: 10/02/2025
-    - tags: [gpu programming]
-  - Tile-level GPU programming
-  - lower level comparing to CuTe
-  - uses [hidet](https://github.com/hidet-org/hidet) IR
+    - tags: [kernel, gpu programming]
 - https://x.com/_jzhao/status/1973830833254621192 -- film grains technical behind commuting.to
   - [meta]:
     - date: 10/03/2025
@@ -7366,6 +7604,12 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://projecteuclid.org/journals/rocky-mountain-journal-of-mathematics/volume-19/issue-3/Fundamentals-of-analysis-over-surreal-number-fields/10.1216/RMJ-1989-19-3-565.pdf#page=3 -- Fundamentals of analysis over surreal numbers fields
+  - [meta]:
+    - date: 01/02/2026
+    - tags: [number theory, field theory]
+    - later: true
+  - The Tarski Principle informs us that, concerning first order statements, all real-closed fields are created equal. Thus the field $\mathbb{R}$ of all real-numbers and the field $\mathbb{R}_0$ of all real-algebraic numbers have the same first order theory; however, their higher order theories are quite different. For example, $\mathbb{R}$ is Dedekind-complete and is a vast transcendental extension of its prime field, whereas $\mathbb{R}_0$ is not Dedekind-complete and is an algebraic extension of its prime field. The surreal number fields $\xi \operatorname{No}$ are all real-closed. They have extraordinary higher order properties, which allow one to do analysis over them, as we will see below.
 - https://www.youtube.com/watch?v=4ykbHwZQ8iU -- Terrence Tao on future of mathematics
   - [meta]:
     - date: 01/01/2026
@@ -7448,10 +7692,6 @@ title: are.na
   - [meta]:
     - date: 10/24/2025
     - tags: [papers, modular form]
-- https://github.com/teorth/pfr -- formalization of the Polynomial Freiman Ruzsa conjecture
-  - [meta]:
-    - date: 10/12/2025
-    - tags: [math]
 - https://www.youtube.com/watch?v=44hfoihYfJ0 -- Towards a Geometric Theory of Deep Learning [**]
   - [meta]:
     - date: 10/12/2025
@@ -7595,7 +7835,7 @@ title: are.na
 - https://arxiv.org/abs/2307.08691
   - [meta]:
     - date: 12/17/2025
-    - tags: [fa2, optimization, kernels]
+    - tags: [fa2, optimization, kernel]
 - https://arxiv.org/abs/2507.19427
   - [meta]:
     - date: 12/17/2025

@@ -38,7 +38,7 @@ metadata:
     letter        = "a".."z" ;
     digit         = "0".."9" ;
     character     = ? any printable ascii except newline ? ;
-modified: 2025-12-29 02:50:59 GMT-05:00
+modified: 2026-01-02 03:51:39 GMT-05:00
 tags:
   - fruit
   - evergreen
@@ -51,7 +51,7 @@ title: stream
     - llm
     - love
 
-I want to build my own [[thoughts/LLMs|ghost]], and I want a qwen3-aarnphm to be an autistic psychopath. But I'm afraid I don't know how to encode the mixed feelings of love and relationship towards friends onto the latent space.
+I want to build my own [[thoughts/LLMs|ghost]], a autistic, psychopathic qwen3-aarnphm. But I afraid I don't know how to encode the mixed feelings of love and relationship towards friends onto the latent space.
 
 ---
 

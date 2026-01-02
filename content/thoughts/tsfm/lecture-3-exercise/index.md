@@ -2,12 +2,10 @@
 date: "2025-09-11"
 description: from scratch frfr
 id: index
-modified: 2025-11-03 08:50:25 GMT-05:00
+modified: 2026-01-02 02:23:04 GMT-05:00
 tags:
-  - seed
   - ml
   - tsfm
-  - folder
 title: numpy implementation of Transformer
 ---
 

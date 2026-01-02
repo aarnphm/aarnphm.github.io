@@ -2,12 +2,12 @@
 date: "2025-12-14"
 description: day 1
 id: rf-1
-modified: 2025-12-16 00:45:06 GMT-05:00
+modified: 2026-01-02 02:44:23 GMT-05:00
 password: THERAPY
 protected: true
 tags:
   - pattern
-title: rf-1
+title: pas, present, future
 ---
 
 ## past
