@@ -278,21 +278,11 @@ views:
       - description
       - posters
     sort:
-      - property: studio
-        direction: ASC
       - property: status
-        direction: DESC
-      - property: watched
-        direction: DESC
-      - property: category
-        direction: ASC
-      - property: file.name
         direction: DESC
       - property: rating
         direction: DESC
       - property: tags
-        direction: DESC
-      - property: director
         direction: DESC
       - property: title
         direction: ASC

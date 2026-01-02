@@ -45,6 +45,7 @@ span[class*="rose"] {
 .markdown-preview-view {
   -webkit-font-variant-ligatures: common-ligatures;
   font-variant-ligatures: common-ligatures;
+  font-family: 'Space Grotesk' !important;
 }
 
 .grid-two {
@@ -82,6 +83,11 @@ span[class*="rose"] {
   }
 }
 
-.markdown-preview-view {
-  font-family: 'Space Grotesk' !important;
+.cm-vim-panel {
+  height: 1rem !important;
+}
+
+.cm-vim-panel input {
+  padding: 0;
+  height: 1rem !important;
 }

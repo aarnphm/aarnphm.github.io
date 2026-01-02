@@ -9,7 +9,7 @@ external: https://browser.engineering/onepage.html
 id: Web Browser Engineering
 modified: 2025-10-29 02:14:43 GMT-04:00
 posters: "[[library/posters/web-browser-engineering.jpg]]"
-status: manuals
+status: finished
 subcategory: programming
 tags:
   - technical

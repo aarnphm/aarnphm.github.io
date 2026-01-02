@@ -3,7 +3,7 @@ date: "2025-12-31"
 description: on contigency, convictions, and Tractatus.
 id: 2025-lists
 layout: technical-tractatus
-modified: 2025-12-31 20:53:24 GMT-05:00
+modified: 2026-01-01 00:31:57 GMT-05:00
 seealso:
   - "[[posts/2025|hyperabundance]]"
 signature: Your present self

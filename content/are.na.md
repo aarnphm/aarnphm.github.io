@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2025-12-31 19:54:13 GMT-05:00
+modified: 2026-01-01 00:30:00 GMT-05:00
 permalinks:
   - /website
   - /tweets
@@ -143,6 +143,14 @@ title: are.na
 - [meta]:
   - view: list
 
+- https://x.com/mitchellh/status/2006114026191769924 -- AI-driven augmentation bug/code reports
+  - [meta]:
+    - date: 01/01/2026
+    - tags: [symbotic, programming]
+- https://x.com/jaschasd/status/1972360484914606240 -- Advice for a young investigator in the first and last days of the Anthropocene [**]
+  - [meta]:
+    - date: 01/01/2026
+    - tags: [investing, strategy]
 - https://x.com/___frye/status/2005851412618498299 -- yearning with Claude
   - [meta]:
     - date: 12/30/2025
@@ -945,10 +953,10 @@ title: are.na
   - [meta]:
     - date: 12/23/2025
     - tags: [researcher, ai]
-- https://en.wikipedia.org/wiki/Jacques_Lacan -- Jacques Lacan
+- https://en.wikipedia.org/wiki/Jacques_Lacan -- Jacques Lacan [**]
   - [meta]:
     - date: 12/23/2025
-    - tags: [psychoanalyst, love]
+    - tags: [psychoanalyst, love, philosophy]
 - https://en.wikipedia.org/wiki/Hannah_Arendt -- Hannah Arendt
   - [meta]:
     - date: 12/23/2025
@@ -1972,6 +1980,22 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://near.blog/supplements/ -- Supplements [**]
+  - [meta]:
+    - date: 01/01/2026
+    - tags: [enhancement]
+- https://near.blog/productivity-tips/ -- Productivity tips [**]
+  - [meta]:
+    - date: 12/16/2025
+    - tags: [enhancement drugs, recreational]
+- https://archive.is/pSMXO -- Will [[thoughts/AGI|A.I.]] Trap You in the "Permanent Underclass"? [--]
+  - [meta]:
+    - date: 01/01/2026
+    - tags: [society]
+- https://zhengdongwang.com/2025/12/30/2025-letter.html-- Zhengdong Wang's 2025 letter
+  - [meta]:
+    - date: 01/01/2026
+    - tags: [review]
 - https://www.visakanv.com/blog/relationships -- relationship are challenging and a lot of work
   - [meta]:
     - date: 12/31/2025
@@ -6437,10 +6461,6 @@ title: are.na
     - tags: [graph, visualisation]
   - see also: https://altair-viz.github.io/index.html
   - example notebook: https://colab.research.google.com/drive/1XEs0v9vq1bmpWiqHcYnnU-8tJ-b9Abq3
-- https://near.blog/productivity-tips/ -- Productivity tips [**]
-  - [meta]:
-    - date: 12/16/2025
-    - tags: [enhancement drugs, recreational]
 - https://www.youtube.com/watch?v=dmeRQN9z504 -- Why all learning tools fail?
   - [meta]:
     - date: 11/01/2025
@@ -6848,6 +6868,10 @@ title: are.na
 
 ## technical
 
+- http://infolab.stanford.edu/~backrub/google.html -- The Anatomy of a Large-Scale Hypertextual Web Search Engine
+  - [meta]:
+    - date: 01/01/2026
+    - tags: [search engine]
 - https://www.youtube.com/watch?v=AF3XJT9YKpM -- Prof. Judy Fan: Cognitive Tools for Making the Invisible Visible [**]
   - [meta]:
     - date: 12/25/2025
@@ -7342,6 +7366,10 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://www.youtube.com/watch?v=4ykbHwZQ8iU -- Terrence Tao on future of mathematics
+  - [meta]:
+    - date: 01/01/2026
+    - tags: [solver, proofs]
 - https://www.quantamagazine.org/toward-a-grand-unified-theory-of-snowflakes-20191219/ -- Toward a Grand Unified Theory of Snowflakes
   - [meta]:
     - date: 12/26/2025

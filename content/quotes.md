@@ -16,7 +16,7 @@ metadata:
     text_line    = { character - newline } ;
     ws           = { " " } ;
     character    = ? any printable ascii except newline ? ;
-modified: 2025-12-24 16:40:46 GMT-05:00
+modified: 2026-01-01 18:03:30 GMT-05:00
 seealso:
   - "[[word|dictionary]]"
   - "[[research|wip]]"
@@ -30,6 +30,26 @@ transclude:
   dynalist: false
   title: false
 ---
+
+> Don't ask many stupid question, because if you ask me stupid question you will get stupid answer
+>
+> Max Verstappen
+
+> Yeah, but I also need to go faster as well. [...] I will sleep when I'm dead.
+>
+> Max Verstappen
+
+> To be one with the infinite in the midst of the finite and to be eternal in a moment, that is the immortality of religion.
+>
+> Friedrich Schleiermacher
+
+> Each friend represents a world in us, a world possibly not born until they arrive, and it is only by this meeting that a new world is born.
+>
+> Anais Nin
+
+> There is almost a sensual longing for communion with others who have a large vision. The immense fulfilment of the friendship between those engaged in furthering the evolution of consciousness has a quality impossible to describe.
+>
+> Pierre Teilhard de Chardin
 
 > Love is giving something you don't have to someone who doesn't want it.
 >

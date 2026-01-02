@@ -2,7 +2,7 @@
 date: "2025-11-10"
 description: conceivability, possibility, and the limits of functionalism
 id: philosophical-zombies
-modified: 2025-12-16 06:00:19 GMT-05:00
+modified: 2026-01-01 18:33:28 GMT-05:00
 seealso:
   - "[[thoughts/functionalism]]"
   - "[[thoughts/qualia]]"
