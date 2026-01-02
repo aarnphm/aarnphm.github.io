@@ -569,6 +569,10 @@ function wrapTractatusItem(li: Element, numberLabel: string, depth: number): Ele
       : []
   if (!className.includes("tractatus-item")) className.push("tractatus-item")
   props.className = className
+  if (!props.id) {
+    const safeId = numberLabel.replace(/[^0-9A-Za-z.-]/g, "")
+    props.id = `tractatus-${safeId}`
+  }
   const style = typeof props.style === "string" ? props.style : ""
   const depthStyle = `--tractatus-depth: ${depth};`
   props.style = style ? `${style.trim().replace(/;?$/, ";")} ${depthStyle}` : depthStyle

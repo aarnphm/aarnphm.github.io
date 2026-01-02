@@ -2,7 +2,7 @@
 date: "2024-02-19"
 description: on personal identity
 id: identity
-modified: 2025-12-08 19:46:41 GMT-05:00
+modified: 2026-01-01 00:22:38 GMT-05:00
 seealso:
   - "[[thoughts/hermeneutics]]"
   - "[[thoughts/love]]"
@@ -137,7 +137,7 @@ These archetypes structure how identity forms and deforms. You are shaped by wha
 
 ## hermeneutics and narrative identity
 
-For the hermeneutic framework of identity as interpretive achievement, see [[thoughts/hermeneutics]].
+For the hermeneutic framework of identity as interpretive achievement
 
 > self-understanding is circular. You interpret yourself from within existing self-conception, which is revised through interpretation. No external standpoint exists.
 

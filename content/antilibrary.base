@@ -17,6 +17,7 @@ formulas:
   "2023": note.finished == 2023
   "2024": note.finished == 2024
   "2025": note.finished == 2025
+  "2026": note.finished == 2026
 properties:
   file.tags:
     displayName: tags
@@ -232,6 +233,7 @@ views:
       - aliases
       - external
       - pdf
+      - formula.2026
       - formula.2025
       - formula.2024
       - formula.2023
@@ -243,6 +245,8 @@ views:
       - property: date
         direction: DESC
       - property: tags
+        direction: DESC
+      - property: formula.2026
         direction: DESC
       - property: formula.2025
         direction: DESC
@@ -271,6 +275,7 @@ views:
       subcategory: Filled
       title: unique
       finished: Filled
+      formula.2026: read this year
       formula.2025: read this year
       formula.2024: read this year
       formula.2023: read this year

@@ -91,7 +91,8 @@ vmap gsn :insertsidenotes<CR>
 """""""""""" All Available Commands """""""""""" "
 " :obcommand and <opt + cmd + i> to open console "
 """""""""""""""""""""""""""""""""""""""""""""""" "
-" Available commands: editor:save-file
+" Available commands:
+" editor:save-file
 " editor:follow-link
 " editor:open-link-in-new-leaf
 " editor:open-link-in-new-split
