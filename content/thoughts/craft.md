@@ -6,7 +6,7 @@ comments: false
 date: "2021-12-22"
 description: and a celebration for the act of making.
 id: craft
-modified: 2025-11-11 07:14:26 GMT-05:00
+modified: 2026-01-01 21:35:32 GMT-05:00
 permalinks:
   - /thoughts/work
   - /craft
@@ -64,7 +64,6 @@ You can find internal monologue under [[/posts/]] index.
   - Added support for lazy setup for better load time improvement https://github.com/yetone/avante.nvim/pull/14
   - Added Rust crates for `.avanterules` templates https://github.com/yetone/avante.nvim/pull/466
   - Source: [github](https://github.com/yetone/avante.nvim)
-    ![[thoughts/images/avante.mp4]]
 
 - **morph** - :writing_hand: An exploration into how we build interfaces for machine-assisted writing tool (2024-) [^morph]
   - Trained [[thoughts/sparse autoencoder]] to interpret QwQ CoT and features [@templeton2024scaling]
