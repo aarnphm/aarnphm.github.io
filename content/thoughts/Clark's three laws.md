@@ -2,11 +2,11 @@
 date: "2025-12-12"
 description: on futurism and longtermism
 id: Clark's three laws
-modified: 2025-12-18 02:08:24 GMT-05:00
+modified: 2026-01-02 03:41:12 GMT-05:00
 tags:
   - pattern
-  - ml
   - longtermism
+  - scaling
 title: Clark's three laws
 ---
 
@@ -36,8 +36,10 @@ this is considered strong AI by any [[thoughts/functionalism|functional]] defini
 >
 > note that here I use the phrase "strong AI" instead of super-intelligence or AGI.
 
-the superintelligence framing is wrong imo. As we expected AGI to look like a brain in a vat it would turn out to be more and more like a clusters of models delegated by a router model to perform expert tasks. fwiw we are still trying to make these models to work effectively with building correct functionalities for websites and ingesting PDFs lol!
+the [[thoughts/AGI|AGI]] framing is wrong imo. As we expected AGI to look like a brain in a vat it would turn out to be more and more like a clusters of models delegated by a router model to perform expert tasks. fwiw we are still trying to make these models to work effectively with building correct functionalities for websites and ingesting PDFs lol!
 
 the third law suggests we might not recognize AGI when it arrives bc it won't match our science fiction priors—it'll just feel like "the way things work now."
 
-afaict the hard problem of AGI was never consciousness or general reasoning (we will have algorithmic solution for this in due time). I suspect it is more about coordination, where how do we coordinate heterogeneous systems to share context, delegate appropriately, and maintain coherence? [[thoughts/LLMs#as search|llms-as-search]] engine works half of the time really. Once we go beyond these philosophical arguments and accept for what it is atm (scaling intelligence is an engineering problem) then I think we can possibly do better science from this.
+afaict the hard problem of AGI was never [[thoughts/Consciousness|consciousness]] or general reasoning (we will have algorithmic solution for this in due time). I suspect it is more about coordination, where how do we coordinate heterogeneous systems to share context, delegate appropriately, and maintain coherence? [[thoughts/LLMs#as search|llms-as-search]] engine works half of the time really. Once we go beyond these philosophical arguments and accept for what it is atm (scaling intelligence is an engineering problem) then I think we can possibly do better science from this.
+
+Some recent research on [recursive language model](https://www.primeintellect.ai/blog/rlm) in terms of inference strategy to deal with long-horizon context tasks.

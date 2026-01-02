@@ -1506,12 +1506,7 @@ const ElementComponent = ((enableRecents: boolean = false) => {
               name="stream"
               url="https://stream.aarnphm.xyz"
             />
-            <AliasLink
-              newTab
-              classes={["external"]}
-              name="workshop"
-              url="https://workshop.aarnphm.xyz"
-            />
+            <AliasLink isInternal name="workshop" url="/lectures" />
             <AliasLink isInternal name="arena" url="/arena" />
             <AliasLink isInternal name="on my mind" url="/thoughts/" />
             <AliasLink isInternal name="writings" url="/posts/" />

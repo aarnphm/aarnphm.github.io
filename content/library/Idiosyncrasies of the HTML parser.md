@@ -16,7 +16,7 @@ posters: "[[library/posters/html-parser.png]]"
 category:
   - technology
 translator:
-description:
+description: how to build a HTML parser
 notebook:
 aliases:
 ---

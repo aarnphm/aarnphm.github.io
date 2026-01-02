@@ -3,11 +3,10 @@ date: "2025-09-07"
 description: intuition for latent mapping
 id: index
 layout: L->ET|A
-modified: 2025-11-23 16:16:57 GMT-05:00
+modified: 2026-01-02 02:21:08 GMT-05:00
 noindex: true
 tags:
   - ml
-  - folder
 title: panoramic representations
 ---
 

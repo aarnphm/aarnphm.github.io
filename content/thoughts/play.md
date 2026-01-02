@@ -2,14 +2,12 @@
 date: "2023-10-18"
 description: the state of being.
 id: play
-modified: 2025-12-20 06:26:21 GMT-05:00
+modified: 2026-01-02 05:55:07 GMT-05:00
 tags:
-  - seed
+  - pattern
   - philosophy
 title: Play
 ---
-
-### play?
 
 > intentional activity of doing the thing you want to do
 
@@ -75,6 +73,8 @@ Intellectual playfulness[^1], loosely, is the disposition to try out new ideas, 
 
 - intellectually playful exploration sometimes can better serve the goal of finding the truth, than will exploration that is strictly aimed at finding the truth
 - it functions against epistemic traps: belief systems that undermine our epistemic efforts, leaving us stuck inside them
+
+or also, [trying playing if you haven't in a while](https://zaira.blog/blog/try-playing-if-you-havent-in-a-while/)
 
 ### Irony
 

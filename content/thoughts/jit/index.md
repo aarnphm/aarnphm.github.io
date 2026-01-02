@@ -2,12 +2,11 @@
 date: "2025-10-05"
 description: educational JIT compiler implementations in Python
 id: bytecode-jit-readme
-modified: 2025-10-29 02:15:48 GMT-04:00
 layout: L->ET|A
+modified: 2026-01-02 02:21:33 GMT-05:00
 tags:
   - seed
   - compilers
-  - folder
 title: python JIT compiler
 ---
 
@@ -21,7 +20,10 @@ single-pass AST → C translation. 50-150ms compile, 20-80× runtime speedup.
 jit = TinyCJIT()
 
 
-@jit(restype=None, argtypes=[POINTER(c_float), POINTER(c_float), POINTER(c_float), c_int])
+@jit(
+  restype=None,
+  argtypes=[POINTER(c_float), POINTER(c_float), POINTER(c_float), c_int],
+)
 def vector_add(a, b, out, n):
   for i in range(n):
     out[i] = a[i] + b[i]
