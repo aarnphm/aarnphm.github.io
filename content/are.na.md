@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-01-02 06:15:53 GMT-05:00
+modified: 2026-01-02 07:42:21 GMT-05:00
 permalinks:
   - /website
   - /tweets
@@ -943,6 +943,10 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://www.vvhuang.com/ -- Vincent Huang
+  - [meta]:
+    - date: 01/02/2026
+    - tags: [researcher, interpretability]
 - https://aryl.org/ -- aryl
   - [meta]:
     - date: 01/02/2026
@@ -1994,6 +1998,10 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://www.doc.cc/articles/power-of-beauty -- The power of beauty in communicating complex ideas
+  - [meta]:
+    - date: 01/02/2026
+    - tags: [illicitation, writing]
 - https://folklore.org/Make_a_Mess,_Clean_it_Up!.html -- Make a Mess, Clean it Up
   - [meta]:
     - date: 01/02/2026
@@ -2026,7 +2034,7 @@ title: are.na
   - [meta]:
     - date: 01/02/2026
     - tags: [ux]
-  - Hmm, I don't really agree
+  - Hmm, I don't really agree with the framing here, insofar to a symbiosis of navigation mode instead of complete replacement for ingesting information.
 - https://samuelalbanie.substack.com/p/reflections-on-2025 -- The Compute Theory of Everything, grading the homework of a minor deity, and the acoustic preferences of Atlantic salmon [**]
   - [meta]:
     - date: 01/02/2026
@@ -2060,6 +2068,7 @@ title: are.na
   - [meta]:
     - date: 12/31/2025
     - tags: [love, being]
+    - later: true
 - https://theimpermanent.substack.com/p/why-i-think-like-an-athlete -- Why I think like an Athlete
   - [meta]:
     - date: 12/29/2025
@@ -6090,6 +6099,10 @@ title: are.na
 
 ## design
 
+- https://www.doc.cc/
+  - [meta]:
+    - date: 01/02/2026
+    - tags: [editorial]
 - https://www.adaline.ai/
   - [meta]:
     - date: 12/16/2025
@@ -6600,6 +6613,10 @@ title: are.na
 
 ## arts
 
+- https://4columns.org/livingstone-jo/spectrum-of-desire
+  - [meta]:
+    - date: 01/02/2026
+    - tags: [artefacts, sculpture]
 - https://alena.art/
   - [meta]:
     - date: 12/29/2025

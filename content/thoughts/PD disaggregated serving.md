@@ -4,7 +4,7 @@ aliases:
 date: "2025-06-16"
 description: and inference go distributed
 id: pd disaggregated serving
-modified: 2025-12-30 23:05:15 GMT-05:00
+modified: 2026-01-02 07:46:37 GMT-05:00
 seealso:
   - "[[thoughts/distributed inference|distributed inference]]"
 tags:
@@ -30,6 +30,8 @@ why:
 > [!important] goal
 >
 > decouple resource bottlenecks and scheduling so TTFT stays low under bursty arrivals without sacrificing ITL or throughput.
+
+see also: [dot-product intensity](https://gist.github.com/mikasenghaas/f3663a1f26acbb95cc880db12e9547ea)
 
 ### goodput
 
@@ -263,14 +265,6 @@ note that this will makes a noticeable difference in dense models, but most MLA 
 - ecoserve (2025): partially disaggregated serving over commodity ethernet with near‑optimal batching. [@ecoserve2025]
 - banaserve (2025): dynamic migration and learning‑based control under non‑stationary loads. [@banaserve2025]
 - spad (2025): hardware/software co‑design for disaggregated attention. [@spad2025]
-
-> [!tip] deployment strategy
->
-> - start prefill‑only vLLM (bigger max batch, dp heavy, ep as needed)
-> - start decode‑only vLLM (continuous batching, ep for moe, tune dp)
-> - enable kv transfer connector and verify fabric throughput/latency
-> - measure ttft/itl; tune prefill:decode worker ratio (e.g., 1:2, 1:3)
-> - keep a monolithic pool as safety net during ramp
 
 ## deep‑dive: sizing, transport, and scheduling
 
@@ -509,9 +503,3 @@ co‑locate endpoints with decode pools (same rack/tor) to minimize cross‑rack
 - shard traffic: by sequence id or kv page range to spread load across endpoints.
 - queue depth: size send/recv queues to keep links full but avoid hoarding; watch tail latency.
 - backpressure: if lookupbuffer depth grows, slow prefill admission or shed requests.
-
-### validation playbook
-
-- burn‑in: run rdma perftest (ib_read_bw/ib_write_bw) between candidate nodes; record p50/p99 and max throughput.
-- counters: check `ethtool -S`, `ibstat`, and nic vendor tools for pause frames, retransmits, congestion events.
-- end‑to‑end: measure ttft deltas with and without nixl; ensure improvements persist under realistic burst patterns.

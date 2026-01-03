@@ -5,7 +5,7 @@ date: "2024-10-10"
 description: a bag of chips/words/vernacular
 id: word
 layout: technical
-modified: 2026-01-02 05:56:34 GMT-05:00
+modified: 2026-01-02 06:26:49 GMT-05:00
 tags:
   - evergreen
 title: lists
@@ -64,3 +64,5 @@ title: lists
 - epistolary
 - {{sidenotes[triptych]: a picture/relief carving on three panels, typically hinged together side by side and used as an altarpiece}}
 - meliorism
+- lex parsimoniae
+  - also known as law of parsimony, circa Occam's razor
