@@ -7,7 +7,7 @@ aliases:
 date: "2025-08-09"
 description: just another fish in the sea.
 id: dating
-modified: 2025-12-20 13:00:03 GMT-05:00
+modified: 2026-01-03 04:15:02 GMT-05:00
 noindex: true
 slides: true
 tags:
@@ -37,7 +37,7 @@ Here's 30 second about me. By all means explore the rest of the documents.
 
 According to ["what vegetable are you?"](https://sophie006liu.github.io/vegetal/), I'm an [[thoughts/images/onion.webp|onion.]] [^onion]
 
-I work on [[thoughts/LLMs|large laguage models]], and I like to cook: I make fresh pasta (tortellini, tagliatelle) every Sunday, velouté and beef stocks from time to time. I collect vinyl, climb V5s, and read math textbooks.
+I work on [[thoughts/LLMs|large language models]], and I like to cook: I make fresh pasta (tortellini, tagliatelle) every Sunday, velouté and beef stocks from time to time. I collect vinyl, climb V5s, and read math textbooks.
 
 [^onion]: This is somewhat hilarious given that I actually love [[thoughts/images/onionnnnnnnnnn.webp|onion]]!
 
