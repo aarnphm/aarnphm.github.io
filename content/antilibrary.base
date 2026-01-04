@@ -26,9 +26,6 @@ properties:
 views:
   - type: cards
     name: gallery
-    groupBy:
-      property: category
-      direction: DESC
     order:
       - file.basename
       - date
@@ -94,11 +91,11 @@ views:
       - author
       - posters
     sort:
-      - property: finished
-        direction: DESC
       - property: date
         direction: DESC
       - property: status
+        direction: ASC
+      - property: finished
         direction: DESC
       - property: title
         direction: ASC
@@ -109,8 +106,8 @@ views:
       - property: file.tags
         direction: ASC
     summaries:
-      date: Latest
-      subcategory: unique
+      date: Range
+      subcategory: missing
     columnSize:
       note.title: 401
       note.date: 147

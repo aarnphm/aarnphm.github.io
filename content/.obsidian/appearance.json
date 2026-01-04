@@ -4,7 +4,7 @@
   "interfaceFontFamily": "PP Neue Montreal,Berkeley Mono",
   "textFontFamily": "Berkeley Mono,PP Neue Montreal,Space Grotesk,Darker Grotesque",
   "monospaceFontFamily": "Berkeley Mono",
-  "baseFontSize": 29,
+  "baseFontSize": 16,
   "translucency": false,
   "showViewHeader": false,
   "enabledCssSnippets": [

@@ -24,77 +24,57 @@ export const ObsidianBases: QuartzTransformerPlugin = () => {
               return
             }
 
-            // Mark as bases file
             file.data.bases = true
 
-            try {
-              // Parse YAML and store config for emitter to use
-              const parsed = yaml.load(String(file.value)) as any
-              if (!parsed || typeof parsed !== "object") {
-                throw new Error("Invalid .base file format")
-              }
+            // Parse YAML and store config for emitter to use
+            const parsed = yaml.load(String(file.value)) as any
 
-              const normalizeProperties = (
-                raw: unknown,
-              ): Record<string, PropertyConfig> | undefined => {
-                if (!raw || typeof raw !== "object") {
-                  return undefined
+            const normalizeProperties = (
+              raw: object,
+            ): Record<string, PropertyConfig> | undefined => {
+              const normalized: Record<string, PropertyConfig> = {}
+
+              for (const [key, value] of Object.entries(raw)) {
+                if (!value || typeof value !== "object") {
+                  continue
                 }
 
-                const normalized: Record<string, PropertyConfig> = {}
+                const propConfig = value as PropertyConfig
+                normalized[key] = propConfig
 
-                for (const [key, value] of Object.entries(raw)) {
-                  if (!value || typeof value !== "object") {
-                    continue
-                  }
-
-                  const propConfig = value as PropertyConfig
-                  normalized[key] = propConfig
-
-                  const withoutPrefix = key.replace(/^(?:note|file)\./, "")
-                  if (withoutPrefix !== key && !(withoutPrefix in normalized)) {
-                    normalized[withoutPrefix] = propConfig
-                  }
-
-                  const segments = withoutPrefix.split(".")
-                  const lastSegment = segments[segments.length - 1]
-                  if (lastSegment && !(lastSegment in normalized)) {
-                    normalized[lastSegment] = propConfig
-                  }
+                const withoutPrefix = key.replace(/^(?:note|file)\./, "")
+                if (withoutPrefix !== key && !(withoutPrefix in normalized)) {
+                  normalized[withoutPrefix] = propConfig
                 }
 
-                return Object.keys(normalized).length > 0 ? normalized : undefined
-              }
-
-              const properties = normalizeProperties(parsed.properties)
-
-              // Store config in file.data - emitter will do actual filtering
-              const config: BaseFile = {
-                filters: parseFilter(parsed.filters),
-                views: parseViews(parsed.views),
-                properties,
-                summaries: parsed.summaries,
-                formulas: parseFormulas(parsed.formulas),
-              }
-              file.data.basesConfig = config
-
-              // Create empty tree - emitter will build the actual table
-              tree.children = []
-
-              // Add bases tag to frontmatter
-              if (!file.data.frontmatter) {
-                file.data.frontmatter = {
-                  title: file.path?.replace(".base", "").split("/").pop() || "",
-                  pageLayout: "default" as const,
-                  description: `bases renderer of ${file.data.slug}`,
+                const segments = withoutPrefix.split(".")
+                const lastSegment = segments[segments.length - 1]
+                if (lastSegment && !(lastSegment in normalized)) {
+                  normalized[lastSegment] = propConfig
                 }
               }
-              const existingTags = (file.data.frontmatter.tags as string[]) || []
-              file.data.frontmatter.tags = [...existingTags, "bases"]
-            } catch (error) {
-              console.error(`Error processing .base file ${file.path}:`, error)
-              // Keep empty tree on error
-              tree.children = []
+
+              return Object.keys(normalized).length > 0 ? normalized : undefined
+            }
+
+            const properties = normalizeProperties(parsed.properties)
+
+            const config: BaseFile = {
+              filters: parseFilter(parsed.filters),
+              views: parseViews(parsed.views),
+              properties,
+              summaries: parsed.summaries,
+              formulas: parseFormulas(parsed.formulas),
+            }
+            file.data.basesConfig = config
+
+            tree.children = []
+
+            file.data.frontmatter = {
+              title: file.path?.replace(".base", "").split("/").pop() || "",
+              pageLayout: "default" as const,
+              description: `bases renderer of ${file.data.slug}`,
+              tags: ["bases"],
             }
           }
         },

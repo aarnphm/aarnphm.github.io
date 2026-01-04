@@ -10,7 +10,7 @@ coordinates:
 date: "2025-08-05"
 description: food hall with rotating vendors and communal seating
 id: Stakt Market
-modified: "2025-12-22 21:07:25 GMT-05:00"
+modified: "2026-01-03 11:36:50 GMT-05:00"
 rating: 5
 tags:
   - places

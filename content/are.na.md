@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-01-02 07:42:21 GMT-05:00
+modified: 2026-01-03 17:06:13 GMT-05:00
 permalinks:
   - /website
   - /tweets
@@ -1863,13 +1863,13 @@ title: are.na
 - https://maps.app.goo.gl/UgMkYbuHWampcXcg6 -- DROM Taberna
   - [meta]:
     - date: 12/06/2025
-    - tags: [live music]
-    - coord: [43.6460345, -79.4116657]
+    - tags: [jazz]
+    - coord: [43.6481885, -79.4021657]
 - https://maps.app.goo.gl/1TY3HD3zJgExWDje7 -- Handlebar
   - [meta]:
     - date: 12/06/2025
     - tags: [jazz]
-    - coord: [43.6470437, -79.4121211]
+    - coord: [43.652916, -79.4011013]
 - https://maps.app.goo.gl/8cZo64RZkG5R4n2T6 -- PIKA
   - [meta]:
     - date: 10/05/2025
@@ -4735,7 +4735,8 @@ title: are.na
 - https://ai-2027.com/ -- AI 2027 [**]
   - [meta]:
     - date: 10/28/2025
-    - tags: [prediction, speculation]
+    - tags: [agi, speculation]
+    - pinned: true
   - https://x.com/eli_lifland/status/1908671788630106366
   - https://thezvi.substack.com/p/analyzing-a-critique-of-the-ai-2027
   - https://www.lesswrong.com/posts/PAYfmG2aRbdb74mEp/a-deep-critique-of-ai-2027-s-bad-timeline-models
@@ -7176,7 +7177,7 @@ title: are.na
     - date: 01/02/2026
     - tags: [interpretability]
   - ckpt: https://huggingface.co/collections/adamkarvonen/activation-oracles
-- https://www.learncpp.com/cpp-tutorial/c-style-array-decay/#:~:text=When%20passing%20a%20C%2Dstyle,style%20array%20argument%20is%20avoided. -- C-style array decay
+- https://www.learncpp.com/cpp-tutorial/c-style-array-decay -- C-style array decay
   - [meta]:
     - date: 01/02/2026
     - tags: [programming]
@@ -7621,6 +7622,10 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://pages.jh.edu/rrynasi1/FoundationsOFMath/Literature/Topology/Vickers1989TopologyViaLogic.pdf -- Topology via logic
+  - [meta]:
+    - date: 01/03/2026
+    - tags: [topology]
 - https://projecteuclid.org/journals/rocky-mountain-journal-of-mathematics/volume-19/issue-3/Fundamentals-of-analysis-over-surreal-number-fields/10.1216/RMJ-1989-19-3-565.pdf#page=3 -- Fundamentals of analysis over surreal numbers fields
   - [meta]:
     - date: 01/02/2026

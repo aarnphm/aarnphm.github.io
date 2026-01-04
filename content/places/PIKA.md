@@ -10,7 +10,7 @@ coordinates:
 date: "2025-10-05"
 description: mit co-op living space with creative energy and communal dinners
 id: PIKA @ MIT
-modified: "2025-12-22 21:07:25 GMT-05:00"
+modified: "2026-01-03 11:36:50 GMT-05:00"
 rating: 5
 tags:
   - places

@@ -68,7 +68,7 @@ export async function fetchTwitterEmbed(url: string, locale: string): Promise<st
       `https://publish.twitter.com/oembed?url=${url}&dnt=true&omit_script=true&lang=${locale}`,
     )
     if (!res.ok) {
-      throw new Error(`Twitter oEmbed request failed with status ${res.status}`)
+      throw new Error(`twitter oEmbed request failed with status ${res.status}`)
     }
     const data = (await res.json()) as TwitterEmbed
     value = unescapeHTML(data.html)
