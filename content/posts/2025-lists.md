@@ -3,7 +3,7 @@ date: "2025-12-31"
 description: on contigency, convictions, and Tractatus.
 id: 2025-lists
 layout: technical-tractatus
-modified: 2026-01-02 04:07:45 GMT-05:00
+modified: 2026-01-03 17:28:14 GMT-05:00
 seealso:
   - "[[posts/2025|hyperabundance]]"
 signature: Your present self
@@ -46,7 +46,7 @@ Jacques Lacan
 - _1.02_ Searle's account requires _collective intentionality_. We must all agree that the paper is money for it to function as money
   - but the pillow on the right side of my bed counts as her-side without collective agreement
   - therefore, a subset of status function, in which I call _personal status function_, where "X counts as Y for _this body_ in context C"
-  - personal status function require no collective recognition, but only subjective recognition, or the body's ongoing self-interpretation
+  - {{sidenotes[personal status function]: I don't really like this definition from myself, because this is privatizing Searle's social ontology. I would probably like to correct this definition towards _embodied priors_.}} require no collective recognition, but only subjective recognition, or the body's ongoing self-interpretation
 - _1.03_ personal status function are {{sidenotes[pre-reflective constitution]: merleau-ponty's motor intentionality: the body understands its environment before cognition represents it. the doorknob affords turning before you think "this is a doorknob." constitution happens prior to and independent of explicit judgement.}}
 - _1.04_ self-interpretation implies capacity for self-modification of beliefs and values
   - if you can interpret yourself, then it is implied you can reinterpret yourself.
@@ -114,13 +114,13 @@ Jacques Lacan
 ## 2. universal love is an emergent property of attention
 
 - _2.01_ love is a personal status function. $X$ counts as beloved for _this body_ in context $C$.
-  - no collective agreement required. you just decided. somewhere between the second coffee and the fourth hour of talking about nothing in particular, she became someone whose absence would register as loss.
+  - One properties of love is that it requires _no collective agreement_, i.e love emerges from _subjective experience_. you just decided. somewhere between the second coffee and the fourth hour of talking about nothing in particular, she became someone whose absence would register as loss.
   - unlike purely private states, love has intentional structure—it's directed at another. you can't love in a vacuum. the beloved must exist and be attended to.
   - this is why love is not solipsistic projection. the other person has to be real enough to resist your interpretations. N did this constantly—refused my frame, offered her own.
-- _2.02_ attention is a good primitive.
+- _2.02_ attention is a good primitive to define as atomic unit explaining _essence of life_.
   - love, understanding, [[thoughts/intelligence|intelligence]]—they all decompose into sustained attention applied to an object. you cannot deeply understand what you haven't attended to. you cannot love what you haven't seen.
-  - sustained attention generates an {{sidenotes[interpretive infrastructure]: the learned mappings between surface behavior and latent state. after two years you learn what her silence means when it's thinking vs when it's withdrawing. you learn the specific quality of voice that means she's tired vs the one that means she's hurt. this is expensive to build.}}
-  - the infrastructure cannot be transferred. it's specific to the dyad. when i started dating again, i kept misreading cues bc my interpretive machinery was calibrated to the wrong person.
+  - sustained attention generates an {{sidenotes[interpretive infrastructure]: the learned mappings between surface behavior and latent state. after two years you learn what her silence means when it's thinking vs when it's withdrawing. you learn the specific quality of voice that means she's tired vs the one that means she's hurt. this is expensive to build.<br/><br/>This is also known as [[thoughts/hermeneutics]] circle.}}
+  - this infrastructure cannot be transferred. it's specific to the dyad. when i started dating again, i kept misreading cues bc my interpretive machinery was calibrated to the wrong person.
   - hence deep relationships have high switching costs. you're losing years of accumulated interpretive capital.
   - this year i discovered feelings that didn't fit inside English grammatical structures.
     - there's a thing that's not-quite-love and not-quite-friendship and not-quite-desire. it's the feeling of being seen by someone whose attention itself constitutes you differently. L looked at me and I became a version of myself that only existed in her gaze.

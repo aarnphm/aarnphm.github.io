@@ -5,12 +5,12 @@ address: >-
 category:
   - "[[places to go]]"
 coordinates:
-  - "43.6470437"
-  - "-79.4121211"
+  - "43.652916"
+  - "-79.4011013"
 date: "2025-12-06"
 description: trinity bellwoods venue with local jazz and world music
 id: Handlebar
-modified: "2025-12-22 21:07:25 GMT-05:00"
+modified: "2026-01-03 11:36:50 GMT-05:00"
 rating: 5
 tags:
   - places

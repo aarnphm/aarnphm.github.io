@@ -272,9 +272,7 @@ export const ComponentResources: QuartzEmitterPlugin = () => {
         if (changeEvent.type === "delete") {
           const name = path.basename(changeEvent.path).replace(/\.ts$/, "")
           const dest = joinSegments(ctx.argv.output, `${name}.js`)
-          try {
-            await fs.unlink(dest)
-          } catch {}
+          await fs.unlink(dest)
           continue
         }
         const result = await bundle({

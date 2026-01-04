@@ -250,35 +250,31 @@ const ArenaModalMainContent = ({
 }
 
 const rewriteArxivUrl = (rawUrl: string): string => {
-  try {
-    const parsed = new URL(rawUrl)
-    if (!parsed.hostname.toLowerCase().endsWith("arxiv.org")) {
-      return rawUrl
-    }
-
-    const pathSegments = parsed.pathname.split("/").filter(Boolean)
-    if (pathSegments.length === 0) {
-      return rawUrl
-    }
-
-    const [head, ...rest] = pathSegments
-    if (rest.length === 0) {
-      return rawUrl
-    }
-
-    const normalizedHead = head.toLowerCase()
-    const remainder = rest.join("/")
-    const suffix = `${parsed.search}${parsed.hash}`
-
-    if (normalizedHead === "pdf" || normalizedHead === "html" || normalizedHead === "abs") {
-      const sanitized = remainder.replace(/\.pdf$/i, "")
-      return `https://www.alphaxiv.org/abs/${sanitized}${suffix}`
-    }
-
-    return `https://www.alphaxiv.org/abs/${[head, ...rest].join("/")}${suffix}`
-  } catch {
+  const parsed = new URL(rawUrl)
+  if (!parsed.hostname.toLowerCase().endsWith("arxiv.org")) {
     return rawUrl
   }
+
+  const pathSegments = parsed.pathname.split("/").filter(Boolean)
+  if (pathSegments.length === 0) {
+    return rawUrl
+  }
+
+  const [head, ...rest] = pathSegments
+  if (rest.length === 0) {
+    return rawUrl
+  }
+
+  const normalizedHead = head.toLowerCase()
+  const remainder = rest.join("/")
+  const suffix = `${parsed.search}${parsed.hash}`
+
+  if (normalizedHead === "pdf" || normalizedHead === "html" || normalizedHead === "abs") {
+    const sanitized = remainder.replace(/\.pdf$/i, "")
+    return `https://alphaxiv.org/abs/${sanitized}${suffix}`
+  }
+
+  return `https://alphaxiv.org/abs/${[head, ...rest].join("/")}${suffix}`
 }
 
 const normalizeDate = (value: string): { display: string; dateTime?: string } => {

@@ -30,6 +30,7 @@ import {
   FormulaDefinition,
   ViewSummaryConfig,
   parseViewSummaries,
+  BasesConfigFile,
 } from "../../util/base/types"
 import { QuartzPluginData } from "../vfile"
 import { Root } from "hast"
@@ -988,11 +989,7 @@ async function* emitBaseViewsForFile(
   resources: StaticResources,
   layout: FullPageLayout,
 ) {
-  if (!baseFileData.bases || !baseFileData.basesConfig || !baseFileData.slug) {
-    return
-  }
-
-  const config = baseFileData.basesConfig
+  const config = baseFileData.basesConfig as BasesConfigFile
   const baseSlug = baseFileData.slug as FullSlug
 
   const allViews = config.views.map((view, idx) => ({
@@ -1043,15 +1040,11 @@ async function* emitBaseViewsForFile(
     const fileData: QuartzPluginData = { ...baseFileData }
     fileData.slug = slug
     fileData.htmlAst = tree
-
-    if (fileData.frontmatter) {
-      fileData.frontmatter = {
-        ...fileData.frontmatter,
-        title: `${baseFileData.frontmatter?.title || baseSlug} - ${view.name}`,
-        pageLayout: fileData.frontmatter.pageLayout || "default",
-      }
+    fileData.frontmatter = {
+      ...fileData.frontmatter,
+      title: `${fileData.frontmatter?.title || baseSlug} - ${view.name}`,
+      pageLayout: fileData.frontmatter!.pageLayout || "default",
     }
-
     fileData.basesMetadata = { baseSlug, currentView: view.name, allViews }
 
     const cfg = ctx.cfg.configuration

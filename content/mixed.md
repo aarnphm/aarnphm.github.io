@@ -4,7 +4,7 @@ cssclasses:
 date: "2025-06-09"
 description: and a list of vinyl and music are on my mind for mixing.
 id: mixed
-modified: 2025-10-29 02:14:45 GMT-04:00
+modified: 2026-01-03 14:22:51 GMT-05:00
 tags:
   - music
   - evergreen
@@ -17,6 +17,8 @@ transclude:
 
 - ![[https://music.youtube.com/playlist?list=PLsRPzRsbp3lBIs6ATkkwQna75qslAZKLF&si=BczKaJFf8_uhSWZy]]
 - ![[https://music.youtube.com/playlist?list=PLsRPzRsbp3lBbddid9loYh6o9gz004N7k&si=MBTa6UT63IIo5xHt]]
+- ![[https://music.youtube.com/playlist?list=PLhdidoMrFypF_OzJlr5YRR9lTswRdVsKD]]
+- ![[https://music.youtube.com/playlist?list=PLosoS0uWFKCsILMfLRRzAqasL_72xHmir]]
 - Love In Us All by Pharaoh Sanders
 - https://capitald.bandcamp.com/album/songs-pt-2
   - 415, or Boss
