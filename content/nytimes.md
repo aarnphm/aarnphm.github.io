@@ -2,11 +2,13 @@
 date: "2025-10-27"
 description: from nytimes
 id: nytimes
-modified: 2025-12-29 04:08:07 GMT-05:00
+modified: 2026-01-06 06:23:18 GMT-05:00
 tags:
   - games
 title: games
 ---
+
+_a la [[puzzle/index|puzzle]] et al._
 
 ## connections
 
@@ -64,6 +66,26 @@ Puzzle #932
 🟩🟪🟪🟪
 🟨🟨🟨🟨
 🟪🟪🟪🟪
+🟩🟩🟩🟩
+```
+
+```text
+Connections
+Puzzle #939
+🟦🟪🟩🟩
+🟩🟩🟩🟩
+🟦🟦🟦🟦
+🟨🟨🟨🟨
+🟪🟪🟪🟪
+```
+
+```text
+Connections
+Puzzle #940
+🟪🟦🟩🟨
+🟨🟨🟨🟨
+🟪🟪🟪🟪
+🟦🟦🟦🟦
 🟩🟩🟩🟩
 ```
 
@@ -146,3 +168,35 @@ Wordle 1,654 3/6
 ⬜🟨🟨🟨⬜
 🟩🟩🟩🟩🟩
 ```
+
+```text
+Wordle 1,661 4/6
+
+⬜⬜⬜⬜⬜
+⬜⬜⬜⬜⬜
+⬜⬜🟨🟩⬜
+🟩🟩🟩🟩🟩
+```
+
+```text
+Wordle 1,662 5/6
+
+⬜⬜⬜⬜⬜
+⬜⬜⬜⬜⬜
+⬜🟩⬜⬜⬜
+⬜🟩⬜⬜🟨
+🟩🟩🟩🟩🟩
+```
+
+## spelling bee
+
+![[thoughts/images/nytimes/spelling-bee-genius-2026-01-05.webp]]
+![[thoughts/images/nytimes/spelling-bee-genius-2026-01-06.webp]]
+
+## sudoku
+
+![[thoughts/pdfs/nytimes/sudoku-01-06-26.pdf]]
+
+## the mini
+
+![[thoughts/images/nytimes/mini-2026-01-06.webp]]

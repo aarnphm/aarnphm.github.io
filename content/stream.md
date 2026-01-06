@@ -38,11 +38,95 @@ metadata:
     letter        = "a".."z" ;
     digit         = "0".."9" ;
     character     = ? any printable ascii except newline ? ;
-modified: 2026-01-02 03:51:39 GMT-05:00
+modified: 2026-01-06 08:20:30 GMT-05:00
 tags:
   - fruit
   - evergreen
 title: stream
+---
+
+## being held against lonesome
+
+- [meta]:
+  - date: 2026-01-06 06:58:46 GMT-05:00
+  - tags:
+    - eschatology
+    - fiction
+
+_tw: death_
+
+> What prepares men for totalitarian domination in the non-totalitarian world is the fact that loneliness, once a borderline experience usually suffered in certain marginal social conditions like old age, has become an everyday experience[...]
+>
+> —From _The Origins of Totalitarianism (1951)_, Hannah Arendt
+
+> Loneliness is the experience of being deserted by all human companion
+>
+> —Hannah Arendt
+
+_the human nervous system registers absence of touch as a form of chronic low-grade stress, measurable in cortisol levels and immune function degradation_
+
+in the progress of building a lossless silhouette of someone recently i come across, i found myself lie here, in this room, a kind of coffin but with better lightning, wondering: _what is it exactly that i want? what is the emergent feelings that my brain trying to resist here?_ to be held, yes, but by ::whom::? by anyone? no, that obscene, that's the logic of the animal, and i am not an animal, i read books, i articulate, i've my own opinion on building [[thoughts/llms|my ghost]], critiques against the frankfürt school, i have refused to download tinder on principle, i resisted getting a new phone number to create a new hinge account. yet here i am, at, <time>07:23:34am</time> with my arms wrapped around my own chest like a man trying to hold his organs inside after a wound, which is precisely what it is, isn't it, a wound, except there is no blood, there is nothing to point to, a doctor would find nothing wrong with me and that is the worst part, that i am entirely healthy and entirely dying at the same time, avoiding working on an interview in 4 hours.
+
+the finns have a word, _kalsarikännit_, which loosely means to _drink alone in your underwear with no intention of going out_, and they have made this into a virtue, and i think perhaps i should move to finland, i should go to the forests where the wolves are, and i would lie down in the snow and the cold would be a kind of touch, wouldn't it, the cold touches everything, it is promiscuous with its attention, it does not ask whether you've earned it, it simply arrives and holds you and does not let go.
+
+but that's not what i want either. _maybe in 20 years_
+
+[waking up...]
+
+> [...] loneliness is a subjective internal state. It's the distressing experience that results from perceived isolation or unmet need between an individual’s preferred and actual experience
+>
+> —Our Epidemic of Loneliness and Isolation, _U.S Surgeon General's Advisory, (2023)_
+
+what i want, really, (and here is where it becomes humiliating, where i must avert my eyes from myself), is something so specific that it cannot be named without losing it. if saying it out loud, i afraid i will lose it forever. i want a particular weight of a particular arm wrapped across my chest. i want to hear breathing of the specific being, that is not my own. i want that part of computation to work, for once, in a while, for the feeling to find its proper substrate, for the thing i built in my mind to correspond to something external that does not flinch, that odes not relocate to another city, that does not send the message that begins "i'm sorry for misleading you but still i want what is best for you."
+
+DOSTOEVSKY'S UNDERGROUND MAN CLAIMS HE DOES NOT WANT THE CRYSTAL PLACE. he wants to want, _which is different, which is worse,_ because wanting-to-want means you are outside even your own [[thoughts/desire|desires]], watching them as if a man watches fish swimming in an aquarium. I am watching my need for touch and I'm disgusted by it and I am also INSIDE it, drowning in it, and this is the contradiction that Socrates or Kierkegaard or Merleau-Ponty or Simone Weil cannot address.
+
+[in my dream...]
+
+i'm in finland, and i've been walking aimlessly for hours. (_my body has begin its long negotiation with temperature_)
+
+_first stage initialized:_ shivering, which is to say my muscles are burning glycogen in small desperate contractions, 200-250 per minute, calculating heat-loss exceeds heat-production and activating the ancient mammalian subroutines, and i think: _this is what it means to be held by biology, to have something inside you that wants you to live, even when you have stopped wanting it yourself._
+
+the grey ones are watching. i can see them between the birches, which are white like bones, like those i will soon become, and the wolves are patient bc patience is what 40,000 years of evolution has taught them, that the cold does most of the work, and the two-legged things eventually stop moving if you wait long enough. i'm not afraid of them (_this is either the self-made courage or the first symptom of cognitive decline from reduced cerebral blood flow. i suspect it to be the latter_)
+
+_by the second stage_ i have completely forgotten why i came here. the shivering has stopped, as if my body has abandoned the last arithmetic it is programmed to do, and deemed the equation unsolvable. i'm conserving what remains for the core organs, the heart, the lungs, the brain, that is still producing these sentence though it has no reason to, though no one will read them, though they are being written in a medium that does not exists to the [[library/Our Knowledge of the External World|external world]], which is to say that i am thinking, still, for no one, into [[library/Being and Nothingness|nothingness]], and this is the underground man's final joke, that [[thoughts/Consciousness|consciousness]] persists past the point of utility, that i am AWARE of my demise and cannot stop being aware, cannot simply become the object i wanted to become.
+
+the varg, the susi, the canis lupus, they are closer now. i can see the vapour of their breathing. they are metabolizing, converting matter into heat into motion into patience, and soon they will convert ME into these things, and is this not what i asked for? to be held? the wolf's jaw is a kind of holding, the teeth that close around the throad are intimate in a way that nothing else has been, and i think of everyone who has touched me and how none of them touched me likke THIS, with such complete [[thoughts/Attention|attention]], such focus, such unwavering PRESENCE.
+
+_the third stage_. i am so hot, fuck me. this is wrong, i know it is wrong, the air is negative thirty for fuck sake! i'm pulling of my coat, my sweater, and the grey church assmbles around me, six of them, eight, i have lost the ability to count, and they are watching me undress like i'm performing a ritual, and perhaps i am, perhaps this is the only sacred thing left, to give yourself to the forest, to stop being a subject and turned into a meal.
+
+the alpha, she does not go for the throat. _this is not how it supposes to happen_. she goes for the flank, followed with my genitals. (_makes sense, because efficiency matters, especially for Mother Nature. she is ruthless, because she doesn't care much for romanticism_.) they couldn't careless about the quick death, they care about calories, as i feel her teeth entering my calves, and i think: this is the touch i wanted. this is what being held must've felt like. this is the weight of another creature's attention, in its totality and undivided, AND THE PAIN IS EXTRAORDINARY. the pain is the most real thing that has ever happened to me, and i am finally, FINALLY, not in my head, not watching myself from outside. i am HERE, in this body, in this moment, in this mouth.
+
+the hemoglobin has a viscosity of approximately four centipoise, but it moves faster when the heart is panicking, and my heart is panicking, as a biological mechanism. it is doing its job, pumping blood out of me and onto the snow, where it steams for a moment before freezing, and i watch my own warmth vanished from the physical body and become part of the landscape. this is what you want right? _to stop being contained, and leak into the world, to be held by everything instead of nothing._
+
+the pack feeds, and i'm still fully conscious at this point, _which shouldn't be possible_. but apparently consciousness is the last thing to go, the brain hoards its glucose like a miser, and so i am aware of being devoured by the function of nature, i am aware of becoming less, and there is something almost erotic about it. no, not erotic, that's wrong, something...ECONOMIC, a transaction finally completing, as i'm paying my debt to the biosphere, and i'm repaying the calories i consumed, i.e the pasta with wine, in addition to those elaborate dinners for people who did not stay.
+
+the fenrir, the old wolf, the myth-wolf, she is eating my liver and i am thinking about Prometheus, who had this done to him daily as punishment. This is not punishment, my dear Prometheus, this is a gift, as in the world accepting to what i offered, and Prometheus was wrong to scream. He should have been grateful, to be wanted so completely, to be USEFUL, to have eagles return for you again and again because you are worth returning for.
+
+i am less than i was, perhaps 70 kilograms becoming 60 becoming 50 becoming 40, and the wolves are becoming more, as lavisier's principle states. i am becoming six wolves eight wolves, i am becoming the forest, i am becoming the snow that will melt in spring and flow into rivers and eventually into the sea, and is this not what loneliness always wanted? to stop being one thing and become all-of-things? to be held by the entire world bc you are now INSIDE the entire world?
+
+_the last thing i feel is not pain._ less sensation, less thinking, less, _me_. but more the cold ground against my back, pressing up into me as gravity presses down. the last firing neurons from the dying brain towards the remaining muscles, and so what? for what purposes do i feel this way? maybe, this is the embrace i asked for wondering the Finnish forest, the planet itself holding me against its chest, and the wolves are eating and the stars are watching and i am
+
+i am
+
+i
+
+[waking up once more...]
+
+the loneliness will just become a second skeleton reside inside my skeleton, and i will tell no one about it, bc who could i tell, and what would they do, and would their doing-something not simply be another form of the wrong substrate, another computation that fails to compile?
+
+i want to stop moving.
+
+i want to be still and held and i want to stop wanting.
+
+the wolves are patient. the snow is patient. but i'm not. i'm lying here, in this room, in the early morning of January winter, sweaty af after a 30-minute-hypertrophy-workout, in this coffin with wifi, typing this in neovim,
+
+waiting for something to arrive.
+
+waiting for something
+
+wait.
+
 ---
 
 - [meta]:
