@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-01-03 17:06:13 GMT-05:00
+modified: 2026-01-06 06:28:17 GMT-05:00
 permalinks:
   - /website
   - /tweets
@@ -489,6 +489,10 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://feather.computer/ -- Feather Computer
+  - [meta]:
+    - date: 01/05/2026
+    - tags: [tools]
 - https://arthshaha.com/play -- play
   - [meta]:
     - date: 12/22/2025
@@ -5290,6 +5294,10 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://www.youtube.com/watch?v=ayh-ehvFVfU -- Irwin Weil on Dostoevsky
+  - [meta]:
+    - date: 01/06/2026
+    - tags: [pathology, absurdism]
 - https://www.thelastrationalist.com/rationality-is-not-systematized-winning.html -- Rationality is not Systematized Winning
   - [meta]:
     - date: 01/02/2026
@@ -6100,6 +6108,18 @@ title: are.na
 
 ## design
 
+- https://pickle.com/os
+  - [meta]:
+    - date: 01/05/2026
+    - tags: [progressive, os]
+- https://www.craftwithanna.com/
+  - [meta]:
+    - date: 01/05/2026
+    - tags: [interaction]
+- https://www.gardenintel.com/
+  - [meta]:
+    - date: 01/04/2026
+    - tags: [company]
 - https://www.doc.cc/
   - [meta]:
     - date: 01/02/2026
@@ -6274,6 +6294,10 @@ title: are.na
 
 ## video
 
+- https://www.youtube.com/watch?v=SHK-xtGWYc8 -- Tis as easy as lying
+  - [meta]:
+    - date: 01/05/2026
+    - tags: [acting]
 - https://www.youtube.com/watch?v=PUv66718DII -- Bret Victor, Inventing on Principle [**]
   - [meta]:
     - date: 12/21/2025
@@ -6614,6 +6638,10 @@ title: are.na
 
 ## arts
 
+- https://www.jackywinter.com/category/illustrators-and-makers?id=flutterfilms.tv%2FJackyWinter_AnimationReel_FINAL -- Jacky Winter
+  - [meta]:
+    - date: 01/06/2026
+    - tags: [masonry]
 - https://4columns.org/livingstone-jo/spectrum-of-desire
   - [meta]:
     - date: 01/02/2026

@@ -3,7 +3,7 @@ date: "2025-12-31"
 description: on contigency, convictions, and Tractatus.
 id: 2025-lists
 layout: technical-tractatus
-modified: 2026-01-03 17:28:14 GMT-05:00
+modified: 2026-01-05 02:42:32 GMT-05:00
 seealso:
   - "[[posts/2025|hyperabundance]]"
 signature: Your present self
@@ -99,7 +99,7 @@ Jacques Lacan
 - _1.4_ the body is a Bayesian engine with strong priors accumulated through sustained engagement.
   - sleeping beside her encoded "this is her-side" across thousands of co-activations. the prior is strong.
   - a single observation—she is gone—cannot overcome a strong prior. Bayesian updating with strong priors requires accumulated counter-evidence.
-  - grief is the lag between propositional update (instant) and distributional update (gradual). the reflective mind knows. the body has not yet accumulated sufficient counter-evidence.
+  - grief is the lag between propositional update (instant) and distributional update (gradual). the reflective mind knows that the body has yet to accumulate sufficient counter-evidence.
 
 - _1.5_ canonical events are high-salience signals that accelerate but do not eliminate the lag.
   - normally attention reallocates gradually according to heuristics. canonical events override heuristics through salience.
