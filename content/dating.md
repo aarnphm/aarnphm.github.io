@@ -7,7 +7,7 @@ aliases:
 date: "2025-08-09"
 description: just another fish in the sea.
 id: dating
-modified: 2026-01-03 04:15:02 GMT-05:00
+modified: 2026-01-06 10:03:35 GMT-05:00
 noindex: true
 slides: true
 tags:
@@ -89,12 +89,12 @@ I'm someone you can rely on[^1] --when I make a commitment to you, I'll be 100% 
 
 [^1]: reliable in both logistics and emotional capacity, but I'm still human at the end of the day.
 
-I want to build a farm one day, and a high believer in lab-grown meat [^lab-grown]
+I want to build an animal sanctuary one day, and a high believer in lab-grown meat [^lab-grown]
 
 [^lab-grown]:
-    This will be one of the most important innovation in the 21st century. Though, I would still want to raise cattle ethically.
+    This will be one of the most important innovation in the 21st century. I would still like to raise cattle ethically, alongside with this.
 
-    Note that when I refers to "direct B2C", I would expect having 3-4 families to share a cow. In this case, it would be a lot cheaper for each family comparing to getting their stock at Costco.
+    I would expect having 3-4 families to share a cow. In this case, it would be a lot cheaper for each family comparing to getting their stock at Costco.
 
 Most people know me online as `aarnphm` /urn-fm/, but you can call me _Aaron_ (or [a-a-ron](https://www.youtube.com/watch?v=zRpsRKuyi3Y&ab_channel=ComedyCentralUK)).
 
