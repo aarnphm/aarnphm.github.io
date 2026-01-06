@@ -7,7 +7,7 @@ aliases:
 date: "2024-10-30"
 description: and reverse engineering neural networks.
 id: mechanistic interpretability
-modified: 2025-11-06 01:32:51 GMT-05:00
+modified: 2026-01-06 10:02:27 GMT-05:00
 permalinks:
   - /mechinterp
   - /interpretability
@@ -1097,5 +1097,9 @@ see also: https://github.com/goodfire-ai/spd
 https://transformer-circuits.pub/2025/attention-qk
 
 > describe attention head scores as a bilinear function of feature activations on the respective query and key positions.
+
+## manipulate manifolds
+
+https://transformer-circuits.pub/2025/linebreaks/index.html
 
 [^ref]

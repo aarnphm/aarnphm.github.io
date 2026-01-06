@@ -8,7 +8,7 @@ description: part of Slouching Towards Bethlehem (1968)
 external: null
 finished: 2026
 id: On Keeping a Notebook
-modified: 2026-01-02 05:25:46 GMT-05:00
+modified: 2026-01-06 08:31:00 GMT-05:00
 notebook: null
 pdf: "[[thoughts/pdfs/00-On-Keeping-a-Notebook.pdf]]"
 posters: "[[library/posters/Slouching Towards Bethlehem.jpg]]"
@@ -71,7 +71,7 @@ But sometimes the point is harder to discern. What exactly did I have in mind wh
 
 ---
 
-But of course that is exactly it: not that I should ever use the line, but that I should remember the woman who said it and the afternoon I heard it. We were on her terrace by the sea, and we were finishing the wine left from lunch, trying to get what sun there was, a California winter sun. The woman whose husband was born the night the _Titanic_ went down wanted to rent her house, wanted to go back to her children in Paris. I remember wishing that I could afford the house, which cost $1,000 a month. "Someday you will," she said lazily. "Someday it all comes." There in the sun on her terrace it seemed easy to believe in someday, but later I had a low-grade afternoon hangover and ran over a black snake on the way to the supermarket and was flooded with inexplicable fear when I heard the checkout clerk explaining to the man ahead of me why she was finally divorcing her husband. "He left me no choice," she said over and over as she punched the register. "He has a little seven-month-old baby by her, he left me no choice." I would like to believe that my dread then was for the human condition, but of course it was for me, because I wanted a baby and did not then have one and because I wanted to own the house that cost $1,000 a month to rent and because I had a hangover.
+But of course that is exactly it: not that I should ever use the line, but that I should remember the woman who said it and the afternoon I heard it. We were on her terrace by the sea, and we were finishing the wine left from lunch, trying to get what sun there was, a California winter sun. The woman whose husband was born the night the _Titanic_ went down wanted to rent her house, wanted to go back to her children in Paris. I remember wishing that I could afford the house, which cost \$1,000 a month. "Someday you will," she said lazily. "Someday it all comes." There in the sun on her terrace it seemed easy to believe in someday, but later I had a low-grade afternoon hangover and ran over a black snake on the way to the supermarket and was flooded with inexplicable fear when I heard the checkout clerk explaining to the man ahead of me why she was finally divorcing her husband. "He left me no choice," she said over and over as she punched the register. "He has a little seven-month-old baby by her, he left me no choice." I would like to believe that my dread then was for the human condition, but of course it was for me, because I wanted a baby and did not then have one and because I wanted to own the house that cost \$1,000 a month to rent and because I had a hangover.
 
 _It all comes back._
 
