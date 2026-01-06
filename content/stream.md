@@ -38,7 +38,7 @@ metadata:
     letter        = "a".."z" ;
     digit         = "0".."9" ;
     character     = ? any printable ascii except newline ? ;
-modified: 2026-01-06 08:20:30 GMT-05:00
+modified: 2026-01-06 08:27:36 GMT-05:00
 tags:
   - fruit
   - evergreen
@@ -53,7 +53,7 @@ title: stream
     - eschatology
     - fiction
 
-_tw: death_
+_tw: death, gore, body horror_
 
 > What prepares men for totalitarian domination in the non-totalitarian world is the fact that loneliness, once a borderline experience usually suffered in certain marginal social conditions like old age, has become an everyday experience[...]
 >
@@ -93,7 +93,7 @@ _by the second stage_ i have completely forgotten why i came here. the shivering
 
 the varg, the susi, the canis lupus, they are closer now. i can see the vapour of their breathing. they are metabolizing, converting matter into heat into motion into patience, and soon they will convert ME into these things, and is this not what i asked for? to be held? the wolf's jaw is a kind of holding, the teeth that close around the throad are intimate in a way that nothing else has been, and i think of everyone who has touched me and how none of them touched me likke THIS, with such complete [[thoughts/Attention|attention]], such focus, such unwavering PRESENCE.
 
-_the third stage_. i am so hot, fuck me. this is wrong, i know it is wrong, the air is negative thirty for fuck sake! i'm pulling of my coat, my sweater, and the grey church assmbles around me, six of them, eight, i have lost the ability to count, and they are watching me undress like i'm performing a ritual, and perhaps i am, perhaps this is the only sacred thing left, to give yourself to the forest, to stop being a subject and turned into a meal.
+_the third stage_. i am so hot, fuck me. this is wrong, i know it is wrong, the air is negative thirty for fuck sake! i'm pulling of my coat, my sweater, and the grey church assembles around me, six of them, eight, i have lost the ability to count, and they are watching me undress like i'm performing a ritual, and perhaps i am, perhaps this is the only sacred thing left, to give yourself to the forest, to stop being a subject and turned into a meal.
 
 the alpha, she does not go for the throat. _this is not how it supposes to happen_. she goes for the flank, followed with my genitals. (_makes sense, because efficiency matters, especially for Mother Nature. she is ruthless, because she doesn't care much for romanticism_.) they couldn't careless about the quick death, they care about calories, as i feel her teeth entering my calves, and i think: this is the touch i wanted. this is what being held must've felt like. this is the weight of another creature's attention, in its totality and undivided, AND THE PAIN IS EXTRAORDINARY. the pain is the most real thing that has ever happened to me, and i am finally, FINALLY, not in my head, not watching myself from outside. i am HERE, in this body, in this moment, in this mouth.
 
