@@ -11,7 +11,7 @@ modified: 2025-10-29 02:14:58 GMT-04:00
 posters: "[[movies/posters/the-french-dispatch.jpg]]"
 rating: 7.1
 status: recurring
-studio: wes anderson
+studio: searchlight
 tags:
   - o/life
 title: The French Dispatch

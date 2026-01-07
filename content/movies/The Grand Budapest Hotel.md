@@ -11,7 +11,7 @@ modified: 2025-10-29 02:14:58 GMT-04:00
 posters: "[[movies/posters/the-grand-budapest-hotel.jpg]]"
 rating: 8.1
 status: recurring
-studio:
+studio: searchlight
 tags:
   - vintage
   - comedy

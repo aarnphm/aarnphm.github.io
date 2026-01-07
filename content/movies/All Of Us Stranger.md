@@ -11,7 +11,7 @@ modified: 2025-10-29 02:14:45 GMT-04:00
 posters: "[[movies/posters/all-of-us-stranger.jpg]]"
 rating: 7.6
 status: to watch
-studio: searchlight pictures
+studio: searchlight
 tags:
   - love
   - o/life

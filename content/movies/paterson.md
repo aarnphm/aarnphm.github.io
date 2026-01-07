@@ -11,7 +11,7 @@ modified: 2025-10-29 02:15:05 GMT-04:00
 posters: "[[movies/posters/paterson.jpg]]"
 rating: 7.3
 status: to watch
-studio: general
+studio: le pacte
 tags:
   - poetry
   - o/life

@@ -8,7 +8,7 @@ modified: 2025-10-29 02:14:54 GMT-04:00
 posters: "[[movies/posters/midnight-run.jpg]]"
 rating: 7.5
 status: recurring
-studio: general
+studio: universal
 tags:
   - vintage
 title: Midnight Run

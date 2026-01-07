@@ -1,4 +1,5 @@
 import "./MethodologyTree"
+import "./Tractatus"
 
 export type { QuartzMdxComponent, QuartzMdxConstructor } from "./registry"
 export {
@@ -8,3 +9,4 @@ export {
   getMdxComponents,
 } from "./registry"
 export { MethodologyTree, MethodologyStep } from "./MethodologyTree"
+export { Tractatus, TractatusPropo, TractatusRoot } from "./Tractatus"

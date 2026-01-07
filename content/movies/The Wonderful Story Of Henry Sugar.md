@@ -10,7 +10,7 @@ modified: 2025-11-09 01:46:35 GMT-05:00
 posters: "[[movies/posters/the-wonderful-story-of-henry-sugar.jpg]]"
 rating: 7.4
 status: recurring
-studio: general
+studio: netflix
 tags:
   - r/shorts
 title: The Wonderful Story of Henry Sugar

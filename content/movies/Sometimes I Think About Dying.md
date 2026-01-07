@@ -11,11 +11,12 @@ modified: 2025-10-29 02:14:56 GMT-04:00
 posters: "[[movies/posters/sometimes-i-think-about-dying.jpg]]"
 rating: 6.6
 status: to watch
-studio: general
+studio: "[independent]"
 tags:
   - o/life
   - psychology
   - love
+  - relationship
 title: Sometimes I Think About Dying
 year: 2023
 ---

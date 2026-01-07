@@ -11,7 +11,7 @@ modified: 2025-10-29 02:14:46 GMT-04:00
 posters: "[[movies/posters/batman-begins.jpg]]"
 rating: 8.2
 status: recurring
-studio:
+studio: syncopy
 tags:
   - action
   - thriller

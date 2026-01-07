@@ -11,7 +11,7 @@ modified: 2025-10-29 02:14:59 GMT-04:00
 posters: "[[movies/posters/the-perks-of-being-a-wallflower.jpg]]"
 rating: 7.9
 status: to watch
-studio: general
+studio: summit
 tags:
   - psychology
   - o/life

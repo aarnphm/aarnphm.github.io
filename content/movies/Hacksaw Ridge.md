@@ -8,7 +8,7 @@ modified: 2025-10-29 02:14:51 GMT-04:00
 posters: "[[movies/posters/hacksaw-ridge.jpg]]"
 rating: 8.1
 status: recurring
-studio: general
+studio: icon productions
 tags:
   - buster
 title: Hacksaw Ridge

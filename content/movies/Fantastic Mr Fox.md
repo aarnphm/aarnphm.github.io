@@ -11,7 +11,7 @@ modified: 2025-10-29 02:14:50 GMT-04:00
 posters: "[[movies/posters/fantastic-mr-fox.jpg]]"
 rating: 7.9
 status: recurring
-studio:
+studio: 20th century fox
 tags:
   - animation
   - family

@@ -11,9 +11,9 @@ modified: 2025-10-29 02:14:51 GMT-04:00
 posters: "[[movies/posters/killers-of-the-flower-moon.jpg]]"
 rating: 7.5
 status: recurring
-studio:
+studio: apple tv
 tags:
   - thriller
 title: Killers of the Flower Moon
-year: 2022
+year: 2023
 ---

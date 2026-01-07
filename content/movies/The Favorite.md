@@ -11,7 +11,7 @@ modified: 2025-10-29 02:14:58 GMT-04:00
 posters: "[[movies/posters/the-favorite.jpg]]"
 rating: 7.5
 status: to watch
-studio: general
+studio: element pictures
 tags:
   - politics
   - comedy

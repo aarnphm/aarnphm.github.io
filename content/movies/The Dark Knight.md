@@ -11,7 +11,7 @@ modified: 2025-10-29 02:14:57 GMT-04:00
 posters: "[[movies/posters/the-dark-knight.jpg]]"
 rating: 9.1
 status: recurring
-studio:
+studio: syncopy
 tags:
   - action
   - thriller

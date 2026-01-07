@@ -3,8 +3,9 @@ created: "2025-10-01"
 date: "2025-10-01"
 description: Functional roles, computational hermeneutics, autopoietic critiques
 id: functionalism
-modified: 2025-12-19 16:43:11 GMT-05:00
+modified: 2026-01-06 20:07:44 GMT-05:00
 seealso:
+  - "[[thoughts/chinese room|chinese room]]"
   - "[[thoughts/representations|representations]]"
   - "[[thoughts/emergent behaviour|emergent behaviour]]"
 socials:

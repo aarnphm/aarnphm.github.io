@@ -11,7 +11,7 @@ modified: 2025-10-29 02:14:55 GMT-04:00
 posters: "[[movies/posters/pulp-fiction.jpg]]"
 rating: 8.8
 status: recurring
-studio: general
+studio: miramax
 tags:
   - vintage
 title: Pulp Fiction

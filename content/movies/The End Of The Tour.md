@@ -10,7 +10,7 @@ modified: 2025-10-29 02:14:58 GMT-04:00
 posters: "[[movies/posters/the-end-of-the-tour.jpg]]"
 rating: 7.2
 status: to watch
-studio: general
+studio: modern man films
 tags:
   - writing
   - o/life

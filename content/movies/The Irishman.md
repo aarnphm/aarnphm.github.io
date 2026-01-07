@@ -11,7 +11,7 @@ modified: 2025-10-29 02:14:58 GMT-04:00
 posters: "[[movies/posters/the-irishman.jpg]]"
 rating: 7.8
 status: recurring
-studio:
+studio: tribeca
 tags:
   - family
   - film

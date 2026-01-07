@@ -11,7 +11,7 @@ modified: 2025-10-29 02:14:53 GMT-04:00
 posters: "[[movies/posters/moonrise-kingdom.jpg]]"
 rating: 7.8
 status: recurring
-studio:
+studio: focus features
 tags:
   - love
   - family

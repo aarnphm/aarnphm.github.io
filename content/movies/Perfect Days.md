@@ -11,7 +11,7 @@ modified: 2025-11-27 11:04:38 GMT-05:00
 posters: "[[movies/posters/perfect-days.jpg]]"
 rating: 7.9
 status: to watch
-studio: general
+studio: "[independent]"
 tags:
   - o/life
   - philosophy

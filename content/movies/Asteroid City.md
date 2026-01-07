@@ -11,7 +11,7 @@ modified: 2025-10-29 02:14:46 GMT-04:00
 posters: "[[movies/posters/asteroid-city.jpg]]"
 rating: 6.4
 status: recurring
-studio:
+studio: focus features
 tags:
   - absurdism
 title: Asteroid City

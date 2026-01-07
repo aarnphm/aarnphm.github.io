@@ -11,7 +11,7 @@ modified: 2025-10-29 02:14:48 GMT-04:00
 posters: "[[movies/posters/dallas-buyers-club.jpg]]"
 rating: 7.9
 status: to watch
-studio: general
+studio: focus features
 tags:
   - biology
   - politics

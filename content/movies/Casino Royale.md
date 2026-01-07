@@ -11,7 +11,7 @@ modified: 2025-10-29 02:14:47 GMT-04:00
 posters: "[[movies/posters/casino-royale.jpg]]"
 rating: 8
 status: recurring
-studio:
+studio: columbia pictures
 tags:
   - bond
 title: Casino Royale

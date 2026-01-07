@@ -11,7 +11,7 @@ modified: 2025-10-29 02:14:54 GMT-04:00
 posters: "[[movies/posters/notting-hill.jpg]]"
 rating: 7.2
 status: recurring
-studio: general
+studio: universal
 tags:
   - vintage
 title: Notting Hill

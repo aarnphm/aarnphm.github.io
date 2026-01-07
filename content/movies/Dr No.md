@@ -8,7 +8,7 @@ modified: 2025-10-29 02:14:48 GMT-04:00
 posters: "[[movies/posters/dr-no.jpg]]"
 rating: 7.2
 status: recurring
-studio:
+studio: united artists
 tags:
   - bond
 title: Dr. No

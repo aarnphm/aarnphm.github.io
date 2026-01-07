@@ -9,7 +9,7 @@ modified: 2025-10-29 02:15:03 GMT-04:00
 posters: "[[movies/posters/following.jpg]]"
 rating: 7.4
 status: recurring
-studio:
+studio: syncopy
 tags:
   - thriller
   - psychology

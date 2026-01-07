@@ -8,7 +8,7 @@ modified: 2025-10-29 02:15:02 GMT-04:00
 posters: "[[movies/posters/under-the-silver-lake.jpg]]"
 rating: 6.5
 status: to watch
-studio: general
+studio: a24
 tags:
   - thriller
   - absurdism

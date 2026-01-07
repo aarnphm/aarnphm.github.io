@@ -9,7 +9,7 @@ modified: 2025-10-29 02:15:01 GMT-04:00
 posters: "[[movies/posters/there-will-be-blood.jpg]]"
 rating: 8.2
 status: to watch
-studio:
+studio: paramount vantage
 tags:
   - finance
   - politics

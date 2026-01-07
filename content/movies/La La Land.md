@@ -8,7 +8,7 @@ modified: 2025-10-29 02:14:53 GMT-04:00
 posters: "[[movies/posters/la-la-land.jpg]]"
 rating: 8
 status: recurring
-studio: general
+studio: summit
 tags:
   - thriller
 title: La La Land
