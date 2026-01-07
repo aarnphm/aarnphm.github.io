@@ -11,7 +11,7 @@ modified: 2025-10-29 02:14:53 GMT-04:00
 posters: "[[movies/posters/mean-streets.jpg]]"
 rating: 7.2
 status: recurring
-studio:
+studio: warner bros
 tags:
   - vintage
   - o/life

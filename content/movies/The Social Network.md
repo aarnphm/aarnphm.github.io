@@ -8,7 +8,7 @@ modified: 2025-10-29 02:15:00 GMT-04:00
 posters: "[[movies/posters/the-social-network.jpg]]"
 rating: 7.8
 status: recurring
-studio: general
+studio: columbia pictures
 tags:
   - buster
 title: The Social Network

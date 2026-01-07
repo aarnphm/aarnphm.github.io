@@ -11,7 +11,7 @@ modified: 2025-10-29 02:14:59 GMT-04:00
 posters: "[[movies/posters/the-king-of-comedy.jpg]]"
 rating: 7.8
 status: to watch
-studio:
+studio: 20th century fox
 tags:
   - comedy
   - psychology

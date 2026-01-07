@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-01-06 06:28:17 GMT-05:00
+modified: 2026-01-06 20:29:42 GMT-05:00
 permalinks:
   - /website
   - /tweets
@@ -6108,6 +6108,10 @@ title: are.na
 
 ## design
 
+- https://wabi.ai/
+  - [meta]:
+    - date: 01/06/2026
+    - tags: [app store, liquid glass]
 - https://pickle.com/os
   - [meta]:
     - date: 01/05/2026
@@ -6294,6 +6298,11 @@ title: are.na
 
 ## video
 
+- https://www.youtube.com/watch?v=mWAF-BKlj0M -- when the villain breaks all the rules.. of being a villain
+  - [meta]:
+    - date: 01/06/2026
+    - tags: [acting, absurdism]
+    - later: true
 - https://www.youtube.com/watch?v=SHK-xtGWYc8 -- Tis as easy as lying
   - [meta]:
     - date: 01/05/2026
@@ -6744,6 +6753,10 @@ title: are.na
 
 ## resources
 
+- https://www.alphaxiv.org/wrapped/019a24b9-72e1-77ec-9f8a-7deb13e41d21 -- AlphaXiv Wrapped 2025
+  - [meta]:
+    - date: 01/06/2026
+    - tags: [research, productivity]
 - https://www.rheingold.com/texts/tft/ -- Tool for Thought, by Howard Rheingold
   - [meta]:
     - date: 01/02/2026

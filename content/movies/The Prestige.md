@@ -11,7 +11,7 @@ modified: 2025-10-29 02:14:59 GMT-04:00
 posters: "[[movies/posters/the-prestige.jpg]]"
 rating: 8.5
 status: recurring
-studio:
+studio: syncopy
 tags:
   - thriller
   - technical

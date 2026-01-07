@@ -11,7 +11,7 @@ modified: 2025-10-29 02:15:03 GMT-04:00
 posters: "[[movies/posters/dunkirk.jpg]]"
 rating: 7.8
 status: recurring
-studio:
+studio: syncopy
 tags:
   - history
   - thriller

@@ -9,7 +9,7 @@ modified: 2025-10-29 02:14:53 GMT-04:00
 posters: "[[movies/posters/never-say-never-again.jpg]]"
 rating: 6.1
 status: finished
-studio:
+studio: warner bros
 tags:
   - bond
 title: Never Say Never Again

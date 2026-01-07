@@ -10,7 +10,7 @@ id: tenet
 modified: 2025-10-29 02:15:06 GMT-04:00
 posters: "[[movies/posters/tenet.jpg]]"
 status: recurring
-studio:
+studio: syncopy
 tags:
   - recursion
   - time

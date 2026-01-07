@@ -8,7 +8,7 @@ modified: 2025-10-29 02:14:56 GMT-04:00
 posters: "[[movies/posters/the-banshees-of-inisherin.jpg]]"
 rating: 7.7
 status: recurring
-studio: general
+studio: searchlight
 tags:
   - thriller
 title: The Banshees of Inisherin

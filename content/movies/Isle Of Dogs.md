@@ -11,7 +11,7 @@ modified: 2025-10-29 02:14:51 GMT-04:00
 posters: "[[movies/posters/isle-of-dogs.jpg]]"
 rating: 7.8
 status: recurring
-studio:
+studio: 20th century fox
 tags:
   - animation
   - politics

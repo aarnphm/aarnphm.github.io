@@ -9,7 +9,7 @@ modified: 2025-10-29 02:15:05 GMT-04:00
 posters: "[[movies/posters/octopussy.webp]]"
 rating: 6.5
 status: recurring
-studio:
+studio: united artists
 tags:
   - bond
 title: Octopussy

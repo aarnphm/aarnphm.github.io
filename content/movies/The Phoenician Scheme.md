@@ -5,7 +5,7 @@ title: The Phoenician Scheme
 director:
   - Wes Anderson
 status: to watch
-studio: "[independent]"
+studio: focus features
 watched:
 year: 2025
 rating: 6.9

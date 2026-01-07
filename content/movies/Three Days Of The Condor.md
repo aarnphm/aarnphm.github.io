@@ -11,7 +11,7 @@ modified: 2025-10-29 02:15:01 GMT-04:00
 posters: "[[movies/posters/three-days-of-the-condor.jpg]]"
 rating: 7.4
 status: to watch
-studio: general
+studio: paramount
 tags:
   - vintage
   - thriller

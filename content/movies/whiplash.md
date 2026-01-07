@@ -8,7 +8,7 @@ modified: 2025-10-29 02:15:06 GMT-04:00
 posters: "[[movies/posters/whiplash.jpg]]"
 rating: 8.5
 status: recurring
-studio: general
+studio: sony pictures classics
 tags:
   - thriller
 title: Whiplash

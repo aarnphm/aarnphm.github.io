@@ -10,7 +10,7 @@ modified: 2025-10-29 02:15:05 GMT-04:00
 posters: "[[movies/posters/oppenheimer.jpg]]"
 rating: 8.2
 status: recurring
-studio:
+studio: syncopy
 tags:
   - technical
   - history

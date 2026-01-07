@@ -8,7 +8,7 @@ modified: 2025-10-29 02:15:02 GMT-04:00
 posters: "[[movies/posters/we-wont-grow-old-together.jpg]]"
 rating: 7.2
 status: recurring
-studio: general
+studio: les films du losange
 tags:
   - seed
 title: We Won't Grow Old Together

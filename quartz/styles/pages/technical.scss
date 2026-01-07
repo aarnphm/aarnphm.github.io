@@ -14,15 +14,26 @@ body[data-layout="technical"] {
 }
 
 body[data-layout="technical-tractatus"] {
-  --tractatus-number-col: 7.5ch;
-  --tractatus-number-gap: 1.2rem;
-  --tractatus-number-indent: 0.8rem;
-
   .page-content :is(ul, ol) {
     list-style: none;
     padding-inline-start: 0;
     margin-left: 0;
   }
+}
+
+section[class~="tractatus-root"] {
+  ul,
+  ol {
+    list-style: none;
+    padding-inline-start: 0;
+    margin-left: 0;
+  }
+}
+
+body {
+  --tractatus-number-col: 7.5ch;
+  --tractatus-number-gap: 1.2rem;
+  --tractatus-number-indent: 0.8rem;
 
   .tractatus-list {
     margin: 0;

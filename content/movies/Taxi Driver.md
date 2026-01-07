@@ -11,7 +11,7 @@ modified: 2025-10-29 02:14:56 GMT-04:00
 posters: "[[movies/posters/taxi-driver.jpg]]"
 rating: 8.2
 status: recurring
-studio:
+studio: columbia pictures
 tags:
   - vintage
   - thriller

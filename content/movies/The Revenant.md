@@ -8,7 +8,7 @@ modified: 2025-10-29 02:14:59 GMT-04:00
 posters: "[[movies/posters/the-revenant.jpg]]"
 rating: 8
 status: recurring
-studio: general
+studio: ratpac
 tags:
   - thriller
 title: The Revenant

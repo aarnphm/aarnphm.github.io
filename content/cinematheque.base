@@ -24,7 +24,7 @@ properties:
   note.category:
     displayName: category
   note.studio:
-    displayName: distribution
+    displayName: production company
   note.runtime:
     displayName: runtime
   note.watched:
@@ -72,11 +72,12 @@ views:
   - type: table
     name: to watch
     filters:
-      and:
-        - status == "to-watch"
+      or:
+        - status == "to watch"
+        - watched.isEmpty()
     groupBy:
-      property: category
-      direction: ASC
+      property: year
+      direction: DESC
     order:
       - title
       - year
@@ -278,6 +279,8 @@ views:
       - description
       - posters
     sort:
+      - property: watched
+        direction: ASC
       - property: status
         direction: DESC
       - property: rating

@@ -11,7 +11,7 @@ modified: 2025-12-16 02:57:27 GMT-05:00
 posters: "[[movies/posters/green-book.jpg]]"
 rating: 8.2
 status: recurring
-studio: general
+studio: dreamworks
 tags:
   - drama
 title: Green Book

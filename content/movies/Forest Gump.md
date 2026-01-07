@@ -11,7 +11,7 @@ modified: 2025-10-29 02:14:50 GMT-04:00
 posters: "[[movies/posters/forest-gump.jpg]]"
 rating: 8.8
 status: recurring
-studio: general
+studio: paramount
 tags:
   - vintage
 title: Forest Gump

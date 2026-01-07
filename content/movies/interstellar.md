@@ -11,7 +11,7 @@ modified: 2025-10-29 02:15:04 GMT-04:00
 posters: "[[movies/posters/interstellar.jpg]]"
 rating: 8.7
 status: recurring
-studio:
+studio: syncopy
 tags:
   - p/sf
   - technical

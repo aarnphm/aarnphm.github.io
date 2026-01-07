@@ -11,7 +11,7 @@ modified: 2025-10-29 02:14:45 GMT-04:00
 posters: "[[movies/posters/a-real-pain.jpg]]"
 rating: 8
 status: finished
-studio: searchlight pictures
+studio: searchlight
 tags:
   - history
   - psychology

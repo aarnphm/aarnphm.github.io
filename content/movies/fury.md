@@ -8,7 +8,7 @@ modified: 2025-10-29 02:15:03 GMT-04:00
 posters: "[[movies/posters/fury.jpg]]"
 rating: 7.6
 status: recurring
-studio: general
+studio: columbia pictures
 tags:
   - thriller
 title: Fury

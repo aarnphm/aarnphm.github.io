@@ -11,7 +11,7 @@ modified: 2025-10-29 02:14:47 GMT-04:00
 posters: "[[movies/posters/chungking-express.jpg]]"
 rating: 7.9
 status: to watch
-studio: general
+studio: miramax
 tags:
   - love
   - o/relationship

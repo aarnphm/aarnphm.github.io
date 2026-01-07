@@ -11,7 +11,7 @@ modified: 2025-10-29 02:14:47 GMT-04:00
 posters: "[[movies/posters/butch-cassidy-and-the-sundance-kid.jpg]]"
 rating: 8
 status: to watch
-studio: general
+studio: 20th century fox
 tags:
   - vintage
   - friend
