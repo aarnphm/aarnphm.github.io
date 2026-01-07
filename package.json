@@ -47,7 +47,7 @@
     "@cloudflare/workers-oauth-provider": "^0.2.2",
     "@floating-ui/dom": "^1.7.4",
     "@huggingface/transformers": "^3.8.1",
-    "@modelcontextprotocol/sdk": "^1.25.1",
+    "@modelcontextprotocol/sdk": "^1.25.2",
     "@myriaddreamin/rehype-typst": "^0.6.0",
     "@myriaddreamin/typst-ts-node-compiler": "^0.6.0",
     "@myriaddreamin/typst.ts": "^0.6.0",
