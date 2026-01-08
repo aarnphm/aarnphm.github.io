@@ -38,11 +38,27 @@ metadata:
     letter        = "a".."z" ;
     digit         = "0".."9" ;
     character     = ? any printable ascii except newline ? ;
-modified: 2026-01-06 20:05:07 GMT-05:00
+modified: 2026-01-07 10:46:12 GMT-05:00
 tags:
   - fruit
   - evergreen
 title: stream
+---
+
+- [meta]:
+  - date: 2026-01-07 06:50:11 GMT-05:00
+  - tags:
+    - philosophy
+
+I usually go to school relatively early, given that now I'm living in Toronto. I'm reading Ramsey's [Truth and Probability](https://fitelson.org/probability/ramsey.pdf) while waiting for compiler labs I have at 1000. In p.176 he wrote:
+
+> i am at a cross-roads and do not know the way; but i rather think one of the two ways is right. i propose therefore to go that way but keep my eyes open for someone to ask; if now i see someone half a mile away over the fields, whether i turn aside to ask him will depend on the relative inconvenience of going out of my way to cross the fields or of continuing on the wrong road if it is the wrong road.
+> but it will also depend on how confident i am that i am right; and clearly the more confident i am of this the less distance i should be willing to go from the road to check my opinion. i propose therefore to use the distance i would be prepared to go to ask, as a measure of the confidence of my opinion.
+
+Ramsey then formalized with _the degree of belief_ {{sidenotes[to be]: here the disadvantages of going $x$ yards is $f(x)$, advantage of arriving right $r$}} $p = 1 - f(d)/(r-w)$
+
+
+
 ---
 
 ## being held against lonesome

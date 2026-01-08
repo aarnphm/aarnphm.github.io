@@ -5,7 +5,7 @@ aliases:
 date: "2022-04-22"
 description: my working notes, as a form of a digital garden
 id: _index
-modified: 2025-12-20 05:48:53 GMT-05:00
+modified: 2026-01-07 20:18:09 GMT-05:00
 tags:
   - sapling
   - fruit
@@ -14,7 +14,7 @@ title: Aaron's notes
 
 Hi, my name is Aaron. I'm best reached via [twitter](https://twitter.com/aarnphm) or [email](mailto:contact@aarnphm.xyz).
 
-I'm [[thoughts/craft|working]] at a [startup](https://bentoml.com) building #ml serving systems, where I mainly focus on [[thoughts/LLMs|LLM]] [[thoughts/vllm|inference engine]].
+I'm [[thoughts/craft|working]] on #ml serving systems, and they work for me.
 
 ```telescopic id="thoughts"
 * I try to be
@@ -68,4 +68,6 @@ I'm [[thoughts/craft|working]] at a [startup](https://bentoml.com) building #ml 
                                                 * about their intrinsic [[thoughts/Agency|drive]].
 ```
 
-I would like to do [[research]] at some point. As far as [[thoughts/aesthetic value|aesthetic]] goes, I spend a lot of time [[thoughts/reading|reading]] [[antilibrary|books]], watching [[cinematheque|cinema]], and [[vibes|collecting images]] on the internet ==outside of work==. This is my [[/dating|date-me doc]] if you are interested ✨
+[[research]] is something top of mind. I mainly focus on effective [[thoughts/vllm|inference engine]] and model behaviour.
+
+As far as [[thoughts/aesthetic value|aesthetic]] goes, I spend a lot of time [[thoughts/reading|reading]] [[antilibrary|books]], watching [[cinematheque|cinema]], and [[vibes|collecting images]] on the internet ==outside of work==. This is my [[/dating|date-me doc]] if you are interested ✨

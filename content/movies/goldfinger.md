@@ -13,4 +13,5 @@ tags:
   - bond
 title: Goldfinger
 year: 1964
+watched: 2025-07-21
 ---

@@ -77,32 +77,12 @@ const Layout = {
 
 type FolderLayout = (typeof Layout)[keyof typeof Layout]
 
-const parseFolderLayout = (input: unknown): FolderLayout => {
-  if (Array.isArray(input)) {
-    for (const candidate of input) {
-      const parsed = parseFolderLayout(candidate)
-      if (parsed !== Layout.defn) {
-        return parsed
-      }
-    }
-    return Layout.defn
-  }
+const parseFolderLayout = (input: string): FolderLayout => {
+  if (Array.isArray(input)) return parseFolderLayout(input[0])
 
-  if (typeof input !== "string") {
-    return Layout.defn
-  }
-
-  const normalized = input.trim().toUpperCase()
-  switch (normalized) {
-    case Layout.etas:
-      return Layout.etas
-    case Layout.alsp:
-      return Layout.alsp
-    case Layout.lovp:
-      return Layout.lovp
-    default:
-      return Layout.defn
-  }
+  const normalized = input.trim().toUpperCase() as FolderLayout
+  const valid = Object.values(Layout)
+  return valid.includes(normalized) ? normalized : Layout.defn
 }
 
 /**
@@ -328,18 +308,14 @@ export default ((opts?: Partial<FolderContentOptions>) => {
       }
     }
 
-    const rawLayout = fileData.frontmatter?.["folderLayout"] ?? fileData.frontmatter?.["pageLayout"]
-    const layout = parseFolderLayout(rawLayout)
+    const layout = parseFolderLayout(fileData.frontmatter?.pageLayout!)
 
     const cssClasses: string[] = fileData.frontmatter?.cssclasses ?? []
     const baseClassList = ["popover-hint", "notes-list", "side-col", ...cssClasses]
     const baseListClass = baseClassList.join(" ")
     const listClassName =
       layout === Layout.etas ? `${baseListClass} folder-layout--list` : baseListClass
-    const content =
-      (tree as Root).children.length === 0
-        ? fileData.description
-        : htmlToJsx(fileData.filePath!, tree)
+    const content = htmlToJsx(fileData.filePath!, tree)
 
     const listProps = {
       ...props,

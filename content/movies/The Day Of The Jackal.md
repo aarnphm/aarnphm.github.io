@@ -15,6 +15,7 @@ tags:
   - seed
 title: The Day of the Jackal
 year: 1973
+watched: 2025-10-15
 ---
 
 There is also a remake series (2024) starring Eddie Redmayne. (very chill)

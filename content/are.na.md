@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-01-06 20:29:42 GMT-05:00
+modified: 2026-01-08 07:27:56 GMT-05:00
 permalinks:
   - /website
   - /tweets
@@ -143,6 +143,10 @@ title: are.na
 - [meta]:
   - view: list
 
+- https://x.com/0xluffy/status/2009074401657200992?s=20 -- praying that the baddie is not going to talk to me
+  - [meta]:
+    - date: 01/07/2026
+    - tags: [meme]
 - https://x.com/nickcammarata/status/2006606288004997146 -- Interpretable heart pattern
   - [meta]:
     - date: 01/02/2026
@@ -489,6 +493,11 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://68.netlify.app/ -- 68 Bits of Unsolicited Advice
+  - [meta]:
+    - date: 01/08/2026
+    - tags: [markovian, random]
+  - https://kk.org/thetechnium/68-bits-of-unsolicited-advice/
 - https://feather.computer/ -- Feather Computer
   - [meta]:
     - date: 01/05/2026
@@ -947,6 +956,10 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://www.dannywhite.net/ -- Danny White
+  - [meta]:
+    - date: 01/08/2026
+    - tags: [designer]
 - https://www.vvhuang.com/ -- Vincent Huang
   - [meta]:
     - date: 01/02/2026
@@ -2002,6 +2015,10 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://clarkesworldmagazine.com/kim_02_24/ -- Why Don't We Just Kill the Kid In the Omelas Hole
+  - [meta]:
+    - date: 01/07/2026
+    - tags: [fiction, life]
 - https://www.doc.cc/articles/power-of-beauty -- The power of beauty in communicating complex ideas
   - [meta]:
     - date: 01/02/2026
@@ -3100,6 +3117,7 @@ title: are.na
   - [meta]:
     - date: 10/05/2025
     - tags: [productivity]
+    - pinned: true
   - Even more importantly than freeing up time, clearing my schedule made sure the project was the top idea in my mind. If I don’t do that, it’s easy for me to let projects “go on autopilot,” where I keep them running but don’t proactively make time to think through things like whether we should change goals, add or drop priorities, or do other “non-obvious” things.
 - https://newsletter.squishy.computer/p/all-you-need-is-links -- All you need is links [**]
   - [meta]:
@@ -3677,6 +3695,10 @@ title: are.na
     - date: 12/17/2025
     - tags: [safety, alignment, anchoring]
     - later: true
+- http://joschu.net/blog/opinionated-guide-ml-research.html -- An Opinionated Guide to ML Research
+  - [meta]:
+    - date: 01/07/2026
+    - tags: [research, taste]
 - https://www.alignmentforum.org/posts/Ldrss6o3tiKT6NdMm/my-research-process-understanding-and-cultivating-research -- Neel's Cultivating Research Taste [**]
   - [meta]:
     - date: 12/17/2025
@@ -6108,6 +6130,14 @@ title: are.na
 
 ## design
 
+- https://amylalai.com/untitledlyrics-fromhome -- Lyrics for Untitled
+  - [meta]:
+    - date: 01/07/2026
+    - tags: [ux]
+- https://www.davepagurek.com/programming/stretch-text/
+  - [meta]:
+    - date: 01/07/2026
+    - tags: [caligraphy]
 - https://wabi.ai/
   - [meta]:
     - date: 01/06/2026
@@ -7302,6 +7332,10 @@ title: are.na
     - tags: [gpu]
     - later: true
   - see also: [[thoughts/GPU programming|gpu programming]]
+- https://asawicki.info/articles/state_of_gpu_hardware_2025.php -- State of GPU Hardware (2025)
+  - [meta]:
+    - date: 01/08/2026
+    - tags: [gpu]
 - https://www.csc.liv.ac.uk/~epa/surveyhtml.html -- Survey on two-dimensional packing
   - [meta]:
     - date: 12/12/2025
@@ -7565,6 +7599,16 @@ title: are.na
 
 ## organizations
 
+- https://www.modular.com/ -- Modular
+  - [meta]:
+    - date: 01/07/2026
+    - tags: [inference]
+    - pinned: true
+- https://www.primeintellect.ai/ -- Prime Intellect
+  - [meta]:
+    - date: 01/07/2026
+    - tags: [inference]
+    - pinned: true
 - https://www.osv.llc/ -- O'Shaughnessy Ventures
   - [meta]:
     - date: 12/23/2025

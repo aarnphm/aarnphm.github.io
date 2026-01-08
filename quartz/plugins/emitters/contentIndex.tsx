@@ -34,6 +34,7 @@ export type ContentLayout =
   | "L->ET|A"
   | "L->EAT"
   | "A|L"
+  | "L"
 export type ContentDetails = {
   slug: string
   title: string

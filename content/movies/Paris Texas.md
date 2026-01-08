@@ -11,7 +11,7 @@ modified: 2025-10-29 02:14:54 GMT-04:00
 posters: "[[movies/posters/paris-texas.jpg]]"
 rating: 8.1
 status: to watch
-studio: 20th century fox
+studio: argos films
 tags:
   - love
   - o/life

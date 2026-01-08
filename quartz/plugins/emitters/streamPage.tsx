@@ -7,7 +7,7 @@ import { pathToRoot } from "../../util/path"
 import { sharedPageComponents, defaultContentPageLayout } from "../../../quartz.layout"
 import { write } from "./helpers"
 import { BuildCtx } from "../../util/ctx"
-import { Node } from "unist"
+import { Root } from "hast"
 import { StaticResources } from "../../util/resources"
 import { QuartzPluginData } from "../vfile"
 import StreamPageComponent from "../../components/pages/StreamPage"
@@ -16,7 +16,7 @@ import StreamSearchComponent from "../../components/StreamSearch"
 // FIXME: for links transformation on date subpages, make sure to not include original slug here.
 async function processStreamPage(
   ctx: BuildCtx,
-  tree: Node,
+  tree: Root,
   fileData: QuartzPluginData,
   allFiles: QuartzPluginData[],
   opts: FullPageLayout,

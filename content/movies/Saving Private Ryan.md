@@ -10,7 +10,7 @@ modified: 2025-10-29 02:14:56 GMT-04:00
 posters: "[[movies/posters/saving-private-ryan.jpg]]"
 rating: 8.6
 status: recurring
-studio: dreamworks
+studio: dreamworks pictures
 tags:
   - buster
 title: Saving Private Ryan

@@ -38,6 +38,6 @@ export function htmlToJsx(fp: FilePath, tree: Node) {
     })
   } catch (e) {
     trace(`Failed to parse Markdown in \`${fp}\` into JSX`, e as Error)
-    return null
+    return undefined
   }
 }
