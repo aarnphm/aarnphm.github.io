@@ -6,7 +6,7 @@ director:
   - Michael Angelo Covino
 status: finished
 studio: neon
-watched:
+watched: 2026-01-07
 year: 2025
 rating: 6.8
 category:

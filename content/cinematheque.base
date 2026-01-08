@@ -32,6 +32,9 @@ properties:
 views:
   - type: cards
     name: gallery
+    groupBy:
+      property: year
+      direction: DESC
     order:
       - title
       - director
@@ -48,27 +51,6 @@ views:
         direction: ASC
     cardSize: 320
     image: note.posters
-  - type: table
-    name: all
-    groupBy:
-      property: year
-      direction: DESC
-    order:
-      - file.name
-      - director
-      - status
-      - studio
-    sort:
-      - property: director
-        direction: DESC
-      - property: status
-        direction: DESC
-      - property: title
-        direction: ASC
-    columnSize:
-      file.name: 369
-      note.director: 200
-      note.studio: 193
   - type: table
     name: to watch
     filters:
@@ -100,7 +82,7 @@ views:
       and:
         - status == "finished"
     groupBy:
-      property: watched
+      property: year
       direction: DESC
     order:
       - title
@@ -124,9 +106,6 @@ views:
       note.rating: 100
   - type: table
     name: by director
-    filters:
-      and:
-        - status == "finished"
     groupBy:
       property: director
       direction: ASC
@@ -145,31 +124,6 @@ views:
     columnSize:
       note.title: 350
       note.year: 100
-      note.rating: 100
-  - type: table
-    name: by year
-    filters:
-      and:
-        - status == "finished"
-    groupBy:
-      property: year
-      direction: DESC
-    order:
-      - title
-      - year
-      - director
-      - rating
-      - category
-    sort:
-      - property: year
-        direction: DESC
-      - property: rating
-        direction: DESC
-      - property: title
-        direction: ASC
-    columnSize:
-      note.title: 350
-      note.director: 200
       note.rating: 100
   - type: table
     name: vintage
@@ -196,9 +150,6 @@ views:
       note.director: 200
   - type: table
     name: by studio
-    filters:
-      and:
-        - studio.containsAny("a24", "wes anderson", "christopher nolan", "martin scorsese")
     groupBy:
       property: studio
       direction: ASC

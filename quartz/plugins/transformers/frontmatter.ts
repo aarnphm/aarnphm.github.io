@@ -208,7 +208,7 @@ export const FrontMatter: QuartzTransformerPlugin = () => ({
         const published = coalesceAliases(data, ["publishDate", "published", "date"])
         if (published) data.published = published
 
-        let layout = coalesceAliases(data, ["pageLayout", "layout"])
+        let layout = coalesceAliases(data, ["pageLayout", "folderLayout", "layout"])
         layout ||= "default"
         data.pageLayout = layout
 

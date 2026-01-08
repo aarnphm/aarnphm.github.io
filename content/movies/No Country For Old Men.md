@@ -8,7 +8,7 @@ modified: 2025-10-29 02:14:54 GMT-04:00
 posters: "[[movies/posters/no-country-for-old-men.jpg]]"
 rating: 8.2
 status: recurring
-studio: paramount vantage
+studio: miramax
 tags:
   - thriller
 title: No Country for Old Men

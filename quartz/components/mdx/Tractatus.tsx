@@ -6,7 +6,11 @@ import {
   toChildArray,
   type VNode,
 } from "preact"
-import { registerMdxComponent, type QuartzMdxComponent, type QuartzMdxConstructor } from "./registry"
+import {
+  registerMdxComponent,
+  type QuartzMdxComponent,
+  type QuartzMdxConstructor,
+} from "./registry"
 
 type BasePropoProps = {
   suffix: string

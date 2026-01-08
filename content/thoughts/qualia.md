@@ -2,15 +2,22 @@
 date: "2025-11-10"
 description: phenomenal properties and what resists functional explanation
 id: qualia
-modified: 2025-11-19 15:41:44 GMT-05:00
+modified: 2026-01-08 07:07:29 GMT-05:00
+seealso:
+  - "[[thoughts/functionalism]]"
+  - "[[thoughts/identity]]"
+  - "[[thoughts/representation]]"
+  - "[[thoughts/philosophical zombies]]"
+  - "[[thoughts/knowledge argument]]"
+  - "[[thoughts/inverted spectrum]]"
+  - "[[thoughts/chinese room]]"
+  - "[[thoughts/Attention]]"
 tags:
   - philosophy
   - pattern
   - consciousness
 title: qualia
 ---
-
-see also: [[thoughts/functionalism]], [[thoughts/identity]], [[thoughts/representations]]
 
 when i think about qualia, i’m usually not trying to define them cleanly; i’m noticing the stubborn feeling that my experiences have a "what-it’s-like" character that my functional stories don’t touch.
 
@@ -91,7 +98,3 @@ The functionalist wants to explain mind in terms of causal structure—what thin
 Wittgenstein's line: "The aspects of things that are most important for us are hidden because of their simplicity and familiarity." [@wittgenstein1953pi] Maybe qualia are too close, too immediate, too familiar to capture in functional terms. Or maybe the appearance of irreducibility is confusion—mistaking familiarity for metaphysical depth.
 
 The debate continues. Which means the functionalist story about mind remains incomplete—or complete and missing nothing, depending who you ask.
-
----
-
-see also: [[thoughts/philosophical zombies]], [[thoughts/knowledge argument]], [[thoughts/inverted spectrum]], [[thoughts/chinese room]], [[thoughts/Attention]]

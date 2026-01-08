@@ -11,7 +11,7 @@ modified: 2025-10-29 02:14:50 GMT-04:00
 posters: "[[movies/posters/flame-citron.jpg]]"
 rating: 7.2
 status: to watch
-studio: magnolia pictures
+studio: sandrew metronome
 tags:
   - history
   - thriller
