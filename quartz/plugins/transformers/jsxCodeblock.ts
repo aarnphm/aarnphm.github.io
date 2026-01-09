@@ -5,12 +5,15 @@ import { VFile } from "vfile"
 import { unified } from "unified"
 import remarkParse from "remark-parse"
 import remarkMdx from "remark-mdx"
+import remarkMath from "remark-math"
 import remarkRehype from "remark-rehype"
+import rehypeKatex from "rehype-katex"
 import { Element, Properties, Root as HastRoot } from "hast"
 import { htmlToJsx } from "../../util/jsx"
 import render from "preact-render-to-string"
 import { fromHtml } from "hast-util-from-html"
 import { FilePath } from "../../util/path"
+import { customMacros, katexOptions } from "../../cfg"
 
 type JsxBlock = {
   id: string
@@ -114,6 +117,7 @@ function attributesToProps(attributes: MdxAttribute[] = []): Properties {
 const mdxProcessor = unified()
   .use(remarkParse)
   .use(remarkMdx)
+  .use(remarkMath)
   .use(remarkRehype, {
     allowDangerousHtml: true,
     handlers: {
@@ -139,6 +143,7 @@ const mdxProcessor = unified()
       }),
     },
   })
+  .use(rehypeKatex, { output: "htmlAndMathml", macros: customMacros, ...katexOptions })
 
 function renderJsxSnippet(snippet: string): HastRoot | null {
   try {

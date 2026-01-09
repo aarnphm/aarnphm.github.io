@@ -1500,12 +1500,7 @@ const ElementComponent = ((enableRecents: boolean = false) => {
           <em>jardin</em>
           <address class="clickable-container">
             <AliasLink newTab classes={["external"]} name="notes" url="https://notes.aarnphm.xyz" />
-            <AliasLink
-              newTab
-              classes={["external"]}
-              name="stream"
-              url="https://stream.aarnphm.xyz"
-            />
+            <AliasLink isInternal name="stream" url="/stream" />
             <AliasLink isInternal name="workshop" url="/lectures" />
             <AliasLink isInternal name="arena" url="/arena" />
             <AliasLink isInternal name="on my mind" url="/thoughts/" />

@@ -44,6 +44,12 @@ body {
     margin: 0 0 0.75rem 0;
   }
 
+  .tractatus-content {
+    p {
+      margin: 0;
+    }
+  }
+
   .tractatus-row {
     display: grid;
     grid-template-columns: var(--tractatus-number-col) 1fr;

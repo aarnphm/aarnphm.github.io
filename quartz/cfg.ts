@@ -136,3 +136,22 @@ export interface FullPageLayout {
 
 export type PageLayout = Pick<FullPageLayout, "beforeBody" | "sidebar">
 export type SharedLayout = Pick<FullPageLayout, "head" | "header" | "footer" | "afterBody">
+
+export const customMacros = {
+  "\\argmin": "\\mathop{\\operatorname{arg\\,min}}\\limits",
+  "\\argmax": "\\mathop{\\operatorname{arg\\,max}}\\limits",
+  "\\upgamma": "\\mathit{\\gamma}",
+  "\\upphi": "\\mathit{\\phi}",
+  "\\upeta": "\\mathit{\\eta}",
+  "\\upbeta": "\\mathit{\\beta}",
+  "\\upalpha": "\\mathit{\\alpha}",
+  "\\uptheta": "\\mathit{\\theta}",
+  // KaTeX does not support tabular/multicolumn. Provide safe fallbacks.
+  // This macro drops alignment specifiers and yields only the cell content.
+  // IMPORTANT: when spanning >1 columns, add explicit '&'s in source rows.
+  "\\multicolumn": "#3",
+  // Text micro symbol compatibility
+  "\\textmu": "\\mu",
+}
+
+export const katexOptions = { strict: true, throwOnError: true }

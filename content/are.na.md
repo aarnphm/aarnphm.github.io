@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-01-09 04:29:23 GMT-05:00
+modified: 2026-01-09 14:26:27 GMT-05:00
 permalinks:
   - /website
   - /tweets
@@ -2019,6 +2019,14 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://otherinter.net/research/squad-wealth/ -- Squad Wealth
+  - [meta]:
+    - date: 01/09/2026
+    - tags: [communal]
+- https://www.rajan.sh/multiplayer -- How not to do research
+  - [meta]:
+    - date: 01/09/2026
+    - tags: [research, bitter lesson]
 - https://www.gleech.org/god -- What god has to do with mathematics?
   - [meta]:
     - date: 01/09/2026
@@ -6146,6 +6154,10 @@ title: are.na
 
 ## design
 
+- https://www.otherkind.design/ -- Otherkind
+  - [meta]:
+    - date: 01/09/2026
+    - tags: [studio]
 - https://amylalai.com/untitledlyrics-fromhome -- Lyrics for Untitled
   - [meta]:
     - date: 01/07/2026

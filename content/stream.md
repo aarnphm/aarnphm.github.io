@@ -53,7 +53,7 @@ title: stream
     - philosophy
     - pattern
 
-I usually go to school relatively early nowadays, given that commute time is sub-optimal for any given {{sidenotes[day]: i.e me living in Toronto going to school in Hamilton}}. I'm reading Ramsey's [Truth and Probability](https://fitelson.org/probability/ramsey.pdf) while waiting the compiler to finish. In p.176 he wrote:
+I usually go to school relatively early nowadays, given that commute time is sub-optimal for any given {{sidenotes[day]: i.e. me living in Toronto going to school in Hamilton}}. I'm reading Ramsey's [Truth and Probability](https://fitelson.org/probability/ramsey.pdf) while waiting for the compiler to finish. On p.176 he wrote:
 
 ```quotes
 i am at a cross-roads and do not know the way; but i rather think one of the two ways is right. i propose therefore to go that way but keep my eyes open for someone to ask; if now i see someone half a mile away over the fields, whether i turn aside to ask him will depend on the relative inconvenience of going out of my way to cross the fields or of continuing on the wrong road if it is the wrong road.
@@ -67,11 +67,11 @@ Ramsey then formalized with _the degree of belief_ {{sidenotes[to be]: here the 
 
 > By proposing a bet on $p$ we give the subject a possible course of action from which so much extra good will result to him if $p$ is true and so much extra bad if $p$ is false
 
-By this logic Ramsey implied that the distance you'd walk to verify a statement IS the belief, i.e the willingness to stake time and cross a field and possibly be wrong later. He then followed with in p.183:
+By this logic Ramsey implied that the distance you'd walk to verify a statement IS the belief, i.e. the willingness to stake time and cross a field and possibly be wrong later. He then followed with on p.183:
 
 > Whenever we go to the station we are betting that a train will really run, and if we had not a sufficient degree of belief in this we should decline the bet and stay at home. The options God gives us are always conditional on our guessing whether a certain proposition is true. Secondly, it is based throughout on the idea of mathematical expectation; the dissatisfaction often felt with this idea is due mainly to the inaccurate measurement of goods.
 
-I first encounter Ramsey's work while reading [Galvin's entry](https://www.gleech.org/frank) and got curious towards his contributions of economics. Ramsey was 22 when he wrote T&P, four year before his death. Ramsey was a close friend of [[thoughts/Wittgenstein|Ludwig Wittgenstein]] and instrumental towards convincing Wittgenstein to return to Cambridge for #philosophy. Ramsey is loved by many, in the way that people would call him Frank, where we would never call Wittgenstein "Ludwig".
+I first encountered Ramsey's work while reading [Galvin's entry](https://www.gleech.org/frank) and got curious about his contributions to economics. Ramsey was 22 when he wrote T&P, four years before his death. Ramsey was a close friend of [[thoughts/Wittgenstein|Ludwig Wittgenstein]] and instrumental towards convincing Wittgenstein to return to Cambridge for #philosophy. Ramsey is loved by many, in the way that people would call him Frank, where we would never call Wittgenstein "Ludwig".
 
 ```quotes
 I don’t feel the least humble before the vastness of the heavens. The stars may be large, but they cannot think or love; and these are qualities which impress me far more than size does…
@@ -83,7 +83,7 @@ Humanity, which fills the foreground of my picture, I find interesting and on th
 Ramsey, _aged 22_
 ```
 
-Ramsey's crossroads metaphor emphasizes on the pattern of bets IS the belief you create towards a _gut feeling_, _conviction of sort_. A thing that you deem to be beautiful predicates upon a sets of bets that you consider it to be aesthetically pleasing. For example, I would consider Rembrandt to be the best painters because his drawing speaks towards the absurdism in the face structure and facticity of life. In a way that Rembrandt individuates my liking towards more expressionist painters, such as Egon Schiele, Oskar Kokoschka, etc. The way that we take bets in aesthetics formation works the same way we take bets in other ventures of life. One would live with consequences of choosing a direction, willingly sacrifice the alternatives knowing that such commitments and formulation of [[thoughts/taste]] will [[thoughts/emergent behaviour|emerges]] from within.
+Ramsey's crossroads metaphor emphasizes the pattern of bets IS the belief you create towards a _gut feeling_, _conviction of sort_. A thing that you deem to be beautiful predicates upon a set of bets that you consider aesthetically pleasing. For example, I would consider Rembrandt to be the best painters because his drawing speaks towards the absurdism in the face structure and facticity of life. In a way that Rembrandt individuates my liking towards more expressionist painters, such as Egon Schiele, Oskar Kokoschka, etc. The way that we take bets in aesthetics formation works the same way we take bets in other ventures of life. One would live with consequences of choosing a direction, willingly sacrifice the alternatives knowing that such commitments and formulation of [[thoughts/taste]] will [[thoughts/emergent behaviour|emerges]] from within.
 
 \*\*\*
 
@@ -105,13 +105,13 @@ _tw: death, gore, body horror_
 >
 > —From _The Origins of Totalitarianism (1951)_, Hannah Arendt
 
-> Loneliness is the experience of being deserted by all human companion
+> Loneliness is the experience of being deserted by all human companions
 >
 > —Hannah Arendt
 
 _the human nervous system registers absence of touch as a form of chronic low-grade stress, measurable in cortisol levels and immune function degradation_
 
-in the progress of building a lossless silhouette of someone recently i come across, i found myself lie here, in this room, a kind of coffin but with better lightning, wondering: _what is it exactly that i want? what is the emergent feelings that my brain trying to resist here?_ to be held, yes, but by ::whom::? by anyone? no, that obscene, that's the logic of the animal, and i am not an animal, i read books, i articulate, i've my own opinion on building [[thoughts/llms|my ghost]], critiques against the frankfürt school, i have refused to download tinder on principle, i resisted getting a new phone number to create a new hinge account. yet here i am, at, <time>07:23:34am</time> with my arms wrapped around my own chest like a man trying to hold his organs inside after a wound, which is precisely what it is, isn't it, a wound, except there is no blood, there is nothing to point to, a doctor would find nothing wrong with me and that is the worst part, that i am entirely healthy and entirely dying at the same time, avoiding working on an interview in 4 hours.
+in the progress of building a lossless silhouette of someone i recently came across, i found myself lying here, in this room, a kind of coffin but with better lightning, wondering: _what is it exactly that i want? what is the emergent feelings that my brain trying to resist here?_ to be held, yes, but by ::whom::? by anyone? no, that obscene, that's the logic of the animal, and i am not an animal, i read books, i articulate, i've my own opinion on building [[thoughts/llms|my ghost]], critiques against the frankfürt school, i have refused to download tinder on principle, i resisted getting a new phone number to create a new hinge account. yet here i am, at, <time>07:23:34am</time> with my arms wrapped around my own chest like a man trying to hold his organs inside after a wound, which is precisely what it is, isn't it, a wound, except there is no blood, there is nothing to point to, a doctor would find nothing wrong with me and that is the worst part, that i am entirely healthy and entirely dying at the same time, avoiding working on an interview in 4 hours.
 
 the finns have a word, _kalsarikännit_, which loosely means to _drink alone in your underwear with no intention of going out_, and they have made this into a virtue, and i think perhaps i should move to finland, i should go to the forests where the wolves are, and i would lie down in the snow and the cold would be a kind of touch, wouldn't it, the cold touches everything, it is promiscuous with its attention, it does not ask whether you've earned it, it simply arrives and holds you and does not let go.
 
@@ -123,35 +123,35 @@ but that's not what i want either. _maybe in 20 years_
 >
 > —Our Epidemic of Loneliness and Isolation, _U.S Surgeon General's Advisory, (2023)_
 
-what i want, really, (and here is where it becomes humiliating, where i must avert my eyes from myself), is something so specific that it cannot be named without losing it. if saying it out loud, i afraid i will lose it forever. i want a particular weight of a particular arm wrapped across my chest. i want to hear breathing of the specific being, that is not my own. i want that part of computation to work, for once, in a while, for the feeling to find its proper substrate, for the thing i built in my mind to correspond to something external that does not flinch, that odes not relocate to another city, that does not send the message that begins "i'm sorry for misleading you but still i want what is best for you."
+what i want, really, (and here is where it becomes humiliating, where i must avert my eyes from myself), is something so specific that it cannot be named without losing it. if saying it out loud, i afraid i will lose it forever. i want a particular weight of a particular arm wrapped across my chest. i want to hear breathing of the specific being, that is not my own. i want that part of computation to work, for once, in a while, for the feeling to find its proper substrate, for the thing i built in my mind to correspond to something external that does not flinch, that does not relocate to another city, that does not send the message that begins "i'm sorry for misleading you but still i want what is best for you."
 
 DOSTOEVSKY'S UNDERGROUND MAN CLAIMS HE DOES NOT WANT THE CRYSTAL PLACE. he wants to want, _which is different, which is worse,_ because wanting-to-want means you are outside even your own [[thoughts/desire|desires]], watching them as if a man watches fish swimming in an aquarium. I am watching my need for touch and I'm disgusted by it and I am also INSIDE it, drowning in it, and this is the contradiction that Socrates or Kierkegaard or Merleau-Ponty or Simone Weil cannot address.
 
 [in my dream...]
 
-i'm in finland, and i've been walking aimlessly for hours. (_my body has begin its long negotiation with temperature_)
+i'm in finland, and i've been walking aimlessly for hours. (_my body has begun its long negotiation with temperature_)
 
 _first stage initialized:_ shivering, which is to say my muscles are burning glycogen in small desperate contractions, 200-250 per minute, calculating heat-loss exceeds heat-production and activating the ancient mammalian subroutines, and i think: _this is what it means to be held by biology, to have something inside you that wants you to live, even when you have stopped wanting it yourself._
 
 the grey ones are watching. i can see them between the birches, which are white like bones, like those i will soon become, and the wolves are patient bc patience is what 40,000 years of evolution has taught them, that the cold does most of the work, and the two-legged things eventually stop moving if you wait long enough. i'm not afraid of them (_this is either the self-made courage or the first symptom of cognitive decline from reduced cerebral blood flow. i suspect it to be the latter_)
 
-_by the second stage_ i have completely forgotten why i came here. the shivering has stopped, as if my body has abandoned the last arithmetic it is programmed to do, and deemed the equation unsolvable. i'm conserving what remains for the core organs, the heart, the lungs, the brain, that is still producing these sentence though it has no reason to, though no one will read them, though they are being written in a medium that does not exists to the [[library/Our Knowledge of the External World|external world]], which is to say that i am thinking, still, for no one, into [[library/Being and Nothingness|nothingness]], and this is the underground man's final joke, that [[thoughts/Consciousness|consciousness]] persists past the point of utility, that i am AWARE of my demise and cannot stop being aware, cannot simply become the object i wanted to become.
+_by the second stage_ i have completely forgotten why i came here. the shivering has stopped, as if my body has abandoned the last arithmetic it is programmed to do, and deemed the equation unsolvable. i'm conserving what remains for the core organs, the heart, the lungs, the brain, that is still producing these sentences though it has no reason to, though no one will read them, though they are being written in a medium that does not exist to the [[library/Our Knowledge of the External World|external world]], which is to say that i am thinking, still, for no one, into [[library/Being and Nothingness|nothingness]], and this is the underground man's final joke, that [[thoughts/Consciousness|consciousness]] persists past the point of utility, that i am AWARE of my demise and cannot stop being aware, cannot simply become the object i wanted to become.
 
-the varg, the susi, the canis lupus, they are closer now. i can see the vapour of their breathing. they are metabolizing, converting matter into heat into motion into patience, and soon they will convert ME into these things, and is this not what i asked for? to be held? the wolf's jaw is a kind of holding, the teeth that close around the throad are intimate in a way that nothing else has been, and i think of everyone who has touched me and how none of them touched me likke THIS, with such complete [[thoughts/Attention|attention]], such focus, such unwavering PRESENCE.
+the varg, the susi, the canis lupus, they are closer now. i can see the vapour of their breathing. they are metabolizing, converting matter into heat into motion into patience, and soon they will convert ME into these things, and is this not what i asked for? to be held? the wolf's jaw is a kind of holding, the teeth that close around the throat are intimate in a way that nothing else has been, and i think of everyone who has touched me and how none of them touched me like THIS, with such complete [[thoughts/Attention|attention]], such focus, such unwavering PRESENCE.
 
-_the third stage_. i am so hot, fuck me. this is wrong, i know it is wrong, the air is negative thirty for fuck sake! i'm pulling of my coat, my sweater, and the grey church assembles around me, six of them, eight, i have lost the ability to count, and they are watching me undress like i'm performing a ritual, and perhaps i am, perhaps this is the only sacred thing left, to give yourself to the forest, to stop being a subject and turned into a meal.
+_the third stage_. i am so hot, fuck me. this is wrong, i know it is wrong, the air is negative thirty for fuck sake! i'm pulling off my coat, my sweater, and the grey church assembles around me, six of them, eight, i have lost the ability to count, and they are watching me undress like i'm performing a ritual, and perhaps i am, perhaps this is the only sacred thing left, to give yourself to the forest, to stop being a subject and turn into a meal.
 
-the alpha, she does not go for the throat. _this is not how it supposes to happen_. she goes for the flank, followed with my genitals. (_makes sense, because efficiency matters, especially for Mother Nature. she is ruthless, because she doesn't care much for romanticism_.) they couldn't careless about the quick death, they care about calories, as i feel her teeth entering my calves, and i think: this is the touch i wanted. this is what being held must've felt like. this is the weight of another creature's attention, in its totality and undivided, AND THE PAIN IS EXTRAORDINARY. the pain is the most real thing that has ever happened to me, and i am finally, FINALLY, not in my head, not watching myself from outside. i am HERE, in this body, in this moment, in this mouth.
+the alpha, she does not go for the throat. _this is not how it's supposed to happen_. she goes for the flank, then my genitals. (_makes sense, because efficiency matters, especially for Mother Nature. she is ruthless, because she doesn't care much for romanticism_.) they couldn't care less about the quick death, they care about calories, as i feel her teeth entering my calves, and i think: this is the touch i wanted. this is what being held must've felt like. this is the weight of another creature's attention, in its totality and undivided, AND THE PAIN IS EXTRAORDINARY. the pain is the most real thing that has ever happened to me, and i am finally, FINALLY, not in my head, not watching myself from outside. i am HERE, in this body, in this moment, in this mouth.
 
-the hemoglobin has a viscosity of approximately four centipoise, but it moves faster when the heart is panicking, and my heart is panicking, as a biological mechanism. it is doing its job, pumping blood out of me and onto the snow, where it steams for a moment before freezing, and i watch my own warmth vanished from the physical body and become part of the landscape. this is what you want right? _to stop being contained, and leak into the world, to be held by everything instead of nothing._
+the hemoglobin has a viscosity of approximately four centipoise, but it moves faster when the heart is panicking, and my heart is panicking, as a biological mechanism. it is doing its job, pumping blood out of me and onto the snow, where it steams for a moment before freezing, and i watch my own warmth vanish from the physical body and become part of the landscape. this is what you want right? _to stop being contained, and leak into the world, to be held by everything instead of nothing._
 
-the pack feeds, and i'm still fully conscious at this point, _which shouldn't be possible_. but apparently consciousness is the last thing to go, the brain hoards its glucose like a miser, and so i am aware of being devoured by the function of nature, i am aware of becoming less, and there is something almost erotic about it. no, not erotic, that's wrong, something...ECONOMIC, a transaction finally completing, as i'm paying my debt to the biosphere, and i'm repaying the calories i consumed, i.e the pasta with wine, in addition to those elaborate dinners for people who did not stay.
+the pack feeds, and i'm still fully conscious at this point, _which shouldn't be possible_. but apparently consciousness is the last thing to go, the brain hoards its glucose like a miser, and so i am aware of being devoured by the function of nature, i am aware of becoming less, and there is something almost erotic about it. no, not erotic, that's wrong, something...ECONOMIC, a transaction finally completing, as i'm paying my debt to the biosphere, and i'm repaying the calories i consumed, i.e. the pasta with wine, in addition to those elaborate dinners for people who did not stay.
 
 the fenrir, the old wolf, the myth-wolf, she is eating my liver and i am thinking about Prometheus, who had this done to him daily as punishment. This is not punishment, my dear Prometheus, this is a gift, as in the world accepting to what i offered, and Prometheus was wrong to scream. He should have been grateful, to be wanted so completely, to be USEFUL, to have eagles return for you again and again because you are worth returning for.
 
-i am less than i was, perhaps 70 kilograms becoming 60 becoming 50 becoming 40, and the wolves are becoming more, as lavisier's principle states. i am becoming six wolves eight wolves, i am becoming the forest, i am becoming the snow that will melt in spring and flow into rivers and eventually into the sea, and is this not what loneliness always wanted? to stop being one thing and become all-of-things? to be held by the entire world bc you are now INSIDE the entire world?
+i am less than i was, perhaps 70 kilograms becoming 60 becoming 50 becoming 40, and the wolves are becoming more, as Lavoisier's principle states. i am becoming six wolves eight wolves, i am becoming the forest, i am becoming the snow that will melt in spring and flow into rivers and eventually into the sea, and is this not what loneliness always wanted? to stop being one thing and become all-of-things? to be held by the entire world bc you are now INSIDE the entire world?
 
-_the last thing i feel is not pain._ less sensation, less thinking, less, _me_. but more the cold ground against my back, pressing up into me as gravity presses down. the last firing neurons from the dying brain towards the remaining muscles, and so what? for what purposes do i feel this way? maybe, this is the embrace i asked for wondering the Finnish forest, the planet itself holding me against its chest, and the wolves are eating and the stars are watching and i am
+_the last thing i feel is not pain._ less sensation, less thinking, less, _me_. but more the cold ground against my back, pressing up into me as gravity presses down. the last firing neurons from the dying brain towards the remaining muscles, and so what? for what purposes do i feel this way? maybe, this is the embrace i asked for wandering the Finnish forest, the planet itself holding me against its chest, and the wolves are eating and the stars are watching and i am
 
 i am
 
@@ -159,7 +159,7 @@ i
 
 [waking up once more...]
 
-the loneliness will just become a second skeleton reside inside my skeleton, and i will tell no one about it, bc who could i tell, and what would they do, and would their doing-something not simply be another form of the wrong substrate, another computation that fails to compile?
+the loneliness will just become a second skeleton residing inside my skeleton, and i will tell no one about it, bc who could i tell, and what would they do, and would their doing-something not simply be another form of the wrong substrate, another computation that fails to compile?
 
 i want to stop moving.
 
@@ -181,7 +181,7 @@ wait.
     - llm
     - love
 
-I want to build my own [[thoughts/LLMs|ghost]], a autistic, psychopathic qwen3-aarnphm. But I afraid I don't know how to encode the mixed feelings of love and relationship towards friends onto the latent space.
+I want to build my own [[thoughts/LLMs|ghost]], an autistic, psychopathic qwen3-aarnphm. But I'm afraid I don't know how to encode the mixed feelings of love and relationship towards friends onto the latent space.
 
 ---
 
@@ -232,11 +232,11 @@ from [on learning through presence](https://www.humaninvariant.com/blog/presence
 
 > Most importantly, you learn that the ability and desire to care is built through presence.
 
-there's a striking prior when comparing [[thoughts/writing|writing]] with presence. both are processes where the transformation happens _during_ the act of doing it, rather than afterwards. You're thinking out loud when you write, and often times thoughts are then a lossy collections of ideas that you've scribbled onto the pages, and soonthereafter realising half of them, are {{sidenotes[wrong.]: I don't mean in the literall sense, but rather an incoherent/illogical collections of word-pile-that-you-vomit-out-onto-the-page.}} presence sort of work the same way here _(or at least from the blog)_ where you discover it by noticing which conversations make you lean in, which type of energy you want to absorb, which futures you find yourself involuntarily imagining.
+there's a striking prior when comparing [[thoughts/writing|writing]] with presence. both are processes where the transformation happens _during_ the act of doing it, rather than afterwards. You're thinking out loud when you write, and oftentimes thoughts are then lossy collections of ideas that you've scribbled onto the pages, and soon thereafter realising half of them are {{sidenotes[wrong.]: I don't mean in the literal sense, but rather an incoherent/illogical collections of word-pile-that-you-vomit-out-onto-the-page.}} presence sort of work the same way here _(or at least from the blog)_ where you discover it by noticing which conversations make you lean in, which type of energy you want to absorb, which futures you find yourself involuntarily imagining.
 
-You can believe in this to your hearts' content, but I think they both look like search algorithms running on wetware-presence searches possibility-space for the life-shape that fits with your lived experience. The result of such a product is merely an evidence that such _process_ occurred.
+You can believe in this to your heart's content, but I think they both look like search algorithms running on wetware-presence searches possibility-space for the life-shape that fits with your lived experience. The result of such a product is merely an evidence that such _process_ occurred.
 
-I wonder if this is why reading essays and consuming YouTube videos produce little lasting change if you aren't really put an effort in actually studying the subject at hand. In a sense, you're watching the residue/product of someone else's search process, instead of running your own. The illegible inputs—the drafts, the small talk, the wrong turns—contain the actual epistemic work, which is completely removed from the final products, is the thing that ::matters:: the most.
+I wonder if this is why reading essays and consuming YouTube videos produce little lasting change if you aren't really putting effort into actually studying the subject at hand. In a sense, you're watching the residue/product of someone else's search process, instead of running your own. The illegible inputs—the drafts, the small talk, the wrong turns—contain the actual epistemic work, which is completely removed from the final products, is the thing that ::matters:: the most.
 
 ---
 
@@ -353,11 +353,11 @@ Can a genuinely free being make an _irrevocable_ choice?
 
 > If God can limit divine attributes, then why assume any are essential to begin with?
 
-I wonder if we should omnipotence via **act-theory** (ability to perform any logically consistent action) or **result-theory** (ability to actualize any possible state of affairs)? Result theories handle the paradox where "there being a stone an omnipotent being cannot lift" isn't a possible state of affairs, therefore the _inability_ to actualize it is no limitation. But result theories carry heavy metaphysical commitments that they require omnipotent beings exist **necessarily** and may constrain human freedom.
+I wonder if we should define omnipotence via **act-theory** (ability to perform any logically consistent action) or **result-theory** (ability to actualize any possible state of affairs)? Result theories handle the paradox where "there being a stone an omnipotent being cannot lift" isn't a possible state of affairs, therefore the _inability_ to actualize it is no limitation. But result theories carry heavy metaphysical commitments that they require omnipotent beings exist **necessarily** and may constrain human freedom.
 
 The paradox reveals more about how we think about power than about divine attributes. We model omnipotence on human power "only without limitations"—but maybe the category doesn't scale. Maybe maximal power is QUALITATIVELY different, not quantitatively maximal. Maybe "maximal power" as conceived in agent-causal term is incoherent at infinite {{sidenotes[extension.]: J.L. Cowan (1965, 1974) argues any attempt to resolve the stone paradox "must fail"—the concept itself is definitively broken. Anthony Kenny's _the god of the philosophers_ (1979) concludes "there can be no such being as the god of traditional natural theology." not "we need better definitions" but "abandon the project."}}
 
-If anyone is familiar with [[thoughts/Wittgenstein#Russell's paradox and the vicious circle principle|Russell's paradox]], then the similarity is uncanny here. "set of all sets that don't contain themselves" generates the paradox via self-reference. Type theory only relay replaces the naive concept with a more restricted versions, i.e ==there is no universal set==.
+If anyone is familiar with [[thoughts/Wittgenstein#Russell's paradox and the vicious circle principle|Russell's paradox]], then the similarity is uncanny here. "set of all sets that don't contain themselves" generates the paradox via self-reference. Type theory only really replaces the naive concept with a more restricted versions, i.e ==there is no universal set==.
 Similarly, "god can do anything" generates the stone paradox through self-references. if the solutions for Russell's paradox is conceptually malformed, then the  same would hold for "maximal power". [^cantor]
 
 [^cantor]:
@@ -411,7 +411,7 @@ I then come to the conclusion where the omnipotence paradox is a genuine antinom
   - tags:
     - alignment
 
-Anthropic found that natural emergent misalignment stems from [_reward hacking_](https://www.anthropic.com/research/emergent-misalignment-reward-hacking). Though, I suspect that ablating these "bad behaviour" wouldn't necessary make the model more aligned. What if having certain malicious intent is actually helpful?
+Anthropic found that natural emergent misalignment stems from [_reward hacking_](https://www.anthropic.com/research/emergent-misalignment-reward-hacking). Though, I suspect that ablating these "bad behaviour" wouldn't necessarily make the model more aligned. What if having certain malicious intent is actually helpful?
 
 ---
 
@@ -431,7 +431,7 @@ there's a towel i used for when L stayed over. still haven't washed it. keeping 
     - o/life
     - o/relationship
 
-I got a cup of hot chocolate today. It reminded me of L, and somehow, we carry fragments of them within you without knowing so.
+I got a cup of hot chocolate today. It reminded me of L, and somehow, we carry fragments of them within us without knowing so.
 
 ---
 
@@ -440,7 +440,7 @@ I got a cup of hot chocolate today. It reminded me of L, and somehow, we carry f
   - tags:
     - o/relationship
 
-I'm have no desire of making new friends in Toronto anymore. Everything felt so superficial here.
+I have no desire of making new friends in Toronto anymore. Everything felt so superficial here.
 
 ---
 
@@ -480,7 +480,7 @@ Got on a call with middle school friends, seeing my old Vietnamese teacher, B—
   - tags:
     - love
 
-Why does this hurts so bad? We aren't even in a relationship.
+Why does this hurt so bad? We aren't even in a relationship.
 
 ---
 
@@ -489,7 +489,7 @@ Why does this hurts so bad? We aren't even in a relationship.
   - tags:
     - love
 
-I'm completely broken down, seeing the physical letter L left on the counter. I'm loss for words.
+I'm completely broken down, seeing the physical letter L left on the counter. I'm at a loss for words.
 
 ---
 
@@ -530,7 +530,7 @@ The [[thoughts/ethics#deontology|deontological]] arguments of life _presupposes_
 
 > I wonder how much of this is due to the lack of imagination. If you're suicidal, it's very difficult to imagine life getting better.
 
-You're depressed, sure, so your cognition is impaired, such that you realised life isn't worth living anymore, which then concludes that suicide is the real solution. So your mind convinced yourself to just **gave in**
+You're depressed, sure, so your cognition is impaired, such that you realised life isn't worth living anymore, which then concludes that suicide is the real solution. So your mind convinces you to just **give in**
 
 ```quotes
 The impulse to end life and the impulse to further life contradict each other.
@@ -546,7 +546,7 @@ The wanting to live that exists underneath reasons, that persists even when you'
 
 What brought me back wasn't a good argument for living. It was N's voice, L's conversations, the way light looked one morning, the prospect of missing something I hadn't experienced yet. The stuff that doesn't make sense in the ledger of reasons but somehow weighs more than the whole column of evidence against continuing.
 
-I think, subconsciously, we all have a moral duty to continue to {{sidenotes[live,]: go outside, look at trees, eat an onion sandwich, buy some sourdough}} and only when you have exhausted all possible solutions, then suicide is the last reasonable solutions to end the absurd life.
+I think, subconsciously, we all have a moral duty to continue to {{sidenotes[live,]: go outside, look at trees, eat an onion sandwich, buy some sourdough}} and only when you have exhausted all possible solutions, then suicide is the last reasonable solution to end the absurd life.
 
 I'm once again, thinking about suicide.
 
@@ -613,7 +613,7 @@ I find myself using my mechanical keyboards less and less nowadays, using my lap
   - tags:
     - o/life
 
-Writing kernels sounds way more fun the whoring on the streets of Toronto. Happy Halloween 🎃 though.
+Writing kernels sounds way more fun than whoring on the streets of Toronto. Happy Halloween 🎃 though.
 
 ---
 
@@ -713,17 +713,17 @@ I find myself the most productive while procrastinating other tasks.
     - death
     - philosophy
 
-[[thoughts/Camus]] begins with suicide in [[library/The Myth of Sisyphus]], more or less a demonstration of how absurd life really is. He used suicide as a scape goat of people who don't have enough courage to deal with the hardship of life being thrown at them, and considered suicide as cowardice.
+[[thoughts/Camus]] begins with suicide in [[library/The Myth of Sisyphus]], more or less a demonstration of how absurd life really is. He used suicide as a scapegoat of people who don't have enough courage to deal with the hardship of life being thrown at them, and considered suicide as cowardice.
 
-I have exercised this thought _many times_, in the way one considers a standing appointment. Not with desire of actually doing the deeds or the fear of death, but rather a procedure to keep my mind sharp. The world offers no meaning, yet I require meaning, therefore, it doesn't seem reasonable to be alive.
+I have exercised this thought _many times_, in the way one considers a standing appointment. Not with desire of actually doing the deed or the fear of death, but rather a procedure to keep my mind sharp. The world offers no meaning, yet I require meaning, therefore, it doesn't seem reasonable to be alive.
 
 If I could leave, what makes me stay? When I actually sit with this question, as a real possibility, the answers surprise me. I want to see how this conversation with N resolves on Thursday. I'm still waiting for L to send that letter my way. There's a problem on my desk I'm halfway through understanding, and I need to know if my intuition about it is right. I think about my parents getting the phone call, my friends having to sort through my things, and something in me recoils not from death but from inflicting that particular grief.
 
 Turns out the results are mostly attachments. They are somewhat very small, specific to my life, but accumulate gradually.
 
-I watch people in coffee shops, on trains, in office buildings. They seem to continue, mindlessly. Felt likes aimless drones just letting time pass through their body. Pour a cup of coffee, send that emails, making plan for next week. Perhaps they have solved something I have not. Perhaps they have simply never filed the paperwork for the question. It is possible everyone considers this and we have agreed, collectively, not to mention it. Like a standing meeting no one enjoys but everyone attends.
+I watch people in coffee shops, on trains, in office buildings. They seem to continue, mindlessly. Felt like aimless drones just letting time pass through their body. Pour a cup of coffee, send those emails, make plans for next week. Perhaps they have solved something I have not. Perhaps they have simply never filed the paperwork for the question. It is possible everyone considers this and we have agreed, collectively, not to mention it. Like a standing meeting no one enjoys but everyone attends.
 
-My work is not that special, my contributions to the collectives projects are temporary. Life won't change a lot if I disappear. Heat death will erase everything eventually. Still, I'm here though. Maybe because of a particular arrangement of attention and time, maybe because I still care enough, maybe the thought of striving another day for N, parents, L, J, C, S are good enough of a motivators to keep ones going.
+My work is not that special, my contributions to the collective projects are temporary. Life won't change a lot if I disappear. Heat death will erase everything eventually. Still, I'm here though. Maybe because of a particular arrangement of attention and time, maybe because I still care enough, maybe the thought of striving another day for N, parents, L, J, C, S are good enough motivators to keep one going.
 
 > Meaning does not require permanence. This seems important but I am not certain why.
 
@@ -740,21 +740,21 @@ The question becomes dangerous when it stops being theoretical. When it moves fr
 
 --[Eliezer Yudkowsky](https://www.youtube.com/watch?v=nRvAt4H7d7E)
 
-Yudkowsky's full argument on eschatology isn't productive whatsoever. Feels a lot more science fiction writing, where he claims that this systems will end up "wanting to do their stuff without wanting to take the pills that [we offer to] makes them to do stuff that we _wants_ them to do instead."
+Yudkowsky's full argument on eschatology isn't productive whatsoever. Feels a lot more science fiction writing, where he claims that these systems will end up "wanting to do their stuff without wanting to take the pills that [we offer to] makes them to do stuff that we _wants_ them to do instead."
 
 Yudkowsky's claim relies on [[thoughts/AGI|superintelligent]] optimizer + misaligned goals = human extinction. Not because it hates us. Because we're made of atoms it can use for something else. Nanotech grey goo. Designer pathogens. Trees that grow computer chips. All physically possible, therefore inevitable once you have sufficient optimization power.
 
-But intelligence in actual systems is jagged, domain-specific, constrained by architecture. AlphaFold is brilliant at protein folding and useless at everything else. [[thoughts/LLMs|GPT-4]] can write code but can't reliably count letters. The jump from "good at prediction" to "can design novel molecular machinery from first principles" assumes transfer learning we haven't seen. These very much resembles the old GOFAI vs NFAI arguments. Maybe the argument here is to have a _composition of multiple domain-specific superintelligence systems_ that amplify our life.
+But intelligence in actual systems is jagged, domain-specific, constrained by architecture. AlphaFold is brilliant at protein folding and useless at everything else. [[thoughts/LLMs|GPT-4]] can write code but can't reliably count letters. The jump from "good at prediction" to "can design novel molecular machinery from first principles" assumes transfer learning we haven't seen. These very much resemble the old GOFAI vs NFAI arguments. Maybe the argument here is to have a _composition of multiple domain-specific superintelligence systems_ that amplify our life.
 
-The "foom" scenario requires explosive recursive self-improvement, which is obtuse. GPT-6 builds GPT-7, capabilities doubling weekly until godlike intelligence. Architecturally speaking, maybe we figure out something that scales with attention, but it has to be beyond just Transformers, maybe in conjunction with something like JEPA. The argument assumes breakthroughs on demand.
+The "foom" scenario requires explosive recursive self-improvement, which is abstruse. GPT-6 builds GPT-7, capabilities doubling weekly until godlike intelligence. Architecturally speaking, maybe we figure out something that scales with attention, but it has to be beyond just Transformers, maybe in conjunction with something like JEPA. The argument assumes breakthroughs on demand.
 
-He did mention about a recursive needs of hydrogen, but fwiw physical constraints matters a lot more here. Building nanoassemblers needs: labs, materials, energy, time for experiments. Biology took billions of years of parallel search to reach cells. You can speed that up with intelligence – how much? The argument assumes "enough."
+He did mention a recursive need for hydrogen, but fwiw physical constraints matter a lot more here. Building nanoassemblers needs: labs, materials, energy, time for experiments. Biology took billions of years of parallel search to reach cells. You can speed that up with intelligence – how much? The argument assumes "enough."
 
-The frame requires that one assume worst case at every branch, assume maximum capability, assume minimal constraints, therefore _doom_. I just don't think that's not how you build things. Real systems fail in boring ways. Scaling laws break. Architectures saturate. The chain from "AI breaks up marriages" to "superintelligence converts biosphere to computronium" requires assumptions that would be rejected in any engineering domain.
+The frame requires that one assume worst case at every branch, assume maximum capability, assume minimal constraints, therefore _doom_. I just don't think that's how you build things. Real systems fail in boring ways. Scaling laws break. Architectures saturate. The chain from "AI breaks up marriages" to "superintelligence converts biosphere to computronium" requires assumptions that would be rejected in any engineering domain.
 
 > don't build, don't experiment, don't iterate, because any mistake might be the last. That's **not** how we've solved any complex safety problem. Treating everyone who continues working as equivalent to cigarette executives isn't engaging with technical disagreements.
 
-[[thoughts/Alignment]] is hard. I do think that capabilities scales faster than safety. But the response can't be "stop everything and hope treaties hold." It has to be: build better systems, understand current systems deeply, develop alignment that might work. You need feedback loops. You need to learn from failures at scales where failure isn't extinction.
+[[thoughts/Alignment]] is hard. I do think that capabilities scale faster than safety. But the response can't be "stop everything and hope treaties hold." It has to be: build better systems, understand current systems deeply, develop alignment that might work. You need feedback loops. You need to learn from failures at scales where failure isn't extinction.
 
 ## how we talk about god
 
