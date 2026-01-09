@@ -1,14 +1,10 @@
 ---
-date: "2025-12-24"
+date: "2026-01-08"
 description: «l’embarras du choix»
-draft: true
 id: "2025"
 layout: technical
-modified: 2025-12-31 19:59:32 GMT-05:00
+modified: 2026-01-08 22:54:50 GMT-05:00
 signature: AP
-socials:
-  substack: https://open.substack.com/pub/livingalone/p/2024-dasein?r=1z8i4s&utm_campaign=post&utm_medium=web&showWelcomeOnShare=true
-  twitter: https://x.com/aarnphm/status/1876083332351689070
 tags:
   - growth
   - sapling

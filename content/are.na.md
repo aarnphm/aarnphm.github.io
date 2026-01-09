@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-01-08 14:31:56 GMT-05:00
+modified: 2026-01-09 02:08:41 GMT-05:00
 permalinks:
   - /website
   - /tweets
@@ -4337,6 +4337,10 @@ title: are.na
   - [meta]:
     - date: 10/06/2025
     - tags: [distributed, scaling]
+- https://blog.ezyang.com/2025/12/code-review-as-human-alignment-in-the-era-of-llms -- Code review as human alignment, in the era of LLMs
+  - [meta]:
+    - date: 01/08/2026
+    - tags: [engineering, productivity]
 - https://x.com/JingyuanLiu123/status/1959093411283443726 -- TPU vs GPU parallelism strategies [**]
   - [meta]:
     - date: 09/26/2025
@@ -5320,6 +5324,10 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://www.youtube.com/watch?v=9ztLmWvlS1c -- The Spell of Linguistic Philosophy, Bernard Williams & Bryan Magee (1977)
+  - [meta]:
+    - date: 01/09/2026
+    - tags: [linguistic]
 - https://www.youtube.com/watch?v=ayh-ehvFVfU -- Irwin Weil on Dostoevsky
   - [meta]:
     - date: 01/06/2026
@@ -6332,6 +6340,10 @@ title: are.na
 
 ## video
 
+- https://www.youtube.com/watch?v=wclQwVNkED8 -- Медведица в декретном отпуске.
+  - [meta]:
+    - date: 01/09/2026
+    - tags: [nature, bear]
 - https://www.youtube.com/watch?v=OdsAElI7UOc -- Kristen Stewart & Jesse Eisenberg | Directors on Directors
   - [meta]:
     - date: 01/08/2026

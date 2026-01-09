@@ -192,4 +192,3 @@ export const StreamIndex: QuartzEmitterPlugin = () => {
     },
   }
 }
-

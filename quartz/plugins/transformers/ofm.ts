@@ -39,9 +39,13 @@ import {
   remarkWikilink,
   Wikilink,
   isWikilink,
+  wikilink,
+  wikilinkFromMarkdown,
 } from "../../extensions/micromark-extension-ofm-wikilinks"
 import { remarkSidenote } from "../../extensions/micromark-extension-ofm-sidenotes"
 import { escapeWikilinkForTable } from "../../util/wikilinks"
+import { math } from "micromark-extension-math"
+import { mathFromMarkdown } from "mdast-util-math"
 
 export interface Options {
   comments: boolean
@@ -229,16 +233,6 @@ const blockReferenceRegex = new RegExp(/\^([-_A-Za-z0-9]+)$/g)
 const markerRegex = new RegExp(/::([^:]+?)(?:\{(h[1-7])\})?::/g)
 // bare marker without explicit intensity, defaults to h3
 const bareMarkerRegex = new RegExp(/::([^:{}]+?)::/g)
-
-const intensityColorMap: Record<string, string> = {
-  h1: "rose",
-  h2: "love",
-  h3: "lime",
-  h4: "gold",
-  h5: "pine",
-  h6: "foam",
-  h7: "iris",
-}
 
 export const checkMermaidCode = ({ tagName, properties }: Element) =>
   tagName === "code" &&
@@ -457,7 +451,13 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options>>
 
       // sidenote parser for {{sidenotes...}} syntax
       //@ts-ignore
-      plugins.push(remarkSidenote)
+      plugins.push([
+        remarkSidenote,
+        {
+          micromarkExtensions: [wikilink(), math()],
+          mdastExtensions: [wikilinkFromMarkdown({ hasSlug }), mathFromMarkdown()],
+        },
+      ])
 
       if (opts.callouts) {
         plugins.push(() => (tree: Root, _file) => {
