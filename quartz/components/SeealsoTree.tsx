@@ -4,6 +4,10 @@ import { classNames } from "../util/lang"
 import { FullSlug, resolveRelative } from "../util/path"
 import type { FrontmatterLink } from "../plugins/transformers/frontmatter"
 import { JSX } from "preact"
+import fs from "fs"
+import path from "path"
+import { Cite } from "@citation-js/core"
+import "@citation-js/plugin-bibtex"
 
 const MAX_DEPTH = 5
 const MAX_CHILDREN_PER_NODE = 5
@@ -24,6 +28,23 @@ function getDisplayTitle(
 
   const fragment = slug.split("/").pop() || slug
   return fragment.replace(/\.[^/.]+$/, "").replace(/-/g, " ")
+}
+
+let loadedBib: Cite | null = null
+function getCitationTitle(bibKey: string): string | undefined {
+  if (!loadedBib) {
+    const bibPath = path.join(process.cwd(), "content/References.bib")
+    if (fs.existsSync(bibPath)) {
+      const bibContent = fs.readFileSync(bibPath, "utf8")
+      loadedBib = new Cite(bibContent, { generateGraph: false })
+    }
+  }
+
+  if (loadedBib) {
+    const entry = loadedBib.data.find((item: any) => item.id === bibKey)
+    return entry?.title
+  }
+  return undefined
 }
 
 export default (() => {
@@ -65,7 +86,7 @@ export default (() => {
       return null
     }
 
-    const visited = new Set<FullSlug>([currentSlug])
+    const visited = new Set<string>([currentSlug])
     const lines: JSX.Element[] = []
     const nbsp = "\u00a0"
     const padAfterLabel = nbsp.repeat(2)
@@ -92,19 +113,34 @@ export default (() => {
       ancestorHasSibling: boolean[],
     ): void => {
       const targetSlug = link.slug
-      if (visited.has(targetSlug)) {
+      const isCitation = targetSlug.startsWith("@")
+      const uniqueId = isCitation ? targetSlug : targetSlug
+
+      if (visited.has(uniqueId)) {
         return
       }
-      visited.add(targetSlug)
+      visited.add(uniqueId)
 
-      const targetFile = slugToFile.get(targetSlug)
-      const title = getDisplayTitle(targetSlug, targetFile, link.alias)
-      const href = resolveRelative(currentSlug, targetSlug)
+      let title = link.alias || targetSlug
+      let href = "#"
+      let minutes: number | undefined
+      let children: FrontmatterLink[] = []
 
-      const minutes = targetFile?.readingTime?.minutes
-
-      const rawChildren = depth < MAX_DEPTH ? (seealsoBySlug.get(targetSlug) ?? []) : []
-      const children = rawChildren.slice(0, MAX_CHILDREN_PER_NODE)
+      if (isCitation) {
+        const bibKey = targetSlug.substring(1)
+        const citeTitle = getCitationTitle(bibKey)
+        if (citeTitle) {
+          title = citeTitle
+        }
+        href = `#bib-${bibKey.toLowerCase()}`
+      } else {
+        const targetFile = slugToFile.get(targetSlug)
+        title = getDisplayTitle(targetSlug, targetFile, link.alias)
+        href = resolveRelative(currentSlug, targetSlug)
+        minutes = targetFile?.readingTime?.minutes
+        const rawChildren = depth < MAX_DEPTH ? (seealsoBySlug.get(targetSlug) ?? []) : []
+        children = rawChildren.slice(0, MAX_CHILDREN_PER_NODE)
+      }
 
       const segments: string[] = []
       for (const hasSibling of ancestorHasSibling) {
@@ -115,14 +151,14 @@ export default (() => {
 
       const nextAncestors = [...ancestorHasSibling, !isLast]
 
-      const labelText = formatReadingLabel(minutes)
+      const labelText = isCitation ? "[cite]" : formatReadingLabel(minutes)
 
       lines.push(
         <>
           {prefix}
-          {labelText}
+          <span class="seealso-label">{labelText}</span>
           {padAfterLabel}
-          <a class="internal" href={href} data-slug={targetSlug}>
+          <a class={isCitation ? "external" : "internal"} href={href} data-slug={isCitation ? undefined : targetSlug}>
             {title}
           </a>
           <br />

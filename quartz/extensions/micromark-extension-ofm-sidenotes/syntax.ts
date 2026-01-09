@@ -18,6 +18,7 @@ export function sidenote(): Extension {
   const tokenize: Tokenizer = function (effects, ok, nok) {
     let markerSize = 0
     let keywordIndex = 0
+    let labelBalance = 0
 
     return start
 
@@ -28,6 +29,7 @@ export function sidenote(): Extension {
       effects.enter("sidenoteMarker")
       effects.consume(code)
       markerSize = 1
+      labelBalance = 0
       return openingBrace
     }
 
@@ -118,11 +120,23 @@ export function sidenote(): Extension {
       effects.consume(code)
       effects.exit("sidenoteLabelMarker")
       effects.enter("sidenoteLabelChunk")
+      labelBalance = 0
       return labelInside
     }
 
     function labelInside(code: Code): State | undefined {
+      if (code === codes.leftSquareBracket) {
+        labelBalance++
+        effects.consume(code)
+        return labelInside
+      }
+
       if (code === codes.rightSquareBracket) {
+        if (labelBalance > 0) {
+          labelBalance--
+          effects.consume(code)
+          return labelInside
+        }
         effects.exit("sidenoteLabelChunk")
         effects.enter("sidenoteLabelMarker")
         effects.consume(code)
@@ -142,6 +156,9 @@ export function sidenote(): Extension {
     function afterLabel(code: Code): State | undefined {
       if (code === codes.colon) {
         return colonMarker(code)
+      }
+      if (code === codes.lessThan) {
+        return propertiesStart(code)
       }
       return nok(code)
     }

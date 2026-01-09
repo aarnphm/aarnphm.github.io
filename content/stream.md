@@ -38,7 +38,7 @@ metadata:
     letter        = "a".."z" ;
     digit         = "0".."9" ;
     character     = ? any printable ascii except newline ? ;
-modified: 2026-01-08 15:44:36 GMT-05:00
+modified: 2026-01-09 00:19:41 GMT-05:00
 tags:
   - fruit
   - evergreen
@@ -78,7 +78,7 @@ Ramsey's crossroads metaphor emphasizes on the pattern of bets IS the belief you
 
 \*\*\*
 
-I've been talking with a few friends towards this idea of how we would live in a {{sidenotes[hyperabundance]: i.e post-scarcity, interconnectedness}} world. In the way it creates a sense of grief. For [taste as a guide](https://jzhao.xyz/posts/aesthetics-and-taste), we as a species must "do things without recipes more often". In the similar vein as taking bets per Ramsey here.
+I've been talking with a few friends towards this idea of how we would live in a {{sidenotes[hyperabundance]: i.e post-scarcity, [[posts/hyperabundance|interconnectedness]] towards filtration versus selection.}} world. In the way it creates a sense of grief. For [taste as a guide](https://jzhao.xyz/posts/aesthetics-and-taste), we as a species must "do things without recipes more often". In the similar vein as taking bets per Ramsey here.
 
 ---
 

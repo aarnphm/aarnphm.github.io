@@ -385,9 +385,7 @@ async function fetchBibtex(id: string): Promise<string> {
 function extractArxivIdFromEntry(entry: any): string | null {
   // Try eprint field (varying capitalizations)
   const eprint = entry?.eprint ?? entry?.EPRINT ?? entry?.Eprint
-  if (eprint) {
-    return normalizeArxivId(String(eprint))
-  }
+  if (eprint) return normalizeArxivId(String(eprint))
 
   // Try URL field
   const url = entry?.url ?? entry?.URL

@@ -59,9 +59,7 @@ export const Sidenotes: QuartzTransformerPlugin = () => {
           return (tree: HastRoot, file: VFile) => {
             visit(
               tree,
-              (node) => {
-                return node.type === "element" && node.properties?.dataType === "sidenote"
-              },
+              (node) => node.type === "element" && node.properties?.dataType === "sidenote",
               (node, index, parent) => {
                 if (index === undefined || !parent) return
 
@@ -70,20 +68,29 @@ export const Sidenotes: QuartzTransformerPlugin = () => {
                 const forceInline = node.properties.forceInline === true
                 const allowLeft = node.properties.allowLeft !== false
                 const allowRight = node.properties.allowRight !== false
-                const label = node.properties.label || ""
+                const labelRaw = (node.properties.label as string) || ""
                 const internalLinks = node.properties.internal as string[] | undefined
 
+                const labelContainer = node.children.find((c) =>
+                  c.properties?.className?.includes("sidenote-label-hast"),
+                ) as HastElement | undefined
+                const contentContainer = node.children.find((c) =>
+                  c.properties?.className?.includes("sidenote-content-hast"),
+                ) as HastElement | undefined
+
+                const labelHast = labelContainer?.children ?? []
+                const contentHast = contentContainer?.children ?? []
+
                 const internal = renderInternalLinks(internalLinks, file, ctx)
+                const combinedContent = [...contentHast, ...internal]
 
-                const combinedContent = [...(node.children ?? []), ...internal]
-
-                const labelText = deriveLabel(label)
+                const finalLabel = labelHast.length > 0 ? labelHast : deriveLabel(labelRaw)
 
                 parent.children.splice(
                   index,
                   1,
                   ...buildSidenoteHast(
-                    labelText,
+                    finalLabel,
                     forceInline,
                     allowLeft,
                     allowRight,
@@ -177,9 +184,9 @@ function renderInternalLinks(
   return [separator, container]
 }
 
-function deriveLabel(rawLabel: string): string {
+function deriveLabel(rawLabel: string): ElementContent[] {
   let labelText = rawLabel.trim()
-  if (!labelText) return ""
+  if (!labelText) return []
 
   const wikilinkMatch = /\[\[([^\]]+)\]\]/.exec(labelText)
   if (wikilinkMatch) {
@@ -190,11 +197,11 @@ function deriveLabel(rawLabel: string): string {
     }
   }
 
-  return labelText
+  return [{ type: "text", value: labelText }]
 }
 
 function buildSidenoteHast(
-  labelText: string,
+  label: ElementContent[],
   forceInline: boolean,
   allowLeft: boolean,
   allowRight: boolean,
@@ -219,7 +226,7 @@ function buildSidenoteHast(
     ],
   )
 
-  const hasLabel = labelText.length > 0
+  const hasLabel = label.length > 0
 
   const labelProps: Record<string, string> = {
     id: `${baseId}-label`,
@@ -229,9 +236,7 @@ function buildSidenoteHast(
   const labelElement = h(
     "span.sidenote-label",
     hasLabel ? labelProps : { ...labelProps, "data-auto": "" },
-    hasLabel
-      ? [{ type: "text", value: labelText } as HastText, arrowDownSvg]
-      : [{ type: "text", value: "▪" } as HastText, arrowDownSvg],
+    hasLabel ? [...label, arrowDownSvg] : [{ type: "text", value: "▪" } as HastText, arrowDownSvg],
   )
 
   const dataAttrs: Record<string, string> = {

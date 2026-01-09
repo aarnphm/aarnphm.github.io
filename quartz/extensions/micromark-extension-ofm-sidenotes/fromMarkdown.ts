@@ -94,6 +94,31 @@ export function sidenoteFromMarkdown(options: FromMarkdownOptions = {}): MdastEx
   }
 
   function exitLabel(this: CompileContext): undefined {
+    const node = this.stack[this.stack.length - 1] as any as Sidenote
+    const labelRaw = node.data?.sidenoteParsed?.label || ""
+
+    if (node.data?.sidenoteParsed) {
+      try {
+        const labelTree = fromMarkdown(labelRaw, {
+          extensions: micromarkExts,
+          mdastExtensions: mdastExts,
+        })
+
+        const nodes: PhrasingContent[] = []
+        for (const child of labelTree.children) {
+          if (child.type === "paragraph") {
+            nodes.push(...((child as Paragraph).children as PhrasingContent[]))
+          } else if (isPhrasingContent(child)) {
+            nodes.push(child as PhrasingContent)
+          }
+        }
+
+        node.data.sidenoteParsed.labelNodes = nodes
+      } catch (e) {
+        node.data.sidenoteParsed.labelNodes = [{ type: "text", value: labelRaw }]
+      }
+    }
+
     return undefined
   }
 

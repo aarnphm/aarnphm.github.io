@@ -43,7 +43,10 @@ export function createHtmlProcessor(ctx: BuildCtx): QuartzHtmlProcessor {
         handlers: {
           // Pass through sidenote nodes with their children converted to HAST
           sidenote: (state: any, node: any) => {
-            const children = state.all(node)
+            const content = state.all(node)
+            const labelNodes = node.data?.sidenoteParsed?.labelNodes ?? []
+            const label = labelNodes.map((n: any) => state.one(n, node))
+
             return {
               type: "element",
               tagName: "span",
@@ -58,7 +61,20 @@ export function createHtmlProcessor(ctx: BuildCtx): QuartzHtmlProcessor {
                 label: node.data?.label,
                 internal: node.data?.internal,
               },
-              children,
+              children: [
+                {
+                  type: "element",
+                  tagName: "span",
+                  properties: { className: ["sidenote-label-hast"] },
+                  children: label,
+                },
+                {
+                  type: "element",
+                  tagName: "span",
+                  properties: { className: ["sidenote-content-hast"] },
+                  children: content,
+                },
+              ],
             }
           },
         },

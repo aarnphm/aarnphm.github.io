@@ -22,6 +22,7 @@ export interface SidenoteData {
   raw: string
   properties?: Record<string, string | string[]>
   label?: string
+  labelNodes?: PhrasingContent[]
   content: string
 }
 
