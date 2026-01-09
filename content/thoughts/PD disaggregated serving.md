@@ -4,7 +4,7 @@ aliases:
 date: "2025-06-16"
 description: and inference go distributed
 id: pd disaggregated serving
-modified: 2026-01-09 03:49:17 GMT-05:00
+modified: 2026-01-09 06:08:18 GMT-05:00
 seealso:
   - "[[thoughts/distributed inference|distributed inference]]"
   - "[@vllm-disagg-docs]"
@@ -140,6 +140,12 @@ where $d_c$ is latent dimension, $d_R$ is [[thoughts/RoPE]] dimension.
 > $$
 > \text{AI}(\mathcal{O}) = \frac{\text{FLOPs}(\mathcal{O})}{\text{Bytes}(\mathcal{O})}
 > $$
+
+or to speak it plainly:
+
+$$
+\text{Arithmetic Intensity} = \frac{\text{Computation FLOPs}}{\text{Communication Bytes}}
+$$
 
 > [!math] Definition 2 (Machine Intensity)
 >
@@ -440,7 +446,7 @@ note that this will makes a noticeable difference in dense models, but most MLA 
 | $C$               | 20 PFLOPS       | FP4 dense per GPU           |
 | $C_{\text{node}}$ | 160 PFLOPS      | 8-GPU node aggregate        |
 | $\beta$           | 8 TB/s          | HBM3e per GPU               |
-| $MI$              | 2500 FLOPs/byte | machine intensity $C/\beta$ |
+| $\text{MI}$       | 2500 FLOPs/byte | machine intensity $C/\beta$ |
 
 ##### model primitives
 

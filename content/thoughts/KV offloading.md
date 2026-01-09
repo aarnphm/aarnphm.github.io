@@ -2,7 +2,7 @@
 date: "2025-08-06"
 description: and LMCache.
 id: KV offloading
-modified: 2025-12-24 23:26:43 GMT-05:00
+modified: 2026-01-09 05:49:08 GMT-05:00
 tags:
   - ml
   - inference
@@ -19,8 +19,6 @@ see also: [handbook](https://bentoml.com/llm/inference-optimization/kv-cache-off
 - Decoding is memory-bound, re-computation of $QK^{T}V$ per layer causes $O(L)$ serial passes
 - In practice, not all KV has to be kept in memory. Thionk of sporadic access of chat means GPUs
   aren't being utilize 100% of the time. This would lead to waste of money.
-
-![[thoughts/Transformers#napkin math]]
 
 ## LMCache
 

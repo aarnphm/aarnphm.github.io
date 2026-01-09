@@ -2,10 +2,15 @@
 date: "2024-02-07"
 description: and the backbone of the current language models/ai progress.
 id: Transformers
-modified: 2026-01-08 14:32:20 GMT-05:00
+modified: 2026-01-09 06:03:57 GMT-05:00
 seealso:
   - "[[thoughts/LLMs|LLMs]]"
   - "[[thoughts/Embedding|embedding]]"
+  - "[[thoughts/PD disaggregated serving|disaggregated serving]]"
+  - "[[thoughts/KV compression]]"
+  - "[[thoughts/KV offloading]]"
+  - "[[thoughts/mechanistic interpretability]]"
+  - "[[thoughts/tsfm|toronto school of foundational modelling]]"
 socials:
   updates: https://magazine.sebastianraschka.com/p/beyond-standard-llms
 tags:
@@ -24,7 +29,7 @@ Most implementations are [[thoughts/Autoregressive models|autoregressive]]. Most
 
 ## internals
 
-See also: [transformers from scratch](https://e2eml.school/transformers.html), [[thoughts/mechanistic interpretability]], [[thoughts/tsfm|toronto school of foundational modelling]], @geva2021transformerfeedforwardlayerskeyvalue
+See also: [transformers from scratch](https://e2eml.school/transformers.html), @geva2021transformerfeedforwardlayerskeyvalue
 
 procedure: tokenization -> positional_embeddings -> input_embeddings -> ffn + attn -> hidden_states -> probability distributions -> sampled (next token)
 
@@ -57,19 +62,15 @@ Let number of tokens $N$, embedding dim to $d$, we have embeddings $E \in R^{N\t
 
 The idea of Q,K,V is to project with the embeddings to create $W_q, W_k, W_v$
 
+### Attention
+
 ![[thoughts/Attention#{collapsed: true}]]
 
 ## memory limitations.
 
-see also: [arXiv](https://arxiv.org/html/2403.14123)
+https://arxiv.org/abs/2403.14123
 
 https://x.com/karpathy/status/1691571869051445433
-
-Arithmetic intensity can be determined with the following:
-
-$$
-\text{Arithmetic Intensity} = \frac{\text{\# FLOPs}}{\text{\# MOPs}}
-$$
 
 ## inference.
 
@@ -81,7 +82,117 @@ Either compute-bound (batch inference, saturated usage) or memory-bound (latency
 
 ### sampling
 
-i.e temperature, top-p, top-k
+see also: [vLLM's sampler implementation](https://github.com/vllm-project/vllm/blob/main/vllm/v1/sample/sampler.py)
+
+given logits $z_i$ and base distribution $p_i = \text{softmax}(z)_i$, sampling methods modify this distribution before drawing tokens.
+
+#### temperature
+
+rescales logits before softmax: $p_i^{(\tau)} = \text{softmax}(z/\tau)_i$
+
+$$
+\lim_{\tau \to 0^+} p_i^{(\tau)} = \mathbf{1}[i = \arg\max z], \quad \lim_{\tau \to \infty} p_i^{(\tau)} = 1/|\mathcal{V}|
+$$
+
+entropy $H(p^{(\tau)})$ monotonically increases with $\tau$.
+
+```python
+def apply_temperature(
+  logits: torch.Tensor, temp: torch.Tensor
+) -> torch.Tensor:
+  temp = torch.where(temp < 1e-5, 1.0, temp)
+  return logits.div_(temp.unsqueeze(dim=1))
+```
+
+#### top-k
+
+retain $k$ highest-probability tokens, renormalize:
+
+$$
+p_i^{(k)} = \frac{p_i \cdot \mathbf{1}[i \in \mathcal{V}_k]}{\sum_{j \in \mathcal{V}_k} p_j}, \quad \mathcal{V}_k = \{i : \text{rank}(p_i) \leq k\}
+$$
+
+fixed $k$ ignores distribution shape—problematic when peaked (includes noise) or flat (truncates options).
+
+```python
+def apply_top_k(logits: torch.Tensor, k: torch.Tensor) -> torch.Tensor:
+  vocab_size = logits.shape[1]
+  k = k.clamp(min=1, max=vocab_size)
+  top_k_values = logits.topk(k.max(), dim=1).values
+  threshold = top_k_values.gather(1, (k - 1).unsqueeze(1))
+  return logits.masked_fill_(logits < threshold, -float('inf'))
+```
+
+#### top-p (nucleus) [@holtzman2020curious]
+
+dynamic vocabulary: smallest set with cumulative probability $\geq p$:
+
+$$
+\mathcal{V}_p = \arg\min_{V \subseteq \mathcal{V}} |V| \quad \text{s.t.} \quad \sum_{i \in V} p_i \geq p
+$$
+
+requires sorting: $O(|\mathcal{V}| \log |\mathcal{V}|)$. adapts to distribution—peaked → few tokens, flat → many.
+
+```python
+def apply_top_p(logits: torch.Tensor, p: torch.Tensor) -> torch.Tensor:
+  logits_sort, logits_idx = logits.sort(dim=-1, descending=False)
+  probs_sort = logits_sort.softmax(dim=-1)
+  probs_cumsum = probs_sort.cumsum(dim=-1)
+  mask = probs_cumsum <= (1 - p.unsqueeze(1))
+  mask[:, -1] = False
+  logits_sort.masked_fill_(mask, -float('inf'))
+  return logits_sort.scatter(dim=-1, index=logits_idx, src=logits_sort)
+```
+
+#### min-p [@nguyen2024minp]
+
+probability floor relative to maximum: $\mathcal{V}_{\min p} = \{i : p_i \geq \min_p \cdot \max_j p_j\}$
+
+scales with model confidence—tighter threshold when confident, looser when uncertain. outperforms top-p at high temperatures ($\tau > 1$). [^minp-iclr]
+
+[^minp-iclr]: ICLR 2025 oral. addresses top-p failure mode: flat distribution includes low-quality tokens.
+
+```python
+def apply_min_p(logits: torch.Tensor, min_p: torch.Tensor) -> torch.Tensor:
+  probs = logits.softmax(dim=-1)
+  max_probs = probs.amax(dim=-1, keepdim=True)
+  threshold = max_probs * min_p.unsqueeze(1)
+  return logits.masked_fill_(probs < threshold, -float('inf'))
+```
+
+#### pipeline order
+
+```mermaid
+flowchart LR
+    A["logits (B×V)"] --> B["temperature τ"]
+    B --> C["min_p filter"]
+    C --> D["top_k ∩ top_p"]
+    D --> E["softmax → probs"]
+    E --> F["multinomial sample"]
+    F --> G["token_id"]
+
+    style B fill:#f9d71c,stroke:#333
+    style C fill:#87ceeb,stroke:#333
+    style D fill:#98fb98,stroke:#333
+```
+
+vLLM applies: **temperature → min_p → top_k/top_p → sample**
+
+temperature before truncation means flatter distributions include more tokens in top-p. this order maximizes diversity control.
+
+```python
+def sample(logits: torch.Tensor, params: SamplingParams) -> torch.Tensor:
+  logits = apply_temperature(logits, params.temperature)
+  logits = apply_min_p(logits, params.min_p)
+  logits = apply_top_k(logits, params.top_k)
+  logits = apply_top_p(logits, params.top_p)
+  probs = logits.softmax(dim=-1)
+  return torch.multinomial(probs, num_samples=1)
+```
+
+#### rejection sampling
+
+![[thoughts/Speculative decoding#von Neumann acceptance–rejection|see also: speculative decoding]]
 
 ### KV
 
@@ -94,16 +205,6 @@ The core "retrieval" bags that contains all previous stored key-value pair or ne
 ![[thoughts/images/mooncake-pd.webp|KV-centric optimization]]
 
 ![[lectures/3/notes#kvcache ad-hoc implementation]]
-
-#### napkin math
-
-for calculating memory usage, see also [calculator from LMCache team](https://lmcache.ai/kv_cache_calculator.html)
-
-$$
-\frac{2 \times \text{batch\_size} \times  \text{seq\_len} \times  \text{num\_layers} \times  \text{num\_attn\_heads} \times \text{dim\_attn\_heads} \times (\text{precision} / 8)}{1024^{3}}
-$$
-
-in this case, precision can be FP16, MXFP4, [[thoughts/quantization|FP8]]
 
 ### next-token prediction.
 
