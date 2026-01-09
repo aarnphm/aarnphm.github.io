@@ -77,6 +77,57 @@ export function createHtmlProcessor(ctx: BuildCtx): QuartzHtmlProcessor {
               ],
             }
           },
+          sidenoteReference: (state: any, node: any) => {
+            const labelNodes = node.labelNodes ?? []
+            const label = labelNodes.map((n: any) => state.one(n, node))
+
+            return {
+              type: "element",
+              tagName: "span",
+              properties: {
+                className: ["sidenote-ref-placeholder"],
+                dataType: "sidenote-ref",
+                label: node.label,
+              },
+              children: [
+                {
+                  type: "element",
+                  tagName: "span",
+                  properties: { className: ["sidenote-label-hast"] },
+                  children: label,
+                },
+              ],
+            }
+          },
+          sidenoteDefinition: (state: any, node: any) => {
+            const content = state.all(node)
+            const labelNodes = node.labelNodes ?? []
+            const label = labelNodes.map((n: any) => state.one(n, node))
+
+            return {
+              type: "element",
+              tagName: "div",
+              properties: {
+                className: ["sidenote-def-placeholder"],
+                dataType: "sidenote-def",
+                label: node.label,
+              },
+              children: [
+                {
+                  type: "element",
+                  tagName: "span",
+                  properties: { className: ["sidenote-label-hast"] },
+                  children: label,
+                },
+                {
+                  type: "element",
+                  tagName: "div",
+                  properties: { className: ["sidenote-content-hast"] },
+                  children: content,
+                },
+              ],
+            }
+          },
         },
       })
       // HTML AST -> HTML AST transforms

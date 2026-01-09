@@ -2,7 +2,7 @@
 date: "2025-10-27"
 description: from nytimes
 id: nytimes
-modified: 2026-01-09 04:05:12 GMT-05:00
+modified: 2026-01-09 04:17:07 GMT-05:00
 tags:
   - games
 title: games
@@ -200,6 +200,7 @@ Wordle 1,665 3/6
 
 ![[thoughts/images/nytimes/spelling-bee-genius-2026-01-05.webp]]
 ![[thoughts/images/nytimes/spelling-bee-genius-2026-01-06.webp]]
+![[thoughts/images/nytimes/spelling-bee-genius-2026-01-09.webp]]
 
 ## sudoku
 
@@ -209,3 +210,4 @@ Wordle 1,665 3/6
 
 ![[thoughts/images/nytimes/mini-2026-01-06.webp]]
 ![[thoughts/images/nytimes/mini-2026-01-09.webp]]
+
