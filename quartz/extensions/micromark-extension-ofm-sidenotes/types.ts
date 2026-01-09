@@ -15,6 +15,20 @@ declare module "micromark-util-types" {
     sidenoteColonMarker: "sidenoteColonMarker"
     sidenoteContent: "sidenoteContent"
     sidenoteContentChunk: "sidenoteContentChunk"
+    // Reference types
+    sidenoteReference: "sidenoteReference"
+    sidenoteReferenceMarker: "sidenoteReferenceMarker"
+    sidenoteReferenceKeyword: "sidenoteReferenceKeyword"
+    sidenoteReferenceLabelMarker: "sidenoteReferenceLabelMarker"
+    sidenoteReferenceLabel: "sidenoteReferenceLabel"
+    sidenoteReferenceLabelChunk: "sidenoteReferenceLabelChunk"
+    // Definition types
+    sidenoteDefinition: "sidenoteDefinition"
+    sidenoteDefinitionMarker: "sidenoteDefinitionMarker"
+    sidenoteDefinitionLabel: "sidenoteDefinitionLabel"
+    sidenoteDefinitionLabelMarker: "sidenoteDefinitionLabelMarker"
+    sidenoteDefinitionLabelChunk: "sidenoteDefinitionLabelChunk"
+    sidenoteDefinitionWhitespace: "sidenoteDefinitionWhitespace"
   }
 }
 
@@ -31,6 +45,19 @@ export interface Sidenote extends Node {
   value: string
   children: PhrasingContent[]
   position?: { start: Point; end: Point }
+}
+
+export interface SidenoteReference extends Node {
+  type: "sidenoteReference"
+  label: string
+  labelNodes?: PhrasingContent[]
+}
+
+export interface SidenoteDefinition extends Node {
+  type: "sidenoteDefinition"
+  label: string
+  labelNodes?: PhrasingContent[]
+  children: BlockContent[]
 }
 
 declare module "mdast" {

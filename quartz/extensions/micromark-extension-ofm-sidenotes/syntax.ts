@@ -160,6 +160,9 @@ export function sidenote(): Extension {
       if (code === codes.lessThan) {
         return propertiesStart(code)
       }
+      if (code === codes.rightCurlyBrace) {
+        return closingBraceFirst(code)
+      }
       return nok(code)
     }
 
@@ -219,5 +222,33 @@ export function sidenote(): Extension {
 }
 
 function resolveAllSidenote(events: any[]) {
+  for (let i = 0; i < events.length; i++) {
+    const event = events[i]
+    if (event[0] === "enter" && event[1].type === "sidenote") {
+      let hasContent = false
+      let j = i + 1
+      while (j < events.length) {
+        if (events[j][0] === "exit" && events[j][1] === event[1]) break
+        if (events[j][1].type === "sidenoteContent") {
+          hasContent = true
+          break
+        }
+        j++
+      }
+
+      if (!hasContent) {
+        event[1].type = "sidenoteReference"
+        let k = i + 1
+        while (k < events.length) {
+          if (events[k][0] === "exit" && events[k][1] === event[1]) break
+          const type = events[k][1].type as string
+          if (type.startsWith("sidenote") && !type.startsWith("sidenoteReference")) {
+            events[k][1].type = type.replace("sidenote", "sidenoteReference")
+          }
+          k++
+        }
+      }
+    }
+  }
   return events
 }

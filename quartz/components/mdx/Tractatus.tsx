@@ -14,7 +14,7 @@ import {
 
 type BasePropoProps = {
   suffix: string
-  proposition: string
+  proposition?: ComponentChildren
   children?: ComponentChildren
   parentNumber?: string
 }
@@ -25,6 +25,39 @@ const isVNodeOf = <T,>(node: ComponentChildren, component: ComponentType<T>): no
   return typeof node === "object" && node !== null && "type" in node && node.type === component
 }
 
+const normalizeChildren = (children?: ComponentChildren): ComponentChildren[] =>
+  toChildArray(children).filter((child) => {
+    if (child === null || child === undefined || child === false) return false
+    if (typeof child === "string") return child.trim() !== ""
+    return true
+  })
+
+const splitChildren = <T,>(
+  children: ComponentChildren,
+  isNested: (node: ComponentChildren) => node is VNode<T>,
+) => {
+  const childArray = normalizeChildren(children)
+  const nested: ComponentChildren[] = []
+  const leading: ComponentChildren[] = []
+  const trailing: ComponentChildren[] = []
+  let seenNested = false
+
+  for (const child of childArray) {
+    if (isNested(child)) {
+      seenNested = true
+      nested.push(child)
+      continue
+    }
+    if (!seenNested) {
+      leading.push(child)
+    } else {
+      trailing.push(child)
+    }
+  }
+
+  return { nested, leading, trailing }
+}
+
 const TractatusPropoImpl: FunctionalComponent<BasePropoProps> = ({
   suffix,
   proposition,
@@ -32,11 +65,13 @@ const TractatusPropoImpl: FunctionalComponent<BasePropoProps> = ({
   parentNumber = "",
 }) => {
   const fullNumber = `${parentNumber}${suffix}`
-  const childArray = toChildArray(children).filter(Boolean)
-  const nested = childArray.filter((child) => isVNodeOf(child, TractatusPropoImpl))
-  const content = childArray.filter((child) => !isVNodeOf(child, TractatusPropoImpl))
+  const { nested, leading, trailing } = splitChildren(children, (child) =>
+    isVNodeOf(child, TractatusPropoImpl),
+  )
+  const propositionContent = proposition ?? (leading.length > 0 ? leading : undefined)
+  const content = proposition ? [...leading, ...trailing] : trailing
 
-  const decoratedChildren = nested.map((child) =>
+  const decoratedChildren = (nested as VNode<BasePropoProps>[]).map((child) =>
     cloneElement(child as VNode<BasePropoProps>, {
       parentNumber: fullNumber,
     }),
@@ -55,7 +90,7 @@ const TractatusPropoImpl: FunctionalComponent<BasePropoProps> = ({
       <div class="tractatus-row">
         <span class="tractatus-number">{fullNumber}</span>
         <div class="tractatus-text">
-          <p>{proposition}</p>
+          {propositionContent && <p>{propositionContent}</p>}
           {content.length > 0 && <div class="tractatus-content">{content}</div>}
         </div>
       </div>
@@ -71,7 +106,7 @@ export const TractatusPropo = registerMdxComponent(
 )
 
 type TractatusProps = {
-  proposition: string
+  proposition?: ComponentChildren
   children?: ComponentChildren
   number?: number
 }
@@ -90,11 +125,11 @@ const TractatusImpl: FunctionalComponent<TractatusInternalProps> = ({
   _index = 1,
 }) => {
   const baseNumber = number !== undefined ? String(number) : String(_index)
-  const childArray = toChildArray(children).filter(Boolean)
-  const propos = childArray.filter(isPropoVNode)
-  const content = childArray.filter((child) => !isPropoVNode(child))
+  const { nested: propos, leading, trailing } = splitChildren(children, isPropoVNode)
+  const propositionContent = proposition ?? (leading.length > 0 ? leading : undefined)
+  const content = proposition ? [...leading, ...trailing] : trailing
 
-  const decoratedPropos = propos.map((child) =>
+  const decoratedPropos = (propos as VNode<BasePropoProps>[]).map((child) =>
     cloneElement(child as VNode<BasePropoProps>, {
       parentNumber: baseNumber,
     }),
@@ -111,7 +146,7 @@ const TractatusImpl: FunctionalComponent<TractatusInternalProps> = ({
       <div class="tractatus-row">
         <span class="tractatus-number">{baseNumber}</span>
         <div class="tractatus-text">
-          <p>{proposition}</p>
+          {propositionContent && <p>{propositionContent}</p>}
           {content.length > 0 && <div class="tractatus-content">{content}</div>}
         </div>
       </div>

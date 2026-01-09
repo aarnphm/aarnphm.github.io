@@ -4,7 +4,7 @@ aliases:
 date: "2025-06-16"
 description: and inference go distributed
 id: pd disaggregated serving
-modified: 2026-01-09 02:30:50 GMT-05:00
+modified: 2026-01-09 03:49:17 GMT-05:00
 seealso:
   - "[[thoughts/distributed inference|distributed inference]]"
   - "[@vllm-disagg-docs]"
@@ -30,25 +30,48 @@ _notation are borrowed from [Jax's scaling book](https://jax-ml.github.io/scalin
 
 see also: [dot-product intensity](https://gist.github.com/mikasenghaas/f3663a1f26acbb95cc880db12e9547ea)
 
-| Notation | Description                            | Notes                      |
-| -------- | -------------------------------------- | -------------------------- |
-| $D$      | Model hidden size $d_{\text{model}}$   |                            |
-| $F$      | FFW/MLP dimensions $d_{\text{ff}}$     |                            |
-| $N$      | number of attention head `n_attn_head` |                            |
-| $L$      | Number of Layer                        |                            |
-| $K$      | KV Heads                               | $N$ for MHA, $K<N$ for GQA |
-| $H$      | dimensions per head $d_{\text{head}}$  |                            |
-| $S$      | dtype number of bytes/float            |                            |
+### notation
 
-Now, we consider the memory required to store KV per single tokens is:
+| symbol                 | description                      | notes                                                          |
+| ---------------------- | -------------------------------- | -------------------------------------------------------------- |
+| $T$                    | sequence length (tokens)         | $T_{\text{in}}$ input ($ISL$), $T_{\text{out}}$ output ($OSL$) |
+| $b$                    | bytes per element (dtype)        | FP16=2, BF16=2, FP8=1, FP4=0.5                                 |
+| $\beta$                | memory bandwidth (GB/s)          | HBM3e: 8 TB/s per GPU                                          |
+| $B$                    | batch size                       |                                                                |
+| $L$                    | number of layers                 |                                                                |
+| $D$                    | hidden size $d_{\text{model}}$   |                                                                |
+| $F$                    | FFN intermediate $d_{\text{ff}}$ |                                                                |
+| $n_h$                  | attention heads                  |                                                                |
+| $n_{\text{kv}}$        | KV heads                         | $n_h$ for MHA, $< n_h$ for GQA                                 |
+| $d_h$                  | head dimension                   |                                                                |
+| $k$                    | routed experts per token         |                                                                |
+| $E$                    | total experts                    | $E_{\text{tot}}$                                               |
+| $N$                    | number of nodes                  |                                                                |
+| $E_{\text{gpu}}$       | routed experts on this GPUs      |                                                                |
+| $E_{\text{node}}$      | routed experts on this node      |                                                                |
+| $B_{\text{gpu}}$       | MoE layer input tokens per GPUs  |                                                                |
+| $C$                    | peak compute (FLOPs/s)           |                                                                |
+| $P_{\text{active}}$    | active parameters                | for MoE: shared + $k/E$ routed                                 |
+| $\lambda$              | arrival rate (req/s)             |                                                                |
+| $\lambda_p, \lambda_d$ | pool throughputs                 | prefill and decode                                             |
+| $cc_d$                 | decode concurrency               | concurrent requests in decode                                  |
+| $t_p, t_d$             | phase latencies                  | prefill time, decode step time                                 |
+
+### KV cache memory
+
+per-token KV storage (dense attention):
 
 $$
-M_{kv} = 2 \cdot S \cdot H \cdot K \cdot L
+M_{\text{kv}} = 2 \cdot b \cdot d_h \cdot n_{\text{kv}} \cdot L
 $$
 
-> [!note]
->
-> _We mostly consider bfloat16_, hence the memory required per token is $M_{kv} = 2 \cdot 2 \cdot H \cdot K \cdot L$
+for MLA (latent attention), storage is compressed:
+
+$$
+M_{\text{kv}}^{\text{MLA}} = (d_c + d_R) \cdot b \cdot L
+$$
+
+where $d_c$ is latent dimension, $d_R$ is [[thoughts/RoPE]] dimension.
 
 > [!important] terminology
 >
@@ -71,53 +94,190 @@ $$
 > T_{\text{MoE}} \approx T_{\text{dispatch}} + T_{\text{experts(grouped GEMM)}} + T_{\text{combine}}
 > $$
 >
-> | notation          | description                     |
-> | ----------------- | ------------------------------- |
-> | $k$               | routed experts                  |
-> | $E_{\text{tot}}$  | total experts                   |
-> | $E_{\text{gpu}}$  | routed experts on this GPUs     |
-> | $E_{\text{node}}$ | routed experts on this node     |
-> | $B_{\text{gpu}}$  | MoE layer input tokens per GPUs |
->
 > For MoE grouped GEMM:
 >
-> $$T_{\text{HBM}} = \frac{\text{Bytes}_{\text{HBM}}}{BW_{\text{HBM}}} \approx \frac{3h h^{'}E_{\text{gpu,active}}}{BW_\text{HBM}}$$
+> $$
+> T_{\text{HBM}} = \frac{\text{Bytes}_{\text{HBM}}}{BW_{\text{HBM}}} \approx \frac{3h h^{'}E_{\text{gpu,active}}}{BW_\text{HBM}}
+> $$
 >
 > Where $E_{\text{gpu,active}}=\frac{E_{\text{routed}}}{N_\text{gpu}}+1 = \frac{E_{\text{total}}}{8N_{\text{node}}}+1$
 >
 > For all-to-all:
 >
-> $$T_{\text{comm}} = T_{dispatch} + T_{combine} = 2 \times T_{\text{dispatch}}$$
+> $$
+> T_{\text{comm}} = T_{dispatch} + T_{combine} = 2 \times T_{\text{dispatch}}
+> $$
 >
 > where $T_{\text{dispatch,intra}} = \frac{B_{\text{gpu}}k_{\text{intra}h}}{BW_{\text{NV}}}$ and $t_{\text{dispatch,inter}}=\frac{B_{\text{gpu}}k_{\text{inter}}h}{BW_{\text{IB}}}$
 >
 > With MoE node coalescing (circa DeepSeek):
 >
-> $$n_{\text{remote}} = \min \left( (N_{\text{node}} - 1) \left[ 1 - \left( 1 - \frac{1}{N_{\text{node}}} \right)^k \right], 4 \right)$$
+> $$
+> n_{\text{remote}} = \min \left( (N_{\text{node}} - 1) \left[ 1 - \left( 1 - \frac{1}{N_{\text{node}}} \right)^k \right], 4 \right)
+> $$
 >
-> $$T_{\text{IB,total}} = \frac{B_{\text{gpu}} \cdot n_{\text{remote}} \cdot h \cdot (s_{\text{disp}} + s_{\text{comb}})}{BW_{\text{IB}}}$$
+> $$
+> T_{\text{IB,total}} = \frac{B_{\text{gpu}} \cdot n_{\text{remote}} \cdot h \cdot (s_{\text{disp}} + s_{\text{comb}})}{BW_{\text{IB}}}
+> $$
 >
 > For comparison between IB vs. HBM:
 >
 > - When we increase tokens, IB will become bottleneck
 > - Closed form format would be $T_{\text{IB}} = T_{\text{HBM}}$
 >
-> Then $$B^{*}_{\text{gpu}} = \frac{3h^{'}E_{\text{gpu,active}}}{s_{\text{disp}} + s_{\text{comb}}} \frac{BW_{\text{IB}}}{BW_{\text{HBM}}} \frac{1}{n_{\text{remote}}}$$
+> Then
+>
+> $$
+> B^{*}_{\text{gpu}} = \frac{3h^{'}E_{\text{gpu,active}}}{s_{\text{disp}} + s_{\text{comb}}} \frac{BW_{\text{IB}}}{BW_{\text{HBM}}} \frac{1}{n_{\text{remote}}}
+> $$
 
-Now, prefill is compute-bound ($T_{\text{math}} > T_{\text{comms}}$), decode is comms-bound ($T_{\text{math}} < T_{\text{comms}}$) [^ai]
+### formal definitions
 
-Some napkin math:
+> [!math] Definition 1 (Arithmetic Intensity)
+>
+> For operation $\mathcal{O}$:
+>
+> $$
+> \text{AI}(\mathcal{O}) = \frac{\text{FLOPs}(\mathcal{O})}{\text{Bytes}(\mathcal{O})}
+> $$
 
-- $$\text{Intensity}(\text{dot product}) =  \frac{N + N - 1}{2N + 2N + 2} \to \frac{1}{2}$$
-  - $N$ is the vector length
-- $$\text{Intensity}(\text{matmul}) = \frac{2NMK}{2NM + 2MK + 2NK} = \frac{NMK}{NM+MK+NK}$$
-  - for matrix A [NxM] and matrix B [MxK]
-  - For [[thoughts/Transformers]]
-- see also: [[lectures/420/notes#roofline model|roofline analysis]] [^roofline]
+> [!math] Definition 2 (Machine Intensity)
+>
+> $$
+> \text{MI} = \frac{C}{\beta}
+> $$
+>
+> where $C$ is peak compute (FLOPs/s), $\beta$ is memory bandwidth.
 
-[^ai]: Arithmetic Intensity is considered with $\frac{\text{Computation FLOPs}}{\text{Communication Bytes}}$, so when we discussing bounds, we care about $\text{Intensity}(\text{Computation})$ versus $\text{Intensity}(\text{Accelerator})$ (collary from above definition)
+> [!math] Definition 3 (Bound Classification)
+>
+> Operation $\mathcal{O}$ is **compute-bound** iff $\text{AI}(\mathcal{O}) > \text{MI}$, else **memory-bound**.
 
-[^roofline]: This is usually useful when we discuss accelerator peak FLOPs on the scale of amortized FLOPs/s versus AI (on log scale)
+> [!math] Definition 4 (Pool Utilization)
+>
+> $$
+> U_p = \frac{\lambda \cdot \mathbb{E}[S_p]}{m_p}, \quad U_d = \frac{\lambda \cdot \mathbb{E}[S_d]}{m_d}
+> $$
+>
+> where $\lambda$ is arrival rate, $S_p, S_d$ are service times, $m_p, m_d$ are worker counts.
+
+> [!math] Definition 5 (Goodput)
+>
+> $$
+> G(\lambda) = \lambda \cdot \Pr[\text{TTFT} \leq \tau_p] \cdot \Pr[\text{ITL} \leq \tau_d]
+> $$
+>
+> Fraction of requests meeting both TTFT and ITL SLOs. Product form assumes independence of phase latencies (holds for disaggregated systems with separate queues; fails for monolithic where prefill blocks decode).
+
+### lemmas
+
+> [!math] Lemma 1 (Prefill Compute-Bound)
+>
+> For input sequence $T_{\text{in}} > T^*$, prefill is compute-bound, where:
+>
+> $$
+> T^* = \sqrt{\frac{P_{\text{active}} \cdot \text{MI}}{2 n_h (d_c + d_R + v_h) L}}
+> $$
+
+_Proof:_
+
+Prefill FLOPs:
+
+$$
+\Phi_p = 2P_{\text{active}}T + 2T^2 n_h d L
+$$
+
+where $d = d_c + d_R + v_h$.
+
+Memory access $\sim P_{\text{active}}$ bytes.
+
+Setting $\text{AI} = \text{MI}$: $2T + 2T^2 n_h d L / P_{\text{active}} = \text{MI}$.
+
+Solving the quadratic and taking the attention-dominated regime gives $T^* \approx \sqrt{P_{\text{active}} \cdot \text{MI} / (2 n_h d L)}$. $\square$
+
+> [!math] Lemma 2 (Decode Memory-Bound)
+>
+> For batch $B < B^*$, decode is memory-bound, where:
+>
+> $$
+> B^* = \frac{P_{\text{active}} \cdot \text{MI}}{2P_{\text{active}} - T \cdot M_{\text{kv}} \cdot \text{MI}}
+> $$
+>
+> valid when $T < 2P_{\text{active}}/(\text{MI} \cdot M_{\text{kv}})$.
+
+_Proof:_
+
+Decode loads $P_{\text{active}} + BT M_{\text{kv}}$ bytes, computes $2P_{\text{active}}B$ FLOPs.
+
+Arithmetic intensity $\text{AI} = 2P_{\text{active}}B/(P_{\text{active}} + BT M_{\text{kv}})$.
+
+Setting $\text{AI} = \text{MI}$ and solving gives the threshold.
+
+For short contexts where $T M_{\text{kv}} \ll P_{\text{active}}$, simplifies to $B^* \approx \text{MI}/2$. $\square$
+
+> [!math] Lemma 3 (MoE Expert Activation)
+>
+> Expected number of remote nodes requiring communication:
+>
+> $$
+> n_{\text{remote}} = (N-1)\left[1 - \left(1 - \frac{1}{N}\right)^k\right]
+> $$
+
+_Proof:_
+
+Balls-into-bins.
+
+Each of $k$ routed experts lands on node $i$ with probability $1/N$.
+
+Probability no expert lands on remote node $j$: $(1-1/N)^k$.
+
+Expected count over $N-1$ remote nodes by linearity. $\square$
+
+> [!math] Lemma 4 (TTFT Queueing Bound)
+>
+> Under M/G/1 arrivals:
+>
+> $$
+> \mathbb{E}[\text{TTFT}] = \mathbb{E}[S_p] + \frac{\lambda \mathbb{E}[S_p^2]}{2(1-\rho)}
+> $$
+>
+> where $\rho = \lambda \mathbb{E}[S_p]$ is utilization. [^q-formula]
+
+### MoE propositions
+
+> [!math] Proposition 1 (Communication Crossover)
+>
+> IB becomes bottleneck when batch size exceeds:
+>
+> $$
+> B > B^*_{\text{gpu}} = \frac{3h' E_{\text{gpu,active}}}{s_{\text{disp}} + s_{\text{comb}}} \cdot \frac{\beta_{\text{IB}}}{\beta_{\text{HBM}}} \cdot \frac{1}{n_{\text{remote}}}
+> $$
+
+_Derivation:_ Set $T_{\text{IB}} = T_{\text{HBM}}$ and solve for $B$.
+
+> [!math] Proposition 2 (Shared Expert Overlap)
+>
+> When $T_{\text{shared}} \leq T_{\text{combine}}$, shared expert compute is "free" (hidden behind combine latency).
+
+This is the DeepSeek-style optimization where shared experts run concurrently with the combine all-to-all.
+
+> [!math] Proposition 3 (Node Coalescing Bound)
+>
+> DeepSeek's $\min(\cdot, 4)$ cap bounds inter-node messages regardless of $k$ or cluster size.
+
+_collary:_ Communication complexity is $O(1)$ in cluster size $N$ for $N > 4$.
+
+> [!math] Proposition 4 (DBO Overlap Efficiency) [Empirical]
+>
+> $$
+> \eta_{\text{DBO}}(B) \approx 1 - \frac{1}{1 + L_{\text{MoE}} \cdot T_{\text{compute}} / T_{\text{comm}}}
+> $$
+>
+> Empirical fits: $\eta \approx 75\%$ at $B=16$, $\eta \approx 90\%$ at $B=64$, $\eta \approx 95\%$ at $B=256$.
+
+_note:_ these are empirical observations from vLLM benchmarks, not proven bounds.
+
+see also: [[lectures/420/notes#roofline model|roofline analysis]]
 
 ### goodput
 
@@ -194,7 +354,7 @@ Now, constraints are followed with:
    - memory bound $B$ required to load the active weights and batch of KV (i.e memory movement from HBM to tensor cores)
 3. Memory Capacity Wall: total memory footprint on decode nodes:
    $$
-   cc_{d} \cdot M_{kv} \cdot  (\text{S} + \text{OSL}) + \text{Weight} \le \text{VRAM}_{total}
+   cc_{d} \cdot M_{kv} \cdot  (T_{\text{in}} + T_{\text{out}}) + \text{Weight} \le \text{VRAM}_{total}
    $$
 
 [^tx-notes]: This depends on attention mechanism and attention implementations, as well as inter-op and intra-op parallelism (i.e IB or NVLink). On newer hardware and most linear attention implementation/kernels we can assume that IB/NVLink wouldn't make a lot of different, even in the case of long context inference (will mention a bit later)
@@ -202,13 +362,13 @@ Now, constraints are followed with:
 > [!equation] optimal ratio
 >
 > $$
-> R_{P/D} = \frac{n_{p}}{n_{d}} = \frac{\Phi_{\text{prefill}} \cdot \text{S} \cdot \text{RPS}}{T_{\text{prefill, SLO}}} : \frac{\Phi_{\text{decode}} \cdot \text{OSL} \cdot \text{RPS}}{T_{\text{decode, SLO}}}
+> R_{P/D} = \frac{n_{p}}{n_{d}} = \frac{\Phi_{\text{prefill}} \cdot T_{\text{in}} \cdot \text{RPS}}{T_{\text{prefill, SLO}}} : \frac{\Phi_{\text{decode}} \cdot T_{\text{out}} \cdot \text{RPS}}{T_{\text{decode, SLO}}}
 > $$
 >
 > With:
 >
-> - prefill scaling factor $\Phi_{\text{prefill}}$ estimated as $D \times (12H^2 + 2SH)$ accounting for linear projection and quadratic scaling attention with sequence length $S$
-> - decode scaling factor $\Phi_{\text{decode}}$ estimated as $\frac{P_\text{active} + \text{KV size}}{B}$, as time required to laod data from HBM for 1 token.
+> - prefill scaling factor $\Phi_{\text{prefill}}$ estimated as $D \times (12H^2 + 2T_{\text{in}}H)$ accounting for linear projection and quadratic scaling attention with input sequence $T_{\text{in}}$
+> - decode scaling factor $\Phi_{\text{decode}}$ estimated as $\frac{P_\text{active} + \text{KV size}}{\beta}$, as time required to load data from HBM for 1 token.
 
 #### pool throughputs
 
@@ -216,10 +376,10 @@ Now, to calculate the efficiency of the node, we must calculate the _maximal rat
 
 **A. Prefill Throughput ($\lambda_{p}$)**
 
-Now, for an input sequence length $S$, the time to process the prompt on device with peak compute $C$, with compute utilization factor $U_{pf}$ (usually in the range of 0.7-0.9):
+Now, for input sequence $T_{\text{in}}$, the time to process the prompt on device with peak compute $C$, with compute utilization factor $U_{pf}$ (usually in the range of 0.7-0.9):
 
 $$
-t_p = \frac{2 \cdot P_\text{active}}{C \cdot  U_{pf}} = \frac{2 \cdot  L(3NK + 4DNH) \cdot S}{C \cdot U_{pf}}
+t_p = \frac{2 \cdot P_\text{active}}{C \cdot  U_{pf}} = \frac{2 \cdot  L(3NK + 4DNH) \cdot T_{\text{in}}}{C \cdot U_{pf}}
 $$
 
 For a single request: $\lambda_p = \frac{1}{t_p}$
@@ -232,18 +392,18 @@ $$
 
 **B. Decode Throughput ($\lambda_{d}$)**
 
-Now, time to generate one token for which the active weights $P_{\text{active}}$ with KV Cache loaded from HBM to compute core at memory bandwidth $B$:
+Now, time to generate one token for which the active weights $P_{\text{active}}$ with KV Cache loaded from HBM to compute core at memory bandwidth $\beta$:
 
 $$
-t_d = \frac{2 \cdot P + (B_{\text{sz}} * S * M_{kv})}{B} = \frac{2 \cdot L(3NK + 4DNH) + (cc_{d} \cdot S \cdot M_{kv})}{B}
+t_d = \frac{2 \cdot P + (B \cdot T_{\text{in}} \cdot M_{kv})}{\beta} = \frac{2 \cdot L(3NK + 4DNH) + (cc_{d} \cdot T_{\text{in}} \cdot M_{kv})}{\beta}
 $$
 
-For a decoding batch: $\lambda_{d} = \frac{cc_{d}}{\text{OSL} \cdot t_{d}}$
+For a decoding batch: $\lambda_{d} = \frac{cc_{d}}{T_{\text{out}} \cdot t_{d}}$
 
 **C. P/D Ratio**
 
 > $$
-> R_{P/D} = \frac{n_{p}}{n_{d}} = \frac{\lambda_{p}}{\lambda_{d}} = \frac{cc_{d} \cdot t_p}{\text{OSL} \cdot t_d}
+> R_{P/D} = \frac{n_{p}}{n_{d}} = \frac{\lambda_{p}}{\lambda_{d}} = \frac{cc_{d} \cdot t_p}{T_{\text{out}} \cdot t_d}
 > $$
 
 **D. Transfer speed tradeoff**
@@ -284,17 +444,17 @@ note that this will makes a noticeable difference in dense models, but most MLA 
 
 ##### model primitives
 
-| param               | value               | derivation                |
-| ------------------- | ------------------- | ------------------------- |
-| $P_{\text{total}}$  | 671B (335.5 GB FP4) | min TP2 for residency     |
-| $P_{\text{active}}$ | 37B (18.5 GB FP4)   | 1 shared + 8/256 routed   |
-| $L$                 | 61                  | transformer layers        |
-| $n_h$               | 128                 | attention heads           |
-| $d_c$               | 512                 | kv_lora_rank (MLA latent) |
-| $d_R$               | 64                  | qk_rope_head_dim          |
-| $v_h$               | 128                 | v_head_dim                |
+| param               | value               | derivation                  |
+| ------------------- | ------------------- | --------------------------- |
+| $P_{\text{total}}$  | 671B (335.5 GB FP4) | min TP2 for residency       |
+| $P_{\text{active}}$ | 37B (18.5 GB FP4)   | 1 shared + 8/256 routed     |
+| $L$                 | 61                  | transformer layers          |
+| $n_h$               | 128                 | attention heads             |
+| $d_c$               | 512                 | `kv_lora_rank` (MLA latent) |
+| $d_R$               | 64                  | `qk_rope_head_dim`          |
+| $v_h$               | 128                 | `v_head_dim`                |
 
-##### MLA KV cache
+##### [[thoughts/Attention#Multi-head Latent Attention|MLA]] KV cache
 
 MLA stores compressed latent $c_t^{KV}$ plus RoPE keys $k_t^R$—values reconstructed via $W^{UV}$:
 
@@ -308,15 +468,15 @@ at ISL=70k: $\text{KV}_{\text{total}} = 35 \text{ KB} \times 70{,}000 = 2.45 \te
 
 ##### prefill
 
-FLOPs decomposition for $T$ effective tokens:
+FLOPs decomposition for $T_{\text{eff}}$ effective tokens (where $T_{\text{eff}} = T_{\text{in}}(1-h)$):
 
-| component            | formula                                               | notes            |
-| -------------------- | ----------------------------------------------------- | ---------------- |
-| linear projections   | $2 \times P_{\text{active}} \times T$                 | QKV, output, FFN |
-| attention $Q K^{T}$  | $2 \times T^2 \times n_h \times (d_c + d_R) \times L$ | quadratic in $T$ |
-| attention $\times V$ | $2 \times T^2 \times n_h \times v_h \times L$         | quadratic in $T$ |
+| component            | formula                                                            | notes                         |
+| -------------------- | ------------------------------------------------------------------ | ----------------------------- |
+| linear projections   | $2 \times P_{\text{active}} \times T_{\text{eff}}$                 | QKV, output, FFN              |
+| attention $Q K^{T}$  | $2 \times T_{\text{eff}}^2 \times n_h \times (d_c + d_R) \times L$ | quadratic in $T_{\text{eff}}$ |
+| attention $\times V$ | $2 \times T_{\text{eff}}^2 \times n_h \times v_h \times L$         | quadratic in $T_{\text{eff}}$ |
 
-for $T = 70{,}000$ (no cache):
+for $T_{\text{eff}} = 70{,}000$ (no cache, $h=0$):
 
 $$
 \begin{aligned}
@@ -332,7 +492,7 @@ $$
 t_p^{\text{raw}} = \frac{8.2 \times 10^{16}}{160 \times 10^{15} \times 0.7} = 732 \text{ ms}
 $$
 
-with cache, effective tokens $T_{\text{eff}} = \text{ISL} \times (1 - \text{hit rate})$:
+with cache, effective tokens $T_{\text{eff}} = T_{\text{in}} \times (1 - h)$ where $h$ is hit rate:
 
 **95% cache hit ($T_{\text{eff}} = 3{,}500$):**
 
@@ -378,9 +538,17 @@ $$
 t_d^{\text{base}} = \frac{20.95 \text{ GB}}{8000 \text{ GB/s} \times 0.7} = 3.74 \text{ ms}
 $$
 
-EP all-to-all tax: token dispatch ~720 MB/step at batch $B=64$. [^ep-volume] over IB NDR (50 GB/s) this is 14.4 ms raw, but DBO (dual-batch overlap) hides ~90% behind shared expert GEMM → residual 1.4 ms. [^tbo]
+EP all-to-all tax: token dispatch ~720 MB/step at batch $B=64$. [^ep-volume] over IB NDR (50 GB/s) this is 14.4 ms raw, but DBO (dual-batch overlap) hides ~90% behind shared expert GEMM, so we will account for the _residual 1.4 ms_. [^tbo]
 
-[^ep-volume]: derived from $V_{EP} = B \times d_{\text{model}} \times k \times 2 \times S \times L_{\text{MoE}} = 64 \times 7168 \times 8 \times 2 \times 2 \times 58 \approx 855\text{ MB}$. activations are BF16 (not FP4 like weights) for numerical stability during expert GEMM. the 720 MB figure accounts for inter-node traffic only (~84%), assuming intra-node uses NVLink.
+[^ep-volume]: derived from
+
+    $$
+    V_{EP} = B \times d_{\text{model}} \times k \times 2 \times S \times L_{\text{MoE}} = 64 \times 7168 \times 8 \times 2 \times 2 \times 58 \approx 855\text{ MB}
+    $$
+
+    Note that activations are BF16 (unlike FP4 for weights) because of numerical stability during expert GEMM.
+
+    The 720MB figure accounts for inter-node traffic only (which is approximately 84%), assuming intra-node uses NVLink.
 
 [^tbo]:
     DBO (Dual-Batch Overlap) in vLLM applies to **both prefill and decode** (PR #24845 extended initial decode-only PR #23693).
@@ -440,10 +608,12 @@ per-GPU: $cc_d^{\text{GPU}} = 448 / 8 = 56$ users
 | ---------- | ---------------- | ----------------------- | ------- |
 | 56         | 137 GB           | moderate (memory-bound) | 5.14 ms |
 
-at ISL=70k, we're still VRAM-limited. reducing ISL linearly increases $cc_d$:
+at $T_{\text{in}}=70\text{k}$.
+
+note that reducing $T_{\text{in}}$ linearly increases $cc_d$:
 
 $$
-cc_d(\text{ISL}) = \left\lfloor \frac{1100 \text{ GB}}{\text{ISL} \times 35 \text{ KB}} \right\rfloor
+cc_d(T_{\text{in}}) = \left\lfloor \frac{1100 \text{ GB}}{T_{\text{in}} \times 35 \text{ KB}} \right\rfloor
 $$
 
 | ISL | KV/req  | $cc_d$/node | notes    |
@@ -452,23 +622,41 @@ $$
 
 #### optimal ratio
 
-from [[#pool throughputs|pool throughputs]]:
+> [!math] Theorem 1 (Optimal P/D Ratio)
+>
+> Under steady-state balanced utilization:
+>
+> $$R_{\text{opt}} = \frac{n_p}{n_d} = \frac{\lambda_d}{\lambda_p}$$
+
+_Proof:_ Set $U_p = U_d$. From Definition 4:
 
 $$
-R_{\text{opt}} = \frac{n_p}{n_d} = \frac{\lambda_d}{\lambda_p}
+\frac{\lambda \mathbb{E}[S_p]}{m_p} = \frac{\lambda \mathbb{E}[S_d]}{m_d}
 $$
+
+Rearranging: $\frac{m_p}{m_d} = \frac{\mathbb{E}[S_p]}{\mathbb{E}[S_d]} = \frac{1/\lambda_p}{1/\lambda_d} = \frac{\lambda_d}{\lambda_p}$. $\square$
+
+> [!math] Theorem 2 (Capacity Constraint)
+>
+> $$
+> cc_d \leq \left\lfloor \frac{\text{VRAM} - W - A}{(T_{\text{in}} + T_{\text{out}}) \cdot M_{\text{kv}}} \right\rfloor
+> $$
+>
+> where $W$ is weight memory, $A$ is activation memory. Context grows to $T_{\text{in}} + T_{\text{out}}$ during generation.
+
+from [[#pool throughputs|pool throughputs]]:
 
 using derived values from [[#prefill]] and [[#decode]]:
 
 - $\lambda_d^{\text{node}} = \frac{cc_d \times 8}{\text{OSL} \times t_d} = \frac{448}{200 \times 0.00514} = 436 \text{ req/s}$
 - $\lambda_p^{\text{node}} = \frac{1}{t_p}$
 
-| cache hit | $t_p$ (from [[#prefill]]) | $\lambda_p$ | $R_{\text{opt}}$ | P:D ratio | interpretation  |
-| --------- | ------------------------- | ----------- | ---------------- | --------- | --------------- |
-| 0%        | 732 ms                    | 1.37        | 318              | 318P:1D   | prefill-bound   |
-| 90%       | 5.1 ms                    | 196         | 2.22             | 2P:1D     | prefill-bound   |
-| 95%       | 3.5 ms                    | 286         | 1.52             | **3P:2D** | prefill-limited |
-| 96%       | 2.6 ms                    | 385         | 1.13             | 1P:1D     | nearly balanced |
+| cache hit | $t_p$  | $\lambda_p$ | $R_{\text{opt}}$ | P:D ratio | interpretation  |
+| --------- | ------ | ----------- | ---------------- | --------- | --------------- |
+| 0%        | 732 ms | 1.37        | 318              | 318P:1D   | prefill-bound   |
+| 90%       | 5.1 ms | 196         | 2.22             | 2P:1D     | prefill-bound   |
+| 95%       | 3.5 ms | 286         | 1.52             | ==3P:2D== | prefill-limited |
+| 96%       | 2.6 ms | 385         | 1.13             | 1P:1D     | nearly balanced |
 
 ##### verification
 
@@ -489,6 +677,24 @@ $$
 | 2P:1D        | 572 req/s        | 436 req/s       | 76%         |
 
 #### comparison
+
+> [!math] Conjecture 1 (Disaggregation Gain)
+>
+> Throughput ratio:
+>
+> $$\frac{G_{\text{disagg}}}{G_{\text{mono}}} \geq 1 + \alpha \cdot \frac{c_v^2}{1 + c_v^2}$$
+>
+> where $c_v$ is coefficient of variation in service time, $\alpha \in [0,1]$ is interference factor.
+>
+> _Motivation:_ From Pollaczek-Khinchine (Lemma 4), waiting time scales with $c_v^2$. Monolithic has high $c_v$ (prefill: 3.5ms–732ms). Disaggregation reduces per-pool $c_v$. The bound form is plausible but $\alpha$ remains uncharacterized from production traces—requires empirical calibration.
+
+> [!math] Theorem 4 (Cache Sensitivity)
+>
+> $$t_p(h) = \frac{2P_{\text{active}}(1-h)T + 2(1-h)^2 T^2 n_h d L}{C \cdot U}$$
+>
+> Prefill time is quadratic in cache miss rate $(1-h)$.
+>
+> _Corollary:_ Small improvements in cache hit rate yield outsized latency reductions (95%→96% gives ~25% speedup).
 
 **monolithic failure modes at ISL=70k:**
 
@@ -536,21 +742,51 @@ over IB, this adds to TTFT but not ITL. with NVLink, negligible. FP8 KV cache ha
 > \text{TPM}_{\text{GPU}} = \frac{cc_d \times \text{OSL}}{t_d} \times 60 = \frac{56 \times 200}{0.00514} \times 60 \approx 131\text{M TPM}
 > $$
 
-## patterns
+## disaggregation taxonomy
 
-1. monolithic with smarter scheduling
+```jsx imports={TractatusRoot,Tractatus,TractatusPropo}
+<TractatusRoot>
+  <Tractatus>
+    monolithic serving: single engine handles both prefill and decode phases.
+    <TractatusPropo suffix=".1">
+      interference coefficient $\alpha = 1$; prefill and decode contend for same resources.
+    </TractatusPropo>
+    <TractatusPropo suffix=".2">
+      no KV transfer overhead; convoy effect under mixed workloads.
+    </TractatusPropo>
+    <TractatusPropo suffix=".3">
+      chunked prefill improves scheduling but doesn't eliminate phase interference.
+    </TractatusPropo>
+  </Tractatus>
+  <Tractatus>
+    intra-GPU disaggregation: partition SM or time-slice within single device.
+    <TractatusPropo suffix=".1">
+      interference $0 < \alpha < 1$; partial isolation via SM partitioning (MPS/MIG).
+    </TractatusPropo>
+    <TractatusPropo suffix=".2">still contends for HBM bandwidth and L2 cache.</TractatusPropo>
+    <TractatusPropo suffix=".3">
+      nexus (2025): proactive scheduling achieves >10× TTFT reduction. [@nexus2025]
+    </TractatusPropo>
+  </Tractatus>
+  <Tractatus>
+    inter-instance disaggregation: separate worker pools $\mathcal{P}, \mathcal{D}$ with KV connector.
+    <TractatusPropo suffix=".1">
+      interference $\alpha \to 0$; strongest isolation, independent scaling.
+    </TractatusPropo>
+    <TractatusPropo suffix=".2">
+      KV transfer $\mathcal{K}: \mathcal{P} \to \mathcal{D}$ becomes critical path.
+    </TractatusPropo>
+    <TractatusPropo suffix=".3">
+      requires fast transport (NVLink, RDMA) or cache-aware placement.
+    </TractatusPropo>
+    <TractatusPropo suffix=".4">
+      distserve, mooncake, splitwise operate in this regime. [@distserve2024osdi; @qin2024mooncakekvcachecentricdisaggregatedarchitecture]
+    </TractatusPropo>
+  </Tractatus>
+</TractatusRoot>
+```
 
-- chunked prefill and scheduling inside one engine (no cross‑instance kv transfer). simple ops; limited isolation. supported by vLLM (chunked prefill).
-
-2. intra‑GPU disaggregation
-
-- share a gpu across prefill and decode workers (time‑slice or sm partition). better isolation than monolithic; still contend for memory/sm.
-
-3. inter‑instance disaggregation (SOTA)
-
-- dedicated prefill tier and decode tier; kv blocks from prefill are transferred to decode. strongest isolation and elastic scaling; requires fast kv transport and careful routing.
-
-## papers
+## literature and notes
 
 - distserve: separates prefill/decode with online admission and kv sharing; reports up to 7.4× more requests or 12.6× tighter slo while meeting latency targets. [@distserve2024osdi]
 - vLLM disaggregated prefilling: two‑instance design with connector/lookupbuffer; docs note it does not improve throughput but can control tail itl and tune ttft/itl independently. [@vllm-disagg-docs]
@@ -560,8 +796,6 @@ over IB, this adds to TTFT but not ITL. with NVLink, negligible. FP8 KV cache ha
 - ecoserve (2025): partially disaggregated serving over commodity ethernet with near‑optimal batching. [@ecoserve2025]
 - banaserve (2025): dynamic migration and learning‑based control under non‑stationary loads. [@banaserve2025]
 - spad (2025): hardware/software co‑design for disaggregated attention. [@spad2025]
-
-## deep‑dive: sizing, transport, and scheduling
 
 ### workload model and sizing
 
@@ -602,10 +836,10 @@ for arrival rate $\lambda$, service times $S_p, S_d$, and worker counts $m_p, m_
 transfer time per request is approximately
 
 $$
-T_{\text{xfer}} \approx \frac{\text{kv\_bytes}}{B_{net}}\qquad \qquad \tag{4}
+T_{\text{xfer}} \approx \frac{\text{kv\_bytes}}{\beta_{\text{net}}}\qquad \qquad \tag{4}
 $$
 
-where $B_{\text{net}}$ is end‑to‑end bandwidth between prefill and decode workers. for dp across racks, ensure $B_{\text{net}}$ is high enough so $T_{\text{xfer}}$ doesn’t dominate ttft; mla (eq. 2) can cut transfer volume 5–10×.
+where $\beta_{\text{net}}$ is end‑to‑end bandwidth between prefill and decode workers. for dp across racks, ensure $\beta_{\text{net}}$ is high enough so $T_{\text{xfer}}$ doesn't dominate ttft; mla (eq. 2) can cut transfer volume 5–10×.
 
 ### compatibility and layout
 
@@ -625,176 +859,16 @@ where $B_{\text{net}}$ is end‑to‑end bandwidth between prefill and decode wo
 - partial kv: ensure atomicity on `insert`; consumers should never see partial blocks (vLLM’s lookupbuffer `insert/drop_select` semantics). [@vllm-disagg-docs]
 - retries: on connector failure, either re‑run tail‑prefill on decode or replay prefill after backoff.
 
-## reference commands
+## limitations
 
-> [!note]
+> [!warning] model assumptions
 >
-> exact flags evolve; consult docs/examples for your vLLM version. the json shown below is the `--kv-transfer-config` payload. [@vllm-disagg-docs; @vllm-prodstack]
+> 1. **queueing model mismatch**: analysis uses M/G/1; real systems batch requests (M/G[B]/1)
+> 2. **DBO constants are empirical**: 75%/90%/95% overlap efficiencies are observed, not proven bounds
+> 3. **interference factor $\alpha$**: cited but not characterized from production traces
+> 4. **uniform routing assumption**: learned routers don't route uniformly across experts
+> 5. **steady-state analysis**: transient behavior under load spikes not modeled
 
-prefill‑only instance (shared storage):
+## deployment
 
-```bash
-vllm serve $MODEL \
-  --max-model-len 32768 \
-  --enable-chunked-prefill \
-  --kv-transfer-config '{
-    "kv_connector":"SharedStorageConnector",
-    "kv_role":"kv_producer",
-    "kv_connector_extra_config": {"shared_storage_path":"/mnt/vllm-kv"}
-  }'
-```
-
-decode‑only instance (shared storage consumer):
-
-```bash
-vllm serve $MODEL \
-  --max-model-len 32768 \
-  --kv-transfer-config '{
-    "kv_connector":"SharedStorageConnector",
-    "kv_role":"kv_consumer",
-    "kv_connector_extra_config": {"shared_storage_path":"/mnt/vllm-kv"}
-  }'
-```
-
-RDMA‑based (lmcache + nixl) sketch:
-
-```bash
-export ENGINE_NAME=lmcache-pd
-# start lmcache server separately per docs
-vllm serve $MODEL --kv-transfer-config '{"kv_connector":"LMCacheConnectorV1","kv_role":"kv_producer"}'  # prefill
-vllm serve $MODEL --kv-transfer-config '{"kv_connector":"LMCacheConnectorV1","kv_role":"kv_consumer"}'  # decode
-```
-
-multi‑connector chain (nixl primary, file fallback):
-
-```bash
---kv-transfer-config '{
-  "kv_connector":"MultiConnector","kv_role":"kv_both",
-  "kv_connector_extra_config":{
-    "connectors":[
-      {"kv_connector":"NixlConnector","kv_role":"kv_both"},
-      {"kv_connector":"SharedStorageConnector","kv_role":"kv_both","kv_connector_extra_config":{"shared_storage_path":"/mnt/vllm-kv"}}
-    ]
-  }
-}'
-```
-
-make sure:
-
-- define slos: ttft p95/p99 and itl p95; track goodput (fraction within slos). [@distserve2024osdi]
-- monitor: in‑flight prefills, lookupbuffer depth, kv xfer bandwidth, decode tokens/s, eviction/oom in kv cache.
-- canaries: stage disagg behind a flag; keep a monolithic pool during rollout.
-
-## architecture
-
-```
-           +-------------------+
-           | ingress / router  |
-           +---------+---------+
-                     |
-                     v
-          +----------+----------------------+
-          |  prefill tier                   |   (deployment/statefulset)
-          |  vllm --enable-chunked-prefill  |
-          +----------+----------------------+
-                     |
-                     |  kv pages / latents
-                     v
-       +-------------+--------------+
-       | kv connector / lookupbuffer|
-       | (shared fs, nixl/rdma, p2p)|
-       +-------------+--------------+
-                     |
-                     v
-          +----------+-----------------+
-          |  decode tier               |   (deployment/statefulset)
-          |  vllm continuous batching  |
-          +----------+-----------------+
-                     |
-                     v
-           +---------+---------+
-           |  egress / client  |
-           +-------------------+
-```
-
-> [!note] placement
-> place prefill and decode in the same rack/zone if using high‑bandwidth connectors (p2p, nixl). shared‑fs can span racks but adds latency variance.
-
-> [!tip] switching to nixl/rdma
-> swap the configmap to `{"kv_connector":"LMCacheConnectorV1","kv_role":"kv_both"}` and deploy a nixl/lmcache endpoint; co‑locate pods for low‑latency paths.
-
-> [!security]
-> mount kv volumes read‑only on the decode tier when using shared fs; separate namespaces per environment; pin exact model shas to prevent version skew.
-
-> [!important] pitfalls
->
-> - consistency: kv page layout/versioning must match across tiers/versions.
-> - admission control: aggressive prefill can overwhelm decode; enforce queue limits/backpressure.
-> - network: cross‑rack/az links can dominate ttft; keep prefill→decode traffic topology‑aware.
-> - security: kv blobs may leak context; encrypt or isolate transfer paths.
-
-## nixl and lmcache
-
-> [!note]
-> nixl provides a high‑throughput, low‑latency kv transfer layer (rdma/rocev2 capable) surfaced in vllm via `NixlConnector` and as the transport behind `LMCacheConnectorV1`. lmcache is a kv service/client that stores and retrieves kv pages remotely, integrating with vllm’s lookupbuffer. names and flags evolve; consult vllm production‑stack docs. [@vllm-prodstack]
-
-> [!important] failure handling
->
-> - on transient connector failure, re‑run a short tail of prefill on decode as fallback.
-> - version skew: map model sha → kv namespace in lmcache to avoid mixing kv from different checkpoints.
-
-### when to use
-
-- high‑bandwidth fabric (infiniband/rocev2) available and cross‑node p/d disagg is required.
-- shared‑fs is a bottleneck or adds jitter; need lower ttft impact.
-
-### typical topology
-
-```
-[prefill pods] --rdma/roce--> [nixl/lmcache service] --rdma/roce--> [decode pods]
-                         (or p2p within an nvlink island)
-```
-
-co‑locate endpoints with decode pools (same rack/tor) to minimize cross‑rack hops; pin queue pairs to nic ports for bandwidth.
-
-### sizing and tuning
-
-- register/pin memory for send/recv buffers; prefer hugepages where supported.
-- enable congestion control for rocev2 (dcqcn) to avoid head‑of‑line blocking.
-- shard by sequence or page‑range to spread traffic across endpoints.
-- monitor: rdma qp errors, retransmits, per‑connector queue depth, insert/drop_select latencies.
-
-> [!links]
-> vllm production‑stack and connector docs: [@vllm-prodstack; @vllm-disagg-docs]
-
-## rdma and nixl
-
-> [!important]
-> nixl rides on rdma (ib or rocev2) to move kv pages with low latency and high throughput. solid rdma hygiene matters more than almost any single model flag when p/d traffic crosses nodes.
-
-> [!important] failure handling
->
-> - on link flaps or endpoint loss, allow decode to re‑run a short tail of prefill; retry connector after backoff.
-> - keep strict mapping of model sha → kv namespace to prevent cross‑checkpoint kv mixing.
-
-### rdma
-
-- transports: infiniband or rocev2 (rdma over converged ethernet v2).
-- queue pairs (qps): reliable connection (rc) is typical; unreliable datagram (ud) is rare for kv pages.
-- verbs: write (push), read (pull), send/recv (two‑sided). nixl/lmcache typically use write/read for zero‑copy paths.
-- memory registration: pin and register buffers; reuse mrs to avoid registration overhead.
-
-### cluster prerequisites
-
-- lossless-ish fabric: enable ecn; configure pfc only if strictly necessary (beware deadlocks). use dcqcn for rocev2.
-- mtu: use 4096 or 9000 on links and hosts consistently; mismatches tank performance.
-- nic firmware/driver: align across nodes; keep rdma-core up to date.
-- cpu isolation: reserve cores for irq handling; pin decode workers to remaining cores.
-- hugepages: back rdma buffers with hugepages where possible.
-
-### nixl‑specific
-
-- co‑locate nixl endpoints near decode pools (same rack/tor); prefer same nvlink island when possible.
-- shard traffic: by sequence id or kv page range to spread load across endpoints.
-- queue depth: size send/recv queues to keep links full but avoid hoarding; watch tail latency.
-- backpressure: if lookupbuffer depth grows, slow prefill admission or shed requests.
+for CLI commands, architecture diagrams, and RDMA/nixl configuration, see [@vllm-disagg-docs; @vllm-prodstack].
