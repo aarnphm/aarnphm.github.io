@@ -3,7 +3,7 @@ date: "2025-12-31"
 description: on contigency, convictions, and Tractatus.
 id: 2025-lists
 layout: technical-tractatus
-modified: 2026-01-08 22:55:18 GMT-05:00
+modified: 2026-01-09 05:27:01 GMT-05:00
 seealso:
   - "[[posts/hyperabundance|hyperabundance]]"
 signature: Your present self
@@ -119,7 +119,7 @@ Jacques Lacan
   - this is why love is not solipsistic projection. the other person has to be real enough to resist your interpretations. N did this constantly—refused my frame, offered her own.
 - _2.02_ attention is a good primitive to define as atomic unit explaining _essence of life_.
   - love, understanding, [[thoughts/intelligence|intelligence]]—they all decompose into sustained attention applied to an object. you cannot deeply understand what you haven't attended to. you cannot love what you haven't seen.
-  - sustained attention generates an {{sidenotes[interpretive infrastructure]: the learned mappings between surface behavior and latent state. after two years you learn what her silence means when it's thinking vs when it's withdrawing. you learn the specific quality of voice that means she's tired vs the one that means she's hurt. this is expensive to build.<br/><br/>This is also known as [[thoughts/hermeneutics]] circle.}}
+  - sustained attention generates an {{sidenotes[^interpretive infrastructure]}}
   - this infrastructure cannot be transferred. it's specific to the dyad. when i started dating again, i kept misreading cues bc my interpretive machinery was calibrated to the wrong person.
   - hence deep relationships have high switching costs. you're losing years of accumulated interpretive capital.
   - this year i discovered feelings that didn't fit inside English grammatical structures.
@@ -131,6 +131,14 @@ Jacques Lacan
   - understanding generates care that exceeds rational justification. i cannot defend, in expected-utility terms, why her wellbeing matters more to me than a stranger's. it just does.
   - care exceeding rational justification is love. the infrastructure for care is epistemically objective; the excess of care is ontologically subjective.
     - this is where i was confused for three years. i kept searching for the romantic label when the substance was already present. the attention was there. the care was there. i was just waiting for permission from a category.
+
+{{sidenotes[interpretive infrastructure]}}:
+
+    i.e, the learned mappings between surface behavior and latent state. after two years you learn what her silence means when it's thinking vs when it's withdrawing.
+
+    you learn the specific quality of voice that means she's tired vs the one that means she's hurt, and this is _expensive_ to build.
+
+    This is also known as the [[thoughts/hermeneutics]] circle.
 
 - _2.1_ the mechanism of love is **ontologically universal**.
   - the universality of love operates regardless of cultural framing because it follows the universality of embodied cognition.

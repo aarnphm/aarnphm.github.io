@@ -2,7 +2,7 @@
 date: "2025-11-02"
 description: autonomous path-finding for causal influence in neural networks
 id: circuit tracing
-modified: 2025-11-05 04:29:32 GMT-05:00
+modified: 2026-01-09 05:38:39 GMT-05:00
 tags:
   - interp
   - ml
@@ -46,7 +46,15 @@ Circuit tracing decomposes model computation into a directed graph where nodes a
 
 ## cross-model comparison
 
-Attribution graphs enable {{sidenotes[model diffing]: Particularly useful for measuring model drift across versions.<br/><br/>if Kimi-K1 and Kimi-K2 show divergent attribution graphs at layer 23 for the same prompt, you've found where training or architectural changes restructured computation.<br/><br/>Clustering prompts by graph alignment score reveals the geometry of distributional differences.}} at the circuit level. Given two models $M_1, M_2$ (e.g., different training checkpoints or architectural variants), you can compare their computational strategies:[^model-diff]
+Attribution graphs enable {{sidenotes[^model diffing]}} at the circuit level. Given two models $M_1, M_2$ (e.g., different training checkpoints or architectural variants), you can compare their computational strategies:[^model-diff]
+
+{{sidenotes[^model diffing]}}:
+
+    Particularly useful for measuring model drift across versions.
+
+    for example, if Kimi-K1 and Kimi-K2 show divergent attribution graphs at layer 23 for the same prompt, then you've found where training or architectural changes restructured computation.
+
+    Clustering prompts by graph alignment score reveals the geometry of distributional differences.
 
 [^model-diff]:
     This connects to the broader question of whether neural networks converge to similar solutions (platonic representation hypothesis) or whether different training runs/architectures produce fundamentally different circuits.
@@ -76,7 +84,13 @@ This reveals whether models are:
   - Gradient-based attribution assumes local linearity around activations
   - Breaks in saturated regions of nonlinearities
   - No ground truth for "correct" attributions
-  - Validation relies on behavioral experiments (patching) with their own {{sidenotes[methodological issues]: Activation patching tests whether a circuit is _sufficient_ (does including it preserve behavior?) but not _necessary_ (could the model route around it?).<br/><br/>You need both ablation and patch-in experiments, plus distributional controls to handle out-of-distribution activations from patching.}}
+  - Validation relies on behavioral experiments (patching) with their own {{sidenotes[^methodological issues]}}
+
+{{sidenotes[methodological issues]}}:
+
+    Activation patching tests whether a circuit is _sufficient_ (does including it preserve behavior?) but not _necessary_ (could the model route around it?).
+
+    You need both ablation and patch-in experiments, plus distributional controls to handle out-of-distribution activations from patching.
 
 - Superposition and polysemanticity contaminate the graph
   - Polysemantic features (encode multiple concepts) $\to$ attribution edges conflate multiple causal pathways

@@ -1,6 +1,5 @@
 import type { Extension, Tokenizer, State, Code } from "micromark-util-types"
 import { factorySpace } from "micromark-factory-space"
-import { markdownLineEnding } from "micromark-util-character"
 
 const codes = {
   leftCurlyBrace: 123,
@@ -27,11 +26,10 @@ export function sidenoteDefinition(): Extension {
     return start
 
     function start(code: Code): State | undefined {
-      // Must start at beginning of line (flow)
       if (code !== codes.leftCurlyBrace) return nok(code)
 
       effects.enter("sidenoteDefinition")
-      effects.enter("sidenoteDefinitionMarker") // {{
+      effects.enter("sidenoteDefinitionMarker")
       effects.consume(code)
       markerSize = 1
       labelBalance = 0
@@ -52,11 +50,6 @@ export function sidenoteDefinition(): Extension {
     }
 
     function keyword(code: Code): State | undefined {
-      // We check for "sidenotes"
-      if (keywordIndex === 0) {
-        // effects.enter("sidenoteDefinitionKeyword") 
-      }
-
       if (keywordIndex < KEYWORD.length) {
         if (code === KEYWORD.charCodeAt(keywordIndex)) {
           effects.consume(code)
@@ -65,8 +58,6 @@ export function sidenoteDefinition(): Extension {
         }
         return nok(code)
       }
-
-      // effects.exit("sidenoteDefinitionKeyword")
       return afterKeyword(code)
     }
 
@@ -124,7 +115,7 @@ export function sidenoteDefinition(): Extension {
     }
 
     function closingBraceFirst(code: Code): State | undefined {
-      effects.enter("sidenoteDefinitionMarker") // }}
+      effects.enter("sidenoteDefinitionMarker")
       effects.consume(code)
       return closingBraceSecond
     }
@@ -140,16 +131,12 @@ export function sidenoteDefinition(): Extension {
 
     function afterDefinitionBlock(code: Code): State | undefined {
       if (code === codes.colon) {
-        effects.enter("sidenoteDefinitionMarker") // :
+        effects.enter("sidenoteDefinitionMarker")
         effects.consume(code)
         effects.exit("sidenoteDefinitionMarker")
-        return atWhitespace
+        return factorySpace(effects, atContent, "sidenoteDefinitionWhitespace")
       }
       return nok(code)
-    }
-
-    function atWhitespace(code: Code): State | undefined {
-      return factorySpace(effects, atContent, "sidenoteDefinitionWhitespace")(code)
     }
 
     function atContent(code: Code): State | undefined {
@@ -160,7 +147,7 @@ export function sidenoteDefinition(): Extension {
 
   return {
     flow: {
-      [codes.leftCurlyBrace]: { tokenize }
-    }
+      [codes.leftCurlyBrace]: { tokenize },
+    },
   }
 }

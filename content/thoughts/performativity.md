@@ -1,19 +1,25 @@
 ---
-id: performativity
-tags:
-  - philosophy
-  - pattern
 date: "2025-11-19"
-modified: 2025-11-19 GMT-05:00
-title: performativity
 description: language can function as a form of social action and have the effect of change.
+id: performativity
+modified: 2026-01-09 05:36:47 GMT-05:00
 seealso:
   - "[[thoughts/identity|identity]]"
   - "[[library/Civilisation and its Discontents|C&D]]"
   - "[[thoughts/repression|repression]]"
+tags:
+  - philosophy
+  - pattern
+title: performativity
 ---
 
-captures how we enact rather {{sidenotes[than express]: you become yourself through the performaces rather than having a "self" that represents yourself. <br/><br/>This performance constitutes to who you are, and it blends with your _authentic self_.}} [[thoughts/identity|identity]]
+captures how we enact rather {{sidenotes[^than express]}} [[thoughts/identity|identity]]
+
+{{sidenotes[than express]}}:
+
+    you become yourself through the performaces rather than having a "self" that represents yourself.
+
+    This performance constitutes to who you are, and it blends with your _authentic self_.
 
 ## civilisation requires performance
 
@@ -167,7 +173,7 @@ but also risks:
 
 **5. what about sincerity?** classic worry: if everything's performance, nothing's sincere. response: sincerity isn't opposition to performance but quality of performance. sincere performance = you identify with what you're performing, it coheres with other performances, you'd defend it under reflection. insincerity = performing what you consciously disavow.
 
-## synthesis: performed all the way, but not "just" performed
+## performed all the way, but not "just" performed
 
 view that emerges across traditions:
 

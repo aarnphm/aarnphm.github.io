@@ -2,7 +2,7 @@
 date: "2025-11-10"
 description: dealing with long context
 id: context parallelism
-modified: 2025-11-11 16:51:05 GMT-05:00
+modified: 2026-01-09 05:35:52 GMT-05:00
 tags:
   - llm
   - inference
@@ -30,7 +30,13 @@ Given different SLO characteristics for [[thoughts/PD disaggregated serving#pref
 >
 > Hence context parallelism is more/less sharding KV cache across GPUs.
 
-> For a model of $H$ kv-heads, a request with $T$ tokens requires $H \times T$ key/value tensor in {{sidenotes[KV cache.]: the core idea with `tp` is that we duplicates the KV cache across multiple GPUs.<br/><br/>If one GPU can hold all of the KV, then we don't have to do any parallelisation. <br/><br/>However, if we want to hold more requests in KV cache, and one GPU can't hold them all, we then <span class="marker marker-h3">shard</span> the KV across $H$ dimensions}}
+> For a model of $H$ kv-heads, a request with $T$ tokens requires $H \times T$ key/value tensor in {{sidenotes[^KV cache]}}.
+
+{{sidenotes[KV cache]}}:
+
+    the core idea with TP is that we duplicates the KV cache across multiple GPUs.
+
+    If one GPU can hold all of the KV, then we don't have to do any parallelisation. However, if we want to hold more requests in KV cache, and one GPU can't hold them all, we then ==shard== the KV across $H$ dimensions
 
 Note that we only want to ::duplicate:: $\text{tp\_size} / H$
 

@@ -450,14 +450,53 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options>>
       )
 
       // sidenote parser for {{sidenotes...}} syntax
+      const sidenoteExtensions = [wikilink(), math()]
+      const sidenoteMdastExtensions = [wikilinkFromMarkdown({ hasSlug }), mathFromMarkdown()]
       //@ts-ignore
       plugins.push([
         remarkSidenote,
         {
-          micromarkExtensions: [wikilink(), math()],
-          mdastExtensions: [wikilinkFromMarkdown({ hasSlug }), mathFromMarkdown()],
+          micromarkExtensions: sidenoteExtensions,
+          mdastExtensions: sidenoteMdastExtensions,
         },
       ])
+
+      plugins.push(() => (tree: Root) => {
+        const nodesToRemove: { parent: any; index: number }[] = []
+
+        visit(tree, "sidenoteDefinition", (node: any, index, parent) => {
+          if (!parent || typeof index !== "number") return
+
+          let nextIndex = index + 1
+          const contentNodes: (BlockContent | DefinitionContent)[] = []
+
+          while (nextIndex < parent.children.length) {
+            const next = parent.children[nextIndex] as any
+
+            if (next.type === "code" && !next.lang) {
+              const codeValue = next.value as string
+              const parsed = fromMarkdown(codeValue, {
+                extensions: sidenoteExtensions,
+                mdastExtensions: sidenoteMdastExtensions,
+              })
+              contentNodes.push(...(parsed.children as BlockContent[]))
+              nodesToRemove.push({ parent, index: nextIndex })
+              nextIndex++
+            } else {
+              break
+            }
+          }
+
+          if (contentNodes.length > 0) {
+            node.children = contentNodes
+          }
+        })
+
+        for (let i = nodesToRemove.length - 1; i >= 0; i--) {
+          const { parent, index } = nodesToRemove[i]
+          parent.children.splice(index, 1)
+        }
+      })
 
       if (opts.callouts) {
         plugins.push(() => (tree: Root, _file) => {

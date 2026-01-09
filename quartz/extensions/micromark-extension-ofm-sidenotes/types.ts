@@ -1,4 +1,4 @@
-import type { Node, PhrasingContent } from "mdast"
+import type { Node, PhrasingContent, BlockContent } from "mdast"
 import type { Point } from "unist"
 
 declare module "micromark-util-types" {
@@ -32,6 +32,8 @@ declare module "micromark-util-types" {
   }
 }
 
+export type { BlockContent }
+
 export interface SidenoteData {
   raw: string
   properties?: Record<string, string | string[]>
@@ -51,6 +53,7 @@ export interface SidenoteReference extends Node {
   type: "sidenoteReference"
   label: string
   labelNodes?: PhrasingContent[]
+  children?: PhrasingContent[]
 }
 
 export interface SidenoteDefinition extends Node {

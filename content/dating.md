@@ -7,7 +7,7 @@ aliases:
 date: "2025-08-09"
 description: just another fish in the sea.
 id: dating
-modified: 2026-01-06 10:03:35 GMT-05:00
+modified: 2026-01-09 05:31:48 GMT-05:00
 noindex: true
 slides: true
 tags:
@@ -281,7 +281,7 @@ Steven Weinberg
 
 possible deal-breakers
 
-1. Historically speaking, my past relationships have been {{sidenotes[polyamorous.]: I believe partners should provide certain functions to each others, and being in relationships shouldn't be a constraint that prevent you from exploring something different and _new_. <br/><br/>However, I'm open to monogamy. Note that if for monogamy, I will see it as a 100% commitment, and won't take infidelity lightly.}} I found that my work schedule fits well with that style of romantic attachment, and I'm definitely not the jealous type. Though my previous partner and I ended on a sour note, I'm more than happy with the growth.
+1. Historically speaking, my past relationships have been {{sidenotes[^polyamorous]}}. I found that my work schedule fits well with that style of romantic attachment, and I'm definitely not the jealous type. Though my previous partner and I ended on a sour note, I'm more than happy with the growth.
 2. I don't want kids, _yet_, at least for the next five years.
    - We are young still, many things yet to be explored.
    - I want to be focused on my work and dedication to my [[thoughts/craft|craft]].
@@ -294,6 +294,12 @@ possible deal-breakers
    - I do plan to move back to the US in the future, in the next 5-7 years.
 
 </section>
+
+{{sidenotes[polyamorous]}}:
+
+    I believe partners should provide certain functions to each others, and being in relationships shouldn't be a constraint that prevent you from exploring something different and _new_.
+
+    With that being said, I'm open to monogamy. But this means I must be very much _in love_ with you as a whole.
 
 <section data-compat>
 
