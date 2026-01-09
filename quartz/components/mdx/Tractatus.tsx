@@ -13,10 +13,12 @@ import {
 } from "./registry"
 
 type BasePropoProps = {
-  suffix: string
+  suffix?: string
   proposition?: ComponentChildren
   children?: ComponentChildren
   parentNumber?: string
+  _index?: number
+  _depth?: number
 }
 
 type PropoProps = Omit<BasePropoProps, "parentNumber">
@@ -58,26 +60,51 @@ const splitChildren = <T,>(
   return { nested, leading, trailing }
 }
 
+const computeChildNumber = (parentNumber: string, index: number): string => {
+  const segments = parentNumber.split(".")
+  const last = segments[segments.length - 1]
+  const prefix = segments.slice(0, -1).join(".")
+  const suffix = `${last}${index + 1}`
+  if (prefix.length === 0) {
+    return `${last}.${suffix}`
+  }
+  return `${prefix}.${suffix}`
+}
+
 const TractatusPropoImpl: FunctionalComponent<BasePropoProps> = ({
   suffix,
   proposition,
   children,
   parentNumber = "",
+  _index,
+  _depth,
 }) => {
-  const fullNumber = `${parentNumber}${suffix}`
+  const autoNumber =
+    suffix === undefined && parentNumber.length > 0 && _index !== undefined
+      ? computeChildNumber(parentNumber, _index)
+      : null
+  const manualNumber =
+    suffix === undefined
+      ? parentNumber
+      : parentNumber.length > 0
+        ? `${parentNumber}${suffix}`
+        : suffix
+  const fullNumber = autoNumber ?? manualNumber ?? ""
   const { nested, leading, trailing } = splitChildren(children, (child) =>
     isVNodeOf(child, TractatusPropoImpl),
   )
   const propositionContent = proposition ?? (leading.length > 0 ? leading : undefined)
   const content = proposition ? [...leading, ...trailing] : trailing
 
-  const decoratedChildren = (nested as VNode<BasePropoProps>[]).map((child) =>
+  const decoratedChildren = (nested as VNode<BasePropoProps>[]).map((child, idx) =>
     cloneElement(child as VNode<BasePropoProps>, {
       parentNumber: fullNumber,
+      _index: idx,
+      _depth: (_depth ?? (fullNumber.match(/\./g) || []).length) + 1,
     }),
   )
 
-  const depth = (fullNumber.match(/\./g) || []).length
+  const depth = _depth ?? (fullNumber.match(/\./g) || []).length
 
   return (
     <li
@@ -129,9 +156,11 @@ const TractatusImpl: FunctionalComponent<TractatusInternalProps> = ({
   const propositionContent = proposition ?? (leading.length > 0 ? leading : undefined)
   const content = proposition ? [...leading, ...trailing] : trailing
 
-  const decoratedPropos = (propos as VNode<BasePropoProps>[]).map((child) =>
+  const decoratedPropos = (propos as VNode<BasePropoProps>[]).map((child, idx) =>
     cloneElement(child as VNode<BasePropoProps>, {
       parentNumber: baseNumber,
+      _index: idx,
+      _depth: 1,
     }),
   )
 

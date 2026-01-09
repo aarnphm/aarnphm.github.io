@@ -15,6 +15,7 @@ id: Frankenstein
 year: 1831
 category:
   - w/fiction
-pdf: https://www.gutenberg.org/files/42324/42324-h/42324-h.htm
+pdf:
 description: or modern day Prometheus
+external: https://www.gutenberg.org/files/42324/42324-h/42324-h.htm
 ---

@@ -3,7 +3,7 @@ date: "2024-12-10"
 description: nobby designer word for "the design of the current site"
 id: colophon
 lang: en
-modified: 2025-11-22 10:23:09 GMT-05:00
+modified: 2026-01-09 06:21:52 GMT-05:00
 socials:
   twitter: https://x.com/aarnphm/status/1861550609834402129
 tags:
@@ -26,7 +26,10 @@ title: colophon
 
 **license** -- All my notes are licensed under CC BY-NC-SA [^license], whilst the code are under [Apache 2.0](http://www.apache.org/licenses/) (not everything here is written by me, but original authors are referenced & linked — they have their own licenses)
 
-[^license]: This is not really a huge enforcer per-say, given that [not saying it](https://choosealicense.com/no-permission/) means "oh ALL RIGHTS RESERVED". These are mostly for my own [[notes|consumption]], and if you find it helpful then feel free to use it, just a quick mention would be appreciated 🫶
+[^license]:
+    This is not really a huge enforcer per-say, given that [not saying it](https://choosealicense.com/no-permission/) means "oh ALL RIGHTS RESERVED". These are mostly for my own [[notes|consumption]], and if you find it helpful then feel free to use it, just a quick mention would be appreciated 🫶
+
+    I'm pretty lenient towards LLMs, most of the sites are pretty LLM-friendly. For all URL, you can just append `.md` to just get the markdown source.
 
 **plugins** -- Most of additional items I wrote for this website follow [unified](https://unifiedjs.com/) ecosystem and can be exported as a standalone {{sidenotes[plugins.]: We are working on a few integrations separating out logics and improving general [Quartz ecosystem](https://github.com/quartz-community), stay tuned.}}
 

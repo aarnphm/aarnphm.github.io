@@ -1,8 +1,6 @@
-import { GlobalConfiguration, QuartzConfig } from "./quartz/cfg"
-import { byDateAndAlphabetical } from "./quartz/components/PageList"
+import { GlobalConfiguration, QuartzConfig, customMacros, katexOptions } from "./quartz/cfg"
 import * as Plugin from "./quartz/plugins"
 import * as Component from "./quartz/components"
-import { QuartzPluginData } from "./quartz/plugins/vfile"
 
 const model = "onnx-community/embeddinggemma-300m-ONNX" // onnx-community/Qwen3-Embedding-0.6B-ONNX, intfloat/multilingual-e5-large
 
@@ -120,26 +118,7 @@ const config: QuartzConfig = {
         enableRawEmbed: true,
       }),
       Plugin.Description(),
-      Plugin.Latex({
-        renderEngine: "katex",
-        customMacros: {
-          "\\argmin": "\\mathop{\\operatorname{arg\\,min}}\\limits",
-          "\\argmax": "\\mathop{\\operatorname{arg\\,max}}\\limits",
-          "\\upgamma": "\\mathit{\\gamma}",
-          "\\upphi": "\\mathit{\\phi}",
-          "\\upeta": "\\mathit{\\eta}",
-          "\\upbeta": "\\mathit{\\beta}",
-          "\\upalpha": "\\mathit{\\alpha}",
-          "\\uptheta": "\\mathit{\\theta}",
-          // KaTeX does not support tabular/multicolumn. Provide safe fallbacks.
-          // This macro drops alignment specifiers and yields only the cell content.
-          // IMPORTANT: when spanning >1 columns, add explicit '&'s in source rows.
-          "\\multicolumn": "#3",
-          // Text micro symbol compatibility
-          "\\textmu": "\\mu",
-        },
-        katexOptions: { strict: true, throwOnError: true },
-      }),
+      Plugin.Latex({ renderEngine: "katex", customMacros, katexOptions }),
       Plugin.GitHub({
         internalLinks: [
           "livingalonealone.com",
