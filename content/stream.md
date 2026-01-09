@@ -38,7 +38,7 @@ metadata:
     letter        = "a".."z" ;
     digit         = "0".."9" ;
     character     = ? any printable ascii except newline ? ;
-modified: 2026-01-09 04:20:50 GMT-05:00
+modified: 2026-01-09 05:26:38 GMT-05:00
 tags:
   - fruit
   - evergreen
@@ -326,7 +326,7 @@ This [comment](https://philosophy.stackexchange.com/a/34397) states that what we
 
     19th century German kenoticism (Thomasius, Gess, Ebrard) developed systematic kenotic Christology from Philippians 2:5-8:
     ```quotes
-    <br/>5 In your relationships with one another, have the same mindset as Christ Jesus:
+    5 In your relationships with one another, have the same mindset as Christ Jesus:
 
     6 Who, being in very nature[a] God,
         did not consider equality with God something to be used to his own advantage;

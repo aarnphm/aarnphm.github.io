@@ -8,7 +8,7 @@ import { sidenoteFromMarkdown, type FromMarkdownOptions } from "./fromMarkdown"
 import { sidenoteToMarkdown } from "./toMarkdown"
 
 export { sidenote, sidenoteDefinition, sidenoteFromMarkdown, sidenoteToMarkdown }
-export type { Sidenote, SidenoteData } from "./types"
+export type { Sidenote, SidenoteData, SidenoteDefinition } from "./types"
 
 export interface RemarkSidenoteOptions {
   micromarkExtensions?: MicromarkExtension[]

@@ -14,7 +14,7 @@ gemini:
     4a0fc1cd7b2da549: love, nihilism, mega deep research threads
     d7f06bc496ea82ea: Tractatus Amor-Politicus
 id: love
-modified: 2025-12-30 20:03:22 GMT-05:00
+modified: 2026-01-09 05:41:40 GMT-05:00
 socials:
   essay: "[[posts/love|mutual becoming]]"
   hermeneutics: "[[posts/romantic epistemology|romantic epistemology]]"
@@ -107,7 +107,13 @@ three things: [[#attention]], [[#choice]], and [[#thoughts/Epistemology epistemi
 
 Not attention _to_ something you already understand, but attention that _constitutes_ understanding. You empty yourself, bracket instrumental concerns, become available to what they present.
 
-Attention is not {{sidenotes[will.]: Will tries to force understanding; attention waits for your understanding.<br/><br/>[[thoughts/Will|Will]] imposes your framework; attention _lets_ the framework shift. They might reorganize your whole way of seeing—if you let them}} [@murdoch1970sovereignty] says that "moral life happens mostly in ongoing attention, not discrete choices". How you _think_ about someone, how you imagine them, what you notice and ignore—this is where love operates. Seeing someone clearly requires discipline, spiritual {{sidenotes[exercise.]: one can behaviorally comply (eye contact, nod, repeat back) while completely absent. attention resists third-person measurement. The gap between behavioral proxy and actual attention is everything.}} You practice interpreting charitably, checking projections, staying open to revision.
+Attention is not {{sidenotes[^will]}} [@murdoch1970sovereignty] says that "moral life happens mostly in ongoing attention, not discrete choices". How you _think_ about someone, how you imagine them, what you notice and ignore—this is where love operates. Seeing someone clearly requires discipline, spiritual {{sidenotes[exercise.]: one can behaviorally comply (eye contact, nod, repeat back) while completely absent. attention resists third-person measurement. The gap between behavioral proxy and actual attention is everything.}} You practice interpreting charitably, checking projections, staying open to revision.
+
+{{sidenotes[will]}}:
+
+    Will tries to force understanding; attention waits for your understanding.
+
+    [[thoughts/Will|Will]] imposes your framework; attention _lets_ the framework shift. They might reorganize your whole way of seeing—if you let them
 
 ### choice
 
