@@ -3,10 +3,11 @@ import type { Root } from "mdast"
 import type { Extension as MicromarkExtension } from "micromark-util-types"
 import type { Extension as MdastExtension } from "mdast-util-from-markdown"
 import { sidenote } from "./syntax"
+import { sidenoteDefinition } from "./syntaxDefinition"
 import { sidenoteFromMarkdown, type FromMarkdownOptions } from "./fromMarkdown"
 import { sidenoteToMarkdown } from "./toMarkdown"
 
-export { sidenote, sidenoteFromMarkdown, sidenoteToMarkdown }
+export { sidenote, sidenoteDefinition, sidenoteFromMarkdown, sidenoteToMarkdown }
 export type { Sidenote, SidenoteData } from "./types"
 
 export interface RemarkSidenoteOptions {
@@ -23,6 +24,7 @@ export function remarkSidenote(this: Processor<Root>, options: RemarkSidenoteOpt
     (data.fromMarkdownExtensions = [])) as MdastExtension[]
 
   micromarkExtensions.push(sidenote())
+  micromarkExtensions.push(sidenoteDefinition())
 
   const fromMarkdownOpts: FromMarkdownOptions = {
     micromarkExtensions: options.micromarkExtensions || micromarkExtensions,

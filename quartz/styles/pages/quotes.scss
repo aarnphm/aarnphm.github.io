@@ -23,8 +23,13 @@
             content: "“";
             margin-right: 0.25em;
           }
+        }
 
+        &:nth-last-of-type(2) {
           &:after {
+            font-size: 2em;
+            line-height: 0.1em;
+            vertical-align: -0.4em;
             content: "”";
             margin-left: 0.25em;
           }
@@ -65,8 +70,13 @@ blockquote.quotes {
         content: "“";
         margin-right: 0.25em;
       }
+    }
 
+    &:nth-last-of-type(2) {
       &:after {
+        font-size: 2em;
+        line-height: 0.1em;
+        vertical-align: -0.4em;
         content: "”";
         margin-left: 0.25em;
       }

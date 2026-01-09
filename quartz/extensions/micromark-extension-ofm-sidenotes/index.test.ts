@@ -1,7 +1,7 @@
 import { test } from "node:test"
 import * as assert from "node:assert/strict"
 import { micromark } from "micromark"
-import { sidenote, sidenoteFromMarkdown, sidenoteToMarkdown } from "./index.js"
+import { sidenote, sidenoteDefinition, sidenoteFromMarkdown, sidenoteToMarkdown } from "./index.js"
 import { fromMarkdown } from "mdast-util-from-markdown"
 import { toMarkdown } from "mdast-util-to-markdown"
 import { math } from "micromark-extension-math"
@@ -9,7 +9,7 @@ import { mathFromMarkdown } from "mdast-util-math"
 
 test("sidenotes", async (t) => {
   const htmlOptions = {
-    extensions: [sidenote()],
+    extensions: [sidenote(), sidenoteDefinition()],
     htmlExtensions: [
       {
         enter: {
@@ -24,6 +24,12 @@ test("sidenotes", async (t) => {
           },
           sidenoteContent(token) {
             this.tag("<content>")
+          },
+          sidenoteReference(token) {
+            this.tag("<sidenote-ref>")
+          },
+          sidenoteDefinition(token) {
+            this.tag("<sidenote-def>")
           },
         },
         exit: {
@@ -48,6 +54,18 @@ test("sidenotes", async (t) => {
           sidenotePropertiesChunk(token) {
             this.raw(this.sliceSerialize(token))
           },
+          sidenoteReference(token) {
+            this.tag("</sidenote-ref>")
+          },
+          sidenoteReferenceLabelChunk(token) {
+            this.raw(this.sliceSerialize(token))
+          },
+          sidenoteDefinition(token) {
+            this.tag("</sidenote-def>")
+          },
+          sidenoteDefinitionLabelChunk(token) {
+            this.raw(this.sliceSerialize(token))
+          }
         },
       },
     ],
@@ -100,6 +118,32 @@ test("sidenotes", async (t) => {
     assert.equal(node.type, "sidenote")
     assert.equal(node.data.sidenoteParsed.labelNodes[0].type, "inlineMath")
     assert.equal(node.data.sidenoteParsed.labelNodes[0].value, "E=mc^2")
+  })
+
+  await t.test("sidenote reference", () => {
+    const input = "{{sidenotes[^ref]}}"
+    const output = micromark(input, htmlOptions)
+    assert.match(output, /<sidenote-ref>\^ref<\/sidenote-ref>/)
+  })
+
+  await t.test("long label with spaces", () => {
+    const input = "{{sidenotes[^there is many text in here.]}}"
+    const output = micromark(input, htmlOptions)
+    assert.match(output, /<sidenote-ref>\^there is many text in here.<\/sidenote-ref>/)
+  })
+
+  await t.test("sidenote definition", () => {
+    const input = "{{sidenotes[ref]}}:\n  content"
+    const output = micromark(input, htmlOptions)
+    assert.match(output, /<sidenote-def>ref/)
+  })
+
+  await t.test("stream.md crash reproduction", () => {
+    const input = `{{sidenotes[pick up the rock]}}:
+    The closest pre-modern candidate...`
+    const output = micromark(input, htmlOptions)
+    assert.match(output, /<sidenote-def>pick up the rock<\/sidenote-def>/)
+    // Check if content follows (it might be a code block due to indentation, but verifying no crash is key)
   })
 
   await t.test("ast transformation", () => {

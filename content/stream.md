@@ -38,7 +38,7 @@ metadata:
     letter        = "a".."z" ;
     digit         = "0".."9" ;
     character     = ? any printable ascii except newline ? ;
-modified: 2026-01-09 00:19:41 GMT-05:00
+modified: 2026-01-09 03:45:10 GMT-05:00
 tags:
   - fruit
   - evergreen
@@ -55,8 +55,13 @@ title: stream
 
 I usually go to school relatively early nowadays, given that commute time is sub-optimal for any given {{sidenotes[day]: i.e me living in Toronto going to school in Hamilton}}. I'm reading Ramsey's [Truth and Probability](https://fitelson.org/probability/ramsey.pdf) while waiting the compiler to finish. In p.176 he wrote:
 
-> i am at a cross-roads and do not know the way; but i rather think one of the two ways is right. i propose therefore to go that way but keep my eyes open for someone to ask; if now i see someone half a mile away over the fields, whether i turn aside to ask him will depend on the relative inconvenience of going out of my way to cross the fields or of continuing on the wrong road if it is the wrong road.
-> but it will also depend on how confident i am that i am right; and clearly the more confident i am of this the less distance i should be willing to go from the road to check my opinion. i propose therefore to use the distance i would be prepared to go to ask, as a measure of the confidence of my opinion.
+```quotes
+i am at a cross-roads and do not know the way; but i rather think one of the two ways is right. i propose therefore to go that way but keep my eyes open for someone to ask; if now i see someone half a mile away over the fields, whether i turn aside to ask him will depend on the relative inconvenience of going out of my way to cross the fields or of continuing on the wrong road if it is the wrong road.
+
+but it will also depend on how confident i am that i am right; and clearly the more confident i am of this the less distance i should be willing to go from the road to check my opinion. i propose therefore to use the distance i would be prepared to go to ask, as a measure of the confidence of my opinion.
+
+Ramsey, _Truth and Probability (p. 176)_
+```
 
 Ramsey then formalized with _the degree of belief_ {{sidenotes[to be]: here the disadvantages of going $x$ yards is $f(x)$, advantage of arriving right $r$, arriving wrong is $w$, and you are willing to go distance $d$ to ask}} $p = 1 - \frac{f(d)}{(r-w)}$:
 
@@ -68,11 +73,15 @@ By this logic Ramsey implied that the distance you'd walk to verify a statement 
 
 I first encounter Ramsey's work while reading [Galvin's entry](https://www.gleech.org/frank) and got curious towards his contributions of economics. Ramsey was 22 when he wrote T&P, four year before his death. Ramsey was a close friend of [[thoughts/Wittgenstein|Ludwig Wittgenstein]] and instrumental towards convincing Wittgenstein to return to Cambridge for #philosophy. Ramsey is loved by many, in the way that people would call him Frank, where we would never call Wittgenstein "Ludwig".
 
-> I don’t feel the least humble before the vastness of the heavens. The stars may be large, but they cannot think or love; and these are qualities which impress me far more than size does…
->
-> My picture of the world is drawn in perspective, and not like a model to scale. The foreground is occupied by human beings and the stars are all as small as threepenny bits… In time the world will cool and everything will die; but that is a long time off still… Nor is the present less valuable because the future will be blank.
->
-> Humanity, which fills the foreground of my picture, I find interesting and on the whole admirable. I find, just now at least, the world a pleasant and exciting place. You may find it depressing; I am sorry for you, and you despise me. But I have reason and you have none; you would only have a reason for despising me if your feeling corresponded to the fact in a way mine didn’t. But neither can correspond to the fact. The fact is not in itself good or bad; it is just that it thrills me but depresses you. On the other hand, I pity you with reason, because it is pleasanter to be thrilled than to be depressed, and not merely pleasanter but better for all one’s activities.
+```quotes
+I don’t feel the least humble before the vastness of the heavens. The stars may be large, but they cannot think or love; and these are qualities which impress me far more than size does…
+
+My picture of the world is drawn in perspective, and not like a model to scale. The foreground is occupied by human beings and the stars are all as small as threepenny bits… In time the world will cool and everything will die; but that is a long time off still… Nor is the present less valuable because the future will be blank.
+
+Humanity, which fills the foreground of my picture, I find interesting and on the whole admirable. I find, just now at least, the world a pleasant and exciting place. You may find it depressing; I am sorry for you, and you despise me. But I have reason and you have none; you would only have a reason for despising me if your feeling corresponded to the fact in a way mine didn’t. But neither can correspond to the fact. The fact is not in itself good or bad; it is just that it thrills me but depresses you. On the other hand, I pity you with reason, because it is pleasanter to be thrilled than to be depressed, and not merely pleasanter but better for all one’s activities.
+
+Ramsey, _aged 22_
+```
 
 Ramsey's crossroads metaphor emphasizes on the pattern of bets IS the belief you create towards a _gut feeling_, _conviction of sort_. A thing that you deem to be beautiful predicates upon a sets of bets that you consider it to be aesthetically pleasing. For example, I would consider Rembrandt to be the best painters because his drawing speaks towards the absurdism in the face structure and facticity of life. In a way that Rembrandt individuates my liking towards more expressionist painters, such as Egon Schiele, Oskar Kokoschka, etc. The way that we take bets in aesthetics formation works the same way we take bets in other ventures of life. One would live with consequences of choosing a direction, willingly sacrifice the alternatives knowing that such commitments and formulation of [[thoughts/taste]] will [[thoughts/emergent behaviour|emerges]] from within.
 
@@ -277,8 +286,13 @@ This [comment](https://philosophy.stackexchange.com/a/34397) states that what we
    - Decartes' letters to Mersenne (1630) would emphasize that _god could have made it false that twice four equal eights_ if he wishes so [^letter-to-mersenne]
 3. That God can impose self limitations that stand permanently.
    - In other words, God can make a rock God cannot lift.
-   - Again, the origin wouldn't be that the rock has infinite mass but that God can manufacture the rock and bind a condition on God's own self to not be able to {{sidenotes[pick up the rock.]: The closest pre-modern candidate for this can be traced back to Lurianic Kabbalah's _tzimtzum_ (divine contraction, 1570s Safed), where the Infinite (_Ein Sof_) withdraws to create "vacant space" for finite existence. But then, _tikkun_ (repair) implies eventual restoration, and _reshimu_ (residual trace) suggests God never fully withdraws. Which implies there are resistant from making it absolute.<br/><br/>More importantly, the _potentia absoluta_ vs _potentia ordinata_ distinction (originated by Hugh of St. Cher in 1230s commentary on Lombard's _Sentences_, later refined by [Scotus](https://plato.stanford.edu/entries/duns-scotus/#ProExiGod) and [Ockham](https://plato.stanford.edu/entries/ockham/)) holds that God _reliably would not_ deviate from ordained commitments due to divine faithfulness, not that God _could not_. This implies God _chooses_ not to intervene with such objects, rather than inability to do so.}}
+   - Again, the origin wouldn't be that the rock has infinite mass but that God can manufacture the rock and bind a condition on God's own self to not be able to {{sidenotes[^pick up the rock]}}.
    - (see the footnotes for _postmodern_[^postmodern] interpretation)
+
+{{sidenotes[pick up the rock]}}:
+    The closest pre-modern candidate for this can be traced back to Lurianic Kabbalah's _tzimtzum_ (divine contraction, 1570s Safed), where the Infinite (_Ein Sof_) withdraws to create "vacant space" for finite existence. But then, _tikkun_ (repair) implies eventual restoration, and _reshimu_ (residual trace) suggests God never fully withdraws. Which implies there are resistant from making it absolute.
+
+    More importantly, the _potentia absoluta_ vs _potentia ordinata_ distinction (originated by Hugh of St. Cher in 1230s commentary on Lombard's _Sentences_, later refined by [Scotus](https://plato.stanford.edu/entries/duns-scotus/#ProExiGod) and [Ockham](https://plato.stanford.edu/entries/ockham/)) holds that God _reliably would not_ deviate from ordained commitments due to divine faithfulness, not that God _could not_. This implies God _chooses_ not to intervene with such objects, rather than inability to do so.
 
 [^letter-to-mersenne]:
     Don’t hesitate to assert and proclaim everywhere that it’s God who has laid
