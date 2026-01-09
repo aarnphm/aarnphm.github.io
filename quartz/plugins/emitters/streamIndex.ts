@@ -7,11 +7,11 @@ import { pageResources, renderPage } from "../../components/renderPage"
 import { sharedPageComponents, defaultContentPageLayout } from "../../../quartz.layout"
 import type { QuartzComponentProps } from "../../components/types"
 import type { FullPageLayout } from "../../cfg"
-import { pathToRoot, FullSlug } from "../../util/path"
+import { pathToRoot, FullSlug, normalizeHastElement } from "../../util/path"
 import { render } from "preact-render-to-string"
 import type { QuartzPluginData } from "../vfile"
 import type { StaticResources } from "../../util/resources"
-import type { Root } from "hast"
+import type { Root, Element, ElementContent } from "hast"
 import type { VNode } from "preact"
 import { BuildCtx } from "../../util/ctx"
 
@@ -24,6 +24,8 @@ const formatIsoAsYMD = (iso?: string | null): string | null => {
   const day = String(date.getUTCDate()).padStart(2, "0")
   return `${year}/${month}/${day}`
 }
+
+const isElement = (node: ElementContent): node is Element => node.type === "element"
 
 async function* processStreamIndex(
   ctx: BuildCtx,
@@ -110,11 +112,20 @@ async function* processStreamIndex(
     const slug = onPath.replace(/^\//, "") as FullSlug
     const titleDate = formatIsoAsYMD(isoSource) ?? formatIsoAsYMD(group.isoDate)
     const title = titleDate ?? fileData!.frontmatter?.title ?? "stream"
+    const sourceSlug = fileData.slug! as FullSlug
+    const rebasedEntries = group.entries.map((entry) => ({
+      ...entry,
+      content: entry.content.map((node) =>
+        isElement(node)
+          ? (normalizeHastElement(node, slug, sourceSlug) as ElementContent)
+          : node,
+      ),
+    }))
 
     const fileDataForGroup: QuartzPluginData = {
       ...fileData,
       slug,
-      streamData: { entries: [...group.entries] },
+      streamData: { entries: rebasedEntries },
       frontmatter: {
         ...fileData!.frontmatter,
         title,

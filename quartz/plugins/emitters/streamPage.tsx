@@ -13,7 +13,6 @@ import { QuartzPluginData } from "../vfile"
 import StreamPageComponent from "../../components/pages/StreamPage"
 import StreamSearchComponent from "../../components/StreamSearch"
 
-// FIXME: for links transformation on date subpages, make sure to not include original slug here.
 async function processStreamPage(
   ctx: BuildCtx,
   tree: Root,
