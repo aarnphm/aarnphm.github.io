@@ -57,7 +57,7 @@ interface RendererOptions {
    */
   titlePrefix?: string
 
-  mathEngine?: "katex" | "mathjax"
+  mathEngine?: "katex"
   mathRenderer?: (input: string) => string
 }
 

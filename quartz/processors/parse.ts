@@ -88,6 +88,8 @@ export function createHtmlProcessor(ctx: BuildCtx): QuartzHtmlProcessor {
                 className: ["sidenote-ref-placeholder"],
                 dataType: "sidenote-ref",
                 label: node.label,
+                sidenoteId: node.data?.sidenoteId,
+                baseId: node.data?.baseId,
               },
               children: [
                 {

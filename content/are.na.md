@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-01-09 02:08:41 GMT-05:00
+modified: 2026-01-09 04:29:23 GMT-05:00
 permalinks:
   - /website
   - /tweets
@@ -2019,6 +2019,10 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://www.gleech.org/god -- What god has to do with mathematics?
+  - [meta]:
+    - date: 01/09/2026
+    - tags: [theology]
 - https://clarkesworldmagazine.com/kim_02_24/ -- Why Don't We Just Kill the Kid In the Omelas Hole
   - [meta]:
     - date: 01/07/2026

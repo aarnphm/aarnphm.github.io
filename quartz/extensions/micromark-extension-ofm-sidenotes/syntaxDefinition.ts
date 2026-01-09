@@ -1,5 +1,6 @@
 import type { Extension, Tokenizer, State, Code } from "micromark-util-types"
 import { factorySpace } from "micromark-factory-space"
+import { markdownLineEnding } from "micromark-util-character"
 
 const codes = {
   leftCurlyBrace: 123,
