@@ -1,7 +1,7 @@
 ---
 category:
   - love
-  - relationship
+  - o/relationship
   - drama
 date: 2024-02-07
 description: desire in italian sunlight—a summer compressed into the shape of first love, guadagnino filming peaches and statues as classical surrogates for unspoken longing.

@@ -10,7 +10,7 @@ rating: 8.3
 status: recurring
 studio: universal
 tags:
-  - vintage
+  - o/vintage
 title: Scarface
 year: 1983
 ---

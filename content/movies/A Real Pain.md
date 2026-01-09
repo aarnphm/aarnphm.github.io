@@ -1,6 +1,6 @@
 ---
 category:
-  - relationship
+  - o/relationship
   - growing up
   - brotherhood
 date: 2024-02-07

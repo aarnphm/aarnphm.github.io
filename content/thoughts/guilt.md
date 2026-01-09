@@ -1,13 +1,13 @@
 ---
-id: guilt
+date: "2025-11-19"
 description: internalized aggression turned inward as civilization's self-policing mechanism, explored through freud, linguistic phenomenology, and alternatives in care and recognition ethics.
+id: guilt
+modified: 2026-01-08 14:35:38 GMT-05:00
 tags:
   - philosophy
   - psychoanalysis
   - ethics
   - sapling
-date: "2025-11-19"
-modified: 2025-11-19 GMT-05:00
 title: guilt
 ---
 

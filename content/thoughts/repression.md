@@ -143,7 +143,7 @@ several unresolved problems:
 
 ## connections to explore
 
-- relationship to [[thoughts/Freud|other freudian mechanisms]]: displacement, projection, reaction formation, denial
+- o/relationship to [[thoughts/Freud|other freudian mechanisms]]: displacement, projection, reaction formation, denial
 - comparison to cognitive science concepts: motivated cognition, confirmation bias, memory reconsolidation
 - connection to [[thoughts/identity|identity formation]]: how repression shapes who you become
 - link to [[thoughts/love#hermeneutics|hermeneutic practice]]: interpretation as essential for understanding repressed content

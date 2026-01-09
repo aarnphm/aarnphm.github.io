@@ -12,7 +12,7 @@ rating: 8.3
 status: to watch
 studio: mgm
 tags:
-  - vintage
+  - o/vintage
   - music
   - comedy
   - meta

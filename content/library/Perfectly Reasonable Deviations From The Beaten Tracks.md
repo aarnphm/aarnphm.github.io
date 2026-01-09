@@ -11,7 +11,7 @@ posters: "[[library/posters/perfectly-reasonable-deviations.jpg]]"
 status: to read
 subcategory:
   - love
-  - relationship
+  - o/relationship
 tags:
   - letters
 title: Perfectly Reasonable Deviations From The Beaten Tracks

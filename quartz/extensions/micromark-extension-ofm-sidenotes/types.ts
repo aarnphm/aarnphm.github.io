@@ -28,12 +28,12 @@ export interface SidenoteData {
 export interface Sidenote extends Node {
   type: "sidenote"
   value: string
-  data?: {
-    sidenoteParsed?: SidenoteData
-    hName?: string
-    hProperties?: Record<string, any>
-    hChildren?: any[]
-  }
   children: PhrasingContent[]
   position?: { start: Point; end: Point }
+}
+
+declare module "mdast" {
+  interface Data {
+    sidenoteParsed?: SidenoteData
+  }
 }

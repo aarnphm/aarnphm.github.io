@@ -2,7 +2,7 @@
 category:
   - thriller
   - drama
-  - life
+  - o/life
 date: 2024-02-07
 description: genocide dressed as love—greed poisoning a marriage and a people, scorsese's most patient indictment of american foundations built on theft and murder.
 director: Martin Scorsese

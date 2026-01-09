@@ -10,7 +10,7 @@ rating: 9.2
 status: recurring
 studio: paramount
 tags:
-  - vintage
+  - o/vintage
 title: Godfather
 year: 1972
 ---

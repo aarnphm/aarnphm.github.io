@@ -10,7 +10,7 @@ rating: 8.7
 status: recurring
 studio: warner bros
 tags:
-  - vintage
+  - o/vintage
 title: Goodfellas
 year: 1990
 ---

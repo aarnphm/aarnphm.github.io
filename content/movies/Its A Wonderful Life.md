@@ -1,8 +1,8 @@
 ---
 category:
-  - vintage
-  - life
-  - fiction
+  - o/vintage
+  - o/life
+  - w/fiction
 date: 2024-02-07
 description: guardian angel showing suicidal man the world without him—capra filming despair as christmas fable, james stewart learning every small kindness creates ripples you can't see, life insurance payout unnecessary after all.
 director: Frank Capra
@@ -13,7 +13,7 @@ rating: 8.6
 status: to watch
 studio: rko
 tags:
-  - vintage
+  - o/vintage
   - o/life
 title: It's a wonderful life
 year: 1946

@@ -2,7 +2,7 @@
 date: "2025-12-12"
 description: on futurism and longtermism
 id: Clark's three laws
-modified: 2026-01-02 03:41:12 GMT-05:00
+modified: 2026-01-08 14:32:31 GMT-05:00
 tags:
   - pattern
   - longtermism
@@ -18,7 +18,7 @@ title: Clark's three laws
 
 [@jkcarlsmith](https://x.com/jkcarlsmith) on [Otherness and control in the age of AGI](https://joecarlsmith.com/2024/01/02/otherness-and-control-in-the-age-of-agi). He mentioned that these are largely exercise in #philosophy, but it is relevant to the technical challenge of ensuring building system that ::won't kill us:: [^ai-risk]
 
-[^ai-risk]: In the off-chance we build [power-seeking AI](https://arxiv.org/pdf/2206.13353), it would be leaning towards those similar to [Nazi ideology](https://youtu.be/5XsL_7TnfLU?si=NhA8ANcxeLT42Stm&t=1440)
+[^ai-risk]: In the off-chance we build [power-seeking AI](https://arxiv.org/abs/2206.13353), it would be leaning towards those similar to [Nazi ideology](https://youtu.be/5XsL_7TnfLU?si=NhA8ANcxeLT42Stm&t=1440)
 
 ## on [[thoughts/AGI|AGI]] and the oracle thesis
 

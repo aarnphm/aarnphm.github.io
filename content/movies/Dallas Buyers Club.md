@@ -1,7 +1,7 @@
 ---
 category:
   - drama
-  - life
+  - o/life
   - homosexuality
 date: 2024-02-07
 description: homophobic texas cowboy forced into queer community by aids—mcconaughey shrinking to nothing while fighting the fda, transformation measured in smuggled drugs and friendships he never imagined needing.

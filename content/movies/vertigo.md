@@ -1,7 +1,7 @@
 ---
 category:
   - thriller
-  - vintage
+  - o/vintage
   - love
 date: 2024-02-07
 description: psychological thriller about retired detective with acrophobia hired to follow mysterious woman, spiraling into obsession, deception, and the dizzying heights of fixation that blur reality.
@@ -13,7 +13,7 @@ rating: 8.2
 status: to watch
 studio: paramount
 tags:
-  - vintage
+  - o/vintage
   - thriller
   - psychology
 title: Vertigo

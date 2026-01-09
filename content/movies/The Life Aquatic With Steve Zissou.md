@@ -1,7 +1,7 @@
 ---
 category:
   - comedy
-  - life
+  - o/life
   - buster
 date: 2024-02-07
 description: grief disguised as documentary—a fading oceanographer hunting the shark that killed his partner, symmetry and stop-motion fish unable to mask the emptiness.

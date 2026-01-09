@@ -1,6 +1,6 @@
 ---
 category:
-  - vintage
+  - o/vintage
   - comedy
   - drama
 date: 2024-02-07
@@ -13,7 +13,7 @@ rating: 7.2
 status: recurring
 studio: universal
 tags:
-  - vintage
+  - o/vintage
 title: Notting Hill
 year: 1999
 ---

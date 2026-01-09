@@ -1,6 +1,6 @@
 ---
 category:
-  - vintage
+  - o/vintage
   - drama
   - love
 date: 2024-02-07
@@ -13,7 +13,7 @@ rating: 8.8
 status: recurring
 studio: paramount
 tags:
-  - vintage
+  - o/vintage
 title: Forest Gump
 year: 1994
 ---

@@ -1,6 +1,6 @@
 ---
 category:
-  - vintage
+  - o/vintage
   - thriller
   - comedy
 date: 2024-02-07
@@ -13,7 +13,7 @@ rating: 7.2
 status: recurring
 studio: miramax
 tags:
-  - vintage
+  - o/vintage
 title: Chicago
 year: 2002
 ---

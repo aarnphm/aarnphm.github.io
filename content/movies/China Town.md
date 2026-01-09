@@ -10,7 +10,7 @@ rating: 8.1
 status: recurring
 studio: paramount
 tags:
-  - vintage
+  - o/vintage
 title: China Town
 year: 1974
 ---

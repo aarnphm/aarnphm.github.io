@@ -10,7 +10,7 @@ rating: 7.5
 status: recurring
 studio: universal
 tags:
-  - vintage
+  - o/vintage
 title: Midnight Run
 year: 1988
 ---

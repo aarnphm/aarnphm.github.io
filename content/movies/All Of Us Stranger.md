@@ -1,7 +1,7 @@
 ---
 category:
   - love
-  - life
+  - o/life
   - drama
 date: 2024-02-07
 description: grief conjuring the dead at the exact age they died—haigh filming queer loneliness so total it bends time, andrew scott finally telling his parents who he is decades too late.

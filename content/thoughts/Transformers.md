@@ -2,7 +2,7 @@
 date: "2024-02-07"
 description: and the backbone of the current language models/ai progress.
 id: Transformers
-modified: 2025-12-30 19:56:35 GMT-05:00
+modified: 2026-01-08 14:32:20 GMT-05:00
 seealso:
   - "[[thoughts/LLMs|LLMs]]"
   - "[[thoughts/Embedding|embedding]]"
@@ -20,7 +20,7 @@ ELI5: Mom often creates a food list consists of $n$ of items to buy. Your job is
 
 Most implementations are [[thoughts/Autoregressive models|autoregressive]]. Most major SOTA are decoder-only, given that encoder-decoder are mostly used for machine translation task.
 
-[[thoughts/state-space models|state-space models]] which address transformers' [efficiency issues](https://arxiv.org/pdf/2009.06732) in attention layers within information-dense data.
+[[thoughts/state-space models|state-space models]] which address transformers' [efficiency issues](https://arxiv.org/abs/2009.06732) in attention layers within information-dense data.
 
 ## internals
 

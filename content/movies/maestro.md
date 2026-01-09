@@ -1,6 +1,6 @@
 ---
 category:
-  - life
+  - o/life
   - drama
   - marriage
 date: 2024-02-07

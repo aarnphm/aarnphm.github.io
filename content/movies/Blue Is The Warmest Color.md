@@ -1,7 +1,7 @@
 ---
 category:
   - love
-  - relationship
+  - o/relationship
   - drama
 date: 2024-02-07
 description: three hours of eating and longing—kechiche filming lesbian desire across class lines, first love so consuming it becomes identity, then watching what happens when that identity walks away.

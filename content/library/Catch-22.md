@@ -1,6 +1,6 @@
 ---
 tags:
-  - fiction
+  - w/fiction
 id: Catch-22
 title: Catch-22
 date: 2025-12-18
@@ -15,7 +15,7 @@ author:
   - Joseph Heller
 posters: "[[library/posters/catch-22.jpg]]"
 category:
-  - fiction
+  - w/fiction
 translator:
 notebook:
 aliases:

@@ -1,6 +1,6 @@
 ---
 tags:
-  - eschatology
+  - o/eschatology
   - death
 id: Regarding the Pain of Others
 title: Regarding the Pain of Others
@@ -16,7 +16,7 @@ author:
   - Susan Sontag
 posters: "[[library/posters/regarding-pain-of-others.jpg]]"
 category:
-  - fiction
+  - w/fiction
 translator:
 notebook:
 aliases:

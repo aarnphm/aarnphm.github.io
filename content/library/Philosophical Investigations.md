@@ -245,7 +245,7 @@ likely: PI resists these dichotomies. wittgenstein wants to dissolve the framewo
 
 ## connections to explore
 
-- relationship to [[thoughts/hermeneutics|hermeneutics]]: both emphasize interpretation, context, practices. but tensions around foundations and relativism
+- o/relationship to [[thoughts/hermeneutics|hermeneutics]]: both emphasize interpretation, context, practices. but tensions around foundations and relativism
 - relevance to [[thoughts/performativity|performativity theory]]: language games as performances that constitute meaning
 - implications for [[thoughts/identity|identity]]: you become yourself within forms of life, through participation in language games
 - connection to pragmatism: james, dewey, rorty all influenced by wittgenstein's turn to practice

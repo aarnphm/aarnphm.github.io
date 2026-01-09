@@ -1,8 +1,8 @@
 ---
 category:
-  - vintage
+  - o/vintage
   - buster
-  - relationship
+  - o/relationship
 date: 2024-02-07
 description: girl trapped in spirit world bathhouse rescuing parents turned to pigs—miyazaki filming chihiro's coming-of-age through labor and kindness, greed and transformation woven into every frame, ghibli masterpiece where growing up means remembering your name while capitalism tries making you forget who you are.
 director:
@@ -14,7 +14,7 @@ rating: 8.6
 status: recurring
 studio: studio ghibli
 tags:
-  - vintage
+  - o/vintage
 title: Spirited Away
 year: 2001
 ---

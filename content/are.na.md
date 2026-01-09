@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-01-08 07:27:56 GMT-05:00
+modified: 2026-01-08 14:31:56 GMT-05:00
 permalinks:
   - /website
   - /tweets
@@ -956,6 +956,10 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://en.wikipedia.org/wiki/Daniel_Day-Lewis -- Daniel Day-Lewis
+  - [meta]:
+    - date: 01/08/2026
+    - tags: [actor]
 - https://www.dannywhite.net/ -- Danny White
   - [meta]:
     - date: 01/08/2026
@@ -2085,7 +2089,7 @@ title: are.na
   - [meta]:
     - date: 01/01/2026
     - tags: [review]
-- https://www.visakanv.com/blog/relationships -- relationship are challenging and a lot of work
+- https://www.visakanv.com/blog/relationships -- o/relationship are challenging and a lot of work
   - [meta]:
     - date: 12/31/2025
     - tags: [love, being]
@@ -2573,7 +2577,7 @@ title: are.na
     - date: 11/23/2025
     - tags: [eschatology, family, homosexuality]
     - later: true
-  - still, the two of us were close in our own way. sometimes, the two of us would go on long walks together. after fifteen minutes of silence, or twenty, something would loosen in him and he would start to tell me about the depths of his sadness and the disappointment in the way his life [played out. ](https://www.jenn.site/after-my-dad-died-we-found-the-love-letters/#:~:text=still%2C%20the%20two%20of%20us%20were%20close%20in%20our%20own%20way.%20sometimes%2C%20the%20two%20of%20us%20would%20go%20on%20long%20walks%20together.%20after%20fifteen%20minutes%20of%20silence%2C%20or%20twenty%2C%20something%20would%20loosen%20in%20him%20and%20he%20would%20start%20to%20tell%20me%20about%20the%20depths%20of%20his%20sadness%20and%20the%20disappointment%20in%20the%20way%20his%20life%20played%20out.)
+  - still, the two of us were close in our own way. sometimes, the two of us would go on long walks together. after fifteen minutes of silence, or twenty, something would loosen in him and he would start to tell me about the depths of his sadness and the disappointment in the way his life [played out.](https://www.jenn.site/after-my-dad-died-we-found-the-love-letters/#:~:text=still%2C%20the%20two%20of%20us%20were%20close%20in%20our%20own%20way.%20sometimes%2C%20the%20two%20of%20us%20would%20go%20on%20long%20walks%20together.%20after%20fifteen%20minutes%20of%20silence%2C%20or%20twenty%2C%20something%20would%20loosen%20in%20him%20and%20he%20would%20start%20to%20tell%20me%20about%20the%20depths%20of%20his%20sadness%20and%20the%20disappointment%20in%20the%20way%20his%20life%20played%20out.)
   - edward gave me some photos he had of my dad, and i could scarcely believe that they were of the grim, sad man i knew. he beams in all of them, glowing with joy, his smile more incandescent than i've ever seen in my entire life. i steal glances at edward, the person who took all those impossible photos. the person he was looking at.
   - your own grief is an isolating thing because you are closeted and no one else knew who you were to each other.
   - when i did, he took it well. he told me that though the path i am on is a **painful one**, he would be there for me, and that the most important thing was to find *xin fu* in life, not to live your life in accordance to the expectations of anyone else.
@@ -6328,6 +6332,18 @@ title: are.na
 
 ## video
 
+- https://www.youtube.com/watch?v=OdsAElI7UOc -- Kristen Stewart & Jesse Eisenberg | Directors on Directors
+  - [meta]:
+    - date: 01/08/2026
+    - tags: [angst, directors]
+- https://www.youtube.com/watch?v=I0OeDhBRFCM -- PTA doesn't care anymore
+  - [meta]:
+    - date: 01/08/2026
+    - tags: [director, writing]
+- https://www.youtube.com/watch?v=M1IcCbOpPDw -- When the director breaks all the rules of horror
+  - [meta]:
+    - date: 01/08/2026
+    - tags: [acting]
 - https://www.youtube.com/watch?v=mWAF-BKlj0M -- when the villain breaks all the rules.. of being a villain
   - [meta]:
     - date: 01/06/2026
@@ -7921,6 +7937,17 @@ title: are.na
   - view: list
   - json: true
 
+- https://arxiv.org/abs/2206.13353
+  - [meta]:
+    - date: 01/08/2026
+    - tags: [alignment]
+    - later: true
+- https://arxiv.org/abs/2101.03961
+  - [meta]:
+    - date: 01/08/2026
+    - tags: [moe]
+    - pinned: true
+  - https://x.com/eliebakouch/status/2009301934801399859
 - https://arxiv.org/abs/2512.15712
   - [meta]:
     - date: 12/21/2025
@@ -8177,7 +8204,7 @@ title: are.na
     - date: 11/23/2025
     - tags: [crdt, distributed system]
     - pinned: true
-- https://arxiv.org/pdf/2301.04709
+- https://arxiv.org/abs/2301.04709
   - [meta]:
     - date: 11/15/2025
     - tags: [interpretability]

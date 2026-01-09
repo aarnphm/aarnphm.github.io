@@ -1,7 +1,7 @@
 ---
 category:
   - comedy
-  - life
+  - o/life
   - temporal
 date: 2024-02-07
 description: bill murray trapped in the same day for what might be ten thousand years—ramis filming selfishness polished into kindness through endless repetition, buddhist enlightenment disguised as romantic comedy.

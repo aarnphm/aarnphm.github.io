@@ -1,7 +1,7 @@
 ---
 category:
   - thriller
-  - relationship
+  - o/relationship
   - drama
 date: 2024-02-07
 description: marriage as crime scene with no reliable witnesses—triet refusing to confirm whether it was murder or suicide because the real mystery is whether we ever truly know the people we sleep beside.
