@@ -12,7 +12,7 @@ import { parseWikilink, resolveWikilinkTarget, createWikilinkRegex } from "../..
 // @ts-ignore
 import script from "../../components/scripts/sidenotes.inline"
 import content from "../../components/styles/sidenotes.inline.scss"
-import type { Sidenote } from "../../extensions/micromark-extension-ofm-sidenotes"
+import type { Sidenote, SidenoteReference } from "../../extensions/micromark-extension-ofm-sidenotes"
 
 export const Sidenotes: QuartzTransformerPlugin = () => {
   return {
@@ -28,27 +28,35 @@ export const Sidenotes: QuartzTransformerPlugin = () => {
         () => (tree: MdastRoot, file: VFile) => {
           let counter = 0
 
-          visit(tree, "sidenote", (node: Sidenote, index, parent) => {
-            const parsed = node.data?.sidenoteParsed
-            if (!parsed) return
-
+          visit(tree, ["sidenote", "sidenoteReference"], (node: Sidenote | SidenoteReference) => {
             const sidenoteId = ++counter
             const baseId = buildSidenoteDomId(file, sidenoteId)
 
-            const props = parsed.properties || {}
-            const forceInline = props.dropdown === "true" || props.inline === "true"
-            const allowLeft = props.left !== "false"
-            const allowRight = props.right !== "false"
+            if (node.type === "sidenote") {
+              const parsed = node.data?.sidenoteParsed
+              if (!parsed) return
 
-            // Store metadata on node for HTML plugin to use
-            if (!node.data) node.data = {}
-            node.data.sidenoteId = sidenoteId
-            node.data.baseId = baseId
-            node.data.forceInline = forceInline
-            node.data.allowLeft = allowLeft
-            node.data.allowRight = allowRight
-            node.data.label = parsed.label || ""
-            node.data.internal = props.internal
+              const props = parsed.properties || {}
+              const forceInline = props.dropdown === "true" || props.inline === "true"
+              const allowLeft = props.left !== "false"
+              const allowRight = props.right !== "false"
+
+              if (!node.data) node.data = {}
+              node.data.sidenoteId = sidenoteId
+              node.data.baseId = baseId
+              node.data.forceInline = forceInline
+              node.data.allowLeft = allowLeft
+              node.data.allowRight = allowRight
+              node.data.label = parsed.label || ""
+              node.data.internal = props.internal
+            } else if (node.type === "sidenoteReference") {
+              // Reference node
+              if (!node.data) node.data = {}
+              node.data.sidenoteId = sidenoteId
+              node.data.baseId = baseId
+              // References don't have properties by default, but we could support them if we wanted
+              // For now defaults.
+            }
           })
         },
       ]
@@ -57,9 +65,32 @@ export const Sidenotes: QuartzTransformerPlugin = () => {
       return [
         () => {
           return (tree: HastRoot, file: VFile) => {
+            const definitions = new Map<string, ElementContent[]>()
+
+            visit(tree, "element", (node, index, parent) => {
+              if (node.properties?.dataType === "sidenote-def") {
+                const label = node.properties.label as string
+                const contentDiv = node.children[1] as HastElement
+                if (contentDiv && label) {
+                  definitions.set(label, contentDiv.children)
+                }
+
+                if (parent && typeof index === "number") {
+                  parent.children.splice(index, 1)
+                  return index
+                }
+              }
+            })
+
             visit(
               tree,
-              (node) => node.type === "element" && node.properties?.dataType === "sidenote",
+              (node) => {
+                return (
+                  node.type === "element" &&
+                  (node.properties?.dataType === "sidenote" ||
+                    node.properties?.dataType === "sidenote-ref")
+                )
+              },
               (node, index, parent) => {
                 if (index === undefined || !parent) return
 
@@ -71,15 +102,27 @@ export const Sidenotes: QuartzTransformerPlugin = () => {
                 const labelRaw = (node.properties.label as string) || ""
                 const internalLinks = node.properties.internal as string[] | undefined
 
-                const labelContainer = node.children.find((c) =>
-                  c.properties?.className?.includes("sidenote-label-hast"),
+                const labelContainer = node.children.find(
+                  (c: any) => c.properties?.className?.includes("sidenote-label-hast"),
                 ) as HastElement | undefined
-                const contentContainer = node.children.find((c) =>
-                  c.properties?.className?.includes("sidenote-content-hast"),
+
+                const contentContainer = node.children.find(
+                  (c: any) => c.properties?.className?.includes("sidenote-content-hast"),
                 ) as HastElement | undefined
 
                 const labelHast = labelContainer?.children ?? []
-                const contentHast = contentContainer?.children ?? []
+                let contentHast: ElementContent[] = []
+
+                if (node.properties.dataType === "sidenote-ref") {
+                  const defContent = definitions.get(labelRaw)
+                  if (defContent) {
+                    contentHast = defContent
+                  } else {
+                    contentHast = [{ type: "text", value: "[Missing definition]" }]
+                  }
+                } else {
+                  contentHast = contentContainer?.children ?? []
+                }
 
                 const internal = renderInternalLinks(internalLinks, file, ctx)
                 const combinedContent = [...contentHast, ...internal]
@@ -95,8 +138,8 @@ export const Sidenotes: QuartzTransformerPlugin = () => {
                     allowLeft,
                     allowRight,
                     combinedContent,
-                    sidenoteId,
-                    baseId,
+                    sidenoteId as number,
+                    baseId as string,
                   ),
                 )
                 return index

@@ -5,7 +5,7 @@ date: "2024-10-10"
 description: a bag of chips/words/vernacular
 id: word
 layout: technical
-modified: 2026-01-06 07:39:30 GMT-05:00
+modified: 2026-01-09 04:12:44 GMT-05:00
 tags:
   - evergreen
 title: lists
@@ -66,4 +66,8 @@ title: lists
 - meliorism
 - lex parsimoniae
   - also known as law of parsimony, circa Occam's razor
-- kalsarikännit
+- {{sidenotes[kalsarikännit]: drink alone in your underwear with no intention of going out}}
+- ample
+- {{sidenotes[stork]: Baby-bringing bird}}
+- pesky
+  - annoying to deal with
