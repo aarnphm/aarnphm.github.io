@@ -1,85 +1,36 @@
-[data-slug="quotes"] {
-  header {
-    height: 0;
-  }
+$quote-mark-size: 2em;
+$quote-mark-line-height: 0.1em;
+$quote-mark-shift: -0.4em;
+$quote-mark-gap: 0.25em;
+$quote-indent: 1.25em;
 
-  & article {
-    & > blockquote:not(.twitter-tweet) {
-      border-left: none;
-      padding-top: 1rem;
-      padding-left: 1.8rem;
-      margin: inherit;
-
-      & > p {
-        &:first-of-type {
-          &:before,
-          &:after {
-            font-size: 2em;
-            line-height: 0.1em;
-            vertical-align: -0.4em;
-          }
-
-          &:before {
-            content: "“";
-            margin-right: 0.25em;
-          }
-        }
-
-        &:nth-last-of-type(2) {
-          &:after {
-            font-size: 2em;
-            line-height: 0.1em;
-            vertical-align: -0.4em;
-            content: "”";
-            margin-left: 0.25em;
-          }
-        }
-
-        &:last-of-type {
-          margin-top: 0.8rem;
-          margin-left: 0.5rem;
-          margin-bottom: 0;
-          font-style: italic;
-
-          &:before {
-            content: "—";
-            margin-right: 0;
-          }
-        }
-      }
-    }
-  }
+@mixin quote-mark {
+  font-size: $quote-mark-size;
+  line-height: $quote-mark-line-height;
+  vertical-align: $quote-mark-shift;
 }
 
-blockquote.quotes {
+@mixin quote-block($padding-top) {
   border-left: none;
-  padding-top: 0rem;
+  padding-top: $padding-top;
   padding-left: 1.8rem;
   margin: inherit;
 
   & > p {
-    &:first-of-type {
-      &:before,
-      &:after {
-        font-size: 2em;
-        line-height: 0.1em;
-        vertical-align: -0.4em;
-      }
-
-      &:before {
-        content: "“";
-        margin-right: 0.25em;
-      }
+    &:not(:first-of-type):not(:last-of-type) {
+      padding-left: $quote-indent;
     }
 
-    &:nth-last-of-type(2) {
-      &:after {
-        font-size: 2em;
-        line-height: 0.1em;
-        vertical-align: -0.4em;
-        content: "”";
-        margin-left: 0.25em;
-      }
+    &:first-of-type::before {
+      @include quote-mark;
+      content: "“";
+      margin-right: $quote-mark-gap;
+    }
+
+    &:nth-last-of-type(2)::after {
+      @include quote-mark;
+      content: "”";
+      margin-left: $quote-mark-gap;
     }
 
     &:last-of-type {
@@ -94,4 +45,20 @@ blockquote.quotes {
       }
     }
   }
+}
+
+[data-slug="quotes"] {
+  header {
+    height: 0;
+  }
+
+  & article {
+    & > blockquote:not(.twitter-tweet) {
+      @include quote-block(1rem);
+    }
+  }
+}
+
+blockquote.quotes {
+  @include quote-block(0rem);
 }
