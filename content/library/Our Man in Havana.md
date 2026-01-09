@@ -13,7 +13,7 @@ author:
   - Graham Greene
 posters: "[[library/posters/our-man-in-havana.jpg]]"
 category:
-  - fiction
+  - w/fiction
 translator:
 notebook:
 aliases:

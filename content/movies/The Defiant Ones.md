@@ -10,7 +10,7 @@ rating: 7.5
 status: recurring
 studio: united artists
 tags:
-  - vintage
+  - o/vintage
 title: The Defiant Ones
 year: 1958
 ---

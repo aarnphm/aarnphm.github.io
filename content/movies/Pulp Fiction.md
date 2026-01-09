@@ -1,6 +1,6 @@
 ---
 category:
-  - vintage
+  - o/vintage
   - thriller
   - drama
 date: 2024-02-07
@@ -13,7 +13,7 @@ rating: 8.8
 status: recurring
 studio: miramax
 tags:
-  - vintage
+  - o/vintage
 title: Pulp Fiction
 year: 1994
 ---

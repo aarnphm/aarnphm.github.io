@@ -1,7 +1,7 @@
 ---
 category:
   - love
-  - relationship
+  - o/relationship
 date: 2024-02-07
 description: wartime romance as beautiful lie—bogart choosing the cause over the girl, curtiz filming nobility as renunciation, fog hiding the soundstage.
 director: Michael Curtiz
@@ -12,7 +12,7 @@ rating: 8.5
 status: recurring
 studio: warner bros
 tags:
-  - vintage
+  - o/vintage
 title: Casablanca
 year: 1942
 ---

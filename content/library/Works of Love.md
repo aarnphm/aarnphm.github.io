@@ -8,7 +8,7 @@ description: series of deliberations on christian agape versus erotic or prefere
 status: current
 finished:
 subcategory:
-  - relationship
+  - o/relationship
   - eudamonia
   - hedonia
 author:

@@ -1,6 +1,6 @@
 ---
 category:
-  - life
+  - o/life
   - buster
   - actions
 date: 2024-02-07

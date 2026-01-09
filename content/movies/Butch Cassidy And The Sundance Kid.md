@@ -1,6 +1,6 @@
 ---
 category:
-  - vintage
+  - o/vintage
   - buster
   - thriller
 date: 2024-02-07
@@ -13,7 +13,7 @@ rating: 8
 status: to watch
 studio: 20th century fox
 tags:
-  - vintage
+  - o/vintage
   - friend
 title: Butch Cassidy and the Sundance Kid
 year: 1969

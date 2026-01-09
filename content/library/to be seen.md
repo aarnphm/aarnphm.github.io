@@ -11,7 +11,7 @@ notebook: null
 posters: "[[library/posters/to-be-seen.png]]"
 status: finished
 subcategory:
-  - relationship
+  - o/relationship
   - love
   - grief
 tags:

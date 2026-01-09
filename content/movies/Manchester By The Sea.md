@@ -1,6 +1,6 @@
 ---
 category:
-  - life
+  - o/life
   - drama
   - grief
 date: 2024-02-07

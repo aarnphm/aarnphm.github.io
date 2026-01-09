@@ -3,7 +3,7 @@ date: "2024-01-07"
 description: design document for campus study spot finder app with stakeholder analysis, user personas, interface sketches, and figma prototype.
 draft: true
 id: Design Document
-modified: 2025-10-29 02:16:14 GMT-04:00
+modified: 2026-01-08 08:21:23 GMT-05:00
 noindex: true
 tags:
   - sfwr4hc3

@@ -1,7 +1,7 @@
 ---
 category:
   - love
-  - relationship
+  - o/relationship
   - comedy
 date: 2024-02-07
 description: viagra salesman falling for parkinson's patient—zwick filming pharmaceutical capitalism alongside romance, anne hathaway refusing pity while jake gyllenhaal learns love means staying when disease makes everything harder, not easier.

@@ -1,7 +1,7 @@
 ---
 category:
   - thriller
-  - relationship
+  - o/relationship
   - drama
 date: 2024-02-07
 description: marriage as masked orgy—kubrick's final film exploring sexual jealousy through cruise's nightlong odyssey, his wife's confession about desire unraveling everything he thought he knew about fidelity.

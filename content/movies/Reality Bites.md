@@ -1,8 +1,8 @@
 ---
 title: Reality Bites
 category:
-  - relationship
-  - life
+  - o/relationship
+  - o/life
   - comedy
 date: 2025-11-25
 description: generation x coming-of-age dramedy following aspiring videographer and friends navigating post-college disillusionment, dead-end jobs, and the tension between artistic integrity and corporate compromise.

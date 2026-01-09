@@ -1,7 +1,7 @@
 ---
 category:
   - love
-  - life
+  - o/life
   - comedy
 date: 2024-02-07
 description: office worker imagining her own death—lambert filming daisy ridley's fran isolated in cubicle daydreaming corpses, depression as quiet detachment until new coworker offers connection, celebrating minutia of being alive, one relationship proving sometimes that's all we need to merge inner world with outer.
@@ -16,7 +16,7 @@ tags:
   - o/life
   - psychology
   - love
-  - relationship
+  - o/relationship
 title: Sometimes I Think About Dying
 year: 2023
 ---

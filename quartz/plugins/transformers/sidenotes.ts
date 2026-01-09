@@ -29,15 +29,12 @@ export const Sidenotes: QuartzTransformerPlugin = () => {
           let counter = 0
 
           visit(tree, "sidenote", (node: Sidenote, index, parent) => {
-            if (index === undefined || !parent) return
-
             const parsed = node.data?.sidenoteParsed
             if (!parsed) return
 
             const sidenoteId = ++counter
             const baseId = buildSidenoteDomId(file, sidenoteId)
 
-            // Extract property flags (HAST doesn't support nested objects)
             const props = parsed.properties || {}
             const forceInline = props.dropdown === "true" || props.inline === "true"
             const allowLeft = props.left !== "false"
@@ -60,9 +57,12 @@ export const Sidenotes: QuartzTransformerPlugin = () => {
       return [
         () => {
           return (tree: HastRoot, file: VFile) => {
-            visit(tree, (node: any, index, parent) => {
-              // Look for sidenote placeholder elements
-              if (node.type === "element" && node.properties?.dataType === "sidenote") {
+            visit(
+              tree,
+              (node) => {
+                return node.type === "element" && node.properties?.dataType === "sidenote"
+              },
+              (node, index, parent) => {
                 if (index === undefined || !parent) return
 
                 const sidenoteId = node.properties.sidenoteId
@@ -75,27 +75,26 @@ export const Sidenotes: QuartzTransformerPlugin = () => {
 
                 const internal = renderInternalLinks(internalLinks, file, ctx)
 
-                // Get children - they should already be HAST nodes from remarkRehype
-                const children = Array.isArray(node.children) ? node.children : []
-                const combinedContent = [...children, ...internal]
+                const combinedContent = [...(node.children ?? []), ...internal]
 
                 const labelText = deriveLabel(label)
 
-                const hastNodes = buildSidenoteHast(
-                  labelText,
-                  forceInline,
-                  allowLeft,
-                  allowRight,
-                  combinedContent,
-                  sidenoteId,
-                  baseId,
+                parent.children.splice(
+                  index,
+                  1,
+                  ...buildSidenoteHast(
+                    labelText,
+                    forceInline,
+                    allowLeft,
+                    allowRight,
+                    combinedContent,
+                    sidenoteId,
+                    baseId,
+                  ),
                 )
-
-                // Replace the sidenote node with our HAST nodes
-                parent.children.splice(index, 1, ...hastNodes)
                 return index
-              }
-            })
+              },
+            )
           }
         },
       ]

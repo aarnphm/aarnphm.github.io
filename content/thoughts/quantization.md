@@ -2,7 +2,7 @@
 date: "2024-02-05"
 description: reducing neural network memory and compute through low-precision data types like int8 and fp16, using calibration and rounding schemes.
 id: quantization
-modified: 2025-10-29 02:15:52 GMT-04:00
+modified: 2026-01-08 14:32:10 GMT-05:00
 tags:
   - seed
   - ml
@@ -70,7 +70,7 @@ see also: [specification](https://www.opencompute.org/documents/ocp-microscaling
 
 stands for _microscaling (mx) of 4-bit floating-point (fp4)_
 
-https://arxiv.org/pdf/2310.10537, first proposed in Open Compute Project (OCP), backed by OpenAI, AMD, NVIDIA, Microsoft, Meta.
+https://arxiv.org/abs/2310.10537, first proposed in Open Compute Project (OCP), backed by OpenAI, AMD, NVIDIA, Microsoft, Meta.
 
 Developed for training, given that FP4 is "good enough" in inference.
 

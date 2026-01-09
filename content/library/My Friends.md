@@ -10,12 +10,12 @@ finished:
 year: 2025
 status: to read
 subcategory:
-  - relationship
+  - o/relationship
 author:
   - Fredrik Backman
 posters: "[[library/posters/my-friends.avif]]"
 category:
-  - fiction
+  - w/fiction
 translator:
 notebook:
 aliases:

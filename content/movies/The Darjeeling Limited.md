@@ -1,6 +1,6 @@
 ---
 category:
-  - relationship
+  - o/relationship
   - buster
   - comedy
 date: 2024-02-07

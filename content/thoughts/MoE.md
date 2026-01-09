@@ -2,7 +2,7 @@
 date: "2025-08-13"
 description: Mixture of Expert
 id: MoE
-modified: 2025-12-29 17:54:05 GMT-05:00
+modified: 2026-01-08 14:24:57 GMT-05:00
 seealso:
   - "[[thoughts/muon|muon]]"
   - "[[thoughts/optimization#muon]]"
@@ -12,9 +12,11 @@ tags:
 title: MoE
 ---
 
+the first proposal is found at https://arxiv.org/abs/2101.03961
+
 ## step3
 
-https://arxiv.org/pdf/2507.19427
+https://arxiv.org/abs/2507.19427
 
 [@stepfun2025step3largeaffordablemodelsystem], stored in bfloat16 or block-fp8, used for vision-language reasoning.
 

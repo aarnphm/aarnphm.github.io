@@ -1,7 +1,7 @@
 ---
 category:
   - thriller
-  - vintage
+  - o/vintage
   - drama
 date: 2024-02-07
 description: loneliness calcifying into violence in a city that won't see you—scorsese's fever dream of isolation, where every interaction confirms the protagonist's invisibility.
@@ -13,7 +13,7 @@ rating: 8.2
 status: recurring
 studio: columbia pictures
 tags:
-  - vintage
+  - o/vintage
   - thriller
   - psychology
 title: Taxi Driver

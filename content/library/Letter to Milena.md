@@ -9,7 +9,7 @@ modified: 2025-10-31 07:25:19 GMT-04:00
 posters: "[[library/posters/letter-to-milena.jpg]]"
 status: finished
 subcategory:
-  - relationship
+  - o/relationship
 tags:
   - love
 title: Letter to Milena

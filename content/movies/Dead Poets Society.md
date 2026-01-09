@@ -1,6 +1,6 @@
 ---
 category:
-  - life
+  - o/life
   - comedy
   - drama
 date: 2024-02-07

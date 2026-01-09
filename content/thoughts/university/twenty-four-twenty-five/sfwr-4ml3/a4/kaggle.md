@@ -2,7 +2,7 @@
 date: "2024-12-03"
 description: "CIFAR Challenge: Classify the World of Objects!"
 id: kaggle
-modified: 2025-11-09 01:41:53 GMT-05:00
+modified: 2026-01-08 14:33:15 GMT-05:00
 tags:
   - sfwr4ml3
 title: CIFAR100 with CNN
@@ -48,7 +48,7 @@ Model: fine tuned version of EfficientNetV2 trained on ImageNet21k from [@tan202
 
 ## reasoning
 
-https://arxiv.org/pdf/2104.00298
+https://arxiv.org/abs/2104.00298
 
 EfficientNetV2 includes a optimisations to make training a lot faster while keeping the model relatively lean. They were built on top of a limited search space and a fused conv layers called Fused-MBConv.
 

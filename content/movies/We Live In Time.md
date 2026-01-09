@@ -1,6 +1,6 @@
 ---
 category:
-  - eschatology
+  - o/eschatology
   - grief
 date: 2024-02-07
 description: couple's decade told non-chronologically from first meeting to cancer—crowley filming pugh and garfield's love story scrambled through time, moments of joy intercut with loss, romance structured like memory where past and present collapse into each other.

@@ -5,8 +5,8 @@ draft: true
 id: psychopathy
 modified: 2026-01-07 20:58:05 GMT-05:00
 tags:
-  - fiction
-  - relationship
+  - w/fiction
+  - o/relationship
 title: gone girl is our life now, actually
 ---
 

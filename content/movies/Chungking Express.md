@@ -1,7 +1,7 @@
 ---
 category:
   - love
-  - relationship
+  - o/relationship
   - thriller
 date: 2024-02-07
 description: hong kong loneliness at multiple frame rates—wong kar-wai filming missed connections and pining as the city blurs around people moving too fast and too slow to ever properly meet.

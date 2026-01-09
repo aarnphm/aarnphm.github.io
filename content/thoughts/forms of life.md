@@ -2,15 +2,15 @@
 date: "2025-11-19"
 description: circa PI, Wittgenstein
 id: forms of life
-modified: 2025-11-19 14:31:38 GMT-05:00
-tags:
-  - philosophy
-  - pattern
-title: forms of life
+modified: 2026-01-08 14:35:33 GMT-05:00
 seealso:
   - "[[thoughts/Wittgenstein|Wittgenstein]]"
   - "[[library/Philosophical Investigations|PI]]"
   - "[[library/Civilisation and its Discontents|C&D]]"
+tags:
+  - philosophy
+  - pattern
+title: forms of life
 ---
 
 forms of life (_Lebensformen_) is [[thoughts/Wittgenstein|wittgenstein's]] term for the bedrock of meaning. they're the shared practices, ways of going on, patterns of living that ground language games and make meaning possible.

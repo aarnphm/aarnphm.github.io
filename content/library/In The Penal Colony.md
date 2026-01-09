@@ -11,7 +11,7 @@ notebook:
 posters: "[[library/posters/in-the-penal-colony.jpg]]"
 status: to read
 tags:
-  - fiction
+  - w/fiction
 title: In The Penal Colony
 subcategory:
   - absurdism

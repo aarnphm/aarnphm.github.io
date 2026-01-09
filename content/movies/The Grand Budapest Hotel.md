@@ -1,7 +1,7 @@
 ---
 category:
   - comedy
-  - vintage
+  - o/vintage
   - drama
 date: 2024-02-07
 description: nostalgia for a europe that maybe never existed, told through impossible architecture and fastidious manners masking the violence closing in.
@@ -13,7 +13,7 @@ rating: 8.1
 status: recurring
 studio: searchlight
 tags:
-  - vintage
+  - o/vintage
   - comedy
   - politics
 title: The Grand Budapest Hotel

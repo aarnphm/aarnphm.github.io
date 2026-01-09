@@ -10,7 +10,7 @@ status: current
 finished:
 subcategory:
   - love
-  - relationship
+  - o/relationship
 author:
   - "[[thoughts/Simone de Beauvoir|Simone de Beauvoir]]"
 posters: "[[library/posters/memoirs-of-a-dutiful-daughter.jpg]]"

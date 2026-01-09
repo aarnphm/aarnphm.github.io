@@ -1,6 +1,6 @@
 ---
 category:
-  - vintage
+  - o/vintage
   - drama
   - love
 date: 2024-02-07
@@ -13,7 +13,7 @@ rating: 8.3
 status: recurring
 studio: miramax
 tags:
-  - vintage
+  - o/vintage
 title: Good Will Hunting
 year: 1997
 ---

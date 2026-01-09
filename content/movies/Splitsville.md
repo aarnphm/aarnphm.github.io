@@ -12,7 +12,7 @@ rating: 6.8
 category:
   - romantic
   - love
-  - life
+  - o/life
 description: When his wife asks for a divorce, a man runs to his friends for support, only to learn that the secret to their happiness is an open marriage.
 posters: "[[movies/posters/splitsville.avif]]"
 ---

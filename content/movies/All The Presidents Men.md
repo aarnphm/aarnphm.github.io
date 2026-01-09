@@ -1,6 +1,6 @@
 ---
 category:
-  - vintage
+  - o/vintage
   - thriller
   - drama
 date: 2024-02-07
@@ -13,7 +13,7 @@ rating: 7.9
 status: to watch
 studio: warner bros
 tags:
-  - vintage
+  - o/vintage
   - politics
 title: All the President's Men
 year: 1976

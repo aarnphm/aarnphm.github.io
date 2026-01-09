@@ -1,6 +1,6 @@
 ---
 category:
-  - fiction
+  - w/fiction
   - comedy
 date: 2024-02-07
 description: nicolas cage goes viral for appearing in everyone's dreams—borgli filming fame's psychic invasion, the professor becoming meme then monster, cancel culture as collective nightmare you can't wake from.
