@@ -181,6 +181,8 @@ const config: QuartzConfig = {
           exclude: [/\.(ignore\.pdf)$/, /400232791/],
           tags: [
             "ml",
+            "ai",
+            "fruit",
             "interp",
             "philosophy",
             "inference",
