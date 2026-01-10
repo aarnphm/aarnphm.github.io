@@ -13,7 +13,7 @@ status: recurring
 studio: syncopy
 tags:
   - thriller
-  - psychology
+  - r/psychology
 title: Insomnia
 year: 2002
 ---

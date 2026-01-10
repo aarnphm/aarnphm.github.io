@@ -1,6 +1,7 @@
 import { QuartzComponent, QuartzComponentConstructor, QuartzComponentProps } from "../types"
 import style from "../styles/listPage.scss"
 import PageListConstructor, { SortFn } from "../PageList"
+import PageListSearchConstructor from "../PageListSearch"
 import { FullSlug, getAllSegmentPrefixes, simplifySlug } from "../../util/path"
 import { QuartzPluginData } from "../../plugins/vfile"
 import { Root } from "hast"
@@ -20,6 +21,7 @@ export default ((opts?: Partial<TagContentOptions>) => {
   const options: TagContentOptions = { ...defaultOptions, ...opts }
 
   const PageList = PageListConstructor()
+  const PageListSearch = PageListSearchConstructor()
 
   const TagContent: QuartzComponent = (props: QuartzComponentProps) => {
     const { tree, fileData, allFiles, cfg } = props
@@ -57,6 +59,7 @@ export default ((opts?: Partial<TagContentOptions>) => {
             <p>{content}</p>
           </article>
           <p>{i18n(cfg.locale).pages.tagContent.totalTags({ count: tags.length })}</p>
+          <PageListSearch {...props} allTags />
           <div>
             {tags.map((tag) => {
               const pages = tagItemMap.get(tag)!
@@ -115,6 +118,7 @@ export default ((opts?: Partial<TagContentOptions>) => {
           <article>{content}</article>
           <div class="page-listing">
             <p>{i18n(cfg.locale).pages.tagContent.itemsUnderTag({ count: pages.length })}</p>
+            <PageListSearch {...props} />
             <div>
               <PageList {...listProps} sort={opts?.sort} />
             </div>
@@ -124,6 +128,7 @@ export default ((opts?: Partial<TagContentOptions>) => {
     }
   }
 
-  TagContent.css = style
+  TagContent.css = style + PageListSearch.css
+  TagContent.afterDOMLoaded = PageListSearch.afterDOMLoaded
   return TagContent
 }) satisfies QuartzComponentConstructor

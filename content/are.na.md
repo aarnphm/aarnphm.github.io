@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-01-09 14:26:27 GMT-05:00
+modified: 2026-01-09 22:32:36 GMT-05:00
 permalinks:
   - /website
   - /tweets
@@ -3613,6 +3613,10 @@ title: are.na
   - view: list
   - json: true
 
+- https://modal.com/blog/gpu-health -- Keeping 20,000 GPUs healthy
+  - [meta]:
+    - date: 01/09/2026
+    - tags: [infrastructure]
 - https://blog.character.ai/squinch/ -- optimizing large-scale pretraining at character.ai [**]
   - [meta]:
     - date: 12/23/2025
@@ -6820,6 +6824,14 @@ title: are.na
 
 ## prompts
 
+- https://github.com/jessfraz/dotfiles/blob/main/.codex/AGENTS.md
+  - [meta]:
+    - date: 01/09/2026
+    - tags: [agents]
+- https://github.com/lucasb-eyer/dotfiles/blob/master/_codex/prompts/deslop.md
+  - [meta]:
+    - date: 01/09/2026
+    - tags: [prompts]
 - https://x.com/menhguin/status/2006362777414484231
   - [meta]:
     - date: 01/02/2026

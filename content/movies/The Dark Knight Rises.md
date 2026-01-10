@@ -15,7 +15,7 @@ studio: syncopy
 tags:
   - action
   - thriller
-  - politics
+  - r/politics
 title: The Dark Knight Rises
 year: 2012
 ---

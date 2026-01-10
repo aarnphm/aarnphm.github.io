@@ -15,7 +15,7 @@ studio: paramount
 tags:
   - o/vintage
   - thriller
-  - psychology
+  - r/psychology
 title: Vertigo
 year: 1958
 ---

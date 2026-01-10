@@ -15,7 +15,7 @@ studio: neon
 tags:
   - thriller
   - o/relationship
-  - psychology
+  - r/psychology
 title: Anatomy of a Fall
 year: 2023
 ---

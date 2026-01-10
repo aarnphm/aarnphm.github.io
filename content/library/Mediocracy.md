@@ -10,7 +10,7 @@ posters: "[[library/posters/mediocracy.jpg]]"
 status: to read
 subcategory: politics
 tags:
-  - politics
+  - r/politics
 title: "Mediocracy: The Politics of the Extreme Centre"
 year: 2015
 ---

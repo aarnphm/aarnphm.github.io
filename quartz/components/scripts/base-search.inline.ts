@@ -4,21 +4,16 @@ function setupBaseSearch() {
     return
   }
 
-  const root = (document.querySelector("article.main-col") as HTMLElement | null) ?? document.body
-  if (!root) {
-    return
-  }
-
   const items: HTMLElement[] = []
 
-  const tableRows = root.querySelectorAll<HTMLTableRowElement>("table.base-table tbody tr")
-  tableRows.forEach((row) => items.push(row as HTMLElement))
+  const tableRows = document.querySelectorAll<HTMLTableRowElement>("table.base-table tbody tr")
+  tableRows.forEach((row) => items.push(row))
 
-  const listItems = root.querySelectorAll<HTMLLIElement>(".base-list > li")
-  listItems.forEach((li) => items.push(li as HTMLElement))
+  const listItems = document.querySelectorAll<HTMLLIElement>(".base-list > li")
+  listItems.forEach((li) => items.push(li))
 
-  const cardItems = root.querySelectorAll<HTMLDivElement>(".base-card")
-  cardItems.forEach((card) => items.push(card as HTMLElement))
+  const cardItems = document.querySelectorAll<HTMLDivElement>(".base-card")
+  cardItems.forEach((card) => items.push(card))
 
   const filterItems = () => {
     const query = searchInput.value.toLowerCase().trim()

@@ -14,7 +14,7 @@ status: to watch
 studio: 20th century fox
 tags:
   - comedy
-  - psychology
+  - r/psychology
   - film
 title: The King of Comedy
 year: 1982

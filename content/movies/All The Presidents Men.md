@@ -14,7 +14,7 @@ status: to watch
 studio: warner bros
 tags:
   - o/vintage
-  - politics
+  - r/politics
 title: All the President's Men
 year: 1976
 ---

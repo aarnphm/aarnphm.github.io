@@ -11,7 +11,7 @@ socials:
   wikipedia: https://en.wikipedia.org/wiki/Situated_cognition
 tags:
   - pattern
-  - psychology
+  - r/psychology
 title: Situated cognition
 ---
 

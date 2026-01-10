@@ -12,8 +12,8 @@ status: finished
 studio: mubi
 tags:
   - thriller
-  - psychology
-  - politics
+  - r/psychology
+  - r/politics
 title: The Substance
 watched: 2024-10-15
 year: 2024

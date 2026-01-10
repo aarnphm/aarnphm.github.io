@@ -55,12 +55,7 @@ function handleReference(node: SidenoteReference): string {
   return `{{sidenotes[^${node.label}]}}`
 }
 
-function handleDefinition(
-  node: SidenoteDefinition,
-  _: any,
-  state: any,
-  info: any,
-): string {
+function handleDefinition(node: SidenoteDefinition, _: any, state: any, info: any): string {
   const exit = state.enter("sidenoteDefinition")
   const value = state.containerFlow(node, info)
   exit()

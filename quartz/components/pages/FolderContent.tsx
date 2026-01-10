@@ -2,6 +2,7 @@ import { QuartzComponent, QuartzComponentConstructor, QuartzComponentProps } fro
 import path from "path"
 import style from "../styles/listPage.scss"
 import PageListConstructor, { byDateAndAlphabetical, SortFn } from "../PageList"
+import PageListSearchConstructor from "../PageListSearch"
 import {
   stripSlashes,
   simplifySlug,
@@ -19,6 +20,7 @@ import EvergreenConstructor, { AllTags, EvergreenPermanentNotes } from "../Everg
 import { i18n } from "../../i18n"
 import { FileTrieNode } from "../../util/fileTrie"
 import { parseWikilink } from "../../util/wikilinks"
+import { normalizeResource } from "../../plugins/emitters/componentResources"
 
 interface FolderContentOptions {
   /**
@@ -133,6 +135,7 @@ export default ((opts?: Partial<FolderContentOptions>) => {
   const PageList = PageListConstructor({ highlightTags: [...tags] })
   const Evergreen = EvergreenConstructor({ lg, sm, tags })
   const PermanentNotes = EvergreenPermanentNotes({ lg, sm, tags })
+  const PageListSearch = PageListSearchConstructor()
 
   const FolderContent: QuartzComponent = (props: QuartzComponentProps) => {
     const { tree, fileData, allFiles, ctx, cfg } = props
@@ -328,8 +331,9 @@ export default ((opts?: Partial<FolderContentOptions>) => {
     switch (layout) {
       case Layout.etas:
         return (
-          <div class="folder-layout folder-layout--et-a">
+          <div class="folder-layout folder-layout--et-a" data-pagelist>
             <section class={listClassName}>
+              <PageListSearch {...props} />
               <PageList {...listProps} />
             </section>
             <div class="notes-evergreen folder-layout--evergreen">
@@ -349,7 +353,7 @@ export default ((opts?: Partial<FolderContentOptions>) => {
 
       case Layout.alsp:
         return (
-          <div class="folder-layout folder-layout--a-l">
+          <div class="folder-layout folder-layout--a-l" data-pagelist>
             <article class="folder-layout--article">
               {content}
               <p>
@@ -359,6 +363,7 @@ export default ((opts?: Partial<FolderContentOptions>) => {
               </p>
             </article>
             <section class={listClassName}>
+              <PageListSearch {...props} />
               <PageList {...listProps} />
             </section>
           </div>
@@ -366,8 +371,9 @@ export default ((opts?: Partial<FolderContentOptions>) => {
 
       case Layout.lovp:
         return (
-          <div class="folder-layout folder-layout--l">
+          <div class="folder-layout folder-layout--l" data-pagelist>
             <section class={listClassName}>
+              <PageListSearch {...props} />
               <PageList {...listProps} />
             </section>
           </div>
@@ -377,6 +383,7 @@ export default ((opts?: Partial<FolderContentOptions>) => {
         return (
           <>
             <section class={baseListClass}>
+              <PageListSearch {...props} />
               <PageList {...listProps} />
             </section>
             <aside class="notes-evergreen">
@@ -387,8 +394,11 @@ export default ((opts?: Partial<FolderContentOptions>) => {
     }
   }
 
-  FolderContent.css = style + Evergreen.css
-  FolderContent.afterDOMLoaded = Evergreen.afterDOMLoaded
+  FolderContent.css = style + Evergreen.css + PageListSearch.css
+  FolderContent.afterDOMLoaded = [
+    ...normalizeResource(Evergreen.afterDOMLoaded),
+    ...normalizeResource(PageListSearch.afterDOMLoaded),
+  ].join("\n\n")
 
   return FolderContent
 }) satisfies QuartzComponentConstructor

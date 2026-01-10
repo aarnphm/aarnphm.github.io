@@ -13,7 +13,7 @@ rating: 7.5
 status: to watch
 studio: element pictures
 tags:
-  - politics
+  - r/politics
   - comedy
   - absurdism
 title: The Favorite

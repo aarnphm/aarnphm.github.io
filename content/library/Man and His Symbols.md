@@ -10,7 +10,7 @@ status: to read
 subcategory: psychology
 tags:
   - philosophy
-  - psychology
+  - r/psychology
 title: Man and His Symbols
 year: 1964
 ---

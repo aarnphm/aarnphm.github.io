@@ -14,7 +14,7 @@ seealso:
   - May's theorem
   - Market failure
 tags:
-  - politics
+  - r/politics
   - democracy
 title: Arrow's impossibility theorem
 ---

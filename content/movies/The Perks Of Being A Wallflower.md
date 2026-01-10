@@ -13,7 +13,7 @@ rating: 7.9
 status: to watch
 studio: summit
 tags:
-  - psychology
+  - r/psychology
   - o/life
 title: The Perks of Being a Wallflower
 year: 2012

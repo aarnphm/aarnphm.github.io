@@ -34,22 +34,10 @@ function extractMetadata(raw: unknown): { tags: string[]; metadataString: string
   let metadataString = "{}"
 
   if (typeof raw === "string") {
-    metadataString = raw
-    try {
-      const parsed = JSON.parse(raw)
-      if (parsed && typeof parsed === "object" && !Array.isArray(parsed)) {
-        metadataObj = parsed as Record<string, unknown>
-      }
-    } catch {
-      metadataObj = {}
-    }
+    metadataObj = JSON.parse(raw)
   } else if (raw && typeof raw === "object" && !Array.isArray(raw)) {
     metadataObj = raw as Record<string, unknown>
-    try {
-      metadataString = JSON.stringify(metadataObj)
-    } catch {
-      metadataString = "{}"
-    }
+    metadataString = JSON.stringify(metadataObj)
   }
 
   const rawTags = Array.isArray(metadataObj.tags) ? metadataObj.tags : []
@@ -63,95 +51,72 @@ let indexedEntries: IndexedEntry[] = []
 let isIndexBuilt = false
 let searchTimeout: number | null = null
 
-/**
- * Strip HTML tags from content for indexing
- */
 function stripHtml(html: string): string {
   const tmp = document.createElement("div")
   tmp.innerHTML = html
   return tmp.textContent || tmp.innerText || ""
 }
 
-/**
- * Build search index from stream data
- */
 function isStreamHost(): boolean {
-  return typeof window !== "undefined" && window.location.hostname === "stream.aarnphm.xyz"
+  return window.location.hostname === "stream.aarnphm.xyz"
 }
 
 async function buildSearchIndex() {
   if (isIndexBuilt) return
 
-  try {
-    const endpoint = isStreamHost() ? `${window.location.origin}/streams.jsonl` : "/streams.jsonl"
-    const response = await fetch(endpoint)
-    if (!response.ok) {
-      console.error("[StreamSearch] Failed to load stream data:", response.statusText)
-      return
-    }
+  const endpoint = isStreamHost() ? `${window.location.origin}/streams.jsonl` : "/streams.jsonl"
+  const response = await fetch(endpoint)
 
-    const text = await response.text()
-    const lines = text.trim().split("\n")
+  const text = await response.text()
+  const lines = text.trim().split("\n")
 
-    let entryIndex = 0
-    for (const line of lines) {
-      if (!line.trim()) continue
+  let entryIndex = 0
+  for (const line of lines) {
+    if (!line.trim()) continue
 
-      try {
-        const group: StreamGroup = JSON.parse(line)
+    const group: StreamGroup = JSON.parse(line)
 
-        for (const entry of group.entries) {
-          const { tags, metadataString } = extractMetadata(entry.metadata)
+    for (const entry of group.entries) {
+      const { tags, metadataString } = extractMetadata(entry.metadata)
 
-          const indexedEntry: IndexedEntry = {
-            id: entryIndex++,
-            entryId: entry.id,
-            groupId: group.groupId,
-            content: stripHtml(entry.html),
-            metadata: metadataString,
-            isoDate: entry.isoDate || group.isoDate || "",
-            displayDate: entry.displayDate || group.isoDate || "",
-            tags,
-          }
-          indexedEntries.push(indexedEntry)
-        }
-      } catch (err) {
-        console.warn("[StreamSearch] Failed to parse line:", err)
+      const indexedEntry: IndexedEntry = {
+        id: entryIndex++,
+        entryId: entry.id,
+        groupId: group.groupId,
+        content: stripHtml(entry.html),
+        metadata: metadataString,
+        isoDate: entry.isoDate || group.isoDate || "",
+        displayDate: entry.displayDate || group.isoDate || "",
+        tags,
       }
+      indexedEntries.push(indexedEntry)
     }
-
-    // Build FlexSearch index
-    searchIndex = new FlexSearch.Document({
-      tokenize: "forward",
-      encode,
-      document: {
-        id: "id",
-        index: ["content", "metadata", "isoDate", "displayDate", "tags"],
-      },
-    })
-
-    // Add all entries to index
-    for (const entry of indexedEntries) {
-      const tagsField = entry.tags
-        .flatMap((tag) => [tag, `#${tag}`])
-        .join(" ")
-        .trim()
-
-      await searchIndex.addAsync({
-        ...entry,
-        tags: tagsField,
-      })
-    }
-
-    isIndexBuilt = true
-  } catch (err) {
-    console.error("[StreamSearch] Failed to build search index:", err)
   }
+
+  searchIndex = new FlexSearch.Document({
+    tokenize: "forward",
+    encode,
+    document: {
+      id: "id",
+      index: ["content", "metadata", "isoDate", "displayDate", "tags"],
+    },
+  })
+
+  for (const entry of indexedEntries) {
+    const tagsField = entry.tags
+      .flatMap((tag) => [tag, `#${tag}`])
+      .join(" ")
+      .trim()
+
+    await searchIndex.addAsync({
+      ...entry,
+      tags: tagsField,
+    })
+  }
+
+  isIndexBuilt = true
 }
 
-/**
- * Highlight matches in text nodes recursively
- */
 function highlightTextNodes(element: HTMLElement, searchTerm: string) {
   const tokens = tokenizeTerm(searchTerm)
   const walker = document.createTreeWalker(element, NodeFilter.SHOW_TEXT, null)
@@ -163,7 +128,6 @@ function highlightTextNodes(element: HTMLElement, searchTerm: string) {
     const textNode = currentNode as Text
     const text = textNode.nodeValue || ""
 
-    // Check if any token matches
     let hasMatch = false
     for (const token of tokens) {
       if (text.toLowerCase().includes(token.toLowerCase())) {
@@ -177,7 +141,6 @@ function highlightTextNodes(element: HTMLElement, searchTerm: string) {
     }
   }
 
-  // Replace text nodes with highlighted versions
   for (const { node, parent } of nodesToReplace) {
     const text = node.nodeValue || ""
     const fragment = document.createDocumentFragment()
@@ -190,12 +153,11 @@ function highlightTextNodes(element: HTMLElement, searchTerm: string) {
 
       while ((match = regex.exec(text))) {
         modified = true
-        // Add text before match
+
         if (match.index > lastIndex) {
           fragment.appendChild(document.createTextNode(text.slice(lastIndex, match.index)))
         }
 
-        // Add highlighted match
         const mark = document.createElement("mark")
         mark.className = "search-highlight"
         mark.textContent = match[0]
@@ -206,7 +168,6 @@ function highlightTextNodes(element: HTMLElement, searchTerm: string) {
     }
 
     if (modified) {
-      // Add remaining text
       if (lastIndex < text.length) {
         fragment.appendChild(document.createTextNode(text.slice(lastIndex)))
       }
@@ -215,9 +176,6 @@ function highlightTextNodes(element: HTMLElement, searchTerm: string) {
   }
 }
 
-/**
- * Clear all highlights
- */
 function clearHighlights() {
   const highlights = document.querySelectorAll(".stream-entry .search-highlight")
   highlights.forEach((mark) => {
@@ -239,26 +197,16 @@ function parseTagTokens(query: string): string[] {
   )
 }
 
-/**
- * Filter stream entries based on search query
- */
 async function filterStreamEntries(query: string) {
   if (!searchIndex || !isIndexBuilt) {
     await buildSearchIndex()
   }
 
-  if (!searchIndex) {
-    console.error("[StreamSearch] Search index not available")
-    return
-  }
-
   const trimmedQuery = query.trim()
   const streamEntries = document.querySelectorAll<HTMLElement>(".stream-entry")
 
-  // Clear existing highlights
   clearHighlights()
 
-  // If no query, show all entries
   if (!trimmedQuery) {
     streamEntries.forEach((entry) => {
       entry.style.display = ""
@@ -295,7 +243,6 @@ async function filterStreamEntries(query: string) {
     highlightTerm = tagTokens.join(" ")
   } else {
     try {
-      // Search across all indexed fields
       const results = await searchIndex.searchAsync({
         query: trimmedQuery,
         limit: 500,
@@ -319,55 +266,45 @@ async function filterStreamEntries(query: string) {
     }
   }
 
-  try {
-    // Show/hide entries based on matches
-    let visibleCount = 0
-    streamEntries.forEach((entry) => {
-      const entryId = (entry as HTMLElement).dataset.entryId
-      if (entryId && matchedEntryIds.has(entryId)) {
-        entry.style.display = ""
+  let visibleCount = 0
+  streamEntries.forEach((entry) => {
+    const entryId = entry.dataset.entryId
+    if (entryId && matchedEntryIds.has(entryId)) {
+      entry.style.display = ""
 
-        // Highlight matches in content
-        const contentEl = entry.querySelector(".stream-entry-content") as HTMLElement
-        if (contentEl && highlightTerm) {
-          highlightTextNodes(contentEl, highlightTerm)
-        }
-
-        if (isTagQuery && highlightTerm) {
-          const tagElements = entry.querySelectorAll(".stream-entry-tag")
-          tagElements.forEach((tagEl) => {
-            highlightTextNodes(tagEl as HTMLElement, highlightTerm)
-          })
-        }
-        visibleCount++
-      } else {
-        entry.style.display = "none"
+      const contentEl = entry.querySelector(".stream-entry-content") as HTMLElement
+      if (contentEl && highlightTerm) {
+        highlightTextNodes(contentEl, highlightTerm)
       }
-    })
 
-    if (isTagQuery) {
-      const readableTags = tagTokens.map((tag) => `#${tag}`).join(" ")
-      updateSearchStatus(
-        visibleCount > 0
-          ? `showing ${visibleCount} ${visibleCount === 1 ? "entry" : "entries"} tagged ${readableTags}`
-          : `no entries tagged ${readableTags}`,
-      )
+      if (isTagQuery && highlightTerm) {
+        const tagElements = entry.querySelectorAll(".stream-entry-tag")
+        tagElements.forEach((tagEl) => {
+          highlightTextNodes(tagEl as HTMLElement, highlightTerm)
+        })
+      }
+      visibleCount++
     } else {
-      updateSearchStatus(
-        visibleCount > 0
-          ? `showing ${visibleCount} ${visibleCount === 1 ? "entry" : "entries"}`
-          : `no results for "${trimmedQuery}"`,
-      )
+      entry.style.display = "none"
     }
-  } catch (err) {
-    console.error("[StreamSearch] Failed to update stream entries:", err)
-    updateSearchStatus("search error")
+  })
+
+  if (isTagQuery) {
+    const readableTags = tagTokens.map((tag) => `#${tag}`).join(" ")
+    updateSearchStatus(
+      visibleCount > 0
+        ? `showing ${visibleCount} ${visibleCount === 1 ? "entry" : "entries"} tagged ${readableTags}`
+        : `no entries tagged ${readableTags}`,
+    )
+  } else {
+    updateSearchStatus(
+      visibleCount > 0
+        ? `showing ${visibleCount} ${visibleCount === 1 ? "entry" : "entries"}`
+        : `no results for "${trimmedQuery}"`,
+    )
   }
 }
 
-/**
- * Update search status message
- */
 function updateSearchStatus(message: string) {
   let statusEl = document.querySelector(".stream-search-status") as HTMLElement
   if (!statusEl && message) {
@@ -389,20 +326,16 @@ function updateSearchStatus(message: string) {
   }
 }
 
-/**
- * Initialize stream search
- */
-async function initStreamSearch() {
+document.addEventListener("nav", async () => {
   const currentPath = window.location.pathname
   const isStreamPage =
     currentPath === "/stream" || currentPath.startsWith("/stream/") || isStreamHost()
   if (!isStreamPage) return
 
-  // Pre-build index for instant search
   await buildSearchIndex()
 
-  const form = document.querySelector(".stream-search-form") as HTMLFormElement
-  const searchInput = document.querySelector(".stream-search-input") as HTMLInputElement
+  const form = document.querySelector<HTMLFormElement>(".stream-search-form")
+  const searchInput = document.querySelector<HTMLInputElement>(".stream-search-input")
 
   if (!form || !searchInput) return
 
@@ -415,9 +348,7 @@ async function initStreamSearch() {
     const target = event.target as Element | null
     if (target) {
       const tag = target.tagName?.toLowerCase()
-      if (tag === "input" || tag === "textarea" || (target as HTMLElement).isContentEditable) {
-        return
-      }
+      if (tag === "input" || tag === "textarea" || (target as HTMLElement).isContentEditable) return
     }
 
     event.preventDefault()
@@ -431,22 +362,14 @@ async function initStreamSearch() {
   const focusListenerOptions: AddEventListenerOptions = { capture: true }
   document.addEventListener("keydown", focusShortcutHandler, focusListenerOptions)
 
-  // Handle input changes with debounce
   const handleInput = () => {
-    if (searchTimeout !== null) {
-      window.clearTimeout(searchTimeout)
-    }
-
+    if (searchTimeout !== null) window.clearTimeout(searchTimeout)
     searchTimeout = window.setTimeout(async () => {
-      const query = searchInput.value
-      await filterStreamEntries(query)
+      await filterStreamEntries(searchInput.value)
     }, 300)
   }
 
-  // Prevent form submission
-  const handleSubmit = (e: Event) => {
-    e.preventDefault()
-  }
+  const handleSubmit = (e: Event) => e.preventDefault()
 
   searchInput.addEventListener("input", handleInput)
   form.addEventListener("submit", handleSubmit)
@@ -460,9 +383,4 @@ async function initStreamSearch() {
       searchTimeout = null
     }
   })
-}
-
-// Initialize on page load and navigation
-document.addEventListener("nav", async () => {
-  await initStreamSearch()
 })

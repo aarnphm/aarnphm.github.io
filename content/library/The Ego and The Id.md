@@ -11,7 +11,7 @@ posters: "[[library/posters/the-ego-and-the-id.jpg]]"
 status: finished
 subcategory: psychology
 tags:
-  - psychology
+  - r/psychology
 title: The Ego and The Id
 year: 1923
 ---

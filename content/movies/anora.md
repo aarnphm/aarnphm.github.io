@@ -13,7 +13,7 @@ status: finished
 studio: neon
 tags:
   - comedy
-  - politics
+  - r/politics
 title: Anora
 watched: 2024-11-15
 year: 2024

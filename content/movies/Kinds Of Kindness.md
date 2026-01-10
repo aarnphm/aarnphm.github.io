@@ -12,7 +12,7 @@ status: to watch
 studio: searchlight
 tags:
   - absurdism
-  - psychology
+  - r/psychology
   - o/relationship
 title: Kinds of Kindness
 year: 2024

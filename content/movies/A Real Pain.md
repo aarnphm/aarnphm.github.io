@@ -14,7 +14,7 @@ status: finished
 studio: searchlight
 tags:
   - history
-  - psychology
+  - r/psychology
 title: A Real Pain
 watched: 2024-11-20
 year: 2024

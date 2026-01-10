@@ -14,7 +14,7 @@ status: to watch
 studio: "[independent]"
 tags:
   - o/life
-  - psychology
+  - r/psychology
   - love
   - o/relationship
 title: Sometimes I Think About Dying

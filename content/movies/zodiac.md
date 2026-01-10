@@ -14,7 +14,7 @@ status: to watch
 studio: paramount
 tags:
   - thriller
-  - psychology
+  - r/psychology
 title: Zodiac
 year: 2007
 ---

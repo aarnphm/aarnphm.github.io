@@ -7,6 +7,7 @@ import Toolbar from "./Toolbar"
 import Palette from "./Palette"
 import Keybind from "./Keybind"
 import BaseSearchBar from "./BaseSearchBar"
+import PageListSearch from "./PageListSearch"
 import Content from "./pages/Content"
 import TagContent from "./pages/TagContent"
 import FolderContent from "./pages/FolderContent"
@@ -74,6 +75,7 @@ export {
   DesktopOnly,
   MobileOnly,
   BaseSearchBar,
+  PageListSearch,
   RecentNotes,
   NotFound,
   Breadcrumbs,

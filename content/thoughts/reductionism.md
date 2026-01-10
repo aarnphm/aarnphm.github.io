@@ -4,7 +4,7 @@ description: explaining complex phenomena through minimal parts, compressing rea
 id: reductionism
 modified: 2026-01-02 03:48:26 GMT-05:00
 tags:
-  - psychology
+  - r/psychology
 title: reductionism
 ---
 

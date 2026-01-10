@@ -2,8 +2,6 @@ import { GlobalConfiguration, QuartzConfig, customMacros, katexOptions } from ".
 import * as Plugin from "./quartz/plugins"
 import * as Component from "./quartz/components"
 
-const model = "onnx-community/embeddinggemma-300m-ONNX" // onnx-community/Qwen3-Embedding-0.6B-ONNX, intfloat/multilingual-e5-large
-
 const configuration: GlobalConfiguration = {
   pageTitle: "Aaron's notes",
   enableSPA: true,
@@ -73,13 +71,17 @@ const configuration: GlobalConfiguration = {
   },
   semanticSearch: {
     enable: true,
-    model,
+    // onnx-community/Qwen3-Embedding-0.6B-ONNX
+    // intfloat/multilingual-e5-large
+    // intfloat/multilingual-e5-large-instruct
+    // google/embeddinggemma-300m
+    model: "intfloat/multilingual-e5-large",
     aot: true,
-    dims: 768,
+    dims: 1024,
     dtype: "fp32",
     shardSizeRows: 1024,
     hnsw: { M: 16, efConstruction: 200 },
-    chunking: { chunkSize: 256, chunkOverlap: 64 },
+    chunking: { chunkSize: 64, chunkOverlap: 32 },
     vllm: { concurrency: 16, batchSize: 128 },
   },
 }
@@ -182,13 +184,15 @@ const config: QuartzConfig = {
             "philosophy",
             "inference",
             "love",
-            "fiction",
+            "w/fiction",
             "math",
             "evergreen",
+            "technical",
             "poetry",
             "topology",
             "linalg",
             "pattern",
+            "a24",
           ],
           lg: [
             "thoughts/mechanistic interpretability",
@@ -206,7 +210,7 @@ const config: QuartzConfig = {
             "thoughts/Attention",
             "thoughts/Philosophy and Nietzsche",
             "thoughts/ethics",
-            "thoughts/Existentialism",
+            "thoughts/PD disaggregated serving",
             "thoughts/topology",
             "thoughts/GPU programming",
           ],

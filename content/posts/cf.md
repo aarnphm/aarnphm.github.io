@@ -2,12 +2,11 @@
 date: "2025-08-04"
 description: And maybe you should, or shouldn't.
 id: cf
-modified: 2025-10-29 02:15:10 GMT-04:00
+modified: 2026-01-09 20:45:04 GMT-05:00
 socials:
   hackernews: https://news.ycombinator.com/item?id=44791222
   twitter: https://x.com/aarnphm/status/1952474293654413636
 tags:
-  - seed
   - technical
 title: Moving to Cloudflare
 ---

@@ -16,7 +16,7 @@ metadata:
     text_line    = { character - newline } ;
     ws           = { " " } ;
     character    = ? any printable ascii except newline ? ;
-modified: 2026-01-02 06:17:54 GMT-05:00
+modified: 2026-01-09 22:31:23 GMT-05:00
 seealso:
   - "[[word|dictionary]]"
   - "[[research|wip]]"
@@ -30,6 +30,10 @@ transclude:
   dynalist: false
   title: false
 ---
+
+> Then I did the most ridiculous and the nerdiest thing: I visualized the HTML tag '</thinking>' in my mind to stop thinking.
+>
+> FURKAN, [understanding ourself token by token](https://substack.com/home/post/p-168071811)
 
 > [...]In that Empire, the Art of Cartography attained such Perfection that the map of a single Province occupied the entirety of a City, and the map of the Empire, the entirety of a Province. In time, those Unconscionable Maps no longer satisfied, and the Cartographers Guilds struck a Map of the Empire whose size was that of the Empire, and which coincided point for point with it. The following Generations, who were not so fond of the Study of Cartography as their Forebears had been, saw that that vast Map was Useless, and not without some Pitilessness was it, that they delivered it up to the Inclemencies of Sun and Winters. In the Deserts of the West, still today, there are Tattered Ruins of that Map, inhabited by Animals and Beggars; in all the Land there is no other Relic of the Disciplines of Geography.
 >

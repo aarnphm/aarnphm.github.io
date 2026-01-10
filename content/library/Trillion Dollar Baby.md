@@ -10,7 +10,7 @@ status: to read
 subcategory: life
 tags:
   - r/environment
-  - politics
+  - r/politics
 title: "Trillion Dollar Baby: How Norway Beat the Oil Giants and Won a Lasting Fortune"
 year: 2016
 ---

@@ -82,7 +82,6 @@ function aggregateChunkResults(
   results: SemanticResult[],
   slugToDocIndex: Map<FullSlug, number>,
 ): { rrfScores: Map<number, number>; maxScores: Map<number, number> } {
-  // Group chunks by parent document
   const docChunks = new Map<string, Array<{ score: number }>>()
 
   results.forEach(({ id, score }) => {
@@ -90,7 +89,6 @@ function aggregateChunkResults(
     const chunkSlug = manifestIds[id]
     if (!chunkSlug) return
 
-    // Get parent document slug
     const parentSlug = getParentSlug(chunkSlug)
 
     if (!docChunks.has(parentSlug)) {
@@ -100,7 +98,6 @@ function aggregateChunkResults(
     docChunks.get(parentSlug)!.push({ score })
   })
 
-  // Apply RRF for ranking and track max similarity for display
   const rrfScores = new Map<number, number>()
   const maxScores = new Map<number, number>()
   const RRF_K = 60
@@ -109,13 +106,8 @@ function aggregateChunkResults(
     const docIdx = slugToDocIndex.get(parentSlug as FullSlug)
     if (typeof docIdx !== "number") continue
 
-    // Sort chunks by score descending to assign per-document ranks
     chunks.sort((a, b) => b.score - a.score)
-
-    // RRF formula: sum(1 / (k + rank)) across all chunks, using per-document ranks
     const rrfScore = chunks.reduce((sum, _, rank) => sum + 1.0 / (RRF_K + rank), 0)
-
-    // Max similarity score for display (original 0-1 range)
     const maxScore = chunks[0].score
 
     rrfScores.set(docIdx, rrfScore)
@@ -218,6 +210,19 @@ async function setupSearch(
   if (!searchSpace) return
 
   // Create semantic search progress bar
+  const styleEl = document.createElement("style")
+  styleEl.textContent = `
+    @keyframes semantic-progress-pulse {
+      0% {
+        background-position: -100% 0;
+      }
+      100% {
+        background-position: 100% 0;
+      }
+    }
+  `
+  document.head.appendChild(styleEl)
+
   const progressBar = document.createElement("div")
   progressBar.className = "semantic-search-progress"
   progressBar.style.cssText = `
@@ -226,7 +231,16 @@ async function setupSearch(
     left: 0;
     height: 2px;
     width: 0;
-    background: var(--secondary);
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      var(--secondary) 25%,
+      var(--tertiary) 50%,
+      var(--secondary) 75%,
+      transparent 100%
+    );
+    background-size: 200% 100%;
+    background-position: -100% 0;
     transition: width 0.3s ease, opacity 0.3s ease;
     opacity: 0;
     z-index: 9999;
@@ -238,19 +252,24 @@ async function setupSearch(
     progressBar.style.width = "0"
     setTimeout(() => {
       progressBar.style.width = "100%"
+      progressBar.style.animation = "semantic-progress-pulse 2.5s ease-in-out infinite"
     }, 10)
   }
 
   const completeSemanticProgress = () => {
+    progressBar.style.animation = "none"
     progressBar.style.opacity = "0"
     setTimeout(() => {
       progressBar.style.width = "0"
+      progressBar.style.backgroundPosition = "-100% 0"
     }, 300)
   }
 
   const resetProgressBar = () => {
+    progressBar.style.animation = "none"
     progressBar.style.opacity = "0"
     progressBar.style.width = "0"
+    progressBar.style.backgroundPosition = "-100% 0"
   }
 
   const idDataMap = Object.keys(data) as FullSlug[]
@@ -456,7 +475,10 @@ async function setupSearch(
 
     if ((e.key === "/" || e.key === "k") && (e.ctrlKey || e.metaKey) && !e.shiftKey) {
       if (isBasePage && e.key.toLowerCase() === "k") {
-        // let base views use ctrl/cmd+k for in-base search
+        return
+      }
+      const hasInlineSearch = document.querySelector(".page-list-search-container")
+      if (hasInlineSearch && e.key.toLowerCase() === "k") {
         return
       }
       e.preventDefault()

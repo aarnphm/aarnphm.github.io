@@ -9,7 +9,7 @@ seealso:
   - "[[thoughts/Attention|attention]]"
 tags:
   - philosophy
-  - psychology
+  - r/psychology
   - pattern
 title: Behavirourism
 ---

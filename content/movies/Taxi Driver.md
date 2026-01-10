@@ -15,7 +15,7 @@ studio: columbia pictures
 tags:
   - o/vintage
   - thriller
-  - psychology
+  - r/psychology
 title: Taxi Driver
 year: 1976
 ---

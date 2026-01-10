@@ -14,7 +14,7 @@ status: to watch
 studio: paramount vantage
 tags:
   - finance
-  - politics
+  - r/politics
 title: There Will Be Blood
 year: 2007
 ---

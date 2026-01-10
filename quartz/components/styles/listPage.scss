@@ -4,6 +4,7 @@
 ul.section-ul {
   list-style: none;
   padding-left: 0;
+  margin-block-start: 0;
 }
 
 li.section-li {
@@ -127,7 +128,7 @@ li.section-li {
 
 .notes-list {
   padding-right: calc(var(--kern) * 2);
-  margin-top: calc(var(--kern));
+  margin-top: 1em;
 
   .popover-inner & {
     padding-right: 0;
@@ -151,6 +152,7 @@ li.section-li {
   display: flex;
   flex-direction: column;
   padding-left: calc(var(--kern) * 2);
+  margin-top: 1rem;
 }
 
 @media all and ($tablet) {
