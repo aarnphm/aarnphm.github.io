@@ -38,7 +38,7 @@ metadata:
     letter        = "a".."z" ;
     digit         = "0".."9" ;
     character     = ? any printable ascii except newline ? ;
-modified: 2026-01-09 21:34:32 GMT-05:00
+modified: 2026-01-10 06:12:57 GMT-05:00
 tags:
   - fruit
   - evergreen
@@ -85,9 +85,13 @@ Ramsey, _aged 22_
 
 Ramsey's crossroads metaphor emphasizes the pattern of bets IS the belief you create towards a _gut feeling_, _conviction of sort_. A thing that you deem to be beautiful predicates upon a set of bets that you consider aesthetically pleasing. For example, I would consider Rembrandt to be the best painters because his drawing speaks towards the absurdism in the face structure and facticity of life. In a way that Rembrandt individuates my liking towards more expressionist painters, such as Egon Schiele, Oskar Kokoschka, etc. The way that we take bets in aesthetics formation works the same way we take bets in other ventures of life. One would live with consequences of choosing a direction, willingly sacrifice the alternatives knowing that such commitments and formulation of [[thoughts/taste]] will [[thoughts/emergent behaviour|emerges]] from within.
 
-\*\*\*
+***
 
-I've been talking with a few friends towards this idea of how we would live in a {{sidenotes[hyperabundance]: i.e post-scarcity, [[posts/hyperabundance|interconnectedness]] towards filtration versus selection.}} world. In the way it creates a sense of grief. For [taste as a guide](https://jzhao.xyz/posts/aesthetics-and-taste), we as a species must "do things without recipes more often". In the similar vein as taking bets per Ramsey here.
+"jagged taste" came up in a conversation with my therapist. we were talking about living in a {{sidenotes[hyperabundance]: i.e post-scarcity, unprecedented [[posts/hyperabundance|interconnectedness]], post-singularity to an extent}} world, and i found myself circling the same worry: the tension between filtering and creating. [JZ writes](https://jzhao.xyz/posts/aesthetics-and-taste) that we need to "do things without recipes more often." this tracks with Ramsey's formulation of bets.
+
+the grief surfaced again while i was fine-tuning my [Qwen-based ghost](https://huggingface.co/Qwen/Qwen3-30B-A3B-Instruct-2507-FP8). there's this moment when the loss curve suddenly drops, _grokking_, and the model starts enforcing traits it found in my writing. watching this felt strange. my style is still evolving, still unfinished, yet here i was compressing a snapshot of myself into the [[thoughts/Eldrich horror|Lovecraftian horror]] of my own shortcomings. the thing i kept returning to: _i'm not able to write like Camus yet. i write Camus-adjacent. but i don't want to write like Camus. i need to find something Aaron-shaped._
+
+the gap started to feel unbridgeable. on one side: my rigorous sense of what i like. on the other: the curation speed, how fast i can filter so the _ghost_ generates queries that actually emulate how i think.
 
 ---
 

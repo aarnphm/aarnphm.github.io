@@ -1,4 +1,4 @@
-import { env, pipeline } from "@huggingface/transformers"
+import { env, AutoModel, AutoTokenizer } from "@huggingface/transformers"
 import "onnxruntime-web/webgpu"
 import "onnxruntime-web/wasm"
 
@@ -101,7 +101,8 @@ let cfg: any = null
 let vectorsView: Float32Array | null = null
 let dims = 0
 let rows = 0
-let classifier: any = null
+let tokenizer: any = null
+let model: any = null
 let envConfigured = false
 let entryPoint = -1
 let maxLevel = 0
@@ -268,23 +269,17 @@ function configureRuntimeEnv() {
 const MODEL_MAPPING: Record<string, string> = {
   "intfloat/multilingual-e5-large": "Xenova/multilingual-e5-large",
   "google/embeddinggemma-300m": "onnx-community/embeddinggemma-300m-ONNX",
+  "Qwen/Qwen3-Embedding-0.6B": "onnx-community/Qwen3-Embedding-0.6B-ONNX",
 }
 
 async function ensureEncoder() {
-  if (classifier) return
+  if (tokenizer && model) return
   const modelId = manifest?.model ?? cfg?.model
-  if (!modelId) {
-    throw new Error("semantic worker missing model identifier")
-  }
-  const model = MODEL_MAPPING[modelId] ?? modelId
+  const mappedModel = MODEL_MAPPING[modelId] ?? modelId
   configureRuntimeEnv()
   const dtype = typeof cfg?.dtype === "string" && cfg.dtype.length > 0 ? cfg.dtype : "fp32"
-  const pipelineOpts: Record<string, unknown> = {
-    device: "wasm",
-    dtype,
-    local_files_only: false,
-  }
-  classifier = await pipeline("feature-extraction", model, pipelineOpts)
+  tokenizer = await AutoTokenizer.from_pretrained(mappedModel)
+  model = await AutoModel.from_pretrained(mappedModel, { dtype })
   cfg.dtype = dtype
 }
 
@@ -385,26 +380,22 @@ function hnswSearch(query: Float32Array, k: number): SearchHit[] {
 async function embed(text: string, isQuery: boolean = false): Promise<Float32Array> {
   await ensureEncoder()
   let prefixedText = text
-  const model = manifest?.model ?? cfg?.model
-  if (model) {
-    const modelName = model.toLowerCase()
+  const modelId = manifest?.model ?? cfg?.model
+  if (modelId) {
+    const modelName = modelId.toLowerCase()
     switch (true) {
       case modelName.includes("e5"): {
-        // E5 instruct models
         prefixedText = isQuery ? `query: ${text}` : `passage: ${text}`
         break
       }
       case modelName.includes("qwen") && modelName.includes("embedding"): {
-        // Qwen3-Embedding requires task instruction for queries only
         if (isQuery) {
           const task = "Given a web search query, retrieve relevant passages that answer the query"
           prefixedText = `Instruct: ${task}\nQuery: ${text}`
         }
-        // Documents use plain text (no prefix)
         break
       }
       case modelName.includes("embeddinggemma"): {
-        // embeddinggemma requires specific prefixes
         prefixedText = isQuery
           ? `task: search result | query: ${text}`
           : `title: none | text: ${text}`
@@ -414,10 +405,44 @@ async function embed(text: string, isQuery: boolean = false): Promise<Float32Arr
         break
     }
   }
-  const out = await classifier(prefixedText, { pooling: "mean", normalize: true })
-  const data = Array.from(out?.data ?? out) as number[]
+  const inputs = await tokenizer([prefixedText], { padding: true })
+  const outputs = await model(inputs)
+
+  let embedding
+  if (outputs.sentence_embedding) {
+    embedding = outputs.sentence_embedding
+  } else if (outputs.last_hidden_state) {
+    const lastHidden = outputs.last_hidden_state
+    const attentionMask = inputs.attention_mask
+    const [batchSize, seqLen, hiddenSize] = lastHidden.dims
+    const pooled = new Float32Array(hiddenSize)
+
+    for (let i = 0; i < hiddenSize; i++) {
+      let sum = 0
+      let count = 0
+      for (let j = 0; j < seqLen; j++) {
+        if (attentionMask.data[j] > 0) {
+          sum += lastHidden.data[j * hiddenSize + i]
+          count++
+        }
+      }
+      pooled[i] = count > 0 ? sum / count : 0
+    }
+
+    embedding = { data: pooled }
+  } else {
+    throw new Error("unsupported model output format")
+  }
+
+  const data = embedding.data
   const vec = new Float32Array(dims)
   for (let i = 0; i < dims; i++) vec[i] = data[i] ?? 0
+  let norm = 0
+  for (let i = 0; i < dims; i++) norm += vec[i] * vec[i]
+  norm = Math.sqrt(norm)
+  if (norm > 0) {
+    for (let i = 0; i < dims; i++) vec[i] /= norm
+  }
   return vec
 }
 
@@ -501,7 +526,8 @@ function handleReset() {
   vectorsView = null
   dims = 0
   rows = 0
-  classifier = null
+  tokenizer = null
+  model = null
   envConfigured = false
   levelGraph = []
   entryPoint = -1

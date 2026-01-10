@@ -1500,11 +1500,11 @@ const ElementComponent = ((enableRecents: boolean = false) => {
           <em>jardin</em>
           <address class="clickable-container">
             <AliasLink newTab classes={["external"]} name="notes" url="https://notes.aarnphm.xyz" />
-            <AliasLink isInternal name="stream" url="/stream" />
-            <AliasLink isInternal name="workshop" url="/lectures" />
-            <AliasLink isInternal name="arena" url="/arena" />
-            <AliasLink isInternal name="on my mind" url="/thoughts/" />
-            <AliasLink isInternal name="writings" url="/posts/" />
+            <AliasLink isInternal enablePopover={false} name="stream" url="/stream" />
+            <AliasLink isInternal enablePopover={false} name="workshop" url="/lectures" />
+            <AliasLink isInternal enablePopover={false} name="arena" url="/arena" />
+            <AliasLink isInternal enablePopover={false} name="on my mind" url="/thoughts/" />
+            <AliasLink isInternal enablePopover={false} name="writings" url="/posts/" />
           </address>
         </section>,
         <section class="boring-legal">

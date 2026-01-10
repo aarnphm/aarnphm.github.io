@@ -72,17 +72,58 @@ if (!window.quartzToast) {
   document.addEventListener("prenav", () => toast.destroy())
 }
 
-function startLoading() {
-  const loadingBar = document.createElement("div")
-  loadingBar.className = "navigation-progress"
-  loadingBar.style.width = "0"
-  if (!document.body.contains(loadingBar)) {
-    document.body.appendChild(loadingBar)
+let navProgressBar: HTMLDivElement | null = null
+let navProgressStart: number | null = null
+let navProgressReset: number | null = null
+
+function getNavProgressBar() {
+  if (navProgressBar && document.body.contains(navProgressBar)) {
+    return navProgressBar
   }
 
-  setTimeout(() => {
+  const existing = document.querySelector<HTMLDivElement>(".navigation-progress")
+  if (existing) {
+    navProgressBar = existing
+    return navProgressBar
+  }
+
+  navProgressBar = document.createElement("div")
+  navProgressBar.className = "navigation-progress"
+  document.body.appendChild(navProgressBar)
+  return navProgressBar
+}
+
+function startLoading() {
+  const loadingBar = getNavProgressBar()
+  if (navProgressStart) {
+    window.clearTimeout(navProgressStart)
+  }
+  if (navProgressReset) {
+    window.clearTimeout(navProgressReset)
+  }
+
+  loadingBar.style.opacity = "1"
+  loadingBar.style.width = "0"
+  loadingBar.style.animation = "none"
+  loadingBar.style.backgroundPosition = "-100% 0"
+
+  navProgressStart = window.setTimeout(() => {
     loadingBar.style.width = "100%"
-  }, 100)
+    loadingBar.style.animation = "navigation-progress-sweep 2.5s linear infinite"
+  }, 10)
+}
+
+function stopLoading() {
+  const loadingBar = getNavProgressBar()
+  if (navProgressStart) {
+    window.clearTimeout(navProgressStart)
+  }
+  loadingBar.style.animation = "none"
+  loadingBar.style.opacity = "0"
+  navProgressReset = window.setTimeout(() => {
+    loadingBar.style.width = "0"
+    loadingBar.style.backgroundPosition = "-100% 0"
+  }, 300)
 }
 
 // Additional interfaces and types
@@ -1028,6 +1069,7 @@ async function navigate(url: URL, isBack: boolean = false) {
     notifyNav(getFullSlug(window))
     delete announcer.dataset.persist
   })
+  stopLoading()
 }
 
 window.spaNavigate = navigate
