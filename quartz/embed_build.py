@@ -358,6 +358,10 @@ def main():
     print("No input found in public/embeddings-text.jsonl; run the site build first to emit JSONL.")
     return
 
+  # Filter out are.na (423 chunks, structural outlier)
+  recs = [r for r in recs if r["slug"] != "are.na"]
+  print(f"Filtered to {len(recs)} documents (excluding are.na)")
+
   if args.no_chunking:
     chunks = recs
     chunk_metadata = {}

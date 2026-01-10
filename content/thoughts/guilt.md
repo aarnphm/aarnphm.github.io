@@ -2,16 +2,18 @@
 date: "2025-11-19"
 description: internalized aggression turned inward as civilization's self-policing mechanism, explored through freud, linguistic phenomenology, and alternatives in care and recognition ethics.
 id: guilt
-modified: 2026-01-08 14:35:38 GMT-05:00
+modified: 2026-01-10 08:40:10 GMT-05:00
+seealso:
+  - "[[thoughts/Freud|Freud]]"
+  - "[[library/Civilisation and its Discontents|C&D]]"
+  - "[[thoughts/repression|repression]]"
+  - "[[thoughts/identity#being-for-others|being-for-others]]"
 tags:
   - philosophy
   - psychoanalysis
   - ethics
-  - sapling
 title: guilt
 ---
-
-see also: [[thoughts/Freud|Freud]], [[library/Civilisation and its Discontents|Civilisation and its Discontents]], [[thoughts/repression|repression]], [[thoughts/identity#being-for-others|being-for-others]]
 
 guilt is civilization's internalized police force. it's how social control operates without external enforcement—how you learn to punish yourself for violations even when no one is watching.
 

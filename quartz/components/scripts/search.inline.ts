@@ -23,7 +23,6 @@ interface Item extends DocumentData {
   [key: string]: any
 }
 
-// Can be expanded with things like "term" in the future
 type SearchType = "basic" | "tags"
 type SearchMode = "lexical" | "semantic"
 const SEARCH_MODE_STORAGE_KEY = "quartz:search:mode"
@@ -64,20 +63,11 @@ type SimilarityResult = { item: Item; similarity: number }
 let chunkMetadata: Record<string, { parentSlug: string; chunkId: number }> = {}
 let manifestIds: string[] = []
 
-/**
- * Get parent document slug for a chunk ID
- */
 function getParentSlug(slug: string): string {
   const meta = chunkMetadata[slug]
   return meta ? meta.parentSlug : slug
 }
 
-/**
- * Aggregate semantic search results from chunks to documents using RRF
- * @param results Raw semantic results (chunk-level)
- * @param slugToDocIndex Map from document slug to index in idDataMap
- * @returns Object with rrfScores (for ranking) and maxScores (for display)
- */
 function aggregateChunkResults(
   results: SemanticResult[],
   slugToDocIndex: Map<FullSlug, number>,
@@ -85,7 +75,6 @@ function aggregateChunkResults(
   const docChunks = new Map<string, Array<{ score: number }>>()
 
   results.forEach(({ id, score }) => {
-    // id is an index into manifestIds (the chunk IDs from embeddings)
     const chunkSlug = manifestIds[id]
     if (!chunkSlug) return
 
@@ -126,7 +115,6 @@ function aggregateChunkResults(
   return { rrfScores, maxScores }
 }
 
-// Initialize the FlexSearch Document instance with the appropriate configuration
 const index = new FlexSearch.Document<Item>({
   tokenize: "forward",
   encode,
@@ -208,19 +196,19 @@ async function setupSearch(
   currentSlug: FullSlug,
   data: ContentIndex,
 ) {
-  const container = searchElement.querySelector(".search-container") as HTMLElement
+  const container = searchElement.querySelector<HTMLDivElement>(".search-container")
   if (!container) return
 
-  const searchButton = searchElement.querySelector(".search-button") as HTMLButtonElement
+  const searchButton = searchElement.querySelector<HTMLButtonElement>(".search-button")
   if (!searchButton) return
 
-  const searchBar = searchElement.querySelector(".search-bar") as HTMLInputElement
+  const searchBar = searchElement.querySelector<HTMLInputElement>(".search-bar")
   if (!searchBar) return
 
-  const searchLayout = searchElement?.querySelector(".search-layout") as HTMLOutputElement
+  const searchLayout = searchElement.querySelector<HTMLOutputElement>(".search-layout")
   if (!searchLayout) return
 
-  const searchSpace = searchElement?.querySelector(".search-space") as HTMLFormElement
+  const searchSpace = searchElement.querySelector<HTMLFormElement>(".search-space")
   if (!searchSpace) return
 
   const progressBar = document.createElement("div")
@@ -255,7 +243,7 @@ async function setupSearch(
   const idDataMap = Object.keys(data) as FullSlug[]
   const slugToIndex = new Map<FullSlug, number>()
   idDataMap.forEach((slug, idx) => slugToIndex.set(slug, idx))
-  const el = searchSpace?.querySelector("ul#helper")
+  const el = searchSpace.querySelector("ul#helper")
   const modeToggle = searchSpace.querySelector(".search-mode-toggle") as HTMLDivElement | null
   const modeButtons = modeToggle
     ? Array.from(modeToggle.querySelectorAll<HTMLButtonElement>(".mode-option"))
@@ -289,7 +277,6 @@ async function setupSearch(
       semantic = client
       semanticReady = true
 
-      // Load chunk metadata and IDs from manifest
       try {
         const manifestUrl = "/embeddings/manifest.json"
         const res = await fetch(manifestUrl)
@@ -424,25 +411,25 @@ async function setupSearch(
   }
 
   function hideSearch() {
-    container.classList.remove("active")
-    searchBar.value = "" // clear the input when we dismiss the search
+    container!.classList.remove("active")
+    searchBar!.value = ""
     rawSearchTerm = ""
     removeAllChildren(results)
     if (preview) {
       removeAllChildren(preview)
     }
-    searchLayout.classList.remove("display-results")
-    searchButton.focus()
+    searchLayout!.classList.remove("display-results")
+    searchButton!.focus()
     resetProgressBar()
   }
 
   function showSearch(type: SearchType) {
-    container.classList.add("active")
+    container!.classList.add("active")
     if (type === "tags") {
-      searchBar.value = "#"
+      searchBar!.value = "#"
       rawSearchTerm = "#"
     }
-    searchBar.focus()
+    searchBar!.focus()
   }
 
   let currentHover: HTMLInputElement | null = null
@@ -462,13 +449,12 @@ async function setupSearch(
         return
       }
       e.preventDefault()
-      const searchBarOpen = container.classList.contains("active")
+      const searchBarOpen = container!.classList.contains("active")
       searchBarOpen ? hideSearch() : showSearch("basic")
       return
     } else if (e.shiftKey && (e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") {
-      // Hotkey to open tag search
       e.preventDefault()
-      const searchBarOpen = container.classList.contains("active")
+      const searchBarOpen = container!.classList.contains("active")
       searchBarOpen ? hideSearch() : showSearch("tags")
       return
     }
@@ -477,10 +463,8 @@ async function setupSearch(
       currentHover.classList.remove("focus")
     }
 
-    // If search is active, then we will render the first result and display accordingly
-    if (!container.classList.contains("active")) return
+    if (!container!.classList.contains("active")) return
     if (e.key === "Enter") {
-      // If result has focus, navigate to that one, otherwise pick first result
       let anchor: HTMLAnchorElement | undefined
       if (results.contains(document.activeElement)) {
         anchor = document.activeElement as HTMLAnchorElement
@@ -504,7 +488,6 @@ async function setupSearch(
     ) {
       e.preventDefault()
       if (results.contains(document.activeElement)) {
-        // If an element in results-container already has focus, focus previous one
         const currentResult = currentHover
           ? currentHover
           : (document.activeElement as HTMLInputElement | null)
@@ -516,8 +499,6 @@ async function setupSearch(
       }
     } else if (e.key === "ArrowDown" || e.key === "Tab" || (e.ctrlKey && e.key === "n")) {
       e.preventDefault()
-      // The results should already been focused, so we need to find the next one.
-      // The activeElement is the search bar, so we need to find the first result and focus it.
       if (document.activeElement === searchBar || currentHover !== null) {
         const firstResult = currentHover
           ? currentHover
@@ -533,13 +514,11 @@ async function setupSearch(
 
   const formatForDisplay = (term: string, id: number, renderType: SearchType) => {
     const slug = idDataMap[id]
-    if (data[slug].layout === "letter") {
+    if (data[slug].layout === "letter" || (searchMode === "semantic" && slug.includes("arena")))
       return null
-    }
     const aliases: string[] = data[slug].aliases
     const target = aliases.find((alias) => alias.toLowerCase().includes(term.toLowerCase())) ?? ""
 
-    // Check if query contains title words (for boosting exact matches)
     const queryTokens = tokenizeTerm(term)
     const titleTokens = tokenizeTerm(data[slug].title ?? "")
     const titleMatch = titleTokens.some((t) => queryTokens.includes(t))
@@ -555,7 +534,7 @@ async function setupSearch(
       content: highlight(term, data[slug].content ?? "", true),
       tags: highlightTags(term, data[slug].tags, renderType),
       aliases: aliases,
-      titleMatch, // Add title match flag for boosting
+      titleMatch,
       protected: data[slug].protected,
     }
   }
@@ -599,15 +578,12 @@ async function setupSearch(
     itemTile.id = slug
     itemTile.href = resolveUrl(slug).toString()
 
-    // Detect special file types to control preview behavior
-    try {
-      const fileData = data[slug]
-      const fileName = (fileData?.fileName || slug || "").toLowerCase()
-      const isCanvas = fileName.includes(".canvas")
-      const isBases = fileName.includes(".bases")
-      if (isCanvas) itemTile.dataset.canvas = "true"
-      if (isBases) itemTile.dataset.bases = "true"
-    } catch {}
+    const fileData = data[slug]
+    const fileName = (fileData?.fileName || slug || "").toLowerCase()
+    const isCanvas = fileName.includes(".canvas")
+    const isBases = fileName.includes(".bases")
+    if (isCanvas) itemTile.dataset.canvas = "true"
+    if (isBases) itemTile.dataset.bases = "true"
 
     if (isProtected) {
       itemTile.dataset.protected = "true"
@@ -680,10 +656,8 @@ async function setupSearch(
     }
 
     if (finalResults.length === 0 && preview) {
-      // no results, clear previous preview
       removeAllChildren(preview)
     } else {
-      // focus on first result, then also dispatch preview immediately
       const firstChild = results.firstElementChild as HTMLElement
       firstChild.classList.add("focus")
       currentHover = firstChild as HTMLInputElement
@@ -713,10 +687,8 @@ async function setupSearch(
   }
 
   async function displayPreview(el: HTMLElement | null) {
-    if (!searchLayout || !enablePreview || !el || !preview) return
+    if (!enablePreview || !el || !preview) return
     const slug = el.id as FullSlug
-
-    // Only show metadata for canvas (.canvas) and bases (.bases) files
     if (el.dataset.canvas === "true" || el.dataset.bases === "true") {
       const fileData = data[slug]
       previewInner = document.createElement("div")
@@ -772,30 +744,22 @@ async function setupSearch(
     previewInner.append(...innerDiv)
     preview.replaceChildren(previewInner)
 
-    // scroll to longest
     const highlights = [...preview.getElementsByClassName("highlight")].sort(
       (a, b) => b.innerHTML.length - a.innerHTML.length,
     )
     if (highlights.length > 0) {
       const highlight = highlights[0]
-      const container = preview
-      if (container && highlight) {
-        // Get the relative positions
-        const containerRect = container.getBoundingClientRect()
-        const highlightRect = highlight.getBoundingClientRect()
-        // Calculate the scroll position relative to the container
-        const relativeTop = highlightRect.top - containerRect.top + container.scrollTop - 20 // 20px buffer
-        // Smoothly scroll the container
-        container.scrollTo({
-          top: relativeTop,
-          behavior: "smooth",
-        })
-      }
+      const containerRect = preview.getBoundingClientRect()
+      const highlightRect = highlight.getBoundingClientRect()
+      const relativeTop = highlightRect.top - containerRect.top + preview.scrollTop - 20
+      preview.scrollTo({
+        top: relativeTop,
+        behavior: "smooth",
+      })
     }
   }
 
   async function runSearch(rawTerm: string, token: number) {
-    if (!searchLayout || !index) return
     const trimmed = rawTerm.trim()
     if (trimmed === "") {
       removeAllChildren(results)
@@ -803,7 +767,7 @@ async function setupSearch(
         removeAllChildren(preview)
       }
       currentHover = null
-      searchLayout.classList.remove("display-results")
+      searchLayout!.classList.remove("display-results")
       resetProgressBar()
       return
     }
@@ -905,18 +869,7 @@ async function setupSearch(
     let semanticIds: number[] = []
     const semanticSimilarity = new Map<number, number>()
 
-    const integrateIds = (ids: number[]) => {
-      ids.forEach((docId) => {
-        ensureItem(docId)
-      })
-    }
-
     const orchestrator = semanticReady && semantic ? semantic : null
-
-    const resolveSimilarity = (item: Item): number => {
-      const semanticHit = semanticSimilarity.get(item.id)
-      return semanticHit ?? Number.NaN
-    }
 
     const render = async () => {
       if (token !== searchSeq) return
@@ -934,7 +887,6 @@ async function setupSearch(
           const item = ensureItem(docId)
           if (!item) return
 
-          // Apply title boost for FlexSearch results (1.5x boost for exact title matches)
           let effectiveWeight = weight
           if (applyTitleBoost && item.titleMatch) {
             effectiveWeight *= 1.5
@@ -945,8 +897,8 @@ async function setupSearch(
         })
       }
 
-      push(baseIndices, weights.base, true) // FlexSearch with title boost
-      push(semanticIds, weights.semantic, false) // Semantic without boost
+      push(baseIndices, weights.base, true)
+      push(semanticIds, weights.semantic, false)
 
       const rankedEntries = Array.from(candidateItems.values())
         .map((item) => ({ item, score: rrf.get(item.slug) ?? 0 }))
@@ -955,7 +907,7 @@ async function setupSearch(
 
       const displayEntries: SimilarityResult[] = []
       for (const entry of rankedEntries) {
-        const similarity = resolveSimilarity(entry.item)
+        const similarity = semanticSimilarity.get(entry.item.id) ?? Number.NaN
         displayEntries.push({ item: entry.item, similarity })
       }
 
@@ -976,32 +928,31 @@ async function setupSearch(
     try {
       const { semantic: semRes } = await orchestrator.search(
         highlightTerm,
-        getNumSearchResults(modeForRanking) * 8, // Request 8x chunks for avg 7.2 chunks/doc
+        getNumSearchResults(modeForRanking) * 8,
       )
       if (token !== searchSeq) {
         if (showProgress) completeSemanticProgress()
         return
       }
 
-      // Aggregate chunk results to document level using RRF
       const { rrfScores: semRrfScores, maxScores: semMaxScores } = aggregateChunkResults(
         semRes,
         slugToIndex,
       )
 
-      // Use RRF scores for ranking
       semanticIds = Array.from(semRrfScores.entries())
         .sort((a, b) => b[1] - a[1])
         .slice(0, getNumSearchResults(modeForRanking))
         .map(([docIdx]) => docIdx)
 
-      // Use max chunk similarity for display (0-1 range)
       semanticSimilarity.clear()
       semMaxScores.forEach((score, docIdx) => {
         semanticSimilarity.set(docIdx, score)
       })
 
-      integrateIds(semanticIds)
+      semanticIds.forEach((docId) => {
+        ensureItem(docId)
+      })
       if (showProgress) completeSemanticProgress()
     } catch (err) {
       console.warn("[SemanticClient] search failed:", err)
@@ -1026,10 +977,9 @@ async function setupSearch(
   }
 
   function onType(e: HTMLElementEventMap["input"]) {
-    if (!searchLayout || !index) return
     rawSearchTerm = (e.target as HTMLInputElement).value
     const hasQuery = rawSearchTerm.trim() !== ""
-    searchLayout.classList.toggle("display-results", hasQuery)
+    searchLayout!.classList.toggle("display-results", hasQuery)
     const term = rawSearchTerm
     const token = ++searchSeq
     if (runSearchTimer !== null) {
@@ -1040,8 +990,7 @@ async function setupSearch(
       void runSearch("", token)
       return
     }
-    const now = performance.now()
-    lastInputAt = now
+    lastInputAt = performance.now()
     const delay = computeDebounceDelay(term)
     const scheduledAt = lastInputAt
     runSearchTimer = window.setTimeout(() => {
@@ -1072,10 +1021,6 @@ async function setupSearch(
   await fillDocument(data)
 }
 
-/**
- * Fills flexsearch document with data
- * @param data data to fill index with
- */
 let indexPopulated = false
 async function fillDocument(data: ContentIndex) {
   if (indexPopulated) return
@@ -1083,7 +1028,6 @@ async function fillDocument(data: ContentIndex) {
   const promises = []
   for (const [slug, fileData] of Object.entries<ContentDetails>(data)) {
     promises.push(
-      //@ts-ignore
       index.addAsync({
         id,
         slug: slug as FullSlug,
@@ -1091,6 +1035,7 @@ async function fillDocument(data: ContentIndex) {
         content: fileData.content,
         tags: fileData.tags,
         aliases: fileData.aliases,
+        target: "",
         protected: fileData.protected,
       }),
     )
