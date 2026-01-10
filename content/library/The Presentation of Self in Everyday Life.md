@@ -1,6 +1,6 @@
 ---
 tags:
-  - psychology
+  - r/psychology
   - philosophy
 id: The Presentation of Self in Everyday Life
 title: The Presentation of Self in Everyday Life

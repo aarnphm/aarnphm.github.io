@@ -56,7 +56,12 @@ export default ((userOpts?: Options) => {
           const date = new Date(0)
 
           return (
-            <li class="section-li" data-index={idx}>
+            <li
+              class="section-li"
+              data-index={idx}
+              data-title={title}
+              data-tags={JSON.stringify(tags)}
+            >
               <a
                 class="note-link"
                 href={resolveRelative(fileData.slug!, page.slug!)}

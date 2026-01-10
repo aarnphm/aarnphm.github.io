@@ -13,7 +13,7 @@ status: recurring
 studio: syncopy
 tags:
   - thriller
-  - psychology
+  - r/psychology
   - recursion
 title: Memento
 year: 2000

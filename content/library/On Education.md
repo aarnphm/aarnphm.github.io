@@ -9,7 +9,7 @@ status: to read
 finished:
 subcategory:
   - society
-  - psychology
+  - r/psychology
 author:
   - John Dewey
 posters: "[[library/posters/on-education-dewe.jpg]]"

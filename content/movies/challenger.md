@@ -15,7 +15,7 @@ studio: amazon mgm
 tags:
   - love
   - o/relationship
-  - psychology
+  - r/psychology
 title: Challenger
 watched: 2024-04-01
 year: 2024

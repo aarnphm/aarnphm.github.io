@@ -158,7 +158,11 @@ export default (() => {
           {prefix}
           <span class="seealso-label">{labelText}</span>
           {padAfterLabel}
-          <a class={isCitation ? "external" : "internal"} href={href} data-slug={isCitation ? undefined : targetSlug}>
+          <a
+            class={isCitation ? "external" : "internal"}
+            href={href}
+            data-slug={isCitation ? undefined : targetSlug}
+          >
             {title}
           </a>
           <br />

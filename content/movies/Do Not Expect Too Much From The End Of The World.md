@@ -10,7 +10,7 @@ rating: 7.4
 status: to watch
 studio: mubi
 tags:
-  - politics
+  - r/politics
   - absurdism
   - meta
 title: Do Not Expect Too Much from the End of the World

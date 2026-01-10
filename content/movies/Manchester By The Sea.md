@@ -14,7 +14,7 @@ status: finished
 studio: amazon studios
 tags:
   - family
-  - psychology
+  - r/psychology
   - o/life
 title: Manchester by the Sea
 watched: 2024-02-15

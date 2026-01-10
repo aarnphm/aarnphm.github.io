@@ -12,7 +12,7 @@ status: to watch
 studio: "[independent]"
 tags:
   - r/environment
-  - politics
+  - r/politics
 title: Evil Does Not Exists
 year: 2023
 ---

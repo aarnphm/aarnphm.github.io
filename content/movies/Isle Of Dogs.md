@@ -14,7 +14,7 @@ status: recurring
 studio: 20th century fox
 tags:
   - animation
-  - politics
+  - r/politics
   - absurdism
 title: Isle of Dogs
 year: 2018

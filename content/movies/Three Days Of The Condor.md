@@ -15,7 +15,7 @@ studio: paramount
 tags:
   - o/vintage
   - thriller
-  - politics
+  - r/politics
 title: Three Days of the Condor
 year: 1975
 ---

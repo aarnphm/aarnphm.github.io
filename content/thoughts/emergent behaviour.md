@@ -5,7 +5,7 @@ id: emergent behaviour
 modified: 2025-12-19 07:18:56 GMT-05:00
 tags:
   - seed
-  - psychology
+  - r/psychology
 title: emergent behaviour
 ---
 

@@ -12,7 +12,7 @@ rating: 8.1
 status: finished
 studio: gaumont
 tags:
-  - politics
+  - r/politics
   - thriller
 title: La Haine
 watched: 2024-02-10

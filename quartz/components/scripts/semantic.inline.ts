@@ -72,7 +72,6 @@ export class SemanticClient {
     ) => {
       const msg = event.data
       if (msg.type === "progress") {
-        // Progress updates during initialization - can be logged if needed
         return
       }
       if (msg.type === "ready") {

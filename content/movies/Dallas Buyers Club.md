@@ -14,7 +14,7 @@ status: to watch
 studio: focus features
 tags:
   - biology
-  - politics
+  - r/politics
 title: Dallas Buyers Club
 year: 2013
 ---

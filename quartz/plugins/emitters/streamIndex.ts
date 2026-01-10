@@ -116,9 +116,7 @@ async function* processStreamIndex(
     const rebasedEntries = group.entries.map((entry) => ({
       ...entry,
       content: entry.content.map((node) =>
-        isElement(node)
-          ? (normalizeHastElement(node, slug, sourceSlug) as ElementContent)
-          : node,
+        isElement(node) ? (normalizeHastElement(node, slug, sourceSlug) as ElementContent) : node,
       ),
     }))
 

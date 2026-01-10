@@ -13,8 +13,8 @@ rating: 7.3
 status: to watch
 studio: sony
 tags:
-  - psychology
-  - politics
+  - r/psychology
+  - r/politics
 title: Blue Jasmine
 year: 2013
 ---

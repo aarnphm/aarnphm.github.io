@@ -12,7 +12,10 @@ import { parseWikilink, resolveWikilinkTarget, createWikilinkRegex } from "../..
 // @ts-ignore
 import script from "../../components/scripts/sidenotes.inline"
 import content from "../../components/styles/sidenotes.inline.scss"
-import type { Sidenote, SidenoteReference } from "../../extensions/micromark-extension-ofm-sidenotes"
+import type {
+  Sidenote,
+  SidenoteReference,
+} from "../../extensions/micromark-extension-ofm-sidenotes"
 
 export const Sidenotes: QuartzTransformerPlugin = () => {
   return {
@@ -41,21 +44,18 @@ export const Sidenotes: QuartzTransformerPlugin = () => {
               const allowLeft = props.left !== "false"
               const allowRight = props.right !== "false"
 
-              if (!node.data) node.data = {}
-              node.data.sidenoteId = sidenoteId
-              node.data.baseId = baseId
-              node.data.forceInline = forceInline
-              node.data.allowLeft = allowLeft
-              node.data.allowRight = allowRight
-              node.data.label = parsed.label || ""
-              node.data.internal = props.internal
+              node.data = {
+                ...node.data,
+                sidenoteId,
+                baseId,
+                forceInline,
+                allowLeft,
+                allowRight,
+                internal: props.internal,
+                label: parsed.label || "",
+              } as Record<string, any>
             } else if (node.type === "sidenoteReference") {
-              // Reference node
-              if (!node.data) node.data = {}
-              node.data.sidenoteId = sidenoteId
-              node.data.baseId = baseId
-              // References don't have properties by default, but we could support them if we wanted
-              // For now defaults.
+              node.data = { ...node.data, sidenoteId, baseId } as Record<string, any>
             }
           })
         },
@@ -84,30 +84,29 @@ export const Sidenotes: QuartzTransformerPlugin = () => {
 
             visit(
               tree,
-              (node) => {
-                return (
-                  node.type === "element" &&
-                  (node.properties?.dataType === "sidenote" ||
-                    node.properties?.dataType === "sidenote-ref")
-                )
-              },
-              (node, index, parent) => {
+              (node) =>
+                node.type === "element" &&
+                (node.properties?.dataType === "sidenote" ||
+                  node.properties?.dataType === "sidenote-ref"),
+              (node: Sidenote | SidenoteReference, index, parent) => {
                 if (index === undefined || !parent) return
 
-                const sidenoteId = node.properties.sidenoteId
-                const baseId = node.properties.baseId
-                const forceInline = node.properties.forceInline === true
-                const allowLeft = node.properties.allowLeft !== false
-                const allowRight = node.properties.allowRight !== false
-                const labelRaw = (node.properties.label as string) || ""
-                const internalLinks = node.properties.internal as string[] | undefined
+                const {
+                  sidenoteId,
+                  baseId,
+                  forceInline,
+                  allowLeft,
+                  allowRight,
+                  label: labelRaw,
+                  internal: internalLinks,
+                } = node.properties
 
-                const labelContainer = node.children.find(
-                  (c: any) => c.properties?.className?.includes("sidenote-label-hast"),
+                const labelContainer = node.children.find((c: any) =>
+                  c.properties?.className?.includes("sidenote-label-hast"),
                 ) as HastElement | undefined
 
-                const contentContainer = node.children.find(
-                  (c: any) => c.properties?.className?.includes("sidenote-content-hast"),
+                const contentContainer = node.children.find((c: any) =>
+                  c.properties?.className?.includes("sidenote-content-hast"),
                 ) as HastElement | undefined
 
                 const labelHast = labelContainer?.children ?? []
@@ -134,9 +133,9 @@ export const Sidenotes: QuartzTransformerPlugin = () => {
                   1,
                   ...buildSidenoteHast(
                     finalLabel,
-                    forceInline,
-                    allowLeft,
-                    allowRight,
+                    forceInline === true,
+                    allowLeft !== false,
+                    allowRight !== false,
                     combinedContent,
                     sidenoteId as number,
                     baseId as string,
@@ -210,7 +209,6 @@ function renderInternalLinks(
   if (links.length === 0) return []
 
   const separator = h("span.sidenote-separator", {
-    className: "sidenote-separator",
     role: "presentation",
   })
 
@@ -287,31 +285,24 @@ function buildSidenoteHast(
     "data-sidenote-id": String(sidenoteId),
   }
 
-  if (forceInline) {
-    dataAttrs["data-force-inline"] = "true"
-  }
-  if (!allowLeft) {
-    dataAttrs["data-allow-left"] = "false"
-  }
-  if (!allowRight) {
-    dataAttrs["data-allow-right"] = "false"
-  }
+  if (forceInline) dataAttrs["data-force-inline"] = "true"
+  if (!allowLeft) dataAttrs["data-allow-left"] = "false"
+  if (!allowRight) dataAttrs["data-allow-right"] = "false"
 
   const sidenoteElement = h("span.sidenote", dataAttrs, [labelElement])
 
-  const contentProps: Record<string, string> = {
-    id: `${baseId}-content`,
-    "data-sidenote-id": String(sidenoteId),
-    "data-sidenote-for": baseId,
-    "aria-hidden": "true",
-  }
-
-  const contentChildren =
+  const contentElement = h(
+    "span.sidenote-content",
+    {
+      id: `${baseId}-content`,
+      "data-sidenote-id": String(sidenoteId),
+      "data-sidenote-for": baseId,
+      "aria-hidden": "true",
+    },
     combinedContent.length > 0
       ? combinedContent
-      : ([{ type: "text", value: "" }] as ElementContent[])
-
-  const contentElement = h("span.sidenote-content", contentProps, contentChildren)
+      : ([{ type: "text", value: "" }] as ElementContent[]),
+  )
 
   return [sidenoteElement, contentElement]
 }

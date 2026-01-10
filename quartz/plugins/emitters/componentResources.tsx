@@ -44,6 +44,12 @@ type ComponentResources = {
   afterDOMLoaded: string[]
 }
 
+export function normalizeResource(resource: string | string[] | undefined): string[] {
+  if (!resource) return []
+  if (Array.isArray(resource)) return resource
+  return [resource]
+}
+
 function getComponentResources(ctx: BuildCtx): ComponentResources {
   const allComponents: Set<QuartzComponent | QuartzMdxComponent> = new Set()
   for (const emitter of ctx.cfg.plugins.emitters) {
@@ -60,12 +66,6 @@ function getComponentResources(ctx: BuildCtx): ComponentResources {
     css: new Set<string>(),
     beforeDOMLoaded: new Set<string>(),
     afterDOMLoaded: new Set<string>(),
-  }
-
-  function normalizeResource(resource: string | string[] | undefined): string[] {
-    if (!resource) return []
-    if (Array.isArray(resource)) return resource
-    return [resource]
   }
 
   for (const component of allComponents) {

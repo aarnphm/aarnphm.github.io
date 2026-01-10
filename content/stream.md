@@ -38,7 +38,7 @@ metadata:
     letter        = "a".."z" ;
     digit         = "0".."9" ;
     character     = ? any printable ascii except newline ? ;
-modified: 2026-01-09 05:26:38 GMT-05:00
+modified: 2026-01-09 21:34:32 GMT-05:00
 tags:
   - fruit
   - evergreen
@@ -731,20 +731,20 @@ My work is not that special, my contributions to the collective projects are tem
 
 The question becomes dangerous when it stops being theoretical. When it moves from mind to body. When the weight becomes physical rather than philosophical. Then one must interrupt the process. Call someone. Leave the room. The distinction is administrative: one is philosophy, the other is emergency. Emergency requires different procedures entirely.
 
-## Why Superhuman AI Would Kill Us All
+## why superhuman AI won't kill us all.
 
 - [meta]:
   - date: 2025-10-25 23:26:00 GMT-04:00
   - tags:
     - llm
 
---[Eliezer Yudkowsky](https://www.youtube.com/watch?v=nRvAt4H7d7E)
+—[Eliezer Yudkowsky](https://www.youtube.com/watch?v=nRvAt4H7d7E)
 
 Yudkowsky's full argument on eschatology isn't productive whatsoever. Feels a lot more science fiction writing, where he claims that these systems will end up "wanting to do their stuff without wanting to take the pills that [we offer to] makes them to do stuff that we _wants_ them to do instead."
 
-Yudkowsky's claim relies on [[thoughts/AGI|superintelligent]] optimizer + misaligned goals = human extinction. Not because it hates us. Because we're made of atoms it can use for something else. Nanotech grey goo. Designer pathogens. Trees that grow computer chips. All physically possible, therefore inevitable once you have sufficient optimization power.
+Yudkowsky's claim relies on [[thoughts/AGI|superintelligent]] optimizer + misaligned goals = human extinction, a sort of self-recursion improvement towards its' own power-seeking agendas. bc we're made of atoms it can use for something else (i.e a resource allocation problem). Nanotech grey goo. Designer pathogens. Trees that grow computer chips. All physically possible, therefore inevitable once you have sufficient optimization power.
 
-But intelligence in actual systems is jagged, domain-specific, constrained by architecture. AlphaFold is brilliant at protein folding and useless at everything else. [[thoughts/LLMs|GPT-4]] can write code but can't reliably count letters. The jump from "good at prediction" to "can design novel molecular machinery from first principles" assumes transfer learning we haven't seen. These very much resemble the old GOFAI vs NFAI arguments. Maybe the argument here is to have a _composition of multiple domain-specific superintelligence systems_ that amplify our life.
+But intelligence in actual systems is jagged, domain-specific, constrained by architecture. AlphaFold is brilliant at protein folding and useless at everything else. [[thoughts/LLMs|GPTs]] can write code but can't reliably count letters (update from 01/09/26: not anymore). The jump from "good at prediction" to "can design novel molecular machinery from first principles" assumes transfer learning we haven't seen. These very much resemble the old GOFAI vs NFAI arguments. Maybe the argument here is to have a _composition of multiple domain-specific superintelligence systems_ that amplify our life.
 
 The "foom" scenario requires explosive recursive self-improvement, which is abstruse. GPT-6 builds GPT-7, capabilities doubling weekly until godlike intelligence. Architecturally speaking, maybe we figure out something that scales with attention, but it has to be beyond just Transformers, maybe in conjunction with something like JEPA. The argument assumes breakthroughs on demand.
 
@@ -752,11 +752,15 @@ He did mention a recursive need for hydrogen, but fwiw physical constraints matt
 
 The frame requires that one assume worst case at every branch, assume maximum capability, assume minimal constraints, therefore _doom_. I just don't think that's how you build things. Real systems fail in boring ways. Scaling laws break. Architectures saturate. The chain from "AI breaks up marriages" to "superintelligence converts biosphere to computronium" requires assumptions that would be rejected in any engineering domain.
 
-> don't build, don't experiment, don't iterate, because any mistake might be the last. That's **not** how we've solved any complex safety problem. Treating everyone who continues working as equivalent to cigarette executives isn't engaging with technical disagreements.
+```quotes
+don't build, don't experiment, don't iterate, because any mistake might be the last. That's **not** how we've solved any complex safety problem. Treating everyone who continues working as equivalent to cigarette executives isn't engaging with technical disagreements.
+
+Yudkowsky
+```
 
 [[thoughts/Alignment]] is hard. I do think that capabilities scale faster than safety. But the response can't be "stop everything and hope treaties hold." It has to be: build better systems, understand current systems deeply, develop alignment that might work. You need feedback loops. You need to learn from failures at scales where failure isn't extinction.
 
-## how we talk about god
+## how I wrestle with the idea of god
 
 - [meta]:
   - date: 2025-10-24 01:23:00 GMT-04:00
@@ -764,39 +768,59 @@ The frame requires that one assume worst case at every branch, assume maximum ca
     - theology
     - o/life
 
-"God exists" – we say it like we're saying "the table exists." Same grammatical structure, same verb, same declaration of being. But [[thoughts/Wittgenstein|Wittgensteinians]] would tell you these are entirely different language games. Different forms of life enacted through identical syntax.
+"God exists" and "the table exists" share the same grammatical structure, verb, declaration of being. [[thoughts/Wittgenstein|Wittgensteinians]] would tell you these are entirely different language games, different [[thoughts/forms of life]] enacted through identical syntax.
 
-When someone tells me "I feel God's presence," I wonder what they're actually describing. Not the [[thoughts/Metaphysics|metaphysical]] claim – that's the easy dismissal. But the phenomenology itself. The feeling of being held when no one's holding you. Of mattering when the universe gives no indication you do. Of not being alone in the dark when, empirically, you are.
+When someone tells me "I feel God's presence," I wonder what they're actually describing. The [[thoughts/Metaphysics|metaphysical]] claim, that an immaterial conscious being is causally interacting with your experience right now, is the biggest cope I've ever seen. The phenomenology itself is trickier to describe: how we say _the feeling of being held_ when no one's holding you, _of mattering_ when the universe gives no indication you do, _of company_ in the dark when empirically you are alone??
 
-I've had these feelings. Walking home at 3 AM and suddenly feeling like the street lights are watching over me. Finding a book at exactly the moment I needed it. That uncanny sense of alignment, of pattern, of something speaking directly to you through the noise of existence.
+I've had these feelings, once. Walking home at 3 AM and suddenly feeling like the street lights are watching over me. Finding a book at exactly the moment I needed it. That uncanny sense of [[thoughts/Alignment|alignment]], of #pattern, of something speaking directly to you through the noise of existence. Theism often offers a ready explanation here, providence and divine orchestration and God moving through your life, and I understand why people find it satisfying.
 
-Theism has this ready explanation: providence, divine orchestration, God moving through your life. Clean. Comforting. Complete.
+Strip that away and what type of grammar are we left with to describe this a priori?
+- "Coincidence" dismisses the actual experience too quickly, because the word suggests you've explained something when you've only labeled it.
+  - The feeling persists: events _mean_ something, your pattern-matching brain encounters random noise and insists there's signal there.
+  - This is {{sidenotes[apophenia,]: the tendency to perceive meaningful connections between unrelated things. we see faces in clouds, we find messages in static, we construct narratives from scattered data points.}} the same cognitive architecture that lets you recognize your mother's face in a crowd, now misfiring on the universe itself. And the misfiring feels exactly like insight.
+- {{sidenotes[^"Synchronizität"]}} doesn't make a lot of sense here, _meaningful coincidence_. It sounds scientific until you push on it, at which point it dissolves into gesture. Jung wanted to preserve the phenomenology without the theology, to say "this feeling of connection is real" without committing to a god who arranges it. The problem is that "acausal connecting principle" explains nothing, but a label masked as some polysyllabic word destined to be something more
 
-Strip that away and you're left with something harder to name. Not "coincidence" – that's too dismissive of the actual experience. But this persistent feeling that events _mean_ something. Your pattern-matching brain encountering random noise and insisting – _insisting_ – there's signal there.
 
-"God is good" sounds like "water is wet" – a property of an existing thing. But maybe it's closer to "justice is sacred." Not a description but an orientation. A way of being in the world, encoded in grammatical structures that trick you into thinking you're making claims about reality when you're actually describing how you move through it.
+{{sidenotes["Synchronizität"]}}:
 
-Kierkegaard said faith requires [[thoughts/Camus|absurdity]] – you leap beyond reason into belief. But we're all leaping anyway. Every morning. Into relationships we know will end. Into projects that will be forgotten. Into futures that terminate, always, in death.
+    Jung coined the term in 1952, working with pauli (yes, the physicist). the idea was that meaningful coincidences occur through some acausal connecting principle.
 
-The absurdity isn't believing without evidence. The absurdity is pouring coffee at 7 AM when you know – really know, not just intellectually but viscerally – that entropy wins. That nothing persists. That the heat death of the universe is coming for everything you've ever loved.
+    Pauli was drawn to it because quantum mechanics had already broken his intuitions about causality. And Jung liked it because it gave his patients' experiences a respectable-sounding name.
 
-And yet here we are. Making breakfast. Answering emails. Planning for Tuesday.
 
-This isn't Kierkegaardian faith – no transcendent leap into divine arms. But there's still a leap. Acting _as if_ things matter despite having no cosmic guarantee they do. Building despite impermanence. Loving despite loss. Creating despite destruction.
+    neither of them could say what the mechanism was.
 
-Maybe religious language expresses this fundamental human insistence on continuing. On treating temporary patterns as if they're eternal truths. On finding meaning in noise because meaning-making is what conscious matter does.
+"God is good" sounds like "water is wet", a property of an existing thing. Maybe it's closer to "justice is sacred", an orientation rather than a description. A way of being in the world, encoded in grammatical structures that trick you into thinking you're making claims about reality when you're actually describing how you move through it.
 
-The [[/posts/feelings|feeling]] of being held, of mattering, of not being alone – these persist even after you've dismantled the theological framework. They're built into consciousness itself. This need for connection, for significance, for something beyond the merely material. Not because there's a God responding, but because you're the kind of system that generates these feelings when confronting its own existence.
+The analytic philosophers did try to take a stab at this problem:
+- A.J Ayer, in {{sidenotes[^that thin slash of a book from 1936]}}, didn't argue that God doesn't exist. He argued that "God exists" doesn't say anything at all. The sentence has the grammar-of-a-claim but the content of a sigh. The claim is *meaningless* rather than false, and if theism is meaningless then atheism is too, because there's nothing to deny.
+- W.V. Quine pushed further, though sideways, more in a economic sense: _what beliefs_ {{sidenotes[earn their keep?]: "to be is to be the value of a bound variable" (*From a Logical Point of View*, 1953). your [[thoughts/Ontology|ontology]] is what your best theories quantify over. Quine though never explicitly whether or not this applied this to god, but my inference is that _god doesn't appear in physics or biology or any of our best theories_. The threat is that this criterion may also eliminate numbers, theoretical entities, maybe the self.}} We commit to electrons and genes and spacetime because our best theories quantify over them, they do work, make predictions, connect to other beliefs. God, therefore, a posit, same as Homeric gods, same as physical objects. Physical objects are more useful, because God doesn't pay the rent.
+- Antony Flew {{sidenotes[adapted]: the parable originated with John Wisdom in "Gods" (1944). Flew's version added the escalation of immunizing moves: invisible, intangible, insensible, eternal. "death by a thousand qualifications" is flew's phrase.}} the invisible gardener: two explorers find a clearing, one insists a gardener tends it. They set watches and no gardener appears. The believer qualifies: invisible, intangible, insensible, eternal. Flew asks at what point the invisible gardener differs from no gardener at all, because theological claims die by {{sidenotes[death-by-qualification.]: Flew converted to deism in 2004, age 81, after fifty years of arguing against god. "what I think the DNA material has done is show that intelligence must have been involved." the guy who invented the falsification challenge found something he'd count as evidence. the 2007 book *There Is a God* has authorship controversy, largely ghostwritten while Flew had cognitive decline.}} and whatever would count against them gets absorbed into divine mystery.
+- Alvin Plantinga's response is that belief in god might be {{sidenotes[properly basic,]: reformed [[thoughts/Epistemology|epistemology]] (*Warranted Christian Belief*, 2000) holds that some beliefs are foundational, requiring no inferential support. you don't prove other people are conscious, instead you just find yourself **believing it**. the sensus divinitatis, calvin's term, works the same way: a faculty that produces belief in god when triggered by beauty, guilt, gratitude. the famous objection is "why can't belief in the great pumpkin also be properly basic?"}} like belief in other minds, something you don't derive from evidence so much as find yourself believing.
 
-Strip away providence and you're left with pattern-matching systems encountering randomness and desperately trying to read it as text. As message. As meaning.
+{{sidenotes[that thin slash of a book from 1936]}}:
 
-We can't help it. It's how we're built.
+    i.e. [[library/Language, Truth & Logic|_Language, Truth and Logic_]]. he was 24 when he wrote it, around 160 pages.
 
-The grammar of theism gives us vocabulary for these experiences. But the experiences themselves? They're what happens when consciousness encounters itself in a universe that doesn't care. When the meaning-making machine meets the meaningless void and keeps making meaning anyway.
+    the verification principle was self-refuting, which ayer conceded decades later:
 
-Not despite the void. Through it. Because of it.
+    > the verification principle never got itself properly formulated. I tried several times and it always let in either too little or too much."
 
-Generation without guarantee. Creation without cosmic permission. Love without eternal preservation.
+    logical positivism died by its own sword. and then, in 1988, ayer had a near-death experience, heart stopped for four minutes, wrote about it in "What I Saw When I Was Dead.":
+
+    > i was confronted by a red light, exceedingly bright, responsible for the government of the universe."
+
+    he insisted it didn't change his atheism. his physician would claimed otherwise.
+
+I think about that walk then, the 3 AM street lights, and I'm still uncertain what to call the feeling. "Revelation" carries too much freight, and "delusion" is revelation's shadow, still shaped by what it denies. Ayer would say I wasn't making claims at all, just emoting with declarative syntax. Maybe so. The feeling of meaning-making isn't nothing, though. It's the most robust data point I have. The positivists wanted to clear away metaphysical fog and ended up sweeping aside the only thing worth mapping.
+
+Kierkegaard said the leap of faith requires a certain degree of [[thoughts/Camus|absurdity]], that you leap beyond reason into belief. We're all leaping anyway, every morning, into relationships we know will end, into projects that will be forgotten, into futures that terminate in death. The absurdity is pouring coffee at 7 AM when you know, really know, viscerally rather than just intellectually, that entropy wins and nothing persists and the heat death of the universe is coming for everything you've ever loved. And yet here we are making breakfast, answering emails, planning for Tuesday.
+
+This isn't Kierkegaardian faith in the sense of a transcendent leap into divine arms. There's still a leap, though: acting _as if_ things matter despite having no cosmic guarantee they do. Maybe religious language expresses this fundamental human insistence on continuing, on treating temporary patterns as if they're eternal truths, on finding meaning in noise because meaning-making is what conscious matter does.
+
+The [[/posts/feelings|feeling]] of being held, of mattering, of not being alone, persists even after you've dismantled the theological framework. These feelings are built into consciousness itself, this need for connection and significance and something beyond the merely material. The feelings arise because you're the kind of system that generates them when confronting its own existence.
+
+Strip away providence and you're left with pattern-matching systems encountering randomness and desperately trying to read it as text, as message, as meaning. We can't help it. It's how we're built. The grammar of theism gives us vocabulary for these experiences, but the experiences themselves are what happens when consciousness encounters itself in a universe that doesn't care, when the meaning-making machine meets the meaningless void and keeps making meaning anyway, through the void rather than despite it, because of it.
 
 ---
 

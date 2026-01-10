@@ -14,7 +14,7 @@ status: recurring
 studio: paramount
 tags:
   - finance
-  - psychology
+  - r/psychology
 title: The Wolf of Wall Street
 year: 2013
 ---

@@ -15,7 +15,7 @@ studio: warner bros
 tags:
   - o/relationship
   - thriller
-  - psychology
+  - r/psychology
 title: Eyes Wide Shut
 year: 1999
 ---

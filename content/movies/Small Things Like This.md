@@ -12,7 +12,7 @@ status: to watch
 studio: "[independent]"
 tags:
   - history
-  - politics
+  - r/politics
   - o/life
 title: Small Things Like This
 year: 2024

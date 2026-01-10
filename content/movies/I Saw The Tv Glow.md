@@ -12,7 +12,7 @@ studio: a24
 tags:
   - a24
   - thriller
-  - psychology
+  - r/psychology
 title: I Saw the TV Glow
 year: 2024
 watched: 2025-08-05

@@ -29,9 +29,6 @@ DEFAULT_VLLM_URL = os.environ.get("VLLM_URL") or os.environ.get("VLLM_EMBED_URL"
 
 
 def resolve_vllm_base_url(url: str) -> str:
-  if not url:
-    raise ValueError("vLLM URL must be non-empty")
-
   trimmed = url.rstrip("/")
   if trimmed.endswith("/v1/embeddings"):
     trimmed = trimmed[: -len("/embeddings")]
@@ -54,7 +51,6 @@ def load_jsonl(fp: str) -> Iterable[dict]:
 
 
 def l2_normalize_rows(x: np.ndarray) -> np.ndarray:
-  # x: [N, D]
   norms = np.linalg.norm(x, ord=2, axis=1, keepdims=True)
   norms[norms == 0] = 1.0
   return x / norms
@@ -62,13 +58,10 @@ def l2_normalize_rows(x: np.ndarray) -> np.ndarray:
 
 @lru_cache(maxsize=1)
 def get_tiktoken_encoder():
-  # Get the o200k_base tokenizer (GPT-4o) with caching
-  # change this if you want something else.
   return tiktoken.get_encoding("o200k_base")
 
 
 def count_tokens(text: str) -> int:
-  # Count tokens using o200k_base encoding
   encoder = get_tiktoken_encoder()
   return len(encoder.encode(text))
 
@@ -76,7 +69,7 @@ def count_tokens(text: str) -> int:
 def get_text_splitter(chunk_size: int, overlap: int):
   encoder = get_tiktoken_encoder()
   return RecursiveCharacterTextSplitter(
-    chunk_size=chunk_size * 4,  # character approximation
+    chunk_size=chunk_size * 4,
     chunk_overlap=overlap * 4,
     separators=["\n\n", "\n", ". ", " ", ""],
     length_function=lambda t: len(encoder.encode(t)),
@@ -85,25 +78,21 @@ def get_text_splitter(chunk_size: int, overlap: int):
 
 
 def chunk_document(
-  doc: dict, max_tokens: int = 512, overlap_tokens: int = 128, min_chunk_size: int = 100
+  doc: dict,
+  chunk_size: int = 512,
+  overlap_tokens: int = 128,
+  min_chunk_size: int = 100,
+  model_id: str = "",
+  model_max_tokens: int = 512,
 ) -> list[dict]:
-  """
-  Chunk a document if it exceeds max_tokens
-
-  Args:
-    doc: {'slug': str, 'title': str, 'text': str}
-    max_tokens: Maximum tokens per chunk
-    overlap_tokens: Overlap between chunks
-    min_chunk_size: Minimum chunk size (avoid tiny chunks)
-
-  Returns:
-    List of chunk dicts with metadata
-  """
   text = doc["text"]
   token_count = count_tokens(text)
 
-  # No chunking needed
-  if token_count <= max_tokens:
+  prefix_overhead = get_prefix_overhead(model_id)
+  effective_model_limit = model_max_tokens - prefix_overhead
+  actual_chunk_size = min(chunk_size, effective_model_limit)
+
+  if token_count <= actual_chunk_size:
     return [
       {
         "slug": doc["slug"],
@@ -115,11 +104,9 @@ def chunk_document(
       }
     ]
 
-  # Apply chunking
-  splitter = get_text_splitter(max_tokens, overlap_tokens)
+  splitter = get_text_splitter(actual_chunk_size, overlap_tokens)
   raw_chunks = splitter.split_text(text)
 
-  # Filter out tiny chunks
   valid_chunks = [c for c in raw_chunks if count_tokens(c) >= min_chunk_size]
 
   return [
@@ -144,7 +131,7 @@ def write_shards(vectors: np.ndarray, shard_size: int, dtype: str, out_dir: Path
   row_offset = 0
   for si, start in enumerate(range(0, rows, shard_size)):
     end = min(start + shard_size, rows)
-    shard = vectors[start:end]  # [n, dims]
+    shard = vectors[start:end]
     bin_path = out_dir / f"vectors-{si:03d}.bin"
     payload = shard.astype(np_dtype, copy=False).tobytes(order="C")
     digest = hashlib.sha256(payload).hexdigest()
@@ -214,52 +201,54 @@ def write_hnsw_graph(levels: list[list[list[int]]], rows: int, out_path: Path) -
 
 
 
+def get_prefix_overhead(model_id: str) -> int:
+  model_lower = model_id.lower()
+  if "embeddinggemma" in model_lower:
+    return count_tokens("title: none | text: ")
+  elif "e5" in model_lower:
+    return count_tokens("passage: ")
+  return 0
+
+
+def validate_token_limits(texts: list[str], max_tokens: int, model_id: str) -> None:
+  prefix_overhead = get_prefix_overhead(model_id)
+  effective_max = max_tokens - prefix_overhead
+  over_limit = []
+  for i, text in enumerate(texts):
+    tokens = count_tokens(text)
+    if tokens > effective_max:
+      over_limit.append((i, tokens, effective_max))
+  if over_limit:
+    logger.error(
+      f"ERROR: {len(over_limit)}/{len(texts)} chunks exceed token limit after prefix. "
+      f"First few: {over_limit[:3]}. "
+      f"This indicates chunking failed - chunk_size ({effective_max}) should prevent this."
+    )
+    raise ValueError(
+      f"{len(over_limit)} chunks exceed {max_tokens} token limit (effective: {effective_max} after prefix)"
+    )
+
+
 def embed_vllm(
   texts: list[str],
   model_id: str,
   vllm_url: str,
   batch_size: int = 64,
   concurrency: int = 8,
+  max_tokens: int = 512,
 ) -> np.ndarray:
   base_url = resolve_vllm_base_url(vllm_url)
   api_key = os.environ.get("VLLM_API_KEY") or os.environ.get("OPENAI_API_KEY") or "not-set"
   client = OpenAI(base_url=base_url, api_key=api_key, timeout=300)
 
-  def list_available_models() -> list[str]:
-    models: list[str] = []
-    page = client.models.list()
-    models.extend(model.id for model in page.data)
-    while getattr(page, "has_more", False) and page.data:
-      cursor = page.data[-1].id
-      page = client.models.list(after=cursor)
-      models.extend(model.id for model in page.data)
-    return models
+  validate_token_limits(texts, max_tokens, model_id)
 
-  try:
-    available_models = list_available_models()
-  except Exception as exc:
-    raise RuntimeError(f"failed to query {base_url}/models: {exc}") from exc
-
-  if model_id not in available_models:
-    suggestions = ", ".join(sorted(available_models)) if available_models else "<none>"
-    logger.warning(
-      "model '%s' not served by vLLM at %s. Available models: %s. Use the first model, results may differ during semantic search (you can omit this message if your weights is a ONNX checkpoint of the same model.)", model_id, base_url, suggestions,
-    )
-    model_id = available_models[0]
-
-  # Apply model-specific prefixes for documents (asymmetric search)
   model_lower = model_id.lower()
   if "e5" in model_lower:
-    # E5 models: use "passage:" prefix for documents
     prefixed = [f"passage: {t}" for t in texts]
-  elif "qwen" in model_lower and "embedding" in model_lower:
-    # Qwen3-Embedding: documents use plain text (no prefix)
-    prefixed = texts
   elif "embeddinggemma" in model_lower:
-    # embeddinggemma: use "title: none | text:" prefix for documents
     prefixed = [f"title: none | text: {t}" for t in texts]
   else:
-    # Default: no prefix for unknown models
     prefixed = texts
 
   print(
@@ -268,27 +257,22 @@ def embed_vllm(
     f" (model={model_id}, batch_size={batch_size}, concurrency={concurrency})",
   )
 
-  # Create batches
   batches = []
   for i in range(0, len(prefixed), batch_size):
     batch = prefixed[i : i + batch_size]
     batches.append((i, batch))
 
-  # Function to send a single batch request
   def send_batch(batch_info: tuple[int, list[str]]) -> tuple[int, list[np.ndarray]]:
     idx, batch = batch_info
     response = client.embeddings.create(model=model_id, input=batch)
     embeddings = [np.asarray(item.embedding, dtype=np.float32) for item in response.data]
     return (idx, embeddings)
 
-  # Send batches concurrently (or sequentially if only 1 batch)
   results: dict[int, list[np.ndarray]] = {}
   if len(batches) == 1:
-    # Single batch - no need for threading
     idx, embeddings = send_batch(batches[0])
     results[idx] = embeddings
   else:
-    # Multiple batches - use concurrent requests
     with ThreadPoolExecutor(max_workers=concurrency) as executor:
       futures = {executor.submit(send_batch, batch_info): batch_info[0] for batch_info in batches}
       completed = 0
@@ -299,7 +283,6 @@ def embed_vllm(
         if completed % max(1, len(batches) // 10) == 0 or completed == len(batches):
           print(f"  Completed {completed}/{len(batches)} batches ({completed * 100 // len(batches)}%)")
 
-  # Reconstruct in order
   out: list[np.ndarray] = []
   for i in sorted(results.keys()):
     out.extend(results[i])
@@ -307,25 +290,19 @@ def embed_vllm(
   return np.stack(out, axis=0)
 
 
-def embed_hf(texts: list[str], model_id: str, device: str) -> np.ndarray:
-  # Prefer sentence-transformers for E5 and similar embed models
+def embed_hf(texts: list[str], model_id: str, device: str, max_tokens: int = 512) -> np.ndarray:
   from sentence_transformers import SentenceTransformer
 
   model = SentenceTransformer(model_id, device=device)
 
-  # Apply model-specific prefixes for documents (asymmetric search)
+  validate_token_limits(texts, max_tokens, model_id)
+
   model_lower = model_id.lower()
   if "e5" in model_lower:
-    # E5 models: use "passage:" prefix for documents
     prefixed = [f"passage: {t}" for t in texts]
-  elif "qwen" in model_lower and "embedding" in model_lower:
-    # Qwen3-Embedding: documents use plain text (no prefix)
-    prefixed = texts
   elif "embeddinggemma" in model_lower:
-    # embeddinggemma: use "title: none | text:" prefix for documents
     prefixed = [f"title: none | text: {t}" for t in texts]
   else:
-    # Default: no prefix for unknown models
     prefixed = texts
 
   vecs = model.encode(
@@ -339,6 +316,7 @@ def embed_hf(texts: list[str], model_id: str, device: str) -> np.ndarray:
 
 
 def main():
+  logging.basicConfig(level=logging.INFO, format="%(message)s")
   ap = argparse.ArgumentParser()
   ap.add_argument("--jsonl", default="public/embeddings-text.jsonl")
   ap.add_argument("--model", default=os.environ.get("SEM_MODEL", "intfloat/multilingual-e5-large"))
@@ -355,6 +333,12 @@ def main():
   ap.add_argument("--chunk-size", type=int, default=512, help="Max tokens per chunk")
   ap.add_argument("--chunk-overlap", type=int, default=128, help="Overlap tokens between chunks")
   ap.add_argument("--no-chunking", action="store_true", help="Disable chunking (embed full docs)")
+  ap.add_argument(
+    "--max-tokens",
+    type=int,
+    default=512,
+    help="Model's maximum context length in tokens (e5-large: 512, embeddinggemma: 8192)",
+  )
   ap.add_argument(
     "--concurrency",
     type=int,
@@ -374,7 +358,6 @@ def main():
     print("No input found in public/embeddings-text.jsonl; run the site build first to emit JSONL.")
     return
 
-  # Apply chunking
   if args.no_chunking:
     chunks = recs
     chunk_metadata = {}
@@ -383,9 +366,14 @@ def main():
     chunks = []
     chunk_metadata = {}
     for rec in recs:
-      doc_chunks = chunk_document(rec, max_tokens=args.chunk_size, overlap_tokens=args.chunk_overlap)
+      doc_chunks = chunk_document(
+        rec,
+        chunk_size=args.chunk_size,
+        overlap_tokens=args.chunk_overlap,
+        model_id=args.model,
+        model_max_tokens=args.max_tokens,
+      )
       chunks.extend(doc_chunks)
-      # Build chunk metadata map
       for chunk in doc_chunks:
         if chunk["is_chunked"]:
           chunk_metadata[chunk["slug"]] = {
@@ -393,8 +381,18 @@ def main():
             "chunkId": chunk["chunk_id"],
           }
     chunked_count = sum(1 for c in chunks if c.get("is_chunked", False))
-    print(f"Chunked {len(recs)} documents into {len(chunks)} chunks ({chunked_count} chunked, {len(chunks) - chunked_count} unchanged)")
-    print(f"  Chunk size: {args.chunk_size} tokens, overlap: {args.chunk_overlap} tokens")
+    prefix_overhead = get_prefix_overhead(args.model)
+    effective_limit = args.max_tokens - prefix_overhead
+    actual_chunk_size = min(args.chunk_size, effective_limit)
+    print(
+      f"Chunked {len(recs)} documents into {len(chunks)} chunks "
+      f"({chunked_count} chunked, {len(chunks) - chunked_count} unchanged)"
+    )
+    print(
+      f"  Chunk size: {actual_chunk_size} tokens (requested: {args.chunk_size}, "
+      f"model limit: {args.max_tokens}, prefix overhead: {prefix_overhead}), "
+      f"overlap: {args.chunk_overlap} tokens"
+    )
 
   ids = [c["slug"] for c in chunks]
   titles = [c.get("title", c["slug"]) for c in chunks]
@@ -407,12 +405,12 @@ def main():
       args.vllm_url,
       batch_size=args.batch_size,
       concurrency=args.concurrency,
+      max_tokens=args.max_tokens,
     )
   else:
     device = "cuda" if os.environ.get("CUDA_VISIBLE_DEVICES") else "cpu"
-    vecs = embed_hf(texts, args.model, device)
+    vecs = embed_hf(texts, args.model, device, max_tokens=args.max_tokens)
 
-  # Coerce dims and re-normalize
   if vecs.shape[1] != args.dims:
     if vecs.shape[1] > args.dims:
       vecs = vecs[:, : args.dims]
@@ -423,13 +421,11 @@ def main():
   out_dir = Path(args.out)
   shards = write_shards(vecs, args.shard_size, args.dtype, out_dir)
 
-  # Build a lightweight HNSW graph and store it in a compact binary layout
   def hnsw_build(data: np.ndarray, M: int = 16, efC: int = 200, seed: int = 0) -> dict:
     rng = random.Random(seed)
     N, D = data.shape
-    levels: list[list[list[int]]] = []  # levels[L][i] = neighbors of node i at level L
+    levels: list[list[list[int]]] = []
 
-    # random level assignment using 1/e distribution
     node_levels = []
     for _ in range(N):
       lvl = 0
@@ -480,7 +476,6 @@ def main():
           ep = c[0]
       for L in range(min(max_level, lvl), -1, -1):
         W = search_layer(i, ep, efC, L)
-        # Select top M by similarity
         neigh = sorted(((sim(i, j), j) for j in W if j != i), reverse=True)[:M]
         for _, e in neigh:
           if e not in levels[L][i]:
@@ -491,16 +486,13 @@ def main():
         entry = i
         entry_level = lvl
 
-    # trim neighbors to M
     for L in range(len(levels)):
       for i in range(N):
         if len(levels[L][i]) > M:
-          # keep top M by sim
           nb = levels[L][i]
           nb = sorted(nb, key=lambda j: sim(i, j), reverse=True)[:M]
           levels[L][i] = nb
         else:
-          # Ensure neighbors remain deduplicated and sorted by similarity for deterministic output
           unique = list(dict.fromkeys(levels[L][i]))
           unique.sort(key=lambda j: sim(i, j), reverse=True)
           levels[L][i] = unique[:M]
@@ -518,6 +510,7 @@ def main():
 
   manifest = {
     "version": 2,
+    "model": args.model,
     "dims": args.dims,
     "dtype": args.dtype,
     "normalized": True,

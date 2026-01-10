@@ -210,4 +210,3 @@ Wordle 1,665 3/6
 ## the mini
 
 ![[thoughts/images/nytimes/mini-01-06-26.webp]]
-

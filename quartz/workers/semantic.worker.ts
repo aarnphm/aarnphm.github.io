@@ -26,6 +26,7 @@ type ChunkMetadata = {
 
 type Manifest = {
   version: number
+  model: string
   dims: number
   dtype: string
   normalized: boolean
@@ -264,11 +265,18 @@ function configureRuntimeEnv() {
   envConfigured = true
 }
 
+const MODEL_MAPPING: Record<string, string> = {
+  "intfloat/multilingual-e5-large": "Xenova/multilingual-e5-large",
+  "google/embeddinggemma-300m": "onnx-community/embeddinggemma-300m-ONNX",
+}
+
 async function ensureEncoder() {
   if (classifier) return
-  if (!cfg?.model) {
+  const modelId = manifest?.model ?? cfg?.model
+  if (!modelId) {
     throw new Error("semantic worker missing model identifier")
   }
+  const model = MODEL_MAPPING[modelId] ?? modelId
   configureRuntimeEnv()
   const dtype = typeof cfg?.dtype === "string" && cfg.dtype.length > 0 ? cfg.dtype : "fp32"
   const pipelineOpts: Record<string, unknown> = {
@@ -276,7 +284,7 @@ async function ensureEncoder() {
     dtype,
     local_files_only: false,
   }
-  classifier = await pipeline("feature-extraction", cfg.model, pipelineOpts)
+  classifier = await pipeline("feature-extraction", model, pipelineOpts)
   cfg.dtype = dtype
 }
 
@@ -376,13 +384,13 @@ function hnswSearch(query: Float32Array, k: number): SearchHit[] {
 
 async function embed(text: string, isQuery: boolean = false): Promise<Float32Array> {
   await ensureEncoder()
-  // Apply model-specific prefixes for asymmetric search
   let prefixedText = text
-  if (cfg?.model) {
-    const modelName = cfg.model.toLowerCase()
+  const model = manifest?.model ?? cfg?.model
+  if (model) {
+    const modelName = model.toLowerCase()
     switch (true) {
       case modelName.includes("e5"): {
-        // E5 models require query: or passage: prefix
+        // E5 instruct models
         prefixedText = isQuery ? `query: ${text}` : `passage: ${text}`
         break
       }

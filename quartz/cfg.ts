@@ -71,8 +71,14 @@ type SemanticIndexOptions = {
    * - chunkSize: max tokens per chunk (default: 512)
    * - chunkOverlap: overlap tokens between chunks (default: 128)
    * - noChunking: disable chunking, embed full documents (default: false)
+   * - maxTokens: model's maximum context length in tokens (default: 512 for e5, 8192 for embeddinggemma)
    */
-  chunking?: { chunkSize?: number; chunkOverlap?: number; noChunking?: boolean }
+  chunking?: {
+    chunkSize?: number
+    chunkOverlap?: number
+    noChunking?: boolean
+    maxTokens?: number
+  }
   /**
    * vLLM server configuration (for remote embedding generation)
    * - useVllm: use vLLM API instead of local sentence-transformers (default: false)

@@ -1,7 +1,6 @@
 import { write } from "./helpers"
 import { QuartzEmitterPlugin } from "../types"
-import { FilePath, FullSlug, joinSegments, QUARTZ } from "../../util/path"
-import { ReadTimeResults } from "reading-time"
+import { FullSlug, joinSegments, QUARTZ } from "../../util/path"
 import { GlobalConfiguration } from "../../cfg"
 import { spawn } from "child_process"
 import { styleText } from "node:util"
@@ -30,29 +29,6 @@ const defaults: GlobalConfiguration["semanticSearch"] = {
   },
 }
 
-type ContentDetails = {
-  slug: string
-  title: string
-  filePath: FilePath
-  content: string
-  readingTime?: Partial<ReadTimeResults>
-}
-
-/**
- * Check if uv is installed
- */
-function checkUvInstalled(): Promise<boolean> {
-  return new Promise((resolve) => {
-    const proc = spawn("uv", ["--version"], { shell: true })
-    proc.on("error", () => resolve(false))
-    proc.on("close", (code) => resolve(code === 0))
-  })
-}
-
-/**
- * Run the Python embedding build script using uv
- * Script uses PEP 723 inline metadata for dependency management
- */
 function runEmbedBuild(
   jsonlPath: string,
   outDir: string,
@@ -66,10 +42,9 @@ function runEmbedBuild(
   },
 ): Promise<void> {
   return new Promise((resolve, reject) => {
-    const scriptPath = joinSegments(QUARTZ, "embed_build.py")
     const args = [
       "run",
-      scriptPath,
+      joinSegments(QUARTZ, "embed_build.py"),
       "--jsonl",
       jsonlPath,
       "--model",
@@ -104,15 +79,9 @@ function runEmbedBuild(
     console.log("\nRunning embedding generation:")
     console.log(`  uv ${args.join(" ")}`)
 
-    const env = { ...process.env }
-    if (opts.vllm.useVllm && !env.USE_VLLM) {
-      env.USE_VLLM = "1"
-    }
-
     const proc = spawn("uv", args, {
       stdio: "inherit",
       shell: true,
-      env,
     })
 
     proc.on("error", (err) => {
@@ -159,10 +128,6 @@ export const SemanticIndex: QuartzEmitterPlugin<Partial<GlobalConfiguration["sem
     },
   }
 
-  if (!o.model) {
-    throw new Error("Semantic search requires a model identifier")
-  }
-
   return {
     name: "SemanticIndex",
     getQuartzComponents() {
@@ -172,57 +137,30 @@ export const SemanticIndex: QuartzEmitterPlugin<Partial<GlobalConfiguration["sem
     async *emit(ctx, content, _resources) {
       if (!o.enable) return
 
-      const docs: ContentDetails[] = []
+      const lines: string[] = []
       for (const [_, file] of content) {
         const slug = file.data.slug!
         const title = file.data.frontmatter?.title ?? slug
         const text = file.data.text
-        if (text) {
-          docs.push({
-            slug,
-            title,
-            filePath: file.data.filePath!,
-            content: text,
-            readingTime: file.data.readingTime,
-          })
-        }
+        if (!text) continue
+        lines.push(JSON.stringify({ slug, title, text }))
       }
 
-      // Emit JSONL with the exact text used for embeddings
-      const jsonl = docs
-        .map((d) => ({ slug: d.slug, title: d.title, text: d.content }))
-        .map((o) => JSON.stringify(o))
-        .join("\n")
-
-      const jsonlSlug = "embeddings-text" as FullSlug
       yield write({
         ctx,
-        slug: jsonlSlug,
+        slug: "embeddings-text" as FullSlug,
         ext: ".jsonl",
-        content: jsonl,
+        content: lines.join("\n"),
       })
 
-      // If aot is false, run the embedding generation script
       if (!o.aot) {
         console.log(styleText("blue", `\n[emit:Semantic] Generating embeddings (aot=${o.aot})...`))
 
-        // Check for uv
-        const hasUv = await checkUvInstalled()
-        if (!hasUv) {
-          throw new Error(
-            "uv is required for embedding generation. Install it from https://docs.astral.sh/uv/",
-          )
-        }
-
-        const jsonlPath = joinSegments(ctx.argv.output, "embeddings-text.jsonl")
-        const outDir = joinSegments(ctx.argv.output, "embeddings")
-
-        try {
-          await runEmbedBuild(jsonlPath, outDir, o)
-        } catch (err) {
-          const message = err instanceof Error ? err.message : String(err)
-          throw new Error(`Embedding generation failed: ${message}`)
-        }
+        await runEmbedBuild(
+          joinSegments(ctx.argv.output, "embeddings-text.jsonl"),
+          joinSegments(ctx.argv.output, "embeddings"),
+          o,
+        )
       } else {
         console.log(
           styleText("yellow", `[emit:Semantic] Skipping embedding generation (aot=${o.aot})`),

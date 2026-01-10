@@ -11,7 +11,7 @@ posters: "[[library/posters/beyond-the-pleasure-principle.jpg]]"
 status: finished
 subcategory: hedonia
 tags:
-  - psychology
+  - r/psychology
 title: Beyond The Pleasure Principle
 year: 1920
 ---

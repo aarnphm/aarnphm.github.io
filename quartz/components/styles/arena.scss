@@ -25,10 +25,8 @@ body.arena-modal-open {
     width: 100%;
   }
 
-  @media all and ($mobile) {
-    #quartz-root {
-      margin: 0 1rem;
-    }
+  #quartz-root {
+    margin: 0 1rem;
   }
 
   a[data-role="anchor"],

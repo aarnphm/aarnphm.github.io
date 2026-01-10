@@ -12,7 +12,7 @@ status: recurring
 studio: syncopy
 tags:
   - thriller
-  - psychology
+  - r/psychology
 title: Following
 year: 1998
 ---

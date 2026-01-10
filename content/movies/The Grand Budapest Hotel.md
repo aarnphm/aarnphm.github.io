@@ -15,7 +15,7 @@ studio: searchlight
 tags:
   - o/vintage
   - comedy
-  - politics
+  - r/politics
 title: The Grand Budapest Hotel
 year: 2014
 ---

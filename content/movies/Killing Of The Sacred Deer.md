@@ -15,7 +15,7 @@ studio: element pictures
 tags:
   - thriller
   - absurdism
-  - psychology
+  - r/psychology
 title: Killing of the Sacred Deer
 year: 2017
 ---
