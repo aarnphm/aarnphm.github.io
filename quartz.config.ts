@@ -75,13 +75,13 @@ const configuration: GlobalConfiguration = {
     // intfloat/multilingual-e5-large
     // intfloat/multilingual-e5-large-instruct
     // google/embeddinggemma-300m
-    model: "intfloat/multilingual-e5-large",
+    model: "google/embeddinggemma-300m",
     aot: true,
-    dims: 1024,
+    dims: 768,
     dtype: "fp32",
     shardSizeRows: 1024,
     hnsw: { M: 16, efConstruction: 200 },
-    chunking: { chunkSize: 64, chunkOverlap: 32 },
+    chunking: { chunkSize: 128, chunkOverlap: 64 },
     vllm: { concurrency: 16, batchSize: 128 },
   },
 }

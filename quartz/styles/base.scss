@@ -947,9 +947,27 @@ iframe.pdf {
   left: 0;
   width: 0;
   height: 3px;
-  background: var(--secondary);
-  transition: width 0.2s ease;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    var(--secondary) 40%,
+    var(--secondary) 60%,
+    transparent 100%
+  );
+  background-size: 200% 100%;
+  background-position: -100% 0;
+  transition: width 0.3s ease, opacity 0.3s ease;
+  opacity: 0;
   z-index: 9999;
+}
+
+@keyframes navigation-progress-sweep {
+  0% {
+    background-position: -100% 0;
+  }
+  100% {
+    background-position: 100% 0;
+  }
 }
 
 .image-grid {

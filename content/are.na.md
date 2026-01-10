@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-01-10 05:33:49 GMT-05:00
+modified: 2026-01-10 05:53:38 GMT-05:00
 permalinks:
   - /website
   - /tweets
@@ -143,6 +143,13 @@ title: are.na
 - [meta]:
   - view: list
 
+- https://x.com/phokarlsson/status/2009937260263686588 -- Relationship are an important component of personal growth [**]
+  - [meta]:
+    - date: 01/10/2026
+    - tags: [relationship, love]
+  - c.f. Wilhelm von Humboldt two prong arguments:
+    - intimacy: we need to give the person we're talking to deep [[thoughts/Attention|attention]], i.e. deep enough such that they can share their thoughts in an _uncensored way_.
+    - ==independence==: if we just take the other person in and mirror them, there is limited transformation for either party. We need to maintain enough independence that we can take in what is shared with us and integrate that with ourselves in a way that feels right to us, form an individual reaction to what we hear.
 - https://x.com/0xluffy/status/2009074401657200992?s=20 -- praying that the baddie is not going to talk to me
   - [meta]:
     - date: 01/07/2026

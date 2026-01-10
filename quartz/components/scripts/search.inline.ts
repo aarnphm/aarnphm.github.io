@@ -100,14 +100,23 @@ function aggregateChunkResults(
 
   const rrfScores = new Map<number, number>()
   const maxScores = new Map<number, number>()
-  const RRF_K = 60
+  // This can probably be tuned a bit better, i.e from the range 30-58 would be nice.
+  // depending on the distribution  of chunks per documents, but for 20 i found this works decently well...
+  const RRF_K = 36
+  // now, some files, such as content/are.na.md that has 423 chunks (in case they are all match) RRF = sum(1/(60+i) for i in range(423)) ~ 2.8
+  // comparing to a docs with 7 chunks (which is the average, currently.) with RRF = 1/60 + 1/61 + ... + 1/66 ~ 0.111
+  // essentially, we will limit the MAX_CHUNKS_PER_DOCS = 20 such that we should cap the distribution a bit.
+  // another strategy is to avoid/filter out outliers, and display it separately.
+  const MAX_CHUNKS_PER_DOC = 20
 
   for (const [parentSlug, chunks] of docChunks) {
     const docIdx = slugToDocIndex.get(parentSlug as FullSlug)
     if (typeof docIdx !== "number") continue
 
     chunks.sort((a, b) => b.score - a.score)
-    const rrfScore = chunks.reduce((sum, _, rank) => sum + 1.0 / (RRF_K + rank), 0)
+    // TODO: we might want to find out the distribution based on docs that has a lot of chunks, to see which part is relevant
+    const topChunks = chunks.slice(0, MAX_CHUNKS_PER_DOC)
+    const rrfScore = topChunks.reduce((sum, _, rank) => sum + 1.0 / (RRF_K + rank), 0)
     const maxScore = chunks[0].score
 
     rrfScores.set(docIdx, rrfScore)
@@ -146,8 +155,13 @@ const index = new FlexSearch.Document<Item>({
 
 const p = new DOMParser()
 const fetchContentCache: Map<FullSlug, Element[]> = new Map()
-const numSearchResults = 10
+const numSearchResultsLexical = 10
+const numSearchResultsSemantic = 60
 const numTagResults = 10
+
+function getNumSearchResults(mode: SearchMode): number {
+  return mode === "semantic" ? numSearchResultsSemantic : numSearchResultsLexical
+}
 function highlightHTML(searchTerm: string, el: HTMLElement) {
   const p = new DOMParser()
   const tokenizedTerms = tokenizeTerm(searchTerm)
@@ -209,42 +223,8 @@ async function setupSearch(
   const searchSpace = searchElement?.querySelector(".search-space") as HTMLFormElement
   if (!searchSpace) return
 
-  // Create semantic search progress bar
-  const styleEl = document.createElement("style")
-  styleEl.textContent = `
-    @keyframes semantic-progress-pulse {
-      0% {
-        background-position: -100% 0;
-      }
-      100% {
-        background-position: 100% 0;
-      }
-    }
-  `
-  document.head.appendChild(styleEl)
-
   const progressBar = document.createElement("div")
   progressBar.className = "semantic-search-progress"
-  progressBar.style.cssText = `
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    height: 2px;
-    width: 0;
-    background: linear-gradient(
-      90deg,
-      transparent 0%,
-      var(--secondary) 25%,
-      var(--tertiary) 50%,
-      var(--secondary) 75%,
-      transparent 100%
-    );
-    background-size: 200% 100%;
-    background-position: -100% 0;
-    transition: width 0.3s ease, opacity 0.3s ease;
-    opacity: 0;
-    z-index: 9999;
-  `
   searchBar.parentElement?.appendChild(progressBar)
 
   const startSemanticProgress = () => {
@@ -252,7 +232,7 @@ async function setupSearch(
     progressBar.style.width = "0"
     setTimeout(() => {
       progressBar.style.width = "100%"
-      progressBar.style.animation = "semantic-progress-pulse 2.5s ease-in-out infinite"
+      progressBar.style.animation = "semantic-progress-sweep 2.5s linear infinite"
     }, 10)
   }
 
@@ -380,7 +360,7 @@ async function setupSearch(
     const isReplacement =
       lastTerm.length > 0 && !trimmed.startsWith(lastTerm) && !lastTerm.startsWith(trimmed)
     const baseFullQueryDelay = 200
-    const semanticPenalty = searchMode === "semantic" ? 60 : 0
+    const semanticPenalty = searchMode === "semantic" ? 30 : 0
 
     if (isExtension && trimmed.length > 2) {
       return baseFullQueryDelay + semanticPenalty
@@ -843,7 +823,7 @@ async function setupSearch(
         const query = tagTerm.substring(separatorIndex + 1).trim()
         const results = await index.searchAsync({
           query,
-          limit: Math.max(numSearchResults, 10000),
+          limit: Math.max(getNumSearchResults(modeForRanking), 10000),
           index: ["title", "content", "aliases"],
           tag: { tags: tag },
         })
@@ -854,7 +834,7 @@ async function setupSearch(
       } else {
         const results = await index.searchAsync({
           query: tagTerm,
-          limit: numSearchResults,
+          limit: getNumSearchResults(modeForRanking),
           index: ["tags"],
         })
         if (token !== searchSeq) return
@@ -864,7 +844,7 @@ async function setupSearch(
     } else {
       const results = await index.searchAsync({
         query: highlightTerm,
-        limit: numSearchResults,
+        limit: getNumSearchResults(modeForRanking),
         index: ["title", "content", "aliases"],
       })
       if (token !== searchSeq) return
@@ -971,7 +951,7 @@ async function setupSearch(
       const rankedEntries = Array.from(candidateItems.values())
         .map((item) => ({ item, score: rrf.get(item.slug) ?? 0 }))
         .sort((a, b) => b.score - a.score)
-        .slice(0, numSearchResults)
+        .slice(0, getNumSearchResults(modeForRanking))
 
       const displayEntries: SimilarityResult[] = []
       for (const entry of rankedEntries) {
@@ -996,7 +976,7 @@ async function setupSearch(
     try {
       const { semantic: semRes } = await orchestrator.search(
         highlightTerm,
-        numSearchResults * 3, // Request more chunks to ensure good document coverage
+        getNumSearchResults(modeForRanking) * 8, // Request 8x chunks for avg 7.2 chunks/doc
       )
       if (token !== searchSeq) {
         if (showProgress) completeSemanticProgress()
@@ -1012,7 +992,7 @@ async function setupSearch(
       // Use RRF scores for ranking
       semanticIds = Array.from(semRrfScores.entries())
         .sort((a, b) => b[1] - a[1])
-        .slice(0, numSearchResults)
+        .slice(0, getNumSearchResults(modeForRanking))
         .map(([docIdx]) => docIdx)
 
       // Use max chunk similarity for display (0-1 range)
