@@ -4,10 +4,10 @@ import { QuartzComponent, QuartzComponentConstructor, QuartzComponentProps } fro
 import { FullSlug, joinSegments, resolveRelative } from "../../util/path"
 //@ts-ignore
 import lydiaScript from "../scripts/lydia.inline"
-import SeealsoTree from "../SeealsoTree"
+import SeeAlsoComponent from "../SeeAlso"
 
 export default (() => {
-  const SeeAlso = SeealsoTree()
+  const SeeAlso = SeeAlsoComponent()
 
   const Content: QuartzComponent = (props: QuartzComponentProps) => {
     const { fileData, tree } = props

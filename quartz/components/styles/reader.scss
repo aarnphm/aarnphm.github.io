@@ -1,119 +1,17 @@
 @use "sass:map";
 @use "../../styles/variables.scss" as *;
-@use "../../styles/mixin.scss" as *;
 
-.reader {
-  display: none;
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  z-index: 999;
+:root[reader-mode="on"] {
+  section[class~="byline"],
+  section[class~="page-content"] > .left-col,
+  #wc-modal,
+  .headings-modal-container,
+  .page-footer {
+    opacity: 0;
+    transition: opacity 0.2s ease;
 
-  &.active {
-    display: block;
-    height: 100%;
-  }
-
-  .reader-backdrop {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: var(--light);
-    backdrop-filter: blur(4px);
-  }
-
-  .reader-container {
-    display: flex;
-    max-width: 49%;
-    margin: 0 auto;
-    background: var(--light);
-    box-shadow:
-      0 14px 50px rgba(27, 33, 48, 0.12),
-      0 10px 30px rgba(27, 33, 48, 0.16);
-    position: relative;
-    height: 100%;
-    flex-direction: column;
-
-    .reader-header {
-      position: sticky;
-      top: 0;
-      background: var(--light);
-      display: flex;
-      justify-content: end;
-      padding: 0.2rem;
-      z-index: 2;
-      border-bottom: 1px solid var(--lightgray);
-
-      .reader-close {
-        @include closeButton;
-      }
-    }
-
-    .reader-content {
-      flex: 1;
-      overflow-y: auto;
-      margin: 0 auto;
-      padding-top: 1.5rem;
-      font-family: var(--bodyFont);
-      line-height: 1.6;
-      color: var(--darkgray);
-      width: 100%;
-
-      & > * {
-        margin-left: 1.5rem;
-        margin-right: 1.5rem;
-      }
-
-      img {
-        max-width: 85%;
-      }
-
-      h1,
-      h2,
-      h3,
-      h4,
-      h5,
-      h6,
-      thead,
-      body,
-      section {
-        font-family: "Newsreader";
-        font-weight: normal;
-      }
-
-      h1 {
-        margin-top: unset !important;
-      }
-
-      // remove colorful border, no need in reader mode
-      section[data-references],
-      section[data-footnotes] {
-        border: unset;
-
-        & > * {
-          margin: initial;
-        }
-      }
-
-      // normalize all italic
-      em {
-        font-style: normal;
-      }
-
-      // remove distracting highlight background of text
-      mark {
-        background-color: unset;
-      }
-
-      .callout[data-callout] {
-        --color: inherit !important;
-        --border: inherit !important;
-        --bg: inherit !important;
-        border-left: 3px solid var(--tertiary);
-      }
+    &:hover {
+      opacity: 1;
     }
   }
 }

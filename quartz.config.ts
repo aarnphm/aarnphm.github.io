@@ -142,6 +142,7 @@ const config: QuartzConfig = {
     emitters: [
       Plugin.AliasRedirects(),
       Plugin.ComponentResources(),
+      Plugin.Bibliography({ bibliography: "./content/References.bib" }),
       Plugin.ContentPage(),
       Plugin.LLMText(),
       Plugin.FolderPage({

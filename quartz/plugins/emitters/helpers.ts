@@ -6,7 +6,7 @@ import { Readable } from "stream"
 
 type WriteOptions = {
   ctx: BuildCtx
-  slug: FullSlug
+  slug: FullSlug | string
   ext: `.${string}` | ""
   content: string | Buffer | Readable
 }

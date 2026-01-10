@@ -48,11 +48,7 @@ function getCitationTitle(bibKey: string): string | undefined {
 }
 
 export default (() => {
-  const SeealsoTree: QuartzComponent = ({
-    fileData,
-    allFiles,
-    displayClass,
-  }: QuartzComponentProps) => {
+  const SeeAlso: QuartzComponent = ({ fileData, allFiles, displayClass }: QuartzComponentProps) => {
     const fmLinks = fileData.frontmatterLinks as Record<string, FrontmatterLink[]> | undefined
 
     const rootLinks = fmLinks?.["seealso"]
@@ -186,7 +182,7 @@ export default (() => {
     )
   }
 
-  SeealsoTree.css = style
+  SeeAlso.css = style
 
-  return SeealsoTree
+  return SeeAlso
 }) satisfies QuartzComponentConstructor

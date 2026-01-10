@@ -25,6 +25,10 @@ body {
 html {
   scroll-padding-top: 0;
   overscroll-behavior: none;
+
+  @media all and ($mobile) {
+    scroll-padding-top: 4rem;
+  }
 }
 
 body {

@@ -13,14 +13,13 @@ import {
   SimpleSlug,
   sluggify,
 } from "../../util/path"
-import { Root } from "hast"
 import { htmlToJsx } from "../../util/jsx"
 import { QuartzPluginData } from "../../plugins/vfile"
 import EvergreenConstructor, { AllTags, EvergreenPermanentNotes } from "../Evergreen"
 import { i18n } from "../../i18n"
 import { FileTrieNode } from "../../util/fileTrie"
 import { parseWikilink } from "../../util/wikilinks"
-import { normalizeResource } from "../../plugins/emitters/componentResources"
+import { concatenateResources } from "../../util/resources"
 
 interface FolderContentOptions {
   /**
@@ -394,11 +393,11 @@ export default ((opts?: Partial<FolderContentOptions>) => {
     }
   }
 
-  FolderContent.css = style + Evergreen.css + PageListSearch.css
-  FolderContent.afterDOMLoaded = [
-    ...normalizeResource(Evergreen.afterDOMLoaded),
-    ...normalizeResource(PageListSearch.afterDOMLoaded),
-  ].join("\n\n")
+  FolderContent.css = concatenateResources(style, Evergreen.css, PageListSearch.css)
+  FolderContent.afterDOMLoaded = concatenateResources(
+    Evergreen.afterDOMLoaded,
+    PageListSearch.afterDOMLoaded,
+  )
 
   return FolderContent
 }) satisfies QuartzComponentConstructor
