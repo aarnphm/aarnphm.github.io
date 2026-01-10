@@ -3,7 +3,6 @@ import Recommendations from "./Recommendations"
 import Byline from "./Byline"
 import Image from "./Image"
 import Reader from "./Reader"
-import Toolbar from "./Toolbar"
 import Palette from "./Palette"
 import Keybind from "./Keybind"
 import BaseSearchBar from "./BaseSearchBar"
@@ -38,7 +37,7 @@ import Grid from "./Grid"
 import SlidesContent from "./SlidesContent"
 import HeadingsConstructor from "./Headings"
 import CodeCopy from "./CodeCopy"
-import SeealsoTree from "./SeealsoTree"
+import SeeAlso from "./SeeAlso"
 import BaseViewSelector from "./BaseViewSelector"
 import CanvasContainer from "./Canvas"
 
@@ -50,7 +49,6 @@ export {
   Recommendations,
   StackedNotes,
   Byline,
-  Toolbar,
   Image,
   Reader,
   Keybind,
@@ -84,6 +82,6 @@ export {
   Grid,
   HeadingsConstructor,
   CodeCopy,
-  SeealsoTree,
+  SeeAlso,
   BaseViewSelector,
 }

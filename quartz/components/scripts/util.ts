@@ -124,17 +124,6 @@ export function updatePosition(ref: HTMLElement, child: HTMLElement, parent: HTM
   child.style.top = `${referencePosition}px`
 }
 
-export function closeReader(readerView: HTMLElement | null) {
-  if (!readerView) return
-  readerView.classList.remove("active")
-  const allHr = document.querySelectorAll("hr")
-  const quartz = document.getElementById("quartz-root")
-  if (!allHr || !quartz) return
-  allHr.forEach((hr) => (hr.style.visibility = "visible"))
-  quartz.style.overflow = ""
-  quartz.style.maxHeight = ""
-}
-
 export function debounce(fn: Function, delay: number) {
   let timeoutId: ReturnType<typeof setTimeout>
   return (...args: any[]) => {

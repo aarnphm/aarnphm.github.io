@@ -8,6 +8,7 @@ interface CustomEventMap {
   prenav: CustomEvent<{}>
   nav: CustomEvent<{ url: FullSlug }>
   themechange: CustomEvent<{ theme: "light" | "dark" }>
+  readermodechange: CustomEvent<{ mode: "on" | "off" }>
   toast: CustomEvent<import("./quartz/components/scripts/toast").ToastEventDetail>
   "content-decrypted": CustomEvent<{ article: HTMLDivElement; content: HTMLDivElement }>
 }

@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-01-09 22:32:36 GMT-05:00
+modified: 2026-01-10 05:33:49 GMT-05:00
 permalinks:
   - /website
   - /tweets
@@ -6158,6 +6158,10 @@ title: are.na
 
 ## design
 
+- https://www.designwaterloo.com/ -- Design Waterloo
+  - [meta]:
+    - date: 01/10/2026
+    - tags: [interaction, foundry]
 - https://www.otherkind.design/ -- Otherkind
   - [meta]:
     - date: 01/09/2026
