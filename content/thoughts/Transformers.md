@@ -2,7 +2,7 @@
 date: "2024-02-07"
 description: and the backbone of the current language models/ai progress.
 id: Transformers
-modified: 2026-01-09 06:03:57 GMT-05:00
+modified: 2026-01-10 08:43:35 GMT-05:00
 seealso:
   - "[[thoughts/LLMs|LLMs]]"
   - "[[thoughts/Embedding|embedding]]"
@@ -73,8 +73,6 @@ https://arxiv.org/abs/2403.14123
 https://x.com/karpathy/status/1691571869051445433
 
 ## inference.
-
-Either compute-bound (batch inference, saturated usage) or memory-bound (latency)
 
 ![[thoughts/PD disaggregated serving#prefill/decode]]
 

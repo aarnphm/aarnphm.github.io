@@ -5,7 +5,7 @@ date: "2024-10-10"
 description: a bag of chips/words/vernacular
 id: word
 layout: technical
-modified: 2026-01-09 04:12:44 GMT-05:00
+modified: 2026-01-10 08:46:30 GMT-05:00
 tags:
   - evergreen
 title: lists
@@ -71,3 +71,4 @@ title: lists
 - {{sidenotes[stork]: Baby-bringing bird}}
 - pesky
   - annoying to deal with
+- interlocutors

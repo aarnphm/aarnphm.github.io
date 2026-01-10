@@ -138,6 +138,75 @@ const sanitizeForId = (value: string) =>
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/(^-+)|(-+$)/g, "")
 
+const countIndent = (line: string) => {
+  let total = 0
+  for (let i = 0; i < line.length; i++) {
+    const ch = line[i]
+    if (ch === " ") {
+      total += 1
+      continue
+    }
+    if (ch === "\t") {
+      total += 4
+      continue
+    }
+    break
+  }
+  return total
+}
+
+const stripIndent = (line: string, indent: number) => {
+  if (!line || line.trim() === "") return ""
+  let remaining = indent
+  let i = 0
+  while (i < line.length && remaining > 0) {
+    const ch = line[i]
+    if (ch === " ") {
+      remaining -= 1
+      i++
+      continue
+    }
+    if (ch === "\t") {
+      remaining -= 4
+      i++
+      continue
+    }
+    break
+  }
+  return line.slice(i)
+}
+
+const readIndentedBlock = (lines: string[], startLineIndex: number, baseIndent: number) => {
+  let idx = startLineIndex
+  while (idx < lines.length && lines[idx].trim() === "") {
+    idx++
+  }
+  if (idx >= lines.length) return undefined
+  const firstIndent = countIndent(lines[idx])
+  if (firstIndent <= baseIndent) return undefined
+  const contentIndent = firstIndent
+  const start = idx
+  let end = idx
+  idx++
+  while (idx < lines.length) {
+    const line = lines[idx]
+    if (line.trim() === "") {
+      end = idx
+      idx++
+      continue
+    }
+    const indent = countIndent(line)
+    if (indent <= baseIndent) break
+    end = idx
+    idx++
+  }
+  const raw = lines
+    .slice(start, end + 1)
+    .map((line) => stripIndent(line, contentIndent))
+    .join("\n")
+  return { raw, startLine: start + 1, endLine: end + 1 }
+}
+
 const collectInlineLabel = (parent: Parent | undefined, startIndex: number | null | undefined) => {
   if (!parent || typeof startIndex !== "number") {
     return undefined
@@ -461,11 +530,37 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options>>
         },
       ])
 
-      plugins.push(() => (tree: Root) => {
+      plugins.push(() => (tree: Root, file) => {
         const nodesToRemove: { parent: any; index: number }[] = []
+        const source =
+          typeof file?.value === "string" ? file.value : String(file?.value ?? "")
+        const lines = source.split(/\r?\n/)
 
         visit(tree, "sidenoteDefinition", (node: any, index, parent) => {
           if (!parent || typeof index !== "number") return
+
+          const position = node.position
+          if (position?.end?.line) {
+            const baseLineIndex = position.end.line - 1
+            const baseIndent = countIndent(lines[baseLineIndex] ?? "")
+            const block = readIndentedBlock(lines, baseLineIndex + 1, baseIndent)
+            if (block && block.raw.trim().length > 0) {
+              const parsed = fromMarkdown(block.raw, {
+                extensions: sidenoteExtensions,
+                mdastExtensions: sidenoteMdastExtensions,
+              })
+              node.children = parsed.children as BlockContent[]
+              for (let i = parent.children.length - 1; i > index; i--) {
+                const child = parent.children[i] as any
+                const childPos = child?.position
+                if (!childPos) continue
+                if (childPos.start.line >= block.startLine && childPos.end.line <= block.endLine) {
+                  parent.children.splice(i, 1)
+                }
+              }
+              return
+            }
+          }
 
           let nextIndex = index + 1
           const contentNodes: (BlockContent | DefinitionContent)[] = []

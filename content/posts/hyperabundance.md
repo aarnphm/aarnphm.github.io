@@ -1,9 +1,10 @@
 ---
 date: "2026-01-08"
 description: «l’embarras du choix»
+draft: true
 id: "2025"
 layout: technical
-modified: 2026-01-08 22:54:50 GMT-05:00
+modified: 2026-01-10 10:09:34 GMT-05:00
 signature: AP
 tags:
   - growth

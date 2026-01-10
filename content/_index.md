@@ -5,7 +5,7 @@ aliases:
 date: "2022-04-22"
 description: my working notes, as a form of a digital garden
 id: _index
-modified: 2026-01-10 05:38:20 GMT-05:00
+modified: 2026-01-10 08:45:23 GMT-05:00
 tags:
   - sapling
   - fruit
@@ -13,8 +13,6 @@ title: Aaron's notes
 ---
 
 Hi, my name is Aaron. I'm best reached via [twitter](https://twitter.com/aarnphm) or [email](mailto:contact@aarnphm.xyz).
-
-I'm [[thoughts/craft|working]] on #ml serving systems, and they work for me.
 
 ```telescopic id="thoughts"
 * I try to be
@@ -68,6 +66,8 @@ I'm [[thoughts/craft|working]] on #ml serving systems, and they work for me.
                                                 * about their intrinsic [[thoughts/Agency|drive]].
 ```
 
-[[research]] is something top of mind. My topic of interests are [[thoughts/vllm|efficient inference engine]] and model behaviour.
+I [[thoughts/craft|work]] on #ml systems (mostly on the [[thoughts/Transformers#inference.|serving]] side), and they work with me. My frequent interlocutors includes _my close friends_ and a squad of machinery-councils.
 
-As far as [[thoughts/aesthetic value|aesthetic]] goes, I spend a lot of time [[thoughts/reading|reading]] [[antilibrary|books]], watching [[cinematheque|cinema]], and [[vibes|collecting images]] on the internet ==outside of work==. This is my [[/dating|date-me doc]] if you are interested ✨
+[[research]] is something top of mind. My topic of interests include [[thoughts/vllm|efficient inference engine]] and model behaviour.
+
+As far as [[thoughts/aesthetic value|aesthetic]] goes, I [[thoughts/reading|read]] [[antilibrary|most of the time]], enjoy [[cinematheque|cinema]], and [[vibes|collect images]] on the internet. This is my [[/dating|date-me doc]] if you are interested ✨
