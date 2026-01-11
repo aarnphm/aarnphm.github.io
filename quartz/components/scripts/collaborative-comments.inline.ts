@@ -24,7 +24,6 @@ type BroadcastMessage = {
 let ws: WebSocket | null = null
 let comments: MultiplayerComment[] = []
 let activeSelection: Range | null = null
-let selectionIdleTimer: number | null = null
 
 function getAuthor(): string {
   let author = localStorage.getItem("comment-author")
@@ -115,23 +114,19 @@ function connectWebSocket() {
 }
 
 let activeComposer: HTMLElement | null = null
+let activeHighlight: HTMLSpanElement | null = null
+let activeModal: HTMLElement | null = null
 
 function hideComposer() {
   if (activeComposer) {
     document.body.removeChild(activeComposer)
     activeComposer = null
   }
-  activeSelection = null
-}
-
-function scheduleComposer() {
-  if (selectionIdleTimer !== null) {
-    window.clearTimeout(selectionIdleTimer)
+  if (activeHighlight) {
+    activeHighlight.replaceWith(...activeHighlight.childNodes)
+    activeHighlight = null
   }
-  selectionIdleTimer = window.setTimeout(() => {
-    selectionIdleTimer = null
-    handleTextSelection()
-  }, 120)
+  activeSelection = null
 }
 
 function handleTextSelection() {
@@ -147,14 +142,25 @@ function handleTextSelection() {
     hideComposer()
     return
   }
-  hideComposer()
   activeSelection = range.cloneRange()
 
-  setTimeout(() => showComposer(activeSelection!), 10)
+  const span = document.createElement("span")
+  span.className = "comment-highlight-temp"
+  try {
+    range.surroundContents(span)
+    activeHighlight = span
+  } catch (err) {
+    console.warn("failed to create temporary highlight", err)
+  }
+
+  showComposer(activeSelection!)
 }
 
 async function showComposer(range: Range) {
-  hideComposer()
+  if (activeComposer) {
+    document.body.removeChild(activeComposer)
+    activeComposer = null
+  }
   const articleText = getArticleText()
   const selectedText = range.toString()
   const anchorHash = await hashText(selectedText)
@@ -298,16 +304,31 @@ function renderAllComments() {
 
         const rect = span.getBoundingClientRect()
         const scrollTop = window.pageYOffset || document.documentElement.scrollTop
+        const scrollLeft = window.pageXOffset || document.documentElement.scrollLeft
 
         const bubble = document.createElement("div")
         bubble.className = "comment-bubble"
         bubble.dataset.commentId = comment.id
         bubble.style.top = `${rect.top + scrollTop}px`
+        bubble.style.left = `${rect.right + scrollLeft + 8}px`
 
         const avatar = document.createElement("div")
         avatar.className = "bubble-avatar"
         avatar.textContent = comment.author.charAt(0).toUpperCase()
         bubble.appendChild(avatar)
+
+        const preview = document.createElement("div")
+        preview.className = "comment-preview"
+        preview.textContent = comment.content
+        bubble.appendChild(preview)
+
+        bubble.onmouseenter = () => {
+          bubble.classList.add("expanded")
+        }
+
+        bubble.onmouseleave = () => {
+          bubble.classList.remove("expanded")
+        }
 
         bubble.onclick = () => {
           showCommentThread(comment.id)
@@ -325,10 +346,18 @@ function showCommentThread(commentId: string) {
   const comment = comments.find((c) => c.id === commentId)
   if (!comment) return
 
+  if (activeModal) {
+    if (activeModal.dataset.commentId === commentId) return
+    document.body.removeChild(activeModal)
+    activeModal = null
+  }
+
   const replies = comments.filter((c) => c.parentId === commentId && !c.deletedAt)
 
   const modal = document.createElement("div")
   modal.className = "comment-thread-modal"
+  modal.dataset.commentId = commentId
+  activeModal = modal
 
   const header = document.createElement("div")
   header.className = "modal-header"
@@ -338,10 +367,50 @@ function showCommentThread(commentId: string) {
   title.textContent = "Comment Thread"
 
   const closeButton = document.createElement("button")
+  closeButton.className = "modal-close"
   closeButton.textContent = "×"
   closeButton.onclick = () => {
-    document.body.removeChild(modal)
+    if (activeModal) {
+      document.body.removeChild(activeModal)
+      activeModal = null
+    }
   }
+
+  let isDragging = false
+  let dragStartX = 0
+  let dragStartY = 0
+  let modalStartX = 0
+  let modalStartY = 0
+
+  header.onmousedown = (e: MouseEvent) => {
+    if (e.target === closeButton) return
+    isDragging = true
+    dragStartX = e.clientX
+    dragStartY = e.clientY
+    const rect = modal.getBoundingClientRect()
+    modalStartX = rect.left
+    modalStartY = rect.top
+    modal.style.transform = "none"
+    modal.style.right = "auto"
+    modal.style.top = `${modalStartY}px`
+    modal.style.left = `${modalStartX}px`
+    e.preventDefault()
+  }
+
+  const onMouseMove = (e: MouseEvent) => {
+    if (!isDragging) return
+    const deltaX = e.clientX - dragStartX
+    const deltaY = e.clientY - dragStartY
+    modal.style.left = `${modalStartX + deltaX}px`
+    modal.style.top = `${modalStartY + deltaY}px`
+  }
+
+  const onMouseUp = () => {
+    isDragging = false
+  }
+
+  document.addEventListener("mousemove", onMouseMove)
+  document.addEventListener("mouseup", onMouseUp)
 
   header.appendChild(title)
   header.appendChild(closeButton)
@@ -352,45 +421,107 @@ function showCommentThread(commentId: string) {
   const commentEl = document.createElement("div")
   commentEl.className = "comment-item"
 
+  const commentHeader = document.createElement("div")
+  commentHeader.className = "comment-header"
+
+  const commentAvatar = document.createElement("div")
+  commentAvatar.className = "comment-avatar"
+  commentAvatar.textContent = comment.author.charAt(0).toUpperCase()
+
+  const commentInfo = document.createElement("div")
+  commentInfo.className = "comment-info"
+
+  const commentAuthor = document.createElement("div")
+  commentAuthor.className = "comment-author"
+  commentAuthor.textContent = comment.author
+
+  const commentTime = document.createElement("div")
+  commentTime.className = "comment-time"
+  commentTime.textContent = formatRelativeTime(comment.createdAt)
+
+  commentInfo.appendChild(commentAuthor)
+  commentInfo.appendChild(commentTime)
+  commentHeader.appendChild(commentAvatar)
+  commentHeader.appendChild(commentInfo)
+
   const commentText = document.createElement("div")
   commentText.className = "comment-text"
   commentText.textContent = comment.content
 
-  const commentMeta = document.createElement("div")
-  commentMeta.className = "comment-meta"
-  commentMeta.textContent = `${comment.author} • ${new Date(comment.createdAt).toLocaleString()}`
-
+  commentEl.appendChild(commentHeader)
   commentEl.appendChild(commentText)
-  commentEl.appendChild(commentMeta)
   content.appendChild(commentEl)
 
   for (const reply of replies) {
     const replyEl = document.createElement("div")
     replyEl.className = "reply-item"
 
+    const replyHeader = document.createElement("div")
+    replyHeader.className = "reply-header"
+
+    const replyAvatar = document.createElement("div")
+    replyAvatar.className = "reply-avatar"
+    replyAvatar.textContent = reply.author.charAt(0).toUpperCase()
+
+    const replyInfo = document.createElement("div")
+    replyInfo.className = "reply-info"
+
+    const replyAuthor = document.createElement("div")
+    replyAuthor.className = "reply-author"
+    replyAuthor.textContent = reply.author
+
+    const replyTime = document.createElement("div")
+    replyTime.className = "reply-time"
+    replyTime.textContent = formatRelativeTime(reply.createdAt)
+
+    replyInfo.appendChild(replyAuthor)
+    replyInfo.appendChild(replyTime)
+    replyHeader.appendChild(replyAvatar)
+    replyHeader.appendChild(replyInfo)
+
     const replyText = document.createElement("div")
     replyText.className = "reply-text"
     replyText.textContent = reply.content
 
-    const replyMeta = document.createElement("div")
-    replyMeta.className = "reply-meta"
-    replyMeta.textContent = `${reply.author} • ${new Date(reply.createdAt).toLocaleString()}`
-
+    replyEl.appendChild(replyHeader)
     replyEl.appendChild(replyText)
-    replyEl.appendChild(replyMeta)
     content.appendChild(replyEl)
   }
 
   const replyForm = document.createElement("div")
   replyForm.className = "reply-form"
 
-  const replyTextarea = document.createElement("textarea")
-  replyTextarea.placeholder = "Add a reply..."
+  const replyAvatar = document.createElement("div")
+  replyAvatar.className = "reply-form-avatar"
+  replyAvatar.textContent = getAuthor().charAt(0).toUpperCase()
+
+  const replyInputWrapper = document.createElement("div")
+  replyInputWrapper.className = "reply-input-wrapper"
+
+  const replyInput = document.createElement("div")
+  replyInput.className = "reply-input"
+  replyInput.contentEditable = "true"
+  replyInput.setAttribute("role", "textbox")
+  replyInput.setAttribute("aria-placeholder", "Reply")
+  replyInput.dataset.placeholder = "Reply"
 
   const replyButton = document.createElement("button")
-  replyButton.textContent = "Reply"
+  replyButton.className = "reply-submit"
+  replyButton.disabled = true
+  replyButton.innerHTML = `<svg width="24" height="24" fill="none" viewBox="0 0 24 24"><path fill="currentColor" fill-rule="evenodd" d="M12 16a.5.5 0 0 1-.5-.5V8.707l-3.146 3.147a.5.5 0 0 1-.708-.708l4-4a.5.5 0 0 1 .708 0l4 4a.5.5 0 0 1-.708.708L12.5 8.707V15.5a.5.5 0 0 1-.5.5" clip-rule="evenodd"></path></svg>`
+
+  replyInput.addEventListener("input", () => {
+    const content = replyInput.textContent?.trim() || ""
+    replyButton.disabled = content.length === 0
+    if (content.length === 0) {
+      replyInput.classList.add("empty")
+    } else {
+      replyInput.classList.remove("empty")
+    }
+  })
+
   replyButton.onclick = async () => {
-    const content = replyTextarea.value.trim()
+    const content = replyInput.textContent?.trim()
     if (!content) return
 
     const reply: MultiplayerComment = {
@@ -412,11 +543,15 @@ function showCommentThread(commentId: string) {
       ws.send(JSON.stringify({ type: "new", comment: reply }))
     }
 
-    replyTextarea.value = ""
+    replyInput.textContent = ""
+    replyInput.classList.add("empty")
+    replyButton.disabled = true
   }
 
-  replyForm.appendChild(replyTextarea)
-  replyForm.appendChild(replyButton)
+  replyInputWrapper.appendChild(replyInput)
+  replyInputWrapper.appendChild(replyButton)
+  replyForm.appendChild(replyAvatar)
+  replyForm.appendChild(replyInputWrapper)
 
   modal.appendChild(header)
   modal.appendChild(content)
@@ -433,21 +568,12 @@ document.addEventListener("nav", () => {
     if (activeComposer && event.target && activeComposer.contains(event.target as Node)) {
       return
     }
-    scheduleComposer()
+    handleTextSelection()
   }
 
   document.addEventListener("mouseup", mouseUp)
-  const selectionChange = () => {
-    if (activeComposer) return
-    scheduleComposer()
-  }
-  document.addEventListener("selectionchange", selectionChange)
   window.addCleanup(() => {
     hideComposer()
-    if (selectionIdleTimer !== null) {
-      window.clearTimeout(selectionIdleTimer)
-      selectionIdleTimer = null
-    }
     document
       .querySelectorAll(".comment-highlight")
       .forEach((el) => el.replaceWith(...el.childNodes))
@@ -459,6 +585,5 @@ document.addEventListener("nav", () => {
       ws = null
     }
     document.removeEventListener("mouseup", mouseUp)
-    document.removeEventListener("selectionchange", selectionChange)
   })
 })
