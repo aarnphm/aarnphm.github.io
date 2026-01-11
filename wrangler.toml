@@ -26,12 +26,26 @@ remote = true
 [[kv_namespaces]]
 binding = "STACKED_CACHE"
 id = "265f7849115a4b1ea8687bc9f8de54d6"
-preview_id = "4c407661817a4e1dbf6779ccdac0b341"
 remote = true
 
 [[r2_buckets]]
 binding = "LFS_BUCKET"
 bucket_name = "sites"
+
+[[durable_objects.bindings]]
+name = "MULTIPLAYER_COMMENTS"
+class_name = "MultiplayerComments"
+
+[[migrations]]
+tag = "comments-001"
+new_sqlite_classes = ["MultiplayerComments"]
+
+[[d1_databases]]
+binding = "COMMENTS_ROOM"
+database_name = "COMMENTS_ROOM"
+database_id = "a267f69f-5fc0-4fbd-a013-d81c4da2783e"
+migrations_dir = "migrations"
+remote = true
 
 [browser]
 binding = "BROWSER"

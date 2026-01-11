@@ -7,8 +7,8 @@ This means: no fallbacks, no hacks, no shortcuts. Production-grade, Google-quali
 ## non-negotiables
 
 - do not write comments
-- always write in lowercase
+- use `pnpm` by default
 - do not run bundle or build; assume the user runs `dev.ts` and inspect the running process instead of spawning your own
 - do not commit secrets; use `.env` locally and Cloudflare Secrets for the worker
-- transformers under quartz/plugins/transformers/ must not use filesystem access API of anytype
-- when thinking hard about a problem, use extended thinking with at least seven explicit steps before proposing a change.
+- transformers under @quartz/plugins/transformers/ MUST NOT use filesystem access
+- when thinking hard about a problem, use extended thinking as much as possible to reason hard about a problem.

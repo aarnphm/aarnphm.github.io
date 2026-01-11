@@ -20,3 +20,4 @@ worker-configuration.d.ts
 **/embeddings/*.json
 content/stream.md
 content/are.na.md
+migrations/

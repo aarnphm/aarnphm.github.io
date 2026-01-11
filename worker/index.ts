@@ -2,6 +2,7 @@ import LFS_CONFIG from "./.lfsconfig.txt"
 import handleArxiv from "./arxiv"
 import handleCurius from "./curius"
 import Garden from "./mcp"
+import { MultiplayerComments } from "./comments"
 import { GitHubHandler } from "./github-handler"
 import { OAuthProvider } from "@cloudflare/workers-oauth-provider"
 import { handleStackedNotesRequest } from "./stacked"
@@ -416,6 +417,8 @@ async function getObjectFromLFS(
 type Env = {
   LFS_BUCKET_URL?: string
   KEEP_HEADERS?: string
+  MULTIPLAYER_COMMENTS: DurableObjectNamespace
+  COMMENTS_ROOM: D1Database
   GITHUB_CLIENT_ID: string
   GITHUB_CLIENT_SECRET: string
   SESSION_SECRET: string
@@ -459,6 +462,12 @@ export default {
     if (url.searchParams.has("stackedNotes")) {
       const stacked = await handleStackedNotesRequest(request, env, ctx)
       if (stacked) return stacked
+    }
+
+    if (url.pathname.startsWith("/comments/")) {
+      const id = env.MULTIPLAYER_COMMENTS.idFromName("global")
+      const stub = env.MULTIPLAYER_COMMENTS.get(id)
+      return stub.fetch(request)
     }
 
     const apiHeaders: Record<string, string> = {
@@ -893,4 +902,4 @@ export default {
   },
 } satisfies ExportedHandler<Env>
 
-export { Garden }
+export { Garden, MultiplayerComments }
