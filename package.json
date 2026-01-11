@@ -151,14 +151,14 @@
     "zod": "^4.3.5"
   },
   "devDependencies": {
-    "@cloudflare/workers-types": "^4.20260109.0",
+    "@cloudflare/workers-types": "^4.20260111.0",
     "@modelcontextprotocol/inspector": "^0.18.0",
     "@types/d3": "^7.4.3",
     "@types/hast": "^3.0.4",
     "@types/js-yaml": "^4.0.9",
     "@types/katex": "^0.16.8",
     "@types/mdast": "^4.0.4",
-    "@types/node": "^25.0.5",
+    "@types/node": "^25.0.6",
     "@types/pretty-time": "^1.1.5",
     "@types/source-map-support": "^0.5.10",
     "@types/unist": "^3.0.3",

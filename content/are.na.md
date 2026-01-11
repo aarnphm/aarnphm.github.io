@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-01-10 20:52:09 GMT-05:00
+modified: 2026-01-11 02:51:22 GMT-05:00
 permalinks:
   - /website
   - /tweets
@@ -4641,6 +4641,12 @@ title: are.na
 
 ## opinions
 
+- https://tsvibt.blogspot.com/2025/11/llm-generated-text-is-not-testimony.html -- LLM-generated text is not testimony
+  - [meta]:
+    - date: 01/11/2026
+    - tags: [generative, ai]
+  - The main argument is that it is not epistemic matter but also an isuse of higher-order intent
+  - i.e LLM-generated text lacked the lived-experience depth. Though I do think this comes from a place of laziness of the people who just use LLM-generated text as is.
 - https://archive.is/57dY5 -- The Binge Purge TV’s streaming model is broken. It’s also not going away. For Hollywood, figuring that out will be a horror show.
   - [meta]:
     - date: 01/01/2026
@@ -4889,6 +4895,11 @@ title: are.na
 
 ## life is literature
 
+- https://larrycuban.wordpress.com/2020/09/29/another-look-at-tinkering-toward-utopia -- Another look at "Tinkerin Toward Utopia"
+  - [meta]:
+    - date: 01/11/2026
+    - tags: [books, behaviour, pedagogy]
+    - later: true
 - https://carinas.substack.com/p/there-is-so-much-love-in-trying -- There is so much love in trying
   - [meta]:
     - date: 01/02/2026
@@ -7276,6 +7287,14 @@ title: are.na
 
 ## technical
 
+- https://archive.is/goxZg -- Ralph Wiggum as a "software engineer" [--]
+  - [meta]:
+    - date: 01/11/2026
+    - tags: [agents]
+- https://rfd.shared.oxide.computer/rfd/0576 -- Using LLMs at Oxide
+  - [meta]:
+    - date: 01/11/2026
+    - tags: [rfd, behaviour, symbosis]
 - https://github.com/sirupsen/napkin-math#numbers -- Napkin math [**]
   - [meta]:
     - date: 01/02/2026
@@ -7787,6 +7806,11 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://x.com/getjonwithit/status/2009602836997505255 -- Mathematics is not a closed systems
+  - [meta]:
+    - date: 01/10/2026
+    - tags: [arguments, mathematics, longtermism]
+    - pinned: true
 - https://pages.jh.edu/rrynasi1/FoundationsOFMath/Literature/Topology/Vickers1989TopologyViaLogic.pdf -- Topology via logic
   - [meta]:
     - date: 01/03/2026

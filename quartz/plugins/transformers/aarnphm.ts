@@ -337,10 +337,50 @@ export const Aarnphm: QuartzTransformerPlugin<Partial<Options>> = (userOpts) => 
               children: [{ type: "text", value }],
             })
 
-            const transformPoetry = (target: HtmlElement, lang: string) => {
+            const renderPoetryChildren = (value: string): HtmlElement["children"] => {
+              const markers: number[] = []
+              for (let i = 0; i < value.length - 1; ) {
+                if (value[i] === "~" && value[i + 1] === "~") {
+                  markers.push(i)
+                  i += 2
+                  continue
+                }
+                i += 1
+              }
+
+              if (markers.length < 2) return [{ type: "text", value }]
+
+              const usableCount = markers.length - (markers.length % 2)
+              const children: HtmlElement["children"] = []
+              let cursor = 0
+
+              for (let i = 0; i < usableCount; i += 2) {
+                const start = markers[i]
+                const end = markers[i + 1]
+                const before = value.slice(cursor, start)
+                if (before) children.push({ type: "text", value: before })
+                const struck = value.slice(start + 2, end)
+                if (struck) {
+                  children.push({
+                    type: "element",
+                    tagName: "del",
+                    properties: {},
+                    children: [{ type: "text", value: struck }],
+                  })
+                }
+                cursor = end + 2
+              }
+
+              const tail = value.slice(cursor)
+              if (tail) children.push({ type: "text", value: tail })
+              return children.length === 0 ? [{ type: "text", value }] : children
+            }
+
+            const transformPoetry = (target: HtmlElement, value: string, lang: string) => {
               target.tagName = "pre"
               target.properties.className = ["poetry"]
               target.properties["data-language"] = lang
+              target.children = renderPoetryChildren(value)
               return toHtml(target, { allowDangerousHtml: true })
             }
 
@@ -378,9 +418,13 @@ export const Aarnphm: QuartzTransformerPlugin<Partial<Options>> = (userOpts) => 
               (node: Code) => string
             > = {
               poetry: (node: Code) =>
-                opts.code.poetry ? transformPoetry(createBaseElement(node), lang) : node.value,
+                opts.code.poetry
+                  ? transformPoetry(createBaseElement(node), node.value, lang)
+                  : node.value,
               poem: (node: Code) =>
-                opts.code.poetry ? transformPoetry(createBaseElement(node), lang) : node.value,
+                opts.code.poetry
+                  ? transformPoetry(createBaseElement(node), node.value, lang)
+                  : node.value,
               quotes: (node: Code) => (opts.code.quotes ? transformQuotes(node.value) : node.value),
               sms: (node: Code) =>
                 opts.code.sms ? transformSMS(createBaseElement(node), node.value) : node.value,

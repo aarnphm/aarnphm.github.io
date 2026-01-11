@@ -16,7 +16,7 @@ metadata:
     text_line    = { character - newline } ;
     ws           = { " " } ;
     character    = ? any printable ascii except newline ? ;
-modified: 2026-01-09 22:31:23 GMT-05:00
+modified: 2026-01-11 02:49:56 GMT-05:00
 seealso:
   - "[[word|dictionary]]"
   - "[[research|wip]]"
@@ -30,6 +30,10 @@ transclude:
   dynalist: false
   title: false
 ---
+
+> In this regard, LLM use may be viewed as a dietary choice: one may choose to (say) not eat meat — and at Oxide we wish to empathize with that disposition by making sure that vegetarian options are available when we eat together. But just as we accommodate those choices, those who make them must understand that others will make different decisions — and it is decidedly anti-social to interrupt someone’s meal to register disapproval with their choice of entrée.
+>
+> Bryan Cantrill, [_Using LLMs at Oxide_](https://rfd.shared.oxide.computer/rfd/0576)
 
 > Then I did the most ridiculous and the nerdiest thing: I visualized the HTML tag '</thinking>' in my mind to stop thinking.
 >

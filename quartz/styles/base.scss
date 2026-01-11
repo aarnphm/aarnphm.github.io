@@ -956,7 +956,9 @@ iframe.pdf {
   );
   background-size: 200% 100%;
   background-position: -100% 0;
-  transition: width 0.3s ease, opacity 0.3s ease;
+  transition:
+    width 0.3s ease,
+    opacity 0.3s ease;
   opacity: 0;
   z-index: 9999;
 }

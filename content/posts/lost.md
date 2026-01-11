@@ -1,8 +1,9 @@
 ---
 date: "2026-01-10"
 description: coup de foudre
+draft: true
 id: lost
-modified: 2026-01-10 20:43:29 GMT-05:00
+modified: 2026-01-11 02:14:57 GMT-05:00
 signature: AP
 tags:
   - lost
