@@ -65,8 +65,13 @@ const appendListToYaml = (list: Element, indent: number, lines: string[]): void 
   for (const child of list.children) {
     if (!isLi(child)) continue
 
-    const rawText = getFirstTextContent(child).trim()
     const nested = extractNestedList(child)
+    let rawText = ""
+    for (const ch of child.children as ElementContent[]) {
+      if (isElement(ch) && ch.tagName === "ul") continue
+      rawText += toString(ch)
+    }
+    rawText = rawText.trim()
 
     if (nested) {
       if (rawText.length > 0) {
@@ -96,8 +101,7 @@ const extractMetadata = (list: Element): StreamMetadata | null => {
   if (!firstItem) return null
 
   const label = getFirstTextContent(firstItem).trim().toLowerCase()
-  const metaMatch = label.match(/^\[meta\](?:\s*[:\-–—])?$/)
-  if (!metaMatch) return null
+  if (!/^\[meta\](?:\s*[:\-–—])?$/.test(label)) return null
 
   const metaList = extractNestedList(firstItem)
   if (!metaList || metaList.children.length === 0) return {}
@@ -155,13 +159,10 @@ const parseDateValue = (value: unknown): { date?: string; timestamp?: number } =
   let trimmed = value.trim()
   if (trimmed.length === 0) return {}
 
-  // strip timezone abbreviations like PST, PDT, EST, etc
   trimmed = trimmed.replace(/\s+(PST|PDT|EST|EDT|CST|CDT|MST|MDT)$/i, "")
 
-  // try parsing with Date.parse first
   let timestamp = Date.parse(trimmed)
 
-  // if that fails, try adding T separator for ISO-like formats
   if (Number.isNaN(timestamp) && /^\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}/.test(trimmed)) {
     const isoFormat = trimmed.replace(/^(\d{4}-\d{2}-\d{2})\s+(\d{2}:\d{2}.*)$/, "$1T$2")
     timestamp = Date.parse(isoFormat)
@@ -202,15 +203,10 @@ export const Stream: QuartzTransformerPlugin = () => {
             for (let i = 0; i < bodyChildren.length; i++) {
               const node = bodyChildren[i]
 
-              // skip whitespace text nodes and doctype
               if (node.type === "text" && (!node.value || node.value.trim().length === 0)) {
                 continue
               }
-              if (node.type === "doctype") {
-                continue
-              }
 
-              // h2 starts new entry with title
               if (isH2(node)) {
                 if (currentEntry) {
                   entries.push(currentEntry)
@@ -223,7 +219,6 @@ export const Stream: QuartzTransformerPlugin = () => {
                 continue
               }
 
-              // hr ends current entry
               if (isHr(node)) {
                 if (currentEntry) {
                   entries.push(currentEntry)
@@ -233,7 +228,6 @@ export const Stream: QuartzTransformerPlugin = () => {
                 continue
               }
 
-              // check if ul is metadata list
               if (isUl(node)) {
                 const metadata = extractMetadata(node)
                 if (metadata !== null) {
@@ -249,7 +243,6 @@ export const Stream: QuartzTransformerPlugin = () => {
                 }
               }
 
-              // everything else is content (if it's an element)
               if (!isElement(node)) continue
 
               if (!currentEntry) {
@@ -261,21 +254,12 @@ export const Stream: QuartzTransformerPlugin = () => {
               currentEntry.content.push(node)
             }
 
-            // push final entry if exists
             if (currentEntry) {
               entries.push(currentEntry)
             }
 
-            // remove meta lists and separators from tree
-            const children: RootContent[] = []
-            for (let i = 0; i < bodyChildren.length; i++) {
-              if (!indicesToRemove.has(i)) {
-                children.push(bodyChildren[i])
-              }
-            }
-            tree.children = children
+            tree.children = bodyChildren.filter((_, index) => !indicesToRemove.has(index))
 
-            // build final StreamData with IDs and sorted by timestamp
             const streamEntries: StreamEntry[] = entries.map((entry, idx) => {
               const entryId = `stream-entry-${idx}`
               for (const [contentIdx, contentNode] of entry.content.entries()) {
@@ -314,7 +298,6 @@ export const Stream: QuartzTransformerPlugin = () => {
               }
             })
 
-            // sort by timestamp (newest first)
             streamEntries.sort((a, b) => {
               if (a.timestamp && b.timestamp) return b.timestamp - a.timestamp
               if (a.timestamp) return -1

@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-01-11 09:46:55 GMT-05:00
+modified: 2026-01-11 10:14:34 GMT-05:00
 permalinks:
   - /website
   - /tweets
@@ -3660,6 +3660,12 @@ title: are.na
   - view: list
   - json: true
 
+- https://research.google/blog/alternating-updates-for-efficient-transformers/ -- Alternating updates for efficient transformers [**]
+  - [meta]:
+    - date: 01/11/2026
+    - tags: [architecture]
+    - pinned: true
+    - importance: 6
 - https://thinkingmachines.ai/blog/modular-manifolds/ -- Modular Manifold [**]
   - [meta]:
     - date: 01/11/2026
@@ -4705,7 +4711,7 @@ title: are.na
     - tags: [meliorism, intelligence]
     - pinned: true
     - socials:
-      - main: https://www.forethought.org/research/viatopia
+      - website: https://www.forethought.org/research/viatopia
   - Argument for [[posts/hyperabundance]], I believe we would reach to a hyperabundance state, if not sooner than reaching towards viatopia
 - https://tsvibt.blogspot.com/2025/11/llm-generated-text-is-not-testimony.html -- LLM-generated text is not testimony
   - [meta]:
