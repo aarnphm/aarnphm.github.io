@@ -281,8 +281,18 @@ pre.poetry {
   font-feature-settings: normal;
   font-variation-settings: normal;
 
+  .diff-add,
+  .diff-del,
   del {
     font-family: inherit;
+  }
+
+  .diff-add {
+    background-color: rgba(120, 200, 150, 0.25);
+  }
+
+  .diff-del {
+    background-color: rgba(220, 140, 140, 0.2);
   }
 
   &[data-language="vi"] {
