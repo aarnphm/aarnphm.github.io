@@ -4,13 +4,17 @@ description: «l’embarras du choix»
 draft: true
 id: "2025"
 layout: technical
-modified: 2026-01-10 10:09:34 GMT-05:00
+modified: 2026-01-11 08:54:17 GMT-05:00
 signature: AP
 tags:
   - growth
   - sapling
 title: hyperabundance
 ---
+
+https://newsletter.forethought.org/p/viatopia
+
+ad abundantiam
 
 <div style="font-style: italic">
 

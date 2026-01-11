@@ -9,6 +9,7 @@ socials:
   substack: https://livingalonealone.com/p/horizontverschmelzung?r=1z8i4s&utm_campaign=post&utm_medium=web&showWelcomeOnShare=false
 tags:
   - love
+  - poetry
   - friend
 title: Horizontverschmelzung
 ---

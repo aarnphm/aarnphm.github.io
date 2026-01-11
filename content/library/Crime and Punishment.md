@@ -6,7 +6,7 @@ description: a psychological novel about guilt, moral law, and redemption as a y
 id: Crime and Punishment
 modified: 2025-10-29 02:14:28 GMT-04:00
 posters: "[[library/posters/crime-and-punishment.jpg]]"
-status: finished
+status: evergreen
 subcategory: Dostoevsky
 tags:
   - philosophy

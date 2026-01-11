@@ -38,11 +38,30 @@ metadata:
     letter        = "a".."z" ;
     digit         = "0".."9" ;
     character     = ? any printable ascii except newline ? ;
-modified: 2026-01-11 04:16:30 GMT-05:00
+modified: 2026-01-11 09:48:45 GMT-05:00
 tags:
   - fruit
   - evergreen
 title: stream
+---
+
+- [meta]:
+  - date: 2026-01-11 07:53:01 GMT-05:00
+  - tags:
+    - moral
+
+I'm infatuated by the root of {{sidenotes[all evil]: I just finished [[movies/Nuremberg]] by Vanderbilt, where they dramatized the historical Nuremberg trials, through the lens of US psychatrists Dr. Douglas Kelley.}}, as supposed to the root of happiness. I say happiness here instead of good because I would argue universal good is intrinsic towards human nature, and how they became to be (i.e in the case of Nazi) has nothing to do with this innate good. The degree to which goodness is portrayed is then driven by how happy they are in life. A few line of questioning, circa [[library/Beyond Good and Evil|BGE]]:
+- is "universal good" claim a synthetic a priori judgment, an empirical generalization, or a regulative ideal, given [[thoughts/Philosophy]] limits on metaphysical knowledge in [[library/The Critique of Pure Reason|CPR]]? cf. BGE §11
+- if i treat good as intrinsic to human nature, am i covertly positing a thing in itself about the will that CPR says i cannot know? cf. BGE §2
+- does BGE's suspicion of dogmatism imply that "universal good" is just a refined prejudice, a metaphysical comfort smuggled in under psychological terms? cf. BGE §1
+- how does BGE's master and slave morality distinction reorder my good and evil axis, am i confusing good bad (noble vs base) with good evil (altruism vs harm)? cf. BGE §260
+- if values track types and rank, what would count as a universal good that does not erase difference, and is that coherent on [[thoughts/Philosophy and Nietzsche|Nietzsche]]'s anti realist view of value? cf. BGE §257
+- can Kant's universality test justify a universal good without presupposing a substantive end, or does any substantive end slide into heteronomy? cf. BGE §6
+- if reason seeks the unconditioned and produces antinomies in CPR, is "universal good" better treated as a regulative ideal rather than a constitutive truth claim? cf. BGE §3
+- if goodness scales with happiness in my claim, what ratio of happiness to goodness am i assuming, and does that ratio survive Nietzsche's herd morality critique? cf. BGE §202
+
+_ig it is time to revist BGE argument once again_
+
 ---
 
 ## accumulation of jagged taste
@@ -105,7 +124,7 @@ As such, the jaggedness stems from this **individuated friction**, because we ne
 - You reread the same version of the books because you want to memorize exactly, **word for word** what Camus wrote about how Husserlian intentionality embodied this absurd spirits despite its contradictory appearance:
   > Thinking is not unifying or making the appearance familiar under the guise of a great principle. Thinking is learning all over again how to see, directing one's consciousness, making of every image a privileged place. In other words, phenomenology declines to explain the world, it wants to be merely a description of actual experience. It confirms absurd thought in its initial assertion that there is ==no truth, but merely truths.== [...] Consciousness does not form the object of its understanding, it merely focuses, it is the act of attention, [...] it resembles the projector that suddenly focuses on an image [to borrow Bergsonian image]
 
-Per Ramsey's framework, the _crossroads_ is the wager that induces this friction, insofar as choosing a path/direction. Hyperabundance somewhat blurs this distinction, as in when you can sample both roads simultaneously, when the {{sidenotes[lovely robot]: I want to figure out better term to call these beings, because Shoggoth sounds mean and evil.}} can generate infinite variations of each path, when you can A/B test your life in real-time, the bet stops being a bet, and it _becomes_ a ::simulation of betting::, a performance of conviction without the underlying structure that made conviction possible.
+Per Ramsey's framework, the _crossroads_ is the wager that induces this friction, insofar as choosing a path/direction. Hyperabundance somewhat blurs this distinction, as in when you can sample both roads simultaneously, when the {{sidenotes[lovely robot]: I want to figure out better term to call these beings, because Shoggoth sounds mean and evil.}} can generate infinite variations of each path, when you can A/B test your life in real-time, the bet stops being a bet, and it _becomes_ a ==simulation of betting==, a performance of conviction without the underlying structure that made conviction possible.
 
 The fucked up thing is this is why we build recommendation systems in the first place, i.e. to accelerate convergence towards a generic-optimal. We are universally {{sidenotes[curved into engagement]: from a philosophy perspective, A.J. Ayer's positive emotivism can be used to describe this phenomenon, largely found through his seminar book [[library/Language, Truth & Logic|Language, Truth & Logic]]}}, rage-bait, click-through, time-on-page, which means they are selecting for writing that doesn't require you to cross any fields, writing that just meet you where you are, because _they know what you like even before you know it_.
 
@@ -132,7 +151,7 @@ _So you must resist, or might as well die._
     - o/eschatology
     - w/fiction
   - socials:
-      substack: https://open.substack.com/pub/livingalone/p/being-held-against-lonesome?r=1z8i4s&utm_campaign=post&utm_medium=web&showWelcomeOnShare=true
+    - substack: https://open.substack.com/pub/livingalone/p/being-held-against-lonesome?r=1z8i4s&utm_campaign=post&utm_medium=web&showWelcomeOnShare=true
 
 _tw: death, gore, body horror_
 

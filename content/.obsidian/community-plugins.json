@@ -10,5 +10,7 @@
   "hot-reload",
   "obsidian-sidenotes",
   "obsidian-quartz-runner",
-  "obsidian-style-settings"
+  "obsidian-style-settings",
+  "pseudocode-in-obs",
+  "obsidian-tikzjax"
 ]
