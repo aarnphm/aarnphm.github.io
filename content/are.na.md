@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-01-10 05:53:38 GMT-05:00
+modified: 2026-01-10 20:52:09 GMT-05:00
 permalinks:
   - /website
   - /tweets
@@ -143,6 +143,10 @@ title: are.na
 - [meta]:
   - view: list
 
+- https://x.com/PottsJustin/status/2009791656950657122 -- Aesop bathhouse in Montreal
+  - [meta]:
+    - date: 01/10/2026
+    - tags: [architecture]
 - https://x.com/phokarlsson/status/2009937260263686588 -- Relationship are an important component of personal growth [**]
   - [meta]:
     - date: 01/10/2026
@@ -2026,6 +2030,10 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://archive.ph/y5cUb -- A battle with my blood
+  - [meta]:
+    - date: 01/10/2026
+    - tags: [eschatology, leukemia]
 - https://otherinter.net/research/squad-wealth/ -- Squad Wealth
   - [meta]:
     - date: 01/09/2026
@@ -3620,6 +3628,11 @@ title: are.na
   - view: list
   - json: true
 
+- https://www.lesswrong.com/posts/K3aPmF5o37pYDqrFQ/taking-llms-seriously-as-language-models -- taking LLMs seriously, as a research directives
+  - [meta]:
+    - date: 01/10/2026
+    - tags: [research, ideas]
+    - later: true
 - https://modal.com/blog/gpu-health -- Keeping 20,000 GPUs healthy
   - [meta]:
     - date: 01/09/2026
