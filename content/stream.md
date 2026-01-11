@@ -38,11 +38,24 @@ metadata:
     letter        = "a".."z" ;
     digit         = "0".."9" ;
     character     = ? any printable ascii except newline ? ;
-modified: 2026-01-11 09:48:45 GMT-05:00
+modified: 2026-01-11 10:10:18 GMT-05:00
 tags:
   - fruit
   - evergreen
 title: stream
+---
+
+- [meta]:
+  - date: 2026-01-11 10:17:56 GMT-05:00
+  - tags:
+    - agents
+
+I mean we all heard about [RLM](https://alexzhang13.github.io/blog/2025/rlm/), but path to [[thoughts/AGI]] is to use recursively many large models, i.e Kimi + Qwen3 + MiniMax + Gemini 3 Pro + ChatGPT 5.2 Pro + Claude 4.5 Opus + Claude 4.5 Haiku. Subagent et al. and all that
+
+![[thoughts/images/elmo-fire.gif|just use them all.]]
+
+_update: oops, it seems like Nathan just released a [post](https://www.interconnects.ai/p/use-multiple-models) about this ahaha_
+
 ---
 
 - [meta]:
@@ -51,7 +64,7 @@ title: stream
     - moral
 
 I'm infatuated by the root of {{sidenotes[all evil]: I just finished [[movies/Nuremberg]] by Vanderbilt, where they dramatized the historical Nuremberg trials, through the lens of US psychatrists Dr. Douglas Kelley.}}, as supposed to the root of happiness. I say happiness here instead of good because I would argue universal good is intrinsic towards human nature, and how they became to be (i.e in the case of Nazi) has nothing to do with this innate good. The degree to which goodness is portrayed is then driven by how happy they are in life. A few line of questioning, circa [[library/Beyond Good and Evil|BGE]]:
-- is "universal good" claim a synthetic a priori judgment, an empirical generalization, or a regulative ideal, given [[thoughts/Philosophy]] limits on metaphysical knowledge in [[library/The Critique of Pure Reason|CPR]]? cf. BGE §11
+- is "universal good" claim a synthetic a priori judgment, an empirical generalization, or a regulative ideal, given [[thoughts/Philosophy and Kant|Kant's]] limits on metaphysical knowledge in [[library/The Critique of Pure Reason|CPR]]? cf. BGE §11
 - if i treat good as intrinsic to human nature, am i covertly positing a thing in itself about the will that CPR says i cannot know? cf. BGE §2
 - does BGE's suspicion of dogmatism imply that "universal good" is just a refined prejudice, a metaphysical comfort smuggled in under psychological terms? cf. BGE §1
 - how does BGE's master and slave morality distinction reorder my good and evil axis, am i confusing good bad (noble vs base) with good evil (altruism vs harm)? cf. BGE §260

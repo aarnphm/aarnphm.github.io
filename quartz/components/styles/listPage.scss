@@ -75,6 +75,14 @@ li.section-li {
         }
       }
 
+      .desc {
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        min-width: 0;
+      }
+
       & > .tag-highlights {
         display: flex;
         transition: color 0.3s;

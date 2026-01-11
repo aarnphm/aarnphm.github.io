@@ -49,131 +49,45 @@ export interface ArenaData {
   channels: ArenaChannel[]
 }
 
-/**
- * Serializable version of ArenaBlock for search index.
- * ElementContent fields (titleHtmlNode, htmlNode) are converted to HTML strings
- * for JSON serialization. Enables full-text search and modal reconstruction
- * without requiring build-time ElementContent access.
- */
 export interface ArenaBlockSearchable {
-  /** Unique block identifier matching DOM data-block-id */
   id: string
-
-  /** Slug of the channel containing this block */
   channelSlug: string
-
-  /** Display name of the channel for search result context */
   channelName: string
-
-  /** Plain text content (fallback if title unavailable) */
   content: string
-
-  /** Block title if available */
   title?: string
-
-  /** HTML string serialized from titleHtmlNode via hast-util-to-html */
   titleHtml?: string
-
-  /** HTML string serialized from htmlNode for modal sidebar display */
   blockHtml?: string
-
-  /** External URL if block references one */
   url?: string
-
-  /** Whether block should be visually highlighted */
   highlighted: boolean
-
-  /** Whether block is pinned to the top of the channel */
   pinned: boolean
-
-  /** Whether block is set to read for later */
   later: boolean
-
-  /** Prerendered embed HTML (Twitter, YouTube iframe, etc) */
   embedHtml?: string
-
-  /** Key-value metadata pairs (accessed date, author, etc) */
   metadata?: Record<string, unknown>
-
-  /** Geographic coordinates for map rendering */
   coordinates?: {
     lat: number
     lon: number
   }
-
-  /** Internal note slug reference if block links internally */
   internalSlug?: string
-
-  /** Internal note resolved href */
   internalHref?: string
-
-  /** Internal note anchor fragment */
   internalHash?: string
-
-  /** Internal title fragment */
   internalTitle?: string
-
-  /** Associated tags for filtering and search */
   tags?: string[]
-
-  /** Nested sub-items (notes/annotations on this block) */
   subItems?: ArenaBlockSearchable[]
-
-  /**
-   * True if this block has a prerendered modal div in the index page DOM.
-   * Optimization flag: if true, client can reuse existing modal;
-   * if false, client must reconstruct from JSON data.
-   */
   hasModalInDom: boolean
-
-  /** True if embed rendering is explicitly disabled */
   embedDisabled?: boolean
-
-  /** Numeric importance rating */
   importance?: number
 }
 
-/**
- * Channel metadata for search index.
- * Lightweight summary without full block data.
- */
 export interface ArenaChannelSearchable {
-  /** Channel identifier */
   id: string
-
-  /** Channel display name */
   name: string
-
-  /** Channel URL slug */
   slug: string
-
-  /** Total number of blocks in this channel */
   blockCount: number
 }
 
-/**
- * Complete search index for arena content.
- * Generated at build time in arenaPage.tsx emitter.
- * Emitted as static/arena-search.json for client-side consumption.
- */
 export interface ArenaSearchIndex {
-  /**
-   * Schema version for cache invalidation.
-   * Increment when making breaking changes to the index structure.
-   */
   version: string
-
-  /**
-   * All blocks from all channels in a flat array.
-   * Each block includes channel context (channelSlug, channelName).
-   * Enables efficient linear search and filtering.
-   */
   blocks: ArenaBlockSearchable[]
-
-  /**
-   * Channel metadata for quick lookups and navigation.
-   * Sorted by block count descending (same as index page).
-   */
   channels: ArenaChannelSearchable[]
 }
 
@@ -184,7 +98,6 @@ declare module "vfile" {
   }
 }
 
-// Matches trailing section containing one or more markers in any order
 const TRAILING_MARKERS_PATTERN = /(?:\s*\[(?:\*\*|--|—)\])+\s*$/
 const HIGHLIGHT_MARKER = /\[\*\*\]/
 const EMBED_DISABLED_MARKER = /\[(?:--|—)\]/
@@ -215,11 +128,9 @@ const isGithubUrl = (rawUrl: string): boolean => {
   }
 }
 
-// Get text content from li excluding nested ul elements
 const getTextContentExcludingNestedUl = (li: Element): string => {
   let text = ""
   for (const child of li.children as ElementContent[]) {
-    // skip nested ul elements
     if (isElement(child) && child.tagName === "ul") continue
     text += toString(child)
   }
@@ -227,7 +138,6 @@ const getTextContentExcludingNestedUl = (li: Element): string => {
 }
 
 const cloneElementContent = <T extends ElementContent>(node: T): T => {
-  // structuredClone preserves prototypes and avoids JSON serialization issues
   return typeof structuredClone === "function"
     ? structuredClone(node)
     : (JSON.parse(JSON.stringify(node)) as T)
@@ -236,8 +146,6 @@ const cloneElementContent = <T extends ElementContent>(node: T): T => {
 const COORDINATE_NUMBER_PATTERN = /-?\d+(?:\.\d+)?/g
 
 const parseCoordinateMetadata = (value: string): { lat: number; lon: number } | null => {
-  if (!value) return null
-
   const matches = value.match(COORDINATE_NUMBER_PATTERN)
   if (!matches || matches.length < 2) {
     return null
@@ -258,19 +166,9 @@ const parseCoordinateMetadata = (value: string): { lat: number; lon: number } | 
 }
 
 const elementContainsAnchor = (node: ElementContent): boolean => {
-  if (node.type !== "element") {
-    return false
-  }
-
-  if (node.tagName === "a") {
-    return true
-  }
-
-  if (!("children" in node) || !node.children) {
-    return false
-  }
-
-  return (node.children as ElementContent[]).some((child) => elementContainsAnchor(child))
+  if (node.type !== "element") return false
+  if (node.tagName === "a") return true
+  return node.children.some((child) => elementContainsAnchor(child))
 }
 
 const isElement = (node: RootContent | ElementContent): node is Element => node.type === "element"
@@ -316,8 +214,13 @@ const appendListToYaml = (list: Element, indent: number, lines: string[]): void 
   for (const child of list.children) {
     if (!isLi(child)) continue
 
-    const rawText = getFirstTextContent(child).trim()
     const nested = extractNestedList(child)
+    let rawText = ""
+    for (const ch of child.children as ElementContent[]) {
+      if (isElement(ch) && ch.tagName === "ul") continue
+      rawText += toString(ch)
+    }
+    rawText = rawText.trim()
 
     if (nested) {
       if (rawText.length > 0) {
@@ -369,8 +272,7 @@ export const Arena: QuartzTransformerPlugin = () => {
               if (!firstItem) return {}
 
               const label = getFirstTextContent(firstItem).trim().toLowerCase()
-              const metaMatch = label.match(/^\[meta\](?:\s*[:\-–—])?$/)
-              if (!metaMatch) return {}
+              if (!/^\[meta\](?:\s*[:\-–—])?$/.test(label)) return {}
 
               const metaList = extractNestedList(firstItem)
               if (!metaList || metaList.children.length === 0) return {}
@@ -495,19 +397,14 @@ export const Arena: QuartzTransformerPlugin = () => {
               return result
             }
 
-            // parse block from li element
             const parseBlock = (li: Element, depth = 0): ArenaBlock | null => {
-              // get text excluding nested ul to detect markers correctly
               const textContent = getTextContentExcludingNestedUl(li)
 
-              // extract trailing markers
-              const trailingMatch = textContent.match(TRAILING_MARKERS_PATTERN)
-              const trailingSection = trailingMatch ? trailingMatch[0] : ""
+              const trailingSection = textContent.match(TRAILING_MARKERS_PATTERN)?.[0] ?? ""
               const highlighted = HIGHLIGHT_MARKER.test(trailingSection)
               const embedDisabledFromMarker = EMBED_DISABLED_MARKER.test(trailingSection)
               const strippedContent = stripTrailingMarkers(textContent)
 
-              // find first <a> element
               let url: string | undefined
               let titleCandidate: string | undefined
 
@@ -525,11 +422,8 @@ export const Arena: QuartzTransformerPlugin = () => {
               const firstLink = findFirstLink(li)
 
               if (firstLink && depth === 0) {
-                const linkText = toString(firstLink).trim()
-                const strippedLinkText = stripTrailingMarkers(linkText)
-                if (strippedLinkText.length > 0) {
-                  titleCandidate = strippedLinkText
-                }
+                const linkText = stripTrailingMarkers(toString(firstLink).trim())
+                if (linkText.length > 0) titleCandidate = linkText
 
                 const href = firstLink.properties?.href
                 if (typeof href === "string" && /^https?:\/\//.test(href)) {
@@ -537,7 +431,6 @@ export const Arena: QuartzTransformerPlugin = () => {
                 }
               }
 
-              // check for plain URL with optional title
               if (depth === 0 && strippedContent.toLowerCase().startsWith("http")) {
                 const parsed = parseLinkTitle(strippedContent)
                 if (parsed) {
@@ -550,7 +443,6 @@ export const Arena: QuartzTransformerPlugin = () => {
                 }
               }
 
-              // nested blocks can have links too
               if (depth > 0 && firstLink && !url) {
                 const href = firstLink.properties?.href
                 if (typeof href === "string" && /^https?:\/\//.test(href)) {
@@ -565,24 +457,17 @@ export const Arena: QuartzTransformerPlugin = () => {
                 titleCandidate = url
               }
 
-              const fallbackContent = titleCandidate || strippedContent || url || ""
-              const blockId = `block-${blockCounter++}`
-
-              const blockEmbedDisabled = embedDisabledFromMarker || (url ? isGithubUrl(url) : false)
-
               const block: ArenaBlock = {
-                id: blockId,
-                content: fallbackContent,
+                id: `block-${blockCounter++}`,
+                content: titleCandidate || strippedContent || url || "",
                 title: titleCandidate,
                 url,
                 highlighted,
-                embedDisabled: blockEmbedDisabled,
+                embedDisabled: embedDisabledFromMarker || (url ? isGithubUrl(url) : false),
               }
 
-              // handle nested list
               const nestedList = extractNestedList(li)
               if (nestedList) {
-                // check for metadata first
                 const meta = extractMetadataFromList(nestedList)
                 if (meta.metadata) {
                   block.metadata = meta.metadata
@@ -631,15 +516,11 @@ export const Arena: QuartzTransformerPlugin = () => {
                 }
                 if (meta.tags) block.tags = meta.tags
 
-                // remove meta list (first item) if it exists and was successfully parsed
-                // only remove if we actually found metadata/tags and the first item matches [meta] pattern
                 if (nestedList.children.length > 0 && (meta.metadata || meta.tags)) {
                   const firstItem = nestedList.children.find(isLi)
                   if (firstItem) {
                     const label = getFirstTextContent(firstItem).trim().toLowerCase()
-                    const metaMatch = label.match(/^\[meta\](?:\s*[:\-–—])?$/)
-                    if (metaMatch) {
-                      // find the actual index and remove it
+                    if (/^\[meta\](?:\s*[:\-–—])?$/.test(label)) {
                       const metaIndex = nestedList.children.indexOf(firstItem)
                       if (metaIndex !== -1) {
                         nestedList.children.splice(metaIndex, 1)
@@ -648,7 +529,6 @@ export const Arena: QuartzTransformerPlugin = () => {
                   }
                 }
 
-                // parse remaining items as sub-blocks
                 const subItems: ArenaBlock[] = []
                 for (const child of nestedList.children) {
                   if (isLi(child)) {
@@ -659,28 +539,23 @@ export const Arena: QuartzTransformerPlugin = () => {
                 if (subItems.length > 0) block.subItems = subItems
               }
 
-              // schedule twitter embed fetch
               if (url && twitterUrlRegex.test(url)) {
-                const currentBlock = block
                 embedPromises.push(
                   fetchTwitterEmbed(url, locale)
                     .then((html) => {
-                      if (html) currentBlock.embedHtml = html
+                      if (html) block.embedHtml = html
                     })
                     .catch(() => undefined),
                 )
               }
 
-              // handle youtube embed
               if (url && !block.embedHtml) {
                 const youtubeEmbed = buildYouTubeEmbed(url)
                 if (youtubeEmbed) {
-                  const frameTitle = block.title ?? block.content ?? block.id
-                  block.embedHtml = `<iframe class="arena-modal-iframe arena-modal-iframe-youtube" title="YouTube embed: ${frameTitle.replace(/"/g, "&quot;")}" loading="lazy" data-block-id="${block.id}" src="${youtubeEmbed.src}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>`
+                  block.embedHtml = `<iframe class="arena-modal-iframe arena-modal-iframe-youtube" title="YouTube embed: ${(block.title ?? block.content ?? block.id).replace(/"/g, "&quot;")}" loading="lazy" data-block-id="${block.id}" src="${youtubeEmbed.src}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>`
                 }
               }
 
-              // apply link processing (wikilinks, internal links)
               const applyLinkProcessing = (node: ElementContent): ElementContent => {
                 const processTextNode = (value: string): ElementContent[] => {
                   const results: ElementContent[] = []
@@ -791,9 +666,7 @@ export const Arena: QuartzTransformerPlugin = () => {
                 return cloned
               }
 
-              // build titleHtmlNode from direct li children (with or without p wrapper)
               const buildTitleNode = (li: Element): ElementContent | undefined => {
-                // Check if content is wrapped in <p>
                 let contentChildren: ElementContent[] = li.children as ElementContent[]
 
                 for (const child of contentChildren) {
@@ -803,7 +676,6 @@ export const Arena: QuartzTransformerPlugin = () => {
                   }
                 }
 
-                // extract url from first <a> element
                 let linkHref: string | undefined
                 let linkElement: Element | undefined
 
@@ -818,7 +690,6 @@ export const Arena: QuartzTransformerPlugin = () => {
                   }
                 }
 
-                // extract title - can be text node OR element, or mixed content
                 let titleText: string | undefined
                 let foundSeparator = false
                 const titleElements: ElementContent[] = []
@@ -826,28 +697,23 @@ export const Arena: QuartzTransformerPlugin = () => {
                 for (const child of contentChildren) {
                   if (isElement(child) && child.tagName === "ul") break
 
-                  // Check for separator (emdash or double-hyphen)
                   if (child.type === "text") {
                     const text = child.value.trim()
-                    // Check if this is just a separator
                     if (text === "—" || text === "--") {
                       foundSeparator = true
                       continue
                     }
-                    // Or if it contains separator + title
                     const match = text.match(/^(?:—|--)\s*(.+)$/)
                     if (match && match[1]) {
                       titleText = stripTrailingMarkers(match[1]).trim()
                       foundSeparator = true
                       continue
                     }
-                    // Collect text nodes after separator
                     if (foundSeparator && text.length > 0) {
                       titleElements.push(child)
                     }
                   }
 
-                  // After finding separator, collect <a> elements (wikilinks)
                   if (
                     foundSeparator &&
                     isElement(child) &&
@@ -858,7 +724,6 @@ export const Arena: QuartzTransformerPlugin = () => {
                   }
                 }
 
-                // Process title if we have url and title content
                 if (linkHref && (titleText || titleElements.length > 0)) {
                   const wrapper: Element = {
                     type: "element",
@@ -871,14 +736,11 @@ export const Arena: QuartzTransformerPlugin = () => {
                     wrapper.children.push({ type: "text", value: titleText })
                   }
 
-                  // Add collected elements (text nodes and wikilinks)
                   wrapper.children.push(...(titleElements as any[]))
 
-                  // Apply link processing to handle any wikilinks in text
                   return applyLinkProcessing(wrapper)
                 }
 
-                // fallback: collect all content before nested ul
                 const collected: ElementContent[] = []
                 for (const child of li.children as ElementContent[]) {
                   if (isElement(child) && child.tagName === "ul") break
@@ -900,7 +762,6 @@ export const Arena: QuartzTransformerPlugin = () => {
 
               block.titleHtmlNode = buildTitleNode(li)
 
-              // aggregate all non-ul children for htmlNode
               const aggregateListItem = (li: Element): ElementContent => {
                 const collected: ElementContent[] = []
                 for (const child of li.children as ElementContent[]) {
@@ -919,7 +780,6 @@ export const Arena: QuartzTransformerPlugin = () => {
 
               block.htmlNode = aggregateListItem(li)
 
-              // find internal link
               const findInternalLink = (
                 node?: ElementContent,
               ):
@@ -978,7 +838,6 @@ export const Arena: QuartzTransformerPlugin = () => {
               return block
             }
 
-            // parse structure from hast tree
             const bodyChildren = tree.children.filter(
               (child) => child.type !== "doctype",
             ) as RootContent[]
@@ -986,11 +845,9 @@ export const Arena: QuartzTransformerPlugin = () => {
             for (let i = 0; i < bodyChildren.length; i++) {
               const node = bodyChildren[i]
 
-              // h2 starts a new channel
               if (isH2(node)) {
                 let name = toString(node).trim()
 
-                // check if h2 contains a link and extract name from it
                 const linkInH2 = node.children.find((ch) => isElement(ch) && ch.tagName === "a")
                 if (linkInH2 && isElement(linkInH2)) {
                   const href = linkInH2.properties?.href
@@ -1015,7 +872,6 @@ export const Arena: QuartzTransformerPlugin = () => {
                   blocks: [],
                 }
 
-                // handle titleHtmlNode if h2 contains anchor
                 if (elementContainsAnchor(node)) {
                   const span: Element = {
                     type: "element",
@@ -1030,7 +886,6 @@ export const Arena: QuartzTransformerPlugin = () => {
 
                 channels.push(channel)
               } else if (isUl(node)) {
-                // ul following h2 contains blocks
                 if (channels.length > 0) {
                   const currentChannel = channels[channels.length - 1]
                   const ulElement = node as Element
@@ -1046,8 +901,7 @@ export const Arena: QuartzTransformerPlugin = () => {
                     const firstItem = ulElement.children.find(isLi)
                     if (firstItem) {
                       const label = getFirstTextContent(firstItem).trim().toLowerCase()
-                      const metaMatch = label.match(/^\[meta\](?:\s*[:\-–—])?$/)
-                      if (metaMatch) {
+                      if (/^\[meta\](?:\s*[:\-–—])?$/.test(label)) {
                         const metaIndex = ulElement.children.indexOf(firstItem)
                         if (metaIndex !== -1) {
                           ulElement.children.splice(metaIndex, 1)
@@ -1066,7 +920,6 @@ export const Arena: QuartzTransformerPlugin = () => {
               }
             }
 
-            // wait for all twitter embeds
             if (embedPromises.length > 0) {
               await Promise.all(embedPromises)
             }
