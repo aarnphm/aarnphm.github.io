@@ -3,7 +3,7 @@ date: "2026-01-11"
 description: into you.
 id: dream
 layout: letter
-modified: 2026-01-11 03:41:56 GMT-05:00
+modified: 2026-01-11 03:49:24 GMT-05:00
 signature: AP
 tags:
   - poetry
@@ -55,8 +55,8 @@ Behind—
  the phone doesn't
  the phone
 
-+  then caught myself rehearsing
--  ——— caught myself reminiscing
+-  then caught myself rehearsing
++  —— caught myself reminiscing
     a conversation
     that we had
     out loud

@@ -337,7 +337,9 @@ export const Aarnphm: QuartzTransformerPlugin<Partial<Options>> = (userOpts) => 
               children: [{ type: "text", value }],
             })
 
-            const renderPoetryChildren = (value: string): HtmlElement["children"] => {
+            const renderStrikethroughChildren = (value: string): HtmlElement["children"] => {
+              if (!value) return []
+
               const markers: number[] = []
               for (let i = 0; i < value.length - 1; ) {
                 if (value[i] === "~" && value[i + 1] === "~") {
@@ -374,6 +376,36 @@ export const Aarnphm: QuartzTransformerPlugin<Partial<Options>> = (userOpts) => 
               const tail = value.slice(cursor)
               if (tail) children.push({ type: "text", value: tail })
               return children.length === 0 ? [{ type: "text", value }] : children
+            }
+
+            const renderPoetryChildren = (value: string): HtmlElement["children"] => {
+              const lines = value.split("\n")
+              const children: HtmlElement["children"] = []
+
+              for (let i = 0; i < lines.length; i += 1) {
+                const line = lines[i]
+                const diffMatch = line.match(/^([+-])\s/)
+                const diffLine = diffMatch ? ` ${line.slice(2)}` : line
+                const lineChildren = renderStrikethroughChildren(diffLine)
+
+                if (diffMatch) {
+                  children.push({
+                    type: "element",
+                    tagName: "span",
+                    properties: {
+                      className: [diffMatch[1] === "+" ? "diff-add" : "diff-del"],
+                    },
+                    children:
+                      lineChildren.length === 0 ? [{ type: "text", value: "" }] : lineChildren,
+                  })
+                } else {
+                  children.push(...lineChildren)
+                }
+
+                if (i < lines.length - 1) children.push({ type: "text", value: "\n" })
+              }
+
+              return children.length === 0 ? [{ type: "text", value: "" }] : children
             }
 
             const transformPoetry = (target: HtmlElement, value: string, lang: string) => {
