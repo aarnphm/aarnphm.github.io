@@ -281,6 +281,10 @@ pre.poetry {
   font-feature-settings: normal;
   font-variation-settings: normal;
 
+  del {
+    font-family: inherit;
+  }
+
   &[data-language="vi"] {
     font-family: "Playfair Display" !important;
   }

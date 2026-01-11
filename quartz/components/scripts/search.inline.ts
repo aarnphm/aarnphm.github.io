@@ -900,15 +900,29 @@ async function setupSearch(
       push(baseIndices, weights.base, true)
       push(semanticIds, weights.semantic, false)
 
-      const rankedEntries = Array.from(candidateItems.values())
-        .map((item) => ({ item, score: rrf.get(item.slug) ?? 0 }))
-        .sort((a, b) => b.score - a.score)
-        .slice(0, getNumSearchResults(modeForRanking))
+      const entries = Array.from(candidateItems.values()).map((item) => ({
+        item,
+        score: rrf.get(item.slug) ?? 0,
+        similarity: semanticSimilarity.get(item.id) ?? Number.NaN,
+      }))
+
+      const rankedEntries =
+        modeForRanking === "semantic" && useSemantic
+          ? entries
+              .sort((a, b) => {
+                const aHas = Number.isFinite(a.similarity)
+                const bHas = Number.isFinite(b.similarity)
+                if (aHas && bHas) return b.similarity - a.similarity
+                if (aHas) return -1
+                if (bHas) return 1
+                return b.score - a.score
+              })
+              .slice(0, getNumSearchResults(modeForRanking))
+          : entries.sort((a, b) => b.score - a.score).slice(0, getNumSearchResults(modeForRanking))
 
       const displayEntries: SimilarityResult[] = []
       for (const entry of rankedEntries) {
-        const similarity = semanticSimilarity.get(entry.item.id) ?? Number.NaN
-        displayEntries.push({ item: entry.item, similarity })
+        displayEntries.push({ item: entry.item, similarity: entry.similarity })
       }
 
       await displayResults(displayEntries)

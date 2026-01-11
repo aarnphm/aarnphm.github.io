@@ -5,7 +5,7 @@ date: "2024-10-10"
 description: a bag of chips/words/vernacular
 id: word
 layout: technical
-modified: 2026-01-10 08:46:30 GMT-05:00
+modified: 2026-01-11 02:04:31 GMT-05:00
 tags:
   - evergreen
 title: lists
@@ -72,3 +72,5 @@ title: lists
 - pesky
   - annoying to deal with
 - interlocutors
+- lowkenuinely
+  - i.e. lowkey + genuinely

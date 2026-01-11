@@ -532,8 +532,7 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options>>
 
       plugins.push(() => (tree: Root, file) => {
         const nodesToRemove: { parent: any; index: number }[] = []
-        const source =
-          typeof file?.value === "string" ? file.value : String(file?.value ?? "")
+        const source = typeof file?.value === "string" ? file.value : String(file?.value ?? "")
         const lines = source.split(/\r?\n/)
 
         visit(tree, "sidenoteDefinition", (node: any, index, parent) => {

@@ -38,7 +38,7 @@ metadata:
     letter        = "a".."z" ;
     digit         = "0".."9" ;
     character     = ? any printable ascii except newline ? ;
-modified: 2026-01-10 06:12:57 GMT-05:00
+modified: 2026-01-11 02:18:29 GMT-05:00
 tags:
   - fruit
   - evergreen
@@ -85,13 +85,33 @@ Ramsey, _aged 22_
 
 Ramsey's crossroads metaphor emphasizes the pattern of bets IS the belief you create towards a _gut feeling_, _conviction of sort_. A thing that you deem to be beautiful predicates upon a set of bets that you consider aesthetically pleasing. For example, I would consider Rembrandt to be the best painters because his drawing speaks towards the absurdism in the face structure and facticity of life. In a way that Rembrandt individuates my liking towards more expressionist painters, such as Egon Schiele, Oskar Kokoschka, etc. The way that we take bets in aesthetics formation works the same way we take bets in other ventures of life. One would live with consequences of choosing a direction, willingly sacrifice the alternatives knowing that such commitments and formulation of [[thoughts/taste]] will [[thoughts/emergent behaviour|emerges]] from within.
 
-***
+[———]
 
-"jagged taste" came up in a conversation with my therapist. we were talking about living in a {{sidenotes[hyperabundance]: i.e post-scarcity, unprecedented [[posts/hyperabundance|interconnectedness]], post-singularity to an extent}} world, and i found myself circling the same worry: the tension between filtering and creating. [JZ writes](https://jzhao.xyz/posts/aesthetics-and-taste) that we need to "do things without recipes more often." this tracks with Ramsey's formulation of bets.
+"jagged taste" came up in a conversation with my therapist. we were talking about living in a {{sidenotes[hyperabundance]: i.e post-scarcity, unprecedented [[posts/hyperabundance|interconnectedness]], post-singularity to an extent}} world, and i found myself circling the same worry, cf. the tension between filtering and creating. [Jacky writes](https://jzhao.xyz/posts/aesthetics-and-taste) that we need to "do things without recipes more often." this tracks with Ramsey's formulation of bets.
 
 the grief surfaced again while i was fine-tuning my [Qwen-based ghost](https://huggingface.co/Qwen/Qwen3-30B-A3B-Instruct-2507-FP8). there's this moment when the loss curve suddenly drops, _grokking_, and the model starts enforcing traits it found in my writing. watching this felt strange. my style is still evolving, still unfinished, yet here i was compressing a snapshot of myself into the [[thoughts/Eldrich horror|Lovecraftian horror]] of my own shortcomings. the thing i kept returning to: _i'm not able to write like Camus yet. i write Camus-adjacent. but i don't want to write like Camus. i need to find something Aaron-shaped._
 
 the gap started to feel unbridgeable. on one side: my rigorous sense of what i like. on the other: the curation speed, how fast i can filter so the _ghost_ generates queries that actually emulate how i think.
+
+[———]
+
+the main problem I observe is that one will never have to walk across any fields to verify anything, if one actually like Camus. Ramsey assumes distance has some intrinsic cost. _but what happens when_ $f(d) \to 0 \forall d \in \mathbb{N}^{*}$? what happens when you can sample every possible aesthetic direction simultaneously, and a Camus-adjacent or a Dostoevsky-adjacent, or a Bakhtin-adjacent just _poof appear out of thin air_? In this case, the degree of belief then collapsed into a _preference-simulation_ instead of subjective conviction.
+
+the jaggedness comes from _having to commit_. Dostoevsky couldn't just pivot to write like Turgenev when Notes from Underground wasn't landing like his previous work. He had to tunnel deeper into his own neurotic verbal tics, with run-on sentences that felt like you are traversing a vast landscape, so that the _underground man who won't shut up because shutting up means losing the only voice he possess_ can live on perpetually. Bakhtin's polyphony emerged from the made-up fantasy of Soviet's society (where socialism is more of an idea rather than practical decisions), having to encode his own philosophical dialogue disguised inside {{sidenotes[literacy criticism]: otherwise he would probably get shot or capture by the secret police}} since that is the only [[thoughts/forms of life|form]] it can exist.
+
+As such, the jaggedness stems from this **individuated friction**, because we need friction to formulate such shape. When you are essentially time-boxed and constrained at which books you can read in the local library, versus what your friends recommends, and what you can afford, you develop the _taste_ through ::enough encounters:: such that the same limited set allows you to form your own worldview. One like Rembrandt because that's what's is displayed in the museum that you can reach to. You reread the same version of the books because you want to memorize exactly, **word for word** what Camus wrote about how Husserlian intentionality embodied this absurd spirits despite its contradictory appearance:
+
+> Thinking is not unifying or making the appearance familiar under the guise of a great principle. Thinking is learning all over again how to see, directing one's consciousness, making of every image a privileged place. In other words, phenomenology declines to explain the world, it wants to be merely a description of actual experience. It confirms absurd thought in its initial assertion that there is ==no truth, but merely truths.== [...] Consciousness does not form the object of its understanding, it merely focuses, it is the act of attention, [...] it resembles the projector that suddenly focuses on an image [to borrow Bergsonian image]
+
+Per Ramsey's framework, the _crossroads_ is the wager that induces this friction, insofar as choosing a path/direction to work towards. Hyperabundance somewhat blurs this distinction, as in when you can sample both roads simultaneously, when the {{sidenotes[lovely robot]: I want to figure out better term to call these beings, because Shoggoth sounds mean and evil.}} can generate infinite variations of each path, when you can A/B test your life in real-time, the bet stops being a bet, and it _becomes_ a ::simulation of betting::, a performance of conviction without the underlying structure that made conviction possible.
+
+The fucked up thing is this is why we build recommendation systems in the first place, i.e. to accelerate convergence towards a generic-optimal. We are universally curved into engagement, ragebait, click-through, time-on-page, which means they are selecting for writing that doesn't require you to cross any fields, writing that just meet you where you are, because _they know what you like even before you know it_. In a way, these systems have the same infrastructure with those of {{sidenotes[gambling]: I don't find anything morally wrong towards gambling, other than it is built on top of our worst nature, _power-seeking_}}. Therefore, it creates this evolutionary pressure towards styles that are considered maximally accessible and frictionless. In a world of social pressure full of acted-up performance, the jaggedness gets smoothed out because those edges are considered turn-off.
+
+[——]
+
+I can't and will never be able to write like Camus. I acknowledge that there are a sets of technical skills that I lack. I also acknowledge that there are certain barriers for me to write in English (as a non-native speaker). Though the underlying issue about "becoming Camus" or adapting to any tone of writers you aspire to be is that it will require you to make ==irreversible bets== about what matter in your life. Camus staked his life on certain ideas about absurdism and resistance, and wrote in a particular historical moment where those stakes were real. His style emerged from constraint, from resistance, from the friction between what he wanted to say and what the world allowed him to say. For me, I'm trying to develop a style in an environment of infinite accommodation, where the AI will happily generate Camus-adjacent prose for me, where i can sample every possible variation on absurdist philosophy, where nothing commits because everything's reversible. _I don't want this_
+
+_So you must resist, or die_
 
 ---
 
@@ -102,6 +122,8 @@ the gap started to feel unbridgeable. on one side: my rigorous sense of what i l
   - tags:
     - o/eschatology
     - w/fiction
+  - socials:
+      substack: https://open.substack.com/pub/livingalone/p/being-held-against-lonesome?r=1z8i4s&utm_campaign=post&utm_medium=web&showWelcomeOnShare=true
 
 _tw: death, gore, body horror_
 
@@ -109,17 +131,17 @@ _tw: death, gore, body horror_
 >
 > —From _The Origins of Totalitarianism (1951)_, Hannah Arendt
 
-> Loneliness is the experience of being deserted by all human companions
->
-> —Hannah Arendt
-
 _the human nervous system registers absence of touch as a form of chronic low-grade stress, measurable in cortisol levels and immune function degradation_
 
-in the progress of building a lossless silhouette of someone i recently came across, i found myself lying here, in this room, a kind of coffin but with better lightning, wondering: _what is it exactly that i want? what is the emergent feelings that my brain trying to resist here?_ to be held, yes, but by ::whom::? by anyone? no, that obscene, that's the logic of the animal, and i am not an animal, i read books, i articulate, i've my own opinion on building [[thoughts/llms|my ghost]], critiques against the frankfürt school, i have refused to download tinder on principle, i resisted getting a new phone number to create a new hinge account. yet here i am, at, <time>07:23:34am</time> with my arms wrapped around my own chest like a man trying to hold his organs inside after a wound, which is precisely what it is, isn't it, a wound, except there is no blood, there is nothing to point to, a doctor would find nothing wrong with me and that is the worst part, that i am entirely healthy and entirely dying at the same time, avoiding working on an interview in 4 hours.
+in the progress of building a lossless silhouette of someone i recently came across, i found myself lying here, in this room, a kind of coffin but with better lightning, wondering: _what is it exactly that i want? what is the emergent feelings that my brain trying to resist here?_ to be held, yes, but by ::whom::? by anyone? no, that obscene, that's the logic of the animal, and i am not an animal, i read books, i try to articulate and put it down on paper, i've my own opinion on building [[thoughts/llms|my ghost]], critiques against the frankfürt school, i have refused to download tinder on principle, i resisted getting a new phone number to create a new hinge account. yet here i am, at, <time>07:23:34am</time> with my arms wrapped around my own chest like a man trying to hold his organs inside after a wound, which is precisely what it is, isn't it, a wound, except there is no blood, there is nothing to point to, a doctor would find nothing wrong with me and that is the worst part, that i am entirely healthy and entirely dying at the same time, avoiding working on an interview in 4 hours.
 
 the finns have a word, _kalsarikännit_, which loosely means to _drink alone in your underwear with no intention of going out_, and they have made this into a virtue, and i think perhaps i should move to finland, i should go to the forests where the wolves are, and i would lie down in the snow and the cold would be a kind of touch, wouldn't it, the cold touches everything, it is promiscuous with its attention, it does not ask whether you've earned it, it simply arrives and holds you and does not let go.
 
 but that's not what i want either. _maybe in 20 years_
+
+> Loneliness is the experience of being deserted by all human companions
+>
+> —Hannah Arendt
 
 [waking up...]
 
@@ -151,7 +173,7 @@ the hemoglobin has a viscosity of approximately four centipoise, but it moves fa
 
 the pack feeds, and i'm still fully conscious at this point, _which shouldn't be possible_. but apparently consciousness is the last thing to go, the brain hoards its glucose like a miser, and so i am aware of being devoured by the function of nature, i am aware of becoming less, and there is something almost erotic about it. no, not erotic, that's wrong, something...ECONOMIC, a transaction finally completing, as i'm paying my debt to the biosphere, and i'm repaying the calories i consumed, i.e. the pasta with wine, in addition to those elaborate dinners for people who did not stay.
 
-the fenrir, the old wolf, the myth-wolf, she is eating my liver and i am thinking about Prometheus, who had this done to him daily as punishment. This is not punishment, my dear Prometheus, this is a gift, as in the world accepting to what i offered, and Prometheus was wrong to scream. He should have been grateful, to be wanted so completely, to be USEFUL, to have eagles return for you again and again because you are worth returning for.
+the fenrir, the old wolf, the myth-wolf, she is eating my liver and i am thinking about Prometheus, who had this done to him daily as punishment. This is not punishment, my dear Prometheus, this is a gift, as in the world accepting to what i offered, and Prometheus, you were wrong to scream. You should have been grateful, to be wanted so completely, to be USEFUL, to have eagles return for you again and again because you are worth returning for.
 
 i am less than i was, perhaps 70 kilograms becoming 60 becoming 50 becoming 40, and the wolves are becoming more, as Lavoisier's principle states. i am becoming six wolves eight wolves, i am becoming the forest, i am becoming the snow that will melt in spring and flow into rivers and eventually into the sea, and is this not what loneliness always wanted? to stop being one thing and become all-of-things? to be held by the entire world bc you are now INSIDE the entire world?
 

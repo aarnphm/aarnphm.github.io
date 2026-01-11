@@ -2,7 +2,7 @@
 @use "../../styles/variables.scss" as *;
 @use "../../styles/mixin.scss" as *;
 
-.preview-inner:has(.stream-feed),
+.preview-container > .preview-inner:has(.stream-feed),
 [data-slug*="stream"] {
   section[class~="header"] {
     border-bottom: 0;
@@ -36,7 +36,7 @@
   }
 }
 
-.preview-inner:has(.stream-feed),
+.preview-container > .preview-inner:has(.stream-feed),
 .stream {
   margin: 0 auto;
   padding: 1rem 0;
