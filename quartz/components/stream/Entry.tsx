@@ -124,7 +124,7 @@ export const renderStreamEntry = (
         {socials && Object.keys(socials).length > 0 && (
           <div class="stream-entry-socials">
             {Object.entries(socials).map(([name, link]) => {
-              const href = typeof link === "string" ? link : link?.toString?.() ?? ""
+              const href = typeof link === "string" ? link : (link?.toString?.() ?? "")
               const isInternal = href.startsWith("/")
               return (
                 <address key={name}>

@@ -20,6 +20,7 @@ type ChunkMetadata = {
 
 type Manifest = {
   version: number
+  model: string
   dims: number
   dtype: string
   normalized: boolean
@@ -49,6 +50,34 @@ type Manifest = {
 
 type SearchHit = { id: number; score: number }
 
+const supportsSharedArrayBuffer = typeof SharedArrayBuffer !== "undefined"
+
+function buildQueryText(query: string, modelId?: string): string {
+  if (!modelId) return query
+  const modelName = modelId.toLowerCase()
+  if (modelName.includes("e5")) {
+    return `query: ${query}`
+  }
+  if (modelName.includes("qwen") && modelName.includes("embedding")) {
+    const task = "Given a web search query, retrieve relevant passages that answer the query"
+    return `Instruct: ${task}\nQuery: ${query}`
+  }
+  if (modelName.includes("embeddinggemma")) {
+    return `task: search result | query: ${query}`
+  }
+  return query
+}
+
+function resolveCfModel(modelId?: string): string {
+  if (!modelId || modelId === "google/embeddinggemma-300m") {
+    return "@cf/google/embeddinggemma-300m"
+  }
+  if (modelId.startsWith("@cf/")) {
+    return modelId
+  }
+  throw new Error(`unsupported embedding model '${modelId}'`)
+}
+
 class SemanticSearchEngine {
   private manifest: Manifest | null = null
   private vectorsView: Float32Array | null = null
@@ -57,6 +86,7 @@ class SemanticSearchEngine {
   private entryPoint = -1
   private maxLevel = 0
   private efDefault = 128
+  private normalized = true
   private levelGraph: { indptr: Uint32Array; indices: Uint32Array }[] = []
   private manifestIds: string[] = []
   private chunkMetadata: Record<string, ChunkMetadata> = {}
@@ -70,26 +100,32 @@ class SemanticSearchEngine {
   }
 
   async initialize() {
-    const res = await fetch("https://aarnphm.xyz/embeddings/manifest.json")
+    const manifestUrl = "https://aarnphm.xyz/embeddings/manifest.json"
+    const res = await fetch(manifestUrl)
     if (!res.ok) {
       throw new Error(`failed to fetch manifest: ${res.status}`)
     }
     this.manifest = (await res.json()) as Manifest
 
     if (this.manifest.vectors.dtype !== "fp32") {
-      throw new Error(`unsupported embedding dtype '${this.manifest.vectors.dtype}', expected fp32`)
+      throw new Error(
+        `unsupported embedding dtype '${this.manifest.vectors.dtype}', regenerate with fp32`,
+      )
     }
 
     this.dims = this.manifest.dims
     this.rows = this.manifest.rows
+    this.normalized = this.manifest.normalized !== false
     this.manifestIds = this.manifest.ids || []
     this.chunkMetadata = this.manifest.chunkMetadata || {}
 
     const totalBytes = this.rows * this.dims * Float32Array.BYTES_PER_ELEMENT
-    const buffer = new Float32Array(totalBytes)
+    const buffer = supportsSharedArrayBuffer
+      ? new Float32Array(new SharedArrayBuffer(totalBytes))
+      : new Float32Array(new ArrayBuffer(totalBytes))
 
     for (const shard of this.manifest.vectors.shards) {
-      const payload = await this.fetchBinary(shard.path)
+      const payload = await this.fetchBinary(new URL(shard.path, manifestUrl).toString())
       const view = new Float32Array(payload)
       if (view.length !== shard.rows * this.dims) {
         throw new Error(
@@ -101,7 +137,9 @@ class SemanticSearchEngine {
 
     this.vectorsView = buffer
 
-    const graphBuffer = await this.fetchBinary(this.manifest.hnsw.graph.path)
+    const graphBuffer = await this.fetchBinary(
+      new URL(this.manifest.hnsw.graph.path, manifestUrl).toString(),
+    )
 
     this.entryPoint = this.manifest.hnsw.entryPoint
     this.maxLevel = this.manifest.hnsw.maxLevel
@@ -156,7 +194,7 @@ class SemanticSearchEngine {
       this.entryPoint < 0 ||
       this.levelGraph.length === 0
     ) {
-      throw new Error("semantic graph not initialised")
+      throw new Error("semantic graph not initialised; ensure embeddings include hnsw metadata")
     }
     const ef = Math.max(this.efDefault, k * 10)
     let ep = this.entryPoint
@@ -238,12 +276,14 @@ class SemanticSearchEngine {
     })
 
     const aggregated = new Map<string, { rrfScore: number; maxScore: number }>()
-    const RRF_K = 60
+    const RRF_K = 36
+    const MAX_CHUNKS_PER_DOC = 20
 
     for (const [parentSlug, chunks] of Array.from(docChunks)) {
       chunks.sort((a, b) => b.score - a.score)
 
-      const rrfScore = chunks.reduce((sum, _, rank) => sum + 1.0 / (RRF_K + rank), 0)
+      const topChunks = chunks.slice(0, MAX_CHUNKS_PER_DOC)
+      const rrfScore = topChunks.reduce((sum, _, rank) => sum + 1.0 / (RRF_K + rank), 0)
       const maxScore = chunks[0].score
 
       aggregated.set(parentSlug, { rrfScore, maxScore })
@@ -260,17 +300,41 @@ class SemanticSearchEngine {
       throw new Error("search engine not initialized")
     }
 
-    const queryVec = new Float32Array(queryEmbedding)
-    const chunkResults = this.hnswSearch(queryVec, k * 3)
+    const queryVec = this.formatQueryEmbedding(queryEmbedding)
+    const chunkResults = this.hnswSearch(queryVec, Math.max(1, k) * 8)
 
     const aggregated = this.aggregateChunkResults(chunkResults)
 
     const results = Array.from(aggregated.entries())
-      .map(([slug, { rrfScore, maxScore }]) => ({ slug, score: maxScore }))
-      .sort((a, b) => b.score - a.score)
+      .map(([slug, { rrfScore, maxScore }]) => ({ slug, score: maxScore, rrfScore }))
+      .sort((a, b) => b.rrfScore - a.rrfScore)
       .slice(0, k)
+      .map(({ slug, score }) => ({ slug, score }))
 
     return results
+  }
+
+  getModelId(): string | undefined {
+    return this.manifest?.model
+  }
+
+  private formatQueryEmbedding(embedding: number[]): Float32Array {
+    const vec = new Float32Array(this.dims)
+    for (let i = 0; i < this.dims; i++) {
+      vec[i] = embedding[i] ?? 0
+    }
+    if (!this.normalized) return vec
+    let norm = 0
+    for (let i = 0; i < this.dims; i++) {
+      norm += vec[i] * vec[i]
+    }
+    norm = Math.sqrt(norm)
+    if (norm > 0) {
+      for (let i = 0; i < this.dims; i++) {
+        vec[i] /= norm
+      }
+    }
+    return vec
   }
 }
 
@@ -289,13 +353,13 @@ export async function semanticSearch(
   query: string,
   limit: number = 8,
 ): Promise<Array<{ slug: string; score: number }>> {
-  const prefixedQuery = `task: search result | query: ${query}`
-  const embedding = await env.AI.run("@cf/google/embeddinggemma-300m", {
+  const engine = await getSearchEngine()
+  const modelId = engine.getModelId()
+  const prefixedQuery = buildQueryText(query, modelId)
+  const embedding = await env.AI.run(resolveCfModel(modelId), {
     text: [prefixedQuery],
   })
 
   const embeddingData = embedding.data[0] as number[]
-
-  const engine = await getSearchEngine()
   return await engine.search(embeddingData, limit)
 }
