@@ -10,6 +10,10 @@
     position: static !important;
   }
 
+  .aside-container {
+    display: none;
+  }
+
   .page-header:not(.popover *) {
     padding-top: 0 !important;
   }
@@ -131,6 +135,41 @@
 
     [saved-theme="dark"] & {
       background-color: var(--highlight);
+    }
+  }
+
+  .stream-entry-socials {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    font-size: 0.85rem;
+
+    address {
+      font-style: normal;
+      margin: 0;
+    }
+
+    a {
+      text-decoration: underline;
+      color: var(--gray);
+
+      &:hover {
+        background: var(--light);
+      }
+    }
+  }
+
+  .stream-entry-importance {
+    font-size: 0.85rem;
+    color: var(--gray);
+
+    .stream-entry-importance-label {
+      color: var(--gray);
+    }
+
+    .stream-entry-importance-value {
+      font-variant-numeric: tabular-nums;
+      color: var(--darkgray);
     }
   }
 

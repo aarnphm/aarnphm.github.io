@@ -2,7 +2,7 @@
 date: "2025-12-13"
 description: and knowledge diffusion
 id: reading
-modified: 2025-12-20 05:46:28 GMT-05:00
+modified: 2026-01-11 09:40:57 GMT-05:00
 tags:
   - pattern
   - evergreen
@@ -16,6 +16,14 @@ I'm not yet _sure_ how I read. But this is more/less a collection of how people 
 > [!note]
 >
 > Andy Matuschak [recorded a video w/ Dwarkesh](https://www.youtube.com/watch?v=OFuu4pesKf0) that demonstrate his process of studying _hard problem_ (in this case quantum mechanics), which is a good case study of [close reading](https://en.wikipedia.org/wiki/Close_reading)
+
+## why books don't work
+
+[Matuschak](https://andymatuschak.org/books/) argues that book lacks a functioning cognitive models so that it left the readers to perform all of these metacognitive tasks, i.e annotations, reflection, essays-writing.
+
+He mentioned the model to be {{sidenotes[_transmissionism_]: according to this [article](https://pmc.ncbi.nlm.nih.gov/articles/PMC6189484), it is a teacher-centred teaching and learning model in which the teacher's role is to design lessons aimed at predetermined goals and to present knowledge and skills in a predetermined order, and the students' tasks are to **passively**a acquire teacher-specified knowledge and skills}}. verbatim:
+
+https://x.com/andy_matuschak/status/1081382567100600321
 
 ## how rtq read
 

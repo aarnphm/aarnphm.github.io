@@ -62,6 +62,11 @@ export const renderStreamEntry = (
   options: StreamEntryRenderOptions,
 ): ComponentChild => {
   const tags = Array.isArray(entry.metadata.tags) ? entry.metadata.tags : []
+  const socials =
+    entry.metadata.socials && typeof entry.metadata.socials === "object"
+      ? (entry.metadata.socials as Record<string, unknown>)
+      : null
+
   const timestampAttr =
     typeof options.timestampValue === "number" ? String(options.timestampValue) : undefined
 
@@ -114,6 +119,33 @@ export const renderStreamEntry = (
                 {String(tag)}
               </span>
             ))}
+          </div>
+        )}
+        {socials && Object.keys(socials).length > 0 && (
+          <div class="stream-entry-socials">
+            {Object.entries(socials).map(([name, link]) => {
+              const href = typeof link === "string" ? link : link?.toString?.() ?? ""
+              const isInternal = href.startsWith("/")
+              return (
+                <address key={name}>
+                  <a
+                    href={href}
+                    target={!isInternal ? "_blank" : ""}
+                    rel={!isInternal ? "noopener noreferrer" : ""}
+                    class={isInternal ? "internal" : "external"}
+                    data-no-popover
+                  >
+                    {name}
+                  </a>
+                </address>
+              )
+            })}
+          </div>
+        )}
+        {entry.importance !== undefined && (
+          <div class="stream-entry-importance">
+            <span class="stream-entry-importance-label">importance:</span>{" "}
+            <span class="stream-entry-importance-value">{entry.importance}</span>
           </div>
         )}
       </div>

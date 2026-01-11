@@ -1105,6 +1105,27 @@ body[data-arena-subpage="true"] {
   gap: 0.25rem;
 }
 
+.arena-meta-socials {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+
+  address {
+    font-style: normal;
+    margin: 0;
+  }
+
+  a {
+    text-decoration: underline;
+    color: var(--gray);
+  }
+}
+
+.arena-meta-importance {
+  font-variant-numeric: tabular-nums;
+  color: var(--gray);
+}
+
 span.tag-link {
   border: 1px solid var(--gray);
   border-radius: 0;

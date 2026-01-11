@@ -22,7 +22,7 @@
   "strictLineBreaks": false,
   "showInlineTitle": true,
   "rightToLeft": false,
-  "propertiesInDocument": "hidden",
+  "propertiesInDocument": "visible",
   "livePreview": false,
   "foldHeading": true,
   "foldIndent": true,

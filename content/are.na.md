@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-01-11 02:51:22 GMT-05:00
+modified: 2026-01-11 09:46:55 GMT-05:00
 permalinks:
   - /website
   - /tweets
@@ -967,6 +967,14 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://www.poetryfoundation.org/poets/charles-bukowski -- Charles Bukowski
+  - [meta]:
+    - date: 01/11/2026
+    - tags: [poets]
+- https://www.seungmee-lee.com/ -- Seungmee Lee
+  - [meta]:
+    - date: 01/11/2026
+    - tags: [designer, interaction]
 - https://en.wikipedia.org/wiki/Daniel_Day-Lewis -- Daniel Day-Lewis
   - [meta]:
     - date: 01/08/2026
@@ -2030,7 +2038,31 @@ title: are.na
 - [meta]:
   - json: true
 
-- https://archive.ph/y5cUb -- A battle with my blood
+- https://www.astralcodexten.com/p/the-permanent-emergency -- The Permanent Emergency
+  - [meta]:
+    - date: 01/11/2026
+    - tags: [life, parents]
+- https://dark.ronacher.eu/2026/1/11/i-have/ -- I have Thus I Deserve
+  - [meta]:
+    - date: 01/11/2026
+    - tags: [influence, politics]
+  - i.e. how billionaires are simply as influential as the people in the White House.
+- https://cognitivemedium.com/tat/index.html -- Thought as a Technology [**]
+  - [meta]:
+    - date: 01/11/2026
+    - tags: [interface, learning]
+    - pinned: true
+    - importance: 8
+- https://www.neelnanda.io/blog/51-socratic-persuasion -- Socratic Persuasion: Giving Opinionated Yet Truth-Seeking Advice [**]
+  - [meta]:
+    - date: 01/11/2026
+    - tags: [logic, rationality, subjective]
+- https://phoenixscreenwriters.org/theres-two-kinds-of-people-bill-true -- There's two kinds of people
+  - [meta]:
+    - date: 01/11/2026
+    - tags: [life, media]
+    - later: true
+- https://archive.ph/y5cUb -- A battle with my blood [--]
   - [meta]:
     - date: 01/10/2026
     - tags: [eschatology, leukemia]
@@ -2116,7 +2148,7 @@ title: are.na
   - [meta]:
     - date: 01/01/2026
     - tags: [review]
-- https://www.visakanv.com/blog/relationships -- o/relationship are challenging and a lot of work
+- https://www.visakanv.com/blog/relationships -- relationship are challenging and a lot of work
   - [meta]:
     - date: 12/31/2025
     - tags: [love, being]
@@ -3628,6 +3660,26 @@ title: are.na
   - view: list
   - json: true
 
+- https://thinkingmachines.ai/blog/modular-manifolds/ -- Modular Manifold [**]
+  - [meta]:
+    - date: 01/11/2026
+    - tags: [optimizer, training]
+    - later: true
+    - importance: 7
+- https://yifanzhang-pro.github.io/deep-delta-learning/ -- Deep Delta Learning
+  - [meta]:
+    - date: 01/11/2026
+    - tags: [architecture]
+    - later: true
+- https://archive.is/MFwot -- TF32 data types, NVIDIA [--]
+  - [meta]:
+    - date: 01/11/2026
+    - tags: [quantization]
+- https://huggingface.co/blog/hf-bitsandbytes-integration -- A Gentle Introduction to 8-bit Matrix Multiplication for transformers at scale using Hugging Face Transformers, Accelerate and bitsandbytes
+  - [meta]:
+    - date: 01/11/2026
+    - tags: [quantization, serving, scaling]
+  - see also: [[thoughts/quantization]]
 - https://www.lesswrong.com/posts/K3aPmF5o37pYDqrFQ/taking-llms-seriously-as-language-models -- taking LLMs seriously, as a research directives
   - [meta]:
     - date: 01/10/2026
@@ -4641,13 +4693,27 @@ title: are.na
 
 ## opinions
 
+- https://antirez.com/news/158 -- Don't fall into the anti-AI hype [--]
+  - [meta]:
+    - date: 01/11/2026
+    - tags: [arguments, agents]
+  - A call for a more democratic future of agentic tooling, which I think is already happen with all of these open source tools and model ecosystems.
+  - cf. https://github.com/snarktank/ralph
+- https://newsletter.forethought.org/p/viatopia -- What sort of post-superintelligence society should we aim for?
+  - [meta]:
+    - date: 01/11/2026
+    - tags: [meliorism, intelligence]
+    - pinned: true
+    - socials:
+      - main: https://www.forethought.org/research/viatopia
+  - Argument for [[posts/hyperabundance]], I believe we would reach to a hyperabundance state, if not sooner than reaching towards viatopia
 - https://tsvibt.blogspot.com/2025/11/llm-generated-text-is-not-testimony.html -- LLM-generated text is not testimony
   - [meta]:
     - date: 01/11/2026
     - tags: [generative, ai]
   - The main argument is that it is not epistemic matter but also an isuse of higher-order intent
   - i.e LLM-generated text lacked the lived-experience depth. Though I do think this comes from a place of laziness of the people who just use LLM-generated text as is.
-- https://archive.is/57dY5 -- The Binge Purge TV’s streaming model is broken. It’s also not going away. For Hollywood, figuring that out will be a horror show.
+- https://archive.is/57dY5 -- The Binge Purge TV’s streaming model is broken. It’s also not going away. For Hollywood, figuring that out will be a horror show. [--]
   - [meta]:
     - date: 01/01/2026
     - tags: [media, pop culture]
@@ -4895,6 +4961,14 @@ title: are.na
 
 ## life is literature
 
+- https://stanfordsteamtunnels.wordpress.com/wp-content/uploads/2018/08/stanford-steam-tunnels.pdf -- Stanford Steam Tunnels
+  - [meta]:
+    - date: 01/11/2026
+    - tags: [architecture]
+- https://orgwatch.issarice.com/?organization=Future+of+Humanity+Institute -- Information for Future of Humanity Institute
+  - [meta]:
+    - date: 01/11/2026
+    - tags: [longtermism, statistics, prediction market]
 - https://larrycuban.wordpress.com/2020/09/29/another-look-at-tinkering-toward-utopia -- Another look at "Tinkerin Toward Utopia"
   - [meta]:
     - date: 01/11/2026
@@ -5371,6 +5445,10 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://www.darioamodei.com/essay/machines-of-loving-grace -- Machines of Loving Grace [**]
+  - [meta]:
+    - date: 01/11/2026
+    - tags: [meliorism, superintelligence]
 - https://www.youtube.com/watch?v=9ztLmWvlS1c -- The Spell of Linguistic Philosophy, Bernard Williams & Bryan Magee (1977)
   - [meta]:
     - date: 01/09/2026
@@ -5827,6 +5905,14 @@ title: are.na
 
 ## stream
 
+- https://en.wikipedia.org/wiki/List_of_Latin_phrases_(full) -- List of Latin phrases
+  - [meta]:
+    - date: 01/11/2026
+    - tags: [word]
+- https://nuremberg.law.harvard.edu/ -- Nuremberg trials
+  - [meta]:
+    - date: 01/11/2026
+    - tags: [history, war, crime]
 - https://kexue.fm/content.html
   - [meta]:
     - date: 01/02/2026
@@ -6859,6 +6945,10 @@ title: are.na
 
 ## prompts
 
+- https://x.com/AmandaAskell/status/1765207842993434880 -- Claude 3 System Prompt
+  - [meta]:
+    - date: 01/11/2026
+    - tags: [soul, behaviour]
 - https://github.com/jessfraz/dotfiles/blob/main/.codex/AGENTS.md
   - [meta]:
     - date: 01/09/2026
@@ -7287,6 +7377,10 @@ title: are.na
 
 ## technical
 
+- https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents -- Effective context engineering for AI agent system
+  - [meta]:
+    - date: 01/11/2026
+    - tags: [scaling]
 - https://archive.is/goxZg -- Ralph Wiggum as a "software engineer" [--]
   - [meta]:
     - date: 01/11/2026

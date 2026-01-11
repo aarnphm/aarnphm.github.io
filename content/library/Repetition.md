@@ -1,14 +1,16 @@
 ---
 author: Søren Kierkegaard
 category: philosophy
-language: danish
-date: 2025-09-18
+date: "2025-09-18"
 description: kierkegaard uses the idea of repetition to probe memory, love, and faith, asking whether genuine renewal is possible in life.
 id: Repetition
-modified: 2025-10-29 02:14:35 GMT-04:00
+language: danish
+modified: 2026-01-11 07:58:11 GMT-05:00
 posters: "[[library/posters/repetition.jpg]]"
 status: to read
-subcategory: psychology
+subcategory:
+  - love
+  - faith
 tags:
   - philosophy
 title: Repetition

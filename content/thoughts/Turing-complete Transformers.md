@@ -4,7 +4,7 @@ description: well, here we go again.
 id: Turing-complete Transformers
 modified: 2025-12-24 18:21:52 GMT-05:00
 tags:
-  - seed
+  - pattern
   - ml
 title: Turing-complete Transformers
 ---
@@ -27,3 +27,5 @@ Turing machine is not to be found in nature. They're to be found in our _interpr
 
 John Searle
 ```
+
+the [paper](https://openreview.net/forum?id=MGWsPGogLH) detailed what is very similar to the setup of [recursive language model](https://alexzhang13.github.io/blog/2025/rlm/), ideally we want to deal with long-horizon tasks more effectively and economically viable.

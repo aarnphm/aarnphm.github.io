@@ -12,6 +12,7 @@ export interface StreamEntry {
   content: ElementContent[]
   date?: string
   timestamp?: number
+  importance?: number
 }
 
 export interface StreamData {
@@ -101,20 +102,52 @@ const extractMetadata = (list: Element): StreamMetadata | null => {
   const metaList = extractNestedList(firstItem)
   if (!metaList || metaList.children.length === 0) return {}
 
-  const yamlLines: string[] = []
-  appendListToYaml(metaList, 0, yamlLines)
-  const yamlSource = yamlLines.join("\n")
-  if (yamlSource.trim().length === 0) return {}
+  const metadata: StreamMetadata = {}
 
-  try {
-    const parsed = yaml.load(yamlSource)
-    if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) {
-      return {}
+  for (const item of metaList.children) {
+    if (!isLi(item)) continue
+    const raw = getFirstTextContent(item).trim()
+    const sublist = extractNestedList(item)
+
+    let keySource: string | undefined
+    let value: string | undefined
+
+    if (raw.length > 0) {
+      const delimiterIndex = raw.indexOf(":")
+      if (delimiterIndex !== -1) {
+        keySource = raw.slice(0, delimiterIndex).trim()
+        value = raw.slice(delimiterIndex + 1).trim()
+      } else if (sublist) {
+        keySource = raw.trim().toLowerCase()
+        value = ""
+      }
+    } else if (sublist) {
+      value = ""
     }
-    return parsed as StreamMetadata
-  } catch {
-    return {}
+
+    if (!keySource) continue
+
+    const normalizedKey = keySource.toLowerCase().replace(/\s+/g, "_")
+
+    if (sublist && (!value || value.length === 0)) {
+      const yamlLines: string[] = []
+      appendListToYaml(sublist, 0, yamlLines)
+      const yamlSource = yamlLines.join("\n")
+
+      if (yamlSource.trim().length > 0) {
+        const parsed = yaml.load(yamlSource)
+        if (parsed && typeof parsed === "object") {
+          metadata[normalizedKey] = parsed
+          continue
+        }
+      }
+    }
+
+    if (!value || value.length === 0) continue
+    metadata[normalizedKey] = value
   }
+
+  return Object.keys(metadata).length > 0 ? metadata : {}
 }
 
 const parseDateValue = (value: unknown): { date?: string; timestamp?: number } => {
@@ -254,13 +287,30 @@ export const Stream: QuartzTransformerPlugin = () => {
 
               const { date, timestamp } = parseDateValue(entry.metadata.date)
 
+              let importance: number | undefined
+              const importanceValue = entry.metadata.importance
+              if (importanceValue !== undefined) {
+                const parsed =
+                  typeof importanceValue === "number"
+                    ? importanceValue
+                    : Number.parseFloat(String(importanceValue))
+                if (!Number.isNaN(parsed) && Number.isFinite(parsed)) {
+                  importance = parsed
+                }
+              }
+
+              const cleanMetadata = { ...entry.metadata }
+              delete cleanMetadata.date
+              delete cleanMetadata.importance
+
               return {
                 id: entryId,
                 title: entry.title ? toString(entry.title) : undefined,
-                metadata: entry.metadata,
+                metadata: cleanMetadata,
                 content: entry.content,
                 date,
                 timestamp,
+                importance,
               }
             })
 

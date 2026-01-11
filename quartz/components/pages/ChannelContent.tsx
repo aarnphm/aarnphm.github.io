@@ -16,27 +16,14 @@ const substackPostRegex = /^https?:\/\/[^/]+\/p\/[^/]+/i
 const pdfUrlRegex = /\.pdf(?:[?#].*)?$/i
 
 const extractFilenameFromUrl = (url: string): string => {
-  try {
-    const urlObj = new URL(url)
-    const pathname = urlObj.pathname
-    const parts = pathname.split("/")
-    const lastPart = parts[parts.length - 1]
-    return lastPart || "document.pdf"
-  } catch {
-    return "document.pdf"
-  }
+  const urlObj = new URL(url)
+  const pathname = urlObj.pathname
+  const parts = pathname.split("/")
+  const lastPart = parts[parts.length - 1]
+  return lastPart || "document.pdf"
 }
 
-const isPdfUrl = (url: string): boolean => {
-  if (pdfUrlRegex.test(url)) return true
-
-  // Detect common PDF hosting patterns (excluding arxiv since we redirect those)
-  const pdfHosts = [
-    /^https?:\/\/[^/]*\.pdf$/i, // domain.pdf
-  ]
-
-  return pdfHosts.some((pattern) => pattern.test(url))
-}
+const isPdfUrl = (url: string): boolean => pdfUrlRegex.test(url)
 
 type ArenaModalMapProps = {
   coordinates?: ArenaBlock["coordinates"]
@@ -424,8 +411,23 @@ export default (() => {
         })
       }
 
+      if (block.importance !== undefined) {
+        metadataEntries.push({
+          label: "importance",
+          value: <span class="arena-meta-importance">{block.importance}</span>,
+        })
+      }
+
       if (block.metadata) {
-        const consumedKeys = new Set(["accessed", "accessed_date", "date", "tags", "tag", "coord"])
+        const consumedKeys = new Set([
+          "accessed",
+          "accessed_date",
+          "date",
+          "tags",
+          "tag",
+          "coord",
+          "socials",
+        ])
         const additionalEntries = Object.entries(block.metadata)
           .filter(([key, value]) => {
             if (typeof value !== "string" || value.trim().length === 0) return false
@@ -451,6 +453,38 @@ export default (() => {
                   {tag}
                 </span>
               ))}
+            </span>
+          ),
+        })
+      }
+
+      const socials =
+        block.metadata?.socials && typeof block.metadata.socials === "object"
+          ? (block.metadata.socials as Record<string, unknown>)
+          : null
+
+      if (socials && Object.keys(socials).length > 0) {
+        metadataEntries.push({
+          label: "média",
+          value: (
+            <span class="arena-meta-socials">
+              {Object.entries(socials).map(([name, link]) => {
+                const href = typeof link === "string" ? link : (link?.toString?.() ?? "")
+                const isInternal = href.startsWith("/")
+                return (
+                  <address key={name}>
+                    <a
+                      href={href}
+                      target={!isInternal ? "_blank" : ""}
+                      rel={!isInternal ? "noopener noreferrer" : ""}
+                      class={isInternal ? "internal" : "external"}
+                      data-no-popover
+                    >
+                      {name}
+                    </a>
+                  </address>
+                )
+              })}
             </span>
           ),
         })
@@ -576,7 +610,6 @@ export default (() => {
                 {displayUrl && (
                   <div class="arena-modal-url-bar">
                     <button
-                      // @ts-ignore
                       type="button"
                       class="arena-url-copy-button"
                       data-url={displayUrl}

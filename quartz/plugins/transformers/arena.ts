@@ -7,6 +7,7 @@ import { fetchTwitterEmbed, twitterUrlRegex } from "./twitter"
 import { splitAnchor, transformLink, stripSlashes, FullSlug } from "../../util/path"
 import { createWikilinkRegex, parseWikilink, resolveWikilinkTarget } from "../../util/wikilinks"
 import { buildYouTubeEmbed } from "../../util/youtube"
+import yaml from "js-yaml"
 
 export interface ArenaBlock {
   id: string
@@ -20,7 +21,7 @@ export interface ArenaBlock {
   later?: boolean
   htmlNode?: ElementContent
   embedHtml?: string
-  metadata?: Record<string, string>
+  metadata?: Record<string, unknown>
   coordinates?: {
     lat: number
     lon: number
@@ -31,6 +32,7 @@ export interface ArenaBlock {
   internalTitle?: string
   tags?: string[]
   embedDisabled?: boolean
+  importance?: number
 }
 
 export interface ArenaChannel {
@@ -91,7 +93,7 @@ export interface ArenaBlockSearchable {
   embedHtml?: string
 
   /** Key-value metadata pairs (accessed date, author, etc) */
-  metadata?: Record<string, string>
+  metadata?: Record<string, unknown>
 
   /** Geographic coordinates for map rendering */
   coordinates?: {
@@ -126,6 +128,9 @@ export interface ArenaBlockSearchable {
 
   /** True if embed rendering is explicitly disabled */
   embedDisabled?: boolean
+
+  /** Numeric importance rating */
+  importance?: number
 }
 
 /**
@@ -305,6 +310,36 @@ const extractNestedList = (li: Element): Element | null => {
   return null
 }
 
+const appendListToYaml = (list: Element, indent: number, lines: string[]): void => {
+  const indentStr = "  ".repeat(indent)
+
+  for (const child of list.children) {
+    if (!isLi(child)) continue
+
+    const rawText = getFirstTextContent(child).trim()
+    const nested = extractNestedList(child)
+
+    if (nested) {
+      if (rawText.length > 0) {
+        lines.push(`${indentStr}${rawText}`)
+      } else {
+        lines.push(`${indentStr}-`)
+      }
+      appendListToYaml(nested, indent + 1, lines)
+      continue
+    }
+
+    if (rawText.length === 0) continue
+    const normalized = rawText.replace(/^\-+\s*/, "").trim()
+
+    if (normalized.includes(":")) {
+      lines.push(`${indentStr}${normalized}`)
+    } else {
+      lines.push(`${indentStr}- ${normalized}`)
+    }
+  }
+}
+
 export const Arena: QuartzTransformerPlugin = () => {
   return {
     name: "Arena",
@@ -325,7 +360,7 @@ export const Arena: QuartzTransformerPlugin = () => {
             const extractMetadataFromList = (
               list: Element,
             ): {
-              metadata?: Record<string, string>
+              metadata?: Record<string, unknown>
               tags?: string[]
             } => {
               if (list.children.length === 0) return {}
@@ -340,7 +375,7 @@ export const Arena: QuartzTransformerPlugin = () => {
               const metaList = extractNestedList(firstItem)
               if (!metaList || metaList.children.length === 0) return {}
 
-              const metadata: Record<string, string> = {}
+              const metadata: Record<string, unknown> = {}
               const tags: string[] = []
               const seenTags = new Set<string>()
 
@@ -401,6 +436,9 @@ export const Arena: QuartzTransformerPlugin = () => {
                     if (normalized === "tags" || normalized === "[tags]") {
                       keySource = "tags"
                       value = ""
+                    } else {
+                      keySource = normalized
+                      value = ""
                     }
                   }
                 } else if (sublist) {
@@ -431,13 +469,27 @@ export const Arena: QuartzTransformerPlugin = () => {
                   continue
                 }
 
+                if (sublist && !value) {
+                  const yamlLines: string[] = []
+                  appendListToYaml(sublist, 0, yamlLines)
+                  const yamlSource = yamlLines.join("\n")
+
+                  if (yamlSource.trim().length > 0) {
+                    const parsed = yaml.load(yamlSource)
+                    if (parsed && typeof parsed === "object" && !Array.isArray(parsed)) {
+                      metadata[normalizedKey] = parsed
+                      continue
+                    }
+                  }
+                }
+
                 if (!value || value.length === 0) continue
                 const key = normalizedKey
                 if (key.length === 0) continue
                 metadata[key] = value
               }
 
-              const result: { metadata?: Record<string, string>; tags?: string[] } = {}
+              const result: { metadata?: Record<string, unknown>; tags?: string[] } = {}
               if (Object.keys(metadata).length > 0) result.metadata = metadata
               if (tags.length > 0) result.tags = tags
               return result
@@ -562,6 +614,15 @@ export const Arena: QuartzTransformerPlugin = () => {
                     } else if (normalizedLater === "false" || normalizedLater === "no") {
                       delete block.metadata?.later
                     }
+                  }
+
+                  const importanceValue = block.metadata?.importance
+                  if (importanceValue !== undefined) {
+                    const parsed = Number.parseFloat(importanceValue)
+                    if (!Number.isNaN(parsed) && Number.isFinite(parsed)) {
+                      block.importance = parsed
+                    }
+                    delete block.metadata?.importance
                   }
 
                   if (block.metadata && Object.keys(block.metadata).length === 0) {
