@@ -10,9 +10,10 @@ interface CustomEventMap {
   themechange: CustomEvent<{ theme: "light" | "dark" }>
   readermodechange: CustomEvent<{ mode: "on" | "off" }>
 
-  "collapsibletoggle": CustomEvent<{ toggleId: string; isOpen: "true" | "false" }>
   toast: CustomEvent<import("./quartz/components/scripts/toast").ToastEventDetail>
-  "contentdecrypted": CustomEvent<{ article: HTMLDivElement; content: HTMLDivElement }>
+  collapsibletoggle: CustomEvent<{ toggleId: string; isOpen: "true" | "false" }>
+  commentauthorupdated: CustomEvent<{ oldAuthor: string; newAuthor: string }>
+  contentdecrypted: CustomEvent<{ article: HTMLDivElement; content: HTMLDivElement }>
 }
 
 type ContentIndex = Record<FullSlug, ContentDetails>

@@ -6,18 +6,11 @@ import { MultiplayerComments } from "./comments"
 import { GitHubHandler } from "./github-handler"
 import { OAuthProvider } from "@cloudflare/workers-oauth-provider"
 import { handleStackedNotesRequest } from "./stacked"
+import { fetchUpstreamAuthToken, getUpstreamAuthorizeUrl, getUserFromGitHub } from "./utils"
 
 const VERSION = "version https://git-lfs.github.com/spec/v1\n"
 const MIME = "application/vnd.git-lfs+json"
 const KEEP_HEADERS = "Cache-Control"
-const SUBSTACK_PRECONNECT_REGEX =
-  /<link\b[^>]*\brel=["'][^"']*\bpreconnect\b[^"']*["'][^>]*\bhref=["']https:\/\/substackcdn\.com\/?[^"']*["'][^>]*>/i
-const MAX_HEAD_BYTES = 150_000
-
-function extractHeadSection(html: string): string | null {
-  const match = html.match(/<head\b[^>]*>([\s\S]*?)<\/head>/i)
-  return match ? match[1] : null
-}
 
 type CfCacheStorage = CacheStorage & { readonly default: Cache }
 
@@ -96,104 +89,6 @@ function shouldTreatAsDocument(pathname: string): boolean {
   return ext === "html" || ext === "htm"
 }
 
-function escapeRegExp(str: string): string {
-  return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
-}
-
-function decodeHtmlEntities(raw: string): string {
-  return raw.replace(/&(#x?[0-9a-fA-F]+|[a-zA-Z]+);/g, (match, entity) => {
-    if (entity[0] === "#") {
-      const codePoint =
-        entity[1].toLowerCase() === "x"
-          ? parseInt(entity.slice(2), 16)
-          : parseInt(entity.slice(1), 10)
-      if (!Number.isNaN(codePoint)) {
-        try {
-          return String.fromCodePoint(codePoint)
-        } catch {
-          return match
-        }
-      }
-      return match
-    }
-    switch (entity) {
-      case "amp":
-        return "&"
-      case "lt":
-        return "<"
-      case "gt":
-        return ">"
-      case "quot":
-        return '"'
-      case "apos":
-      case "#39":
-        return "'"
-      default:
-        return match
-    }
-  })
-}
-
-function extractMetaProperty(html: string, property: string): string | null {
-  const pattern = new RegExp(
-    `<meta[^>]+property=["']${escapeRegExp(property)}["'][^>]+content=["']([^"']*)["'][^>]*>`,
-    "i",
-  )
-  const match = html.match(pattern)
-  if (!match) return null
-  return decodeHtmlEntities(match[1].trim())
-}
-
-function detectSubstackHead(html: string): boolean {
-  return SUBSTACK_PRECONNECT_REGEX.test(html)
-}
-
-type EmbedPayload =
-  | {
-      type: "substack"
-      url: string
-      title: string | null
-      description: string | null
-      locale: string | null
-    }
-  | { type: "unknown" }
-
-async function fetchSubstackMetadata(target: URL): Promise<EmbedPayload> {
-  const upstream = await fetch(target.toString(), {
-    cf: {
-      cacheTtl: 3600,
-      cacheEverything: true,
-    },
-    headers: {
-      "User-Agent": "Mozilla/5.0 (compatible; aarnphm-garden-embed/1.0; +https://aarnphm.xyz/)",
-    },
-  })
-
-  if (!upstream.ok) {
-    throw new Error(`upstream status ${upstream.status}`)
-  }
-
-  const text = await upstream.text()
-  const headSection = extractHeadSection(text)
-  const detectionSource = headSection ?? text.slice(0, MAX_HEAD_BYTES)
-  if (!detectSubstackHead(detectionSource)) {
-    return { type: "unknown" }
-  }
-
-  const metaSource = headSection ?? text
-  const title = extractMetaProperty(metaSource, "og:title")
-  const description = extractMetaProperty(metaSource, "og:description")
-  const localeRaw = extractMetaProperty(metaSource, "og:locale")
-  const locale = localeRaw ? (localeRaw.split(/[_.]/)[0]?.toLowerCase() ?? null) : null
-
-  return {
-    type: "substack",
-    url: target.toString(),
-    title: title ?? null,
-    description: description ?? null,
-    locale: locale ?? null,
-  }
-}
 
 async function sha256Hex(input: string): Promise<string> {
   const enc = new TextEncoder().encode(input)
@@ -204,58 +99,148 @@ async function sha256Hex(input: string): Promise<string> {
   return hex
 }
 
-async function handleEmbedRequest(
-  request: Request,
-  apiHeaders: Record<string, string>,
-  env: Env,
-): Promise<Response> {
-  const reqUrl = new URL(request.url)
-  const embedHeaders = { "Content-Type": "application/json", ...apiHeaders }
-  const urlParam = reqUrl.searchParams.get("url")
-  if (!urlParam) {
-    return new Response(JSON.stringify({ error: "missing url" }), {
-      status: 400,
-      headers: embedHeaders,
-    })
-  }
+type CommentAuthState = {
+  returnTo: string
+  author?: string | null
+}
 
+const commentAuthStatePrefix = "comment-auth:state:"
+const commentGithubAuthorPrefix = "comment-auth:github:"
+const commentAuthorRenameAuthorPrefix = "comment-author-rename:author:"
+const commentAuthorRenameIpPrefix = "comment-author-rename:ip:"
+const commentAuthorRenameWindowSeconds = 60 * 60 * 24 * 90
+
+function normalizeReturnTo(request: Request, raw: string | null): string {
+  if (!raw) return "/"
   let target: URL
   try {
-    target = new URL(urlParam)
+    target = new URL(raw, request.url)
   } catch {
-    return new Response(JSON.stringify({ error: "invalid url" }), {
-      status: 400,
-      headers: embedHeaders,
-    })
+    return "/"
   }
+  const origin = new URL(request.url).origin
+  if (target.origin !== origin) return "/"
+  return `${target.pathname}${target.search}${target.hash}`
+}
 
-  // Basic allowlist: only handle HTTP(S)
-  if (target.protocol !== "https:" && target.protocol !== "http:") {
-    return new Response(JSON.stringify({ error: "unsupported protocol" }), {
-      status: 400,
-      headers: embedHeaders,
-    })
-  }
+function normalizeAuthor(raw: string | null): string | null {
+  if (!raw) return null
+  const trimmed = raw.trim()
+  if (!trimmed) return null
+  if (trimmed.length > 128) return null
+  return trimmed
+}
 
+function getCommentGithubClient(
+  env: Env,
+  localRequest: boolean,
+): { clientId: string; clientSecret: string } | null {
+  const clientId = localRequest ? env.GITHUB_COMMENTS_CLIENT_ID : env.GITHUB_COMMETS_PROD_CLIENT_ID
+  const clientSecret = localRequest
+    ? env.GITHUB_COMMENTS_CLIENT_SECRET
+    : env.GITHUB_COMMETS_PROD_CLIENT_SECRET
+
+  if (!clientId || !clientSecret) return null
+  return { clientId, clientSecret }
+}
+
+function parseCommentAuthState(raw: string): CommentAuthState | null {
+  let parsed: unknown
   try {
-    // Miss: fetch and populate KV
-    const payload = await fetchSubstackMetadata(target)
-    const status = payload.type === "substack" ? 200 : 204
-
-    return new Response(JSON.stringify(payload), {
-      status,
-      headers: {
-        ...embedHeaders,
-        "Cache-Control": "s-maxage=1800, stale-while-revalidate=60",
-        "X-Substack-Cache": "miss",
-      },
-    })
-  } catch (err: any) {
-    return new Response(JSON.stringify({ error: err?.message ?? "embed fetch failed" }), {
-      status: 502,
-      headers: embedHeaders,
-    })
+    parsed = JSON.parse(raw)
+  } catch {
+    return null
   }
+  if (!parsed || typeof parsed !== "object") return null
+  const value = parsed as { returnTo?: unknown; author?: unknown }
+  if (typeof value.returnTo !== "string") return null
+  const author = typeof value.author === "string" ? value.author : null
+  return { returnTo: value.returnTo, author }
+}
+
+function safeJsonForHtml(value: unknown): string {
+  return JSON.stringify(value).replace(/</g, "\\u003c")
+}
+
+async function createCommentAuthState(
+  kv: KVNamespace,
+  returnTo: string,
+  author: string | null,
+): Promise<string> {
+  const stateToken = crypto.randomUUID()
+  const payload: CommentAuthState = { returnTo, author }
+  await kv.put(
+    `${commentAuthStatePrefix}${stateToken}`,
+    JSON.stringify(payload),
+    { expirationTtl: 600 },
+  )
+  return stateToken
+}
+
+async function consumeCommentAuthState(
+  kv: KVNamespace,
+  stateToken: string,
+): Promise<CommentAuthState | null> {
+  const key = `${commentAuthStatePrefix}${stateToken}`
+  const raw = await kv.get(key)
+  if (!raw) return null
+  await kv.delete(key)
+  return parseCommentAuthState(raw)
+}
+
+async function getGithubCommentAuthor(kv: KVNamespace, login: string): Promise<string | null> {
+  const raw = await kv.get(`${commentGithubAuthorPrefix}${login}`)
+  if (!raw) return null
+  let parsed: unknown
+  try {
+    parsed = JSON.parse(raw)
+  } catch {
+    return null
+  }
+  if (!parsed || typeof parsed !== "object") return null
+  const value = parsed as { author?: unknown }
+  if (typeof value.author !== "string") return null
+  const normalized = normalizeAuthor(value.author)
+  return normalized
+}
+
+async function setGithubCommentAuthor(
+  kv: KVNamespace,
+  login: string,
+  author: string,
+): Promise<void> {
+  await kv.put(
+    `${commentGithubAuthorPrefix}${login}`,
+    JSON.stringify({ author, updatedAt: Date.now() }),
+  )
+}
+
+function renderCommentAuthResponse(author: string, returnTo: string, login: string | null): Response {
+  const payload = safeJsonForHtml({ author, returnTo, login })
+  const html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Comment login</title>
+</head>
+<body>
+<script>
+const payload = ${payload};
+try {
+  localStorage.setItem("comment-author", payload.author);
+  localStorage.setItem("comment-author-source", "github");
+  if (payload.login) {
+    localStorage.setItem("comment-author-github-login", payload.login);
+  }
+} catch {}
+window.location.assign(payload.returnTo);
+</script>
+</body>
+</html>`
+  return new Response(html, {
+    headers: { "Content-Type": "text/html; charset=utf-8" },
+  })
 }
 
 function resolveBaseUrl(env: Env, request: Request): string {
@@ -421,6 +406,10 @@ type Env = {
   COMMENTS_ROOM: D1Database
   GITHUB_CLIENT_ID: string
   GITHUB_CLIENT_SECRET: string
+  GITHUB_COMMENTS_CLIENT_ID?: string
+  GITHUB_COMMENTS_CLIENT_SECRET?: string
+  GITHUB_COMMETS_PROD_CLIENT_ID?: string
+  GITHUB_COMMETS_PROD_CLIENT_SECRET?: string
   SESSION_SECRET: string
   OAUTH_KV: KVNamespace
   PUBLIC_BASE_URL?: string
@@ -462,6 +451,134 @@ export default {
     if (url.searchParams.has("stackedNotes")) {
       const stacked = await handleStackedNotesRequest(request, env, ctx)
       if (stacked) return stacked
+    }
+
+    if (url.pathname === "/comments/github/login") {
+      const returnTo = normalizeReturnTo(request, url.searchParams.get("returnTo"))
+      const author = normalizeAuthor(url.searchParams.get("author"))
+      const commentClient = getCommentGithubClient(env, localRequest)
+      if (!commentClient) {
+        return new Response("comment github oauth not configured", { status: 500 })
+      }
+      const stateToken = await createCommentAuthState(env.OAUTH_KV, returnTo, author)
+      const redirectUri = new URL("/comments/github/callback", request.url).href
+      const authorizeUrl = getUpstreamAuthorizeUrl({
+        upstream_url: "https://github.com/login/oauth/authorize",
+        client_id: commentClient.clientId,
+        scope: "read:user",
+        redirect_uri: redirectUri,
+        state: stateToken,
+      })
+      return new Response(null, {
+        status: 302,
+        headers: { Location: authorizeUrl },
+      })
+    }
+
+    if (url.pathname === "/comments/github/callback") {
+      const stateToken = url.searchParams.get("state")
+      if (!stateToken) return new Response("Missing state", { status: 400 })
+      const state = await consumeCommentAuthState(env.OAUTH_KV, stateToken)
+      if (!state) return new Response("Invalid state", { status: 400 })
+      const commentClient = getCommentGithubClient(env, localRequest)
+      if (!commentClient) {
+        return new Response("comment github oauth not configured", { status: 500 })
+      }
+      const [accessToken, errResponse] = await fetchUpstreamAuthToken({
+        client_id: commentClient.clientId,
+        client_secret: commentClient.clientSecret,
+        code: url.searchParams.get("code"),
+        redirect_uri: new URL("/comments/github/callback", request.url).href,
+        upstream_url: "https://github.com/login/oauth/access_token",
+      })
+      if (errResponse) return errResponse
+      const user = await getUserFromGitHub(accessToken)
+      const login = user.login || "github-user"
+      const storedAuthor = await getGithubCommentAuthor(env.OAUTH_KV, login)
+      const stateAuthor = normalizeAuthor(state.author ?? null)
+      const resolvedAuthor = stateAuthor || storedAuthor || normalizeAuthor(login) || "github-user"
+      await setGithubCommentAuthor(env.OAUTH_KV, login, resolvedAuthor)
+      return renderCommentAuthResponse(resolvedAuthor, state.returnTo, login)
+    }
+
+    if (request.method === "POST" && url.pathname === "/comments/author/rename") {
+      let payload: { oldAuthor?: unknown; newAuthor?: unknown; githubLogin?: unknown } | null = null
+      try {
+        payload = (await request.json()) as {
+          oldAuthor?: unknown
+          newAuthor?: unknown
+          githubLogin?: unknown
+        }
+      } catch {
+        return new Response("invalid json", { status: 400 })
+      }
+      const oldAuthor =
+        typeof payload?.oldAuthor === "string" ? normalizeAuthor(payload.oldAuthor) : null
+      const newAuthor =
+        typeof payload?.newAuthor === "string" ? normalizeAuthor(payload.newAuthor) : null
+      const githubLogin =
+        typeof payload?.githubLogin === "string" ? normalizeAuthor(payload.githubLogin) : null
+
+      if (!oldAuthor || !newAuthor) {
+        return new Response("invalid author", { status: 400 })
+      }
+
+      if (oldAuthor === newAuthor) {
+        return new Response(JSON.stringify({ updated: 0 }), {
+          status: 200,
+          headers: { "Content-Type": "application/json" },
+        })
+      }
+
+      const ipRaw =
+        request.headers.get("CF-Connecting-IP") ||
+        request.headers.get("X-Forwarded-For")?.split(",")[0]?.trim() ||
+        ""
+      const authorKey = `${commentAuthorRenameAuthorPrefix}${oldAuthor}`
+      const newAuthorKey = `${commentAuthorRenameAuthorPrefix}${newAuthor}`
+      const ipKey = ipRaw ? `${commentAuthorRenameIpPrefix}${ipRaw}` : null
+
+      let canUpdateGithub = false
+      if (githubLogin) {
+        const stored = await getGithubCommentAuthor(env.OAUTH_KV, githubLogin)
+        canUpdateGithub = !stored || stored === oldAuthor
+      }
+
+      if (await env.OAUTH_KV.get(authorKey)) {
+        return new Response("comment name can change every 3 months", { status: 429 })
+      }
+
+      if (!localRequest && ipKey && (await env.OAUTH_KV.get(ipKey))) {
+        return new Response("comment name can change every 3 months", { status: 429 })
+      }
+
+      const result = await env.COMMENTS_ROOM.prepare(
+        "UPDATE comments SET author = ? WHERE author = ?",
+      )
+        .bind(newAuthor, oldAuthor)
+        .run()
+
+      await env.OAUTH_KV.put(authorKey, `${Date.now()}`, {
+        expirationTtl: commentAuthorRenameWindowSeconds,
+      })
+      await env.OAUTH_KV.put(newAuthorKey, `${Date.now()}`, {
+        expirationTtl: commentAuthorRenameWindowSeconds,
+      })
+
+      if (!localRequest && ipKey) {
+        await env.OAUTH_KV.put(ipKey, `${Date.now()}`, {
+          expirationTtl: commentAuthorRenameWindowSeconds,
+        })
+      }
+
+      if (githubLogin && canUpdateGithub) {
+        await setGithubCommentAuthor(env.OAUTH_KV, githubLogin, newAuthor)
+      }
+
+      return new Response(JSON.stringify({ updated: result.changes ?? 0 }), {
+        status: 200,
+        headers: { "Content-Type": "application/json" },
+      })
     }
 
     if (url.pathname.startsWith("/comments/")) {
@@ -560,9 +677,6 @@ export default {
       case "/api/curius": {
         const resp = await handleCurius(request)
         return withHeaders(resp, apiHeaders)
-      }
-      case "/api/embed": {
-        return handleEmbedRequest(request, apiHeaders, env)
       }
       case "/api/pdf-proxy": {
         const pdfUrl = url.searchParams.get("url")

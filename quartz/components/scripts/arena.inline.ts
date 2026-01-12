@@ -6,19 +6,7 @@ let currentBlockIndex = 0
 let totalBlocks = 0
 const p = new DOMParser()
 
-type SubstackEmbedResponse = {
-  type: "substack"
-  url: string
-  title: string | null
-  description: string | null
-  locale: string | null
-}
-
-const SUBSTACK_EMBED_ENDPOINT = `/api/embed`
-const substackEmbedCache = new Map<string, Promise<SubstackEmbedResponse>>()
-
 const SUBSTACK_POST_REGEX = /^https?:\/\/[^/]+\/p\/[^/]+/i
-
 const mapInstances = new WeakMap<HTMLElement, any>()
 let scrollLockState: { x: number; y: number } | null = null
 
@@ -190,82 +178,11 @@ function hydrateMapboxMaps(root: HTMLElement) {
     })
 }
 
-function fetchSubstackEmbed(url: string): Promise<SubstackEmbedResponse> {
-  let promise = substackEmbedCache.get(url)
-  if (!promise) {
-    promise = fetch(`${SUBSTACK_EMBED_ENDPOINT}?url=${encodeURIComponent(url)}`, {
-      headers: { Accept: "application/json" },
-      method: "GET",
-    })
-      .then((resp) => {
-        if (resp.status === 204) {
-          throw new Error("not-substack")
-        }
-        if (!resp.ok) {
-          throw new Error(`status ${resp.status}`)
-        }
-        return resp.json() as Promise<SubstackEmbedResponse>
-      })
-      .then((payload) => {
-        if (!payload || payload.type !== "substack") {
-          throw new Error("invalid-payload")
-        }
-        return payload
-      })
-    promise.catch(() => substackEmbedCache.delete(url))
-    substackEmbedCache.set(url, promise)
-  }
-  return promise
-}
-
 function injectSubstackScript(container: HTMLElement) {
   const script = document.createElement("script")
   script.async = true
   script.src = "https://substack.com/embedjs/embed.js"
   container.appendChild(script)
-}
-
-function renderSubstackEmbed(container: HTMLElement, data: SubstackEmbedResponse) {
-  container.classList.add("arena-modal-embed")
-  container.innerHTML = ""
-
-  const wrapper = document.createElement("div")
-  wrapper.className = "substack-post-embed"
-
-  const title = document.createElement("p")
-  title.lang = data.locale ?? "en"
-  title.textContent = data.title ?? data.url
-
-  const description = document.createElement("p")
-  description.textContent = data.description ?? ""
-
-  const link = document.createElement("a")
-  link.href = data.url
-  link.textContent = "Read on Substack"
-  link.setAttribute("data-post-link", "")
-
-  wrapper.appendChild(title)
-  wrapper.appendChild(description)
-  wrapper.appendChild(link)
-  container.appendChild(wrapper)
-
-  injectSubstackScript(container)
-}
-
-function renderSubstackLoading(container: HTMLElement) {
-  container.innerHTML = ""
-  const spinner = document.createElement("span")
-  spinner.className = "arena-loading-spinner"
-  spinner.setAttribute("role", "status")
-  spinner.setAttribute("aria-label", "Loading Substack preview")
-  container.appendChild(spinner)
-}
-
-function renderSubstackError(container: HTMLElement) {
-  container.innerHTML = ""
-  const message = document.createElement("p")
-  message.textContent = "Unable to load Substack preview."
-  container.appendChild(message)
 }
 
 function hydrateSubstackEmbeds(root: HTMLElement) {
@@ -276,18 +193,18 @@ function hydrateSubstackEmbeds(root: HTMLElement) {
     const targetUrl = node.dataset.substackUrl
     if (!targetUrl) return
     node.dataset.substackStatus = "loading"
-    renderSubstackLoading(node)
-    fetchSubstackEmbed(targetUrl)
-      .then((payload) => {
-        if (!node.isConnected) return
-        renderSubstackEmbed(node, payload)
-        node.dataset.substackStatus = "loaded"
-      })
-      .catch(() => {
-        if (!node.isConnected) return
-        renderSubstackError(node)
-        node.dataset.substackStatus = "error"
-      })
+    node.classList.add("arena-modal-embed")
+    node.innerHTML = ""
+    const wrapper = document.createElement("div")
+    wrapper.className = "substack-post-embed"
+    const link = document.createElement("a")
+    link.href = targetUrl
+    link.textContent = "Read on Substack"
+    link.setAttribute("data-post-link", "")
+    wrapper.appendChild(link)
+    node.appendChild(wrapper)
+    injectSubstackScript(node)
+    node.dataset.substackStatus = "loaded"
   })
 }
 
