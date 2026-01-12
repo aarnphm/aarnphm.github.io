@@ -23,11 +23,6 @@ binding = "FONTS"
 id = "aec7fd95ca404e8c9941993b0e65821d"
 remote = true
 
-[[kv_namespaces]]
-binding = "STACKED_CACHE"
-id = "265f7849115a4b1ea8687bc9f8de54d6"
-remote = true
-
 [[r2_buckets]]
 binding = "LFS_BUCKET"
 bucket_name = "sites"
