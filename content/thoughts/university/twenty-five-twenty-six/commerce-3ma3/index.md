@@ -2,7 +2,8 @@
 date: "2026-01-07"
 description: and research-based tools towards marketing strategies
 id: index
-modified: 2026-01-07 08:47:13 GMT-05:00
+layout: L->ET|A
+modified: 2026-01-12 11:58:40 GMT-05:00
 tags:
   - university
   - commerce3ma3
