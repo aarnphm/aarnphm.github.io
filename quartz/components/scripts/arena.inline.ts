@@ -1,6 +1,6 @@
 import { fetchCanonical, tokenizeTerm, highlight } from "./util"
 import { normalizeRelativeURLs } from "../../util/path"
-import { loadMapbox, applyMonochromeMapPalette } from "./mapboxClient"
+import { loadMapbox, applyMonochromeMapPalette } from "./mapbox-client"
 
 let currentBlockIndex = 0
 let totalBlocks = 0

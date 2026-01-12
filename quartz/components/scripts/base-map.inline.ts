@@ -1,4 +1,4 @@
-import { loadMapbox, applyMonochromeMapPalette } from "./mapboxClient"
+import { loadMapbox, applyMonochromeMapPalette } from "./mapbox-client"
 import { resolveRelative, FullSlug } from "../../util/path"
 
 interface MarkerData {

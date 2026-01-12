@@ -52,28 +52,50 @@ $modal-width: 360px;
     padding: 8px 8px 8px 16px;
     min-width: 320px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-  }
 
-  .composer-input {
-    flex: 1;
-    min-height: 24px;
-    max-height: 120px;
-    overflow-y: auto;
-    font-size: 14px;
-    line-height: 1.5;
-    color: var(--dark);
-    outline: none;
-    white-space: pre-wrap;
-    word-break: break-word;
-    user-select: text;
-    font-family: inherit !important;
-    background-color: inherit !important;
+    .composer-input {
+      flex: 1;
+      min-height: 24px;
+      font-size: 14px;
+      line-height: 1.5;
+      color: var(--dark);
+      outline: none;
+      white-space: pre-wrap;
+      word-break: break-word;
+      user-select: text;
+      font-family: inherit !important;
+      background-color: inherit !important;
+      position: relative;
 
-    &.empty:before,
-    &:empty:before {
-      content: attr(data-placeholder);
-      color: var(--gray);
-      pointer-events: none;
+      .composer-editor-mount {
+        position: relative;
+      }
+
+      > div[aria-hidden="true"] {
+        position: absolute;
+        left: 0;
+        top: 0;
+        pointer-events: none;
+        color: var(--gray);
+        font-size: 14px;
+        line-height: 1.5;
+
+        .placeholder-text {
+          opacity: 0.6;
+        }
+      }
+    }
+
+    &.composer-empty {
+      .composer-input > div[aria-hidden="true"] {
+        display: block;
+      }
+    }
+
+    &:not(.composer-empty) {
+      .composer-input > div[aria-hidden="true"] {
+        display: none;
+      }
     }
   }
 
@@ -474,7 +496,7 @@ $modal-width: 360px;
     }
 
     .input-section-wrapper {
-      overflow: hidden;
+      overflow: visible;
       flex-grow: 1;
       display: flex;
       flex-direction: row;
@@ -484,7 +506,6 @@ $modal-width: 360px;
       border-radius: 13px;
       position: relative;
       background-color: var(--lightgray);
-      max-height: 100%;
       outline: 0px solid transparent;
 
       .editable-typeahead-wrapper {
@@ -493,8 +514,7 @@ $modal-width: 360px;
         user-select: text;
         white-space: pre-wrap;
         word-wrap: break-word;
-        overflow: hidden;
-        overflow-y: auto;
+        overflow: visible;
         box-sizing: border-box;
         padding: 8px 0.5rem 8px 16px;
         transition: padding-bottom 0.1s;
@@ -860,15 +880,13 @@ body:has(.global-graph-outer.active) {
   font-family: var(--bodyFont);
   font-size: 13px;
   line-height: 1.5;
-  height: 20px;
+  height: auto;
 
   &.cm-focused {
     outline: 2px solid $primary-blue;
   }
 
   .cm-content {
-    padding: 8px 16px;
-    min-height: 32px;
     caret-color: var(--dark);
   }
 
@@ -877,7 +895,7 @@ body:has(.global-graph-outer.active) {
   }
 
   .cm-scroller {
-    overflow: auto;
+    overflow: visible;
   }
 
   .cm-cursor {
@@ -990,7 +1008,7 @@ body:has(.global-graph-outer.active) {
   }
 }
 
-.comment-composer > .composer-input,
+.comment-composer .composer-editor-mount,
 .reply-composer-container > .lexical-wrapper,
 .comment-edit-wrapper > .edit-input {
   .cm-editor {
