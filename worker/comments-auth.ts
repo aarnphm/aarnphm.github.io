@@ -1,3 +1,5 @@
+import { bindStateToSession, createState, OAuthError, validateState } from "./workers-oauth-utils"
+
 export type CommentAuthEnv = {
   PUBLIC_BASE_URL?: string
   GITHUB_COMMENTS_CLIENT_ID?: string
@@ -10,7 +12,12 @@ type CommentAuthState = {
 }
 
 const commentAuthStatePrefix = "comment-auth:state:"
+const commentAuthStateCookieName = "__Host-COMMENT_STATE"
 const commentGithubAuthorPrefix = "comment-auth:github:"
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value)
+}
 
 export function normalizeReturnTo(request: Request, raw: string | null): string {
   if (!raw) return "/"
@@ -50,11 +57,11 @@ function parseCommentAuthState(raw: string): CommentAuthState | null {
   } catch {
     return null
   }
-  if (!parsed || typeof parsed !== "object") return null
-  const value = parsed as { returnTo?: unknown; author?: unknown }
-  if (typeof value.returnTo !== "string") return null
-  const author = typeof value.author === "string" ? value.author : null
-  return { returnTo: value.returnTo, author }
+  if (!isRecord(parsed)) return null
+  const returnTo = typeof parsed.returnTo === "string" ? parsed.returnTo : null
+  if (!returnTo) return null
+  const author = typeof parsed.author === "string" ? parsed.author : null
+  return { returnTo, author }
 }
 
 function safeJsonForHtml(value: unknown): string {
@@ -65,24 +72,26 @@ export async function createCommentAuthState(
   kv: KVNamespace,
   returnTo: string,
   author: string | null,
-): Promise<string> {
-  const stateToken = crypto.randomUUID()
+): Promise<{ stateToken: string; setCookie: string }> {
   const payload: CommentAuthState = { returnTo, author }
-  await kv.put(`${commentAuthStatePrefix}${stateToken}`, JSON.stringify(payload), {
-    expirationTtl: 600,
-  })
-  return stateToken
+  const { stateToken } = await createState(kv, commentAuthStatePrefix, payload, 600)
+  const { setCookie } = await bindStateToSession(stateToken, commentAuthStateCookieName)
+  return { stateToken, setCookie }
 }
 
-export async function consumeCommentAuthState(
+export async function validateCommentAuthState(
+  request: Request,
   kv: KVNamespace,
-  stateToken: string,
-): Promise<CommentAuthState | null> {
-  const key = `${commentAuthStatePrefix}${stateToken}`
-  const raw = await kv.get(key)
-  if (!raw) return null
-  await kv.delete(key)
-  return parseCommentAuthState(raw)
+): Promise<{ state: CommentAuthState; clearCookie: string }> {
+  const { raw, clearCookie } = await validateState(request, kv, {
+    statePrefix: commentAuthStatePrefix,
+    cookieName: commentAuthStateCookieName,
+  })
+  const state = parseCommentAuthState(raw)
+  if (!state) {
+    throw new OAuthError("server_error", "Invalid state data", 500)
+  }
+  return { state, clearCookie }
 }
 
 export async function getGithubCommentAuthor(
