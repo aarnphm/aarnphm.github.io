@@ -1,7 +1,7 @@
 ---
 date: "2026-01-12"
 id: introduction to marketing research
-modified: 2026-01-12 12:27:23 GMT-05:00
+modified: 2026-01-12 13:22:04 GMT-05:00
 tags:
   - commerce3ma3
 title: marketing research
@@ -38,3 +38,53 @@ There are a few axes for the nature for applied marketing research:
 > [!note] outcome
 >
 > i3 sold ~165k units over production run (2013-2022) vs model 3 doing 2m+ units, ratio roughly 1:12 despite similar timing. positioned differently and bmw never committed to scaling it.
+
+## process
+
+- identification of the problem and statement, and objectives
+- creation of the _research design_
+- choice of research method
+- selection of the sampling procedure
+- collections of data
+- analysis of data
+- writing and presentation of the report
+- follow-up
+
+> [!question]
+> How do we define the problem?
+
+problem definition separates the management decision (what action to take) from the research problem (what information is missing).
+
+Q: How do we understand the decision-making environment?
+
+> [!question]-
+>
+> Assume our business is a local fast-food restaurant, and our products are mainly hamburgers, fried chicken, fries, and soft drinks
+>
+> What specific information does the manager needs to know in order to decide whether to change the product strategy?
+>
+> for the product strategy decision, manager needs:
+>
+> - performance baselines:
+>   - sales velocity by product (units/day, revenue contribution, margin per unit)
+>   - customer traffic patterns (daypart analysis, weekday vs weekend)
+>   - complaint/return rates by product
+>   - inventory waste rates
+> - customer intelligence:
+>   - purchase bundles (what items sell together)
+>   - repeat frequency by customer segment
+>   - satisfaction scores by product
+>   - consideration set (are we losing to mcdonald's or to chipotle?)
+>   - demographic/psychographic profile of current customers vs target customers
+> - market context:
+>   - competitive menu positioning (are we cheaper? healthier? faster?)
+>   - local market trends (delivery growth rate, health-conscious shifts, dietary restrictions prevalence)
+>   - price elasticity by product category
+> - operational constraints:
+>   - kitchen capacity and equipment limitations
+>   - supplier switching costs
+>   - staff training requirements for new products
+> - strategic alternatives:
+>   - test results from any pilot menu items
+>   - cost structure of potential new products vs current ones
+>   - cannibalization risk (will new chicken sandwich eat burger sales?)

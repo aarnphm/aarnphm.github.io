@@ -67,6 +67,7 @@ let lastSeq = 0
 let hasSnapshot = false
 let pendingOps = new Map<string, OperationInput>()
 const githubAvatarCache = new Map<string, string>()
+const githubAvatarStoragePrefix = "comment-author-github-avatar:"
 
 function getAuthor(): string {
   let author =
@@ -104,6 +105,14 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 async function getGithubAvatarUrl(login: string): Promise<string | null> {
   const cached = githubAvatarCache.get(login)
   if (cached) return cached
+  const storageKey = `${githubAvatarStoragePrefix}${login}`
+  try {
+    const stored = sessionStorage.getItem(storageKey)
+    if (stored) {
+      githubAvatarCache.set(login, stored)
+      return stored
+    }
+  } catch {}
   const resp = await fetch(`https://api.github.com/users/${encodeURIComponent(login)}`, {
     headers: { Accept: "application/vnd.github+json" },
   })
@@ -118,6 +127,9 @@ async function getGithubAvatarUrl(login: string): Promise<string | null> {
   const avatar = data["avatar_url"]
   if (typeof avatar !== "string" || avatar.length === 0) return null
   githubAvatarCache.set(login, avatar)
+  try {
+    sessionStorage.setItem(storageKey, avatar)
+  } catch {}
   return avatar
 }
 
