@@ -15,11 +15,42 @@ type MultiplayerComment = {
   deletedAt: number | null
 }
 
-type BroadcastMessage = {
-  type: "init" | "new" | "update" | "delete"
-  comment?: MultiplayerComment
-  comments?: MultiplayerComment[]
+type OperationType = "new" | "update" | "delete"
+
+type OperationInput = {
+  opId: string
+  type: OperationType
+  comment: MultiplayerComment
 }
+
+type OperationRecord = OperationInput & {
+  seq: number
+}
+
+type BroadcastMessage =
+  | {
+      type: "init"
+      comments: MultiplayerComment[]
+      latestSeq: number
+    }
+  | {
+      type: "delta"
+      ops: OperationRecord[]
+      latestSeq: number
+    }
+  | {
+      type: "op"
+      op: OperationRecord
+    }
+  | {
+      type: "ack"
+      opId: string
+      seq: number
+    }
+  | {
+      type: "error"
+      message: string
+    }
 
 let ws: WebSocket | null = null
 let comments: MultiplayerComment[] = []
@@ -27,6 +58,9 @@ let activeSelection: Range | null = null
 let bubbleOffsets = new Map<string, { x: number; y: number }>()
 let selectionHighlightLayer: HTMLElement | null = null
 let pendingHashCommentId: string | null = null
+let lastSeq = 0
+let hasSnapshot = false
+let pendingOps = new Map<string, OperationInput>()
 
 function getAuthor(): string {
   let author = localStorage.getItem("comment-author")
@@ -223,83 +257,134 @@ function upsertComment(comment: MultiplayerComment) {
   comments[idx] = comment
 }
 
-function applyComment(comment: MultiplayerComment) {
+function applyCommentSilent(comment: MultiplayerComment) {
   upsertComment(comment)
   if (comment.deletedAt) {
     bubbleOffsets.delete(comment.id)
+  }
+}
+
+function applyComment(comment: MultiplayerComment) {
+  applyCommentSilent(comment)
+  renderAllComments()
+  refreshActiveModal()
+}
+
+function updateCommentAuthors(oldAuthor: string, newAuthor: string) {
+  let updated = false
+  for (const comment of comments) {
+    if (comment.author === oldAuthor) {
+      comment.author = newAuthor
+      updated = true
+    }
+  }
+  if (updated) {
+    renderAllComments()
+    refreshActiveModal()
+  }
+}
+
+function applyOperation(op: OperationRecord) {
+  if (op.seq > lastSeq) {
+    lastSeq = op.seq
+  }
+  if (pendingOps.has(op.opId)) {
+    pendingOps.delete(op.opId)
+  }
+  applyComment(op.comment)
+}
+
+function applyOperations(ops: OperationRecord[]) {
+  if (ops.length === 0) return
+  for (const op of ops) {
+    if (op.seq > lastSeq) {
+      lastSeq = op.seq
+    }
+    if (pendingOps.has(op.opId)) {
+      pendingOps.delete(op.opId)
+    }
+    applyCommentSilent(op.comment)
   }
   renderAllComments()
   refreshActiveModal()
 }
 
-async function persistNewComment(comment: MultiplayerComment) {
-  await fetch("/comments/add", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(comment),
-  })
+function queueOperation(op: OperationInput) {
+  pendingOps.set(op.opId, op)
 }
 
-async function persistUpdateComment(comment: MultiplayerComment) {
-  await fetch("/comments/modify", {
-    method: "PATCH",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(comment),
-  })
+function sendOperation(op: OperationInput) {
+  queueOperation(op)
+  if (ws && ws.readyState === WebSocket.OPEN) {
+    ws.send(JSON.stringify({ type: "op", op }))
+  }
 }
 
-async function persistDeleteComment(commentId: string) {
-  await fetch(`/comments/delete?id=${encodeURIComponent(commentId)}`, {
-    method: "DELETE",
-  })
+function flushPendingOperations() {
+  if (!ws || ws.readyState !== WebSocket.OPEN) return
+  for (const op of pendingOps.values()) {
+    ws.send(JSON.stringify({ type: "op", op }))
+  }
 }
 
 function submitNewComment(comment: MultiplayerComment) {
   applyComment(comment)
-  if (ws && ws.readyState === WebSocket.OPEN) {
-    ws.send(JSON.stringify({ type: "new", comment }))
-  }
-  void persistNewComment(comment).catch((err) => {
-    console.error("failed to persist comment:", err)
-  })
+  sendOperation({ opId: crypto.randomUUID(), type: "new", comment })
 }
 
 function submitUpdateComment(comment: MultiplayerComment) {
   applyComment(comment)
-  if (ws && ws.readyState === WebSocket.OPEN) {
-    ws.send(JSON.stringify({ type: "update", comment }))
-  }
-  void persistUpdateComment(comment).catch((err) => {
-    console.error("failed to persist comment update:", err)
-  })
+  sendOperation({ opId: crypto.randomUUID(), type: "update", comment })
 }
 
 function submitDeleteComment(comment: MultiplayerComment, deletedAt: number) {
-  applyComment({ ...comment, deletedAt })
-  if (ws && ws.readyState === WebSocket.OPEN) {
-    ws.send(JSON.stringify({ type: "delete", comment: { ...comment, deletedAt } }))
-  }
-  void persistDeleteComment(comment.id).catch((err) => {
-    console.error("failed to persist comment delete:", err)
-  })
+  const deleted = { ...comment, deletedAt }
+  applyComment(deleted)
+  sendOperation({ opId: crypto.randomUUID(), type: "delete", comment: deleted })
 }
 
 function connectWebSocket() {
   const protocol = window.location.protocol === "https:" ? "wss:" : "ws:"
-  const wsUrl = `${protocol}//${window.location.host}/comments/websocket?pageId=${encodeURIComponent(getFullSlug(window))}`
+  const pageId = encodeURIComponent(getFullSlug(window))
+  const sinceParam = hasSnapshot && lastSeq > 0 ? `&since=${lastSeq}` : ""
+  const wsUrl = `${protocol}//${window.location.host}/comments/websocket?pageId=${pageId}${sinceParam}`
 
   ws = new WebSocket(wsUrl)
+
+  ws.onopen = () => {
+    flushPendingOperations()
+  }
 
   ws.onmessage = (event) => {
     const msg: BroadcastMessage = JSON.parse(event.data)
 
-    if (msg.type === "init" && msg.comments) {
+    if (msg.type === "init") {
       comments = msg.comments
+      lastSeq = msg.latestSeq
+      hasSnapshot = true
+      for (const op of pendingOps.values()) {
+        applyCommentSilent(op.comment)
+      }
       renderAllComments()
       refreshActiveModal()
       openPendingCommentThread()
-    } else if (msg.comment) {
-      applyComment(msg.comment)
+      flushPendingOperations()
+    } else if (msg.type === "delta") {
+      applyOperations(msg.ops)
+      if (msg.latestSeq > lastSeq) {
+        lastSeq = msg.latestSeq
+      }
+      hasSnapshot = true
+      flushPendingOperations()
+    } else if (msg.type === "op") {
+      applyOperation(msg.op)
+    } else if (msg.type === "ack") {
+      if (msg.seq > lastSeq) {
+        lastSeq = msg.seq
+      }
+      pendingOps.delete(msg.opId)
+    } else if (msg.type === "error") {
+      console.error("multiplayer comments error:", msg.message)
     }
   }
 
@@ -1215,6 +1300,9 @@ function showCommentThread(commentId: string, position?: { top: number; left: nu
 }
 
 document.addEventListener("nav", () => {
+  lastSeq = 0
+  hasSnapshot = false
+  pendingOps = new Map()
   connectWebSocket()
   setPendingCommentFromHash()
 
@@ -1243,6 +1331,12 @@ document.addEventListener("nav", () => {
 
   document.addEventListener("mouseup", mouseUp)
   window.addEventListener("resize", handleResize)
+
+  const handleAuthorUpdate = (event: CustomEventMap["commentauthorupdated"]) => {
+    const detail = event.detail
+    if (!detail?.oldAuthor || !detail?.newAuthor) return
+    updateCommentAuthors(detail.oldAuthor, detail.newAuthor)
+  }
 
   const handleCollapseToggle = () => {
     hideComposer()
@@ -1289,9 +1383,11 @@ document.addEventListener("nav", () => {
     document.removeEventListener("mouseup", mouseUp)
     window.removeEventListener("resize", handleResize)
     document.removeEventListener("collapsibletoggle", handleCollapseToggle)
+    document.removeEventListener("commentauthorupdated", handleAuthorUpdate)
     window.removeEventListener("hashchange", handleHashChange)
   })
 
   document.addEventListener("collapsibletoggle", handleCollapseToggle)
+  document.addEventListener("commentauthorupdated", handleAuthorUpdate)
   window.addEventListener("hashchange", handleHashChange)
 })
