@@ -1,4 +1,6 @@
 import { getFullSlug } from "../../util/path"
+import { MarkdownEditor } from "./markdown-editor"
+import { renderMarkdown } from "../../util/markdown-renderer"
 
 type MultiplayerComment = {
   id: string
@@ -585,20 +587,27 @@ function showThreadActionsPopover(comment: MultiplayerComment, buttonRect: DOMRe
 }
 
 function enterEditMode(comment: MultiplayerComment, textElement: HTMLElement) {
-  const originalContent = textElement.textContent || ""
-
   const wrapper = document.createElement("div")
   wrapper.className = "comment-edit-wrapper"
 
   const inputContent = document.createElement("div")
   inputContent.className = "edit-input-content"
 
-  const editor = document.createElement("div")
-  editor.contentEditable = "true"
-  editor.className = "edit-input"
-  editor.textContent = originalContent
+  const editorMount = document.createElement("div")
+  editorMount.className = "edit-input"
 
-  inputContent.appendChild(editor)
+  let markdownEditor: MarkdownEditor | null
+
+  function exitEditMode() {
+    textElement.style.display = ""
+    if (markdownEditor) {
+      markdownEditor.destroy()
+      markdownEditor = null
+    }
+    if (wrapper.parentNode) {
+      wrapper.parentNode.removeChild(wrapper)
+    }
+  }
 
   const actions = document.createElement("div")
   actions.className = "edit-actions"
@@ -606,14 +615,17 @@ function enterEditMode(comment: MultiplayerComment, textElement: HTMLElement) {
   const cancelButton = document.createElement("button")
   cancelButton.innerHTML = `<span class="button-container"><span class="button-text"><span class="button-content">Cancel</span></span></span>`
   cancelButton.className = "edit-button edit-button-cancel"
+  cancelButton.onclick = () => {
+    exitEditMode()
+  }
 
   const saveButton = document.createElement("button")
   saveButton.innerHTML = `<span class="button-container"><span class="button-text"><span class="button-content">Save</span></span></span>`
   saveButton.className = "edit-button edit-button-save"
-
   saveButton.onclick = async () => {
-    const newContent = editor.textContent?.trim()
-    if (!newContent || newContent === originalContent) {
+    if (!markdownEditor) return
+    const newContent = markdownEditor.getValue().trim()
+    if (!newContent || newContent === comment.content) {
       exitEditMode()
       return
     }
@@ -628,25 +640,14 @@ function enterEditMode(comment: MultiplayerComment, textElement: HTMLElement) {
     exitEditMode()
   }
 
-  cancelButton.onclick = () => {
-    exitEditMode()
-  }
-
-  editor.addEventListener("keydown", (e) => {
-    if (e.key === "Escape") {
-      exitEditMode()
-    } else if ((e.metaKey || e.ctrlKey) && e.key === "Enter") {
-      saveButton.click()
-    }
+  markdownEditor = new MarkdownEditor({
+    parent: editorMount,
+    initialContent: comment.content,
+    onSubmit: () => saveButton.click(),
+    onCancel: exitEditMode,
   })
 
-  function exitEditMode() {
-    textElement.style.display = ""
-    if (wrapper.parentNode) {
-      wrapper.parentNode.removeChild(wrapper)
-    }
-  }
-
+  inputContent.appendChild(editorMount)
   actions.appendChild(cancelButton)
   actions.appendChild(saveButton)
   wrapper.appendChild(inputContent)
@@ -655,13 +656,7 @@ function enterEditMode(comment: MultiplayerComment, textElement: HTMLElement) {
   textElement.style.display = "none"
   textElement.parentNode?.insertBefore(wrapper, textElement)
 
-  editor.focus()
-  const range = document.createRange()
-  const sel = window.getSelection()
-  range.selectNodeContents(editor)
-  range.collapse(false)
-  sel?.removeAllRanges()
-  sel?.addRange(range)
+  markdownEditor.focus()
 }
 
 function showDeleteConfirmation(
@@ -756,38 +751,21 @@ async function showComposer(range: Range) {
   const inputWrapper = document.createElement("div")
   inputWrapper.className = "composer-input-wrapper"
 
-  const input = document.createElement("div")
-  input.className = "composer-input"
-  input.contentEditable = "true"
-  input.setAttribute("role", "textbox")
-  input.setAttribute("aria-placeholder", "Add a comment")
-  input.dataset.placeholder = "Add a comment"
+  const inputContainer = document.createElement("div")
+  inputContainer.className = "composer-input"
+  inputContainer.setAttribute("role", "textbox")
+  inputContainer.setAttribute("aria-placeholder", "Add a comment")
+  inputContainer.dataset.placeholder = "Add a comment"
+
+  let editor: MarkdownEditor
 
   const submitButton = document.createElement("button")
   submitButton.className = "composer-submit"
   submitButton.disabled = true
   submitButton.innerHTML = `<span class="icon"><svg width="24" height="24" fill="none" viewBox="0 0 24 24"><path fill="currentColor" fill-rule="evenodd" d="M12 16a.5.5 0 0 1-.5-.5V8.707l-3.146 3.147a.5.5 0 0 1-.708-.708l4-4a.5.5 0 0 1 .708 0l4 4a.5.5 0 0 1-.708.708L12.5 8.707V15.5a.5.5 0 0 1-.5.5" clip-rule="evenodd"></path></svg></span>`
 
-  input.addEventListener("input", () => {
-    const content = input.textContent?.trim() || ""
-    submitButton.disabled = content.length === 0
-    if (content.length === 0) {
-      input.classList.add("empty")
-    } else {
-      input.classList.remove("empty")
-    }
-  })
-
-  input.addEventListener("keydown", (e) => {
-    if (e.key === "Escape") {
-      hideComposer()
-    } else if ((e.metaKey || e.ctrlKey) && e.key === "Enter") {
-      submitButton.click()
-    }
-  })
-
   submitButton.onclick = async () => {
-    const content = input.textContent?.trim()
+    const content = editor.getValue().trim()
     if (!content) return
 
     const comment: MultiplayerComment = {
@@ -810,12 +788,27 @@ async function showComposer(range: Range) {
     hideComposer()
   }
 
-  inputWrapper.appendChild(input)
+  editor = new MarkdownEditor({
+    parent: inputContainer,
+    onChange: (content) => {
+      const trimmed = content.trim()
+      submitButton.disabled = trimmed.length === 0
+      if (trimmed.length === 0) {
+        inputContainer.classList.add("empty")
+      } else {
+        inputContainer.classList.remove("empty")
+      }
+    },
+    onSubmit: () => submitButton.click(),
+    onCancel: () => hideComposer(),
+  })
+
+  inputWrapper.appendChild(inputContainer)
   inputWrapper.appendChild(submitButton)
   composer.appendChild(inputWrapper)
   document.body.appendChild(composer)
 
-  input.focus()
+  editor.focus()
 }
 
 function renderAllComments() {
@@ -939,8 +932,8 @@ function renderAllComments() {
         replyTop.appendChild(replyLeft)
 
         const text = document.createElement("div")
-        text.className = "reply-text"
-        text.textContent = comment.content
+        text.className = "reply-text markdown-content"
+        text.innerHTML = renderMarkdown(comment.content)
 
         bubble.appendChild(replyTop)
         bubble.appendChild(text)
@@ -1061,8 +1054,8 @@ function buildThreadItem(comment: MultiplayerComment) {
   left.appendChild(time)
 
   const text = document.createElement("div")
-  text.className = "reply-text"
-  text.textContent = comment.content
+  text.className = "reply-text markdown-content"
+  text.innerHTML = renderMarkdown(comment.content)
 
   const right = document.createElement("div")
   right.className = "reply-right"
@@ -1241,19 +1234,8 @@ function showCommentThread(commentId: string, position?: { top: number; left: nu
   const lexicalWrapper = document.createElement("div")
   lexicalWrapper.className = "lexical-wrapper"
 
-  const replyInput = document.createElement("div")
-  replyInput.contentEditable = "true"
-  replyInput.setAttribute("role", "combobox")
-  replyInput.setAttribute("aria-expanded", "false")
-  replyInput.setAttribute("aria-label", `Reply to comment with ${comment.author}`)
-  replyInput.setAttribute("spellcheck", "true")
-  replyInput.setAttribute("aria-haspopup", "listbox")
-  replyInput.setAttribute("aria-placeholder", "Reply")
-  replyInput.setAttribute("data-lexical-editor", "true")
-  replyInput.style.userSelect = "text"
-  replyInput.style.whiteSpace = "pre-wrap"
-  replyInput.style.wordBreak = "break-word"
-  replyInput.innerHTML = "<p><br></p>"
+  const editorMount = document.createElement("div")
+  let replyEditor: MarkdownEditor
 
   const placeholderWrapper = document.createElement("div")
   placeholderWrapper.setAttribute("aria-hidden", "true")
@@ -1261,11 +1243,6 @@ function showCommentThread(commentId: string, position?: { top: number; left: nu
   placeholderText.className = "placeholder-text"
   placeholderText.textContent = "Reply"
   placeholderWrapper.appendChild(placeholderText)
-
-  lexicalWrapper.appendChild(replyInput)
-  lexicalWrapper.appendChild(placeholderWrapper)
-  primitiveWrapper.appendChild(lexicalWrapper)
-  editableTypeaheadWrapper.appendChild(primitiveWrapper)
 
   const actions = document.createElement("div")
   actions.className = "composer-actions"
@@ -1284,35 +1261,10 @@ function showCommentThread(commentId: string, position?: { top: number; left: nu
   buttonIconSpan.innerHTML = `<svg width="24" height="24" fill="none" viewBox="0 0 24 24"><path fill="var(--fpl-icon-color, var(--color-icon))" fill-rule="evenodd" d="M12 16a.5.5 0 0 1-.5-.5V8.707l-3.146 3.147a.5.5 0 0 1-.708-.708l4-4a.5.5 0 0 1 .708 0l4 4a.5.5 0 0 1-.708.708L12.5 8.707V15.5a.5.5 0 0 1-.5.5" clip-rule="evenodd"></path></svg>`
   replyButton.appendChild(buttonIconSpan)
 
-  actions.appendChild(replyButton)
-  inputSectionWrapper.appendChild(editableTypeaheadWrapper)
-  inputSectionWrapper.appendChild(actions)
-
-  replyInput.addEventListener("input", () => {
-    const content = replyInput.textContent?.trim() || ""
-    const isEmpty = content.length === 0
-
-    if (isEmpty) {
-      inputSectionWrapper.classList.add("composer-empty")
-      replyButton.setAttribute("aria-disabled", "true")
-    } else {
-      inputSectionWrapper.classList.remove("composer-empty")
-      replyButton.setAttribute("aria-disabled", "false")
-    }
-  })
-
-  replyInput.addEventListener("keydown", (e) => {
-    if (e.key === "Escape") {
-      replyInput.blur()
-    } else if ((e.metaKey || e.ctrlKey) && e.key === "Enter") {
-      replyButton.click()
-    }
-  })
-
   replyButton.onclick = async () => {
     if (replyButton.getAttribute("aria-disabled") === "true") return
 
-    const content = replyInput.textContent?.trim()
+    const content = replyEditor.getValue().trim()
     if (!content) return
 
     const reply: MultiplayerComment = {
@@ -1332,10 +1284,34 @@ function showCommentThread(commentId: string, position?: { top: number; left: nu
 
     submitNewComment(reply)
 
-    replyInput.innerHTML = "<p><br></p>"
+    replyEditor.setValue("")
     inputSectionWrapper.classList.add("composer-empty")
     replyButton.setAttribute("aria-disabled", "true")
   }
+
+  replyEditor = new MarkdownEditor({
+    parent: editorMount,
+    onChange: (content) => {
+      const isEmpty = content.trim().length === 0
+      if (isEmpty) {
+        inputSectionWrapper.classList.add("composer-empty")
+        replyButton.setAttribute("aria-disabled", "true")
+      } else {
+        inputSectionWrapper.classList.remove("composer-empty")
+        replyButton.setAttribute("aria-disabled", "false")
+      }
+    },
+    onSubmit: () => replyButton.click(),
+  })
+
+  lexicalWrapper.appendChild(editorMount)
+  lexicalWrapper.appendChild(placeholderWrapper)
+  primitiveWrapper.appendChild(lexicalWrapper)
+  editableTypeaheadWrapper.appendChild(primitiveWrapper)
+
+  actions.appendChild(replyButton)
+  inputSectionWrapper.appendChild(editableTypeaheadWrapper)
+  inputSectionWrapper.appendChild(actions)
 
   replyComposerContainer.appendChild(replyAuthorElement)
   replyComposerContainer.appendChild(inputSectionWrapper)

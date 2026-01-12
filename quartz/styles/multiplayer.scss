@@ -1,13 +1,47 @@
 @use "sass:list";
 @use "sass:meta";
 @use "sass:string";
+@use "sass:math";
 @use "./variables.scss" as *;
+
+$primary-blue: #0d99ff;
+$hover-blue: #007be5;
+$active-blue: #0768cf;
+$comment-highlight: rgba(255, 220, 100, 0.3);
+$selection-highlight: rgba(255, 220, 100, 0.5);
+$bubble-size: 32px;
+$button-size: 1.5rem;
+$transition-fast: 0.15s;
+$transition-std: 0.2s;
+$modal-width: 360px;
+
+@mixin flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@mixin button-base {
+  border: none;
+  cursor: pointer;
+  @include flex-center;
+}
+
+@mixin button-states($normal, $hover, $active) {
+  background: $normal;
+  &:hover {
+    background: $hover;
+  }
+  &:active {
+    background: $active;
+  }
+}
 
 .comment-composer {
   position: absolute;
   z-index: 903;
   filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.1));
-  width: 360px;
+  width: $modal-width;
 
   .composer-input-wrapper {
     display: flex;
@@ -35,36 +69,23 @@
     font-family: inherit !important;
     background-color: inherit !important;
 
-    &.empty:before {
-      content: attr(data-placeholder);
-      color: var(--gray);
-      pointer-events: none;
-    }
-
+    &.empty:before,
     &:empty:before {
       content: attr(data-placeholder);
       color: var(--gray);
       pointer-events: none;
     }
-
-    &:focus {
-      outline: none;
-    }
   }
 
   .composer-submit {
     flex-shrink: 0;
-    width: 1.5rem;
-    height: 1.5rem;
+    width: $button-size;
+    height: $button-size;
     border-radius: 9999px;
-    border: none;
+    @include button-base;
     background: var(--secondary);
     color: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: background 0.2s ease;
+    transition: background $transition-std ease;
 
     &:disabled {
       opacity: 0.4;
@@ -82,10 +103,7 @@
     }
 
     .icon {
-      justify-content: center;
-      align-items: center;
-      display: flex;
-
+      @include flex-center;
       svg {
         fill: currentColor;
       }
@@ -94,7 +112,7 @@
 }
 
 .comment-highlight {
-  background-color: rgba(255, 220, 100, 0.3);
+  background-color: $comment-highlight;
   cursor: pointer;
 }
 
@@ -119,13 +137,13 @@
   .comment-selection-highlight {
     position: absolute;
     border-radius: 4px;
-    background-color: rgba(255, 220, 100, 0.5);
+    background-color: $selection-highlight;
   }
 }
 
 .comment-bubble {
   --expand-animation-time: 0.1s;
-  --bubble-collapsed-size: 32px;
+  --bubble-collapsed-size: #{$bubble-size};
   position: absolute;
   z-index: 901;
   cursor: pointer;
@@ -133,7 +151,7 @@
   background: var(--light);
   border: 1px solid var(--lightgray);
   display: flex;
-  left: 0px;
+  left: 0;
   bottom: auto;
   min-width: var(--bubble-collapsed-size);
   min-height: var(--bubble-collapsed-size);
@@ -143,13 +161,13 @@
   max-width: var(--bubble-collapsed-size);
   max-height: var(--bubble-collapsed-size);
   box-sizing: border-box;
-  padding: 3px 3px;
+  padding: 3px;
   font-size: 11px;
   line-height: 16px;
   color: var(--darkgray);
-  border-radius: 16px 16px 16px 0px;
+  border-radius: 16px 16px 16px 0;
   box-shadow:
-    0px 3px 6px rgba(0, 0, 0, 0.3),
+    0 3px 6px rgba(0, 0, 0, 0.3),
     0 0 1px rgba(0, 0, 0, 0.05);
   transform-origin: bottom left;
   transform: translateY(0);
@@ -233,12 +251,12 @@
     max-width: 320px;
     max-height: 200px;
     padding: 8px 16px;
-    border-radius: 16px 16px 16px 0px;
+    border-radius: 16px 16px 16px 0;
     transform: translateY(calc(-100% + var(--bubble-collapsed-size)));
     box-shadow:
-      0px 0px 0px 1px rgba(0, 0, 0, 0.1),
-      0px 3px 6px rgba(0, 0, 0, 0.15),
-      0px 6px 12px -6px rgba(0, 0, 0, 0.2);
+      0 0 0 1px rgba(0, 0, 0, 0.1),
+      0 3px 6px rgba(0, 0, 0, 0.15),
+      0 6px 12px -6px rgba(0, 0, 0, 0.2);
 
     .reply-top {
       .reply-left {
@@ -274,7 +292,7 @@
   position: absolute;
   right: 20px;
   top: 20%;
-  width: 360px;
+  width: $modal-width;
   background: var(--light);
   border: 1px solid var(--lightgray);
   border-radius: 12px;
@@ -311,15 +329,11 @@
       gap: 8px;
 
       .modal-actions-button {
+        @include button-base;
         background: none;
-        border: none;
         padding: 4px;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
         color: var(--gray);
-        transition: color 0.2s;
+        transition: color $transition-std;
 
         &:hover {
           color: var(--dark);
@@ -333,18 +347,14 @@
     }
 
     .modal-close {
+      @include button-base;
       background: none;
-      border: none;
       font-size: 20px;
-      cursor: pointer;
       color: var(--gray);
       padding: 0;
       width: 20px;
       height: 20px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: color 0.2s;
+      transition: color $transition-std;
 
       &:hover {
         color: var(--dark);
@@ -410,15 +420,11 @@
 
       .reply-right {
         .reply-actions {
+          @include button-base;
           background: none;
-          border: none;
           padding: 4px;
-          cursor: pointer;
-          display: flex;
-          align-items: center;
-          justify-content: center;
           color: var(--gray);
-          transition: color 0.2s;
+          transition: color $transition-std;
 
           &:hover {
             color: var(--dark);
@@ -519,7 +525,7 @@
               pointer-events: none;
               color: rgba(0, 0, 0, 0.3);
               font-size: 13px;
-              top: 4px;
+              top: 2px;
               pointer-events: none;
               line-height: 1;
 
@@ -560,18 +566,14 @@
         border: unset;
 
         .submit-button {
-          width: 1.5rem;
-          height: 1.5rem;
-          min-width: 1.5rem;
+          width: $button-size;
+          height: $button-size;
+          min-width: $button-size;
           border-radius: 9999px;
-          border: none;
-          background: #0d99ff;
+          @include button-base;
+          background: $primary-blue;
           color: white;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          cursor: pointer;
-          transition: all 0.15s ease;
+          transition: all $transition-fast ease;
           outline: none;
 
           &[aria-disabled="true"] {
@@ -581,18 +583,15 @@
           }
 
           &[aria-disabled="false"]:hover {
-            background: #007be5;
+            background: $hover-blue;
           }
 
           &[aria-disabled="false"]:active {
-            background: #0768cf;
+            background: $active-blue;
           }
 
           .button-icon {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-
+            @include flex-center;
             svg {
               fill: currentColor;
             }
@@ -707,22 +706,18 @@
   position: absolute;
   z-index: 905;
   background: var(--dark);
-  min-width: 160px;
   min-width: 80px;
   padding: 0.5rem 0;
   border-radius: 0.8125rem;
 
   .popover-action {
     width: 100%;
-    padding: 8px 12px;
     background: none;
     border: none;
     text-align: left;
     cursor: pointer;
     font-size: 13px;
-    color: var(--dark);
-    transition: background 0.15s;
-
+    transition: background $transition-fast;
     display: flex;
     align-items: center;
     padding: 0 0.5rem;
@@ -734,7 +729,7 @@
       display: flex;
       align-items: center;
       width: 100%;
-      min-height: 1.5rem;
+      min-height: $button-size;
       padding: 0.25rem 0.5rem;
       box-sizing: border-box;
       color: var(--light);
@@ -828,16 +823,8 @@ body:has(.global-graph-outer.active) {
       }
 
       &.edit-button-save {
-        background: #0d99ff;
+        @include button-states($primary-blue, $hover-blue, $active-blue);
         color: white;
-
-        &:hover {
-          background: #007be5;
-        }
-
-        &:active {
-          background: #0768cf;
-        }
       }
     }
 
@@ -863,6 +850,185 @@ body:has(.global-graph-outer.active) {
           overflow: hidden;
         }
       }
+    }
+  }
+}
+
+.cm-editor {
+  background-color: var(--lightgray);
+  border-radius: 13px;
+  font-family: var(--bodyFont);
+  font-size: 13px;
+  line-height: 1.5;
+  height: 20px;
+
+  &.cm-focused {
+    outline: 2px solid $primary-blue;
+  }
+
+  .cm-content {
+    padding: 8px 16px;
+    min-height: 32px;
+    caret-color: var(--dark);
+  }
+
+  .cm-line {
+    padding: 0;
+  }
+
+  .cm-scroller {
+    overflow: auto;
+  }
+
+  .cm-cursor {
+    border-left-color: var(--dark);
+  }
+
+  .cm-strong {
+    font-weight: 600;
+  }
+  .cm-em {
+    font-style: italic;
+  }
+  .cm-link {
+    color: $primary-blue;
+    text-decoration: underline;
+  }
+  .cm-monospace {
+    font-family: "Courier New", monospace;
+    background: rgba(0, 0, 0, 0.05);
+    padding: 2px 4px;
+    border-radius: 3px;
+  }
+
+  .cm-formatting {
+    opacity: 0.3;
+    transition: opacity $transition-std;
+  }
+
+  &.cm-focused .cm-formatting {
+    opacity: 1;
+  }
+}
+
+.markdown-content {
+  font-size: 13px;
+  line-height: 1.5;
+
+  p {
+    margin: 0.5em 0;
+  }
+  strong {
+    font-weight: 600;
+  }
+  em {
+    font-style: italic;
+  }
+  code {
+    font-family: "Courier New", monospace;
+    background: rgba(0, 0, 0, 0.05);
+    padding: 2px 4px;
+    border-radius: 3px;
+    font-size: 0.9em;
+  }
+
+  pre {
+    background: var(--lightgray);
+    border-radius: 6px;
+    padding: 12px;
+    overflow-x: auto;
+    margin: 8px 0;
+
+    code {
+      background: none;
+      padding: 0;
+    }
+  }
+
+  a {
+    color: $primary-blue;
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+  ul,
+  ol {
+    margin: 8px 0;
+    padding-left: 24px;
+  }
+
+  blockquote {
+    border-left: 3px solid var(--gray);
+    padding-left: 12px;
+    margin: 8px 0;
+    color: var(--gray);
+  }
+
+  .hljs {
+    background: transparent;
+    color: var(--dark);
+  }
+
+  .hljs-keyword {
+    color: #d73a49;
+  }
+  .hljs-string {
+    color: #032f62;
+  }
+  .hljs-comment {
+    color: #6a737d;
+    font-style: italic;
+  }
+  .hljs-function {
+    color: #6f42c1;
+  }
+  .hljs-number {
+    color: #005cc5;
+  }
+}
+
+.comment-composer > .composer-input,
+.reply-composer-container > .lexical-wrapper,
+.comment-edit-wrapper > .edit-input {
+  .cm-editor {
+    background: transparent !important;
+    border: none !important;
+    outline: none !important;
+    font-size: inherit;
+    font-family: inherit !important;
+    line-height: inherit;
+    color: inherit;
+    padding: 0 !important;
+    margin: 0 !important;
+    height: auto;
+
+    &.cm-focused {
+      outline: none !important;
+      border: none !important;
+      box-shadow: none !important;
+    }
+
+    .cm-content {
+      padding: 0 !important;
+      min-height: inherit;
+      caret-color: inherit;
+    }
+
+    .cm-scroller {
+      overflow: inherit;
+      font-family: inherit !important;
+      font-size: inherit;
+    }
+
+    .cm-line {
+      padding: 0;
+    }
+
+    .cm-cursor {
+      border-left-color: inherit;
     }
   }
 }

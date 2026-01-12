@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-01-11 10:14:34 GMT-05:00
+modified: 2026-01-12 11:55:07 GMT-05:00
 permalinks:
   - /website
   - /tweets
@@ -6228,6 +6228,10 @@ title: are.na
 
 ## poetry
 
+- https://www.poetryfoundation.org/poems/49001/ariel -- Ariel, By Sylvia Plath
+  - [meta]:
+    - date: 01/12/2026
+    - tags: [love]
 - https://urlpoetry.club/ -- URL Poetry Club
   - [meta]:
     - date: 12/17/2025
