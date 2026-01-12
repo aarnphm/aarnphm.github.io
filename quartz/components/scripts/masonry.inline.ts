@@ -188,4 +188,4 @@ async function initMasonry() {
 }
 
 document.addEventListener("nav", initMasonry)
-document.addEventListener("content-decrypted", initMasonry)
+document.addEventListener("contentdecrypted", initMasonry)

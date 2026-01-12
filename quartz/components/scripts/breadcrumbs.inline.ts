@@ -163,4 +163,4 @@ function hydrateBreadcrumbs() {
 }
 
 document.addEventListener("nav", hydrateBreadcrumbs)
-document.addEventListener("content-decrypted", hydrateBreadcrumbs)
+document.addEventListener("contentdecrypted", hydrateBreadcrumbs)

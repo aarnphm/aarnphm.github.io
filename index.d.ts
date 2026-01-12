@@ -9,8 +9,10 @@ interface CustomEventMap {
   nav: CustomEvent<{ url: FullSlug }>
   themechange: CustomEvent<{ theme: "light" | "dark" }>
   readermodechange: CustomEvent<{ mode: "on" | "off" }>
+
+  "collapsibletoggle": CustomEvent<{ toggleId: string; isOpen: "true" | "false" }>
   toast: CustomEvent<import("./quartz/components/scripts/toast").ToastEventDetail>
-  "content-decrypted": CustomEvent<{ article: HTMLDivElement; content: HTMLDivElement }>
+  "contentdecrypted": CustomEvent<{ article: HTMLDivElement; content: HTMLDivElement }>
 }
 
 type ContentIndex = Record<FullSlug, ContentDetails>

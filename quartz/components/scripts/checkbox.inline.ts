@@ -21,4 +21,4 @@ function setupCheckbox() {
 }
 
 document.addEventListener("nav", setupCheckbox)
-document.addEventListener("content-decrypted", setupCheckbox)
+document.addEventListener("contentdecrypted", setupCheckbox)

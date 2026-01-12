@@ -22,6 +22,12 @@ function handleToggleClick(event: Event) {
     `${window.document.body.dataset.slug!.replace(/\//g, "--")}-${toggle.id}`,
     isOpen ? "true" : "false",
   )
+
+  document.dispatchEvent(
+    new CustomEvent("collapsibletoggle", {
+      detail: { toggleId: toggle.id, isOpen },
+    }),
+  )
 }
 
 function handleToggleKeydown(event: KeyboardEvent) {

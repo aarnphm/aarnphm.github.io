@@ -298,4 +298,4 @@ function setupSidenotes() {
 }
 
 document.addEventListener("nav", setupSidenotes)
-document.addEventListener("content-decrypted", setupSidenotes)
+document.addEventListener("contentdecrypted", setupSidenotes)

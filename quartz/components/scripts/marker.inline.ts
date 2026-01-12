@@ -48,4 +48,4 @@ async function setupMarkers() {
 }
 
 document.addEventListener("nav", setupMarkers)
-document.addEventListener("content-decrypted", setupMarkers)
+document.addEventListener("contentdecrypted", setupMarkers)

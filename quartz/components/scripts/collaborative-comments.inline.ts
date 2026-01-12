@@ -26,6 +26,7 @@ let comments: MultiplayerComment[] = []
 let activeSelection: Range | null = null
 let bubbleOffsets = new Map<string, { x: number; y: number }>()
 let selectionHighlightLayer: HTMLElement | null = null
+let pendingHashCommentId: string | null = null
 
 function getAuthor(): string {
   let author = localStorage.getItem("comment-author")
@@ -77,6 +78,56 @@ async function hashText(text: string): Promise<string> {
 function getArticleText(): string {
   const article = document.querySelector("article.popover-hint")
   return article?.textContent || ""
+}
+
+function parseCommentHash(): string | null {
+  const { hash } = window.location
+  if (!hash) return null
+  const prefix = "#comment-"
+  if (!hash.startsWith(prefix)) return null
+  const rawId = hash.slice(prefix.length)
+  if (!rawId) return null
+  try {
+    return decodeURIComponent(rawId)
+  } catch {
+    return rawId
+  }
+}
+
+function openPendingCommentThread() {
+  if (!pendingHashCommentId) return
+  const targetId = pendingHashCommentId
+  const comment = comments.find((item) => item.id === targetId && !item.deletedAt)
+  if (!comment) return
+
+  const bubble = document.querySelector<HTMLElement>(
+    `.comment-bubble[data-comment-id="${targetId}"]`,
+  )
+  const highlight = document.querySelector<HTMLElement>(
+    `.comment-highlight[data-comment-id="${targetId}"]`,
+  )
+  const target = bubble ?? highlight
+  let position: { top: number; left: number } | undefined
+  if (target) {
+    const rect = target.getBoundingClientRect()
+    const scrollTop = window.pageYOffset || document.documentElement.scrollTop
+    const scrollLeft = window.pageXOffset || document.documentElement.scrollLeft
+    position = { top: rect.top + scrollTop, left: rect.left + scrollLeft }
+    target.scrollIntoView({ block: "center", inline: "nearest" })
+  }
+
+  showCommentThread(targetId, position)
+  pendingHashCommentId = null
+}
+
+function setPendingCommentFromHash() {
+  const targetId = parseCommentHash()
+  if (!targetId) {
+    pendingHashCommentId = null
+    return
+  }
+  pendingHashCommentId = targetId
+  openPendingCommentThread()
 }
 
 function clearSelectionHighlight() {
@@ -246,6 +297,7 @@ function connectWebSocket() {
       comments = msg.comments
       renderAllComments()
       refreshActiveModal()
+      openPendingCommentThread()
     } else if (msg.comment) {
       applyComment(msg.comment)
     }
@@ -1164,6 +1216,7 @@ function showCommentThread(commentId: string, position?: { top: number; left: nu
 
 document.addEventListener("nav", () => {
   connectWebSocket()
+  setPendingCommentFromHash()
 
   const mouseUp = (event: MouseEvent) => {
     if (event.button !== 0) return
@@ -1190,6 +1243,31 @@ document.addEventListener("nav", () => {
 
   document.addEventListener("mouseup", mouseUp)
   window.addEventListener("resize", handleResize)
+
+  const handleCollapseToggle = () => {
+    hideComposer()
+    hideActionsPopover()
+    if (activeModal) {
+      const activeId = activeModal.dataset.commentId
+      document.body.removeChild(activeModal)
+      activeModal = null
+      if (activeId) {
+        document
+          .querySelector<HTMLElement>(`.comment-bubble[data-comment-id="${activeId}"]`)
+          ?.classList.remove("modal-active")
+      }
+    }
+    requestAnimationFrame(() => {
+      renderAllComments()
+      refreshActiveModal()
+      openPendingCommentThread()
+    })
+  }
+
+  const handleHashChange = () => {
+    setPendingCommentFromHash()
+  }
+
   window.addCleanup(() => {
     hideComposer()
     hideActionsPopover()
@@ -1210,5 +1288,10 @@ document.addEventListener("nav", () => {
     }
     document.removeEventListener("mouseup", mouseUp)
     window.removeEventListener("resize", handleResize)
+    document.removeEventListener("collapsibletoggle", handleCollapseToggle)
+    window.removeEventListener("hashchange", handleHashChange)
   })
+
+  document.addEventListener("collapsibletoggle", handleCollapseToggle)
+  window.addEventListener("hashchange", handleHashChange)
 })

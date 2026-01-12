@@ -386,5 +386,5 @@ async function setupMermaid() {
   }
 }
 document.addEventListener("nav", setupMermaid)
-document.addEventListener("content-decrypted", setupMermaid)
+document.addEventListener("contentdecrypted", setupMermaid)
 document.addEventListener("slide-change", setupMermaid)
