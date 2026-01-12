@@ -2,7 +2,7 @@
 date: "2023-09-11"
 description: notes on film equipment, anamorphic lenses, camera formats, and compositional techniques including planimetric composition and lighting.
 id: Cinematography
-modified: 2025-12-16 06:47:27 GMT-05:00
+modified: 2026-01-11 18:17:05 GMT-05:00
 socials:
   tf: https://www.youtube.com/watch?v=PzZTIH0WKaU&t=80s
 tags:
@@ -14,6 +14,7 @@ title: Cinematography
 Notes on format:
 
 - Anamorphic [[thoughts/lenses|lenses]]
+  - https://www.youtube.com/watch?v=47sg4o37hkY
 
 Equipment:
 

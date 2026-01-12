@@ -139,28 +139,28 @@ export class MultiplayerComments extends DurableObject<Env> {
   private async handleNewComment(comment: Comment): Promise<Response> {
     const db = drizzle(this.env.COMMENTS_ROOM)
 
-    // Check if comment already exists (idempotency)
-    const existing = await db.select().from(comments).where(eq(comments.id, comment.id)).get()
-    if (existing) {
-      return Response.json(existing, { status: 200 })
-    }
-
-    await db.insert(comments).values({
-      id: comment.id,
-      pageId: comment.pageId,
-      parentId: comment.parentId,
-      anchorHash: comment.anchorHash,
-      anchorStart: comment.anchorStart,
-      anchorEnd: comment.anchorEnd,
-      anchorText: comment.anchorText,
-      content: comment.content,
-      author: comment.author,
-      createdAt: comment.createdAt,
-      updatedAt: null,
-      deletedAt: null,
-    })
+    await db
+      .insert(comments)
+      .values({
+        id: comment.id,
+        pageId: comment.pageId,
+        parentId: comment.parentId,
+        anchorHash: comment.anchorHash,
+        anchorStart: comment.anchorStart,
+        anchorEnd: comment.anchorEnd,
+        anchorText: comment.anchorText,
+        content: comment.content,
+        author: comment.author,
+        createdAt: comment.createdAt,
+        updatedAt: null,
+        deletedAt: null,
+      })
+      .onConflictDoNothing()
 
     const saved = await db.select().from(comments).where(eq(comments.id, comment.id)).get()
+    if (!saved) {
+      return new Response("failed to save comment", { status: 500 })
+    }
 
     for (const [ws, session] of this.sessions) {
       if (session.pageId === comment.pageId) {
@@ -197,7 +197,7 @@ export class MultiplayerComments extends DurableObject<Env> {
       }
 
       if (data.type === "delete") {
-        await this.handleDeleteComment(data.commentId)
+        await this.handleDeleteComment(data.comment.id)
       }
     } catch (err) {
       console.error("websocket message error:", err)
@@ -244,7 +244,7 @@ export class MultiplayerComments extends DurableObject<Env> {
 
     if (!comment) return
 
-    await db.update(comments).set({ deletedAt: now }).where(eq(comments.id, commentId))
+    await db.delete(comments).where(eq(comments.id, commentId))
 
     for (const [ws, session] of this.sessions) {
       if (session.pageId === comment.pageId) {

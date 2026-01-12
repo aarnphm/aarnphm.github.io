@@ -20,15 +20,6 @@
   @return $format;
 }
 
-@mixin iconStyles {
-  margin-left: auto;
-  white-space: nowrap;
-  color: var(--lightgray);
-  padding: 2px 0px;
-  fill: lightgray;
-  opacity: 0;
-}
-
 @mixin dagHighlights {
   color: var(--dag-highlights);
   text-decoration: underline;
