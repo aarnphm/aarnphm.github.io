@@ -107,13 +107,14 @@ function addGlobalPageResources(ctx: BuildCtx, componentResources: ComponentReso
     componentResources.css.push(popoverStyle)
   }
 
+  componentResources.beforeDOMLoaded.push(markerScript)
+
   componentResources.css.push(clipboardStyle, pseudoStyle, audioStyle)
   componentResources.afterDOMLoaded.push(
     clipboardScript,
     pseudoScript,
     protectedScript,
     audioScript,
-    markerScript,
     baseMapScript,
     multiplayerScript,
   )

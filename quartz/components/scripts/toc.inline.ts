@@ -6,7 +6,7 @@ const observer = new IntersectionObserver((entries) => {
   for (const entry of entries) {
     const slug = entry.target.id
     const tocEntryElement = document.querySelector(`button[data-for="${slug}"]`)
-    const toc = document.querySelector(".toc") as HTMLDivElement
+    const toc = document.querySelector<HTMLDivElement>(".toc")
     if (!toc) continue
     const layout = toc.dataset.layout
     const windowHeight = entry.rootBounds?.height
@@ -92,9 +92,7 @@ function scrollToElement(hash: string) {
 
   const shareOpts = {
     color: "rgba(234, 157, 52, 0.45)",
-    iterations: 4,
-    animationDuration: 800,
-    strokeWidth: 2,
+    animate: false,
   }
 
   const highlight = element.querySelector("span.highlight-span") as HTMLElement

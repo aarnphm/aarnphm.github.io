@@ -20,7 +20,7 @@ async function setupMarkers() {
   annotations = []
 
   // find all marker elements
-  var markers = document.querySelectorAll(".marker") as NodeListOf<HTMLElement>
+  var markers = document.querySelectorAll<HTMLDivElement>(".marker")
 
   markers.forEach((marker) => {
     // extract intensity level from class (marker-h1, marker-h2, etc.)
@@ -34,10 +34,12 @@ async function setupMarkers() {
 
     // create rough notation annotation
     var annotation = annotate(marker, {
-      type: "highlight",
-      color: color,
+      type: "bracket",
+      color,
       iterations: 2,
-      animationDuration: 0, // instant, no animation on page load
+      animate: false,
+      multiline: true,
+      brackets: ["left", "bottom"],
     })
 
     annotation.show()
@@ -45,6 +47,5 @@ async function setupMarkers() {
   })
 }
 
-document.addEventListener("prenav", setupMarkers)
 document.addEventListener("nav", setupMarkers)
 document.addEventListener("content-decrypted", setupMarkers)

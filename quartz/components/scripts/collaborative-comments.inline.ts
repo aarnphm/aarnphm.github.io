@@ -24,6 +24,7 @@ type BroadcastMessage = {
 let ws: WebSocket | null = null
 let comments: MultiplayerComment[] = []
 let activeSelection: Range | null = null
+let bubbleOffsets = new Map<string, { x: number; y: number }>()
 
 function getAuthor(): string {
   let author = localStorage.getItem("comment-author")
@@ -32,6 +33,16 @@ function getAuthor(): string {
     localStorage.setItem("comment-author", author)
   }
   return author
+}
+
+async function getGravatarUrl(identifier: string, size: number = 24): Promise<string> {
+  const normalized = identifier.trim().toLowerCase()
+  const encoder = new TextEncoder()
+  const data = encoder.encode(normalized)
+  const hashBuffer = await crypto.subtle.digest("SHA-256", data)
+  const hashArray = Array.from(new Uint8Array(hashBuffer))
+  const hashHex = hashArray.map((b) => b.toString(16).padStart(2, "0")).join("")
+  return `https://gravatar.com/avatar/${hashHex}?s=${size}&d=identicon&r=pg`
 }
 
 function formatRelativeTime(timestamp: number): string {
@@ -67,6 +78,113 @@ function getArticleText(): string {
   return article?.textContent || ""
 }
 
+function getRangeOffsets(range: Range, root: Element) {
+  const text = range.toString()
+  if (!text) return null
+  const startRange = document.createRange()
+  startRange.setStart(root, 0)
+  startRange.setEnd(range.startContainer, range.startOffset)
+  const startOffset = startRange.toString().length
+  const endRange = document.createRange()
+  endRange.setStart(root, 0)
+  endRange.setEnd(range.endContainer, range.endOffset)
+  const endOffset = endRange.toString().length
+  if (endOffset <= startOffset) return null
+  return { text, startOffset, endOffset }
+}
+
+function wrapRange(range: Range, wrapper: HTMLElement) {
+  try {
+    range.surroundContents(wrapper)
+  } catch {
+    const contents = range.extractContents()
+    wrapper.appendChild(contents)
+    range.insertNode(wrapper)
+  }
+}
+
+function refreshActiveModal() {
+  if (!activeModal) return
+  const commentId = activeModal.dataset.commentId
+  if (!commentId) return
+  const comment = comments.find((c) => c.id === commentId)
+  if (!comment) return
+  const replies = comments.filter((c) => c.parentId === commentId && !c.deletedAt)
+  const content = activeModal.querySelector(".modal-content")
+  if (!(content instanceof HTMLElement)) return
+  renderThreadContent(content, comment, replies)
+}
+
+function upsertComment(comment: MultiplayerComment) {
+  const idx = comments.findIndex((c) => c.id === comment.id)
+  if (idx === -1) {
+    comments.push(comment)
+    return
+  }
+  comments[idx] = comment
+}
+
+function applyComment(comment: MultiplayerComment) {
+  upsertComment(comment)
+  if (comment.deletedAt) {
+    bubbleOffsets.delete(comment.id)
+  }
+  renderAllComments()
+  refreshActiveModal()
+}
+
+async function persistNewComment(comment: MultiplayerComment) {
+  await fetch("/comments/add", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(comment),
+  })
+}
+
+async function persistUpdateComment(comment: MultiplayerComment) {
+  await fetch("/comments/modify", {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(comment),
+  })
+}
+
+async function persistDeleteComment(commentId: string) {
+  await fetch(`/comments/delete?id=${encodeURIComponent(commentId)}`, {
+    method: "DELETE",
+  })
+}
+
+function submitNewComment(comment: MultiplayerComment) {
+  applyComment(comment)
+  if (ws && ws.readyState === WebSocket.OPEN) {
+    ws.send(JSON.stringify({ type: "new", comment }))
+  }
+  void persistNewComment(comment).catch((err) => {
+    console.error("failed to persist comment:", err)
+  })
+}
+
+function submitUpdateComment(comment: MultiplayerComment) {
+  applyComment(comment)
+  if (ws && ws.readyState === WebSocket.OPEN) {
+    ws.send(JSON.stringify({ type: "update", comment }))
+  }
+  void persistUpdateComment(comment).catch((err) => {
+    console.error("failed to persist comment update:", err)
+  })
+}
+
+function submitDeleteComment(comment: MultiplayerComment, deletedAt: number) {
+  applyComment({ ...comment, deletedAt })
+  if (ws && ws.readyState === WebSocket.OPEN) {
+    ws.send(JSON.stringify({ type: "delete", comment: { ...comment, deletedAt } }))
+  }
+  void persistDeleteComment(comment.id).catch((err) => {
+    console.error("failed to persist comment delete:", err)
+  })
+}
+
 function connectWebSocket() {
   const protocol = window.location.protocol === "https:" ? "wss:" : "ws:"
   const wsUrl = `${protocol}//${window.location.host}/comments/websocket?pageId=${encodeURIComponent(getFullSlug(window))}`
@@ -79,21 +197,9 @@ function connectWebSocket() {
     if (msg.type === "init" && msg.comments) {
       comments = msg.comments
       renderAllComments()
-    } else if (msg.type === "new" && msg.comment) {
-      comments.push(msg.comment)
-      renderAllComments()
-    } else if (msg.type === "update" && msg.comment) {
-      const idx = comments.findIndex((c) => c.id === msg.comment!.id)
-      if (idx !== -1) {
-        comments[idx] = msg.comment
-        renderAllComments()
-      }
-    } else if (msg.type === "delete" && msg.comment) {
-      const idx = comments.findIndex((c) => c.id === msg.comment!.id)
-      if (idx !== -1) {
-        comments[idx] = msg.comment
-        renderAllComments()
-      }
+      refreshActiveModal()
+    } else if (msg.comment) {
+      applyComment(msg.comment)
     }
   }
 
@@ -116,6 +222,7 @@ function connectWebSocket() {
 let activeComposer: HTMLElement | null = null
 let activeHighlight: HTMLSpanElement | null = null
 let activeModal: HTMLElement | null = null
+let activeActionsPopover: HTMLElement | null = null
 
 function hideComposer() {
   if (activeComposer) {
@@ -123,10 +230,257 @@ function hideComposer() {
     activeComposer = null
   }
   if (activeHighlight) {
-    activeHighlight.replaceWith(...activeHighlight.childNodes)
+    activeHighlight.replaceWith(...Array.from(activeHighlight.childNodes))
     activeHighlight = null
   }
   activeSelection = null
+}
+
+function hideActionsPopover() {
+  if (activeActionsPopover) {
+    document.body.removeChild(activeActionsPopover)
+    activeActionsPopover = null
+  }
+}
+
+function showActionsPopover(
+  comment: MultiplayerComment,
+  buttonRect: DOMRect,
+  onEdit: () => void,
+  onDelete: () => void,
+  showDelete: boolean = true,
+) {
+  hideActionsPopover()
+
+  const popover = document.createElement("div")
+  popover.className = "comment-actions-popover"
+  activeActionsPopover = popover
+
+  const scrollLeft = window.pageXOffset || document.documentElement.scrollLeft
+  const scrollTop = window.pageYOffset || document.documentElement.scrollTop
+
+  popover.style.left = `${buttonRect.right + scrollLeft + 4}px`
+  popover.style.top = `${buttonRect.top + scrollTop}px`
+
+  const editButton = document.createElement("button")
+  editButton.className = "popover-action"
+  editButton.innerHTML = `<span class="menu-item">Edit</span>`
+  editButton.onclick = () => {
+    hideActionsPopover()
+    onEdit()
+  }
+
+  popover.appendChild(editButton)
+
+  if (showDelete) {
+    const deleteButton = document.createElement("button")
+    deleteButton.className = "popover-action popover-action-danger"
+    deleteButton.innerHTML = `<span class="menu-item">Delete comment</span>`
+    deleteButton.onclick = () => {
+      hideActionsPopover()
+      onDelete()
+    }
+    popover.appendChild(deleteButton)
+  }
+
+  document.body.appendChild(popover)
+
+  const closeOnClickOutside = (e: MouseEvent) => {
+    if (!popover.contains(e.target as Node)) {
+      hideActionsPopover()
+      document.removeEventListener("mousedown", closeOnClickOutside)
+    }
+  }
+  setTimeout(() => document.addEventListener("mousedown", closeOnClickOutside), 0)
+}
+
+function showThreadActionsPopover(comment: MultiplayerComment, buttonRect: DOMRect) {
+  hideActionsPopover()
+
+  const popover = document.createElement("div")
+  popover.className = "comment-actions-popover"
+  activeActionsPopover = popover
+
+  const scrollLeft = window.pageXOffset || document.documentElement.scrollLeft
+  const scrollTop = window.pageYOffset || document.documentElement.scrollTop
+
+  popover.style.left = `${buttonRect.right + scrollLeft + 4}px`
+  popover.style.top = `${buttonRect.top + scrollTop}px`
+
+  const markUnreadButton = document.createElement("button")
+  markUnreadButton.className = "popover-action"
+  markUnreadButton.innerHTML = `<span class="menu-item">Mark as unread</span>`
+  markUnreadButton.onclick = () => {
+    hideActionsPopover()
+  }
+
+  const copyLinkButton = document.createElement("button")
+  copyLinkButton.className = "popover-action"
+  copyLinkButton.innerHTML = `<span class="menu-item">Copy link</span>`
+  copyLinkButton.onclick = async () => {
+    hideActionsPopover()
+    const url = new URL(window.location.href)
+    url.hash = `comment-${comment.id}`
+    try {
+      await navigator.clipboard.writeText(url.toString())
+    } catch (err) {
+      console.error("failed to copy link:", err)
+    }
+  }
+
+  const deleteButton = document.createElement("button")
+  deleteButton.className = "popover-action popover-action-danger"
+  deleteButton.innerHTML = `<span class="menu-item">Delete thread...</span>`
+  deleteButton.onclick = () => {
+    hideActionsPopover()
+    const replies = comments.filter((c) => c.parentId === comment.id && !c.deletedAt)
+    showDeleteConfirmation(comment, (deletedAt) => {
+      submitDeleteComment(comment, deletedAt)
+      for (const reply of replies) {
+        submitDeleteComment(reply, deletedAt)
+      }
+    })
+  }
+
+  popover.appendChild(markUnreadButton)
+  popover.appendChild(copyLinkButton)
+  popover.appendChild(deleteButton)
+  document.body.appendChild(popover)
+
+  const closeOnClickOutside = (e: MouseEvent) => {
+    if (!popover.contains(e.target as Node)) {
+      hideActionsPopover()
+      document.removeEventListener("mousedown", closeOnClickOutside)
+    }
+  }
+  setTimeout(() => document.addEventListener("mousedown", closeOnClickOutside), 0)
+}
+
+function enterEditMode(comment: MultiplayerComment, textElement: HTMLElement) {
+  const originalContent = textElement.textContent || ""
+
+  const wrapper = document.createElement("div")
+  wrapper.className = "comment-edit-wrapper"
+
+  const inputContent = document.createElement("div")
+  inputContent.className = "edit-input-content"
+
+  const editor = document.createElement("div")
+  editor.contentEditable = "true"
+  editor.className = "edit-input"
+  editor.textContent = originalContent
+
+  inputContent.appendChild(editor)
+
+  const actions = document.createElement("div")
+  actions.className = "edit-actions"
+
+  const cancelButton = document.createElement("button")
+  cancelButton.innerHTML = `<span class="button-container"><span class="button-text"><span class="button-content">Cancel</span></span></span>`
+  cancelButton.className = "edit-button edit-button-cancel"
+
+  const saveButton = document.createElement("button")
+  saveButton.innerHTML = `<span class="button-container"><span class="button-text"><span class="button-content">Save</span></span></span>`
+  saveButton.className = "edit-button edit-button-save"
+
+  saveButton.onclick = async () => {
+    const newContent = editor.textContent?.trim()
+    if (!newContent || newContent === originalContent) {
+      exitEditMode()
+      return
+    }
+
+    const updatedAt = Date.now()
+    submitUpdateComment({
+      ...comment,
+      content: newContent,
+      updatedAt,
+    })
+
+    exitEditMode()
+  }
+
+  cancelButton.onclick = () => {
+    exitEditMode()
+  }
+
+  editor.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") {
+      exitEditMode()
+    } else if ((e.metaKey || e.ctrlKey) && e.key === "Enter") {
+      saveButton.click()
+    }
+  })
+
+  function exitEditMode() {
+    textElement.style.display = ""
+    if (wrapper.parentNode) {
+      wrapper.parentNode.removeChild(wrapper)
+    }
+  }
+
+  actions.appendChild(cancelButton)
+  actions.appendChild(saveButton)
+  wrapper.appendChild(inputContent)
+  wrapper.appendChild(actions)
+
+  textElement.style.display = "none"
+  textElement.parentNode?.insertBefore(wrapper, textElement)
+
+  editor.focus()
+  const range = document.createRange()
+  const sel = window.getSelection()
+  range.selectNodeContents(editor)
+  range.collapse(false)
+  sel?.removeAllRanges()
+  sel?.addRange(range)
+}
+
+function showDeleteConfirmation(
+  comment: MultiplayerComment,
+  onConfirm?: (deletedAt: number) => void,
+) {
+  const overlay = document.createElement("div")
+  overlay.className = "delete-confirmation-overlay"
+
+  const modal = document.createElement("div")
+  modal.className = "delete-confirmation-modal"
+
+  const message = document.createElement("div")
+  message.className = "delete-confirmation-message"
+  message.textContent = "Delete this comment?"
+
+  const actions = document.createElement("div")
+  actions.className = "delete-confirmation-actions"
+
+  const cancelButton = document.createElement("button")
+  cancelButton.className = "edit-button edit-button-cancel"
+  cancelButton.innerHTML = `<span class="button-container"><span class="button-text"><span class="button-content">Cancel</span></span></span>`
+
+  const deleteButton = document.createElement("button")
+  deleteButton.className = "edit-button edit-button-delete"
+  deleteButton.innerHTML = `<span class="button-container"><span class="button-text"><span class="button-content">Delete</span></span></span>`
+
+  cancelButton.onclick = () => {
+    document.body.removeChild(overlay)
+  }
+
+  deleteButton.onclick = async () => {
+    const deletedAt = Date.now()
+    document.body.removeChild(overlay)
+    if (onConfirm) {
+      onConfirm(deletedAt)
+      return
+    }
+    submitDeleteComment(comment, deletedAt)
+  }
+
+  actions.appendChild(cancelButton)
+  actions.appendChild(deleteButton)
+  modal.appendChild(message)
+  modal.appendChild(actions)
+  overlay.appendChild(modal)
+  document.body.appendChild(overlay)
 }
 
 function handleTextSelection() {
@@ -153,30 +507,25 @@ function handleTextSelection() {
     console.warn("failed to create temporary highlight", err)
   }
 
-  showComposer(activeSelection!)
+  showComposer(activeSelection!, span)
 }
 
-async function showComposer(range: Range) {
+async function showComposer(range: Range, highlightSpan: HTMLSpanElement) {
   if (activeComposer) {
     document.body.removeChild(activeComposer)
     activeComposer = null
   }
-  const articleText = getArticleText()
-  const selectedText = range.toString()
-  const anchorHash = await hashText(selectedText)
-
-  const startOffset = articleText.indexOf(selectedText)
-  if (startOffset === -1) {
-    return
-  }
-
-  const endOffset = startOffset + selectedText.length
+  const article = document.querySelector("article.popover-hint")
+  if (!article) return
+  const offsets = getRangeOffsets(range, article)
+  if (!offsets) return
+  const anchorHash = await hashText(offsets.text)
 
   const composer = document.createElement("div")
   composer.className = "comment-composer"
   activeComposer = composer
 
-  const rect = range.getBoundingClientRect()
+  const rect = highlightSpan.getBoundingClientRect()
   const scrollLeft = window.pageXOffset || document.documentElement.scrollLeft
   const scrollTop = window.pageYOffset || document.documentElement.scrollTop
 
@@ -196,7 +545,7 @@ async function showComposer(range: Range) {
   const submitButton = document.createElement("button")
   submitButton.className = "composer-submit"
   submitButton.disabled = true
-  submitButton.innerHTML = `<svg width="24" height="24" fill="none" viewBox="0 0 24 24"><path fill="currentColor" fill-rule="evenodd" d="M12 16a.5.5 0 0 1-.5-.5V8.707l-3.146 3.147a.5.5 0 0 1-.708-.708l4-4a.5.5 0 0 1 .708 0l4 4a.5.5 0 0 1-.708.708L12.5 8.707V15.5a.5.5 0 0 1-.5.5" clip-rule="evenodd"></path></svg>`
+  submitButton.innerHTML = `<span class="icon"><svg width="24" height="24" fill="none" viewBox="0 0 24 24"><path fill="currentColor" fill-rule="evenodd" d="M12 16a.5.5 0 0 1-.5-.5V8.707l-3.146 3.147a.5.5 0 0 1-.708-.708l4-4a.5.5 0 0 1 .708 0l4 4a.5.5 0 0 1-.708.708L12.5 8.707V15.5a.5.5 0 0 1-.5.5" clip-rule="evenodd"></path></svg></span>`
 
   input.addEventListener("input", () => {
     const content = input.textContent?.trim() || ""
@@ -225,9 +574,9 @@ async function showComposer(range: Range) {
       pageId: getFullSlug(window),
       parentId: null,
       anchorHash,
-      anchorStart: startOffset,
-      anchorEnd: endOffset,
-      anchorText: selectedText,
+      anchorStart: offsets.startOffset,
+      anchorEnd: offsets.endOffset,
+      anchorText: offsets.text,
       content,
       author: getAuthor(),
       createdAt: Date.now(),
@@ -235,9 +584,7 @@ async function showComposer(range: Range) {
       deletedAt: null,
     }
 
-    if (ws && ws.readyState === WebSocket.OPEN) {
-      ws.send(JSON.stringify({ type: "new", comment }))
-    }
+    submitNewComment(comment)
 
     hideComposer()
   }
@@ -251,7 +598,9 @@ async function showComposer(range: Range) {
 }
 
 function renderAllComments() {
-  document.querySelectorAll(".comment-highlight").forEach((el) => el.replaceWith(...el.childNodes))
+  document
+    .querySelectorAll(".comment-highlight")
+    .forEach((el) => el.replaceWith(...Array.from(el.childNodes)))
   document.querySelectorAll(".comment-bubble").forEach((el) => el.remove())
 
   const articleText = getArticleText()
@@ -264,6 +613,7 @@ function renderAllComments() {
     const startIdx = comment.anchorStart
     const endIdx = comment.anchorEnd
 
+    if (startIdx === endIdx) continue
     if (startIdx < 0 || endIdx > articleText.length) continue
 
     const walker = document.createTreeWalker(article, NodeFilter.SHOW_TEXT)
@@ -309,29 +659,123 @@ function renderAllComments() {
         const bubble = document.createElement("div")
         bubble.className = "comment-bubble"
         bubble.dataset.commentId = comment.id
-        bubble.style.top = `${rect.top + scrollTop}px`
-        bubble.style.left = `${rect.right + scrollLeft + 8}px`
+        const baseLeft = rect.right + scrollLeft + 8
+        const baseTop = rect.top + scrollTop
+        const offset = bubbleOffsets.get(comment.id)
+        const initialLeft = baseLeft + (offset?.x ?? 0)
+        const initialTop = baseTop + (offset?.y ?? 0)
+        bubble.style.top = `${initialTop}px`
+        bubble.style.left = `${initialLeft}px`
 
-        const avatar = document.createElement("div")
-        avatar.className = "bubble-avatar"
-        avatar.textContent = comment.author.charAt(0).toUpperCase()
-        bubble.appendChild(avatar)
+        const replyTop = document.createElement("div")
+        replyTop.className = "reply-top"
 
-        const preview = document.createElement("div")
-        preview.className = "comment-preview"
-        preview.textContent = comment.content
-        bubble.appendChild(preview)
+        const replyLeft = document.createElement("div")
+        replyLeft.className = "reply-left"
+
+        const avatar = document.createElement("img")
+        avatar.className = "reply-avatar"
+        getGravatarUrl(comment.author, 24).then((url) => {
+          avatar.src = url
+        })
+        avatar.alt = comment.author
+
+        const author = document.createElement("span")
+        author.className = "reply-author"
+        author.textContent = comment.author
+
+        const time = document.createElement("span")
+        time.className = "reply-time"
+        time.textContent = formatRelativeTime(comment.createdAt)
+
+        replyLeft.appendChild(avatar)
+        replyLeft.appendChild(author)
+        replyLeft.appendChild(time)
+        replyTop.appendChild(replyLeft)
+
+        const text = document.createElement("div")
+        text.className = "reply-text"
+        text.textContent = comment.content
+
+        bubble.appendChild(replyTop)
+        bubble.appendChild(text)
+
+        const replyCount = comments.filter((c) => c.parentId === comment.id && !c.deletedAt).length
+        if (replyCount > 0) {
+          const replies = document.createElement("div")
+          replies.className = "preview-replies"
+          replies.textContent = `${replyCount} ${replyCount === 1 ? "reply" : "replies"}`
+          bubble.appendChild(replies)
+        }
 
         bubble.onmouseenter = () => {
-          bubble.classList.add("expanded")
+          if (activeModal && activeModal.dataset.commentId === comment.id) {
+            bubble.classList.add("modal-active")
+          }
         }
 
         bubble.onmouseleave = () => {
-          bubble.classList.remove("expanded")
+          bubble.classList.remove("modal-active")
+        }
+
+        bubble.onmousedown = (e: MouseEvent) => {
+          if (e.button !== 0) return
+          e.preventDefault()
+          let isDragging = true
+          let dragStartX = e.pageX
+          let dragStartY = e.pageY
+          let startLeft = parseFloat(bubble.style.left) || initialLeft
+          let startTop = parseFloat(bubble.style.top) || initialTop
+
+          const onMouseMove = (moveEvent: MouseEvent) => {
+            if (!isDragging) return
+            const deltaX = moveEvent.pageX - dragStartX
+            const deltaY = moveEvent.pageY - dragStartY
+            bubble.style.left = `${startLeft + deltaX}px`
+            bubble.style.top = `${startTop + deltaY}px`
+          }
+
+          const onMouseUp = () => {
+            isDragging = false
+            document.removeEventListener("mousemove", onMouseMove)
+            document.removeEventListener("mouseup", onMouseUp)
+            const currentLeft = parseFloat(bubble.style.left) || startLeft
+            const currentTop = parseFloat(bubble.style.top) || startTop
+            bubbleOffsets.set(comment.id, {
+              x: currentLeft - baseLeft,
+              y: currentTop - baseTop,
+            })
+          }
+
+          document.addEventListener("mousemove", onMouseMove)
+          document.addEventListener("mouseup", onMouseUp)
         }
 
         bubble.onclick = () => {
-          showCommentThread(comment.id)
+          if (activeModal) {
+            return
+          }
+          bubble.classList.add("modal-active")
+          const durationRaw = getComputedStyle(bubble)
+            .getPropertyValue("--expand-animation-time")
+            .trim()
+          let delay = 120
+          if (durationRaw.endsWith("ms")) {
+            const parsed = Number.parseFloat(durationRaw)
+            if (!Number.isNaN(parsed)) delay = parsed
+          } else if (durationRaw.endsWith("s")) {
+            const parsed = Number.parseFloat(durationRaw)
+            if (!Number.isNaN(parsed)) delay = parsed * 1000
+          }
+          window.setTimeout(() => {
+            const bubbleRect = bubble.getBoundingClientRect()
+            const scrollTop = window.pageYOffset || document.documentElement.scrollTop
+            const scrollLeft = window.pageXOffset || document.documentElement.scrollLeft
+            showCommentThread(comment.id, {
+              top: bubbleRect.top + scrollTop,
+              left: bubbleRect.left + scrollLeft,
+            })
+          }, delay)
         }
 
         document.body.appendChild(bubble)
@@ -342,12 +786,94 @@ function renderAllComments() {
   }
 }
 
-function showCommentThread(commentId: string) {
+function buildThreadItem(comment: MultiplayerComment) {
+  const item = document.createElement("div")
+  item.className = "reply-item"
+
+  const top = document.createElement("div")
+  top.className = "reply-top"
+
+  const left = document.createElement("div")
+  left.className = "reply-left"
+
+  const avatar = document.createElement("img")
+  avatar.className = "reply-avatar"
+  getGravatarUrl(comment.author, 24).then((url) => {
+    avatar.src = url
+  })
+  avatar.alt = comment.author
+
+  const author = document.createElement("div")
+  author.className = "reply-author"
+  author.textContent = comment.author
+
+  const time = document.createElement("div")
+  time.className = "reply-time"
+  time.textContent = formatRelativeTime(comment.createdAt)
+
+  left.appendChild(avatar)
+  left.appendChild(author)
+  left.appendChild(time)
+
+  const text = document.createElement("div")
+  text.className = "reply-text"
+  text.textContent = comment.content
+
+  const right = document.createElement("div")
+  right.className = "reply-right"
+
+  const actions = document.createElement("button")
+  actions.className = "reply-actions"
+  actions.setAttribute("aria-label", "Comment actions")
+  actions.innerHTML = `<svg width="24" height="24" fill="none" viewBox="0 0 24 24"><path fill="currentColor" fill-rule="evenodd" d="M7.5 12a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0m6 0a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0m4.5 1.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3" clip-rule="evenodd"></path></svg>`
+
+  actions.onclick = (e: MouseEvent) => {
+    e.stopPropagation()
+    const buttonRect = actions.getBoundingClientRect()
+    showActionsPopover(
+      comment,
+      buttonRect,
+      () => enterEditMode(comment, text),
+      () => showDeleteConfirmation(comment),
+      comment.parentId !== null,
+    )
+  }
+
+  right.appendChild(actions)
+  top.appendChild(left)
+  top.appendChild(right)
+
+  item.appendChild(top)
+  item.appendChild(text)
+
+  return item
+}
+
+function renderThreadContent(
+  content: HTMLElement,
+  comment: MultiplayerComment,
+  replies: MultiplayerComment[],
+) {
+  content.replaceChildren()
+  content.appendChild(buildThreadItem(comment))
+  for (const reply of replies) {
+    content.appendChild(buildThreadItem(reply))
+  }
+}
+
+function showCommentThread(commentId: string, position?: { top: number; left: number }) {
   const comment = comments.find((c) => c.id === commentId)
   if (!comment) return
 
   if (activeModal) {
-    if (activeModal.dataset.commentId === commentId) return
+    if (activeModal.dataset.commentId === commentId) {
+      const replies = comments.filter((c) => c.parentId === commentId && !c.deletedAt)
+      const content = activeModal.querySelector(".modal-content")
+      if (content instanceof HTMLElement) {
+        renderThreadContent(content, comment, replies)
+      }
+      return
+    }
     document.body.removeChild(activeModal)
     activeModal = null
   }
@@ -359,12 +885,31 @@ function showCommentThread(commentId: string) {
   modal.dataset.commentId = commentId
   activeModal = modal
 
+  if (position) {
+    modal.style.top = `${position.top}px`
+    modal.style.left = `${position.left + 50}px`
+    modal.style.right = "auto"
+  }
+
   const header = document.createElement("div")
   header.className = "modal-header"
 
   const title = document.createElement("div")
   title.className = "modal-title"
-  title.textContent = "Comment Thread"
+  title.textContent = "comment"
+
+  const headerActions = document.createElement("div")
+  headerActions.className = "modal-actions"
+
+  const headerMenuButton = document.createElement("button")
+  headerMenuButton.className = "modal-actions-button"
+  headerMenuButton.setAttribute("aria-label", "Thread actions")
+  headerMenuButton.innerHTML = `<svg width="24" height="24" fill="none" viewBox="0 0 24 24"><path fill="currentColor" fill-rule="evenodd" d="M7.5 12a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0m6 0a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0m4.5 1.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3" clip-rule="evenodd"></path></svg>`
+  headerMenuButton.onclick = (e: MouseEvent) => {
+    e.stopPropagation()
+    const buttonRect = headerMenuButton.getBoundingClientRect()
+    showThreadActionsPopover(comment, buttonRect)
+  }
 
   const closeButton = document.createElement("button")
   closeButton.className = "modal-close"
@@ -383,13 +928,15 @@ function showCommentThread(commentId: string) {
   let modalStartY = 0
 
   header.onmousedown = (e: MouseEvent) => {
-    if (e.target === closeButton) return
+    if (headerActions.contains(e.target as Node)) return
     isDragging = true
-    dragStartX = e.clientX
-    dragStartY = e.clientY
+    const scrollTop = window.pageYOffset || document.documentElement.scrollTop
+    const scrollLeft = window.pageXOffset || document.documentElement.scrollLeft
+    dragStartX = e.pageX
+    dragStartY = e.pageY
     const rect = modal.getBoundingClientRect()
-    modalStartX = rect.left
-    modalStartY = rect.top
+    modalStartX = rect.left + scrollLeft
+    modalStartY = rect.top + scrollTop
     modal.style.transform = "none"
     modal.style.right = "auto"
     modal.style.top = `${modalStartY}px`
@@ -399,8 +946,8 @@ function showCommentThread(commentId: string) {
 
   const onMouseMove = (e: MouseEvent) => {
     if (!isDragging) return
-    const deltaX = e.clientX - dragStartX
-    const deltaY = e.clientY - dragStartY
+    const deltaX = e.pageX - dragStartX
+    const deltaY = e.pageY - dragStartY
     modal.style.left = `${modalStartX + deltaX}px`
     modal.style.top = `${modalStartY + deltaY}px`
   }
@@ -412,115 +959,106 @@ function showCommentThread(commentId: string) {
   document.addEventListener("mousemove", onMouseMove)
   document.addEventListener("mouseup", onMouseUp)
 
+  headerActions.appendChild(headerMenuButton)
+  headerActions.appendChild(closeButton)
+
   header.appendChild(title)
-  header.appendChild(closeButton)
+  header.appendChild(headerActions)
 
   const content = document.createElement("div")
   content.className = "modal-content"
+  renderThreadContent(content, comment, replies)
 
-  const commentEl = document.createElement("div")
-  commentEl.className = "comment-item"
+  const replyComposerContainer = document.createElement("div")
+  replyComposerContainer.className = "reply-composer-container"
 
-  const commentHeader = document.createElement("div")
-  commentHeader.className = "comment-header"
+  const replyAuthorElement = document.createElement("div")
+  replyAuthorElement.className = "reply-author-element"
 
-  const commentAvatar = document.createElement("div")
-  commentAvatar.className = "comment-avatar"
-  commentAvatar.textContent = comment.author.charAt(0).toUpperCase()
+  const avatar = document.createElement("img")
+  avatar.className = "avatar"
+  getGravatarUrl(getAuthor(), 24).then((url) => {
+    avatar.src = url
+  })
+  avatar.alt = getAuthor()
+  replyAuthorElement.appendChild(avatar)
 
-  const commentInfo = document.createElement("div")
-  commentInfo.className = "comment-info"
+  const inputSectionWrapper = document.createElement("div")
+  inputSectionWrapper.className = "input-section-wrapper composer-empty"
 
-  const commentAuthor = document.createElement("div")
-  commentAuthor.className = "comment-author"
-  commentAuthor.textContent = comment.author
+  const editableTypeaheadWrapper = document.createElement("div")
+  editableTypeaheadWrapper.className = "editable-typeahead-wrapper"
 
-  const commentTime = document.createElement("div")
-  commentTime.className = "comment-time"
-  commentTime.textContent = formatRelativeTime(comment.createdAt)
+  const primitiveWrapper = document.createElement("div")
+  primitiveWrapper.className = "primitive-wrapper"
+  primitiveWrapper.style.display = "block"
 
-  commentInfo.appendChild(commentAuthor)
-  commentInfo.appendChild(commentTime)
-  commentHeader.appendChild(commentAvatar)
-  commentHeader.appendChild(commentInfo)
-
-  const commentText = document.createElement("div")
-  commentText.className = "comment-text"
-  commentText.textContent = comment.content
-
-  commentEl.appendChild(commentHeader)
-  commentEl.appendChild(commentText)
-  content.appendChild(commentEl)
-
-  for (const reply of replies) {
-    const replyEl = document.createElement("div")
-    replyEl.className = "reply-item"
-
-    const replyHeader = document.createElement("div")
-    replyHeader.className = "reply-header"
-
-    const replyAvatar = document.createElement("div")
-    replyAvatar.className = "reply-avatar"
-    replyAvatar.textContent = reply.author.charAt(0).toUpperCase()
-
-    const replyInfo = document.createElement("div")
-    replyInfo.className = "reply-info"
-
-    const replyAuthor = document.createElement("div")
-    replyAuthor.className = "reply-author"
-    replyAuthor.textContent = reply.author
-
-    const replyTime = document.createElement("div")
-    replyTime.className = "reply-time"
-    replyTime.textContent = formatRelativeTime(reply.createdAt)
-
-    replyInfo.appendChild(replyAuthor)
-    replyInfo.appendChild(replyTime)
-    replyHeader.appendChild(replyAvatar)
-    replyHeader.appendChild(replyInfo)
-
-    const replyText = document.createElement("div")
-    replyText.className = "reply-text"
-    replyText.textContent = reply.content
-
-    replyEl.appendChild(replyHeader)
-    replyEl.appendChild(replyText)
-    content.appendChild(replyEl)
-  }
-
-  const replyForm = document.createElement("div")
-  replyForm.className = "reply-form"
-
-  const replyAvatar = document.createElement("div")
-  replyAvatar.className = "reply-form-avatar"
-  replyAvatar.textContent = getAuthor().charAt(0).toUpperCase()
-
-  const replyInputWrapper = document.createElement("div")
-  replyInputWrapper.className = "reply-input-wrapper"
+  const lexicalWrapper = document.createElement("div")
+  lexicalWrapper.className = "lexical-wrapper"
 
   const replyInput = document.createElement("div")
-  replyInput.className = "reply-input"
   replyInput.contentEditable = "true"
-  replyInput.setAttribute("role", "textbox")
+  replyInput.setAttribute("role", "combobox")
+  replyInput.setAttribute("aria-expanded", "false")
+  replyInput.setAttribute("aria-label", `Reply to comment with ${comment.author}`)
+  replyInput.setAttribute("spellcheck", "true")
+  replyInput.setAttribute("aria-haspopup", "listbox")
   replyInput.setAttribute("aria-placeholder", "Reply")
-  replyInput.dataset.placeholder = "Reply"
+  replyInput.setAttribute("data-lexical-editor", "true")
+  replyInput.style.userSelect = "text"
+  replyInput.style.whiteSpace = "pre-wrap"
+  replyInput.style.wordBreak = "break-word"
+  replyInput.innerHTML = "<p><br></p>"
+
+  const placeholderWrapper = document.createElement("div")
+  placeholderWrapper.setAttribute("aria-hidden", "true")
+  const placeholderText = document.createElement("span")
+  placeholderText.className = "placeholder-text"
+  placeholderText.textContent = "Reply"
+  placeholderWrapper.appendChild(placeholderText)
+
+  lexicalWrapper.appendChild(replyInput)
+  lexicalWrapper.appendChild(placeholderWrapper)
+  primitiveWrapper.appendChild(lexicalWrapper)
+  editableTypeaheadWrapper.appendChild(primitiveWrapper)
+
+  const actions = document.createElement("div")
+  actions.className = "composer-actions"
 
   const replyButton = document.createElement("button")
-  replyButton.className = "reply-submit"
-  replyButton.disabled = true
-  replyButton.innerHTML = `<svg width="24" height="24" fill="none" viewBox="0 0 24 24"><path fill="currentColor" fill-rule="evenodd" d="M12 16a.5.5 0 0 1-.5-.5V8.707l-3.146 3.147a.5.5 0 0 1-.708-.708l4-4a.5.5 0 0 1 .708 0l4 4a.5.5 0 0 1-.708.708L12.5 8.707V15.5a.5.5 0 0 1-.5.5" clip-rule="evenodd"></path></svg>`
+  replyButton.type = "button"
+  replyButton.setAttribute("aria-label", "Submit")
+  replyButton.setAttribute("aria-disabled", "true")
+  replyButton.setAttribute("data-tooltip", "Submit")
+  replyButton.setAttribute("data-tooltip-type", "text")
+  replyButton.tabIndex = 0
+  replyButton.className = "submit-button"
+  const buttonIconSpan = document.createElement("span")
+  buttonIconSpan.setAttribute("aria-hidden", "true")
+  buttonIconSpan.className = "button-icon"
+  buttonIconSpan.innerHTML = `<svg width="24" height="24" fill="none" viewBox="0 0 24 24"><path fill="var(--fpl-icon-color, var(--color-icon))" fill-rule="evenodd" d="M12 16a.5.5 0 0 1-.5-.5V8.707l-3.146 3.147a.5.5 0 0 1-.708-.708l4-4a.5.5 0 0 1 .708 0l4 4a.5.5 0 0 1-.708.708L12.5 8.707V15.5a.5.5 0 0 1-.5.5" clip-rule="evenodd"></path></svg>`
+  replyButton.appendChild(buttonIconSpan)
+
+  actions.appendChild(replyButton)
+  inputSectionWrapper.appendChild(editableTypeaheadWrapper)
+  inputSectionWrapper.appendChild(actions)
 
   replyInput.addEventListener("input", () => {
     const content = replyInput.textContent?.trim() || ""
-    replyButton.disabled = content.length === 0
-    if (content.length === 0) {
-      replyInput.classList.add("empty")
+    const isEmpty = content.length === 0
+
+    if (isEmpty) {
+      inputSectionWrapper.classList.add("composer-empty")
+      replyButton.setAttribute("aria-disabled", "true")
     } else {
-      replyInput.classList.remove("empty")
+      inputSectionWrapper.classList.remove("composer-empty")
+      replyButton.setAttribute("aria-disabled", "false")
     }
   })
 
   replyButton.onclick = async () => {
+    if (replyButton.getAttribute("aria-disabled") === "true") return
+
     const content = replyInput.textContent?.trim()
     if (!content) return
 
@@ -539,30 +1077,26 @@ function showCommentThread(commentId: string) {
       deletedAt: null,
     }
 
-    if (ws && ws.readyState === WebSocket.OPEN) {
-      ws.send(JSON.stringify({ type: "new", comment: reply }))
-    }
+    submitNewComment(reply)
 
-    replyInput.textContent = ""
-    replyInput.classList.add("empty")
-    replyButton.disabled = true
+    replyInput.innerHTML = "<p><br></p>"
+    inputSectionWrapper.classList.add("composer-empty")
+    replyButton.setAttribute("aria-disabled", "true")
   }
 
-  replyInputWrapper.appendChild(replyInput)
-  replyInputWrapper.appendChild(replyButton)
-  replyForm.appendChild(replyAvatar)
-  replyForm.appendChild(replyInputWrapper)
+  replyComposerContainer.appendChild(replyAuthorElement)
+  replyComposerContainer.appendChild(inputSectionWrapper)
 
   modal.appendChild(header)
   modal.appendChild(content)
-  modal.appendChild(replyForm)
+  modal.appendChild(replyComposerContainer)
 
   document.body.appendChild(modal)
 }
 
-document.addEventListener("nav", () => {
-  connectWebSocket()
+document.addEventListener("prenav", connectWebSocket)
 
+document.addEventListener("nav", () => {
   const mouseUp = (event: MouseEvent) => {
     if (event.button !== 0) return
     if (activeComposer && event.target && activeComposer.contains(event.target as Node)) {
@@ -571,19 +1105,37 @@ document.addEventListener("nav", () => {
     handleTextSelection()
   }
 
+  let resizeFrame = 0
+  const handleResize = () => {
+    if (resizeFrame) {
+      cancelAnimationFrame(resizeFrame)
+    }
+    resizeFrame = requestAnimationFrame(() => {
+      renderAllComments()
+      refreshActiveModal()
+      resizeFrame = 0
+    })
+  }
+
   document.addEventListener("mouseup", mouseUp)
+  window.addEventListener("resize", handleResize)
   window.addCleanup(() => {
     hideComposer()
+    hideActionsPopover()
     document
       .querySelectorAll(".comment-highlight")
-      .forEach((el) => el.replaceWith(...el.childNodes))
+      .forEach((el) => el.replaceWith(...Array.from(el.childNodes)))
     document.querySelectorAll(".comment-bubble").forEach((el) => el.remove())
     document.querySelectorAll(".comment-thread-modal").forEach((el) => el.remove())
+    document.querySelectorAll(".comment-actions-popover").forEach((el) => el.remove())
+    document.querySelectorAll(".delete-confirmation-overlay").forEach((el) => el.remove())
+    document.querySelectorAll(".delete-confirmation-modal").forEach((el) => el.remove())
 
     if (ws) {
       ws.close()
       ws = null
     }
     document.removeEventListener("mouseup", mouseUp)
+    window.removeEventListener("resize", handleResize)
   })
 })
