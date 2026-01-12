@@ -64,6 +64,7 @@ let pendingHashCommentId: string | null = null
 let lastSeq = 0
 let hasSnapshot = false
 let pendingOps = new Map<string, OperationInput>()
+const githubAvatarCache = new Map<string, string>()
 
 function getAuthor(): string {
   let author =
@@ -83,6 +84,40 @@ async function getGravatarUrl(identifier: string, size: number = 24): Promise<st
   const hashArray = Array.from(new Uint8Array(hashBuffer))
   const hashHex = hashArray.map((b) => b.toString(16).padStart(2, "0")).join("")
   return `https://gravatar.com/avatar/${hashHex}?s=${size}&d=identicon&r=pg`
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value)
+}
+
+async function getGithubAvatarUrl(login: string): Promise<string | null> {
+  const cached = githubAvatarCache.get(login)
+  if (cached) return cached
+  const resp = await fetch(`https://api.github.com/users/${encodeURIComponent(login)}`, {
+    headers: { Accept: "application/vnd.github+json" },
+  })
+  if (!resp.ok) return null
+  let data: unknown
+  try {
+    data = await resp.json()
+  } catch {
+    return null
+  }
+  if (!isRecord(data)) return null
+  const avatar = data["avatar_url"]
+  if (typeof avatar !== "string" || avatar.length === 0) return null
+  githubAvatarCache.set(login, avatar)
+  return avatar
+}
+
+async function getAvatarUrl(author: string, size: number = 24): Promise<string> {
+  const login = localStorage.getItem("comment-author-github-login")
+  const localAuthor = localStorage.getItem("comment-author")
+  if (login && (author === localAuthor || author === login)) {
+    const githubUrl = await getGithubAvatarUrl(login)
+    if (githubUrl) return githubUrl
+  }
+  return getGravatarUrl(author, size)
 }
 
 function formatRelativeTime(timestamp: number): string {
@@ -876,7 +911,7 @@ function renderAllComments() {
 
         const avatar = document.createElement("img")
         avatar.className = "reply-avatar"
-        getGravatarUrl(comment.author, 24).then((url) => {
+        getAvatarUrl(comment.author, 24).then((url) => {
           avatar.src = url
         })
         avatar.alt = comment.author
@@ -999,7 +1034,7 @@ function buildThreadItem(comment: MultiplayerComment) {
 
   const avatar = document.createElement("img")
   avatar.className = "reply-avatar"
-  getGravatarUrl(comment.author, 24).then((url) => {
+  getAvatarUrl(comment.author, 24).then((url) => {
     avatar.src = url
   })
   avatar.alt = comment.author
@@ -1178,7 +1213,7 @@ function showCommentThread(commentId: string, position?: { top: number; left: nu
 
   const avatar = document.createElement("img")
   avatar.className = "avatar"
-  getGravatarUrl(getAuthor(), 24).then((url) => {
+  getAvatarUrl(getAuthor(), 24).then((url) => {
     avatar.src = url
   })
   avatar.alt = getAuthor()
