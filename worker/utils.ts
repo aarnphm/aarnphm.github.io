@@ -1,5 +1,3 @@
-import { Octokit } from "octokit"
-
 export type Props = {
   login: string
   name: string
@@ -53,14 +51,4 @@ export async function fetchUpstreamAuthToken({
   const accessToken = form.get("access_token") as string | null
   if (!accessToken) return [null, new Response("Missing access token", { status: 400 })]
   return [accessToken, null]
-}
-
-export async function getUserFromGitHub(accessToken: string): Promise<{
-  login: string
-  name: string
-  email: string
-}> {
-  const octokit = new Octokit({ auth: accessToken })
-  const { data } = await octokit.rest.users.getAuthenticated()
-  return { login: data.login, name: data.name ?? data.login, email: (data as any).email ?? "" }
 }

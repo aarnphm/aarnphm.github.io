@@ -46,6 +46,65 @@ export interface ValidateCSRFResult {
   clearCookie: string
 }
 
+export interface ValidateStateInput {
+  statePrefix?: string
+  cookieName?: string
+}
+
+export interface ValidateStatePayloadResult {
+  raw: string
+  clearCookie: string
+}
+
+const defaultStatePrefix = "oauth:state:"
+const defaultStateCookieName = "__Host-CONSENTED_STATE"
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value)
+}
+
+function parseAuthRequest(raw: string): AuthRequest | null {
+  let parsed: unknown
+  try {
+    parsed = JSON.parse(raw)
+  } catch {
+    return null
+  }
+  if (!isRecord(parsed)) return null
+  const responseType = typeof parsed.responseType === "string" ? parsed.responseType : null
+  const clientId = typeof parsed.clientId === "string" ? parsed.clientId : null
+  const redirectUri = typeof parsed.redirectUri === "string" ? parsed.redirectUri : null
+  const state = typeof parsed.state === "string" ? parsed.state : null
+  const scope =
+    Array.isArray(parsed.scope) && parsed.scope.every((item) => typeof item === "string")
+      ? parsed.scope
+      : null
+  if (!responseType || !clientId || !redirectUri || !state || !scope) return null
+  const codeChallenge =
+    typeof parsed.codeChallenge === "string" ? parsed.codeChallenge : undefined
+  const codeChallengeMethod =
+    typeof parsed.codeChallengeMethod === "string" ? parsed.codeChallengeMethod : undefined
+  let resource: string | string[] | undefined
+  if (typeof parsed.resource === "string") {
+    resource = parsed.resource
+  } else if (
+    Array.isArray(parsed.resource) &&
+    parsed.resource.every((item) => typeof item === "string")
+  ) {
+    resource = parsed.resource
+  }
+  return {
+    responseType,
+    clientId,
+    redirectUri,
+    scope,
+    state,
+    codeChallenge,
+    codeChallengeMethod,
+    resource,
+  }
+}
+
 export function sanitizeText(text: string): string {
   return text
     .replace(/&/g, "&amp;")
@@ -119,39 +178,39 @@ export function validateCSRFToken(formData: FormData, request: Request): Validat
   return { clearCookie }
 }
 
-export async function createOAuthState(
-  oauthReqInfo: AuthRequest,
-  kv: KVNamespace,
-  stateTTL = 600,
-): Promise<OAuthStateResult> {
-  const stateToken = crypto.randomUUID()
-
-  await kv.put(`oauth:state:${stateToken}`, JSON.stringify(oauthReqInfo), {
-    expirationTtl: stateTTL,
-  })
-
-  return { stateToken }
-}
-
-export async function bindStateToSession(stateToken: string): Promise<BindStateResult> {
-  const consentedStateCookieName = "__Host-CONSENTED_STATE"
-
+async function hashStateToken(stateToken: string): Promise<string> {
   const encoder = new TextEncoder()
   const data = encoder.encode(stateToken)
   const hashBuffer = await crypto.subtle.digest("SHA-256", data)
   const hashArray = Array.from(new Uint8Array(hashBuffer))
-  const hashHex = hashArray.map((b) => b.toString(16).padStart(2, "0")).join("")
+  return hashArray.map((b) => b.toString(16).padStart(2, "0")).join("")
+}
 
-  const setCookie = `${consentedStateCookieName}=${hashHex}; HttpOnly; Secure; Path=/; SameSite=Lax; Max-Age=600`
+export async function createState<T>(
+  kv: KVNamespace,
+  prefix: string,
+  payload: T,
+  stateTTL = 600,
+): Promise<OAuthStateResult> {
+  const stateToken = crypto.randomUUID()
+  await kv.put(`${prefix}${stateToken}`, JSON.stringify(payload), { expirationTtl: stateTTL })
+  return { stateToken }
+}
 
+export async function bindStateToSession(
+  stateToken: string,
+  cookieName = defaultStateCookieName,
+): Promise<BindStateResult> {
+  const stateHash = await hashStateToken(stateToken)
+  const setCookie = `${cookieName}=${stateHash}; HttpOnly; Secure; Path=/; SameSite=Lax; Max-Age=600`
   return { setCookie }
 }
 
-export async function validateOAuthState(
+export async function validateState(
   request: Request,
   kv: KVNamespace,
-): Promise<ValidateStateResult> {
-  const consentedStateCookieName = "__Host-CONSENTED_STATE"
+  { statePrefix = defaultStatePrefix, cookieName = defaultStateCookieName }: ValidateStateInput = {},
+): Promise<ValidateStatePayloadResult> {
   const url = new URL(request.url)
   const stateFromQuery = url.searchParams.get("state")
 
@@ -159,16 +218,16 @@ export async function validateOAuthState(
     throw new OAuthError("invalid_request", "Missing state parameter", 400)
   }
 
-  const storedDataJson = await kv.get(`oauth:state:${stateFromQuery}`)
+  const storedDataJson = await kv.get(`${statePrefix}${stateFromQuery}`)
   if (!storedDataJson) {
     throw new OAuthError("invalid_request", "Invalid or expired state", 400)
   }
 
   const cookieHeader = request.headers.get("Cookie") || ""
   const cookies = cookieHeader.split(";").map((c) => c.trim())
-  const consentedStateCookie = cookies.find((c) => c.startsWith(`${consentedStateCookieName}=`))
+  const consentedStateCookie = cookies.find((c) => c.startsWith(`${cookieName}=`))
   const consentedStateHash = consentedStateCookie
-    ? consentedStateCookie.substring(consentedStateCookieName.length + 1)
+    ? consentedStateCookie.substring(cookieName.length + 1)
     : null
 
   if (!consentedStateHash) {
@@ -179,11 +238,7 @@ export async function validateOAuthState(
     )
   }
 
-  const encoder = new TextEncoder()
-  const data = encoder.encode(stateFromQuery)
-  const hashBuffer = await crypto.subtle.digest("SHA-256", data)
-  const hashArray = Array.from(new Uint8Array(hashBuffer))
-  const stateHash = hashArray.map((b) => b.toString(16).padStart(2, "0")).join("")
+  const stateHash = await hashStateToken(stateFromQuery)
 
   if (stateHash !== consentedStateHash) {
     throw new OAuthError(
@@ -193,17 +248,33 @@ export async function validateOAuthState(
     )
   }
 
-  let oauthReqInfo: AuthRequest
-  try {
-    oauthReqInfo = JSON.parse(storedDataJson) as AuthRequest
-  } catch (_e) {
+  await kv.delete(`${statePrefix}${stateFromQuery}`)
+
+  const clearCookie = `${cookieName}=; HttpOnly; Secure; Path=/; SameSite=Lax; Max-Age=0`
+
+  return { raw: storedDataJson, clearCookie }
+}
+
+export async function createOAuthState(
+  oauthReqInfo: AuthRequest,
+  kv: KVNamespace,
+  stateTTL = 600,
+): Promise<OAuthStateResult> {
+  return createState(kv, defaultStatePrefix, oauthReqInfo, stateTTL)
+}
+
+export async function validateOAuthState(
+  request: Request,
+  kv: KVNamespace,
+): Promise<ValidateStateResult> {
+  const { raw, clearCookie } = await validateState(request, kv, {
+    statePrefix: defaultStatePrefix,
+    cookieName: defaultStateCookieName,
+  })
+  const oauthReqInfo = parseAuthRequest(raw)
+  if (!oauthReqInfo) {
     throw new OAuthError("server_error", "Invalid state data", 500)
   }
-
-  await kv.delete(`oauth:state:${stateFromQuery}`)
-
-  const clearCookie = `${consentedStateCookieName}=; HttpOnly; Secure; Path=/; SameSite=Lax; Max-Age=0`
-
   return { oauthReqInfo, clearCookie }
 }
 
