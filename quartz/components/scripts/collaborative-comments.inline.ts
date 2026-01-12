@@ -761,13 +761,22 @@ async function showComposer(range: Range) {
   composer.style.top = `${rect.bottom + scrollTop + 8}px`
 
   const inputWrapper = document.createElement("div")
-  inputWrapper.className = "composer-input-wrapper"
+  inputWrapper.className = "composer-input-wrapper composer-empty"
 
   const inputContainer = document.createElement("div")
   inputContainer.className = "composer-input"
   inputContainer.setAttribute("role", "textbox")
   inputContainer.setAttribute("aria-placeholder", "Add a comment")
-  inputContainer.dataset.placeholder = "Add a comment"
+
+  const editorMount = document.createElement("div")
+  editorMount.className = "composer-editor-mount"
+
+  const placeholderWrapper = document.createElement("div")
+  placeholderWrapper.setAttribute("aria-hidden", "true")
+  const placeholderText = document.createElement("span")
+  placeholderText.className = "placeholder-text"
+  placeholderText.textContent = "Add a comment"
+  placeholderWrapper.appendChild(placeholderText)
 
   let editor: MarkdownEditor
 
@@ -801,20 +810,22 @@ async function showComposer(range: Range) {
   }
 
   editor = new MarkdownEditor({
-    parent: inputContainer,
+    parent: editorMount,
     onChange: (content) => {
       const trimmed = content.trim()
       submitButton.disabled = trimmed.length === 0
       if (trimmed.length === 0) {
-        inputContainer.classList.add("empty")
+        inputWrapper.classList.add("composer-empty")
       } else {
-        inputContainer.classList.remove("empty")
+        inputWrapper.classList.remove("composer-empty")
       }
     },
     onSubmit: () => submitButton.click(),
     onCancel: () => hideComposer(),
   })
 
+  inputContainer.appendChild(editorMount)
+  inputContainer.appendChild(placeholderWrapper)
   inputWrapper.appendChild(inputContainer)
   inputWrapper.appendChild(submitButton)
   composer.appendChild(inputWrapper)

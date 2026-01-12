@@ -48,7 +48,7 @@ export class MarkdownEditor {
         fontFamily: "inherit !important",
         lineHeight: "inherit",
         color: "inherit",
-        height: "100%",
+        height: "auto",
         padding: "0",
       },
       "&.cm-focused": {
@@ -58,11 +58,14 @@ export class MarkdownEditor {
       },
       ".cm-content": {
         padding: "0 !important",
-        minHeight: "inherit",
+        minHeight: "20px",
         caretColor: "inherit",
       },
+      ".cm-gutter": {
+        minHeight: "20px",
+      },
       ".cm-scroller": {
-        overflow: "inherit",
+        overflow: "visible",
         fontFamily: "inherit !important",
         fontSize: "inherit",
       },

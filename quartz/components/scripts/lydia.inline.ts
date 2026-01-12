@@ -1,5 +1,5 @@
 import { getFullSlug } from "../../util/path"
-import { loadMapbox, applyMonochromeMapPalette } from "./mapboxClient"
+import { loadMapbox, applyMonochromeMapPalette } from "./mapbox-client"
 
 function initScrollMask() {
   const root = document.querySelector("[data-slug='lyd']") as HTMLElement
