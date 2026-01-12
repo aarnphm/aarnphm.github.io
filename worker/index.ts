@@ -89,7 +89,6 @@ function shouldTreatAsDocument(pathname: string): boolean {
   return ext === "html" || ext === "htm"
 }
 
-
 async function sha256Hex(input: string): Promise<string> {
   const enc = new TextEncoder().encode(input)
   const buf = await crypto.subtle.digest("SHA-256", enc)
@@ -135,10 +134,10 @@ function getCommentGithubClient(
   env: Env,
   localRequest: boolean,
 ): { clientId: string; clientSecret: string } | null {
-  const clientId = localRequest ? env.GITHUB_COMMENTS_CLIENT_ID : env.GITHUB_COMMETS_PROD_CLIENT_ID
+  const clientId = localRequest ? env.GITHUB_COMMENTS_CLIENT_ID : env.GITHUB_COMMENTS_PROD_CLIENT_ID
   const clientSecret = localRequest
     ? env.GITHUB_COMMENTS_CLIENT_SECRET
-    : env.GITHUB_COMMETS_PROD_CLIENT_SECRET
+    : env.GITHUB_COMMENTS_PROD_CLIENT_SECRET
 
   if (!clientId || !clientSecret) return null
   return { clientId, clientSecret }
@@ -169,11 +168,9 @@ async function createCommentAuthState(
 ): Promise<string> {
   const stateToken = crypto.randomUUID()
   const payload: CommentAuthState = { returnTo, author }
-  await kv.put(
-    `${commentAuthStatePrefix}${stateToken}`,
-    JSON.stringify(payload),
-    { expirationTtl: 600 },
-  )
+  await kv.put(`${commentAuthStatePrefix}${stateToken}`, JSON.stringify(payload), {
+    expirationTtl: 600,
+  })
   return stateToken
 }
 
@@ -215,7 +212,11 @@ async function setGithubCommentAuthor(
   )
 }
 
-function renderCommentAuthResponse(author: string, returnTo: string, login: string | null): Response {
+function renderCommentAuthResponse(
+  author: string,
+  returnTo: string,
+  login: string | null,
+): Response {
   const payload = safeJsonForHtml({ author, returnTo, login })
   const html = `<!DOCTYPE html>
 <html lang="en">
@@ -408,8 +409,8 @@ type Env = {
   GITHUB_CLIENT_SECRET: string
   GITHUB_COMMENTS_CLIENT_ID?: string
   GITHUB_COMMENTS_CLIENT_SECRET?: string
-  GITHUB_COMMETS_PROD_CLIENT_ID?: string
-  GITHUB_COMMETS_PROD_CLIENT_SECRET?: string
+  GITHUB_COMMENTS_PROD_CLIENT_ID?: string
+  GITHUB_COMMENTS_PROD_CLIENT_SECRET?: string
   SESSION_SECRET: string
   OAUTH_KV: KVNamespace
   PUBLIC_BASE_URL?: string
