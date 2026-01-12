@@ -76,6 +76,15 @@ function getAuthor(): string {
   return author
 }
 
+function getCommentPageId(): string {
+  const slug = getFullSlug(window)
+  const hostname = window.location.hostname.toLowerCase()
+  if (hostname === "stream.aarnphm.xyz") {
+    return `stream:${slug}`
+  }
+  return slug
+}
+
 async function getGravatarUrl(identifier: string, size: number = 24): Promise<string> {
   const normalized = identifier.trim().toLowerCase()
   const encoder = new TextEncoder()
@@ -384,7 +393,7 @@ function submitDeleteComment(comment: MultiplayerComment, deletedAt: number) {
 
 function connectWebSocket() {
   const protocol = window.location.protocol === "https:" ? "wss:" : "ws:"
-  const pageId = encodeURIComponent(getFullSlug(window))
+  const pageId = encodeURIComponent(getCommentPageId())
   const sinceParam = hasSnapshot && lastSeq > 0 ? `&since=${lastSeq}` : ""
   const wsUrl = `${protocol}//${window.location.host}/comments/websocket?pageId=${pageId}${sinceParam}`
 
@@ -783,7 +792,7 @@ async function showComposer(range: Range) {
 
     const comment: MultiplayerComment = {
       id: crypto.randomUUID(),
-      pageId: getFullSlug(window),
+      pageId: getCommentPageId(),
       parentId: null,
       anchorHash,
       anchorStart: offsets.startOffset,
@@ -1308,7 +1317,7 @@ function showCommentThread(commentId: string, position?: { top: number; left: nu
 
     const reply: MultiplayerComment = {
       id: crypto.randomUUID(),
-      pageId: getFullSlug(window),
+      pageId: getCommentPageId(),
       parentId: comment.id,
       anchorHash: comment.anchorHash,
       anchorStart: comment.anchorStart,

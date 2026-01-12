@@ -130,18 +130,18 @@ async function updateCommentAuthor(author: string, source: "manual" | "github") 
   if (!existing) {
     localStorage.setItem(commentAuthorKey, next)
     localStorage.setItem(commentAuthorSourceKey, source)
-    notifyToast(`comment name set to ${next}`)
+    notifyToast(`name set to ${next}`)
     return
   }
 
   if (existing === next) {
     localStorage.setItem(commentAuthorSourceKey, source)
-    notifyToast(`comment name set to ${next}`)
+    notifyToast(`name set to ${next}`)
     return
   }
 
   if (isRenameWindowActive()) {
-    notifyToast("comment name can change every 3 months")
+    notifyToast("name can change every 3 months")
     return
   }
 
@@ -152,7 +152,7 @@ async function updateCommentAuthor(author: string, source: "manual" | "github") 
   localStorage.setItem(commentAuthorKey, next)
   localStorage.setItem(commentAuthorSourceKey, source)
   dispatchCommentAuthorUpdated(existing, next)
-  notifyToast(`comment name set to ${next}`)
+  notifyToast(`name set to ${next}`)
 }
 
 function promptForCommentAuthor() {
