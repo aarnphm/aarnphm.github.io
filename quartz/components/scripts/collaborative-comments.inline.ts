@@ -25,6 +25,7 @@ let ws: WebSocket | null = null
 let comments: MultiplayerComment[] = []
 let activeSelection: Range | null = null
 let bubbleOffsets = new Map<string, { x: number; y: number }>()
+let selectionHighlightLayer: HTMLElement | null = null
 
 function getAuthor(): string {
   let author = localStorage.getItem("comment-author")
@@ -78,6 +79,36 @@ function getArticleText(): string {
   return article?.textContent || ""
 }
 
+function clearSelectionHighlight() {
+  if (selectionHighlightLayer) {
+    selectionHighlightLayer.remove()
+    selectionHighlightLayer = null
+  }
+}
+
+function renderSelectionHighlight(range: Range) {
+  clearSelectionHighlight()
+  const rects = Array.from(range.getClientRects()).filter((rect) => rect.width && rect.height)
+  if (rects.length === 0) return
+  const scrollTop = window.pageYOffset || document.documentElement.scrollTop
+  const scrollLeft = window.pageXOffset || document.documentElement.scrollLeft
+  const layer = document.createElement("div")
+  layer.className = "comment-selection-layer"
+  layer.style.width = `${document.documentElement.scrollWidth}px`
+  layer.style.height = `${document.documentElement.scrollHeight}px`
+  for (const rect of rects) {
+    const highlight = document.createElement("span")
+    highlight.className = "comment-selection-highlight"
+    highlight.style.left = `${rect.left + scrollLeft}px`
+    highlight.style.top = `${rect.top + scrollTop}px`
+    highlight.style.width = `${rect.width}px`
+    highlight.style.height = `${rect.height}px`
+    layer.appendChild(highlight)
+  }
+  document.body.appendChild(layer)
+  selectionHighlightLayer = layer
+}
+
 function getRangeOffsets(range: Range, root: Element) {
   const text = range.toString()
   if (!text) return null
@@ -93,14 +124,31 @@ function getRangeOffsets(range: Range, root: Element) {
   return { text, startOffset, endOffset }
 }
 
-function wrapRange(range: Range, wrapper: HTMLElement) {
-  try {
-    range.surroundContents(wrapper)
-  } catch {
-    const contents = range.extractContents()
-    wrapper.appendChild(contents)
-    range.insertNode(wrapper)
+async function copyToClipboard(text: string) {
+  if (navigator.clipboard && window.isSecureContext) {
+    try {
+      await navigator.clipboard.writeText(text)
+      return true
+    } catch {
+      return false
+    }
   }
+
+  const textarea = document.createElement("textarea")
+  textarea.value = text
+  textarea.style.position = "fixed"
+  textarea.style.opacity = "0"
+  document.body.appendChild(textarea)
+  textarea.focus()
+  textarea.select()
+  let succeeded = false
+  try {
+    succeeded = document.execCommand("copy")
+  } catch {
+    succeeded = false
+  }
+  document.body.removeChild(textarea)
+  return succeeded
 }
 
 function refreshActiveModal() {
@@ -220,7 +268,6 @@ function connectWebSocket() {
 }
 
 let activeComposer: HTMLElement | null = null
-let activeHighlight: HTMLSpanElement | null = null
 let activeModal: HTMLElement | null = null
 let activeActionsPopover: HTMLElement | null = null
 
@@ -229,10 +276,7 @@ function hideComposer() {
     document.body.removeChild(activeComposer)
     activeComposer = null
   }
-  if (activeHighlight) {
-    activeHighlight.replaceWith(...Array.from(activeHighlight.childNodes))
-    activeHighlight = null
-  }
+  clearSelectionHighlight()
   activeSelection = null
 }
 
@@ -321,10 +365,9 @@ function showThreadActionsPopover(comment: MultiplayerComment, buttonRect: DOMRe
     hideActionsPopover()
     const url = new URL(window.location.href)
     url.hash = `comment-${comment.id}`
-    try {
-      await navigator.clipboard.writeText(url.toString())
-    } catch (err) {
-      console.error("failed to copy link:", err)
+    const copied = await copyToClipboard(url.toString())
+    if (!copied) {
+      console.error("failed to copy link")
     }
   }
 
@@ -497,20 +540,12 @@ function handleTextSelection() {
     return
   }
   activeSelection = range.cloneRange()
+  renderSelectionHighlight(activeSelection)
 
-  const span = document.createElement("span")
-  span.className = "comment-highlight-temp"
-  try {
-    range.surroundContents(span)
-    activeHighlight = span
-  } catch (err) {
-    console.warn("failed to create temporary highlight", err)
-  }
-
-  showComposer(activeSelection!, span)
+  showComposer(activeSelection)
 }
 
-async function showComposer(range: Range, highlightSpan: HTMLSpanElement) {
+async function showComposer(range: Range) {
   if (activeComposer) {
     document.body.removeChild(activeComposer)
     activeComposer = null
@@ -525,7 +560,8 @@ async function showComposer(range: Range, highlightSpan: HTMLSpanElement) {
   composer.className = "comment-composer"
   activeComposer = composer
 
-  const rect = highlightSpan.getBoundingClientRect()
+  const rects = Array.from(range.getClientRects()).filter((rect) => rect.width && rect.height)
+  const rect = rects[0] ?? range.getBoundingClientRect()
   const scrollLeft = window.pageXOffset || document.documentElement.scrollLeft
   const scrollTop = window.pageYOffset || document.documentElement.scrollTop
 
@@ -598,6 +634,7 @@ async function showComposer(range: Range, highlightSpan: HTMLSpanElement) {
 }
 
 function renderAllComments() {
+  document.querySelectorAll(".comment-highlight-layer").forEach((el) => el.remove())
   document
     .querySelectorAll(".comment-highlight")
     .forEach((el) => el.replaceWith(...Array.from(el.childNodes)))
@@ -607,11 +644,26 @@ function renderAllComments() {
   const article = document.querySelector("article.popover-hint")
   if (!article) return
 
+  const highlightLayer = document.createElement("div")
+  highlightLayer.className = "comment-highlight-layer"
+  highlightLayer.style.width = `${document.documentElement.scrollWidth}px`
+  highlightLayer.style.height = `${document.documentElement.scrollHeight}px`
+  document.body.appendChild(highlightLayer)
+
   const topLevelComments = comments.filter((c) => !c.parentId && !c.deletedAt)
 
   for (const comment of topLevelComments) {
-    const startIdx = comment.anchorStart
-    const endIdx = comment.anchorEnd
+    let startIdx = comment.anchorStart
+    let endIdx = comment.anchorEnd
+    if (startIdx >= endIdx || endIdx > articleText.length || startIdx < 0) {
+      if (comment.anchorText) {
+        const fallbackStart = articleText.indexOf(comment.anchorText)
+        if (fallbackStart !== -1) {
+          startIdx = fallbackStart
+          endIdx = fallbackStart + comment.anchorText.length
+        }
+      }
+    }
 
     if (startIdx === endIdx) continue
     if (startIdx < 0 || endIdx > articleText.length) continue
@@ -647,20 +699,28 @@ function renderAllComments() {
         range.setStart(startNode, startNodeOffset)
         range.setEnd(endNode, endNodeOffset)
 
-        const span = document.createElement("span")
-        span.className = "comment-highlight"
-        span.dataset.commentId = comment.id
-        range.surroundContents(span)
-
-        const rect = span.getBoundingClientRect()
+        const rects = Array.from(range.getClientRects()).filter((rect) => rect.width && rect.height)
+        if (rects.length === 0) continue
+        const anchorRect = rects[0]
         const scrollTop = window.pageYOffset || document.documentElement.scrollTop
         const scrollLeft = window.pageXOffset || document.documentElement.scrollLeft
+
+        for (const rect of rects) {
+          const highlight = document.createElement("span")
+          highlight.className = "comment-highlight"
+          highlight.dataset.commentId = comment.id
+          highlight.style.left = `${rect.left + scrollLeft}px`
+          highlight.style.top = `${rect.top + scrollTop}px`
+          highlight.style.width = `${rect.width}px`
+          highlight.style.height = `${rect.height}px`
+          highlightLayer.appendChild(highlight)
+        }
 
         const bubble = document.createElement("div")
         bubble.className = "comment-bubble"
         bubble.dataset.commentId = comment.id
-        const baseLeft = rect.right + scrollLeft + 8
-        const baseTop = rect.top + scrollTop
+        const baseLeft = anchorRect.right + scrollLeft + 8
+        const baseTop = anchorRect.top + scrollTop
         const offset = bubbleOffsets.get(comment.id)
         const initialLeft = baseLeft + (offset?.x ?? 0)
         const initialTop = baseTop + (offset?.y ?? 0)
@@ -1056,6 +1116,14 @@ function showCommentThread(commentId: string, position?: { top: number; left: nu
     }
   })
 
+  replyInput.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") {
+      replyInput.blur()
+    } else if ((e.metaKey || e.ctrlKey) && e.key === "Enter") {
+      replyButton.click()
+    }
+  })
+
   replyButton.onclick = async () => {
     if (replyButton.getAttribute("aria-disabled") === "true") return
 
@@ -1094,9 +1162,9 @@ function showCommentThread(commentId: string, position?: { top: number; left: nu
   document.body.appendChild(modal)
 }
 
-document.addEventListener("prenav", connectWebSocket)
-
 document.addEventListener("nav", () => {
+  connectWebSocket()
+
   const mouseUp = (event: MouseEvent) => {
     if (event.button !== 0) return
     if (activeComposer && event.target && activeComposer.contains(event.target as Node)) {
@@ -1113,6 +1181,9 @@ document.addEventListener("nav", () => {
     resizeFrame = requestAnimationFrame(() => {
       renderAllComments()
       refreshActiveModal()
+      if (activeSelection) {
+        renderSelectionHighlight(activeSelection)
+      }
       resizeFrame = 0
     })
   }
@@ -1122,6 +1193,8 @@ document.addEventListener("nav", () => {
   window.addCleanup(() => {
     hideComposer()
     hideActionsPopover()
+    document.querySelectorAll(".comment-highlight-layer").forEach((el) => el.remove())
+    document.querySelectorAll(".comment-selection-layer").forEach((el) => el.remove())
     document
       .querySelectorAll(".comment-highlight")
       .forEach((el) => el.replaceWith(...Array.from(el.childNodes)))

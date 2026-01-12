@@ -240,8 +240,8 @@ export function highlight(searchTerm: string, text: string, trim?: boolean) {
     let bestSum = 0
     let bestIndex = 0
     for (let i = 0; i < Math.max(tokenizedText.length - contextWindowWords, 0); i++) {
-      const window = occurrencesIndices.slice(i, i + contextWindowWords)
-      const windowSum = window.reduce((total, cur) => total + (cur ? 1 : 0), 0)
+      const windowIndices = occurrencesIndices.slice(i, i + contextWindowWords)
+      const windowSum = windowIndices.reduce((total, cur) => total + (cur ? 1 : 0), 0)
       if (windowSum >= bestSum) {
         bestSum = windowSum
         bestIndex = i

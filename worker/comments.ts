@@ -244,7 +244,7 @@ export class MultiplayerComments extends DurableObject<Env> {
 
     if (!comment) return
 
-    await db.delete(comments).where(eq(comments.id, commentId))
+    await db.update(comments).set({ deletedAt: now }).where(eq(comments.id, commentId))
 
     for (const [ws, session] of this.sessions) {
       if (session.pageId === comment.pageId) {
