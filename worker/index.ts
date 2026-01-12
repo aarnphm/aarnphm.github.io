@@ -3,10 +3,12 @@ import handleArxiv from "./arxiv"
 import handleCurius from "./curius"
 import Garden from "./mcp"
 import { MultiplayerComments } from "./comments"
+import { CommentsGitHubHandler } from "./comments-github-handler"
 import { GitHubHandler } from "./github-handler"
 import { OAuthProvider } from "@cloudflare/workers-oauth-provider"
 import { handleStackedNotesRequest } from "./stacked"
-import { fetchUpstreamAuthToken, getUpstreamAuthorizeUrl, getUserFromGitHub } from "./utils"
+import { getGithubCommentAuthor, normalizeAuthor, setGithubCommentAuthor } from "./comments-auth"
+import { isLocalRequest, resolveBaseUrl } from "./request-utils"
 
 const VERSION = "version https://git-lfs.github.com/spec/v1\n"
 const MIME = "application/vnd.git-lfs+json"
@@ -89,191 +91,9 @@ function shouldTreatAsDocument(pathname: string): boolean {
   return ext === "html" || ext === "htm"
 }
 
-async function sha256Hex(input: string): Promise<string> {
-  const enc = new TextEncoder().encode(input)
-  const buf = await crypto.subtle.digest("SHA-256", enc)
-  const bytes = new Uint8Array(buf)
-  let hex = ""
-  for (let i = 0; i < bytes.length; i++) hex += bytes[i].toString(16).padStart(2, "0")
-  return hex
-}
-
-type CommentAuthState = {
-  returnTo: string
-  author?: string | null
-}
-
-const commentAuthStatePrefix = "comment-auth:state:"
-const commentGithubAuthorPrefix = "comment-auth:github:"
 const commentAuthorRenameAuthorPrefix = "comment-author-rename:author:"
 const commentAuthorRenameIpPrefix = "comment-author-rename:ip:"
 const commentAuthorRenameWindowSeconds = 60 * 60 * 24 * 90
-
-function normalizeReturnTo(request: Request, raw: string | null): string {
-  if (!raw) return "/"
-  let target: URL
-  try {
-    target = new URL(raw, request.url)
-  } catch {
-    return "/"
-  }
-  const origin = new URL(request.url).origin
-  if (target.origin !== origin) return "/"
-  return `${target.pathname}${target.search}${target.hash}`
-}
-
-function normalizeAuthor(raw: string | null): string | null {
-  if (!raw) return null
-  const trimmed = raw.trim()
-  if (!trimmed) return null
-  if (trimmed.length > 128) return null
-  return trimmed
-}
-
-function getCommentGithubClient(
-  env: Env,
-  localRequest: boolean,
-): { clientId: string; clientSecret: string } | null {
-  const clientId = localRequest ? env.GITHUB_COMMENTS_CLIENT_ID : env.GITHUB_COMMENTS_PROD_CLIENT_ID
-  const clientSecret = localRequest
-    ? env.GITHUB_COMMENTS_CLIENT_SECRET
-    : env.GITHUB_COMMENTS_PROD_CLIENT_SECRET
-
-  if (!clientId || !clientSecret) return null
-  return { clientId, clientSecret }
-}
-
-function parseCommentAuthState(raw: string): CommentAuthState | null {
-  let parsed: unknown
-  try {
-    parsed = JSON.parse(raw)
-  } catch {
-    return null
-  }
-  if (!parsed || typeof parsed !== "object") return null
-  const value = parsed as { returnTo?: unknown; author?: unknown }
-  if (typeof value.returnTo !== "string") return null
-  const author = typeof value.author === "string" ? value.author : null
-  return { returnTo: value.returnTo, author }
-}
-
-function safeJsonForHtml(value: unknown): string {
-  return JSON.stringify(value).replace(/</g, "\\u003c")
-}
-
-async function createCommentAuthState(
-  kv: KVNamespace,
-  returnTo: string,
-  author: string | null,
-): Promise<string> {
-  const stateToken = crypto.randomUUID()
-  const payload: CommentAuthState = { returnTo, author }
-  await kv.put(`${commentAuthStatePrefix}${stateToken}`, JSON.stringify(payload), {
-    expirationTtl: 600,
-  })
-  return stateToken
-}
-
-async function consumeCommentAuthState(
-  kv: KVNamespace,
-  stateToken: string,
-): Promise<CommentAuthState | null> {
-  const key = `${commentAuthStatePrefix}${stateToken}`
-  const raw = await kv.get(key)
-  if (!raw) return null
-  await kv.delete(key)
-  return parseCommentAuthState(raw)
-}
-
-async function getGithubCommentAuthor(kv: KVNamespace, login: string): Promise<string | null> {
-  const raw = await kv.get(`${commentGithubAuthorPrefix}${login}`)
-  if (!raw) return null
-  let parsed: unknown
-  try {
-    parsed = JSON.parse(raw)
-  } catch {
-    return null
-  }
-  if (!parsed || typeof parsed !== "object") return null
-  const value = parsed as { author?: unknown }
-  if (typeof value.author !== "string") return null
-  const normalized = normalizeAuthor(value.author)
-  return normalized
-}
-
-async function setGithubCommentAuthor(
-  kv: KVNamespace,
-  login: string,
-  author: string,
-): Promise<void> {
-  await kv.put(
-    `${commentGithubAuthorPrefix}${login}`,
-    JSON.stringify({ author, updatedAt: Date.now() }),
-  )
-}
-
-function renderCommentAuthResponse(
-  author: string,
-  returnTo: string,
-  login: string | null,
-): Response {
-  const payload = safeJsonForHtml({ author, returnTo, login })
-  const html = `<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Comment login</title>
-</head>
-<body>
-<script>
-const payload = ${payload};
-try {
-  localStorage.setItem("comment-author", payload.author);
-  localStorage.setItem("comment-author-source", "github");
-  if (payload.login) {
-    localStorage.setItem("comment-author-github-login", payload.login);
-  }
-} catch {}
-window.location.assign(payload.returnTo);
-</script>
-</body>
-</html>`
-  return new Response(html, {
-    headers: { "Content-Type": "text/html; charset=utf-8" },
-  })
-}
-
-function resolveBaseUrl(env: Env, request: Request): string {
-  if (env.PUBLIC_BASE_URL) return env.PUBLIC_BASE_URL.replace(/\/$/, "")
-  const u = new URL(request.url)
-  u.pathname = ""
-  u.search = ""
-  u.hash = ""
-  return u.toString().replace(/\/$/, "")
-}
-
-function isLocalHostname(hostname: string): boolean {
-  const normalized = hostname.toLowerCase()
-  return (
-    normalized === "localhost" ||
-    normalized === "127.0.0.1" ||
-    normalized === "::1" ||
-    normalized.endsWith(".localhost")
-  )
-}
-
-function isLoopbackIp(ip: string): boolean {
-  const normalized = ip.trim().toLowerCase()
-  return normalized === "127.0.0.1" || normalized === "::1" || normalized === "0:0:0:0:0:0:0:1"
-}
-
-function getRequestHostname(request: Request, fallbackUrl: URL): string {
-  const hostHeader = request.headers.get("X-Forwarded-Host") ?? request.headers.get("Host")
-  const hostValue = hostHeader?.split(",")[0]?.trim() ?? ""
-  if (hostValue.length > 0) return new URL(`http://${hostValue}`).hostname
-  return fallbackUrl.hostname
-}
 
 function getAllowedOrigin(env: Env, request: Request): string | null {
   const origin = request.headers.get("Origin")
@@ -409,8 +229,6 @@ type Env = {
   GITHUB_CLIENT_SECRET: string
   GITHUB_COMMENTS_CLIENT_ID?: string
   GITHUB_COMMENTS_CLIENT_SECRET?: string
-  GITHUB_COMMENTS_PROD_CLIENT_ID?: string
-  GITHUB_COMMENTS_PROD_CLIENT_SECRET?: string
   SESSION_SECRET: string
   OAUTH_KV: KVNamespace
   PUBLIC_BASE_URL?: string
@@ -421,12 +239,7 @@ type Env = {
 export default {
   async fetch(request, env, ctx): Promise<Response> {
     const url = new URL(request.url)
-    const requestHostname = getRequestHostname(request, url)
-    const connectingIp = request.headers.get("CF-Connecting-IP") ?? ""
-    const localRequest =
-      isLocalHostname(requestHostname) ||
-      isLocalHostname(url.hostname) ||
-      isLoopbackIp(connectingIp)
+    const localRequest = isLocalRequest(request)
     const method = request.method.toUpperCase()
 
     const provider = new OAuthProvider({
@@ -448,59 +261,13 @@ export default {
     const providerResp = await provider.fetch(request, env, ctx)
     if (providerResp.status !== 404) return providerResp
 
+    const commentsResp = await CommentsGitHubHandler.fetch(request, env, ctx)
+    if (commentsResp.status !== 404) return commentsResp
+
     // Handle stacked notes requests with server-side rendering
     if (url.searchParams.has("stackedNotes")) {
       const stacked = await handleStackedNotesRequest(request, env, ctx)
       if (stacked) return stacked
-    }
-
-    if (url.pathname === "/comments/github/login") {
-      const returnTo = normalizeReturnTo(request, url.searchParams.get("returnTo"))
-      const author = normalizeAuthor(url.searchParams.get("author"))
-      const commentClient = getCommentGithubClient(env, localRequest)
-      if (!commentClient) {
-        return new Response("comment github oauth not configured", { status: 500 })
-      }
-      const stateToken = await createCommentAuthState(env.OAUTH_KV, returnTo, author)
-      const redirectUri = new URL("/comments/github/callback", resolveBaseUrl(env, request)).href
-      const authorizeUrl = getUpstreamAuthorizeUrl({
-        upstream_url: "https://github.com/login/oauth/authorize",
-        client_id: commentClient.clientId,
-        scope: "read:user",
-        redirect_uri: redirectUri,
-        state: stateToken,
-      })
-      return new Response(null, {
-        status: 302,
-        headers: { Location: authorizeUrl },
-      })
-    }
-
-    if (url.pathname === "/comments/github/callback") {
-      const stateToken = url.searchParams.get("state")
-      if (!stateToken) return new Response("Missing state", { status: 400 })
-      const state = await consumeCommentAuthState(env.OAUTH_KV, stateToken)
-      if (!state) return new Response("Invalid state", { status: 400 })
-      const commentClient = getCommentGithubClient(env, localRequest)
-      if (!commentClient) {
-        return new Response("comment github oauth not configured", { status: 500 })
-      }
-      const redirectUri = new URL("/comments/github/callback", resolveBaseUrl(env, request)).href
-      const [accessToken, errResponse] = await fetchUpstreamAuthToken({
-        client_id: commentClient.clientId,
-        client_secret: commentClient.clientSecret,
-        code: url.searchParams.get("code"),
-        redirect_uri: redirectUri,
-        upstream_url: "https://github.com/login/oauth/access_token",
-      })
-      if (errResponse) return errResponse
-      const user = await getUserFromGitHub(accessToken)
-      const login = user.login || "github-user"
-      const storedAuthor = await getGithubCommentAuthor(env.OAUTH_KV, login)
-      const stateAuthor = normalizeAuthor(state.author ?? null)
-      const resolvedAuthor = stateAuthor || storedAuthor || normalizeAuthor(login) || "github-user"
-      await setGithubCommentAuthor(env.OAUTH_KV, login, resolvedAuthor)
-      return renderCommentAuthResponse(resolvedAuthor, state.returnTo, login)
     }
 
     if (request.method === "POST" && url.pathname === "/comments/author/rename") {
