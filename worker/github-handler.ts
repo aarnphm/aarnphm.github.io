@@ -14,15 +14,7 @@ import {
   validateOAuthState,
 } from "./workers-oauth-utils"
 
-type Env = {
-  OAUTH_PROVIDER: OAuthHelpers
-  GITHUB_CLIENT_ID: string
-  GITHUB_CLIENT_SECRET: string
-  SESSION_SECRET: string
-  OAUTH_KV: KVNamespace
-}
-
-const app = new Hono<{ Bindings: Env }>()
+const app = new Hono<{ Bindings: { OAUTH_PROVIDER: OAuthHelpers } & Env }>()
 
 app.get("/authorize", async (c) => {
   const oauthReqInfo = await c.env.OAUTH_PROVIDER.parseAuthRequest(c.req.raw)

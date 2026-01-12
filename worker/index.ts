@@ -223,17 +223,7 @@ async function getObjectFromLFS(
 type Env = {
   LFS_BUCKET_URL?: string
   KEEP_HEADERS?: string
-  MULTIPLAYER_COMMENTS: DurableObjectNamespace
-  COMMENTS_ROOM: D1Database
-  GITHUB_CLIENT_ID: string
-  GITHUB_CLIENT_SECRET: string
-  GITHUB_COMMENTS_CLIENT_ID?: string
-  GITHUB_COMMENTS_CLIENT_SECRET?: string
-  SESSION_SECRET: string
-  OAUTH_KV: KVNamespace
   PUBLIC_BASE_URL?: string
-  STACKED_CACHE?: KVNamespace
-  MAPBOX_API_KEY?: string
 } & Cloudflare.Env
 
 export default {
@@ -264,9 +254,8 @@ export default {
     const commentsResp = await CommentsGitHubHandler.fetch(request, env, ctx)
     if (commentsResp.status !== 404) return commentsResp
 
-    // Handle stacked notes requests with server-side rendering
     if (url.searchParams.has("stackedNotes")) {
-      const stacked = await handleStackedNotesRequest(request, env, ctx)
+      const stacked = await handleStackedNotesRequest(request, env)
       if (stacked) return stacked
     }
 
@@ -466,7 +455,6 @@ export default {
           })
         }
 
-        // Only allow HTTP(S)
         if (targetUrl.protocol !== "https:" && targetUrl.protocol !== "http:") {
           return new Response("unsupported protocol", {
             status: 400,
@@ -546,9 +534,7 @@ export default {
         }
 
         const key = url.searchParams.get("key") ?? ""
-        const allowList: Record<string, keyof Env> = {
-          MAPBOX_API_KEY: "MAPBOX_API_KEY",
-        }
+        const allowList: Record<string, keyof Env> = { MAPBOX_API_KEY: "MAPBOX_API_KEY" }
         const envKey = allowList[key]
         if (!envKey) {
           return new Response("not found", {
@@ -613,11 +599,9 @@ export default {
       }
     }
 
-    // font serving from KV with edge caching
     if (url.pathname.startsWith("/fonts/")) {
       const fontFile = url.pathname.replace(/^\/fonts\//, "")
 
-      // check referer to prevent hotlinking
       const referer = request.headers.get("Referer")
       const allowedHosts = [
         "aarnphm.xyz",
@@ -641,28 +625,23 @@ export default {
         }
       }
 
-      // construct cache key for edge caching
       const cacheKey = new Request(url.toString(), request)
       const cache = (caches as CfCacheStorage).default
 
-      // check edge cache first
       const cached = await cache.match(cacheKey)
       if (cached) return cached
 
-      // fetch from KV
       const fontData = await env.FONTS.get(fontFile, "arrayBuffer")
       if (!fontData) {
         return new Response("font not found", { status: 404 })
       }
 
-      // determine mime type
       const mimeType = fontFile.endsWith(".woff2")
         ? "font/woff2"
         : fontFile.endsWith(".woff")
           ? "font/woff"
           : "application/octet-stream"
 
-      // build response with proper headers
       const headers = new Headers({
         "Content-Type": mimeType,
         "Cache-Control": "public, max-age=31536000, immutable",
@@ -672,13 +651,11 @@ export default {
 
       const response = new Response(fontData, { headers })
 
-      // cache at edge for 1 year
       ctx.waitUntil(cache.put(cacheKey, response.clone()))
 
       return response
     }
 
-    // Internal rewrite for stream domain -> dedupe /stream prefix and serve canonical content
     if (url.hostname === "stream.aarnphm.xyz" && !url.pathname.startsWith("/fonts/")) {
       const streamPrefix = "/stream"
       let sanitizedPathname = url.pathname
@@ -720,7 +697,6 @@ export default {
       })
     }
 
-    // rendering supported code files as text/plain
     const assetsMatch = url.pathname.match(
       /.+\.(py|go|java|c|cpp|cxx|cu|cuh|h|hpp|ts|tsx|jsx|yaml|yml|rs|m|sql|sh|zig|lua)$/i,
     )
@@ -734,14 +710,12 @@ export default {
       })
     }
 
-    // Deny non-GET/HEAD for other paths
     if (request.method !== "GET" && request.method !== "HEAD")
       return new Response(null, {
         status: request.method === "OPTIONS" ? 200 : 405,
         headers: { Allow: "GET, HEAD, OPTIONS" },
       })
 
-    // arena channel json routes
     const arenaJsonMatch = url.pathname.match(/^\/arena\/([^/]+)\/json$/)
     if (arenaJsonMatch) {
       const originResp = await env.ASSETS.fetch(request)
@@ -751,7 +725,6 @@ export default {
       })
     }
 
-    // PDF redirect to R2 / LFS
     if (url.pathname.endsWith(".pdf")) {
       const rawUrl = `https://raw.githubusercontent.com/aarnphm/aarnphm.github.io/refs/heads/main/content${url.pathname}`
       const upstream = await fetch(new Request(rawUrl, { method: "GET", headers: request.headers }))

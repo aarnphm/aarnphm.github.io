@@ -22,26 +22,26 @@ document.addEventListener("nav", async (e) => {
   if (e.detail.url !== "curius") return
 
   const elements = [".curius-page-container", "#curius-fetching-text", "#curius-fragments"].map(
-    (id) => document.querySelector(id),
+    document.querySelector<HTMLDivElement>,
   )
 
   if (elements.some((el) => el === null)) return
 
-  const [container, fetchText, fragment] = elements as HTMLElement[]
+  const [container, fetchText, fragment] = elements
 
-  const friends = document.querySelector(".curius-friends") as HTMLUListElement | null
-  const trails = document.getElementsByClassName("curius-trail")[0] as HTMLDivElement | null
+  const friends = document.querySelector<HTMLUListElement>(".curius-friends")
+  const trails = document.getElementsByClassName("curius-trail")[0] as HTMLDivElement
 
-  fetchText.textContent = "Récupération des liens curius"
-  fetchText.classList.toggle("active", true)
+  fetchText!.textContent = "Récupération des liens curius"
+  fetchText!.classList.toggle("active", true)
 
   const [resp, searchLinks] = await Promise.all([fetchCuriusLinks(), fetchSearchLinks()])
 
-  fetchText.classList.toggle("active", false)
+  fetchText!.classList.toggle("active", false)
 
   const callIfEmpty = (data: Link[]) => {
     if (data.length === 0) {
-      container.innerHTML = `<p>Échec de la récupération des liens.</p>`
+      container!.innerHTML = `<p>Échec de la récupération des liens.</p>`
       return []
     }
     return data.filter((link) => link.trails.length === 0)
@@ -55,7 +55,7 @@ document.addEventListener("nav", async (e) => {
 
   await curiusSearch(searchLinks)
 
-  fragment.append(...linksData.map(createLinkEl))
+  fragment!.append(...linksData.map(createLinkEl))
 
   if (friends) friends.classList.toggle("active", true)
   if (trails) trails.classList.toggle("active", true)

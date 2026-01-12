@@ -1,8 +1,4 @@
-type BaseUrlEnv = {
-  PUBLIC_BASE_URL?: string
-}
-
-export function resolveBaseUrl(env: BaseUrlEnv, request: Request): string {
+export function resolveBaseUrl(env: Env, request: Request): string {
   if (env.PUBLIC_BASE_URL) return env.PUBLIC_BASE_URL.replace(/\/$/, "")
   const u = new URL(request.url)
   u.pathname = ""
@@ -38,8 +34,6 @@ export function isLocalRequest(request: Request): boolean {
   const requestHostname = getRequestHostname(request, url)
   const connectingIp = request.headers.get("CF-Connecting-IP") ?? ""
   return (
-    isLocalHostname(requestHostname) ||
-    isLocalHostname(url.hostname) ||
-    isLoopbackIp(connectingIp)
+    isLocalHostname(requestHostname) || isLocalHostname(url.hostname) || isLoopbackIp(connectingIp)
   )
 }

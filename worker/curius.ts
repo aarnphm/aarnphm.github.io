@@ -126,9 +126,9 @@ export default async function handleCurius(request: Request): Promise<Response> 
       status: 200,
       headers: { "Content-Type": "application/json" },
     })
-  } catch (e: any) {
-    return new Response(JSON.stringify({ error: e?.message || "unknown" }), {
-      status: 500,
+  } catch {
+    return new Response(JSON.stringify({}), {
+      status: 200,
       headers: { "Content-Type": "application/json" },
     })
   }
