@@ -462,7 +462,7 @@ export default {
         return new Response("comment github oauth not configured", { status: 500 })
       }
       const stateToken = await createCommentAuthState(env.OAUTH_KV, returnTo, author)
-      const redirectUri = new URL("/comments/github/callback", request.url).href
+      const redirectUri = new URL("/comments/github/callback", resolveBaseUrl(env, request)).href
       const authorizeUrl = getUpstreamAuthorizeUrl({
         upstream_url: "https://github.com/login/oauth/authorize",
         client_id: commentClient.clientId,
@@ -485,11 +485,12 @@ export default {
       if (!commentClient) {
         return new Response("comment github oauth not configured", { status: 500 })
       }
+      const redirectUri = new URL("/comments/github/callback", resolveBaseUrl(env, request)).href
       const [accessToken, errResponse] = await fetchUpstreamAuthToken({
         client_id: commentClient.clientId,
         client_secret: commentClient.clientSecret,
         code: url.searchParams.get("code"),
-        redirect_uri: new URL("/comments/github/callback", request.url).href,
+        redirect_uri: redirectUri,
         upstream_url: "https://github.com/login/oauth/access_token",
       })
       if (errResponse) return errResponse
