@@ -27,6 +27,9 @@ type OperationRecord = OperationInput & {
   seq: number
 }
 
+// BUG: if sending consecutive messages it seems like it is not being registered to D1
+// i.e. some synching problem, which means probably will need to implement WebRTC + CRDT, circa raft.
+
 type BroadcastMessage =
   | {
       type: "init"
@@ -63,7 +66,8 @@ let hasSnapshot = false
 let pendingOps = new Map<string, OperationInput>()
 
 function getAuthor(): string {
-  let author = localStorage.getItem("comment-author")
+  let author =
+    localStorage.getItem("comment-author") ?? localStorage.getItem("comment-author-github-login")
   if (!author) {
     author = `anon-${Math.random().toString(36).slice(2, 8)}`
     localStorage.setItem("comment-author", author)
