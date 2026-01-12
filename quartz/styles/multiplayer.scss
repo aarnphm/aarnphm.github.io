@@ -749,6 +749,21 @@
   }
 }
 
+body:has(.search-container.active),
+body:has(#palette-container.active),
+body:has(.global-graph-outer.active) {
+  .comment-highlight-layer,
+  .comment-selection-layer,
+  .comment-bubble,
+  .comment-composer,
+  .comment-thread-modal,
+  .comment-actions-popover,
+  .delete-confirmation-overlay,
+  .delete-confirmation-modal {
+    display: none !important;
+  }
+}
+
 .comment-edit-wrapper {
   overflow: hidden;
   display: flex;
