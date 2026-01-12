@@ -569,7 +569,7 @@ document.addEventListener("nav", () => {
   setupPopoverLinks()
 })
 
-document.addEventListener("content-decrypted", (e) => {
+document.addEventListener("contentdecrypted", (e) => {
   const { content } = e.detail
   if (content) setupPopoverLinks(content)
 })

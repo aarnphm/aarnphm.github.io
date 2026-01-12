@@ -207,7 +207,7 @@ document.addEventListener("nav", () => {
         input.value = ""
 
         document.dispatchEvent(
-          new CustomEvent("content-decrypted", {
+          new CustomEvent("contentdecrypted", {
             detail: { article, content: contentDiv },
           }),
         )
