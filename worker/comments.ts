@@ -42,16 +42,29 @@ export class MultiplayerComments extends DurableObject<Env> {
     this.sessions = new Map()
     this.rateLimits = new Map()
     this.sql = ctx.storage.sql
+    const tableInfo = this.sql
+      .exec("PRAGMA table_info(comment_ops)")
+      .toArray() as Array<{ name: string; pk: number }>
+    const hasLegacyPk = tableInfo.some((row) => row.name === "seq" && row.pk === 1)
+    if (hasLegacyPk) {
+      this.sql.exec("DROP INDEX IF EXISTS idx_comment_ops_page_seq")
+      this.sql.exec("DROP INDEX IF EXISTS idx_comment_ops_page_seq_unique")
+      this.sql.exec("DROP TABLE IF EXISTS comment_ops")
+    }
     this.sql.exec(`
       CREATE TABLE IF NOT EXISTS comment_ops (
-        seq INTEGER PRIMARY KEY,
         pageId TEXT NOT NULL,
+        seq INTEGER NOT NULL,
         opId TEXT NOT NULL UNIQUE,
         opType TEXT NOT NULL,
         commentId TEXT NOT NULL,
         commentJson TEXT NOT NULL,
         createdAt INTEGER NOT NULL
       )
+    `)
+    this.sql.exec(`
+      CREATE UNIQUE INDEX IF NOT EXISTS idx_comment_ops_page_seq_unique
+      ON comment_ops (pageId, seq)
     `)
     this.sql.exec(`
       CREATE INDEX IF NOT EXISTS idx_comment_ops_page_seq
