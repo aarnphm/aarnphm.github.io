@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-01-12 18:52:47 GMT-05:00
+modified: 2026-01-13 17:01:03 GMT-05:00
 permalinks:
   - /website
   - /tweets
@@ -504,6 +504,10 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://elishajeon.com/ -- Elisha
+  - [meta]:
+    - date: 01/12/2026
+    - tags: [utilitarian, minimal, insporation]
 - https://68.netlify.app/ -- 68 Bits of Unsolicited Advice
   - [meta]:
     - date: 01/08/2026
@@ -5451,6 +5455,15 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://www.youtube.com/watch?v=HvCEf7n9-Ps -- Why we make art?
+  - [meta]:
+    - date: 01/13/2026
+    - tags: [culture]
+- https://slimemoldtimemold.com/2022/02/10/the-scientific-virtues/ -- Scientific virtues [**]
+  - [meta]:
+    - date: 01/12/2026
+    - tags: [progress, ethics, being]
+    - later: true
 - https://www.darioamodei.com/essay/machines-of-loving-grace -- Machines of Loving Grace [**]
   - [meta]:
     - date: 01/11/2026
@@ -5911,6 +5924,16 @@ title: are.na
 
 ## stream
 
+- https://ffbandf.wordpress.com/ -- Forking, Forcing and back&Forthing
+  - [meta]:
+    - date: 01/13/2026
+    - tags: [math]
+    - later: true
+- https://reflectivedisequilibrium.blogspot.com/ -- Reflective Disequilibrium
+  - [meta]:
+    - date: 01/13/2026
+    - tags: [biotech, longtermism]
+    - pinned: true
 - https://en.wikipedia.org/wiki/List_of_Latin_phrases_(full) -- List of Latin phrases
   - [meta]:
     - date: 01/11/2026
@@ -6285,6 +6308,10 @@ title: are.na
 
 ## design
 
+- https://spiderdefense.framer.website/ -- SP // DER Defense Corp.
+  - [meta]:
+    - date: 01/12/2026
+    - tags: [utilitarian]
 - https://playback.design/report -- Figma Makeathon
   - [meta]:
     - date: 01/12/2026

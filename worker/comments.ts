@@ -202,6 +202,9 @@ export class MultiplayerComments extends DurableObject<Env> {
         createdAt: comment.createdAt,
         updatedAt: null,
         deletedAt: null,
+        anchor: comment.anchor ?? null,
+        orphaned: comment.orphaned ?? null,
+        lastRecoveredAt: comment.lastRecoveredAt ?? null,
       })
       .onConflictDoNothing()
 
@@ -215,7 +218,15 @@ export class MultiplayerComments extends DurableObject<Env> {
 
     await db
       .update(comments)
-      .set({ content: comment.content, updatedAt: now })
+      .set({
+        content: comment.content,
+        anchorStart: comment.anchorStart,
+        anchorEnd: comment.anchorEnd,
+        anchor: comment.anchor ?? null,
+        orphaned: comment.orphaned ?? null,
+        lastRecoveredAt: comment.lastRecoveredAt ?? null,
+        updatedAt: now,
+      })
       .where(eq(comments.id, comment.id))
 
     const updated = await db.select().from(comments).where(eq(comments.id, comment.id)).get()

@@ -15,6 +15,9 @@ export const comments = sqliteTable(
     createdAt: integer("createdAt").notNull(),
     updatedAt: integer("updatedAt"),
     deletedAt: integer("deletedAt"),
+    anchor: text("anchor"),
+    orphaned: integer("orphaned", { mode: "boolean" }),
+    lastRecoveredAt: integer("lastRecoveredAt"),
   },
   (table) => [
     index("idx_comments_page").on(table.pageId, table.createdAt),
