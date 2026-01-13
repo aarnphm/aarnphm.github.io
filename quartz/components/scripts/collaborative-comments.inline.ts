@@ -2,58 +2,15 @@ import { getFullSlug, type FullSlug } from "../../util/path"
 import { MarkdownEditor } from "./markdown-editor"
 import { renderMarkdown } from "../../util/markdown-renderer"
 import { populateSearchIndex } from "./search-index"
-
-type MultiplayerComment = {
-  id: string
-  pageId: string
-  parentId: string | null
-  anchorHash: string
-  anchorStart: number
-  anchorEnd: number
-  anchorText: string
-  content: string
-  author: string
-  createdAt: number
-  updatedAt: number | null
-  deletedAt: number | null
-}
-
-type OperationType = "new" | "update" | "delete"
-
-type OperationInput = {
-  opId: string
-  type: OperationType
-  comment: MultiplayerComment
-}
-
-type OperationRecord = OperationInput & {
-  seq: number
-}
-
-type BroadcastMessage =
-  | {
-      type: "init"
-      comments: MultiplayerComment[]
-      latestSeq: number
-    }
-  | {
-      type: "delta"
-      ops: OperationRecord[]
-      latestSeq: number
-    }
-  | {
-      type: "op"
-      op: OperationRecord
-    }
-  | {
-      type: "ack"
-      opId: string
-      seq: number
-    }
-  | {
-      type: "error"
-      message: string
-    }
+import {
+  type BroadcastMessage,
+  type MultiplayerComment,
+  type OperationInput,
+  type OperationRecord,
+  type StructuralAnchor,
+  isRecord,
+  parsePendingOps,
+} from "../comments/collaborative-comments.model"
 
 let ws: WebSocket | null = null
 let comments: MultiplayerComment[] = []
@@ -68,75 +25,10 @@ const githubAvatarCache = new Map<string, string>()
 const githubAvatarStoragePrefix = "comment-author-github-avatar:"
 const pendingOpsStoragePrefix = "comment-pending-ops:"
 let currentPageId: string | null = null
+const correctedAnchors = new Set<string>()
 
-function isOperationType(value: unknown): value is OperationType {
-  return value === "new" || value === "update" || value === "delete"
-}
-
-function parseComment(value: unknown): MultiplayerComment | null {
-  if (!isRecord(value)) return null
-  const id = value["id"]
-  const pageId = value["pageId"]
-  const parentId = value["parentId"]
-  const anchorHash = value["anchorHash"]
-  const anchorStart = value["anchorStart"]
-  const anchorEnd = value["anchorEnd"]
-  const anchorText = value["anchorText"]
-  const content = value["content"]
-  const author = value["author"]
-  const createdAt = value["createdAt"]
-  const updatedAt = value["updatedAt"]
-  const deletedAt = value["deletedAt"]
-
-  if (typeof id !== "string") return null
-  if (typeof pageId !== "string") return null
-  if (parentId !== null && typeof parentId !== "string") return null
-  if (typeof anchorHash !== "string") return null
-  if (typeof anchorStart !== "number") return null
-  if (typeof anchorEnd !== "number") return null
-  if (typeof anchorText !== "string") return null
-  if (typeof content !== "string") return null
-  if (typeof author !== "string") return null
-  if (typeof createdAt !== "number") return null
-  if (updatedAt !== null && typeof updatedAt !== "number") return null
-  if (deletedAt !== null && typeof deletedAt !== "number") return null
-
-  return {
-    id,
-    pageId,
-    parentId,
-    anchorHash,
-    anchorStart,
-    anchorEnd,
-    anchorText,
-    content,
-    author,
-    createdAt,
-    updatedAt,
-    deletedAt,
-  }
-}
-
-function parsePendingOps(raw: string): OperationInput[] {
-  let data: unknown
-  try {
-    data = JSON.parse(raw)
-  } catch {
-    return []
-  }
-  if (!Array.isArray(data)) return []
-  const ops: OperationInput[] = []
-  for (const item of data) {
-    if (!isRecord(item)) continue
-    const opId = item["opId"]
-    const type = item["type"]
-    const comment = parseComment(item["comment"])
-    if (typeof opId !== "string") continue
-    if (!isOperationType(type)) continue
-    if (!comment) continue
-    ops.push({ opId, type, comment })
-  }
-  return ops
+function correctionOpId(commentId: string, start: number, end: number): string {
+  return `correction:${commentId}:${start}:${end}`
 }
 
 function pendingOpsKey(pageId: string): string {
@@ -194,10 +86,6 @@ async function getGravatarUrl(identifier: string, size: number = 24): Promise<st
   const hashArray = Array.from(new Uint8Array(hashBuffer))
   const hashHex = hashArray.map((b) => b.toString(16).padStart(2, "0")).join("")
   return `https://gravatar.com/avatar/${hashHex}?s=${size}&d=identicon&r=pg`
-}
-
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === "object" && value !== null && !Array.isArray(value)
 }
 
 async function getGithubAvatarUrl(login: string): Promise<string | null> {
@@ -274,6 +162,211 @@ function getArticleText(): string {
   return article?.textContent || ""
 }
 
+function findClosestHeading(node: Node): string | null {
+  let current: Node | null = node
+  while (current) {
+    if (current instanceof HTMLElement) {
+      const headingId = current.getAttribute("data-heading-id")
+      if (headingId) return headingId
+      if (current.classList.contains("collapsible-header")) {
+        return current.id || null
+      }
+    }
+    current = current.parentNode
+  }
+  return null
+}
+
+function findBlockId(node: Node): string | null {
+  let current: Node | null = node
+  while (current) {
+    if (current instanceof HTMLElement) {
+      const id = current.id
+      if (id && /^[a-zA-Z0-9_-]+$/.test(id) && !id.startsWith("collapsible-")) {
+        return id
+      }
+    }
+    current = current.parentNode
+  }
+  return null
+}
+
+function findContainingParagraph(node: Node): Element | null {
+  let current: Node | null = node
+  while (current) {
+    if (current instanceof HTMLElement) {
+      const tag = current.tagName.toLowerCase()
+      if (tag === "p" || tag === "li" || tag === "blockquote" || tag === "td" || tag === "th") {
+        return current
+      }
+    }
+    current = current.parentNode
+  }
+  return null
+}
+
+function countParagraphsBefore(section: Element | null, node: Node): number {
+  if (!section) return -1
+  const paragraphs = section.querySelectorAll("p, li, blockquote, td, th")
+  const containingParagraph = findContainingParagraph(node)
+  if (!containingParagraph) return -1
+  for (let i = 0; i < paragraphs.length; i++) {
+    if (paragraphs[i] === containingParagraph || paragraphs[i].contains(containingParagraph)) {
+      return i
+    }
+  }
+  return -1
+}
+
+function computeLocalOffset(paragraph: Element | null, node: Node, nodeOffset: number): number {
+  if (!paragraph) return -1
+  const walker = document.createTreeWalker(paragraph, NodeFilter.SHOW_TEXT)
+  let offset = 0
+  while (walker.nextNode()) {
+    const textNode = walker.currentNode
+    if (textNode === node) {
+      return offset + nodeOffset
+    }
+    offset += textNode.textContent?.length || 0
+  }
+  return offset
+}
+
+function extractContextWords(range: Range, count: number): [string, string] {
+  const articleText = getArticleText()
+  const article = document.querySelector("article.popover-hint")
+  if (!article) return ["", ""]
+
+  const offsets = getRangeOffsets(range, article)
+  if (!offsets) return ["", ""]
+
+  const beforeText = articleText.slice(0, offsets.startOffset)
+  const afterText = articleText.slice(offsets.endOffset)
+
+  const beforeWords = beforeText.trim().split(/\s+/).slice(-count).join(" ")
+  const afterWords = afterText.trim().split(/\s+/).slice(0, count).join(" ")
+
+  return [beforeWords, afterWords]
+}
+
+function computeStructuralAnchor(range: Range, article: Element): StructuralAnchor {
+  const headingId = findClosestHeading(range.startContainer)
+  const blockId = findBlockId(range.startContainer)
+
+  let section: Element | null = null
+  if (headingId) {
+    section =
+      article.querySelector(`[data-heading-id="${headingId}"]`) ||
+      article.querySelector(`#${headingId}`)
+  }
+
+  const containingParagraph = findContainingParagraph(range.startContainer)
+  const paragraphIndex = countParagraphsBefore(section || article, range.startContainer)
+  const localOffset = computeLocalOffset(
+    containingParagraph,
+    range.startContainer,
+    range.startOffset,
+  )
+  const contextWords = extractContextWords(range, 3)
+
+  return {
+    headingId,
+    blockId,
+    paragraphIndex,
+    localOffset,
+    contextWords,
+  }
+}
+
+function recoverFromStructuralAnchor(
+  anchor: StructuralAnchor,
+  anchorText: string,
+  article: Element,
+): { startIdx: number; endIdx: number } | null {
+  let section: Element | null = null
+  if (anchor.headingId) {
+    section =
+      article.querySelector(`[data-heading-id="${anchor.headingId}"]`) ||
+      article.querySelector(`#${anchor.headingId}`)
+  }
+
+  const searchWithinElement = (
+    element: Element,
+  ): { startIdx: number; endIdx: number } | null => {
+    const elementText = element.textContent || ""
+    const matches: number[] = []
+    let searchStart = 0
+    while (true) {
+      const idx = elementText.indexOf(anchorText, searchStart)
+      if (idx === -1) break
+      matches.push(idx)
+      searchStart = idx + 1
+    }
+
+    if (matches.length === 0) return null
+
+    const walker = document.createTreeWalker(article, NodeFilter.SHOW_TEXT)
+    let globalOffset = 0
+    let elementStartOffset = -1
+    while (walker.nextNode()) {
+      const textNode = walker.currentNode as Text
+      if (element.contains(textNode)) {
+        if (elementStartOffset === -1) {
+          elementStartOffset = globalOffset
+        }
+      }
+      globalOffset += textNode.length
+    }
+
+    if (elementStartOffset === -1) return null
+
+    let bestMatch = matches[0]
+    if (matches.length > 1 && anchor.contextWords) {
+      for (const match of matches) {
+        const beforeStart = Math.max(0, match - 50)
+        const afterEnd = Math.min(elementText.length, match + anchorText.length + 50)
+        const context = elementText.slice(beforeStart, afterEnd)
+        if (
+          context.includes(anchor.contextWords[0]) ||
+          context.includes(anchor.contextWords[1])
+        ) {
+          bestMatch = match
+          break
+        }
+      }
+    }
+
+    return {
+      startIdx: elementStartOffset + bestMatch,
+      endIdx: elementStartOffset + bestMatch + anchorText.length,
+    }
+  }
+
+  if (anchor.blockId) {
+    const block = article.querySelector(`#${anchor.blockId}`)
+    if (block) {
+      const result = searchWithinElement(block)
+      if (result) return result
+    }
+  }
+
+  if (section && anchor.paragraphIndex >= 0) {
+    const paragraphs = section.querySelectorAll("p, li, blockquote, td, th")
+    if (anchor.paragraphIndex < paragraphs.length) {
+      const targetParagraph = paragraphs[anchor.paragraphIndex]
+      const result = searchWithinElement(targetParagraph)
+      if (result) return result
+    }
+  }
+
+  if (section) {
+    const result = searchWithinElement(section)
+    if (result) return result
+  }
+
+  return null
+}
+
 function parseCommentHash(): string | null {
   const { hash } = window.location
   if (!hash) return null
@@ -331,9 +424,44 @@ function clearSelectionHighlight() {
   }
 }
 
+function getTextNodeRects(range: Range): DOMRect[] {
+  const rects: DOMRect[] = []
+  const walker = document.createTreeWalker(
+    range.commonAncestorContainer.nodeType === Node.TEXT_NODE
+      ? range.commonAncestorContainer.parentElement!
+      : (range.commonAncestorContainer as Element),
+    NodeFilter.SHOW_TEXT,
+  )
+
+  let node: Text | null = null
+  while ((node = walker.nextNode() as Text | null)) {
+    if (!range.intersectsNode(node)) continue
+
+    const nodeRange = document.createRange()
+    nodeRange.selectNodeContents(node)
+
+    const startOffset = node === range.startContainer ? range.startOffset : 0
+    const endOffset = node === range.endContainer ? range.endOffset : node.length
+
+    if (startOffset >= endOffset) continue
+
+    nodeRange.setStart(node, startOffset)
+    nodeRange.setEnd(node, endOffset)
+
+    const nodeRects = nodeRange.getClientRects()
+    for (const rect of nodeRects) {
+      if (rect.width > 0 && rect.height > 0) {
+        rects.push(rect)
+      }
+    }
+  }
+
+  return rects
+}
+
 function renderSelectionHighlight(range: Range) {
   clearSelectionHighlight()
-  const rects = Array.from(range.getClientRects()).filter((rect) => rect.width && rect.height)
+  const rects = getTextNodeRects(range)
   if (rects.length === 0) return
   const scrollTop = window.pageYOffset || document.documentElement.scrollTop
   const scrollLeft = window.pageXOffset || document.documentElement.scrollLeft
@@ -370,30 +498,25 @@ function getRangeOffsets(range: Range, root: Element) {
 }
 
 async function copyToClipboard(text: string) {
-  if (navigator.clipboard && window.isSecureContext) {
-    try {
-      await navigator.clipboard.writeText(text)
-      return true
-    } catch {
-      return false
-    }
-  }
-
-  const textarea = document.createElement("textarea")
-  textarea.value = text
-  textarea.style.position = "fixed"
-  textarea.style.opacity = "0"
-  document.body.appendChild(textarea)
-  textarea.focus()
-  textarea.select()
-  let succeeded = false
   try {
-    succeeded = document.execCommand("copy")
-  } catch {
-    succeeded = false
+    await navigator.clipboard.writeText(text)
+    return true
+  } catch (err) {
+    console.error("Failed to copy:", err)
+    return false
   }
-  document.body.removeChild(textarea)
-  return succeeded
+}
+
+function closeActiveModal() {
+  if (!activeModal) return
+  const activeId = activeModal.dataset.commentId
+  document.body.removeChild(activeModal)
+  activeModal = null
+  if (activeId) {
+    document
+      .querySelector<HTMLElement>(`.comment-bubble[data-comment-id="${activeId}"]`)
+      ?.classList.remove("modal-active")
+  }
 }
 
 function refreshActiveModal() {
@@ -401,7 +524,10 @@ function refreshActiveModal() {
   const commentId = activeModal.dataset.commentId
   if (!commentId) return
   const comment = comments.find((c) => c.id === commentId)
-  if (!comment) return
+  if (!comment || comment.deletedAt) {
+    closeActiveModal()
+    return
+  }
   const replies = comments.filter((c) => c.parentId === commentId && !c.deletedAt)
   const content = activeModal.querySelector(".modal-content")
   if (!(content instanceof HTMLElement)) return
@@ -593,7 +719,6 @@ function hideActionsPopover() {
 }
 
 function showActionsPopover(
-  comment: MultiplayerComment,
   buttonRect: DOMRect,
   onEdit: () => void,
   onDelete: () => void,
@@ -853,6 +978,7 @@ async function showComposer(range: Range) {
   const offsets = getRangeOffsets(range, article)
   if (!offsets) return
   const anchorHash = await hashText(offsets.text)
+  const structuralAnchor = computeStructuralAnchor(range, article)
 
   const composer = document.createElement("div")
   composer.className = "comment-composer"
@@ -908,6 +1034,9 @@ async function showComposer(range: Range) {
       createdAt: Date.now(),
       updatedAt: null,
       deletedAt: null,
+      anchor: structuralAnchor,
+      orphaned: null,
+      lastRecoveredAt: null,
     }
 
     submitNewComment(comment)
@@ -962,18 +1091,91 @@ function renderAllComments() {
   for (const comment of topLevelComments) {
     let startIdx = comment.anchorStart
     let endIdx = comment.anchorEnd
-    if (startIdx >= endIdx || endIdx > articleText.length || startIdx < 0) {
-      if (comment.anchorText) {
-        const fallbackStart = articleText.indexOf(comment.anchorText)
-        if (fallbackStart !== -1) {
-          startIdx = fallbackStart
-          endIdx = fallbackStart + comment.anchorText.length
+
+    const textAtOffsets = articleText.substring(startIdx, endIdx)
+    const offsetsValid =
+      startIdx >= 0 &&
+      endIdx <= articleText.length &&
+      startIdx < endIdx &&
+      textAtOffsets === comment.anchorText
+
+    if (!offsetsValid && comment.anchorText) {
+      let recovered = false
+
+      if (comment.anchor) {
+        const structuralResult = recoverFromStructuralAnchor(
+          comment.anchor,
+          comment.anchorText,
+          article,
+        )
+        if (structuralResult) {
+          startIdx = structuralResult.startIdx
+          endIdx = structuralResult.endIdx
+          recovered = true
+        }
+      }
+
+      if (!recovered) {
+        const matches: number[] = []
+        let searchStart = 0
+        while (true) {
+          const idx = articleText.indexOf(comment.anchorText, searchStart)
+          if (idx === -1) break
+          matches.push(idx)
+          searchStart = idx + 1
+        }
+
+        if (matches.length > 0) {
+          const closest = matches.reduce((best, curr) =>
+            Math.abs(curr - comment.anchorStart) < Math.abs(best - comment.anchorStart) ? curr : best,
+          )
+          startIdx = closest
+          endIdx = closest + comment.anchorText.length
+          recovered = true
+        }
+      }
+
+      if (recovered && (startIdx !== comment.anchorStart || endIdx !== comment.anchorEnd)) {
+        const opId = correctionOpId(comment.id, startIdx, endIdx)
+        if (!correctedAnchors.has(opId)) {
+          correctedAnchors.add(opId)
+          submitUpdateComment({
+            ...comment,
+            anchorStart: startIdx,
+            anchorEnd: endIdx,
+            lastRecoveredAt: Date.now(),
+            updatedAt: Date.now(),
+          })
         }
       }
     }
 
-    if (startIdx === endIdx) continue
-    if (startIdx < 0 || endIdx > articleText.length) continue
+    if (startIdx === endIdx || startIdx < 0 || endIdx > articleText.length) {
+      if (!comment.orphaned) {
+        const opId = `orphan:${comment.id}`
+        if (!correctedAnchors.has(opId)) {
+          correctedAnchors.add(opId)
+          submitUpdateComment({
+            ...comment,
+            orphaned: true,
+            updatedAt: Date.now(),
+          })
+        }
+      }
+      continue
+    }
+
+    if (comment.orphaned) {
+      const opId = `unorphan:${comment.id}`
+      if (!correctedAnchors.has(opId)) {
+        correctedAnchors.add(opId)
+        submitUpdateComment({
+          ...comment,
+          orphaned: false,
+          updatedAt: Date.now(),
+        })
+      }
+    }
 
     const walker = document.createTreeWalker(article, NodeFilter.SHOW_TEXT)
     let currentOffset = 0
@@ -1005,6 +1207,19 @@ function renderAllComments() {
         const range = document.createRange()
         range.setStart(startNode, startNodeOffset)
         range.setEnd(endNode, endNodeOffset)
+
+        if (!comment.anchor) {
+          const opId = `backfill-anchor:${comment.id}`
+          if (!correctedAnchors.has(opId)) {
+            correctedAnchors.add(opId)
+            const newAnchor = computeStructuralAnchor(range, article)
+            submitUpdateComment({
+              ...comment,
+              anchor: newAnchor,
+              updatedAt: Date.now(),
+            })
+          }
+        }
 
         const rects = Array.from(range.getClientRects()).filter((rect) => rect.width && rect.height)
         if (rects.length === 0) continue
@@ -1200,7 +1415,6 @@ function buildThreadItem(comment: MultiplayerComment) {
     e.stopPropagation()
     const buttonRect = actions.getBoundingClientRect()
     showActionsPopover(
-      comment,
       buttonRect,
       () => enterEditMode(comment, text),
       () => showDeleteConfirmation(comment),
