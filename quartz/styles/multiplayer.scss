@@ -10,10 +10,28 @@ $active-blue: #0768cf;
 $comment-highlight: rgba(255, 220, 100, 0.3);
 $selection-highlight: rgba(255, 220, 100, 0.5);
 $bubble-size: 32px;
+$bubble-margin: 6px;
+$bubble-padding: 8px;
 $button-size: 1.5rem;
 $transition-fast: 0.15s;
 $transition-std: 0.2s;
 $modal-width: 360px;
+$space-2xs: 4px;
+$space-xs: 8px;
+$space-sm: 12px;
+$space-md: 16px;
+$space-lg: 20px;
+$space-xl: 24px;
+$space-2xl: 32px;
+$font-xs: 11px;
+$font-sm: 12px;
+$font-md: 13px;
+$font-lg: 14px;
+$font-xl: 15px;
+$line-base: 1.5;
+$line-xs: 16px;
+$line-md: 24px;
+$avatar-sm: 24px;
 
 @mixin flex-center {
   display: flex;
@@ -37,6 +55,66 @@ $modal-width: 360px;
   }
 }
 
+@mixin icon-button($size: 20px) {
+  @include button-base;
+  background: none;
+  padding: $space-2xs;
+  color: var(--gray);
+  transition: color $transition-std;
+
+  &:hover {
+    color: var(--dark);
+  }
+
+  svg {
+    width: $size;
+    height: $size;
+  }
+}
+
+%edit-button-base {
+  border: none;
+  border-radius: 0.3125rem;
+  cursor: pointer;
+  background: transparent;
+  outline: var(--gray-200) solid 1px;
+  outline-offset: -0.0625rem;
+  font-size: 10px;
+  font-weight: 450;
+  letter-spacing: 0.00344rem;
+  line-height: 1rem;
+  position: relative;
+  display: inline-flex;
+  height: 1.5rem;
+  max-width: 100%;
+  text-align: center;
+  padding-inline: 0;
+}
+
+%button-container {
+  display: flex;
+  width: 100%;
+  height: 1.5rem;
+  max-width: 100%;
+
+  > .button-text {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    max-width: 100%;
+    margin: $space-xs;
+    overflow: hidden;
+
+    > .button-content {
+      display: block;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      overflow-wrap: break-word;
+      overflow: hidden;
+    }
+  }
+}
+
 .comment-composer {
   position: absolute;
   z-index: 903;
@@ -46,18 +124,18 @@ $modal-width: 360px;
   .composer-input-wrapper {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: $space-sm;
     background: var(--light);
     border-radius: 24px;
-    padding: 8px 8px 8px 16px;
+    padding: $space-xs $space-xs $space-xs $space-md;
     min-width: 320px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 
     .composer-input {
       flex: 1;
-      min-height: 24px;
-      font-size: 14px;
-      line-height: 1.5;
+      min-height: $space-xl;
+      font-size: $font-lg;
+      line-height: $line-base;
       color: var(--dark);
       outline: none;
       white-space: pre-wrap;
@@ -77,8 +155,8 @@ $modal-width: 360px;
         top: 0;
         pointer-events: none;
         color: var(--gray);
-        font-size: 14px;
-        line-height: 1.5;
+        font-size: $font-lg;
+        line-height: $line-base;
 
         .placeholder-text {
           opacity: 0.6;
@@ -166,6 +244,7 @@ $modal-width: 360px;
 .comment-bubble {
   --expand-animation-time: 0.1s;
   --bubble-collapsed-size: #{$bubble-size};
+  --bubble-margin: #{$bubble-margin};
   position: absolute;
   z-index: 901;
   cursor: pointer;
@@ -184,8 +263,8 @@ $modal-width: 360px;
   max-height: var(--bubble-collapsed-size);
   box-sizing: border-box;
   padding: 3px;
-  font-size: 11px;
-  line-height: 16px;
+  font-size: $font-xs;
+  line-height: $line-xs;
   color: var(--darkgray);
   border-radius: 16px 16px 16px 0;
   box-shadow:
@@ -216,15 +295,15 @@ $modal-width: 360px;
       align-items: center;
 
       .reply-avatar {
-        width: calc(var(--bubble-collapsed-size) - 6px);
-        height: calc(var(--bubble-collapsed-size) - 6px);
+        width: calc(var(--bubble-collapsed-size) - var(--bubble-margin));
+        height: calc(var(--bubble-collapsed-size) - var(--bubble-margin));
         border-radius: 9999px;
         flex-shrink: 0;
         flex-direction: row-reverse;
         justify-content: flex-end;
         align-items: flex-start;
-        min-width: calc(var(--bubble-collapsed-size) - 6px);
-        min-height: calc(var(--bubble-collapsed-size) - 6px);
+        min-width: calc(var(--bubble-collapsed-size) - var(--bubble-margin));
+        min-height: calc(var(--bubble-collapsed-size) - var(--bubble-margin));
         object-fit: cover;
       }
 
@@ -245,10 +324,10 @@ $modal-width: 360px;
     max-height: 0;
     opacity: 0;
     overflow: hidden;
-    font-size: 13px;
-    line-height: 1.5;
+    font-size: $font-md;
+    line-height: $line-base;
     color: var(--dark);
-    padding-left: 32px;
+    padding-left: calc(var(--bubble-collapsed-size) - var(--bubble-margin) + var(--gap-size));
     margin-top: 0;
     transition:
       max-height 220ms cubic-bezier(0.2, 0, 0, 1),
@@ -259,9 +338,9 @@ $modal-width: 360px;
     max-height: 0;
     opacity: 0;
     overflow: hidden;
-    font-size: 12px;
+    font-size: $font-sm;
     color: var(--gray);
-    padding-left: 32px;
+    padding-left: $space-2xl;
     transition:
       max-height 220ms cubic-bezier(0.2, 0, 0, 1),
       opacity 180ms 40ms;
@@ -295,7 +374,7 @@ $modal-width: 360px;
     .reply-text {
       max-height: 120px;
       opacity: 1;
-      margin-top: 4px;
+      margin-top: $space-2xs;
       overflow: hidden;
       display: -webkit-box;
       -webkit-line-clamp: 4;
@@ -305,7 +384,7 @@ $modal-width: 360px;
     .preview-replies {
       max-height: 24px;
       opacity: 1;
-      margin-top: 4px;
+      margin-top: $space-2xs;
     }
   }
 }
@@ -325,7 +404,7 @@ $modal-width: 360px;
   overflow: auto;
 
   .modal-header {
-    padding: 0.25rem 0.5rem 0.25rem 0.75rem;
+    padding: 0.25rem $space-xs 0.25rem 0.75rem;
     margin: 0;
     border-bottom: 1px solid var(--lightgray);
     display: flex;
@@ -341,7 +420,7 @@ $modal-width: 360px;
 
     .modal-title {
       font-weight: 600;
-      font-size: 15px;
+      font-size: $font-xl;
       color: var(--dark);
     }
 
@@ -351,20 +430,7 @@ $modal-width: 360px;
       gap: 8px;
 
       .modal-actions-button {
-        @include button-base;
-        background: none;
-        padding: 4px;
-        color: var(--gray);
-        transition: color $transition-std;
-
-        &:hover {
-          color: var(--dark);
-        }
-
-        svg {
-          width: 20px;
-          height: 20px;
-        }
+        @include icon-button(20px);
       }
     }
 
@@ -390,13 +456,13 @@ $modal-width: 360px;
   }
 
   .reply-item {
-    margin-bottom: 12px;
-    padding-left: 16px;
-    padding-right: 16px;
+    margin-bottom: $space-sm;
+    padding-left: $space-md;
+    padding-right: $space-md;
 
     &:first-of-type {
-      margin-top: 0.5rem;
-      margin-bottom: 16px;
+      margin-top: $space-xs;
+      margin-bottom: $space-md;
 
       .reply-avatar {
         background: #5b9eff;
@@ -407,65 +473,52 @@ $modal-width: 360px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 8px;
+      margin-bottom: $space-xs;
 
       .reply-left {
         display: flex;
         align-items: center;
-        gap: 8px;
+        gap: $space-xs;
 
         .reply-avatar {
           flex-shrink: 0;
-          width: 24px;
-          height: 24px;
+          width: $avatar-sm;
+          height: $avatar-sm;
           border-radius: 50%;
           background: #8e81a2;
           color: white;
           display: flex;
           align-items: center;
           justify-content: center;
-          font-size: 11px;
+          font-size: $font-xs;
           font-weight: 600;
         }
 
         .reply-author {
-          font-size: 13px;
+          font-size: $font-md;
           font-weight: 600;
           color: var(--dark);
         }
 
         .reply-time {
-          font-size: 12px;
+          font-size: $font-sm;
           color: var(--gray);
         }
       }
 
       .reply-right {
         .reply-actions {
-          @include button-base;
-          background: none;
-          padding: 4px;
-          color: var(--gray);
-          transition: color $transition-std;
-
-          &:hover {
-            color: var(--dark);
-          }
-
-          svg {
-            width: 20px;
-            height: 20px;
-          }
+          @include icon-button(20px);
         }
       }
     }
 
     .reply-text {
-      font-size: 13px;
-      line-height: 1.5;
+      font-size: $font-md;
+      line-height: $line-base;
       color: var(--dark);
-      padding-left: 32px;
-      margin-top: 4px;
+      padding-left: $space-2xl;
+      margin-top: $space-2xs;
     }
   }
 
@@ -474,17 +527,17 @@ $modal-width: 360px;
 
     .reply-author-element {
       flex-shrink: 0;
-      margin-top: 20px;
-      margin-left: 16px;
+      margin-top: $space-lg;
+      margin-left: $space-md;
 
       .avatar {
-        width: 24px;
-        height: 24px;
+        width: $avatar-sm;
+        height: $avatar-sm;
         border-radius: 100%;
         overflow: hidden;
         display: flex;
         line-height: 30px;
-        font-size: 15px;
+        font-size: $font-xl;
         background: #5b9eff;
         align-items: center;
         justify-content: center;
@@ -500,9 +553,9 @@ $modal-width: 360px;
       flex-grow: 1;
       display: flex;
       flex-direction: row;
-      min-height: 32px;
+      min-height: $space-2xl;
       align-items: center;
-      margin: 16px 16px 16px 8px;
+      margin: $space-md $space-md $space-md $space-xs;
       border-radius: 13px;
       position: relative;
       background-color: var(--lightgray);
@@ -516,10 +569,10 @@ $modal-width: 360px;
         word-wrap: break-word;
         overflow: visible;
         box-sizing: border-box;
-        padding: 8px 0.5rem 8px 16px;
+        padding: $space-xs $space-xs $space-xs $space-md;
         transition: padding-bottom 0.1s;
-        font-size: 13px;
-        line-height: 24px;
+        font-size: $font-md;
+        line-height: $line-md;
 
         .primitive-wrapper {
           .lexical-wrapper {
@@ -544,7 +597,7 @@ $modal-width: 360px;
               left: 0;
               pointer-events: none;
               color: rgba(0, 0, 0, 0.3);
-              font-size: 13px;
+              font-size: $font-md;
               top: 2px;
               pointer-events: none;
               line-height: 1;
@@ -581,7 +634,7 @@ $modal-width: 360px;
         position: relative;
         height: 40px;
         align-items: center;
-        padding: 4px 0.5rem 4px;
+        padding: $space-2xs $space-xs $space-2xs;
         box-sizing: border-box;
         border: unset;
 
@@ -638,14 +691,14 @@ $modal-width: 360px;
   border: 1px solid var(--lightgray);
   border-radius: 12px;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
-  padding: 24px;
+  padding: $space-xl;
   min-width: 320px;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: $space-md;
 
   .delete-confirmation-message {
-    font-size: 15px;
+    font-size: $font-xl;
     font-weight: 600;
     color: var(--dark);
   }
@@ -653,26 +706,11 @@ $modal-width: 360px;
   .delete-confirmation-actions {
     display: flex;
     justify-content: flex-end;
-    gap: 8px;
+    gap: $space-xs;
   }
 
   .edit-button {
-    border: none;
-    border-radius: 0.3125rem;
-    cursor: pointer;
-    background: transparent;
-    outline: var(--gray-200) solid 1px;
-    outline-offset: -0.0625rem;
-    font-size: 10px;
-    font-weight: 450;
-    letter-spacing: 0.00344rem;
-    line-height: 1rem;
-    position: relative;
-    display: inline-flex;
-    height: 1.5rem;
-    max-width: 100%;
-    text-align: center;
-    padding-inline: 0;
+    @extend %edit-button-base;
   }
 
   .edit-button-cancel {
@@ -698,27 +736,7 @@ $modal-width: 360px;
   }
 
   .button-container {
-    display: flex;
-    width: 100%;
-    height: 1.5rem;
-    max-width: 100%;
-
-    & > .button-text {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      max-width: 100%;
-      margin: 0.5rem;
-      overflow: hidden;
-
-      & > .button-content {
-        display: block;
-        white-space: nowrap;
-        text-overflow: ellipsis;
-        overflow-wrap: break-word;
-        overflow: hidden;
-      }
-    }
+    @extend %button-container;
   }
 }
 
@@ -727,7 +745,7 @@ $modal-width: 360px;
   z-index: 905;
   background: var(--dark);
   min-width: 80px;
-  padding: 0.5rem 0;
+  padding: $space-xs 0;
   border-radius: 0.8125rem;
 
   .popover-action {
@@ -736,11 +754,11 @@ $modal-width: 360px;
     border: none;
     text-align: left;
     cursor: pointer;
-    font-size: 13px;
+    font-size: $font-md;
     transition: background $transition-fast;
     display: flex;
     align-items: center;
-    padding: 0 0.5rem;
+    padding: 0 $space-xs;
     color: var(--light);
     text-decoration: none;
     user-select: none;
@@ -750,7 +768,7 @@ $modal-width: 360px;
       align-items: center;
       width: 100%;
       min-height: $button-size;
-      padding: 0.25rem 0.5rem;
+      padding: $space-2xs $space-xs;
       box-sizing: border-box;
       color: var(--light);
       white-space: nowrap;
@@ -782,22 +800,22 @@ body:has(.global-graph-outer.active) {
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  min-height: 32px;
-  margin-left: 32px;
-  margin-top: 8px;
+  min-height: $space-2xl;
+  margin-left: $space-2xl;
+  margin-top: $space-xs;
   border-radius: 13px;
   position: relative;
   background-color: var(--lightgray);
 
   .edit-input-content {
-    padding: 8px 16px;
+    padding: $space-xs $space-md;
 
     .edit-input {
       outline: none;
       color: var(--dark);
-      font-size: 13px;
-      line-height: 1.5;
-      min-height: 24px;
+      font-size: $font-md;
+      line-height: $line-base;
+      min-height: $space-xl;
       white-space: pre-wrap;
       word-break: break-word;
 
@@ -811,27 +829,12 @@ body:has(.global-graph-outer.active) {
     display: flex;
     justify-content: flex-end;
     align-items: center;
-    gap: 8px;
-    padding: 8px 16px;
+    gap: $space-xs;
+    padding: $space-xs $space-md;
     border-top: 1px solid rgba(0, 0, 0, 0.05);
 
     .edit-button {
-      border: none;
-      border-radius: 0.3125rem;
-      cursor: pointer;
-      background: transparent;
-      outline: var(--gray-200) solid 1px;
-      outline-offset: -0.0625rem;
-      font-size: 10px;
-      font-weight: 450;
-      letter-spacing: 0.00344rem;
-      line-height: 1rem;
-      position: relative;
-      display: inline-flex;
-      height: 1.5rem;
-      max-width: 100%;
-      text-align: center;
-      padding-inline: 0;
+      @extend %edit-button-base;
 
       &.edit-button-cancel {
         background: var(--lightgray);
@@ -849,27 +852,7 @@ body:has(.global-graph-outer.active) {
     }
 
     .button-container {
-      display: flex;
-      width: 100%;
-      height: 1.5rem;
-      max-width: 100%;
-
-      & > .button-text {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        max-width: 100%;
-        margin: 0.5rem;
-        overflow: hidden;
-
-        & > .button-content {
-          display: block;
-          white-space: nowrap;
-          text-overflow: ellipsis;
-          overflow-wrap: break-word;
-          overflow: hidden;
-        }
-      }
+      @extend %button-container;
     }
   }
 }
@@ -878,8 +861,8 @@ body:has(.global-graph-outer.active) {
   background-color: var(--lightgray);
   border-radius: 13px;
   font-family: var(--bodyFont);
-  font-size: 13px;
-  line-height: 1.5;
+  font-size: $font-md;
+  line-height: $line-base;
   height: auto;
 
   &.cm-focused {
@@ -913,9 +896,9 @@ body:has(.global-graph-outer.active) {
     text-decoration: underline;
   }
   .cm-monospace {
-    font-family: "Courier New", monospace;
+    font-family: var(--codeFont);
     background: rgba(0, 0, 0, 0.05);
-    padding: 2px 4px;
+    padding: 2px $space-2xs;
     border-radius: 3px;
   }
 
@@ -930,11 +913,11 @@ body:has(.global-graph-outer.active) {
 }
 
 .markdown-content {
-  font-size: 13px;
-  line-height: 1.5;
+  font-size: $font-md;
+  line-height: $line-base;
 
   p {
-    margin: 0.5em 0;
+    margin: 0;
   }
   strong {
     font-weight: 600;
@@ -945,7 +928,7 @@ body:has(.global-graph-outer.active) {
   code {
     font-family: "Courier New", monospace;
     background: rgba(0, 0, 0, 0.05);
-    padding: 2px 4px;
+    padding: 2px $space-2xs;
     border-radius: 3px;
     font-size: 0.9em;
   }
@@ -953,9 +936,9 @@ body:has(.global-graph-outer.active) {
   pre {
     background: var(--lightgray);
     border-radius: 6px;
-    padding: 12px;
+    padding: $space-sm;
     overflow-x: auto;
-    margin: 8px 0;
+    margin: $space-xs 0;
 
     code {
       background: none;
@@ -974,14 +957,14 @@ body:has(.global-graph-outer.active) {
 
   ul,
   ol {
-    margin: 8px 0;
-    padding-left: 24px;
+    margin: $space-xs 0;
+    padding-left: $space-xl;
   }
 
   blockquote {
     border-left: 3px solid var(--gray);
-    padding-left: 12px;
-    margin: 8px 0;
+    padding-left: $space-sm;
+    margin: $space-xs 0;
     color: var(--gray);
   }
 

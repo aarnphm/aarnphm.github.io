@@ -7,6 +7,8 @@ import python from "highlight.js/lib/languages/python"
 import rust from "highlight.js/lib/languages/rust"
 import go from "highlight.js/lib/languages/go"
 import bash from "highlight.js/lib/languages/bash"
+import { extractWikilinks, resolveWikilinkTarget } from "./wikilinks"
+import { stripSlashes, splitAnchor, resolveRelative, type FullSlug } from "./path"
 
 hljs.registerLanguage("javascript", javascript)
 hljs.registerLanguage("typescript", typescript)
@@ -23,11 +25,49 @@ marked.use({
   renderer,
 })
 
-export function renderMarkdown(markdown: string): string {
+function processWikilinks(text: string, currentSlug: FullSlug): string {
+  const wikilinks = extractWikilinks(text)
+  if (wikilinks.length === 0) return text
+
+  let processed = text
+  for (const link of wikilinks) {
+    const resolved = resolveWikilinkTarget(link, currentSlug)
+    if (!resolved) continue
+
+    let dest = resolved.slug
+    if (!dest.startsWith("/")) dest = `/${dest}` as FullSlug
+
+    const url = new URL(dest, `https://base.com/${stripSlashes(currentSlug, true)}`)
+    let canonicalDest = url.pathname
+    let [destCanonical, _destAnchor] = splitAnchor(canonicalDest)
+
+    if (destCanonical.endsWith("/")) {
+      destCanonical += "index"
+    }
+
+    const finalSlug = decodeURIComponent(stripSlashes(destCanonical, true)) as FullSlug
+    const relativeHref = resolveRelative(currentSlug, finalSlug)
+    const href = resolved.anchor ? `${relativeHref}${resolved.anchor}` : relativeHref
+
+    const displayText = link.alias || link.target || resolved.slug
+    const anchorTag = `<a href="${href}" class="internal-link">${displayText}</a>`
+
+    processed = processed.replace(link.raw, anchorTag)
+  }
+  return processed
+}
+
+export function renderMarkdown(markdown: string, currentSlug?: FullSlug): string {
   if (!markdown || !markdown.trim()) {
     return ""
   }
-  let html = marked.parse(markdown, { async: false }) as string
+
+  let processedMarkdown = markdown
+  if (currentSlug) {
+    processedMarkdown = processWikilinks(markdown, currentSlug)
+  }
+
+  let html = marked.parse(processedMarkdown, { async: false }) as string
   html = html.replace(
     /<pre><code class="language-(\w+)">([\s\S]*?)<\/code><\/pre>/g,
     (_match, lang: string, code: string) => {

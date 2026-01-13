@@ -1,5 +1,5 @@
 import FlexSearch from "flexsearch"
-import { tokenizeTerm, encode } from "./util"
+import { tokenizeTerm, encode, isStreamHost } from "./util"
 
 interface StreamEntry {
   id: string
@@ -55,10 +55,6 @@ function stripHtml(html: string): string {
   const tmp = document.createElement("div")
   tmp.innerHTML = html
   return tmp.textContent || tmp.innerText || ""
-}
-
-function isStreamHost(): boolean {
-  return window.location.hostname === "stream.aarnphm.xyz"
 }
 
 async function buildSearchIndex() {

@@ -12,3 +12,4 @@ This means: no fallbacks, no hacks, no shortcuts. Production-grade, Google-quali
 - do not commit secrets; use `.env` locally and Cloudflare Secrets for the worker
 - transformers under @quartz/plugins/transformers/ MUST NOT use filesystem access
 - when thinking hard about a problem, use extended thinking as much as possible to reason hard about a problem.
+- always use fd, rg as tools (assume these are installed by default)

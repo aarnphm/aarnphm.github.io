@@ -39,7 +39,7 @@ async function setupMarkers() {
       iterations: 2,
       animate: false,
       multiline: true,
-      brackets: ["left", "bottom"],
+      brackets: ["left", "right"],
     })
 
     annotation.show()
@@ -49,3 +49,5 @@ async function setupMarkers() {
 
 document.addEventListener("nav", setupMarkers)
 document.addEventListener("contentdecrypted", setupMarkers)
+document.addEventListener("readermodechange", setupMarkers)
+document.addEventListener("resize", setupMarkers)

@@ -1,6 +1,7 @@
-import { getFullSlug } from "../../util/path"
+import { getFullSlug, type FullSlug } from "../../util/path"
 import { MarkdownEditor } from "./markdown-editor"
 import { renderMarkdown } from "../../util/markdown-renderer"
+import { populateSearchIndex } from "./search-index"
 
 type MultiplayerComment = {
   id: string
@@ -28,9 +29,6 @@ type OperationInput = {
 type OperationRecord = OperationInput & {
   seq: number
 }
-
-// BUG: if sending consecutive messages it seems like it is not being registered to D1
-// i.e. some synching problem, which means probably will need to implement WebRTC + CRDT, circa raft.
 
 type BroadcastMessage =
   | {
@@ -68,6 +66,106 @@ let hasSnapshot = false
 let pendingOps = new Map<string, OperationInput>()
 const githubAvatarCache = new Map<string, string>()
 const githubAvatarStoragePrefix = "comment-author-github-avatar:"
+const pendingOpsStoragePrefix = "comment-pending-ops:"
+let currentPageId: string | null = null
+
+function isOperationType(value: unknown): value is OperationType {
+  return value === "new" || value === "update" || value === "delete"
+}
+
+function parseComment(value: unknown): MultiplayerComment | null {
+  if (!isRecord(value)) return null
+  const id = value["id"]
+  const pageId = value["pageId"]
+  const parentId = value["parentId"]
+  const anchorHash = value["anchorHash"]
+  const anchorStart = value["anchorStart"]
+  const anchorEnd = value["anchorEnd"]
+  const anchorText = value["anchorText"]
+  const content = value["content"]
+  const author = value["author"]
+  const createdAt = value["createdAt"]
+  const updatedAt = value["updatedAt"]
+  const deletedAt = value["deletedAt"]
+
+  if (typeof id !== "string") return null
+  if (typeof pageId !== "string") return null
+  if (parentId !== null && typeof parentId !== "string") return null
+  if (typeof anchorHash !== "string") return null
+  if (typeof anchorStart !== "number") return null
+  if (typeof anchorEnd !== "number") return null
+  if (typeof anchorText !== "string") return null
+  if (typeof content !== "string") return null
+  if (typeof author !== "string") return null
+  if (typeof createdAt !== "number") return null
+  if (updatedAt !== null && typeof updatedAt !== "number") return null
+  if (deletedAt !== null && typeof deletedAt !== "number") return null
+
+  return {
+    id,
+    pageId,
+    parentId,
+    anchorHash,
+    anchorStart,
+    anchorEnd,
+    anchorText,
+    content,
+    author,
+    createdAt,
+    updatedAt,
+    deletedAt,
+  }
+}
+
+function parsePendingOps(raw: string): OperationInput[] {
+  let data: unknown
+  try {
+    data = JSON.parse(raw)
+  } catch {
+    return []
+  }
+  if (!Array.isArray(data)) return []
+  const ops: OperationInput[] = []
+  for (const item of data) {
+    if (!isRecord(item)) continue
+    const opId = item["opId"]
+    const type = item["type"]
+    const comment = parseComment(item["comment"])
+    if (typeof opId !== "string") continue
+    if (!isOperationType(type)) continue
+    if (!comment) continue
+    ops.push({ opId, type, comment })
+  }
+  return ops
+}
+
+function pendingOpsKey(pageId: string): string {
+  return `${pendingOpsStoragePrefix}${pageId}`
+}
+
+function persistPendingOps(pageId: string) {
+  if (!pageId) return
+  try {
+    const key = pendingOpsKey(pageId)
+    if (pendingOps.size === 0) {
+      sessionStorage.removeItem(key)
+      return
+    }
+    const payload = JSON.stringify([...pendingOps.values()])
+    sessionStorage.setItem(key, payload)
+  } catch {}
+}
+
+function restorePendingOps(pageId: string): OperationInput[] {
+  if (!pageId) return []
+  try {
+    const raw = sessionStorage.getItem(pendingOpsKey(pageId))
+    if (!raw) return []
+    return parsePendingOps(raw)
+  } catch {
+    return []
+  }
+}
 
 function getAuthor(): string {
   let author =
@@ -352,6 +450,7 @@ function applyOperation(op: OperationRecord) {
   }
   if (pendingOps.has(op.opId)) {
     pendingOps.delete(op.opId)
+    persistPendingOps(op.comment.pageId)
   }
   applyComment(op.comment)
 }
@@ -367,12 +466,16 @@ function applyOperations(ops: OperationRecord[]) {
     }
     applyCommentSilent(op.comment)
   }
+  if (ops.length > 0) {
+    persistPendingOps(ops[0].comment.pageId)
+  }
   renderAllComments()
   refreshActiveModal()
 }
 
 function queueOperation(op: OperationInput) {
   pendingOps.set(op.opId, op)
+  persistPendingOps(op.comment.pageId)
 }
 
 function sendOperation(op: OperationInput) {
@@ -445,6 +548,9 @@ function connectWebSocket() {
         lastSeq = msg.seq
       }
       pendingOps.delete(msg.opId)
+      if (currentPageId) {
+        persistPendingOps(currentPageId)
+      }
     } else if (msg.type === "error") {
       console.error("multiplayer comments error:", msg.message)
     }
@@ -956,7 +1062,8 @@ function renderAllComments() {
 
         const text = document.createElement("div")
         text.className = "reply-text markdown-content"
-        text.innerHTML = renderMarkdown(comment.content)
+        const currentSlug = (document.body.dataset.slug || getFullSlug(window)) as FullSlug
+        text.innerHTML = renderMarkdown(comment.content, currentSlug)
 
         bubble.appendChild(replyTop)
         bubble.appendChild(text)
@@ -1078,7 +1185,8 @@ function buildThreadItem(comment: MultiplayerComment) {
 
   const text = document.createElement("div")
   text.className = "reply-text markdown-content"
-  text.innerHTML = renderMarkdown(comment.content)
+  const currentSlug = (document.body.dataset.slug || getFullSlug(window)) as FullSlug
+  text.innerHTML = renderMarkdown(comment.content, currentSlug)
 
   const right = document.createElement("div")
   right.className = "reply-right"
@@ -1344,12 +1452,37 @@ function showCommentThread(commentId: string, position?: { top: number; left: nu
   modal.appendChild(replyComposerContainer)
 
   document.body.appendChild(modal)
+
+  const handleEscape = (e: KeyboardEvent) => {
+    if (e.key === "Escape" && activeModal === modal) {
+      if (activeModal) {
+        document.body.removeChild(activeModal)
+        activeModal = null
+      }
+      document.removeEventListener("keydown", handleEscape)
+    }
+  }
+  document.addEventListener("keydown", handleEscape)
 }
 
-document.addEventListener("nav", () => {
+document.addEventListener("nav", async () => {
   lastSeq = 0
   hasSnapshot = false
-  pendingOps = new Map()
+  currentPageId = getCommentPageId()
+  comments = []
+  const restoredOps = restorePendingOps(currentPageId)
+  pendingOps = new Map(restoredOps.map((op) => [op.opId, op]))
+  if (restoredOps.length > 0) {
+    for (const op of restoredOps) {
+      applyCommentSilent(op.comment)
+    }
+    renderAllComments()
+    refreshActiveModal()
+  }
+
+  const data = await fetchData
+  await populateSearchIndex(data)
+
   connectWebSocket()
   setPendingCommentFromHash()
 

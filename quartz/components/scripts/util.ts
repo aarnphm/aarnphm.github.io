@@ -213,6 +213,10 @@ export function isBrowser() {
   return typeof window !== "undefined"
 }
 
+export function isStreamHost(): boolean {
+  return window.location.hostname === "stream.aarnphm.xyz"
+}
+
 const contextWindowWords = 30
 export const tokenizeTerm = (term: string) => {
   const tokens = term.split(/\s+/).filter((t) => t.trim() !== "")

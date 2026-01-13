@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-01-12 11:55:07 GMT-05:00
+modified: 2026-01-12 18:52:47 GMT-05:00
 permalinks:
   - /website
   - /tweets
@@ -6285,6 +6285,14 @@ title: are.na
 
 ## design
 
+- https://playback.design/report -- Figma Makeathon
+  - [meta]:
+    - date: 01/12/2026
+    - tags: [interaction]
+- https://sachabolteau.fr/
+  - [meta]:
+    - date: 01/12/2026
+    - tags: [motion, designer]
 - https://www.designwaterloo.com/ -- Design Waterloo
   - [meta]:
     - date: 01/10/2026
@@ -7387,6 +7395,10 @@ title: are.na
 
 ## technical
 
+- https://www.designengineer.xyz/design-engineering -- What is design engineering
+  - [meta]:
+    - date: 01/12/2026
+    - tags: [internet]
 - https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents -- Effective context engineering for AI agent system
   - [meta]:
     - date: 01/11/2026
