@@ -28,6 +28,9 @@ importers:
       '@cloudflare/workers-oauth-provider':
         specifier: ^0.2.2
         version: 0.2.2
+      '@codemirror/autocomplete':
+        specifier: ^6.20.0
+        version: 6.20.0
       '@codemirror/commands':
         specifier: ^6.10.1
         version: 6.10.1
@@ -69,7 +72,7 @@ importers:
         version: 25.0.0
       agents:
         specifier: ^0.3.4
-        version: 0.3.4(@cloudflare/ai-chat@0.0.3)(@cloudflare/codemode@0.0.3)(@cloudflare/workers-types@4.20260111.0)(ai@6.0.28(zod@4.3.5))(react@18.3.1)(zod@4.3.5)
+        version: 0.3.4(@cloudflare/ai-chat@0.0.3)(@cloudflare/codemode@0.0.3)(@cloudflare/workers-types@4.20260111.0)(ai@6.0.30(zod@4.3.5))(react@18.3.1)(zod@4.3.5)
       ansi-truncate:
         specifier: ^1.4.0
         version: 1.4.0
@@ -408,8 +411,8 @@ importers:
         specifier: 7.0.0-dev.20260107.1
         version: 7.0.0-dev.20260107.1
       ai:
-        specifier: ^6.0.28
-        version: 6.0.28(zod@4.3.5)
+        specifier: ^6.0.30
+        version: 6.0.30(zod@4.3.5)
       bibtex-tidy:
         specifier: ^1.14.0
         version: 1.14.0
@@ -452,14 +455,14 @@ importers:
 
 packages:
 
-  '@ai-sdk/gateway@3.0.11':
-    resolution: {integrity: sha512-gLrgNXA95wdo/zAlA0miX/SJEYKSYCHg+e0Y/uQeABLScZAMjPw3jWaeANta/Db1T4xfi8cBvY3nnV8Pa27z+w==}
+  '@ai-sdk/gateway@3.0.12':
+    resolution: {integrity: sha512-lL2tSNOQBu3rMcfF59jtpxGH3uF0CVOsoBWp/9Qi65S8umQQXxgx9KH3NXcFDdu0APZPXVww4Z757l/BA2ysSw==}
     engines: {node: '>=18'}
     peerDependencies:
       zod: ^3.25.76 || ^4.1.8
 
-  '@ai-sdk/provider-utils@4.0.4':
-    resolution: {integrity: sha512-VxhX0B/dWGbpNHxrKCWUAJKXIXV015J4e7qYjdIU9lLWeptk0KMLGcqkB4wFxff5Njqur8dt8wRi1MN9lZtDqg==}
+  '@ai-sdk/provider-utils@4.0.5':
+    resolution: {integrity: sha512-Ow/X/SEkeExTTc1x+nYLB9ZHK2WUId8+9TlkamAx7Tl9vxU+cKzWx2dwjgMHeCN6twrgwkLrrtqckQeO4mxgVA==}
     engines: {node: '>=18'}
     peerDependencies:
       zod: ^3.25.76 || ^4.1.8
@@ -481,12 +484,12 @@ packages:
   '@asamuzakjp/dom-selector@2.0.2':
     resolution: {integrity: sha512-x1KXOatwofR6ZAYzXRBL5wrdV0vwNxlTCK9NCuLqAzQYARqGcvFwiJA6A1ERuh+dgeA4Dxm3JBYictIes+SqUQ==}
 
-  '@babel/runtime-corejs3@7.28.4':
-    resolution: {integrity: sha512-h7iEYiW4HebClDEhtvFObtPmIvrd1SSfpI9EhOeKk4CtIK/ngBWFpuhCzhdmRKtg71ylcue+9I6dv54XYO1epQ==}
+  '@babel/runtime-corejs3@7.28.6':
+    resolution: {integrity: sha512-kz2fAQ5UzjV7X7D3ySxmj3vRq89dTpqOZWv76Z6pNPztkwb/0Yj1Mtx1xFrYj6mbIHysxtBot8J4o0JLCblcFw==}
     engines: {node: '>=6.9.0'}
 
-  '@babel/runtime@7.28.4':
-    resolution: {integrity: sha512-Q/N6JNWvIvPnLDvjlE1OUBLPQHH6l3CltCEsHIujp45zQUSSh8K+gHnaEX45yAT1nyngnINhvWtzN+Nb9D8RAQ==}
+  '@babel/runtime@7.28.6':
+    resolution: {integrity: sha512-05WQkdpL9COIMz4LjTxGpPNCdlpyimKppYNoJ5Di5EUObifl8t4tuLuUBBZEpoLYOmfvIWrsp9fCl0HoPRVTdA==}
     engines: {node: '>=6.9.0'}
 
   '@braintree/sanitize-url@7.1.1':
@@ -2942,8 +2945,8 @@ packages:
       x402:
         optional: true
 
-  ai@6.0.28:
-    resolution: {integrity: sha512-TshF7p7Vhg8Ty8MMijiUKB3k334GTqgD7eK5XQzaxAcrc4JXuZClRrS0nhxrbs0LOtCVbqYTRLb7qJ7VG2djnQ==}
+  ai@6.0.30:
+    resolution: {integrity: sha512-66FVOxNTogAkOK3Xx6vR+9l1Ze1bamQl6qmeRONpReqFEBnFInCEFX1EcJVW++BBtfYJ1pPWl5RTDk3BOyCN8w==}
     engines: {node: '>=18'}
     peerDependencies:
       zod: ^3.25.76 || ^4.1.8
@@ -6256,14 +6259,14 @@ packages:
 
 snapshots:
 
-  '@ai-sdk/gateway@3.0.11(zod@4.3.5)':
+  '@ai-sdk/gateway@3.0.12(zod@4.3.5)':
     dependencies:
       '@ai-sdk/provider': 3.0.2
-      '@ai-sdk/provider-utils': 4.0.4(zod@4.3.5)
+      '@ai-sdk/provider-utils': 4.0.5(zod@4.3.5)
       '@vercel/oidc': 3.1.0
       zod: 4.3.5
 
-  '@ai-sdk/provider-utils@4.0.4(zod@4.3.5)':
+  '@ai-sdk/provider-utils@4.0.5(zod@4.3.5)':
     dependencies:
       '@ai-sdk/provider': 3.0.2
       '@standard-schema/spec': 1.1.0
@@ -6299,11 +6302,11 @@ snapshots:
       css-tree: 2.3.1
       is-potential-custom-element-name: 1.0.1
 
-  '@babel/runtime-corejs3@7.28.4':
+  '@babel/runtime-corejs3@7.28.6':
     dependencies:
       core-js-pure: 3.47.0
 
-  '@babel/runtime@7.28.4': {}
+  '@babel/runtime@7.28.6': {}
 
   '@braintree/sanitize-url@7.1.1': {}
 
@@ -6376,17 +6379,17 @@ snapshots:
       picocolors: 1.1.1
       sisteransi: 1.0.5
 
-  '@cloudflare/ai-chat@0.0.3(agents@0.3.4)(ai@6.0.28(zod@4.3.5))(react@18.3.1)(zod@4.3.5)':
+  '@cloudflare/ai-chat@0.0.3(agents@0.3.4)(ai@6.0.30(zod@4.3.5))(react@18.3.1)(zod@4.3.5)':
     dependencies:
-      agents: 0.3.4(@cloudflare/ai-chat@0.0.3)(@cloudflare/codemode@0.0.3)(@cloudflare/workers-types@4.20260111.0)(ai@6.0.28(zod@4.3.5))(react@18.3.1)(zod@4.3.5)
-      ai: 6.0.28(zod@4.3.5)
+      agents: 0.3.4(@cloudflare/ai-chat@0.0.3)(@cloudflare/codemode@0.0.3)(@cloudflare/workers-types@4.20260111.0)(ai@6.0.30(zod@4.3.5))(react@18.3.1)(zod@4.3.5)
+      ai: 6.0.30(zod@4.3.5)
       react: 18.3.1
       zod: 4.3.5
 
-  '@cloudflare/codemode@0.0.3(agents@0.3.4)(ai@6.0.28(zod@4.3.5))(typescript@5.9.3)(zod@4.3.5)':
+  '@cloudflare/codemode@0.0.3(agents@0.3.4)(ai@6.0.30(zod@4.3.5))(typescript@5.9.3)(zod@4.3.5)':
     dependencies:
-      agents: 0.3.4(@cloudflare/ai-chat@0.0.3)(@cloudflare/codemode@0.0.3)(@cloudflare/workers-types@4.20260111.0)(ai@6.0.28(zod@4.3.5))(react@18.3.1)(zod@4.3.5)
-      ai: 6.0.28(zod@4.3.5)
+      agents: 0.3.4(@cloudflare/ai-chat@0.0.3)(@cloudflare/codemode@0.0.3)(@cloudflare/workers-types@4.20260111.0)(ai@6.0.30(zod@4.3.5))(react@18.3.1)(zod@4.3.5)
+      ai: 6.0.30(zod@4.3.5)
       zod: 4.3.5
       zod-to-ts: 2.0.0(typescript@5.9.3)(zod@4.3.5)
     transitivePeerDependencies:
@@ -8491,13 +8494,13 @@ snapshots:
 
   agent-base@7.1.4: {}
 
-  agents@0.3.4(@cloudflare/ai-chat@0.0.3)(@cloudflare/codemode@0.0.3)(@cloudflare/workers-types@4.20260111.0)(ai@6.0.28(zod@4.3.5))(react@18.3.1)(zod@4.3.5):
+  agents@0.3.4(@cloudflare/ai-chat@0.0.3)(@cloudflare/codemode@0.0.3)(@cloudflare/workers-types@4.20260111.0)(ai@6.0.30(zod@4.3.5))(react@18.3.1)(zod@4.3.5):
     dependencies:
       '@cfworker/json-schema': 4.1.1
-      '@cloudflare/ai-chat': 0.0.3(agents@0.3.4)(ai@6.0.28(zod@4.3.5))(react@18.3.1)(zod@4.3.5)
-      '@cloudflare/codemode': 0.0.3(agents@0.3.4)(ai@6.0.28(zod@4.3.5))(typescript@5.9.3)(zod@4.3.5)
+      '@cloudflare/ai-chat': 0.0.3(agents@0.3.4)(ai@6.0.30(zod@4.3.5))(react@18.3.1)(zod@4.3.5)
+      '@cloudflare/codemode': 0.0.3(agents@0.3.4)(ai@6.0.30(zod@4.3.5))(typescript@5.9.3)(zod@4.3.5)
       '@modelcontextprotocol/sdk': 1.23.0(@cfworker/json-schema@4.1.1)(zod@4.3.5)
-      ai: 6.0.28(zod@4.3.5)
+      ai: 6.0.30(zod@4.3.5)
       cron-schedule: 6.0.0
       json-schema: 0.4.0
       json-schema-to-typescript: 15.0.4
@@ -8512,11 +8515,11 @@ snapshots:
       - '@cloudflare/workers-types'
       - supports-color
 
-  ai@6.0.28(zod@4.3.5):
+  ai@6.0.30(zod@4.3.5):
     dependencies:
-      '@ai-sdk/gateway': 3.0.11(zod@4.3.5)
+      '@ai-sdk/gateway': 3.0.12(zod@4.3.5)
       '@ai-sdk/provider': 3.0.2
-      '@ai-sdk/provider-utils': 4.0.4(zod@4.3.5)
+      '@ai-sdk/provider-utils': 4.0.5(zod@4.3.5)
       '@opentelemetry/api': 1.9.0
       zod: 4.3.5
 
@@ -10834,8 +10837,8 @@ snapshots:
 
   mimetext@3.0.27:
     dependencies:
-      '@babel/runtime': 7.28.4
-      '@babel/runtime-corejs3': 7.28.4
+      '@babel/runtime': 7.28.6
+      '@babel/runtime-corejs3': 7.28.6
       js-base64: 3.7.8
       mime-types: 2.1.35
 

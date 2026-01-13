@@ -1,5 +1,6 @@
 import { ComponentChild } from "preact"
 import type { ElementContent, Root as HastRoot } from "hast"
+import { toString as hastToString } from "hast-util-to-string"
 import { htmlToJsx } from "../../util/jsx"
 import type { FilePath } from "../../util/path"
 import type { StreamEntry } from "../../plugins/transformers/stream"
@@ -9,6 +10,7 @@ export interface StreamEntryRenderOptions {
   timestampValue?: number
   showDate?: boolean
   resolvedIsoDate?: string
+  showWordCount?: boolean
 }
 
 const nodesToJsx = (filePath: FilePath, nodes: ElementContent[]): ComponentChild => {
@@ -22,6 +24,28 @@ const nodesToJsx = (filePath: FilePath, nodes: ElementContent[]): ComponentChild
     return <span key={idx}>{htmlToJsx(filePath, root)}</span>
   })
 }
+
+const countWords = (value: string): number => {
+  const trimmed = value.trim()
+  if (!trimmed) return 0
+  return trimmed.split(/\s+/).filter((token) => token.length > 0).length
+}
+
+const streamEntryText = (entry: StreamEntry): string => {
+  const root: HastRoot = {
+    type: "root",
+    children: entry.content,
+  }
+  const contentText = hastToString(root)
+  const titleText = entry.title ? String(entry.title) : ""
+  return [titleText, contentText].filter((part) => part.length > 0).join(" ").trim()
+}
+
+export const getStreamEntryWordCount = (entry: StreamEntry): number =>
+  countWords(streamEntryText(entry))
+
+export const formatWordCount = (count: number): string =>
+  count === 1 ? "1 word" : `${count} words`
 
 export const formatStreamDate = (isoDate: string | undefined): string | null => {
   if (!isoDate) return null
@@ -71,12 +95,15 @@ export const renderStreamEntry = (
     typeof options.timestampValue === "number" ? String(options.timestampValue) : undefined
 
   const showDate = options.showDate !== undefined ? options.showDate : true
+  const showWordCount = options.showWordCount !== undefined ? options.showWordCount : false
 
   const resolvedIsoDate = options.resolvedIsoDate ?? entry.date
   const formattedDate = showDate ? formatStreamDate(resolvedIsoDate) : null
   const ariaLabel = formattedDate ? formattedDate : undefined
 
   const onPath = timestampAttr ? buildOnPath(resolvedIsoDate) : null
+  const wordCount = showWordCount ? getStreamEntryWordCount(entry) : 0
+  const wordCountLabel = showWordCount && wordCount > 0 ? formatWordCount(wordCount) : null
 
   return (
     <li
@@ -152,6 +179,11 @@ export const renderStreamEntry = (
       <div class="stream-entry-body">
         {entry.title && <h2 class="stream-entry-title">{entry.title}</h2>}
         <div class="stream-entry-content">{nodesToJsx(filePath, entry.content)}</div>
+        {wordCountLabel && (
+          <div class="stream-entry-wordcount">
+            <em>{wordCountLabel}</em>
+          </div>
+        )}
       </div>
     </li>
   )

@@ -12,8 +12,6 @@ import { toHtml } from "hast-util-to-html"
 import { toHast } from "mdast-util-to-hast"
 import { wikilink, wikilinkFromMarkdown } from "../../extensions/micromark-extension-ofm-wikilinks"
 import { parseSmsHtmlFragment } from "./sms"
-// @ts-ignore
-import wcScript from "../../components/scripts/wc.inline.ts"
 
 export const banks = {
   a: {
@@ -525,7 +523,6 @@ export const Aarnphm: QuartzTransformerPlugin<Partial<Options>> = (userOpts) => 
     },
     externalResources: () => {
       return {
-        js: [{ loadTime: "afterDOMReady", contentType: "inline", script: wcScript }],
         css: [{ content, spaPreserve: true, inline: true }],
       }
     },

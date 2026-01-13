@@ -3,6 +3,8 @@ import { EditorState } from "@codemirror/state"
 import { markdown } from "@codemirror/lang-markdown"
 import { defaultKeymap, historyKeymap, history } from "@codemirror/commands"
 import { syntaxHighlighting, defaultHighlightStyle } from "@codemirror/language"
+import { autocompletion, completionStatus, moveCompletionSelection } from "@codemirror/autocomplete"
+import { wikilinkCompletionSource } from "./wikilink-completion"
 
 export interface MarkdownEditorConfig {
   parent: HTMLElement
@@ -29,6 +31,26 @@ export class MarkdownEditor {
         run: () => {
           config.onCancel?.()
           return true
+        },
+      },
+      {
+        key: "Ctrl-n",
+        run: (view) => {
+          if (completionStatus(view.state) === "active") {
+            moveCompletionSelection(true)(view)
+            return true
+          }
+          return false
+        },
+      },
+      {
+        key: "Ctrl-p",
+        run: (view) => {
+          if (completionStatus(view.state) === "active") {
+            moveCompletionSelection(false)(view)
+            return true
+          }
+          return false
         },
       },
     ])
@@ -75,6 +97,45 @@ export class MarkdownEditor {
       ".cm-cursor": {
         borderLeftColor: "inherit",
       },
+      ".cm-tooltip-autocomplete": {
+        backgroundColor: "var(--light)",
+        border: "1px solid var(--lightgray)",
+        borderRadius: "12px",
+        boxShadow: "0 12px 32px rgba(0, 0, 0, 0.12)",
+        padding: "8px 0",
+        fontFamily: "var(--bodyFont)",
+        fontSize: "13px",
+        width: "320px",
+      },
+      ".cm-completionLabel": {
+        fontWeight: "600",
+        color: "var(--dark)",
+        overflow: "hidden !important",
+        whiteSpace: "nowrap !important",
+        textOverflow: "ellipsis !important",
+      },
+      ".cm-completionDetail": {
+        fontSize: "12px",
+        color: "var(--gray)",
+        fontStyle: "normal",
+        overflow: "hidden !important",
+        whiteSpace: "nowrap !important",
+        textOverflow: "ellipsis !important",
+      },
+      ".cm-completionIcon": {
+        display: "none",
+      },
+      "li[role='option']": {
+        padding: "8px 16px",
+        cursor: "pointer",
+        borderRadius: "8px",
+        margin: "0 4px",
+        display: "grid",
+        gridTemplateColumns: "1fr 160px",
+      },
+      "li[role='option'][aria-selected]": {
+        background: "var(--foam) !important",
+      },
     })
 
     const extensions = [
@@ -85,6 +146,11 @@ export class MarkdownEditor {
       updateListener,
       syntaxHighlighting(defaultHighlightStyle),
       EditorView.lineWrapping,
+      autocompletion({
+        override: [wikilinkCompletionSource],
+        closeOnBlur: false,
+        activateOnTyping: true,
+      }),
       transparentTheme,
     ]
 

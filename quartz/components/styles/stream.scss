@@ -187,6 +187,12 @@
     margin: 0;
   }
 
+  .stream-entry-wordcount {
+    font-size: 0.85rem;
+    color: var(--gray);
+    font-style: italic;
+  }
+
   .stream-entry-content {
     line-height: 1.7;
     color: var(--darkgray);

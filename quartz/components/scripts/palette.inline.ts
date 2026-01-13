@@ -1,55 +1,17 @@
-import FlexSearch, { DocumentData } from "flexsearch"
 import { FilePath, FullSlug, normalizeRelativeURLs, resolveRelative } from "../../util/path"
 import {
   highlight,
   registerEscapeHandler,
   removeAllChildren,
-  encode,
   fetchCanonical,
   createSidePanel,
   getOrCreateSidePanel,
 } from "./util"
+import { populateSearchIndex, querySearchIndex, SearchItem } from "./search-index"
 
-interface Item extends DocumentData {
-  id: number
-  slug: FullSlug
-  name: FilePath
-  title: string
-  content: string
-  aliases: string[]
+interface Item extends SearchItem {
   target: string
-  [key: string]: any
 }
-
-let index = new FlexSearch.Document<Item>({
-  encode,
-  document: {
-    id: "id",
-    tag: "slug",
-    index: [
-      {
-        field: "title",
-        tokenize: "forward",
-      },
-      {
-        field: "name",
-        tokenize: "forward",
-      },
-      {
-        field: "content",
-        tokenize: "forward",
-      },
-      {
-        field: "slug",
-        tokenize: "forward",
-      },
-      {
-        field: "aliases",
-        tokenize: "forward",
-      },
-    ],
-  },
-})
 
 const numSearchResults = 10
 
@@ -610,51 +572,24 @@ document.addEventListener("nav", async (e) => {
 
   async function querySearch(currentSearchTerm: string) {
     if (actionType === "quick_open") {
-      const searchResults = await index.searchAsync({
-        query: currentSearchTerm,
-        limit: numSearchResults,
-        index: ["title", "name", "content", "aliases"],
-      })
-
-      const getByField = (field: string): number[] => {
-        const results = searchResults.filter((x) => x.field === field)
-        return results.length === 0 ? [] : ([...results[0].result] as number[])
-      }
-
-      const allIds: Set<number> = new Set([
-        ...getByField("title"),
-        ...getByField("name"),
-        ...getByField("content"),
-        ...getByField("aliases"),
-      ])
+      const searchResults = await querySearchIndex(currentSearchTerm, numSearchResults)
 
       displayResults(
-        //@ts-ignore
-        [...allIds]
-          .map((id) => {
-            const slug = idDataMap[id]
-            if (!slug) return null
-            const aliases: string[] = data[slug].aliases
-            const target = aliases.find((alias) =>
-              alias.toLowerCase().includes(currentSearchTerm.toLowerCase()),
-            )
+        searchResults
+          .map((item) => {
+            const target =
+              item.aliases.find((alias) =>
+                alias.toLowerCase().includes(currentSearchTerm.toLowerCase()),
+              ) || ""
             return {
-              id,
-              slug,
-              name: highlight(currentSearchTerm, data[slug].fileName) as FilePath,
-              title: data[slug].title ?? "",
-              content: data[slug].content ?? "",
-              aliases: data[slug].aliases,
+              ...item,
+              name: highlight(currentSearchTerm, item.name) as FilePath,
               target,
             }
           })
-          .filter((result) => result !== null)
           .sort((a, b) => {
-            // If both have targets or both don't have targets, maintain original order
             if ((!a?.target && !b?.target) || (a?.target && b?.target)) return 0
-            // If a has target and b doesn't, a comes first
             if (a?.target && !b?.target) return -1
-            // If b has target and a doesn't, b comes first
             if (!a?.target && b?.target) return 1
             return 0
           }),
@@ -778,23 +713,5 @@ document.addEventListener("nav", async (e) => {
 })
 
 async function fillDocument(data: ContentIndex) {
-  let id = 0
-  const promises = []
-  for (const [slug, fileData] of Object.entries(data)) {
-    promises.push(
-      //@ts-ignore
-      index.addAsync(id++, {
-        id,
-        slug: slug as FullSlug,
-        name: fileData.fileName,
-        title: fileData.title ?? "",
-        content: fileData.content ?? "",
-        aliases: fileData.aliases,
-        target: "",
-      }),
-    )
-  }
-  // Actions are now searched directly, not indexed in FlexSearch
-
-  return await Promise.all(promises)
+  await populateSearchIndex(data)
 }

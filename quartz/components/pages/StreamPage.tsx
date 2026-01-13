@@ -44,6 +44,7 @@ export default (() => {
               timestampValue: group.timestamp,
               showDate: true,
               resolvedIsoDate: entry.date ?? group.isoDate,
+              showWordCount: true,
             }),
           )}
         </ol>
