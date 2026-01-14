@@ -66,10 +66,7 @@ export async function populateSearchIndex(data: ContentIndex): Promise<void> {
   isPopulated = true
 }
 
-export async function querySearchIndex(
-  query: string,
-  limit: number = 10,
-): Promise<SearchItem[]> {
+export async function querySearchIndex(query: string, limit: number = 10): Promise<SearchItem[]> {
   if (!query || query.trim() === "") {
     return [...itemsById.values()].slice(0, limit)
   }

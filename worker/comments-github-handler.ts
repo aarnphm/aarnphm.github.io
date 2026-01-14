@@ -1,44 +1,30 @@
+import type { OAuthHelpers } from "@cloudflare/workers-oauth-provider"
 import { Hono } from "hono"
 import { Octokit } from "octokit"
 import {
   createCommentAuthState,
-  getCommentGithubClient,
   getGithubCommentAuthor,
   normalizeAuthor,
   normalizeReturnTo,
   renderCommentAuthResponse,
   setGithubCommentAuthor,
   validateCommentAuthState,
-  type CommentAuthEnv,
 } from "./comments-auth"
 import { resolveBaseUrl } from "./request-utils"
 import { fetchUpstreamAuthToken, getUpstreamAuthorizeUrl } from "./utils"
 import { OAuthError } from "./workers-oauth-utils"
 
-type Env = {
-  OAUTH_KV: KVNamespace
-} & CommentAuthEnv &
-  Cloudflare.Env
-
-const app = new Hono<{ Bindings: Env }>()
+const app = new Hono<{ Bindings: { OAUTH_PROVIDER: OAuthHelpers } & Env }>()
 
 app.get("/comments/github/login", async (c) => {
   try {
     const returnTo = normalizeReturnTo(c.req.raw, c.req.query("returnTo") ?? null)
     const author = normalizeAuthor(c.req.query("author") ?? null)
-    const commentClient = getCommentGithubClient(c.env)
-    if (!commentClient) {
-      return c.text("comment github oauth not configured", 500)
-    }
-    const { stateToken, setCookie } = await createCommentAuthState(
-      c.env.OAUTH_KV,
-      returnTo,
-      author,
-    )
+    const { stateToken, setCookie } = await createCommentAuthState(c.env.OAUTH_KV, returnTo, author)
     const redirectUri = new URL("/comments/github/callback", resolveBaseUrl(c.env, c.req.raw)).href
     const authorizeUrl = getUpstreamAuthorizeUrl({
       upstream_url: "https://github.com/login/oauth/authorize",
-      client_id: commentClient.clientId,
+      client_id: c.env.GITHUB_COMMENTS_CLIENT_ID,
       scope: "read:user",
       redirect_uri: redirectUri,
       state: stateToken,
@@ -61,14 +47,10 @@ app.get("/comments/github/login", async (c) => {
 app.get("/comments/github/callback", async (c) => {
   try {
     const { state, clearCookie } = await validateCommentAuthState(c.req.raw, c.env.OAUTH_KV)
-    const commentClient = getCommentGithubClient(c.env)
-    if (!commentClient) {
-      return c.text("comment github oauth not configured", 500)
-    }
     const redirectUri = new URL("/comments/github/callback", resolveBaseUrl(c.env, c.req.raw)).href
     const [accessToken, errResponse] = await fetchUpstreamAuthToken({
-      client_id: commentClient.clientId,
-      client_secret: commentClient.clientSecret,
+      client_id: c.env.GITHUB_COMMENTS_CLIENT_ID,
+      client_secret: c.env.GITHUB_COMMENTS_CLIENT_SECRET,
       code: c.req.query("code"),
       redirect_uri: redirectUri,
       upstream_url: "https://github.com/login/oauth/access_token",

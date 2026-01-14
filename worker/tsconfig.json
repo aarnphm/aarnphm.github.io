@@ -5,7 +5,11 @@
     "lib": ["esnext", "webworker"],
     "module": "esnext",
     "target": "esnext",
-    "moduleResolution": "node"
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "allowJs": true,
+    "checkJs": false,
+    "noEmit": true
   },
   "include": ["**/*.ts", "**/*.tsx"],
   "exclude": ["../build/**/*.d.ts"]

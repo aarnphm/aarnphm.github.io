@@ -38,7 +38,10 @@ const streamEntryText = (entry: StreamEntry): string => {
   }
   const contentText = hastToString(root)
   const titleText = entry.title ? String(entry.title) : ""
-  return [titleText, contentText].filter((part) => part.length > 0).join(" ").trim()
+  return [titleText, contentText]
+    .filter((part) => part.length > 0)
+    .join(" ")
+    .trim()
 }
 
 export const getStreamEntryWordCount = (entry: StreamEntry): number =>

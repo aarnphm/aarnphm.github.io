@@ -80,8 +80,7 @@ function parseAuthRequest(raw: string): AuthRequest | null {
       ? parsed.scope
       : null
   if (!responseType || !clientId || !redirectUri || !state || !scope) return null
-  const codeChallenge =
-    typeof parsed.codeChallenge === "string" ? parsed.codeChallenge : undefined
+  const codeChallenge = typeof parsed.codeChallenge === "string" ? parsed.codeChallenge : undefined
   const codeChallengeMethod =
     typeof parsed.codeChallengeMethod === "string" ? parsed.codeChallengeMethod : undefined
   let resource: string | string[] | undefined
@@ -209,7 +208,10 @@ export async function bindStateToSession(
 export async function validateState(
   request: Request,
   kv: KVNamespace,
-  { statePrefix = defaultStatePrefix, cookieName = defaultStateCookieName }: ValidateStateInput = {},
+  {
+    statePrefix = defaultStatePrefix,
+    cookieName = defaultStateCookieName,
+  }: ValidateStateInput = {},
 ): Promise<ValidateStatePayloadResult> {
   const url = new URL(request.url)
   const stateFromQuery = url.searchParams.get("state")
@@ -633,7 +635,7 @@ async function getApprovedClientsFromCookie(
       return null
     }
     return approvedClients as string[]
-  } catch (_e) {
+  } catch {
     return null
   }
 }

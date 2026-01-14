@@ -1,11 +1,5 @@
 import { bindStateToSession, createState, OAuthError, validateState } from "./workers-oauth-utils"
 
-export type CommentAuthEnv = {
-  PUBLIC_BASE_URL?: string
-  GITHUB_COMMENTS_CLIENT_ID?: string
-  GITHUB_COMMENTS_CLIENT_SECRET?: string
-}
-
 type CommentAuthState = {
   returnTo: string
   author?: string | null
@@ -38,16 +32,6 @@ export function normalizeAuthor(raw: string | null): string | null {
   if (!trimmed) return null
   if (trimmed.length > 128) return null
   return trimmed
-}
-
-export function getCommentGithubClient(
-  env: CommentAuthEnv,
-): { clientId: string; clientSecret: string } | null {
-  const clientId = env.GITHUB_COMMENTS_CLIENT_ID
-  const clientSecret = env.GITHUB_COMMENTS_CLIENT_SECRET
-
-  if (!clientId || !clientSecret) return null
-  return { clientId, clientSecret }
 }
 
 function parseCommentAuthState(raw: string): CommentAuthState | null {
