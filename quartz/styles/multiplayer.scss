@@ -282,8 +282,14 @@ $avatar-sm: 24px;
     box-shadow var(--expand-animation-time) ease-in-out;
 
   &.comment-bubble-unread {
-    background: rgba($primary-blue, 0.12);
-    border-color: rgba($primary-blue, 0.35);
+    background: $primary-blue;
+    border-color: $primary-blue;
+    color: #ffffff;
+
+    .preview-replies,
+    .reply-text > * {
+      color: #ffffff;
+    }
   }
 
   .reply-top {
@@ -332,7 +338,7 @@ $avatar-sm: 24px;
     font-size: $font-md;
     line-height: $line-base;
     color: var(--dark);
-    padding-left: calc(var(--bubble-collapsed-size) - var(--bubble-margin) + var(--gap-size));
+    padding-left: calc(var(--bubble-collapsed-size) - var(--bubble-margin) + var(--space-2));
     margin-top: 0;
     transition:
       max-height 220ms cubic-bezier(0.2, 0, 0, 1),
@@ -345,7 +351,7 @@ $avatar-sm: 24px;
     overflow: hidden;
     font-size: $font-sm;
     color: var(--gray);
-    padding-left: $space-2xl;
+    padding-left: calc(var(--bubble-collapsed-size) - var(--bubble-margin) + var(--space-2));
     transition:
       max-height 220ms cubic-bezier(0.2, 0, 0, 1),
       opacity 180ms 40ms;
@@ -382,7 +388,7 @@ $avatar-sm: 24px;
       margin-top: $space-2xs;
       overflow: hidden;
       display: -webkit-box;
-      line-clamp: 4;
+      -webkit-line-clamp: 4;
       -webkit-box-orient: vertical;
     }
 
@@ -439,8 +445,6 @@ $avatar-sm: 24px;
       }
 
       .modal-resolve-button {
-        color: var(--dark);
-
         &:hover {
           color: $primary-blue;
         }
