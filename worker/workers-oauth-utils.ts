@@ -1,4 +1,4 @@
-import type { AuthRequest, ClientInfo } from "@cloudflare/workers-oauth-provider"
+import type { ClientInfo } from "@cloudflare/workers-oauth-provider"
 
 export class OAuthError extends Error {
   constructor(
@@ -28,11 +28,6 @@ export interface OAuthStateResult {
   stateToken: string
 }
 
-export interface ValidateStateResult {
-  oauthReqInfo: AuthRequest
-  clearCookie: string
-}
-
 export interface BindStateResult {
   setCookie: string
 }
@@ -46,62 +41,9 @@ export interface ValidateCSRFResult {
   clearCookie: string
 }
 
-export interface ValidateStateInput {
-  statePrefix?: string
-  cookieName?: string
-}
-
 export interface ValidateStatePayloadResult {
   raw: string
   clearCookie: string
-}
-
-const defaultStatePrefix = "oauth:state:"
-const defaultStateCookieName = "__Host-CONSENTED_STATE"
-
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === "object" && value !== null && !Array.isArray(value)
-}
-
-function parseAuthRequest(raw: string): AuthRequest | null {
-  let parsed: unknown
-  try {
-    parsed = JSON.parse(raw)
-  } catch {
-    return null
-  }
-  if (!isRecord(parsed)) return null
-  const responseType = typeof parsed.responseType === "string" ? parsed.responseType : null
-  const clientId = typeof parsed.clientId === "string" ? parsed.clientId : null
-  const redirectUri = typeof parsed.redirectUri === "string" ? parsed.redirectUri : null
-  const state = typeof parsed.state === "string" ? parsed.state : null
-  const scope =
-    Array.isArray(parsed.scope) && parsed.scope.every((item) => typeof item === "string")
-      ? parsed.scope
-      : null
-  if (!responseType || !clientId || !redirectUri || !state || !scope) return null
-  const codeChallenge = typeof parsed.codeChallenge === "string" ? parsed.codeChallenge : undefined
-  const codeChallengeMethod =
-    typeof parsed.codeChallengeMethod === "string" ? parsed.codeChallengeMethod : undefined
-  let resource: string | string[] | undefined
-  if (typeof parsed.resource === "string") {
-    resource = parsed.resource
-  } else if (
-    Array.isArray(parsed.resource) &&
-    parsed.resource.every((item) => typeof item === "string")
-  ) {
-    resource = parsed.resource
-  }
-  return {
-    responseType,
-    clientId,
-    redirectUri,
-    scope,
-    state,
-    codeChallenge,
-    codeChallengeMethod,
-    resource,
-  }
 }
 
 export function sanitizeText(text: string): string {
@@ -198,7 +140,7 @@ export async function createState<T>(
 
 export async function bindStateToSession(
   stateToken: string,
-  cookieName = defaultStateCookieName,
+  cookieName: string,
 ): Promise<BindStateResult> {
   const stateHash = await hashStateToken(stateToken)
   const setCookie = `${cookieName}=${stateHash}; HttpOnly; Secure; Path=/; SameSite=Lax; Max-Age=600`
@@ -208,10 +150,7 @@ export async function bindStateToSession(
 export async function validateState(
   request: Request,
   kv: KVNamespace,
-  {
-    statePrefix = defaultStatePrefix,
-    cookieName = defaultStateCookieName,
-  }: ValidateStateInput = {},
+  { statePrefix, cookieName }: { statePrefix: string; cookieName: string },
 ): Promise<ValidateStatePayloadResult> {
   const url = new URL(request.url)
   const stateFromQuery = url.searchParams.get("state")
@@ -255,29 +194,6 @@ export async function validateState(
   const clearCookie = `${cookieName}=; HttpOnly; Secure; Path=/; SameSite=Lax; Max-Age=0`
 
   return { raw: storedDataJson, clearCookie }
-}
-
-export async function createOAuthState(
-  oauthReqInfo: AuthRequest,
-  kv: KVNamespace,
-  stateTTL = 600,
-): Promise<OAuthStateResult> {
-  return createState(kv, defaultStatePrefix, oauthReqInfo, stateTTL)
-}
-
-export async function validateOAuthState(
-  request: Request,
-  kv: KVNamespace,
-): Promise<ValidateStateResult> {
-  const { raw, clearCookie } = await validateState(request, kv, {
-    statePrefix: defaultStatePrefix,
-    cookieName: defaultStateCookieName,
-  })
-  const oauthReqInfo = parseAuthRequest(raw)
-  if (!oauthReqInfo) {
-    throw new OAuthError("server_error", "Invalid state data", 500)
-  }
-  return { oauthReqInfo, clearCookie }
 }
 
 export async function isClientApproved(

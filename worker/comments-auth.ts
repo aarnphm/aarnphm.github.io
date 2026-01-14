@@ -1,17 +1,4 @@
-import { bindStateToSession, createState, OAuthError, validateState } from "./workers-oauth-utils"
-
-type CommentAuthState = {
-  returnTo: string
-  author?: string | null
-}
-
-const commentAuthStatePrefix = "comment-auth:state:"
-const commentAuthStateCookieName = "__Host-COMMENT_STATE"
 const commentGithubAuthorPrefix = "comment-auth:github:"
-
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === "object" && value !== null && !Array.isArray(value)
-}
 
 export function normalizeReturnTo(request: Request, raw: string | null): string {
   if (!raw) return "/"
@@ -34,48 +21,8 @@ export function normalizeAuthor(raw: string | null): string | null {
   return trimmed
 }
 
-function parseCommentAuthState(raw: string): CommentAuthState | null {
-  let parsed: unknown
-  try {
-    parsed = JSON.parse(raw)
-  } catch {
-    return null
-  }
-  if (!isRecord(parsed)) return null
-  const returnTo = typeof parsed.returnTo === "string" ? parsed.returnTo : null
-  if (!returnTo) return null
-  const author = typeof parsed.author === "string" ? parsed.author : null
-  return { returnTo, author }
-}
-
 function safeJsonForHtml(value: unknown): string {
   return JSON.stringify(value).replace(/</g, "\\u003c")
-}
-
-export async function createCommentAuthState(
-  kv: KVNamespace,
-  returnTo: string,
-  author: string | null,
-): Promise<{ stateToken: string; setCookie: string }> {
-  const payload: CommentAuthState = { returnTo, author }
-  const { stateToken } = await createState(kv, commentAuthStatePrefix, payload, 600)
-  const { setCookie } = await bindStateToSession(stateToken, commentAuthStateCookieName)
-  return { stateToken, setCookie }
-}
-
-export async function validateCommentAuthState(
-  request: Request,
-  kv: KVNamespace,
-): Promise<{ state: CommentAuthState; clearCookie: string }> {
-  const { raw, clearCookie } = await validateState(request, kv, {
-    statePrefix: commentAuthStatePrefix,
-    cookieName: commentAuthStateCookieName,
-  })
-  const state = parseCommentAuthState(raw)
-  if (!state) {
-    throw new OAuthError("server_error", "Invalid state data", 500)
-  }
-  return { state, clearCookie }
 }
 
 export async function getGithubCommentAuthor(
