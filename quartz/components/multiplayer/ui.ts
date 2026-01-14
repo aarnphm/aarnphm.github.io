@@ -1018,9 +1018,7 @@ export function createCommentsUi({ getState, dispatch }: UiDeps) {
             }
           }
 
-          const rects = Array.from(range.getClientRects()).filter(
-            (rect) => rect.width && rect.height,
-          )
+          const rects = getTextNodeRects(range)
           if (rects.length === 0) continue
           const anchorRect = rects[0]
           const scrollTop = window.pageYOffset || document.documentElement.scrollTop
