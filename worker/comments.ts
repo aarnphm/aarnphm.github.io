@@ -602,7 +602,8 @@ export function renderCommentAuthResponse(
 <script>
 const payload = ${payload};
 try {
-  localStorage.setItem("comment-author", payload.author);
+  const author = payload.login || payload.author;
+  localStorage.setItem("comment-author", author);
   localStorage.setItem("comment-author-source", "github");
   if (payload.login) {
     localStorage.setItem("comment-author-github-login", payload.login);

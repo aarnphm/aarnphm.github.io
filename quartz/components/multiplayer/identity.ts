@@ -5,12 +5,19 @@ const githubAvatarCache = new Map<string, string>()
 const githubAvatarStoragePrefix = "comment-author-github-avatar:"
 
 export function getAuthor(): string {
-  let author =
-    localStorage.getItem("comment-author") ?? localStorage.getItem("comment-author-github-login")
-  if (!author) {
-    author = `anon-${Math.random().toString(36).slice(2, 8)}`
-    localStorage.setItem("comment-author", author)
+  const login = localStorage.getItem("comment-author-github-login")
+  const stored = localStorage.getItem("comment-author")
+  if (login && stored !== login) {
+    localStorage.setItem("comment-author", login)
+    return login
   }
+  if (stored) return stored
+  if (login) {
+    localStorage.setItem("comment-author", login)
+    return login
+  }
+  const author = `anon-${Math.random().toString(36).slice(2, 8)}`
+  localStorage.setItem("comment-author", author)
   return author
 }
 

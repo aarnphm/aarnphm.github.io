@@ -233,7 +233,6 @@ export default {
   async fetch(request, env, ctx): Promise<Response> {
     const url = new URL(request.url)
     const localRequest = isLocalRequest(request)
-    const method = request.method.toUpperCase()
 
     const provider = new OAuthProvider({
       apiHandlers: {
@@ -497,7 +496,7 @@ export default {
         }
       }
       case "/_plausible/event": {
-        if (method !== "POST") {
+        if (request.method !== "POST") {
           return new Response("method not allowed", {
             status: 405,
             headers: { ...apiHeaders, Allow: "POST, OPTIONS" },
@@ -529,7 +528,7 @@ export default {
         })
       }
       case "/api/secrets": {
-        if (method !== "GET") {
+        if (request.method !== "GET") {
           return new Response("method not allowed", {
             status: 405,
             headers: { ...apiHeaders, "Cache-Control": "no-store", Allow: "GET" },
