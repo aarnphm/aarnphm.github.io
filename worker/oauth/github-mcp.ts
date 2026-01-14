@@ -24,34 +24,24 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value)
 }
 
-function parseAuthRequest(raw: string): AuthRequest | null {
-  let parsed: unknown
-  try {
-    parsed = JSON.parse(raw)
-  } catch {
-    return null
-  }
-  if (!isRecord(parsed)) return null
-  const responseType = typeof parsed.responseType === "string" ? parsed.responseType : null
-  const clientId = typeof parsed.clientId === "string" ? parsed.clientId : null
-  const redirectUri = typeof parsed.redirectUri === "string" ? parsed.redirectUri : null
-  const state = typeof parsed.state === "string" ? parsed.state : null
+function parseAuthRequestFromRecord(obj: Record<string, unknown>): AuthRequest | null {
+  const responseType = typeof obj.responseType === "string" ? obj.responseType : null
+  const clientId = typeof obj.clientId === "string" ? obj.clientId : null
+  const redirectUri = typeof obj.redirectUri === "string" ? obj.redirectUri : null
+  const state = typeof obj.state === "string" ? obj.state : null
   const scope =
-    Array.isArray(parsed.scope) && parsed.scope.every((item) => typeof item === "string")
-      ? parsed.scope
+    Array.isArray(obj.scope) && obj.scope.every((item) => typeof item === "string")
+      ? obj.scope
       : null
   if (!responseType || !clientId || !redirectUri || !state || !scope) return null
-  const codeChallenge = typeof parsed.codeChallenge === "string" ? parsed.codeChallenge : undefined
+  const codeChallenge = typeof obj.codeChallenge === "string" ? obj.codeChallenge : undefined
   const codeChallengeMethod =
-    typeof parsed.codeChallengeMethod === "string" ? parsed.codeChallengeMethod : undefined
+    typeof obj.codeChallengeMethod === "string" ? obj.codeChallengeMethod : undefined
   let resource: string | string[] | undefined
-  if (typeof parsed.resource === "string") {
-    resource = parsed.resource
-  } else if (
-    Array.isArray(parsed.resource) &&
-    parsed.resource.every((item) => typeof item === "string")
-  ) {
-    resource = parsed.resource
+  if (typeof obj.resource === "string") {
+    resource = obj.resource
+  } else if (Array.isArray(obj.resource) && obj.resource.every((item) => typeof item === "string")) {
+    resource = obj.resource
   }
   return {
     responseType,
@@ -66,7 +56,15 @@ function parseAuthRequest(raw: string): AuthRequest | null {
 }
 
 function parseMcpOAuthState(raw: string): McpOAuthState | null {
-  const oauthReqInfo = parseAuthRequest(raw)
+  let parsed: unknown
+  try {
+    parsed = JSON.parse(raw)
+  } catch {
+    return null
+  }
+  if (!isRecord(parsed)) return null
+  if (!isRecord(parsed.oauthReqInfo)) return null
+  const oauthReqInfo = parseAuthRequestFromRecord(parsed.oauthReqInfo)
   if (!oauthReqInfo) return null
   return { oauthReqInfo }
 }
