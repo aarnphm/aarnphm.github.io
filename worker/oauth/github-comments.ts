@@ -6,7 +6,7 @@ import {
   normalizeReturnTo,
   renderCommentAuthResponse,
   setGithubCommentAuthor,
-} from "../comments-auth"
+} from "../comments"
 import { createGithubOAuthHandler, OAuthError } from "./core"
 
 type CommentAuthState = {
@@ -59,7 +59,8 @@ const commentsOAuth = createGithubOAuthHandler<CommentAuthState, CommentAuthResu
     onComplete: async (_req, env, state, user, _accessToken) => {
       const storedAuthor = await getGithubCommentAuthor(env.OAUTH_KV, user.login)
       const stateAuthor = normalizeAuthor(state.author)
-      const resolvedAuthor = stateAuthor || storedAuthor || normalizeAuthor(user.login) || "github-user"
+      const resolvedAuthor =
+        stateAuthor || storedAuthor || normalizeAuthor(user.login) || "github-user"
       await setGithubCommentAuthor(env.OAUTH_KV, user.login, resolvedAuthor)
       return {
         author: resolvedAuthor,
@@ -77,14 +78,10 @@ const app = new Hono<{ Bindings: { OAUTH_PROVIDER: OAuthHelpers } & Env }>()
 
 app.get("/comments/github/login", async (c) => {
   try {
-    const statePayload = await commentsOAuth.initiateAuth(
-      c.req.raw,
-      c.env,
-      {
-        returnTo: normalizeReturnTo(c.req.raw, c.req.query("returnTo") ?? null),
-        author: normalizeAuthor(c.req.query("author") ?? null),
-      },
-    )
+    const statePayload = await commentsOAuth.initiateAuth(c.req.raw, c.env, {
+      returnTo: normalizeReturnTo(c.req.raw, c.req.query("returnTo") ?? null),
+      author: normalizeAuthor(c.req.query("author") ?? null),
+    })
     return statePayload
   } catch (error: unknown) {
     if (error instanceof OAuthError) {
