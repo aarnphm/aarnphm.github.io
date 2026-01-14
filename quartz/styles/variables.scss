@@ -1,4 +1,5 @@
 @use "sass:map";
+@forward "./tokens";
 
 $base-duration: 1;
 $row-delay: 0.4;

@@ -1,0 +1,45 @@
+%input-reset {
+  border: none;
+  background: transparent;
+  font-family: inherit;
+  font-size: inherit;
+  color: inherit;
+
+  &:focus {
+    outline: none;
+  }
+}
+
+%input-base {
+  @extend %input-reset;
+  width: 100%;
+  padding: var(--space-2) var(--space-3);
+  background-color: var(--light);
+  border: 1px solid var(--lightgray);
+  border-radius: var(--radius-md);
+  color: var(--dark);
+  transition: var(--transition-normal);
+
+  &::placeholder {
+    color: var(--gray);
+  }
+
+  &:focus {
+    border-color: var(--secondary);
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--secondary) 15%, transparent);
+  }
+}
+
+%input-search {
+  @extend %input-base;
+  padding-left: var(--space-8);
+}
+
+%input-borderless {
+  @extend %input-reset;
+  width: 100%;
+  padding: var(--space-4);
+  font-size: 1.1em;
+  background-color: var(--light);
+  color: var(--dark);
+}

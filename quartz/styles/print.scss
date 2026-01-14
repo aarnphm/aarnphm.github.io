@@ -1,0 +1,71 @@
+@media print {
+  @page {
+    margin: 1in;
+    size: A4;
+  }
+
+  video,
+  .sidebar,
+  .toolbar,
+  .graph,
+  .backlinks,
+  .callout-icon,
+  .toggle-button,
+  header,
+  a[data-role="anchor"],
+  a[data-footnote-backref],
+  hr,
+  footer {
+    display: none !important;
+  }
+
+  section[data-footnotes],
+  section[data-references] {
+    break-before: page;
+    page-break-inside: avoid;
+  }
+
+  .center {
+    border: unset !important;
+    margin-top: 0 !important;
+
+    & > * {
+      padding: 0 !important;
+    }
+  }
+
+  .collapsible-header-content-outer {
+    padding-left: 0 !important;
+
+    & > .collapsible-header-content {
+      padding-left: 0 !important;
+      border-left: unset !important;
+    }
+  }
+
+  .callout[data-callout] {
+    --color: inherit !important;
+    --border: inherit !important;
+    --bg: inherit !important;
+    border-left: 3px solid var(--tertiary);
+    max-height: unset !important;
+
+    break-inside: avoid;
+    page-break-inside: avoid;
+
+    &.force-page-break {
+      break-before: page;
+      page-break-before: always;
+    }
+
+    .callout-title {
+      break-after: avoid;
+      page-break-after: avoid;
+    }
+
+    .callout-content {
+      break-before: avoid;
+      page-break-before: avoid;
+    }
+  }
+}

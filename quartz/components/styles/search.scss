@@ -30,7 +30,7 @@
     width 0.3s ease,
     opacity 0.3s ease;
   opacity: 0;
-  z-index: 9999;
+  z-index: var(--z-tooltip);
 }
 
 .search {
@@ -99,7 +99,7 @@
         .search-mode-toggle {
           display: inline-flex;
           align-items: center;
-          border-radius: 9999px;
+          border-radius: var(--radius-full);
           height: 1.4rem;
           background-color: color-mix(in srgb, var(--darkgray) 12%, transparent);
           margin-right: 1rem;
@@ -109,7 +109,7 @@
             background: transparent;
             font: inherit;
             color: var(--gray);
-            border-radius: 9999px;
+            border-radius: var(--radius-full);
             cursor: pointer;
             transition:
               background-color 0.2s ease,

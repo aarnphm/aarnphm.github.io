@@ -3,7 +3,7 @@
   top: 0;
   right: 12px;
   bottom: 0;
-  z-index: 9999;
+  z-index: var(--z-tooltip);
   display: none;
   align-items: center;
   justify-content: flex-start;
@@ -13,8 +13,8 @@
     position: relative;
     background-color: var(--light);
     border: 1px solid var(--lightgray);
-    border-radius: 8px;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
     width: min(600px, 80vw);
     max-height: min(600px, 80vh);
     display: flex;
@@ -35,7 +35,7 @@
         padding: 1rem 1.5rem;
         border-bottom: 1px solid var(--lightgray);
         background-color: var(--light);
-        border-radius: 8px 8px 0 0;
+        border-radius: var(--radius-lg) var(--radius-lg) 0 0;
         display: flex;
         justify-content: space-between;
 
@@ -51,7 +51,7 @@
             width: 100%;
             padding: 0.5rem 0.75rem;
             border: 1px solid var(--lightgray);
-            border-radius: 4px;
+            border-radius: var(--radius-md);
             background-color: var(--light);
             color: var(--dark);
             font-size: 0.9rem;
@@ -65,7 +65,7 @@
 
             &:focus {
               border-color: var(--secondary);
-              box-shadow: 0 0 0 2px rgba(var(--secondary-rgb), 0.1);
+              box-shadow: var(--shadow-focus);
             }
           }
         }
@@ -80,7 +80,7 @@
           > kbd {
             background-color: var(--lightgray);
             border: 1px solid var(--gray);
-            border-radius: 3px;
+            border-radius: var(--radius-sm);
             padding: 0.1rem 0.3rem;
             font-size: 8px;
             font-family: var(--codeFont);
@@ -122,7 +122,7 @@
           mark.key-extmark {
             background-color: rgba(208, 162, 21, 0.4);
             color: white;
-            border-radius: 2px;
+            border-radius: var(--radius-sm);
             padding: 0.1rem 0.2rem;
             font-weight: bold;
             font-family: var(--codeFont);
@@ -139,7 +139,7 @@
 
         &::-webkit-scrollbar-thumb {
           background-color: var(--gray);
-          border-radius: 3px;
+          border-radius: var(--radius-sm);
 
           &:hover {
             background-color: var(--darkgray);

@@ -1,0 +1,90 @@
+@mixin btn-reset {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-family: inherit;
+  padding: 0;
+  margin: 0;
+
+  &:focus {
+    outline: none;
+  }
+}
+
+%btn-reset {
+  @include btn-reset;
+}
+
+%btn-icon {
+  @extend %btn-reset;
+  --btn-size: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--btn-size);
+  height: var(--btn-size);
+  border-radius: var(--radius-md);
+  color: var(--darkgray);
+  transition: var(--transition-normal);
+
+  &:hover {
+    background: var(--lightgray);
+    color: var(--dark);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--tertiary);
+    outline-offset: 2px;
+  }
+}
+
+%btn-icon-sm {
+  @extend %btn-icon;
+  --btn-size: 24px;
+}
+
+%btn-close {
+  @extend %btn-icon;
+}
+
+%btn-action {
+  @extend %btn-reset;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-md);
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: var(--transition-normal);
+
+  &:hover {
+    background: var(--lightgray);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--tertiary);
+    outline-offset: 2px;
+  }
+}
+
+%btn-toggle {
+  @extend %btn-reset;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-full);
+  font-size: 0.75rem;
+  color: var(--gray);
+  transition: var(--transition-normal);
+
+  &:hover {
+    background: var(--lightgray);
+  }
+
+  &.active {
+    background: var(--secondary);
+    color: var(--light);
+  }
+}

@@ -43,9 +43,9 @@
   height: 32px;
   background: transparent;
   border: none;
-  border-radius: 4px;
+  border-radius: var(--radius-md);
   color: var(--darkgray);
-  transition: all 0.2s ease;
+  transition: var(--transition-normal);
 
   &:hover {
     background: var(--lightgray);
@@ -81,9 +81,9 @@
   border: 1px solid $border-color;
   cursor: $cursor;
   transition:
-    background-color 0.2s ease,
-    color 0.2s ease,
-    border-color 0.2s ease;
+    background-color var(--transition-normal),
+    color var(--transition-normal),
+    border-color var(--transition-normal);
 
   &:hover {
     background-color: $hover-bg;
@@ -155,7 +155,7 @@
 @mixin containerPopover {
   position: fixed;
   contain: layout;
-  z-index: 1000;
+  z-index: var(--z-modal);
   left: 0;
   top: 0;
   width: 100vw;
@@ -206,9 +206,7 @@
   flex-direction: column;
   background-color: var(--light);
   box-sizing: border-box;
-  box-shadow:
-    0 14px 50px rgba(27, 33, 48, 0.12),
-    0 10px 30px rgba(27, 33, 48, 0.16);
+  box-shadow: var(--shadow-modal);
 }
 
 @mixin steps {

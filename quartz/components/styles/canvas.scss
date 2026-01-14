@@ -3,7 +3,7 @@
 
 $canvas-bg: var(--light);
 $canvas-border: var(--gray);
-$canvas-shadow: 0 18px 40px rgba(0, 0, 0, 0.12);
+$canvas-shadow: var(--shadow-lg);
 $label-bg: var(--light);
 $label-color: var(--gray);
 $label-border: var(--lightgray);
@@ -60,7 +60,7 @@ $canvas-accents: (
     @if $dash != null {
       stroke-dasharray: $dash;
     }
-    transition: stroke 0.2s ease;
+    transition: stroke var(--transition-normal);
   }
   .node-border-overlay {
     stroke: $stroke;
@@ -184,7 +184,7 @@ $canvas-accents: (
   min-width: 400px;
   background: $canvas-bg;
   border: 1px solid $canvas-border;
-  border-radius: 8px;
+  border-radius: var(--radius-lg);
   overflow: hidden;
   position: relative;
   box-shadow: $canvas-shadow;
@@ -204,9 +204,9 @@ $canvas-accents: (
     color: $label-color;
     background: $label-bg;
     padding: 4px 10px;
-    border-radius: 4px;
+    border-radius: var(--radius-md);
     border: 1px solid $label-border;
-    z-index: 10;
+    z-index: var(--z-sidenote);
     pointer-events: none;
     opacity: 0.9;
     letter-spacing: 0.02em;
@@ -220,12 +220,23 @@ $canvas-accents: (
   @extend %canvas-box;
 }
 
+.canvas-embed-container {
+  .node {
+    cursor: default;
+  }
+
+  .node.node-file,
+  .node.node-text {
+    cursor: pointer;
+  }
+}
+
 // error state
 .canvas-embed-error {
   margin: 2rem auto;
   padding: 1.5rem;
   text-align: center;
-  border-radius: 8px;
+  border-radius: var(--radius-lg);
   background: var(--lightgray);
   color: var(--darkgray);
 }
@@ -428,13 +439,13 @@ $canvas-accents: (
   position: absolute;
   background: var(--light);
   border: 1px solid var(--border);
-  border-radius: 4px;
+  border-radius: var(--radius-md);
   padding: 8px 12px;
   max-width: 300px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  box-shadow: var(--shadow-sm);
   font-size: 0.85rem;
   line-height: 1.4;
-  z-index: 1000;
+  z-index: var(--z-modal);
   pointer-events: none;
 }
 
@@ -466,7 +477,7 @@ $canvas-accents: (
   left: 0;
   width: 100vw;
   height: 100vh;
-  z-index: 1000;
+  z-index: var(--z-modal);
   display: none;
   align-items: center;
   justify-content: center;
@@ -490,14 +501,14 @@ $canvas-accents: (
   position: relative;
   background: var(--light);
   border: 1px solid var(--lightgray);
-  border-radius: 8px;
+  border-radius: var(--radius-lg);
   padding: 16px;
   max-width: 450px;
   width: 90%;
   max-height: 70vh;
   overflow: auto;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
-  z-index: 1;
+  box-shadow: var(--shadow-md);
+  z-index: var(--z-base);
 }
 
 .canvas-help-header {
@@ -595,7 +606,7 @@ $canvas-accents: (
   display: flex;
   flex-direction: column;
   gap: 8px;
-  z-index: 100;
+  z-index: var(--z-dropdown);
   pointer-events: none;
 }
 
@@ -604,8 +615,8 @@ $canvas-accents: (
   flex-direction: column;
   background: var(--light);
   border: 1px solid var(--lightgray);
-  border-radius: var(--radius-s);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-sm);
   pointer-events: all;
   overflow: hidden;
 }

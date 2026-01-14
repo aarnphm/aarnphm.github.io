@@ -1,0 +1,7 @@
+:root {
+  --transition-fast: 0.1s ease;
+  --transition-normal: 0.2s ease;
+  --transition-slow: 0.3s ease;
+  --transition-modal: 0.2s cubic-bezier(0.19, 1, 0.22, 1);
+  --transition-bounce: 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}

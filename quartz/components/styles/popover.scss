@@ -15,7 +15,7 @@
 }
 
 .popover {
-  z-index: 999;
+  z-index: var(--z-popover);
   position: fixed;
   overflow: visible;
   padding: 1rem;
@@ -59,7 +59,7 @@
     border: 1px solid var(--lightgray);
     border-radius: var(--border-radius);
     background-color: var(--light);
-    box-shadow: 6px 6px 36px 0 rgba(0, 0, 0, 0.25);
+    box-shadow: var(--shadow-popover);
     overflow: auto;
     overscroll-behavior: contain;
     white-space: normal;

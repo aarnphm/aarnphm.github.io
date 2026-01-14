@@ -95,14 +95,12 @@
     position: absolute;
     top: calc(100% + 0.5rem);
     left: 0;
-    z-index: 1000;
+    z-index: var(--z-modal);
     max-height: 400px;
     background: var(--light);
     border: 1px solid var(--lightgray);
-    border-radius: 8px;
-    box-shadow:
-      0 2px 8px rgba(0, 0, 0, 0.1),
-      0 0 0 1px rgba(0, 0, 0, 0.05);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
     overflow: hidden;
     min-width: 280px;
     display: none;
@@ -141,7 +139,7 @@
         }
 
         &:focus {
-          box-shadow: 0 0 0 2px rgba(var(--secondary-rgb), 0.1);
+          box-shadow: var(--shadow-focus);
         }
 
         &::-webkit-search-cancel-button {

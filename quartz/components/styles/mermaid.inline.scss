@@ -3,7 +3,7 @@
 #mermaid-container {
   position: fixed;
   contain: layout;
-  z-index: 999;
+  z-index: var(--z-popover);
   left: 0;
   top: 0;
   width: 100vw;
@@ -20,7 +20,7 @@
   & > #mermaid-space {
     border: 1px solid var(--lightgray);
     background-color: var(--light);
-    border-radius: 5px;
+    border-radius: var(--radius-md);
     position: fixed;
     top: 50%;
     left: 50%;
@@ -58,8 +58,8 @@
       padding: 8px;
       background: var(--light);
       border: 1px solid var(--lightgray);
-      border-radius: 6px;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
       z-index: 2;
 
       .mermaid-control-button {
@@ -72,11 +72,11 @@
         border: 1px solid var(--lightgray);
         background: var(--light);
         color: var(--dark);
-        border-radius: 4px;
+        border-radius: var(--radius-md);
         cursor: pointer;
         font-size: 16px;
         font-family: var(--bodyFont);
-        transition: all 0.2s ease;
+        transition: all var(--transition-normal);
 
         &:hover {
           background: var(--lightgray);

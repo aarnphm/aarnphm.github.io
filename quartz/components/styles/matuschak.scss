@@ -108,7 +108,7 @@ a {
 
 #stacked-notes-container {
   background: var(--light);
-  z-index: 999;
+  z-index: var(--z-popover);
   display: none;
   overflow-x: auto;
   overflow-y: hidden;
@@ -136,7 +136,7 @@ a {
       height: 100%;
 
       .stacked-popover {
-        z-index: 1001;
+        z-index: var(--z-overlay);
         will-change: transform;
 
         .page-footer,
@@ -173,9 +173,7 @@ a {
         }
 
         &.overlay {
-          box-shadow:
-            0 14px 50px rgba(27, 33, 48, 0.12),
-            0 10px 30px rgba(27, 33, 48, 0.16);
+          box-shadow: var(--shadow-modal);
         }
 
         &.highlights {

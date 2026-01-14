@@ -1,0 +1,44 @@
+%badge-base {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-md);
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1.2;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+%badge-tag {
+  @extend %badge-base;
+  background-color: var(--highlight);
+  color: var(--darkgray);
+  text-transform: none;
+  letter-spacing: normal;
+}
+
+%badge-kbd {
+  display: inline-block;
+  padding: var(--space-1) var(--space-2);
+  background-color: var(--lightgray);
+  border: 1px solid var(--gray);
+  border-radius: var(--radius-sm);
+  font-family: var(--codeFont);
+  font-size: 0.6875rem;
+  color: var(--darkgray);
+}
+
+%badge-status {
+  @extend %badge-base;
+  padding: 2px 6px;
+  border-radius: var(--radius-full);
+  font-size: 0.625rem;
+}
+
+%badge-pill {
+  @extend %badge-base;
+  border-radius: var(--radius-full);
+  padding: var(--space-1) var(--space-3);
+}

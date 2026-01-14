@@ -1,0 +1,38 @@
+%card-base {
+  background-color: var(--light);
+  border: 1px solid var(--lightgray);
+  border-radius: var(--radius-lg);
+}
+
+%card-elevated {
+  @extend %card-base;
+  box-shadow: var(--shadow-md);
+}
+
+%card-modal {
+  @extend %card-base;
+  box-shadow: var(--shadow-modal);
+}
+
+%card-interactive {
+  @extend %card-base;
+  transition: var(--transition-normal);
+  cursor: pointer;
+
+  &:hover {
+    border-color: var(--gray);
+    box-shadow: var(--shadow-sm);
+  }
+}
+
+%card-tooltip {
+  position: absolute;
+  background-color: var(--light);
+  border: 1px solid var(--lightgray);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  padding: var(--space-2) var(--space-3);
+  font-size: 0.875rem;
+  z-index: var(--z-tooltip);
+  pointer-events: none;
+}

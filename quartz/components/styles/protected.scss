@@ -13,7 +13,7 @@ body:has(.password-prompt-overlay[style*="display: flex"]) {
     width: 100vw;
     height: 100vh;
     top: 0;
-    z-index: 99999;
+    z-index: var(--z-max);
   }
 
   .password-prompt-overlay {
@@ -27,7 +27,7 @@ body:has(.password-prompt-overlay[style*="display: flex"]) {
     justify-content: center;
     background: color-mix(in srgb, var(--light) 95%, transparent);
     backdrop-filter: blur(8px);
-    z-index: 1000;
+    z-index: var(--z-modal);
   }
 
   .password-prompt-container {
@@ -37,9 +37,7 @@ body:has(.password-prompt-overlay[style*="display: flex"]) {
     border: 1px solid var(--lightgray);
     border-radius: var(--border-radius);
     background-color: var(--light);
-    box-shadow:
-      0 4px 6px rgba(0, 0, 0, 0.05),
-      0 2px 4px rgba(0, 0, 0, 0.08);
+    box-shadow: var(--shadow-md);
 
     & > p {
       margin: 0 0 1rem;

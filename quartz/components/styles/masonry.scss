@@ -35,14 +35,14 @@
   opacity: 0;
   object-fit: cover;
   cursor: pointer;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-sm);
 
   &.positioned {
     opacity: 1;
   }
 
   &:hover {
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    box-shadow: var(--shadow-md);
     z-index: 10;
   }
 }
@@ -53,14 +53,14 @@
   background: var(--light);
   border: 1px solid var(--lightgray);
   padding: 0.5rem 0.75rem;
-  border-radius: 4px;
+  border-radius: var(--radius-md);
   max-width: 300px;
-  z-index: 1000;
+  z-index: var(--z-modal);
   pointer-events: none;
   font-size: 0.875rem;
   line-height: 1.4;
   color: var(--dark);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  box-shadow: var(--shadow-sm);
 
   &.visible {
     display: block;

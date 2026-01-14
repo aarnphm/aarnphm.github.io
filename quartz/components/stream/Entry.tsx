@@ -2,6 +2,7 @@ import { ComponentChild } from "preact"
 import type { ElementContent, Root as HastRoot } from "hast"
 import { toString as hastToString } from "hast-util-to-string"
 import { htmlToJsx } from "../../util/jsx"
+import { fromHtmlIsomorphic } from "hast-util-from-html-isomorphic"
 import type { FilePath } from "../../util/path"
 import type { StreamEntry } from "../../plugins/transformers/stream"
 
@@ -38,10 +39,19 @@ const streamEntryText = (entry: StreamEntry): string => {
   }
   const contentText = hastToString(root)
   const titleText = entry.title ? String(entry.title) : ""
-  return [titleText, contentText]
+  const descriptionText = entry.description ? String(entry.description) : ""
+  return [titleText, descriptionText, contentText]
     .filter((part) => part.length > 0)
     .join(" ")
     .trim()
+}
+
+const descriptionToJsx = (
+  filePath: FilePath,
+  descriptionHtml: string,
+): ComponentChild => {
+  const root = fromHtmlIsomorphic(descriptionHtml, { fragment: true })
+  return htmlToJsx(filePath, root)
 }
 
 export const getStreamEntryWordCount = (entry: StreamEntry): number =>
@@ -107,6 +117,9 @@ export const renderStreamEntry = (
   const onPath = timestampAttr ? buildOnPath(resolvedIsoDate) : null
   const wordCount = showWordCount ? getStreamEntryWordCount(entry) : 0
   const wordCountLabel = showWordCount && wordCount > 0 ? formatWordCount(wordCount) : null
+  const descriptionContent = entry.descriptionHtml
+    ? descriptionToJsx(filePath, entry.descriptionHtml)
+    : entry.description
 
   return (
     <li
@@ -181,6 +194,9 @@ export const renderStreamEntry = (
       </div>
       <div class="stream-entry-body">
         {entry.title && <h2 class="stream-entry-title">{entry.title}</h2>}
+        {descriptionContent && (
+          <p class="stream-entry-description">{descriptionContent}</p>
+        )}
         <div class="stream-entry-content">{nodesToJsx(filePath, entry.content)}</div>
         {wordCountLabel && (
           <div class="stream-entry-wordcount">

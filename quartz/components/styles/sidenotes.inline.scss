@@ -108,7 +108,7 @@ $sidenote-content-border-width: 0.075rem;
   box-sizing: border-box;
   margin-top: -1.02rem;
   background-color: $sidenote-surface;
-  z-index: 10;
+  z-index: var(--z-sidenote);
   line-height: 1.5;
   transition: $sidenote-transition;
   font-size: $sidenote-inline-font-size;

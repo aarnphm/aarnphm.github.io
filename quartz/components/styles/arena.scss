@@ -457,7 +457,7 @@ body[data-arena-subpage="true"] {
   width: 20px;
   height: 20px;
   color: var(--tertiary);
-  z-index: 1;
+  z-index: var(--z-base);
   pointer-events: none;
 
   svg {
@@ -476,7 +476,7 @@ body[data-arena-subpage="true"] {
   width: 20px;
   height: 20px;
   color: var(--tertiary);
-  z-index: 1;
+  z-index: var(--z-base);
   pointer-events: none;
 
   svg {
@@ -495,7 +495,7 @@ body[data-arena-subpage="true"] {
   width: 20px;
   height: 20px;
   color: var(--secondary);
-  z-index: 1;
+  z-index: var(--z-base);
   pointer-events: none;
 
   svg {
@@ -606,7 +606,7 @@ body[data-arena-subpage="true"] {
   height: 100dvh;
   align-items: center;
   justify-content: center;
-  z-index: 1000;
+  z-index: var(--z-modal);
   &.active {
     background-color: var(--light);
   }
@@ -639,7 +639,7 @@ body[data-arena-subpage="true"] {
   @include closeButton;
   cursor: pointer;
   display: flex;
-  z-index: 10;
+  z-index: var(--z-sidenote);
   width: 24px;
   height: 24px;
 
@@ -1065,7 +1065,6 @@ body[data-arena-subpage="true"] {
 .arena-meta-item {
   display: grid;
   grid-template-columns: 140px 1fr;
-  align-items: start;
   column-gap: 0.75rem;
   row-gap: 0.15rem;
   align-items: baseline;
@@ -1191,9 +1190,9 @@ span.tag-link:hover {
   top: 0px;
   right: 0px;
   gap: 5px;
-  border-radius: 3px;
+  border-radius: var(--radius-sm);
   padding: 5px;
-  z-index: 1;
+  z-index: var(--z-base);
 }
 
 .arena-modal-url-bar {
@@ -1416,13 +1415,13 @@ span.tag-link:hover {
     box-sizing: border-box;
     background-color: var(--light);
     border: 1px solid var(--lightgray);
-    border-radius: 6px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
     max-height: 50vh;
     margin-top: 0.5rem;
     overflow-y: auto;
     width: 100%;
-    z-index: 100;
+    z-index: var(--z-dropdown);
 
     &.active {
       display: block;
