@@ -2,15 +2,16 @@
 date: "2024-02-25"
 description: higher dimensions representations of information in subspaces
 id: Embedding
-modified: 2025-10-29 02:15:21 GMT-04:00
+modified: 2026-01-14 11:32:53 GMT-05:00
+seealso:
+  - "[[thoughts/Transformers]]"
+  - "[[thoughts/Attention]]"
+  - "[[thoughts/LLMs]]"
 tags:
-  - seed
   - ml
   - llm
 title: Embedding
 ---
-
-See also: [[thoughts/Transformers]], [[thoughts/Attention]]
 
 In the context of [[thoughts/LLMs|LLMs]], Embeddings map discrete token IDs to continuous vectors so transformers can operate in a geometric space. For a vocabulary of size $\mid V\mid$ and model width `d_model`:
 
@@ -67,7 +68,7 @@ where $\mathcal{M}$ indexes valid, non-padded time steps.
 
 - Mask token vs. attention masks: masked language modeling (e.g., BERT) uses a literal `[MASK]` token in inputs; decoder-only LLMs usually do not, relying instead on causal and padding masks while training with next-token prediction.
 
-### practical notes
+_notes_:
 
 - Weight tying: often `E` is reused as the output projection `W_out = E^\top` for parameter efficiency.
 - Normalization: modern stacks place layer norms around attention/FFN; embeddings typically enter the residual stream unnormalized.
@@ -119,7 +120,7 @@ $$
 \mathcal{L} = \tfrac{1}{2}\Big(\tfrac{1}{B}\sum_i \text{CE}(s_{i,:}, i)\; +\; \tfrac{1}{B}\sum_j \text{CE}(s_{:,j}, j)\Big)
 $$
 
-Practical notes:
+_notes_:
 
 - Projection heads map encoder outputs to a shared dim; temperature $\tau$ is learned or fixed.
 - Zero-shot classification: encode class name prompts with the text encoder and pick the class with highest similarity to the image embedding.

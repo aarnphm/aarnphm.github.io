@@ -15,6 +15,7 @@ export const comments = sqliteTable(
     createdAt: integer("createdAt").notNull(),
     updatedAt: integer("updatedAt"),
     deletedAt: integer("deletedAt"),
+    resolvedAt: integer("resolvedAt"),
     anchor: text("anchor"),
     orphaned: integer("orphaned", { mode: "boolean" }),
     lastRecoveredAt: integer("lastRecoveredAt"),
