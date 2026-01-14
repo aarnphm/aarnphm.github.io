@@ -1,4 +1,4 @@
-import { QuartzComponent, QuartzComponentConstructor } from "./types"
+import { QuartzComponent, QuartzComponentConstructor } from "../types/component"
 // @ts-ignore
 import script from "./scripts/code-copy.inline"
 

@@ -1,5 +1,5 @@
 import { FullSlug, isRelativeURL, resolveRelative, simplifySlug } from "../../util/path"
-import { QuartzEmitterPlugin } from "../types"
+import { QuartzEmitterPlugin } from "../../types/plugin"
 import { write } from "./helpers"
 import { BuildCtx } from "../../util/ctx"
 import { VFile } from "vfile"

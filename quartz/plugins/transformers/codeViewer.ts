@@ -1,4 +1,4 @@
-import { QuartzTransformerPlugin } from "../types"
+import { QuartzTransformerPlugin } from "../../types/plugin"
 import { Code, Root } from "mdast"
 import { BuildCtx } from "../../util/ctx"
 import path from "path"

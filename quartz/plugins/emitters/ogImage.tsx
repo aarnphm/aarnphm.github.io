@@ -1,4 +1,4 @@
-import { QuartzEmitterPlugin } from "../types"
+import { QuartzEmitterPlugin } from "../../types/plugin"
 import { i18n } from "../../i18n"
 import { unescapeHTML } from "../../util/escape"
 import { FullSlug, getFileExtension } from "../../util/path"

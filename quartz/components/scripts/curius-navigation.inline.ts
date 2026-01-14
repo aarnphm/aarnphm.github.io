@@ -1,5 +1,5 @@
 import { removeAllChildren } from "./util"
-import { Link, CuriusResponse } from "../types"
+import { Link, CuriusResponse } from "../../types/curius"
 import { createLinkEl } from "./curius"
 
 declare global {

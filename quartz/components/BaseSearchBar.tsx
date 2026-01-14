@@ -1,4 +1,4 @@
-import { QuartzComponentConstructor, QuartzComponentProps } from "./types"
+import { QuartzComponentConstructor, QuartzComponentProps } from "../types/component"
 import style from "./styles/search.scss"
 // @ts-ignore
 import script from "./scripts/base-search.inline"

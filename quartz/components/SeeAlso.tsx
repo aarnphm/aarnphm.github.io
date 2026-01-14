@@ -1,4 +1,8 @@
-import { QuartzComponent, QuartzComponentConstructor, QuartzComponentProps } from "./types"
+import {
+  QuartzComponent,
+  QuartzComponentConstructor,
+  QuartzComponentProps,
+} from "../types/component"
 import style from "./styles/seealsoTree.scss"
 import { classNames } from "../util/lang"
 import { FullSlug, resolveRelative } from "../util/path"

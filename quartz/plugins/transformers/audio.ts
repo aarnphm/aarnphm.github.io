@@ -1,4 +1,4 @@
-import { QuartzTransformerPlugin } from "../types"
+import { QuartzTransformerPlugin } from "../../types/plugin"
 import { Element, Root } from "hast"
 import { visit } from "unist-util-visit"
 import { h, s } from "hastscript"

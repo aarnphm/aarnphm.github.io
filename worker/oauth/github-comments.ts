@@ -1,5 +1,6 @@
 import type { OAuthHelpers } from "@cloudflare/workers-oauth-provider"
 import { Hono } from "hono"
+import { drizzle } from "drizzle-orm/d1"
 import {
   getGithubCommentAuthor,
   normalizeAuthor,
@@ -7,6 +8,7 @@ import {
   renderCommentAuthResponse,
   setGithubCommentAuthor,
 } from "../comments"
+import { githubUsers } from "../schema"
 import { createGithubOAuthHandler, OAuthError } from "./core"
 
 type CommentAuthState = {
@@ -55,6 +57,27 @@ const commentsOAuth = createGithubOAuthHandler<CommentAuthState, CommentAuthResu
       const resolvedAuthor =
         stateAuthor || storedAuthor || normalizeAuthor(user.login) || "github-user"
       await setGithubCommentAuthor(env.OAUTH_KV, user.login, resolvedAuthor)
+
+      const now = Date.now()
+      const db = drizzle(env.COMMENTS_ROOM)
+      await db
+        .insert(githubUsers)
+        .values({
+          login: user.login,
+          displayName: user.name || user.login,
+          avatarUrl: user.avatar_url,
+          lastSeenAt: now,
+          firstSeenAt: now,
+        })
+        .onConflictDoUpdate({
+          target: githubUsers.login,
+          set: {
+            displayName: user.name || user.login,
+            avatarUrl: user.avatar_url,
+            lastSeenAt: now,
+          },
+        })
+
       return {
         author: resolvedAuthor,
         returnTo: state.returnTo,

@@ -1,4 +1,4 @@
-import type { Following, Link, User, Trail } from "../quartz/components/types"
+import type { Following, Link, User, Trail } from "../quartz/types/curius"
 
 const HEADERS: RequestInit = { headers: { "Content-Type": "application/json" } }
 

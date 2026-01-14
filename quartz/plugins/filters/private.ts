@@ -1,4 +1,4 @@
-import { QuartzFilterPlugin } from "../types"
+import { QuartzFilterPlugin } from "../../types/plugin"
 
 export const RemovePrivate: QuartzFilterPlugin<{}> = () => ({
   name: "RemovePrivate",

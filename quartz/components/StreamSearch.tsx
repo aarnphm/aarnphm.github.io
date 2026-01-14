@@ -1,4 +1,4 @@
-import { QuartzComponent, QuartzComponentConstructor } from "./types"
+import { QuartzComponent, QuartzComponentConstructor } from "../types/component"
 import style from "./styles/streamSearch.scss"
 // @ts-ignore
 import script from "./scripts/stream-search.inline"

@@ -1,4 +1,4 @@
-import { QuartzTransformerPlugin } from "../types"
+import { QuartzTransformerPlugin } from "../../types/plugin"
 import { Element, ElementContent, Root as HastRoot, RootContent } from "hast"
 import { toString } from "hast-util-to-string"
 import Slugger from "github-slugger"

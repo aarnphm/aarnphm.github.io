@@ -1,4 +1,4 @@
-import { QuartzTransformerPlugin } from "../types"
+import { QuartzTransformerPlugin } from "../../types/plugin"
 import type { Element, ElementContent, Root as HastRoot, RootContent } from "hast"
 import { toString } from "hast-util-to-string"
 import { toHtml } from "hast-util-to-html"
@@ -82,8 +82,7 @@ const extractInlineNodes = (li: Element): ElementContent[] => {
   return nodes
 }
 
-const escapeRegex = (value: string): string =>
-  value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
+const escapeRegex = (value: string): string => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
 
 const stripKeyPrefixFromNodes = (nodes: ElementContent[], key: string): ElementContent[] => {
   const cloned = nodes.map((node) => cloneContent(node))
@@ -396,7 +395,10 @@ export const Stream: QuartzTransformerPlugin = () => {
               const descriptionValue = cleanMetadata.description
               let description: string | undefined
               if (Array.isArray(descriptionValue)) {
-                const joined = descriptionValue.map((value) => String(value)).join(" ").trim()
+                const joined = descriptionValue
+                  .map((value) => String(value))
+                  .join(" ")
+                  .trim()
                 if (joined.length > 0) {
                   description = joined
                 }

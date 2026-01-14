@@ -1,4 +1,8 @@
-import { QuartzComponent, QuartzComponentConstructor, QuartzComponentProps } from "./types"
+import {
+  QuartzComponent,
+  QuartzComponentConstructor,
+  QuartzComponentProps,
+} from "../types/component"
 import { classNames } from "../util/lang"
 import { resolveRelative, FullSlug } from "../util/path"
 import { ArenaData, ArenaChannel } from "../plugins/transformers/arena"

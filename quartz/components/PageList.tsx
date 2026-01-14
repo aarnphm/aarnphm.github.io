@@ -1,7 +1,11 @@
 import { isFolderPath, resolveRelative } from "../util/path"
 import { QuartzPluginData } from "../plugins/vfile"
 import { Date as DateComponent, getDate } from "./Date"
-import { QuartzComponent, QuartzComponentProps, QuartzComponentConstructor } from "./types"
+import {
+  QuartzComponent,
+  QuartzComponentProps,
+  QuartzComponentConstructor,
+} from "../types/component"
 import { GlobalConfiguration } from "../cfg"
 
 export type SortFn = (f1: QuartzPluginData, f2: QuartzPluginData) => number

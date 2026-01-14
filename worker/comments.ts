@@ -423,7 +423,11 @@ export class MultiplayerComments extends DurableObject<Env> {
           .select()
           .from(comments)
           .where(
-            and(eq(comments.pageId, pageId), isNull(comments.deletedAt), isNull(comments.resolvedAt)),
+            and(
+              eq(comments.pageId, pageId),
+              isNull(comments.deletedAt),
+              isNull(comments.resolvedAt),
+            ),
           )
           .orderBy(comments.createdAt)
 

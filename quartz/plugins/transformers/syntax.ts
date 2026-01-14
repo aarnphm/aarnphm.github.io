@@ -1,4 +1,4 @@
-import { QuartzTransformerPlugin } from "../types"
+import { QuartzTransformerPlugin } from "../../types/plugin"
 import { Element } from "hast"
 import { h, s } from "hastscript"
 import rehypePrettyCode, { Options as CodeOptions, Theme as CodeTheme } from "rehype-pretty-code"

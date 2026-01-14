@@ -1,5 +1,5 @@
 import fs from "node:fs"
-import { QuartzEmitterPlugin } from "../types"
+import { QuartzEmitterPlugin } from "../../types/plugin"
 import { joinSegments, QUARTZ } from "../../util/path"
 import { extractArxivId } from "../transformers/links"
 import { Cite } from "@citation-js/core"

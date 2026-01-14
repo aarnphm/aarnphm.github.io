@@ -1,4 +1,4 @@
-import { Link } from "../types"
+import { Link } from "../../types/curius"
 import {
   fetchCuriusLinks,
   fetchSearchLinks,

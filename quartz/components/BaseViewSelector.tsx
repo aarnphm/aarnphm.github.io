@@ -1,4 +1,8 @@
-import { QuartzComponent, QuartzComponentConstructor, QuartzComponentProps } from "./types"
+import {
+  QuartzComponent,
+  QuartzComponentConstructor,
+  QuartzComponentProps,
+} from "../types/component"
 import baseViewSelectorStyle from "./styles/baseViewSelector.scss"
 // @ts-ignore
 import script from "./scripts/base-view-selector.inline"

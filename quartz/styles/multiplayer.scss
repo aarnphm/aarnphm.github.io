@@ -1050,3 +1050,19 @@ body:has(.global-graph-outer.active) {
     }
   }
 }
+
+.markdown-content .mention,
+.reply-text .mention {
+  color: $primary-blue;
+  font-weight: 500;
+  text-decoration: none;
+  background: rgba($primary-blue, 0.1);
+  padding: 1px 4px;
+  border-radius: 4px;
+  transition: background $transition-fast;
+
+  &:hover {
+    background: rgba($primary-blue, 0.2);
+    text-decoration: none;
+  }
+}

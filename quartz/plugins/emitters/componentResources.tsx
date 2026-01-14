@@ -1,6 +1,6 @@
 import { FullSlug, joinSegments } from "../../util/path"
 import path from "path"
-import { QuartzEmitterPlugin } from "../types"
+import { QuartzEmitterPlugin } from "../../types/plugin"
 // @ts-ignore
 import spaRouterScript from "../../components/scripts/spa.inline"
 // @ts-ignore
@@ -27,7 +27,7 @@ import audioStyle from "../../components/styles/audio.scss"
 // @ts-ignore
 import markerScript from "../../components/scripts/marker.inline"
 import { BuildCtx } from "../../util/ctx"
-import { QuartzComponent } from "../../components/types"
+import { QuartzComponent } from "../../types/component"
 import type { QuartzMdxComponent } from "../../components/mdx/registry"
 import { getMdxComponents } from "../../components/mdx/registry"
 import "../../components/mdx"

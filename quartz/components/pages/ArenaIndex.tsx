@@ -1,4 +1,8 @@
-import { QuartzComponent, QuartzComponentConstructor, QuartzComponentProps } from "../types"
+import {
+  QuartzComponent,
+  QuartzComponentConstructor,
+  QuartzComponentProps,
+} from "../../types/component"
 import { ArenaData, ArenaBlock } from "../../plugins/transformers/arena"
 import { resolveRelative, joinSegments, FullSlug } from "../../util/path"
 import style from "../styles/arena.scss"

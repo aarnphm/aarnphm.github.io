@@ -1,5 +1,5 @@
 import { FilePath, joinSegments, slugifyFilePath } from "../../util/path"
-import { QuartzEmitterPlugin } from "../types"
+import { QuartzEmitterPlugin } from "../../types/plugin"
 import path from "path"
 import fs from "node:fs/promises"
 import { glob } from "../../util/glob"

@@ -14,7 +14,7 @@ import {
   simplifySlug,
   sluggify,
 } from "../../util/path"
-import { QuartzEmitterPlugin } from "../types"
+import { QuartzEmitterPlugin } from "../../types/plugin"
 import { toHtml } from "hast-util-to-html"
 import { write } from "./helpers"
 import { i18n } from "../../i18n"

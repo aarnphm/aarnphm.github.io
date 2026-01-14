@@ -1,4 +1,4 @@
-import { QuartzTransformerPlugin } from "../types"
+import { QuartzTransformerPlugin } from "../../types/plugin"
 import type { Heading, PhrasingContent, Root } from "mdast"
 import { visit } from "unist-util-visit"
 import { toString } from "mdast-util-to-string"

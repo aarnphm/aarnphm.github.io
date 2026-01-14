@@ -1,5 +1,9 @@
 import { Date as DateComponent, getDate } from "./Date"
-import { QuartzComponent, QuartzComponentConstructor, QuartzComponentProps } from "./types"
+import {
+  QuartzComponent,
+  QuartzComponentConstructor,
+  QuartzComponentProps,
+} from "../types/component"
 //@ts-ignore
 import script from "./scripts/content-meta.inline"
 import style from "./styles/contentMeta.scss"

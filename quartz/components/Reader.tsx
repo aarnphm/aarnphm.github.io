@@ -1,4 +1,4 @@
-import { QuartzComponent, QuartzComponentConstructor } from "./types"
+import { QuartzComponent, QuartzComponentConstructor } from "../types/component"
 import style from "./styles/reader.scss"
 // @ts-ignore
 import readerScript from "./scripts/reader.inline"

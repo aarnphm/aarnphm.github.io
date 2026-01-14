@@ -1,5 +1,9 @@
 import { i18n } from "../../i18n"
-import { QuartzComponent, QuartzComponentConstructor, QuartzComponentProps } from "../types"
+import {
+  QuartzComponent,
+  QuartzComponentConstructor,
+  QuartzComponentProps,
+} from "../../types/component"
 
 const NotFound: QuartzComponent = ({ cfg }: QuartzComponentProps) => {
   return (

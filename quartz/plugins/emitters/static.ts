@@ -1,5 +1,5 @@
 import { FilePath, QUARTZ, joinSegments } from "../../util/path"
-import { QuartzEmitterPlugin } from "../types"
+import { QuartzEmitterPlugin } from "../../types/plugin"
 import fs from "node:fs/promises"
 import { glob } from "../../util/glob"
 import { dirname } from "path"

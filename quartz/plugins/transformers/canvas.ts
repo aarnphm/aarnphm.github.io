@@ -1,4 +1,4 @@
-import { QuartzTransformerPlugin } from "../types"
+import { QuartzTransformerPlugin } from "../../types/plugin"
 import { visit } from "unist-util-visit"
 import { parseJsonCanvas } from "./jcast"
 import { JcastCanvas, isJcastCanvasNode } from "./jcast/types"

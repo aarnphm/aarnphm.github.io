@@ -1,5 +1,5 @@
 import { Code, Root as MdRoot } from "mdast"
-import { QuartzTransformerPlugin } from "../types"
+import { QuartzTransformerPlugin } from "../../types/plugin"
 import { visit } from "unist-util-visit"
 import { load, tex, dvi2svg } from "node-tikzjax"
 import { h, s } from "hastscript"

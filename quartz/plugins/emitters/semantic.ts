@@ -1,5 +1,5 @@
 import { write } from "./helpers"
-import { QuartzEmitterPlugin } from "../types"
+import { QuartzEmitterPlugin } from "../../types/plugin"
 import { FullSlug, joinSegments, QUARTZ } from "../../util/path"
 import { GlobalConfiguration } from "../../cfg"
 import { spawn } from "child_process"

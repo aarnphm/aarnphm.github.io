@@ -1,5 +1,17 @@
 import { sqliteTable, text, integer, index } from "drizzle-orm/sqlite-core"
 
+export const githubUsers = sqliteTable(
+  "github_users",
+  {
+    login: text("login").primaryKey(),
+    displayName: text("display_name"),
+    avatarUrl: text("avatar_url"),
+    lastSeenAt: integer("last_seen_at").notNull(),
+    firstSeenAt: integer("first_seen_at").notNull(),
+  },
+  (table) => [index("idx_github_users_last_seen").on(table.lastSeenAt)],
+)
+
 export const comments = sqliteTable(
   "comments",
   {
