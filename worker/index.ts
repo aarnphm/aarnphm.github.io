@@ -233,10 +233,7 @@ export default {
     const method = request.method.toUpperCase()
 
     const provider = new OAuthProvider({
-      apiHandlers: {
-        // @ts-ignore
-        "/mcp": Garden.serve("/mcp", { binding: "MCP_OBJECT" }),
-      },
+      apiHandlers: { "/mcp": Garden.serve("/mcp"), "/sse": Garden.serveSSE("/sse") },
       authorizeEndpoint: "/authorize",
       clientRegistrationEndpoint: "/register",
       // @ts-ignore
