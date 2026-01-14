@@ -9,7 +9,7 @@ import {
   renderApprovalDialog,
   validateCSRFToken,
 } from "../workers-oauth-utils"
-import { createGithubOAuthHandler, type GithubUser } from "./core"
+import { createGithubOAuthHandler } from "./core"
 
 type McpOAuthState = {
   oauthReqInfo: AuthRequest
@@ -17,7 +17,6 @@ type McpOAuthState = {
 
 type McpOAuthResult = {
   redirectTo: string
-  user: GithubUser
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -79,9 +78,6 @@ const mcpOAuth = createGithubOAuthHandler<McpOAuthState, McpOAuthResult>(
     callbackPath: "/callback",
   },
   {
-    createStatePayload: async () => {
-      throw new Error("createStatePayload not used for MCP flow")
-    },
     parseStatePayload: parseMcpOAuthState,
     onComplete: async (req, env, state, user, accessToken) => {
       const provider = (env as any).OAUTH_PROVIDER as OAuthHelpers
@@ -97,22 +93,10 @@ const mcpOAuth = createGithubOAuthHandler<McpOAuthState, McpOAuthResult>(
         scope: state.oauthReqInfo.scope,
         userId: user.login,
       })
-      return { redirectTo, user }
+      return { redirectTo }
     },
     formatResult: (result, _req) => {
-      const body = `<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <title>auth finished</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-  </head>
-  <body>
-    <p>auth finished. you can close this window.</p>
-    <p><a href="${result.redirectTo}">continue</a></p>
-  </body>
-</html>`
-      return new Response(body, {
+      return new Response("auth finished", {
         status: 302,
         headers: { Location: result.redirectTo },
       })
@@ -130,8 +114,7 @@ app.get("/authorize", async (c) => {
   }
 
   if (await isClientApproved(c.req.raw, clientId, c.env.SESSION_SECRET)) {
-    const statePayload: McpOAuthState = { oauthReqInfo }
-    return mcpOAuth.initiateAuth(c.req.raw, c.env, statePayload)
+    return mcpOAuth.initiateAuth(c.req.raw, c.env, { oauthReqInfo })
   }
 
   const { token: csrfToken, setCookie } = generateCSRFProtection()
@@ -160,43 +143,46 @@ app.post("/authorize", async (c) => {
       return c.text("Missing state in form data", 400)
     }
 
-    let state: { oauthReqInfo?: any }
+    let rawState: unknown
     try {
-      state = JSON.parse(atob(encodedState))
+      rawState = JSON.parse(atob(encodedState))
     } catch {
       return c.text("Invalid state data", 400)
     }
 
-    if (!state.oauthReqInfo || !state.oauthReqInfo.clientId) {
+    if (!isRecord(rawState) || !isRecord(rawState.oauthReqInfo)) {
+      return c.text("Invalid request", 400)
+    }
+
+    const oauthReqInfo = parseAuthRequestFromRecord(rawState.oauthReqInfo)
+    if (!oauthReqInfo) {
       return c.text("Invalid request", 400)
     }
 
     const approvedClientCookie = await addApprovedClient(
       c.req.raw,
-      state.oauthReqInfo.clientId,
+      oauthReqInfo.clientId,
       c.env.SESSION_SECRET,
     )
 
-    const statePayload: McpOAuthState = { oauthReqInfo: state.oauthReqInfo }
-    const headers = new Headers()
-    headers.append("Set-Cookie", approvedClientCookie)
-
-    const headerEntries: [string, string][] = []
-    headers.forEach((value, key) => headerEntries.push([key, value]))
-    return mcpOAuth.initiateAuth(c.req.raw, c.env, statePayload, Object.fromEntries(headerEntries))
-  } catch (error: any) {
-    console.error("POST /authorize error:", error)
+    return mcpOAuth.initiateAuth(
+      c.req.raw,
+      c.env,
+      { oauthReqInfo },
+      { "Set-Cookie": approvedClientCookie },
+    )
+  } catch (error: unknown) {
     if (error instanceof OAuthError) {
       return error.toResponse()
     }
-    return c.text(`Internal server error: ${error.message}`, 500)
+    return c.text("Internal server error", 500)
   }
 })
 
 app.get("/callback", async (c) => {
   try {
     return await mcpOAuth.handleCallback(c.req.raw, c.env)
-  } catch (error: any) {
+  } catch (error: unknown) {
     if (error instanceof OAuthError) {
       return error.toResponse()
     }

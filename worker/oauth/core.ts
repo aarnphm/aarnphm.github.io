@@ -18,7 +18,6 @@ export type GithubUser = {
 }
 
 export type GithubOAuthCallbacks<TState, TResult> = {
-  createStatePayload: (req: Request, env: Env) => Promise<TState>
   parseStatePayload: (raw: string) => TState | null
   onComplete: (
     req: Request,
