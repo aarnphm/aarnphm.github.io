@@ -48,12 +48,17 @@ Define the content elsewhere using the block syntax.
 
 ```markdown
 {{sidenotes[ref1]}}:
-This is the multiline content of the sidenote.
-It supports block elements like lists:
 
-- Item 1
-- Item 2
+    This is the multiline content of the sidenote.
+    It supports block elements, [[wikilinks]], _markdown_ **styling**, lists:
+
+    - Item 1
+    - Item 2
 ```
+
+_note_: This is currently a limitation, so if you want multi-line sidenotes you will have to insert a newline below like shown.
+
+To integrate this into you vault, just grep over my implementation for sidenotes, there are a few hooks in `parse.ts` and `build.ts` needed for this to work.
 
 ### 4. Rich Content in Labels
 
