@@ -1,4 +1,4 @@
-import { QuartzTransformerPlugin } from "../types"
+import { QuartzTransformerPlugin } from "../../types/plugin"
 import { Root, Code } from "mdast"
 import { Element, Text } from "hast"
 import { PluggableList } from "unified"

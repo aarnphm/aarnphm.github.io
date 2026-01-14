@@ -1,5 +1,9 @@
 import { pathToRoot } from "../util/path"
-import { QuartzComponent, QuartzComponentConstructor, QuartzComponentProps } from "./types"
+import {
+  QuartzComponent,
+  QuartzComponentConstructor,
+  QuartzComponentProps,
+} from "../types/component"
 
 export default (() => {
   const PageTitle: QuartzComponent = ({ fileData }: QuartzComponentProps) => {

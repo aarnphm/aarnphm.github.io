@@ -1,4 +1,8 @@
-import { QuartzComponent, QuartzComponentConstructor, QuartzComponentProps } from "./types"
+import {
+  QuartzComponent,
+  QuartzComponentConstructor,
+  QuartzComponentProps,
+} from "../types/component"
 import breadcrumbsStyle from "./styles/breadcrumbs.scss"
 // @ts-ignore
 import script from "./scripts/breadcrumbs.inline"

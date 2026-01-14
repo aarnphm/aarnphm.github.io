@@ -1,7 +1,7 @@
 import rehypeCitation from "rehype-citation"
 import { visit } from "unist-util-visit"
 import { Element, Text as HastText } from "hast"
-import { QuartzTransformerPlugin } from "../types"
+import { QuartzTransformerPlugin } from "../../types/plugin"
 import { extractArxivId } from "./links"
 import { h } from "hastscript"
 import { XMLParser } from "fast-xml-parser"

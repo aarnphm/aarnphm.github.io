@@ -1,4 +1,4 @@
-import { QuartzTransformerPlugin } from "../types"
+import { QuartzTransformerPlugin } from "../../types/plugin"
 import { Element, ElementContent, Root } from "hast"
 import { headingRank } from "hast-util-heading-rank"
 import { toString as hastToString } from "hast-util-to-string"

@@ -1,7 +1,7 @@
 import { ValidDateType } from "./components/Date"
-import { QuartzComponent } from "./components/types"
+import { QuartzComponent } from "./types/component"
 import { ValidLocale } from "./i18n"
-import { PluginTypes } from "./plugins/types"
+import { PluginTypes } from "./types/plugin"
 import { Theme } from "./util/theme"
 
 export type Analytics =

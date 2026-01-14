@@ -9,7 +9,7 @@ import { Root, Link, PhrasingContent } from "mdast"
 import { Root as HtmlRoot, Element, Text } from "hast"
 import { RegExpMatchObject, findAndReplace as mdastFindReplace } from "mdast-util-find-and-replace"
 import { toString } from "mdast-util-to-string"
-import { QuartzTransformerPlugin } from "../types"
+import { QuartzTransformerPlugin } from "../../types/plugin"
 import { visit } from "unist-util-visit"
 import rehypeGithubEmoji from "rehype-github-emoji"
 

@@ -1,6 +1,10 @@
 import { concatenateResources } from "../../util/resources"
 import { htmlToJsx } from "../../util/jsx"
-import { QuartzComponent, QuartzComponentConstructor, QuartzComponentProps } from "../types"
+import {
+  QuartzComponent,
+  QuartzComponentConstructor,
+  QuartzComponentProps,
+} from "../../types/component"
 import { FullSlug, joinSegments, resolveRelative } from "../../util/path"
 //@ts-ignore
 import lydiaScript from "../scripts/lydia.inline"

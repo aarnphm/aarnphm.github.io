@@ -4,7 +4,11 @@
 import darkmodeScript from "./scripts/darkmode.inline"
 import styles from "./styles/darkmode.scss"
 import { classNames } from "../util/lang"
-import { QuartzComponent, QuartzComponentConstructor, QuartzComponentProps } from "./types"
+import {
+  QuartzComponent,
+  QuartzComponentConstructor,
+  QuartzComponentProps,
+} from "../types/component"
 
 export default (() => {
   const Darkmode: QuartzComponent = ({ displayClass }: QuartzComponentProps) => (

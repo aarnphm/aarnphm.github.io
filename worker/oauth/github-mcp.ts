@@ -39,7 +39,10 @@ function parseAuthRequestFromRecord(obj: Record<string, unknown>): AuthRequest |
   let resource: string | string[] | undefined
   if (typeof obj.resource === "string") {
     resource = obj.resource
-  } else if (Array.isArray(obj.resource) && obj.resource.every((item) => typeof item === "string")) {
+  } else if (
+    Array.isArray(obj.resource) &&
+    obj.resource.every((item) => typeof item === "string")
+  ) {
     resource = obj.resource
   }
   return {

@@ -1,4 +1,4 @@
-import { QuartzTransformerPlugin } from "../types"
+import { QuartzTransformerPlugin } from "../../types/plugin"
 import { visit } from "unist-util-visit"
 import { Code, Root as MdRoot } from "mdast"
 import { VFile } from "vfile"

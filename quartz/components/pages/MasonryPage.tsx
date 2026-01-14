@@ -1,4 +1,8 @@
-import type { QuartzComponent, QuartzComponentConstructor, QuartzComponentProps } from "../types"
+import type {
+  QuartzComponent,
+  QuartzComponentConstructor,
+  QuartzComponentProps,
+} from "../../types/component"
 import style from "../styles/masonry.scss"
 // @ts-ignore
 import script from "../scripts/masonry.inline"

@@ -1,4 +1,8 @@
-import { QuartzComponent, QuartzComponentConstructor, QuartzComponentProps } from "../types"
+import {
+  QuartzComponent,
+  QuartzComponentConstructor,
+  QuartzComponentProps,
+} from "../../types/component"
 import style from "../styles/listPage.scss"
 import PageListConstructor, { SortFn } from "../PageList"
 import PageListSearchConstructor from "../PageListSearch"

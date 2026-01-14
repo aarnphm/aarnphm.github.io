@@ -3,7 +3,7 @@ import { Root as MdRoot, Link, Html, PhrasingContent, BlockContent, Paragraph, T
 import { toMarkdown } from "mdast-util-to-markdown"
 import { gfmToMarkdown } from "mdast-util-gfm"
 import { mathToMarkdown } from "mdast-util-math"
-import { QuartzTransformerPlugin } from "../types"
+import { QuartzTransformerPlugin } from "../../types/plugin"
 import { QuartzPluginData } from "../vfile"
 import { FullSlug, isAbsoluteURL } from "../../util/path"
 import { clone } from "../../util/clone"

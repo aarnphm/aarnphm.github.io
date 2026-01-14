@@ -1,6 +1,6 @@
 import type { Element, ElementContent, Root } from "hast"
 import { htmlToJsx } from "./jsx"
-import type { QuartzComponentProps } from "../components/types"
+import type { QuartzComponentProps } from "../types/component"
 import type { FilePath } from "./path"
 import {
   FullSlug,

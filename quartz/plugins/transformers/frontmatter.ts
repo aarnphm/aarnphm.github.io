@@ -1,6 +1,6 @@
 import matter from "gray-matter"
 import remarkFrontmatter from "remark-frontmatter"
-import { QuartzTransformerPlugin } from "../types"
+import { QuartzTransformerPlugin } from "../../types/plugin"
 import yaml from "js-yaml"
 import { FilePath, FullSlug, slugifyFilePath, slugTag, getFileExtension } from "../../util/path"
 import { extractWikilinks, resolveWikilinkTarget } from "../../util/wikilinks"

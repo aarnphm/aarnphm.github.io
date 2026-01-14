@@ -46,10 +46,7 @@ const streamEntryText = (entry: StreamEntry): string => {
     .trim()
 }
 
-const descriptionToJsx = (
-  filePath: FilePath,
-  descriptionHtml: string,
-): ComponentChild => {
+const descriptionToJsx = (filePath: FilePath, descriptionHtml: string): ComponentChild => {
   const root = fromHtmlIsomorphic(descriptionHtml, { fragment: true })
   return htmlToJsx(filePath, root)
 }
@@ -194,9 +191,7 @@ export const renderStreamEntry = (
       </div>
       <div class="stream-entry-body">
         {entry.title && <h2 class="stream-entry-title">{entry.title}</h2>}
-        {descriptionContent && (
-          <p class="stream-entry-description">{descriptionContent}</p>
-        )}
+        {descriptionContent && <p class="stream-entry-description">{descriptionContent}</p>}
         <div class="stream-entry-content">{nodesToJsx(filePath, entry.content)}</div>
         {wordCountLabel && (
           <div class="stream-entry-wordcount">

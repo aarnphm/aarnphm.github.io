@@ -23,6 +23,23 @@ marked.use({
   gfm: true,
   breaks: true,
   renderer,
+  extensions: [
+    {
+      name: "mention",
+      level: "inline",
+      start: (src: string) => src.indexOf("@"),
+      tokenizer(src: string) {
+        const match = src.match(/^@([\w-]+)/)
+        if (match) {
+          return { type: "mention", raw: match[0], username: match[1] }
+        }
+      },
+      renderer(token) {
+        const t = token as unknown as { username: string }
+        return `<a class="mention" href="https://github.com/${t.username}">@${t.username}</a>`
+      },
+    },
+  ],
 })
 
 function processWikilinks(text: string, currentSlug: FullSlug): string {

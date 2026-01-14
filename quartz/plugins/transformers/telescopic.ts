@@ -15,7 +15,7 @@
 // NOTE: For this, we only a small subset of wikilinks, and it should always be absolute
 //
 // Some deviation: separator=" ", shouldExpandOnMouseOver=false
-import { QuartzTransformerPlugin } from "../types"
+import { QuartzTransformerPlugin } from "../../types/plugin"
 import { Root, Element } from "hast"
 import type { RootContent, Text } from "hast"
 import { Root as MdastRoot, Code } from "mdast"

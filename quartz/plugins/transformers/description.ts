@@ -1,6 +1,6 @@
 import { Root as HTMLRoot } from "hast"
 import { toString } from "hast-util-to-string"
-import { QuartzTransformerPlugin } from "../types"
+import { QuartzTransformerPlugin } from "../../types/plugin"
 import { escapeHTML } from "../../util/escape"
 import readingTime, { ReadTimeResults } from "reading-time"
 import { i18n } from "../../i18n"

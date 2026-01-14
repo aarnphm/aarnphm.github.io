@@ -1,4 +1,4 @@
-import { QuartzTransformerPlugin } from "../types"
+import { QuartzTransformerPlugin } from "../../types/plugin"
 import { Element } from "hast"
 import { Html, Link, Paragraph, PhrasingContent } from "mdast"
 import { Parent } from "unist"

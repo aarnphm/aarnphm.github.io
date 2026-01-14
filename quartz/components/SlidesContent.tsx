@@ -1,4 +1,8 @@
-import { QuartzComponent, QuartzComponentConstructor, QuartzComponentProps } from "./types"
+import {
+  QuartzComponent,
+  QuartzComponentConstructor,
+  QuartzComponentProps,
+} from "../types/component"
 import { ElementContent, Root, Element } from "hast"
 import { clone } from "../util/clone"
 import { htmlToJsx } from "../util/jsx"

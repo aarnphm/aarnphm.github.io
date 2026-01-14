@@ -1,4 +1,8 @@
-import { QuartzComponent, QuartzComponentConstructor, QuartzComponentProps } from "../types"
+import {
+  QuartzComponent,
+  QuartzComponentConstructor,
+  QuartzComponentProps,
+} from "../../types/component"
 import { ArenaChannel, ArenaBlock } from "../../plugins/transformers/arena"
 import { classNames } from "../../util/lang"
 import type { ElementContent, Root } from "hast"

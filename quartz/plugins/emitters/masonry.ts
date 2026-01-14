@@ -1,5 +1,5 @@
-import { QuartzEmitterPlugin } from "../types"
-import { QuartzComponentProps } from "../../components/types"
+import { QuartzEmitterPlugin } from "../../types/plugin"
+import { QuartzComponentProps } from "../../types/component"
 import { pageResources, renderPage } from "../../components/renderPage"
 import { FullPageLayout } from "../../cfg"
 import { pathToRoot, slugifyFilePath, FilePath, FullSlug } from "../../util/path"

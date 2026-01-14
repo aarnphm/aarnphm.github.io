@@ -1,5 +1,9 @@
 import { FullSlug, pathToRoot, resolveRelative, slugTag } from "../util/path"
-import { QuartzComponent, QuartzComponentConstructor, QuartzComponentProps } from "./types"
+import {
+  QuartzComponent,
+  QuartzComponentConstructor,
+  QuartzComponentProps,
+} from "../types/component"
 import { classNames } from "../util/lang"
 import { i18n } from "../i18n"
 import { stripWikilinkFormatting } from "../util/wikilinks"

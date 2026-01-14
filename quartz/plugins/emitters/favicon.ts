@@ -1,6 +1,6 @@
 import sharp from "sharp"
 import { joinSegments, QUARTZ, FilePath } from "../../util/path"
-import { QuartzEmitterPlugin } from "../types"
+import { QuartzEmitterPlugin } from "../../types/plugin"
 
 export const Favicon: QuartzEmitterPlugin = () => ({
   name: "Favicon",

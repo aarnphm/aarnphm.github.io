@@ -2,7 +2,7 @@ import remarkMath from "remark-math"
 import rehypeKatex from "rehype-katex"
 //@ts-ignore
 import rehypeTypst from "@myriaddreamin/rehype-typst"
-import { QuartzTransformerPlugin } from "../types"
+import { QuartzTransformerPlugin } from "../../types/plugin"
 import { KatexOptions } from "katex"
 //@ts-ignore
 import { Options as TypstOptions } from "@myriaddreamin/rehype-typst"

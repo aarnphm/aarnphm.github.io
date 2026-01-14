@@ -1,5 +1,9 @@
 import { classNames } from "../util/lang"
-import { QuartzComponent, QuartzComponentConstructor, QuartzComponentProps } from "./types"
+import {
+  QuartzComponent,
+  QuartzComponentConstructor,
+  QuartzComponentProps,
+} from "../types/component"
 
 export default (() => {
   const Header: QuartzComponent = ({ children }: QuartzComponentProps) => {

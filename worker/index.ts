@@ -1,6 +1,7 @@
 import LFS_CONFIG from "./.lfsconfig.txt"
 import handleArxiv from "./arxiv"
 import handleCurius from "./curius"
+import { handleMentions } from "./mentions"
 import Garden from "./mcp"
 import { CommentsGitHubHandler, GitHubHandler } from "./oauth"
 import { OAuthProvider } from "@cloudflare/workers-oauth-provider"
@@ -436,6 +437,10 @@ export default {
       }
       case "/api/curius": {
         const resp = await handleCurius(request)
+        return withHeaders(resp, apiHeaders)
+      }
+      case "/api/mentions": {
+        const resp = await handleMentions(env)
         return withHeaders(resp, apiHeaders)
       }
       case "/api/pdf-proxy": {

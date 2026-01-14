@@ -1,4 +1,8 @@
-import { QuartzComponent, QuartzComponentConstructor, QuartzComponentProps } from "./types"
+import {
+  QuartzComponent,
+  QuartzComponentConstructor,
+  QuartzComponentProps,
+} from "../types/component"
 import { getAllSegmentPrefixes, resolveRelative, SimpleSlug, simplifySlug } from "../util/path"
 import { h, VNode } from "preact"
 import { i18n } from "../i18n"

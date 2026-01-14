@@ -152,4 +152,3 @@ We are left with questions that are both technical and philosophical.
 - How does a probabilistic system represent impossibility?
 
 We built the machine Wittgenstein described, but we built it out of probabilities instead of hard logic. And we are still climbing the ladder to figure out what it means.
-

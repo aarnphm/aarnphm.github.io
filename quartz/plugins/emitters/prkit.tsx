@@ -1,7 +1,7 @@
 import satori from "satori"
 import type { SatoriOptions } from "satori/wasm"
 import { GlobalConfiguration } from "../../cfg"
-import { QuartzEmitterPlugin } from "../types"
+import { QuartzEmitterPlugin } from "../../types/plugin"
 import { i18n } from "../../i18n"
 import { formatDate, getDate } from "../../components/Date"
 import { FilePath, FullSlug, joinSegments } from "../../util/path"

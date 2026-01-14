@@ -5,6 +5,15 @@ import { defaultKeymap, historyKeymap, history } from "@codemirror/commands"
 import { syntaxHighlighting, defaultHighlightStyle } from "@codemirror/language"
 import { autocompletion, completionStatus, moveCompletionSelection } from "@codemirror/autocomplete"
 import { wikilinkCompletionSource } from "./wikilink-completion"
+import { emojiCompletionSource } from "./emoji-completion"
+import { mentionCompletionSource } from "./mention-completion"
+import TurndownService from "turndown"
+
+const turndown = new TurndownService({
+  headingStyle: "atx",
+  codeBlockStyle: "fenced",
+  bulletListMarker: "-",
+})
 
 export interface MarkdownEditorConfig {
   parent: HTMLElement
@@ -147,9 +156,36 @@ export class MarkdownEditor {
       syntaxHighlighting(defaultHighlightStyle),
       EditorView.lineWrapping,
       autocompletion({
-        override: [wikilinkCompletionSource],
+        override: [wikilinkCompletionSource, emojiCompletionSource, mentionCompletionSource],
         closeOnBlur: false,
         activateOnTyping: true,
+      }),
+      EditorView.domEventHandlers({
+        paste(event, view) {
+          const html = event.clipboardData?.getData("text/html")
+          if (!html) return false
+
+          if (
+            !html.includes("<p>") &&
+            !html.includes("<div>") &&
+            !html.includes("<h") &&
+            !html.includes("<li>")
+          ) {
+            return false
+          }
+
+          event.preventDefault()
+          const md = turndown.turndown(html)
+
+          view.dispatch({
+            changes: {
+              from: view.state.selection.main.from,
+              to: view.state.selection.main.to,
+              insert: md,
+            },
+          })
+          return true
+        },
       }),
       transparentTheme,
     ]

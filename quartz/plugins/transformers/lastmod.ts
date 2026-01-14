@@ -1,7 +1,7 @@
 import fs from "node:fs/promises"
 import path from "path"
 import { Repository } from "@napi-rs/simple-git"
-import { QuartzTransformerPlugin } from "../types"
+import { QuartzTransformerPlugin } from "../../types/plugin"
 import { styleText } from "node:util"
 
 export interface Options {
