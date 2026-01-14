@@ -1,0 +1,66 @@
+%modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-modal);
+  display: none;
+  backdrop-filter: blur(12px);
+  background-color: color-mix(in srgb, var(--light) 80%, transparent);
+
+  &.active {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+%modal-content {
+  position: relative;
+  max-width: 80vw;
+  max-height: 80vh;
+  background-color: var(--light);
+  border: 1px solid var(--lightgray);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-modal);
+  overflow: hidden;
+}
+
+%modal-sidebar {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  z-index: var(--z-modal);
+  display: none;
+  width: min(400px, 90vw);
+  background-color: var(--light);
+  border-left: 1px solid var(--lightgray);
+  box-shadow: var(--shadow-modal);
+  overflow-y: auto;
+
+  &.active {
+    display: block;
+  }
+}
+
+%modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-4);
+  border-bottom: 1px solid var(--lightgray);
+}
+
+%modal-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--space-4);
+}
+
+%modal-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  border-top: 1px solid var(--lightgray);
+}

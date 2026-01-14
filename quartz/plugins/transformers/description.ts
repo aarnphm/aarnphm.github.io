@@ -10,8 +10,7 @@ import {
   resolveWikilinkTarget,
 } from "../../util/wikilinks"
 import { simplifySlug, type FullSlug, type SimpleSlug } from "../../util/path"
-import katex from "katex"
-import type { KatexOptions } from "katex"
+import { processWikilinksToHtml, renderLatexInString } from "../../util/description"
 
 export interface Options {
   descriptionLength: number
@@ -29,61 +28,6 @@ const urlRegex = new RegExp(
   /(https?:\/\/)?(?<domain>([\da-z\.-]+)\.([a-z\.]{2,6})(:\d+)?)(?<path>[\/\w\.-]*)(\?[\/\w\.=&;-]*)?/,
   "g",
 )
-
-const defaultKatexOptions: Omit<KatexOptions, "output"> = {
-  strict: true,
-  throwOnError: true,
-}
-
-function renderLatexInString(
-  text: string,
-  options: Omit<KatexOptions, "output"> = defaultKatexOptions,
-): string {
-  let result = text
-
-  const blockMathRegex = /\$\$([\s\S]*?)\$\$/g
-  result = result.replace(blockMathRegex, (match, math) => {
-    try {
-      return katex.renderToString(math.trim(), {
-        ...options,
-        displayMode: true,
-      })
-    } catch (error) {
-      return match
-    }
-  })
-
-  const inlineMathRegex = /(?<!\$)\$([^$\n]+?)\$(?!\$)/g
-  result = result.replace(inlineMathRegex, (match, math) => {
-    try {
-      return katex.renderToString(math.trim(), {
-        ...options,
-        displayMode: false,
-      })
-    } catch (error) {
-      return match
-    }
-  })
-
-  return result
-}
-
-function processWikilinksToHtml(text: string, currentSlug: FullSlug): string {
-  const wikilinks = extractWikilinks(text)
-  let result = text
-
-  for (const link of wikilinks) {
-    const resolved = resolveWikilinkTarget(link, currentSlug)
-    if (resolved) {
-      const displayText = link.alias || link.target
-      const href = `/${resolved.slug}${resolved.anchor || ""}`
-      const htmlLink = `<a href="${href}" class="internal">${displayText}</a>`
-      result = result.replace(link.raw, htmlLink)
-    }
-  }
-
-  return result
-}
 
 export const Description: QuartzTransformerPlugin<Partial<Options>> = (userOpts) => {
   const opts = { ...defaultOptions, ...userOpts }

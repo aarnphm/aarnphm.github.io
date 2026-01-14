@@ -38,19 +38,20 @@ metadata:
     letter        = "a".."z" ;
     digit         = "0".."9" ;
     character     = ? any printable ascii except newline ? ;
-modified: 2026-01-12 17:42:06 GMT-05:00
+modified: 2026-01-14 09:45:04 GMT-05:00
 tags:
   - fruit
   - evergreen
 title: stream
 ---
 
-## cat and the state of homeostasis
+## being a cat
 
 - [meta]:
   - date: 2026-01-12 17:41:48 GMT-05:00
   - tags:
     - life
+  - description: and the homeostasis state
 
 ---
 

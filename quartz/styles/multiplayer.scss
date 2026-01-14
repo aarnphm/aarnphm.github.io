@@ -377,7 +377,7 @@ $avatar-sm: 24px;
       margin-top: $space-2xs;
       overflow: hidden;
       display: -webkit-box;
-      -webkit-line-clamp: 4;
+      line-clamp: 4;
       -webkit-box-orient: vertical;
     }
 

@@ -1,13 +1,18 @@
 import { QuartzTransformerPlugin } from "../types"
 import type { Element, ElementContent, Root as HastRoot, RootContent } from "hast"
 import { toString } from "hast-util-to-string"
+import { toHtml } from "hast-util-to-html"
 import yaml from "js-yaml"
+import type { FullSlug } from "../../util/path"
+import { processWikilinksToHtml, renderLatexInString } from "../../util/description"
 
 export type StreamMetadata = Record<string, unknown>
 
 export interface StreamEntry {
   id: string
   title?: string
+  description?: string
+  descriptionHtml?: string
   metadata: StreamMetadata
   content: ElementContent[]
   date?: string
@@ -59,6 +64,82 @@ const extractNestedList = (li: Element): Element | null => {
   return null
 }
 
+const cloneContent = <T extends ElementContent>(node: T): T =>
+  typeof structuredClone === "function"
+    ? structuredClone(node)
+    : (JSON.parse(JSON.stringify(node)) as T)
+
+const extractInlineNodes = (li: Element): ElementContent[] => {
+  const nodes: ElementContent[] = []
+  for (const child of li.children as ElementContent[]) {
+    if (isElement(child) && child.tagName === "ul") continue
+    if (isElement(child) && child.tagName === "p") {
+      nodes.push(...(child.children as ElementContent[]))
+      continue
+    }
+    nodes.push(child)
+  }
+  return nodes
+}
+
+const escapeRegex = (value: string): string =>
+  value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
+
+const stripKeyPrefixFromNodes = (nodes: ElementContent[], key: string): ElementContent[] => {
+  const cloned = nodes.map((node) => cloneContent(node))
+  const pattern = new RegExp(`^\\s*${escapeRegex(key)}\\s*[:\\-–—]?\\s*`, "i")
+  let stripped = false
+
+  const visit = (node: ElementContent) => {
+    if (stripped) return
+    if (node.type === "text") {
+      const nextValue = node.value.replace(pattern, "")
+      if (nextValue !== node.value) {
+        node.value = nextValue
+        stripped = true
+        return
+      }
+      if (node.value.trim().length > 0) {
+        stripped = true
+      }
+      return
+    }
+    if (isElement(node)) {
+      node.children.forEach((child) => visit(child as ElementContent))
+    }
+  }
+
+  for (const node of cloned) {
+    visit(node)
+    if (stripped) break
+  }
+
+  return cloned
+}
+
+const trimLeadingEmptyTextNodes = (nodes: ElementContent[]): ElementContent[] => {
+  const trimmed: ElementContent[] = []
+  let leading = true
+
+  for (const node of nodes) {
+    if (leading && node.type === "text" && node.value.trim().length === 0) {
+      continue
+    }
+    leading = false
+    trimmed.push(node)
+  }
+
+  return trimmed
+}
+
+const inlineTextFromNodes = (nodes: ElementContent[]): string => {
+  const root: HastRoot = {
+    type: "root",
+    children: nodes,
+  }
+  return toString(root).trim()
+}
+
 const appendListToYaml = (list: Element, indent: number, lines: string[]): void => {
   const indentStr = "  ".repeat(indent)
 
@@ -94,7 +175,10 @@ const appendListToYaml = (list: Element, indent: number, lines: string[]): void 
   }
 }
 
-const extractMetadata = (list: Element): StreamMetadata | null => {
+const extractMetadata = (
+  list: Element,
+  currentSlug: FullSlug,
+): { metadata: StreamMetadata; descriptionHtml?: string } | null => {
   if (list.children.length === 0) return null
 
   const firstItem = list.children.find(isLi)
@@ -104,13 +188,15 @@ const extractMetadata = (list: Element): StreamMetadata | null => {
   if (!/^\[meta\](?:\s*[:\-–—])?$/.test(label)) return null
 
   const metaList = extractNestedList(firstItem)
-  if (!metaList || metaList.children.length === 0) return {}
+  if (!metaList || metaList.children.length === 0) return { metadata: {} }
 
   const metadata: StreamMetadata = {}
+  let descriptionHtml: string | undefined
 
   for (const item of metaList.children) {
     if (!isLi(item)) continue
-    const raw = getFirstTextContent(item).trim()
+    const inlineNodes = extractInlineNodes(item)
+    const raw = inlineTextFromNodes(inlineNodes)
     const sublist = extractNestedList(item)
 
     let keySource: string | undefined
@@ -133,6 +219,26 @@ const extractMetadata = (list: Element): StreamMetadata | null => {
 
     const normalizedKey = keySource.toLowerCase().replace(/\s+/g, "_")
 
+    if (normalizedKey === "description") {
+      const strippedNodes = trimLeadingEmptyTextNodes(
+        stripKeyPrefixFromNodes(inlineNodes, keySource),
+      )
+      const descriptionText = inlineTextFromNodes(strippedNodes)
+      if (descriptionText.length > 0) {
+        metadata[normalizedKey] = descriptionText
+      }
+      const htmlRoot: HastRoot = {
+        type: "root",
+        children: strippedNodes,
+      }
+      const rawHtml = toHtml(htmlRoot)
+      const processedHtml = renderLatexInString(processWikilinksToHtml(rawHtml, currentSlug))
+      if (processedHtml.trim().length > 0) {
+        descriptionHtml = processedHtml
+      }
+      continue
+    }
+
     if (sublist && (!value || value.length === 0)) {
       const yamlLines: string[] = []
       appendListToYaml(sublist, 0, yamlLines)
@@ -151,7 +257,7 @@ const extractMetadata = (list: Element): StreamMetadata | null => {
     metadata[normalizedKey] = value
   }
 
-  return Object.keys(metadata).length > 0 ? metadata : {}
+  return { metadata, descriptionHtml }
 }
 
 const parseDateValue = (value: unknown): { date?: string; timestamp?: number } => {
@@ -178,6 +284,7 @@ interface ParsedEntry {
   title?: ElementContent
   metadata: StreamMetadata
   content: ElementContent[]
+  descriptionHtml?: string
 }
 
 export const Stream: QuartzTransformerPlugin = () => {
@@ -188,6 +295,7 @@ export const Stream: QuartzTransformerPlugin = () => {
         () => {
           return (tree: HastRoot, file) => {
             if (file.data.slug !== "stream") return
+            const currentSlug = (file.data.slug ?? "stream") as FullSlug
 
             // at htmlPlugins stage, content is direct children of root (no body wrapper yet)
             const bodyChildren = tree.children.filter(
@@ -229,15 +337,16 @@ export const Stream: QuartzTransformerPlugin = () => {
               }
 
               if (isUl(node)) {
-                const metadata = extractMetadata(node)
-                if (metadata !== null) {
+                const metaResult = extractMetadata(node, currentSlug)
+                if (metaResult !== null) {
                   if (!currentEntry) {
                     currentEntry = {
                       metadata: {},
                       content: [],
                     }
                   }
-                  currentEntry.metadata = metadata
+                  currentEntry.metadata = metaResult.metadata
+                  currentEntry.descriptionHtml = metaResult.descriptionHtml
                   indicesToRemove.add(i)
                   continue
                 }
@@ -284,12 +393,32 @@ export const Stream: QuartzTransformerPlugin = () => {
               }
 
               const cleanMetadata = { ...entry.metadata }
+              const descriptionValue = cleanMetadata.description
+              let description: string | undefined
+              if (Array.isArray(descriptionValue)) {
+                const joined = descriptionValue.map((value) => String(value)).join(" ").trim()
+                if (joined.length > 0) {
+                  description = joined
+                }
+              } else if (descriptionValue !== undefined && descriptionValue !== null) {
+                const asString = String(descriptionValue).trim()
+                if (asString.length > 0) {
+                  description = asString
+                }
+              }
+              const fallbackDescriptionHtml =
+                description && !entry.descriptionHtml
+                  ? renderLatexInString(processWikilinksToHtml(description, currentSlug))
+                  : undefined
+
               delete cleanMetadata.date
               delete cleanMetadata.importance
 
               return {
                 id: entryId,
                 title: entry.title ? toString(entry.title) : undefined,
+                description,
+                descriptionHtml: entry.descriptionHtml ?? fallbackDescriptionHtml,
                 metadata: cleanMetadata,
                 content: entry.content,
                 date,

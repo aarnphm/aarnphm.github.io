@@ -191,6 +191,10 @@ async function renderCanvas(container: HTMLElement) {
 
     const [canvasData, metaMap] = await Promise.all([dataPromise, metaPromise])
     const cfg: CanvasConfig = cfgAttr ? JSON.parse(cfgAttr) : {}
+    if (isEmbed) {
+      cfg.drag = false
+      cfg.zoom = false
+    }
 
     if (!canvasData.nodes || canvasData.nodes.length === 0) {
       container.textContent = "Empty canvas"
@@ -454,13 +458,13 @@ async function renderCanvas(container: HTMLElement) {
       }
     }
 
-    // for embeds: add click overlay to navigate to full canvas page
     if (isEmbed && navigateTo) {
       const overlay = document.createElement("div")
       overlay.className = "canvas-embed-overlay"
       overlay.style.cssText =
         "position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1000; cursor: pointer;"
       overlay.setAttribute("aria-label", `view full canvas: ${navigateTo}`)
+      overlay.setAttribute("role", "link")
       overlay.addEventListener("click", () => {
         const path = navigateTo.startsWith("/") ? navigateTo : `/${navigateTo}`
         window.spaNavigate(new URL(path, window.location.origin))

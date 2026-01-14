@@ -235,7 +235,7 @@ li:has(> .folder-outer:not(.open)) > .folder-container > svg {
 
     .explorer-content {
       box-sizing: border-box;
-      z-index: 100;
+      z-index: var(--z-dropdown);
       position: absolute;
       top: 0;
       left: 0;
@@ -257,7 +257,7 @@ li:has(> .folder-outer:not(.open)) > .folder-container > svg {
     .mobile-explorer {
       margin: 0;
       padding: 5px;
-      z-index: 101;
+      z-index: calc(var(--z-dropdown) + 1);
 
       .lucide-menu {
         stroke: var(--darkgray);

@@ -5,6 +5,8 @@
 @use "./variables.scss" as *;
 @use "./mixin.scss" as *;
 @use "./multiplayer.scss";
+@use "./fonts.scss";
+@use "./print.scss";
 @use "./pages/menu.scss";
 @use "./pages/quotes.scss";
 @use "./pages/curius.scss";
@@ -18,221 +20,11 @@
 @use "./pages/bases.scss";
 @use "./pages/lydia.scss";
 
-// fonts from /static/ (legacy)
-@include font-face(
-  "ABC Diatype Light",
-  "ABCDiatype-Light.woff2",
-  "woff2",
-  normal,
-  normal,
-  "/static/"
-);
-@include font-face(
-  "ITCGaramondStdLtCond",
-  "ITCGaramondStdLtCond.woff2",
-  "woff2",
-  normal,
-  normal,
-  "/static/"
-);
-@include font-face(
-  "GT Sectra Display",
-  "GT-Sectra-Display-Regular.woff",
-  "woff",
-  normal,
-  normal,
-  "/static/"
-);
-@include font-face("GT Sectra Book", "GT-Sectra-Book.woff", "woff", normal, normal, "/static/");
-@include font-face(
-  "EditorialNew Ultralight",
-  "EditorialNew-Ultralight.woff2",
-  "woff2",
-  normal,
-  normal,
-  "/static/"
-);
-@include font-face(
-  "Playfair Display",
-  "PlayfairDisplay.woff2",
-  "woff2",
-  normal,
-  normal,
-  "/static/"
-);
-@include font-face("Playfair Display", "PlayfairDisplay.woff", "woff", normal, normal, "/static/");
-@include font-face(
-  "Departure Mono",
-  "DepartureMono-Regular.woff",
-  "woff",
-  normal,
-  normal,
-  "/static/"
-);
-@include font-face(
-  "Departure Mono",
-  "DepartureMono-Regular.woff2",
-  "woff2",
-  normal,
-  normal,
-  "/static/"
-);
-@include font-face(
-  "Space Groteskque",
-  "SpaceGrotesk-VariableFont_wght.ttf",
-  "ttf",
-  normal,
-  normal,
-  "/static/"
-);
-
-// fonts from KV (/fonts/)
-@include font-face("PP Neue Montreal", "PPNeueMontreal-Thin.woff2", "woff2", normal, 100);
-@include font-face("PP Neue Montreal", "PPNeueMontreal-ThinItalic.woff2", "woff2", italic, 100);
-@include font-face("PP Neue Montreal", "PPNeueMontreal-Light.woff2", "woff2", normal, 300);
-@include font-face("PP Neue Montreal", "PPNeueMontreal-LightItalic.woff2", "woff2", italic, 300);
-@include font-face("PP Neue Montreal", "PPNeueMontreal-Book.woff2", "woff2", normal, 350);
-@include font-face("PP Neue Montreal", "PPNeueMontreal-BookItalic.woff2", "woff2", italic, 350);
-@include font-face("PP Neue Montreal", "PPNeueMontreal-Regular.woff2", "woff2", normal, 400);
-@include font-face("PP Neue Montreal", "PPNeueMontreal-Italic.woff2", "woff2", italic, 400);
-@include font-face("PP Neue Montreal", "PPNeueMontreal-Medium.woff2", "woff2", normal, 500);
-@include font-face("PP Neue Montreal", "PPNeueMontreal-MediumItalic.woff2", "woff2", italic, 500);
-@include font-face("PP Neue Montreal", "PPNeueMontreal-SemiBold.woff2", "woff2", normal, 600);
-@include font-face("PP Neue Montreal", "PPNeueMontreal-SemiBolditalic.woff2", "woff2", italic, 600);
-@include font-face("PP Neue Montreal", "PPNeueMontreal-Bold.woff2", "woff2", normal, 700);
-@include font-face("PP Neue Montreal", "PPNeueMontreal-BoldItalic.woff2", "woff2", italic, 700);
-@include font-face("Berkeley Mono", "TX-02-N14XWV3W-Thin.woff2", "woff2", normal, 100);
-@include font-face("Berkeley Mono", "TX-02-Thin-Oblique.woff2", "woff2", italic, 100);
-@include font-face("Berkeley Mono", "TX-02-ExtraLight.woff2", "woff2", normal, 200);
-@include font-face("Berkeley Mono", "TX-02-ExtraLight-Oblique.woff2", "woff2", italic, 200);
-@include font-face("Berkeley Mono", "TX-02-Light.woff2", "woff2", normal, 300);
-@include font-face("Berkeley Mono", "TX-02-Light-Oblique.woff2", "woff2", italic, 300);
-@include font-face("Berkeley Mono", "TX-02-SemiLight.woff2", "woff2", normal, 350);
-@include font-face("Berkeley Mono", "TX-02-SemiLight-Oblique.woff2", "woff2", italic, 350);
-@include font-face("Berkeley Mono", "TX-02-Book.woff2", "woff2", normal, 375);
-@include font-face("Berkeley Mono", "TX-02-Book-Oblique.woff2", "woff2", italic, 375);
-@include font-face("Berkeley Mono", "TX-02-Regular.woff2", "woff2", normal, 400);
-@include font-face("Berkeley Mono", "TX-02-Oblique.woff2", "woff2", italic, 400);
-@include font-face("Berkeley Mono", "TX-02-Retina.woff2", "woff2", normal, 450);
-@include font-face("Berkeley Mono", "TX-02-Retina-Oblique.woff2", "woff2", italic, 450);
-@include font-face("Berkeley Mono", "TX-02-Medium.woff2", "woff2", normal, 500);
-@include font-face("Berkeley Mono", "TX-02-Medium-Oblique.woff2", "woff2", italic, 500);
-@include font-face("Berkeley Mono", "TX-02-SemiBold.woff2", "woff2", normal, 600);
-@include font-face("Berkeley Mono", "TX-02-SemiBold-Oblique.woff2", "woff2", italic, 600);
-@include font-face("Berkeley Mono", "TX-02-Bold.woff2", "woff2", normal, 700);
-@include font-face("Berkeley Mono", "TX-02-Bold-Oblique.woff2", "woff2", italic, 700);
-@include font-face("Berkeley Mono", "TX-02-ExtraBold.woff2", "woff2", normal, 800);
-@include font-face("Berkeley Mono", "TX-02-ExtraBold-Oblique.woff2", "woff2", italic, 800);
-@include font-face("Berkeley Mono", "TX-02-Black.woff2", "woff2", normal, 900);
-@include font-face("Berkeley Mono", "TX-02-Black-Oblique.woff2", "woff2", italic, 900);
-@include font-face("Parclo Serif", "ParcloSerifStudent-Thin.woff2", "woff2", normal, 100);
-@include font-face("Parclo Serif", "ParcloSerifStudent-ThinItalic.woff2", "woff2", italic, 100);
-@include font-face("Parclo Serif", "ParcloSerifStudent-Light.woff2", "woff2", normal, 300);
-@include font-face("Parclo Serif", "ParcloSerifStudent-LightItalic.woff2", "woff2", italic, 300);
-@include font-face("Parclo Serif", "ParcloSerifStudent-Regular.woff2", "woff2", normal, 400);
-@include font-face("Parclo Serif", "ParcloSerifStudent-Italic.woff2", "woff2", italic, 400);
-@include font-face("Parclo Serif", "ParcloSerifStudent-Medium.woff2", "woff2", normal, 500);
-@include font-face("Parclo Serif", "ParcloSerifStudent-MediumItalic.woff2", "woff2", italic, 500);
-@include font-face("Parclo Serif", "ParcloSerifStudent-SemiBold.woff2", "woff2", normal, 600);
-@include font-face("Parclo Serif", "ParcloSerifStudent-SemiBoldItalic.woff2", "woff2", italic, 600);
-@include font-face("Parclo Serif", "ParcloSerifStudent-Bold.woff2", "woff2", normal, 700);
-@include font-face("Parclo Serif", "ParcloSerifStudent-BoldItalic.woff2", "woff2", italic, 700);
-@include font-face("Parclo Serif", "ParcloSerifStudent-Black.woff2", "woff2", normal, 800);
-@include font-face("Parclo Serif", "ParcloSerifStudent-BlackItalic.woff2", "woff2", italic, 800);
-@include font-face("Parclo Serif", "ParcloSerifStudent-ExtraBlack.woff2", "woff2", normal, 900);
-@include font-face(
-  "Parclo Serif",
-  "ParcloSerifStudent-ExtraBlackItalic.woff2",
-  "woff2",
-  italic,
-  900
-);
-@include font-face("Parclo Serif", "ParcloSerifStudent-Ultra.woff2", "woff2", normal, 950);
-@include font-face("Parclo Serif", "ParcloSerifStudent-UltraItalic.woff2", "woff2", italic, 950);
-
 [role="article"]:hover {
   border: 1px solid var(--highlight);
   background: var(--highlight);
-  border-radius: 5px;
+  border-radius: var(--radius-md);
 }
-
-// ----- print stuff -----
-
-@media print {
-  @page {
-    margin: 1in;
-    size: A4;
-  }
-
-  video,
-  .sidebar,
-  .toolbar,
-  .graph,
-  .backlinks,
-  .callout-icon,
-  .toggle-button,
-  header,
-  a[data-role="anchor"],
-  a[data-footnote-backref],
-  hr,
-  footer {
-    display: none !important;
-  }
-
-  section[data-footnotes],
-  section[data-references] {
-    break-before: page;
-    page-break-inside: avoid;
-  }
-
-  .center {
-    border: unset !important;
-    margin-top: 0 !important;
-
-    & > * {
-      padding: 0 !important;
-    }
-  }
-
-  .collapsible-header-content-outer {
-    padding-left: 0 !important;
-
-    & > .collapsible-header-content {
-      padding-left: 0 !important;
-      border-left: unset !important;
-    }
-  }
-
-  .callout[data-callout] {
-    --color: inherit !important;
-    --border: inherit !important;
-    --bg: inherit !important;
-    border-left: 3px solid var(--tertiary);
-    max-height: unset !important;
-
-    break-inside: avoid;
-    page-break-inside: avoid;
-
-    // For callouts that are forced to break to next page
-    &.force-page-break {
-      break-before: page;
-      page-break-before: always;
-    }
-
-    // Ensure content within callouts doesn't break
-    .callout-title {
-      break-after: avoid;
-      page-break-after: avoid;
-    }
-
-    .callout-content {
-      break-before: avoid;
-      page-break-before: avoid;
-    }
-  }
-}
-
-// ----- DOM customization -----
 
 hgroup {
   & > .description {
@@ -511,7 +303,6 @@ hr {
   isolation: isolate;
 }
 
-// fade-in elements
 body {
   & {
     --animation-duration: #{$base-duration}s;
@@ -552,8 +343,6 @@ body {
 .preview-container {
   flex-grow: 1;
 }
-
-// ----- class customization -----
 
 .article-title {
   font-size: 2.6rem;
@@ -736,250 +525,94 @@ footer[class~="menu"] {
   padding: 0px;
 }
 
-.callout[data-callout="note"] {
+.callout[data-callout] {
   --callout-color: inherit;
-  background-color: light-dark(rgba(32, 94, 166, 0.1), rgba(67, 133, 190, 0.1));
-  border: 0px solid light-dark(rgba(32, 94, 166, 0.25), rgba(67, 133, 190, 0.25));
-  border-top-left-radius: 4px;
-  border-top-right-radius: 4px;
-  border-bottom-left-radius: 4px;
-  border-bottom-right-radius: 4px;
-  border-start-start-radius: 4px;
-  border-start-end-radius: 4px;
-  border-end-start-radius: 4px;
-  border-end-end-radius: 4px;
+  border-radius: var(--radius-md);
 }
 
-.callout[data-callout="note"] .callout-title .callout-icon {
+.callout[data-callout] .callout-title .callout-icon {
   fill: none;
+}
+
+.callout[data-callout="note"] {
+  background-color: light-dark(rgba(32, 94, 166, 0.1), rgba(67, 133, 190, 0.1));
+  border: 0px solid light-dark(rgba(32, 94, 166, 0.25), rgba(67, 133, 190, 0.25));
+}
+.callout[data-callout="note"] .callout-title .callout-icon {
   stroke: rgb(67, 133, 190);
 }
 
 .callout[data-callout="abstract"] {
-  --callout-color: inherit;
   background-color: light-dark(rgba(36, 131, 123, 0.1), rgba(58, 169, 159, 0.1));
   border: 0px solid light-dark(rgba(36, 131, 123, 0.25), rgba(58, 169, 159, 0.25));
-  border-top-left-radius: 4px;
-  border-top-right-radius: 4px;
-  border-bottom-left-radius: 4px;
-  border-bottom-right-radius: 4px;
-  border-start-start-radius: 4px;
-  border-start-end-radius: 4px;
-  border-end-start-radius: 4px;
-  border-end-end-radius: 4px;
 }
-
 .callout[data-callout="abstract"] .callout-title .callout-icon {
-  fill: none;
   stroke: rgb(58, 169, 159);
 }
 
-.callout[data-callout="info"] {
-  --callout-color: inherit;
-  background-color: light-dark(rgba(32, 94, 166, 0.1), rgba(67, 133, 190, 0.1));
-  border: 0px solid light-dark(rgba(32, 94, 166, 0.25), rgba(67, 133, 190, 0.25));
-  border-top-left-radius: 4px;
-  border-top-right-radius: 4px;
-  border-bottom-left-radius: 4px;
-  border-bottom-right-radius: 4px;
-  border-start-start-radius: 4px;
-  border-start-end-radius: 4px;
-  border-end-start-radius: 4px;
-  border-end-end-radius: 4px;
-}
-
-.callout[data-callout="info"] .callout-title .callout-icon {
-  fill: none;
-  stroke: rgb(67, 133, 190);
-}
-
+.callout[data-callout="info"],
 .callout[data-callout="todo"] {
-  --callout-color: inherit;
   background-color: light-dark(rgba(32, 94, 166, 0.1), rgba(67, 133, 190, 0.1));
   border: 0px solid light-dark(rgba(32, 94, 166, 0.25), rgba(67, 133, 190, 0.25));
-  border-top-left-radius: 4px;
-  border-top-right-radius: 4px;
-  border-bottom-left-radius: 4px;
-  border-bottom-right-radius: 4px;
-  border-start-start-radius: 4px;
-  border-start-end-radius: 4px;
-  border-end-start-radius: 4px;
-  border-end-end-radius: 4px;
 }
-
+.callout[data-callout="info"] .callout-title .callout-icon,
 .callout[data-callout="todo"] .callout-title .callout-icon {
-  fill: none;
   stroke: rgb(67, 133, 190);
 }
 
 .callout[data-callout="tip"] {
-  --callout-color: inherit;
   background-color: light-dark(rgba(36, 131, 123, 0.1), rgba(58, 169, 159, 0.1));
   border: 0px solid light-dark(rgba(36, 131, 123, 0.25), rgba(58, 169, 159, 0.25));
-  border-top-left-radius: 4px;
-  border-top-right-radius: 4px;
-  border-bottom-left-radius: 4px;
-  border-bottom-right-radius: 4px;
-  border-start-start-radius: 4px;
-  border-start-end-radius: 4px;
-  border-end-start-radius: 4px;
-  border-end-end-radius: 4px;
 }
-
 .callout[data-callout="tip"] .callout-title .callout-icon {
-  fill: none;
   stroke: rgb(58, 169, 159);
 }
 
 .callout[data-callout="success"] {
-  --callout-color: inherit;
   background-color: light-dark(rgba(102, 128, 11, 0.1), rgba(135, 154, 57, 0.1));
   border: 0px solid light-dark(rgba(102, 128, 11, 0.25), rgba(135, 154, 57, 0.25));
-  border-top-left-radius: 4px;
-  border-top-right-radius: 4px;
-  border-bottom-left-radius: 4px;
-  border-bottom-right-radius: 4px;
-  border-start-start-radius: 4px;
-  border-start-end-radius: 4px;
-  border-end-start-radius: 4px;
-  border-end-end-radius: 4px;
 }
-
 .callout[data-callout="success"] .callout-title .callout-icon {
-  fill: none;
   stroke: rgb(135, 154, 57);
 }
 
-.callout[data-callout="question"] {
-  --callout-color: inherit;
-  background-color: light-dark(rgba(188, 82, 21, 0.1), rgba(218, 112, 44, 0.1));
-  border: 0px solid light-dark(rgba(188, 82, 21, 0.25), rgba(218, 112, 44, 0.25));
-  border-top-left-radius: 4px;
-  border-top-right-radius: 4px;
-  border-bottom-left-radius: 4px;
-  border-bottom-right-radius: 4px;
-  border-start-start-radius: 4px;
-  border-start-end-radius: 4px;
-  border-end-start-radius: 4px;
-  border-end-end-radius: 4px;
-}
-
-.callout[data-callout="question"] .callout-title .callout-icon {
-  fill: none;
-  stroke: rgb(218, 112, 44);
-}
-
+.callout[data-callout="question"],
 .callout[data-callout="warning"] {
-  --callout-color: inherit;
   background-color: light-dark(rgba(188, 82, 21, 0.1), rgba(218, 112, 44, 0.1));
   border: 0px solid light-dark(rgba(188, 82, 21, 0.25), rgba(218, 112, 44, 0.25));
-  border-top-left-radius: 4px;
-  border-top-right-radius: 4px;
-  border-bottom-left-radius: 4px;
-  border-bottom-right-radius: 4px;
-  border-start-start-radius: 4px;
-  border-start-end-radius: 4px;
-  border-end-start-radius: 4px;
-  border-end-end-radius: 4px;
 }
-
+.callout[data-callout="question"] .callout-title .callout-icon,
 .callout[data-callout="warning"] .callout-title .callout-icon {
-  fill: none;
   stroke: rgb(218, 112, 44);
 }
 
-.callout[data-callout="danger"] {
-  --callout-color: inherit;
+.callout[data-callout="danger"],
+.callout[data-callout="failure"],
+.callout[data-callout="bug"] {
   background-color: light-dark(rgba(175, 48, 41, 0.1), rgba(209, 77, 65, 0.1));
   border: 0px solid light-dark(rgba(175, 48, 41, 0.25), rgba(209, 77, 65, 0.25));
-  border-top-left-radius: 4px;
-  border-top-right-radius: 4px;
-  border-bottom-left-radius: 4px;
-  border-bottom-right-radius: 4px;
-  border-start-start-radius: 4px;
-  border-start-end-radius: 4px;
-  border-end-start-radius: 4px;
-  border-end-end-radius: 4px;
 }
-
-.callout[data-callout="danger"] .callout-title .callout-icon {
-  fill: none;
+.callout[data-callout="danger"] .callout-title .callout-icon,
+.callout[data-callout="bug"] .callout-title .callout-icon {
   stroke: rgb(209, 77, 65);
 }
-
-.callout[data-callout="failure"] {
-  --callout-color: inherit;
-  background-color: light-dark(rgba(175, 48, 41, 0.1), rgba(209, 77, 65, 0.1));
-  border: 0px solid light-dark(rgba(175, 48, 41, 0.25), rgba(209, 77, 65, 0.25));
-  border-top-left-radius: 4px;
-  border-top-right-radius: 4px;
-  border-bottom-left-radius: 4px;
-  border-bottom-right-radius: 4px;
-  border-start-start-radius: 4px;
-  border-start-end-radius: 4px;
-  border-end-start-radius: 4px;
-  border-end-end-radius: 4px;
-}
-
 .callout[data-callout="failure"] .callout-title .callout-icon {
-  fill: none;
   stroke: rgb(135, 133, 128);
 }
 
-.callout[data-callout="bug"] {
-  --callout-color: inherit;
-  background-color: light-dark(rgba(175, 48, 41, 0.1), rgba(209, 77, 65, 0.1));
-  border: 0px solid light-dark(rgba(175, 48, 41, 0.25), rgba(209, 77, 65, 0.25));
-  border-top-left-radius: 4px;
-  border-top-right-radius: 4px;
-  border-bottom-left-radius: 4px;
-  border-bottom-right-radius: 4px;
-  border-start-start-radius: 4px;
-  border-start-end-radius: 4px;
-  border-end-start-radius: 4px;
-  border-end-end-radius: 4px;
-}
-
-.callout[data-callout="bug"] .callout-title .callout-icon {
-  fill: none;
-  stroke: rgb(209, 77, 65);
-}
-
 .callout[data-callout="example"] {
-  --callout-color: inherit;
   background-color: light-dark(rgba(94, 64, 157, 0.1), rgba(139, 126, 200, 0.1));
   border: 0px solid light-dark(rgba(94, 64, 157, 0.25), rgba(139, 126, 200, 0.25));
-  border-top-left-radius: 4px;
-  border-top-right-radius: 4px;
-  border-bottom-left-radius: 4px;
-  border-bottom-right-radius: 4px;
-  border-start-start-radius: 4px;
-  border-start-end-radius: 4px;
-  border-end-start-radius: 4px;
-  border-end-end-radius: 4px;
 }
-
 .callout[data-callout="example"] .callout-title .callout-icon {
-  fill: none;
   stroke: rgb(206, 205, 195);
 }
 
 .callout[data-callout="quote"] {
-  --callout-color: inherit;
   background-color: rgba(158, 158, 158, 0.1);
   border: 0px solid rgba(158, 158, 158, 0.25);
-  border-top-left-radius: 4px;
-  border-top-right-radius: 4px;
-  border-bottom-left-radius: 4px;
-  border-bottom-right-radius: 4px;
-  border-start-start-radius: 4px;
-  border-start-end-radius: 4px;
-  border-end-start-radius: 4px;
-  border-end-end-radius: 4px;
 }
-
 .callout[data-callout="quote"] .callout-title .callout-icon {
-  fill: none;
   stroke: rgb(158, 158, 158);
 }
 

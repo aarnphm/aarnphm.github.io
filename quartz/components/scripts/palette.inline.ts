@@ -489,13 +489,15 @@ document.addEventListener("nav", async (e) => {
 
     if (e.metaKey && e.altKey && e.key === "Enter") {
       if (!currentHover) return
+      const slug = currentHover.dataset.slug
+      if (!slug) return
 
       try {
         const asidePanel = getOrCreateSidePanel()
-        await fetchContent(currentSlug, currentHover.dataset.slug as FullSlug).then((innerDiv) => {
-          asidePanel.dataset.slug = currentHover!.dataset.slug
+        await fetchContent(currentSlug, slug as FullSlug).then((innerDiv) => {
+          asidePanel.dataset.slug = slug
           createSidePanel(asidePanel, ...innerDiv)
-          window.notifyNav(currentHover!.dataset.slug as FullSlug)
+          window.notifyNav(slug as FullSlug)
           hidePalette()
         })
       } catch (error) {

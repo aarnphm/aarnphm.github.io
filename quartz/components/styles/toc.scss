@@ -43,7 +43,7 @@ nav#toc-vertical {
   position: fixed;
   inset: 30% 0 0;
   cursor: pointer;
-  z-index: 999;
+  z-index: var(--z-popover);
   max-width: calc(var(--indicator-position) * 0.8);
 
   button.toc-item {

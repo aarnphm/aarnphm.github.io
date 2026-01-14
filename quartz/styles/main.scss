@@ -1,3 +1,5 @@
+@use "./tokens";
+
 // contains all root variables
 // This file should be isomorphic, meaning it should only be imported once.
 :root {

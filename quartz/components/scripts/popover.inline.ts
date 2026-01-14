@@ -477,9 +477,12 @@ async function mouseClickHandler(evt: MouseEvent) {
     evt.preventDefault()
     evt.stopPropagation()
 
+    // derive slug from href if data-slug not set (e.g. generated pages like /tags/*)
+    const slug = link.dataset.slug || targetUrl.pathname
+
     try {
       const asidePanel = getOrCreateSidePanel()
-      asidePanel.dataset.slug = link.dataset.slug
+      asidePanel.dataset.slug = slug
 
       let response: Response | void
       if (link.dataset.arxivId) {
@@ -521,7 +524,7 @@ async function mouseClickHandler(evt: MouseEvent) {
         createSidePanel(asidePanel, ...elts)
       }
 
-      window.notifyNav(link.dataset.slug as FullSlug)
+      window.notifyNav(slug as FullSlug)
     } catch (error) {
       console.error("Failed to create side panel:", error)
     }

@@ -46,12 +46,13 @@ ul#helper {
 }
 
 .sidepanel-container {
+  --sidepanel-width: calc(var(--grid-col-width) * 3);
   // NOTE: This will be updated dynamically
   top: 0;
   right: 0;
   bottom: 0;
   position: fixed;
-  width: calc(var(--grid-col-width) * 3);
+  width: var(--sidepanel-width);
   transition: right 0.3s ease-in-out;
   grid-column: 8/-1;
 
@@ -60,7 +61,8 @@ ul#helper {
   }
 
   @media all and ($tablet) {
-    width: calc(var(--grid-col-width) * 3);
+    --sidepanel-width: calc(var(--grid-col-width) * 2);
+    width: var(--sidepanel-width);
   }
 
   & > .sidepanel-inner {
@@ -70,14 +72,13 @@ ul#helper {
     max-height: 100%;
     display: flex;
     flex-direction: column;
+    box-sizing: border-box;
 
     border: 1px solid var(--lightgray);
     border-radius: 0;
     border-top-width: 0px;
     background-color: var(--light);
-    box-shadow:
-      0 14px 50px rgba(27, 33, 48, 0.12),
-      0 10px 30px rgba(27, 33, 48, 0.16);
+    box-shadow: var(--shadow-modal);
     overflow: hidden auto;
     white-space: normal;
 
@@ -105,7 +106,7 @@ ul#helper {
 
     & > * {
       padding: var(--sidepanel-padding);
-      z-index: 998;
+      z-index: calc(var(--z-popover) - 1);
     }
 
     footer {
@@ -160,7 +161,7 @@ ul#helper {
     }
 
     & > .sidepanel-header {
-      position: sticky;
+      position: fixed;
       bottom: 0;
       margin-top: auto;
       gap: 0.3em;
@@ -168,8 +169,10 @@ ul#helper {
       justify-content: flex-end;
       border-top: 1px solid var(--lightgray);
       background: var(--light);
-      z-index: 999;
+      z-index: var(--z-popover);
       max-height: 24px;
+      width: var(--sidepanel-width);
+      box-sizing: border-box;
 
       & > .redirect-button,
       & > .close-button {
@@ -230,7 +233,7 @@ ul#helper {
           display: flex;
           justify-content: space-between;
 
-          border-radius: 4px;
+          border-radius: var(--radius-md);
           white-space: pre-wrap;
           padding-inline-start: 12px;
           padding: 6px 12px;
