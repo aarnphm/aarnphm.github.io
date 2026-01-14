@@ -13,6 +13,7 @@ export type State = {
   pendingHashCommentId: string | null
   bubbleOffsets: Map<string, { x: number; y: number }>
   correctedAnchors: Set<string>
+  unreadCommentIds: Set<string>
 }
 
 export type Event =
@@ -36,6 +37,8 @@ export type Event =
   | { type: "ui.bubble.offsetUpdated"; commentId: string; offset: { x: number; y: number } }
   | { type: "ui.bubbleOffsets.prune"; commentIds: string[] }
   | { type: "ui.correctedAnchor.add"; opId: string }
+  | { type: "ui.comment.unread"; commentId: string }
+  | { type: "ui.comment.read"; commentId: string }
   | { type: "dom.collapse" }
 
 export type Effect =
@@ -67,6 +70,7 @@ export function createState(): State {
     pendingHashCommentId: null,
     bubbleOffsets: new Map(),
     correctedAnchors: new Set(),
+    unreadCommentIds: new Set(),
   }
 }
 
@@ -321,6 +325,28 @@ export function reduce(state: State, event: Event): { state: State; effects: Eff
       return {
         state: { ...state, correctedAnchors },
         effects: [],
+      }
+    }
+    case "ui.comment.unread": {
+      if (state.unreadCommentIds.has(event.commentId)) {
+        return { state, effects: [] }
+      }
+      const unreadCommentIds = new Set(state.unreadCommentIds)
+      unreadCommentIds.add(event.commentId)
+      return {
+        state: { ...state, unreadCommentIds },
+        effects: [{ type: "render" }],
+      }
+    }
+    case "ui.comment.read": {
+      if (!state.unreadCommentIds.has(event.commentId)) {
+        return { state, effects: [] }
+      }
+      const unreadCommentIds = new Set(state.unreadCommentIds)
+      unreadCommentIds.delete(event.commentId)
+      return {
+        state: { ...state, unreadCommentIds },
+        effects: [{ type: "render" }],
       }
     }
     case "dom.collapse": {

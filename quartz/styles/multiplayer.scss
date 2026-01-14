@@ -281,6 +281,11 @@ $avatar-sm: 24px;
     border-radius var(--expand-animation-time) ease-in-out,
     box-shadow var(--expand-animation-time) ease-in-out;
 
+  &.comment-bubble-unread {
+    background: rgba($primary-blue, 0.12);
+    border-color: rgba($primary-blue, 0.35);
+  }
+
   .reply-top {
     display: flex;
     margin: 0;
@@ -431,6 +436,14 @@ $avatar-sm: 24px;
 
       .modal-actions-button {
         @include icon-button(20px);
+      }
+
+      .modal-resolve-button {
+        color: var(--dark);
+
+        &:hover {
+          color: $primary-blue;
+        }
       }
     }
 

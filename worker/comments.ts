@@ -17,7 +17,7 @@ type Comment = Omit<DbComment, "anchor"> & {
   anchor: Anchor | null
 }
 
-type OperationType = "new" | "update" | "delete"
+type OperationType = "new" | "update" | "delete" | "resolve"
 
 type OperationInput = {
   opId: string
@@ -278,6 +278,7 @@ export class MultiplayerComments extends DurableObject<Env> {
         createdAt: comment.createdAt,
         updatedAt: null,
         deletedAt: null,
+        resolvedAt: comment.resolvedAt ?? null,
         anchor: anchorJson,
         orphaned: comment.orphaned ?? null,
         lastRecoveredAt: comment.lastRecoveredAt ?? null,
@@ -321,6 +322,19 @@ export class MultiplayerComments extends DurableObject<Env> {
     return this.normalizeComment({ ...comment, deletedAt: now })
   }
 
+  private async persistResolveComment(commentId: string): Promise<Comment | null> {
+    const db = drizzle(this.env.COMMENTS_ROOM)
+    const now = Date.now()
+
+    const comment = await db.select().from(comments).where(eq(comments.id, commentId)).get()
+    if (!comment) return null
+    if (comment.deletedAt) return null
+    if (comment.resolvedAt) return this.normalizeComment(comment)
+
+    await db.update(comments).set({ resolvedAt: now }).where(eq(comments.id, commentId))
+    return this.normalizeComment({ ...comment, resolvedAt: now })
+  }
+
   private async applyOperation(
     op: OperationInput,
     pageId: string,
@@ -340,6 +354,8 @@ export class MultiplayerComments extends DurableObject<Env> {
       saved = await this.persistUpdateComment(op.comment)
     } else if (op.type === "delete") {
       saved = await this.persistDeleteComment(op.comment.id)
+    } else if (op.type === "resolve") {
+      saved = await this.persistResolveComment(op.comment.id)
     }
 
     if (!saved) return null
@@ -406,7 +422,9 @@ export class MultiplayerComments extends DurableObject<Env> {
         const existing = await db
           .select()
           .from(comments)
-          .where(and(eq(comments.pageId, pageId), isNull(comments.deletedAt)))
+          .where(
+            and(eq(comments.pageId, pageId), isNull(comments.deletedAt), isNull(comments.resolvedAt)),
+          )
           .orderBy(comments.createdAt)
 
         server.send(
@@ -477,6 +495,20 @@ export class MultiplayerComments extends DurableObject<Env> {
       const op: OperationInput = { opId, type: "delete", comment }
       const record = await this.applyOperation(op, pageId)
       if (!record) return new Response("failed to delete comment", { status: 500 })
+      return Response.json({ op: record }, { status: 200 })
+    }
+
+    if (request.method === "PATCH" && url.pathname === "/comments/resolve") {
+      const commentId = url.searchParams.get("id")
+      if (!commentId) {
+        return new Response("comment id required", { status: 400 })
+      }
+      const pageId = url.searchParams.get("pageId") ?? ""
+      const opId = url.searchParams.get("opId") ?? crypto.randomUUID()
+      const comment = { id: commentId, pageId } as Comment
+      const op: OperationInput = { opId, type: "resolve", comment }
+      const record = await this.applyOperation(op, pageId)
+      if (!record) return new Response("failed to resolve comment", { status: 500 })
       return Response.json({ op: record }, { status: 200 })
     }
 

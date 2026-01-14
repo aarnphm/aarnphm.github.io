@@ -19,12 +19,13 @@ export type MultiplayerComment = {
   createdAt: number
   updatedAt: number | null
   deletedAt: number | null
+  resolvedAt: number | null
   anchor?: StructuralAnchor | null
   orphaned?: boolean | null
   lastRecoveredAt?: number | null
 }
 
-export type OperationType = "new" | "update" | "delete"
+export type OperationType = "new" | "update" | "delete" | "resolve"
 
 export type OperationInput = {
   opId: string
@@ -66,7 +67,7 @@ export function isRecord(value: unknown): value is Record<string, unknown> {
 }
 
 export function isOperationType(value: unknown): value is OperationType {
-  return value === "new" || value === "update" || value === "delete"
+  return value === "new" || value === "update" || value === "delete" || value === "resolve"
 }
 
 export function parseStructuralAnchor(value: unknown): StructuralAnchor | null {
@@ -107,6 +108,7 @@ export function parseComment(value: unknown): MultiplayerComment | null {
   const createdAt = value["createdAt"]
   const updatedAt = value["updatedAt"]
   const deletedAt = value["deletedAt"]
+  const resolvedAt = value["resolvedAt"]
   const anchorRaw = value["anchor"]
   const orphaned = value["orphaned"]
   const lastRecoveredAt = value["lastRecoveredAt"]
@@ -123,6 +125,7 @@ export function parseComment(value: unknown): MultiplayerComment | null {
   if (typeof createdAt !== "number") return null
   if (updatedAt !== null && typeof updatedAt !== "number") return null
   if (deletedAt !== null && typeof deletedAt !== "number") return null
+  if (resolvedAt !== null && resolvedAt !== undefined && typeof resolvedAt !== "number") return null
   if (orphaned !== null && orphaned !== undefined && typeof orphaned !== "boolean") return null
   if (
     lastRecoveredAt !== null &&
@@ -146,6 +149,7 @@ export function parseComment(value: unknown): MultiplayerComment | null {
     createdAt,
     updatedAt,
     deletedAt,
+    resolvedAt: resolvedAt ?? null,
     anchor,
     orphaned: orphaned ?? null,
     lastRecoveredAt: lastRecoveredAt ?? null,

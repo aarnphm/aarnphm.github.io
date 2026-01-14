@@ -162,7 +162,7 @@ export function createCommentsUi({ getState, dispatch }: UiDeps) {
     const commentId = activeModal.dataset.commentId
     if (!commentId) return
     const comment = getState().comments.find((c) => c.id === commentId)
-    if (!comment || comment.deletedAt) {
+    if (!comment || comment.deletedAt || comment.resolvedAt) {
       closeActiveModal()
       return
     }
@@ -244,6 +244,7 @@ export function createCommentsUi({ getState, dispatch }: UiDeps) {
     markUnreadButton.innerHTML = `<span class="menu-item">Mark as unread</span>`
     markUnreadButton.onclick = () => {
       hideActionsPopover()
+      dispatch({ type: "ui.comment.unread", commentId: comment.id })
     }
 
     const copyLinkButton = document.createElement("button")
@@ -421,6 +422,11 @@ export function createCommentsUi({ getState, dispatch }: UiDeps) {
     submitComment({ opId: crypto.randomUUID(), type: "delete", comment: deleted })
   }
 
+  const submitResolveComment = (comment: MultiplayerComment, resolvedAt: number) => {
+    const resolved = { ...comment, resolvedAt }
+    submitComment({ opId: crypto.randomUUID(), type: "resolve", comment: resolved })
+  }
+
   const buildThreadItem = (comment: MultiplayerComment) => {
     const item = document.createElement("div")
     item.className = "reply-item"
@@ -499,7 +505,7 @@ export function createCommentsUi({ getState, dispatch }: UiDeps) {
 
   const showCommentThread = (commentId: string, position?: { top: number; left: number }) => {
     const comment = getState().comments.find((c) => c.id === commentId)
-    if (!comment) return
+    if (!comment || comment.deletedAt || comment.resolvedAt) return
 
     if (activeModal) {
       if (activeModal.dataset.commentId === commentId) {
@@ -508,6 +514,7 @@ export function createCommentsUi({ getState, dispatch }: UiDeps) {
         if (content instanceof HTMLElement) {
           renderThreadContent(content, comment, replies)
         }
+        dispatch({ type: "ui.comment.read", commentId })
         return
       }
       closeActiveModal()
@@ -520,6 +527,7 @@ export function createCommentsUi({ getState, dispatch }: UiDeps) {
     modal.dataset.commentId = commentId
     activeModal = modal
     dispatch({ type: "ui.modal.open", commentId })
+    dispatch({ type: "ui.comment.read", commentId })
 
     if (position) {
       modal.style.top = `${position.top}px`
@@ -545,6 +553,16 @@ export function createCommentsUi({ getState, dispatch }: UiDeps) {
       e.stopPropagation()
       const buttonRect = headerMenuButton.getBoundingClientRect()
       showThreadActionsPopover(comment, buttonRect)
+    }
+
+    const resolveButton = document.createElement("button")
+    resolveButton.className = "modal-actions-button modal-resolve-button"
+    resolveButton.setAttribute("aria-label", "Resolve thread")
+    resolveButton.innerHTML = `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>`
+    resolveButton.onclick = () => {
+      submitResolveComment(comment, Date.now())
+      closeActiveModal()
+      document.dispatchEvent(new CustomEvent("toast", { detail: { message: "Comment resolved" } }))
     }
 
     const closeButton = document.createElement("button")
@@ -594,6 +612,7 @@ export function createCommentsUi({ getState, dispatch }: UiDeps) {
     document.addEventListener("mouseup", onMouseUp)
 
     headerActions.appendChild(headerMenuButton)
+    headerActions.appendChild(resolveButton)
     headerActions.appendChild(closeButton)
 
     header.appendChild(title)
@@ -676,6 +695,7 @@ export function createCommentsUi({ getState, dispatch }: UiDeps) {
         createdAt: Date.now(),
         updatedAt: null,
         deletedAt: null,
+        resolvedAt: null,
       }
 
       submitNewComment(reply)
@@ -793,6 +813,7 @@ export function createCommentsUi({ getState, dispatch }: UiDeps) {
         createdAt: Date.now(),
         updatedAt: null,
         deletedAt: null,
+        resolvedAt: null,
         anchor: structuralAnchor,
         orphaned: null,
         lastRecoveredAt: null,
@@ -846,9 +867,11 @@ export function createCommentsUi({ getState, dispatch }: UiDeps) {
 
   const renderAllComments = () => {
     const { comments } = getState()
-    const deletedIds = comments.filter((comment) => comment.deletedAt).map((comment) => comment.id)
-    if (deletedIds.length > 0) {
-      dispatch({ type: "ui.bubbleOffsets.prune", commentIds: deletedIds })
+    const hiddenIds = comments
+      .filter((comment) => comment.deletedAt || comment.resolvedAt)
+      .map((comment) => comment.id)
+    if (hiddenIds.length > 0) {
+      dispatch({ type: "ui.bubbleOffsets.prune", commentIds: hiddenIds })
     }
 
     document.querySelectorAll(".comment-highlight-layer").forEach((el) => el.remove())
@@ -867,7 +890,7 @@ export function createCommentsUi({ getState, dispatch }: UiDeps) {
     highlightLayer.style.height = `${document.documentElement.scrollHeight}px`
     document.body.appendChild(highlightLayer)
 
-    const topLevelComments = comments.filter((c) => !c.parentId && !c.deletedAt)
+    const topLevelComments = comments.filter((c) => !c.parentId && !c.deletedAt && !c.resolvedAt)
 
     for (const comment of topLevelComments) {
       let startIdx = comment.anchorStart
@@ -1037,6 +1060,9 @@ export function createCommentsUi({ getState, dispatch }: UiDeps) {
 
           const bubble = document.createElement("div")
           bubble.className = "comment-bubble"
+          if (getState().unreadCommentIds.has(comment.id)) {
+            bubble.classList.add("comment-bubble-unread")
+          }
           bubble.dataset.commentId = comment.id
           const baseLeft = anchorRect.right + scrollLeft + 8
           const baseTop = anchorRect.top + scrollTop
@@ -1175,7 +1201,9 @@ export function createCommentsUi({ getState, dispatch }: UiDeps) {
   const openPendingCommentThread = () => {
     const targetId = getState().pendingHashCommentId
     if (!targetId) return
-    const comment = getState().comments.find((item) => item.id === targetId && !item.deletedAt)
+    const comment = getState().comments.find(
+      (item) => item.id === targetId && !item.deletedAt && !item.resolvedAt,
+    )
     if (!comment) return
 
     const bubble = document.querySelector<HTMLElement>(
