@@ -2,12 +2,15 @@ import LFS_CONFIG from "./.lfsconfig.txt"
 import handleArxiv from "./arxiv"
 import handleCurius from "./curius"
 import Garden from "./mcp"
-import { MultiplayerComments } from "./comments"
-import { CommentsGitHubHandler } from "./oauth/github-comments"
-import { GitHubHandler } from "./oauth/github-mcp"
+import { CommentsGitHubHandler, GitHubHandler } from "./oauth"
 import { OAuthProvider } from "@cloudflare/workers-oauth-provider"
 import { handleStackedNotesRequest } from "./stacked"
-import { getGithubCommentAuthor, normalizeAuthor, setGithubCommentAuthor } from "./comments-auth"
+import {
+  getGithubCommentAuthor,
+  normalizeAuthor,
+  setGithubCommentAuthor,
+  MultiplayerComments,
+} from "./comments"
 import { isLocalRequest, resolveBaseUrl } from "./request-utils"
 
 const VERSION = "version https://git-lfs.github.com/spec/v1\n"
@@ -233,7 +236,10 @@ export default {
     const method = request.method.toUpperCase()
 
     const provider = new OAuthProvider({
-      apiHandlers: { "/mcp": Garden.serve("/mcp"), "/sse": Garden.serveSSE("/sse") },
+      apiHandlers: {
+        "/mcp": Garden.serve("/mcp", { binding: "MCP_OBJECT" }),
+        "/sse": Garden.serveSSE("/sse"),
+      },
       authorizeEndpoint: "/authorize",
       clientRegistrationEndpoint: "/register",
       // @ts-ignore
