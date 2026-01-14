@@ -60,7 +60,7 @@ app.post("/authorize", async (c) => {
     let state: { oauthReqInfo?: any }
     try {
       state = JSON.parse(atob(encodedState))
-    } catch (_e) {
+    } catch {
       return c.text("Invalid state data", 400)
     }
 
@@ -168,7 +168,20 @@ app.get("/callback", async (c) => {
     headers.set("Set-Cookie", clearSessionCookie)
   }
 
-  return new Response(null, {
+  const body = `<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>auth finished</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+  </head>
+  <body>
+    <p>auth finished. you can close this window.</p>
+    <p><a href="${redirectTo}">continue</a></p>
+  </body>
+</html>`
+
+  return new Response(body, {
     status: 302,
     headers,
   })

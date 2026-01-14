@@ -3,7 +3,19 @@ import { eq, and, isNull } from "drizzle-orm"
 import { comments } from "./schema"
 import { DurableObject } from "cloudflare:workers"
 
-type Comment = typeof comments.$inferSelect
+type DbComment = typeof comments.$inferSelect
+
+type Anchor = {
+  headingId: string | null
+  blockId: string | null
+  paragraphIndex: number
+  localOffset: number
+  contextWords: [string, string]
+}
+
+type Comment = Omit<DbComment, "anchor"> & {
+  anchor: Anchor | null
+}
 
 type OperationType = "new" | "update" | "delete"
 
@@ -42,9 +54,10 @@ export class MultiplayerComments extends DurableObject<Env> {
     this.sessions = new Map()
     this.rateLimits = new Map()
     this.sql = ctx.storage.sql
-    const tableInfo = this.sql
-      .exec("PRAGMA table_info(comment_ops)")
-      .toArray() as Array<{ name: string; pk: number }>
+    const tableInfo = this.sql.exec("PRAGMA table_info(comment_ops)").toArray() as Array<{
+      name: string
+      pk: number
+    }>
     const hasLegacyPk = tableInfo.some((row) => row.name === "seq" && row.pk === 1)
     if (hasLegacyPk) {
       this.sql.exec("DROP INDEX IF EXISTS idx_comment_ops_page_seq")
@@ -76,6 +89,59 @@ export class MultiplayerComments extends DurableObject<Env> {
         seq INTEGER NOT NULL
       )
     `)
+  }
+
+  private isRecord(value: unknown): value is Record<string, unknown> {
+    return typeof value === "object" && value !== null && !Array.isArray(value)
+  }
+
+  private parseAnchor(value: unknown): Anchor | null {
+    if (value === null || value === undefined) return null
+    let raw: unknown = value
+    if (typeof raw === "string") {
+      try {
+        raw = JSON.parse(raw)
+      } catch {
+        return null
+      }
+    }
+    if (!this.isRecord(raw)) return null
+    const headingId = raw["headingId"]
+    const blockId = raw["blockId"]
+    const paragraphIndex = raw["paragraphIndex"]
+    const localOffset = raw["localOffset"]
+    const contextWords = raw["contextWords"]
+
+    if (headingId !== null && typeof headingId !== "string") return null
+    if (blockId !== null && typeof blockId !== "string") return null
+    if (typeof paragraphIndex !== "number") return null
+    if (typeof localOffset !== "number") return null
+    if (!Array.isArray(contextWords) || contextWords.length !== 2) return null
+    if (typeof contextWords[0] !== "string" || typeof contextWords[1] !== "string") return null
+
+    return {
+      headingId: headingId ?? null,
+      blockId: blockId ?? null,
+      paragraphIndex,
+      localOffset,
+      contextWords: [contextWords[0], contextWords[1]],
+    }
+  }
+
+  private serializeAnchor(anchor: Anchor | null): string | null {
+    if (!anchor) return null
+    try {
+      return JSON.stringify(anchor)
+    } catch {
+      return null
+    }
+  }
+
+  private normalizeComment(comment: DbComment | Comment): Comment {
+    return {
+      ...comment,
+      anchor: this.parseAnchor(comment.anchor),
+    }
   }
 
   private checkRateLimit(ip: string): boolean {
@@ -122,7 +188,7 @@ export class MultiplayerComments extends DurableObject<Env> {
       seq: row.seq,
       opId: row.opId,
       type: row.opType as OperationType,
-      comment: JSON.parse(row.commentJson) as Comment,
+      comment: this.normalizeComment(JSON.parse(row.commentJson) as Comment),
     }
   }
 
@@ -138,7 +204,7 @@ export class MultiplayerComments extends DurableObject<Env> {
         seq: typedRow.seq,
         opId: typedRow.opId,
         type: typedRow.opType as OperationType,
-        comment: JSON.parse(typedRow.commentJson) as Comment,
+        comment: this.normalizeComment(JSON.parse(typedRow.commentJson) as Comment),
       }
     })
   }
@@ -155,17 +221,26 @@ export class MultiplayerComments extends DurableObject<Env> {
     return next
   }
 
-  private storeOp(op: OperationInput, comment: Comment, seq: number) {
-    this.sql.exec(
-      "INSERT INTO comment_ops (seq, pageId, opId, opType, commentId, commentJson, createdAt) VALUES (?, ?, ?, ?, ?, ?, ?)",
-      seq,
-      comment.pageId,
-      op.opId,
-      op.type,
-      comment.id,
-      JSON.stringify(comment),
-      Date.now(),
-    )
+  private storeOp(op: OperationInput, comment: Comment, seq: number): boolean {
+    try {
+      this.sql.exec(
+        "INSERT INTO comment_ops (seq, pageId, opId, opType, commentId, commentJson, createdAt) VALUES (?, ?, ?, ?, ?, ?, ?)",
+        seq,
+        comment.pageId,
+        op.opId,
+        op.type,
+        comment.id,
+        JSON.stringify(comment),
+        Date.now(),
+      )
+      return true
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err)
+      if (message.includes("SQLITE_CONSTRAINT") && message.includes("comment_ops.opId")) {
+        return false
+      }
+      throw err
+    }
   }
 
   private trimOps(pageId: string, seq: number) {
@@ -186,6 +261,7 @@ export class MultiplayerComments extends DurableObject<Env> {
 
   private async persistNewComment(comment: Comment): Promise<Comment | null> {
     const db = drizzle(this.env.COMMENTS_ROOM)
+    const anchorJson = this.serializeAnchor(this.parseAnchor(comment.anchor))
 
     await db
       .insert(comments)
@@ -202,19 +278,20 @@ export class MultiplayerComments extends DurableObject<Env> {
         createdAt: comment.createdAt,
         updatedAt: null,
         deletedAt: null,
-        anchor: comment.anchor ?? null,
+        anchor: anchorJson,
         orphaned: comment.orphaned ?? null,
         lastRecoveredAt: comment.lastRecoveredAt ?? null,
       })
       .onConflictDoNothing()
 
     const saved = await db.select().from(comments).where(eq(comments.id, comment.id)).get()
-    return saved ?? null
+    return saved ? this.normalizeComment(saved) : null
   }
 
   private async persistUpdateComment(comment: Comment): Promise<Comment | null> {
     const db = drizzle(this.env.COMMENTS_ROOM)
     const now = Date.now()
+    const anchorJson = this.serializeAnchor(this.parseAnchor(comment.anchor))
 
     await db
       .update(comments)
@@ -222,7 +299,7 @@ export class MultiplayerComments extends DurableObject<Env> {
         content: comment.content,
         anchorStart: comment.anchorStart,
         anchorEnd: comment.anchorEnd,
-        anchor: comment.anchor ?? null,
+        anchor: anchorJson,
         orphaned: comment.orphaned ?? null,
         lastRecoveredAt: comment.lastRecoveredAt ?? null,
         updatedAt: now,
@@ -230,7 +307,7 @@ export class MultiplayerComments extends DurableObject<Env> {
       .where(eq(comments.id, comment.id))
 
     const updated = await db.select().from(comments).where(eq(comments.id, comment.id)).get()
-    return updated ?? null
+    return updated ? this.normalizeComment(updated) : null
   }
 
   private async persistDeleteComment(commentId: string): Promise<Comment | null> {
@@ -241,10 +318,13 @@ export class MultiplayerComments extends DurableObject<Env> {
     if (!comment) return null
 
     await db.update(comments).set({ deletedAt: now }).where(eq(comments.id, commentId))
-    return { ...comment, deletedAt: now }
+    return this.normalizeComment({ ...comment, deletedAt: now })
   }
 
-  private async applyOperation(op: OperationInput, pageId: string): Promise<OperationRecord | null> {
+  private async applyOperation(
+    op: OperationInput,
+    pageId: string,
+  ): Promise<OperationRecord | null> {
     const existing = this.readOpById(op.opId)
     if (existing) return existing
 
@@ -265,7 +345,11 @@ export class MultiplayerComments extends DurableObject<Env> {
     if (!saved) return null
 
     const seq = this.nextSeq(pageId)
-    this.storeOp(op, saved, seq)
+    const stored = this.storeOp(op, saved, seq)
+    if (!stored) {
+      const existing = this.readOpById(op.opId)
+      return existing
+    }
     this.trimOps(pageId, seq)
 
     const record: OperationRecord = {
@@ -328,7 +412,7 @@ export class MultiplayerComments extends DurableObject<Env> {
         server.send(
           JSON.stringify({
             type: "init",
-            comments: existing,
+            comments: existing.map((comment) => this.normalizeComment(comment)),
             latestSeq,
           }),
         )
@@ -357,7 +441,7 @@ export class MultiplayerComments extends DurableObject<Env> {
       const stream = new ReadableStream({
         start(controller) {
           for (const comment of allComments) {
-            const line = JSON.stringify(comment) + "\n"
+            const line = JSON.stringify(this.normalizeComment(comment)) + "\n"
             controller.enqueue(encoder.encode(line))
           }
           controller.close()

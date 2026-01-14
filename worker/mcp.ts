@@ -184,14 +184,15 @@ function scoreEntry(e: ContentIndexEntry, query: string): number {
   return score * computeRecencyBoost(e.date)
 }
 
-export class Garden extends McpAgent {
-  server = new McpServer({ name: "aarnphm.xyz", version: "1.0.0" })
-  private env: any
+type Props = {
+  login: string
+  name: string
+  email: string
+  accessToken: string
+}
 
-  constructor(state: DurableObjectState, env: any) {
-    super(state, env)
-    this.env = env
-  }
+export class Garden extends McpAgent<Env, Record<string, never>, Props> {
+  server = new McpServer({ name: "aarnphm.xyz", version: "1.0.0" })
 
   async init() {
     this.server.tool(

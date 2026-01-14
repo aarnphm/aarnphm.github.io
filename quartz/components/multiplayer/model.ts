@@ -124,7 +124,12 @@ export function parseComment(value: unknown): MultiplayerComment | null {
   if (updatedAt !== null && typeof updatedAt !== "number") return null
   if (deletedAt !== null && typeof deletedAt !== "number") return null
   if (orphaned !== null && orphaned !== undefined && typeof orphaned !== "boolean") return null
-  if (lastRecoveredAt !== null && lastRecoveredAt !== undefined && typeof lastRecoveredAt !== "number") return null
+  if (
+    lastRecoveredAt !== null &&
+    lastRecoveredAt !== undefined &&
+    typeof lastRecoveredAt !== "number"
+  )
+    return null
 
   const anchor = anchorRaw ? parseStructuralAnchor(anchorRaw) : null
 
