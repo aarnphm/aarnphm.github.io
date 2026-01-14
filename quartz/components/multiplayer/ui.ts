@@ -240,11 +240,15 @@ export function createCommentsUi({ getState, dispatch }: UiDeps) {
     popover.style.top = `${buttonRect.top + scrollTop}px`
 
     const markUnreadButton = document.createElement("button")
-    markUnreadButton.className = "popover-action"
-    markUnreadButton.innerHTML = `<span class="menu-item">Mark as unread</span>`
+    const isUnread = getState().unreadCommentIds.has(comment.id)
+    markUnreadButton.className = `popover-action ${isUnread ? "popover-action-read" : "popover-action-unread"}`
+    markUnreadButton.innerHTML = `<span class="menu-item">${isUnread ? "Mark as read" : "Mark as unread"}</span>`
     markUnreadButton.onclick = () => {
       hideActionsPopover()
-      dispatch({ type: "ui.comment.unread", commentId: comment.id })
+      dispatch({
+        type: isUnread ? "ui.comment.read" : "ui.comment.unread",
+        commentId: comment.id,
+      })
     }
 
     const copyLinkButton = document.createElement("button")
