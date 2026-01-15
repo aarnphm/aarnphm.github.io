@@ -2,10 +2,10 @@
 date: "2025-08-21"
 description: Entropy-regularized attention as a convex program; Fenchel–Young view, geometry, and verification insights.
 id: convexity
-modified: 2025-11-11 07:02:34 GMT-05:00
+modified: 2026-01-15 08:29:33 GMT-05:00
 tags:
-  - math
-  - linalg
+  - math/linalg
+  - theory
 title: convexity of attention
 ---
 

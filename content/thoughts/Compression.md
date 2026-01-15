@@ -4,7 +4,7 @@ description: a [[/thoughts/reductionism|reductionist]] way to transfer data.
 id: Compression
 modified: 2025-11-05 07:06:08 GMT-05:00
 tags:
-  - linalg
+  - math/linalg
   - math
   - technical
 title: Compression

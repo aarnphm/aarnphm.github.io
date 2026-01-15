@@ -6,7 +6,7 @@ modified: 2025-11-11 06:58:34 GMT-05:00
 slides: true
 tags:
   - workshop
-  - linalg
+  - math/linalg
 title: supplement to 0.412
 transclude:
   title: false

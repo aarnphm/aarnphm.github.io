@@ -152,6 +152,7 @@ export const customMacros = {
   "\\upbeta": "\\mathit{\\beta}",
   "\\upalpha": "\\mathit{\\alpha}",
   "\\uptheta": "\\mathit{\\theta}",
+  "\\abs": "\\left\\lvert #1 \\right\\rvert",
   // KaTeX does not support tabular/multicolumn. Provide safe fallbacks.
   // This macro drops alignment specifiers and yields only the cell content.
   // IMPORTANT: when spanning >1 columns, add explicit '&'s in source rows.

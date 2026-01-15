@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-01-13 17:01:03 GMT-05:00
+modified: 2026-01-15 09:39:49 GMT-05:00
 permalinks:
   - /website
   - /tweets
@@ -215,7 +215,7 @@ title: are.na
 - https://x.com/jessemhan/status/2000659168773202340 -- mechanized proof for definition of a mathematicians to be then widen
   - [meta]:
     - date: 12/15/2025
-    - tags: [mathematics, terrence tao]
+    - tags: [mathematics, agi]
 - https://x.com/LydNot/status/1999219527993938318 -- Emergent misalignment argues incompetent and evil are more closely aligned
   - [meta]:
     - date: 12/15/2025
@@ -504,6 +504,10 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://www.playfuldesign.app/
+  - [meta]:
+    - date: 01/14/2026
+    - tags: [play]
 - https://elishajeon.com/ -- Elisha
   - [meta]:
     - date: 01/12/2026
@@ -971,6 +975,12 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://terrytao.wordpress.com -- Terrence Tao
+  - [meta]:
+    - date: 01/14/2026
+    - tags: [mathematician]
+    - pinned: true
+    - importance: 8
 - https://www.poetryfoundation.org/poets/charles-bukowski -- Charles Bukowski
   - [meta]:
     - date: 01/11/2026
@@ -1263,7 +1273,13 @@ title: are.na
     - date: 11/13/2025
     - tags: [medicine, philosophy, acx, ssc]
     - pinned: true
-  - https://www.astralcodexten.com/
+    - socials:
+      - acx: https://www.astralcodexten.com/
+- https://scottaaronson.blog -- Scott Aaronson
+  - [meta]:
+    - date: 01/14/2026
+    - tags: [life, engineering]
+    - pinned: true
 - https://scyy.fi/ -- Sarabet Chang Yuye
   - [meta]:
     - date: 11/12/2025
@@ -2042,6 +2058,36 @@ title: are.na
 - [meta]:
   - json: true
 
+- http://www.catb.org/~esr/faqs/smart-questions.html -- How to Ask Questions the Smart Way
+  - [meta]:
+    - date: 01/15/2026
+    - tags: [pedagogy, work]
+    - importance: 8
+    - pinned: true
+- https://archive.ph/20250416201127/https://www.theatlantic.com/magazine/archive/2011/04/a-vaster-wasteland/308418/ -- A Vaster Wasteland [--]
+  - [meta]:
+    - date: 01/15/2026
+    - tags: [technology, longtermism]
+- https://davidbau.com/archives/2026/01/05/agi_break_room.html -- AGI Break Room
+  - [meta]:
+    - date: 01/14/2026
+    - tags: [futurism, meliorism]
+- https://www.argmin.net/p/nothings-shocking -- Nothing's Shocking
+  - [meta]:
+    - date: 01/14/2026
+    - tags: [meliorism]
+- https://www.approachwithalacrity.com/claude-ne/ -- Claude is not a senior engineer (yet)
+  - [meta]:
+    - date: 01/14/2026
+    - tags: [longtermism, capabilities]
+- https://www.yudhister.me/home-1/ -- home is what the heart remembers [**]
+  - [meta]:
+    - date: 01/14/2026
+    - tags: [letter, growth]
+- https://www.firstround.com/ai/notion -- Context Before Code: How Notion Put an AI Engineer on the Sales Floor to Discover What Actually Needed Building
+  - [meta]:
+    - date: 01/14/2026
+    - tags: [technology, agentic]
 - https://www.astralcodexten.com/p/the-permanent-emergency -- The Permanent Emergency
   - [meta]:
     - date: 01/11/2026
@@ -3648,6 +3694,14 @@ title: are.na
 
 ## courses
 
+- [meta]:
+  - view: list
+  - json: true
+
+- https://math.ucr.edu/home/baez/information/ -- Information Geometry
+  - [meta]:
+    - date: 01/14/2026
+    - tags: [topology, statistics]
 - https://ocw.mit.edu/courses/18-04-complex-variables-with-applications-spring-2018/ -- Complex Variables with Applications
   - [meta]:
     - date: 12/17/2025
@@ -3664,6 +3718,30 @@ title: are.na
   - view: list
   - json: true
 
+- https://developer.nvidia.com/blog/reimagining-llm-memory-using-context-as-training-data-unlocks-models-that-learn-at-test-time -- Hybrid Attention for scaling
+  - [meta]:
+    - date: 01/14/2026
+    - tags: [long context, scaling]
+    - later: true
+    - socials:
+      - arxiv: https://arxiv.org/abs/2512.23675
+- https://research.google/blog/titans-miras-helping-ai-have-long-term-memory/ -- Titans + MIRAS
+  - [meta]:
+    - date: 01/14/2026
+    - tags: [scaling, long context]
+- https://ericjmichaud.com/quanta/ -- On neural scaling and the quanta hypothesis [**]
+  - [meta]:
+    - date: 01/14/2026
+    - tags: [longtermism, scaling]
+    - later: true
+    - importance: 8
+    - socials:
+      - twitter: https://x.com/ericjmichaud_/status/2011094378396467316
+- https://sites.google.com/view/deep-rl-bootcamp/lectures -- Deep RL
+  - [meta]:
+    - date: 01/14/2026
+    - tags: [rl]
+    - later: true
 - https://research.google/blog/alternating-updates-for-efficient-transformers/ -- Alternating updates for efficient transformers [**]
   - [meta]:
     - date: 01/11/2026
@@ -3938,10 +4016,12 @@ title: are.na
     - date: 12/01/2025
     - tags: [interviews]
     - pinned: true
-- https://htihle.github.io/weirdml.html -- WeirdML
+- https://htihle.github.io/weirdml.html -- WeirdML [**]
   - [meta]:
     - date: 11/30/2025
     - tags: [datasets]
+    - pinned: true
+    - importance: 6
 - https://www.artfintel.com/p/reinforcement-learning-and-general -- Reinforcement learning and general intelligence
   - [meta]:
     - date: 11/28/2025
@@ -4703,6 +4783,10 @@ title: are.na
 
 ## opinions
 
+- https://geohot.github.io//blog/jekyll/update/2026/01/15/anthropic-huge-mistake.html -- Anthropic is making a huge mistakes
+  - [meta]:
+    - date: 01/14/2026
+    - tags: [osint, tooling]
 - https://antirez.com/news/158 -- Don't fall into the anti-AI hype [--]
   - [meta]:
     - date: 01/11/2026
@@ -4971,6 +5055,10 @@ title: are.na
 
 ## life is literature
 
+- https://futurelovers.com -- Gossip is Good, A Manifesto for Social Intelligence
+  - [meta]:
+    - date: 01/15/2026
+    - tags: [os, life]
 - https://stanfordsteamtunnels.wordpress.com/wp-content/uploads/2018/08/stanford-steam-tunnels.pdf -- Stanford Steam Tunnels
   - [meta]:
     - date: 01/11/2026
@@ -5924,6 +6012,16 @@ title: are.na
 
 ## stream
 
+- https://orgwatch.issarice.com/?organization=Future+of+Humanity+Institute -- Information for Future of humanity Institute
+  - [meta]:
+    - date: 01/14/2026
+    - tags: [resources, futurism]
+    - importance: 7
+- https://blog.rootsofprogress.org/writing -- The Roots of Progress
+  - [meta]:
+    - date: 01/14/2026
+    - tags: [progress, longtermism]
+    - pinned: true
 - https://ffbandf.wordpress.com/ -- Forking, Forcing and back&Forthing
   - [meta]:
     - date: 01/13/2026
@@ -6234,6 +6332,11 @@ title: are.na
 
 ## finances
 
+- https://maxdesalle.com/mastering-zcash/ -- Mastering Zcash
+  - [meta]:
+    - date: 01/14/2026
+    - tags: [finance, distributed]
+    - later: true
 - https://manual.compoundplanning.com/chapters/tender-offers -- Tender offers
   - [meta]:
     - date: 12/24/2025
@@ -6308,6 +6411,11 @@ title: are.na
 
 ## design
 
+- https://www.userinterface.wiki/ -- A living manual for interface
+  - [meta]:
+    - date: 01/14/2026
+    - tags: [design]
+    - importance: 6
 - https://spiderdefense.framer.website/ -- SP // DER Defense Corp.
   - [meta]:
     - date: 01/12/2026
@@ -6891,6 +6999,10 @@ title: are.na
 
 ## arts
 
+- https://www.kat-terada.com/ -- kat terada
+  - [meta]:
+    - date: 01/14/2026
+    - tags: [drawing]
 - https://www.jackywinter.com/category/illustrators-and-makers?id=flutterfilms.tv%2FJackyWinter_AnimationReel_FINAL -- Jacky Winter
   - [meta]:
     - date: 01/06/2026
@@ -7422,6 +7534,10 @@ title: are.na
 
 ## technical
 
+- https://diffs.com/ -- A diff rendering library
+  - [meta]:
+    - date: 01/14/2026
+    - tags: [delta, text]
 - https://www.designengineer.xyz/design-engineering -- What is design engineering
   - [meta]:
     - date: 01/12/2026
@@ -7434,6 +7550,8 @@ title: are.na
   - [meta]:
     - date: 01/11/2026
     - tags: [agents]
+    - socials:
+      - github: https://github.com/ghuntley/how-to-ralph-wiggum
 - https://rfd.shared.oxide.computer/rfd/0576 -- Using LLMs at Oxide
   - [meta]:
     - date: 01/11/2026
@@ -7949,6 +8067,11 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://www.erdosproblems.com/forum/thread/397 -- Erdos problems 397, solved with GPT-5.2
+  - [meta]:
+    - date: 01/14/2026
+    - tags: [agentic, mathematics]
+    - importance: 9
 - https://x.com/getjonwithit/status/2009602836997505255 -- Mathematics is not a closed systems
   - [meta]:
     - date: 01/10/2026
@@ -8168,6 +8291,10 @@ title: are.na
   - view: list
   - json: true
 
+- https://arxiv.org/abs/2512.23675
+  - [meta]:
+    - date: 01/14/2026
+    - tags: [scaling, test-time compute]
 - https://arxiv.org/abs/2206.13353
   - [meta]:
     - date: 01/08/2026
@@ -8665,7 +8792,7 @@ title: are.na
   - [meta]:
     - date: 10/09/2025
     - tags: [math, llm]
-  - see also #linalg
+  - see also #math/linalg
 - https://arxiv.org/abs/2211.00170
   - [meta]:
     - date: 10/09/2025

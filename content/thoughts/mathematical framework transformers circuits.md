@@ -2,7 +2,7 @@
 date: "2025-09-15"
 description: Anthropic, 2021
 id: mathematical framework transformers circuits
-modified: 2025-11-10 06:36:51 GMT-05:00
+modified: 2026-01-15 08:28:49 GMT-05:00
 tags:
   - ml
   - interp
@@ -16,7 +16,7 @@ see also:
 - [[thoughts/induction heads]], superposition, logit lens
 - Matrix perspectives and decompositions: [[thoughts/Singular Value Decomposition|SVD]], [[thoughts/Attention]], [[thoughts/Vector calculus#Jacobian matrix|Jacobian]].
 
-## residual stream as a #linalg space
+## residual stream as a [[thoughts/Embedding|embedding]] space
 
 For token position $t$, the residual vector $r^{(\ell)}_t\in\mathbb R^d$ evolves via skip connections as
 

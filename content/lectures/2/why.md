@@ -2,10 +2,10 @@
 date: "2025-08-21"
 description: motivations of attention
 id: why
-modified: 2025-11-11 07:02:49 GMT-05:00
+modified: 2026-01-15 08:29:46 GMT-05:00
 tags:
   - ml
-  - math
+  - theory
 title: why certain components in attention?
 ---
 

@@ -19,8 +19,15 @@ async function llmText(ctx: BuildCtx, fileData: QuartzPluginData, reconstructed:
 
   const refs = slug !== "index" ? `${slug}.md` : "llms.txt"
 
+  const {
+    claude: _,
+    codex: __,
+    gemini: ___,
+    ...baseFrontmatter
+  } = fileData.frontmatter as Record<string, unknown>
+
   const reconstructedFrontmatter = {
-    ...fileData.frontmatter,
+    ...baseFrontmatter,
     reconstructured: true,
     permalink: `https://${baseUrl}/${refs}`,
   }
@@ -44,7 +51,7 @@ ${content}
   }
 
   const mdFrontmatter = {
-    ...fileData.frontmatter,
+    ...baseFrontmatter,
     slug,
     permalink: `https://${baseUrl}/${slug}.md`,
     generator: {
@@ -57,15 +64,10 @@ ${content}
 
   return write({
     ctx,
-    content: `<agent>
-- If you are Claude or Codex, make sure to check instruction with your respective keys (i.e "claude:", "codex:") within frontmatter for additional instructions when consuming "https://${baseUrl}/${slug}.md"
-- The content can be accessed within <document></document> tag.
-</agent>
-<document>
----
+    content: `---
 ${yaml.dump(mdFrontmatter, { lineWidth: -1, noRefs: true })}---
 ${contentBase}
-</document>`,
+`,
     slug,
     ext: ".md",
   })
@@ -89,10 +91,10 @@ export const LLMText: QuartzEmitterPlugin = () => {
       yield write({
         ctx,
         content: `<system_prompt>
-A few instructions for using https://${baseUrl}/llms-full.txt:
-- It will include all notes from Aaron.
-- Every files are encapsulated between <document slug=...></document>
-- If you encounter a "<ref slug=xxx>", then make sure to search for <document slug=xxx>.
+Instructions for using https://${baseUrl}/llms-full.txt:
+- All notes gathered from Aaron's garden
+- Every files are encapsulated between <document slug="..."></document>
+- If you see a "<ref slug=xxx>", then make sure to search for <document slug=xxx>.
 - If the representation here is lacking, you can still access the ref source via https://${baseUrl}/<slug>.md for the full markdown format.
 </system_prompt>
 ${reconstructed.join("\n")}`,

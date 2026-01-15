@@ -5,7 +5,7 @@ id: Singular Value Decomposition
 modified: 2025-11-05 03:39:05 GMT-05:00
 tags:
   - ml
-  - linalg
+  - math/linalg
 title: Singular Value Decomposition
 ---
 

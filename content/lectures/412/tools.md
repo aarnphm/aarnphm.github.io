@@ -5,7 +5,7 @@ id: tools
 modified: 2025-11-11 07:00:11 GMT-05:00
 tags:
   - workshop
-  - linalg
+  - math/linalg
   - tooling
 title: tools for 0.412
 ---

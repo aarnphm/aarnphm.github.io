@@ -4,7 +4,7 @@ description: structure-preserving function between vector spaces satisfying addi
 id: linear map
 modified: 2025-12-24 23:25:07 GMT-05:00
 tags:
-  - linalg
+  - math/linalg
 title: linear map
 ---
 
