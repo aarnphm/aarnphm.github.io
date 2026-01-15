@@ -234,5 +234,3 @@ _NOTE: if you have any more suggestions we are more than happy to take it into c
 ## acknowledgement
 
 I want to thank the vLLM team, XGrammar team, [Michael Groin (Red Hat)](https://github.com/mgoin), [Chendi Xue (Intel)](https://github.com/xuechendi), and [Russell Bryant (Red Hat)](https://github.com/russellb) for their valuable feedback and collaboration on bringing XGrammar to vLLM and the continuous effort to improve structured decoding in vLLM.
-
-[^ref]

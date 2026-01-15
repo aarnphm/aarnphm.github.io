@@ -1,18 +1,20 @@
 ---
 aliases:
   - pd
+  - disaggregated serving
 date: "2025-06-16"
 description: and inference go distributed
 id: pd disaggregated serving
-modified: 2026-01-09 06:08:18 GMT-05:00
+modified: 2026-01-15 15:56:12 GMT-05:00
 seealso:
+  - "[[thoughts/KV offloading]]"
   - "[[thoughts/distributed inference|distributed inference]]"
-  - "[@vllm-disagg-docs]"
-  - "[@vllm-disagg-blog]"
-  - "[@qin2024mooncakekvcachecentricdisaggregatedarchitecture]"
+  - "[[@vllm-disagg-docs]]"
+  - "[[@vllm-disagg-blog]]"
+  - "[[@qin2024mooncakekvcachecentricdisaggregatedarchitecture]]"
 tags:
   - ml
-  - gpu
+  - inference
 title: P/D disaggregation
 ---
 

@@ -63,5 +63,3 @@ _Simulacra and Simulation, Jean Baudrillard_
 > Art of Cartography attained such Perfection that the map of a single Province occupied the entirely of a City [...] ==saw that that vast Map was Useless...==
 
 _On Exatitude in Science, Jorge Luis Borges_
-
-[^ref]

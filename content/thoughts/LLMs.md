@@ -129,6 +129,6 @@ https://x.com/leonardtang_/status/1927396709870489634
 
 _outperform opus and gpt-4o_
 
-![[thoughts/mechanistic interpretability#{collapsed: true}]]
+---
 
-[^ref]
+![[thoughts/mechanistic interpretability]]

@@ -879,6 +879,7 @@ dependencies = [
     { name = "numpy" },
     { name = "scipy" },
     { name = "svgling" },
+    { name = "tiktoken" },
 ]
 
 [package.dev-dependencies]
@@ -918,6 +919,7 @@ requires-dist = [
     { name = "numpy", specifier = ">=2.1.2" },
     { name = "scipy", specifier = ">=1.14.1" },
     { name = "svgling", specifier = ">=0.5.0" },
+    { name = "tiktoken", specifier = ">=0.11.0" },
 ]
 
 [package.metadata.requires-dev]

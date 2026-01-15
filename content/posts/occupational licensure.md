@@ -45,5 +45,3 @@ Friedman also emphasised the importance of [[thoughts/monetary#free market|free 
 PEO may encourage talented individuals to leave Ontario in favour of jurisdictions where they can more easily practice their profession. This results in a loss of talent and weakens Ontario’s competitiveness in attracting and retaining highly skilled professionals.
 
 In conclusion, while maintaining high professional standards is essential, it is equally important to ensure that licensing procedures do not inadvertently exclude capable engineers. From Friednmanite’s perspective, alternative approaches that maintain professional standards while avoiding these market distortions should be considered. He advocated for certification systems that would allow consumers to identify qualified practitioners while not preventing others from practising. In engineering, this could mean competency-based assessments rather than rigid credential requirements, recognition of diverse educational and professional pathways, and a tiered certification system recognising different levels of expertise.
-
-[^ref]

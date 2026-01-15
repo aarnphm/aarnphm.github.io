@@ -32,6 +32,7 @@ import {
   obsidianSvg,
   youtubeSvg,
   gwernSvg,
+  modularSvg,
 } from "../../components/svg"
 import type { FrontmatterLink } from "./frontmatter"
 
@@ -183,6 +184,8 @@ export const CrawlLinks: QuartzTransformerPlugin<Partial<Options>> = (userOpts) 
                   isWikipedia: dest.includes("wikipedia.org"),
                   isLessWrong: dest.includes("lesswrong.com"),
                   isBentoml: dest.includes("bentoml.com"),
+                  isModular: dest.includes("modular.com"),
+                  isSep: dest.includes("plato.stanford.edu"),
                   isYoutube: dest.includes("youtube.com"),
                   isGwern: dest.includes("gwern.net"),
                   isNeovim: dest.includes("neovim.io"),
@@ -207,6 +210,13 @@ export const CrawlLinks: QuartzTransformerPlugin<Partial<Options>> = (userOpts) 
                     classes.push("bentoml-link")
                   }
                   ctx.node.properties.dataLinkVendor = "bentoml"
+                }
+
+                if (linkTypes.isModular) {
+                  if (!classes.includes("modular-link")) {
+                    classes.push("modular-link")
+                  }
+                  ctx.node.properties.dataLinkVendor = "modular"
                 }
 
                 if (linkTypes.isGithub) {
@@ -354,6 +364,12 @@ export const CrawlLinks: QuartzTransformerPlugin<Partial<Options>> = (userOpts) 
                     )
                   } else if (linkTypes.isBentoml) {
                     ctx.node.children.push(bentomlSvg, bentomlHoverSvg)
+                  } else if (linkTypes.isModular) {
+                    ctx.node.children.push(modularSvg)
+                  } else if (linkTypes.isSep) {
+                    ctx.node.children.push(
+                      createIconElement("/static/favicons/sep-man-red.png", "SEP"),
+                    )
                   } else if (linkTypes.isYoutube) {
                     ctx.node.children.push(youtubeSvg)
                   } else if (linkTypes.isGwern) {

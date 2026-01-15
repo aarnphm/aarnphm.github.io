@@ -1,8 +1,8 @@
 ---
 date: "2025-05-22"
-description: and llm-d
+description: and llm-d, dynamo, mammoth
 id: distributed inference
-modified: 2025-10-29 02:15:44 GMT-04:00
+modified: 2026-01-15 15:54:50 GMT-05:00
 tags:
   - llm
   - inference

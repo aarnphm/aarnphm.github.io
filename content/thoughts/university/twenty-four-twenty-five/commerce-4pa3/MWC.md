@@ -39,8 +39,6 @@ Governments could adopt his probate efficiency frameworks to reduce legal bottle
 which underscores Canada’s sluggish productivity growth and immigration-driven GDP challenges, reinforcing Spitman’s advocacy for diversified portfolios
 and tax-aware investing.
 
-[^ref]
-
 ## Session 2
 
 ### Summary
