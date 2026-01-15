@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-01-15 09:39:49 GMT-05:00
+modified: 2026-01-15 15:29:29 GMT-05:00
 permalinks:
   - /website
   - /tweets
@@ -2058,6 +2058,19 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://torontolife.com/food/restaurant-ruined-life/ -- A Restaurant Ruined My Life
+  - [meta]:
+    - date: 01/15/2026
+    - tags: [life, business]
+- https://archive.is/e180u -- Why I Broke Up with New York [--]
+  - [meta]:
+    - date: 01/15/2026
+    - tags: [life, communal]
+    - later: true
+- https://commoncog.com/tacit-knowledge-is-a-real-thing -- Why Tacit Knowledge is More Important Than Deliberate Practice
+  - [meta]:
+    - date: 01/15/2026
+    - tags: [learning, comprehension]
 - http://www.catb.org/~esr/faqs/smart-questions.html -- How to Ask Questions the Smart Way
   - [meta]:
     - date: 01/15/2026
@@ -3737,7 +3750,7 @@ title: are.na
     - importance: 8
     - socials:
       - twitter: https://x.com/ericjmichaud_/status/2011094378396467316
-- https://sites.google.com/view/deep-rl-bootcamp/lectures -- Deep RL
+- https://sites.google.com/view/deep-rl-bootcamp/lectures -- Deep RL Bootcamp
   - [meta]:
     - date: 01/14/2026
     - tags: [rl]
@@ -5543,6 +5556,11 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://plato.stanford.edu/entries/disagreement/ -- Disagreement
+  - [meta]:
+    - date: 01/15/2026
+    - tags: [metaphysics, ethics]
+  - seealso: [[thoughts/Disagreement]]
 - https://www.youtube.com/watch?v=HvCEf7n9-Ps -- Why we make art?
   - [meta]:
     - date: 01/13/2026
@@ -6411,6 +6429,10 @@ title: are.na
 
 ## design
 
+- https://familyoffice.is/work
+  - [meta]:
+    - date: 01/15/2026
+    - tags: [interaction]
 - https://www.userinterface.wiki/ -- A living manual for interface
   - [meta]:
     - date: 01/14/2026
@@ -7532,8 +7554,26 @@ title: are.na
     - date: 10/06/2025
     - tags: [programming, distributed]
 
-## technical
+## engineering
 
+- https://research.perplexity.ai/articles/high-performance-gpu-memory-transfer-on-aws-sagemaker-hyperpod -- High-Performance GPU Memory Transfer on AWS Sagemaker Hyperpod
+  - [meta]:
+    - date: 01/15/2026
+    - tags: [systems]
+    - importance: 8
+    - pinned: true
+    - socials:
+      - github: https://github.com/perplexityai/libfabric-efa-demo
+- https://steve-yegge.medium.com/welcome-to-gas-town-4f25ee16dd04 -- Welcome to Gas Town
+  - [meta]:
+    - date: 01/15/2026
+    - tags: [agents, k8s]
+    - socials:
+      - github: https://github.com/steveyegge/gastown
+- https://www.figma.com/blog/making-multiplayer-more-reliable/ -- Making multiplayer more reliable
+  - [meta]:
+    - date: 01/15/2026
+    - tags: [crdt, multiplayer]
 - https://diffs.com/ -- A diff rendering library
   - [meta]:
     - date: 01/14/2026
@@ -8291,6 +8331,11 @@ title: are.na
   - view: list
   - json: true
 
+- https://askell.io/files/Askell-BPhil-Thesis.pdf -- Objective Epistemic Consequentialism
+  - [meta]:
+    - date: 01/15/2026
+    - tags: [continential, metaethics]
+    - later: true
 - https://arxiv.org/abs/2512.23675
   - [meta]:
     - date: 01/14/2026

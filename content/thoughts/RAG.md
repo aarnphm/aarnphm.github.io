@@ -16,5 +16,3 @@ The idea of RAG is to combine a pretrained retriever and a seq2seq to do end-to-
 Two core components include [[thoughts/Embedding|embeddings]] and vector databases.
 
 Very useful for building "agents": Agents are complex RAG application.
-
-[^ref]

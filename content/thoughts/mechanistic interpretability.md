@@ -1101,5 +1101,3 @@ https://transformer-circuits.pub/2025/attention-qk
 ## manipulate manifolds
 
 https://transformer-circuits.pub/2025/linebreaks/index.html
-
-[^ref]

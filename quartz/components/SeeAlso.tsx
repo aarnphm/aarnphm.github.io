@@ -159,8 +159,9 @@ export default (() => {
           <span class="seealso-label">{labelText}</span>
           {padAfterLabel}
           <a
-            class={isCitation ? "external" : "internal"}
             href={href}
+            class={isCitation ? "" : "internal"}
+            data-no-popover={isCitation}
             data-slug={isCitation ? undefined : targetSlug}
           >
             {title}

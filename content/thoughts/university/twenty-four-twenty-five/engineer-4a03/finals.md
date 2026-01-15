@@ -109,5 +109,3 @@ Tony Hope
    - User-centric design principles, help ensure that clinicians, patients, and regulators can understand and trust the system.
    - Regular stakeholder feedback integration
    - Maintenance of model cards and datasheets [@mitchell2019model]
-
-[^ref]

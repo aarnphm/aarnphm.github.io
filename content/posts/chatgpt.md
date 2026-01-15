@@ -61,5 +61,3 @@ The focus will shift towards the process of reaching desired outcomes and improv
 
 These new interfaces will require instructors to adapt their evaluation methods. Assessment will need to consider students' pace flexibility and their level of engagement with a given topic.
 This approach encourages a more holistic, cross-disciplinary understanding, better preparing students for continuous learning in our rapidly evolving technological landscape.
-
-[^ref]

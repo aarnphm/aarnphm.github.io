@@ -362,5 +362,3 @@ if __name__ == '__main__':
   )
   evaluate(model, test_loader)
 ```
-
-[^ref]

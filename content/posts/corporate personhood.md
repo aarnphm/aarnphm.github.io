@@ -51,5 +51,3 @@ Recognising corporations are not moral agents; we shift the onus onto legal fram
 In conclusion, corporate personhood should be recognised as a limited legal fiction rather than a morally meaningful form. While legal personhood serves practical functions in commerce and law, extending this to claims of moral personhood obscures the need for external regulation and democratic oversight of corporate power. Instead of expecting corporations to embody moral principles, society should strengthen regulatory frameworks that ensure corporate actions align with the broader public interest, especially in the era of AI and data capitalism. [^analogy]
 
 [^analogy]: data capitalism or surveillance capitalism are used exchangeably in this context, as they both refer to the same concept of using personal data for profit.
-
-[^ref]

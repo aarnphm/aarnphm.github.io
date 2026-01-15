@@ -32,5 +32,3 @@ Three grounds for this arguments:
 > these measures, whether it be registration, certification, or licensure,
 > almost ==inevitably becomes a tool== in the hands of [_a special producer group_]
 > to obtain a **monopoly** position at the expense of the rest of the public.
-
-[^ref]

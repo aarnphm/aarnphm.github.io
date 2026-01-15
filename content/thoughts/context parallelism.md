@@ -2,7 +2,7 @@
 date: "2025-11-10"
 description: dealing with long context
 id: context parallelism
-modified: 2026-01-09 05:35:52 GMT-05:00
+modified: 2026-01-15 15:18:32 GMT-05:00
 tags:
   - llm
   - inference
@@ -30,13 +30,7 @@ Given different SLO characteristics for [[thoughts/PD disaggregated serving#pref
 >
 > Hence context parallelism is more/less sharding KV cache across GPUs.
 
-> For a model of $H$ kv-heads, a request with $T$ tokens requires $H \times T$ key/value tensor in {{sidenotes[^KV cache]}}.
-
-{{sidenotes[KV cache]}}:
-
-    the core idea with TP is that we duplicates the KV cache across multiple GPUs.
-
-    If one GPU can hold all of the KV, then we don't have to do any parallelisation. However, if we want to hold more requests in KV cache, and one GPU can't hold them all, we then ==shard== the KV across $H$ dimensions
+> For a model of $H$ kv-heads, a request with $T$ tokens requires $H \times T$ key/value tensor in {{sidenotes[KV cache]: the core idea with TP is that we duplicates the KV cache across multiple GPUs. If one GPU can hold all of the KV, then we don't have to do any parallelisation. However, if we want to hold more requests in KV cache, and one GPU can't hold them all, we then ==shard== the KV across $H$ dimensions}}.
 
 Note that we only want to ::duplicate:: $\text{tp\_size} / H$
 
@@ -46,4 +40,4 @@ Then we will need shard along $T$ dimension. `dcp` size should be in range of $[
 
 i.e: interleaved storage of KV cache where we reuse the TP's `process_group`
 
-for a token at index $n$, its KV cach is stored on GPU rank $\text{cp\_rank} = n \quad \% \quad \text{cp\_world\_size}$
+for a token at index $n$, its KV cach is stored on GPU rank $\text{cp\_rank} = n \space \% \space \text{cp\_world\_size}$

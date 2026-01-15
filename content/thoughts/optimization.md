@@ -315,5 +315,3 @@ https://docs.modula.systems/algorithms/newton-schulz/
 ### muon
 
 ![[thoughts/muon]]
-
-[^ref]
