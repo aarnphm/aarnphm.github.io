@@ -51,7 +51,7 @@
     "@codemirror/language": "^6.12.1",
     "@codemirror/state": "^6.5.4",
     "@codemirror/view": "^6.39.11",
-    "@electric-sql/pglite": "^0.3.14",
+    "@electric-sql/pglite": "^0.3.15",
     "@floating-ui/dom": "^1.7.4",
     "@huggingface/transformers": "^3.8.1",
     "@modelcontextprotocol/sdk": "^1.25.2",
@@ -163,21 +163,21 @@
     "zod": "^4.3.5"
   },
   "devDependencies": {
-    "@cloudflare/workers-types": "^4.20260114.0",
+    "@cloudflare/workers-types": "^4.20260115.0",
     "@modelcontextprotocol/inspector": "^0.18.0",
     "@types/d3": "^7.4.3",
     "@types/hast": "^3.0.4",
     "@types/js-yaml": "^4.0.9",
     "@types/katex": "^0.16.8",
     "@types/mdast": "^4.0.4",
-    "@types/node": "^25.0.8",
+    "@types/node": "^25.0.9",
     "@types/pretty-time": "^1.1.5",
     "@types/source-map-support": "^0.5.10",
     "@types/unist": "^3.0.3",
     "@types/ws": "^8.18.1",
     "@types/yargs": "^17.0.35",
-    "@typescript/native-preview": "7.0.0-dev.20260114.1",
-    "ai": "^6.0.34",
+    "@typescript/native-preview": "7.0.0-dev.20260115.1",
+    "ai": "^6.0.37",
     "bibtex-tidy": "^1.14.0",
     "drizzle-kit": "^0.31.8",
     "esbuild": "^0.27.2",
@@ -185,11 +185,11 @@
     "mermaid": "^11.12.2",
     "micromark": "^4.0.2",
     "micromark-util-types": "^2.0.2",
-    "prettier": "^3.7.4",
+    "prettier": "^3.8.0",
     "rehype-stringify": "^10.0.1",
     "ts-morph": "^27.0.2",
     "tsx": "^4.21.0",
     "typescript": "^5.9.3",
-    "wrangler": "^4.59.1"
+    "wrangler": "^4.59.2"
   }
 }
