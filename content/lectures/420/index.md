@@ -5,7 +5,7 @@ id: index
 modified: 2025-11-11 06:58:06 GMT-05:00
 tags:
   - ml
-  - linalg
+  - math/linalg
 title: 0[dot]420
 ---
 

@@ -8,7 +8,14 @@ description = "Aaron's notes"
 readme = { file = ".github/README.md", content-type = "text/markdown" }
 authors = [{ name = "Aaron Pham", email = "contact@aarnphm.xyz" }]
 requires-python = ">=3.11"
-dependencies = ["numpy>=2.1.2", "scipy>=1.14.1", "bytecode>=0.17.0"]
+dependencies = [
+    "numpy>=2.1.2",
+    "scipy>=1.14.1",
+    "bytecode>=0.17.0",
+    "nltk>=3.9.2",
+    "graphviz>=0.21",
+    "svgling>=0.5.0",
+]
 dynamic = ["version"]
 
 [tool.uv.sources]

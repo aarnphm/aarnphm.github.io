@@ -6,7 +6,7 @@ modified: 2025-10-29 02:14:23 GMT-04:00
 tags:
   - seed
   - ml
-  - linalg
+  - math/linalg
 title: 0[dot]412
 ---
 

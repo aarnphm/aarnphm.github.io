@@ -6,7 +6,7 @@ modified: 2025-10-29 02:16:09 GMT-04:00
 tags:
   - sfwr4ml3
   - ml
-  - linalg
+  - math/linalg
 title: Supervised machine learning
 ---
 

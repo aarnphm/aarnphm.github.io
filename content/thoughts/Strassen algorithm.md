@@ -7,7 +7,7 @@ modified: 2025-12-18 01:35:52 GMT-05:00
 published: "2004-07-02"
 source: https://en.wikipedia.org/wiki/Strassen_algorithm
 tags:
-  - linalg
+  - math/linalg
 
 title: Strassen algorithm
 ---
