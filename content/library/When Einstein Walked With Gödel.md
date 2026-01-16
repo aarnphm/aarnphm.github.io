@@ -12,7 +12,8 @@ author:
   - Jim Holt
 posters: "[[library/posters/when-einstein.jpg]]"
 notebook:
-category: non fiction
+category:
+  - p/nf
 id: When Einstein Walked With Gödel
 year: 2018
 ---

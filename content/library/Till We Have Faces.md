@@ -1,7 +1,8 @@
 ---
 author:
   - C. S. Lewis
-category: fiction
+category:
+  - p/fiction
 date: 2025-11-29
 description: retelling of the cupid and psyche myth from the perspective of psyche's jealous sister orual, examining possessive love, divine mystery, and self-knowledge.
 id: Till We Have Faces

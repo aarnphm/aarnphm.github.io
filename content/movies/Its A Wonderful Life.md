@@ -2,7 +2,7 @@
 category:
   - o/vintage
   - o/life
-  - w/fiction
+  - p/fiction
 date: 2024-02-07
 description: guardian angel showing suicidal man the world without him—capra filming despair as christmas fable, james stewart learning every small kindness creates ripples you can't see, life insurance payout unnecessary after all.
 director: Frank Capra

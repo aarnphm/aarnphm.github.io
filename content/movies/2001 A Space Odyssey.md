@@ -10,7 +10,7 @@ rating: 8.3
 status: recurring
 studio: mgm
 tags:
-  - p/sf
+  - p/scifi
   - technical
 title: "2001: A Space Odyssey"
 year: 1968

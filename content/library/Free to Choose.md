@@ -1,6 +1,7 @@
 ---
 author: Milton Friedman
-category: non fiction
+category:
+  - p/nf
 date: 2024-12-23
 description: popular defense of free market economics, arguing for limited government, personal responsibility, and the power of choice in policy.
 id: Free to Choose

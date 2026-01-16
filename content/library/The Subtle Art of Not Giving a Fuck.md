@@ -1,6 +1,7 @@
 ---
 author: Mark Manson
-category: non fiction
+category:
+  - p/nf
 date: 2022-08-21
 description: self help book arguing that caring about fewer, truer things leads to a better life than constant positivity and chasing validation.
 id: The Subtle Art of Not Giving a Fuck

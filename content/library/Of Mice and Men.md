@@ -13,7 +13,8 @@ subcategory:
 author:
   - John Steinbeck
 posters: "[[library/posters/of-mice-and-men.jpg]]"
-category: fiction
+category:
+  - p/fiction
 translator:
 notebook:
 aliases:

@@ -81,10 +81,7 @@ async function determineGraphicsAPI(): Promise<"webgpu" | "webgl"> {
     (canvas.getContext("webgl2") as WebGL2RenderingContext | null) ??
     (canvas.getContext("webgl") as WebGLRenderingContext | null)
 
-  // we have to return webgl so pixijs automatically falls back to canvas
-  if (!gl) {
-    return "webgl"
-  }
+  if (!gl) return "webgl"
 
   const webglMaxTextures = gl.getParameter(gl.MAX_TEXTURE_IMAGE_UNITS)
   const webgpuMaxTextures = device.limits.maxSampledTexturesPerShaderStage
@@ -150,7 +147,6 @@ async function renderGraph(graph: HTMLElement, fullSlug: FullSlug) {
   const wl: (SimpleSlug | "__SENTINEL")[] = [slug, "__SENTINEL"]
   if (depth >= 0) {
     while (depth >= 0 && wl.length > 0) {
-      // compute neighbours
       const cur = wl.shift()!
       if (cur === "__SENTINEL") {
         depth--
@@ -194,10 +190,9 @@ async function renderGraph(graph: HTMLElement, fullSlug: FullSlug) {
     .force("link", forceLink(graphData.links).distance(linkDistance))
     .force("collide", forceCollide<NodeData>((n) => nodeRadius(n)).iterations(3))
 
-  const radius = (Math.min(width, height) / 2) * 0.8
-  if (enableRadial) simulation.force("radial", forceRadial(radius).strength(0.2))
+  if (enableRadial)
+    simulation.force("radial", forceRadial((Math.min(width, height) / 2) * 0.8).strength(0.2))
 
-  // precompute style prop strings as pixi doesn't support css variables
   const cssVars = [
     "--secondary",
     "--tertiary",
@@ -217,7 +212,6 @@ async function renderGraph(graph: HTMLElement, fullSlug: FullSlug) {
     {} as Record<(typeof cssVars)[number], string>,
   )
 
-  // calculate color
   const color = (d: NodeData) => {
     const isCurrent = d.id === slug
     if (isCurrent) {
@@ -280,8 +274,6 @@ async function renderGraph(graph: HTMLElement, fullSlug: FullSlug) {
     for (const l of linkRenderData) {
       let alpha = 1
 
-      // if we are hovering over a node, we want to highlight the immediate neighbours
-      // with full alpha and the rest with default alpha
       if (hoveredNodeId) {
         alpha = l.active ? 1 : 0.2
       }
@@ -315,7 +307,6 @@ async function renderGraph(graph: HTMLElement, fullSlug: FullSlug) {
           ? { x: activeScale, y: activeScale }
           : { x: defaultScale, y: defaultScale }
 
-      // Show labels for hovered node and its connections
       const targetAlpha = isCurrentlyHover ? 1 : isConnected ? 0.8 : 0
 
       tweenGroup.add(new Tweened<Text>(n.label).to({ alpha: targetAlpha, scale }, 100))
@@ -337,7 +328,6 @@ async function renderGraph(graph: HTMLElement, fullSlug: FullSlug) {
     for (const n of nodeRenderData) {
       let alpha = 1
 
-      // if we are hovering over a node, we want to highlight the immediate neighbours
       if (hoveredNodeId !== null && focusOnHover) {
         alpha = n.active ? 1 : 0.2
       }
@@ -363,7 +353,6 @@ async function renderGraph(graph: HTMLElement, fullSlug: FullSlug) {
   tweens.forEach((tween) => tween.stop())
   tweens.clear()
 
-  const pixiPreference = await determineGraphicsAPI()
   const app = new Application()
   await app.init({
     width,
@@ -372,7 +361,7 @@ async function renderGraph(graph: HTMLElement, fullSlug: FullSlug) {
     autoStart: false,
     autoDensity: true,
     backgroundAlpha: 0,
-    preference: pixiPreference,
+    preference: await determineGraphicsAPI(),
     resolution: window.devicePixelRatio,
     eventMode: "static",
   })
@@ -430,31 +419,27 @@ async function renderGraph(graph: HTMLElement, fullSlug: FullSlug) {
     nodesContainer.addChild(gfx)
     labelsContainer.addChild(label)
 
-    const nodeRenderDatum: NodeRenderData = {
+    nodeRenderData.push({
       simulationData,
       gfx,
       label,
       color: color(simulationData),
       alpha: 1,
       active: false,
-    }
-
-    nodeRenderData.push(nodeRenderDatum)
+    })
   }
 
   for (const l of graphData.links) {
     const gfx = new Graphics({ interactive: false, eventMode: "none" })
     linkContainer.addChild(gfx)
 
-    const linkRenderDatum: LinkRenderData = {
+    linkRenderData.push({
       simulationData: l,
       gfx,
       color: computedStyleMap["--lightgray"],
       alpha: 1,
       active: false,
-    }
-
-    linkRenderData.push(linkRenderDatum)
+    })
   }
 
   let currentTransform = zoomIdentity
@@ -487,22 +472,20 @@ async function renderGraph(graph: HTMLElement, fullSlug: FullSlug) {
           event.subject.fy = null
           dragging = false
 
-          // if the time between mousedown and mouseup is short, we consider it a click
           if (Date.now() - dragStartTime < 500) {
-            const node = graphData.nodes.find((n) => n.id === event.subject.id) as NodeData
-            const targ = resolveRelative(fullSlug, node.id)
-            window.spaNavigate(new URL(targ, window.location.toString()))
+            window.spaNavigate(
+              new URL(resolveRelative(fullSlug, event.subject.id), window.location.toString()),
+            )
           }
         }),
     )
   } else {
     for (const node of nodeRenderData) {
       node.gfx.on("click", () => {
-        const targ = resolveRelative(fullSlug, node.simulationData.id)
-        window.spaNavigate(new URL(targ, window.location.toString()))
-        if (graph.classList.contains("active")) {
-          graph.classList.remove("active")
-        }
+        window.spaNavigate(
+          new URL(resolveRelative(fullSlug, node.simulationData.id), window.location.toString()),
+        )
+        graph.classList.remove("active")
       })
     }
   }
@@ -511,7 +494,6 @@ async function renderGraph(graph: HTMLElement, fullSlug: FullSlug) {
     stage.scale.set(scale, scale)
     stage.position.set(x, y)
 
-    // zoom adjusts opacity of labels too
     const currentOpacityScale = scale * opacityScale
     let alpha = Math.max((currentOpacityScale - 1) / 3.75, 0)
     const activeNodes = nodeRenderData.filter((n) => n.active).flatMap((n) => n.label)
@@ -539,7 +521,6 @@ async function renderGraph(graph: HTMLElement, fullSlug: FullSlug) {
         handleZoomBehaviour(transform.x, transform.y, transform.k)
       })
 
-    // initialize zoom with default scale and centered
     const canvasSelection = select<HTMLCanvasElement, NodeData>(app.canvas).call(zoomBehaviour)
     const initialTransform = zoomIdentity.translate(initialX, initialY).scale(initialScale)
     canvasSelection.call(zoomBehaviour.transform, initialTransform)
@@ -552,11 +533,9 @@ async function renderGraph(graph: HTMLElement, fullSlug: FullSlug) {
     if (stopAnimation) return
     for (const n of nodeRenderData) {
       const { x, y } = n.simulationData
-      if (!x || !y) continue
+      if (x == null || y == null) continue
       n.gfx.position.set(x + width / 2, y + height / 2)
-      if (n.label) {
-        n.label.position.set(x + width / 2, y + height / 2)
-      }
+      n.label.position.set(x + width / 2, y + height / 2)
     }
 
     for (const l of linkRenderData) {
@@ -604,11 +583,10 @@ document.addEventListener("nav", async (e: CustomEventMap["nav"]) => {
 
     for (const container of containers) {
       container.classList.add("active")
-      const graphContainer = container.querySelector(".global-graph-container") as HTMLElement
+      const graphContainer = container.querySelector<HTMLElement>(".global-graph-container")
       registerEscapeHandler(container, hideGlobalGraph)
-      if (graphContainer) {
-        globalGraphCleanups.push(await renderGraph(graphContainer, slug))
-      }
+      if (!graphContainer) continue
+      globalGraphCleanups.push(await renderGraph(graphContainer, slug))
     }
   }
 

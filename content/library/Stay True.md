@@ -14,7 +14,7 @@ author:
   - Hua Tsu
 posters: "[[library/posters/stay true.jpg]]"
 category:
-  - non fiction
+  - p/nf
 translator:
 description: The memoir depicts Hsu's unlikely relationship with a college friend named Ken, a friendship that was unexpectedly and tragically cut short when Ken was killed in a carjacking in 1998.
 notebook:

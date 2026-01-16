@@ -1,6 +1,6 @@
 ---
 tags:
-  - p/sf
+  - p/scifi
   - thriller
 director:
   - Danny Boyle

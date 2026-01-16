@@ -16,7 +16,7 @@ author:
   - Susan Sontag
 posters: "[[library/posters/regarding-pain-of-others.jpg]]"
 category:
-  - w/fiction
+  - p/fiction
 translator:
 notebook:
 aliases:

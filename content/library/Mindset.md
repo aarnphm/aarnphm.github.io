@@ -1,6 +1,7 @@
 ---
 author: Dr. Carol S. Dweck
-category: non fiction
+category:
+  - p/nf
 date: 2024-12-23
 description: popular psychology book contrasting fixed and growth mindsets, arguing that beliefs about ability shape learning, resilience, and success.
 id: Mindset

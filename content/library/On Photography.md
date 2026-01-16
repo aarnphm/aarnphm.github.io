@@ -14,7 +14,7 @@ author:
   - Susan Sontag
 posters: "[[library/posters/on-photography.jpg]]"
 category:
-  - non fiction
+  - p/nf
 translator:
 notebook:
 aliases:

@@ -1,6 +1,7 @@
 ---
 author: George Orwell
-category: fiction
+category:
+  - p/fiction
 date: 2025-03-05
 description: orwell first person account of fighting in the spanish civil war, mixing reportage, political critique, and growing disillusionment.
 id: Homage to Catalonia

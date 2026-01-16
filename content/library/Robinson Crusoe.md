@@ -1,6 +1,7 @@
 ---
 author: Daniel Defoe
-category: fiction
+category:
+  - p/fiction
 date: 2025-03-05
 description: classic adventure novel of shipwreck and survival on a remote island, exploring labor, colonialism, and solitude.
 id: Robinson Crusoe

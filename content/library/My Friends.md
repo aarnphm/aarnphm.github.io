@@ -15,7 +15,7 @@ author:
   - Fredrik Backman
 posters: "[[library/posters/my-friends.avif]]"
 category:
-  - w/fiction
+  - p/fiction
 translator:
 notebook:
 aliases:

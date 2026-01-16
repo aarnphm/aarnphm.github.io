@@ -4,19 +4,23 @@ aliases:
 date: "2025-09-08"
 description: bedstone of scaling intelligence
 id: GPU programming
-modified: 2025-10-29 02:15:23 GMT-04:00
+modified: 2026-01-15 18:18:33 GMT-05:00
 permalinks:
   - /gpus
+socials:
+  glossary: https://modal.com/gpu-glossary
+  history: https://fabiensanglard.net/cuda/
 tags:
   - ml
   - hardware
 title: GPU
-socials:
-  history: https://fabiensanglard.net/cuda/
-  glossary: https://modal.com/gpu-glossary/device-hardware/cuda-device-architecture
 ---
 
 > uccl project: https://github.com/uccl-project/uccl
+
+## arithmetic bandwidth
+
+_https://modal.com/gpu-glossary/perf/arithmetic-bandwidth_
 
 ## architecture overview
 

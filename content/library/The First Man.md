@@ -1,6 +1,7 @@
 ---
 author: "[[thoughts/Camus|Abert Camus]]"
-category: fiction
+category:
+  - p/fiction
 language: french
 date: 2025-10-06
 description: unfinished, autobiographical novel about childhood in colonial algeria, exploring poverty, family, and the search for origin.

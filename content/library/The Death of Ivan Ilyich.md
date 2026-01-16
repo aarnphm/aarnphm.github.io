@@ -1,6 +1,7 @@
 ---
 author: Leo Tolstoy
-category: fiction
+category:
+  - p/fiction
 language: russian
 date: 2022-08-21
 description: novella about a dying judge confronting the emptiness of his conventional life, moving from denial to a late, painful honesty.

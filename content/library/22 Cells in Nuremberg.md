@@ -15,7 +15,7 @@ author:
   - Douglas Kelley
 posters: "[[library/posters/22-cell-in-nuremberg.jpg]]"
 category:
-  - non fiction
+  - p/nf
 translator:
 description: The depiction of those who were in trials at Nuremberg, circa Kelley's work on Göring
 notebook:

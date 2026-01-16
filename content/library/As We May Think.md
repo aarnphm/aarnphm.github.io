@@ -15,7 +15,7 @@ author:
   - Vannevar Bush
 posters: "[[library/posters/as-we-may-think.jpg]]"
 category:
-  - non fiction
+  - p/nf
 translator:
 notebook:
 aliases:

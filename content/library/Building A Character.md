@@ -1,6 +1,7 @@
 ---
 author: Constantin Stanislavski
-category: non fiction
+category:
+  - p/nf
 date: 2025-08-13
 description: a practical guide for actors on building believable characters through physical actions, motivation, and disciplined rehearsal.
 id: Building A Character

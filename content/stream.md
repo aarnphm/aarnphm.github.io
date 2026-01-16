@@ -172,7 +172,7 @@ _So you must resist, or might as well die._
   - date: 2026-01-06 06:58:46 GMT-05:00
   - tags:
     - o/eschatology
-    - w/fiction
+    - p/fiction
   - socials:
     - substack: https://open.substack.com/pub/livingalone/p/being-held-against-lonesome?r=1z8i4s&utm_campaign=post&utm_medium=web&showWelcomeOnShare=true
 

@@ -1,6 +1,7 @@
 ---
 author: Paul Cleary
-category: non fiction
+category:
+  - p/nf
 date: 2025-10-07
 description: history of how norway managed its oil wealth through institutions and policy, building a massive sovereign fund instead of a curse.
 id: Trillion Dollar Baby

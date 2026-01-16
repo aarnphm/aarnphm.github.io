@@ -1,6 +1,7 @@
 ---
 author: Fernand Point
-category: non fiction
+category:
+  - p/nf
 language: french
 date: 2025-08-13
 description: classic french cookbook and memoir from chef fernand point, celebrating generous, intuitive cooking and the art of hospitality.

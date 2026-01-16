@@ -2,7 +2,9 @@
 date: "2025-08-06"
 description: and LMCache.
 id: KV offloading
-modified: 2026-01-09 05:49:08 GMT-05:00
+modified: 2026-01-16 01:46:43 GMT-05:00
+socials:
+  handbook: https://bentoml.com/llm/inference-optimization/kv-cache-offloading
 tags:
   - ml
   - inference
@@ -12,7 +14,11 @@ title: KV offloading
 The idea is to "offload" parts of the KV in GPU to larger storage on SSD and CPU for longer-context and concurrent use-cases.
 An [[thoughts/optimization]] strategy to increase GPU usage and reduce costs.
 
-see also: [handbook](https://bentoml.com/llm/inference-optimization/kv-cache-offloading)
+Testing towards block size changes for offloading to CPU
+
+- SSD 2TB, Read/Write 450MiB/s 450MiB/s
+- Max IOPs Read/Write 20000 40000
+- Blocksize = 16KiB
 
 ## motivation
 

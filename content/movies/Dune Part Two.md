@@ -10,7 +10,7 @@ status: finished
 studio: warner bros
 tags:
   - utopia
-  - p/sf
+  - p/scifi
 title: "Dune: Part Two"
 year: 2024
 watched: 2025-06-11

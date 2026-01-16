@@ -1,6 +1,7 @@
 ---
 author: Franz Kafka
-category: fiction
+category:
+  - p/fiction
 language: german
 date: 2022-08-21
 description: kafka tale of gregor samsa waking as an insect, depicting alienation, family cruelty, and the erosion of self.

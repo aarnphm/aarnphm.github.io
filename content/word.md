@@ -5,7 +5,7 @@ date: "2024-10-10"
 description: a bag of chips/words/vernacular
 id: word
 layout: technical
-modified: 2026-01-12 10:53:09 GMT-05:00
+modified: 2026-01-15 17:17:00 GMT-05:00
 tags:
   - evergreen
 title: lists
@@ -78,3 +78,4 @@ title: lists
 - {{sidenotes[a fortiori]: mostly used to lead from a less certain proposition to a more evident corollary, i.e. "even more so"}}
 - passementerie
   - fancy decorations on clothes
+- jovial
