@@ -1,6 +1,7 @@
 ---
 author: Frank Herbert
-category: fiction
+category:
+  - p/fiction
 date: 2025-10-07
 description: epic science fiction saga of politics, ecology, and prophecy on the desert planet arrakis, following paul atreides rise and transformation.
 id: Dune
@@ -9,7 +10,7 @@ posters: "[[library/posters/dune.jpg]]"
 status: finished
 subcategory: life
 tags:
-  - p/sf
+  - p/scifi
 title: Dune
 year: 1965
 finished: 2022

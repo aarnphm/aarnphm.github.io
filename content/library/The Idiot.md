@@ -1,6 +1,7 @@
 ---
 author: Fyodor Dostoevsky
-category: fiction
+category:
+  - p/fiction
 language: russian
 date: 2025-03-05
 description: novel about prince myshkin, a guileless man whose goodness collides with intrigue, jealousy, and violence in russian society.

@@ -11,7 +11,7 @@ socials:
   twitter: https://x.com/aarnphm/status/1877365322182705313
 tags:
   - love
-  - w/fiction
+  - p/fiction
   - writing
 title: the mountain in Topanga
 ---

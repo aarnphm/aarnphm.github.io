@@ -11,7 +11,7 @@ status: recurring
 studio: warner bros
 tags:
   - utopia
-  - p/sf
+  - p/scifi
 title: Dune
 year: 2021
 ---

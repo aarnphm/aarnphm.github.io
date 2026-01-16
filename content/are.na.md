@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-01-15 15:29:29 GMT-05:00
+modified: 2026-01-16 01:43:53 GMT-05:00
 permalinks:
   - /website
   - /tweets
@@ -2058,6 +2058,15 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://logangraves.com/the-human-project -- The Human Project
+  - [meta]:
+    - date: 01/15/2026
+    - tags: [meliorism, simulation]
+- https://brianlovin.com/writing/give-your-agent-a-laboratory -- Give your agent a laboratory
+  - [meta]:
+    - date: 01/15/2026
+    - tags: [sanbox, simulation]
+    - importance: 5
 - https://torontolife.com/food/restaurant-ruined-life/ -- A Restaurant Ruined My Life
   - [meta]:
     - date: 01/15/2026
@@ -3711,6 +3720,10 @@ title: are.na
   - view: list
   - json: true
 
+- https://castle.princeton.edu/optimallearning/ -- Optimal Learning
+  - [meta]:
+    - date: 12/11/2025
+    - tags: [information, visualisation]
 - https://math.ucr.edu/home/baez/information/ -- Information Geometry
   - [meta]:
     - date: 01/14/2026
@@ -4818,7 +4831,8 @@ title: are.na
   - [meta]:
     - date: 01/11/2026
     - tags: [generative, ai]
-  - The main argument is that it is not epistemic matter but also an isuse of higher-order intent
+    - importance: 5
+  - The main argument is that it is not epistemic matter but also an issue of higher-order intent
   - i.e LLM-generated text lacked the lived-experience depth. Though I do think this comes from a place of laziness of the people who just use LLM-generated text as is.
 - https://archive.is/57dY5 -- The Binge Purge TV’s streaming model is broken. It’s also not going away. For Hollywood, figuring that out will be a horror show. [--]
   - [meta]:
@@ -6429,6 +6443,14 @@ title: are.na
 
 ## design
 
+- https://nabiu.studio/digital-home-zine/essay -- On digital home
+  - [meta]:
+    - date: 01/16/2026
+    - tags: [communial, internet]
+- https://emergenceprojects.com
+  - [meta]:
+    - date: 01/15/2026
+    - tags: [interaction, play]
 - https://familyoffice.is/work
   - [meta]:
     - date: 01/15/2026
@@ -7172,10 +7194,6 @@ title: are.na
     - utility function of $\text{Citizen}$: $u_{C}(\text{exit}) = E$ $u_{C}(\text{loyalty}) = 0$, $u_{C}(\text{voice, respond}) = 1 - c$, $u_{C}(\text{voice,ignore,exit}) = E - c$, $u_{C}(\text{voice,ignore,loyalty}) = 0 - c$
     - i.e: _citizen_ incurs a cost of $c$ whenever they choose to raise their $\text{voice}$ and when _government_ respond then payout = 1
     - payoff function of $\text{Government}$: $u_{G}(\text{exit}) = 1$ $u_{G}(\text{loyalty}) = 1 + L$, $u_{G}(\text{voice, respond}) = L$, $u_{G}(\text{voice,ignore,exit}) = 1$, $u_{G}(\text{voice,ignore,loyalty}) = 1 + L$
-- https://castle.princeton.edu/optimallearning/ -- Optimal Learning
-  - [meta]:
-    - date: 12/11/2025
-    - tags: [information, visualisation]
 - https://flowingdata.com/2025/12/02/who-makes-a-higher-salary-and-the-jobs-they-work/ -- Who earns a higher salary than you and the jobs they work
   - [meta]:
     - date: 12/06/2025
@@ -7556,6 +7574,15 @@ title: are.na
 
 ## engineering
 
+- https://cursor.com/blog/scaling-agents -- Scaling long-running agents
+  - [meta]:
+    - date: 01/15/2026
+    - tags: [agents, scaling]
+  - experiments: https://github.com/wilsonzlin/fastrender
+- https://www.nvidia.com/content/gtc-2010/pdfs/2238_gtc2010.pdf -- Better Performance at Lower Occupancy
+  - [meta]:
+    - date: 01/15/2026
+    - tags: [systems, optimization]
 - https://research.perplexity.ai/articles/high-performance-gpu-memory-transfer-on-aws-sagemaker-hyperpod -- High-Performance GPU Memory Transfer on AWS Sagemaker Hyperpod
   - [meta]:
     - date: 01/15/2026
@@ -8331,6 +8358,10 @@ title: are.na
   - view: list
   - json: true
 
+- https://arxiv.org/abs/2512.23966
+  - [meta]:
+    - date: 01/15/2026
+    - tags: [scaling, long context]
 - https://askell.io/files/Askell-BPhil-Thesis.pdf -- Objective Epistemic Consequentialism
   - [meta]:
     - date: 01/15/2026
@@ -8607,6 +8638,8 @@ title: are.na
     - date: 11/23/2025
     - tags: [crdt, distributed system]
     - pinned: true
+    - socials:
+      - extended: https://raft.github.io/raft.pdf
 - https://arxiv.org/abs/2301.04709
   - [meta]:
     - date: 11/15/2025

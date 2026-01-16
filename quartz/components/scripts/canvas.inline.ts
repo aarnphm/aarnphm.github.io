@@ -1,5 +1,8 @@
 import { registerEscapeHandler, removeAllChildren, fetchCanonical } from "./util"
 import { normalizeRelativeURLs } from "../../util/path"
+import type { DragBehavior } from "d3-drag"
+import type { Simulation } from "d3-force"
+import type { ZoomBehavior } from "d3-zoom"
 import {
   forceSimulation,
   forceManyBody,
@@ -13,21 +16,9 @@ import {
 } from "d3"
 import { marked } from "marked"
 
-// configure marked for safe inline rendering
 marked.setOptions({ breaks: true, gfm: true })
 
-// helper to parse markdown safely
-function parseMarkdown(text: string): string {
-  try {
-    return marked.parse(text, { async: false }) as string
-  } catch (error) {
-    console.error("Failed to parse markdown:", error)
-    return wrapTextHtml(text)
-  }
-}
-
 const EDGE_LABEL_LINE_HEIGHT = 1.2
-// mark synthetic mouseleave events so bubbling back to the node does not recurse forever
 const SYNTHETIC_MOUSELEAVE_FLAG = Symbol("canvasSyntheticMouseleave")
 
 type SyntheticMouseEvent = MouseEvent & {
@@ -35,8 +26,7 @@ type SyntheticMouseEvent = MouseEvent & {
 }
 
 function renderTextNodeContent(node: NodeData): string {
-  const source = node.resolvedText ?? node.text ?? ""
-  const html = parseMarkdown(source)
+  const html = marked.parse(node.resolvedText ?? node.text ?? "", { async: false }) as string
 
   if (!node.wikilinks || node.wikilinks.length === 0) {
     return `<div class="node-text">${html}</div>`
@@ -86,6 +76,16 @@ interface CanvasResolvedWikilink {
   missing?: boolean
 }
 
+type CanvasMeta = {
+  slug?: string
+  href?: string
+  displayName?: string
+  description?: string
+  content?: string
+  resolvedText?: string
+  wikilinks?: CanvasResolvedWikilink[]
+}
+
 interface CanvasNode {
   id: string
   type: "text" | "file" | "link" | "group"
@@ -98,7 +98,6 @@ interface CanvasNode {
   file?: string
   url?: string
   label?: string
-  // merged at runtime from data-meta (server-provided)
   displayName?: string
   resolvedSlug?: string
   resolvedHref?: string
@@ -135,6 +134,13 @@ interface CanvasConfig {
   previewMaxLength: number
 }
 
+type CanvasBounds = {
+  minX: number
+  minY: number
+  maxX: number
+  maxY: number
+}
+
 type NodeData = CanvasNode & {
   fx?: number
   fy?: number
@@ -145,7 +151,7 @@ type LinkData = CanvasEdge & {
   target: NodeData
 }
 
-const jsonFetchCache = new Map<string, Promise<any>>()
+const jsonFetchCache = new Map<string, Promise<unknown>>()
 const filePreviewCache = new Map<string, Promise<string | null>>()
 const htmlParser = new DOMParser()
 
@@ -157,39 +163,35 @@ async function fetchJson<T>(source: string): Promise<T> {
   const absoluteUrl = resolveToAbsoluteUrl(source)
 
   if (!jsonFetchCache.has(absoluteUrl)) {
-    const pending = fetch(absoluteUrl, { credentials: "same-origin" }).then((response) => {
-      if (!response.ok) {
-        throw new Error(`Failed to load canvas data (${response.status})`)
-      }
-      return response.json()
-    })
-
-    jsonFetchCache.set(absoluteUrl, pending)
+    jsonFetchCache.set(
+      absoluteUrl,
+      fetch(absoluteUrl, { credentials: "same-origin" }).then((response) => {
+        if (!response.ok) {
+          throw new Error(`Failed to load canvas data (${response.status})`)
+        }
+        return response.json()
+      }),
+    )
   }
 
   return jsonFetchCache.get(absoluteUrl)! as Promise<T>
 }
 
 async function renderCanvas(container: HTMLElement) {
-  const dataAttr = container.getAttribute("data-canvas")
-  const cfgAttr = container.getAttribute("data-cfg")
-  const metaAttr = container.getAttribute("data-meta")
-  const isEmbed = container.getAttribute("data-embed") === "true"
-  const navigateTo = container.getAttribute("data-navigate-to")
+  const canvasUrl = container.getAttribute("data-canvas")?.trim()
+  if (!canvasUrl) return
 
-  if (!dataAttr || dataAttr.trim().length === 0) return
+  const cfgAttr = container.getAttribute("data-cfg")
+  const metaUrl = container.getAttribute("data-meta")?.trim()
+  const isEmbed = container.getAttribute("data-embed") === "true"
 
   try {
-    const canvasUrl = dataAttr.trim()
-    const metaUrl = metaAttr?.trim() ?? ""
-
-    const dataPromise = fetchJson<CanvasData>(canvasUrl)
-    const metaPromise =
-      metaUrl.length > 0
-        ? fetchJson<Record<string, any>>(metaUrl)
-        : Promise.resolve<Record<string, any>>({})
-
-    const [canvasData, metaMap] = await Promise.all([dataPromise, metaPromise])
+    const [canvasData, metaMap] = await Promise.all([
+      fetchJson<CanvasData>(canvasUrl),
+      metaUrl
+        ? fetchJson<Record<string, CanvasMeta>>(metaUrl)
+        : Promise.resolve<Record<string, CanvasMeta>>({}),
+    ])
     const cfg: CanvasConfig = cfgAttr ? JSON.parse(cfgAttr) : {}
     if (isEmbed) {
       cfg.drag = false
@@ -206,7 +208,6 @@ async function renderCanvas(container: HTMLElement) {
     const width = container.clientWidth || 800
     const height = container.clientHeight || 600
 
-    // create toolbar and help modal (skip for embeds)
     let toolbar: HTMLElement | null = null
     let helpModal: HTMLElement | null = null
 
@@ -303,14 +304,12 @@ async function renderCanvas(container: HTMLElement) {
       container.appendChild(helpModal)
     }
 
-    // create SVG
     const svg = select(container)
       .append("svg")
       .attr("width", width)
       .attr("height", height)
       .attr("viewBox", [0, 0, width, height])
 
-    // add dot pattern for background
     const defs = svg.append("defs")
     const pattern = defs
       .append("pattern")
@@ -327,32 +326,29 @@ async function renderCanvas(container: HTMLElement) {
       .attr("fill", "var(--gray)")
       .attr("opacity", 0.3)
 
-    // add background rect with pattern
     svg
       .append("rect")
       .attr("width", "100%")
       .attr("height", "100%")
       .attr("fill", `url(#${pattern.attr("id")})`)
 
-    // create container groups - order matters for z-index
     const g = svg.append("g")
     const groupNodeGroup = g.append("g").attr("class", "group-nodes")
     const edgeGroup = g.append("g").attr("class", "edges")
     const edgeLabelGroup = g.append("g").attr("class", "edge-labels")
     const nodeGroup = g.append("g").attr("class", "nodes")
 
-    // track focused node for scroll behavior
     let focusedNode: SVGGElement | null = null
     let isHelpOpen = false
+    let bounds: CanvasBounds | null = null
 
-    // setup zoom
-    let zoomBehavior: any = null
+    let zoomBehavior: ZoomBehavior<SVGSVGElement, unknown> | null = null
     let currentScale = 1
     let initialTransform = zoomIdentity
     if (cfg.zoom) {
-      zoomBehavior = d3Zoom<SVGSVGElement, unknown>()
+      const zoom = d3Zoom<SVGSVGElement, unknown>()
         .scaleExtent([0.1, 4])
-        .filter((event: any) => {
+        .filter((event) => {
           if (isHelpOpen) return false
 
           if (event.type === "wheel") {
@@ -376,10 +372,35 @@ async function renderCanvas(container: HTMLElement) {
             container.classList.remove("canvas-skeleton-view")
           }
         })
-      svg.call(zoomBehavior as any)
+      zoomBehavior = zoom
+      svg.call(zoom)
     }
 
-    // custom scroll handler for panning
+    const getBoundsTransform = (b: CanvasBounds) => {
+      const contentW = Math.max(1, b.maxX - b.minX)
+      const contentH = Math.max(1, b.maxY - b.minY)
+      const padding = 40
+      const kRaw = Math.min((width - padding) / contentW, (height - padding) / contentH)
+      const k = Math.max(0.1, Math.min(4, kRaw))
+      const cx = (b.minX + b.maxX) / 2
+      const cy = (b.minY + b.maxY) / 2
+      const tx = width / 2 - k * cx
+      const ty = height / 2 - k * cy
+      return { k, tx, ty }
+    }
+
+    const applyBoundsTransform = (b: CanvasBounds, animate: boolean) => {
+      const { k, tx, ty } = getBoundsTransform(b)
+      const transform = zoomIdentity.translate(tx, ty).scale(k)
+      if (zoomBehavior) {
+        const selection = animate ? svg.transition().duration(300) : svg
+        selection.call(zoomBehavior.transform, transform)
+      } else {
+        g.attr("transform", `translate(${tx},${ty}) scale(${k})`)
+      }
+      return transform
+    }
+
     container.addEventListener(
       "wheel",
       (event) => {
@@ -395,8 +416,8 @@ async function renderCanvas(container: HTMLElement) {
           event.stopPropagation()
 
           const currentTransform = zoomBehavior
-            ? //@ts-ignore
-              svg.node().__zoom || zoomIdentity
+            ? ((svg.node() as SVGSVGElement & { __zoom?: typeof zoomIdentity }).__zoom ??
+              zoomIdentity)
             : zoomIdentity
 
           const deltaX = event.deltaX
@@ -430,7 +451,6 @@ async function renderCanvas(container: HTMLElement) {
       { passive: false },
     )
 
-    // setup help modal (only for non-embeds)
     const showHelp = () => {
       if (helpModal) {
         helpModal.classList.add("is-visible")
@@ -458,21 +478,23 @@ async function renderCanvas(container: HTMLElement) {
       }
     }
 
-    if (isEmbed && navigateTo) {
-      const overlay = document.createElement("div")
-      overlay.className = "canvas-embed-overlay"
-      overlay.style.cssText =
-        "position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1000; cursor: pointer;"
-      overlay.setAttribute("aria-label", `view full canvas: ${navigateTo}`)
-      overlay.setAttribute("role", "link")
-      overlay.addEventListener("click", () => {
-        const path = navigateTo.startsWith("/") ? navigateTo : `/${navigateTo}`
-        window.spaNavigate(new URL(path, window.location.origin))
-      })
-      container.appendChild(overlay)
+    if (isEmbed) {
+      const navigateTo = container.getAttribute("data-navigate-to")
+      if (navigateTo) {
+        const overlay = document.createElement("div")
+        overlay.className = "canvas-embed-overlay"
+        overlay.style.cssText =
+          "position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1000; cursor: pointer;"
+        overlay.setAttribute("aria-label", `view full canvas: ${navigateTo}`)
+        overlay.setAttribute("role", "link")
+        overlay.addEventListener("click", () => {
+          const path = navigateTo.startsWith("/") ? navigateTo : `/${navigateTo}`
+          window.spaNavigate(new URL(path, window.location.origin))
+        })
+        container.appendChild(overlay)
+      }
     }
 
-    // setup toolbar controls
     if (toolbar) {
       toolbar.querySelectorAll("[data-action]").forEach((btn) => {
         btn.addEventListener("click", (e) => {
@@ -486,8 +508,6 @@ async function renderCanvas(container: HTMLElement) {
 
           if (!zoomBehavior) return
 
-          const boundsAttr = container.getAttribute("data-canvas-bounds")
-
           switch (action) {
             case "zoom-in":
               svg.transition().duration(300).call(zoomBehavior.scaleBy, 1.3)
@@ -499,28 +519,8 @@ async function renderCanvas(container: HTMLElement) {
               svg.transition().duration(300).call(zoomBehavior.transform, initialTransform)
               break
             case "zoom-fit":
-              if (boundsAttr) {
-                try {
-                  const b = JSON.parse(boundsAttr) as {
-                    minX: number
-                    minY: number
-                    maxX: number
-                    maxY: number
-                  }
-                  const contentW = Math.max(1, b.maxX - b.minX)
-                  const contentH = Math.max(1, b.maxY - b.minY)
-                  const padding = 40
-                  const kRaw = Math.min((width - padding) / contentW, (height - padding) / contentH)
-                  const k = Math.max(0.1, Math.min(4, kRaw))
-                  const cx = (b.minX + b.maxX) / 2
-                  const cy = (b.minY + b.maxY) / 2
-                  const tx = width / 2 - k * cx
-                  const ty = height / 2 - k * cy
-                  svg
-                    .transition()
-                    .duration(300)
-                    .call(zoomBehavior.transform, zoomIdentity.translate(tx, ty).scale(k))
-                } catch {}
+              if (bounds) {
+                applyBoundsTransform(bounds, true)
               }
               break
           }
@@ -528,7 +528,6 @@ async function renderCanvas(container: HTMLElement) {
       })
     }
 
-    // keyboard shortcuts
     const handleKeydown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
         hideHelp()
@@ -539,29 +538,8 @@ async function renderCanvas(container: HTMLElement) {
       }
       if (event.shiftKey && event.key === "1") {
         event.preventDefault()
-        const boundsAttr = container.getAttribute("data-canvas-bounds")
-        if (boundsAttr && zoomBehavior) {
-          try {
-            const b = JSON.parse(boundsAttr) as {
-              minX: number
-              minY: number
-              maxX: number
-              maxY: number
-            }
-            const contentW = Math.max(1, b.maxX - b.minX)
-            const contentH = Math.max(1, b.maxY - b.minY)
-            const padding = 40
-            const kRaw = Math.min((width - padding) / contentW, (height - padding) / contentH)
-            const k = Math.max(0.1, Math.min(4, kRaw))
-            const cx = (b.minX + b.maxX) / 2
-            const cy = (b.minY + b.maxY) / 2
-            const tx = width / 2 - k * cx
-            const ty = height / 2 - k * cy
-            svg
-              .transition()
-              .duration(300)
-              .call(zoomBehavior.transform, zoomIdentity.translate(tx, ty).scale(k))
-          } catch {}
+        if (bounds && zoomBehavior) {
+          applyBoundsTransform(bounds, true)
         }
       }
     }
@@ -575,12 +553,10 @@ async function renderCanvas(container: HTMLElement) {
       }
     })
 
-    // prepare data
     const nodes: NodeData[] = canvasData.nodes.map((n) => {
-      const meta = (metaMap && metaMap[n.id]) || {}
+      const meta: CanvasMeta = metaMap[n.id] ?? {}
       return {
         ...n,
-        // merge server-provided metadata without polluting raw JSON on disk
         displayName: meta.displayName ?? n.displayName,
         resolvedSlug: meta.slug ?? n.resolvedSlug,
         resolvedHref: meta.href ?? n.resolvedHref,
@@ -596,7 +572,6 @@ async function renderCanvas(container: HTMLElement) {
     const nodeMap = new Map<string, NodeData>()
     nodes.forEach((n) => nodeMap.set(n.id, n))
 
-    // separate groups from regular nodes
     const groupNodes = nodes.filter((n) => n.type === "group")
     const regularNodes = nodes.filter((n) => n.type !== "group")
 
@@ -609,8 +584,7 @@ async function renderCanvas(container: HTMLElement) {
       })
       .filter((l): l is LinkData => l !== null)
 
-    // create force simulation for regular nodes only (groups are static)
-    let simulation: any = null
+    let simulation: Simulation<NodeData, LinkData> | null = null
     if (!cfg.useManualPositions) {
       simulation = forceSimulation(regularNodes)
         .force(
@@ -624,7 +598,6 @@ async function renderCanvas(container: HTMLElement) {
         .force("collision", forceCollide().radius(cfg.collisionRadius || 50))
     }
 
-    // render group nodes (behind everything else)
     const groupNode = groupNodeGroup
       .selectAll("g.node")
       .data(groupNodes)
@@ -660,7 +633,7 @@ async function renderCanvas(container: HTMLElement) {
       .attr("y", -8)
       .attr("font-size", "2rem")
       .text((d) => d.label || "Group")
-      .each(function (d: any) {
+      .each(function (d: NodeData) {
         const maxWidth = d.width - 24
         const textEl = this as SVGTextElement
         let text = d.label || "Group"
@@ -672,10 +645,9 @@ async function renderCanvas(container: HTMLElement) {
         }
       })
 
-    // render edges
     const edge = edgeGroup
       .selectAll<SVGGElement, LinkData>("g.edge")
-      .data(links, (d: any) => d.id)
+      .data(links, (d) => d.id)
       .join(
         (enter) => {
           const edgeEnter = enter.append("g").attr("class", "edge")
@@ -700,12 +672,12 @@ async function renderCanvas(container: HTMLElement) {
 
     const labeledLinks = links.filter(
       (d): d is LinkData & { label: string } =>
-        d !== null && typeof d.label === "string" && d.label.trim().length > 0,
+        typeof d.label === "string" && d.label.trim().length > 0,
     )
 
     const edgeLabels = edgeLabelGroup
-      .selectAll<SVGGElement, LinkData>("g.edge-label-group")
-      .data(labeledLinks, (d: any) => d.id)
+      .selectAll<SVGGElement, LinkData & { label: string }>("g.edge-label-group")
+      .data(labeledLinks, (d) => d.id)
       .join(
         (enter) => {
           const labelGroup = enter
@@ -738,9 +710,7 @@ async function renderCanvas(container: HTMLElement) {
 
     edgeLabels.select("text").each(function (d) {
       const textSelection = select(this as SVGTextElement)
-      const raw = typeof d.label === "string" ? d.label : ""
-      const lines = raw.split(/\r?\n/)
-      const normalized = lines.length > 0 ? lines : [raw]
+      const normalized = d.label.split(/\r?\n/)
       const totalLines = normalized.length
       const offset = ((totalLines - 1) * EDGE_LABEL_LINE_HEIGHT) / 2
       const offsetStr = `${-offset.toFixed(3)}em`
@@ -763,7 +733,6 @@ async function renderCanvas(container: HTMLElement) {
         .text((line) => (line.length === 0 ? "\u00A0" : line))
     })
 
-    // add arrowhead marker
     svg
       .append("defs")
       .append("marker")
@@ -778,7 +747,6 @@ async function renderCanvas(container: HTMLElement) {
       .attr("d", "M0,-5L10,0L0,5")
       .attr("fill", "var(--gray)")
 
-    // render regular nodes (not groups)
     const node = nodeGroup
       .selectAll("g.node")
       .data(regularNodes)
@@ -787,7 +755,6 @@ async function renderCanvas(container: HTMLElement) {
       .attr("data-node-id", (d) => d.id)
       .attr("data-color", (d) => d.color || "")
 
-    // node backgrounds
     node
       .append("rect")
       .attr("class", "node-bg")
@@ -798,7 +765,6 @@ async function renderCanvas(container: HTMLElement) {
       .attr("stroke", "var(--gray)")
       .attr("stroke-width", 1.5)
 
-    // title box for file nodes
     const fileNodes = node.filter((d) => d.type === "file")
 
     fileNodes
@@ -808,7 +774,7 @@ async function renderCanvas(container: HTMLElement) {
       .attr("y", -8)
       .attr("font-size", "12px")
       .text((d) => d.displayName || d.file || "")
-      .each(function (d: any) {
+      .each(function (d: NodeData) {
         const maxWidth = d.width - 32
         const textEl = this as SVGTextElement
         let text = d.displayName || d.file || ""
@@ -830,7 +796,7 @@ async function renderCanvas(container: HTMLElement) {
       .attr("font-size", "16px")
       .attr("font-weight", "600")
       .text((d) => d.displayName || d.file || "")
-      .each(function (d: any) {
+      .each(function (d: NodeData) {
         const maxWidth = d.width - 32
         const textEl = this as SVGTextElement
         let text = d.displayName || d.file || ""
@@ -863,7 +829,7 @@ async function renderCanvas(container: HTMLElement) {
       const lineHeight = 8
       const lineGap = 6
       const maxLines = Math.min(4, Math.floor((d.height - paddingY * 2) / (lineHeight + lineGap)))
-      const lineCount = Math.max(1, maxLines || 1)
+      const lineCount = Math.max(1, maxLines)
 
       skeleton.attr("transform", `translate(${paddingX}, ${paddingY})`)
 
@@ -881,7 +847,6 @@ async function renderCanvas(container: HTMLElement) {
       }
     })
 
-    // node content
     node
       .append("foreignObject")
       .attr("width", (d) => d.width)
@@ -908,12 +873,11 @@ async function renderCanvas(container: HTMLElement) {
 
     textNodes.selectAll(".node-skeleton").raise()
 
-    // add a hidden overlay anchor inside file nodes to reuse site-wide popover logic
     node
       .filter((d) => d.type === "file")
       .select(".node-content")
-      .each(function (d: any) {
-        const container = this as unknown as HTMLElement
+      .each(function (d: NodeData) {
+        const container = this as HTMLElement
         const link = document.createElement("a")
         link.className = "internal canvas-popover-link"
         const href = d.resolvedHref
@@ -937,13 +901,12 @@ async function renderCanvas(container: HTMLElement) {
     node
       .filter((d) => d.type === "file")
       .each(function (d: NodeData) {
-        const host = this as unknown as SVGGElement
+        const host = this as SVGGElement
         const content = host.querySelector(".node-file-content") as HTMLElement | null
         if (!content) return
         hydrateFileNodeContent(content, d)
       })
 
-    // add border overlay (rendered on top of content)
     node
       .append("rect")
       .attr("class", "node-border-overlay")
@@ -956,14 +919,13 @@ async function renderCanvas(container: HTMLElement) {
       .attr("fill", "none")
       .attr("pointer-events", "none")
 
-    // add click handler to all nodes for focus tracking
     node.on("click", (evt, d) => {
       const clickEvent = evt as MouseEvent
       clickEvent.stopPropagation()
       const target = clickEvent.target as HTMLElement
       const currentNode = evt.currentTarget as SVGGElement
 
-      if (target && target.closest("a:not(.canvas-popover-link)")) {
+      if (target.closest("a:not(.canvas-popover-link)")) {
         return
       }
 
@@ -1017,7 +979,6 @@ async function renderCanvas(container: HTMLElement) {
       }
     })
 
-    // unfocus on background click
     svg.on("click", (evt) => {
       const target = evt.target as SVGElement
       if (
@@ -1032,9 +993,8 @@ async function renderCanvas(container: HTMLElement) {
       }
     })
 
-    // setup dragging
     if (cfg.drag) {
-      const drag = d3Drag<SVGGElement, NodeData>()
+      const drag: DragBehavior<SVGGElement, NodeData, unknown> = d3Drag<SVGGElement, NodeData>()
         .on("start", (event, d) => {
           if (!event.active && simulation) simulation.alphaTarget(0.3).restart()
           d.fx = d.x
@@ -1052,22 +1012,18 @@ async function renderCanvas(container: HTMLElement) {
           }
         })
 
-      node.call(drag as any)
+      node.call(drag)
     }
 
-    // update positions
     function updatePositions() {
-      // update regular nodes
       if (cfg.useManualPositions) {
         node.attr("transform", (d) => `translate(${d.x},${d.y})`)
       } else {
         node.attr("transform", (d) => `translate(${d.x - d.width / 2},${d.y - d.height / 2})`)
       }
 
-      // update group nodes (always use top-left positioning from JSON Canvas spec)
       groupNode.attr("transform", (d) => `translate(${d.x},${d.y})`)
 
-      // update edges with straight segments then curves
       edge.select("path").attr("d", (d) => {
         const sourceCenterX = d.source.x + d.source.width / 2
         const sourceCenterY = d.source.y + d.source.height / 2
@@ -1092,8 +1048,7 @@ async function renderCanvas(container: HTMLElement) {
         return `M ${p1.x} ${p1.y} L ${ext1.x} ${ext1.y} C ${cp1.x} ${cp1.y}, ${cp2.x} ${cp2.y}, ${ext2.x} ${ext2.y} L ${p2.x} ${p2.y}`
       })
 
-      // update edge labels - position at curve midpoint
-      edgeLabels.attr("transform", (d: any) => {
+      edgeLabels.attr("transform", (d) => {
         const sourceCenterX = d.source.x + d.source.width / 2
         const sourceCenterY = d.source.y + d.source.height / 2
         const targetCenterX = d.target.x + d.target.width / 2
@@ -1130,7 +1085,6 @@ async function renderCanvas(container: HTMLElement) {
         return `translate(${mx},${my})`
       })
 
-      // size background rectangles to fit text
       edgeLabels.each(function () {
         const group = this as SVGGElement
         const text = group.querySelector("text") as SVGTextElement
@@ -1149,11 +1103,9 @@ async function renderCanvas(container: HTMLElement) {
     if (simulation) {
       simulation.on("tick", updatePositions)
     } else {
-      // manual positions: just set them once
       updatePositions()
     }
 
-    // size edge label backgrounds after initial render
     setTimeout(() => {
       edgeLabels.each(function () {
         const group = this as SVGGElement
@@ -1170,23 +1122,10 @@ async function renderCanvas(container: HTMLElement) {
       })
     }, 100)
 
-    // Center / fit to view using bounds from data-canvas-bounds or calculate from nodes
     const boundsAttr = container.getAttribute("data-canvas-bounds")
-    let bounds:
-      | {
-          minX: number
-          minY: number
-          maxX: number
-          maxY: number
-        }
-      | undefined
-
     if (boundsAttr) {
-      try {
-        bounds = JSON.parse(boundsAttr)
-      } catch {}
+      bounds = JSON.parse(boundsAttr)
     } else if (isEmbed) {
-      // calculate bounds from canvas nodes for embeds
       let minX = Infinity
       let minY = Infinity
       let maxX = -Infinity
@@ -1210,26 +1149,9 @@ async function renderCanvas(container: HTMLElement) {
     }
 
     if (bounds) {
-      try {
-        const contentW = Math.max(1, bounds.maxX - bounds.minX)
-        const contentH = Math.max(1, bounds.maxY - bounds.minY)
-        const padding = 40
-        const kRaw = Math.min((width - padding) / contentW, (height - padding) / contentH)
-        const k = Math.max(0.1, Math.min(4, kRaw))
-        const cx = (bounds.minX + bounds.maxX) / 2
-        const cy = (bounds.minY + bounds.maxY) / 2
-        const tx = width / 2 - k * cx
-        const ty = height / 2 - k * cy
-        initialTransform = zoomIdentity.translate(tx, ty).scale(k)
-        if (zoomBehavior) {
-          svg.call(zoomBehavior.transform, initialTransform)
-        } else {
-          g.attr("transform", `translate(${tx},${ty}) scale(${k})`)
-        }
-      } catch {}
+      initialTransform = applyBoundsTransform(bounds, false)
     }
 
-    // show preview on hover
     if (cfg.showPreviewOnHover) {
       const tooltip = select("body")
         .append("div")
@@ -1247,12 +1169,9 @@ async function renderCanvas(container: HTMLElement) {
       node
         .filter((d) => d.type === "file")
         .on("mouseenter", async (event, d) => {
-          // show description or full popover
           if (d.description) {
-            // simple tooltip with description
             tooltip.html(wrapTextHtml(d.description)).style("visibility", "visible")
           } else {
-            // show a lightweight popover with the page's .popover-hint contents
             const pointer = event as MouseEvent
             const href = d.resolvedHref
               ? `/${d.resolvedHref}`
@@ -1260,7 +1179,6 @@ async function renderCanvas(container: HTMLElement) {
                 ? `/${d.resolvedSlug}`
                 : (d.file || "").replace(/\.md$/, "")
 
-            // create popover shell
             const pop = document.createElement("div")
             pop.classList.add("popover", "canvas-popover")
             const inner = document.createElement("div")
@@ -1268,7 +1186,6 @@ async function renderCanvas(container: HTMLElement) {
             pop.appendChild(inner)
             document.body.appendChild(pop)
 
-            // simple fixed positioning near the pointer
             pop.style.position = "fixed"
             pop.style.left = `${pointer.clientX + 12}px`
             pop.style.top = `${pointer.clientY + 12}px`
@@ -1281,19 +1198,15 @@ async function renderCanvas(container: HTMLElement) {
               targetUrl.search = ""
               const response = await fetchCanonical(targetUrl)
               const html = new DOMParser().parseFromString(await response.text(), "text/html")
-              // normalize relative links to point to the fetched page
               html.querySelectorAll("[href], [src]").forEach((el) => {
                 const e = el as HTMLElement
                 const attr = e.hasAttribute("href") ? "href" : e.hasAttribute("src") ? "src" : null
                 if (!attr) return
                 const val = e.getAttribute(attr)!
                 if (!val) return
-                try {
-                  const rebased = new URL(val, targetUrl)
-                  e.setAttribute(attr, rebased.pathname + rebased.hash)
-                } catch {}
+                const rebased = new URL(val, targetUrl)
+                e.setAttribute(attr, rebased.pathname + rebased.hash)
               })
-              // rewrite ids to avoid collisions (same as popover.inline.ts)
               html.querySelectorAll("[id]").forEach((el) => {
                 const targetID = `popover-${el.id}`
                 el.id = targetID
@@ -1305,7 +1218,6 @@ async function renderCanvas(container: HTMLElement) {
               ]
               if (elts.length > 0) {
                 inner.append(...elts)
-                // if there was a hash, try to scroll to it inside the popover
                 if (hash) {
                   const targetAnchor = hash.startsWith("#popover")
                     ? hash
@@ -1321,7 +1233,6 @@ async function renderCanvas(container: HTMLElement) {
               console.error("canvas popover failed: ", e)
             }
 
-            // cleanup on leave
             const current = event.currentTarget as SVGGElement
             const onLeave = () => {
               pop.remove()
@@ -1331,7 +1242,6 @@ async function renderCanvas(container: HTMLElement) {
           }
         })
         .on("mousemove", (event, d) => {
-          // only move tooltip for simple tooltips, not for full popovers
           if (d.type === "file" && d.description) {
             tooltip.style("top", `${event.pageY + 10}px`).style("left", `${event.pageX + 10}px`)
           }
@@ -1398,60 +1308,60 @@ async function getFileNodePreview(node: NodeData): Promise<string | null> {
 
   const cacheKey = targetUrl.toString()
 
-  const fetchCache = async () => {
-    try {
-      const response = await fetchCanonical(targetUrl).catch((error) => {
-        console.error("Canvas preview request failed:", error)
-        return null
-      })
-
-      if (!response || !response.ok) {
-        return null
-      }
-
-      const contentType = response.headers.get("Content-Type") ?? ""
-      if (!contentType.startsWith("text/html")) {
-        return null
-      }
-
-      const markup = await response.text()
-      const doc = htmlParser.parseFromString(markup, "text/html")
-      normalizeRelativeURLs(doc, targetUrl)
-
-      doc
-        .querySelectorAll('section[class~="page-footer"],section[class~="page-header"]')
-        .forEach((el) => el.remove())
-
-      doc.querySelectorAll("[id]").forEach((el) => {
-        const targetID = `canvas-${el.id}`
-        el.id = targetID
-      })
-
-      const hints = Array.from(
-        doc.getElementsByClassName("popover-hint") as HTMLCollectionOf<HTMLElement>,
-      )
-
-      if (hints.length > 0) {
-        return hints
-          .map((hint) => cleanCanvasPreviewElement(hint.cloneNode(true) as HTMLElement).outerHTML)
-          .join("")
-      }
-
-      const article = doc.querySelector("article")
-      if (!article) {
-        return null
-      }
-
-      const clone = article.cloneNode(true) as HTMLElement
-      cleanCanvasPreviewElement(clone)
-      return clone.innerHTML
-    } catch (error) {
-      console.error("Canvas preview parsing failed:", error)
-      return null
-    }
-  }
   if (!filePreviewCache.has(cacheKey)) {
-    filePreviewCache.set(cacheKey, fetchCache())
+    filePreviewCache.set(
+      cacheKey,
+      (async () => {
+        try {
+          const response = await fetchCanonical(targetUrl)
+          if (!response.ok) {
+            return null
+          }
+
+          const contentType = response.headers.get("Content-Type") ?? ""
+          if (!contentType.startsWith("text/html")) {
+            return null
+          }
+
+          const markup = await response.text()
+          const doc = htmlParser.parseFromString(markup, "text/html")
+          normalizeRelativeURLs(doc, targetUrl)
+
+          doc
+            .querySelectorAll('section[class~="page-footer"],section[class~="page-header"]')
+            .forEach((el) => el.remove())
+
+          doc.querySelectorAll("[id]").forEach((el) => {
+            const targetID = `canvas-${el.id}`
+            el.id = targetID
+          })
+
+          const hints = Array.from(
+            doc.getElementsByClassName("popover-hint") as HTMLCollectionOf<HTMLElement>,
+          )
+
+          if (hints.length > 0) {
+            return hints
+              .map(
+                (hint) => cleanCanvasPreviewElement(hint.cloneNode(true) as HTMLElement).outerHTML,
+              )
+              .join("")
+          }
+
+          const article = doc.querySelector("article")
+          if (!article) {
+            return null
+          }
+
+          const clone = article.cloneNode(true) as HTMLElement
+          cleanCanvasPreviewElement(clone)
+          return clone.innerHTML
+        } catch (error) {
+          console.error("Canvas preview failed:", error)
+          return null
+        }
+      })(),
+    )
   }
 
   return filePreviewCache.get(cacheKey)!
@@ -1476,12 +1386,7 @@ function resolveFileNodeUrl(node: NodeData): URL | null {
   if (trimmed.length === 0) return null
 
   const normalizedPath = trimmed.startsWith("/") ? trimmed : `/${trimmed}`
-  try {
-    return new URL(normalizedPath, window.location.origin)
-  } catch (error) {
-    console.error("Invalid canvas file node URL:", normalizedPath, error)
-    return null
-  }
+  return new URL(normalizedPath, window.location.origin)
 }
 
 function cleanCanvasPreviewElement<T extends HTMLElement>(element: T): T {
@@ -1501,9 +1406,6 @@ function wrapTextHtml(text: string): string {
   return div.innerHTML
 }
 
-// get connection point on node border
-// if side specified (JSON Canvas spec), use center of that side
-// otherwise calculate intersection point with target direction
 function getNodeEdgePoint(
   node: NodeData,
   side?: string,
@@ -1583,11 +1485,10 @@ function getControlPoint(extPoint: { x: number; y: number }, side: string, dista
   }
 }
 
-// initialize all canvases on the page
 document.addEventListener("nav", () => {
-  const selectors = [".canvas-container", ".canvas-embed-container"]
-  const canvasContainers = document.querySelectorAll<HTMLElement>(selectors.join(","))
-  canvasContainers.forEach((container) => {
-    renderCanvas(container)
-  })
+  document
+    .querySelectorAll<HTMLElement>([".canvas-container", ".canvas-embed-container"].join(","))
+    .forEach((container) => {
+      renderCanvas(container)
+    })
 })

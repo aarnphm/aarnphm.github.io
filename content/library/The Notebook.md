@@ -1,6 +1,7 @@
 ---
 author: Roland Allen
-category: non fiction
+category:
+  - p/nf
 date: 2025-10-07
 description: cultural history of notebooks as tools for thinking, tracing how paper records shape memory, creativity, and everyday life.
 id: The Notebook

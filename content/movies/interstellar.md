@@ -1,6 +1,6 @@
 ---
 category:
-  - w/fiction
+  - p/fiction
   - temporal
   - buster
 date: 2024-02-07
@@ -13,7 +13,7 @@ rating: 8.7
 status: recurring
 studio: syncopy
 tags:
-  - p/sf
+  - p/scifi
   - technical
   - time
 title: Interstellar

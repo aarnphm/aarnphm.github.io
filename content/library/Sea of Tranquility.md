@@ -1,6 +1,7 @@
 ---
 author: Emily St. John Mandel
-category: fiction
+category:
+  - p/fiction
 date: 2025-03-05
 description: time hopping novel connecting plague, art, and simulation across centuries, questioning reality and recurrence in the mandel universe.
 id: Sea of Tranquility

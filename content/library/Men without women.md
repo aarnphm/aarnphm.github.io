@@ -1,6 +1,7 @@
 ---
 author: Haruki Murakami
-category: fiction
+category:
+  - p/fiction
 language: japanese
 date: 2025-08-13
 description: short story collection about lonely men and ruptured relationships, mixing murakami surreal touches with quiet, aching realism.

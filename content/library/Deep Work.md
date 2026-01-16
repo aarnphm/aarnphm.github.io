@@ -1,6 +1,7 @@
 ---
 author: Cal Newport
-category: non fiction
+category:
+  - p/nf
 date: 2024-12-23
 description: argues for long, distraction free concentration as the key to producing valuable work in a world of constant digital noise.
 id: Deep Work

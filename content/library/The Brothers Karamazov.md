@@ -1,6 +1,7 @@
 ---
 author: Fyodor Dostoevsky
-category: fiction
+category:
+  - p/fiction
 date: "2025-03-05"
 description: dostoevsky final novel about faith, parricide, and guilt, following the three karamazov brothers through trial and spiritual crisis.
 id: The Brothers Karamazov

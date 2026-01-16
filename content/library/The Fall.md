@@ -1,6 +1,7 @@
 ---
 author: "[[thoughts/Camus|Albert Camus]]"
-category: fiction
+category:
+  - p/fiction
 language: french
 date: 2025-08-10
 description: monologue of a former lawyer in amsterdam, dissecting his own hypocrisy and guilt while quietly indicting bourgeois morality.

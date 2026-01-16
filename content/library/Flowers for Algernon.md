@@ -1,6 +1,7 @@
 ---
 author: Daniel Keyes
-category: fiction
+category:
+  - p/fiction
 date: 2025-10-16
 description: story of charlie gordon, whose intelligence is briefly transformed by an experiment, exploring disability, dignity, and the cost of knowledge.
 id: Flowers for Algernon

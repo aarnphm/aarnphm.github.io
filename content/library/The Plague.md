@@ -1,6 +1,6 @@
 ---
 tags:
-  - w/fiction
+  - p/fiction
   - philosophy
 id: The Plague
 title: The Plague

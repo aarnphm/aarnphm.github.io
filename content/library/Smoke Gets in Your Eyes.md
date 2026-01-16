@@ -15,7 +15,7 @@ author:
   - Caitlin Doughty
 posters: "[[library/posters/smoke-gets-in-your-eyes.jpg]]"
 category:
-  - non fiction
+  - p/nf
 translator:
 notebook:
 aliases:

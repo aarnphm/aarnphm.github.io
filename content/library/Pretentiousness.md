@@ -1,6 +1,7 @@
 ---
 author: Dan Fox
-category: non fiction
+category:
+  - p/nf
 date: 2025-10-07
 description: defense of pretension as reaching beyond one place, arguing that taste policing and authenticity talk often hide class anxiety.
 id: Pretentiousness

@@ -1,6 +1,7 @@
 ---
 author: Iris Murdoch
-category: fiction
+category:
+  - p/fiction
 date: 2025-07-07
 description: novel of an aging director obsessed with revisiting a first love by the sea, exposing ego, self deception, and fantasy.
 id: The Sea, The Sea

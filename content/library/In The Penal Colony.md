@@ -1,7 +1,8 @@
 ---
 author:
   - Franz Kafka
-category: fiction
+category:
+  - p/fiction
 language: german
 date: 2025-11-29
 description: short story about an elaborate torture machine that carves commandments into condemned prisoners' skin, exploring justice, authority, and devotion to ambiguous law.
@@ -11,7 +12,7 @@ notebook:
 posters: "[[library/posters/in-the-penal-colony.jpg]]"
 status: to read
 tags:
-  - w/fiction
+  - p/fiction
 title: In The Penal Colony
 subcategory:
   - absurdism

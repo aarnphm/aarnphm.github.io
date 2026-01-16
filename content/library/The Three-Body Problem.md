@@ -1,6 +1,7 @@
 ---
 author: Liu Cixin
-category: fiction
+category:
+  - p/fiction
 language: chinese
 date: 2024-12-23
 description: first volume of a sci fi trilogy where contact with an alien civilization intersects with chinese cultural revolution history and physics puzzles.
@@ -10,7 +11,7 @@ posters: "[[library/posters/the-three-body-problem.jpg]]"
 status: finished
 subcategory: progress
 tags:
-  - p/sf
+  - p/scifi
 title: The Three-Body Problem
 year: 2008
 finished: 2024

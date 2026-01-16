@@ -3,7 +3,8 @@ author:
   - Christopher Alexander
   - Sara Ishikawa
   - Murray Silverstein
-category: non fiction
+category:
+  - p/nf
 date: 2025-10-07
 description: a handbook of architectural and urban design patterns showing how towns, buildings, and rooms can support humane, livable communities.
 external: https://patternlanguage.cc/

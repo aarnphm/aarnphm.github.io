@@ -1,6 +1,7 @@
 ---
 author: George Orwell
-category: non fiction
+category:
+  - p/nf
 date: 2022-08-21
 description: orwell essay on his motives for writing, politics of language, and the link between prose style and honesty.
 id: Why I Write

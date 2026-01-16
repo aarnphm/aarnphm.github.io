@@ -1,6 +1,7 @@
 ---
 author: Jade Wu
-category: non fiction
+category:
+  - p/nf
 date: 2024-12-23
 description: guide to treating insomnia with behavioral science, explaining sleep habits, anxiety, and practical tools for resetting the sleep system.
 id: Hello Sleep

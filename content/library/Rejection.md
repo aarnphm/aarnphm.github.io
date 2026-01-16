@@ -1,6 +1,7 @@
 ---
 author: Tony Tulathimutte
-category: fiction
+category:
+  - p/fiction
 date: 2025-03-05
 description: short fiction about rejection, ambition, and creative failure, tracing how the desire to be chosen warps work and relationships.
 id: Rejection

@@ -1,6 +1,7 @@
 ---
 author: McKenzie Wark
-category: non fiction
+category:
+  - p/nf
 date: 2025-10-07
 description: introduction to situationist thought and revolutionary practice, tracing how spectacle, play, and detournement reshape politics and everyday life.
 id: Leaving the Twentieth Century

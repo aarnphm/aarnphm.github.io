@@ -1,6 +1,7 @@
 ---
 author: William S. Burroughs
-category: fiction
+category:
+  - p/fiction
 date: "2025-09-18"
 description: hallucinatory, nonlinear novel about addiction, control, and bureaucracy, stitched from routines that attack respectability and state power.
 id: Naked Lunch

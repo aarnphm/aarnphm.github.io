@@ -1,6 +1,7 @@
 ---
 author: Richard P. Feynman
-category: non fiction
+category:
+  - p/nf
 date: 2024-12-23
 description: collection of feynman interviews and essays that capture his curiosity, playfulness, and attitude toward science, puzzles, and discovery.
 id: The Pleasure of Finding Things Out

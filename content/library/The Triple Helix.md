@@ -1,6 +1,7 @@
 ---
 author: Richard Lewontin
-category: non fiction
+category:
+  - p/nf
 date: 2025-10-07
 description: lewontin argues that gene, organism, and environment form an inseparable system, critiquing simple genetic determinism.
 id: The Triple Helix

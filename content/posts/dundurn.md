@@ -8,7 +8,7 @@ socials:
   substack: https://open.substack.com/pub/livingalone/p/apartment-two-twenty?r=1z8i4s&utm_campaign=post&utm_medium=web&showWelcomeOnShare=true
 tags:
   - home
-  - w/fiction
+  - p/fiction
   - writing
 title: apartment two twenty
 ---

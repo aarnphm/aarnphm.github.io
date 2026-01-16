@@ -11,7 +11,8 @@ author:
 subcategory:
   - o/life
   - being
-category: fiction
+category:
+  - p/fiction
 title: What We Can Know
 id: What We Can Know
 year: 2025

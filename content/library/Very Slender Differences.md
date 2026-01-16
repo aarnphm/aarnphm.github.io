@@ -1,6 +1,7 @@
 ---
 author: Samuel Johnson
-category: fiction
+category:
+  - p/fiction
 date: 2025-01-01
 description: An essay in The Idler
 finished: 2025

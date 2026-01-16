@@ -1,6 +1,7 @@
 ---
 author: Kurt Vonnegut
-category: fiction
+category:
+  - p/fiction
 date: 2025-10-07
 description: antiwar novel about dresden and billy pilgrim time travel, blending trauma, absurdity, and science fiction refrain so it goes.
 id: Slaughterhouse-Five
@@ -12,7 +13,7 @@ subcategory:
   - cybernetics
 tags:
   - aesthetics
-  - p/sf
+  - p/scifi
 title: Slaughterhouse-Five
 year: 1969
 finished: 2025

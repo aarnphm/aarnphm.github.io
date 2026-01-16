@@ -1,6 +1,7 @@
 ---
 author: Blake Crouch
-category: fiction
+category:
+  - p/fiction
 date: 2025-03-05
 description: sci fi thriller about a memory altering technology that lets people rewrite the past, collapsing timelines and identities.
 id: Recursion
@@ -10,7 +11,7 @@ status: to read
 subcategory: life
 tags:
   - being
-  - p/sf
+  - p/scifi
 title: Recursion
 year: 2019
 ---

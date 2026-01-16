@@ -5,7 +5,7 @@ aliases:
 date: "2025-06-16"
 description: and inference go distributed
 id: pd disaggregated serving
-modified: 2026-01-15 15:56:12 GMT-05:00
+modified: 2026-01-16 01:38:25 GMT-05:00
 seealso:
   - "[[thoughts/KV offloading]]"
   - "[[thoughts/distributed inference|distributed inference]]"
@@ -31,6 +31,8 @@ _notation are borrowed from [Jax's scaling book](https://jax-ml.github.io/scalin
 > decouple resource bottlenecks and scheduling so TTFT stays low under bursty arrivals without sacrificing ITL or throughput.
 
 see also: [dot-product intensity](https://gist.github.com/mikasenghaas/f3663a1f26acbb95cc880db12e9547ea)
+
+To skip to ratio calculation, see [[#ratio calculation]]
 
 ### notation
 
@@ -876,7 +878,3 @@ where $\beta_{\text{net}}$ is end‑to‑end bandwidth between prefill and decod
 > 3. **interference factor $\alpha$**: cited but not characterized from production traces
 > 4. **uniform routing assumption**: learned routers don't route uniformly across experts
 > 5. **steady-state analysis**: transient behavior under load spikes not modeled
-
-## deployment
-
-for CLI commands, architecture diagrams, and RDMA/nixl configuration, see [@vllm-disagg-docs; @vllm-prodstack].

@@ -1,6 +1,7 @@
 ---
 author: Cal Newport
-category: non fiction
+category:
+  - p/nf
 date: 2024-12-23
 description: argues for a focused, intentional relationship with technology, stripping away digital clutter to protect time, attention, and solitude.
 id: Digital Minimalism

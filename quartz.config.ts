@@ -187,7 +187,7 @@ const config: QuartzConfig = {
             "philosophy",
             "inference",
             "love",
-            "w/fiction",
+            "p/fiction",
             "math",
             "evergreen",
             "technical",
