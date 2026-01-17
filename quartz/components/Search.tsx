@@ -53,6 +53,9 @@ export default ((userOpts?: Partial<SearchOptions>) => {
                 aria-label={searchPlaceholder}
                 placeholder={searchPlaceholder}
               />
+              <span class="semantic-status" data-state="loading" aria-live="polite">
+                semantic not available yet
+              </span>
               <div class="search-mode-toggle" role="radiogroup" aria-label="Search mode">
                 <button
                   type="button"

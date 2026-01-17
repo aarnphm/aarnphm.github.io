@@ -94,6 +94,7 @@
         .search-bar {
           flex: 1 1 auto;
           min-width: 0;
+          padding-right: 9rem;
         }
 
         .search-mode-toggle {
@@ -131,6 +132,11 @@
               color: var(--light);
             }
 
+            &[disabled] {
+              opacity: 0.35;
+              cursor: not-allowed;
+            }
+
             svg {
               width: 18px;
               height: 18px;
@@ -148,6 +154,27 @@
               border: 0;
             }
           }
+        }
+
+        .semantic-status {
+          font-size: 0.65rem;
+          color: var(--gray);
+          opacity: 0.6;
+          letter-spacing: 0.02em;
+          text-transform: lowercase;
+          white-space: nowrap;
+          position: absolute;
+          right: 4.5rem;
+          top: 50%;
+          transform: translateY(-50%);
+          pointer-events: none;
+          max-width: 45%;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+
+        .semantic-status[data-state="ready"] {
+          display: none;
         }
       }
 

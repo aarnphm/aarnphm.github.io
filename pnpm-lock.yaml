@@ -55,6 +55,9 @@ importers:
       '@huggingface/transformers':
         specifier: ^3.8.1
         version: 3.8.1
+      '@jax-js/jax':
+        specifier: ^0.1.5
+        version: 0.1.5
       '@modelcontextprotocol/sdk':
         specifier: ^1.25.2
         version: 1.25.2(@cfworker/json-schema@4.1.1)(hono@4.11.4)(zod@4.3.5)
@@ -1550,6 +1553,10 @@ packages:
   '@isaacs/fs-minipass@4.0.1':
     resolution: {integrity: sha512-wgm9Ehl2jpeqP3zw/7mo3kRHFp5MEDhqAdwy1fTGkHAwnkGOVsgpvQhL8B5n1qlb01jV3n/bI0ZfZp5lWA1k4w==}
     engines: {node: '>=18.0.0'}
+
+  '@jax-js/jax@0.1.5':
+    resolution: {integrity: sha512-zBVL9VaVv6jOTXhHo050FkGI42/oQBAs6V3gYbE+NuFm0pfzMFkKTNp8xPkeV+LQWCalrcx3Ow3QRKRGyfsGhQ==}
+    engines: {pnpm: '>=10.0.0'}
 
   '@jridgewell/resolve-uri@3.1.2':
     resolution: {integrity: sha512-bRISgCIjP20/tbWSPWMEi54QVPRZExkuD9lJL+UIxUKtwVJA8wW1Trb1jMs1RFXo1CBTNZ/5hpC9QvmKWdopKw==}
@@ -6923,6 +6930,8 @@ snapshots:
   '@isaacs/fs-minipass@4.0.1':
     dependencies:
       minipass: 7.1.2
+
+  '@jax-js/jax@0.1.5': {}
 
   '@jridgewell/resolve-uri@3.1.2': {}
 

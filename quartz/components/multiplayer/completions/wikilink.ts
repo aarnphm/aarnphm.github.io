@@ -2,11 +2,10 @@ import { CompletionContext, CompletionResult, Completion } from "@codemirror/aut
 import { EditorView } from "@codemirror/view"
 import { fuzzyMatch, fuzzyMatchMultiple } from "./fuzzy"
 import { frecencyStore } from "./frecency"
+import { getContentIndex } from "./data"
 import type { FuzzyMatch } from "./types"
 import type { ContentDetails } from "../../../plugins/emitters/contentIndex"
 import { isStreamHost } from "../../scripts/util"
-
-type ContentIndex = Record<string, ContentDetails>
 
 function extractNamespace(query: string): { prefix: string; remainder: string } {
   const slashIdx = query.lastIndexOf("/")
@@ -57,7 +56,7 @@ export async function wikilinkCompletionSource(
   const wikiCtx = isInsideWikilink(context)
   if (!wikiCtx.inside) return null
 
-  const data: ContentIndex = await fetchData
+  const data = await getContentIndex()
 
   const query = wikiCtx.query.trim()
   const { prefix, remainder } = extractNamespace(query)
