@@ -354,6 +354,25 @@ function hydrateInternalHosts(root: HTMLElement) {
 // PDF.js integration
 const PDFJS_CDN = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/5.4.54"
 const pdfInstances = new WeakMap<HTMLElement, any>()
+let pdfjsReady: Promise<any | null> | null = null
+
+async function loadPdfJs(): Promise<any | null> {
+  if (window.pdfjsLib) return window.pdfjsLib
+
+  if (!pdfjsReady) {
+    pdfjsReady = new Promise((resolve) => {
+      const script = document.createElement("script")
+      script.src = `${PDFJS_CDN}/pdf.min.mjs`
+      script.type = "module"
+      script.async = true
+      document.head.appendChild(script)
+      script.addEventListener("load", () => resolve(window.pdfjsLib ?? null), { once: true })
+      script.addEventListener("error", () => resolve(null), { once: true })
+    })
+  }
+
+  return pdfjsReady
+}
 
 function renderPdfLoading(container: HTMLElement) {
   container.innerHTML = ""
@@ -527,10 +546,13 @@ async function createPdfViewer(container: HTMLElement, pdfUrl: string): Promise<
   const isBlobUrl = pdfUrl.startsWith("blob:")
   const loadUrl = isBlobUrl ? pdfUrl : `/api/pdf-proxy?url=${encodeURIComponent(pdfUrl)}`
 
-  window.pdfjsLib.GlobalWorkerOptions.workerSrc = `${PDFJS_CDN}/pdf.worker.min.mjs`
+  const pdfjsLib = await loadPdfJs()
+  if (!pdfjsLib) {
+    throw new Error("pdf.js failed to load")
+  }
+  pdfjsLib.GlobalWorkerOptions.workerSrc = `${PDFJS_CDN}/pdf.worker.min.mjs`
 
-  // Load PDF
-  return window.pdfjsLib.getDocument(loadUrl).promise.then((pdf: any) => {
+  return pdfjsLib.getDocument(loadUrl).promise.then((pdf: any) => {
     pdfDoc = pdf
     pdfInstances.set(container, pdfDoc)
     totalPages = pdf.numPages

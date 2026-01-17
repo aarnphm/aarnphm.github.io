@@ -687,7 +687,7 @@ ol.overflow {
       --grid-left: 1fr;
     }
     .header-content {
-      grid-column: 6/10;
+      grid-column: 5/10;
     }
   }
 }
@@ -768,7 +768,7 @@ ol.overflow {
 }
 
 .side-col {
-  grid-column: 6/8;
+  grid-column: 5/8;
 
   .popover &,
   .sidepanel-container &,
