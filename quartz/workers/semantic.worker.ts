@@ -120,31 +120,11 @@ async function fetchBinary(path: string): Promise<ArrayBuffer> {
 }
 
 function vectorToLiteral(vec: Float32Array): string {
-  const parts = new Array(vec.length)
-  for (let i = 0; i < vec.length; i++) {
-    const v = Number.isFinite(vec[i]) ? vec[i] : 0
-    parts[i] = String(v)
-  }
-  return `[${parts.join(",")}]`
+  return `[${vec.join(",")}]`
 }
 
 function parseVectorLiteral(text: string, expectedDims: number): number[] {
-  const trimmed = text.trim()
-  if (!trimmed.startsWith("[") || !trimmed.endsWith("]")) {
-    throw new Error("invalid vector literal")
-  }
-  const inner = trimmed.slice(1, -1).trim()
-  if (!inner) {
-    return new Array(expectedDims).fill(0)
-  }
-  const parts = inner.split(",")
-  const out = new Array(expectedDims)
-  for (let i = 0; i < expectedDims; i++) {
-    const raw = parts[i]
-    const v = raw ? Number(raw.trim()) : 0
-    out[i] = Number.isFinite(v) ? v : 0
-  }
-  return out
+  return JSON.parse(text)
 }
 
 function buildManifestId(data: Manifest): string {
@@ -232,47 +212,50 @@ async function ensureSchema(db: PGlite, manifest: Manifest, manifestKey: string,
     `create table ${EMBEDDINGS_TABLE} (id integer primary key, vec vector(${manifest.dims}))`,
   )
 
-  const batchSize = 64
-  let batchIds: number[] = []
-  let batchVecs: string[] = []
+  const batchSize = 512
   let loadedRows = 0
 
-  for (const shard of manifest.vectors.shards) {
-    const absolute = toAbsolute(shard.path, baseUrl)
-    const payload = await fetchBinary(absolute)
-    const view = new Float32Array(payload)
-    if (view.length !== shard.rows * manifest.dims) {
-      throw new Error(
-        `shard ${shard.path} has mismatched length (expected ${shard.rows * manifest.dims}, got ${view.length})`,
-      )
-    }
-
-    for (let i = 0; i < shard.rows; i++) {
-      const id = shard.rowOffset + i
-      const offset = i * manifest.dims
-      const vec = view.subarray(offset, offset + manifest.dims)
-      batchIds.push(id)
-      batchVecs.push(vectorToLiteral(vec))
-
-      if (batchIds.length >= batchSize) {
-        await insertBatch(db, batchIds, batchVecs)
-        batchIds = []
-        batchVecs = []
+  await Promise.all(
+    manifest.vectors.shards.map(async (shard) => {
+      const absolute = toAbsolute(shard.path, baseUrl)
+      const payload = await fetchBinary(absolute)
+      const view = new Float32Array(payload)
+      if (view.length !== shard.rows * manifest.dims) {
+        throw new Error(
+          `shard ${shard.path} has mismatched length (expected ${shard.rows * manifest.dims}, got ${view.length})`,
+        )
       }
-    }
 
-    loadedRows = Math.min(manifest.rows, shard.rowOffset + shard.rows)
-    const progress: ProgressMessage = {
-      type: "progress",
-      loadedRows,
-      totalRows: manifest.rows,
-    }
-    self.postMessage(progress)
-  }
+      let batchIds: number[] = []
+      let batchVecs: string[] = []
 
-  if (batchIds.length > 0) {
-    await insertBatch(db, batchIds, batchVecs)
-  }
+      for (let i = 0; i < shard.rows; i++) {
+        const id = shard.rowOffset + i
+        const offset = i * manifest.dims
+        const vec = view.subarray(offset, offset + manifest.dims)
+        batchIds.push(id)
+        batchVecs.push(vectorToLiteral(vec))
+
+        if (batchIds.length >= batchSize) {
+          await insertBatch(db, batchIds, batchVecs)
+          batchIds = []
+          batchVecs = []
+        }
+      }
+
+      if (batchIds.length > 0) {
+        await insertBatch(db, batchIds, batchVecs)
+      }
+
+      loadedRows = Math.min(manifest.rows, loadedRows + shard.rows)
+      const progress: ProgressMessage = {
+        type: "progress",
+        loadedRows,
+        totalRows: manifest.rows,
+      }
+      self.postMessage(progress)
+    }),
+  )
 
   const m = manifest.hnsw?.M ?? 16
   const efc = manifest.hnsw?.efConstruction ?? 200
@@ -481,9 +464,10 @@ async function handleInit(msg: InitMessage) {
     dims = manifest.dims
     manifestId = buildManifestId(manifest)
 
+    const jaxPromiseLocal = ensureJax()
     const db = await openDatabase(Boolean(msg.disableCache))
     await ensureSchema(db, manifest, manifestId, msg.baseUrl)
-    await ensureJax()
+    await jaxPromiseLocal
 
     state = "ready"
     const ready: ReadyMessage = { type: "ready" }
