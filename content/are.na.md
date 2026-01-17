@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-01-17 04:12:10 GMT-05:00
+modified: 2026-01-17 05:28:50 GMT-05:00
 permalinks:
   - /website
   - /tweets
@@ -143,6 +143,10 @@ title: are.na
 - [meta]:
   - view: list
 
+- https://x.com/_xjdr/status/2012353724165791765 -- The power of codex and open source is just to do it yourself
+  - [meta]:
+    - date: 01/17/2026
+    - tags: [ubiquitous, tooling]
 - https://x.com/PottsJustin/status/2009791656950657122 -- Aesop bathhouse in Montreal
   - [meta]:
     - date: 01/10/2026
@@ -979,6 +983,10 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://jakub.kr
+  - [meta]:
+    - date: 01/17/2026
+    - tags: [designer, interface, web]
 - https://terrytao.wordpress.com -- Terrence Tao
   - [meta]:
     - date: 01/14/2026
@@ -7159,6 +7167,10 @@ title: are.na
 
 ## prompts
 
+- https://jakub.kr/work/using-ai-as-a-design-engineer -- Using models for design engineer
+  - [meta]:
+    - date: 01/17/2026
+    - tags: [tooling, prompts]
 - https://x.com/AmandaAskell/status/1765207842993434880 -- Claude 3 System Prompt
   - [meta]:
     - date: 01/11/2026

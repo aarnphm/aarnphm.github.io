@@ -15,7 +15,6 @@ import {
   zoom,
 } from "d3"
 import { Text, Graphics, Application, Container, Circle } from "pixi.js"
-import { Group as TweenGroup, Tween as Tweened } from "@tweenjs/tween.js"
 import { registerEscapeHandler, removeAllChildren } from "./util"
 import { FullSlug, SimpleSlug, getFullSlug, resolveRelative, simplifySlug } from "../../util/path"
 import { D3Config } from "../Graph"
@@ -64,11 +63,6 @@ function addToVisited(slug: SimpleSlug) {
   const visited = getVisited()
   visited.add(slug)
   localStorage.setItem(localStorageKey, JSON.stringify([...visited]))
-}
-
-type TweenNode = {
-  update: (time: number) => void
-  stop: () => void
 }
 
 // workaround for pixijs webgpu issue: https://github.com/pixijs/pixijs/issues/11389
@@ -139,7 +133,6 @@ async function renderGraph(graph: HTMLElement, fullSlug: FullSlug) {
     addAdjacent(target, source)
   }
 
-  const tweens = new Map<string, TweenNode>()
   for (const [source, details] of data.entries()) {
     const outgoing = details.links ?? []
 
@@ -202,13 +195,14 @@ async function renderGraph(graph: HTMLElement, fullSlug: FullSlug) {
     }
   })
   const nodeById = new Map(nodes.map((node) => [node.id, node]))
-  const filteredLinks = links.filter((l) => neighbourhood.has(l.source) && neighbourhood.has(l.target))
   const graphData: { nodes: NodeData[]; links: LinkData[] } = {
     nodes,
-    links: filteredLinks.map((l) => ({
-      source: nodeById.get(l.source)!,
-      target: nodeById.get(l.target)!,
-    })),
+    links: links
+      .filter((l) => neighbourhood.has(l.source) && neighbourhood.has(l.target))
+      .map((l) => ({
+        source: nodeById.get(l.source)!,
+        target: nodeById.get(l.target)!,
+      })),
   }
 
   const nodeDegree = new Map<SimpleSlug, number>()
@@ -253,6 +247,25 @@ async function renderGraph(graph: HTMLElement, fullSlug: FullSlug) {
     },
     {} as Record<(typeof cssVars)[number], string>,
   )
+  let colorParserCtx: CanvasRenderingContext2D | null = null
+  const parseColorToHex = (value: string) => {
+    if (!colorParserCtx) {
+      colorParserCtx = document.createElement("canvas").getContext("2d")
+    }
+    if (!colorParserCtx) return 0xffffff
+    colorParserCtx.fillStyle = value.trim()
+    const resolved = colorParserCtx.fillStyle
+    if (resolved.startsWith("#")) {
+      const hex = resolved.slice(1)
+      return parseInt(hex.length === 3 ? hex.replace(/(.)/g, "$1$1") : hex, 16)
+    }
+    const parts = resolved.match(/\d+/g)
+    if (!parts) return 0xffffff
+    const [r, g, b] = parts.map((part) => parseInt(part, 10))
+    return (r << 16) + (g << 8) + b
+  }
+  const labelTintBase = parseColorToHex(computedStyleMap["--dark"])
+  const labelTintDimmed = parseColorToHex(computedStyleMap["--lightgray"])
 
   const color = (d: NodeData) => {
     const isCurrent = d.id === slug
@@ -266,7 +279,10 @@ async function renderGraph(graph: HTMLElement, fullSlug: FullSlug) {
   }
 
   function nodeRadius(d: NodeData) {
-    return nodeRadiusById.get(d.id) ?? 4
+    const numLinks = graphData.links.filter(
+      (l) => l.source.id === d.id || l.target.id === d.id,
+    ).length
+    return 2 + Math.sqrt(numLinks)
   }
 
   let hoveredNodeId: string | null = null
@@ -310,24 +326,12 @@ async function renderGraph(graph: HTMLElement, fullSlug: FullSlug) {
   let layoutDirty = true
   let linksDirty = true
   let renderDirty = true
-  let tweenUntil = 0
-  let linkTweenUntil = 0
-
   const scheduleRender = () => {
     if (stopAnimation || animationFrame !== null) return
     animationFrame = requestAnimationFrame(renderFrame)
   }
 
-  const extendTween = (duration: number, affectsLinks: boolean) => {
-    const now = performance.now()
-    const endAt = now + duration
-    tweenUntil = Math.max(tweenUntil, endAt)
-    if (affectsLinks) {
-      linkTweenUntil = Math.max(linkTweenUntil, endAt)
-    }
-    renderDirty = true
-    scheduleRender()
-  }
+  let lastFrameTime = 0
 
   const markLayoutDirty = () => {
     layoutDirty = true
@@ -344,85 +348,46 @@ async function renderGraph(graph: HTMLElement, fullSlug: FullSlug) {
     scheduleRender()
   }
 
-  function renderLinks() {
-    tweens.get("link")?.stop()
-    const tweenGroup = new TweenGroup()
-
-    for (const l of linkRenderData) {
-      let alpha = 1
-
-      if (hoveredNodeId) {
-        alpha = l.active ? 1 : 0.2
-      }
-
-      l.color = l.active ? computedStyleMap["--secondary"] : computedStyleMap["--lightgray"]
-      tweenGroup.add(new Tweened<LinkRenderData>(l).to({ alpha }, 200))
-    }
-
-    tweenGroup.getAll().forEach((tw) => tw.start())
-    tweens.set("link", {
-      update: tweenGroup.update.bind(tweenGroup),
-      stop() {
-        tweenGroup.getAll().forEach((tw) => tw.stop())
-      },
-    })
-    extendTween(220, true)
-    markLinksDirty()
+  const smooth = (current: number, target: number, factor = 0.9) =>
+    current * factor + target * (1 - factor)
+  const smoothColor = (current: number, target: number, factor: number) => {
+    const cr = (current >> 16) & 255
+    const cg = (current >> 8) & 255
+    const cb = current & 255
+    const tr = (target >> 16) & 255
+    const tg = (target >> 8) & 255
+    const tb = target & 255
+    const nr = Math.round(smooth(cr, tr, factor))
+    const ng = Math.round(smooth(cg, tg, factor))
+    const nb = Math.round(smooth(cb, tb, factor))
+    return (nr << 16) + (ng << 8) + nb
   }
 
-  const defaultScale = 1 / scale
+  const initialScale = scale
+  const defaultScale = 1 / initialScale
   const activeScale = defaultScale * 1.1
+  let zoomScale = 1
+  let zoomTextAlpha = 0
+  const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value))
+  const updateZoomDerived = (currentScale: number) => {
+    const relativeZoom = currentScale / initialScale
+    const safeRelativeZoom = Math.max(relativeZoom, 1e-4)
+    zoomScale = 1 / Math.sqrt(safeRelativeZoom)
+    zoomTextAlpha = clamp(Math.log2(safeRelativeZoom) + 1 - opacityScale, 0, 1)
+  }
+  updateZoomDerived(initialScale)
 
   function renderLabels() {
-    tweens.get("label")?.stop()
-    const tweenGroup = new TweenGroup()
+    markRenderDirty()
+  }
 
-    for (const n of nodeRenderData) {
-      const nodeId = n.simulationData.id
-      const isCurrentlyHover = hoveredNodeId === nodeId
-      const isConnected = hoveredNeighbours.has(nodeId)
-      const scale =
-        isCurrentlyHover || isConnected
-          ? { x: activeScale, y: activeScale }
-          : { x: defaultScale, y: defaultScale }
-
-      const targetAlpha = isCurrentlyHover ? 1 : isConnected ? 0.8 : 0
-
-      tweenGroup.add(new Tweened<Text>(n.label).to({ alpha: targetAlpha, scale }, 100))
-    }
-
-    tweenGroup.getAll().forEach((tw) => tw.start())
-    tweens.set("label", {
-      update: tweenGroup.update.bind(tweenGroup),
-      stop() {
-        tweenGroup.getAll().forEach((tw) => tw.stop())
-      },
-    })
-    extendTween(120, false)
+  function renderLinks() {
+    markLinksDirty()
+    markRenderDirty()
   }
 
   function renderNodes() {
-    tweens.get("hover")?.stop()
-
-    const tweenGroup = new TweenGroup()
-    for (const n of nodeRenderData) {
-      let alpha = 1
-
-      if (hoveredNodeId !== null && focusOnHover) {
-        alpha = n.active ? 1 : 0.2
-      }
-
-      tweenGroup.add(new Tweened<Graphics>(n.gfx, tweenGroup).to({ alpha }, 200))
-    }
-
-    tweenGroup.getAll().forEach((tw) => tw.start())
-    tweens.set("hover", {
-      update: tweenGroup.update.bind(tweenGroup),
-      stop() {
-        tweenGroup.getAll().forEach((tw) => tw.stop())
-      },
-    })
-    extendTween(220, false)
+    markRenderDirty()
   }
 
   function renderPixiFromD3() {
@@ -430,9 +395,6 @@ async function renderGraph(graph: HTMLElement, fullSlug: FullSlug) {
     renderLinks()
     renderLabels()
   }
-
-  tweens.forEach((tween) => tween.stop())
-  tweens.clear()
 
   const app = new Application()
   await app.init({
@@ -469,12 +431,13 @@ async function renderGraph(graph: HTMLElement, fullSlug: FullSlug) {
       anchor: { x: 0.5, y: 1.2 },
       style: {
         fontSize: fontSize * 15,
-        fill: computedStyleMap["--dark"],
+        fill: "#ffffff",
         fontFamily: computedStyleMap["--bodyFont"],
       },
       resolution: window.devicePixelRatio * 4,
     })
-    label.scale.set(defaultScale)
+    label.tint = labelTintBase
+    label.scale.set(defaultScale * zoomScale)
 
     const isTagNode = nodeId.startsWith("tags/")
     const gfx = new Graphics({
@@ -580,21 +543,17 @@ async function renderGraph(graph: HTMLElement, fullSlug: FullSlug) {
     stage.scale.set(scale, scale)
     stage.position.set(x, y)
 
-    const currentOpacityScale = scale * opacityScale
-    let alpha = Math.max((currentOpacityScale - 1) / 3.75, 0)
-    const activeNodes = nodeRenderData.filter((n) => n.active).flatMap((n) => n.label)
-
-    for (const label of labelsContainer.children) {
-      if (!activeNodes.includes(label)) {
-        label.alpha = alpha
-      }
+    updateZoomDerived(scale)
+    for (const n of nodeRenderData) {
+      n.gfx.scale.set(zoomScale)
     }
+    renderLabels()
+    markLinksDirty()
     markRenderDirty()
   }
 
-  const initialScale = scale
-  const initialX = width / 2 - (width / 2) * scale
-  const initialY = height / 2 - (height / 2) * scale
+  const initialX = width / 2 - (width / 2) * initialScale
+  const initialY = height / 2 - (height / 2) * initialScale
 
   if (enableZoom) {
     const zoomBehaviour = zoom<HTMLCanvasElement, NodeData>()
@@ -619,6 +578,10 @@ async function renderGraph(graph: HTMLElement, fullSlug: FullSlug) {
     animationFrame = null
     if (stopAnimation) return
 
+    const delta = lastFrameTime === 0 ? 16.666 : Math.max(1, Math.min(100, time - lastFrameTime))
+    lastFrameTime = time
+    const smoothingFactor = Math.pow(0.9, delta / 16.666)
+
     if (layoutDirty) {
       for (const n of nodeRenderData) {
         const { x, y } = n.simulationData
@@ -631,19 +594,69 @@ async function renderGraph(graph: HTMLElement, fullSlug: FullSlug) {
       renderDirty = true
     }
 
-    const tweenActive = time < tweenUntil
-    const linkTweenActive = time < linkTweenUntil
+    let needsNextFrame = false
+    const epsilon = 0.001
+    const baseScale = defaultScale * zoomScale
+    const hoverScale = activeScale * zoomScale
 
-    if (tweenActive) {
-      tweens.forEach((t) => t.update(time))
-      renderDirty = true
-      if (linkTweenActive) {
-        linksDirty = true
+    for (const n of nodeRenderData) {
+      const nodeTargetAlpha = hoveredNodeId !== null && focusOnHover ? (n.active ? 1 : 0.2) : 1
+      const nextNodeAlpha = smooth(n.alpha, nodeTargetAlpha, smoothingFactor)
+      if (Math.abs(nextNodeAlpha - n.alpha) > epsilon) {
+        needsNextFrame = true
+        renderDirty = true
+      }
+      n.alpha = nextNodeAlpha
+      n.gfx.alpha = nextNodeAlpha
+
+      const nodeId = n.simulationData.id
+      const isCurrentlyHover = hoveredNodeId === nodeId
+      const isConnected = hoveredNeighbours.has(nodeId)
+      const isDimmed = hoveredNodeId !== null && !isCurrentlyHover && !isConnected
+      const labelTargetAlpha = hoveredNodeId
+        ? isCurrentlyHover
+          ? 1
+          : isConnected
+            ? 0.8
+            : zoomTextAlpha
+        : zoomTextAlpha
+      const nextLabelAlpha = smooth(n.label.alpha, labelTargetAlpha, smoothingFactor)
+      if (Math.abs(nextLabelAlpha - n.label.alpha) > epsilon) {
+        needsNextFrame = true
+        renderDirty = true
+      }
+      n.label.alpha = nextLabelAlpha
+
+      const labelScale = isCurrentlyHover || isConnected ? hoverScale : baseScale
+      if (Math.abs(n.label.scale.x - labelScale) > epsilon) {
+        n.label.scale.set(labelScale)
+        renderDirty = true
+      }
+
+      const targetTint = isDimmed ? labelTintDimmed : labelTintBase
+      const nextTint = smoothColor(n.label.tint, targetTint, smoothingFactor)
+      if (nextTint !== n.label.tint) {
+        n.label.tint = nextTint
+        needsNextFrame = true
+        renderDirty = true
       }
     }
 
-    if (linksDirty) {
+    let linksNeedRender = linksDirty
+    for (const l of linkRenderData) {
+      const linkTargetAlpha = hoveredNodeId ? (l.active ? 1 : 0.2) : 1
+      const nextLinkAlpha = smooth(l.alpha, linkTargetAlpha, smoothingFactor)
+      if (Math.abs(nextLinkAlpha - l.alpha) > epsilon) {
+        needsNextFrame = true
+        linksNeedRender = true
+      }
+      l.alpha = nextLinkAlpha
+      l.color = l.active ? computedStyleMap["--secondary"] : computedStyleMap["--lightgray"]
+    }
+
+    if (linksNeedRender) {
       linksGfx.clear()
+      const linkWidth = 1 / stage.scale.x
       for (const l of linkRenderData) {
         const linkData = l.simulationData
         if (
@@ -656,7 +669,7 @@ async function renderGraph(graph: HTMLElement, fullSlug: FullSlug) {
         linksGfx.moveTo(linkData.source.x + width / 2, linkData.source.y + height / 2)
         linksGfx
           .lineTo(linkData.target.x + width / 2, linkData.target.y + height / 2)
-          .stroke({ alpha: l.alpha, width: 1, color: l.color })
+          .stroke({ alpha: l.alpha, width: linkWidth, color: l.color })
       }
       linksDirty = false
       renderDirty = true
@@ -667,7 +680,7 @@ async function renderGraph(graph: HTMLElement, fullSlug: FullSlug) {
       renderDirty = false
     }
 
-    if (tweenActive || linkTweenActive) {
+    if (needsNextFrame) {
       scheduleRender()
     }
   }

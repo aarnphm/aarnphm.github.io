@@ -3,12 +3,11 @@ created: "2025-10-29"
 date: "2025-10-29"
 description: Definition, properties, and examples of Lebesgue measure on $R^n$
 id: Lebesgue measure
-modified: 2025-11-27 16:10:36 GMT-05:00
+modified: 2026-01-17 05:58:49 GMT-05:00
 published: "2001-09-30"
 source: https://en.wikipedia.org/wiki/Lebesgue_measure
 tags:
   - math
-
 title: Lebesgue measure
 ---
 
@@ -26,27 +25,27 @@ Lebesgue measure extends the classical notion of volume to every dimension while
 
 1. One dimension. For an interval $I=[a,b]$ or $I=(a,b)$ in $\mathbb{R}$, define its length $\ell(I)=b-a$. For $E\subseteq\mathbb{R}$, the Lebesgue outer measure is
 
-$$
-\lambda^{*}(E)=\inf\Big\{\sum_{k=1}^{\infty}\ell(I_k):\ (I_k)_{k\in\mathbb{N}}\text{ are open intervals with }E\subset\bigcup_{k=1}^{\infty}I_k\Big\}.
-$$
+   $$
+   \lambda^{*}(E)=\inf\Big\{\sum_{k=1}^{\infty}\ell(I_k):\ (I_k)_{k\in\mathbb{N}}\text{ are open intervals with }E\subset\bigcup_{k=1}^{\infty}I_k\Big\}.
+   $$
 
 2. Higher dimensions. For a rectangular cuboid (product of open intervals) $C=I_1\times\cdots\times I_n$, define
 
-$$
-\operatorname{vol}(C)=\ell(I_1)\cdots\ell(I_n).
-$$
+   $$
+   \operatorname{vol}(C)=\ell(I_1)\cdots\ell(I_n).
+   $$
 
-For $E\subseteq\mathbb{R}^n$, define
+   For $E\subseteq\mathbb{R}^n$, define
 
-$$
-\lambda^{*}(E)=\inf\Big\{\sum_{k=1}^{\infty}\operatorname{vol}(C_k):\ (C_k)_{k\in\mathbb{N}}\text{ are products of open intervals with }E\subset\bigcup_{k=1}^{\infty}C_k\Big\}.
-$$
+   $$
+   \lambda^{*}(E)=\inf\Big\{\sum_{k=1}^{\infty}\operatorname{vol}(C_k):\ (C_k)_{k\in\mathbb{N}}\text{ are products of open intervals with }E\subset\bigcup_{k=1}^{\infty}C_k\Big\}.
+   $$
 
 3. Carathéodory criterion. A set $E\subseteq\mathbb{R}^n$ is Lebesgue-measurable if for all $A\subseteq\mathbb{R}^n$,
 
-$$
-\lambda^{*}(A)=\lambda^{*}(A\cap E)+\lambda^{*}(A\cap E^{\complement}).
-$$
+   $$
+   \lambda^{*}(A)=\lambda^{*}(A\cap E)+\lambda^{*}(A\cap E^{\complement}).
+   $$
 
 Lebesgue-measurable sets form a $\sigma$-algebra. For such $E$, define $\lambda(E)=\lambda^{*}(E)$.
 
@@ -76,33 +75,70 @@ These heuristics match textbook discussions that stress coverings, regularity, a
 
 ## properties
 
-- Translation invariance: $\lambda(A)=\lambda(A+t)$ for any $t\in\mathbb{R}^n$.
-
-1. If $A=I_1\times\cdots\times I_n$ (intervals), then $A$ is measurable and:
-   $$
-   \lambda(A)=|I_1|\cdot|I_2|\cdots|I_n|
-   $$
-2. If $A=\bigsqcup_{k=1}^{\infty}A_k$ with pairwise disjoint measurable $A_k$, then $A$ is measurable and:
-   $$
-   \lambda(A)=\sum_{k=1}^{\infty}\lambda(A_k)
-   $$
-3. If $A$ is measurable, then $A^{\complement}$ is measurable.
-4. $\lambda(A)\ge 0$ for every measurable $A$.
-5. If $A\subseteq B$ are measurable, then $\lambda(A)\le\lambda(B)$.
-6. Countable unions and intersections of measurable sets are measurable.
-7. Every open, closed, or Borel subset of $\mathbb{R}^n$ is measurable.
-8. Measurable sets are “approximately open/closed” in the sense of Lebesgue measure.
-9. Regularity: For every $\varepsilon>0$ and measurable $E\subset\mathbb{R}$, there exist closed $F\subset E\subset G$ open with $\lambda(G\setminus F)<\varepsilon$.
-10. There exist a $G_\delta$ set $G$ and an $F_\sigma$ set $F$ with $F\subseteq A\subseteq G$ and $\lambda(G\setminus A)=\lambda(A\setminus F)=0$.
-11. Lebesgue measure is a Radon measure (locally finite, inner regular).
-12. Strictly positive on nonempty open sets; support is all of $\mathbb{R}^n$.
-13. If $\lambda(A)=0$ and $B\subseteq A$, then $\lambda(B)=0$ (in particular, $B$ is measurable).
-14. For any $x\in\mathbb{R}^n$, the translation $A+x=\{a+x:a\in A\}$ is measurable with $\lambda(A+x)=\lambda(A)$.
-15. For any $\delta>0$, the dilation $\delta A=\{\delta x:x\in A\}$ is measurable with $\lambda(\delta A)=\delta^n\,\lambda(A)$.
-16. More generally, for a linear map $T$ and measurable $A\subset\mathbb{R}^n$, $T(A)$ is measurable with:
-    $$
-    \lambda(T(A))=|\det T|\,\lambda(A)
-    $$
+```jsx imports={TractatusRoot,Tractatus,TractatusPropo}
+<TractatusRoot>
+  <Tractatus>
+  Translation invariance: $\lambda(A)=\lambda(A+t)$ for any $t\in\mathbb{R}^n$.
+  </Tractatus>
+  <Tractatus>
+  If $A=I_1\times\cdots\times I_n$ (intervals), then $A$ is measurable and:
+  $$
+  \lambda(A)=|I_1|\cdot|I_2|\cdots|I_n|
+  $$
+  </Tractatus>
+  <Tractatus>
+  If $A=\bigsqcup_{k=1}^{\infty}A_k$ with pairwise disjoint measurable $A_k$, then $A$ is measurable and:
+  $$
+  \lambda(A)=\sum_{k=1}^{\infty}\lambda(A_k)
+  $$
+  </Tractatus>
+  <Tractatus>
+  If $A$ is measurable, then $A^{\complement}$ is measurable.
+  </Tractatus>
+  <Tractatus>
+  $\lambda(A)\ge 0$ for every measurable $A$.
+  </Tractatus>
+  <Tractatus>
+  If $A\subseteq B$ are measurable, then $\lambda(A)\le\lambda(B)$.
+  </Tractatus>
+  <Tractatus>
+  Countable unions and intersections of measurable sets are measurable.
+  </Tractatus>
+  <Tractatus>
+  Every open, closed, or Borel subset of $\mathbb{R}^n$ is measurable.
+  </Tractatus>
+  <Tractatus>
+  Measurable sets are “approximately open/closed” in the sense of Lebesgue measure.
+  </Tractatus>
+  <Tractatus>
+  Regularity: For every $\varepsilon>0$ and measurable $E\subset\mathbb{R}$, there exist closed $F\subset E\subset G$ open with $\lambda(G\setminus F)<\varepsilon$.
+  </Tractatus>
+  <Tractatus>
+  There exist a $G_\delta$ set $G$ and an $F_\sigma$ set $F$ with $F\subseteq A\subseteq G$ and $\lambda(G\setminus A)=\lambda(A\setminus F)=0$.
+  </Tractatus>
+  <Tractatus>
+  Lebesgue measure is a Radon measure (locally finite, inner regular).
+  </Tractatus>
+  <Tractatus>
+  Strictly positive on nonempty open sets; support is all of $\mathbb{R}^n$.
+  </Tractatus>
+  <Tractatus>
+  If $\lambda(A)=0$ and $B\subseteq A$, then $\lambda(B)=0$ (in particular, $B$ is measurable).
+  </Tractatus>
+  <Tractatus>
+  For any $x\in\mathbb{R}^n$, the translation $A+x=\{a+x:a\in A\}$ is measurable with $\lambda(A+x)=\lambda(A)$.
+  </Tractatus>
+  <Tractatus>
+  For any $\delta>0$, the dilation $\delta A=\{\delta x:x\in A\}$ is measurable with $\lambda(\delta A)=\delta^n\,\lambda(A)$.
+  </Tractatus>
+  <Tractatus>
+  More generally, for a linear map $T$ and measurable $A\subset\mathbb{R}^n$, $T(A)$ is measurable with:
+  $$
+  \lambda(T(A))=|\det T|\,\lambda(A)
+  $$
+  </Tractatus>
+</TractatusRoot>
+```
 
 > [!summary]
 >

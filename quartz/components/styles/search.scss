@@ -294,21 +294,6 @@
               grid-template-columns: 1fr auto 1fr;
             }
 
-            .collapsible-header {
-              .toggle-button {
-                display: none;
-              }
-            }
-
-            .collapsible-header-content-outer {
-              padding-left: 0 !important;
-
-              & > .collapsible-header-content {
-                padding-left: 0 !important;
-                border-left: unset !important;
-              }
-            }
-
             footer {
               display: none;
             }

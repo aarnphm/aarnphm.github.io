@@ -123,7 +123,7 @@ function vectorToLiteral(vec: Float32Array): string {
   return `[${vec.join(",")}]`
 }
 
-function parseVectorLiteral(text: string, expectedDims: number): number[] {
+function parseVectorLiteral(text: string): number[] {
   return JSON.parse(text)
 }
 
@@ -355,7 +355,7 @@ async function embed(text: string, isQuery: boolean = false): Promise<Float32Arr
   } else if (outputs.last_hidden_state) {
     const lastHidden = outputs.last_hidden_state
     const attentionMask = inputs.attention_mask
-    const [batchSize, seqLen, hiddenSize] = lastHidden.dims
+    const [_, seqLen, hiddenSize] = lastHidden.dims
     const pooled = new Float32Array(hiddenSize)
 
     for (let i = 0; i < hiddenSize; i++) {
@@ -393,7 +393,7 @@ async function rerank(queryVec: Float32Array, candidates: CandidateRow[]): Promi
   const queryArr = Array.from(queryVec)
   const flat = new Float32Array(candidates.length * dims)
   for (let i = 0; i < candidates.length; i++) {
-    const parsed = parseVectorLiteral(candidates[i].vec, dims)
+    const parsed = parseVectorLiteral(candidates[i].vec)
     for (let j = 0; j < dims; j++) {
       flat[i * dims + j] = parsed[j] ?? 0
     }
@@ -464,10 +464,8 @@ async function handleInit(msg: InitMessage) {
     dims = manifest.dims
     manifestId = buildManifestId(manifest)
 
-    const jaxPromiseLocal = ensureJax()
-    const db = await openDatabase(Boolean(msg.disableCache))
+    const [db] = await Promise.all([openDatabase(Boolean(msg.disableCache)), ensureJax()])
     await ensureSchema(db, manifest, manifestId, msg.baseUrl)
-    await jaxPromiseLocal
 
     state = "ready"
     const ready: ReadyMessage = { type: "ready" }
