@@ -5,134 +5,80 @@ const MAPBOX_TOKEN_ENDPOINT = "/api/secrets?key=MAPBOX_API_KEY"
 let mapboxTokenPromise: Promise<string | null> | null = null
 let mapboxReady: Promise<any | null> | null = null
 
-async function fetchMapboxToken(): Promise<string | null> {
+async function fetchMapboxToken() {
   try {
-    const response = await fetch(MAPBOX_TOKEN_ENDPOINT, {
-      method: "GET",
+    const res = await fetch(MAPBOX_TOKEN_ENDPOINT, {
       headers: { Accept: "application/json" },
       credentials: "same-origin",
     })
-
-    if (!response.ok) {
-      return null
-    }
-
-    const payload = (await response.json().catch(() => null)) as { value?: unknown } | null
-    if (!payload || typeof payload.value !== "string") {
-      return null
-    }
-
-    const token = payload.value.trim()
-    return token.length > 0 ? token : null
-  } catch (error) {
-    console.error(error)
+    if (!res.ok) return null
+    const { value } = (await res.json()) as { value?: string }
+    return value?.trim() || null
+  } catch {
     return null
   }
 }
 
-export async function getMapboxToken(): Promise<string | null> {
-  if (!mapboxTokenPromise) {
-    mapboxTokenPromise = fetchMapboxToken()
-  }
-
-  const token = await mapboxTokenPromise
-  if (!token) {
-    mapboxTokenPromise = Promise.resolve(null)
-  }
-  return token
+export function getMapboxToken() {
+  return (mapboxTokenPromise ??= fetchMapboxToken())
 }
 
-export async function loadMapbox(): Promise<any | null> {
+export async function loadMapbox() {
   const token = await getMapboxToken()
-  if (!token) {
-    return null
-  }
+  if (!token) return null
 
-  const ensureStylesheet = () => {
-    if (document.querySelector(`link[href="${MAPBOX_STYLESHEET_HREF}"]`)) {
-      return
-    }
+  if (!document.querySelector(`link[href="${MAPBOX_STYLESHEET_HREF}"]`)) {
     const link = document.createElement("link")
     link.rel = "stylesheet"
     link.href = MAPBOX_STYLESHEET_HREF
     document.head.appendChild(link)
   }
-  ensureStylesheet()
 
-  const applyToken = (mapboxgl: any | null) => {
-    if (mapboxgl && mapboxgl.Map) {
-      if (window.mapboxgl && window.mapboxgl.accessToken !== token) {
-        window.mapboxgl.accessToken = token
-      }
-      return mapboxgl
-    }
-    return null
-  }
-
-  const immediate = applyToken(window.mapboxgl ?? null)
-  if (immediate) {
-    return immediate
+  if (window.mapboxgl) {
+    window.mapboxgl.accessToken = token
+    return window.mapboxgl
   }
 
   if (!mapboxReady) {
-    let script: HTMLScriptElement | null = document.querySelector(
-      `script[src="${MAPBOX_SCRIPT_SRC}"]`,
-    )
+    mapboxReady = new Promise((resolve) => {
+      let script = document.querySelector(`script[src="${MAPBOX_SCRIPT_SRC}"]`) as HTMLScriptElement
+      if (!script) {
+        script = document.createElement("script")
+        script.src = MAPBOX_SCRIPT_SRC
+        script.async = true
+        script.defer = true
+        document.head.appendChild(script)
+      }
 
-    if (!script) {
-      script = document.createElement("script")
-      script.src = MAPBOX_SCRIPT_SRC
-      script.async = true
-      script.defer = true
-      document.head.appendChild(script)
-    }
-
-    if (script) {
-      mapboxReady = new Promise((resolve) => {
-        const resolveWithMap = () => resolve(window.mapboxgl ?? null)
-        const state = (script as any).readyState as string | undefined
-        if (state === "complete" || state === "loaded") {
-          resolveWithMap()
-        } else {
-          script!.addEventListener("load", resolveWithMap, { once: true })
-          script!.addEventListener("error", () => resolve(null), { once: true })
-        }
-      })
-    } else {
-      mapboxReady = Promise.resolve(null)
-    }
+      script.addEventListener("load", () => resolve(window.mapboxgl), { once: true })
+      script.addEventListener("error", () => resolve(null), { once: true })
+    })
   }
 
-  const loaded = await mapboxReady
-  return applyToken(loaded)
+  const mapbox = await mapboxReady
+  if (mapbox) mapbox.accessToken = token
+  return mapbox
 }
 
 export function applyMonochromeMapPalette(map: any) {
-  try {
-    const layers = map.getStyle()?.layers ?? []
-    layers.forEach((layer: any) => {
-      try {
-        if (layer.type === "background") {
-          map.setPaintProperty(layer.id, "background-color", "#fff9f3")
-        } else if (layer.type === "fill") {
-          const isWater = layer.id.includes("water")
-          map.setPaintProperty(layer.id, "fill-color", isWater ? "#e2e8ee" : "#fef6ee")
-          map.setPaintProperty(layer.id, "fill-opacity", isWater ? 0.96 : 0.85)
-        } else if (layer.type === "line") {
-          map.setPaintProperty(layer.id, "line-color", "#cbbfb1")
-          map.setPaintProperty(layer.id, "line-opacity", 0.35)
-        } else if (layer.type === "symbol") {
-          map.setPaintProperty(layer.id, "text-color", "#7c7468")
-          map.setPaintProperty(layer.id, "icon-color", "#7c7468")
-        } else if (layer.type === "circle") {
-          map.setPaintProperty(layer.id, "circle-color", "#7c7468")
-          map.setPaintProperty(layer.id, "circle-opacity", 0.4)
-        }
-      } catch {
-        // ignore layers without matching paint properties
-      }
-    })
-  } catch (error) {
-    console.error(error)
+  const layers = map.getStyle()?.layers ?? []
+  for (const layer of layers) {
+    const { id, type } = layer
+    if (type === "background") {
+      map.setPaintProperty(id, "background-color", "#fff9f3")
+    } else if (type === "fill") {
+      const isWater = id.includes("water")
+      map.setPaintProperty(id, "fill-color", isWater ? "#e2e8ee" : "#fef6ee")
+      map.setPaintProperty(id, "fill-opacity", isWater ? 0.96 : 0.85)
+    } else if (type === "line") {
+      map.setPaintProperty(id, "line-color", "#cbbfb1")
+      map.setPaintProperty(id, "line-opacity", 0.35)
+    } else if (type === "symbol") {
+      map.setPaintProperty(id, "text-color", "#7c7468")
+      map.setPaintProperty(id, "icon-color", "#7c7468")
+    } else if (type === "circle") {
+      map.setPaintProperty(id, "circle-color", "#7c7468")
+      map.setPaintProperty(id, "circle-opacity", 0.4)
+    }
   }
 }
