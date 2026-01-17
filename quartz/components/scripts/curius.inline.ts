@@ -22,7 +22,7 @@ document.addEventListener("nav", async (e) => {
   if (e.detail.url !== "curius") return
 
   const elements = [".curius-page-container", "#curius-fetching-text", "#curius-fragments"].map(
-    document.querySelector<HTMLDivElement>,
+    (selector) => document.querySelector<HTMLDivElement>(selector),
   )
 
   if (elements.some((el) => el === null)) return
