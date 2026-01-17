@@ -248,6 +248,7 @@ async function setupSearch(
   const modeButtons = modeToggle
     ? Array.from(modeToggle.querySelectorAll<HTMLButtonElement>(".mode-option"))
     : []
+  const semanticStatus = searchSpace.querySelector<HTMLElement>(".semantic-status")
 
   const appendLayout = (el: HTMLElement) => {
     searchLayout.appendChild(el)
@@ -269,47 +270,93 @@ async function setupSearch(
     searchSpace.appendChild(helper)
   }
 
-  const enablePreview = searchLayout.dataset.preview === "true"
-  if (!semantic && !semanticInitFailed) {
-    const client = new SemanticClient(semanticCfg)
-    try {
-      await client.ensureReady()
-      semantic = client
-      semanticReady = true
-
-      try {
-        const manifestUrl = "/embeddings/manifest.json"
-        const res = await fetch(manifestUrl)
-        if (res.ok) {
-          const manifest = await res.json()
-          chunkMetadata = manifest.chunkMetadata || {}
-          manifestIds = manifest.ids || []
-        }
-      } catch (err) {
-        console.warn("[Search] failed to load chunk metadata:", err)
-        chunkMetadata = {}
-        manifestIds = []
-      }
-    } catch (err) {
-      console.warn("[SemanticClient] initialization failed:", err)
-      client.dispose()
-      semantic = null
-      semanticReady = false
-      semanticInitFailed = true
+  const updateModeUI = (mode: SearchMode) => {
+    modeButtons.forEach((button) => {
+      const btnMode = (button.dataset.mode as SearchMode) ?? "lexical"
+      const isActive = btnMode === mode
+      button.classList.toggle("active", isActive)
+      button.setAttribute("aria-pressed", String(isActive))
+    })
+    if (modeToggle) {
+      modeToggle.dataset.mode = mode
     }
-  } else if (semantic && !semanticReady) {
-    try {
-      await semantic.ensureReady()
-      semanticReady = true
-    } catch (err) {
-      console.warn("[SemanticClient] became unavailable:", err)
-      semantic.dispose()
-      semantic = null
-      semanticReady = false
-      semanticInitFailed = true
+    searchLayout.dataset.mode = mode
+  }
+
+  const setSemanticState = (state: "loading" | "ready" | "unavailable") => {
+    if (semanticStatus) {
+      semanticStatus.dataset.state = state
+      semanticStatus.textContent =
+        state === "ready"
+          ? ""
+          : state === "loading"
+            ? "semantic (loading)"
+            : "semantic (unavailable)"
+    }
+    modeButtons.forEach((button) => {
+      const btnMode = (button.dataset.mode as SearchMode) ?? "lexical"
+      if (btnMode !== "semantic") return
+      const disabled = state !== "ready"
+      button.disabled = disabled
+      button.setAttribute("aria-disabled", String(disabled))
+    })
+    if (state !== "ready" && searchMode === "semantic") {
+      searchMode = "lexical"
+      updateModeUI(searchMode)
     }
   }
+
+  const enablePreview = searchLayout.dataset.preview === "true"
   const storedMode = loadStoredSearchMode()
+  const bootSemantic = (client: SemanticClient) => {
+    setSemanticState("loading")
+    void client
+      .ensureReady()
+      .then(async () => {
+        semantic = client
+        semanticReady = true
+        setSemanticState("ready")
+
+        try {
+          const manifestUrl = "/embeddings/manifest.json"
+          const res = await fetch(manifestUrl)
+          if (res.ok) {
+            const manifest = await res.json()
+            chunkMetadata = manifest.chunkMetadata || {}
+            manifestIds = manifest.ids || []
+          }
+        } catch (err) {
+          console.warn("[Search] failed to load chunk metadata:", err)
+          chunkMetadata = {}
+          manifestIds = []
+        }
+
+        if (storedMode === "semantic") {
+          searchMode = storedMode
+          updateModeUI(searchMode)
+        }
+      })
+      .catch((err) => {
+        console.warn("[SemanticClient] initialization failed:", err)
+        client.dispose()
+        semantic = null
+        semanticReady = false
+        semanticInitFailed = true
+        setSemanticState("unavailable")
+      })
+  }
+
+  if (!semantic && !semanticInitFailed) {
+    const client = new SemanticClient(semanticCfg)
+    semantic = client
+    bootSemantic(client)
+  } else if (semantic && !semanticReady) {
+    bootSemantic(semantic)
+  } else if (semanticReady) {
+    setSemanticState("ready")
+  } else if (semanticInitFailed) {
+    setSemanticState("unavailable")
+  }
   if (storedMode === "semantic") {
     if (semanticReady) {
       searchMode = storedMode
@@ -324,19 +371,6 @@ async function setupSearch(
   let runSearchTimer: number | null = null
   let lastInputAt = 0
   searchLayout.dataset.mode = searchMode
-
-  const updateModeUI = (mode: SearchMode) => {
-    modeButtons.forEach((button) => {
-      const btnMode = (button.dataset.mode as SearchMode) ?? "lexical"
-      const isActive = btnMode === mode
-      button.classList.toggle("active", isActive)
-      button.setAttribute("aria-pressed", String(isActive))
-    })
-    if (modeToggle) {
-      modeToggle.dataset.mode = mode
-    }
-    searchLayout.dataset.mode = mode
-  }
 
   const computeDebounceDelay = (term: string): number => {
     const trimmed = term.trim()
@@ -975,6 +1009,7 @@ async function setupSearch(
       semantic = null
       semanticReady = false
       semanticInitFailed = true
+      setSemanticState("unavailable")
       if (searchMode === "semantic") {
         searchMode = "lexical"
         updateModeUI(searchMode)

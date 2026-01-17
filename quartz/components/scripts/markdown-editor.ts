@@ -1,10 +1,11 @@
 import { EditorView, keymap } from "@codemirror/view"
-import { EditorState } from "@codemirror/state"
+import { EditorState, Prec } from "@codemirror/state"
 import { markdown } from "@codemirror/lang-markdown"
 import { defaultKeymap, historyKeymap, history } from "@codemirror/commands"
 import { syntaxHighlighting, defaultHighlightStyle } from "@codemirror/language"
 import { autocompletion, completionStatus, moveCompletionSelection } from "@codemirror/autocomplete"
 import { completionSources } from "../multiplayer/completions"
+import { togglePreview, cleanupPreview, onEditorUpdate } from "../multiplayer/completions/preview"
 import TurndownService from "turndown"
 
 const turndown = new TurndownService({
@@ -25,7 +26,7 @@ export class MarkdownEditor {
   private view: EditorView
 
   constructor(config: MarkdownEditorConfig) {
-    const customKeymap = keymap.of([
+    const customKeymap = Prec.highest(keymap.of([
       {
         key: "Mod-Enter",
         run: () => {
@@ -60,12 +61,22 @@ export class MarkdownEditor {
           return false
         },
       },
-    ])
+      {
+        key: "Ctrl-d",
+        run: (view) => {
+          if (completionStatus(view.state) === "active") {
+            return togglePreview(view)
+          }
+          return false
+        },
+      },
+    ]))
 
     const updateListener = EditorView.updateListener.of((update) => {
       if (update.docChanged && config.onChange) {
         config.onChange(update.state.doc.toString())
       }
+      onEditorUpdate(update)
     })
 
     const transparentTheme = EditorView.theme({
@@ -219,6 +230,7 @@ export class MarkdownEditor {
   }
 
   destroy(): void {
+    cleanupPreview()
     this.view.destroy()
   }
 }

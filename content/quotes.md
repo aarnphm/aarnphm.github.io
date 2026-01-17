@@ -16,7 +16,7 @@ metadata:
     text_line    = { character - newline } ;
     ws           = { " " } ;
     character    = ? any printable ascii except newline ? ;
-modified: 2026-01-11 02:49:56 GMT-05:00
+modified: 2026-01-17 03:17:53 GMT-05:00
 seealso:
   - "[[word|dictionary]]"
   - "[[research|wip]]"
@@ -31,7 +31,11 @@ transclude:
   title: false
 ---
 
-> In this regard, LLM use may be viewed as a dietary choice: one may choose to (say) not eat meat — and at Oxide we wish to empathize with that disposition by making sure that vegetarian options are available when we eat together. But just as we accommodate those choices, those who make them must understand that others will make different decisions — and it is decidedly anti-social to interrupt someone’s meal to register disapproval with their choice of entrée.
+> Once men turned their thinking over to machines in the hope that this would set them free. But that only permitted other men with machines to enslave them.
+>
+> Frank Herbert, _[[library/Dune]]_
+
+> In this regard, [[thoughts/LLMs|LLM]] use may be viewed as a dietary choice: one may choose to (say) not eat meat — and at Oxide we wish to empathize with that disposition by making sure that vegetarian options are available when we eat together. But just as we accommodate those choices, those who make them must understand that others will make different decisions — and it is decidedly anti-social to interrupt someone’s meal to register disapproval with their choice of entrée.
 >
 > Bryan Cantrill, [_Using LLMs at Oxide_](https://rfd.shared.oxide.computer/rfd/0576)
 

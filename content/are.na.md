@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-01-17 01:07:50 GMT-05:00
+modified: 2026-01-17 04:12:10 GMT-05:00
 permalinks:
   - /website
   - /tweets
@@ -4813,6 +4813,10 @@ title: are.na
 
 ## opinions
 
+- https://embedding-shapes.github.io/cursor-implied-success-without-evidence/ -- Cursor's latest "browser experiment" implied success without evidence
+  - [meta]:
+    - date: 01/17/2026
+    - tags: [engineering, news]
 - https://geohot.github.io//blog/jekyll/update/2026/01/15/anthropic-huge-mistake.html -- Anthropic is making a huge mistakes
   - [meta]:
     - date: 01/14/2026
@@ -6048,6 +6052,11 @@ title: are.na
 
 ## stream
 
+- https://x.com/i/events/2011075996787552257 -- Fashion Weeks (Menswear FW26 & Haute Couture SS26)
+  - [meta]:
+    - date: 01/17/2026
+    - tags: [fashion, shows]
+    - importance: 1
 - https://orgwatch.issarice.com/?organization=Future+of+Humanity+Institute -- Information for Future of humanity Institute
   - [meta]:
     - date: 01/14/2026
@@ -7314,6 +7323,16 @@ title: are.na
 
 ## fonts
 
+- https://monaspace.githubnext.com -- Monaspace
+  - [meta]:
+    - date: 01/17/2026
+    - tags: [fonts]
+    - importance: 8
+- https://github.com/mona-sans -- Mona Sans
+  - [meta]:
+    - date: 01/17/2026
+    - tags: [fonts]
+    - importance: 8
 - https://foundry.gardedesign.se/
   - [meta]:
     - date: 12/18/2025
@@ -8030,7 +8049,11 @@ title: are.na
 
 ## organizations
 
-- https://www.modular.com/ -- Modular
+- https://www.normalcomputing.com -- Normal Computing
+  - [meta]:
+    - date: 01/17/2026
+    - tags: [company, agentic]
+- https://www.modular.com/ -- Modular [**]
   - [meta]:
     - date: 01/07/2026
     - tags: [inference]

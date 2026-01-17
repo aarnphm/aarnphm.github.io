@@ -152,7 +152,7 @@ export function createCommentsUi({ getState, dispatch }: UiDeps) {
     dispatch({ type: "ui.modal.close" })
     if (activeId) {
       document
-        .querySelector<HTMLElement>(`.comment-bubble[data-comment-id=\"${activeId}\"]`)
+        .querySelector<HTMLElement>(`.comment-bubble[data-comment-id="${activeId}"]`)
         ?.classList.remove("modal-active")
     }
   }
@@ -781,7 +781,7 @@ export function createCommentsUi({ getState, dispatch }: UiDeps) {
     const inputContainer = document.createElement("div")
     inputContainer.className = "composer-input"
     inputContainer.setAttribute("role", "textbox")
-    inputContainer.setAttribute("aria-placeholder", "Add a comment")
+    inputContainer.setAttribute("aria-placeholder", "Commentaire (compatible markdown)")
 
     const editorMount = document.createElement("div")
     editorMount.className = "composer-editor-mount"
@@ -790,7 +790,7 @@ export function createCommentsUi({ getState, dispatch }: UiDeps) {
     placeholderWrapper.setAttribute("aria-hidden", "true")
     const placeholderText = document.createElement("span")
     placeholderText.className = "placeholder-text"
-    placeholderText.textContent = "Add a comment"
+    placeholderText.textContent = "Commentaire (compatible markdown)"
     placeholderWrapper.appendChild(placeholderText)
 
     let editor: MarkdownEditor
@@ -1211,10 +1211,10 @@ export function createCommentsUi({ getState, dispatch }: UiDeps) {
     if (!comment) return
 
     const bubble = document.querySelector<HTMLElement>(
-      `.comment-bubble[data-comment-id=\"${targetId}\"]`,
+      `.comment-bubble[data-comment-id="${targetId}"]`,
     )
     const highlight = document.querySelector<HTMLElement>(
-      `.comment-highlight[data-comment-id=\"${targetId}\"]`,
+      `.comment-highlight[data-comment-id="${targetId}"]`,
     )
     const target = bubble ?? highlight
     let position: { top: number; left: number } | undefined

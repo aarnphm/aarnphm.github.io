@@ -1,6 +1,11 @@
 import { env, AutoModel, AutoTokenizer } from "@huggingface/transformers"
 import "onnxruntime-web/webgpu"
 import "onnxruntime-web/wasm"
+import { PGlite } from "@electric-sql/pglite"
+//@ts-ignore
+import { vector as vectorExtension } from "@electric-sql/pglite/vector"
+import { init, defaultDevice, numpy as np } from "@jax-js/jax"
+import { dependencies } from "../../package.json"
 
 export {}
 
@@ -11,12 +16,6 @@ type VectorShardMeta = {
   byteLength: number
   sha256?: string
   byteStride: number
-}
-
-type LevelSection = {
-  level: number
-  indptr: { offset: number; elements: number; byteLength: number }
-  indices: { offset: number; elements: number; byteLength: number }
 }
 
 type ChunkMetadata = {
@@ -41,16 +40,9 @@ type Manifest = {
   ids: string[]
   titles?: string[]
   chunkMetadata?: Record<string, ChunkMetadata>
-  hnsw: {
+  hnsw?: {
     M: number
     efConstruction: number
-    entryPoint: number
-    maxLevel: number
-    graph: {
-      path: string
-      sha256?: string
-      levels: LevelSection[]
-    }
   }
 }
 
@@ -63,6 +55,7 @@ type InitMessage = {
 }
 
 type SearchMessage = { type: "search"; text: string; k: number; seq: number }
+
 type ResetMessage = { type: "reset" }
 
 type WorkerMessage = InitMessage | SearchMessage | ResetMessage
@@ -87,87 +80,28 @@ type ErrorMessage = { type: "error"; seq?: number; message: string }
 
 type WorkerState = "idle" | "loading" | "ready" | "error"
 
-// IndexedDB configuration
-const DB_NAME = "semantic-search-cache"
-const STORE_NAME = "assets"
-const DB_VERSION = 1
-const hasIndexedDB = typeof indexedDB !== "undefined"
-const supportsSharedArrayBuffer = typeof SharedArrayBuffer !== "undefined"
+type CandidateRow = { id: number; vec: string; score: number }
 
-// State
+type MetaRow = { value: string }
+
+const DB_NAME = "semantic-search-cache"
+const META_TABLE = "semantic_meta"
+const EMBEDDINGS_TABLE = "semantic_embeddings"
+const INDEX_NAME = "semantic_embeddings_vec_hnsw"
+const CDN_BASE = `https://cdn.jsdelivr.net/npm/@electric-sql/pglite@${dependencies["@electric-sql/pglite"].slice(1)}/dist`
+const VECTOR_BUNDLE_URL = new URL(`${CDN_BASE}/vector.tar.gz`)
+
 let state: WorkerState = "idle"
 let manifest: Manifest | null = null
 let cfg: any = null
-let vectorsView: Float32Array | null = null
 let dims = 0
-let rows = 0
 let tokenizer: any = null
 let model: any = null
 let envConfigured = false
-let entryPoint = -1
-let maxLevel = 0
-let efDefault = 128
-let levelGraph: { indptr: Uint32Array; indices: Uint32Array }[] = []
 let abortController: AbortController | null = null
-let dbPromise: Promise<IDBDatabase> | null = null
-
-// IndexedDB helpers
-function openDatabase(): Promise<IDBDatabase> {
-  if (!hasIndexedDB) {
-    return Promise.reject(new Error("indexedDB unavailable"))
-  }
-  if (!dbPromise) {
-    dbPromise = new Promise((resolve, reject) => {
-      const req = indexedDB.open(DB_NAME, DB_VERSION)
-      req.onupgradeneeded = () => {
-        const db = req.result
-        if (!db.objectStoreNames.contains(STORE_NAME)) {
-          db.createObjectStore(STORE_NAME)
-        }
-      }
-      req.onsuccess = () => resolve(req.result)
-      req.onerror = () => reject(req.error ?? new Error("failed to open cache store"))
-    })
-  }
-  return dbPromise
-}
-
-async function readAsset(hash: string): Promise<ArrayBuffer | null> {
-  if (!hasIndexedDB) {
-    return null
-  }
-  const db = await openDatabase()
-  return new Promise((resolve, reject) => {
-    const tx = db.transaction(STORE_NAME, "readonly")
-    const store = tx.objectStore(STORE_NAME)
-    const req = store.get(hash)
-    req.onsuccess = () => {
-      const value = req.result
-      if (value instanceof ArrayBuffer) {
-        resolve(value)
-      } else if (value && value.buffer instanceof ArrayBuffer) {
-        resolve(value.buffer as ArrayBuffer)
-      } else {
-        resolve(null)
-      }
-    }
-    req.onerror = () => reject(req.error ?? new Error("failed to read cached asset"))
-  })
-}
-
-async function writeAsset(hash: string, buffer: ArrayBuffer): Promise<void> {
-  if (!hasIndexedDB) {
-    return
-  }
-  const db = await openDatabase()
-  await new Promise<void>((resolve, reject) => {
-    const tx = db.transaction(STORE_NAME, "readwrite")
-    const store = tx.objectStore(STORE_NAME)
-    const req = store.put(buffer, hash)
-    req.onsuccess = () => resolve()
-    req.onerror = () => reject(req.error ?? new Error("failed to cache asset"))
-  })
-}
+let dbPromise: Promise<PGlite> | null = null
+let jaxPromise: Promise<void> | null = null
+let manifestId: string | null = null
 
 function toAbsolute(path: string, baseUrl?: string): string {
   if (path.startsWith("http://") || path.startsWith("https://")) {
@@ -177,80 +111,198 @@ function toAbsolute(path: string, baseUrl?: string): string {
   return new URL(path, base).toString()
 }
 
-async function fetchBinary(
-  path: string,
-  disableCache: boolean,
-  sha?: string,
-): Promise<ArrayBuffer> {
-  if (!disableCache && sha && hasIndexedDB) {
-    try {
-      const cached = await readAsset(sha)
-      if (cached) {
-        return cached
-      }
-    } catch {
-      // fall through to network fetch on cache errors
-    }
-  }
+async function fetchBinary(path: string): Promise<ArrayBuffer> {
   const res = await fetch(path, { signal: abortController?.signal ?? undefined })
   if (!res.ok) {
     throw new Error(`failed to fetch ${path}: ${res.status} ${res.statusText}`)
   }
-  const payload = await res.arrayBuffer()
-  if (!disableCache && sha && hasIndexedDB) {
-    try {
-      await writeAsset(sha, payload)
-    } catch {
-      // ignore cache write failures
-    }
-  }
-  return payload
+  return await res.arrayBuffer()
 }
 
-async function populateVectors(
-  manifest: Manifest,
-  baseUrl: string | undefined,
-  disableCache: boolean | undefined,
-): Promise<{ buffer: Float32Array; rowsLoaded: number }> {
-  if (manifest.vectors.dtype !== "fp32") {
-    throw new Error(`unsupported embedding dtype '${manifest.vectors.dtype}', regenerate with fp32`)
+function vectorToLiteral(vec: Float32Array): string {
+  const parts = new Array(vec.length)
+  for (let i = 0; i < vec.length; i++) {
+    const v = Number.isFinite(vec[i]) ? vec[i] : 0
+    parts[i] = String(v)
   }
-  const rows = manifest.rows
-  const dims = manifest.dims
-  const totalBytes = rows * dims * Float32Array.BYTES_PER_ELEMENT
-  const buffer = supportsSharedArrayBuffer
-    ? new Float32Array(new SharedArrayBuffer(totalBytes))
-    : new Float32Array(totalBytes)
+  return `[${parts.join(",")}]`
+}
+
+function parseVectorLiteral(text: string, expectedDims: number): number[] {
+  const trimmed = text.trim()
+  if (!trimmed.startsWith("[") || !trimmed.endsWith("]")) {
+    throw new Error("invalid vector literal")
+  }
+  const inner = trimmed.slice(1, -1).trim()
+  if (!inner) {
+    return new Array(expectedDims).fill(0)
+  }
+  const parts = inner.split(",")
+  const out = new Array(expectedDims)
+  for (let i = 0; i < expectedDims; i++) {
+    const raw = parts[i]
+    const v = raw ? Number(raw.trim()) : 0
+    out[i] = Number.isFinite(v) ? v : 0
+  }
+  return out
+}
+
+function buildManifestId(data: Manifest): string {
+  const shardHashes = data.vectors.shards.map((shard) => shard.sha256 ?? "").join("|")
+  return [data.version, data.model, data.dims, data.rows, shardHashes].join(":")
+}
+
+async function openDatabase(disableCache: boolean | undefined): Promise<PGlite> {
+  if (!dbPromise) {
+    dbPromise = (async () => {
+      const [wasmModule, fsBundle] = await Promise.all([
+        WebAssembly.compileStreaming(fetch(`${CDN_BASE}/pglite.wasm`)),
+        fetch(`${CDN_BASE}/pglite.data`).then((r) => r.blob()),
+      ])
+
+      const vector = {
+        ...vectorExtension,
+        async setup(pg: unknown, emscriptenOpts: unknown) {
+          const setupResult = await vectorExtension.setup(pg as never, emscriptenOpts)
+          return { ...setupResult, bundlePath: VECTOR_BUNDLE_URL }
+        },
+      }
+      const dataDir = disableCache ? `memory://${DB_NAME}` : `idb://${DB_NAME}`
+      const db = await PGlite.create({
+        dataDir,
+        wasmModule,
+        fsBundle,
+        extensions: { vector },
+      })
+      await db.exec("create extension if not exists vector")
+      return db
+    })()
+  }
+  return dbPromise
+}
+
+async function closeDatabase(): Promise<void> {
+  if (!dbPromise) return
+  const db = await dbPromise
+  await db.close()
+  dbPromise = null
+}
+
+async function ensureJax(): Promise<void> {
+  if (!jaxPromise) {
+    jaxPromise = (async () => {
+      const devices = await init("webgpu")
+      if (!devices.includes("webgpu")) {
+        throw new Error("webgpu unavailable for jax-js")
+      }
+      defaultDevice("webgpu")
+    })()
+  }
+  return jaxPromise
+}
+
+async function ensureSchema(db: PGlite, manifest: Manifest, manifestKey: string, baseUrl?: string) {
+  await db.exec(
+    `create table if not exists ${META_TABLE} (key text primary key, value text not null)`,
+  )
+  let currentKey: string | null = null
+  try {
+    const meta = await db.query<MetaRow>(`select value from ${META_TABLE} where key = $1`, [
+      "manifest_id",
+    ])
+    currentKey = meta.rows[0]?.value ?? null
+  } catch {
+    currentKey = null
+  }
+
+  if (currentKey === manifestKey) {
+    try {
+      const res = await db.query<{ count: number }>(
+        `select count(*)::int as count from ${EMBEDDINGS_TABLE}`,
+      )
+      if (res.rows[0]?.count === manifest.rows) {
+        return
+      }
+    } catch {}
+  }
+
+  await db.exec(`drop index if exists ${INDEX_NAME}`)
+  await db.exec(`drop table if exists ${EMBEDDINGS_TABLE}`)
+  await db.exec(
+    `create table ${EMBEDDINGS_TABLE} (id integer primary key, vec vector(${manifest.dims}))`,
+  )
+
+  const batchSize = 64
+  let batchIds: number[] = []
+  let batchVecs: string[] = []
   let loadedRows = 0
+
   for (const shard of manifest.vectors.shards) {
     const absolute = toAbsolute(shard.path, baseUrl)
-    const payload = await fetchBinary(absolute, Boolean(disableCache), shard.sha256)
+    const payload = await fetchBinary(absolute)
     const view = new Float32Array(payload)
-    if (view.length !== shard.rows * dims) {
+    if (view.length !== shard.rows * manifest.dims) {
       throw new Error(
-        `shard ${shard.path} has mismatched length (expected ${shard.rows * dims}, got ${view.length})`,
+        `shard ${shard.path} has mismatched length (expected ${shard.rows * manifest.dims}, got ${view.length})`,
       )
     }
-    buffer.set(view, shard.rowOffset * dims)
-    loadedRows = Math.min(rows, shard.rowOffset + shard.rows)
+
+    for (let i = 0; i < shard.rows; i++) {
+      const id = shard.rowOffset + i
+      const offset = i * manifest.dims
+      const vec = view.subarray(offset, offset + manifest.dims)
+      batchIds.push(id)
+      batchVecs.push(vectorToLiteral(vec))
+
+      if (batchIds.length >= batchSize) {
+        await insertBatch(db, batchIds, batchVecs)
+        batchIds = []
+        batchVecs = []
+      }
+    }
+
+    loadedRows = Math.min(manifest.rows, shard.rowOffset + shard.rows)
     const progress: ProgressMessage = {
       type: "progress",
       loadedRows,
-      totalRows: rows,
+      totalRows: manifest.rows,
     }
     self.postMessage(progress)
   }
-  return { buffer, rowsLoaded: loadedRows }
+
+  if (batchIds.length > 0) {
+    await insertBatch(db, batchIds, batchVecs)
+  }
+
+  const m = manifest.hnsw?.M ?? 16
+  const efc = manifest.hnsw?.efConstruction ?? 200
+  try {
+    await db.exec(
+      `create index ${INDEX_NAME} on ${EMBEDDINGS_TABLE} using hnsw (vec vector_cosine_ops) with (m=${m}, ef_construction=${efc})`,
+    )
+  } catch {
+    try {
+      await db.exec(
+        `create index ${INDEX_NAME} on ${EMBEDDINGS_TABLE} using ivfflat (vec vector_cosine_ops) with (lists=100)`,
+      )
+    } catch {}
+  }
+  await db.query(
+    `insert into ${META_TABLE} (key, value) values ($1, $2) on conflict (key) do update set value = excluded.value`,
+    ["manifest_id", manifestKey],
+  )
 }
 
-async function populateGraph(
-  manifest: Manifest,
-  baseUrl: string | undefined,
-  disableCache: boolean | undefined,
-): Promise<ArrayBuffer> {
-  const graphMeta = manifest.hnsw.graph
-  const absolute = toAbsolute(graphMeta.path, baseUrl)
-  return await fetchBinary(absolute, Boolean(disableCache), graphMeta.sha256)
+async function insertBatch(db: PGlite, ids: number[], vecs: string[]) {
+  const values: string[] = []
+  const params: Array<number | string> = []
+  let idx = 1
+  for (let i = 0; i < ids.length; i++) {
+    values.push(`($${idx}, $${idx + 1}::vector)`)
+    params.push(ids[i], vecs[i])
+    idx += 2
+  }
+  await db.query(`insert into ${EMBEDDINGS_TABLE} (id, vec) values ${values.join(",")}`, params)
 }
 
 function configureRuntimeEnv() {
@@ -281,100 +333,6 @@ async function ensureEncoder() {
   tokenizer = await AutoTokenizer.from_pretrained(mappedModel)
   model = await AutoModel.from_pretrained(mappedModel, { dtype })
   cfg.dtype = dtype
-}
-
-function vectorSlice(id: number): Float32Array {
-  if (!vectorsView) {
-    throw new Error("vector buffer not configured")
-  }
-  const start = id * dims
-  const end = start + dims
-  return vectorsView.subarray(start, end)
-}
-
-function dot(a: Float32Array, b: Float32Array): number {
-  let s = 0
-  for (let i = 0; i < dims; i++) {
-    s += a[i] * b[i]
-  }
-  return s
-}
-
-function neighborsFor(level: number, node: number): Uint32Array {
-  const meta = levelGraph[level]
-  if (!meta) return new Uint32Array()
-  const { indptr, indices } = meta
-  if (node < 0 || node + 1 >= indptr.length) return new Uint32Array()
-  const start = indptr[node]
-  const end = indptr[node + 1]
-  return indices.subarray(start, end)
-}
-
-function insertSortedDescending(arr: SearchHit[], item: SearchHit) {
-  let idx = arr.length
-  while (idx > 0 && arr[idx - 1].score < item.score) {
-    idx -= 1
-  }
-  arr.splice(idx, 0, item)
-}
-
-function hnswSearch(query: Float32Array, k: number): SearchHit[] {
-  if (!manifest || !vectorsView || entryPoint < 0 || levelGraph.length === 0) {
-    throw new Error("semantic graph not initialised; ensure embeddings include HNSW metadata")
-  }
-  const ef = Math.max(efDefault, k * 10)
-  let ep = entryPoint
-  let epScore = dot(query, vectorSlice(ep))
-  for (let level = maxLevel; level > 0; level--) {
-    let changed = true
-    while (changed) {
-      changed = false
-      const neigh = neighborsFor(level, ep)
-      for (let i = 0; i < neigh.length; i++) {
-        const candidate = neigh[i]
-        if (candidate >= rows) continue
-        const score = dot(query, vectorSlice(candidate))
-        if (score > epScore) {
-          epScore = score
-          ep = candidate
-          changed = true
-        }
-      }
-    }
-  }
-
-  const visited = new Set<number>()
-  const candidateQueue: SearchHit[] = []
-  const best: SearchHit[] = []
-  insertSortedDescending(candidateQueue, { id: ep, score: epScore })
-  insertSortedDescending(best, { id: ep, score: epScore })
-  visited.add(ep)
-
-  while (candidateQueue.length > 0) {
-    const current = candidateQueue.shift()!
-    const worstBest = best.length >= ef ? best[best.length - 1].score : -Infinity
-    if (current.score < worstBest && best.length >= ef) {
-      break
-    }
-    const neigh = neighborsFor(0, current.id)
-    for (let i = 0; i < neigh.length; i++) {
-      const candidate = neigh[i]
-      if (candidate >= rows || visited.has(candidate)) continue
-      visited.add(candidate)
-      const score = dot(query, vectorSlice(candidate))
-      const hit = { id: candidate, score }
-      insertSortedDescending(candidateQueue, hit)
-      if (best.length < ef || score > best[best.length - 1].score) {
-        insertSortedDescending(best, hit)
-        if (best.length > ef) {
-          best.pop()
-        }
-      }
-    }
-  }
-
-  best.sort((a, b) => b.score - a.score)
-  return best.slice(0, k)
 }
 
 async function embed(text: string, isQuery: boolean = false): Promise<Float32Array> {
@@ -446,6 +404,53 @@ async function embed(text: string, isQuery: boolean = false): Promise<Float32Arr
   return vec
 }
 
+async function rerank(queryVec: Float32Array, candidates: CandidateRow[]): Promise<SearchHit[]> {
+  if (candidates.length === 0) return []
+  await ensureJax()
+  const queryArr = Array.from(queryVec)
+  const flat = new Float32Array(candidates.length * dims)
+  for (let i = 0; i < candidates.length; i++) {
+    const parsed = parseVectorLiteral(candidates[i].vec, dims)
+    for (let j = 0; j < dims; j++) {
+      flat[i * dims + j] = parsed[j] ?? 0
+    }
+  }
+  const q = np.array(queryArr)
+  const m = np.array(flat).reshape([candidates.length, dims])
+  const scoresArr = np.dot(m.ref, q.ref)
+  m.dispose()
+  q.dispose()
+  const scoresRaw = await scoresArr.ref.data()
+  scoresArr.dispose()
+  const scores = toNumberArray(scoresRaw)
+
+  const hits: SearchHit[] = []
+  for (let i = 0; i < candidates.length; i++) {
+    const fallback = Number(candidates[i].score)
+    const score = scores[i]
+    const resolved = Number.isFinite(score) ? score : fallback
+    const validated =
+      Number.isFinite(fallback) && Math.abs(resolved - fallback) > 1e-3 ? fallback : resolved
+    hits.push({ id: candidates[i].id, score: validated })
+  }
+  return hits
+}
+
+function toNumberArray(value: unknown): number[] {
+  if (Array.isArray(value)) {
+    return value.map((entry) => Number(entry))
+  }
+  if (value instanceof Float32Array) return Array.from(value)
+  if (value instanceof Float64Array) return Array.from(value)
+  if (value instanceof Int32Array) return Array.from(value)
+  if (value instanceof Uint32Array) return Array.from(value)
+  if (value instanceof Int16Array) return Array.from(value)
+  if (value instanceof Uint16Array) return Array.from(value)
+  if (value instanceof Int8Array) return Array.from(value)
+  if (value instanceof Uint8Array) return Array.from(value)
+  throw new Error("unexpected score payload")
+}
+
 async function handleInit(msg: InitMessage) {
   if (state === "loading" || state === "ready") {
     throw new Error("worker already initialized or loading")
@@ -474,21 +479,11 @@ async function handleInit(msg: InitMessage) {
     }
 
     dims = manifest.dims
-    rows = manifest.rows
+    manifestId = buildManifestId(manifest)
 
-    const { buffer: vectorBuffer } = await populateVectors(manifest, msg.baseUrl, msg.disableCache)
-    vectorsView = vectorBuffer
-
-    const graphBuffer = await populateGraph(manifest, msg.baseUrl, msg.disableCache)
-
-    entryPoint = manifest.hnsw.entryPoint
-    maxLevel = manifest.hnsw.maxLevel
-    efDefault = Math.max(64, manifest.hnsw.M * 4)
-    levelGraph = manifest.hnsw.graph.levels.map((level) => {
-      const indptr = new Uint32Array(graphBuffer, level.indptr.offset, level.indptr.elements)
-      const indices = new Uint32Array(graphBuffer, level.indices.offset, level.indices.elements)
-      return { indptr, indices }
-    })
+    const db = await openDatabase(Boolean(msg.disableCache))
+    await ensureSchema(db, manifest, manifestId, msg.baseUrl)
+    await ensureJax()
 
     state = "ready"
     const ready: ReadyMessage = { type: "ready" }
@@ -503,12 +498,26 @@ async function handleSearch(msg: SearchMessage) {
   if (state !== "ready") {
     throw new Error("worker not ready for search")
   }
-  if (!manifest || !vectorsView) {
+  if (!manifest) {
     throw new Error("semantic worker not configured")
   }
 
   const queryVec = await embed(msg.text, true)
-  const semanticHits = hnswSearch(queryVec, Math.max(1, msg.k))
+  const queryLiteral = vectorToLiteral(queryVec)
+  const limit = Math.max(1, msg.k)
+  const db = await openDatabase(Boolean(cfg?.disableCache))
+  const efSearch = Math.min(1000, Math.max(64, limit * 10))
+  try {
+    await db.exec(`set hnsw.ef_search = ${efSearch}`)
+  } catch {}
+  const res = await db.query<CandidateRow>(
+    `select id, vec, 1 - (vec <=> $1::vector) as score from ${EMBEDDINGS_TABLE} order by vec <=> $1::vector limit $2`,
+    [queryLiteral, limit],
+  )
+  const reranked = await rerank(queryVec, res.rows)
+  reranked.sort((a, b) => b.score - a.score)
+  const semanticHits = reranked.slice(0, limit)
+
   const message: SearchResultMessage = {
     type: "search-result",
     seq: msg.seq,
@@ -523,15 +532,13 @@ function handleReset() {
   state = "idle"
   manifest = null
   cfg = null
-  vectorsView = null
   dims = 0
-  rows = 0
   tokenizer = null
   model = null
   envConfigured = false
-  levelGraph = []
-  entryPoint = -1
-  maxLevel = 0
+  manifestId = null
+  jaxPromise = null
+  void closeDatabase()
 }
 
 self.onmessage = (event: MessageEvent<WorkerMessage>) => {

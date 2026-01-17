@@ -2,7 +2,7 @@
 date: "2024-02-07"
 description: and the backbone of the current language models/ai progress.
 id: Transformers
-modified: 2026-01-10 08:43:35 GMT-05:00
+modified: 2026-01-17 02:41:13 GMT-05:00
 seealso:
   - "[[thoughts/LLMs|LLMs]]"
   - "[[thoughts/Embedding|embedding]]"
@@ -58,12 +58,7 @@ where $\mathcal{M}$ indexes non‑padded, shift‑right targets.
 
 Let number of tokens $N$, embedding dim to $d$, we have embeddings $E \in R^{N\times d}$
 
-### [[thoughts/Embedding]]
-
-The idea of Q,K,V is to project with the embeddings to create $W_q, W_k, W_v$
-
-### Attention
-
+![[thoughts/Embedding#{collapsed: true}]]
 ![[thoughts/Attention#{collapsed: true}]]
 
 ## memory limitations.
@@ -121,7 +116,9 @@ def apply_top_k(logits: torch.Tensor, k: torch.Tensor) -> torch.Tensor:
   return logits.masked_fill_(logits < threshold, -float('inf'))
 ```
 
-#### top-p (nucleus) [@holtzman2020curious]
+#### top-p (nucleus)
+
+[@holtzman2020curiouscaseneuraltext]
 
 dynamic vocabulary: smallest set with cumulative probability $\geq p$:
 
@@ -142,7 +139,9 @@ def apply_top_p(logits: torch.Tensor, p: torch.Tensor) -> torch.Tensor:
   return logits_sort.scatter(dim=-1, index=logits_idx, src=logits_sort)
 ```
 
-#### min-p [@nguyen2024minp]
+#### min-p
+
+[@nguyen2025turningheatminpsampling]
 
 probability floor relative to maximum: $\mathcal{V}_{\min p} = \{i : p_i \geq \min_p \cdot \max_j p_j\}$
 
