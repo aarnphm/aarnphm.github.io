@@ -23,7 +23,6 @@
 @mixin dagHighlights {
   color: var(--dag-highlights);
   text-decoration: underline;
-  text-decoration-thickness: 3px;
 }
 
 @mixin tinyFonts {

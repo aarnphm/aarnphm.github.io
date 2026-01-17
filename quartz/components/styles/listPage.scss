@@ -173,7 +173,7 @@ li.section-li {
   &--et-a,
   &--a-l,
   &--l {
-    grid-column: 5/10;
+    grid-column: 6/10;
   }
 
   &--et-a {
@@ -222,9 +222,8 @@ li.section-li {
   }
 
   &--a-l {
-    display: flex;
+    display: block;
     gap: calc(var(--kern) * 3);
-    flex-direction: column;
 
     .folder-layout--article {
       flex: 1;
@@ -239,7 +238,6 @@ li.section-li {
     }
 
     @media all and ($mobile) {
-      flex-direction: column;
       gap: calc(var(--kern) * 2);
     }
   }

@@ -752,7 +752,7 @@ body[data-arena-subpage="true"] {
     max-width: none;
   }
   .byline {
-    grid-column: 5/8;
+    grid-column: 6/9;
     & > .tags {
       flex-grow: 0 0 20%;
     }
@@ -981,7 +981,7 @@ body[data-arena-subpage="true"] {
     overflow: hidden;
 
     .byline {
-      grid-column: 5/8 !important;
+      grid-column: 6/9 !important;
     }
   }
 

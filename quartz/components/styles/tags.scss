@@ -23,7 +23,7 @@ div.first {
 
 div.first,
 menu.tags {
-  grid-column: 5/6;
+  grid-column: 6/7;
 
   @media all and ($tablet) {
     grid-column: 3/6;
