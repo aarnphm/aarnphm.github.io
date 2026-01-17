@@ -27,6 +27,13 @@
     "npm": ">=9.3.1",
     "node": ">=22"
   },
+  "pnpm": {
+    "peerDependencyRules": {
+      "allowedVersions": {
+        "react": "18.3.1"
+      }
+    }
+  },
   "keywords": [
     "site generator",
     "ssg",
@@ -43,6 +50,8 @@
     "@citation-js/plugin-bibtex": "^0.7.21",
     "@citation-js/plugin-doi": "^0.7.21",
     "@clack/prompts": "^0.11.0",
+    "@cloudflare/ai-chat": "^0.0.4",
+    "@cloudflare/codemode": "^0.0.4",
     "@cloudflare/puppeteer": "^1.0.4",
     "@cloudflare/workers-oauth-provider": "^0.2.2",
     "@codemirror/autocomplete": "^6.20.0",
@@ -56,16 +65,13 @@
     "@huggingface/transformers": "^3.8.1",
     "@jax-js/jax": "^0.1.5",
     "@modelcontextprotocol/sdk": "^1.25.2",
-    "@myriaddreamin/rehype-typst": "^0.6.0",
-    "@myriaddreamin/typst-ts-node-compiler": "^0.6.0",
-    "@myriaddreamin/typst.ts": "^0.6.0",
     "@napi-rs/simple-git": "^0.1.22",
     "@tweenjs/tween.js": "^25.0.0",
     "@types/turndown": "^5.0.6",
     "agents": "^0.3.5",
     "ansi-truncate": "^1.4.0",
     "async-mutex": "^0.5.0",
-    "chokidar": "^4.0.3",
+    "chokidar": "^5.0.0",
     "d3": "^7.9.0",
     "dompurify": "^3.3.1",
     "drizzle-orm": "^0.45.1",
@@ -146,7 +152,6 @@
     "satori": "^0.19.1",
     "serve-handler": "^6.1.6",
     "sharp": "^0.34.5",
-    "shiki": "^1.29.2",
     "source-map-support": "^0.5.21",
     "svg2roughjs": "^3.2.1",
     "to-vfile": "^8.0.0",
@@ -165,7 +170,6 @@
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20260117.0",
-    "@modelcontextprotocol/inspector": "^0.18.0",
     "@types/d3": "^7.4.3",
     "@types/hast": "^3.0.4",
     "@types/js-yaml": "^4.0.9",

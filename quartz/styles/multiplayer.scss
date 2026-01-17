@@ -964,9 +964,6 @@ body:has(.global-graph-outer.active) {
   }
 
   a {
-    color: $primary-blue;
-    text-decoration: none;
-
     &:hover {
       text-decoration: underline;
       background: transparent;

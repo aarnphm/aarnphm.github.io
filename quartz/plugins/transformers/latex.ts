@@ -1,17 +1,12 @@
 import remarkMath from "remark-math"
 import rehypeKatex from "rehype-katex"
-//@ts-ignore
-import rehypeTypst from "@myriaddreamin/rehype-typst"
 import { QuartzTransformerPlugin } from "../../types/plugin"
 import { KatexOptions } from "katex"
-//@ts-ignore
-import { Options as TypstOptions } from "@myriaddreamin/rehype-typst"
 
 interface Options {
-  renderEngine: "katex" | "typst"
+  renderEngine: "katex"
   customMacros: MacroType
   katexOptions: Omit<KatexOptions, "macros" | "output">
-  typstOptions: TypstOptions
 }
 
 interface MacroType {
@@ -26,9 +21,6 @@ export const Latex: QuartzTransformerPlugin<Partial<Options>> = (opts) => {
     markdownPlugins: () => [remarkMath],
     htmlPlugins() {
       switch (engine) {
-        case "typst": {
-          return [[rehypeTypst, opts?.typstOptions ?? {}]]
-        }
         default: {
           return [[rehypeKatex, { output: "htmlAndMathml", macros, ...opts?.katexOptions }]]
         }
