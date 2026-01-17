@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-01-16 01:43:53 GMT-05:00
+modified: 2026-01-17 01:07:50 GMT-05:00
 permalinks:
   - /website
   - /tweets
@@ -504,6 +504,10 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://ratwedding.boston/RATSRATSRATSRATS
+  - [meta]:
+    - date: 01/17/2026
+    - tags: [fun, jovial]
 - https://www.playfuldesign.app/
   - [meta]:
     - date: 01/14/2026

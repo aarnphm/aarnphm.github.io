@@ -43,13 +43,16 @@ type LinkData = {
   target: NodeData
 } & SimulationLinkDatum<NodeData>
 
-type LinkRenderData = GraphicsInfo & {
-  simulationData: LinkData
-}
-
 type NodeRenderData = GraphicsInfo & {
   simulationData: NodeData
   label: Text
+}
+
+type LinkRenderData = {
+  simulationData: LinkData
+  color: string
+  alpha: number
+  active: boolean
 }
 
 const localStorageKey = "graph-visited"
@@ -117,8 +120,24 @@ async function renderGraph(graph: HTMLElement, fullSlug: FullSlug) {
     ]),
   )
   const links: SimpleLinkData[] = []
-  const tags: SimpleSlug[] = []
+  const tags = new Set<SimpleSlug>()
   const validLinks = new Set(data.keys())
+  const adjacency = new Map<SimpleSlug, Set<SimpleSlug>>()
+
+  const addAdjacent = (source: SimpleSlug, target: SimpleSlug) => {
+    const existing = adjacency.get(source)
+    if (existing) {
+      existing.add(target)
+      return
+    }
+    adjacency.set(source, new Set([target]))
+  }
+
+  const addLink = (source: SimpleSlug, target: SimpleSlug) => {
+    links.push({ source, target })
+    addAdjacent(source, target)
+    addAdjacent(target, source)
+  }
 
   const tweens = new Map<string, TweenNode>()
   for (const [source, details] of data.entries()) {
@@ -126,7 +145,7 @@ async function renderGraph(graph: HTMLElement, fullSlug: FullSlug) {
 
     for (const dest of outgoing) {
       if (validLinks.has(dest)) {
-        links.push({ source: source, target: dest })
+        addLink(source, dest)
       }
     }
 
@@ -135,10 +154,12 @@ async function renderGraph(graph: HTMLElement, fullSlug: FullSlug) {
         .filter((tag) => !removeTags.includes(tag))
         .map((tag) => simplifySlug(("tags/" + tag) as FullSlug))
 
-      tags.push(...localTags.filter((tag) => !tags.includes(tag)))
+      for (const tag of localTags) {
+        tags.add(tag)
+      }
 
       for (const tag of localTags) {
-        links.push({ source: source, target: tag })
+        addLink(source, tag)
       }
     }
   }
@@ -151,16 +172,25 @@ async function renderGraph(graph: HTMLElement, fullSlug: FullSlug) {
       if (cur === "__SENTINEL") {
         depth--
         wl.push("__SENTINEL")
-      } else {
+      } else if (!neighbourhood.has(cur)) {
         neighbourhood.add(cur)
-        const outgoing = links.filter((l) => l.source === cur)
-        const incoming = links.filter((l) => l.target === cur)
-        wl.push(...outgoing.map((l) => l.target), ...incoming.map((l) => l.source))
+        const neighbors = adjacency.get(cur)
+        if (neighbors) {
+          for (const next of neighbors) {
+            if (!neighbourhood.has(next)) {
+              wl.push(next)
+            }
+          }
+        }
       }
     }
   } else {
     validLinks.forEach((id) => neighbourhood.add(id))
-    if (showTags) tags.forEach((tag) => neighbourhood.add(tag))
+    if (showTags) {
+      for (const tag of tags) {
+        neighbourhood.add(tag)
+      }
+    }
   }
 
   const nodes = [...neighbourhood].map((url) => {
@@ -171,14 +201,26 @@ async function renderGraph(graph: HTMLElement, fullSlug: FullSlug) {
       tags: data.get(url)?.tags ?? [],
     }
   })
+  const nodeById = new Map(nodes.map((node) => [node.id, node]))
+  const filteredLinks = links.filter((l) => neighbourhood.has(l.source) && neighbourhood.has(l.target))
   const graphData: { nodes: NodeData[]; links: LinkData[] } = {
     nodes,
-    links: links
-      .filter((l) => neighbourhood.has(l.source) && neighbourhood.has(l.target))
-      .map((l) => ({
-        source: nodes.find((n) => n.id === l.source)!,
-        target: nodes.find((n) => n.id === l.target)!,
-      })),
+    links: filteredLinks.map((l) => ({
+      source: nodeById.get(l.source)!,
+      target: nodeById.get(l.target)!,
+    })),
+  }
+
+  const nodeDegree = new Map<SimpleSlug, number>()
+  for (const link of graphData.links) {
+    nodeDegree.set(link.source.id, (nodeDegree.get(link.source.id) ?? 0) + 1)
+    nodeDegree.set(link.target.id, (nodeDegree.get(link.target.id) ?? 0) + 1)
+  }
+
+  const nodeRadiusById = new Map<SimpleSlug, number>()
+  for (const node of graphData.nodes) {
+    const degree = nodeDegree.get(node.id) ?? 0
+    nodeRadiusById.set(node.id, 4 + Math.log(degree + 1) * 2)
   }
 
   const width = graph.offsetWidth
@@ -224,10 +266,7 @@ async function renderGraph(graph: HTMLElement, fullSlug: FullSlug) {
   }
 
   function nodeRadius(d: NodeData) {
-    const numLinks = graphData.links.filter(
-      (l) => l.source.id === d.id || l.target.id === d.id,
-    ).length
-    return 4 + Math.log(numLinks + 1) * 2
+    return nodeRadiusById.get(d.id) ?? 4
   }
 
   let hoveredNodeId: string | null = null
@@ -266,6 +305,44 @@ async function renderGraph(graph: HTMLElement, fullSlug: FullSlug) {
 
   let dragStartTime = 0
   let dragging = false
+  let animationFrame: number | null = null
+  let stopAnimation = false
+  let layoutDirty = true
+  let linksDirty = true
+  let renderDirty = true
+  let tweenUntil = 0
+  let linkTweenUntil = 0
+
+  const scheduleRender = () => {
+    if (stopAnimation || animationFrame !== null) return
+    animationFrame = requestAnimationFrame(renderFrame)
+  }
+
+  const extendTween = (duration: number, affectsLinks: boolean) => {
+    const now = performance.now()
+    const endAt = now + duration
+    tweenUntil = Math.max(tweenUntil, endAt)
+    if (affectsLinks) {
+      linkTweenUntil = Math.max(linkTweenUntil, endAt)
+    }
+    renderDirty = true
+    scheduleRender()
+  }
+
+  const markLayoutDirty = () => {
+    layoutDirty = true
+    scheduleRender()
+  }
+
+  const markLinksDirty = () => {
+    linksDirty = true
+    scheduleRender()
+  }
+
+  const markRenderDirty = () => {
+    renderDirty = true
+    scheduleRender()
+  }
 
   function renderLinks() {
     tweens.get("link")?.stop()
@@ -289,6 +366,8 @@ async function renderGraph(graph: HTMLElement, fullSlug: FullSlug) {
         tweenGroup.getAll().forEach((tw) => tw.stop())
       },
     })
+    extendTween(220, true)
+    markLinksDirty()
   }
 
   const defaultScale = 1 / scale
@@ -319,6 +398,7 @@ async function renderGraph(graph: HTMLElement, fullSlug: FullSlug) {
         tweenGroup.getAll().forEach((tw) => tw.stop())
       },
     })
+    extendTween(120, false)
   }
 
   function renderNodes() {
@@ -342,6 +422,7 @@ async function renderGraph(graph: HTMLElement, fullSlug: FullSlug) {
         tweenGroup.getAll().forEach((tw) => tw.stop())
       },
     })
+    extendTween(220, false)
   }
 
   function renderPixiFromD3() {
@@ -373,6 +454,8 @@ async function renderGraph(graph: HTMLElement, fullSlug: FullSlug) {
   const labelsContainer = new Container<Text>({ zIndex: 3, isRenderGroup: true })
   const nodesContainer = new Container<Graphics>({ zIndex: 2, isRenderGroup: true })
   const linkContainer = new Container<Graphics>({ zIndex: 1, isRenderGroup: true })
+  const linksGfx = new Graphics({ interactive: false, eventMode: "none" })
+  linkContainer.addChild(linksGfx)
   stage.addChild(nodesContainer, labelsContainer, linkContainer)
 
   for (const simulationData of graphData.nodes) {
@@ -430,17 +513,17 @@ async function renderGraph(graph: HTMLElement, fullSlug: FullSlug) {
   }
 
   for (const l of graphData.links) {
-    const gfx = new Graphics({ interactive: false, eventMode: "none" })
-    linkContainer.addChild(gfx)
-
     linkRenderData.push({
       simulationData: l,
-      gfx,
       color: computedStyleMap["--lightgray"],
       alpha: 1,
       active: false,
     })
   }
+
+  simulation.on("tick", () => {
+    markLayoutDirty()
+  })
 
   let currentTransform = zoomIdentity
   if (enableDrag) {
@@ -460,17 +543,20 @@ async function renderGraph(graph: HTMLElement, fullSlug: FullSlug) {
           }
           dragStartTime = Date.now()
           dragging = true
+          markLayoutDirty()
         })
         .on("drag", function dragged(event) {
           const initPos = event.subject.__initialDragPos
           event.subject.fx = initPos.x + (event.x - initPos.x) / currentTransform.k
           event.subject.fy = initPos.y + (event.y - initPos.y) / currentTransform.k
+          markLayoutDirty()
         })
         .on("end", function dragended(event) {
           if (!event.active) simulation.alphaTarget(0)
           event.subject.fx = null
           event.subject.fy = null
           dragging = false
+          markLayoutDirty()
 
           if (Date.now() - dragStartTime < 500) {
             window.spaNavigate(
@@ -503,6 +589,7 @@ async function renderGraph(graph: HTMLElement, fullSlug: FullSlug) {
         label.alpha = alpha
       }
     }
+    markRenderDirty()
   }
 
   const initialScale = scale
@@ -528,33 +615,71 @@ async function renderGraph(graph: HTMLElement, fullSlug: FullSlug) {
     handleZoomBehaviour(initialX, initialY, initialScale)
   }
 
-  let stopAnimation = false
-  function animate(time: number) {
+  function renderFrame(time: number) {
+    animationFrame = null
     if (stopAnimation) return
-    for (const n of nodeRenderData) {
-      const { x, y } = n.simulationData
-      if (x == null || y == null) continue
-      n.gfx.position.set(x + width / 2, y + height / 2)
-      n.label.position.set(x + width / 2, y + height / 2)
+
+    if (layoutDirty) {
+      for (const n of nodeRenderData) {
+        const { x, y } = n.simulationData
+        if (x == null || y == null) continue
+        n.gfx.position.set(x + width / 2, y + height / 2)
+        n.label.position.set(x + width / 2, y + height / 2)
+      }
+      layoutDirty = false
+      linksDirty = true
+      renderDirty = true
     }
 
-    for (const l of linkRenderData) {
-      const linkData = l.simulationData
-      l.gfx.clear()
-      l.gfx.moveTo(linkData.source.x! + width / 2, linkData.source.y! + height / 2)
-      l.gfx
-        .lineTo(linkData.target.x! + width / 2, linkData.target.y! + height / 2)
-        .stroke({ alpha: l.alpha, width: 1, color: l.color })
+    const tweenActive = time < tweenUntil
+    const linkTweenActive = time < linkTweenUntil
+
+    if (tweenActive) {
+      tweens.forEach((t) => t.update(time))
+      renderDirty = true
+      if (linkTweenActive) {
+        linksDirty = true
+      }
     }
 
-    tweens.forEach((t) => t.update(time))
-    app.renderer.render(stage)
-    requestAnimationFrame(animate)
+    if (linksDirty) {
+      linksGfx.clear()
+      for (const l of linkRenderData) {
+        const linkData = l.simulationData
+        if (
+          linkData.source.x == null ||
+          linkData.source.y == null ||
+          linkData.target.x == null ||
+          linkData.target.y == null
+        )
+          continue
+        linksGfx.moveTo(linkData.source.x + width / 2, linkData.source.y + height / 2)
+        linksGfx
+          .lineTo(linkData.target.x + width / 2, linkData.target.y + height / 2)
+          .stroke({ alpha: l.alpha, width: 1, color: l.color })
+      }
+      linksDirty = false
+      renderDirty = true
+    }
+
+    if (renderDirty) {
+      app.renderer.render(stage)
+      renderDirty = false
+    }
+
+    if (tweenActive || linkTweenActive) {
+      scheduleRender()
+    }
   }
 
-  requestAnimationFrame(animate)
+  markLayoutDirty()
   return () => {
     stopAnimation = true
+    if (animationFrame !== null) {
+      cancelAnimationFrame(animationFrame)
+      animationFrame = null
+    }
+    simulation.stop()
     app.destroy()
   }
 }

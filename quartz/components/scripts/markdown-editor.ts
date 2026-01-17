@@ -114,7 +114,7 @@ export class MarkdownEditor {
         padding: "8px 0",
         fontFamily: "var(--bodyFont)",
         fontSize: "13px",
-        width: "320px",
+        width: "240px",
       },
       ".cm-completionLabel": {
         fontWeight: "600",

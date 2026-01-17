@@ -1067,3 +1067,8 @@ body:has(.global-graph-outer.active) {
     text-decoration: none;
   }
 }
+
+div[class~="cm-tooltip-autocomplete"] > ul {
+  min-width: inherit !important;
+  max-height: 20em !important;
+}

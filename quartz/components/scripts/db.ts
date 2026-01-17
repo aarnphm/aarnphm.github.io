@@ -1,9 +1,9 @@
 import { PGlite } from "@electric-sql/pglite"
 import { drizzle, type PgliteDatabase } from "drizzle-orm/pglite"
 import { pgTable, text, integer, index } from "drizzle-orm/pg-core"
+import { dependencies } from "../../../package.json"
 
-const PGLITE_VERSION = "0.3.14"
-const CDN_BASE = `https://cdn.jsdelivr.net/npm/@electric-sql/pglite@${PGLITE_VERSION}/dist`
+const CDN_BASE = `https://cdn.jsdelivr.net/npm/@electric-sql/pglite@${dependencies["@electric-sql/pglite"].slice(1)}/dist`
 
 export const githubUsers = pgTable(
   "github_users",

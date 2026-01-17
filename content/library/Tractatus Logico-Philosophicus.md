@@ -10,7 +10,7 @@ finished: 2025
 id: Tractatus Logico-Philosophicus
 language: german
 layout: technical-tractatus
-modified: 2026-01-14 11:34:01 GMT-05:00
+modified: 2026-01-17 01:00:24 GMT-05:00
 pdf: https://www.gutenberg.org/files/5740/5740-pdf.pdf
 posters: "[[library/posters/tractatus-logico-philosophicus.jpg]]"
 seealso:
@@ -115,15 +115,12 @@ It cannot say its own logic. The logic is encoded in the billions of parameters,
 
 ## Possibility vs. Actuality
 
-For Wittgenstein:
-
-- **Logical space** = all possible combinations.
-- **The world** = the specific subset of combinations that are true right now.
-
-For an LLM:
-
-- **[[thoughts/Embedding|Embeddings]] space** = the continuous space of all possible meanings.
-- **Training data** = the samples of actual text it has seen.
+- circa Wittgenstein:
+  - Logical space = all possible combinations.
+  - The world = the specific subset of combinations that are true right now.
+- circa [[thoughts/LLMs]]:
+  - [[thoughts/Embedding|Embeddings]] space = the continuous space of all possible meanings.
+  - Training data = the samples of actual text it has seen.
 
 The model assigns probabilities to regions of that space. When it generates text, it is sampling from the possible.
 
