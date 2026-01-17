@@ -4,9 +4,7 @@ import { markdown } from "@codemirror/lang-markdown"
 import { defaultKeymap, historyKeymap, history } from "@codemirror/commands"
 import { syntaxHighlighting, defaultHighlightStyle } from "@codemirror/language"
 import { autocompletion, completionStatus, moveCompletionSelection } from "@codemirror/autocomplete"
-import { wikilinkCompletionSource } from "./wikilink-completion"
-import { emojiCompletionSource } from "./emoji-completion"
-import { mentionCompletionSource } from "./mention-completion"
+import { completionSources } from "../multiplayer/completions"
 import TurndownService from "turndown"
 
 const turndown = new TurndownService({
@@ -135,10 +133,11 @@ export class MarkdownEditor {
         display: "none",
       },
       "li[role='option']": {
-        padding: "8px 16px",
         cursor: "pointer",
-        borderRadius: "8px",
-        margin: "0 4px",
+        borderRadius: "6px",
+        margin: "1px 6px",
+        justifyContent: "center",
+        alignItems: "center",
         display: "grid",
         gridTemplateColumns: "1fr 160px",
       },
@@ -156,7 +155,7 @@ export class MarkdownEditor {
       syntaxHighlighting(defaultHighlightStyle),
       EditorView.lineWrapping,
       autocompletion({
-        override: [wikilinkCompletionSource, emojiCompletionSource, mentionCompletionSource],
+        override: completionSources,
         closeOnBlur: false,
         activateOnTyping: true,
       }),

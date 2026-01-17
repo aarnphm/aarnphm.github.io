@@ -1,4 +1,3 @@
-import path from "path"
 import isAbsoluteUrl from "is-absolute-url"
 
 import {
