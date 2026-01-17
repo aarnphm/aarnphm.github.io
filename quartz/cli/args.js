@@ -67,3 +67,7 @@ export const BuildArgv = {
     describe: "how many threads to use to parse notes",
   },
 }
+
+export const StatsArgv = {
+  ...CommonArgv,
+}

@@ -14,6 +14,79 @@ import { globby } from "globby"
 import { version, fp, cacheFile } from "./constants.js"
 import { styleText } from "node:util"
 
+const createBuildConfig = () => ({
+  entryPoints: [fp],
+  outfile: cacheFile,
+  bundle: true,
+  keepNames: true,
+  minifyWhitespace: true,
+  minifySyntax: true,
+  platform: "node",
+  format: "esm",
+  jsx: "automatic",
+  jsxImportSource: "preact",
+  packages: "external",
+  metafile: true,
+  sourcemap: true,
+  sourcesContent: false,
+  plugins: [
+    sassPlugin({
+      type: "css-text",
+      cssImports: true,
+    }),
+    sassPlugin({
+      filter: /\.inline\.scss$/,
+      type: "css",
+      cssImports: true,
+    }),
+    {
+      name: "inline-script-loader",
+      setup(build) {
+        build.onLoad({ filter: /\.inline\.(ts|js)$/ }, async (args) => {
+          let text = await promises.readFile(args.path, "utf8")
+
+          text = text.replace("export default", "")
+          text = text.replace("export", "")
+
+          const sourcefile = path.relative(path.resolve("."), args.path)
+          const resolveDir = path.dirname(sourcefile)
+          const transpiled = await esbuild.build({
+            stdin: {
+              contents: text,
+              loader: "ts",
+              resolveDir,
+              sourcefile,
+            },
+            write: false,
+            bundle: true,
+            minify: true,
+            platform: "browser",
+            format: "esm",
+          })
+          const rawMod = transpiled.outputFiles[0].text
+          return {
+            contents: rawMod,
+            loader: "text",
+          }
+        })
+      },
+    },
+  ],
+})
+
+const printBundleInfo = async (metafile) => {
+  const outputFileName = cacheFile.replace(/^\.\//, "")
+  const meta = metafile.outputs[outputFileName]
+  if (meta) {
+    console.log(
+      `Successfully transpiled ${Object.keys(meta.inputs).length} files (${prettyBytes(
+        meta.bytes,
+      )})`,
+    )
+  }
+  console.log(await esbuild.analyzeMetafile(metafile, { color: true }))
+}
+
 /**
  * Handles `npx quartz build`
  * @param {import("../util/ctx.ts").Argv} argv arguments for `build`
@@ -24,66 +97,7 @@ export async function handleBuild(argv) {
   }
 
   console.log("\n" + styleText(["bgGreen", "black"], `Quartz v${version}`) + "\n")
-  const ctx = await esbuild.context({
-    entryPoints: [fp],
-    outfile: cacheFile,
-    bundle: true,
-    keepNames: true,
-    minifyWhitespace: true,
-    minifySyntax: true,
-    platform: "node",
-    format: "esm",
-    jsx: "automatic",
-    jsxImportSource: "preact",
-    packages: "external",
-    metafile: true,
-    sourcemap: true,
-    sourcesContent: false,
-    plugins: [
-      sassPlugin({
-        type: "css-text",
-        cssImports: true,
-      }),
-      sassPlugin({
-        filter: /\.inline\.scss$/,
-        type: "css",
-        cssImports: true,
-      }),
-      {
-        name: "inline-script-loader",
-        setup(build) {
-          build.onLoad({ filter: /\.inline\.(ts|js)$/ }, async (args) => {
-            let text = await promises.readFile(args.path, "utf8")
-
-            // remove default exports that we manually inserted
-            text = text.replace("export default", "")
-            text = text.replace("export", "")
-
-            const sourcefile = path.relative(path.resolve("."), args.path)
-            const resolveDir = path.dirname(sourcefile)
-            const transpiled = await esbuild.build({
-              stdin: {
-                contents: text,
-                loader: "ts",
-                resolveDir,
-                sourcefile,
-              },
-              write: false,
-              bundle: true,
-              minify: true,
-              platform: "browser",
-              format: "esm",
-            })
-            const rawMod = transpiled.outputFiles[0].text
-            return {
-              contents: rawMod,
-              loader: "text",
-            }
-          })
-        },
-      },
-    ],
-  })
+  const ctx = await esbuild.context(createBuildConfig())
 
   const buildMutex = new Mutex()
   let lastBuildMs = 0
@@ -110,14 +124,7 @@ export async function handleBuild(argv) {
     release()
 
     if (argv.bundleInfo) {
-      const outputFileName = "quartz/.quartz-cache/transpiled-build.mjs"
-      const meta = result.metafile.outputs[outputFileName]
-      console.log(
-        `Successfully transpiled ${Object.keys(meta.inputs).length} files (${prettyBytes(
-          meta.bytes,
-        )})`,
-      )
-      console.log(await esbuild.analyzeMetafile(result.metafile, { color: true }))
+      await printBundleInfo(result.metafile)
     }
 
     // bypass module cache
@@ -270,4 +277,53 @@ export async function handleBuild(argv) {
 
     console.log(styleText("grey", "hint: exit with ctrl+c"))
   }
+}
+
+export async function handleStats(argv) {
+  console.log("\n" + styleText(["bgGreen", "black"], `Quartz v${version}`) + "\n")
+  const absDir = path.resolve(argv.directory)
+  const files = await globby(["**/*"], { cwd: absDir, dot: true, onlyFiles: true })
+  const fileStats = await Promise.all(
+    files.map(async (file) => {
+      const stat = await promises.stat(path.join(absDir, file))
+      return { file, size: stat.size }
+    }),
+  )
+
+  let totalBytes = 0
+  let mdBytes = 0
+  let mdFiles = 0
+  let largestFile = null
+  let largestBytes = 0
+
+  for (const { file, size } of fileStats) {
+    totalBytes += size
+    if (path.extname(file).toLowerCase() === ".md") {
+      mdFiles += 1
+      mdBytes += size
+    }
+    if (size > largestBytes) {
+      largestBytes = size
+      largestFile = file
+    }
+  }
+
+  console.log(styleText("cyan", "Vault stats"))
+  console.log(`Path: ${absDir}`)
+  console.log(
+    `Files: ${files.length} (${mdFiles} markdown, ${files.length - mdFiles} other)`,
+  )
+  console.log(`Size: ${prettyBytes(totalBytes)} (${totalBytes} bytes)`)
+  console.log(`Markdown: ${prettyBytes(mdBytes)} (${mdBytes} bytes)`)
+  if (largestFile) {
+    console.log(`Largest: ${largestFile} (${prettyBytes(largestBytes)})`)
+  }
+  console.log("")
+
+  const result = await esbuild.build({
+    ...createBuildConfig(),
+    write: false,
+  })
+  console.log(styleText("cyan", "Bundle info"))
+  await printBundleInfo(result.metafile)
 }
