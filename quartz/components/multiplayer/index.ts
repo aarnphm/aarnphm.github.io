@@ -1,7 +1,9 @@
-export type { Effect, Event } from "./core"
-
-export { createState, reduce } from "./core"
+export type { MultiplayerEffect, MultiplayerEvent, MultiplayerModel } from "./state"
+export type { MultiplayerComment, OperationInput, OperationRecord } from "./model"
+export { createState, reduce } from "./state"
 export { createCommentsUi } from "./ui"
 export { restorePendingOps, persistPendingOps } from "./storage"
 export { getCommentPageId } from "./identity"
 export { createWebSocketManager } from "./ws"
+export { mountMultiplayer } from "./view"
+export { runMultiplayerEffect, type MultiplayerServices } from "./effects"

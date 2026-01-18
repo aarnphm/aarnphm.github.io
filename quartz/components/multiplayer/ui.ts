@@ -1,7 +1,7 @@
 import { getFullSlug } from "../../util/path"
 import { renderMarkdown } from "../../util/markdown-renderer"
 import { MarkdownEditor } from "../scripts/markdown-editor"
-import type { Event, State } from "./core"
+import type { MultiplayerEvent, MultiplayerModel } from "./state"
 import type { MultiplayerComment, OperationInput } from "./model"
 import {
   computeStructuralAnchor,
@@ -13,8 +13,8 @@ import {
 import { getAuthor, getAvatarUrl, getCommentPageId } from "./identity"
 
 type UiDeps = {
-  getState: () => State
-  dispatch: (event: Event) => void
+  getState: () => MultiplayerModel
+  dispatch: (event: MultiplayerEvent) => void
 }
 
 export function createCommentsUi({ getState, dispatch }: UiDeps) {

@@ -1,9 +1,9 @@
 import type { BroadcastMessage, OperationInput } from "./model"
-import type { Event, State } from "./core"
+import type { MultiplayerEvent, MultiplayerModel } from "./state"
 
 type WebSocketManagerDeps = {
-  getState: () => State
-  dispatch: (event: Event) => void
+  getState: () => MultiplayerModel
+  dispatch: (event: MultiplayerEvent) => void
   getPageId: () => string
 }
 
