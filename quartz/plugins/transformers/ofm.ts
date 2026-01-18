@@ -593,7 +593,7 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options>>
       })
 
       if (opts.callouts) {
-        plugins.push(() => (tree: Root, _file) => {
+        plugins.push(() => (tree: Root) => {
           visit(tree, "blockquote", (node) => {
             if (node.children.length === 0) {
               return

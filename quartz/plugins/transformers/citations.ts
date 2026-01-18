@@ -179,7 +179,7 @@ function chunkIds(ids: string[], size: number): string[][] {
 function extractIdFromEntry(entry: any): string | null {
   const raw = typeof entry?.id === "string" ? entry.id : ""
   if (!raw) return null
-  const tail = raw.includes("/") ? raw.split("/").pop() ?? raw : raw
+  const tail = raw.includes("/") ? (raw.split("/").pop() ?? raw) : raw
   const normalized = normalizeArxivId(tail)
   return normalized || null
 }
@@ -252,8 +252,7 @@ export const Citations: QuartzTransformerPlugin<Options> = (opts?: Options) => {
     markdownPlugins: () => [
       () => async (tree: Root, file: any) => {
         const frontmatter = file.data?.frontmatter ?? {}
-        const disableCitations =
-          frontmatter.citations === false || frontmatter.noCitations === true
+        const disableCitations = frontmatter.citations === false || frontmatter.noCitations === true
         if (disableCitations) {
           file.data.citationsDisabled = true
           delete file.data.citations
@@ -324,8 +323,9 @@ export const Citations: QuartzTransformerPlugin<Options> = (opts?: Options) => {
       },
     ],
     htmlPlugins: ({ cfg }) => [
-      () => {
-        const citationProcessor = rehypeCitation({
+      [
+        rehypeCitation,
+        {
           bibliography,
           suppressBibliography: false,
           linkCitations: true,
@@ -334,12 +334,8 @@ export const Citations: QuartzTransformerPlugin<Options> = (opts?: Options) => {
             cfg.configuration.locale !== "en-US"
               ? `https://raw.githubusercontent.com/citation-style-language/locales/refs/heads/master/locales-${cfg.configuration.locale}.xml`
               : "en-US",
-        })
-        return (tree: any, file: any) => {
-          if (file?.data?.citationsDisabled) return
-          return citationProcessor(tree, file)
-        }
-      },
+        },
+      ],
       // Transform the HTML of the citattions; add data-no-popover property to the citation links
       // using https://github.com/syntax-tree/unist-util-visit as they're just anochor links
       () => (tree, file: any) => {

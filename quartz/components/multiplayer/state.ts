@@ -1,6 +1,7 @@
+import { Cmd } from "../../functional"
 import type { MultiplayerComment, OperationInput, OperationRecord } from "./model"
 
-export type State = {
+export type MultiplayerModel = {
   comments: MultiplayerComment[]
   pendingOps: Map<string, OperationInput>
   lastSeq: number
@@ -16,7 +17,7 @@ export type State = {
   unreadCommentIds: Set<string>
 }
 
-export type Event =
+export type MultiplayerEvent =
   | { type: "nav.enter"; pageId: string }
   | { type: "nav.ready" }
   | { type: "storage.pendingOpsRestored"; ops: OperationInput[] }
@@ -41,7 +42,7 @@ export type Event =
   | { type: "ui.comment.read"; commentId: string }
   | { type: "dom.collapse" }
 
-export type Effect =
+export type MultiplayerEffect =
   | { type: "render" }
   | { type: "refreshModal" }
   | { type: "openPendingThread" }
@@ -56,7 +57,7 @@ export type Effect =
   | { type: "popover.hide" }
   | { type: "modal.close" }
 
-export function createState(): State {
+export function createState(): MultiplayerModel {
   return {
     comments: [],
     pendingOps: new Map(),
@@ -106,33 +107,36 @@ function removePendingOp(
   return { pendingOps: next, changed: true }
 }
 
-export function reduce(state: State, event: Event): { state: State; effects: Effect[] } {
+export function reduce(
+  model: MultiplayerModel,
+  event: MultiplayerEvent,
+): { model: MultiplayerModel; effects: Cmd<MultiplayerEffect> } {
   switch (event.type) {
     case "nav.enter": {
       return {
-        state: { ...createState(), currentPageId: event.pageId },
+        model: { ...createState(), currentPageId: event.pageId },
         effects: [{ type: "storage.restore", pageId: event.pageId }],
       }
     }
     case "nav.ready": {
       return {
-        state,
+        model: model,
         effects: [{ type: "ws.connect" }],
       }
     }
     case "storage.pendingOpsRestored": {
       const pendingOps = new Map(event.ops.map((op) => [op.opId, op]))
-      const comments = applyPendingOpsToComments(state.comments, pendingOps)
+      const comments = applyPendingOpsToComments(model.comments, pendingOps)
       return {
-        state: { ...state, pendingOps, comments },
+        model: { ...model, pendingOps, comments },
         effects: [{ type: "render" }, { type: "refreshModal" }],
       }
     }
     case "ws.init": {
-      const comments = applyPendingOpsToComments(event.comments, state.pendingOps)
+      const comments = applyPendingOpsToComments(event.comments, model.pendingOps)
       return {
-        state: {
-          ...state,
+        model: {
+          ...model,
           comments,
           lastSeq: event.latestSeq,
           hasSnapshot: true,
@@ -146,10 +150,10 @@ export function reduce(state: State, event: Event): { state: State; effects: Eff
       }
     }
     case "ws.delta": {
-      let comments = state.comments
-      let pendingOps = state.pendingOps
+      let comments = model.comments
+      let pendingOps = model.pendingOps
       let pendingOpsChanged = false
-      let lastSeq = state.lastSeq
+      let lastSeq = model.lastSeq
       for (const op of event.ops) {
         if (op.seq > lastSeq) lastSeq = op.seq
         comments = upsertComment(comments, op.comment)
@@ -158,13 +162,17 @@ export function reduce(state: State, event: Event): { state: State; effects: Eff
         pendingOpsChanged = pendingOpsChanged || removal.changed
       }
       if (event.latestSeq > lastSeq) lastSeq = event.latestSeq
-      const effects: Effect[] = [{ type: "render" }, { type: "refreshModal" }, { type: "ws.flush" }]
-      if (pendingOpsChanged && state.currentPageId) {
-        effects.push({ type: "persistPendingOps", pageId: state.currentPageId })
+      const effects: MultiplayerEffect[] = [
+        { type: "render" },
+        { type: "refreshModal" },
+        { type: "ws.flush" },
+      ]
+      if (pendingOpsChanged && model.currentPageId) {
+        effects.push({ type: "persistPendingOps", pageId: model.currentPageId })
       }
       return {
-        state: {
-          ...state,
+        model: {
+          ...model,
           comments,
           pendingOps,
           lastSeq,
@@ -174,16 +182,16 @@ export function reduce(state: State, event: Event): { state: State; effects: Eff
       }
     }
     case "ws.op": {
-      let comments = upsertComment(state.comments, event.op.comment)
-      const removal = removePendingOp(state.pendingOps, event.op.opId)
-      const lastSeq = Math.max(state.lastSeq, event.op.seq)
-      const effects: Effect[] = [{ type: "render" }, { type: "refreshModal" }]
-      if (removal.changed && state.currentPageId) {
-        effects.push({ type: "persistPendingOps", pageId: state.currentPageId })
+      let comments = upsertComment(model.comments, event.op.comment)
+      const removal = removePendingOp(model.pendingOps, event.op.opId)
+      const lastSeq = Math.max(model.lastSeq, event.op.seq)
+      const effects: MultiplayerEffect[] = [{ type: "render" }, { type: "refreshModal" }]
+      if (removal.changed && model.currentPageId) {
+        effects.push({ type: "persistPendingOps", pageId: model.currentPageId })
       }
       return {
-        state: {
-          ...state,
+        model: {
+          ...model,
           comments,
           pendingOps: removal.pendingOps,
           lastSeq,
@@ -192,35 +200,35 @@ export function reduce(state: State, event: Event): { state: State; effects: Eff
       }
     }
     case "ws.ack": {
-      const removal = removePendingOp(state.pendingOps, event.opId)
-      const effects: Effect[] = []
-      if (removal.changed && state.currentPageId) {
-        effects.push({ type: "persistPendingOps", pageId: state.currentPageId })
+      const removal = removePendingOp(model.pendingOps, event.opId)
+      const effects: MultiplayerEffect[] = []
+      if (removal.changed && model.currentPageId) {
+        effects.push({ type: "persistPendingOps", pageId: model.currentPageId })
       }
       return {
-        state: {
-          ...state,
+        model: {
+          ...model,
           pendingOps: removal.pendingOps,
-          lastSeq: Math.max(state.lastSeq, event.seq),
+          lastSeq: Math.max(model.lastSeq, event.seq),
         },
         effects,
       }
     }
     case "comment.submit": {
-      const comments = upsertComment(state.comments, event.op.comment)
-      const pendingOps = new Map(state.pendingOps)
+      const comments = upsertComment(model.comments, event.op.comment)
+      const pendingOps = new Map(model.pendingOps)
       pendingOps.set(event.op.opId, event.op)
-      const effects: Effect[] = [
+      const effects: MultiplayerEffect[] = [
         { type: "render" },
         { type: "refreshModal" },
         { type: "ws.send", op: event.op },
       ]
-      if (state.currentPageId) {
-        effects.push({ type: "persistPendingOps", pageId: state.currentPageId })
+      if (model.currentPageId) {
+        effects.push({ type: "persistPendingOps", pageId: model.currentPageId })
       }
       return {
-        state: {
-          ...state,
+        model: {
+          ...model,
           comments,
           pendingOps,
         },
@@ -229,20 +237,20 @@ export function reduce(state: State, event: Event): { state: State; effects: Eff
     }
     case "author.update": {
       let updated = false
-      const comments = state.comments.map((comment) => {
+      const comments = model.comments.map((comment) => {
         if (comment.author !== event.oldAuthor) return comment
         updated = true
         return { ...comment, author: event.newAuthor }
       })
       return {
-        state: updated ? { ...state, comments } : state,
+        model: updated ? { ...model, comments } : model,
         effects: updated ? [{ type: "render" }, { type: "refreshModal" }] : [],
       }
     }
     case "ui.selection.changed": {
       return {
-        state: {
-          ...state,
+        model: {
+          ...model,
           activeSelection: event.range,
           activeComposerId: "selection",
         },
@@ -251,8 +259,8 @@ export function reduce(state: State, event: Event): { state: State; effects: Eff
     }
     case "ui.selection.cleared": {
       return {
-        state: {
-          ...state,
+        model: {
+          ...model,
           activeSelection: null,
           activeComposerId: null,
         },
@@ -261,98 +269,98 @@ export function reduce(state: State, event: Event): { state: State; effects: Eff
     }
     case "ui.hash.changed": {
       return {
-        state: { ...state, pendingHashCommentId: event.commentId },
+        model: { ...model, pendingHashCommentId: event.commentId },
         effects: event.commentId ? [{ type: "openPendingThread" }] : [],
       }
     }
     case "ui.hash.consumed": {
       return {
-        state: { ...state, pendingHashCommentId: null },
+        model: { ...model, pendingHashCommentId: null },
         effects: [],
       }
     }
     case "ui.modal.open": {
       return {
-        state: { ...state, activeModalId: event.commentId },
+        model: { ...model, activeModalId: event.commentId },
         effects: [],
       }
     }
     case "ui.modal.close": {
       return {
-        state: { ...state, activeModalId: null },
+        model: { ...model, activeModalId: null },
         effects: [],
       }
     }
     case "ui.popover.open": {
       return {
-        state: { ...state, activeActionsPopoverId: event.commentId },
+        model: { ...model, activeActionsPopoverId: event.commentId },
         effects: [],
       }
     }
     case "ui.popover.close": {
       return {
-        state: { ...state, activeActionsPopoverId: null },
+        model: { ...model, activeActionsPopoverId: null },
         effects: [],
       }
     }
     case "ui.bubble.offsetUpdated": {
-      const bubbleOffsets = new Map(state.bubbleOffsets)
+      const bubbleOffsets = new Map(model.bubbleOffsets)
       bubbleOffsets.set(event.commentId, event.offset)
       return {
-        state: { ...state, bubbleOffsets },
+        model: { ...model, bubbleOffsets },
         effects: [],
       }
     }
     case "ui.bubbleOffsets.prune": {
       if (event.commentIds.length === 0) {
-        return { state, effects: [] }
+        return { model: model, effects: [] }
       }
-      const bubbleOffsets = new Map(state.bubbleOffsets)
+      const bubbleOffsets = new Map(model.bubbleOffsets)
       for (const commentId of event.commentIds) {
         bubbleOffsets.delete(commentId)
       }
       return {
-        state: { ...state, bubbleOffsets },
+        model: { ...model, bubbleOffsets },
         effects: [],
       }
     }
     case "ui.correctedAnchor.add": {
-      if (state.correctedAnchors.has(event.opId)) {
-        return { state, effects: [] }
+      if (model.correctedAnchors.has(event.opId)) {
+        return { model: model, effects: [] }
       }
-      const correctedAnchors = new Set(state.correctedAnchors)
+      const correctedAnchors = new Set(model.correctedAnchors)
       correctedAnchors.add(event.opId)
       return {
-        state: { ...state, correctedAnchors },
+        model: { ...model, correctedAnchors },
         effects: [],
       }
     }
     case "ui.comment.unread": {
-      if (state.unreadCommentIds.has(event.commentId)) {
-        return { state, effects: [] }
+      if (model.unreadCommentIds.has(event.commentId)) {
+        return { model: model, effects: [] }
       }
-      const unreadCommentIds = new Set(state.unreadCommentIds)
+      const unreadCommentIds = new Set(model.unreadCommentIds)
       unreadCommentIds.add(event.commentId)
       return {
-        state: { ...state, unreadCommentIds },
+        model: { ...model, unreadCommentIds },
         effects: [{ type: "render" }],
       }
     }
     case "ui.comment.read": {
-      if (!state.unreadCommentIds.has(event.commentId)) {
-        return { state, effects: [] }
+      if (!model.unreadCommentIds.has(event.commentId)) {
+        return { model: model, effects: [] }
       }
-      const unreadCommentIds = new Set(state.unreadCommentIds)
+      const unreadCommentIds = new Set(model.unreadCommentIds)
       unreadCommentIds.delete(event.commentId)
       return {
-        state: { ...state, unreadCommentIds },
+        model: { ...model, unreadCommentIds },
         effects: [{ type: "render" }],
       }
     }
     case "dom.collapse": {
       return {
-        state: {
-          ...state,
+        model: {
+          ...model,
           activeSelection: null,
           activeComposerId: null,
           activeModalId: null,

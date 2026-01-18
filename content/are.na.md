@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-01-17 18:03:55 GMT-05:00
+modified: 2026-01-18 16:08:12 GMT-05:00
 permalinks:
   - /website
   - /tweets
@@ -983,6 +983,10 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://www.rowleyvzn.com
+  - [meta]:
+    - date: 01/18/2026
+    - tags: [designer, branding]
 - https://jakub.kr
   - [meta]:
     - date: 01/17/2026
@@ -5417,6 +5421,11 @@ title: are.na
 
 ## computer science
 
+- https://www.letta.com/blog/benchmarking-ai-agent-memory -- Benchmarking AI Agent Memory: Is a Filesystem All You Need?
+  - [meta]:
+    - date: 01/18/2026
+    - tags: [long horizon, context, scaling]
+    - importance: 5
 - https://www.rfleury.com/p/untangling-lifetimes-the-arena-allocator -- Untangling Lifetimes, the arena allocator
   - [meta]:
     - date: 01/02/2026
@@ -6074,6 +6083,13 @@ title: are.na
 
 ## stream
 
+- https://bounded-regret.ghost.io -- Bounded regrets, by Jacob Stienhardt
+  - [meta]:
+    - date: 01/18/2026
+    - tags: [interpretability]
+    - later: true
+    - socials:
+      - assistant: https://bounded-regret.ghost.io/oversight-assiturning-compute-into-understanding/
 - https://x.com/i/events/2011075996787552257 -- Fashion Weeks (Menswear FW26 & Haute Couture SS26)
   - [meta]:
     - date: 01/17/2026
@@ -7083,6 +7099,11 @@ title: are.na
 
 ## arts
 
+- https://emergenceprojects.com/3/ -- Emergence Projects
+  - [meta]:
+    - date: 01/18/2026
+    - tags: [caligraphy, arts]
+    - importance: 6
 - https://www.kat-terada.com/ -- kat terada
   - [meta]:
     - date: 01/14/2026
@@ -7628,6 +7649,10 @@ title: are.na
 
 ## engineering
 
+- https://alexharri.com/blog/ascii-rendering -- ASCII characters are not pixels: a deep dive into ASCII rendering
+  - [meta]:
+    - date: 01/18/2026
+    - tags: [rendering, processor]
 - https://cursor.com/blog/scaling-agents -- Scaling long-running agents
   - [meta]:
     - date: 01/15/2026

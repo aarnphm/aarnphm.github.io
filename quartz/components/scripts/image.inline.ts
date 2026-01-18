@@ -1,25 +1,23 @@
 import { getFullSlug } from "../../util/path"
+import { registerEscapeHandler } from "./util"
 
 document.addEventListener("nav", () => {
   if (getFullSlug(window) === "lyd") return
 
-  const modal = document.getElementById("image-popup-modal")
-  const modalImg = modal?.querySelector(".image-popup-img") as HTMLImageElement
-  const closeBtn = modal?.querySelector(".image-popup-close")
-  const backdrop = modal?.querySelector(".image-popup-backdrop")
+  const dialog = document.getElementById("image-popup-modal") as HTMLDialogElement | null
+  const modalImg = dialog?.querySelector<HTMLImageElement>(".image-popup-img")
+  const closeBtn = dialog?.querySelector<HTMLButtonElement>(".image-popup-close")
 
-  if (!modal || !modalImg || !closeBtn || !backdrop) return
+  if (!dialog || !modalImg || !closeBtn) return
 
   function closeModal() {
-    modal!.classList.remove("active")
-    document.body.style.overflow = ""
+    if (dialog!.open) dialog!.close()
   }
 
   function openModal(imgSrc: string, imgAlt: string) {
-    modalImg.src = imgSrc
-    modalImg.alt = imgAlt
-    modal!.classList.add("active")
-    document.body.style.overflow = "hidden"
+    modalImg!.src = imgSrc
+    modalImg!.alt = imgAlt
+    if (!dialog!.open) dialog!.showModal()
   }
 
   const imageHandlers = new WeakMap<HTMLImageElement, () => void>()
@@ -62,29 +60,24 @@ document.addEventListener("nav", () => {
     })
   }
 
-  function keyboardHandler(e: any) {
-    if (e.key === "Escape" && modal!.classList.contains("active")) closeModal()
+  const backdropClickHandler = (e: MouseEvent) => {
+    if (e.target === dialog) closeModal()
   }
 
-  closeBtn.addEventListener("click", closeModal)
-  backdrop.addEventListener("click", closeModal)
-  document.addEventListener("keydown", keyboardHandler)
+  closeBtn!.addEventListener("click", closeModal)
+  dialog!.addEventListener("click", backdropClickHandler)
+  registerEscapeHandler(closeBtn!, closeModal)
 
   window.addCleanup(() => {
-    closeBtn.removeEventListener("click", closeModal)
-    backdrop.removeEventListener("click", closeModal)
-    document.removeEventListener("keydown", keyboardHandler)
+    closeBtn!.removeEventListener("click", closeModal)
+    dialog!.removeEventListener("click", backdropClickHandler)
 
-    if (observer) {
-      observer.disconnect()
-    }
+    if (observer) observer.disconnect()
 
     for (const img of contentImages) {
       if (img instanceof HTMLImageElement) {
         const handler = imageHandlers.get(img)
-        if (handler) {
-          img.removeEventListener("click", handler)
-        }
+        if (handler) img.removeEventListener("click", handler)
       }
     }
   })

@@ -11,8 +11,7 @@ import { classNames } from "../util/lang"
 export default (() => {
   const Image: QuartzComponent = ({ displayClass }: QuartzComponentProps) => {
     return (
-      <div class={classNames(displayClass, "image-popup-modal")} id="image-popup-modal">
-        <div class="image-popup-backdrop" />
+      <dialog class={classNames(displayClass, "image-popup-modal")} id="image-popup-modal">
         <div class="image-popup-content">
           <button class="image-popup-close" aria-label="Close popup">
             <svg
@@ -32,7 +31,7 @@ export default (() => {
           </button>
           <img class="image-popup-img" src="" alt="" />
         </div>
-      </div>
+      </dialog>
     )
   }
 

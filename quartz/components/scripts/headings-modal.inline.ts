@@ -1,7 +1,11 @@
+import { annotate } from "rough-notation"
+import type { RoughAnnotation } from "rough-notation/lib/model"
 import { registerEscapeHandler } from "./util"
 
+let ag: RoughAnnotation | null = null
+
 interface HeadingInfo {
-  element: HTMLElement
+  element: HTMLDivElement
   level: number
   text: string
   uniqueText: string
@@ -105,7 +109,6 @@ function extractHeadings(): HeadingInfo[] {
         return null
       }
 
-      // Make text unique by appending counter if duplicate
       const count = textCounts.get(text) || 0
       textCounts.set(text, count + 1)
       const uniqueText = count > 0 ? `${text} (${count + 1})` : text
@@ -140,7 +143,6 @@ function buildLetterGroups(headings: HeadingInfo[]): Record<string, number[]> {
     const text = heading.text.trim()
     addInitial(text)
 
-    // Add to groups
     initials.forEach((letter) => {
       if (!groups[letter]) groups[letter] = []
       if (!groups[letter].includes(index)) {
@@ -173,7 +175,6 @@ function renderHeadings() {
     item.className = "heading-item"
     item.dataset.index = index.toString()
 
-    // Add indentation based on level
     const indent = Math.max(heading.level - 1, 0) * 2
     item.style.paddingLeft = `${indent}ch`
 
@@ -199,7 +200,6 @@ function updateActiveItem() {
     )
   })
 
-  // Scroll active item into view
   const activeItem = items[currentIndex]
   if (activeItem) {
     activeItem.scrollIntoView({ block: "nearest" })
@@ -213,22 +213,31 @@ function jumpToHeading(index: number) {
   const heading = visible[index]
   closeModal()
 
-  // Calculate proper scroll position to center the heading
+  if (ag) ag.hide()
+
+  const highlight = heading.element.querySelector("span.highlight-span") as HTMLElement
+  if (highlight) {
+    ag = annotate(highlight, {
+      type: "box",
+      color: "rgba(234, 157, 52, 0.45)",
+      animate: false,
+      multiline: true,
+      brackets: ["left", "right"],
+    })
+    setTimeout(() => ag!.show(), 50)
+    setTimeout(() => ag?.hide(), 2500)
+  }
+
+  heading.element.style.outline = "none"
+
   const headingRect = heading.element.getBoundingClientRect()
   const absoluteTop = window.pageYOffset + headingRect.top
   const middle = absoluteTop - window.innerHeight / 2 + headingRect.height / 2
 
-  // Use smooth scrolling
   window.scrollTo({
     top: middle,
     behavior: "smooth",
   })
-
-  // Wait for scroll to complete before focusing
-  setTimeout(() => {
-    heading.element.setAttribute("tabindex", "-1")
-    heading.element.focus({ preventScroll: true })
-  }, 500)
 }
 
 function clearSecondaryMode() {
@@ -281,7 +290,6 @@ function enterSecondaryMode(letter: string) {
     secondaryKeys.push(key)
   })
 
-  // Add visual indicators using mark elements
   Object.entries(assigned).forEach(([indexStr, key]) => {
     const index = parseInt(indexStr)
     const item = listContainer.querySelector(`[data-index="${index}"]`) as HTMLElement
@@ -317,7 +325,6 @@ function enterSecondaryMode(letter: string) {
     }
   })
 
-  // Add escape handler for secondary mode
   const handleSecondaryKey = (e: KeyboardEvent) => {
     if (!isSecondaryMode) return
 
@@ -376,7 +383,6 @@ function openModal() {
 
   if (modal) {
     modal.style.display = "flex"
-    // Focus the modal for keyboard handling
     const modalContent = modal.querySelector(".headings-modal") as HTMLElement
     modalContent?.focus()
   }
@@ -392,7 +398,6 @@ function closeModal() {
     modal.style.display = "none"
   }
 
-  // Return focus to body
   document.body.focus()
 }
 
@@ -497,12 +502,10 @@ function handleGlobalKeyDown(e: KeyboardEvent) {
   }
 }
 
-// Initialize when DOM is loaded
 document.addEventListener("nav", () => {
   modal = document.querySelector(".headings-modal-container")
 
   if (modal) {
-    // Make modal focusable
     const modalContent = modal.querySelector(".headings-modal") as HTMLElement
     if (modalContent) {
       modalContent.setAttribute("tabindex", "-1")
@@ -559,10 +562,8 @@ document.addEventListener("nav", () => {
       searchInput = header.querySelector(".headings-modal-search input") as HTMLInputElement | null
     }
 
-    // Register escape handler
     registerEscapeHandler(modal, closeModal)
 
-    // Add backdrop click handler
     const backdrop = modal.querySelector(".headings-modal-backdrop")
     if (backdrop) {
       backdrop.addEventListener("click", closeModal)
@@ -570,7 +571,6 @@ document.addEventListener("nav", () => {
     }
   }
 
-  // Global keyboard handlers
   document.addEventListener("keydown", handleKeyDown)
   document.addEventListener("keydown", handleGlobalKeyDown)
 
@@ -581,9 +581,7 @@ document.addEventListener("nav", () => {
   })
 })
 
-// Re-initialize on SPA navigation
 document.addEventListener("nav", () => {
-  // Reset state
   isOpen = false
   isSecondaryMode = false
   allHeadings = []
