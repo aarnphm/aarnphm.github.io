@@ -89,7 +89,7 @@ a[data-breadcrumbs] {
   flex-direction: column;
   gap: 0.25rem;
   padding: 0.5rem 0.75rem;
-  border-radius: 0;
+  border-radius: var(--radius-none);
   font-family: var(--headerFont);
   font-style: italic;
   background-color: var(--light);
@@ -108,7 +108,7 @@ a[data-breadcrumbs] {
     align-items: center;
     justify-content: flex-start;
     padding: 0.125rem 0.5rem;
-    border-radius: 0.5rem;
+    border-radius: var(--radius-lg);
     align-self: flex-start;
     width: max-content;
     max-width: 100%;

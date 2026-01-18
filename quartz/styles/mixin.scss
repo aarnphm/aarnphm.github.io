@@ -21,7 +21,7 @@
 }
 
 @mixin dagHighlights {
-  color: var(--dag-highlights);
+  color: var(--foam);
   text-decoration: underline;
 }
 
@@ -57,7 +57,7 @@
   $fg: rgb(119, 119, 119),
   $hover-bg: rgb(222, 222, 222),
   $padding: 2px 4px,
-  $radius: 6px,
+  $radius: var(--radius-6),
   $font-size: 10px,
   $font-family: var(--codeFont),
   $uppercase: true,
@@ -134,10 +134,7 @@
 }
 
 @mixin links {
-  background-image: linear-gradient(
-    var(--link-underline-gradient-line-color),
-    var(--link-underline-gradient-line-color)
-  );
+  background-image: linear-gradient(currentColor, currentColor);
   background-size: 1px 1px;
   background-repeat: repeat-x;
   background-position: 0% calc(100% - 0.1em);
@@ -182,7 +179,7 @@
       background-color: var(--light);
       font-size: 1.1em;
       border: none;
-      border-radius: 0;
+      border-radius: var(--radius-none);
 
       &:focus {
         outline: none;
@@ -200,7 +197,7 @@
   overflow: hidden;
 
   border: 1px solid var(--lightgray);
-  border-radius: var(--border-radius);
+  border-radius: var(--radius-12);
   display: flex;
   flex-direction: column;
   background-color: var(--light);

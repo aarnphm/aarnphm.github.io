@@ -2,6 +2,7 @@ import { QuartzTransformerPlugin } from "../../types/plugin"
 import { Root as MdastRoot } from "mdast"
 import { Element as HastElement, Text as HastText, ElementContent, Root as HastRoot } from "hast"
 import { visit } from "unist-util-visit"
+import type { Node } from "unist"
 import { h } from "hastscript"
 import { BuildCtx } from "../../util/ctx"
 import { FullSlug, transformLink } from "../../util/path"
@@ -84,7 +85,7 @@ export const Sidenotes: QuartzTransformerPlugin = () => {
 
             visit(
               tree,
-              (node) =>
+              (node): node is Node =>
                 node.type === "element" &&
                 (node.properties?.dataType === "sidenote" ||
                   node.properties?.dataType === "sidenote-ref"),
@@ -101,11 +102,11 @@ export const Sidenotes: QuartzTransformerPlugin = () => {
                   internal: internalLinks,
                 } = node.properties
 
-                const labelContainer = node.children.find((c: any) =>
+                const labelContainer = node.children!.find((c: any) =>
                   c.properties?.className?.includes("sidenote-label-hast"),
                 ) as HastElement | undefined
 
-                const contentContainer = node.children.find((c: any) =>
+                const contentContainer = node.children!.find((c: any) =>
                   c.properties?.className?.includes("sidenote-content-hast"),
                 ) as HastElement | undefined
 

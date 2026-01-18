@@ -4,7 +4,6 @@
 // This file should be isomorphic, meaning it should only be imported once.
 :root {
   color-scheme: light dark;
-  --link-underline-gradient-line-color: currentColor;
 
   // rose-pine-dawn
   --base: #faf4ed;
@@ -20,25 +19,20 @@
   --pine: rgb(58, 169, 159);
   --foam: rgb(67, 133, 190);
   --iris: rgb(139, 126, 200);
-  --dag-highlights: var(--foam);
-  --gray-200: rgba(0, 0, 0, 0.2);
-  --rail-width: 1.6rem;
 
   // fonts
   --kern: 12px;
-  --border-radius: var(--kern);
   --align-cap-height: -6px;
   --align-baseline: -6px;
   --font-size: 16px;
   --line-height: 1.4;
-  --line-px: calc(var(--line-height) * var(--font-size));
+  --rail-width: 1.6rem;
   --sidepanel-padding: 14px;
 
   // telescope
+  --telescope-border: #888;
   --telescope-highlight: rgb(252, 193, 146);
   --telescope-highlight-hover: rgb(249, 174, 119);
-  --telescope-text-color: var(--dark);
-  --telescope-border: #888;
 }
 
 // generated with https://quartz-themes.github.io/flexoki/syntax

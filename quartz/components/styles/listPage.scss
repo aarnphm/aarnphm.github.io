@@ -22,22 +22,22 @@ li.section-li {
   }
 
   &.fade-out + &.fade-out {
-    border-top-color: var(--gray-200);
+    border-top-color: rgba(0, 0, 0, 0.2);
   }
 
   &.fade-out {
     & > .note-link {
-      color: var(--gray-200);
+      color: rgba(0, 0, 0, 0.2);
     }
 
     & .tag-highlights {
-      color: var(--gray-200);
+      color: rgba(0, 0, 0, 0.2);
 
       li {
-        color: var(--gray-200);
+        color: rgba(0, 0, 0, 0.2);
 
         &::after {
-          border-color: var(--gray-200);
+          border-color: rgba(0, 0, 0, 0.2);
         }
       }
     }
@@ -115,7 +115,7 @@ li.section-li {
           &::after {
             content: "";
             border: 1px solid;
-            border-radius: 0;
+            border-radius: var(--radius-none);
             transition: border-color 0.3s;
             inset: 0 0 -0.12em;
             pointer-events: none;

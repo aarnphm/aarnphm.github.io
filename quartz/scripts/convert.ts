@@ -15,6 +15,7 @@ async function convertMedia(contentDir: string) {
         "favicon-*",
         "**/movies",
         "**/library",
+        "content/thoughts/university/twenty-five-twenty-six/**/*",
       ],
       absolute: true,
     })

@@ -57,7 +57,7 @@
     font-size: initial;
     font-family: var(--bodyFont);
     border: 1px solid var(--lightgray);
-    border-radius: var(--border-radius);
+    border-radius: var(--radius-12);
     background-color: var(--light);
     box-shadow: var(--shadow-popover);
     overflow: auto;
@@ -81,7 +81,7 @@
     &[data-content-type*="image"] {
       img {
         margin: 0;
-        border-radius: 0;
+        border-radius: var(--radius-none);
         display: block;
       }
     }
@@ -133,7 +133,7 @@
     );
     background-size: 200% 100%;
     animation: skeleton-shimmer 1.5s infinite;
-    border-radius: 4px;
+    border-radius: var(--radius-md);
   }
 
   .skeleton-title {

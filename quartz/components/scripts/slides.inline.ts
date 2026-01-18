@@ -19,7 +19,6 @@ document.addEventListener("nav", () => {
   }
 
   const update = () => {
-    // close any open mermaid popups before switching slides
     const activePopups = document.querySelectorAll("#mermaid-container.active")
     activePopups.forEach((popup) => popup.classList.remove("active"))
 
@@ -32,8 +31,7 @@ document.addEventListener("nav", () => {
     if (target) target.scrollIntoView({ behavior: "auto", block: "start" })
     history.replaceState(null, "", `#slide-${idx}`)
 
-    // trigger mermaid re-rendering for the new active slide
-    document.dispatchEvent(new CustomEvent("slide-change"))
+    document.dispatchEvent(new CustomEvent("slidechange", { detail: {} }))
   }
 
   const goPrev = () => {

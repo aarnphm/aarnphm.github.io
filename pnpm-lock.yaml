@@ -222,7 +222,7 @@ importers:
         version: 12.27.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       node-tikzjax:
         specifier: ^1.0.3
-        version: 1.0.3(bufferutil@4.0.9)(utf-8-validate@5.0.10)
+        version: 1.0.3(bufferutil@4.0.9)(tslib@2.8.1)(utf-8-validate@5.0.10)
       octokit:
         specifier: ^5.0.5
         version: 5.0.5
@@ -377,6 +377,15 @@ importers:
       '@types/d3':
         specifier: ^7.4.3
         version: 7.4.3
+      '@types/d3-drag':
+        specifier: ^3.0.7
+        version: 3.0.7
+      '@types/d3-force':
+        specifier: ^3.0.10
+        version: 3.0.10
+      '@types/d3-zoom':
+        specifier: ^3.0.8
+        version: 3.0.8
       '@types/hast':
         specifier: ^3.0.4
         version: 3.0.4
@@ -1559,8 +1568,20 @@ packages:
     peerDependencies:
       tslib: '2'
 
+  '@jsonjoy.com/base64@17.65.0':
+    resolution: {integrity: sha512-Xrh7Fm/M0QAYpekSgmskdZYnFdSGnsxJ/tHaolA4bNwWdG9i65S8m83Meh7FOxyJyQAdo4d4J97NOomBLEfkDQ==}
+    engines: {node: '>=10.0'}
+    peerDependencies:
+      tslib: '2'
+
   '@jsonjoy.com/buffers@1.2.1':
     resolution: {integrity: sha512-12cdlDwX4RUM3QxmUbVJWqZ/mrK6dFQH4Zxq6+r1YXKXYBNgZXndx2qbCJwh3+WWkCSn67IjnlG3XYTvmvYtgA==}
+    engines: {node: '>=10.0'}
+    peerDependencies:
+      tslib: '2'
+
+  '@jsonjoy.com/buffers@17.65.0':
+    resolution: {integrity: sha512-eBrIXd0/Ld3p9lpDDlMaMn6IEfWqtHMD+z61u0JrIiPzsV1r7m6xDZFRxJyvIFTEO+SWdYF9EiQbXZGd8BzPfA==}
     engines: {node: '>=10.0'}
     peerDependencies:
       tslib: '2'
@@ -1571,8 +1592,68 @@ packages:
     peerDependencies:
       tslib: '2'
 
+  '@jsonjoy.com/codegen@17.65.0':
+    resolution: {integrity: sha512-7MXcRYe7n3BG+fo3jicvjB0+6ypl2Y/bQp79Sp7KeSiiCgLqw4Oled6chVv07/xLVTdo3qa1CD0VCCnPaw+RGA==}
+    engines: {node: '>=10.0'}
+    peerDependencies:
+      tslib: '2'
+
+  '@jsonjoy.com/fs-core@4.56.2':
+    resolution: {integrity: sha512-5s3t0Lj/gDgPhhXEdSe9yNDB07iMrpIXN9OV9FTiwlLKP3EBFhsbOhhMMVoWuSJkPxaaiOFUpZcyZcKi7mOmUQ==}
+    engines: {node: '>=10.0'}
+    peerDependencies:
+      tslib: '2'
+
+  '@jsonjoy.com/fs-fsa@4.56.2':
+    resolution: {integrity: sha512-2lN4rdhcjFBf2Oji0rHR1aS+fW+GA0l9o9gXCMWFoC+YXqRO4N4xkSeJwm6a10SMuqlhoseCWRWlhaDYiNiI2A==}
+    engines: {node: '>=10.0'}
+    peerDependencies:
+      tslib: '2'
+
+  '@jsonjoy.com/fs-node-builtins@4.56.2':
+    resolution: {integrity: sha512-TB8rFES/4lygIudoTHSGp2fjHe7R229VRQ4IQCMds6uTKhBKuDLZAqOUBiS3hosfxTVrB/JpDrr46MvCSjPzog==}
+    engines: {node: '>=10.0'}
+    peerDependencies:
+      tslib: '2'
+
+  '@jsonjoy.com/fs-node-to-fsa@4.56.2':
+    resolution: {integrity: sha512-Es62G93ychdl0VhQKVTIPq31QWabXveTEVJfi3gC/AIiehnXV3AMl38TWXLCS4fomBz5EaLqNhMkV7u/oW1p6g==}
+    engines: {node: '>=10.0'}
+    peerDependencies:
+      tslib: '2'
+
+  '@jsonjoy.com/fs-node-utils@4.56.2':
+    resolution: {integrity: sha512-CIUSlhbnws7b9f3Z2r963/lSA+VLPJlJcy8fqjQ9lk1Z1y6Ca9qj2CWXlABkvDZE7sDX+6PEdEU1PsXlfkZVbg==}
+    engines: {node: '>=10.0'}
+    peerDependencies:
+      tslib: '2'
+
+  '@jsonjoy.com/fs-node@4.56.2':
+    resolution: {integrity: sha512-Ws4cwm9UQY0noP/Ee2KpPf2zJJukJywjTIl3lBTH/AdH7r5n5CyGPLgySxpAa7/isV0WD02bYV+XKhslF/Dtbg==}
+    engines: {node: '>=10.0'}
+    peerDependencies:
+      tslib: '2'
+
+  '@jsonjoy.com/fs-print@4.56.2':
+    resolution: {integrity: sha512-7e4hmCrfERuqdNu1shsj140F4uS4h8orBULhlXQJ0F3sT4lnCuWe32rwxAa8xPutb99jKpHcsxM76TaFzFgQTA==}
+    engines: {node: '>=10.0'}
+    peerDependencies:
+      tslib: '2'
+
+  '@jsonjoy.com/fs-snapshot@4.56.2':
+    resolution: {integrity: sha512-Qh0lc8Ujnb2b1D4RQ7CD+BOzqzw2aUpJPIK9SDv+y9LTy3lZ/ydPU7m6qBIH2ePhBKZuBIyVwxOWSvHRaasETQ==}
+    engines: {node: '>=10.0'}
+    peerDependencies:
+      tslib: '2'
+
   '@jsonjoy.com/json-pack@1.21.0':
     resolution: {integrity: sha512-+AKG+R2cfZMShzrF2uQw34v3zbeDYUqnQ+jg7ORic3BGtfw9p/+N6RJbq/kkV8JmYZaINknaEQ2m0/f693ZPpg==}
+    engines: {node: '>=10.0'}
+    peerDependencies:
+      tslib: '2'
+
+  '@jsonjoy.com/json-pack@17.65.0':
+    resolution: {integrity: sha512-e0SG/6qUCnVhHa0rjDJHgnXnbsacooHVqQHxspjvlYQSkHm+66wkHw6Gql+3u/WxI/b1VsOdUi0M+fOtkgKGdQ==}
     engines: {node: '>=10.0'}
     peerDependencies:
       tslib: '2'
@@ -1583,8 +1664,20 @@ packages:
     peerDependencies:
       tslib: '2'
 
+  '@jsonjoy.com/json-pointer@17.65.0':
+    resolution: {integrity: sha512-uhTe+XhlIZpWOxgPcnO+iSCDgKKBpwkDVTyYiXX9VayGV8HSFVJM67M6pUE71zdnXF1W0Da21AvnhlmdwYPpow==}
+    engines: {node: '>=10.0'}
+    peerDependencies:
+      tslib: '2'
+
   '@jsonjoy.com/util@1.9.0':
     resolution: {integrity: sha512-pLuQo+VPRnN8hfPqUTLTHk126wuYdXVxE6aDmjSeV4NCAgyxWbiOIeNJVtID3h1Vzpoi9m4jXezf73I6LgabgQ==}
+    engines: {node: '>=10.0'}
+    peerDependencies:
+      tslib: '2'
+
+  '@jsonjoy.com/util@17.65.0':
+    resolution: {integrity: sha512-cWiEHZccQORf96q2y6zU3wDeIVPeidmGqd9cNKJRYoVHTV0S1eHPy5JTbHpMnGfDvtvujQwQozOqgO9ABu6h0w==}
     engines: {node: '>=10.0'}
     peerDependencies:
       tslib: '2'
@@ -2028,8 +2121,8 @@ packages:
   '@ts-morph/common@0.28.1':
     resolution: {integrity: sha512-W74iWf7ILp1ZKNYXY5qbddNaml7e9Sedv5lvU1V8lftlitkc9Pq1A+jlH23ltDgWYeZFFEqGCD1Ies9hqu3O+g==}
 
-  '@types/aws-lambda@8.10.159':
-    resolution: {integrity: sha512-SAP22WSGNN12OQ8PlCzGzRCZ7QDCwI85dQZbmpz7+mAk+L7j+wI7qnvmdKh+o7A5LaOp6QnOZ2NJphAZQTTHQg==}
+  '@types/aws-lambda@8.10.160':
+    resolution: {integrity: sha512-uoO4QVQNWFPJMh26pXtmtrRfGshPUSpMZGUyUQY20FhfHEElEBOPKgVmFs1z+kbpyBsRs2JnoOPT7++Z4GA9pA==}
 
   '@types/css-font-loading-module@0.0.12':
     resolution: {integrity: sha512-x2tZZYkSxXqWvTDgveSynfjq/T2HyiZHXb00j/+gy19yp70PHCizM48XFdjBCWH7eHBD0R5i/pw9yMBP/BH5uA==}
@@ -2848,8 +2941,8 @@ packages:
   decimal.js@10.6.0:
     resolution: {integrity: sha512-YpgQiITW3JXGntzdUmyUR1V812Hn8T1YVXhCu+wO3OpS4eU9l4YdD3qjyiKdV6mvV29zapkMeD390UVEf2lkUg==}
 
-  decode-named-character-reference@1.2.0:
-    resolution: {integrity: sha512-c6fcElNV6ShtZXmsgNgFFV5tVX2PaV4g+MOAkb8eXHvn6sryJBrZa9r0zV6+dtTyoCKxtDy5tyQ5ZwQuidtd+Q==}
+  decode-named-character-reference@1.3.0:
+    resolution: {integrity: sha512-GtpQYB283KrPp6nRw50q3U9/VfOutZOe103qlN7BPP6Ad27xYnOIWv4lPzo8HCAL+mMZofJ9KEy30fq6MfaK6Q==}
 
   deep-is@0.1.4:
     resolution: {integrity: sha512-oIPzksmTg4/MriiaYGO+okXDT7ztn/w3Eptv/+gSIdMdKsJo0u4CfYNFJPy+4SKMuCqGw2wxnA+URMg3t8a/bQ==}
@@ -3177,8 +3270,8 @@ packages:
   event-target-polyfill@0.0.4:
     resolution: {integrity: sha512-Gs6RLjzlLRdT8X9ZipJdIZI/Y6/HhRLyq9RdDlCsnpxr/+Nn6bU2EFGuC94GjxqhM+Nmij2Vcq98yoHrU8uNFQ==}
 
-  eventemitter3@5.0.1:
-    resolution: {integrity: sha512-GWkBvjiSZK87ELrYOSESUYeVIc9mvLLf/nXalMOS5dYrgZq9o5OVkbZAVM06CVxYsCwH9BDZFPlQTlPA1j4ahA==}
+  eventemitter3@5.0.4:
+    resolution: {integrity: sha512-mlsTRyGaPBjPedk6Bvw+aqbsXDtoAyAzm5MO7JgU+yVRyMQ5O8bD4Kcci7BS85f93veegeCPkL8R4GLClnjLFw==}
 
   events-universal@1.0.1:
     resolution: {integrity: sha512-LUd5euvbMLpwOF8m6ivPCbhQeSiYVNb8Vs0fQ8QjXo0JTkEHpz8pxdQf0gStltaPpw0Cca8b39KxvK9cfKRiAw==}
@@ -3933,8 +4026,10 @@ packages:
     resolution: {integrity: sha512-aisnrDP4GNe06UcKFnV5bfMNPBUw4jsLGaWwWfnH3v02GnBuXX2MCVn5RbrWo0j3pczUilYblq7fQ7Nw2t5XKw==}
     engines: {node: '>= 0.8'}
 
-  memfs@4.52.0:
-    resolution: {integrity: sha512-dG5ZY1wUCPWhtl4M2mlc7Wx4OrMGtiI79axnScxwDoPR/25biQYrYm21OpKyZcnKv8pvWaX95SRtZgecZ84gFg==}
+  memfs@4.56.2:
+    resolution: {integrity: sha512-AEbdVTy4TZiugbnfA7d1z9IvwpHlaGh9Vlb/iteHDtUU/WhOKAwgbhy1f8dnX1SMbeKLIXdXf3lVWb55PuBQQw==}
+    peerDependencies:
+      tslib: '2'
 
   merge-descriptors@2.0.0:
     resolution: {integrity: sha512-Snk314V5ayFLhp3fkUREub6WtjBfPdCPY1Ln8/8munuLuiYhsABgBVWsozAG+MWMbVEvcdcpbi9R7ww22l9Q3g==}
@@ -4951,8 +5046,8 @@ packages:
   tar-stream@3.1.7:
     resolution: {integrity: sha512-qJj60CXt7IU1Ffyc3NJMjh6EkuCFej46zUqJ4J7pqYlThyd9bO0XBTmcOIhSzZJVWfsLks0+nle/j538YAW9RQ==}
 
-  tar@7.5.3:
-    resolution: {integrity: sha512-ENg5JUHUm2rDD7IvKNFGzyElLXNjachNLp6RaGf4+JOgxXHkqA+gq81ZAMCUmtMtqBsoU62lcp6S27g1LCYGGQ==}
+  tar@7.5.4:
+    resolution: {integrity: sha512-AN04xbWGrSTDmVwlI4/GTlIIwMFk/XEv7uL8aa57zuvRy6s4hdBed+lVq2fAZ89XDa7Us3ANXcE3Tvqvja1kTA==}
     engines: {node: '>=18'}
 
   text-decoder@1.2.3:
@@ -6174,12 +6269,78 @@ snapshots:
     dependencies:
       tslib: 2.8.1
 
+  '@jsonjoy.com/base64@17.65.0(tslib@2.8.1)':
+    dependencies:
+      tslib: 2.8.1
+
   '@jsonjoy.com/buffers@1.2.1(tslib@2.8.1)':
+    dependencies:
+      tslib: 2.8.1
+
+  '@jsonjoy.com/buffers@17.65.0(tslib@2.8.1)':
     dependencies:
       tslib: 2.8.1
 
   '@jsonjoy.com/codegen@1.0.0(tslib@2.8.1)':
     dependencies:
+      tslib: 2.8.1
+
+  '@jsonjoy.com/codegen@17.65.0(tslib@2.8.1)':
+    dependencies:
+      tslib: 2.8.1
+
+  '@jsonjoy.com/fs-core@4.56.2(tslib@2.8.1)':
+    dependencies:
+      '@jsonjoy.com/fs-node-builtins': 4.56.2(tslib@2.8.1)
+      '@jsonjoy.com/fs-node-utils': 4.56.2(tslib@2.8.1)
+      thingies: 2.5.0(tslib@2.8.1)
+      tslib: 2.8.1
+
+  '@jsonjoy.com/fs-fsa@4.56.2(tslib@2.8.1)':
+    dependencies:
+      '@jsonjoy.com/fs-core': 4.56.2(tslib@2.8.1)
+      '@jsonjoy.com/fs-node-builtins': 4.56.2(tslib@2.8.1)
+      '@jsonjoy.com/fs-node-utils': 4.56.2(tslib@2.8.1)
+      thingies: 2.5.0(tslib@2.8.1)
+      tslib: 2.8.1
+
+  '@jsonjoy.com/fs-node-builtins@4.56.2(tslib@2.8.1)':
+    dependencies:
+      tslib: 2.8.1
+
+  '@jsonjoy.com/fs-node-to-fsa@4.56.2(tslib@2.8.1)':
+    dependencies:
+      '@jsonjoy.com/fs-fsa': 4.56.2(tslib@2.8.1)
+      '@jsonjoy.com/fs-node-builtins': 4.56.2(tslib@2.8.1)
+      '@jsonjoy.com/fs-node-utils': 4.56.2(tslib@2.8.1)
+      tslib: 2.8.1
+
+  '@jsonjoy.com/fs-node-utils@4.56.2(tslib@2.8.1)':
+    dependencies:
+      '@jsonjoy.com/fs-node-builtins': 4.56.2(tslib@2.8.1)
+      tslib: 2.8.1
+
+  '@jsonjoy.com/fs-node@4.56.2(tslib@2.8.1)':
+    dependencies:
+      '@jsonjoy.com/fs-core': 4.56.2(tslib@2.8.1)
+      '@jsonjoy.com/fs-node-builtins': 4.56.2(tslib@2.8.1)
+      '@jsonjoy.com/fs-node-utils': 4.56.2(tslib@2.8.1)
+      '@jsonjoy.com/fs-print': 4.56.2(tslib@2.8.1)
+      glob-to-regex.js: 1.2.0(tslib@2.8.1)
+      thingies: 2.5.0(tslib@2.8.1)
+      tslib: 2.8.1
+
+  '@jsonjoy.com/fs-print@4.56.2(tslib@2.8.1)':
+    dependencies:
+      '@jsonjoy.com/fs-node-utils': 4.56.2(tslib@2.8.1)
+      tree-dump: 1.1.0(tslib@2.8.1)
+      tslib: 2.8.1
+
+  '@jsonjoy.com/fs-snapshot@4.56.2(tslib@2.8.1)':
+    dependencies:
+      '@jsonjoy.com/fs-node-utils': 4.56.2(tslib@2.8.1)
+      '@jsonjoy.com/json-pack': 17.65.0(tslib@2.8.1)
+      '@jsonjoy.com/util': 17.65.0(tslib@2.8.1)
       tslib: 2.8.1
 
   '@jsonjoy.com/json-pack@1.21.0(tslib@2.8.1)':
@@ -6194,16 +6355,39 @@ snapshots:
       tree-dump: 1.1.0(tslib@2.8.1)
       tslib: 2.8.1
 
+  '@jsonjoy.com/json-pack@17.65.0(tslib@2.8.1)':
+    dependencies:
+      '@jsonjoy.com/base64': 17.65.0(tslib@2.8.1)
+      '@jsonjoy.com/buffers': 17.65.0(tslib@2.8.1)
+      '@jsonjoy.com/codegen': 17.65.0(tslib@2.8.1)
+      '@jsonjoy.com/json-pointer': 17.65.0(tslib@2.8.1)
+      '@jsonjoy.com/util': 17.65.0(tslib@2.8.1)
+      hyperdyperid: 1.2.0
+      thingies: 2.5.0(tslib@2.8.1)
+      tree-dump: 1.1.0(tslib@2.8.1)
+      tslib: 2.8.1
+
   '@jsonjoy.com/json-pointer@1.0.2(tslib@2.8.1)':
     dependencies:
       '@jsonjoy.com/codegen': 1.0.0(tslib@2.8.1)
       '@jsonjoy.com/util': 1.9.0(tslib@2.8.1)
       tslib: 2.8.1
 
+  '@jsonjoy.com/json-pointer@17.65.0(tslib@2.8.1)':
+    dependencies:
+      '@jsonjoy.com/util': 17.65.0(tslib@2.8.1)
+      tslib: 2.8.1
+
   '@jsonjoy.com/util@1.9.0(tslib@2.8.1)':
     dependencies:
       '@jsonjoy.com/buffers': 1.2.1(tslib@2.8.1)
       '@jsonjoy.com/codegen': 1.0.0(tslib@2.8.1)
+      tslib: 2.8.1
+
+  '@jsonjoy.com/util@17.65.0(tslib@2.8.1)':
+    dependencies:
+      '@jsonjoy.com/buffers': 17.65.0(tslib@2.8.1)
+      '@jsonjoy.com/codegen': 17.65.0(tslib@2.8.1)
       tslib: 2.8.1
 
   '@lezer/common@1.5.0': {}
@@ -6426,7 +6610,7 @@ snapshots:
       '@octokit/core': 7.0.6
       '@octokit/oauth-authorization-url': 8.0.0
       '@octokit/oauth-methods': 6.0.2
-      '@types/aws-lambda': 8.10.159
+      '@types/aws-lambda': 8.10.160
       universal-user-agent: 7.0.3
 
   '@octokit/oauth-authorization-url@8.0.0': {}
@@ -6671,7 +6855,7 @@ snapshots:
       path-browserify: 1.0.1
       tinyglobby: 0.2.15
 
-  '@types/aws-lambda@8.10.159': {}
+  '@types/aws-lambda@8.10.160': {}
 
   '@types/css-font-loading-module@0.0.12': {}
 
@@ -7485,7 +7669,7 @@ snapshots:
 
   decimal.js@10.6.0: {}
 
-  decode-named-character-reference@1.2.0:
+  decode-named-character-reference@1.3.0:
     dependencies:
       character-entities: 2.0.2
 
@@ -7834,7 +8018,7 @@ snapshots:
 
   event-target-polyfill@0.0.4: {}
 
-  eventemitter3@5.0.1: {}
+  eventemitter3@5.0.4: {}
 
   events-universal@1.0.1:
     dependencies:
@@ -8627,7 +8811,7 @@ snapshots:
     dependencies:
       '@types/mdast': 4.0.4
       '@types/unist': 3.0.3
-      decode-named-character-reference: 1.2.0
+      decode-named-character-reference: 1.3.0
       devlop: 1.1.0
       mdast-util-to-string: 4.0.0
       micromark: 4.0.2
@@ -8813,8 +8997,16 @@ snapshots:
 
   media-typer@1.1.0: {}
 
-  memfs@4.52.0:
+  memfs@4.56.2(tslib@2.8.1):
     dependencies:
+      '@jsonjoy.com/fs-core': 4.56.2(tslib@2.8.1)
+      '@jsonjoy.com/fs-fsa': 4.56.2(tslib@2.8.1)
+      '@jsonjoy.com/fs-node': 4.56.2(tslib@2.8.1)
+      '@jsonjoy.com/fs-node-builtins': 4.56.2(tslib@2.8.1)
+      '@jsonjoy.com/fs-node-to-fsa': 4.56.2(tslib@2.8.1)
+      '@jsonjoy.com/fs-node-utils': 4.56.2(tslib@2.8.1)
+      '@jsonjoy.com/fs-print': 4.56.2(tslib@2.8.1)
+      '@jsonjoy.com/fs-snapshot': 4.56.2(tslib@2.8.1)
       '@jsonjoy.com/json-pack': 1.21.0(tslib@2.8.1)
       '@jsonjoy.com/util': 1.9.0(tslib@2.8.1)
       glob-to-regex.js: 1.2.0(tslib@2.8.1)
@@ -8851,7 +9043,7 @@ snapshots:
 
   micromark-core-commonmark@2.0.3:
     dependencies:
-      decode-named-character-reference: 1.2.0
+      decode-named-character-reference: 1.3.0
       devlop: 1.1.0
       micromark-factory-destination: 2.0.1
       micromark-factory-label: 2.0.1
@@ -9064,7 +9256,7 @@ snapshots:
 
   micromark-util-decode-string@2.0.1:
     dependencies:
-      decode-named-character-reference: 1.2.0
+      decode-named-character-reference: 1.3.0
       micromark-util-character: 2.1.1
       micromark-util-decode-numeric-character-reference: 2.0.2
       micromark-util-symbol: 2.0.1
@@ -9112,7 +9304,7 @@ snapshots:
     dependencies:
       '@types/debug': 4.1.12
       debug: 4.4.3
-      decode-named-character-reference: 1.2.0
+      decode-named-character-reference: 1.3.0
       devlop: 1.1.0
       micromark-core-commonmark: 2.0.3
       micromark-factory-space: 2.0.1
@@ -9242,11 +9434,11 @@ snapshots:
   node-gyp-build@4.8.4:
     optional: true
 
-  node-tikzjax@1.0.3(bufferutil@4.0.9)(utf-8-validate@5.0.10):
+  node-tikzjax@1.0.3(bufferutil@4.0.9)(tslib@2.8.1)(utf-8-validate@5.0.10):
     dependencies:
       '@prinsss/dvi2html': 0.0.1
       jsdom: 23.2.0(bufferutil@4.0.9)(utf-8-validate@5.0.10)
-      memfs: 4.52.0
+      memfs: 4.56.2(tslib@2.8.1)
       svgo: 3.3.2
       tar-fs: 3.1.1
     transitivePeerDependencies:
@@ -9256,6 +9448,7 @@ snapshots:
       - canvas
       - react-native-b4a
       - supports-color
+      - tslib
       - utf-8-validate
 
   nth-check@2.1.1:
@@ -9306,7 +9499,7 @@ snapshots:
     dependencies:
       global-agent: 3.0.0
       onnxruntime-common: 1.21.0
-      tar: 7.5.3
+      tar: 7.5.4
 
   onnxruntime-web@1.22.0-dev.20250409-89f8206ba4:
     dependencies:
@@ -9379,7 +9572,7 @@ snapshots:
       '@types/unist': 2.0.11
       character-entities-legacy: 3.0.0
       character-reference-invalid: 2.0.1
-      decode-named-character-reference: 1.2.0
+      decode-named-character-reference: 1.3.0
       is-alphanumerical: 2.0.1
       is-decimal: 2.0.1
       is-hexadecimal: 2.0.1
@@ -9448,7 +9641,7 @@ snapshots:
       '@webgpu/types': 0.1.69
       '@xmldom/xmldom': 0.8.11
       earcut: 3.0.2
-      eventemitter3: 5.0.1
+      eventemitter3: 5.0.4
       gifuct-js: 2.1.2
       ismobilejs: 1.1.1
       parse-svg-path: 0.1.2
@@ -10267,7 +10460,7 @@ snapshots:
       - bare-abort-controller
       - react-native-b4a
 
-  tar@7.5.3:
+  tar@7.5.4:
     dependencies:
       '@isaacs/fs-minipass': 4.0.1
       chownr: 3.0.0

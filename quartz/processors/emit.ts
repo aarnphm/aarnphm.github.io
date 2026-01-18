@@ -26,7 +26,7 @@ export async function emitContent(ctx: BuildCtx, content: ProcessedContent[]) {
             if (ctx.argv.verbose) {
               console.log(`[emit:${emitter.name}] ${file}`)
             } else {
-              log.updateText(`${emitter.name} -> ${styleText("grey", file)}`)
+              log.updateText(`${emitter.name} -> ${styleText("gray", file)}`)
             }
           }
         } else {

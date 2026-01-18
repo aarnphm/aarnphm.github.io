@@ -47,6 +47,7 @@ export interface Sidenote extends Node {
   value: string
   children: PhrasingContent[]
   position?: { start: Point; end: Point }
+  properties?: Record<string, any>
 }
 
 export interface SidenoteReference extends Node {
@@ -54,6 +55,7 @@ export interface SidenoteReference extends Node {
   label: string
   labelNodes?: PhrasingContent[]
   children?: PhrasingContent[]
+  properties?: Record<string, any>
 }
 
 export interface SidenoteDefinition extends Node {

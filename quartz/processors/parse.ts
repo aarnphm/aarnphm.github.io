@@ -289,7 +289,7 @@ export async function parseMarkdown(ctx: BuildCtx, fps: FilePath[]): Promise<Pro
       textToMarkdownPromises.map(async (promise) => {
         const result = await promise
         processedFiles += result.length
-        log.updateText(`text->markdown ${styleText("grey", `${processedFiles}/${fps.length}`)}`)
+        log.updateText(`text->markdown ${styleText("gray", `${processedFiles}/${fps.length}`)}`)
         return result
       }),
     ).catch(errorHandler)
@@ -303,7 +303,7 @@ export async function parseMarkdown(ctx: BuildCtx, fps: FilePath[]): Promise<Pro
       markdownToHtmlPromises.map(async (promise) => {
         const result = await promise
         processedFiles += result.length
-        log.updateText(`markdown->html ${styleText("grey", `${processedFiles}/${fps.length}`)}`)
+        log.updateText(`markdown->html ${styleText("gray", `${processedFiles}/${fps.length}`)}`)
         return result
       }),
     ).catch(errorHandler)

@@ -123,7 +123,7 @@
     align-items: center;
     margin-right: 5px;
     text-transform: uppercase;
-    border-radius: 6px;
+    border-radius: var(--radius-6);
     padding: 2px 4px;
     display: inline;
     cursor: pointer;
@@ -216,7 +216,7 @@
       font-size: 0.9em;
       padding: 0.1em 0.3em;
       background: var(--lightgray);
-      border-radius: 3px;
+      border-radius: var(--radius-3);
     }
 
     strong {

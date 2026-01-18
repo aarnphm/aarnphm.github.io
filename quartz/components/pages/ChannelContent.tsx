@@ -8,8 +8,6 @@ import { classNames } from "../../util/lang"
 import type { ElementContent, Root } from "hast"
 import type { ComponentChild } from "preact"
 import style from "../styles/arena.scss"
-// @ts-ignore
-import modalScript from "../scripts/arena.inline"
 import { fromHtmlIsomorphic } from "hast-util-from-html-isomorphic"
 import { FullSlug, slugTag, resolveRelative } from "../../util/path"
 import { toArenaJsx, fromHtmlStringToArenaJsx, arenaBlockTimestamp } from "../../util/arena"
@@ -1011,7 +1009,6 @@ export default (() => {
   }
 
   ChannelContent.css = style
-  ChannelContent.afterDOMLoaded = modalScript
 
   return ChannelContent
 }) satisfies QuartzComponentConstructor

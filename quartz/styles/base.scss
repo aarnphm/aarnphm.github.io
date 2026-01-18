@@ -65,7 +65,7 @@ body {
 mark {
   background-color: var(--textHighlight);
   padding: 0 0.1rem;
-  border-radius: 5px;
+  border-radius: var(--radius-5);
   color: inherit;
 }
 
@@ -90,7 +90,7 @@ kbd {
   font-family: var(--codeFont);
   padding: 0 0.2rem;
   border: 1px solid var(--gray);
-  border-radius: 0px;
+  border-radius: var(--radius-none);
   line-height: 18px;
   width: fit-content;
 }
@@ -156,7 +156,7 @@ a {
 
     &:has(> img) {
       background-color: transparent;
-      border-radius: 0;
+      border-radius: var(--radius-none);
       padding: 0;
     }
 
@@ -258,7 +258,7 @@ input[type="checkbox"] {
   transform: translateY(2px);
   color: var(--secondary);
   border: 1px solid var(--lightgray);
-  border-radius: 3px;
+  border-radius: var(--radius-3);
   background-color: var(--light);
   position: relative;
   display: inline-block;
@@ -407,7 +407,7 @@ figure {
       padding: 0.1rem 0.5rem;
       border: 1px solid var(--lightgray);
       width: fit-content;
-      border-radius: 5px;
+      border-radius: var(--radius-5);
       margin-bottom: -0.5rem;
       color: var(--darkgray);
     }
@@ -421,7 +421,7 @@ figure {
 pre {
   font-family: var(--codeFont);
   padding: 0 0.5rem;
-  border-radius: 5px;
+  border-radius: var(--radius-5);
   overflow-x: auto;
   border: 1px solid var(--lightgray);
   position: relative;
@@ -450,7 +450,7 @@ pre {
 
     & [data-highlighted-chars] {
       background-color: var(--highlight);
-      border-radius: 5px;
+      border-radius: var(--radius-5);
     }
 
     & > [data-line] {
@@ -509,7 +509,7 @@ code {
 }
 
 :not(pre) > code {
-  border-radius: 0px;
+  border-radius: var(--radius-none);
   cursor: pointer;
 
   &:not([data-language]) {
@@ -563,7 +563,7 @@ tr {
 img {
   max-width: 100%;
   width: 100%;
-  border-radius: 5px;
+  border-radius: var(--radius-5);
   margin: 0;
   content-visibility: auto;
 }
@@ -588,7 +588,7 @@ hr {
 audio,
 video {
   width: 100%;
-  border-radius: 5px;
+  border-radius: var(--radius-5);
   margin: 4px 0;
 }
 
@@ -930,7 +930,7 @@ code,
 }
 
 iframe {
-  border-radius: var(--border-radius);
+  border-radius: var(--radius-12);
   border: 1px solid var(--lightgray);
   width: 100%;
 }

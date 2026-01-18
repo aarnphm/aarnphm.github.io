@@ -32,12 +32,12 @@
 #telescope#telescope blockquote {
   margin-left: 0;
   padding-left: 1rem;
-  border-left: 1px solid var(--telescope-text-color);
+  border-left: 1px solid var(--dark);
   display: block;
 }
 
 #telescope#telescope hr {
-  border: 0.5px solid var(--telescope-text-color);
+  border: 0.5px solid var(--dark);
   margin: 3px 0;
   display: block;
 }

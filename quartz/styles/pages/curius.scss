@@ -85,7 +85,7 @@ body[data-slug="curius"] {
 
   & .highlight {
     background: color-mix(in srgb, var(--tertiary) 60%, rgba(255, 255, 255, 0));
-    border-radius: 5px;
+    border-radius: var(--radius-5);
     scroll-margin-top: 2rem;
   }
 
@@ -338,7 +338,7 @@ svg.favorite-icon {
       white-space: nowrap;
       font-family: var(--bodyFont);
       box-sizing: border-box;
-      border-radius: 2px;
+      border-radius: var(--radius-sm);
       color: var(--dark);
       padding: 0.4rem 0.5rem;
       border: 1px solid var(--lightgray);
@@ -388,7 +388,7 @@ svg.favorite-icon {
         &:hover,
         &:focus {
           background-color: var(--lightgray);
-          border-radius: 5px;
+          border-radius: var(--radius-5);
           cursor: pointer;
         }
       }

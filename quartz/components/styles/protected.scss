@@ -35,7 +35,7 @@ body:has(.password-prompt-overlay[style*="display: flex"]) {
     min-width: 250px;
     padding: 2rem;
     border: 1px solid var(--lightgray);
-    border-radius: var(--border-radius);
+    border-radius: var(--radius-12);
     background-color: var(--light);
     box-shadow: var(--shadow-md);
 
@@ -59,7 +59,7 @@ body:has(.password-prompt-overlay[style*="display: flex"]) {
       background-color: var(--light);
       font-size: 1.1em;
       border: 1px solid var(--lightgray);
-      border-radius: 0;
+      border-radius: var(--radius-none);
       transition: border-color 0.2s ease;
 
       &:focus {
@@ -77,7 +77,7 @@ body:has(.password-prompt-overlay[style*="display: flex"]) {
       background: transparent;
       color: var(--dark);
       border: 1px solid var(--lightgray);
-      border-radius: 0;
+      border-radius: var(--radius-none);
       cursor: pointer;
       font-family: var(--bodyFont);
       font-size: 1em;

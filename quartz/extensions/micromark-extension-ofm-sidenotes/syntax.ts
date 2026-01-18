@@ -173,7 +173,7 @@ export function sidenote(): Extension {
       return contentStart
     }
 
-    function contentStart(code: Code): State | undefined {
+    function contentStart(_: Code): State | undefined {
       effects.enter("sidenoteContent")
       effects.enter("sidenoteContentChunk")
       return contentInside

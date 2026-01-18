@@ -141,7 +141,7 @@ a.min-links {
 
   &.internal {
     background-color: unset;
-    border-radius: 0;
+    border-radius: var(--radius-none);
     padding: 0;
   }
 }

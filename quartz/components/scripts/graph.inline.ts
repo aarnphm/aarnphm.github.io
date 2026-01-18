@@ -421,9 +421,9 @@ async function renderGraph(graph: HTMLElement, fullSlug: FullSlug) {
   stage.addChild(nodesContainer, labelsContainer, linkContainer)
 
   for (const simulationData of graphData.nodes) {
-    const { text, id: nodeId } = simulationData
+    const { text, id: label } = simulationData
 
-    const label = new Text({
+    const txt = new Text({
       interactive: false,
       eventMode: "none",
       text,
@@ -436,13 +436,13 @@ async function renderGraph(graph: HTMLElement, fullSlug: FullSlug) {
       },
       resolution: window.devicePixelRatio * 4,
     })
-    label.tint = labelTintBase
-    label.scale.set(defaultScale * zoomScale)
+    txt.tint = labelTintBase
+    txt.scale.set(defaultScale * zoomScale)
 
-    const isTagNode = nodeId.startsWith("tags/")
+    const isTagNode = label.startsWith("tags/")
     const gfx = new Graphics({
       interactive: true,
-      label: nodeId,
+      label,
       eventMode: "static",
       hitArea: new Circle(0, 0, nodeRadius(simulationData)),
       cursor: "pointer",
@@ -458,17 +458,15 @@ async function renderGraph(graph: HTMLElement, fullSlug: FullSlug) {
         if (!dragging) renderPixiFromD3()
       })
 
-    if (isTagNode) {
-      gfx.stroke({ width: 2, color: computedStyleMap["--tertiary"] })
-    }
+    if (isTagNode) gfx.stroke({ width: 1, color: computedStyleMap["--tertiary"] })
 
     nodesContainer.addChild(gfx)
-    labelsContainer.addChild(label)
+    labelsContainer.addChild(txt)
 
     nodeRenderData.push({
       simulationData,
       gfx,
-      label,
+      label: txt,
       color: color(simulationData),
       alpha: 1,
       active: false,

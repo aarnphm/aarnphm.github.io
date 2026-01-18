@@ -367,7 +367,8 @@ async function manageWranglerLoop(): Promise<void> {
   while (!shuttingDown) {
     const exists = await pathExists(publicDir)
     const now = Date.now()
-    const canStart = exists && wrangler === null && shouldRunWrangler() && now >= wranglerStartNotBefore
+    const canStart =
+      exists && wrangler === null && shouldRunWrangler() && now >= wranglerStartNotBefore
     if (canStart) {
       wrangler = startProcess(runtimeConfig.wranglerArgs, "wrangler")
       wrangler.on("exit", (code, signal) => {

@@ -310,9 +310,7 @@ export async function handleStats(argv) {
 
   console.log(styleText("cyan", "Vault stats"))
   console.log(`Path: ${absDir}`)
-  console.log(
-    `Files: ${files.length} (${mdFiles} markdown, ${files.length - mdFiles} other)`,
-  )
+  console.log(`Files: ${files.length} (${mdFiles} markdown, ${files.length - mdFiles} other)`)
   console.log(`Size: ${prettyBytes(totalBytes)} (${totalBytes} bytes)`)
   console.log(`Markdown: ${prettyBytes(mdBytes)} (${mdBytes} bytes)`)
   if (largestFile) {

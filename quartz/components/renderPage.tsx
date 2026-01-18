@@ -1087,6 +1087,7 @@ export function transcludeFinal(
       }
       const [inner] = node.children as Element[]
       const transcludeTarget = inner.properties["data-slug"] as FullSlug
+      if (visited.has(transcludeTarget)) return
       visited.add(transcludeTarget)
 
       const page = allFiles.find((f) => f.slug === transcludeTarget)

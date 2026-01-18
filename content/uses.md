@@ -3,9 +3,7 @@ comments: false
 date: "2024-01-22"
 description: Includes the tools I use, workflow,  etc.
 id: uses
-modified: 2025-12-18 04:21:59 GMT-05:00
-seealso:
-  - "[[are.na|are.na style links]]"
+modified: 2026-01-18 07:14:01 GMT-05:00
 tags:
   - technical
 title: uses.

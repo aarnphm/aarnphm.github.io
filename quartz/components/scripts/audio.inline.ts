@@ -172,7 +172,7 @@ class AudioPlayer {
     this.playButton.setAttribute("aria-label", "Play")
     this.playButton.setAttribute("aria-pressed", "false")
     // clear saved progress when finished
-    localStorage.removeItem(getStorageKey(this.audio.src))
+    localStorage.removeItem(`audio-progress:${this.audio.src}`)
   }
 
   private updateTimeDisplay(): void {

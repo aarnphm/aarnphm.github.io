@@ -1,4 +1,4 @@
-import { isFolderPath, resolveRelative } from "../util/path"
+import { resolveRelative } from "../util/path"
 import { QuartzPluginData } from "../plugins/vfile"
 import { Date as DateComponent, getDate } from "./Date"
 import {

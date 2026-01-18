@@ -38,7 +38,7 @@ metadata:
     letter        = "a".."z" ;
     digit         = "0".."9" ;
     character     = ? any printable ascii except newline ? ;
-modified: 2026-01-14 09:45:04 GMT-05:00
+modified: 2026-01-18 07:01:14 GMT-05:00
 tags:
   - fruit
   - evergreen

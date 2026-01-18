@@ -28,7 +28,7 @@
   transition: color 0.3s;
 
   &.fade-out {
-    color: var(--gray-200);
+    color: rgba(0, 0, 0, 0.2);
   }
 }
 
@@ -40,7 +40,7 @@ a[data-list] {
 
     &[data-tag] {
       &:hover {
-        color: var(--dag-highlights) !important;
+        color: var(--foam) !important;
       }
       & > .title {
         @include tinyCodeFonts;

@@ -10,7 +10,7 @@ blockquote:not([class~="is-collapsed"]) {
 .callout {
   border: 1px solid var(--border);
   background-color: var(--bg);
-  border-radius: 5px;
+  border-radius: var(--radius-5);
   padding: 0 1rem;
   overflow-y: hidden;
   box-sizing: border-box;
