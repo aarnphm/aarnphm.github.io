@@ -160,14 +160,6 @@ declare module "vfile" {
   }
 }
 
-async function fetchArxivMetadata(id: string): Promise<ArxivMeta> {
-  const normalized = normalizeArxivId(id)
-  const batch = await fetchArxivMetadataBatch([normalized])
-  const entry = batch.get(normalized)
-  if (!entry) throw new Error(`No entry returned for arXiv id ${id}`)
-  return entry
-}
-
 function chunkIds(ids: string[], size: number): string[][] {
   const chunks: string[][] = []
   for (let i = 0; i < ids.length; i += size) {

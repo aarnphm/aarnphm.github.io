@@ -27,7 +27,7 @@ import {
 import { clone } from "../util/clone"
 import { svgOptions, QuartzIcon } from "./svg"
 import { EXIT, visit } from "unist-util-visit"
-import { Root, Element, ElementContent, Node, Text } from "hast"
+import { Root, RootContent, Element, ElementContent, Node, Text } from "hast"
 import { i18n } from "../i18n"
 import { JSX } from "preact"
 import { headingRank } from "hast-util-heading-rank"
@@ -567,8 +567,10 @@ function computeChildNumber(parentNumber: string, index: number): string {
 function wrapTractatusItem(li: Element, numberLabel: string, depth: number): Element[] {
   const props = li.properties ?? (li.properties = {})
   const className = Array.isArray(props.className)
-    ? props.className
-    : props.className
+    ? props.className.filter((value): value is string | number => {
+        return typeof value === "string" || typeof value === "number"
+      })
+    : typeof props.className === "string" || typeof props.className === "number"
       ? [props.className]
       : []
   if (!className.includes("tractatus-item")) className.push("tractatus-item")
@@ -608,8 +610,10 @@ function wrapTractatusItem(li: Element, numberLabel: string, depth: number): Ele
 function processTractatusList(list: Element, parentNumber: string | null, depth: number): void {
   const props = list.properties ?? (list.properties = {})
   const className = Array.isArray(props.className)
-    ? props.className
-    : props.className
+    ? props.className.filter((value): value is string | number => {
+        return typeof value === "string" || typeof value === "number"
+      })
+    : typeof props.className === "string" || typeof props.className === "number"
       ? [props.className]
       : []
   if (!className.includes("tractatus-list")) className.push("tractatus-list")
@@ -640,7 +644,7 @@ function processTractatusList(list: Element, parentNumber: string | null, depth:
 }
 
 function applyTractatusLayout(root: Root): void {
-  const walk = (node: ElementContent, inMeta: boolean, inList: boolean): void => {
+  const walk = (node: RootContent, inMeta: boolean, inList: boolean): void => {
     if (node.type !== "element") return
     const element = node as Element
     const nextMeta = inMeta || isMetaSection(element)

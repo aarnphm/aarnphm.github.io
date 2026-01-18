@@ -397,6 +397,20 @@ export const Arena: QuartzTransformerPlugin = () => {
               return result
             }
 
+            const normalizeChannelMetadata = (
+              metadata: Record<string, unknown>,
+            ): Record<string, string | boolean> => {
+              const normalized: Record<string, string | boolean> = {}
+              for (const [key, value] of Object.entries(metadata)) {
+                if (typeof value === "string" || typeof value === "boolean") {
+                  normalized[key] = value
+                } else if (typeof value === "number" && Number.isFinite(value)) {
+                  normalized[key] = String(value)
+                }
+              }
+              return normalized
+            }
+
             const parseBlock = (li: Element, depth = 0): ArenaBlock | null => {
               const textContent = getTextContentExcludingNestedUl(li)
 
@@ -473,7 +487,7 @@ export const Arena: QuartzTransformerPlugin = () => {
                   block.metadata = meta.metadata
 
                   const coordValue = block.metadata?.coord
-                  if (coordValue) {
+                  if (typeof coordValue === "string" && coordValue.length > 0) {
                     const parsedCoords = parseCoordinateMetadata(coordValue)
                     if (parsedCoords) {
                       block.coordinates = parsedCoords
@@ -483,16 +497,32 @@ export const Arena: QuartzTransformerPlugin = () => {
 
                   const pinnedValue = block.metadata?.pinned
                   if (pinnedValue !== undefined && depth === 0) {
-                    const normalizedPinned = pinnedValue.toLowerCase().trim()
+                    const normalizedPinned =
+                      typeof pinnedValue === "string"
+                        ? pinnedValue.toLowerCase().trim()
+                        : pinnedValue === true
+                          ? "true"
+                          : pinnedValue === false
+                            ? "false"
+                            : undefined
                     if (normalizedPinned === "true" || normalizedPinned === "yes") {
                       block.pinned = true
+                      delete block.metadata?.pinned
+                    } else if (normalizedPinned === "false" || normalizedPinned === "no") {
                       delete block.metadata?.pinned
                     }
                   }
 
                   const laterValue = block.metadata?.later
                   if (laterValue !== undefined && depth === 0) {
-                    const normalizedLater = laterValue.toLowerCase().trim()
+                    const normalizedLater =
+                      typeof laterValue === "string"
+                        ? laterValue.toLowerCase().trim()
+                        : laterValue === true
+                          ? "true"
+                          : laterValue === false
+                            ? "false"
+                            : undefined
                     if (normalizedLater === "true" || normalizedLater === "yes") {
                       block.later = true
                       delete block.metadata?.later
@@ -503,7 +533,12 @@ export const Arena: QuartzTransformerPlugin = () => {
 
                   const importanceValue = block.metadata?.importance
                   if (importanceValue !== undefined) {
-                    const parsed = Number.parseFloat(importanceValue)
+                    const parsed =
+                      typeof importanceValue === "number"
+                        ? importanceValue
+                        : typeof importanceValue === "string"
+                          ? Number.parseFloat(importanceValue)
+                          : Number.NaN
                     if (!Number.isNaN(parsed) && Number.isFinite(parsed)) {
                       block.importance = parsed
                     }
@@ -892,7 +927,10 @@ export const Arena: QuartzTransformerPlugin = () => {
 
                   const channelMeta = extractMetadataFromList(ulElement)
                   if (channelMeta.metadata) {
-                    currentChannel.metadata = channelMeta.metadata
+                    const normalizedMeta = normalizeChannelMetadata(channelMeta.metadata)
+                    if (Object.keys(normalizedMeta).length > 0) {
+                      currentChannel.metadata = normalizedMeta
+                    }
                   }
                   if (channelMeta.tags) {
                     currentChannel.tags = channelMeta.tags

@@ -18,6 +18,42 @@ import type {
   SidenoteReference,
 } from "../../extensions/micromark-extension-ofm-sidenotes"
 
+const isSidenoteNode = (node: Node): node is Sidenote | SidenoteReference =>
+  node.type === "sidenote" || node.type === "sidenoteReference"
+
+const isHastElement = (node: Node): node is HastElement => node.type === "element"
+
+const readString = (value: unknown): string | undefined => (typeof value === "string" ? value : undefined)
+
+const readNumber = (value: unknown): number | undefined =>
+  typeof value === "number" && Number.isFinite(value) ? value : undefined
+
+const readBoolean = (value: unknown): boolean | undefined =>
+  typeof value === "boolean" ? value : undefined
+
+const readStringArray = (value: unknown): string[] | undefined =>
+  Array.isArray(value) && value.every((item) => typeof item === "string") ? value : undefined
+
+const getClassNameList = (value: unknown): string[] => {
+  if (Array.isArray(value)) {
+    return value.filter((entry): entry is string => typeof entry === "string")
+  }
+  if (typeof value === "string") return [value]
+  return []
+}
+
+const findChildByClass = (
+  children: ElementContent[],
+  className: string,
+): HastElement | undefined => {
+  for (const child of children) {
+    if (!isHastElement(child)) continue
+    const classList = getClassNameList(child.properties?.className)
+    if (classList.includes(className)) return child
+  }
+  return undefined
+}
+
 export const Sidenotes: QuartzTransformerPlugin = () => {
   return {
     name: "Sidenotes",
@@ -32,7 +68,9 @@ export const Sidenotes: QuartzTransformerPlugin = () => {
         () => (tree: MdastRoot, file: VFile) => {
           let counter = 0
 
-          visit(tree, ["sidenote", "sidenoteReference"], (node: Sidenote | SidenoteReference) => {
+          visit(tree, (node: Node) => {
+            if (!isSidenoteNode(node)) return
+
             const sidenoteId = ++counter
             const baseId = buildSidenoteDomId(file, sidenoteId)
 
@@ -54,9 +92,9 @@ export const Sidenotes: QuartzTransformerPlugin = () => {
                 allowRight,
                 internal: props.internal,
                 label: parsed.label || "",
-              } as Record<string, any>
-            } else if (node.type === "sidenoteReference") {
-              node.data = { ...node.data, sidenoteId, baseId } as Record<string, any>
+              }
+            } else {
+              node.data = { ...node.data, sidenoteId, baseId }
             }
           })
         },
@@ -68,67 +106,67 @@ export const Sidenotes: QuartzTransformerPlugin = () => {
           return (tree: HastRoot, file: VFile) => {
             const definitions = new Map<string, ElementContent[]>()
 
-            visit(tree, "element", (node, index, parent) => {
-              if (node.properties?.dataType === "sidenote-def") {
-                const label = node.properties.label as string
-                const contentDiv = node.children[1] as HastElement
-                if (contentDiv && label) {
-                  definitions.set(label, contentDiv.children)
-                }
+            visit(tree, (node, index, parent) => {
+              if (!isHastElement(node)) return
 
-                if (parent && typeof index === "number") {
+              const dataType = readString(node.properties?.dataType)
+              if (dataType !== "sidenote-def") return
+
+              const label = readString(node.properties?.label)
+              const contentDiv = node.children[1]
+              if (label && contentDiv && isHastElement(contentDiv)) {
+                definitions.set(label, contentDiv.children)
+              }
+
+              if (parent && "children" in parent && Array.isArray(parent.children)) {
+                if (typeof index === "number") {
                   parent.children.splice(index, 1)
                   return index
                 }
               }
             })
 
-            visit(
-              tree,
-              (node): node is Node =>
-                node.type === "element" &&
-                (node.properties?.dataType === "sidenote" ||
-                  node.properties?.dataType === "sidenote-ref"),
-              (node: Sidenote | SidenoteReference, index, parent) => {
-                if (index === undefined || !parent) return
+            visit(tree, (node, index, parent) => {
+              if (!isHastElement(node)) return
+              if (!parent || typeof index !== "number") return
 
-                const {
-                  sidenoteId,
-                  baseId,
-                  forceInline,
-                  allowLeft,
-                  allowRight,
-                  label: labelRaw,
-                  internal: internalLinks,
-                } = node.properties
+              const dataType = readString(node.properties?.dataType)
+              if (dataType !== "sidenote" && dataType !== "sidenote-ref") return
 
-                const labelContainer = node.children!.find((c: any) =>
-                  c.properties?.className?.includes("sidenote-label-hast"),
-                ) as HastElement | undefined
+              const props = node.properties ?? {}
+              const labelRaw = readString(props.label) ?? ""
+              const labelContainer = findChildByClass(node.children, "sidenote-label-hast")
+              const contentContainer = findChildByClass(node.children, "sidenote-content-hast")
 
-                const contentContainer = node.children!.find((c: any) =>
-                  c.properties?.className?.includes("sidenote-content-hast"),
-                ) as HastElement | undefined
+              const labelHast = labelContainer?.children ?? []
+              let contentHast: ElementContent[] = []
 
-                const labelHast = labelContainer?.children ?? []
-                let contentHast: ElementContent[] = []
-
-                if (node.properties.dataType === "sidenote-ref") {
-                  const defContent = definitions.get(labelRaw)
-                  if (defContent) {
-                    contentHast = defContent
-                  } else {
-                    contentHast = [{ type: "text", value: "[Missing definition]" }]
-                  }
+              if (dataType === "sidenote-ref") {
+                const defContent = definitions.get(labelRaw)
+                if (defContent) {
+                  contentHast = defContent
                 } else {
-                  contentHast = contentContainer?.children ?? []
+                  contentHast = [{ type: "text", value: "[Missing definition]" }]
                 }
+              } else {
+                contentHast = contentContainer?.children ?? []
+              }
 
-                const internal = renderInternalLinks(internalLinks, file, ctx)
-                const combinedContent = [...contentHast, ...internal]
+              const internalLinks =
+                readStringArray(props.internal) ??
+                (typeof props.internal === "string" ? [props.internal] : undefined)
+              const internal = renderInternalLinks(internalLinks, file, ctx)
+              const combinedContent = [...contentHast, ...internal]
 
-                const finalLabel = labelHast.length > 0 ? labelHast : deriveLabel(labelRaw)
+              const finalLabel = labelHast.length > 0 ? labelHast : deriveLabel(labelRaw)
+              const resolvedSidenoteId = readNumber(props.sidenoteId) ?? 0
+              const resolvedBaseId =
+                readString(props.baseId) ?? buildSidenoteDomId(file, resolvedSidenoteId)
+              const forceInline = readBoolean(props.forceInline) ?? false
+              const allowLeft = readBoolean(props.allowLeft)
+              const allowRight = readBoolean(props.allowRight)
 
+              if ("children" in parent && Array.isArray(parent.children)) {
                 parent.children.splice(
                   index,
                   1,
@@ -138,13 +176,13 @@ export const Sidenotes: QuartzTransformerPlugin = () => {
                     allowLeft !== false,
                     allowRight !== false,
                     combinedContent,
-                    sidenoteId as number,
-                    baseId as string,
+                    resolvedSidenoteId,
+                    resolvedBaseId,
                   ),
                 )
                 return index
-              },
-            )
+              }
+            })
           }
         },
       ]
@@ -216,7 +254,8 @@ function renderInternalLinks(
   const interleaved: ElementContent[] = []
   links.forEach((link, idx) => {
     if (idx > 0) {
-      interleaved.push({ type: "text", value: ", " } as HastText)
+      const comma: HastText = { type: "text", value: ", " }
+      interleaved.push(comma)
     }
     interleaved.push(link)
   })
@@ -278,7 +317,7 @@ function buildSidenoteHast(
   const labelElement = h(
     "span.sidenote-label",
     hasLabel ? labelProps : { ...labelProps, "data-auto": "" },
-    hasLabel ? [...label, arrowDownSvg] : [{ type: "text", value: "▪" } as HastText, arrowDownSvg],
+    hasLabel ? [...label, arrowDownSvg] : [{ type: "text", value: "▪" }, arrowDownSvg],
   )
 
   const dataAttrs: Record<string, string> = {
@@ -300,9 +339,7 @@ function buildSidenoteHast(
       "data-sidenote-for": baseId,
       "aria-hidden": "true",
     },
-    combinedContent.length > 0
-      ? combinedContent
-      : ([{ type: "text", value: "" }] as ElementContent[]),
+    combinedContent.length > 0 ? combinedContent : [{ type: "text", value: "" }],
   )
 
   return [sidenoteElement, contentElement]

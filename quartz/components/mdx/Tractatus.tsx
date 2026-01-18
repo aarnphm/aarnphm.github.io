@@ -29,7 +29,7 @@ const isVNodeOf = <T,>(node: ComponentChildren, component: ComponentType<T>): no
 
 const normalizeChildren = (children?: ComponentChildren): ComponentChildren[] =>
   toChildArray(children).filter((child) => {
-    if (child === null || child === undefined || child === false) return false
+    if (child === null || child === undefined) return false
     if (typeof child === "string") return child.trim() !== ""
     return true
   })

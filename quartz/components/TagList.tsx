@@ -24,6 +24,25 @@ export default (() => {
 
       return `/${link.slug}${link.anchor ?? ""}`
     }
+
+    const isRecord = (value: unknown): value is Record<string, unknown> =>
+      typeof value === "object" && value !== null
+
+    const normalizeSocialLink = (value: unknown): string => {
+      if (typeof value === "string") return value
+      if (typeof value === "number" || typeof value === "boolean") return String(value)
+      if (value && typeof value === "object" && "toString" in value) {
+        const candidate = value.toString
+        if (typeof candidate === "function") {
+          return candidate.call(value)
+        }
+      }
+      return ""
+    }
+
+    const socialsEntries = isRecord(fileData.frontmatter?.socials)
+      ? Object.entries(fileData.frontmatter.socials)
+      : []
     if (tags && tags.length > 0) {
       return (
         <menu class={classNames(displayClass, "tags")}>
@@ -57,12 +76,12 @@ export default (() => {
               })}
             </ul>
           </li>
-          {fileData.frontmatter?.socials && (
+          {socialsEntries.length > 0 && (
             <li class="socials">
               <h2>média</h2>
               <ul>
-                {Object.entries(fileData.frontmatter?.socials).map(([social, link]) => {
-                  const linkValue = typeof link === "string" ? link : (link?.toString?.() ?? "")
+                {socialsEntries.map(([social, link]) => {
+                  const linkValue = normalizeSocialLink(link)
                   const wikiLink = linkLookup?.[linkValue]
                   const isInternal = Boolean(wikiLink) || linkValue.startsWith("/")
                   const href = wikiLink ? buildHref(wikiLink) : linkValue

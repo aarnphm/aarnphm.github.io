@@ -46,6 +46,9 @@ export interface MasonryImage {
   height: number
 }
 
+const isHastNode = (value: unknown): value is Node =>
+  typeof value === "object" && value !== null && "type" in value
+
 export const Masonry: QuartzEmitterPlugin<Partial<FullPageLayout>> = (userOpts) => {
   const filteredHeader = sharedPageComponents.header.filter((component) => {
     const name = component.displayName || component.name || ""
@@ -263,7 +266,7 @@ async function processMasonry(
       if (!resolved) continue
 
       const referencedFile = allFiles.find((f) => f.slug === resolved.slug)
-      if (!referencedFile?.tree) continue
+      if (!referencedFile?.tree || !isHastNode(referencedFile.tree)) continue
 
       const refImages = await extractImagesFromTree(referencedFile.tree, ctx.argv.directory)
       referencedImages.push(...refImages)

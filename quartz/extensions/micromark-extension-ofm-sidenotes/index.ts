@@ -1,5 +1,4 @@
 import type { Processor } from "unified"
-import type { Root } from "mdast"
 import type { Extension as MicromarkExtension } from "micromark-util-types"
 import type { Extension as MdastExtension } from "mdast-util-from-markdown"
 import { sidenote } from "./syntax"
@@ -15,7 +14,7 @@ export interface RemarkSidenoteOptions {
   mdastExtensions?: MdastExtension[]
 }
 
-export function remarkSidenote(this: Processor<Root>, options: RemarkSidenoteOptions = {}): void {
+export function remarkSidenote(this: Processor, options: RemarkSidenoteOptions = {}): void {
   const data = this.data()
 
   const micromarkExtensions = (data.micromarkExtensions ||
