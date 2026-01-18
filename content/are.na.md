@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-01-18 16:08:12 GMT-05:00
+modified: 2026-01-18 16:32:26 GMT-05:00
 permalinks:
   - /website
   - /tweets
@@ -143,6 +143,14 @@ title: are.na
 - [meta]:
   - view: list
 
+- https://x.com/0xluffy/status/2007140595043889254?s=20 -- boyfriend 101
+  - [meta]:
+    - date: 01/18/2026
+    - tags: [advice, column]
+- https://x.com/hantengri/status/2012710088679489887 -- How to fix your entire life in one day
+  - [meta]:
+    - date: 01/18/2026
+    - tags: [sarcasm]
 - https://x.com/_xjdr/status/2012353724165791765 -- The power of codex and open source is just to do it yourself
   - [meta]:
     - date: 01/17/2026

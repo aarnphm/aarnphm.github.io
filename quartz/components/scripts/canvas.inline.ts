@@ -748,7 +748,7 @@ async function renderCanvas(container: HTMLElement) {
       .attr("fill", "var(--gray)")
 
     const node = nodeGroup
-      .selectAll("g.node")
+      .selectAll<SVGGElement, NodeData>("g.node")
       .data(regularNodes)
       .join("g")
       .attr("class", (d) => `node node-${d.type}`)

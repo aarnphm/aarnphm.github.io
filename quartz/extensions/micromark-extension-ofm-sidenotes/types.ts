@@ -68,5 +68,21 @@ export interface SidenoteDefinition extends Node {
 declare module "mdast" {
   interface Data {
     sidenoteParsed?: SidenoteData
+    sidenoteId?: number
+    baseId?: string
+    forceInline?: boolean
+    allowLeft?: boolean
+    allowRight?: boolean
+    internal?: string | string[]
+    label?: string
+  }
+
+  interface StaticPhrasingContentMap {
+    sidenote: Sidenote
+    sidenoteReference: SidenoteReference
+  }
+
+  interface StaticBlockContentMap {
+    sidenoteDefinition: SidenoteDefinition
   }
 }

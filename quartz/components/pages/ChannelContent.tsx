@@ -393,7 +393,11 @@ export default (() => {
       const isPinned = block.pinned ?? false
       const youtubeEmbed = block.url ? buildYouTubeEmbed(block.url) : undefined
       const accessedRaw =
-        block.metadata?.accessed ?? block.metadata?.accessed_date ?? block.metadata?.date
+        (typeof block.metadata?.accessed === "string" ? block.metadata.accessed : undefined) ??
+        (typeof block.metadata?.accessed_date === "string"
+          ? block.metadata.accessed_date
+          : undefined) ??
+        (typeof block.metadata?.date === "string" ? block.metadata.date : undefined)
       const accessed = accessedRaw ? normalizeDate(accessedRaw) : undefined
       const displayUrl =
         block.url ??
@@ -431,7 +435,8 @@ export default (() => {
           "socials",
         ])
         const additionalEntries = Object.entries(block.metadata)
-          .filter(([key, value]) => {
+          .filter((entry): entry is [string, string] => {
+            const [key, value] = entry
             if (typeof value !== "string" || value.trim().length === 0) return false
             if (consumedKeys.has(key.toLowerCase())) return false
             return true

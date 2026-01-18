@@ -2,7 +2,7 @@
 date: "2025-12-12"
 description: on futurism and longtermism
 id: Clark's three laws
-modified: 2026-01-08 14:32:31 GMT-05:00
+modified: 2026-01-18 16:36:58 GMT-05:00
 tags:
   - pattern
   - longtermism
@@ -30,7 +30,7 @@ this is considered strong AI by any [[thoughts/functionalism|functional]] defini
 
 - synthesize knowledge across domains
 - understand arbitrary intellectual tasks expressible in natural language
-- improve through feedback loops (RLHF, constitutional #ai, iterative refinement)
+- improve through feedback loops (RLHF, constitutional AI, iterative refinement)
 
 > [!note] concepts
 >
