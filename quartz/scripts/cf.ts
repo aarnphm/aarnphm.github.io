@@ -33,13 +33,11 @@ function parseMdLfsPatterns(gitattributesPath: string): string[] {
     const attrs = parts.slice(1).join(" ")
 
     // Only consider patterns that look like they target Markdown files
-    const isMarkdown = /(^|\/)\*?\*?[^\s]*\.md(x)?(\b|$)/i.test(pattern)
+    const isMarkdown = /(^|\/)\*?\*?[^\s]*\.md(x)?(\b|$)/i.test(pattern!)
     // Only consider entries that reference LFS in any attribute
     const mentionsLfs = /(^|\s)(filter=lfs|diff=lfs|merge=lfs|lfs)(\s|$)/i.test(attrs)
 
-    if (isMarkdown && mentionsLfs) {
-      patterns.push(pattern)
-    }
+    if (isMarkdown && mentionsLfs) patterns.push(pattern!)
   }
   return patterns
 }

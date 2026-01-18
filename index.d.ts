@@ -10,6 +10,7 @@ interface CustomEventMap {
   themechange: CustomEvent<{ theme: "light" | "dark" }>
   readermodechange: CustomEvent<{ mode: "on" | "off" }>
 
+  slidechange: CustomEvent<{}>
   toast: CustomEvent<import("./quartz/components/scripts/toast").ToastEventDetail>
   collapsibletoggle: CustomEvent<{ toggleId: string; isOpen: "true" | "false" }>
   commentauthorupdated: CustomEvent<{ oldAuthor: string; newAuthor: string }>

@@ -7,7 +7,7 @@ $sidenote-surface-muted: var(--lightgray);
 $sidenote-border-color: var(--gray);
 $sidenote-width: 17rem;
 $sidenote-spacing: 1rem;
-$sidenote-border-radius: 0.2rem;
+$sidenote-border-radius: var(--radius-3-2);
 $sidenote-transition:
   border-color 0.2s ease,
   background-color 0.2s ease;
@@ -16,8 +16,8 @@ $sidenote-inline-font-size-mobile: 0.85em;
 $sidenote-code-font-size: 0.85em;
 $sidenote-offset-right: $sidenote-width + calc(3 * $sidenote-spacing);
 $sidenote-offset-left: $sidenote-width + calc(3 * $sidenote-spacing);
-$sidenote-label-border-width: 0.2rem;
-$sidenote-content-border-width: 0.075rem;
+$sidenote-label-border-width: 2px;
+$sidenote-content-border-width: 1px;
 
 @mixin media-query($query) {
   @media all and #{$query} {

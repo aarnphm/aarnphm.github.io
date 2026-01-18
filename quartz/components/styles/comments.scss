@@ -7,13 +7,13 @@ main {
   .gsc-comment-box-write,
   .rounded-md,
   .gsc-comment-box-textarea {
-    border-radius: 0rem;
+    border-radius: var(--radius-none);
   }
 
   .rounded-t,
   .rounded-md,
   .gsc-comment-box-textarea-extras {
-    border-radius: 0rem !important;
+    border-radius: var(--radius-none) !important;
     border-start-end-radius: 0rem !important;
     border-start-start-radius: 0rem !important;
   }

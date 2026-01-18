@@ -47,7 +47,7 @@ footer {
     text-decoration: underline;
     text-decoration-thickness: from-font;
     transition: none;
-    border-radius: 0;
+    border-radius: var(--radius-none);
     background-color: inherit;
   }
 }

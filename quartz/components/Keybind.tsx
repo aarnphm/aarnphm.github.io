@@ -17,6 +17,8 @@ export const KeybindAlias = {
   "cmd+/": "recherche",
   "cmd+\\": "page d'accueil",
   "cmd+j": "curius",
+  "cmd+.": "arena",
+  "cmd+i": "stream",
   "cmd+b": "lecteur",
   "cmd+g": "graphique",
   "cmd+o": "opener",

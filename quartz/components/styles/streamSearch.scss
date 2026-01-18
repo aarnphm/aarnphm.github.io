@@ -18,7 +18,7 @@
   padding: 0.5rem 0.75rem;
   font-size: 0.9rem;
   border: 1px solid var(--lightgray);
-  border-radius: 6px;
+  border-radius: var(--radius-6);
   background: var(--light);
   color: var(--dark);
   font-family: inherit;
@@ -51,7 +51,7 @@
     color: var(--dark);
     font-weight: 500;
     padding: 0.05em 0.15em;
-    border-radius: 2px;
+    border-radius: var(--radius-sm);
   }
 }
 

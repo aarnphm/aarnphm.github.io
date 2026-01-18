@@ -279,6 +279,28 @@ export function renderApprovalDialog(request: Request, options: ApprovalDialogOp
   --foam: rgb(67, 133, 190);
   --highlight: rgb(218, 216, 206);
   --card-shadow: 0 14px 50px rgba(27, 33, 48, 0.12), 0 10px 30px rgba(27, 33, 48, 0.16);
+  --radius-none: 0;
+  --radius-1: 1px;
+  --radius-2: 2px;
+  --radius-3: 3px;
+  --radius-3-2: 0.2rem;
+  --radius-4: 4px;
+  --radius-5: 5px;
+  --radius-6: 6px;
+  --radius-7-2: 0.45rem;
+  --radius-8: 8px;
+  --radius-12: 12px;
+  --radius-13: 13px;
+  --radius-14: 14px;
+  --radius-16: 16px;
+  --radius-24: 24px;
+  --radius-full: 9999px;
+  --radius-circle: 50%;
+  --radius-circle-full: 100%;
+  --radius-sm: var(--radius-2);
+  --radius-md: var(--radius-4);
+  --radius-lg: var(--radius-8);
+  --radius-xl: var(--radius-16);
 }
 body {
   font-family: "PP Neue Montreal", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
@@ -298,7 +320,7 @@ body {
 }
 .card {
   background-color: var(--light);
-  border-radius: 0px;
+  border-radius: var(--radius-none);
   border: 1px solid var(--lightgray);
   box-shadow: var(--card-shadow);
   padding: 2rem;
@@ -312,7 +334,7 @@ body {
   width: 48px;
   height: 48px;
   margin-right: 1rem;
-  border-radius: 0px;
+  border-radius: var(--radius-none);
   object-fit: contain;
 }
 .title {
@@ -333,7 +355,7 @@ body {
 }
 .client-info {
   border: 1px solid var(--lightgray);
-  border-radius: 0px;
+  border-radius: var(--radius-none);
   padding: 1rem 1rem 0.5rem;
   margin-bottom: 1.5rem;
   background-color: rgba(255, 255, 255, 0.3);
@@ -378,7 +400,7 @@ body {
 }
 .button {
   padding: 0.75rem 1.5rem;
-  border-radius: 0px;
+  border-radius: var(--radius-none);
   font-weight: 500;
   cursor: pointer;
   border: none;

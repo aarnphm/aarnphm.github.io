@@ -1160,7 +1160,7 @@ async function renderCanvas(container: HTMLElement) {
         .style("visibility", "hidden")
         .style("background", "var(--light)")
         .style("border", "1px solid var(--border)")
-        .style("border-radius", "4px")
+        .style("border-radius", "var(--radius-md)")
         .style("padding", "8px")
         .style("max-width", "300px")
         .style("z-index", "1000")

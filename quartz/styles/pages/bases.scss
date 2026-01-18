@@ -77,7 +77,7 @@
         padding: 0.1rem 0.4rem;
         background: var(--highlight);
         border: 1px solid var(--lightgray);
-        border-radius: 4px;
+        border-radius: var(--radius-md);
         font-size: 0.85em;
         color: var(--darkgray);
         white-space: nowrap;
@@ -92,7 +92,7 @@
 
       .base-checkbox {
         --checkbox-size: 15px;
-        --checkbox-radius: 4px;
+        --checkbox-radius: var(--radius-md);
         --checkbox-border-color: var(--gray);
         --checkbox-border-color-hover: var(--darkgray);
         --checkbox-color: var(--secondary);
@@ -270,7 +270,7 @@
   flex-direction: column;
   background: var(--light);
   border: 1px solid var(--lightgray);
-  border-radius: 8px;
+  border-radius: var(--radius-lg);
   overflow: hidden;
   transition: all 0.2s ease;
   height: 100%;
@@ -398,7 +398,7 @@
 .base-map {
   height: var(--base-map-height, calc(100vh - 150px));
   min-height: 400px;
-  border-radius: 5px;
+  border-radius: var(--radius-5);
   overflow: hidden;
   position: relative;
   border: 1px solid var(--lightgray);
@@ -442,7 +442,7 @@
 
 .mapboxgl-popup-content {
   padding: 0;
-  border-radius: 5px;
+  border-radius: var(--radius-5);
   box-shadow:
     0 4px 12px rgba(27, 33, 48, 0.12),
     0 2px 6px rgba(27, 33, 48, 0.08);
@@ -529,7 +529,7 @@
     transition:
       transform 0.1s ease-out,
       box-shadow 0.1s ease-out;
-    border-radius: 2px 6px 6px 2px;
+    border-radius: var(--radius-sm) var(--radius-6) var(--radius-6) var(--radius-sm);
     box-shadow:
       inset 1px 1px 0 1px rgba(255, 255, 255, 0.2),
       inset 0 0 0 1px rgba(0, 0, 0, 0.1),

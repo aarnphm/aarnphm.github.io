@@ -26,51 +26,53 @@ export class MarkdownEditor {
   private view: EditorView
 
   constructor(config: MarkdownEditorConfig) {
-    const customKeymap = Prec.highest(keymap.of([
-      {
-        key: "Mod-Enter",
-        run: () => {
-          config.onSubmit?.()
-          return true
-        },
-      },
-      {
-        key: "Escape",
-        run: () => {
-          config.onCancel?.()
-          return true
-        },
-      },
-      {
-        key: "Ctrl-n",
-        run: (view) => {
-          if (completionStatus(view.state) === "active") {
-            moveCompletionSelection(true)(view)
+    const customKeymap = Prec.highest(
+      keymap.of([
+        {
+          key: "Mod-Enter",
+          run: () => {
+            config.onSubmit?.()
             return true
-          }
-          return false
+          },
         },
-      },
-      {
-        key: "Ctrl-p",
-        run: (view) => {
-          if (completionStatus(view.state) === "active") {
-            moveCompletionSelection(false)(view)
+        {
+          key: "Escape",
+          run: () => {
+            config.onCancel?.()
             return true
-          }
-          return false
+          },
         },
-      },
-      {
-        key: "Ctrl-d",
-        run: (view) => {
-          if (completionStatus(view.state) === "active") {
-            return togglePreview(view)
-          }
-          return false
+        {
+          key: "Ctrl-n",
+          run: (view) => {
+            if (completionStatus(view.state) === "active") {
+              moveCompletionSelection(true)(view)
+              return true
+            }
+            return false
+          },
         },
-      },
-    ]))
+        {
+          key: "Ctrl-p",
+          run: (view) => {
+            if (completionStatus(view.state) === "active") {
+              moveCompletionSelection(false)(view)
+              return true
+            }
+            return false
+          },
+        },
+        {
+          key: "Ctrl-d",
+          run: (view) => {
+            if (completionStatus(view.state) === "active") {
+              return togglePreview(view)
+            }
+            return false
+          },
+        },
+      ]),
+    )
 
     const updateListener = EditorView.updateListener.of((update) => {
       if (update.docChanged && config.onChange) {

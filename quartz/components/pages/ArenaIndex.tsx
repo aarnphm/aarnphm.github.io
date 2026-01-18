@@ -9,7 +9,7 @@ import style from "../styles/arena.scss"
 import { classNames } from "../../util/lang"
 import { toArenaHeadingInlineJsx, toArenaJsx, arenaBlockTimestamp } from "../../util/arena"
 // @ts-ignore
-import modalScript from "../scripts/arena.inline"
+import script from "../scripts/arena.inline"
 import type { ComponentChild } from "preact"
 import { createWikilinkRegex, parseWikilink, resolveWikilinkTarget } from "../../util/wikilinks"
 
@@ -279,7 +279,7 @@ export default (() => {
   }
 
   ArenaIndex.css = style
-  ArenaIndex.afterDOMLoaded = modalScript
+  ArenaIndex.afterDOMLoaded = script
 
   return ArenaIndex
 }) satisfies QuartzComponentConstructor

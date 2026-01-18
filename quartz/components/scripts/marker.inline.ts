@@ -1,40 +1,50 @@
 import { annotate } from "rough-notation"
 import type { RoughAnnotation } from "rough-notation/lib/model"
 
-// map intensity levels to colors
-var intensityColors: Record<string, string> = {
-  h1: "rgb(209, 77, 65)", // --rose
-  h2: "rgb(218, 112, 44)", // --love
-  h3: "rgb(135, 154, 57)", // --lime
-  h4: "rgb(208, 162, 21)", // --gold
-  h5: "rgb(58, 169, 159)", // --pine
-  h6: "rgb(67, 133, 190)", // --foam
-  h7: "rgb(139, 126, 200)", // --iris
-}
+let annotations: RoughAnnotation[] = []
 
-var annotations: RoughAnnotation[] = []
-
-async function setupMarkers() {
-  // clean up previous annotations
+function cleanup() {
   annotations.forEach((annotation) => annotation.remove())
   annotations = []
+}
 
-  // find all marker elements
-  var markers = document.querySelectorAll<HTMLDivElement>(".marker")
+function setupMarkers() {
+  cleanup()
+  window.addCleanup(cleanup)
 
-  markers.forEach((marker) => {
-    // extract intensity level from class (marker-h1, marker-h2, etc.)
-    var classList = Array.from(marker.classList)
-    var intensityClass = classList.find((cls) => cls.startsWith("marker-h"))
+  const markers = document.querySelectorAll<HTMLDivElement>(".marker")
+  if (markers.length === 0) return
 
-    if (!intensityClass) return
+  const cssVars = ["--rose", "--love", "--lime", "--gold", "--pine", "--foam", "--iris"] as const
 
-    var intensity = intensityClass.replace("marker-", "")
-    var color = intensityColors[intensity] || intensityColors["h1"]
+  const style = getComputedStyle(document.documentElement)
+  const computedStyleMap = cssVars.reduce(
+    (acc, key) => {
+      acc[key] = style.getPropertyValue(key)
+      return acc
+    },
+    {} as Record<(typeof cssVars)[number], string>,
+  )
 
-    // create rough notation annotation
-    var annotation = annotate(marker, {
-      type: "bracket",
+  const intensityColors: Record<string, string> = {
+    h1: computedStyleMap["--rose"],
+    h2: computedStyleMap["--love"],
+    h3: computedStyleMap["--lime"],
+    h4: computedStyleMap["--gold"],
+    h5: computedStyleMap["--pine"],
+    h6: computedStyleMap["--foam"],
+    h7: computedStyleMap["--iris"],
+  }
+
+  for (const marker of markers) {
+    const intensityClass = Array.from(marker.classList).find((cls) => cls.startsWith("marker-h"))
+    if (!intensityClass) continue
+
+    const intensity = intensityClass.replace("marker-", "")
+    const color = intensityColors[intensity] || intensityColors["h1"]
+
+    const annotation = annotate(marker, {
+      type: "box",
       color,
       iterations: 2,
       animate: false,
@@ -44,7 +54,7 @@ async function setupMarkers() {
 
     annotation.show()
     annotations.push(annotation)
-  })
+  }
 }
 
 document.addEventListener("nav", setupMarkers)

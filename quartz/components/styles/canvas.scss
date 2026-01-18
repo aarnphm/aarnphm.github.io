@@ -99,7 +99,7 @@ $canvas-accents: (
   code {
     background: var(--lightgray);
     padding: 0.1em 0.3em;
-    border-radius: 3px;
+    border-radius: var(--radius-3);
     font-family: var(--codeFont);
     font-size: 0.9em;
   }
@@ -107,7 +107,7 @@ $canvas-accents: (
   pre {
     background: var(--lightgray);
     padding: 0.5em;
-    border-radius: 4px;
+    border-radius: var(--radius-md);
     overflow-x: auto;
     margin: 0.5em 0;
     code {
@@ -532,7 +532,7 @@ $canvas-accents: (
   border: none;
   cursor: pointer;
   padding: 6px;
-  border-radius: 4px;
+  border-radius: var(--radius-md);
   color: var(--gray);
   display: flex;
   align-items: center;
@@ -588,7 +588,7 @@ $canvas-accents: (
   kbd {
     background: var(--lightgray);
     border: 1px solid var(--gray);
-    border-radius: 2px;
+    border-radius: var(--radius-sm);
     padding: 2px 4px;
     font-family: var(--codeFont);
     font-size: 0.75em;
@@ -627,7 +627,7 @@ $canvas-accents: (
   justify-content: center;
   width: 28px;
   height: 28px;
-  border-radius: 0;
+  border-radius: var(--radius-none);
   background: var(--light);
   border: none;
   border-bottom: 1px solid var(--lightgray);

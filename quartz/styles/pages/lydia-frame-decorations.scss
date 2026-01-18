@@ -92,7 +92,7 @@
       width: 6px;
       height: 6px;
       background: radial-gradient(circle, rgba(255, 220, 180, 0.95), rgba(255, 189, 156, 0.7));
-      border-radius: 50%;
+      border-radius: var(--radius-circle);
       animation: particleFall linear forwards;
       box-shadow:
         0 0 10px rgba(255, 200, 150, 0.7),
@@ -102,7 +102,7 @@
         width: 8px;
         height: 8px;
         background: linear-gradient(45deg, rgba(255, 235, 200, 0.95), rgba(255, 200, 150, 0.8));
-        border-radius: 0;
+        border-radius: var(--radius-none);
         clip-path: polygon(
           50% 0%,
           61% 35%,

@@ -34,7 +34,7 @@ function getDisplayTitle(
   return fragment.replace(/\.[^/.]+$/, "").replace(/-/g, " ")
 }
 
-let loadedBib: Cite | null = null
+let loadedBib: any = null
 function getCitationTitle(bibKey: string): string | undefined {
   if (!loadedBib) {
     const bibPath = path.join(process.cwd(), "content/References.bib")

@@ -88,7 +88,7 @@ export const Twitter: QuartzTransformerPlugin = () => ({
 
     return src
   },
-  markdownPlugins({ cfg, argv }) {
+  markdownPlugins({ cfg }) {
     const locale = cfg.configuration.locale.split("-")[0] ?? "en"
     return [
       () => async (tree, file) => {

@@ -94,7 +94,7 @@ export const CanvasPage: QuartzEmitterPlugin<Partial<FullPageLayout>> = (userOpt
           children: [canvasElement],
         }
 
-        // use links already extracted by transformer
+        //@ts-ignore
         const linkedSlugs = (file.data.links ?? []).map(simplifySlug) as SimpleSlug[]
 
         const fileData: QuartzPluginData = {

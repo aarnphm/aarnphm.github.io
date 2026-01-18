@@ -21,7 +21,7 @@ export default (() => {
 }
 
 .page-title img {
-  border-radius: 999px;
+  border-radius: var(--radius-full);
   display: inline-block;
   height: 1.5rem;
   width: 1.5rem;

@@ -1,4 +1,4 @@
-interface ImageData {
+interface ImageMetadata {
   src: string
   alt: string
   width: number
@@ -114,7 +114,7 @@ async function initMasonry() {
       return f.json()
     })
     .then((imageData) => {
-      const shuffledData: ImageData[] = shuffleArray(imageData)
+      const shuffledData: ImageMetadata[] = shuffleArray(imageData)
       const containerWidth = container.getBoundingClientRect().width
       const positioned: ImagePosition[] = []
       let containerHeight = 600

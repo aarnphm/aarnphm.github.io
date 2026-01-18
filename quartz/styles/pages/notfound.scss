@@ -29,7 +29,7 @@ body[data-slug="404"] {
     background: rgba(0, 0, 0, 0.8);
     color: white;
     padding: 8px 12px;
-    border-radius: 6px;
+    border-radius: var(--radius-6);
     font-size: 14px;
     pointer-events: none; // Prevent tooltip from interfering with clicks
     opacity: 0;

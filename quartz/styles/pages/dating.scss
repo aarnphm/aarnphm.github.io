@@ -2,6 +2,8 @@
 @use "../variables.scss" as *;
 @use "../mixin.scss" as *;
 
+[data-slug="friends/slides"],
+[data-slug="friends"],
 [data-slug="dating/slides"],
 [data-slug="dating"] {
   section {
@@ -42,12 +44,14 @@
   }
 }
 
+[data-slug="friends/slides"],
 [data-slug="dating/slides"] {
   #tldr {
     margin-top: 2rem;
   }
 }
 
+[data-slug="friends"],
 [data-slug="dating"] {
   #tldr {
     border-left: unset;

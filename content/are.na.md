@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-01-17 05:28:50 GMT-05:00
+modified: 2026-01-17 18:03:55 GMT-05:00
 permalinks:
   - /website
   - /tweets
@@ -2070,7 +2070,17 @@ title: are.na
 - [meta]:
   - json: true
 
-- https://logangraves.com/the-human-project -- The Human Project
+- https://borischerny.com/tech/2023/12/10/Working-Remotely.html -- Learning to work (very) remotely
+  - [meta]:
+    - date: 01/17/2026
+    - tags: [work, habits]
+- https://ldeming.posthaven.com/the-rage-of-research -- The rage of research
+  - [meta]:
+    - date: 01/17/2026
+    - tags: [research, feeling]
+    - importance: 5
+  - > A lot of stage 3 can be best characterized by reading everything I possibly can about a subject and internally screaming "but what actually is the thing???"
+- https://logangraves.com/the-human-project -- The Human Project [**]
   - [meta]:
     - date: 01/15/2026
     - tags: [meliorism, simulation]
@@ -4821,6 +4831,10 @@ title: are.na
 
 ## opinions
 
+- https://matt.might.net/articles/ways-to-fail-a-phd/ -- 10 easy ways to fail a Ph.D
+  - [meta]:
+    - date: 01/17/2026
+    - tags: [research, work]
 - https://embedding-shapes.github.io/cursor-implied-success-without-evidence/ -- Cursor's latest "browser experiment" implied success without evidence
   - [meta]:
     - date: 01/17/2026
@@ -6464,6 +6478,11 @@ title: are.na
 
 ## design
 
+- https://spaces.is/loversmagazine/interviews/helen-holmes
+  - [meta]:
+    - date: 01/17/2026
+    - tags: [agency]
+    - later: true
 - https://nabiu.studio/digital-home-zine/essay -- On digital home
   - [meta]:
     - date: 01/16/2026
@@ -8173,6 +8192,25 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://lawrencecpaulson.github.io/2026/01/15/Broken_proofs.html -- Broken proofs and broken provers
+  - [meta]:
+    - date: 01/17/2026
+    - tags: [verification, memories]
+  - > A close examination of almost any proof published in a mathematics journal will identify errors. Most are easy to fix, but the persistence of errors must undermine our confidence in published mathematics.
+  - ```quotes
+    The result of Problem 11 contradicts the results announceed by Levy [1963b]. Unfortunately, the construction presented there cannot be completed.
+
+    The transfer to ZF was also claimed by Marek [1966] but the outlined method appears to be unsatisfactory and has not been published
+
+    A contradicting result was announced and later withdrawn by Truss [1970]
+
+    The example in Problem 22 is a counterexample to another condition of Mostowski, who conjectured its sufficiency and singled out this example as a test case.
+
+    The independence result contradicts the claim of Felgner [1969] that the Confinality Principle imples the Axiom of Choice. An error has been found by Morris (see Felgner's corrects to [1969])
+
+    T.J. Jech, _The Axiom of Choice_
+    ```
+  - In my corner of the world of interactive theorem proving, we take soundness seriously. Mike Gordon strongly promoted a _definitional approach_: no axioms ever, all proof developments built upon ::pure higher-logic:: from definitions alone, to avoid any danger of inconsistency
 - https://www.erdosproblems.com/forum/thread/397 -- Erdos problems 397, solved with GPT-5.2
   - [meta]:
     - date: 01/14/2026

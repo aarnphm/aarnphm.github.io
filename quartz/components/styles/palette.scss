@@ -75,7 +75,7 @@ ul#helper {
     box-sizing: border-box;
 
     border: 1px solid var(--lightgray);
-    border-radius: 0;
+    border-radius: var(--radius-none);
     border-top-width: 0px;
     background-color: var(--light);
     box-shadow: var(--shadow-modal);

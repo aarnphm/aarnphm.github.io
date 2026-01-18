@@ -74,10 +74,10 @@ $avatar-sm: 24px;
 
 %edit-button-base {
   border: none;
-  border-radius: 0.3125rem;
+  border-radius: var(--radius-5);
   cursor: pointer;
   background: transparent;
-  outline: var(--gray-200) solid 1px;
+  outline: rgba(0, 0, 0, 0.2) solid 1px;
   outline-offset: -0.0625rem;
   font-size: 10px;
   font-weight: 450;
@@ -126,7 +126,7 @@ $avatar-sm: 24px;
     align-items: center;
     gap: $space-sm;
     background: var(--light);
-    border-radius: 24px;
+    border-radius: var(--radius-24);
     padding: $space-xs $space-xs $space-xs $space-md;
     min-width: 320px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
@@ -181,7 +181,7 @@ $avatar-sm: 24px;
     flex-shrink: 0;
     width: $button-size;
     height: $button-size;
-    border-radius: 9999px;
+    border-radius: var(--radius-full);
     @include button-base;
     background: var(--secondary);
     color: white;
@@ -224,7 +224,7 @@ $avatar-sm: 24px;
 
   .comment-highlight {
     position: absolute;
-    border-radius: 4px;
+    border-radius: var(--radius-md);
   }
 }
 
@@ -236,7 +236,7 @@ $avatar-sm: 24px;
 
   .comment-selection-highlight {
     position: absolute;
-    border-radius: 4px;
+    border-radius: var(--radius-md);
     background-color: $selection-highlight;
   }
 }
@@ -266,7 +266,7 @@ $avatar-sm: 24px;
   font-size: $font-xs;
   line-height: $line-xs;
   color: var(--darkgray);
-  border-radius: 16px 16px 16px 0;
+  border-radius: var(--radius-xl) var(--radius-xl) var(--radius-xl) var(--radius-none);
   box-shadow:
     0 3px 6px rgba(0, 0, 0, 0.3),
     0 0 1px rgba(0, 0, 0, 0.05);
@@ -308,7 +308,7 @@ $avatar-sm: 24px;
       .reply-avatar {
         width: calc(var(--bubble-collapsed-size) - var(--bubble-margin));
         height: calc(var(--bubble-collapsed-size) - var(--bubble-margin));
-        border-radius: 9999px;
+        border-radius: var(--radius-full);
         flex-shrink: 0;
         flex-direction: row-reverse;
         justify-content: flex-end;
@@ -363,7 +363,7 @@ $avatar-sm: 24px;
     max-width: 320px;
     max-height: 200px;
     padding: 8px 16px;
-    border-radius: 16px 16px 16px 0;
+    border-radius: var(--radius-xl) var(--radius-xl) var(--radius-xl) var(--radius-none);
     transform: translateY(calc(-100% + var(--bubble-collapsed-size)));
     box-shadow:
       0 0 0 1px rgba(0, 0, 0, 0.1),
@@ -407,7 +407,7 @@ $avatar-sm: 24px;
   width: $modal-width;
   background: var(--light);
   border: 1px solid var(--lightgray);
-  border-radius: 12px;
+  border-radius: var(--radius-12);
   box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
   z-index: 904;
   display: flex;
@@ -501,7 +501,7 @@ $avatar-sm: 24px;
           flex-shrink: 0;
           width: $avatar-sm;
           height: $avatar-sm;
-          border-radius: 50%;
+          border-radius: var(--radius-circle);
           background: #8e81a2;
           color: white;
           display: flex;
@@ -550,7 +550,7 @@ $avatar-sm: 24px;
       .avatar {
         width: $avatar-sm;
         height: $avatar-sm;
-        border-radius: 100%;
+        border-radius: var(--radius-circle-full);
         overflow: hidden;
         display: flex;
         line-height: 30px;
@@ -573,7 +573,7 @@ $avatar-sm: 24px;
       min-height: $space-2xl;
       align-items: center;
       margin: $space-md $space-md $space-md $space-xs;
-      border-radius: 13px;
+      border-radius: var(--radius-13);
       position: relative;
       background-color: var(--lightgray);
       outline: 0px solid transparent;
@@ -659,7 +659,7 @@ $avatar-sm: 24px;
           width: $button-size;
           height: $button-size;
           min-width: $button-size;
-          border-radius: 9999px;
+          border-radius: var(--radius-full);
           @include button-base;
           background: $primary-blue;
           color: white;
@@ -706,7 +706,7 @@ $avatar-sm: 24px;
 .delete-confirmation-modal {
   background: var(--light);
   border: 1px solid var(--lightgray);
-  border-radius: 12px;
+  border-radius: var(--radius-12);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
   padding: $space-xl;
   min-width: 320px;
@@ -763,7 +763,7 @@ $avatar-sm: 24px;
   background: var(--dark);
   min-width: 80px;
   padding: $space-xs 0;
-  border-radius: 0.8125rem;
+  border-radius: var(--radius-13);
 
   .popover-action {
     width: 100%;
@@ -789,7 +789,7 @@ $avatar-sm: 24px;
       box-sizing: border-box;
       color: var(--light);
       white-space: nowrap;
-      border-radius: 0.3125rem;
+      border-radius: var(--radius-5);
 
       &:hover {
         background: var(--foam);
@@ -820,7 +820,7 @@ body:has(.global-graph-outer.active) {
   min-height: $space-2xl;
   margin-left: $space-2xl;
   margin-top: $space-xs;
-  border-radius: 13px;
+  border-radius: var(--radius-13);
   position: relative;
   background-color: var(--lightgray);
 
@@ -876,7 +876,7 @@ body:has(.global-graph-outer.active) {
 
 .cm-editor {
   background-color: var(--lightgray);
-  border-radius: 13px;
+  border-radius: var(--radius-13);
   font-family: var(--bodyFont);
   font-size: $font-md;
   line-height: $line-base;
@@ -916,7 +916,7 @@ body:has(.global-graph-outer.active) {
     font-family: var(--codeFont);
     background: rgba(0, 0, 0, 0.05);
     padding: 2px $space-2xs;
-    border-radius: 3px;
+    border-radius: var(--radius-3);
   }
 
   .cm-formatting {
@@ -946,13 +946,13 @@ body:has(.global-graph-outer.active) {
     font-family: "Courier New", monospace;
     background: rgba(0, 0, 0, 0.05);
     padding: 2px $space-2xs;
-    border-radius: 3px;
+    border-radius: var(--radius-3);
     font-size: 0.9em;
   }
 
   pre {
     background: var(--lightgray);
-    border-radius: 6px;
+    border-radius: var(--radius-6);
     padding: $space-sm;
     overflow-x: auto;
     margin: $space-xs 0;
@@ -1055,7 +1055,7 @@ body:has(.global-graph-outer.active) {
   text-decoration: none;
   background: rgba($primary-blue, 0.1);
   padding: 1px 4px;
-  border-radius: 4px;
+  border-radius: var(--radius-md);
   transition: background $transition-fast;
 
   &:hover {
