@@ -2,7 +2,8 @@
 date: "2026-01-15"
 description: formal accountability framework for commerce 3ma3 project team.
 id: contract
-modified: 2026-01-15 13:20:42 GMT-05:00
+modified: 2026-01-18 16:53:26 GMT-05:00
+protected: true
 tags:
   - commerce3ma3
 title: Group Contract
