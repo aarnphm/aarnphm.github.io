@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-01-18 16:32:26 GMT-05:00
+modified: 2026-01-19 17:41:29 GMT-05:00
 permalinks:
   - /website
   - /tweets
@@ -151,6 +151,8 @@ title: are.na
   - [meta]:
     - date: 01/18/2026
     - tags: [sarcasm]
+    - socials:
+      - posts: https://letters.thedankoe.com/p/how-to-fix-your-entire-life-in-1
 - https://x.com/_xjdr/status/2012353724165791765 -- The power of codex and open source is just to do it yourself
   - [meta]:
     - date: 01/17/2026
@@ -794,7 +796,7 @@ title: are.na
     - date: 10/03/2025
     - tags: [web poetic]
   - Arrowssssss
-- https://brand.dropbox.com/ -- Dropbox brand design
+- https://brand.dropbox.com/ -- Dropbox brand design [--]
   - [meta]:
     - date: 10/03/2025
     - tags: [design, landing]
@@ -2082,6 +2084,26 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://artsbarca.wordpress.com/2015/10/09/the-opening-fist-lygia-clark-and-the-notion-of-the-organic/ -- The Opening Fist: Lygia Clark and the Notion of the Organic
+  - [meta]:
+    - date: 01/19/2026
+    - tags: [physicality, items, biography]
+- https://spikeartmagazine.com/articles/libra-season-iphone-modernism -- iPhone Modernism
+  - [meta]:
+    - date: 01/19/2026
+    - tags: [culture, study, writing]
+  - > Phone are a terrible medium for performance art.
+  - > The affect of the Phone is revealed as a cracked modernist thrust. You approach it with commands, but it’s a black mirror, and it gives you loss.
+- https://archive.ph/20251114204243/https://www.economist.com/business/2000/08/17/bright-some-clouds -- Bright, some clouds [--]
+  - [meta]:
+    - date: 01/19/2026
+    - tags: [systems, history, infrastructure]
+    - importance: 5
+- https://internetprincess.substack.com/p/no-good-alone -- No good alone
+  - [meta]:
+    - date: 01/18/2026
+    - tags: [love, isolation]
+  - > Seductively, it whispers that you “don’t owe anyone anything.” It glamourizes — and moralizes — a life spent alone.
 - https://borischerny.com/tech/2023/12/10/Working-Remotely.html -- Learning to work (very) remotely
   - [meta]:
     - date: 01/17/2026
@@ -3778,6 +3800,16 @@ title: are.na
   - view: list
   - json: true
 
+- https://turntrout.com/shard-theory -- The Shard Theorey of Human Values
+  - [meta]:
+    - date: 01/19/2026
+    - tags: [epistemology, value]
+    - later: true
+    - importance: 6
+- https://www.lesswrong.com/posts/4uXCAJNuPKtKBsi28/negative-results-for-saes-on-downstream-tasks -- Negative Results for SAEs on Downstream Tasks (GDM Interpretability Team Progress Update)
+  - [meta]:
+    - date: 01/18/2026
+    - tags: [interpretability]
 - https://developer.nvidia.com/blog/reimagining-llm-memory-using-context-as-training-data-unlocks-models-that-learn-at-test-time -- Hybrid Attention for scaling
   - [meta]:
     - date: 01/14/2026
@@ -6091,6 +6123,11 @@ title: are.na
 
 ## stream
 
+- https://apod.nasa.gov/apod/ap111101.html -- Astronomy Picture of the Day [**]
+  - [meta]:
+    - date: 01/19/2026
+    - tags: [universe, galactic]
+    - later: true
 - https://bounded-regret.ghost.io -- Bounded regrets, by Jacob Stienhardt
   - [meta]:
     - date: 01/18/2026
@@ -6502,6 +6539,16 @@ title: are.na
 
 ## design
 
+- https://benji.org/annotating -- Annotating for agents
+  - [meta]:
+    - date: 01/19/2026
+    - tags: [design, agentic, autonomous, ideas]
+  - seealso: https://roughnotation.com
+- https://brand.dropbox.com/color -- Dropbox Design Principle, Color [--]
+  - [meta]:
+    - date: 01/19/2026
+    - tags: [design system]
+  - seealso: [[thoughts/Color]]
 - https://spaces.is/loversmagazine/interviews/helen-holmes
   - [meta]:
     - date: 01/17/2026
@@ -7238,6 +7285,15 @@ title: are.na
 
 ## resources
 
+- https://svgl.app/directory/ai -- svgl [**]
+  - [meta]:
+    - date: 01/19/2026
+    - tags: [foundry, svg]
+    - pinned: true
+- https://www.retroui.dev/docs/ -- RetroUI Components
+  - [meta]:
+    - date: 01/19/2026
+    - tags: [foundry, shadcn]
 - https://www.alphaxiv.org/wrapped/019a24b9-72e1-77ec-9f8a-7deb13e41d21 -- AlphaXiv Wrapped 2025
   - [meta]:
     - date: 01/06/2026
@@ -7383,6 +7439,19 @@ title: are.na
 
 ## fonts
 
+- https://usgraphics.com/products -- US Graphics Company [**]
+  - [meta]:
+    - date: 01/19/2026
+    - tags: [foundry]
+  - This [[/|site]] use [TX-02](https://usgraphics.com/products/berkeley-mono)
+- https://abcdinamo.com -- Dinamo
+  - [meta]:
+    - date: 01/19/2026
+    - tags: [foundry]
+- https://djr.com/roslindale/ -- Roslindale
+  - [meta]:
+    - date: 01/19/2026
+    - tags: [serif]
 - https://monaspace.githubnext.com -- Monaspace
   - [meta]:
     - date: 01/17/2026
@@ -7413,10 +7482,10 @@ title: are.na
   - [meta]:
     - date: 10/28/2025
     - tags: [fonts]
-- https://pangrampangram.com/products/neue-montreal -- PP Neue Montreal
+- https://pangrampangram.com/products/neue-montreal -- PP Neue Montreal [**]
   - [meta]:
     - date: 10/06/2025
-    - tags: [modern]
+    - tags: [modern, grotesk]
   - this [[/|site]] uses PP Neue Montreal
 - https://fontsource.org/ -- Fontsource
   - [meta]:
@@ -7532,6 +7601,11 @@ title: are.na
   - view: list
   - json: true
 
+- https://github.com/google-deepmind/gemma_penzai
+  - [meta]:
+    - date: 01/19/2026
+    - tags: [interpretability, visualisation]
+    - later: true
 - https://github.com/Dao-AILab/sonic-moe
   - [meta]:
     - date: 01/02/2026
@@ -8113,6 +8187,10 @@ title: are.na
 
 ## organizations
 
+- https://engram-lab.com -- engram labs
+  - [meta]:
+    - date: 01/19/2026
+    - tags: [agentic, infrastructure, embeddings]
 - https://www.normalcomputing.com -- Normal Computing
   - [meta]:
     - date: 01/17/2026
@@ -8468,6 +8546,11 @@ title: are.na
   - view: list
   - json: true
 
+- https://arxiv.org/abs/1906.07983
+  - [meta]:
+    - date: 01/19/2026
+    - tags: [interpretability, geometry, manifold]
+    - later: true
 - https://arxiv.org/abs/2512.23966
   - [meta]:
     - date: 01/15/2026

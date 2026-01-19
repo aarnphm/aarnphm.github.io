@@ -35,6 +35,7 @@ import {
   modularSvg,
 } from "../../components/svg"
 import type { FrontmatterLink } from "./frontmatter"
+import type { ArenaBlock, ArenaData } from "./arena"
 
 interface Options {
   enableArxivEmbed: boolean
@@ -523,6 +524,23 @@ export const CrawlLinks: QuartzTransformerPlugin<Partial<Options>> = (userOpts) 
                 for (const link of links) {
                   outgoing.add(simplifySlug(link.slug))
                 }
+              }
+            }
+
+            const arenaData = file.data.arenaData as ArenaData | undefined
+            if (arenaData) {
+              const collectArenaInternalLinks = (blocks: ArenaBlock[]): void => {
+                for (const block of blocks) {
+                  if (block.internalSlug) {
+                    outgoing.add(simplifySlug(block.internalSlug as FullSlug))
+                  }
+                  if (block.subItems) {
+                    collectArenaInternalLinks(block.subItems)
+                  }
+                }
+              }
+              for (const channel of arenaData.channels) {
+                collectArenaInternalLinks(channel.blocks)
               }
             }
 
