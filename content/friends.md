@@ -4,8 +4,9 @@ aliases:
   - not dating
 date: "2026-01-17"
 description: just another entity in the matrix.
-id: dating
-modified: 2026-01-17 18:18:08 GMT-05:00
+id: friends
+layout: technical
+modified: 2026-01-19 17:46:24 GMT-05:00
 noindex: true
 tags:
   - evergreen
@@ -16,6 +17,6 @@ title: making friends.
 
 bonjour.
 
-This document details information about me as a _friend_. I also have a [[dating|date-me doc]] if {{sidenotes[you would like to see]: This profile was published in 2025; I'm no longer actively dating (i.e. I'm seeing someone), but still want to leave this up given that it was an important document for me.}}
+This document details information about me as a _friend_. I also have a [[dating|date-me doc]] {{sidenotes[for historical purposes]: This profile was published in February 2025; I'm no longer actively dating (i.e. I'm seeing someone), but still want to leave this up given that it was an important document to me.}}
 
 [^sign]
