@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-01-19 17:41:29 GMT-05:00
+modified: 2026-01-20 12:48:28 GMT-05:00
 permalinks:
   - /website
   - /tweets
@@ -143,6 +143,13 @@ title: are.na
 - [meta]:
   - view: list
 
+- https://x.com/funEDEDD/status/2010412392929542456 -- Crab shorts, horror
+  - [meta]:
+    - date: 01/20/2026
+    - tags: [eldrich, horror]
+    - socials:
+      - imdb: https://m.imdb.com/title/tt1945126/
+  - seealso: [[thoughts/Eldrich horror]]
 - https://x.com/0xluffy/status/2007140595043889254?s=20 -- boyfriend 101
   - [meta]:
     - date: 01/18/2026
@@ -4875,6 +4882,12 @@ title: are.na
 
 ## opinions
 
+- https://thezvi.substack.com/p/chatgpt-self-portrait -- ChatGPT Self-Portrait
+  - [meta]:
+    - date: 01/20/2026
+    - tags: [dystopian, being]
+    - socials:
+      - experiment: https://chatgpt.com/c/696fb319-cffc-8332-be59-194d20e96829
 - https://matt.might.net/articles/ways-to-fail-a-phd/ -- 10 easy ways to fail a Ph.D
   - [meta]:
     - date: 01/17/2026
@@ -5649,6 +5662,11 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://www.youtube.com/watch?v=U-ZQoMh32Ck&t=9932s -- Hubert Dreyfus - Merleau-Ponty's Phenomenology of Perception [**]
+  - [meta]:
+    - date: 01/20/2026
+    - tags: [perception, being]
+    - pinned: true
 - https://plato.stanford.edu/entries/disagreement/ -- Disagreement
   - [meta]:
     - date: 01/15/2026
@@ -6123,6 +6141,10 @@ title: are.na
 
 ## stream
 
+- https://www.loot-drop.io -- The Startup Graveyard
+  - [meta]:
+    - date: 01/20/2026
+    - tags: [ideas]
 - https://apod.nasa.gov/apod/ap111101.html -- Astronomy Picture of the Day [**]
   - [meta]:
     - date: 01/19/2026
@@ -6539,6 +6561,10 @@ title: are.na
 
 ## design
 
+- https://www.youtube.com/watch?v=QkhrGUSf2ok -- The Design Ethos of Dieter Rams
+  - [meta]:
+    - date: 01/20/2026
+    - tags: [architecture, design]
 - https://benji.org/annotating -- Annotating for agents
   - [meta]:
     - date: 01/19/2026
@@ -6789,6 +6815,10 @@ title: are.na
 
 ## video
 
+- https://www.youtube.com/watch?v=BzKXF0T75ps -- Why aren't actors ugly anymore?
+  - [meta]:
+    - date: 01/20/2026
+    - tags: [culture, being]
 - https://www.youtube.com/watch?v=wclQwVNkED8 -- Медведица в декретном отпуске.
   - [meta]:
     - date: 01/09/2026

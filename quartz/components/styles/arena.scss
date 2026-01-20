@@ -613,6 +613,8 @@ body[data-arena-subpage="true"] {
 }
 
 .arena-modal-content {
+  --border-offset: 45px;
+
   @include containerInner;
   margin: 3rem auto;
   padding: 0;
@@ -624,11 +626,18 @@ body[data-arena-subpage="true"] {
   flex-direction: column;
   max-width: 90%;
   max-height: 90%;
-  width: calc(100% - 45px);
-  height: calc(100% - 45px);
+  width: calc(100% - var(--border-offset));
+  height: calc(100% - var(--border-offset));
   border: 1px solid var(--gray);
   overflow: auto;
   will-change: transform, opacity;
+
+  @media all and ($mobile) {
+    --border-offset: 45px;
+    margin: 0;
+    max-width: 96%;
+    max-height: 96%;
+  }
 }
 
 .arena-url-copy-button,
@@ -680,7 +689,7 @@ body[data-arena-subpage="true"] {
 
   @media all and ($mobile) {
     grid-template-columns: 1fr;
-    grid-template-rows: auto 1fr;
+    grid-template-rows: 1fr;
   }
 }
 
