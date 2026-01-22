@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-01-20 12:48:28 GMT-05:00
+modified: 2026-01-22 18:54:59 GMT-05:00
 permalinks:
   - /website
   - /tweets
@@ -143,6 +143,11 @@ title: are.na
 - [meta]:
   - view: list
 
+- https://x.com/woosuk_k/status/2014383490637443380 -- Inferact announcement
+  - [meta]:
+    - date: 01/22/2026
+    - tags: [inference, scaling]
+  - [[thoughts/vllm|vLLM]] company
 - https://x.com/funEDEDD/status/2010412392929542456 -- Crab shorts, horror
   - [meta]:
     - date: 01/20/2026
@@ -525,6 +530,10 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://www.synesthesia.club -- synesthesia club
+  - [meta]:
+    - date: 01/22/2026
+    - tags: [journal]
 - https://ratwedding.boston/RATSRATSRATSRATS
   - [meta]:
     - date: 01/17/2026
@@ -2091,6 +2100,23 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://aeon.co/essays/the-question-is-what-are-we-a-conversation-on-consciousness -- You are the world
+  - [meta]:
+    - date: 01/22/2026
+    - tags: [consciousness, dualism]
+    - importance: 7
+- https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0305834 -- The American Friendship Project: A report on the status and health of friendship in America
+  - [meta]:
+    - date: 01/22/2026
+    - tags: [health, relationship]
+- https://turntrout.com/instrumental-convergence-requires-psychology-assumptions -- No Instrumental Convergence without AI Psychology
+  - [meta]:
+    - date: 01/20/2026
+    - tags: [interpretability]
+- https://pudding.cool/2024/10/fanfic/ -- Who gets shipped, and why?
+  - [meta]:
+    - date: 01/20/2026
+    - tags: [relationship, love]
 - https://artsbarca.wordpress.com/2015/10/09/the-opening-fist-lygia-clark-and-the-notion-of-the-organic/ -- The Opening Fist: Lygia Clark and the Notion of the Organic
   - [meta]:
     - date: 01/19/2026
@@ -3807,6 +3833,10 @@ title: are.na
   - view: list
   - json: true
 
+- https://tsvibt.blogspot.com/2025/11/abstract-advice-to-researchers-tackling.html -- Abstract advice to researchers tackling the difficult core problems of AGI alignment
+  - [meta]:
+    - date: 01/20/2026
+    - tags: [research, alignment]
 - https://turntrout.com/shard-theory -- The Shard Theorey of Human Values
   - [meta]:
     - date: 01/19/2026
@@ -4066,7 +4096,7 @@ title: are.na
 - https://alignment.openai.com/sae-latent-attribution/ -- Debugging misaligned completions with [[thoughts/sparse autoencoder|SAE]] latent [[thoughts/Attribution parameter decomposition|attribution]]
   - [meta]:
     - date: 12/11/2025
-    - tags: []
+    - tags: [alignment, sae]
 - https://pub.sakana.ai/ctm/ -- Continuous Thought Machines
   - [meta]:
     - date: 12/08/2025
@@ -5169,6 +5199,10 @@ title: are.na
 
 ## life is literature
 
+- https://sf2g.com/terms.html -- SF2G terms in San Francisco
+  - [meta]:
+    - date: 01/22/2026
+    - tags: [words]
 - https://futurelovers.com -- Gossip is Good, A Manifesto for Social Intelligence
   - [meta]:
     - date: 01/15/2026
@@ -5474,6 +5508,12 @@ title: are.na
 
 ## computer science
 
+- https://sean.heelan.io/2026/01/18/on-the-coming-industrialisation-of-exploit-generation-with-llms/ -- On the Coming Industrialisation of Exploit Generation with LLMs
+  - [meta]:
+    - date: 01/22/2026
+    - tags: [security, autonomous, agents]
+    - socials:
+      - github: https://github.com/SeanHeelan/anamnesis-release
 - https://www.letta.com/blog/benchmarking-ai-agent-memory -- Benchmarking AI Agent Memory: Is a Filesystem All You Need?
   - [meta]:
     - date: 01/18/2026
@@ -5662,6 +5702,10 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://www.youtube.com/watch?v=4OXtO92x5KA -- My Grandfather Met Napoleon: Bertrand Russell Interview 1952
+  - [meta]:
+    - date: 01/20/2026
+    - tags: [history, biography]
 - https://www.youtube.com/watch?v=U-ZQoMh32Ck&t=9932s -- Hubert Dreyfus - Merleau-Ponty's Phenomenology of Perception [**]
   - [meta]:
     - date: 01/20/2026
@@ -6561,6 +6605,10 @@ title: are.na
 
 ## design
 
+- https://www.uilabs.dev -- components design
+  - [meta]:
+    - date: 01/22/2026
+    - tags: [motion, animation]
 - https://www.youtube.com/watch?v=QkhrGUSf2ok -- The Design Ethos of Dieter Rams
   - [meta]:
     - date: 01/20/2026
@@ -6815,6 +6863,10 @@ title: are.na
 
 ## video
 
+- https://www.youtube.com/watch?v=belyWyeN32c -- The line you only ski once
+  - [meta]:
+    - date: 01/20/2026
+    - tags: [adventure]
 - https://www.youtube.com/watch?v=BzKXF0T75ps -- Why aren't actors ugly anymore?
   - [meta]:
     - date: 01/20/2026
@@ -7315,6 +7367,10 @@ title: are.na
 
 ## resources
 
+- https://gist.github.com/rexim/6f2349b548fdead7ed790d1a40915ae1 -- XOR trick
+  - [meta]:
+    - date: 01/20/2026
+    - tags: [programming, esoteric]
 - https://svgl.app/directory/ai -- svgl [**]
   - [meta]:
     - date: 01/19/2026
@@ -7761,6 +7817,17 @@ title: are.na
 
 ## engineering
 
+- https://blog.wilsonl.in/search-engine/ -- Building a web search engine from scratch in two months with 3 billion neural embeddings
+  - [meta]:
+    - date: 01/22/2026
+    - tags: [scale, search]
+    - importance: 7
+    - socials:
+      - hnsw: https://blog.wilsonl.in/graph-vector-search/
+- https://evilmartians.com/chronicles/oklch-in-css-why-quit-rgb-hsl -- OKLCH in CSS: why we moved from RGB and HSL
+  - [meta]:
+    - date: 01/20/2026
+    - tags: [styling, systems, design]
 - https://alexharri.com/blog/ascii-rendering -- ASCII characters are not pixels: a deep dive into ASCII rendering
   - [meta]:
     - date: 01/18/2026
@@ -8333,6 +8400,12 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://www.youtube.com/watch?v=Xd0YBQUre4w -- Information Theory, Lecture 8: Tunstall's code
+  - [meta]:
+    - date: 01/20/2026
+    - tags: [information theory, math]
+    - socials:
+      - wikipedia: https://en.wikipedia.org/wiki/Tunstall_coding
 - https://lawrencecpaulson.github.io/2026/01/15/Broken_proofs.html -- Broken proofs and broken provers
   - [meta]:
     - date: 01/17/2026

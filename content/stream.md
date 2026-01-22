@@ -38,11 +38,22 @@ metadata:
     letter        = "a".."z" ;
     digit         = "0".."9" ;
     character     = ? any printable ascii except newline ? ;
-modified: 2026-01-18 07:01:14 GMT-05:00
+modified: 2026-01-22 13:00:53 GMT-05:00
 tags:
   - fruit
   - evergreen
 title: stream
+---
+
+## on transitory state of being
+
+- [meta]:
+  - date: 2026-01-22 13:00:48 GMT-05:00
+  - tags:
+    - life
+
+[inferact.ai](https://x.com/woosuk_k/status/2014383490637443380), or the [[thoughts/vllm|vLLM]] company announcement came out today, even though this has been in the works for a while now, which makes me think a lot of this fluid state of moving
+
 ---
 
 ## being a cat

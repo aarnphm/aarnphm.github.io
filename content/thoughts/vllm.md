@@ -2,7 +2,7 @@
 date: "2024-09-09"
 description: efficient LLM serving engine.
 id: vllm
-modified: 2026-01-15 15:49:26 GMT-05:00
+modified: 2026-01-22 12:49:51 GMT-05:00
 permalinks:
   - /vllm
 seealso:
@@ -12,6 +12,7 @@ seealso:
   - "[[thoughts/Continuous batching]]"
   - "[[thoughts/structured outputs]]"
   - "[[thoughts/KV compression]]"
+  - "[[thoughts/prefix caching]]"
 socials:
   dbo: https://docs.vllm.ai/en/latest/design/dbo/
 tags:

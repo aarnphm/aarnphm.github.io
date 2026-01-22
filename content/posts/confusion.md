@@ -3,7 +3,7 @@ date: "2025-07-13"
 description: and growing, friendship
 draft: true
 id: confusion
-modified: 2025-11-21 06:00:10 GMT-05:00
+modified: 2026-01-21 01:27:20 GMT-05:00
 tags:
   - love
   - friend
@@ -34,3 +34,11 @@ What I did wrong?
   - It felt brittle, as if just one more mistakes, then its gone.
     - Baseball simile
     -
+
+---
+
+What do I do when she doesn't want me?
+
+What is this feeling of being in love, yet so confused about things going slow?
+
+What did I do wrong mostly? It felt like I didn't even know how to behave correctly? I can't just seemingly to love one to the full extend
