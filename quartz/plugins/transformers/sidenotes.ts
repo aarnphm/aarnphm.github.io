@@ -23,7 +23,8 @@ const isSidenoteNode = (node: Node): node is Sidenote | SidenoteReference =>
 
 const isHastElement = (node: Node): node is HastElement => node.type === "element"
 
-const readString = (value: unknown): string | undefined => (typeof value === "string" ? value : undefined)
+const readString = (value: unknown): string | undefined =>
+  typeof value === "string" ? value : undefined
 
 const readNumber = (value: unknown): number | undefined =>
   typeof value === "number" && Number.isFinite(value) ? value : undefined

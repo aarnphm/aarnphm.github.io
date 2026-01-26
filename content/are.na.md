@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-01-26 11:22:13 GMT-05:00
+modified: 2026-01-26 13:40:57 GMT-05:00
 permalinks:
   - /website
   - /tweets
@@ -2106,6 +2106,12 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://archive.is/vCC2o#selection-605.0-613.396 -- Chloé Zhao Is Yearning to Know How to Love [--]
+  - [meta]:
+    - date: 01/26/2026
+    - tags: [film, relationship]
+    - socials:
+      - yt: https://www.youtube.com/watch?v=IKLm3w341AM
 - https://lucumr.pocoo.org/2026/1/18/agent-psychosis/ -- Agent Psychosis, Are we going insane?
   - [meta]:
     - date: 01/26/2026
@@ -6898,6 +6904,10 @@ title: are.na
 
 ## video
 
+- https://www.youtube.com/watch?v=EXD3b6OLtsg -- How The Martian was written, with Andy Weir
+  - [meta]:
+    - date: 01/26/2026
+    - tags: [film, writing, process]
 - https://www.youtube.com/watch?v=_Hp11d1Z-78 -- Lagrangian vs Newtonian Mechanics
   - [meta]:
     - date: 01/26/2026
