@@ -49,7 +49,7 @@ metadata:
     list_entry     = "-" , ws , link , [ ws "--" ws title ] , [ ws "[**]" ] ;
     meta_section   = ws , "-" , ws , "[meta]:" , newline , meta_pair , { meta_pair } ;
     meta_pair      = ws , ws , "-" , ws , key , ":" , ws , value ;
-    key            = "date" | "tags" | "pinned" | "view" | identifier ;
+    key            = "date" | "tags" | "pinned" | "later" | "socials" | "view" | identifier ;
     value          = date | tag_list | boolean | text ;
     tag_list       = "[" , tag , { "," , ws , tag } , "]" ;
     tag            = identifier ;
@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-01-22 18:54:59 GMT-05:00
+modified: 2026-01-26 11:22:13 GMT-05:00
 permalinks:
   - /website
   - /tweets
@@ -538,6 +538,8 @@ title: are.na
   - [meta]:
     - date: 01/17/2026
     - tags: [fun, jovial]
+    - socials:
+      - main: https://ratwedding.boston
 - https://www.playfuldesign.app/
   - [meta]:
     - date: 01/14/2026
@@ -1009,6 +1011,10 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://lausandoval.com
+  - [meta]:
+    - date: 01/23/2026
+    - tags: [designer]
 - https://www.rowleyvzn.com
   - [meta]:
     - date: 01/18/2026
@@ -2100,6 +2106,18 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://lucumr.pocoo.org/2026/1/18/agent-psychosis/ -- Agent Psychosis, Are we going insane?
+  - [meta]:
+    - date: 01/26/2026
+    - tags: [agents, productivity]
+- https://web.archive.org/web/20220401010635/https://www.theatlantic.com/technology/archive/2019/05/mary-olivers-poetry-captures-our-relationship-technology/589039/ -- Attention is the Beginning of Devotion
+  - [meta]:
+    - date: 01/24/2026
+    - tags: [attention, love]
+- https://cannoneyed.com/projects/isometric-nyc -- Isometric NYC
+  - [meta]:
+    - date: 01/23/2026
+    - tags: [graphics]
 - https://aeon.co/essays/the-question-is-what-are-we-a-conversation-on-consciousness -- You are the world
   - [meta]:
     - date: 01/22/2026
@@ -3833,7 +3851,16 @@ title: are.na
   - view: list
   - json: true
 
-- https://tsvibt.blogspot.com/2025/11/abstract-advice-to-researchers-tackling.html -- Abstract advice to researchers tackling the difficult core problems of AGI alignment
+- https://huggingface.co/blog/novita/sglang-glm4-moe -- Optimizing GLM4-MoE with SGLang
+  - [meta]:
+    - date: 01/26/2026
+    - tags: [inference engine, optimization]
+- https://nousresearch.com/moe-scaling-field-notes/ -- Field Notes on scaling MoE with DeepEP
+  - [meta]:
+    - date: 01/24/2026
+    - tags: [systems, infrastructure, optimization]
+    - importance: 6
+- https://tsvibt.blogspot.com/2025/11/abstract-advice-to-researchers-tackling.html -- Abstract advice to researchers tackling the difficult core problems of AGI alignmentj
   - [meta]:
     - date: 01/20/2026
     - tags: [research, alignment]
@@ -6526,6 +6553,10 @@ title: are.na
 
 ## finances
 
+- https://docs.google.com/presentation/d/e/2PACX-1vQXsMMv5ZCWm77za7oXJcz1X-Th5Mz15g5nYBxbUjnomStVcjn8lXPjE5LzAlvc_hg4yHKgwASWLo5a/pub?slide=id.g3b6e2578ab2_5_68 -- a16z investment portfolio
+  - [meta]:
+    - date: 01/22/2026
+    - tags: [reports]
 - https://maxdesalle.com/mastering-zcash/ -- Mastering Zcash
   - [meta]:
     - date: 01/14/2026
@@ -6605,6 +6636,10 @@ title: are.na
 
 ## design
 
+- https://www.itsoffbrand.com -- OFF+BRAND
+  - [meta]:
+    - date: 01/24/2026
+    - tags: [agency]
 - https://www.uilabs.dev -- components design
   - [meta]:
     - date: 01/22/2026
@@ -6863,6 +6898,10 @@ title: are.na
 
 ## video
 
+- https://www.youtube.com/watch?v=_Hp11d1Z-78 -- Lagrangian vs Newtonian Mechanics
+  - [meta]:
+    - date: 01/26/2026
+    - tags: [physics, mathematics, theory]
 - https://www.youtube.com/watch?v=belyWyeN32c -- The line you only ski once
   - [meta]:
     - date: 01/20/2026
@@ -6917,6 +6956,7 @@ title: are.na
   - [meta]:
     - date: 12/17/2025
     - tags: [discipline, routine, dedication]
+    - later: true
 - https://www.youtube.com/watch?v=LJuKALOACAg -- a peaceful life in a new city ~ sf
   - [meta]:
     - date: 12/17/2025
@@ -7344,6 +7384,10 @@ title: are.na
 
 ## prompts
 
+- https://chatgpt.com/c/696fb26d-e738-8327-9b10-01f2b28f4040 -- how ChatGPT sees me
+  - [meta]:
+    - date: 01/23/2026
+    - tags: [intelligence]
 - https://jakub.kr/work/using-ai-as-a-design-engineer -- Using models for design engineer
   - [meta]:
     - date: 01/17/2026
@@ -7817,6 +7861,14 @@ title: are.na
 
 ## engineering
 
+- https://mistral.ai/news/debugging-memory-leak-in-vllm -- Debugging a memory leak in [[thoughts/vllm|vLLM]]
+  - [meta]:
+    - date: 01/26/2026
+    - tags: [inference, optimization, systems]
+- https://www.anthropic.com/engineering/AI-resistant-technical-evaluations -- Anthropic Take-home challenges
+  - [meta]:
+    - date: 01/24/2026
+    - tags: [engineering, optimization, systems]
 - https://blog.wilsonl.in/search-engine/ -- Building a web search engine from scratch in two months with 3 billion neural embeddings
   - [meta]:
     - date: 01/22/2026
@@ -8284,6 +8336,10 @@ title: are.na
 
 ## organizations
 
+- https://archiveofourown.org/works/20223610/chapters/47927191 -- For Guidance, Please See the Corporate Interpersonal Relationship Policy
+  - [meta]:
+    - date: 01/23/2026
+    - tags: [policy]
 - https://engram-lab.com -- engram labs
   - [meta]:
     - date: 01/19/2026
@@ -8649,6 +8705,10 @@ title: are.na
   - view: list
   - json: true
 
+- https://arxiv.org/abs/2601.14175
+  - [meta]:
+    - date: 01/26/2026
+    - tags: [errors, interpretability]
 - https://arxiv.org/abs/1906.07983
   - [meta]:
     - date: 01/19/2026

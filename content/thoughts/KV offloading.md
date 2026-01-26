@@ -2,7 +2,7 @@
 date: "2025-08-06"
 description: and LMCache.
 id: KV offloading
-modified: 2026-01-16 01:46:43 GMT-05:00
+modified: 2026-01-22 21:11:45 GMT-05:00
 socials:
   handbook: https://bentoml.com/llm/inference-optimization/kv-cache-offloading
 tags:
@@ -25,6 +25,10 @@ Testing towards block size changes for offloading to CPU
 - Decoding is memory-bound, re-computation of $QK^{T}V$ per layer causes $O(L)$ serial passes
 - In practice, not all KV has to be kept in memory. Thionk of sporadic access of chat means GPUs
   aren't being utilize 100% of the time. This would lead to waste of money.
+
+## KVConnector implementation
+
+in [[thoughts/vllm|vLLM]]
 
 ## LMCache
 
