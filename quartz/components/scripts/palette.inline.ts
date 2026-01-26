@@ -456,7 +456,7 @@ document.addEventListener("nav", async (e) => {
 
   async function shortcutHandler(e: HTMLElementEventMap["keydown"]) {
     const searchOpen = document.querySelector<HTMLDivElement>("search.search-container")
-    const noteContainer = document.getElementById("stacked-notes-container") as HTMLDivElement
+    const noteContainer = document.getElementById("stacked-notes-container")
     if (
       (searchOpen && searchOpen.classList.contains("active")) ||
       (noteContainer && noteContainer.classList.contains("active"))
