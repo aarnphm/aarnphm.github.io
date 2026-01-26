@@ -417,17 +417,22 @@ export function createCommentsUi({ getState, dispatch }: UiDeps) {
     submitComment({ opId: crypto.randomUUID(), type: "new", comment })
   }
 
+  const ensurePageId = (comment: MultiplayerComment): MultiplayerComment => {
+    if (comment.pageId) return comment
+    return { ...comment, pageId: getCommentPageId() }
+  }
+
   const submitUpdateComment = (comment: MultiplayerComment, opId?: string) => {
-    submitComment({ opId: opId ?? crypto.randomUUID(), type: "update", comment })
+    submitComment({ opId: opId ?? crypto.randomUUID(), type: "update", comment: ensurePageId(comment) })
   }
 
   const submitDeleteComment = (comment: MultiplayerComment, deletedAt: number) => {
-    const deleted = { ...comment, deletedAt }
+    const deleted = { ...ensurePageId(comment), deletedAt }
     submitComment({ opId: crypto.randomUUID(), type: "delete", comment: deleted })
   }
 
   const submitResolveComment = (comment: MultiplayerComment, resolvedAt: number) => {
-    const resolved = { ...comment, resolvedAt }
+    const resolved = { ...ensurePageId(comment), resolvedAt }
     submitComment({ opId: crypto.randomUUID(), type: "resolve", comment: resolved })
   }
 
@@ -559,16 +564,6 @@ export function createCommentsUi({ getState, dispatch }: UiDeps) {
       showThreadActionsPopover(comment, buttonRect)
     }
 
-    const resolveButton = document.createElement("button")
-    resolveButton.className = "modal-actions-button modal-resolve-button"
-    resolveButton.setAttribute("aria-label", "Resolve thread")
-    resolveButton.innerHTML = `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>`
-    resolveButton.onclick = () => {
-      submitResolveComment(comment, Date.now())
-      closeActiveModal()
-      document.dispatchEvent(new CustomEvent("toast", { detail: { message: "Comment resolved" } }))
-    }
-
     const closeButton = document.createElement("button")
     closeButton.className = "modal-close"
     closeButton.textContent = "×"
@@ -616,7 +611,18 @@ export function createCommentsUi({ getState, dispatch }: UiDeps) {
     document.addEventListener("mouseup", onMouseUp)
 
     headerActions.appendChild(headerMenuButton)
-    headerActions.appendChild(resolveButton)
+    if (comment.author === getAuthor()) {
+      const resolveButton = document.createElement("button")
+      resolveButton.className = "modal-actions-button modal-resolve-button"
+      resolveButton.setAttribute("aria-label", "Resolve thread")
+      resolveButton.innerHTML = `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>`
+      resolveButton.onclick = () => {
+        submitResolveComment(comment, Date.now())
+        closeActiveModal()
+        document.dispatchEvent(new CustomEvent("toast", { detail: { message: "Comment resolved" } }))
+      }
+      headerActions.appendChild(resolveButton)
+    }
     headerActions.appendChild(closeButton)
 
     header.appendChild(title)
