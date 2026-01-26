@@ -7,8 +7,7 @@ aliases:
 date: "2025-08-09"
 description: just another fish in the sea.
 id: dating
-modified: 2026-01-09 05:31:48 GMT-05:00
-noindex: true
+modified: 2026-01-26 14:20:17 GMT-05:00
 slides: true
 tags:
   - evergreen
@@ -17,7 +16,7 @@ tags:
 title: dating me.
 ---
 
-This document doesn't represent the whole me, but it should give you a sense of the "non-tech" version of who I am and what I do in my downtime.
+This document doesn't represent the whole me, but it should give you a sense of the "non-tech" version of who I am and what I do in {{sidenotes[my downtime]: I'm not actively dating anymore, but this document is still an important part of my life, but you might be interested in [[friends|this docs]] instead.}}.
 
 I hate dating apps. I know it's a numbers game, but I got lazy and tired of the repetition and algorithms, so I decided to make this instead—something I can share with someone I find attractive.
 

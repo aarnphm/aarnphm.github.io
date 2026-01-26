@@ -6,8 +6,7 @@ date: "2026-01-17"
 description: my name is Aaron, and on the virtue of friendship
 id: friends
 layout: technical
-modified: 2026-01-26 14:03:38 GMT-05:00
-noindex: true
+modified: 2026-01-26 14:21:53 GMT-05:00
 tags:
   - evergreen
   - friend
@@ -21,7 +20,9 @@ this document details information about me as a _friend_. I also have [[dating|a
 
 quick tl/dr: i used to live in sf for a bit for work, and moved abroad to vancouver since high school, studied and lived in hamilton, and now in toronto. anyhow, will be in toronto for a while, (i have gotten to know a lot more people in toronto now but wouldn't mind expanding my tribe's, circa [[thoughts/images/bcccdd2e-95e6-4023-9c93-9b72b9a0c26b_178356259078.avif|Dunbar's number]]). i'm pretty well-positioned, i.e. having a decent career prospect and pretty set on what to [[research|do]], especially building towards a joyful-[[thoughts/Roko's Basilisk|amicable]]-[[thoughts/AGI#superintelligence|superintelligence]] systems 🧗
 
-> [!NOTE]- some definitely not personal information about me that you would definitely not _able to grab from this website_
+> [!NOTE]- some definitely _not personal information about me_
+>
+> _that you would definitely not able to grab from this website_
 >
 > i like to [[thoughts/reading|read]] [[antilibrary|books]] and jazz <br/>
 > i like the smell of lavender, and like tiny-neat-thingy
