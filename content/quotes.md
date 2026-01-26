@@ -16,7 +16,7 @@ metadata:
     text_line    = { character - newline } ;
     ws           = { " " } ;
     character    = ? any printable ascii except newline ? ;
-modified: 2026-01-17 03:17:53 GMT-05:00
+modified: 2026-01-26 14:02:16 GMT-05:00
 seealso:
   - "[[word|dictionary]]"
   - "[[research|wip]]"
@@ -30,6 +30,10 @@ transclude:
   dynalist: false
   title: false
 ---
+
+> On the whole, humans are so inherently good and cooperative that it's not notable when they are.
+>
+> Andy Weir, _[Talks at Lawrence Livermore National Laboratory](https://www.youtube.com/watch?v=2tfh6OUUYUw)_, [LLNL](https://www.llnl.gov)
 
 > Once men turned their thinking over to machines in the hope that this would set them free. But that only permitted other men with machines to enslave them.
 >

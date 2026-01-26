@@ -170,11 +170,8 @@ interface Action {
 
 let actionType: ActionType = "quick_open"
 let currentSearchTerm: string = ""
-document.addEventListener("nav", async (e) => {
-  const data = await fetchData
+document.addEventListener("nav", (e) => {
   const currentSlug = e.detail.url
-  const idDataMap = Object.keys(data) as FullSlug[]
-
   const container = document.getElementById("palette-container")
   if (!container) return
 
@@ -182,6 +179,25 @@ document.addEventListener("nav", async (e) => {
   const output = container.getElementsByTagName("output")[0]
   const helper = container.querySelector("ul#helper") as HTMLUListElement
   let currentHover: HTMLDivElement | null = null
+  let data: ContentIndex | null = null
+  let idDataMap: FullSlug[] = []
+  let isActive = true
+
+  window.addCleanup(() => {
+    isActive = false
+  })
+
+  const dataReady = fetchData.then(async (resolved) => {
+    if (!isActive) return resolved
+    data = resolved
+    idDataMap = Object.keys(resolved) as FullSlug[]
+    await fillDocument(resolved)
+    if (!isActive) return resolved
+    if (actionType === "quick_open" && container.classList.contains("active")) {
+      getRecentItems()
+    }
+    return resolved
+  })
 
   function hidePalette() {
     container?.classList.remove("active")
@@ -394,6 +410,14 @@ document.addEventListener("nav", async (e) => {
 
   let recentItems: Item[] = []
   function getRecentItems() {
+    if (!data) {
+      if (output) {
+        removeAllChildren(output)
+      }
+      return
+    }
+    const loadedData = data
+    const dataMap = idDataMap
     const visited = getRecents()
 
     if (output) {
@@ -409,16 +433,16 @@ document.addEventListener("nav", async (e) => {
     // If visited >= 10, then we get the first recent 10 items
     // Otherwise, we will choose randomly from the set of data
     els.forEach((slug) => {
-      const id = idDataMap.findIndex((s) => s === slug)
+      const id = dataMap.findIndex((s) => s === slug)
       if (id !== -1) {
         //@ts-ignore
         recentItems.push({
           id,
           slug,
-          name: data[slug].fileName,
-          title: data[slug].title ?? "",
-          content: data[slug].content ?? "",
-          aliases: data[slug].aliases,
+          name: loadedData[slug].fileName,
+          title: loadedData[slug].title ?? "",
+          content: loadedData[slug].content ?? "",
+          aliases: loadedData[slug].aliases,
           target: "",
         })
       }
@@ -426,22 +450,22 @@ document.addEventListener("nav", async (e) => {
     // Fill with random items from data
     const needed = numSearchResults - els.length
     if (needed != 0) {
-      const availableSlugs = idDataMap.filter((slug) => !els.includes(slug))
+      const availableSlugs = dataMap.filter((slug) => !els.includes(slug))
 
       // Then add random items
       for (let i = 0; i < needed && availableSlugs.length > 0; i++) {
         const randomIndex = Math.floor(Math.random() * availableSlugs.length)
         const slug = availableSlugs[randomIndex]
-        const id = idDataMap.findIndex((s) => s === slug)
+        const id = dataMap.findIndex((s) => s === slug)
 
         //@ts-ignore
         recentItems.push({
           id,
           slug: slug as FullSlug,
-          name: data[slug].fileName,
-          title: data[slug].title ?? "",
-          content: data[slug].content ?? "",
-          aliases: data[slug].aliases,
+          name: loadedData[slug].fileName,
+          title: loadedData[slug].title ?? "",
+          content: loadedData[slug].content ?? "",
+          aliases: loadedData[slug].aliases,
           target: "",
         })
 
@@ -468,7 +492,7 @@ document.addEventListener("nav", async (e) => {
       const barOpen = container?.classList.contains("active")
       barOpen ? hidePalette() : showPalette("quick_open")
       return
-    } else if (e.key === "p" && (e.altKey || e.metaKey)) {
+    } else if (e.key === "p" && (e.altKey || e.metaKey || e.ctrlKey)) {
       e.preventDefault()
       const barOpen = container?.classList.contains("active")
       barOpen ? hidePalette() : showPalette("command")
@@ -574,6 +598,7 @@ document.addEventListener("nav", async (e) => {
 
   async function querySearch(currentSearchTerm: string) {
     if (actionType === "quick_open") {
+      await dataReady
       const searchResults = await querySearchIndex(currentSearchTerm, numSearchResults)
 
       displayResults(
@@ -711,7 +736,6 @@ document.addEventListener("nav", async (e) => {
   })
 
   registerEscapeHandler(container, hidePalette)
-  await fillDocument(data)
 })
 
 async function fillDocument(data: ContentIndex) {

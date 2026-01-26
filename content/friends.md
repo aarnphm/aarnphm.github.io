@@ -6,7 +6,7 @@ date: "2026-01-17"
 description: my name is Aaron, and on the virtue of friendship
 id: friends
 layout: technical
-modified: 2026-01-26 11:19:00 GMT-05:00
+modified: 2026-01-26 14:03:38 GMT-05:00
 noindex: true
 tags:
   - evergreen
@@ -32,7 +32,7 @@ friends are still our first and sometimes best model of someone who chooses to b
 Ava, [bookbear express](https://www.avabear.xyz/p/always-on-your-side)
 ```
 
-i think a lot about this framing. before romantic love, before family obligation, there's friendship, the relationship you choose without biological accident or legal contract, i.e. the one where someone looks at you and decides to keep showing up for this person. yes, i will spend a portion of my waking hours to be with them.
+i like this framing. before romantic love, before family obligation, there's friendship, the relationship you choose without biological accident or legal contract. someone looks at you and decides to keep showing up. yes, i will allocate a portion of my waking hours to be with this person. the structure is different from romance in a way that c.s. lewis noticed: lovers face each other absorbed in one another while friends stand side by side absorbed in something external. you become friends by caring about the same problems. this is why work-friends feel so intense. you're literally shoulder-to-shoulder looking at the same thing for 40+ hours a week.
 
 ```quotes
 friendship was what taught me that love is an endurance sport with no finish line.
@@ -44,11 +44,7 @@ Aristotle distinguished three kinds of philia: utility (we exchange value), plea
 
 [^1]: this maps onto something karlsson observes: "love is friendship on hard mode." romantic relationships aren't a different category from friendship, they're friendship plus difficulty, plus stakes, plus everything that makes it easier to fuck up.
 
-c.s. lewis noticed a structural difference too: "lovers are normally face to face, absorbed in each other; friends, side by side, absorbed in some common interest." friendship is outward-facing. you don't become friends by staring at each other, you become friends by looking at the same thing together, by caring about the same problems.
-
-this is why work-friends can feel so intense. you're literally side-by-side looking at the same problem for 40+ hours a week.
-
-## friction as feature.
+<div class="w-120">
 
 ```quotes
 friendships are, by their very nature, made of friction, knowing what's going on in someone's day-to-day life, making plans, rescheduling when someone gets sick, bringing over soup.
@@ -60,41 +56,13 @@ we've optimized away the very friction that creates connection. everything about
 
 sheila liming wrote an entire book on this: "hanging out is productive, and the thing that it produces is our relationships with each other." the unstructured time, the plans that get rescheduled, the showing up when it's inconvenient, these are features, not bugs.
 
-my version of friction: cooking for people. i [[thoughts/atelier with friends|host]] dinners most weeks, four-course meals for 4-6 people, and at the end you pay me whatever you think the meal is worth. [^2] the friction is the planning, the dietary restrictions, the hours in the kitchen. the output is sitting around a table with people i care about.
+</div>
 
-[^2]: i also make fresh pasta every sunday, tortellini or tagliatelle depending on mood. this is my form of therapy.
+Karlsson puts it better than I every could, where we "show the inside of your head in public, so people can see if they would like to live in there." this site is my version of that, a search query for people who might want to be friends.
 
-i'm the 3am call who shows up. when i make a commitment to you, i'll be 100% present. reliable in both logistics and emotional capacity, though i'm still human at the end of the day.
+what i look for is presence over performance: people who can sit in a room without filling it with noise, who can be bored together without reaching for phones. the [[thoughts/hermeneutics]] commitment, choosing to interpret someone charitably, staying in the circle when understanding breaks down instead of exiting to win. honesty without cruelty, the friends who tell you when you're being stupid but frame it as observation rather than judgment. and showing up, repeatedly, over time, which is the only way any of this compounds into something real.
 
-## what i value.
-
-karlsson has this line: "show the inside of your head in public, so people can see if they would like to live in there." this site is my version of that, a search query for people who might want to be friends.
-
-there aren't that many people you can have an amazing life with, maybe 10,000 spread unevenly across the globe. most of them you'll never meet. the ones you do find, you hold onto.
-
-what i look for:
-
-- **presence over performance.** attention is the rarest form of generosity. i want friends who can sit in a room without filling it with noise, who can be bored together without reaching for phones.
-
-- **the hermeneutic commitment.** choosing to interpret someone charitably, staying in the circle when understanding breaks down. "you can't win an argument," ava writes, "you can only lose the relationship."
-
-- **honesty without cruelty.** the friends who tell you when you're being an idiot, but frame it as "here's what i'm seeing" rather than "you're wrong."
-
-- **showing up.** rupture and repair, someone to cry at, disappoint, or annoy and still continue with. the relationship doesn't fracture at the first conflict.
-
-## what i offer.
-
-i want to think about my life as being RLHF by the people i surround myself with. we populate our concept of the world around them. the [[influence|full list]] is elsewhere, but the short version: i take friendship seriously as infrastructure, not ornament.
-
-concrete things:
-
-- i will cook for you
-- i will remember the small things (your nut allergy, the thing you mentioned three months ago, the song that reminds me of you)
-- i will show up when it matters
-- i will tell you when you're being an idiot, gently
-- i will not disappear when things get hard
-
-ava articulates the aspirational stance better than i can: "nothing you do could make me love you any less."
+i think about my life as being RLHF'd by the people i surround myself with. we populate our concept of the world with them.
 
 i'm not there yet with everyone, but with the people closest to me, i'm trying.
 
