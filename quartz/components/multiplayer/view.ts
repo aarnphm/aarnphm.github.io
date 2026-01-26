@@ -43,7 +43,7 @@ export const mountMultiplayer = ({ dispatch, state, services }: MountDeps) => {
 
   const mouseUp = (event: MouseEvent) => {
     if (event.button !== 0) return
-    if (!event.metaKey && !event.altKey) return
+    if (!event.metaKey && !event.altKey && !event.ctrlKey) return
     if (event.target instanceof Node && event.target.isConnected) {
       const composer = document.body.querySelector(".comment-composer")
       if (composer instanceof HTMLElement && composer.contains(event.target)) {

@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-01-26 13:40:57 GMT-05:00
+modified: 2026-01-26 16:24:29 GMT-05:00
 permalinks:
   - /website
   - /tweets
@@ -2106,6 +2106,10 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://www.darioamodei.com/essay/the-adolescence-of-technology -- The Adolescence of Technology
+  - [meta]:
+    - date: 01/26/2026
+    - tags: [alignment, technology, ai]
 - https://archive.is/vCC2o#selection-605.0-613.396 -- Chloé Zhao Is Yearning to Know How to Love [--]
   - [meta]:
     - date: 01/26/2026
@@ -2769,7 +2773,7 @@ title: are.na
   - [meta]:
     - date: 11/28/2025
     - tags: [longtermism, ai]
-- https://archive.is/ilTr1 -- How to spot a genius
+- https://archive.is/ilTr1 -- How to spot a genius [--]
   - [meta]:
     - date: 11/28/2025
     - tags: [intelligence]
@@ -6908,6 +6912,8 @@ title: are.na
   - [meta]:
     - date: 01/26/2026
     - tags: [film, writing, process]
+    - socials:
+      - talks at google: https://www.youtube.com/watch?v=ZQrfxgW2EXQ
 - https://www.youtube.com/watch?v=_Hp11d1Z-78 -- Lagrangian vs Newtonian Mechanics
   - [meta]:
     - date: 01/26/2026
@@ -7871,6 +7877,19 @@ title: are.na
 
 ## engineering
 
+- https://github.com/anthropics/claude-code/issues/14391 -- Claude Code workaround with Chrome
+  - [meta]:
+    - date: 01/26/2026
+    - tags: [tricks]
+  - One of those things where we just need to hack it
+- https://www.pinecone.io/learn/series/faiss/hnsw/ -- HNSW, Hierarchical Navigable Small Worlds
+  - [meta]:
+    - date: 01/26/2026
+    - tags: [search, algorithm]
+- https://lantern.dev/blog/pgvector-storage -- Understanding pgvector's HNSW Index Storage in Postgres
+  - [meta]:
+    - date: 01/26/2026
+    - tags: [search, database]
 - https://mistral.ai/news/debugging-memory-leak-in-vllm -- Debugging a memory leak in [[thoughts/vllm|vLLM]]
   - [meta]:
     - date: 01/26/2026
@@ -8466,6 +8485,10 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://x.com/davidbessis/status/2015756436081357110 -- Lifecycle of a pure math theorem
+  - [meta]:
+    - date: 01/26/2026
+    - tags: [proof, conjecture]
 - https://www.youtube.com/watch?v=Xd0YBQUre4w -- Information Theory, Lecture 8: Tunstall's code
   - [meta]:
     - date: 01/20/2026
