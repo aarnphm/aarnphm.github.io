@@ -93,7 +93,7 @@
     "hast-util-whitespace": "^3.0.0",
     "hastscript": "^9.0.1",
     "highlight.js": "^11.11.1",
-    "hono": "^4.11.6",
+    "hono": "^4.11.7",
     "image-size": "^2.0.2",
     "is-absolute-url": "^5.0.0",
     "js-yaml": "^4.1.1",
