@@ -3,10 +3,7 @@ import katex from "katex"
 import type { FullSlug } from "./path"
 import { extractWikilinks, resolveWikilinkTarget } from "./wikilinks"
 
-const defaultKatexOptions: Omit<KatexOptions, "output"> = {
-  strict: true,
-  throwOnError: true,
-}
+const defaultKatexOptions: Omit<KatexOptions, "output"> = { strict: true, throwOnError: true }
 
 export function renderLatexInString(
   text: string,
@@ -17,10 +14,7 @@ export function renderLatexInString(
   const blockMathRegex = /\$\$([\s\S]*?)\$\$/g
   result = result.replace(blockMathRegex, (match, math) => {
     try {
-      return katex.renderToString(math.trim(), {
-        ...options,
-        displayMode: true,
-      })
+      return katex.renderToString(math.trim(), { ...options, displayMode: true })
     } catch {
       return match
     }
@@ -29,10 +23,7 @@ export function renderLatexInString(
   const inlineMathRegex = /(?<!\$)\$([^$\n]+?)\$(?!\$)/g
   result = result.replace(inlineMathRegex, (match, math) => {
     try {
-      return katex.renderToString(math.trim(), {
-        ...options,
-        displayMode: false,
-      })
+      return katex.renderToString(math.trim(), { ...options, displayMode: false })
     } catch {
       return match
     }

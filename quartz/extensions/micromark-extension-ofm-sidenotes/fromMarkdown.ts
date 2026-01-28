@@ -46,12 +46,7 @@ export function sidenoteFromMarkdown(options: FromMarkdownOptions = {}): MdastEx
       type: "sidenote",
       value: "",
       children: [],
-      data: {
-        sidenoteParsed: {
-          raw: "",
-          content: "",
-        },
-      },
+      data: { sidenoteParsed: { raw: "", content: "" } },
     }
     this.enter(node as any, token)
     return undefined
@@ -176,11 +171,7 @@ export function sidenoteFromMarkdown(options: FromMarkdownOptions = {}): MdastEx
 
   // Reference Handlers
   function enterReference(this: CompileContext, token: Token): undefined {
-    const node: SidenoteReference = {
-      type: "sidenoteReference",
-      label: "",
-      children: [],
-    }
+    const node: SidenoteReference = { type: "sidenoteReference", label: "", children: [] }
     this.enter(node as any, token)
     return undefined
   }
@@ -206,11 +197,7 @@ export function sidenoteFromMarkdown(options: FromMarkdownOptions = {}): MdastEx
 
   // Definition Handlers
   function enterDefinition(this: CompileContext, token: Token): undefined {
-    const node: SidenoteDefinition = {
-      type: "sidenoteDefinition",
-      label: "",
-      children: [],
-    }
+    const node: SidenoteDefinition = { type: "sidenoteDefinition", label: "", children: [] }
     this.enter(node as any, token)
     return undefined
   }

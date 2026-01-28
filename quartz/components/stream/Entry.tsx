@@ -18,10 +18,7 @@ const nodesToJsx = (filePath: FilePath, nodes: ElementContent[]): ComponentChild
   if (!nodes || nodes.length === 0) return null
 
   return nodes.map((node, idx) => {
-    const root: HastRoot = {
-      type: "root",
-      children: [node as any],
-    }
+    const root: HastRoot = { type: "root", children: [node as any] }
     return <span key={idx}>{htmlToJsx(filePath, root)}</span>
   })
 }
@@ -33,10 +30,7 @@ const countWords = (value: string): number => {
 }
 
 const streamEntryText = (entry: StreamEntry): string => {
-  const root: HastRoot = {
-    type: "root",
-    children: entry.content,
-  }
+  const root: HastRoot = { type: "root", children: entry.content }
   const contentText = hastToString(root)
   const titleText = entry.title ? String(entry.title) : ""
   const descriptionText = entry.description ? String(entry.description) : ""

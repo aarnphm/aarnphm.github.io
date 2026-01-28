@@ -48,7 +48,11 @@ document.addEventListener("nav", async () => {
       if (e.key === key && (e.ctrlKey || e.metaKey)) {
         e.preventDefault()
         const containerOpen = container?.classList.contains("active")
-        containerOpen ? hideContainer() : showContainer()
+        if (containerOpen) {
+          hideContainer()
+        } else {
+          showContainer()
+        }
         break
       }
     }

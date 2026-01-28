@@ -124,10 +124,7 @@ async function initializeMap(container: HTMLElement) {
 
     // fit to bounds if we have markers and no explicit center
     if (bounds && !config.defaultCenter && markersData.length > 1) {
-      map.fitBounds(bounds, {
-        padding: { top: 50, bottom: 50, left: 50, right: 50 },
-        maxZoom: 15,
-      })
+      map.fitBounds(bounds, { padding: { top: 50, bottom: 50, left: 50, right: 50 }, maxZoom: 15 })
     }
   })
 
@@ -138,10 +135,7 @@ async function initializeMap(container: HTMLElement) {
       type: "FeatureCollection",
       features: markersData.map((marker) => ({
         type: "Feature",
-        geometry: {
-          type: "Point",
-          coordinates: [marker.lon, marker.lat],
-        },
+        geometry: { type: "Point", coordinates: [marker.lon, marker.lat] },
         properties: {
           title: marker.title,
           slug: marker.slug,
@@ -185,9 +179,7 @@ async function initializeMap(container: HTMLElement) {
           "text-font": ["DIN Offc Pro Medium", "Arial Unicode MS Bold"],
           "text-size": 12,
         },
-        paint: {
-          "text-color": "#fff9f3",
-        },
+        paint: { "text-color": "#fff9f3" },
       })
 
       // unclustered points
@@ -206,16 +198,11 @@ async function initializeMap(container: HTMLElement) {
 
       // click on cluster to zoom
       map.on("click", "clusters", (e: any) => {
-        const features = map.queryRenderedFeatures(e.point, {
-          layers: ["clusters"],
-        })
+        const features = map.queryRenderedFeatures(e.point, { layers: ["clusters"] })
         const clusterId = features[0].properties.cluster_id
         map.getSource("markers").getClusterExpansionZoom(clusterId, (err: any, zoom: number) => {
           if (err) return
-          map.easeTo({
-            center: features[0].geometry.coordinates,
-            zoom: zoom,
-          })
+          map.easeTo({ center: features[0].geometry.coordinates, zoom: zoom })
         })
       })
 

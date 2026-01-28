@@ -73,12 +73,7 @@ const defaultOptions: FolderContentOptions = {
   tags: [],
 }
 
-const Layout = {
-  defn: "L->EAT",
-  etas: "L->ET|A",
-  alsp: "A|L",
-  lovp: "L",
-} as const
+const Layout = { defn: "L->EAT", etas: "L->ET|A", alsp: "A|L", lovp: "L" } as const
 
 type FolderLayout = (typeof Layout)[keyof typeof Layout]
 
@@ -121,11 +116,7 @@ export default ((opts?: Partial<FolderContentOptions>) => {
   const options: FolderContentOptions = { ...defaultOptions, ...opts }
 
   // Trie covering ALL files in content (any extension), built from ctx
-  let fullTrie: FileTrieNode<{
-    slug: string
-    title: string
-    filePath: string
-  }>
+  let fullTrie: FileTrieNode<{ slug: string; title: string; filePath: string }>
 
   const shouldIncludeFile = extensionFilterFn(options)
 
@@ -157,11 +148,7 @@ export default ((opts?: Partial<FolderContentOptions>) => {
         const ext = path.extname(fp)
         const base = path.basename(fp, ext)
         const md = mdBySlug.get(fileSlug)
-        fullTrie.add({
-          slug: fileSlug,
-          title: md?.frontmatter?.title ?? base,
-          filePath: fp,
-        })
+        fullTrie.add({ slug: fileSlug, title: md?.frontmatter?.title ?? base, filePath: fp })
       }
     }
 
@@ -314,7 +301,9 @@ export default ((opts?: Partial<FolderContentOptions>) => {
       }
     }
 
-    const layout = parseFolderLayout(fileData.frontmatter?.pageLayout!)
+    const layout = parseFolderLayout(
+      fileData.frontmatter ? fileData.frontmatter.pageLayout! : "L->ET|A",
+    )
 
     const cssClasses: string[] = fileData.frontmatter?.cssclasses ?? []
     const baseClassList = ["popover-hint", "notes-list", "side-col", ...cssClasses]
@@ -323,13 +312,7 @@ export default ((opts?: Partial<FolderContentOptions>) => {
       layout === Layout.etas ? `${baseListClass} folder-layout--list` : baseListClass
     const content = htmlToJsx(fileData.filePath!, tree)
 
-    const listProps = {
-      ...props,
-      sort: options.sort,
-      content,
-      allFiles: entries,
-      vaults: allFiles,
-    }
+    const listProps = { ...props, sort: options.sort, content, allFiles: entries, vaults: allFiles }
 
     switch (layout) {
       case Layout.etas:

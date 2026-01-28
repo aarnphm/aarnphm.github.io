@@ -53,12 +53,7 @@ async function processArenaIndex(
   }
 
   const content = renderPage(ctx, slug, componentData, opts, externalResources, false)
-  return write({
-    ctx,
-    content,
-    slug,
-    ext: ".html",
-  })
+  return write({ ctx, content, slug, ext: ".html" })
 }
 
 async function processChannel(
@@ -76,11 +71,7 @@ async function processChannel(
   const [tree] = defaultProcessedContent({
     slug: channelSlug,
     arenaChannel: channel,
-    frontmatter: {
-      ...baseFileData.frontmatter,
-      title: channel.name,
-      pageLayout: "default",
-    },
+    frontmatter: { ...baseFileData.frontmatter, title: channel.name, pageLayout: "default" },
   })
 
   const externalResources = pageResources(pathToRoot(channelSlug), resources, ctx)
@@ -90,11 +81,7 @@ async function processChannel(
       ...baseFileData,
       slug: channelSlug,
       arenaChannel: channel,
-      frontmatter: {
-        ...baseFileData.frontmatter,
-        title: channel.name,
-        pageLayout: "default",
-      },
+      frontmatter: { ...baseFileData.frontmatter, title: channel.name, pageLayout: "default" },
     },
     externalResources,
     cfg,
@@ -104,12 +91,7 @@ async function processChannel(
   }
 
   const content = renderPage(ctx, channelSlug, componentData, opts, externalResources, false)
-  return write({
-    ctx,
-    content,
-    slug: channelSlug,
-    ext: ".html",
-  })
+  return write({ ctx, content, slug: channelSlug, ext: ".html" })
 }
 
 /**
@@ -197,23 +179,14 @@ function buildSearchIndex(channels: ArenaChannel[]): ArenaSearchIndex {
     })
   }
 
-  return {
-    version: "1.0.0",
-    blocks,
-    channels: channelMetadata,
-  }
+  return { version: "1.0.0", blocks, channels: channelMetadata }
 }
 
 async function emitSearchIndex(ctx: BuildCtx, searchIndex: ArenaSearchIndex) {
   const slug = "static/arena-search" as FullSlug
   const content = JSON.stringify(searchIndex)
 
-  return write({
-    ctx,
-    content,
-    slug,
-    ext: ".json",
-  })
+  return write({ ctx, content, slug, ext: ".json" })
 }
 
 async function processChannelJson(ctx: BuildCtx, channel: ArenaChannel) {
@@ -247,12 +220,7 @@ async function processChannelJson(ctx: BuildCtx, channel: ArenaChannel) {
     output[url] = entry
   }
 
-  return write({
-    ctx,
-    content: JSON.stringify(output, null, 2),
-    slug,
-    ext: "",
-  })
+  return write({ ctx, content: JSON.stringify(output, null, 2), slug, ext: "" })
 }
 
 export const ArenaPage: QuartzEmitterPlugin<Partial<FullPageLayout>> = (userOpts) => {
@@ -347,8 +315,6 @@ export const ArenaPage: QuartzEmitterPlugin<Partial<FullPageLayout>> = (userOpts
         yield emitSearchIndex(ctx, searchIndex)
       }
     },
-    externalResources: () => ({
-      additionalHead: [],
-    }),
+    externalResources: () => ({ additionalHead: [] }),
   }
 }

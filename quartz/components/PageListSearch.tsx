@@ -12,9 +12,7 @@ export interface PageListSearchOptions {
   placeholder?: string
 }
 
-const defaultOptions: PageListSearchOptions = {
-  placeholder: "filtering...",
-}
+const defaultOptions: PageListSearchOptions = { placeholder: "filtering..." }
 
 export default ((userOpts?: Partial<PageListSearchOptions>) => {
   const PageListSearch: QuartzComponent = ({ cfg, allTags }: QuartzComponentProps) => {

@@ -17,9 +17,7 @@ interface TagContentOptions {
   numPages: number
 }
 
-const defaultOptions: TagContentOptions = {
-  numPages: 10,
-}
+const defaultOptions: TagContentOptions = { numPages: 10 }
 
 export default ((opts?: Partial<TagContentOptions>) => {
   const options: TagContentOptions = { ...defaultOptions, ...opts }
@@ -67,10 +65,7 @@ export default ((opts?: Partial<TagContentOptions>) => {
           <div>
             {tags.map((tag) => {
               const pages = tagItemMap.get(tag)!
-              const listProps = {
-                ...props,
-                allFiles: pages,
-              }
+              const listProps = { ...props, allFiles: pages }
 
               const contentPage = allFiles.filter((file) => file.slug === `tags/${tag}`).at(0)
 
@@ -112,10 +107,7 @@ export default ((opts?: Partial<TagContentOptions>) => {
       )
     } else {
       const pages = allPagesWithTag(tag)
-      const listProps = {
-        ...props,
-        allFiles: pages,
-      }
+      const listProps = { ...props, allFiles: pages }
 
       return (
         <div class={classes} data-pagelist>

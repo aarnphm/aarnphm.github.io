@@ -12,11 +12,7 @@ export interface Options {
   showByDefault: boolean
 }
 
-const defaultOptions: Options = {
-  maxDepth: 3,
-  minEntries: 1,
-  showByDefault: true,
-}
+const defaultOptions: Options = { maxDepth: 3, minEntries: 1, showByDefault: true }
 
 export interface TocEntry {
   depth: number
@@ -79,11 +75,7 @@ export const TableOfContents: QuartzTransformerPlugin<Partial<Options>> = (userO
                   const normalizedText = extractHeadingText(node)
                   const text = normalizedText.length > 0 ? normalizedText : toString(node)
                   highestDepth = Math.min(highestDepth, node.depth)
-                  toc.push({
-                    depth: node.depth,
-                    text,
-                    slug: slugAnchor.slug(text),
-                  })
+                  toc.push({ depth: node.depth, text, slug: slugAnchor.slug(text) })
                 }
               })
 

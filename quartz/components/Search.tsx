@@ -14,10 +14,7 @@ export interface SearchOptions {
   includeButton: boolean
 }
 
-const defaultOptions: SearchOptions = {
-  enablePreview: true,
-  includeButton: true,
-}
+const defaultOptions: SearchOptions = { enablePreview: true, includeButton: true }
 
 export default ((userOpts?: Partial<SearchOptions>) => {
   const Search: QuartzComponent = ({ displayClass, cfg }: QuartzComponentProps) => {

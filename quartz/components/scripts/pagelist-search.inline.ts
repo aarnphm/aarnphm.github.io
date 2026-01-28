@@ -114,7 +114,7 @@ function filterItems(state: PageListState, query: string) {
     )
 
     const textMatch = !textQuery || title.includes(textQuery)
-    const tagMatch = queryTags.length === 0 || queryTags.every((qt) => tagMatches(qt, itemTags))
+    const tagMatch = queryTags.some((qt) => tagMatches(qt, itemTags))
 
     li.hidden = !(textMatch && tagMatch)
     if (!li.hidden) visible++

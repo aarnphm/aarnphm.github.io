@@ -13,18 +13,8 @@ interface ContentIndexEntry {
   richContent?: string
   date?: string
   description?: string
-  fileData?: {
-    dates?: {
-      created: string
-      modified: string
-    }
-  }
-  readingTime?: {
-    text: string
-    minutes: number
-    time: number
-    words: number
-  }
+  fileData?: { dates?: { created: string; modified: string } }
+  readingTime?: { text: string; minutes: number; time: number; words: number }
 }
 
 type ContentIndex = Record<string, ContentIndexEntry>
@@ -107,11 +97,7 @@ function buildMetadataFooter(entry: ContentIndexEntry | undefined): string {
 }
 
 function formatDate(date: Date): string {
-  return date.toLocaleDateString("fr-FR", {
-    year: "numeric",
-    month: "short",
-    day: "2-digit",
-  })
+  return date.toLocaleDateString("fr-FR", { year: "numeric", month: "short", day: "2-digit" })
 }
 
 async function fetchNoteData(
@@ -125,10 +111,7 @@ async function fetchNoteData(
   noteUrl.hash = ""
 
   const noteResp = await env.ASSETS.fetch(
-    new Request(noteUrl.toString(), {
-      method: "GET",
-      headers: { Accept: "text/html" },
-    }),
+    new Request(noteUrl.toString(), { method: "GET", headers: { Accept: "text/html" } }),
   )
 
   if (!noteResp.ok) return null
@@ -190,10 +173,7 @@ export async function handleStackedNotesRequest(
     baseUrl.hash = ""
 
     const baseResp = await env.ASSETS.fetch(
-      new Request(baseUrl.toString(), {
-        method: "GET",
-        headers: { Accept: "text/html" },
-      }),
+      new Request(baseUrl.toString(), { method: "GET", headers: { Accept: "text/html" } }),
     )
 
     if (!baseResp.ok) return null

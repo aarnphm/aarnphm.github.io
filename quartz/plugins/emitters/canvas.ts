@@ -89,10 +89,7 @@ export const CanvasPage: QuartzEmitterPlugin<Partial<FullPageLayout>> = (userOpt
           [h("div.canvas-loading", "Loading canvas...")],
         )
 
-        const tree: Root = {
-          type: "root",
-          children: [canvasElement],
-        }
+        const tree: Root = { type: "root", children: [canvasElement] }
 
         //@ts-ignore
         const linkedSlugs = (file.data.links ?? []).map(simplifySlug) as SimpleSlug[]
@@ -100,11 +97,7 @@ export const CanvasPage: QuartzEmitterPlugin<Partial<FullPageLayout>> = (userOpt
         const fileData: QuartzPluginData = {
           ...file.data,
           slug,
-          frontmatter: {
-            title: `${slug}.canvas`,
-            tags: ["canvas"],
-            pageLayout: "default",
-          },
+          frontmatter: { title: `${slug}.canvas`, tags: ["canvas"], pageLayout: "default" },
           description: `Canvas of ${slug}`,
           htmlAst: tree,
           text: file.data.text ?? "",

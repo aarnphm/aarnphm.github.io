@@ -11,11 +11,7 @@ const publicDir = path.join(gitRoot, "public")
 const pollIntervalMs = 500
 const useColor = process.stdout.isTTY && process.stderr.isTTY
 const RESET = "\x1b[0m"
-const labelNames = {
-  main: "main",
-  quartz: "quartz",
-  wrangler: "wrangler",
-} as const
+const labelNames = { main: "main", quartz: "quartz", wrangler: "wrangler" } as const
 type Label = keyof typeof labelNames
 type ManagedChild = ChildProcessWithoutNullStreams & { label: Label }
 const formattedLabels: Record<Label, string> = formatLabels(labelNames)
@@ -257,11 +253,7 @@ async function main(): Promise<void> {
     const child = spawn(
       process.execPath,
       [fileURLToPath(import.meta.url), ...process.argv.slice(2).filter((arg) => arg !== "--bg")],
-      {
-        cwd: gitRoot,
-        detached: true,
-        stdio: ["ignore", stdout.fd, stderr.fd],
-      },
+      { cwd: gitRoot, detached: true, stdio: ["ignore", stdout.fd, stderr.fd] },
     )
     child.unref()
     await writeFile(pidFile, String(child.pid ?? process.pid))

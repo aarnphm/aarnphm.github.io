@@ -1,9 +1,4 @@
-export type Props = {
-  login: string
-  name: string
-  email: string
-  accessToken: string
-}
+export type Props = { login: string; name: string; email: string; accessToken: string }
 
 export function getUpstreamAuthorizeUrl({
   upstream_url,

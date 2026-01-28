@@ -22,10 +22,7 @@ export function parseJsonCanvas(json: JsonCanvas | string): JcastCanvas {
   const ast: JcastCanvas = {
     type: "canvas",
     children: [],
-    data: {
-      nodeMap: new Map(),
-      edgeMap: new Map(),
-    },
+    data: { nodeMap: new Map(), edgeMap: new Map() },
   }
 
   // phase 1: transform all nodes
@@ -121,22 +118,12 @@ function transformNode(node: JsonCanvasNode): JcastCanvasNode | JcastCanvasGroup
     return {
       type: "canvasGroup",
       id: node.id,
-      data: {
-        canvas: node,
-        nodeType: node.type,
-      },
+      data: { canvas: node, nodeType: node.type },
       children: [],
     }
   }
 
-  return {
-    type: "canvasNode",
-    id: node.id,
-    data: {
-      canvas: node,
-      nodeType: node.type,
-    },
-  }
+  return { type: "canvasNode", id: node.id, data: { canvas: node, nodeType: node.type } }
 }
 
 /**
@@ -146,11 +133,7 @@ function transformEdge(edge: JsonCanvasEdge): JcastCanvasEdge {
   return {
     type: "canvasEdge",
     id: edge.id,
-    data: {
-      canvas: edge,
-      fromNode: edge.fromNode,
-      toNode: edge.toNode,
-    },
+    data: { canvas: edge, fromNode: edge.fromNode, toNode: edge.toNode },
   }
 }
 

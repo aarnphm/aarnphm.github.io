@@ -92,10 +92,7 @@ async function buildSearchIndex() {
   searchIndex = new FlexSearch.Document({
     tokenize: "forward",
     encode,
-    document: {
-      id: "id",
-      index: ["content", "metadata", "isoDate", "displayDate", "tags"],
-    },
+    document: { id: "id", index: ["content", "metadata", "isoDate", "displayDate", "tags"] },
   })
 
   for (const entry of indexedEntries) {
@@ -104,10 +101,7 @@ async function buildSearchIndex() {
       .join(" ")
       .trim()
 
-    await searchIndex.addAsync({
-      ...entry,
-      tags: tagsField,
-    })
+    await searchIndex.addAsync({ ...entry, tags: tagsField })
   }
 
   isIndexBuilt = true

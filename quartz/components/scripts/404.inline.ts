@@ -23,15 +23,9 @@ document.addEventListener("nav", () => {
           },
         },
         tooltip,
-        {
-          placement: "right-start",
-          middleware: [offset(15), flip(), shift()],
-        },
+        { placement: "right-start", middleware: [offset(15), flip(), shift()] },
       ).then(({ x, y }) => {
-        Object.assign(tooltip.style, {
-          top: `${y}px`,
-          left: `${x}px`,
-        })
+        Object.assign(tooltip.style, { top: `${y}px`, left: `${x}px` })
       })
     }
 

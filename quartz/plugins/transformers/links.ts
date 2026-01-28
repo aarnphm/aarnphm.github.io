@@ -148,100 +148,94 @@ export const CrawlLinks: QuartzTransformerPlugin<Partial<Options>> = (userOpts) 
             const shouldRewriteLinks = ({ tagName, properties }: Element) =>
               tagName === "a" && Boolean(properties.href) && typeof properties.href === "string"
 
-            // rewrite all links
-            //@ts-ignore
-            visit(
-              tree,
-              (node: Element) => shouldRewriteLinks(node as Element),
-              (node: Element) => {
-                const classes = (node.properties.className ?? []) as string[]
-                // insert a span element into node.children
-                let dest = node.properties.href as RelativeURL
-                const ext: string = path.extname(dest).toLowerCase()
-                const metadata = JSON.parse((node.properties?.["data-metadata"] ?? "{}") as string)
+            visit(tree, "element", (node: Element) => {
+              if (!shouldRewriteLinks(node)) {
+                return
+              }
+              const classes = (node.properties.className ?? []) as string[]
+              let dest = node.properties.href as RelativeURL
+              const ext: string = path.extname(dest).toLowerCase()
+              const metadata = JSON.parse((node.properties?.["data-metadata"] ?? "{}") as string)
 
-                // Check for protocol-based URLs (mailto:, tel:, etc.)
-                const hasProtocol = /^[a-zA-Z][a-zA-Z0-9+.-]*:/.test(dest)
+              const hasProtocol = /^[a-zA-Z][a-zA-Z0-9+.-]*:/.test(dest)
 
-                // Initialize context object
-                const ctx: LinkContext = {
-                  classes,
-                  dest,
-                  ext,
-                  isExternal:
-                    opts.enableRawEmbed && ALLOWED_EXTENSIONS.includes(ext)
-                      ? true
-                      : isAbsoluteUrl(dest, { httpOnly: false }) || hasProtocol,
-                  node,
-                  metadata,
+              const ctx: LinkContext = {
+                classes,
+                dest,
+                ext,
+                isExternal:
+                  opts.enableRawEmbed && ALLOWED_EXTENSIONS.includes(ext)
+                    ? true
+                    : isAbsoluteUrl(dest, { httpOnly: false }) || hasProtocol,
+                node,
+                metadata,
+              }
+
+              const linkTypes = {
+                isApexDomain: dest.includes(cfg.configuration.baseUrl!),
+                isCslNode: classes.includes("csl-external-link"),
+                isEmbedTwitter: filterEmbedTwitter(node),
+                isArxiv: dest.includes("arxiv.org"),
+                isWikipedia: dest.includes("wikipedia.org"),
+                isLessWrong: dest.includes("lesswrong.com"),
+                isBentoml: dest.includes("bentoml.com"),
+                isModular: dest.includes("modular.com"),
+                isSep: dest.includes("plato.stanford.edu"),
+                isYoutube: dest.includes("youtube.com"),
+                isGwern: dest.includes("gwern.net"),
+                isNeovim: dest.includes("neovim.io"),
+                isQuartz: dest.includes("quartz.jzhao.xyz"),
+                isObsidian: dest.includes("obsidian.md"),
+                isGithub: dest.includes("github.com"),
+                isSubstack: dest.includes("substack.com"),
+                isTwitter: twitterUrlRegex.test(dest),
+                isBsky: dest.includes("bsky.app"),
+                isDoi: dest.includes("doi.org"),
+                isOpenai: dest.includes("openai.com"),
+                isHf: dest.includes("huggingface.co"),
+                isYC: dest.includes("ycombinator.com"),
+                isAnthropic:
+                  dest.includes("transformer-circuits.pub") || dest.includes("anthropic.com"),
+                isGoogleDocs: dest.includes("docs.google.com"),
+                isGoogleDrive: dest.includes("drive.google.com"),
+              }
+
+              if (linkTypes.isBentoml) {
+                if (!classes.includes("bentoml-link")) {
+                  classes.push("bentoml-link")
                 }
+                ctx.node.properties.dataLinkVendor = "bentoml"
+              }
 
-                // Link type checks
-                const linkTypes = {
-                  isApexDomain: dest.includes(cfg.configuration.baseUrl!),
-                  isCslNode: classes.includes("csl-external-link"),
-                  isEmbedTwitter: filterEmbedTwitter(node),
-                  isArxiv: dest.includes("arxiv.org"),
-                  isWikipedia: dest.includes("wikipedia.org"),
-                  isLessWrong: dest.includes("lesswrong.com"),
-                  isBentoml: dest.includes("bentoml.com"),
-                  isModular: dest.includes("modular.com"),
-                  isSep: dest.includes("plato.stanford.edu"),
-                  isYoutube: dest.includes("youtube.com"),
-                  isGwern: dest.includes("gwern.net"),
-                  isNeovim: dest.includes("neovim.io"),
-                  isQuartz: dest.includes("quartz.jzhao.xyz"),
-                  isObsidian: dest.includes("obsidian.md"),
-                  isGithub: dest.includes("github.com"),
-                  isSubstack: dest.includes("substack.com"),
-                  isTwitter: twitterUrlRegex.test(dest),
-                  isBsky: dest.includes("bsky.app"),
-                  isDoi: dest.includes("doi.org"),
-                  isOpenai: dest.includes("openai.com"),
-                  isHf: dest.includes("huggingface.co"),
-                  isYC: dest.includes("ycombinator.com"),
-                  isAnthropic:
-                    dest.includes("transformer-circuits.pub") || dest.includes("anthropic.com"),
-                  isGoogleDocs: dest.includes("docs.google.com"),
-                  isGoogleDrive: dest.includes("drive.google.com"),
+              if (linkTypes.isModular) {
+                if (!classes.includes("modular-link")) {
+                  classes.push("modular-link")
                 }
+                ctx.node.properties.dataLinkVendor = "modular"
+              }
 
-                if (linkTypes.isBentoml) {
-                  if (!classes.includes("bentoml-link")) {
-                    classes.push("bentoml-link")
+              if (linkTypes.isGithub) {
+                if (!classes.includes("github-link")) {
+                  classes.push("github-link")
+                }
+                ctx.node.properties.dataLinkVendor = "github"
+              }
+
+              if (
+                linkTypes.isWikipedia &&
+                node.children.length === 1 &&
+                node.children[0].type === "text" &&
+                node.children[0].value === dest
+              ) {
+                try {
+                  const u = new URL(dest)
+                  const lang = u.hostname.split(".")[0]
+                  const m = u.pathname.match(/\/wiki\/(.+)/)
+                  if (m) {
+                    node.children[0].value = `wikipedia/${lang !== "simple" ? lang + "/" : ""}${m[1]}`
                   }
-                  ctx.node.properties.dataLinkVendor = "bentoml"
-                }
-
-                if (linkTypes.isModular) {
-                  if (!classes.includes("modular-link")) {
-                    classes.push("modular-link")
-                  }
-                  ctx.node.properties.dataLinkVendor = "modular"
-                }
-
-                if (linkTypes.isGithub) {
-                  if (!classes.includes("github-link")) {
-                    classes.push("github-link")
-                  }
-                  ctx.node.properties.dataLinkVendor = "github"
-                }
-
-                if (
-                  linkTypes.isWikipedia &&
-                  node.children.length === 1 &&
-                  node.children[0].type === "text" &&
-                  node.children[0].value === dest
-                ) {
-                  try {
-                    const u = new URL(dest)
-                    const lang = u.hostname.split(".")[0]
-                    const m = u.pathname.match(/\/wiki\/(.+)/)
-                    if (m) {
-                      node.children[0].value = `wikipedia/${lang !== "simple" ? lang + "/" : ""}${m[1]}`
-                    }
-                  } catch {}
-                }
+                } catch {}
+              }
 
                 if (
                   linkTypes.isYoutube &&

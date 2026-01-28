@@ -33,11 +33,7 @@ export type QuartzFilterPluginInstance = {
   shouldPublish(ctx: BuildCtx, content: ProcessedContent): boolean
 }
 
-export type ChangeEvent = {
-  type: "add" | "change" | "delete"
-  path: FilePath
-  file?: VFile
-}
+export type ChangeEvent = { type: "add" | "change" | "delete"; path: FilePath; file?: VFile }
 
 export type QuartzEmitterPlugin<Options extends OptionType = undefined> = (
   opts?: Options,

@@ -13,10 +13,7 @@ type LevelSection = {
   indices: { offset: number; elements: number; byteLength: number }
 }
 
-type ChunkMetadata = {
-  parentSlug: string
-  chunkId: number
-}
+type ChunkMetadata = { parentSlug: string; chunkId: number }
 
 type Manifest = {
   version: number
@@ -26,12 +23,7 @@ type Manifest = {
   normalized: boolean
   rows: number
   shardSizeRows: number
-  vectors: {
-    dtype: string
-    rows: number
-    dims: number
-    shards: VectorShardMeta[]
-  }
+  vectors: { dtype: string; rows: number; dims: number; shards: VectorShardMeta[] }
   ids: string[]
   titles?: string[]
   chunkMetadata?: Record<string, ChunkMetadata>
@@ -40,11 +32,7 @@ type Manifest = {
     efConstruction: number
     entryPoint: number
     maxLevel: number
-    graph: {
-      path: string
-      sha256?: string
-      levels: LevelSection[]
-    }
+    graph: { path: string; sha256?: string; levels: LevelSection[] }
   }
 }
 
@@ -356,9 +344,7 @@ export async function semanticSearch(
   const engine = await getSearchEngine()
   const modelId = engine.getModelId()
   const prefixedQuery = buildQueryText(query, modelId)
-  const embedding = await env.AI.run(resolveCfModel(modelId), {
-    text: [prefixedQuery],
-  })
+  const embedding = await env.AI.run(resolveCfModel(modelId), { text: [prefixedQuery] })
 
   const embeddingData = embedding.data[0] as number[]
   return await engine.search(embeddingData, limit)

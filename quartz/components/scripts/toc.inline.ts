@@ -86,10 +86,7 @@ function scrollToElement(hash: string) {
   const rect = element.getBoundingClientRect()
   const absoluteTop = window.scrollY + rect.top
 
-  window.scrollTo({
-    top: absoluteTop - 100,
-    behavior: "smooth",
-  })
+  window.scrollTo({ top: absoluteTop - 100, behavior: "smooth" })
 
   history.pushState(null, "", hash)
 }

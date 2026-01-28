@@ -119,10 +119,7 @@ export function reduce(
       }
     }
     case "nav.ready": {
-      return {
-        model: model,
-        effects: [{ type: "ws.connect" }],
-      }
+      return { model: model, effects: [{ type: "ws.connect" }] }
     }
     case "storage.pendingOpsRestored": {
       const pendingOps = new Map(event.ops.map((op) => [op.opId, op]))
@@ -135,12 +132,7 @@ export function reduce(
     case "ws.init": {
       const comments = applyPendingOpsToComments(event.comments, model.pendingOps)
       return {
-        model: {
-          ...model,
-          comments,
-          lastSeq: event.latestSeq,
-          hasSnapshot: true,
-        },
+        model: { ...model, comments, lastSeq: event.latestSeq, hasSnapshot: true },
         effects: [
           { type: "render" },
           { type: "refreshModal" },
@@ -170,16 +162,7 @@ export function reduce(
       if (pendingOpsChanged && model.currentPageId) {
         effects.push({ type: "persistPendingOps", pageId: model.currentPageId })
       }
-      return {
-        model: {
-          ...model,
-          comments,
-          pendingOps,
-          lastSeq,
-          hasSnapshot: true,
-        },
-        effects,
-      }
+      return { model: { ...model, comments, pendingOps, lastSeq, hasSnapshot: true }, effects }
     }
     case "ws.op": {
       let comments = upsertComment(model.comments, event.op.comment)
@@ -189,15 +172,7 @@ export function reduce(
       if (removal.changed && model.currentPageId) {
         effects.push({ type: "persistPendingOps", pageId: model.currentPageId })
       }
-      return {
-        model: {
-          ...model,
-          comments,
-          pendingOps: removal.pendingOps,
-          lastSeq,
-        },
-        effects,
-      }
+      return { model: { ...model, comments, pendingOps: removal.pendingOps, lastSeq }, effects }
     }
     case "ws.ack": {
       const removal = removePendingOp(model.pendingOps, event.opId)
@@ -226,14 +201,7 @@ export function reduce(
       if (model.currentPageId) {
         effects.push({ type: "persistPendingOps", pageId: model.currentPageId })
       }
-      return {
-        model: {
-          ...model,
-          comments,
-          pendingOps,
-        },
-        effects,
-      }
+      return { model: { ...model, comments, pendingOps }, effects }
     }
     case "author.update": {
       let updated = false
@@ -249,21 +217,13 @@ export function reduce(
     }
     case "ui.selection.changed": {
       return {
-        model: {
-          ...model,
-          activeSelection: event.range,
-          activeComposerId: "selection",
-        },
+        model: { ...model, activeSelection: event.range, activeComposerId: "selection" },
         effects: [{ type: "selection.highlight" }, { type: "composer.show" }],
       }
     }
     case "ui.selection.cleared": {
       return {
-        model: {
-          ...model,
-          activeSelection: null,
-          activeComposerId: null,
-        },
+        model: { ...model, activeSelection: null, activeComposerId: null },
         effects: [{ type: "composer.hide" }],
       }
     }
@@ -274,42 +234,24 @@ export function reduce(
       }
     }
     case "ui.hash.consumed": {
-      return {
-        model: { ...model, pendingHashCommentId: null },
-        effects: [],
-      }
+      return { model: { ...model, pendingHashCommentId: null }, effects: [] }
     }
     case "ui.modal.open": {
-      return {
-        model: { ...model, activeModalId: event.commentId },
-        effects: [],
-      }
+      return { model: { ...model, activeModalId: event.commentId }, effects: [] }
     }
     case "ui.modal.close": {
-      return {
-        model: { ...model, activeModalId: null },
-        effects: [],
-      }
+      return { model: { ...model, activeModalId: null }, effects: [] }
     }
     case "ui.popover.open": {
-      return {
-        model: { ...model, activeActionsPopoverId: event.commentId },
-        effects: [],
-      }
+      return { model: { ...model, activeActionsPopoverId: event.commentId }, effects: [] }
     }
     case "ui.popover.close": {
-      return {
-        model: { ...model, activeActionsPopoverId: null },
-        effects: [],
-      }
+      return { model: { ...model, activeActionsPopoverId: null }, effects: [] }
     }
     case "ui.bubble.offsetUpdated": {
       const bubbleOffsets = new Map(model.bubbleOffsets)
       bubbleOffsets.set(event.commentId, event.offset)
-      return {
-        model: { ...model, bubbleOffsets },
-        effects: [],
-      }
+      return { model: { ...model, bubbleOffsets }, effects: [] }
     }
     case "ui.bubbleOffsets.prune": {
       if (event.commentIds.length === 0) {
@@ -319,10 +261,7 @@ export function reduce(
       for (const commentId of event.commentIds) {
         bubbleOffsets.delete(commentId)
       }
-      return {
-        model: { ...model, bubbleOffsets },
-        effects: [],
-      }
+      return { model: { ...model, bubbleOffsets }, effects: [] }
     }
     case "ui.correctedAnchor.add": {
       if (model.correctedAnchors.has(event.opId)) {
@@ -330,10 +269,7 @@ export function reduce(
       }
       const correctedAnchors = new Set(model.correctedAnchors)
       correctedAnchors.add(event.opId)
-      return {
-        model: { ...model, correctedAnchors },
-        effects: [],
-      }
+      return { model: { ...model, correctedAnchors }, effects: [] }
     }
     case "ui.comment.unread": {
       if (model.unreadCommentIds.has(event.commentId)) {
@@ -341,10 +277,7 @@ export function reduce(
       }
       const unreadCommentIds = new Set(model.unreadCommentIds)
       unreadCommentIds.add(event.commentId)
-      return {
-        model: { ...model, unreadCommentIds },
-        effects: [{ type: "render" }],
-      }
+      return { model: { ...model, unreadCommentIds }, effects: [{ type: "render" }] }
     }
     case "ui.comment.read": {
       if (!model.unreadCommentIds.has(event.commentId)) {
@@ -352,10 +285,7 @@ export function reduce(
       }
       const unreadCommentIds = new Set(model.unreadCommentIds)
       unreadCommentIds.delete(event.commentId)
-      return {
-        model: { ...model, unreadCommentIds },
-        effects: [{ type: "render" }],
-      }
+      return { model: { ...model, unreadCommentIds }, effects: [{ type: "render" }] }
     }
     case "dom.collapse": {
       return {

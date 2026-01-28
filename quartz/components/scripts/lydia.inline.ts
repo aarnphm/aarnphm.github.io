@@ -521,10 +521,7 @@ function initTimelineLocationPreview() {
 
   const centroidFromMarker = (marker: HTMLElement) => {
     const rect = marker.getBoundingClientRect()
-    return {
-      x: rect.left + rect.width / 2,
-      y: rect.top + rect.height / 2,
-    }
+    return { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 }
   }
 
   locationItems.forEach((item) => {

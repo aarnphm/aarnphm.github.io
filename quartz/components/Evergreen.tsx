@@ -118,11 +118,7 @@ export default ((opts?: EvergreenNotes) => {
         <Permanent {...props} />
         <article style={{ marginBottom: 0 }}>
           {content}
-          <p>
-            {i18n(cfg.locale).pages.folderContent.itemsUnderFolder({
-              count: allFiles.length,
-            })}
-          </p>
+          <p>{i18n(cfg.locale).pages.folderContent.itemsUnderFolder({ count: allFiles.length })}</p>
         </article>
         <AllTags {...props} opts />
       </div>

@@ -211,14 +211,7 @@ export function sidenote(): Extension {
     }
   }
 
-  return {
-    text: {
-      [codes.leftCurlyBrace]: {
-        tokenize,
-        resolveAll: resolveAllSidenote,
-      },
-    },
-  }
+  return { text: { [codes.leftCurlyBrace]: { tokenize, resolveAll: resolveAllSidenote } } }
 }
 
 function resolveAllSidenote(events: any[]) {

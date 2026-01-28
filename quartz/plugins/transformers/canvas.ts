@@ -315,21 +315,13 @@ export async function processCanvasFile(
       const resolvedLinks = wikilinks.map((link) => {
         const resolved = resolveWikilinkTarget(link, currentSlug)
         if (!resolved) {
-          return {
-            link,
-            missing: true,
-          }
+          return { link, missing: true }
         }
 
         const baseHref = resolveRelative(currentSlug, resolved.slug)
         const href = resolved.anchor ? `${baseHref}${resolved.anchor}` : baseHref
 
-        return {
-          link,
-          resolvedSlug: resolved.slug,
-          resolvedHref: href,
-          missing: false,
-        }
+        return { link, resolvedSlug: resolved.slug, resolvedHref: href, missing: false }
       })
 
       const regex = createWikilinkRegex()

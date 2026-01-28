@@ -29,11 +29,7 @@
       "tid": 2,
       "ts": 6740206725576.285,
       "dur": 1098.309,
-      "args": {
-        "External id": 1,
-        "Record function id": 0,
-        "Ev Idx": 0
-      }
+      "args": { "External id": 1, "Record function id": 0, "Ev Idx": 0 }
     },
     {
       "ph": "X",
@@ -451,11 +447,7 @@
       "tid": 2,
       "ts": 6740206726736.604,
       "dur": 131.588,
-      "args": {
-        "External id": 19,
-        "Record function id": 0,
-        "Ev Idx": 18
-      }
+      "args": { "External id": 19, "Record function id": 0, "Ev Idx": 18 }
     },
     {
       "ph": "X",
@@ -873,11 +865,7 @@
       "tid": 2,
       "ts": 6740206726884.08,
       "dur": 114.199,
-      "args": {
-        "External id": 37,
-        "Record function id": 0,
-        "Ev Idx": 36
-      }
+      "args": { "External id": 37, "Record function id": 0, "Ev Idx": 36 }
     },
     {
       "ph": "X",
@@ -1295,11 +1283,7 @@
       "tid": 2,
       "ts": 6740206727012.144,
       "dur": 357.308,
-      "args": {
-        "External id": 55,
-        "Record function id": 0,
-        "Ev Idx": 54
-      }
+      "args": { "External id": 55, "Record function id": 0, "Ev Idx": 54 }
     },
     {
       "ph": "X",
@@ -1717,11 +1701,7 @@
       "tid": 2,
       "ts": 6740206727399.607,
       "dur": 139.289,
-      "args": {
-        "External id": 73,
-        "Record function id": 0,
-        "Ev Idx": 72
-      }
+      "args": { "External id": 73, "Record function id": 0, "Ev Idx": 72 }
     },
     {
       "ph": "X",
@@ -2139,11 +2119,7 @@
       "tid": 2,
       "ts": 6740206727551.041,
       "dur": 78.203,
-      "args": {
-        "External id": 91,
-        "Record function id": 0,
-        "Ev Idx": 90
-      }
+      "args": { "External id": 91, "Record function id": 0, "Ev Idx": 90 }
     },
     {
       "ph": "X",
@@ -2561,11 +2537,7 @@
       "tid": 2,
       "ts": 6740206727639.575,
       "dur": 72.58,
-      "args": {
-        "External id": 109,
-        "Record function id": 0,
-        "Ev Idx": 108
-      }
+      "args": { "External id": 109, "Record function id": 0, "Ev Idx": 108 }
     },
     {
       "ph": "X",
@@ -2983,11 +2955,7 @@
       "tid": 2,
       "ts": 6740206727721.728,
       "dur": 69.335,
-      "args": {
-        "External id": 127,
-        "Record function id": 0,
-        "Ev Idx": 126
-      }
+      "args": { "External id": 127, "Record function id": 0, "Ev Idx": 126 }
     },
     {
       "ph": "X",
@@ -3405,11 +3373,7 @@
       "tid": 2,
       "ts": 6740206727801.079,
       "dur": 73.324,
-      "args": {
-        "External id": 145,
-        "Record function id": 0,
-        "Ev Idx": 144
-      }
+      "args": { "External id": 145, "Record function id": 0, "Ev Idx": 144 }
     },
     {
       "ph": "X",
@@ -3827,11 +3791,7 @@
       "tid": 2,
       "ts": 6740206727883.224,
       "dur": 98.042,
-      "args": {
-        "External id": 163,
-        "Record function id": 0,
-        "Ev Idx": 162
-      }
+      "args": { "External id": 163, "Record function id": 0, "Ev Idx": 162 }
     },
     {
       "ph": "X",
@@ -4249,11 +4209,7 @@
       "tid": 2,
       "ts": 6740206727993.876,
       "dur": 73.084,
-      "args": {
-        "External id": 181,
-        "Record function id": 0,
-        "Ev Idx": 180
-      }
+      "args": { "External id": 181, "Record function id": 0, "Ev Idx": 180 }
     },
     {
       "ph": "X",
@@ -4671,11 +4627,7 @@
       "tid": 2,
       "ts": 6740206728077.296,
       "dur": 65.597,
-      "args": {
-        "External id": 199,
-        "Record function id": 0,
-        "Ev Idx": 198
-      }
+      "args": { "External id": 199, "Record function id": 0, "Ev Idx": 198 }
     },
     {
       "ph": "X",
@@ -5093,11 +5045,7 @@
       "tid": 2,
       "ts": 6740206728151.826,
       "dur": 65.637,
-      "args": {
-        "External id": 217,
-        "Record function id": 0,
-        "Ev Idx": 216
-      }
+      "args": { "External id": 217, "Record function id": 0, "Ev Idx": 216 }
     },
     {
       "ph": "X",
@@ -5515,11 +5463,7 @@
       "tid": 2,
       "ts": 6740206728225.711,
       "dur": 68.61,
-      "args": {
-        "External id": 235,
-        "Record function id": 0,
-        "Ev Idx": 234
-      }
+      "args": { "External id": 235, "Record function id": 0, "Ev Idx": 234 }
     },
     {
       "ph": "X",
@@ -5937,11 +5881,7 @@
       "tid": 2,
       "ts": 6740206728305.639,
       "dur": 77.465,
-      "args": {
-        "External id": 253,
-        "Record function id": 0,
-        "Ev Idx": 252
-      }
+      "args": { "External id": 253, "Record function id": 0, "Ev Idx": 252 }
     },
     {
       "ph": "X",
@@ -6359,11 +6299,7 @@
       "tid": 2,
       "ts": 6740206728391.304,
       "dur": 65.871,
-      "args": {
-        "External id": 271,
-        "Record function id": 0,
-        "Ev Idx": 270
-      }
+      "args": { "External id": 271, "Record function id": 0, "Ev Idx": 270 }
     },
     {
       "ph": "X",
@@ -6781,11 +6717,7 @@
       "tid": 2,
       "ts": 6740206728464.435,
       "dur": 62.771,
-      "args": {
-        "External id": 289,
-        "Record function id": 0,
-        "Ev Idx": 288
-      }
+      "args": { "External id": 289, "Record function id": 0, "Ev Idx": 288 }
     },
     {
       "ph": "X",
@@ -7203,11 +7135,7 @@
       "tid": 2,
       "ts": 6740206728534.359,
       "dur": 62.227,
-      "args": {
-        "External id": 307,
-        "Record function id": 0,
-        "Ev Idx": 306
-      }
+      "args": { "External id": 307, "Record function id": 0, "Ev Idx": 306 }
     },
     {
       "ph": "X",
@@ -7625,11 +7553,7 @@
       "tid": 2,
       "ts": 6740206728604.954,
       "dur": 65.824,
-      "args": {
-        "External id": 325,
-        "Record function id": 0,
-        "Ev Idx": 324
-      }
+      "args": { "External id": 325, "Record function id": 0, "Ev Idx": 324 }
     },
     {
       "ph": "X",
@@ -8047,11 +7971,7 @@
       "tid": 2,
       "ts": 6740206728678.214,
       "dur": 61.888,
-      "args": {
-        "External id": 343,
-        "Record function id": 0,
-        "Ev Idx": 342
-      }
+      "args": { "External id": 343, "Record function id": 0, "Ev Idx": 342 }
     },
     {
       "ph": "X",
@@ -8469,11 +8389,7 @@
       "tid": 2,
       "ts": 6740206728747.516,
       "dur": 64.83,
-      "args": {
-        "External id": 361,
-        "Record function id": 0,
-        "Ev Idx": 360
-      }
+      "args": { "External id": 361, "Record function id": 0, "Ev Idx": 360 }
     },
     {
       "ph": "X",
@@ -8891,11 +8807,7 @@
       "tid": 2,
       "ts": 6740206728821.172,
       "dur": 66.815,
-      "args": {
-        "External id": 379,
-        "Record function id": 0,
-        "Ev Idx": 378
-      }
+      "args": { "External id": 379, "Record function id": 0, "Ev Idx": 378 }
     },
     {
       "ph": "X",
@@ -9313,11 +9225,7 @@
       "tid": 2,
       "ts": 6740206728896.931,
       "dur": 97.762,
-      "args": {
-        "External id": 397,
-        "Record function id": 0,
-        "Ev Idx": 396
-      }
+      "args": { "External id": 397, "Record function id": 0, "Ev Idx": 396 }
     },
     {
       "ph": "X",
@@ -9735,11 +9643,7 @@
       "tid": 2,
       "ts": 6740206729007.644,
       "dur": 81.621,
-      "args": {
-        "External id": 415,
-        "Record function id": 0,
-        "Ev Idx": 414
-      }
+      "args": { "External id": 415, "Record function id": 0, "Ev Idx": 414 }
     },
     {
       "ph": "X",
@@ -10157,11 +10061,7 @@
       "tid": 2,
       "ts": 6740206729098.733,
       "dur": 65.684,
-      "args": {
-        "External id": 433,
-        "Record function id": 0,
-        "Ev Idx": 432
-      }
+      "args": { "External id": 433, "Record function id": 0, "Ev Idx": 432 }
     },
     {
       "ph": "X",
@@ -10579,11 +10479,7 @@
       "tid": 2,
       "ts": 6740206729172.679,
       "dur": 65.953,
-      "args": {
-        "External id": 451,
-        "Record function id": 0,
-        "Ev Idx": 450
-      }
+      "args": { "External id": 451, "Record function id": 0, "Ev Idx": 450 }
     },
     {
       "ph": "X",
@@ -11001,11 +10897,7 @@
       "tid": 2,
       "ts": 6740206729246.985,
       "dur": 326.316,
-      "args": {
-        "External id": 469,
-        "Record function id": 0,
-        "Ev Idx": 468
-      }
+      "args": { "External id": 469, "Record function id": 0, "Ev Idx": 468 }
     },
     {
       "ph": "X",
@@ -11423,11 +11315,7 @@
       "tid": 2,
       "ts": 6740206729600.153,
       "dur": 106.549,
-      "args": {
-        "External id": 487,
-        "Record function id": 0,
-        "Ev Idx": 486
-      }
+      "args": { "External id": 487, "Record function id": 0, "Ev Idx": 486 }
     },
     {
       "ph": "X",
@@ -11845,11 +11733,7 @@
       "tid": 2,
       "ts": 6740206729718.09,
       "dur": 112.121,
-      "args": {
-        "External id": 505,
-        "Record function id": 0,
-        "Ev Idx": 504
-      }
+      "args": { "External id": 505, "Record function id": 0, "Ev Idx": 504 }
     },
     {
       "ph": "X",
@@ -12267,11 +12151,7 @@
       "tid": 2,
       "ts": 6740206729844.24,
       "dur": 84.014,
-      "args": {
-        "External id": 523,
-        "Record function id": 0,
-        "Ev Idx": 522
-      }
+      "args": { "External id": 523, "Record function id": 0, "Ev Idx": 522 }
     },
     {
       "ph": "X",
@@ -17009,11 +16889,7 @@
       "tid": 2,
       "ts": 6740206726481.552,
       "dur": 4.054,
-      "args": {
-        "External id": 10,
-        "cbid": 317,
-        "correlation": 459
-      }
+      "args": { "External id": 10, "cbid": 317, "correlation": 459 }
     },
     {
       "ph": "f",
@@ -17033,11 +16909,7 @@
       "tid": 2,
       "ts": 6740206726503.186,
       "dur": 9.913,
-      "args": {
-        "External id": 10,
-        "cbid": 273,
-        "correlation": 462
-      }
+      "args": { "External id": 10, "cbid": 273, "correlation": 462 }
     },
     {
       "ph": "f",
@@ -17091,11 +16963,7 @@
       "tid": 2,
       "ts": 6740206726515.684,
       "dur": 39.064,
-      "args": {
-        "External id": 10,
-        "cbid": 211,
-        "correlation": 463
-      }
+      "args": { "External id": 10, "cbid": 211, "correlation": 463 }
     },
     {
       "ph": "s",
@@ -17114,11 +16982,7 @@
       "tid": 2,
       "ts": 6740206726823.835,
       "dur": 0.769,
-      "args": {
-        "External id": 28,
-        "cbid": 317,
-        "correlation": 502
-      }
+      "args": { "External id": 28, "cbid": 317, "correlation": 502 }
     },
     {
       "ph": "f",
@@ -17138,11 +17002,7 @@
       "tid": 2,
       "ts": 6740206726829.203,
       "dur": 0.88,
-      "args": {
-        "External id": 28,
-        "cbid": 273,
-        "correlation": 505
-      }
+      "args": { "External id": 28, "cbid": 273, "correlation": 505 }
     },
     {
       "ph": "f",
@@ -17196,11 +17056,7 @@
       "tid": 2,
       "ts": 6740206726830.692,
       "dur": 9.896,
-      "args": {
-        "External id": 28,
-        "cbid": 211,
-        "correlation": 506
-      }
+      "args": { "External id": 28, "cbid": 211, "correlation": 506 }
     },
     {
       "ph": "s",
@@ -17219,11 +17075,7 @@
       "tid": 2,
       "ts": 6740206726952.957,
       "dur": 0.724,
-      "args": {
-        "External id": 46,
-        "cbid": 317,
-        "correlation": 545
-      }
+      "args": { "External id": 46, "cbid": 317, "correlation": 545 }
     },
     {
       "ph": "f",
@@ -17243,11 +17095,7 @@
       "tid": 2,
       "ts": 6740206726960.714,
       "dur": 0.836,
-      "args": {
-        "External id": 46,
-        "cbid": 273,
-        "correlation": 548
-      }
+      "args": { "External id": 46, "cbid": 273, "correlation": 548 }
     },
     {
       "ph": "f",
@@ -17301,11 +17149,7 @@
       "tid": 2,
       "ts": 6740206726961.967,
       "dur": 7.985,
-      "args": {
-        "External id": 46,
-        "cbid": 211,
-        "correlation": 549
-      }
+      "args": { "External id": 46, "cbid": 211, "correlation": 549 }
     },
     {
       "ph": "s",
@@ -17324,11 +17168,7 @@
       "tid": 2,
       "ts": 6740206727058.149,
       "dur": 0.535,
-      "args": {
-        "External id": 64,
-        "cbid": 317,
-        "correlation": 588
-      }
+      "args": { "External id": 64, "cbid": 317, "correlation": 588 }
     },
     {
       "ph": "f",
@@ -17348,11 +17188,7 @@
       "tid": 2,
       "ts": 6740206727245.571,
       "dur": 10.847,
-      "args": {
-        "External id": 64,
-        "cbid": 273,
-        "correlation": 591
-      }
+      "args": { "External id": 64, "cbid": 273, "correlation": 591 }
     },
     {
       "ph": "f",
@@ -17406,11 +17242,7 @@
       "tid": 2,
       "ts": 6740206727257.556,
       "dur": 15.597,
-      "args": {
-        "External id": 64,
-        "cbid": 211,
-        "correlation": 592
-      }
+      "args": { "External id": 64, "cbid": 211, "correlation": 592 }
     },
     {
       "ph": "s",
@@ -17429,11 +17261,7 @@
       "tid": 2,
       "ts": 6740206727499.796,
       "dur": 0.855,
-      "args": {
-        "External id": 82,
-        "cbid": 317,
-        "correlation": 631
-      }
+      "args": { "External id": 82, "cbid": 317, "correlation": 631 }
     },
     {
       "ph": "f",
@@ -17453,11 +17281,7 @@
       "tid": 2,
       "ts": 6740206727507.11,
       "dur": 0.619,
-      "args": {
-        "External id": 82,
-        "cbid": 273,
-        "correlation": 634
-      }
+      "args": { "External id": 82, "cbid": 273, "correlation": 634 }
     },
     {
       "ph": "f",
@@ -17511,11 +17335,7 @@
       "tid": 2,
       "ts": 6740206727508.094,
       "dur": 6.968,
-      "args": {
-        "External id": 82,
-        "cbid": 211,
-        "correlation": 635
-      }
+      "args": { "External id": 82, "cbid": 211, "correlation": 635 }
     },
     {
       "ph": "s",
@@ -17534,11 +17354,7 @@
       "tid": 2,
       "ts": 6740206727597.073,
       "dur": 0.407,
-      "args": {
-        "External id": 100,
-        "cbid": 317,
-        "correlation": 674
-      }
+      "args": { "External id": 100, "cbid": 317, "correlation": 674 }
     },
     {
       "ph": "f",
@@ -17558,11 +17374,7 @@
       "tid": 2,
       "ts": 6740206727602.85,
       "dur": 0.508,
-      "args": {
-        "External id": 100,
-        "cbid": 273,
-        "correlation": 677
-      }
+      "args": { "External id": 100, "cbid": 273, "correlation": 677 }
     },
     {
       "ph": "f",
@@ -17616,11 +17428,7 @@
       "tid": 2,
       "ts": 6740206727603.638,
       "dur": 5.397,
-      "args": {
-        "External id": 100,
-        "cbid": 211,
-        "correlation": 678
-      }
+      "args": { "External id": 100, "cbid": 211, "correlation": 678 }
     },
     {
       "ph": "s",
@@ -17639,11 +17447,7 @@
       "tid": 2,
       "ts": 6740206727677.648,
       "dur": 0.497,
-      "args": {
-        "External id": 118,
-        "cbid": 317,
-        "correlation": 717
-      }
+      "args": { "External id": 118, "cbid": 317, "correlation": 717 }
     },
     {
       "ph": "f",
@@ -17663,11 +17467,7 @@
       "tid": 2,
       "ts": 6740206727683.207,
       "dur": 0.513,
-      "args": {
-        "External id": 118,
-        "cbid": 273,
-        "correlation": 720
-      }
+      "args": { "External id": 118, "cbid": 273, "correlation": 720 }
     },
     {
       "ph": "f",
@@ -17721,11 +17521,7 @@
       "tid": 2,
       "ts": 6740206727684.001,
       "dur": 6.629,
-      "args": {
-        "External id": 118,
-        "cbid": 211,
-        "correlation": 721
-      }
+      "args": { "External id": 118, "cbid": 211, "correlation": 721 }
     },
     {
       "ph": "s",
@@ -17744,11 +17540,7 @@
       "tid": 2,
       "ts": 6740206727761.656,
       "dur": 0.497,
-      "args": {
-        "External id": 136,
-        "cbid": 317,
-        "correlation": 760
-      }
+      "args": { "External id": 136, "cbid": 317, "correlation": 760 }
     },
     {
       "ph": "f",
@@ -17768,11 +17560,7 @@
       "tid": 2,
       "ts": 6740206727765.247,
       "dur": 0.462,
-      "args": {
-        "External id": 136,
-        "cbid": 273,
-        "correlation": 763
-      }
+      "args": { "External id": 136, "cbid": 273, "correlation": 763 }
     },
     {
       "ph": "f",
@@ -17826,11 +17614,7 @@
       "tid": 2,
       "ts": 6740206727765.989,
       "dur": 4.718,
-      "args": {
-        "External id": 136,
-        "cbid": 211,
-        "correlation": 764
-      }
+      "args": { "External id": 136, "cbid": 211, "correlation": 764 }
     },
     {
       "ph": "s",
@@ -17849,11 +17633,7 @@
       "tid": 2,
       "ts": 6740206727838.441,
       "dur": 0.486,
-      "args": {
-        "External id": 154,
-        "cbid": 317,
-        "correlation": 803
-      }
+      "args": { "External id": 154, "cbid": 317, "correlation": 803 }
     },
     {
       "ph": "f",
@@ -17873,11 +17653,7 @@
       "tid": 2,
       "ts": 6740206727842.018,
       "dur": 0.447,
-      "args": {
-        "External id": 154,
-        "cbid": 273,
-        "correlation": 806
-      }
+      "args": { "External id": 154, "cbid": 273, "correlation": 806 }
     },
     {
       "ph": "f",
@@ -17931,11 +17707,7 @@
       "tid": 2,
       "ts": 6740206727842.738,
       "dur": 5.801,
-      "args": {
-        "External id": 154,
-        "cbid": 211,
-        "correlation": 807
-      }
+      "args": { "External id": 154, "cbid": 211, "correlation": 807 }
     },
     {
       "ph": "s",
@@ -17954,11 +17726,7 @@
       "tid": 2,
       "ts": 6740206727941.066,
       "dur": 0.677,
-      "args": {
-        "External id": 172,
-        "cbid": 317,
-        "correlation": 846
-      }
+      "args": { "External id": 172, "cbid": 317, "correlation": 846 }
     },
     {
       "ph": "f",
@@ -17978,11 +17746,7 @@
       "tid": 2,
       "ts": 6740206727945.749,
       "dur": 0.754,
-      "args": {
-        "External id": 172,
-        "cbid": 273,
-        "correlation": 849
-      }
+      "args": { "External id": 172, "cbid": 273, "correlation": 849 }
     },
     {
       "ph": "f",
@@ -18036,11 +17800,7 @@
       "tid": 2,
       "ts": 6740206727947.126,
       "dur": 6.585,
-      "args": {
-        "External id": 172,
-        "cbid": 211,
-        "correlation": 850
-      }
+      "args": { "External id": 172, "cbid": 211, "correlation": 850 }
     },
     {
       "ph": "s",
@@ -18059,11 +17819,7 @@
       "tid": 2,
       "ts": 6740206728034.882,
       "dur": 0.469,
-      "args": {
-        "External id": 190,
-        "cbid": 317,
-        "correlation": 889
-      }
+      "args": { "External id": 190, "cbid": 317, "correlation": 889 }
     },
     {
       "ph": "f",
@@ -18083,11 +17839,7 @@
       "tid": 2,
       "ts": 6740206728039.348,
       "dur": 0.397,
-      "args": {
-        "External id": 190,
-        "cbid": 273,
-        "correlation": 892
-      }
+      "args": { "External id": 190, "cbid": 273, "correlation": 892 }
     },
     {
       "ph": "f",
@@ -18141,11 +17893,7 @@
       "tid": 2,
       "ts": 6740206728040.19,
       "dur": 6.505,
-      "args": {
-        "External id": 190,
-        "cbid": 211,
-        "correlation": 893
-      }
+      "args": { "External id": 190, "cbid": 211, "correlation": 893 }
     },
     {
       "ph": "s",
@@ -18164,11 +17912,7 @@
       "tid": 2,
       "ts": 6740206728113.494,
       "dur": 0.517,
-      "args": {
-        "External id": 208,
-        "cbid": 317,
-        "correlation": 932
-      }
+      "args": { "External id": 208, "cbid": 317, "correlation": 932 }
     },
     {
       "ph": "f",
@@ -18188,11 +17932,7 @@
       "tid": 2,
       "ts": 6740206728117.405,
       "dur": 0.431,
-      "args": {
-        "External id": 208,
-        "cbid": 273,
-        "correlation": 935
-      }
+      "args": { "External id": 208, "cbid": 273, "correlation": 935 }
     },
     {
       "ph": "f",
@@ -18246,11 +17986,7 @@
       "tid": 2,
       "ts": 6740206728118.104,
       "dur": 4.974,
-      "args": {
-        "External id": 208,
-        "cbid": 211,
-        "correlation": 936
-      }
+      "args": { "External id": 208, "cbid": 211, "correlation": 936 }
     },
     {
       "ph": "s",
@@ -18269,11 +18005,7 @@
       "tid": 2,
       "ts": 6740206728189.921,
       "dur": 0.462,
-      "args": {
-        "External id": 226,
-        "cbid": 317,
-        "correlation": 975
-      }
+      "args": { "External id": 226, "cbid": 317, "correlation": 975 }
     },
     {
       "ph": "f",
@@ -18293,11 +18025,7 @@
       "tid": 2,
       "ts": 6740206728193.36,
       "dur": 0.453,
-      "args": {
-        "External id": 226,
-        "cbid": 273,
-        "correlation": 978
-      }
+      "args": { "External id": 226, "cbid": 273, "correlation": 978 }
     },
     {
       "ph": "f",
@@ -18351,11 +18079,7 @@
       "tid": 2,
       "ts": 6740206728194.048,
       "dur": 5.618,
-      "args": {
-        "External id": 226,
-        "cbid": 211,
-        "correlation": 979
-      }
+      "args": { "External id": 226, "cbid": 211, "correlation": 979 }
     },
     {
       "ph": "s",
@@ -18374,11 +18098,7 @@
       "tid": 2,
       "ts": 6740206728260.728,
       "dur": 0.508,
-      "args": {
-        "External id": 244,
-        "cbid": 317,
-        "correlation": 1018
-      }
+      "args": { "External id": 244, "cbid": 317, "correlation": 1018 }
     },
     {
       "ph": "f",
@@ -18398,11 +18118,7 @@
       "tid": 2,
       "ts": 6740206728264.591,
       "dur": 0.454,
-      "args": {
-        "External id": 244,
-        "cbid": 273,
-        "correlation": 1021
-      }
+      "args": { "External id": 244, "cbid": 273, "correlation": 1021 }
     },
     {
       "ph": "f",
@@ -18456,11 +18172,7 @@
       "tid": 2,
       "ts": 6740206728265.297,
       "dur": 5.801,
-      "args": {
-        "External id": 244,
-        "cbid": 211,
-        "correlation": 1022
-      }
+      "args": { "External id": 244, "cbid": 211, "correlation": 1022 }
     },
     {
       "ph": "s",
@@ -18479,11 +18191,7 @@
       "tid": 2,
       "ts": 6740206728352.186,
       "dur": 0.518,
-      "args": {
-        "External id": 262,
-        "cbid": 317,
-        "correlation": 1061
-      }
+      "args": { "External id": 262, "cbid": 317, "correlation": 1061 }
     },
     {
       "ph": "f",
@@ -18503,11 +18211,7 @@
       "tid": 2,
       "ts": 6740206728356.046,
       "dur": 0.536,
-      "args": {
-        "External id": 262,
-        "cbid": 273,
-        "correlation": 1064
-      }
+      "args": { "External id": 262, "cbid": 273, "correlation": 1064 }
     },
     {
       "ph": "f",
@@ -18561,11 +18265,7 @@
       "tid": 2,
       "ts": 6740206728356.954,
       "dur": 6.753,
-      "args": {
-        "External id": 262,
-        "cbid": 211,
-        "correlation": 1065
-      }
+      "args": { "External id": 262, "cbid": 211, "correlation": 1065 }
     },
     {
       "ph": "s",
@@ -18584,11 +18284,7 @@
       "tid": 2,
       "ts": 6740206728428.523,
       "dur": 0.482,
-      "args": {
-        "External id": 280,
-        "cbid": 317,
-        "correlation": 1104
-      }
+      "args": { "External id": 280, "cbid": 317, "correlation": 1104 }
     },
     {
       "ph": "f",
@@ -18608,11 +18304,7 @@
       "tid": 2,
       "ts": 6740206728432.593,
       "dur": 0.454,
-      "args": {
-        "External id": 280,
-        "cbid": 273,
-        "correlation": 1107
-      }
+      "args": { "External id": 280, "cbid": 273, "correlation": 1107 }
     },
     {
       "ph": "f",
@@ -18666,11 +18358,7 @@
       "tid": 2,
       "ts": 6740206728433.272,
       "dur": 5.053,
-      "args": {
-        "External id": 280,
-        "cbid": 211,
-        "correlation": 1108
-      }
+      "args": { "External id": 280, "cbid": 211, "correlation": 1108 }
     },
     {
       "ph": "s",
@@ -18689,11 +18377,7 @@
       "tid": 2,
       "ts": 6740206728498.5,
       "dur": 0.427,
-      "args": {
-        "External id": 298,
-        "cbid": 317,
-        "correlation": 1147
-      }
+      "args": { "External id": 298, "cbid": 317, "correlation": 1147 }
     },
     {
       "ph": "f",
@@ -18713,11 +18397,7 @@
       "tid": 2,
       "ts": 6740206728501.94,
       "dur": 0.454,
-      "args": {
-        "External id": 298,
-        "cbid": 273,
-        "correlation": 1150
-      }
+      "args": { "External id": 298, "cbid": 273, "correlation": 1150 }
     },
     {
       "ph": "f",
@@ -18771,11 +18451,7 @@
       "tid": 2,
       "ts": 6740206728502.625,
       "dur": 6.676,
-      "args": {
-        "External id": 298,
-        "cbid": 211,
-        "correlation": 1151
-      }
+      "args": { "External id": 298, "cbid": 211, "correlation": 1151 }
     },
     {
       "ph": "s",
@@ -18794,11 +18470,7 @@
       "tid": 2,
       "ts": 6740206728569.691,
       "dur": 0.47,
-      "args": {
-        "External id": 316,
-        "cbid": 317,
-        "correlation": 1190
-      }
+      "args": { "External id": 316, "cbid": 317, "correlation": 1190 }
     },
     {
       "ph": "f",
@@ -18818,11 +18490,7 @@
       "tid": 2,
       "ts": 6740206728573.241,
       "dur": 0.439,
-      "args": {
-        "External id": 316,
-        "cbid": 273,
-        "correlation": 1193
-      }
+      "args": { "External id": 316, "cbid": 273, "correlation": 1193 }
     },
     {
       "ph": "f",
@@ -18876,11 +18544,7 @@
       "tid": 2,
       "ts": 6740206728573.952,
       "dur": 4.609,
-      "args": {
-        "External id": 316,
-        "cbid": 211,
-        "correlation": 1194
-      }
+      "args": { "External id": 316, "cbid": 211, "correlation": 1194 }
     },
     {
       "ph": "s",
@@ -18899,11 +18563,7 @@
       "tid": 2,
       "ts": 6740206728641.602,
       "dur": 0.41,
-      "args": {
-        "External id": 334,
-        "cbid": 317,
-        "correlation": 1233
-      }
+      "args": { "External id": 334, "cbid": 317, "correlation": 1233 }
     },
     {
       "ph": "f",
@@ -18923,11 +18583,7 @@
       "tid": 2,
       "ts": 6740206728646.306,
       "dur": 0.438,
-      "args": {
-        "External id": 334,
-        "cbid": 273,
-        "correlation": 1236
-      }
+      "args": { "External id": 334, "cbid": 273, "correlation": 1236 }
     },
     {
       "ph": "f",
@@ -18981,11 +18637,7 @@
       "tid": 2,
       "ts": 6740206728647.002,
       "dur": 5.633,
-      "args": {
-        "External id": 334,
-        "cbid": 211,
-        "correlation": 1237
-      }
+      "args": { "External id": 334, "cbid": 211, "correlation": 1237 }
     },
     {
       "ph": "s",
@@ -19004,11 +18656,7 @@
       "tid": 2,
       "ts": 6740206728712.079,
       "dur": 0.435,
-      "args": {
-        "External id": 352,
-        "cbid": 317,
-        "correlation": 1276
-      }
+      "args": { "External id": 352, "cbid": 317, "correlation": 1276 }
     },
     {
       "ph": "f",
@@ -19028,11 +18676,7 @@
       "tid": 2,
       "ts": 6740206728716.952,
       "dur": 0.431,
-      "args": {
-        "External id": 352,
-        "cbid": 273,
-        "correlation": 1279
-      }
+      "args": { "External id": 352, "cbid": 273, "correlation": 1279 }
     },
     {
       "ph": "f",
@@ -19086,11 +18730,7 @@
       "tid": 2,
       "ts": 6740206728717.647,
       "dur": 4.75,
-      "args": {
-        "External id": 352,
-        "cbid": 211,
-        "correlation": 1280
-      }
+      "args": { "External id": 352, "cbid": 211, "correlation": 1280 }
     },
     {
       "ph": "s",
@@ -19109,11 +18749,7 @@
       "tid": 2,
       "ts": 6740206728782.418,
       "dur": 0.422,
-      "args": {
-        "External id": 370,
-        "cbid": 317,
-        "correlation": 1319
-      }
+      "args": { "External id": 370, "cbid": 317, "correlation": 1319 }
     },
     {
       "ph": "f",
@@ -19133,11 +18769,7 @@
       "tid": 2,
       "ts": 6740206728788.166,
       "dur": 0.489,
-      "args": {
-        "External id": 370,
-        "cbid": 273,
-        "correlation": 1322
-      }
+      "args": { "External id": 370, "cbid": 273, "correlation": 1322 }
     },
     {
       "ph": "f",
@@ -19191,11 +18823,7 @@
       "tid": 2,
       "ts": 6740206728788.934,
       "dur": 5.581,
-      "args": {
-        "External id": 370,
-        "cbid": 211,
-        "correlation": 1323
-      }
+      "args": { "External id": 370, "cbid": 211, "correlation": 1323 }
     },
     {
       "ph": "s",
@@ -19214,11 +18842,7 @@
       "tid": 2,
       "ts": 6740206728860.075,
       "dur": 0.398,
-      "args": {
-        "External id": 388,
-        "cbid": 317,
-        "correlation": 1362
-      }
+      "args": { "External id": 388, "cbid": 317, "correlation": 1362 }
     },
     {
       "ph": "f",
@@ -19238,11 +18862,7 @@
       "tid": 2,
       "ts": 6740206728863.586,
       "dur": 0.447,
-      "args": {
-        "External id": 388,
-        "cbid": 273,
-        "correlation": 1365
-      }
+      "args": { "External id": 388, "cbid": 273, "correlation": 1365 }
     },
     {
       "ph": "f",
@@ -19296,11 +18916,7 @@
       "tid": 2,
       "ts": 6740206728864.265,
       "dur": 4.547,
-      "args": {
-        "External id": 388,
-        "cbid": 211,
-        "correlation": 1366
-      }
+      "args": { "External id": 388, "cbid": 211, "correlation": 1366 }
     },
     {
       "ph": "s",
@@ -19319,11 +18935,7 @@
       "tid": 2,
       "ts": 6740206728952.561,
       "dur": 0.553,
-      "args": {
-        "External id": 406,
-        "cbid": 317,
-        "correlation": 1405
-      }
+      "args": { "External id": 406, "cbid": 317, "correlation": 1405 }
     },
     {
       "ph": "f",
@@ -19343,11 +18955,7 @@
       "tid": 2,
       "ts": 6740206728958.208,
       "dur": 0.775,
-      "args": {
-        "External id": 406,
-        "cbid": 273,
-        "correlation": 1408
-      }
+      "args": { "External id": 406, "cbid": 273, "correlation": 1408 }
     },
     {
       "ph": "f",
@@ -19401,11 +19009,7 @@
       "tid": 2,
       "ts": 6740206728959.534,
       "dur": 7.663,
-      "args": {
-        "External id": 406,
-        "cbid": 211,
-        "correlation": 1409
-      }
+      "args": { "External id": 406, "cbid": 211, "correlation": 1409 }
     },
     {
       "ph": "s",
@@ -19424,11 +19028,7 @@
       "tid": 2,
       "ts": 6740206729049.859,
       "dur": 0.453,
-      "args": {
-        "External id": 424,
-        "cbid": 317,
-        "correlation": 1448
-      }
+      "args": { "External id": 424, "cbid": 317, "correlation": 1448 }
     },
     {
       "ph": "f",
@@ -19448,11 +19048,7 @@
       "tid": 2,
       "ts": 6740206729061.43,
       "dur": 0.497,
-      "args": {
-        "External id": 424,
-        "cbid": 273,
-        "correlation": 1451
-      }
+      "args": { "External id": 424, "cbid": 273, "correlation": 1451 }
     },
     {
       "ph": "f",
@@ -19506,11 +19102,7 @@
       "tid": 2,
       "ts": 6740206729062.2,
       "dur": 5.046,
-      "args": {
-        "External id": 424,
-        "cbid": 211,
-        "correlation": 1452
-      }
+      "args": { "External id": 424, "cbid": 211, "correlation": 1452 }
     },
     {
       "ph": "s",
@@ -19529,11 +19121,7 @@
       "tid": 2,
       "ts": 6740206729133.367,
       "dur": 0.43,
-      "args": {
-        "External id": 442,
-        "cbid": 317,
-        "correlation": 1491
-      }
+      "args": { "External id": 442, "cbid": 317, "correlation": 1491 }
     },
     {
       "ph": "f",
@@ -19553,11 +19141,7 @@
       "tid": 2,
       "ts": 6740206729137.344,
       "dur": 0.524,
-      "args": {
-        "External id": 442,
-        "cbid": 273,
-        "correlation": 1494
-      }
+      "args": { "External id": 442, "cbid": 273, "correlation": 1494 }
     },
     {
       "ph": "f",
@@ -19611,11 +19195,7 @@
       "tid": 2,
       "ts": 6740206729138.139,
       "dur": 5.68,
-      "args": {
-        "External id": 442,
-        "cbid": 211,
-        "correlation": 1495
-      }
+      "args": { "External id": 442, "cbid": 211, "correlation": 1495 }
     },
     {
       "ph": "s",
@@ -19634,11 +19214,7 @@
       "tid": 2,
       "ts": 6740206729209.726,
       "dur": 0.45,
-      "args": {
-        "External id": 460,
-        "cbid": 317,
-        "correlation": 1534
-      }
+      "args": { "External id": 460, "cbid": 317, "correlation": 1534 }
     },
     {
       "ph": "f",
@@ -19658,11 +19234,7 @@
       "tid": 2,
       "ts": 6740206729213.248,
       "dur": 0.491,
-      "args": {
-        "External id": 460,
-        "cbid": 273,
-        "correlation": 1537
-      }
+      "args": { "External id": 460, "cbid": 273, "correlation": 1537 }
     },
     {
       "ph": "f",
@@ -19716,11 +19288,7 @@
       "tid": 2,
       "ts": 6740206729213.978,
       "dur": 4.983,
-      "args": {
-        "External id": 460,
-        "cbid": 211,
-        "correlation": 1538
-      }
+      "args": { "External id": 460, "cbid": 211, "correlation": 1538 }
     },
     {
       "ph": "s",
@@ -19739,11 +19307,7 @@
       "tid": 2,
       "ts": 6740206729477.042,
       "dur": 1.105,
-      "args": {
-        "External id": 478,
-        "cbid": 317,
-        "correlation": 1577
-      }
+      "args": { "External id": 478, "cbid": 317, "correlation": 1577 }
     },
     {
       "ph": "f",
@@ -19763,11 +19327,7 @@
       "tid": 2,
       "ts": 6740206729486.428,
       "dur": 6.802,
-      "args": {
-        "External id": 478,
-        "cbid": 273,
-        "correlation": 1580
-      }
+      "args": { "External id": 478, "cbid": 273, "correlation": 1580 }
     },
     {
       "ph": "f",
@@ -19821,11 +19381,7 @@
       "tid": 2,
       "ts": 6740206729493.937,
       "dur": 12.87,
-      "args": {
-        "External id": 478,
-        "cbid": 211,
-        "correlation": 1581
-      }
+      "args": { "External id": 478, "cbid": 211, "correlation": 1581 }
     },
     {
       "ph": "s",
@@ -19844,11 +19400,7 @@
       "tid": 2,
       "ts": 6740206729672.036,
       "dur": 0.575,
-      "args": {
-        "External id": 496,
-        "cbid": 317,
-        "correlation": 1620
-      }
+      "args": { "External id": 496, "cbid": 317, "correlation": 1620 }
     },
     {
       "ph": "f",
@@ -19868,11 +19420,7 @@
       "tid": 2,
       "ts": 6740206729676.412,
       "dur": 0.743,
-      "args": {
-        "External id": 496,
-        "cbid": 273,
-        "correlation": 1623
-      }
+      "args": { "External id": 496, "cbid": 273, "correlation": 1623 }
     },
     {
       "ph": "f",
@@ -19926,11 +19474,7 @@
       "tid": 2,
       "ts": 6740206729677.571,
       "dur": 6.426,
-      "args": {
-        "External id": 496,
-        "cbid": 211,
-        "correlation": 1624
-      }
+      "args": { "External id": 496, "cbid": 211, "correlation": 1624 }
     },
     {
       "ph": "s",
@@ -19949,11 +19493,7 @@
       "tid": 2,
       "ts": 6740206729799.282,
       "dur": 0.557,
-      "args": {
-        "External id": 514,
-        "cbid": 317,
-        "correlation": 1663
-      }
+      "args": { "External id": 514, "cbid": 317, "correlation": 1663 }
     },
     {
       "ph": "f",
@@ -19973,11 +19513,7 @@
       "tid": 2,
       "ts": 6740206729803.062,
       "dur": 0.505,
-      "args": {
-        "External id": 514,
-        "cbid": 273,
-        "correlation": 1666
-      }
+      "args": { "External id": 514, "cbid": 273, "correlation": 1666 }
     },
     {
       "ph": "f",
@@ -20031,11 +19567,7 @@
       "tid": 2,
       "ts": 6740206729803.886,
       "dur": 5.461,
-      "args": {
-        "External id": 514,
-        "cbid": 211,
-        "correlation": 1667
-      }
+      "args": { "External id": 514, "cbid": 211, "correlation": 1667 }
     },
     {
       "ph": "s",
@@ -20054,11 +19586,7 @@
       "tid": 2,
       "ts": 6740206729885.254,
       "dur": 0.453,
-      "args": {
-        "External id": 532,
-        "cbid": 317,
-        "correlation": 1706
-      }
+      "args": { "External id": 532, "cbid": 317, "correlation": 1706 }
     },
     {
       "ph": "f",
@@ -20078,11 +19606,7 @@
       "tid": 2,
       "ts": 6740206729888.884,
       "dur": 0.504,
-      "args": {
-        "External id": 532,
-        "cbid": 273,
-        "correlation": 1709
-      }
+      "args": { "External id": 532, "cbid": 273, "correlation": 1709 }
     },
     {
       "ph": "f",
@@ -20136,11 +19660,7 @@
       "tid": 2,
       "ts": 6740206729889.634,
       "dur": 5.176,
-      "args": {
-        "External id": 532,
-        "cbid": 211,
-        "correlation": 1710
-      }
+      "args": { "External id": 532, "cbid": 211, "correlation": 1710 }
     },
     {
       "ph": "s",
@@ -20159,11 +19679,7 @@
       "tid": 2,
       "ts": 6740206729998.976,
       "dur": 10.985,
-      "args": {
-        "External id": 1727,
-        "cbid": 165,
-        "correlation": 1727
-      }
+      "args": { "External id": 1727, "cbid": 165, "correlation": 1727 }
     },
     {
       "ph": "s",
@@ -20182,9 +19698,7 @@
       "tid": 7,
       "ts": 6740206729895.406,
       "dur": 56.801,
-      "args": {
-        "External id": 523
-      }
+      "args": { "External id": 523 }
     },
     {
       "ph": "X",
@@ -20194,9 +19708,7 @@
       "tid": 7,
       "ts": 6740206728200.52,
       "dur": 56.289,
-      "args": {
-        "External id": 217
-      }
+      "args": { "External id": 217 }
     },
     {
       "ph": "X",
@@ -20206,9 +19718,7 @@
       "tid": 7,
       "ts": 6740206728123.785,
       "dur": 56.545,
-      "args": {
-        "External id": 199
-      }
+      "args": { "External id": 199 }
     },
     {
       "ph": "X",
@@ -20218,9 +19728,7 @@
       "tid": 7,
       "ts": 6740206728046.826,
       "dur": 56.098,
-      "args": {
-        "External id": 181
-      }
+      "args": { "External id": 181 }
     },
     {
       "ph": "X",
@@ -20230,9 +19738,7 @@
       "tid": 7,
       "ts": 6740206727954.028,
       "dur": 56.193,
-      "args": {
-        "External id": 163
-      }
+      "args": { "External id": 163 }
     },
     {
       "ph": "X",
@@ -20242,9 +19748,7 @@
       "tid": 7,
       "ts": 6740206727849.581,
       "dur": 56.034,
-      "args": {
-        "External id": 145
-      }
+      "args": { "External id": 145 }
     },
     {
       "ph": "X",
@@ -20254,9 +19758,7 @@
       "tid": 7,
       "ts": 6740206727771.438,
       "dur": 56.418,
-      "args": {
-        "External id": 127
-      }
+      "args": { "External id": 127 }
     },
     {
       "ph": "X",
@@ -20266,9 +19768,7 @@
       "tid": 7,
       "ts": 6740206727691.6,
       "dur": 56.449,
-      "args": {
-        "External id": 109
-      }
+      "args": { "External id": 109 }
     },
     {
       "ph": "X",
@@ -20278,9 +19778,7 @@
       "tid": 7,
       "ts": 6740206727609.521,
       "dur": 56.225,
-      "args": {
-        "External id": 91
-      }
+      "args": { "External id": 91 }
     },
     {
       "ph": "X",
@@ -20290,9 +19788,7 @@
       "tid": 7,
       "ts": 6740206727515.89,
       "dur": 56.865,
-      "args": {
-        "External id": 73
-      }
+      "args": { "External id": 73 }
     },
     {
       "ph": "X",
@@ -20302,9 +19798,7 @@
       "tid": 7,
       "ts": 6740206727271.702,
       "dur": 56.705,
-      "args": {
-        "External id": 55
-      }
+      "args": { "External id": 55 }
     },
     {
       "ph": "X",
@@ -20314,9 +19808,7 @@
       "tid": 7,
       "ts": 6740206726969.947,
       "dur": 56.289,
-      "args": {
-        "External id": 37
-      }
+      "args": { "External id": 37 }
     },
     {
       "ph": "X",
@@ -20326,9 +19818,7 @@
       "tid": 7,
       "ts": 6740206726840.412,
       "dur": 56.386,
-      "args": {
-        "External id": 19
-      }
+      "args": { "External id": 19 }
     },
     {
       "ph": "X",
@@ -20338,9 +19828,7 @@
       "tid": 7,
       "ts": 6740206726550.145,
       "dur": 56.801,
-      "args": {
-        "External id": 1
-      }
+      "args": { "External id": 1 }
     },
     {
       "ph": "X",
@@ -20350,9 +19838,7 @@
       "tid": 7,
       "ts": 6740206728271.495,
       "dur": 56.257,
-      "args": {
-        "External id": 235
-      }
+      "args": { "External id": 235 }
     },
     {
       "ph": "X",
@@ -20362,9 +19848,7 @@
       "tid": 7,
       "ts": 6740206728363.91,
       "dur": 56.417,
-      "args": {
-        "External id": 253
-      }
+      "args": { "External id": 253 }
     },
     {
       "ph": "X",
@@ -20374,9 +19858,7 @@
       "tid": 7,
       "ts": 6740206728438.532,
       "dur": 56.642,
-      "args": {
-        "External id": 271
-      }
+      "args": { "External id": 271 }
     },
     {
       "ph": "X",
@@ -20386,9 +19868,7 @@
       "tid": 7,
       "ts": 6740206728510.115,
       "dur": 55.778,
-      "args": {
-        "External id": 289
-      }
+      "args": { "External id": 289 }
     },
     {
       "ph": "X",
@@ -20398,9 +19878,7 @@
       "tid": 7,
       "ts": 6740206728579.362,
       "dur": 55.906,
-      "args": {
-        "External id": 307
-      }
+      "args": { "External id": 307 }
     },
     {
       "ph": "X",
@@ -20410,9 +19888,7 @@
       "tid": 7,
       "ts": 6740206728653.537,
       "dur": 56.161,
-      "args": {
-        "External id": 325
-      }
+      "args": { "External id": 325 }
     },
     {
       "ph": "X",
@@ -20422,9 +19898,7 @@
       "tid": 7,
       "ts": 6740206728723.232,
       "dur": 55.841,
-      "args": {
-        "External id": 343
-      }
+      "args": { "External id": 343 }
     },
     {
       "ph": "X",
@@ -20434,9 +19908,7 @@
       "tid": 7,
       "ts": 6740206728795.327,
       "dur": 55.905,
-      "args": {
-        "External id": 361
-      }
+      "args": { "External id": 361 }
     },
     {
       "ph": "X",
@@ -20446,9 +19918,7 @@
       "tid": 7,
       "ts": 6740206728869.566,
       "dur": 56.033,
-      "args": {
-        "External id": 379
-      }
+      "args": { "External id": 379 }
     },
     {
       "ph": "X",
@@ -20458,9 +19928,7 @@
       "tid": 7,
       "ts": 6740206728967.548,
       "dur": 56.194,
-      "args": {
-        "External id": 397
-      }
+      "args": { "External id": 397 }
     },
     {
       "ph": "X",
@@ -20470,9 +19938,7 @@
       "tid": 7,
       "ts": 6740206729067.995,
       "dur": 56.417,
-      "args": {
-        "External id": 415
-      }
+      "args": { "External id": 415 }
     },
     {
       "ph": "X",
@@ -20482,9 +19948,7 @@
       "tid": 7,
       "ts": 6740206729144.698,
       "dur": 56.417,
-      "args": {
-        "External id": 433
-      }
+      "args": { "External id": 433 }
     },
     {
       "ph": "X",
@@ -20494,9 +19958,7 @@
       "tid": 7,
       "ts": 6740206729219.576,
       "dur": 56.098,
-      "args": {
-        "External id": 451
-      }
+      "args": { "External id": 451 }
     },
     {
       "ph": "X",
@@ -20506,9 +19968,7 @@
       "tid": 7,
       "ts": 6740206729506.068,
       "dur": 56.641,
-      "args": {
-        "External id": 469
-      }
+      "args": { "External id": 469 }
     },
     {
       "ph": "X",
@@ -20518,9 +19978,7 @@
       "tid": 7,
       "ts": 6740206729684.21,
       "dur": 56.705,
-      "args": {
-        "External id": 487
-      }
+      "args": { "External id": 487 }
     },
     {
       "ph": "X",
@@ -20530,9 +19988,7 @@
       "tid": 7,
       "ts": 6740206729810.159,
       "dur": 56.226,
-      "args": {
-        "External id": 505
-      }
+      "args": { "External id": 505 }
     },
     {
       "name": "process_name",
@@ -20540,9 +19996,7 @@
       "ts": 6740206725263.618,
       "pid": 2,
       "tid": 0,
-      "args": {
-        "name": "python"
-      }
+      "args": { "name": "python" }
     },
     {
       "name": "process_labels",
@@ -20550,9 +20004,7 @@
       "ts": 6740206725263.618,
       "pid": 2,
       "tid": 0,
-      "args": {
-        "labels": "CPU"
-      }
+      "args": { "labels": "CPU" }
     },
     {
       "name": "process_sort_index",
@@ -20560,9 +20012,7 @@
       "ts": 6740206725263.618,
       "pid": 2,
       "tid": 0,
-      "args": {
-        "sort_index": 2
-      }
+      "args": { "sort_index": 2 }
     },
     {
       "name": "process_name",
@@ -20570,9 +20020,7 @@
       "ts": 6740206725263.618,
       "pid": 0,
       "tid": 0,
-      "args": {
-        "name": "python"
-      }
+      "args": { "name": "python" }
     },
     {
       "name": "process_labels",
@@ -20580,9 +20028,7 @@
       "ts": 6740206725263.618,
       "pid": 0,
       "tid": 0,
-      "args": {
-        "labels": "GPU 0"
-      }
+      "args": { "labels": "GPU 0" }
     },
     {
       "name": "process_sort_index",
@@ -20590,9 +20036,7 @@
       "ts": 6740206725263.618,
       "pid": 0,
       "tid": 0,
-      "args": {
-        "sort_index": 5000000
-      }
+      "args": { "sort_index": 5000000 }
     },
     {
       "name": "process_name",
@@ -20600,9 +20044,7 @@
       "ts": 6740206725263.618,
       "pid": 1,
       "tid": 0,
-      "args": {
-        "name": "python"
-      }
+      "args": { "name": "python" }
     },
     {
       "name": "process_labels",
@@ -20610,9 +20052,7 @@
       "ts": 6740206725263.618,
       "pid": 1,
       "tid": 0,
-      "args": {
-        "labels": "GPU 1"
-      }
+      "args": { "labels": "GPU 1" }
     },
     {
       "name": "process_sort_index",
@@ -20620,9 +20060,7 @@
       "ts": 6740206725263.618,
       "pid": 1,
       "tid": 0,
-      "args": {
-        "sort_index": 5000001
-      }
+      "args": { "sort_index": 5000001 }
     },
     {
       "name": "process_name",
@@ -20630,9 +20068,7 @@
       "ts": 6740206725263.618,
       "pid": 2,
       "tid": 0,
-      "args": {
-        "name": "python"
-      }
+      "args": { "name": "python" }
     },
     {
       "name": "process_labels",
@@ -20640,9 +20076,7 @@
       "ts": 6740206725263.618,
       "pid": 2,
       "tid": 0,
-      "args": {
-        "labels": "GPU 2"
-      }
+      "args": { "labels": "GPU 2" }
     },
     {
       "name": "process_sort_index",
@@ -20650,9 +20084,7 @@
       "ts": 6740206725263.618,
       "pid": 2,
       "tid": 0,
-      "args": {
-        "sort_index": 5000002
-      }
+      "args": { "sort_index": 5000002 }
     },
     {
       "name": "process_name",
@@ -20660,9 +20092,7 @@
       "ts": 6740206725263.618,
       "pid": 3,
       "tid": 0,
-      "args": {
-        "name": "python"
-      }
+      "args": { "name": "python" }
     },
     {
       "name": "process_labels",
@@ -20670,9 +20100,7 @@
       "ts": 6740206725263.618,
       "pid": 3,
       "tid": 0,
-      "args": {
-        "labels": "GPU 3"
-      }
+      "args": { "labels": "GPU 3" }
     },
     {
       "name": "process_sort_index",
@@ -20680,9 +20108,7 @@
       "ts": 6740206725263.618,
       "pid": 3,
       "tid": 0,
-      "args": {
-        "sort_index": 5000003
-      }
+      "args": { "sort_index": 5000003 }
     },
     {
       "name": "process_name",
@@ -20690,9 +20116,7 @@
       "ts": 6740206725263.618,
       "pid": 4,
       "tid": 0,
-      "args": {
-        "name": "python"
-      }
+      "args": { "name": "python" }
     },
     {
       "name": "process_labels",
@@ -20700,9 +20124,7 @@
       "ts": 6740206725263.618,
       "pid": 4,
       "tid": 0,
-      "args": {
-        "labels": "GPU 4"
-      }
+      "args": { "labels": "GPU 4" }
     },
     {
       "name": "process_sort_index",
@@ -20710,9 +20132,7 @@
       "ts": 6740206725263.618,
       "pid": 4,
       "tid": 0,
-      "args": {
-        "sort_index": 5000004
-      }
+      "args": { "sort_index": 5000004 }
     },
     {
       "name": "process_name",
@@ -20720,9 +20140,7 @@
       "ts": 6740206725263.618,
       "pid": 5,
       "tid": 0,
-      "args": {
-        "name": "python"
-      }
+      "args": { "name": "python" }
     },
     {
       "name": "process_labels",
@@ -20730,9 +20148,7 @@
       "ts": 6740206725263.618,
       "pid": 5,
       "tid": 0,
-      "args": {
-        "labels": "GPU 5"
-      }
+      "args": { "labels": "GPU 5" }
     },
     {
       "name": "process_sort_index",
@@ -20740,9 +20156,7 @@
       "ts": 6740206725263.618,
       "pid": 5,
       "tid": 0,
-      "args": {
-        "sort_index": 5000005
-      }
+      "args": { "sort_index": 5000005 }
     },
     {
       "name": "process_name",
@@ -20750,9 +20164,7 @@
       "ts": 6740206725263.618,
       "pid": 6,
       "tid": 0,
-      "args": {
-        "name": "python"
-      }
+      "args": { "name": "python" }
     },
     {
       "name": "process_labels",
@@ -20760,9 +20172,7 @@
       "ts": 6740206725263.618,
       "pid": 6,
       "tid": 0,
-      "args": {
-        "labels": "GPU 6"
-      }
+      "args": { "labels": "GPU 6" }
     },
     {
       "name": "process_sort_index",
@@ -20770,9 +20180,7 @@
       "ts": 6740206725263.618,
       "pid": 6,
       "tid": 0,
-      "args": {
-        "sort_index": 5000006
-      }
+      "args": { "sort_index": 5000006 }
     },
     {
       "name": "process_name",
@@ -20780,9 +20188,7 @@
       "ts": 6740206725263.618,
       "pid": 7,
       "tid": 0,
-      "args": {
-        "name": "python"
-      }
+      "args": { "name": "python" }
     },
     {
       "name": "process_labels",
@@ -20790,9 +20196,7 @@
       "ts": 6740206725263.618,
       "pid": 7,
       "tid": 0,
-      "args": {
-        "labels": "GPU 7"
-      }
+      "args": { "labels": "GPU 7" }
     },
     {
       "name": "process_sort_index",
@@ -20800,9 +20204,7 @@
       "ts": 6740206725263.618,
       "pid": 7,
       "tid": 0,
-      "args": {
-        "sort_index": 5000007
-      }
+      "args": { "sort_index": 5000007 }
     },
     {
       "name": "process_name",
@@ -20810,9 +20212,7 @@
       "ts": 6740206725263.618,
       "pid": 8,
       "tid": 0,
-      "args": {
-        "name": "python"
-      }
+      "args": { "name": "python" }
     },
     {
       "name": "process_labels",
@@ -20820,9 +20220,7 @@
       "ts": 6740206725263.618,
       "pid": 8,
       "tid": 0,
-      "args": {
-        "labels": "GPU 8"
-      }
+      "args": { "labels": "GPU 8" }
     },
     {
       "name": "process_sort_index",
@@ -20830,9 +20228,7 @@
       "ts": 6740206725263.618,
       "pid": 8,
       "tid": 0,
-      "args": {
-        "sort_index": 5000008
-      }
+      "args": { "sort_index": 5000008 }
     },
     {
       "name": "process_name",
@@ -20840,9 +20236,7 @@
       "ts": 6740206725263.618,
       "pid": 9,
       "tid": 0,
-      "args": {
-        "name": "python"
-      }
+      "args": { "name": "python" }
     },
     {
       "name": "process_labels",
@@ -20850,9 +20244,7 @@
       "ts": 6740206725263.618,
       "pid": 9,
       "tid": 0,
-      "args": {
-        "labels": "GPU 9"
-      }
+      "args": { "labels": "GPU 9" }
     },
     {
       "name": "process_sort_index",
@@ -20860,9 +20252,7 @@
       "ts": 6740206725263.618,
       "pid": 9,
       "tid": 0,
-      "args": {
-        "sort_index": 5000009
-      }
+      "args": { "sort_index": 5000009 }
     },
     {
       "name": "process_name",
@@ -20870,9 +20260,7 @@
       "ts": 6740206725263.618,
       "pid": 10,
       "tid": 0,
-      "args": {
-        "name": "python"
-      }
+      "args": { "name": "python" }
     },
     {
       "name": "process_labels",
@@ -20880,9 +20268,7 @@
       "ts": 6740206725263.618,
       "pid": 10,
       "tid": 0,
-      "args": {
-        "labels": "GPU 10"
-      }
+      "args": { "labels": "GPU 10" }
     },
     {
       "name": "process_sort_index",
@@ -20890,9 +20276,7 @@
       "ts": 6740206725263.618,
       "pid": 10,
       "tid": 0,
-      "args": {
-        "sort_index": 5000010
-      }
+      "args": { "sort_index": 5000010 }
     },
     {
       "name": "process_name",
@@ -20900,9 +20284,7 @@
       "ts": 6740206725263.618,
       "pid": 11,
       "tid": 0,
-      "args": {
-        "name": "python"
-      }
+      "args": { "name": "python" }
     },
     {
       "name": "process_labels",
@@ -20910,9 +20292,7 @@
       "ts": 6740206725263.618,
       "pid": 11,
       "tid": 0,
-      "args": {
-        "labels": "GPU 11"
-      }
+      "args": { "labels": "GPU 11" }
     },
     {
       "name": "process_sort_index",
@@ -20920,9 +20300,7 @@
       "ts": 6740206725263.618,
       "pid": 11,
       "tid": 0,
-      "args": {
-        "sort_index": 5000011
-      }
+      "args": { "sort_index": 5000011 }
     },
     {
       "name": "process_name",
@@ -20930,9 +20308,7 @@
       "ts": 6740206725263.618,
       "pid": 12,
       "tid": 0,
-      "args": {
-        "name": "python"
-      }
+      "args": { "name": "python" }
     },
     {
       "name": "process_labels",
@@ -20940,9 +20316,7 @@
       "ts": 6740206725263.618,
       "pid": 12,
       "tid": 0,
-      "args": {
-        "labels": "GPU 12"
-      }
+      "args": { "labels": "GPU 12" }
     },
     {
       "name": "process_sort_index",
@@ -20950,9 +20324,7 @@
       "ts": 6740206725263.618,
       "pid": 12,
       "tid": 0,
-      "args": {
-        "sort_index": 5000012
-      }
+      "args": { "sort_index": 5000012 }
     },
     {
       "name": "process_name",
@@ -20960,9 +20332,7 @@
       "ts": 6740206725263.618,
       "pid": 13,
       "tid": 0,
-      "args": {
-        "name": "python"
-      }
+      "args": { "name": "python" }
     },
     {
       "name": "process_labels",
@@ -20970,9 +20340,7 @@
       "ts": 6740206725263.618,
       "pid": 13,
       "tid": 0,
-      "args": {
-        "labels": "GPU 13"
-      }
+      "args": { "labels": "GPU 13" }
     },
     {
       "name": "process_sort_index",
@@ -20980,9 +20348,7 @@
       "ts": 6740206725263.618,
       "pid": 13,
       "tid": 0,
-      "args": {
-        "sort_index": 5000013
-      }
+      "args": { "sort_index": 5000013 }
     },
     {
       "name": "process_name",
@@ -20990,9 +20356,7 @@
       "ts": 6740206725263.618,
       "pid": 14,
       "tid": 0,
-      "args": {
-        "name": "python"
-      }
+      "args": { "name": "python" }
     },
     {
       "name": "process_labels",
@@ -21000,9 +20364,7 @@
       "ts": 6740206725263.618,
       "pid": 14,
       "tid": 0,
-      "args": {
-        "labels": "GPU 14"
-      }
+      "args": { "labels": "GPU 14" }
     },
     {
       "name": "process_sort_index",
@@ -21010,9 +20372,7 @@
       "ts": 6740206725263.618,
       "pid": 14,
       "tid": 0,
-      "args": {
-        "sort_index": 5000014
-      }
+      "args": { "sort_index": 5000014 }
     },
     {
       "name": "process_name",
@@ -21020,9 +20380,7 @@
       "ts": 6740206725263.618,
       "pid": 15,
       "tid": 0,
-      "args": {
-        "name": "python"
-      }
+      "args": { "name": "python" }
     },
     {
       "name": "process_labels",
@@ -21030,9 +20388,7 @@
       "ts": 6740206725263.618,
       "pid": 15,
       "tid": 0,
-      "args": {
-        "labels": "GPU 15"
-      }
+      "args": { "labels": "GPU 15" }
     },
     {
       "name": "process_sort_index",
@@ -21040,9 +20396,7 @@
       "ts": 6740206725263.618,
       "pid": 15,
       "tid": 0,
-      "args": {
-        "sort_index": 5000015
-      }
+      "args": { "sort_index": 5000015 }
     },
     {
       "name": "thread_name",
@@ -21050,9 +20404,7 @@
       "ts": 6740206725263.618,
       "pid": 0,
       "tid": 7,
-      "args": {
-        "name": "stream 7 "
-      }
+      "args": { "name": "stream 7 " }
     },
     {
       "name": "thread_sort_index",
@@ -21060,9 +20412,7 @@
       "ts": 6740206725263.618,
       "pid": 0,
       "tid": 7,
-      "args": {
-        "sort_index": 7
-      }
+      "args": { "sort_index": 7 }
     },
     {
       "name": "thread_name",
@@ -21070,9 +20420,7 @@
       "ts": 6740206725263.618,
       "pid": 2,
       "tid": 2,
-      "args": {
-        "name": "thread 2 (python)"
-      }
+      "args": { "name": "thread 2 (python)" }
     },
     {
       "name": "thread_sort_index",
@@ -21080,9 +20428,7 @@
       "ts": 6740206725263.618,
       "pid": 2,
       "tid": 2,
-      "args": {
-        "sort_index": 2
-      }
+      "args": { "sort_index": 2 }
     },
     {
       "name": "thread_name",
@@ -21090,9 +20436,7 @@
       "ts": 6740206725263.618,
       "pid": 2,
       "tid": 2,
-      "args": {
-        "name": "thread 2 (python)"
-      }
+      "args": { "name": "thread 2 (python)" }
     },
     {
       "name": "thread_sort_index",
@@ -21100,9 +20444,7 @@
       "ts": 6740206725263.618,
       "pid": 2,
       "tid": 2,
-      "args": {
-        "sort_index": 2
-      }
+      "args": { "sort_index": 2 }
     },
     {
       "ph": "X",
@@ -21112,9 +20454,7 @@
       "pid": "Spans",
       "tid": "PyTorch Profiler",
       "name": "PyTorch Profiler (0)",
-      "args": {
-        "Op count": 0
-      }
+      "args": { "Op count": 0 }
     },
     {
       "name": "process_sort_index",
@@ -21122,9 +20462,7 @@
       "ts": 6740206725196.808,
       "pid": "Spans",
       "tid": 0,
-      "args": {
-        "sort_index": 536870912
-      }
+      "args": { "sort_index": 536870912 }
     },
     {
       "name": "Iteration Start: PyTorch Profiler",

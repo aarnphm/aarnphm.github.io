@@ -4,9 +4,7 @@ import { none, of } from "../../functional"
 export type SearchScope = "channel" | "index"
 export type SearchResultOptions = { focus?: boolean; scroll?: boolean }
 
-export type ArenaModel = {
-  ready: boolean
-}
+export type ArenaModel = { ready: boolean }
 
 export type ArenaEvent =
   | { type: "nav.ready" }

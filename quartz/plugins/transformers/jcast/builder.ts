@@ -312,11 +312,7 @@ export class CanvasUtils {
    */
   static translateNodes(canvas: JsonCanvas, offsetX: number, offsetY: number): JsonCanvas {
     return {
-      nodes: canvas.nodes.map((n) => ({
-        ...n,
-        x: n.x + offsetX,
-        y: n.y + offsetY,
-      })),
+      nodes: canvas.nodes.map((n) => ({ ...n, x: n.x + offsetX, y: n.y + offsetY })),
       edges: canvas.edges,
     }
   }

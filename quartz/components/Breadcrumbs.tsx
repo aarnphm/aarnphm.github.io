@@ -10,20 +10,11 @@ import { FullSlug, SimpleSlug, joinSegments, resolveRelative, simplifySlug } fro
 import script from "./scripts/breadcrumbs.inline"
 import breadcrumbsStyle from "./styles/breadcrumbs.scss"
 
-type CrumbData = {
-  displayName: string
-  path: string
-}
+type CrumbData = { displayName: string; path: string }
 
 type BreadcrumbSegment =
-  | {
-      kind: "crumb"
-      data: CrumbData
-    }
-  | {
-      kind: "overflow"
-      data: CrumbData[]
-    }
+  | { kind: "crumb"; data: CrumbData }
+  | { kind: "overflow"; data: CrumbData[] }
 
 interface BreadcrumbOptions {
   /**
@@ -61,10 +52,7 @@ const defaultOptions: BreadcrumbOptions = {
   trailingWindow: 2,
 }
 
-type BreadcrumbNodeDescriptor = {
-  displayName: string
-  slug: FullSlug
-}
+type BreadcrumbNodeDescriptor = { displayName: string; slug: FullSlug }
 
 function formatCrumb(displayName: string, baseSlug: FullSlug, currentSlug: SimpleSlug): CrumbData {
   return {
@@ -74,10 +62,7 @@ function formatCrumb(displayName: string, baseSlug: FullSlug, currentSlug: Simpl
 }
 
 function nodeToDescriptor(node: { displayName: string; slug: FullSlug }): BreadcrumbNodeDescriptor {
-  return {
-    displayName: node.displayName,
-    slug: node.slug,
-  }
+  return { displayName: node.displayName, slug: node.slug }
 }
 
 function buildFallbackDescriptors(
@@ -104,10 +89,7 @@ function buildFallbackDescriptors(
 
     const slug = joinSegments(...traversed) as FullSlug
     const isLast = idx === slugParts.length - 1
-    descriptors.push({
-      displayName: isLast ? (fileTitle ?? segment) : segment,
-      slug,
-    })
+    descriptors.push({ displayName: isLast ? (fileTitle ?? segment) : segment, slug })
     current = undefined
   })
 

@@ -12,10 +12,7 @@ interface SvgBankElement {
 }
 
 interface LetterBank {
-  [key: string]: {
-    upper: SvgBankElement
-    lower: SvgBankElement
-  }
+  [key: string]: { upper: SvgBankElement; lower: SvgBankElement }
 }
 
 interface GlyphBank {
@@ -27,15 +24,9 @@ const glyphScript = (char: string, idx: number, glyphs: GlyphBank) => {
   if (!path) return h("span", { class: "char" }, char)
 
   return h("span", { class: `glyph ${path.name}` }, [
-    s(
-      "svg",
-      {
-        xmlns: "http://www.w3.org/2000/svg",
-        fill: "none",
-        ...path.opts,
-      },
-      [h("path", { d: path.d, style: `animation: drawPath 1s ease forwards ${idx * 0.1}s;` })],
-    ),
+    s("svg", { xmlns: "http://www.w3.org/2000/svg", fill: "none", ...path.opts }, [
+      h("path", { d: path.d, style: `animation: drawPath 1s ease forwards ${idx * 0.1}s;` }),
+    ]),
   ])
 }
 
@@ -61,11 +52,7 @@ const charScript = (char: string, idx: number, paths: LetterBank, glyphs: GlyphB
   return h("span", { class: `${key} ${isUpper ? "up" : "lo"}` }, [
     s(
       "svg",
-      {
-        xmlns: "http://www.w3.org/2000/svg",
-        fill: "none",
-        ...path.opts,
-      },
+      { xmlns: "http://www.w3.org/2000/svg", fill: "none", ...path.opts },
       s("path", { d: path.d, style: `animation: drawPath 1s ease forwards ${idx * 0.1}s;` }),
     ),
   ])

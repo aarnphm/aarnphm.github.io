@@ -24,9 +24,7 @@ function handleToggleClick(event: Event) {
   )
 
   document.dispatchEvent(
-    new CustomEvent("collapsibletoggle", {
-      detail: { toggleId: toggle.id, isOpen },
-    }),
+    new CustomEvent("collapsibletoggle", { detail: { toggleId: toggle.id, isOpen } }),
   )
 }
 

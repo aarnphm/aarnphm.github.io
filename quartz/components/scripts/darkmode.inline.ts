@@ -44,9 +44,7 @@ const describeNextAction = (preference: ThemePreference) => {
 }
 
 const emitThemeChangeEvent = (theme: Theme) => {
-  const event: CustomEventMap["themechange"] = new CustomEvent("themechange", {
-    detail: { theme },
-  })
+  const event: CustomEventMap["themechange"] = new CustomEvent("themechange", { detail: { theme } })
   document.dispatchEvent(event)
 }
 
@@ -70,10 +68,7 @@ let toggleElement: HTMLElement | null = null
 
 const showThemeToast = (preference: ThemePreference, _resolved: Theme) => {
   const event: CustomEventMap["toast"] = new CustomEvent("toast", {
-    detail: {
-      message: `current theme: ${preference}`,
-      containerId: "theme-toast-container",
-    },
+    detail: { message: `current theme: ${preference}`, containerId: "theme-toast-container" },
   })
   document.dispatchEvent(event)
 }

@@ -278,12 +278,7 @@ async function processMasonry(
 
   // write images JSON file
   const imagesJsonSlug = `${slug}.images` as FullSlug
-  await write({
-    ctx,
-    content: JSON.stringify(allImages),
-    slug: imagesJsonSlug,
-    ext: ".json",
-  })
+  await write({ ctx, content: JSON.stringify(allImages), slug: imagesJsonSlug, ext: ".json" })
 
   const fileData: QuartzPluginData = {
     ...file.data,

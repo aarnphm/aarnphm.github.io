@@ -15,15 +15,9 @@ export interface Options {
   order: OrderEntries[]
 }
 
-type DataWrapper = {
-  file: QuartzPluginData
-  path: string[]
-}
+type DataWrapper = { file: QuartzPluginData; path: string[] }
 
-export type FolderState = {
-  path: string
-  collapsed: boolean
-}
+export type FolderState = { path: string; collapsed: boolean }
 
 function getPathSegment(fp: FilePath | undefined, idx: number): string | undefined {
   if (!fp) {
@@ -211,9 +205,7 @@ export function ExplorerNode({ node, opts, fullPath, fileData }: ExplorerNodePro
           <div class={`folder-outer ${node.depth === 0 || isDefaultOpen ? "open" : ""}`}>
             <ul
               // Inline style for left folder paddings
-              style={{
-                paddingLeft: node.name !== "" ? "1.4rem" : "0",
-              }}
+              style={{ paddingLeft: node.name !== "" ? "1.4rem" : "0" }}
               class="content"
               data-folderul={folderPath}
             >

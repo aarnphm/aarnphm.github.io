@@ -1,29 +1,16 @@
 export type SemanticResult = { id: number; score: number }
 
-type ProgressMessage = {
-  type: "progress"
-  loadedRows: number
-  totalRows: number
-}
+type ProgressMessage = { type: "progress"; loadedRows: number; totalRows: number }
 
 type ReadyMessage = { type: "ready" }
 
-type ResultMessage = {
-  type: "search-result"
-  seq: number
-  semantic: SemanticResult[]
-}
+type ResultMessage = { type: "search-result"; seq: number; semantic: SemanticResult[] }
 
 type ErrorMessage = { type: "error"; seq?: number; message: string }
 
-type SearchPayload = {
-  semantic: SemanticResult[]
-}
+type SearchPayload = { semantic: SemanticResult[] }
 
-type PendingResolver = {
-  resolve: (payload: SearchPayload) => void
-  reject: (err: Error) => void
-}
+type PendingResolver = { resolve: (payload: SearchPayload) => void; reject: (err: Error) => void }
 
 export class SemanticClient {
   private ready: Promise<void>
@@ -111,13 +98,7 @@ export class SemanticClient {
     const disableCache = Boolean(this.cfg?.disableCache)
     const baseUrl =
       typeof this.cfg?.manifestBaseUrl === "string" ? this.cfg.manifestBaseUrl : undefined
-    this.worker.postMessage({
-      type: "init",
-      cfg: this.cfg,
-      manifestUrl,
-      baseUrl,
-      disableCache,
-    })
+    this.worker.postMessage({ type: "init", cfg: this.cfg, manifestUrl, baseUrl, disableCache })
   }
 
   private rejectAll(err: Error, fatal = false) {

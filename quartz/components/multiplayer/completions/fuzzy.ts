@@ -1,15 +1,7 @@
 import type { FuzzyMatch } from "./types"
 
 // Smith-Waterman implementation with position-aware bonuses for fuzzy match
-const W = {
-  MATCH: 16,
-  GAP_START: -3,
-  GAP_EXT: -1,
-  BOUNDARY: 8,
-  CAMEL: 7,
-  CONSECUTIVE: 4,
-  FIRST: 8,
-}
+const W = { MATCH: 16, GAP_START: -3, GAP_EXT: -1, BOUNDARY: 8, CAMEL: 7, CONSECUTIVE: 4, FIRST: 8 }
 
 const SEPARATORS = new Set(["/", ":", "_", "-", " ", "\t", ".", "[", "]"])
 

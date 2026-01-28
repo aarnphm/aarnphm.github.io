@@ -15,11 +15,7 @@ const defaults: GlobalConfiguration["semanticSearch"] = {
   dtype: "fp32",
   shardSizeRows: 1024,
   hnsw: { M: 16, efConstruction: 200 },
-  chunking: {
-    chunkSize: 512,
-    chunkOverlap: 128,
-    noChunking: false,
-  },
+  chunking: { chunkSize: 512, chunkOverlap: 128, noChunking: false },
   vllm: {
     useVllm: false,
     vllmUrl:
@@ -79,10 +75,7 @@ function runEmbedBuild(
     console.log("\nRunning embedding generation:")
     console.log(`  uv ${args.join(" ")}`)
 
-    const proc = spawn("uv", args, {
-      stdio: "inherit",
-      shell: true,
-    })
+    const proc = spawn("uv", args, { stdio: "inherit", shell: true })
 
     proc.on("error", (err) => {
       reject(new Error(`Failed to spawn uv: ${err.message}`))

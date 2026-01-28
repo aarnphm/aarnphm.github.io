@@ -138,9 +138,7 @@ type TractatusProps = {
   number?: number
 }
 
-type TractatusInternalProps = TractatusProps & {
-  _index?: number
-}
+type TractatusInternalProps = TractatusProps & { _index?: number }
 
 const isPropoVNode = (node: ComponentChildren): node is VNode<BasePropoProps> =>
   isVNodeOf(node, TractatusPropo)
@@ -187,9 +185,7 @@ const TractatusImpl: FunctionalComponent<TractatusInternalProps> = ({
 const TractatusComponent = TractatusImpl as QuartzMdxComponent<TractatusProps>
 export const Tractatus = registerMdxComponent("Tractatus", TractatusComponent)
 
-type TractatusRootProps = {
-  children?: ComponentChildren
-}
+type TractatusRootProps = { children?: ComponentChildren }
 
 const isTractatus = (node: ComponentChildren): node is VNode<TractatusInternalProps> =>
   isVNodeOf(node, Tractatus)
@@ -200,9 +196,7 @@ const TractatusRootImpl: QuartzMdxComponent<TractatusRootProps> = ({ children })
   const trailing = childArray.filter((child) => !isTractatus(child))
 
   const decoratedTractati = tractati.map((child, idx) =>
-    cloneElement(child as VNode<TractatusInternalProps>, {
-      _index: idx + 1,
-    }),
+    cloneElement(child as VNode<TractatusInternalProps>, { _index: idx + 1 }),
   )
 
   return (

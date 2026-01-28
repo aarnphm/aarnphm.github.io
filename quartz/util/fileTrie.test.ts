@@ -25,22 +25,14 @@ describe("FileTrie", () => {
     })
 
     test("should set displayName from data title", () => {
-      const data = {
-        title: "Test Title",
-        slug: "test",
-        filePath: "test.md",
-      }
+      const data = { title: "Test Title", slug: "test", filePath: "test.md" }
 
       trie.add(data)
       assert.strictEqual(trie.children[0].displayName, "Test Title")
     })
 
     test("should be able to set displayName", () => {
-      const data = {
-        title: "Test Title",
-        slug: "test",
-        filePath: "test.md",
-      }
+      const data = { title: "Test Title", slug: "test", filePath: "test.md" }
 
       trie.add(data)
       trie.children[0].displayName = "Modified"
@@ -50,11 +42,7 @@ describe("FileTrie", () => {
 
   describe("add", () => {
     test("should add a file at root level", () => {
-      const data = {
-        title: "Test",
-        slug: "test",
-        filePath: "test.md",
-      }
+      const data = { title: "Test", slug: "test", filePath: "test.md" }
 
       trie.add(data)
       assert.strictEqual(trie.children.length, 1)
@@ -63,11 +51,7 @@ describe("FileTrie", () => {
     })
 
     test("should handle index files", () => {
-      const data = {
-        title: "Index",
-        slug: "index",
-        filePath: "index.md",
-      }
+      const data = { title: "Index", slug: "index", filePath: "index.md" }
 
       trie.add(data)
       assert.strictEqual(trie.data, data)
@@ -75,11 +59,7 @@ describe("FileTrie", () => {
     })
 
     test("should add nested files", () => {
-      const data1 = {
-        title: "Nested",
-        slug: "folder/test",
-        filePath: "folder/test.md",
-      }
+      const data1 = { title: "Nested", slug: "folder/test", filePath: "folder/test.md" }
 
       const data2 = {
         title: "Really nested index",
@@ -283,21 +263,13 @@ describe("FileTrie", () => {
 
   describe("getFolderPaths", () => {
     test("should return all folder paths", () => {
-      const data1 = {
-        title: "Root",
-        slug: "index",
-        filePath: "index.md",
-      }
+      const data1 = { title: "Root", slug: "index", filePath: "index.md" }
       const data2 = {
         title: "Test",
         slug: "folder/subfolder/test",
         filePath: "folder/subfolder/test.md",
       }
-      const data3 = {
-        title: "Folder Index",
-        slug: "abc/index",
-        filePath: "abc/index.md",
-      }
+      const data3 = { title: "Folder Index", slug: "abc/index", filePath: "abc/index.md" }
 
       trie.add(data1)
       trie.add(data2)
@@ -377,21 +349,13 @@ describe("FileTrie", () => {
     })
 
     test("should return file data for intermediate folders", () => {
-      const data1 = {
-        title: "Root",
-        slug: "index",
-        filePath: "index.md",
-      }
+      const data1 = { title: "Root", slug: "index", filePath: "index.md" }
       const data2 = {
         title: "Test",
         slug: "folder/subfolder/test",
         filePath: "folder/subfolder/test.md",
       }
-      const data3 = {
-        title: "Folder Index",
-        slug: "folder/index",
-        filePath: "folder/index.md",
-      }
+      const data3 = { title: "Folder Index", slug: "folder/index", filePath: "folder/index.md" }
 
       trie.add(data1)
       trie.add(data2)

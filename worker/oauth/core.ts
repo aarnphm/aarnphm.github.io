@@ -11,11 +11,7 @@ export type GithubOAuthConfig = {
   callbackPath: string
 }
 
-export type GithubUser = {
-  login: string
-  name: string | null
-  email: string | null
-}
+export type GithubUser = { login: string; name: string | null; email: string | null }
 
 export type GithubOAuthCallbacks<TState, TResult> = {
   parseStatePayload: (raw: string) => TState | null

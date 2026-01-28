@@ -10,10 +10,7 @@ import { fuzzyMatch, fuzzyMatchMultiple } from "./fuzzy"
 function extractNamespace(query: string): { prefix: string; remainder: string } {
   const slashIdx = query.lastIndexOf("/")
   if (slashIdx === -1) return { prefix: "", remainder: query }
-  return {
-    prefix: query.slice(0, slashIdx + 1),
-    remainder: query.slice(slashIdx + 1),
-  }
+  return { prefix: query.slice(0, slashIdx + 1), remainder: query.slice(slashIdx + 1) }
 }
 
 function isInsideWikilink(context: CompletionContext): {
@@ -157,9 +154,5 @@ export async function wikilinkCompletionSource(
     },
   )
 
-  return {
-    from: wikiCtx.start,
-    options: completions,
-    filter: false,
-  }
+  return { from: wikiCtx.start, options: completions, filter: false }
 }

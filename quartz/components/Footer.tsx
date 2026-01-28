@@ -13,12 +13,7 @@ type FooterLayout = "default" | "minimal" | "poetry" | "menu" | "curius" | "maso
 
 interface Options {
   layout?: FooterLayout
-  links?: Record<string, string> &
-    Partial<{
-      twitter: string
-      github: string
-      bsky: string
-    }>
+  links?: Record<string, string> & Partial<{ twitter: string; github: string; bsky: string }>
 }
 
 const defaultOptions: Options = { layout: "minimal", links: {} as Record<string, string> }
@@ -28,7 +23,9 @@ export default ((userOpts?: Options) => {
   const Footer: QuartzComponent = ({ displayClass, cfg, fileData, ctx }: QuartzComponentProps) => {
     const year = new Date().getFullYear()
     const links = opts?.links ?? []
-    const addHomeLink = fileData.frontmatter?.pageLayout! === "letter" || fileData.slug === "curius"
+    const addHomeLink =
+      (fileData.frontmatter && fileData.frontmatter.pageLayout! === "letter") ||
+      fileData.slug === "curius"
 
     const DateFooter = () => <DateComponent date={getDate(cfg, fileData)!} locale={cfg.locale} />
 

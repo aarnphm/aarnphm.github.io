@@ -53,12 +53,7 @@ async function deriveKey(password: string, salt: Uint8Array): Promise<CryptoKey>
   )
 
   return crypto.subtle.deriveKey(
-    {
-      name: "PBKDF2",
-      salt: ensureArrayBuffer(salt),
-      iterations: 100000,
-      hash: "SHA-256",
-    },
+    { name: "PBKDF2", salt: ensureArrayBuffer(salt), iterations: 100000, hash: "SHA-256" },
     passwordKey,
     { name: "AES-GCM", length: 256 },
     false,
@@ -220,9 +215,7 @@ document.addEventListener("nav", () => {
         input.value = ""
 
         document.dispatchEvent(
-          new CustomEvent("contentdecrypted", {
-            detail: { article, content: contentDiv },
-          }),
+          new CustomEvent("contentdecrypted", { detail: { article, content: contentDiv } }),
         )
       } catch (err) {
         console.error("decryption error:", err)

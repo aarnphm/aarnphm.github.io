@@ -1,11 +1,22 @@
 import { Position, Span } from "./ast"
 import { Diagnostic } from "./errors"
-import { Operator, Punctuation, Token } from "./tokens"
+import {
+  Operator,
+  Punctuation,
+  Token,
+  StringToken,
+  RegexToken,
+  NumberToken,
+  BooleanToken,
+  NullToken,
+  ThisToken,
+  IdentifierToken,
+  OperatorToken,
+  PunctuationToken,
+  EofToken,
+} from "./tokens"
 
-type LexResult = {
-  tokens: Token[]
-  diagnostics: Diagnostic[]
-}
+type LexResult = { tokens: Token[]; diagnostics: Diagnostic[] }
 
 const operatorTokens: Operator[] = [
   "==",
@@ -86,7 +97,8 @@ export function lex(input: string, file?: string): LexResult {
 
   const isWhitespace = (ch: string) => ch === " " || ch === "\t" || ch === "\n" || ch === "\r"
   const isDigit = (ch: string) => ch >= "0" && ch <= "9"
-  const isIdentStart = (ch: string) => (ch >= "a" && ch <= "z") || (ch >= "A" && ch <= "Z") || ch === "_"
+  const isIdentStart = (ch: string) =>
+    (ch >= "a" && ch <= "z") || (ch >= "A" && ch <= "Z") || ch === "_"
   const isIdentContinue = (ch: string) => isIdentStart(ch) || isDigit(ch)
 
   while (index < input.length) {
@@ -125,7 +137,7 @@ export function lex(input: string, file?: string): LexResult {
       const end = currentPosition()
       const span = makeSpan(start, end)
       if (!closed) addDiagnostic("unterminated string literal", span)
-      const token: Token = { type: "string", value, span }
+      const token: StringToken = { type: "string", value, span }
       tokens.push(token)
       updateRegexState(token)
       continue
@@ -162,7 +174,7 @@ export function lex(input: string, file?: string): LexResult {
         const end = currentPosition()
         const span = makeSpan(start, end)
         if (!closed) addDiagnostic("unterminated regex literal", span)
-        const token: Token = { type: "regex", pattern, flags, span }
+        const token: RegexToken = { type: "regex", pattern, flags, span }
         tokens.push(token)
         updateRegexState(token)
         continue
@@ -182,7 +194,7 @@ export function lex(input: string, file?: string): LexResult {
       }
       const end = currentPosition()
       const span = makeSpan(start, end)
-      const token: Token = { type: "number", value: Number(num), span }
+      const token: NumberToken = { type: "number", value: Number(num), span }
       tokens.push(token)
       updateRegexState(token)
       continue
@@ -196,24 +208,24 @@ export function lex(input: string, file?: string): LexResult {
       const end = currentPosition()
       const span = makeSpan(start, end)
       if (ident === "true" || ident === "false") {
-        const token: Token = { type: "boolean", value: ident === "true", span }
+        const token: BooleanToken = { type: "boolean", value: ident === "true", span }
         tokens.push(token)
         updateRegexState(token)
         continue
       }
       if (ident === "null") {
-        const token: Token = { type: "null", span }
+        const token: NullToken = { type: "null", span }
         tokens.push(token)
         updateRegexState(token)
         continue
       }
       if (ident === "this") {
-        const token: Token = { type: "this", span }
+        const token: ThisToken = { type: "this", span }
         tokens.push(token)
         updateRegexState(token)
         continue
       }
-      const token: Token = { type: "identifier", value: ident, span }
+      const token: IdentifierToken = { type: "identifier", value: ident, span }
       tokens.push(token)
       updateRegexState(token)
       continue
@@ -225,7 +237,7 @@ export function lex(input: string, file?: string): LexResult {
       advance()
       const end = currentPosition()
       const span = makeSpan(start, end)
-      const token: Token = { type: "operator", value: twoChar, span }
+      const token: OperatorToken = { type: "operator", value: twoChar, span }
       tokens.push(token)
       updateRegexState(token)
       continue
@@ -235,7 +247,7 @@ export function lex(input: string, file?: string): LexResult {
       advance()
       const end = currentPosition()
       const span = makeSpan(start, end)
-      const token: Token = { type: "operator", value: ch, span }
+      const token: OperatorToken = { type: "operator", value: ch, span }
       tokens.push(token)
       updateRegexState(token)
       continue
@@ -245,7 +257,7 @@ export function lex(input: string, file?: string): LexResult {
       advance()
       const end = currentPosition()
       const span = makeSpan(start, end)
-      const token: Token = { type: "punctuation", value: ch, span }
+      const token: PunctuationToken = { type: "punctuation", value: ch, span }
       tokens.push(token)
       updateRegexState(token)
       continue
@@ -258,8 +270,9 @@ export function lex(input: string, file?: string): LexResult {
 
   const eofPos = currentPosition()
   const eofSpan = makeSpan(eofPos, eofPos)
-  tokens.push({ type: "eof", span: eofSpan })
-  updateRegexState(tokens[tokens.length - 1])
+  const eofToken: EofToken = { type: "eof", span: eofSpan }
+  tokens.push(eofToken)
+  updateRegexState(eofToken)
 
   return { tokens, diagnostics }
 }

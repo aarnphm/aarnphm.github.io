@@ -149,12 +149,7 @@ export interface JcastCanvas extends JcastNode {
     /**
      * Canvas-level metadata
      */
-    bounds?: {
-      minX: number
-      minY: number
-      maxX: number
-      maxY: number
-    }
+    bounds?: { minX: number; minY: number; maxX: number; maxY: number }
   }
 }
 
@@ -164,10 +159,7 @@ export interface JcastCanvas extends JcastNode {
 export interface JcastCanvasNode extends JcastNode {
   type: "canvasNode"
   id: string
-  data: JcastData & {
-    canvas: JsonCanvasNode
-    nodeType: NodeType
-  }
+  data: JcastData & { canvas: JsonCanvasNode; nodeType: NodeType }
   children?: JcastNode[] // For groups, contains child nodes
 }
 
@@ -177,11 +169,7 @@ export interface JcastCanvasNode extends JcastNode {
 export interface JcastCanvasEdge extends JcastNode {
   type: "canvasEdge"
   id: string
-  data: JcastData & {
-    canvas: JsonCanvasEdge
-    fromNode: string
-    toNode: string
-  }
+  data: JcastData & { canvas: JsonCanvasEdge; fromNode: string; toNode: string }
 }
 
 /**
@@ -190,10 +178,7 @@ export interface JcastCanvasEdge extends JcastNode {
 export interface JcastCanvasGroup extends JcastNode {
   type: "canvasGroup"
   id: string
-  data: JcastData & {
-    canvas: JsonCanvasNode
-    nodeType: "group"
-  }
+  data: JcastData & { canvas: JsonCanvasNode; nodeType: "group" }
   children: JcastNode[] // Nodes contained in this group
 }
 
@@ -227,10 +212,7 @@ export type JcastVisitor<T extends JcastNode = JcastNode> = (
  */
 export type JcastGraphVisitor<T extends JcastNode = JcastNode> = (
   node: T,
-  edges: {
-    incoming: JcastCanvasEdge[]
-    outgoing: JcastCanvasEdge[]
-  },
+  edges: { incoming: JcastCanvasEdge[]; outgoing: JcastCanvasEdge[] },
   index?: number,
   parent?: Parent,
 ) => void | boolean | Promise<void | boolean>

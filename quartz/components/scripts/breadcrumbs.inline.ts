@@ -32,11 +32,7 @@ function mountFloating(trigger: HTMLElement, template: HTMLElement, onClose: () 
       middleware: [offset(8), flip(), shift({ padding: 8 })],
     })
 
-    Object.assign(floating.style, {
-      left: `${x}px`,
-      top: `${y}px`,
-      visibility: "visible",
-    })
+    Object.assign(floating.style, { left: `${x}px`, top: `${y}px`, visibility: "visible" })
   }
 
   const cleanupAutoUpdate = autoUpdate(trigger, floating, update)

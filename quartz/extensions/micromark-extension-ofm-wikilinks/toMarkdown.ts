@@ -45,21 +45,13 @@ function escape(text: string, chars: string): string {
  * create mdast-util-to-markdown extension for wikilinks.
  */
 export function wikilinkToMarkdown(): Options {
-  const handlers: any = {
-    wikilink: handleWikilink,
-  }
+  const handlers: any = { wikilink: handleWikilink }
 
   return {
     handlers,
     unsafe: [
-      {
-        character: "[",
-        inConstruct: ["phrasing", "label", "reference"] as any,
-      },
-      {
-        character: "]",
-        inConstruct: ["phrasing", "label", "reference"] as any,
-      },
+      { character: "[", inConstruct: ["phrasing", "label", "reference"] as any },
+      { character: "]", inConstruct: ["phrasing", "label", "reference"] as any },
     ],
   }
 }

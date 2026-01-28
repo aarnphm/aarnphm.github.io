@@ -248,9 +248,7 @@ function renderInternalLinks(
 
   if (links.length === 0) return []
 
-  const separator = h("span.sidenote-separator", {
-    role: "presentation",
-  })
+  const separator = h("span.sidenote-separator", { role: "presentation" })
 
   const interleaved: ElementContent[] = []
   links.forEach((link, idx) => {
@@ -300,12 +298,7 @@ function buildSidenoteHast(
       xmlns: "http://www.w3.org/2000/svg",
       "aria-hidden": "true",
     },
-    [
-      h("path", {
-        d: "M0 0L8 0L4 5Z",
-        fill: "currentColor",
-      }),
-    ],
+    [h("path", { d: "M0 0L8 0L4 5Z", fill: "currentColor" })],
   )
 
   const hasLabel = label.length > 0
@@ -321,10 +314,7 @@ function buildSidenoteHast(
     hasLabel ? [...label, arrowDownSvg] : [{ type: "text", value: "▪" }, arrowDownSvg],
   )
 
-  const dataAttrs: Record<string, string> = {
-    id: baseId,
-    "data-sidenote-id": String(sidenoteId),
-  }
+  const dataAttrs: Record<string, string> = { id: baseId, "data-sidenote-id": String(sidenoteId) }
 
   if (forceInline) dataAttrs["data-force-inline"] = "true"
   if (!allowLeft) dataAttrs["data-allow-left"] = "false"

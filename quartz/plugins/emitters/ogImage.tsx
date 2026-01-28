@@ -68,22 +68,11 @@ async function processOgImage(
     unescapeHTML(fileData.description?.trim() ?? i18n(cfg.locale).propertyDefaults.description)
 
   const stream = await generateSocialImage(
-    {
-      title,
-      description,
-      fonts,
-      cfg,
-      fileData,
-    },
+    { title, description, fonts, cfg, fileData },
     fullOptions,
   )
 
-  return write({
-    ctx,
-    content: stream,
-    slug: `${slug}-og-image` as FullSlug,
-    ext: ".webp",
-  })
+  return write({ ctx, content: stream, slug: `${slug}-og-image` as FullSlug, ext: ".webp" })
 }
 
 export const CustomOgImagesEmitterName = "CustomOgImages"

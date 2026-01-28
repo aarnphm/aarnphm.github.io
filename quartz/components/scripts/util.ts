@@ -104,10 +104,7 @@ function getBounds(parent: HTMLElement, child: HTMLElement): { min: number; max:
   const containerRect = parent.getBoundingClientRect()
   const sidenoteRect = child.getBoundingClientRect()
 
-  return {
-    min: 0,
-    max: containerRect.height - sidenoteRect.height,
-  }
+  return { min: 0, max: containerRect.height - sidenoteRect.height }
 }
 
 export function updatePosition(ref: HTMLElement, child: HTMLElement, parent: HTMLElement) {

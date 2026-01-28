@@ -21,12 +21,7 @@ const strip = (node: unknown): unknown => {
     return { type, operator: node.operator, argument: strip(node.argument) }
   }
   if (type === "BinaryExpr" || type === "LogicalExpr") {
-    return {
-      type,
-      operator: node.operator,
-      left: strip(node.left),
-      right: strip(node.right),
-    }
+    return { type, operator: node.operator, left: strip(node.left), right: strip(node.right) }
   }
   if (type === "CallExpr") {
     const args = Array.isArray(node.args) ? node.args.map(strip) : []
@@ -93,11 +88,7 @@ test("ebnf to ast mapping snapshots", () => {
           callee: { type: "Identifier", name: "date" },
           args: [{ type: "Identifier", name: "due" }],
         },
-        right: {
-          type: "CallExpr",
-          callee: { type: "Identifier", name: "today" },
-          args: [],
-        },
+        right: { type: "CallExpr", callee: { type: "Identifier", name: "today" }, args: [] },
       },
     },
     {
@@ -105,11 +96,7 @@ test("ebnf to ast mapping snapshots", () => {
       expected: {
         type: "BinaryExpr",
         operator: "-",
-        left: {
-          type: "CallExpr",
-          callee: { type: "Identifier", name: "now" },
-          args: [],
-        },
+        left: { type: "CallExpr", callee: { type: "Identifier", name: "now" }, args: [] },
         right: {
           type: "MemberExpr",
           object: { type: "Identifier", name: "file" },
@@ -190,6 +177,40 @@ test("ebnf to ast mapping snapshots", () => {
         property: "length",
       },
     },
+    {
+      source: "this.file.name",
+      expected: {
+        type: "MemberExpr",
+        object: {
+          type: "MemberExpr",
+          object: { type: "Identifier", name: "this" },
+          property: "file",
+        },
+        property: "name",
+      },
+    },
+    {
+      source: "a || b && c",
+      expected: {
+        type: "LogicalExpr",
+        operator: "||",
+        left: { type: "Identifier", name: "a" },
+        right: {
+          type: "LogicalExpr",
+          operator: "&&",
+          left: { type: "Identifier", name: "b" },
+          right: { type: "Identifier", name: "c" },
+        },
+      },
+    },
+    {
+      source: "values[0]",
+      expected: {
+        type: "IndexExpr",
+        object: { type: "Identifier", name: "values" },
+        index: { type: "Literal", kind: "number", value: 0 },
+      },
+    },
   ]
 
   for (const entry of cases) {
@@ -202,11 +223,11 @@ test("ebnf to ast mapping snapshots", () => {
 test("syntax doc samples parse", () => {
   const samples = [
     'note["price"]',
-    'file.size > 10',
-    'file.hasLink(this.file)',
+    "file.size > 10",
+    "file.hasLink(this.file)",
     'date("2024-12-01") + "1M" + "4h" + "3m"',
-    'now() - file.ctime',
-    'property[0]',
+    "now() - file.ctime",
+    "property[0]",
     'link("filename", icon("plus"))',
     'file.mtime > now() - "1 week"',
     '/abc/.matches("abcde")',

@@ -97,10 +97,7 @@ class DiagramPanZoom {
     if (!this.isDragging) return
     e.preventDefault()
 
-    this.currentPan = {
-      x: e.clientX - this.startPan.x,
-      y: e.clientY - this.startPan.y,
-    }
+    this.currentPan = { x: e.clientX - this.startPan.x, y: e.clientY - this.startPan.y }
 
     this.updateTransform()
   }
@@ -122,10 +119,7 @@ class DiagramPanZoom {
     e.preventDefault() // Prevent scrolling
 
     const touch = e.touches[0]
-    this.currentPan = {
-      x: touch.clientX - this.startPan.x,
-      y: touch.clientY - this.startPan.y,
-    }
+    this.currentPan = { x: touch.clientX - this.startPan.x, y: touch.clientY - this.startPan.y }
 
     this.updateTransform()
   }

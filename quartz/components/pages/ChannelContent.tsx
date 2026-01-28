@@ -27,10 +27,7 @@ const extractFilenameFromUrl = (url: string): string => {
 
 const isPdfUrl = (url: string): boolean => pdfUrlRegex.test(url)
 
-type ArenaModalMapProps = {
-  coordinates?: ArenaBlock["coordinates"]
-  title?: string
-}
+type ArenaModalMapProps = { coordinates?: ArenaBlock["coordinates"]; title?: string }
 
 const ArenaModalMap = ({ coordinates, title }: ArenaModalMapProps) => {
   if (!coordinates) {

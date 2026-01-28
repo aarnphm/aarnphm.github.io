@@ -8,7 +8,6 @@ import fs from "node:fs"
 import path from "node:path"
 import rehypeGithubEmoji from "rehype-github-emoji"
 import { BuildUrlValues, defaultBuildUrl } from "remark-github"
-import { RepositoryInfo, UrlInfo } from "remark-github/lib"
 import { visit } from "unist-util-visit"
 import { QuartzTransformerPlugin } from "../../types/plugin"
 
@@ -82,6 +81,19 @@ export interface Options {
   noTranslateBlock?: string[]
 }
 
+type RepositoryInfo = {
+  project: string
+  user: string
+}
+
+type UrlInfo = {
+  comment: boolean
+  page: string
+  project: string
+  reference: string
+  user: string
+}
+
 const defaultOptions: Options = {
   repository: "https://github.com/aarnphm/aarnphm.github.io",
   buildUrl: defaultBuildUrl,
@@ -150,10 +162,7 @@ export const GitHub: QuartzTransformerPlugin<Partial<Options>> = (userOpts) => {
 
               if (link.page === "issues" || link.page === "pull") {
                 base += "#"
-                children.push({
-                  type: "text",
-                  value: base + link.reference + comment,
-                })
+                children.push({ type: "text", value: base + link.reference + comment })
               } else {
                 if (base) {
                   children.push({ type: "text", value: base + "@" })
@@ -232,12 +241,7 @@ export const GitHub: QuartzTransformerPlugin<Partial<Options>> = (userOpts) => {
                 return false
               }
 
-              const url = buildUrl({
-                base: a,
-                compare: b,
-                type: "compare",
-                ...repositoryInfo,
-              })
+              const url = buildUrl({ base: a, compare: b, type: "compare", ...repositoryInfo })
 
               return url
                 ? {

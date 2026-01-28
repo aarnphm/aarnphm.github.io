@@ -19,40 +19,17 @@ import { FullSlug, SimpleSlug, getFullSlug, resolveRelative, simplifySlug } from
 import { D3Config } from "../Graph"
 import { registerEscapeHandler, removeAllChildren } from "./util"
 
-type GraphicsInfo = {
-  color: string
-  gfx: Graphics
-  alpha: number
-  active: boolean
-}
+type GraphicsInfo = { color: string; gfx: Graphics; alpha: number; active: boolean }
 
-type NodeData = {
-  id: SimpleSlug
-  text: string
-  tags: string[]
-} & SimulationNodeDatum
+type NodeData = { id: SimpleSlug; text: string; tags: string[] } & SimulationNodeDatum
 
-type SimpleLinkData = {
-  source: SimpleSlug
-  target: SimpleSlug
-}
+type SimpleLinkData = { source: SimpleSlug; target: SimpleSlug }
 
-type LinkData = {
-  source: NodeData
-  target: NodeData
-} & SimulationLinkDatum<NodeData>
+type LinkData = { source: NodeData; target: NodeData } & SimulationLinkDatum<NodeData>
 
-type NodeRenderData = GraphicsInfo & {
-  simulationData: NodeData
-  label: Text
-}
+type NodeRenderData = GraphicsInfo & { simulationData: NodeData; label: Text }
 
-type LinkRenderData = {
-  simulationData: LinkData
-  color: string
-  alpha: number
-  active: boolean
-}
+type LinkRenderData = { simulationData: LinkData; color: string; alpha: number; active: boolean }
 
 const localStorageKey = "graph-visited"
 function getVisited(): Set<SimpleSlug> {
@@ -189,21 +166,14 @@ async function renderGraph(graph: HTMLElement, fullSlug: FullSlug) {
 
   const nodes = [...neighbourhood].map((url) => {
     const text = url.startsWith("tags/") ? "#" + url.substring(5) : (data.get(url)?.title ?? url)
-    return {
-      id: url,
-      text,
-      tags: data.get(url)?.tags ?? [],
-    }
+    return { id: url, text, tags: data.get(url)?.tags ?? [] }
   })
   const nodeById = new Map(nodes.map((node) => [node.id, node]))
   const graphData: { nodes: NodeData[]; links: LinkData[] } = {
     nodes,
     links: links
       .filter((l) => neighbourhood.has(l.source) && neighbourhood.has(l.target))
-      .map((l) => ({
-        source: nodeById.get(l.source)!,
-        target: nodeById.get(l.target)!,
-      })),
+      .map((l) => ({ source: nodeById.get(l.source)!, target: nodeById.get(l.target)! })),
   }
 
   const nodeDegree = new Map<SimpleSlug, number>()
@@ -753,7 +723,11 @@ document.addEventListener("nav", async (e: CustomEventMap["nav"]) => {
       const anyGlobalGraphOpen = containers.some((container) =>
         container.classList.contains("active"),
       )
-      anyGlobalGraphOpen ? hideGlobalGraph() : renderGlobalGraph()
+      if (anyGlobalGraphOpen) {
+        hideGlobalGraph()
+      } else {
+        renderGlobalGraph()
+      }
     }
   }
 

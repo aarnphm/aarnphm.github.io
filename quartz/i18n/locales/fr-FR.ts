@@ -1,10 +1,7 @@
 import { Translation } from "./definition"
 
 export default {
-  propertyDefaults: {
-    title: "sans titre",
-    description: "aucune description fournie",
-  },
+  propertyDefaults: { title: "sans titre", description: "aucune description fournie" },
   components: {
     callout: {
       note: "note",
@@ -21,23 +18,11 @@ export default {
       example: "exemple",
       quote: "citation",
     },
-    backlinks: {
-      title: "liens retour",
-      noBacklinksFound: "aucun lien retour trouvé",
-    },
-    themeToggle: {
-      lightMode: "mode clair",
-      darkMode: "mode sombre",
-    },
-    explorer: {
-      title: "explorateur",
-    },
-    footer: {
-      createdWith: "créé avec",
-    },
-    graph: {
-      title: "vue graphique",
-    },
+    backlinks: { title: "liens retour", noBacklinksFound: "aucun lien retour trouvé" },
+    themeToggle: { lightMode: "mode clair", darkMode: "mode sombre" },
+    explorer: { title: "explorateur" },
+    footer: { createdWith: "créé avec" },
+    graph: { title: "vue graphique" },
     recentNotes: {
       title: "notes récentes",
       seeRemainingMore: ({ remaining }) => `voir ${remaining} de plus →`,
@@ -46,13 +31,8 @@ export default {
       transcludeOf: ({ targetSlug }) => `transclusion de ${targetSlug}`,
       linkToOriginal: "lien vers l'original",
     },
-    search: {
-      title: "recherche",
-      searchBarPlaceholder: "rechercher quelque chose",
-    },
-    tableOfContents: {
-      title: "table des matières",
-    },
+    search: { title: "recherche", searchBarPlaceholder: "rechercher quelque chose" },
+    tableOfContents: { title: "table des matières" },
     contentMeta: {
       readingTime: ({ minutes, words }) => `${minutes} min de lecture (${words} words)`,
     },
@@ -62,10 +42,7 @@ export default {
       recentNotes: "notes récentes",
       lastFewNotes: ({ count }) => `les dernières ${count} notes`,
     },
-    error: {
-      title: "introuvable",
-      notFound: "à venir",
-    },
+    error: { title: "introuvable", notFound: "à venir" },
     folderContent: {
       folder: "dossier",
       itemsUnderFolder: ({ count }) =>

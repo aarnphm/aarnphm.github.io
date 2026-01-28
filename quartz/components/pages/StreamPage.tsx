@@ -32,10 +32,7 @@ export default (() => {
 
     const groups = groupStreamEntries(fileData.streamData.entries)
     const entriesWithContext = groups.flatMap((group) =>
-      group.entries.map((entry) => ({
-        entry,
-        group,
-      })),
+      group.entries.map((entry) => ({ entry, group })),
     )
 
     return (

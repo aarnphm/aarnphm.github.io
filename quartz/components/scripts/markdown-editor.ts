@@ -98,25 +98,15 @@ export class MarkdownEditor {
         border: "none !important",
         boxShadow: "none !important",
       },
-      ".cm-content": {
-        padding: "0 !important",
-        minHeight: "20px",
-        caretColor: "inherit",
-      },
-      ".cm-gutter": {
-        minHeight: "20px",
-      },
+      ".cm-content": { padding: "0 !important", minHeight: "20px", caretColor: "inherit" },
+      ".cm-gutter": { minHeight: "20px" },
       ".cm-scroller": {
         overflow: "visible",
         fontFamily: "inherit !important",
         fontSize: "inherit",
       },
-      ".cm-line": {
-        padding: "0",
-      },
-      ".cm-cursor": {
-        borderLeftColor: "inherit",
-      },
+      ".cm-line": { padding: "0" },
+      ".cm-cursor": { borderLeftColor: "inherit" },
       ".cm-tooltip-autocomplete": {
         backgroundColor: "var(--light)",
         border: "1px solid var(--lightgray)",
@@ -142,9 +132,7 @@ export class MarkdownEditor {
         whiteSpace: "nowrap !important",
         textOverflow: "ellipsis !important",
       },
-      ".cm-completionIcon": {
-        display: "none",
-      },
+      ".cm-completionIcon": { display: "none" },
       "li[role='option']": {
         cursor: "pointer",
         borderRadius: "6px",
@@ -154,9 +142,7 @@ export class MarkdownEditor {
         display: "grid",
         gridTemplateColumns: "1fr 160px",
       },
-      "li[role='option'][aria-selected]": {
-        background: "var(--foam) !important",
-      },
+      "li[role='option'][aria-selected]": { background: "var(--foam) !important" },
     })
 
     const extensions = [
@@ -167,11 +153,7 @@ export class MarkdownEditor {
       updateListener,
       syntaxHighlighting(defaultHighlightStyle),
       EditorView.lineWrapping,
-      autocompletion({
-        override: completionSources,
-        closeOnBlur: false,
-        activateOnTyping: true,
-      }),
+      autocompletion({ override: completionSources, closeOnBlur: false, activateOnTyping: true }),
       EditorView.domEventHandlers({
         paste(event, view) {
           const html = event.clipboardData?.getData("text/html")
@@ -202,15 +184,9 @@ export class MarkdownEditor {
       transparentTheme,
     ]
 
-    const state = EditorState.create({
-      doc: config.initialContent || "",
-      extensions,
-    })
+    const state = EditorState.create({ doc: config.initialContent || "", extensions })
 
-    this.view = new EditorView({
-      state,
-      parent: config.parent,
-    })
+    this.view = new EditorView({ state, parent: config.parent })
   }
 
   getValue(): string {
@@ -218,13 +194,7 @@ export class MarkdownEditor {
   }
 
   setValue(content: string): void {
-    this.view.dispatch({
-      changes: {
-        from: 0,
-        to: this.view.state.doc.length,
-        insert: content,
-      },
-    })
+    this.view.dispatch({ changes: { from: 0, to: this.view.state.doc.length, insert: content } })
   }
 
   focus(): void {

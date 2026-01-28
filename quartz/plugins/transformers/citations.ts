@@ -36,11 +36,7 @@ interface LinkType {
 }
 
 const LINK_TYPES: LinkType[] = [
-  {
-    type: "arxiv",
-    pattern: extractArxivId,
-    label: "[arXiv]",
-  },
+  { type: "arxiv", pattern: extractArxivId, label: "[arXiv]" },
   {
     type: "lesswrong",
     pattern: (url: string) => url.toLowerCase().includes("lesswrong.com"),
@@ -123,10 +119,7 @@ function processNodes(nodes: (Element | HastText)[]): (Element | HastText)[] {
       return processTextNode(node)
     }
     if (node.type === "element") {
-      return {
-        ...node,
-        children: processNodes(node.children as (Element | HastText)[]),
-      }
+      return { ...node, children: processNodes(node.children as (Element | HastText)[]) }
     }
     return [node]
   })
@@ -153,9 +146,7 @@ interface ArxivMeta {
 
 declare module "vfile" {
   interface DataMap {
-    citations?: {
-      arxivIds: string[]
-    }
+    citations?: { arxivIds: string[] }
     citationsDisabled?: boolean
   }
 }
@@ -212,9 +203,7 @@ async function fetchArxivMetadataBatch(ids: string[]): Promise<Map<string, Arxiv
   for (const batch of batches) {
     await arxivRateLimiter.wait()
     const res = await fetch(`http://export.arxiv.org/api/query?id_list=${batch.join(",")}`, {
-      headers: {
-        "User-Agent": "QuartzArxivTransformer/1.0 (+https://github.com/aarnphm)",
-      },
+      headers: { "User-Agent": "QuartzArxivTransformer/1.0 (+https://github.com/aarnphm)" },
     })
 
     if (!res.ok) throw new Error(`arXiv API error for ${batch.join(",")}: ${res.statusText}`)

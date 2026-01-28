@@ -17,11 +17,7 @@ export interface Argv {
   concurrency?: number
 }
 
-export type BuildTimeTrieData = QuartzPluginData & {
-  slug: string
-  title: string
-  filePath: string
-}
+export type BuildTimeTrieData = QuartzPluginData & { slug: string; title: string; filePath: string }
 
 export interface BuildCtx {
   buildId: string
@@ -62,12 +58,7 @@ export function trieFromAllFiles(allFiles: QuartzPluginData[]): FileTrieNode<Bui
           }
         }
 
-        trie.add({
-          ...file,
-          slug,
-          title: title || slug,
-          filePath: file.filePath!,
-        })
+        trie.add({ ...file, slug, title: title || slug, filePath: file.filePath! })
       }
     }
   })

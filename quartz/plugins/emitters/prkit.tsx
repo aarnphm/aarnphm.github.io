@@ -1,4 +1,4 @@
-import type { SatoriOptions } from "satori/wasm"
+import type { SatoriOptions } from "satori"
 import { fromHtml } from "hast-util-from-html"
 import { JSX } from "preact"
 import satori from "satori"
@@ -89,8 +89,8 @@ const TwitterPost: PressReleaseComponent = (
   }
   const { locale } = cfg
   reading = i18n(locale).components.contentMeta.readingTime({
-    minutes: Math.ceil(fileData.readingTime?.minutes!),
-    words: Math.ceil(fileData.readingTime?.words!),
+    minutes: Math.ceil(fileData.readingTime ? fileData.readingTime.minutes! : 0),
+    words: Math.ceil(fileData.readingTime ? fileData.readingTime.words! : 0),
   })
 
   const metaItems: string[] = []
@@ -126,13 +126,7 @@ const TwitterPost: PressReleaseComponent = (
           maxWidth: "85%",
         }}
       >
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            textAlign: "left",
-          }}
-        >
+        <div style={{ display: "flex", flexDirection: "column", textAlign: "left" }}>
           <h2
             style={{
               color: cfg.theme.colors[colorScheme].dark,
@@ -177,9 +171,7 @@ const TwitterPost: PressReleaseComponent = (
   )
 }
 
-type Props = {
-  children: JSX.Element
-}
+type Props = { children: JSX.Element }
 
 const getAbstractProps = (abstract: string): Props =>
   htmlToJsx("" as FilePath, fromHtml(abstract, { fragment: true })).props

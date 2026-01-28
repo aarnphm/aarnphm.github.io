@@ -1,22 +1,58 @@
-import { Expr, Literal, Span } from "./ast"
-import { parseDuration } from "../types"
 import { QuartzPluginData } from "../../../plugins/vfile"
+import { parseDuration } from "../types"
+import { BinaryExpr, Expr, Literal, Span } from "./ast"
+
+export type NullValue = { kind: "null" }
+export type BooleanValue = { kind: "boolean"; value: boolean }
+export type NumberValue = { kind: "number"; value: number }
+export type StringValue = { kind: "string"; value: string }
+export type DateValue = { kind: "date"; value: Date }
+export type DurationValue = { kind: "duration"; value: number }
+export type ListValue = { kind: "list"; value: Value[] }
+export type ObjectValue = { kind: "object"; value: Record<string, Value> }
+export type FileValue = { kind: "file"; value: QuartzPluginData }
+export type LinkValue = { kind: "link"; value: string; display?: string }
+export type RegexValue = { kind: "regex"; value: RegExp }
+export type HtmlValue = { kind: "html"; value: string }
+export type IconValue = { kind: "icon"; value: string }
+export type ImageValue = { kind: "image"; value: string }
 
 export type Value =
-  | { kind: "null" }
-  | { kind: "boolean"; value: boolean }
-  | { kind: "number"; value: number }
-  | { kind: "string"; value: string }
-  | { kind: "date"; value: Date }
-  | { kind: "duration"; value: number }
-  | { kind: "list"; value: Value[] }
-  | { kind: "object"; value: Record<string, Value> }
-  | { kind: "file"; value: QuartzPluginData }
-  | { kind: "link"; value: string; display?: string }
-  | { kind: "regex"; value: RegExp }
-  | { kind: "html"; value: string }
-  | { kind: "icon"; value: string }
-  | { kind: "image"; value: string }
+  | NullValue
+  | BooleanValue
+  | NumberValue
+  | StringValue
+  | DateValue
+  | DurationValue
+  | ListValue
+  | ObjectValue
+  | FileValue
+  | LinkValue
+  | RegexValue
+  | HtmlValue
+  | IconValue
+  | ImageValue
+
+export type ValueKind = Value["kind"]
+export type ValueOf<K extends ValueKind> = Extract<Value, { kind: K }>
+
+export function isValueKind(value: Value, kind: "null"): value is NullValue
+export function isValueKind(value: Value, kind: "boolean"): value is BooleanValue
+export function isValueKind(value: Value, kind: "number"): value is NumberValue
+export function isValueKind(value: Value, kind: "string"): value is StringValue
+export function isValueKind(value: Value, kind: "date"): value is DateValue
+export function isValueKind(value: Value, kind: "duration"): value is DurationValue
+export function isValueKind(value: Value, kind: "list"): value is ListValue
+export function isValueKind(value: Value, kind: "object"): value is ObjectValue
+export function isValueKind(value: Value, kind: "file"): value is FileValue
+export function isValueKind(value: Value, kind: "link"): value is LinkValue
+export function isValueKind(value: Value, kind: "regex"): value is RegexValue
+export function isValueKind(value: Value, kind: "html"): value is HtmlValue
+export function isValueKind(value: Value, kind: "icon"): value is IconValue
+export function isValueKind(value: Value, kind: "image"): value is ImageValue
+export function isValueKind(value: Value, kind: ValueKind): value is Value {
+  return value.kind === kind
+}
 
 export type EvalContext = {
   file: QuartzPluginData
@@ -28,22 +64,22 @@ export type EvalContext = {
   values?: Value[]
 }
 
-const nullValue: Value = { kind: "null" }
+const nullValue: NullValue = { kind: "null" }
 
-const makeNull = (): Value => nullValue
-const makeBoolean = (value: boolean): Value => ({ kind: "boolean", value })
-const makeNumber = (value: number): Value => ({ kind: "number", value })
-const makeString = (value: string): Value => ({ kind: "string", value })
-const makeDate = (value: Date): Value => ({ kind: "date", value })
-const makeDuration = (value: number): Value => ({ kind: "duration", value })
-const makeList = (value: Value[]): Value => ({ kind: "list", value })
-const makeObject = (value: Record<string, Value>): Value => ({ kind: "object", value })
-const makeFile = (value: QuartzPluginData): Value => ({ kind: "file", value })
-const makeLink = (value: string, display?: string): Value => ({ kind: "link", value, display })
-const makeRegex = (value: RegExp): Value => ({ kind: "regex", value })
-const makeHtml = (value: string): Value => ({ kind: "html", value })
-const makeIcon = (value: string): Value => ({ kind: "icon", value })
-const makeImage = (value: string): Value => ({ kind: "image", value })
+const makeNull = (): NullValue => nullValue
+const makeBoolean = (value: boolean): BooleanValue => ({ kind: "boolean", value })
+const makeNumber = (value: number): NumberValue => ({ kind: "number", value })
+const makeString = (value: string): StringValue => ({ kind: "string", value })
+const makeDate = (value: Date): DateValue => ({ kind: "date", value })
+const makeDuration = (value: number): DurationValue => ({ kind: "duration", value })
+const makeList = (value: Value[]): ListValue => ({ kind: "list", value })
+const makeObject = (value: Record<string, Value>): ObjectValue => ({ kind: "object", value })
+const makeFile = (value: QuartzPluginData): FileValue => ({ kind: "file", value })
+const makeLink = (value: string, display?: string): LinkValue => ({ kind: "link", value, display })
+const makeRegex = (value: RegExp): RegexValue => ({ kind: "regex", value })
+const makeHtml = (value: string): HtmlValue => ({ kind: "html", value })
+const makeIcon = (value: string): IconValue => ({ kind: "icon", value })
+const makeImage = (value: string): ImageValue => ({ kind: "image", value })
 
 const isRecord = (value: unknown): value is Record<string, unknown> =>
   typeof value === "object" && value !== null && !Array.isArray(value)
@@ -51,35 +87,25 @@ const isRecord = (value: unknown): value is Record<string, unknown> =>
 const isValue = (value: unknown): value is Value =>
   typeof value === "object" && value !== null && "kind" in value
 
-const isNumberValue = (value: Value): value is { kind: "number"; value: number } =>
-  value.kind === "number"
+const isNumberValue = (value: Value): value is NumberValue => isValueKind(value, "number")
 
-const isStringValue = (value: Value): value is { kind: "string"; value: string } =>
-  value.kind === "string"
+const isStringValue = (value: Value): value is StringValue => isValueKind(value, "string")
 
-const isBooleanValue = (value: Value): value is { kind: "boolean"; value: boolean } =>
-  value.kind === "boolean"
+const isBooleanValue = (value: Value): value is BooleanValue => isValueKind(value, "boolean")
 
-const isListValue = (value: Value): value is { kind: "list"; value: Value[] } =>
-  value.kind === "list"
+const isListValue = (value: Value): value is ListValue => isValueKind(value, "list")
 
-const isObjectValue = (value: Value): value is { kind: "object"; value: Record<string, Value> } =>
-  value.kind === "object"
+const isObjectValue = (value: Value): value is ObjectValue => isValueKind(value, "object")
 
-const isDateValue = (value: Value): value is { kind: "date"; value: Date } =>
-  value.kind === "date"
+const isDateValue = (value: Value): value is DateValue => isValueKind(value, "date")
 
-const isDurationValue = (value: Value): value is { kind: "duration"; value: number } =>
-  value.kind === "duration"
+const isDurationValue = (value: Value): value is DurationValue => isValueKind(value, "duration")
 
-const isFileValue = (value: Value): value is { kind: "file"; value: QuartzPluginData } =>
-  value.kind === "file"
+const isFileValue = (value: Value): value is FileValue => isValueKind(value, "file")
 
-const isLinkValue = (value: Value): value is { kind: "link"; value: string; display?: string } =>
-  value.kind === "link"
+const isLinkValue = (value: Value): value is LinkValue => isValueKind(value, "link")
 
-const isRegexValue = (value: Value): value is { kind: "regex"; value: RegExp } =>
-  value.kind === "regex"
+const isRegexValue = (value: Value): value is RegexValue => isValueKind(value, "regex")
 
 const valueToString = (value: Value): string => {
   switch (value.kind) {
@@ -166,7 +192,13 @@ const valueToBoolean = (value: Value): boolean => {
   }
 }
 
-const valueEquals = (left: Value, right: Value): boolean => {
+const valueEquals = (left: Value, right: Value, allFiles: QuartzPluginData[]): boolean => {
+  if ((isLinkValue(left) || isFileValue(left)) && (isLinkValue(right) || isFileValue(right))) {
+    const leftTarget = extractLinkTarget(left, allFiles)
+    const rightTarget = extractLinkTarget(right, allFiles)
+    if (!leftTarget || !rightTarget) return false
+    return leftTarget === rightTarget
+  }
   if (left.kind !== right.kind) return false
   if (left.kind === "null") return true
   if (isBooleanValue(left) && isBooleanValue(right)) return left.value === right.value
@@ -174,12 +206,11 @@ const valueEquals = (left: Value, right: Value): boolean => {
   if (isStringValue(left) && isStringValue(right)) return left.value === right.value
   if (isDateValue(left) && isDateValue(right)) return left.value.getTime() === right.value.getTime()
   if (isDurationValue(left) && isDurationValue(right)) return left.value === right.value
-  if (isLinkValue(left) && isLinkValue(right)) return left.value === right.value
   if (isRegexValue(left) && isRegexValue(right)) return left.value.source === right.value.source
   if (isListValue(left) && isListValue(right)) {
     if (left.value.length !== right.value.length) return false
     for (let i = 0; i < left.value.length; i += 1) {
-      if (!valueEquals(left.value[i], right.value[i])) return false
+      if (!valueEquals(left.value[i], right.value[i], allFiles)) return false
     }
     return true
   }
@@ -190,12 +221,9 @@ const valueEquals = (left: Value, right: Value): boolean => {
     for (const key of leftKeys) {
       const l = left.value[key]
       const r = right.value[key]
-      if (!r || !valueEquals(l, r)) return false
+      if (!r || !valueEquals(l, r, allFiles)) return false
     }
     return true
-  }
-  if (isFileValue(left) && isFileValue(right)) {
-    return left.value.slug === right.value.slug
   }
   return false
 }
@@ -429,13 +457,24 @@ const evalBinary = (
 ): Value => {
   const left = evaluateExpression(expr.left, ctx)
   const right = evaluateExpression(expr.right, ctx)
-  if (expr.operator === "==") return makeBoolean(valueEquals(left, right))
-  if (expr.operator === "!=") return makeBoolean(!valueEquals(left, right))
+  if (expr.operator === "==") return makeBoolean(valueEquals(left, right, ctx.allFiles))
+  if (expr.operator === "!=") return makeBoolean(!valueEquals(left, right, ctx.allFiles))
 
   if (expr.operator === "+" || expr.operator === "-") {
     return evalAdditive(expr.operator, left, right)
   }
   if (expr.operator === "*" || expr.operator === "/" || expr.operator === "%") {
+    if (isDurationValue(left)) {
+      const rightNum = valueToNumber(right)
+      if (!Number.isFinite(rightNum)) return makeNull()
+      if (expr.operator === "*") return makeDuration(left.value * rightNum)
+      if (expr.operator === "/") {
+        if (rightNum === 0) return makeNull()
+        return makeDuration(left.value / rightNum)
+      }
+      return makeNull()
+    }
+    if (isDurationValue(right)) return makeNull()
     const leftNum = valueToNumber(left)
     const rightNum = valueToNumber(right)
     if (!Number.isFinite(leftNum) || !Number.isFinite(rightNum)) return makeNull()
@@ -457,6 +496,9 @@ const evalAdditive = (operator: "+" | "-", left: Value, right: Value): Value => 
   if (operator === "+" && (isStringValue(left) || isStringValue(right))) {
     return makeString(`${valueToString(left)}${valueToString(right)}`)
   }
+  if (isDateValue(left) && isDateValue(right) && operator === "-") {
+    return makeDuration(left.value.getTime() - right.value.getTime())
+  }
   if (isDateValue(left)) {
     const duration = parseDurationValue(right)
     if (duration === null) return makeNull()
@@ -468,9 +510,6 @@ const evalAdditive = (operator: "+" | "-", left: Value, right: Value): Value => 
     if (duration === null) return makeNull()
     const date = new Date(right.value.getTime() + duration)
     return makeDate(date)
-  }
-  if (isDateValue(left) && isDateValue(right) && operator === "-") {
-    return makeDuration(left.value.getTime() - right.value.getTime())
   }
   if (isDurationValue(left) && isDurationValue(right)) {
     return makeDuration(operator === "+" ? left.value + right.value : left.value - right.value)
@@ -492,10 +531,7 @@ const compareValues = (left: Value, right: Value): number | null => {
   return null
 }
 
-const evalMember = (
-  expr: { object: Expr; property: string },
-  ctx: EvalContext,
-): Value => {
+const evalMember = (expr: { object: Expr; property: string }, ctx: EvalContext): Value => {
   if (expr.object.type === "Identifier") {
     if (expr.object.name === "file") {
       return resolveFileProperty(ctx.file, expr.property, ctx.allFiles)
@@ -516,10 +552,11 @@ const evalMember = (
   return accessProperty(objectValue, expr.property, ctx)
 }
 
-const evalIndex = (
-  expr: { object: Expr; index: Expr },
-  ctx: EvalContext,
-): Value => {
+const evalIndex = (expr: { object: Expr; index: Expr }, ctx: EvalContext): Value => {
+  if (expr.object.type === "Identifier" && expr.object.name === "formula") {
+    const indexValue = evaluateExpression(expr.index, ctx)
+    if (isStringValue(indexValue)) return resolveFormulaProperty(indexValue.value, ctx)
+  }
   const objectValue = evaluateExpression(expr.object, ctx)
   const indexValue = evaluateExpression(expr.index, ctx)
   if (isListValue(objectValue)) {
@@ -628,7 +665,7 @@ const evalGlobalCall = (name: string, args: Expr[], ctx: EvalContext): Value => 
       .replace(/&/g, "&amp;")
       .replace(/</g, "&lt;")
       .replace(/>/g, "&gt;")
-      .replace(/\"/g, "&quot;")
+      .replace(/"/g, "&quot;")
       .replace(/'/g, "&#39;")
     return makeString(escaped)
   }
@@ -679,7 +716,7 @@ const evalMethodCall = (receiver: Value, method: string, args: Expr[], ctx: Eval
 }
 
 const evalStringMethod = (
-  receiver: { kind: "string"; value: string },
+  receiver: StringValue,
   method: string,
   args: Expr[],
   ctx: EvalContext,
@@ -710,9 +747,6 @@ const evalStringMethod = (
   }
   if (method === "lower") {
     return makeString(value.toLowerCase())
-  }
-  if (method === "upper") {
-    return makeString(value.toUpperCase())
   }
   if (method === "title") {
     const parts = value.split(/\s+/).map((part) => {
@@ -748,9 +782,14 @@ const evalStringMethod = (
     return makeString(value.slice(startIndex, endIndex))
   }
   if (method === "split") {
-    const separator = args[0] ? valueToString(evaluateExpression(args[0], ctx)) : ""
-    const limit = args[1] ? valueToNumber(evaluateExpression(args[1], ctx)) : undefined
-    const parts = limit && Number.isFinite(limit) ? value.split(separator, limit) : value.split(separator)
+    const separatorValue = args[0] ? evaluateExpression(args[0], ctx) : makeString("")
+    const separator = isRegexValue(separatorValue)
+      ? separatorValue.value
+      : valueToString(separatorValue)
+    const limitValue = args[1] ? valueToNumber(evaluateExpression(args[1], ctx)) : undefined
+    const limit =
+      limitValue !== undefined && Number.isFinite(limitValue) ? Math.trunc(limitValue) : undefined
+    const parts = limit !== undefined ? value.split(separator, limit) : value.split(separator)
     return makeList(parts.map((entry) => makeString(entry)))
   }
   if (method === "length") {
@@ -760,7 +799,7 @@ const evalStringMethod = (
 }
 
 const evalNumberMethod = (
-  receiver: { kind: "number"; value: number },
+  receiver: NumberValue,
   method: string,
   args: Expr[],
   ctx: EvalContext,
@@ -787,7 +826,7 @@ const evalNumberMethod = (
 }
 
 const evalListMethod = (
-  receiver: { kind: "list"; value: Value[] },
+  receiver: ListValue,
   method: string,
   args: Expr[],
   ctx: EvalContext,
@@ -795,15 +834,19 @@ const evalListMethod = (
   const list = receiver.value
   if (method === "contains") {
     const arg = args[0] ? evaluateExpression(args[0], ctx) : makeNull()
-    return makeBoolean(list.some((entry) => valueEquals(entry, arg)))
+    return makeBoolean(list.some((entry) => valueEquals(entry, arg, ctx.allFiles)))
   }
   if (method === "containsAny") {
     const values = args.map((arg) => evaluateExpression(arg, ctx))
-    return makeBoolean(values.some((entry) => list.some((item) => valueEquals(item, entry))))
+    return makeBoolean(
+      values.some((entry) => list.some((item) => valueEquals(item, entry, ctx.allFiles))),
+    )
   }
   if (method === "containsAll") {
     const values = args.map((arg) => evaluateExpression(arg, ctx))
-    return makeBoolean(values.every((entry) => list.some((item) => valueEquals(item, entry))))
+    return makeBoolean(
+      values.every((entry) => list.some((item) => valueEquals(item, entry, ctx.allFiles))),
+    )
   }
   if (method === "filter") {
     const expr = args[0]
@@ -834,11 +877,7 @@ const evalListMethod = (
     let acc = initial
     for (let index = 0; index < list.length; index += 1) {
       const value = list[index]
-      const locals: Record<string, Value> = {
-        value,
-        index: makeNumber(index),
-        acc,
-      }
+      const locals: Record<string, Value> = { value, index: makeNumber(index), acc }
       const baseLocals = ctx.locals ? ctx.locals : {}
       const nextCtx: EvalContext = { ...ctx, locals: { ...baseLocals, ...locals } }
       acc = evaluateExpression(expr, nextCtx)
@@ -885,7 +924,7 @@ const evalListMethod = (
   if (method === "unique") {
     const unique: Value[] = []
     for (const item of list) {
-      if (!unique.some((entry) => valueEquals(entry, item))) {
+      if (!unique.some((entry) => valueEquals(entry, item, ctx.allFiles))) {
         unique.push(item)
       }
     }
@@ -901,7 +940,7 @@ const evalListMethod = (
 }
 
 const evalDateMethod = (
-  receiver: { kind: "date"; value: Date },
+  receiver: DateValue,
   method: string,
   args: Expr[],
   ctx: EvalContext,
@@ -935,7 +974,7 @@ const evalDateMethod = (
   return makeNull()
 }
 
-const evalObjectMethod = (receiver: { kind: "object"; value: Record<string, Value> }, method: string): Value => {
+const evalObjectMethod = (receiver: ObjectValue, method: string): Value => {
   const entries = Object.entries(receiver.value)
   if (method === "isEmpty") return makeBoolean(entries.length === 0)
   if (method === "keys") return makeList(entries.map(([key]) => makeString(key)))
@@ -944,7 +983,7 @@ const evalObjectMethod = (receiver: { kind: "object"; value: Record<string, Valu
 }
 
 const evalFileMethod = (
-  receiver: { kind: "file"; value: QuartzPluginData },
+  receiver: FileValue,
   method: string,
   args: Expr[],
   ctx: EvalContext,
@@ -975,14 +1014,14 @@ const evalFileMethod = (
   if (method === "hasLink") {
     const arg = args[0] ? evaluateExpression(args[0], ctx) : makeNull()
     const target = extractLinkTarget(arg, ctx.allFiles)
-    const links = Array.isArray(file.links) ? file.links : []
+    const links = Array.isArray(file.links) ? file.links.map((link) => String(link)) : []
     return makeBoolean(target.length > 0 && links.includes(target))
   }
   return makeNull()
 }
 
 const evalLinkMethod = (
-  receiver: { kind: "link"; value: string },
+  receiver: LinkValue,
   method: string,
   args: Expr[],
   ctx: EvalContext,
@@ -1022,15 +1061,16 @@ const resolveFileProperty = (
   if (property === "file") return makeFile(file)
   if (property === "name" || property === "basename") {
     const filePath = typeof file.filePath === "string" ? file.filePath : ""
-    const source = filePath.length > 0 ? filePath : (file.slug ? String(file.slug) : "")
+    const source = filePath.length > 0 ? filePath : file.slug ? String(file.slug) : ""
     const segment = source.split("/").pop() || ""
+    if (property === "name") return makeString(segment)
     const basename = segment.replace(/\.[^/.]+$/, "")
     return makeString(basename)
   }
   if (property === "title") {
     const title = typeof file.frontmatter?.title === "string" ? file.frontmatter.title : ""
     if (title.length > 0) return makeString(title)
-    return resolveFileProperty(file, "name", allFiles)
+    return resolveFileProperty(file, "basename", allFiles)
   }
   if (property === "path") {
     const path = file.filePath || file.slug || ""
@@ -1050,6 +1090,9 @@ const resolveFileProperty = (
     return makeString(match ? match[1] : "md")
   }
   if (property === "size") {
+    if (isRecord(file) && typeof file.size === "number") {
+      return makeNumber(file.size)
+    }
     return makeNull()
   }
   if (property === "ctime") {
@@ -1076,7 +1119,7 @@ const resolveFileProperty = (
     const target = normalizeLinkTarget(slug)
     const backlinks = allFiles
       .filter((entry) => {
-        const links = Array.isArray(entry.links) ? entry.links : []
+        const links = Array.isArray(entry.links) ? entry.links.map((link) => String(link)) : []
         return target.length > 0 && links.includes(target)
       })
       .map((entry) => (entry.slug ? String(entry.slug) : ""))
@@ -1084,7 +1127,8 @@ const resolveFileProperty = (
     return makeList(backlinks.map((link) => makeString(link)))
   }
   if (property === "embeds") {
-    return makeList([])
+    const embeds = isRecord(file) && Array.isArray(file.embeds) ? file.embeds : []
+    return makeList(embeds.map((entry) => makeString(String(entry))))
   }
   if (property === "properties") {
     return toValue(file.frontmatter)
@@ -1147,10 +1191,15 @@ const extractLinkTarget = (value: Value, allFiles: QuartzPluginData[]): string =
   return file && file.slug ? normalizeLinkTarget(String(file.slug)) : ""
 }
 
-const findFileByTarget = (target: string, allFiles: QuartzPluginData[]): QuartzPluginData | undefined => {
+const findFileByTarget = (
+  target: string,
+  allFiles: QuartzPluginData[],
+): QuartzPluginData | undefined => {
   const normalized = normalizeLinkTarget(target)
   if (!normalized) return undefined
-  return allFiles.find((entry) => normalizeLinkTarget(entry.slug ? String(entry.slug) : "") === normalized)
+  return allFiles.find(
+    (entry) => normalizeLinkTarget(entry.slug ? String(entry.slug) : "") === normalized,
+  )
 }
 
 const normalizeLinkTarget = (raw: string): string => {
@@ -1166,7 +1215,7 @@ const normalizeLinkTarget = (raw: string): string => {
   return slug.toLowerCase()
 }
 
-type BinaryOperator = BinaryExpr['operator']
+type BinaryOperator = BinaryExpr["operator"]
 
 export const buildSyntheticSpan = (): Span => ({
   start: { offset: 0, line: 0, column: 0 },

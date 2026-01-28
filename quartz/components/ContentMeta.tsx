@@ -13,11 +13,7 @@ import script from "./scripts/content-meta.inline"
 import style from "./styles/contentMeta.scss"
 import { svgOptions } from "./svg"
 
-type MetaProp = {
-  title: string
-  classes: string[]
-  item: JSX.Element | JSX.Element[]
-}
+type MetaProp = { title: string; classes: string[]; item: JSX.Element | JSX.Element[] }
 
 export default (() => {
   const ContentMeta: QuartzComponent = ({ cfg, fileData, displayClass }: QuartzComponentProps) => {
@@ -32,8 +28,8 @@ export default (() => {
       modified = fileData.dates?.["modified"]
     }
     const displayedTime = i18n(locale).components.contentMeta.readingTime({
-      minutes: Math.ceil(fileData.readingTime?.minutes!),
-      words: Math.ceil(fileData.readingTime?.words!),
+      minutes: Math.ceil(fileData.readingTime ? fileData.readingTime.minutes! : 0),
+      words: Math.ceil(fileData.readingTime ? fileData.readingTime.words! : 0),
     })
 
     const Li = ({ title, item, classes }: MetaProp) => {
@@ -52,10 +48,7 @@ export default (() => {
         classes: ["published-time"],
         item: h(
           "span",
-          {
-            class: "page-creation",
-            title: `Date de création du contenu de la page (${created})`,
-          },
+          { class: "page-creation", title: `Date de création du contenu de la page (${created})` },
           [h("em", {}, [<DateComponent date={created} locale={locale} />])],
         ),
       })

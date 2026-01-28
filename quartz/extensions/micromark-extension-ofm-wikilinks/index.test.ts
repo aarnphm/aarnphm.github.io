@@ -17,10 +17,7 @@ import { wikilinkToMarkdown } from "./toMarkdown"
  */
 function parse(
   markdown: string,
-  options?: {
-    obsidian?: boolean
-    stripExtensions?: string[]
-  },
+  options?: { obsidian?: boolean; stripExtensions?: string[] },
 ): Root {
   return fromMarkdown(markdown, {
     extensions: [wikilink()],
@@ -48,9 +45,7 @@ function extractWikilink(tree: Root): Wikilink | null {
  * helper to serialize markdown with wikilink extension.
  */
 function serialize(tree: Root): string {
-  return toMarkdown(tree, {
-    extensions: [wikilinkToMarkdown()],
-  })
+  return toMarkdown(tree, { extensions: [wikilinkToMarkdown()] })
 }
 
 describe("micromark wikilink extension", () => {
@@ -893,9 +888,7 @@ describe("micromark wikilink extension", () => {
       })
 
       test("annotates image with caption and dimensions", () => {
-        const tree = parse("![[photo.jpg|A beautiful sunset|400x300]]", {
-          obsidian: true,
-        })
+        const tree = parse("![[photo.jpg|A beautiful sunset|400x300]]", { obsidian: true })
         const wikilink = extractWikilink(tree)
 
         assert(wikilink, "wikilink node should exist")
@@ -907,9 +900,7 @@ describe("micromark wikilink extension", () => {
       })
 
       test("annotates image with multi-part caption", () => {
-        const tree = parse("![[photo.jpg|Caption with|multiple|pipes]]", {
-          obsidian: true,
-        })
+        const tree = parse("![[photo.jpg|Caption with|multiple|pipes]]", { obsidian: true })
         const wikilink = extractWikilink(tree)
 
         assert(wikilink, "wikilink node should exist")
@@ -920,9 +911,7 @@ describe("micromark wikilink extension", () => {
       })
 
       test("annotates image with multi-part caption and dimensions", () => {
-        const tree = parse("![[photo.jpg|Caption with|multiple parts|800x600]]", {
-          obsidian: true,
-        })
+        const tree = parse("![[photo.jpg|Caption with|multiple parts|800x600]]", { obsidian: true })
         const wikilink = extractWikilink(tree)
 
         assert(wikilink, "wikilink node should exist")
@@ -1092,9 +1081,7 @@ describe("micromark wikilink extension", () => {
 
     describe("integration with obsidian mode", () => {
       test("combines obsidian anchor handling with hName annotation", () => {
-        const tree = parse("[[file#Parent#Child|display]]", {
-          obsidian: true,
-        })
+        const tree = parse("[[file#Parent#Child|display]]", { obsidian: true })
         const wikilink = extractWikilink(tree)
 
         assert(wikilink, "wikilink node should exist")
@@ -1140,10 +1127,7 @@ describe("micromark wikilink extension", () => {
     })
 
     test("only strips first matching extension", () => {
-      const tree = parse("[[file.md.backup]]", {
-        obsidian: true,
-        stripExtensions: [".backup"],
-      })
+      const tree = parse("[[file.md.backup]]", { obsidian: true, stripExtensions: [".backup"] })
       const wikilink = extractWikilink(tree)
 
       assert(wikilink, "wikilink node should exist")

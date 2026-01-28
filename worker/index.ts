@@ -472,10 +472,7 @@ export default {
         try {
           const pdfResponse = await fetch(targetUrl.toString(), {
             method: "GET",
-            cf: {
-              cacheTtl: 3600,
-              cacheEverything: true,
-            },
+            cf: { cacheTtl: 3600, cacheEverything: true },
           })
 
           if (!pdfResponse.ok) {
@@ -726,10 +723,7 @@ export default {
     const arenaJsonMatch = url.pathname.match(/^\/arena\/([^/]+)\/json$/)
     if (arenaJsonMatch) {
       const originResp = await env.ASSETS.fetch(request)
-      return withHeaders(originResp, {
-        "Content-Type": "application/json",
-        ...apiHeaders,
-      })
+      return withHeaders(originResp, { "Content-Type": "application/json", ...apiHeaders })
     }
 
     if (url.pathname.endsWith(".pdf")) {

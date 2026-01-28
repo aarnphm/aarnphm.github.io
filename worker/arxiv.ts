@@ -11,14 +11,8 @@ interface ArxivResponse {
       summary: string
       author: Array<{ name: string }> | { name: string }
       published: string
-      "arxiv:primary_category": {
-        "@_term": string
-      }
-      link: Array<{
-        "@_href": string
-        "@_type": string
-        "@_rel": string
-      }>
+      "arxiv:primary_category": { "@_term": string }
+      link: Array<{ "@_href": string; "@_type": string; "@_rel": string }>
     }
   }
 }

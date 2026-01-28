@@ -73,12 +73,7 @@ function makeTikzGraph(node: Code, svg: string, style?: string): Element {
       ),
       s(
         "svg.check-icon",
-        {
-          ...svgOptions,
-          width: 12,
-          height: 16,
-          viewbox: "0 -4 16 16",
-        },
+        { ...svgOptions, width: 12, height: 16, viewbox: "0 -4 16 16" },
         s("use", { href: "#github-check" }),
       ),
     ),
@@ -100,9 +95,7 @@ interface Options {
   showConsole: boolean
 }
 
-const defaultOpts: Options = {
-  showConsole: false,
-}
+const defaultOpts: Options = { showConsole: false }
 
 export const TikzJax: QuartzTransformerPlugin<Options> = (opts?: Options) => {
   const o = { ...defaultOpts, ...opts }
@@ -152,11 +145,7 @@ export const TikzJax: QuartzTransformerPlugin<Options> = (opts?: Options) => {
     },
     externalResources() {
       return {
-        css: [
-          {
-            content: "https://cdn.jsdelivr.net/npm/node-tikzjax@latest/css/fonts.css",
-          },
-        ],
+        css: [{ content: "https://cdn.jsdelivr.net/npm/node-tikzjax@latest/css/fonts.css" }],
       }
     },
   }

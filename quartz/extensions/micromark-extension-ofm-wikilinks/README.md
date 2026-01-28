@@ -499,9 +499,7 @@ const html = await processor.process("[[Page1|link]] and ![[image.png|caption|10
 // with custom strip extensions
 const customProcessor = unified()
   .use(remarkParse)
-  .use(remarkWikilink, {
-    stripExtensions: [".md", ".mdx"],
-  })
+  .use(remarkWikilink, { stripExtensions: [".md", ".mdx"] })
   .use(remarkRehype)
   .use(rehypeStringify)
 ```

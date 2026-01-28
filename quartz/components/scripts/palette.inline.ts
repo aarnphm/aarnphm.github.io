@@ -38,9 +38,7 @@ function notifyToast(message: string) {
 
 function dispatchCommentAuthorUpdated(oldAuthor: string, newAuthor: string) {
   document.dispatchEvent(
-    new CustomEvent("commentauthorupdated", {
-      detail: { oldAuthor, newAuthor },
-    }),
+    new CustomEvent("commentauthorupdated", { detail: { oldAuthor, newAuthor } }),
   )
 }
 
@@ -490,12 +488,20 @@ document.addEventListener("nav", (e) => {
     if (e.key === "o" && (e.ctrlKey || e.metaKey)) {
       e.preventDefault()
       const barOpen = container?.classList.contains("active")
-      barOpen ? hidePalette() : showPalette("quick_open")
+      if (barOpen) {
+        hidePalette()
+      } else {
+        showPalette("quick_open")
+      }
       return
     } else if (e.key === "p" && (e.altKey || e.metaKey || e.ctrlKey)) {
       e.preventDefault()
       const barOpen = container?.classList.contains("active")
-      barOpen ? hidePalette() : showPalette("command")
+      if (barOpen) {
+        hidePalette()
+      } else {
+        showPalette("command")
+      }
       return
     } else if (
       e.key.startsWith("Esc") &&
@@ -608,11 +614,7 @@ document.addEventListener("nav", (e) => {
               item.aliases.find((alias) =>
                 alias.toLowerCase().includes(currentSearchTerm.toLowerCase()),
               ) || ""
-            return {
-              ...item,
-              name: highlight(currentSearchTerm, item.name) as FilePath,
-              target,
-            }
+            return { ...item, name: highlight(currentSearchTerm, item.name) as FilePath, target }
           })
           .sort((a, b) => {
             if ((!a?.target && !b?.target) || (a?.target && b?.target)) return 0

@@ -77,10 +77,7 @@ const convertLinksToRefs = (tree: MdRoot, slug: FullSlug) => {
       children.push({ type: "text", value: fallback })
     }
 
-    parent.children.splice(index, 1, {
-      type: "html",
-      value: `<ref slug="${resolvedSlug}">`,
-    })
+    parent.children.splice(index, 1, { type: "html", value: `<ref slug="${resolvedSlug}">` })
   })
 }
 
@@ -97,10 +94,7 @@ const convertTranscludesToRefs = (tree: MdRoot, slug: FullSlug) => {
     const base = normalizeSlug(slug, dataSlug ?? dataUrl ?? "")
     if (!base) return
 
-    parent.children.splice(index, 1, {
-      type: "html",
-      value: `<ref slug="${base}${dataBlock}">`,
-    })
+    parent.children.splice(index, 1, { type: "html", value: `<ref slug="${base}${dataBlock}">` })
   })
 }
 
@@ -160,10 +154,7 @@ const convertCalloutsToMarkdown = (tree: MdRoot) => {
       titleChildren = extractCalloutTitle(firstChild.value)
     }
 
-    const prefix: Text = {
-      type: "text",
-      value: `[!${calloutType}${metadata}]${collapseChar}`,
-    }
+    const prefix: Text = { type: "text", value: `[!${calloutType}${metadata}]${collapseChar}` }
 
     const header: Paragraph = { type: "paragraph", children: [prefix] }
     if (titleChildren.length > 0) {

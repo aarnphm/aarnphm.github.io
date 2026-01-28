@@ -161,13 +161,7 @@ function enterWikilink(this: CompileContext, token: Token): undefined {
   const node: Wikilink = {
     type: "wikilink",
     value: "",
-    data: {
-      wikilink: {
-        raw: "",
-        target: "",
-        embed: false,
-      },
-    },
+    data: { wikilink: { raw: "", target: "", embed: false } },
   }
   // @ts-expect-error: custom node type not in base mdast
   this.enter(node, token)
@@ -517,16 +511,8 @@ function annotateTransclude(
     {
       type: "element",
       tagName: "a",
-      properties: {
-        href: url + displayAnchor,
-        class: "transclude-inner",
-      },
-      children: [
-        {
-          type: "text",
-          value: `Transclude of ${url} ${block}`,
-        },
-      ],
+      properties: { href: url + displayAnchor, class: "transclude-inner" },
+      children: [{ type: "text", value: `Transclude of ${url} ${block}` }],
     },
   ]
 }

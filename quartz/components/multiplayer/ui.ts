@@ -252,10 +252,7 @@ export function createCommentsUi({ getState, dispatch, canResolveComment }: UiDe
     markUnreadButton.innerHTML = `<span class="menu-item">${isUnread ? "Mark as read" : "Mark as unread"}</span>`
     markUnreadButton.onclick = () => {
       hideActionsPopover()
-      dispatch({
-        type: isUnread ? "ui.comment.read" : "ui.comment.unread",
-        commentId: comment.id,
-      })
+      dispatch({ type: isUnread ? "ui.comment.read" : "ui.comment.unread", commentId: comment.id })
     }
 
     const copyLinkButton = document.createElement("button")
@@ -345,11 +342,7 @@ export function createCommentsUi({ getState, dispatch, canResolveComment }: UiDe
       }
 
       const updatedAt = Date.now()
-      submitUpdateComment({
-        ...comment,
-        content: newContent,
-        updatedAt,
-      })
+      submitUpdateComment({ ...comment, content: newContent, updatedAt })
 
       exitEditMode()
     }
@@ -987,14 +980,7 @@ export function createCommentsUi({ getState, dispatch, canResolveComment }: UiDe
           const opId = `orphan:${comment.id}`
           if (!getState().correctedAnchors.has(opId)) {
             dispatch({ type: "ui.correctedAnchor.add", opId })
-            submitUpdateComment(
-              {
-                ...comment,
-                orphaned: true,
-                updatedAt: Date.now(),
-              },
-              opId,
-            )
+            submitUpdateComment({ ...comment, orphaned: true, updatedAt: Date.now() }, opId)
           }
         }
         continue
@@ -1004,14 +990,7 @@ export function createCommentsUi({ getState, dispatch, canResolveComment }: UiDe
         const opId = `unorphan:${comment.id}`
         if (!getState().correctedAnchors.has(opId)) {
           dispatch({ type: "ui.correctedAnchor.add", opId })
-          submitUpdateComment(
-            {
-              ...comment,
-              orphaned: false,
-              updatedAt: Date.now(),
-            },
-            opId,
-          )
+          submitUpdateComment({ ...comment, orphaned: false, updatedAt: Date.now() }, opId)
         }
       }
 
@@ -1053,14 +1032,7 @@ export function createCommentsUi({ getState, dispatch, canResolveComment }: UiDe
             if (!getState().correctedAnchors.has(opId)) {
               dispatch({ type: "ui.correctedAnchor.add", opId })
               const newAnchor = computeStructuralAnchor(range, article)
-              submitUpdateComment(
-                {
-                  ...comment,
-                  anchor: newAnchor,
-                  updatedAt: Date.now(),
-                },
-                opId,
-              )
+              submitUpdateComment({ ...comment, anchor: newAnchor, updatedAt: Date.now() }, opId)
             }
           }
 
@@ -1175,10 +1147,7 @@ export function createCommentsUi({ getState, dispatch, canResolveComment }: UiDe
               dispatch({
                 type: "ui.bubble.offsetUpdated",
                 commentId: comment.id,
-                offset: {
-                  x: currentLeft - baseLeft,
-                  y: currentTop - baseTop,
-                },
+                offset: { x: currentLeft - baseLeft, y: currentTop - baseTop },
               })
             }
 

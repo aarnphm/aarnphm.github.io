@@ -13,34 +13,17 @@ type Anchor = {
   contextWords: [string, string]
 }
 
-type Comment = Omit<DbComment, "anchor"> & {
-  anchor: Anchor | null
-}
+type Comment = Omit<DbComment, "anchor"> & { anchor: Anchor | null }
 
 type OperationType = "new" | "update" | "delete" | "resolve"
 
-type OperationInput = {
-  opId: string
-  type: OperationType
-  comment: Comment
-}
+type OperationInput = { opId: string; type: OperationType; comment: Comment }
 
-type OperationRecord = {
-  seq: number
-  opId: string
-  type: OperationType
-  comment: Comment
-}
+type OperationRecord = { seq: number; opId: string; type: OperationType; comment: Comment }
 
-type RateLimit = {
-  count: number
-  windowStart: number
-}
+type RateLimit = { count: number; windowStart: number }
 
-type Session = {
-  pageId: string
-  ip: string
-}
+type Session = { pageId: string; ip: string }
 
 const MAX_OP_LOG = 1000
 
@@ -138,10 +121,7 @@ export class MultiplayerComments extends DurableObject<Env> {
   }
 
   private normalizeComment(comment: DbComment | Comment): Comment {
-    return {
-      ...comment,
-      anchor: this.parseAnchor(comment.anchor),
-    }
+    return { ...comment, anchor: this.parseAnchor(comment.anchor) }
   }
 
   private checkRateLimit(ip: string): boolean {
@@ -169,10 +149,7 @@ export class MultiplayerComments extends DurableObject<Env> {
       pageId,
     )
     const row = rows.toArray()[0] as { minSeq: number | null; maxSeq: number | null } | undefined
-    return {
-      minSeq: row?.minSeq ?? null,
-      maxSeq: row?.maxSeq ?? null,
-    }
+    return { minSeq: row?.minSeq ?? null, maxSeq: row?.maxSeq ?? null }
   }
 
   private readOpById(opId: string): OperationRecord | null {
@@ -368,12 +345,7 @@ export class MultiplayerComments extends DurableObject<Env> {
     }
     this.trimOps(pageId, seq)
 
-    const record: OperationRecord = {
-      seq,
-      opId: op.opId,
-      type: op.type,
-      comment: saved,
-    }
+    const record: OperationRecord = { seq, opId: op.opId, type: op.type, comment: saved }
 
     this.broadcastOp(record)
     return record
@@ -410,13 +382,7 @@ export class MultiplayerComments extends DurableObject<Env> {
 
       if (sinceSeq !== null && minSeq !== null && sinceSeq >= minSeq - 1) {
         const ops = this.readOpsSince(pageId, sinceSeq)
-        server.send(
-          JSON.stringify({
-            type: "delta",
-            ops,
-            latestSeq,
-          }),
-        )
+        server.send(JSON.stringify({ type: "delta", ops, latestSeq }))
       } else {
         const db = drizzle(this.env.COMMENTS_ROOM)
         const existing = await db
@@ -440,10 +406,7 @@ export class MultiplayerComments extends DurableObject<Env> {
         )
       }
 
-      return new Response(null, {
-        status: 101,
-        webSocket: client,
-      })
+      return new Response(null, { status: 101, webSocket: client })
     }
 
     if (url.pathname === "/comments/export") {
@@ -649,7 +612,5 @@ window.location.assign(payload.returnTo);
 </script>
 </body>
 </html>`
-  return new Response(html, {
-    headers: { "Content-Type": "text/html; charset=utf-8" },
-  })
+  return new Response(html, { headers: { "Content-Type": "text/html; charset=utf-8" } })
 }

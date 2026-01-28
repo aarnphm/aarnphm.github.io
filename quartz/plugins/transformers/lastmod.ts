@@ -8,9 +8,7 @@ export interface Options {
   priority: ("frontmatter" | "git" | "filesystem")[]
 }
 
-const defaultOptions: Options = {
-  priority: ["frontmatter", "git", "filesystem"],
-}
+const defaultOptions: Options = { priority: ["frontmatter", "git", "filesystem"] }
 
 // YYYY-MM-DD
 const iso8601DateOnlyRegex = /^\d{4}-\d{2}-\d{2}$/
@@ -106,10 +104,6 @@ export const CreatedModifiedDate: QuartzTransformerPlugin<Partial<Options>> = (u
 
 declare module "vfile" {
   interface DataMap {
-    dates: {
-      created: Date
-      modified: Date
-      published: Date
-    }
+    dates: { created: Date; modified: Date; published: Date }
   }
 }

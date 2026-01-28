@@ -42,23 +42,14 @@ ${content}
 </document>`)
 
   if (slug === "index") {
-    return write({
-      ctx,
-      content,
-      slug: "llms" as FullSlug,
-      ext: ".txt",
-    })
+    return write({ ctx, content, slug: "llms" as FullSlug, ext: ".txt" })
   }
 
   const mdFrontmatter = {
     ...baseFrontmatter,
     slug,
     permalink: `https://${baseUrl}/${slug}.md`,
-    generator: {
-      quartz: `v${version}`,
-      hostedProvider: "Cloudflare",
-      baseUrl,
-    },
+    generator: { quartz: `v${version}`, hostedProvider: "Cloudflare", baseUrl },
     full: `https://${baseUrl}/llms-full.txt`,
   }
 

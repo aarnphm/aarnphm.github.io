@@ -7,7 +7,7 @@ This means: no fallbacks, no hacks, no shortcuts. Production-grade, Google-quali
 ## non-negotiables
 
 - do not write comments
-- use `pnpm` by default, oxlint, oxfmt
+- use `pnpm` by default, oxlint, oxfmt, tsgo for the new Go compiler.
 - do not run bundle or build; assume the user runs `dev.ts` and inspect the running process instead of spawning your own
 - do not commit secrets; use `.env` locally and Cloudflare Secrets for the worker
 - transformers under @quartz/plugins/transformers/ MUST NOT use filesystem access
