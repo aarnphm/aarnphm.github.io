@@ -38,7 +38,7 @@ metadata:
     letter        = "a".."z" ;
     digit         = "0".."9" ;
     character     = ? any printable ascii except newline ? ;
-modified: 2026-01-28 01:55:25 GMT-05:00
+modified: 2026-01-28 02:10:21 GMT-05:00
 tags:
   - fruit
   - evergreen
@@ -52,7 +52,7 @@ title: stream
   - tags:
     - philosophy
   - socials:
-    - dualism: https://plato.stanford.edu/entries/dualism/
+    - sep: https://plato.stanford.edu/entries/dualism/
     - leibniz: https://plato.stanford.edu/entries/leibniz-mind/
 
 it's 2am and i'm staring at attention head visualizations in a jupyter notebook, tracking the residual stream flowing through layer 16 of a model that just told me it doesn't experience anything. the cursor blinks. i've been here for four hours, zooming into activation patterns, looking for something i can't name.

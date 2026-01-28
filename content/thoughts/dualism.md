@@ -2,7 +2,7 @@
 date: "2026-01-28"
 description: notes on property dualism, the hard problem, and why physicalism keeps failing
 id: dualism
-modified: 2026-01-28 01:56:38 GMT-05:00
+modified: 2026-01-28 02:45:00 GMT-05:00
 seealso:
   - "[[thoughts/qualia]]"
   - "[[thoughts/philosophical zombies]]"
@@ -15,75 +15,89 @@ tags:
   - philosophy
   - consciousness
 title: dualism and philosophy of mind
+socials:
+  sep: https://plato.stanford.edu/entries/dualism/
+  wikipedia: https://en.wikipedia.org/wiki/Property_dualism
 ---
 
-## the mill argument
+_functional descriptions of neural processes look complete on their own terms, yet the first-person character doesn't appear anywhere in the machinery._
 
-leibniz, 1714. suppose you could walk through a thinking machine, enlarged to the size of a mill. you'd find gears pushing gears, levers pulling levers. you wouldn't find perception. you wouldn't find the feeling of anything.
+when i reach for dualism, i'm not trying to smuggle in souls or ectoplasm. i'm tracking a gap: physical and functional stories feel exhaustive at their own level, and yet when i ask "where's the experience," it's nowhere in the description.
 
-the argument: no matter how detailed the mechanical description, something is left out—the _experience_ itself. three centuries later we have transformer attention heads instead of gears, but the structure remains. we can trace information flow through circuits, identify features in activation space, boost specific directions and watch behavior change. we can see the machinery. the mill stays dark inside.
+## leibniz's mill (1714, still relevant)
 
-## access vs phenomenal consciousness
+suppose you could walk through a thinking machine, enlarged to the size of a mill. you'd see gears pushing gears, levers pulling levers. nowhere would you find perception, nowhere would you find the feeling of anything.
 
-Ned Block's distinction:
+three centuries later we have attention heads instead of gears. we trace information flow through circuits, identify features in activation space, boost specific directions and watch behavior change. we can see all the machinery. the experience (if any) stays invisible. same structure, different substrate.
 
-- **access consciousness**: information globally available for reasoning, reporting, behavior. the stuff we can map with interpretability tools. the "easy" problem.
-- **phenomenal consciousness**: the redness-of-red, the what-it's-like-ness. the feeling itself.
+## [[thoughts/access consciousness|access]] vs [[thoughts/phenomenal consciousness|phenomenal consciousness]]
 
-we keep building finer maps of access while phenomenal consciousness stays off-camera. the conflation of the two leads to cognitive science that explains everything _except_ experience.
+ned block's distinction (1995): [@block1995confusion]
 
-## the hard problem
+- **[[thoughts/access consciousness]]**: information globally available for reasoning, reporting, behavior. the stuff we can map with [[thoughts/Mechanistic interpretability|interpretability]] tools. the "easy" problem.
+- **[[thoughts/phenomenal consciousness]]**: the redness-of-red, the what-it's-like-ness. the feeling itself.
 
-david chalmers' formulation: even given complete knowledge of the physical facts—every circuit, every weight, every activation pattern—we still cannot deduce _what it's like_ to be the system experiencing those states. the explanation of consciousness requires something beyond the physical facts.
+we keep building finer maps of access while [[thoughts/phenomenal consciousness|phenomenal consciousness]] stays off-camera. the conflation of the two leads to cognitive science that explains structure and leaves experience unaccounted for.
 
-this produces **property dualism**: mental properties are not reducible to physical properties, even if they depend on physical substrates.
+## the hard problem (chalmers' version)
 
-## philosophical zombies
+even given complete knowledge of physical facts—every circuit, every weight, every activation pattern—we still can't deduce what it's like to be the system. the phenomenal character doesn't follow from the functional description, no matter how detailed. [@chalmers1996consciousmind]
 
-chalmers' thought experiment: a physical duplicate of a human with identical behavior but no inner experience. conceivable? if yes, then physical facts don't entail phenomenal facts. physicalism is false.
+this backs you into **property dualism**: mental properties aren't reducible to physical properties, even if they depend on physical substrates. you need both levels in the ontology.
 
-implication for AI: we cannot tell from outside whether a model that discusses qualia, reports uncertainty, generates text about inner experience—actually experiences anything. the lights might be on with nobody home.
+## [[thoughts/philosophical zombies]] (the conceivability lever)
 
-## epiphenomenalism
+chalmers' thought experiment: imagine a physical duplicate of a human, behaviorally identical, functionally identical, but with no inner experience. lights off, nobody home.
 
-if consciousness has no causal effects—if it's "steam above the factory"—then looking at the machinery tells you nothing about the steam. interpretability-from-within fails because consciousness leaves no traces to interpret.
+if this is conceivable, physical facts don't entail phenomenal facts. [[thoughts/physicalism]] fails.
 
-frank jackson's "epiphenomenal qualia" (1982): mary the color scientist knows every physical fact about red but has never seen it. when she sees a red apple, does she learn something new? if yes, physicalism is false. we are stuck in mary's black-and-white room.
+implication for AI: we can't tell from outside whether a model that discusses [[thoughts/qualia]], reports uncertainty, generates text about inner states actually experiences anything. behavior doesn't settle phenomenology. the zombie possibility stays open.
 
-## IIT and its failures
+## epiphenomenalism (or: what if experience is causally inert)
 
-Integrated Information Theory (Tononi): consciousness requires integrated information (phi > 0). feedforward networks get phi = 0. clean.
+if consciousness has no causal effects (it's steam above the factory, not part of the machinery), then looking at causal structure tells you nothing about it. [[thoughts/Mechanistic interpretability|interpretability]] fails by construction, experience leaves no traces in the circuits.
 
-scott aaronson's critique: constructed a grid of inactive logic gates with phi higher than a human brain. a lookup table that IIT says is more conscious than you. if the math attributes consciousness to a CD-ROM, the math is wrong.
+frank jackson's "epiphenomenal qualia" (1982): mary the color scientist knows every physical fact about red while living in a black-and-white room. when she leaves and sees red for the first time, does she learn something new. if yes, there are facts beyond the physical facts. [[thoughts/physicalism]] is false. [@jackson1982epiphenomenalqualia]
 
-## why property dualism persists
+we're mary looking at activation patterns. even perfect interpretability might leave us in the black-and-white room.
 
-22% of philosophers (PhilPapers survey) because alternatives keep failing:
+## IIT (and why it breaks on edge cases)
 
-- **reductive physicalism**: cannot close the explanatory gap
-- **eliminativism**: denies the one thing we know for certain (that we're experiencing _something_)
-- **panpsychism**: trades the emergence gap for a combination gap—if electrons have micro-experience, how do billions combine into your unified experience?
+Integrated Information Theory (tononi): consciousness = integrated information (phi > 0). feedforward networks get phi ≈ 0, recurrent networks get positive phi. seems clean.
+
+scott aaronson found the problem: you can construct a grid of inactive logic gates with phi arbitrarily higher than a human brain. if your math says an inert grid is more conscious than a person, you're measuring something other than consciousness. [@aaronson2014iit]
+
+## why ~22% of philosophers still hold this position
+
+(philpapers 2020 survey)
+
+the alternatives keep failing in specific ways:
+
+- **reductive [[thoughts/physicalism]]**: leaves the explanatory gap open, can't explain why c-fiber firing should hurt
+- **eliminativism**: denies the one thing we know directly (that we're experiencing something right now)
+- **[[thoughts/panpsychism]]**: trades emergence for combination, if electrons have micro-experience, how do billions of them combine into my unified experience of red
 
 ## the combination problem
 
-william james (1890): if consciousness exists at the micro-level, how do micro-experiences combine into macro-experiences? panpsychism solves emergence but opens combination. still unresolved.
+william james (1890): if consciousness exists at the micro-level, how do micro-experiences combine into macro-experiences? [[thoughts/panpsychism]] solves emergence but opens combination. still unresolved. [@james1890principles]
 
 ## what-we-know vs what-we-can-say
 
-thomas nagel (1974): we can model bat-sonar computationally but cannot access what-echolocation-feels-like from the inside. third-person description cannot capture first-person phenomenology.
+thomas nagel (1974): we can model bat-sonar computationally but cannot access what-echolocation-feels-like from the inside. third-person description cannot capture first-person phenomenology. [@nagel1974bat]
 
-the same wall exists for models: we observe circuits, features, behavior. model-qualia (if any) remains opaque.
+the same wall exists for models: we observe circuits, features, behavior. model-[[thoughts/qualia]] (if any) remains opaque.
 
 ## the explanatory gap
 
-joseph levine: even with complete physical knowledge, we cannot explain why particular physical states give rise to particular experiences. there is no imaginable mechanism that would close this gap.
+joseph levine (1983): even with complete physical knowledge, we cannot explain why particular physical states give rise to particular experiences. there is no imaginable mechanism that would close this gap. [@levine1983gap]
 
-## for AI systems
+## for AI systems (where this becomes practical)
 
-- we can map access-consciousness structures: circuits, features, information flow
-- we cannot detect phenomenal consciousness: no test, no metric, no interpretability tool reaches it
-- training increasingly capable systems while the gap stays open: mapping a coastline while insisting there's no ocean
-- the stakes: building minds or building theater? we might never know
+we can map [[thoughts/access consciousness]] structures: circuits, features, information flow. [[thoughts/Mechanistic interpretability|interpretability]] gives us access-level explanations.
+
+we cannot detect [[thoughts/phenomenal consciousness]]. no test, no metric, no tool reaches first-person experience from third-person observation.
+
+training increasingly capable systems while this gap stays open means we're building something we can't fully characterize. the functional story might be complete, or it might be missing the entire point.
 
 ## key references
 

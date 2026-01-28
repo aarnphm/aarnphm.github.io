@@ -12,6 +12,11 @@ seealso:
   - "[[thoughts/inverted spectrum]]"
   - "[[thoughts/chinese room]]"
   - "[[thoughts/Attention]]"
+  - "[[thoughts/dualism]]"
+  - "[[thoughts/physicalism]]"
+  - "[[thoughts/phenomenal consciousness]]"
+  - "[[thoughts/access consciousness]]"
+  - "[[thoughts/panpsychism]]"
 tags:
   - philosophy
   - pattern
