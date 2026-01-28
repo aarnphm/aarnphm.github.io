@@ -262,11 +262,14 @@ async function renderGraph(graph: HTMLElement, fullSlug: FullSlug) {
   const updateLabelVisibility = () => {
     if (!labelsContainer) return
     labelsContainer.visible =
-      labelMode !== "off" && (labelMode !== "hover" || hoveredNodeId !== null)
+      !dragging && labelMode !== "off" && (labelMode !== "hover" || hoveredNodeId !== null)
   }
   const linkRenderData: LinkRenderData[] = []
   const nodeRenderData: NodeRenderData[] = []
   function updateHoverInfo(newHoveredId: string | null) {
+    if (dragging && newHoveredId !== null) {
+      return
+    }
     hoveredNodeId = newHoveredId
 
     if (newHoveredId === null) {
@@ -483,6 +486,7 @@ async function renderGraph(graph: HTMLElement, fullSlug: FullSlug) {
           }
           dragStartTime = Date.now()
           dragging = true
+          updateHoverInfo(null)
           markLayoutDirty()
         })
         .on("drag", function dragged(event) {
@@ -496,6 +500,7 @@ async function renderGraph(graph: HTMLElement, fullSlug: FullSlug) {
           event.subject.fx = null
           event.subject.fy = null
           dragging = false
+          updateLabelVisibility()
           markLayoutDirty()
 
           if (Date.now() - dragStartTime < 500) {
@@ -591,16 +596,18 @@ async function renderGraph(graph: HTMLElement, fullSlug: FullSlug) {
       const isConnected = hoveredNeighbours.has(nodeId)
       const isDimmed = hoveredNodeId !== null && !isCurrentlyHover && !isConnected
       let labelTargetAlpha = 0
-      if (labelMode === "default") {
-        labelTargetAlpha = hoveredNodeId
-          ? isCurrentlyHover
-            ? 1
-            : isConnected
-              ? 0.8
-              : zoomTextAlpha
-          : zoomTextAlpha
-      } else if (labelMode === "hover") {
-        labelTargetAlpha = hoveredNodeId && (isCurrentlyHover || isConnected) ? 1 : 0
+      if (!dragging) {
+        if (labelMode === "default") {
+          labelTargetAlpha = hoveredNodeId
+            ? isCurrentlyHover
+              ? 1
+              : isConnected
+                ? 0.8
+                : zoomTextAlpha
+            : zoomTextAlpha
+        } else if (labelMode === "hover") {
+          labelTargetAlpha = hoveredNodeId && (isCurrentlyHover || isConnected) ? 1 : 0
+        }
       }
       const nextLabelAlpha = smooth(n.label.alpha, labelTargetAlpha, smoothingFactor)
       if (Math.abs(nextLabelAlpha - n.label.alpha) > epsilon) {
