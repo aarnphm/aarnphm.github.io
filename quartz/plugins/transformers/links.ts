@@ -237,254 +237,247 @@ export const CrawlLinks: QuartzTransformerPlugin<Partial<Options>> = (userOpts) 
                 } catch {}
               }
 
-                if (
-                  linkTypes.isYoutube &&
-                  node.children.length === 1 &&
-                  node.children[0].type === "text" &&
-                  node.children[0].value === dest
-                ) {
-                  try {
-                    const u = new URL(dest)
-                    const vid = u.searchParams.get("v")
-                    if (vid) {
-                      node.children = [{ type: "text", value: `youtube/v=${vid}` }]
-                    }
-                  } catch {}
-                }
-
-                if (
-                  linkTypes.isGoogleDocs &&
-                  node.children.length === 1 &&
-                  node.children[0].type === "text" &&
-                  node.children[0].value === dest
-                ) {
-                  try {
-                    const u = new URL(dest)
-                    const m = u.pathname.match(/\/d\/([^/]+)/)
-                    if (m) {
-                      const id = m[1]
-                      let displayId = id
-                      if (id.length > 10) {
-                        displayId = `${id.slice(0, 3)}[...]${id.slice(-3)}`
-                      }
-                      node.children[0].value = `docs.google.com/${displayId}`
-                    }
-                  } catch {}
-                }
-
-                if (
-                  linkTypes.isGoogleDrive &&
-                  node.children.length === 1 &&
-                  node.children[0].type === "text" &&
-                  node.children[0].value === dest
-                ) {
-                  try {
-                    const u = new URL(dest)
-                    const m = u.pathname.match(/\/d\/([^/]+)/)
-                    if (m) {
-                      const id = m[1]
-                      node.children[0].value = `drive.google.com/${id}`
-                    }
-                  } catch {}
-                }
-
-                // Handle special link types
-                const handleArxiv = (ctx: LinkContext) => {
-                  if (opts.enableArxivEmbed && linkTypes.isArxiv) {
-                    ctx.classes.push("internal")
-                    ctx.node.properties.dataArxivId = extractArxivId(ctx.dest)
-                    return true
+              if (
+                linkTypes.isYoutube &&
+                node.children.length === 1 &&
+                node.children[0].type === "text" &&
+                node.children[0].value === dest
+              ) {
+                try {
+                  const u = new URL(dest)
+                  const vid = u.searchParams.get("v")
+                  if (vid) {
+                    node.children = [{ type: "text", value: `youtube/v=${vid}` }]
                   }
-                  return false
-                }
+                } catch {}
+              }
 
-                const handleCdnLinks = (ctx: LinkContext) => {
-                  if (ctx.isExternal && opts.enableRawEmbed) {
-                    if (
-                      ALLOWED_EXTENSIONS.includes(ctx.ext) &&
-                      !isAbsoluteUrl(ctx.dest, { httpOnly: false })
-                    ) {
-                      ctx.classes.push("cdn-links")
-                      ctx.dest = ctx.node.properties.href =
-                        `https://aarnphm.xyz/${ctx.dest}` as RelativeURL
+              if (
+                linkTypes.isGoogleDocs &&
+                node.children.length === 1 &&
+                node.children[0].type === "text" &&
+                node.children[0].value === dest
+              ) {
+                try {
+                  const u = new URL(dest)
+                  const m = u.pathname.match(/\/d\/([^/]+)/)
+                  if (m) {
+                    const id = m[1]
+                    let displayId = id
+                    if (id.length > 10) {
+                      displayId = `${id.slice(0, 3)}[...]${id.slice(-3)}`
                     }
+                    node.children[0].value = `docs.google.com/${displayId}`
                   }
+                } catch {}
+              }
+
+              if (
+                linkTypes.isGoogleDrive &&
+                node.children.length === 1 &&
+                node.children[0].type === "text" &&
+                node.children[0].value === dest
+              ) {
+                try {
+                  const u = new URL(dest)
+                  const m = u.pathname.match(/\/d\/([^/]+)/)
+                  if (m) {
+                    const id = m[1]
+                    node.children[0].value = `drive.google.com/${id}`
+                  }
+                } catch {}
+              }
+
+              // Handle special link types
+              const handleArxiv = (ctx: LinkContext) => {
+                if (opts.enableArxivEmbed && linkTypes.isArxiv) {
+                  ctx.classes.push("internal")
+                  ctx.node.properties.dataArxivId = extractArxivId(ctx.dest)
+                  return true
                 }
+                return false
+              }
 
-                const createIconElement = (src: string, alt: string) =>
-                  h(
-                    "span",
-                    { style: "white-space: nowrap;" },
-                    h("img.inline-icons", {
-                      src,
-                      alt,
-                      style:
-                        "height: 8px; width: 8px; margin-left: 3px; bottom: 2px; position: relative;",
-                    }),
-                  )
-
-                // Add appropriate icons based on link type
-                if (!handleArxiv(ctx) && !linkTypes.isEmbedTwitter) {
-                  ctx.classes.push(ctx.isExternal ? "external" : "internal")
-                }
-
-                handleCdnLinks(ctx)
-
-                // Add appropriate icons (skip if data-skip-icons is present)
-                const skipIcons =
-                  ctx.node.properties.dataSkipIcons === true ||
-                  ctx.node.properties.dataSkipIcons === "true"
-                if (!skipIcons) {
-                  if (linkTypes.isWikipedia) {
-                    ctx.node.children.push(
-                      createIconElement("/static/favicons/wikipedia.svg", "Wikipedia"),
-                    )
-                  } else if (linkTypes.isApexDomain && file.data.slug! !== "index") {
-                    ctx.node.children.push(createIconElement("/static/icon.webp", "apex"))
-                  } else if (linkTypes.isArxiv) {
-                    ctx.node.children.push(
-                      createIconElement("/static/favicons/arxiv.avif", "arXiv"),
-                    )
-                  } else if (linkTypes.isLessWrong) {
-                    ctx.node.children.push(
-                      createIconElement("/static/favicons/lesswrong.avif", "LessWrong"),
-                    )
-                  } else if (linkTypes.isQuartz) {
-                    ctx.node.children.push(
-                      createIconElement("/static/favicons/quartz.png", "Quartz"),
-                    )
-                  } else if (linkTypes.isNeovim) {
-                    ctx.node.children.push(
-                      createIconElement("/static/favicons/neovim.svg", "Neovim"),
-                    )
-                  } else if (linkTypes.isBentoml) {
-                    ctx.node.children.push(bentomlSvg, bentomlHoverSvg)
-                  } else if (linkTypes.isModular) {
-                    ctx.node.children.push(modularSvg)
-                  } else if (linkTypes.isSep) {
-                    ctx.node.children.push(
-                      createIconElement("/static/favicons/sep-man-red.png", "SEP"),
-                    )
-                  } else if (linkTypes.isYoutube) {
-                    ctx.node.children.push(youtubeSvg)
-                  } else if (linkTypes.isGwern) {
-                    ctx.node.children.push(gwernSvg)
-                  } else if (linkTypes.isObsidian) {
-                    ctx.node.children.push(obsidianSvg)
-                  } else if (linkTypes.isYC) {
-                    ctx.node.children.push(ycSvg)
-                  } else if (linkTypes.isDoi) {
-                    ctx.node.children.push(doiSvg)
-                  } else if (linkTypes.isHf) {
-                    ctx.node.children.push(hfSvg)
-                  } else if (linkTypes.isAnthropic) {
-                    ctx.node.children.push(anthropicSvg)
-                  } else if (linkTypes.isOpenai) {
-                    ctx.node.children.push(openaiSvg)
-                  } else if (linkTypes.isGithub) {
-                    ctx.node.children.push(githubSvg, githubWhiteSvg)
-                  } else if (linkTypes.isSubstack) {
-                    ctx.node.children.push(substackSvg)
-                  } else if (linkTypes.isTwitter) {
-                    ctx.node.children.push(twitterSvg)
-                  } else if (linkTypes.isBsky) {
-                    ctx.node.children.push(bskySvg)
-                  } else if (
-                    !linkTypes.isEmbedTwitter &&
-                    !linkTypes.isCslNode &&
-                    !linkTypes.isArxiv &&
-                    ctx.isExternal &&
-                    opts.externalLinkIcon
+              const handleCdnLinks = (ctx: LinkContext) => {
+                if (ctx.isExternal && opts.enableRawEmbed) {
+                  if (
+                    ALLOWED_EXTENSIONS.includes(ctx.ext) &&
+                    !isAbsoluteUrl(ctx.dest, { httpOnly: false })
                   ) {
-                    ctx.node.children.push(
-                      s(
-                        "svg",
-                        {
-                          ...svgOptions,
-                          ariaHidden: true,
-                          class: "external-icon",
-                          viewbox: "0 -12 24 24",
-                          fill: "none",
-                          stroke: "currentColor",
-                          strokewidth: 1.5,
-                        },
-                        [s("use", { href: "#arrow-ne" })],
-                      ),
-                    )
+                    ctx.classes.push("cdn-links")
+                    ctx.dest = ctx.node.properties.href =
+                      `https://aarnphm.xyz/${ctx.dest}` as RelativeURL
                   }
                 }
+              }
 
-                // Check if the link has alias text
-                if (
-                  node.children.length === 1 &&
-                  node.children[0].type === "text" &&
-                  node.children[0].value !== dest
-                ) {
-                  // Add the 'alias' class if the text content is not the same as the href
-                  classes.push("alias")
-                }
-                node.properties.className = classes
-
-                if ((ctx.isExternal && opts.openLinksInNewTab) || [".ipynb"].includes(ext)) {
-                  node.properties.target = "_blank"
-                }
-
-                // don't process external links, protocol URLs, or intra-document anchors
-                const isInternal = !(
-                  isAbsoluteUrl(dest, { httpOnly: false }) ||
-                  dest.startsWith("#") ||
-                  hasProtocol
+              const createIconElement = (src: string, alt: string) =>
+                h(
+                  "span",
+                  { style: "white-space: nowrap;" },
+                  h("img.inline-icons", {
+                    src,
+                    alt,
+                    style:
+                      "height: 8px; width: 8px; margin-left: 3px; bottom: 2px; position: relative;",
+                  }),
                 )
 
-                if (isInternal && metadataDisablesPopover(ctx.metadata)) {
-                  node.properties["data-no-popover"] = true
-                }
+              // Add appropriate icons based on link type
+              if (!handleArxiv(ctx) && !linkTypes.isEmbedTwitter) {
+                ctx.classes.push(ctx.isExternal ? "external" : "internal")
+              }
 
-                if (isInternal) {
-                  if (ext.includes("pdf")) {
-                    // we use CF middleware for fetch from Git LFS, for now
-                    dest = node.properties.href = `/${dest}` as RelativeURL
-                  } else {
-                    dest = node.properties.href = transformLink(
-                      file.data.slug!,
-                      dest,
-                      transformOptions,
-                    )
-                  }
+              handleCdnLinks(ctx)
 
-                  // url.resolve is considered legacy
-                  // WHATWG equivalent https://nodejs.dev/en/api/v18/url/#urlresolvefrom-to
-                  const url = new URL(dest, "https://base.com/" + stripSlashes(curSlug, true))
-                  const canonicalDest = url.pathname
-                  let [destCanonical, _destAnchor] = splitAnchor(canonicalDest)
-                  if (destCanonical.endsWith("/")) {
-                    destCanonical += "index"
-                  }
-
-                  // need to decodeURIComponent here as WHATWG URL percent-encodes everything
-                  const full = decodeURIComponent(stripSlashes(destCanonical, true)) as FullSlug
-                  const simple = simplifySlug(full)
-                  outgoing.add(simple)
-                  node.properties["data-slug"] = full
-                }
-
-                // rewrite link internals if prettylinks is on
-                if (
-                  opts.prettyLinks &&
-                  isInternal &&
-                  node.children.length === 1 &&
-                  node.children[0].type === "text" &&
-                  !node.children[0].value.startsWith("#")
+              // Add appropriate icons (skip if data-skip-icons is present)
+              const skipIcons =
+                ctx.node.properties.dataSkipIcons === true ||
+                ctx.node.properties.dataSkipIcons === "true"
+              if (!skipIcons) {
+                if (linkTypes.isWikipedia) {
+                  ctx.node.children.push(
+                    createIconElement("/static/favicons/wikipedia.svg", "Wikipedia"),
+                  )
+                } else if (linkTypes.isApexDomain && file.data.slug! !== "index") {
+                  ctx.node.children.push(createIconElement("/static/icon.webp", "apex"))
+                } else if (linkTypes.isArxiv) {
+                  ctx.node.children.push(createIconElement("/static/favicons/arxiv.avif", "arXiv"))
+                } else if (linkTypes.isLessWrong) {
+                  ctx.node.children.push(
+                    createIconElement("/static/favicons/lesswrong.avif", "LessWrong"),
+                  )
+                } else if (linkTypes.isQuartz) {
+                  ctx.node.children.push(createIconElement("/static/favicons/quartz.png", "Quartz"))
+                } else if (linkTypes.isNeovim) {
+                  ctx.node.children.push(createIconElement("/static/favicons/neovim.svg", "Neovim"))
+                } else if (linkTypes.isBentoml) {
+                  ctx.node.children.push(bentomlSvg, bentomlHoverSvg)
+                } else if (linkTypes.isModular) {
+                  ctx.node.children.push(modularSvg)
+                } else if (linkTypes.isSep) {
+                  ctx.node.children.push(
+                    createIconElement("/static/favicons/sep-man-red.png", "SEP"),
+                  )
+                } else if (linkTypes.isYoutube) {
+                  ctx.node.children.push(youtubeSvg)
+                } else if (linkTypes.isGwern) {
+                  ctx.node.children.push(gwernSvg)
+                } else if (linkTypes.isObsidian) {
+                  ctx.node.children.push(obsidianSvg)
+                } else if (linkTypes.isYC) {
+                  ctx.node.children.push(ycSvg)
+                } else if (linkTypes.isDoi) {
+                  ctx.node.children.push(doiSvg)
+                } else if (linkTypes.isHf) {
+                  ctx.node.children.push(hfSvg)
+                } else if (linkTypes.isAnthropic) {
+                  ctx.node.children.push(anthropicSvg)
+                } else if (linkTypes.isOpenai) {
+                  ctx.node.children.push(openaiSvg)
+                } else if (linkTypes.isGithub) {
+                  ctx.node.children.push(githubSvg, githubWhiteSvg)
+                } else if (linkTypes.isSubstack) {
+                  ctx.node.children.push(substackSvg)
+                } else if (linkTypes.isTwitter) {
+                  ctx.node.children.push(twitterSvg)
+                } else if (linkTypes.isBsky) {
+                  ctx.node.children.push(bskySvg)
+                } else if (
+                  !linkTypes.isEmbedTwitter &&
+                  !linkTypes.isCslNode &&
+                  !linkTypes.isArxiv &&
+                  ctx.isExternal &&
+                  opts.externalLinkIcon
                 ) {
-                  node.children[0].value = path.basename(node.children[0].value)
+                  ctx.node.children.push(
+                    s(
+                      "svg",
+                      {
+                        ...svgOptions,
+                        ariaHidden: true,
+                        class: "external-icon",
+                        viewbox: "0 -12 24 24",
+                        fill: "none",
+                        stroke: "currentColor",
+                        strokewidth: 1.5,
+                      },
+                      [s("use", { href: "#arrow-ne" })],
+                    ),
+                  )
+                }
+              }
+
+              // Check if the link has alias text
+              if (
+                node.children.length === 1 &&
+                node.children[0].type === "text" &&
+                node.children[0].value !== dest
+              ) {
+                // Add the 'alias' class if the text content is not the same as the href
+                classes.push("alias")
+              }
+              node.properties.className = classes
+
+              if ((ctx.isExternal && opts.openLinksInNewTab) || [".ipynb"].includes(ext)) {
+                node.properties.target = "_blank"
+              }
+
+              // don't process external links, protocol URLs, or intra-document anchors
+              const isInternal = !(
+                isAbsoluteUrl(dest, { httpOnly: false }) ||
+                dest.startsWith("#") ||
+                hasProtocol
+              )
+
+              if (isInternal && metadataDisablesPopover(ctx.metadata)) {
+                node.properties["data-no-popover"] = true
+              }
+
+              if (isInternal) {
+                if (ext.includes("pdf")) {
+                  // we use CF middleware for fetch from Git LFS, for now
+                  dest = node.properties.href = `/${dest}` as RelativeURL
+                } else {
+                  dest = node.properties.href = transformLink(
+                    file.data.slug!,
+                    dest,
+                    transformOptions,
+                  )
                 }
 
-                // add indicator hook after handling all prettyLinks, inspired by gwern
-                if (opts.enableIndicatorHook) {
-                  node.children = [h("span.indicator-hook"), ...node.children]
+                // url.resolve is considered legacy
+                // WHATWG equivalent https://nodejs.dev/en/api/v18/url/#urlresolvefrom-to
+                const url = new URL(dest, "https://base.com/" + stripSlashes(curSlug, true))
+                const canonicalDest = url.pathname
+                let [destCanonical, _destAnchor] = splitAnchor(canonicalDest)
+                if (destCanonical.endsWith("/")) {
+                  destCanonical += "index"
                 }
-              },
-            )
+
+                // need to decodeURIComponent here as WHATWG URL percent-encodes everything
+                const full = decodeURIComponent(stripSlashes(destCanonical, true)) as FullSlug
+                const simple = simplifySlug(full)
+                outgoing.add(simple)
+                node.properties["data-slug"] = full
+              }
+
+              // rewrite link internals if prettylinks is on
+              if (
+                opts.prettyLinks &&
+                isInternal &&
+                node.children.length === 1 &&
+                node.children[0].type === "text" &&
+                !node.children[0].value.startsWith("#")
+              ) {
+                node.children[0].value = path.basename(node.children[0].value)
+              }
+
+              // add indicator hook after handling all prettyLinks, inspired by gwern
+              if (opts.enableIndicatorHook) {
+                node.children = [h("span.indicator-hook"), ...node.children]
+              }
+            })
 
             const shouldTransformResources = ({ tagName, properties }: Element) =>
               ["img", "video", "audio", "iframe"].includes(tagName) &&

@@ -1,4 +1,4 @@
-import { resolveRelative, FullSlug } from "../../util/path"
+import { resolveRelative, FullSlug, FilePath, slugifyFilePath, splitAnchor } from "../../util/path"
 import { loadMapbox, applyMonochromeMapPalette } from "./mapbox-client"
 
 interface MarkerData {
@@ -17,16 +17,66 @@ interface MapConfig {
   clustering: boolean
 }
 
-function formatPropertyValue(value: any): string {
+function parseWikilinkValue(raw: string) {
+  let text = raw.trim()
+  if (!text.startsWith("[[")) {
+    if (text.startsWith("![[") && text.endsWith("]]")) {
+      text = text.slice(1)
+    } else {
+      return null
+    }
+  }
+  if (!text.endsWith("]]")) return null
+  const inner = text.slice(2, -2)
+  let buffer = ""
+  let alias: string | undefined
+  let escaped = false
+  for (let i = 0; i < inner.length; i += 1) {
+    const ch = inner[i]
+    if (escaped) {
+      buffer += ch
+      escaped = false
+      continue
+    }
+    if (ch === "\\") {
+      escaped = true
+      continue
+    }
+    if (ch === "|" && alias === undefined) {
+      alias = inner.slice(i + 1)
+      break
+    }
+    buffer += ch
+  }
+  const target = buffer.replace(/\\\|/g, "|").trim()
+  const cleanedAlias = alias?.replace(/\\\|/g, "|").trim()
+  const [base, anchor] = splitAnchor(target)
+  return {
+    target: base,
+    alias: cleanedAlias && cleanedAlias.length > 0 ? cleanedAlias : undefined,
+    anchor: anchor.length > 0 ? anchor : undefined,
+  }
+}
+
+function formatPropertyValue(value: any, currentSlug: FullSlug): string {
   if (value === undefined || value === null) return ""
   if (Array.isArray(value)) {
-    return value.map((item) => formatPropertyValue(item)).join(", ")
+    return value.map((item) => formatPropertyValue(item, currentSlug)).join(", ")
   }
   if (value instanceof Date) {
     return value.toISOString().split("T")[0]
   }
   if (typeof value === "string") {
-    return value
+    const parsed = parseWikilinkValue(value)
+    if (!parsed) {
+      return value
+    }
+    const slug = parsed.target.length > 0 ? slugifyFilePath(parsed.target as FilePath) : currentSlug
+    const hrefBase = resolveRelative(currentSlug, slug)
+    const href = parsed.anchor ? `${hrefBase}${parsed.anchor}` : hrefBase
+    const dataSlug = parsed.anchor ? `${slug}${parsed.anchor}` : slug
+    const label = parsed.alias ?? (parsed.target.length > 0 ? parsed.target : currentSlug)
+    return `<a href="${href}" class="internal" data-slug="${dataSlug}">${label}</a>`
   }
   return String(value)
 }
@@ -54,7 +104,7 @@ function createPopupContent(
           .replace(/_/g, " ") ||
         key
 
-      const formattedValue = formatPropertyValue(value)
+      const formattedValue = formatPropertyValue(value, currentSlug)
       if (formattedValue) {
         content += `<div class="base-map-popup-field"><span class="base-map-popup-label">${displayName}:</span> <span class="base-map-popup-value">${formattedValue}</span></div>`
       }

@@ -1,6 +1,6 @@
 summaries:
   missing: values.filter(value.isType("null")).length
-  watched: values.filter(value => status == "finished").length
+  watched: values.filter(value == "finished").length
 filters:
   or:
     - file.hasTag("movies")

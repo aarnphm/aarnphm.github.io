@@ -81,18 +81,9 @@ export interface Options {
   noTranslateBlock?: string[]
 }
 
-type RepositoryInfo = {
-  project: string
-  user: string
-}
+type RepositoryInfo = { project: string; user: string }
 
-type UrlInfo = {
-  comment: boolean
-  page: string
-  project: string
-  reference: string
-  user: string
-}
+type UrlInfo = { comment: boolean; page: string; project: string; reference: string; user: string }
 
 const defaultOptions: Options = {
   repository: "https://github.com/aarnphm/aarnphm.github.io",

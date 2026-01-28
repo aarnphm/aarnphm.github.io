@@ -213,6 +213,7 @@ const BaseViewSelector: QuartzComponent = ({ fileData, displayClass }: QuartzCom
                         : "suggestion-item bases-toolbar-menu-item"
                     }
                     data-view-name={view.name}
+                    data-view-type={view.type}
                   >
                     <div class="bases-toolbar-menu-item-info">
                       <div class="bases-toolbar-menu-item-info-icon">{icon}</div>

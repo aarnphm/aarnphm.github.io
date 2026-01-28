@@ -16,7 +16,7 @@ import content from "../../components/styles/sidenotes.inline.scss"
 import { QuartzTransformerPlugin } from "../../types/plugin"
 import { BuildCtx } from "../../util/ctx"
 import { FullSlug, transformLink } from "../../util/path"
-import { parseWikilink, resolveWikilinkTarget, createWikilinkRegex } from "../../util/wikilinks"
+import { extractWikilinks, resolveWikilinkTarget } from "../../util/wikilinks"
 
 const isSidenoteNode = (node: Node): node is Sidenote | SidenoteReference =>
   node.type === "sidenote" || node.type === "sidenoteReference"
@@ -199,14 +199,9 @@ function renderInternalLinks(
   if (!wikilinks || wikilinks.length === 0) return []
 
   const links: HastElement[] = []
-  const regex = createWikilinkRegex()
 
   for (const wl of wikilinks) {
-    let match: RegExpExecArray | null
-    while ((match = regex.exec(wl)) !== null) {
-      const parsed = parseWikilink(match[0])
-      if (!parsed) continue
-
+    for (const parsed of extractWikilinks(wl)) {
       const resolved = resolveWikilinkTarget(parsed, file.data.slug as FullSlug)
       const anchor = parsed.anchor ?? ""
       let destination = parsed.target + anchor
@@ -268,13 +263,10 @@ function deriveLabel(rawLabel: string): ElementContent[] {
   let labelText = rawLabel.trim()
   if (!labelText) return []
 
-  const wikilinkMatch = /\[\[([^\]]+)\]\]/.exec(labelText)
-  if (wikilinkMatch) {
-    const parsed = parseWikilink(wikilinkMatch[0])
-    if (parsed) {
-      labelText =
-        parsed.alias || path.basename(parsed.target, path.extname(parsed.target)) || parsed.target
-    }
+  const parsed = extractWikilinks(labelText)[0]
+  if (parsed) {
+    labelText =
+      parsed.alias || path.basename(parsed.target, path.extname(parsed.target)) || parsed.target
   }
 
   return [{ type: "text", value: labelText }]

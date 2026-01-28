@@ -4,8 +4,8 @@ import { QuartzTransformerPlugin } from "../../types/plugin"
 import { BuildCtx } from "../../util/ctx"
 import { slugifyFilePath, slugAnchor, FilePath, FullSlug, resolveRelative } from "../../util/path"
 import {
-  createWikilinkRegex,
   extractWikilinks,
+  extractWikilinksWithPositions,
   resolveWikilinkTarget,
   Wikilink,
 } from "../../util/wikilinks"
@@ -324,23 +324,39 @@ export async function processCanvasFile(
         return { link, resolvedSlug: resolved.slug, resolvedHref: href, missing: false }
       })
 
-      const regex = createWikilinkRegex()
+      const ranges = extractWikilinksWithPositions(rawText)
       let idx = 0
+      let rewrittenText = ""
+      let lastIndex = 0
 
-      const rewrittenText = rawText.replace(regex, (value) => {
+      for (const range of ranges) {
+        if (range.start > lastIndex) {
+          rewrittenText += rawText.slice(lastIndex, range.start)
+        }
+
         const info = resolvedLinks[idx++]
+        const value = rawText.slice(range.start, range.end)
         if (!info) {
-          return value
+          rewrittenText += value
+          lastIndex = range.end
+          continue
         }
 
         const display = (info.link.alias ?? info.link.target ?? value).trim()
         if (!info.resolvedHref) {
-          return display.length > 0 ? display : info.link.raw
+          rewrittenText += display.length > 0 ? display : info.link.raw
+          lastIndex = range.end
+          continue
         }
 
         const label = display.length > 0 ? display : info.resolvedHref
-        return `[${label}](${info.resolvedHref})`
-      })
+        rewrittenText += `[${label}](${info.resolvedHref})`
+        lastIndex = range.end
+      }
+
+      if (lastIndex < rawText.length) {
+        rewrittenText += rawText.slice(lastIndex)
+      }
 
       if (node.data) {
         node.data.wikilinks = resolvedLinks

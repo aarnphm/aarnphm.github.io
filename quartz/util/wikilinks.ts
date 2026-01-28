@@ -1,70 +1,81 @@
+import type { Root } from "mdast"
+import type { Node } from "unist"
 import isAbsoluteUrl from "is-absolute-url"
+import { fromMarkdown } from "mdast-util-from-markdown"
+import { visit } from "unist-util-visit"
 import {
-  WikilinkData,
   Wikilink,
-} from "../extensions/micromark-extension-ofm-wikilinks/fromMarkdown"
+  WikilinkData,
+  isWikilink,
+  wikilink,
+  wikilinkFromMarkdown,
+} from "../extensions/micromark-extension-ofm-wikilinks"
 import {
   FilePath,
   FullSlug,
   getFileExtension,
+  joinSegments,
   slugAnchor,
   slugifyFilePath,
-  splitAnchor,
+  sluggify,
   stripSlashes,
 } from "./path"
 
 export type { WikilinkData, Wikilink }
 
-// !?                 -> optional embedding
-// \[\[               -> open brace
-// ([^\[\]\|\#]+)     -> one or more non-special characters ([,],|, or #) (name)
-// (#[^\[\]\|\#]+)?   -> # then one or more non-special characters (heading link)
-// (\\?\|[^\[\]\#]+)? -> optional escape \ then | then zero or more non-special characters (alias)
-export const WIKILINK_PATTERN = /!?\[\[([^[\]|#\\]+)?(#+[^[\]|#\\]+)?(\\?\|[^[\]#]*)?\]\]/
-
-/**
- * Create a fresh wikilink regex. Consumers should prefer using this helper instead of sharing
- * a singleton RegExp to avoid `lastIndex` state across different callers.
- */
-export function createWikilinkRegex(flags: string = "g"): RegExp {
-  const normalizedFlags = Array.from(new Set((flags + "g").split(""))).join("")
-  return new RegExp(WIKILINK_PATTERN.source, normalizedFlags)
+export interface WikilinkRange {
+  wikilink: WikilinkData
+  start: number
+  end: number
 }
-
-export const singleWikilinkRegex = new RegExp(`^${WIKILINK_PATTERN.source}$`, "i")
 
 export function parseWikilink(raw: string): WikilinkData | null {
   const trimmed = raw.trim()
-  const match = trimmed.match(singleWikilinkRegex)
-  if (!match) {
+  if (!trimmed) {
     return null
   }
 
-  const isEmbed = trimmed.startsWith("!")
+  const ranges = extractWikilinksWithPositions(trimmed)
+  if (ranges.length !== 1) {
+    return null
+  }
 
-  const [, rawFp, rawHeader, rawAlias] = match
+  const [range] = ranges
+  if (range.start !== 0 || range.end !== trimmed.length) {
+    return null
+  }
 
-  const [_target, anchor] = splitAnchor(`${rawFp ?? ""}${rawHeader ?? ""}`)
-  const blockRef = rawHeader?.startsWith("#^") ? "^" : ""
-  const displayAnchor = anchor ? `#${blockRef}${anchor.trim().replace(/^#+/, "")}` : undefined
-  const alias = rawAlias ? rawAlias.replace(/^\\?\|/, "") : undefined
+  return range.wikilink
+}
 
-  return { raw: trimmed, target: rawFp ?? "", anchor: displayAnchor, alias, embed: isEmbed }
+export function extractWikilinksWithPositions(text: string): WikilinkRange[] {
+  if (!text || !text.includes("[[")) {
+    return []
+  }
+
+  const tree: Root = fromMarkdown(text, {
+    extensions: [wikilink()],
+    mdastExtensions: [wikilinkFromMarkdown({ hasSlug: () => false })],
+  })
+
+  const ranges: WikilinkRange[] = []
+
+  visit(tree, (node: Node) => {
+    if (!isWikilink(node)) return
+    const data = node.data?.wikilink
+    if (!data) return
+    const start = node.position?.start?.offset
+    const end = node.position?.end?.offset
+    if (typeof start !== "number" || typeof end !== "number") return
+    ranges.push({ wikilink: data, start, end })
+  })
+
+  ranges.sort((a, b) => a.start - b.start)
+  return ranges
 }
 
 export function extractWikilinks(text: string): WikilinkData[] {
-  const links: WikilinkData[] = []
-  const regex = createWikilinkRegex()
-  let match: RegExpExecArray | null
-
-  while ((match = regex.exec(text)) !== null) {
-    const parsed = parseWikilink(match[0])
-    if (parsed) {
-      links.push(parsed)
-    }
-  }
-
-  return links
+  return extractWikilinksWithPositions(text).map((range) => range.wikilink)
 }
 
 export interface ResolvedWikilinkTarget {
@@ -109,6 +120,18 @@ export function resolveWikilinkTarget(
 
   const filePath = ensureFilePath(target)
   const slug = slugifyFilePath(stripSlashes(filePath) as FilePath)
+  const ext = getFileExtension(filePath)
+
+  if (ext === ".base" && link.anchor && !link.anchor.startsWith("#^")) {
+    const anchorText = link.anchorText?.trim()
+    const viewSegment = sluggify(
+      anchorText && anchorText.length > 0 ? anchorText : link.anchor.replace(/^#/, ""),
+    )
+    if (viewSegment.length > 0) {
+      const viewSlug = joinSegments(slug, viewSegment) as FullSlug
+      return { slug: viewSlug }
+    }
+  }
 
   return { slug, anchor: link.anchor }
 }
@@ -118,11 +141,27 @@ export function stripWikilinkFormatting(text: string): string {
     return text
   }
 
-  return text.replace(createWikilinkRegex(), (value) => {
-    const parsed = parseWikilink(value)
-    if (!parsed) return value
-    return parsed.alias ?? parsed.target
-  })
+  const ranges = extractWikilinksWithPositions(text)
+  if (ranges.length === 0) {
+    return text
+  }
+
+  let result = ""
+  let lastIndex = 0
+
+  for (const range of ranges) {
+    if (range.start > lastIndex) {
+      result += text.slice(lastIndex, range.start)
+    }
+    result += range.wikilink.alias ?? range.wikilink.target
+    lastIndex = range.end
+  }
+
+  if (lastIndex < text.length) {
+    result += text.slice(lastIndex)
+  }
+
+  return result
 }
 
 /**

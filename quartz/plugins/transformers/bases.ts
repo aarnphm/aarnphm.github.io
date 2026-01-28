@@ -3,9 +3,11 @@ import { Root } from "mdast"
 import { QuartzTransformerPlugin } from "../../types/plugin"
 import {
   parseExpressionSource,
+  compileExpression,
   buildPropertyExpressionSource,
   BaseExpressionDiagnostic,
   BasesExpressions,
+  ProgramIR,
 } from "../../util/base/compiler"
 import { Expr, LogicalExpr, UnaryExpr, spanFrom } from "../../util/base/compiler/ast"
 import { BUILTIN_SUMMARY_TYPES } from "../../util/base/compiler/schema"
@@ -133,7 +135,7 @@ export const ObsidianBases: QuartzTransformerPlugin = () => {
               if (!source) return
               const expr = parseExpressionWithDiagnostics(source, context)
               if (expr) {
-                expressions.propertyExpressions[key] = expr
+                expressions.propertyExpressions[key] = compileExpression(expr)
               }
             }
 
@@ -296,7 +298,7 @@ export const ObsidianBases: QuartzTransformerPlugin = () => {
             if (parsedConfig.filters) {
               const expr = buildFilterExpr(parsedConfig.filters, "filters")
               if (expr) {
-                expressions.filters = expr
+                expressions.filters = compileExpression(expr)
               }
             }
 
@@ -307,7 +309,7 @@ export const ObsidianBases: QuartzTransformerPlugin = () => {
                 if (view.filters) {
                   const expr = buildFilterExpr(view.filters, `views[${index}].filters`)
                   if (expr) {
-                    expressions.viewFilters[String(index)] = expr
+                    expressions.viewFilters[String(index)] = compileExpression(expr)
                   }
                 }
                 if (view.summaries) {
@@ -322,7 +324,7 @@ export const ObsidianBases: QuartzTransformerPlugin = () => {
                   addExpressionDiagnostics(expression, `formulas.${name}`)
                   const expr = parseExpression(expression)
                   if (expr) {
-                    expressions.formulas[name] = expr
+                    expressions.formulas[name] = compileExpression(expr)
                   }
                 }
               }
@@ -334,7 +336,7 @@ export const ObsidianBases: QuartzTransformerPlugin = () => {
                   addExpressionDiagnostics(expression, `summaries.${name}`)
                   const expr = parseExpression(expression)
                   if (expr) {
-                    expressions.summaries[name] = expr
+                    expressions.summaries[name] = compileExpression(expr)
                   }
                 }
               }
@@ -350,7 +352,7 @@ export const ObsidianBases: QuartzTransformerPlugin = () => {
                     ? summaries.columns
                     : summaries
                 const viewKey = String(index)
-                const viewMap: Record<string, Expr> = {}
+                const viewMap: Record<string, ProgramIR> = {}
                 for (const [column, summaryValue] of Object.entries(columns)) {
                   if (typeof summaryValue !== "string") continue
                   const normalized = summaryValue.toLowerCase().trim()
@@ -362,7 +364,7 @@ export const ObsidianBases: QuartzTransformerPlugin = () => {
                   }
                   const expr = parseExpression(summaryValue)
                   if (expr) {
-                    viewMap[column] = expr
+                    viewMap[column] = compileExpression(expr)
                   }
                 }
                 if (Object.keys(viewMap).length > 0) {

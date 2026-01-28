@@ -111,6 +111,28 @@ export function lex(input: string, file?: string): LexResult {
 
     const start = currentPosition()
 
+    if (ch === "=" && peek(1) !== "=") {
+      let offset = 1
+      while (isWhitespace(peek(offset))) {
+        offset += 1
+      }
+      if (peek(offset) === ">") {
+        advance()
+        for (let step = 1; step < offset; step += 1) {
+          advance()
+        }
+        if (peek() === ">") {
+          advance()
+        }
+        const end = currentPosition()
+        addDiagnostic(
+          "arrow functions are not supported, use list.filter(expression)",
+          makeSpan(start, end),
+        )
+        continue
+      }
+    }
+
     if (ch === '"' || ch === "'") {
       const quote = advance()
       let value = ""

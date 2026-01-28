@@ -638,5 +638,6 @@ function labelColor(label: Label): string | null {
 }
 
 function stripAnsi(value: string): string {
+  // eslint-disable-next-line no-control-regex
   return value.replace(/\x1b\[[0-9;]*m/g, "")
 }

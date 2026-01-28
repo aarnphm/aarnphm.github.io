@@ -4,7 +4,7 @@ import { toString } from "hast-util-to-string"
 import yaml from "js-yaml"
 import { QuartzTransformerPlugin } from "../../types/plugin"
 import { splitAnchor, transformLink, stripSlashes, FullSlug } from "../../util/path"
-import { createWikilinkRegex, parseWikilink, resolveWikilinkTarget } from "../../util/wikilinks"
+import { extractWikilinksWithPositions, resolveWikilinkTarget } from "../../util/wikilinks"
 import { buildYouTubeEmbed } from "../../util/youtube"
 import { externalLinkRegex } from "./ofm"
 import { fetchTwitterEmbed, twitterUrlRegex } from "./twitter"
@@ -582,20 +582,19 @@ export const Arena: QuartzTransformerPlugin = () => {
               const applyLinkProcessing = (node: ElementContent): ElementContent => {
                 const processTextNode = (value: string): ElementContent[] => {
                   const results: ElementContent[] = []
-                  const regex = createWikilinkRegex()
+                  const ranges = extractWikilinksWithPositions(value)
                   let lastIndex = 0
-                  let match: RegExpExecArray | null
-
-                  while ((match = regex.exec(value)) !== null) {
-                    const start = match.index
+                  for (const range of ranges) {
+                    const start = range.start
                     if (start > lastIndex) {
                       results.push({ type: "text", value: value.slice(lastIndex, start) })
                     }
 
-                    const parsed = parseWikilink(match[0])
-                    const resolved = parsed ? resolveWikilinkTarget(parsed, "" as FullSlug) : null
+                    const parsed = range.wikilink
+                    const resolved = resolveWikilinkTarget(parsed, "" as FullSlug)
+                    const raw = value.slice(range.start, range.end)
 
-                    if (parsed && resolved) {
+                    if (resolved) {
                       const href = (
                         parsed.anchor ? `/${resolved.slug}${parsed.anchor}` : `/${resolved.slug}`
                       ) as string
@@ -608,18 +607,13 @@ export const Arena: QuartzTransformerPlugin = () => {
                           "data-slug": resolved.slug,
                           "data-no-popover": true,
                         },
-                        children: [
-                          { type: "text", value: parsed.alias ?? parsed.target ?? match[0] },
-                        ],
+                        children: [{ type: "text", value: parsed.alias ?? parsed.target ?? raw }],
                       })
                     } else {
-                      results.push({
-                        type: "text",
-                        value: parsed?.alias ?? parsed?.target ?? match[0],
-                      })
+                      results.push({ type: "text", value: parsed.alias ?? parsed.target ?? raw })
                     }
 
-                    lastIndex = regex.lastIndex
+                    lastIndex = range.end
                   }
 
                   if (lastIndex < value.length) {

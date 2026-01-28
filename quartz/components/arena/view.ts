@@ -134,20 +134,35 @@ function hydrateMapboxMaps(root: HTMLElement) {
             center: [lon, lat],
             zoom: 15,
             attributionControl: false,
-            cooperativeGestures: true,
           })
 
           mapInstances.set(node, map)
           node.dataset.mapInitialized = "1"
           node.dataset.mapStatus = "loading"
 
-          map.addControl(new mapboxgl.NavigationControl({ visualizePitch: true }), "top-right")
-          map.addControl(new mapboxgl.AttributionControl({ compact: true }), "bottom-right")
+          const markerEl = document.createElement("div")
+          markerEl.className = "base-map-marker"
+          markerEl.textContent = "•"
+          markerEl.style.color = "#2b2418"
+          markerEl.style.width = "24px"
+          markerEl.style.height = "24px"
+          markerEl.style.display = "flex"
+          markerEl.style.alignItems = "center"
+          markerEl.style.justifyContent = "center"
+          markerEl.style.fontSize = "18px"
+          markerEl.style.cursor = "pointer"
 
-          const marker = new mapboxgl.Marker({ color: "#222" }).setLngLat([lon, lat])
+          const marker = new mapboxgl.Marker({ element: markerEl, anchor: "bottom" }).setLngLat([
+            lon,
+            lat,
+          ])
           const title = node.dataset.mapTitle
           if (title && title.trim().length > 0) {
-            const popup = new mapboxgl.Popup({ closeButton: false, closeOnClick: false })
+            const popup = new mapboxgl.Popup({
+              closeButton: false,
+              closeOnClick: false,
+              offset: 25,
+            })
             popup.setText(title)
             marker.setPopup(popup)
           }

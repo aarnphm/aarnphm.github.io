@@ -15,7 +15,7 @@ export default (() => {
 
   const Content: QuartzComponent = (props: QuartzComponentProps) => {
     const { fileData, tree } = props
-    const hasSlides = fileData.frontmatter?.slides! || false
+    const hasSlides = (fileData.frontmatter && fileData.frontmatter.slides!) || false
     const content = htmlToJsx(fileData.filePath!, tree)
     const classes: string[] = fileData.frontmatter?.cssclasses ?? []
     const classString = ["popover-hint", "main-col", ...classes].join(" ")

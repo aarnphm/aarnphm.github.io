@@ -212,6 +212,14 @@ describe("remarkWikilink integration", () => {
       assert(html.includes('<a href="notes#summary"'))
     })
 
+    test("converts base view transclude", () => {
+      const html = processToHTML("![[data.base#editors]]")
+      assert(html.includes('<blockquote class="transclude"'))
+      assert(html.includes('data-url="data/editors"'))
+      assert(html.includes('data-block=""'))
+      assert(html.includes('<a href="data/editors"'))
+    })
+
     test("converts transclude with block reference", () => {
       const html = processToHTML("![[notes#^block-id]]")
       assert(html.includes('<blockquote class="transclude"'))
@@ -236,6 +244,11 @@ describe("remarkWikilink integration", () => {
       const html = processToHTML("[[data.base]]", { obsidian: true })
       // href should strip .base, but display text keeps it
       assert(html.includes('<a href="data">data.base</a>'))
+    })
+
+    test("maps base view anchors to view slugs", () => {
+      const html = processToHTML("[[data.base#editors]]", { obsidian: true })
+      assert(html.includes('<a href="data/editors">editors</a>'))
     })
 
     test("strips custom extensions from href", () => {
