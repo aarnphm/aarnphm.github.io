@@ -1,5 +1,16 @@
 import { Root } from "hast"
 import { h } from "hastscript"
+import { QuartzPluginData } from "../../plugins/vfile"
+import {
+  resolveRelative,
+  FullSlug,
+  joinSegments,
+  FilePath,
+  slugifyFilePath,
+  simplifySlug,
+  isAbsoluteURL,
+} from "../../util/path"
+import { extractWikilinksWithPositions } from "../../util/wikilinks"
 import {
   BaseExpressionDiagnostic,
   ProgramIR,
@@ -19,17 +30,6 @@ import {
   parseViewSummaries,
   BasesConfigFile,
 } from "./types"
-import {
-  resolveRelative,
-  FullSlug,
-  joinSegments,
-  FilePath,
-  slugifyFilePath,
-  simplifySlug,
-  isAbsoluteURL,
-} from "../../util/path"
-import { extractWikilinksWithPositions } from "../../util/wikilinks"
-import { QuartzPluginData } from "../../plugins/vfile"
 
 function getFileBaseName(filePath?: string, slug?: string): string | undefined {
   const source = filePath ?? slug
@@ -288,9 +288,7 @@ function buildTableCell(
     }
     const nodes: any[] = []
     backlinks.forEach((entry: string) => {
-      if (!entry) {
-        return
-      }
+      if (!entry) return
       let raw = entry.trim()
       let alias: string | undefined
       if (raw.startsWith("!")) {

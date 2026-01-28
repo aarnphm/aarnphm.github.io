@@ -109,7 +109,12 @@ const compileExpr = (expr: Expr, out: Instruction[]) => {
         for (const arg of expr.args) {
           compileExpr(arg, out)
         }
-        out.push({ op: "call_global", name: expr.callee.name, argc: expr.args.length, span: expr.span })
+        out.push({
+          op: "call_global",
+          name: expr.callee.name,
+          argc: expr.args.length,
+          span: expr.span,
+        })
         return
       }
       if (expr.callee.type === "MemberExpr") {
