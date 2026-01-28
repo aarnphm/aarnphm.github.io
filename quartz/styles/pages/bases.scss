@@ -509,6 +509,66 @@
   color: var(--dark);
 }
 
+.base-diagnostics {
+  border: 1px solid var(--lightgray);
+  background: var(--light);
+  padding: 1rem;
+  border-radius: var(--radius-md);
+  margin: 1rem 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.base-diagnostics-title {
+  font-weight: 600;
+  color: var(--dark);
+}
+
+.base-diagnostics-meta {
+  display: flex;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  color: var(--gray);
+}
+
+.base-diagnostics-page {
+  color: var(--darkgray);
+}
+
+.base-diagnostics-list {
+  margin: 0;
+  padding-left: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.base-diagnostics-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.base-diagnostics-label {
+  font-weight: 500;
+  color: var(--darkgray);
+}
+
+.base-diagnostics-message {
+  color: var(--dark);
+}
+
+.base-diagnostics-source {
+  font-family: var(--codeFont);
+  font-size: 0.85rem;
+  background: var(--lightgray);
+  padding: 0.2rem 0.4rem;
+  border-radius: var(--radius-sm);
+  display: inline-block;
+  width: fit-content;
+}
+
 [data-slug="antilibrary"],
 [data-slug="books"] {
   .base-card {

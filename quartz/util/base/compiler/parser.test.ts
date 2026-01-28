@@ -2,46 +2,50 @@ import assert from "node:assert"
 import test from "node:test"
 import { parseExpressionSource } from "./parser"
 
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+  typeof value === "object" && value !== null
+
 const strip = (node: unknown): unknown => {
-  if (!node || typeof node !== "object") return node
-  const record = node as Record<string, unknown>
-  const type = record.type
+  if (!isRecord(node)) return node
+  const type = node.type
   if (type === "Identifier") {
-    return { type, name: record.name }
+    return { type, name: node.name }
   }
   if (type === "Literal") {
-    const kind = record.kind
-    const value = record.value
-    const flags = record.flags
+    const kind = node.kind
+    const value = node.value
+    const flags = node.flags
     return flags !== undefined ? { type, kind, value, flags } : { type, kind, value }
   }
   if (type === "UnaryExpr") {
-    return { type, operator: record.operator, argument: strip(record.argument) }
+    return { type, operator: node.operator, argument: strip(node.argument) }
   }
   if (type === "BinaryExpr" || type === "LogicalExpr") {
     return {
       type,
-      operator: record.operator,
-      left: strip(record.left),
-      right: strip(record.right),
+      operator: node.operator,
+      left: strip(node.left),
+      right: strip(node.right),
     }
   }
   if (type === "CallExpr") {
-    return { type, callee: strip(record.callee), args: (record.args as unknown[]).map(strip) }
+    const args = Array.isArray(node.args) ? node.args.map(strip) : []
+    return { type, callee: strip(node.callee), args }
   }
   if (type === "MemberExpr") {
-    return { type, object: strip(record.object), property: record.property }
+    return { type, object: strip(node.object), property: node.property }
   }
   if (type === "IndexExpr") {
-    return { type, object: strip(record.object), index: strip(record.index) }
+    return { type, object: strip(node.object), index: strip(node.index) }
   }
   if (type === "ListExpr") {
-    return { type, elements: (record.elements as unknown[]).map(strip) }
+    const elements = Array.isArray(node.elements) ? node.elements.map(strip) : []
+    return { type, elements }
   }
   if (type === "ErrorExpr") {
-    return { type, message: record.message }
+    return { type, message: node.message }
   }
-  return record
+  return node
 }
 
 test("ebnf to ast mapping snapshots", () => {
@@ -220,7 +224,10 @@ test("syntax doc samples parse", () => {
 test("string escapes are decoded", () => {
   const result = parseExpressionSource('"a\\n\\"b"')
   assert.strictEqual(result.diagnostics.length, 0)
-  const literal = strip(result.program.body) as { type: string; kind: string; value: string }
+  const literal = strip(result.program.body)
+  if (!isRecord(literal)) {
+    throw new Error("expected literal record")
+  }
   assert.strictEqual(literal.type, "Literal")
   assert.strictEqual(literal.kind, "string")
   assert.strictEqual(literal.value, 'a\n"b')

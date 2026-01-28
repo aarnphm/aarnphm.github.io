@@ -45,6 +45,22 @@ const infixBindingPowers: Record<string, InfixInfo> = {
   "%": { lbp: 11, rbp: 12, kind: "binary" },
 }
 
+const isLogicalOperator = (value: Operator): value is LogicalExpr["operator"] =>
+  value === "&&" || value === "||"
+
+const isBinaryOperator = (value: Operator): value is BinaryExpr["operator"] =>
+  value === "+" ||
+  value === "-" ||
+  value === "*" ||
+  value === "/" ||
+  value === "%" ||
+  value === "==" ||
+  value === "!=" ||
+  value === ">" ||
+  value === ">=" ||
+  value === "<" ||
+  value === "<="
+
 export function parseExpressionSource(source: string, file?: string): ParseResult {
   const { tokens, diagnostics } = lex(source, file)
   const parser = new Parser(tokens, diagnostics)
@@ -86,10 +102,12 @@ class Parser {
       this.advance()
       const right = this.parseExpression(info.rbp)
       const span = spanFrom(left.span, right.span)
-      if (info.kind === "logical") {
-        left = { type: "LogicalExpr", operator: token.value as "&&" | "||", left, right, span }
+      if (info.kind === "logical" && isLogicalOperator(token.value)) {
+        left = { type: "LogicalExpr", operator: token.value, left, right, span }
+      } else if (info.kind === "binary" && isBinaryOperator(token.value)) {
+        left = { type: "BinaryExpr", operator: token.value, left, right, span }
       } else {
-        left = { type: "BinaryExpr", operator: token.value as BinaryExpr["operator"], left, right, span }
+        this.error("unexpected operator", token.span)
       }
     }
 
