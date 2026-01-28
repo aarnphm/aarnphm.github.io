@@ -1,0 +1,5 @@
+export { lex } from "./lexer"
+export { parseExpressionSource } from "./parser"
+export type { ParseResult } from "./parser"
+export type { Diagnostic } from "./errors"
+export type { Program, Expr, Span, Position } from "./ast"
