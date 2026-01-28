@@ -13,6 +13,7 @@ import {
 
 document.addEventListener("nav", () => {
   let services: MultiplayerServices | null = null
+  const resolveAliases = new Set(["aarnphm", "aarnphm-local"])
 
   const program = start({
     init: () => ({ model: createState(), effects: [] as MultiplayerEffect[] }),
@@ -23,7 +24,15 @@ document.addEventListener("nav", () => {
     },
     subscriptions: (ctx) => {
       services = {
-        ui: createCommentsUi({ getState: ctx.retrieve, dispatch: ctx.dispatch }),
+        ui: createCommentsUi({
+          getState: ctx.retrieve,
+          dispatch: ctx.dispatch,
+          canResolveComment: () => {
+            const login = localStorage.getItem("comment-author-github-login")
+            if (!login) return false
+            return resolveAliases.has(login.toLowerCase())
+          },
+        }),
         ws: createWebSocketManager({
           getState: ctx.retrieve,
           dispatch: ctx.dispatch,

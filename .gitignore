@@ -224,3 +224,5 @@ TODO.md
 .claude/*.md
 txts/
 progress.md
+*.aux
+*.xhtml

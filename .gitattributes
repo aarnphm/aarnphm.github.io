@@ -45,3 +45,4 @@ content/posts/25/rabia.md filter=lfs diff=lfs merge=lfs -text
 .claude/skills/core/SKILL.md filter=lfs diff=lfs merge=lfs -text
 .claude/skills/quartz-plugins filter=lfs diff=lfs merge=lfs -text
 .claude/skills/quartz-plugins/SKILL.md filter=lfs diff=lfs merge=lfs -text
+content/thoughts/university/twenty-five-twenty-six/sfwr-4tb3/88[[:space:]]Assignment[[:space:]]2/rr-2.2-SNAPSHOT-java11/rr.war filter=lfs diff=lfs merge=lfs -text

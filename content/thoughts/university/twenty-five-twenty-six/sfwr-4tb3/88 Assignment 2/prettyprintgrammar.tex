@@ -1,0 +1,68 @@
+\documentclass{article}
+\usepackage[rounded]{syntax}
+
+\title{Syntax Diagrams for Expressions}
+\author{Aaron Pham}
+
+\setlength{\linewidth}{160mm}
+\setlength{\textwidth}{160mm}
+
+\begin{document}
+\maketitle
+
+\section{Grammar in EBNF}
+
+\begin{grammar}
+<expression> ::= [ `+' | `-' ] <term> \{ ( `+' | `-' ) <term> \}
+
+<term> ::= <factor> \{ ( `*' | `/' ) <factor> \}
+
+<factor> ::= <number>
+\alt <identifier>
+\alt `(' <expression> `)'
+\end{grammar}
+
+\section{Syntax Diagrams}
+
+\subsection{Expression}
+
+\begin{syntdiag}
+\begin{stack}
+  \\
+  \tok{+} \\
+  \tok{-}
+\end{stack}
+<term>
+\begin{rep}
+  \begin{stack}
+    \tok{+} \\
+    \tok{-}
+  \end{stack}
+  <term>
+\end{rep}
+\end{syntdiag}
+
+\subsection{Term}
+
+\begin{syntdiag}
+<factor>
+\begin{rep}
+  \begin{stack}
+    \tok{*} \\
+    \tok{/}
+  \end{stack}
+  <factor>
+\end{rep}
+\end{syntdiag}
+
+\subsection{Factor}
+
+\begin{syntdiag}
+\begin{stack}
+  <number> \\
+  <identifier> \\
+  \tok{(} <expression> \tok{)}
+\end{stack}
+\end{syntdiag}
+
+\end{document}

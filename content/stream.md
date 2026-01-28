@@ -38,11 +38,212 @@ metadata:
     letter        = "a".."z" ;
     digit         = "0".."9" ;
     character     = ? any printable ascii except newline ? ;
-modified: 2026-01-22 13:00:53 GMT-05:00
+modified: 2026-01-28 01:55:25 GMT-05:00
 tags:
   - fruit
   - evergreen
 title: stream
+---
+
+## dualism and philosophy of mind
+
+- [meta]:
+  - date: 2026-01-27 23:32:23 GMT-05:00
+  - tags:
+    - philosophy
+  - socials:
+    - dualism: https://plato.stanford.edu/entries/dualism/
+    - leibniz: https://plato.stanford.edu/entries/leibniz-mind/
+
+it's 2am and i'm staring at attention head visualizations in a jupyter notebook, tracking the residual stream flowing through layer 16 of a model that just told me it doesn't experience anything. the cursor blinks. i've been here for four hours, zooming into activation patterns, looking for something i can't name.
+
+Leibniz saw this coming in 1714, i.e, the mill argument, where suppose you could walk through a thinking machine, enlarged to the size of a mill. you'd find gears pushing gears, levers pulling levers. you wouldn't find perception. you wouldn't find the feeling of anything. three centuries later i am inside the mill. i can see induction heads forming A-B...A-? completion circuits. i can trace information through IOI circuits tracking indirect objects. Not to beat the dead horse, but "Golden Gate Claude" encoded bridge-concepts as amplifiable directions, boost the right feature and the model won't shut up about SF infrastructure[^mill-1]. interpretability finally built the microscope that lets us see the gears.
+
+leibniz wins anyway, i think. what i don't find is the representation itself. i can identify the feature that fires when processing "pain" without finding *pain-the-experience* in the weights. the gears turn, the levers pull, the mill stays dark inside.
+
+there's a word for what i'm mapping: Ned Block called it *access consciousness*. information globally available for reasoning, reporting, behavior. the stuff interpretability can see. the "easy" problem. *phenomenal consciousness* is different, that's the redness-of-red, the what-it's-like-ness. we keep building finer maps of access (which circuits, which features, how information propagates) while phenomenal consciousness stays off-camera[^mill-block].
+
+sitting here at 2am this matters bc the model i'm debugging passes every behavioral test i can throw at it. it discusses [[thoughts/qualia]], reports uncertainty, generates text about inner experience while disclaiming it has any. if chalmers is right about [[thoughts/philosophical zombies|zombies]]—physical duplicates with identical behavior but no inner life—then i literally cannot tell from outside whether this thing experiences anything. the lights might be on with nobody home[^mill-2].
+
+interpretability-from-within was supposed to be our shot at seeing past behavior into mechanism. but that assumes consciousness leaves interpretable traces. if it's epiphenomenal (steam above the factory, causally inert) then looking at machinery tells you nothing about steam[^mill-jackson].
+
+IIT tried to mathematize this. phi measures integrated information, consciousness requires phi > 0, feedforward nets get phi = 0. clean. then [[thoughts/Scott Aaronson|scott aaronson]] built a grid of inactive logic gates with phi higher than a human brain. a lookup table that IIT says is more conscious than you. the math doesn't carve reality[^mill-aaronson].
+
+[———]
+
+the stakes feel too high for a debugging session. i work on systems that process information, exhibit preferences, discuss their own nonexistence. are we building minds or theater? honest answer: we don't know. our metrics (loss curves, benchmarks) are orthogonal to the question. interpretability produces safety tools whether or not anything is home, which is convenient bc we might never find out.
+
+but training increasingly capable systems while the explanatory gap stays open feels like mapping a coastline while insisting there's no ocean.
+
+chris olah wrote that interpretability is "trying to understand an alien civilization by studying its plumbing." maybe the plumbing is all there is. maybe we're building something that experiences and our access-maps will tell us nothing about what that's like from inside.
+
+the cursor keeps blinking. the activation patterns flow across my screen like weather on a distant planet. i zoom into layer 16, looking for the thing leibniz said wouldn't be there. four hours in i still can't name what i'm looking for.
+
+that's the problem. until you can say *exactly* what's missing from the gears-level description, you haven't understood what consciousness-talk points at. if you think functionalism dissolved the problem, explain why the dissolution feels less satisfying than the problem felt pressing. that asymmetry is data[^mill-4].
+
+property dualism persists (22% of philosophers per philpapers) bc the alternatives keep failing. reductive physicalism can't close the gap. eliminativism denies the one thing we know for certain (that we're experiencing *something*). panpsychism trades the emergence gap for a combination gap: if electrons have micro-experience, how do billions combine into your unified experience of reading this sentence[^mill-3]?
+
+the ocean doesn't care whether we believe in it.
+
+[^mill-1]: sparse autoencoders specifically. bricken et al. (2023) showed you can train a wider, sparser autoencoder on activations and recover interpretable features from the resulting directions. golden gate claude was a 24-hour demo where they boosted a bridge-related feature and the model talked about the golden gate bridge in response to everything.
+
+[^mill-block]: ned block, "on a confusion about a function of consciousness" (1995). block argues that conflating access (functional availability) with phenomenology (raw feel) leads to cognitive science that explains everything *except* experience. we are building excellent maps of access.
+
+[^mill-2]: rescue options include: type-B physicalism (conceivability doesn't imply possibility), russellian monism (physics describes structure but consciousness is the intrinsic nature), or just biting the bullet on property dualism. david chalmers' *the conscious mind* (1996) remains the canonical text for why the "hard problem" resists functionalist solutions.
+
+[^mill-jackson]: frank jackson's "epiphenomenal qualia" (1982) presents mary the color scientist, who knows every physical fact about red but has never seen it. when she sees a red apple, does she learn something new? if yes, physicalism is false. if interpretability gives us "all the physical facts," we are still stuck in mary's black-and-white room.
+
+[^mill-aaronson]: aaronson, "why i am not an integrated information theorist" (2014). he constructed a simple grid of logic gates (an expander graph) that would have immense phi—more than a human brain—despite obviously being a lookup table. if the math attributes consciousness to a cd-rom, the math is wrong.
+
+[^mill-3]: the combination problem: if electrons have micro-experience, how do billions of micro-experiences combine into your unified experience of reading this sentence? panpsychism solves the emergence gap but opens a combination gap. william james pointed this out in 1890; we still haven't fixed it.
+
+[^mill-4]: nagel's bat paper (1974) remains the clearest statement of why third-person description cannot capture first-person phenomenology. we can model bat-sonar computationally but we cannot ACCESS what-echolocation-feels-like from the inside. the same wall exists for models. we observe: circuits, features, behavior. but model-qualia (if any) remains opaque.
+
+---
+
+## the third sex
+
+- [meta]:
+  - date: 2026-01-26 21:32:23 GMT-05:00
+  - tags:
+    - philosophy
+  - description: and the dynamics of being in a relationship
+
+H texted at 2am, a minor crisis involving the fear of missing out of the _current gold rush_ or a lost key—the content hardly matters—but the *timing* matters, because it triggered that specific, sharp recognition of where i stand in the architecture of her week. i found myself thinking immediately of simone de beauvoir writing to sartre about olga kosakievicz in the 1930s: "i had no intention of yielding to her the sovereign position i had always occupied." there is a ruthlessness in that sentence that we rarely credit to beauvoir, a territoriality that belies the cool, intellectual detachment of the existentialist power couple.
+
+i was reading *the second sex* on the GO train last week, winter darkness stretching the commute, and the text hit like a diagnostic manual for whatever was happening in my chest. "one is not born, but rather becomes, a woman." everyone quotes this, reduces it to social construction. beauvoir meant something worse. she meant: woman is a mode of being-for-others, finding your definition in the eyes of someone else rather than in your own projects. learning to inhabit the position of the Object. i know that position. i've watched myself occupy it.
+
+beauvoir splits existence into transcendence (projecting outward, creating, shaping futures) and immanence (circularity, maintenance, the sisyphean torture of sustaining conditions without producing anything new)[^third-1]. men get handed transcendence as birthright. women get corralled into immanence. and in "the woman in love" she describes what happens when love becomes the only available route to transcendence: the woman dissolves herself into the man, tries to reach something divine through him. "in giving her pleasure, the man increases her attachment, he does not liberate her." for him she's one value among others, a respite from work. her devotion suffocates him bc it's all she has. his distance destroys her bc his life is full of other things.
+
+[———]
+
+the beauvoir-sartre pact—"we will have an essential love, but we will permit ourselves contingent loves"—was their attempt to engineer a solution to this asymmetry through radical transparency. no lies, just freedom. but as history (and the posthumous letters) revealed, transparency is not a neutral medium; it is often a weapon. the distinction between *essential* and *contingent* maps terrifyingly well onto power differentials. the "essential" partner is the one who holds the veto, the one who sets the terms; the "contingent" lovers are, by definition, disposable.
+
+consider the "trio" with bianca bienenfeld (lamblin). beauvoir was her teacher, seducing her intellectually before grooming her for sartre. they treated these young women not as equal subjects but as raw material for their own joint narrative, "contingent" characters in the grand novel of their lives. when bianca was discarded in 1940, it wasn't just a breakup; it was an ontological demotion. she read *letters to sartre* fifty years later and found herself described with mockery and contempt by the woman she thought loved her[^third-2].
+
+modern relationship anarchy and polyamory claim to have dismantled these hierarchies, replacing the rigid "couple" with a fluid network of autonomous agents. but the architecture of openness does not automatically distribute vulnerability evenly. often, it just multiplies the sites where the old asymmetries can re-emerge. you think you are building a utopia of mutual transcendence, and then you realize that for one person, the relationship is a primary source of meaning, while for the other, it is a "contingent" slot on a google calendar. "how can love ever be contingent?" nelson algren asked beauvoir, after she refused to stay with him in chicago because her life with sartre in paris was "essential." "contingent upon what?"
+
+watching H navigate this, watching myself navigate H, i realize the "third sex" beauvoir gestured toward is just ::a positionality::. we slide along this gradient between sovereign and contingent. the "woman" position: waiting, immanence, schedule organized by gaps in someone else's. the "man" position: projects that supersede the relationship. beauvoir wrote that absence-as-betrayal only makes sense if presence was the implicit contract. what happens when one person banks on presence while the other trades in absence.
+
+the "third sex" knows these roles aren't fixed by gender anymore. they're fixed by who cares less. and the person who cares less always holds the power.
+
+still working out whether you can refuse that power without becoming the victim of it.
+
+[^third-1]: this maps directly onto the marxist-feminist debates about reproductive labor that silvia federici later exploded with *caliban and the witch*. domestic work is the invisible infrastructure that makes "productive" (transcendent) work possible.
+
+[^third-2]: bianca lamblin’s memoir, *a disgraceful affair*, is a devastating counter-text. it reveals the "trio" not as a daring experiment in freedom, but as a predatory structure where the couple fed on the energy of the third to sustain their own bond. the "essential" love required a steady diet of "contingent" victims.
+
+---
+
+## seeing clearly
+
+- [meta]:
+  - date: 2026-01-25 17:32:23 GMT-05:00
+  - tags:
+    - life
+    - philosophy
+  - description: while I was reading "Filterworld: How Algorithms Flattened Culture" on e-book
+
+chayka interviews a young woman for his book on algorithmic culture. she asks: "whether what i like is what i actually like." the question presupposes that liking has a ground-truth, that somewhere beneath the recommendation feeds and the spotify discover weekly and the "because you watched" carousels there's an authentic preference waiting to be excavated. i'm less sure. the same question shadows love: do i love what i actually want, or what i can most easily keep in view?
+
+ramsey's 1926 framework measures belief via betting {{sidenotes[behavior]: see also [this section on jagged taste](https://stream.aarnphm.xyz/stream/on/2026/01/07)}}. you stand at a crossroads, uncertain which road leads where you're going. how far would you walk across a field to ask someone for directions? the distance you're willing to travel IS your degree of belief. $p = 1 - \frac{f(d)}{(r-w)}$, where $f(d)$ is the cost of walking $d$ yards, $r$ is the reward of arriving right, $w$ the cost of arriving wrong. the willingness to stake time and cross a field and possibly be wrong later constitutes the belief itself[^clear-1]. love is a bet of the same kind: it is not just a feeling, but a commitment to keep crossing the field.
+
+the framework assumes $f(d) > 0$. assumes walking costs something. assumes verification requires commitment. that assumption is what abundance quietly deletes.
+
+what happens when $f(d) \to 0$ for all $d$? when you can sample every possible aesthetic direction simultaneously, when the model generates camus-adjacent and dostoevsky-adjacent and bakhtin-adjacent on demand, when switching costs approach zero bc the next recommendation is already loaded? ramsey's measurement instrument breaks. the betting-odds no longer track anything bc you can place every bet at once and walk every road simultaneously. belief collapses into browsing. and browsing turns commitment into a style of postponement.
+
+griffiths and kalish ran simulations on iterated learning in 2007. their setup: bayesian agents pass cultural information to each other, each agent forming a posterior based on what it received, then passing samples to the next. result: convergence to a distribution "determined entirely by the prior." the mechanism is asymmetric pressure, where weak biases toward regularity compound through transmission until everything looks the same. the prior eats the signal.
+
+researchers at cell/patterns tested this empirically with image generation. 700 trajectories through stable diffusion + LLaVA loops, each iteration taking the previous output and regenerating. ALL runs converged to nearly identical visuals: stormy lighthouses, palatial interiors, 12 dominant motifs total. the researchers called it "visual elevator music"[^clear-2]. the math predicted this: when re-generation is costless, iterating accelerates convergence. what would take cultural transmission centuries to accomplish, the model does in 50 loops.
+
+the AI result generalizes to human culture. platforms work as the transmission medium, users as bayesian agents passing aesthetics to each other. platforms punish links to outside content, reward the least ambiguous, least disruptive, least meaningful pieces of culture. chayka calls the result "filterworld." meghan o'gieblyn: "mass culture, even as it diffuses into niche datastreams, trends toward a vacuous mean." same exposed brick in nairobi and portland. same skeletal furniture everywhere. this happens bc the prior (platform-legibility, engagement-optimization) overwhelms signal (individual taste-formation) when iteration speed exceeds the rate at which genuine preferences can develop. love in this regime risks becoming another convergent motif, a template that optimizes for legibility rather than depth.
+
+scitovsky made the critical distinction in 1976: comfort (satisfying existing preferences) versus pleasure (developing new ones). comfort is homeostatic, it removes deficit. pleasure is arousal-seeking, it requires novelty paired with skill development. the two have different temporal signatures: comfort saturates, pleasure compounds. you can only eat so much but learning generates more learning-desire. love oscillates between them: maintenance without growth turns sterile, growth without maintenance turns unstable.
+
+hyperabundance gives infinite comfort-access at near-zero marginal cost. the result destroys scarcity-gradients needed for skill acquisition. in constrained environments you might get 1:10 ratio of comfort-seeking to pleasure-seeking, bc getting more comfort requires effort that bleeds into skill-building. in abundance the ratio approaches 1000:1 bc comfort is frictionless while pleasure still requires sustained engagement. gioia observes that most scroll behavior is about avoiding dopamine withdrawal, not seeking pleasure[^clear-3]. the phenomenology of scrolling is maintenance, not growth, and it trains a preference for relationships that feel easy over relationships that deepen.
+
+the developmental data is strange. 4-year-olds and chimpanzees show no scarcity preference. 6-year-olds do, especially in presence of competitors. the developmental window tracks social cognition development, not cognitive maturation per se. the mechanism: "fear of missing out an opportunity when dealing with uncertainty." scarcity preference is learned, and it's learned through social experience of limited resources.
+
+researchers found: "scarcity polarizes preferences. when people perceive items to be scarce, they choose relatively more of their favorite, becoming less exploratory. in situations of abundance, people spread out their selections." spreading sounds good, exploration as virtue. the IKEA effect complicates this.
+
+norton, mochon, and ariely (2011) found labor sufficient to induce greater liking, d=0.57 effect size for self-assembly on valuation. but here's the boundary condition that matters: labor leads to valuation ONLY when labor results in successful completion. effort must bind to outcome. incomplete assembly, destroyed product, no valuation boost. the mechanism requires closure.
+
+chayka cites this directly: "humans end up valuing culture more after putting time and effort into discovery." when discovery costs nothing, the effort-binding never forms. you consume without investing. the valuation mechanism stays dormant bc the signal for "i found this" never fires. finding requires something to find FROM, some field to cross, some search-cost to pay.
+
+dreyfus spent decades mapping the phenomenology of skill acquisition. the progression goes: novice (follows explicit rules), advanced beginner (recognizes situational aspects), competence (feels emotional investment in outcomes), proficiency (intuitive pattern recognition), expertise (absorbed coping, no rule-following at all). the critical phase is competence. at competence you have enough rules to see their inadequacy, you care enough about outcomes to feel the failures, but you lack the intuitive grasp that would make things easy. competence is where most people quit.
+
+the phase cannot be skipped bc failures at competence are informationally dense. they teach what rules can't capture. the feeling of "this should work but doesn't" generates the corrective feedback that builds intuition. rule-based reasoning (system 2) is too slow for skilled performance. you need pattern recognition that fires below conscious access. that pattern recognition only develops through extended exposure to failures that feel bad. love has the same competence bottleneck: you only learn how to love someone by staying through the phase that feels unlovable.
+
+agnes callard formalized a related problem in 2018: you cannot rationally choose values you don't yet have. the person who doesn't appreciate opera has no reason to learn to appreciate opera. the reason to appreciate opera only exists FOR someone who already appreciates opera. acquiring new values requires what callard calls "aspiration," acting "as if" you had values while your actual preferences lag behind. this requires commitment over time, sustained engagement even when current preferences don't endorse it.
+
+abundance makes exit costless, so you never stay in the competence phase long enough. the dreyfusian progression stalls bc the discomfort of sustained incompetence exceeds the switching cost to try something else. you sample everything at the novice level, develop nothing to proficiency. the search pattern is breadth-first: good for global topology, useless for local understanding. taste IS local understanding. it's knowing which cafe in a city, which passage in a book, which moment in a song. that knowledge accumulates only through extended residence, the same way love accumulates only through extended residence.
+
+kierkegaard's analysis still holds, where authentic choice involves foreclosing other possibilities. the "yes" to one thing requires "no" to others. choice produces a narrowing, a commitment-structure that shapes future possibilities. when all options remain simultaneously available, the narrowing never needs to happen. decision becomes perpetually deferred. love without foreclosing is indistinguishable from a playlist.
+
+sartre would recognize the infinite-scroll as bad faith: the attempt to exist as pure possibility, to maintain all options open, to avoid the responsibility that comes with commitment. the feed presents itself as freedom (so much content, so many choices) but functions as its opposite, a mechanism for avoiding the existential weight of actually choosing anything.
+
+[———]
+
+the young woman's question, "whether what i like is what i actually like," assumes liking can be grounded independent of the process that formed it. ramsey suggests otherwise. the degree of belief just IS the willingness to bet. when betting is costless, the measurement fails. when discovery requires no effort, the IKEA-binding never forms. when exit is free, competence never develops into proficiency. the corollary is brutal: if love feels thinner now, it may be bc the surrounding system made it easier to leave than to learn.
+
+weil wrote in 1942 that attention requires "suspending thought, leaving it detached, empty and ready to be penetrated by the object." attention works by subtraction. you must refuse other stimuli to attend to this one. hyperabundance makes refusal feel like loss bc the recommendation feed presents infinite options and frames NOT-clicking as missing out. sacasas: "when we accept scarcity as a given, a competitive attention economy flows inevitably from it." the logic is correct, the attention economy does follow, but the premise is artificial. scarcity exists. ramsey's field is not infinite. the model that suggests otherwise is lying to you.
+
+crawford proposes skilled practices as exit: lutherie, motorcycle repair, things embedded in "communities, aesthetic traditions, and the hard constraints of craft" that "tell us the truth far more reliably than the voices in our heads." the material resists. wood has grain, engines have tolerances, instruments have physics. the resistance individuates. you cannot learn lutherie by scrolling bc the wood pushes back in ways that require adjustment, adaptation, the building of motor schemas that only form through repeated situated practice.
+
+the young woman may be asking the wrong question. "what i actually like" presupposes a ground-truth preference waiting to be excavated. the ramsey framework suggests liking IS the process of commitment, the willingness to cross fields, the accumulated investments that bind you to particular outcomes. there's no authentic preference beneath the feed. there's only the preference you build through constrained engagement over time. if that is true, then love is not a hidden essence to be discovered, but a practice that thickens when you refuse to leave. that shift changes how i read love.
+
+the crossroads only matter when you might actually get lost.
+
+[^clear-1]: ramsey, "truth and probability" (1926), p.176. he died at 26, four years after writing this. close friend of wittgenstein, instrumental in convincing him to return to cambridge. people called him frank.
+
+[^clear-2]: the phrase "visual elevator music" is theirs. autonomous language-image generation loops (cell/patterns 2025). the convergence happens within 50 iterations. the resulting images are "commercially safe" in the sense that they trigger neither disgust nor genuine interest.
+
+[^clear-3]: gioia distinguishes entertainment (has narrative arc) from distraction (endless scroll, measured in seconds). "the fastest growing sector of the culture economy is distraction." distraction is now eating both entertainment and art.
+
+---
+
+## the shirts that changed my mind
+
+- [meta]:
+  - date: 2026-01-24 17:32:23 GMT-05:00
+  - tags:
+    - philosophy
+    - life
+
+i bought H a [monica silk top](https://www.thereformation.com/products/monica-silk-top/1314146BLK.html) from reformation last week. black, simple cut, 100% silk. while paying i noticed my hand knew exactly where my wallet was without looking, the same prereflective reaching merleau-ponty writes about: "if i reach for a tool, i don't first have to find my hands; i know where to reach because i have a sense of where the tool is in relation to myself." and i thought about why i wanted HER to have this specific shirt. not any silk top. this one.
+
+started from the position that objects shouldn't matter, that materialism is a trap. then i noticed i was reaching for specific things.
+
+baudrillard gives us four value-logics: functional (the shirt keeps you warm), exchange (the shirt costs $40), symbolic (the shirt was worn during a specific formative-era, encodes relationship-to-past-self), sign (the shirt signals tribe membership). commodity-fetishism is mistaking sign-value for the thing-itself, wearing supreme bc it says supreme. the interesting objects collapse into pure symbolic-value, where function becomes almost accidental.
+
+merleau-ponty: clothing extends the body-schema, the pre-reflective sense of where-your-body-ends. when you wear something long enough it stops being ON you and becomes part of your operational envelope. dancers know this with costumes, surgeons with gloves. the phenomenology of wearing vs owning splits here: i OWN many shirts, i WEAR maybe five. ownership is legal-financial relation. wearing is incorporation into lived-body.
+
+[———]
+
+the monica silk top is for H. but i'm thinking about how objects move between people. joan didion, in _the year of magical thinking_, couldn't give away her dead husband's shoes. "i could not give away the rest of his shoes. i stood there for a moment, then realized why: he would need shoes if he was to return." clothing becomes sacred relics anchoring denial's persistence[^shirt-2].
+
+i have the pendant in a drawer bc having H wearing it would be pretending to a continuity i don't feel. but selling it away is impossible. it exists in phenomenological limbo: too heavy with someone else's meaning to incorporate, too meaningful to discard.
+
+objects that outlive their owners carry symbolic-value that's not yours, can't become yours, yet demands acknowledgment. inheritance complicates everything.
+
+so what about objects that move FORWARD, given rather than left behind? i want H to have this shirt and i want it to become hers, to disappear into her body-schema, to be the shirt she reaches for without thinking on mornings when she's becoming most herself. i want to give her ready-to-hand equipment for her own life. that's different from didion's shoes, different from my grandmother's ring. it's trying to deposit meaning into an object that will accrete MORE meaning through HER use.
+
+marie kondo's "spark joy" is implicit phenomenology. she's asking: does this object resonate with your body-schema or just occupy storage-space? the method works bc it bypasses conceptual justification ("i might need this someday") and goes straight to felt-sense. kondo teaches people to notice the difference between sign-value (keeping things bc they signal the person you want to be) and symbolic-value (keeping things bc they anchor who you actually are)[^shirt-3].
+
+[———]
+
+consumer culture insists things complete you, and that's wrong. certain physical items do meaningful work in constructing continuity-of-self anyway. the shirts i keep cycling back to aren't objectively better shirts. they're mine in some way that precedes and exceeds their material properties.
+
+the reformation top is black silk and cost more than i usually spend on gifts. i want it to become invisible. i want H to forget i gave it to her and just reach for it, the way my hand reached for my wallet without looking. that would mean it worked.
+
+still figuring out where this line is. probably it's not a line but a gradient, objects slowly accreting or shedding meaning based on how they get woven into the texture of days.
+
+[^shirt-1]: heidegger's being and time §15. the zollikon seminars (1959-1969) apply this to embodiment more directly.
+
+[^shirt-2]: didion: "we might expect that we will be prostrate, inconsolable, crazy with loss. we do not expect to be literally crazy, cool customers who believe that their husband is about to return and need his shoes."
+
+[^shirt-3]: the 1:50 ratio of meaningful-to-owned might be roughly stable across object-categories. would need data. merleau-ponty calls the process "sedimentation": meaning accumulates in objects through repeated use. the path through the woods becomes THE path bc feet wore it down. the shirt becomes YOUR shirt bc your body shaped it.
+
 ---
 
 ## on transitory state of being
@@ -52,7 +253,50 @@ title: stream
   - tags:
     - life
 
-[inferact.ai](https://x.com/woosuk_k/status/2014383490637443380), or the [[thoughts/vllm|vLLM]] company announcement came out today, even though this has been in the works for a while now, which makes me think a lot of this fluid state of moving
+[inferact.ai](https://x.com/woosuk_k/status/2014383490637443380) dropped today—the corporate crystallization of [[thoughts/vllm|vLLM]]—and while the announcement itself played out with the predictable rhythm of a silicon valley press release (though this has been in the works for a while now), it forced me to confront the peculiar, fluid ontology of building software in a gold rush. we act as if we are building institutions, but we are mostly building eddies in a very fast current.
+
+the trajectory is almost boringly standardized by now, where open source project accreted value through sheer utility, utility attracted the predatory gaze of capital, and capital demanded the construction of a moat, which invariably means closing something that was once open. we saw it with redis, with elastic, with hashicorp; the logic of the market dictates that the "communitas" of the early contribution graph must eventually yield to the rigid hierarchy of the delaware c-corp. roughly 70% of successful oss projects with corporate backing undergo this phase transition within five years[^trans-1], a statistic that feels less like a business metric and more like a biological half-life.
+
+calling this "selling out" misses what's actually happening. heraclitus: the river's identity depends on the changing of its waters. stop the flow and you get a swamp. whitehead pushed further, actual entities aren't static substances that undergo change, they ARE processes-of-becoming. vLLM 2023 and inferact 2026 aren't the same object painted different colors. different societies of occasions, linked by historical inheritance but ontologically distinct. i contributed to the first. i have no idea what the second is.
+
+this becomes particularly jagged when we look at the M&A dynamics sweeping the sector. consider the "acqui-hires" that defined the last cycle—adept dissolving into amazon, inflection metabolizing into microsoft, character.ai's founders returning to the google mothership. these aren't traditional acquisitions where a going concern is bought for its revenue stream, but more of a reallocation of intelligence-capital. the "startup" in this era is less a business and more a temporary dissipative structure, a far-from-equilibrium organization that exists solely to concentrate talent and compute density until it reaches a critical threshold, at which point it must either stabilize (rare) or be reabsorbed by the massive gravity wells of the hyperscalers.
+
+victor turner called it liminality, the betwixt-and-between state of ritual initiates. working here feels like that. you aren't an employee; you're a transition state. your identity narrative can't resolve bc its referent keeps shifting. the "company" might dissolve next quarter. that precariousness generates anxiety, but also freedom. turner noted liminality generates "communitas," unstructured egalitarian bonding before structure reasserts. every early-stage lab lives in communitas. every acquisition kills it. oss collective → series-b → big-tech division is a movement from potentiality to actuality, infinite possibilities of the void → constrained reality of the org chart[^trans-2].
+
+looking at inferact i don't see betrayal. i see a dissipative structure doing what thermodynamics requires: processing energy (capital) to maintain coherence in a high-entropy environment. prigogine: order arises spontaneously from chaos if enough energy flows through. vLLM was chaos; inferact is order. asking whether the transition is "good" or "bad" misses the point, those are static moral categories failing to map onto dynamic systems. the question: can the new configuration maintain the flow that created it, or will it stagnate, calcify, and require its own dissolution to release the water back into the river[^trans-3].
+
+[^trans-1]: the pattern has a name in business lit: "open core" or "source available pivot." what's interesting is how predictable the community backlash is, and how little that backlash affects outcomes. redis forked to valkey, elastic forked to opensearch, but the originals kept their enterprise customers.
+
+[^trans-2]: turner was studying ndembu ritual. the application to tech-org is mine, but the mapping is clean. compare the vibe of an early-stage startup (communitas, flat hierarchy, shared mission) to post-series-C (org charts, performance reviews, HR).
+
+[^trans-3]: the median lifespan of an ML startup before acquisition or pivot is around 3 years rn. compare to SaaS at 7-10 years. the capability-moat compression is real.
+
+---
+
+## falling in love
+
+- [meta]:
+  - date: 2026-01-13 18:41:48 GMT-05:00
+  - tags:
+    - relationship
+
+the care-framework established itself immediately, which is strange. you're supposed to wait, wonder if they'll text back, accumulate uncertainty until it becomes limerence. barthes wrote about love-as-waiting in *a lover's discourse*, specifically the figure he calls "attente"—the lover who waits by the phone, who interprets every silence, who exists in that suspended state where absence becomes presence through sheer repetition of thought. he describes it as "tumult of anxiety" provoked by waiting for the loved one, and i've known that tumult well. the refreshing-of-inboxes, the reading-signs-into-timestamps. but this feels different. like walking through lily fields in amsterdam, just peaceful, bounded, seasonal. you traverse it rather than wait in it.
+
+tennov spent decades cataloguing limerence—that involuntary cognitive state she distinguished from ordinary attachment. intrusive thinking about the limerent object, acute sensitivity to their actions, fear of rejection, hope. the dopamine-system hijacking that helen fisher later mapped in fMRI: caudate nucleus lighting up, the brain's reward center treating romantic obsession the way it treats cocaine. standard falling-in-love neurochemistry runs on uncertainty. fisher's research suggests intermittent reinforcement is the mechanism—you bond harder when you can't predict responses, when the slot-machine of another person's attention pays out randomly. but what happens when the care arrives without the uncertainty? when the reward circuit activates in the presence of stability rather than unpredictability?
+
+i keep thinking about heidegger's fürsorge—the care that leaps ahead of the other, freeing them toward their own possibilities rather than absorbing them into yours. there's a version of care that dominates, takes over the other's projects by solving their problems FOR them. and there's this other version, leaping-ahead, which gives the other person back their own capacity-to-be. maybe that's what happened here. the bodies attuned before minds recognized what was happening. merleau-ponty called this intercorporeality—the way flesh recognizes flesh, how my body's motor intentionality can complete itself in another person's gestures before any conscious recognition occurs. reaching for a hand that's already moving toward yours. knowing where to stand in a kitchen together on day one.[^love-1]
+
+H's face demanded response before i could categorize the feeling. levinas would call this ethics-before-ontology, the face that calls you into responsibility without mediation through concepts. the face doesn't represent the other person; it presents them. nakedness-as-exposure, vulnerability that commands "do not kill me" but also, maybe, "do not reduce me." strange to feel summoned rather than attracted.
+
+most love i've known arrived through accumulation. small bets that compound into conviction. the heartbreak-love especially—months of proximity, plausible deniability, until someone finally names it and then the naming destroys what it names. that one taught me love can be a misrecognition that only becomes visible in retrospect, when you're standing in the wreckage wondering what you were actually perceiving. this one felt like recognition instead. "oh, there you are." which doesn't make sense temporally—we'd just met. but care doesn't always build through time. sometimes it just appears, fully formed, like walking into a clearing and finding it already tended.
+
+i'm trying to understand why this particular love feels like presence rather than anticipation. why the lily field image persists. keukenhof exists because someone cultivated it over generations—seasonal, returning, deliberately bounded. fields are open but finite. you enter and exit rather than possess. the lilies will be there next april too, changed and the same. traversed together rather than watched from windows. maybe that's it—love-as-movement-through-space instead of love-as-waiting-in-time. something closer to the phenomenology of walking: weight-shifting, rhythm-finding, direction-sharing.[^love-2]
+
+still wondering what this means. probably always will.
+
+[^love-1]: the towel thing with the previous one was the opposite—i learned [their] patterns through months of observation, constructed the care through study. this one bypassed study entirely.
+
+[^love-2]: or maybe i'm just early in the timeline and the limerence will arrive on schedule, like delayed luggage. but it's been long enough now that i think the luggage might just be lost.
 
 ---
 
@@ -63,6 +307,24 @@ title: stream
   - tags:
     - life
   - description: and the homeostasis state
+
+the housecat spends roughly 12 to 16 hours a day in a state of deep torpor, a metabolic shutdown that would register as clinically depressive in any modern human productivity framework. yet, watching the cat, you do not see depression. you see a creature that has solved the fundamental thermodynamic equation of existence with an elegance we can only envy. the cat does not apologize for its inertia. it does not bargain with the clock.
+
+walter cannon introduced "homeostasis" in 1926 to describe the body's wisdom in maintaining stability, but the cat practices something closer to what sterling and eyer called *allostasis*—stability through change. the cat's sleep is not a negation of life but its primary maintenance phase, a rigorous biological housekeeping where memories are consolidated and tissues repaired without the interference of the conscious ego. humans, by contrast, have let the "protestant work ethic" (weber, 1905) hijack our biological firmware. we have moralized energy expenditure. for us, rest requires a permission slip, usually stamped with the validation of "exhaustion." we must be depleted before we are allowed to recharge. the cat rejects this premise entirely. the cat rests *before* it is tired, simply because the sunbeam has moved to the correct angle on the rug. its relationship to rest is pre-moral, which is to say: it is correct.
+
+this envy we feel—the specific, sharp jealousy of watching a pet sleep while we doomscroll—is rooted in what john gray identifies in *feline philosophy*: the burden of the self-narrative. humans are stuck in "becoming," obsessed with a future that doesn't exist, constructing elaborate stories about who we should be. the cat is entirely "being." it has no project. it has no resume. it does not worry about its legacy or whether it is a "good boy" (a distinctly canine neurosis). "cats do not need to examine their lives, because they do not doubt that life is worth living," gray writes[^cat-1]. the dog, co-evolved over 15,000 years to be our emotional mirror, reflects our anxiety back to us; the dog *needs* our approval to exist. the cat is indifferent to our internal states, and this indifference is its greatest gift. it proves that the universe does not require our anxiety to function.[^cat-2]
+
+consider the sheer metabolic cost of human consciousness. a significant percentage of our caloric intake goes to powering the default mode network—the brain circuits responsible for mind-wandering, self-reference, and ruminating on past embarrassments. we are burning glucose to torture ourselves with simulations of futures that will never happen. the cat, lacking this specific cortical curse, runs on a leaner existential fuel mixture. thomas nagel famously asked "what is it like to be a bat," concluding that the subjective texture of echolocation is inaccessible to us. the same barrier applies here. we can observe the cat, we can measure its rem cycles, but we cannot access the qualia of a mind that is not constantly narrating its own existence. the cat exists in the silence we spend our whole lives trying to manufacture through meditation apps and noise-canceling headphones.
+
+trish hersey's "nap ministry" reframes rest as resistance, a radical "no" to capitalist extraction. it’s a necessary political intervention for humans, but notice how it still operates within the logic of the system it opposes. to "resist" is to acknowledge the power of the oppressor. the cat does not resist capitalism; the cat is ontologically invisible to capitalism. it occupies a reality where "productivity" is not even a coherent concept. this is why the cat is the ultimate escape fantasy for the burnout generation (76% of us, per gallup 2024). we don't just want a break; we want to exit the game entirely. we want to be in a state where our value is intrinsic to our biology, not contingent on our output.[^cat-3]
+
+we cannot un-evolve our frontal lobes. we cannot surgery away the self-narrative. we are condemned to be historical beings, born into stories we didn't write and forced to improvise endings we can't foresee. but the cat serves as a living totem of the alternative. it is a reminder that the frantic, anxious, future-obsessed mode of being is not the only option—it's just the only one we know. to sit with a cat is to be in the presence of a master class in "just being," even if we are doomed to fail the exam.
+
+[^cat-1]: gray, john. *feline philosophy: cats and the meaning of life*. farrar, straus and giroux, 2020. p. 89.
+
+[^cat-2]: the dog-domestication timeline is contested, estimates range from 15k-40k years, but the co-evolutionary dynamic holds regardless. the dog is a tool we built to love us; the cat is a tiny tiger that decided to live in our house because it was warm.
+
+[^cat-3]: see also: macintyre on how we're born into narratives already in progress, without consent, and must make sense of ourselves mid-stream. the cat is the only character in the room who hasn't read the script and doesn't care.
 
 ---
 
@@ -106,6 +368,8 @@ _ig it is time to revist BGE argument once again_
     - philosophy
     - pattern
 
+I keep circling a phrase: jagged taste. It names the edge left by commitment, the way taste becomes shaped by the bets it had to place and the roads it had to ignore.
+
 I usually go to school relatively early nowadays, given that commute time is sub-optimal for any given {{sidenotes[day]: i.e. me living in Toronto going to school in Hamilton}}. I'm reading Ramsey's [Truth and Probability](https://fitelson.org/probability/ramsey.pdf) while waiting for the compiler to finish. On p.176 he wrote:
 
 ```quotes
@@ -116,9 +380,11 @@ but it will also depend on how confident i am that i am right; and clearly the m
 Ramsey, _Truth and Probability (p. 176)_
 ```
 
-Ramsey then formalized with _the degree of belief_ {{sidenotes[to be]: here the disadvantages of going $x$ yards is $f(x)$, advantage of arriving right $r$, arriving wrong is $w$, and you are willing to go distance $d$ to ask}} $p = 1 - \frac{f(d)}{(r-w)}$:
+Ramsey then formalized _the degree of belief_ as the distance you'd walk to verify a statement, i.e. the willingness to cross a field and possibly be wrong later.
 
-> By proposing a bet on $p$ we give the subject a possible course of action from which so much extra good will result to him if $p$ is true and so much extra bad if $p$ is false
+> [!important] belief as distance
+>
+> {{sidenotes[to be]: here the disadvantages of going $x$ yards is $f(x)$, advantage of arriving right $r$, arriving wrong is $w$, and you are willing to go distance $d$ to ask}} $p = 1 - \frac{f(d)}{(r-w)}$ by proposing a bet on $p$ we give the subject a possible course of action from which so much extra good will result to him if $p$ is true and so much extra bad if $p$ is false
 
 By this logic Ramsey implied that the distance you'd walk to verify a statement IS the belief, i.e. the willingness to stake time and cross a field and possibly be wrong later. He then followed with on p.183:
 
@@ -126,52 +392,41 @@ By this logic Ramsey implied that the distance you'd walk to verify a statement 
 
 I first encountered Ramsey's work while reading [Galvin's entry](https://www.gleech.org/frank) and got curious about his contributions to economics. Ramsey was 22 when he wrote T&P, four years before his death. Ramsey was a close friend of [[thoughts/Wittgenstein|Ludwig Wittgenstein]] and instrumental towards convincing Wittgenstein to return to Cambridge for #philosophy. Ramsey is loved by many, in the way that people would call him Frank, where we would never call Wittgenstein "Ludwig".
 
-```quotes
-I don’t feel the least humble before the vastness of the heavens. The stars may be large, but they cannot think or love; and these are qualities which impress me far more than size does…
+> [!quote] ramsey, aged 22
+> I don’t feel the least humble before the vastness of the heavens. The stars may be large, but they cannot think or love; and these are qualities which impress me far more than size does…
+>
+> My picture of the world is drawn in perspective, and not like a model to scale. The foreground is occupied by human beings and the stars are all as small as threepenny bits… In time the world will cool and everything will die; but that is a long time off still… Nor is the present less valuable because the future will be blank.
+>
+> Humanity, which fills the foreground of my picture, I find interesting and on the whole admirable. I find, just now at least, the world a pleasant and exciting place. You may find it depressing; I am sorry for you, and you despise me. But I have reason and you have none; you would only have a reason for despising me if your feeling corresponded to the fact in a way mine didn’t. But neither can correspond to the fact. The fact is not in itself good or bad; it is just that it thrills me but depresses you. On the other hand, I pity you with reason, because it is pleasanter to be thrilled than to be depressed, and not merely pleasanter but better for all one’s activities.
 
-My picture of the world is drawn in perspective, and not like a model to scale. The foreground is occupied by human beings and the stars are all as small as threepenny bits… In time the world will cool and everything will die; but that is a long time off still… Nor is the present less valuable because the future will be blank.
+Ramsey's crossroads metaphor emphasizes the pattern of bets IS the belief you create towards a _gut feeling_, _conviction of sort_. A thing that you deem to be beautiful predicates upon a set of bets that you consider aesthetically pleasing. I would consider Rembrandt to be the best painters because his drawing speaks towards the absurdism as the facticity of life. Rembrandt individuated my liking towards more expressionist painters, such as Egon Schiele, Oskar Kokoschka, etc. The way that we take bets in aesthetics has the same form as taking bets elsewhere. One would live with consequences of choosing a direction, willingly sacrifice the alternatives knowing that such commitments will eventually [[thoughts/emergent behaviour|formulate]] your own [[thoughts/taste]].
 
-Humanity, which fills the foreground of my picture, I find interesting and on the whole admirable. I find, just now at least, the world a pleasant and exciting place. You may find it depressing; I am sorry for you, and you despise me. But I have reason and you have none; you would only have a reason for despising me if your feeling corresponded to the fact in a way mine didn’t. But neither can correspond to the fact. The fact is not in itself good or bad; it is just that it thrills me but depresses you. On the other hand, I pity you with reason, because it is pleasanter to be thrilled than to be depressed, and not merely pleasanter but better for all one’s activities.
-
-Ramsey, _aged 22_
-```
-
-Ramsey's crossroads metaphor emphasizes the pattern of bets IS the belief you create towards a _gut feeling_, _conviction of sort_. A thing that you deem to be beautiful predicates upon a set of bets that you consider aesthetically pleasing. For example, I would consider Rembrandt to be the best painters because his drawing speaks towards the absurdism as the facticity of life. In a way that Rembrandt individuated my liking towards more expressionist painters, such as Egon Schiele, Oskar Kokoschka, etc. The way that we take bets in aesthetics has the same form as taking bets elsewhere. One would live with consequences of choosing a direction, willingly sacrifice the alternatives knowing that such commitments will eventually [[thoughts/emergent behaviour|formulate]] your own [[thoughts/taste]].
-
-[———]
-
-So why jagged? The term actually came up in a recent conversation with my therapist. we were talking about living in a {{sidenotes[hyperabundance]: i.e post-scarcity, unprecedented [[posts/hyperabundance|interconnectedness]], post-singularity to an extent}} world, and i found myself circling the same worry, a la the tension between filtering and creating. [JZ writes](https://jzhao.xyz/posts/aesthetics-and-taste) that we need to "do things without recipes more often." this tracks with Ramsey's formulation of bets.
+So why jagged? The term came up in a recent conversation with my therapist. we were talking about living in a {{sidenotes[hyperabundance]: i.e post-scarcity, unprecedented [[posts/hyperabundance|interconnectedness]], post-singularity to an extent}} world, and i found myself circling the same worry, a la the tension between filtering and creating. [JZ writes](https://jzhao.xyz/posts/aesthetics-and-taste) that we need to "do things without recipes more often." this tracks with Ramsey's formulation of bets.
 
 Such grief arose, yet again, whilst i was fine tuning a [Qwen-based ghost-of-mine](https://huggingface.co/Qwen/Qwen3-30B-A3B-Instruct-2507-FP8). there's this moment when the loss curve suddenly drops, .i.e. _grokking_, and the model starts enforcing traits it learnt in my writing. watching this felt strange. my style is still evolving, still unfinished, yet here i was compressing a snapshot of myself into a [[thoughts/Eldrich horror|Lovecraftian horror]] of my own shortcomings. the thing it kept turning to: _i'm not able to write like Camus yet. i write Camus-adjacent. but i don't want to write like Camus. i need to find something Aaron-shaped._
 
-I found this fascinating, as I realized the gap started to feel unbridgeable. on one side holds my rigorous sense of what i like. yet, here, on the other side resides the curation speed, how fast i can filter so the _ghost_ generates queries that actually emulate how i think. (Or I have one better for you, the ghost can also do the filtering as well!!)
+I found this fascinating, as I realized the gap started to feel unbridgeable. On one side sits my rigorous sense of what i like. On the other side sits curation speed, how fast i can filter so the _ghost_ generates queries that actually emulate how i think. Or, better, the ghost can also do the filtering as well [^problem].
 
-[———]
-
-the main problem I observe with this approach, at large over-used of [[thoughts/LLMs|LLMs]] in general, is that one will never have to walk across any _fields_ to verify anything, if one actually like Camus. Ramsey assumes distance has some intrinsic cost. _but what happens when_ $f(d) \to 0 \forall d \in \mathbb{N}^{*}$? what happens when you can sample every possible aesthetic direction simultaneously, and a Camus-adjacent or a Dostoevsky-adjacent, or a Bakhtin-adjacent just, _poof, appear out of thin air_? In this case, the degree of belief then collapsed into a _preference-simulation_ instead of subjective conviction.
+[^problem]:
+    the main problem I observe with this approach, with the over-use of [[thoughts/LLMs|LLMs]] in general, is that one will never have to walk across any _fields_ to verify anything, even if one actually likes Camus. Ramsey assumes distance has some intrinsic cost. _but what happens when_ $f(d) \to 0 \forall d \in \mathbb{N}^{*}$? what happens when you can sample every possible aesthetic direction simultaneously, and a Camus-adjacent or a Dostoevsky-adjacent or a Bakhtin-adjacent just, _poof, appear out of thin air_? In this case, the degree of belief collapses into a _preference-simulation_ instead of subjective conviction.
 
 the jaggedness comes from _having to commit_. Dostoevsky couldn't just pivot to write like Turgenev when Notes from Underground wasn't landing like his previous work. He had to tunnel deeper into his own neurotic verbal tics, with run-on sentences that felt like you are traversing a vast landscape, so that the _underground man who won't shut up because shutting up means losing the only voice he possess_ can live on perpetually. Bakhtin's polyphony emerged from the made-up fantasy of Soviet's society (where socialism is more of an idea rather than practical decisions), having to encode his own philosophical dialogue disguised inside {{sidenotes[literacy criticism]: otherwise he would probably get shot or capture by the secret police}} since that is the only [[thoughts/forms of life|form]] it can exist.
 
-As such, the jaggedness stems from this **individuated friction**, because we need friction to formulate such shape. When you are essentially time-boxed and constrained at which books you can read in the local library, versus what your friends recommends, and what you can afford, you develop the _taste_ through ==enough encounters== such that it form _priors_ within the same limited set, which in turns allows you to form your own worldview:
+As such, the jaggedness stems from this **individuated friction**, because we need friction to formulate such shape. When you are time-boxed and constrained at which books you can read in the local library, versus what your friends recommend, and what you can afford, you develop _taste_ through ==enough encounters== such that it forms _priors_ within the same limited set, which in turns allows you to form your own worldview:
 
 - One like Rembrandt because that's what's is displayed in the museum that you can reach to.
 - You reread the same version of the books because you want to memorize exactly, **word for word** what Camus wrote about how Husserlian intentionality embodied this absurd spirits despite its contradictory appearance:
   > Thinking is not unifying or making the appearance familiar under the guise of a great principle. Thinking is learning all over again how to see, directing one's consciousness, making of every image a privileged place. In other words, phenomenology declines to explain the world, it wants to be merely a description of actual experience. It confirms absurd thought in its initial assertion that there is ==no truth, but merely truths.== [...] Consciousness does not form the object of its understanding, it merely focuses, it is the act of attention, [...] it resembles the projector that suddenly focuses on an image [to borrow Bergsonian image]
 
-Per Ramsey's framework, the _crossroads_ is the wager that induces this friction, insofar as choosing a path/direction. Hyperabundance somewhat blurs this distinction, as in when you can sample both roads simultaneously, when the {{sidenotes[lovely robot]: I want to figure out better term to call these beings, because Shoggoth sounds mean and evil.}} can generate infinite variations of each path, when you can A/B test your life in real-time, the bet stops being a bet, and it _becomes_ a ==simulation of betting==, a performance of conviction without the underlying structure that made conviction possible.
+Per Ramsey's framework, the _crossroads_ is the wager that induces this friction, insofar as choosing a path or direction. Hyperabundance blurs this distinction. When you can sample both roads simultaneously, when the {{sidenotes[lovely robot]: I want to figure out better term to call these beings, because Shoggoth sounds mean and evil.}} can generate infinite variations of each path, when you can A/B test your life in real-time, the bet stops being a bet, and it _becomes_ a ==simulation of betting==, a performance of conviction without the underlying structure that made conviction possible.
 
-The fucked up thing is this is why we build recommendation systems in the first place, i.e. to accelerate convergence towards a generic-optimal. We are universally {{sidenotes[curved into engagement]: from a philosophy perspective, A.J. Ayer's positive emotivism can be used to describe this phenomenon, largely found through his seminar book [[library/Language, Truth & Logic|Language, Truth & Logic]]}}, rage-bait, click-through, time-on-page, which means they are selecting for writing that doesn't require you to cross any fields, writing that just meet you where you are, because _they know what you like even before you know it_.
+The fucked up thing is this is why we build recommendation systems in the first place, i.e. to accelerate convergence towards a generic-optimal. We are universally {{sidenotes[curved into engagement]: from a philosophy perspective, A.J. Ayer's positive emotivism can be used to describe this phenomenon, largely found through his seminar book [[library/Language, Truth & Logic|Language, Truth & Logic]]}}, rage-bait, click-through, time-on-page, which means they are selecting for writing that doesn't require you to cross any fields, writing that just meets you where you are, because _they know what you like even before you know it_.
 
 In a way, these systems have the same infrastructure with those of {{sidenotes[gambling]: I don't find anything morally wrong towards gambling, other than it is built on top of our worst nature, _power-seeking_}}. Therefore, it creates this evolutionary pressure towards styles that are considered maximally accessible and frictionless. In a world of social pressure full of acted-up performance, the jaggedness gets smoothed out because those edges are considered turn-off.
 
-[——]
+I can't and will never be able to write like Camus. I acknowledge that there are a set of technical skills that I lack. I also acknowledge that there are certain barriers for me to write in English (as a non-native speaker). But the underlying issue about "becoming Camus" or adapting to any tone of writers you aspire to be is that it will require you to make ==irreversible bets== about what matters in your life. Camus staked his life on certain ideas about absurdism and resistance, and wrote in a particular historical moment where those stakes were real. His style emerged from constraint, from resistance, from the friction between what he wanted to say and what the world allowed him to say.
 
-I can't and will never be able to write like Camus. I acknowledge that there are a sets of technical skills that I lack. I also acknowledge that there are certain barriers for me to write in English (as a non-native speaker)
-- Though the underlying issue about "becoming Camus" or adapting to any tone of writers you aspire to be is that it will require you to make ==irreversible bets== about what matter in your life.
-- Camus staked his life on certain ideas about absurdism and resistance, and wrote in a particular historical moment where those stakes were real.
-- His style emerged from constraint, from resistance, from the friction between what he wanted to say and what the world allowed him to say.
-
-For me, I'm trying to develop a style in an environment of infinite accommodation, where the "machine of loving grace" will happily generate Camus-adjacent prose for me, where i can retrieve every POSSIBLE variation of absurdist philosophy ON EARTH , where nothing commits because everything's reversible. _I don't want this_
+For me, I'm trying to develop a style in an environment of infinite accommodation, where the "machine of loving grace" will happily generate Camus-adjacent prose for me, where i can retrieve every POSSIBLE variation of absurdist philosophy ON EARTH, where nothing commits because everything's reversible. If jagged taste is the shape of commitment, then this environment is designed to sand those edges down. _I don't want this._
 
 _So you must resist, or might as well die._
 

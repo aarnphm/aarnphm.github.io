@@ -29,6 +29,11 @@ export const mountMultiplayer = ({ dispatch, state, services }: MountDeps) => {
     cleanups.push(cleanup)
   }
 
+  const isTouchDevice = () =>
+    "maxTouchPoints" in navigator
+      ? navigator.maxTouchPoints > 0
+      : "ontouchstart" in window
+
   const init = async () => {
     dispatch({ type: "nav.enter", pageId: getCommentPageId() })
 
@@ -51,6 +56,20 @@ export const mountMultiplayer = ({ dispatch, state, services }: MountDeps) => {
       }
     }
     services.ui.handleTextSelection()
+  }
+
+  const contextMenu = (event: MouseEvent) => {
+    if (!isTouchDevice()) return
+    const selection = window.getSelection()
+    if (!selection || selection.isCollapsed || selection.rangeCount === 0) return
+    if (event.target instanceof Node && event.target.isConnected) {
+      const composer = document.body.querySelector(".comment-composer")
+      if (composer instanceof HTMLElement && composer.contains(event.target)) {
+        return
+      }
+    }
+    services.ui.handleTextSelection()
+    event.preventDefault()
   }
 
   let resizeFrame = 0
@@ -84,6 +103,7 @@ export const mountMultiplayer = ({ dispatch, state, services }: MountDeps) => {
   }
 
   document.addEventListener("mouseup", mouseUp)
+  document.addEventListener("contextmenu", contextMenu)
   window.addEventListener("resize", handleResize)
   document.addEventListener("collapsibletoggle", handleCollapseToggle)
   document.addEventListener("commentauthorupdated", handleAuthorUpdate)
@@ -93,6 +113,7 @@ export const mountMultiplayer = ({ dispatch, state, services }: MountDeps) => {
     services.ui.cleanup()
     services.ws.close()
     document.removeEventListener("mouseup", mouseUp)
+    document.removeEventListener("contextmenu", contextMenu)
     window.removeEventListener("resize", handleResize)
     document.removeEventListener("collapsibletoggle", handleCollapseToggle)
     document.removeEventListener("commentauthorupdated", handleAuthorUpdate)
