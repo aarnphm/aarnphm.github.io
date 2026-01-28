@@ -1,42 +1,42 @@
-import { FullSlug, joinSegments } from "../../util/path"
+import { transform as transpile, build as bundle } from "esbuild"
+import { globby } from "globby"
+import { Features, transform } from "lightningcss"
+import fs from "node:fs/promises"
 import path from "path"
-import { QuartzEmitterPlugin } from "../../types/plugin"
-// @ts-ignore
-import spaRouterScript from "../../components/scripts/spa.inline"
-// @ts-ignore
-import multiplayerScript from "../../components/scripts/collaborative-comments.inline"
-// @ts-ignore
-import popoverScript from "../../components/scripts/popover.inline"
-import styles from "../../styles/custom.scss"
-import popoverStyle from "../../components/styles/popover.scss"
-// @ts-ignore
-import clipboardScript from "../../components/scripts/clipboard.inline"
-import clipboardStyle from "../../components/styles/clipboard.scss"
-// @ts-ignore
-import pseudoScript from "../../components/scripts/clipboard-pseudo.inline"
-// @ts-ignore
-import baseMapScript from "../../components/scripts/base-map.inline"
-import pseudoStyle from "../../components/styles/pseudocode.scss"
+import type { QuartzMdxComponent } from "../../components/mdx/registry"
+import { getMdxComponents } from "../../components/mdx/registry"
 // @ts-ignore
 import notFoundScript from "../../components/scripts/404.inline"
 //@ts-ignore
-import protectedScript from "../../components/scripts/protected.inline"
-//@ts-ignore
 import audioScript from "../../components/scripts/audio.inline"
-import audioStyle from "../../components/styles/audio.scss"
+// @ts-ignore
+import baseMapScript from "../../components/scripts/base-map.inline"
+// @ts-ignore
+import pseudoScript from "../../components/scripts/clipboard-pseudo.inline"
+// @ts-ignore
+import clipboardScript from "../../components/scripts/clipboard.inline"
+// @ts-ignore
+import multiplayerScript from "../../components/scripts/collaborative-comments.inline"
 // @ts-ignore
 import markerScript from "../../components/scripts/marker.inline"
-import { BuildCtx } from "../../util/ctx"
-import { QuartzComponent } from "../../types/component"
-import type { QuartzMdxComponent } from "../../components/mdx/registry"
-import { getMdxComponents } from "../../components/mdx/registry"
+// @ts-ignore
+import popoverScript from "../../components/scripts/popover.inline"
+//@ts-ignore
+import protectedScript from "../../components/scripts/protected.inline"
+// @ts-ignore
+import spaRouterScript from "../../components/scripts/spa.inline"
+import audioStyle from "../../components/styles/audio.scss"
+import clipboardStyle from "../../components/styles/clipboard.scss"
+import popoverStyle from "../../components/styles/popover.scss"
+import pseudoStyle from "../../components/styles/pseudocode.scss"
+import styles from "../../styles/custom.scss"
 import "../../components/mdx"
+import { QuartzComponent } from "../../types/component"
+import { QuartzEmitterPlugin } from "../../types/plugin"
+import { BuildCtx } from "../../util/ctx"
+import { FullSlug, joinSegments } from "../../util/path"
 import { googleFontHref, joinStyles, processGoogleFonts } from "../../util/theme"
-import { Features, transform } from "lightningcss"
-import { transform as transpile, build as bundle } from "esbuild"
-import { globby } from "globby"
 import { write } from "./helpers"
-import fs from "node:fs/promises"
 
 const name = "ComponentResources"
 
@@ -272,7 +272,7 @@ export const ComponentResources: QuartzEmitterPlugin = () => {
     },
     async *partialEmit(ctx, _content, _resources, changeEvents) {
       for (const changeEvent of changeEvents) {
-        if (!/\.worker\.ts$/.test(changeEvent.path)) continue
+        if (!changeEvent.path.endsWith(".worker.ts")) continue
         if (changeEvent.type === "delete") {
           const name = path.basename(changeEvent.path).replace(/\.ts$/, "")
           const dest = joinSegments(ctx.argv.output, `${name}.js`)

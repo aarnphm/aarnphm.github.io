@@ -1,6 +1,6 @@
 import { ValidDateType } from "./components/Date"
-import { QuartzComponent } from "./types/component"
 import { ValidLocale } from "./i18n"
+import { QuartzComponent } from "./types/component"
 import { PluginTypes } from "./types/plugin"
 import { Theme } from "./util/theme"
 

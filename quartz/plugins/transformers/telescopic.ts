@@ -1,3 +1,19 @@
+import type { RootContent, Text } from "hast"
+import { Root, Element } from "hast"
+import { findAndReplace as hastFindReplace } from "hast-util-find-and-replace"
+import { FindAndReplaceList } from "hast-util-find-and-replace"
+import { fromHtmlIsomorphic } from "hast-util-from-html-isomorphic"
+import { toHtml } from "hast-util-to-html"
+import { toString } from "hast-util-to-string"
+import { h, s } from "hastscript"
+import isAbsoluteUrl from "is-absolute-url"
+import { Root as MdastRoot, Code } from "mdast"
+import path from "path"
+import { SKIP, visit } from "unist-util-visit"
+// @ts-ignore
+import script from "../../components/scripts/telescopic.inline.ts"
+import content from "../../components/styles/telescopic.inline.scss"
+import { svgOptions } from "../../components/svg"
 // A small subsets of https://github.com/jackyzha0/telescopic-text
 // turned into remark plugin for Quartz
 //
@@ -16,24 +32,8 @@
 //
 // Some deviation: separator=" ", shouldExpandOnMouseOver=false
 import { QuartzTransformerPlugin } from "../../types/plugin"
-import { Root, Element } from "hast"
-import type { RootContent, Text } from "hast"
-import { Root as MdastRoot, Code } from "mdast"
-import { toHtml } from "hast-util-to-html"
-import { SKIP, visit } from "unist-util-visit"
-import { toString } from "hast-util-to-string"
-import { h, s } from "hastscript"
-import { createWikilinkRegex } from "../../util/wikilinks"
-import { findAndReplace as hastFindReplace } from "hast-util-find-and-replace"
-import isAbsoluteUrl from "is-absolute-url"
 import { FullSlug, simplifySlug, splitAnchor, stripSlashes, transformLink } from "../../util/path"
-import path from "path"
-import { FindAndReplaceList } from "hast-util-find-and-replace"
-import { fromHtmlIsomorphic } from "hast-util-from-html-isomorphic"
-// @ts-ignore
-import script from "../../components/scripts/telescopic.inline.ts"
-import content from "../../components/styles/telescopic.inline.scss"
-import { svgOptions } from "../../components/svg"
+import { createWikilinkRegex } from "../../util/wikilinks"
 
 interface Line {
   og: string // the original string to replace

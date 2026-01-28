@@ -1,14 +1,14 @@
-import { QuartzConfig } from "../../cfg"
-import { QuartzEmitterPlugin } from "../../types/plugin"
-import path from "path"
-import fs from "node:fs/promises"
-import { glob } from "../../util/glob"
-import { FilePath, joinSegments, slugifyFilePath } from "../../util/path"
-import { Argv } from "../../util/ctx"
 import { spawn } from "child_process"
+import fs from "node:fs/promises"
 import { availableParallelism } from "node:os"
 import { styleText } from "node:util"
+import path from "path"
 import * as process from "process"
+import { QuartzConfig } from "../../cfg"
+import { QuartzEmitterPlugin } from "../../types/plugin"
+import { Argv } from "../../util/ctx"
+import { glob } from "../../util/glob"
+import { FilePath, joinSegments, slugifyFilePath } from "../../util/path"
 
 const notebookFiles = async (argv: Argv, cfg: QuartzConfig) => {
   return await glob("**/*.ipynb", argv.directory, [...cfg.configuration.ignorePatterns])

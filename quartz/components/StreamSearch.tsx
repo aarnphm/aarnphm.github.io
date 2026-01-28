@@ -1,7 +1,7 @@
 import { QuartzComponent, QuartzComponentConstructor } from "../types/component"
-import style from "./styles/streamSearch.scss"
 // @ts-ignore
 import script from "./scripts/stream-search.inline"
+import style from "./styles/streamSearch.scss"
 
 export interface StreamSearchOptions {
   placeholder?: string

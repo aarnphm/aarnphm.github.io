@@ -1,17 +1,16 @@
+import { i18n } from "../i18n"
 import {
   QuartzComponent,
   QuartzComponentConstructor,
   QuartzComponentProps,
 } from "../types/component"
-import style from "./styles/explorer.scss"
-
+import { FileTrieNode } from "../util/fileTrie"
+import { classNames } from "../util/lang"
+import { concatenateResources } from "../util/resources"
+import OverflowListFactory from "./OverflowList"
 // @ts-ignore
 import script from "./scripts/explorer.inline"
-import { classNames } from "../util/lang"
-import { i18n } from "../i18n"
-import { FileTrieNode } from "../util/fileTrie"
-import OverflowListFactory from "./OverflowList"
-import { concatenateResources } from "../util/resources"
+import style from "./styles/explorer.scss"
 
 type OrderEntries = "sort" | "filter" | "map"
 

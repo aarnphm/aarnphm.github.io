@@ -1,17 +1,17 @@
+import type { ComponentChild } from "preact"
+import { ArenaData, ArenaBlock } from "../../plugins/transformers/arena"
 import {
   QuartzComponent,
   QuartzComponentConstructor,
   QuartzComponentProps,
 } from "../../types/component"
-import { ArenaData, ArenaBlock } from "../../plugins/transformers/arena"
-import { resolveRelative, joinSegments, FullSlug } from "../../util/path"
-import style from "../styles/arena.scss"
-import { classNames } from "../../util/lang"
 import { toArenaHeadingInlineJsx, toArenaJsx, arenaBlockTimestamp } from "../../util/arena"
+import { classNames } from "../../util/lang"
+import { resolveRelative, joinSegments, FullSlug } from "../../util/path"
+import { createWikilinkRegex, parseWikilink, resolveWikilinkTarget } from "../../util/wikilinks"
 // @ts-ignore
 import script from "../scripts/arena.inline"
-import type { ComponentChild } from "preact"
-import { createWikilinkRegex, parseWikilink, resolveWikilinkTarget } from "../../util/wikilinks"
+import style from "../styles/arena.scss"
 
 export default (() => {
   const ArenaIndex: QuartzComponent = (componentData: QuartzComponentProps) => {

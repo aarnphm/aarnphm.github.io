@@ -1,7 +1,7 @@
+import { QuartzComponentConstructor, QuartzComponentProps } from "../types/component"
 import { LCG } from "../util/helpers"
 import { classNames } from "../util/lang"
 import { FilePath, resolveRelative, slugifyFilePath } from "../util/path"
-import { QuartzComponentConstructor, QuartzComponentProps } from "../types/component"
 
 export default (() =>
   ({ fileData, allFiles, displayClass }: QuartzComponentProps) => {

@@ -1,5 +1,5 @@
-import { annotate } from "rough-notation"
 import type { RoughAnnotation } from "rough-notation/lib/model"
+import { annotate } from "rough-notation"
 import { registerEscapeHandler } from "./util"
 
 let ag: RoughAnnotation | null = null

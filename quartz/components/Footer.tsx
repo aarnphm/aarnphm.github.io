@@ -1,13 +1,13 @@
+import { version, repository } from "../../package.json"
+import { i18n } from "../i18n"
 import {
   QuartzComponent,
   QuartzComponentConstructor,
   QuartzComponentProps,
 } from "../types/component"
-import style from "./styles/footer.scss"
-import { version, repository } from "../../package.json"
-import { i18n } from "../i18n"
 import { classNames } from "../util/lang"
 import { Date as DateComponent, getDate } from "./Date"
+import style from "./styles/footer.scss"
 
 type FooterLayout = "default" | "minimal" | "poetry" | "menu" | "curius" | "masonry"
 

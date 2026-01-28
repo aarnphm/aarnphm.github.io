@@ -1,10 +1,10 @@
-import { ComponentChild } from "preact"
 import type { ElementContent, Root as HastRoot } from "hast"
-import { toString as hastToString } from "hast-util-to-string"
-import { htmlToJsx } from "../../util/jsx"
 import { fromHtmlIsomorphic } from "hast-util-from-html-isomorphic"
-import type { FilePath } from "../../util/path"
+import { toString as hastToString } from "hast-util-to-string"
+import { ComponentChild } from "preact"
 import type { StreamEntry } from "../../plugins/transformers/stream"
+import type { FilePath } from "../../util/path"
+import { htmlToJsx } from "../../util/jsx"
 
 export interface StreamEntryRenderOptions {
   groupId: string

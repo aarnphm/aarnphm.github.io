@@ -1,17 +1,17 @@
+import Slugger from "github-slugger"
+import { fromHtmlIsomorphic } from "hast-util-from-html-isomorphic"
+import { i18n } from "../i18n"
 import {
   QuartzComponent,
   QuartzComponentConstructor,
   QuartzComponentProps,
 } from "../types/component"
-import modernStyle from "./styles/toc.scss"
+import { htmlToJsx } from "../util/jsx"
 import { classNames } from "../util/lang"
+import OverflowListFactory from "./OverflowList"
 // @ts-ignore
 import script from "./scripts/toc.inline"
-import { i18n } from "../i18n"
-import { fromHtmlIsomorphic } from "hast-util-from-html-isomorphic"
-import { htmlToJsx } from "../util/jsx"
-import Slugger from "github-slugger"
-import OverflowListFactory from "./OverflowList"
+import modernStyle from "./styles/toc.scss"
 
 const ghSlugger = new Slugger()
 

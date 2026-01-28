@@ -1,8 +1,8 @@
+import path from "path"
 import { QuartzConfig } from "../cfg"
 import { QuartzPluginData } from "../plugins/vfile"
 import { FileTrieNode } from "./fileTrie"
 import { FilePath, FullSlug, splitAnchor, stripSlashes } from "./path"
-import path from "path"
 
 export interface Argv {
   directory: string

@@ -1,13 +1,13 @@
+import { ArenaData, ArenaChannel } from "../plugins/transformers/arena"
 import {
   QuartzComponent,
   QuartzComponentConstructor,
   QuartzComponentProps,
 } from "../types/component"
-import { classNames } from "../util/lang"
-import { resolveRelative, FullSlug } from "../util/path"
-import { ArenaData, ArenaChannel } from "../plugins/transformers/arena"
 import { toArenaHeadingJsx } from "../util/arena"
+import { classNames } from "../util/lang"
 import { renderDescription } from "../util/og"
+import { resolveRelative, FullSlug } from "../util/path"
 
 export interface Options {
   enableDescription: boolean

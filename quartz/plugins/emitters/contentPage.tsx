@@ -1,5 +1,7 @@
-import { QuartzEmitterPlugin } from "../../types/plugin"
-import { QuartzComponentProps } from "../../types/component"
+import { Node } from "unist"
+import { defaultContentPageLayout, sharedPageComponents } from "../../../quartz.layout"
+import { FullPageLayout } from "../../cfg"
+import { HeadingsConstructor, Content } from "../../components"
 import HeaderConstructor from "../../components/Header"
 import {
   pageResources,
@@ -8,15 +10,13 @@ import {
   CuriusFriends,
   CuriusNavigation,
 } from "../../components/renderPage"
-import { FullPageLayout } from "../../cfg"
-import { pathToRoot } from "../../util/path"
-import { defaultContentPageLayout, sharedPageComponents } from "../../../quartz.layout"
-import { HeadingsConstructor, Content } from "../../components"
-import { write } from "./helpers"
+import { QuartzComponentProps } from "../../types/component"
+import { QuartzEmitterPlugin } from "../../types/plugin"
 import { BuildCtx } from "../../util/ctx"
-import { Node } from "unist"
+import { pathToRoot } from "../../util/path"
 import { StaticResources } from "../../util/resources"
 import { QuartzPluginData } from "../vfile"
+import { write } from "./helpers"
 
 async function processContent(
   ctx: BuildCtx,

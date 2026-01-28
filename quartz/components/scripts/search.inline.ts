@@ -1,6 +1,8 @@
 import FlexSearch, { DefaultDocumentSearchResults, DocumentData, Id } from "flexsearch"
-import { SemanticClient, type SemanticResult } from "./semantic.inline"
 import type { ContentDetails } from "../../plugins"
+import { escapeHTML } from "../../util/escape"
+import { FullSlug, normalizeRelativeURLs, resolveRelative } from "../../util/path"
+import { SemanticClient, type SemanticResult } from "./semantic.inline"
 import {
   registerEscapeHandler,
   removeAllChildren,
@@ -9,8 +11,6 @@ import {
   encode,
   fetchCanonical,
 } from "./util"
-import { FullSlug, normalizeRelativeURLs, resolveRelative } from "../../util/path"
-import { escapeHTML } from "../../util/escape"
 
 interface Item extends DocumentData {
   id: number

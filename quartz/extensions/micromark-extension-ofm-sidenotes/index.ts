@@ -1,9 +1,9 @@
-import type { Processor } from "unified"
-import type { Extension as MicromarkExtension } from "micromark-util-types"
 import type { Extension as MdastExtension } from "mdast-util-from-markdown"
+import type { Extension as MicromarkExtension } from "micromark-util-types"
+import type { Processor } from "unified"
+import { sidenoteFromMarkdown, type FromMarkdownOptions } from "./fromMarkdown"
 import { sidenote } from "./syntax"
 import { sidenoteDefinition } from "./syntaxDefinition"
-import { sidenoteFromMarkdown, type FromMarkdownOptions } from "./fromMarkdown"
 import { sidenoteToMarkdown } from "./toMarkdown"
 
 export { sidenote, sidenoteDefinition, sidenoteFromMarkdown, sidenoteToMarkdown }

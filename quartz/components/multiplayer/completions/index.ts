@@ -1,7 +1,7 @@
 import { CompletionSource } from "@codemirror/autocomplete"
-import { wikilinkCompletionSource } from "./wikilink"
 import { emojiCompletionSource } from "./emoji"
 import { mentionCompletionSource } from "./mention"
+import { wikilinkCompletionSource } from "./wikilink"
 
 export { fuzzyMatch, fuzzyMatchMultiple } from "./fuzzy"
 export { frecencyStore } from "./frecency"

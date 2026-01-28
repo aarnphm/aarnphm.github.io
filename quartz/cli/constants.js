@@ -1,5 +1,5 @@
-import path from "path"
 import { readFileSync } from "fs"
+import path from "path"
 
 /**
  * All constants relating to helpers or handlers

@@ -1,8 +1,8 @@
-import { getFullSlug } from "../../util/path"
-import { renderMarkdown } from "../../util/markdown-renderer"
-import { MarkdownEditor } from "../scripts/markdown-editor"
-import type { MultiplayerEvent, MultiplayerModel } from "./state"
 import type { MultiplayerComment, OperationInput } from "./model"
+import type { MultiplayerEvent, MultiplayerModel } from "./state"
+import { renderMarkdown } from "../../util/markdown-renderer"
+import { getFullSlug } from "../../util/path"
+import { MarkdownEditor } from "../scripts/markdown-editor"
 import {
   computeStructuralAnchor,
   getArticleText,

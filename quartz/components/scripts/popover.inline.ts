@@ -1,7 +1,7 @@
 import { computePosition, flip, inline, Placement, shift, Strategy } from "@floating-ui/dom"
-import { FullSlug, getFullSlug, normalizeRelativeURLs } from "../../util/path"
-import { getContentType } from "../../util/mime"
 import xmlFormat from "xml-formatter"
+import { getContentType } from "../../util/mime"
+import { FullSlug, getFullSlug, normalizeRelativeURLs } from "../../util/path"
 import { createSidePanel, fetchCanonical, getOrCreateSidePanel } from "./util"
 
 type ContentHandler = (
@@ -449,9 +449,7 @@ async function mouseEnterHandler(
 
   await populatePopoverContent(response, targetUrl, popoverInner)
 
-  if (!!document.getElementById(popoverId)) {
-    return
-  }
+  if (document.getElementById(popoverId)) return
 
   document.body.appendChild(popoverElement)
   if (activeAnchor !== link) {

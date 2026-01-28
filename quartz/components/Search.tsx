@@ -1,13 +1,13 @@
+import { i18n } from "../i18n"
 import {
   QuartzComponent,
   QuartzComponentConstructor,
   QuartzComponentProps,
 } from "../types/component"
-import style from "./styles/search.scss"
+import { classNames } from "../util/lang"
 // @ts-ignore
 import script from "./scripts/search.inline"
-import { classNames } from "../util/lang"
-import { i18n } from "../i18n"
+import style from "./styles/search.scss"
 
 export interface SearchOptions {
   enablePreview: boolean

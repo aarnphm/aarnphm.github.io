@@ -1,6 +1,6 @@
+import type { ChildProcessWithoutNullStreams } from "node:child_process"
 // orchestrates quartz dev rebuilds with wrangler dev resets when public/ is regenerated.
 import { spawn } from "node:child_process"
-import type { ChildProcessWithoutNullStreams } from "node:child_process"
 import { access, open, writeFile } from "node:fs/promises"
 import path from "node:path"
 import process from "node:process"

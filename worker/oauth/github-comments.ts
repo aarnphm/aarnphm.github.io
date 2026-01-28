@@ -1,6 +1,6 @@
 import type { OAuthHelpers } from "@cloudflare/workers-oauth-provider"
-import { Hono } from "hono"
 import { drizzle } from "drizzle-orm/d1"
+import { Hono } from "hono"
 import {
   getGithubCommentAuthor,
   normalizeAuthor,

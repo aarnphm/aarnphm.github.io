@@ -1,10 +1,7 @@
+import { Cite } from "@citation-js/core"
 import fs from "node:fs"
 import { QuartzEmitterPlugin } from "../../types/plugin"
 import { joinSegments, QUARTZ } from "../../util/path"
-import { extractArxivId } from "../transformers/links"
-import { Cite } from "@citation-js/core"
-import "@citation-js/plugin-bibtex"
-import "@citation-js/plugin-doi"
 import {
   arraysEqual,
   buildCachePayload,
@@ -16,6 +13,9 @@ import {
   pruneMetadata,
   sanitizeLinks,
 } from "../stores/citations"
+import "@citation-js/plugin-bibtex"
+import "@citation-js/plugin-doi"
+import { extractArxivId } from "../transformers/links"
 import { write } from "./helpers"
 
 interface Options {
@@ -195,7 +195,10 @@ export const Bibliography: QuartzEmitterPlugin<Partial<Options>> = (opts) => {
       await ensureBibEntries(activeIds, bibliography)
 
       if (cacheState.dirty) {
-        const cacheCtx = { ...ctx, argv: { ...ctx.argv, output: process.env.PWD ?? process.cwd() } }
+        const cacheCtx = {
+          ...ctx,
+          argv: { ...ctx.argv, output: process.env.PWD ?? process.cwd() },
+        }
         yield write({
           ctx: cacheCtx,
           slug: `${QUARTZ}/.quartz-cache/citations`,

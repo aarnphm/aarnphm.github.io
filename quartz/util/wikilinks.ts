@@ -1,5 +1,8 @@
 import isAbsoluteUrl from "is-absolute-url"
-
+import {
+  WikilinkData,
+  Wikilink,
+} from "../extensions/micromark-extension-ofm-wikilinks/fromMarkdown"
 import {
   FilePath,
   FullSlug,
@@ -9,10 +12,6 @@ import {
   splitAnchor,
   stripSlashes,
 } from "./path"
-import {
-  WikilinkData,
-  Wikilink,
-} from "../extensions/micromark-extension-ofm-wikilinks/fromMarkdown"
 
 export type { WikilinkData, Wikilink }
 
@@ -21,7 +20,7 @@ export type { WikilinkData, Wikilink }
 // ([^\[\]\|\#]+)     -> one or more non-special characters ([,],|, or #) (name)
 // (#[^\[\]\|\#]+)?   -> # then one or more non-special characters (heading link)
 // (\\?\|[^\[\]\#]+)? -> optional escape \ then | then zero or more non-special characters (alias)
-export const WIKILINK_PATTERN = /!?\[\[([^\[\]\|#\\]+)?(#+[^\[\]\|#\\]+)?(\\?\|[^\[\]#]*)?\]\]/
+export const WIKILINK_PATTERN = /!?\[\[([^[\]|#\\]+)?(#+[^[\]|#\\]+)?(\\?\|[^[\]#]*)?\]\]/
 
 /**
  * Create a fresh wikilink regex. Consumers should prefer using this helper instead of sharing

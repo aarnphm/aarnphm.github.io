@@ -3,10 +3,10 @@ import {
   QuartzComponentConstructor,
   QuartzComponentProps,
 } from "../types/component"
+import { classNames } from "../util/lang"
 // @ts-ignore
 import script from "./scripts/graph.inline"
 import style from "./styles/graph.scss"
-import { classNames } from "../util/lang"
 
 export interface D3Config {
   drag: boolean

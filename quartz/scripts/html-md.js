@@ -1,10 +1,10 @@
 import fs from "node:fs/promises"
 import path from "node:path"
-import { unified } from "unified"
 import rehypeParse from "rehype-parse"
 import rehypeRemark from "rehype-remark"
 import remarkGfm from "remark-gfm"
 import remarkStringify from "remark-stringify"
+import { unified } from "unified"
 
 async function htmlToMarkdown(htmlString) {
   // Build a pipeline that:

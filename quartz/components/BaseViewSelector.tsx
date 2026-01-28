@@ -3,11 +3,11 @@ import {
   QuartzComponentConstructor,
   QuartzComponentProps,
 } from "../types/component"
-import baseViewSelectorStyle from "./styles/baseViewSelector.scss"
-// @ts-ignore
-import script from "./scripts/base-view-selector.inline"
 import { classNames } from "../util/lang"
 import { resolveRelative } from "../util/path"
+// @ts-ignore
+import script from "./scripts/base-view-selector.inline"
+import baseViewSelectorStyle from "./styles/baseViewSelector.scss"
 
 // lucide icons as inline SVG
 const icons = {

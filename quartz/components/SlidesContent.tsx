@@ -1,13 +1,14 @@
+import { ElementContent, Root, Element } from "hast"
+import { h } from "hastscript"
+import { visit } from "unist-util-visit"
+import type { SlideSection } from "../plugins/transformers/slides"
 import {
   QuartzComponent,
   QuartzComponentConstructor,
   QuartzComponentProps,
 } from "../types/component"
-import { ElementContent, Root, Element } from "hast"
 import { clone } from "../util/clone"
 import { htmlToJsx } from "../util/jsx"
-import { h } from "hastscript"
-import { transcludeFinal } from "./renderPage"
 import {
   FullSlug,
   joinSegments,
@@ -16,11 +17,10 @@ import {
   isAbsoluteURL,
   resolveRelative,
 } from "../util/path"
-import type { SlideSection } from "../plugins/transformers/slides"
+import { transcludeFinal } from "./renderPage"
 // @ts-ignore
 import slideScript from "./scripts/slides.inline"
 import style from "./styles/slides.scss"
-import { visit } from "unist-util-visit"
 
 export default (() => {
   const SlidesContent: QuartzComponent = (componentData: QuartzComponentProps) => {

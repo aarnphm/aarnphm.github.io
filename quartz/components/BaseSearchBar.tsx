@@ -1,8 +1,8 @@
 import { QuartzComponentConstructor, QuartzComponentProps } from "../types/component"
-import style from "./styles/search.scss"
+import { classNames } from "../util/lang"
 // @ts-ignore
 import script from "./scripts/base-search.inline"
-import { classNames } from "../util/lang"
+import style from "./styles/search.scss"
 
 function BaseSearchBar({ displayClass, fileData }: QuartzComponentProps) {
   if (!fileData.bases) {

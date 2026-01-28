@@ -1,13 +1,13 @@
-import { FullSlug, pathToRoot, resolveRelative, slugTag } from "../util/path"
+import type { FrontmatterLink } from "../plugins/transformers/frontmatter"
+import { i18n } from "../i18n"
 import {
   QuartzComponent,
   QuartzComponentConstructor,
   QuartzComponentProps,
 } from "../types/component"
 import { classNames } from "../util/lang"
-import { i18n } from "../i18n"
+import { FullSlug, pathToRoot, resolveRelative, slugTag } from "../util/path"
 import { stripWikilinkFormatting } from "../util/wikilinks"
-import type { FrontmatterLink } from "../plugins/transformers/frontmatter"
 import style from "./styles/tags.scss"
 
 export default (() => {

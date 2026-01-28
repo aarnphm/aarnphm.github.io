@@ -1,6 +1,6 @@
-import { removeAllChildren } from "./util"
 import { Link, CuriusResponse } from "../../types/curius"
 import { createLinkEl } from "./curius"
+import { removeAllChildren } from "./util"
 
 declare global {
   interface Window {

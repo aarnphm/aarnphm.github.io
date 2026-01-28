@@ -6,9 +6,9 @@ import {
   toChildArray,
   type VNode,
 } from "preact"
-import style from "../styles/methodologyTree.scss"
 //@ts-ignore
 import script from "../scripts/methodology-tree.inline"
+import style from "../styles/methodologyTree.scss"
 import {
   registerMdxComponent,
   type QuartzMdxComponent,

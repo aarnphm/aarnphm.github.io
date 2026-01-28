@@ -1,7 +1,7 @@
 import { QuartzComponent, QuartzComponentConstructor } from "../types/component"
-import style from "./styles/reader.scss"
 // @ts-ignore
 import readerScript from "./scripts/reader.inline"
+import style from "./styles/reader.scss"
 
 export default (() => {
   const Reader: QuartzComponent = () => <></>

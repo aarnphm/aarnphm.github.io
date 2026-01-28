@@ -3,10 +3,10 @@ import {
   QuartzComponentConstructor,
   QuartzComponentProps,
 } from "../types/component"
-import style from "./styles/image.scss"
+import { classNames } from "../util/lang"
 // @ts-ignore
 import script from "./scripts/image.inline"
-import { classNames } from "../util/lang"
+import style from "./styles/image.scss"
 
 export default (() => {
   const Image: QuartzComponent = ({ displayClass }: QuartzComponentProps) => {

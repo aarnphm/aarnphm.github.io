@@ -3,10 +3,10 @@ import {
   QuartzComponentConstructor,
   QuartzComponentProps,
 } from "../types/component"
+import { classNames } from "../util/lang"
 // @ts-ignore
 import script from "./scripts/palette.inline"
 import style from "./styles/palette.scss"
-import { classNames } from "../util/lang"
 
 export default (() => {
   const placeholder = "sélectionnez une option..."

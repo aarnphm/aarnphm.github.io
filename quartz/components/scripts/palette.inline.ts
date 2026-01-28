@@ -1,4 +1,5 @@
 import { FilePath, FullSlug, normalizeRelativeURLs, resolveRelative } from "../../util/path"
+import { populateSearchIndex, querySearchIndex, SearchItem } from "./search-index"
 import {
   highlight,
   registerEscapeHandler,
@@ -7,7 +8,6 @@ import {
   createSidePanel,
   getOrCreateSidePanel,
 } from "./util"
-import { populateSearchIndex, querySearchIndex, SearchItem } from "./search-index"
 
 interface Item extends SearchItem {
   target: string

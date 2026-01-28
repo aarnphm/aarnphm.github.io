@@ -1,7 +1,7 @@
 import { CompletionContext, CompletionResult } from "@codemirror/autocomplete"
+import type { FuzzyMatch } from "./types"
 import { getEmojiEntries, type EmojiEntry } from "../../../util/emoji"
 import { fuzzyMatch } from "./fuzzy"
-import type { FuzzyMatch } from "./types"
 
 interface ScoredEmoji {
   entry: EmojiEntry

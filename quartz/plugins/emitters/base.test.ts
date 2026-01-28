@@ -1,5 +1,5 @@
-import test, { describe } from "node:test"
 import assert from "node:assert"
+import test, { describe } from "node:test"
 import { FilePath, slugifyFilePath, joinSegments, FullSlug } from "../../util/path"
 
 describe("base emitter slug generation", () => {

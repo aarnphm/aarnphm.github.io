@@ -3,14 +3,14 @@
  * verifies tokenization and mdast node creation.
  */
 
-import test, { describe } from "node:test"
-import assert from "node:assert"
+import type { Root } from "mdast"
 import { fromMarkdown } from "mdast-util-from-markdown"
 import { toMarkdown } from "mdast-util-to-markdown"
-import { wikilink } from "./syntax"
+import assert from "node:assert"
+import test, { describe } from "node:test"
 import { wikilinkFromMarkdown, Wikilink, isWikilink } from "./fromMarkdown"
+import { wikilink } from "./syntax"
 import { wikilinkToMarkdown } from "./toMarkdown"
-import type { Root } from "mdast"
 
 /**
  * helper to parse markdown with wikilink extension.

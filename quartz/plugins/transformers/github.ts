@@ -1,17 +1,16 @@
+import { Root as HtmlRoot, Element, Text } from "hast"
+import { Root, Link, PhrasingContent } from "mdast"
+import { RegExpMatchObject, findAndReplace as mdastFindReplace } from "mdast-util-find-and-replace"
+import { toString } from "mdast-util-to-string"
 // modified version of https://github.com/remarkjs/remark-github/blob/main/index.js
 // main change: Update mentionRegex to work with rehype-citation
 import fs from "node:fs"
 import path from "node:path"
-
+import rehypeGithubEmoji from "rehype-github-emoji"
 import { BuildUrlValues, defaultBuildUrl } from "remark-github"
 import { RepositoryInfo, UrlInfo } from "remark-github/lib"
-import { Root, Link, PhrasingContent } from "mdast"
-import { Root as HtmlRoot, Element, Text } from "hast"
-import { RegExpMatchObject, findAndReplace as mdastFindReplace } from "mdast-util-find-and-replace"
-import { toString } from "mdast-util-to-string"
-import { QuartzTransformerPlugin } from "../../types/plugin"
 import { visit } from "unist-util-visit"
-import rehypeGithubEmoji from "rehype-github-emoji"
+import { QuartzTransformerPlugin } from "../../types/plugin"
 
 // Previously, GitHub linked `@mention` and `@mentions` to their blog post about
 // mentions (<https://github.com/blog/821>).
@@ -458,7 +457,7 @@ export const GitHub: QuartzTransformerPlugin<Partial<Options>> = (userOpts) => {
           return function (tree) {
             visit(tree, { tagName: "a" }, (node: Element) => {
               const githubMatch = ((node.properties.href! as string) ?? "").match(
-                /^https:\/\/github\.com\/([^\/]+)\/([^\/\s#]+)/,
+                /^https:\/\/github\.com\/([^/]+)\/([^/\s#]+)/,
               )
               if (githubMatch && toString(node) === node.properties.href!) {
                 visit(node, "text", function (el: Text) {

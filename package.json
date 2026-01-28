@@ -1,16 +1,27 @@
 {
   "name": "@aarnphm/aarnphm.github.io",
-  "description": "🌱 heavily modified version of Quartz for Aaron's notes",
-  "private": true,
   "version": "4.5.2",
-  "type": "module",
-  "author": "Aaron Pham <contact@aarnphm.xyz>",
-  "license": "MIT",
+  "private": true,
+  "description": "🌱 heavily modified version of Quartz for Aaron's notes",
+  "keywords": [
+    "blog",
+    "digital-garden",
+    "markdown",
+    "quartz",
+    "site generator",
+    "ssg"
+  ],
   "homepage": "https://aarnphm.xyz",
+  "license": "MIT",
+  "author": "Aaron Pham <contact@aarnphm.xyz>",
   "repository": {
     "type": "git",
     "url": "https://github.com/aarnphm/aarnphm.github.io.git"
   },
+  "bin": {
+    "quartz": "./quartz/bootstrap-cli.mjs"
+  },
+  "type": "module",
   "scripts": {
     "bundle": "pnpm exec quartz/bootstrap-cli.mjs build --concurrency 10 --bundleInfo --verbose",
     "bundle:dev": "CF_PAGES=1 NODE_ENV=development pnpm bundle",
@@ -23,28 +34,6 @@
     "check": "oxfmt --check && oxlint && tsc --noEmit && tsx --test",
     "format": "pnpx bibtex-tidy content/References.bib --months --merge=combine --no-align --sort=type,year,eprint --duplicates=key,doi,citation --no-escape --sort-fields=title,shorttitle,author,year,month,day,journal,booktitle,eprint,archivePrefix,primaryClass,location,on,publisher,address,series,volume,number,pages,doi,isbn,issn,url,urldate,copyright,category,note,metadata --strip-comments --no-remove-dupe-fields --blank-lines --modify && oxfmt && oxlint --fix",
     "profile": "0x -D prof quartz/bootstrap-cli.mjs build --concurrency=1"
-  },
-  "engines": {
-    "npm": ">=9.3.1",
-    "node": ">=22"
-  },
-  "pnpm": {
-    "peerDependencyRules": {
-      "allowedVersions": {
-        "react": "18.3.1"
-      }
-    }
-  },
-  "keywords": [
-    "site generator",
-    "ssg",
-    "digital-garden",
-    "markdown",
-    "blog",
-    "quartz"
-  ],
-  "bin": {
-    "quartz": "./quartz/bootstrap-cli.mjs"
   },
   "dependencies": {
     "@citation-js/core": "^0.7.21",
@@ -201,5 +190,16 @@
     "tsx": "^4.21.0",
     "typescript": "^5.9.3",
     "wrangler": "^4.61.0"
+  },
+  "engines": {
+    "node": ">=22",
+    "npm": ">=9.3.1"
+  },
+  "pnpm": {
+    "peerDependencyRules": {
+      "allowedVersions": {
+        "react": "18.3.1"
+      }
+    }
   }
 }

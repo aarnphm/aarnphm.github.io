@@ -3,14 +3,14 @@
  * verifies full unified pipeline including mdast-to-hast conversion.
  */
 
-import test, { describe } from "node:test"
+import type { Root } from "mdast"
 import assert from "node:assert"
-import { unified } from "unified"
+import test, { describe } from "node:test"
+import rehypeStringify from "rehype-stringify"
 import remarkParse from "remark-parse"
 import remarkRehype from "remark-rehype"
-import rehypeStringify from "rehype-stringify"
+import { unified } from "unified"
 import { remarkWikilink } from "./index"
-import type { Root } from "mdast"
 
 /**
  * helper to process markdown through full pipeline.

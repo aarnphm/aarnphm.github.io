@@ -1,9 +1,9 @@
-import { env, AutoModel, AutoTokenizer } from "@huggingface/transformers"
+import { PGlite } from "@electric-sql/pglite"
 import "onnxruntime-web/webgpu"
 import "onnxruntime-web/wasm"
-import { PGlite } from "@electric-sql/pglite"
 //@ts-ignore
 import { vector as vectorExtension } from "@electric-sql/pglite/vector"
+import { env, AutoModel, AutoTokenizer } from "@huggingface/transformers"
 import { init, defaultDevice, numpy as np } from "@jax-js/jax"
 import { dependencies } from "../../package.json"
 

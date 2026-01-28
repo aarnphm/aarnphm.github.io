@@ -1,5 +1,5 @@
-import test, { describe, beforeEach } from "node:test"
 import assert from "node:assert"
+import test, { describe, beforeEach } from "node:test"
 import { FileTrieNode } from "./fileTrie"
 import { FullSlug } from "./path"
 

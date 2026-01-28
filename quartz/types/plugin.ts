@@ -1,10 +1,10 @@
 import { PluggableList } from "unified"
-import { StaticResources } from "../util/resources"
-import { ProcessedContent } from "../plugins/vfile"
-import { QuartzComponent } from "./component"
-import { FilePath } from "../util/path"
-import { BuildCtx } from "../util/ctx"
 import { VFile } from "vfile"
+import { ProcessedContent } from "../plugins/vfile"
+import { BuildCtx } from "../util/ctx"
+import { FilePath } from "../util/path"
+import { StaticResources } from "../util/resources"
+import { QuartzComponent } from "./component"
 
 export interface PluginTypes {
   transformers: QuartzTransformerPluginInstance[]

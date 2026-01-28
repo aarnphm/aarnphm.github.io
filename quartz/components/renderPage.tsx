@@ -1,21 +1,25 @@
+import crypto from "crypto"
+import { Root, RootContent, Element, ElementContent, Node, Text } from "hast"
+import { headingRank } from "hast-util-heading-rank"
+import { toHtml } from "hast-util-to-html"
+import { h, s } from "hastscript"
+import { JSX } from "preact"
 import { render } from "preact-render-to-string"
+import { EXIT, visit } from "unist-util-visit"
+import type { TranscludeOptions } from "../plugins/transformers/frontmatter"
+import { i18n } from "../i18n"
+import { checkBib, checkBibSection } from "../plugins/transformers/citations"
+import { checkFootnoteRef, checkFootnoteSection } from "../plugins/transformers/gfm"
+import { QuartzPluginData } from "../plugins/vfile"
 import {
   QuartzComponent,
   QuartzComponentConstructor,
   QuartzComponentProps,
 } from "../types/component"
-import HeaderConstructor from "./Header"
-import ContentConstructor from "./pages/Content"
-import FooterConstructor from "./Footer"
-import Search from "./Search"
-import Graph from "./Graph"
-import Palette from "./Palette"
-import Image from "./Image"
-import HeadingsConstructor from "./Headings"
-import { byDateAndAlphabetical } from "./PageList"
-import { getDate, Date as DateComponent } from "./Date"
+import { clone } from "../util/clone"
+import { BuildCtx } from "../util/ctx"
+import { htmlToJsx } from "../util/jsx"
 import { classNames } from "../util/lang"
-import { JSResourceToScriptElement, StaticResources } from "../util/resources"
 import {
   FullSlug,
   SimpleSlug,
@@ -24,37 +28,33 @@ import {
   normalizeHastElement,
   resolveRelative,
 } from "../util/path"
-import { clone } from "../util/clone"
-import { svgOptions, QuartzIcon } from "./svg"
-import { EXIT, visit } from "unist-util-visit"
-import { Root, RootContent, Element, ElementContent, Node, Text } from "hast"
-import { i18n } from "../i18n"
-import { JSX } from "preact"
-import { headingRank } from "hast-util-heading-rank"
-import type { TranscludeOptions } from "../plugins/transformers/frontmatter"
-import { QuartzPluginData } from "../plugins/vfile"
-import { h, s } from "hastscript"
+import { JSResourceToScriptElement, StaticResources } from "../util/resources"
+import CodeCopy from "./CodeCopy"
+import Darkmode from "./Darkmode"
+import { getDate, Date as DateComponent } from "./Date"
+import FooterConstructor from "./Footer"
+import Graph from "./Graph"
+import HeaderConstructor from "./Header"
+import HeadingsConstructor from "./Headings"
+import Image from "./Image"
+import Keybind from "./Keybind"
+import { byDateAndAlphabetical } from "./PageList"
+import ContentConstructor from "./pages/Content"
+import Content from "./pages/Content"
+import Palette from "./Palette"
 // @ts-ignore
 import collapseHeaderScript from "./scripts/collapse-header.inline"
-import collapseHeaderStyle from "./styles/collapseHeader.inline.scss"
-//@ts-ignore
-import transcludeScript from "./scripts/transclude.inline.ts"
-//@ts-ignore
-import curiusScript from "./scripts/curius.inline"
 //@ts-ignore
 import curiusFriendScript from "./scripts/curius-friends.inline"
 //@ts-ignore
 import curiusNavigationScript from "./scripts/curius-navigation.inline"
-import { htmlToJsx } from "../util/jsx"
-import Content from "./pages/Content"
-import { BuildCtx } from "../util/ctx"
-import { checkBib, checkBibSection } from "../plugins/transformers/citations"
-import { checkFootnoteRef, checkFootnoteSection } from "../plugins/transformers/gfm"
-import Keybind from "./Keybind"
-import CodeCopy from "./CodeCopy"
-import Darkmode from "./Darkmode"
-import { toHtml } from "hast-util-to-html"
-import crypto from "crypto"
+//@ts-ignore
+import curiusScript from "./scripts/curius.inline"
+//@ts-ignore
+import transcludeScript from "./scripts/transclude.inline.ts"
+import Search from "./Search"
+import collapseHeaderStyle from "./styles/collapseHeader.inline.scss"
+import { svgOptions, QuartzIcon } from "./svg"
 
 interface EncryptedPayload {
   ciphertext: string

@@ -1,8 +1,8 @@
 import { execSync } from "child_process"
 import { promises as fs } from "fs"
-import path from "path"
 import { globby } from "globby"
 import { styleText } from "node:util"
+import path from "path"
 
 async function convertMedia(contentDir: string) {
   try {

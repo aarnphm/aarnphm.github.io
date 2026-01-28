@@ -1,17 +1,17 @@
 import { promises as fs } from "fs"
-import { FontWeight, SatoriOptions } from "satori/wasm"
-import { GlobalConfiguration } from "../cfg"
-import { QuartzPluginData } from "../plugins/vfile"
-import { JSX } from "preact"
-import { FontSpecification, getFontSpecificationName, ThemeKey } from "./theme"
 import path from "path"
-import { QUARTZ, joinSegments } from "./path"
-import { formatDate, getDate } from "../components/Date"
+import { JSX } from "preact"
 import readingTime from "reading-time"
-import { i18n } from "../i18n"
+import { FontWeight, SatoriOptions } from "satori/wasm"
 import { styleText } from "util"
-import { parseWikilink, resolveWikilinkTarget } from "../util/wikilinks"
+import { GlobalConfiguration } from "../cfg"
+import { formatDate, getDate } from "../components/Date"
+import { i18n } from "../i18n"
+import { QuartzPluginData } from "../plugins/vfile"
 import { FullSlug } from "../util/path"
+import { parseWikilink, resolveWikilinkTarget } from "../util/wikilinks"
+import { QUARTZ, joinSegments } from "./path"
+import { FontSpecification, getFontSpecificationName, ThemeKey } from "./theme"
 
 const defaultHeaderWeight = [700]
 const defaultBodyWeight = [400]
@@ -183,9 +183,7 @@ export async function fetchTtf(
   try {
     await fs.access(cachePath)
     return fs.readFile(cachePath)
-  } catch (error) {
-    // ignore errors and fetch font
-  }
+  } catch {}
 
   // Get css file from google fonts
   const cssResponse = await fetch(

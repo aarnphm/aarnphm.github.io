@@ -1,7 +1,9 @@
 import type { Element, ElementContent, Root } from "hast"
-import { htmlToJsx } from "./jsx"
+import type { ArenaBlock } from "../plugins/transformers/arena"
 import type { QuartzComponentProps } from "../types/component"
 import type { FilePath } from "./path"
+import { transcludeFinal } from "../components/renderPage"
+import { htmlToJsx } from "./jsx"
 import {
   FullSlug,
   joinSegments,
@@ -10,8 +12,6 @@ import {
   resolveRelative,
   simplifySlug,
 } from "./path"
-import { transcludeFinal } from "../components/renderPage"
-import type { ArenaBlock } from "../plugins/transformers/arena"
 
 const cloneContent = <T extends ElementContent>(node: T): T =>
   typeof structuredClone === "function"

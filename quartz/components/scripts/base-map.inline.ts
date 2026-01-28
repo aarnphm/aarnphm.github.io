@@ -1,5 +1,5 @@
-import { loadMapbox, applyMonochromeMapPalette } from "./mapbox-client"
 import { resolveRelative, FullSlug } from "../../util/path"
+import { loadMapbox, applyMonochromeMapPalette } from "./mapbox-client"
 
 interface MarkerData {
   lat: number

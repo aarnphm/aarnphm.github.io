@@ -1,5 +1,5 @@
-import { slug as slugAnchor } from "github-slugger"
 import type { Element as HastElement } from "hast"
+import { slug as slugAnchor } from "github-slugger"
 import { clone } from "./clone"
 
 // this file must be isomorphic so it can't use node libs (e.g. path)

@@ -1,8 +1,8 @@
+import type { PhrasingContent, Paragraph } from "mdast"
 import type { Extension as MdastExtension, CompileContext, Token } from "mdast-util-from-markdown"
 import type { Extension as MicromarkExtension } from "micromark-util-types"
-import type { Sidenote, SidenoteReference, SidenoteDefinition } from "./types"
 import { fromMarkdown } from "mdast-util-from-markdown"
-import type { PhrasingContent, Paragraph } from "mdast"
+import type { Sidenote, SidenoteReference, SidenoteDefinition } from "./types"
 
 export interface FromMarkdownOptions {
   micromarkExtensions?: MicromarkExtension[]
@@ -124,7 +124,7 @@ export function sidenoteFromMarkdown(options: FromMarkdownOptions = {}): MdastEx
         }
 
         node.data.sidenoteParsed.labelNodes = nodes
-      } catch (e) {
+      } catch {
         node.data.sidenoteParsed.labelNodes = [{ type: "text", value: labelRaw }]
       }
     }
@@ -166,7 +166,7 @@ export function sidenoteFromMarkdown(options: FromMarkdownOptions = {}): MdastEx
         }
 
         node.children = children
-      } catch (e) {
+      } catch {
         node.children = [{ type: "text", value: contentRaw }]
       }
     }
@@ -255,7 +255,7 @@ function parseLabelNodes(
       }
     }
     node.labelNodes = nodes
-  } catch (e) {
+  } catch {
     node.labelNodes = [{ type: "text", value: labelRaw }]
   }
 }

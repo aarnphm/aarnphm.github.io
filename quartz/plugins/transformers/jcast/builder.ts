@@ -1,3 +1,4 @@
+import { parseJsonCanvas, serializeJcast } from "./parser"
 import {
   JcastCanvas,
   JsonCanvas,
@@ -9,7 +10,6 @@ import {
   GroupNodeOptions,
   EdgeBuilderOptions,
 } from "./types"
-import { parseJsonCanvas, serializeJcast } from "./parser"
 
 /**
  * Fluent builder for programmatically creating JSON Canvas files

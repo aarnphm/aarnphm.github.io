@@ -1,6 +1,6 @@
+import type { ArenaEffect, ArenaModel } from "../arena/model"
 import { Cmd, none, start } from "../../functional"
 import { mountArena, runArenaEffect, reduce } from "../arena"
-import type { ArenaEffect, ArenaModel } from "../arena/model"
 
 document.addEventListener("nav", () => {
   const program = start({

@@ -1,16 +1,16 @@
-import { Date as DateComponent, getDate } from "./Date"
+import { JSX, h } from "preact"
+import { i18n } from "../i18n"
 import {
   QuartzComponent,
   QuartzComponentConstructor,
   QuartzComponentProps,
 } from "../types/component"
+import { classNames } from "../util/lang"
+import { FullSlug, resolveRelative } from "../util/path"
+import { Date as DateComponent, getDate } from "./Date"
 //@ts-ignore
 import script from "./scripts/content-meta.inline"
 import style from "./styles/contentMeta.scss"
-import { classNames } from "../util/lang"
-import { FullSlug, resolveRelative } from "../util/path"
-import { i18n } from "../i18n"
-import { JSX, h } from "preact"
 import { svgOptions } from "./svg"
 
 type MetaProp = {

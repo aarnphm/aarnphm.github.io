@@ -1,18 +1,18 @@
+import { OAuthProvider } from "@cloudflare/workers-oauth-provider"
 import LFS_CONFIG from "./.lfsconfig.txt"
 import handleArxiv from "./arxiv"
-import handleCurius from "./curius"
-import { handleMentions } from "./mentions"
-import Garden from "./mcp"
-import { CommentsGitHubHandler, GitHubHandler } from "./oauth"
-import { OAuthProvider } from "@cloudflare/workers-oauth-provider"
-import { handleStackedNotesRequest } from "./stacked"
 import {
   getGithubCommentAuthor,
   normalizeAuthor,
   setGithubCommentAuthor,
   MultiplayerComments,
 } from "./comments"
+import handleCurius from "./curius"
+import Garden from "./mcp"
+import { handleMentions } from "./mentions"
+import { CommentsGitHubHandler, GitHubHandler } from "./oauth"
 import { isLocalRequest, resolveBaseUrl } from "./request-utils"
+import { handleStackedNotesRequest } from "./stacked"
 
 const VERSION = "version https://git-lfs.github.com/spec/v1\n"
 const MIME = "application/vnd.git-lfs+json"

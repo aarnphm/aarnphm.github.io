@@ -1,9 +1,9 @@
-import { write } from "./helpers"
-import { QuartzEmitterPlugin } from "../../types/plugin"
-import { FullSlug, joinSegments, QUARTZ } from "../../util/path"
-import { GlobalConfiguration } from "../../cfg"
 import { spawn } from "child_process"
 import { styleText } from "node:util"
+import { GlobalConfiguration } from "../../cfg"
+import { QuartzEmitterPlugin } from "../../types/plugin"
+import { FullSlug, joinSegments, QUARTZ } from "../../util/path"
+import { write } from "./helpers"
 
 const DEFAULT_MODEL_ID = "onnx-community/Qwen3-Embedding-0.6B-ONNX"
 

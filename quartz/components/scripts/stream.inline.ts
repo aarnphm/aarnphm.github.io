@@ -57,8 +57,6 @@ function hydrateStreamInteractions() {
   const originalHash = originalUrl.hash
 
   let activeTimestamp: string | null = null
-  //@ts-ignore
-  let lastAppliedPath = window.location.pathname
 
   const applyHistory = (targetPath: string | null) => {
     const url = new URL(window.location.href)
@@ -66,7 +64,6 @@ function hydrateStreamInteractions() {
     url.search = originalSearch
     url.hash = originalHash
     window.history.replaceState(window.history.state, "", url)
-    lastAppliedPath = url.pathname
   }
 
   const updateEntries = (
@@ -105,10 +102,7 @@ function hydrateStreamInteractions() {
       }
     })
 
-    if (!updateHistory) {
-      lastAppliedPath = window.location.pathname
-      return
-    }
+    if (!updateHistory) return
 
     if (targetTimestamp) {
       const targetPath = timestampHrefMap.get(targetTimestamp)

@@ -1,6 +1,6 @@
+import { globby } from "globby"
 import path from "path"
 import { FilePath } from "./path"
-import { globby } from "globby"
 
 export function toPosixPath(fp: string): string {
   return fp.split(path.sep).join("/")

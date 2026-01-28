@@ -1,9 +1,9 @@
-import { FullSlug, isRelativeURL, resolveRelative, simplifySlug } from "../../util/path"
-import { QuartzEmitterPlugin } from "../../types/plugin"
-import { write } from "./helpers"
-import { BuildCtx } from "../../util/ctx"
-import { VFile } from "vfile"
 import path from "path"
+import { VFile } from "vfile"
+import { QuartzEmitterPlugin } from "../../types/plugin"
+import { BuildCtx } from "../../util/ctx"
+import { FullSlug, isRelativeURL, resolveRelative, simplifySlug } from "../../util/path"
+import { write } from "./helpers"
 
 async function* processFile(ctx: BuildCtx, file: VFile) {
   const ogSlug = simplifySlug(file.data.slug!)
