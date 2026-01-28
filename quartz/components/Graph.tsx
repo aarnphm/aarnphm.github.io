@@ -20,6 +20,7 @@ export interface D3Config {
   opacityScale: number
   removeTags: string[]
   showTags: boolean
+  label: "hover" | "default" | "off"
   focusOnHover?: boolean
   enableRadial?: boolean
 }
@@ -29,6 +30,7 @@ export const defaultOptions: Partial<D3Config> | undefined = {
   zoom: true,
   depth: -1,
   scale: 1,
+  label: "hover",
   repelForce: 0.5,
   centerForce: 0.3,
   linkDistance: 30,

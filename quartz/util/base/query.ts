@@ -676,8 +676,14 @@ function parseValueExpression(expr: string, file: QuartzPluginData): any {
 
 function parseFunction(name: string, args: string[]): FilePredicate {
   const registry: Record<string, (...args: string[]) => FilePredicate> = {
-    icon: (...params: string[]) => () => params.length > 0,
-    image: (...params: string[]) => () => params.length > 0,
+    icon:
+      (...params: string[]) =>
+      () =>
+        params.length > 0,
+    image:
+      (...params: string[]) =>
+      () =>
+        params.length > 0,
     file: (target?: string) => (_file, allFiles) => {
       const normalized = normalizeLinkTarget(target)
       return Boolean(findFileByNormalizedSlug(normalized, allFiles))

@@ -17,6 +17,7 @@
     ],
     "newlinesBetween": false
   },
+  "objectWrap": "collapse",
   "experimentalSortPackageJson": true,
   "ignorePatterns": [
     "public",
