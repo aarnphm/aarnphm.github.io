@@ -373,6 +373,11 @@ const tokenize: Tokenizer = function (this, effects, ok, nok) {
       return metadataStart
     }
 
+    if (code === codes.numberSign) {
+      effects.consume(code)
+      return anchorOrMetadataDecide
+    }
+
     // otherwise, it's a subheading - continue anchor parsing
     effects.enter("wikilinkAnchor")
     effects.enter("wikilinkAnchorChunk", { contentType: "string" })

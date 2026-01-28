@@ -16,6 +16,7 @@ import {
   QuartzComponentConstructor,
   QuartzComponentProps,
 } from "../types/component"
+import { renderBaseViewsForFile } from "../util/base/render"
 import { clone } from "../util/clone"
 import { BuildCtx } from "../util/ctx"
 import { htmlToJsx } from "../util/jsx"
@@ -29,7 +30,6 @@ import {
   resolveRelative,
 } from "../util/path"
 import { JSResourceToScriptElement, StaticResources } from "../util/resources"
-import { renderBaseViewsForFile } from "../util/base/render"
 import CodeCopy from "./CodeCopy"
 import Darkmode from "./Darkmode"
 import { getDate, Date as DateComponent } from "./Date"

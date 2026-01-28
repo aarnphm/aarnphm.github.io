@@ -2,7 +2,8 @@ import assert from "node:assert"
 import test from "node:test"
 import { ContentLayout } from "../../../plugins/emitters/contentIndex"
 import { FilePath, FullSlug, SimpleSlug } from "../../path"
-import { evaluateExpression, valueToUnknown, EvalContext } from "./evaluator"
+import { evaluateExpression, valueToUnknown, EvalContext } from "./interpreter"
+import { compileExpression } from "./ir"
 import { parseExpressionSource } from "./parser"
 
 const parseExpr = (source: string) => {
@@ -10,7 +11,7 @@ const parseExpr = (source: string) => {
   if (!result.program.body) {
     throw new Error(`expected expression for ${source}`)
   }
-  return result.program.body
+  return compileExpression(result.program.body)
 }
 
 const makeCtx = (): EvalContext => {
@@ -65,5 +66,7 @@ test("list summary helpers compute statistics", () => {
   assert.strictEqual(valueToUnknown(evaluateExpression(sumExpr, ctx)), 6)
   const stddev = valueToUnknown(evaluateExpression(stddevExpr, ctx))
   assert.strictEqual(typeof stddev, "number")
-  assert.ok(Math.abs(stddev - Math.sqrt(2 / 3)) < 1e-6)
+  if (typeof stddev === "number") {
+    assert.ok(Math.abs(stddev - Math.sqrt(2 / 3)) < 1e-6)
+  }
 })

@@ -2,8 +2,8 @@ import { QuartzPluginData } from "../../../plugins/vfile"
 import { FilePath, FullSlug, simplifySlug, slugifyFilePath, splitAnchor } from "../../path"
 import { parseWikilink, resolveWikilinkTarget } from "../../wikilinks"
 import { BinaryExpr, Literal, Span } from "./ast"
-import { ProgramIR, Instruction } from "./ir"
 import { BaseExpressionDiagnostic } from "./diagnostics"
+import { ProgramIR, Instruction } from "./ir"
 
 export type NullValue = { kind: "null" }
 export type BooleanValue = { kind: "boolean"; value: boolean }
@@ -881,12 +881,7 @@ const accessIndex = (objectValue: Value, indexValue: Value): Value => {
   return makeNull()
 }
 
-const evalGlobalCallValues = (
-  name: string,
-  args: Value[],
-  ctx: EvalContext,
-  span: Span,
-): Value => {
+const evalGlobalCallValues = (name: string, args: Value[], ctx: EvalContext, span: Span): Value => {
   if (name === "if") {
     if (args.length < 2) {
       pushRuntimeDiagnostic(ctx, "if() expects at least 2 arguments", span)
@@ -1317,11 +1312,7 @@ const evalListMethod = (
   return makeNull()
 }
 
-const applyListFilter = (
-  receiver: Value,
-  program: ProgramIR | null,
-  ctx: EvalContext,
-): Value => {
+const applyListFilter = (receiver: Value, program: ProgramIR | null, ctx: EvalContext): Value => {
   if (!isListValue(receiver)) return makeNull()
   if (!program) return makeList(receiver.value)
   const list = receiver.value

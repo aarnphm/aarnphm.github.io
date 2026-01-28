@@ -33,7 +33,11 @@ async function* emitBaseViewsForFile(
       title: `${fileData.frontmatter?.title || baseSlug} - ${renderedView.view.name}`,
       pageLayout: fileData.frontmatter!.pageLayout || "default",
     }
-    fileData.basesMetadata = { baseSlug, currentView: renderedView.view.name, allViews: rendered.allViews }
+    fileData.basesMetadata = {
+      baseSlug,
+      currentView: renderedView.view.name,
+      allViews: rendered.allViews,
+    }
 
     const cfg = ctx.cfg.configuration
     const externalResources = pageResources(pathToRoot(slug), resources, ctx)
