@@ -1025,6 +1025,19 @@ describe("micromark wikilink extension", () => {
         assert.strictEqual(innerLink?.properties?.class, "transclude-inner")
       })
 
+      test("annotates base view transclude", () => {
+        const tree = parse("![[data.base#editors]]", { obsidian: true })
+        const wikilink = extractWikilink(tree)
+
+        assert(wikilink, "wikilink node should exist")
+        assert.strictEqual(wikilink.data?.hName, "blockquote")
+        assert.strictEqual(wikilink.data?.hProperties?.class, "transclude")
+        assert.strictEqual(wikilink.data?.hProperties?.["data-url"], "data/editors")
+        assert.strictEqual(wikilink.data?.hProperties?.["data-block"], "")
+        const innerLink = wikilink.data?.hChildren?.[0] as any
+        assert.strictEqual(innerLink?.properties?.href, "data/editors")
+      })
+
       test("annotates transclude with block reference", () => {
         const tree = parse("![[notes#^block-id]]", { obsidian: true })
         const wikilink = extractWikilink(tree)
@@ -1112,6 +1125,16 @@ describe("micromark wikilink extension", () => {
       assert(wikilink, "wikilink node should exist")
       assert.strictEqual(wikilink.data?.hName, "a")
       assert.strictEqual(wikilink.data?.hProperties?.href, "data")
+    })
+
+    test("maps base view anchors to view slugs", () => {
+      const tree = parse("[[data.base#editors]]", { obsidian: true })
+      const wikilink = extractWikilink(tree)
+
+      assert(wikilink, "wikilink node should exist")
+      assert.strictEqual(wikilink.data?.hName, "a")
+      assert.strictEqual(wikilink.data?.hProperties?.href, "data/editors")
+      assert.deepStrictEqual(wikilink.data?.hChildren, [{ type: "text", value: "editors" }])
     })
 
     test("strips custom extensions", () => {

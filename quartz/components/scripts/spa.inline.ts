@@ -499,7 +499,7 @@ class StackedNoteManager {
         if (date) {
           const dateContent = document.createElement("div")
           dateContent.classList.add("published")
-          dateContent.innerHTML = `<span lang="fr" class="metadata" dir="auto">dernière modification par <time datetime=${date.toISOString()}>${formatDate(date)}</time> (${el.readingTime?.minutes!} min de lecture)</span>`
+          dateContent.innerHTML = `<span lang="fr" class="metadata" dir="auto">dernière modification par <time datetime=${date.toISOString()}>${formatDate(date)}</time> (${el.readingTime ? el.readingTime.minutes! : 0} min de lecture)</span>`
           noteContent.append(dateContent)
         }
       }

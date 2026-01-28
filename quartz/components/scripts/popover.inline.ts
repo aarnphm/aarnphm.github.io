@@ -366,7 +366,9 @@ async function mouseEnterHandler(
   this: HTMLAnchorElement,
   { clientX, clientY }: { clientX: number; clientY: number },
 ) {
-  const link = (activeAnchor = this)
+  // eslint-disable-next-line @typescript-eslint/no-this-alias
+  activeAnchor = this
+  const link = activeAnchor
 
   if (link.dataset.bib === "") {
     await handleBibliography(link, { clientX, clientY })

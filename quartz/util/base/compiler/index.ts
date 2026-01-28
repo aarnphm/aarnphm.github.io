@@ -5,6 +5,8 @@ export type { Diagnostic } from "./errors"
 export type { Program, Expr, Span, Position } from "./ast"
 export type { BaseExpressionDiagnostic } from "./diagnostics"
 export type { BasesExpressions } from "./expressions"
+export type { Instruction, ProgramIR } from "./ir"
+export { compileExpression } from "./ir"
 export { buildPropertyExpressionSource } from "./properties"
 export type {
   SummaryDefinition,
@@ -18,7 +20,7 @@ export {
   evaluateFilterExpression,
   evaluateSummaryExpression,
   valueToUnknown,
-} from "./evaluator"
+} from "./interpreter"
 export type {
   EvalContext,
   Value,
@@ -38,5 +40,5 @@ export type {
   ImageValue,
   ValueKind,
   ValueOf,
-} from "./evaluator"
-export { isValueKind } from "./evaluator"
+} from "./interpreter"
+export { isValueKind } from "./interpreter"

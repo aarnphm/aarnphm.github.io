@@ -228,3 +228,4 @@ progress.md
 *.br
 docs/app
 docs/obsidian
+*.jsonl

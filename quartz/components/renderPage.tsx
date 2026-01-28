@@ -29,6 +29,7 @@ import {
   resolveRelative,
 } from "../util/path"
 import { JSResourceToScriptElement, StaticResources } from "../util/resources"
+import { renderBaseViewsForFile } from "../util/base/render"
 import CodeCopy from "./CodeCopy"
 import Darkmode from "./Darkmode"
 import { getDate, Date as DateComponent } from "./Date"
@@ -1241,8 +1242,19 @@ export function transcludeFinal(
             })
           }
         }
-      } else if (page.htmlAst) {
+      } else if (page.htmlAst || page.bases) {
         // page transclude
+        let baseTree = page.htmlAst
+        if (page.bases && page.basesConfig && page.basesExpressions && page.slug) {
+          const rendered = renderBaseViewsForFile(page, allFiles, fileData)
+          const baseSlug = page.slug as FullSlug
+          const baseView =
+            rendered.views.find((entry) => entry.slug === baseSlug) ?? rendered.views[0]
+          baseTree = baseView ? baseView.tree : baseTree
+        }
+        if (!baseTree) {
+          return
+        }
         const children = [
           anchor(inner.properties?.href as string, url, alias, title),
           title
@@ -1257,7 +1269,7 @@ export function transcludeFinal(
                 },
               ])
             : null,
-          ...(page.htmlAst.children as ElementContent[]).map((child) =>
+          ...(baseTree.children as ElementContent[]).map((child) =>
             normalizeHastElement(child as Element, slug, transcludeTarget),
           ),
         ]

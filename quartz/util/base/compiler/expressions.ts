@@ -1,10 +1,10 @@
-import { Expr } from "./ast"
+import { ProgramIR } from "./ir"
 
 export type BasesExpressions = {
-  filters?: Expr
-  viewFilters: Record<string, Expr>
-  formulas: Record<string, Expr>
-  summaries: Record<string, Expr>
-  viewSummaries: Record<string, Record<string, Expr>>
-  propertyExpressions: Record<string, Expr>
+  filters?: ProgramIR
+  viewFilters: Record<string, ProgramIR>
+  formulas: Record<string, ProgramIR>
+  summaries: Record<string, ProgramIR>
+  viewSummaries: Record<string, Record<string, ProgramIR>>
+  propertyExpressions: Record<string, ProgramIR>
 }

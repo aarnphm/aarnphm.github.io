@@ -1,5 +1,5 @@
 import { QuartzPluginData } from "../../plugins/vfile"
-import { evaluateSummaryExpression, valueToUnknown, EvalContext, Expr } from "./compiler"
+import { evaluateSummaryExpression, valueToUnknown, EvalContext, ProgramIR } from "./compiler"
 import { SummaryDefinition, ViewSummaryConfig, BuiltinSummaryType } from "./types"
 
 type SummaryValueResolver = (
@@ -17,7 +17,7 @@ export function computeColumnSummary(
   allFiles: QuartzPluginData[] = [],
   valueResolver: SummaryValueResolver,
   getContext: SummaryContextFactory,
-  summaryExpression?: Expr,
+  summaryExpression?: ProgramIR,
 ): string | number | undefined {
   if (files.length === 0) {
     return undefined
@@ -31,7 +31,11 @@ export function computeColumnSummary(
 
   if (summary.type === "formula" && summary.expression) {
     if (summaryExpression) {
-      const value = evaluateSummaryExpression(summaryExpression, values, getContext(files[0]))
+      const summaryCtx = getContext(files[0])
+      summaryCtx.diagnosticContext = `summaries.${column}`
+      summaryCtx.diagnosticSource = summary.expression
+      summaryCtx.rows = files
+      const value = evaluateSummaryExpression(summaryExpression, values, summaryCtx)
       const unknownValue = valueToUnknown(value)
       if (typeof unknownValue === "number" || typeof unknownValue === "string") {
         return unknownValue
@@ -220,7 +224,7 @@ export function computeViewSummaries(
   allFiles: QuartzPluginData[] = [],
   getContext: SummaryContextFactory,
   valueResolver: SummaryValueResolver,
-  summaryExpressions?: Record<string, Expr>,
+  summaryExpressions?: Record<string, ProgramIR>,
 ): Record<string, string | number | undefined> {
   const results: Record<string, string | number | undefined> = {}
 

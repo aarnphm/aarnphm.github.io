@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-01-26 16:24:29 GMT-05:00
+modified: 2026-01-28 15:36:33 GMT-05:00
 permalinks:
   - /website
   - /tweets
@@ -127,7 +127,7 @@ title: are.na
   - [meta]:
     - date: 10/03/2025
     - tags: [metaphysics, diety]
-- https://www.lesswrong.com/posts/WBw8dDkAWohFjWQSk/the-cluster-structure-of-thingspace -- Cluster structure of [[thoughts/love#thingspace]] [**]
+- https://www.lesswrong.com/posts/WBw8dDkAWohFjWQSk/the-cluster-structure-of-thingspace -- Cluster structure of [[thoughts/love#thingspace]]
   - [meta]:
     - date: 09/04/2025
     - tags: [love, friendship]

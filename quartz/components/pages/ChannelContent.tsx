@@ -10,7 +10,7 @@ import {
 import { toArenaJsx, fromHtmlStringToArenaJsx, arenaBlockTimestamp } from "../../util/arena"
 import { classNames } from "../../util/lang"
 import { FullSlug, slugTag, resolveRelative } from "../../util/path"
-import { createWikilinkRegex, parseWikilink, resolveWikilinkTarget } from "../../util/wikilinks"
+import { extractWikilinksWithPositions, resolveWikilinkTarget } from "../../util/wikilinks"
 import { buildYouTubeEmbed, type YouTubeEmbedSpec } from "../../util/youtube"
 import style from "../styles/arena.scss"
 
@@ -333,20 +333,19 @@ export default (() => {
     const renderInlineText = (text: string) => {
       if (!text) return ""
       const parts: ComponentChild[] = []
-      const regex = createWikilinkRegex()
+      const ranges = extractWikilinksWithPositions(text)
       let lastIndex = 0
-      let match: RegExpExecArray | null
-
-      while ((match = regex.exec(text)) !== null) {
-        const start = match.index
+      for (const range of ranges) {
+        const start = range.start
         if (start > lastIndex) {
           parts.push(text.slice(lastIndex, start))
         }
 
-        const parsed = parseWikilink(match[0])
-        const resolved = parsed ? resolveWikilinkTarget(parsed, "" as FullSlug) : null
+        const parsed = range.wikilink
+        const resolved = resolveWikilinkTarget(parsed, "" as FullSlug)
+        const raw = text.slice(range.start, range.end)
 
-        if (parsed && resolved) {
+        if (resolved) {
           const hrefBase = resolveRelative(fileData.slug! as FullSlug, resolved.slug)
           const href = parsed.anchor ? `${hrefBase}${parsed.anchor}` : hrefBase
           parts.push(
@@ -357,14 +356,14 @@ export default (() => {
               data-slug={resolved.slug}
               key={`wikilink-${parts.length}`}
             >
-              {parsed.alias ?? parsed.target ?? match[0]}
+              {parsed.alias ?? parsed.target ?? raw}
             </a>,
           )
         } else {
-          parts.push(parsed?.alias ?? parsed?.target ?? match[0])
+          parts.push(parsed.alias ?? parsed.target ?? raw)
         }
 
-        lastIndex = regex.lastIndex
+        lastIndex = range.end
       }
 
       if (lastIndex < text.length) {

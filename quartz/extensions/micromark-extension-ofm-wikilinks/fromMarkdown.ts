@@ -583,7 +583,7 @@ function exitWikilink(
       if (obsidian) {
         const targetPath = wikilink.target.trim()
         const ext = getFileExtension(targetPath) ?? ""
-        const displayAnchor = wikilink.anchor?.trim() ?? ""
+        let displayAnchor = wikilink.anchor?.trim() ?? ""
 
         let url: string
         // handle absolute paths like /tags/ml
@@ -595,6 +595,21 @@ function exitWikilink(
         } else {
           url = slugifyFilePath(targetPath, stripExtensions)
         }
+        if (ext === ".base" && displayAnchor && !displayAnchor.startsWith("#^")) {
+          const anchorText = wikilink.anchorText?.trim()
+          const viewSegment = sluggify(
+            anchorText && anchorText.length > 0 ? anchorText : displayAnchor.replace(/^#/, ""),
+          )
+          if (viewSegment.length > 0) {
+            const baseUrl = url.endsWith("/") ? url.slice(0, -1) : url
+            url = baseUrl.length > 0 ? `${baseUrl}/${viewSegment}` : viewSegment
+            displayAnchor = ""
+            if (!wikilink.alias && anchorText) {
+              wikilink.alias = anchorText
+            }
+          }
+        }
+
         if (wikilink.embed) {
           // check for youtube URLs first (before file extension checks)
           const youtubeEmbed = buildYouTubeEmbed(targetPath)

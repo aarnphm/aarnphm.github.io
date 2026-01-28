@@ -76,7 +76,8 @@ function setupBaseViewSelector() {
 
       items.forEach((item) => {
         const viewName = (item.getAttribute("data-view-name") || "").toLowerCase()
-        const matches = viewName.includes(lowerQuery)
+        const viewType = (item.getAttribute("data-view-type") || "").toLowerCase()
+        const matches = viewName.includes(lowerQuery) || viewType.includes(lowerQuery)
         item.style.display = matches ? "" : "none"
       })
     }

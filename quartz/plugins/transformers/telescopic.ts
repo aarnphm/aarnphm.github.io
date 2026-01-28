@@ -1,7 +1,5 @@
 import type { RootContent, Text } from "hast"
 import { Root, Element } from "hast"
-import { findAndReplace as hastFindReplace } from "hast-util-find-and-replace"
-import { FindAndReplaceList } from "hast-util-find-and-replace"
 import { fromHtmlIsomorphic } from "hast-util-from-html-isomorphic"
 import { toHtml } from "hast-util-to-html"
 import { toString } from "hast-util-to-string"
@@ -11,7 +9,7 @@ import { Root as MdastRoot, Code } from "mdast"
 import path from "path"
 import { SKIP, visit } from "unist-util-visit"
 // @ts-ignore
-import script from "../../components/scripts/telescopic.inline.ts"
+import script from "../../components/scripts/telescopic.inline"
 import content from "../../components/styles/telescopic.inline.scss"
 import { svgOptions } from "../../components/svg"
 // A small subsets of https://github.com/jackyzha0/telescopic-text
@@ -32,8 +30,8 @@ import { svgOptions } from "../../components/svg"
 //
 // Some deviation: separator=" ", shouldExpandOnMouseOver=false
 import { QuartzTransformerPlugin } from "../../types/plugin"
-import { FullSlug, simplifySlug, splitAnchor, stripSlashes, transformLink } from "../../util/path"
-import { createWikilinkRegex } from "../../util/wikilinks"
+import { simplifySlug, splitAnchor, stripSlashes, transformLink } from "../../util/path"
+import { extractWikilinksWithPositions } from "../../util/wikilinks"
 
 interface Line {
   og: string // the original string to replace
@@ -71,7 +69,6 @@ interface Config {
 }
 
 const createEmptyTextNode = (): Text => ({ type: "text", value: "" })
-const wikilinkRegex = createWikilinkRegex()
 
 function applyInlineFormatting(value: string): string {
   if (!value) {
@@ -317,19 +314,18 @@ export const TelescopicText: QuartzTransformerPlugin<Partial<Config>> = (userOpt
         () => (tree: Root, file) => {
           const curSlug = simplifySlug(file.data.slug!)
 
-          const wikilinksReplace = (
-            _value: string,
-            ...capture: string[]
-          ): { dest: string; alias: string; dataSlug: string } => {
-            let [rawFp, rawHeader, rawAlias] = capture
-            const fp = rawFp?.trim() ?? ""
-            const anchor = rawHeader?.trim() ?? ""
-            const alias = rawAlias?.slice(1).trim()
+          const resolveWikilink = (
+            target: string,
+            anchor: string | undefined,
+            alias: string | undefined,
+          ): { dest: string; alias: string } => {
+            const fp = target.trim()
+            const resolvedAnchor = anchor?.trim() ?? ""
+            const resolvedAlias = alias?.trim()
 
-            let dest = fp + anchor
+            let dest = fp + resolvedAnchor
             const ext: string = path.extname(dest).toLowerCase()
-            if (isAbsoluteUrl(dest, { httpOnly: false }))
-              return { dest, alias: dest, dataSlug: dest }
+            if (isAbsoluteUrl(dest, { httpOnly: false })) return { dest, alias: dest }
 
             if (!ext.includes("pdf")) {
               dest = transformLink(file.data.slug!, dest, {
@@ -346,10 +342,7 @@ export const TelescopicText: QuartzTransformerPlugin<Partial<Config>> = (userOpt
             if (destCanonical.endsWith("/")) {
               destCanonical += "index"
             }
-
-            // need to decodeURIComponent here as WHATWG URL percent-encodes everything
-            const full = decodeURIComponent(stripSlashes(destCanonical, true)) as FullSlug
-            return { dest, alias: alias ?? path.basename(fp), dataSlug: full }
+            return { dest, alias: resolvedAlias ?? path.basename(fp) }
           }
 
           const checkParsedCodeblock = ({ tagName, children }: Element): boolean => {
@@ -372,25 +365,37 @@ export const TelescopicText: QuartzTransformerPlugin<Partial<Config>> = (userOpt
             (node, index, parent) => {
               const code = (node as Element).children[0] as Element
 
-              const replacements: FindAndReplaceList = [
-                [
-                  wikilinkRegex,
-                  (match, ...link) => {
-                    const { dest, alias } = wikilinksReplace(match, ...link)
+              let codeText = toString(code)
+              const ranges = extractWikilinksWithPositions(codeText)
+              if (ranges.length > 0) {
+                let rewritten = ""
+                let lastIndex = 0
+                for (const range of ranges) {
+                  if (range.start > lastIndex) {
+                    rewritten += codeText.slice(lastIndex, range.start)
+                  }
 
-                    return toHtml(h("a", { href: dest }, { type: "text", value: alias }))
-                  },
-                ],
-                [
-                  linkRegex,
-                  (_match, value, href) => {
-                    return toHtml(h("a", { href }, { type: "text", value }))
-                  },
-                ],
-              ]
-              hastFindReplace(code, replacements)
+                  const parsed = range.wikilink
+                  const { dest, alias } = resolveWikilink(
+                    parsed.target,
+                    parsed.anchor,
+                    parsed.alias,
+                  )
+                  rewritten += toHtml(h("a", { href: dest }, { type: "text", value: alias }))
+                  lastIndex = range.end
+                }
+                if (lastIndex < codeText.length) {
+                  rewritten += codeText.slice(lastIndex)
+                }
+                codeText = rewritten
+              }
 
-              const content = mdToContent(toString(code), opts.separator)
+              codeText = codeText.replace(linkRegex, (_match, value, href) => {
+                return toHtml(h("a", { href }, { type: "text", value }))
+              })
+              code.children = [{ type: "text", value: codeText }]
+
+              const content = mdToContent(codeText, opts.separator)
               parent!.children.splice(
                 index!,
                 1,

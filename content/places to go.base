@@ -29,17 +29,6 @@ views:
     defaultCenter:
       - 43.6485848
       - -79.3745828
-  - type: map
-    name: globe
-    filters:
-      and:
-        - list(type).contains(this)
-    order:
-      - file.name
-      - address
-    coordinates: note.coordinates
-    markerIcon: formula.Type icon
-    markerColor: formula.Type color
   - type: table
     name: wip
     groupBy:
