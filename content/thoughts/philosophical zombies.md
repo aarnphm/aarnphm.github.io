@@ -10,6 +10,11 @@ seealso:
   - "[[thoughts/knowledge argument]]"
   - "[[thoughts/inverted spectrum]]"
   - "[[thoughts/chinese room]]"
+  - "[[thoughts/dualism]]"
+  - "[[thoughts/physicalism]]"
+  - "[[thoughts/phenomenal consciousness]]"
+  - "[[thoughts/access consciousness]]"
+  - "[[thoughts/panpsychism]]"
 socials:
   sep: https://plato.stanford.edu/entries/zombies/
   wikipedia: https://en.wikipedia.org/wiki/Philosophical_zombie

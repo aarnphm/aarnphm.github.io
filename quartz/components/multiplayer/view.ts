@@ -30,9 +30,7 @@ export const mountMultiplayer = ({ dispatch, state, services }: MountDeps) => {
   }
 
   const isTouchDevice = () =>
-    "maxTouchPoints" in navigator
-      ? navigator.maxTouchPoints > 0
-      : "ontouchstart" in window
+    "maxTouchPoints" in navigator ? navigator.maxTouchPoints > 0 : "ontouchstart" in window
 
   const init = async () => {
     dispatch({ type: "nav.enter", pageId: getCommentPageId() })

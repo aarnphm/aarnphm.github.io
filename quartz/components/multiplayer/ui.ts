@@ -430,7 +430,11 @@ export function createCommentsUi({ getState, dispatch, canResolveComment }: UiDe
   }
 
   const submitUpdateComment = (comment: MultiplayerComment, opId?: string) => {
-    submitComment({ opId: opId ?? crypto.randomUUID(), type: "update", comment: ensurePageId(comment) })
+    submitComment({
+      opId: opId ?? crypto.randomUUID(),
+      type: "update",
+      comment: ensurePageId(comment),
+    })
   }
 
   const submitDeleteComment = (comment: MultiplayerComment, deletedAt: number) => {
@@ -626,7 +630,9 @@ export function createCommentsUi({ getState, dispatch, canResolveComment }: UiDe
       resolveButton.onclick = () => {
         submitResolveComment(comment, Date.now())
         closeActiveModal()
-        document.dispatchEvent(new CustomEvent("toast", { detail: { message: "Comment resolved" } }))
+        document.dispatchEvent(
+          new CustomEvent("toast", { detail: { message: "Comment resolved" } }),
+        )
       }
       headerActions.appendChild(resolveButton)
     }
