@@ -1,12 +1,12 @@
-import { QuartzTransformerPlugin } from "../../types/plugin"
-import { Code, Root } from "mdast"
-import { BuildCtx } from "../../util/ctx"
-import path from "path"
-import { FilePath } from "../../util/path"
+import type { Parent } from "unist"
 import { readFile } from "fs/promises"
+import { Code, Root } from "mdast"
+import path from "path"
 import { visit, SKIP } from "unist-util-visit"
 import type { Wikilink } from "../../util/wikilinks"
-import type { Parent } from "unist"
+import { QuartzTransformerPlugin } from "../../types/plugin"
+import { BuildCtx } from "../../util/ctx"
+import { FilePath } from "../../util/path"
 
 type Options = {
   /** File extensions to treat as code files (lowercase, with dot). */
@@ -181,7 +181,7 @@ export const CodeViewer: QuartzTransformerPlugin<Partial<Options>> = (userOpts) 
               }
 
               const dataAny = codeNode as unknown as { data?: Record<string, any> }
-              dataAny.data = { ...(dataAny.data ?? {}), codeTranscludeTarget: fp }
+              dataAny.data = { ...dataAny.data, codeTranscludeTarget: fp }
 
               const parentNode = parent as Parent
               if (!parentNode.children) return

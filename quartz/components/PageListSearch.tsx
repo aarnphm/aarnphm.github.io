@@ -1,12 +1,12 @@
+import { i18n } from "../i18n"
 import {
   QuartzComponent,
   QuartzComponentConstructor,
   QuartzComponentProps,
 } from "../types/component"
-import style from "./styles/pageListSearch.scss"
 // @ts-ignore
 import script from "./scripts/pagelist-search.inline"
-import { i18n } from "../i18n"
+import style from "./styles/pageListSearch.scss"
 
 export interface PageListSearchOptions {
   placeholder?: string

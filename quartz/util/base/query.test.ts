@@ -1,11 +1,10 @@
-import test, { describe } from "node:test"
 import assert from "node:assert"
-import { evaluateFilter, BaseFilter, resolvePropertyValue } from "./query"
-import { parseFilter } from "./types"
+import test, { describe } from "node:test"
 import { QuartzPluginData } from "../../plugins/vfile"
 import { FullSlug } from "../path"
+import { evaluateFilter, BaseFilter, resolvePropertyValue } from "./query"
+import { parseFilter } from "./types"
 
-// helper to create mock file data
 function createMockFile(
   frontmatter: Record<string, any>,
   slug?: string,
@@ -925,7 +924,6 @@ describe("base query engine", () => {
         createMockFile({ total: 50, discount: 5 }),
       ]
       const result = evaluateFilter(filter, files)
-      // 60-15=45 < 50 ✓, 80-20=60 < 50 ✗, 50-5=45 < 50 ✓
       assert.strictEqual(result.length, 2)
     })
 
@@ -1232,11 +1230,6 @@ describe("base query engine", () => {
         createMockFile({}, "page4", ["page1"]),
       ]
       const result = evaluateFilter(filter, files)
-      // page2 links to page1, page4 links to page1
-      // so files that have page1 in their inlinks should be the files that are pointed to by page1
-      // but the filter checks if the file's inlinks contains "page1"
-      // that means we want files where page1 links to them
-      // page1 links to page2, so page2 should match
       assert.strictEqual(result.length, 1)
       assert.strictEqual(result[0].slug, "page2")
     })

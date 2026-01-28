@@ -1,4 +1,3 @@
-import type { ContentDetails } from "../../plugins/emitters/contentIndex"
 import {
   SimulationNodeDatum,
   SimulationLinkDatum,
@@ -15,9 +14,10 @@ import {
   zoom,
 } from "d3"
 import { Text, Graphics, Application, Container, Circle } from "pixi.js"
-import { registerEscapeHandler, removeAllChildren } from "./util"
+import type { ContentDetails } from "../../plugins/emitters/contentIndex"
 import { FullSlug, SimpleSlug, getFullSlug, resolveRelative, simplifySlug } from "../../util/path"
 import { D3Config } from "../Graph"
+import { registerEscapeHandler, removeAllChildren } from "./util"
 
 type GraphicsInfo = {
   color: string

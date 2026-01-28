@@ -1,5 +1,6 @@
-import { QuartzTransformerPlugin } from "../../types/plugin"
+import yaml from "js-yaml"
 import { Root } from "mdast"
+import { QuartzTransformerPlugin } from "../../types/plugin"
 import {
   parseFilter,
   parseViews,
@@ -7,7 +8,6 @@ import {
   BaseFile,
   PropertyConfig,
 } from "../../util/base/types"
-import yaml from "js-yaml"
 
 export const ObsidianBases: QuartzTransformerPlugin = () => {
   return {

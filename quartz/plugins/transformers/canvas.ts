@@ -1,17 +1,17 @@
-import { QuartzTransformerPlugin } from "../../types/plugin"
-import { visit } from "unist-util-visit"
-import { parseJsonCanvas } from "./jcast"
-import { JcastCanvas, isJcastCanvasNode } from "./jcast/types"
-import { visitJcast } from "./jcast/visitor"
-import { slugifyFilePath, slugAnchor, FilePath, FullSlug, resolveRelative } from "../../util/path"
-import { BuildCtx } from "../../util/ctx"
 import path from "path"
+import { visit } from "unist-util-visit"
+import { QuartzTransformerPlugin } from "../../types/plugin"
+import { BuildCtx } from "../../util/ctx"
+import { slugifyFilePath, slugAnchor, FilePath, FullSlug, resolveRelative } from "../../util/path"
 import {
   createWikilinkRegex,
   extractWikilinks,
   resolveWikilinkTarget,
   Wikilink,
 } from "../../util/wikilinks"
+import { parseJsonCanvas } from "./jcast"
+import { JcastCanvas, isJcastCanvasNode } from "./jcast/types"
+import { visitJcast } from "./jcast/visitor"
 
 export const JsonCanvas: QuartzTransformerPlugin = () => {
   return {

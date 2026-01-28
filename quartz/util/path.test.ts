@@ -1,6 +1,6 @@
+import assert from "node:assert"
 import test, { describe } from "node:test"
 import * as path from "./path"
-import assert from "node:assert"
 import { FullSlug, TransformOptions } from "./path"
 
 describe("typeguards", () => {

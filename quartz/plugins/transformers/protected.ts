@@ -1,5 +1,5 @@
-import { QuartzTransformerPlugin } from "../../types/plugin"
 import content from "../../components/styles/protected.scss"
+import { QuartzTransformerPlugin } from "../../types/plugin"
 
 function getPasswordForPage(file: any): string {
   const frontmatter = file.data.frontmatter

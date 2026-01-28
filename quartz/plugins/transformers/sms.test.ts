@@ -1,7 +1,7 @@
-import test, { describe } from "node:test"
-import assert from "node:assert"
-import { toHtml } from "hast-util-to-html"
 import { Element as HtmlElement } from "hast"
+import { toHtml } from "hast-util-to-html"
+import assert from "node:assert"
+import test, { describe } from "node:test"
 import { parseSmsHtmlFragment } from "./sms"
 
 describe("sms html fragment parsing", () => {

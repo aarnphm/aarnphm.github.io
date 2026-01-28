@@ -3,12 +3,12 @@ import type {
   QuartzComponentConstructor,
   QuartzComponentProps,
 } from "../../types/component"
-import style from "../styles/stream.scss"
+import { groupStreamEntries } from "../../util/stream"
 // @ts-ignore
 import script from "../scripts/stream.inline"
 import { renderStreamEntry } from "../stream/Entry"
-import { groupStreamEntries } from "../../util/stream"
 import StreamSearchConstructor from "../StreamSearch"
+import style from "../styles/stream.scss"
 
 export default (() => {
   const StreamSearch = StreamSearchConstructor()

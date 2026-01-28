@@ -1,5 +1,5 @@
-import test, { describe } from "node:test"
 import assert from "node:assert"
+import test, { describe } from "node:test"
 
 // Inline the encoder function from search.inline.ts for testing
 const encoder = (str: string): string[] => {

@@ -1,18 +1,18 @@
+import type { ElementContent, Root } from "hast"
+import type { ComponentChild } from "preact"
+import { fromHtmlIsomorphic } from "hast-util-from-html-isomorphic"
+import { ArenaChannel, ArenaBlock } from "../../plugins/transformers/arena"
 import {
   QuartzComponent,
   QuartzComponentConstructor,
   QuartzComponentProps,
 } from "../../types/component"
-import { ArenaChannel, ArenaBlock } from "../../plugins/transformers/arena"
-import { classNames } from "../../util/lang"
-import type { ElementContent, Root } from "hast"
-import type { ComponentChild } from "preact"
-import style from "../styles/arena.scss"
-import { fromHtmlIsomorphic } from "hast-util-from-html-isomorphic"
-import { FullSlug, slugTag, resolveRelative } from "../../util/path"
 import { toArenaJsx, fromHtmlStringToArenaJsx, arenaBlockTimestamp } from "../../util/arena"
+import { classNames } from "../../util/lang"
+import { FullSlug, slugTag, resolveRelative } from "../../util/path"
 import { createWikilinkRegex, parseWikilink, resolveWikilinkTarget } from "../../util/wikilinks"
 import { buildYouTubeEmbed, type YouTubeEmbedSpec } from "../../util/youtube"
+import style from "../styles/arena.scss"
 
 const substackPostRegex = /^https?:\/\/[^/]+\/p\/[^/]+/i
 const pdfUrlRegex = /\.pdf(?:[?#].*)?$/i

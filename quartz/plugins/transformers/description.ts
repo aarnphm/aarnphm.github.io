@@ -1,16 +1,16 @@
 import { Root as HTMLRoot } from "hast"
 import { toString } from "hast-util-to-string"
-import { QuartzTransformerPlugin } from "../../types/plugin"
-import { escapeHTML } from "../../util/escape"
 import readingTime, { ReadTimeResults } from "reading-time"
 import { i18n } from "../../i18n"
+import { QuartzTransformerPlugin } from "../../types/plugin"
+import { processWikilinksToHtml, renderLatexInString } from "../../util/description"
+import { escapeHTML } from "../../util/escape"
+import { simplifySlug, type FullSlug, type SimpleSlug } from "../../util/path"
 import {
   stripWikilinkFormatting,
   extractWikilinks,
   resolveWikilinkTarget,
 } from "../../util/wikilinks"
-import { simplifySlug, type FullSlug, type SimpleSlug } from "../../util/path"
-import { processWikilinksToHtml, renderLatexInString } from "../../util/description"
 
 export interface Options {
   descriptionLength: number
@@ -25,7 +25,7 @@ const defaultOptions: Options = {
 }
 
 const urlRegex = new RegExp(
-  /(https?:\/\/)?(?<domain>([\da-z\.-]+)\.([a-z\.]{2,6})(:\d+)?)(?<path>[\/\w\.-]*)(\?[\/\w\.=&;-]*)?/,
+  /(https?:\/\/)?(?<domain>([\da-z.-]+)\.([a-z.]{2,6})(:\d+)?)(?<path>[/\w.-]*)(\?[/\w.=&;-]*)?/,
   "g",
 )
 

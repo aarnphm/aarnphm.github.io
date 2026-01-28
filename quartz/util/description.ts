@@ -1,7 +1,7 @@
-import katex from "katex"
 import type { KatexOptions } from "katex"
-import { extractWikilinks, resolveWikilinkTarget } from "./wikilinks"
+import katex from "katex"
 import type { FullSlug } from "./path"
+import { extractWikilinks, resolveWikilinkTarget } from "./wikilinks"
 
 const defaultKatexOptions: Omit<KatexOptions, "output"> = {
   strict: true,

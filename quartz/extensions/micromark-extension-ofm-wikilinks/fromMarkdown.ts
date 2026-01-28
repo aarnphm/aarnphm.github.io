@@ -3,8 +3,9 @@
  * converts micromark tokens to Wikilink AST nodes.
  */
 
-import type { Extension, CompileContext, Token } from "mdast-util-from-markdown"
 import type { Element as HastElement, Text as HastText } from "hast"
+import type { Extension, CompileContext, Token } from "mdast-util-from-markdown"
+import { Literal } from "unist"
 import {
   FilePath,
   FullSlug,
@@ -14,9 +15,8 @@ import {
   sluggify,
   endsWith,
 } from "../../util/path"
-import { buildYouTubeEmbed } from "../../util/youtube"
 import "./types"
-import { Literal } from "unist"
+import { buildYouTubeEmbed } from "../../util/youtube"
 
 export interface WikilinkData {
   raw: string

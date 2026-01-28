@@ -1,12 +1,12 @@
-import { EditorView, keymap } from "@codemirror/view"
-import { EditorState, Prec } from "@codemirror/state"
-import { markdown } from "@codemirror/lang-markdown"
-import { defaultKeymap, historyKeymap, history } from "@codemirror/commands"
-import { syntaxHighlighting, defaultHighlightStyle } from "@codemirror/language"
 import { autocompletion, completionStatus, moveCompletionSelection } from "@codemirror/autocomplete"
+import { defaultKeymap, historyKeymap, history } from "@codemirror/commands"
+import { markdown } from "@codemirror/lang-markdown"
+import { syntaxHighlighting, defaultHighlightStyle } from "@codemirror/language"
+import { EditorState, Prec } from "@codemirror/state"
+import { EditorView, keymap } from "@codemirror/view"
+import TurndownService from "turndown"
 import { completionSources } from "../multiplayer/completions"
 import { togglePreview, cleanupPreview, onEditorUpdate } from "../multiplayer/completions/preview"
-import TurndownService from "turndown"
 
 const turndown = new TurndownService({
   headingStyle: "atx",

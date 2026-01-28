@@ -1,6 +1,6 @@
 import { PGlite } from "@electric-sql/pglite"
-import { drizzle, type PgliteDatabase } from "drizzle-orm/pglite"
 import { pgTable, text, bigint, index } from "drizzle-orm/pg-core"
+import { drizzle, type PgliteDatabase } from "drizzle-orm/pglite"
 import { dependencies } from "../../../package.json"
 
 const CDN_BASE = `https://cdn.jsdelivr.net/npm/@electric-sql/pglite@${dependencies["@electric-sql/pglite"].slice(1)}/dist`

@@ -1,12 +1,12 @@
 import matter from "gray-matter"
-import remarkFrontmatter from "remark-frontmatter"
-import { QuartzTransformerPlugin } from "../../types/plugin"
 import yaml from "js-yaml"
+import remarkFrontmatter from "remark-frontmatter"
+import { i18n } from "../../i18n"
+import { QuartzTransformerPlugin } from "../../types/plugin"
 import { FilePath, FullSlug, slugifyFilePath, slugTag, getFileExtension } from "../../util/path"
 import { extractWikilinks, resolveWikilinkTarget } from "../../util/wikilinks"
-import { QuartzPluginData } from "../vfile"
-import { i18n } from "../../i18n"
 import { ContentLayout } from "../emitters/contentIndex"
+import { QuartzPluginData } from "../vfile"
 
 function getAliasSlugs(aliases: string[]): FullSlug[] {
   const res: FullSlug[] = []

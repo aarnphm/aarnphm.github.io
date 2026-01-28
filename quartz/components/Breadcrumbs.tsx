@@ -3,12 +3,12 @@ import {
   QuartzComponentConstructor,
   QuartzComponentProps,
 } from "../types/component"
-import breadcrumbsStyle from "./styles/breadcrumbs.scss"
+import { trieFromAllFiles } from "../util/ctx"
+import { classNames } from "../util/lang"
+import { FullSlug, SimpleSlug, joinSegments, resolveRelative, simplifySlug } from "../util/path"
 // @ts-ignore
 import script from "./scripts/breadcrumbs.inline"
-import { FullSlug, SimpleSlug, joinSegments, resolveRelative, simplifySlug } from "../util/path"
-import { classNames } from "../util/lang"
-import { trieFromAllFiles } from "../util/ctx"
+import breadcrumbsStyle from "./styles/breadcrumbs.scss"
 
 type CrumbData = {
   displayName: string

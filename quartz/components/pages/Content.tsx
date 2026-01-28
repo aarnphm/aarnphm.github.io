@@ -1,11 +1,11 @@
-import { concatenateResources } from "../../util/resources"
-import { htmlToJsx } from "../../util/jsx"
 import {
   QuartzComponent,
   QuartzComponentConstructor,
   QuartzComponentProps,
 } from "../../types/component"
+import { htmlToJsx } from "../../util/jsx"
 import { FullSlug, joinSegments, resolveRelative } from "../../util/path"
+import { concatenateResources } from "../../util/resources"
 //@ts-ignore
 import lydiaScript from "../scripts/lydia.inline"
 import SeeAlsoComponent from "../SeeAlso"

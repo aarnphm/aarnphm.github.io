@@ -19,13 +19,13 @@ interface TagSectionState {
 }
 
 function extractTagsFromQuery(query: string): string[] {
-  const matches = query.match(/#[\w\/-]+/g) || []
+  const matches = query.match(/#[\w/-]+/g) || []
   return matches.map((t) => t.slice(1).toLowerCase())
 }
 
 function extractTextQuery(query: string): string {
   return query
-    .replace(/#[\w\/-]+/g, "")
+    .replace(/#[\w/-]+/g, "")
     .trim()
     .toLowerCase()
 }

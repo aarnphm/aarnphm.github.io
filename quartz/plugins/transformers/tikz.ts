@@ -1,12 +1,12 @@
-import { Code, Root as MdRoot } from "mdast"
-import { QuartzTransformerPlugin } from "../../types/plugin"
-import { visit } from "unist-util-visit"
-import { load, tex, dvi2svg } from "node-tikzjax"
-import { h, s } from "hastscript"
 import { Element, Properties } from "hast"
-import { svgOptions } from "../../components/svg"
-import { toHtml } from "hast-util-to-html"
 import { fromHtmlIsomorphic } from "hast-util-from-html-isomorphic"
+import { toHtml } from "hast-util-to-html"
+import { h, s } from "hastscript"
+import { Code, Root as MdRoot } from "mdast"
+import { load, tex, dvi2svg } from "node-tikzjax"
+import { visit } from "unist-util-visit"
+import { svgOptions } from "../../components/svg"
+import { QuartzTransformerPlugin } from "../../types/plugin"
 
 async function tex2svg(input: string, showConsole: boolean) {
   await load()

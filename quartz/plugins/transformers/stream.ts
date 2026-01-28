@@ -1,9 +1,9 @@
-import { QuartzTransformerPlugin } from "../../types/plugin"
 import type { Element, ElementContent, Root as HastRoot, RootContent } from "hast"
-import { toString } from "hast-util-to-string"
 import { toHtml } from "hast-util-to-html"
+import { toString } from "hast-util-to-string"
 import yaml from "js-yaml"
 import type { FullSlug } from "../../util/path"
+import { QuartzTransformerPlugin } from "../../types/plugin"
 import { processWikilinksToHtml, renderLatexInString } from "../../util/description"
 
 export type StreamMetadata = Record<string, unknown>
@@ -164,7 +164,7 @@ const appendListToYaml = (list: Element, indent: number, lines: string[]): void 
     }
 
     if (rawText.length === 0) continue
-    const normalized = rawText.replace(/^\-+\s*/, "").trim()
+    const normalized = rawText.replace(/^-+\s*/, "").trim()
 
     if (normalized.includes(":")) {
       lines.push(`${indentStr}${normalized}`)

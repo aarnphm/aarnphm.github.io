@@ -3,10 +3,10 @@ import {
   QuartzComponentConstructor,
   QuartzComponentProps,
 } from "../types/component"
-import style from "./styles/headings.scss"
+import { classNames } from "../util/lang"
 // @ts-ignore
 import script from "./scripts/headings-modal.inline"
-import { classNames } from "../util/lang"
+import style from "./styles/headings.scss"
 
 export default (() => {
   const Headings: QuartzComponent = ({ displayClass }: QuartzComponentProps) => {

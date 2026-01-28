@@ -1,17 +1,18 @@
-import { QuartzEmitterPlugin } from "../../types/plugin"
-import { QuartzComponentProps } from "../../types/component"
-import HeaderConstructor from "../../components/Header"
-import { pageResources, renderPage } from "../../components/renderPage"
-import { FullPageLayout } from "../../cfg"
-import { pathToRoot, joinSegments, FullSlug } from "../../util/path"
+import { ElementContent } from "hast"
+import { toHtml } from "hast-util-to-html"
+import { Node } from "unist"
 import { sharedPageComponents, defaultContentPageLayout } from "../../../quartz.layout"
+import { FullPageLayout } from "../../cfg"
+import HeaderConstructor from "../../components/Header"
 import ArenaIndex from "../../components/pages/ArenaIndex"
 import ChannelContent from "../../components/pages/ChannelContent"
-import { write } from "./helpers"
+import { pageResources, renderPage } from "../../components/renderPage"
+import { QuartzComponentProps } from "../../types/component"
+import { QuartzEmitterPlugin } from "../../types/plugin"
+import { clone } from "../../util/clone"
 import { BuildCtx } from "../../util/ctx"
-import { Node } from "unist"
+import { pathToRoot, joinSegments, FullSlug } from "../../util/path"
 import { StaticResources } from "../../util/resources"
-import { QuartzPluginData, defaultProcessedContent } from "../vfile"
 import {
   ArenaChannel,
   ArenaBlock,
@@ -19,9 +20,8 @@ import {
   ArenaChannelSearchable,
   ArenaSearchIndex,
 } from "../transformers/arena"
-import { clone } from "../../util/clone"
-import { toHtml } from "hast-util-to-html"
-import { ElementContent } from "hast"
+import { QuartzPluginData, defaultProcessedContent } from "../vfile"
+import { write } from "./helpers"
 
 async function processArenaIndex(
   ctx: BuildCtx,

@@ -1,10 +1,10 @@
-import { version } from "../../../package.json"
-import { BuildCtx } from "../../util/ctx"
-import { QuartzPluginData } from "../vfile"
-import { QuartzEmitterPlugin } from "../../types/plugin"
-import { FullSlug } from "../../util/path"
-import { write } from "./helpers"
 import yaml from "js-yaml"
+import { version } from "../../../package.json"
+import { QuartzEmitterPlugin } from "../../types/plugin"
+import { BuildCtx } from "../../util/ctx"
+import { FullSlug } from "../../util/path"
+import { QuartzPluginData } from "../vfile"
+import { write } from "./helpers"
 
 const name = "LLMText"
 

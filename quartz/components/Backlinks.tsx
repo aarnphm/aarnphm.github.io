@@ -1,12 +1,12 @@
+import { i18n } from "../i18n"
 import {
   QuartzComponent,
   QuartzComponentConstructor,
   QuartzComponentProps,
 } from "../types/component"
-import style from "./styles/backlinks.scss"
-import { resolveRelative, simplifySlug } from "../util/path"
-import { i18n } from "../i18n"
 import { classNames } from "../util/lang"
+import { resolveRelative, simplifySlug } from "../util/path"
+import style from "./styles/backlinks.scss"
 
 export default (() => {
   const Backlinks: QuartzComponent = ({

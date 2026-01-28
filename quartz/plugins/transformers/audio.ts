@@ -1,8 +1,8 @@
-import { QuartzTransformerPlugin } from "../../types/plugin"
 import { Element, Root } from "hast"
-import { visit } from "unist-util-visit"
 import { h, s } from "hastscript"
+import { visit } from "unist-util-visit"
 import { svgOptions } from "../../components/svg"
+import { QuartzTransformerPlugin } from "../../types/plugin"
 
 export interface Options {
   /**

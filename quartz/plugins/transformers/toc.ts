@@ -1,10 +1,10 @@
-import { QuartzTransformerPlugin } from "../../types/plugin"
 import type { Heading, PhrasingContent, Root } from "mdast"
-import { visit } from "unist-util-visit"
-import { toString } from "mdast-util-to-string"
 import Slugger from "github-slugger"
-import { isWikilink } from "../../extensions/micromark-extension-ofm-wikilinks"
+import { toString } from "mdast-util-to-string"
+import { visit } from "unist-util-visit"
 import type { Wikilink } from "../../extensions/micromark-extension-ofm-wikilinks"
+import { isWikilink } from "../../extensions/micromark-extension-ofm-wikilinks"
+import { QuartzTransformerPlugin } from "../../types/plugin"
 
 export interface Options {
   maxDepth: 1 | 2 | 3 | 4 | 5 | 6

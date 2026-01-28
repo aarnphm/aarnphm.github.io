@@ -125,7 +125,7 @@ export class Toast {
   }
 
   destroy() {
-    for (const entry of [...this.toasts]) {
+    for (const entry of this.toasts) {
       this.clearEntryHideTimer(entry)
       if (entry.teardownTimer !== undefined) {
         window.clearTimeout(entry.teardownTimer)

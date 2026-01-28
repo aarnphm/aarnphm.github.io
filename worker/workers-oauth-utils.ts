@@ -599,7 +599,7 @@ async function verifySignature(
       signatureHex.match(/.{1,2}/g)!.map((byte) => Number.parseInt(byte, 16)),
     )
     return await crypto.subtle.verify("HMAC", key, signatureBytes.buffer, enc.encode(data))
-  } catch (_e) {
+  } catch {
     return false
   }
 }

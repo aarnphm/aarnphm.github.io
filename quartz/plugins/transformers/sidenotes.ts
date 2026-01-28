@@ -1,22 +1,22 @@
-import { QuartzTransformerPlugin } from "../../types/plugin"
-import { Root as MdastRoot } from "mdast"
-import { Element as HastElement, Text as HastText, ElementContent, Root as HastRoot } from "hast"
-import { visit } from "unist-util-visit"
 import type { Node } from "unist"
+import { Element as HastElement, Text as HastText, ElementContent, Root as HastRoot } from "hast"
 import { h } from "hastscript"
-import { BuildCtx } from "../../util/ctx"
-import { FullSlug, transformLink } from "../../util/path"
-import { VFile } from "vfile"
-import path from "path"
 import isAbsoluteUrl from "is-absolute-url"
-import { parseWikilink, resolveWikilinkTarget, createWikilinkRegex } from "../../util/wikilinks"
-// @ts-ignore
-import script from "../../components/scripts/sidenotes.inline"
-import content from "../../components/styles/sidenotes.inline.scss"
+import { Root as MdastRoot } from "mdast"
+import path from "path"
+import { visit } from "unist-util-visit"
+import { VFile } from "vfile"
 import type {
   Sidenote,
   SidenoteReference,
 } from "../../extensions/micromark-extension-ofm-sidenotes"
+// @ts-ignore
+import script from "../../components/scripts/sidenotes.inline"
+import content from "../../components/styles/sidenotes.inline.scss"
+import { QuartzTransformerPlugin } from "../../types/plugin"
+import { BuildCtx } from "../../util/ctx"
+import { FullSlug, transformLink } from "../../util/path"
+import { parseWikilink, resolveWikilinkTarget, createWikilinkRegex } from "../../util/wikilinks"
 
 const isSidenoteNode = (node: Node): node is Sidenote | SidenoteReference =>
   node.type === "sidenote" || node.type === "sidenoteReference"

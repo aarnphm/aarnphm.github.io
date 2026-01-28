@@ -1,5 +1,5 @@
-import { Cmd } from "../../functional"
 import type { MultiplayerComment, OperationInput, OperationRecord } from "./model"
+import { Cmd } from "../../functional"
 
 export type MultiplayerModel = {
   comments: MultiplayerComment[]

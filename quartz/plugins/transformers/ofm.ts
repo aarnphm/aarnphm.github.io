@@ -1,4 +1,9 @@
-import { QuartzTransformerPlugin } from "../../types/plugin"
+import { Element, Literal, Root as HtmlRoot, Parent, Properties } from "hast"
+import { phrasing } from "hast-util-phrasing"
+import { toHtml } from "hast-util-to-html"
+import { toText } from "hast-util-to-text"
+import { whitespace } from "hast-util-whitespace"
+import { h, s } from "hastscript"
 import {
   Root,
   Html,
@@ -8,33 +13,25 @@ import {
   Code,
   PhrasingContent,
 } from "mdast"
-import { Element, Literal, Root as HtmlRoot, Parent, Properties } from "hast"
 import { ReplaceFunction, findAndReplace as mdastFindReplace } from "mdast-util-find-and-replace"
+import { fromMarkdown } from "mdast-util-from-markdown"
+import { mathFromMarkdown } from "mdast-util-math"
+import { toHast } from "mdast-util-to-hast"
+import { toString } from "mdast-util-to-string"
+import { math } from "micromark-extension-math"
 import rehypeRaw from "rehype-raw"
+import { PluggableList } from "unified"
+import { remove } from "unist-util-remove"
 import { SKIP, visit } from "unist-util-visit"
-import { CSSResource, JSResource } from "../../util/resources"
 // @ts-ignore
 import calloutScript from "../../components/scripts/callout.inline.ts"
-// @ts-ignore
-import mermaidScript from "../../components/scripts/mermaid.inline"
 //@ts-ignore
 import checkboxScript from "../../components/scripts/checkbox.inline"
-import mermaidStyle from "../../components/styles/mermaid.inline.scss"
 // @ts-ignore
-import { FullSlug, pathToRoot, slugTag } from "../../util/path"
-import { toHast } from "mdast-util-to-hast"
-import { toHtml } from "hast-util-to-html"
-import { toString } from "mdast-util-to-string"
-import { fromMarkdown } from "mdast-util-from-markdown"
-import { capitalize } from "../../util/lang"
-import { buildYouTubeEmbed } from "../../util/youtube"
-import { PluggableList } from "unified"
-import { h, s } from "hastscript"
-import { whitespace } from "hast-util-whitespace"
-import { phrasing } from "hast-util-phrasing"
-import { toText } from "hast-util-to-text"
-import { remove } from "unist-util-remove"
+import mermaidScript from "../../components/scripts/mermaid.inline"
+import mermaidStyle from "../../components/styles/mermaid.inline.scss"
 import { svgOptions } from "../../components/svg"
+import { remarkSidenote } from "../../extensions/micromark-extension-ofm-sidenotes"
 import {
   remarkWikilink,
   Wikilink,
@@ -42,10 +39,13 @@ import {
   wikilink,
   wikilinkFromMarkdown,
 } from "../../extensions/micromark-extension-ofm-wikilinks"
-import { remarkSidenote } from "../../extensions/micromark-extension-ofm-sidenotes"
+import { QuartzTransformerPlugin } from "../../types/plugin"
+import { capitalize } from "../../util/lang"
+// @ts-ignore
+import { FullSlug, pathToRoot, slugTag } from "../../util/path"
+import { CSSResource, JSResource } from "../../util/resources"
 import { escapeWikilinkForTable } from "../../util/wikilinks"
-import { math } from "micromark-extension-math"
-import { mathFromMarkdown } from "mdast-util-math"
+import { buildYouTubeEmbed } from "../../util/youtube"
 
 export interface Options {
   comments: boolean
@@ -275,7 +275,7 @@ export const externalLinkRegex = /^https?:\/\//i
 
 export const arrowRegex = new RegExp(/(-{1,2}>|={1,2}>|<-{1,2}|<={1,2})/g)
 
-export const inlineFootnoteRegex = /\^\[((?:[^\[\]]|\[(?:[^\[\]]|\[[^\[\]]*\])*\])*)\]/g
+export const inlineFootnoteRegex = /\^\[((?:[^[\]]|\[(?:[^[\]]|\[[^[\]]*\])*\])*)\]/g
 
 // ^\|([^\n])+\|\n(\|) -> matches the header row
 // ( ?:?-{3,}:? ?\|)+  -> matches the header row separator
@@ -288,8 +288,8 @@ export const tableWikilinkRegex = new RegExp(/(!?\[\[[^\]]*?\]\]|\[\^[^\]]*?\])/
 const highlightRegex = new RegExp(/==([^=]+)==/g)
 const commentRegex = new RegExp(/%%[\s\S]*?%%/g)
 // from https://github.com/escwxyz/remark-obsidian-callout/blob/main/src/index.ts
-const calloutRegex = new RegExp(/^\[\!([\w-]+)\|?(.+?)?\]([+-]?)/)
-const calloutLineRegex = new RegExp(/^> *\[\!\w+\|?.*?\][+-]?.*$/gm)
+const calloutRegex = new RegExp(/^\[!([\w-]+)\|?(.+?)?\]([+-]?)/)
+const calloutLineRegex = new RegExp(/^> *\[!\w+\|?.*?\][+-]?.*$/gm)
 // (?<=^| )             -> a lookbehind assertion, tag should start be separated by a space or be the start of the line
 // #(...)               -> capturing group, tag itself must start with #
 // (?:[-_\p{L}\d\p{Z}])+       -> non-capturing group, non-empty string of (Unicode-aware) alpha-numeric characters and symbols, hyphens and/or underscores
@@ -445,7 +445,7 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options>>
               tagRegex,
               (_value: string, tag: string) => {
                 // Check if the tag only includes numbers and slashes
-                if (/^[\/\d]+$/.test(tag)) {
+                if (/^[/\d]+$/.test(tag)) {
                   return false
                 }
 
@@ -897,7 +897,7 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options>>
                 return
               }
 
-              const properties: Properties = { ...(node.properties ?? {}) }
+              const properties: Properties = { ...node.properties }
 
               const existingId =
                 typeof properties.id === "string" && properties.id.trim().length > 0

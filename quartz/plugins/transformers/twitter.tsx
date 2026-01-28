@@ -1,11 +1,11 @@
-import { QuartzTransformerPlugin } from "../../types/plugin"
 import { Element } from "hast"
 import { Html, Link, Paragraph, PhrasingContent } from "mdast"
 import { Parent } from "unist"
 import { visit } from "unist-util-visit"
-import { unescapeHTML } from "../../util/escape"
 // @ts-ignore
 import script from "../../components/scripts/twitter.inline"
+import { QuartzTransformerPlugin } from "../../types/plugin"
+import { unescapeHTML } from "../../util/escape"
 import { wikiTextTransform } from "./ofm"
 
 export const twitterUrlRegex = /^.*(twitter\.com|x\.com)\/[a-zA-Z0-9_]+\/(status)\/(\d{19}).*/

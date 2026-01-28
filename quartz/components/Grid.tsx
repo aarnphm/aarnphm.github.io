@@ -1,9 +1,9 @@
-import { concatenateResources } from "../util/resources"
 import {
   QuartzComponent,
   QuartzComponentConstructor,
   QuartzComponentProps,
 } from "../types/component"
+import { concatenateResources } from "../util/resources"
 
 type GridConfig = {
   components: {

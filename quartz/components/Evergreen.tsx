@@ -1,15 +1,15 @@
+import { h, VNode } from "preact"
+import { i18n } from "../i18n"
+import { QuartzPluginData } from "../plugins/vfile"
 import {
   QuartzComponent,
   QuartzComponentConstructor,
   QuartzComponentProps,
 } from "../types/component"
 import { getAllSegmentPrefixes, resolveRelative, SimpleSlug, simplifySlug } from "../util/path"
-import { h, VNode } from "preact"
-import { i18n } from "../i18n"
 //@ts-ignore
 import script from "./scripts/evergreen.inline"
 import style from "./styles/evergreen.scss"
-import { QuartzPluginData } from "../plugins/vfile"
 
 type Props = {
   vaults?: QuartzPluginData[]

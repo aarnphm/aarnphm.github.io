@@ -1,6 +1,6 @@
 import { CompletionContext, CompletionResult } from "@codemirror/autocomplete"
-import { getDB, githubUsers, type GithubUser } from "../../scripts/db"
 import { desc } from "drizzle-orm"
+import { getDB, githubUsers, type GithubUser } from "../../scripts/db"
 import { fuzzyMatchMultiple } from "./fuzzy"
 
 const SYNC_KEY = "mentions-last-sync"

@@ -1,4 +1,5 @@
 import micromorph from "micromorph"
+import { ContentDetails } from "../../plugins"
 import {
   FullSlug,
   RelativeURL,
@@ -6,11 +7,10 @@ import {
   normalizeRelativeURLs,
   sluggify,
 } from "../../util/path"
-import { removeAllChildren, Dag, DagNode } from "./util"
-import { ContentDetails } from "../../plugins"
 import { formatDate } from "../Date"
-import { fetchCanonical, startViewTransition } from "./util"
 import { Toast } from "./toast"
+import { removeAllChildren, Dag, DagNode } from "./util"
+import { fetchCanonical, startViewTransition } from "./util"
 
 // adapted from `micromorph`
 // https://github.com/natemoo-re/micromorph
@@ -21,10 +21,8 @@ const isElement = (target: EventTarget | null): target is Element =>
 const isLocalUrl = (href: string) => {
   try {
     const url = new URL(href)
-    if (window.location.origin === url.origin) {
-      return true
-    }
-  } catch (e) {}
+    if (window.location.origin === url.origin) return true
+  } catch {}
   return false
 }
 

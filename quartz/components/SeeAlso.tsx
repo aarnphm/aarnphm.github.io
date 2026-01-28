@@ -1,16 +1,16 @@
+import { Cite } from "@citation-js/core"
+import fs from "fs"
+import path from "path"
+import { JSX } from "preact"
+import type { FrontmatterLink } from "../plugins/transformers/frontmatter"
 import {
   QuartzComponent,
   QuartzComponentConstructor,
   QuartzComponentProps,
 } from "../types/component"
-import style from "./styles/seealsoTree.scss"
 import { classNames } from "../util/lang"
 import { FullSlug, resolveRelative } from "../util/path"
-import type { FrontmatterLink } from "../plugins/transformers/frontmatter"
-import { JSX } from "preact"
-import fs from "fs"
-import path from "path"
-import { Cite } from "@citation-js/core"
+import style from "./styles/seealsoTree.scss"
 import "@citation-js/plugin-bibtex"
 
 const MAX_DEPTH = 5

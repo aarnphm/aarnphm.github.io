@@ -1,13 +1,13 @@
-import { Link, CuriusResponse, Trail, TrailInfo, Following } from "../../types/curius"
-import { registerEscapeHandler, registerEvents, removeAllChildren } from "./util"
-import { ValidLocale, i18n } from "../../i18n"
 import FlexSearch, { Id } from "flexsearch"
+import { ValidLocale, i18n } from "../../i18n"
+import { Link, CuriusResponse, Trail, TrailInfo, Following } from "../../types/curius"
 import { LCG } from "../../util/helpers"
+import { registerEscapeHandler, registerEvents, removeAllChildren } from "./util"
 import { encode } from "./util"
 
 const CURIUS_HOST = "https://curius.app"
 export const CURIUS = `${CURIUS_HOST}/aaron-pham`
-const externalLinkRegex = /^(?:https?:\/\/)?(?:www\.)?([^\/]+)/
+const externalLinkRegex = /^(?:https?:\/\/)?(?:www\.)?([^/]+)/
 export const PINNED_FOLLOWING_IDS = [3971, 1296] as const
 
 export const fetchLinksHeaders: RequestInit = {

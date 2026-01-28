@@ -1,9 +1,14 @@
-import path from "path"
-import fs from "node:fs/promises"
-import crypto from "node:crypto"
 import { Root } from "hast"
+import { toHtml } from "hast-util-to-html"
+import crypto from "node:crypto"
+import fs from "node:fs/promises"
+import path from "path"
+import { ReadTimeResults } from "reading-time"
+import { version } from "../../../package.json"
 import { GlobalConfiguration } from "../../cfg"
 import { formatDate, getDate } from "../../components/Date"
+import { i18n } from "../../i18n"
+import { QuartzEmitterPlugin } from "../../types/plugin"
 import { escapeHTML } from "../../util/escape"
 import {
   FilePath,
@@ -14,14 +19,9 @@ import {
   simplifySlug,
   sluggify,
 } from "../../util/path"
-import { QuartzEmitterPlugin } from "../../types/plugin"
-import { toHtml } from "hast-util-to-html"
-import { write } from "./helpers"
-import { i18n } from "../../i18n"
-import { QuartzPluginData } from "../vfile"
-import { version } from "../../../package.json"
-import { ReadTimeResults } from "reading-time"
 import { ArenaData } from "../transformers/arena"
+import { QuartzPluginData } from "../vfile"
+import { write } from "./helpers"
 
 export type ContentIndexMap = Map<FullSlug, ContentDetails>
 export type ContentLayout =
@@ -260,7 +260,7 @@ function generateAtomFeed(
     ? `https://${joinSegments(base, encodeURI(options.linkPath))}`
     : `https://${base}`
   const feedTitle = escapeHTML(options.title ?? cfg.pageTitle)
-  const baseSubtitle = !!limit
+  const baseSubtitle = limit
     ? i18n(cfg.locale).pages.rss.lastFewNotes({ count: limit })
     : i18n(cfg.locale).pages.rss.recentNotes
   const feedSubtitle = escapeHTML(options.subtitle ?? `${baseSubtitle} on ${cfg.pageTitle}`)

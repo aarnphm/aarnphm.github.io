@@ -1,12 +1,13 @@
+import path from "path"
+import { i18n } from "../../i18n"
+import { QuartzPluginData } from "../../plugins/vfile"
 import {
   QuartzComponent,
   QuartzComponentConstructor,
   QuartzComponentProps,
 } from "../../types/component"
-import path from "path"
-import style from "../styles/listPage.scss"
-import PageListConstructor, { byDateAndAlphabetical, SortFn } from "../PageList"
-import PageListSearchConstructor from "../PageListSearch"
+import { FileTrieNode } from "../../util/fileTrie"
+import { htmlToJsx } from "../../util/jsx"
 import {
   stripSlashes,
   simplifySlug,
@@ -17,13 +18,12 @@ import {
   SimpleSlug,
   sluggify,
 } from "../../util/path"
-import { htmlToJsx } from "../../util/jsx"
-import { QuartzPluginData } from "../../plugins/vfile"
-import EvergreenConstructor, { AllTags, EvergreenPermanentNotes } from "../Evergreen"
-import { i18n } from "../../i18n"
-import { FileTrieNode } from "../../util/fileTrie"
-import { parseWikilink } from "../../util/wikilinks"
 import { concatenateResources } from "../../util/resources"
+import { parseWikilink } from "../../util/wikilinks"
+import EvergreenConstructor, { AllTags, EvergreenPermanentNotes } from "../Evergreen"
+import PageListConstructor, { byDateAndAlphabetical, SortFn } from "../PageList"
+import PageListSearchConstructor from "../PageListSearch"
+import style from "../styles/listPage.scss"
 
 interface FolderContentOptions {
   /**

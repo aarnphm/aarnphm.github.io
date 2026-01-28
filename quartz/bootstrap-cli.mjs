@@ -1,9 +1,9 @@
 #!/usr/bin/env -S node --no-deprecation
 import yargs from "yargs"
 import { hideBin } from "yargs/helpers"
-import { handleBuild, handleStats } from "./cli/handlers.js"
 import { BuildArgv, StatsArgv } from "./cli/args.js"
 import { version } from "./cli/constants.js"
+import { handleBuild, handleStats } from "./cli/handlers.js"
 
 yargs(hideBin(process.argv))
   .scriptName("quartz")

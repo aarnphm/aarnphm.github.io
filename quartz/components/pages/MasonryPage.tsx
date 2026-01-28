@@ -3,10 +3,10 @@ import type {
   QuartzComponentConstructor,
   QuartzComponentProps,
 } from "../../types/component"
-import style from "../styles/masonry.scss"
+import { classNames } from "../../util/lang"
 // @ts-ignore
 import script from "../scripts/masonry.inline"
-import { classNames } from "../../util/lang"
+import style from "../styles/masonry.scss"
 
 export default (() => {
   const MasonryPage: QuartzComponent = ({ fileData, displayClass }: QuartzComponentProps) => {

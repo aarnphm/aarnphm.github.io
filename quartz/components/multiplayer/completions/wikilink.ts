@@ -1,11 +1,11 @@
 import { CompletionContext, CompletionResult, Completion } from "@codemirror/autocomplete"
 import { EditorView } from "@codemirror/view"
-import { fuzzyMatch, fuzzyMatchMultiple } from "./fuzzy"
-import { frecencyStore } from "./frecency"
-import { getContentIndex } from "./data"
-import type { FuzzyMatch } from "./types"
 import type { ContentDetails } from "../../../plugins/emitters/contentIndex"
+import type { FuzzyMatch } from "./types"
 import { isStreamHost } from "../../scripts/util"
+import { getContentIndex } from "./data"
+import { frecencyStore } from "./frecency"
+import { fuzzyMatch, fuzzyMatchMultiple } from "./fuzzy"
 
 function extractNamespace(query: string): { prefix: string; remainder: string } {
   const slashIdx = query.lastIndexOf("/")

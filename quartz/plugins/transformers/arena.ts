@@ -1,13 +1,13 @@
-import { QuartzTransformerPlugin } from "../../types/plugin"
+import Slugger from "github-slugger"
 import { Element, ElementContent, Root as HastRoot, RootContent } from "hast"
 import { toString } from "hast-util-to-string"
-import Slugger from "github-slugger"
-import { externalLinkRegex } from "./ofm"
-import { fetchTwitterEmbed, twitterUrlRegex } from "./twitter"
+import yaml from "js-yaml"
+import { QuartzTransformerPlugin } from "../../types/plugin"
 import { splitAnchor, transformLink, stripSlashes, FullSlug } from "../../util/path"
 import { createWikilinkRegex, parseWikilink, resolveWikilinkTarget } from "../../util/wikilinks"
 import { buildYouTubeEmbed } from "../../util/youtube"
-import yaml from "js-yaml"
+import { externalLinkRegex } from "./ofm"
+import { fetchTwitterEmbed, twitterUrlRegex } from "./twitter"
 
 export interface ArenaBlock {
   id: string
@@ -233,7 +233,7 @@ const appendListToYaml = (list: Element, indent: number, lines: string[]): void 
     }
 
     if (rawText.length === 0) continue
-    const normalized = rawText.replace(/^\-+\s*/, "").trim()
+    const normalized = rawText.replace(/^-+\s*/, "").trim()
 
     if (normalized.includes(":")) {
       lines.push(`${indentStr}${normalized}`)

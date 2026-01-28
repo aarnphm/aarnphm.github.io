@@ -1,4 +1,5 @@
 import { QuartzPluginData } from "../../plugins/vfile"
+import { simplifySlug, FullSlug } from "../path"
 import {
   ComparisonOp,
   compileExpression,
@@ -8,9 +9,7 @@ import {
   ViewSummaryConfig,
   BuiltinSummaryType,
 } from "./types"
-import { simplifySlug, FullSlug } from "../path"
 
-// filter AST types matching obsidian bases syntax
 export type BaseFilter =
   | { type: "and"; conditions: BaseFilter[] }
   | { type: "or"; conditions: BaseFilter[] }
@@ -27,7 +26,6 @@ export type BaseFilter =
 
 export type FilePredicate = (file: QuartzPluginData, allFiles: QuartzPluginData[]) => boolean
 
-// resolve a property reference (frontmatter or file.* helper) to its value
 export function resolvePropertyValue(
   file: QuartzPluginData,
   property: string,
@@ -121,17 +119,14 @@ export function resolvePropertyValue(
   return file.frontmatter?.[key]
 }
 
-// evaluate a formula definition against a file, returning the computed value
 export function evaluateFormula(
   formula: FormulaDefinition,
   file: QuartzPluginData,
   allFiles: QuartzPluginData[] = [],
 ): any {
-  // if we have a parsed comparison formula, evaluate it
   if (formula.property && formula.operator !== undefined && formula.value !== undefined) {
     const propValue = resolvePropertyValue(file, formula.property, allFiles)
 
-    // normalize values for comparison
     const normalizeValue = (val: any): any => {
       if (val instanceof Date) return val.getTime()
       if (typeof val === "string" && /^\d{4}-\d{2}-\d{2}/.test(val)) {
@@ -178,7 +173,6 @@ export function evaluateFormula(
     }
   }
 
-  // fallback: return undefined for unparsed expressions
   return undefined
 }
 
@@ -223,7 +217,7 @@ function findFileByNormalizedSlug(
     if (!candidate.slug) {
       return false
     }
-    const candidateSlug = normalizeLinkTarget(candidate.slug as string)
+    const candidateSlug = normalizeLinkTarget(candidate.slug)
     return candidateSlug === normalized
   })
 }
@@ -249,7 +243,6 @@ function parseRegexInput(pattern: string): RegExp | null {
   }
 }
 
-// evaluate filter against all files, return matching subset
 export function evaluateFilter(
   filter: BaseFilter,
   allFiles: QuartzPluginData[],
@@ -258,7 +251,6 @@ export function evaluateFilter(
   return allFiles.filter((file) => predicate(file, allFiles))
 }
 
-// recursively build predicate function from filter AST
 function buildPredicate(filter: BaseFilter): FilePredicate {
   switch (filter.type) {
     case "and":
@@ -276,7 +268,6 @@ function buildPredicate(filter: BaseFilter): FilePredicate {
   }
 }
 
-// boolean combinators
 function and(predicates: FilePredicate[]): FilePredicate {
   return (file, allFiles) => predicates.every((p) => p(file, allFiles))
 }
@@ -289,14 +280,12 @@ function not(predicate: FilePredicate): FilePredicate {
   return (file, allFiles) => !predicate(file, allFiles)
 }
 
-// comparison predicate builder
 function parseComparison(
   property: string,
   operator: ComparisonOp,
   value: string | number | boolean | Date,
   isExpression?: boolean,
 ): FilePredicate {
-  // if isExpression is true, property is an arithmetic expression
   if (isExpression) {
     const evaluator = compileExpression(property)
     return (file, _allFiles) => {
@@ -331,24 +320,20 @@ function parseComparison(
           default:
             return false
         }
-      } catch (err) {
-        // if evaluation fails (e.g., property not a number), return false
+      } catch {
         return false
       }
     }
   }
 
-  // standard property comparison
   return (file, allFiles) => {
     const fileValue = resolvePropertyValue(file, property, allFiles)
 
-    // helper to normalize values for comparison
     const normalizeForComparison = (val: any) => {
       if (val instanceof Date) {
         return val.getTime()
       }
       if (typeof val === "string" && /^\d{4}-\d{2}-\d{2}/.test(val)) {
-        // looks like a date string, parse it
         const parsed = new Date(val)
         if (!isNaN(parsed.getTime())) {
           return parsed.getTime()
@@ -357,20 +342,15 @@ function parseComparison(
       return val
     }
 
+    const normalizedFile = normalizeForComparison(fileValue)
+    const normalizedValue = normalizeForComparison(value)
+
     switch (operator) {
-      case "==": {
-        const normalizedFile = normalizeForComparison(fileValue)
-        const normalizedValue = normalizeForComparison(value)
+      case "==":
         return normalizedFile === normalizedValue
-      }
-      case "!=": {
-        const normalizedFile = normalizeForComparison(fileValue)
-        const normalizedValue = normalizeForComparison(value)
+      case "!=":
         return normalizedFile !== normalizedValue
-      }
-      case ">": {
-        const normalizedFile = normalizeForComparison(fileValue)
-        const normalizedValue = normalizeForComparison(value)
+      case ">":
         if (typeof normalizedFile === "number" && typeof normalizedValue === "number") {
           return normalizedFile > normalizedValue
         }
@@ -378,10 +358,7 @@ function parseComparison(
           return normalizedFile > normalizedValue
         }
         return false
-      }
-      case "<": {
-        const normalizedFile = normalizeForComparison(fileValue)
-        const normalizedValue = normalizeForComparison(value)
+      case "<":
         if (typeof normalizedFile === "number" && typeof normalizedValue === "number") {
           return normalizedFile < normalizedValue
         }
@@ -389,10 +366,7 @@ function parseComparison(
           return normalizedFile < normalizedValue
         }
         return false
-      }
-      case ">=": {
-        const normalizedFile = normalizeForComparison(fileValue)
-        const normalizedValue = normalizeForComparison(value)
+      case ">=":
         if (typeof normalizedFile === "number" && typeof normalizedValue === "number") {
           return normalizedFile >= normalizedValue
         }
@@ -400,10 +374,7 @@ function parseComparison(
           return normalizedFile >= normalizedValue
         }
         return false
-      }
-      case "<=": {
-        const normalizedFile = normalizeForComparison(fileValue)
-        const normalizedValue = normalizeForComparison(value)
+      case "<=":
         if (typeof normalizedFile === "number" && typeof normalizedValue === "number") {
           return normalizedFile <= normalizedValue
         }
@@ -411,7 +382,6 @@ function parseComparison(
           return normalizedFile <= normalizedValue
         }
         return false
-      }
       case "contains":
         if (Array.isArray(fileValue)) {
           return fileValue.includes(value)
@@ -434,23 +404,18 @@ function parseComparison(
   }
 }
 
-// evaluate an argument that might contain a function call
 function evaluateArgument(arg: string): string {
   const trimmed = arg.trim()
 
-  // check for link() function call
   const linkMatch = trimmed.match(/^link\(["']?(.+?)["']?\)$/)
   if (linkMatch) {
     const target = linkMatch[1]
-    // return wikilink format to match frontmatter
     return `[[${target}]]`
   }
 
-  // return the arg as-is for other cases
   return arg
 }
 
-// method call predicate builder for property.method(args) syntax
 function buildMethodCall(
   property: string,
   method: string,
@@ -459,92 +424,79 @@ function buildMethodCall(
 ): FilePredicate {
   return (file, allFiles) => {
     const propValue = resolvePropertyValue(file, property, allFiles)
-
-    // evaluate args to handle function calls like link()
     const evaluatedArgs = args.map(evaluateArgument)
+    const applyNegation = (result: boolean) => (negated ? !result : result)
 
     switch (method) {
       case "toString": {
-        // convert value to string
-        if (propValue === undefined || propValue === null) {
-          return negated ? true : false
-        }
-        // toString() always returns true as it's a transformation, not a boolean check
-        // in obsidian, toString() is used in comparisons like: file.name.toString() == "something"
-        // but as a standalone method call check, we just verify the value exists
-        return negated ? false : true
+        return applyNegation(propValue !== undefined && propValue !== null)
       }
 
       case "contains": {
-        if (evaluatedArgs.length === 0) {
-          return negated ? true : false
-        }
-        const [needle] = evaluatedArgs
-        let result = false
+        if (evaluatedArgs.length === 0) return applyNegation(false)
+        const needle = evaluatedArgs[0]
         if (Array.isArray(propValue)) {
-          result = propValue.includes(needle)
-        } else if (typeof propValue === "string") {
-          result = propValue.includes(String(needle))
+          return applyNegation(propValue.includes(needle))
         }
-        return negated ? !result : result
+        if (typeof propValue === "string") {
+          return applyNegation(propValue.includes(String(needle)))
+        }
+        return applyNegation(false)
       }
 
       case "containsAny": {
-        let result = false
         if (Array.isArray(propValue)) {
-          result = evaluatedArgs.some((arg) => propValue.includes(arg))
-        } else if (typeof propValue === "string") {
-          result = evaluatedArgs.some((arg) => propValue.includes(String(arg)))
+          return applyNegation(evaluatedArgs.some((arg) => propValue.includes(arg)))
         }
-        return negated ? !result : result
+        if (typeof propValue === "string") {
+          return applyNegation(evaluatedArgs.some((arg) => propValue.includes(String(arg))))
+        }
+        return applyNegation(false)
       }
 
       case "containsAll": {
-        let result = false
         if (Array.isArray(propValue)) {
-          result = evaluatedArgs.every((arg) => propValue.includes(arg))
-        } else if (typeof propValue === "string") {
-          result = evaluatedArgs.every((arg) => propValue.includes(String(arg)))
+          return applyNegation(evaluatedArgs.every((arg) => propValue.includes(arg)))
         }
-        return negated ? !result : result
+        if (typeof propValue === "string") {
+          return applyNegation(evaluatedArgs.every((arg) => propValue.includes(String(arg))))
+        }
+        return applyNegation(false)
       }
 
       case "startsWith": {
-        let result = false
         if (typeof propValue === "string" && evaluatedArgs.length > 0) {
-          result = propValue.startsWith(String(evaluatedArgs[0]))
+          return applyNegation(propValue.startsWith(String(evaluatedArgs[0])))
         }
-        return negated ? !result : result
+        return applyNegation(false)
       }
 
       case "endsWith": {
-        let result = false
         if (typeof propValue === "string" && evaluatedArgs.length > 0) {
-          result = propValue.endsWith(String(evaluatedArgs[0]))
+          return applyNegation(propValue.endsWith(String(evaluatedArgs[0])))
         }
-        return negated ? !result : result
+        return applyNegation(false)
       }
 
       case "isEmpty": {
-        const result =
+        return applyNegation(
           propValue === undefined ||
-          propValue === null ||
-          propValue === "" ||
-          (Array.isArray(propValue) && propValue.length === 0) ||
-          (typeof propValue === "object" &&
-            propValue !== null &&
-            !Array.isArray(propValue) &&
-            Object.keys(propValue).length === 0)
-        return negated ? !result : result
+            propValue === null ||
+            propValue === "" ||
+            (Array.isArray(propValue) && propValue.length === 0) ||
+            (typeof propValue === "object" &&
+              propValue !== null &&
+              !Array.isArray(propValue) &&
+              Object.keys(propValue).length === 0),
+        )
       }
 
       case "isTruthy": {
-        const result = Boolean(propValue)
-        return negated ? !result : result
+        return applyNegation(Boolean(propValue))
       }
 
       case "isType": {
-        if (evaluatedArgs.length === 0) return negated ? true : false
+        if (evaluatedArgs.length === 0) return applyNegation(false)
         const typeArg = evaluatedArgs[0].toLowerCase()
         let result = false
 
@@ -571,157 +523,114 @@ function buildMethodCall(
           default:
             result = false
         }
-        return negated ? !result : result
+        return applyNegation(result)
       }
 
-      // string methods
       case "replace": {
-        // replace(search, replacement) - used for transformation, not filtering
-        // for filtering purposes, check if value is a string
-        const result = typeof propValue === "string" && evaluatedArgs.length >= 2
-        return negated ? !result : result
+        return applyNegation(typeof propValue === "string" && evaluatedArgs.length >= 2)
       }
 
       case "lower": {
-        // convert to lowercase - for filtering, check if string exists
-        const result = typeof propValue === "string"
-        return negated ? !result : result
+        return applyNegation(typeof propValue === "string")
       }
 
       case "upper": {
-        // convert to uppercase - for filtering, check if string exists
-        const result = typeof propValue === "string"
-        return negated ? !result : result
+        return applyNegation(typeof propValue === "string")
       }
 
       case "slice": {
-        // slice(start, end) - for filtering, check if value is string or array
-        const result =
-          (typeof propValue === "string" || Array.isArray(propValue)) && evaluatedArgs.length >= 1
-        return negated ? !result : result
+        return applyNegation(
+          (typeof propValue === "string" || Array.isArray(propValue)) && evaluatedArgs.length >= 1,
+        )
       }
 
       case "split": {
-        // split(delimiter) - for filtering, check if string with delimiter
-        const result = typeof propValue === "string" && evaluatedArgs.length >= 1
-        return negated ? !result : result
+        return applyNegation(typeof propValue === "string" && evaluatedArgs.length >= 1)
       }
 
       case "trim": {
-        // trim whitespace - for filtering, check if string
-        const result = typeof propValue === "string"
-        return negated ? !result : result
+        return applyNegation(typeof propValue === "string")
       }
 
-      // number methods
       case "abs": {
-        // absolute value - for filtering, check if number
-        const result = typeof propValue === "number"
-        return negated ? !result : result
+        return applyNegation(typeof propValue === "number")
       }
 
       case "ceil": {
-        // ceiling - for filtering, check if number
-        const result = typeof propValue === "number"
-        return negated ? !result : result
+        return applyNegation(typeof propValue === "number")
       }
 
       case "floor": {
-        // floor - for filtering, check if number
-        const result = typeof propValue === "number"
-        return negated ? !result : result
+        return applyNegation(typeof propValue === "number")
       }
 
       case "round": {
-        // round - for filtering, check if number
-        const result = typeof propValue === "number"
-        return negated ? !result : result
+        return applyNegation(typeof propValue === "number")
       }
 
       case "toFixed": {
-        // toFixed(decimals) - for filtering, check if number
-        const result = typeof propValue === "number" && evaluatedArgs.length >= 1
-        return negated ? !result : result
+        return applyNegation(typeof propValue === "number" && evaluatedArgs.length >= 1)
       }
 
-      // array methods
       case "join": {
-        // join(separator) - for filtering, check if array
-        const result = Array.isArray(propValue)
-        return negated ? !result : result
+        return applyNegation(Array.isArray(propValue))
       }
 
       case "reverse": {
-        const result = typeof propValue === "string" || Array.isArray(propValue)
-        return negated ? !result : result
+        return applyNegation(typeof propValue === "string" || Array.isArray(propValue))
       }
 
       case "sort": {
-        // sort array - for filtering, check if array
-        const result = Array.isArray(propValue)
-        return negated ? !result : result
+        return applyNegation(Array.isArray(propValue))
       }
 
       case "flat": {
-        const result = Array.isArray(propValue)
-        return negated ? !result : result
+        return applyNegation(Array.isArray(propValue))
       }
 
       case "map":
       case "filter": {
-        const result = Array.isArray(propValue)
-        return negated ? !result : result
+        return applyNegation(Array.isArray(propValue))
       }
 
       case "unique": {
-        // remove duplicates - for filtering, check if array
-        const result = Array.isArray(propValue)
-        return negated ? !result : result
+        return applyNegation(Array.isArray(propValue))
       }
 
       case "length": {
-        // get length - for filtering, check if string or array
-        const result =
+        return applyNegation(
           typeof propValue === "string" ||
-          Array.isArray(propValue) ||
-          (typeof propValue === "object" && propValue !== null)
-        return negated ? !result : result
+            Array.isArray(propValue) ||
+            (typeof propValue === "object" && propValue !== null),
+        )
       }
 
       case "title": {
-        const result = typeof propValue === "string"
-        return negated ? !result : result
+        return applyNegation(typeof propValue === "string")
       }
 
       case "keys": {
-        const result =
-          typeof propValue === "object" && propValue !== null && !Array.isArray(propValue)
-        return negated ? !result : result
+        return applyNegation(
+          typeof propValue === "object" && propValue !== null && !Array.isArray(propValue),
+        )
       }
 
       case "values": {
-        const result =
-          typeof propValue === "object" && propValue !== null && !Array.isArray(propValue)
-        return negated ? !result : result
+        return applyNegation(
+          typeof propValue === "object" && propValue !== null && !Array.isArray(propValue),
+        )
       }
 
       case "matches": {
-        if (typeof propValue !== "string" || evaluatedArgs.length === 0) {
-          return negated ? true : false
-        }
+        if (typeof propValue !== "string" || evaluatedArgs.length === 0) return applyNegation(false)
         const regex = parseRegexInput(evaluatedArgs[0])
-        const result = regex ? regex.test(propValue) : false
-        return negated ? !result : result
+        return applyNegation(regex ? regex.test(propValue) : false)
       }
 
       case "linksTo": {
-        if (evaluatedArgs.length === 0) {
-          return negated ? true : false
-        }
+        if (evaluatedArgs.length === 0) return applyNegation(false)
         const normalizedTarget = normalizeLinkTarget(evaluatedArgs[0])
-        if (!normalizedTarget) {
-          return negated ? true : false
-        }
+        if (!normalizedTarget) return applyNegation(false)
 
         const values = Array.isArray(propValue) ? propValue : [propValue]
         const result = values.some((val) => {
@@ -731,16 +640,13 @@ function buildMethodCall(
           const normalizedValue = normalizeLinkTarget(val)
           return normalizedValue === normalizedTarget
         })
-        return negated ? !result : result
+        return applyNegation(result)
       }
 
       case "asFile": {
-        if (typeof propValue !== "string") {
-          return negated ? true : false
-        }
+        if (typeof propValue !== "string") return applyNegation(false)
         const normalized = normalizeLinkTarget(propValue)
-        const exists = Boolean(findFileByNormalizedSlug(normalized, allFiles))
-        return negated ? !exists : exists
+        return applyNegation(Boolean(findFileByNormalizedSlug(normalized, allFiles)))
       }
 
       default:
@@ -749,11 +655,9 @@ function buildMethodCall(
   }
 }
 
-// helper to parse and evaluate a value expression
 function parseValueExpression(expr: string, file: QuartzPluginData): any {
   const trimmed = expr.trim()
 
-  // handle quoted strings
   if (
     (trimmed.startsWith('"') && trimmed.endsWith('"')) ||
     (trimmed.startsWith("'") && trimmed.endsWith("'"))
@@ -761,168 +665,94 @@ function parseValueExpression(expr: string, file: QuartzPluginData): any {
     return trimmed.slice(1, -1)
   }
 
-  // handle numbers
   const num = Number(trimmed)
   if (!isNaN(num)) return num
 
-  // handle booleans
   if (trimmed === "true") return true
   if (trimmed === "false") return false
 
-  // handle property access
   return file.frontmatter?.[trimmed]
 }
 
-// function registry - maps filter function names to predicates
 function parseFunction(name: string, args: string[]): FilePredicate {
   const registry: Record<string, (...args: string[]) => FilePredicate> = {
-    icon:
-      (...params: string[]) =>
-      () =>
-        params.length > 0,
-    image:
-      (...params: string[]) =>
-      () =>
-        params.length > 0,
+    icon: (...params: string[]) => () => params.length > 0,
+    image: (...params: string[]) => () => params.length > 0,
     file: (target?: string) => (_file, allFiles) => {
       const normalized = normalizeLinkTarget(target)
       return Boolean(findFileByNormalizedSlug(normalized, allFiles))
     },
 
     "file.asLink": () => (file) => Boolean(file.slug),
-    "file.hasTag": (...tags: string[]) => {
-      let matchCount = 0
-      return (file, _allFiles) => {
+    "file.hasTag":
+      (...tags: string[]) =>
+      (file, _allFiles) => {
         const fileTags = file.frontmatter?.tags
         if (!Array.isArray(fileTags)) return false
-        // hasTag with multiple args means ANY of the tags (OR semantics)
-        const matched = tags.some((tag) => fileTags.includes(tag))
-        if (matched && matchCount < 3) {
-          matchCount++
-        }
-        return matched
-      }
+        return tags.some((tag) => fileTags.includes(tag))
+      },
+
+    "file.inFolder": (folder: string) => (file, _allFiles) => {
+      if (!file.slug) return false
+      const normalizedFolder = folder.endsWith("/") ? folder : folder + "/"
+      return file.slug.startsWith(normalizedFolder)
     },
 
-    "file.inFolder": (folder: string) => {
-      let matchCount = 0
-      let failCount = 0
-      return (file, _allFiles) => {
-        if (!file.slug) {
-          if (failCount < 3) {
-            failCount++
-          }
-          return false
-        }
-        // normalize folder path: library -> library/
-        const normalizedFolder = folder.endsWith("/") ? folder : folder + "/"
-        const matched = file.slug.startsWith(normalizedFolder)
-        if (matched && matchCount < 3) {
-          matchCount++
-        } else if (!matched && failCount < 5) {
-          failCount++
-        }
-        return matched
-      }
-    },
+    "file.hasProperty": (prop: string) => (file, _allFiles) =>
+      file.frontmatter?.[prop] !== undefined,
 
-    "file.hasProperty": (prop: string) => (file, _allFiles) => {
-      return file.frontmatter?.[prop] !== undefined
-    },
+    "file.hasLink": (target: string) => (file, _allFiles) =>
+      file.links?.some((link) => link === target) ?? false,
 
-    "file.hasLink": (target: string) => (file, _allFiles) => {
-      const links = file.links ?? []
-      return links.some((link) => link === target)
-    },
+    now: () => () => true,
 
-    now: () => () => {
-      // now() is typically used in comparisons, not as a predicate
-      // this should not be called directly but here for completeness
-      return true
-    },
+    today: () => () => true,
 
-    today: () => () => {
-      // today() is typically used in comparisons, not as a predicate
-      return true
-    },
-
-    date: (value: string) => (_file, _allFiles) => {
-      // convert value to date timestamp
-      try {
-        const timestamp = new Date(value).getTime()
-        return !isNaN(timestamp)
-      } catch {
-        return false
-      }
-    },
+    date: (value: string) => (_file, _allFiles) => !isNaN(new Date(value).getTime()),
 
     if: (conditionStr: string, valueIfTrue: string, valueIfFalse: string) => (file, _allFiles) => {
-      // evaluate condition as a boolean expression
-      // this is a simplified version - full implementation would need recursive parsing
-      // XXX: more complex
-      try {
-        const conditionValue = parseValueExpression(conditionStr, file)
-        const result = conditionValue
-          ? parseValueExpression(valueIfTrue, file)
-          : parseValueExpression(valueIfFalse, file)
-        return !!result
-      } catch {
-        return false
-      }
+      const conditionValue = parseValueExpression(conditionStr, file)
+      const result = conditionValue
+        ? parseValueExpression(valueIfTrue, file)
+        : parseValueExpression(valueIfFalse, file)
+      return !!result
     },
 
-    number: (_value: string) => () => {
-      // convert value to number - used for transformation
-      return true
-    },
+    number: (_value: string) => () => true,
 
     max:
       (...values: string[]) =>
       (file, _allFiles) => {
-        try {
-          const nums = values.map((v) => {
-            const parsed = parseValueExpression(v, file)
-            return typeof parsed === "number" ? parsed : Number(parsed)
-          })
-          const result = Math.max(...nums)
-          return !isNaN(result)
-        } catch {
-          return false
-        }
+        const nums = values.map((v) => {
+          const parsed = parseValueExpression(v, file)
+          return typeof parsed === "number" ? parsed : Number(parsed)
+        })
+        const result = Math.max(...nums)
+        return !isNaN(result)
       },
 
     min:
       (...values: string[]) =>
       (file, _allFiles) => {
-        try {
-          const nums = values.map((v) => {
-            const parsed = parseValueExpression(v, file)
-            return typeof parsed === "number" ? parsed : Number(parsed)
-          })
-          const result = Math.min(...nums)
-          return !isNaN(result)
-        } catch {
-          return false
-        }
+        const nums = values.map((v) => {
+          const parsed = parseValueExpression(v, file)
+          return typeof parsed === "number" ? parsed : Number(parsed)
+        })
+        const result = Math.min(...nums)
+        return !isNaN(result)
       },
 
     duration: (durationStr: string) => () => {
-      // parse duration string (e.g., "7 days", "3 hours", "30 minutes")
-      // or accept raw milliseconds as number
       const ms = parseDuration(durationStr)
       return !isNaN(ms) && ms >= 0
     },
 
     link: (target: string) => (file, _allFiles) => {
-      // create link reference - used for comparison
       const simpleTarget = simplifySlug(target as FullSlug)
       return file.links?.includes(simpleTarget) ?? false
     },
 
-    list: () => () => {
-      // create list - always returns true if called
-      return true
-    },
+    list: () => () => true,
   }
 
   const factory = registry[name]
@@ -933,7 +763,6 @@ function parseFunction(name: string, args: string[]): FilePredicate {
   return factory(...args)
 }
 
-// compute summary value for a column across all matching files
 export function computeColumnSummary(
   column: string,
   files: QuartzPluginData[],
@@ -944,8 +773,7 @@ export function computeColumnSummary(
     return undefined
   }
 
-  // collect all values for this column
-  const values: any[] = files.map((file) => resolvePropertyValue(file, column, allFiles))
+  const values = files.map((file) => resolvePropertyValue(file, column, allFiles))
 
   if (summary.type === "builtin" && summary.builtinType) {
     return computeBuiltinSummary(values, summary.builtinType)
@@ -958,7 +786,6 @@ export function computeColumnSummary(
   return undefined
 }
 
-// compute built-in summary aggregations
 function computeBuiltinSummary(
   values: any[],
   type: BuiltinSummaryType,
@@ -989,12 +816,10 @@ function computeBuiltinSummary(
       const normalized = comparable.map((v) => (v instanceof Date ? v.getTime() : v))
       const min = Math.min(...normalized.filter((v) => typeof v === "number"))
       if (isNaN(min)) {
-        // string comparison
         const strings = comparable.filter((v) => typeof v === "string") as string[]
         if (strings.length === 0) return undefined
         return strings.sort()[0]
       }
-      // check if original values were dates
       if (comparable.some((v) => v instanceof Date)) {
         return new Date(min).toISOString().split("T")[0]
       }
@@ -1090,62 +915,46 @@ function computeBuiltinSummary(
   }
 }
 
-// compute formula-based summary
-// supports expressions like: values.filter(value.isType("null")).length
-// XXX: This is mostly monkeypatched together. Proper implementation would require a small jit.
 function computeFormulaSummary(values: any[], expression: string): string | number | undefined {
-  try {
-    // parse common formula patterns
-    // pattern: values.filter(value.isType("null")).length -> count nulls
-    const isTypeNullMatch = expression.match(
-      /values\.filter\(value\.isType\(['"](null|undefined)['"]\)\)\.length/,
-    )
-    if (isTypeNullMatch) {
-      return values.filter((v) => v === null || v === undefined).length
-    }
-
-    // pattern: values.filter(value == true).reduce(acc + 1, 0)
-    const filterTrueMatch = expression.match(
-      /values\.filter\(value\s*==\s*true\)\.reduce\(acc\s*\+\s*1,\s*0\)/,
-    )
-    if (filterTrueMatch) {
-      return values.filter((v) => v === true).length
-    }
-
-    // pattern: values.filter(value == false).reduce(acc + 1, 0)
-    const filterFalseMatch = expression.match(
-      /values\.filter\(value\s*==\s*false\)\.reduce\(acc\s*\+\s*1,\s*0\)/,
-    )
-    if (filterFalseMatch) {
-      return values.filter((v) => v === false).length
-    }
-
-    // pattern: values.reduce(acc + value, 0) -> sum
-    const sumMatch = expression.match(/values\.reduce\(acc\s*\+\s*value,\s*0\)/)
-    if (sumMatch) {
-      const nums = values.filter((v) => typeof v === "number")
-      return nums.reduce((acc, v) => acc + v, 0)
-    }
-
-    // pattern: values.length
-    if (expression.trim() === "values.length") {
-      return values.length
-    }
-
-    // pattern: values.filter(value => ...).length
-    const filterLengthMatch = expression.match(/values\.filter\(.+\)\.length/)
-    if (filterLengthMatch) {
-      // for now, return count of non-null values as fallback
-      return values.filter((v) => v !== null && v !== undefined).length
-    }
-
-    return undefined
-  } catch {
-    return undefined
+  const isTypeNullMatch = expression.match(
+    /values\.filter\(value\.isType\(['"](null|undefined)['"]\)\)\.length/,
+  )
+  if (isTypeNullMatch) {
+    return values.filter((v) => v === null || v === undefined).length
   }
+
+  const filterTrueMatch = expression.match(
+    /values\.filter\(value\s*==\s*true\)\.reduce\(acc\s*\+\s*1,\s*0\)/,
+  )
+  if (filterTrueMatch) {
+    return values.filter((v) => v === true).length
+  }
+
+  const filterFalseMatch = expression.match(
+    /values\.filter\(value\s*==\s*false\)\.reduce\(acc\s*\+\s*1,\s*0\)/,
+  )
+  if (filterFalseMatch) {
+    return values.filter((v) => v === false).length
+  }
+
+  const sumMatch = expression.match(/values\.reduce\(acc\s*\+\s*value,\s*0\)/)
+  if (sumMatch) {
+    const nums = values.filter((v) => typeof v === "number")
+    return nums.reduce((acc, v) => acc + v, 0)
+  }
+
+  if (expression.trim() === "values.length") {
+    return values.length
+  }
+
+  const filterLengthMatch = expression.match(/values\.filter\(.+\)\.length/)
+  if (filterLengthMatch) {
+    return values.filter((v) => v !== null && v !== undefined).length
+  }
+
+  return undefined
 }
 
-// compute all summaries for a view
 export function computeViewSummaries(
   columns: string[],
   files: QuartzPluginData[],

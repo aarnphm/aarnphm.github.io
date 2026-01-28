@@ -1,14 +1,14 @@
-import fs from "node:fs/promises"
 import { fromMarkdown } from "mdast-util-from-markdown"
-import { gfm } from "micromark-extension-gfm"
-import { frontmatter } from "micromark-extension-frontmatter"
 import { frontmatterFromMarkdown } from "mdast-util-frontmatter"
 import { gfmFromMarkdown } from "mdast-util-gfm"
+import { toString } from "mdast-util-to-string"
+import { frontmatter } from "micromark-extension-frontmatter"
+import { gfm } from "micromark-extension-gfm"
+import fs from "node:fs/promises"
 import remarkMath from "remark-math"
+import remarkParse from "remark-parse"
 import { read } from "to-vfile"
 import { unified } from "unified"
-import remarkParse from "remark-parse"
-import { toString } from "mdast-util-to-string"
 
 const doc = await fs.readFile("./content/thoughts/sparse autoencoder.md")
 
@@ -16,6 +16,7 @@ const parsed = fromMarkdown(doc, {
   extensions: [frontmatter(["yaml", "toml"]), gfm()],
   mdastExtensions: [frontmatterFromMarkdown(["yaml", "toml"]), gfmFromMarkdown()],
 })
+console.log(parsed)
 
 const tree = unified()
   .use(remarkParse)

@@ -1,7 +1,7 @@
-import { populateSearchIndex } from "../scripts/search-index"
-import { getCommentPageId } from "./identity"
 import type { MultiplayerServices } from "./effects"
 import type { MultiplayerEvent, MultiplayerModel } from "./state"
+import { populateSearchIndex } from "../scripts/search-index"
+import { getCommentPageId } from "./identity"
 
 type MountDeps = {
   dispatch: (event: MultiplayerEvent) => void

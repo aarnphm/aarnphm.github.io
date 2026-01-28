@@ -1,7 +1,7 @@
-import path from "node:path"
-import { promises as fs } from "node:fs"
-import { execSync } from "node:child_process"
 import matter from "gray-matter"
+import { execSync } from "node:child_process"
+import { promises as fs } from "node:fs"
+import path from "node:path"
 
 interface Coordinates {
   lat: string
@@ -74,7 +74,7 @@ function parseCoordinate(value?: string): Coordinates | undefined {
   if (!value) {
     return undefined
   }
-  const inner = value.replace(/^[\[]|[\]]$/g, "")
+  const inner = value.replace(/^[[]|[\]]$/g, "")
   const parts = inner
     .split(",")
     .map((part) => normalizeCoordinatePart(part))

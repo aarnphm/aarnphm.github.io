@@ -1,20 +1,10 @@
-import { QuartzTransformerPlugin } from "../../types/plugin"
-import {
-  FullSlug,
-  RelativeURL,
-  SimpleSlug,
-  TransformOptions,
-  stripSlashes,
-  simplifySlug,
-  splitAnchor,
-  transformLink,
-} from "../../util/path"
+import { Element } from "hast"
+import { h, s } from "hastscript"
+import isAbsoluteUrl from "is-absolute-url"
 import path from "path"
 import { visit } from "unist-util-visit"
-import isAbsoluteUrl from "is-absolute-url"
-import { Element } from "hast"
-import { filterEmbedTwitter, twitterUrlRegex } from "./twitter"
-import { h, s } from "hastscript"
+import type { ArenaBlock, ArenaData } from "./arena"
+import type { FrontmatterLink } from "./frontmatter"
 import {
   anthropicSvg,
   bentomlHoverSvg,
@@ -34,8 +24,18 @@ import {
   gwernSvg,
   modularSvg,
 } from "../../components/svg"
-import type { FrontmatterLink } from "./frontmatter"
-import type { ArenaBlock, ArenaData } from "./arena"
+import { QuartzTransformerPlugin } from "../../types/plugin"
+import {
+  FullSlug,
+  RelativeURL,
+  SimpleSlug,
+  TransformOptions,
+  stripSlashes,
+  simplifySlug,
+  splitAnchor,
+  transformLink,
+} from "../../util/path"
+import { filterEmbedTwitter, twitterUrlRegex } from "./twitter"
 
 interface Options {
   enableArxivEmbed: boolean
@@ -105,7 +105,7 @@ function metadataDisablesPopover(metadata?: Record<string, any>): boolean {
  *  - https://arxiv.org/pdf/1712.05877v1.pdf
  */
 const ARXIV_URL_REGEX =
-  /^https?:\/\/arxiv\.org\/(?:abs|pdf|html)[\/\w.-]*?(\d{4}\.\d{4,5})(?:v\d+)?(?:\.pdf)?(?:[?#].*)?$/i
+  /^https?:\/\/arxiv\.org\/(?:abs|pdf|html)[/\w.-]*?(\d{4}\.\d{4,5})(?:v\d+)?(?:\.pdf)?(?:[?#].*)?$/i
 
 export function extractArxivId(url: string): string | null {
   try {

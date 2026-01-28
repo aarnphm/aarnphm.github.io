@@ -1,6 +1,6 @@
+import { ContentDetails } from "../../plugins/emitters/contentIndex"
 import { FileTrieNode } from "../../util/fileTrie"
 import { FullSlug, resolveRelative, simplifySlug } from "../../util/path"
-import { ContentDetails } from "../../plugins/emitters/contentIndex"
 
 type MaybeHTMLElement = HTMLElement | undefined
 
@@ -170,7 +170,7 @@ async function setupExplorer(currentSlug: FullSlug) {
     )
 
     const data = await fetchData
-    const entries = [...Object.entries(data)] as [FullSlug, ContentDetails][]
+    const entries = Object.entries(data) as [FullSlug, ContentDetails][]
     const trie = FileTrieNode.fromEntries(entries)
 
     // Apply functions in order

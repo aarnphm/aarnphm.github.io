@@ -1,22 +1,11 @@
-import { QuartzEmitterPlugin } from "../../types/plugin"
-import { QuartzComponentProps } from "../../types/component"
-import { pageResources, renderPage } from "../../components/renderPage"
-import { FullPageLayout } from "../../cfg"
-import { BuildCtx } from "../../util/ctx"
-import {
-  pathToRoot,
-  resolveRelative,
-  FullSlug,
-  joinSegments,
-  FilePath,
-  slugifyFilePath,
-  simplifySlug,
-  splitAnchor,
-  isAbsoluteURL,
-} from "../../util/path"
+import { Root } from "hast"
+import { h } from "hastscript"
 import { defaultContentPageLayout, sharedPageComponents } from "../../../quartz.layout"
+import { FullPageLayout } from "../../cfg"
 import { Content, BaseSearchBar, BaseViewSelector } from "../../components"
-import { write } from "./helpers"
+import { pageResources, renderPage } from "../../components/renderPage"
+import { QuartzComponentProps } from "../../types/component"
+import { QuartzEmitterPlugin } from "../../types/plugin"
 import {
   evaluateFilter,
   resolvePropertyValue,
@@ -32,11 +21,22 @@ import {
   parseViewSummaries,
   BasesConfigFile,
 } from "../../util/base/types"
-import { QuartzPluginData } from "../vfile"
-import { Root } from "hast"
-import { h } from "hastscript"
-import { createWikilinkRegex } from "../../util/wikilinks"
+import { BuildCtx } from "../../util/ctx"
+import {
+  pathToRoot,
+  resolveRelative,
+  FullSlug,
+  joinSegments,
+  FilePath,
+  slugifyFilePath,
+  simplifySlug,
+  splitAnchor,
+  isAbsoluteURL,
+} from "../../util/path"
 import { StaticResources } from "../../util/resources"
+import { createWikilinkRegex } from "../../util/wikilinks"
+import { QuartzPluginData } from "../vfile"
+import { write } from "./helpers"
 
 const wikilinkRegex = createWikilinkRegex()
 const INLINE_WIKILINK_REGEX = createWikilinkRegex()

@@ -1,5 +1,3 @@
-import { registerEscapeHandler, removeAllChildren, fetchCanonical } from "./util"
-import { normalizeRelativeURLs } from "../../util/path"
 import type { DragBehavior } from "d3-drag"
 import type { Simulation } from "d3-force"
 import type { ZoomBehavior } from "d3-zoom"
@@ -15,6 +13,8 @@ import {
   zoomIdentity,
 } from "d3"
 import { marked } from "marked"
+import { normalizeRelativeURLs } from "../../util/path"
+import { registerEscapeHandler, removeAllChildren, fetchCanonical } from "./util"
 
 marked.setOptions({ breaks: true, gfm: true })
 

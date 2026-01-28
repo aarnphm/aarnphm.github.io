@@ -1,17 +1,17 @@
-import { QuartzTransformerPlugin } from "../../types/plugin"
-import { Root as MdRoot } from "mdast"
 import { Element } from "hast"
-import { visit } from "unist-util-visit"
+import { fromHtmlIsomorphic } from "hast-util-from-html-isomorphic"
+import { toHtml } from "hast-util-to-html"
+import { s, h } from "hastscript"
+import { Root as MdRoot } from "mdast"
 // @ts-ignore
 import Lexer from "pseudocode/src/Lexer.js"
 // @ts-ignore
 import Parser from "pseudocode/src/Parser.js"
 // @ts-ignore
 import Renderer from "pseudocode/src/Renderer.js"
-import { s, h } from "hastscript"
+import { visit } from "unist-util-visit"
+import { QuartzTransformerPlugin } from "../../types/plugin"
 import { extractInlineMacros } from "../../util/latex"
-import { toHtml } from "hast-util-to-html"
-import { fromHtmlIsomorphic } from "hast-util-from-html-isomorphic"
 
 export interface Options {
   code: string

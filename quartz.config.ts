@@ -1,6 +1,6 @@
 import { GlobalConfiguration, QuartzConfig, customMacros, katexOptions } from "./quartz/cfg"
-import * as Plugin from "./quartz/plugins"
 import * as Component from "./quartz/components"
+import * as Plugin from "./quartz/plugins"
 
 const configuration: GlobalConfiguration = {
   pageTitle: "Aaron's notes",

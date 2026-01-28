@@ -1,5 +1,5 @@
-import { BaseFilter } from "./query"
 import { QuartzPluginData } from "../../plugins/vfile"
+import { BaseFilter } from "./query"
 
 export type ComparisonOp = "==" | "!=" | ">" | "<" | ">=" | "<=" | "contains" | "!contains"
 
@@ -99,7 +99,6 @@ export interface BaseTableData {
   columns: string[]
 }
 
-// tokenize arithmetic expression
 type Token =
   | { type: "number"; value: number }
   | { type: "property"; value: string }
@@ -114,20 +113,17 @@ function tokenizeExpression(expr: string): Token[] {
   while (i < expr.length) {
     const char = expr[i]
 
-    // skip whitespace
     if (/\s/.test(char)) {
       i++
       continue
     }
 
-    // operators
     if (["+", "-", "*", "/", "%"].includes(char)) {
       tokens.push({ type: "operator", value: char as "+" | "-" | "*" | "/" | "%" })
       i++
       continue
     }
 
-    // parentheses
     if (char === "(") {
       tokens.push({ type: "lparen" })
       i++
@@ -140,7 +136,6 @@ function tokenizeExpression(expr: string): Token[] {
       continue
     }
 
-    // numbers (including decimals)
     if (/\d/.test(char)) {
       let numStr = ""
       while (i < expr.length && /[\d.]/.test(expr[i])) {
@@ -151,7 +146,6 @@ function tokenizeExpression(expr: string): Token[] {
       continue
     }
 
-    // property references (alphanumeric, dots, underscores)
     if (/[a-zA-Z_]/.test(char)) {
       let propStr = ""
       while (i < expr.length && /[a-zA-Z0-9_.]/.test(expr[i])) {
@@ -168,11 +162,6 @@ function tokenizeExpression(expr: string): Token[] {
   return tokens
 }
 
-// recursive descent parser for arithmetic expressions
-// grammar:
-//   expr    -> term (('+' | '-') term)*
-//   term    -> factor (('*' | '/' | '%') factor)*
-//   factor  -> number | property | '(' expr ')'
 class ExpressionParser {
   private tokens: Token[]
   private pos: number
@@ -191,8 +180,7 @@ class ExpressionParser {
   }
 
   parse(): (props: Record<string, any>) => number {
-    const tree = this.parseExpr()
-    return tree
+    return this.parseExpr()
   }
 
   private parseExpr(): (props: Record<string, any>) => number {
@@ -284,20 +272,16 @@ class ExpressionParser {
   }
 }
 
-// compile arithmetic expression to evaluator function
 export function compileExpression(expr: string): (props: Record<string, any>) => number {
   const tokens = tokenizeExpression(expr)
   const parser = new ExpressionParser(tokens)
   return parser.parse()
 }
 
-// check if string contains arithmetic operators
 function hasArithmeticOperators(str: string): boolean {
   return /[+\-*/%()]/.test(str)
 }
 
-// parse value from string to proper type
-// note: now() and today() return Date objects (not timestamps) for compatibility with date arithmetic
 export function parseDuration(durationStr: string): number {
   const str = durationStr.toLowerCase().trim()
 
@@ -332,22 +316,18 @@ export function parseDuration(durationStr: string): number {
 function parseValue(val: string): string | number | boolean | Date {
   const trimmed = val.trim()
 
-  // handle function calls
   const funcMatch = trimmed.match(/^(now|today|date|duration|number)\(/)
   if (funcMatch) {
     const funcName = funcMatch[1]
     if (funcName === "now") {
-      // return Date object representing current moment
       return new Date()
     }
     if (funcName === "today") {
-      // return Date object representing today at midnight
       const d = new Date()
       d.setHours(0, 0, 0, 0)
       return d
     }
     if (funcName === "date") {
-      // extract argument from date("2023-01-01")
       const argMatch = trimmed.match(/^date\(['"](.+)['"]\)$/)
       if (argMatch) {
         const dateStr = argMatch[1]
@@ -376,17 +356,14 @@ function parseValue(val: string): string | number | boolean | Date {
     }
   }
 
-  // handle quoted strings
   if (
     (trimmed.startsWith('"') && trimmed.endsWith('"')) ||
     (trimmed.startsWith("'") && trimmed.endsWith("'"))
   ) {
     const unquoted = trimmed.slice(1, -1)
 
-    // try parsing as ISO date
     if (/^\d{4}-\d{2}-\d{2}(T\d{2}:\d{2}:\d{2}(\.\d{3})?Z?)?$/.test(unquoted)) {
       const timestamp = new Date(unquoted).getTime()
-      // check for invalid date
       if (!isNaN(timestamp)) {
         return timestamp
       }
@@ -394,14 +371,11 @@ function parseValue(val: string): string | number | boolean | Date {
 
     return unquoted
   }
-  // handle booleans
   if (trimmed === "true") return true
   if (trimmed === "false") return false
-  // handle numbers
   const num = Number(trimmed)
   if (!isNaN(num)) return num
 
-  // handle unquoted ISO dates (for backward compatibility)
   if (/^\d{4}-\d{2}-\d{2}(T\d{2}:\d{2}:\d{2}(\.\d{3})?Z?)?$/.test(trimmed)) {
     const timestamp = new Date(trimmed).getTime()
     if (!isNaN(timestamp)) {
@@ -409,11 +383,9 @@ function parseValue(val: string): string | number | boolean | Date {
     }
   }
 
-  // fallback to string
   return trimmed
 }
 
-// tokenize filter expression for boolean operators
 function tokenizeFilter(expr: string): string[] {
   const tokens: string[] = []
   let current = ""
@@ -425,7 +397,6 @@ function tokenizeFilter(expr: string): string[] {
     const char = expr[i]
     const next = expr[i + 1]
 
-    // track quote state
     if ((char === '"' || char === "'") && (i === 0 || expr[i - 1] !== "\\")) {
       if (!inQuotes) {
         inQuotes = true
@@ -441,13 +412,11 @@ function tokenizeFilter(expr: string): string[] {
       continue
     }
 
-    // skip processing inside quotes
     if (inQuotes) {
       current += char
       continue
     }
 
-    // track parentheses
     if (char === "(") {
       parenDepth++
       current += char
@@ -459,20 +428,19 @@ function tokenizeFilter(expr: string): string[] {
       continue
     }
 
-    // detect && and || operators at depth 0
     if (parenDepth === 0) {
       if (char === "&" && next === "&") {
         if (current.trim()) tokens.push(current.trim())
         tokens.push("&&")
         current = ""
-        i++ // skip next &
+        i++
         continue
       }
       if (char === "|" && next === "|") {
         if (current.trim()) tokens.push(current.trim())
         tokens.push("||")
         current = ""
-        i++ // skip next |
+        i++
         continue
       }
     }
@@ -487,17 +455,13 @@ function tokenizeFilter(expr: string): string[] {
   return tokens
 }
 
-// parse filter with inline boolean operators
 function parseFilterWithBoolean(expr: string): BaseFilter {
   const tokens = tokenizeFilter(expr)
 
-  // no boolean operators found
   if (tokens.length === 1) {
     return parseFilterAtom(tokens[0])
   }
 
-  // parse with precedence: || has lower precedence than &&
-  // first split by ||, then recursively split by &&
   const orGroups: string[][] = [[]]
   let currentGroup = 0
 
@@ -510,7 +474,6 @@ function parseFilterWithBoolean(expr: string): BaseFilter {
     }
   }
 
-  // if we have multiple OR groups
   if (orGroups.length > 1) {
     return {
       type: "or",
@@ -518,11 +481,9 @@ function parseFilterWithBoolean(expr: string): BaseFilter {
     }
   }
 
-  // single group, parse as AND
   return parseAndGroup(orGroups[0])
 }
 
-// parse a group of tokens connected by &&
 function parseAndGroup(tokens: string[]): BaseFilter {
   const andConditions: BaseFilter[] = []
 
@@ -542,19 +503,15 @@ function parseAndGroup(tokens: string[]): BaseFilter {
   }
 }
 
-// parse a single atomic filter expression (no boolean operators)
 function parseFilterAtom(raw: string): BaseFilter {
   const trimmed = raw.trim()
 
-  // check for negation prefix FIRST (before parentheses)
   const negated = trimmed.startsWith("!")
   const cleanRaw = negated ? trimmed.slice(1).trim() : trimmed
 
-  // handle parentheses grouping (after negation check)
   if (cleanRaw.startsWith("(") && cleanRaw.endsWith(")")) {
     const inner = cleanRaw.slice(1, -1)
     const innerFilter = parseFilterWithBoolean(inner)
-    // if negated, wrap in not
     if (negated) {
       return {
         type: "not",
@@ -564,12 +521,10 @@ function parseFilterAtom(raw: string): BaseFilter {
     return innerFilter
   }
 
-  // try method call: 'property.method("arg1", "arg2")' or '!property.method("arg")'
   const methodMatch = cleanRaw.match(/^([\w.-]+)\.([\w]+)\((.*)\)$/)
   if (methodMatch) {
     const [, property, method, argsStr] = methodMatch
 
-    // check if this is a file.* function (special case)
     if (property === "file") {
       const fullName = `${property}.${method}`
       const args = argsStr
@@ -597,7 +552,6 @@ function parseFilterAtom(raw: string): BaseFilter {
       }
     }
 
-    // regular method call on property
     const args = argsStr
       .split(",")
       .map((s) => s.trim().replace(/^["']|["']$/g, ""))
@@ -611,7 +565,6 @@ function parseFilterAtom(raw: string): BaseFilter {
     }
   }
 
-  // try function call: 'file.hasTag("book", "article")'
   const funcMatch = cleanRaw.match(/^([\w.]+)\((.*)\)$/)
   if (funcMatch) {
     const [, name, argsStr] = funcMatch
@@ -640,17 +593,13 @@ function parseFilterAtom(raw: string): BaseFilter {
     }
   }
 
-  // try comparison expression: 'property == "value"' or 'status != "finished"'
-  // also support arithmetic: 'price * 1.13 > 50' or '(end - start) / 86400000 > 7'
   const comparisonMatch = trimmed.match(/^(.+?)\s*(==|!=|>=|<=|>|<|contains|!contains)\s*(.+)$/)
   if (comparisonMatch) {
     const [, leftStr, operator, rightStr] = comparisonMatch
     const left = leftStr.trim()
     const right = rightStr.trim()
 
-    // check if left side has arithmetic operators
     if (hasArithmeticOperators(left)) {
-      // parse right side as value (must be constant)
       const value = parseValue(right)
       return {
         type: "comparison",
@@ -661,7 +610,6 @@ function parseFilterAtom(raw: string): BaseFilter {
       }
     }
 
-    // standard property comparison
     const value = parseValue(right)
     return {
       type: "comparison",
@@ -671,10 +619,7 @@ function parseFilterAtom(raw: string): BaseFilter {
     }
   }
 
-  // handle implicit boolean property reference: 'deleted' or '!deleted'
-  // these are shorthand for 'deleted == true' or 'deleted == false'
   if (negated) {
-    // !propertyName -> propertyName == false
     if (/^[a-zA-Z_][\w.]*$/.test(cleanRaw)) {
       return {
         type: "comparison",
@@ -684,7 +629,6 @@ function parseFilterAtom(raw: string): BaseFilter {
       }
     }
   } else {
-    // propertyName -> propertyName == true (but only if no operators found)
     if (/^[a-zA-Z_][\w.]*$/.test(trimmed)) {
       return {
         type: "comparison",

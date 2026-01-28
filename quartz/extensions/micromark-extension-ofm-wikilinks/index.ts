@@ -1,3 +1,4 @@
+import type { Root } from "mdast"
 /**
  * ofm-wikilink - micromark extension for Obsidian-flavored wikilinks.
  *
@@ -22,10 +23,9 @@
  * ```
  */
 import type { Processor } from "unified"
-import type { Root } from "mdast"
+import { wikilinkFromMarkdown, isWikilink } from "./fromMarkdown"
 import { wikilink } from "./syntax"
 import { wikilinkToMarkdown } from "./toMarkdown"
-import { wikilinkFromMarkdown, isWikilink } from "./fromMarkdown"
 
 export { wikilink, wikilinkToMarkdown, wikilinkFromMarkdown, isWikilink }
 export type { Wikilink, WikilinkData, FromMarkdownOptions } from "./fromMarkdown"

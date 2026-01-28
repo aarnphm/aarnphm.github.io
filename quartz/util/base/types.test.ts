@@ -1,5 +1,5 @@
-import test, { describe } from "node:test"
 import assert from "node:assert"
+import test, { describe } from "node:test"
 import { parseFilter, parseViews, compileExpression } from "./types"
 
 describe("base types parser", () => {
@@ -538,9 +538,7 @@ describe("base types parser", () => {
         if (result.type === "and") {
           assert.strictEqual(result.conditions.length, 2)
           assert.strictEqual(result.conditions[0].type, "comparison")
-          // second condition should be negated comparison
           const secondCond = result.conditions[1]
-          // !archived should be parsed as a filter expression
           assert.ok(secondCond !== undefined)
         }
       })
@@ -629,14 +627,12 @@ describe("base types parser", () => {
         assert.strictEqual(result.type, "and")
         if (result.type === "and") {
           assert.strictEqual(result.conditions.length, 2)
-          // first condition is negated parenthesized OR
           const firstCond = result.conditions[0]
           assert.strictEqual(firstCond.type, "not")
           if (firstCond.type === "not") {
             assert.strictEqual(firstCond.conditions.length, 1)
             assert.strictEqual(firstCond.conditions[0].type, "or")
           }
-          // second condition is negated implicit boolean
           const secondCond = result.conditions[1]
           assert.strictEqual(secondCond.type, "comparison")
           if (secondCond.type === "comparison") {
@@ -965,7 +961,6 @@ describe("base types parser", () => {
     test("decimal numbers", () => {
       const evaluator = compileExpression("price * 1.13")
       const result = evaluator({ price: 100 })
-      // use tolerance for floating point comparison
       assert.ok(Math.abs(result - 113) < 0.001)
     })
 

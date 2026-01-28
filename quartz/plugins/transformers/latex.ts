@@ -1,7 +1,7 @@
-import remarkMath from "remark-math"
-import rehypeKatex from "rehype-katex"
-import { QuartzTransformerPlugin } from "../../types/plugin"
 import { KatexOptions } from "katex"
+import rehypeKatex from "rehype-katex"
+import remarkMath from "remark-math"
+import { QuartzTransformerPlugin } from "../../types/plugin"
 
 interface Options {
   renderEngine: "katex"

@@ -1,7 +1,7 @@
-import { fetchCanonical, tokenizeTerm, highlight } from "../scripts/util"
+import type { ArenaEvent, SearchResultOptions, SearchScope } from "./model"
 import { normalizeRelativeURLs } from "../../util/path"
 import { loadMapbox, applyMonochromeMapPalette } from "../scripts/mapbox-client"
-import type { ArenaEvent, SearchResultOptions, SearchScope } from "./model"
+import { fetchCanonical, tokenizeTerm, highlight } from "../scripts/util"
 
 let currentBlockIndex = 0
 let totalBlocks = 0
