@@ -39,21 +39,13 @@ function getFileBaseName(filePath?: string, slug?: string): string | undefined {
 }
 
 function getFileDisplayName(file?: QuartzPluginData): string | undefined {
-  if (!file) {
-    return undefined
-  }
+  if (!file) return undefined
   const title = file.frontmatter?.title
-  if (typeof title === "string" && title.length > 0) {
-    return title
-  }
+  if (typeof title === "string" && title.length > 0) return title
   const baseFromPath = getFileBaseName(file.filePath as string | undefined)
-  if (baseFromPath) {
-    return baseFromPath
-  }
+  if (baseFromPath) return baseFromPath
   const baseFromSlug = getFileBaseName(file.slug)
-  if (baseFromSlug) {
-    return baseFromSlug.replace(/-/g, " ")
-  }
+  if (baseFromSlug) return baseFromSlug.replace(/-/g, " ")
   return undefined
 }
 
@@ -295,7 +287,7 @@ function buildTableCell(
       return h("td", {}, "")
     }
     const nodes: any[] = []
-    backlinks.forEach((entry: string, _index: number) => {
+    backlinks.forEach((entry: string) => {
       if (!entry) {
         return
       }

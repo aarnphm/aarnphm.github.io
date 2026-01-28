@@ -156,15 +156,11 @@ function computeBuiltinSummary(
       return Math.round(Math.sqrt(variance) * 100) / 100
     }
 
-    case "checked": {
-      const count = values.filter((v) => v === true).length
-      return count
-    }
+    case "checked":
+      return values.filter((v) => v === true).length
 
-    case "unchecked": {
-      const count = values.filter((v) => v === false).length
-      return count
-    }
+    case "unchecked":
+      return values.filter((v) => v === false).length
 
     case "empty": {
       const count = values.filter(

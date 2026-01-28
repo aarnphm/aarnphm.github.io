@@ -1334,7 +1334,7 @@ const applyListFilter = (
           file: value.value,
           propertyCache: undefined,
           formulaCache: undefined,
-          formulaStack: new Set(),
+          formulaStack: new Set<string>(),
         }
       : ctx
     const nextCtx: EvalContext = { ...fileCtx, locals: { ...baseLocals, ...locals } }
@@ -1356,7 +1356,7 @@ const applyListMap = (receiver: Value, program: ProgramIR | null, ctx: EvalConte
           file: value.value,
           propertyCache: undefined,
           formulaCache: undefined,
-          formulaStack: new Set(),
+          formulaStack: new Set<string>(),
         }
       : ctx
     const nextCtx: EvalContext = { ...fileCtx, locals: { ...baseLocals, ...locals } }
@@ -1386,7 +1386,7 @@ const applyListReduce = (
           file: value.value,
           propertyCache: undefined,
           formulaCache: undefined,
-          formulaStack: new Set(),
+          formulaStack: new Set<string>(),
         }
       : ctx
     const nextCtx: EvalContext = { ...fileCtx, locals: { ...baseLocals, ...locals } }
@@ -1725,8 +1725,3 @@ const findFileByTarget = (target: string, ctx: EvalContext): QuartzPluginData | 
   if (indexed) return indexed
   return ctx.allFiles.find((entry) => resolveFileSlug(entry) === slug)
 }
-
-export const buildSyntheticSpan = (): Span => ({
-  start: { offset: 0, line: 0, column: 0 },
-  end: { offset: 0, line: 0, column: 0 },
-})
