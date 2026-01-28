@@ -9,6 +9,7 @@ import {
   ViewSummaryConfig,
   BuiltinSummaryType,
 } from "./types"
+import { evaluateSummaryExpression, valueToUnknown, EvalContext, Expr } from "./compiler"
 
 export type BaseFilter =
   | { type: "and"; conditions: BaseFilter[] }
@@ -26,6 +27,9 @@ export type BaseFilter =
 
 export type FilePredicate = (file: QuartzPluginData, allFiles: QuartzPluginData[]) => boolean
 
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+  typeof value === "object" && value !== null
+
 export function resolvePropertyValue(
   file: QuartzPluginData,
   property: string,
@@ -34,6 +38,16 @@ export function resolvePropertyValue(
   if (property.startsWith("file.")) {
     switch (property) {
       case "file.name": {
+        const filePath = file.filePath as string | undefined
+        if (filePath) {
+          const segment = filePath.split("/").pop() || ""
+          return segment.replace(/\.[^/.]+$/, "")
+        }
+        const slug = file.slug || ""
+        const segment = slug.split("/").pop() || ""
+        return segment.replace(/\.[^/.]+$/, "")
+      }
+      case "file.basename": {
         const filePath = file.filePath as string | undefined
         if (filePath) {
           const segment = filePath.split("/").pop() || ""
@@ -59,6 +73,8 @@ export function resolvePropertyValue(
       }
       case "file.path":
         return file.filePath || file.slug || ""
+      case "file.file":
+        return file.slug || file.filePath || ""
       case "file.link":
         return file.slug || ""
       case "file.folder": {
@@ -89,6 +105,18 @@ export function resolvePropertyValue(
       }
       case "file.aliases":
         return file.frontmatter?.aliases || []
+      case "file.properties":
+        return file.frontmatter || {}
+      case "file.embeds": {
+        const record = isRecord(file) ? file : null
+        const embedsValue = record && Array.isArray(record.embeds) ? record.embeds : []
+        return embedsValue
+      }
+      case "file.size": {
+        const record = isRecord(file) ? file : null
+        const sizeValue = record && typeof record.size === "number" ? record.size : undefined
+        return sizeValue
+      }
       case "file.ctime":
         return file.dates?.created ? new Date(file.dates.created) : undefined
       case "file.mtime":
@@ -769,23 +797,44 @@ function parseFunction(name: string, args: string[]): FilePredicate {
   return factory(...args)
 }
 
+type SummaryValueResolver = (
+  file: QuartzPluginData,
+  column: string,
+  allFiles: QuartzPluginData[],
+) => unknown
+
+type SummaryContextFactory = (file: QuartzPluginData) => EvalContext
+
 export function computeColumnSummary(
   column: string,
   files: QuartzPluginData[],
   summary: SummaryDefinition,
   allFiles: QuartzPluginData[] = [],
+  summaryExpression?: Expr,
+  valueResolver?: SummaryValueResolver,
+  getContext?: SummaryContextFactory,
 ): string | number | undefined {
   if (files.length === 0) {
     return undefined
   }
 
-  const values = files.map((file) => resolvePropertyValue(file, column, allFiles))
+  const values = files.map((file) =>
+    valueResolver ? valueResolver(file, column, allFiles) : resolvePropertyValue(file, column, allFiles),
+  )
 
   if (summary.type === "builtin" && summary.builtinType) {
     return computeBuiltinSummary(values, summary.builtinType)
   }
 
   if (summary.type === "formula" && summary.expression) {
+    if (summaryExpression && getContext) {
+      const value = evaluateSummaryExpression(summaryExpression, values, getContext(files[0]))
+      const unknownValue = valueToUnknown(value)
+      if (typeof unknownValue === "number" || typeof unknownValue === "string") {
+        return unknownValue
+      }
+      return undefined
+    }
     return computeFormulaSummary(values, summary.expression)
   }
 
@@ -882,6 +931,48 @@ function computeBuiltinSummary(
       return missing.length
     }
 
+    case "median": {
+      const nums = values.filter((v) => typeof v === "number") as number[]
+      if (nums.length === 0) return undefined
+      const sorted = [...nums].sort((a, b) => a - b)
+      const mid = Math.floor(sorted.length / 2)
+      if (sorted.length % 2 === 0) {
+        return (sorted[mid - 1] + sorted[mid]) / 2
+      }
+      return sorted[mid]
+    }
+
+    case "stddev": {
+      const nums = values.filter((v) => typeof v === "number") as number[]
+      if (nums.length === 0) return undefined
+      const mean = nums.reduce((acc, v) => acc + v, 0) / nums.length
+      const variance =
+        nums.reduce((acc, v) => acc + (v - mean) * (v - mean), 0) / nums.length
+      return Math.round(Math.sqrt(variance) * 100) / 100
+    }
+
+    case "checked": {
+      const count = values.filter((v) => v === true).length
+      return count
+    }
+
+    case "unchecked": {
+      const count = values.filter((v) => v === false).length
+      return count
+    }
+
+    case "empty": {
+      const count = values.filter(
+        (v) =>
+          v === undefined ||
+          v === null ||
+          v === "" ||
+          (Array.isArray(v) && v.length === 0) ||
+          (typeof v === "object" && v !== null && !Array.isArray(v) && Object.keys(v).length === 0),
+      ).length
+      return count
+    }
+
     case "earliest": {
       const dates = values.filter(
         (v) =>
@@ -966,6 +1057,9 @@ export function computeViewSummaries(
   files: QuartzPluginData[],
   summaryConfig: ViewSummaryConfig | undefined,
   allFiles: QuartzPluginData[] = [],
+  summaryExpressions?: Record<string, Expr>,
+  getContext?: SummaryContextFactory,
+  valueResolver?: SummaryValueResolver,
 ): Record<string, string | number | undefined> {
   const results: Record<string, string | number | undefined> = {}
 
@@ -976,7 +1070,16 @@ export function computeViewSummaries(
   for (const column of columns) {
     const summary = summaryConfig.columns[column]
     if (summary) {
-      results[column] = computeColumnSummary(column, files, summary, allFiles)
+      const expression = summaryExpressions ? summaryExpressions[column] : undefined
+      results[column] = computeColumnSummary(
+        column,
+        files,
+        summary,
+        allFiles,
+        expression,
+        valueResolver,
+        getContext,
+      )
     }
   }
 

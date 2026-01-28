@@ -16,20 +16,6 @@ export interface FormulaDefinition {
   value?: string | number | boolean | Date
 }
 
-export type BuiltinSummaryType =
-  | "count"
-  | "sum"
-  | "average"
-  | "avg"
-  | "min"
-  | "max"
-  | "range"
-  | "unique"
-  | "filled"
-  | "missing"
-  | "earliest"
-  | "latest"
-
 export interface SummaryDefinition {
   type: "builtin" | "formula"
   builtinType?: BuiltinSummaryType
@@ -734,7 +720,7 @@ export function parseViews(raw: any): BaseView[] {
   })
 }
 
-const BUILTIN_SUMMARY_TYPES: BuiltinSummaryType[] = [
+const BUILTIN_SUMMARY_TYPES = [
   "count",
   "sum",
   "average",
@@ -745,9 +731,16 @@ const BUILTIN_SUMMARY_TYPES: BuiltinSummaryType[] = [
   "unique",
   "filled",
   "missing",
+  "median",
+  "stddev",
+  "checked",
+  "unchecked",
+  "empty",
   "earliest",
   "latest",
-]
+] as const
+
+export type BuiltinSummaryType = (typeof BUILTIN_SUMMARY_TYPES)[number]
 
 export function parseViewSummaries(
   viewSummaries: Record<string, string> | ViewSummaryConfig | undefined,

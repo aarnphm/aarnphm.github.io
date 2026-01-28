@@ -21,6 +21,16 @@ import {
   parseViewSummaries,
   BasesConfigFile,
 } from "../../util/base/types"
+import {
+  BaseExpressionDiagnostic,
+  BasesExpressions,
+  Expr,
+  evaluateExpression,
+  evaluateFilterExpression,
+  valueToUnknown,
+  EvalContext,
+  Value,
+} from "../../util/base/compiler"
 import { BuildCtx } from "../../util/ctx"
 import {
   pathToRoot,
@@ -251,12 +261,36 @@ function buildTableHead(columns: string[], properties?: Record<string, PropertyC
   )
 }
 
+type EvalContextFactory = (file: QuartzPluginData) => EvalContext
+
+type FormulaExpressionMap = Record<string, Expr>
+
+function resolveValueWithFormulas(
+  file: QuartzPluginData,
+  property: string,
+  allFiles: QuartzPluginData[],
+  formulas: FormulaExpressionMap | undefined,
+  getContext: EvalContextFactory | undefined,
+): unknown {
+  if (property.startsWith("formula.") && formulas && getContext) {
+    const name = property.slice("formula.".length)
+    const expr = formulas[name]
+    if (expr) {
+      const value = evaluateExpression(expr, getContext(file))
+      return valueToUnknown(value)
+    }
+  }
+  return resolvePropertyValue(file, property, allFiles)
+}
+
 function buildTableCell(
   file: QuartzPluginData,
   column: string,
   currentSlug: FullSlug,
   allFiles: QuartzPluginData[],
   formulas?: Record<string, FormulaDefinition>,
+  formulaExpressions?: FormulaExpressionMap,
+  getContext?: EvalContextFactory,
 ): any {
   const fallbackSlugSegment = file.slug?.split("/").pop() || ""
   const fallbackTitle =
@@ -266,11 +300,24 @@ function buildTableCell(
   // handle formula.* columns
   if (column.startsWith("formula.")) {
     const formulaName = column.slice("formula.".length)
+    if (formulaExpressions && getContext) {
+      const expr = formulaExpressions[formulaName]
+      if (!expr) {
+        return h("td", {}, "")
+      }
+      const value = valueToUnknown(evaluateExpression(expr, getContext(file)))
+      if (typeof value === "boolean") {
+        return h("td", {}, [renderBooleanCheckbox(value)])
+      }
+      if (value === undefined || value === null) {
+        return h("td", {}, "")
+      }
+      return h("td", {}, String(value))
+    }
     const formula = formulas?.[formulaName]
     if (!formula) {
       return h("td", {}, "")
     }
-
     const value = evaluateFormula(formula, file, allFiles)
     if (typeof value === "boolean") {
       return h("td", {}, [renderBooleanCheckbox(value)])
@@ -338,12 +385,7 @@ function buildTableCell(
     return buildTableCell(file, actualColumn, currentSlug, allFiles, formulas)
   }
 
-  let value: any
-  if (column.startsWith("file.")) {
-    value = resolvePropertyValue(file, column, allFiles)
-  } else {
-    value = file.frontmatter?.[column]
-  }
+  const value = resolveValueWithFormulas(file, column, allFiles, formulaExpressions, getContext)
 
   if (value === undefined || value === null) {
     return h("td", {}, "")
@@ -385,6 +427,8 @@ function applySorting(
   files: QuartzPluginData[],
   sortConfig: { property: string; direction: "ASC" | "DESC" }[] = [],
   allFiles: QuartzPluginData[] = [],
+  formulaExpressions?: FormulaExpressionMap,
+  getContext?: EvalContextFactory,
 ): QuartzPluginData[] {
   if (sortConfig.length === 0) return files
 
@@ -400,8 +444,8 @@ function applySorting(
 
   return [...files].sort((a, b) => {
     for (const { property, direction } of sortConfig) {
-      const aRaw = resolvePropertyValue(a, property, allFiles)
-      const bRaw = resolvePropertyValue(b, property, allFiles)
+      const aRaw = resolveValueWithFormulas(a, property, allFiles, formulaExpressions, getContext)
+      const bRaw = resolveValueWithFormulas(b, property, allFiles, formulaExpressions, getContext)
 
       const aVal = normalizeSortValue(aRaw)
       const bVal = normalizeSortValue(bRaw)
@@ -434,6 +478,9 @@ function applySorting(
 function groupFiles(
   files: QuartzPluginData[],
   groupBy: string | BaseGroupBy,
+  allFiles: QuartzPluginData[],
+  formulaExpressions?: FormulaExpressionMap,
+  getContext?: EvalContextFactory,
 ): Map<string, QuartzPluginData[]> {
   const groups = new Map<string, QuartzPluginData[]>()
 
@@ -441,7 +488,7 @@ function groupFiles(
   const direction = typeof groupBy === "string" ? "ASC" : groupBy.direction
 
   for (const file of files) {
-    const value = file.frontmatter?.[property]
+    const value = resolveValueWithFormulas(file, property, allFiles, formulaExpressions, getContext)
     const key = value === undefined || value === null ? "(empty)" : String(value)
 
     if (!groups.has(key)) {
@@ -470,12 +517,24 @@ function buildTableSummaryRow(
   files: QuartzPluginData[],
   summaryConfig: ViewSummaryConfig | undefined,
   allFiles: QuartzPluginData[],
+  summaryExpressions: Record<string, Expr> | undefined,
+  getContext: EvalContextFactory | undefined,
+  formulaExpressions: FormulaExpressionMap | undefined,
 ): any | undefined {
   if (!summaryConfig?.columns || Object.keys(summaryConfig.columns).length === 0) {
     return undefined
   }
 
-  const summaryValues = computeViewSummaries(columns, files, summaryConfig, allFiles)
+  const summaryValues = computeViewSummaries(
+    columns,
+    files,
+    summaryConfig,
+    allFiles,
+    summaryExpressions,
+    getContext,
+    (file, column, filesList) =>
+      resolveValueWithFormulas(file, column, filesList, formulaExpressions, getContext),
+  )
 
   // check if we have any summary values to display
   const hasValues = Object.values(summaryValues).some((v) => v !== undefined)
@@ -503,6 +562,9 @@ function buildTable(
   properties?: Record<string, { displayName?: string }>,
   formulas?: Record<string, FormulaDefinition>,
   topLevelSummaries?: Record<string, string>,
+  formulaExpressions?: FormulaExpressionMap,
+  summaryExpressions?: Record<string, Expr>,
+  getContext?: EvalContextFactory,
 ): any {
   const columns = view.order || []
 
@@ -511,7 +573,7 @@ function buildTable(
 
   // apply groupBy if specified - skip summaries for grouped tables
   if (view.groupBy) {
-    const groups = groupFiles(files, view.groupBy)
+    const groups = groupFiles(files, view.groupBy, allFiles, formulaExpressions, getContext)
     const allRows: any[] = []
 
     for (const [groupName, groupFiles] of groups) {
@@ -521,9 +583,9 @@ function buildTable(
       allRows.push(groupHeader)
 
       for (const file of groupFiles) {
-        const cells = columns.map((col) =>
-          buildTableCell(file, col, currentSlug, allFiles, formulas),
-        )
+      const cells = columns.map((col) =>
+        buildTableCell(file, col, currentSlug, allFiles, formulas, formulaExpressions, getContext),
+      )
         allRows.push(h("tr", cells))
       }
     }
@@ -535,13 +597,23 @@ function buildTable(
 
   // no grouping - standard table
   const rows = files.map((f) => {
-    const cells = columns.map((col) => buildTableCell(f, col, currentSlug, allFiles, formulas))
+    const cells = columns.map((col) =>
+      buildTableCell(f, col, currentSlug, allFiles, formulas, formulaExpressions, getContext),
+    )
     return h("tr", cells)
   })
 
   const tbody = h("tbody", rows)
   const thead = h("thead", buildTableHead(columns, properties))
-  const tfoot = buildTableSummaryRow(columns, files, summaryConfig, allFiles)
+  const tfoot = buildTableSummaryRow(
+    columns,
+    files,
+    summaryConfig,
+    allFiles,
+    summaryExpressions,
+    getContext,
+    formulaExpressions,
+  )
   const tableChildren = tfoot ? [thead, tbody, tfoot] : [thead, tbody]
   return h("table.base-table", tableChildren)
 }
@@ -613,6 +685,8 @@ function buildList(
   currentSlug: FullSlug,
   allFiles: QuartzPluginData[],
   properties?: Record<string, PropertyConfig>,
+  formulaExpressions?: FormulaExpressionMap,
+  getContext?: EvalContextFactory,
 ): any {
   const nestedProperties = view.nestedProperties === true || view.indentProperties === true
   const order = Array.isArray(view.order) && view.order.length > 0 ? view.order : ["title"]
@@ -626,8 +700,8 @@ function buildList(
       getFileDisplayName(file) ?? fallbackNameFromSlug((file.slug || "") as FullSlug)
 
     const primaryValue = primaryProp
-      ? resolvePropertyValue(file, primaryProp, allFiles)
-      : resolvePropertyValue(file, "title", allFiles)
+      ? resolveValueWithFormulas(file, primaryProp, allFiles, formulaExpressions, getContext)
+      : resolveValueWithFormulas(file, "title", allFiles, formulaExpressions, getContext)
     const primaryText = listValueToPlainText(primaryValue) ?? fallbackTitle
     const anchor = h("a.internal", { href, "data-slug": slug }, primaryText)
 
@@ -643,7 +717,13 @@ function buildList(
 
       for (const propertyKey of secondaryProps) {
         if (!propertyKey || seen.has(propertyKey)) continue
-        const value = resolvePropertyValue(file, propertyKey, allFiles)
+        const value = resolveValueWithFormulas(
+          file,
+          propertyKey,
+          allFiles,
+          formulaExpressions,
+          getContext,
+        )
         if (!hasRenderableValue(value)) continue
 
         const renderedValue = renderPropertyValueNodes(value, currentSlug, allFiles)
@@ -661,7 +741,7 @@ function buildList(
 
     for (const propertyKey of secondaryProps) {
       if (!propertyKey || seen.has(propertyKey)) continue
-      const value = resolvePropertyValue(file, propertyKey, allFiles)
+      const value = resolveValueWithFormulas(file, propertyKey, allFiles, formulaExpressions, getContext)
       if (!hasRenderableValue(value)) continue
 
       const renderedValue = renderPropertyValueNodes(value, currentSlug, allFiles)
@@ -680,7 +760,7 @@ function buildList(
   }
 
   if (view.groupBy) {
-    const groups = groupFiles(files, view.groupBy)
+    const groups = groupFiles(files, view.groupBy, allFiles, formulaExpressions, getContext)
     const groupElements: any[] = []
 
     for (const [groupName, groupedFiles] of groups) {
@@ -706,6 +786,8 @@ function buildCards(
   view: BaseView,
   currentSlug: FullSlug,
   allFiles: QuartzPluginData[],
+  formulaExpressions?: FormulaExpressionMap,
+  getContext?: EvalContextFactory,
 ): any {
   const imageField = view.image || "image"
 
@@ -716,7 +798,13 @@ function buildCards(
 
     // resolve image from frontmatter
     let imageUrl: string | undefined
-    const imageValue = resolvePropertyValue(file, imageField, allFiles)
+    const imageValue = resolveValueWithFormulas(
+      file,
+      imageField,
+      allFiles,
+      formulaExpressions,
+      getContext,
+    )
     const toRelativeFromSlug = (target: string): string => {
       // absolute external URL: keep as-is
       if (isAbsoluteURL(target)) return target
@@ -762,7 +850,7 @@ function buildCards(
     )
 
     for (const field of metadataFields) {
-      const value = resolvePropertyValue(file, field, allFiles)
+      const value = resolveValueWithFormulas(file, field, allFiles, formulaExpressions, getContext)
       if (value !== undefined && value !== null && value !== "") {
         const label = field
           .replace("file.", "")
@@ -848,7 +936,7 @@ function buildCards(
   const varStyle = styleParts.length > 0 ? styleParts.join(" ") : undefined
 
   if (view.groupBy) {
-    const groups = groupFiles(files, view.groupBy)
+    const groups = groupFiles(files, view.groupBy, allFiles, formulaExpressions, getContext)
     const groupElements: any[] = []
 
     const groupSizes = view.groupSizes as Record<string, number> | undefined
@@ -891,6 +979,8 @@ function buildMap(
   currentSlug: FullSlug,
   allFiles: QuartzPluginData[],
   properties?: Record<string, PropertyConfig>,
+  formulaExpressions?: FormulaExpressionMap,
+  getContext?: EvalContextFactory,
 ): any {
   // strip note. prefix if present (same pattern as buildTableCell)
   let coordinatesProp = view.coordinates || "coordinates"
@@ -902,7 +992,13 @@ function buildMap(
 
   // extract markers from files with valid coordinates
   for (const file of files) {
-    const coordsValue = resolvePropertyValue(file, coordinatesProp, allFiles)
+    const coordsValue = resolveValueWithFormulas(
+      file,
+      coordinatesProp,
+      allFiles,
+      formulaExpressions,
+      getContext,
+    )
     if (!coordsValue || !Array.isArray(coordsValue) || coordsValue.length < 2) {
       continue
     }
@@ -922,7 +1018,7 @@ function buildMap(
     const order = view.order || []
     for (const field of order) {
       if (field === "title" || field === "file.title" || field === "note.title") continue
-      const value = resolvePropertyValue(file, field, allFiles)
+      const value = resolveValueWithFormulas(file, field, allFiles, formulaExpressions, getContext)
       if (value !== undefined && value !== null && value !== "") {
         popupFields[field] = value
       }
@@ -938,8 +1034,12 @@ function buildMap(
       colorProp = colorProp.replace("note.", "")
     }
 
-    const icon = iconProp ? resolvePropertyValue(file, iconProp, allFiles) : undefined
-    const color = colorProp ? resolvePropertyValue(file, colorProp, allFiles) : undefined
+    const icon = iconProp
+      ? resolveValueWithFormulas(file, iconProp, allFiles, formulaExpressions, getContext)
+      : undefined
+    const color = colorProp
+      ? resolveValueWithFormulas(file, colorProp, allFiles, formulaExpressions, getContext)
+      : undefined
 
     markers.push({
       lat,
@@ -982,6 +1082,34 @@ function resolveViewSlug(baseSlug: FullSlug, viewName: string, viewIndex: number
   return joinSegments(baseSlug, slugifiedName) as FullSlug
 }
 
+function renderDiagnostics(
+  diagnostics: BaseExpressionDiagnostic[] | undefined,
+  currentSlug: FullSlug,
+): any | undefined {
+  if (!diagnostics || diagnostics.length === 0) {
+    return undefined
+  }
+  const items = diagnostics.map((diag, index) => {
+    const line = diag.span.start.line
+    const column = diag.span.start.column
+    const location = Number.isFinite(line) && Number.isFinite(column) ? `${line}:${column}` : ""
+    const label = location.length > 0 ? `${diag.context} (${location})` : diag.context
+    return h("li.base-diagnostics-item", { key: String(index) }, [
+      h("div.base-diagnostics-label", label),
+      h("div.base-diagnostics-message", diag.message),
+      h("code.base-diagnostics-source", diag.source),
+    ])
+  })
+  return h("div.base-diagnostics", [
+    h("div.base-diagnostics-title", "bases parser diagnostics"),
+    h("div.base-diagnostics-meta", [
+      h("span", "page"),
+      h("span.base-diagnostics-page", currentSlug),
+    ]),
+    h("ul.base-diagnostics-list", items),
+  ])
+}
+
 async function* emitBaseViewsForFile(
   ctx: BuildCtx,
   baseFileData: QuartzPluginData,
@@ -991,6 +1119,27 @@ async function* emitBaseViewsForFile(
 ) {
   const config = baseFileData.basesConfig as BasesConfigFile
   const baseSlug = baseFileData.slug as FullSlug
+  const expressions = baseFileData.basesExpressions
+  const formulaExpressions = expressions?.formulas
+  const summaryExpressionsByView = expressions?.viewSummaries
+  const viewFilterExpressions = expressions?.viewFilters
+  const formulaCaches = new Map<string, Map<string, Value>>()
+
+  const getEvalContext: EvalContextFactory = (file) => {
+    const slug = file.slug ? String(file.slug) : ""
+    let cache = formulaCaches.get(slug)
+    if (!cache) {
+      cache = new Map()
+      formulaCaches.set(slug, cache)
+    }
+    return {
+      file,
+      allFiles,
+      formulas: formulaExpressions,
+      formulaCache: cache,
+      formulaStack: new Set(),
+    }
+  }
 
   const allViews = config.views.map((view, idx) => ({
     name: view.name,
@@ -998,20 +1147,34 @@ async function* emitBaseViewsForFile(
     slug: resolveViewSlug(baseSlug, view.name, idx),
   }))
 
-  const baseMatchedFiles = evaluateFilter(config.filters, allFiles)
+  const baseMatchedFiles = expressions?.filters
+    ? allFiles.filter((file) => evaluateFilterExpression(expressions.filters!, getEvalContext(file)))
+    : evaluateFilter(config.filters, allFiles)
 
   for (const [viewIndex, view] of config.views.entries()) {
     const slug = resolveViewSlug(baseSlug, view.name, viewIndex)
 
     let matchedFiles = baseMatchedFiles
-    if (view.filters) {
+    const viewFilter = viewFilterExpressions ? viewFilterExpressions[String(viewIndex)] : undefined
+    if (viewFilter) {
+      matchedFiles = matchedFiles.filter((file) =>
+        evaluateFilterExpression(viewFilter, getEvalContext(file)),
+      )
+    } else if (view.filters) {
       matchedFiles = evaluateFilter(view.filters, matchedFiles)
     }
 
-    const sortedFiles = applySorting(matchedFiles, view.sort, allFiles)
+    const sortedFiles = applySorting(
+      matchedFiles,
+      view.sort,
+      allFiles,
+      formulaExpressions,
+      getEvalContext,
+    )
     const limitedFiles = view.limit ? sortedFiles.slice(0, view.limit) : sortedFiles
 
     let tree: Root
+    const diagnosticsNode = renderDiagnostics(baseFileData.basesDiagnostics, slug)
     if (view.type === "table") {
       const tableNode = buildTable(
         limitedFiles,
@@ -1021,17 +1184,49 @@ async function* emitBaseViewsForFile(
         config.properties,
         config.formulas,
         config.summaries,
+        formulaExpressions,
+        summaryExpressionsByView ? summaryExpressionsByView[String(viewIndex)] : undefined,
+        getEvalContext,
       )
-      tree = { type: "root", children: [tableNode] }
+      tree = {
+        type: "root",
+        children: diagnosticsNode ? [diagnosticsNode, tableNode] : [tableNode],
+      }
     } else if (view.type === "list") {
-      const listNode = buildList(limitedFiles, view, slug, allFiles, config.properties)
-      tree = { type: "root", children: [listNode] }
+      const listNode = buildList(
+        limitedFiles,
+        view,
+        slug,
+        allFiles,
+        config.properties,
+        formulaExpressions,
+        getEvalContext,
+      )
+      tree = { type: "root", children: diagnosticsNode ? [diagnosticsNode, listNode] : [listNode] }
     } else if (view.type === "card" || view.type === "cards") {
-      const cardsNode = buildCards(limitedFiles, view, slug, allFiles)
-      tree = { type: "root", children: [cardsNode] }
+      const cardsNode = buildCards(
+        limitedFiles,
+        view,
+        slug,
+        allFiles,
+        formulaExpressions,
+        getEvalContext,
+      )
+      tree = {
+        type: "root",
+        children: diagnosticsNode ? [diagnosticsNode, cardsNode] : [cardsNode],
+      }
     } else if (view.type === "map") {
-      const mapNode = buildMap(limitedFiles, view, slug, allFiles, config.properties)
-      tree = { type: "root", children: [mapNode] }
+      const mapNode = buildMap(
+        limitedFiles,
+        view,
+        slug,
+        allFiles,
+        config.properties,
+        formulaExpressions,
+        getEvalContext,
+      )
+      tree = { type: "root", children: diagnosticsNode ? [diagnosticsNode, mapNode] : [mapNode] }
     } else {
       console.warn(`[BaseViewPage] Unsupported view type: ${view.type}`)
       continue
@@ -1153,5 +1348,7 @@ export const BasePage: QuartzEmitterPlugin<Partial<FullPageLayout>> = (userOpts)
 declare module "vfile" {
   interface DataMap {
     basesMetadata: BaseMetadata
+    basesDiagnostics?: BaseExpressionDiagnostic[]
+    basesExpressions?: BasesExpressions
   }
 }

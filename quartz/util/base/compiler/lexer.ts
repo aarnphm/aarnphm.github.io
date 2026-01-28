@@ -26,6 +26,12 @@ const operatorTokens: Operator[] = [
 
 const punctuationTokens: Punctuation[] = [".", ",", "(", ")", "[", "]"]
 
+const isOperator = (value: string): value is Operator =>
+  operatorTokens.some((token) => token === value)
+
+const isPunctuation = (value: string): value is Punctuation =>
+  punctuationTokens.some((token) => token === value)
+
 export function lex(input: string, file?: string): LexResult {
   const tokens: Token[] = []
   const diagnostics: Diagnostic[] = []
@@ -214,32 +220,32 @@ export function lex(input: string, file?: string): LexResult {
     }
 
     const twoChar = ch + peek(1)
-    if (operatorTokens.includes(twoChar as Operator)) {
+    if (isOperator(twoChar)) {
       advance()
       advance()
       const end = currentPosition()
       const span = makeSpan(start, end)
-      const token: Token = { type: "operator", value: twoChar as Operator, span }
+      const token: Token = { type: "operator", value: twoChar, span }
       tokens.push(token)
       updateRegexState(token)
       continue
     }
 
-    if (operatorTokens.includes(ch as Operator)) {
+    if (isOperator(ch)) {
       advance()
       const end = currentPosition()
       const span = makeSpan(start, end)
-      const token: Token = { type: "operator", value: ch as Operator, span }
+      const token: Token = { type: "operator", value: ch, span }
       tokens.push(token)
       updateRegexState(token)
       continue
     }
 
-    if (punctuationTokens.includes(ch as Punctuation)) {
+    if (isPunctuation(ch)) {
       advance()
       const end = currentPosition()
       const span = makeSpan(start, end)
-      const token: Token = { type: "punctuation", value: ch as Punctuation, span }
+      const token: Token = { type: "punctuation", value: ch, span }
       tokens.push(token)
       updateRegexState(token)
       continue
