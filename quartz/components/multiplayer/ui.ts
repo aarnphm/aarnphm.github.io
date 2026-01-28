@@ -15,13 +15,20 @@ import { getAuthor, getAvatarUrl, getCommentPageId } from "./identity"
 type UiDeps = {
   getState: () => MultiplayerModel
   dispatch: (event: MultiplayerEvent) => void
+  canResolveComment?: (comment: MultiplayerComment) => boolean
 }
 
-export function createCommentsUi({ getState, dispatch }: UiDeps) {
+export function createCommentsUi({ getState, dispatch, canResolveComment }: UiDeps) {
   let activeComposer: HTMLElement | null = null
   let activeModal: HTMLElement | null = null
   let activeActionsPopover: HTMLElement | null = null
   let selectionHighlightLayer: HTMLElement | null = null
+
+  const canResolve = (comment: MultiplayerComment) => {
+    if (comment.author === getAuthor()) return true
+    if (!canResolveComment) return false
+    return canResolveComment(comment)
+  }
 
   const submitComment = (op: OperationInput) => {
     dispatch({ type: "comment.submit", op })
@@ -611,7 +618,7 @@ export function createCommentsUi({ getState, dispatch }: UiDeps) {
     document.addEventListener("mouseup", onMouseUp)
 
     headerActions.appendChild(headerMenuButton)
-    if (comment.author === getAuthor()) {
+    if (canResolve(comment)) {
       const resolveButton = document.createElement("button")
       resolveButton.className = "modal-actions-button modal-resolve-button"
       resolveButton.setAttribute("aria-label", "Resolve thread")

@@ -2,7 +2,7 @@
 date: "2026-01-15"
 description: AST et al.
 id: results
-modified: 2026-01-26 22:35:23 GMT-05:00
+modified: 2026-01-26 20:10:31 GMT-05:00
 tags:
   - sfwr4tb3
   - assignment
@@ -52,8 +52,6 @@ Write grammars as below with NLTK and draw the parse trees with NLTK
 
 > [!question] 6.
 > Write a grammar such that $+$ binds tighter than $-$ and $+$ associates to the left. That is, $-a+b+c$ is parsed as $-\left( \left( a+b \right) +c \right)$ and $a+-b+c$ as $a+\left( -\left( b+c \right) \right)$. Draw the parse trees for $-a+b+c$ and $a+-b+c$!
-
-![[thoughts/university/twenty-five-twenty-six/sfwr-4tb3/88 Assignment 2/a1.py]]
 
 ## A2
 
@@ -122,8 +120,6 @@ Use the railroad diagram generator RR to draw the syntax diagram! You can either
 2. Open `http://localhost:8080/` in your web browser.
 
 Note that RR uses a W3C standard for EBNF. Insert the grammar and the generated SVG or PNG diagrams in the cell below.
-
-![[thoughts/university/twenty-five-twenty-six/sfwr-4tb3/88 Assignment 2/diagram]]
 
 ## A3
 
@@ -200,8 +196,6 @@ setattr(Grammar, 'derivable', derivable)
 
 Consider the language $\{ a^{n}b^{2n}c^{n} \mid n \ge 1 \}$. Write a grammar, $G$, for this language, and use procedure `derivable` to check that `a b b c, a a b b b b c c, a a a b b b b b b c c c` are derivable, but `a b c, a b b b c, a b b c c, a a b b c c` are not.! The grammar must be monotonic, meaning context-sensitive.
 
-![[thoughts/university/twenty-five-twenty-six/sfwr-4tb3/88 Assignment 2/a3.py]]
-
 ## A4
 
 Explain in simple words the languages described by the following regular expressions. Avoid paraphrasing the regular expressions!
@@ -209,29 +203,17 @@ Explain in simple words the languages described by the following regular express
 > [!question] 1
 > $(a^{*}b^{*})^{*}$
 
-All strings over the alphabet $\{a, b\}$, including the empty string.
-
 > [!question] 2
 > $(a^{*}[b])^{*}$
-
-All strings over the alphabet $\{a, b\}$, including the empty string (same language as question 1).
 
 > [!question] 3
 > $(a^{*}ba^{*}b)^{*} a^{*}$
 
-Strings over $\{a, b\}$ with an even number of $b$'s, including zero.
-
 > [!question] 4
 > $(a^{*}[ba^{*}c])^{*}$
-
-Strings over $\{a, b, c\}$ where deleting all $a$'s leaves a sequence of $bc$ pairs, possibly empty.
 
 > [!question] 5
 > $(a\mid ba)^{*}[b]$
 
-Strings over $\{a, b\}$ with no consecutive $b$'s.
-
 > [!question] 6
 > $a^{*}(ba+)^{*}$
-
-Strings over $\{a, b\}$ where every $b$ is immediately followed by at least one $a$.
