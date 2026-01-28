@@ -486,10 +486,7 @@ async function createPdfViewer(container: HTMLElement, pdfUrl: string): Promise<
         canvas.height = viewport.height
         canvas.width = viewport.width
 
-        const renderContext = {
-          canvasContext: ctx,
-          viewport: viewport,
-        }
+        const renderContext = { canvasContext: ctx, viewport: viewport }
 
         return page.render(renderContext).promise
       })
@@ -975,10 +972,7 @@ interface ArenaBlockSearchable {
   highlighted: boolean
   embedHtml?: string
   metadata?: Record<string, string>
-  coordinates?: {
-    lon: number
-    lat: number
-  }
+  coordinates?: { lon: number; lat: number }
   internalSlug?: string
   internalHref?: string
   internalHash?: string

@@ -78,11 +78,7 @@ export interface Link extends Partial<Entity> {
   snippet: string
   toRead: boolean
   createdBy: number
-  metadata?: {
-    full_text: string
-    author: string
-    page_type: string
-  }
+  metadata?: { full_text: string; author: string; page_type: string }
   lastCrawled: any
   trails: Trail[]
   comments: string[]

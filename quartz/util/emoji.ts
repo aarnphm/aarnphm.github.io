@@ -30,16 +30,9 @@ function codePointToEmoji(codepoint: string): string {
   return String.fromCodePoint(...codepoints)
 }
 
-type EmojiMap = {
-  codePointToName: Record<string, string>
-  nameToBase64: Record<string, string>
-}
+type EmojiMap = { codePointToName: Record<string, string>; nameToBase64: Record<string, string> }
 
-export type EmojiEntry = {
-  name: string
-  codepoint: string
-  emoji: string
-}
+export type EmojiEntry = { name: string; codepoint: string; emoji: string }
 
 let emojimap: EmojiMap | undefined = undefined
 let emojiEntries: EmojiEntry[] | null = null

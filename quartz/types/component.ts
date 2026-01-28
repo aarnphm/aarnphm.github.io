@@ -14,9 +14,7 @@ export type QuartzComponentProps = {
   tree: Node
   allFiles: QuartzPluginData[]
   displayClass?: "mobile-only" | "desktop-only"
-} & JSX.IntrinsicAttributes & {
-    [key: string]: any
-  }
+} & JSX.IntrinsicAttributes & { [key: string]: any }
 
 export type QuartzComponent = ComponentType<QuartzComponentProps> & {
   css?: StringResource

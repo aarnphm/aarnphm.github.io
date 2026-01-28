@@ -54,10 +54,7 @@ document.addEventListener("nav", () => {
       }
     })
 
-    observer.observe(masonryContainer, {
-      childList: true,
-      subtree: true,
-    })
+    observer.observe(masonryContainer, { childList: true, subtree: true })
   }
 
   const backdropClickHandler = (e: MouseEvent) => {

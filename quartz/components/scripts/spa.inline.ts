@@ -261,14 +261,7 @@ class StackedNoteManager {
           : []
 
         // Add to DAG with reference to existing DOM element
-        this.dag.addNode({
-          slug,
-          title,
-          contents,
-          hash: "",
-          anchor: null,
-          note: noteElement,
-        })
+        this.dag.addNode({ slug, title, contents, hash: "", anchor: null, note: noteElement })
 
         // Attach event listeners
         this.hydrateNote(noteElement)
@@ -299,11 +292,7 @@ class StackedNoteManager {
       const res = await this.fetchContent(href)
       if (!res) return null
 
-      return {
-        slug,
-        href,
-        res,
-      }
+      return { slug, href, res }
     })
 
     // Wait for all fetches to complete in parallel
@@ -314,17 +303,9 @@ class StackedNoteManager {
       if (!result) continue
       const { slug, href, res } = result
 
-      const dagNode = this.dag.addNode({
-        ...res,
-        slug,
-        anchor: null,
-        note: undefined!,
-      })
+      const dagNode = this.dag.addNode({ ...res, slug, anchor: null, note: undefined! })
 
-      dagNode.note = await this.createNote(this.dag.getOrderedNodes().length, {
-        slug,
-        ...res,
-      })
+      dagNode.note = await this.createNote(this.dag.getOrderedNodes().length, { slug, ...res })
       notifyNav(href.pathname as FullSlug)
     }
   }
@@ -847,10 +828,7 @@ class StackedNoteManager {
     // note will be set after creation
     const dagNode = this.dag.addNode({ ...res, slug, anchor, note: undefined! })
     // Add new note to DAG
-    dagNode.note = await this.createNote(this.dag.getOrderedNodes().length, {
-      slug,
-      ...res,
-    })
+    dagNode.note = await this.createNote(this.dag.getOrderedNodes().length, { slug, ...res })
     this.updateURL()
     notifyNav(this.getSlug(href))
     return true

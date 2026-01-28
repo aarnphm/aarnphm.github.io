@@ -24,16 +24,7 @@ import { trace } from "./util/trace"
 
 sourceMapSupport.install(options)
 
-type ContentMap = Map<
-  FilePath,
-  | {
-      type: "markdown"
-      content: ProcessedContent
-    }
-  | {
-      type: "other"
-    }
->
+type ContentMap = Map<FilePath, { type: "markdown"; content: ProcessedContent } | { type: "other" }>
 
 type BuildData = {
   ctx: BuildCtx
@@ -127,17 +118,12 @@ async function startWatching(
 
   const contentMap: ContentMap = new Map()
   for (const filePath of allFiles) {
-    contentMap.set(filePath, {
-      type: "other",
-    })
+    contentMap.set(filePath, { type: "other" })
   }
 
   for (const content of initialContent) {
     const [_tree, vfile] = content
-    contentMap.set(vfile.data.relativePath!, {
-      type: "markdown",
-      content,
-    })
+    contentMap.set(vfile.data.relativePath!, { type: "markdown", content })
   }
 
   const gitIgnoredMatcher = await isGitIgnored()
@@ -228,10 +214,7 @@ async function rebuild(changes: ChangeEvent[], clientRefresh: () => void, buildD
 
   const parsed = await parseMarkdown(ctx, pathsToParse)
   for (const content of parsed) {
-    contentMap.set(content[1].data.relativePath!, {
-      type: "markdown",
-      content,
-    })
+    contentMap.set(content[1].data.relativePath!, { type: "markdown", content })
   }
 
   // update state using changesSinceLastBuild
@@ -247,9 +230,7 @@ async function rebuild(changes: ChangeEvent[], clientRefresh: () => void, buildD
     // contains markdown files
     const fileExt = path.extname(file)
     if (change === "add" && fileExt !== ".md" && fileExt !== ".base" && fileExt !== ".canvas") {
-      contentMap.set(file as FilePath, {
-        type: "other",
-      })
+      contentMap.set(file as FilePath, { type: "other" })
     }
   }
 
@@ -258,17 +239,10 @@ async function rebuild(changes: ChangeEvent[], clientRefresh: () => void, buildD
     const processedContent = contentMap.get(path)
     if (processedContent?.type === "markdown") {
       const [_tree, file] = processedContent.content
-      return {
-        type,
-        path,
-        file,
-      }
+      return { type, path, file }
     }
 
-    return {
-      type,
-      path,
-    }
+    return { type, path }
   })
 
   // update allFiles and then allSlugs with the consistent view of content map

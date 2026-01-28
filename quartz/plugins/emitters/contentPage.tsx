@@ -40,12 +40,7 @@ async function processContent(
   }
 
   const content = renderPage(ctx, slug, componentData, opts, externalResources, false)
-  return write({
-    ctx,
-    content,
-    slug,
-    ext: ".html",
-  })
+  return write({ ctx, content, slug, ext: ".html" })
 }
 
 export const ContentPage: QuartzEmitterPlugin<Partial<FullPageLayout>> = (userOpts) => {

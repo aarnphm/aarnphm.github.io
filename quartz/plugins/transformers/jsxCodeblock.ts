@@ -15,11 +15,7 @@ import { QuartzTransformerPlugin } from "../../types/plugin"
 import { htmlToJsx } from "../../util/jsx"
 import { FilePath } from "../../util/path"
 
-type JsxBlock = {
-  id: string
-  code: string
-  imports: string[]
-}
+type JsxBlock = { id: string; code: string; imports: string[] }
 
 const IMPORT_REGEX = /imports\s*=\s*\{([^}]*)\}/i
 
@@ -39,10 +35,7 @@ type MdxAttribute =
       name: string
       value?: string | { type: "mdxJsxAttributeValueExpression"; value: string }
     }
-  | {
-      type: "mdxJsxExpressionAttribute"
-      value: string
-    }
+  | { type: "mdxJsxExpressionAttribute"; value: string }
 
 function parseAttributeExpression(raw: string): unknown {
   const trimmed = raw.trim()

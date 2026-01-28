@@ -128,9 +128,7 @@ export const FrontMatter: QuartzTransformerPlugin = () => ({
         const { data } = matter(Buffer.from(file.value), {
           delimiters: "---",
           language: "yaml",
-          engines: {
-            yaml: (s) => yaml.load(s, { schema: yaml.JSON_SCHEMA }) as object,
-          },
+          engines: { yaml: (s) => yaml.load(s, { schema: yaml.JSON_SCHEMA }) as object },
         })
 
         if (data.title != null && data.title.toString() !== "") {

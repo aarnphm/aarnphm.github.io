@@ -21,9 +21,7 @@ marked.setOptions({ breaks: true, gfm: true })
 const EDGE_LABEL_LINE_HEIGHT = 1.2
 const SYNTHETIC_MOUSELEAVE_FLAG = Symbol("canvasSyntheticMouseleave")
 
-type SyntheticMouseEvent = MouseEvent & {
-  [SYNTHETIC_MOUSELEAVE_FLAG]?: boolean
-}
+type SyntheticMouseEvent = MouseEvent & { [SYNTHETIC_MOUSELEAVE_FLAG]?: boolean }
 
 function renderTextNodeContent(node: NodeData): string {
   const html = marked.parse(node.resolvedText ?? node.text ?? "", { async: false }) as string
@@ -134,22 +132,11 @@ interface CanvasConfig {
   previewMaxLength: number
 }
 
-type CanvasBounds = {
-  minX: number
-  minY: number
-  maxX: number
-  maxY: number
-}
+type CanvasBounds = { minX: number; minY: number; maxX: number; maxY: number }
 
-type NodeData = CanvasNode & {
-  fx?: number
-  fy?: number
-}
+type NodeData = CanvasNode & { fx?: number; fy?: number }
 
-type LinkData = CanvasEdge & {
-  source: NodeData
-  target: NodeData
-}
+type LinkData = CanvasEdge & { source: NodeData; target: NodeData }
 
 const jsonFetchCache = new Map<string, Promise<unknown>>()
 const filePreviewCache = new Map<string, Promise<string | null>>()

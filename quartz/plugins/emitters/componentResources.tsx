@@ -40,11 +40,7 @@ import { write } from "./helpers"
 
 const name = "ComponentResources"
 
-type ComponentResources = {
-  css: string[]
-  beforeDOMLoaded: string[]
-  afterDOMLoaded: string[]
-}
+type ComponentResources = { css: string[]; beforeDOMLoaded: string[]; afterDOMLoaded: string[] }
 
 export function normalizeResource(resource: string | string[] | undefined): string[] {
   if (!resource) return []
@@ -234,19 +230,9 @@ export const ComponentResources: QuartzEmitterPlugin = () => {
         }).code.toString(),
       })
 
-      yield write({
-        ctx,
-        slug: "prescript" as FullSlug,
-        ext: ".js",
-        content: prescript,
-      })
+      yield write({ ctx, slug: "prescript" as FullSlug, ext: ".js", content: prescript })
 
-      yield write({
-        ctx,
-        slug: "postscript" as FullSlug,
-        ext: ".js",
-        content: postscript,
-      })
+      yield write({ ctx, slug: "postscript" as FullSlug, ext: ".js", content: postscript })
 
       yield write({
         ctx,

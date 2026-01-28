@@ -94,11 +94,7 @@ function encryptContent(htmlString: string, password: string): EncryptedPayload 
     return buffer.toString("base64").replace(/\+/g, "-").replace(/\//g, "_").replace(/=/g, "")
   }
 
-  return {
-    ciphertext: toBase64Url(ciphertext),
-    salt: toBase64Url(salt),
-    iv: toBase64Url(iv),
-  }
+  return { ciphertext: toBase64Url(ciphertext), salt: toBase64Url(salt), iv: toBase64Url(iv) }
 }
 
 interface RenderComponents {
@@ -152,48 +148,27 @@ function headerElement(
       ["data-collapse-toggle"]: "",
     },
     [
-      h(
-        "span.collapse-rail",
-        {
-          ariaHidden: true,
-        },
-        [
-          h("span.collapse-line.collapse-line--before"),
-          h("button.toggle-icons", [
-            s(
-              "svg",
-              {
-                ...svgOptions,
-                fill: "var(--dark)",
-                stroke: "var(--dark)",
-                class: "circle-icon",
-              },
-              [s("use", { href: "#circle-icon" })],
-            ),
-            s(
-              "svg",
-              {
-                ...svgOptions,
-                fill: "var(--iris)",
-                stroke: "var(--iris)",
-                class: "expand-icon",
-              },
-              [s("use", { href: "#arrow-down" })],
-            ),
-            s(
-              "svg",
-              {
-                ...svgOptions,
-                fill: "var(--foam)",
-                stroke: "var(--foam)",
-                class: "collapse-icon",
-              },
-              [s("use", { href: "#arrow-up" })],
-            ),
-          ]),
-          h("span.collapse-line.collapse-line--after"),
-        ],
-      ),
+      h("span.collapse-rail", { ariaHidden: true }, [
+        h("span.collapse-line.collapse-line--before"),
+        h("button.toggle-icons", [
+          s(
+            "svg",
+            { ...svgOptions, fill: "var(--dark)", stroke: "var(--dark)", class: "circle-icon" },
+            [s("use", { href: "#circle-icon" })],
+          ),
+          s(
+            "svg",
+            { ...svgOptions, fill: "var(--iris)", stroke: "var(--iris)", class: "expand-icon" },
+            [s("use", { href: "#arrow-down" })],
+          ),
+          s(
+            "svg",
+            { ...svgOptions, fill: "var(--foam)", stroke: "var(--foam)", class: "collapse-icon" },
+            [s("use", { href: "#arrow-up" })],
+          ),
+        ]),
+        h("span.collapse-line.collapse-line--after"),
+      ]),
       h("span.collapse-title", hasNextLevelChild ? { class: "has-next-level-child" } : {}, [
         ...headingContent,
         s("svg", { ...svgOptions, class: "collapsed-dots" }, [s("use", { href: "#triple-dots" })]),
@@ -212,10 +187,7 @@ function headerElement(
   return h(`section.${className.join(".")}#${id}`, { "data-level": rank }, [
     h(
       "div.collapse-shell.is-open",
-      {
-        ["data-collapse-shell"]: "",
-        ["data-initial-open"]: "true",
-      },
+      { ["data-collapse-shell"]: "", ["data-initial-open"]: "true" },
       [
         node,
         h(
@@ -227,13 +199,9 @@ function headerElement(
             ["data-collapse-body"]: "",
           },
           [
-            h(
-              "span.collapse-rail.collapse-rail--body",
-              {
-                ariaHidden: true,
-              },
-              [h("span.collapse-line.collapse-line--body")],
-            ),
+            h("span.collapse-rail.collapse-rail--body", { ariaHidden: true }, [
+              h("span.collapse-line.collapse-line--body"),
+            ]),
             h("div.collapse-body-content", [
               h(
                 ".collapsible-header-content",
@@ -253,40 +221,16 @@ function headerElement(
 }
 
 function spacerElement(): Element {
-  return h(
-    "div.collapsible-header-spacer",
-    {
-      ariaHidden: true,
-    },
-    [
-      h(
-        "span.collapse-rail",
-        {
-          ariaHidden: true,
-        },
-        [h("span.collapse-line.collapse-line--spacer")],
-      ),
-    ],
-  )
+  return h("div.collapsible-header-spacer", { ariaHidden: true }, [
+    h("span.collapse-rail", { ariaHidden: true }, [h("span.collapse-line.collapse-line--spacer")]),
+  ])
 }
 
 function hrElement(): Element {
-  return h(
-    "div.collapsible-header-hr",
-    {
-      ariaHidden: true,
-    },
-    [
-      h(
-        "span.collapse-rail",
-        {
-          ariaHidden: true,
-        },
-        [h("span.collapse-line.collapse-line--hr")],
-      ),
-      h("hr"),
-    ],
-  )
+  return h("div.collapsible-header-hr", { ariaHidden: true }, [
+    h("span.collapse-rail", { ariaHidden: true }, [h("span.collapse-line.collapse-line--hr")]),
+    h("hr"),
+  ])
 }
 
 function isCollapsibleHeader(node: ElementContent): boolean {
@@ -839,11 +783,7 @@ function mergeFootnotes(root: Root, appendSuffix?: string | undefined): void {
       container.children.push(
         h(
           "a",
-          {
-            href: `#${refId}`,
-            dataFootnoteBackref: "",
-            ariaLabel: "Back to content",
-          },
+          { href: `#${refId}`, dataFootnoteBackref: "", ariaLabel: "Back to content" },
           `↩︎${ordinal === 0 ? "" : ordinal + 1}`,
         ) as Element,
       )
@@ -891,16 +831,8 @@ export const pageResources = (
         spaPreserve: true,
         script: `const semanticCfg = ${JSON.stringify(ctx.cfg?.configuration?.semanticSearch ?? {})}`,
       },
-      {
-        script: transcludeScript,
-        loadTime: "afterDOMReady",
-        contentType: "inline",
-      },
-      {
-        script: collapseHeaderScript,
-        loadTime: "afterDOMReady",
-        contentType: "inline",
-      },
+      { script: transcludeScript, loadTime: "afterDOMReady", contentType: "inline" },
+      { script: collapseHeaderScript, loadTime: "afterDOMReady", contentType: "inline" },
       ...staticResources.js,
       {
         src: joinSegments(baseDir, "postscript.js"),
@@ -1005,10 +937,7 @@ export function transcludeFinal(
       h("ul.metadata", metadata),
       h(
         "button.transclude-title-link",
-        {
-          type: "button",
-          ariaLabel: "Go to original link",
-        },
+        { type: "button", ariaLabel: "Go to original link" },
         s(
           "svg",
           {
@@ -1240,7 +1169,7 @@ export function transcludeFinal(
             })
           } else if (node.tagName === "cite" && node.children) {
             const linkId = (
-              (node.children as Element[]).find((v) => v.tagName === "a")?.properties.href as string
+              (node.children as Element[]).find((v) => v.tagName === "a")!.properties.href as string
             ).replace("#", "")
             visit(page.htmlAst!, { tagName: "section" }, (node) => {
               if (node.properties.dataReferences == "") {
@@ -1468,9 +1397,7 @@ const NotesComponent = ((opts?: { slug: SimpleSlug; numLimits?: number; header?:
                   class={classNames(undefined, classes, "see-more")}
                   style={{ fontSize: "0.9em", textDecoration: "underline" }}
                 >
-                  {i18n(cfg.locale).components.recentNotes.seeRemainingMore({
-                    remaining,
-                  })}
+                  {i18n(cfg.locale).components.recentNotes.seeRemainingMore({ remaining })}
                 </a>
               </p>
             )}
@@ -1715,36 +1642,27 @@ export function renderPage(
             dataEncryptedContent: encodeURIComponent(JSON.stringify(encrypted)),
           },
           [
-            h(
-              ".password-prompt-overlay",
-              {
-                id: "password-prompt",
-                style: "display: flex;",
-              },
-              [
-                h(".password-prompt-container", [
-                  h("p", "this content is protected"),
-                  h("form.password-form", [
-                    h("input.password-input", {
-                      type: "password",
-                      placeholder: "enter password",
-                      autocomplete: "off",
-                      required: true,
-                      id: "protected-password-input",
-                      name: "password input for protected page",
-                    }),
-                    h("button.password-submit", { type: "submit" }, "unlock"),
-                  ]),
-                  h(
-                    "p.password-error",
-                    {
-                      style: "display: none; color: var(--rose); margin-top: 2rem;",
-                    },
-                    "incorrect password",
-                  ),
+            h(".password-prompt-overlay", { id: "password-prompt", style: "display: flex;" }, [
+              h(".password-prompt-container", [
+                h("p", "this content is protected"),
+                h("form.password-form", [
+                  h("input.password-input", {
+                    type: "password",
+                    placeholder: "enter password",
+                    autocomplete: "off",
+                    required: true,
+                    id: "protected-password-input",
+                    name: "password input for protected page",
+                  }),
+                  h("button.password-submit", { type: "submit" }, "unlock"),
                 ]),
-              ],
-            ),
+                h(
+                  "p.password-error",
+                  { style: "display: none; color: var(--rose); margin-top: 2rem;" },
+                  "incorrect password",
+                ),
+              ]),
+            ]),
           ],
         ),
       ],
@@ -1858,19 +1776,11 @@ export function renderPage(
       footer: FooterConstructor({ layout: "curius" }),
     }
   } else if (slug === "lyd") {
-    components = {
-      ...components,
-      beforeBody: [],
-      sidebar: [],
-      afterBody: [],
-    }
+    components = { ...components, beforeBody: [], sidebar: [], afterBody: [] }
   }
 
   if (componentData.fileData.frontmatter?.poem) {
-    components = {
-      ...components,
-      footer: FooterConstructor({ layout: "poetry" }),
-    }
+    components = { ...components, footer: FooterConstructor({ layout: "poetry" }) }
   }
 
   let isMenu = false
@@ -1887,13 +1797,7 @@ export function renderPage(
   }
 
   if (componentData.fileData.frontmatter?.pageLayout === "letter-poem") {
-    components = {
-      ...components,
-      header: [],
-      sidebar: [],
-      afterBody: [],
-      beforeBody: [],
-    }
+    components = { ...components, header: [], sidebar: [], afterBody: [], beforeBody: [] }
   }
 
   const {
@@ -1919,9 +1823,7 @@ export function renderPage(
   const isBase = componentData.fileData.bases ?? false
   const isCanvas = componentData.fileData.filePath?.endsWith(".canvas") ?? false
 
-  const contentAttrs = {
-    "data-plain": !isBoxy,
-  }
+  const contentAttrs = { "data-plain": !isBoxy }
 
   return (
     `<!DOCTYPE html>` +

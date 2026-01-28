@@ -88,10 +88,7 @@ const MethodologyStepImpl: FunctionalComponent<BaseStepProps> = ({
   const marker = String.fromCharCode(letterCode)
 
   const decoratedChildren = nested.map((child, idx) =>
-    cloneElement(child as VNode<BaseStepProps>, {
-      depth: depth + 1,
-      path: [...path, idx + 1],
-    }),
+    cloneElement(child as VNode<BaseStepProps>, { depth: depth + 1, path: [...path, idx + 1] }),
   )
 
   const pathKey = path.length > 0 ? path.join("-") : `${depth}-${sequenceIndex}`
@@ -179,10 +176,7 @@ const MethodologyTreeImpl: QuartzMdxComponent<TreeProps> = ({
   const trailing = childArray.filter((child) => !isStepVNode(child))
 
   const decoratedSteps = steps.map((child, idx) =>
-    cloneElement(child as VNode<BaseStepProps>, {
-      depth: 0,
-      path: [idx + 1],
-    }),
+    cloneElement(child as VNode<BaseStepProps>, { depth: 0, path: [idx + 1] }),
   )
 
   return (

@@ -22,10 +22,7 @@ export interface ArenaBlock {
   htmlNode?: ElementContent
   embedHtml?: string
   metadata?: Record<string, unknown>
-  coordinates?: {
-    lat: number
-    lon: number
-  }
+  coordinates?: { lat: number; lon: number }
   internalSlug?: string
   internalHref?: string
   internalHash?: string
@@ -63,10 +60,7 @@ export interface ArenaBlockSearchable {
   later: boolean
   embedHtml?: string
   metadata?: Record<string, unknown>
-  coordinates?: {
-    lat: number
-    lon: number
-  }
+  coordinates?: { lat: number; lon: number }
   internalSlug?: string
   internalHref?: string
   internalHash?: string
@@ -108,10 +102,7 @@ const parseLinkTitle = (text: string): { url: string; title?: string } | undefin
     return undefined
   }
 
-  return {
-    url: match[1],
-    title: match[2]?.trim(),
-  }
+  return { url: match[1], title: match[2]?.trim() }
 }
 
 const stripTrailingMarkers = (value: string): string =>
@@ -262,10 +253,7 @@ export const Arena: QuartzTransformerPlugin = () => {
 
             const extractMetadataFromList = (
               list: Element,
-            ): {
-              metadata?: Record<string, unknown>
-              tags?: string[]
-            } => {
+            ): { metadata?: Record<string, unknown>; tags?: string[] } => {
               if (list.children.length === 0) return {}
 
               const firstItem = list.children.find(isLi)
@@ -817,14 +805,7 @@ export const Arena: QuartzTransformerPlugin = () => {
 
               const findInternalLink = (
                 node?: ElementContent,
-              ):
-                | {
-                    slug: string
-                    href: string
-                    title: string
-                    hash?: string
-                  }
-                | undefined => {
+              ): { slug: string; href: string; title: string; hash?: string } | undefined => {
                 if (!node || node.type !== "element") return undefined
                 const el = node as Element
 

@@ -406,10 +406,7 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options>>
               bareMarkerRegex,
               (_value: string, ...capture: string[]) => {
                 const [text] = capture
-                return {
-                  type: "html",
-                  value: `<span class="marker marker-h2">${text}</span>`,
-                }
+                return { type: "html", value: `<span class="marker marker-h2">${text}</span>` }
               },
             ])
 
@@ -432,10 +429,7 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options>>
               (value: string, ..._capture: string[]) => {
                 const maybeArrow = arrowMapping[value]
                 if (maybeArrow === undefined) return SKIP
-                return {
-                  type: "html",
-                  value: `<span>${maybeArrow}</span>`,
-                }
+                return { type: "html", value: `<span>${maybeArrow}</span>` }
               },
             ])
           }
@@ -458,17 +452,8 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options>>
                 return {
                   type: "link",
                   url: base + `/tags/${tag}`,
-                  data: {
-                    hProperties: {
-                      className: ["tag-link"],
-                    },
-                  },
-                  children: [
-                    {
-                      type: "text",
-                      value: tag,
-                    },
-                  ],
+                  data: { hProperties: { className: ["tag-link"] } },
+                  children: [{ type: "text", value: tag }],
                 }
               },
             ])
@@ -524,10 +509,7 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options>>
       //@ts-ignore
       plugins.push([
         remarkSidenote,
-        {
-          micromarkExtensions: sidenoteExtensions,
-          mdastExtensions: sidenoteMdastExtensions,
-        },
+        { micromarkExtensions: sidenoteExtensions, mdastExtensions: sidenoteMdastExtensions },
       ])
 
       plugins.push(() => (tree: Root, file) => {
@@ -645,12 +627,7 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options>>
               if (remainingText.length > 0) {
                 blockquoteContent.push({
                   type: "paragraph",
-                  children: [
-                    {
-                      type: "text",
-                      value: remainingText,
-                    },
-                  ],
+                  children: [{ type: "text", value: remainingText }],
                 })
               }
 
@@ -679,12 +656,7 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options>>
               // Add callout-content class to callout body if it has one.
               if (calloutContent.length > 0) {
                 const contentData: BlockContent | DefinitionContent = {
-                  data: {
-                    hProperties: {
-                      className: "callout-content",
-                    },
-                    hName: "div",
-                  },
+                  data: { hProperties: { className: "callout-content" }, hName: "div" },
                   type: "blockquote",
                   children: [...calloutContent],
                 }
@@ -701,10 +673,7 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options>>
             visit(tree, "code", (node: Code) => {
               if (node.lang === "mermaid") {
                 node.data = {
-                  hProperties: {
-                    className: ["mermaid"],
-                    "data-clipboard": toString(node),
-                  },
+                  hProperties: { className: ["mermaid"], "data-clipboard": toString(node) },
                 }
               }
             })
@@ -765,10 +734,7 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options>>
                       const block = matches[0].slice(1)
 
                       if (!Object.keys(file.data.blocks!).includes(block)) {
-                        node.properties = {
-                          ...node.properties,
-                          id: block,
-                        }
+                        node.properties = { ...node.properties, id: block }
                         file.data.blocks![block] = node
                       }
                     }
@@ -793,10 +759,7 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options>>
                           idx -= 1
                         } else {
                           if (!Object.keys(file.data.blocks!).includes(block)) {
-                            element.properties = {
-                              ...element.properties,
-                              id: block,
-                            }
+                            element.properties = { ...element.properties, id: block }
                             file.data.blocks![block] = element
                           }
                           return
@@ -805,10 +768,7 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options>>
                     } else {
                       // normal paragraph transclude
                       if (!Object.keys(file.data.blocks!).includes(block)) {
-                        node.properties = {
-                          ...node.properties,
-                          id: block,
-                        }
+                        node.properties = { ...node.properties, id: block }
                         file.data.blocks![block] = node
                       }
                     }
@@ -988,10 +948,7 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options>>
               }
 
               node.tagName = "iframe"
-              node.properties = {
-                ...baseProperties,
-                src: embed.src,
-              }
+              node.properties = { ...baseProperties, src: embed.src }
             })
           }
         })
@@ -1020,11 +977,7 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options>>
                   ),
                   h(
                     "span.clipboard-button",
-                    {
-                      type: "button",
-                      ariaLabel: "copy source",
-                      "data-view-component": true,
-                    },
+                    { type: "button", ariaLabel: "copy source", "data-view-component": true },
                     [
                       s("svg", { ...svgOptions, viewbox: "0 -8 24 24", class: "copy-icon" }, [
                         s("use", { href: "#github-copy" }),
@@ -1102,19 +1055,11 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options>>
       const css: CSSResource[] = []
 
       if (opts.enableCheckbox) {
-        js.push({
-          script: checkboxScript,
-          loadTime: "afterDOMReady",
-          contentType: "inline",
-        })
+        js.push({ script: checkboxScript, loadTime: "afterDOMReady", contentType: "inline" })
       }
 
       if (opts.callouts) {
-        js.push({
-          script: calloutScript,
-          loadTime: "afterDOMReady",
-          contentType: "inline",
-        })
+        js.push({ script: calloutScript, loadTime: "afterDOMReady", contentType: "inline" })
       }
       if (opts.mermaid) {
         js.push({
@@ -1123,10 +1068,7 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options>>
           contentType: "inline",
           moduleType: "module",
         })
-        css.push({
-          content: mermaidStyle,
-          inline: true,
-        })
+        css.push({ content: mermaidStyle, inline: true })
       }
 
       return { js, css }

@@ -27,40 +27,16 @@ export type MultiplayerComment = {
 
 export type OperationType = "new" | "update" | "delete" | "resolve"
 
-export type OperationInput = {
-  opId: string
-  type: OperationType
-  comment: MultiplayerComment
-}
+export type OperationInput = { opId: string; type: OperationType; comment: MultiplayerComment }
 
-export type OperationRecord = OperationInput & {
-  seq: number
-}
+export type OperationRecord = OperationInput & { seq: number }
 
 export type BroadcastMessage =
-  | {
-      type: "init"
-      comments: MultiplayerComment[]
-      latestSeq: number
-    }
-  | {
-      type: "delta"
-      ops: OperationRecord[]
-      latestSeq: number
-    }
-  | {
-      type: "op"
-      op: OperationRecord
-    }
-  | {
-      type: "ack"
-      opId: string
-      seq: number
-    }
-  | {
-      type: "error"
-      message: string
-    }
+  | { type: "init"; comments: MultiplayerComment[]; latestSeq: number }
+  | { type: "delta"; ops: OperationRecord[]; latestSeq: number }
+  | { type: "op"; op: OperationRecord }
+  | { type: "ack"; opId: string; seq: number }
+  | { type: "error"; message: string }
 
 export function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value)

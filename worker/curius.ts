@@ -26,10 +26,7 @@ async function queryLinks(page: number = 0): Promise<ApiResponse> {
     const r = await fetch(`https://curius.app/api/users/3584/links?page=${page}`, HEADERS)
     if (!r.ok) throw new Error("Network error")
     const d: any = await r.json()
-    return {
-      links: d.userSaved || [],
-      page,
-    }
+    return { links: d.userSaved || [], page }
   } catch {
     return { links: [], page }
   }
@@ -53,10 +50,7 @@ async function queryTrails(page: number = 0, alias?: string): Promise<ApiRespons
       const r = await fetch(`https://curius.app/api/links?page=${page}&trailHash=${alias}`, HEADERS)
       if (!r.ok) throw new Error("Network error")
       const d: any = await r.json()
-      return {
-        links: d.userSaved || [],
-        page,
-      }
+      return { links: d.userSaved || [], page }
     }
 
     const r = await fetch("https://curius.app/api/trails/3584", HEADERS)
@@ -114,12 +108,7 @@ export default async function handleCurius(request: Request): Promise<Response> 
           queryFollowing(),
           queryTrails(),
         ])
-        resp = {
-          user: r1.user,
-          links: r2.links,
-          following: r3.following,
-          trails: r4.trails,
-        }
+        resp = { user: r1.user, links: r2.links, following: r3.following, trails: r4.trails }
         break
     }
     return new Response(JSON.stringify(resp), {

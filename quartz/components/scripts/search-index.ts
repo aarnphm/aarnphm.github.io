@@ -18,22 +18,10 @@ const searchIndex = new FlexSearch.Document<SearchItem>({
     id: "id",
     tag: "slug",
     index: [
-      {
-        field: "title",
-        tokenize: "forward",
-      },
-      {
-        field: "name",
-        tokenize: "forward",
-      },
-      {
-        field: "aliases",
-        tokenize: "forward",
-      },
-      {
-        field: "content",
-        tokenize: "forward",
-      },
+      { field: "title", tokenize: "forward" },
+      { field: "name", tokenize: "forward" },
+      { field: "aliases", tokenize: "forward" },
+      { field: "content", tokenize: "forward" },
     ],
   },
 })

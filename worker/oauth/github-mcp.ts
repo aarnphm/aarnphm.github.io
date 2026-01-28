@@ -11,13 +11,9 @@ import {
 } from "../workers-oauth-utils"
 import { createGithubOAuthHandler } from "./core"
 
-type McpOAuthState = {
-  oauthReqInfo: AuthRequest
-}
+type McpOAuthState = { oauthReqInfo: AuthRequest }
 
-type McpOAuthResult = {
-  redirectTo: string
-}
+type McpOAuthResult = { redirectTo: string }
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value)
@@ -86,12 +82,7 @@ const mcpOAuth = createGithubOAuthHandler<McpOAuthState, McpOAuthResult>(
       const provider = (env as any).OAUTH_PROVIDER as OAuthHelpers
       const { redirectTo } = await provider.completeAuthorization({
         metadata: { label: user.name },
-        props: {
-          accessToken,
-          email: user.email,
-          login: user.login,
-          name: user.name,
-        } as Props,
+        props: { accessToken, email: user.email, login: user.login, name: user.name } as Props,
         request: state.oauthReqInfo,
         scope: state.oauthReqInfo.scope,
         userId: user.login,

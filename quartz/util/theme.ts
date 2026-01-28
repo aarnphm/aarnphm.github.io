@@ -17,11 +17,7 @@ interface Colors {
 
 export type FontSpecification =
   | string
-  | {
-      name: string
-      weights?: number[]
-      includeItalic?: boolean
-    }
+  | { name: string; weights?: number[]; includeItalic?: boolean }
 
 export interface Theme {
   typography: {
@@ -110,10 +106,7 @@ export interface GoogleFontFile {
 export async function processGoogleFonts(
   stylesheet: string,
   baseUrl: string,
-): Promise<{
-  processedStylesheet: string
-  fontFiles: GoogleFontFile[]
-}> {
+): Promise<{ processedStylesheet: string; fontFiles: GoogleFontFile[] }> {
   const fontSourceRegex = /url\((https:\/\/fonts.gstatic.com\/s\/[^)]+\.(woff2|ttf))\)/g
   const fontFiles: GoogleFontFile[] = []
   let processedStylesheet = stylesheet

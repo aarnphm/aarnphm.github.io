@@ -17,17 +17,9 @@ import { Diagnostic } from "./errors"
 import { lex } from "./lexer"
 import { Operator, Token } from "./tokens"
 
-export type ParseResult = {
-  program: Program
-  tokens: Token[]
-  diagnostics: Diagnostic[]
-}
+export type ParseResult = { program: Program; tokens: Token[]; diagnostics: Diagnostic[] }
 
-type InfixInfo = {
-  lbp: number
-  rbp: number
-  kind: "binary" | "logical"
-}
+type InfixInfo = { lbp: number; rbp: number; kind: "binary" | "logical" }
 
 const infixBindingPowers: Record<string, InfixInfo> = {
   "||": { lbp: 1, rbp: 2, kind: "logical" },
@@ -83,11 +75,7 @@ class Parser {
     const start = this.tokens[0]?.span ?? this.tokens[this.tokens.length - 1].span
     const body = this.peek().type === "eof" ? null : this.parseExpression(0)
     const end = this.tokens[this.tokens.length - 1]?.span ?? start
-    return {
-      type: "Program",
-      body,
-      span: spanFrom(start, end),
-    }
+    return { type: "Program", body, span: spanFrom(start, end) }
   }
 
   private parseExpression(minBp: number): Expr {
@@ -192,7 +180,8 @@ class Parser {
           }
           this.error("expected ',' or ')'", sep.span)
           this.syncTo(")")
-          if (this.peek().type === "punctuation" && this.peek().value === ")") {
+          const maybeClose = this.peek()
+          if (maybeClose.type === "punctuation" && maybeClose.value === ")") {
             this.advance()
           }
           break
@@ -214,13 +203,23 @@ class Parser {
 
     if (token.type === "number") {
       this.advance()
-      const node: Literal = { type: "Literal", kind: "number", value: token.value, span: token.span }
+      const node: Literal = {
+        type: "Literal",
+        kind: "number",
+        value: token.value,
+        span: token.span,
+      }
       return node
     }
 
     if (token.type === "string") {
       this.advance()
-      const node: Literal = { type: "Literal", kind: "string", value: token.value, span: token.span }
+      const node: Literal = {
+        type: "Literal",
+        kind: "string",
+        value: token.value,
+        span: token.span,
+      }
       return node
     }
 
@@ -274,7 +273,8 @@ class Parser {
       } else {
         this.error("expected ')'", closeToken.span)
         this.syncTo(")")
-        if (this.peek().type === "punctuation" && this.peek().value === ")") {
+        const maybeClose = this.peek()
+        if (maybeClose.type === "punctuation" && maybeClose.value === ")") {
           this.advance()
         }
       }
@@ -325,8 +325,9 @@ class Parser {
       }
       this.error("expected ',' or ']'", sep.span)
       this.syncTo("]")
-      if (this.peek().type === "punctuation" && this.peek().value === "]") {
-        const endToken = this.peek()
+      const maybeClose = this.peek()
+      if (maybeClose.type === "punctuation" && maybeClose.value === "]") {
+        const endToken = maybeClose
         this.advance()
         const span = spanFrom(startToken.span, endToken.span)
         const node: ListExpr = { type: "ListExpr", elements, span }

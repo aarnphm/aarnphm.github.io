@@ -38,14 +38,8 @@ const codes = {
 export function wikilink(): Extension {
   return {
     text: {
-      [codes.exclamationMark]: {
-        name: "wikilink",
-        tokenize,
-      },
-      [codes.leftSquareBracket]: {
-        name: "wikilink",
-        tokenize,
-      },
+      [codes.exclamationMark]: { name: "wikilink", tokenize },
+      [codes.leftSquareBracket]: { name: "wikilink", tokenize },
     },
   }
 }

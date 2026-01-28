@@ -18,10 +18,7 @@ type VectorShardMeta = {
   byteStride: number
 }
 
-type ChunkMetadata = {
-  parentSlug: string
-  chunkId: number
-}
+type ChunkMetadata = { parentSlug: string; chunkId: number }
 
 type Manifest = {
   version: number
@@ -31,19 +28,11 @@ type Manifest = {
   normalized: boolean
   rows: number
   shardSizeRows: number
-  vectors: {
-    dtype: string
-    rows: number
-    dims: number
-    shards: VectorShardMeta[]
-  }
+  vectors: { dtype: string; rows: number; dims: number; shards: VectorShardMeta[] }
   ids: string[]
   titles?: string[]
   chunkMetadata?: Record<string, ChunkMetadata>
-  hnsw?: {
-    M: number
-    efConstruction: number
-  }
+  hnsw?: { M: number; efConstruction: number }
 }
 
 type InitMessage = {
@@ -62,19 +51,11 @@ type WorkerMessage = InitMessage | SearchMessage | ResetMessage
 
 type ReadyMessage = { type: "ready" }
 
-type ProgressMessage = {
-  type: "progress"
-  loadedRows: number
-  totalRows: number
-}
+type ProgressMessage = { type: "progress"; loadedRows: number; totalRows: number }
 
 type SearchHit = { id: number; score: number }
 
-type SearchResultMessage = {
-  type: "search-result"
-  seq: number
-  semantic: SearchHit[]
-}
+type SearchResultMessage = { type: "search-result"; seq: number; semantic: SearchHit[] }
 
 type ErrorMessage = { type: "error"; seq?: number; message: string }
 
@@ -148,12 +129,7 @@ async function openDatabase(disableCache: boolean | undefined): Promise<PGlite> 
         },
       }
       const dataDir = disableCache ? `memory://${DB_NAME}` : `idb://${DB_NAME}`
-      const db = await PGlite.create({
-        dataDir,
-        wasmModule,
-        fsBundle,
-        extensions: { vector },
-      })
+      const db = await PGlite.create({ dataDir, wasmModule, fsBundle, extensions: { vector } })
       await db.exec("create extension if not exists vector")
       return db
     })()
@@ -248,11 +224,7 @@ async function ensureSchema(db: PGlite, manifest: Manifest, manifestKey: string,
       }
 
       loadedRows = Math.min(manifest.rows, loadedRows + shard.rows)
-      const progress: ProgressMessage = {
-        type: "progress",
-        loadedRows,
-        totalRows: manifest.rows,
-      }
+      const progress: ProgressMessage = { type: "progress", loadedRows, totalRows: manifest.rows }
       self.postMessage(progress)
     }),
   )

@@ -33,9 +33,7 @@ export const KeybindAlias = {
   "H/M/L": "haut/milieu/bas du viewport",
 }
 
-const defaultOptions: Options = {
-  default: ["⌘ '", "⌃ '"],
-}
+const defaultOptions: Options = { default: ["⌘ '", "⌃ '"] }
 
 const convert = (key: string) =>
   key

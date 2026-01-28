@@ -8,9 +8,7 @@ export const options: sourceMapSupport.Options = {
   retrieveSourceMap(source) {
     if (source.includes(".quartz-cache")) {
       let realSource = fileURLToPath(source.split("?", 2)[0] + ".map")
-      return {
-        map: fs.readFileSync(realSource, "utf8"),
-      }
+      return { map: fs.readFileSync(realSource, "utf8") }
     } else {
       return null
     }

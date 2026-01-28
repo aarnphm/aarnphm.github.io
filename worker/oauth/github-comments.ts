@@ -11,16 +11,9 @@ import {
 import { githubUsers } from "../schema"
 import { createGithubOAuthHandler, OAuthError } from "./core"
 
-type CommentAuthState = {
-  returnTo: string
-  author: string | null
-}
+type CommentAuthState = { returnTo: string; author: string | null }
 
-type CommentAuthResult = {
-  author: string
-  returnTo: string
-  login: string
-}
+type CommentAuthResult = { author: string; returnTo: string; login: string }
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value)
@@ -78,11 +71,7 @@ const commentsOAuth = createGithubOAuthHandler<CommentAuthState, CommentAuthResu
           },
         })
 
-      return {
-        author: resolvedAuthor,
-        returnTo: state.returnTo,
-        login: user.login,
-      }
+      return { author: resolvedAuthor, returnTo: state.returnTo, login: user.login }
     },
     formatResult: (result, _req) => {
       return renderCommentAuthResponse(result.author, result.returnTo, result.login)

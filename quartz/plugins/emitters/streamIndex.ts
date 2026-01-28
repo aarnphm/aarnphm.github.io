@@ -93,12 +93,7 @@ async function* processStreamIndex(
 
   const payload = lines.join("\n")
 
-  yield write({
-    ctx,
-    slug: "streams" as FullSlug,
-    ext: ".jsonl",
-    content: payload,
-  })
+  yield write({ ctx, slug: "streams" as FullSlug, ext: ".jsonl", content: payload })
 
   for (const group of groups) {
     const isoSource =
@@ -145,12 +140,7 @@ async function* processStreamIndex(
 
     const html = renderPage(ctx, slug, componentData, layout, externalResources, false)
 
-    yield write({
-      ctx,
-      slug,
-      ext: ".html",
-      content: html,
-    })
+    yield write({ ctx, slug, ext: ".html", content: html })
   }
 }
 

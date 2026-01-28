@@ -71,10 +71,7 @@ export function walkConnected(
   canvas: JcastCanvas,
   startNodeId: string,
   visitor: JcastGraphVisitor,
-  options: {
-    direction?: "incoming" | "outgoing" | "both"
-    maxDepth?: number
-  } = {},
+  options: { direction?: "incoming" | "outgoing" | "both"; maxDepth?: number } = {},
 ): void {
   const { direction = "both", maxDepth = Infinity } = options
 
@@ -141,9 +138,7 @@ export function findPath(
   canvas: JcastCanvas,
   startNodeId: string,
   endNodeId: string,
-  options: {
-    direction?: "incoming" | "outgoing" | "both"
-  } = {},
+  options: { direction?: "incoming" | "outgoing" | "both" } = {},
 ): string[] | null {
   const { direction = "both" } = options
 
@@ -210,10 +205,7 @@ export function findPath(
 export function findReachableNodes(
   canvas: JcastCanvas,
   startNodeId: string,
-  options: {
-    direction?: "incoming" | "outgoing" | "both"
-    maxDepth?: number
-  } = {},
+  options: { direction?: "incoming" | "outgoing" | "both"; maxDepth?: number } = {},
 ): Set<string> {
   const reachable = new Set<string>()
 

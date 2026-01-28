@@ -36,12 +36,7 @@ async function processStreamPage(
   }
 
   const content = renderPage(ctx, slug, componentData, opts, externalResources, false)
-  return write({
-    ctx,
-    content,
-    slug,
-    ext: ".html",
-  })
+  return write({ ctx, content, slug, ext: ".html" })
 }
 
 export const StreamPage: QuartzEmitterPlugin<Partial<FullPageLayout>> = (userOpts) => {

@@ -12,9 +12,7 @@ export interface Options {
   enableCustomPlayer: boolean
 }
 
-const defaultOptions: Options = {
-  enableCustomPlayer: true,
-}
+const defaultOptions: Options = { enableCustomPlayer: true }
 
 /**
  * parse timestamp from various formats:
@@ -128,11 +126,7 @@ function createAudioPlayer(audioNode: Element): Element {
   // create play/pause button
   const playButton = h(
     "button.audio-play-button",
-    {
-      type: "button",
-      ariaLabel: "Play",
-      ariaPressed: "false",
-    },
+    { type: "button", ariaLabel: "Play", ariaPressed: "false" },
     [h("span.audio-icon-play", [playIcon]), h("span.audio-icon-pause", [pauseIcon])],
   )
 
@@ -149,11 +143,7 @@ function createAudioPlayer(audioNode: Element): Element {
   // create speed control
   const speedButton = h(
     "button.audio-speed",
-    {
-      type: "button",
-      ariaLabel: "Playback speed",
-      ["data-speed"]: "1",
-    },
+    { type: "button", ariaLabel: "Playback speed", ["data-speed"]: "1" },
     "1×",
   )
 

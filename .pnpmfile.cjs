@@ -1,15 +1,10 @@
 "use strict"
 
 /** @type {Record<string, Set<string>>} */
-const optionalDepsToPrune = {
-  agents: new Set(["x402"]),
-}
+const optionalDepsToPrune = { agents: new Set(["x402"]) }
 
 /** @type {Record<string, string>} */
-const allowedPeerRanges = {
-  "use-sync-external-store>react": "^19.0.0",
-  zod: "^3.22.0 || ^4.0.0",
-}
+const allowedPeerRanges = { "use-sync-external-store>react": "^19.0.0", zod: "^3.22.0 || ^4.0.0" }
 
 /**
  * Remove noisy optional dependencies we never install.
@@ -54,9 +49,4 @@ const updateConfig = (config) => {
   return config
 }
 
-module.exports = {
-  hooks: {
-    readPackage,
-    updateConfig,
-  },
-}
+module.exports = { hooks: { readPackage, updateConfig } }

@@ -19,10 +19,7 @@ let cachedComponents: Components | undefined
 function resolveComponents(): Components {
   if (!cachedComponents) {
     const mdxEntries = Object.fromEntries(getMdxComponentEntries())
-    cachedComponents = {
-      ...baseComponents,
-      ...mdxEntries,
-    } as Components
+    cachedComponents = { ...baseComponents, ...mdxEntries } as Components
   }
   return cachedComponents
 }

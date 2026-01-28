@@ -81,14 +81,7 @@ export const Slides: QuartzTransformerPlugin = () => {
               const id = (headingEl.properties?.id as string) || undefined
               const title = hastToString(headingEl)
 
-              sections.push({
-                type: "section",
-                id,
-                title,
-                level,
-                startIndex,
-                endIndex,
-              })
+              sections.push({ type: "section", id, title, level, startIndex, endIndex })
 
               i = endIndex - 1 // skip to end of section
             }

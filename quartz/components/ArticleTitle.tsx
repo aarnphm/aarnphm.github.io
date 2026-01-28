@@ -13,9 +13,7 @@ export interface Options {
   enableDescription: boolean
 }
 
-const defaultOptions: Options = {
-  enableDescription: true,
-}
+const defaultOptions: Options = { enableDescription: true }
 
 export default ((userOpts?: Options) => {
   const opts = { ...defaultOptions, ...userOpts }

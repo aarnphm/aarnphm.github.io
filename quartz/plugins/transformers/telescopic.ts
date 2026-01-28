@@ -181,17 +181,11 @@ function parseMarkdown(mdContent: string): TelescopicOutput {
     const currentContent: NewContent = { text: strippedLine, expansions: [] }
     if (currentDepth === defaultDepth) {
       telescopicOut.push(currentContent)
-      nodeStack[nodeStack.length - 1] = {
-        ...restLastNode,
-        telescopicOut,
-      }
+      nodeStack[nodeStack.length - 1] = { ...restLastNode, telescopicOut }
     } else {
       telescopicOut[telescopicOut.length - 1].expansions!.push(currentContent)
       // add this current one as a replacement to the last upper level one.
-      const newNode = {
-        depth: currentDepth,
-        telescopicOut: [currentContent],
-      }
+      const newNode = { depth: currentDepth, telescopicOut: [currentContent] }
       nodeStack.push(newNode)
     }
   }
@@ -288,10 +282,7 @@ function contentToHast(content: Content, opts: Config) {
   )
 }
 
-const defaultOpts: Config = {
-  separator: " ",
-  shouldExpandOnMouseOver: false,
-}
+const defaultOpts: Config = { separator: " ", shouldExpandOnMouseOver: false }
 
 const linkRegex = /\[([^\]]+)\]\(([^)]+)\)/g
 

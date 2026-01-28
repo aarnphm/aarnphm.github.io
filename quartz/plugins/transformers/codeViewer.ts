@@ -173,12 +173,7 @@ export const CodeViewer: QuartzTransformerPlugin<Partial<Options>> = (userOpts) 
 
               const lang = languageFromExt(ext)
               const base = path.posix.basename(fp)
-              const codeNode: Code = {
-                type: "code",
-                lang,
-                meta: `title="${base}"`,
-                value: "",
-              }
+              const codeNode: Code = { type: "code", lang, meta: `title="${base}"`, value: "" }
 
               const dataAny = codeNode as unknown as { data?: Record<string, any> }
               dataAny.data = { ...dataAny.data, codeTranscludeTarget: fp }

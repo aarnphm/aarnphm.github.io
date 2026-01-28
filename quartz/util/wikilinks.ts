@@ -49,13 +49,7 @@ export function parseWikilink(raw: string): WikilinkData | null {
   const displayAnchor = anchor ? `#${blockRef}${anchor.trim().replace(/^#+/, "")}` : undefined
   const alias = rawAlias ? rawAlias.replace(/^\\?\|/, "") : undefined
 
-  return {
-    raw: trimmed,
-    target: rawFp ?? "",
-    anchor: displayAnchor,
-    alias,
-    embed: isEmbed,
-  }
+  return { raw: trimmed, target: rawFp ?? "", anchor: displayAnchor, alias, embed: isEmbed }
 }
 
 export function extractWikilinks(text: string): WikilinkData[] {
@@ -110,19 +104,13 @@ export function resolveWikilinkTarget(
 
   // If empty target, link to current page
   if (!target) {
-    return {
-      slug: currentSlug,
-      anchor: link.anchor,
-    }
+    return { slug: currentSlug, anchor: link.anchor }
   }
 
   const filePath = ensureFilePath(target)
   const slug = slugifyFilePath(stripSlashes(filePath) as FilePath)
 
-  return {
-    slug,
-    anchor: link.anchor,
-  }
+  return { slug, anchor: link.anchor }
 }
 
 export function stripWikilinkFormatting(text: string): string {

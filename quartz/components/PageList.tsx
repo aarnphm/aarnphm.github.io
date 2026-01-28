@@ -30,10 +30,7 @@ export function byDateAndAlphabetical(cfg: GlobalConfiguration): SortFn {
   }
 }
 
-type Props = {
-  limit?: number
-  sort?: SortFn
-} & QuartzComponentProps
+type Props = { limit?: number; sort?: SortFn } & QuartzComponentProps
 
 interface Options {
   highlightTags: string[]

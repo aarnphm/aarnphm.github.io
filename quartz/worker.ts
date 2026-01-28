@@ -17,10 +17,7 @@ export async function parseMarkdown(
   partialCtx: WorkerSerializableBuildCtx,
   fps: FilePath[],
 ): Promise<MarkdownContent[]> {
-  const ctx: BuildCtx = {
-    ...partialCtx,
-    cfg,
-  }
+  const ctx: BuildCtx = { ...partialCtx, cfg }
   return await createFileParser(ctx, fps)(createMdProcessor(ctx))
 }
 
@@ -29,9 +26,6 @@ export function processHtml(
   partialCtx: WorkerSerializableBuildCtx,
   mds: MarkdownContent[],
 ): Promise<ProcessedContent[]> {
-  const ctx: BuildCtx = {
-    ...partialCtx,
-    cfg,
-  }
+  const ctx: BuildCtx = { ...partialCtx, cfg }
   return createMarkdownParser(ctx, mds)(createHtmlProcessor(ctx))
 }

@@ -11,16 +11,10 @@ export class OAuthError extends Error {
   }
 
   toResponse(): Response {
-    return new Response(
-      JSON.stringify({
-        error: this.code,
-        error_description: this.description,
-      }),
-      {
-        status: this.statusCode,
-        headers: { "Content-Type": "application/json" },
-      },
-    )
+    return new Response(JSON.stringify({ error: this.code, error_description: this.description }), {
+      status: this.statusCode,
+      headers: { "Content-Type": "application/json" },
+    })
   }
 }
 
@@ -225,11 +219,7 @@ export async function addApprovedClient(
 
 export interface ApprovalDialogOptions {
   client: ClientInfo | null
-  server: {
-    name: string
-    logo?: string
-    description?: string
-  }
+  server: { name: string; logo?: string; description?: string }
   state: Record<string, any>
   csrfToken: string
   setCookie: string

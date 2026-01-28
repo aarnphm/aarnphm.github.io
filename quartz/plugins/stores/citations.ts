@@ -18,11 +18,7 @@ export interface CacheState {
   dirty: boolean
 }
 
-export const cacheState: CacheState = {
-  documents: new Map(),
-  papers: new Map(),
-  dirty: false,
-}
+export const cacheState: CacheState = { documents: new Map(), papers: new Map(), dirty: false }
 
 export function normalizeArxivId(id: string): string {
   return id.replace(/^arxiv:/i, "").replace(/v\d+$/i, "")

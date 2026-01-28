@@ -143,10 +143,7 @@ function buildAddressFromParts(parts?: Record<string, string>): string | undefin
   return cleaned.length > 0 ? cleaned.join(", ") : undefined
 }
 
-type NominatimResponse = {
-  display_name?: string
-  address?: Record<string, string>
-}
+type NominatimResponse = { display_name?: string; address?: Record<string, string> }
 
 async function reverseGeocode(coords: Coordinates): Promise<string | undefined> {
   const key = `${coords.lat},${coords.lon}`
@@ -161,10 +158,7 @@ async function reverseGeocode(coords: Coordinates): Promise<string | undefined> 
 
   try {
     const response = await fetch(url, {
-      headers: {
-        "User-Agent": NOMINATIM_USER_AGENT,
-        Accept: "application/json",
-      },
+      headers: { "User-Agent": NOMINATIM_USER_AGENT, Accept: "application/json" },
     })
 
     if (!response.ok) {
@@ -192,12 +186,7 @@ async function reverseGeocode(coords: Coordinates): Promise<string | undefined> 
   }
 }
 
-type ParsedMeta = {
-  date?: string
-  tags?: string[]
-  coord?: Coordinates
-  title?: string
-}
+type ParsedMeta = { date?: string; tags?: string[]; coord?: Coordinates; title?: string }
 
 function parseMeta(lines: string[]): ParsedMeta {
   const meta: ParsedMeta = {}
@@ -382,20 +371,14 @@ function buildFrontmatter(
   return data
 }
 
-type ExistingNote = {
-  data: Record<string, unknown>
-  body: string
-}
+type ExistingNote = { data: Record<string, unknown>; body: string }
 
 function parseExistingContent(raw?: string): ExistingNote {
   if (!raw) {
     return { data: {}, body: "" }
   }
   const parsed = matter(raw)
-  return {
-    data: parsed.data as Record<string, unknown>,
-    body: parsed.content.trimEnd(),
-  }
+  return { data: parsed.data as Record<string, unknown>, body: parsed.content.trimEnd() }
 }
 
 async function buildExistingPlaceIndex(): Promise<Map<string, string>> {
@@ -476,12 +459,7 @@ async function ensureAddress(
 async function writePlace(
   entry: PlaceEntry,
   existingIndex: Map<string, string>,
-): Promise<{
-  path: string
-  changed: boolean
-  existed: boolean
-  hasAddress: boolean
-}> {
+): Promise<{ path: string; changed: boolean; existed: boolean; hasAddress: boolean }> {
   const normalizedUrl = normalizeUrl(entry.url)
   const fallbackPath = path.join(PLACES_DIR, `${sanitizeFileName(entry.title)}.md`)
   const filePath = (normalizedUrl ? existingIndex.get(normalizedUrl) : undefined) ?? fallbackPath

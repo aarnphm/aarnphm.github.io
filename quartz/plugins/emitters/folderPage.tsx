@@ -49,12 +49,7 @@ async function* processFolderInfo(
     }
 
     const content = renderPage(ctx, slug, componentData, opts, externalResources, true)
-    yield write({
-      ctx,
-      content,
-      slug,
-      ext: ".html",
-    })
+    yield write({ ctx, content, slug, ext: ".html" })
   }
 }
 

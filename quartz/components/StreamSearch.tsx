@@ -7,9 +7,7 @@ export interface StreamSearchOptions {
   placeholder?: string
 }
 
-const defaultOptions: StreamSearchOptions = {
-  placeholder: "search stream...",
-}
+const defaultOptions: StreamSearchOptions = { placeholder: "search stream..." }
 
 export default ((userOpts?: Partial<StreamSearchOptions>) => {
   const StreamSearch: QuartzComponent = () => {

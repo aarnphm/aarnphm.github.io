@@ -6,9 +6,7 @@ const configuration: GlobalConfiguration = {
   pageTitle: "Aaron's notes",
   enableSPA: true,
   enablePopovers: true,
-  analytics: {
-    provider: "plausible",
-  },
+  analytics: { provider: "plausible" },
   locale: "fr-FR",
   baseUrl: "aarnphm.xyz",
   ignorePatterns: [

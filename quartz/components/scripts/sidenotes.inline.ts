@@ -283,10 +283,7 @@ function setupSidenotes() {
 
   if (sidepanel) {
     observer = new MutationObserver(() => debouncedLayout())
-    observer.observe(sidepanel, {
-      attributes: true,
-      attributeFilter: ["class"],
-    })
+    observer.observe(sidepanel, { attributes: true, attributeFilter: ["class"] })
   }
 
   window.addCleanup(() => {

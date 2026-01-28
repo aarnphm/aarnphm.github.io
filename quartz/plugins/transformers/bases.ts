@@ -2,18 +2,14 @@ import yaml from "js-yaml"
 import { Root } from "mdast"
 import { QuartzTransformerPlugin } from "../../types/plugin"
 import {
-  parseFilter,
-  parseViews,
-  parseFormulas,
-  BaseFile,
-  PropertyConfig,
-} from "../../util/base/types"
-import {
   parseExpressionSource,
+  buildPropertyExpressionSource,
   BaseExpressionDiagnostic,
   BasesExpressions,
 } from "../../util/base/compiler"
 import { Expr, LogicalExpr, UnaryExpr, spanFrom } from "../../util/base/compiler/ast"
+import { BUILTIN_SUMMARY_TYPES } from "../../util/base/compiler/schema"
+import { parseViews, BaseFile, PropertyConfig } from "../../util/base/types"
 
 export const ObsidianBases: QuartzTransformerPlugin = () => {
   return {
@@ -32,20 +28,24 @@ export const ObsidianBases: QuartzTransformerPlugin = () => {
 
             file.data.bases = true
 
+            const isRecord = (value: unknown): value is Record<string, unknown> =>
+              typeof value === "object" && value !== null && !Array.isArray(value)
+
             // Parse YAML and store config for emitter to use
-            const parsed = yaml.load(String(file.value)) as any
+            const parsed = yaml.load(String(file.value))
+            const parsedConfig: Record<string, unknown> = isRecord(parsed) ? parsed : {}
 
             const normalizeProperties = (
-              raw: object,
+              raw: unknown,
             ): Record<string, PropertyConfig> | undefined => {
+              if (!isRecord(raw)) return undefined
               const normalized: Record<string, PropertyConfig> = {}
 
               for (const [key, value] of Object.entries(raw)) {
-                if (!value || typeof value !== "object") {
-                  continue
-                }
-
-                const propConfig = value as PropertyConfig
+                if (!isRecord(value)) continue
+                const displayName =
+                  typeof value.displayName === "string" ? value.displayName : undefined
+                const propConfig: PropertyConfig = displayName ? { displayName } : {}
                 normalized[key] = propConfig
 
                 const withoutPrefix = key.replace(/^(?:note|file)\./, "")
@@ -63,7 +63,7 @@ export const ObsidianBases: QuartzTransformerPlugin = () => {
               return Object.keys(normalized).length > 0 ? normalized : undefined
             }
 
-            const properties = normalizeProperties(parsed.properties)
+            const properties = normalizeProperties(parsedConfig.properties)
 
             const diagnostics: BaseExpressionDiagnostic[] = []
             const expressions: BasesExpressions = {
@@ -71,29 +71,19 @@ export const ObsidianBases: QuartzTransformerPlugin = () => {
               formulas: {},
               summaries: {},
               viewSummaries: {},
+              propertyExpressions: {},
             }
-            const isRecord = (value: unknown): value is Record<string, unknown> =>
-              typeof value === "object" && value !== null && !Array.isArray(value)
-            const builtinSummaries = new Set(
-              [
-                "average",
-                "avg",
-                "min",
-                "max",
-                "sum",
-                "range",
-                "median",
-                "stddev",
-                "earliest",
-                "latest",
-                "checked",
-                "unchecked",
-                "empty",
-                "filled",
-                "unique",
-              ].map((value) => value.toLowerCase()),
-            )
-            const summaryKeys = parsed.summaries ? Object.keys(parsed.summaries) : []
+            const summariesRaw = parsedConfig.summaries
+            const summaries = isRecord(summariesRaw)
+              ? Object.entries(summariesRaw).reduce<Record<string, string>>((acc, [key, value]) => {
+                  if (typeof value === "string") {
+                    acc[key] = value
+                  }
+                  return acc
+                }, {})
+              : undefined
+            const builtinSummaries = new Set<string>(BUILTIN_SUMMARY_TYPES)
+            const summaryKeys = summaries ? Object.keys(summaries) : []
 
             const addExpressionDiagnostics = (source: string, context: string) => {
               const result = parseExpressionSource(source, file.path)
@@ -117,10 +107,37 @@ export const ObsidianBases: QuartzTransformerPlugin = () => {
               return result.program.body
             }
 
-            const buildLogical = (
-              operator: "&&" | "||",
-              expressionsList: Expr[],
+            const parseExpressionWithDiagnostics = (
+              source: string,
+              context: string,
             ): Expr | null => {
+              const result = parseExpressionSource(source, file.path)
+              if (result.diagnostics.length > 0) {
+                for (const diagnostic of result.diagnostics) {
+                  diagnostics.push({
+                    kind: diagnostic.kind,
+                    message: diagnostic.message,
+                    span: diagnostic.span,
+                    context,
+                    source,
+                  })
+                }
+              }
+              return result.program.body ?? null
+            }
+
+            const addPropertyExpression = (property: string, context: string) => {
+              const key = property.trim()
+              if (!key || expressions.propertyExpressions[key]) return
+              const source = buildPropertyExpressionSource(key)
+              if (!source) return
+              const expr = parseExpressionWithDiagnostics(source, context)
+              if (expr) {
+                expressions.propertyExpressions[key] = expr
+              }
+            }
+
+            const buildLogical = (operator: "&&" | "||", expressionsList: Expr[]): Expr | null => {
               if (expressionsList.length === 0) return null
               let current: Expr | null = null
               for (const next of expressionsList) {
@@ -182,8 +199,7 @@ export const ObsidianBases: QuartzTransformerPlugin = () => {
 
             const walkSummaries = (raw: unknown, context: string) => {
               if (!isRecord(raw)) return
-              const columns =
-                "columns" in raw && isRecord(raw.columns) ? raw.columns : raw
+              const columns = "columns" in raw && isRecord(raw.columns) ? raw.columns : raw
               for (const [key, value] of Object.entries(columns)) {
                 if (typeof value !== "string") continue
                 const normalized = value.toLowerCase().trim()
@@ -193,16 +209,101 @@ export const ObsidianBases: QuartzTransformerPlugin = () => {
               }
             }
 
-            if (parsed.filters) {
-              const expr = buildFilterExpr(parsed.filters, "filters")
+            const collectViewProperties = (view: Record<string, unknown>, viewIndex: number) => {
+              const viewContext = `views[${viewIndex}]`
+              if (Array.isArray(view.order)) {
+                view.order.forEach((entry, orderIndex) => {
+                  if (typeof entry === "string") {
+                    addPropertyExpression(entry, `${viewContext}.order[${orderIndex}]`)
+                  }
+                })
+              }
+
+              if (Array.isArray(view.sort)) {
+                view.sort.forEach((entry, sortIndex) => {
+                  if (isRecord(entry) && typeof entry.property === "string") {
+                    addPropertyExpression(
+                      entry.property,
+                      `${viewContext}.sort[${sortIndex}].property`,
+                    )
+                  }
+                })
+              }
+
+              if (typeof view.groupBy === "string") {
+                addPropertyExpression(view.groupBy, `${viewContext}.groupBy`)
+              } else if (isRecord(view.groupBy) && typeof view.groupBy.property === "string") {
+                addPropertyExpression(view.groupBy.property, `${viewContext}.groupBy.property`)
+              }
+
+              if (typeof view.image === "string") {
+                addPropertyExpression(view.image, `${viewContext}.image`)
+              }
+
+              if (typeof view.coordinates === "string") {
+                addPropertyExpression(view.coordinates, `${viewContext}.coordinates`)
+              } else if (view.type === "map") {
+                addPropertyExpression("coordinates", `${viewContext}.coordinates`)
+              }
+
+              if (typeof view.markerIcon === "string") {
+                addPropertyExpression(view.markerIcon, `${viewContext}.markerIcon`)
+              }
+
+              if (typeof view.markerColor === "string") {
+                addPropertyExpression(view.markerColor, `${viewContext}.markerColor`)
+              }
+
+              if (view.summaries && isRecord(view.summaries)) {
+                const columns =
+                  "columns" in view.summaries && isRecord(view.summaries.columns)
+                    ? view.summaries.columns
+                    : view.summaries
+                for (const key of Object.keys(columns)) {
+                  addPropertyExpression(key, `${viewContext}.summaries.${key}`)
+                }
+              }
+
+              if (view.type === "list") {
+                const hasOrder = Array.isArray(view.order) && view.order.length > 0
+                if (!hasOrder) {
+                  addPropertyExpression("title", `${viewContext}.order`)
+                }
+              }
+
+              if (view.type === "card" || view.type === "cards") {
+                const imageProp = typeof view.image === "string" ? view.image : "image"
+                addPropertyExpression(imageProp, `${viewContext}.image`)
+              }
+
+              if (view.type === "table") {
+                const orderList = Array.isArray(view.order) ? view.order : []
+                for (const entry of orderList) {
+                  if (entry === "title" || entry === "file.title" || entry === "note.title") {
+                    addPropertyExpression("file.title", `${viewContext}.order`)
+                    break
+                  }
+                }
+                for (const entry of orderList) {
+                  if (entry === "file.name") {
+                    addPropertyExpression("file.name", `${viewContext}.order`)
+                    break
+                  }
+                }
+              }
+            }
+
+            if (parsedConfig.filters) {
+              const expr = buildFilterExpr(parsedConfig.filters, "filters")
               if (expr) {
                 expressions.filters = expr
               }
             }
 
-            if (parsed.views && Array.isArray(parsed.views)) {
-              parsed.views.forEach((view, index) => {
+            if (Array.isArray(parsedConfig.views)) {
+              parsedConfig.views.forEach((view, index) => {
                 if (!isRecord(view)) return
+                collectViewProperties(view, index)
                 if (view.filters) {
                   const expr = buildFilterExpr(view.filters, `views[${index}].filters`)
                   if (expr) {
@@ -215,8 +316,8 @@ export const ObsidianBases: QuartzTransformerPlugin = () => {
               })
             }
 
-            if (parsed.formulas && typeof parsed.formulas === "object") {
-              for (const [name, expression] of Object.entries(parsed.formulas)) {
+            if (isRecord(parsedConfig.formulas)) {
+              for (const [name, expression] of Object.entries(parsedConfig.formulas)) {
                 if (typeof expression === "string") {
                   addExpressionDiagnostics(expression, `formulas.${name}`)
                   const expr = parseExpression(expression)
@@ -227,8 +328,8 @@ export const ObsidianBases: QuartzTransformerPlugin = () => {
               }
             }
 
-            if (parsed.summaries && typeof parsed.summaries === "object") {
-              for (const [name, expression] of Object.entries(parsed.summaries)) {
+            if (summaries) {
+              for (const [name, expression] of Object.entries(summaries)) {
                 if (typeof expression === "string") {
                   addExpressionDiagnostics(expression, `summaries.${name}`)
                   const expr = parseExpression(expression)
@@ -239,8 +340,8 @@ export const ObsidianBases: QuartzTransformerPlugin = () => {
               }
             }
 
-            if (parsed.views && Array.isArray(parsed.views)) {
-              parsed.views.forEach((view, index) => {
+            if (Array.isArray(parsedConfig.views)) {
+              parsedConfig.views.forEach((view, index) => {
                 if (!isRecord(view) || !view.summaries) return
                 const summaries = view.summaries
                 if (!isRecord(summaries)) return
@@ -270,12 +371,28 @@ export const ObsidianBases: QuartzTransformerPlugin = () => {
               })
             }
 
+            const rawFilters = parsedConfig.filters
+            const filters: BaseFile["filters"] =
+              typeof rawFilters === "string" || isRecord(rawFilters)
+                ? (rawFilters as BaseFile["filters"])
+                : undefined
+
             const config: BaseFile = {
-              filters: parseFilter(parsed.filters ?? { and: [] }),
-              views: parseViews(parsed.views),
+              filters,
+              views: parseViews(parsedConfig.views),
               properties,
-              summaries: parsed.summaries,
-              formulas: parseFormulas(parsed.formulas),
+              summaries,
+              formulas: isRecord(parsedConfig.formulas)
+                ? Object.entries(parsedConfig.formulas).reduce<Record<string, string>>(
+                    (acc, [key, value]) => {
+                      if (typeof value === "string") {
+                        acc[key] = value
+                      }
+                      return acc
+                    },
+                    {},
+                  )
+                : undefined,
             }
             file.data.basesConfig = config
             file.data.basesDiagnostics = diagnostics

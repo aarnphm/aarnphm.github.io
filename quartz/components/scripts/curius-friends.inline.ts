@@ -30,7 +30,11 @@ document.addEventListener("nav", async () => {
     registerMouseHover(li, "focus")
 
     // only show first four friends
-    index < 4 ? li.classList.add("active") : (li.id = "inactive")
+    if (index < 4) {
+      li.classList.add("active")
+    } else {
+      li.id = "inactive"
+    }
 
     // title div
     const titleDiv = document.createElement("div")

@@ -89,12 +89,7 @@ async function processTagPage(
   }
 
   const content = renderPage(ctx, slug, componentData, opts, externalResources, true)
-  return write({
-    ctx,
-    content,
-    slug: file.data.slug!,
-    ext: ".html",
-  })
+  return write({ ctx, content, slug: file.data.slug!, ext: ".html" })
 }
 
 export const TagPage: QuartzEmitterPlugin<Partial<TagPageOptions>> = (userOpts) => {

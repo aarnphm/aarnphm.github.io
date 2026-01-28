@@ -13,10 +13,7 @@ document.addEventListener("nav", () => {
 
   const showCopyToast = () => {
     const event: CustomEventMap["toast"] = new CustomEvent("toast", {
-      detail: {
-        message: "copied to clipboard",
-        containerId: "code-copy-toast-container",
-      },
+      detail: { message: "copied to clipboard", containerId: "code-copy-toast-container" },
     })
     document.dispatchEvent(event)
   }

@@ -1,8 +1,8 @@
+import type { FontWeight, SatoriOptions } from "satori"
 import { promises as fs } from "fs"
 import path from "path"
 import { JSX } from "preact"
 import readingTime from "reading-time"
-import { FontWeight, SatoriOptions } from "satori/wasm"
 import { styleText } from "util"
 import { GlobalConfiguration } from "../cfg"
 import { formatDate, getDate } from "../components/Date"
@@ -122,12 +122,7 @@ export async function getSatoriFonts(
       }
     }
     if (!data) return null
-    return {
-      name: headerFontName,
-      data,
-      weight,
-      style: "normal" as const,
-    }
+    return { name: headerFontName, data, weight, style: "normal" as const }
   })
 
   const bodyFontPromises = bodyWeights.map(async (weight) => {
@@ -142,12 +137,7 @@ export async function getSatoriFonts(
     }
 
     if (!data) return null
-    return {
-      name: bodyFontName,
-      data,
-      weight,
-      style: "normal" as const,
-    }
+    return { name: bodyFontName, data, weight, style: "normal" as const }
   })
 
   const [headerFonts, bodyFonts] = await Promise.all([
@@ -235,10 +225,7 @@ export type SocialImageOptions = {
    * JSX to use for generating image. See satori docs for more info (https://github.com/vercel/satori)
    */
   imageStructure: (
-    options: ImageOptions & {
-      userOpts: UserOpts
-      iconBase64?: string
-    },
+    options: ImageOptions & { userOpts: UserOpts; iconBase64?: string },
   ) => JSX.Element
 }
 
@@ -311,23 +298,9 @@ export const defaultImage: SocialImageOptions["imageStructure"] = ({
         fontFamily: bodyFont,
       }}
     >
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          gap: "1rem",
-          marginBottom: "0.5rem",
-        }}
-      >
+      <div style={{ display: "flex", alignItems: "center", gap: "1rem", marginBottom: "0.5rem" }}>
         {iconBase64 && (
-          <img
-            src={iconBase64}
-            width={56}
-            height={56}
-            style={{
-              borderRadius: "50%",
-            }}
-          />
+          <img src={iconBase64} width={56} height={56} style={{ borderRadius: "50%" }} />
         )}
         <div
           style={{
@@ -340,13 +313,7 @@ export const defaultImage: SocialImageOptions["imageStructure"] = ({
           {cfg.baseUrl}
         </div>
       </div>
-      <div
-        style={{
-          display: "flex",
-          marginTop: "1rem",
-          marginBottom: "1.5rem",
-        }}
-      >
+      <div style={{ display: "flex", marginTop: "1rem", marginBottom: "1.5rem" }}>
         <h1
           style={{
             margin: 0,

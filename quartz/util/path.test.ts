@@ -191,10 +191,7 @@ describe("link strategies", () => {
   ] as FullSlug[]
 
   describe("absolute", () => {
-    const opts: TransformOptions = {
-      strategy: "absolute",
-      allSlugs,
-    }
+    const opts: TransformOptions = { strategy: "absolute", allSlugs }
 
     test("from a/b/c", () => {
       const cur = "a/b/c" as FullSlug
@@ -226,10 +223,7 @@ describe("link strategies", () => {
   })
 
   describe("shortest", () => {
-    const opts: TransformOptions = {
-      strategy: "shortest",
-      allSlugs,
-    }
+    const opts: TransformOptions = { strategy: "shortest", allSlugs }
 
     test("from a/b/c", () => {
       const cur = "a/b/c" as FullSlug
@@ -262,10 +256,7 @@ describe("link strategies", () => {
   })
 
   describe("relative", () => {
-    const opts: TransformOptions = {
-      strategy: "relative",
-      allSlugs,
-    }
+    const opts: TransformOptions = { strategy: "relative", allSlugs }
 
     test("from a/b/c", () => {
       const cur = "a/b/c" as FullSlug

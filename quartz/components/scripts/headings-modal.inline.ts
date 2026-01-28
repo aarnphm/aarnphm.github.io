@@ -113,13 +113,7 @@ function extractHeadings(): HeadingInfo[] {
       textCounts.set(text, count + 1)
       const uniqueText = count > 0 ? `${text} (${count + 1})` : text
 
-      return {
-        element: el as HTMLElement,
-        level,
-        text,
-        uniqueText,
-        line: index,
-      }
+      return { element: el as HTMLElement, level, text, uniqueText, line: index }
     })
     .filter((h): h is HeadingInfo => h !== null)
 }
@@ -234,10 +228,7 @@ function jumpToHeading(index: number) {
   const absoluteTop = window.pageYOffset + headingRect.top
   const middle = absoluteTop - window.innerHeight / 2 + headingRect.height / 2
 
-  window.scrollTo({
-    top: middle,
-    behavior: "smooth",
-  })
+  window.scrollTo({ top: middle, behavior: "smooth" })
 }
 
 function clearSecondaryMode() {

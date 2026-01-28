@@ -6,38 +6,13 @@ import { Theme } from "./util/theme"
 
 export type Analytics =
   | null
-  | {
-      provider: "plausible"
-      host?: string
-    }
-  | {
-      provider: "google"
-      tagId: string
-    }
-  | {
-      provider: "umami"
-      websiteId: string
-      host?: string
-    }
-  | {
-      provider: "goatcounter"
-      websiteId: string
-      host?: string
-      scriptSrc?: string
-    }
-  | {
-      provider: "posthog"
-      apiKey: string
-      host?: string
-    }
-  | {
-      provider: "tinylytics"
-      siteId: string
-    }
-  | {
-      provider: "cabin"
-      host?: string
-    }
+  | { provider: "plausible"; host?: string }
+  | { provider: "google"; tagId: string }
+  | { provider: "umami"; websiteId: string; host?: string }
+  | { provider: "goatcounter"; websiteId: string; host?: string; scriptSrc?: string }
+  | { provider: "posthog"; apiKey: string; host?: string }
+  | { provider: "tinylytics"; siteId: string }
+  | { provider: "cabin"; host?: string }
 
 type DType = "fp16" | "fp32"
 
@@ -73,12 +48,7 @@ type SemanticIndexOptions = {
    * - noChunking: disable chunking, embed full documents (default: false)
    * - maxTokens: model's maximum context length in tokens (default: 512 for e5, 8192 for embeddinggemma)
    */
-  chunking?: {
-    chunkSize?: number
-    chunkOverlap?: number
-    noChunking?: boolean
-    maxTokens?: number
-  }
+  chunking?: { chunkSize?: number; chunkOverlap?: number; noChunking?: boolean; maxTokens?: number }
   /**
    * vLLM server configuration (for remote embedding generation)
    * - useVllm: use vLLM API instead of local sentence-transformers (default: false)
@@ -86,12 +56,7 @@ type SemanticIndexOptions = {
    * - concurrency: concurrent requests to vLLM (default: 8)
    * - batchSize: batch size per request (default: 64)
    */
-  vllm?: {
-    useVllm?: boolean
-    vllmUrl?: string
-    concurrency?: number
-    batchSize?: number
-  }
+  vllm?: { useVllm?: boolean; vllmUrl?: string; concurrency?: number; batchSize?: number }
 }
 
 export interface GlobalConfiguration {

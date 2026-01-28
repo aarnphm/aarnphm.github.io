@@ -184,12 +184,7 @@ function scoreEntry(e: ContentIndexEntry, query: string): number {
   return score * computeRecencyBoost(e.date)
 }
 
-type Props = {
-  login: string
-  name: string
-  email: string
-  accessToken: string
-}
+type Props = { login: string; name: string; email: string; accessToken: string }
 
 export class Garden extends McpAgent<Env, Record<string, never>, Props> {
   server = new McpServer({ name: "aarnphm.xyz", version: "1.0.0" })

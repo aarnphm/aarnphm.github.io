@@ -18,10 +18,7 @@ import { remarkWikilink } from "./index"
  */
 function processToHTML(
   markdown: string,
-  options?: {
-    obsidian?: boolean
-    stripExtensions?: string[]
-  },
+  options?: { obsidian?: boolean; stripExtensions?: string[] },
 ): string {
   const processor = unified()
     .use(remarkParse)
@@ -253,10 +250,7 @@ describe("remarkWikilink integration", () => {
     })
 
     test("preserves extensions not in stripExtensions", () => {
-      const html = processToHTML("[[document.pdf]]", {
-        obsidian: true,
-        stripExtensions: [".md"],
-      })
+      const html = processToHTML("[[document.pdf]]", { obsidian: true, stripExtensions: [".md"] })
       // PDF has special handling - preserved in href
       assert(html.includes("document"))
       assert(html.includes(".pdf"))

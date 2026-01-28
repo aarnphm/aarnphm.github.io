@@ -4,10 +4,7 @@ import { removeAllChildren } from "./util"
 
 declare global {
   interface Window {
-    curiusState?: {
-      currentPage: number
-      hasMore: boolean
-    }
+    curiusState?: { currentPage: number; hasMore: boolean }
   }
 }
 

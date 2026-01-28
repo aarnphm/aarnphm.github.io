@@ -14,10 +14,7 @@ interface ParsedOptions {
   order: "sort" | "filter" | "map"[]
 }
 
-type FolderState = {
-  path: string
-  collapsed: boolean
-}
+type FolderState = { path: string; collapsed: boolean }
 
 let currentExplorerState: Array<FolderState>
 function toggleExplorer(this: HTMLElement) {

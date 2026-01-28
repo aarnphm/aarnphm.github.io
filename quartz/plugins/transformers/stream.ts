@@ -132,10 +132,7 @@ const trimLeadingEmptyTextNodes = (nodes: ElementContent[]): ElementContent[] =>
 }
 
 const inlineTextFromNodes = (nodes: ElementContent[]): string => {
-  const root: HastRoot = {
-    type: "root",
-    children: nodes,
-  }
+  const root: HastRoot = { type: "root", children: nodes }
   return toString(root).trim()
 }
 
@@ -226,10 +223,7 @@ const extractMetadata = (
       if (descriptionText.length > 0) {
         metadata[normalizedKey] = descriptionText
       }
-      const htmlRoot: HastRoot = {
-        type: "root",
-        children: strippedNodes,
-      }
+      const htmlRoot: HastRoot = { type: "root", children: strippedNodes }
       const rawHtml = toHtml(htmlRoot)
       const processedHtml = renderLatexInString(processWikilinksToHtml(rawHtml, currentSlug))
       if (processedHtml.trim().length > 0) {
@@ -318,11 +312,7 @@ export const Stream: QuartzTransformerPlugin = () => {
                 if (currentEntry) {
                   entries.push(currentEntry)
                 }
-                currentEntry = {
-                  title: node,
-                  metadata: {},
-                  content: [],
-                }
+                currentEntry = { title: node, metadata: {}, content: [] }
                 continue
               }
 
@@ -339,10 +329,7 @@ export const Stream: QuartzTransformerPlugin = () => {
                 const metaResult = extractMetadata(node, currentSlug)
                 if (metaResult !== null) {
                   if (!currentEntry) {
-                    currentEntry = {
-                      metadata: {},
-                      content: [],
-                    }
+                    currentEntry = { metadata: {}, content: [] }
                   }
                   currentEntry.metadata = metaResult.metadata
                   currentEntry.descriptionHtml = metaResult.descriptionHtml
@@ -354,10 +341,7 @@ export const Stream: QuartzTransformerPlugin = () => {
               if (!isElement(node)) continue
 
               if (!currentEntry) {
-                currentEntry = {
-                  metadata: {},
-                  content: [],
-                }
+                currentEntry = { metadata: {}, content: [] }
               }
               currentEntry.content.push(node)
             }

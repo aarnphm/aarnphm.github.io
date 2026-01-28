@@ -2,10 +2,7 @@ import { Root as HtmlRoot, Element as HtmlElement } from "hast"
 import { fromHtml } from "hast-util-from-html"
 import { phrasing } from "hast-util-phrasing"
 
-export type SmsHtmlFragment = {
-  wrapperTagName: "p" | "div"
-  children: HtmlElement["children"]
-}
+export type SmsHtmlFragment = { wrapperTagName: "p" | "div"; children: HtmlElement["children"] }
 
 const escapeInvalidHtmlStarts = (value: string) =>
   value.replace(/<(?!\/?[a-z][a-z0-9-]*(?:\s|\/?>))/gi, "&lt;")

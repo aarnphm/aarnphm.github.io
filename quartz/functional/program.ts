@@ -2,10 +2,7 @@ import type { Cmd } from "./cmd"
 
 export type Dispatch<Event> = (event: Event) => void
 
-export type EffectContext<Model, Event> = {
-  dispatch: Dispatch<Event>
-  retrieve: () => Model
-}
+export type EffectContext<Model, Event> = { dispatch: Dispatch<Event>; retrieve: () => Model }
 
 export type EffectRunner<Model, Event, Effect> = (
   effect: Effect,

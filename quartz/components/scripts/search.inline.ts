@@ -121,22 +121,10 @@ const index = new FlexSearch.Document<Item>({
   document: {
     id: "id",
     index: [
-      {
-        field: "title",
-        tokenize: "forward",
-      },
-      {
-        field: "content",
-        tokenize: "forward",
-      },
-      {
-        field: "tags",
-        tokenize: "forward",
-      },
-      {
-        field: "aliases",
-        tokenize: "forward",
-      },
+      { field: "title", tokenize: "forward" },
+      { field: "content", tokenize: "forward" },
+      { field: "tags", tokenize: "forward" },
+      { field: "aliases", tokenize: "forward" },
     ],
   },
 })
@@ -484,12 +472,20 @@ async function setupSearch(
       }
       e.preventDefault()
       const searchBarOpen = container!.classList.contains("active")
-      searchBarOpen ? hideSearch() : showSearch("basic")
+      if (searchBarOpen) {
+        hideSearch()
+      } else {
+        showSearch("basic")
+      }
       return
     } else if (e.shiftKey && (e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") {
       e.preventDefault()
       const searchBarOpen = container!.classList.contains("active")
-      searchBarOpen ? hideSearch() : showSearch("tags")
+      if (searchBarOpen) {
+        hideSearch()
+      } else {
+        showSearch("tags")
+      }
       return
     }
 
@@ -786,10 +782,7 @@ async function setupSearch(
       const containerRect = preview.getBoundingClientRect()
       const highlightRect = highlight.getBoundingClientRect()
       const relativeTop = highlightRect.top - containerRect.top + preview.scrollTop - 20
-      preview.scrollTo({
-        top: relativeTop,
-        behavior: "smooth",
-      })
+      preview.scrollTo({ top: relativeTop, behavior: "smooth" })
     }
   }
 

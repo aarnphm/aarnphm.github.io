@@ -282,25 +282,14 @@ const glyphs = {
     opts: { viewBox: "0 4 1 51", width: "13", height: "51" },
     name: "dot",
   },
-  "-": {
-    d: "M1 32.5h10",
-    opts: { viewBox: "0 4 12 51", width: "13", height: "51" },
-    name: "dash",
-  },
+  "-": { d: "M1 32.5h10", opts: { viewBox: "0 4 12 51", width: "13", height: "51" }, name: "dash" },
 } as const
 
 type Enable<T> = T & { enable: boolean }
 
-type SignatureOptions = Enable<{
-  text: string
-  class: string
-}>
+type SignatureOptions = Enable<{ text: string; class: string }>
 
-type CodeOptions = Enable<{
-  poetry: boolean
-  quotes: boolean
-  sms: boolean
-}>
+type CodeOptions = Enable<{ poetry: boolean; quotes: boolean; sms: boolean }>
 
 export interface Options {
   code: CodeOptions
@@ -390,9 +379,7 @@ export const Aarnphm: QuartzTransformerPlugin<Partial<Options>> = (userOpts) => 
                   children.push({
                     type: "element",
                     tagName: "span",
-                    properties: {
-                      className: [diffMatch[1] === "+" ? "diff-add" : "diff-del"],
-                    },
+                    properties: { className: [diffMatch[1] === "+" ? "diff-add" : "diff-del"] },
                     children:
                       lineChildren.length === 0 ? [{ type: "text", value: "" }] : lineChildren,
                   })
@@ -522,9 +509,7 @@ export const Aarnphm: QuartzTransformerPlugin<Partial<Options>> = (userOpts) => 
       return plugins
     },
     externalResources: () => {
-      return {
-        css: [{ content, spaPreserve: true, inline: true }],
-      }
+      return { css: [{ content, spaPreserve: true, inline: true }] }
     },
   }
 }

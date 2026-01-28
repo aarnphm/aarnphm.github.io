@@ -159,11 +159,7 @@ async function setPosition(
     x,
     y,
     placement: finalPlacement,
-  } = await computePosition(link, popoverElement, {
-    placement,
-    strategy,
-    middleware,
-  })
+  } = await computePosition(link, popoverElement, { placement, strategy, middleware })
 
   popoverElement.style.position = strategy
   popoverElement.style.transform = `translate(${Math.round(x)}px, ${Math.round(y)}px)`

@@ -163,14 +163,8 @@ async function transpileWorkerScript() {
       {
         name: "css-and-scripts-as-text",
         setup(build) {
-          build.onLoad({ filter: /\.scss$/ }, (_) => ({
-            contents: "",
-            loader: "text",
-          }))
-          build.onLoad({ filter: /\.inline\.(ts|js)$/ }, (_) => ({
-            contents: "",
-            loader: "text",
-          }))
+          build.onLoad({ filter: /\.scss$/ }, (_) => ({ contents: "", loader: "text" }))
+          build.onLoad({ filter: /\.inline\.(ts|js)$/ }, (_) => ({ contents: "", loader: "text" }))
         },
       },
     ],

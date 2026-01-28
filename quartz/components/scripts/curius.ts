@@ -23,11 +23,7 @@ export const _SENTINEL: Link = {
   snippet: "",
   toRead: false,
   createdBy: 0,
-  metadata: {
-    full_text: "",
-    author: "",
-    page_type: "",
-  },
+  metadata: { full_text: "", author: "", page_type: "" },
   createdDate: "",
   modifiedDate: "",
   lastCrawled: null,
@@ -265,11 +261,7 @@ interface Title {
   addFaIcon?: boolean
 }
 
-const defaultTitle: Title = {
-  Link: _SENTINEL,
-  elementType: "div",
-  addFaIcon: false,
-}
+const defaultTitle: Title = { Link: _SENTINEL, elementType: "div", addFaIcon: false }
 
 let p: DOMParser
 export const createTitle = (userOpts: Title): HTMLDivElement | HTMLLIElement => {
@@ -624,18 +616,9 @@ let index = new FlexSearch.Document({
   document: {
     id: "id",
     index: [
-      {
-        field: "title",
-        tokenize: "forward",
-      },
-      {
-        field: "link",
-        tokenize: "forward",
-      },
-      {
-        field: "snippet",
-        tokenize: "forward",
-      },
+      { field: "title", tokenize: "forward" },
+      { field: "link", tokenize: "forward" },
+      { field: "snippet", tokenize: "forward" },
     ],
   },
 })
@@ -737,11 +720,7 @@ export async function curiusSearch(searchData: Link[]) {
 
   const formatLinks = (term: string, id: number): Link => {
     const L = searchData[id]
-    return {
-      ...L,
-      title: highlight(term, L.title),
-      snippet: highlight(term, L.snippet, true),
-    }
+    return { ...L, title: highlight(term, L.title), snippet: highlight(term, L.snippet, true) }
   }
 
   const notes = document.getElementsByClassName("curius-notes")[0] as HTMLDivElement | null
@@ -762,7 +741,11 @@ export async function curiusSearch(searchData: Link[]) {
       e.preventDefault()
       if (notes?.classList.contains("active")) notes.classList.remove("active")
       const searchBarOpen = container?.classList.contains("active")
-      searchBarOpen ? hideLinks() : showLinks(sampleLinks)
+      if (searchBarOpen) {
+        hideLinks()
+      } else {
+        showLinks(sampleLinks)
+      }
       return
     }
 
@@ -805,7 +788,11 @@ export async function curiusSearch(searchData: Link[]) {
     if (bar?.classList.contains("active")) return
     if (notes?.classList.contains("active")) notes.classList.remove("active")
     const searchBarOpen = container?.classList.contains("active")
-    searchBarOpen ? hideLinks() : showLinks(sampleLinks)
+    if (searchBarOpen) {
+      hideLinks()
+    } else {
+      showLinks(sampleLinks)
+    }
   }
 
   function showLinks(links: Link[]) {

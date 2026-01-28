@@ -78,3 +78,6 @@ docs/arithmetic-intensity-transformer-inference-research.md filter=lfs diff=lfs 
 docs/conversation-posts-25.md filter=lfs diff=lfs merge=lfs -text
 docs/refactor-comments-plan.md filter=lfs diff=lfs merge=lfs -text
 docs/collaborative-comments.md filter=lfs diff=lfs merge=lfs -text
+content/thoughts/KV[[:space:]]connector.md filter=lfs diff=lfs merge=lfs -text
+docs/bases-implementation.md filter=lfs diff=lfs merge=lfs -text
+docs/bases-remaining-work.md filter=lfs diff=lfs merge=lfs -text

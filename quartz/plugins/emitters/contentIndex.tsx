@@ -239,20 +239,10 @@ function generateAtomFeed(
   const latestUpdated = limitedEntries.reduce<Date | undefined>((latest, [_, content]) => {
     const frontmatterModified = content.fileData?.frontmatter?.modified
     let candidate = frontmatterModified ? new Date(frontmatterModified) : content.date
-    if (candidate && Number.isNaN(candidate.getTime())) {
-      candidate = undefined
-    }
-    if (!candidate) {
-      candidate = content.date ?? undefined
-    }
-
-    if (!candidate) {
-      return latest
-    }
-
-    if (!latest || candidate.getTime() > latest.getTime()) {
-      return candidate
-    }
+    if (candidate && Number.isNaN(candidate.getTime())) candidate = undefined
+    if (!candidate) candidate = content.date ?? undefined
+    if (!candidate) return latest
+    if (!latest || candidate.getTime() > latest.getTime()) return candidate
     return latest
   }, undefined)
 
@@ -367,7 +357,7 @@ export const ContentIndex: QuartzEmitterPlugin<Partial<Options>> = (opts) => {
 
           linkIndex.set(slug, {
             slug,
-            title: file.data.frontmatter?.title!,
+            title: file.data.frontmatter ? file.data.frontmatter.title! : "",
             links,
             filePath: file.data.filePath!,
             fileName: getFileName(),
@@ -377,8 +367,8 @@ export const ContentIndex: QuartzEmitterPlugin<Partial<Options>> = (opts) => {
             richContent: isProtected ? "" : sanitizedRichContent,
             date: date,
             readingTime: {
-              minutes: Math.ceil(file.data.readingTime?.minutes!),
-              words: Math.ceil(file.data.readingTime?.words!),
+              minutes: Math.ceil(file.data.readingTime ? file.data.readingTime.minutes! : 0),
+              words: Math.ceil(file.data.readingTime ? file.data.readingTime.words! : 0),
             },
             fileData: file.data,
             layout: file.data.frontmatter!.pageLayout,
@@ -402,10 +392,7 @@ export const ContentIndex: QuartzEmitterPlugin<Partial<Options>> = (opts) => {
                   content: channel.blocks.map((b) => b.title || b.content).join(" "),
                   richContent: "",
                   date: date,
-                  readingTime: {
-                    minutes: 1,
-                    words: channel.blocks.length * 10,
-                  },
+                  readingTime: { minutes: 1, words: channel.blocks.length * 10 },
                   layout: "default",
                   description: `${channel.blocks.length} blocks in ${channel.name}`,
                 })
@@ -516,12 +503,7 @@ Expires: ${expiresDate.toISOString()}
           slug: joinSegments(".well-known", "security") as FullSlug,
           ext: ".txt",
         })
-        yield write({
-          ctx,
-          content: securityTxt,
-          slug: "security" as FullSlug,
-          ext: ".txt",
-        })
+        yield write({ ctx, content: securityTxt, slug: "security" as FullSlug, ext: ".txt" })
       }
 
       if (opts?.enableSiteMap) {
@@ -536,9 +518,7 @@ Expires: ${expiresDate.toISOString()}
       if (opts?.enableAtom) {
         yield write({
           ctx,
-          content: generateAtomFeed(cfg, linkIndex, {
-            limit: opts.atomLimit,
-          }),
+          content: generateAtomFeed(cfg, linkIndex, { limit: opts.atomLimit }),
           slug: "index" as FullSlug,
           ext: ".xml",
         })
@@ -630,12 +610,7 @@ Expires: ${expiresDate.toISOString()}
         }),
       )
 
-      yield write({
-        ctx,
-        content: JSON.stringify(simplifiedIndex),
-        slug: fp,
-        ext: ".json",
-      })
+      yield write({ ctx, content: JSON.stringify(simplifiedIndex), slug: fp, ext: ".json" })
 
       // inform Chrome to yield correct information
       if (

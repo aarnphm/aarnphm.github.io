@@ -124,13 +124,7 @@ export function computeStructuralAnchor(range: Range, article: Element): Structu
   )
   const contextWords = extractContextWords(range, 3)
 
-  return {
-    headingId,
-    blockId,
-    paragraphIndex,
-    localOffset,
-    contextWords,
-  }
+  return { headingId, blockId, paragraphIndex, localOffset, contextWords }
 }
 
 export function recoverFromStructuralAnchor(

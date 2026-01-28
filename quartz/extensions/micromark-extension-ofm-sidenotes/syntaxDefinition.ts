@@ -145,9 +145,5 @@ export function sidenoteDefinition(): Extension {
     }
   }
 
-  return {
-    flow: {
-      [codes.leftCurlyBrace]: { tokenize },
-    },
-  }
+  return { flow: { [codes.leftCurlyBrace]: { tokenize } } }
 }

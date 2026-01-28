@@ -44,10 +44,7 @@ export const GitHubFlavoredMarkdown: QuartzTransformerPlugin = () => ({
       rehypeAutolinkHeadings,
       {
         behavior: "append",
-        properties: {
-          "data-role": "anchor",
-          "data-no-popover": true,
-        },
+        properties: { "data-role": "anchor", "data-no-popover": true },
         content: s(
           "svg",
           { ...svgOptions, fill: "none", stroke: "currentColor", strokewidth: "2" },

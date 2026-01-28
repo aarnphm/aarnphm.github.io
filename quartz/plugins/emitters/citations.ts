@@ -83,9 +83,7 @@ async function fetchBibtex(id: string): Promise<string> {
   await arxivRateLimiter.wait()
 
   const res = await fetch(url, {
-    headers: {
-      "User-Agent": "QuartzArxivTransformer/1.0 (+https://github.com/aarnphm)",
-    },
+    headers: { "User-Agent": "QuartzArxivTransformer/1.0 (+https://github.com/aarnphm)" },
   })
 
   if (!res.ok) {
@@ -148,12 +146,7 @@ export async function ensureBibEntries(ids: Iterable<string>, bibliography: stri
     if (!needsVerification) continue
 
     const bibkey = await ensureBibEntry(bibliography, id, cachedEntry.bibkey ?? makeBibKey(id))
-    cacheState.papers.set(id, {
-      ...cachedEntry,
-      bibkey,
-      lastVerified: now,
-      inBibFile: true,
-    })
+    cacheState.papers.set(id, { ...cachedEntry, bibkey, lastVerified: now, inBibFile: true })
     cacheState.dirty = true
   }
 }
@@ -195,10 +188,7 @@ export const Bibliography: QuartzEmitterPlugin<Partial<Options>> = (opts) => {
       await ensureBibEntries(activeIds, bibliography)
 
       if (cacheState.dirty) {
-        const cacheCtx = {
-          ...ctx,
-          argv: { ...ctx.argv, output: process.env.PWD ?? process.cwd() },
-        }
+        const cacheCtx = { ...ctx, argv: { ...ctx.argv, output: process.env.PWD ?? process.cwd() } }
         yield write({
           ctx: cacheCtx,
           slug: `${QUARTZ}/.quartz-cache/citations`,

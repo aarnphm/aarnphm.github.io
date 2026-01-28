@@ -19,9 +19,7 @@ interface Options {
   layout: "minimal" | "default"
 }
 
-const defaultOptions: Options = {
-  layout: "minimal",
-}
+const defaultOptions: Options = { layout: "minimal" }
 
 export default ((userOpts?: Partial<Options>) => {
   const opts = { ...defaultOptions, ...userOpts }

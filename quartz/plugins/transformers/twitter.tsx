@@ -2,8 +2,6 @@ import { Element } from "hast"
 import { Html, Link, Paragraph, PhrasingContent } from "mdast"
 import { Parent } from "unist"
 import { visit } from "unist-util-visit"
-// @ts-ignore
-import script from "../../components/scripts/twitter.inline"
 import { QuartzTransformerPlugin } from "../../types/plugin"
 import { unescapeHTML } from "../../util/escape"
 import { wikiTextTransform } from "./ofm"

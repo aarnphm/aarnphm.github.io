@@ -30,15 +30,8 @@ const createBuildConfig = () => ({
   sourcemap: true,
   sourcesContent: false,
   plugins: [
-    sassPlugin({
-      type: "css-text",
-      cssImports: true,
-    }),
-    sassPlugin({
-      filter: /\.inline\.scss$/,
-      type: "css",
-      cssImports: true,
-    }),
+    sassPlugin({ type: "css-text", cssImports: true }),
+    sassPlugin({ filter: /\.inline\.scss$/, type: "css", cssImports: true }),
     {
       name: "inline-script-loader",
       setup(build) {
@@ -51,12 +44,7 @@ const createBuildConfig = () => ({
           const sourcefile = path.relative(path.resolve("."), args.path)
           const resolveDir = path.dirname(sourcefile)
           const transpiled = await esbuild.build({
-            stdin: {
-              contents: text,
-              loader: "ts",
-              resolveDir,
-              sourcefile,
-            },
+            stdin: { contents: text, loader: "ts", resolveDir, sourcefile },
             write: false,
             bundle: true,
             minify: true,
@@ -64,10 +52,7 @@ const createBuildConfig = () => ({
             format: "esm",
           })
           const rawMod = transpiled.outputFiles[0].text
-          return {
-            contents: rawMod,
-            loader: "text",
-          }
+          return { contents: rawMod, loader: "text" }
         })
       },
     },
@@ -168,19 +153,10 @@ export async function handleBuild(argv) {
           public: argv.output,
           directoryListing: false,
           headers: [
-            {
-              source: "**/*.*",
-              headers: [{ key: "Content-Disposition", value: "inline" }],
-            },
-            {
-              source: "**/*.webp",
-              headers: [{ key: "Content-Type", value: "image/webp" }],
-            },
+            { source: "**/*.*", headers: [{ key: "Content-Disposition", value: "inline" }] },
+            { source: "**/*.webp", headers: [{ key: "Content-Type", value: "image/webp" }] },
             // fixes bug where avif images are displayed as text instead of images (future proof)
-            {
-              source: "**/*.avif",
-              headers: [{ key: "Content-Type", value: "image/avif" }],
-            },
+            { source: "**/*.avif", headers: [{ key: "Content-Type", value: "image/avif" }] },
           ],
         })
         const status = res.statusCode
@@ -194,9 +170,7 @@ export async function handleBuild(argv) {
 
       const redirect = (newFp) => {
         newFp = argv.baseDir + newFp
-        res.writeHead(302, {
-          Location: newFp,
-        })
+        res.writeHead(302, { Location: newFp })
         console.log(
           styleText("yellow", "[302]") +
             styleText("grey", ` ${argv.baseDir}${req.url} -> ${newFp}`),
@@ -318,10 +292,7 @@ export async function handleStats(argv) {
   }
   console.log("")
 
-  const result = await esbuild.build({
-    ...createBuildConfig(),
-    write: false,
-  })
+  const result = await esbuild.build({ ...createBuildConfig(), write: false })
   console.log(styleText("cyan", "Bundle info"))
   await printBundleInfo(result.metafile)
 }
