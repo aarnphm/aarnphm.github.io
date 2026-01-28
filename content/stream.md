@@ -11,8 +11,10 @@ metadata:
     meta_block    = "- [meta]:" , newline , meta_entry , { meta_entry } ;
     meta_entry    = ws , "- date:" , ws , timestamp
                   | ws , "- tags:" , newline , tag_item , { tag_item }
+                  | ws , "- socials:" , newline , social_item , { social_item }
                   | ws , "- " , key , ":" , ws , value ;
     tag_item      = ws , ws , "- " , tag ;
+    social_item   = ws , ws , "- " , social ;
     body          = markdown_line , { newline , markdown_line } ;
     markdown_line = text_line | quote_line | list_line | embed_line | image_line ;
     quote_line    = ">" , ws , text_line ;
@@ -23,6 +25,7 @@ metadata:
     offset        = ("+" | "-") , hour , ":" , minute ;
     tag           = identifier ;
     key           = identifier ;
+    social        = identifier , ":", identifier;
     value         = text ;
     title         = text ;
     text_line     = { character - newline } ;
@@ -38,7 +41,7 @@ metadata:
     letter        = "a".."z" ;
     digit         = "0".."9" ;
     character     = ? any printable ascii except newline ? ;
-modified: 2026-01-28 02:10:21 GMT-05:00
+modified: 2026-01-28 10:01:58 GMT-05:00
 tags:
   - fruit
   - evergreen
@@ -140,7 +143,7 @@ still working out whether you can refuse that power without becoming the victim 
 - [meta]:
   - date: 2026-01-25 17:32:23 GMT-05:00
   - tags:
-    - life
+    - o/life
     - philosophy
   - description: while I was reading "Filterworld: How Algorithms Flattened Culture" on e-book
 
@@ -208,7 +211,7 @@ the crossroads only matter when you might actually get lost.
   - date: 2026-01-24 17:32:23 GMT-05:00
   - tags:
     - philosophy
-    - life
+    - o/life
 
 i bought H a [monica silk top](https://www.thereformation.com/products/monica-silk-top/1314146BLK.html) from reformation last week. black, simple cut, 100% silk. while paying i noticed my hand knew exactly where my wallet was without looking, the same prereflective reaching merleau-ponty writes about: "if i reach for a tool, i don't first have to find my hands; i know where to reach because i have a sense of where the tool is in relation to myself." and i thought about why i wanted HER to have this specific shirt. not any silk top. this one.
 
@@ -251,7 +254,7 @@ still figuring out where this line is. probably it's not a line but a gradient, 
 - [meta]:
   - date: 2026-01-22 13:00:48 GMT-05:00
   - tags:
-    - life
+    - o/life
 
 [inferact.ai](https://x.com/woosuk_k/status/2014383490637443380) dropped today—the corporate crystallization of [[thoughts/vllm|vLLM]]—and while the announcement itself played out with the predictable rhythm of a silicon valley press release (though this has been in the works for a while now), it forced me to confront the peculiar, fluid ontology of building software in a gold rush. we act as if we are building institutions, but we are mostly building eddies in a very fast current.
 
@@ -305,7 +308,7 @@ still wondering what this means. probably always will.
 - [meta]:
   - date: 2026-01-12 17:41:48 GMT-05:00
   - tags:
-    - life
+    - o/life
   - description: and the homeostasis state
 
 the housecat spends roughly 12 to 16 hours a day in a state of deep torpor, a metabolic shutdown that would register as clinically depressive in any modern human productivity framework. yet, watching the cat, you do not see depression. you see a creature that has solved the fundamental thermodynamic equation of existence with an elegance we can only envy. the cat does not apologize for its inertia. it does not bargain with the clock.
@@ -338,6 +341,15 @@ I mean we all heard about [RLM](https://alexzhang13.github.io/blog/2025/rlm/), b
 ![[thoughts/images/elmo-fire.gif|just use them all.]]
 
 _update: oops, it seems like Nathan just released a [post](https://www.interconnects.ai/p/use-multiple-models) about this ahaha_
+
+---
+
+- [meta]:
+  - date: 2026-01-11 09:24:22 GMT-05:00
+  - tags:
+    - poetry
+
+![[posts/dream]]
 
 ---
 

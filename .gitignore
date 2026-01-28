@@ -206,7 +206,6 @@ checkpoints
 .gemini
 .cursor
 content/arena_hast.json
-docs/
 /scripts
 *.log
 *.lock
@@ -226,3 +225,6 @@ txts/
 progress.md
 *.aux
 *.xhtml
+*.br
+docs/app
+docs/obsidian

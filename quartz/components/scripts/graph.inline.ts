@@ -105,6 +105,7 @@ async function renderGraph(graph: HTMLElement, fullSlug: FullSlug) {
     showTags,
     focusOnHover,
     enableRadial,
+    label: labelMode = "default",
   } = JSON.parse(graph.dataset["cfg"]!) as D3Config
 
   const data: Map<SimpleSlug, ContentDetails> = new Map(
@@ -287,6 +288,12 @@ async function renderGraph(graph: HTMLElement, fullSlug: FullSlug) {
 
   let hoveredNodeId: string | null = null
   let hoveredNeighbours: Set<string> = new Set()
+  let labelsContainer: Container<Text> | null = null
+  const updateLabelVisibility = () => {
+    if (!labelsContainer) return
+    labelsContainer.visible =
+      labelMode !== "off" && (labelMode !== "hover" || hoveredNodeId !== null)
+  }
   const linkRenderData: LinkRenderData[] = []
   const nodeRenderData: NodeRenderData[] = []
   function updateHoverInfo(newHoveredId: string | null) {
@@ -317,6 +324,7 @@ async function renderGraph(graph: HTMLElement, fullSlug: FullSlug) {
         n.active = hoveredNeighbours.has(n.simulationData.id)
       }
     }
+    updateLabelVisibility()
   }
 
   let dragStartTime = 0
@@ -413,12 +421,13 @@ async function renderGraph(graph: HTMLElement, fullSlug: FullSlug) {
   const stage = app.stage
   stage.interactive = false
 
-  const labelsContainer = new Container<Text>({ zIndex: 3, isRenderGroup: true })
+  labelsContainer = new Container<Text>({ zIndex: 3, isRenderGroup: true })
   const nodesContainer = new Container<Graphics>({ zIndex: 2, isRenderGroup: true })
   const linkContainer = new Container<Graphics>({ zIndex: 1, isRenderGroup: true })
   const linksGfx = new Graphics({ interactive: false, eventMode: "none" })
   linkContainer.addChild(linksGfx)
   stage.addChild(nodesContainer, labelsContainer, linkContainer)
+  updateLabelVisibility()
 
   for (const simulationData of graphData.nodes) {
     const { text, id: label } = simulationData
@@ -611,13 +620,18 @@ async function renderGraph(graph: HTMLElement, fullSlug: FullSlug) {
       const isCurrentlyHover = hoveredNodeId === nodeId
       const isConnected = hoveredNeighbours.has(nodeId)
       const isDimmed = hoveredNodeId !== null && !isCurrentlyHover && !isConnected
-      const labelTargetAlpha = hoveredNodeId
-        ? isCurrentlyHover
-          ? 1
-          : isConnected
-            ? 0.8
-            : zoomTextAlpha
-        : zoomTextAlpha
+      let labelTargetAlpha = 0
+      if (labelMode === "default") {
+        labelTargetAlpha = hoveredNodeId
+          ? isCurrentlyHover
+            ? 1
+            : isConnected
+              ? 0.8
+              : zoomTextAlpha
+          : zoomTextAlpha
+      } else if (labelMode === "hover") {
+        labelTargetAlpha = hoveredNodeId && (isCurrentlyHover || isConnected) ? 1 : 0
+      }
       const nextLabelAlpha = smooth(n.label.alpha, labelTargetAlpha, smoothingFactor)
       if (Math.abs(nextLabelAlpha - n.label.alpha) > epsilon) {
         needsNextFrame = true
