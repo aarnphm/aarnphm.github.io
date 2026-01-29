@@ -820,9 +820,6 @@ const applyBinary = (
 }
 
 const evalAdditive = (operator: "+" | "-", left: Value, right: Value): Value => {
-  if (operator === "+" && (isStringValue(left) || isStringValue(right))) {
-    return makeString(`${valueToString(left)}${valueToString(right)}`)
-  }
   if (isDateValue(left) && isDateValue(right) && operator === "-") {
     return makeDuration(left.value.getTime() - right.value.getTime())
   }
@@ -835,6 +832,9 @@ const evalAdditive = (operator: "+" | "-", left: Value, right: Value): Value => 
     const duration = parseDurationValue(left)
     if (duration === null) return makeNull()
     return makeDate(addDurationToDate(right.value, duration, 1))
+  }
+  if (operator === "+" && (isStringValue(left) || isStringValue(right))) {
+    return makeString(`${valueToString(left)}${valueToString(right)}`)
   }
   if (isDurationValue(left) && isDurationValue(right)) {
     return makeDuration(
