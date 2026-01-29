@@ -381,7 +381,7 @@ export const ObsidianBases: QuartzTransformerPlugin = () => {
 
             const config: BaseFile = {
               filters,
-              views: parseViews(parsedConfig.views),
+              views: parseViews(parsedConfig.views as any[]),
               properties,
               summaries,
               formulas: isRecord(parsedConfig.formulas)
