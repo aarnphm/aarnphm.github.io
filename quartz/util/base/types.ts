@@ -1,4 +1,3 @@
-import { QuartzPluginData } from "../../plugins/vfile"
 import {
   SummaryDefinition,
   ViewSummaryConfig,
@@ -10,149 +9,73 @@ import {
 export type { SummaryDefinition, ViewSummaryConfig, PropertyConfig, BuiltinSummaryType }
 export { BUILTIN_SUMMARY_TYPES }
 
-export type BasesConfigFileFilter =
-  | string
-  | { and: BasesConfigFileFilter[] }
-  | { or: BasesConfigFileFilter[] }
-  | { not: BasesConfigFileFilter[] }
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+  typeof value === "object" && value !== null && !Array.isArray(value)
 
-export interface BasesConfigFile {
-  filters?: BasesConfigFileFilter
-  views: BasesConfigFileView[]
+const isNonEmptyString = (value: unknown): value is string =>
+  typeof value === "string" && value.trim().length > 0
+
+export type BaseFileFilter =
+  | string
+  | { and: BaseFileFilter[] }
+  | { or: BaseFileFilter[] }
+  | { not: BaseFileFilter[] }
+
+export interface BaseFile {
+  filters?: BaseFileFilter
+  views: BaseView[]
   properties?: Record<string, PropertyConfig>
   summaries?: Record<string, string>
   formulas?: Record<string, string>
 }
 
-export type BaseFile = BasesConfigFile
-
-export interface BasesConfigFileView {
+export interface BaseView {
   type: "table" | "list" | "gallery" | "board" | "calendar" | "card" | "cards" | "map"
   name: string
   order?: string[]
-  sort?: BasesSortConfig[]
+  sort?: BaseSortConfig[]
   columnSize?: Record<string, number>
-  groupBy?: string | BasesGroupByConfig
+  groupBy?: string | BaseGroupBy
   limit?: number
-  filters?: BasesConfigFileFilter
+  filters?: BaseFileFilter
   summaries?: Record<string, string> | ViewSummaryConfig
   image?: string
   cardSize?: number
+  cardAspect?: number
   nestedProperties?: boolean
+  indentProperties?: boolean
+  separator?: string
+  date?: string
+  dateField?: string
+  dateProperty?: string
   coordinates?: string
   markerIcon?: string
   markerColor?: string
   defaultZoom?: number
   defaultCenter?: [number, number]
   clustering?: boolean
-  [key: string]: any
+  groupSizes?: Record<string, number>
+  groupAspects?: Record<string, number>
 }
 
-export type BaseView = BasesConfigFileView
-
-export interface BasesSortConfig {
+export interface BaseSortConfig {
   property: string
   direction: "ASC" | "DESC"
 }
 
-export type BaseSortConfig = BasesSortConfig
-
-export interface BasesGroupByConfig {
+export interface BaseGroupBy {
   property: string
   direction: "ASC" | "DESC"
 }
 
-export type BaseGroupBy = BasesGroupByConfig
-
-export interface BaseTableData {
-  view: BaseView
-  rows: QuartzPluginData[]
-  columns: string[]
-}
-
-export function parseDuration(durationStr: string): number {
-  const str = durationStr.trim()
-
-  const asNumber = Number(str)
-  if (!isNaN(asNumber)) {
-    return asNumber
-  }
-
-  let totalMs = 0
-  const regex = /(\d+(?:\.\d+)?)\s*([a-zA-Z]+)/g
-  let match
-  while ((match = regex.exec(str)) !== null) {
-    const value = parseFloat(match[1])
-    const unitRaw = match[2]
-    const unit = unitRaw.toLowerCase()
-    if (unitRaw === "M" || unit === "mo" || unit === "month" || unit === "months") {
-      totalMs += value * 30 * 24 * 60 * 60 * 1000
-      continue
+export function parseViews(raw: unknown[]): BaseView[] {
+  return raw.map((entry) => {
+    if (!isRecord(entry)) throw new Error("Each view must be an object")
+    const { type, name } = entry
+    if (!isNonEmptyString(type) || !isNonEmptyString(name)) {
+      throw new Error("Each view must have 'type' and 'name' fields")
     }
-    if (unit === "ms" || unit === "millisecond" || unit === "milliseconds") {
-      totalMs += value
-      continue
-    }
-    if (
-      unit === "s" ||
-      unit === "sec" ||
-      unit === "secs" ||
-      unit === "second" ||
-      unit === "seconds"
-    ) {
-      totalMs += value * 1000
-      continue
-    }
-    if (
-      unit === "m" ||
-      unit === "min" ||
-      unit === "mins" ||
-      unit === "minute" ||
-      unit === "minutes"
-    ) {
-      totalMs += value * 60 * 1000
-      continue
-    }
-    if (unit === "h" || unit === "hr" || unit === "hrs" || unit === "hour" || unit === "hours") {
-      totalMs += value * 60 * 60 * 1000
-      continue
-    }
-    if (unit === "d" || unit === "day" || unit === "days") {
-      totalMs += value * 24 * 60 * 60 * 1000
-      continue
-    }
-    if (unit === "w" || unit === "week" || unit === "weeks") {
-      totalMs += value * 7 * 24 * 60 * 60 * 1000
-      continue
-    }
-    if (unit === "y" || unit === "yr" || unit === "yrs" || unit === "year" || unit === "years") {
-      totalMs += value * 365 * 24 * 60 * 60 * 1000
-      continue
-    }
-  }
-
-  return totalMs
-}
-
-export function parseViews(raw: any): BaseView[] {
-  if (!Array.isArray(raw)) throw new Error("Views must be an array")
-
-  return raw.map((v) => {
-    if (!v || typeof v !== "object") throw new Error("Each view must be an object")
-    if (!v.type || !v.name) throw new Error("Each view must have 'type' and 'name' fields")
-
-    return {
-      ...v,
-      type: v.type,
-      name: v.name,
-      order: v.order,
-      sort: v.sort,
-      columnSize: v.columnSize,
-      groupBy: v.groupBy,
-      limit: v.limit,
-      filters: v.filters,
-      summaries: v.summaries,
-    } as BaseView
+    return { ...entry, type, name } as BaseView
   })
 }
 

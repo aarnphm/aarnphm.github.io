@@ -10,7 +10,7 @@ import {
   simplifySlug,
   isAbsoluteURL,
 } from "../../util/path"
-import { extractWikilinksWithPositions } from "../../util/wikilinks"
+import { extractWikilinksWithPositions, resolveWikilinkTarget } from "../../util/wikilinks"
 import {
   BaseExpressionDiagnostic,
   ProgramIR,
@@ -25,11 +25,15 @@ import { computeViewSummaries } from "./query"
 import {
   BaseView,
   BaseGroupBy,
+  BaseFile,
+  BaseSortConfig,
   PropertyConfig,
   ViewSummaryConfig,
   parseViewSummaries,
-  BasesConfigFile,
 } from "./types"
+
+type RenderElement = ReturnType<typeof h>
+type RenderNode = RenderElement | string
 
 function getFileBaseName(filePath?: string, slug?: string): string | undefined {
   const source = filePath ?? slug
@@ -70,7 +74,7 @@ function renderInternalLinkNode(
   allFiles: QuartzPluginData[],
   alias?: string,
   anchor?: string,
-) {
+): RenderElement {
   const targetFile = findFileBySlug(allFiles, targetSlug)
   const displayText =
     alias && alias.trim().length > 0
@@ -82,6 +86,15 @@ function renderInternalLinkNode(
   const dataSlug = anchor && anchor.length > 0 ? `${targetSlug}${anchor}` : targetSlug
 
   return h("a.internal", { href, "data-slug": dataSlug }, displayText)
+}
+
+function buildFileLinkNode(
+  slug: FullSlug,
+  currentSlug: FullSlug,
+  label: string,
+): RenderElement {
+  const href = resolveRelative(currentSlug, slug)
+  return h("a.internal", { href, "data-slug": slug }, label)
 }
 
 function splitTargetAndAlias(raw: string): { target: string; alias?: string } {
@@ -126,12 +139,12 @@ function renderInlineString(
   value: string,
   currentSlug: FullSlug,
   allFiles: QuartzPluginData[],
-): (string | ReturnType<typeof h>)[] {
+): RenderNode[] {
   if (!value.includes("[[")) {
     return [value]
   }
 
-  const nodes: (string | ReturnType<typeof h>)[] = []
+  const nodes: RenderNode[] = []
   const ranges = extractWikilinksWithPositions(value)
   let lastIndex = 0
   for (const range of ranges) {
@@ -146,8 +159,16 @@ function renderInlineString(
       continue
     }
 
-    const { slug, anchor } = normalizeTargetSlug(parsed.target, currentSlug, parsed.anchor)
-    nodes.push(renderInternalLinkNode(slug, currentSlug, allFiles, parsed.alias, anchor))
+    const resolved = resolveWikilinkTarget(parsed, currentSlug)
+    if (!resolved) {
+      nodes.push(parsed.alias ?? parsed.target ?? raw)
+      lastIndex = range.end
+      continue
+    }
+
+    nodes.push(
+      renderInternalLinkNode(resolved.slug, currentSlug, allFiles, parsed.alias, resolved.anchor),
+    )
     lastIndex = range.end
   }
 
@@ -155,6 +176,43 @@ function renderInlineString(
     nodes.push(value.slice(lastIndex))
   }
 
+  return nodes
+}
+
+function renderBacklinkNodes(
+  backlinks: string[],
+  currentSlug: FullSlug,
+  allFiles: QuartzPluginData[],
+): RenderNode[] {
+  const nodes: RenderNode[] = []
+  for (const entry of backlinks) {
+    if (!entry) continue
+    let raw = entry.trim()
+    if (!raw) continue
+    let alias: string | undefined
+    if (raw.startsWith("!")) {
+      raw = raw.slice(1)
+    }
+    if (raw.startsWith("[[") && raw.endsWith("]]")) {
+      const inner = raw.slice(2, -2)
+      const parsed = splitTargetAndAlias(inner)
+      raw = parsed.target
+      alias = parsed.alias
+    }
+    const { slug: targetSlug, anchor } = normalizeTargetSlug(raw, currentSlug)
+    if (nodes.length > 0) {
+      nodes.push(", ")
+    }
+    nodes.push(
+      renderInternalLinkNode(
+        targetSlug,
+        currentSlug,
+        allFiles,
+        alias,
+        anchor && anchor.length > 0 ? anchor : undefined,
+      ),
+    )
+  }
   return nodes
 }
 
@@ -202,7 +260,7 @@ function getPropertyDisplayName(
     .trim()
 }
 
-function renderBooleanCheckbox(value: boolean): any {
+function renderBooleanCheckbox(value: boolean): RenderElement {
   return h("input", {
     type: "checkbox",
     checked: value ? true : undefined,
@@ -211,7 +269,10 @@ function renderBooleanCheckbox(value: boolean): any {
   })
 }
 
-function buildTableHead(columns: string[], properties?: Record<string, PropertyConfig>): any {
+function buildTableHead(
+  columns: string[],
+  properties?: Record<string, PropertyConfig>,
+): RenderElement {
   return h(
     "tr",
     columns.map((col) => h("th", {}, getPropertyDisplayName(col, properties))),
@@ -251,28 +312,25 @@ function buildTableCell(
   allFiles: QuartzPluginData[],
   getContext: EvalContextFactory,
   getPropertyExpr: PropertyExprGetter,
-): any {
+): RenderElement {
+  const slug = (file.slug || "") as FullSlug
   const fallbackSlugSegment = file.slug?.split("/").pop() || ""
   const fallbackTitle =
     getFileBaseName(file.filePath as string | undefined) ||
     fallbackSlugSegment.replace(/\.[^/.]+$/, "").replace(/-/g, " ")
 
-  if (column === "title" || column === "file.title" || column === "note.title") {
-    const titleValue = resolveValueWithFormulas(file, "file.title", getContext, getPropertyExpr)
-    const resolvedTitle =
-      typeof titleValue === "string" && titleValue.length > 0 ? titleValue : fallbackTitle
-    const slug = (file.slug || "") as FullSlug
-    const href = resolveRelative(currentSlug, slug)
-    return h("td", [h("a.internal", { href, "data-slug": slug }, resolvedTitle)])
-  }
+  const linkProperty =
+    column === "file.name"
+      ? "file.name"
+      : column === "title" || column === "file.title" || column === "note.title"
+        ? "file.title"
+        : undefined
 
-  if (column === "file.name") {
-    const nameValue = resolveValueWithFormulas(file, "file.name", getContext, getPropertyExpr)
-    const resolvedName =
-      typeof nameValue === "string" && nameValue.length > 0 ? nameValue : fallbackTitle
-    const slug = (file.slug || "") as FullSlug
-    const href = resolveRelative(currentSlug, slug)
-    return h("td", [h("a.internal", { href, "data-slug": slug }, resolvedName)])
+  if (linkProperty) {
+    const rawValue = resolveValueWithFormulas(file, linkProperty, getContext, getPropertyExpr)
+    const resolvedValue =
+      typeof rawValue === "string" && rawValue.length > 0 ? rawValue : fallbackTitle
+    return h("td", [buildFileLinkNode(slug, currentSlug, resolvedValue)])
   }
 
   if (column === "file.links") {
@@ -286,34 +344,11 @@ function buildTableCell(
     if (!Array.isArray(backlinks) || backlinks.length === 0) {
       return h("td", {}, "")
     }
-    const nodes: any[] = []
-    backlinks.forEach((entry: string) => {
-      if (!entry) return
-      let raw = entry.trim()
-      let alias: string | undefined
-      if (raw.startsWith("!")) {
-        raw = raw.slice(1)
-      }
-      if (raw.startsWith("[[") && raw.endsWith("]]")) {
-        const inner = raw.slice(2, -2)
-        const parsed = splitTargetAndAlias(inner)
-        raw = parsed.target
-        alias = parsed.alias
-      }
-      const { slug: targetSlug, anchor } = normalizeTargetSlug(raw, currentSlug)
-      if (nodes.length > 0) {
-        nodes.push(", ")
-      }
-      nodes.push(
-        renderInternalLinkNode(
-          targetSlug,
-          currentSlug,
-          allFiles,
-          alias,
-          anchor && anchor.length > 0 ? anchor : undefined,
-        ),
-      )
-    })
+    const entries = backlinks.filter((entry): entry is string => typeof entry === "string")
+    if (entries.length === 0) {
+      return h("td", {}, "")
+    }
+    const nodes = renderBacklinkNodes(entries, currentSlug, allFiles)
     return h("td", {}, nodes)
   }
 
@@ -331,7 +366,7 @@ function buildTableCell(
   }
 
   if (Array.isArray(value)) {
-    const parts: any[] = []
+    const parts: RenderNode[] = []
     value.forEach((item, idx) => {
       if (typeof item === "string") {
         parts.push(...renderInlineString(item, currentSlug, allFiles))
@@ -363,20 +398,29 @@ function buildTableCell(
 
 function applySorting(
   files: QuartzPluginData[],
-  sortConfig: { property: string; direction: "ASC" | "DESC" }[] = [],
+  sortConfig: BaseSortConfig[] = [],
   getContext: EvalContextFactory,
   getPropertyExpr: PropertyExprGetter,
 ): QuartzPluginData[] {
   if (sortConfig.length === 0) return files
 
-  const normalizeSortValue = (val: any) => {
+  const normalizeSortValue = (val: unknown): string | number | null | undefined => {
     if (val instanceof Date) {
       return val.getTime()
     }
     if (Array.isArray(val)) {
       return val.join(", ")
     }
-    return val
+    if (typeof val === "string" || typeof val === "number") {
+      return val
+    }
+    if (typeof val === "boolean") {
+      return val ? 1 : 0
+    }
+    if (val === null || val === undefined) {
+      return val
+    }
+    return String(val)
   }
 
   return [...files].sort((a, b) => {
@@ -388,19 +432,24 @@ function applySorting(
       const bVal = normalizeSortValue(bRaw)
 
       let comparison = 0
-      const aMissing = aVal === undefined || aVal === null || aVal === ""
-      const bMissing = bVal === undefined || bVal === null || bVal === ""
-
-      if (aMissing && bMissing) {
-        comparison = 0
-      } else if (aMissing) {
-        comparison = 1
-      } else if (bMissing) {
+      if (aVal === undefined || aVal === null || aVal === "") {
+        if (bVal === undefined || bVal === null || bVal === "") {
+          comparison = 0
+        } else {
+          comparison = 1
+        }
+      } else if (bVal === undefined || bVal === null || bVal === "") {
         comparison = -1
       } else if (typeof aVal === "string" && typeof bVal === "string") {
         comparison = aVal.localeCompare(bVal)
       } else {
-        comparison = aVal > bVal ? 1 : aVal < bVal ? -1 : 0
+        const aNumber = typeof aVal === "number" ? aVal : Number(aVal)
+        const bNumber = typeof bVal === "number" ? bVal : Number(bVal)
+        if (Number.isFinite(aNumber) && Number.isFinite(bNumber)) {
+          comparison = aNumber > bNumber ? 1 : aNumber < bNumber ? -1 : 0
+        } else {
+          comparison = String(aVal).localeCompare(String(bVal))
+        }
       }
 
       if (comparison !== 0) {
@@ -453,7 +502,7 @@ function buildTableSummaryRow(
   summaryExpressions: Record<string, ProgramIR> | undefined,
   getContext: EvalContextFactory,
   getPropertyExpr: PropertyExprGetter,
-): any | undefined {
+): RenderElement | undefined {
   if (!summaryConfig?.columns || Object.keys(summaryConfig.columns).length === 0) {
     return undefined
   }
@@ -473,7 +522,7 @@ function buildTableSummaryRow(
     return undefined
   }
 
-  const cells = columns.map((col) => {
+  const cells: RenderElement[] = columns.map((col) => {
     const value = summaryValues[col]
     if (value === undefined) {
       return h("td.base-summary-cell", {}, "")
@@ -491,17 +540,17 @@ function buildTable(
   allFiles: QuartzPluginData[],
   getContext: EvalContextFactory,
   getPropertyExpr: PropertyExprGetter,
-  properties?: Record<string, { displayName?: string }>,
+  properties?: Record<string, PropertyConfig>,
   topLevelSummaries?: Record<string, string>,
   summaryExpressions?: Record<string, ProgramIR>,
-): any {
+): RenderElement {
   const columns = view.order || []
 
   const summaryConfig = parseViewSummaries(view.summaries, topLevelSummaries)
 
   if (view.groupBy) {
     const groups = groupFiles(files, view.groupBy, getContext, getPropertyExpr)
-    const allRows: any[] = []
+    const allRows: RenderElement[] = []
 
     for (const [groupName, groupFiles] of groups) {
       const groupHeader = h("tr.base-group-header", [
@@ -544,7 +593,7 @@ function buildTable(
   return h("table.base-table", tableChildren)
 }
 
-function listValueToPlainText(value: any): string | undefined {
+function listValueToPlainText(value: unknown): string | undefined {
   if (value === undefined || value === null) {
     return undefined
   }
@@ -569,7 +618,7 @@ function listValueToPlainText(value: any): string | undefined {
   return stringified.length > 0 ? stringified : undefined
 }
 
-function hasRenderableValue(value: any): boolean {
+function hasRenderableValue(value: unknown): boolean {
   if (value === undefined || value === null) return false
   if (Array.isArray(value)) {
     return value.some((item) => hasRenderableValue(item))
@@ -580,13 +629,13 @@ function hasRenderableValue(value: any): boolean {
 }
 
 function renderPropertyValueNodes(
-  value: any,
+  value: unknown,
   currentSlug: FullSlug,
   allFiles: QuartzPluginData[],
-): any[] {
+): RenderNode[] {
   if (value === undefined || value === null) return []
   if (Array.isArray(value)) {
-    const nodes: any[] = []
+    const nodes: RenderNode[] = []
     value.forEach((item, idx) => {
       nodes.push(...renderPropertyValueNodes(item, currentSlug, allFiles))
       if (idx < value.length - 1) {
@@ -604,31 +653,29 @@ function renderPropertyValueNodes(
   return [String(value)]
 }
 
-function buildList(
-  files: QuartzPluginData[],
+function createListItemRenderer(
   view: BaseView,
   currentSlug: FullSlug,
   allFiles: QuartzPluginData[],
   getContext: EvalContextFactory,
   getPropertyExpr: PropertyExprGetter,
   properties?: Record<string, PropertyConfig>,
-): any {
+): (file: QuartzPluginData) => RenderElement {
   const nestedProperties = view.nestedProperties === true || view.indentProperties === true
   const order = Array.isArray(view.order) && view.order.length > 0 ? view.order : ["title"]
   const [primaryProp, ...secondaryProps] = order
+  const rawSeparator = typeof view.separator === "string" ? view.separator : ","
+  const separator = rawSeparator.endsWith(" ") ? rawSeparator : `${rawSeparator} `
 
-  const renderListItem = (file: QuartzPluginData) => {
+  return (file) => {
     const slug = (file.slug || "") as FullSlug
-    const href = resolveRelative(currentSlug, slug)
-
-    const fallbackTitle =
-      getFileDisplayName(file) ?? fallbackNameFromSlug((file.slug || "") as FullSlug)
+    const fallbackTitle = getFileDisplayName(file) ?? fallbackNameFromSlug(slug)
 
     const primaryValue = primaryProp
       ? resolveValueWithFormulas(file, primaryProp, getContext, getPropertyExpr)
       : resolveValueWithFormulas(file, "title", getContext, getPropertyExpr)
     const primaryText = listValueToPlainText(primaryValue) ?? fallbackTitle
-    const anchor = h("a.internal", { href, "data-slug": slug }, primaryText)
+    const anchor = buildFileLinkNode(slug, currentSlug, primaryText)
 
     const seen = new Set<string>()
     if (primaryProp) {
@@ -636,9 +683,7 @@ function buildList(
     }
 
     if (!nestedProperties) {
-      const rawSeparator = typeof view.separator === "string" ? view.separator : ","
-      const separator = rawSeparator.endsWith(" ") ? rawSeparator : `${rawSeparator} `
-      const inlineNodes: any[] = []
+      const inlineNodes: RenderNode[] = []
 
       for (const propertyKey of secondaryProps) {
         if (!propertyKey || seen.has(propertyKey)) continue
@@ -656,7 +701,7 @@ function buildList(
       return inlineNodes.length > 0 ? h("li", [anchor, ...inlineNodes]) : h("li", [anchor])
     }
 
-    const metadataItems: any[] = []
+    const metadataItems: RenderElement[] = []
 
     for (const propertyKey of secondaryProps) {
       if (!propertyKey || seen.has(propertyKey)) continue
@@ -677,10 +722,29 @@ function buildList(
 
     return h("li", [anchor, h("ul.base-list-nested", metadataItems)])
   }
+}
+
+function buildList(
+  files: QuartzPluginData[],
+  view: BaseView,
+  currentSlug: FullSlug,
+  allFiles: QuartzPluginData[],
+  getContext: EvalContextFactory,
+  getPropertyExpr: PropertyExprGetter,
+  properties?: Record<string, PropertyConfig>,
+): RenderElement {
+  const renderListItem = createListItemRenderer(
+    view,
+    currentSlug,
+    allFiles,
+    getContext,
+    getPropertyExpr,
+    properties,
+  )
 
   if (view.groupBy) {
     const groups = groupFiles(files, view.groupBy, getContext, getPropertyExpr)
-    const groupElements: any[] = []
+    const groupElements: RenderElement[] = []
 
     for (const [groupName, groupedFiles] of groups) {
       const items = groupedFiles.map((file) => renderListItem(file))
@@ -699,7 +763,7 @@ function buildList(
   return h("ul.base-list", items)
 }
 
-function normalizeCalendarDate(value: any): string | undefined {
+function normalizeCalendarDate(value: unknown): string | undefined {
   if (value instanceof Date) {
     return value.toISOString().split("T")[0]
   }
@@ -729,10 +793,7 @@ function buildCalendar(
   getContext: EvalContextFactory,
   getPropertyExpr: PropertyExprGetter,
   properties?: Record<string, PropertyConfig>,
-): any {
-  const nestedProperties = view.nestedProperties === true || view.indentProperties === true
-  const order = Array.isArray(view.order) && view.order.length > 0 ? view.order : ["title"]
-  const [primaryProp, ...secondaryProps] = order
+): RenderElement {
   const dateField =
     typeof view.date === "string"
       ? view.date
@@ -742,66 +803,14 @@ function buildCalendar(
           ? view.dateProperty
           : "date"
 
-  const renderListItem = (file: QuartzPluginData) => {
-    const slug = (file.slug || "") as FullSlug
-    const href = resolveRelative(currentSlug, slug)
-
-    const fallbackTitle =
-      getFileDisplayName(file) ?? fallbackNameFromSlug((file.slug || "") as FullSlug)
-
-    const primaryValue = primaryProp
-      ? resolveValueWithFormulas(file, primaryProp, getContext, getPropertyExpr)
-      : resolveValueWithFormulas(file, "title", getContext, getPropertyExpr)
-    const primaryText = listValueToPlainText(primaryValue) ?? fallbackTitle
-    const anchor = h("a.internal", { href, "data-slug": slug }, primaryText)
-
-    const seen = new Set<string>()
-    if (primaryProp) {
-      seen.add(primaryProp)
-    }
-
-    if (!nestedProperties) {
-      const rawSeparator = typeof view.separator === "string" ? view.separator : ","
-      const separator = rawSeparator.endsWith(" ") ? rawSeparator : `${rawSeparator} `
-      const inlineNodes: any[] = []
-
-      for (const propertyKey of secondaryProps) {
-        if (!propertyKey || seen.has(propertyKey)) continue
-        const value = resolveValueWithFormulas(file, propertyKey, getContext, getPropertyExpr)
-        if (!hasRenderableValue(value)) continue
-
-        const renderedValue = renderPropertyValueNodes(value, currentSlug, allFiles)
-        if (renderedValue.length === 0) continue
-
-        inlineNodes.push(separator)
-        inlineNodes.push(...renderedValue)
-        seen.add(propertyKey)
-      }
-
-      return inlineNodes.length > 0 ? h("li", [anchor, ...inlineNodes]) : h("li", [anchor])
-    }
-
-    const metadataItems: any[] = []
-
-    for (const propertyKey of secondaryProps) {
-      if (!propertyKey || seen.has(propertyKey)) continue
-      const value = resolveValueWithFormulas(file, propertyKey, getContext, getPropertyExpr)
-      if (!hasRenderableValue(value)) continue
-
-      const renderedValue = renderPropertyValueNodes(value, currentSlug, allFiles)
-      if (renderedValue.length === 0) continue
-
-      const label = getPropertyDisplayName(propertyKey, properties)
-      metadataItems.push(h("li", [h("span.base-list-meta-label", `${label}: `), ...renderedValue]))
-      seen.add(propertyKey)
-    }
-
-    if (metadataItems.length === 0) {
-      return h("li", [anchor])
-    }
-
-    return h("li", [anchor, h("ul.base-list-nested", metadataItems)])
-  }
+  const renderListItem = createListItemRenderer(
+    view,
+    currentSlug,
+    allFiles,
+    getContext,
+    getPropertyExpr,
+    properties,
+  )
 
   const groups = new Map<string, QuartzPluginData[]>()
   for (const file of files) {
@@ -813,7 +822,7 @@ function buildCalendar(
     groups.get(dateKey)!.push(file)
   }
 
-  const groupElements: any[] = []
+  const groupElements: RenderElement[] = []
   const sorted = [...groups.entries()].sort(([a], [b]) => a.localeCompare(b))
   for (const [dateKey, groupedFiles] of sorted) {
     const items = groupedFiles.map((file) => renderListItem(file))
@@ -828,6 +837,36 @@ function buildCalendar(
   return h("div.base-calendar-container", groupElements)
 }
 
+function resolveCardImageUrl(imageValue: unknown, currentSlug: FullSlug): string | undefined {
+  const source =
+    typeof imageValue === "string"
+      ? imageValue
+      : Array.isArray(imageValue) && typeof imageValue[0] === "string"
+        ? imageValue[0]
+        : undefined
+
+  if (!source) return undefined
+
+  const trimmed = source.trim()
+  if (!trimmed) return undefined
+
+  const toRelativeFromSlug = (target: string): string => {
+    if (isAbsoluteURL(target)) return target
+    const imgSlug = slugifyFilePath(target as FilePath)
+    return resolveRelative(currentSlug, imgSlug)
+  }
+
+  const wl = trimmed.match(/^\[\[(.+?)\]\]$/)
+  if (wl) {
+    const inner = wl[1]
+    const { target } = splitTargetAndAlias(inner)
+    const { slug } = normalizeTargetSlug(target, currentSlug)
+    return resolveRelative(currentSlug, slug)
+  }
+
+  return toRelativeFromSlug(trimmed)
+}
+
 function buildCards(
   files: QuartzPluginData[],
   view: BaseView,
@@ -835,98 +874,44 @@ function buildCards(
   allFiles: QuartzPluginData[],
   getContext: EvalContextFactory,
   getPropertyExpr: PropertyExprGetter,
-): any {
+  properties?: Record<string, PropertyConfig>,
+): RenderElement {
   const imageField = view.image || "image"
 
-  const renderCard = (file: QuartzPluginData) => {
-    const title = file.frontmatter?.title || file.slug?.split("/").pop() || ""
+  const renderCard = (file: QuartzPluginData): RenderElement => {
     const slug = (file.slug || "") as FullSlug
+    const title = getFileDisplayName(file) ?? fallbackNameFromSlug(slug)
     const href = resolveRelative(currentSlug, slug)
 
-    let imageUrl: string | undefined
     const imageValue = resolveValueWithFormulas(file, imageField, getContext, getPropertyExpr)
-    const toRelativeFromSlug = (target: string): string => {
-      if (isAbsoluteURL(target)) return target
-      const imgSlug = slugifyFilePath(target as FilePath)
-      return resolveRelative(currentSlug, imgSlug)
-    }
+    const imageUrl = resolveCardImageUrl(imageValue, currentSlug)
 
-    if (imageValue) {
-      if (typeof imageValue === "string") {
-        const wl = imageValue.match(/^\[\[(.+?)\]\]$/)
-        if (wl) {
-          const inner = wl[1]
-          const { target } = splitTargetAndAlias(inner)
-          const { slug } = normalizeTargetSlug(target, currentSlug)
-          imageUrl = resolveRelative(currentSlug, slug)
-        } else {
-          imageUrl = toRelativeFromSlug(imageValue)
-        }
-      } else if (Array.isArray(imageValue) && imageValue.length > 0) {
-        const first = imageValue[0]
-        if (typeof first === "string") {
-          const wl = first.match(/^\[\[(.+?)\]\]$/)
-          if (wl) {
-            const inner = wl[1]
-            const { target } = splitTargetAndAlias(inner)
-            const { slug } = normalizeTargetSlug(target, currentSlug)
-            imageUrl = resolveRelative(currentSlug, slug)
-          } else {
-            imageUrl = toRelativeFromSlug(first)
-          }
-        }
-      }
-    }
-
-    const metadataItems: any[] = []
-    const order = view.order || []
+    const metadataItems: RenderElement[] = []
+    const order = Array.isArray(view.order) ? view.order : []
     const metadataFields = order.filter(
-      (field) => field !== "title" && field !== imageField && field !== "file.title",
+      (field): field is string =>
+        typeof field === "string" &&
+        field !== "title" &&
+        field !== "file.title" &&
+        field !== "note.title" &&
+        field !== imageField,
     )
 
     for (const field of metadataFields) {
       const value = resolveValueWithFormulas(file, field, getContext, getPropertyExpr)
-      if (value !== undefined && value !== null && value !== "") {
-        const label = field
-          .replace("file.", "")
-          .replace("note.", "")
-          .replace(/-/g, " ")
-          .replace(/([A-Z])/g, " $1")
-          .trim()
-
-        let displayValue: any
-        if (Array.isArray(value)) {
-          const parts: any[] = []
-          value.forEach((item, idx) => {
-            if (typeof item === "string") {
-              parts.push(...renderInlineString(item, currentSlug, allFiles))
-            } else {
-              parts.push(String(item))
-            }
-            if (idx < value.length - 1) {
-              parts.push(", ")
-            }
-          })
-          displayValue = parts
-        } else if (value instanceof Date) {
-          displayValue = value.toISOString().split("T")[0]
-        } else if (typeof value === "string") {
-          const rendered = renderInlineString(value, currentSlug, allFiles)
-          displayValue = rendered
-        } else {
-          displayValue = String(value)
-        }
-
-        metadataItems.push(
-          h("div.base-card-meta-item", [
-            h("span.base-card-meta-label", label),
-            h("span.base-card-meta-value", displayValue),
-          ]),
-        )
-      }
+      if (!hasRenderableValue(value)) continue
+      const renderedValue = renderPropertyValueNodes(value, currentSlug, allFiles)
+      if (renderedValue.length === 0) continue
+      const label = getPropertyDisplayName(field, properties)
+      metadataItems.push(
+        h("div.base-card-meta-item", [
+          h("span.base-card-meta-label", label),
+          h("span.base-card-meta-value", renderedValue),
+        ]),
+      )
     }
 
-    const cardChildren = []
+    const cardChildren: RenderElement[] = []
     if (imageUrl) {
       cardChildren.push(
         h(
@@ -946,7 +931,7 @@ function buildCards(
       )
     }
 
-    const contentChildren = [
+    const contentChildren: RenderElement[] = [
       h("a.base-card-title-link", { href, "data-slug": slug }, [h("h3.base-card-title", title)]),
     ]
     if (metadataItems.length > 0) {
@@ -969,14 +954,13 @@ function buildCards(
 
   if (view.groupBy) {
     const groups = groupFiles(files, view.groupBy, getContext, getPropertyExpr)
-    const groupElements: any[] = []
+    const groupElements: RenderElement[] = []
 
-    const groupSizes = view.groupSizes as Record<string, number> | undefined
-    const groupAspects = view.groupAspects as Record<string, number> | undefined
+    const groupSizes = view.groupSizes
+    const groupAspects = view.groupAspects
 
     for (const [groupName, groupFiles] of groups) {
       const cards = groupFiles.map((file) => renderCard(file))
-      let gridStyle: string | undefined
       const parts: string[] = []
       const size = groupSizes?.[groupName]
       if (typeof size === "number" && size > 0) {
@@ -986,7 +970,7 @@ function buildCards(
       if (typeof aspect === "number" && aspect > 0) {
         parts.push(`--base-card-aspect: ${aspect};`)
       }
-      gridStyle = parts.length > 0 ? parts.join(" ") : undefined
+      const gridStyle = parts.length > 0 ? parts.join(" ") : undefined
 
       groupElements.push(
         h("div.base-card-group", [
@@ -1003,6 +987,16 @@ function buildCards(
   return h("div.base-card-grid", varStyle ? { style: varStyle } : {}, cards)
 }
 
+type MapMarker = {
+  lat: number
+  lon: number
+  title: string
+  slug: FullSlug
+  icon?: string
+  color?: string
+  popupFields: Record<string, unknown>
+}
+
 function buildMap(
   files: QuartzPluginData[],
   view: BaseView,
@@ -1010,7 +1004,7 @@ function buildMap(
   getContext: EvalContextFactory,
   getPropertyExpr: PropertyExprGetter,
   properties?: Record<string, PropertyConfig>,
-): any {
+): RenderElement {
   const resolveMapProperty = (file: QuartzPluginData, prop: string | undefined): unknown => {
     if (!prop) return undefined
     const key = prop.trim()
@@ -1034,7 +1028,7 @@ function buildMap(
 
   const coordinatesProp = view.coordinates || "coordinates"
 
-  const markers: any[] = []
+  const markers: MapMarker[] = []
 
   for (const file of files) {
     const coordsValue = resolveMapProperty(file, coordinatesProp)
@@ -1052,12 +1046,13 @@ function buildMap(
     const title = getFileDisplayName(file) ?? fallbackNameFromSlug((file.slug || "") as FullSlug)
     const slug = (file.slug || "") as FullSlug
 
-    const popupFields: Record<string, any> = {}
-    const order = view.order || []
+    const popupFields: Record<string, unknown> = {}
+    const order = Array.isArray(view.order) ? view.order : []
     for (const field of order) {
+      if (typeof field !== "string") continue
       if (field === "title" || field === "file.title" || field === "note.title") continue
       const value = resolveValueWithFormulas(file, field, getContext, getPropertyExpr)
-      if (value !== undefined && value !== null && value !== "") {
+      if (hasRenderableValue(value)) {
         popupFields[field] = value
       }
     }
@@ -1082,7 +1077,7 @@ function buildMap(
     clustering: view.clustering !== false,
   }
 
-  const attrs: Record<string, any> = {
+  const attrs: Record<string, string> = {
     "data-markers": JSON.stringify(markers),
     "data-config": JSON.stringify(config),
     "data-current-slug": currentSlug,
@@ -1104,11 +1099,11 @@ function resolveViewSlug(baseSlug: FullSlug, viewName: string, viewIndex: number
 function renderDiagnostics(
   diagnostics: BaseExpressionDiagnostic[] | undefined,
   currentSlug: FullSlug,
-): any | undefined {
+): RenderElement | undefined {
   if (!diagnostics || diagnostics.length === 0) {
     return undefined
   }
-  const items = diagnostics.map((diag, index) => {
+  const items: RenderElement[] = diagnostics.map((diag, index) => {
     const line = diag.span.start.line
     const column = diag.span.start.column
     const location = Number.isFinite(line) && Number.isFinite(column) ? `${line}:${column}` : ""
@@ -1140,7 +1135,7 @@ export function renderBaseViewsForFile(
   allFiles: QuartzPluginData[],
   thisFile?: QuartzPluginData,
 ): { views: RenderedBaseView[]; allViews: BaseViewMeta[] } {
-  const config = baseFileData.basesConfig as BasesConfigFile | undefined
+  const config = baseFileData.basesConfig as BaseFile | undefined
   if (!config || !baseFileData.slug) {
     return { views: [], allViews: [] }
   }
@@ -1259,15 +1254,15 @@ export function renderBaseViewsForFile(
       diagnostics.length > 0 ? diagnostics : undefined,
       slug,
     )
-    const wrapView = (node: any) =>
+    const wrapView = (node: RenderElement) =>
       h("div.base-view", { "data-base-view-type": view.type, "data-base-view-name": view.name }, [
         node,
       ])
 
-    let tree: Root
-    if (view.type === "table") {
-      const tableNode = wrapView(
-        buildTable(
+    let viewNode: RenderElement | undefined
+    switch (view.type) {
+      case "table":
+        viewNode = buildTable(
           limitedFiles,
           view,
           slug,
@@ -1277,15 +1272,10 @@ export function renderBaseViewsForFile(
           config.properties,
           config.summaries,
           summaryExpressionsByView ? summaryExpressionsByView[String(viewIndex)] : undefined,
-        ),
-      )
-      tree = {
-        type: "root",
-        children: diagnosticsNode ? [diagnosticsNode, tableNode] : [tableNode],
-      }
-    } else if (view.type === "list") {
-      const listNode = wrapView(
-        buildList(
+        )
+        break
+      case "list":
+        viewNode = buildList(
           limitedFiles,
           view,
           slug,
@@ -1293,28 +1283,13 @@ export function renderBaseViewsForFile(
           getEvalContext,
           getPropertyExpr,
           config.properties,
-        ),
-      )
-      tree = { type: "root", children: diagnosticsNode ? [diagnosticsNode, listNode] : [listNode] }
-    } else if (view.type === "card" || view.type === "cards" || view.type === "gallery") {
-      const cardsNode = wrapView(
-        buildCards(limitedFiles, view, slug, allFiles, getEvalContext, getPropertyExpr),
-      )
-      tree = {
-        type: "root",
-        children: diagnosticsNode ? [diagnosticsNode, cardsNode] : [cardsNode],
-      }
-    } else if (view.type === "board") {
-      const boardNode = wrapView(
-        buildCards(limitedFiles, view, slug, allFiles, getEvalContext, getPropertyExpr),
-      )
-      tree = {
-        type: "root",
-        children: diagnosticsNode ? [diagnosticsNode, boardNode] : [boardNode],
-      }
-    } else if (view.type === "calendar") {
-      const calendarNode = wrapView(
-        buildCalendar(
+        )
+        break
+      case "card":
+      case "cards":
+      case "gallery":
+      case "board":
+        viewNode = buildCards(
           limitedFiles,
           view,
           slug,
@@ -1322,19 +1297,39 @@ export function renderBaseViewsForFile(
           getEvalContext,
           getPropertyExpr,
           config.properties,
-        ),
-      )
-      tree = {
-        type: "root",
-        children: diagnosticsNode ? [diagnosticsNode, calendarNode] : [calendarNode],
-      }
-    } else if (view.type === "map") {
-      const mapNode = wrapView(
-        buildMap(limitedFiles, view, slug, getEvalContext, getPropertyExpr, config.properties),
-      )
-      tree = { type: "root", children: diagnosticsNode ? [diagnosticsNode, mapNode] : [mapNode] }
-    } else {
-      continue
+        )
+        break
+      case "calendar":
+        viewNode = buildCalendar(
+          limitedFiles,
+          view,
+          slug,
+          allFiles,
+          getEvalContext,
+          getPropertyExpr,
+          config.properties,
+        )
+        break
+      case "map":
+        viewNode = buildMap(
+          limitedFiles,
+          view,
+          slug,
+          getEvalContext,
+          getPropertyExpr,
+          config.properties,
+        )
+        break
+      default:
+        viewNode = undefined
+    }
+
+    if (!viewNode) continue
+
+    const wrapped = wrapView(viewNode)
+    const tree: Root = {
+      type: "root",
+      children: diagnosticsNode ? [diagnosticsNode, wrapped] : [wrapped],
     }
 
     views.push({ view, slug, tree })

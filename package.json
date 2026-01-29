@@ -158,7 +158,7 @@
     "zod": "^4.3.6"
   },
   "devDependencies": {
-    "@cloudflare/workers-types": "^4.20260128.0",
+    "@cloudflare/workers-types": "^4.20260129.0",
     "@types/d3": "^7.4.3",
     "@types/d3-drag": "^3.0.7",
     "@types/d3-force": "^3.0.10",
@@ -174,7 +174,7 @@
     "@types/ws": "^8.18.1",
     "@types/yargs": "^17.0.35",
     "@typescript/native-preview": "7.0.0-dev.20260128.1",
-    "ai": "^6.0.58",
+    "ai": "^6.0.61",
     "bibtex-tidy": "^1.14.0",
     "drizzle-kit": "^0.31.8",
     "esbuild": "^0.27.2",
@@ -189,7 +189,7 @@
     "ts-morph": "^27.0.2",
     "tsx": "^4.21.0",
     "typescript": "^5.9.3",
-    "wrangler": "^4.61.0"
+    "wrangler": "^4.61.1"
   },
   "engines": {
     "node": ">=22",

@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-01-28 15:36:33 GMT-05:00
+modified: 2026-01-29 10:20:06 GMT-05:00
 permalinks:
   - /website
   - /tweets
@@ -6646,6 +6646,10 @@ title: are.na
 
 ## design
 
+- https://www.aesop.ca/en/city-guides.html -- Aesop city guide
+  - [meta]:
+    - date: 01/29/2026
+    - tags: [illustration]
 - https://www.itsoffbrand.com -- OFF+BRAND
   - [meta]:
     - date: 01/24/2026
