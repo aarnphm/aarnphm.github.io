@@ -17,7 +17,7 @@ import { wikilinkToMarkdown } from "./toMarkdown"
  */
 function parse(
   markdown: string,
-  options?: { obsidian?: boolean; stripExtensions?: string[] },
+  options?: { obsidian?: boolean; stripExtensions?: string[]; hasSlug?: (slug: string) => boolean },
 ): Root {
   return fromMarkdown(markdown, {
     extensions: [wikilink()],
@@ -789,10 +789,7 @@ describe("micromark wikilink extension", () => {
         // should extract "epistemic humility" from after the last /
         assert.strictEqual(wikilink.data?.wikilink.anchor, "#epistemic-humility")
         assert.strictEqual(wikilink.data?.wikilink.anchorText, "epistemic humility")
-        // display text should be the original, not slugified
-        assert.deepStrictEqual(wikilink.data?.hChildren, [
-          { type: "text", value: "epistemic humility" },
-        ])
+        assert.deepStrictEqual(wikilink.data?.hChildren, [{ type: "text", value: "" }])
       })
     })
   })
@@ -826,8 +823,7 @@ describe("micromark wikilink extension", () => {
         assert(wikilink, "wikilink node should exist")
         assert.strictEqual(wikilink.data?.hName, "a")
         assert.strictEqual(wikilink.data?.hProperties?.href, "page#section")
-        // now uses anchor text as display when no explicit alias
-        assert.deepStrictEqual(wikilink.data?.hChildren, [{ type: "text", value: "section" }])
+        assert.deepStrictEqual(wikilink.data?.hChildren, [{ type: "text", value: "page" }])
       })
 
       test("annotates link with anchor and alias", () => {
@@ -1201,8 +1197,11 @@ describe("micromark wikilink extension", () => {
   })
 
   describe("implicit alias from space in target", () => {
+    const implicitAliasSlugs = new Set(["Target", "thoughts/Epistemology", "folder/file", "file"])
+    const hasSlug = (slug: string) => implicitAliasSlugs.has(slug)
+
     test("extracts display text after space in simple target", () => {
-      const tree = parse("[[Target display text]]", { obsidian: true })
+      const tree = parse("[[Target display text]]", { obsidian: true, hasSlug })
       const wikilink = extractWikilink(tree)
 
       assert(wikilink, "wikilink node should exist")
@@ -1212,7 +1211,10 @@ describe("micromark wikilink extension", () => {
     })
 
     test("extracts display text after space in path with slashes", () => {
-      const tree = parse("[[thoughts/Epistemology epistemic humility]]", { obsidian: true })
+      const tree = parse("[[thoughts/Epistemology epistemic humility]]", {
+        obsidian: true,
+        hasSlug,
+      })
       const wikilink = extractWikilink(tree)
 
       assert(wikilink, "wikilink node should exist")
@@ -1224,7 +1226,7 @@ describe("micromark wikilink extension", () => {
     })
 
     test("handles multiple words in display text", () => {
-      const tree = parse("[[folder/file this is the display]]", { obsidian: true })
+      const tree = parse("[[folder/file this is the display]]", { obsidian: true, hasSlug })
       const wikilink = extractWikilink(tree)
 
       assert(wikilink, "wikilink node should exist")
@@ -1233,7 +1235,7 @@ describe("micromark wikilink extension", () => {
     })
 
     test("does not extract when explicit alias is present", () => {
-      const tree = parse("[[target with space|explicit alias]]", { obsidian: true })
+      const tree = parse("[[target with space|explicit alias]]", { obsidian: true, hasSlug })
       const wikilink = extractWikilink(tree)
 
       assert(wikilink, "wikilink node should exist")
@@ -1242,7 +1244,7 @@ describe("micromark wikilink extension", () => {
     })
 
     test("works with anchors", () => {
-      const tree = parse("[[file name display#section]]", { obsidian: true })
+      const tree = parse("[[file name display#section]]", { obsidian: true, hasSlug })
       const wikilink = extractWikilink(tree)
 
       assert(wikilink, "wikilink node should exist")
@@ -1253,18 +1255,17 @@ describe("micromark wikilink extension", () => {
   })
 
   describe("anchor display text", () => {
-    test("uses original anchor text as display when no alias", () => {
+    test("keeps original anchor text in data when no alias", () => {
       const tree = parse("[[page#Section Title]]", { obsidian: true })
       const wikilink = extractWikilink(tree)
 
       assert(wikilink, "wikilink node should exist")
       assert.strictEqual(wikilink.data?.wikilink.anchor, "#section-title")
       assert.strictEqual(wikilink.data?.wikilink.anchorText, "Section Title")
-      // display should be original, not slugified
-      assert.deepStrictEqual(wikilink.data?.hChildren, [{ type: "text", value: "Section Title" }])
+      assert.deepStrictEqual(wikilink.data?.hChildren, [{ type: "text", value: "page" }])
     })
 
-    test("uses anchor text for same-file reference", () => {
+    test("keeps anchor text for same-file reference", () => {
       const tree = parse("[[#knowledge]]", { obsidian: true })
       const wikilink = extractWikilink(tree)
 
@@ -1272,16 +1273,16 @@ describe("micromark wikilink extension", () => {
       assert.strictEqual(wikilink.data?.wikilink.target, "")
       assert.strictEqual(wikilink.data?.wikilink.anchor, "#knowledge")
       assert.strictEqual(wikilink.data?.wikilink.anchorText, "knowledge")
-      assert.deepStrictEqual(wikilink.data?.hChildren, [{ type: "text", value: "knowledge" }])
+      assert.deepStrictEqual(wikilink.data?.hChildren, [{ type: "text", value: "" }])
     })
 
-    test("uses anchor text for block reference", () => {
+    test("keeps anchor text for block reference", () => {
       const tree = parse("[[file#^block-id]]", { obsidian: true })
       const wikilink = extractWikilink(tree)
 
       assert(wikilink, "wikilink node should exist")
       assert.strictEqual(wikilink.data?.wikilink.anchorText, "block-id")
-      assert.deepStrictEqual(wikilink.data?.hChildren, [{ type: "text", value: "block-id" }])
+      assert.deepStrictEqual(wikilink.data?.hChildren, [{ type: "text", value: "file" }])
     })
 
     test("prefers explicit alias over anchor", () => {

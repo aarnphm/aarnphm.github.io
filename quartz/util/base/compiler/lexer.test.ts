@@ -14,7 +14,7 @@ test("lexes bracket access with hyphenated keys", () => {
 })
 
 test("lexes bracket access with escaped quotes", () => {
-  const result = lex('note["my\\\\\\"field"]')
+  const result = lex('note["my\\\"field"]')
   const value = result.tokens.find((token) => token.type === "string")
   if (!value || value.type !== "string") {
     throw new Error("expected string token")
@@ -33,7 +33,7 @@ test("lexes regex literals with flags", () => {
 })
 
 test("lexes regex literals with escaped slashes", () => {
-  const result = lex("path.matches(/\\\\/)")
+  const result = lex("path.matches(/\\//)")
   const regexToken = result.tokens.find((token) => token.type === "regex")
   if (!regexToken || regexToken.type !== "regex") {
     throw new Error("expected regex token")

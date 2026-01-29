@@ -23,6 +23,8 @@ export interface WikilinkData {
   target: string
   anchor?: string
   anchorText?: string // original un-slugified anchor text for display
+  anchorSegments?: string[]
+  anchorIsBlockRef?: boolean
   metadata?: string
   metadataParsed?: Record<string, any>
   alias?: string
@@ -221,53 +223,52 @@ function enterAnchor(this: CompileContext): undefined {
  * - applies slugification using github-slugger
  */
 function exitAnchor(this: CompileContext, _token: Token, obsidian: boolean = false): undefined {
-  let anchorText = this.resume()
+  const anchorText = this.resume()
   const node = this.stack[this.stack.length - 1] as unknown as Wikilink
 
   if (node.data?.wikilink) {
-    // preserve block reference marker ^
+    const wikilink = node.data.wikilink
     const isBlockRef = anchorText.startsWith("^")
-    const blockMarker = isBlockRef ? "^" : ""
     let cleanAnchor = isBlockRef ? anchorText.slice(1) : anchorText
 
-    // handle Obsidian's implicit alias in anchors: "#path/to/file heading text"
-    // similar to target implicit alias, extract heading text after space following path
-    if (obsidian && cleanAnchor.includes("/") && cleanAnchor.includes(" ")) {
-      const lastSlash = cleanAnchor.lastIndexOf("/")
-      const afterSlash = cleanAnchor.substring(lastSlash + 1)
-      const spaceIndex = afterSlash.indexOf(" ")
+    if (isBlockRef || wikilink.anchorIsBlockRef) {
+      wikilink.anchorIsBlockRef = true
+    }
 
-      if (spaceIndex >= 0) {
-        // extract the heading text part after the space
-        const headingText = afterSlash.substring(spaceIndex + 1).trim()
-        if (headingText) {
-          cleanAnchor = headingText
+    const segments = wikilink.anchorSegments ?? []
+    segments.push(cleanAnchor)
+    wikilink.anchorSegments = segments
+
+    if (obsidian) {
+      if (cleanAnchor.includes("/") && cleanAnchor.includes(" ")) {
+        const lastSlash = cleanAnchor.lastIndexOf("/")
+        const afterSlash = cleanAnchor.substring(lastSlash + 1)
+        const spaceIndex = afterSlash.indexOf(" ")
+
+        if (spaceIndex >= 0) {
+          const headingText = afterSlash.substring(spaceIndex + 1).trim()
+          if (headingText) {
+            cleanAnchor = headingText
+          }
         }
       }
+
+      cleanAnchor = cleanAnchor
+        .replace(/\$([^$]+)\$/g, (_, content) => content.trim())
+        .replace(/\s+/g, " ")
+        .trim()
+
+      wikilink.anchorText = cleanAnchor
+
+      const slugifiedAnchor = slugAnchor(cleanAnchor)
+      const blockPrefix = wikilink.anchorIsBlockRef ? "^" : ""
+      wikilink.anchor = `#${blockPrefix}${slugifiedAnchor}`
+    } else {
+      const combined = segments.join("#")
+      wikilink.anchorText = combined
+      const blockPrefix = wikilink.anchorIsBlockRef ? "^" : ""
+      wikilink.anchor = combined.length > 0 ? `#${blockPrefix}${combined}` : undefined
     }
-
-    // obsidian-style nested heading resolution
-    if (obsidian && cleanAnchor.includes("#")) {
-      // take only the last segment after splitting by #
-      const segments = cleanAnchor.split("#")
-      cleanAnchor = segments[segments.length - 1].trim()
-    }
-
-    // normalize inline math delimiters: strip $ and trim content
-    // "$ mu$" → "mu", "architectural skeleton of $ mu$" → "architectural skeleton of mu"
-    cleanAnchor = cleanAnchor
-      .replace(/\$([^$]+)\$/g, (_, content) => content.trim())
-      .replace(/\s+/g, " ")
-      .trim()
-
-    // store original anchor text for display before slugification
-    node.data.wikilink.anchorText = cleanAnchor
-
-    // apply slugification for consistency with heading IDs
-    const slugifiedAnchor = obsidian ? slugAnchor(cleanAnchor) : cleanAnchor
-
-    // format as #anchor or #^block
-    node.data.wikilink.anchor = `#${blockMarker}${slugifiedAnchor}`
   }
   return undefined
 }
@@ -351,15 +352,10 @@ function exitMetadata(this: CompileContext): undefined {
  * converts `[[target]]`, `[[target|alias]]`, `[[target#anchor]]` to <a> elements.
  */
 function annotateRegularLink(node: Wikilink, wikilink: WikilinkData, url: string): void {
-  const { alias, target, anchor, anchorText, metadataParsed, metadata } = wikilink
+  const { alias, target, metadataParsed, metadata } = wikilink
 
   const fp = target.trim()
   let displayText = alias ?? fp
-
-  // if no explicit alias and there's an anchor, use the original anchor text as display
-  if (!alias && anchor && anchorText) {
-    displayText = anchorText
-  }
 
   if (!node.data) node.data = { wikilink }
 
@@ -538,9 +534,14 @@ function exitWikilink(
       const { obsidian = true, stripExtensions = [], hasSlug } = options
 
       // handle implicit alias from space in target (Obsidian behavior)
-      // only extract from target, not from anchors
       // if no explicit alias, has a target (not just anchor), and target contains a space after last /, split it
-      if (!wikilink.alias && wikilink.target && !wikilink.anchor && wikilink.target.includes(" ")) {
+      if (
+        obsidian &&
+        hasSlug &&
+        !wikilink.alias &&
+        wikilink.target &&
+        wikilink.target.includes(" ")
+      ) {
         const lastSlash = wikilink.target.lastIndexOf("/")
         const afterSlash =
           lastSlash >= 0 ? wikilink.target.substring(lastSlash + 1) : wikilink.target
@@ -554,25 +555,13 @@ function exitWikilink(
               : wikilink.target.substring(0, spaceIndex)
           const displayPart = afterSlash.substring(spaceIndex + 1).trim()
 
-          // only apply implicit alias if we can verify:
-          // - partial path (before space) exists as a file
-          // - full path (with space) doesn't exist
-          // this prevents breaking links like [[thoughts/Lebesgue measure]]
-          if (hasSlug) {
-            const fullPathSlug = slugifyFilePath(wikilink.target, stripExtensions)
-            const partialPathSlug = slugifyFilePath(pathPart, stripExtensions)
+          const fullPathSlug = slugifyFilePath(wikilink.target, stripExtensions)
+          const partialPathSlug = slugifyFilePath(pathPart, stripExtensions)
 
-            const fullPathExists = hasSlug(fullPathSlug)
-            const partialPathExists = hasSlug(partialPathSlug)
+          const fullPathExists = hasSlug(fullPathSlug)
+          const partialPathExists = hasSlug(partialPathSlug)
 
-            // only split if partial exists and full doesn't
-            if (partialPathExists && !fullPathExists) {
-              wikilink.target = pathPart
-              wikilink.alias = displayPart
-            }
-          } else {
-            // fallback: if no hasSlug function provided, apply the split
-            // (maintains backward compatibility)
+          if (partialPathExists && !fullPathExists) {
             wikilink.target = pathPart
             wikilink.alias = displayPart
           }
