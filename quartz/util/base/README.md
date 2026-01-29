@@ -27,11 +27,11 @@ jq '.expressions[] | {context, kind, ir}' /tmp/antilibrary-ast-ir.json
 
 1. parse `.base` yaml (plugin: `quartz/plugins/transformers/bases.ts`)
 2. parse expressions into ast (`compiler/parser.ts`)
-3. compile ast to bytecode (`compiler/ir.ts`)
-4. evaluate bytecode per row with caches (`compiler/interpreter.ts`)
+3. compile ast to ir (`compiler/ir.ts`)
+4. evaluate ir per row with caches (`compiler/interpreter.ts`)
 5. render views and diagnostics (`render.ts`)
 
-## key modules
+## modules
 
 - `compiler/lexer.ts`: tokenizer with span tracking and regex support
 - `compiler/parser.ts`: pratt parser for expression grammar and error recovery
@@ -90,9 +90,3 @@ coercions are permissive to match obsidian behavior. comparisons prefer type-awa
 - table, list, cards/gallery, board, calendar, map
 - map rendering expects coordinates `[lat, lon]` and map config fields
 - view filters combine with base filters via logical and
-
-## constraints
-
-- no filesystem access in transformers under `quartz/plugins/transformers/`
-- no dynamic code generation in shipped assets
-- default evaluator is an interpreter (not jit)

@@ -3,7 +3,7 @@ date: "2024-12-10"
 description: nobby designer word for "the design of the current site"
 id: colophon
 lang: en
-modified: 2026-01-12 12:49:14 GMT-05:00
+modified: 2026-01-28 19:20:10 GMT-05:00
 socials:
   twitter: https://x.com/aarnphm/status/1861550609834402129
 tags:
@@ -189,3 +189,9 @@ _press cmd/ctrl+b_
 ### sidepanel view
 
 _press cmd/ctrl+click on any internal links_
+
+### comments
+
+_inspired by figma multiplayer comments_
+
+I added the ability to leave comments on pages, simply by holding <kbd>Ctrl</kbd> or <kbd>Cmd</kbd> while dragging to add a comment.
