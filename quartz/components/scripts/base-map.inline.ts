@@ -58,8 +58,49 @@ function parseWikilinkValue(raw: string) {
   }
 }
 
+type IconToken = { kind: "icon"; value: string }
+
+const isIconToken = (value: unknown): value is IconToken =>
+  typeof value === "object" &&
+  value !== null &&
+  (value as IconToken).kind === "icon" &&
+  typeof (value as IconToken).value === "string"
+
+const splitIconClasses = (raw: string): string[] =>
+  raw
+    .trim()
+    .split(/\s+/)
+    .filter((part) => part.length > 0)
+
+const normalizeIconName = (raw: string): string => {
+  const trimmed = raw.trim()
+  if (!trimmed) return ""
+  const colonIndex = trimmed.lastIndexOf(":")
+  return colonIndex >= 0 ? trimmed.slice(colonIndex + 1).trim() : trimmed
+}
+
+const buildIconClassList = (raw: string): string[] => {
+  const parts = splitIconClasses(raw)
+  if (parts.length === 0) return []
+  if (parts.length > 1) return parts
+  const normalized = normalizeIconName(parts[0])
+  if (!normalized) return []
+  if (normalized.startsWith("icon-")) return [normalized]
+  return [`icon-${normalized}`]
+}
+
+const renderIconHtml = (raw: string): string => {
+  const classList = buildIconClassList(raw)
+  if (classList.length === 0) return ""
+  return `<i class="${classList.join(" ")}" aria-hidden="true"></i>`
+}
+
 function formatPropertyValue(value: any, currentSlug: FullSlug): string {
   if (value === undefined || value === null) return ""
+  if (isIconToken(value)) {
+    const cleaned = value.value.trim()
+    return cleaned.length > 0 ? renderIconHtml(cleaned) : ""
+  }
   if (Array.isArray(value)) {
     return value.map((item) => formatPropertyValue(item, currentSlug)).join(", ")
   }

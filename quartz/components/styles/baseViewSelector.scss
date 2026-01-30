@@ -16,7 +16,6 @@
 .bases-toolbar {
   position: relative;
   display: inline-block;
-  margin: 1rem 0;
   font-family: var(--bodyFont);
   grid-column: 3/4;
 
@@ -95,7 +94,7 @@
     position: absolute;
     top: calc(100% + 0.5rem);
     left: 0;
-    z-index: var(--z-modal);
+    z-index: var(--z-popover);
     max-height: 400px;
     background: var(--light);
     border: 1px solid var(--lightgray);

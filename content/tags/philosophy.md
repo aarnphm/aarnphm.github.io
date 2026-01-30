@@ -14,3 +14,21 @@ This series ([The Analytic Tradition, Spring 2017](https://www.youtube.com/playl
 - The Intentional Stance (by Daniel Dennett, 1987)
 
 ![[philosophie.canvas]]
+
+```base
+filters:
+  and:
+    - file.inFolder("library")
+    - file.ext == "md"
+    - file.hasTag("philosophy")
+views:
+  - type: table
+    name: books
+    order:
+      - title
+      - date
+      - status
+      - author
+      - subcategory
+      - file.backlinks
+```

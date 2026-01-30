@@ -2,7 +2,7 @@
 date: "2026-01-28"
 description: mentality as fundamental, the combination problem, and why emergence keeps failing
 id: panpsychism
-modified: 2026-01-28 02:30:00 GMT-05:00
+modified: 2026-01-30 09:13:26 GMT-05:00
 seealso:
   - "[[thoughts/dualism]]"
   - "[[thoughts/physicalism]]"
@@ -10,20 +10,20 @@ seealso:
   - "[[thoughts/phenomenal consciousness]]"
   - "[[thoughts/functionalism]]"
   - "[[thoughts/philosophical zombies]]"
+socials:
+  sep: https://plato.stanford.edu/entries/panpsychism/
+  wikipedia: https://en.wikipedia.org/wiki/Panpsychism
 tags:
   - philosophy
   - consciousness
 title: panpsychism
-socials:
-  sep: https://plato.stanford.edu/entries/panpsychism/
-  wikipedia: https://en.wikipedia.org/wiki/Panpsychism
 ---
 
 _experience doesn't emerge from non-experience, it was there all along in simpler forms._
 
-when i reach for panpsychism, i'm trying to make sense of a specific gap: saying experience "emerges" from totally non-experiential matter without explaining what "emerges" actually means. the word is doing all the work, and when i push on it, nothing's there.
+when i reach for panpsychism, i'm trying to make sense of _saying experience "emerges" from totally non-experiential matter_ without explaining what "emerges" actually means.
 
-the move is this: mentality goes all the way down. some form of experience, or proto-experience, or at least something phenomenal-ish, exists at the fundamental level. this isn't rocks thinking about lunch or electrons believing things. it's the claim that whatever realizes physical structure from the inside has some experiential character.
+the panpsychists' mentality goes all the way down. some form of experience, or proto-experience, or at least something phenomenal-ish, exists at the fundamental level. this isn't rocks thinking about lunch or electrons believing things, but the claim that whatever realizes physical structure from the inside has some experiential character.
 
 ## the emergence problem
 
@@ -33,7 +33,7 @@ standard [[thoughts/physicalism]] says experience arises from non-experiential p
 2. claim experience is identical to physical states (type identity theory). this just relabels the gap, doesn't explain it.
 3. say experience emerges from complexity (standard emergentism). but then i need some story about why THESE arrangements of non-experiential stuff yield THIS particular feeling, and the story never arrives.
 
-panpsychism cuts through by rejecting the setup: experience doesn't emerge from non-experience. it reorganizes and combines.
+panpsychism rejects these framing, insofar to experience combines and rearrange non-experience??
 
 ## the russellian move
 
@@ -112,16 +112,3 @@ aaronson's response: you can't both dismiss intuitions about expander graphs not
 panpsychism is best understood as a move to avoid brute emergence. all the historical lineage, all the variants, are scaffolding around that core intuition: you can't get experience from zero-experience. whether the move works depends on solving combination, which nobody's done yet.
 
 the 22% of philosophers who lean toward [[thoughts/dualism|property dualism]] (philpapers 2020) often find panpsychism or russellian monism more tolerable than alternatives. they share the sense that [[thoughts/physicalism]] is missing something, they just disagree on what to add and where to put it.
-
-## key references
-
-- leibniz (1714). _monadology_
-- james (1890). _the principles of psychology_ ch. 6
-- whitehead (1929). _process and reality_
-- strawson (2006). "realistic monism" _JCS_ 13(10-11): 3-31
-- chalmers (2015). "panpsychism and panprotopsychism" _amherst lecture in philosophy_
-- chalmers (2017). "the combination problem for panpsychism" in _panpsychism_ (OUP)
-- goff (2017). _consciousness and fundamental reality_ (OUP)
-- shani (2015). "cosmopsychism" _philosophical papers_ 44(3): 389-437
-- tononi et al. (2023). "IIT 4.0" _PLOS computational biology_
-- aaronson (2014). "why i am not an integrated information theorist" (blog)

@@ -580,7 +580,7 @@ export const valueToUnknown = (value: Value): unknown => {
     case "html":
       return value.value
     case "icon":
-      return value.value
+      return { kind: "icon", value: value.value }
     case "image":
       return value.value
   }

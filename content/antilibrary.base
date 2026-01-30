@@ -2,15 +2,15 @@ summaries:
   missing: values.filter(value.isType("null")).length
   read this year: values.filter(value == true).reduce(acc + 1, 0)
   Filled: values.filter(!value.isType("null")).length
+  Empty: values.filter(value.isType("null")).length
 filters:
-  or:
-    - file.hasTag("book")
-    - and:
-        - file.inFolder("library")
-        - not:
-            - file.hasTag("evergreen", "meta")
-        - not:
-            - file.inFolder("library/posters")
+  and:
+    - file.inFolder("library")
+    - file.ext == "md"
+    - not:
+        - file.inFolder("library/posters")
+        - file.name == "index"
+        - file.hasTag("evergreen", "meta")
 formulas:
   "2021": note.finished == 2021
   "2022": note.finished == 2022
@@ -18,11 +18,20 @@ formulas:
   "2024": note.finished == 2024
   "2025": note.finished == 2025
   "2026": note.finished == 2026
+  year_num: number(year)
+  status_icon: if(status.containsAny("evergreen"), icon("leaf"), if(status.containsAny("finished"), icon("check-check"), if(status.containsAny("reading", "in progress"), icon("book-open"), if(status.containsAny("to read", "queue"), icon("bookmark"), icon("circle")))))
+  age_years: if(number(year).isTruthy(), (today().year - number(year)), "")
 properties:
   file.tags:
     displayName: tags
   file.basename:
     displayName: notes
+  formula.status_icon:
+    displayName: wip
+  formula.age_years:
+    displayName: years ago
+  formula.year_num:
+    displayName: year
 views:
   - type: cards
     name: gallery
@@ -47,73 +56,6 @@ views:
       note.date: 147
     cardSize: 320
     image: note.posters
-  - type: cards
-    name: subcategory
-    groupBy:
-      property: subcategory
-      direction: DESC
-    order:
-      - file.basename
-      - date
-      - notebook
-      - tags
-      - status
-      - author
-      - category
-      - finished
-    sort:
-      - property: date
-        direction: DESC
-      - property: title
-        direction: ASC
-      - property: notebook
-        direction: ASC
-    summaries: {}
-    columnSize:
-      note.title: 401
-      note.date: 147
-    cardSize: 350
-    image: note.posters
-    imageAspectRatio: 1.5
-    imageFit: contain
-  - type: table
-    name: all
-    groupBy:
-      property: category
-      direction: ASC
-    order:
-      - title
-      - date
-      - tags
-      - status
-      - finished
-      - subcategory
-      - author
-      - posters
-    sort:
-      - property: date
-        direction: DESC
-      - property: status
-        direction: ASC
-      - property: finished
-        direction: DESC
-      - property: title
-        direction: ASC
-      - property: tags
-        direction: ASC
-      - property: subcategory
-        direction: DESC
-      - property: file.tags
-        direction: ASC
-    summaries:
-      date: Range
-      subcategory: missing
-    columnSize:
-      note.title: 401
-      note.date: 147
-      note.subcategory: 172
-      note.author: 205
-      note.tags: 179
   - type: table
     name: philosophy
     filters:
@@ -128,11 +70,8 @@ views:
       - status
       - author
       - subcategory
-      - notebook
       - file.backlinks
     sort:
-      - property: notebook
-        direction: ASC
       - property: date
         direction: DESC
       - property: subcategory
@@ -141,13 +80,13 @@ views:
         direction: DESC
       - property: status
         direction: DESC
-      - property: title
-        direction: ASC
     summaries: {}
     columnSize:
       note.title: 401
       note.date: 147
-      note.subcategory: 172
+      note.status: 94
+      note.author: 205
+      note.subcategory: 280
       file.backlinks: 222
   - type: table
     name: top of mind
@@ -160,12 +99,49 @@ views:
             - status.containsAny("to read", "evergreen")
     order:
       - file.name
-      - file.tags
+      - formula.status_icon
       - date
-      - status
+      - formula.age_years
     sort:
       - property: status
         direction: ASC
+      - property: formula.age_years
+        direction: DESC
+  - type: table
+    name: triage
+    filters:
+      or:
+        - status.isType("null")
+        - '!status.containsAny("finished", "evergreen")'
+    groupBy:
+      property: status
+      direction: ASC
+    order:
+      - title
+      - formula.status_icon
+      - date
+      - formula.age_years
+      - category
+      - subcategory
+      - author
+    sort:
+      - property: status
+        direction: ASC
+      - property: formula.age_years
+        direction: DESC
+      - property: title
+        direction: ASC
+    summaries:
+      author: missing
+      date: range
+      formula.age_years: range
+      subcategory: missing
+    columnSize:
+      note.date: 147
+      formula.age_years: 96
+      note.subcategory: 172
+      note.author: 205
+      formula.status_icon: 96
   - type: table
     name: to read
     filters:
@@ -175,8 +151,9 @@ views:
       property: category
       direction: DESC
     order:
-      - title
+      - formula.status_icon
       - date
+      - formula.age_years
       - subcategory
       - author
     sort:
@@ -189,9 +166,30 @@ views:
       - property: status
         direction: DESC
     columnSize:
-      note.title: 401
       note.date: 147
       note.author: 237
+      formula.age_years: 96
+      formula.status_icon: 96
+  - type: cards
+    name: recency dashboard
+    groupBy:
+      property: formula.year_num
+      direction: DESC
+    order:
+      - date
+      - formula.age_years
+      - status
+      - category
+      - author
+      - tags
+    sort:
+      - property: formula.age_years
+        direction: ASC
+    summaries: {}
+    cardSize: 300
+    image: note.posters
+    imageAspectRatio: 1.3
+    imageFit: contain
   - type: list
     name: dynalist
     groupBy:
@@ -213,9 +211,10 @@ views:
       property: status
       direction: ASC
     order:
-      - id
       - title
+      - formula.status_icon
       - date
+      - formula.age_years
       - tags
       - finished
       - year
@@ -268,10 +267,9 @@ views:
       - property: file.tags
         direction: ASC
     summaries:
-      date: range
+      date: Range
       subcategory: Filled
-      title: unique
-      finished: Filled
+      finished: Empty
       formula.2026: read this year
       formula.2025: read this year
       formula.2024: read this year
@@ -282,10 +280,9 @@ views:
       id: Filled
     columnSize:
       note.id: 307
+      formula.status_icon: 96
       note.title: 401
       note.date: 147
-      note.tags: 225
-      note.finished: 98
       note.status: 83
       note.subcategory: 172
       note.author: 205

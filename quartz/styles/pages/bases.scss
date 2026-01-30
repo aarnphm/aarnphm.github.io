@@ -1,9 +1,66 @@
 @use "../variables.scss" as *;
 
 .base-table-wrapper {
-  overflow-x: auto;
-  margin: 1.5rem 0;
+  overflow: auto;
   -webkit-overflow-scrolling: touch;
+  border: 1px solid var(--lightgray);
+  border-radius: var(--radius-none);
+  background: var(--light);
+}
+
+.base-embed-bar {
+  position: sticky;
+  top: 0;
+  z-index: var(--z-sticky);
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 0;
+  background: var(--light);
+}
+
+.base-embed-bar .bases-toolbar {
+  margin: 0;
+}
+
+.base-embed-results {
+  margin-left: auto;
+  font-size: 0.875rem;
+  color: var(--darkgray);
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.page-content article.main-col:has(.base-embed) {
+  display: contents;
+}
+
+.page-content article.main-col:has(.base-embed) > * {
+  grid-column: 6/9;
+}
+
+.page-content article.main-col:has(.base-embed) > .base-embed {
+  grid-column: 4/11;
+}
+
+@media all and ($tablet) {
+  .page-content article.main-col:has(.base-embed) > * {
+    grid-column: 3/-3;
+  }
+
+  .page-content article.main-col:has(.base-embed) > .base-embed {
+    grid-column: 3/-3;
+  }
+}
+
+@media all and ($mobile) {
+  .page-content article.main-col:has(.base-embed) > * {
+    grid-column: 3/-3;
+  }
+
+  .page-content article.main-col:has(.base-embed) > .base-embed {
+    grid-column: 3/-3;
+  }
 }
 
 .base-table {
@@ -18,6 +75,8 @@
       text-align: left;
       font-weight: 600;
       white-space: nowrap;
+      overflow: auto;
+      max-width: var(--base-cell-max-width, 24rem);
       background: var(--light);
       position: sticky;
       top: 0;
@@ -51,13 +110,22 @@
           padding: 0.5rem 1rem;
           font-weight: 600;
           color: var(--dark);
+
+          .base-group-header-label {
+            font-weight: 500;
+            color: var(--darkgray);
+            text-transform: lowercase;
+            margin-right: 0.25rem;
+            font-size: 11.1px;
+          }
         }
       }
     }
 
     td {
-      padding: 0.75rem 1rem;
       vertical-align: top;
+      white-space: nowrap;
+      max-width: var(--base-cell-max-width, 24rem);
 
       a.internal {
         color: var(--dark);
@@ -139,6 +207,26 @@
         }
       }
     }
+
+    td .base-table-cell-content {
+      display: inline-block;
+      max-width: 100%;
+      overflow: auto;
+      white-space: inherit;
+    }
+
+    tr:not(.base-group-header) td:first-child .base-table-cell-content {
+      display: block;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+  }
+
+  thead th:first-child,
+  tbody td:first-child {
+    width: var(--base-first-col-width, 18rem);
+    max-width: var(--base-first-col-width, 18rem);
   }
 
   tfoot {
@@ -152,6 +240,9 @@
         color: var(--darkgray);
         font-size: 0.9em;
         font-variant-numeric: tabular-nums;
+        white-space: nowrap;
+        overflow: auto;
+        max-width: var(--base-cell-max-width, 24rem);
       }
 
       &:hover {

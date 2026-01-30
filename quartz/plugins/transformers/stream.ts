@@ -136,6 +136,36 @@ const inlineTextFromNodes = (nodes: ElementContent[]): string => {
   return toString(root).trim()
 }
 
+const normalizeInternalHref = (href: string, dataSlug: string | undefined): string => {
+  if (!dataSlug) return href
+  const slug = dataSlug.startsWith("/") ? dataSlug.slice(1) : dataSlug
+  const anchorIndex = href.indexOf("#")
+  const anchor = anchorIndex === -1 ? "" : href.slice(anchorIndex)
+  return `/${slug}${anchor}`
+}
+
+const nodeTextWithLinks = (node: ElementContent): string => {
+  if (node.type === "text") return node.value
+  if (!isElement(node)) return ""
+
+  if (node.tagName === "a") {
+    const props = (node.properties ?? {}) as Record<string, unknown>
+    const href = typeof props.href === "string" ? props.href : ""
+    const dataSlug = typeof props["data-slug"] === "string" ? props["data-slug"] : undefined
+    const normalized = normalizeInternalHref(href, dataSlug)
+    if (normalized.length > 0) return normalized
+  }
+
+  let result = ""
+  for (const child of node.children) {
+    result += nodeTextWithLinks(child as ElementContent)
+  }
+  return result
+}
+
+const inlineTextFromNodesWithLinks = (nodes: ElementContent[]): string =>
+  nodes.map((node) => nodeTextWithLinks(node)).join("")
+
 const appendListToYaml = (list: Element, indent: number, lines: string[]): void => {
   const indentStr = "  ".repeat(indent)
 
@@ -146,7 +176,7 @@ const appendListToYaml = (list: Element, indent: number, lines: string[]): void 
     let rawText = ""
     for (const ch of child.children as ElementContent[]) {
       if (isElement(ch) && ch.tagName === "ul") continue
-      rawText += toString(ch)
+      rawText += inlineTextFromNodesWithLinks([ch])
     }
     rawText = rawText.trim()
 

@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-01-29 10:20:06 GMT-05:00
+modified: 2026-01-30 12:33:38 GMT-05:00
 permalinks:
   - /website
   - /tweets
@@ -1011,6 +1011,11 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://www.daniellitt.com -- Daniel Litt
+  - [meta]:
+    - date: 01/30/2026
+    - tags: [mathematician]
+  - algebraic geometry and number theory
 - https://lausandoval.com
   - [meta]:
     - date: 01/23/2026
@@ -6912,6 +6917,10 @@ title: are.na
 
 ## video
 
+- https://www.youtube.com/watch?v=jFJku8sxLWY -- AI math capabilities could be jagged for a long time — Daniel Litt
+  - [meta]:
+    - date: 01/30/2026
+    - tags: [capabilities, long horizon, scaling]
 - https://www.youtube.com/watch?v=EXD3b6OLtsg -- How The Martian was written, with Andy Weir
   - [meta]:
     - date: 01/26/2026
