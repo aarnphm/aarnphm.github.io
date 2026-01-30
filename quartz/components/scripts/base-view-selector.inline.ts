@@ -40,6 +40,7 @@ function setupBaseViewSelector() {
     const searchInput = selector.querySelector("[data-search-input]") as HTMLInputElement
     const clearButton = selector.querySelector("[data-clear-search]") as HTMLElement
     const viewList = selector.querySelector("[data-view-list]") as HTMLElement
+    const embedRoot = selector.closest(".base-embed") as HTMLElement | null
 
     if (!trigger || !dropdown || !searchInput || !viewList) return
 
@@ -133,6 +134,63 @@ function setupBaseViewSelector() {
       closeDropdown()
     }
 
+    const formatResultsLabel = (resultCount: string, totalCount: string) => {
+      if (!resultCount || !totalCount) return ""
+      return resultCount === totalCount
+        ? `${totalCount} results`
+        : `${resultCount} of ${totalCount} results`
+    }
+
+    const updateEmbedView = (viewName: string, viewSlug: string, activeLink: HTMLElement) => {
+      if (!embedRoot) return
+      const views = embedRoot.querySelectorAll<HTMLElement>("[data-base-embed-view]")
+      let activeView: HTMLElement | null = null
+      views.forEach((view) => {
+        const name = view.getAttribute("data-base-view-name") || ""
+        const slug = view.getAttribute("data-base-view-slug") || ""
+        const matches =
+          (viewSlug && slug === viewSlug) ||
+          (viewName && name.toLowerCase() === viewName.toLowerCase())
+        view.hidden = !matches
+        view.classList.toggle("is-active", matches)
+        if (matches) {
+          activeView = view
+        }
+      })
+
+      if (activeView) {
+        const resultCount = activeView.getAttribute("data-base-view-result-count") || ""
+        const totalCount = activeView.getAttribute("data-base-view-total-count") || ""
+        const label = formatResultsLabel(resultCount, totalCount)
+        const resultsLabel = embedRoot.querySelector<HTMLElement>("[data-base-embed-results-label]")
+        if (resultsLabel && label) {
+          resultsLabel.textContent = label
+        }
+      }
+
+      const triggerLabel = selector.querySelector(".text-button-label") as HTMLElement | null
+      if (triggerLabel && viewName) {
+        triggerLabel.textContent = viewName.toLowerCase()
+      }
+
+      const triggerIcon = selector.querySelector(
+        ".text-button-icon:not(.mod-aux)",
+      ) as HTMLElement | null
+      const linkIcon = activeLink.querySelector(
+        ".bases-toolbar-menu-item-info-icon",
+      ) as HTMLElement | null
+      if (triggerIcon && linkIcon) {
+        triggerIcon.innerHTML = linkIcon.innerHTML
+      }
+
+      const viewLinks = viewList.querySelectorAll(".bases-toolbar-menu-item")
+      viewLinks.forEach((link) => {
+        const isActive = link === activeLink
+        link.classList.toggle("mod-active", isActive)
+        link.classList.toggle("is-selected", isActive)
+      })
+    }
+
     // add event listeners
     trigger.addEventListener("click", handleTriggerClick)
     trigger.addEventListener("keydown", handleTriggerKeydown)
@@ -146,7 +204,15 @@ function setupBaseViewSelector() {
     // close dropdown when any view link is clicked
     const viewLinks = viewList.querySelectorAll(".bases-toolbar-menu-item")
     viewLinks.forEach((link) => {
-      const handleLinkClick = () => {
+      const handleLinkClick = (e: MouseEvent) => {
+        if (embedRoot) {
+          e.preventDefault()
+          e.stopPropagation()
+          const target = e.currentTarget as HTMLElement
+          const viewName = target.getAttribute("data-view-name") || ""
+          const viewSlug = target.getAttribute("data-slug") || ""
+          updateEmbedView(viewName, viewSlug, target)
+        }
         closeDropdown()
       }
       link.addEventListener("click", handleLinkClick)

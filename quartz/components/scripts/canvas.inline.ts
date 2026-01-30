@@ -388,55 +388,57 @@ async function renderCanvas(container: HTMLElement) {
       return transform
     }
 
-    container.addEventListener(
-      "wheel",
-      (event) => {
-        if (isHelpOpen) return
+    if (!isEmbed) {
+      container.addEventListener(
+        "wheel",
+        (event) => {
+          if (isHelpOpen) return
 
-        const target = event.target as HTMLElement
-        if (focusedNode && target.closest(".node-content")) {
-          return
-        }
+          const target = event.target as HTMLElement
+          if (focusedNode && target.closest(".node-content")) {
+            return
+          }
 
-        if (!event.metaKey && !event.ctrlKey) {
-          event.preventDefault()
-          event.stopPropagation()
+          if (!event.metaKey && !event.ctrlKey) {
+            event.preventDefault()
+            event.stopPropagation()
 
-          const currentTransform = zoomBehavior
-            ? ((svg.node() as SVGSVGElement & { __zoom?: typeof zoomIdentity }).__zoom ??
-              zoomIdentity)
-            : zoomIdentity
+            const currentTransform = zoomBehavior
+              ? ((svg.node() as SVGSVGElement & { __zoom?: typeof zoomIdentity }).__zoom ??
+                zoomIdentity)
+              : zoomIdentity
 
-          const deltaX = event.deltaX
-          const deltaY = event.deltaY
-          const panSpeed = 1
+            const deltaX = event.deltaX
+            const deltaY = event.deltaY
+            const panSpeed = 1
 
-          if (event.shiftKey) {
-            const scrollDelta = deltaX !== 0 ? deltaX : deltaY
-            const newTransform = currentTransform.translate(-scrollDelta * panSpeed, 0)
-            if (zoomBehavior) {
-              svg.call(zoomBehavior.transform, newTransform)
+            if (event.shiftKey) {
+              const scrollDelta = deltaX !== 0 ? deltaX : deltaY
+              const newTransform = currentTransform.translate(-scrollDelta * panSpeed, 0)
+              if (zoomBehavior) {
+                svg.call(zoomBehavior.transform, newTransform)
+              } else {
+                g.attr(
+                  "transform",
+                  `translate(${newTransform.x},${newTransform.y}) scale(${newTransform.k})`,
+                )
+              }
             } else {
-              g.attr(
-                "transform",
-                `translate(${newTransform.x},${newTransform.y}) scale(${newTransform.k})`,
-              )
-            }
-          } else {
-            const newTransform = currentTransform.translate(0, -deltaY * panSpeed)
-            if (zoomBehavior) {
-              svg.call(zoomBehavior.transform, newTransform)
-            } else {
-              g.attr(
-                "transform",
-                `translate(${newTransform.x},${newTransform.y}) scale(${newTransform.k})`,
-              )
+              const newTransform = currentTransform.translate(0, -deltaY * panSpeed)
+              if (zoomBehavior) {
+                svg.call(zoomBehavior.transform, newTransform)
+              } else {
+                g.attr(
+                  "transform",
+                  `translate(${newTransform.x},${newTransform.y}) scale(${newTransform.k})`,
+                )
+              }
             }
           }
-        }
-      },
-      { passive: false },
-    )
+        },
+        { passive: false },
+      )
+    }
 
     const showHelp = () => {
       if (helpModal) {

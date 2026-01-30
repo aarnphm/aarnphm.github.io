@@ -34,6 +34,47 @@ import {
 
 type RenderElement = ReturnType<typeof h>
 type RenderNode = RenderElement | string
+type IconToken = { kind: "icon"; value: string }
+
+const isIconToken = (value: unknown): value is IconToken =>
+  typeof value === "object" &&
+  value !== null &&
+  (value as IconToken).kind === "icon" &&
+  typeof (value as IconToken).value === "string"
+
+const splitIconClasses = (raw: string): string[] =>
+  raw
+    .trim()
+    .split(/\s+/)
+    .filter((part) => part.length > 0)
+
+const normalizeIconName = (raw: string): string => {
+  const trimmed = raw.trim()
+  if (!trimmed) return ""
+  const colonIndex = trimmed.lastIndexOf(":")
+  return colonIndex >= 0 ? trimmed.slice(colonIndex + 1).trim() : trimmed
+}
+
+const buildIconClassList = (raw: string): string[] => {
+  const parts = splitIconClasses(raw)
+  if (parts.length === 0) return []
+  if (parts.length > 1) return parts
+  const normalized = normalizeIconName(parts[0])
+  if (!normalized) return []
+  if (normalized.startsWith("icon-")) return [normalized]
+  return [`icon-${normalized}`]
+}
+
+const renderIconNode = (raw: string): RenderElement => {
+  const classList = buildIconClassList(raw)
+  return h("i", { class: classList.join(" "), ariaHidden: true })
+}
+
+const renderIconHtml = (raw: string): string => {
+  const classList = buildIconClassList(raw)
+  if (classList.length === 0) return ""
+  return `<i class="${classList.join(" ")}" aria-hidden="true"></i>`
+}
 
 function getFileBaseName(filePath?: string, slug?: string): string | undefined {
   const source = filePath ?? slug
@@ -88,11 +129,7 @@ function renderInternalLinkNode(
   return h("a.internal", { href, "data-slug": dataSlug }, displayText)
 }
 
-function buildFileLinkNode(
-  slug: FullSlug,
-  currentSlug: FullSlug,
-  label: string,
-): RenderElement {
+function buildFileLinkNode(slug: FullSlug, currentSlug: FullSlug, label: string): RenderElement {
   const href = resolveRelative(currentSlug, slug)
   return h("a.internal", { href, "data-slug": slug }, label)
 }
@@ -269,6 +306,11 @@ function renderBooleanCheckbox(value: boolean): RenderElement {
   })
 }
 
+function wrapTableCellContent(content: RenderNode | RenderNode[]): RenderElement {
+  const nodes = Array.isArray(content) ? content : [content]
+  return h("td", {}, [h("div.base-table-cell-content", nodes)])
+}
+
 function buildTableHead(
   columns: string[],
   properties?: Record<string, PropertyConfig>,
@@ -330,26 +372,26 @@ function buildTableCell(
     const rawValue = resolveValueWithFormulas(file, linkProperty, getContext, getPropertyExpr)
     const resolvedValue =
       typeof rawValue === "string" && rawValue.length > 0 ? rawValue : fallbackTitle
-    return h("td", [buildFileLinkNode(slug, currentSlug, resolvedValue)])
+    return wrapTableCellContent(buildFileLinkNode(slug, currentSlug, resolvedValue))
   }
 
   if (column === "file.links") {
     const links = resolveValueWithFormulas(file, "file.links", getContext, getPropertyExpr)
     const count = Array.isArray(links) ? links.length : 0
-    return h("td", {}, String(count))
+    return wrapTableCellContent(String(count))
   }
 
   if (column === "file.backlinks" || column === "file.inlinks") {
     const backlinks = resolveValueWithFormulas(file, column, getContext, getPropertyExpr)
     if (!Array.isArray(backlinks) || backlinks.length === 0) {
-      return h("td", {}, "")
+      return wrapTableCellContent("")
     }
     const entries = backlinks.filter((entry): entry is string => typeof entry === "string")
     if (entries.length === 0) {
-      return h("td", {}, "")
+      return wrapTableCellContent("")
     }
     const nodes = renderBacklinkNodes(entries, currentSlug, allFiles)
-    return h("td", {}, nodes)
+    return wrapTableCellContent(nodes)
   }
 
   const canEvalExpr = Boolean(getPropertyExpr(column))
@@ -362,13 +404,25 @@ function buildTableCell(
   const value = resolveValueWithFormulas(file, column, getContext, getPropertyExpr)
 
   if (value === undefined || value === null) {
-    return h("td", {}, "")
+    return wrapTableCellContent("")
+  }
+
+  if (isIconToken(value)) {
+    const cleaned = value.value.trim()
+    return cleaned.length > 0
+      ? wrapTableCellContent(renderIconNode(cleaned))
+      : wrapTableCellContent("")
   }
 
   if (Array.isArray(value)) {
     const parts: RenderNode[] = []
     value.forEach((item, idx) => {
-      if (typeof item === "string") {
+      if (isIconToken(item)) {
+        const cleaned = item.value.trim()
+        if (cleaned.length > 0) {
+          parts.push(renderIconNode(cleaned))
+        }
+      } else if (typeof item === "string") {
         parts.push(...renderInlineString(item, currentSlug, allFiles))
       } else {
         parts.push(String(item))
@@ -377,23 +431,23 @@ function buildTableCell(
         parts.push(", ")
       }
     })
-    return h("td", {}, parts)
+    return wrapTableCellContent(parts)
   }
 
   if (value instanceof Date) {
-    return h("td", {}, value.toISOString().split("T")[0])
+    return wrapTableCellContent(value.toISOString().split("T")[0])
   }
 
   if (typeof value === "string") {
     const rendered = renderInlineString(value, currentSlug, allFiles)
-    return h("td", {}, rendered)
+    return wrapTableCellContent(rendered)
   }
 
   if (typeof value === "boolean") {
-    return h("td", {}, [renderBooleanCheckbox(value)])
+    return wrapTableCellContent(renderBooleanCheckbox(value))
   }
 
-  return h("td", {}, String(value))
+  return wrapTableCellContent(String(value))
 }
 
 function applySorting(
@@ -405,6 +459,9 @@ function applySorting(
   if (sortConfig.length === 0) return files
 
   const normalizeSortValue = (val: unknown): string | number | null | undefined => {
+    if (isIconToken(val)) {
+      return val.value
+    }
     if (val instanceof Date) {
       return val.getTime()
     }
@@ -473,7 +530,11 @@ function groupFiles(
 
   for (const file of files) {
     const value = resolveValueWithFormulas(file, property, getContext, getPropertyExpr)
-    const key = value === undefined || value === null ? "(empty)" : String(value)
+    const key = isIconToken(value)
+      ? value.value
+      : value === undefined || value === null
+        ? "(empty)"
+        : String(value)
 
     if (!groups.has(key)) {
       groups.set(key, [])
@@ -527,6 +588,12 @@ function buildTableSummaryRow(
     if (value === undefined) {
       return h("td.base-summary-cell", {}, "")
     }
+    if (isIconToken(value)) {
+      const cleaned = value.value.trim()
+      return cleaned.length > 0
+        ? h("td.base-summary-cell", {}, [renderIconNode(cleaned)])
+        : h("td.base-summary-cell", {}, "")
+    }
     return h("td.base-summary-cell", {}, String(value))
   })
 
@@ -551,10 +618,16 @@ function buildTable(
   if (view.groupBy) {
     const groups = groupFiles(files, view.groupBy, getContext, getPropertyExpr)
     const allRows: RenderElement[] = []
+    const groupByKey = typeof view.groupBy === "string" ? view.groupBy : view.groupBy.property
+    const groupByLabel = getPropertyDisplayName(groupByKey, properties)
 
     for (const [groupName, groupFiles] of groups) {
       const groupHeader = h("tr.base-group-header", [
-        h("td", { colspan: columns.length }, groupName),
+        h("td", { colspan: columns.length }, [
+          h("span.base-group-header-label", groupByLabel.toLowerCase()),
+          " ",
+          groupName,
+        ]),
       ])
       allRows.push(groupHeader)
 
@@ -568,7 +641,8 @@ function buildTable(
 
     const tbody = h("tbody", allRows)
     const thead = h("thead", buildTableHead(columns, properties))
-    return h("table.base-table", [thead, tbody])
+    const table = h("table.base-table", [thead, tbody])
+    return h("div.base-table-wrapper", [table])
   }
 
   const rows = files.map((f) => {
@@ -590,12 +664,17 @@ function buildTable(
     getPropertyExpr,
   )
   const tableChildren = tfoot ? [thead, tbody, tfoot] : [thead, tbody]
-  return h("table.base-table", tableChildren)
+  const table = h("table.base-table", tableChildren)
+  return h("div.base-table-wrapper", [table])
 }
 
 function listValueToPlainText(value: unknown): string | undefined {
   if (value === undefined || value === null) {
     return undefined
+  }
+  if (isIconToken(value)) {
+    const cleaned = value.value.trim()
+    return cleaned.length > 0 ? cleaned : undefined
   }
   if (Array.isArray(value)) {
     const parts = value
@@ -620,6 +699,9 @@ function listValueToPlainText(value: unknown): string | undefined {
 
 function hasRenderableValue(value: unknown): boolean {
   if (value === undefined || value === null) return false
+  if (isIconToken(value)) {
+    return value.value.trim().length > 0
+  }
   if (Array.isArray(value)) {
     return value.some((item) => hasRenderableValue(item))
   }
@@ -634,6 +716,11 @@ function renderPropertyValueNodes(
   allFiles: QuartzPluginData[],
 ): RenderNode[] {
   if (value === undefined || value === null) return []
+  if (isIconToken(value)) {
+    const cleaned = value.value.trim()
+    if (cleaned.length === 0) return []
+    return [renderIconNode(cleaned)]
+  }
   if (Array.isArray(value)) {
     const nodes: RenderNode[] = []
     value.forEach((item, idx) => {
@@ -1059,13 +1146,18 @@ function buildMap(
 
     const icon = resolveMapProperty(file, view.markerIcon)
     const color = resolveMapProperty(file, view.markerColor)
+    const iconHtml = isIconToken(icon)
+      ? renderIconHtml(icon.value)
+      : icon
+        ? String(icon)
+        : undefined
 
     markers.push({
       lat,
       lon,
       title,
       slug,
-      icon: icon ? String(icon) : undefined,
+      icon: iconHtml,
       color: color ? String(color) : undefined,
       popupFields,
     })
@@ -1126,7 +1218,13 @@ function renderDiagnostics(
 
 export type BaseViewMeta = { name: string; type: BaseView["type"]; slug: FullSlug }
 
-export type RenderedBaseView = { view: BaseView; slug: FullSlug; tree: Root }
+export type RenderedBaseView = {
+  view: BaseView
+  slug: FullSlug
+  tree: Root
+  resultCount: number
+  totalCount: number
+}
 
 export type BaseMetadata = { baseSlug: FullSlug; currentView: string; allViews: BaseViewMeta[] }
 
@@ -1248,6 +1346,8 @@ export function renderBaseViewsForFile(
 
     const sortedFiles = applySorting(matchedFiles, view.sort, getEvalContext, getPropertyExpr)
     const limitedFiles = view.limit ? sortedFiles.slice(0, view.limit) : sortedFiles
+    const totalCount = matchedFiles.length
+    const resultCount = limitedFiles.length
 
     const diagnostics = [...(baseFileData.basesDiagnostics ?? []), ...runtimeDiagnostics]
     const diagnosticsNode = renderDiagnostics(
@@ -1332,7 +1432,7 @@ export function renderBaseViewsForFile(
       children: diagnosticsNode ? [diagnosticsNode, wrapped] : [wrapped],
     }
 
-    views.push({ view, slug, tree })
+    views.push({ view, slug, tree, resultCount, totalCount })
   }
 
   return { views, allViews }

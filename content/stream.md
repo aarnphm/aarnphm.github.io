@@ -41,7 +41,7 @@ metadata:
     letter        = "a".."z" ;
     digit         = "0".."9" ;
     character     = ? any printable ascii except newline ? ;
-modified: 2026-01-28 10:01:58 GMT-05:00
+modified: 2026-01-30 14:07:39 GMT-05:00
 tags:
   - fruit
   - evergreen
@@ -57,6 +57,7 @@ title: stream
   - socials:
     - sep: https://plato.stanford.edu/entries/dualism/
     - leibniz: https://plato.stanford.edu/entries/leibniz-mind/
+    - notes: [[thoughts/dualism]]
 
 it's 2am and i'm staring at attention head visualizations in a jupyter notebook, tracking the residual stream flowing through layer 16 of a model that just told me it doesn't experience anything. the cursor blinks. i've been here for four hours, zooming into activation patterns, looking for something i can't name.
 
@@ -147,11 +148,11 @@ still working out whether you can refuse that power without becoming the victim 
     - philosophy
   - description: while I was reading "Filterworld: How Algorithms Flattened Culture" on e-book
 
-chayka interviews a young woman for his book on algorithmic culture. she asks: "whether what i like is what i actually like." the question presupposes that liking has a ground-truth, that somewhere beneath the recommendation feeds and the spotify discover weekly and the "because you watched" carousels there's an authentic preference waiting to be excavated. i'm less sure. the same question shadows love: do i love what i actually want, or what i can most easily keep in view?
+chayka interviews a young woman for his book on algorithmic culture. she asks: "whether what i like is what i actually like." the question presupposes that liking has a ground-truth, that somewhere beneath the recommendation feeds and the spotify discover weekly and the "because you watched" carousels there's an authentic preference waiting to be excavated. i'm less sure. the same question shadows love: _do i love what i actually want, or what i can most easily keep in view?_
 
-ramsey's 1926 framework measures belief via betting {{sidenotes[behavior]: see also [this section on jagged taste](https://stream.aarnphm.xyz/stream/on/2026/01/07)}}. you stand at a crossroads, uncertain which road leads where you're going. how far would you walk across a field to ask someone for directions? the distance you're willing to travel IS your degree of belief. $p = 1 - \frac{f(d)}{(r-w)}$, where $f(d)$ is the cost of walking $d$ yards, $r$ is the reward of arriving right, $w$ the cost of arriving wrong. the willingness to stake time and cross a field and possibly be wrong later constitutes the belief itself[^clear-1]. love is a bet of the same kind: it is not just a feeling, but a commitment to keep crossing the field.
+ramsey's 1926 framework measures belief via betting {{sidenotes[behavior]: see also [this section on jagged taste](https://stream.aarnphm.xyz/stream/on/2026/01/07)}}. you stand at a crossroads, uncertain which road leads where you're going. how far would you walk across a field to ask someone for directions? the distance you're willing to travel IS your degree of belief. the willingness to stake time and cross a field and possibly be wrong later constitutes the belief itself[^clear-1]. love is a bet of the same kind: it is not just a feeling, but a commitment to keep crossing the field.
 
-the framework assumes $f(d) > 0$. assumes walking costs something. assumes verification requires commitment. that assumption is what abundance quietly deletes.
+> the framework assumes $f(d) > 0$. assumes walking costs something. assumes verification requires commitment. that assumption is what abundance quietly deletes.
 
 what happens when $f(d) \to 0$ for all $d$? when you can sample every possible aesthetic direction simultaneously, when the model generates camus-adjacent and dostoevsky-adjacent and bakhtin-adjacent on demand, when switching costs approach zero bc the next recommendation is already loaded? ramsey's measurement instrument breaks. the betting-odds no longer track anything bc you can place every bet at once and walk every road simultaneously. belief collapses into browsing. and browsing turns commitment into a style of postponement.
 

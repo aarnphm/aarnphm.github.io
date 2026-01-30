@@ -2,16 +2,19 @@
 date: "2025-12-13"
 description: and knowledge diffusion
 id: reading
-modified: 2026-01-11 10:05:01 GMT-05:00
+modified: 2026-01-30 14:27:50 GMT-05:00
 tags:
   - pattern
   - evergreen
+  - philosophy
 title: reading
 ---
 
-A lot of what you [[thoughts/writing|write]] are diffused from what you read. I pretty much spend a lot of my waking hours [[antilibrary|reading]] books (when I'm not working ofc) that is intellectually stimulated and I find interesting. I also do perform [close reading](https://en.wikipedia.org/wiki/Close_reading).
+A lot of what you [[thoughts/writing|write]] are diffused from what you read. I pretty much spend a lot of my waking hours [[antilibrary.base|reading]] books (when I'm not working ofc) that is intellectually stimulated and I find interesting. I also do perform [close reading](https://en.wikipedia.org/wiki/Close_reading).
 
 I'm not yet _sure_ how I read. But this is more/less a collection of how people I follow read. Inspired by [Zvi's on writing](https://thezvi.substack.com/p/on-writing-1)
+
+![[antilibrary.base#editors]]
 
 > [!note]
 >

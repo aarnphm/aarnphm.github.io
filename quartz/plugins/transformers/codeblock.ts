@@ -158,16 +158,30 @@ function ensureJsxBlocks(file: VFile): JsxBlock[] {
   return file.data.jsxBlocks as JsxBlock[]
 }
 
-export const JsxCodeblock: QuartzTransformerPlugin = () => {
+export const Codeblock: QuartzTransformerPlugin = () => {
   let counter = 0
 
   return {
-    name: "JsxCodeblock",
+    name: "Codeblock",
     markdownPlugins() {
       return [
         () => (tree: MdRoot, file: VFile) => {
           visit(tree, "code", (node: Code) => {
-            if (node.lang !== "jsx") return
+            const lang = node.lang?.toLowerCase()
+            if (lang === "base") {
+              const source = node.value ?? ""
+              node.data ??= {}
+              node.data.hName = "div"
+              node.data.hProperties = {
+                className: ["base-embed"],
+                "data-base-embed": "",
+                "data-base-source": encodeURIComponent(source),
+              }
+              node.data.hChildren = []
+              return
+            }
+
+            if (lang !== "jsx") return
             const imports = parseImports(node.meta)
             if (imports.length === 0) return
 
@@ -187,6 +201,31 @@ export const JsxCodeblock: QuartzTransformerPlugin = () => {
       return [
         () => (tree: HastRoot, file: VFile) => {
           const blocksMap = getJsxBlockMap(file)
+          visit(tree, "element", (node: Element, index, parent) => {
+            if (!parent || index === undefined) return
+            if (node.tagName !== "pre") return
+            const preHasEmbed =
+              node.properties?.["data-base-embed"] !== undefined ||
+              node.properties?.["data-base-source"] !== undefined ||
+              (Array.isArray(node.properties?.className) &&
+                node.properties.className.includes("base-embed"))
+            if (preHasEmbed) {
+              node.tagName = "div"
+              return
+            }
+            const embedChild = node.children.find(
+              (child): child is Element =>
+                child.type === "element" &&
+                (child.properties?.["data-base-embed"] !== undefined ||
+                  child.properties?.["data-base-source"] !== undefined ||
+                  (Array.isArray(child.properties?.className) &&
+                    child.properties.className.includes("base-embed"))),
+            )
+            if (embedChild) {
+              parent.children.splice(index, 1, embedChild)
+            }
+          })
+
           if (blocksMap.size === 0) return
 
           const collectedImports = new Set<string>(

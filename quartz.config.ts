@@ -99,7 +99,7 @@ const config: QuartzConfig = {
       Plugin.Pseudocode(),
       Plugin.TikzJax({ showConsole: false }),
       Plugin.TelescopicText(),
-      Plugin.JsxCodeblock(),
+      Plugin.Codeblock(),
       // Convert code-file transcludes to code blocks before highlighting
       Plugin.CodeViewer(),
       Plugin.Twitter(),
