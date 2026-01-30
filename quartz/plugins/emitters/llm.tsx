@@ -68,8 +68,6 @@ export const LLMText: QuartzEmitterPlugin = () => {
   return {
     name,
     async *emit(ctx, content, _resources) {
-      if (ctx.argv.watch && !ctx.argv.force) return []
-
       const baseUrl = ctx.cfg.configuration.baseUrl ?? "https://example.com"
 
       const reconstructed: string[] = []
@@ -94,8 +92,6 @@ ${reconstructed.join("\n")}`,
       })
     },
     async *partialEmit(ctx, content, _resources, changeEvents) {
-      if (ctx.argv.watch && !ctx.argv.force) return []
-
       // find all slugs that changed or were added
       const changedSlugs = new Set<string>()
       for (const changeEvent of changeEvents) {

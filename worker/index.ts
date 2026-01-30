@@ -95,6 +95,44 @@ function shouldTreatAsDocument(pathname: string): boolean {
   return ext === "html" || ext === "htm"
 }
 
+function wantsMarkdown(request: Request): boolean {
+  const accept = request.headers.get("Accept")?.toLowerCase() ?? ""
+  if (accept.includes("text/markdown")) return true
+  const ua = request.headers.get("User-Agent")?.toLowerCase() ?? ""
+  if (!ua) return false
+  return (
+    ua.includes("chatgpt") ||
+    ua.includes("claude") ||
+    ua.includes("anthropic") ||
+    ua.includes("openai") ||
+    ua.includes("gptbot")
+  )
+}
+
+function markdownPathname(pathname: string): string {
+  if (pathname === "/") return "/index.md"
+  if (pathname.endsWith("/")) return `${pathname.slice(0, -1)}.md`
+  return `${pathname}.md`
+}
+
+function shouldRewriteMarkdown(request: Request, url: URL): boolean {
+  if (request.method !== "GET" && request.method !== "HEAD") return false
+  if (!wantsMarkdown(request)) return false
+  if (url.pathname.endsWith(".md")) return false
+  if (getExtension(url.pathname)) return false
+  if (url.pathname.startsWith("/api/")) return false
+  if (url.pathname.startsWith("/comments/")) return false
+  if (url.pathname.startsWith("/mcp")) return false
+  if (url.pathname.startsWith("/sse")) return false
+  if (url.pathname.startsWith("/authorize")) return false
+  if (url.pathname.startsWith("/register")) return false
+  if (url.pathname.startsWith("/token")) return false
+  if (url.pathname.startsWith("/.well-known/")) return false
+  if (url.pathname.startsWith("/_plausible/")) return false
+  if (url.pathname.startsWith("/fonts/")) return false
+  return true
+}
+
 const commentAuthorRenameAuthorPrefix = "comment-author-rename:author:"
 const commentAuthorRenameIpPrefix = "comment-author-rename:ip:"
 const commentAuthorRenameWindowSeconds = 60 * 60 * 24 * 90
@@ -346,6 +384,14 @@ export default {
       const id = env.MULTIPLAYER_COMMENTS.idFromName("global")
       const stub = env.MULTIPLAYER_COMMENTS.get(id)
       return stub.fetch(request)
+    }
+
+    if (shouldRewriteMarkdown(request, url)) {
+      const markdownUrl = new URL(url.toString())
+      markdownUrl.pathname = markdownPathname(url.pathname)
+      const markdownReq = new Request(markdownUrl.toString(), request)
+      const markdownResp = await env.ASSETS.fetch(markdownReq)
+      return withHeaders(markdownResp, { Vary: "Accept, User-Agent" })
     }
 
     const apiHeaders: Record<string, string> = {

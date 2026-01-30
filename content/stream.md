@@ -41,7 +41,7 @@ metadata:
     letter        = "a".."z" ;
     digit         = "0".."9" ;
     character     = ? any printable ascii except newline ? ;
-modified: 2026-01-30 14:07:39 GMT-05:00
+modified: 2026-01-30 15:19:25 GMT-05:00
 tags:
   - fruit
   - evergreen
@@ -164,7 +164,7 @@ the AI result generalizes to human culture. platforms work as the transmission m
 
 scitovsky made the critical distinction in 1976: comfort (satisfying existing preferences) versus pleasure (developing new ones). comfort is homeostatic, it removes deficit. pleasure is arousal-seeking, it requires novelty paired with skill development. the two have different temporal signatures: comfort saturates, pleasure compounds. you can only eat so much but learning generates more learning-desire. love oscillates between them: maintenance without growth turns sterile, growth without maintenance turns unstable.
 
-hyperabundance gives infinite comfort-access at near-zero marginal cost. the result destroys scarcity-gradients needed for skill acquisition. in constrained environments you might get 1:10 ratio of comfort-seeking to pleasure-seeking, bc getting more comfort requires effort that bleeds into skill-building. in abundance the ratio approaches 1000:1 bc comfort is frictionless while pleasure still requires sustained engagement. gioia observes that most scroll behavior is about avoiding dopamine withdrawal, not seeking pleasure[^clear-3]. the phenomenology of scrolling is maintenance, not growth, and it trains a preference for relationships that feel easy over relationships that deepen.
+[[posts/hyperabundance]] gives infinite comfort-access at near-zero marginal cost. the result destroys scarcity-gradients needed for skill acquisition. in constrained environments you might get 1:10 ratio of comfort-seeking to pleasure-seeking, bc getting more comfort requires effort that bleeds into skill-building. in abundance the ratio approaches 1000:1 bc comfort is frictionless while pleasure still requires sustained engagement. gioia observes that most scroll behavior is about avoiding dopamine withdrawal, not seeking pleasure[^clear-3]. the phenomenology of scrolling is maintenance, not growth, and it trains a preference for relationships that feel easy over relationships that deepen.
 
 the developmental data is strange. 4-year-olds and chimpanzees show no scarcity preference. 6-year-olds do, especially in presence of competitors. the developmental window tracks social cognition development, not cognitive maturation per se. the mechanism: "fear of missing out an opportunity when dealing with uncertainty." scarcity preference is learned, and it's learned through social experience of limited resources.
 
