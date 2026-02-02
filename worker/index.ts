@@ -270,6 +270,14 @@ type Env = {
   PUBLIC_BASE_URL?: string
 } & Cloudflare.Env
 
+type EmailPayload = {
+  subject: string
+  text?: string
+  html?: string
+  recipients: string[]
+  attachments?: { contentId: string; filename: string; contentType: string; content: string }[]
+}
+
 export default {
   async fetch(request, env, ctx): Promise<Response> {
     const url = new URL(request.url)
@@ -305,18 +313,17 @@ export default {
         return new Response("unauthorized", { status: 401 })
       }
 
-      const { subject, text, html, recipients, attachments = [] } = (await request.json()) as {
-        subject: string
-        text?: string
-        html?: string
-        recipients: string[]
-        attachments?: {
-          contentId: string
-          filename: string
-          contentType: string
-          content: string
-        }[]
+      const payload: EmailPayload = await request.json()
+      const recipients = Array.isArray(payload.recipients)
+        ? payload.recipients.filter((email) => typeof email === "string" && email.trim().length > 0)
+        : typeof payload.recipients === "string"
+          ? [payload.recipients]
+          : []
+      if (recipients.length === 0) {
+        return new Response("invalid recipients", { status: 400 })
       }
+      const { subject, text, html } = payload
+      const attachments = Array.isArray(payload.attachments) ? payload.attachments : []
 
       const msg = createMimeMessage()
       msg.setSender({ name: "Aaron Pham", addr: env.EMAIL_SENDER })

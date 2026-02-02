@@ -51,7 +51,8 @@ export const EmailEmitter: QuartzEmitterPlugin = () => {
       }
 
       for (const [tree, file] of content) {
-        if (file.data.frontmatter?.email !== true || file.data.frontmatter?.emailSent !== false) continue
+        if (file.data.frontmatter?.email !== true || file.data.frontmatter?.emailSent !== false)
+          continue
 
         const slug = file.data.slug!
         const relativePath = file.data.relativePath ?? file.data.filePath ?? ""
@@ -162,7 +163,7 @@ export const EmailEmitter: QuartzEmitterPlugin = () => {
           })
           replacements.set(src, `cid:${contentId}`)
         }
-        for (const [src, cid] of replacements) {
+        for (const [src, _cid] of replacements) {
           const escaped = src.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
           html = html.replace(
             new RegExp(`(<img\\b[^>]*\\bsrc=)(["'])${escaped}\\2`, "gi"),
@@ -180,7 +181,7 @@ export const EmailEmitter: QuartzEmitterPlugin = () => {
           "----------------------------------------",
           `rendered: ${url}`,
           "----------------------------------------",
-          contentText
+          contentText,
         ]
           .join("\n")
           .trim()
@@ -191,13 +192,7 @@ export const EmailEmitter: QuartzEmitterPlugin = () => {
           {
             method: "POST",
             headers: { "Content-Type": "application/json", "x-email-secret": secret },
-            body: JSON.stringify({
-              subject,
-              text,
-              html,
-              recipients,
-              attachments,
-            }),
+            body: JSON.stringify({ subject, text, html, recipients, attachments }),
           },
         )
 
