@@ -1,4 +1,6 @@
 import { OAuthProvider } from "@cloudflare/workers-oauth-provider"
+import { EmailMessage } from "cloudflare:email"
+import { createMimeMessage } from "mimetext"
 import LFS_CONFIG from "./.lfsconfig.txt"
 import handleArxiv from "./arxiv"
 import {
@@ -294,6 +296,57 @@ export default {
 
     const commentsResp = await CommentsGitHubHandler.fetch(request, env, ctx)
     if (commentsResp.status !== 404) return commentsResp
+
+    if (request.method === "POST" && url.pathname === "/internal/email/emit") {
+      if (
+        !env.EMAIL_EMITTER_SECRET ||
+        request.headers.get("x-email-secret") !== env.EMAIL_EMITTER_SECRET
+      ) {
+        return new Response("unauthorized", { status: 401 })
+      }
+
+      const { subject, text, html, recipients, attachments = [] } = (await request.json()) as {
+        subject: string
+        text?: string
+        html?: string
+        recipients: string[]
+        attachments?: {
+          contentId: string
+          filename: string
+          contentType: string
+          content: string
+        }[]
+      }
+
+      const msg = createMimeMessage()
+      msg.setSender({ name: "Aaron Pham", addr: env.EMAIL_SENDER })
+      msg.setRecipient("undisclosed-recipients:;")
+      msg.setSubject(subject)
+      msg.setHeader("Bcc", recipients.join(", "))
+      if (text) {
+        msg.addMessage({ contentType: "text/plain", data: text })
+      }
+      if (html) {
+        msg.addMessage({ contentType: "text/html", data: html })
+      }
+      for (const attachment of attachments) {
+        msg.addAttachment({
+          filename: attachment.filename,
+          contentType: attachment.contentType,
+          data: attachment.content,
+          inline: true,
+          headers: { "Content-ID": attachment.contentId },
+        })
+      }
+      for (const recipient of recipients) {
+        await env.EMAIL.send(new EmailMessage(env.EMAIL_SENDER, recipient, msg.asRaw()))
+      }
+
+      return new Response(JSON.stringify({ ok: true, sent: recipients.length }), {
+        status: 200,
+        headers: { "Content-Type": "application/json" },
+      })
+    }
 
     if (url.searchParams.has("stackedNotes")) {
       const stacked = await handleStackedNotesRequest(request, env)

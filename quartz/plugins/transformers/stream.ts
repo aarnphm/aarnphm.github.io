@@ -310,9 +310,14 @@ interface ParsedEntry {
   descriptionHtml?: string
 }
 
+const anonToken = "<INSERT_HERE>"
+
 export const Stream: QuartzTransformerPlugin = () => {
   return {
     name: "Stream",
+    textTransform(_, src: any) {
+      return src.split(anonToken).join("M")
+    },
     htmlPlugins() {
       return [
         () => {

@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-01-30 12:33:38 GMT-05:00
+modified: 2026-02-02 12:11:02 GMT-05:00
 permalinks:
   - /website
   - /tweets
@@ -143,6 +143,11 @@ title: are.na
 - [meta]:
   - view: list
 
+- https://x.com/carl_feynman/status/2016967613042303016?s=46&t=E_gPjnJKDBGnwpVrE7Z-WQ -- My dad (Richard Feynman) being a mercenary polymaths
+  - [meta]:
+    - date: 01/30/2026
+    - tags: [history, aura]
+    - pinned: true
 - https://x.com/woosuk_k/status/2014383490637443380 -- Inferact announcement
   - [meta]:
     - date: 01/22/2026
@@ -2288,7 +2293,7 @@ title: are.na
   - [meta]:
     - date: 01/02/2026
     - tags: [relationship, being]
-- https://waitbutwhy.com/2016/09/marriage-decision.html -- The Marriage Decision: Everything Foreever or Nothing Ever Again
+- https://waitbutwhy.com/2016/09/marriage-decision.html -- The Marriage Decision: Everything Forever or Nothing Ever Again
   - [meta]:
     - date: 01/02/2026
     - tags: [relationship]
@@ -2438,6 +2443,10 @@ title: are.na
   - [meta]:
     - date: 12/21/2025
     - tags: [alignment, products]
+- https://aligned.substack.com/p/alignment-is-not-solved-but-increasingly-looks-solvable
+  - [meta]:
+    - date: 02/02/2026
+    - tags: [alignment, longtermism]
 - https://www.henrikkarlsson.xyz/p/self-help-for-cocoons -- Self-help for cocoons
   - [meta]:
     - date: 12/21/2025
@@ -3866,6 +3875,11 @@ title: are.na
   - view: list
   - json: true
 
+- https://livgorton.com/non-linear-feature-reps -- What Would Non-Linear Features Actually Look Like?
+  - [meta]:
+    - date: 02/02/2026
+    - tags: [interpretability]
+    - later: true
 - https://huggingface.co/blog/novita/sglang-glm4-moe -- Optimizing GLM4-MoE with SGLang
   - [meta]:
     - date: 01/26/2026

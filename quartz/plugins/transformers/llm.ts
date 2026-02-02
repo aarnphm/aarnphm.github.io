@@ -186,6 +186,8 @@ export const LLM: QuartzTransformerPlugin = () => {
   return {
     name: "LLM",
     markdownPlugins({ argv }) {
+      if (argv.watch && !argv.force) return []
+
       return [
         () => {
           return (tree: MdRoot, file) => {

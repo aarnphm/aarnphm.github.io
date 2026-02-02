@@ -3,7 +3,7 @@ comments: false
 date: "2024-01-07"
 description: A (mostly) up-to-date scents that I use/like/prefer.
 id: Scents
-modified: 2025-10-29 02:15:34 GMT-04:00
+modified: 2026-02-01 18:01:44 GMT-05:00
 tags:
   - evergreen
 title: Scents
@@ -16,6 +16,7 @@ See [[books|antilibrary]] for reading list.
 - LeLabo's Rose 31, Lavande 31, Labdanum 18, Santal 31
 - Aesop's Gloam
 - Aesop's Aurner
+- Jo Malone's Amber Labdanum Cologne Intense
 
 ## like.
 
