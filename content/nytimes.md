@@ -2,7 +2,7 @@
 date: "2025-10-27"
 description: from nytimes
 id: nytimes
-modified: 2026-01-09 04:53:56 GMT-05:00
+modified: 2026-02-01 14:53:33 GMT-05:00
 tags:
   - games
 title: games
@@ -210,3 +210,166 @@ Wordle 1,665 3/6
 ## the mini
 
 ![[thoughts/images/nytimes/mini-01-06-26.webp]]
+
+## word games
+
+```text
+https://rose.systems/animalist
+
+144 animals listed
+🦁🐅🐘🦒🦓🐍🧓🐆🦏🦛🦍🦧🦘🐨🐼🐺🦊🫎🦬🦙𓃥𓃴𓃜🦦🦫🦡🦨🦝🦥🦔🐿🦇🐳🐬🦭🫍🐧🐦🐦🦩🐦𓅣🐦🦢🪿🦆🦅🐦𓅃🐦🦉🐦🦜🦜🐦‍⬛🐦‍⬛🐦🐦𓅪🐦🐦🐦🐦🐦🐦🐦🕊️𓅳🐦🦚🦃🐥𓅦🐦🐦🐊🦎𓆈𓆉🐸🦈🐟🐙🦑🦪🐌🐌𓇼
+
+Starfish
+Conch
+Slug
+Snail Replaced by more specific Slug
+Scallop
+Mussel
+Oyster
+Clam
+Nautilus
+Cuttlefish
+Squid
+Octopus
+jellyfish → Medusozoa
+Seahorse
+Eel
+Barracuda
+mackerel → Atlantic mackerel
+sardine → European pilchard
+Anchovy
+herring → Atlantic herring
+cod → Atlantic cod
+pike → Northern pike
+Catfish
+bass → European seabass
+trout → Brown trout
+salmon → Atlantic salmon
+Tuna
+Swordfish
+ray → Batomorphi
+Shark
+Newt
+Salamander
+Toad
+Frog Replaced by more specific Toad
+Tortoise
+Turtle Replaced by more specific Tortoise
+Rattlesnake
+Anaconda
+Viper Replaced by more specific Rattlesnake
+python → Python (genus)
+komodo → Komodo dragon
+Chameleon
+Gecko
+Iguana
+Lizard
+Alligator
+Crocodile
+kiwi → Kiwi (bird)
+Emu
+Ostrich
+Chicken
+turkey → Turkey (bird)
+peacock → Peafowl
+pheasant → Common pheasant
+Quail
+pigeon → Dove/Pigeon
+seagull → Gull
+Kingfisher
+Hummingbird
+Woodpecker
+cardinal → Cardinalis
+canary → Domestic canary
+Finch Replaced by more specific Domestic canary
+robin → American robin
+sparrow → Old World sparrow
+jay → Eurasian jay
+Magpie
+Raven
+Crow
+Cockatoo
+macaw → Arini (tribe)
+Toucan
+parrot → Parakeet Replaced by more specific Arini (tribe)
+Owl
+Vulture
+Falcon
+Hawk
+Eagle
+Duck
+Goose
+Swan
+crane → Crane (bird)
+Heron
+Stork
+Flamingo
+Pelican
+Albatross
+Penguin
+Orca
+beluga → Beluga whale
+Narwhal
+Dugong
+Manatee
+Walrus
+Seal
+Porpoise
+Dolphin
+Whale
+Bat
+Shrew
+mole → European mole
+Chipmunk
+Squirrel Replaced by more specific Chipmunk
+Hedgehog
+Porcupine
+Anteater
+sloth → Ground sloth
+Armadillo
+Opossum
+Raccoon
+Skunk
+Mink
+Ferret
+Weasel Replaced by more specific Ferret
+Badger
+Beaver
+Otter
+Yak
+Impala
+Gazelle
+Antelope
+Wildebeest
+Warthog
+Jackal
+Hyena
+Lynx
+Cougar
+Jaguar
+Alpaca
+Llama
+Camel
+Bison
+Moose
+Deer Replaced by more specific Moose
+Fox
+Wolf
+panda → Giant panda
+Koala
+Kangaroo
+Orangutan
+Chimpanzee
+Gorilla
+Hippopotamus
+Rhinoceros
+Leopard
+Cheetah
+Human
+Snake
+Zebra
+Giraffe
+Elephant
+Tiger
+Lion
+```

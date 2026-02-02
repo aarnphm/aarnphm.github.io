@@ -13,10 +13,6 @@ async function llmText(ctx: BuildCtx, fileData: QuartzPluginData, reconstructed:
   const baseUrl = ctx.cfg.configuration.baseUrl ?? "https://example.com"
   const contentBase = fileData.llmsText as string | undefined
 
-  if (typeof contentBase !== "string") {
-    throw new Error(`llmsText content missing for slug ${slug}`)
-  }
-
   const refs = slug !== "index" ? `${slug}.md` : "llms.txt"
 
   const {
@@ -68,6 +64,8 @@ export const LLMText: QuartzEmitterPlugin = () => {
   return {
     name,
     async *emit(ctx, content, _resources) {
+      if (ctx.argv.watch && !ctx.argv.force) return []
+
       const baseUrl = ctx.cfg.configuration.baseUrl ?? "https://example.com"
 
       const reconstructed: string[] = []
@@ -92,6 +90,8 @@ ${reconstructed.join("\n")}`,
       })
     },
     async *partialEmit(ctx, content, _resources, changeEvents) {
+      if (ctx.argv.watch && !ctx.argv.force) return []
+
       // find all slugs that changed or were added
       const changedSlugs = new Set<string>()
       for (const changeEvent of changeEvents) {

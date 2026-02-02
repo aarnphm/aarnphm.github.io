@@ -41,14 +41,14 @@ metadata:
     letter        = "a".."z" ;
     digit         = "0".."9" ;
     character     = ? any printable ascii except newline ? ;
-modified: 2026-01-30 15:19:25 GMT-05:00
+modified: 2026-01-31 13:40:04 GMT-05:00
 tags:
   - fruit
   - evergreen
 title: stream
 ---
 
-## dualism and philosophy of mind
+## on the mill argument
 
 - [meta]:
   - date: 2026-01-27 23:32:23 GMT-05:00
@@ -111,9 +111,10 @@ the ocean doesn't care whether we believe in it.
   - date: 2026-01-26 21:32:23 GMT-05:00
   - tags:
     - philosophy
+    - o/m
   - description: and the dynamics of being in a relationship
 
-H texted at 2am, a minor crisis involving the fear of missing out of the _current gold rush_ or a lost key—the content hardly matters—but the *timing* matters, because it triggered that specific, sharp recognition of where i stand in the architecture of her week. i found myself thinking immediately of simone de beauvoir writing to sartre about olga kosakievicz in the 1930s: "i had no intention of yielding to her the sovereign position i had always occupied." there is a ruthlessness in that sentence that we rarely credit to beauvoir, a territoriality that belies the cool, intellectual detachment of the existentialist power couple.
+<INSERT_HERE> texted at 2am, a minor crisis involving the fear of missing out of the _current gold rush_ or a lost key—the content hardly matters—but the *timing* matters, because it triggered that specific, sharp recognition of where i stand in the architecture of her week. i found myself thinking immediately of simone de beauvoir writing to sartre about olga kosakievicz in the 1930s: "i had no intention of yielding to her the sovereign position i had always occupied." there is a ruthlessness in that sentence that we rarely credit to beauvoir, a territoriality that belies the cool, intellectual detachment of the existentialist power couple.
 
 i was reading *the second sex* on the GO train last week, winter darkness stretching the commute, and the text hit like a diagnostic manual for whatever was happening in my chest. "one is not born, but rather becomes, a woman." everyone quotes this, reduces it to social construction. beauvoir meant something worse. she meant: woman is a mode of being-for-others, finding your definition in the eyes of someone else rather than in your own projects. learning to inhabit the position of the Object. i know that position. i've watched myself occupy it.
 
@@ -127,7 +128,7 @@ consider the "trio" with bianca bienenfeld (lamblin). beauvoir was her teacher, 
 
 modern relationship anarchy and polyamory claim to have dismantled these hierarchies, replacing the rigid "couple" with a fluid network of autonomous agents. but the architecture of openness does not automatically distribute vulnerability evenly. often, it just multiplies the sites where the old asymmetries can re-emerge. you think you are building a utopia of mutual transcendence, and then you realize that for one person, the relationship is a primary source of meaning, while for the other, it is a "contingent" slot on a google calendar. "how can love ever be contingent?" nelson algren asked beauvoir, after she refused to stay with him in chicago because her life with sartre in paris was "essential." "contingent upon what?"
 
-watching H navigate this, watching myself navigate H, i realize the "third sex" beauvoir gestured toward is just ::a positionality::. we slide along this gradient between sovereign and contingent. the "woman" position: waiting, immanence, schedule organized by gaps in someone else's. the "man" position: projects that supersede the relationship. beauvoir wrote that absence-as-betrayal only makes sense if presence was the implicit contract. what happens when one person banks on presence while the other trades in absence.
+watching <INSERT_HERE> navigate this, watching myself navigate <INSERT_HERE>, i realize the "third sex" beauvoir gestured toward is just ::a positionality::. we slide along this gradient between sovereign and contingent. the "woman" position: waiting, immanence, schedule organized by gaps in someone else's. the "man" position: projects that supersede the relationship. beauvoir wrote that absence-as-betrayal only makes sense if presence was the implicit contract. what happens when one person banks on presence while the other trades in absence.
 
 the "third sex" knows these roles aren't fixed by gender anymore. they're fixed by who cares less. and the person who cares less always holds the power.
 
@@ -146,63 +147,30 @@ still working out whether you can refuse that power without becoming the victim 
   - tags:
     - o/life
     - philosophy
+    - o/m
   - description: while I was reading "Filterworld: How Algorithms Flattened Culture" on e-book
 
 chayka interviews a young woman for his book on algorithmic culture. she asks: "whether what i like is what i actually like." the question presupposes that liking has a ground-truth, that somewhere beneath the recommendation feeds and the spotify discover weekly and the "because you watched" carousels there's an authentic preference waiting to be excavated. i'm less sure. the same question shadows love: _do i love what i actually want, or what i can most easily keep in view?_
 
-ramsey's 1926 framework measures belief via betting {{sidenotes[behavior]: see also [this section on jagged taste](https://stream.aarnphm.xyz/stream/on/2026/01/07)}}. you stand at a crossroads, uncertain which road leads where you're going. how far would you walk across a field to ask someone for directions? the distance you're willing to travel IS your degree of belief. the willingness to stake time and cross a field and possibly be wrong later constitutes the belief itself[^clear-1]. love is a bet of the same kind: it is not just a feeling, but a commitment to keep crossing the field.
+ramsey's 1926 framework measures belief via betting {{sidenotes[behavior]: see also [this section on jagged taste](https://stream.aarnphm.xyz/stream/on/2026/01/07)}}. you stand at a crossroads, uncertain which road leads where you're going. how far would you walk across a field to ask someone for directions? the distance you're willing to travel is your degree of belief[^clear-1]. the instrument assumes walking costs something. it assumes verification requires commitment.
 
-> the framework assumes $f(d) > 0$. assumes walking costs something. assumes verification requires commitment. that assumption is what abundance quietly deletes.
+the part i can't unsee is that the meter only works when the field has weight. now the field is weightless. when $f(d) \to 0$, i can check everything and commit to nothing. belief slides into browsing, and browsing feels like care while erasing care.
 
-what happens when $f(d) \to 0$ for all $d$? when you can sample every possible aesthetic direction simultaneously, when the model generates camus-adjacent and dostoevsky-adjacent and bakhtin-adjacent on demand, when switching costs approach zero bc the next recommendation is already loaded? ramsey's measurement instrument breaks. the betting-odds no longer track anything bc you can place every bet at once and walk every road simultaneously. belief collapses into browsing. and browsing turns commitment into a style of postponement.
+iterate a preference fast enough and it converges. i've seen the loops: stormy lighthouses, palatial interiors, a dozen motifs that pass through any model like a virus. they call it "visual elevator music"[^clear-2]. the prior eats the signal, and the signal looks like taste until you try to own it.
 
-griffiths and kalish ran simulations on iterated learning in 2007. their setup: bayesian agents pass cultural information to each other, each agent forming a posterior based on what it received, then passing samples to the next. result: convergence to a distribution "determined entirely by the prior." the mechanism is asymmetric pressure, where weak biases toward regularity compound through transmission until everything looks the same. the prior eats the signal.
+the feed is the same mechanism with a human face. it rewards the least disruptive, most legible signals. it does not matter where you live, you end up with the same exposed brick. filterworld is the name for this, but it also happens inside me. i pick what fits cleanly, not what asks me to change.
 
-researchers at cell/patterns tested this empirically with image generation. 700 trajectories through stable diffusion + LLaVA loops, each iteration taking the previous output and regenerating. ALL runs converged to nearly identical visuals: stormy lighthouses, palatial interiors, 12 dominant motifs total. the researchers called it "visual elevator music"[^clear-2]. the math predicted this: when re-generation is costless, iterating accelerates convergence. what would take cultural transmission centuries to accomplish, the model does in 50 loops.
+effort binds value only when the effort lands. unfinished labor does not deepen liking. when discovery is frictionless, the binding never fires. you consume without investing, and your taste stays smooth. love follows the same physics. when exit is cheap, the awkward middle never hardens into something you can trust.
 
-the AI result generalizes to human culture. platforms work as the transmission medium, users as bayesian agents passing aesthetics to each other. platforms punish links to outside content, reward the least ambiguous, least disruptive, least meaningful pieces of culture. chayka calls the result "filterworld." meghan o'gieblyn: "mass culture, even as it diffuses into niche datastreams, trends toward a vacuous mean." same exposed brick in nairobi and portland. same skeletal furniture everywhere. this happens bc the prior (platform-legibility, engagement-optimization) overwhelms signal (individual taste-formation) when iteration speed exceeds the rate at which genuine preferences can develop. love in this regime risks becoming another convergent motif, a template that optimizes for legibility rather than depth.
+in that light, seeing clearly is not a revelation, it is a settling. it is setting into this new reality, the split between absolutist excellency and building a family with h. the ratio is real in hours and attention, and it will not let me pretend both are infinite. i can stretch, but only by thinning, and thinning is its own bet.
 
-scitovsky made the critical distinction in 1976: comfort (satisfying existing preferences) versus pleasure (developing new ones). comfort is homeostatic, it removes deficit. pleasure is arousal-seeking, it requires novelty paired with skill development. the two have different temporal signatures: comfort saturates, pleasure compounds. you can only eat so much but learning generates more learning-desire. love oscillates between them: maintenance without growth turns sterile, growth without maintenance turns unstable.
-
-[[posts/hyperabundance]] gives infinite comfort-access at near-zero marginal cost. the result destroys scarcity-gradients needed for skill acquisition. in constrained environments you might get 1:10 ratio of comfort-seeking to pleasure-seeking, bc getting more comfort requires effort that bleeds into skill-building. in abundance the ratio approaches 1000:1 bc comfort is frictionless while pleasure still requires sustained engagement. gioia observes that most scroll behavior is about avoiding dopamine withdrawal, not seeking pleasure[^clear-3]. the phenomenology of scrolling is maintenance, not growth, and it trains a preference for relationships that feel easy over relationships that deepen.
-
-the developmental data is strange. 4-year-olds and chimpanzees show no scarcity preference. 6-year-olds do, especially in presence of competitors. the developmental window tracks social cognition development, not cognitive maturation per se. the mechanism: "fear of missing out an opportunity when dealing with uncertainty." scarcity preference is learned, and it's learned through social experience of limited resources.
-
-researchers found: "scarcity polarizes preferences. when people perceive items to be scarce, they choose relatively more of their favorite, becoming less exploratory. in situations of abundance, people spread out their selections." spreading sounds good, exploration as virtue. the IKEA effect complicates this.
-
-norton, mochon, and ariely (2011) found labor sufficient to induce greater liking, d=0.57 effect size for self-assembly on valuation. but here's the boundary condition that matters: labor leads to valuation ONLY when labor results in successful completion. effort must bind to outcome. incomplete assembly, destroyed product, no valuation boost. the mechanism requires closure.
-
-chayka cites this directly: "humans end up valuing culture more after putting time and effort into discovery." when discovery costs nothing, the effort-binding never forms. you consume without investing. the valuation mechanism stays dormant bc the signal for "i found this" never fires. finding requires something to find FROM, some field to cross, some search-cost to pay.
-
-dreyfus spent decades mapping the phenomenology of skill acquisition. the progression goes: novice (follows explicit rules), advanced beginner (recognizes situational aspects), competence (feels emotional investment in outcomes), proficiency (intuitive pattern recognition), expertise (absorbed coping, no rule-following at all). the critical phase is competence. at competence you have enough rules to see their inadequacy, you care enough about outcomes to feel the failures, but you lack the intuitive grasp that would make things easy. competence is where most people quit.
-
-the phase cannot be skipped bc failures at competence are informationally dense. they teach what rules can't capture. the feeling of "this should work but doesn't" generates the corrective feedback that builds intuition. rule-based reasoning (system 2) is too slow for skilled performance. you need pattern recognition that fires below conscious access. that pattern recognition only develops through extended exposure to failures that feel bad. love has the same competence bottleneck: you only learn how to love someone by staying through the phase that feels unlovable.
-
-agnes callard formalized a related problem in 2018: you cannot rationally choose values you don't yet have. the person who doesn't appreciate opera has no reason to learn to appreciate opera. the reason to appreciate opera only exists FOR someone who already appreciates opera. acquiring new values requires what callard calls "aspiration," acting "as if" you had values while your actual preferences lag behind. this requires commitment over time, sustained engagement even when current preferences don't endorse it.
-
-abundance makes exit costless, so you never stay in the competence phase long enough. the dreyfusian progression stalls bc the discomfort of sustained incompetence exceeds the switching cost to try something else. you sample everything at the novice level, develop nothing to proficiency. the search pattern is breadth-first: good for global topology, useless for local understanding. taste IS local understanding. it's knowing which cafe in a city, which passage in a book, which moment in a song. that knowledge accumulates only through extended residence, the same way love accumulates only through extended residence.
-
-kierkegaard's analysis still holds, where authentic choice involves foreclosing other possibilities. the "yes" to one thing requires "no" to others. choice produces a narrowing, a commitment-structure that shapes future possibilities. when all options remain simultaneously available, the narrowing never needs to happen. decision becomes perpetually deferred. love without foreclosing is indistinguishable from a playlist.
-
-sartre would recognize the infinite-scroll as bad faith: the attempt to exist as pure possibility, to maintain all options open, to avoid the responsibility that comes with commitment. the feed presents itself as freedom (so much content, so many choices) but functions as its opposite, a mechanism for avoiding the existential weight of actually choosing anything.
-
-[———]
-
-the young woman's question, "whether what i like is what i actually like," assumes liking can be grounded independent of the process that formed it. ramsey suggests otherwise. the degree of belief just IS the willingness to bet. when betting is costless, the measurement fails. when discovery requires no effort, the IKEA-binding never forms. when exit is free, competence never develops into proficiency. the corollary is brutal: if love feels thinner now, it may be bc the surrounding system made it easier to leave than to learn.
-
-weil wrote in 1942 that attention requires "suspending thought, leaving it detached, empty and ready to be penetrated by the object." attention works by subtraction. you must refuse other stimuli to attend to this one. hyperabundance makes refusal feel like loss bc the recommendation feed presents infinite options and frames NOT-clicking as missing out. sacasas: "when we accept scarcity as a given, a competitive attention economy flows inevitably from it." the logic is correct, the attention economy does follow, but the premise is artificial. scarcity exists. ramsey's field is not infinite. the model that suggests otherwise is lying to you.
-
-crawford proposes skilled practices as exit: lutherie, motorcycle repair, things embedded in "communities, aesthetic traditions, and the hard constraints of craft" that "tell us the truth far more reliably than the voices in our heads." the material resists. wood has grain, engines have tolerances, instruments have physics. the resistance individuates. you cannot learn lutherie by scrolling bc the wood pushes back in ways that require adjustment, adaptation, the building of motor schemas that only form through repeated situated practice.
-
-the young woman may be asking the wrong question. "what i actually like" presupposes a ground-truth preference waiting to be excavated. the ramsey framework suggests liking IS the process of commitment, the willingness to cross fields, the accumulated investments that bind you to particular outcomes. there's no authentic preference beneath the feed. there's only the preference you build through constrained engagement over time. if that is true, then love is not a hidden essence to be discovered, but a practice that thickens when you refuse to leave. that shift changes how i read love.
+weil wrote that attention is a form of refusal, a suspension that lets the object arrive. attention works by subtraction. the feed presents refusal as loss, but the field is still there, and you still have to cross it if you want anything to become yours.
 
 the crossroads only matter when you might actually get lost.
 
 [^clear-1]: ramsey, "truth and probability" (1926), p.176. he died at 26, four years after writing this. close friend of wittgenstein, instrumental in convincing him to return to cambridge. people called him frank.
 
-[^clear-2]: the phrase "visual elevator music" is theirs. autonomous language-image generation loops (cell/patterns 2025). the convergence happens within 50 iterations. the resulting images are "commercially safe" in the sense that they trigger neither disgust nor genuine interest.
-
-[^clear-3]: gioia distinguishes entertainment (has narrative arc) from distraction (endless scroll, measured in seconds). "the fastest growing sector of the culture economy is distraction." distraction is now eating both entertainment and art.
+[^clear-2]: the phrase "visual elevator music" is theirs. autonomous language-image generation loops (cell/patterns 2025). 700 trajectories converged to a small set of motifs.
 
 ---
 
@@ -213,8 +181,9 @@ the crossroads only matter when you might actually get lost.
   - tags:
     - philosophy
     - o/life
+    - o/m
 
-i bought H a [monica silk top](https://www.thereformation.com/products/monica-silk-top/1314146BLK.html) from reformation last week. black, simple cut, 100% silk. while paying i noticed my hand knew exactly where my wallet was without looking, the same prereflective reaching merleau-ponty writes about: "if i reach for a tool, i don't first have to find my hands; i know where to reach because i have a sense of where the tool is in relation to myself." and i thought about why i wanted HER to have this specific shirt. not any silk top. this one.
+i bought <INSERT_HERE> a [monica silk top](https://www.thereformation.com/products/monica-silk-top/1314146BLK.html) from reformation last week. black, simple cut, 100% silk. while paying i noticed my hand knew exactly where my wallet was without looking, the same prereflective reaching merleau-ponty writes about: "if i reach for a tool, i don't first have to find my hands; i know where to reach because i have a sense of where the tool is in relation to myself." and i thought about why i wanted HER to have this specific shirt. not any silk top. this one.
 
 started from the position that objects shouldn't matter, that materialism is a trap. then i noticed i was reaching for specific things.
 
@@ -224,13 +193,13 @@ merleau-ponty: clothing extends the body-schema, the pre-reflective sense of whe
 
 [———]
 
-the monica silk top is for H. but i'm thinking about how objects move between people. joan didion, in _the year of magical thinking_, couldn't give away her dead husband's shoes. "i could not give away the rest of his shoes. i stood there for a moment, then realized why: he would need shoes if he was to return." clothing becomes sacred relics anchoring denial's persistence[^shirt-2].
+the monica silk top is for <INSERT_HERE>. but i'm thinking about how objects move between people. joan didion, in _the year of magical thinking_, couldn't give away her dead husband's shoes. "i could not give away the rest of his shoes. i stood there for a moment, then realized why: he would need shoes if he was to return." clothing becomes sacred relics anchoring denial's persistence[^shirt-2].
 
-i have the pendant in a drawer bc having H wearing it would be pretending to a continuity i don't feel. but selling it away is impossible. it exists in phenomenological limbo: too heavy with someone else's meaning to incorporate, too meaningful to discard.
+i have the pendant in a drawer bc having <INSERT_HERE> wearing it would be pretending to a continuity i don't feel. but selling it away is impossible. it exists in phenomenological limbo: too heavy with someone else's meaning to incorporate, too meaningful to discard.
 
 objects that outlive their owners carry symbolic-value that's not yours, can't become yours, yet demands acknowledgment. inheritance complicates everything.
 
-so what about objects that move FORWARD, given rather than left behind? i want H to have this shirt and i want it to become hers, to disappear into her body-schema, to be the shirt she reaches for without thinking on mornings when she's becoming most herself. i want to give her ready-to-hand equipment for her own life. that's different from didion's shoes, different from my grandmother's ring. it's trying to deposit meaning into an object that will accrete MORE meaning through HER use.
+so what about objects that move FORWARD, given rather than left behind? i want <INSERT_HERE> to have this shirt and i want it to become hers, to disappear into her body-schema, to be the shirt she reaches for without thinking on mornings when she's becoming most herself. i want to give her ready-to-hand equipment for her own life. that's different from didion's shoes, different from my grandmother's ring. it's trying to deposit meaning into an object that will accrete MORE meaning through HER use.
 
 marie kondo's "spark joy" is implicit phenomenology. she's asking: does this object resonate with your body-schema or just occupy storage-space? the method works bc it bypasses conceptual justification ("i might need this someday") and goes straight to felt-sense. kondo teaches people to notice the difference between sign-value (keeping things bc they signal the person you want to be) and symbolic-value (keeping things bc they anchor who you actually are)[^shirt-3].
 
@@ -238,7 +207,7 @@ marie kondo's "spark joy" is implicit phenomenology. she's asking: does this obj
 
 consumer culture insists things complete you, and that's wrong. certain physical items do meaningful work in constructing continuity-of-self anyway. the shirts i keep cycling back to aren't objectively better shirts. they're mine in some way that precedes and exceeds their material properties.
 
-the reformation top is black silk and cost more than i usually spend on gifts. i want it to become invisible. i want H to forget i gave it to her and just reach for it, the way my hand reached for my wallet without looking. that would mean it worked.
+the reformation top is black silk and cost more than i usually spend on gifts. i want it to become invisible. i want <INSERT_HERE> to forget i gave it to her and just reach for it, the way my hand reached for my wallet without looking. that would mean it worked.
 
 still figuring out where this line is. probably it's not a line but a gradient, objects slowly accreting or shedding meaning based on how they get woven into the texture of days.
 
@@ -256,6 +225,7 @@ still figuring out where this line is. probably it's not a line but a gradient, 
   - date: 2026-01-22 13:00:48 GMT-05:00
   - tags:
     - o/life
+    - o/m
 
 [inferact.ai](https://x.com/woosuk_k/status/2014383490637443380) dropped today—the corporate crystallization of [[thoughts/vllm|vLLM]]—and while the announcement itself played out with the predictable rhythm of a silicon valley press release (though this has been in the works for a while now), it forced me to confront the peculiar, fluid ontology of building software in a gold rush. we act as if we are building institutions, but we are mostly building eddies in a very fast current.
 
@@ -290,7 +260,7 @@ tennov spent decades cataloguing limerence—that involuntary cognitive state sh
 
 i keep thinking about heidegger's fürsorge—the care that leaps ahead of the other, freeing them toward their own possibilities rather than absorbing them into yours. there's a version of care that dominates, takes over the other's projects by solving their problems FOR them. and there's this other version, leaping-ahead, which gives the other person back their own capacity-to-be. maybe that's what happened here. the bodies attuned before minds recognized what was happening. merleau-ponty called this intercorporeality—the way flesh recognizes flesh, how my body's motor intentionality can complete itself in another person's gestures before any conscious recognition occurs. reaching for a hand that's already moving toward yours. knowing where to stand in a kitchen together on day one.[^love-1]
 
-H's face demanded response before i could categorize the feeling. levinas would call this ethics-before-ontology, the face that calls you into responsibility without mediation through concepts. the face doesn't represent the other person; it presents them. nakedness-as-exposure, vulnerability that commands "do not kill me" but also, maybe, "do not reduce me." strange to feel summoned rather than attracted.
+<INSERT_HERE>'s face demanded response before i could categorize the feeling. levinas would call this ethics-before-ontology, the face that calls you into responsibility without mediation through concepts. the face doesn't represent the other person; it presents them. nakedness-as-exposure, vulnerability that commands "do not kill me" but also, maybe, "do not reduce me." strange to feel summoned rather than attracted.
 
 most love i've known arrived through accumulation. small bets that compound into conviction. the heartbreak-love especially—months of proximity, plausible deniability, until someone finally names it and then the naming destroys what it names. that one taught me love can be a misrecognition that only becomes visible in retrospect, when you're standing in the wreckage wondering what you were actually perceiving. this one felt like recognition instead. "oh, there you are." which doesn't make sense temporally—we'd just met. but care doesn't always build through time. sometimes it just appears, fully formed, like walking into a clearing and finding it already tended.
 

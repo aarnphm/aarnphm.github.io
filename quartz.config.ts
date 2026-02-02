@@ -31,6 +31,7 @@ const configuration: GlobalConfiguration = {
     "**/.conform*",
     "**/target",
     "**/data",
+    "quartz/static/emails.txt",
   ],
   defaultDateType: "created",
   theme: {
@@ -142,6 +143,7 @@ const config: QuartzConfig = {
       Plugin.ComponentResources(),
       Plugin.Bibliography({ bibliography: "./content/References.bib" }),
       Plugin.ContentPage(),
+      Plugin.EmailEmitter(),
       Plugin.LLMText(),
       Plugin.FolderPage({
         pageBody: Component.FolderContent({

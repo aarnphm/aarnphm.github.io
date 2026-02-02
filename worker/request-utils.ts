@@ -13,6 +13,7 @@ function isLocalHostname(hostname: string): boolean {
     normalized === "localhost" ||
     normalized === "127.0.0.1" ||
     normalized === "::1" ||
+    normalized.startsWith("appl-mbp16") ||
     normalized.endsWith(".localhost")
   )
 }

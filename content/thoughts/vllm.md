@@ -2,7 +2,7 @@
 date: "2024-09-09"
 description: efficient LLM serving engine.
 id: vllm
-modified: 2026-01-22 12:49:51 GMT-05:00
+modified: 2026-01-30 17:43:07 GMT-05:00
 permalinks:
   - /vllm
 seealso:
@@ -107,3 +107,9 @@ implementation details (from [vLLM docs](https://docs.vllm.ai/en/latest/serving/
 - future work: multi-token queries require custom causal masking
 
 day-0 support for DeepSeek-V3.2-Exp with sparse attention on H100/H200/H20 and B200/GB200.
+
+---
+
+## design docs
+
+- https://github.com/vllm-project/vllm/issues/32358: vLLM IR for kernel implementation
