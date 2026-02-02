@@ -322,7 +322,7 @@ export default {
       msg.setSender({ name: "Aaron Pham", addr: env.EMAIL_SENDER })
       msg.setRecipient("undisclosed-recipients:;")
       msg.setSubject(subject)
-      msg.setHeader("Bcc", recipients.join(", "))
+      msg.setBcc(recipients)
       if (text) {
         msg.addMessage({ contentType: "text/plain", data: text })
       }
