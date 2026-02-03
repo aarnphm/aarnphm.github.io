@@ -4,7 +4,6 @@ import { toHtml } from "hast-util-to-html"
 import { existsSync, promises as fs } from "node:fs"
 import path from "path"
 import { EXIT, visit } from "unist-util-visit"
-import { defaultContentPageLayout } from "../../../quartz.layout"
 import { FullPageLayout } from "../../cfg"
 import { Content, Head } from "../../components"
 import { pageResources, renderPage } from "../../components/renderPage"
@@ -27,15 +26,6 @@ const name = "EmailEmitter"
 const emailsPath = path.join(QUARTZ, "static", "emails.txt")
 const imageExtensions = new Set([".avif", ".gif", ".jpg", ".jpeg", ".png", ".svg", ".webp"])
 const EmptyFooter: QuartzComponent = () => null
-const emailLayout: FullPageLayout = {
-  head: Head(),
-  header: [],
-  beforeBody: defaultContentPageLayout.beforeBody,
-  pageBody: Content(),
-  afterBody: [],
-  sidebar: [],
-  footer: EmptyFooter,
-}
 
 const readCssFile = async (href: string, ctx: BuildCtx): Promise<string | null> => {
   if (href.startsWith("http://") || href.startsWith("https://")) {
@@ -106,6 +96,15 @@ const renderEmail = async (
     children: [],
     tree,
     allFiles,
+  }
+  const emailLayout: FullPageLayout = {
+    head: Head(),
+    header: [],
+    beforeBody: [],
+    pageBody: Content(),
+    afterBody: [],
+    sidebar: [],
+    footer: EmptyFooter,
   }
   const rendered = renderPage(
     ctx,
@@ -216,7 +215,8 @@ export const EmailEmitter: QuartzEmitterPlugin = () => {
           continue
 
         const slug = fileData.slug!
-        const isProtected = Boolean(fileData.frontmatter?.protected || fileData.protectedPassword)
+        const isProtected =
+          fileData.frontmatter?.protected === true || Boolean(fileData.protectedPassword)
         const relativePath = fileData.relativePath ?? fileData.filePath ?? ""
         const baseName = path.basename(relativePath, path.extname(relativePath))
         const [monthToken, yearToken] = baseName.split("-")
