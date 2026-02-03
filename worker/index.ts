@@ -326,46 +326,48 @@ export default {
       const attachments = Array.isArray(payload.attachments) ? payload.attachments : []
 
       const sender = env.EMAIL_SENDER
-      const msg = createMimeMessage()
-      msg.setSender({ name: "Aaron Pham", addr: env.EMAIL_SENDER })
-      msg.setRecipient("updates@aarnphm.xyz")
-      msg.setSubject(subject)
-      msg.setBcc(recipients)
-      if (text) {
-        msg.addMessage({
-          contentType: "text/plain",
-          charset: "utf-8",
-          encoding: "quoted-printable",
-          data: text,
-        })
+      const buildRawMessage = () => {
+        const msg = createMimeMessage()
+        msg.setSender({ name: "Aaron Pham", addr: env.EMAIL_SENDER })
+        msg.setRecipient("undisclosed-recipients:;")
+        msg.setSubject(subject)
+        msg.setBcc(recipients)
+        if (text) {
+          msg.addMessage({
+            contentType: "text/plain",
+            charset: "utf-8",
+            encoding: "quoted-printable",
+            data: text,
+          })
+        }
+        if (html) {
+          msg.addMessage({
+            contentType: "text/html",
+            charset: "utf-8",
+            encoding: "quoted-printable",
+            data: html,
+          })
+        }
+        for (const attachment of attachments) {
+          msg.addAttachment({
+            filename: attachment.filename,
+            contentType: attachment.contentType,
+            data: attachment.content,
+            inline: true,
+            headers: { "Content-ID": attachment.contentId },
+          })
+        }
+        return msg.asRaw().replace(/\r?\n/g, "\r\n")
       }
-      if (html) {
-        msg.addMessage({
-          contentType: "text/html",
-          charset: "utf-8",
-          encoding: "quoted-printable",
-          data: html,
-        })
-      }
-      for (const attachment of attachments) {
-        msg.addAttachment({
-          filename: attachment.filename,
-          contentType: attachment.contentType,
-          data: attachment.content,
-          inline: true,
-          headers: { "Content-ID": attachment.contentId },
-        })
-      }
-      const rawMessage = msg.asRaw().replace(/\r?\n/g, "\r\n")
       if (url.searchParams.has("dry")) {
+        const rawMessage = buildRawMessage()
         return new Response(rawMessage, {
           status: 200,
           headers: { "Content-Type": "message/rfc822" },
         })
       }
-      for (const recipient of recipients) {
-        await env.EMAIL.send(new EmailMessage(sender, recipient, rawMessage))
-      }
+      const rawMessage = buildRawMessage()
+      await env.EMAIL.send(new EmailMessage(sender, "undisclosed-recipients:;", rawMessage))
 
       return new Response(JSON.stringify({ ok: true, sent: recipients.length }), {
         status: 200,

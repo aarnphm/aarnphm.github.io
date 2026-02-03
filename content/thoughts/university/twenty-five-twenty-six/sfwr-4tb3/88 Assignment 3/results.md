@@ -1,219 +1,523 @@
 ---
-date: "2026-01-15"
+date: "2026-02-03"
 description: AST et al.
 id: results
-modified: 2026-01-26 20:10:31 GMT-05:00
+modified: 2026-02-03 14:32:02 GMT-05:00
 tags:
   - sfwr4tb3
   - assignment
-title: regular constructions and language parser
+title: languages and regex
 ---
 
 ## A1
 
-Consider expression made up of identifiers $a, b, c, d$ and binary operators $+, -$ like shown
+1. Assume the vocabulary is $\{a, b\}$. Give a regular expression that describes all sequences containing at least two consecutive occurrences of $a$, like $aa, baa, aaa, abaaaaba$
 
-$$
-\begin{align*}
-a &+ b &+ c \\
-a &- b &- c \\
-a &- b &+ c - d \\
-a &+ b &- c + d
-\end{align*}
-$$
+$$(a|b)^*aa(a|b)^*$$
 
-Write grammars as below with NLTK and draw the parse trees with NLTK
+2. Now give a regular expression of the complement of the above language (without using a complement operator), that is, those sequences over $\{ a, b\}$ that must not contaiin two or more consecutive occurrences of $a$ but still may have an arbitrary number of occurrences of $a$! [^note]
 
-> [!question] 1.
->
-> Write a grammar such that $+$ binds tighter than $-$ and both $+$ and $-$ associate to the left. That is, $a+b+c$ is parsed as $\left( a+b \right)+c$ and $a-b+c-d$ as $\left( a - \left( b+c \right) \right) - d$. Draw the parse tree for $a+b+c$ and $a-b+c-d$!
+$$b^*(ab^+)^*a?$$
 
-> [!question] 2.
-> Write a grammar such that $-$ binds tighter than $+$ and both $-$ and $+$ associate to the left. That is $a+b+c$ is parsed as as $\left( a+b \right) + c$ and $a-b+c-d$ as $\left( a-b \right) + \left( c-d \right)$. Draw the parse tree for $a+b+c$ and $a-b+c-d$!
+[^note]: Between any two $a$'s, there must be at least one $b$. Structure: optional $b$'s at start, then zero or more ($a$ followed by one-or-more $b$'s), then optionally a trailing $a$. Equivalently: $(b|ab)^*(\epsilon|a)$
 
-> [!question] 3.
-> Write a grammar such that $+$ and $-$ bind equally strongly and associate to the left. That is, $a+b+c$ is parsed as $\left( a+b \right)+c$ is parsed as $\left( a+b \right) + c$ and $a-b+c-d$ as $\left( \left( a-b \right) +c \right) - d$. Draw the parse tree for $a+b+c$ and $a-b+c-d$!
+3. Assume that the vocabulary is $\{a, b, c\}$. Give a regular expression that describes all sequences in which the number of $a$ symbols is divisible by three
 
-> [!question] 4.
-> Write a grammar such that $+$ and $-$ bind equally strongly and associate to the right. That is $a+b+c$ is parsed as $a+\left( b+c \right)$ and $a-b+c-d$ as $a-\left( b+\left( c-d \right) \right)$. Draw the parses trees for $a+b+c$ and $a-b+c-d$!
+$$((b|c)^*a(b|c)^*a(b|c)^*a)^*(b|c)^*$$
 
-> [!question] 5.
->
-> Now consider expression made up of identifiers $a, b, c, d$ binary operator $+$ and unary operator $-$ such that
->
-> $$
-> \begin{aligned}
-> &-a+b+c
-> &a+-b+c
-> \end{aligned}
-> $$
->
-> Write a grammar such that $-$ binds tighter than $+$ and $+$ associates to the left. That is, $-a+b+c$ is parsed as $\left( \left( -a \right)+b \right)+c$ and $a+-b+c$ as $a+\left( \left( -b \right) + c \right)$. Draw the parse tree for $-a+b+c$ and $a+-b+c$!
+3-state automaton counting $a$'s mod 3. Each cycle through the inner group consumes exactly 3 $a$'s with arbitrary $b/c$ between them.
 
-> [!question] 6.
-> Write a grammar such that $+$ binds tighter than $-$ and $+$ associates to the left. That is, $-a+b+c$ is parsed as $-\left( \left( a+b \right) +c \right)$ and $a+-b+c$ as $a+\left( -\left( b+c \right) \right)$. Draw the parse trees for $-a+b+c$ and $a+-b+c$!
+4. Now give a regular expression for sequences with the total number of $b$ and $c$ symbols being three!
+
+$$a^*(b|c)a^*(b|c)a^*(b|c)a^*$$
+
+Exactly 3 slots for $b$-or-$c$, with arbitrary $a$'s in the 4 gaps.
 
 ## A2
 
-Consider following grammar for arithmetic expressions:
+given regular grammar in EBNF for fractional numbers:
 
-```
-expression  →  [ '+' | '–' ] term { ( '+' | '–' ) term }
-term  →  factor { ( '×' | '/' ) factor }
-factor  →  number | identifier | '(' expression ')'
-```
+$$
+\begin{aligned}
+N &\to '0' N \mid\; \ldots \mid '9' N \mid '.' F \\
+F &\to '0' D \mid\; \ldots \mid '9' D \\
+D &\to '0' D \mid\; \ldots\;| '9' D \mid ''
+\end{aligned}
+$$
 
-### part 1.
+Given grammar ($d = 0|1|...|9$):
 
-Use the LaTeX `mdwtools` package to
+$$N \to dN \mid \texttt{.}F \quad F \to dD \quad D \to dD \mid \epsilon$$
 
-1. pretty-print above grammar, as in:
-   ![[thoughts/university/twenty-five-twenty-six/sfwr-4tb3/88 Assignment 2/img/expressiongrammar.webp]]
-2. to draw the syntax diagrams of the three nonterminals, as in:
-   ![[thoughts/university/twenty-five-twenty-six/sfwr-4tb3/88 Assignment 2/img/termdiagram.webp]]
+$D = dD \mid \epsilon \xrightarrow{\text{Arden}} d^*$
 
-For this, create a file `prettyprintgrammar.tex` from the terminal and use this as template:
+$F = dD = d \cdot d^* \xrightarrow{aa^*=a^+} d^+$
 
-```latex
-\documentclass{article}
-\usepackage[rounded]{syntax}
-
-\title{Syntax Diagrams for Expressions}
-\author{Aaron Pham}
-
-\setlength{\linewidth}{160mm}
-\setlength
-{\textwidth}{160mm}
-
-\begin{document}
-\maketitle
-
-\begin{grammar}
-...
-\end{grammar}
-
-
-\begin{syntdiag} % for expression
-...
-\end{syntdiag}
-
-\begin{syntdiag} % for term
-...
-\end{syntdiag}
-
-\begin{syntdiag} % for factor
-...
-\end{syntdiag}
-
-
-\end{document}
-
-```
-
-You can run `pdflatex` from the terminal with `pdflatex prettyprintgrammar.tex`
-
-### part 3.
-
-Use the railroad diagram generator RR to draw the syntax diagram! You can either use the website http://bottlecaps.de/rr/ui or run RR locally. To run RR locally:
-
-1. Run `java -jar ./rr-2.2-SNAPSHOT-java11/rr.war -gui` inside the unzipped folder. That should print the message `Now listening on http://localhost:8080/`.
-2. Open `http://localhost:8080/` in your web browser.
-
-Note that RR uses a W3C standard for EBNF. Insert the grammar and the generated SVG or PNG diagrams in the cell below.
+$N = dN \mid \texttt{.}d^+ \xrightarrow{\text{Arden}} d^*\texttt{.}d^+$
 
 ## A3
 
-Procedure `derivable` from the course notes can be used for unrestricted grammars, not just context-sensitive grammars. The procedure will terminate with `true` or `false` for context-sensitive grammars (_decision procedure_) but may or may not terminate for unrestricted grammars (_semi-decision procedure_).
+Here is the Python code
 
 ```python
-from collections.abc import Iterator
+class RegEx:
+  pass
 
 
-class Grammar:
-  def __init__(
-    self, T: set[str], N: set[str], P: set[tuple[str, str]], S: str
-  ):
-    self.T, self.N, self.P, self.S = T, N, P, S
-
-  def L(self, log=False, stats=False) -> Iterator[str]:
-    dd, d = set(), {self.S}
-    if log:
-      print('    ', self.S)
-    while d != set():
-      if stats:
-        print('# added derivations:', len(d))
-      if log:
-        print()
-      dd.update(d)
-      d = set()
-      for π in sorted(dd, key=len):
-        for σ, τ in self.P:  # production σ → τ
-          i = π.find(σ, 0)
-          while i != -1:  # π == π[0:i] + σ + π[i + len(σ):]
-            χ = π[0:i] + τ + π[i + len(σ) :]
-            χ = χ.replace('  ', ' ')
-            if (χ not in dd) and (χ not in d):
-              if all(a in self.T for a in χ.split()):
-                yield χ.strip()
-              if log:
-                print('    ', π, '⇒', χ)
-              d.add(χ)
-            i = π.find(σ, i + 1)
+class ε(RegEx):
+  def __repr__(self):
+    return 'ε'
 
 
-def derivable(
-  G: Grammar, ω: str, log=False, stats=False
-) -> bool:  # G must be context-sensitive
-  dd, d, ω = set(), {G.S}, ω.strip()
-  if log:
-    print('    ', G.S)
-  while d != set():
-    if stats:
-      print('# added derivations:', len(d))
-    if log:
-      print()
-    dd.update(d)
-    d = set()
-    for π in sorted(dd, key=len):
-      for σ, τ in G.P:  # production σ → τ
-        i = π.find(σ, 0)
-        while i != -1:  # π == π[0:i] + σ + π[i + len(σ):]
-          χ = π[0:i] + τ + π[i + len(σ) :]
-          χ = χ.replace('  ', ' ')
-          if (χ not in dd) and (χ not in d):
-            if χ.strip() == ω:
-              return True
-            elif len(χ.strip()) <= len(ω):
-              if log:
-                print('    ', π, '⇒', χ)
-              d.add(χ)
-          i = π.find(σ, i + 1)
-  return False
+class Sym(RegEx):
+  def __init__(self, a: str):
+    self.a = a
+
+  def __repr__(self):
+    return str(self.a)
 
 
-setattr(Grammar, 'derivable', derivable)
+class Choice(RegEx):
+  def __init__(self, E1: RegEx, E2: RegEx):
+    self.E1, self.E2 = E1, E2
+
+  def __repr__(self):
+    return '(' + str(self.E1) + '|' + str(self.E2) + ')'
+
+
+class Conc(RegEx):
+  def __init__(self, E1: RegEx, E2: RegEx):
+    self.E1, self.E2 = E1, E2
+
+  def __repr__(self):
+    return '(' + str(self.E1) + str(self.E2) + ')'
+
+
+class Star(RegEx):
+  def __init__(self, E: RegEx):
+    self.E = E
+
+  def __repr__(self):
+    return '(' + str(self.E) + ')*'
+
+
+class fset(frozenset):
+  def __repr__(self):
+    return '{' + ', '.join(str(e) for e in self) + '}'
+
+
+def wrap(a):
+  import textwrap
+
+  return '\\n'.join(textwrap.wrap(str(a), width=12))
+
+
+TransFunc = dict[str, dict[str, set[str]]]
+
+
+class FiniteStateAutomaton:
+  Σ: set[str]  # set of symbols
+  Q: set[str]  # set of states
+  I: set[str]  # I ⊆ Q, the initial states,
+  δ: TransFunc  # representing Q ↛ Σ ↛ 𝒫Q, the transition function
+  F: set[str]  # F ⊆ Q, the finite states
+  vars = ()  # for reduced FSAs, the names of the original variables
+
+  def __init__(self, Σ, Q, I, δ, F):
+    self.Σ, self.Q, self.I, self.δ, self.F = Σ, fset(Q), fset(I), δ, fset(F)
+
+  def draw(self, trace=None):
+    from graphviz import Digraph
+
+    dot = Digraph(
+      graph_attr={'rankdir': 'LR'},
+      node_attr={
+        'fontsize': '10',
+        'fontname': 'Noto Sans',
+        'margin': '0',
+        'width': '0.25',
+      },  # 'nodesep': '0.75', 'ranksep': '0.75'
+      edge_attr={
+        'fontsize': '10',
+        'fontname': 'Noto Sans',
+        'arrowsize': '0.5',
+      },
+    )  # 'weight': '5.0' # create a directed graph
+    for q in self.I:
+      dot.node('_' + str(q), label='', shape='none', height='.0', width='.0')
+      dot.node(wrap(q), shape='circle')
+      dot.edge('_' + str(q), wrap(q), len='.1')
+    P = self.I | self.F
+    for q in self.δ:
+      P = P | {q}
+      for a in self.δ[q]:
+        dot.node(wrap(q), shape='circle')
+        for r in self.δ[q][a]:
+          dot.node(wrap(r), shape='circle')
+          dot.edge(wrap(q), wrap(r), label=str(a))
+          P = P | {r}
+    for q in self.F:
+      dot.node(wrap(q), shape='doublecircle')
+    for q in self.Q - P:  # place all unreachable nodes to the right
+      dot.node(wrap(q), shape='circle')
+      for p in P:
+        dot.edge(wrap(p), wrap(q), style='invis')  # , constraint='false'
+    if trace:
+      xlab = {}  # maps states to Graphviz external labels
+      for i in range(0, len(trace), 2):
+        xlab[trace[i]] = (
+          xlab[trace[i]] + ', ' + str(i // 2)
+          if trace[i] in xlab
+          else str(i // 2)
+        )
+      for q in xlab:
+        dot.node(
+          wrap(q),
+          xlabel='<<font color="royalblue">' + wrap(xlab[q]) + '</font>>',
+        )
+    return dot
+
+  def writepdf(self, name, trace=None):
+    open(name, 'wb').write(self.draw(trace).pipe(format='pdf'))
+
+  def writesvg(self, name, trace=None):
+    open(name, 'wb').write(self.draw(trace).pipe(format='svg'))
+
+  def __repr__(self):
+    return (
+      ' '.join(str(q) for q in self.I)
+      + '\n'
+      + '\n'.join(
+        str(q) + ' ' + str(a) + ' → ' + ', '.join(str(r) for r in self.δ[q][a])
+        for q in self.δ
+        for a in self.δ[q]
+        if self.δ[q][a] != set()
+      )
+      + '\n'
+      + ' '.join(str(f) for f in self.F)
+      + '\n'
+    )
+
+
+def parseFSA(fsa: str) -> FiniteStateAutomaton:
+  fl = [line for line in fsa.split('\n') if line != '']
+  I = (
+    set(fl[0].split()) if len(fl) > 0 else set()
+  )  # second line: initial initial ...
+  Σ, Q, δ, F = set(), set(), {}, set()
+  for line in fl[1:]:  # all subsequent lines
+    if '→' in line:  # source action → target
+      l, r = line.split('→')
+      p, a, q = l.split()[0], l.split()[1], r.split()[0]
+      if p in δ:
+        s = δ[p]
+        s[a] = s[a] | {q} if a in s else {q}
+      else:
+        δ[p] = {a: {q}}
+      Σ.add(a)
+      Q.add(p)
+      Q.add(q)
+    else:  # a line without → is assumed to have the final states
+      F = set(line.split()) if len(line) > 0 else set()  # final final ...
+  return FiniteStateAutomaton(Σ, Q | I | F, I, δ, F)
+
+
+def setunion(S: set[set]) -> set:
+  return set.union(set(), *S)
+
+
+def δ̂(δ: TransFunc, P: set[str], a: str) -> set[str]:
+  return fset(setunion(δ[p][a] for p in P if p in δ if a in δ[p]))
+
+
+def ε_closure(Q, δ) -> set:  #
+  C, W = set(Q), Q  # as C is updated, a copy of Q is needed
+  # invariant: C ∪ ε-closure W δ = ε-closure Q δ
+  # variant: ε-closure Q δ - C
+  while W != set():
+    W = δ̂(δ, W, 'ε') - C
+    C |= W
+  return fset(C)
+
+
+def accepts(A: FiniteStateAutomaton, α: str):
+  W = ε_closure(A.I, A.δ)
+  for a in α:
+    W = ε_closure(δ̂(A.δ, W, a), A.δ)
+  return W & A.F != set()
+
+
+setattr(FiniteStateAutomaton, 'accepts', accepts)
+
+
+def merge(γ: TransFunc, δ: TransFunc) -> TransFunc:
+  return (
+    {q: γ[q] for q in γ.keys() - δ.keys()}
+    | {q: δ[q] for q in δ.keys() - γ.keys()}
+    | {
+      q: {
+        a: γ[q].get(a, set()) | δ[q].get(a, set())
+        for a in γ[q].keys() | δ[q].keys()
+      }
+      for q in γ.keys() & δ.keys()
+    }
+  )
+
+
+def RegExToFSA(re) -> FiniteStateAutomaton:
+  def ToFSA(re) -> FiniteStateAutomaton:
+    nonlocal QC
+    match re:
+      case ε():
+        q = QC
+        QC += 1
+        return FiniteStateAutomaton(set(), {q}, {q}, {}, {q})
+      case Sym(a=a):
+        q = QC
+        QC += 1
+        r = QC
+        QC += 1
+        return FiniteStateAutomaton({a}, {q, r}, {q}, {q: {a: {r}}}, {r})
+      case Choice(E1=E1, E2=E2):
+        A1, A2 = ToFSA(E1), ToFSA(E2)
+        q = QC
+        QC += 1
+        δ = A1.δ | A2.δ | {q: {'ε': A1.I | A2.I}}
+        return FiniteStateAutomaton(
+          A1.Σ | A2.Σ, A1.Q | A2.Q | {q}, {q}, δ, A1.F | A2.F
+        )
+      case Conc(E1=E1, E2=E2):
+        A1, A2 = ToFSA(E1), ToFSA(E2)
+        δ = merge(A1.δ | A2.δ, {q: {'ε': A2.I} for q in A1.F})
+        return FiniteStateAutomaton(A1.Σ | A2.Σ, A1.Q | A2.Q, A1.I, δ, A2.F)
+      case Star(E=E):
+        A = ToFSA(E)
+        δ = merge(A.δ, {q: {'ε': A.I} for q in A.F})
+        return FiniteStateAutomaton(A.Σ, A.Q, A.I, δ, A.I | A.F)
+      case E:
+        raise Exception(str(E) + ' not a regular expression')
+
+  QC = 0
+  return ToFSA(re)
 ```
 
-Consider the language $\{ a^{n}b^{2n}c^{n} \mid n \ge 1 \}$. Write a grammar, $G$, for this language, and use procedure `derivable` to check that `a b b c, a a b b b b c c, a a a b b b b b b c c c` are derivable, but `a b c, a b b b c, a b b c c, a a b b c c` are not.! The grammar must be monotonic, meaning context-sensitive.
+1. Using the notation from the course notes, write a regular expression for identifiers: an identifier is a sequence of letters `abcdefghijklmnopqrstuvwxyz` and digits `0123456789` starting with a letter. You may use abbreviations:
+
+   Test your answer by expressing it with Python constructors `ε`, `Sym`, `Choice`, `Conc`, `Star` and calling it `I`.
+
+   ```python
+   def choices(s: str) -> RegEx:
+       result = Sym(s[0])
+       for c in s[1:]:
+           result = Choice(result, Sym(c))
+       return result
+
+   LETTERS = 'abcdefghijklmnopqrstuvwxyz'
+   DIGITS = '0123456789'
+
+   I = Conc(choices(LETTERS), Star(Choice(choices(LETTERS), choices(DIGITS))))
+   ```
+
+   Regex: $L(L|D)^*$ where $L$ = letter, $D$ = digit
+
+   ```python
+   A = RegExToFSA(I)
+   ```
+
+   ```python
+   assert accepts(A, 'cloud7')
+   assert accepts(A, 'if')
+   assert accepts(A, 'b12')
+   assert not accepts(A, '007')
+   assert not accepts(A, '15b')
+   assert not accepts(A, 'B12')
+   assert not accepts(A, 'e-mail')
+   ```
+
+2. Using the notation from the course notes, write a regular expression for dollar amounts: A dollar amount must start with `$` and be followed by a non-empty sequence of digits. It may optionally be followed by `.` and exactly two digits for the cents. The separator `,` may be used for readability of the part before the `.`; if it is used, it must separate all groups of 3 digits.
+
+   Test your answer by expressing it with Python constructors `ε`, `Sym`, `Choice`, `Conc`, `Star` and calling it `C`.
+
+   ```python
+   def plus(e: RegEx) -> RegEx: return Conc(e, Star(e))
+
+   def opt(e: RegEx) -> RegEx:
+       return Choice(ε(), e)
+
+   def seq(*args: RegEx) -> RegEx:
+       result = args[0]
+       for e in args[1:]: result = Conc(result, e)
+       return result
+
+   def digit(): return choices(DIGITS)
+
+   def dn(n: int) -> RegEx:
+       if n == 1: return digit()
+       return Conc(digit(), dn(n - 1))
+
+   d_plus = plus(digit())
+   d1_or_d2_or_d3 = Choice(digit(), Choice(dn(2), dn(3)))
+   comma_d3 = Conc(Sym(','), dn(3))
+   amount_with_commas = Conc(d1_or_d2_or_d3, plus(comma_d3))
+   amount = Choice(d_plus, amount_with_commas)
+   cents = opt(Conc(Sym('.'), dn(2)))
+
+   C = seq(Sym('$'), amount, cents)
+   ```
+
+   Regex: $\$\;(d^+ \mid (d|dd|ddd)(,ddd)^+)\;(.dd)?$ where $d$ = digit
+
+   ```python
+   B = RegExToFSA(C)
+   ```
+
+   ```python
+    assert accepts(B, '$27.04')
+    assert accepts(B, '$11,222,333')
+    assert accepts(B, '$0')
+    assert not accepts(B, '27.04')
+    assert not accepts(B, '$11222,333')
+    assert not accepts(B, '$35.5')
+    assert not accepts(B, '$9.409')
+   ```
 
 ## A4
 
-Explain in simple words the languages described by the following regular expressions. Avoid paraphrasing the regular expressions!
+For your graduation party, you would like to invite all your friends to whom you have either an e-mail address or a telephone number. As you never had time to keep an address book, you like to search for these in all your files using `grep`. In the cells below, write `grep` commands. The `%%bash` cell magic runs the cell in the bash shell; the `%%capture output` cell magic captures the cell's output in the Python variable `output`.
 
-> [!question] 1
-> $(a^{*}b^{*})^{*}$
+1. E-mail addresses start with one or more upper case letters `A-Z`, lower case letters `a-z`, and symbols `+-._`, followed by the `@` sign and a domain. The domain is a sequence of subdomains separated by `.`, where each subdomain consists of a number of upper and lower case letters, digits, and the symbol `-`. There must be at least two subdomains (i.e. one `.`). The last subdomain, the top-level domain, must consist only of two to six upper or lower case letters. E-mail addresses must start at the beginning of a line or after a separator and end at the end of a line or a separator. Write a shell command using `grep` that, from the directory in which it is started, recursively visits all subdirectories and prints those lines of files that contain an e-mail address. Use `\b` and `\s` as separators and `grep -r` to recursively visit subdirectories.
 
-> [!question] 2
-> $(a^{*}[b])^{*}$
+   ```text
+   %%capture output
+   %%bash
+   grep -rE '(^|\s)[A-Za-z+._-]+@([A-Za-z0-9-]+\.)+[A-Za-z]{2,6}(\s|$)' data/
+   ```
 
-> [!question] 3
-> $(a^{*}ba^{*}b)^{*} a^{*}$
+   ```text
+   assert str(output) == """data/03/friends.txt:abcd@abc.ca
+    data/03/friends.txt:abcde@ab-BC.com
+    data/02/other-friends.txt:ABCabc+-._@ancbd.ca
+    data/02/other-friends.txt:ABCabc+-._@mcmaster.io.ca
+    data/02/other-friends.txt:ABCabc+-._@school.image
+    data/02/other-friends.txt:ABCabc+-._@school3-computer.image
+    data/02/other-friends.txt:ABCabc+-._@school3-IT.image.tor.chrome.ca
+    data/01/friends.txt:Marion Floyd (905 263-7740 jpflip@yahoo.com
+    data/01/friends.txt:Cora Larson (905) 255-8305 frederic@yahoo.ca
+    data/01/friends.txt:Van Craig 905) 608-2616 chunzi@aol.com
+    data/01/friends.txt:Emilio Morrison (905) 2877753 cantu@sbcglobal.net
+    data/01/friends.txt:Ismael Hanson (905) 755 9372 satch@hotmail.com
+    data/01/friends.txt:Wayne Douglas (905)222-3316 tfinniga@verizon.net
+    data/01/friends.txt:Tomas Carlson (905746-0359 ardagna@me.com
+    data/01/friends.txt:Laurence Newman 9057803232 jaarnial@icloud.com
+    data/01/friends.txt:Lori Sherman 905-543-7753 chaki@att.net
+    data/01/friends.txt:Gladys Brock (539) 728-2363 lukka@icloud.com
+    """
+   ```
 
-> [!question] 4
-> $(a^{*}[ba^{*}c])^{*}$
+2. You are looking for telephone numbers in the `905` area for your party. Valid numbers are of the form `(905) 123 4567`, `(905) 1234567`, `905-123-4567`. However, `9051234567`, as well as `905) 123 4567`, `905-123 4567`, are not. Telephone addresses must start at a the beginning of a line or after a separator and must end at the end of a line or a separator. Write a shell command using grep that, from the directory in which it is started, recursively visits all subdirectories and prints those lines of files that contain a telephone number.
+   ```bash
+   %%capture output
+   %%bash
+   grep -rE '(^|\s)(\(905\) ([0-9]{3} [0-9]{4}|[0-9]{7})|905-[0-9]{3}-[0-9]{4})(\s|$)' data/
+   ```
 
-> [!question] 5
-> $(a\mid ba)^{*}[b]$
+## A5
 
-> [!question] 6
-> $a^{*}(ba+)^{*}$
+Extracting columns from CSV (sed). File `data/q.csv`:
+
+```csv
+a,b,c
+d,e,f
+gh,i,jkl
+m n o,pq r,stuv1
+```
+
+1. Extract first column:
+
+   ```bash
+   %%capture output
+   %%bash
+   sed 's/,.*//' data/q.csv
+   ```
+
+   Pattern: `s/,.*//` - delete from first comma to end of line
+
+   ```text
+   assert str(output) == """a
+   d
+   gh
+   m n o
+   """
+   ```
+
+2. Extract second column:
+
+   ```bash
+   %%capture output
+   %%bash
+   sed 's/^[^,]*,//; s/,.*//' data/q.csv
+   ```
+
+   Pattern: `s/^[^,]*,//` deletes first column + comma, then `s/,.*//` deletes third column
+
+   ```text
+   assert str(output) == """b
+   e
+   i
+   pq r
+   """
+   ```
+
+3. Extract third column:
+
+   ```bash
+   %%capture output
+   %%bash
+   sed 's/.*,//' data/q.csv
+   ```
+
+   Pattern: `s/.*,//` - delete everything up to (and including) the LAST comma
+
+   ```text
+   assert str(output) == """c
+   f
+   jkl
+   stuv1
+   """
+   ```
+
+## A6
+
+Lowercasing HTML `src` attribute values. File `data/q.html`:
+
+```html
+<img src="PiCtuRe.PnG "/>
+<img src="PiCtuRe.PnG"></img>
+<img src="PiCtuRe.PnG">alt</img>
+<img src="PiCtuRe.PnG"> alt   </img>
+<img src ="PiCtuRe.PnG" />
+<img src = "PiCtuRe.PnG"/>
+<img onclick="alert('Clicked!')" src = "PiCtuRe.PnG"/>
+```
+
+```bash
+%%capture output
+%%bash
+sed -r 's/(src *= *")([^"]*)/\1\L\2/g' data/q.html
+```
+
+Pattern breakdown:
+- `(src *= *")` captures `src` + optional spaces + `=` + optional spaces + opening `"`
+- `([^"]*)` captures everything until closing quote (the value)
+- `\1\L\2` outputs group 1, then lowercased group 2 (`\L` is GNU sed lowercase)
+
+```text
+assert str(output) == """<img src="picture.png "/>
+<img src="picture.png"></img>
+<img src="picture.png">alt</img>
+<img src="picture.png"> alt   </img>
+<img src ="picture.png" />
+<img src = "picture.png"/>
+<img onclick="alert('Clicked!')" src = "picture.png"/>
+"""
+```
