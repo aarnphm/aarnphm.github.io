@@ -1766,6 +1766,8 @@ export const CuriusNavigation: QuartzComponent = (props: QuartzComponentProps) =
 }
 CuriusNavigation.afterDOMLoaded = curiusNavigationScript
 
+type RenderPageOptions = { forEmail?: boolean; skipProtected?: boolean; skipSearch?: boolean }
+
 export function renderPage(
   ctx: BuildCtx,
   slug: FullSlug,
@@ -1774,6 +1776,7 @@ export function renderPage(
   pageResources: StaticResources,
   isFolderTag?: boolean,
   isBoxy: boolean = false,
+  renderOptions?: RenderPageOptions,
 ): string {
   // make a deep copy of the tree so we don't remove the transclusion references
   // for the file cached in contentMap in build.ts
@@ -1788,8 +1791,14 @@ export function renderPage(
     applyTractatusLayout(tree)
   }
 
-  // Handle protected content encryption after all transformers run
-  if (componentData.fileData.protectedPassword) {
+  const isProtected = Boolean(
+    componentData.fileData.frontmatter?.protected || componentData.fileData.protectedPassword,
+  )
+  const skipProtected = renderOptions?.skipProtected ?? renderOptions?.forEmail ?? false
+  if (isProtected && skipProtected) {
+    tree = { type: "root", children: [] } as Root
+    delete componentData.fileData.protectedPassword
+  } else if (componentData.fileData.protectedPassword) {
     const password = componentData.fileData.protectedPassword as string
 
     // Convert final tree to HTML
@@ -1915,7 +1924,8 @@ export function renderPage(
   updateStreamDataFromTree(tree, componentData)
   isFolderTag = isFolderTag ?? false
 
-  if (slug === "index") {
+  const skipSearch = renderOptions?.skipSearch ?? renderOptions?.forEmail ?? false
+  if (slug === "index" && !skipSearch) {
     components = {
       ...components,
       header: [Image(), Graph(), Search(), Palette(), Keybind(), CodeCopy(), Darkmode()],

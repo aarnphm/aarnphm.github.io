@@ -332,7 +332,12 @@ export default {
       msg.setSubject(subject)
       msg.setBcc(recipients)
       if (text) {
-        msg.addMessage({ contentType: "text/plain", data: text })
+        msg.addMessage({
+          contentType: "text/plain",
+          charset: "utf-8",
+          encoding: "quoted-printable",
+          data: text,
+        })
       }
       if (html) {
         msg.addMessage({ contentType: "text/html", data: html })
