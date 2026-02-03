@@ -228,4 +228,5 @@ progress.md
 *.br
 docs/app
 docs/obsidian
+docs/plans
 *.jsonl

@@ -333,7 +333,8 @@ export const CrawlLinks: QuartzTransformerPlugin<Partial<Options>> = (userOpts) 
               // Add appropriate icons (skip if data-skip-icons is present)
               const skipIcons =
                 ctx.node.properties.dataSkipIcons === true ||
-                ctx.node.properties.dataSkipIcons === "true"
+                ctx.node.properties.dataSkipIcons === "true" ||
+                file.data.frontmatter?.email === true
               if (!skipIcons) {
                 if (linkTypes.isWikipedia) {
                   ctx.node.children.push(
