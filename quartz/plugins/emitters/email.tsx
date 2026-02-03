@@ -1,4 +1,4 @@
-import { Element, Root, Node, Text } from "hast"
+import { Element, Root, Node } from "hast"
 import { fromHtml } from "hast-util-from-html"
 import { toHtml } from "hast-util-to-html"
 import { existsSync, promises as fs } from "node:fs"
@@ -27,64 +27,13 @@ const emailsPath = path.join(QUARTZ, "static", "emails.txt")
 const imageExtensions = new Set([".avif", ".gif", ".jpg", ".jpeg", ".png", ".svg", ".webp"])
 const EmptyFooter: QuartzComponent = () => null
 
-const readCssFile = async (href: string, ctx: BuildCtx): Promise<string | null> => {
-  if (href.startsWith("http://") || href.startsWith("https://")) {
-    return null
-  }
-  const normalized = href.replace(/^(\.\/|(\.\.\/)+)/, "").replace(/^\/+/, "")
-  if (!normalized) return null
-  const candidate = path.join(ctx.argv.output, normalized)
-  if (!existsSync(candidate)) return null
-  return fs.readFile(candidate, "utf8")
-}
-
-const readEmailCss = async (resources: StaticResources, ctx: BuildCtx): Promise<string[]> => {
-  const chunks: string[] = []
-  for (const resource of resources.css) {
-    if (resource.inline) {
-      chunks.push(resource.content)
-      continue
-    }
-    const content = await readCssFile(resource.content, ctx)
-    if (content) chunks.push(content)
-  }
-  return chunks
-}
-
-const readHeadCss = async (head: Element | undefined, ctx: BuildCtx): Promise<string[]> => {
-  if (!head) return []
-  const chunks: string[] = []
-  const hrefs: string[] = []
-  visit(head, "element", (node: Element) => {
-    if (node.tagName === "style") {
-      const text = (node.children ?? [])
-        .filter((child): child is Text => child.type === "text")
-        .map((child) => child.value)
-        .join("")
-      if (text.trim().length > 0) chunks.push(text)
-      return
-    }
-    if (node.tagName !== "link") return
-    const rel = node.properties?.rel
-    const rels = Array.isArray(rel) ? rel : typeof rel === "string" ? [rel] : []
-    if (!rels.includes("stylesheet")) return
-    const href = node.properties?.href
-    if (typeof href === "string") hrefs.push(href)
-  })
-  for (const href of hrefs) {
-    const content = await readCssFile(href, ctx)
-    if (content) chunks.push(content)
-  }
-  return chunks
-}
-
 const renderEmail = async (
   ctx: BuildCtx,
   tree: Node,
   fileData: QuartzPluginData,
   allFiles: QuartzPluginData[],
   resources: StaticResources,
-): Promise<{ root: Root; cssText: string }> => {
+): Promise<Root> => {
   const slug = fileData.slug!
   const cfg = ctx.cfg.configuration
   const externalResources = pageResources(pathToRoot(slug), resources, ctx)
@@ -127,22 +76,88 @@ const renderEmail = async (
   )
   const doc = fromHtml(rendered)
   let body: Element | undefined
-  let head: Element | undefined
   visit(doc, { tagName: "body" }, (node: Element) => {
     body = node
     return EXIT
   })
-  visit(doc, { tagName: "head" }, (node: Element) => {
-    head = node
-    return EXIT
+  return body ? ({ type: "root", children: body.children } as Root) : doc
+}
+
+const extractEmailRoot = (root: Root): Root => {
+  let article: Element | undefined
+  const footnotes: Element[] = []
+  visit(root, "element", (node: Element) => {
+    if (!article && node.tagName === "article") {
+      article = node
+    }
+    if (node.properties?.dataFootnotes === "") {
+      footnotes.push(node)
+    }
   })
-  const root = body ? ({ type: "root", children: body.children } as Root) : doc
-  const cssChunks = [
-    ...(await readEmailCss(externalResources, ctx)),
-    ...(await readHeadCss(head, ctx)),
-  ]
-  const cssText = [...new Set(cssChunks.filter((chunk) => chunk.trim().length > 0))].join("\n")
-  return { root, cssText }
+  if (!article && footnotes.length === 0) return root
+  const children: Root["children"] = []
+  if (article) children.push(article)
+  children.push(...footnotes)
+  return { type: "root", children }
+}
+
+const classList = (node: Element): string[] => {
+  const classes = node.properties?.className
+  return Array.isArray(classes) ? classes.map(String) : classes ? [String(classes)] : []
+}
+
+const buildParentMap = (root: Root): Map<Node, Element | Root> => {
+  const parentMap = new Map<Node, Element | Root>()
+  visit(root, (_node, _index, parent) => {
+    if (parent) parentMap.set(_node, parent as Element | Root)
+  })
+  return parentMap
+}
+
+const hasAncestorWithClass = (
+  node: Node,
+  className: string,
+  parentMap: Map<Node, Element | Root>,
+): boolean => {
+  let current: Element | Root | undefined = parentMap.get(node)
+  while (current && current.type === "element") {
+    if (classList(current).includes(className)) return true
+    current = parentMap.get(current)
+  }
+  return false
+}
+
+const stripEmailNodes = (root: Root) => {
+  const parentMap = buildParentMap(root)
+  const removals: Array<{ parent: Element | Root; index: number }> = []
+  visit(root, "element", (node: Element, index, parent) => {
+    if (!parent || index === null) return
+    if (node.tagName === "script" || node.tagName === "style") {
+      removals.push({ parent: parent as Element | Root, index })
+      return
+    }
+    if (node.tagName === "span" && classList(node).includes("indicator-hook")) {
+      removals.push({ parent: parent as Element | Root, index })
+      return
+    }
+    if (node.tagName === "svg" && !hasAncestorWithClass(node, "signature", parentMap)) {
+      removals.push({ parent: parent as Element | Root, index })
+    }
+  })
+  removals
+    .sort((a, b) => b.index - a.index)
+    .forEach(({ parent, index }) => parent.children.splice(index, 1))
+}
+
+const applySignatureStyles = (root: Root) => {
+  visit(root, "element", (node: Element) => {
+    if (node.tagName !== "path") return
+    node.properties = node.properties ?? {}
+    node.properties.stroke = node.properties.stroke ?? "#1a1a1a"
+    node.properties["stroke-width"] = node.properties["stroke-width"] ?? "1"
+    node.properties["stroke-linecap"] = node.properties["stroke-linecap"] ?? "round"
+    node.properties["stroke-linejoin"] = node.properties["stroke-linejoin"] ?? "round"
+  })
 }
 
 const formatPlainText = (body: string, slug: FullSlug, baseUrl?: string): string => {
@@ -190,6 +205,53 @@ const applyEmailStyles = (root: Root) => {
     node.properties.style = current ? `${current}; ${style}` : style
   }
   visit(root, "element", (node: Element, _index, parent) => {
+    const dataCodeblock = node.properties?.dataCodeblock
+    const classes = classList(node)
+    const isSignature = classes.includes("signature")
+    const isSms = dataCodeblock === "sms" || classes.includes("text")
+    if (node.tagName === "p" || node.tagName === "div") {
+      if (isSms) {
+        mergeStyle(
+          node,
+          [
+            "padding-top: 1.5rem",
+            "padding-bottom: 1.5rem",
+            "padding-left: 1rem",
+            "font-style: italic",
+            "border: 0",
+            "border-top: 1px solid #e5e5e5",
+            "border-bottom: 1px solid #e5e5e5",
+          ].join("; "),
+        )
+      } else if (typeof dataCodeblock === "string") {
+        mergeStyle(
+          node,
+          [
+            "background: #f6f6f6",
+            "border: 1px solid #e5e5e5",
+            "border-radius: 6px",
+            "padding: 12px 14px",
+            "margin: 0 0 1.2em 0",
+            "font-family: SFMono-Regular, Consolas, Liberation Mono, Menlo, monospace",
+            "font-size: 13px",
+            "line-height: 1.6",
+            "white-space: pre-wrap",
+          ].join("; "),
+        )
+      }
+    }
+    if (node.tagName === "p" && isSignature) {
+      mergeStyle(
+        node,
+        [
+          "display: flex",
+          "flex-wrap: wrap",
+          "justify-content: flex-end",
+          "min-height: 51px",
+          "margin: 0 0 1.2em 0",
+        ].join("; "),
+      )
+    }
     switch (node.tagName) {
       case "p":
         mergeStyle(node, "margin: 0 0 1.2em 0;")
@@ -223,7 +285,7 @@ const applyEmailStyles = (root: Root) => {
         mergeStyle(node, "border: 0; border-top: 1px solid #e5e5e5; margin: 1.6em 0;")
         break
       case "img":
-        mergeStyle(node, "max-width: 100%; height: auto; display: block; margin: 1.2em 0;")
+        mergeStyle(node, "max-width: 100%; height: auto; display: block; margin: 1.2em auto;")
         break
       case "pre":
         mergeStyle(
@@ -312,8 +374,6 @@ export const EmailEmitter: QuartzEmitterPlugin = () => {
           continue
 
         const slug = fileData.slug!
-        const isProtected =
-          fileData.frontmatter?.protected === true || Boolean(fileData.protectedPassword)
         const relativePath = fileData.relativePath ?? fileData.filePath ?? ""
         const baseName = path.basename(relativePath, path.extname(relativePath))
         const [monthToken, yearToken] = baseName.split("-")
@@ -338,7 +398,10 @@ export const EmailEmitter: QuartzEmitterPlugin = () => {
         const subject = `GET updates/${year}/${emailSuffix}`
         const baseUrl = ctx.cfg.configuration.baseUrl
 
-        const { root, cssText } = await renderEmail(ctx, tree, fileData, allFiles, resources)
+        const renderedRoot = await renderEmail(ctx, tree, fileData, allFiles, resources)
+        const root = extractEmailRoot(renderedRoot)
+        stripEmailNodes(root)
+        applySignatureStyles(root)
         const attachments: {
           contentId: string
           filename: string
@@ -447,12 +510,9 @@ export const EmailEmitter: QuartzEmitterPlugin = () => {
         }
         applyEmailStyles(root)
         let html = toHtml(root)
-        if (cssText.trim().length > 0) {
-          html = `<style>${cssText}</style>${html}`
-        }
         const outerStyle = "width: 100%; background: #ffffff; padding: 24px 0;"
         const innerStyle =
-          "max-width: 640px; margin: 0 auto; padding: 0 24px; font-family: Georgia, 'Times New Roman', serif; font-size: 16px; line-height: 1.7; color: #1a1a1a;"
+          "max-width: 640px; margin: 0 auto; padding: 0 24px; font-family: Georgia, 'Times New Roman', serif; font-size: 16px; line-height: 1.7; color: #1a1a1a; text-align: left;"
         html = `<div dir="ltr"><div style="${outerStyle}"><div style="${innerStyle}">${html}</div></div></div>`
 
         const raw = await fs.readFile(filePath, "utf8")
@@ -461,18 +521,15 @@ export const EmailEmitter: QuartzEmitterPlugin = () => {
         const marker = "\n---\n"
         const endIndex = normalized.indexOf(marker, 4)
         const body = endIndex === -1 ? normalized : normalized.slice(endIndex + marker.length)
-        let text = ""
-        if (!isProtected) {
-          text = body
-            .replace(/```[^\n]*\n([\s\S]*?)```/g, "$1")
-            .replace(/\n{3,}/g, "\n\n")
-            .trim()
-          text = formatPlainText(text, slug as FullSlug, baseUrl)
-          text = text.replace(/!\[[^\]]*\]\(([^)]+)\)/g, (_match, target) => {
-            const cleaned = String(target).split(/[?#]/)[0] ?? ""
-            return `[image: ${path.basename(cleaned)}]`
-          })
-        }
+        let text = body
+          .replace(/```[^\n]*\n([\s\S]*?)```/g, "$1")
+          .replace(/\n{3,}/g, "\n\n")
+          .trim()
+        text = formatPlainText(text, slug as FullSlug, baseUrl)
+        text = text.replace(/!\[[^\]]*\]\(([^)]+)\)/g, (_match, target) => {
+          const cleaned = String(target).split(/[?#]/)[0] ?? ""
+          return `[image: ${path.basename(cleaned)}]`
+        })
 
         const endpoint =
           process.env.EMAIL_EMITTER_ENDPOINT ??
