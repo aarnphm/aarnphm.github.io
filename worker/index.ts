@@ -328,9 +328,7 @@ export default {
       const sender = env.EMAIL_SENDER
       const msg = createMimeMessage()
       msg.setSender({ name: "Aaron Pham", addr: env.EMAIL_SENDER })
-      msg.setRecipient("undisclosed-recipients:;")
       msg.setSubject(subject)
-      msg.setBcc(recipients)
       if (text) {
         msg.addMessage({
           contentType: "text/plain",
@@ -359,6 +357,7 @@ export default {
         })
       }
       for (const recipient of recipients) {
+        msg.setRecipient(recipient)
         await env.EMAIL.send(new EmailMessage(sender, recipient, msg.asRaw()))
       }
 
