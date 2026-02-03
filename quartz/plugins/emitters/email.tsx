@@ -174,6 +174,94 @@ const formatPlainText = (body: string, slug: FullSlug, baseUrl?: string): string
   return result
 }
 
+const applyEmailStyles = (root: Root) => {
+  const mergeStyle = (node: Element, style: string) => {
+    const current = typeof node.properties?.style === "string" ? node.properties.style : ""
+    node.properties = node.properties ?? {}
+    node.properties.style = current ? `${current}; ${style}` : style
+  }
+  visit(root, "element", (node: Element, _index, parent) => {
+    switch (node.tagName) {
+      case "p":
+        mergeStyle(node, "margin: 0 0 1.2em 0;")
+        break
+      case "h1":
+        mergeStyle(node, "margin: 0 0 0.6em 0; font-size: 1.7em; line-height: 1.3;")
+        break
+      case "h2":
+        mergeStyle(node, "margin: 1.4em 0 0.6em 0; font-size: 1.4em; line-height: 1.35;")
+        break
+      case "h3":
+        mergeStyle(node, "margin: 1.2em 0 0.5em 0; font-size: 1.2em; line-height: 1.4;")
+        break
+      case "h4":
+        mergeStyle(node, "margin: 1em 0 0.4em 0; font-size: 1.05em; line-height: 1.4;")
+        break
+      case "ul":
+      case "ol":
+        mergeStyle(node, "margin: 0 0 1.2em 1.4em; padding: 0;")
+        break
+      case "li":
+        mergeStyle(node, "margin: 0.35em 0;")
+        break
+      case "blockquote":
+        mergeStyle(
+          node,
+          "margin: 1.2em 0; padding: 0 0 0 1em; border-left: 3px solid #e5e5e5; color: #555;",
+        )
+        break
+      case "hr":
+        mergeStyle(node, "border: 0; border-top: 1px solid #e5e5e5; margin: 1.6em 0;")
+        break
+      case "img":
+        mergeStyle(node, "max-width: 100%; height: auto; display: block; margin: 1.2em 0;")
+        break
+      case "pre":
+        mergeStyle(
+          node,
+          [
+            "background: #f6f6f6",
+            "border: 1px solid #e5e5e5",
+            "border-radius: 6px",
+            "padding: 12px 14px",
+            "margin: 0 0 1.2em 0",
+            "overflow-x: auto",
+            "white-space: pre-wrap",
+            "font-family: SFMono-Regular, Consolas, Liberation Mono, Menlo, monospace",
+            "font-size: 13px",
+            "line-height: 1.6",
+          ].join("; "),
+        )
+        break
+      case "code": {
+        const isBlock =
+          parent?.type === "element" && (parent as Element).tagName === "pre"
+        if (isBlock) {
+          mergeStyle(node, "background: transparent; padding: 0;")
+        } else {
+          mergeStyle(
+            node,
+            [
+              "background: #f6f6f6",
+              "border: 1px solid #e5e5e5",
+              "border-radius: 4px",
+              "padding: 0 3px",
+              "font-family: SFMono-Regular, Consolas, Liberation Mono, Menlo, monospace",
+              "font-size: 0.95em",
+            ].join("; "),
+          )
+        }
+        break
+      }
+      case "a":
+        mergeStyle(node, "color: #111111; text-decoration: underline;")
+        break
+      default:
+        break
+    }
+  })
+}
+
 export const EmailEmitter: QuartzEmitterPlugin = () => {
   return {
     name,
@@ -348,11 +436,15 @@ export const EmailEmitter: QuartzEmitterPlugin = () => {
             }
           })
         }
+        applyEmailStyles(root)
         let html = toHtml(root)
         if (cssText.trim().length > 0) {
           html = `<style>${cssText}</style>${html}`
         }
-        html = `<div dir="ltr">${html}</div>`
+        const outerStyle = "width: 100%; background: #ffffff; padding: 24px 0;"
+        const innerStyle =
+          "max-width: 640px; margin: 0 auto; padding: 0 24px; font-family: Georgia, 'Times New Roman', serif; font-size: 16px; line-height: 1.7; color: #1a1a1a;"
+        html = `<div dir="ltr"><div style="${outerStyle}"><div style="${innerStyle}">${html}</div></div></div>`
 
         const raw = await fs.readFile(filePath, "utf8")
         const newline = raw.includes("\r\n") ? "\r\n" : "\n"

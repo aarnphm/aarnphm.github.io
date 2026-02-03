@@ -1776,7 +1776,7 @@ export function renderPage(
   pageResources: StaticResources,
   isFolderTag?: boolean,
   isBoxy: boolean = false,
-  renderOptions?: RenderPageOptions,
+  userOptions?: RenderPageOptions,
 ): string {
   // make a deep copy of the tree so we don't remove the transclusion references
   // for the file cached in contentMap in build.ts
@@ -1791,11 +1791,14 @@ export function renderPage(
     applyTractatusLayout(tree)
   }
 
+  const renderOptions: RenderPageOptions = {skipProtected: false, forEmail: false, skipSearch: false, ...userOptions}
+
   const isProtected =
     componentData.fileData.frontmatter?.protected === true ||
     Boolean(componentData.fileData.protectedPassword)
   const skipProtected = renderOptions?.skipProtected ?? renderOptions?.forEmail ?? false
   if (isProtected && skipProtected) {
+    tree = { type: "root", children: [] } as Root
     delete componentData.fileData.protectedPassword
   } else if (componentData.fileData.protectedPassword) {
     const password = componentData.fileData.protectedPassword as string
