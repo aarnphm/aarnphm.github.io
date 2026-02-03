@@ -1791,14 +1791,15 @@ export function renderPage(
     applyTractatusLayout(tree)
   }
 
-  const renderOptions: RenderPageOptions = {skipProtected: false, forEmail: false, skipSearch: false, ...userOptions}
+  const renderOptions: RenderPageOptions = {
+    skipProtected: false,
+    forEmail: false,
+    skipSearch: false,
+    ...userOptions,
+  }
 
-  const isProtected =
-    componentData.fileData.frontmatter?.protected === true ||
-    Boolean(componentData.fileData.protectedPassword)
   const skipProtected = renderOptions?.skipProtected ?? renderOptions?.forEmail ?? false
-  if (isProtected && skipProtected) {
-    tree = { type: "root", children: [] } as Root
+  if (skipProtected) {
     delete componentData.fileData.protectedPassword
   } else if (componentData.fileData.protectedPassword) {
     const password = componentData.fileData.protectedPassword as string
