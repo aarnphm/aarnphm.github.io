@@ -88,9 +88,18 @@ const renderEmail = async (
   const slug = fileData.slug!
   const cfg = ctx.cfg.configuration
   const externalResources = pageResources(pathToRoot(slug), resources, ctx)
+  const emailFileData: QuartzPluginData = {
+    ...fileData,
+    frontmatter: fileData.frontmatter ? { ...fileData.frontmatter } : undefined,
+  }
+  if (emailFileData.frontmatter?.protected === true) {
+    emailFileData.frontmatter.protected = false
+  }
+  delete emailFileData.protectedPassword
+
   const componentData: QuartzComponentProps = {
     ctx,
-    fileData,
+    fileData: emailFileData,
     externalResources,
     cfg,
     children: [],
