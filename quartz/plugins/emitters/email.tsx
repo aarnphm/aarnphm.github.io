@@ -1,14 +1,14 @@
-import { Element, Root, Node } from "hast"
+import { Element, Root, Node, Text } from "hast"
 import { fromHtml } from "hast-util-from-html"
 import { toHtml } from "hast-util-to-html"
 import { existsSync, promises as fs } from "node:fs"
 import path from "path"
 import { EXIT, visit } from "unist-util-visit"
-import { defaultContentPageLayout, sharedPageComponents } from "../../../quartz.layout"
+import { defaultContentPageLayout } from "../../../quartz.layout"
 import { FullPageLayout } from "../../cfg"
-import { Content } from "../../components"
+import { Content, Head } from "../../components"
 import { pageResources, renderPage } from "../../components/renderPage"
-import { QuartzComponentProps } from "../../types/component"
+import { QuartzComponent, QuartzComponentProps } from "../../types/component"
 import { QuartzEmitterPlugin } from "../../types/plugin"
 import { BuildCtx } from "../../util/ctx"
 import {
@@ -26,14 +26,75 @@ import { QuartzPluginData } from "../vfile"
 const name = "EmailEmitter"
 const emailsPath = path.join(QUARTZ, "static", "emails.txt")
 const imageExtensions = new Set([".avif", ".gif", ".jpg", ".jpeg", ".png", ".svg", ".webp"])
+const EmptyFooter: QuartzComponent = () => null
+const emailLayout: FullPageLayout = {
+  head: Head(),
+  header: [],
+  beforeBody: defaultContentPageLayout.beforeBody,
+  pageBody: Content(),
+  afterBody: [],
+  sidebar: [],
+  footer: EmptyFooter,
+}
 
-const renderEmailRoot = (
+const readCssFile = async (href: string, ctx: BuildCtx): Promise<string | null> => {
+  if (href.startsWith("http://") || href.startsWith("https://")) {
+    return null
+  }
+  const normalized = href.replace(/^(\.\/|(\.\.\/)+)/, "").replace(/^\/+/, "")
+  if (!normalized) return null
+  const candidate = path.join(ctx.argv.output, normalized)
+  if (!existsSync(candidate)) return null
+  return fs.readFile(candidate, "utf8")
+}
+
+const readEmailCss = async (resources: StaticResources, ctx: BuildCtx): Promise<string[]> => {
+  const chunks: string[] = []
+  for (const resource of resources.css) {
+    if (resource.inline) {
+      chunks.push(resource.content)
+      continue
+    }
+    const content = await readCssFile(resource.content, ctx)
+    if (content) chunks.push(content)
+  }
+  return chunks
+}
+
+const readHeadCss = async (head: Element | undefined, ctx: BuildCtx): Promise<string[]> => {
+  if (!head) return []
+  const chunks: string[] = []
+  const hrefs: string[] = []
+  visit(head, "element", (node: Element) => {
+    if (node.tagName === "style") {
+      const text = (node.children ?? [])
+        .filter((child): child is Text => child.type === "text")
+        .map((child) => child.value)
+        .join("")
+      if (text.trim().length > 0) chunks.push(text)
+      return
+    }
+    if (node.tagName !== "link") return
+    const rel = node.properties?.rel
+    const rels = Array.isArray(rel) ? rel : typeof rel === "string" ? [rel] : []
+    if (!rels.includes("stylesheet")) return
+    const href = node.properties?.href
+    if (typeof href === "string") hrefs.push(href)
+  })
+  for (const href of hrefs) {
+    const content = await readCssFile(href, ctx)
+    if (content) chunks.push(content)
+  }
+  return chunks
+}
+
+const renderEmail = async (
   ctx: BuildCtx,
   tree: Node,
   fileData: QuartzPluginData,
   allFiles: QuartzPluginData[],
   resources: StaticResources,
-): Root => {
+): Promise<{ root: Root; cssText: string }> => {
   const slug = fileData.slug!
   const cfg = ctx.cfg.configuration
   const externalResources = pageResources(pathToRoot(slug), resources, ctx)
@@ -46,26 +107,34 @@ const renderEmailRoot = (
     tree,
     allFiles,
   }
-  const emailLayout: FullPageLayout = {
-    ...sharedPageComponents,
-    ...defaultContentPageLayout,
-    pageBody: Content(),
-    afterBody: [],
-    sidebar: [],
-  }
-
-  const rendered = renderPage(ctx, slug, componentData, emailLayout, externalResources, false)
+  const rendered = renderPage(
+    ctx,
+    slug,
+    componentData,
+    emailLayout,
+    externalResources,
+    false,
+    false,
+    { forEmail: true },
+  )
   const doc = fromHtml(rendered)
   let body: Element | undefined
+  let head: Element | undefined
   visit(doc, { tagName: "body" }, (node: Element) => {
     body = node
     return EXIT
   })
-  if (body) {
-    const root: Root = { type: "root", children: body.children }
-    return root
-  }
-  return doc
+  visit(doc, { tagName: "head" }, (node: Element) => {
+    head = node
+    return EXIT
+  })
+  const root = body ? ({ type: "root", children: body.children } as Root) : doc
+  const cssChunks = [
+    ...(await readEmailCss(externalResources, ctx)),
+    ...(await readHeadCss(head, ctx)),
+  ]
+  const cssText = [...new Set(cssChunks.filter((chunk) => chunk.trim().length > 0))].join("\n")
+  return { root, cssText }
 }
 
 const formatPlainText = (body: string, slug: FullSlug, baseUrl?: string): string => {
@@ -147,6 +216,7 @@ export const EmailEmitter: QuartzEmitterPlugin = () => {
           continue
 
         const slug = fileData.slug!
+        const isProtected = Boolean(fileData.frontmatter?.protected || fileData.protectedPassword)
         const relativePath = fileData.relativePath ?? fileData.filePath ?? ""
         const baseName = path.basename(relativePath, path.extname(relativePath))
         const [monthToken, yearToken] = baseName.split("-")
@@ -171,7 +241,7 @@ export const EmailEmitter: QuartzEmitterPlugin = () => {
         const subject = `GET updates/${year}/${emailSuffix}`
         const baseUrl = ctx.cfg.configuration.baseUrl
 
-        const root = renderEmailRoot(ctx, tree, fileData, allFiles, resources)
+        const { root, cssText } = await renderEmail(ctx, tree, fileData, allFiles, resources)
         const attachments: {
           contentId: string
           filename: string
@@ -279,6 +349,9 @@ export const EmailEmitter: QuartzEmitterPlugin = () => {
           })
         }
         let html = toHtml(root)
+        if (cssText.trim().length > 0) {
+          html = `<style>${cssText}</style>${html}`
+        }
         html = `<div dir="ltr">${html}</div>`
 
         const raw = await fs.readFile(filePath, "utf8")
@@ -287,15 +360,18 @@ export const EmailEmitter: QuartzEmitterPlugin = () => {
         const marker = "\n---\n"
         const endIndex = normalized.indexOf(marker, 4)
         const body = endIndex === -1 ? normalized : normalized.slice(endIndex + marker.length)
-        let text = body
-          .replace(/```[^\n]*\n([\s\S]*?)```/g, "$1")
-          .replace(/\n{3,}/g, "\n\n")
-          .trim()
-        text = formatPlainText(text, slug as FullSlug, baseUrl)
-        text = text.replace(/!\[[^\]]*\]\(([^)]+)\)/g, (_match, target) => {
-          const cleaned = String(target).split(/[?#]/)[0] ?? ""
-          return `[image: ${path.basename(cleaned)}]`
-        })
+        let text = ""
+        if (!isProtected) {
+          text = body
+            .replace(/```[^\n]*\n([\s\S]*?)```/g, "$1")
+            .replace(/\n{3,}/g, "\n\n")
+            .trim()
+          text = formatPlainText(text, slug as FullSlug, baseUrl)
+          text = text.replace(/!\[[^\]]*\]\(([^)]+)\)/g, (_match, target) => {
+            const cleaned = String(target).split(/[?#]/)[0] ?? ""
+            return `[image: ${path.basename(cleaned)}]`
+          })
+        }
 
         const endpoint =
           process.env.EMAIL_EMITTER_ENDPOINT ??
@@ -323,8 +399,8 @@ export const EmailEmitter: QuartzEmitterPlugin = () => {
           newline === "\n" ? updated : updated.replace(/\n/g, newline),
           "utf8",
         )
+        yield filePath
       }
-      yield "" as FilePath
     },
   }
 }
