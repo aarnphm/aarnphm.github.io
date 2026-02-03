@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -e
+
 git pull
 git lfs pull && git lfs checkout
 

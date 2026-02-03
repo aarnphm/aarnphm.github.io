@@ -270,6 +270,7 @@ declare module "vfile" {
         signature: string
         socials: Record<string, string>
         authors: string[]
+        email: boolean
       }>
     frontmatterLinks?: Record<string, FrontmatterLink[]>
     frontmatterLinkLookup?: Record<string, FrontmatterLink>

@@ -325,6 +325,7 @@ export default {
       const { subject, text, html } = payload
       const attachments = Array.isArray(payload.attachments) ? payload.attachments : []
 
+      const sender = env.EMAIL_SENDER
       const msg = createMimeMessage()
       msg.setSender({ name: "Aaron Pham", addr: env.EMAIL_SENDER })
       msg.setRecipient("undisclosed-recipients:;")
@@ -345,8 +346,15 @@ export default {
           headers: { "Content-ID": attachment.contentId },
         })
       }
+      if (url.searchParams.has("dry")) {
+        msg.setRecipient(recipients[0])
+        return new Response(msg.asRaw(), {
+          status: 200,
+          headers: { "Content-Type": "message/rfc822" },
+        })
+      }
       for (const recipient of recipients) {
-        await env.EMAIL.send(new EmailMessage(env.EMAIL_SENDER, recipient, msg.asRaw()))
+        await env.EMAIL.send(new EmailMessage(sender, recipient, msg.asRaw()))
       }
 
       return new Response(JSON.stringify({ ok: true, sent: recipients.length }), {
