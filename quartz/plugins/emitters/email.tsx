@@ -3,6 +3,7 @@ import { fromHtml } from "hast-util-from-html"
 import { toHtml } from "hast-util-to-html"
 import { existsSync, promises as fs } from "node:fs"
 import path from "path"
+import sharp from "sharp"
 import { EXIT, visit } from "unist-util-visit"
 import { FullPageLayout } from "../../cfg"
 import { Content, Head } from "../../components"
@@ -214,9 +215,9 @@ const applyEmailStyles = (root: Root) => {
         mergeStyle(
           node,
           [
-            "padding-top: 1.5rem",
-            "padding-bottom: 1.5rem",
-            "padding-left: 1rem",
+            "padding-top: 24px",
+            "padding-bottom: 24px",
+            "padding-left: 16px",
             "font-style: italic",
             "border: 0",
             "border-top: 1px solid #e5e5e5",
@@ -231,7 +232,7 @@ const applyEmailStyles = (root: Root) => {
             "border: 1px solid #e5e5e5",
             "border-radius: 6px",
             "padding: 12px 14px",
-            "margin: 0 0 1.2em 0",
+            "margin: 0 0 18px 0",
             "font-family: SFMono-Regular, Consolas, Liberation Mono, Menlo, monospace",
             "font-size: 13px",
             "line-height: 1.6",
@@ -248,44 +249,71 @@ const applyEmailStyles = (root: Root) => {
           "flex-wrap: wrap",
           "justify-content: flex-end",
           "min-height: 51px",
-          "margin: 0 0 1.2em 0",
+          "margin: 0 0 18px 0",
         ].join("; "),
       )
     }
     switch (node.tagName) {
+      case "article":
+        mergeStyle(node, "margin: 0;")
+        break
+      case "section":
+        mergeStyle(node, "margin: 0;")
+        break
       case "p":
-        mergeStyle(node, "margin: 0 0 1.2em 0;")
+        mergeStyle(node, "margin: 0 0 18px 0;")
         break
       case "h1":
-        mergeStyle(node, "margin: 0 0 0.6em 0; font-size: 1.7em; line-height: 1.3;")
+        mergeStyle(
+          node,
+          "margin: 0 0 18px 0; font-size: 30px; line-height: 1.25; font-weight: 600;",
+        )
         break
       case "h2":
-        mergeStyle(node, "margin: 1.4em 0 0.6em 0; font-size: 1.4em; line-height: 1.35;")
+        mergeStyle(
+          node,
+          "margin: 28px 0 14px 0; font-size: 22px; line-height: 1.3; font-weight: 600;",
+        )
         break
       case "h3":
-        mergeStyle(node, "margin: 1.2em 0 0.5em 0; font-size: 1.2em; line-height: 1.4;")
+        mergeStyle(
+          node,
+          "margin: 22px 0 12px 0; font-size: 19px; line-height: 1.35; font-weight: 600;",
+        )
         break
       case "h4":
-        mergeStyle(node, "margin: 1em 0 0.4em 0; font-size: 1.05em; line-height: 1.4;")
+        mergeStyle(
+          node,
+          "margin: 18px 0 10px 0; font-size: 17px; line-height: 1.35; font-weight: 600;",
+        )
         break
       case "ul":
       case "ol":
-        mergeStyle(node, "margin: 0 0 1.2em 1.4em; padding: 0;")
+        mergeStyle(node, "margin: 0 0 18px 0; padding: 0 0 0 24px;")
         break
       case "li":
-        mergeStyle(node, "margin: 0.35em 0;")
+        mergeStyle(node, "margin: 6px 0;")
         break
       case "blockquote":
         mergeStyle(
           node,
-          "margin: 1.2em 0; padding: 0 0 0 1em; border-left: 3px solid #e5e5e5; color: #555;",
+          "margin: 22px 0; padding: 0 0 0 16px; border-left: 3px solid #e5e5e5; color: #555; font-style: italic;",
         )
         break
       case "hr":
-        mergeStyle(node, "border: 0; border-top: 1px solid #e5e5e5; margin: 1.6em 0;")
+        mergeStyle(node, "border: 0; border-top: 1px solid #e5e5e5; margin: 28px 0;")
         break
       case "img":
-        mergeStyle(node, "max-width: 100%; height: auto; display: block; margin: 1.2em auto;")
+        mergeStyle(
+          node,
+          "max-width: 100%; height: auto; display: block; margin: 24px auto; border-radius: 6px;",
+        )
+        break
+      case "figure":
+        mergeStyle(node, "margin: 24px 0;")
+        break
+      case "figcaption":
+        mergeStyle(node, "margin-top: 10px; font-size: 14px; color: #666; text-align: center;")
         break
       case "pre":
         mergeStyle(
@@ -295,7 +323,7 @@ const applyEmailStyles = (root: Root) => {
             "border: 1px solid #e5e5e5",
             "border-radius: 6px",
             "padding: 12px 14px",
-            "margin: 0 0 1.2em 0",
+            "margin: 0 0 18px 0",
             "overflow-x: auto",
             "white-space: pre-wrap",
             "font-family: SFMono-Regular, Consolas, Liberation Mono, Menlo, monospace",
@@ -327,10 +355,99 @@ const applyEmailStyles = (root: Root) => {
       case "a":
         mergeStyle(node, "color: #111111; text-decoration: underline;")
         break
+      case "table":
+        mergeStyle(node, "width: 100%; border-collapse: collapse; margin: 24px 0;")
+        break
+      case "thead":
+        mergeStyle(node, "background: #fafafa;")
+        break
+      case "th":
+        mergeStyle(node, "text-align: left; border-bottom: 1px solid #e5e5e5; padding: 8px 6px;")
+        break
+      case "td":
+        mergeStyle(node, "border-bottom: 1px solid #f0f0f0; padding: 8px 6px;")
+        break
+      case "sup":
+        mergeStyle(node, "font-size: 0.75em; line-height: 0;")
+        break
+      case "small":
+        mergeStyle(node, "font-size: 14px; color: #666;")
+        break
       default:
         break
     }
   })
+}
+
+const buildEmailHtml = (content: string): string => {
+  const bodyStyle = [
+    "margin: 0",
+    "padding: 0",
+    "background: #f7f5f2",
+    "color: #1a1a1a",
+    "-webkit-text-size-adjust: 100%",
+  ].join("; ")
+  const outerTableStyle = ["width: 100%", "background: #f7f5f2"].join("; ")
+  const containerStyle = [
+    "width: 100%",
+    "max-width: 640px",
+    "background: #ffffff",
+    "border: 1px solid #ece7df",
+    "border-radius: 12px",
+    "overflow: hidden",
+  ].join("; ")
+  const innerStyle = [
+    "padding: 32px 36px 40px",
+    "font-family: Cambria, Georgia, 'Times New Roman', serif",
+    "font-size: 17px",
+    "line-height: 1.75",
+    "color: #1a1a1a",
+    "text-align: left",
+  ].join("; ")
+  return [
+    "<!doctype html>",
+    "<html>",
+    "<head>",
+    '<meta charset="utf-8">',
+    '<meta name="viewport" content="width=device-width, initial-scale=1.0">',
+    "</head>",
+    `<body dir="ltr" style="${bodyStyle}">`,
+    `<table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="${outerTableStyle}">`,
+    "<tr>",
+    '<td align="center" style="padding: 24px 12px;">',
+    `<table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="${containerStyle}">`,
+    "<tr>",
+    `<td style="${innerStyle}">`,
+    content,
+    "</td>",
+    "</tr>",
+    "</table>",
+    "</td>",
+    "</tr>",
+    "</table>",
+    "</body>",
+    "</html>",
+  ].join("")
+}
+
+const preferCompatibleImage = (
+  sourcePath: string,
+  fileDir: string,
+  contentRoot: string,
+  staticRoot: string,
+): string => {
+  const ext = path.extname(sourcePath).toLowerCase()
+  if (ext !== ".webp" && ext !== ".avif") return sourcePath
+  const baseName = path.basename(sourcePath, ext)
+  const candidates = [path.dirname(sourcePath), fileDir, contentRoot, staticRoot]
+  const preferredExts = [".png", ".jpg", ".jpeg", ".gif"]
+  for (const dir of candidates) {
+    for (const preferredExt of preferredExts) {
+      const candidate = path.join(dir, `${baseName}${preferredExt}`)
+      if (existsSync(candidate)) return candidate
+    }
+  }
+  return sourcePath
 }
 
 export const EmailEmitter: QuartzEmitterPlugin = () => {
@@ -463,15 +580,30 @@ export const EmailEmitter: QuartzEmitterPlugin = () => {
           pending.set(src, { nodes: [node], sourcePath })
         })
         for (const [src, entry] of pending) {
-          const ext = path.extname(entry.sourcePath).toLowerCase()
-          const contentType = contentTypes[ext] ?? "application/octet-stream"
+          const preferredPath = preferCompatibleImage(
+            entry.sourcePath,
+            fileDir,
+            contentRoot,
+            staticRoot,
+          )
+          const ext = path.extname(preferredPath).toLowerCase()
+          let contentType = contentTypes[ext] ?? "application/octet-stream"
+          let filename = path.basename(preferredPath)
+          let contentBuffer = await fs.readFile(preferredPath)
+          if (ext === ".webp" || ext === ".avif") {
+            try {
+              contentBuffer = await sharp(contentBuffer).png().toBuffer()
+              contentType = "image/png"
+              filename = `${path.basename(preferredPath, ext)}.png`
+            } catch {}
+          }
           const contentId = `${slug.replace(/[^a-z0-9]/gi, "-")}-${replacements.size + 1}`
           const cid = `cid:${contentId}`
           attachments.push({
             contentId,
-            filename: path.basename(entry.sourcePath),
+            filename,
             contentType,
-            content: (await fs.readFile(entry.sourcePath)).toString("base64"),
+            content: contentBuffer.toString("base64"),
           })
           replacements.set(src, cid)
           for (const node of entry.nodes) {
@@ -509,11 +641,8 @@ export const EmailEmitter: QuartzEmitterPlugin = () => {
           })
         }
         applyEmailStyles(root)
-        let html = toHtml(root)
-        const outerStyle = "width: 100%; background: #ffffff; padding: 24px 0;"
-        const innerStyle =
-          "max-width: 640px; margin: 0 auto; padding: 0 24px; font-family: Georgia, 'Times New Roman', serif; font-size: 16px; line-height: 1.7; color: #1a1a1a; text-align: left;"
-        html = `<div dir="ltr"><div style="${outerStyle}"><div style="${innerStyle}">${html}</div></div></div>`
+        let html = toHtml(root, { allowDangerousHtml: true })
+        html = buildEmailHtml(html)
 
         const raw = await fs.readFile(filePath, "utf8")
         const newline = raw.includes("\r\n") ? "\r\n" : "\n"
