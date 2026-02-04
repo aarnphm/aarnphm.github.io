@@ -24,10 +24,10 @@ importers:
         version: 1.0.0
       '@cloudflare/ai-chat':
         specifier: ^0.0.5
-        version: 0.0.5(agents@0.3.9)(ai@6.0.69(zod@4.3.6))(react@18.3.1)(zod@4.3.6)
+        version: 0.0.5(agents@0.3.10)(ai@6.0.70(zod@4.3.6))(react@18.3.1)(zod@4.3.6)
       '@cloudflare/codemode':
         specifier: ^0.0.6
-        version: 0.0.6(agents@0.3.9)(ai@6.0.69(zod@4.3.6))(typescript@5.9.3)(zod@4.3.6)
+        version: 0.0.6(agents@0.3.10)(ai@6.0.70(zod@4.3.6))(typescript@5.9.3)(zod@4.3.6)
       '@cloudflare/puppeteer':
         specifier: ^1.0.6
         version: 1.0.6(bufferutil@4.0.9)(utf-8-validate@5.0.10)
@@ -74,8 +74,8 @@ importers:
         specifier: ^5.0.6
         version: 5.0.6
       agents:
-        specifier: ^0.3.9
-        version: 0.3.9(@cloudflare/ai-chat@0.0.5)(@cloudflare/codemode@0.0.6)(@cloudflare/workers-types@4.20260203.0)(ai@6.0.69(zod@4.3.6))(hono@4.11.7)(react@18.3.1)(zod@4.3.6)
+        specifier: ^0.3.10
+        version: 0.3.10(@cloudflare/ai-chat@0.0.5)(@cloudflare/codemode@0.0.6)(@cloudflare/workers-types@4.20260203.0)(ai@6.0.70(zod@4.3.6))(hono@4.11.7)(react@18.3.1)(zod@4.3.6)
       ansi-truncate:
         specifier: ^1.4.0
         version: 1.4.0
@@ -423,8 +423,8 @@ importers:
         specifier: 7.0.0-dev.20260204.1
         version: 7.0.0-dev.20260204.1
       ai:
-        specifier: ^6.0.69
-        version: 6.0.69(zod@4.3.6)
+        specifier: ^6.0.70
+        version: 6.0.70(zod@4.3.6)
       bibtex-tidy:
         specifier: ^1.14.0
         version: 1.14.0
@@ -473,8 +473,8 @@ importers:
 
 packages:
 
-  '@ai-sdk/gateway@3.0.32':
-    resolution: {integrity: sha512-7clZRr07P9rpur39t1RrbIe7x8jmwnwUWI8tZs+BvAfX3NFgdSVGGIaT7bTz2pb08jmLXzTSDbrOTqAQ7uBkBQ==}
+  '@ai-sdk/gateway@3.0.33':
+    resolution: {integrity: sha512-elnzKRxkC8ZL3IvOdklavkYTBgJhjP9l8b5MO6WYz1MBoT/0WdJoG3Jp31Olwpzk4hIac7z27S6a4q7DkhzsZg==}
     engines: {node: '>=18'}
     peerDependencies:
       zod: ^3.25.76 || ^4.1.8
@@ -1691,8 +1691,8 @@ packages:
     peerDependencies:
       tslib: '2'
 
-  '@lezer/common@1.5.0':
-    resolution: {integrity: sha512-PNGcolp9hr4PJdXR4ix7XtixDrClScvtSCYW3rQG106oVMOOI+jFb+0+J3mbeL/53g1Zd6s0kJzaw6Ri68GmAA==}
+  '@lezer/common@1.5.1':
+    resolution: {integrity: sha512-6YRVG9vBkaY7p1IVxL4s44n5nUnaNnGM2/AckNgYOnxTG2kWh1vR8BMxPseWPjRNpb5VtXnMpeYAEAADoRV1Iw==}
 
   '@lezer/css@1.3.0':
     resolution: {integrity: sha512-pBL7hup88KbI7hXnZV3PQsn43DHy6TWyzuyk2AO9UyoXcDltvIdqWKE1dLL/45JVZ+YZkHe1WVHqO6wugZZWcw==}
@@ -2459,13 +2459,13 @@ packages:
     resolution: {integrity: sha512-MnA+YT8fwfJPgBx3m60MNqakm30XOkyIoH1y6huTQvC0PwZG7ki8NacLBcrPbNoo8vEZy7Jpuk7+jMO+CUovTQ==}
     engines: {node: '>= 14'}
 
-  agents@0.3.9:
-    resolution: {integrity: sha512-ffuixXuKlO9+tJKeA8cnZGnDRXRVBYbiJoh875oErw4WO+vg9IwTQAE31WSkXWmtH3XF7p6J6tRyvqMw4tQb1w==}
+  agents@0.3.10:
+    resolution: {integrity: sha512-hKj3nbej14GA2SgE6/stQheJF35LCS7DxMuHG0QDl1/npnnECYyG0Yf5DXl6AvJAZOFNDwT3iEzKi8yLZngPDA==}
     hasBin: true
     peerDependencies:
       '@ai-sdk/openai': ^3.0.0
       '@ai-sdk/react': ^3.0.0
-      '@cloudflare/ai-chat': ^0.0.5
+      '@cloudflare/ai-chat': ^0.0.6
       '@cloudflare/codemode': ^0.0.6
       ai: ^6.0.0
       react: ^19.0.0
@@ -2482,8 +2482,8 @@ packages:
       x402:
         optional: true
 
-  ai@6.0.69:
-    resolution: {integrity: sha512-zIURMSnNroaVvu47Bm3XhC2y3LRsm8jmkwBgupxF+N7q/s6MpIiv04w1ltlnWqC8+T2PT2rN+f0sUhF+vArkwg==}
+  ai@6.0.70:
+    resolution: {integrity: sha512-1Osgqs/HSCqKNQt+u5THWI4sBpHZefiQWZIPv+MRJfIx7tGX34IMtXBDs05tZ6yW2P06fmB03w94UkPXWfdieA==}
     engines: {node: '>=18'}
     peerDependencies:
       zod: ^3.25.76 || ^4.1.8
@@ -5576,7 +5576,7 @@ packages:
 
 snapshots:
 
-  '@ai-sdk/gateway@3.0.32(zod@4.3.6)':
+  '@ai-sdk/gateway@3.0.33(zod@4.3.6)':
     dependencies:
       '@ai-sdk/provider': 3.0.7
       '@ai-sdk/provider-utils': 4.0.13(zod@4.3.6)
@@ -5696,17 +5696,17 @@ snapshots:
       picocolors: 1.1.1
       sisteransi: 1.0.5
 
-  '@cloudflare/ai-chat@0.0.5(agents@0.3.9)(ai@6.0.69(zod@4.3.6))(react@18.3.1)(zod@4.3.6)':
+  '@cloudflare/ai-chat@0.0.5(agents@0.3.10)(ai@6.0.70(zod@4.3.6))(react@18.3.1)(zod@4.3.6)':
     dependencies:
-      agents: 0.3.9(@cloudflare/ai-chat@0.0.5)(@cloudflare/codemode@0.0.6)(@cloudflare/workers-types@4.20260203.0)(ai@6.0.69(zod@4.3.6))(hono@4.11.7)(react@18.3.1)(zod@4.3.6)
-      ai: 6.0.69(zod@4.3.6)
+      agents: 0.3.10(@cloudflare/ai-chat@0.0.5)(@cloudflare/codemode@0.0.6)(@cloudflare/workers-types@4.20260203.0)(ai@6.0.70(zod@4.3.6))(hono@4.11.7)(react@18.3.1)(zod@4.3.6)
+      ai: 6.0.70(zod@4.3.6)
       react: 18.3.1
       zod: 4.3.6
 
-  '@cloudflare/codemode@0.0.6(agents@0.3.9)(ai@6.0.69(zod@4.3.6))(typescript@5.9.3)(zod@4.3.6)':
+  '@cloudflare/codemode@0.0.6(agents@0.3.10)(ai@6.0.70(zod@4.3.6))(typescript@5.9.3)(zod@4.3.6)':
     dependencies:
-      agents: 0.3.9(@cloudflare/ai-chat@0.0.5)(@cloudflare/codemode@0.0.6)(@cloudflare/workers-types@4.20260203.0)(ai@6.0.69(zod@4.3.6))(hono@4.11.7)(react@18.3.1)(zod@4.3.6)
-      ai: 6.0.69(zod@4.3.6)
+      agents: 0.3.10(@cloudflare/ai-chat@0.0.5)(@cloudflare/codemode@0.0.6)(@cloudflare/workers-types@4.20260203.0)(ai@6.0.70(zod@4.3.6))(hono@4.11.7)(react@18.3.1)(zod@4.3.6)
+      ai: 6.0.70(zod@4.3.6)
       zod: 4.3.6
       zod-to-ts: 2.0.0(typescript@5.9.3)(zod@4.3.6)
     transitivePeerDependencies:
@@ -5758,21 +5758,21 @@ snapshots:
       '@codemirror/language': 6.12.1
       '@codemirror/state': 6.5.4
       '@codemirror/view': 6.39.12
-      '@lezer/common': 1.5.0
+      '@lezer/common': 1.5.1
 
   '@codemirror/commands@6.10.1':
     dependencies:
       '@codemirror/language': 6.12.1
       '@codemirror/state': 6.5.4
       '@codemirror/view': 6.39.12
-      '@lezer/common': 1.5.0
+      '@lezer/common': 1.5.1
 
   '@codemirror/lang-css@6.3.1':
     dependencies:
       '@codemirror/autocomplete': 6.20.0
       '@codemirror/language': 6.12.1
       '@codemirror/state': 6.5.4
-      '@lezer/common': 1.5.0
+      '@lezer/common': 1.5.1
       '@lezer/css': 1.3.0
 
   '@codemirror/lang-html@6.4.11':
@@ -5783,7 +5783,7 @@ snapshots:
       '@codemirror/language': 6.12.1
       '@codemirror/state': 6.5.4
       '@codemirror/view': 6.39.12
-      '@lezer/common': 1.5.0
+      '@lezer/common': 1.5.1
       '@lezer/css': 1.3.0
       '@lezer/html': 1.3.13
 
@@ -5794,7 +5794,7 @@ snapshots:
       '@codemirror/lint': 6.9.3
       '@codemirror/state': 6.5.4
       '@codemirror/view': 6.39.12
-      '@lezer/common': 1.5.0
+      '@lezer/common': 1.5.1
       '@lezer/javascript': 1.5.4
 
   '@codemirror/lang-markdown@6.5.0':
@@ -5804,14 +5804,14 @@ snapshots:
       '@codemirror/language': 6.12.1
       '@codemirror/state': 6.5.4
       '@codemirror/view': 6.39.12
-      '@lezer/common': 1.5.0
+      '@lezer/common': 1.5.1
       '@lezer/markdown': 1.6.3
 
   '@codemirror/language@6.12.1':
     dependencies:
       '@codemirror/state': 6.5.4
       '@codemirror/view': 6.39.12
-      '@lezer/common': 1.5.0
+      '@lezer/common': 1.5.1
       '@lezer/highlight': 1.2.3
       '@lezer/lr': 1.4.8
       style-mod: 4.1.3
@@ -6511,37 +6511,37 @@ snapshots:
       '@jsonjoy.com/codegen': 17.65.0(tslib@2.8.1)
       tslib: 2.8.1
 
-  '@lezer/common@1.5.0': {}
+  '@lezer/common@1.5.1': {}
 
   '@lezer/css@1.3.0':
     dependencies:
-      '@lezer/common': 1.5.0
+      '@lezer/common': 1.5.1
       '@lezer/highlight': 1.2.3
       '@lezer/lr': 1.4.8
 
   '@lezer/highlight@1.2.3':
     dependencies:
-      '@lezer/common': 1.5.0
+      '@lezer/common': 1.5.1
 
   '@lezer/html@1.3.13':
     dependencies:
-      '@lezer/common': 1.5.0
+      '@lezer/common': 1.5.1
       '@lezer/highlight': 1.2.3
       '@lezer/lr': 1.4.8
 
   '@lezer/javascript@1.5.4':
     dependencies:
-      '@lezer/common': 1.5.0
+      '@lezer/common': 1.5.1
       '@lezer/highlight': 1.2.3
       '@lezer/lr': 1.4.8
 
   '@lezer/lr@1.4.8':
     dependencies:
-      '@lezer/common': 1.5.0
+      '@lezer/common': 1.5.1
 
   '@lezer/markdown@1.6.3':
     dependencies:
-      '@lezer/common': 1.5.0
+      '@lezer/common': 1.5.1
       '@lezer/highlight': 1.2.3
 
   '@marijn/find-cluster-break@1.0.2': {}
@@ -7289,14 +7289,15 @@ snapshots:
 
   agent-base@7.1.4: {}
 
-  agents@0.3.9(@cloudflare/ai-chat@0.0.5)(@cloudflare/codemode@0.0.6)(@cloudflare/workers-types@4.20260203.0)(ai@6.0.69(zod@4.3.6))(hono@4.11.7)(react@18.3.1)(zod@4.3.6):
+  agents@0.3.10(@cloudflare/ai-chat@0.0.5)(@cloudflare/codemode@0.0.6)(@cloudflare/workers-types@4.20260203.0)(ai@6.0.70(zod@4.3.6))(hono@4.11.7)(react@18.3.1)(zod@4.3.6):
     dependencies:
       '@cfworker/json-schema': 4.1.1
-      '@cloudflare/ai-chat': 0.0.5(agents@0.3.9)(ai@6.0.69(zod@4.3.6))(react@18.3.1)(zod@4.3.6)
-      '@cloudflare/codemode': 0.0.6(agents@0.3.9)(ai@6.0.69(zod@4.3.6))(typescript@5.9.3)(zod@4.3.6)
+      '@cloudflare/ai-chat': 0.0.5(agents@0.3.10)(ai@6.0.70(zod@4.3.6))(react@18.3.1)(zod@4.3.6)
+      '@cloudflare/codemode': 0.0.6(agents@0.3.10)(ai@6.0.70(zod@4.3.6))(typescript@5.9.3)(zod@4.3.6)
       '@modelcontextprotocol/sdk': 1.25.2(@cfworker/json-schema@4.1.1)(hono@4.11.7)(zod@4.3.6)
-      ai: 6.0.69(zod@4.3.6)
+      ai: 6.0.70(zod@4.3.6)
       cron-schedule: 6.0.0
+      escape-html: 1.0.3
       json-schema: 0.4.0
       json-schema-to-typescript: 15.0.4
       mimetext: 3.0.28
@@ -7311,9 +7312,9 @@ snapshots:
       - hono
       - supports-color
 
-  ai@6.0.69(zod@4.3.6):
+  ai@6.0.70(zod@4.3.6):
     dependencies:
-      '@ai-sdk/gateway': 3.0.32(zod@4.3.6)
+      '@ai-sdk/gateway': 3.0.33(zod@4.3.6)
       '@ai-sdk/provider': 3.0.7
       '@ai-sdk/provider-utils': 4.0.13(zod@4.3.6)
       '@opentelemetry/api': 1.9.0
