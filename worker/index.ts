@@ -313,61 +313,113 @@ export default {
         return new Response("unauthorized", { status: 401 })
       }
 
-      const payload: EmailPayload = await request.json()
-      const recipients = Array.isArray(payload.recipients)
-        ? payload.recipients.filter((email) => typeof email === "string" && email.trim().length > 0)
-        : typeof payload.recipients === "string"
-          ? [payload.recipients]
+      let payload: unknown
+      try {
+        payload = await request.json()
+      } catch {
+        return new Response("invalid json", { status: 400 })
+      }
+      if (!payload || typeof payload !== "object") {
+        return new Response("invalid payload", { status: 400 })
+      }
+
+      const payloadRecord = payload as Record<string, unknown>
+      const recipients = Array.isArray(payloadRecord.recipients)
+        ? payloadRecord.recipients
+            .filter((email) => typeof email === "string")
+            .map((email) => email.trim())
+            .filter((email) => email.length > 0)
+        : typeof payloadRecord.recipients === "string"
+          ? [payloadRecord.recipients.trim()].filter((email) => email.length > 0)
           : []
       if (recipients.length === 0) {
         return new Response("invalid recipients", { status: 400 })
       }
-      const { subject, text, html } = payload
-      const attachments = Array.isArray(payload.attachments) ? payload.attachments : []
+
+      const subject =
+        typeof payloadRecord.subject === "string" ? payloadRecord.subject.trim() : ""
+      if (!subject) {
+        return new Response("invalid subject", { status: 400 })
+      }
+
+      const text = typeof payloadRecord.text === "string" ? payloadRecord.text : undefined
+      const html = typeof payloadRecord.html === "string" ? payloadRecord.html : undefined
+      if (!text && !html) {
+        return new Response("missing content", { status: 400 })
+      }
+
+      const attachments = Array.isArray(payloadRecord.attachments)
+        ? payloadRecord.attachments
+            .filter((entry) => entry && typeof entry === "object")
+            .map((entry) => {
+              const record = entry as Record<string, unknown>
+              return {
+                contentId: typeof record.contentId === "string" ? record.contentId : "",
+                filename: typeof record.filename === "string" ? record.filename : "",
+                contentType: typeof record.contentType === "string" ? record.contentType : "",
+                content: typeof record.content === "string" ? record.content : "",
+              }
+            })
+            .filter(
+              (entry) =>
+                entry.contentId.length > 0 &&
+                entry.filename.length > 0 &&
+                entry.contentType.length > 0 &&
+                entry.content.length > 0,
+            )
+        : []
 
       const sender = env.EMAIL_SENDER
-      const buildRawMessage = () => {
-        const msg = createMimeMessage()
-        msg.setSender({ name: "Aaron Pham", addr: env.EMAIL_SENDER })
-        msg.setRecipient("undisclosed-recipients:;")
-        msg.setSubject(subject)
-        msg.setBcc(recipients)
-        if (text) {
-          msg.addMessage({
-            contentType: "text/plain",
-            charset: "utf-8",
-            encoding: "quoted-printable",
-            data: text,
-          })
-        }
-        if (html) {
-          msg.addMessage({
-            contentType: "text/html",
-            charset: "utf-8",
-            encoding: "quoted-printable",
-            data: html,
-          })
-        }
-        for (const attachment of attachments) {
-          msg.addAttachment({
-            filename: attachment.filename,
-            contentType: attachment.contentType,
-            data: attachment.content,
-            inline: true,
-            headers: { "Content-ID": attachment.contentId },
-          })
-        }
-        return msg.asRaw().replace(/\r?\n/g, "\r\n")
+      if (!sender) {
+        return new Response("missing sender", { status: 500 })
       }
-      if (url.searchParams.has("dry")) {
-        const rawMessage = buildRawMessage()
-        return new Response(rawMessage, {
-          status: 200,
-          headers: { "Content-Type": "message/rfc822" },
-        })
+      try {
+        const buildRawMessage = (recipient: string) => {
+          const msg = createMimeMessage()
+          msg.setSender({ name: "Aaron Pham", addr: sender })
+          msg.setRecipient("undisclosed-recipients:;")
+          msg.setSubject(subject)
+          msg.setBcc(recipient)
+          if (text) {
+            msg.addMessage({
+              contentType: "text/plain",
+              charset: "utf-8",
+              data: text,
+            })
+          }
+          if (html) {
+            msg.addMessage({
+              contentType: "text/html",
+              charset: "utf-8",
+              data: html,
+            })
+          }
+          for (const attachment of attachments) {
+            msg.addAttachment({
+              filename: attachment.filename,
+              contentType: attachment.contentType,
+              data: attachment.content,
+              inline: true,
+              headers: { "Content-ID": attachment.contentId },
+            })
+          }
+          return msg.asRaw().replace(/\r?\n/g, "\r\n")
+        }
+        if (url.searchParams.has("dry")) {
+          const rawMessage = buildRawMessage("no-reply@aarnphm.xyz")
+          return new Response(rawMessage, {
+            status: 200,
+            headers: { "Content-Type": "message/rfc822" },
+          })
+        }
+        for (const recipient of recipients) {
+          const rawMessage = buildRawMessage(recipient)
+          await env.EMAIL.send(new EmailMessage(sender, recipient, rawMessage))
+        }
+      } catch (err) {
+        const message = err instanceof Error ? err.message : String(err)
+        return new Response(message, { status: 500 })
       }
-      const rawMessage = buildRawMessage()
-      await env.EMAIL.send(new EmailMessage(sender, "undisclosed-recipients:;", rawMessage))
 
       return new Response(JSON.stringify({ ok: true, sent: recipients.length }), {
         status: 200,
