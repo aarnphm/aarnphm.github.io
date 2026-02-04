@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-02-02 12:11:02 GMT-05:00
+modified: 2026-02-04 17:41:42 GMT-05:00
 permalinks:
   - /website
   - /tweets
@@ -3875,6 +3875,10 @@ title: are.na
   - view: list
   - json: true
 
+- https://samikhan.ai/blog/countdown-rl.html -- Teaching a Language Model Arithmetic with RL
+  - [meta]:
+    - date: 02/04/2026
+    - tags: [post training, rl]
 - https://livgorton.com/non-linear-feature-reps -- What Would Non-Linear Features Actually Look Like?
   - [meta]:
     - date: 02/02/2026
