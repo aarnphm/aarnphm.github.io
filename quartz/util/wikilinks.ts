@@ -1,15 +1,15 @@
-import type { Root } from "mdast"
-import type { Node } from "unist"
-import isAbsoluteUrl from "is-absolute-url"
-import { fromMarkdown } from "mdast-util-from-markdown"
-import { visit } from "unist-util-visit"
+import type { Root } from 'mdast'
+import type { Node } from 'unist'
+import isAbsoluteUrl from 'is-absolute-url'
+import { fromMarkdown } from 'mdast-util-from-markdown'
+import { visit } from 'unist-util-visit'
 import {
   Wikilink,
   WikilinkData,
   isWikilink,
   wikilink,
   wikilinkFromMarkdown,
-} from "../extensions/micromark-extension-ofm-wikilinks"
+} from '../extensions/micromark-extension-ofm-wikilinks'
 import {
   FilePath,
   FullSlug,
@@ -19,7 +19,7 @@ import {
   slugifyFilePath,
   sluggify,
   stripSlashes,
-} from "./path"
+} from './path'
 
 export type { WikilinkData, Wikilink }
 
@@ -49,7 +49,7 @@ export function parseWikilink(raw: string): WikilinkData | null {
 }
 
 export function extractWikilinksWithPositions(text: string): WikilinkRange[] {
-  if (!text || !text.includes("[[")) {
+  if (!text || !text.includes('[[')) {
     return []
   }
 
@@ -66,7 +66,7 @@ export function extractWikilinksWithPositions(text: string): WikilinkRange[] {
     if (!data) return
     const start = node.position?.start?.offset
     const end = node.position?.end?.offset
-    if (typeof start !== "number" || typeof end !== "number") return
+    if (typeof start !== 'number' || typeof end !== 'number') return
     ranges.push({ wikilink: data, start, end })
   })
 
@@ -75,7 +75,7 @@ export function extractWikilinksWithPositions(text: string): WikilinkRange[] {
 }
 
 export function extractWikilinks(text: string): WikilinkData[] {
-  return extractWikilinksWithPositions(text).map((range) => range.wikilink)
+  return extractWikilinksWithPositions(text).map(range => range.wikilink)
 }
 
 export interface ResolvedWikilinkTarget {
@@ -85,10 +85,10 @@ export interface ResolvedWikilinkTarget {
 
 function ensureFilePath(target: string): FilePath {
   if (target.length === 0) {
-    return "index.md" as FilePath
+    return 'index.md' as FilePath
   }
 
-  if (target.endsWith("/")) {
+  if (target.endsWith('/')) {
     return `${target}index.md` as FilePath
   }
 
@@ -108,10 +108,10 @@ export function resolveWikilinkTarget(
     return null
   }
 
-  const normalizedTarget = link.target?.replace(/\\/g, "/") ?? ""
+  const normalizedTarget = link.target?.replace(/\\/g, '/') ?? ''
 
   // Remove leading slash if present - wikilinks are absolute from content root
-  const target = normalizedTarget.startsWith("/") ? normalizedTarget.slice(1) : normalizedTarget
+  const target = normalizedTarget.startsWith('/') ? normalizedTarget.slice(1) : normalizedTarget
 
   // If empty target, link to current page
   if (!target) {
@@ -122,10 +122,10 @@ export function resolveWikilinkTarget(
   const slug = slugifyFilePath(stripSlashes(filePath) as FilePath)
   const ext = getFileExtension(filePath)
 
-  if (ext === ".base" && link.anchor && !link.anchor.startsWith("#^")) {
+  if (ext === '.base' && link.anchor && !link.anchor.startsWith('#^')) {
     const anchorText = link.anchorText?.trim()
     const viewSegment = sluggify(
-      anchorText && anchorText.length > 0 ? anchorText : link.anchor.replace(/^#/, ""),
+      anchorText && anchorText.length > 0 ? anchorText : link.anchor.replace(/^#/, ''),
     )
     if (viewSegment.length > 0) {
       const viewSlug = joinSegments(slug, viewSegment) as FullSlug
@@ -146,7 +146,7 @@ export function stripWikilinkFormatting(text: string): string {
     return text
   }
 
-  let result = ""
+  let result = ''
   let lastIndex = 0
 
   for (const range of ranges) {
@@ -187,8 +187,8 @@ export function stripWikilinkFormatting(text: string): string {
 export function resolveAnchor(anchorText: string): string {
   // if anchor contains #, take the last segment (Obsidian behavior)
   let text = anchorText.trim()
-  if (text.includes("#")) {
-    const segments = text.split("#")
+  if (text.includes('#')) {
+    const segments = text.split('#')
     text = segments[segments.length - 1].trim()
   }
   // slugify using github-slugger (same as heading slugs)
@@ -205,9 +205,9 @@ export function resolveAnchor(anchorText: string): string {
 export function escapeWikilinkForTable(wikilink: string): string {
   let escaped = wikilink
   // escape hash for headers
-  escaped = escaped.replace("#", "\\#")
+  escaped = escaped.replace('#', '\\#')
   // escape pipe characters if not already escaped
   // regex: match pipe that's not preceded by backslash (or preceded by even number of backslashes)
-  escaped = escaped.replace(/((^|[^\\])(\\\\)*)\|/g, "$1\\|")
+  escaped = escaped.replace(/((^|[^\\])(\\\\)*)\|/g, '$1\\|')
   return escaped
 }

@@ -1,5 +1,5 @@
 ---
-date: "2024-04-12"
+date: '2024-04-12'
 description: Economics for engineer, a guide.
 id: Finals
 modified: 2025-10-29 02:16:13 GMT-04:00

@@ -1,5 +1,5 @@
 ---
-date: "2024-12-17"
+date: '2024-12-17'
 description: to convert time to frequency domain and vice versa.
 id: Laplace transform
 modified: 2025-10-29 02:15:27 GMT-04:00

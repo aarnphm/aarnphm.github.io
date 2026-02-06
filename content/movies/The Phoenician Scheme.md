@@ -13,5 +13,5 @@ category:
   - philosophy
   - sociology
 description: Wealthy businessman, Zsa-zsa Korda appoints his only daughter, a nun, as sole heir to his estate. As Korda embarks on a new enterprise, they soon become the target of scheming tycoons, foreign terrorists, and determined assassins.
-posters: "[[movies/posters/the-phoenician-scheme.webp]]"
+posters: '[[movies/posters/the-phoenician-scheme.webp]]'
 ---

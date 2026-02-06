@@ -12,7 +12,7 @@ subcategory:
   - networking
 author:
   - W. Richard Stevens
-posters: "[[library/posters/TCP-IP-Illustrated.jpg]]"
+posters: '[[library/posters/TCP-IP-Illustrated.jpg]]'
 category:
   - technology
 translator:

@@ -1,5 +1,5 @@
 ---
-date: "2025-12-18"
+date: '2025-12-18'
 description: on teaching how models should learn.
 id: Reinforcement learning
 modified: 2026-01-17 00:19:11 GMT-05:00

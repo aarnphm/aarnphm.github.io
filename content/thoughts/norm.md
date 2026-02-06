@@ -1,5 +1,5 @@
 ---
-date: "2025-08-20"
+date: '2025-08-20'
 description: a function on a real or complex vector space that returns non-negative reals while satisfying the standard axioms.
 id: norm
 modified: 2025-10-29 02:15:51 GMT-04:00

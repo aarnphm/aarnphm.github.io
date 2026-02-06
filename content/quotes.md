@@ -1,7 +1,7 @@
 ---
 aliases:
   - advice
-date: "2024-01-23"
+date: '2024-01-23'
 description: A collection of quotes, wisdom, and advice.
 id: quotes
 layout: letter
@@ -18,9 +18,9 @@ metadata:
     character    = ? any printable ascii except newline ? ;
 modified: 2026-01-26 14:02:16 GMT-05:00
 seealso:
-  - "[[word|dictionary]]"
-  - "[[research|wip]]"
-  - "[[influence|people canon]]"
+  - '[[word|dictionary]]'
+  - '[[research|wip]]'
+  - '[[influence|people canon]]'
 socials:
   notes: https://notes.aarnphm.xyz
 tags:

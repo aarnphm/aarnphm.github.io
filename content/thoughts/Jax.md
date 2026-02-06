@@ -1,5 +1,5 @@
 ---
-date: "2022-11-07"
+date: '2022-11-07'
 description: numpy with autograd and xla compilation for accelerators, featuring jit compilation, automatic differentiation, and vectorization with immutable arrays.
 id: Jax
 modified: 2025-10-29 02:15:25 GMT-04:00

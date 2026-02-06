@@ -1,6 +1,6 @@
 ---
 category: companies
-date: "2022-01-25"
+date: '2022-01-25'
 description: sfcompute but in toronto
 id: torontocompute
 modified: 2025-12-10 16:15:18 GMT-05:00

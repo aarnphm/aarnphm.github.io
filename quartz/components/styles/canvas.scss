@@ -1,5 +1,5 @@
-@use "sass:map";
-@use "../../styles/variables.scss" as *;
+@use 'sass:map';
+@use '../../styles/variables.scss' as *;
 
 $canvas-bg: var(--light);
 $canvas-border: var(--gray);
@@ -162,7 +162,7 @@ $canvas-accents: (
 }
 
 // Page-level adjustments
-[data-is-canvas="true"] {
+[data-is-canvas='true'] {
   overflow: hidden;
   height: 100vh;
   .main-col {
@@ -189,7 +189,7 @@ $canvas-accents: (
   position: relative;
   box-shadow: $canvas-shadow;
 
-  svg:not(a[data-role="anchor"] *):not([class~="external-icon"]):not([data-icon]) {
+  svg:not(a[data-role='anchor'] *):not([class~='external-icon']):not([data-icon]) {
     width: 100%;
     height: 100%;
   }
@@ -665,7 +665,7 @@ $canvas-accents: (
     pointer-events: none;
   }
 
-  &[data-action="help"] svg {
+  &[data-action='help'] svg {
     width: 12px;
     height: 12px;
   }
@@ -909,10 +909,10 @@ $canvas-accents: (
 
 // Accent borders by Obsidian canvas color id
 @each $id, $color in $canvas-accents {
-  .node[data-color="#{$id}"] .node-bg,
-  .node[data-color="#{$id}"] .node-border-overlay,
-  .node-group[data-color="#{$id}"] .node-bg,
-  .node-group[data-color="#{$id}"] .node-border-overlay {
+  .node[data-color='#{$id}'] .node-bg,
+  .node[data-color='#{$id}'] .node-border-overlay,
+  .node-group[data-color='#{$id}'] .node-bg,
+  .node-group[data-color='#{$id}'] .node-border-overlay {
     stroke: $color !important;
     stroke-width: 2px !important;
   }

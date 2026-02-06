@@ -1,10 +1,10 @@
 ---
-created: "2025-09-18"
-date: "2025-09-18"
+created: '2025-09-18'
+date: '2025-09-18'
 description: Summary statistic of variability
 id: average absolute deviation
 modified: 2025-10-29 02:15:41 GMT-04:00
-published: "2003-10-18"
+published: '2003-10-18'
 source: https://en.wikipedia.org/wiki/Average_absolute_deviation
 tags:
   - seed

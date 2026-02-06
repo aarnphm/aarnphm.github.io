@@ -1,5 +1,5 @@
 ---
-date: "2024-12-14"
+date: '2024-12-14'
 description: despite the name, this is a classification model.
 id: Logistic regression
 modified: 2025-10-29 02:15:27 GMT-04:00

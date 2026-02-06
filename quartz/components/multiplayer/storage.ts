@@ -1,7 +1,7 @@
-import type { OperationInput } from "./model"
-import { parsePendingOps } from "./model"
+import type { OperationInput } from './model'
+import { parsePendingOps } from './model'
 
-const pendingOpsStoragePrefix = "comment-pending-ops:"
+const pendingOpsStoragePrefix = 'comment-pending-ops:'
 
 export function pendingOpsKey(pageId: string): string {
   return `${pendingOpsStoragePrefix}${pageId}`

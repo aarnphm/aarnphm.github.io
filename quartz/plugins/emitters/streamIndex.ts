@@ -1,31 +1,31 @@
-import type { Root, Element, ElementContent } from "hast"
-import type { VNode } from "preact"
-import { render } from "preact-render-to-string"
-import type { FullPageLayout } from "../../cfg"
-import type { QuartzComponentProps } from "../../types/component"
-import type { StaticResources } from "../../util/resources"
-import type { QuartzPluginData } from "../vfile"
-import { sharedPageComponents, defaultContentPageLayout } from "../../../quartz.layout"
-import StreamPageComponent from "../../components/pages/StreamPage"
-import { pageResources, renderPage } from "../../components/renderPage"
-import { renderStreamEntry, formatStreamDate, buildOnPath } from "../../components/stream/Entry"
-import { QuartzEmitterPlugin } from "../../types/plugin"
-import { BuildCtx } from "../../util/ctx"
-import { pathToRoot, FullSlug, normalizeHastElement } from "../../util/path"
-import { groupStreamEntries } from "../../util/stream"
-import { write } from "./helpers"
+import type { Root, Element, ElementContent } from 'hast'
+import type { VNode } from 'preact'
+import { render } from 'preact-render-to-string'
+import type { FullPageLayout } from '../../cfg'
+import type { QuartzComponentProps } from '../../types/component'
+import type { StaticResources } from '../../util/resources'
+import type { QuartzPluginData } from '../vfile'
+import { sharedPageComponents, defaultContentPageLayout } from '../../../quartz.layout'
+import StreamPageComponent from '../../components/pages/StreamPage'
+import { pageResources, renderPage } from '../../components/renderPage'
+import { renderStreamEntry, formatStreamDate, buildOnPath } from '../../components/stream/Entry'
+import { QuartzEmitterPlugin } from '../../types/plugin'
+import { BuildCtx } from '../../util/ctx'
+import { pathToRoot, FullSlug, normalizeHastElement } from '../../util/path'
+import { groupStreamEntries } from '../../util/stream'
+import { write } from './helpers'
 
 const formatIsoAsYMD = (iso?: string | null): string | null => {
   if (!iso) return null
   const date = new Date(iso)
   if (Number.isNaN(date.getTime())) return null
   const year = date.getUTCFullYear()
-  const month = String(date.getUTCMonth() + 1).padStart(2, "0")
-  const day = String(date.getUTCDate()).padStart(2, "0")
+  const month = String(date.getUTCMonth() + 1).padStart(2, '0')
+  const day = String(date.getUTCDate()).padStart(2, '0')
   return `${year}/${month}/${day}`
 }
 
-const isElement = (node: ElementContent): node is Element => node.type === "element"
+const isElement = (node: ElementContent): node is Element => node.type === 'element'
 
 async function* processStreamIndex(
   ctx: BuildCtx,
@@ -34,12 +34,12 @@ async function* processStreamIndex(
   allFiles: QuartzPluginData[],
   resources: StaticResources,
 ) {
-  const filteredHeader = sharedPageComponents.header.filter((component) => {
-    const name = component.displayName || component.name || ""
-    return name !== "Breadcrumbs" && name !== "StackedNotes"
+  const filteredHeader = sharedPageComponents.header.filter(component => {
+    const name = component.displayName || component.name || ''
+    return name !== 'Breadcrumbs' && name !== 'StackedNotes'
   })
   const filteredBefore = defaultContentPageLayout.beforeBody.filter(
-    (c) => c.displayName !== "Byline" || c.name !== "Byline",
+    c => c.displayName !== 'Byline' || c.name !== 'Byline',
   )
 
   const layout: FullPageLayout = {
@@ -54,14 +54,14 @@ async function* processStreamIndex(
   const groups = groupStreamEntries(fileData!.streamData!.entries)
   if (groups.length === 0) return
 
-  const lines = groups.map((group) => {
+  const lines = groups.map(group => {
     const isoSource =
       group.isoDate ??
-      group.entries.find((entry) => entry.date)?.date ??
+      group.entries.find(entry => entry.date)?.date ??
       (group.timestamp ? new Date(group.timestamp).toISOString() : null)
 
     const path = buildOnPath(isoSource!) ?? null
-    const entries = group.entries.map((entry) => {
+    const entries = group.entries.map(entry => {
       const vnode = renderStreamEntry(entry, fileData!.filePath!, {
         groupId: group.id,
         timestampValue: group.timestamp,
@@ -91,26 +91,26 @@ async function* processStreamIndex(
     })
   })
 
-  const payload = lines.join("\n")
+  const payload = lines.join('\n')
 
-  yield write({ ctx, slug: "streams" as FullSlug, ext: ".jsonl", content: payload })
+  yield write({ ctx, slug: 'streams' as FullSlug, ext: '.jsonl', content: payload })
 
   for (const group of groups) {
     const isoSource =
       group.isoDate ??
-      group.entries.find((entry) => entry.date)?.date ??
+      group.entries.find(entry => entry.date)?.date ??
       (group.timestamp ? new Date(group.timestamp).toISOString() : null)
 
     const onPath = buildOnPath(isoSource!)
     if (!onPath) continue
 
-    const slug = onPath.replace(/^\//, "") as FullSlug
+    const slug = onPath.replace(/^\//, '') as FullSlug
     const titleDate = formatIsoAsYMD(isoSource) ?? formatIsoAsYMD(group.isoDate)
-    const title = titleDate ?? fileData!.frontmatter?.title ?? "stream"
+    const title = titleDate ?? fileData!.frontmatter?.title ?? 'stream'
     const sourceSlug = fileData.slug! as FullSlug
-    const rebasedEntries = group.entries.map((entry) => ({
+    const rebasedEntries = group.entries.map(entry => ({
       ...entry,
-      content: entry.content.map((node) =>
+      content: entry.content.map(node =>
         isElement(node) ? (normalizeHastElement(node, slug, sourceSlug) as ElementContent) : node,
       ),
     }))
@@ -122,8 +122,8 @@ async function* processStreamIndex(
       frontmatter: {
         ...fileData!.frontmatter,
         title,
-        streamCanonical: "/stream",
-        pageLayout: "default",
+        streamCanonical: '/stream',
+        pageLayout: 'default',
       },
     }
 
@@ -140,19 +140,19 @@ async function* processStreamIndex(
 
     const html = renderPage(ctx, slug, componentData, layout, externalResources, false)
 
-    yield write({ ctx, slug, ext: ".html", content: html })
+    yield write({ ctx, slug, ext: '.html', content: html })
   }
 }
 
 export const StreamIndex: QuartzEmitterPlugin = () => {
   return {
-    name: "StreamIndex",
+    name: 'StreamIndex',
     async *emit(ctx, content, resources) {
       const allFiles = content.map(([, file]) => file.data as QuartzPluginData)
 
       for (const [tree, file] of content) {
         const data = file.data as QuartzPluginData
-        if (data.slug !== "stream" || !data.streamData) continue
+        if (data.slug !== 'stream' || !data.streamData) continue
 
         yield* processStreamIndex(ctx, data, tree, allFiles, resources)
       }
@@ -163,13 +163,13 @@ export const StreamIndex: QuartzEmitterPlugin = () => {
 
       for (const changeEvent of changeEvents) {
         if (changeEvent.file) {
-          if (changeEvent.type === "add" || changeEvent.type === "change") {
+          if (changeEvent.type === 'add' || changeEvent.type === 'change') {
             changedSlugs.add(changeEvent.file.data.slug!)
           }
           continue
         }
 
-        if (changeEvent.type === "add" || changeEvent.type === "change") {
+        if (changeEvent.type === 'add' || changeEvent.type === 'change') {
           const changedPath = changeEvent.path
           for (const [_, vf] of content) {
             const deps = (vf.data.codeDependencies as string[] | undefined) ?? []
@@ -180,12 +180,12 @@ export const StreamIndex: QuartzEmitterPlugin = () => {
         }
       }
 
-      if (!changedSlugs.has("stream")) return
+      if (!changedSlugs.has('stream')) return
 
       for (const [tree, file] of content) {
         const data = file.data as QuartzPluginData
         const slug = data.slug!
-        if (slug !== "stream" || !data.streamData) continue
+        if (slug !== 'stream' || !data.streamData) continue
         yield* processStreamIndex(ctx, data, tree, allFiles, resources)
       }
     },

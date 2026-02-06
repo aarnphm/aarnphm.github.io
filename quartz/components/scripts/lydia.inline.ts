@@ -1,5 +1,5 @@
-import { getFullSlug } from "../../util/path"
-import { loadMapbox, applyMonochromeMapPalette } from "./mapbox-client"
+import { getFullSlug } from '../../util/path'
+import { loadMapbox, applyMonochromeMapPalette } from './mapbox-client'
 
 function initScrollMask() {
   const root = document.querySelector("[data-slug='lyd']") as HTMLElement
@@ -19,7 +19,7 @@ function initScrollMask() {
     const opacity = Math.max(0.3, 1 - scrollProgress * 0.7)
 
     // Update the CSS custom property
-    root.style.setProperty("--mask-opacity", opacity.toString())
+    root.style.setProperty('--mask-opacity', opacity.toString())
   }
 
   // Initial check
@@ -28,7 +28,7 @@ function initScrollMask() {
   // Update on scroll with throttling for better performance
   let ticking = false
   window.addEventListener(
-    "scroll",
+    'scroll',
     () => {
       if (!ticking) {
         window.requestAnimationFrame(() => {
@@ -47,30 +47,30 @@ function initHoverModal() {
   if (!root) return
 
   // Create modal element
-  let modal = document.querySelector(".lydia-modal") as HTMLElement
+  let modal = document.querySelector('.lydia-modal') as HTMLElement
   if (!modal) {
-    modal = document.createElement("div")
-    modal.className = "lydia-modal"
+    modal = document.createElement('div')
+    modal.className = 'lydia-modal'
     root.appendChild(modal)
   }
 
   // Find all timeline items with hover text
-  const timelineItems = root.querySelectorAll(".timeline-item[data-hover-text]")
+  const timelineItems = root.querySelectorAll('.timeline-item[data-hover-text]')
 
-  timelineItems.forEach((item) => {
-    const hoverText = item.getAttribute("data-hover-text")
+  timelineItems.forEach(item => {
+    const hoverText = item.getAttribute('data-hover-text')
     if (!hoverText) return
 
-    const content = item.querySelector(".timeline-content") as HTMLElement
+    const content = item.querySelector('.timeline-content') as HTMLElement
     if (!content) return
 
     const onMouseEnter = () => {
       modal.textContent = hoverText
-      modal.classList.add("active")
+      modal.classList.add('active')
     }
 
     const onMouseLeave = () => {
-      modal.classList.remove("active")
+      modal.classList.remove('active')
     }
 
     const onMouseMove = (e: MouseEvent) => {
@@ -79,9 +79,9 @@ function initHoverModal() {
       modal.style.top = `${e.pageY + 15}px`
     }
 
-    content.addEventListener("mouseenter", onMouseEnter)
-    content.addEventListener("mouseleave", onMouseLeave)
-    content.addEventListener("mousemove", onMouseMove)
+    content.addEventListener('mouseenter', onMouseEnter)
+    content.addEventListener('mouseleave', onMouseLeave)
+    content.addEventListener('mousemove', onMouseMove)
   })
 }
 
@@ -92,15 +92,15 @@ function initPictureFrameDecorations() {
   const historyItems = root.querySelectorAll(".timeline-item[data-type='history']")
 
   historyItems.forEach((item, index) => {
-    const content = item.querySelector<HTMLElement>(".timeline-content") as HTMLElement
+    const content = item.querySelector<HTMLElement>('.timeline-content') as HTMLElement
     if (!content) return
 
     // Check if decorations already exist
-    if (content.querySelector(".frame-corner")) return
+    if (content.querySelector('.frame-corner')) return
 
     // Create corner decorations (4 corners)
     for (let i = 0; i < 4; i++) {
-      const corner = document.createElement("div")
+      const corner = document.createElement('div')
       corner.className = `frame-corner frame-corner-${i + 1}`
       corner.innerHTML = generateCornerOrnament(i, index)
       content.appendChild(corner)
@@ -108,40 +108,40 @@ function initPictureFrameDecorations() {
 
     // Create edge decorations (top, right, bottom, left)
     for (let i = 0; i < 4; i++) {
-      const edge = document.createElement("div")
+      const edge = document.createElement('div')
       edge.className = `frame-edge frame-edge-${i + 1}`
       edge.innerHTML = generateEdgePattern(i, index)
       content.appendChild(edge)
     }
 
     // Create particle shower container
-    const showerContainer = document.createElement("div")
-    showerContainer.className = "particle-shower"
+    const showerContainer = document.createElement('div')
+    showerContainer.className = 'particle-shower'
     content.appendChild(showerContainer)
 
     // Add hover effect to trigger shower
-    content.addEventListener("mouseenter", () => {
-      showerContainer.innerHTML = ""
+    content.addEventListener('mouseenter', () => {
+      showerContainer.innerHTML = ''
       for (let i = 0; i < 15; i++) {
-        const particle = document.createElement("div")
-        particle.className = "particle"
+        const particle = document.createElement('div')
+        particle.className = 'particle'
         particle.style.left = `${Math.random() * 100}%`
         particle.style.animationDelay = `${Math.random() * 0.6}s`
         particle.style.animationDuration = `${1.2 + Math.random() * 1.2}s`
 
         // Vary particle shapes
         if (Math.random() > 0.7) {
-          particle.classList.add("particle-star")
+          particle.classList.add('particle-star')
         } else if (Math.random() > 0.5) {
-          particle.classList.add("particle-dot")
+          particle.classList.add('particle-dot')
         }
 
         showerContainer.appendChild(particle)
       }
     })
 
-    content.addEventListener("animationend", (e) => {
-      if ((e.target as HTMLElement).classList.contains("particle")) {
+    content.addEventListener('animationend', e => {
+      if ((e.target as HTMLElement).classList.contains('particle')) {
         // @ts-ignore
         e.target?.remove()
       }
@@ -284,15 +284,15 @@ function generateEdgePattern(edge: number, frameIndex: number): string {
 }
 
 function initCharacter() {
-  const timelineContainer = document.querySelector(".timeline-container") as HTMLElement
+  const timelineContainer = document.querySelector('.timeline-container') as HTMLElement
   if (!timelineContainer) return
 
   // Check if character already exists
-  if (document.querySelector(".lydia-character")) return
+  if (document.querySelector('.lydia-character')) return
 
   // Create character container
-  const characterDiv = document.createElement("div")
-  characterDiv.className = "lydia-character"
+  const characterDiv = document.createElement('div')
+  characterDiv.className = 'lydia-character'
 
   // Random variant selection
   const variants = [drawAlienVariant1, drawAlienVariant2]
@@ -303,10 +303,10 @@ function initCharacter() {
   timelineContainer.appendChild(characterDiv)
 
   // Add cursor interaction
-  const alien = characterDiv.querySelector("svg") as SVGElement
+  const alien = characterDiv.querySelector('svg') as SVGElement
   if (!alien) return
 
-  const eyes = alien.querySelectorAll(".alien-eye")
+  const eyes = alien.querySelectorAll('.alien-eye')
   if (!eyes.length) return
 
   const lookRange = 3
@@ -329,44 +329,44 @@ function initCharacter() {
     const offsetX = Math.cos(angle) * lookRange
     const offsetY = Math.sin(angle) * lookRange
 
-    eyes.forEach((eye) => {
-      eye.setAttribute("transform", `translate(${offsetX}, ${offsetY})`)
+    eyes.forEach(eye => {
+      eye.setAttribute('transform', `translate(${offsetX}, ${offsetY})`)
     })
   }
 
   const resetEyes = () => {
-    alien.style.transform = "rotate(0deg)"
-    eyes.forEach((eye) => eye.setAttribute("transform", "translate(0, 0)"))
+    alien.style.transform = 'rotate(0deg)'
+    eyes.forEach(eye => eye.setAttribute('transform', 'translate(0, 0)'))
   }
 
-  const handleNav = (event: CustomEventMap["nav"]) => {
-    if (event.detail?.url !== "lyd") {
+  const handleNav = (event: CustomEventMap['nav']) => {
+    if (event.detail?.url !== 'lyd') {
       cleanupEyeTracking()
     }
   }
 
   function cleanupEyeTracking() {
-    document.body.removeEventListener("pointermove", handlePointerMove)
-    document.body.removeEventListener("pointerleave", resetEyes)
-    document.removeEventListener("nav", handleNav)
+    document.body.removeEventListener('pointermove', handlePointerMove)
+    document.body.removeEventListener('pointerleave', resetEyes)
+    document.removeEventListener('nav', handleNav)
   }
 
-  document.body.addEventListener("pointermove", handlePointerMove)
-  document.body.addEventListener("pointerleave", resetEyes)
-  document.addEventListener("nav", handleNav)
+  document.body.addEventListener('pointermove', handlePointerMove)
+  document.body.addEventListener('pointerleave', resetEyes)
+  document.addEventListener('nav', handleNav)
 }
 
 function readCoordinates(node: HTMLElement): { lat: number; lon: number } | null {
-  const lat = Number.parseFloat(node.getAttribute("data-lat") ?? "")
-  const lon = Number.parseFloat(node.getAttribute("data-lon") ?? "")
+  const lat = Number.parseFloat(node.getAttribute('data-lat') ?? '')
+  const lon = Number.parseFloat(node.getAttribute('data-lon') ?? '')
   if (!Number.isFinite(lat) || !Number.isFinite(lon)) {
     return null
   }
   return { lat, lon }
 }
 
-function formatCoordinate(value: number, axis: "lat" | "lon"): string {
-  const direction = axis === "lat" ? (value >= 0 ? "N" : "S") : value >= 0 ? "E" : "W"
+function formatCoordinate(value: number, axis: 'lat' | 'lon'): string {
+  const direction = axis === 'lat' ? (value >= 0 ? 'N' : 'S') : value >= 0 ? 'E' : 'W'
   return `${Math.abs(value).toFixed(4)} ${direction}`
 }
 
@@ -374,7 +374,7 @@ function initTimelineLocationPreview() {
   const root = document.querySelector("[data-slug='lyd']") as HTMLElement | null
   if (!root) return
 
-  if (root.dataset.locationMapReady === "1") {
+  if (root.dataset.locationMapReady === '1') {
     return
   }
 
@@ -385,11 +385,11 @@ function initTimelineLocationPreview() {
   )
 
   if (locationItems.length === 0) return
-  root.dataset.locationMapReady = "1"
+  root.dataset.locationMapReady = '1'
 
-  const tooltip = document.createElement("div")
-  tooltip.className = "lydia-map-tooltip"
-  tooltip.setAttribute("aria-hidden", "true")
+  const tooltip = document.createElement('div')
+  tooltip.className = 'lydia-map-tooltip'
+  tooltip.setAttribute('aria-hidden', 'true')
   tooltip.innerHTML = `
     <p class="lydia-map-title">toronto</p>
     <div class="lydia-map-meta">
@@ -401,18 +401,18 @@ function initTimelineLocationPreview() {
   `
   root.appendChild(tooltip)
 
-  const titleEl = tooltip.querySelector(".lydia-map-title") as HTMLElement
+  const titleEl = tooltip.querySelector('.lydia-map-title') as HTMLElement
   const latEl = tooltip.querySelector("[data-role='lat']") as HTMLElement
   const lonEl = tooltip.querySelector("[data-role='lon']") as HTMLElement
-  const statusEl = tooltip.querySelector(".lydia-map-status") as HTMLElement
-  const mapCanvas = tooltip.querySelector(".lydia-map-canvas") as HTMLElement
+  const statusEl = tooltip.querySelector('.lydia-map-status') as HTMLElement
+  const mapCanvas = tooltip.querySelector('.lydia-map-canvas') as HTMLElement
 
   let previewToken = 0
   let mapBundlePromise: Promise<{ map: any; marker: any } | null> | null = null
 
   const setTooltipVisible = (visible: boolean) => {
-    tooltip.classList.toggle("active", visible)
-    tooltip.setAttribute("aria-hidden", visible ? "false" : "true")
+    tooltip.classList.toggle('active', visible)
+    tooltip.setAttribute('aria-hidden', visible ? 'false' : 'true')
   }
 
   const updateTooltipPosition = (point: { x: number; y: number }) => {
@@ -429,14 +429,14 @@ function initTimelineLocationPreview() {
   const ensureMapBundle = () => {
     if (!mapBundlePromise) {
       mapBundlePromise = loadMapbox()
-        .then((mapboxgl) => {
+        .then(mapboxgl => {
           if (!mapboxgl) {
             return null
           }
 
           const map = new mapboxgl.Map({
             container: mapCanvas,
-            style: "mapbox://styles/mapbox/light-v11",
+            style: 'mapbox://styles/mapbox/light-v11',
             center: [-79.3832, 43.6532],
             zoom: 12.5,
             attributionControl: false,
@@ -445,7 +445,7 @@ function initTimelineLocationPreview() {
             bearing: 0,
           })
 
-          const marker = new mapboxgl.Marker({ color: "#2b2418" })
+          const marker = new mapboxgl.Marker({ color: '#2b2418' })
             .setLngLat([-79.3832, 43.6532])
             .addTo(map)
 
@@ -456,11 +456,11 @@ function initTimelineLocationPreview() {
           if (map.doubleClickZoom) map.doubleClickZoom.disable()
           if (map.touchZoomRotate) map.touchZoomRotate.disable()
 
-          map.once("load", () => applyMonochromeMapPalette(map))
+          map.once('load', () => applyMonochromeMapPalette(map))
 
           return { map, marker }
         })
-        .catch((error) => {
+        .catch(error => {
           console.error(error)
           return null
         })
@@ -474,26 +474,26 @@ function initTimelineLocationPreview() {
     setTooltipVisible(true)
     updateTooltipPosition(point)
 
-    const heading = item.querySelector("h3")?.textContent?.trim() ?? "toronto"
+    const heading = item.querySelector('h3')?.textContent?.trim() ?? 'toronto'
     titleEl.textContent = heading
-    latEl.textContent = "…"
-    lonEl.textContent = "…"
-    statusEl.textContent = "looking up location…"
+    latEl.textContent = '…'
+    lonEl.textContent = '…'
+    statusEl.textContent = 'looking up location…'
 
     const coords = readCoordinates(item)
 
     if (!coords) {
-      statusEl.textContent = "location unavailable"
-      latEl.textContent = "—"
-      lonEl.textContent = "—"
+      statusEl.textContent = 'location unavailable'
+      latEl.textContent = '—'
+      lonEl.textContent = '—'
       return
     }
 
-    latEl.textContent = formatCoordinate(coords.lat, "lat")
-    lonEl.textContent = formatCoordinate(coords.lon, "lon")
-    statusEl.textContent = ""
+    latEl.textContent = formatCoordinate(coords.lat, 'lat')
+    lonEl.textContent = formatCoordinate(coords.lon, 'lon')
+    statusEl.textContent = ''
 
-    ensureMapBundle().then((bundle) => {
+    ensureMapBundle().then(bundle => {
       if (requestId !== previewToken) return
       if (!bundle) {
         statusEl.textContent = `• map offline`
@@ -502,7 +502,7 @@ function initTimelineLocationPreview() {
 
       bundle.marker.setLngLat([coords.lon, coords.lat])
       bundle.map.jumpTo({ center: [coords.lon, coords.lat], zoom: 13.3, bearing: 0, pitch: 0 })
-      statusEl.textContent = "• map online"
+      statusEl.textContent = '• map online'
 
       window.requestAnimationFrame(() => {
         try {
@@ -524,39 +524,39 @@ function initTimelineLocationPreview() {
     return { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 }
   }
 
-  locationItems.forEach((item) => {
-    const marker = item.querySelector(".timeline-marker") as HTMLElement | null
+  locationItems.forEach(item => {
+    const marker = item.querySelector('.timeline-marker') as HTMLElement | null
     if (!marker) return
 
-    if (!marker.getAttribute("tabindex")) {
-      marker.setAttribute("tabindex", "0")
+    if (!marker.getAttribute('tabindex')) {
+      marker.setAttribute('tabindex', '0')
     }
 
-    marker.addEventListener("pointerenter", (event) => {
+    marker.addEventListener('pointerenter', event => {
       showPreview(item, { x: event.clientX, y: event.clientY })
     })
 
-    marker.addEventListener("pointermove", (event) => {
-      if (!tooltip.classList.contains("active")) return
+    marker.addEventListener('pointermove', event => {
+      if (!tooltip.classList.contains('active')) return
       updateTooltipPosition({ x: event.clientX, y: event.clientY })
     })
 
-    marker.addEventListener("pointerleave", hidePreview)
-    marker.addEventListener("pointercancel", hidePreview)
+    marker.addEventListener('pointerleave', hidePreview)
+    marker.addEventListener('pointercancel', hidePreview)
 
-    marker.addEventListener("focus", () => {
+    marker.addEventListener('focus', () => {
       showPreview(item, centroidFromMarker(marker))
     })
 
-    marker.addEventListener("blur", hidePreview)
+    marker.addEventListener('blur', hidePreview)
   })
 
-  const handleNav = (event: CustomEventMap["nav"]) => {
-    if (event.detail?.url === "lyd") return
+  const handleNav = (event: CustomEventMap['nav']) => {
+    if (event.detail?.url === 'lyd') return
     if (mapBundlePromise) {
-      mapBundlePromise.then((bundle) => {
+      mapBundlePromise.then(bundle => {
         const mapInstance = bundle?.map
-        if (mapInstance && typeof mapInstance.remove === "function") {
+        if (mapInstance && typeof mapInstance.remove === 'function') {
           try {
             mapInstance.remove()
           } catch (error) {
@@ -566,10 +566,10 @@ function initTimelineLocationPreview() {
       })
       mapBundlePromise = null
     }
-    document.removeEventListener("nav", handleNav)
+    document.removeEventListener('nav', handleNav)
   }
 
-  document.addEventListener("nav", handleNav)
+  document.addEventListener('nav', handleNav)
 }
 
 function drawAlienVariant1(): string {
@@ -662,9 +662,9 @@ function drawAlienVariant2(): string {
 }
 
 // Initialize when DOM is ready
-document.addEventListener("nav", () => {
+document.addEventListener('nav', () => {
   const slug = getFullSlug(window)
-  if (slug === "lyd") {
+  if (slug === 'lyd') {
     initScrollMask()
     initHoverModal()
     initPictureFrameDecorations()
@@ -674,7 +674,7 @@ document.addEventListener("nav", () => {
 })
 
 // Also run on initial page load
-if (getFullSlug(window) === "lyd") {
+if (getFullSlug(window) === 'lyd') {
   initScrollMask()
   initHoverModal()
   initPictureFrameDecorations()

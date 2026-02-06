@@ -1,23 +1,23 @@
 function hydrateStreamInteractions() {
-  const el = document.querySelector<HTMLElement>(".stream")
+  const el = document.querySelector<HTMLElement>('.stream')
   if (!el) return
 
-  const timeElements = el.querySelectorAll<HTMLTimeElement>(".stream-entry-date[datetime]")
+  const timeElements = el.querySelectorAll<HTMLTimeElement>('.stream-entry-date[datetime]')
 
   if (timeElements.length === 0) return
 
-  const formatter = new Intl.DateTimeFormat("en-US", {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-    hour: "numeric",
-    minute: "2-digit",
+  const formatter = new Intl.DateTimeFormat('en-US', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+    hour: 'numeric',
+    minute: '2-digit',
     hour12: false,
-    timeZoneName: "shortOffset",
+    timeZoneName: 'shortOffset',
   })
 
-  timeElements.forEach((timeEl) => {
-    const isoDate = timeEl.getAttribute("datetime")
+  timeElements.forEach(timeEl => {
+    const isoDate = timeEl.getAttribute('datetime')
     if (!isoDate) return
 
     const date = new Date(isoDate)
@@ -26,19 +26,19 @@ function hydrateStreamInteractions() {
     timeEl.textContent = formatter.format(date)
   })
 
-  const entries = Array.from(el.querySelectorAll<HTMLElement>(".stream-entry"))
+  const entries = Array.from(el.querySelectorAll<HTMLElement>('.stream-entry'))
   if (entries.length === 0) return
 
   const interactiveLinks = Array.from(
     el.querySelectorAll<HTMLAnchorElement>(
-      ".stream-entry-date[data-stream-link][data-stream-timestamp]",
+      '.stream-entry-date[data-stream-link][data-stream-timestamp]',
     ),
   )
 
   if (interactiveLinks.length === 0) return
 
   const timestampHrefMap = new Map<string, string>()
-  interactiveLinks.forEach((link) => {
+  interactiveLinks.forEach(link => {
     const timestamp = link.dataset.streamTimestamp
     const href = link.dataset.streamHref
     if (timestamp && href) {
@@ -47,11 +47,11 @@ function hydrateStreamInteractions() {
   })
 
   if (timestampHrefMap.size <= 1) {
-    el.removeAttribute("data-stream-active-timestamp")
+    el.removeAttribute('data-stream-active-timestamp')
     return
   }
 
-  const canonicalPath = el.dataset.streamCanonical || "/stream"
+  const canonicalPath = el.dataset.streamCanonical || '/stream'
   const originalUrl = new URL(window.location.href)
   const originalSearch = originalUrl.search
   const originalHash = originalUrl.hash
@@ -63,7 +63,7 @@ function hydrateStreamInteractions() {
     url.pathname = targetPath ?? canonicalPath
     url.search = originalSearch
     url.hash = originalHash
-    window.history.replaceState(window.history.state, "", url)
+    window.history.replaceState(window.history.state, '', url)
   }
 
   const updateEntries = (
@@ -74,12 +74,12 @@ function hydrateStreamInteractions() {
     activeTimestamp = targetTimestamp
 
     if (!targetTimestamp) {
-      el.removeAttribute("data-stream-active-timestamp")
+      el.removeAttribute('data-stream-active-timestamp')
     } else {
       el.dataset.streamActiveTimestamp = targetTimestamp
     }
 
-    entries.forEach((entry) => {
+    entries.forEach(entry => {
       const entryTimestamp = entry.dataset.streamTimestamp ?? null
       const matches = targetTimestamp !== null && entryTimestamp === targetTimestamp
 
@@ -89,16 +89,16 @@ function hydrateStreamInteractions() {
         entry.hidden = true
       }
 
-      entry.classList.toggle("stream-entry-active", matches)
+      entry.classList.toggle('stream-entry-active', matches)
     })
 
-    interactiveLinks.forEach((link) => {
+    interactiveLinks.forEach(link => {
       const matches = targetTimestamp !== null && link.dataset.streamTimestamp === targetTimestamp
-      link.classList.toggle("is-active", matches)
+      link.classList.toggle('is-active', matches)
       if (matches) {
-        link.setAttribute("aria-current", "page")
+        link.setAttribute('aria-current', 'page')
       } else {
-        link.removeAttribute("aria-current")
+        link.removeAttribute('aria-current')
       }
     })
 
@@ -126,15 +126,15 @@ function hydrateStreamInteractions() {
   }
 
   const handleRootKeydown = (event: KeyboardEvent) => {
-    if (event.key === "Escape") {
+    if (event.key === 'Escape') {
       updateEntries(null)
     }
   }
 
-  el.addEventListener("keydown", handleRootKeydown)
-  el.addEventListener("focusout", clearIfOutside, true)
-  window.addCleanup(() => el.removeEventListener("keydown", handleRootKeydown))
-  window.addCleanup(() => el.removeEventListener("focusout", clearIfOutside, true))
+  el.addEventListener('keydown', handleRootKeydown)
+  el.addEventListener('focusout', clearIfOutside, true)
+  window.addCleanup(() => el.removeEventListener('keydown', handleRootKeydown))
+  window.addCleanup(() => el.removeEventListener('focusout', clearIfOutside, true))
 
   const getTimestampForPath = (path: string): string | null => {
     for (const [timestamp, href] of timestampHrefMap.entries()) {
@@ -145,7 +145,7 @@ function hydrateStreamInteractions() {
     return null
   }
 
-  interactiveLinks.forEach((link) => {
+  interactiveLinks.forEach(link => {
     const timestamp = link.dataset.streamTimestamp
     if (!timestamp) return
 
@@ -156,20 +156,20 @@ function hydrateStreamInteractions() {
     }
 
     const onKeydown = (event: KeyboardEvent) => {
-      if (event.key === "Enter" || event.key === " ") {
+      if (event.key === 'Enter' || event.key === ' ') {
         event.preventDefault()
         updateEntries(activeTimestamp === timestamp ? null : timestamp)
-      } else if (event.key === "Escape" && activeTimestamp !== null) {
+      } else if (event.key === 'Escape' && activeTimestamp !== null) {
         event.preventDefault()
         updateEntries(null)
       }
     }
 
-    link.addEventListener("click", onClick)
-    link.addEventListener("keydown", onKeydown)
+    link.addEventListener('click', onClick)
+    link.addEventListener('keydown', onKeydown)
 
-    window.addCleanup(() => link.removeEventListener("click", onClick))
-    window.addCleanup(() => link.removeEventListener("keydown", onKeydown))
+    window.addCleanup(() => link.removeEventListener('click', onClick))
+    window.addCleanup(() => link.removeEventListener('keydown', onKeydown))
   })
 
   const handlePopstate = () => {
@@ -177,8 +177,8 @@ function hydrateStreamInteractions() {
     updateEntries(timestamp, { updateHistory: false })
   }
 
-  window.addEventListener("popstate", handlePopstate)
-  window.addCleanup(() => window.removeEventListener("popstate", handlePopstate))
+  window.addEventListener('popstate', handlePopstate)
+  window.addCleanup(() => window.removeEventListener('popstate', handlePopstate))
 
   const initialTimestamp = getTimestampForPath(window.location.pathname)
   if (initialTimestamp) {
@@ -190,4 +190,4 @@ function hydrateStreamInteractions() {
   }
 }
 
-document.addEventListener("nav", hydrateStreamInteractions)
+document.addEventListener('nav', hydrateStreamInteractions)

@@ -1,9 +1,9 @@
-document.addEventListener("nav", () => {
-  const deck = document.querySelector<HTMLDivElement>(".slides-deck")
-  const slides = Array.from(document.querySelectorAll<HTMLElement>(".slide"))
-  const prev = document.querySelector<HTMLButtonElement>(".slides-controls .prev")
-  const next = document.querySelector<HTMLButtonElement>(".slides-controls .next")
-  const status = document.querySelector<HTMLSpanElement>(".slides-controls .status")
+document.addEventListener('nav', () => {
+  const deck = document.querySelector<HTMLDivElement>('.slides-deck')
+  const slides = Array.from(document.querySelectorAll<HTMLElement>('.slide'))
+  const prev = document.querySelector<HTMLButtonElement>('.slides-controls .prev')
+  const next = document.querySelector<HTMLButtonElement>('.slides-controls .next')
+  const status = document.querySelector<HTMLSpanElement>('.slides-controls .status')
   if (!deck || slides.length === 0 || !prev || !next || !status) return
 
   let idx = 0
@@ -19,19 +19,19 @@ document.addEventListener("nav", () => {
   }
 
   const update = () => {
-    const activePopups = document.querySelectorAll("#mermaid-container.active")
-    activePopups.forEach((popup) => popup.classList.remove("active"))
+    const activePopups = document.querySelectorAll('#mermaid-container.active')
+    activePopups.forEach(popup => popup.classList.remove('active'))
 
     slides.forEach((el, i) => {
-      el.classList.toggle("active", i === idx)
-      el.setAttribute("aria-hidden", i === idx ? "false" : "true")
+      el.classList.toggle('active', i === idx)
+      el.setAttribute('aria-hidden', i === idx ? 'false' : 'true')
     })
     status.textContent = `${idx + 1} / ${slides.length}`
     const target = document.getElementById(`slide-${idx}`)
-    if (target) target.scrollIntoView({ behavior: "auto", block: "start" })
-    history.replaceState(null, "", `#slide-${idx}`)
+    if (target) target.scrollIntoView({ behavior: 'auto', block: 'start' })
+    history.replaceState(null, '', `#slide-${idx}`)
 
-    document.dispatchEvent(new CustomEvent("slidechange", { detail: {} }))
+    document.dispatchEvent(new CustomEvent('slidechange', { detail: {} }))
   }
 
   const goPrev = () => {
@@ -45,29 +45,29 @@ document.addEventListener("nav", () => {
 
   // Expand all callouts by default for slides
   const expandAllCallouts = () => {
-    const callouts = deck.querySelectorAll<HTMLElement>("blockquote.callout, .callout")
+    const callouts = deck.querySelectorAll<HTMLElement>('blockquote.callout, .callout')
     for (const el of Array.from(callouts)) {
-      el.classList.remove("is-collapsed")
-      if (el.style && typeof el.style.maxHeight !== "undefined") el.style.maxHeight = ""
+      el.classList.remove('is-collapsed')
+      if (el.style && typeof el.style.maxHeight !== 'undefined') el.style.maxHeight = ''
       // clear any descendant inline max-heights
       const descendants = el.querySelectorAll<HTMLElement>("[style*='max-height']")
-      descendants.forEach((child) => (child.style.maxHeight = ""))
+      descendants.forEach(child => (child.style.maxHeight = ''))
     }
   }
 
   // Expand all transcludes by default for slides
   const expandAllTranscludes = () => {
-    const transcludes = deck.querySelectorAll<HTMLElement>(".transclude-collapsible")
+    const transcludes = deck.querySelectorAll<HTMLElement>('.transclude-collapsible')
     for (const el of Array.from(transcludes)) {
-      el.classList.remove("is-collapsed")
-      const content = el.querySelector<HTMLElement>(".transclude-content")
+      el.classList.remove('is-collapsed')
+      const content = el.querySelector<HTMLElement>('.transclude-content')
       if (content && content.style) {
-        content.style.gridTemplateRows = "1fr"
+        content.style.gridTemplateRows = '1fr'
       }
       // clear any descendant inline grid-template-rows
-      const descendants = el.querySelectorAll<HTMLElement>(".transclude-content")
-      descendants.forEach((child) => {
-        if (child.style) child.style.gridTemplateRows = "1fr"
+      const descendants = el.querySelectorAll<HTMLElement>('.transclude-content')
+      descendants.forEach(child => {
+        if (child.style) child.style.gridTemplateRows = '1fr'
       })
     }
   }
@@ -78,16 +78,16 @@ document.addEventListener("nav", () => {
   update()
 
   const keyEvent = (e: any) => {
-    if (e.key === "ArrowLeft") goPrev()
-    if (e.key === "ArrowRight" || e.key === " ") goNext()
+    if (e.key === 'ArrowLeft') goPrev()
+    if (e.key === 'ArrowRight' || e.key === ' ') goNext()
   }
 
-  prev.addEventListener("click", goPrev)
-  next.addEventListener("click", goNext)
-  window.addEventListener("keydown", keyEvent)
+  prev.addEventListener('click', goPrev)
+  next.addEventListener('click', goNext)
+  window.addEventListener('keydown', keyEvent)
   window.addCleanup(() => {
-    prev.removeEventListener("click", goPrev)
-    next.removeEventListener("click", goNext)
-    window.removeEventListener("keydown", keyEvent)
+    prev.removeEventListener('click', goPrev)
+    next.removeEventListener('click', goNext)
+    window.removeEventListener('keydown', keyEvent)
   })
 })

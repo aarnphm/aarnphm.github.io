@@ -1,5 +1,5 @@
 ---
-date: "2023-11-30"
+date: '2023-11-30'
 description: and on Spinoza's Ethics.
 id: Questions about Spinoza
 modified: 2025-11-21 06:07:44 GMT-05:00

@@ -1,9 +1,9 @@
-@use "../../styles/base.scss";
-@use "../../styles/variables.scss" as *;
-@use "../../styles/mixin.scss" as *;
+@use '../../styles/base.scss';
+@use '../../styles/variables.scss' as *;
+@use '../../styles/mixin.scss' as *;
 
 .ps-root {
-  font-family: KaTeX_Main, "Times New Roman", Times, serif;
+  font-family: KaTeX_Main, 'Times New Roman', Times, serif;
   font-size: 1em;
   font-weight: 100;
   -webkit-font-smoothing: antialiased !important;
@@ -76,7 +76,7 @@
   }
 
   .ps-funcname {
-    font-family: KaTeX_Main, "Times New Roman", Times, serif;
+    font-family: KaTeX_Main, 'Times New Roman', Times, serif;
     font-weight: 400;
     font-variant: small-caps;
     font-style: normal;
@@ -84,7 +84,7 @@
   }
 
   .ps-keyword {
-    font-family: KaTeX_Main, "Times New Roman", Times, serif;
+    font-family: KaTeX_Main, 'Times New Roman', Times, serif;
     font-weight: 700;
     font-variant: normal;
     font-style: normal;
@@ -92,7 +92,7 @@
   }
 
   .ps-comment {
-    font-family: KaTeX_Main, "Times New Roman", Times, serif;
+    font-family: KaTeX_Main, 'Times New Roman', Times, serif;
     font-weight: 400;
     font-variant: normal;
     font-style: normal;

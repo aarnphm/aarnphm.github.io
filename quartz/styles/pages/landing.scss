@@ -1,7 +1,7 @@
-@use "../base.scss";
-@use "../variables.scss" as *;
+@use '../base.scss';
+@use '../variables.scss' as *;
 
-body[data-slug="index"] {
+body[data-slug='index'] {
   overflow-x: hidden;
   font-size: 1em;
   text-transform: lowercase;
@@ -36,21 +36,21 @@ body[data-slug="index"] {
     }
   }
 
-  .page-content:not([data-plain="true"]) {
+  .page-content:not([data-plain='true']) {
     margin: 1rem 0;
     border: 1px solid var(--gray);
     padding: 0 2rem;
   }
 
-  span[class*="rose"] {
+  span[class*='rose'] {
     background-color: rgb(215, 130, 126);
     border-bottom: none;
     color: var(--lightgray);
   }
 }
 
-[saved-theme="dark"] body[data-slug="index"] {
-  span[class*="rose"] {
+[saved-theme='dark'] body[data-slug='index'] {
+  span[class*='rose'] {
     background-color: rgb(235, 188, 186);
   }
 }
@@ -122,7 +122,7 @@ body[data-slug="index"] {
   }
 }
 
-a[data-skip-icons="true"] {
+a[data-skip-icons='true'] {
   svg[data-icon] {
     display: none;
   }

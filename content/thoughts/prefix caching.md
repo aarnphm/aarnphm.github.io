@@ -1,5 +1,5 @@
 ---
-date: "2026-01-22"
+date: '2026-01-22'
 description: and longest hash matching, i.e a [[thoughts/Search|search]] problem
 id: prefix caching
 modified: 2026-01-22 12:51:48 GMT-05:00

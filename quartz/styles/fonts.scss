@@ -1,133 +1,133 @@
-@use "./mixin.scss" as *;
+@use './mixin.scss' as *;
 
 // fonts from /static/ (legacy)
 @include font-face(
-  "ABC Diatype Light",
-  "ABCDiatype-Light.woff2",
-  "woff2",
+  'ABC Diatype Light',
+  'ABCDiatype-Light.woff2',
+  'woff2',
   normal,
   normal,
-  "/static/"
+  '/static/'
 );
 @include font-face(
-  "ITCGaramondStdLtCond",
-  "ITCGaramondStdLtCond.woff2",
-  "woff2",
+  'ITCGaramondStdLtCond',
+  'ITCGaramondStdLtCond.woff2',
+  'woff2',
   normal,
   normal,
-  "/static/"
+  '/static/'
 );
 @include font-face(
-  "GT Sectra Display",
-  "GT-Sectra-Display-Regular.woff",
-  "woff",
+  'GT Sectra Display',
+  'GT-Sectra-Display-Regular.woff',
+  'woff',
   normal,
   normal,
-  "/static/"
+  '/static/'
 );
-@include font-face("GT Sectra Book", "GT-Sectra-Book.woff", "woff", normal, normal, "/static/");
+@include font-face('GT Sectra Book', 'GT-Sectra-Book.woff', 'woff', normal, normal, '/static/');
 @include font-face(
-  "EditorialNew Ultralight",
-  "EditorialNew-Ultralight.woff2",
-  "woff2",
+  'EditorialNew Ultralight',
+  'EditorialNew-Ultralight.woff2',
+  'woff2',
   normal,
   normal,
-  "/static/"
-);
-@include font-face(
-  "Playfair Display",
-  "PlayfairDisplay.woff2",
-  "woff2",
-  normal,
-  normal,
-  "/static/"
-);
-@include font-face("Playfair Display", "PlayfairDisplay.woff", "woff", normal, normal, "/static/");
-@include font-face(
-  "Departure Mono",
-  "DepartureMono-Regular.woff",
-  "woff",
-  normal,
-  normal,
-  "/static/"
+  '/static/'
 );
 @include font-face(
-  "Departure Mono",
-  "DepartureMono-Regular.woff2",
-  "woff2",
+  'Playfair Display',
+  'PlayfairDisplay.woff2',
+  'woff2',
   normal,
   normal,
-  "/static/"
+  '/static/'
+);
+@include font-face('Playfair Display', 'PlayfairDisplay.woff', 'woff', normal, normal, '/static/');
+@include font-face(
+  'Departure Mono',
+  'DepartureMono-Regular.woff',
+  'woff',
+  normal,
+  normal,
+  '/static/'
 );
 @include font-face(
-  "Space Groteskque",
-  "SpaceGrotesk-VariableFont_wght.ttf",
-  "ttf",
+  'Departure Mono',
+  'DepartureMono-Regular.woff2',
+  'woff2',
   normal,
   normal,
-  "/static/"
+  '/static/'
+);
+@include font-face(
+  'Space Groteskque',
+  'SpaceGrotesk-VariableFont_wght.ttf',
+  'ttf',
+  normal,
+  normal,
+  '/static/'
 );
 
 // fonts from KV (/fonts/)
-@include font-face("PP Neue Montreal", "PPNeueMontreal-Thin.woff2", "woff2", normal, 100);
-@include font-face("PP Neue Montreal", "PPNeueMontreal-ThinItalic.woff2", "woff2", italic, 100);
-@include font-face("PP Neue Montreal", "PPNeueMontreal-Light.woff2", "woff2", normal, 300);
-@include font-face("PP Neue Montreal", "PPNeueMontreal-LightItalic.woff2", "woff2", italic, 300);
-@include font-face("PP Neue Montreal", "PPNeueMontreal-Book.woff2", "woff2", normal, 350);
-@include font-face("PP Neue Montreal", "PPNeueMontreal-BookItalic.woff2", "woff2", italic, 350);
-@include font-face("PP Neue Montreal", "PPNeueMontreal-Regular.woff2", "woff2", normal, 400);
-@include font-face("PP Neue Montreal", "PPNeueMontreal-Italic.woff2", "woff2", italic, 400);
-@include font-face("PP Neue Montreal", "PPNeueMontreal-Medium.woff2", "woff2", normal, 500);
-@include font-face("PP Neue Montreal", "PPNeueMontreal-MediumItalic.woff2", "woff2", italic, 500);
-@include font-face("PP Neue Montreal", "PPNeueMontreal-SemiBold.woff2", "woff2", normal, 600);
-@include font-face("PP Neue Montreal", "PPNeueMontreal-SemiBolditalic.woff2", "woff2", italic, 600);
-@include font-face("PP Neue Montreal", "PPNeueMontreal-Bold.woff2", "woff2", normal, 700);
-@include font-face("PP Neue Montreal", "PPNeueMontreal-BoldItalic.woff2", "woff2", italic, 700);
-@include font-face("Berkeley Mono", "TX-02-N14XWV3W-Thin.woff2", "woff2", normal, 100);
-@include font-face("Berkeley Mono", "TX-02-Thin-Oblique.woff2", "woff2", italic, 100);
-@include font-face("Berkeley Mono", "TX-02-ExtraLight.woff2", "woff2", normal, 200);
-@include font-face("Berkeley Mono", "TX-02-ExtraLight-Oblique.woff2", "woff2", italic, 200);
-@include font-face("Berkeley Mono", "TX-02-Light.woff2", "woff2", normal, 300);
-@include font-face("Berkeley Mono", "TX-02-Light-Oblique.woff2", "woff2", italic, 300);
-@include font-face("Berkeley Mono", "TX-02-SemiLight.woff2", "woff2", normal, 350);
-@include font-face("Berkeley Mono", "TX-02-SemiLight-Oblique.woff2", "woff2", italic, 350);
-@include font-face("Berkeley Mono", "TX-02-Book.woff2", "woff2", normal, 375);
-@include font-face("Berkeley Mono", "TX-02-Book-Oblique.woff2", "woff2", italic, 375);
-@include font-face("Berkeley Mono", "TX-02-Regular.woff2", "woff2", normal, 400);
-@include font-face("Berkeley Mono", "TX-02-Oblique.woff2", "woff2", italic, 400);
-@include font-face("Berkeley Mono", "TX-02-Retina.woff2", "woff2", normal, 450);
-@include font-face("Berkeley Mono", "TX-02-Retina-Oblique.woff2", "woff2", italic, 450);
-@include font-face("Berkeley Mono", "TX-02-Medium.woff2", "woff2", normal, 500);
-@include font-face("Berkeley Mono", "TX-02-Medium-Oblique.woff2", "woff2", italic, 500);
-@include font-face("Berkeley Mono", "TX-02-SemiBold.woff2", "woff2", normal, 600);
-@include font-face("Berkeley Mono", "TX-02-SemiBold-Oblique.woff2", "woff2", italic, 600);
-@include font-face("Berkeley Mono", "TX-02-Bold.woff2", "woff2", normal, 700);
-@include font-face("Berkeley Mono", "TX-02-Bold-Oblique.woff2", "woff2", italic, 700);
-@include font-face("Berkeley Mono", "TX-02-ExtraBold.woff2", "woff2", normal, 800);
-@include font-face("Berkeley Mono", "TX-02-ExtraBold-Oblique.woff2", "woff2", italic, 800);
-@include font-face("Berkeley Mono", "TX-02-Black.woff2", "woff2", normal, 900);
-@include font-face("Berkeley Mono", "TX-02-Black-Oblique.woff2", "woff2", italic, 900);
-@include font-face("Parclo Serif", "ParcloSerifStudent-Thin.woff2", "woff2", normal, 100);
-@include font-face("Parclo Serif", "ParcloSerifStudent-ThinItalic.woff2", "woff2", italic, 100);
-@include font-face("Parclo Serif", "ParcloSerifStudent-Light.woff2", "woff2", normal, 300);
-@include font-face("Parclo Serif", "ParcloSerifStudent-LightItalic.woff2", "woff2", italic, 300);
-@include font-face("Parclo Serif", "ParcloSerifStudent-Regular.woff2", "woff2", normal, 400);
-@include font-face("Parclo Serif", "ParcloSerifStudent-Italic.woff2", "woff2", italic, 400);
-@include font-face("Parclo Serif", "ParcloSerifStudent-Medium.woff2", "woff2", normal, 500);
-@include font-face("Parclo Serif", "ParcloSerifStudent-MediumItalic.woff2", "woff2", italic, 500);
-@include font-face("Parclo Serif", "ParcloSerifStudent-SemiBold.woff2", "woff2", normal, 600);
-@include font-face("Parclo Serif", "ParcloSerifStudent-SemiBoldItalic.woff2", "woff2", italic, 600);
-@include font-face("Parclo Serif", "ParcloSerifStudent-Bold.woff2", "woff2", normal, 700);
-@include font-face("Parclo Serif", "ParcloSerifStudent-BoldItalic.woff2", "woff2", italic, 700);
-@include font-face("Parclo Serif", "ParcloSerifStudent-Black.woff2", "woff2", normal, 800);
-@include font-face("Parclo Serif", "ParcloSerifStudent-BlackItalic.woff2", "woff2", italic, 800);
-@include font-face("Parclo Serif", "ParcloSerifStudent-ExtraBlack.woff2", "woff2", normal, 900);
+@include font-face('PP Neue Montreal', 'PPNeueMontreal-Thin.woff2', 'woff2', normal, 100);
+@include font-face('PP Neue Montreal', 'PPNeueMontreal-ThinItalic.woff2', 'woff2', italic, 100);
+@include font-face('PP Neue Montreal', 'PPNeueMontreal-Light.woff2', 'woff2', normal, 300);
+@include font-face('PP Neue Montreal', 'PPNeueMontreal-LightItalic.woff2', 'woff2', italic, 300);
+@include font-face('PP Neue Montreal', 'PPNeueMontreal-Book.woff2', 'woff2', normal, 350);
+@include font-face('PP Neue Montreal', 'PPNeueMontreal-BookItalic.woff2', 'woff2', italic, 350);
+@include font-face('PP Neue Montreal', 'PPNeueMontreal-Regular.woff2', 'woff2', normal, 400);
+@include font-face('PP Neue Montreal', 'PPNeueMontreal-Italic.woff2', 'woff2', italic, 400);
+@include font-face('PP Neue Montreal', 'PPNeueMontreal-Medium.woff2', 'woff2', normal, 500);
+@include font-face('PP Neue Montreal', 'PPNeueMontreal-MediumItalic.woff2', 'woff2', italic, 500);
+@include font-face('PP Neue Montreal', 'PPNeueMontreal-SemiBold.woff2', 'woff2', normal, 600);
+@include font-face('PP Neue Montreal', 'PPNeueMontreal-SemiBolditalic.woff2', 'woff2', italic, 600);
+@include font-face('PP Neue Montreal', 'PPNeueMontreal-Bold.woff2', 'woff2', normal, 700);
+@include font-face('PP Neue Montreal', 'PPNeueMontreal-BoldItalic.woff2', 'woff2', italic, 700);
+@include font-face('Berkeley Mono', 'TX-02-N14XWV3W-Thin.woff2', 'woff2', normal, 100);
+@include font-face('Berkeley Mono', 'TX-02-Thin-Oblique.woff2', 'woff2', italic, 100);
+@include font-face('Berkeley Mono', 'TX-02-ExtraLight.woff2', 'woff2', normal, 200);
+@include font-face('Berkeley Mono', 'TX-02-ExtraLight-Oblique.woff2', 'woff2', italic, 200);
+@include font-face('Berkeley Mono', 'TX-02-Light.woff2', 'woff2', normal, 300);
+@include font-face('Berkeley Mono', 'TX-02-Light-Oblique.woff2', 'woff2', italic, 300);
+@include font-face('Berkeley Mono', 'TX-02-SemiLight.woff2', 'woff2', normal, 350);
+@include font-face('Berkeley Mono', 'TX-02-SemiLight-Oblique.woff2', 'woff2', italic, 350);
+@include font-face('Berkeley Mono', 'TX-02-Book.woff2', 'woff2', normal, 375);
+@include font-face('Berkeley Mono', 'TX-02-Book-Oblique.woff2', 'woff2', italic, 375);
+@include font-face('Berkeley Mono', 'TX-02-Regular.woff2', 'woff2', normal, 400);
+@include font-face('Berkeley Mono', 'TX-02-Oblique.woff2', 'woff2', italic, 400);
+@include font-face('Berkeley Mono', 'TX-02-Retina.woff2', 'woff2', normal, 450);
+@include font-face('Berkeley Mono', 'TX-02-Retina-Oblique.woff2', 'woff2', italic, 450);
+@include font-face('Berkeley Mono', 'TX-02-Medium.woff2', 'woff2', normal, 500);
+@include font-face('Berkeley Mono', 'TX-02-Medium-Oblique.woff2', 'woff2', italic, 500);
+@include font-face('Berkeley Mono', 'TX-02-SemiBold.woff2', 'woff2', normal, 600);
+@include font-face('Berkeley Mono', 'TX-02-SemiBold-Oblique.woff2', 'woff2', italic, 600);
+@include font-face('Berkeley Mono', 'TX-02-Bold.woff2', 'woff2', normal, 700);
+@include font-face('Berkeley Mono', 'TX-02-Bold-Oblique.woff2', 'woff2', italic, 700);
+@include font-face('Berkeley Mono', 'TX-02-ExtraBold.woff2', 'woff2', normal, 800);
+@include font-face('Berkeley Mono', 'TX-02-ExtraBold-Oblique.woff2', 'woff2', italic, 800);
+@include font-face('Berkeley Mono', 'TX-02-Black.woff2', 'woff2', normal, 900);
+@include font-face('Berkeley Mono', 'TX-02-Black-Oblique.woff2', 'woff2', italic, 900);
+@include font-face('Parclo Serif', 'ParcloSerifStudent-Thin.woff2', 'woff2', normal, 100);
+@include font-face('Parclo Serif', 'ParcloSerifStudent-ThinItalic.woff2', 'woff2', italic, 100);
+@include font-face('Parclo Serif', 'ParcloSerifStudent-Light.woff2', 'woff2', normal, 300);
+@include font-face('Parclo Serif', 'ParcloSerifStudent-LightItalic.woff2', 'woff2', italic, 300);
+@include font-face('Parclo Serif', 'ParcloSerifStudent-Regular.woff2', 'woff2', normal, 400);
+@include font-face('Parclo Serif', 'ParcloSerifStudent-Italic.woff2', 'woff2', italic, 400);
+@include font-face('Parclo Serif', 'ParcloSerifStudent-Medium.woff2', 'woff2', normal, 500);
+@include font-face('Parclo Serif', 'ParcloSerifStudent-MediumItalic.woff2', 'woff2', italic, 500);
+@include font-face('Parclo Serif', 'ParcloSerifStudent-SemiBold.woff2', 'woff2', normal, 600);
+@include font-face('Parclo Serif', 'ParcloSerifStudent-SemiBoldItalic.woff2', 'woff2', italic, 600);
+@include font-face('Parclo Serif', 'ParcloSerifStudent-Bold.woff2', 'woff2', normal, 700);
+@include font-face('Parclo Serif', 'ParcloSerifStudent-BoldItalic.woff2', 'woff2', italic, 700);
+@include font-face('Parclo Serif', 'ParcloSerifStudent-Black.woff2', 'woff2', normal, 800);
+@include font-face('Parclo Serif', 'ParcloSerifStudent-BlackItalic.woff2', 'woff2', italic, 800);
+@include font-face('Parclo Serif', 'ParcloSerifStudent-ExtraBlack.woff2', 'woff2', normal, 900);
 @include font-face(
-  "Parclo Serif",
-  "ParcloSerifStudent-ExtraBlackItalic.woff2",
-  "woff2",
+  'Parclo Serif',
+  'ParcloSerifStudent-ExtraBlackItalic.woff2',
+  'woff2',
   italic,
   900
 );
-@include font-face("Parclo Serif", "ParcloSerifStudent-Ultra.woff2", "woff2", normal, 950);
-@include font-face("Parclo Serif", "ParcloSerifStudent-UltraItalic.woff2", "woff2", italic, 950);
+@include font-face('Parclo Serif', 'ParcloSerifStudent-Ultra.woff2', 'woff2', normal, 950);
+@include font-face('Parclo Serif', 'ParcloSerifStudent-UltraItalic.woff2', 'woff2', italic, 950);

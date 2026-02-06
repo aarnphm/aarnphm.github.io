@@ -5,8 +5,8 @@ description: collection of essays and projects on ai, art, and politics, explori
 external: https://www.creativeapplications.net/books/the-ai-anarchies-book
 id: The AI Anarchies Book
 modified: 2025-10-29 02:14:37 GMT-04:00
-posters: "[[library/posters/ai-anarchy.png]]"
-notebook: "[[thoughts/LLMs|LLMs]]"
+posters: '[[library/posters/ai-anarchy.png]]'
+notebook: '[[thoughts/LLMs|LLMs]]'
 tags:
   - llm
 title: The AI Anarchies Book

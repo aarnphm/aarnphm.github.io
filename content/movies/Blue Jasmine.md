@@ -8,7 +8,7 @@ description: blanche dubois reincarnated in san francisco after madoff—allen f
 director: Woody Allen
 id: blue-jasmine
 modified: 2025-10-29 02:14:47 GMT-04:00
-posters: "[[movies/posters/blue-jasmine.jpg]]"
+posters: '[[movies/posters/blue-jasmine.jpg]]'
 rating: 7.3
 status: to watch
 studio: sony

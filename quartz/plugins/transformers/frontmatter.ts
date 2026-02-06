@@ -1,18 +1,18 @@
-import matter from "gray-matter"
-import yaml from "js-yaml"
-import remarkFrontmatter from "remark-frontmatter"
-import { i18n } from "../../i18n"
-import { QuartzTransformerPlugin } from "../../types/plugin"
-import { FilePath, FullSlug, slugifyFilePath, slugTag, getFileExtension } from "../../util/path"
-import { extractWikilinks, resolveWikilinkTarget } from "../../util/wikilinks"
-import { ContentLayout } from "../emitters/contentIndex"
-import { QuartzPluginData } from "../vfile"
+import matter from 'gray-matter'
+import yaml from 'js-yaml'
+import remarkFrontmatter from 'remark-frontmatter'
+import { i18n } from '../../i18n'
+import { QuartzTransformerPlugin } from '../../types/plugin'
+import { FilePath, FullSlug, slugifyFilePath, slugTag, getFileExtension } from '../../util/path'
+import { extractWikilinks, resolveWikilinkTarget } from '../../util/wikilinks'
+import { ContentLayout } from '../emitters/contentIndex'
+import { QuartzPluginData } from '../vfile'
 
 function getAliasSlugs(aliases: string[]): FullSlug[] {
   const res: FullSlug[] = []
   for (const alias of aliases) {
-    const isMd = getFileExtension(alias) === "md"
-    const mockFp = isMd ? alias : alias + ".md"
+    const isMd = getFileExtension(alias) === 'md'
+    const mockFp = isMd ? alias : alias + '.md'
     const slug = slugifyFilePath(mockFp as FilePath)
     res.push(slug)
   }
@@ -32,13 +32,13 @@ function coerceToArray(input: string | string[]): string[] | undefined {
   if (!Array.isArray(input)) {
     input = input
       .toString()
-      .split(",")
+      .split(',')
       .map((tag: string) => tag.trim())
   }
 
   // remove all non-strings
   return input
-    .filter((tag: unknown) => typeof tag === "string" || typeof tag === "number")
+    .filter((tag: unknown) => typeof tag === 'string' || typeof tag === 'number')
     .map((tag: string | number) => tag.toString())
 }
 
@@ -54,12 +54,12 @@ function collectValueLinks(value: unknown, currentSlug: FullSlug): FrontmatterLi
   const seen = new Set<string>()
 
   const visitValue = (val: unknown) => {
-    if (typeof val === "string") {
+    if (typeof val === 'string') {
       for (const link of extractWikilinks(val)) {
         const resolved = resolveWikilinkTarget(link, currentSlug)
         if (!resolved) continue
 
-        const fingerprint = `${resolved.slug}${resolved.anchor ?? ""}`
+        const fingerprint = `${resolved.slug}${resolved.anchor ?? ''}`
         if (seen.has(fingerprint)) continue
         seen.add(fingerprint)
 
@@ -74,7 +74,7 @@ function collectValueLinks(value: unknown, currentSlug: FullSlug): FrontmatterLi
       for (const item of val) {
         visitValue(item)
       }
-    } else if (val && typeof val === "object" && val.constructor === Object) {
+    } else if (val && typeof val === 'object' && val.constructor === Object) {
       for (const inner of Object.values(val as Record<string, unknown>)) {
         visitValue(inner)
       }
@@ -120,33 +120,33 @@ function buildFrontmatterLinkLookup(
 }
 
 export const FrontMatter: QuartzTransformerPlugin = () => ({
-  name: "FrontMatter",
+  name: 'FrontMatter',
   markdownPlugins: ({ cfg, allSlugs }) => [
-    [remarkFrontmatter, ["yaml", "toml"]],
+    [remarkFrontmatter, ['yaml', 'toml']],
     () => {
       return (_, file) => {
         const { data } = matter(Buffer.from(file.value), {
-          delimiters: "---",
-          language: "yaml",
-          engines: { yaml: (s) => yaml.load(s, { schema: yaml.JSON_SCHEMA }) as object },
+          delimiters: '---',
+          language: 'yaml',
+          engines: { yaml: s => yaml.load(s, { schema: yaml.JSON_SCHEMA }) as object },
         })
 
-        if (data.title != null && data.title.toString() !== "") {
+        if (data.title != null && data.title.toString() !== '') {
           data.title = data.title.toString()
         } else {
           data.title = file.stem ?? i18n(cfg.configuration.locale).propertyDefaults.title
         }
 
-        const tags = coerceToArray(coalesceAliases(data, ["tags"]))
+        const tags = coerceToArray(coalesceAliases(data, ['tags']))
         if (tags) data.tags = [...new Set(tags.map((tag: string) => slugTag(tag)))]
 
-        const aliases = coerceToArray(coalesceAliases(data, ["aliases", "alias"]))
+        const aliases = coerceToArray(coalesceAliases(data, ['aliases', 'alias']))
         if (aliases) {
           data.aliases = aliases
           file.data.aliases = getAliasSlugs(aliases)
           allSlugs.push(...file.data.aliases)
         }
-        const permalinks = coerceToArray(coalesceAliases(data, ["permalink", "permalinks"]))
+        const permalinks = coerceToArray(coalesceAliases(data, ['permalink', 'permalinks']))
 
         if (permalinks) {
           data.permalinks = permalinks as FullSlug[]
@@ -156,15 +156,15 @@ export const FrontMatter: QuartzTransformerPlugin = () => ({
           allSlugs.push(data.permalinks)
         }
 
-        const cssclasses = coerceToArray(coalesceAliases(data, ["cssclasses"]))
+        const cssclasses = coerceToArray(coalesceAliases(data, ['cssclasses']))
         if (cssclasses) data.cssclasses = cssclasses
 
-        const noindex = coerceToArray(coalesceAliases(data, ["noindex", "unlisted"]))
+        const noindex = coerceToArray(coalesceAliases(data, ['noindex', 'unlisted']))
         if (noindex) data.noindex = noindex
 
         const currentSlug = file.data.slug as FullSlug | undefined
 
-        const socialImage = coalesceAliases(data, ["socialImage", "image", "cover"])
+        const socialImage = coalesceAliases(data, ['socialImage', 'image', 'cover'])
         if (socialImage) {
           // Check if socialImage contains wikilinks
           const wikilinks = extractWikilinks(socialImage)
@@ -180,34 +180,34 @@ export const FrontMatter: QuartzTransformerPlugin = () => ({
           }
         }
 
-        const description = coalesceAliases(data, ["description", "socialDescription"])
+        const description = coalesceAliases(data, ['description', 'socialDescription'])
         if (description) data.description = description
 
-        const transclude = coalesceAliases(data, ["transclude", "transclusion"])
+        const transclude = coalesceAliases(data, ['transclude', 'transclusion'])
         if (transclude) data.transclude = transclude
 
-        const socials = coalesceAliases(data, ["social", "socials"])
+        const socials = coalesceAliases(data, ['social', 'socials'])
         if (socials) data.socials = socials
 
-        const authors = coalesceAliases(data, ["author", "authors"])
+        const authors = coalesceAliases(data, ['author', 'authors'])
         if (authors) data.authors = authors
 
-        const slides = coalesceAliases(data, ["slides", "slide", "ppt", "powerpoint"])
+        const slides = coalesceAliases(data, ['slides', 'slide', 'ppt', 'powerpoint'])
         if (slides) data.slides = slides
 
-        const created = coalesceAliases(data, ["date", "created"])
+        const created = coalesceAliases(data, ['date', 'created'])
         if (created) {
           data.created = created
         }
-        const modified = coalesceAliases(data, ["lastmod", "updated", "last-modified", "modified"])
+        const modified = coalesceAliases(data, ['lastmod', 'updated', 'last-modified', 'modified'])
         if (modified) data.modified = modified
         data.modified ||= created // if modified is not set, use created
 
-        const published = coalesceAliases(data, ["publishDate", "published", "date"])
+        const published = coalesceAliases(data, ['publishDate', 'published', 'date'])
         if (published) data.published = published
 
-        let layout = coalesceAliases(data, ["pageLayout", "folderLayout", "layout"])
-        layout ||= "default"
+        let layout = coalesceAliases(data, ['pageLayout', 'folderLayout', 'layout'])
+        layout ||= 'default'
         data.pageLayout = layout
 
         if (currentSlug) {
@@ -225,7 +225,7 @@ export const FrontMatter: QuartzTransformerPlugin = () => ({
         }
 
         // fill in frontmatter
-        file.data.frontmatter = data as QuartzPluginData["frontmatter"]
+        file.data.frontmatter = data as QuartzPluginData['frontmatter']
       }
     },
   ],
@@ -238,7 +238,7 @@ export type TranscludeOptions = {
   skipTranscludes: boolean
 }
 
-declare module "vfile" {
+declare module 'vfile' {
   interface DataMap {
     aliases: FullSlug[]
     frontmatter: { [key: string]: unknown } & {

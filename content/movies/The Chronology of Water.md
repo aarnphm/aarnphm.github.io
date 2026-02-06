@@ -14,5 +14,5 @@ category:
   - o/relationship
   - love
 description: A woman becomes a competitive swimmer after surviving an abusive childhood.
-posters: "[[movies/posters/the-chronology-of-water.jpg]]"
+posters: '[[movies/posters/the-chronology-of-water.jpg]]'
 ---

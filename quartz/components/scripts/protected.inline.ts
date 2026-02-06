@@ -23,7 +23,7 @@ function readUnlockUntil(slug: string) {
 
 function clearUnlockTimer(slug: string) {
   const timerId = unlockTimers.get(slug)
-  if (typeof timerId === "number") {
+  if (typeof timerId === 'number') {
     window.clearTimeout(timerId)
     unlockTimers.delete(slug)
   }
@@ -45,51 +45,51 @@ function ensureArrayBuffer(bytes: Uint8Array): ArrayBuffer {
 async function deriveKey(password: string, salt: Uint8Array): Promise<CryptoKey> {
   const encoder = new TextEncoder()
   const passwordKey = await crypto.subtle.importKey(
-    "raw",
+    'raw',
     encoder.encode(password),
-    "PBKDF2",
+    'PBKDF2',
     false,
-    ["deriveKey"],
+    ['deriveKey'],
   )
 
   return crypto.subtle.deriveKey(
-    { name: "PBKDF2", salt: ensureArrayBuffer(salt), iterations: 100000, hash: "SHA-256" },
+    { name: 'PBKDF2', salt: ensureArrayBuffer(salt), iterations: 100000, hash: 'SHA-256' },
     passwordKey,
-    { name: "AES-GCM", length: 256 },
+    { name: 'AES-GCM', length: 256 },
     false,
-    ["decrypt"],
+    ['decrypt'],
   )
 }
 
 async function decryptContent(encryptedData: EncryptedPayload, password: string): Promise<string> {
   // Convert base64url back to base64 (add padding and restore +/)
   const fromBase64Url = (str: string | undefined): string => {
-    if (!str || typeof str !== "string") {
+    if (!str || typeof str !== 'string') {
       throw new Error(`invalid base64url string: ${str}`)
     }
     // Replace URL-safe characters back to standard base64
-    let base64 = str.replace(/-/g, "+").replace(/_/g, "/")
+    let base64 = str.replace(/-/g, '+').replace(/_/g, '/')
     // Add padding
     while (base64.length % 4) {
-      base64 += "="
+      base64 += '='
     }
     return base64
   }
 
-  const salt = Uint8Array.from(atob(fromBase64Url(encryptedData.salt)), (c) => c.charCodeAt(0))
-  const iv = Uint8Array.from(atob(fromBase64Url(encryptedData.iv)), (c) => c.charCodeAt(0))
-  const ciphertext = Uint8Array.from(atob(fromBase64Url(encryptedData.ciphertext)), (c) =>
+  const salt = Uint8Array.from(atob(fromBase64Url(encryptedData.salt)), c => c.charCodeAt(0))
+  const iv = Uint8Array.from(atob(fromBase64Url(encryptedData.iv)), c => c.charCodeAt(0))
+  const ciphertext = Uint8Array.from(atob(fromBase64Url(encryptedData.ciphertext)), c =>
     c.charCodeAt(0),
   )
 
   const key = await deriveKey(password, salt)
 
   try {
-    const decrypted = await crypto.subtle.decrypt({ name: "AES-GCM", iv }, key, ciphertext)
+    const decrypted = await crypto.subtle.decrypt({ name: 'AES-GCM', iv }, key, ciphertext)
 
     return new TextDecoder().decode(decrypted)
   } catch {
-    throw new Error("decryption failed")
+    throw new Error('decryption failed')
   }
 }
 
@@ -97,19 +97,19 @@ async function decryptContent(encryptedData: EncryptedPayload, password: string)
 const DECRYPTION_TTL = 30 * 60 * 1000
 
 function reLockContent(article: Element, slug: string): void {
-  const decryptedContent = article.querySelector(".decrypted-content")
+  const decryptedContent = article.querySelector('.decrypted-content')
   if (decryptedContent) {
     decryptedContent.remove()
   }
 
-  const promptOverlay = article.querySelector<HTMLElement>(".password-prompt-overlay")
+  const promptOverlay = article.querySelector<HTMLElement>('.password-prompt-overlay')
   if (promptOverlay) {
-    promptOverlay.style.display = "flex"
+    promptOverlay.style.display = 'flex'
   }
 
-  const input = article.querySelector(".password-input") as HTMLInputElement
+  const input = article.querySelector('.password-input') as HTMLInputElement
   if (input) {
-    input.value = ""
+    input.value = ''
   }
 
   clearUnlockTimer(slug)
@@ -125,14 +125,14 @@ const scheduleReLock = (article: Element, slug: string, unlockUntil: number): vo
   unlockTimers.set(slug, timerId)
 }
 
-document.addEventListener("nav", () => {
-  const isProtected = window.document.body.dataset.protected === "true"
+document.addEventListener('nav', () => {
+  const isProtected = window.document.body.dataset.protected === 'true'
   if (!isProtected) return
 
   const protectedArticles = document.querySelectorAll('[data-protected="true"]')
 
-  protectedArticles.forEach((article) => {
-    const slug = article.getAttribute("data-slug")
+  protectedArticles.forEach(article => {
+    const slug = article.getAttribute('data-slug')
 
     if (slug) {
       const unlockUntil = readUnlockUntil(slug)
@@ -144,18 +144,18 @@ document.addEventListener("nav", () => {
       }
     }
 
-    if (article.getAttribute("data-setup-complete") === "true") {
+    if (article.getAttribute('data-setup-complete') === 'true') {
       return
     }
 
-    article.setAttribute("data-setup-complete", "true")
-    const form = article.querySelector(".password-form") as HTMLFormElement
-    const input = article.querySelector(".password-input") as HTMLInputElement
-    const errorEl = article.querySelector(".password-error") as HTMLElement
-    const encryptedDataAttr = article.getAttribute("data-encrypted-content")
+    article.setAttribute('data-setup-complete', 'true')
+    const form = article.querySelector('.password-form') as HTMLFormElement
+    const input = article.querySelector('.password-input') as HTMLInputElement
+    const errorEl = article.querySelector('.password-error') as HTMLElement
+    const encryptedDataAttr = article.getAttribute('data-encrypted-content')
 
     if (!form || !input || !encryptedDataAttr || !slug) {
-      article.removeAttribute("data-setup-complete")
+      article.removeAttribute('data-setup-complete')
       return
     }
 
@@ -166,25 +166,25 @@ document.addEventListener("nav", () => {
 
       if (
         !encryptedData ||
-        typeof encryptedData !== "object" ||
+        typeof encryptedData !== 'object' ||
         !encryptedData.salt ||
-        typeof encryptedData.salt !== "string" ||
+        typeof encryptedData.salt !== 'string' ||
         !encryptedData.iv ||
-        typeof encryptedData.iv !== "string" ||
+        typeof encryptedData.iv !== 'string' ||
         !encryptedData.ciphertext ||
-        typeof encryptedData.ciphertext !== "string"
+        typeof encryptedData.ciphertext !== 'string'
       ) {
-        console.error("invalid encrypted data structure:", encryptedData)
+        console.error('invalid encrypted data structure:', encryptedData)
         return
       }
     } catch (err) {
-      console.error("failed to parse encrypted data:", err)
+      console.error('failed to parse encrypted data:', err)
       return
     }
 
-    const isDecrypted = () => article.querySelector(".decrypted-content") !== null
+    const isDecrypted = () => article.querySelector('.decrypted-content') !== null
 
-    form.addEventListener("submit", async (e) => {
+    form.addEventListener('submit', async e => {
       e.preventDefault()
       const password = input.value.trim()
       if (!password) return
@@ -194,15 +194,15 @@ document.addEventListener("nav", () => {
       }
 
       try {
-        errorEl.style.display = "none"
+        errorEl.style.display = 'none'
 
         const decryptedHtml = await decryptContent(encryptedData, password)
 
-        const promptOverlay = article.querySelector<HTMLDivElement>(".password-prompt-overlay")
-        if (promptOverlay) promptOverlay.style.display = "none"
+        const promptOverlay = article.querySelector<HTMLDivElement>('.password-prompt-overlay')
+        if (promptOverlay) promptOverlay.style.display = 'none'
 
-        const contentDiv = document.createElement("div")
-        contentDiv.className = "decrypted-content popover-hint"
+        const contentDiv = document.createElement('div')
+        contentDiv.className = 'decrypted-content popover-hint'
         contentDiv.innerHTML = decryptedHtml
         article.appendChild(contentDiv)
 
@@ -212,15 +212,15 @@ document.addEventListener("nav", () => {
           scheduleReLock(article, slug, unlockUntil)
         }
 
-        input.value = ""
+        input.value = ''
 
         document.dispatchEvent(
-          new CustomEvent("contentdecrypted", { detail: { article, content: contentDiv } }),
+          new CustomEvent('contentdecrypted', { detail: { article, content: contentDiv } }),
         )
       } catch (err) {
-        console.error("decryption error:", err)
-        errorEl.style.display = "block"
-        input.value = ""
+        console.error('decryption error:', err)
+        errorEl.style.display = 'block'
+        input.value = ''
         input.focus()
       }
     })

@@ -5,7 +5,7 @@ description: cuban refugee climbing to cocaine kingpin—de palma filming pacino
 director: Brian De Palma
 id: scarface
 modified: 2025-10-29 02:15:06 GMT-04:00
-posters: "[[movies/posters/scarface.jpg]]"
+posters: '[[movies/posters/scarface.jpg]]'
 rating: 8.3
 status: recurring
 studio: universal

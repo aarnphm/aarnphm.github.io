@@ -1,5 +1,5 @@
 ---
-date: "2025-04-22"
+date: '2025-04-22'
 description: formal grammar defined as 4-tuple with non-terminals, terminals, production rules, and start symbol, recognized by pushdown automata.
 id: Context-Free Grammar
 modified: 2026-01-15 08:27:04 GMT-05:00

@@ -1,5 +1,5 @@
 ---
-date: "2025-09-11"
+date: '2025-09-11'
 description: chapter 1 and 2
 id: financial analysis
 modified: 2025-10-29 02:15:58 GMT-04:00

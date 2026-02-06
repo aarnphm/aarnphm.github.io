@@ -12,7 +12,7 @@ subcategory:
   - being
 author:
   - Alain Badiou
-posters: "[[library/posters/images-of-our-present-time.avif]]"
+posters: '[[library/posters/images-of-our-present-time.avif]]'
 category:
   - philosophy
 translator:

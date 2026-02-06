@@ -1,20 +1,20 @@
-import assert from "node:assert"
-import test from "node:test"
-import { parseExpressionSource } from "./parser"
-import { buildPropertyExpressionSource } from "./properties"
+import assert from 'node:assert'
+import test from 'node:test'
+import { parseExpressionSource } from './parser'
+import { buildPropertyExpressionSource } from './properties'
 
-test("builds property expression sources", () => {
+test('builds property expression sources', () => {
   const cases: Array<{ input: string; expected: string }> = [
-    { input: "status", expected: "note.status" },
-    { input: "note.status", expected: "note.status" },
-    { input: "file.name", expected: "file.name" },
-    { input: "file.my-field", expected: 'file["my-field"]' },
-    { input: "my-field", expected: 'note["my-field"]' },
+    { input: 'status', expected: 'note.status' },
+    { input: 'note.status', expected: 'note.status' },
+    { input: 'file.name', expected: 'file.name' },
+    { input: 'file.my-field', expected: 'file["my-field"]' },
+    { input: 'my-field', expected: 'note["my-field"]' },
     { input: 'note["my field"]', expected: 'note["my field"]' },
-    { input: "formula.total", expected: "formula.total" },
-    { input: "this.file.name", expected: "this.file.name" },
-    { input: "a.b-c.d", expected: 'note.a["b-c"].d' },
-    { input: "date(file.ctime)", expected: "date(file.ctime)" },
+    { input: 'formula.total', expected: 'formula.total' },
+    { input: 'this.file.name', expected: 'this.file.name' },
+    { input: 'a.b-c.d', expected: 'note.a["b-c"].d' },
+    { input: 'date(file.ctime)', expected: 'date(file.ctime)' },
   ]
 
   for (const entry of cases) {

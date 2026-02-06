@@ -1,5 +1,5 @@
-import { resolveRelative, FullSlug, FilePath, slugifyFilePath, splitAnchor } from "../../util/path"
-import { loadMapbox, applyMonochromeMapPalette } from "./mapbox-client"
+import { resolveRelative, FullSlug, FilePath, slugifyFilePath, splitAnchor } from '../../util/path'
+import { loadMapbox, applyMonochromeMapPalette } from './mapbox-client'
 
 interface MarkerData {
   lat: number
@@ -19,16 +19,16 @@ interface MapConfig {
 
 function parseWikilinkValue(raw: string) {
   let text = raw.trim()
-  if (!text.startsWith("[[")) {
-    if (text.startsWith("![[") && text.endsWith("]]")) {
+  if (!text.startsWith('[[')) {
+    if (text.startsWith('![[') && text.endsWith(']]')) {
       text = text.slice(1)
     } else {
       return null
     }
   }
-  if (!text.endsWith("]]")) return null
+  if (!text.endsWith(']]')) return null
   const inner = text.slice(2, -2)
-  let buffer = ""
+  let buffer = ''
   let alias: string | undefined
   let escaped = false
   for (let i = 0; i < inner.length; i += 1) {
@@ -38,18 +38,18 @@ function parseWikilinkValue(raw: string) {
       escaped = false
       continue
     }
-    if (ch === "\\") {
+    if (ch === '\\') {
       escaped = true
       continue
     }
-    if (ch === "|" && alias === undefined) {
+    if (ch === '|' && alias === undefined) {
       alias = inner.slice(i + 1)
       break
     }
     buffer += ch
   }
-  const target = buffer.replace(/\\\|/g, "|").trim()
-  const cleanedAlias = alias?.replace(/\\\|/g, "|").trim()
+  const target = buffer.replace(/\\\|/g, '|').trim()
+  const cleanedAlias = alias?.replace(/\\\|/g, '|').trim()
   const [base, anchor] = splitAnchor(target)
   return {
     target: base,
@@ -58,24 +58,24 @@ function parseWikilinkValue(raw: string) {
   }
 }
 
-type IconToken = { kind: "icon"; value: string }
+type IconToken = { kind: 'icon'; value: string }
 
 const isIconToken = (value: unknown): value is IconToken =>
-  typeof value === "object" &&
+  typeof value === 'object' &&
   value !== null &&
-  (value as IconToken).kind === "icon" &&
-  typeof (value as IconToken).value === "string"
+  (value as IconToken).kind === 'icon' &&
+  typeof (value as IconToken).value === 'string'
 
 const splitIconClasses = (raw: string): string[] =>
   raw
     .trim()
     .split(/\s+/)
-    .filter((part) => part.length > 0)
+    .filter(part => part.length > 0)
 
 const normalizeIconName = (raw: string): string => {
   const trimmed = raw.trim()
-  if (!trimmed) return ""
-  const colonIndex = trimmed.lastIndexOf(":")
+  if (!trimmed) return ''
+  const colonIndex = trimmed.lastIndexOf(':')
   return colonIndex >= 0 ? trimmed.slice(colonIndex + 1).trim() : trimmed
 }
 
@@ -85,29 +85,29 @@ const buildIconClassList = (raw: string): string[] => {
   if (parts.length > 1) return parts
   const normalized = normalizeIconName(parts[0])
   if (!normalized) return []
-  if (normalized.startsWith("icon-")) return [normalized]
+  if (normalized.startsWith('icon-')) return [normalized]
   return [`icon-${normalized}`]
 }
 
 const renderIconHtml = (raw: string): string => {
   const classList = buildIconClassList(raw)
-  if (classList.length === 0) return ""
-  return `<i class="${classList.join(" ")}" aria-hidden="true"></i>`
+  if (classList.length === 0) return ''
+  return `<i class="${classList.join(' ')}" aria-hidden="true"></i>`
 }
 
 function formatPropertyValue(value: any, currentSlug: FullSlug): string {
-  if (value === undefined || value === null) return ""
+  if (value === undefined || value === null) return ''
   if (isIconToken(value)) {
     const cleaned = value.value.trim()
-    return cleaned.length > 0 ? renderIconHtml(cleaned) : ""
+    return cleaned.length > 0 ? renderIconHtml(cleaned) : ''
   }
   if (Array.isArray(value)) {
-    return value.map((item) => formatPropertyValue(item, currentSlug)).join(", ")
+    return value.map(item => formatPropertyValue(item, currentSlug)).join(', ')
   }
   if (value instanceof Date) {
-    return value.toISOString().split("T")[0]
+    return value.toISOString().split('T')[0]
   }
-  if (typeof value === "string") {
+  if (typeof value === 'string') {
     const parsed = parseWikilinkValue(value)
     if (!parsed) {
       return value
@@ -138,11 +138,11 @@ function createPopupContent(
       const displayName =
         properties?.[key]?.displayName ||
         key
-          .replace(/^(note|file)\./, "")
-          .split(".")
+          .replace(/^(note|file)\./, '')
+          .split('.')
           .pop()
-          ?.replace(/-/g, " ")
-          .replace(/_/g, " ") ||
+          ?.replace(/-/g, ' ')
+          .replace(/_/g, ' ') ||
         key
 
       const formattedValue = formatPropertyValue(value, currentSlug)
@@ -158,11 +158,11 @@ function createPopupContent(
 }
 
 async function initializeMap(container: HTMLElement) {
-  const markersData = JSON.parse(container.getAttribute("data-markers") || "[]") as MarkerData[]
-  const config = JSON.parse(container.getAttribute("data-config") || "{}") as MapConfig
-  const currentSlug = container.getAttribute("data-current-slug") as FullSlug
-  const properties = container.getAttribute("data-properties")
-    ? JSON.parse(container.getAttribute("data-properties")!)
+  const markersData = JSON.parse(container.getAttribute('data-markers') || '[]') as MarkerData[]
+  const config = JSON.parse(container.getAttribute('data-config') || '{}') as MapConfig
+  const currentSlug = container.getAttribute('data-current-slug') as FullSlug
+  const properties = container.getAttribute('data-properties')
+    ? JSON.parse(container.getAttribute('data-properties')!)
     : undefined
 
   if (markersData.length === 0) {
@@ -180,7 +180,7 @@ async function initializeMap(container: HTMLElement) {
   let bounds: any = null
   if (markersData.length > 0) {
     bounds = new mapboxgl.LngLatBounds()
-    markersData.forEach((marker) => {
+    markersData.forEach(marker => {
       bounds.extend([marker.lon, marker.lat])
     })
   }
@@ -203,14 +203,14 @@ async function initializeMap(container: HTMLElement) {
   // initialize map
   const map = new mapboxgl.Map({
     container: container,
-    style: "mapbox://styles/mapbox/light-v11",
+    style: 'mapbox://styles/mapbox/light-v11',
     center: center,
     zoom: zoom,
     attributionControl: false,
   })
 
   // apply monochrome styling once loaded
-  map.once("load", () => {
+  map.once('load', () => {
     applyMonochromeMapPalette(map)
 
     // fit to bounds if we have markers and no explicit center
@@ -223,10 +223,10 @@ async function initializeMap(container: HTMLElement) {
   if (config.clustering && markersData.length > 10) {
     // use clustering for many markers
     const geojson: any = {
-      type: "FeatureCollection",
-      features: markersData.map((marker) => ({
-        type: "Feature",
-        geometry: { type: "Point", coordinates: [marker.lon, marker.lat] },
+      type: 'FeatureCollection',
+      features: markersData.map(marker => ({
+        type: 'Feature',
+        geometry: { type: 'Point', coordinates: [marker.lon, marker.lat] },
         properties: {
           title: marker.title,
           slug: marker.slug,
@@ -237,9 +237,9 @@ async function initializeMap(container: HTMLElement) {
       })),
     }
 
-    map.on("load", () => {
-      map.addSource("markers", {
-        type: "geojson",
+    map.on('load', () => {
+      map.addSource('markers', {
+        type: 'geojson',
         data: geojson,
         cluster: true,
         clusterMaxZoom: 14,
@@ -248,57 +248,57 @@ async function initializeMap(container: HTMLElement) {
 
       // cluster circles
       map.addLayer({
-        id: "clusters",
-        type: "circle",
-        source: "markers",
-        filter: ["has", "point_count"],
+        id: 'clusters',
+        type: 'circle',
+        source: 'markers',
+        filter: ['has', 'point_count'],
         paint: {
-          "circle-color": "#2b2418",
-          "circle-radius": ["step", ["get", "point_count"], 20, 10, 30, 30, 40],
-          "circle-opacity": 0.8,
+          'circle-color': '#2b2418',
+          'circle-radius': ['step', ['get', 'point_count'], 20, 10, 30, 30, 40],
+          'circle-opacity': 0.8,
         },
       })
 
       // cluster count labels
       map.addLayer({
-        id: "cluster-count",
-        type: "symbol",
-        source: "markers",
-        filter: ["has", "point_count"],
+        id: 'cluster-count',
+        type: 'symbol',
+        source: 'markers',
+        filter: ['has', 'point_count'],
         layout: {
-          "text-field": "{point_count_abbreviated}",
-          "text-font": ["DIN Offc Pro Medium", "Arial Unicode MS Bold"],
-          "text-size": 12,
+          'text-field': '{point_count_abbreviated}',
+          'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
+          'text-size': 12,
         },
-        paint: { "text-color": "#fff9f3" },
+        paint: { 'text-color': '#fff9f3' },
       })
 
       // unclustered points
       map.addLayer({
-        id: "unclustered-point",
-        type: "circle",
-        source: "markers",
-        filter: ["!", ["has", "point_count"]],
+        id: 'unclustered-point',
+        type: 'circle',
+        source: 'markers',
+        filter: ['!', ['has', 'point_count']],
         paint: {
-          "circle-color": "#2b2418",
-          "circle-radius": 8,
-          "circle-stroke-width": 2,
-          "circle-stroke-color": "#fff9f3",
+          'circle-color': '#2b2418',
+          'circle-radius': 8,
+          'circle-stroke-width': 2,
+          'circle-stroke-color': '#fff9f3',
         },
       })
 
       // click on cluster to zoom
-      map.on("click", "clusters", (e: any) => {
-        const features = map.queryRenderedFeatures(e.point, { layers: ["clusters"] })
+      map.on('click', 'clusters', (e: any) => {
+        const features = map.queryRenderedFeatures(e.point, { layers: ['clusters'] })
         const clusterId = features[0].properties.cluster_id
-        map.getSource("markers").getClusterExpansionZoom(clusterId, (err: any, zoom: number) => {
+        map.getSource('markers').getClusterExpansionZoom(clusterId, (err: any, zoom: number) => {
           if (err) return
           map.easeTo({ center: features[0].geometry.coordinates, zoom: zoom })
         })
       })
 
       // show popup on unclustered point click
-      map.on("click", "unclustered-point", (e: any) => {
+      map.on('click', 'unclustered-point', (e: any) => {
         const coordinates = e.features[0].geometry.coordinates.slice()
         const props = e.features[0].properties
 
@@ -309,7 +309,7 @@ async function initializeMap(container: HTMLElement) {
           slug: props.slug,
           icon: props.icon,
           color: props.color,
-          popupFields: JSON.parse(props.popupFields || "{}"),
+          popupFields: JSON.parse(props.popupFields || '{}'),
         }
 
         const popupContent = createPopupContent(marker, currentSlug, properties)
@@ -318,24 +318,24 @@ async function initializeMap(container: HTMLElement) {
       })
 
       // change cursor on hover
-      map.on("mouseenter", "clusters", () => {
-        map.getCanvas().style.cursor = "pointer"
+      map.on('mouseenter', 'clusters', () => {
+        map.getCanvas().style.cursor = 'pointer'
       })
-      map.on("mouseleave", "clusters", () => {
-        map.getCanvas().style.cursor = ""
+      map.on('mouseleave', 'clusters', () => {
+        map.getCanvas().style.cursor = ''
       })
-      map.on("mouseenter", "unclustered-point", () => {
-        map.getCanvas().style.cursor = "pointer"
+      map.on('mouseenter', 'unclustered-point', () => {
+        map.getCanvas().style.cursor = 'pointer'
       })
-      map.on("mouseleave", "unclustered-point", () => {
-        map.getCanvas().style.cursor = ""
+      map.on('mouseleave', 'unclustered-point', () => {
+        map.getCanvas().style.cursor = ''
       })
     })
   } else {
     // no clustering - individual markers
-    markersData.forEach((marker) => {
-      const el = document.createElement("div")
-      el.className = "base-map-marker"
+    markersData.forEach(marker => {
+      const el = document.createElement('div')
+      el.className = 'base-map-marker'
 
       if (marker.icon) {
         el.innerHTML = marker.icon
@@ -349,7 +349,7 @@ async function initializeMap(container: HTMLElement) {
 
       const popup = new mapboxgl.Popup({ offset: 25 }).setHTML(popupContent)
 
-      new mapboxgl.Marker({ element: el, anchor: "bottom" })
+      new mapboxgl.Marker({ element: el, anchor: 'bottom' })
         .setLngLat([marker.lon, marker.lat])
         .setPopup(popup)
         .addTo(map)
@@ -362,8 +362,8 @@ async function initializeMap(container: HTMLElement) {
 }
 
 function initBaseMaps() {
-  const containers = document.querySelectorAll<HTMLElement>(".base-map")
-  containers.forEach((container) => {
+  const containers = document.querySelectorAll<HTMLElement>('.base-map')
+  containers.forEach(container => {
     // @ts-ignore
     if (container._mapInitialized) return
     // @ts-ignore
@@ -373,11 +373,11 @@ function initBaseMaps() {
 }
 
 function cleanupBaseMaps() {
-  const containers = document.querySelectorAll<HTMLElement>(".base-map")
-  containers.forEach((container) => {
+  const containers = document.querySelectorAll<HTMLElement>('.base-map')
+  containers.forEach(container => {
     // @ts-ignore
     const map = container._mapInstance
-    if (map && typeof map.remove === "function") {
+    if (map && typeof map.remove === 'function') {
       try {
         map.remove()
       } catch (error) {
@@ -392,7 +392,7 @@ function cleanupBaseMaps() {
 }
 
 // initialize on nav event
-document.addEventListener("nav", () => {
+document.addEventListener('nav', () => {
   setTimeout(() => {
     initBaseMaps()
   }, 100)

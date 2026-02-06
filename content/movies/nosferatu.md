@@ -6,7 +6,7 @@ description: eggers remaking murnau's silent masterpiece—gothic romance told t
 director: Robert Eggers
 id: nosferatu
 modified: 2025-10-29 02:15:05 GMT-04:00
-posters: "[[movies/posters/nosferatu.jpg]]"
+posters: '[[movies/posters/nosferatu.jpg]]'
 status: to watch
 studio: focus features
 tags:

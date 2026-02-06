@@ -1,5 +1,5 @@
 ---
-date: "2024-02-26"
+date: '2024-02-26'
 description: graph theory covering directed and undirected graphs, adjacency lists, dfs and bfs traversal, connected components, bipartite graphs, shortest paths.
 id: Graphs
 modified: 2025-10-29 02:16:18 GMT-04:00

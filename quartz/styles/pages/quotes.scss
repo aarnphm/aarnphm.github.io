@@ -23,13 +23,13 @@ $quote-indent: 1.25em;
 
     &:first-of-type::before {
       @include quote-mark;
-      content: "“";
+      content: '“';
       margin-right: $quote-mark-gap;
     }
 
     &:nth-last-of-type(2)::after {
       @include quote-mark;
-      content: "”";
+      content: '”';
       margin-left: $quote-mark-gap;
     }
 
@@ -40,14 +40,14 @@ $quote-indent: 1.25em;
       font-style: italic;
 
       &:before {
-        content: "—";
+        content: '—';
         margin-right: 0;
       }
     }
   }
 }
 
-[data-slug="quotes"] {
+[data-slug='quotes'] {
   header {
     height: 0;
   }

@@ -8,7 +8,7 @@ description: bus driver writing poetry in his spare moments—jarmusch filming a
 director: Jim Jarmusch
 id: paterson
 modified: 2025-10-29 02:15:05 GMT-04:00
-posters: "[[movies/posters/paterson.jpg]]"
+posters: '[[movies/posters/paterson.jpg]]'
 rating: 7.3
 status: to watch
 studio: le pacte

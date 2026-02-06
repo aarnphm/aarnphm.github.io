@@ -1,10 +1,10 @@
-import { Node, Root } from "hast"
-import { Components, Jsx, toJsxRuntime } from "hast-util-to-jsx-runtime"
-import { Fragment, jsx, jsxs } from "preact/jsx-runtime"
-import { getMdxComponentEntries } from "../components/mdx/registry"
-import { type FilePath } from "./path"
-import "../components/mdx"
-import { trace } from "./trace"
+import { Node, Root } from 'hast'
+import { Components, Jsx, toJsxRuntime } from 'hast-util-to-jsx-runtime'
+import { Fragment, jsx, jsxs } from 'preact/jsx-runtime'
+import { getMdxComponentEntries } from '../components/mdx/registry'
+import { type FilePath } from './path'
+import '../components/mdx'
+import { trace } from './trace'
 
 const baseComponents: Record<string, any> = {
   table: (props: any) => (
@@ -30,7 +30,7 @@ export function htmlToJsx(fp: FilePath, tree: Node) {
       Fragment,
       jsx: jsx as Jsx,
       jsxs: jsxs as Jsx,
-      elementAttributeNameCase: "html",
+      elementAttributeNameCase: 'html',
       components: resolveComponents(),
     })
   } catch (e) {

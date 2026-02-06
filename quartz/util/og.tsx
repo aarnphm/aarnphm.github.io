@@ -1,34 +1,34 @@
-import type { FontWeight, SatoriOptions } from "satori"
-import { promises as fs } from "fs"
-import path from "path"
-import { JSX } from "preact"
-import readingTime from "reading-time"
-import { styleText } from "util"
-import { GlobalConfiguration } from "../cfg"
-import { formatDate, getDate } from "../components/Date"
-import { i18n } from "../i18n"
-import { QuartzPluginData } from "../plugins/vfile"
-import { FullSlug } from "../util/path"
-import { parseWikilink, resolveWikilinkTarget } from "../util/wikilinks"
-import { QUARTZ, joinSegments } from "./path"
-import { FontSpecification, getFontSpecificationName, ThemeKey } from "./theme"
+import type { FontWeight, SatoriOptions } from 'satori'
+import { promises as fs } from 'fs'
+import path from 'path'
+import { JSX } from 'preact'
+import readingTime from 'reading-time'
+import { styleText } from 'util'
+import { GlobalConfiguration } from '../cfg'
+import { formatDate, getDate } from '../components/Date'
+import { i18n } from '../i18n'
+import { QuartzPluginData } from '../plugins/vfile'
+import { FullSlug } from '../util/path'
+import { parseWikilink, resolveWikilinkTarget } from '../util/wikilinks'
+import { QUARTZ, joinSegments } from './path'
+import { FontSpecification, getFontSpecificationName, ThemeKey } from './theme'
 
 const defaultHeaderWeight = [700]
 const defaultBodyWeight = [400]
 
-const headerFontLocal = joinSegments("static", "GT-Sectra-Display-Regular.woff")
-const bodyFontLocal = joinSegments("static", "GT-Sectra-Book.woff")
+const headerFontLocal = joinSegments('static', 'GT-Sectra-Display-Regular.woff')
+const bodyFontLocal = joinSegments('static', 'GT-Sectra-Book.woff')
 
 /**
  * Strip HTML tags from text for use in OG images
  */
 function stripHtml(text: string): string {
-  return text.replace(/<[^>]*>/g, "")
+  return text.replace(/<[^>]*>/g, '')
 }
 
 export const renderDescription = (description: string | undefined, slug: string) => {
   if (!description) {
-    return ""
+    return ''
   }
 
   // Strip HTML tags first for OG image compatibility
@@ -58,15 +58,15 @@ export async function getSatoriFonts(
   useGoogleFonts ||= false
   // Get all weights for header and body fonts
   const headerWeights: FontWeight[] = (
-    typeof headerFont === "string"
+    typeof headerFont === 'string'
       ? defaultHeaderWeight
       : (headerFont.weights ?? defaultHeaderWeight)
   ) as FontWeight[]
   const bodyWeights: FontWeight[] = (
-    typeof bodyFont === "string" ? defaultBodyWeight : (bodyFont.weights ?? defaultBodyWeight)
+    typeof bodyFont === 'string' ? defaultBodyWeight : (bodyFont.weights ?? defaultBodyWeight)
   ) as FontWeight[]
 
-  const url = new URL(`https://${cfg.baseUrl ?? "example.com"}`)
+  const url = new URL(`https://${cfg.baseUrl ?? 'example.com'}`)
 
   const readLocalFont = async (relativePath: string) => {
     const absolutePath = path.join(QUARTZ, relativePath)
@@ -75,7 +75,7 @@ export async function getSatoriFonts(
     } catch (error) {
       console.log(
         styleText(
-          "yellow",
+          'yellow',
           `\nWarning: failed to read local font asset at ${absolutePath}, ${String(error)}`,
         ),
       )
@@ -89,7 +89,7 @@ export async function getSatoriFonts(
       if (!res.ok) {
         console.log(
           styleText(
-            "yellow",
+            'yellow',
             `\nWarning: failed to fetch font ${relativePath} from ${url.toString()}, got ${res.status} ${res.statusText}`,
           ),
         )
@@ -99,7 +99,7 @@ export async function getSatoriFonts(
     } catch (error) {
       console.log(
         styleText(
-          "yellow",
+          'yellow',
           `\nWarning: network error while fetching font ${relativePath} from ${url.toString()}, ${String(error)}`,
         ),
       )
@@ -107,11 +107,11 @@ export async function getSatoriFonts(
     }
   }
 
-  const headerFontName = typeof headerFont === "string" ? headerFont : headerFont.name
-  const bodyFontName = typeof bodyFont === "string" ? bodyFont : bodyFont.name
+  const headerFontName = typeof headerFont === 'string' ? headerFont : headerFont.name
+  const bodyFontName = typeof bodyFont === 'string' ? bodyFont : bodyFont.name
 
   // Fetch fonts for all weights and convert to satori format in one go
-  const headerFontPromises = headerWeights.map(async (weight) => {
+  const headerFontPromises = headerWeights.map(async weight => {
     let data
     if (useGoogleFonts) {
       data = await fetchTtf(headerFontName, weight)
@@ -122,10 +122,10 @@ export async function getSatoriFonts(
       }
     }
     if (!data) return null
-    return { name: headerFontName, data, weight, style: "normal" as const }
+    return { name: headerFontName, data, weight, style: 'normal' as const }
   })
 
-  const bodyFontPromises = bodyWeights.map(async (weight) => {
+  const bodyFontPromises = bodyWeights.map(async weight => {
     let data
     if (useGoogleFonts) {
       data = await fetchTtf(bodyFontName, weight)
@@ -137,7 +137,7 @@ export async function getSatoriFonts(
     }
 
     if (!data) return null
-    return { name: bodyFontName, data, weight, style: "normal" as const }
+    return { name: bodyFontName, data, weight, style: 'normal' as const }
   })
 
   const [headerFonts, bodyFonts] = await Promise.all([
@@ -146,7 +146,7 @@ export async function getSatoriFonts(
   ])
 
   // Filter out any failed fetches and combine header and body fonts
-  const fonts: SatoriOptions["fonts"] = [
+  const fonts: SatoriOptions['fonts'] = [
     ...headerFonts.filter((font): font is NonNullable<typeof font> => font !== null),
     ...bodyFonts.filter((font): font is NonNullable<typeof font> => font !== null),
   ]
@@ -164,9 +164,9 @@ export async function fetchTtf(
   rawFontName: string,
   weight: FontWeight,
 ): Promise<Buffer<ArrayBufferLike> | undefined> {
-  const fontName = rawFontName.replaceAll(" ", "+")
+  const fontName = rawFontName.replaceAll(' ', '+')
   const cacheKey = `${fontName}-${weight}`
-  const cacheDir = path.join(QUARTZ, ".quartz-cache", "fonts")
+  const cacheDir = path.join(QUARTZ, '.quartz-cache', 'fonts')
   const cachePath = path.join(cacheDir, cacheKey)
 
   // Check if font exists in cache
@@ -188,7 +188,7 @@ export async function fetchTtf(
   if (!match) {
     console.log(
       styleText(
-        "yellow",
+        'yellow',
         `\nWarning: Failed to fetch font ${rawFontName} with weight ${weight}, got ${cssResponse.statusText}`,
       ),
     )
@@ -229,7 +229,7 @@ export type SocialImageOptions = {
   ) => JSX.Element
 }
 
-export type UserOpts = Omit<SocialImageOptions, "imageStructure">
+export type UserOpts = Omit<SocialImageOptions, 'imageStructure'>
 
 export type ImageOptions = {
   /**
@@ -243,7 +243,7 @@ export type ImageOptions = {
   /**
    * header + body font to be used when generating satori image (as promise to work around sync in component)
    */
-  fonts: SatoriOptions["fonts"]
+  fonts: SatoriOptions['fonts']
   /**
    * `GlobalConfiguration` of quartz (used for theme/typography)
    */
@@ -255,7 +255,7 @@ export type ImageOptions = {
 }
 
 // This is the default template for generated social image.
-export const defaultImage: SocialImageOptions["imageStructure"] = ({
+export const defaultImage: SocialImageOptions['imageStructure'] = ({
   cfg,
   userOpts,
   title,
@@ -272,7 +272,7 @@ export const defaultImage: SocialImageOptions["imageStructure"] = ({
   const date = rawDate ? formatDate(rawDate, cfg.locale) : null
 
   // Calculate reading time
-  const { minutes, words } = readingTime(fileData.text ?? "")
+  const { minutes, words } = readingTime(fileData.text ?? '')
   const readingTimeText = i18n(cfg.locale).components.contentMeta.readingTime({
     minutes: Math.ceil(minutes),
     words,
@@ -289,22 +289,22 @@ export const defaultImage: SocialImageOptions["imageStructure"] = ({
   return (
     <div
       style={{
-        display: "flex",
-        flexDirection: "column",
-        height: "100%",
-        width: "100%",
+        display: 'flex',
+        flexDirection: 'column',
+        height: '100%',
+        width: '100%',
         backgroundColor: cfg.theme.colors[colorScheme].light,
-        padding: "2.5rem",
+        padding: '2.5rem',
         fontFamily: bodyFont,
       }}
     >
-      <div style={{ display: "flex", alignItems: "center", gap: "1rem", marginBottom: "0.5rem" }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '0.5rem' }}>
         {iconBase64 && (
-          <img src={iconBase64} width={56} height={56} style={{ borderRadius: "50%" }} />
+          <img src={iconBase64} width={56} height={56} style={{ borderRadius: '50%' }} />
         )}
         <div
           style={{
-            display: "flex",
+            display: 'flex',
             fontSize: 32,
             color: cfg.theme.colors[colorScheme].gray,
             fontFamily: bodyFont,
@@ -313,7 +313,7 @@ export const defaultImage: SocialImageOptions["imageStructure"] = ({
           {cfg.baseUrl}
         </div>
       </div>
-      <div style={{ display: "flex", marginTop: "1rem", marginBottom: "1.5rem" }}>
+      <div style={{ display: 'flex', marginTop: '1rem', marginBottom: '1.5rem' }}>
         <h1
           style={{
             margin: 0,
@@ -322,11 +322,11 @@ export const defaultImage: SocialImageOptions["imageStructure"] = ({
             fontWeight: 700,
             color: cfg.theme.colors[colorScheme].dark,
             lineHeight: 1.2,
-            display: "-webkit-box",
-            WebkitBoxOrient: "vertical",
+            display: '-webkit-box',
+            WebkitBoxOrient: 'vertical',
             WebkitLineClamp: 2,
-            overflow: "hidden",
-            textOverflow: "ellipsis",
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
           }}
         >
           {title}
@@ -334,7 +334,7 @@ export const defaultImage: SocialImageOptions["imageStructure"] = ({
       </div>
       <div
         style={{
-          display: "flex",
+          display: 'flex',
           flex: 1,
           fontSize: 36,
           color: cfg.theme.colors[colorScheme].darkgray,
@@ -344,11 +344,11 @@ export const defaultImage: SocialImageOptions["imageStructure"] = ({
         <p
           style={{
             margin: 0,
-            display: "-webkit-box",
-            WebkitBoxOrient: "vertical",
+            display: '-webkit-box',
+            WebkitBoxOrient: 'vertical',
             WebkitLineClamp: 5,
-            overflow: "hidden",
-            textOverflow: "ellipsis",
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
           }}
         >
           {descriptionText}
@@ -356,27 +356,27 @@ export const defaultImage: SocialImageOptions["imageStructure"] = ({
       </div>
       <div
         style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          marginTop: "2rem",
-          paddingTop: "2rem",
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          marginTop: '2rem',
+          paddingTop: '2rem',
           borderTop: `1px solid ${cfg.theme.colors[colorScheme].lightgray}`,
         }}
       >
         <div
           style={{
-            display: "flex",
-            alignItems: "center",
-            gap: "2rem",
+            display: 'flex',
+            alignItems: 'center',
+            gap: '2rem',
             color: cfg.theme.colors[colorScheme].gray,
             fontSize: 28,
           }}
         >
           {date && (
-            <div style={{ display: "flex", alignItems: "center" }}>
+            <div style={{ display: 'flex', alignItems: 'center' }}>
               <svg
-                style={{ marginRight: "0.5rem" }}
+                style={{ marginRight: '0.5rem' }}
                 width="28"
                 height="28"
                 viewBox="0 0 24 24"
@@ -391,9 +391,9 @@ export const defaultImage: SocialImageOptions["imageStructure"] = ({
               {date}
             </div>
           )}
-          <div style={{ display: "flex", alignItems: "center" }}>
+          <div style={{ display: 'flex', alignItems: 'center' }}>
             <svg
-              style={{ marginRight: "0.5rem" }}
+              style={{ marginRight: '0.5rem' }}
               width="28"
               height="28"
               viewBox="0 0 24 24"
@@ -408,21 +408,21 @@ export const defaultImage: SocialImageOptions["imageStructure"] = ({
         </div>
         <div
           style={{
-            display: "flex",
-            gap: "0.5rem",
-            flexWrap: "wrap",
-            justifyContent: "flex-end",
-            maxWidth: "60%",
+            display: 'flex',
+            gap: '0.5rem',
+            flexWrap: 'wrap',
+            justifyContent: 'flex-end',
+            maxWidth: '60%',
           }}
         >
           {tags.slice(0, 3).map((tag: string) => (
             <div
               style={{
-                display: "flex",
-                padding: "0.5rem 1rem",
+                display: 'flex',
+                padding: '0.5rem 1rem',
                 backgroundColor: cfg.theme.colors[colorScheme].highlight,
                 color: cfg.theme.colors[colorScheme].dark,
-                borderRadius: "10px",
+                borderRadius: '10px',
                 fontSize: 24,
               }}
             >

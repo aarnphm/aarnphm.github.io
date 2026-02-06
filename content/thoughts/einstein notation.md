@@ -1,10 +1,10 @@
 ---
-created: "2025-09-17"
-date: "2025-09-17"
+created: '2025-09-17'
+date: '2025-09-17'
 description: Shorthand notation for tensor operations using repeated indices to imply summation
 id: einstein notation
 modified: 2025-12-18 01:35:52 GMT-05:00
-published: "2003-03-12"
+published: '2003-03-12'
 source: https://en.wikipedia.org/wiki/Einstein_notation
 tags:
   - math

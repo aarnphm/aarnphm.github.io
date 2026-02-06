@@ -1,5 +1,5 @@
 ---
-date: "2024-12-23"
+date: '2024-12-23'
 description: a numerical optimization technique
 id: annealing
 modified: 2025-10-29 02:15:40 GMT-04:00

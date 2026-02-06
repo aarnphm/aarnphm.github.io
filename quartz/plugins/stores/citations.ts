@@ -1,4 +1,4 @@
-import { extractArxivId } from "../transformers/links"
+import { extractArxivId } from '../transformers/links'
 
 export interface CachedCitationEntry {
   title: string
@@ -21,11 +21,11 @@ export interface CacheState {
 export const cacheState: CacheState = { documents: new Map(), papers: new Map(), dirty: false }
 
 export function normalizeArxivId(id: string): string {
-  return id.replace(/^arxiv:/i, "").replace(/v\d+$/i, "")
+  return id.replace(/^arxiv:/i, '').replace(/v\d+$/i, '')
 }
 
 export function makeBibKey(id: string): string {
-  return `arxiv-${normalizeArxivId(id).replace(/\./g, "")}`
+  return `arxiv-${normalizeArxivId(id).replace(/\./g, '')}`
 }
 
 export function sanitizeLinks(links: string[]): string[] {

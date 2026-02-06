@@ -1,5 +1,5 @@
 ---
-date: "2024-12-18"
+date: '2024-12-18'
 description: think of Laplace transform, but for sampled data
 id: Z-transform
 modified: 2025-10-29 02:15:39 GMT-04:00

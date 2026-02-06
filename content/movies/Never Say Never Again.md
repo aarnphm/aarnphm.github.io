@@ -6,7 +6,7 @@ description: connery returning to bond twelve years later—kershner's non-canon
 director: Irvin Kershner
 id: never-say-never-again
 modified: 2025-10-29 02:14:53 GMT-04:00
-posters: "[[movies/posters/never-say-never-again.jpg]]"
+posters: '[[movies/posters/never-say-never-again.jpg]]'
 rating: 6.1
 status: finished
 studio: warner bros

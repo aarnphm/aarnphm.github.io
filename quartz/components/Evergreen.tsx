@@ -1,15 +1,15 @@
-import { h, VNode } from "preact"
-import { i18n } from "../i18n"
-import { QuartzPluginData } from "../plugins/vfile"
+import { h, VNode } from 'preact'
+import { i18n } from '../i18n'
+import { QuartzPluginData } from '../plugins/vfile'
 import {
   QuartzComponent,
   QuartzComponentConstructor,
   QuartzComponentProps,
-} from "../types/component"
-import { getAllSegmentPrefixes, resolveRelative, SimpleSlug, simplifySlug } from "../util/path"
+} from '../types/component'
+import { getAllSegmentPrefixes, resolveRelative, SimpleSlug, simplifySlug } from '../util/path'
 //@ts-ignore
-import script from "./scripts/evergreen.inline"
-import style from "./styles/evergreen.scss"
+import script from './scripts/evergreen.inline'
+import style from './styles/evergreen.scss'
 
 type Props = {
   vaults?: QuartzPluginData[]
@@ -20,15 +20,15 @@ type Props = {
 export const AllTags: QuartzComponent = ({ allFiles }: Props) => {
   const tags = [
     ...new Set(
-      allFiles.flatMap((data) => data.frontmatter?.tags ?? []).flatMap(getAllSegmentPrefixes),
+      allFiles.flatMap(data => data.frontmatter?.tags ?? []).flatMap(getAllSegmentPrefixes),
     ),
   ].sort((a, b) => a.localeCompare(b))
 
-  return h("section", { class: "note-tags" }, [
+  return h('section', { class: 'note-tags' }, [
     h(
-      "div",
-      { class: "notes-list" },
-      tags.map((tag) => h("div", { class: "note-tag", "data-tag": tag }, [tag])),
+      'div',
+      { class: 'notes-list' },
+      tags.map(tag => h('div', { class: 'note-tag', 'data-tag': tag }, [tag])),
     ),
   ])
 }
@@ -44,62 +44,62 @@ const defaultOpts: EvergreenNotes = { lg: [], sm: [], tags: [] }
 export const EvergreenPermanentNotes = ((userOpts?: EvergreenNotes) =>
   ({ fileData, vaults }: Props) => {
     const opts = { ...defaultOpts, ...userOpts }
-    const largeFiles = vaults!.filter((file) => opts.lg.includes(simplifySlug(file.slug!)))
-    const smallFiles = vaults!.filter((file) => opts.sm.includes(simplifySlug(file.slug!)))
+    const largeFiles = vaults!.filter(file => opts.lg.includes(simplifySlug(file.slug!)))
+    const smallFiles = vaults!.filter(file => opts.sm.includes(simplifySlug(file.slug!)))
 
     const tagItemMap: Map<string, QuartzPluginData[]> = new Map()
     for (const tag of opts.tags) {
       tagItemMap.set(
         tag,
-        vaults!.filter((file) =>
+        vaults!.filter(file =>
           (file.frontmatter?.tags ?? []).flatMap(getAllSegmentPrefixes).includes(tag),
         ),
       )
     }
 
-    return h("section", { class: "note-permanent" }, [
-      h("div", { class: "permanent-grid", style: "position: relative;" }, [
+    return h('section', { class: 'note-permanent' }, [
+      h('div', { class: 'permanent-grid', style: 'position: relative;' }, [
         h(
-          "div",
-          { class: "large grid-line" },
-          largeFiles.map((f) =>
+          'div',
+          { class: 'large grid-line' },
+          largeFiles.map(f =>
             h(
-              "a",
-              { href: resolveRelative(fileData.slug!, f.slug!), "data-list": true, class: "perma" },
+              'a',
+              { href: resolveRelative(fileData.slug!, f.slug!), 'data-list': true, class: 'perma' },
               [
-                h("div", { class: "title" }, [f.frontmatter?.title]),
-                h("div", { class: "description" }, [f.description!]),
+                h('div', { class: 'title' }, [f.frontmatter?.title]),
+                h('div', { class: 'description' }, [f.description!]),
               ],
             ),
           ),
         ),
         h(
-          "div",
-          { class: "mid grid-line" },
-          smallFiles.map((f) =>
+          'div',
+          { class: 'mid grid-line' },
+          smallFiles.map(f =>
             h(
-              "a",
-              { href: resolveRelative(fileData.slug!, f.slug!), "data-list": true, class: "perma" },
-              [h("div", { class: "title" }, [f.frontmatter?.title])],
+              'a',
+              { href: resolveRelative(fileData.slug!, f.slug!), 'data-list': true, class: 'perma' },
+              [h('div', { class: 'title' }, [f.frontmatter?.title])],
             ),
           ),
         ),
         h(
-          "div",
-          { class: "small grid-line" },
+          'div',
+          { class: 'small grid-line' },
           Array.from(tagItemMap.entries()).map(([key, pages]) =>
             h(
-              "a",
+              'a',
               {
                 href: resolveRelative(fileData.slug!, `tags/${key}` as SimpleSlug),
-                "data-list": true,
-                "data-tag": key,
-                class: "perma",
+                'data-list': true,
+                'data-tag': key,
+                class: 'perma',
               },
               [
-                h("div", { class: "title" }, [key]),
-                h("div", { class: "description" }, [
-                  pages.length === 1 ? "1 élément" : `${pages.length} éléments`,
+                h('div', { class: 'title' }, [key]),
+                h('div', { class: 'description' }, [
+                  pages.length === 1 ? '1 élément' : `${pages.length} éléments`,
                 ]),
               ],
             ),

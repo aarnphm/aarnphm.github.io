@@ -1,5 +1,5 @@
 ---
-date: "2024-02-07"
+date: '2024-02-07'
 description: The study of knowledge and justified belief.
 id: Epistemology
 modified: 2025-12-24 18:21:57 GMT-05:00

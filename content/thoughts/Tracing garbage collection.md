@@ -1,10 +1,10 @@
 ---
-created: "2025-09-18"
-date: "2025-09-27"
+created: '2025-09-18'
+date: '2025-09-27'
 description: Quick mental models and cross-language notes on tracing GC
 id: Tracing garbage collection
 modified: 2025-10-29 02:15:36 GMT-04:00
-published: "2004-01-17"
+published: '2004-01-17'
 source: synthesis
 tags:
   - seed

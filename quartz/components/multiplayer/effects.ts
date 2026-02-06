@@ -1,8 +1,8 @@
-import type { EffectContext } from "../../functional"
-import type { MultiplayerEvent, MultiplayerEffect, MultiplayerModel } from "./state"
-import type { createCommentsUi } from "./ui"
-import type { createWebSocketManager } from "./ws"
-import { persistPendingOps, restorePendingOps } from "./storage"
+import type { EffectContext } from '../../functional'
+import type { MultiplayerEvent, MultiplayerEffect, MultiplayerModel } from './state'
+import type { createCommentsUi } from './ui'
+import type { createWebSocketManager } from './ws'
+import { persistPendingOps, restorePendingOps } from './storage'
 
 export type MultiplayerServices = {
   ui: ReturnType<typeof createCommentsUi>
@@ -17,51 +17,51 @@ export const runMultiplayerEffect = (
   const state = ctx.retrieve()
 
   switch (effect.type) {
-    case "render":
+    case 'render':
       services.ui.renderAllComments()
       return
-    case "refreshModal":
+    case 'refreshModal':
       services.ui.refreshActiveModal()
       return
-    case "openPendingThread":
+    case 'openPendingThread':
       services.ui.openPendingCommentThread()
       return
-    case "persistPendingOps":
+    case 'persistPendingOps':
       persistPendingOps(effect.pageId, state.pendingOps)
       return
-    case "storage.restore": {
+    case 'storage.restore': {
       const restoredOps = restorePendingOps(effect.pageId)
       if (restoredOps.length > 0) {
-        ctx.dispatch({ type: "storage.pendingOpsRestored", ops: restoredOps })
+        ctx.dispatch({ type: 'storage.pendingOpsRestored', ops: restoredOps })
       }
       return
     }
-    case "ws.send":
+    case 'ws.send':
       services.ws.send(effect.op)
       return
-    case "ws.flush":
+    case 'ws.flush':
       services.ws.flushPending()
       return
-    case "ws.connect":
+    case 'ws.connect':
       services.ws.connect()
       return
-    case "selection.highlight":
+    case 'selection.highlight':
       if (state.activeSelection) {
         services.ui.renderSelectionHighlight(state.activeSelection)
       }
       return
-    case "composer.show":
+    case 'composer.show':
       if (state.activeSelection) {
         services.ui.showComposer(state.activeSelection)
       }
       return
-    case "composer.hide":
+    case 'composer.hide':
       services.ui.hideComposer()
       return
-    case "popover.hide":
+    case 'popover.hide':
       services.ui.hideActionsPopover()
       return
-    case "modal.close":
+    case 'modal.close':
       services.ui.closeActiveModal()
       return
     default: {

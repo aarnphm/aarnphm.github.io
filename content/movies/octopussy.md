@@ -6,7 +6,7 @@ description: moore battling soviet general's nuclear plot—glen filming bond in
 director: John Glen
 id: octopussy
 modified: 2025-10-29 02:15:05 GMT-04:00
-posters: "[[movies/posters/octopussy.webp]]"
+posters: '[[movies/posters/octopussy.webp]]'
 rating: 6.5
 status: recurring
 studio: united artists

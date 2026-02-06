@@ -1,16 +1,16 @@
 ---
-date: "2026-01-28"
+date: '2026-01-28'
 description: notes on property dualism, the hard problem, and why physicalism keeps failing
 id: dualism
 modified: 2026-01-28 02:45:00 GMT-05:00
 seealso:
-  - "[[thoughts/qualia]]"
-  - "[[thoughts/philosophical zombies]]"
-  - "[[thoughts/panpsychism]]"
-  - "[[thoughts/access consciousness]]"
-  - "[[thoughts/phenomenal consciousness]]"
-  - "[[thoughts/functionalism]]"
-  - "[[thoughts/physicalism]]"
+  - '[[thoughts/qualia]]'
+  - '[[thoughts/philosophical zombies]]'
+  - '[[thoughts/panpsychism]]'
+  - '[[thoughts/access consciousness]]'
+  - '[[thoughts/phenomenal consciousness]]'
+  - '[[thoughts/functionalism]]'
+  - '[[thoughts/physicalism]]'
 tags:
   - philosophy
   - consciousness

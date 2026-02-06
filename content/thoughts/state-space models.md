@@ -1,5 +1,5 @@
 ---
-date: "2024-02-07"
+date: '2024-02-07'
 description: structured state space sequence models
 id: state-space models
 modified: 2025-10-29 02:15:53 GMT-04:00

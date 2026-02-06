@@ -1,16 +1,16 @@
 ---
-date: "2024-02-07"
+date: '2024-02-07'
 description: and the backbone of the current language models/ai progress.
 id: Transformers
 modified: 2026-01-17 02:41:13 GMT-05:00
 seealso:
-  - "[[thoughts/LLMs|LLMs]]"
-  - "[[thoughts/Embedding|embedding]]"
-  - "[[thoughts/PD disaggregated serving|disaggregated serving]]"
-  - "[[thoughts/KV compression]]"
-  - "[[thoughts/KV offloading]]"
-  - "[[thoughts/mechanistic interpretability]]"
-  - "[[thoughts/tsfm|toronto school of foundational modelling]]"
+  - '[[thoughts/LLMs|LLMs]]'
+  - '[[thoughts/Embedding|embedding]]'
+  - '[[thoughts/PD disaggregated serving|disaggregated serving]]'
+  - '[[thoughts/KV compression]]'
+  - '[[thoughts/KV offloading]]'
+  - '[[thoughts/mechanistic interpretability]]'
+  - '[[thoughts/tsfm|toronto school of foundational modelling]]'
 socials:
   updates: https://magazine.sebastianraschka.com/p/beyond-standard-llms
 tags:

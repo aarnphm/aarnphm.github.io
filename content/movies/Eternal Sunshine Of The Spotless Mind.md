@@ -8,7 +8,7 @@ description: memory as love's only evidence—kaufman collapsing time into recur
 director: Michel Gondry
 id: eternal-sunshine-of-the-spotless-mind
 modified: 2025-10-29 02:14:49 GMT-04:00
-posters: "[[movies/posters/eternal-sunshine-of-the-spotless-mind.jpg]]"
+posters: '[[movies/posters/eternal-sunshine-of-the-spotless-mind.jpg]]'
 rating: 8.3
 status: to watch
 studio: focus features

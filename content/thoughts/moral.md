@@ -1,5 +1,5 @@
 ---
-date: "2024-02-07"
+date: '2024-02-07'
 description: criteria for judging right and wrong actions, encompassing deontological ethics, utilitarianism, and virtue ethics.
 id: moral
 modified: 2025-12-18 03:36:04 GMT-05:00

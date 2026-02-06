@@ -1,5 +1,5 @@
 ---
-date: "2025-09-26"
+date: '2025-09-26'
 description: helper scripts for lecture 0.412
 id: tools
 modified: 2025-11-11 07:00:11 GMT-05:00

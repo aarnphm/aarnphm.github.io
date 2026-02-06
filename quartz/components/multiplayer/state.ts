@@ -1,5 +1,5 @@
-import type { MultiplayerComment, OperationInput, OperationRecord } from "./model"
-import { Cmd } from "../../functional"
+import type { MultiplayerComment, OperationInput, OperationRecord } from './model'
+import { Cmd } from '../../functional'
 
 export type MultiplayerModel = {
   comments: MultiplayerComment[]
@@ -18,44 +18,44 @@ export type MultiplayerModel = {
 }
 
 export type MultiplayerEvent =
-  | { type: "nav.enter"; pageId: string }
-  | { type: "nav.ready" }
-  | { type: "storage.pendingOpsRestored"; ops: OperationInput[] }
-  | { type: "ws.init"; comments: MultiplayerComment[]; latestSeq: number }
-  | { type: "ws.delta"; ops: OperationRecord[]; latestSeq: number }
-  | { type: "ws.op"; op: OperationRecord }
-  | { type: "ws.ack"; opId: string; seq: number }
-  | { type: "comment.submit"; op: OperationInput }
-  | { type: "author.update"; oldAuthor: string; newAuthor: string }
-  | { type: "ui.selection.changed"; range: Range }
-  | { type: "ui.selection.cleared" }
-  | { type: "ui.hash.changed"; commentId: string | null }
-  | { type: "ui.hash.consumed" }
-  | { type: "ui.modal.open"; commentId: string }
-  | { type: "ui.modal.close" }
-  | { type: "ui.popover.open"; commentId: string | null }
-  | { type: "ui.popover.close" }
-  | { type: "ui.bubble.offsetUpdated"; commentId: string; offset: { x: number; y: number } }
-  | { type: "ui.bubbleOffsets.prune"; commentIds: string[] }
-  | { type: "ui.correctedAnchor.add"; opId: string }
-  | { type: "ui.comment.unread"; commentId: string }
-  | { type: "ui.comment.read"; commentId: string }
-  | { type: "dom.collapse" }
+  | { type: 'nav.enter'; pageId: string }
+  | { type: 'nav.ready' }
+  | { type: 'storage.pendingOpsRestored'; ops: OperationInput[] }
+  | { type: 'ws.init'; comments: MultiplayerComment[]; latestSeq: number }
+  | { type: 'ws.delta'; ops: OperationRecord[]; latestSeq: number }
+  | { type: 'ws.op'; op: OperationRecord }
+  | { type: 'ws.ack'; opId: string; seq: number }
+  | { type: 'comment.submit'; op: OperationInput }
+  | { type: 'author.update'; oldAuthor: string; newAuthor: string }
+  | { type: 'ui.selection.changed'; range: Range }
+  | { type: 'ui.selection.cleared' }
+  | { type: 'ui.hash.changed'; commentId: string | null }
+  | { type: 'ui.hash.consumed' }
+  | { type: 'ui.modal.open'; commentId: string }
+  | { type: 'ui.modal.close' }
+  | { type: 'ui.popover.open'; commentId: string | null }
+  | { type: 'ui.popover.close' }
+  | { type: 'ui.bubble.offsetUpdated'; commentId: string; offset: { x: number; y: number } }
+  | { type: 'ui.bubbleOffsets.prune'; commentIds: string[] }
+  | { type: 'ui.correctedAnchor.add'; opId: string }
+  | { type: 'ui.comment.unread'; commentId: string }
+  | { type: 'ui.comment.read'; commentId: string }
+  | { type: 'dom.collapse' }
 
 export type MultiplayerEffect =
-  | { type: "render" }
-  | { type: "refreshModal" }
-  | { type: "openPendingThread" }
-  | { type: "persistPendingOps"; pageId: string }
-  | { type: "ws.send"; op: OperationInput }
-  | { type: "ws.flush" }
-  | { type: "ws.connect" }
-  | { type: "storage.restore"; pageId: string }
-  | { type: "selection.highlight" }
-  | { type: "composer.show" }
-  | { type: "composer.hide" }
-  | { type: "popover.hide" }
-  | { type: "modal.close" }
+  | { type: 'render' }
+  | { type: 'refreshModal' }
+  | { type: 'openPendingThread' }
+  | { type: 'persistPendingOps'; pageId: string }
+  | { type: 'ws.send'; op: OperationInput }
+  | { type: 'ws.flush' }
+  | { type: 'ws.connect' }
+  | { type: 'storage.restore'; pageId: string }
+  | { type: 'selection.highlight' }
+  | { type: 'composer.show' }
+  | { type: 'composer.hide' }
+  | { type: 'popover.hide' }
+  | { type: 'modal.close' }
 
 export function createState(): MultiplayerModel {
   return {
@@ -79,7 +79,7 @@ function upsertComment(
   comments: MultiplayerComment[],
   comment: MultiplayerComment,
 ): MultiplayerComment[] {
-  const idx = comments.findIndex((c) => c.id === comment.id)
+  const idx = comments.findIndex(c => c.id === comment.id)
   if (idx === -1) return [...comments, comment]
   const next = comments.slice()
   next[idx] = comment
@@ -112,36 +112,36 @@ export function reduce(
   event: MultiplayerEvent,
 ): { model: MultiplayerModel; effects: Cmd<MultiplayerEffect> } {
   switch (event.type) {
-    case "nav.enter": {
+    case 'nav.enter': {
       return {
         model: { ...createState(), currentPageId: event.pageId },
-        effects: [{ type: "storage.restore", pageId: event.pageId }],
+        effects: [{ type: 'storage.restore', pageId: event.pageId }],
       }
     }
-    case "nav.ready": {
-      return { model: model, effects: [{ type: "ws.connect" }] }
+    case 'nav.ready': {
+      return { model: model, effects: [{ type: 'ws.connect' }] }
     }
-    case "storage.pendingOpsRestored": {
-      const pendingOps = new Map(event.ops.map((op) => [op.opId, op]))
+    case 'storage.pendingOpsRestored': {
+      const pendingOps = new Map(event.ops.map(op => [op.opId, op]))
       const comments = applyPendingOpsToComments(model.comments, pendingOps)
       return {
         model: { ...model, pendingOps, comments },
-        effects: [{ type: "render" }, { type: "refreshModal" }],
+        effects: [{ type: 'render' }, { type: 'refreshModal' }],
       }
     }
-    case "ws.init": {
+    case 'ws.init': {
       const comments = applyPendingOpsToComments(event.comments, model.pendingOps)
       return {
         model: { ...model, comments, lastSeq: event.latestSeq, hasSnapshot: true },
         effects: [
-          { type: "render" },
-          { type: "refreshModal" },
-          { type: "openPendingThread" },
-          { type: "ws.flush" },
+          { type: 'render' },
+          { type: 'refreshModal' },
+          { type: 'openPendingThread' },
+          { type: 'ws.flush' },
         ],
       }
     }
-    case "ws.delta": {
+    case 'ws.delta': {
       let comments = model.comments
       let pendingOps = model.pendingOps
       let pendingOpsChanged = false
@@ -155,30 +155,30 @@ export function reduce(
       }
       if (event.latestSeq > lastSeq) lastSeq = event.latestSeq
       const effects: MultiplayerEffect[] = [
-        { type: "render" },
-        { type: "refreshModal" },
-        { type: "ws.flush" },
+        { type: 'render' },
+        { type: 'refreshModal' },
+        { type: 'ws.flush' },
       ]
       if (pendingOpsChanged && model.currentPageId) {
-        effects.push({ type: "persistPendingOps", pageId: model.currentPageId })
+        effects.push({ type: 'persistPendingOps', pageId: model.currentPageId })
       }
       return { model: { ...model, comments, pendingOps, lastSeq, hasSnapshot: true }, effects }
     }
-    case "ws.op": {
+    case 'ws.op': {
       let comments = upsertComment(model.comments, event.op.comment)
       const removal = removePendingOp(model.pendingOps, event.op.opId)
       const lastSeq = Math.max(model.lastSeq, event.op.seq)
-      const effects: MultiplayerEffect[] = [{ type: "render" }, { type: "refreshModal" }]
+      const effects: MultiplayerEffect[] = [{ type: 'render' }, { type: 'refreshModal' }]
       if (removal.changed && model.currentPageId) {
-        effects.push({ type: "persistPendingOps", pageId: model.currentPageId })
+        effects.push({ type: 'persistPendingOps', pageId: model.currentPageId })
       }
       return { model: { ...model, comments, pendingOps: removal.pendingOps, lastSeq }, effects }
     }
-    case "ws.ack": {
+    case 'ws.ack': {
       const removal = removePendingOp(model.pendingOps, event.opId)
       const effects: MultiplayerEffect[] = []
       if (removal.changed && model.currentPageId) {
-        effects.push({ type: "persistPendingOps", pageId: model.currentPageId })
+        effects.push({ type: 'persistPendingOps', pageId: model.currentPageId })
       }
       return {
         model: {
@@ -189,71 +189,71 @@ export function reduce(
         effects,
       }
     }
-    case "comment.submit": {
+    case 'comment.submit': {
       const comments = upsertComment(model.comments, event.op.comment)
       const pendingOps = new Map(model.pendingOps)
       pendingOps.set(event.op.opId, event.op)
       const effects: MultiplayerEffect[] = [
-        { type: "render" },
-        { type: "refreshModal" },
-        { type: "ws.send", op: event.op },
+        { type: 'render' },
+        { type: 'refreshModal' },
+        { type: 'ws.send', op: event.op },
       ]
       if (model.currentPageId) {
-        effects.push({ type: "persistPendingOps", pageId: model.currentPageId })
+        effects.push({ type: 'persistPendingOps', pageId: model.currentPageId })
       }
       return { model: { ...model, comments, pendingOps }, effects }
     }
-    case "author.update": {
+    case 'author.update': {
       let updated = false
-      const comments = model.comments.map((comment) => {
+      const comments = model.comments.map(comment => {
         if (comment.author !== event.oldAuthor) return comment
         updated = true
         return { ...comment, author: event.newAuthor }
       })
       return {
         model: updated ? { ...model, comments } : model,
-        effects: updated ? [{ type: "render" }, { type: "refreshModal" }] : [],
+        effects: updated ? [{ type: 'render' }, { type: 'refreshModal' }] : [],
       }
     }
-    case "ui.selection.changed": {
+    case 'ui.selection.changed': {
       return {
-        model: { ...model, activeSelection: event.range, activeComposerId: "selection" },
-        effects: [{ type: "selection.highlight" }, { type: "composer.show" }],
+        model: { ...model, activeSelection: event.range, activeComposerId: 'selection' },
+        effects: [{ type: 'selection.highlight' }, { type: 'composer.show' }],
       }
     }
-    case "ui.selection.cleared": {
+    case 'ui.selection.cleared': {
       return {
         model: { ...model, activeSelection: null, activeComposerId: null },
-        effects: [{ type: "composer.hide" }],
+        effects: [{ type: 'composer.hide' }],
       }
     }
-    case "ui.hash.changed": {
+    case 'ui.hash.changed': {
       return {
         model: { ...model, pendingHashCommentId: event.commentId },
-        effects: event.commentId ? [{ type: "openPendingThread" }] : [],
+        effects: event.commentId ? [{ type: 'openPendingThread' }] : [],
       }
     }
-    case "ui.hash.consumed": {
+    case 'ui.hash.consumed': {
       return { model: { ...model, pendingHashCommentId: null }, effects: [] }
     }
-    case "ui.modal.open": {
+    case 'ui.modal.open': {
       return { model: { ...model, activeModalId: event.commentId }, effects: [] }
     }
-    case "ui.modal.close": {
+    case 'ui.modal.close': {
       return { model: { ...model, activeModalId: null }, effects: [] }
     }
-    case "ui.popover.open": {
+    case 'ui.popover.open': {
       return { model: { ...model, activeActionsPopoverId: event.commentId }, effects: [] }
     }
-    case "ui.popover.close": {
+    case 'ui.popover.close': {
       return { model: { ...model, activeActionsPopoverId: null }, effects: [] }
     }
-    case "ui.bubble.offsetUpdated": {
+    case 'ui.bubble.offsetUpdated': {
       const bubbleOffsets = new Map(model.bubbleOffsets)
       bubbleOffsets.set(event.commentId, event.offset)
       return { model: { ...model, bubbleOffsets }, effects: [] }
     }
-    case "ui.bubbleOffsets.prune": {
+    case 'ui.bubbleOffsets.prune': {
       if (event.commentIds.length === 0) {
         return { model: model, effects: [] }
       }
@@ -263,7 +263,7 @@ export function reduce(
       }
       return { model: { ...model, bubbleOffsets }, effects: [] }
     }
-    case "ui.correctedAnchor.add": {
+    case 'ui.correctedAnchor.add': {
       if (model.correctedAnchors.has(event.opId)) {
         return { model: model, effects: [] }
       }
@@ -271,23 +271,23 @@ export function reduce(
       correctedAnchors.add(event.opId)
       return { model: { ...model, correctedAnchors }, effects: [] }
     }
-    case "ui.comment.unread": {
+    case 'ui.comment.unread': {
       if (model.unreadCommentIds.has(event.commentId)) {
         return { model: model, effects: [] }
       }
       const unreadCommentIds = new Set(model.unreadCommentIds)
       unreadCommentIds.add(event.commentId)
-      return { model: { ...model, unreadCommentIds }, effects: [{ type: "render" }] }
+      return { model: { ...model, unreadCommentIds }, effects: [{ type: 'render' }] }
     }
-    case "ui.comment.read": {
+    case 'ui.comment.read': {
       if (!model.unreadCommentIds.has(event.commentId)) {
         return { model: model, effects: [] }
       }
       const unreadCommentIds = new Set(model.unreadCommentIds)
       unreadCommentIds.delete(event.commentId)
-      return { model: { ...model, unreadCommentIds }, effects: [{ type: "render" }] }
+      return { model: { ...model, unreadCommentIds }, effects: [{ type: 'render' }] }
     }
-    case "dom.collapse": {
+    case 'dom.collapse': {
       return {
         model: {
           ...model,
@@ -297,12 +297,12 @@ export function reduce(
           activeActionsPopoverId: null,
         },
         effects: [
-          { type: "composer.hide" },
-          { type: "popover.hide" },
-          { type: "modal.close" },
-          { type: "render" },
-          { type: "refreshModal" },
-          { type: "openPendingThread" },
+          { type: 'composer.hide' },
+          { type: 'popover.hide' },
+          { type: 'modal.close' },
+          { type: 'render' },
+          { type: 'refreshModal' },
+          { type: 'openPendingThread' },
         ],
       }
     }

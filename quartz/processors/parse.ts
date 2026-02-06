@@ -1,19 +1,19 @@
-import esbuild from "esbuild"
-import { Root as HtmlRoot } from "hast"
-import { Root as MdRoot } from "mdast"
-import path from "path"
-import remarkParse from "remark-parse"
-import remarkRehype from "remark-rehype"
-import { read } from "to-vfile"
-import { Processor, unified } from "unified"
-import { styleText } from "util"
-import workerpool, { Promise as WorkerPromise } from "workerpool"
-import { MarkdownContent, ProcessedContent } from "../plugins/vfile"
-import { BuildCtx, WorkerSerializableBuildCtx } from "../util/ctx"
-import { QuartzLogger } from "../util/log"
-import { FilePath, QUARTZ, slugifyFilePath } from "../util/path"
-import { PerfTimer } from "../util/perf"
-import { trace } from "../util/trace"
+import esbuild from 'esbuild'
+import { Root as HtmlRoot } from 'hast'
+import { Root as MdRoot } from 'mdast'
+import path from 'path'
+import remarkParse from 'remark-parse'
+import remarkRehype from 'remark-rehype'
+import { read } from 'to-vfile'
+import { Processor, unified } from 'unified'
+import { styleText } from 'util'
+import workerpool, { Promise as WorkerPromise } from 'workerpool'
+import { MarkdownContent, ProcessedContent } from '../plugins/vfile'
+import { BuildCtx, WorkerSerializableBuildCtx } from '../util/ctx'
+import { QuartzLogger } from '../util/log'
+import { FilePath, QUARTZ, slugifyFilePath } from '../util/path'
+import { PerfTimer } from '../util/perf'
+import { trace } from '../util/trace'
 
 export type QuartzMdProcessor = Processor<MdRoot, MdRoot, MdRoot>
 export type QuartzHtmlProcessor = Processor<undefined, MdRoot, HtmlRoot>
@@ -27,7 +27,7 @@ export function createMdProcessor(ctx: BuildCtx): QuartzMdProcessor {
       .use(remarkParse)
       // MD AST -> MD AST transforms
       .use(
-        transformers.flatMap((plugin) => plugin.markdownPlugins?.(ctx) ?? []),
+        transformers.flatMap(plugin => plugin.markdownPlugins?.(ctx) ?? []),
       ) as unknown as QuartzMdProcessor
     //  ^ sadly the typing of `use` is not smart enough to infer the correct type from our plugin list
   )
@@ -48,11 +48,11 @@ export function createHtmlProcessor(ctx: BuildCtx): QuartzHtmlProcessor {
             const label = labelNodes.map((n: any) => state.one(n, node))
 
             return {
-              type: "element",
-              tagName: "span",
+              type: 'element',
+              tagName: 'span',
               properties: {
-                className: ["sidenote-placeholder"],
-                dataType: "sidenote",
+                className: ['sidenote-placeholder'],
+                dataType: 'sidenote',
                 sidenoteId: node.data?.sidenoteId,
                 baseId: node.data?.baseId,
                 forceInline: node.data?.forceInline,
@@ -63,15 +63,15 @@ export function createHtmlProcessor(ctx: BuildCtx): QuartzHtmlProcessor {
               },
               children: [
                 {
-                  type: "element",
-                  tagName: "span",
-                  properties: { className: ["sidenote-label-hast"] },
+                  type: 'element',
+                  tagName: 'span',
+                  properties: { className: ['sidenote-label-hast'] },
                   children: label,
                 },
                 {
-                  type: "element",
-                  tagName: "span",
-                  properties: { className: ["sidenote-content-hast"] },
+                  type: 'element',
+                  tagName: 'span',
+                  properties: { className: ['sidenote-content-hast'] },
                   children: content,
                 },
               ],
@@ -82,20 +82,20 @@ export function createHtmlProcessor(ctx: BuildCtx): QuartzHtmlProcessor {
             const label = labelNodes.map((n: any) => state.one(n, node))
 
             return {
-              type: "element",
-              tagName: "span",
+              type: 'element',
+              tagName: 'span',
               properties: {
-                className: ["sidenote-ref-placeholder"],
-                dataType: "sidenote-ref",
+                className: ['sidenote-ref-placeholder'],
+                dataType: 'sidenote-ref',
                 label: node.label,
                 sidenoteId: node.data?.sidenoteId,
                 baseId: node.data?.baseId,
               },
               children: [
                 {
-                  type: "element",
-                  tagName: "span",
-                  properties: { className: ["sidenote-label-hast"] },
+                  type: 'element',
+                  tagName: 'span',
+                  properties: { className: ['sidenote-label-hast'] },
                   children: label,
                 },
               ],
@@ -107,24 +107,24 @@ export function createHtmlProcessor(ctx: BuildCtx): QuartzHtmlProcessor {
             const label = labelNodes.map((n: any) => state.one(n, node))
 
             return {
-              type: "element",
-              tagName: "div",
+              type: 'element',
+              tagName: 'div',
               properties: {
-                className: ["sidenote-def-placeholder"],
-                dataType: "sidenote-def",
+                className: ['sidenote-def-placeholder'],
+                dataType: 'sidenote-def',
                 label: node.label,
               },
               children: [
                 {
-                  type: "element",
-                  tagName: "span",
-                  properties: { className: ["sidenote-label-hast"] },
+                  type: 'element',
+                  tagName: 'span',
+                  properties: { className: ['sidenote-label-hast'] },
                   children: label,
                 },
                 {
-                  type: "element",
-                  tagName: "div",
-                  properties: { className: ["sidenote-content-hast"] },
+                  type: 'element',
+                  tagName: 'div',
+                  properties: { className: ['sidenote-content-hast'] },
                   children: content,
                 },
               ],
@@ -134,7 +134,7 @@ export function createHtmlProcessor(ctx: BuildCtx): QuartzHtmlProcessor {
       })
       // HTML AST -> HTML AST transforms
       .use(
-        transformers.flatMap((plugin) => plugin.htmlPlugins?.(ctx) ?? []),
+        transformers.flatMap(plugin => plugin.htmlPlugins?.(ctx) ?? []),
       ) as unknown as QuartzHtmlProcessor
   )
 }
@@ -147,24 +147,24 @@ function* chunks<T>(arr: T[], n: number) {
 
 async function transpileWorkerScript() {
   // transpile worker script
-  const cacheFile = "./.quartz-cache/transpiled-worker.mjs"
-  const fp = "./quartz/worker.ts"
+  const cacheFile = './.quartz-cache/transpiled-worker.mjs'
+  const fp = './quartz/worker.ts'
   return esbuild.build({
     entryPoints: [fp],
     outfile: path.join(QUARTZ, cacheFile),
     bundle: true,
     keepNames: true,
-    platform: "node",
-    format: "esm",
-    packages: "external",
+    platform: 'node',
+    format: 'esm',
+    packages: 'external',
     sourcemap: true,
     sourcesContent: false,
     plugins: [
       {
-        name: "css-and-scripts-as-text",
+        name: 'css-and-scripts-as-text',
         setup(build) {
-          build.onLoad({ filter: /\.scss$/ }, (_) => ({ contents: "", loader: "text" }))
-          build.onLoad({ filter: /\.inline\.(ts|js)$/ }, (_) => ({ contents: "", loader: "text" }))
+          build.onLoad({ filter: /\.scss$/ }, _ => ({ contents: '', loader: 'text' }))
+          build.onLoad({ filter: /\.inline\.(ts|js)$/ }, _ => ({ contents: '', loader: 'text' }))
         },
       },
     ],
@@ -184,7 +184,7 @@ export function createFileParser(ctx: BuildCtx, fps: FilePath[]) {
         file.value = file.value.toString().trim()
 
         // Text -> Text transforms
-        for (const plugin of cfg.plugins.transformers.filter((p) => p.textTransform)) {
+        for (const plugin of cfg.plugins.transformers.filter(p => p.textTransform)) {
           file.value = plugin.textTransform!(ctx, file.value.toString())
         }
 
@@ -255,10 +255,10 @@ export async function parseMarkdown(ctx: BuildCtx, fps: FilePath[]): Promise<Pro
     }
   } else {
     await transpileWorkerScript()
-    const pool = workerpool.pool("./quartz/bootstrap-worker.mjs", {
-      minWorkers: "max",
+    const pool = workerpool.pool('./quartz/bootstrap-worker.mjs', {
+      minWorkers: 'max',
       maxWorkers: concurrency,
-      workerType: "thread",
+      workerType: 'thread',
     })
     const errorHandler = (err: any) => {
       console.error(err)
@@ -276,14 +276,14 @@ export async function parseMarkdown(ctx: BuildCtx, fps: FilePath[]): Promise<Pro
     const textToMarkdownPromises: WorkerPromise<MarkdownContent[]>[] = []
     let processedFiles = 0
     for (const chunk of chunks(fps, CHUNK_SIZE)) {
-      textToMarkdownPromises.push(pool.exec("parseMarkdown", [serializableCtx, chunk]))
+      textToMarkdownPromises.push(pool.exec('parseMarkdown', [serializableCtx, chunk]))
     }
 
     const mdResults: Array<MarkdownContent[]> = await Promise.all(
-      textToMarkdownPromises.map(async (promise) => {
+      textToMarkdownPromises.map(async promise => {
         const result = await promise
         processedFiles += result.length
-        log.updateText(`text->markdown ${styleText("gray", `${processedFiles}/${fps.length}`)}`)
+        log.updateText(`text->markdown ${styleText('gray', `${processedFiles}/${fps.length}`)}`)
         return result
       }),
     ).catch(errorHandler)
@@ -291,13 +291,13 @@ export async function parseMarkdown(ctx: BuildCtx, fps: FilePath[]): Promise<Pro
     const markdownToHtmlPromises: WorkerPromise<ProcessedContent[]>[] = []
     processedFiles = 0
     for (const mdChunk of mdResults) {
-      markdownToHtmlPromises.push(pool.exec("processHtml", [serializableCtx, mdChunk]))
+      markdownToHtmlPromises.push(pool.exec('processHtml', [serializableCtx, mdChunk]))
     }
     const results: ProcessedContent[][] = await Promise.all(
-      markdownToHtmlPromises.map(async (promise) => {
+      markdownToHtmlPromises.map(async promise => {
         const result = await promise
         processedFiles += result.length
-        log.updateText(`markdown->html ${styleText("gray", `${processedFiles}/${fps.length}`)}`)
+        log.updateText(`markdown->html ${styleText('gray', `${processedFiles}/${fps.length}`)}`)
         return result
       }),
     ).catch(errorHandler)

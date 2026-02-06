@@ -16,5 +16,5 @@ category:
   - love
   - vintage
 description: montmartre builds the moulin rouge - renoir turns spectacle into a love story about making spectacle.
-posters: "[[movies/posters/french-cancan.jpg]]"
+posters: '[[movies/posters/french-cancan.jpg]]'
 ---

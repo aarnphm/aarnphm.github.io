@@ -1,5 +1,5 @@
 ---
-date: "2025-10-03"
+date: '2025-10-03'
 description: the study of interpretation
 id: hermeneutics
 modified: 2025-11-09 03:41:15 GMT-05:00
@@ -10,11 +10,11 @@ tags:
   - philosophy
 title: hermeneutics
 seealso:
-  - "[[thoughts/love|love]]"
-  - "[[thoughts/functionalism|functionalism]]"
-  - "[[thoughts/Behavirourism|Behavirourism]]"
-  - "[[thoughts/ethics|ethics]]"
-  - "[[thoughts/Attention|Attention]]"
+  - '[[thoughts/love|love]]'
+  - '[[thoughts/functionalism|functionalism]]'
+  - '[[thoughts/Behavirourism|Behavirourism]]'
+  - '[[thoughts/ethics|ethics]]'
+  - '[[thoughts/Attention|Attention]]'
 ---
 
 Understanding is not finding; it's making. You enter another's world not by observing from outside but by participating. The hermeneutic circle: you can't grasp the whole without the parts, can't grasp the parts without the whole. You're always already inside.

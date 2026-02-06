@@ -13,7 +13,7 @@ subcategory:
   - forms
 author:
   - Christopher Alexander
-posters: "[[library/posters/notes-on-synthesis-of-form.jpg]]"
+posters: '[[library/posters/notes-on-synthesis-of-form.jpg]]'
 category:
   - philosophy
 translator:

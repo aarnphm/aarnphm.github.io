@@ -1,5 +1,5 @@
 ---
-date: "2025-08-12"
+date: '2025-08-12'
 description: inference overview
 id: notes
 modified: 2025-11-11 07:03:15 GMT-05:00

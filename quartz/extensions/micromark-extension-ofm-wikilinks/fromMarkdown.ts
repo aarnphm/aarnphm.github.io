@@ -3,9 +3,9 @@
  * converts micromark tokens to Wikilink AST nodes.
  */
 
-import type { Element as HastElement, Text as HastText } from "hast"
-import type { Extension, CompileContext, Token } from "mdast-util-from-markdown"
-import { Literal } from "unist"
+import type { Element as HastElement, Text as HastText } from 'hast'
+import type { Extension, CompileContext, Token } from 'mdast-util-from-markdown'
+import { Literal } from 'unist'
 import {
   FilePath,
   FullSlug,
@@ -14,9 +14,9 @@ import {
   stripSlashes,
   sluggify,
   endsWith,
-} from "../../util/path"
-import "./types"
-import { buildYouTubeEmbed } from "../../util/youtube"
+} from '../../util/path'
+import './types'
+import { buildYouTubeEmbed } from '../../util/youtube'
 
 export interface WikilinkData {
   raw: string
@@ -37,7 +37,7 @@ export interface WikilinkData {
  * data.hName/hProperties/hChildren enable automatic hast conversion.
  */
 export interface Wikilink extends Literal {
-  type: "wikilink"
+  type: 'wikilink'
   value: string
   data?: {
     wikilink: WikilinkData
@@ -80,9 +80,9 @@ export interface FromMarkdownOptions {
 /**
  * file extension constants for media types
  */
-const IMAGE_EXTS = [".png", ".jpg", ".jpeg", ".gif", ".bmp", ".svg", ".webp"]
-const VIDEO_EXTS = [".mp4", ".webm", ".ogv", ".mov", ".mkv"]
-const AUDIO_EXTS = [".mp3", ".wav", ".m4a", ".ogg", ".3gp", ".flac"]
+const IMAGE_EXTS = ['.png', '.jpg', '.jpeg', '.gif', '.bmp', '.svg', '.webp']
+const VIDEO_EXTS = ['.mp4', '.webm', '.ogv', '.mov', '.mkv']
+const AUDIO_EXTS = ['.mp3', '.wav', '.m4a', '.ogg', '.3gp', '.flac']
 
 /**
  * determine if a file extension is an image format.
@@ -113,15 +113,15 @@ function isAudioExtension(ext: string): boolean {
 function slugifyFilePath(path: string, stripExts: string[]): string {
   let fp = stripSlashes(path) as FilePath
   let ext = getFileExtension(fp)
-  const withoutFileExt = fp.replace(new RegExp(ext + "$"), "")
-  if ([".md", ".base", ...stripExts, undefined].includes(ext)) {
-    ext = ""
+  const withoutFileExt = fp.replace(new RegExp(ext + '$'), '')
+  if (['.md', '.base', ...stripExts, undefined].includes(ext)) {
+    ext = ''
   }
   let slug = sluggify(withoutFileExt)
 
   // treat _index as index
-  if (endsWith(slug, "_index")) {
-    slug = slug.replace(/_index$/, "index")
+  if (endsWith(slug, '_index')) {
+    slug = slug.replace(/_index$/, 'index')
   }
   return (slug + ext) as FullSlug
 }
@@ -161,9 +161,9 @@ export function wikilinkFromMarkdown(options: FromMarkdownOptions = {}): Extensi
  */
 function enterWikilink(this: CompileContext, token: Token): undefined {
   const node: Wikilink = {
-    type: "wikilink",
-    value: "",
-    data: { wikilink: { raw: "", target: "", embed: false } },
+    type: 'wikilink',
+    value: '',
+    data: { wikilink: { raw: '', target: '', embed: false } },
   }
   // @ts-expect-error: custom node type not in base mdast
   this.enter(node, token)
@@ -228,7 +228,7 @@ function exitAnchor(this: CompileContext, _token: Token, obsidian: boolean = fal
 
   if (node.data?.wikilink) {
     const wikilink = node.data.wikilink
-    const isBlockRef = anchorText.startsWith("^")
+    const isBlockRef = anchorText.startsWith('^')
     let cleanAnchor = isBlockRef ? anchorText.slice(1) : anchorText
 
     if (isBlockRef || wikilink.anchorIsBlockRef) {
@@ -240,10 +240,10 @@ function exitAnchor(this: CompileContext, _token: Token, obsidian: boolean = fal
     wikilink.anchorSegments = segments
 
     if (obsidian) {
-      if (cleanAnchor.includes("/") && cleanAnchor.includes(" ")) {
-        const lastSlash = cleanAnchor.lastIndexOf("/")
+      if (cleanAnchor.includes('/') && cleanAnchor.includes(' ')) {
+        const lastSlash = cleanAnchor.lastIndexOf('/')
         const afterSlash = cleanAnchor.substring(lastSlash + 1)
-        const spaceIndex = afterSlash.indexOf(" ")
+        const spaceIndex = afterSlash.indexOf(' ')
 
         if (spaceIndex >= 0) {
           const headingText = afterSlash.substring(spaceIndex + 1).trim()
@@ -255,18 +255,18 @@ function exitAnchor(this: CompileContext, _token: Token, obsidian: boolean = fal
 
       cleanAnchor = cleanAnchor
         .replace(/\$([^$]+)\$/g, (_, content) => content.trim())
-        .replace(/\s+/g, " ")
+        .replace(/\s+/g, ' ')
         .trim()
 
       wikilink.anchorText = cleanAnchor
 
       const slugifiedAnchor = slugAnchor(cleanAnchor)
-      const blockPrefix = wikilink.anchorIsBlockRef ? "^" : ""
+      const blockPrefix = wikilink.anchorIsBlockRef ? '^' : ''
       wikilink.anchor = `#${blockPrefix}${slugifiedAnchor}`
     } else {
-      const combined = segments.join("#")
+      const combined = segments.join('#')
       wikilink.anchorText = combined
-      const blockPrefix = wikilink.anchorIsBlockRef ? "^" : ""
+      const blockPrefix = wikilink.anchorIsBlockRef ? '^' : ''
       wikilink.anchor = combined.length > 0 ? `#${blockPrefix}${combined}` : undefined
     }
   }
@@ -321,7 +321,7 @@ function parseMetadata(raw: string): Record<string, any> | undefined {
       let normalized = raw
         .replace(/(\w+):/g, '"$1":') // quote unquoted keys
         .replace(/'/g, '"') // convert single quotes to double quotes
-        .replace(/,\s*([}\]])/g, "$1") // remove trailing commas
+        .replace(/,\s*([}\]])/g, '$1') // remove trailing commas
       return JSON.parse(`{${normalized}}`)
     } catch {
       // parsing failed, return undefined
@@ -359,16 +359,16 @@ function annotateRegularLink(node: Wikilink, wikilink: WikilinkData, url: string
 
   if (!node.data) node.data = { wikilink }
 
-  node.data.hName = "a"
+  node.data.hName = 'a'
   node.data.hProperties = {
     href: url,
     ...(metadataParsed
-      ? { "data-metadata": JSON.stringify(metadataParsed) }
+      ? { 'data-metadata': JSON.stringify(metadataParsed) }
       : metadata
-        ? { "data-metadata": metadata }
+        ? { 'data-metadata': metadata }
         : {}),
   }
-  node.data.hChildren = [{ type: "text", value: displayText }]
+  node.data.hChildren = [{ type: 'text', value: displayText }]
 }
 
 /**
@@ -379,10 +379,10 @@ function annotateRegularLink(node: Wikilink, wikilink: WikilinkData, url: string
 function annotateImageEmbed(node: Wikilink, wikilink: WikilinkData, url: string): void {
   const { alias, metadataParsed, metadata } = wikilink
 
-  const parts = (alias ?? "").split("|").map((s) => s.trim())
-  let caption = ""
-  let width = "auto"
-  let height = "auto"
+  const parts = (alias ?? '').split('|').map(s => s.trim())
+  let caption = ''
+  let width = 'auto'
+  let height = 'auto'
 
   if (parts.length > 0) {
     const lastPart = parts[parts.length - 1]
@@ -390,26 +390,26 @@ function annotateImageEmbed(node: Wikilink, wikilink: WikilinkData, url: string)
 
     if (dimMatch) {
       width = dimMatch[1]
-      height = dimMatch[2] ?? "auto"
-      caption = parts.slice(0, -1).join("|").trim()
+      height = dimMatch[2] ?? 'auto'
+      caption = parts.slice(0, -1).join('|').trim()
     } else {
-      caption = parts.join("|").trim()
+      caption = parts.join('|').trim()
     }
   }
 
   if (!node.data) node.data = { wikilink }
 
   // backward compatible
-  node.data.hName = "img"
+  node.data.hName = 'img'
   node.data.hProperties = {
     src: url,
     width,
     height,
     alt: caption,
     ...(metadataParsed
-      ? { "data-metadata": JSON.stringify(metadataParsed) }
+      ? { 'data-metadata': JSON.stringify(metadataParsed) }
       : metadata
-        ? { "data-metadata": metadata }
+        ? { 'data-metadata': metadata }
         : {}),
   }
 }
@@ -423,15 +423,15 @@ function annotateVideoEmbed(node: Wikilink, wikilink: WikilinkData, url: string)
 
   if (!node.data) node.data = { wikilink }
 
-  node.data.hName = "video"
+  node.data.hName = 'video'
   node.data.hProperties = {
     src: url,
     controls: true,
     loop: true,
     ...(metadataParsed
-      ? { "data-metadata": JSON.stringify(metadataParsed) }
+      ? { 'data-metadata': JSON.stringify(metadataParsed) }
       : metadata
-        ? { "data-metadata": metadata }
+        ? { 'data-metadata': metadata }
         : {}),
   }
 }
@@ -441,14 +441,14 @@ function annotateAudioEmbed(node: Wikilink, wikilink: WikilinkData, url: string)
 
   if (!node.data) node.data = { wikilink }
 
-  node.data.hName = "audio"
+  node.data.hName = 'audio'
   node.data.hProperties = {
     src: url,
     controls: true,
     ...(metadataParsed
-      ? { "data-metadata": JSON.stringify(metadataParsed) }
+      ? { 'data-metadata': JSON.stringify(metadataParsed) }
       : metadata
-        ? { "data-metadata": metadata }
+        ? { 'data-metadata': metadata }
         : {}),
   }
 }
@@ -462,14 +462,14 @@ function annotatePdfEmbed(node: Wikilink, wikilink: WikilinkData, url: string): 
 
   if (!node.data) node.data = { wikilink }
 
-  node.data.hName = "iframe"
+  node.data.hName = 'iframe'
   node.data.hProperties = {
     src: url,
-    class: "pdf",
+    class: 'pdf',
     ...(metadataParsed
-      ? { "data-metadata": JSON.stringify(metadataParsed) }
+      ? { 'data-metadata': JSON.stringify(metadataParsed) }
       : metadata
-        ? { "data-metadata": metadata }
+        ? { 'data-metadata': metadata }
         : {}),
   }
 }
@@ -489,26 +489,26 @@ function annotateTransclude(
 
   if (!node.data) node.data = { wikilink }
 
-  node.data.hName = "blockquote"
+  node.data.hName = 'blockquote'
   node.data.hProperties = {
-    class: "transclude",
+    class: 'transclude',
     transclude: true,
-    "data-url": url,
-    "data-block": block,
-    "data-embed-alias": alias ?? "",
+    'data-url': url,
+    'data-block': block,
+    'data-embed-alias': alias ?? '',
     ...(metadataParsed
-      ? { "data-metadata": JSON.stringify(metadataParsed) }
+      ? { 'data-metadata': JSON.stringify(metadataParsed) }
       : metadata
-        ? { "data-metadata": metadata }
+        ? { 'data-metadata': metadata }
         : {}),
   }
 
   node.data.hChildren = [
     {
-      type: "element",
-      tagName: "a",
-      properties: { href: url + displayAnchor, class: "transclude-inner" },
-      children: [{ type: "text", value: `Transclude of ${url} ${block}` }],
+      type: 'element',
+      tagName: 'a',
+      properties: { href: url + displayAnchor, class: 'transclude-inner' },
+      children: [{ type: 'text', value: `Transclude of ${url} ${block}` }],
     },
   ]
 }
@@ -540,12 +540,12 @@ function exitWikilink(
         hasSlug &&
         !wikilink.alias &&
         wikilink.target &&
-        wikilink.target.includes(" ")
+        wikilink.target.includes(' ')
       ) {
-        const lastSlash = wikilink.target.lastIndexOf("/")
+        const lastSlash = wikilink.target.lastIndexOf('/')
         const afterSlash =
           lastSlash >= 0 ? wikilink.target.substring(lastSlash + 1) : wikilink.target
-        const spaceIndex = afterSlash.indexOf(" ")
+        const spaceIndex = afterSlash.indexOf(' ')
 
         if (spaceIndex >= 0) {
           // split: everything before space is path, everything after is display text
@@ -571,28 +571,28 @@ function exitWikilink(
       // only annotate nodes when obsidian mode is enabled
       if (obsidian) {
         const targetPath = wikilink.target.trim()
-        const ext = getFileExtension(targetPath) ?? ""
-        let displayAnchor = wikilink.anchor?.trim() ?? ""
+        const ext = getFileExtension(targetPath) ?? ''
+        let displayAnchor = wikilink.anchor?.trim() ?? ''
 
         let url: string
         // handle absolute paths like /tags/ml
-        if (targetPath.startsWith("/")) {
+        if (targetPath.startsWith('/')) {
           url = targetPath
         } else if (!targetPath) {
           // handle same-file anchors like #heading
-          url = ""
+          url = ''
         } else {
           url = slugifyFilePath(targetPath, stripExtensions)
         }
-        if (ext === ".base" && displayAnchor && !displayAnchor.startsWith("#^")) {
+        if (ext === '.base' && displayAnchor && !displayAnchor.startsWith('#^')) {
           const anchorText = wikilink.anchorText?.trim()
           const viewSegment = sluggify(
-            anchorText && anchorText.length > 0 ? anchorText : displayAnchor.replace(/^#/, ""),
+            anchorText && anchorText.length > 0 ? anchorText : displayAnchor.replace(/^#/, ''),
           )
           if (viewSegment.length > 0) {
-            const baseUrl = url.endsWith("/") ? url.slice(0, -1) : url
+            const baseUrl = url.endsWith('/') ? url.slice(0, -1) : url
             url = baseUrl.length > 0 ? `${baseUrl}/${viewSegment}` : viewSegment
-            displayAnchor = ""
+            displayAnchor = ''
             if (!wikilink.alias && anchorText) {
               wikilink.alias = anchorText
             }
@@ -606,13 +606,13 @@ function exitWikilink(
             // create img tag with youtube URL as src
             // downstream ofm.ts handler will convert to iframe
             if (!node.data) node.data = { wikilink }
-            node.data.hName = "img"
+            node.data.hName = 'img'
             node.data.hProperties = {
               src: targetPath,
               ...(wikilink.metadataParsed
-                ? { "data-metadata": JSON.stringify(wikilink.metadataParsed) }
+                ? { 'data-metadata': JSON.stringify(wikilink.metadataParsed) }
                 : wikilink.metadata
-                  ? { "data-metadata": wikilink.metadata }
+                  ? { 'data-metadata': wikilink.metadata }
                   : {}),
             }
           } else if (ext && isImageExtension(ext)) {
@@ -621,7 +621,7 @@ function exitWikilink(
             annotateVideoEmbed(node, wikilink, url)
           } else if (ext && isAudioExtension(ext)) {
             annotateAudioEmbed(node, wikilink, url)
-          } else if (ext === ".pdf") {
+          } else if (ext === '.pdf') {
             annotatePdfEmbed(node, wikilink, url)
           } else {
             annotateTransclude(node, wikilink, url, displayAnchor)
@@ -642,10 +642,10 @@ function exitWikilink(
  * type guard for Wikilink.
  */
 export function isWikilink(node: any): node is Wikilink {
-  return node && node.type === "wikilink" && node.data?.wikilink
+  return node && node.type === 'wikilink' && node.data?.wikilink
 }
 
-declare module "mdast" {
+declare module 'mdast' {
   interface StaticPhrasingContentMap {
     wikilink: Wikilink
   }

@@ -5,15 +5,15 @@ import {
   type FunctionalComponent,
   toChildArray,
   type VNode,
-} from "preact"
+} from 'preact'
 //@ts-ignore
-import script from "../scripts/methodology-tree.inline"
-import style from "../styles/methodologyTree.scss"
+import script from '../scripts/methodology-tree.inline'
+import style from '../styles/methodologyTree.scss'
 import {
   registerMdxComponent,
   type QuartzMdxComponent,
   type QuartzMdxConstructor,
-} from "./registry"
+} from './registry'
 
 type StepPath = number[]
 
@@ -28,24 +28,24 @@ type BaseStepProps = {
   path?: StepPath
 }
 
-type StepProps = Omit<BaseStepProps, "depth" | "path">
+type StepProps = Omit<BaseStepProps, 'depth' | 'path'>
 
 const isVNodeOf = <T,>(node: ComponentChildren, component: ComponentType<T>): node is VNode<T> => {
-  return typeof node === "object" && node !== null && "type" in node && node.type === component
+  return typeof node === 'object' && node !== null && 'type' in node && node.type === component
 }
 
 function toStringArray(value: unknown): string[] {
   if (Array.isArray(value)) {
-    return value.map((item) => String(item))
+    return value.map(item => String(item))
   }
 
-  if (typeof value === "string") {
+  if (typeof value === 'string') {
     const trimmed = value.trim()
     if (!trimmed) return []
     try {
       const parsed = JSON.parse(trimmed)
       if (Array.isArray(parsed)) {
-        return parsed.map((item) => String(item))
+        return parsed.map(item => String(item))
       }
     } catch {
       try {
@@ -60,8 +60,8 @@ function toStringArray(value: unknown): string[] {
     }
 
     return trimmed
-      .split("\n")
-      .map((line) => line.trim())
+      .split('\n')
+      .map(line => line.trim())
       .filter(Boolean)
   }
 
@@ -80,8 +80,8 @@ const MethodologyStepImpl: FunctionalComponent<BaseStepProps> = ({
 }) => {
   const normalizedPoints = toStringArray(points)
   const childArray = toChildArray(children).filter(Boolean)
-  const nested = childArray.filter((child) => isVNodeOf(child, MethodologyStepImpl))
-  const inline = childArray.filter((child) => !isVNodeOf(child, MethodologyStepImpl))
+  const nested = childArray.filter(child => isVNodeOf(child, MethodologyStepImpl))
+  const inline = childArray.filter(child => !isVNodeOf(child, MethodologyStepImpl))
 
   const sequenceIndex = path[path.length - 1] ?? depth + 1
   const letterCode = ((sequenceIndex - 1) % 26) + 65
@@ -91,7 +91,7 @@ const MethodologyStepImpl: FunctionalComponent<BaseStepProps> = ({
     cloneElement(child as VNode<BaseStepProps>, { depth: depth + 1, path: [...path, idx + 1] }),
   )
 
-  const pathKey = path.length > 0 ? path.join("-") : `${depth}-${sequenceIndex}`
+  const pathKey = path.length > 0 ? path.join('-') : `${depth}-${sequenceIndex}`
   const toggleId = `methodology-step-toggle-${pathKey}`
   const bodyId = `methodology-step-body-${pathKey}`
 
@@ -130,7 +130,7 @@ const MethodologyStepImpl: FunctionalComponent<BaseStepProps> = ({
           {highlight && <p class="step-highlight">{highlight}</p>}
           {normalizedPoints.length > 0 && (
             <ul class="step-points">
-              {normalizedPoints.map((point) => (
+              {normalizedPoints.map(point => (
                 <li>{point}</li>
               ))}
             </ul>
@@ -149,7 +149,7 @@ const MethodologyStepComponent = MethodologyStepImpl as QuartzMdxComponent<StepP
 MethodologyStepComponent.css = style
 MethodologyStepComponent.afterDOMLoaded = script
 export const MethodologyStep = registerMdxComponent(
-  ["MethodologyStep", "MethodologyNode", "MethodologyLeaf"],
+  ['MethodologyStep', 'MethodologyNode', 'MethodologyLeaf'],
   MethodologyStepComponent,
 )
 
@@ -173,14 +173,14 @@ const MethodologyTreeImpl: QuartzMdxComponent<TreeProps> = ({
 }) => {
   const childArray = toChildArray(children).filter(Boolean)
   const steps = childArray.filter(isStepVNode)
-  const trailing = childArray.filter((child) => !isStepVNode(child))
+  const trailing = childArray.filter(child => !isStepVNode(child))
 
   const decoratedSteps = steps.map((child, idx) =>
     cloneElement(child as VNode<BaseStepProps>, { depth: 0, path: [idx + 1] }),
   )
 
   return (
-    <section class={`methodology-tree${compact ? " compact" : ""}`}>
+    <section class={`methodology-tree${compact ? ' compact' : ''}`}>
       {(title || description) && (
         <header class="tree-header">
           {title && (asTitle ? <h4>{title}</h4> : <p>{title}</p>)}
@@ -195,6 +195,6 @@ const MethodologyTreeImpl: QuartzMdxComponent<TreeProps> = ({
 MethodologyTreeImpl.css = style
 MethodologyTreeImpl.afterDOMLoaded = script
 
-export const MethodologyTree = registerMdxComponent("MethodologyTree", MethodologyTreeImpl)
+export const MethodologyTree = registerMdxComponent('MethodologyTree', MethodologyTreeImpl)
 
 export default (() => MethodologyTree) satisfies QuartzMdxConstructor

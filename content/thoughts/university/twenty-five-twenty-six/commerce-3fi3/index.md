@@ -1,5 +1,5 @@
 ---
-date: "2025-01-06"
+date: '2025-01-06'
 description: finance go brrr
 id: index
 modified: 2025-10-29 02:15:57 GMT-04:00

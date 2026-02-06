@@ -12,7 +12,7 @@ subcategory:
   - adventure
 author:
   - John Steinbeck
-posters: "[[library/posters/of-mice-and-men.jpg]]"
+posters: '[[library/posters/of-mice-and-men.jpg]]'
 category:
   - p/fiction
 translator:

@@ -14,5 +14,5 @@ category:
   - o/life
   - drama
 description: college dropout to apple co-founder - a straight-line biopic tracking ambition, friendship, and the cost of focus from the garage to the mac.
-posters: "[[movies/posters/kutcher-jobs.jpg]]"
+posters: '[[movies/posters/kutcher-jobs.jpg]]'
 ---

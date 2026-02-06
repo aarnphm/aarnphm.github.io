@@ -1,29 +1,29 @@
-import { styleText } from "node:util"
-import process from "process"
-import { isMainThread } from "workerpool"
+import { styleText } from 'node:util'
+import process from 'process'
+import { isMainThread } from 'workerpool'
 
 const rootFile = /.*at file:/
 export function trace(msg: string, err: Error) {
-  let stack = err.stack ?? ""
+  let stack = err.stack ?? ''
 
   const lines: string[] = []
 
-  lines.push("")
+  lines.push('')
   lines.push(
-    "\n" +
-      styleText(["bgRed", "black", "bold"], " ERROR ") +
-      "\n\n" +
-      styleText("red", ` ${msg}`) +
-      (err.message.length > 0 ? `: ${err.message}` : ""),
+    '\n' +
+      styleText(['bgRed', 'black', 'bold'], ' ERROR ') +
+      '\n\n' +
+      styleText('red', ` ${msg}`) +
+      (err.message.length > 0 ? `: ${err.message}` : ''),
   )
 
   let reachedEndOfLegibleTrace = false
-  for (const line of stack.split("\n").slice(1)) {
+  for (const line of stack.split('\n').slice(1)) {
     if (reachedEndOfLegibleTrace) {
       break
     }
 
-    if (!line.includes("node_modules")) {
+    if (!line.includes('node_modules')) {
       lines.push(` ${line}`)
       if (rootFile.test(line)) {
         reachedEndOfLegibleTrace = true
@@ -31,7 +31,7 @@ export function trace(msg: string, err: Error) {
     }
   }
 
-  const traceMsg = lines.join("\n")
+  const traceMsg = lines.join('\n')
   if (!isMainThread) {
     // gather lines and throw
     throw new Error(traceMsg)

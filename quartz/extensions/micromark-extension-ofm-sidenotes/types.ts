@@ -1,34 +1,34 @@
-import type { Node, PhrasingContent, BlockContent } from "mdast"
-import type { Point } from "unist"
+import type { Node, PhrasingContent, BlockContent } from 'mdast'
+import type { Point } from 'unist'
 
-declare module "micromark-util-types" {
+declare module 'micromark-util-types' {
   interface TokenTypeMap {
-    sidenote: "sidenote"
-    sidenoteMarker: "sidenoteMarker"
-    sidenoteKeyword: "sidenoteKeyword"
-    sidenotePropertiesMarker: "sidenotePropertiesMarker"
-    sidenoteProperties: "sidenoteProperties"
-    sidenotePropertiesChunk: "sidenotePropertiesChunk"
-    sidenoteLabelMarker: "sidenoteLabelMarker"
-    sidenoteLabel: "sidenoteLabel"
-    sidenoteLabelChunk: "sidenoteLabelChunk"
-    sidenoteColonMarker: "sidenoteColonMarker"
-    sidenoteContent: "sidenoteContent"
-    sidenoteContentChunk: "sidenoteContentChunk"
+    sidenote: 'sidenote'
+    sidenoteMarker: 'sidenoteMarker'
+    sidenoteKeyword: 'sidenoteKeyword'
+    sidenotePropertiesMarker: 'sidenotePropertiesMarker'
+    sidenoteProperties: 'sidenoteProperties'
+    sidenotePropertiesChunk: 'sidenotePropertiesChunk'
+    sidenoteLabelMarker: 'sidenoteLabelMarker'
+    sidenoteLabel: 'sidenoteLabel'
+    sidenoteLabelChunk: 'sidenoteLabelChunk'
+    sidenoteColonMarker: 'sidenoteColonMarker'
+    sidenoteContent: 'sidenoteContent'
+    sidenoteContentChunk: 'sidenoteContentChunk'
     // Reference types
-    sidenoteReference: "sidenoteReference"
-    sidenoteReferenceMarker: "sidenoteReferenceMarker"
-    sidenoteReferenceKeyword: "sidenoteReferenceKeyword"
-    sidenoteReferenceLabelMarker: "sidenoteReferenceLabelMarker"
-    sidenoteReferenceLabel: "sidenoteReferenceLabel"
-    sidenoteReferenceLabelChunk: "sidenoteReferenceLabelChunk"
+    sidenoteReference: 'sidenoteReference'
+    sidenoteReferenceMarker: 'sidenoteReferenceMarker'
+    sidenoteReferenceKeyword: 'sidenoteReferenceKeyword'
+    sidenoteReferenceLabelMarker: 'sidenoteReferenceLabelMarker'
+    sidenoteReferenceLabel: 'sidenoteReferenceLabel'
+    sidenoteReferenceLabelChunk: 'sidenoteReferenceLabelChunk'
     // Definition types
-    sidenoteDefinition: "sidenoteDefinition"
-    sidenoteDefinitionMarker: "sidenoteDefinitionMarker"
-    sidenoteDefinitionLabel: "sidenoteDefinitionLabel"
-    sidenoteDefinitionLabelMarker: "sidenoteDefinitionLabelMarker"
-    sidenoteDefinitionLabelChunk: "sidenoteDefinitionLabelChunk"
-    sidenoteDefinitionWhitespace: "sidenoteDefinitionWhitespace"
+    sidenoteDefinition: 'sidenoteDefinition'
+    sidenoteDefinitionMarker: 'sidenoteDefinitionMarker'
+    sidenoteDefinitionLabel: 'sidenoteDefinitionLabel'
+    sidenoteDefinitionLabelMarker: 'sidenoteDefinitionLabelMarker'
+    sidenoteDefinitionLabelChunk: 'sidenoteDefinitionLabelChunk'
+    sidenoteDefinitionWhitespace: 'sidenoteDefinitionWhitespace'
   }
 }
 
@@ -43,7 +43,7 @@ export interface SidenoteData {
 }
 
 export interface Sidenote extends Node {
-  type: "sidenote"
+  type: 'sidenote'
   value: string
   children: PhrasingContent[]
   position?: { start: Point; end: Point }
@@ -51,7 +51,7 @@ export interface Sidenote extends Node {
 }
 
 export interface SidenoteReference extends Node {
-  type: "sidenoteReference"
+  type: 'sidenoteReference'
   label: string
   labelNodes?: PhrasingContent[]
   children?: PhrasingContent[]
@@ -59,13 +59,13 @@ export interface SidenoteReference extends Node {
 }
 
 export interface SidenoteDefinition extends Node {
-  type: "sidenoteDefinition"
+  type: 'sidenoteDefinition'
   label: string
   labelNodes?: PhrasingContent[]
   children: BlockContent[]
 }
 
-declare module "mdast" {
+declare module 'mdast' {
   interface Data {
     sidenoteParsed?: SidenoteData
     sidenoteId?: number

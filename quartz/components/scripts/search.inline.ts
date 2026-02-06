@@ -1,8 +1,8 @@
-import FlexSearch, { DefaultDocumentSearchResults, DocumentData, Id } from "flexsearch"
-import type { ContentDetails } from "../../plugins"
-import { escapeHTML } from "../../util/escape"
-import { FullSlug, normalizeRelativeURLs, resolveRelative } from "../../util/path"
-import { SemanticClient, type SemanticResult } from "./semantic.inline"
+import FlexSearch, { DefaultDocumentSearchResults, DocumentData, Id } from 'flexsearch'
+import type { ContentDetails } from '../../plugins'
+import { escapeHTML } from '../../util/escape'
+import { FullSlug, normalizeRelativeURLs, resolveRelative } from '../../util/path'
+import { SemanticClient, type SemanticResult } from './semantic.inline'
 import {
   registerEscapeHandler,
   removeAllChildren,
@@ -10,7 +10,7 @@ import {
   tokenizeTerm,
   encode,
   fetchCanonical,
-} from "./util"
+} from './util'
 
 interface Item extends DocumentData {
   id: number
@@ -23,39 +23,39 @@ interface Item extends DocumentData {
   [key: string]: any
 }
 
-type SearchType = "basic" | "tags"
-type SearchMode = "lexical" | "semantic"
-const SEARCH_MODE_STORAGE_KEY = "quartz:search:mode"
+type SearchType = 'basic' | 'tags'
+type SearchMode = 'lexical' | 'semantic'
+const SEARCH_MODE_STORAGE_KEY = 'quartz:search:mode'
 
 const loadStoredSearchMode = (): SearchMode | null => {
-  if (typeof window === "undefined") {
+  if (typeof window === 'undefined') {
     return null
   }
 
   try {
     const stored = window.localStorage.getItem(SEARCH_MODE_STORAGE_KEY)
-    return stored === "lexical" || stored === "semantic" ? stored : null
+    return stored === 'lexical' || stored === 'semantic' ? stored : null
   } catch (err) {
-    console.warn("[Search] failed to read stored search mode:", err)
+    console.warn('[Search] failed to read stored search mode:', err)
     return null
   }
 }
 
 const persistSearchMode = (mode: SearchMode) => {
-  if (typeof window === "undefined") {
+  if (typeof window === 'undefined') {
     return
   }
 
   try {
     window.localStorage.setItem(SEARCH_MODE_STORAGE_KEY, mode)
   } catch (err) {
-    console.warn("[Search] failed to persist search mode:", err)
+    console.warn('[Search] failed to persist search mode:', err)
   }
 }
 
-let searchMode: SearchMode = "lexical"
-let currentSearchTerm: string = ""
-let rawSearchTerm: string = ""
+let searchMode: SearchMode = 'lexical'
+let currentSearchTerm: string = ''
+let rawSearchTerm: string = ''
 let semantic: SemanticClient | null = null
 let semanticReady = false
 let semanticInitFailed = false
@@ -100,7 +100,7 @@ function aggregateChunkResults(
 
   for (const [parentSlug, chunks] of docChunks) {
     const docIdx = slugToDocIndex.get(parentSlug as FullSlug)
-    if (typeof docIdx !== "number") continue
+    if (typeof docIdx !== 'number') continue
 
     chunks.sort((a, b) => b.score - a.score)
     // TODO: we might want to find out the distribution based on docs that has a lot of chunks, to see which part is relevant
@@ -116,15 +116,15 @@ function aggregateChunkResults(
 }
 
 const index = new FlexSearch.Document<Item>({
-  tokenize: "forward",
+  tokenize: 'forward',
   encode,
   document: {
-    id: "id",
+    id: 'id',
     index: [
-      { field: "title", tokenize: "forward" },
-      { field: "content", tokenize: "forward" },
-      { field: "tags", tokenize: "forward" },
-      { field: "aliases", tokenize: "forward" },
+      { field: 'title', tokenize: 'forward' },
+      { field: 'content', tokenize: 'forward' },
+      { field: 'tags', tokenize: 'forward' },
+      { field: 'aliases', tokenize: 'forward' },
     ],
   },
 })
@@ -136,27 +136,27 @@ const numSearchResultsSemantic = 60
 const numTagResults = 10
 
 function getNumSearchResults(mode: SearchMode): number {
-  return mode === "semantic" ? numSearchResultsSemantic : numSearchResultsLexical
+  return mode === 'semantic' ? numSearchResultsSemantic : numSearchResultsLexical
 }
 function highlightHTML(searchTerm: string, el: HTMLElement) {
   const p = new DOMParser()
   const tokenizedTerms = tokenizeTerm(searchTerm)
-  const html = p.parseFromString(el.innerHTML, "text/html")
+  const html = p.parseFromString(el.innerHTML, 'text/html')
 
   const createHighlightSpan = (text: string) => {
-    const span = document.createElement("span")
-    span.className = "highlight"
+    const span = document.createElement('span')
+    span.className = 'highlight'
     span.textContent = text
     return span
   }
 
   const highlightTextNodes = (node: Node, term: string) => {
     if (node.nodeType === Node.TEXT_NODE) {
-      const nodeText = node.nodeValue ?? ""
-      const regex = new RegExp(term.toLowerCase(), "gi")
+      const nodeText = node.nodeValue ?? ''
+      const regex = new RegExp(term.toLowerCase(), 'gi')
       const matches = nodeText.match(regex)
       if (!matches || matches.length === 0) return
-      const spanContainer = document.createElement("span")
+      const spanContainer = document.createElement('span')
       let lastIndex = 0
       for (const match of matches) {
         const matchIndex = nodeText.indexOf(match, lastIndex)
@@ -167,8 +167,8 @@ function highlightHTML(searchTerm: string, el: HTMLElement) {
       spanContainer.appendChild(document.createTextNode(nodeText.slice(lastIndex)))
       node.parentNode?.replaceChild(spanContainer, node)
     } else if (node.nodeType === Node.ELEMENT_NODE) {
-      if ((node as HTMLElement).classList.contains("highlight")) return
-      Array.from(node.childNodes).forEach((child) => highlightTextNodes(child, term))
+      if ((node as HTMLElement).classList.contains('highlight')) return
+      Array.from(node.childNodes).forEach(child => highlightTextNodes(child, term))
     }
   }
 
@@ -184,59 +184,59 @@ async function setupSearch(
   currentSlug: FullSlug,
   data: ContentIndex,
 ) {
-  const container = searchElement.querySelector<HTMLDivElement>(".search-container")
+  const container = searchElement.querySelector<HTMLDivElement>('.search-container')
   if (!container) return
 
-  const searchButton = searchElement.querySelector<HTMLButtonElement>(".search-button")
+  const searchButton = searchElement.querySelector<HTMLButtonElement>('.search-button')
   if (!searchButton) return
 
-  const searchBar = searchElement.querySelector<HTMLInputElement>(".search-bar")
+  const searchBar = searchElement.querySelector<HTMLInputElement>('.search-bar')
   if (!searchBar) return
 
-  const searchLayout = searchElement.querySelector<HTMLOutputElement>(".search-layout")
+  const searchLayout = searchElement.querySelector<HTMLOutputElement>('.search-layout')
   if (!searchLayout) return
 
-  const searchSpace = searchElement.querySelector<HTMLFormElement>(".search-space")
+  const searchSpace = searchElement.querySelector<HTMLFormElement>('.search-space')
   if (!searchSpace) return
 
-  const progressBar = document.createElement("div")
-  progressBar.className = "semantic-search-progress"
+  const progressBar = document.createElement('div')
+  progressBar.className = 'semantic-search-progress'
   searchBar.parentElement?.appendChild(progressBar)
 
   const startSemanticProgress = () => {
-    progressBar.style.opacity = "1"
-    progressBar.style.width = "0"
+    progressBar.style.opacity = '1'
+    progressBar.style.width = '0'
     setTimeout(() => {
-      progressBar.style.width = "100%"
-      progressBar.style.animation = "semantic-progress-sweep 2.5s linear infinite"
+      progressBar.style.width = '100%'
+      progressBar.style.animation = 'semantic-progress-sweep 2.5s linear infinite'
     }, 10)
   }
 
   const completeSemanticProgress = () => {
-    progressBar.style.animation = "none"
-    progressBar.style.opacity = "0"
+    progressBar.style.animation = 'none'
+    progressBar.style.opacity = '0'
     setTimeout(() => {
-      progressBar.style.width = "0"
-      progressBar.style.backgroundPosition = "-100% 0"
+      progressBar.style.width = '0'
+      progressBar.style.backgroundPosition = '-100% 0'
     }, 300)
   }
 
   const resetProgressBar = () => {
-    progressBar.style.animation = "none"
-    progressBar.style.opacity = "0"
-    progressBar.style.width = "0"
-    progressBar.style.backgroundPosition = "-100% 0"
+    progressBar.style.animation = 'none'
+    progressBar.style.opacity = '0'
+    progressBar.style.width = '0'
+    progressBar.style.backgroundPosition = '-100% 0'
   }
 
   const idDataMap = Object.keys(data) as FullSlug[]
   const slugToIndex = new Map<FullSlug, number>()
   idDataMap.forEach((slug, idx) => slugToIndex.set(slug, idx))
-  const el = searchSpace.querySelector("ul#helper")
-  const modeToggle = searchSpace.querySelector(".search-mode-toggle") as HTMLDivElement | null
+  const el = searchSpace.querySelector('ul#helper')
+  const modeToggle = searchSpace.querySelector('.search-mode-toggle') as HTMLDivElement | null
   const modeButtons = modeToggle
-    ? Array.from(modeToggle.querySelectorAll<HTMLButtonElement>(".mode-option"))
+    ? Array.from(modeToggle.querySelectorAll<HTMLButtonElement>('.mode-option'))
     : []
-  const semanticStatus = searchSpace.querySelector<HTMLElement>(".semantic-status")
+  const semanticStatus = searchSpace.querySelector<HTMLElement>('.semantic-status')
 
   const appendLayout = (el: HTMLElement) => {
     searchLayout.appendChild(el)
@@ -244,14 +244,14 @@ async function setupSearch(
 
   if (!el) {
     const keys = [
-      { kbd: "↑↓", description: "pour naviguer" },
-      { kbd: "↵", description: "pour ouvrir" },
-      { kbd: "esc", description: "pour rejeter" },
+      { kbd: '↑↓', description: 'pour naviguer' },
+      { kbd: '↵', description: 'pour ouvrir' },
+      { kbd: 'esc', description: 'pour rejeter' },
     ]
-    const helper = document.createElement("ul")
-    helper.id = "helper"
+    const helper = document.createElement('ul')
+    helper.id = 'helper'
     for (const { kbd, description } of keys) {
-      const liEl = document.createElement("li")
+      const liEl = document.createElement('li')
       liEl.innerHTML = `<kbd>${escapeHTML(kbd)}</kbd>${description}`
       helper.appendChild(liEl)
     }
@@ -259,11 +259,11 @@ async function setupSearch(
   }
 
   const updateModeUI = (mode: SearchMode) => {
-    modeButtons.forEach((button) => {
-      const btnMode = (button.dataset.mode as SearchMode) ?? "lexical"
+    modeButtons.forEach(button => {
+      const btnMode = (button.dataset.mode as SearchMode) ?? 'lexical'
       const isActive = btnMode === mode
-      button.classList.toggle("active", isActive)
-      button.setAttribute("aria-pressed", String(isActive))
+      button.classList.toggle('active', isActive)
+      button.setAttribute('aria-pressed', String(isActive))
     })
     if (modeToggle) {
       modeToggle.dataset.mode = mode
@@ -271,42 +271,42 @@ async function setupSearch(
     searchLayout.dataset.mode = mode
   }
 
-  const setSemanticState = (state: "loading" | "ready" | "unavailable") => {
+  const setSemanticState = (state: 'loading' | 'ready' | 'unavailable') => {
     if (semanticStatus) {
       semanticStatus.dataset.state = state
       semanticStatus.textContent =
-        state === "ready"
-          ? ""
-          : state === "loading"
-            ? "semantic (loading)"
-            : "semantic (unavailable)"
+        state === 'ready'
+          ? ''
+          : state === 'loading'
+            ? 'semantic (loading)'
+            : 'semantic (unavailable)'
     }
-    modeButtons.forEach((button) => {
-      const btnMode = (button.dataset.mode as SearchMode) ?? "lexical"
-      if (btnMode !== "semantic") return
-      const disabled = state !== "ready"
+    modeButtons.forEach(button => {
+      const btnMode = (button.dataset.mode as SearchMode) ?? 'lexical'
+      if (btnMode !== 'semantic') return
+      const disabled = state !== 'ready'
       button.disabled = disabled
-      button.setAttribute("aria-disabled", String(disabled))
+      button.setAttribute('aria-disabled', String(disabled))
     })
-    if (state !== "ready" && searchMode === "semantic") {
-      searchMode = "lexical"
+    if (state !== 'ready' && searchMode === 'semantic') {
+      searchMode = 'lexical'
       updateModeUI(searchMode)
     }
   }
 
-  const enablePreview = searchLayout.dataset.preview === "true"
+  const enablePreview = searchLayout.dataset.preview === 'true'
   const storedMode = loadStoredSearchMode()
   const bootSemantic = (client: SemanticClient) => {
-    setSemanticState("loading")
+    setSemanticState('loading')
     void client
       .ensureReady()
       .then(async () => {
         semantic = client
         semanticReady = true
-        setSemanticState("ready")
+        setSemanticState('ready')
 
         try {
-          const manifestUrl = "/embeddings/manifest.json"
+          const manifestUrl = '/embeddings/manifest.json'
           const res = await fetch(manifestUrl)
           if (res.ok) {
             const manifest = await res.json()
@@ -314,23 +314,23 @@ async function setupSearch(
             manifestIds = manifest.ids || []
           }
         } catch (err) {
-          console.warn("[Search] failed to load chunk metadata:", err)
+          console.warn('[Search] failed to load chunk metadata:', err)
           chunkMetadata = {}
           manifestIds = []
         }
 
-        if (storedMode === "semantic") {
+        if (storedMode === 'semantic') {
           searchMode = storedMode
           updateModeUI(searchMode)
         }
       })
-      .catch((err) => {
-        console.warn("[SemanticClient] initialization failed:", err)
+      .catch(err => {
+        console.warn('[SemanticClient] initialization failed:', err)
         client.dispose()
         semantic = null
         semanticReady = false
         semanticInitFailed = true
-        setSemanticState("unavailable")
+        setSemanticState('unavailable')
       })
   }
 
@@ -341,19 +341,19 @@ async function setupSearch(
   } else if (semantic && !semanticReady) {
     bootSemantic(semantic)
   } else if (semanticReady) {
-    setSemanticState("ready")
+    setSemanticState('ready')
   } else if (semanticInitFailed) {
-    setSemanticState("unavailable")
+    setSemanticState('unavailable')
   }
-  if (storedMode === "semantic") {
+  if (storedMode === 'semantic') {
     if (semanticReady) {
       searchMode = storedMode
     }
-  } else if (storedMode === "lexical") {
+  } else if (storedMode === 'lexical') {
     searchMode = storedMode
   }
-  if (!semanticReady && searchMode === "semantic") {
-    searchMode = "lexical"
+  if (!semanticReady && searchMode === 'semantic') {
+    searchMode = 'lexical'
   }
   let searchSeq = 0
   let runSearchTimer: number | null = null
@@ -369,7 +369,7 @@ async function setupSearch(
     const isReplacement =
       lastTerm.length > 0 && !trimmed.startsWith(lastTerm) && !lastTerm.startsWith(trimmed)
     const baseFullQueryDelay = 200
-    const semanticPenalty = searchMode === "semantic" ? 30 : 0
+    const semanticPenalty = searchMode === 'semantic' ? 30 : 0
 
     if (isExtension && trimmed.length > 2) {
       return baseFullQueryDelay + semanticPenalty
@@ -383,19 +383,19 @@ async function setupSearch(
       return 90
     }
 
-    return baseFullQueryDelay + (searchMode === "semantic" ? 40 : 0)
+    return baseFullQueryDelay + (searchMode === 'semantic' ? 40 : 0)
   }
 
   const triggerSearchWithMode = (mode: SearchMode) => {
-    if (mode === "semantic" && !semanticReady) {
+    if (mode === 'semantic' && !semanticReady) {
       return
     }
     if (searchMode === mode) return
     searchMode = mode
     updateModeUI(mode)
     persistSearchMode(searchMode)
-    if (rawSearchTerm.trim() !== "") {
-      searchLayout.classList.add("display-results")
+    if (rawSearchTerm.trim() !== '') {
+      searchLayout.classList.add('display-results')
       const token = ++searchSeq
       void runSearch(rawSearchTerm, token)
     }
@@ -403,108 +403,108 @@ async function setupSearch(
 
   updateModeUI(searchMode)
 
-  modeButtons.forEach((button) => {
-    const btnMode = (button.dataset.mode as SearchMode) ?? "lexical"
-    if (btnMode === "semantic") {
+  modeButtons.forEach(button => {
+    const btnMode = (button.dataset.mode as SearchMode) ?? 'lexical'
+    if (btnMode === 'semantic') {
       button.disabled = !semanticReady
-      button.setAttribute("aria-disabled", String(!semanticReady))
+      button.setAttribute('aria-disabled', String(!semanticReady))
     }
     const handler = () => triggerSearchWithMode(btnMode)
-    button.addEventListener("click", handler)
-    window.addCleanup(() => button.removeEventListener("click", handler))
+    button.addEventListener('click', handler)
+    window.addCleanup(() => button.removeEventListener('click', handler))
   })
   let preview: HTMLDivElement | undefined = undefined
   let previewInner: HTMLDivElement | undefined = undefined
 
-  let results = searchLayout.querySelector(".results-container") as HTMLDivElement
+  let results = searchLayout.querySelector('.results-container') as HTMLDivElement
   if (!results) {
-    results = document.createElement("div")
-    results.className = "results-container"
+    results = document.createElement('div')
+    results.className = 'results-container'
     appendLayout(results)
   }
 
   if (enablePreview) {
-    preview = searchLayout.querySelector(".preview-container") as HTMLDivElement
+    preview = searchLayout.querySelector('.preview-container') as HTMLDivElement
     if (!preview) {
-      preview = document.createElement("div")
-      preview.className = "preview-container"
+      preview = document.createElement('div')
+      preview.className = 'preview-container'
       appendLayout(preview)
     }
   }
 
   function hideSearch() {
-    container!.classList.remove("active")
-    searchBar!.value = ""
-    rawSearchTerm = ""
+    container!.classList.remove('active')
+    searchBar!.value = ''
+    rawSearchTerm = ''
     removeAllChildren(results)
     if (preview) {
       removeAllChildren(preview)
     }
-    searchLayout!.classList.remove("display-results")
+    searchLayout!.classList.remove('display-results')
     searchButton!.focus()
     resetProgressBar()
   }
 
   function showSearch(type: SearchType) {
-    container!.classList.add("active")
-    if (type === "tags") {
-      searchBar!.value = "#"
-      rawSearchTerm = "#"
+    container!.classList.add('active')
+    if (type === 'tags') {
+      searchBar!.value = '#'
+      rawSearchTerm = '#'
     }
     searchBar!.focus()
   }
 
   let currentHover: HTMLInputElement | null = null
 
-  async function shortcutHandler(e: HTMLElementEventMap["keydown"]) {
-    const paletteOpen = document.querySelector("search#palette-container") as HTMLDivElement
-    if (paletteOpen && paletteOpen.classList.contains("active")) return
+  async function shortcutHandler(e: HTMLElementEventMap['keydown']) {
+    const paletteOpen = document.querySelector('search#palette-container') as HTMLDivElement
+    if (paletteOpen && paletteOpen.classList.contains('active')) return
 
-    const isBasePage = document.body?.dataset?.isBase === "true"
+    const isBasePage = document.body?.dataset?.isBase === 'true'
 
-    if ((e.key === "/" || e.key === "k") && (e.ctrlKey || e.metaKey) && !e.shiftKey) {
-      if (isBasePage && e.key.toLowerCase() === "k") {
+    if ((e.key === '/' || e.key === 'k') && (e.ctrlKey || e.metaKey) && !e.shiftKey) {
+      if (isBasePage && e.key.toLowerCase() === 'k') {
         return
       }
-      const hasInlineSearch = document.querySelector(".page-list-search-container")
-      if (hasInlineSearch && e.key.toLowerCase() === "k") {
+      const hasInlineSearch = document.querySelector('.page-list-search-container')
+      if (hasInlineSearch && e.key.toLowerCase() === 'k') {
         return
       }
       e.preventDefault()
-      const searchBarOpen = container!.classList.contains("active")
+      const searchBarOpen = container!.classList.contains('active')
       if (searchBarOpen) {
         hideSearch()
       } else {
-        showSearch("basic")
+        showSearch('basic')
       }
       return
-    } else if (e.shiftKey && (e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") {
+    } else if (e.shiftKey && (e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
       e.preventDefault()
-      const searchBarOpen = container!.classList.contains("active")
+      const searchBarOpen = container!.classList.contains('active')
       if (searchBarOpen) {
         hideSearch()
       } else {
-        showSearch("tags")
+        showSearch('tags')
       }
       return
     }
 
     if (currentHover) {
-      currentHover.classList.remove("focus")
+      currentHover.classList.remove('focus')
     }
 
-    if (!container!.classList.contains("active")) return
-    if (e.key === "Enter") {
+    if (!container!.classList.contains('active')) return
+    if (e.key === 'Enter') {
       let anchor: HTMLAnchorElement | undefined
       if (results.contains(document.activeElement)) {
         anchor = document.activeElement as HTMLAnchorElement
-        if (anchor.classList.contains("no-match")) return
+        if (anchor.classList.contains('no-match')) return
         await displayPreview(anchor)
         e.preventDefault()
         anchor.click()
       } else {
-        anchor = document.getElementsByClassName("result-card")[0] as HTMLAnchorElement
-        if (!anchor || anchor.classList.contains("no-match")) return
+        anchor = document.getElementsByClassName('result-card')[0] as HTMLAnchorElement
+        if (!anchor || anchor.classList.contains('no-match')) return
         await displayPreview(anchor)
         e.preventDefault()
         anchor.click()
@@ -512,9 +512,9 @@ async function setupSearch(
       if (anchor !== undefined)
         window.spaNavigate(new URL(new URL(anchor.href).pathname, window.location.toString()))
     } else if (
-      e.key === "ArrowUp" ||
-      (e.shiftKey && e.key === "Tab") ||
-      (e.ctrlKey && e.key === "p")
+      e.key === 'ArrowUp' ||
+      (e.shiftKey && e.key === 'Tab') ||
+      (e.ctrlKey && e.key === 'p')
     ) {
       e.preventDefault()
       if (results.contains(document.activeElement)) {
@@ -522,19 +522,19 @@ async function setupSearch(
           ? currentHover
           : (document.activeElement as HTMLInputElement | null)
         const prevResult = currentResult?.previousElementSibling as HTMLInputElement | null
-        currentResult?.classList.remove("focus")
+        currentResult?.classList.remove('focus')
         prevResult?.focus()
         if (prevResult) currentHover = prevResult
         await displayPreview(prevResult)
       }
-    } else if (e.key === "ArrowDown" || e.key === "Tab" || (e.ctrlKey && e.key === "n")) {
+    } else if (e.key === 'ArrowDown' || e.key === 'Tab' || (e.ctrlKey && e.key === 'n')) {
       e.preventDefault()
       if (document.activeElement === searchBar || currentHover !== null) {
         const firstResult = currentHover
           ? currentHover
-          : (document.getElementsByClassName("result-card")[0] as HTMLInputElement | null)
+          : (document.getElementsByClassName('result-card')[0] as HTMLInputElement | null)
         const secondResult = firstResult?.nextElementSibling as HTMLInputElement | null
-        firstResult?.classList.remove("focus")
+        firstResult?.classList.remove('focus')
         secondResult?.focus()
         if (secondResult) currentHover = secondResult
         await displayPreview(secondResult)
@@ -544,24 +544,24 @@ async function setupSearch(
 
   const formatForDisplay = (term: string, id: number, renderType: SearchType) => {
     const slug = idDataMap[id]
-    if (data[slug].layout === "letter" || (searchMode === "semantic" && slug.includes("arena")))
+    if (data[slug].layout === 'letter' || (searchMode === 'semantic' && slug.includes('arena')))
       return null
     const aliases: string[] = data[slug].aliases
-    const target = aliases.find((alias) => alias.toLowerCase().includes(term.toLowerCase())) ?? ""
+    const target = aliases.find(alias => alias.toLowerCase().includes(term.toLowerCase())) ?? ''
 
     const queryTokens = tokenizeTerm(term)
-    const titleTokens = tokenizeTerm(data[slug].title ?? "")
-    const titleMatch = titleTokens.some((t) => queryTokens.includes(t))
+    const titleTokens = tokenizeTerm(data[slug].title ?? '')
+    const titleMatch = titleTokens.some(t => queryTokens.includes(t))
 
     return {
       id,
       slug,
       title:
-        renderType === "tags" || target
+        renderType === 'tags' || target
           ? data[slug].title
-          : highlight(term, data[slug].title ?? ""),
+          : highlight(term, data[slug].title ?? ''),
       target,
-      content: highlight(term, data[slug].content ?? "", true),
+      content: highlight(term, data[slug].content ?? '', true),
       tags: highlightTags(term, data[slug].tags, renderType),
       aliases: aliases,
       titleMatch,
@@ -570,13 +570,13 @@ async function setupSearch(
   }
 
   function highlightTags(term: string, tags: string[], renderType: SearchType) {
-    if (!tags || renderType !== "tags") {
+    if (!tags || renderType !== 'tags') {
       return []
     }
 
     const tagTerm = term.toLowerCase()
     return tags
-      .map((tag) => {
+      .map(tag => {
         if (tag.toLowerCase().includes(tagTerm)) {
           return `<li><p class="match-tag">#${tag}</p></li>`
         } else {
@@ -593,30 +593,30 @@ async function setupSearch(
   const resultToHTML = ({ item, percent }: { item: Item; percent: number | null }) => {
     const { slug, title, content, tags, target } = item
     const isProtected = item.protected === true
-    const htmlTags = tags.length > 0 ? `<ul class="tags">${tags.join("")}</ul>` : ``
-    const itemTile = document.createElement("a")
+    const htmlTags = tags.length > 0 ? `<ul class="tags">${tags.join('')}</ul>` : ``
+    const itemTile = document.createElement('a')
     const titleContent = target ? highlight(currentSearchTerm, target) : title
     const subscript = target ? `<b>${slug}</b>` : ``
-    let percentLabel = "—"
-    let percentAttr = ""
+    let percentLabel = '—'
+    let percentAttr = ''
     if (percent !== null && Number.isFinite(percent)) {
       const bounded = Math.max(0, Math.min(100, percent))
       percentLabel = `${bounded.toFixed(1)}%`
       percentAttr = bounded.toFixed(3)
     }
-    itemTile.classList.add("result-card")
+    itemTile.classList.add('result-card')
     itemTile.id = slug
     itemTile.href = resolveUrl(slug).toString()
 
     const fileData = data[slug]
-    const fileName = (fileData?.fileName || slug || "").toLowerCase()
-    const isCanvas = fileName.includes(".canvas")
-    const isBases = fileName.includes(".bases")
-    if (isCanvas) itemTile.dataset.canvas = "true"
-    if (isBases) itemTile.dataset.bases = "true"
+    const fileName = (fileData?.fileName || slug || '').toLowerCase()
+    const isCanvas = fileName.includes('.canvas')
+    const isBases = fileName.includes('.bases')
+    if (isCanvas) itemTile.dataset.canvas = 'true'
+    if (isBases) itemTile.dataset.bases = 'true'
 
     if (isProtected) {
-      itemTile.dataset.protected = "true"
+      itemTile.dataset.protected = 'true'
       itemTile.innerHTML = `<hgroup>
         <h3>${titleContent}</h3>
         ${subscript}${htmlTags}
@@ -626,15 +626,15 @@ async function setupSearch(
           font-style: italic;
           margin-left: 0.5rem;
         ">🔒 protected content</span>
-        ${searchMode === "semantic" ? `<span class="result-likelihood" title="match likelihood">&nbsp;${percentLabel}</span>` : ""}
+        ${searchMode === 'semantic' ? `<span class="result-likelihood" title="match likelihood">&nbsp;${percentLabel}</span>` : ''}
       </hgroup>`
     } else {
       delete itemTile.dataset.protected
       itemTile.innerHTML = `<hgroup>
         <h3>${titleContent}</h3>
         ${subscript}${htmlTags}
-        ${searchMode === "semantic" ? `<span class="result-likelihood" title="match likelihood">&nbsp;${percentLabel}</span>` : ""}
-        ${enablePreview && window.innerWidth > 600 ? "" : `<p>${content}</p>`}
+        ${searchMode === 'semantic' ? `<span class="result-likelihood" title="match likelihood">&nbsp;${percentLabel}</span>` : ''}
+        ${enablePreview && window.innerWidth > 600 ? '' : `<p>${content}</p>`}
       </hgroup>`
     }
 
@@ -646,7 +646,7 @@ async function setupSearch(
       const anchor = evt.currentTarget as HTMLAnchorElement | null
       if (!anchor) return
       evt.preventDefault()
-      const href = anchor.getAttribute("href")
+      const href = anchor.getAttribute('href')
       if (!href) return
       const url = new URL(href, window.location.toString())
       window.spaNavigate(url)
@@ -659,10 +659,10 @@ async function setupSearch(
       await displayPreview(target)
     }
 
-    itemTile.addEventListener("mouseenter", onMouseEnter)
-    window.addCleanup(() => itemTile.removeEventListener("mouseenter", onMouseEnter))
-    itemTile.addEventListener("click", handler)
-    window.addCleanup(() => itemTile.removeEventListener("click", handler))
+    itemTile.addEventListener('mouseenter', onMouseEnter)
+    window.addCleanup(() => itemTile.removeEventListener('mouseenter', onMouseEnter))
+    itemTile.addEventListener('click', handler)
+    window.addCleanup(() => itemTile.removeEventListener('click', handler))
 
     return itemTile
   }
@@ -689,7 +689,7 @@ async function setupSearch(
       removeAllChildren(preview)
     } else {
       const firstChild = results.firstElementChild as HTMLElement
-      firstChild.classList.add("focus")
+      firstChild.classList.add('focus')
       currentHover = firstChild as HTMLInputElement
       await displayPreview(firstChild)
     }
@@ -702,14 +702,14 @@ async function setupSearch(
 
     const targetUrl = resolveUrl(slug)
     const contents = await fetchCanonical(targetUrl)
-      .then((res) => res.text())
-      .then((contents) => {
+      .then(res => res.text())
+      .then(contents => {
         if (contents === undefined) {
           throw new Error(`Could not fetch ${targetUrl}`)
         }
-        const html = p.parseFromString(contents ?? "", "text/html")
+        const html = p.parseFromString(contents ?? '', 'text/html')
         normalizeRelativeURLs(html, targetUrl)
-        return [...html.getElementsByClassName("popover-hint")]
+        return [...html.getElementsByClassName('popover-hint')]
       })
 
     fetchContentCache.set(slug, contents)
@@ -719,29 +719,29 @@ async function setupSearch(
   async function displayPreview(el: HTMLElement | null) {
     if (!enablePreview || !el || !preview) return
     const slug = el.id as FullSlug
-    if (el.dataset.canvas === "true" || el.dataset.bases === "true") {
+    if (el.dataset.canvas === 'true' || el.dataset.bases === 'true') {
       const fileData = data[slug]
-      previewInner = document.createElement("div")
-      previewInner.classList.add("preview-inner")
+      previewInner = document.createElement('div')
+      previewInner.classList.add('preview-inner')
 
-      const metaContainer = document.createElement("div")
-      metaContainer.style.padding = "1rem"
-      metaContainer.style.color = "var(--gray)"
-      metaContainer.style.fontSize = "0.9rem"
+      const metaContainer = document.createElement('div')
+      metaContainer.style.padding = '1rem'
+      metaContainer.style.color = 'var(--gray)'
+      metaContainer.style.fontSize = '0.9rem'
 
-      const filePath = document.createElement("p")
+      const filePath = document.createElement('p')
       filePath.innerHTML = `<strong>File:</strong> ${fileData?.fileName || slug}`
       metaContainer.appendChild(filePath)
 
       if (fileData?.description) {
-        const desc = document.createElement("p")
+        const desc = document.createElement('p')
         desc.innerHTML = `<strong>Description:</strong> ${fileData.description}`
         metaContainer.appendChild(desc)
       }
 
       if (fileData?.tags && fileData.tags.length > 0) {
-        const tags = document.createElement("p")
-        tags.innerHTML = `<strong>Tags:</strong> ${fileData.tags.join(", ")}`
+        const tags = document.createElement('p')
+        tags.innerHTML = `<strong>Tags:</strong> ${fileData.tags.join(', ')}`
         metaContainer.appendChild(tags)
       }
 
@@ -750,31 +750,31 @@ async function setupSearch(
       return
     }
 
-    const isProtected = el.dataset.protected === "true" || data[slug]?.protected === true
+    const isProtected = el.dataset.protected === 'true' || data[slug]?.protected === true
     if (isProtected) {
-      previewInner = document.createElement("div")
-      previewInner.classList.add("preview-inner", "preview-redacted")
+      previewInner = document.createElement('div')
+      previewInner.classList.add('preview-inner', 'preview-redacted')
 
-      const blurLayer = document.createElement("div")
-      blurLayer.className = "preview-redacted-blur"
-      const label = document.createElement("span")
-      label.className = "preview-redacted-label"
-      label.textContent = "redacted"
+      const blurLayer = document.createElement('div')
+      blurLayer.className = 'preview-redacted-blur'
+      const label = document.createElement('span')
+      label.className = 'preview-redacted-label'
+      label.textContent = 'redacted'
 
       previewInner.append(blurLayer, label)
       preview.replaceChildren(previewInner)
       return
     }
 
-    const innerDiv = await fetchContent(slug).then((contents) =>
-      contents.flatMap((el) => [...highlightHTML(currentSearchTerm, el as HTMLElement).children]),
+    const innerDiv = await fetchContent(slug).then(contents =>
+      contents.flatMap(el => [...highlightHTML(currentSearchTerm, el as HTMLElement).children]),
     )
-    previewInner = document.createElement("div")
-    previewInner.classList.add("preview-inner")
+    previewInner = document.createElement('div')
+    previewInner.classList.add('preview-inner')
     previewInner.append(...innerDiv)
     preview.replaceChildren(previewInner)
 
-    const highlights = [...preview.getElementsByClassName("highlight")].sort(
+    const highlights = [...preview.getElementsByClassName('highlight')].sort(
       (a, b) => b.innerHTML.length - a.innerHTML.length,
     )
     if (highlights.length > 0) {
@@ -782,51 +782,51 @@ async function setupSearch(
       const containerRect = preview.getBoundingClientRect()
       const highlightRect = highlight.getBoundingClientRect()
       const relativeTop = highlightRect.top - containerRect.top + preview.scrollTop - 20
-      preview.scrollTo({ top: relativeTop, behavior: "smooth" })
+      preview.scrollTo({ top: relativeTop, behavior: 'smooth' })
     }
   }
 
   async function runSearch(rawTerm: string, token: number) {
     const trimmed = rawTerm.trim()
-    if (trimmed === "") {
+    if (trimmed === '') {
       removeAllChildren(results)
       if (preview) {
         removeAllChildren(preview)
       }
       currentHover = null
-      searchLayout!.classList.remove("display-results")
+      searchLayout!.classList.remove('display-results')
       resetProgressBar()
       return
     }
 
     const modeForRanking: SearchMode = searchMode
-    const initialType: SearchType = trimmed.startsWith("#") ? "tags" : "basic"
+    const initialType: SearchType = trimmed.startsWith('#') ? 'tags' : 'basic'
     let workingType: SearchType = initialType
     let highlightTerm = trimmed
-    let tagTerm = ""
+    let tagTerm = ''
     let searchResults: DefaultDocumentSearchResults<Item> = []
 
-    if (initialType === "tags") {
+    if (initialType === 'tags') {
       tagTerm = trimmed.substring(1).trim()
-      const separatorIndex = tagTerm.indexOf(" ")
+      const separatorIndex = tagTerm.indexOf(' ')
       if (separatorIndex !== -1) {
         const tag = tagTerm.substring(0, separatorIndex).trim()
         const query = tagTerm.substring(separatorIndex + 1).trim()
         const results = await index.searchAsync({
           query,
           limit: Math.max(getNumSearchResults(modeForRanking), 10000),
-          index: ["title", "content", "aliases"],
+          index: ['title', 'content', 'aliases'],
           tag: { tags: tag },
         })
         if (token !== searchSeq) return
         searchResults = Object.values(results)
-        workingType = "basic"
+        workingType = 'basic'
         highlightTerm = query
       } else {
         const results = await index.searchAsync({
           query: tagTerm,
           limit: getNumSearchResults(modeForRanking),
-          index: ["tags"],
+          index: ['tags'],
         })
         if (token !== searchSeq) return
         searchResults = Object.values(results)
@@ -836,7 +836,7 @@ async function setupSearch(
       const results = await index.searchAsync({
         query: highlightTerm,
         limit: getNumSearchResults(modeForRanking),
-        index: ["title", "content", "aliases"],
+        index: ['title', 'content', 'aliases'],
       })
       if (token !== searchSeq) return
       searchResults = Object.values(results)
@@ -846,7 +846,7 @@ async function setupSearch(
       if (!hit) return []
       return hit.result
         .map((value: Id) => {
-          if (typeof value === "number") {
+          if (typeof value === 'number') {
             return value
           }
           const parsed = Number.parseInt(String(value), 10)
@@ -856,15 +856,15 @@ async function setupSearch(
     }
 
     const getByField = (field: string): number[] => {
-      const hit = searchResults.find((x) => x.field === field)
+      const hit = searchResults.find(x => x.field === field)
       return coerceIds(hit)
     }
 
     const allIds: Set<number> = new Set([
-      ...getByField("aliases"),
-      ...getByField("title"),
-      ...getByField("content"),
-      ...getByField("tags"),
+      ...getByField('aliases'),
+      ...getByField('title'),
+      ...getByField('content'),
+      ...getByField('tags'),
     ])
 
     currentSearchTerm = highlightTerm
@@ -888,7 +888,7 @@ async function setupSearch(
       const item = ensureItem(id)
       if (!item) continue
       const idx = slugToIndex.get(item.slug)
-      if (typeof idx === "number") {
+      if (typeof idx === 'number') {
         baseIndices.push(idx)
       }
     }
@@ -902,7 +902,7 @@ async function setupSearch(
       if (token !== searchSeq) return
       const useSemantic = semanticReady && semanticIds.length > 0
       const weights =
-        modeForRanking === "semantic" && useSemantic
+        modeForRanking === 'semantic' && useSemantic
           ? { base: 0.3, semantic: 1.0 }
           : { base: 1.0, semantic: useSemantic ? 0.3 : 0 }
       const rrf = new Map<string, number>()
@@ -927,14 +927,14 @@ async function setupSearch(
       push(baseIndices, weights.base, true)
       push(semanticIds, weights.semantic, false)
 
-      const entries = Array.from(candidateItems.values()).map((item) => ({
+      const entries = Array.from(candidateItems.values()).map(item => ({
         item,
         score: rrf.get(item.slug) ?? 0,
         similarity: semanticSimilarity.get(item.id) ?? Number.NaN,
       }))
 
       const rankedEntries =
-        modeForRanking === "semantic" && useSemantic
+        modeForRanking === 'semantic' && useSemantic
           ? entries
               .sort((a, b) => {
                 const aHas = Number.isFinite(a.similarity)
@@ -957,11 +957,11 @@ async function setupSearch(
 
     await render()
 
-    if (workingType === "tags" || !orchestrator || !semanticReady || highlightTerm.length < 2) {
+    if (workingType === 'tags' || !orchestrator || !semanticReady || highlightTerm.length < 2) {
       return
     }
 
-    const showProgress = modeForRanking === "semantic"
+    const showProgress = modeForRanking === 'semantic'
     if (showProgress) {
       startSemanticProgress()
     }
@@ -991,26 +991,26 @@ async function setupSearch(
         semanticSimilarity.set(docIdx, score)
       })
 
-      semanticIds.forEach((docId) => {
+      semanticIds.forEach(docId => {
         ensureItem(docId)
       })
       if (showProgress) completeSemanticProgress()
     } catch (err) {
-      console.warn("[SemanticClient] search failed:", err)
+      console.warn('[SemanticClient] search failed:', err)
       if (showProgress) completeSemanticProgress()
       orchestrator.dispose()
       semantic = null
       semanticReady = false
       semanticInitFailed = true
-      setSemanticState("unavailable")
-      if (searchMode === "semantic") {
-        searchMode = "lexical"
+      setSemanticState('unavailable')
+      if (searchMode === 'semantic') {
+        searchMode = 'lexical'
         updateModeUI(searchMode)
       }
-      modeButtons.forEach((button) => {
-        if ((button.dataset.mode as SearchMode) === "semantic") {
+      modeButtons.forEach(button => {
+        if ((button.dataset.mode as SearchMode) === 'semantic') {
           button.disabled = true
-          button.setAttribute("aria-disabled", "true")
+          button.setAttribute('aria-disabled', 'true')
         }
       })
     }
@@ -1018,10 +1018,10 @@ async function setupSearch(
     await render()
   }
 
-  function onType(e: HTMLElementEventMap["input"]) {
+  function onType(e: HTMLElementEventMap['input']) {
     rawSearchTerm = (e.target as HTMLInputElement).value
-    const hasQuery = rawSearchTerm.trim() !== ""
-    searchLayout!.classList.toggle("display-results", hasQuery)
+    const hasQuery = rawSearchTerm.trim() !== ''
+    searchLayout!.classList.toggle('display-results', hasQuery)
     const term = rawSearchTerm
     const token = ++searchSeq
     if (runSearchTimer !== null) {
@@ -1029,7 +1029,7 @@ async function setupSearch(
       runSearchTimer = null
     }
     if (!hasQuery) {
-      void runSearch("", token)
+      void runSearch('', token)
       return
     }
     lastInputAt = performance.now()
@@ -1044,13 +1044,13 @@ async function setupSearch(
     }, delay)
   }
 
-  document.addEventListener("keydown", shortcutHandler)
-  window.addCleanup(() => document.removeEventListener("keydown", shortcutHandler))
-  const openHandler = () => showSearch("basic")
-  searchButton.addEventListener("click", openHandler)
-  window.addCleanup(() => searchButton.removeEventListener("click", openHandler))
-  searchBar.addEventListener("input", onType)
-  window.addCleanup(() => searchBar.removeEventListener("input", onType))
+  document.addEventListener('keydown', shortcutHandler)
+  window.addCleanup(() => document.removeEventListener('keydown', shortcutHandler))
+  const openHandler = () => showSearch('basic')
+  searchButton.addEventListener('click', openHandler)
+  window.addCleanup(() => searchButton.removeEventListener('click', openHandler))
+  searchBar.addEventListener('input', onType)
+  window.addCleanup(() => searchBar.removeEventListener('input', onType))
   window.addCleanup(() => {
     if (runSearchTimer !== null) {
       window.clearTimeout(runSearchTimer)
@@ -1077,7 +1077,7 @@ async function fillDocument(data: ContentIndex) {
         content: fileData.content,
         tags: fileData.tags,
         aliases: fileData.aliases,
-        target: "",
+        target: '',
         protected: fileData.protected,
       }),
     )
@@ -1088,11 +1088,11 @@ async function fillDocument(data: ContentIndex) {
   indexPopulated = true
 }
 
-document.addEventListener("nav", async (e: CustomEventMap["nav"]) => {
+document.addEventListener('nav', async (e: CustomEventMap['nav']) => {
   const currentSlug = e.detail.url
   const data = await fetchData
   const searchElement = document.getElementsByClassName(
-    "search",
+    'search',
   ) as HTMLCollectionOf<HTMLDivElement>
   for (const element of searchElement) {
     await setupSearch(element, currentSlug, data)

@@ -1,5 +1,5 @@
 ---
-date: "2025-04-17"
+date: '2025-04-17'
 description: And everything in between
 id: finals
 modified: 2025-10-29 02:16:02 GMT-04:00

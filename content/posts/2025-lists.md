@@ -1,11 +1,11 @@
 ---
-date: "2025-12-31"
+date: '2025-12-31'
 description: on contigency, convictions, and Tractatus.
 id: 2025-lists
 layout: technical-tractatus
 modified: 2026-01-09 05:27:01 GMT-05:00
 seealso:
-  - "[[posts/hyperabundance|hyperabundance]]"
+  - '[[posts/hyperabundance|hyperabundance]]'
 signature: Your present self
 socials:
   substack: https://open.substack.com/pub/livingalone/p/2025-mode-of-essence?r=1z8i4s&utm_campaign=post&utm_medium=web&showWelcomeOnShare=true
@@ -13,7 +13,7 @@ socials:
 tags:
   - growth
   - sapling
-title: "2025: mode of essence"
+title: '2025: mode of essence'
 ---
 
 Dear [[posts/2024]] me,

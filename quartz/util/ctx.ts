@@ -1,8 +1,8 @@
-import path from "path"
-import { QuartzConfig } from "../cfg"
-import { QuartzPluginData } from "../plugins/vfile"
-import { FileTrieNode } from "./fileTrie"
-import { FilePath, FullSlug, splitAnchor, stripSlashes } from "./path"
+import path from 'path'
+import { QuartzConfig } from '../cfg'
+import { QuartzPluginData } from '../plugins/vfile'
+import { FileTrieNode } from './fileTrie'
+import { FilePath, FullSlug, splitAnchor, stripSlashes } from './path'
 
 export interface Argv {
   directory: string
@@ -32,11 +32,11 @@ export interface BuildCtx {
 
 export function trieFromAllFiles(allFiles: QuartzPluginData[]): FileTrieNode<BuildTimeTrieData> {
   const trie = new FileTrieNode<BuildTimeTrieData>([])
-  allFiles.forEach((file) => {
+  allFiles.forEach(file => {
     // Handle PDFs and files with frontmatter
     if (file.slug) {
       const isPdf = file.filePath
-        ? path.extname(file.filePath).toLowerCase().includes("pdf")
+        ? path.extname(file.filePath).toLowerCase().includes('pdf')
         : false
 
       if (isPdf || file.frontmatter) {
@@ -46,14 +46,14 @@ export function trieFromAllFiles(allFiles: QuartzPluginData[]): FileTrieNode<Bui
         // Special handling for PDFs
         if (isPdf) {
           // Ensure the slug is properly formatted for PDFs
-          const url = new URL(`/${file.slug}`, "https://base.com")
+          const url = new URL(`/${file.slug}`, 'https://base.com')
           const canonicalDest = url.pathname
           const [destCanonical, _] = splitAnchor(canonicalDest)
           slug = decodeURIComponent(stripSlashes(destCanonical, true)) as FullSlug
 
           // Use filename as title if no frontmatter title
           if (!title) {
-            const baseName = path.basename(file.filePath!, ".pdf")
+            const baseName = path.basename(file.filePath!, '.pdf')
             title = baseName
           }
         }
@@ -66,4 +66,4 @@ export function trieFromAllFiles(allFiles: QuartzPluginData[]): FileTrieNode<Bui
   return trie
 }
 
-export type WorkerSerializableBuildCtx = Omit<BuildCtx, "cfg" | "trie">
+export type WorkerSerializableBuildCtx = Omit<BuildCtx, 'cfg' | 'trie'>

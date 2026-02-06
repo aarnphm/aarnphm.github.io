@@ -7,7 +7,7 @@ description: twenty-four hours in paris banlieue after riots—kassovitz filming
 director: Mathieu Kassovitz
 id: la-haine
 modified: 2025-10-29 02:14:52 GMT-04:00
-posters: "[[movies/posters/la-haine.jpg]]"
+posters: '[[movies/posters/la-haine.jpg]]'
 rating: 8.1
 status: finished
 studio: gaumont

@@ -1,17 +1,17 @@
-type Theme = "light" | "dark"
-type ThemePreference = Theme | "system"
+type Theme = 'light' | 'dark'
+type ThemePreference = Theme | 'system'
 
-const PREFERENCE_STORAGE_KEY = "theme-preference"
-const LEGACY_STORAGE_KEY = "theme"
-const preferenceOrder: ThemePreference[] = ["system", "dark", "light"]
+const PREFERENCE_STORAGE_KEY = 'theme-preference'
+const LEGACY_STORAGE_KEY = 'theme'
+const preferenceOrder: ThemePreference[] = ['system', 'dark', 'light']
 
-const prefersDarkMediaQuery = window.matchMedia("(prefers-color-scheme: dark)")
+const prefersDarkMediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
 
-const isTheme = (value: string | null): value is Theme => value === "light" || value === "dark"
+const isTheme = (value: string | null): value is Theme => value === 'light' || value === 'dark'
 const isPreference = (value: string | null): value is ThemePreference =>
-  value === "system" || isTheme(value)
+  value === 'system' || isTheme(value)
 
-const getSystemTheme = (): Theme => (prefersDarkMediaQuery.matches ? "dark" : "light")
+const getSystemTheme = (): Theme => (prefersDarkMediaQuery.matches ? 'dark' : 'light')
 
 const nextPreference = (preference: ThemePreference): ThemePreference => {
   const index = preferenceOrder.indexOf(preference)
@@ -20,31 +20,31 @@ const nextPreference = (preference: ThemePreference): ThemePreference => {
 
 const describePreference = (preference: ThemePreference, resolved: Theme) => {
   switch (preference) {
-    case "system":
+    case 'system':
       return `Theme preference: system (${resolved})`
-    case "dark":
-      return "Theme preference: dark"
-    case "light":
+    case 'dark':
+      return 'Theme preference: dark'
+    case 'light':
     default:
-      return "Theme preference: light"
+      return 'Theme preference: light'
   }
 }
 
 const describeNextAction = (preference: ThemePreference) => {
   const upcoming = nextPreference(preference)
   switch (upcoming) {
-    case "system":
-      return "Switch to system theme"
-    case "dark":
-      return "Switch to dark theme"
-    case "light":
+    case 'system':
+      return 'Switch to system theme'
+    case 'dark':
+      return 'Switch to dark theme'
+    case 'light':
     default:
-      return "Switch to light theme"
+      return 'Switch to light theme'
   }
 }
 
 const emitThemeChangeEvent = (theme: Theme) => {
-  const event: CustomEventMap["themechange"] = new CustomEvent("themechange", { detail: { theme } })
+  const event: CustomEventMap['themechange'] = new CustomEvent('themechange', { detail: { theme } })
   document.dispatchEvent(event)
 }
 
@@ -59,7 +59,7 @@ const readStoredPreference = (): ThemePreference => {
     return legacyTheme
   }
 
-  return "system"
+  return 'system'
 }
 
 let activePreference: ThemePreference = readStoredPreference()
@@ -67,8 +67,8 @@ let activePreference: ThemePreference = readStoredPreference()
 let toggleElement: HTMLElement | null = null
 
 const showThemeToast = (preference: ThemePreference, _resolved: Theme) => {
-  const event: CustomEventMap["toast"] = new CustomEvent("toast", {
-    detail: { message: `current theme: ${preference}`, containerId: "theme-toast-container" },
+  const event: CustomEventMap['toast'] = new CustomEvent('toast', {
+    detail: { message: `current theme: ${preference}`, containerId: 'theme-toast-container' },
   })
   document.dispatchEvent(event)
 }
@@ -76,15 +76,15 @@ const showThemeToast = (preference: ThemePreference, _resolved: Theme) => {
 const updateTogglePresentation = (resolvedTheme: Theme, preference: ThemePreference) => {
   if (!toggleElement) return
 
-  toggleElement.setAttribute("aria-label", describePreference(preference, resolvedTheme))
-  toggleElement.setAttribute("title", describeNextAction(preference))
+  toggleElement.setAttribute('aria-label', describePreference(preference, resolvedTheme))
+  toggleElement.setAttribute('title', describeNextAction(preference))
 
-  if (preference === "system") {
-    toggleElement.setAttribute("aria-pressed", "mixed")
-  } else if (preference === "dark") {
-    toggleElement.setAttribute("aria-pressed", "true")
+  if (preference === 'system') {
+    toggleElement.setAttribute('aria-pressed', 'mixed')
+  } else if (preference === 'dark') {
+    toggleElement.setAttribute('aria-pressed', 'true')
   } else {
-    toggleElement.setAttribute("aria-pressed", "false")
+    toggleElement.setAttribute('aria-pressed', 'false')
   }
 
   toggleElement.dataset.preference = preference
@@ -96,10 +96,10 @@ const applyPreference = (
   options: { persist?: boolean; emit?: boolean } = {},
 ) => {
   activePreference = preference
-  const resolvedTheme: Theme = preference === "system" ? getSystemTheme() : preference
+  const resolvedTheme: Theme = preference === 'system' ? getSystemTheme() : preference
 
-  document.documentElement.setAttribute("saved-theme", resolvedTheme)
-  document.documentElement.setAttribute("data-theme-mode", preference)
+  document.documentElement.setAttribute('saved-theme', resolvedTheme)
+  document.documentElement.setAttribute('data-theme-mode', preference)
 
   localStorage.setItem(LEGACY_STORAGE_KEY, resolvedTheme)
   if (options.persist !== false) {
@@ -117,12 +117,12 @@ const applyPreference = (
 
 applyPreference(activePreference, { emit: false })
 
-document.addEventListener("nav", () => {
-  const themeButton = document.querySelector("#light-toggle") as HTMLElement | null
+document.addEventListener('nav', () => {
+  const themeButton = document.querySelector('#light-toggle') as HTMLElement | null
   if (themeButton) {
     toggleElement = themeButton
     updateTogglePresentation(
-      activePreference === "system" ? getSystemTheme() : (activePreference as Theme),
+      activePreference === 'system' ? getSystemTheme() : (activePreference as Theme),
       activePreference,
     )
 
@@ -138,19 +138,19 @@ document.addEventListener("nav", () => {
 
     const keyActivate = (ev: KeyboardEvent) => {
       const key = ev.key
-      if (key === "Enter" || key === " ") {
+      if (key === 'Enter' || key === ' ') {
         activateButton(ev)
-      } else if (key === "Spacebar") {
+      } else if (key === 'Spacebar') {
         activateButton(ev)
       }
     }
 
-    themeButton.addEventListener("click", activateButton)
-    themeButton.addEventListener("keydown", keyActivate)
+    themeButton.addEventListener('click', activateButton)
+    themeButton.addEventListener('keydown', keyActivate)
 
     window.addCleanup(() => {
-      themeButton.removeEventListener("click", activateButton)
-      themeButton.removeEventListener("keydown", keyActivate)
+      themeButton.removeEventListener('click', activateButton)
+      themeButton.removeEventListener('keydown', keyActivate)
       toggleElement = null
     })
   }
@@ -160,14 +160,14 @@ document.addEventListener("nav", () => {
     const tag = el.tagName.toLowerCase()
 
     // Check if headings modal is open
-    const headingsModal = document.querySelector(".headings-modal-container") as HTMLElement
-    const isHeadingsModalOpen = headingsModal && headingsModal.style.display === "flex"
+    const headingsModal = document.querySelector('.headings-modal-container') as HTMLElement
+    const isHeadingsModalOpen = headingsModal && headingsModal.style.display === 'flex'
 
     return (
-      tag === "input" ||
-      tag === "textarea" ||
+      tag === 'input' ||
+      tag === 'textarea' ||
       (el as HTMLElement).isContentEditable ||
-      el.closest(".search .search-container") !== null ||
+      el.closest('.search .search-container') !== null ||
       isHeadingsModalOpen
     )
   }
@@ -182,26 +182,26 @@ document.addEventListener("nav", () => {
   const keyToggle = (e: KeyboardEvent) => {
     if (e.ctrlKey || e.metaKey || e.altKey) return
     if (shouldIgnoreTarget(e.target)) return
-    if (e.key === "D") {
+    if (e.key === 'D') {
       cyclePreference(e)
     }
   }
 
-  document.addEventListener("keydown", keyToggle)
-  window.addCleanup(() => document.removeEventListener("keydown", keyToggle))
+  document.addEventListener('keydown', keyToggle)
+  window.addCleanup(() => document.removeEventListener('keydown', keyToggle))
 
   const themeChange = (e: MediaQueryListEvent) => {
-    if (activePreference !== "system") {
+    if (activePreference !== 'system') {
       return
     }
 
-    const newTheme = e.matches ? "dark" : "light"
-    document.documentElement.setAttribute("saved-theme", newTheme)
+    const newTheme = e.matches ? 'dark' : 'light'
+    document.documentElement.setAttribute('saved-theme', newTheme)
     localStorage.setItem(LEGACY_STORAGE_KEY, newTheme)
     updateTogglePresentation(newTheme, activePreference)
     emitThemeChangeEvent(newTheme)
   }
 
-  prefersDarkMediaQuery.addEventListener("change", themeChange)
-  window.addCleanup(() => prefersDarkMediaQuery.removeEventListener("change", themeChange))
+  prefersDarkMediaQuery.addEventListener('change', themeChange)
+  window.addCleanup(() => prefersDarkMediaQuery.removeEventListener('change', themeChange))
 })

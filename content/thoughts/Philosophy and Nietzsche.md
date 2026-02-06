@@ -1,5 +1,5 @@
 ---
-date: "2023-12-04"
+date: '2023-12-04'
 description: and Zarathustra.
 id: Philosophy and Nietzsche
 modified: 2026-01-11 09:04:16 GMT-05:00

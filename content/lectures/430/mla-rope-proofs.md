@@ -1,5 +1,5 @@
 ---
-date: "2025-10-17"
+date: '2025-10-17'
 description: a basic theorem proof
 id: mla-rope-proofs
 modified: 2025-11-11 06:56:02 GMT-05:00

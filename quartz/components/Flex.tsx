@@ -2,9 +2,9 @@ import {
   QuartzComponent,
   QuartzComponentConstructor,
   QuartzComponentProps,
-} from "../types/component"
-import { classNames } from "../util/lang"
-import { concatenateResources } from "../util/resources"
+} from '../types/component'
+import { classNames } from '../util/lang'
+import { concatenateResources } from '../util/resources'
 
 type FlexConfig = {
   components: {
@@ -13,33 +13,33 @@ type FlexConfig = {
     shrink?: boolean
     basis?: string
     order?: number
-    align?: "start" | "end" | "center" | "stretch"
-    justify?: "start" | "end" | "center" | "between" | "around"
+    align?: 'start' | 'end' | 'center' | 'stretch'
+    justify?: 'start' | 'end' | 'center' | 'between' | 'around'
   }[]
-  direction?: "row" | "row-reverse" | "column" | "column-reverse"
-  wrap?: "nowrap" | "wrap" | "wrap-reverse"
+  direction?: 'row' | 'row-reverse' | 'column' | 'column-reverse'
+  wrap?: 'nowrap' | 'wrap' | 'wrap-reverse'
   gap?: string
   classNames?: string[]
 }
 
 export default ((config: FlexConfig) => {
   const Flex: QuartzComponent = (props: QuartzComponentProps) => {
-    const direction = config.direction ?? "row"
-    const wrap = config.wrap ?? "nowrap"
-    const gap = config.gap ?? "1rem"
+    const direction = config.direction ?? 'row'
+    const wrap = config.wrap ?? 'nowrap'
+    const gap = config.gap ?? '1rem'
 
     return (
       <div
         style={`display: flex; flex-direction: ${direction}; flex-wrap: ${wrap}; gap: ${gap};`}
         class={classNames(props.displayClass, ...config.classNames!)}
       >
-        {config.components.map((c) => {
+        {config.components.map(c => {
           const grow = c.grow ? 1 : 0
           const shrink = (c.shrink ?? true) ? 1 : 0
-          const basis = c.basis ?? "auto"
+          const basis = c.basis ?? 'auto'
           const order = c.order ?? 0
-          const align = c.align ?? "center"
-          const justify = c.justify ?? "center"
+          const align = c.align ?? 'center'
+          const justify = c.justify ?? 'center'
 
           return (
             <div
@@ -54,11 +54,11 @@ export default ((config: FlexConfig) => {
   }
 
   Flex.afterDOMLoaded = concatenateResources(
-    ...config.components.map((c) => c.Component.afterDOMLoaded),
+    ...config.components.map(c => c.Component.afterDOMLoaded),
   )
   Flex.beforeDOMLoaded = concatenateResources(
-    ...config.components.map((c) => c.Component.beforeDOMLoaded),
+    ...config.components.map(c => c.Component.beforeDOMLoaded),
   )
-  Flex.css = concatenateResources(...config.components.map((c) => c.Component.css))
+  Flex.css = concatenateResources(...config.components.map(c => c.Component.css))
   return Flex
 }) satisfies QuartzComponentConstructor<FlexConfig>

@@ -1,5 +1,5 @@
 ---
-date: "2024-11-05"
+date: '2024-11-05'
 description: useful for derive upper bounds, e.g when analysing the error or convergence rate of an algorithm
 id: Cauchy-Schwarz
 modified: 2025-10-29 02:15:17 GMT-04:00

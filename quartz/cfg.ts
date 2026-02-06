@@ -1,20 +1,20 @@
-import { ValidDateType } from "./components/Date"
-import { ValidLocale } from "./i18n"
-import { QuartzComponent } from "./types/component"
-import { PluginTypes } from "./types/plugin"
-import { Theme } from "./util/theme"
+import { ValidDateType } from './components/Date'
+import { ValidLocale } from './i18n'
+import { QuartzComponent } from './types/component'
+import { PluginTypes } from './types/plugin'
+import { Theme } from './util/theme'
 
 export type Analytics =
   | null
-  | { provider: "plausible"; host?: string }
-  | { provider: "google"; tagId: string }
-  | { provider: "umami"; websiteId: string; host?: string }
-  | { provider: "goatcounter"; websiteId: string; host?: string; scriptSrc?: string }
-  | { provider: "posthog"; apiKey: string; host?: string }
-  | { provider: "tinylytics"; siteId: string }
-  | { provider: "cabin"; host?: string }
+  | { provider: 'plausible'; host?: string }
+  | { provider: 'google'; tagId: string }
+  | { provider: 'umami'; websiteId: string; host?: string }
+  | { provider: 'goatcounter'; websiteId: string; host?: string; scriptSrc?: string }
+  | { provider: 'posthog'; apiKey: string; host?: string }
+  | { provider: 'tinylytics'; siteId: string }
+  | { provider: 'cabin'; host?: string }
 
-type DType = "fp16" | "fp32"
+type DType = 'fp16' | 'fp32'
 
 type SemanticIndexOptions = {
   /** Enable semantic search (default: true) */
@@ -105,25 +105,25 @@ export interface FullPageLayout {
   footer: QuartzComponent
 }
 
-export type PageLayout = Pick<FullPageLayout, "beforeBody" | "sidebar">
-export type SharedLayout = Pick<FullPageLayout, "head" | "header" | "footer" | "afterBody">
+export type PageLayout = Pick<FullPageLayout, 'beforeBody' | 'sidebar'>
+export type SharedLayout = Pick<FullPageLayout, 'head' | 'header' | 'footer' | 'afterBody'>
 
 export const customMacros = {
-  "\\argmin": "\\mathop{\\operatorname{arg\\,min}}\\limits",
-  "\\argmax": "\\mathop{\\operatorname{arg\\,max}}\\limits",
-  "\\upgamma": "\\mathit{\\gamma}",
-  "\\upphi": "\\mathit{\\phi}",
-  "\\upeta": "\\mathit{\\eta}",
-  "\\upbeta": "\\mathit{\\beta}",
-  "\\upalpha": "\\mathit{\\alpha}",
-  "\\uptheta": "\\mathit{\\theta}",
-  "\\abs": "\\left\\lvert #1 \\right\\rvert",
+  '\\argmin': '\\mathop{\\operatorname{arg\\,min}}\\limits',
+  '\\argmax': '\\mathop{\\operatorname{arg\\,max}}\\limits',
+  '\\upgamma': '\\mathit{\\gamma}',
+  '\\upphi': '\\mathit{\\phi}',
+  '\\upeta': '\\mathit{\\eta}',
+  '\\upbeta': '\\mathit{\\beta}',
+  '\\upalpha': '\\mathit{\\alpha}',
+  '\\uptheta': '\\mathit{\\theta}',
+  '\\abs': '\\left\\lvert #1 \\right\\rvert',
   // KaTeX does not support tabular/multicolumn. Provide safe fallbacks.
   // This macro drops alignment specifiers and yields only the cell content.
   // IMPORTANT: when spanning >1 columns, add explicit '&'s in source rows.
-  "\\multicolumn": "#3",
+  '\\multicolumn': '#3',
   // Text micro symbol compatibility
-  "\\textmu": "\\mu",
+  '\\textmu': '\\mu',
 }
 
 export const katexOptions = { strict: true, throwOnError: true }

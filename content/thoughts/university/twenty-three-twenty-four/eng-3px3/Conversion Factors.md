@@ -1,5 +1,5 @@
 ---
-date: "2024-01-23"
+date: '2024-01-23'
 description: conversion factors for economic analysis including cost of labor, time, opportunity cost, environmental impacts, ghg emissions, and health costs.
 id: Conversion Factors
 modified: 2025-10-29 02:16:13 GMT-04:00

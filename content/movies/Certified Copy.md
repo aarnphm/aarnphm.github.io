@@ -15,5 +15,5 @@ category:
   - relationship
   - drama
 description: a day in tuscany where a couple may or may not be a couple - kiarostami turns conversation into identity swap.
-posters: "[[movies/posters/certified-copy.jpg]]"
+posters: '[[movies/posters/certified-copy.jpg]]'
 ---

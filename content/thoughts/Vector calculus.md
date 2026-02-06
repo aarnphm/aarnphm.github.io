@@ -1,5 +1,5 @@
 ---
-date: "2024-11-27"
+date: '2024-11-27'
 description: just enough vector calculus to be dangerous
 id: Vector calculus
 modified: 2025-11-01 06:03:40 GMT-04:00

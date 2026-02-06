@@ -1,7 +1,7 @@
-import type { ArenaEvent, SearchResultOptions, SearchScope } from "./model"
-import { normalizeRelativeURLs } from "../../util/path"
-import { loadMapbox, applyMonochromeMapPalette } from "../scripts/mapbox-client"
-import { fetchCanonical, tokenizeTerm, highlight } from "../scripts/util"
+import type { ArenaEvent, SearchResultOptions, SearchScope } from './model'
+import { normalizeRelativeURLs } from '../../util/path'
+import { loadMapbox, applyMonochromeMapPalette } from '../scripts/mapbox-client'
+import { fetchCanonical, tokenizeTerm, highlight } from '../scripts/util'
 
 let currentBlockIndex = 0
 let totalBlocks = 0
@@ -23,26 +23,26 @@ const addCleanup = (cleanup: () => void) => {
 function lockPageScroll() {
   if (scrollLockState) return
   scrollLockState = { x: window.scrollX, y: window.scrollY }
-  document.documentElement.classList.add("arena-modal-open")
-  document.body.classList.add("arena-modal-open")
-  document.body.style.position = "fixed"
+  document.documentElement.classList.add('arena-modal-open')
+  document.body.classList.add('arena-modal-open')
+  document.body.style.position = 'fixed'
   document.body.style.top = `-${scrollLockState.y}px`
-  document.body.style.left = "0"
-  document.body.style.right = "0"
-  document.body.style.width = "100%"
-  document.body.style.overflow = "hidden"
+  document.body.style.left = '0'
+  document.body.style.right = '0'
+  document.body.style.width = '100%'
+  document.body.style.overflow = 'hidden'
 }
 
 function unlockPageScroll() {
   const state = scrollLockState
-  document.documentElement.classList.remove("arena-modal-open")
-  document.body.classList.remove("arena-modal-open")
-  document.body.style.position = ""
-  document.body.style.top = ""
-  document.body.style.left = ""
-  document.body.style.right = ""
-  document.body.style.width = ""
-  document.body.style.overflow = ""
+  document.documentElement.classList.remove('arena-modal-open')
+  document.body.classList.remove('arena-modal-open')
+  document.body.style.position = ''
+  document.body.style.top = ''
+  document.body.style.left = ''
+  document.body.style.right = ''
+  document.body.style.width = ''
+  document.body.style.overflow = ''
   scrollLockState = null
   if (state) {
     window.scrollTo(state.x, state.y)
@@ -50,18 +50,18 @@ function unlockPageScroll() {
 }
 
 function escapeHtml(value: string): string {
-  return value.replace(/[&<>"']/g, (char) => {
+  return value.replace(/[&<>"']/g, char => {
     switch (char) {
-      case "&":
-        return "&amp;"
-      case "<":
-        return "&lt;"
-      case ">":
-        return "&gt;"
+      case '&':
+        return '&amp;'
+      case '<':
+        return '&lt;'
+      case '>':
+        return '&gt;'
       case '"':
-        return "&quot;"
+        return '&quot;'
       case "'":
-        return "&#39;"
+        return '&#39;'
       default:
         return char
     }
@@ -69,13 +69,13 @@ function escapeHtml(value: string): string {
 }
 
 function renderMapFallback(node: HTMLElement, message: string) {
-  node.dataset.mapStatus = "error"
-  node.classList.add("arena-map-error")
+  node.dataset.mapStatus = 'error'
+  node.classList.add('arena-map-error')
   node.textContent = message
 }
 
 function cleanupMaps(root: HTMLElement) {
-  root.querySelectorAll<HTMLElement>(".arena-modal-map[data-map-initialized]").forEach((node) => {
+  root.querySelectorAll<HTMLElement>('.arena-modal-map[data-map-initialized]').forEach(node => {
     const map = mapInstances.get(node)
     if (map) {
       try {
@@ -85,74 +85,74 @@ function cleanupMaps(root: HTMLElement) {
       }
       mapInstances.delete(node)
     }
-    node.removeAttribute("data-map-initialized")
-    node.removeAttribute("data-map-status")
-    node.classList.remove("arena-map-error")
-    node.textContent = ""
+    node.removeAttribute('data-map-initialized')
+    node.removeAttribute('data-map-status')
+    node.classList.remove('arena-map-error')
+    node.textContent = ''
   })
 }
 
 function hydrateMapboxMaps(root: HTMLElement) {
   const mapNodes = root.querySelectorAll<HTMLElement>(
-    ".arena-modal-map[data-map-lon][data-map-lat]",
+    '.arena-modal-map[data-map-lon][data-map-lat]',
   )
   if (mapNodes.length === 0) {
     return
   }
 
-  mapNodes.forEach((node) => {
-    if (node.dataset.mapInitialized === "1") return
-    node.dataset.mapStatus = "loading"
-    node.classList.remove("arena-map-error")
-    node.textContent = "loading map…"
+  mapNodes.forEach(node => {
+    if (node.dataset.mapInitialized === '1') return
+    node.dataset.mapStatus = 'loading'
+    node.classList.remove('arena-map-error')
+    node.textContent = 'loading map…'
   })
 
   loadMapbox()
-    .then((mapboxgl) => {
+    .then(mapboxgl => {
       if (!mapboxgl) {
-        mapNodes.forEach((node) => renderMapFallback(node, "map unavailable"))
+        mapNodes.forEach(node => renderMapFallback(node, 'map unavailable'))
         return
       }
 
-      mapNodes.forEach((node) => {
-        if (!node.isConnected || node.dataset.mapInitialized === "1") {
+      mapNodes.forEach(node => {
+        if (!node.isConnected || node.dataset.mapInitialized === '1') {
           return
         }
 
-        const lon = Number.parseFloat(node.dataset.mapLon || "")
-        const lat = Number.parseFloat(node.dataset.mapLat || "")
+        const lon = Number.parseFloat(node.dataset.mapLon || '')
+        const lat = Number.parseFloat(node.dataset.mapLat || '')
 
         if (!Number.isFinite(lon) || !Number.isFinite(lat)) {
-          renderMapFallback(node, "invalid location")
+          renderMapFallback(node, 'invalid location')
           return
         }
 
         try {
           const map = new mapboxgl.Map({
             container: node,
-            style: "mapbox://styles/mapbox/light-v11",
+            style: 'mapbox://styles/mapbox/light-v11',
             center: [lon, lat],
             zoom: 15,
             attributionControl: false,
           })
 
           mapInstances.set(node, map)
-          node.dataset.mapInitialized = "1"
-          node.dataset.mapStatus = "loading"
+          node.dataset.mapInitialized = '1'
+          node.dataset.mapStatus = 'loading'
 
-          const markerEl = document.createElement("div")
-          markerEl.className = "base-map-marker"
-          markerEl.textContent = "•"
-          markerEl.style.color = "#2b2418"
-          markerEl.style.width = "24px"
-          markerEl.style.height = "24px"
-          markerEl.style.display = "flex"
-          markerEl.style.alignItems = "center"
-          markerEl.style.justifyContent = "center"
-          markerEl.style.fontSize = "18px"
-          markerEl.style.cursor = "pointer"
+          const markerEl = document.createElement('div')
+          markerEl.className = 'base-map-marker'
+          markerEl.textContent = '•'
+          markerEl.style.color = '#2b2418'
+          markerEl.style.width = '24px'
+          markerEl.style.height = '24px'
+          markerEl.style.display = 'flex'
+          markerEl.style.alignItems = 'center'
+          markerEl.style.justifyContent = 'center'
+          markerEl.style.fontSize = '18px'
+          markerEl.style.cursor = 'pointer'
 
-          const marker = new mapboxgl.Marker({ element: markerEl, anchor: "bottom" }).setLngLat([
+          const marker = new mapboxgl.Marker({ element: markerEl, anchor: 'bottom' }).setLngLat([
             lon,
             lat,
           ])
@@ -168,10 +168,10 @@ function hydrateMapboxMaps(root: HTMLElement) {
           }
           marker.addTo(map)
 
-          map.once("load", () => {
+          map.once('load', () => {
             applyMonochromeMapPalette(map)
-            node.dataset.mapStatus = "loaded"
-            node.classList.remove("arena-map-error")
+            node.dataset.mapStatus = 'loaded'
+            node.classList.remove('arena-map-error')
             try {
               map.resize()
             } catch (error) {
@@ -186,76 +186,76 @@ function hydrateMapboxMaps(root: HTMLElement) {
             }
           })
 
-          map.on("error", () => {
-            if (node.dataset.mapStatus !== "loaded") {
-              renderMapFallback(node, "map unavailable")
+          map.on('error', () => {
+            if (node.dataset.mapStatus !== 'loaded') {
+              renderMapFallback(node, 'map unavailable')
             }
           })
         } catch (error) {
           console.error(error)
-          renderMapFallback(node, "map unavailable")
+          renderMapFallback(node, 'map unavailable')
         }
       })
     })
-    .catch((error) => {
+    .catch(error => {
       console.error(error)
-      mapNodes.forEach((node) => renderMapFallback(node, "map unavailable"))
+      mapNodes.forEach(node => renderMapFallback(node, 'map unavailable'))
     })
 }
 
 function injectSubstackScript(container: HTMLElement) {
-  const script = document.createElement("script")
+  const script = document.createElement('script')
   script.async = true
-  script.src = "https://substack.com/embedjs/embed.js"
+  script.src = 'https://substack.com/embedjs/embed.js'
   container.appendChild(script)
 }
 
 function hydrateSubstackEmbeds(root: HTMLElement) {
   const nodes = root.querySelectorAll<HTMLElement>(
-    ".arena-modal-embed-substack[data-substack-url]:not([data-substack-status])",
+    '.arena-modal-embed-substack[data-substack-url]:not([data-substack-status])',
   )
-  nodes.forEach((node) => {
+  nodes.forEach(node => {
     const targetUrl = node.dataset.substackUrl
     if (!targetUrl) return
-    node.dataset.substackStatus = "loading"
-    node.classList.add("arena-modal-embed")
-    node.innerHTML = ""
-    const wrapper = document.createElement("div")
-    wrapper.className = "substack-post-embed"
-    const link = document.createElement("a")
+    node.dataset.substackStatus = 'loading'
+    node.classList.add('arena-modal-embed')
+    node.innerHTML = ''
+    const wrapper = document.createElement('div')
+    wrapper.className = 'substack-post-embed'
+    const link = document.createElement('a')
     link.href = targetUrl
-    link.textContent = "Read on Substack"
-    link.setAttribute("data-post-link", "")
+    link.textContent = 'Read on Substack'
+    link.setAttribute('data-post-link', '')
     wrapper.appendChild(link)
     node.appendChild(wrapper)
     injectSubstackScript(node)
-    node.dataset.substackStatus = "loaded"
+    node.dataset.substackStatus = 'loaded'
   })
 }
 
 function ensureInternalPreviewContainer(host: HTMLElement): HTMLDivElement {
-  let preview = host.querySelector(".arena-modal-internal-preview") as HTMLDivElement | null
+  let preview = host.querySelector('.arena-modal-internal-preview') as HTMLDivElement | null
   if (!preview) {
-    preview = document.createElement("div")
-    preview.className = "arena-modal-internal-preview"
+    preview = document.createElement('div')
+    preview.className = 'arena-modal-internal-preview'
     host.appendChild(preview)
   }
   return preview
 }
 
 function renderInternalPreviewLoading(container: HTMLElement) {
-  container.innerHTML = ""
-  const spinner = document.createElement("span")
-  spinner.className = "arena-loading-spinner"
-  spinner.setAttribute("role", "status")
-  spinner.setAttribute("aria-label", "Loading preview")
+  container.innerHTML = ''
+  const spinner = document.createElement('span')
+  spinner.className = 'arena-loading-spinner'
+  spinner.setAttribute('role', 'status')
+  spinner.setAttribute('aria-label', 'Loading preview')
   container.appendChild(spinner)
 }
 
 function renderInternalPreviewError(container: HTMLElement) {
-  container.innerHTML = ""
-  const message = document.createElement("p")
-  message.textContent = "Unable to load preview."
+  container.innerHTML = ''
+  const message = document.createElement('p')
+  message.textContent = 'Unable to load preview.'
   container.appendChild(message)
 }
 
@@ -264,29 +264,29 @@ async function hydrateInternalHost(host: HTMLElement) {
   const href = host.dataset.internalHref
   if (
     !href ||
-    host.dataset.internalStatus === "loading" ||
-    host.dataset.internalStatus === "loaded"
+    host.dataset.internalStatus === 'loading' ||
+    host.dataset.internalStatus === 'loaded'
   ) {
     return
   }
 
-  host.dataset.internalStatus = "loading"
+  host.dataset.internalStatus = 'loading'
   const preview = ensureInternalPreviewContainer(host)
   renderInternalPreviewLoading(preview)
 
   try {
     const targetUrl = new URL(href, window.location.origin)
     const urlWithoutHash = new URL(targetUrl.toString())
-    urlWithoutHash.hash = ""
+    urlWithoutHash.hash = ''
 
     // Check if this is a PDF by URL extension
     const isPdf = /\.pdf(?:[?#].*)?$/i.test(urlWithoutHash.pathname)
 
     if (isPdf) {
       // Handle PDF files - fetch from internal URL and create blob
-      preview.innerHTML = ""
-      preview.classList.add("arena-modal-embed-pdf")
-      preview.dataset.pdfStatus = "loading"
+      preview.innerHTML = ''
+      preview.classList.add('arena-modal-embed-pdf')
+      preview.dataset.pdfStatus = 'loading'
       renderPdfLoading(preview)
 
       try {
@@ -302,14 +302,14 @@ async function hydrateInternalHost(host: HTMLElement) {
         preview.dataset.pdfBlobUrl = blobUrl
 
         await createPdfViewer(preview, blobUrl)
-        preview.dataset.pdfStatus = "loaded"
-        host.dataset.internalStatus = "loaded"
+        preview.dataset.pdfStatus = 'loaded'
+        host.dataset.internalStatus = 'loaded'
       } catch (pdfError) {
-        console.error("PDF load error:", pdfError)
-        const filename = urlWithoutHash.pathname.split("/").pop() || "document.pdf"
+        console.error('PDF load error:', pdfError)
+        const filename = urlWithoutHash.pathname.split('/').pop() || 'document.pdf'
         renderPdfError(preview, urlWithoutHash.toString(), filename)
-        preview.dataset.pdfStatus = "error"
-        host.dataset.internalStatus = "error"
+        preview.dataset.pdfStatus = 'error'
+        host.dataset.internalStatus = 'error'
       }
       return
     }
@@ -320,29 +320,29 @@ async function hydrateInternalHost(host: HTMLElement) {
       throw new Error(`status ${response.status}`)
     }
 
-    const headerContentType = response.headers.get("Content-Type")
-    const contentType = headerContentType?.split(";")[0]
-    if (!contentType || !contentType.startsWith("text/html")) {
-      throw new Error("non-html")
+    const headerContentType = response.headers.get('Content-Type')
+    const contentType = headerContentType?.split(';')[0]
+    if (!contentType || !contentType.startsWith('text/html')) {
+      throw new Error('non-html')
     }
 
     const contents = await response.text()
-    const html = p.parseFromString(contents, "text/html")
+    const html = p.parseFromString(contents, 'text/html')
     normalizeRelativeURLs(html, targetUrl)
-    html.querySelectorAll("[id]").forEach((el) => {
+    html.querySelectorAll('[id]').forEach(el => {
       if (el.id && el.id.length > 0) {
         el.id = `arena-modal-${el.id}`
       }
     })
 
     const hints = [
-      ...(html.getElementsByClassName("popover-hint") as HTMLCollectionOf<HTMLElement>),
+      ...(html.getElementsByClassName('popover-hint') as HTMLCollectionOf<HTMLElement>),
     ]
-    preview.innerHTML = ""
+    preview.innerHTML = ''
 
     if (hints.length === 0) {
       renderInternalPreviewError(preview)
-      host.dataset.internalStatus = "error"
+      host.dataset.internalStatus = 'error'
       return
     }
 
@@ -352,32 +352,32 @@ async function hydrateInternalHost(host: HTMLElement) {
 
     const hashValue = host.dataset.internalHash
     if (hashValue) {
-      const normalized = hashValue.startsWith("#") ? hashValue.slice(1) : hashValue
+      const normalized = hashValue.startsWith('#') ? hashValue.slice(1) : hashValue
       const targetId = `arena-modal-${normalized}`
-      const anchorCandidates = preview.querySelectorAll<HTMLElement>("[id]")
-      const anchor = Array.from(anchorCandidates).find((el) => el.id === targetId) ?? null
+      const anchorCandidates = preview.querySelectorAll<HTMLElement>('[id]')
+      const anchor = Array.from(anchorCandidates).find(el => el.id === targetId) ?? null
       if (anchor) {
-        anchor.scrollIntoView({ behavior: "smooth" })
+        anchor.scrollIntoView({ behavior: 'smooth' })
       }
     }
 
-    host.dataset.internalStatus = "loaded"
+    host.dataset.internalStatus = 'loaded'
   } catch (error) {
     console.error(error)
     renderInternalPreviewError(preview)
-    host.dataset.internalStatus = "error"
+    host.dataset.internalStatus = 'error'
   }
 }
 
 function hydrateInternalHosts(root: HTMLElement) {
-  const hosts = root.querySelectorAll<HTMLElement>(".arena-modal-internal-host[data-internal-href]")
-  hosts.forEach((host) => {
+  const hosts = root.querySelectorAll<HTMLElement>('.arena-modal-internal-host[data-internal-href]')
+  hosts.forEach(host => {
     void hydrateInternalHost(host)
   })
 }
 
 // PDF.js integration
-const PDFJS_CDN = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/5.4.54"
+const PDFJS_CDN = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/5.4.54'
 const pdfInstances = new WeakMap<HTMLElement, any>()
 let pdfjsReady: Promise<any | null> | null = null
 
@@ -385,14 +385,14 @@ async function loadPdfJs(): Promise<any | null> {
   if (window.pdfjsLib) return window.pdfjsLib
 
   if (!pdfjsReady) {
-    pdfjsReady = new Promise((resolve) => {
-      const script = document.createElement("script")
+    pdfjsReady = new Promise(resolve => {
+      const script = document.createElement('script')
       script.src = `${PDFJS_CDN}/pdf.min.mjs`
-      script.type = "module"
+      script.type = 'module'
       script.async = true
       document.head.appendChild(script)
-      script.addEventListener("load", () => resolve(window.pdfjsLib ?? null), { once: true })
-      script.addEventListener("error", () => resolve(null), { once: true })
+      script.addEventListener('load', () => resolve(window.pdfjsLib ?? null), { once: true })
+      script.addEventListener('error', () => resolve(null), { once: true })
     })
   }
 
@@ -400,25 +400,25 @@ async function loadPdfJs(): Promise<any | null> {
 }
 
 function renderPdfLoading(container: HTMLElement) {
-  container.innerHTML = ""
-  const spinner = document.createElement("span")
-  spinner.className = "arena-loading-spinner"
-  spinner.setAttribute("role", "status")
-  spinner.setAttribute("aria-label", "Loading PDF")
+  container.innerHTML = ''
+  const spinner = document.createElement('span')
+  spinner.className = 'arena-loading-spinner'
+  spinner.setAttribute('role', 'status')
+  spinner.setAttribute('aria-label', 'Loading PDF')
   container.appendChild(spinner)
 }
 
 function renderPdfError(container: HTMLElement, pdfUrl: string, filename: string) {
-  container.innerHTML = ""
-  const errorDiv = document.createElement("div")
-  errorDiv.className = "arena-pdf-error"
-  const message = document.createElement("p")
-  message.textContent = "unable to display PDF in browser"
-  const link = document.createElement("a")
+  container.innerHTML = ''
+  const errorDiv = document.createElement('div')
+  errorDiv.className = 'arena-pdf-error'
+  const message = document.createElement('p')
+  message.textContent = 'unable to display PDF in browser'
+  const link = document.createElement('a')
   link.href = pdfUrl
   link.download = filename
-  link.className = "arena-pdf-download-link"
-  link.textContent = "download PDF →"
+  link.className = 'arena-pdf-download-link'
+  link.textContent = 'download PDF →'
   errorDiv.appendChild(message)
   errorDiv.appendChild(link)
   container.appendChild(errorDiv)
@@ -431,16 +431,16 @@ async function createPdfViewer(container: HTMLElement, pdfUrl: string): Promise<
   let scale = 3.0
   let rendering = false
 
-  let controls = container.querySelector(".arena-pdf-controls") as HTMLElement
-  let canvas = container.querySelector(".arena-pdf-canvas") as HTMLCanvasElement
-  const spinner = container.querySelector(".arena-loading-spinner") as HTMLElement
+  let controls = container.querySelector('.arena-pdf-controls') as HTMLElement
+  let canvas = container.querySelector('.arena-pdf-canvas') as HTMLCanvasElement
+  const spinner = container.querySelector('.arena-loading-spinner') as HTMLElement
 
   if (!controls || !canvas) {
-    canvas = document.createElement("canvas")
-    canvas.className = "arena-pdf-canvas"
+    canvas = document.createElement('canvas')
+    canvas.className = 'arena-pdf-canvas'
 
-    controls = document.createElement("div")
-    controls.className = "arena-pdf-controls"
+    controls = document.createElement('div')
+    controls.className = 'arena-pdf-controls'
     controls.innerHTML = `
       <div class="arena-pdf-controls-group">
         <button type="button" class="arena-pdf-btn arena-pdf-prev" disabled>
@@ -477,22 +477,22 @@ async function createPdfViewer(container: HTMLElement, pdfUrl: string): Promise<
       </div>
     `
 
-    const canvasWrapper = document.createElement("div")
-    canvasWrapper.className = "arena-pdf-canvas-wrapper"
+    const canvasWrapper = document.createElement('div')
+    canvasWrapper.className = 'arena-pdf-canvas-wrapper'
     canvasWrapper.appendChild(canvas)
 
-    container.innerHTML = ""
+    container.innerHTML = ''
     container.appendChild(controls)
     container.appendChild(canvasWrapper)
   }
 
-  const ctx = canvas.getContext("2d")
+  const ctx = canvas.getContext('2d')
 
   function renderPageAtIndex(pageNum: number) {
     if (rendering || !pdfDoc) return
 
     rendering = true
-    const pageInput = controls.querySelector(".arena-pdf-page-input") as HTMLInputElement
+    const pageInput = controls.querySelector('.arena-pdf-page-input') as HTMLInputElement
 
     pdfDoc
       .getPage(pageNum)
@@ -512,15 +512,15 @@ async function createPdfViewer(container: HTMLElement, pdfUrl: string): Promise<
         updateControls()
       })
       .catch((err: Error) => {
-        console.error("PDF render error:", err)
+        console.error('PDF render error:', err)
         rendering = false
       })
   }
 
   function updateControls() {
-    const prevBtn = controls.querySelector(".arena-pdf-prev") as HTMLButtonElement
-    const nextBtn = controls.querySelector(".arena-pdf-next") as HTMLButtonElement
-    const zoomLevel = controls.querySelector(".arena-pdf-zoom-level") as HTMLSpanElement
+    const prevBtn = controls.querySelector('.arena-pdf-prev') as HTMLButtonElement
+    const nextBtn = controls.querySelector('.arena-pdf-next') as HTMLButtonElement
+    const zoomLevel = controls.querySelector('.arena-pdf-zoom-level') as HTMLSpanElement
 
     if (prevBtn) prevBtn.disabled = currentPage <= 1
     if (nextBtn) nextBtn.disabled = currentPage >= totalPages
@@ -528,16 +528,16 @@ async function createPdfViewer(container: HTMLElement, pdfUrl: string): Promise<
   }
 
   // Event handlers
-  controls.querySelector(".arena-pdf-prev")?.addEventListener("click", () => {
+  controls.querySelector('.arena-pdf-prev')?.addEventListener('click', () => {
     if (currentPage > 1) renderPageAtIndex(currentPage - 1)
   })
 
-  controls.querySelector(".arena-pdf-next")?.addEventListener("click", () => {
+  controls.querySelector('.arena-pdf-next')?.addEventListener('click', () => {
     if (currentPage < totalPages) renderPageAtIndex(currentPage + 1)
   })
 
-  const pageInput = controls.querySelector(".arena-pdf-page-input") as HTMLInputElement
-  pageInput?.addEventListener("change", (e) => {
+  const pageInput = controls.querySelector('.arena-pdf-page-input') as HTMLInputElement
+  pageInput?.addEventListener('change', e => {
     const target = e.target as HTMLInputElement
     const page = Number.parseInt(target.value, 10)
     if (page >= 1 && page <= totalPages) {
@@ -547,30 +547,30 @@ async function createPdfViewer(container: HTMLElement, pdfUrl: string): Promise<
     }
   })
 
-  controls.querySelector(".arena-pdf-zoom-in")?.addEventListener("click", () => {
+  controls.querySelector('.arena-pdf-zoom-in')?.addEventListener('click', () => {
     scale = Math.min(scale + 0.25, 3.0)
     renderPageAtIndex(currentPage)
   })
 
-  controls.querySelector(".arena-pdf-zoom-out")?.addEventListener("click", () => {
+  controls.querySelector('.arena-pdf-zoom-out')?.addEventListener('click', () => {
     scale = Math.max(scale - 0.25, 0.5)
     renderPageAtIndex(currentPage)
   })
 
-  controls.querySelector(".arena-pdf-download")?.addEventListener("click", () => {
-    const a = document.createElement("a")
+  controls.querySelector('.arena-pdf-download')?.addEventListener('click', () => {
+    const a = document.createElement('a')
     a.href = pdfUrl
-    a.download = container.dataset.pdfFilename || "document.pdf"
+    a.download = container.dataset.pdfFilename || 'document.pdf'
     a.click()
   })
 
   // Use CORS proxy for external PDFs, direct blob URLs for internal PDFs
-  const isBlobUrl = pdfUrl.startsWith("blob:")
+  const isBlobUrl = pdfUrl.startsWith('blob:')
   const loadUrl = isBlobUrl ? pdfUrl : `/api/pdf-proxy?url=${encodeURIComponent(pdfUrl)}`
 
   const pdfjsLib = await loadPdfJs()
   if (!pdfjsLib) {
-    throw new Error("pdf.js failed to load")
+    throw new Error('pdf.js failed to load')
   }
   pdfjsLib.GlobalWorkerOptions.workerSrc = `${PDFJS_CDN}/pdf.worker.min.mjs`
 
@@ -578,13 +578,13 @@ async function createPdfViewer(container: HTMLElement, pdfUrl: string): Promise<
     pdfDoc = pdf
     pdfInstances.set(container, pdfDoc)
     totalPages = pdf.numPages
-    const totalSpan = controls.querySelector(".arena-pdf-total")
+    const totalSpan = controls.querySelector('.arena-pdf-total')
     if (totalSpan) totalSpan.textContent = String(totalPages)
-    pageInput?.setAttribute("max", String(totalPages))
+    pageInput?.setAttribute('max', String(totalPages))
 
     // Show controls and hide spinner
-    controls.style.display = ""
-    if (spinner) spinner.style.display = "none"
+    controls.style.display = ''
+    if (spinner) spinner.style.display = 'none'
 
     renderPageAtIndex(1)
   })
@@ -592,34 +592,34 @@ async function createPdfViewer(container: HTMLElement, pdfUrl: string): Promise<
 
 function hydratePdfEmbeds(root: HTMLElement) {
   const nodes = root.querySelectorAll<HTMLElement>(
-    ".arena-modal-embed-pdf[data-pdf-url]:not([data-pdf-status])",
+    '.arena-modal-embed-pdf[data-pdf-url]:not([data-pdf-status])',
   )
 
-  nodes.forEach((node) => {
+  nodes.forEach(node => {
     const pdfUrl = node.dataset.pdfUrl
     if (!pdfUrl) return
 
-    node.dataset.pdfStatus = "loading"
+    node.dataset.pdfStatus = 'loading'
     renderPdfLoading(node)
 
-    const filename = node.dataset.pdfFilename || "document.pdf"
+    const filename = node.dataset.pdfFilename || 'document.pdf'
 
     createPdfViewer(node, pdfUrl)
       .then(() => {
         if (!node.isConnected) return
-        node.dataset.pdfStatus = "loaded"
+        node.dataset.pdfStatus = 'loaded'
       })
-      .catch((err) => {
-        console.error("PDF load error:", err)
+      .catch(err => {
+        console.error('PDF load error:', err)
         if (!node.isConnected) return
         renderPdfError(node, pdfUrl, filename)
-        node.dataset.pdfStatus = "error"
+        node.dataset.pdfStatus = 'error'
       })
   })
 }
 
 function cleanupPdfs(root: HTMLElement) {
-  root.querySelectorAll<HTMLElement>(".arena-modal-embed-pdf[data-pdf-status]").forEach((node) => {
+  root.querySelectorAll<HTMLElement>('.arena-modal-embed-pdf[data-pdf-status]').forEach(node => {
     const instance = pdfInstances.get(node)
     if (instance?.destroy) {
       try {
@@ -637,18 +637,18 @@ function cleanupPdfs(root: HTMLElement) {
       delete node.dataset.pdfBlobUrl
     }
 
-    node.dataset.pdfStatus = ""
+    node.dataset.pdfStatus = ''
   })
 }
 
 // Dynamically create modal data from search index JSON
 function createModalDataFromJson(block: ArenaBlockSearchable, channelSlug: string): HTMLElement {
-  const container = document.createElement("div")
-  container.className = "arena-block-modal-data"
+  const container = document.createElement('div')
+  container.className = 'arena-block-modal-data'
   container.id = `arena-modal-data-${block.id}`
   container.dataset.blockId = block.id
   container.dataset.channelSlug = channelSlug
-  container.style.display = "none"
+  container.style.display = 'none'
 
   // Build display URL
   const displayUrl =
@@ -659,17 +659,17 @@ function createModalDataFromJson(block: ArenaBlockSearchable, channelSlug: strin
   const metadataHtml: string[] = []
 
   if (block.metadata) {
-    const consumedKeys = new Set(["accessed", "accessed_date", "date", "tags", "tag", "coord"])
+    const consumedKeys = new Set(['accessed', 'accessed_date', 'date', 'tags', 'tag', 'coord'])
     const entries = Object.entries(block.metadata)
       .filter(([key, value]) => {
-        if (typeof value !== "string" || value.trim().length === 0) return false
+        if (typeof value !== 'string' || value.trim().length === 0) return false
         if (consumedKeys.has(key.toLowerCase())) return false
         return true
       })
       .sort(([a], [b]) => a.localeCompare(b))
 
     for (const [key, value] of entries) {
-      const label = key.replace(/_/g, " ")
+      const label = key.replace(/_/g, ' ')
       metadataHtml.push(`
         <div class="arena-meta-item">
           <span class="arena-meta-label">${label}</span>
@@ -680,8 +680,8 @@ function createModalDataFromJson(block: ArenaBlockSearchable, channelSlug: strin
   }
 
   if (block.tags && block.tags.length > 0) {
-    const tagsLabel = block.tags.length === 1 ? "tag" : "tags"
-    const tagsList = block.tags.map((tag) => `<span class="tag-link">${tag}</span>`).join("")
+    const tagsLabel = block.tags.length === 1 ? 'tag' : 'tags'
+    const tagsList = block.tags.map(tag => `<span class="tag-link">${tag}</span>`).join('')
     metadataHtml.push(`
       <div class="arena-meta-item">
         <span class="arena-meta-label">${tagsLabel}</span>
@@ -704,30 +704,30 @@ function createModalDataFromJson(block: ArenaBlockSearchable, channelSlug: strin
       <ul class="arena-modal-connections-list">
         ${block
           .subItems!.map(
-            (subItem) => `
+            subItem => `
           <li>${subItem.blockHtml || subItem.titleHtml || subItem.title || subItem.content}</li>
         `,
           )
-          .join("")}
+          .join('')}
       </ul>
     </div>
   `
-    : ""
+    : ''
 
-  const mapTitle = block.title || block.content || block.url || ""
+  const mapTitle = block.title || block.content || block.url || ''
   const mapHtml = block.coordinates
     ? `
         <div class="arena-modal-map-wrapper">
           <div
             class="arena-modal-map"
             data-map-lon="${String(block.coordinates.lon)}"
-            data-map-lat="${String(block.coordinates.lat)}"${mapTitle.trim().length > 0 ? ` data-map-title="${escapeHtml(mapTitle)}"` : ""}
+            data-map-lat="${String(block.coordinates.lat)}"${mapTitle.trim().length > 0 ? ` data-map-title="${escapeHtml(mapTitle)}"` : ''}
           ></div>
         </div>
       `
-    : ""
+    : ''
 
-  let mainContentHtml = ""
+  let mainContentHtml = ''
   if (block.embedHtml) {
     mainContentHtml = block.embedHtml
   } else if (block.url && SUBSTACK_POST_REGEX.test(block.url)) {
@@ -748,7 +748,7 @@ function createModalDataFromJson(block: ArenaBlockSearchable, channelSlug: strin
       </div>
     `
   } else if (block.url) {
-    const frameTitle = block.title ?? block.content ?? "Block"
+    const frameTitle = block.title ?? block.content ?? 'Block'
     mainContentHtml = `
       <iframe
         class="arena-modal-iframe"
@@ -765,8 +765,8 @@ function createModalDataFromJson(block: ArenaBlockSearchable, channelSlug: strin
         class="arena-modal-internal-host"
         data-block-id="${block.id}"
         data-internal-slug="${block.internalSlug}"
-        data-internal-href="${block.internalHref || ""}"
-        data-internal-hash="${block.internalHash || ""}"
+        data-internal-href="${block.internalHref || ''}"
+        data-internal-hash="${block.internalHash || ''}"
       >
         <div class="arena-modal-internal-preview grid"></div>
       </div>
@@ -811,7 +811,7 @@ function createModalDataFromJson(block: ArenaBlockSearchable, channelSlug: strin
             }
           </div>
         `
-            : ""
+            : ''
         }
         ${mapHtml}
         <div class="arena-modal-main-content">
@@ -821,16 +821,16 @@ function createModalDataFromJson(block: ArenaBlockSearchable, channelSlug: strin
       <div class="arena-modal-sidebar">
         <div class="arena-modal-info">
           <h3 class="arena-modal-title">
-            ${block.titleHtml || block.title || ""}
+            ${block.titleHtml || block.title || ''}
           </h3>
           ${
             metadataHtml.length > 0
               ? `
             <div class="arena-modal-meta">
-              ${metadataHtml.join("")}
+              ${metadataHtml.join('')}
             </div>
           `
-              : ""
+              : ''
           }
         </div>
         ${subItemsHtml}
@@ -842,8 +842,8 @@ function createModalDataFromJson(block: ArenaBlockSearchable, channelSlug: strin
 }
 
 export async function showModal(blockId: string) {
-  const modal = document.getElementById("arena-modal")
-  const modalBody = modal?.querySelector(".arena-modal-body") as HTMLElement | null
+  const modal = document.getElementById('arena-modal')
+  const modalBody = modal?.querySelector('.arena-modal-body') as HTMLElement | null
   if (!modal || !modalBody) return
 
   const dataEl = document.getElementById(`arena-modal-data-${blockId}`)
@@ -854,19 +854,19 @@ export async function showModal(blockId: string) {
 
   const blockEl = document.querySelector(`[data-block-id="${blockId}"]`)
   if (blockEl) {
-    currentBlockIndex = parseInt(blockEl.getAttribute("data-block-index") || "0")
+    currentBlockIndex = parseInt(blockEl.getAttribute('data-block-index') || '0')
   } else {
     // On index page or dynamic modal - disable navigation by setting out of bounds
     currentBlockIndex = 0
   }
 
   cleanupMaps(modalBody)
-  modalBody.innerHTML = ""
+  modalBody.innerHTML = ''
   const clonedContent = dataEl.cloneNode(true) as HTMLElement
-  clonedContent.style.display = "block"
+  clonedContent.style.display = 'block'
   modalBody.appendChild(clonedContent)
 
-  if (window.twttr && typeof window.twttr.ready === "function") {
+  if (window.twttr && typeof window.twttr.ready === 'function') {
     window.twttr.ready((readyTwttr: any) => {
       if (readyTwttr?.widgets?.load) {
         readyTwttr.widgets.load(modalBody)
@@ -883,47 +883,47 @@ export async function showModal(blockId: string) {
   hydrateMapboxMaps(modalBody)
   hydratePdfEmbeds(modalBody)
 
-  const sidebar = modalBody.querySelector(".arena-modal-sidebar") as HTMLElement | null
-  const hasConnections = modalBody.querySelector(".arena-modal-connections") !== null
-  const collapseBtn = modal?.querySelector(".arena-modal-collapse") as HTMLElement | null
+  const sidebar = modalBody.querySelector('.arena-modal-sidebar') as HTMLElement | null
+  const hasConnections = modalBody.querySelector('.arena-modal-connections') !== null
+  const collapseBtn = modal?.querySelector('.arena-modal-collapse') as HTMLElement | null
 
   if (sidebar) {
     let shouldCollapse = !hasConnections
 
     // Check for sidebar metadata
     if (arenaSearchData) {
-      const blockData = arenaSearchData.blocks.find((b) => b.id === blockId)
+      const blockData = arenaSearchData.blocks.find(b => b.id === blockId)
       if (blockData?.metadata?.sidebar) {
         const sidebarValue = blockData.metadata.sidebar.toLowerCase().trim()
-        if (sidebarValue === "false" || sidebarValue === "0") {
+        if (sidebarValue === 'false' || sidebarValue === '0') {
           shouldCollapse = true
         }
       }
     }
 
     if (shouldCollapse) {
-      sidebar.classList.add("collapsed")
-      collapseBtn?.classList.add("active")
+      sidebar.classList.add('collapsed')
+      collapseBtn?.classList.add('active')
     } else {
-      sidebar.classList.remove("collapsed")
-      collapseBtn?.classList.remove("active")
+      sidebar.classList.remove('collapsed')
+      collapseBtn?.classList.remove('active')
     }
   }
 
   updateNavButtons()
-  modal.classList.add("active")
+  modal.classList.add('active')
   lockPageScroll()
 }
 
 export function closeModal() {
-  const modal = document.getElementById("arena-modal")
+  const modal = document.getElementById('arena-modal')
   if (modal) {
-    const modalBody = modal.querySelector(".arena-modal-body") as HTMLElement | null
+    const modalBody = modal.querySelector('.arena-modal-body') as HTMLElement | null
     if (modalBody) {
       cleanupMaps(modalBody)
       cleanupPdfs(modalBody)
     }
-    modal.classList.remove("active")
+    modal.classList.remove('active')
     unlockPageScroll()
   }
 }
@@ -932,45 +932,45 @@ export async function navigateBlock(direction: number) {
   const newIndex = currentBlockIndex + direction
   if (newIndex < 0 || newIndex >= totalBlocks) return
 
-  const blocks = Array.from(document.querySelectorAll(".arena-block[data-block-id]"))
+  const blocks = Array.from(document.querySelectorAll('.arena-block[data-block-id]'))
   const targetBlock = blocks[newIndex] as HTMLElement
   if (!targetBlock) return
 
-  const blockId = targetBlock.getAttribute("data-block-id")
+  const blockId = targetBlock.getAttribute('data-block-id')
   if (blockId) {
     await showModal(blockId)
   }
 }
 
 function updateNavButtons() {
-  const prevBtn = document.querySelector(".arena-modal-prev") as HTMLButtonElement
-  const nextBtn = document.querySelector(".arena-modal-next") as HTMLButtonElement
+  const prevBtn = document.querySelector('.arena-modal-prev') as HTMLButtonElement
+  const nextBtn = document.querySelector('.arena-modal-next') as HTMLButtonElement
 
   if (prevBtn) {
     prevBtn.disabled = currentBlockIndex === 0
-    prevBtn.style.opacity = currentBlockIndex === 0 ? "0.3" : "1"
+    prevBtn.style.opacity = currentBlockIndex === 0 ? '0.3' : '1'
   }
 
   if (nextBtn) {
     nextBtn.disabled = currentBlockIndex >= totalBlocks - 1
-    nextBtn.style.opacity = currentBlockIndex >= totalBlocks - 1 ? "0.3" : "1"
+    nextBtn.style.opacity = currentBlockIndex >= totalBlocks - 1 ? '0.3' : '1'
   }
 }
 
 export function handleCopyButton(button: HTMLElement) {
-  const targetUrl = button.getAttribute("data-url")
+  const targetUrl = button.getAttribute('data-url')
   if (!targetUrl) {
     return
   }
 
   navigator.clipboard.writeText(targetUrl).then(
     () => {
-      button.classList.add("check")
+      button.classList.add('check')
       setTimeout(() => {
-        button.classList.remove("check")
+        button.classList.remove('check')
       }, 2000)
     },
-    (error) => console.error(error),
+    error => console.error(error),
   )
 }
 
@@ -1036,7 +1036,7 @@ async function fetchArenaSearchIndex(): Promise<ArenaSearchIndex | null> {
   if (arenaSearchData) return arenaSearchData
 
   try {
-    const response = await fetch("/static/arena-search.json")
+    const response = await fetch('/static/arena-search.json')
     if (!response.ok) {
       console.warn(`Failed to fetch arena search index: ${response.status}`)
       return null
@@ -1044,7 +1044,7 @@ async function fetchArenaSearchIndex(): Promise<ArenaSearchIndex | null> {
     arenaSearchData = (await response.json()) as ArenaSearchIndex
     return arenaSearchData
   } catch (error) {
-    console.error("Error fetching arena search index:", error)
+    console.error('Error fetching arena search index:', error)
     return null
   }
 }
@@ -1052,17 +1052,17 @@ async function fetchArenaSearchIndex(): Promise<ArenaSearchIndex | null> {
 export async function buildSearchIndex(scope: SearchScope): Promise<SearchIndexItem[]> {
   const index: SearchIndexItem[] = []
 
-  if (scope === "channel") {
+  if (scope === 'channel') {
     // For channel pages, fetch JSON and filter by current channel
     const data = await fetchArenaSearchIndex()
     if (!data) return index
 
-    const currentSlug = document.body?.dataset.slug || ""
-    const channelSlug = currentSlug.replace(/^arena\//, "")
+    const currentSlug = document.body?.dataset.slug || ''
+    const channelSlug = currentSlug.replace(/^arena\//, '')
 
     data.blocks
-      .filter((block) => block.channelSlug === channelSlug)
-      .forEach((block) => {
+      .filter(block => block.channelSlug === channelSlug)
+      .forEach(block => {
         index.push({
           blockId: block.id,
           channelSlug: block.channelSlug,
@@ -1079,7 +1079,7 @@ export async function buildSearchIndex(scope: SearchScope): Promise<SearchIndexI
     const data = await fetchArenaSearchIndex()
     if (!data) return index
 
-    data.blocks.forEach((block) => {
+    data.blocks.forEach(block => {
       index.push({
         blockId: block.id,
         channelSlug: block.channelSlug,
@@ -1105,17 +1105,17 @@ function parseSearchQuery(query: string): { tagQueries: string[]; regularTerms: 
   let match
 
   while ((match = tagPatternRegex.exec(query)) !== null) {
-    const tagText = (match[1] || match[2] || "").trim()
+    const tagText = (match[1] || match[2] || '').trim()
     if (tagText.length > 0) {
       tagQueries.push(tagText)
-      remainingQuery = remainingQuery.replace(match[0], " ")
+      remainingQuery = remainingQuery.replace(match[0], ' ')
     }
   }
 
   const regularTerms = remainingQuery
     .trim()
     .split(/\s+/)
-    .filter((term) => term.length > 0)
+    .filter(term => term.length > 0)
 
   return { tagQueries, regularTerms }
 }
@@ -1125,10 +1125,10 @@ export function performSearch(query: string, index: SearchIndexItem[]): SearchIn
   if (lowerQuery.length < 2) return []
 
   const { tagQueries, regularTerms } = parseSearchQuery(lowerQuery)
-  const tokens = tokenizeTerm(regularTerms.join(" "))
+  const tokens = tokenizeTerm(regularTerms.join(' '))
 
   const scoredResults = index
-    .map((item) => {
+    .map(item => {
       const lowerTitle = item.title.toLowerCase()
       const lowerContent = item.content.toLowerCase()
       const itemTags = item.tags || []
@@ -1198,7 +1198,7 @@ export function performSearch(query: string, index: SearchIndexItem[]): SearchIn
 
       // Boost for exact phrase match in title/content
       if (regularTerms.length > 0) {
-        const regularQuery = regularTerms.join(" ").toLowerCase()
+        const regularQuery = regularTerms.join(' ').toLowerCase()
         if (lowerTitle.includes(regularQuery)) {
           score += 20
         }
@@ -1237,51 +1237,51 @@ export function performSearch(query: string, index: SearchIndexItem[]): SearchIn
       return b.contentMatchCount - a.contentMatchCount
     })
 
-  return scoredResults.map((result) => result.item)
+  return scoredResults.map(result => result.item)
 }
 
 export function renderSearchResults(
   results: SearchIndexItem[],
   scope: SearchScope,
-  searchQuery: string = "",
+  searchQuery: string = '',
 ) {
-  const container = document.getElementById("arena-search-container")
+  const container = document.getElementById('arena-search-container')
   if (!container) return
 
   if (results.length === 0) {
     container.innerHTML = '<div class="arena-search-no-results">no results found</div>'
-    container.classList.add("active")
+    container.classList.add('active')
     return
   }
 
   const fragment = document.createDocumentFragment()
   results.forEach((result, idx) => {
-    const resultItem = document.createElement("div")
-    resultItem.className = "arena-search-result-item"
-    resultItem.setAttribute("data-block-id", result.blockId)
+    const resultItem = document.createElement('div')
+    resultItem.className = 'arena-search-result-item'
+    resultItem.setAttribute('data-block-id', result.blockId)
     if (result.channelSlug) {
-      resultItem.setAttribute("data-channel-slug", result.channelSlug)
+      resultItem.setAttribute('data-channel-slug', result.channelSlug)
     }
     resultItem.dataset.index = String(idx)
     resultItem.tabIndex = -1
-    resultItem.setAttribute("role", "option")
+    resultItem.setAttribute('role', 'option')
     if (!resultItem.id) {
       const uniqueId = `arena-search-${result.blockId}`
       resultItem.id = uniqueId
     }
 
-    const title = document.createElement("div")
-    title.className = "arena-search-result-title"
+    const title = document.createElement('div')
+    title.className = 'arena-search-result-title'
     title.innerHTML = searchQuery ? highlight(searchQuery, result.title) : result.title
     resultItem.appendChild(title)
 
     if (result.matchedTags && result.matchedTags.length > 0) {
-      const tagsContainer = document.createElement("ul")
-      tagsContainer.className = "arena-search-result-tags"
+      const tagsContainer = document.createElement('ul')
+      tagsContainer.className = 'arena-search-result-tags'
 
-      result.matchedTags.forEach((tag) => {
-        const tagBadge = document.createElement("li")
-        tagBadge.className = "arena-search-result-tag-badge"
+      result.matchedTags.forEach(tag => {
+        const tagBadge = document.createElement('li')
+        tagBadge.className = 'arena-search-result-tag-badge'
         tagBadge.innerHTML = searchQuery ? highlight(searchQuery, tag) : tag
         tagsContainer.appendChild(tagBadge)
       })
@@ -1289,9 +1289,9 @@ export function renderSearchResults(
       resultItem.appendChild(tagsContainer)
     }
 
-    if (scope === "index" && result.channelName) {
-      const badge = document.createElement("span")
-      badge.className = "arena-search-result-channel-badge"
+    if (scope === 'index' && result.channelName) {
+      const badge = document.createElement('span')
+      badge.className = 'arena-search-result-channel-badge'
       badge.textContent = result.channelName
       resultItem.appendChild(badge)
     }
@@ -1299,22 +1299,22 @@ export function renderSearchResults(
     fragment.appendChild(resultItem)
   })
 
-  container.innerHTML = ""
+  container.innerHTML = ''
   container.appendChild(fragment)
-  container.classList.add("active")
+  container.classList.add('active')
 }
 
 const getSearchResults = () =>
   Array.from(
-    document.querySelectorAll<HTMLElement>("#arena-search-container .arena-search-result-item"),
+    document.querySelectorAll<HTMLElement>('#arena-search-container .arena-search-result-item'),
   )
 
 export const resetActiveResultHighlight = () => {
   activeResultIndex = null
   if (searchInput) {
-    searchInput.removeAttribute("aria-activedescendant")
+    searchInput.removeAttribute('aria-activedescendant')
   }
-  getSearchResults().forEach((result) => result.classList.remove("active"))
+  getSearchResults().forEach(result => result.classList.remove('active'))
 }
 
 export const setActiveResult = (index: number | null, options?: SearchResultOptions) => {
@@ -1337,17 +1337,17 @@ export const setActiveResult = (index: number | null, options?: SearchResultOpti
 
   const clamped = Math.max(0, Math.min(index, results.length - 1))
   results.forEach((result, idx) => {
-    result.classList.toggle("active", idx === clamped)
+    result.classList.toggle('active', idx === clamped)
   })
 
   const target = results[clamped]
   activeResultIndex = clamped
   if (!target.id) {
-    const fallbackId = target.getAttribute("data-block-id") || `arena-result-${clamped}`
+    const fallbackId = target.getAttribute('data-block-id') || `arena-result-${clamped}`
     target.id = `arena-search-${fallbackId}`
   }
   if (searchInput) {
-    searchInput.setAttribute("aria-activedescendant", target.id)
+    searchInput.setAttribute('aria-activedescendant', target.id)
   }
 
   if (options?.focus !== false) {
@@ -1355,34 +1355,34 @@ export const setActiveResult = (index: number | null, options?: SearchResultOpti
   }
 
   if (options?.scroll !== false) {
-    target.scrollIntoView({ block: "nearest" })
+    target.scrollIntoView({ block: 'nearest' })
   }
 }
 
 export const wireSearchResultsInteractions = () => {
   const items = getSearchResults()
-  items.forEach((item) => {
-    const idx = Number.parseInt(item.dataset.index ?? "", 10)
+  items.forEach(item => {
+    const idx = Number.parseInt(item.dataset.index ?? '', 10)
     if (!Number.isInteger(idx)) return
 
     const onFocus = () => setActiveResult(idx, { focus: false, scroll: false })
     const onMouseEnter = () => setActiveResult(idx, { focus: false, scroll: false })
 
-    item.addEventListener("focus", onFocus)
-    item.addEventListener("mouseenter", onMouseEnter)
+    item.addEventListener('focus', onFocus)
+    item.addEventListener('mouseenter', onMouseEnter)
 
     addCleanup(() => {
-      item.removeEventListener("focus", onFocus)
-      item.removeEventListener("mouseenter", onMouseEnter)
+      item.removeEventListener('focus', onFocus)
+      item.removeEventListener('mouseenter', onMouseEnter)
     })
   })
 }
 
 export const focusSearchInput = (prefill?: string) => {
   if (!searchInput) return
-  if (typeof prefill === "string") {
+  if (typeof prefill === 'string') {
     searchInput.value = prefill
-    searchInput.dispatchEvent(new Event("input", { bubbles: true }))
+    searchInput.dispatchEvent(new Event('input', { bubbles: true }))
   }
   resetActiveResultHighlight()
   const valueLength = searchInput.value.length
@@ -1398,21 +1398,21 @@ export const focusSearchInput = (prefill?: string) => {
 
 export const clearSearchState = (options?: { blur?: boolean }) => {
   if (searchInput) {
-    searchInput.value = ""
+    searchInput.value = ''
     if (options?.blur !== false) {
       searchInput.blur()
     }
-    searchInput.removeAttribute("aria-activedescendant")
+    searchInput.removeAttribute('aria-activedescendant')
   }
   resetActiveResultHighlight()
   closeSearchDropdown()
 }
 
 export function closeSearchDropdown() {
-  const container = document.getElementById("arena-search-container")
+  const container = document.getElementById('arena-search-container')
   if (container) {
-    container.classList.remove("active")
-    container.innerHTML = ""
+    container.classList.remove('active')
+    container.innerHTML = ''
   }
 }
 
@@ -1424,50 +1424,50 @@ export const mountArena = (dispatch: (event: ArenaEvent) => void) => {
   }
   registerCleanup = register
 
-  totalBlocks = document.querySelectorAll("[data-block-id][data-block-index]").length
+  totalBlocks = document.querySelectorAll('[data-block-id][data-block-index]').length
 
-  const channelPage = document.querySelector<HTMLElement>(".arena-channel-page")
-  const blockCollection = document.getElementById("arena-block-collection") as HTMLElement | null
+  const channelPage = document.querySelector<HTMLElement>('.arena-channel-page')
+  const blockCollection = document.getElementById('arena-block-collection') as HTMLElement | null
   const viewToggleButtons = channelPage
-    ? Array.from(channelPage.querySelectorAll<HTMLButtonElement>(".arena-view-toggle-button"))
+    ? Array.from(channelPage.querySelectorAll<HTMLButtonElement>('.arena-view-toggle-button'))
     : []
 
-  type ArenaViewMode = "grid" | "list"
+  type ArenaViewMode = 'grid' | 'list'
 
   const applyViewMode = (mode: ArenaViewMode) => {
     if (!channelPage || !blockCollection) return
-    const normalized: ArenaViewMode = mode === "list" ? "list" : "grid"
+    const normalized: ArenaViewMode = mode === 'list' ? 'list' : 'grid'
     channelPage.dataset.viewMode = normalized
     blockCollection.dataset.viewMode = normalized
-    viewToggleButtons.forEach((button) => {
-      const targetMode = (button.dataset.viewMode as ArenaViewMode) || "grid"
+    viewToggleButtons.forEach(button => {
+      const targetMode = (button.dataset.viewMode as ArenaViewMode) || 'grid'
       const isActive = targetMode === normalized
-      button.classList.toggle("active", isActive)
-      button.setAttribute("aria-pressed", isActive ? "true" : "false")
+      button.classList.toggle('active', isActive)
+      button.setAttribute('aria-pressed', isActive ? 'true' : 'false')
     })
-    totalBlocks = channelPage.querySelectorAll("[data-block-id][data-block-index]").length
+    totalBlocks = channelPage.querySelectorAll('[data-block-id][data-block-index]').length
   }
 
   if (channelPage && blockCollection && viewToggleButtons.length > 0) {
-    const initialMode = (blockCollection.dataset.viewMode as ArenaViewMode | undefined) ?? "grid"
+    const initialMode = (blockCollection.dataset.viewMode as ArenaViewMode | undefined) ?? 'grid'
     applyViewMode(initialMode)
 
-    viewToggleButtons.forEach((button) => {
-      const desiredMode = (button.dataset.viewMode as ArenaViewMode) || "grid"
+    viewToggleButtons.forEach(button => {
+      const desiredMode = (button.dataset.viewMode as ArenaViewMode) || 'grid'
       const onToggleClick = () => applyViewMode(desiredMode)
-      button.addEventListener("click", onToggleClick)
-      addCleanup(() => button.removeEventListener("click", onToggleClick))
+      button.addEventListener('click', onToggleClick)
+      addCleanup(() => button.removeEventListener('click', onToggleClick))
     })
   }
 
   // Build search index
-  searchInput = document.querySelector<HTMLInputElement>(".arena-search-input")
+  searchInput = document.querySelector<HTMLInputElement>('.arena-search-input')
   activeResultIndex = null
 
   if (searchInput) {
     const input = searchInput
-    const scope = input.getAttribute("data-search-scope") as SearchScope
-    dispatch({ type: "search.index.request", scope })
+    const scope = input.getAttribute('data-search-scope') as SearchScope
+    dispatch({ type: 'search.index.request', scope })
 
     if (searchDebounceTimer) {
       window.clearTimeout(searchDebounceTimer)
@@ -1479,12 +1479,12 @@ export const mountArena = (dispatch: (event: ArenaEvent) => void) => {
 
       window.clearTimeout(searchDebounceTimer)
       searchDebounceTimer = window.setTimeout(() => {
-        dispatch({ type: "ui.search.query", query, scope })
+        dispatch({ type: 'ui.search.query', query, scope })
       }, 300)
     }
 
-    input.addEventListener("input", onSearchInput)
-    addCleanup(() => input.removeEventListener("input", onSearchInput))
+    input.addEventListener('input', onSearchInput)
+    addCleanup(() => input.removeEventListener('input', onSearchInput))
     addCleanup(() => {
       if (searchDebounceTimer) {
         window.clearTimeout(searchDebounceTimer)
@@ -1496,11 +1496,11 @@ export const mountArena = (dispatch: (event: ArenaEvent) => void) => {
   const onClick = async (e: MouseEvent) => {
     const target = e.target as HTMLElement
     const isArenaChannelPage = () => {
-      const slug = document.body?.dataset.slug || ""
-      return slug.startsWith("arena/") && slug !== "arena"
+      const slug = document.body?.dataset.slug || ''
+      return slug.startsWith('arena/') && slug !== 'arena'
     }
 
-    const internalLink = target.closest(".arena-modal-body a.internal") as HTMLAnchorElement | null
+    const internalLink = target.closest('.arena-modal-body a.internal') as HTMLAnchorElement | null
     if (internalLink) {
       if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) {
         return
@@ -1509,9 +1509,9 @@ export const mountArena = (dispatch: (event: ArenaEvent) => void) => {
       e.preventDefault()
 
       // Check if this is a wikilink trail anchor - open in stacked notes
-      const isWikilinkTrail = internalLink.classList.contains("arena-wikilink-trail-anchor")
+      const isWikilinkTrail = internalLink.classList.contains('arena-wikilink-trail-anchor')
 
-      if (isWikilinkTrail && typeof window.stackedNotes !== "undefined") {
+      if (isWikilinkTrail && typeof window.stackedNotes !== 'undefined') {
         // Open in stacked notes view
         try {
           const destination = new URL(internalLink.href)
@@ -1519,16 +1519,16 @@ export const mountArena = (dispatch: (event: ArenaEvent) => void) => {
           // Keep modal open so user can see both arena block and note
           return
         } catch (err) {
-          console.error("Failed to open in stacked notes:", err)
+          console.error('Failed to open in stacked notes:', err)
           // Fall through to regular navigation
         }
       }
 
       // Regular internal link - close modal and navigate
-      dispatch({ type: "ui.modal.close" })
+      dispatch({ type: 'ui.modal.close' })
       try {
         const destination = new URL(internalLink.href)
-        if (typeof window.spaNavigate === "function") {
+        if (typeof window.spaNavigate === 'function') {
           window.spaNavigate(destination)
         } else {
           window.location.assign(destination)
@@ -1540,24 +1540,24 @@ export const mountArena = (dispatch: (event: ArenaEvent) => void) => {
       return
     }
 
-    const copyButton = target.closest("button.arena-url-copy-button") as HTMLElement | null
+    const copyButton = target.closest('button.arena-url-copy-button') as HTMLElement | null
     if (copyButton) {
       e.preventDefault()
       e.stopPropagation()
-      dispatch({ type: "ui.copy", button: copyButton })
+      dispatch({ type: 'ui.copy', button: copyButton })
       return
     }
 
-    const blockClickable = target.closest(".arena-block-clickable")
+    const blockClickable = target.closest('.arena-block-clickable')
     if (blockClickable) {
-      const blockEl = blockClickable.closest(".arena-block")
-      const blockId = blockEl?.getAttribute("data-block-id")
+      const blockEl = blockClickable.closest('.arena-block')
+      const blockId = blockEl?.getAttribute('data-block-id')
       if (blockId) {
         e.preventDefault()
 
         // Check if this is an arxiv block without notes and redirect instead of opening modal
         if (arenaSearchData) {
-          const blockData = arenaSearchData.blocks.find((b) => b.id === blockId)
+          const blockData = arenaSearchData.blocks.find(b => b.id === blockId)
           const isArxivUrl = blockData?.url
             ? /^https?:\/\/(?:ar5iv\.(?:labs\.)?)?arxiv\.org\//i.test(blockData.url)
             : false
@@ -1566,26 +1566,26 @@ export const mountArena = (dispatch: (event: ArenaEvent) => void) => {
             // Only redirect if the block has no notes (description or content)
             const hasNotes = !!blockData.content
             if (!hasNotes) {
-              window.open(blockData.url, "_blank", "noopener,noreferrer")
+              window.open(blockData.url, '_blank', 'noopener,noreferrer')
               return
             }
             // If it has notes, continue to show the modal (without embed)
           }
         }
 
-        dispatch({ type: "ui.modal.open", blockId })
+        dispatch({ type: 'ui.modal.open', blockId })
       }
       return
     }
 
-    const previewItem = target.closest(".arena-channel-row-preview-item[data-block-id]")
+    const previewItem = target.closest('.arena-channel-row-preview-item[data-block-id]')
     if (previewItem) {
-      const blockId = (previewItem as HTMLElement).getAttribute("data-block-id")
+      const blockId = (previewItem as HTMLElement).getAttribute('data-block-id')
 
       if (isArenaChannelPage()) {
         // On channel pages: check if arxiv block without notes and redirect instead of modal
         if (blockId && arenaSearchData) {
-          const blockData = arenaSearchData.blocks.find((b) => b.id === blockId)
+          const blockData = arenaSearchData.blocks.find(b => b.id === blockId)
           const isArxivUrl = blockData?.url
             ? /^https?:\/\/(?:ar5iv\.(?:labs\.)?)?arxiv\.org\//i.test(blockData.url)
             : false
@@ -1595,7 +1595,7 @@ export const mountArena = (dispatch: (event: ArenaEvent) => void) => {
             const hasNotes = !!blockData.content
             if (!hasNotes) {
               e.preventDefault()
-              window.open(blockData.url, "_blank", "noopener,noreferrer")
+              window.open(blockData.url, '_blank', 'noopener,noreferrer')
               return
             }
             // If it has notes, continue to show the modal (without embed)
@@ -1604,13 +1604,13 @@ export const mountArena = (dispatch: (event: ArenaEvent) => void) => {
 
         if (blockId) {
           e.preventDefault()
-          dispatch({ type: "ui.modal.open", blockId })
+          dispatch({ type: 'ui.modal.open', blockId })
         }
       } else {
         // On Arena index page, clicking a preview should navigate to the channel
-        const channelRow = previewItem.closest(".arena-channel-row") as HTMLElement | null
+        const channelRow = previewItem.closest('.arena-channel-row') as HTMLElement | null
         const headerLink = channelRow?.querySelector(
-          ".arena-channel-row-header a[href]",
+          '.arena-channel-row-header a[href]',
         ) as HTMLAnchorElement | null
         if (headerLink) {
           e.preventDefault()
@@ -1621,14 +1621,14 @@ export const mountArena = (dispatch: (event: ArenaEvent) => void) => {
     }
 
     // Click anywhere on a channel row should navigate to the header link
-    const channelRow = target.closest(".arena-channel-row") as HTMLElement | null
+    const channelRow = target.closest('.arena-channel-row') as HTMLElement | null
     if (channelRow) {
       // If the user clicked a real interactive element, let it handle itself
-      if (target.closest("a,button,[role=button],input,textarea,select,summary")) {
+      if (target.closest('a,button,[role=button],input,textarea,select,summary')) {
         return
       }
       const headerLink = channelRow.querySelector(
-        ".arena-channel-row-header a[href]",
+        '.arena-channel-row-header a[href]',
       ) as HTMLAnchorElement | null
       if (headerLink) {
         e.preventDefault()
@@ -1638,31 +1638,31 @@ export const mountArena = (dispatch: (event: ArenaEvent) => void) => {
       return
     }
 
-    if (target.closest(".arena-modal-prev")) {
-      dispatch({ type: "ui.block.navigate", direction: -1 })
+    if (target.closest('.arena-modal-prev')) {
+      dispatch({ type: 'ui.block.navigate', direction: -1 })
       return
     }
 
-    if (target.closest(".arena-modal-next")) {
-      dispatch({ type: "ui.block.navigate", direction: 1 })
+    if (target.closest('.arena-modal-next')) {
+      dispatch({ type: 'ui.block.navigate', direction: 1 })
       return
     }
 
-    if (target.closest(".arena-modal-collapse")) {
-      const modal = document.getElementById("arena-modal")
-      const sidebar = modal?.querySelector(".arena-modal-sidebar") as HTMLElement | null
-      const collapseBtn = target.closest(".arena-modal-collapse") as HTMLElement | null
+    if (target.closest('.arena-modal-collapse')) {
+      const modal = document.getElementById('arena-modal')
+      const sidebar = modal?.querySelector('.arena-modal-sidebar') as HTMLElement | null
+      const collapseBtn = target.closest('.arena-modal-collapse') as HTMLElement | null
       if (sidebar) {
-        sidebar.classList.toggle("collapsed")
-        collapseBtn?.classList.toggle("active")
+        sidebar.classList.toggle('collapsed')
+        collapseBtn?.classList.toggle('active')
 
         // Resize maps after layout change - wait for CSS transition
-        const modalBody = modal?.querySelector(".arena-modal-body") as HTMLElement | null
+        const modalBody = modal?.querySelector('.arena-modal-body') as HTMLElement | null
         if (modalBody) {
           const resizeMaps = () => {
             modalBody
               .querySelectorAll<HTMLElement>(".arena-modal-map[data-map-initialized='1']")
-              .forEach((mapNode) => {
+              .forEach(mapNode => {
                 const map = mapInstances.get(mapNode)
                 if (map) {
                   try {
@@ -1675,15 +1675,15 @@ export const mountArena = (dispatch: (event: ArenaEvent) => void) => {
           }
 
           const onTransitionEnd = (event: TransitionEvent) => {
-            if (event.target === sidebar && event.propertyName === "width") {
-              sidebar.removeEventListener("transitionend", onTransitionEnd)
+            if (event.target === sidebar && event.propertyName === 'width') {
+              sidebar.removeEventListener('transitionend', onTransitionEnd)
               requestAnimationFrame(resizeMaps)
             }
           }
 
-          sidebar.addEventListener("transitionend", onTransitionEnd)
+          sidebar.addEventListener('transitionend', onTransitionEnd)
           setTimeout(() => {
-            sidebar.removeEventListener("transitionend", onTransitionEnd)
+            sidebar.removeEventListener('transitionend', onTransitionEnd)
             requestAnimationFrame(resizeMaps)
           }, 500)
         }
@@ -1692,18 +1692,18 @@ export const mountArena = (dispatch: (event: ArenaEvent) => void) => {
     }
 
     // Handle search result clicks with smart navigation based on hasModalInDom
-    const searchResultItem = target.closest(".arena-search-result-item") as HTMLElement | null
+    const searchResultItem = target.closest('.arena-search-result-item') as HTMLElement | null
     if (searchResultItem) {
-      const blockId = searchResultItem.getAttribute("data-block-id")
-      const channelSlug = searchResultItem.getAttribute("data-channel-slug")
+      const blockId = searchResultItem.getAttribute('data-block-id')
+      const channelSlug = searchResultItem.getAttribute('data-channel-slug')
 
       if (blockId) {
         e.preventDefault()
-        dispatch({ type: "ui.search.clear", blur: true })
+        dispatch({ type: 'ui.search.clear', blur: true })
 
         // Check if this is an arxiv block without notes and redirect instead of opening modal
         if (arenaSearchData) {
-          const blockData = arenaSearchData.blocks.find((b) => b.id === blockId)
+          const blockData = arenaSearchData.blocks.find(b => b.id === blockId)
           const isArxivUrl = blockData?.url
             ? /^https?:\/\/(?:ar5iv\.(?:labs\.)?)?arxiv\.org\//i.test(blockData.url)
             : false
@@ -1712,7 +1712,7 @@ export const mountArena = (dispatch: (event: ArenaEvent) => void) => {
             // Only redirect if the block has no notes (description or content)
             const hasNotes = !!blockData.content
             if (!hasNotes) {
-              window.open(blockData.url, "_blank", "noopener,noreferrer")
+              window.open(blockData.url, '_blank', 'noopener,noreferrer')
               return
             }
             // If it has notes, continue to show the modal (without embed)
@@ -1720,11 +1720,11 @@ export const mountArena = (dispatch: (event: ArenaEvent) => void) => {
         }
 
         // Find the result in search index to check hasModalInDom flag
-        const resultData = searchIndex.find((item) => item.blockId === blockId)
+        const resultData = searchIndex.find(item => item.blockId === blockId)
 
         if (resultData?.hasModalInDom) {
           // Block has prerendered modal in DOM - show it instantly
-          dispatch({ type: "ui.modal.open", blockId })
+          dispatch({ type: 'ui.modal.open', blockId })
         } else {
           // Block doesn't have modal in DOM - create it dynamically from JSON
           const existingModal = document.getElementById(`arena-modal-data-${blockId}`)
@@ -1736,12 +1736,12 @@ export const mountArena = (dispatch: (event: ArenaEvent) => void) => {
             }
 
             if (!arenaSearchData) {
-              console.error("Failed to load arena search data")
+              console.error('Failed to load arena search data')
               return
             }
 
             // Find full block data in search JSON
-            const fullBlockData = arenaSearchData.blocks.find((b) => b.id === blockId)
+            const fullBlockData = arenaSearchData.blocks.find(b => b.id === blockId)
 
             if (fullBlockData) {
               // Create modal data element from JSON
@@ -1751,64 +1751,64 @@ export const mountArena = (dispatch: (event: ArenaEvent) => void) => {
               document.body.appendChild(modalDataEl)
 
               // Now show the modal
-              dispatch({ type: "ui.modal.open", blockId })
+              dispatch({ type: 'ui.modal.open', blockId })
             } else if (channelSlug) {
               // Fallback: navigate to channel page if we can't find the data
-              const currentSlug = document.body?.dataset.slug || ""
+              const currentSlug = document.body?.dataset.slug || ''
               const targetChannelSlug = `arena/${channelSlug}`
 
               if (currentSlug === targetChannelSlug) {
-                dispatch({ type: "ui.modal.open", blockId })
+                dispatch({ type: 'ui.modal.open', blockId })
               } else {
                 window.location.href = `/${targetChannelSlug}#${blockId}`
               }
             } else {
               // Last resort: try to show modal anyway
-              dispatch({ type: "ui.modal.open", blockId })
+              dispatch({ type: 'ui.modal.open', blockId })
             }
           } else {
             // Modal data already exists, just show it
-            dispatch({ type: "ui.modal.open", blockId })
+            dispatch({ type: 'ui.modal.open', blockId })
           }
         }
       }
       return
     }
 
-    if (target.closest(".arena-modal-close") || target.classList.contains("arena-block-modal")) {
-      dispatch({ type: "ui.modal.close" })
+    if (target.closest('.arena-modal-close') || target.classList.contains('arena-block-modal')) {
+      dispatch({ type: 'ui.modal.close' })
     }
   }
 
   const onKey = (e: KeyboardEvent) => {
     const key = e.key.toLowerCase()
-    if ((e.metaKey || e.ctrlKey) && key === "k") {
+    if ((e.metaKey || e.ctrlKey) && key === 'k') {
       e.preventDefault()
       if (e.shiftKey) {
-        dispatch({ type: "ui.search.focus", prefill: "#" })
+        dispatch({ type: 'ui.search.focus', prefill: '#' })
       } else {
-        dispatch({ type: "ui.search.focus" })
+        dispatch({ type: 'ui.search.focus' })
       }
       return
     }
 
-    if ((e.metaKey || e.ctrlKey) && key === "b") {
-      const modal = document.getElementById("arena-modal")
-      if (modal?.classList.contains("active")) {
+    if ((e.metaKey || e.ctrlKey) && key === 'b') {
+      const modal = document.getElementById('arena-modal')
+      if (modal?.classList.contains('active')) {
         e.preventDefault()
-        const sidebar = modal.querySelector(".arena-modal-sidebar") as HTMLElement | null
-        const collapseBtn = modal.querySelector(".arena-modal-collapse") as HTMLElement | null
+        const sidebar = modal.querySelector('.arena-modal-sidebar') as HTMLElement | null
+        const collapseBtn = modal.querySelector('.arena-modal-collapse') as HTMLElement | null
         if (sidebar) {
-          sidebar.classList.toggle("collapsed")
-          collapseBtn?.classList.toggle("active")
+          sidebar.classList.toggle('collapsed')
+          collapseBtn?.classList.toggle('active')
 
           // Resize maps after layout change - wait for CSS transition
-          const modalBody = modal.querySelector(".arena-modal-body") as HTMLElement | null
+          const modalBody = modal.querySelector('.arena-modal-body') as HTMLElement | null
           if (modalBody) {
             const resizeMaps = () => {
               modalBody
                 .querySelectorAll<HTMLElement>(".arena-modal-map[data-map-initialized='1']")
-                .forEach((mapNode) => {
+                .forEach(mapNode => {
                   const map = mapInstances.get(mapNode)
                   if (map) {
                     try {
@@ -1821,15 +1821,15 @@ export const mountArena = (dispatch: (event: ArenaEvent) => void) => {
             }
 
             const onTransitionEnd = (event: TransitionEvent) => {
-              if (event.target === sidebar && event.propertyName === "width") {
-                sidebar.removeEventListener("transitionend", onTransitionEnd)
+              if (event.target === sidebar && event.propertyName === 'width') {
+                sidebar.removeEventListener('transitionend', onTransitionEnd)
                 requestAnimationFrame(resizeMaps)
               }
             }
 
-            sidebar.addEventListener("transitionend", onTransitionEnd)
+            sidebar.addEventListener('transitionend', onTransitionEnd)
             setTimeout(() => {
-              sidebar.removeEventListener("transitionend", onTransitionEnd)
+              sidebar.removeEventListener('transitionend', onTransitionEnd)
               requestAnimationFrame(resizeMaps)
             }, 100)
           }
@@ -1839,96 +1839,96 @@ export const mountArena = (dispatch: (event: ArenaEvent) => void) => {
     }
 
     const results = getSearchResults()
-    const searchContainer = document.getElementById("arena-search-container")
-    const searchOpen = Boolean(searchContainer && searchContainer.classList.contains("active"))
-    const resultFocused = document.activeElement?.classList.contains("arena-search-result-item")
+    const searchContainer = document.getElementById('arena-search-container')
+    const searchOpen = Boolean(searchContainer && searchContainer.classList.contains('active'))
+    const resultFocused = document.activeElement?.classList.contains('arena-search-result-item')
     const inputFocused = document.activeElement === searchInput
 
     if (searchOpen && results.length > 0) {
       if (
-        key === "ArrowDown" ||
-        (!e.shiftKey && key === "Tab") ||
-        (key === "n" && (e.ctrlKey || e.metaKey))
+        key === 'ArrowDown' ||
+        (!e.shiftKey && key === 'Tab') ||
+        (key === 'n' && (e.ctrlKey || e.metaKey))
       ) {
         e.preventDefault()
         if (
           !e.shiftKey &&
-          key === "Tab" &&
+          key === 'Tab' &&
           resultFocused &&
           activeResultIndex === results.length - 1
         ) {
           dispatch({
-            type: "ui.search.result.activate",
+            type: 'ui.search.result.activate',
             index: null,
             options: { focus: true, scroll: false },
           })
         } else if (inputFocused || activeResultIndex === null) {
-          dispatch({ type: "ui.search.result.activate", index: 0 })
+          dispatch({ type: 'ui.search.result.activate', index: 0 })
         } else {
           const nextIndex = Math.min((activeResultIndex ?? -1) + 1, results.length - 1)
-          dispatch({ type: "ui.search.result.activate", index: nextIndex })
+          dispatch({ type: 'ui.search.result.activate', index: nextIndex })
         }
         return
       }
 
       if (
-        key === "ArrowUp" ||
-        (e.shiftKey && key === "Tab") ||
-        (key === "p" && (e.ctrlKey || e.metaKey))
+        key === 'ArrowUp' ||
+        (e.shiftKey && key === 'Tab') ||
+        (key === 'p' && (e.ctrlKey || e.metaKey))
       ) {
         e.preventDefault()
         if (!resultFocused || activeResultIndex === null) {
-          dispatch({ type: "ui.search.result.activate", index: results.length - 1 })
+          dispatch({ type: 'ui.search.result.activate', index: results.length - 1 })
         } else if (activeResultIndex <= 0) {
           dispatch({
-            type: "ui.search.result.activate",
+            type: 'ui.search.result.activate',
             index: null,
             options: { focus: true, scroll: false },
           })
         } else {
-          dispatch({ type: "ui.search.result.activate", index: activeResultIndex - 1 })
+          dispatch({ type: 'ui.search.result.activate', index: activeResultIndex - 1 })
         }
         return
       }
 
-      if (key === "enter") {
+      if (key === 'enter') {
         e.preventDefault()
         if (resultFocused) {
-          document.activeElement?.dispatchEvent(new MouseEvent("click", { bubbles: true }))
+          document.activeElement?.dispatchEvent(new MouseEvent('click', { bubbles: true }))
         } else if (inputFocused && results.length > 0) {
           // Open first result if Enter pressed in input
-          results[0]?.dispatchEvent(new MouseEvent("click", { bubbles: true }))
+          results[0]?.dispatchEvent(new MouseEvent('click', { bubbles: true }))
         }
         return
       }
     }
 
-    if (key === "escape") {
-      if (searchContainer && searchContainer.classList.contains("active")) {
-        dispatch({ type: "ui.search.close" })
+    if (key === 'escape') {
+      if (searchContainer && searchContainer.classList.contains('active')) {
+        dispatch({ type: 'ui.search.close' })
       } else {
-        dispatch({ type: "ui.modal.close" })
+        dispatch({ type: 'ui.modal.close' })
       }
       return
     }
 
     // Handle PDF page navigation with Shift+Arrow
-    if (e.shiftKey && (e.key === "ArrowLeft" || e.key === "ArrowRight")) {
-      const modal = document.getElementById("arena-modal")
-      const modalBody = modal?.querySelector(".arena-modal-body")
+    if (e.shiftKey && (e.key === 'ArrowLeft' || e.key === 'ArrowRight')) {
+      const modal = document.getElementById('arena-modal')
+      const modalBody = modal?.querySelector('.arena-modal-body')
       const pdfViewer = modalBody?.querySelector(".arena-modal-embed-pdf[data-pdf-status='loaded']")
 
       if (pdfViewer) {
         e.preventDefault()
-        const controls = pdfViewer.querySelector(".arena-pdf-controls")
+        const controls = pdfViewer.querySelector('.arena-pdf-controls')
         if (controls) {
-          if (e.key === "ArrowLeft") {
-            const prevBtn = controls.querySelector(".arena-pdf-prev") as HTMLButtonElement
+          if (e.key === 'ArrowLeft') {
+            const prevBtn = controls.querySelector('.arena-pdf-prev') as HTMLButtonElement
             if (prevBtn && !prevBtn.disabled) {
               prevBtn.click()
             }
           } else {
-            const nextBtn = controls.querySelector(".arena-pdf-next") as HTMLButtonElement
+            const nextBtn = controls.querySelector('.arena-pdf-next') as HTMLButtonElement
             if (nextBtn && !nextBtn.disabled) {
               nextBtn.click()
             }
@@ -1938,17 +1938,17 @@ export const mountArena = (dispatch: (event: ArenaEvent) => void) => {
       }
     }
 
-    if (e.key === "ArrowLeft") {
-      dispatch({ type: "ui.block.navigate", direction: -1 })
-    } else if (e.key === "ArrowRight") {
-      dispatch({ type: "ui.block.navigate", direction: 1 })
+    if (e.key === 'ArrowLeft') {
+      dispatch({ type: 'ui.block.navigate', direction: -1 })
+    } else if (e.key === 'ArrowRight') {
+      dispatch({ type: 'ui.block.navigate', direction: 1 })
     }
   }
 
-  document.addEventListener("click", onClick)
-  document.addEventListener("keydown", onKey)
-  addCleanup(() => document.removeEventListener("click", onClick))
-  addCleanup(() => document.removeEventListener("keydown", onKey))
+  document.addEventListener('click', onClick)
+  document.addEventListener('keydown', onKey)
+  addCleanup(() => document.removeEventListener('click', onClick))
+  addCleanup(() => document.removeEventListener('keydown', onKey))
 
   return () => {
     const pending = cleanups.slice()

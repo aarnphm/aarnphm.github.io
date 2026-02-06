@@ -1,5 +1,5 @@
 ---
-date: "2024-02-07"
+date: '2024-02-07'
 description: and our understanding of the environment.
 id: intelligence
 modified: 2025-10-29 02:15:47 GMT-04:00

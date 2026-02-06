@@ -1,6 +1,6 @@
 ---
 category: letters
-date: "2022-01-25"
+date: '2022-01-25'
 description: and recommendation system.
 id: word2vec
 modified: 2025-11-21 12:13:04 GMT-05:00

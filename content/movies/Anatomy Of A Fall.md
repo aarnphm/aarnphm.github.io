@@ -8,7 +8,7 @@ description: marriage as crime scene with no reliable witnesses—triet refusing
 director: Justine Triet
 id: anatomy-of-a-fall
 modified: 2025-10-29 02:14:46 GMT-04:00
-posters: "[[movies/posters/anatomy-of-a-fall.jpg]]"
+posters: '[[movies/posters/anatomy-of-a-fall.jpg]]'
 rating: 7.6
 status: to watch
 studio: neon

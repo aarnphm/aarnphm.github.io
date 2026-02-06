@@ -1,5 +1,5 @@
 ---
-date: "2025-11-16"
+date: '2025-11-16'
 description: structural orthogonality in the phenomenology of intimacy
 draft: true
 id: romantic epistemology

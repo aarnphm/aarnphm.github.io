@@ -1,10 +1,10 @@
-import { Element } from "hast"
-import { h, s } from "hastscript"
-import isAbsoluteUrl from "is-absolute-url"
-import path from "path"
-import { visit } from "unist-util-visit"
-import type { ArenaBlock, ArenaData } from "./arena"
-import type { FrontmatterLink } from "./frontmatter"
+import { Element } from 'hast'
+import { h, s } from 'hastscript'
+import isAbsoluteUrl from 'is-absolute-url'
+import path from 'path'
+import { visit } from 'unist-util-visit'
+import type { ArenaBlock, ArenaData } from './arena'
+import type { FrontmatterLink } from './frontmatter'
 import {
   anthropicSvg,
   bentomlHoverSvg,
@@ -23,8 +23,8 @@ import {
   youtubeSvg,
   gwernSvg,
   modularSvg,
-} from "../../components/svg"
-import { QuartzTransformerPlugin } from "../../types/plugin"
+} from '../../components/svg'
+import { QuartzTransformerPlugin } from '../../types/plugin'
 import {
   FullSlug,
   RelativeURL,
@@ -34,15 +34,15 @@ import {
   simplifySlug,
   splitAnchor,
   transformLink,
-} from "../../util/path"
-import { filterEmbedTwitter, twitterUrlRegex } from "./twitter"
+} from '../../util/path'
+import { filterEmbedTwitter, twitterUrlRegex } from './twitter'
 
 interface Options {
   enableArxivEmbed: boolean
   enableRawEmbed: boolean
   enableIndicatorHook: boolean
   /** How to resolve Markdown paths */
-  markdownLinkResolution: TransformOptions["strategy"]
+  markdownLinkResolution: TransformOptions['strategy']
   /** Strips folders from a link so that it looks nice */
   prettyLinks: boolean
   openLinksInNewTab: boolean
@@ -54,7 +54,7 @@ const defaultOptions: Options = {
   enableArxivEmbed: false,
   enableRawEmbed: false,
   enableIndicatorHook: true,
-  markdownLinkResolution: "absolute",
+  markdownLinkResolution: 'absolute',
   prettyLinks: true,
   openLinksInNewTab: false,
   lazyLoad: false,
@@ -62,36 +62,36 @@ const defaultOptions: Options = {
 }
 
 const ALLOWED_EXTENSIONS = [
-  ".py",
-  ".go",
-  ".java",
-  ".c",
-  ".cpp",
-  ".cxx",
-  ".cu",
-  ".cuh",
-  ".h",
-  ".hpp",
-  ".ts",
-  ".tsx",
-  ".yaml",
-  ".yml",
-  ".rs",
-  ".m",
-  ".sql",
-  ".sh",
-  ".txt",
+  '.py',
+  '.go',
+  '.java',
+  '.c',
+  '.cpp',
+  '.cxx',
+  '.cu',
+  '.cuh',
+  '.h',
+  '.hpp',
+  '.ts',
+  '.tsx',
+  '.yaml',
+  '.yml',
+  '.rs',
+  '.m',
+  '.sql',
+  '.sh',
+  '.txt',
 ]
 
-const FALSE_LIKE_STRINGS = new Set(["false", "0", "no", "off"])
+const FALSE_LIKE_STRINGS = new Set(['false', '0', 'no', 'off'])
 
 function metadataDisablesPopover(metadata?: Record<string, any>): boolean {
   if (!metadata) return false
-  const value = metadata.popover ?? metadata.noPopover ?? metadata["no-popover"]
+  const value = metadata.popover ?? metadata.noPopover ?? metadata['no-popover']
   if (value === undefined) return false
-  if (typeof value === "boolean") return value === false
-  if (typeof value === "number") return value === 0
-  if (typeof value === "string") {
+  if (typeof value === 'boolean') return value === false
+  if (typeof value === 'number') return value === 0
+  if (typeof value === 'string') {
     return FALSE_LIKE_STRINGS.has(value.trim().toLowerCase())
   }
   return false
@@ -110,7 +110,7 @@ const ARXIV_URL_REGEX =
 export function extractArxivId(url: string): string | null {
   try {
     const urlObj = new URL(url)
-    if (!urlObj.hostname.includes("arxiv.org")) return null
+    if (!urlObj.hostname.includes('arxiv.org')) return null
 
     const match = url.match(ARXIV_URL_REGEX)
     return match ? match[1] : null
@@ -128,10 +128,10 @@ interface LinkContext {
   metadata?: Record<string, any>
 }
 
-export const CrawlLinks: QuartzTransformerPlugin<Partial<Options>> = (userOpts) => {
+export const CrawlLinks: QuartzTransformerPlugin<Partial<Options>> = userOpts => {
   const opts = { ...defaultOptions, ...userOpts }
   return {
-    name: "LinkProcessing",
+    name: 'LinkProcessing',
     htmlPlugins(ctx) {
       const { cfg } = ctx
       return [
@@ -146,16 +146,16 @@ export const CrawlLinks: QuartzTransformerPlugin<Partial<Options>> = (userOpts) 
             }
 
             const shouldRewriteLinks = ({ tagName, properties }: Element) =>
-              tagName === "a" && Boolean(properties.href) && typeof properties.href === "string"
+              tagName === 'a' && Boolean(properties.href) && typeof properties.href === 'string'
 
-            visit(tree, "element", (node: Element) => {
+            visit(tree, 'element', (node: Element) => {
               if (!shouldRewriteLinks(node)) {
                 return
               }
               const classes = (node.properties.className ?? []) as string[]
               let dest = node.properties.href as RelativeURL
               const ext: string = path.extname(dest).toLowerCase()
-              const metadata = JSON.parse((node.properties?.["data-metadata"] ?? "{}") as string)
+              const metadata = JSON.parse((node.properties?.['data-metadata'] ?? '{}') as string)
 
               const hasProtocol = /^[a-zA-Z][a-zA-Z0-9+.-]*:/.test(dest)
 
@@ -173,66 +173,66 @@ export const CrawlLinks: QuartzTransformerPlugin<Partial<Options>> = (userOpts) 
 
               const linkTypes = {
                 isApexDomain: dest.includes(cfg.configuration.baseUrl!),
-                isCslNode: classes.includes("csl-external-link"),
+                isCslNode: classes.includes('csl-external-link'),
                 isEmbedTwitter: filterEmbedTwitter(node),
-                isArxiv: dest.includes("arxiv.org"),
-                isWikipedia: dest.includes("wikipedia.org"),
-                isLessWrong: dest.includes("lesswrong.com"),
-                isBentoml: dest.includes("bentoml.com"),
-                isModular: dest.includes("modular.com"),
-                isSep: dest.includes("plato.stanford.edu"),
-                isYoutube: dest.includes("youtube.com"),
-                isGwern: dest.includes("gwern.net"),
-                isNeovim: dest.includes("neovim.io"),
-                isQuartz: dest.includes("quartz.jzhao.xyz"),
-                isObsidian: dest.includes("obsidian.md"),
-                isGithub: dest.includes("github.com"),
-                isSubstack: dest.includes("substack.com"),
+                isArxiv: dest.includes('arxiv.org'),
+                isWikipedia: dest.includes('wikipedia.org'),
+                isLessWrong: dest.includes('lesswrong.com'),
+                isBentoml: dest.includes('bentoml.com'),
+                isModular: dest.includes('modular.com'),
+                isSep: dest.includes('plato.stanford.edu'),
+                isYoutube: dest.includes('youtube.com'),
+                isGwern: dest.includes('gwern.net'),
+                isNeovim: dest.includes('neovim.io'),
+                isQuartz: dest.includes('quartz.jzhao.xyz'),
+                isObsidian: dest.includes('obsidian.md'),
+                isGithub: dest.includes('github.com'),
+                isSubstack: dest.includes('substack.com'),
                 isTwitter: twitterUrlRegex.test(dest),
-                isBsky: dest.includes("bsky.app"),
-                isDoi: dest.includes("doi.org"),
-                isOpenai: dest.includes("openai.com"),
-                isHf: dest.includes("huggingface.co"),
-                isYC: dest.includes("ycombinator.com"),
+                isBsky: dest.includes('bsky.app'),
+                isDoi: dest.includes('doi.org'),
+                isOpenai: dest.includes('openai.com'),
+                isHf: dest.includes('huggingface.co'),
+                isYC: dest.includes('ycombinator.com'),
                 isAnthropic:
-                  dest.includes("transformer-circuits.pub") || dest.includes("anthropic.com"),
-                isGoogleDocs: dest.includes("docs.google.com"),
-                isGoogleDrive: dest.includes("drive.google.com"),
+                  dest.includes('transformer-circuits.pub') || dest.includes('anthropic.com'),
+                isGoogleDocs: dest.includes('docs.google.com'),
+                isGoogleDrive: dest.includes('drive.google.com'),
               }
 
               if (linkTypes.isBentoml) {
-                if (!classes.includes("bentoml-link")) {
-                  classes.push("bentoml-link")
+                if (!classes.includes('bentoml-link')) {
+                  classes.push('bentoml-link')
                 }
-                ctx.node.properties.dataLinkVendor = "bentoml"
+                ctx.node.properties.dataLinkVendor = 'bentoml'
               }
 
               if (linkTypes.isModular) {
-                if (!classes.includes("modular-link")) {
-                  classes.push("modular-link")
+                if (!classes.includes('modular-link')) {
+                  classes.push('modular-link')
                 }
-                ctx.node.properties.dataLinkVendor = "modular"
+                ctx.node.properties.dataLinkVendor = 'modular'
               }
 
               if (linkTypes.isGithub) {
-                if (!classes.includes("github-link")) {
-                  classes.push("github-link")
+                if (!classes.includes('github-link')) {
+                  classes.push('github-link')
                 }
-                ctx.node.properties.dataLinkVendor = "github"
+                ctx.node.properties.dataLinkVendor = 'github'
               }
 
               if (
                 linkTypes.isWikipedia &&
                 node.children.length === 1 &&
-                node.children[0].type === "text" &&
+                node.children[0].type === 'text' &&
                 node.children[0].value === dest
               ) {
                 try {
                   const u = new URL(dest)
-                  const lang = u.hostname.split(".")[0]
+                  const lang = u.hostname.split('.')[0]
                   const m = u.pathname.match(/\/wiki\/(.+)/)
                   if (m) {
-                    node.children[0].value = `wikipedia/${lang !== "simple" ? lang + "/" : ""}${m[1]}`
+                    node.children[0].value = `wikipedia/${lang !== 'simple' ? lang + '/' : ''}${m[1]}`
                   }
                 } catch {}
               }
@@ -240,14 +240,14 @@ export const CrawlLinks: QuartzTransformerPlugin<Partial<Options>> = (userOpts) 
               if (
                 linkTypes.isYoutube &&
                 node.children.length === 1 &&
-                node.children[0].type === "text" &&
+                node.children[0].type === 'text' &&
                 node.children[0].value === dest
               ) {
                 try {
                   const u = new URL(dest)
-                  const vid = u.searchParams.get("v")
+                  const vid = u.searchParams.get('v')
                   if (vid) {
-                    node.children = [{ type: "text", value: `youtube/v=${vid}` }]
+                    node.children = [{ type: 'text', value: `youtube/v=${vid}` }]
                   }
                 } catch {}
               }
@@ -255,7 +255,7 @@ export const CrawlLinks: QuartzTransformerPlugin<Partial<Options>> = (userOpts) 
               if (
                 linkTypes.isGoogleDocs &&
                 node.children.length === 1 &&
-                node.children[0].type === "text" &&
+                node.children[0].type === 'text' &&
                 node.children[0].value === dest
               ) {
                 try {
@@ -275,7 +275,7 @@ export const CrawlLinks: QuartzTransformerPlugin<Partial<Options>> = (userOpts) 
               if (
                 linkTypes.isGoogleDrive &&
                 node.children.length === 1 &&
-                node.children[0].type === "text" &&
+                node.children[0].type === 'text' &&
                 node.children[0].value === dest
               ) {
                 try {
@@ -291,7 +291,7 @@ export const CrawlLinks: QuartzTransformerPlugin<Partial<Options>> = (userOpts) 
               // Handle special link types
               const handleArxiv = (ctx: LinkContext) => {
                 if (opts.enableArxivEmbed && linkTypes.isArxiv) {
-                  ctx.classes.push("internal")
+                  ctx.classes.push('internal')
                   ctx.node.properties.dataArxivId = extractArxivId(ctx.dest)
                   return true
                 }
@@ -304,7 +304,7 @@ export const CrawlLinks: QuartzTransformerPlugin<Partial<Options>> = (userOpts) 
                     ALLOWED_EXTENSIONS.includes(ctx.ext) &&
                     !isAbsoluteUrl(ctx.dest, { httpOnly: false })
                   ) {
-                    ctx.classes.push("cdn-links")
+                    ctx.classes.push('cdn-links')
                     ctx.dest = ctx.node.properties.href =
                       `https://aarnphm.xyz/${ctx.dest}` as RelativeURL
                   }
@@ -313,19 +313,19 @@ export const CrawlLinks: QuartzTransformerPlugin<Partial<Options>> = (userOpts) 
 
               const createIconElement = (src: string, alt: string) =>
                 h(
-                  "span",
-                  { style: "white-space: nowrap;" },
-                  h("img.inline-icons", {
+                  'span',
+                  { style: 'white-space: nowrap;' },
+                  h('img.inline-icons', {
                     src,
                     alt,
                     style:
-                      "height: 8px; width: 8px; margin-left: 3px; bottom: 2px; position: relative;",
+                      'height: 8px; width: 8px; margin-left: 3px; bottom: 2px; position: relative;',
                   }),
                 )
 
               // Add appropriate icons based on link type
               if (!handleArxiv(ctx) && !linkTypes.isEmbedTwitter) {
-                ctx.classes.push(ctx.isExternal ? "external" : "internal")
+                ctx.classes.push(ctx.isExternal ? 'external' : 'internal')
               }
 
               handleCdnLinks(ctx)
@@ -333,32 +333,32 @@ export const CrawlLinks: QuartzTransformerPlugin<Partial<Options>> = (userOpts) 
               // Add appropriate icons (skip if data-skip-icons is present)
               const skipIcons =
                 ctx.node.properties.dataSkipIcons === true ||
-                ctx.node.properties.dataSkipIcons === "true" ||
+                ctx.node.properties.dataSkipIcons === 'true' ||
                 file.data.frontmatter?.email === true
               if (!skipIcons) {
                 if (linkTypes.isWikipedia) {
                   ctx.node.children.push(
-                    createIconElement("/static/favicons/wikipedia.svg", "Wikipedia"),
+                    createIconElement('/static/favicons/wikipedia.svg', 'Wikipedia'),
                   )
-                } else if (linkTypes.isApexDomain && file.data.slug! !== "index") {
-                  ctx.node.children.push(createIconElement("/static/icon.webp", "apex"))
+                } else if (linkTypes.isApexDomain && file.data.slug! !== 'index') {
+                  ctx.node.children.push(createIconElement('/static/icon.webp', 'apex'))
                 } else if (linkTypes.isArxiv) {
-                  ctx.node.children.push(createIconElement("/static/favicons/arxiv.avif", "arXiv"))
+                  ctx.node.children.push(createIconElement('/static/favicons/arxiv.avif', 'arXiv'))
                 } else if (linkTypes.isLessWrong) {
                   ctx.node.children.push(
-                    createIconElement("/static/favicons/lesswrong.avif", "LessWrong"),
+                    createIconElement('/static/favicons/lesswrong.avif', 'LessWrong'),
                   )
                 } else if (linkTypes.isQuartz) {
-                  ctx.node.children.push(createIconElement("/static/favicons/quartz.png", "Quartz"))
+                  ctx.node.children.push(createIconElement('/static/favicons/quartz.png', 'Quartz'))
                 } else if (linkTypes.isNeovim) {
-                  ctx.node.children.push(createIconElement("/static/favicons/neovim.svg", "Neovim"))
+                  ctx.node.children.push(createIconElement('/static/favicons/neovim.svg', 'Neovim'))
                 } else if (linkTypes.isBentoml) {
                   ctx.node.children.push(bentomlSvg, bentomlHoverSvg)
                 } else if (linkTypes.isModular) {
                   ctx.node.children.push(modularSvg)
                 } else if (linkTypes.isSep) {
                   ctx.node.children.push(
-                    createIconElement("/static/favicons/sep-man-red.png", "SEP"),
+                    createIconElement('/static/favicons/sep-man-red.png', 'SEP'),
                   )
                 } else if (linkTypes.isYoutube) {
                   ctx.node.children.push(youtubeSvg)
@@ -393,17 +393,17 @@ export const CrawlLinks: QuartzTransformerPlugin<Partial<Options>> = (userOpts) 
                 ) {
                   ctx.node.children.push(
                     s(
-                      "svg",
+                      'svg',
                       {
                         ...svgOptions,
                         ariaHidden: true,
-                        class: "external-icon",
-                        viewbox: "0 -12 24 24",
-                        fill: "none",
-                        stroke: "currentColor",
+                        class: 'external-icon',
+                        viewbox: '0 -12 24 24',
+                        fill: 'none',
+                        stroke: 'currentColor',
                         strokewidth: 1.5,
                       },
-                      [s("use", { href: "#arrow-ne" })],
+                      [s('use', { href: '#arrow-ne' })],
                     ),
                   )
                 }
@@ -412,31 +412,31 @@ export const CrawlLinks: QuartzTransformerPlugin<Partial<Options>> = (userOpts) 
               // Check if the link has alias text
               if (
                 node.children.length === 1 &&
-                node.children[0].type === "text" &&
+                node.children[0].type === 'text' &&
                 node.children[0].value !== dest
               ) {
                 // Add the 'alias' class if the text content is not the same as the href
-                classes.push("alias")
+                classes.push('alias')
               }
               node.properties.className = classes
 
-              if ((ctx.isExternal && opts.openLinksInNewTab) || [".ipynb"].includes(ext)) {
-                node.properties.target = "_blank"
+              if ((ctx.isExternal && opts.openLinksInNewTab) || ['.ipynb'].includes(ext)) {
+                node.properties.target = '_blank'
               }
 
               // don't process external links, protocol URLs, or intra-document anchors
               const isInternal = !(
                 isAbsoluteUrl(dest, { httpOnly: false }) ||
-                dest.startsWith("#") ||
+                dest.startsWith('#') ||
                 hasProtocol
               )
 
               if (isInternal && metadataDisablesPopover(ctx.metadata)) {
-                node.properties["data-no-popover"] = true
+                node.properties['data-no-popover'] = true
               }
 
               if (isInternal) {
-                if (ext.includes("pdf")) {
+                if (ext.includes('pdf')) {
                   // we use CF middleware for fetch from Git LFS, for now
                   dest = node.properties.href = `/${dest}` as RelativeURL
                 } else {
@@ -449,18 +449,18 @@ export const CrawlLinks: QuartzTransformerPlugin<Partial<Options>> = (userOpts) 
 
                 // url.resolve is considered legacy
                 // WHATWG equivalent https://nodejs.dev/en/api/v18/url/#urlresolvefrom-to
-                const url = new URL(dest, "https://base.com/" + stripSlashes(curSlug, true))
+                const url = new URL(dest, 'https://base.com/' + stripSlashes(curSlug, true))
                 const canonicalDest = url.pathname
                 let [destCanonical, _destAnchor] = splitAnchor(canonicalDest)
-                if (destCanonical.endsWith("/")) {
-                  destCanonical += "index"
+                if (destCanonical.endsWith('/')) {
+                  destCanonical += 'index'
                 }
 
                 // need to decodeURIComponent here as WHATWG URL percent-encodes everything
                 const full = decodeURIComponent(stripSlashes(destCanonical, true)) as FullSlug
                 const simple = simplifySlug(full)
                 outgoing.add(simple)
-                node.properties["data-slug"] = full
+                node.properties['data-slug'] = full
               }
 
               // rewrite link internals if prettylinks is on
@@ -468,29 +468,29 @@ export const CrawlLinks: QuartzTransformerPlugin<Partial<Options>> = (userOpts) 
                 opts.prettyLinks &&
                 isInternal &&
                 node.children.length === 1 &&
-                node.children[0].type === "text" &&
-                !node.children[0].value.startsWith("#")
+                node.children[0].type === 'text' &&
+                !node.children[0].value.startsWith('#')
               ) {
                 node.children[0].value = path.basename(node.children[0].value)
               }
 
               // add indicator hook after handling all prettyLinks, inspired by gwern
               if (opts.enableIndicatorHook) {
-                node.children = [h("span.indicator-hook"), ...node.children]
+                node.children = [h('span.indicator-hook'), ...node.children]
               }
             })
 
             const shouldTransformResources = ({ tagName, properties }: Element) =>
-              ["img", "video", "audio", "iframe"].includes(tagName) &&
+              ['img', 'video', 'audio', 'iframe'].includes(tagName) &&
               Boolean(properties.src) &&
-              typeof properties.src === "string"
+              typeof properties.src === 'string'
 
             // transform all other resources that may use links
             visit(
               tree,
-              (node) => shouldTransformResources(node as Element),
-              (node) => {
-                if (opts.lazyLoad) node.properties.loading = "lazy"
+              node => shouldTransformResources(node as Element),
+              node => {
+                if (opts.lazyLoad) node.properties.loading = 'lazy'
 
                 if (!isAbsoluteUrl(node.properties.src, { httpOnly: false })) {
                   let dest = node.properties.src as RelativeURL
@@ -540,7 +540,7 @@ export const CrawlLinks: QuartzTransformerPlugin<Partial<Options>> = (userOpts) 
   }
 }
 
-declare module "vfile" {
+declare module 'vfile' {
   interface DataMap {
     links: SimpleSlug[]
   }

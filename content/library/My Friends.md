@@ -13,7 +13,7 @@ subcategory:
   - o/relationship
 author:
   - Fredrik Backman
-posters: "[[library/posters/my-friends.avif]]"
+posters: '[[library/posters/my-friends.avif]]'
 category:
   - p/fiction
 translator:

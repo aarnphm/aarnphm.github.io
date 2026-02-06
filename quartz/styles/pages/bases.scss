@@ -1,4 +1,4 @@
-@use "../variables.scss" as *;
+@use '../variables.scss' as *;
 
 .base-table-wrapper {
   overflow: auto;
@@ -190,7 +190,7 @@
           border-color: var(--checkbox-color);
 
           &::after {
-            content: "";
+            content: '';
             top: -2px;
             position: absolute;
             width: var(--checkbox-size);
@@ -284,7 +284,7 @@
     position: relative;
 
     &:before {
-      content: "•";
+      content: '•';
       position: absolute;
       left: 0;
       color: var(--secondary);
@@ -314,7 +314,7 @@
     position: relative;
 
     &:before {
-      content: "◦";
+      content: '◦';
       position: absolute;
       left: 0;
       color: var(--gray);
@@ -592,7 +592,7 @@
   min-width: fit-content;
 
   &::after {
-    content: " ";
+    content: ' ';
   }
 }
 
@@ -660,8 +660,8 @@
   width: fit-content;
 }
 
-[data-slug="antilibrary"],
-[data-slug="books"] {
+[data-slug='antilibrary'],
+[data-slug='books'] {
   .base-card {
     border: 0;
     overflow: visible;
@@ -701,7 +701,7 @@
     }
 
     &::before {
-      content: "";
+      content: '';
       background-image: linear-gradient(
         to right,
         rgba(0, 0, 0, 0.2),

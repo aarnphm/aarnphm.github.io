@@ -1,5 +1,5 @@
 ---
-date: "2025-11-01"
+date: '2025-11-01'
 description: curated bibliography and resources for topology study from point-set through poincaré conjecture.
 id: topology-resources
 modified: 2025-11-09 01:37:41 GMT-05:00

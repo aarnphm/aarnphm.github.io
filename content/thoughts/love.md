@@ -6,7 +6,7 @@ aliases:
   - living
   - philia
   - eros
-date: "2025-10-04"
+date: '2025-10-04'
 description: choosing to give your full, continuously.
 gemini:
   session:
@@ -16,8 +16,8 @@ gemini:
 id: love
 modified: 2026-01-09 05:41:40 GMT-05:00
 socials:
-  essay: "[[posts/love|mutual becoming]]"
-  hermeneutics: "[[posts/romantic epistemology|romantic epistemology]]"
+  essay: '[[posts/love|mutual becoming]]'
+  hermeneutics: '[[posts/romantic epistemology|romantic epistemology]]'
 tags:
   - evergreen
   - love

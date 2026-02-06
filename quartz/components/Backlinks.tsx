@@ -1,12 +1,12 @@
-import { i18n } from "../i18n"
+import { i18n } from '../i18n'
 import {
   QuartzComponent,
   QuartzComponentConstructor,
   QuartzComponentProps,
-} from "../types/component"
-import { classNames } from "../util/lang"
-import { resolveRelative, simplifySlug } from "../util/path"
-import style from "./styles/backlinks.scss"
+} from '../types/component'
+import { classNames } from '../util/lang'
+import { resolveRelative, simplifySlug } from '../util/path'
+import style from './styles/backlinks.scss'
 
 export default (() => {
   const Backlinks: QuartzComponent = ({
@@ -16,13 +16,13 @@ export default (() => {
     cfg,
   }: QuartzComponentProps) => {
     const slug = simplifySlug(fileData.slug!)
-    const backlinkFiles = allFiles.filter((file) => file.links?.includes(slug))
+    const backlinkFiles = allFiles.filter(file => file.links?.includes(slug))
     if (backlinkFiles.length === 0) {
       return null
     }
 
     return (
-      <section data-backlinks class={classNames(displayClass, "backlinks", "main-col")}>
+      <section data-backlinks class={classNames(displayClass, 'backlinks', 'main-col')}>
         <h2 id="backlinks-label">
           {i18n(cfg.locale).components.backlinks.title}
           <a
@@ -49,7 +49,7 @@ export default (() => {
         </h2>
         <div class="overflow">
           {backlinkFiles.length > 0 ? (
-            backlinkFiles.map((f) => (
+            backlinkFiles.map(f => (
               <a
                 href={resolveRelative(fileData.slug!, f.slug!)}
                 data-backlink={f.slug!}

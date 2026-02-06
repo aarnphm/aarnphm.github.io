@@ -1,8 +1,8 @@
-import type { PhrasingContent, Paragraph } from "mdast"
-import type { Extension as MdastExtension, CompileContext, Token } from "mdast-util-from-markdown"
-import type { Extension as MicromarkExtension } from "micromark-util-types"
-import { fromMarkdown } from "mdast-util-from-markdown"
-import type { Sidenote, SidenoteReference, SidenoteDefinition } from "./types"
+import type { PhrasingContent, Paragraph } from 'mdast'
+import type { Extension as MdastExtension, CompileContext, Token } from 'mdast-util-from-markdown'
+import type { Extension as MicromarkExtension } from 'micromark-util-types'
+import { fromMarkdown } from 'mdast-util-from-markdown'
+import type { Sidenote, SidenoteReference, SidenoteDefinition } from './types'
 
 export interface FromMarkdownOptions {
   micromarkExtensions?: MicromarkExtension[]
@@ -43,10 +43,10 @@ export function sidenoteFromMarkdown(options: FromMarkdownOptions = {}): MdastEx
 
   function enterSidenote(this: CompileContext, token: Token): undefined {
     const node: Sidenote = {
-      type: "sidenote",
-      value: "",
+      type: 'sidenote',
+      value: '',
       children: [],
-      data: { sidenoteParsed: { raw: "", content: "" } },
+      data: { sidenoteParsed: { raw: '', content: '' } },
     }
     this.enter(node as any, token)
     return undefined
@@ -100,7 +100,7 @@ export function sidenoteFromMarkdown(options: FromMarkdownOptions = {}): MdastEx
 
   function exitLabel(this: CompileContext): undefined {
     const node = this.stack[this.stack.length - 1] as any as Sidenote
-    const labelRaw = node.data?.sidenoteParsed?.label || ""
+    const labelRaw = node.data?.sidenoteParsed?.label || ''
 
     if (node.data?.sidenoteParsed) {
       try {
@@ -111,7 +111,7 @@ export function sidenoteFromMarkdown(options: FromMarkdownOptions = {}): MdastEx
 
         const nodes: PhrasingContent[] = []
         for (const child of labelTree.children) {
-          if (child.type === "paragraph") {
+          if (child.type === 'paragraph') {
             nodes.push(...((child as Paragraph).children as PhrasingContent[]))
           } else if (isPhrasingContent(child)) {
             nodes.push(child as PhrasingContent)
@@ -120,7 +120,7 @@ export function sidenoteFromMarkdown(options: FromMarkdownOptions = {}): MdastEx
 
         node.data.sidenoteParsed.labelNodes = nodes
       } catch {
-        node.data.sidenoteParsed.labelNodes = [{ type: "text", value: labelRaw }]
+        node.data.sidenoteParsed.labelNodes = [{ type: 'text', value: labelRaw }]
       }
     }
 
@@ -142,7 +142,7 @@ export function sidenoteFromMarkdown(options: FromMarkdownOptions = {}): MdastEx
 
   function exitContent(this: CompileContext): undefined {
     const node = this.stack[this.stack.length - 1] as any as Sidenote
-    const contentRaw = node.data?.sidenoteParsed?.content || ""
+    const contentRaw = node.data?.sidenoteParsed?.content || ''
 
     if (node.data?.sidenoteParsed) {
       try {
@@ -153,7 +153,7 @@ export function sidenoteFromMarkdown(options: FromMarkdownOptions = {}): MdastEx
 
         const children: PhrasingContent[] = []
         for (const child of contentTree.children) {
-          if (child.type === "paragraph") {
+          if (child.type === 'paragraph') {
             children.push(...((child as Paragraph).children as PhrasingContent[]))
           } else if (isPhrasingContent(child)) {
             children.push(child as PhrasingContent)
@@ -162,7 +162,7 @@ export function sidenoteFromMarkdown(options: FromMarkdownOptions = {}): MdastEx
 
         node.children = children
       } catch {
-        node.children = [{ type: "text", value: contentRaw }]
+        node.children = [{ type: 'text', value: contentRaw }]
       }
     }
 
@@ -171,7 +171,7 @@ export function sidenoteFromMarkdown(options: FromMarkdownOptions = {}): MdastEx
 
   // Reference Handlers
   function enterReference(this: CompileContext, token: Token): undefined {
-    const node: SidenoteReference = { type: "sidenoteReference", label: "", children: [] }
+    const node: SidenoteReference = { type: 'sidenoteReference', label: '', children: [] }
     this.enter(node as any, token)
     return undefined
   }
@@ -185,7 +185,7 @@ export function sidenoteFromMarkdown(options: FromMarkdownOptions = {}): MdastEx
     const node = this.stack[this.stack.length - 1] as any as SidenoteReference
     if (!node) return undefined
     const raw = this.sliceSerialize(token)
-    node.label = raw.startsWith("^") ? raw.slice(1) : raw
+    node.label = raw.startsWith('^') ? raw.slice(1) : raw
     return undefined
   }
 
@@ -197,7 +197,7 @@ export function sidenoteFromMarkdown(options: FromMarkdownOptions = {}): MdastEx
 
   // Definition Handlers
   function enterDefinition(this: CompileContext, token: Token): undefined {
-    const node: SidenoteDefinition = { type: "sidenoteDefinition", label: "", children: [] }
+    const node: SidenoteDefinition = { type: 'sidenoteDefinition', label: '', children: [] }
     this.enter(node as any, token)
     return undefined
   }
@@ -226,7 +226,7 @@ function parseLabelNodes(
   micromarkExts: MicromarkExtension[],
   mdastExts: MdastExtension[],
 ) {
-  const labelRaw = node.label || ""
+  const labelRaw = node.label || ''
   try {
     const labelTree = fromMarkdown(labelRaw, {
       extensions: micromarkExts,
@@ -235,7 +235,7 @@ function parseLabelNodes(
 
     const nodes: PhrasingContent[] = []
     for (const child of labelTree.children) {
-      if (child.type === "paragraph") {
+      if (child.type === 'paragraph') {
         nodes.push(...((child as Paragraph).children as PhrasingContent[]))
       } else if (isPhrasingContent(child)) {
         nodes.push(child as PhrasingContent)
@@ -243,7 +243,7 @@ function parseLabelNodes(
     }
     node.labelNodes = nodes
   } catch {
-    node.labelNodes = [{ type: "text", value: labelRaw }]
+    node.labelNodes = [{ type: 'text', value: labelRaw }]
   }
 }
 
@@ -257,9 +257,9 @@ function parseProperties(raw: string): Record<string, string | string[]> {
     const key = match[1]?.trim()
     if (!key) continue
 
-    const value = (match[2] ?? "").trim()
+    const value = (match[2] ?? '').trim()
 
-    if (value.includes("[[")) {
+    if (value.includes('[[')) {
       const wikilinks = value.match(/\[\[[^\]]+\]\]/g) || []
       props[key] = wikilinks.length > 0 ? wikilinks : value
     } else {
@@ -272,18 +272,18 @@ function parseProperties(raw: string): Record<string, string | string[]> {
 
 function isPhrasingContent(node: any): boolean {
   const phrasingTypes = new Set([
-    "text",
-    "emphasis",
-    "strong",
-    "delete",
-    "inlineCode",
-    "break",
-    "link",
-    "image",
-    "linkReference",
-    "imageReference",
-    "html",
-    "inlineMath",
+    'text',
+    'emphasis',
+    'strong',
+    'delete',
+    'inlineCode',
+    'break',
+    'link',
+    'image',
+    'linkReference',
+    'imageReference',
+    'html',
+    'inlineMath',
   ])
   return phrasingTypes.has(node.type)
 }

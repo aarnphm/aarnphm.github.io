@@ -1,15 +1,15 @@
 ---
-date: "2026-01-28"
+date: '2026-01-28'
 description: what-it's-like-ness, the hard problem, and why functional explanation keeps missing the target
 id: phenomenal-consciousness
 modified: 2026-01-28 02:30:00 GMT-05:00
 seealso:
-  - "[[thoughts/access consciousness]]"
-  - "[[thoughts/dualism]]"
-  - "[[thoughts/qualia]]"
-  - "[[thoughts/philosophical zombies]]"
-  - "[[thoughts/functionalism]]"
-  - "[[thoughts/physicalism]]"
+  - '[[thoughts/access consciousness]]'
+  - '[[thoughts/dualism]]'
+  - '[[thoughts/qualia]]'
+  - '[[thoughts/philosophical zombies]]'
+  - '[[thoughts/functionalism]]'
+  - '[[thoughts/physicalism]]'
 tags:
   - philosophy
   - consciousness

@@ -1,5 +1,5 @@
 ---
-date: "2026-01-07"
+date: '2026-01-07'
 description: and llvm go brr.
 id: index
 modified: 2026-01-07 08:40:11 GMT-05:00

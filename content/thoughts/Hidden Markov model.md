@@ -1,5 +1,5 @@
 ---
-date: "2024-10-02"
+date: '2024-10-02'
 description: observations which are dependent on given Markov process.
 id: Hidden Markov model
 modified: 2025-10-29 02:15:24 GMT-04:00

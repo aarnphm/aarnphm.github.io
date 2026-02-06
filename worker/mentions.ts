@@ -1,7 +1,7 @@
-import { desc } from "drizzle-orm"
-import { drizzle } from "drizzle-orm/d1"
-import type { GithubUser } from "../quartz/types/mentions"
-import { githubUsers } from "./schema"
+import { desc } from 'drizzle-orm'
+import { drizzle } from 'drizzle-orm/d1'
+import type { GithubUser } from '../quartz/types/mentions'
+import { githubUsers } from './schema'
 
 export async function handleMentions(env: Env): Promise<Response> {
   const db = drizzle(env.COMMENTS_ROOM)

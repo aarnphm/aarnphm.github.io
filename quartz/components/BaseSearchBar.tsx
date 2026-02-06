@@ -1,15 +1,15 @@
-import { QuartzComponentConstructor, QuartzComponentProps } from "../types/component"
-import { classNames } from "../util/lang"
+import { QuartzComponentConstructor, QuartzComponentProps } from '../types/component'
+import { classNames } from '../util/lang'
 // @ts-ignore
-import script from "./scripts/base-search.inline"
-import style from "./styles/search.scss"
+import script from './scripts/base-search.inline'
+import style from './styles/search.scss'
 
 function BaseSearchBar({ displayClass, fileData }: QuartzComponentProps) {
   if (!fileData.bases) {
     return null
   }
   return (
-    <div class={classNames(displayClass, "search", "bases-search")}>
+    <div class={classNames(displayClass, 'search', 'bases-search')}>
       <div id="base-search-bar">
         <input
           type="text"

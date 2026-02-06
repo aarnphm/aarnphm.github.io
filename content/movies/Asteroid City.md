@@ -8,7 +8,7 @@ description: a play about a play about grief in the desert—meta-theatrical nes
 director: Wes Anderson
 id: asteroid-city
 modified: 2025-10-29 02:14:46 GMT-04:00
-posters: "[[movies/posters/asteroid-city.jpg]]"
+posters: '[[movies/posters/asteroid-city.jpg]]'
 rating: 6.4
 status: recurring
 studio: focus features

@@ -14,5 +14,5 @@ category:
   - drama
   - vintage
 description: a pastor loses faith under winter light - bergman strips belief down to bare doubt.
-posters: "[[movies/posters/winter-light.jpg]]"
+posters: '[[movies/posters/winter-light.jpg]]'
 ---

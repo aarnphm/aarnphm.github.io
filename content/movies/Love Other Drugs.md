@@ -8,7 +8,7 @@ description: viagra salesman falling for parkinson's patient—zwick filming pha
 director: Edward Zwick
 id: love-other-drugs
 modified: 2025-10-29 02:14:52 GMT-04:00
-posters: "[[movies/posters/love-other-drugs.jpg]]"
+posters: '[[movies/posters/love-other-drugs.jpg]]'
 rating: 6.7
 status: finished
 studio: 20th century fox

@@ -5,12 +5,12 @@ import {
   type FunctionalComponent,
   toChildArray,
   type VNode,
-} from "preact"
+} from 'preact'
 import {
   registerMdxComponent,
   type QuartzMdxComponent,
   type QuartzMdxConstructor,
-} from "./registry"
+} from './registry'
 
 type BasePropoProps = {
   suffix?: string
@@ -21,16 +21,16 @@ type BasePropoProps = {
   _depth?: number
 }
 
-type PropoProps = Omit<BasePropoProps, "parentNumber">
+type PropoProps = Omit<BasePropoProps, 'parentNumber'>
 
 const isVNodeOf = <T,>(node: ComponentChildren, component: ComponentType<T>): node is VNode<T> => {
-  return typeof node === "object" && node !== null && "type" in node && node.type === component
+  return typeof node === 'object' && node !== null && 'type' in node && node.type === component
 }
 
 const normalizeChildren = (children?: ComponentChildren): ComponentChildren[] =>
-  toChildArray(children).filter((child) => {
+  toChildArray(children).filter(child => {
     if (child === null || child === undefined) return false
-    if (typeof child === "string") return child.trim() !== ""
+    if (typeof child === 'string') return child.trim() !== ''
     return true
   })
 
@@ -61,9 +61,9 @@ const splitChildren = <T,>(
 }
 
 const computeChildNumber = (parentNumber: string, index: number): string => {
-  const segments = parentNumber.split(".")
+  const segments = parentNumber.split('.')
   const last = segments[segments.length - 1]
-  const prefix = segments.slice(0, -1).join(".")
+  const prefix = segments.slice(0, -1).join('.')
   const suffix = `${last}${index + 1}`
   if (prefix.length === 0) {
     return `${last}.${suffix}`
@@ -75,7 +75,7 @@ const TractatusPropoImpl: FunctionalComponent<BasePropoProps> = ({
   suffix,
   proposition,
   children,
-  parentNumber = "",
+  parentNumber = '',
   _index,
   _depth,
 }) => {
@@ -89,8 +89,8 @@ const TractatusPropoImpl: FunctionalComponent<BasePropoProps> = ({
       : parentNumber.length > 0
         ? `${parentNumber}${suffix}`
         : suffix
-  const fullNumber = autoNumber ?? manualNumber ?? ""
-  const { nested, leading, trailing } = splitChildren(children, (child) =>
+  const fullNumber = autoNumber ?? manualNumber ?? ''
+  const { nested, leading, trailing } = splitChildren(children, child =>
     isVNodeOf(child, TractatusPropoImpl),
   )
   const propositionContent = proposition ?? (leading.length > 0 ? leading : undefined)
@@ -109,7 +109,7 @@ const TractatusPropoImpl: FunctionalComponent<BasePropoProps> = ({
   return (
     <li
       class="tractatus-item"
-      id={`tractatus-${fullNumber.replace(/[^0-9A-Za-z.-]/g, "")}`}
+      id={`tractatus-${fullNumber.replace(/[^0-9A-Za-z.-]/g, '')}`}
       data-tractatus-number={fullNumber}
       data-tractatus-depth={depth}
       style={`--tractatus-depth: ${depth};`}
@@ -128,7 +128,7 @@ const TractatusPropoImpl: FunctionalComponent<BasePropoProps> = ({
 
 const TractatusPropoComponent = TractatusPropoImpl as QuartzMdxComponent<PropoProps>
 export const TractatusPropo = registerMdxComponent(
-  ["TractatusPropo", "TractatusProposition"],
+  ['TractatusPropo', 'TractatusProposition'],
   TractatusPropoComponent,
 )
 
@@ -183,7 +183,7 @@ const TractatusImpl: FunctionalComponent<TractatusInternalProps> = ({
 }
 
 const TractatusComponent = TractatusImpl as QuartzMdxComponent<TractatusProps>
-export const Tractatus = registerMdxComponent("Tractatus", TractatusComponent)
+export const Tractatus = registerMdxComponent('Tractatus', TractatusComponent)
 
 type TractatusRootProps = { children?: ComponentChildren }
 
@@ -193,7 +193,7 @@ const isTractatus = (node: ComponentChildren): node is VNode<TractatusInternalPr
 const TractatusRootImpl: QuartzMdxComponent<TractatusRootProps> = ({ children }) => {
   const childArray = toChildArray(children).filter(Boolean)
   const tractati = childArray.filter(isTractatus)
-  const trailing = childArray.filter((child) => !isTractatus(child))
+  const trailing = childArray.filter(child => !isTractatus(child))
 
   const decoratedTractati = tractati.map((child, idx) =>
     cloneElement(child as VNode<TractatusInternalProps>, { _index: idx + 1 }),
@@ -207,6 +207,6 @@ const TractatusRootImpl: QuartzMdxComponent<TractatusRootProps> = ({ children })
   )
 }
 
-export const TractatusRoot = registerMdxComponent("TractatusRoot", TractatusRootImpl)
+export const TractatusRoot = registerMdxComponent('TractatusRoot', TractatusRootImpl)
 
 export default (() => TractatusRoot) satisfies QuartzMdxConstructor

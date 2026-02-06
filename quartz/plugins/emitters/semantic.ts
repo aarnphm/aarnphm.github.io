@@ -1,27 +1,27 @@
-import { spawn } from "child_process"
-import { styleText } from "node:util"
-import { GlobalConfiguration } from "../../cfg"
-import { QuartzEmitterPlugin } from "../../types/plugin"
-import { FullSlug, joinSegments, QUARTZ } from "../../util/path"
-import { write } from "./helpers"
+import { spawn } from 'child_process'
+import { styleText } from 'node:util'
+import { GlobalConfiguration } from '../../cfg'
+import { QuartzEmitterPlugin } from '../../types/plugin'
+import { FullSlug, joinSegments, QUARTZ } from '../../util/path'
+import { write } from './helpers'
 
-const DEFAULT_MODEL_ID = "onnx-community/Qwen3-Embedding-0.6B-ONNX"
+const DEFAULT_MODEL_ID = 'onnx-community/Qwen3-Embedding-0.6B-ONNX'
 
-const defaults: GlobalConfiguration["semanticSearch"] = {
+const defaults: GlobalConfiguration['semanticSearch'] = {
   enable: true,
   model: DEFAULT_MODEL_ID,
   aot: false,
   dims: 1024,
-  dtype: "fp32",
+  dtype: 'fp32',
   shardSizeRows: 1024,
   hnsw: { M: 16, efConstruction: 200 },
   chunking: { chunkSize: 512, chunkOverlap: 128, noChunking: false },
   vllm: {
     useVllm: false,
     vllmUrl:
-      process.env.VLLM_URL || process.env.VLLM_EMBED_URL || "http://127.0.0.1:8000/v1/embeddings",
-    concurrency: parseInt(process.env.VLLM_CONCURRENCY || "8", 10),
-    batchSize: parseInt(process.env.VLLM_BATCH_SIZE || "64", 10),
+      process.env.VLLM_URL || process.env.VLLM_EMBED_URL || 'http://127.0.0.1:8000/v1/embeddings',
+    concurrency: parseInt(process.env.VLLM_CONCURRENCY || '8', 10),
+    batchSize: parseInt(process.env.VLLM_BATCH_SIZE || '64', 10),
   },
 }
 
@@ -39,51 +39,51 @@ function runEmbedBuild(
 ): Promise<void> {
   return new Promise((resolve, reject) => {
     const args = [
-      "run",
-      joinSegments(QUARTZ, "embed_build.py"),
-      "--jsonl",
+      'run',
+      joinSegments(QUARTZ, 'embed_build.py'),
+      '--jsonl',
       jsonlPath,
-      "--model",
+      '--model',
       opts.model,
-      "--out",
+      '--out',
       outDir,
-      "--dtype",
+      '--dtype',
       opts.dtype,
-      "--dims",
+      '--dims',
       String(opts.dims),
-      "--shard-size",
+      '--shard-size',
       String(opts.shardSizeRows),
-      "--chunk-size",
+      '--chunk-size',
       String(opts.chunking.chunkSize),
-      "--chunk-overlap",
+      '--chunk-overlap',
       String(opts.chunking.chunkOverlap),
     ]
 
     if (opts.chunking.noChunking) {
-      args.push("--no-chunking")
+      args.push('--no-chunking')
     }
 
     if (opts.vllm.useVllm) {
-      args.push("--use-vllm")
+      args.push('--use-vllm')
       if (opts.vllm.vllmUrl) {
-        args.push("--vllm-url", opts.vllm.vllmUrl)
+        args.push('--vllm-url', opts.vllm.vllmUrl)
       }
-      args.push("--concurrency", String(opts.vllm.concurrency))
-      args.push("--batch-size", String(opts.vllm.batchSize))
+      args.push('--concurrency', String(opts.vllm.concurrency))
+      args.push('--batch-size', String(opts.vllm.batchSize))
     }
 
-    console.log("\nRunning embedding generation:")
-    console.log(`  uv ${args.join(" ")}`)
+    console.log('\nRunning embedding generation:')
+    console.log(`  uv ${args.join(' ')}`)
 
-    const proc = spawn("uv", args, { stdio: "inherit", shell: true })
+    const proc = spawn('uv', args, { stdio: 'inherit', shell: true })
 
-    proc.on("error", (err) => {
+    proc.on('error', err => {
       reject(new Error(`Failed to spawn uv: ${err.message}`))
     })
 
-    proc.on("close", (code) => {
+    proc.on('close', code => {
       if (code === 0) {
-        console.log("Embedding generation completed successfully")
+        console.log('Embedding generation completed successfully')
         resolve()
       } else {
         reject(new Error(`embed_build.py exited with code ${code}`))
@@ -92,9 +92,9 @@ function runEmbedBuild(
   })
 }
 
-export const SemanticIndex: QuartzEmitterPlugin<Partial<GlobalConfiguration["semanticSearch"]>> = (
-  opts,
-) => {
+export const SemanticIndex: QuartzEmitterPlugin<
+  Partial<GlobalConfiguration['semanticSearch']>
+> = opts => {
   const merged = { ...defaults, ...opts }
   const o = {
     enable: merged.enable!,
@@ -122,7 +122,7 @@ export const SemanticIndex: QuartzEmitterPlugin<Partial<GlobalConfiguration["sem
   }
 
   return {
-    name: "SemanticIndex",
+    name: 'SemanticIndex',
     getQuartzComponents() {
       return []
     },
@@ -141,22 +141,22 @@ export const SemanticIndex: QuartzEmitterPlugin<Partial<GlobalConfiguration["sem
 
       yield write({
         ctx,
-        slug: "embeddings-text" as FullSlug,
-        ext: ".jsonl",
-        content: lines.join("\n"),
+        slug: 'embeddings-text' as FullSlug,
+        ext: '.jsonl',
+        content: lines.join('\n'),
       })
 
       if (!o.aot) {
-        console.log(styleText("blue", `\n[emit:Semantic] Generating embeddings (aot=${o.aot})...`))
+        console.log(styleText('blue', `\n[emit:Semantic] Generating embeddings (aot=${o.aot})...`))
 
         await runEmbedBuild(
-          joinSegments(ctx.argv.output, "embeddings-text.jsonl"),
-          joinSegments(ctx.argv.output, "embeddings"),
+          joinSegments(ctx.argv.output, 'embeddings-text.jsonl'),
+          joinSegments(ctx.argv.output, 'embeddings'),
           o,
         )
       } else {
         console.log(
-          styleText("yellow", `[emit:Semantic] Skipping embedding generation (aot=${o.aot})`),
+          styleText('yellow', `[emit:Semantic] Skipping embedding generation (aot=${o.aot})`),
         )
       }
     },

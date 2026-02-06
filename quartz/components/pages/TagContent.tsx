@@ -1,16 +1,16 @@
-import { Root } from "hast"
-import { i18n } from "../../i18n"
-import { QuartzPluginData } from "../../plugins/vfile"
+import { Root } from 'hast'
+import { i18n } from '../../i18n'
+import { QuartzPluginData } from '../../plugins/vfile'
 import {
   QuartzComponent,
   QuartzComponentConstructor,
   QuartzComponentProps,
-} from "../../types/component"
-import { htmlToJsx } from "../../util/jsx"
-import { FullSlug, getAllSegmentPrefixes, simplifySlug } from "../../util/path"
-import PageListConstructor, { SortFn } from "../PageList"
-import PageListSearchConstructor from "../PageListSearch"
-import style from "../styles/listPage.scss"
+} from '../../types/component'
+import { htmlToJsx } from '../../util/jsx'
+import { FullSlug, getAllSegmentPrefixes, simplifySlug } from '../../util/path'
+import PageListConstructor, { SortFn } from '../PageList'
+import PageListSearchConstructor from '../PageListSearch'
+import style from '../styles/listPage.scss'
 
 interface TagContentOptions {
   sort?: SortFn
@@ -29,13 +29,13 @@ export default ((opts?: Partial<TagContentOptions>) => {
     const { tree, fileData, allFiles, cfg } = props
     const slug = fileData.slug
 
-    if (!(slug?.startsWith("tags/") || slug === "tags")) {
+    if (!(slug?.startsWith('tags/') || slug === 'tags')) {
       throw new Error(`Component "TagContent" tried to render a non-tag page: ${slug}`)
     }
 
-    const tag = simplifySlug(slug.slice("tags/".length) as FullSlug)
+    const tag = simplifySlug(slug.slice('tags/'.length) as FullSlug)
     const allPagesWithTag = (tag: string) =>
-      allFiles.filter((file) =>
+      allFiles.filter(file =>
         (file.frontmatter?.tags ?? []).flatMap(getAllSegmentPrefixes).includes(tag),
       )
 
@@ -44,11 +44,11 @@ export default ((opts?: Partial<TagContentOptions>) => {
         ? fileData.description
         : htmlToJsx(fileData.filePath!, tree)
     const cssClasses: string[] = fileData.frontmatter?.cssclasses ?? []
-    const classes = ["popover-hint", "full-col", ...cssClasses].join(" ")
-    if (tag === "/") {
+    const classes = ['popover-hint', 'full-col', ...cssClasses].join(' ')
+    if (tag === '/') {
       const tags = [
         ...new Set(
-          allFiles.flatMap((data) => data.frontmatter?.tags ?? []).flatMap(getAllSegmentPrefixes),
+          allFiles.flatMap(data => data.frontmatter?.tags ?? []).flatMap(getAllSegmentPrefixes),
         ),
       ].sort((a, b) => a.localeCompare(b))
       const tagItemMap: Map<string, QuartzPluginData[]> = new Map()
@@ -63,11 +63,11 @@ export default ((opts?: Partial<TagContentOptions>) => {
           <p>{i18n(cfg.locale).pages.tagContent.totalTags({ count: tags.length })}</p>
           <PageListSearch {...props} allTags />
           <div>
-            {tags.map((tag) => {
+            {tags.map(tag => {
               const pages = tagItemMap.get(tag)!
               const listProps = { ...props, allFiles: pages }
 
-              const contentPage = allFiles.filter((file) => file.slug === `tags/${tag}`).at(0)
+              const contentPage = allFiles.filter(file => file.slug === `tags/${tag}`).at(0)
 
               const root = contentPage?.htmlAst
               const content =
@@ -88,7 +88,7 @@ export default ((opts?: Partial<TagContentOptions>) => {
                       {i18n(cfg.locale).pages.tagContent.itemsUnderTag({ count: pages.length })}
                       {pages.length > options.numPages && (
                         <>
-                          {" "}
+                          {' '}
                           <span>
                             {i18n(cfg.locale).pages.tagContent.showingFirst({
                               count: options.numPages,

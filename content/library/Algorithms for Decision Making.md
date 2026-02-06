@@ -12,8 +12,8 @@ author:
 subcategory:
   - statistics
 description: A broad introduction to algorithms for decision making under uncertainty, introducing the underlying mathematical problem formulations and the algorithms for solving them.Automated decision-making
-posters: "[[library/posters/algorithms-for-decision-making.jpg]]"
-pdf: "[[thoughts/pdfs/dm.pdf]]"
+posters: '[[library/posters/algorithms-for-decision-making.jpg]]'
+pdf: '[[thoughts/pdfs/dm.pdf]]'
 external: https://algorithmsbook.com/decisionmaking
 id: Algorithms for Decision Making
 title: Algorithms for Decision Making

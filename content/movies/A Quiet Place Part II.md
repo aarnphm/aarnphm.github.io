@@ -8,7 +8,7 @@ description: the family leaves the farm and learns the wider world has no safe v
 director: John Krasinski
 id: a-quiet-place-part-ii
 modified: 2026-01-07 06:52:06 GMT-05:00
-posters: "[[movies/posters/a-quiet-place-2.jpg]]"
+posters: '[[movies/posters/a-quiet-place-2.jpg]]'
 rating: 7.2
 status: to watch
 studio: paramount pictures

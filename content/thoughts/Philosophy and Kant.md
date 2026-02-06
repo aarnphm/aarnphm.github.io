@@ -1,12 +1,12 @@
 ---
-date: "2023-12-04"
+date: '2023-12-04'
 description: and [[thoughts/moral]] philosophy
 id: Philosophy and Kant
 modified: 2026-01-11 08:50:44 GMT-05:00
 seealso:
-  - "[[thoughts/moral]]"
-  - "[[thoughts/ethics]]"
-  - "[[thoughts/Metaphysics]]"
+  - '[[thoughts/moral]]'
+  - '[[thoughts/ethics]]'
+  - '[[thoughts/Metaphysics]]'
 tags:
   - philosophy
 title: Immanuel Kant

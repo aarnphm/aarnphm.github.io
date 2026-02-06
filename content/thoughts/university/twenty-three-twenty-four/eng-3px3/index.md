@@ -1,5 +1,5 @@
 ---
-date: "2024-01-09"
+date: '2024-01-09'
 description: engineering economics course covering net value functions, economic principles for decision-making, financial metrics, and group project management.
 id: index
 modified: 2025-10-29 02:16:14 GMT-04:00

@@ -1,5 +1,5 @@
-import content from "../../components/styles/protected.scss"
-import { QuartzTransformerPlugin } from "../../types/plugin"
+import content from '../../components/styles/protected.scss'
+import { QuartzTransformerPlugin } from '../../types/plugin'
 
 function getPasswordForPage(file: any): string {
   const frontmatter = file.data.frontmatter
@@ -18,14 +18,14 @@ function getPasswordForPage(file: any): string {
 
   throw new Error(
     `No password found for protected page ${file.data.slug}. ` +
-      `Set ${frontmatter?.password || "PROTECTED_CONTENT_PASSWORD"} environment variable.`,
+      `Set ${frontmatter?.password || 'PROTECTED_CONTENT_PASSWORD'} environment variable.`,
   )
 }
 
 export const Protected: QuartzTransformerPlugin = () => {
   return {
-    name: "Protected",
-    htmlPlugins: (ctx) => [
+    name: 'Protected',
+    htmlPlugins: ctx => [
       () => {
         return async (_tree, file) => {
           if (ctx.argv.watch && !ctx.argv.force) return

@@ -1,24 +1,24 @@
-import { Cite } from "@citation-js/core"
-import fs from "fs"
-import path from "path"
-import { JSX } from "preact"
-import type { FrontmatterLink } from "../plugins/transformers/frontmatter"
+import { Cite } from '@citation-js/core'
+import fs from 'fs'
+import path from 'path'
+import { JSX } from 'preact'
+import type { FrontmatterLink } from '../plugins/transformers/frontmatter'
 import {
   QuartzComponent,
   QuartzComponentConstructor,
   QuartzComponentProps,
-} from "../types/component"
-import { classNames } from "../util/lang"
-import { FullSlug, resolveRelative } from "../util/path"
-import style from "./styles/seealsoTree.scss"
-import "@citation-js/plugin-bibtex"
+} from '../types/component'
+import { classNames } from '../util/lang'
+import { FullSlug, resolveRelative } from '../util/path'
+import style from './styles/seealsoTree.scss'
+import '@citation-js/plugin-bibtex'
 
 const MAX_DEPTH = 5
 const MAX_CHILDREN_PER_NODE = 5
 
 function getDisplayTitle(
   slug: FullSlug,
-  file: QuartzComponentProps["fileData"] | undefined,
+  file: QuartzComponentProps['fileData'] | undefined,
   alias?: string,
 ): string {
   if (alias && alias.trim().length > 0) {
@@ -26,20 +26,20 @@ function getDisplayTitle(
   }
 
   const frontmatterTitle = file?.frontmatter?.title
-  if (typeof frontmatterTitle === "string" && frontmatterTitle.length > 0) {
+  if (typeof frontmatterTitle === 'string' && frontmatterTitle.length > 0) {
     return frontmatterTitle
   }
 
-  const fragment = slug.split("/").pop() || slug
-  return fragment.replace(/\.[^/.]+$/, "").replace(/-/g, " ")
+  const fragment = slug.split('/').pop() || slug
+  return fragment.replace(/\.[^/.]+$/, '').replace(/-/g, ' ')
 }
 
 let loadedBib: any = null
 function getCitationTitle(bibKey: string): string | undefined {
   if (!loadedBib) {
-    const bibPath = path.join(process.cwd(), "content/References.bib")
+    const bibPath = path.join(process.cwd(), 'content/References.bib')
     if (fs.existsSync(bibPath)) {
-      const bibContent = fs.readFileSync(bibPath, "utf8")
+      const bibContent = fs.readFileSync(bibPath, 'utf8')
       loadedBib = new Cite(bibContent, { generateGraph: false })
     }
   }
@@ -55,13 +55,13 @@ export default (() => {
   const SeeAlso: QuartzComponent = ({ fileData, allFiles, displayClass }: QuartzComponentProps) => {
     const fmLinks = fileData.frontmatterLinks as Record<string, FrontmatterLink[]> | undefined
 
-    const rootLinks = fmLinks?.["seealso"]
+    const rootLinks = fmLinks?.['seealso']
 
     if (!rootLinks || rootLinks.length === 0) {
       return null
     }
 
-    const slugToFile = new Map<FullSlug, QuartzComponentProps["fileData"]>()
+    const slugToFile = new Map<FullSlug, QuartzComponentProps['fileData']>()
     for (const data of allFiles) {
       const slug = data.slug as FullSlug | undefined
       if (slug) {
@@ -74,7 +74,7 @@ export default (() => {
       const slug = data.slug as FullSlug | undefined
       if (!slug) continue
       const links = (data.frontmatterLinks as Record<string, FrontmatterLink[]> | undefined)?.[
-        "seealso"
+        'seealso'
       ]
       if (links && links.length > 0) {
         seealsoBySlug.set(slug, links)
@@ -88,7 +88,7 @@ export default (() => {
 
     const visited = new Set<string>([currentSlug])
     const lines: JSX.Element[] = []
-    const nbsp = "\u00a0"
+    const nbsp = '\u00a0'
     const padAfterLabel = nbsp.repeat(2)
     const segmentPad = nbsp.repeat(3)
     const segmentWithBar = `│${segmentPad}`
@@ -96,7 +96,7 @@ export default (() => {
 
     const formatReadingLabel = (minutes?: number): string => {
       let value = 0
-      if (typeof minutes === "number" && Number.isFinite(minutes) && minutes > 0) {
+      if (typeof minutes === 'number' && Number.isFinite(minutes) && minutes > 0) {
         value = Math.ceil(minutes)
       }
       if (value < 10) {
@@ -113,7 +113,7 @@ export default (() => {
       ancestorHasSibling: boolean[],
     ): void => {
       const targetSlug = link.slug
-      const isCitation = targetSlug.startsWith("@")
+      const isCitation = targetSlug.startsWith('@')
       const uniqueId = isCitation ? targetSlug : targetSlug
 
       if (visited.has(uniqueId)) {
@@ -122,7 +122,7 @@ export default (() => {
       visited.add(uniqueId)
 
       let title = link.alias || targetSlug
-      let href = "#"
+      let href = '#'
       let minutes: number | undefined
       let children: FrontmatterLink[] = []
 
@@ -146,12 +146,12 @@ export default (() => {
       for (const hasSibling of ancestorHasSibling) {
         segments.push(hasSibling ? segmentWithBar : segmentEmpty)
       }
-      const branchGlyph = isLast ? "└── " : "├── "
-      const prefix = segments.join("") + branchGlyph
+      const branchGlyph = isLast ? '└── ' : '├── '
+      const prefix = segments.join('') + branchGlyph
 
       const nextAncestors = [...ancestorHasSibling, !isLast]
 
-      const labelText = isCitation ? "[cite]" : formatReadingLabel(minutes)
+      const labelText = isCitation ? '[cite]' : formatReadingLabel(minutes)
 
       lines.push(
         <>
@@ -160,7 +160,7 @@ export default (() => {
           {padAfterLabel}
           <a
             href={href}
-            class={isCitation ? "" : "internal"}
+            class={isCitation ? '' : 'internal'}
             data-no-popover={isCitation}
             data-slug={isCitation ? undefined : targetSlug}
           >
@@ -181,7 +181,7 @@ export default (() => {
     topLevel.forEach((link, idx) => addBranch(link, 0, idx === topLevel.length - 1, []))
 
     return (
-      <section class={classNames(displayClass, "seealso-tree", "main-col")}>
+      <section class={classNames(displayClass, 'seealso-tree', 'main-col')}>
         <p class="seealso-tree-lines">{lines}</p>
       </section>
     )

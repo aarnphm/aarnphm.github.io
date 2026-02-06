@@ -10,10 +10,10 @@
   h4,
   h5,
   h6,
-  input[type="text"],
-  input[type="tel"],
-  input[type="email"],
-  input[type="search"],
+  input[type='text'],
+  input[type='tel'],
+  input[type='email'],
+  input[type='search'],
   textarea {
     cursor: var(--f-cursor-text);
   }
@@ -22,29 +22,29 @@
   a,
   a *,
   button,
-  [type="button"],
-  [type="reset"],
-  [type="submit"],
+  [type='button'],
+  [type='reset'],
+  [type='submit'],
   select,
-  input[type="checkbox"],
-  input[type="radio"],
+  input[type='checkbox'],
+  input[type='radio'],
   label,
   .clickable,
-  [role="button"],
-  [role="link"],
-  [role="menuitem"],
-  [role="tab"],
+  [role='button'],
+  [role='link'],
+  [role='menuitem'],
+  [role='tab'],
   details summary,
   .interactive {
     cursor: var(--f-cursor-pointer);
   }
 
   /* All grab events */
-  [draggable="true"],
+  [draggable='true'],
   .draggable,
   .scrollable,
   .sortable,
-  [role="slider"],
+  [role='slider'],
   ::-webkit-scrollbar-thumb,
   div:where(.overflow-auto, .overflow-x-auto, .overflow-y-auto) {
     cursor: var(--f-cursor-grab);
@@ -54,7 +54,7 @@
     }
   }
 
-  button[aria-disabled="true"] {
+  button[aria-disabled='true'] {
     pointer-events: none;
   }
 }

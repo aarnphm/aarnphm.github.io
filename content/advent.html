@@ -23,8 +23,8 @@
         --absurd-blue: #3a5a8b;
         --nausea-green: #3a6b5a;
 
-        --font-serif: "EB Garamond", Georgia, serif;
-        --font-mono: "Space Mono", monospace;
+        --font-serif: 'EB Garamond', Georgia, serif;
+        --font-mono: 'Space Mono', monospace;
       }
 
       * {
@@ -114,7 +114,7 @@
       }
 
       .day-card::before {
-        content: "";
+        content: '';
         position: absolute;
         inset: 0;
         background: linear-gradient(135deg, transparent 60%, rgba(139, 58, 58, 0.1) 100%);
@@ -431,123 +431,123 @@
     <script>
       const days = [
         {
-          title: "existence precedes essence",
-          thinker: "Jean-Paul Sartre",
-          symbol: "∅",
+          title: 'existence precedes essence',
+          thinker: 'Jean-Paul Sartre',
+          symbol: '∅',
           content: `<p>You are not born with a predetermined purpose. Unlike a hammer, which is designed before it exists, humans exist first—and then must create their own meaning.</p>
         <div class="modal-quote">"We are left alone, without excuse. That is what I mean when I say that man is condemned to be free."</div>
         <p>There is no cosmic blueprint for who you should become. The terrifying freedom is that you must choose, constantly, who you are becoming.</p>`,
         },
         {
-          title: "the absurd",
-          thinker: "Albert Camus",
-          symbol: "◎",
+          title: 'the absurd',
+          thinker: 'Albert Camus',
+          symbol: '◎',
           content: `<p>The absurd arises from the confrontation between human beings who desperately seek meaning and a universe that offers none. We cry out for answers into a silent void.</p>
         <div class="modal-quote">"The absurd is born of this confrontation between the human need and the unreasonable silence of the world."</div>
         <p>Yet Camus saw three responses: suicide (rejected), religious hope (philosophical suicide), or acceptance—living fully despite the absurd. One must imagine Sisyphus happy.</p>`,
         },
         {
-          title: "angst",
-          thinker: "Søren Kierkegaard",
-          symbol: "≈",
+          title: 'angst',
+          thinker: 'Søren Kierkegaard',
+          symbol: '≈',
           content: `<p>Angst is not fear of something specific—it is dread of freedom itself. When we truly confront our absolute freedom, when we realize that nothing constrains our choices, we feel vertigo.</p>
         <div class="modal-quote">"Anxiety is the dizziness of freedom."</div>
         <p>Standing at the edge of possibility, we experience the weight of our own existence. Every moment is a precipice.</p>`,
         },
         {
-          title: "being-toward-death",
-          thinker: "Martin Heidegger",
-          symbol: "→",
+          title: 'being-toward-death',
+          thinker: 'Martin Heidegger',
+          symbol: '→',
           content: `<p>Authentic existence requires confronting our own mortality. Not in morbid fascination, but in recognition that death individualizes us—no one can die my death for me.</p>
         <div class="modal-quote">"As soon as man comes to life, he is at once old enough to die."</div>
         <p>When we truly grasp our finitude, the everyday distractions fall away. We are called back to what genuinely matters.</p>`,
         },
         {
-          title: "bad faith",
-          thinker: "Jean-Paul Sartre",
-          symbol: "◇",
+          title: 'bad faith',
+          thinker: 'Jean-Paul Sartre',
+          symbol: '◇',
           content: `<p>Bad faith is lying to ourselves—pretending we have no choice when we do, or that we are fully free when we face real constraints. It is the comfortable evasion of responsibility.</p>
         <div class="modal-quote">"Bad faith seeks to flee what it can not flee, to flee what it is."</div>
         <p>The waiter who performs his role so completely he forgets he chose it. The person who says "I had no choice" when they simply didn't want to face the consequences of choosing otherwise.</p>`,
         },
         {
-          title: "the other",
-          thinker: "Jean-Paul Sartre",
-          symbol: "◈",
+          title: 'the other',
+          thinker: 'Jean-Paul Sartre',
+          symbol: '◈',
           content: `<p>When another person looks at me, I am suddenly objectified—I become a thing in their world. Their gaze reveals my existence to myself, but also threatens to define me.</p>
         <div class="modal-quote">"Hell is other people."</div>
         <p>This famous line is often misunderstood. It's not that others are inherently torturous, but that we are forever caught between our self-image and how others see us.</p>`,
         },
         {
-          title: "authenticity",
-          thinker: "Martin Heidegger",
-          symbol: "●",
+          title: 'authenticity',
+          thinker: 'Martin Heidegger',
+          symbol: '●',
           content: `<p>To live authentically is to own your existence—to choose deliberately rather than drifting with "the they," the anonymous crowd that thinks and does what "one" thinks and does.</p>
         <div class="modal-quote">"Everyone is the other, and no one is himself."</div>
         <p>Authenticity isn't about being different for its own sake, but about genuinely owning your choices rather than hiding behind what "they" say or do.</p>`,
         },
         {
-          title: "freedom and responsibility",
-          thinker: "Simone de Beauvoir",
-          symbol: "⊕",
+          title: 'freedom and responsibility',
+          thinker: 'Simone de Beauvoir',
+          symbol: '⊕',
           content: `<p>Freedom is not abstract—it exists in concrete situations, and my freedom is intertwined with others'. To will my own freedom, I must will the freedom of all.</p>
         <div class="modal-quote">"One is not born, but rather becomes, a woman."</div>
         <p>De Beauvoir extended existentialism to show how we are made into what society expects, yet retain the possibility of transcendence—of becoming more than we are told we can be.</p>`,
         },
         {
-          title: "nausea",
-          thinker: "Jean-Paul Sartre",
-          symbol: "∿",
+          title: 'nausea',
+          thinker: 'Jean-Paul Sartre',
+          symbol: '∿',
           content: `<p>Nausea is the visceral confrontation with existence itself—the sudden realization that things simply are, without reason, without necessity. Pure, contingent being.</p>
         <div class="modal-quote">"I exist. It's sweet, so sweet, so slow. And light: you'd think it floated all by itself."</div>
         <p>In these moments, the familiar becomes strange. A tree root, a hand, a face—all become alien, terrifying in their sheer thereness.</p>`,
         },
         {
-          title: "the eternal return",
-          thinker: "Friedrich Nietzsche",
-          symbol: "∞",
+          title: 'the eternal return',
+          thinker: 'Friedrich Nietzsche',
+          symbol: '∞',
           content: `<p>What if you had to live this exact life, with every pain and joy, infinitely? The eternal return is a test: can you affirm your existence so completely you would will it to repeat forever?</p>
         <div class="modal-quote">"Was that life? Well then, once more!"</div>
         <p>This is not a metaphysical claim but an ethical challenge. It asks: are you living in a way you could affirm eternally?</p>`,
         },
         {
-          title: "the leap of faith",
-          thinker: "Søren Kierkegaard",
-          symbol: "↑",
+          title: 'the leap of faith',
+          thinker: 'Søren Kierkegaard',
+          symbol: '↑',
           content: `<p>Reason can only take us so far. At some point, if we are to live meaningfully, we must leap—commit to something beyond what logic can justify.</p>
         <div class="modal-quote">"Life can only be understood backwards; but it must be lived forwards."</div>
         <p>Whether the leap is toward faith, love, or any genuine commitment—it requires risking everything without guarantee.</p>`,
         },
         {
-          title: "radical freedom",
-          thinker: "Jean-Paul Sartre",
-          symbol: "✦",
+          title: 'radical freedom',
+          thinker: 'Jean-Paul Sartre',
+          symbol: '✦',
           content: `<p>In every moment, you are free. Even in chains, you choose how to bear them. This is both liberation and burden—you cannot escape responsibility by claiming circumstance.</p>
         <div class="modal-quote">"Freedom is what we do with what is done to us."</div>
         <p>There are no excuses. What you do next is yours alone. The weight of existence rests entirely on your shoulders. And yet—this is the only ground from which genuine meaning can grow.</p>`,
         },
       ]
 
-      const calendar = document.getElementById("calendar")
-      const progress = document.getElementById("progress")
-      const modal = document.getElementById("modal")
-      const revealedDays = JSON.parse(localStorage.getItem("existAdventRevealed") || "[]")
+      const calendar = document.getElementById('calendar')
+      const progress = document.getElementById('progress')
+      const modal = document.getElementById('modal')
+      const revealedDays = JSON.parse(localStorage.getItem('existAdventRevealed') || '[]')
 
       function renderCalendar() {
-        calendar.innerHTML = ""
-        progress.innerHTML = ""
+        calendar.innerHTML = ''
+        progress.innerHTML = ''
 
         days.forEach((day, index) => {
           const isRevealed = revealedDays.includes(index)
 
-          const dot = document.createElement("div")
-          dot.className = `progress-dot ${isRevealed ? "filled" : ""}`
+          const dot = document.createElement('div')
+          dot.className = `progress-dot ${isRevealed ? 'filled' : ''}`
           progress.appendChild(dot)
 
-          const card = document.createElement("div")
-          card.className = `day-card ${isRevealed ? "revealed" : ""}`
+          const card = document.createElement('div')
+          card.className = `day-card ${isRevealed ? 'revealed' : ''}`
           card.innerHTML = `
-          <span class="day-number">${String(index + 1).padStart(2, "0")}</span>
+          <span class="day-number">${String(index + 1).padStart(2, '0')}</span>
           <span class="day-symbol">${day.symbol}</span>
           <div class="day-content">
             <h3 class="day-title">${day.title}</h3>
@@ -563,11 +563,11 @@
             </svg>
           </div>
           `
-              : ""
+              : ''
           }
         `
 
-          card.addEventListener("click", () => openModal(index))
+          card.addEventListener('click', () => openModal(index))
           calendar.appendChild(card)
         })
       }
@@ -577,34 +577,34 @@
 
         if (!revealedDays.includes(index)) {
           revealedDays.push(index)
-          localStorage.setItem("existAdventRevealed", JSON.stringify(revealedDays))
+          localStorage.setItem('existAdventRevealed', JSON.stringify(revealedDays))
           renderCalendar()
         }
 
-        document.getElementById("modalDay").textContent = `Day ${index + 1}`
-        document.getElementById("modalTitle").textContent = day.title
-        document.getElementById("modalThinker").textContent = day.thinker
-        document.getElementById("modalBody").innerHTML = day.content
+        document.getElementById('modalDay').textContent = `Day ${index + 1}`
+        document.getElementById('modalTitle').textContent = day.title
+        document.getElementById('modalThinker').textContent = day.thinker
+        document.getElementById('modalBody').innerHTML = day.content
 
-        modal.classList.add("open")
-        document.body.style.overflow = "hidden"
+        modal.classList.add('open')
+        document.body.style.overflow = 'hidden'
       }
 
       function closeModal() {
-        modal.classList.remove("open")
-        document.body.style.overflow = ""
+        modal.classList.remove('open')
+        document.body.style.overflow = ''
       }
 
-      modal.addEventListener("click", (e) => {
+      modal.addEventListener('click', e => {
         if (e.target === modal) closeModal()
       })
 
-      document.addEventListener("keydown", (e) => {
-        if (e.key === "Escape") closeModal()
+      document.addEventListener('keydown', e => {
+        if (e.key === 'Escape') closeModal()
       })
 
       function resetCalendar() {
-        localStorage.removeItem("existAdventRevealed")
+        localStorage.removeItem('existAdventRevealed')
         revealedDays.length = 0
         renderCalendar()
       }

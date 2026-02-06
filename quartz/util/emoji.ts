@@ -2,7 +2,7 @@ const U200D = String.fromCharCode(8205)
 const UFE0Fg = /\uFE0F/g
 
 export function getIconCode(char: string) {
-  return toCodePoint(char.indexOf(U200D) < 0 ? char.replace(UFE0Fg, "") : char)
+  return toCodePoint(char.indexOf(U200D) < 0 ? char.replace(UFE0Fg, '') : char)
 }
 
 function toCodePoint(unicodeSurrogates: string) {
@@ -22,11 +22,11 @@ function toCodePoint(unicodeSurrogates: string) {
       r.push(c.toString(16))
     }
   }
-  return r.join("-")
+  return r.join('-')
 }
 
 function codePointToEmoji(codepoint: string): string {
-  const codepoints = codepoint.split("-").map((cp) => parseInt(cp, 16))
+  const codepoints = codepoint.split('-').map(cp => parseInt(cp, 16))
   return String.fromCodePoint(...codepoints)
 }
 
@@ -39,7 +39,7 @@ let emojiEntries: EmojiEntry[] | null = null
 
 async function ensureEmojiMap(): Promise<EmojiMap | undefined> {
   if (!emojimap) {
-    const data = await import("./emojimap.json")
+    const data = await import('./emojimap.json')
     emojimap = data
   }
   return emojimap

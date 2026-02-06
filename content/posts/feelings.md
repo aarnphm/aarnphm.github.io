@@ -1,5 +1,5 @@
 ---
-date: "2025-08-16"
+date: '2025-08-16'
 description: visual poetry exploring the process of becoming and making.
 id: feelings
 layout: letter-poem

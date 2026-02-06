@@ -1,15 +1,15 @@
 ---
-date: "2026-01-28"
+date: '2026-01-28'
 description: information availability, global workspace, and what interpretability can actually map
 id: access-consciousness
 modified: 2026-01-28 02:30:00 GMT-05:00
 seealso:
-  - "[[thoughts/phenomenal consciousness]]"
-  - "[[thoughts/dualism]]"
-  - "[[thoughts/functionalism]]"
-  - "[[thoughts/qualia]]"
-  - "[[thoughts/Attention]]"
-  - "[[thoughts/Mechanistic interpretability]]"
+  - '[[thoughts/phenomenal consciousness]]'
+  - '[[thoughts/dualism]]'
+  - '[[thoughts/functionalism]]'
+  - '[[thoughts/qualia]]'
+  - '[[thoughts/Attention]]'
+  - '[[thoughts/Mechanistic interpretability]]'
 tags:
   - philosophy
   - consciousness

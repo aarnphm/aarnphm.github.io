@@ -8,7 +8,7 @@ description: surgeon's family cursed by dead patient's son—lanthimos adapting 
 director: Yorgos Lanthimos
 id: killing-of-the-sacred-deer
 modified: 2025-10-29 02:14:52 GMT-04:00
-posters: "[[movies/posters/killing-of-the-sacred-deer.jpg]]"
+posters: '[[movies/posters/killing-of-the-sacred-deer.jpg]]'
 rating: 7
 status: to watch
 studio: element pictures

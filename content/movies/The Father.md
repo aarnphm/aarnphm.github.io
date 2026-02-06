@@ -8,7 +8,7 @@ description: man's apartment rearranging itself as dementia erases his memory—
 director: Florian Zeller
 id: the-father
 modified: 2025-10-29 02:14:57 GMT-04:00
-posters: "[[movies/posters/the-father.jpg]]"
+posters: '[[movies/posters/the-father.jpg]]'
 rating: 8.2
 status: to watch
 studio: sony pictures classics

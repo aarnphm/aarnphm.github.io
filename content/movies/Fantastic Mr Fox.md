@@ -8,7 +8,7 @@ description: mid-life crisis in stop-motion—a fox domesticated then feral agai
 director: Wes Anderson
 id: fantastic-mr-fox
 modified: 2025-10-29 02:14:50 GMT-04:00
-posters: "[[movies/posters/fantastic-mr-fox.jpg]]"
+posters: '[[movies/posters/fantastic-mr-fox.jpg]]'
 rating: 7.9
 status: recurring
 studio: 20th century fox

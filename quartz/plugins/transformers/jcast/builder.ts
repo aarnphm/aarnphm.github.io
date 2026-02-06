@@ -1,4 +1,4 @@
-import { parseJsonCanvas, serializeJcast } from "./parser"
+import { parseJsonCanvas, serializeJcast } from './parser'
 import {
   JcastCanvas,
   JsonCanvas,
@@ -9,7 +9,7 @@ import {
   LinkNodeOptions,
   GroupNodeOptions,
   EdgeBuilderOptions,
-} from "./types"
+} from './types'
 
 /**
  * Fluent builder for programmatically creating JSON Canvas files
@@ -43,7 +43,7 @@ export class CanvasBuilder {
   static fromCanvas(canvas: JsonCanvas | JcastCanvas): CanvasBuilder {
     const builder = new CanvasBuilder()
 
-    if ("type" in canvas && canvas.type === "canvas") {
+    if ('type' in canvas && canvas.type === 'canvas') {
       // it's a jcast, serialize it back to JSON Canvas
       const jsonCanvas = serializeJcast(canvas as JcastCanvas)
       builder.nodes = [...jsonCanvas.nodes]
@@ -57,8 +57,8 @@ export class CanvasBuilder {
 
     // set id counter to max existing ID + 1
     const maxId = Math.max(
-      ...builder.nodes.map((n) => parseInt(n.id) || 0),
-      ...builder.edges.map((e) => parseInt(e.id) || 0),
+      ...builder.nodes.map(n => parseInt(n.id) || 0),
+      ...builder.edges.map(e => parseInt(e.id) || 0),
       0,
     )
     builder.idCounter = maxId + 1
@@ -79,7 +79,7 @@ export class CanvasBuilder {
   addTextNode(options: TextNodeOptions): CanvasBuilder {
     this.nodes.push({
       id: options.id || this.generateId(),
-      type: "text",
+      type: 'text',
       x: options.x,
       y: options.y,
       width: options.width,
@@ -96,7 +96,7 @@ export class CanvasBuilder {
   addFileNode(options: FileNodeOptions): CanvasBuilder {
     this.nodes.push({
       id: options.id || this.generateId(),
-      type: "file",
+      type: 'file',
       x: options.x,
       y: options.y,
       width: options.width,
@@ -114,7 +114,7 @@ export class CanvasBuilder {
   addLinkNode(options: LinkNodeOptions): CanvasBuilder {
     this.nodes.push({
       id: options.id || this.generateId(),
-      type: "link",
+      type: 'link',
       x: options.x,
       y: options.y,
       width: options.width,
@@ -131,7 +131,7 @@ export class CanvasBuilder {
   addGroupNode(options: GroupNodeOptions): CanvasBuilder {
     this.nodes.push({
       id: options.id || this.generateId(),
-      type: "group",
+      type: 'group',
       x: options.x,
       y: options.y,
       width: options.width,
@@ -166,9 +166,9 @@ export class CanvasBuilder {
    * Remove a node by ID
    */
   removeNode(nodeId: string): CanvasBuilder {
-    this.nodes = this.nodes.filter((n) => n.id !== nodeId)
+    this.nodes = this.nodes.filter(n => n.id !== nodeId)
     // also remove edges connected to this node
-    this.edges = this.edges.filter((e) => e.fromNode !== nodeId && e.toNode !== nodeId)
+    this.edges = this.edges.filter(e => e.fromNode !== nodeId && e.toNode !== nodeId)
     return this
   }
 
@@ -176,7 +176,7 @@ export class CanvasBuilder {
    * Remove an edge by ID
    */
   removeEdge(edgeId: string): CanvasBuilder {
-    this.edges = this.edges.filter((e) => e.id !== edgeId)
+    this.edges = this.edges.filter(e => e.id !== edgeId)
     return this
   }
 
@@ -184,7 +184,7 @@ export class CanvasBuilder {
    * Update a node
    */
   updateNode(nodeId: string, updates: Partial<JsonCanvasNode>): CanvasBuilder {
-    const node = this.nodes.find((n) => n.id === nodeId)
+    const node = this.nodes.find(n => n.id === nodeId)
     if (node) {
       Object.assign(node, updates)
     }
@@ -195,7 +195,7 @@ export class CanvasBuilder {
    * Update an edge
    */
   updateEdge(edgeId: string, updates: Partial<JsonCanvasEdge>): CanvasBuilder {
-    const edge = this.edges.find((e) => e.id === edgeId)
+    const edge = this.edges.find(e => e.id === edgeId)
     if (edge) {
       Object.assign(edge, updates)
     }
@@ -206,10 +206,10 @@ export class CanvasBuilder {
    * Filter nodes by predicate
    */
   filterNodes(predicate: (node: JsonCanvasNode) => boolean): CanvasBuilder {
-    const removedIds = new Set(this.nodes.filter((n) => !predicate(n)).map((n) => n.id))
+    const removedIds = new Set(this.nodes.filter(n => !predicate(n)).map(n => n.id))
     this.nodes = this.nodes.filter(predicate)
     // remove edges connected to removed nodes
-    this.edges = this.edges.filter((e) => !removedIds.has(e.fromNode) && !removedIds.has(e.toNode))
+    this.edges = this.edges.filter(e => !removedIds.has(e.fromNode) && !removedIds.has(e.toNode))
     return this
   }
 
@@ -225,14 +225,14 @@ export class CanvasBuilder {
    * Get node by ID
    */
   getNode(nodeId: string): JsonCanvasNode | undefined {
-    return this.nodes.find((n) => n.id === nodeId)
+    return this.nodes.find(n => n.id === nodeId)
   }
 
   /**
    * Get edge by ID
    */
   getEdge(edgeId: string): JsonCanvasEdge | undefined {
-    return this.edges.find((e) => e.id === edgeId)
+    return this.edges.find(e => e.id === edgeId)
   }
 
   /**
@@ -292,8 +292,8 @@ export class CanvasUtils {
    * Create a subgraph containing only specified nodes
    */
   static subgraph(canvas: JsonCanvas, nodeIds: Set<string>): JsonCanvas {
-    const nodes = canvas.nodes.filter((n) => nodeIds.has(n.id))
-    const edges = canvas.edges.filter((e) => nodeIds.has(e.fromNode) && nodeIds.has(e.toNode))
+    const nodes = canvas.nodes.filter(n => nodeIds.has(n.id))
+    const edges = canvas.edges.filter(e => nodeIds.has(e.fromNode) && nodeIds.has(e.toNode))
     return { nodes, edges }
   }
 
@@ -301,10 +301,7 @@ export class CanvasUtils {
    * Clone a canvas
    */
   static clone(canvas: JsonCanvas): JsonCanvas {
-    return {
-      nodes: canvas.nodes.map((n) => ({ ...n })),
-      edges: canvas.edges.map((e) => ({ ...e })),
-    }
+    return { nodes: canvas.nodes.map(n => ({ ...n })), edges: canvas.edges.map(e => ({ ...e })) }
   }
 
   /**
@@ -312,7 +309,7 @@ export class CanvasUtils {
    */
   static translateNodes(canvas: JsonCanvas, offsetX: number, offsetY: number): JsonCanvas {
     return {
-      nodes: canvas.nodes.map((n) => ({ ...n, x: n.x + offsetX, y: n.y + offsetY })),
+      nodes: canvas.nodes.map(n => ({ ...n, x: n.x + offsetX, y: n.y + offsetY })),
       edges: canvas.edges,
     }
   }
@@ -322,7 +319,7 @@ export class CanvasUtils {
    */
   static scaleCanvas(canvas: JsonCanvas, scale: number): JsonCanvas {
     return {
-      nodes: canvas.nodes.map((n) => ({
+      nodes: canvas.nodes.map(n => ({
         ...n,
         x: n.x * scale,
         y: n.y * scale,

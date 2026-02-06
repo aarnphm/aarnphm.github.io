@@ -1,5 +1,5 @@
 ---
-date: "2025-09-12"
+date: '2025-09-12'
 description: linear algebra
 id: index
 modified: 2025-11-11 07:00:31 GMT-05:00

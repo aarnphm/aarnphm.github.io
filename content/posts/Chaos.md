@@ -1,5 +1,5 @@
 ---
-date: "2024-02-18"
+date: '2024-02-18'
 id: Chaos
 modified: 2025-11-09 01:36:44 GMT-05:00
 signature: from twenty three aaron

@@ -12,7 +12,7 @@ subcategory:
   - r/psychology
 author:
   - John Dewey
-posters: "[[library/posters/on-education-dewe.jpg]]"
+posters: '[[library/posters/on-education-dewe.jpg]]'
 notebook:
 category: philosophy
 id: On Education

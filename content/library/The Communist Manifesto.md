@@ -13,7 +13,7 @@ subcategory:
 author:
   - Karl Marx
   - Friedrich Engels
-posters: "[[library/posters/the-communist-manifesto.avif]]"
+posters: '[[library/posters/the-communist-manifesto.avif]]'
 notebook:
 category: philosophy
 language: german

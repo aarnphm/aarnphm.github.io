@@ -1,25 +1,25 @@
-import type { StructuralAnchor } from "./model"
+import type { StructuralAnchor } from './model'
 
 export async function hashText(text: string): Promise<string> {
   const encoder = new TextEncoder()
   const data = encoder.encode(text)
-  const hashBuffer = await crypto.subtle.digest("SHA-256", data)
+  const hashBuffer = await crypto.subtle.digest('SHA-256', data)
   const hashArray = Array.from(new Uint8Array(hashBuffer))
-  return hashArray.map((b) => b.toString(16).padStart(2, "0")).join("")
+  return hashArray.map(b => b.toString(16).padStart(2, '0')).join('')
 }
 
 export function getArticleText(): string {
-  const article = document.querySelector("article.popover-hint")
-  return article?.textContent || ""
+  const article = document.querySelector('article.popover-hint')
+  return article?.textContent || ''
 }
 
 export function findClosestHeading(node: Node): string | null {
   let current: Node | null = node
   while (current) {
     if (current instanceof HTMLElement) {
-      const headingId = current.getAttribute("data-heading-id")
+      const headingId = current.getAttribute('data-heading-id')
       if (headingId) return headingId
-      if (current.classList.contains("collapsible-header")) {
+      if (current.classList.contains('collapsible-header')) {
         return current.id || null
       }
     }
@@ -33,7 +33,7 @@ export function findBlockId(node: Node): string | null {
   while (current) {
     if (current instanceof HTMLElement) {
       const id = current.id
-      if (id && /^[a-zA-Z0-9_-]+$/.test(id) && !id.startsWith("collapsible-")) {
+      if (id && /^[a-zA-Z0-9_-]+$/.test(id) && !id.startsWith('collapsible-')) {
         return id
       }
     }
@@ -47,7 +47,7 @@ export function findContainingParagraph(node: Node): Element | null {
   while (current) {
     if (current instanceof HTMLElement) {
       const tag = current.tagName.toLowerCase()
-      if (tag === "p" || tag === "li" || tag === "blockquote" || tag === "td" || tag === "th") {
+      if (tag === 'p' || tag === 'li' || tag === 'blockquote' || tag === 'td' || tag === 'th') {
         return current
       }
     }
@@ -58,7 +58,7 @@ export function findContainingParagraph(node: Node): Element | null {
 
 export function countParagraphsBefore(section: Element | null, node: Node): number {
   if (!section) return -1
-  const paragraphs = section.querySelectorAll("p, li, blockquote, td, th")
+  const paragraphs = section.querySelectorAll('p, li, blockquote, td, th')
   const containingParagraph = findContainingParagraph(node)
   if (!containingParagraph) return -1
   for (let i = 0; i < paragraphs.length; i++) {
@@ -89,17 +89,17 @@ export function computeLocalOffset(
 
 export function extractContextWords(range: Range, count: number): [string, string] {
   const articleText = getArticleText()
-  const article = document.querySelector("article.popover-hint")
-  if (!article) return ["", ""]
+  const article = document.querySelector('article.popover-hint')
+  if (!article) return ['', '']
 
   const offsets = getRangeOffsets(range, article)
-  if (!offsets) return ["", ""]
+  if (!offsets) return ['', '']
 
   const beforeText = articleText.slice(0, offsets.startOffset)
   const afterText = articleText.slice(offsets.endOffset)
 
-  const beforeWords = beforeText.trim().split(/\\s+/).slice(-count).join(" ")
-  const afterWords = afterText.trim().split(/\\s+/).slice(0, count).join(" ")
+  const beforeWords = beforeText.trim().split(/\\s+/).slice(-count).join(' ')
+  const afterWords = afterText.trim().split(/\\s+/).slice(0, count).join(' ')
 
   return [beforeWords, afterWords]
 }
@@ -140,7 +140,7 @@ export function recoverFromStructuralAnchor(
   }
 
   const searchWithinElement = (element: Element): { startIdx: number; endIdx: number } | null => {
-    const elementText = element.textContent || ""
+    const elementText = element.textContent || ''
     const matches: number[] = []
     let searchStart = 0
     while (true) {
@@ -196,7 +196,7 @@ export function recoverFromStructuralAnchor(
   }
 
   if (section && anchor.paragraphIndex >= 0) {
-    const paragraphs = section.querySelectorAll("p, li, blockquote, td, th")
+    const paragraphs = section.querySelectorAll('p, li, blockquote, td, th')
     if (anchor.paragraphIndex < paragraphs.length) {
       const targetParagraph = paragraphs[anchor.paragraphIndex]
       const result = searchWithinElement(targetParagraph)

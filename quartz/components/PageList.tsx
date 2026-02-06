@@ -1,12 +1,12 @@
-import { GlobalConfiguration } from "../cfg"
-import { QuartzPluginData } from "../plugins/vfile"
+import { GlobalConfiguration } from '../cfg'
+import { QuartzPluginData } from '../plugins/vfile'
 import {
   QuartzComponent,
   QuartzComponentProps,
   QuartzComponentConstructor,
-} from "../types/component"
-import { resolveRelative } from "../util/path"
-import { Date as DateComponent, getDate } from "./Date"
+} from '../types/component'
+import { resolveRelative } from '../util/path'
+import { Date as DateComponent, getDate } from './Date'
 
 export type SortFn = (f1: QuartzPluginData, f2: QuartzPluginData) => number
 
@@ -24,8 +24,8 @@ export function byDateAndAlphabetical(cfg: GlobalConfiguration): SortFn {
     }
 
     // otherwise, sort lexicographically by title
-    const f1Title = f1.frontmatter?.title.toLowerCase() ?? ""
-    const f2Title = f2.frontmatter?.title.toLowerCase() ?? ""
+    const f1Title = f1.frontmatter?.title.toLowerCase() ?? ''
+    const f2Title = f2.frontmatter?.title.toLowerCase() ?? ''
     return f1Title.localeCompare(f2Title)
   }
 }
@@ -53,7 +53,7 @@ export default ((userOpts?: Options) => {
         {list.map((page, idx) => {
           const title = page.frontmatter?.title
           const tags = page.frontmatter?.tags ?? []
-          const hiTags = opts.highlightTags.filter((v) => tags.includes(v))
+          const hiTags = opts.highlightTags.filter(v => tags.includes(v))
           const date = new Date(0)
 
           return (
@@ -67,7 +67,7 @@ export default ((userOpts?: Options) => {
                 class="note-link"
                 href={resolveRelative(fileData.slug!, page.slug!)}
                 data-list={true}
-                data-tags={tags.join(",")}
+                data-tags={tags.join(',')}
               >
                 <div class="note-grid">
                   {page.dates ? (
@@ -81,11 +81,11 @@ export default ((userOpts?: Options) => {
                   )}
                   <div class="desc">
                     {title}
-                    {tags.includes("folder") && <span>/</span>}
+                    {tags.includes('folder') && <span>/</span>}
                   </div>
                   {hiTags.length > 0 ? (
                     <menu class="tag-highlights">
-                      {hiTags.map((el) => (
+                      {hiTags.map(el => (
                         <li class="tag" data-tag={el}>
                           {el}
                         </li>

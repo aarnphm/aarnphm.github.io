@@ -1,5 +1,5 @@
 ---
-date: "2025-12-24"
+date: '2025-12-24'
 description: to be or what to be?
 id: Consciousness
 modified: 2026-01-02 03:50:52 GMT-05:00

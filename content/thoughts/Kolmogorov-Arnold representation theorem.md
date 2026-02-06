@@ -1,5 +1,5 @@
 ---
-date: "2024-12-17"
+date: '2024-12-17'
 description: also known as the superposition theorem.
 id: Kolmogorov-Arnold representation theorem
 modified: 2025-11-04 22:01:56 GMT-05:00

@@ -8,7 +8,7 @@ description: obsession calcified into ritual—two magicians destroying themselv
 director: Christopher Nolan
 id: the-prestige
 modified: 2025-10-29 02:14:59 GMT-04:00
-posters: "[[movies/posters/the-prestige.jpg]]"
+posters: '[[movies/posters/the-prestige.jpg]]'
 rating: 8.5
 status: recurring
 studio: syncopy

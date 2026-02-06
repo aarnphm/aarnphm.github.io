@@ -1,5 +1,5 @@
 ---
-date: "2024-11-11"
+date: '2024-11-11'
 description: accelerated gradient descent using lookahead gradient computation, achieving better convergence rates than standard momentum with optimal parameter assignments.
 id: Nesterov momentum
 modified: 2025-10-29 02:15:30 GMT-04:00

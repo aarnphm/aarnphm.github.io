@@ -1,7 +1,7 @@
-import { selectedCompletion, completionStatus } from "@codemirror/autocomplete"
-import { EditorView, ViewUpdate } from "@codemirror/view"
-import { normalizeRelativeURLs } from "../../../util/path"
-import { fetchCanonical } from "../../scripts/util"
+import { selectedCompletion, completionStatus } from '@codemirror/autocomplete'
+import { EditorView, ViewUpdate } from '@codemirror/view'
+import { normalizeRelativeURLs } from '../../../util/path'
+import { fetchCanonical } from '../../scripts/util'
 
 const parser = new DOMParser()
 
@@ -13,10 +13,10 @@ let currentSlug: string | null = null
 
 function ensurePopover() {
   if (popover) return
-  popover = document.createElement("div")
-  popover.classList.add("popover", "completion-preview")
-  inner = document.createElement("div")
-  inner.className = "popover-inner"
+  popover = document.createElement('div')
+  popover.classList.add('popover', 'completion-preview')
+  inner = document.createElement('div')
+  inner.className = 'popover-inner'
   popover.appendChild(inner)
   document.body.appendChild(popover)
 }
@@ -32,7 +32,7 @@ function showSkeleton() {
       <div class="skeleton-line"></div>
     </div>
   `
-  inner.classList.remove("grid")
+  inner.classList.remove('grid')
 }
 
 async function render(slug: string) {
@@ -47,28 +47,28 @@ async function render(slug: string) {
     const res = await fetchCanonical(url, { signal: abort.signal })
     if (!res.ok) throw new Error()
 
-    const doc = parser.parseFromString(await res.text(), "text/html")
+    const doc = parser.parseFromString(await res.text(), 'text/html')
     normalizeRelativeURLs(doc, url)
 
-    const hints = Array.from(doc.getElementsByClassName("popover-hint")) as HTMLElement[]
+    const hints = Array.from(doc.getElementsByClassName('popover-hint')) as HTMLElement[]
     if (!hints.length) throw new Error()
 
-    inner.innerHTML = ""
-    inner.classList.add("grid")
+    inner.innerHTML = ''
+    inner.classList.add('grid')
 
     for (const hint of hints) {
       hint
         .querySelectorAll(
-          "section[data-references], section[data-footnotes], [data-skip-preview], .telescopic-container",
+          'section[data-references], section[data-footnotes], [data-skip-preview], .telescopic-container',
         )
-        .forEach((e) => e.remove())
-      hint.querySelectorAll("[id]").forEach((el) => {
+        .forEach(e => e.remove())
+      hint.querySelectorAll('[id]').forEach(el => {
         el.id = `preview-${el.id}`
       })
       inner.appendChild(hint)
     }
   } catch (e: any) {
-    if (e.name === "AbortError") return
+    if (e.name === 'AbortError') return
     inner.innerHTML = '<p class="preview-empty">No preview available</p>'
   }
 }
@@ -77,7 +77,7 @@ let scrollContainer: HTMLElement | null = null
 let scrollHandler: (() => void) | null = null
 
 function positionSync() {
-  const tooltip = document.querySelector(".cm-tooltip-autocomplete")
+  const tooltip = document.querySelector('.cm-tooltip-autocomplete')
   if (!tooltip || !popover) return
 
   const rect = tooltip.getBoundingClientRect()
@@ -100,11 +100,11 @@ function positionSync() {
 }
 
 function startTracking() {
-  scrollContainer = document.querySelector(".center") ?? document.body
+  scrollContainer = document.querySelector('.center') ?? document.body
   scrollHandler = () => positionSync()
 
-  scrollContainer.addEventListener("scroll", scrollHandler, { passive: true })
-  window.addEventListener("scroll", scrollHandler, { passive: true })
+  scrollContainer.addEventListener('scroll', scrollHandler, { passive: true })
+  window.addEventListener('scroll', scrollHandler, { passive: true })
 
   if (rafId !== null) return
   const loop = () => {
@@ -116,8 +116,8 @@ function startTracking() {
 
 function stopTracking() {
   if (scrollHandler) {
-    scrollContainer?.removeEventListener("scroll", scrollHandler)
-    window.removeEventListener("scroll", scrollHandler)
+    scrollContainer?.removeEventListener('scroll', scrollHandler)
+    window.removeEventListener('scroll', scrollHandler)
     scrollHandler = null
     scrollContainer = null
   }
@@ -131,7 +131,7 @@ async function updateView(view: EditorView) {
   const completion = selectedCompletion(view.state)
   if (!completion?.detail) return
 
-  const slug = completion.detail.split(" ")[0]
+  const slug = completion.detail.split(' ')[0]
   if (slug !== currentSlug) {
     currentSlug = slug
     await render(slug)
@@ -141,7 +141,7 @@ async function updateView(view: EditorView) {
 export function showPreview(view: EditorView): void {
   ensurePopover()
   positionSync()
-  popover!.classList.add("active-popover")
+  popover!.classList.add('active-popover')
   startTracking()
   updateView(view)
 }
@@ -149,7 +149,7 @@ export function showPreview(view: EditorView): void {
 export function hidePreview(): void {
   stopTracking()
   abort?.abort()
-  popover?.classList.remove("active-popover")
+  popover?.classList.remove('active-popover')
   currentSlug = null
 }
 
@@ -163,12 +163,12 @@ export function togglePreview(view: EditorView): boolean {
 }
 
 export function isPreviewVisible(): boolean {
-  return popover?.classList.contains("active-popover") ?? false
+  return popover?.classList.contains('active-popover') ?? false
 }
 
 export function onEditorUpdate(update: ViewUpdate): void {
   if (!isPreviewVisible()) return
-  if (completionStatus(update.state) !== "active") return hidePreview()
+  if (completionStatus(update.state) !== 'active') return hidePreview()
   updateView(update.view)
 }
 

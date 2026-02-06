@@ -5,7 +5,7 @@ description: friendship ending without explanation on irish island—mcdonagh fi
 director: Martin McDonagh
 id: the-banshees-of-inisherin
 modified: 2025-10-29 02:14:56 GMT-04:00
-posters: "[[movies/posters/the-banshees-of-inisherin.jpg]]"
+posters: '[[movies/posters/the-banshees-of-inisherin.jpg]]'
 rating: 7.7
 status: recurring
 studio: searchlight

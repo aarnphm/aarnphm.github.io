@@ -6,7 +6,7 @@ description: morbidly obese professor trying to reconnect with daughter before d
 director: Darren Aronofsky
 id: the-whale
 modified: 2025-10-29 02:15:00 GMT-04:00
-posters: "[[movies/posters/the-whale.jpg]]"
+posters: '[[movies/posters/the-whale.jpg]]'
 rating: 7.6
 status: recurring
 studio: a24

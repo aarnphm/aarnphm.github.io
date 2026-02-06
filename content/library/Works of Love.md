@@ -13,7 +13,7 @@ subcategory:
   - hedonia
 author:
   - Søren Kierkegaard
-posters: "[[library/posters/works-of-love.jpeg]]"
+posters: '[[library/posters/works-of-love.jpeg]]'
 notebook:
 category: philosophy
 external: https://sorenkierkegaard.org/works-of-love.html

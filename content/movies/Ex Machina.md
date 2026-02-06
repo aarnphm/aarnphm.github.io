@@ -7,7 +7,7 @@ description: turing test as seduction—garland asking who's manipulating whom, 
 director: Alex Garland
 id: ex-machina
 modified: 2025-10-29 02:14:49 GMT-04:00
-posters: "[[movies/posters/ex-machina.jpg]]"
+posters: '[[movies/posters/ex-machina.jpg]]'
 rating: 7.7
 status: recurring
 studio: a24

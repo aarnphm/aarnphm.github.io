@@ -1,6 +1,6 @@
 #!/usr/bin/env node
-import fs from "fs"
-import path from "path"
+import fs from 'fs'
+import path from 'path'
 
 interface ArenaEntry {
   url: string
@@ -67,7 +67,7 @@ function parseMetaTags(html: string): MetaInfo {
   // extract keywords
   const keywordsMatch = html.match(/<meta[^>]*name=["']keywords["'][^>]*content=["']([^"']*)["']/i)
   if (keywordsMatch) {
-    metaInfo.keywords = keywordsMatch[1].split(",").map((k) => k.trim())
+    metaInfo.keywords = keywordsMatch[1].split(',').map(k => k.trim())
   }
 
   // extract twitter card type
@@ -90,8 +90,8 @@ async function fetchMetaInfo(url: string): Promise<MetaInfo | null> {
     const response = await fetch(url, {
       signal: controller.signal,
       headers: {
-        "User-Agent":
-          "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        'User-Agent':
+          'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
       },
     })
 
@@ -120,23 +120,23 @@ function inferTags(entry: ArenaEntry, metaInfo: MetaInfo | null): string[] {
   const url = new URL(entry.url)
   const domain = url.hostname
 
-  if (domain.includes("x.com") || domain.includes("twitter.com")) {
-    tags.add("social")
-    tags.add("twitter")
-  } else if (domain.includes("arxiv.org")) {
-    tags.add("paper")
-    tags.add("academic")
-  } else if (domain.includes("github.com")) {
-    tags.add("code")
-    tags.add("repository")
-  } else if (domain.includes("youtube.com") || domain.includes("youtu.be")) {
-    tags.add("video")
-  } else if (domain.includes("lesswrong.com")) {
-    tags.add("rationality")
-    tags.add("discourse")
-  } else if (domain.includes("substack.com")) {
-    tags.add("article")
-    tags.add("newsletter")
+  if (domain.includes('x.com') || domain.includes('twitter.com')) {
+    tags.add('social')
+    tags.add('twitter')
+  } else if (domain.includes('arxiv.org')) {
+    tags.add('paper')
+    tags.add('academic')
+  } else if (domain.includes('github.com')) {
+    tags.add('code')
+    tags.add('repository')
+  } else if (domain.includes('youtube.com') || domain.includes('youtu.be')) {
+    tags.add('video')
+  } else if (domain.includes('lesswrong.com')) {
+    tags.add('rationality')
+    tags.add('discourse')
+  } else if (domain.includes('substack.com')) {
+    tags.add('article')
+    tags.add('newsletter')
   }
 
   if (!metaInfo) {
@@ -145,19 +145,19 @@ function inferTags(entry: ArenaEntry, metaInfo: MetaInfo | null): string[] {
 
   // og:type based tags
   if (metaInfo.ogType) {
-    if (metaInfo.ogType.includes("article")) tags.add("article")
-    if (metaInfo.ogType.includes("video")) tags.add("video")
-    if (metaInfo.ogType.includes("website")) tags.add("web")
+    if (metaInfo.ogType.includes('article')) tags.add('article')
+    if (metaInfo.ogType.includes('video')) tags.add('video')
+    if (metaInfo.ogType.includes('website')) tags.add('web')
   }
 
   // twitter card based tags
-  if (metaInfo.twitterCard === "summary_large_image") {
-    tags.add("media")
+  if (metaInfo.twitterCard === 'summary_large_image') {
+    tags.add('media')
   }
 
   // keywords based tags
   if (metaInfo.keywords && metaInfo.keywords.length > 0) {
-    metaInfo.keywords.forEach((keyword) => {
+    metaInfo.keywords.forEach(keyword => {
       const normalized = keyword.toLowerCase().trim()
       if (normalized.length > 2 && normalized.length < 20) {
         tags.add(normalized)
@@ -166,27 +166,27 @@ function inferTags(entry: ArenaEntry, metaInfo: MetaInfo | null): string[] {
   }
 
   // content analysis from description
-  const description = (metaInfo.ogDescription || metaInfo.description || "").toLowerCase()
-  const title = (metaInfo.ogTitle || metaInfo.title || "").toLowerCase()
+  const description = (metaInfo.ogDescription || metaInfo.description || '').toLowerCase()
+  const title = (metaInfo.ogTitle || metaInfo.title || '').toLowerCase()
   const content = `${title} ${description}`
 
   // topic-based inference
-  if (content.match(/\b(ai|artificial intelligence|machine learning|ml|llm)\b/)) tags.add("ai")
-  if (content.match(/\b(research|study|paper|academic)\b/)) tags.add("research")
-  if (content.match(/\b(philosophy|philosophical|ethics|moral)\b/)) tags.add("philosophy")
-  if (content.match(/\b(money|capitalism|economy|economic|finance)\b/)) tags.add("economics")
-  if (content.match(/\b(love|relationship|dating|romance)\b/)) tags.add("relationships")
-  if (content.match(/\b(poem|poetry|creative writing)\b/)) tags.add("poetry")
-  if (content.match(/\b(life|living|existence)\b/)) tags.add("life")
-  if (content.match(/\b(meme|funny|humor|joke)\b/)) tags.add("humor")
+  if (content.match(/\b(ai|artificial intelligence|machine learning|ml|llm)\b/)) tags.add('ai')
+  if (content.match(/\b(research|study|paper|academic)\b/)) tags.add('research')
+  if (content.match(/\b(philosophy|philosophical|ethics|moral)\b/)) tags.add('philosophy')
+  if (content.match(/\b(money|capitalism|economy|economic|finance)\b/)) tags.add('economics')
+  if (content.match(/\b(love|relationship|dating|romance)\b/)) tags.add('relationships')
+  if (content.match(/\b(poem|poetry|creative writing)\b/)) tags.add('poetry')
+  if (content.match(/\b(life|living|existence)\b/)) tags.add('life')
+  if (content.match(/\b(meme|funny|humor|joke)\b/)) tags.add('humor')
 
   return Array.from(tags)
 }
 
 // parse are.na.md file and extract entries with specific tag
 function parseArenaFile(filePath: string, targetTag: string): ArenaEntry[] {
-  const content = fs.readFileSync(filePath, "utf-8")
-  const lines = content.split("\n")
+  const content = fs.readFileSync(filePath, 'utf-8')
+  const lines = content.split('\n')
   const entries: ArenaEntry[] = []
 
   let i = 0
@@ -194,19 +194,19 @@ function parseArenaFile(filePath: string, targetTag: string): ArenaEntry[] {
     const line = lines[i]
 
     // check if line starts with "- http" (entry line)
-    if (line.trim().startsWith("- http")) {
+    if (line.trim().startsWith('- http')) {
       const urlMatch = line.match(/^-\s+(https?:\/\/[^\s]+)(?:\s+--\s+(.*))?/)
       if (urlMatch) {
         const url = urlMatch[1]
-        const description = urlMatch[2]?.replace(/\*\*$/, "").trim() || ""
+        const description = urlMatch[2]?.replace(/\*\*$/, '').trim() || ''
 
         // look ahead for [meta] section
-        let date = ""
+        let date = ''
         let tags: string[] = []
         let j = i + 1
 
         // check next lines for meta section
-        if (j < lines.length && lines[j].trim() === "- [meta]:") {
+        if (j < lines.length && lines[j].trim() === '- [meta]:') {
           j++
           while (j < lines.length && lines[j].match(/^\s{4}-\s+/)) {
             const metaLine = lines[j].trim()
@@ -220,7 +220,7 @@ function parseArenaFile(filePath: string, targetTag: string): ArenaEntry[] {
             // extract tags
             const tagsMatch = metaLine.match(/^-\s+tags:\s+\[(.*)\]/)
             if (tagsMatch) {
-              tags = tagsMatch[1].split(",").map((t) => t.trim())
+              tags = tagsMatch[1].split(',').map(t => t.trim())
             }
 
             j++
@@ -248,18 +248,18 @@ function parseArenaFile(filePath: string, targetTag: string): ArenaEntry[] {
 
 // delay helper
 function delay(ms: number): Promise<void> {
-  return new Promise((resolve) => setTimeout(resolve, ms))
+  return new Promise(resolve => setTimeout(resolve, ms))
 }
 
 // main execution
 async function main() {
   const args = process.argv.slice(2)
-  const targetTag = args.find((arg) => arg.startsWith("--tag="))?.split("=")[1] || "fruit"
+  const targetTag = args.find(arg => arg.startsWith('--tag='))?.split('=')[1] || 'fruit'
   const outputPath =
-    args.find((arg) => arg.startsWith("--output="))?.split("=")[1] || "content/are.na-meta.json"
-  const delayMs = parseInt(args.find((arg) => arg.startsWith("--delay="))?.split("=")[1] || "1500")
+    args.find(arg => arg.startsWith('--output='))?.split('=')[1] || 'content/are.na-meta.json'
+  const delayMs = parseInt(args.find(arg => arg.startsWith('--delay='))?.split('=')[1] || '1500')
 
-  const arenaPath = path.join(process.cwd(), "content/are.na.md")
+  const arenaPath = path.join(process.cwd(), 'content/are.na.md')
 
   console.log(`Parsing ${arenaPath} for entries tagged with "${targetTag}"...`)
   const entries = parseArenaFile(arenaPath, targetTag)
@@ -274,18 +274,18 @@ async function main() {
     const metaInfo = await fetchMetaInfo(entry.url)
 
     if (metaInfo) {
-      console.log(`  Title: ${metaInfo.ogTitle || metaInfo.title || "N/A"}`)
-      console.log(`  Type: ${metaInfo.ogType || "N/A"}`)
+      console.log(`  Title: ${metaInfo.ogTitle || metaInfo.title || 'N/A'}`)
+      console.log(`  Type: ${metaInfo.ogType || 'N/A'}`)
     }
 
     const suggestedTags = inferTags(entry, metaInfo)
-    console.log(`  Suggested tags: ${suggestedTags.join(", ")}`)
+    console.log(`  Suggested tags: ${suggestedTags.join(', ')}`)
 
     processedEntries.push({
       ...entry,
       metaInfo: metaInfo || undefined,
       suggestedTags,
-      error: metaInfo ? undefined : "Failed to fetch meta information",
+      error: metaInfo ? undefined : 'Failed to fetch meta information',
     })
 
     // rate limiting
@@ -300,7 +300,7 @@ async function main() {
   console.log(`\n\nResults saved to ${outputFullPath}`)
 
   // summary
-  const successful = processedEntries.filter((e) => !e.error).length
+  const successful = processedEntries.filter(e => !e.error).length
   console.log(`\nSummary:`)
   console.log(`  Total entries: ${processedEntries.length}`)
   console.log(`  Successfully fetched: ${successful}`)

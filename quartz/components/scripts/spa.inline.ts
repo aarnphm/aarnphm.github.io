@@ -1,21 +1,21 @@
-import micromorph from "micromorph"
-import { ContentDetails } from "../../plugins"
+import micromorph from 'micromorph'
+import { ContentDetails } from '../../plugins'
 import {
   FullSlug,
   RelativeURL,
   getFullSlug,
   normalizeRelativeURLs,
   sluggify,
-} from "../../util/path"
-import { formatDate } from "../Date"
-import { Toast } from "./toast"
-import { removeAllChildren, Dag, DagNode } from "./util"
-import { fetchCanonical, startViewTransition } from "./util"
+} from '../../util/path'
+import { formatDate } from '../Date'
+import { Toast } from './toast'
+import { removeAllChildren, Dag, DagNode } from './util'
+import { fetchCanonical, startViewTransition } from './util'
 
 // adapted from `micromorph`
 // https://github.com/natemoo-re/micromorph
 const NODE_TYPE_ELEMENT = 1
-let announcer = document.createElement("route-announcer")
+let announcer = document.createElement('route-announcer')
 const isElement = (target: EventTarget | null): target is Element =>
   (target as Node)?.nodeType === NODE_TYPE_ELEMENT
 const isLocalUrl = (href: string) => {
@@ -34,28 +34,28 @@ const isSamePage = (url: URL): boolean => {
 
 const getOpts = ({ target }: Event): { url: URL; scroll?: boolean } | undefined => {
   if (!isElement(target)) return
-  if (target.attributes.getNamedItem("target")?.value === "_blank") return
-  const a = target.closest("a")
+  if (target.attributes.getNamedItem('target')?.value === '_blank') return
+  const a = target.closest('a')
   if (!a) return
-  if ("routerIgnore" in a.dataset) return
+  if ('routerIgnore' in a.dataset) return
   const { href } = a
   if (!isLocalUrl(href)) return
-  return { url: new URL(href), scroll: "routerNoscroll" in a.dataset ? false : undefined }
+  return { url: new URL(href), scroll: 'routerNoscroll' in a.dataset ? false : undefined }
 }
 
 function notifyNav(url: FullSlug) {
-  const event: CustomEventMap["nav"] = new CustomEvent("nav", { detail: { url } })
+  const event: CustomEventMap['nav'] = new CustomEvent('nav', { detail: { url } })
   document.dispatchEvent(event)
 }
 
 const cleanupFns: Set<(...args: any[]) => void> = new Set()
-window.addCleanup = (fn) => cleanupFns.add(fn)
+window.addCleanup = fn => cleanupFns.add(fn)
 
 if (!window.quartzToast) {
   const toast = new Toast()
   window.quartzToast = toast
 
-  const handleToast = (event: CustomEventMap["toast"]) => {
+  const handleToast = (event: CustomEventMap['toast']) => {
     const detail = event.detail
     if (!detail?.message) return
     toast.show(detail.message, {
@@ -66,8 +66,8 @@ if (!window.quartzToast) {
     })
   }
 
-  document.addEventListener("toast", handleToast)
-  document.addEventListener("prenav", () => toast.destroy())
+  document.addEventListener('toast', handleToast)
+  document.addEventListener('prenav', () => toast.destroy())
 }
 
 let navProgressBar: HTMLDivElement | null = null
@@ -79,14 +79,14 @@ function getNavProgressBar() {
     return navProgressBar
   }
 
-  const existing = document.querySelector<HTMLDivElement>(".navigation-progress")
+  const existing = document.querySelector<HTMLDivElement>('.navigation-progress')
   if (existing) {
     navProgressBar = existing
     return navProgressBar
   }
 
-  navProgressBar = document.createElement("div")
-  navProgressBar.className = "navigation-progress"
+  navProgressBar = document.createElement('div')
+  navProgressBar.className = 'navigation-progress'
   document.body.appendChild(navProgressBar)
   return navProgressBar
 }
@@ -100,14 +100,14 @@ function startLoading() {
     window.clearTimeout(navProgressReset)
   }
 
-  loadingBar.style.opacity = "1"
-  loadingBar.style.width = "0"
-  loadingBar.style.animation = "none"
-  loadingBar.style.backgroundPosition = "-100% 0"
+  loadingBar.style.opacity = '1'
+  loadingBar.style.width = '0'
+  loadingBar.style.animation = 'none'
+  loadingBar.style.backgroundPosition = '-100% 0'
 
   navProgressStart = window.setTimeout(() => {
-    loadingBar.style.width = "100%"
-    loadingBar.style.animation = "navigation-progress-sweep 2.5s linear infinite"
+    loadingBar.style.width = '100%'
+    loadingBar.style.animation = 'navigation-progress-sweep 2.5s linear infinite'
   }, 10)
 }
 
@@ -116,11 +116,11 @@ function stopLoading() {
   if (navProgressStart) {
     window.clearTimeout(navProgressStart)
   }
-  loadingBar.style.animation = "none"
-  loadingBar.style.opacity = "0"
+  loadingBar.style.animation = 'none'
+  loadingBar.style.opacity = '0'
   navProgressReset = window.setTimeout(() => {
-    loadingBar.style.width = "0"
-    loadingBar.style.backgroundPosition = "-100% 0"
+    loadingBar.style.width = '0'
+    loadingBar.style.backgroundPosition = '-100% 0'
   }, 300)
 }
 
@@ -148,9 +148,9 @@ class StackedNoteManager {
   private isActive: boolean = false
 
   constructor() {
-    this.container = document.getElementById("stacked-notes-container") as HTMLDivElement
-    this.main = this.container.querySelector("#stacked-notes-main") as HTMLDivElement
-    this.column = this.main.querySelector(".stacked-notes-column") as HTMLDivElement
+    this.container = document.getElementById('stacked-notes-container') as HTMLDivElement
+    this.main = this.container.querySelector('#stacked-notes-main') as HTMLDivElement
+    this.column = this.main.querySelector('.stacked-notes-column') as HTMLDivElement
 
     this.styled = getComputedStyle(this.main)
 
@@ -169,12 +169,12 @@ class StackedNoteManager {
       return
     }
 
-    const titleWidth = parseInt(this.styled.getPropertyValue("--note-title-width"))
-    const contentWidth = parseInt(this.styled.getPropertyValue("--note-content-width"))
+    const titleWidth = parseInt(this.styled.getPropertyValue('--note-title-width'))
+    const contentWidth = parseInt(this.styled.getPropertyValue('--note-content-width'))
 
     const updateNoteStates = () => {
       const notes = [...this.column.children].filter(
-        (el) => !el.classList.contains("popover"),
+        el => !el.classList.contains('popover'),
       ) as HTMLElement[]
       const clientWidth = document.documentElement.clientWidth
 
@@ -183,7 +183,7 @@ class StackedNoteManager {
 
         if (idx === notes.length - 1) {
           const shouldCollapsed = clientWidth - rect.left <= 50 // 40px + padding
-          note.classList.toggle("collapsed", shouldCollapsed)
+          note.classList.toggle('collapsed', shouldCollapsed)
           if (shouldCollapsed) {
             note.scrollTo({ top: 0 })
           }
@@ -202,14 +202,14 @@ class StackedNoteManager {
         }
 
         // Check overlay - when next note starts overlapping current note
-        nextNote.classList.toggle("overlay", nextRect.left < rect.right)
+        nextNote.classList.toggle('overlay', nextRect.left < rect.right)
 
         // Check collapse - when next note fully overlaps (leaving title space)
         const shouldCollapsed = nextRect.left <= rect.left + titleWidth
         if (shouldCollapsed) {
           note.scrollTo({ top: 0 })
         }
-        note.classList.toggle("collapsed", shouldCollapsed)
+        note.classList.toggle('collapsed', shouldCollapsed)
       })
     }
 
@@ -217,26 +217,26 @@ class StackedNoteManager {
       requestAnimationFrame(updateNoteStates)
     }
 
-    this.main.addEventListener("scroll", this.scrollHandler)
-    window.addEventListener("resize", this.scrollHandler)
+    this.main.addEventListener('scroll', this.scrollHandler)
+    window.addEventListener('resize', this.scrollHandler)
     this.scrollHandler()
 
     window.addCleanup(() => {
       if (this.scrollHandler) {
-        this.main.removeEventListener("scroll", this.scrollHandler)
-        window.removeEventListener("resize", this.scrollHandler)
+        this.main.removeEventListener('scroll', this.scrollHandler)
+        window.removeEventListener('resize', this.scrollHandler)
       }
     })
   }
 
   private async initFromParams() {
     const url = new URL(window.location.toString())
-    const stackedNotes = url.searchParams.getAll("stackedNotes")
+    const stackedNotes = url.searchParams.getAll('stackedNotes')
 
     if (stackedNotes.length === 0) return
 
     // Check if notes already rendered by server
-    const existingNotes = [...this.column.querySelectorAll(".stacked-note")] as HTMLElement[]
+    const existingNotes = [...this.column.querySelectorAll('.stacked-note')] as HTMLElement[]
 
     if (existingNotes.length > 0) {
       // Server-rendered path: hydrate existing notes
@@ -251,17 +251,17 @@ class StackedNoteManager {
         }
 
         // Extract title and contents from existing DOM (no fetch needed)
-        const noteTitle = noteElement.querySelector(".stacked-title") as HTMLDivElement
-        const noteContent = noteElement.querySelector(".stacked-content") as HTMLDivElement
+        const noteTitle = noteElement.querySelector('.stacked-title') as HTMLDivElement
+        const noteContent = noteElement.querySelector('.stacked-content') as HTMLDivElement
 
         const title = noteTitle?.textContent || slug
         // Extract popover-hint elements from rendered content
         const contents = noteContent
-          ? (Array.from(noteContent.querySelectorAll(".popover-hint")) as HTMLDivElement[])
+          ? (Array.from(noteContent.querySelectorAll('.popover-hint')) as HTMLDivElement[])
           : []
 
         // Add to DAG with reference to existing DOM element
-        this.dag.addNode({ slug, title, contents, hash: "", anchor: null, note: noteElement })
+        this.dag.addNode({ slug, title, contents, hash: '', anchor: null, note: noteElement })
 
         // Attach event listeners
         this.hydrateNote(noteElement)
@@ -277,7 +277,7 @@ class StackedNoteManager {
     // Client-rendered path: fetch and build notes
 
     // Create an array to store all fetch promises
-    const fetchPromises = stackedNotes.map(async (noteHash) => {
+    const fetchPromises = stackedNotes.map(async noteHash => {
       const slug = this.decodeHash(noteHash)
       if (!slug) return null
 
@@ -314,24 +314,24 @@ class StackedNoteManager {
     const url = new URL(window.location.toString())
 
     // Clear existing stackednotes params
-    url.searchParams.delete("stackedNotes")
+    url.searchParams.delete('stackedNotes')
 
     // Add current stack state and right position
     this.dag.getOrderedNodes().forEach((node, index, _) => {
-      url.searchParams.append("stackedNotes", this.hashSlug(node.slug))
+      url.searchParams.append('stackedNotes', this.hashSlug(node.slug))
 
-      const width = parseInt(this.styled.getPropertyValue("--note-content-width"))
-      const left = parseInt(this.styled.getPropertyValue("--note-title-width"))
+      const width = parseInt(this.styled.getPropertyValue('--note-content-width'))
+      const left = parseInt(this.styled.getPropertyValue('--note-title-width'))
       const right = width - left
       node.note.style.right = `${-right + (this.dag.getOrderedNodes().length - index - 1) * left}px`
     })
 
     // Update URL without reloading
-    window.history.replaceState({}, "", url)
+    window.history.replaceState({}, '', url)
     // Update anchor highlights
     for (const el of this.dag.getOrderedNodes()) {
-      Array.from(el.note.getElementsByClassName("internal")).forEach((el) =>
-        el.classList.toggle("dag", this.dag.has((el as HTMLAnchorElement).dataset.slug!)),
+      Array.from(el.note.getElementsByClassName('internal')).forEach(el =>
+        el.classList.toggle('dag', this.dag.has((el as HTMLAnchorElement).dataset.slug!)),
       )
     }
   }
@@ -339,30 +339,30 @@ class StackedNoteManager {
   getChain() {
     return this.dag
       .getOrderedNodes()
-      .map((el) => `stackedNotes=${this.hashSlug(el.slug)}`)
-      .join("&")
+      .map(el => `stackedNotes=${this.hashSlug(el.slug)}`)
+      .join('&')
   }
 
   /** Generates URL-safe hash for a slug. Uses base64 with special handling for dots */
   private generateHash(slug: string): string {
     // Replace dots with a safe character sequence before encoding
-    const safePath = slug.toString().replace(/\./g, "___DOT___")
-    return btoa(safePath).replace(/=+$/, "")
+    const safePath = slug.toString().replace(/\./g, '___DOT___')
+    return btoa(safePath).replace(/=+$/, '')
   }
 
   private decodeHash(hash: string): string {
     try {
       const decoded = atob(hash)
       // Restore dots after decoding
-      const restoredPath = decoded.replace(/___DOT___/g, ".")
+      const restoredPath = decoded.replace(/___DOT___/g, '.')
       // Validate the path only contains allowed characters
       if (restoredPath.match(/^[a-zA-Z0-9/.-]+$/)) {
         return restoredPath
       }
-      throw new Error("Invalid path characters")
+      throw new Error('Invalid path characters')
     } catch (e) {
-      console.error("Failed to decode hash:", e)
-      return ""
+      console.error('Failed to decode hash:', e)
+      return ''
     }
   }
 
@@ -383,18 +383,18 @@ class StackedNoteManager {
     return hash
   }
 
-  private async fetchContent(url: URL): Promise<Omit<StackedNote, "slug"> | undefined> {
+  private async fetchContent(url: URL): Promise<Omit<StackedNote, 'slug'> | undefined> {
     p = p || new DOMParser()
 
     const hash = decodeURIComponent(url.hash)
-    url.hash = ""
-    url.search = ""
+    url.hash = ''
+    url.search = ''
 
     const response = await fetchCanonical(url).catch(console.error)
     if (!response) return
 
     const txt = await response.text()
-    const html = p.parseFromString(txt, "text/html")
+    const html = p.parseFromString(txt, 'text/html')
     normalizeRelativeURLs(html, url)
     transformHostInternalLinks(html)
 
@@ -402,8 +402,8 @@ class StackedNoteManager {
     const protectedArticle = html.querySelector('article[data-protected="true"]')
     if (protectedArticle) {
       // create a protected indicator element
-      const protectedDiv = document.createElement("div")
-      protectedDiv.className = "protected-stacked-note"
+      const protectedDiv = document.createElement('div')
+      protectedDiv.className = 'protected-stacked-note'
       protectedDiv.innerHTML = `
         <div class="protected-overlay">
           <div class="protected-message">
@@ -413,19 +413,19 @@ class StackedNoteManager {
         </div>
       `
 
-      const h1 = html.querySelector("h1")
+      const h1 = html.querySelector('h1')
       const title =
         h1?.innerText ??
         h1?.textContent ??
         this.getSlug(url) ??
-        html.querySelector("title")?.textContent
+        html.querySelector('title')?.textContent
 
       return { hash, contents: [protectedDiv], title }
     }
 
     const contents = new Set<HTMLDivElement>()
-    for (const el of Array.from(html.getElementsByClassName("popover-hint"))) {
-      if (el.classList.contains("page-footer") && !el.hasChildNodes()) {
+    for (const el of Array.from(html.getElementsByClassName('popover-hint'))) {
+      if (el.classList.contains('page-footer') && !el.hasChildNodes()) {
         el.remove()
         continue
       }
@@ -433,12 +433,12 @@ class StackedNoteManager {
     }
     if (contents.size == 0) return
 
-    const h1 = html.querySelector("h1")
+    const h1 = html.querySelector('h1')
     const title =
       h1?.innerText ??
       h1?.textContent ??
       this.getSlug(url) ??
-      html.querySelector("title")?.textContent
+      html.querySelector('title')?.textContent
 
     return { hash, contents: [...contents], title }
   }
@@ -456,20 +456,20 @@ class StackedNoteManager {
     i: number,
     { contents, title, slug }: StackedNote,
   ): Promise<HTMLElement> {
-    const width = parseInt(this.styled.getPropertyValue("--note-content-width"))
-    const left = parseInt(this.styled.getPropertyValue("--note-title-width"))
+    const width = parseInt(this.styled.getPropertyValue('--note-content-width'))
+    const left = parseInt(this.styled.getPropertyValue('--note-title-width'))
     const right = width - left
 
-    const note = document.createElement("div")
-    note.className = "stacked-note"
+    const note = document.createElement('div')
+    note.className = 'stacked-note'
     note.id = this.hashSlug(slug)
     note.style.left = `${i * left}px`
     note.style.right = `${-right + (this.dag.getOrderedNodes().length - i - 1) * left}px`
     note.dataset.slug = slug
 
     // Create note contents...
-    const noteTitle = document.createElement("div")
-    noteTitle.classList.add("stacked-title")
+    const noteTitle = document.createElement('div')
+    noteTitle.classList.add('stacked-title')
     noteTitle.textContent = title
 
     const elView = () => {
@@ -477,17 +477,17 @@ class StackedNoteManager {
       const scrollWidth = this.column.scrollWidth - this.main.clientWidth
       const noteLeft = note.offsetLeft
       const scrollPosition = Math.min(noteLeft, scrollWidth)
-      this.main.scrollTo({ left: scrollPosition, behavior: "smooth" })
+      this.main.scrollTo({ left: scrollPosition, behavior: 'smooth' })
     }
-    noteTitle.addEventListener("click", elView)
-    window.addCleanup(() => noteTitle.removeEventListener("click", elView))
+    noteTitle.addEventListener('click', elView)
+    window.addCleanup(() => noteTitle.removeEventListener('click', elView))
 
-    const noteContent = document.createElement("div")
-    noteContent.className = "stacked-content"
+    const noteContent = document.createElement('div')
+    noteContent.className = 'stacked-content'
     noteContent.append(...contents)
     transformHostInternalLinks(noteContent)
 
-    await this.loadData().then((allFiles) => {
+    await this.loadData().then(allFiles => {
       // NOTE: some pages are auto-generated, so we don't have access here in allFiles
       const el = allFiles.get(slug as FullSlug)
       if (el) {
@@ -497,8 +497,8 @@ class StackedNoteManager {
             ? new Date(el.date)
             : new Date()
         if (date) {
-          const dateContent = document.createElement("div")
-          dateContent.classList.add("published")
+          const dateContent = document.createElement('div')
+          dateContent.classList.add('published')
           dateContent.innerHTML = `<span lang="fr" class="metadata" dir="auto">dernière modification par <time datetime=${date.toISOString()}>${formatDate(date)}</time> (${el.readingTime ? el.readingTime.minutes! : 0} min de lecture)</span>`
           noteContent.append(dateContent)
         }
@@ -506,15 +506,15 @@ class StackedNoteManager {
       note.append(noteContent, noteTitle)
     })
 
-    const links = [...noteContent.getElementsByClassName("internal")] as HTMLAnchorElement[]
+    const links = [...noteContent.getElementsByClassName('internal')] as HTMLAnchorElement[]
 
     for (const link of links) {
-      if ("routerIgnore" in link.dataset) continue
+      if ('routerIgnore' in link.dataset) continue
 
       const href = link.href
       const slug = link.dataset.slug as string
       if (this.dag.has(slug)) {
-        link.classList.add("dag")
+        link.classList.add('dag')
       }
 
       const onClick = async (e: MouseEvent) => {
@@ -545,47 +545,47 @@ class StackedNoteManager {
         const link = ev.target as HTMLAnchorElement
         if (this.dag.has(link.dataset.slug!)) {
           const note = this.dag.get(link.dataset.slug!)?.note
-          const header = note!.querySelector<HTMLHeadElement>("h1")
-          const stackedTitle = note!.querySelector<HTMLDivElement>(".stacked-title")
-          if (header) header!.classList.toggle("dag", true)
-          if (stackedTitle) stackedTitle!.classList.toggle("dag", true)
+          const header = note!.querySelector<HTMLHeadElement>('h1')
+          const stackedTitle = note!.querySelector<HTMLDivElement>('.stacked-title')
+          if (header) header!.classList.toggle('dag', true)
+          if (stackedTitle) stackedTitle!.classList.toggle('dag', true)
         }
       }
       const onMouseLeave = (ev: MouseEvent) => {
         const link = ev.target as HTMLAnchorElement
         if (this.dag.has(link.dataset.slug!)) {
           const note = this.dag.get(link.dataset.slug!)?.note
-          const header = note!.querySelector<HTMLHeadElement>("h1")
-          const stackedTitle = note!.querySelector<HTMLDivElement>(".stacked-title")
-          if (header) header!.classList.toggle("dag", false)
-          if (stackedTitle) stackedTitle!.classList.toggle("dag", false)
+          const header = note!.querySelector<HTMLHeadElement>('h1')
+          const stackedTitle = note!.querySelector<HTMLDivElement>('.stacked-title')
+          if (header) header!.classList.toggle('dag', false)
+          if (stackedTitle) stackedTitle!.classList.toggle('dag', false)
         }
       }
 
       const onKeyDown = (ev: KeyboardEvent) => {
         const link = ev.target as HTMLAnchorElement
         if (ev.altKey && !link.title) {
-          link.title = "pour ajouter à la fin de la pile"
+          link.title = 'pour ajouter à la fin de la pile'
         }
       }
       const onKeyUp = (ev: KeyboardEvent) => {
         const link = ev.target as HTMLAnchorElement
-        if (!ev.altKey && link.title === "pour ajouter à la fin de la pile") {
-          link.title = ""
+        if (!ev.altKey && link.title === 'pour ajouter à la fin de la pile') {
+          link.title = ''
         }
       }
 
-      link.addEventListener("click", onClick)
-      link.addEventListener("mouseenter", onMouseEnter)
-      link.addEventListener("mouseleave", onMouseLeave)
-      link.addEventListener("keydown", onKeyDown)
-      link.addEventListener("keyup", onKeyUp)
+      link.addEventListener('click', onClick)
+      link.addEventListener('mouseenter', onMouseEnter)
+      link.addEventListener('mouseleave', onMouseLeave)
+      link.addEventListener('keydown', onKeyDown)
+      link.addEventListener('keyup', onKeyUp)
       window.addCleanup(() => {
-        link.removeEventListener("click", onClick)
-        link.removeEventListener("mouseenter", onMouseEnter)
-        link.removeEventListener("mouseleave", onMouseLeave)
-        link.removeEventListener("keydown", onKeyDown)
-        link.removeEventListener("keyup", onKeyUp)
+        link.removeEventListener('click', onClick)
+        link.removeEventListener('mouseenter', onMouseEnter)
+        link.removeEventListener('mouseleave', onMouseLeave)
+        link.removeEventListener('keydown', onKeyDown)
+        link.removeEventListener('keyup', onKeyUp)
       })
     }
 
@@ -599,8 +599,8 @@ class StackedNoteManager {
    */
   private hydrateNote(note: HTMLElement): void {
     const slug = note.dataset.slug!
-    const noteTitle = note.querySelector(".stacked-title") as HTMLDivElement
-    const noteContent = note.querySelector(".stacked-content") as HTMLDivElement
+    const noteTitle = note.querySelector('.stacked-title') as HTMLDivElement
+    const noteContent = note.querySelector('.stacked-content') as HTMLDivElement
     transformHostInternalLinks(noteContent)
 
     if (!noteTitle || !noteContent) {
@@ -613,23 +613,23 @@ class StackedNoteManager {
       const scrollWidth = this.column.scrollWidth - this.main.clientWidth
       const noteLeft = note.offsetLeft
       const scrollPosition = Math.min(noteLeft, scrollWidth)
-      this.main.scrollTo({ left: scrollPosition, behavior: "smooth" })
+      this.main.scrollTo({ left: scrollPosition, behavior: 'smooth' })
     }
-    noteTitle.addEventListener("click", elView)
-    window.addCleanup(() => noteTitle.removeEventListener("click", elView))
+    noteTitle.addEventListener('click', elView)
+    window.addCleanup(() => noteTitle.removeEventListener('click', elView))
 
     // attach link handlers
-    const links = [...noteContent.getElementsByClassName("internal")] as HTMLAnchorElement[]
+    const links = [...noteContent.getElementsByClassName('internal')] as HTMLAnchorElement[]
 
     for (const link of links) {
-      if ("routerIgnore" in link.dataset) continue
+      if ('routerIgnore' in link.dataset) continue
 
       const href = link.href
       const linkSlug = link.dataset.slug as string
 
       // update DAG class if already in stack
       if (this.dag.has(linkSlug)) {
-        link.classList.add("dag")
+        link.classList.add('dag')
       }
 
       const onClick = async (e: MouseEvent) => {
@@ -664,47 +664,47 @@ class StackedNoteManager {
         const link = ev.target as HTMLAnchorElement
         if (this.dag.has(link.dataset.slug!)) {
           const note = this.dag.get(link.dataset.slug!)?.note
-          const header = note!.querySelector<HTMLHeadElement>("h1")
-          const stackedTitle = note!.querySelector<HTMLDivElement>(".stacked-title")
-          if (header) header!.classList.toggle("dag", true)
-          if (stackedTitle) stackedTitle!.classList.toggle("dag", true)
+          const header = note!.querySelector<HTMLHeadElement>('h1')
+          const stackedTitle = note!.querySelector<HTMLDivElement>('.stacked-title')
+          if (header) header!.classList.toggle('dag', true)
+          if (stackedTitle) stackedTitle!.classList.toggle('dag', true)
         }
       }
       const onMouseLeave = (ev: MouseEvent) => {
         const link = ev.target as HTMLAnchorElement
         if (this.dag.has(link.dataset.slug!)) {
           const note = this.dag.get(link.dataset.slug!)?.note
-          const header = note!.querySelector<HTMLHeadElement>("h1")
-          const stackedTitle = note!.querySelector<HTMLDivElement>(".stacked-title")
-          if (header) header!.classList.toggle("dag", false)
-          if (stackedTitle) stackedTitle!.classList.toggle("dag", false)
+          const header = note!.querySelector<HTMLHeadElement>('h1')
+          const stackedTitle = note!.querySelector<HTMLDivElement>('.stacked-title')
+          if (header) header!.classList.toggle('dag', false)
+          if (stackedTitle) stackedTitle!.classList.toggle('dag', false)
         }
       }
 
       const onKeyDown = (ev: KeyboardEvent) => {
         const link = ev.target as HTMLAnchorElement
         if (ev.altKey && !link.title) {
-          link.title = "pour ajouter à la fin de la pile"
+          link.title = 'pour ajouter à la fin de la pile'
         }
       }
       const onKeyUp = (ev: KeyboardEvent) => {
         const link = ev.target as HTMLAnchorElement
-        if (!ev.altKey && link.title === "pour ajouter à la fin de la pile") {
-          link.title = ""
+        if (!ev.altKey && link.title === 'pour ajouter à la fin de la pile') {
+          link.title = ''
         }
       }
 
-      link.addEventListener("click", onClick)
-      link.addEventListener("mouseenter", onMouseEnter)
-      link.addEventListener("mouseleave", onMouseLeave)
-      link.addEventListener("keydown", onKeyDown)
-      link.addEventListener("keyup", onKeyUp)
+      link.addEventListener('click', onClick)
+      link.addEventListener('mouseenter', onMouseEnter)
+      link.addEventListener('mouseleave', onMouseLeave)
+      link.addEventListener('keydown', onKeyDown)
+      link.addEventListener('keyup', onKeyUp)
       window.addCleanup(() => {
-        link.removeEventListener("click", onClick)
-        link.removeEventListener("mouseenter", onMouseEnter)
-        link.removeEventListener("mouseleave", onMouseLeave)
-        link.removeEventListener("keydown", onKeyDown)
-        link.removeEventListener("keyup", onKeyUp)
+        link.removeEventListener('click', onClick)
+        link.removeEventListener('mouseenter', onMouseEnter)
+        link.removeEventListener('mouseleave', onMouseLeave)
+        link.removeEventListener('keydown', onKeyDown)
+        link.removeEventListener('keyup', onKeyUp)
       })
     }
 
@@ -717,7 +717,7 @@ class StackedNoteManager {
 
     if (this.mobile()) {
       const node = this.dag.getTail() as DagNode
-      currentChildren.forEach((child) => {
+      currentChildren.forEach(child => {
         if (child.dataset.slug !== node!.slug) this.column.removeChild(child)
       })
 
@@ -730,14 +730,14 @@ class StackedNoteManager {
         })
         this.column.appendChild(node.note)
       }
-      this.container.classList.toggle("active", this.isActive)
+      this.container.classList.toggle('active', this.isActive)
       return
     }
 
-    const width = parseInt(this.styled.getPropertyValue("--note-content-width"))
+    const width = parseInt(this.styled.getPropertyValue('--note-content-width'))
 
     // Remove notes not in DAG
-    currentChildren.forEach((child) => {
+    currentChildren.forEach(child => {
       const slug = child.dataset.slug!
       if (!this.dag.has(slug)) {
         this.column.removeChild(child)
@@ -746,7 +746,7 @@ class StackedNoteManager {
 
     // Add missing notes from DAG path
     for (const [i, node] of this.dag.getOrderedNodes().entries()) {
-      if (!currentChildren.some((child) => child.dataset.slug === node.slug)) {
+      if (!currentChildren.some(child => child.dataset.slug === node.slug)) {
         node.note = await this.createNote(i, {
           slug: node.slug,
           title: node.title,
@@ -758,21 +758,21 @@ class StackedNoteManager {
           const heading = node.note.querySelector(node.hash) as HTMLElement | null
           if (heading) {
             // leave ~12px of buffer when scrolling to a heading
-            node.note.scroll({ top: heading.offsetTop - 12, behavior: "smooth" })
+            node.note.scroll({ top: heading.offsetTop - 12, behavior: 'smooth' })
           }
         }
       }
     }
 
     this.column.style.width = `${this.column.children.length * width}px`
-    this.container.classList.toggle("active", this.isActive)
+    this.container.classList.toggle('active', this.isActive)
 
     // Always scroll to rightmost note
     if (this.column.lastElementChild) {
       requestAnimationFrame(() => {
         // Calculate full scroll width
         const scrollWidth = this.column.scrollWidth - this.main.clientWidth
-        this.main.scrollTo({ left: scrollWidth, behavior: "smooth" })
+        this.main.scrollTo({ left: scrollWidth, behavior: 'smooth' })
       })
     }
 
@@ -784,30 +784,30 @@ class StackedNoteManager {
     let slug = this.getSlug(href)
 
     // handle default url by appending index for uniqueness
-    if (href.pathname === "/") {
-      if (slug === "") {
-        slug = "index" as FullSlug
+    if (href.pathname === '/') {
+      if (slug === '') {
+        slug = 'index' as FullSlug
       } else {
         slug = `${slug}/index` as FullSlug
       }
     }
 
     if (!anchor) anchor = document.activeElement as HTMLAnchorElement
-    const clickedNote = document.activeElement?.closest(".stacked-note") as HTMLDivElement
-    anchor.classList.add("dag")
+    const clickedNote = document.activeElement?.closest('.stacked-note') as HTMLDivElement
+    anchor.classList.add('dag')
 
     // If note exists in DAG
     if (this.dag.has(slug)) {
       const notes = [...this.column.children] as HTMLElement[]
-      const note = notes.find((note) => note.dataset.slug === slug)
+      const note = notes.find(note => note.dataset.slug === slug)
       if (!note) return false
 
       requestAnimationFrame(() => {
-        this.main.scrollTo({ left: note.getBoundingClientRect().left, behavior: "smooth" })
+        this.main.scrollTo({ left: note.getBoundingClientRect().left, behavior: 'smooth' })
       })
-      note.classList.add("highlights")
+      note.classList.add('highlights')
       setTimeout(() => {
-        note.classList.remove("highlights")
+        note.classList.remove('highlights')
       }, 500)
       notifyNav(slug)
       return true
@@ -836,17 +836,17 @@ class StackedNoteManager {
 
   async open() {
     // We will need to construct the results from the current page, so no need to fetch here.
-    const contents = Array.from(document.getElementsByClassName("popover-hint")).map((el) =>
+    const contents = Array.from(document.getElementsByClassName('popover-hint')).map(el =>
       el.cloneNode(true),
     ) as HTMLDivElement[]
-    const h1 = document.querySelector("h1")
+    const h1 = document.querySelector('h1')
     const title =
       h1?.innerText ??
       h1?.textContent ??
       getFullSlug(window) ??
-      document.querySelector("title")?.textContent
+      document.querySelector('title')?.textContent
     const hash = decodeURIComponent(window.location.hash)
-    window.location.hash = ""
+    window.location.hash = ''
     const res = { contents, title, hash }
 
     const note = await this.createNote(0, { slug: getFullSlug(window), ...res })
@@ -868,10 +868,10 @@ class StackedNoteManager {
 
     // Clear stackednotes from URL
     const url = new URL(window.location.toString())
-    url.searchParams.delete("stackedNotes")
-    window.history.replaceState({}, "", url)
+    url.searchParams.delete('stackedNotes')
+    window.history.replaceState({}, '', url)
 
-    cleanupFns.forEach((fn) => fn())
+    cleanupFns.forEach(fn => fn())
     cleanupFns.clear()
   }
 
@@ -880,7 +880,7 @@ class StackedNoteManager {
       if (!this.active) return await this.open()
 
       // notify about to nav
-      const event: CustomEventMap["prenav"] = new CustomEvent("prenav", { detail: {} })
+      const event: CustomEventMap['prenav'] = new CustomEvent('prenav', { detail: {} })
       document.dispatchEvent(event)
 
       await this.add(url)
@@ -901,22 +901,22 @@ class StackedNoteManager {
   }
 }
 
-const STREAM_HOSTNAME = "stream.aarnphm.xyz"
-const NOTES_HOSTNAME = "notes.aarnphm.xyz"
-const APEX_ORIGIN = "https://aarnphm.xyz"
+const STREAM_HOSTNAME = 'stream.aarnphm.xyz'
+const NOTES_HOSTNAME = 'notes.aarnphm.xyz'
+const APEX_ORIGIN = 'https://aarnphm.xyz'
 
 function normalizeStreamPath(raw: string): string | null {
   if (!raw) return null
   const trimmed = raw.trim()
-  if (trimmed === "") return "/"
-  if (trimmed.startsWith("#")) return null
+  if (trimmed === '') return '/'
+  if (trimmed.startsWith('#')) return null
 
   try {
     const parsed = new URL(trimmed, `https://${STREAM_HOSTNAME}`)
-    const hash = parsed.hash ?? ""
-    const search = parsed.search ?? ""
-    let pathname = parsed.pathname.replace(/^\/+/, "")
-    if (pathname === "") return `/${search}${hash}`
+    const hash = parsed.hash ?? ''
+    const search = parsed.search ?? ''
+    let pathname = parsed.pathname.replace(/^\/+/, '')
+    if (pathname === '') return `/${search}${hash}`
     pathname = sluggify(pathname)
     const normalizedPath = `/${pathname}`
     return `${normalizedPath}${search}${hash}`
@@ -926,40 +926,40 @@ function normalizeStreamPath(raw: string): string | null {
 }
 
 function transformHostInternalLinks(root: Document | Element) {
-  if (typeof window === "undefined") return
+  if (typeof window === 'undefined') return
   const host = window.location.hostname
 
-  const anchors = root.querySelectorAll<HTMLAnchorElement>("a.internal")
-  anchors.forEach((anchor) => {
+  const anchors = root.querySelectorAll<HTMLAnchorElement>('a.internal')
+  anchors.forEach(anchor => {
     if (host === STREAM_HOSTNAME) {
-      const preferred = anchor.dataset.slug ?? anchor.getAttribute("href") ?? ""
+      const preferred = anchor.dataset.slug ?? anchor.getAttribute('href') ?? ''
       const normalizedPath = normalizeStreamPath(preferred)
       if (!normalizedPath) return
 
       const absoluteHref = `${APEX_ORIGIN}${
-        normalizedPath.startsWith("/") ? normalizedPath : `/${normalizedPath}`
+        normalizedPath.startsWith('/') ? normalizedPath : `/${normalizedPath}`
       }`
-      if (anchor.getAttribute("href") !== absoluteHref) {
-        anchor.setAttribute("href", absoluteHref)
+      if (anchor.getAttribute('href') !== absoluteHref) {
+        anchor.setAttribute('href', absoluteHref)
       }
-      anchor.dataset.noPopover = "true"
-      anchor.dataset.routerIgnore = "true"
+      anchor.dataset.noPopover = 'true'
+      anchor.dataset.routerIgnore = 'true'
     } else if (host === NOTES_HOSTNAME) {
-      anchor.dataset.noPopover = "true"
+      anchor.dataset.noPopover = 'true'
     }
   })
 
   if (host === STREAM_HOSTNAME) {
-    const transcludeRefs = root.querySelectorAll<HTMLElement>(".transclude-ref[data-href]")
-    transcludeRefs.forEach((ref) => {
-      const preferred = ref.dataset.slug ?? ref.dataset.href ?? ""
+    const transcludeRefs = root.querySelectorAll<HTMLElement>('.transclude-ref[data-href]')
+    transcludeRefs.forEach(ref => {
+      const preferred = ref.dataset.slug ?? ref.dataset.href ?? ''
       const normalizedPath = normalizeStreamPath(preferred)
       if (!normalizedPath) return
       const absoluteHref = `${APEX_ORIGIN}${
-        normalizedPath.startsWith("/") ? normalizedPath : `/${normalizedPath}`
+        normalizedPath.startsWith('/') ? normalizedPath : `/${normalizedPath}`
       }`
       ref.dataset.href = absoluteHref
-      ref.dataset.routerIgnore = "true"
+      ref.dataset.routerIgnore = 'true'
     })
   }
 }
@@ -968,8 +968,8 @@ const stacked = new StackedNoteManager()
 window.stacked = stacked
 
 async function navigate(url: URL, isBack: boolean = false) {
-  const stackedContainer = document.getElementById("stacked-notes-container")
-  if (stackedContainer?.classList.contains("active")) {
+  const stackedContainer = document.getElementById('stacked-notes-container')
+  if (stackedContainer?.classList.contains('active')) {
     return await window.stacked.navigate(url)
   }
 
@@ -977,9 +977,9 @@ async function navigate(url: URL, isBack: boolean = false) {
 
   p = p || new DOMParser()
   const contents = await fetchCanonical(new URL(`${url}`))
-    .then((res) => {
-      const contentType = res.headers.get("content-type")
-      if (contentType?.startsWith("text/html")) {
+    .then(res => {
+      const contentType = res.headers.get('content-type')
+      if (contentType?.startsWith('text/html')) {
         return res.text()
       } else {
         window.location.assign(url)
@@ -992,28 +992,28 @@ async function navigate(url: URL, isBack: boolean = false) {
   if (!contents) return
 
   // notify about to nav
-  const event: CustomEventMap["prenav"] = new CustomEvent("prenav", { detail: {} })
+  const event: CustomEventMap['prenav'] = new CustomEvent('prenav', { detail: {} })
   document.dispatchEvent(event)
 
   // cleanup old
-  cleanupFns.forEach((fn) => fn())
+  cleanupFns.forEach(fn => fn())
   cleanupFns.clear()
 
-  const html = p.parseFromString(contents, "text/html")
+  const html = p.parseFromString(contents, 'text/html')
   normalizeRelativeURLs(html, url)
   transformHostInternalLinks(html)
 
-  let title = html.querySelector("title")?.textContent
+  let title = html.querySelector('title')?.textContent
   if (title) {
     document.title = title
   } else {
-    const h1 = document.querySelector("h1")
+    const h1 = document.querySelector('h1')
     title = h1?.innerText ?? h1?.textContent ?? url.pathname
   }
   if (announcer.textContent !== title) {
     announcer.textContent = title
   }
-  announcer.dataset.persist = ""
+  announcer.dataset.persist = ''
   html.body.appendChild(announcer)
 
   // morph body
@@ -1032,15 +1032,15 @@ async function navigate(url: URL, isBack: boolean = false) {
     }
 
     // now, patch head, re-executing scripts
-    const elementsToRemove = document.head.querySelectorAll(":not([data-persist])")
-    elementsToRemove.forEach((el) => el.remove())
-    const elementsToAdd = html.head.querySelectorAll(":not([data-persist])")
-    elementsToAdd.forEach((el) => document.head.appendChild(el))
+    const elementsToRemove = document.head.querySelectorAll(':not([data-persist])')
+    elementsToRemove.forEach(el => el.remove())
+    const elementsToAdd = html.head.querySelectorAll(':not([data-persist])')
+    elementsToAdd.forEach(el => document.head.appendChild(el))
 
     // delay setting the url until now
     // at this point everything is loaded so changing the url should resolve to the correct addresses
     if (!isBack) {
-      history.pushState({}, "", url)
+      history.pushState({}, '', url)
     }
     notifyNav(getFullSlug(window))
     delete announcer.dataset.persist
@@ -1051,13 +1051,13 @@ async function navigate(url: URL, isBack: boolean = false) {
 window.spaNavigate = navigate
 window.notifyNav = notifyNav
 
-document.addEventListener("nav", () => {
+document.addEventListener('nav', () => {
   transformHostInternalLinks(document)
 })
 
 function createRouter() {
-  if (typeof window !== "undefined") {
-    window.addEventListener("click", async (event) => {
+  if (typeof window !== 'undefined') {
+    window.addEventListener('click', async event => {
       const { url } = getOpts(event) ?? {}
       // dont hijack behaviour, just let browser act normally
       if (!url || event.ctrlKey || event.metaKey || event.altKey) return
@@ -1066,7 +1066,7 @@ function createRouter() {
       if (isSamePage(url) && url.hash) {
         const el = document.getElementById(decodeURIComponent(url.hash.substring(1)))
         el?.scrollIntoView()
-        history.pushState({}, "", url)
+        history.pushState({}, '', url)
         return
       }
 
@@ -1078,7 +1078,7 @@ function createRouter() {
       }
     })
 
-    window.addEventListener("popstate", (event) => {
+    window.addEventListener('popstate', event => {
       const { url } = getOpts(event) ?? {}
       if (window.location.hash && window.location.pathname === url?.pathname) return
       try {
@@ -1110,16 +1110,16 @@ function createRouter() {
 createRouter()
 notifyNav(getFullSlug(window))
 
-if (!customElements.get("route-announcer")) {
+if (!customElements.get('route-announcer')) {
   const attrs = {
-    "aria-live": "assertive",
-    "aria-atomic": "true",
+    'aria-live': 'assertive',
+    'aria-atomic': 'true',
     style:
-      "position: absolute; left: 0; top: 0; clip: rect(0 0 0 0); clip-path: inset(50%); overflow: hidden; white-space: nowrap; width: 1px; height: 1px",
+      'position: absolute; left: 0; top: 0; clip: rect(0 0 0 0); clip-path: inset(50%); overflow: hidden; white-space: nowrap; width: 1px; height: 1px',
   }
 
   customElements.define(
-    "route-announcer",
+    'route-announcer',
     class RouteAnnouncer extends HTMLElement {
       constructor() {
         super()
@@ -1135,22 +1135,22 @@ if (!customElements.get("route-announcer")) {
 
 // NOTE: navigate first if there are stackedNotes
 const baseUrl = new URL(document.location.toString())
-const stackedNotes = baseUrl.searchParams.get("stackedNotes")
+const stackedNotes = baseUrl.searchParams.get('stackedNotes')
 
 // remove elements on notes.aarnphm.xyz
-if (window.location.host === "notes.aarnphm.xyz") {
+if (window.location.host === 'notes.aarnphm.xyz') {
   if (!stackedNotes || stackedNotes.length === 0) {
-    const slug = "notes"
-    baseUrl.searchParams.set("stackedNotes", btoa(slug.toString()).replace(/=+$/, ""))
+    const slug = 'notes'
+    baseUrl.searchParams.set('stackedNotes', btoa(slug.toString()).replace(/=+$/, ''))
     baseUrl.pathname = `/${slug}`
 
-    window.stacked.navigate(baseUrl).then((data) => {
+    window.stacked.navigate(baseUrl).then(data => {
       if (data) window.location.reload()
       document
         .querySelectorAll(
           'main > section[class~="page-footer"], main > section[class~="page-header"], main > section[class~="page-content"], nav.breadcrumb-container, header > .keybind, header > .search, header > .graph',
         )
-        .forEach((el) => el.remove())
+        .forEach(el => el.remove())
     })
   }
 }

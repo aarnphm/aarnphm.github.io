@@ -8,7 +8,7 @@ description: fear weaponized—bruce wayne descending into the cave to confront 
 director: Christopher Nolan
 id: batman-begins
 modified: 2025-10-29 02:14:46 GMT-04:00
-posters: "[[movies/posters/batman-begins.jpg]]"
+posters: '[[movies/posters/batman-begins.jpg]]'
 rating: 8.2
 status: recurring
 studio: syncopy

@@ -6,12 +6,12 @@ description: study of modern open source communities, examining how maintainers 
 finished: 2021
 id: Working in Public
 modified: 2025-11-30 15:38:33 GMT-05:00
-posters: "[[library/posters/working-in-public.jpg]]"
+posters: '[[library/posters/working-in-public.jpg]]'
 status: finished
 subcategory: programming
 tags:
   - technical
   - o/opensource
-title: "Working in Public: The Making and Maintenance of Open Source Software"
+title: 'Working in Public: The Making and Maintenance of Open Source Software'
 year: 2020
 ---

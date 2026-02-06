@@ -1,4 +1,4 @@
-import type { Extension, Tokenizer, State, Code } from "micromark-util-types"
+import type { Extension, Tokenizer, State, Code } from 'micromark-util-types'
 
 const codes = {
   leftCurlyBrace: 123,
@@ -12,7 +12,7 @@ const codes = {
   eof: null,
 }
 
-const KEYWORD = "sidenotes"
+const KEYWORD = 'sidenotes'
 
 export function sidenote(): Extension {
   const tokenize: Tokenizer = function (effects, ok, nok) {
@@ -25,8 +25,8 @@ export function sidenote(): Extension {
     function start(code: Code): State | undefined {
       if (code !== codes.leftCurlyBrace) return nok(code)
 
-      effects.enter("sidenote")
-      effects.enter("sidenoteMarker")
+      effects.enter('sidenote')
+      effects.enter('sidenoteMarker')
       effects.consume(code)
       markerSize = 1
       labelBalance = 0
@@ -38,7 +38,7 @@ export function sidenote(): Extension {
         effects.consume(code)
         markerSize++
         if (markerSize === 2) {
-          effects.exit("sidenoteMarker")
+          effects.exit('sidenoteMarker')
           return keyword
         }
         return openingBrace
@@ -48,7 +48,7 @@ export function sidenote(): Extension {
 
     function keyword(code: Code): State | undefined {
       if (keywordIndex === 0) {
-        effects.enter("sidenoteKeyword")
+        effects.enter('sidenoteKeyword')
       }
 
       if (keywordIndex < KEYWORD.length) {
@@ -60,7 +60,7 @@ export function sidenote(): Extension {
         return nok(code)
       }
 
-      effects.exit("sidenoteKeyword")
+      effects.exit('sidenoteKeyword')
       return afterKeyword(code)
     }
 
@@ -78,21 +78,21 @@ export function sidenote(): Extension {
     }
 
     function propertiesStart(code: Code): State | undefined {
-      effects.enter("sidenoteProperties")
-      effects.enter("sidenotePropertiesMarker")
+      effects.enter('sidenoteProperties')
+      effects.enter('sidenotePropertiesMarker')
       effects.consume(code)
-      effects.exit("sidenotePropertiesMarker")
-      effects.enter("sidenotePropertiesChunk")
+      effects.exit('sidenotePropertiesMarker')
+      effects.enter('sidenotePropertiesChunk')
       return propertiesInside
     }
 
     function propertiesInside(code: Code): State | undefined {
       if (code === codes.greaterThan) {
-        effects.exit("sidenotePropertiesChunk")
-        effects.enter("sidenotePropertiesMarker")
+        effects.exit('sidenotePropertiesChunk')
+        effects.enter('sidenotePropertiesMarker')
         effects.consume(code)
-        effects.exit("sidenotePropertiesMarker")
-        effects.exit("sidenoteProperties")
+        effects.exit('sidenotePropertiesMarker')
+        effects.exit('sidenoteProperties')
         return afterProperties
       }
 
@@ -115,11 +115,11 @@ export function sidenote(): Extension {
     }
 
     function labelStart(code: Code): State | undefined {
-      effects.enter("sidenoteLabel")
-      effects.enter("sidenoteLabelMarker")
+      effects.enter('sidenoteLabel')
+      effects.enter('sidenoteLabelMarker')
       effects.consume(code)
-      effects.exit("sidenoteLabelMarker")
-      effects.enter("sidenoteLabelChunk")
+      effects.exit('sidenoteLabelMarker')
+      effects.enter('sidenoteLabelChunk')
       labelBalance = 0
       return labelInside
     }
@@ -137,11 +137,11 @@ export function sidenote(): Extension {
           effects.consume(code)
           return labelInside
         }
-        effects.exit("sidenoteLabelChunk")
-        effects.enter("sidenoteLabelMarker")
+        effects.exit('sidenoteLabelChunk')
+        effects.enter('sidenoteLabelMarker')
         effects.consume(code)
-        effects.exit("sidenoteLabelMarker")
-        effects.exit("sidenoteLabel")
+        effects.exit('sidenoteLabelMarker')
+        effects.exit('sidenoteLabel')
         return afterLabel
       }
 
@@ -167,22 +167,22 @@ export function sidenote(): Extension {
     }
 
     function colonMarker(code: Code): State | undefined {
-      effects.enter("sidenoteColonMarker")
+      effects.enter('sidenoteColonMarker')
       effects.consume(code)
-      effects.exit("sidenoteColonMarker")
+      effects.exit('sidenoteColonMarker')
       return contentStart
     }
 
     function contentStart(_: Code): State | undefined {
-      effects.enter("sidenoteContent")
-      effects.enter("sidenoteContentChunk")
+      effects.enter('sidenoteContent')
+      effects.enter('sidenoteContentChunk')
       return contentInside
     }
 
     function contentInside(code: Code): State | undefined {
       if (code === codes.rightCurlyBrace) {
-        effects.exit("sidenoteContentChunk")
-        effects.exit("sidenoteContent")
+        effects.exit('sidenoteContentChunk')
+        effects.exit('sidenoteContent')
         return closingBraceFirst(code)
       }
 
@@ -195,7 +195,7 @@ export function sidenote(): Extension {
     }
 
     function closingBraceFirst(code: Code): State | undefined {
-      effects.enter("sidenoteMarker")
+      effects.enter('sidenoteMarker')
       effects.consume(code)
       return closingBraceSecond
     }
@@ -203,8 +203,8 @@ export function sidenote(): Extension {
     function closingBraceSecond(code: Code): State | undefined {
       if (code === codes.rightCurlyBrace) {
         effects.consume(code)
-        effects.exit("sidenoteMarker")
-        effects.exit("sidenote")
+        effects.exit('sidenoteMarker')
+        effects.exit('sidenote')
         return ok
       }
       return nok(code)
@@ -217,12 +217,12 @@ export function sidenote(): Extension {
 function resolveAllSidenote(events: any[]) {
   for (let i = 0; i < events.length; i++) {
     const event = events[i]
-    if (event[0] === "enter" && event[1].type === "sidenote") {
+    if (event[0] === 'enter' && event[1].type === 'sidenote') {
       let hasContent = false
       let j = i + 1
       while (j < events.length) {
-        if (events[j][0] === "exit" && events[j][1] === event[1]) break
-        if (events[j][1].type === "sidenoteContent") {
+        if (events[j][0] === 'exit' && events[j][1] === event[1]) break
+        if (events[j][1].type === 'sidenoteContent') {
           hasContent = true
           break
         }
@@ -230,13 +230,13 @@ function resolveAllSidenote(events: any[]) {
       }
 
       if (!hasContent) {
-        event[1].type = "sidenoteReference"
+        event[1].type = 'sidenoteReference'
         let k = i + 1
         while (k < events.length) {
-          if (events[k][0] === "exit" && events[k][1] === event[1]) break
+          if (events[k][0] === 'exit' && events[k][1] === event[1]) break
           const type = events[k][1].type as string
-          if (type.startsWith("sidenote") && !type.startsWith("sidenoteReference")) {
-            events[k][1].type = type.replace("sidenote", "sidenoteReference")
+          if (type.startsWith('sidenote') && !type.startsWith('sidenoteReference')) {
+            events[k][1].type = type.replace('sidenote', 'sidenoteReference')
           }
           k++
         }

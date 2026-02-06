@@ -1,7 +1,7 @@
 ---
 cssclasses:
   - nolist
-date: "2025-06-09"
+date: '2025-06-09'
 description: and a list of vinyl and music are on my mind for mixing.
 id: mixed
 modified: 2026-01-03 14:22:51 GMT-05:00

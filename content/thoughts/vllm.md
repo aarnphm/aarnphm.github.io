@@ -1,18 +1,18 @@
 ---
-date: "2024-09-09"
+date: '2024-09-09'
 description: efficient LLM serving engine.
 id: vllm
 modified: 2026-01-30 17:43:07 GMT-05:00
 permalinks:
   - /vllm
 seealso:
-  - "[[thoughts/Attention#Paged Attention|PagedAttention]]"
-  - "[[thoughts/PD disaggregated serving|pd disaggregation]]"
-  - "[[thoughts/Speculative decoding]]"
-  - "[[thoughts/Continuous batching]]"
-  - "[[thoughts/structured outputs]]"
-  - "[[thoughts/KV compression]]"
-  - "[[thoughts/prefix caching]]"
+  - '[[thoughts/Attention#Paged Attention|PagedAttention]]'
+  - '[[thoughts/PD disaggregated serving|pd disaggregation]]'
+  - '[[thoughts/Speculative decoding]]'
+  - '[[thoughts/Continuous batching]]'
+  - '[[thoughts/structured outputs]]'
+  - '[[thoughts/KV compression]]'
+  - '[[thoughts/prefix caching]]'
 socials:
   dbo: https://docs.vllm.ai/en/latest/design/dbo/
 tags:

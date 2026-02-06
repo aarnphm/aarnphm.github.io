@@ -1,5 +1,5 @@
 ---
-date: "2023-10-10"
+date: '2023-10-10'
 description: and moral philosophy, relationship with God.
 id: Sphinoza
 modified: 2025-10-29 02:16:17 GMT-04:00

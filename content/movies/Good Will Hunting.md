@@ -8,7 +8,7 @@ description: southie genius mopping floors at mit—van sant filming trauma as t
 director: Gus Van Sant
 id: good-will-hunting
 modified: 2025-10-29 02:14:50 GMT-04:00
-posters: "[[movies/posters/good-will-hunting.jpg]]"
+posters: '[[movies/posters/good-will-hunting.jpg]]'
 rating: 8.3
 status: recurring
 studio: miramax

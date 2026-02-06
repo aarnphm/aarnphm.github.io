@@ -117,7 +117,7 @@ BreakInheritanceList: BeforeColon
 BreakStringLiterals: true
 BreakTemplateDeclarations: MultiLine
 ColumnLimit: 80
-CommentPragmas: "^ IWYU pragma:"
+CommentPragmas: '^ IWYU pragma:'
 CompactNamespaces: false
 ConstructorInitializerIndentWidth: 4
 ContinuationIndentWidth: 4
@@ -144,12 +144,12 @@ IncludeCategories:
     Priority: 3
     SortPriority: 0
     CaseSensitive: false
-  - Regex: ".*"
+  - Regex: '.*'
     Priority: 1
     SortPriority: 0
     CaseSensitive: false
-IncludeIsMainRegex: "(Test)?$"
-IncludeIsMainSourceRegex: ""
+IncludeIsMainRegex: '(Test)?$'
+IncludeIsMainSourceRegex: ''
 IndentAccessModifiers: false
 IndentCaseBlocks: false
 IndentCaseLabels: false
@@ -177,8 +177,8 @@ KeepEmptyLines:
   AtStartOfFile: true
 LambdaBodyIndentation: Signature
 LineEnding: DeriveLF
-MacroBlockBegin: ""
-MacroBlockEnd: ""
+MacroBlockBegin: ''
+MacroBlockEnd: ''
 MainIncludeChar: Quote
 MaxEmptyLinesToKeep: 1
 NamespaceIndentation: None

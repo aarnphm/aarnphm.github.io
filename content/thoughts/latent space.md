@@ -1,5 +1,5 @@
 ---
-date: "2024-04-03"
+date: '2024-04-03'
 description: lower-dimensional space capturing essential features of input data, where similar pieces of data cluster together in learned representations.
 id: latent space
 modified: 2025-10-29 02:15:48 GMT-04:00

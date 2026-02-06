@@ -5,7 +5,7 @@ description: mentally ill man laughing uncontrollably while gotham abandons himâ
 director: Todd Phillips
 id: joker
 modified: 2025-10-29 02:15:05 GMT-04:00
-posters: "[[movies/posters/joker.jpg]]"
+posters: '[[movies/posters/joker.jpg]]'
 rating: 8.3
 status: recurring
 studio: dc

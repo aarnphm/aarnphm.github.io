@@ -1,31 +1,31 @@
-import FlexSearch, { Id } from "flexsearch"
-import { ValidLocale, i18n } from "../../i18n"
-import { Link, CuriusResponse, Trail, TrailInfo, Following } from "../../types/curius"
-import { LCG } from "../../util/helpers"
-import { registerEscapeHandler, registerEvents, removeAllChildren } from "./util"
-import { encode } from "./util"
+import FlexSearch, { Id } from 'flexsearch'
+import { ValidLocale, i18n } from '../../i18n'
+import { Link, CuriusResponse, Trail, TrailInfo, Following } from '../../types/curius'
+import { LCG } from '../../util/helpers'
+import { registerEscapeHandler, registerEvents, removeAllChildren } from './util'
+import { encode } from './util'
 
-const CURIUS_HOST = "https://curius.app"
+const CURIUS_HOST = 'https://curius.app'
 export const CURIUS = `${CURIUS_HOST}/aaron-pham`
 const externalLinkRegex = /^(?:https?:\/\/)?(?:www\.)?([^/]+)/
 export const PINNED_FOLLOWING_IDS = [3971, 1296] as const
 
 export const fetchLinksHeaders: RequestInit = {
-  method: "GET",
-  headers: { "Content-Type": "application/json" },
+  method: 'GET',
+  headers: { 'Content-Type': 'application/json' },
 }
 
 export const _SENTINEL: Link = {
   id: 0,
-  link: "",
-  title: "",
+  link: '',
+  title: '',
   favorite: false,
-  snippet: "",
+  snippet: '',
   toRead: false,
   createdBy: 0,
-  metadata: { full_text: "", author: "", page_type: "" },
-  createdDate: "",
-  modifiedDate: "",
+  metadata: { full_text: '', author: '', page_type: '' },
+  createdDate: '',
+  modifiedDate: '',
   lastCrawled: null,
   trails: [],
   comments: [],
@@ -49,30 +49,30 @@ const getIconSvg = (name: iconKeys) => iconMapping[name] ?? null
 
 function extractApexDomain(url: string) {
   const match = url.match(externalLinkRegex)
-  return match ? match[1] : ""
+  return match ? match[1] : ''
 }
 
 let currentActive: HTMLLIElement | null = null
 
 function updateNotePanel(Link: Link, note: HTMLDivElement, parent: HTMLLIElement) {
-  const titleNode = note.querySelector("#note-link") as HTMLAnchorElement
-  const snippetNode = note.querySelector(".curius-note-snippet") as HTMLDivElement
-  const highlightsNode = note.querySelector(".curius-note-highlights") as HTMLDivElement
+  const titleNode = note.querySelector('#note-link') as HTMLAnchorElement
+  const snippetNode = note.querySelector('.curius-note-snippet') as HTMLDivElement
+  const highlightsNode = note.querySelector('.curius-note-highlights') as HTMLDivElement
 
   titleNode.innerHTML = `<span class="curius-item-span">${Link.title}</span>`
   titleNode.href = Link.link
-  titleNode.target = "_blank"
-  titleNode.rel = "noopener noreferrer"
+  titleNode.target = '_blank'
+  titleNode.rel = 'noopener noreferrer'
 
-  const close = document.querySelector(".icon-container")
+  const close = document.querySelector('.icon-container')
 
   const cleanUp = () => {
-    note.classList.remove("active")
-    parent.classList.remove("active")
+    note.classList.remove('active')
+    parent.classList.remove('active')
   }
 
-  close?.addEventListener("click", cleanUp)
-  window.addCleanup(() => close?.removeEventListener("click", cleanUp))
+  close?.addEventListener('click', cleanUp)
+  window.addCleanup(() => close?.removeEventListener('click', cleanUp))
   registerEscapeHandler(note, cleanUp)
 
   removeAllChildren(snippetNode)
@@ -81,12 +81,12 @@ function updateNotePanel(Link: Link, note: HTMLDivElement, parent: HTMLLIElement
   removeAllChildren(highlightsNode)
   if (Link.highlights.length === 0) return
   for (const hl of Link.highlights) {
-    const highlightItem = document.createElement("li")
-    const hlLink = document.createElement("a")
+    const highlightItem = document.createElement('li')
+    const hlLink = document.createElement('a')
     hlLink.dataset.highlight = hl.id.toString()
     hlLink.href = `${Link.link}?curius=${hl.userId}`
-    hlLink.target = "_blank"
-    hlLink.rel = "noopener noreferrer"
+    hlLink.target = '_blank'
+    hlLink.rel = 'noopener noreferrer'
     hlLink.textContent = hl.highlight
     highlightItem.appendChild(hlLink)
     highlightsNode.appendChild(highlightItem)
@@ -94,30 +94,30 @@ function updateNotePanel(Link: Link, note: HTMLDivElement, parent: HTMLLIElement
 }
 
 export function createLinkEl(Link: Link): HTMLLIElement {
-  const curiusItem = document.createElement("li")
+  const curiusItem = document.createElement('li')
   curiusItem.id = `curius-item-${Link.id}`
-  curiusItem.classList.add("curius-item")
+  curiusItem.classList.add('curius-item')
 
   const createMetadata = (Link: Link): HTMLDivElement => {
-    const item = document.createElement("div")
-    item.classList.add("curius-item-metadata")
+    const item = document.createElement('div')
+    item.classList.add('curius-item-metadata')
 
-    const tags = document.createElement("ul")
-    tags.classList.add("curius-item-tags")
+    const tags = document.createElement('ul')
+    tags.classList.add('curius-item-tags')
     tags.innerHTML =
       Link.topics.length > 0
         ? `${Link.topics
-            .map((topic) =>
+            .map(topic =>
               topic.public
                 ? `<li><a href="https://curius.app/aaron-pham/${topic.slug}" target="_blank">${topic.topic}</a></li>`
                 : ``,
             )
-            .join("")}`
+            .join('')}`
         : ``
 
-    const misc = document.createElement("div")
+    const misc = document.createElement('div')
     misc.id = `curius-misc-${Link.id}`
-    const time = document.createElement("span")
+    const time = document.createElement('span')
     time.id = `curius-span-${Link.id}`
     const modifiedDate = new Date(Link.modifiedDate as string)
     time.innerHTML = `<time datetime=${
@@ -126,53 +126,53 @@ export function createLinkEl(Link: Link): HTMLLIElement {
     misc.appendChild(time)
 
     if (Link.highlights.length > 0) {
-      const highlights = document.createElement("div")
+      const highlights = document.createElement('div')
       highlights.id = `curius-highlights-${Link.id}`
-      highlights.innerHTML = `${Link.highlights.length} ${Link.highlights.length > 0 ? "highlights" : "highlight"}`
+      highlights.innerHTML = `${Link.highlights.length} ${Link.highlights.length > 0 ? 'highlights' : 'highlight'}`
       misc.appendChild(highlights)
 
-      const modal = document.getElementById("highlight-modal")
-      const modalList = document.getElementById("highlight-modal-list")
+      const modal = document.getElementById('highlight-modal')
+      const modalList = document.getElementById('highlight-modal-list')
 
       const onMouseEnter = () => {
         const highlightsData = Link.highlights
 
         if (!modal || !modalList) return
         // clear the previous modal
-        modalList.innerHTML = ""
-        curiusItem.classList.remove("focus")
+        modalList.innerHTML = ''
+        curiusItem.classList.remove('focus')
 
-        highlightsData.forEach((highlight) => {
-          let hiItem = document.createElement("li")
+        highlightsData.forEach(highlight => {
+          let hiItem = document.createElement('li')
           hiItem.textContent = highlight.highlight
           modalList.appendChild(hiItem)
         })
-        modal.style.visibility = "visible"
-        modal.classList.add("active")
+        modal.style.visibility = 'visible'
+        modal.classList.add('active')
       }
 
       const onMouseLeave = () => {
-        curiusItem.classList.add("focus")
+        curiusItem.classList.add('focus')
 
         if (!modal) return
-        modal.style.visibility = "hidden"
-        modal.classList.remove("active")
+        modal.style.visibility = 'hidden'
+        modal.classList.remove('active')
       }
 
       const onMouseMove = ({ pageX, pageY }: MouseEvent) => {
-        curiusItem.classList.remove("focus")
+        curiusItem.classList.remove('focus')
 
         if (!modal) return
-        modal.classList.add("active")
+        modal.classList.add('active')
         modal.style.left = `${pageX + 10}px`
         modal.style.top = `${pageY + 10}px`
       }
 
       registerEvents(
         highlights,
-        ["mouseenter", onMouseEnter],
-        ["mouseleave", onMouseLeave],
-        ["mousemove", onMouseMove],
+        ['mouseenter', onMouseEnter],
+        ['mouseleave', onMouseLeave],
+        ['mousemove', onMouseMove],
       )
     }
 
@@ -183,48 +183,48 @@ export function createLinkEl(Link: Link): HTMLLIElement {
   curiusItem.append(createTitle({ Link, addFaIcon: true }), createMetadata(Link))
   curiusItem.dataset.items = JSON.stringify(true)
 
-  const onClick = (e: HTMLElementEventMap["click"]) => {
-    const note = document.getElementsByClassName("curius-notes")[0] as HTMLDivElement | null
+  const onClick = (e: HTMLElementEventMap['click']) => {
+    const note = document.getElementsByClassName('curius-notes')[0] as HTMLDivElement | null
 
     if (e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) return
-    if (currentActive) currentActive.classList.remove("active")
-    if (note) note.classList.remove("active")
+    if (currentActive) currentActive.classList.remove('active')
+    if (note) note.classList.remove('active')
 
     currentActive = curiusItem
-    currentActive.classList.add("active")
+    currentActive.classList.add('active')
 
     if (Link.highlights.length > 0) {
       if (!note) return
-      note.classList.add("active")
+      note.classList.add('active')
       updateNotePanel(Link, note, currentActive)
     }
 
-    if (e.target instanceof HTMLAnchorElement || note?.classList.contains("active")) return
-    window.open(Link.link, "_blank")
+    if (e.target instanceof HTMLAnchorElement || note?.classList.contains('active')) return
+    window.open(Link.link, '_blank')
   }
 
-  registerEscapeHandler(curiusItem, () => curiusItem.classList.remove("active"))
+  registerEscapeHandler(curiusItem, () => curiusItem.classList.remove('active'))
 
   const onMouseEnter = () => {
-    const favoriteDiv = curiusItem.querySelector("svg.favorite-icon") as HTMLDivElement | null
+    const favoriteDiv = curiusItem.querySelector('svg.favorite-icon') as HTMLDivElement | null
 
-    if (favoriteDiv) favoriteDiv.classList.add("focus")
-    curiusItem.classList.add("focus")
+    if (favoriteDiv) favoriteDiv.classList.add('focus')
+    curiusItem.classList.add('focus')
   }
 
   const onMouseLeave = () => {
-    const favoriteDiv = curiusItem.querySelector("svg.favorite-icon") as HTMLDivElement | null
+    const favoriteDiv = curiusItem.querySelector('svg.favorite-icon') as HTMLDivElement | null
 
-    if (favoriteDiv) favoriteDiv.classList.remove("focus")
-    curiusItem.classList.remove("focus")
+    if (favoriteDiv) favoriteDiv.classList.remove('focus')
+    curiusItem.classList.remove('focus')
   }
 
   registerEvents(
     curiusItem,
     //@ts-ignore
-    ["click", onClick],
-    ["mouseenter", onMouseEnter],
-    ["mouseleave", onMouseLeave],
+    ['click', onClick],
+    ['mouseenter', onMouseEnter],
+    ['mouseleave', onMouseLeave],
   )
 
   return curiusItem
@@ -257,82 +257,82 @@ export function timeSince(date: Date | string) {
 
 interface Title {
   Link: Link
-  elementType?: "div" | "li"
+  elementType?: 'div' | 'li'
   addFaIcon?: boolean
 }
 
-const defaultTitle: Title = { Link: _SENTINEL, elementType: "div", addFaIcon: false }
+const defaultTitle: Title = { Link: _SENTINEL, elementType: 'div', addFaIcon: false }
 
 let p: DOMParser
 export const createTitle = (userOpts: Title): HTMLDivElement | HTMLLIElement => {
   const { Link, elementType, addFaIcon } = { ...defaultTitle, ...userOpts }
 
-  if (elementType === undefined) throw new Error("Element type is undefined")
+  if (elementType === undefined) throw new Error('Element type is undefined')
 
   p = p || new DOMParser()
   const item = document.createElement(elementType)
-  item.classList.add("curius-item-title")
+  item.classList.add('curius-item-title')
 
-  const header = document.createElement("div")
-  header.classList.add("curius-item-link")
+  const header = document.createElement('div')
+  header.classList.add('curius-item-link')
 
-  const link = document.createElement("a")
+  const link = document.createElement('a')
   Object.assign(link, {
     href: Link.link,
-    target: "_blank",
-    rel: "noopener noreferrer",
+    target: '_blank',
+    rel: 'noopener noreferrer',
     innerHTML: Link.title,
   })
   header.appendChild(link)
 
-  const address = document.createElement("div")
-  address.classList.add("curius-item-address")
+  const address = document.createElement('div')
+  address.classList.add('curius-item-address')
   address.textContent = extractApexDomain(Link.link)
 
   if (addFaIcon) {
-    const faIcon = document.createElement("div")
-    faIcon.classList.add("curius-item-fa")
+    const faIcon = document.createElement('div')
+    faIcon.classList.add('curius-item-fa')
     switch (true) {
       case /twitter/.test(Link.link):
-        faIcon.innerHTML = getIconSvg("twitter")
+        faIcon.innerHTML = getIconSvg('twitter')
         break
       case /youtube/.test(Link.link):
-        faIcon.innerHTML = getIconSvg("youtube")
+        faIcon.innerHTML = getIconSvg('youtube')
         break
       case /github/.test(Link.link):
-        faIcon.innerHTML = getIconSvg("github")
+        faIcon.innerHTML = getIconSvg('github')
         break
       case /arxiv/.test(Link.link):
-        faIcon.innerHTML = getIconSvg("arxiv")
+        faIcon.innerHTML = getIconSvg('arxiv')
         break
       default:
-        faIcon.innerHTML = getIconSvg("default")
+        faIcon.innerHTML = getIconSvg('default')
         break
     }
     item.appendChild(faIcon)
   }
 
   item.append(header, address)
-  const itemIcon = document.createElement("div")
-  itemIcon.classList.add("curius-item-icons")
+  const itemIcon = document.createElement('div')
+  itemIcon.classList.add('curius-item-icons')
 
   if (Link.favorite) {
-    const icon = document.createElementNS("http://www.w3.org/2000/svg", "svg")
-    icon.setAttribute("fill", "currentColor")
-    icon.setAttribute("preserveAspectRatio", "xMidYMid meet")
-    icon.setAttribute("height", "1rem")
-    icon.setAttribute("width", "1rem")
-    icon.setAttribute("viewBox", "0 0 40 40")
-    icon.setAttribute("class", "favorite-icon")
-    icon.style.verticalAlign = "unset"
+    const icon = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
+    icon.setAttribute('fill', 'currentColor')
+    icon.setAttribute('preserveAspectRatio', 'xMidYMid meet')
+    icon.setAttribute('height', '1rem')
+    icon.setAttribute('width', '1rem')
+    icon.setAttribute('viewBox', '0 0 40 40')
+    icon.setAttribute('class', 'favorite-icon')
+    icon.style.verticalAlign = 'unset'
 
-    const g = document.createElementNS("http://www.w3.org/2000/svg", "g")
-    const path = document.createElementNS("http://www.w3.org/2000/svg", "path")
-    path.setAttribute("stroke-width", "5")
-    path.setAttribute("fill", "rgb(236, 180, 19)")
+    const g = document.createElementNS('http://www.w3.org/2000/svg', 'g')
+    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path')
+    path.setAttribute('stroke-width', '5')
+    path.setAttribute('fill', 'rgb(236, 180, 19)')
     path.setAttribute(
-      "d",
-      "m5.2 18.8l6 5.5-1.7 7.7c-0.2 1 0.2 2 1 2.5 0.3 0.3 0.8 0.5 1.3 0.5 0.4 0 0.7 0 1-0.2 0 0 0.2 0 0.2-0.1l6.8-3.9 6.9 3.9s0.1 0 0.1 0.1c0.9 0.4 1.9 0.4 2.5-0.1 0.9-0.5 1.2-1.5 1-2.5l-1.6-7.7c0.6-0.5 1.6-1.5 2.6-2.5l3.2-2.8 0.2-0.2c0.6-0.7 0.8-1.7 0.5-2.5s-1-1.5-2-1.7h-0.2l-7.8-0.8-3.2-7.2s0-0.1-0.2-0.1c-0.1-1.2-1-1.7-1.8-1.7s-1.7 0.5-2.2 1.3c0 0 0 0.2-0.1 0.2l-3.2 7.2-7.8 0.8h-0.2c-0.8 0.2-1.7 0.8-2 1.7-0.2 1 0 2 0.7 2.6z",
+      'd',
+      'm5.2 18.8l6 5.5-1.7 7.7c-0.2 1 0.2 2 1 2.5 0.3 0.3 0.8 0.5 1.3 0.5 0.4 0 0.7 0 1-0.2 0 0 0.2 0 0.2-0.1l6.8-3.9 6.9 3.9s0.1 0 0.1 0.1c0.9 0.4 1.9 0.4 2.5-0.1 0.9-0.5 1.2-1.5 1-2.5l-1.6-7.7c0.6-0.5 1.6-1.5 2.6-2.5l3.2-2.8 0.2-0.2c0.6-0.7 0.8-1.7 0.5-2.5s-1-1.5-2-1.7h-0.2l-7.8-0.8-3.2-7.2s0-0.1-0.2-0.1c-0.1-1.2-1-1.7-1.8-1.7s-1.7 0.5-2.2 1.3c0 0 0 0.2-0.1 0.2l-3.2 7.2-7.8 0.8h-0.2c-0.8 0.2-1.7 0.8-2 1.7-0.2 1 0 2 0.7 2.6z',
     )
 
     g.appendChild(path)
@@ -347,20 +347,20 @@ export const createTitle = (userOpts: Title): HTMLDivElement | HTMLLIElement => 
 
 export async function fetchFollowing() {
   try {
-    const resp = await fetch("/api/curius?query=following", fetchLinksHeaders)
+    const resp = await fetch('/api/curius?query=following', fetchLinksHeaders)
     if (!resp.ok) {
-      throw new Error("Failed to get followings from curius")
+      throw new Error('Failed to get followings from curius')
     }
     const data: CuriusResponse = await resp.json()
     if (data === undefined || data.following === undefined) {
-      throw new Error("No following data")
+      throw new Error('No following data')
     }
     const prioritizedSet = new Set<number>(PINNED_FOLLOWING_IDS)
     const prioritizedBuckets = new Map<number, Following[]>()
-    PINNED_FOLLOWING_IDS.forEach((id) => prioritizedBuckets.set(id, []))
+    PINNED_FOLLOWING_IDS.forEach(id => prioritizedBuckets.set(id, []))
     const remaining: Following[] = []
 
-    data.following.forEach((entry) => {
+    data.following.forEach(entry => {
       const userId = entry.user.id
       if (prioritizedSet.has(userId)) {
         prioritizedBuckets.get(userId)!.push(entry)
@@ -370,7 +370,7 @@ export async function fetchFollowing() {
     })
 
     const prioritized: Following[] = []
-    PINNED_FOLLOWING_IDS.forEach((id) => {
+    PINNED_FOLLOWING_IDS.forEach(id => {
       const entries = prioritizedBuckets.get(id)
       if (entries && entries.length > 0) {
         prioritized.push(...entries)
@@ -385,13 +385,13 @@ export async function fetchFollowing() {
 
 export async function fetchUsers() {
   try {
-    const resp = await fetch("/api/curius?query=user", fetchLinksHeaders)
+    const resp = await fetch('/api/curius?query=user', fetchLinksHeaders)
     if (!resp.ok) {
-      throw new Error("Failed to get users from curius")
+      throw new Error('Failed to get users from curius')
     }
     const data: CuriusResponse = await resp.json()
     if (data === undefined || data.user === undefined) {
-      throw new Error("Failed to fetch user")
+      throw new Error('Failed to fetch user')
     }
     return data.user
   } catch (error) {
@@ -401,13 +401,13 @@ export async function fetchUsers() {
 
 async function fetchLinks(): Promise<CuriusResponse | undefined> {
   try {
-    const resp = await fetch("/api/curius?query=links", fetchLinksHeaders)
+    const resp = await fetch('/api/curius?query=links', fetchLinksHeaders)
     if (!resp.ok) {
-      throw new Error("Failed to get links from curius")
+      throw new Error('Failed to get links from curius')
     }
     const data: CuriusResponse = await resp.json()
     if (data === undefined || data.links === undefined) {
-      throw new Error("Failed to fetch links")
+      throw new Error('Failed to fetch links')
     }
     return data
   } catch (error) {
@@ -424,7 +424,7 @@ export async function fetchCuriusLinks(): Promise<CuriusResponse> {
   ])
 
   const links = linkResp?.links ?? []
-  const hasMore = typeof linkResp?.hasMore === "boolean" ? linkResp.hasMore : links.length > 0
+  const hasMore = typeof linkResp?.hasMore === 'boolean' ? linkResp.hasMore : links.length > 0
   const page = linkResp?.page ?? 0
 
   return { links, user, following, trails, hasMore, page }
@@ -449,8 +449,8 @@ async function fetchTrailPages(trail: Trail): Promise<Link[]> {
       const data: CuriusResponse = await resp.json()
       const pageLinks = data.links ?? []
 
-      pageLinks.forEach((rawLink) => {
-        const linkId = typeof rawLink.id === "number" ? rawLink.id : NaN
+      pageLinks.forEach(rawLink => {
+        const linkId = typeof rawLink.id === 'number' ? rawLink.id : NaN
         if (Number.isNaN(linkId) || seenIds.has(linkId)) return
         seenIds.add(linkId)
 
@@ -481,7 +481,7 @@ export async function createTrailMetadata(res: CuriusResponse): Promise<Map<stri
 
   if (trails.length > 0) {
     const trailCollections = await Promise.all(
-      trails.map(async (trail) => ({ trail, links: await fetchTrailPages(trail) })),
+      trails.map(async trail => ({ trail, links: await fetchTrailPages(trail) })),
     )
 
     trailCollections.forEach(({ trail, links }) => {
@@ -495,8 +495,8 @@ export async function createTrailMetadata(res: CuriusResponse): Promise<Map<stri
       const trailBucket = trailMetadata.get(trailName)
       if (!trailBucket) return
 
-      links.forEach((link) => {
-        const linkId = typeof link.id === "number" ? link.id : NaN
+      links.forEach(link => {
+        const linkId = typeof link.id === 'number' ? link.id : NaN
         if (Number.isNaN(linkId)) return
         if (!trailBucket.links.has(linkId)) {
           trailBucket.links.set(linkId, link)
@@ -508,9 +508,9 @@ export async function createTrailMetadata(res: CuriusResponse): Promise<Map<stri
   if (trailMetadata.size === 0) {
     const links = res.links ?? []
     links
-      .filter((link) => link.trails.length > 0)
-      .forEach((link) => {
-        link.trails.forEach((trail) => {
+      .filter(link => link.trails.length > 0)
+      .forEach(link => {
+        link.trails.forEach(trail => {
           if (!trailMetadata.has(trail.trailName)) {
             trailMetadata.set(trail.trailName, { trail, links: new Map() })
           }
@@ -518,7 +518,7 @@ export async function createTrailMetadata(res: CuriusResponse): Promise<Map<stri
           if (!trailBucket) return
 
           const linkId = link.id
-          if (typeof linkId === "number") {
+          if (typeof linkId === 'number') {
             trailBucket.links.set(linkId, link)
           }
         })
@@ -529,8 +529,8 @@ export async function createTrailMetadata(res: CuriusResponse): Promise<Map<stri
 }
 
 export const createTrailList = (trails: Map<string, TrailInfo>) => {
-  const trail = document.getElementById("trail-list") as HTMLUListElement | null
-  const total = document.getElementsByClassName("curius-trail")[0] as HTMLDivElement | null
+  const trail = document.getElementById('trail-list') as HTMLUListElement | null
+  const total = document.getElementsByClassName('curius-trail')[0] as HTMLDivElement | null
   if (!trail || !total) return
 
   const limits = parseInt(total.dataset.limits!) ?? 5
@@ -555,55 +555,55 @@ function createTrailEl(
   remaining: number,
   locale: ValidLocale,
 ): HTMLLIElement {
-  const container = document.createElement("li")
-  container.classList.add("trails-li")
+  const container = document.createElement('li')
+  container.classList.add('trails-li')
 
-  const headers = document.createElement("div")
-  headers.classList.add("curius-trail-header")
+  const headers = document.createElement('div')
+  headers.classList.add('curius-trail-header')
   headers.innerHTML = `<span class="trail-title"><em>${trail_name}</em></span><span class="trail-description">${info.description!}</span>`
 
   const trailLink = `${CURIUS_HOST}/trail/${info.slug}`
 
-  const links = document.createElement("ul")
-  links.classList.add("trail-ul")
+  const links = document.createElement('ul')
+  links.classList.add('trail-ul')
   links.append(
-    ...trails.map((link) => {
-      const el = createTitle({ Link: link, elementType: "li" })
+    ...trails.map(link => {
+      const el = createTitle({ Link: link, elementType: 'li' })
 
       const onMouseEnter = () => {
-        const favoriteDiv = el.querySelector("svg.favorite-icon") as HTMLDivElement | null
+        const favoriteDiv = el.querySelector('svg.favorite-icon') as HTMLDivElement | null
 
-        if (favoriteDiv) favoriteDiv.classList.add("focus")
-        el.classList.add("focus")
+        if (favoriteDiv) favoriteDiv.classList.add('focus')
+        el.classList.add('focus')
       }
 
       const onMouseLeave = () => {
-        const favoriteDiv = el.querySelector("svg.favorite-icon") as HTMLDivElement | null
+        const favoriteDiv = el.querySelector('svg.favorite-icon') as HTMLDivElement | null
 
-        if (favoriteDiv) favoriteDiv.classList.remove("focus")
-        el.classList.remove("focus")
+        if (favoriteDiv) favoriteDiv.classList.remove('focus')
+        el.classList.remove('focus')
       }
 
-      const openLink = (evt: HTMLElementEventMap["click"]) => {
+      const openLink = (evt: HTMLElementEventMap['click']) => {
         if (evt.target instanceof HTMLAnchorElement) return
-        window.open(trailLink, "_blank")
+        window.open(trailLink, '_blank')
       }
 
       registerEvents(
         el,
-        ["mouseenter", onMouseEnter],
-        ["mouseleave", onMouseLeave],
+        ['mouseenter', onMouseEnter],
+        ['mouseleave', onMouseLeave],
         //@ts-ignore
-        ["click", openLink],
+        ['click', openLink],
       )
 
       return el
     }),
   )
 
-  const seeMore = document.createElement("div")
-  seeMore.classList.add("see-more")
-  seeMore.innerHTML = `<span><a href=${trailLink} target="_blank">${remaining > 0 ? i18n(locale).components.recentNotes.seeRemainingMore({ remaining }) : "Void de plus →"}</a></span>`
+  const seeMore = document.createElement('div')
+  seeMore.classList.add('see-more')
+  seeMore.innerHTML = `<span><a href=${trailLink} target="_blank">${remaining > 0 ? i18n(locale).components.recentNotes.seeRemainingMore({ remaining }) : 'Void de plus →'}</a></span>`
 
   container.append(headers, links, seeMore)
 
@@ -611,14 +611,14 @@ function createTrailEl(
 }
 
 let index = new FlexSearch.Document({
-  tokenize: "forward",
+  tokenize: 'forward',
   encode,
   document: {
-    id: "id",
+    id: 'id',
     index: [
-      { field: "title", tokenize: "forward" },
-      { field: "link", tokenize: "forward" },
-      { field: "snippet", tokenize: "forward" },
+      { field: 'title', tokenize: 'forward' },
+      { field: 'link', tokenize: 'forward' },
+      { field: 'snippet', tokenize: 'forward' },
     ],
   },
 })
@@ -627,11 +627,11 @@ const numSearchResults = 20
 const contextWindowWords = 30
 
 const tokenizeTerm = (term: string) => {
-  const tokens = term.split(/\s+/).filter((t) => t.trim() !== "")
+  const tokens = term.split(/\s+/).filter(t => t.trim() !== '')
   const tokenLen = tokens.length
   if (tokenLen > 1) {
     for (let i = 1; i < tokenLen; i++) {
-      tokens.push(tokens.slice(0, i + 1).join(" "))
+      tokens.push(tokens.slice(0, i + 1).join(' '))
     }
   }
 
@@ -640,13 +640,13 @@ const tokenizeTerm = (term: string) => {
 
 function highlight(searchTerm: string, text: string, trim?: boolean) {
   const tokenizedTerms = tokenizeTerm(searchTerm)
-  let tokenizedText = text.split(/\s+/).filter((t) => t !== "")
+  let tokenizedText = text.split(/\s+/).filter(t => t !== '')
 
   let startIndex = 0
   let endIndex = tokenizedText.length - 1
   if (trim) {
     const includesCheck = (tok: string) =>
-      tokenizedTerms.some((term) => tok.toLowerCase().startsWith(term.toLowerCase()))
+      tokenizedTerms.some(term => tok.toLowerCase().startsWith(term.toLowerCase()))
     const occurrencesIndices = tokenizedText.map(includesCheck)
 
     let bestSum = 0
@@ -666,19 +666,19 @@ function highlight(searchTerm: string, text: string, trim?: boolean) {
   }
 
   const slice = tokenizedText
-    .map((tok) => {
+    .map(tok => {
       for (const searchTok of tokenizedTerms) {
         if (tok.toLowerCase().includes(searchTok.toLowerCase())) {
-          const regex = new RegExp(searchTok.toLowerCase(), "gi")
+          const regex = new RegExp(searchTok.toLowerCase(), 'gi')
           return tok.replace(regex, `<span class="highlight">$&</span>`)
         }
       }
       return tok
     })
-    .join(" ")
+    .join(' ')
 
-  return `${startIndex === 0 ? "" : "..."}${slice}${
-    endIndex === tokenizedText.length - 1 ? "" : "..."
+  return `${startIndex === 0 ? '' : '...'}${slice}${
+    endIndex === tokenizedText.length - 1 ? '' : '...'
   }`
 }
 
@@ -690,31 +690,31 @@ const rng = new LCG(seed)
 export async function curiusSearch(searchData: Link[]) {
   const sampleLinks = rng.shuffle(searchData).splice(0, 20)
 
-  const bar = document.getElementById("curius-bar") as HTMLInputElement | null
-  const container = document.getElementById("curius-search-container") as HTMLDivElement | null
+  const bar = document.getElementById('curius-bar') as HTMLInputElement | null
+  const container = document.getElementById('curius-search-container') as HTMLDivElement | null
 
-  async function onType(e: HTMLElementEventMap["input"]) {
+  async function onType(e: HTMLElementEventMap['input']) {
     let term = (e.target as HTMLInputElement).value
-    container?.classList.toggle("active", term !== "")
+    container?.classList.toggle('active', term !== '')
     let searchResults =
       (await index?.searchAsync({
         query: term,
         limit: numSearchResults,
-        index: ["title", "snippet", "link"],
+        index: ['title', 'snippet', 'link'],
       })) ?? []
 
     const getByField = (field: string): number[] => {
-      const results = searchResults.filter((x) => x.field === field)
+      const results = searchResults.filter(x => x.field === field)
       return results.length === 0 ? [] : ([...results[0].result] as number[])
     }
 
     const allIds: Set<number> = new Set([
-      ...getByField("title"),
-      ...getByField("snippet"),
-      ...getByField("link"),
+      ...getByField('title'),
+      ...getByField('snippet'),
+      ...getByField('link'),
     ])
 
-    const finalResults = [...allIds].map((id) => formatLinks(term, id))
+    const finalResults = [...allIds].map(id => formatLinks(term, id))
     displayLinks(finalResults)
   }
 
@@ -723,7 +723,7 @@ export async function curiusSearch(searchData: Link[]) {
     return { ...L, title: highlight(term, L.title), snippet: highlight(term, L.snippet, true) }
   }
 
-  const notes = document.getElementsByClassName("curius-notes")[0] as HTMLDivElement | null
+  const notes = document.getElementsByClassName('curius-notes')[0] as HTMLDivElement | null
 
   function displayLinks(links: Link[]) {
     if (!container) return
@@ -736,11 +736,11 @@ export async function curiusSearch(searchData: Link[]) {
     }
   }
 
-  function shortcutHandler(e: HTMLElementEventMap["keydown"]) {
-    if (e.key === "k" && (e.ctrlKey || e.metaKey)) {
+  function shortcutHandler(e: HTMLElementEventMap['keydown']) {
+    if (e.key === 'k' && (e.ctrlKey || e.metaKey)) {
       e.preventDefault()
-      if (notes?.classList.contains("active")) notes.classList.remove("active")
-      const searchBarOpen = container?.classList.contains("active")
+      if (notes?.classList.contains('active')) notes.classList.remove('active')
+      const searchBarOpen = container?.classList.contains('active')
       if (searchBarOpen) {
         hideLinks()
       } else {
@@ -749,31 +749,31 @@ export async function curiusSearch(searchData: Link[]) {
       return
     }
 
-    if (!container?.classList.contains("active")) return
-    if (e.key === "Enter") {
+    if (!container?.classList.contains('active')) return
+    if (e.key === 'Enter') {
       if (container?.contains(document.activeElement)) {
         const active = document.activeElement as HTMLInputElement
         active.click()
       } else {
         const anchor = document.getElementsByClassName(
-          "curius-search-link",
+          'curius-search-link',
         )[0] as HTMLInputElement | null
         anchor?.click()
       }
-    } else if (e.key === "ArrowUp" || (e.shiftKey && e.key === "Tab")) {
+    } else if (e.key === 'ArrowUp' || (e.shiftKey && e.key === 'Tab')) {
       e.preventDefault()
       // When first pressing ArrowDown, results wont contain the active element, so focus first element
       if (container?.contains(document.activeElement)) {
         const prevResult = document.activeElement?.previousElementSibling as HTMLInputElement | null
         prevResult?.focus()
       }
-    } else if (e.key === "ArrowDown" || e.key === "Tab") {
+    } else if (e.key === 'ArrowDown' || e.key === 'Tab') {
       e.preventDefault()
 
       // When first pressing ArrowDown, results wont contain the active element, so focus first element
       if (!container?.contains(document.activeElement)) {
         const firstResult = document.getElementsByClassName(
-          "curius-search-link",
+          'curius-search-link',
         )[0] as HTMLInputElement | null
         firstResult?.focus()
       } else {
@@ -785,9 +785,9 @@ export async function curiusSearch(searchData: Link[]) {
   }
 
   function onClick() {
-    if (bar?.classList.contains("active")) return
-    if (notes?.classList.contains("active")) notes.classList.remove("active")
-    const searchBarOpen = container?.classList.contains("active")
+    if (bar?.classList.contains('active')) return
+    if (notes?.classList.contains('active')) notes.classList.remove('active')
+    const searchBarOpen = container?.classList.contains('active')
     if (searchBarOpen) {
       hideLinks()
     } else {
@@ -797,21 +797,21 @@ export async function curiusSearch(searchData: Link[]) {
 
   function showLinks(links: Link[]) {
     if (!container) return
-    container?.classList.add("active")
+    container?.classList.add('active')
     bar?.focus()
-    bar?.scrollIntoView({ behavior: "smooth" })
+    bar?.scrollIntoView({ behavior: 'smooth' })
     displayLinks(links)
   }
 
   function hideLinks() {
-    if (container) container.classList.remove("active")
-    if (bar) bar.value = ""
+    if (container) container.classList.remove('active')
+    if (bar) bar.value = ''
   }
 
   function createSearchLinks(link: Link): HTMLAnchorElement {
-    const curiusLink = document.createElement("a")
-    curiusLink.classList.add("curius-search-link")
-    curiusLink.target = "_blank"
+    const curiusLink = document.createElement('a')
+    curiusLink.classList.add('curius-search-link')
+    curiusLink.target = '_blank'
     curiusLink.href = link.link
     curiusLink.innerHTML = `<span class="curius-search-title">${link.title}</span><p class="curius-search-snippet">${link.snippet}</div>`
 
@@ -820,18 +820,18 @@ export async function curiusSearch(searchData: Link[]) {
       hideLinks()
     }
 
-    curiusLink.addEventListener("click", onClick)
-    window.addCleanup(() => curiusLink.removeEventListener("click", onClick))
+    curiusLink.addEventListener('click', onClick)
+    window.addCleanup(() => curiusLink.removeEventListener('click', onClick))
 
     return curiusLink
   }
 
-  document.addEventListener("keydown", shortcutHandler)
-  window.addCleanup(() => document.removeEventListener("keydown", shortcutHandler))
-  bar?.addEventListener("input", onType)
-  window.addCleanup(() => bar?.removeEventListener("input", onType))
-  bar?.addEventListener("click", onClick)
-  window.addCleanup(() => bar?.removeEventListener("click", onClick))
+  document.addEventListener('keydown', shortcutHandler)
+  window.addCleanup(() => document.removeEventListener('keydown', shortcutHandler))
+  bar?.addEventListener('input', onType)
+  window.addCleanup(() => bar?.removeEventListener('input', onType))
+  bar?.addEventListener('click', onClick)
+  window.addCleanup(() => bar?.removeEventListener('click', onClick))
 
   registerEscapeHandler(container, hideLinks)
 
@@ -840,13 +840,13 @@ export async function curiusSearch(searchData: Link[]) {
 
 export async function fetchSearchLinks() {
   try {
-    const resp = await fetch("/api/curius?query=searchLinks", fetchLinksHeaders)
+    const resp = await fetch('/api/curius?query=searchLinks', fetchLinksHeaders)
     if (!resp.ok) {
-      throw new Error("Failed to get searchLinks from curius")
+      throw new Error('Failed to get searchLinks from curius')
     }
     const data: CuriusResponse = await resp.json()
     if (data === undefined || data.links === undefined) {
-      throw new Error("No searchLinks data")
+      throw new Error('No searchLinks data')
     }
     return data.links
   } catch (err) {
@@ -857,13 +857,13 @@ export async function fetchSearchLinks() {
 
 export async function fetchTrails() {
   try {
-    const resp = await fetch("/api/curius?query=trails", fetchLinksHeaders)
+    const resp = await fetch('/api/curius?query=trails', fetchLinksHeaders)
     if (!resp.ok) {
-      throw new Error("Failed to get trails from curius")
+      throw new Error('Failed to get trails from curius')
     }
     const data: CuriusResponse = await resp.json()
     if (data === undefined || data.trails === undefined) {
-      throw new Error("No trails data")
+      throw new Error('No trails data')
     }
     return data.trails
   } catch (err) {

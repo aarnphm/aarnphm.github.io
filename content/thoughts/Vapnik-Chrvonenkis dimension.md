@@ -1,5 +1,5 @@
 ---
-date: "2024-12-14"
+date: '2024-12-14'
 description: measure of hypothesis class capacity as cardinality of largest set it can shatter into all possible classifications.
 id: Vapnik-Chrvonenkis dimension
 modified: 2025-10-29 02:15:37 GMT-04:00

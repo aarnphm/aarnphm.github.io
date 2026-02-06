@@ -1,5 +1,5 @@
 ---
-date: "2025-01-06"
+date: '2025-01-06'
 description: a course about TDD and testing strategies essentially
 id: index
 modified: 2025-10-29 02:16:04 GMT-04:00

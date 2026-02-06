@@ -1,5 +1,5 @@
 ---
-date: "2024-03-01"
+date: '2024-03-01'
 description: everything related to machine learning, or statistics-adjacent topics
 title: machine learning
 ---

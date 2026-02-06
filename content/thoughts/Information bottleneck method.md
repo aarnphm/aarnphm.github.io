@@ -1,5 +1,5 @@
 ---
-date: "2025-08-28"
+date: '2025-08-28'
 description: bottleneck in theory
 id: Information bottleneck method
 modified: 2025-10-29 02:15:25 GMT-04:00

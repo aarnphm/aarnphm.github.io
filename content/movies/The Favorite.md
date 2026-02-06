@@ -8,7 +8,7 @@ description: cousins competing for queen anne's affection and political power—
 director: Yorgos Lanthimos
 id: the-favorite
 modified: 2025-10-29 02:14:58 GMT-04:00
-posters: "[[movies/posters/the-favorite.jpg]]"
+posters: '[[movies/posters/the-favorite.jpg]]'
 rating: 7.5
 status: to watch
 studio: element pictures

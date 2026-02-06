@@ -1,5 +1,5 @@
 ---
-date: "2025-11-01"
+date: '2025-11-01'
 description: bridge from topological manifolds to smooth manifolds, morse theory, and differential structures.
 id: differential foundations
 modified: 2025-11-09 01:42:21 GMT-05:00

@@ -6,11 +6,11 @@ description: grandson caring for dying grandmother to secure inheritance—boonn
 director: Pat Boonnitipat
 id: How To Make Millions Before Grandma Dies
 modified: 2025-12-16 02:58:25 GMT-05:00
-posters: "[[movies/posters/how-to-make-millions-before-grandma-dies.jpg]]"
+posters: '[[movies/posters/how-to-make-millions-before-grandma-dies.jpg]]'
 seealso:
-  - "[[projects/growth after death]]"
+  - '[[projects/growth after death]]'
 status: to watch
-studio: "[independent]"
+studio: '[independent]'
 tags:
   - love
 title: How To Make Millions Before Grandma Dies

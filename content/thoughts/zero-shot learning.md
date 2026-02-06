@@ -1,5 +1,5 @@
 ---
-date: "2024-02-12"
+date: '2024-02-12'
 description: instruction-tuned language models performing tasks without examples, outperforming larger models through improved zero-shot generalization.
 id: zero-shot learning
 modified: 2026-01-08 14:31:08 GMT-05:00

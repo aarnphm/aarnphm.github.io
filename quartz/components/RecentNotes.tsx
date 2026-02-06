@@ -1,16 +1,16 @@
-import { GlobalConfiguration } from "../cfg"
-import { i18n } from "../i18n"
-import { QuartzPluginData } from "../plugins/vfile"
+import { GlobalConfiguration } from '../cfg'
+import { i18n } from '../i18n'
+import { QuartzPluginData } from '../plugins/vfile'
 import {
   QuartzComponent,
   QuartzComponentConstructor,
   QuartzComponentProps,
-} from "../types/component"
-import { classNames } from "../util/lang"
-import { SimpleSlug, resolveRelative } from "../util/path"
-import { Date, getDate } from "./Date"
-import { byDateAndAlphabetical } from "./PageList"
-import style from "./styles/recentNotes.scss"
+} from '../types/component'
+import { classNames } from '../util/lang'
+import { SimpleSlug, resolveRelative } from '../util/path'
+import { Date, getDate } from './Date'
+import { byDateAndAlphabetical } from './PageList'
+import style from './styles/recentNotes.scss'
 
 interface Options {
   title?: string
@@ -39,10 +39,10 @@ export default ((userOpts?: Partial<Options>) => {
     const pages = allFiles.filter(opts.filter).sort(opts.sort)
     const remaining = Math.max(0, pages.length - opts.limit)
     return (
-      <div class={classNames(displayClass, "recent-notes")}>
+      <div class={classNames(displayClass, 'recent-notes')}>
         <h3>{opts.title ?? i18n(cfg.locale).components.recentNotes.title}</h3>
         <ul class="recent-ul">
-          {pages.slice(0, opts.limit).map((page) => {
+          {pages.slice(0, opts.limit).map(page => {
             const title = page.frontmatter?.title ?? i18n(cfg.locale).propertyDefaults.title
 
             return (

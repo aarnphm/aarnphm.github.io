@@ -1,17 +1,17 @@
-import truncate from "ansi-truncate"
-import readline from "readline"
+import truncate from 'ansi-truncate'
+import readline from 'readline'
 
 export class QuartzLogger {
   verbose: boolean
   private spinnerInterval: NodeJS.Timeout | undefined
-  private spinnerText: string = ""
-  private updateSuffix: string = ""
+  private spinnerText: string = ''
+  private updateSuffix: string = ''
   private spinnerIndex: number = 0
-  private readonly spinnerChars = ["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"]
+  private readonly spinnerChars = ['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏']
 
   constructor(verbose: boolean) {
     const isInteractiveTerminal =
-      process.stdout.isTTY && process.env.TERM !== "dumb" && !process.env.CI
+      process.stdout.isTTY && process.env.TERM !== 'dumb' && !process.env.CI
     this.verbose = verbose || !isInteractiveTerminal
   }
 

@@ -1,5 +1,5 @@
 ---
-date: "2025-08-07"
+date: '2025-08-07'
 description: scaling long-context generations
 id: RoPE
 modified: 2026-01-08 14:30:59 GMT-05:00

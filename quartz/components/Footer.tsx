@@ -1,22 +1,22 @@
-import { version, repository } from "../../package.json"
-import { i18n } from "../i18n"
+import { version, repository } from '../../package.json'
+import { i18n } from '../i18n'
 import {
   QuartzComponent,
   QuartzComponentConstructor,
   QuartzComponentProps,
-} from "../types/component"
-import { classNames } from "../util/lang"
-import { Date as DateComponent, getDate } from "./Date"
-import style from "./styles/footer.scss"
+} from '../types/component'
+import { classNames } from '../util/lang'
+import { Date as DateComponent, getDate } from './Date'
+import style from './styles/footer.scss'
 
-type FooterLayout = "default" | "minimal" | "poetry" | "menu" | "curius" | "masonry"
+type FooterLayout = 'default' | 'minimal' | 'poetry' | 'menu' | 'curius' | 'masonry'
 
 interface Options {
   layout?: FooterLayout
   links?: Record<string, string> & Partial<{ twitter: string; github: string; bsky: string }>
 }
 
-const defaultOptions: Options = { layout: "minimal", links: {} as Record<string, string> }
+const defaultOptions: Options = { layout: 'minimal', links: {} as Record<string, string> }
 
 export default ((userOpts?: Options) => {
   const opts = { ...defaultOptions, ...userOpts }
@@ -24,8 +24,8 @@ export default ((userOpts?: Options) => {
     const year = new Date().getFullYear()
     const links = opts?.links ?? []
     const addHomeLink =
-      (fileData.frontmatter && fileData.frontmatter.pageLayout! === "letter") ||
-      fileData.slug === "curius"
+      (fileData.frontmatter && fileData.frontmatter.pageLayout! === 'letter') ||
+      fileData.slug === 'curius'
 
     const DateFooter = () => <DateComponent date={getDate(cfg, fileData)!} locale={cfg.locale} />
 
@@ -35,14 +35,14 @@ export default ((userOpts?: Options) => {
         process.env.CF_PAGES_COMMIT_SHA ||
         process.env.GITHUB_SHA ||
         ctx?.gitCommitSha ||
-        ""
+        ''
       if (!fullSha) return null
       const shortSha = fullSha.slice(0, 7)
-      const repoUrl = (repository?.url || "").replace(/\.git$/, "")
+      const repoUrl = (repository?.url || '').replace(/\.git$/, '')
       const commitUrl = repoUrl ? `${repoUrl}/commit/${fullSha}` : undefined
       return (
         <>
-          {", "}
+          {', '}
           {commitUrl ? (
             <a
               href={commitUrl}
@@ -78,7 +78,7 @@ export default ((userOpts?: Options) => {
           {addHomeLink && (
             <li>
               <address>
-                <a href={"/"} target="_self" class="internal">
+                <a href={'/'} target="_self" class="internal">
                   home
                 </a>
               </address>
@@ -93,7 +93,7 @@ export default ((userOpts?: Options) => {
             aria-label="Quartz links"
           >
             Quartz v{version}
-          </a>{" "}
+          </a>{' '}
           © {year}
           <Sha />
         </p>
@@ -103,7 +103,7 @@ export default ((userOpts?: Options) => {
     const DefaultFooter = () => (
       <>
         <p>
-          {i18n(cfg.locale).components.footer.createdWith}{" "}
+          {i18n(cfg.locale).components.footer.createdWith}{' '}
           <a href="https://quartz.jzhao.xyz/">Quartz v{version}</a> © {year}
         </p>
         <ul>
@@ -117,11 +117,11 @@ export default ((userOpts?: Options) => {
     )
 
     const FooterConstructor = (layout: FooterLayout) => {
-      if (layout === "minimal" || layout === "curius") {
+      if (layout === 'minimal' || layout === 'curius') {
         return <MinimalFooter />
-      } else if (layout === "poetry" || layout === "menu") {
+      } else if (layout === 'poetry' || layout === 'menu') {
         return <DateFooter />
-      } else if (layout === "masonry") {
+      } else if (layout === 'masonry') {
         return <></>
       } else {
         return <DefaultFooter />
@@ -133,7 +133,7 @@ export default ((userOpts?: Options) => {
         class={classNames(
           displayClass,
           opts.layout!,
-          opts.layout !== "curius" ? "title-col" : "curius-col",
+          opts.layout !== 'curius' ? 'title-col' : 'curius-col',
         )}
       >
         {FooterConstructor(opts.layout!)}

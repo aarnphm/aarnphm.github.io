@@ -6,7 +6,7 @@ description: burroughs' early confessional novel as fever dream—guadagnino fil
 director: Luca Guadagnino
 id: queer
 modified: 2025-10-29 02:15:05 GMT-04:00
-posters: "[[movies/posters/queer.jpg]]"
+posters: '[[movies/posters/queer.jpg]]'
 rating: 7.3
 status: finished
 studio: a24

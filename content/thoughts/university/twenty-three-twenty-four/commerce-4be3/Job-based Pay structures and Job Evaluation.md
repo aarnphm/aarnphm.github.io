@@ -1,5 +1,5 @@
 ---
-date: "2024-01-31"
+date: '2024-01-31'
 description: job evaluation methods including point method, compensable factors, skill-based and competency-based plans for determining relative job worth.
 id: Job-based Pay structures and Job Evaluation
 modified: 2025-12-24 23:24:43 GMT-05:00

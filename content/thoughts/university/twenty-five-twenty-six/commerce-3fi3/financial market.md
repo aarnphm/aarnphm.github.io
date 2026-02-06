@@ -1,5 +1,5 @@
 ---
-date: "2025-09-08"
+date: '2025-09-08'
 description: week 1
 id: financial market
 modified: 2025-10-29 02:15:57 GMT-04:00

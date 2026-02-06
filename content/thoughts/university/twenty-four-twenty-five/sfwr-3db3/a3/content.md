@@ -1,5 +1,5 @@
 ---
-date: "2024-11-24"
+date: '2024-11-24'
 description: assignment on functional dependencies, minimal cover, armstrong's axioms, normalization, and transaction concurrency control.
 id: content
 modified: 2025-11-09 01:40:53 GMT-05:00

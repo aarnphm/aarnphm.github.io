@@ -1,6 +1,6 @@
-import { Link, CuriusResponse } from "../../types/curius"
-import { createLinkEl } from "./curius"
-import { removeAllChildren } from "./util"
+import { Link, CuriusResponse } from '../../types/curius'
+import { createLinkEl } from './curius'
+import { removeAllChildren } from './util'
 
 declare global {
   interface Window {
@@ -9,25 +9,25 @@ declare global {
 }
 
 const fetchLinksHeaders: RequestInit = {
-  method: "GET",
-  headers: { "Content-Type": "application/json" },
+  method: 'GET',
+  headers: { 'Content-Type': 'application/json' },
 }
 
 async function loadPage(page: number) {
-  const fetchText = document.getElementById("curius-fetching-text")
+  const fetchText = document.getElementById('curius-fetching-text')
   if (fetchText) {
-    fetchText.textContent = "Récupération des liens curius"
-    fetchText.classList.toggle("active", true)
+    fetchText.textContent = 'Récupération des liens curius'
+    fetchText.classList.toggle('active', true)
   }
 
   const resp = await fetch(`/api/curius?query=links&page=${page}`, fetchLinksHeaders)
 
   if (fetchText) {
-    fetchText.classList.toggle("active", false)
+    fetchText.classList.toggle('active', false)
   }
 
   if (!resp.ok) {
-    throw new Error("Failed to load page")
+    throw new Error('Failed to load page')
   }
 
   const data: CuriusResponse = await resp.json()
@@ -35,7 +35,7 @@ async function loadPage(page: number) {
 }
 
 async function renderPage(page: number): Promise<boolean> {
-  const fragment = document.getElementById("curius-fragments")
+  const fragment = document.getElementById('curius-fragments')
   if (!fragment) return false
 
   let data: CuriusResponse
@@ -59,11 +59,11 @@ async function renderPage(page: number): Promise<boolean> {
       window.curiusState = { currentPage: 0, hasMore: false }
       updateNavigation()
     } else {
-      const fetchText = document.getElementById("curius-fetching-text")
+      const fetchText = document.getElementById('curius-fetching-text')
       if (fetchText) {
         fetchText.textContent = "Pas d'autres liens pour le moment"
-        fetchText.classList.toggle("active", true)
-        window.setTimeout(() => fetchText.classList.toggle("active", false), 1500)
+        fetchText.classList.toggle('active', true)
+        window.setTimeout(() => fetchText.classList.toggle('active', false), 1500)
       }
 
       const prevState = window.curiusState || { currentPage: 0, hasMore: false }
@@ -79,7 +79,7 @@ async function renderPage(page: number): Promise<boolean> {
 
   window.curiusState = {
     currentPage: page,
-    hasMore: typeof data.hasMore === "boolean" ? data.hasMore : linksData.length > 0,
+    hasMore: typeof data.hasMore === 'boolean' ? data.hasMore : linksData.length > 0,
   }
 
   updateNavigation()
@@ -87,8 +87,8 @@ async function renderPage(page: number): Promise<boolean> {
 }
 
 export function updateNavigation() {
-  const prevButton = document.getElementById("curius-prev")
-  const nextButton = document.getElementById("curius-next")
+  const prevButton = document.getElementById('curius-prev')
+  const nextButton = document.getElementById('curius-next')
 
   if (!prevButton || !nextButton) return
 
@@ -96,20 +96,20 @@ export function updateNavigation() {
   const canGoPrev = state.currentPage > 0
   const canGoNext = state.hasMore !== false
 
-  prevButton.classList.toggle("disabled", !canGoPrev)
-  prevButton.setAttribute("aria-disabled", String(!canGoPrev))
+  prevButton.classList.toggle('disabled', !canGoPrev)
+  prevButton.setAttribute('aria-disabled', String(!canGoPrev))
 
-  nextButton.classList.toggle("disabled", !canGoNext)
-  nextButton.setAttribute("aria-disabled", String(!canGoNext))
+  nextButton.classList.toggle('disabled', !canGoNext)
+  nextButton.setAttribute('aria-disabled', String(!canGoNext))
 }
 
 let isNavigating = false
 
-document.addEventListener("nav", async (e) => {
-  if (e.detail.url !== "curius") return
+document.addEventListener('nav', async e => {
+  if (e.detail.url !== 'curius') return
 
-  const prevButton = document.getElementById("curius-prev")
-  const nextButton = document.getElementById("curius-next")
+  const prevButton = document.getElementById('curius-prev')
+  const nextButton = document.getElementById('curius-next')
 
   if (!prevButton || !nextButton) return
 
@@ -148,9 +148,9 @@ document.addEventListener("nav", async (e) => {
     }
   }
 
-  prevButton.addEventListener("click", onPrevClick)
-  nextButton.addEventListener("click", onNextClick)
+  prevButton.addEventListener('click', onPrevClick)
+  nextButton.addEventListener('click', onNextClick)
 
-  window.addCleanup(() => prevButton.removeEventListener("click", onPrevClick))
-  window.addCleanup(() => nextButton.removeEventListener("click", onNextClick))
+  window.addCleanup(() => prevButton.removeEventListener('click', onPrevClick))
+  window.addCleanup(() => nextButton.removeEventListener('click', onNextClick))
 })

@@ -1,16 +1,16 @@
-import { defaultContentPageLayout, sharedPageComponents } from "../../../quartz.layout"
-import { FullPageLayout } from "../../cfg"
-import { Content, BaseSearchBar, BaseViewSelector } from "../../components"
-import { pageResources, renderPage } from "../../components/renderPage"
-import { QuartzComponentProps } from "../../types/component"
-import { QuartzEmitterPlugin } from "../../types/plugin"
-import { BaseExpressionDiagnostic, BasesExpressions } from "../../util/base/compiler"
-import { BaseMetadata, renderBaseViewsForFile } from "../../util/base/render"
-import { BuildCtx } from "../../util/ctx"
-import { pathToRoot, FullSlug } from "../../util/path"
-import { StaticResources } from "../../util/resources"
-import { QuartzPluginData } from "../vfile"
-import { write } from "./helpers"
+import { defaultContentPageLayout, sharedPageComponents } from '../../../quartz.layout'
+import { FullPageLayout } from '../../cfg'
+import { Content, BaseSearchBar, BaseViewSelector } from '../../components'
+import { pageResources, renderPage } from '../../components/renderPage'
+import { QuartzComponentProps } from '../../types/component'
+import { QuartzEmitterPlugin } from '../../types/plugin'
+import { BaseExpressionDiagnostic, BasesExpressions } from '../../util/base/compiler'
+import { BaseMetadata, renderBaseViewsForFile } from '../../util/base/render'
+import { BuildCtx } from '../../util/ctx'
+import { pathToRoot, FullSlug } from '../../util/path'
+import { StaticResources } from '../../util/resources'
+import { QuartzPluginData } from '../vfile'
+import { write } from './helpers'
 
 async function* emitBaseViewsForFile(
   ctx: BuildCtx,
@@ -31,7 +31,7 @@ async function* emitBaseViewsForFile(
     fileData.frontmatter = {
       ...fileData.frontmatter,
       title: `${fileData.frontmatter?.title || baseSlug} - ${renderedView.view.name}`,
-      pageLayout: fileData.frontmatter!.pageLayout || "default",
+      pageLayout: fileData.frontmatter!.pageLayout || 'default',
     }
     fileData.basesMetadata = {
       baseSlug,
@@ -52,11 +52,11 @@ async function* emitBaseViewsForFile(
     }
 
     const content = renderPage(ctx, slug, componentData, layout, externalResources, false)
-    yield write({ ctx, content, slug, ext: ".html" })
+    yield write({ ctx, content, slug, ext: '.html' })
   }
 }
 
-export const BasePage: QuartzEmitterPlugin<Partial<FullPageLayout>> = (userOpts) => {
+export const BasePage: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts => {
   const opts: FullPageLayout = {
     ...sharedPageComponents,
     ...defaultContentPageLayout,
@@ -69,12 +69,12 @@ export const BasePage: QuartzEmitterPlugin<Partial<FullPageLayout>> = (userOpts)
   const { head: Head, header, beforeBody, pageBody, afterBody, sidebar, footer: Footer } = opts
 
   return {
-    name: "BaseViewPage",
+    name: 'BaseViewPage',
     getQuartzComponents() {
       return [Head, ...header, ...beforeBody, pageBody, ...afterBody, ...sidebar, Footer]
     },
     async *partialEmit(ctx, content, resources, changeEvents) {
-      const allFiles = content.map((c) => c[1].data)
+      const allFiles = content.map(c => c[1].data)
       const baseFilesBySlug = new Map<FullSlug, QuartzPluginData>()
 
       for (const [, file] of content) {
@@ -101,7 +101,7 @@ export const BasePage: QuartzEmitterPlugin<Partial<FullPageLayout>> = (userOpts)
           continue
         }
 
-        if (changeEvent.type === "delete") {
+        if (changeEvent.type === 'delete') {
           rebuildAllBases = true
           continue
         }
@@ -132,7 +132,7 @@ export const BasePage: QuartzEmitterPlugin<Partial<FullPageLayout>> = (userOpts)
       }
     },
     async *emit(ctx, content, resources) {
-      const allFiles = content.map((c) => c[1].data)
+      const allFiles = content.map(c => c[1].data)
 
       for (const [, file] of content) {
         if (!file.data.bases || !file.data.basesConfig || !file.data.slug) continue
@@ -142,7 +142,7 @@ export const BasePage: QuartzEmitterPlugin<Partial<FullPageLayout>> = (userOpts)
   }
 }
 
-declare module "vfile" {
+declare module 'vfile' {
   interface DataMap {
     basesMetadata: BaseMetadata
     basesDiagnostics?: BaseExpressionDiagnostic[]

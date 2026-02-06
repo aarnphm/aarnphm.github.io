@@ -7,7 +7,7 @@ description: memory as the only thread connecting us to ourselves, and what happ
 director: Christopher Nolan
 id: memento
 modified: 2025-10-29 02:15:05 GMT-04:00
-posters: "[[movies/posters/memento.jpg]]"
+posters: '[[movies/posters/memento.jpg]]'
 rating: 8.4
 status: recurring
 studio: syncopy

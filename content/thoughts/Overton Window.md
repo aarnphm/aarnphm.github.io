@@ -1,5 +1,5 @@
 ---
-date: "2024-03-05"
+date: '2024-03-05'
 description: also known as window of discourse
 id: Overton Window
 modified: 2025-12-24 23:26:23 GMT-05:00

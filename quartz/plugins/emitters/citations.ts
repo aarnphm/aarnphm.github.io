@@ -1,7 +1,7 @@
-import { Cite } from "@citation-js/core"
-import fs from "node:fs"
-import { QuartzEmitterPlugin } from "../../types/plugin"
-import { joinSegments, QUARTZ } from "../../util/path"
+import { Cite } from '@citation-js/core'
+import fs from 'node:fs'
+import { QuartzEmitterPlugin } from '../../types/plugin'
+import { joinSegments, QUARTZ } from '../../util/path'
 import {
   arraysEqual,
   buildCachePayload,
@@ -12,24 +12,24 @@ import {
   normalizeArxivId,
   pruneMetadata,
   sanitizeLinks,
-} from "../stores/citations"
-import "@citation-js/plugin-bibtex"
-import "@citation-js/plugin-doi"
-import { extractArxivId } from "../transformers/links"
-import { write } from "./helpers"
+} from '../stores/citations'
+import '@citation-js/plugin-bibtex'
+import '@citation-js/plugin-doi'
+import { extractArxivId } from '../transformers/links'
+import { write } from './helpers'
 
 interface Options {
   bibliography: string
 }
 
-const citationsCacheFile = joinSegments(QUARTZ, ".quartz-cache", "citations.json")
+const citationsCacheFile = joinSegments(QUARTZ, '.quartz-cache', 'citations.json')
 
 function readCachePayload(): CitationsCachePayload {
   if (!fs.existsSync(citationsCacheFile)) {
     return { papers: {}, documents: {} }
   }
 
-  const raw = fs.readFileSync(citationsCacheFile, "utf8")
+  const raw = fs.readFileSync(citationsCacheFile, 'utf8')
   return JSON.parse(raw) as CitationsCachePayload
 }
 
@@ -43,7 +43,7 @@ class RateLimiter {
     const now = Date.now()
     const elapsed = now - this.lastRequest
     if (elapsed < this.minInterval) {
-      await new Promise((resolve) => setTimeout(resolve, this.minInterval - elapsed))
+      await new Promise(resolve => setTimeout(resolve, this.minInterval - elapsed))
     }
     this.lastRequest = Date.now()
   }
@@ -83,7 +83,7 @@ async function fetchBibtex(id: string): Promise<string> {
   await arxivRateLimiter.wait()
 
   const res = await fetch(url, {
-    headers: { "User-Agent": "QuartzArxivTransformer/1.0 (+https://github.com/aarnphm)" },
+    headers: { 'User-Agent': 'QuartzArxivTransformer/1.0 (+https://github.com/aarnphm)' },
   })
 
   if (!res.ok) {
@@ -92,7 +92,7 @@ async function fetchBibtex(id: string): Promise<string> {
 
   const bibtex = await res.text()
 
-  if (!bibtex.trim().startsWith("@")) {
+  if (!bibtex.trim().startsWith('@')) {
     throw new Error(`Invalid BibTeX response for ${norm}`)
   }
 
@@ -101,7 +101,7 @@ async function fetchBibtex(id: string): Promise<string> {
 
 async function ensureBibEntry(bibPath: string, id: string, desiredKey: string): Promise<string> {
   const targetArxivId = normalizeArxivId(id)
-  const fileContent = fs.existsSync(bibPath) ? fs.readFileSync(bibPath, "utf8") : ""
+  const fileContent = fs.existsSync(bibPath) ? fs.readFileSync(bibPath, 'utf8') : ''
   const libItems = fileContent.trim()
     ? (new Cite(fileContent, { generateGraph: false }).data as any[])
     : []
@@ -121,14 +121,14 @@ async function ensureBibEntry(bibPath: string, id: string, desiredKey: string): 
   const key = desiredKey || newEntry.id
 
   if (libItems.some((x: any) => x.id === key)) {
-    const suffix = targetArxivId.replace(/\./g, "")
+    const suffix = targetArxivId.replace(/\./g, '')
     newEntry = { ...newEntry, id: `${key}-${suffix}` }
   } else {
     newEntry = { ...newEntry, id: key }
   }
 
-  const prefix = fileContent.trim().length ? "\n\n" : ""
-  const rendered = new Cite(newEntry).format("bibtex")
+  const prefix = fileContent.trim().length ? '\n\n' : ''
+  const rendered = new Cite(newEntry).format('bibtex')
   fs.appendFileSync(bibPath, `${prefix}${rendered}\n`)
 
   return newEntry.id
@@ -151,19 +151,17 @@ export async function ensureBibEntries(ids: Iterable<string>, bibliography: stri
   }
 }
 
-export const Bibliography: QuartzEmitterPlugin<Partial<Options>> = (opts) => {
-  const bibliography = opts?.bibliography ?? "content/References.bib"
+export const Bibliography: QuartzEmitterPlugin<Partial<Options>> = opts => {
+  const bibliography = opts?.bibliography ?? 'content/References.bib'
   return {
-    name: "Bibliography",
+    name: 'Bibliography',
     async *emit(ctx, content) {
       const documents = new Map<string, string[]>()
       for (const [, file] of content) {
         const ids = file.data.citations?.arxivIds
         const fileKey = file.data.slug!
         if (!fileKey || !ids || ids.length === 0) continue
-        const links = sanitizeLinks(
-          ids.map((id) => `https://arxiv.org/abs/${normalizeArxivId(id)}`),
-        )
+        const links = sanitizeLinks(ids.map(id => `https://arxiv.org/abs/${normalizeArxivId(id)}`))
         documents.set(fileKey, links)
       }
 
@@ -192,7 +190,7 @@ export const Bibliography: QuartzEmitterPlugin<Partial<Options>> = (opts) => {
         yield write({
           ctx: cacheCtx,
           slug: `${QUARTZ}/.quartz-cache/citations`,
-          ext: ".json",
+          ext: '.json',
           content: JSON.stringify(buildCachePayload(), null, 2),
         })
         cacheState.dirty = false

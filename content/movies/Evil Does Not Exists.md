@@ -6,10 +6,10 @@ description: nature gazing down indifferent at our plans—hamaguchi filming vil
 director: Ryusuke Hamaguchi
 id: evil-does-not-exists
 modified: 2025-10-29 02:14:49 GMT-04:00
-posters: "[[movies/posters/evil-does-not-exists.jpg]]"
+posters: '[[movies/posters/evil-does-not-exists.jpg]]'
 rating: 7
 status: to watch
-studio: "[independent]"
+studio: '[independent]'
 tags:
   - r/environment
   - r/politics

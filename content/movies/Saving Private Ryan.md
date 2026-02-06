@@ -7,7 +7,7 @@ description: omaha beach opening as visceral horror—spielberg filming d-day ca
 director: Steven Spielberg
 id: saving-private-ryan
 modified: 2025-10-29 02:14:56 GMT-04:00
-posters: "[[movies/posters/saving-private-ryan.jpg]]"
+posters: '[[movies/posters/saving-private-ryan.jpg]]'
 rating: 8.6
 status: recurring
 studio: dreamworks pictures

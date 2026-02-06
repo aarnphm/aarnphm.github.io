@@ -5,7 +5,7 @@ description: drummer pushed to breaking point by abusive instructor—chazelle f
 director: Damien Chazelle
 id: whiplash
 modified: 2025-10-29 02:15:06 GMT-04:00
-posters: "[[movies/posters/whiplash.jpg]]"
+posters: '[[movies/posters/whiplash.jpg]]'
 rating: 8.5
 status: recurring
 studio: sony pictures classics

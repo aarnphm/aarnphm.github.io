@@ -1,5 +1,5 @@
 ---
-date: "2025-10-31"
+date: '2025-10-31'
 description: framing for the tinyvllm architecture slice
 id: overview
 modified: 2025-11-09 01:30:15 GMT-05:00

@@ -1,5 +1,5 @@
 ---
-date: "2024-12-14"
+date: '2024-12-14'
 description: feature extraction from neural network
 id: autoencoders
 modified: 2025-10-29 02:15:41 GMT-04:00
@@ -7,8 +7,8 @@ tags:
   - ml
 title: autoencoders
 seealso:
-  - "[[thoughts/autoencoder-diagrams-intuition|diagrams]]"
-  - "[[thoughts/latent space|latent space]]"
+  - '[[thoughts/autoencoder-diagrams-intuition|diagrams]]'
+  - '[[thoughts/latent space|latent space]]'
 ---
 
 Think of using autoencoders to extract [[thoughts/representations]].

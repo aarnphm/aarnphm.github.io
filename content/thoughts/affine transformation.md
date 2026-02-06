@@ -1,5 +1,5 @@
 ---
-date: "2025-09-15"
+date: '2025-09-15'
 description: linear map plus translation preserving lines, parallelism, and convex combinations through matrix operations and homogeneous coordinates.
 id: affine transformation
 modified: 2025-10-29 02:15:39 GMT-04:00

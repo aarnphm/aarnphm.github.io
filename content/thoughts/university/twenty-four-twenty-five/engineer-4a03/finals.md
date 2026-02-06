@@ -1,5 +1,5 @@
 ---
-date: "2024-12-08"
+date: '2024-12-08'
 description: and exercise.
 id: finals
 modified: 2025-11-22 11:41:34 GMT-05:00

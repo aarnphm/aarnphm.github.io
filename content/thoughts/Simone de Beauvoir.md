@@ -1,5 +1,5 @@
 ---
-date: "2025-11-17"
+date: '2025-11-17'
 description: French existentialist philosopher, writer, social theorist, and feminist activist.
 id: Simone de Beauvoir
 modified: 2026-01-06 19:39:16 GMT-05:00

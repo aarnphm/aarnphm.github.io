@@ -1,5 +1,5 @@
 ---
-date: "2025-10-27"
+date: '2025-10-27'
 description: from nytimes
 id: nytimes
 modified: 2026-02-01 14:53:33 GMT-05:00

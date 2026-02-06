@@ -1,5 +1,5 @@
 ---
-date: "2024-03-01"
+date: '2024-03-01'
 description: assignment on second-order systems with pid controller design for overshoot and settling time, routh-hurwitz stability criterion, and steady-state error analysis.
 id: content
 modified: 2025-10-29 02:16:22 GMT-04:00

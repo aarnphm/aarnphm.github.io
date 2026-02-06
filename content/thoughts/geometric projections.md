@@ -1,5 +1,5 @@
 ---
-date: "2024-12-13"
+date: '2024-12-13'
 description: transformations of geometric properties within projective space, encoding positional information for vectors through homeography.
 id: geometric projections
 modified: 2025-10-29 02:15:46 GMT-04:00

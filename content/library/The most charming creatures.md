@@ -7,7 +7,7 @@ description: poetry collection using radiolarians as metaphor to examine languag
 id: The most charming creatures
 modified: 2025-11-29 21:54:49 GMT-05:00
 notebook:
-posters: "[[library/posters/the-most-charming-creatures.jpg]]"
+posters: '[[library/posters/the-most-charming-creatures.jpg]]'
 status: to read
 subcategory:
   - love

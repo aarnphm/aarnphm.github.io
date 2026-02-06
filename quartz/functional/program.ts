@@ -1,4 +1,4 @@
-import type { Cmd } from "./cmd"
+import type { Cmd } from './cmd'
 
 export type Dispatch<Event> = (event: Event) => void
 
@@ -32,7 +32,7 @@ export const start = <Model, Event, Effect>(program: Program<Model, Event, Effec
     }
   }
 
-  const dispatch: Dispatch<Event> = (event) => {
+  const dispatch: Dispatch<Event> = event => {
     if (!running) return
     const result = program.reduce(model, event)
     model = result.model

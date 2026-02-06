@@ -2,11 +2,11 @@ import type {
   QuartzComponent,
   QuartzComponentConstructor,
   QuartzComponentProps,
-} from "../../types/component"
-import { classNames } from "../../util/lang"
+} from '../../types/component'
+import { classNames } from '../../util/lang'
 // @ts-ignore
-import script from "../scripts/masonry.inline"
-import style from "../styles/masonry.scss"
+import script from '../scripts/masonry.inline'
+import style from '../styles/masonry.scss'
 
 export default (() => {
   const MasonryPage: QuartzComponent = ({ fileData, displayClass }: QuartzComponentProps) => {
@@ -22,10 +22,10 @@ export default (() => {
           class={classNames(
             displayClass,
             ...classes,
-            "masonry-container",
-            "all-col",
-            "grid",
-            "popover-hint",
+            'masonry-container',
+            'all-col',
+            'grid',
+            'popover-hint',
           )}
         >
           <div class="masonry-empty all-col">no images found</div>
@@ -38,10 +38,10 @@ export default (() => {
         class={classNames(
           displayClass,
           ...classes,
-          "masonry-container",
-          "all-col",
-          "popover-hint",
-          "grid",
+          'masonry-container',
+          'all-col',
+          'popover-hint',
+          'grid',
         )}
       >
         <div class="masonry-grid all-col" id="masonry-grid" data-json-path={jsonPath}></div>

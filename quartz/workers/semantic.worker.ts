@@ -1,11 +1,11 @@
-import { PGlite } from "@electric-sql/pglite"
-import "onnxruntime-web/webgpu"
-import "onnxruntime-web/wasm"
+import { PGlite } from '@electric-sql/pglite'
+import 'onnxruntime-web/webgpu'
+import 'onnxruntime-web/wasm'
 //@ts-ignore
-import { vector as vectorExtension } from "@electric-sql/pglite/vector"
-import { env, AutoModel, AutoTokenizer } from "@huggingface/transformers"
-import { init, defaultDevice, numpy as np } from "@jax-js/jax"
-import { dependencies } from "../../package.json"
+import { vector as vectorExtension } from '@electric-sql/pglite/vector'
+import { env, AutoModel, AutoTokenizer } from '@huggingface/transformers'
+import { init, defaultDevice, numpy as np } from '@jax-js/jax'
+import { dependencies } from '../../package.json'
 
 export {}
 
@@ -36,43 +36,43 @@ type Manifest = {
 }
 
 type InitMessage = {
-  type: "init"
+  type: 'init'
   cfg: any
   manifestUrl: string
   baseUrl?: string
   disableCache?: boolean
 }
 
-type SearchMessage = { type: "search"; text: string; k: number; seq: number }
+type SearchMessage = { type: 'search'; text: string; k: number; seq: number }
 
-type ResetMessage = { type: "reset" }
+type ResetMessage = { type: 'reset' }
 
 type WorkerMessage = InitMessage | SearchMessage | ResetMessage
 
-type ReadyMessage = { type: "ready" }
+type ReadyMessage = { type: 'ready' }
 
-type ProgressMessage = { type: "progress"; loadedRows: number; totalRows: number }
+type ProgressMessage = { type: 'progress'; loadedRows: number; totalRows: number }
 
 type SearchHit = { id: number; score: number }
 
-type SearchResultMessage = { type: "search-result"; seq: number; semantic: SearchHit[] }
+type SearchResultMessage = { type: 'search-result'; seq: number; semantic: SearchHit[] }
 
-type ErrorMessage = { type: "error"; seq?: number; message: string }
+type ErrorMessage = { type: 'error'; seq?: number; message: string }
 
-type WorkerState = "idle" | "loading" | "ready" | "error"
+type WorkerState = 'idle' | 'loading' | 'ready' | 'error'
 
 type CandidateRow = { id: number; vec: string; score: number }
 
 type MetaRow = { value: string }
 
-const DB_NAME = "semantic-search-cache"
-const META_TABLE = "semantic_meta"
-const EMBEDDINGS_TABLE = "semantic_embeddings"
-const INDEX_NAME = "semantic_embeddings_vec_hnsw"
-const CDN_BASE = `https://cdn.jsdelivr.net/npm/@electric-sql/pglite@${dependencies["@electric-sql/pglite"].slice(1)}/dist`
+const DB_NAME = 'semantic-search-cache'
+const META_TABLE = 'semantic_meta'
+const EMBEDDINGS_TABLE = 'semantic_embeddings'
+const INDEX_NAME = 'semantic_embeddings_vec_hnsw'
+const CDN_BASE = `https://cdn.jsdelivr.net/npm/@electric-sql/pglite@${dependencies['@electric-sql/pglite'].slice(1)}/dist`
 const VECTOR_BUNDLE_URL = new URL(`${CDN_BASE}/vector.tar.gz`)
 
-let state: WorkerState = "idle"
+let state: WorkerState = 'idle'
 let manifest: Manifest | null = null
 let cfg: any = null
 let dims = 0
@@ -85,7 +85,7 @@ let jaxPromise: Promise<void> | null = null
 let manifestId: string | null = null
 
 function toAbsolute(path: string, baseUrl?: string): string {
-  if (path.startsWith("http://") || path.startsWith("https://")) {
+  if (path.startsWith('http://') || path.startsWith('https://')) {
     return path
   }
   const base = baseUrl ?? self.location.origin
@@ -101,7 +101,7 @@ async function fetchBinary(path: string): Promise<ArrayBuffer> {
 }
 
 function vectorToLiteral(vec: Float32Array): string {
-  return `[${vec.join(",")}]`
+  return `[${vec.join(',')}]`
 }
 
 function parseVectorLiteral(text: string): number[] {
@@ -109,8 +109,8 @@ function parseVectorLiteral(text: string): number[] {
 }
 
 function buildManifestId(data: Manifest): string {
-  const shardHashes = data.vectors.shards.map((shard) => shard.sha256 ?? "").join("|")
-  return [data.version, data.model, data.dims, data.rows, shardHashes].join(":")
+  const shardHashes = data.vectors.shards.map(shard => shard.sha256 ?? '').join('|')
+  return [data.version, data.model, data.dims, data.rows, shardHashes].join(':')
 }
 
 async function openDatabase(disableCache: boolean | undefined): Promise<PGlite> {
@@ -118,7 +118,7 @@ async function openDatabase(disableCache: boolean | undefined): Promise<PGlite> 
     dbPromise = (async () => {
       const [wasmModule, fsBundle] = await Promise.all([
         WebAssembly.compileStreaming(fetch(`${CDN_BASE}/pglite.wasm`)),
-        fetch(`${CDN_BASE}/pglite.data`).then((r) => r.blob()),
+        fetch(`${CDN_BASE}/pglite.data`).then(r => r.blob()),
       ])
 
       const vector = {
@@ -130,7 +130,7 @@ async function openDatabase(disableCache: boolean | undefined): Promise<PGlite> 
       }
       const dataDir = disableCache ? `memory://${DB_NAME}` : `idb://${DB_NAME}`
       const db = await PGlite.create({ dataDir, wasmModule, fsBundle, extensions: { vector } })
-      await db.exec("create extension if not exists vector")
+      await db.exec('create extension if not exists vector')
       return db
     })()
   }
@@ -147,11 +147,11 @@ async function closeDatabase(): Promise<void> {
 async function ensureJax(): Promise<void> {
   if (!jaxPromise) {
     jaxPromise = (async () => {
-      const devices = await init("webgpu")
-      if (!devices.includes("webgpu")) {
-        throw new Error("webgpu unavailable for jax-js")
+      const devices = await init('webgpu')
+      if (!devices.includes('webgpu')) {
+        throw new Error('webgpu unavailable for jax-js')
       }
-      defaultDevice("webgpu")
+      defaultDevice('webgpu')
     })()
   }
   return jaxPromise
@@ -164,7 +164,7 @@ async function ensureSchema(db: PGlite, manifest: Manifest, manifestKey: string,
   let currentKey: string | null = null
   try {
     const meta = await db.query<MetaRow>(`select value from ${META_TABLE} where key = $1`, [
-      "manifest_id",
+      'manifest_id',
     ])
     currentKey = meta.rows[0]?.value ?? null
   } catch {
@@ -192,7 +192,7 @@ async function ensureSchema(db: PGlite, manifest: Manifest, manifestKey: string,
   let loadedRows = 0
 
   await Promise.all(
-    manifest.vectors.shards.map(async (shard) => {
+    manifest.vectors.shards.map(async shard => {
       const absolute = toAbsolute(shard.path, baseUrl)
       const payload = await fetchBinary(absolute)
       const view = new Float32Array(payload)
@@ -224,7 +224,7 @@ async function ensureSchema(db: PGlite, manifest: Manifest, manifestKey: string,
       }
 
       loadedRows = Math.min(manifest.rows, loadedRows + shard.rows)
-      const progress: ProgressMessage = { type: "progress", loadedRows, totalRows: manifest.rows }
+      const progress: ProgressMessage = { type: 'progress', loadedRows, totalRows: manifest.rows }
       self.postMessage(progress)
     }),
   )
@@ -244,7 +244,7 @@ async function ensureSchema(db: PGlite, manifest: Manifest, manifestKey: string,
   }
   await db.query(
     `insert into ${META_TABLE} (key, value) values ($1, $2) on conflict (key) do update set value = excluded.value`,
-    ["manifest_id", manifestKey],
+    ['manifest_id', manifestKey],
   )
 }
 
@@ -257,7 +257,7 @@ async function insertBatch(db: PGlite, ids: number[], vecs: string[]) {
     params.push(ids[i], vecs[i])
     idx += 2
   }
-  await db.query(`insert into ${EMBEDDINGS_TABLE} (id, vec) values ${values.join(",")}`, params)
+  await db.query(`insert into ${EMBEDDINGS_TABLE} (id, vec) values ${values.join(',')}`, params)
 }
 
 function configureRuntimeEnv() {
@@ -266,7 +266,7 @@ function configureRuntimeEnv() {
   env.allowRemoteModels = true
   const wasmBackend = env.backends?.onnx?.wasm
   if (!wasmBackend) {
-    throw new Error("transformers.js ONNX runtime backend unavailable")
+    throw new Error('transformers.js ONNX runtime backend unavailable')
   }
   const cdnBase = `https://cdn.jsdelivr.net/npm/@huggingface/transformers@${env.version}/dist/`
   wasmBackend.wasmPaths = cdnBase
@@ -274,9 +274,9 @@ function configureRuntimeEnv() {
 }
 
 const MODEL_MAPPING: Record<string, string> = {
-  "intfloat/multilingual-e5-large": "Xenova/multilingual-e5-large",
-  "google/embeddinggemma-300m": "onnx-community/embeddinggemma-300m-ONNX",
-  "Qwen/Qwen3-Embedding-0.6B": "onnx-community/Qwen3-Embedding-0.6B-ONNX",
+  'intfloat/multilingual-e5-large': 'Xenova/multilingual-e5-large',
+  'google/embeddinggemma-300m': 'onnx-community/embeddinggemma-300m-ONNX',
+  'Qwen/Qwen3-Embedding-0.6B': 'onnx-community/Qwen3-Embedding-0.6B-ONNX',
 }
 
 async function ensureEncoder() {
@@ -284,7 +284,7 @@ async function ensureEncoder() {
   const modelId = manifest?.model ?? cfg?.model
   const mappedModel = MODEL_MAPPING[modelId] ?? modelId
   configureRuntimeEnv()
-  const dtype = typeof cfg?.dtype === "string" && cfg.dtype.length > 0 ? cfg.dtype : "fp32"
+  const dtype = typeof cfg?.dtype === 'string' && cfg.dtype.length > 0 ? cfg.dtype : 'fp32'
   tokenizer = await AutoTokenizer.from_pretrained(mappedModel)
   model = await AutoModel.from_pretrained(mappedModel, { dtype })
   cfg.dtype = dtype
@@ -297,18 +297,18 @@ async function embed(text: string, isQuery: boolean = false): Promise<Float32Arr
   if (modelId) {
     const modelName = modelId.toLowerCase()
     switch (true) {
-      case modelName.includes("e5"): {
+      case modelName.includes('e5'): {
         prefixedText = isQuery ? `query: ${text}` : `passage: ${text}`
         break
       }
-      case modelName.includes("qwen") && modelName.includes("embedding"): {
+      case modelName.includes('qwen') && modelName.includes('embedding'): {
         if (isQuery) {
-          const task = "Given a web search query, retrieve relevant passages that answer the query"
+          const task = 'Given a web search query, retrieve relevant passages that answer the query'
           prefixedText = `Instruct: ${task}\nQuery: ${text}`
         }
         break
       }
-      case modelName.includes("embeddinggemma"): {
+      case modelName.includes('embeddinggemma'): {
         prefixedText = isQuery
           ? `task: search result | query: ${text}`
           : `title: none | text: ${text}`
@@ -344,7 +344,7 @@ async function embed(text: string, isQuery: boolean = false): Promise<Float32Arr
 
     embedding = { data: pooled }
   } else {
-    throw new Error("unsupported model output format")
+    throw new Error('unsupported model output format')
   }
 
   const data = embedding.data
@@ -393,7 +393,7 @@ async function rerank(queryVec: Float32Array, candidates: CandidateRow[]): Promi
 
 function toNumberArray(value: unknown): number[] {
   if (Array.isArray(value)) {
-    return value.map((entry) => Number(entry))
+    return value.map(entry => Number(entry))
   }
   if (value instanceof Float32Array) return Array.from(value)
   if (value instanceof Float64Array) return Array.from(value)
@@ -403,15 +403,15 @@ function toNumberArray(value: unknown): number[] {
   if (value instanceof Uint16Array) return Array.from(value)
   if (value instanceof Int8Array) return Array.from(value)
   if (value instanceof Uint8Array) return Array.from(value)
-  throw new Error("unexpected score payload")
+  throw new Error('unexpected score payload')
 }
 
 async function handleInit(msg: InitMessage) {
-  if (state === "loading" || state === "ready") {
-    throw new Error("worker already initialized or loading")
+  if (state === 'loading' || state === 'ready') {
+    throw new Error('worker already initialized or loading')
   }
 
-  state = "loading"
+  state = 'loading'
   abortController?.abort()
   abortController = new AbortController()
 
@@ -427,7 +427,7 @@ async function handleInit(msg: InitMessage) {
     }
     manifest = (await response.json()) as Manifest
 
-    if (manifest.vectors.dtype !== "fp32") {
+    if (manifest.vectors.dtype !== 'fp32') {
       throw new Error(
         `unsupported embedding dtype '${manifest.vectors.dtype}', regenerate with fp32`,
       )
@@ -439,21 +439,21 @@ async function handleInit(msg: InitMessage) {
     const [db] = await Promise.all([openDatabase(Boolean(msg.disableCache)), ensureJax()])
     await ensureSchema(db, manifest, manifestId, msg.baseUrl)
 
-    state = "ready"
-    const ready: ReadyMessage = { type: "ready" }
+    state = 'ready'
+    const ready: ReadyMessage = { type: 'ready' }
     self.postMessage(ready)
   } catch (err) {
-    state = "error"
+    state = 'error'
     throw err
   }
 }
 
 async function handleSearch(msg: SearchMessage) {
-  if (state !== "ready") {
-    throw new Error("worker not ready for search")
+  if (state !== 'ready') {
+    throw new Error('worker not ready for search')
   }
   if (!manifest) {
-    throw new Error("semantic worker not configured")
+    throw new Error('semantic worker not configured')
   }
 
   const queryVec = await embed(msg.text, true)
@@ -473,7 +473,7 @@ async function handleSearch(msg: SearchMessage) {
   const semanticHits = reranked.slice(0, limit)
 
   const message: SearchResultMessage = {
-    type: "search-result",
+    type: 'search-result',
     seq: msg.seq,
     semantic: semanticHits,
   }
@@ -483,7 +483,7 @@ async function handleSearch(msg: SearchMessage) {
 function handleReset() {
   abortController?.abort()
   abortController = null
-  state = "idle"
+  state = 'idle'
   manifest = null
   cfg = null
   dims = 0
@@ -498,15 +498,15 @@ function handleReset() {
 self.onmessage = (event: MessageEvent<WorkerMessage>) => {
   const data = event.data
 
-  if (data.type === "reset") {
+  if (data.type === 'reset') {
     handleReset()
     return
   }
 
-  if (data.type === "init") {
+  if (data.type === 'init') {
     void handleInit(data).catch((err: unknown) => {
       const message: ErrorMessage = {
-        type: "error",
+        type: 'error',
         message: err instanceof Error ? err.message : String(err),
       }
       self.postMessage(message)
@@ -514,10 +514,10 @@ self.onmessage = (event: MessageEvent<WorkerMessage>) => {
     return
   }
 
-  if (data.type === "search") {
+  if (data.type === 'search') {
     void handleSearch(data).catch((err: unknown) => {
       const message: ErrorMessage = {
-        type: "error",
+        type: 'error',
         seq: data.seq,
         message: err instanceof Error ? err.message : String(err),
       }

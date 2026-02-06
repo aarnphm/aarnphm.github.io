@@ -15,5 +15,5 @@ category:
 id: The Analysis of Matter
 title: The Analysis of Matter
 year: 1927
-posters: "[[library/posters/the-analysis-of-matter.jpg]]"
+posters: '[[library/posters/the-analysis-of-matter.jpg]]'
 ---

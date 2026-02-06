@@ -1,12 +1,12 @@
 ---
-date: "2024-02-25"
+date: '2024-02-25'
 description: higher dimensions representations of information in subspaces
 id: Embedding
 modified: 2026-01-14 11:32:53 GMT-05:00
 seealso:
-  - "[[thoughts/Transformers]]"
-  - "[[thoughts/Attention]]"
-  - "[[thoughts/LLMs]]"
+  - '[[thoughts/Transformers]]'
+  - '[[thoughts/Attention]]'
+  - '[[thoughts/LLMs]]'
 tags:
   - ml
   - llm

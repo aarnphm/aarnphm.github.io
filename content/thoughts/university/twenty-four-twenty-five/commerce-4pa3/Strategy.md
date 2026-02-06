@@ -1,5 +1,5 @@
 ---
-date: "2025-01-15"
+date: '2025-01-15'
 description: and competitive force shaping strategy
 id: Strategy
 modified: 2025-10-29 02:15:59 GMT-04:00

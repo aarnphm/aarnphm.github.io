@@ -12,7 +12,7 @@ subcategory:
   - photography
 author:
   - Susan Sontag
-posters: "[[library/posters/on-photography.jpg]]"
+posters: '[[library/posters/on-photography.jpg]]'
 category:
   - p/nf
 translator:

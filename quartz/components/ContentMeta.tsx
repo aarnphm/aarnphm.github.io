@@ -1,17 +1,17 @@
-import { JSX, h } from "preact"
-import { i18n } from "../i18n"
+import { JSX, h } from 'preact'
+import { i18n } from '../i18n'
 import {
   QuartzComponent,
   QuartzComponentConstructor,
   QuartzComponentProps,
-} from "../types/component"
-import { classNames } from "../util/lang"
-import { FullSlug, resolveRelative } from "../util/path"
-import { Date as DateComponent, getDate } from "./Date"
+} from '../types/component'
+import { classNames } from '../util/lang'
+import { FullSlug, resolveRelative } from '../util/path'
+import { Date as DateComponent, getDate } from './Date'
 //@ts-ignore
-import script from "./scripts/content-meta.inline"
-import style from "./styles/contentMeta.scss"
-import { svgOptions } from "./svg"
+import script from './scripts/content-meta.inline'
+import style from './styles/contentMeta.scss'
+import { svgOptions } from './svg'
 
 type MetaProp = { title: string; classes: string[]; item: JSX.Element | JSX.Element[] }
 
@@ -25,7 +25,7 @@ export default (() => {
       created = getDate(cfg, fileData)
     }
     if (fileData.dates?.modified) {
-      modified = fileData.dates?.["modified"]
+      modified = fileData.dates?.['modified']
     }
     const displayedTime = i18n(locale).components.contentMeta.readingTime({
       minutes: Math.ceil(fileData.readingTime ? fileData.readingTime.minutes! : 0),
@@ -44,64 +44,64 @@ export default (() => {
     const meta: MetaProp[] = []
     if (created !== undefined) {
       meta.push({
-        title: "publié à",
-        classes: ["published-time"],
+        title: 'publié à',
+        classes: ['published-time'],
         item: h(
-          "span",
-          { class: "page-creation", title: `Date de création du contenu de la page (${created})` },
-          [h("em", {}, [<DateComponent date={created} locale={locale} />])],
+          'span',
+          { class: 'page-creation', title: `Date de création du contenu de la page (${created})` },
+          [h('em', {}, [<DateComponent date={created} locale={locale} />])],
         ),
       })
     }
     if (modified !== undefined) {
       meta.push({
-        title: "modifié à",
-        classes: ["modified-time"],
+        title: 'modifié à',
+        classes: ['modified-time'],
         item: h(
-          "span",
-          { class: "page-modification" },
-          h("em", {}, <DateComponent date={modified} locale={locale} />),
+          'span',
+          { class: 'page-modification' },
+          h('em', {}, <DateComponent date={modified} locale={locale} />),
         ),
       })
     }
 
-    meta.push({ title: "durée", classes: ["reading-time"], item: h("span", {}, [displayedTime]) })
+    meta.push({ title: 'durée', classes: ['reading-time'], item: h('span', {}, [displayedTime]) })
 
     if (fileData.frontmatter?.protected !== true) {
       meta.push({
-        title: "source",
-        classes: ["readable-source"],
+        title: 'source',
+        classes: ['readable-source'],
         item: [
           h(
-            "a",
+            'a',
             {
               href: resolveRelative(
                 fileData.slug!,
-                ((fileData.slug === "arena" ? "are.na" : fileData.slug!) + ".md") as FullSlug,
+                ((fileData.slug === 'arena' ? 'are.na' : fileData.slug!) + '.md') as FullSlug,
               ),
-              target: "_blank",
-              rel: "noopener noreferrer",
-              class: "llm-source",
+              target: '_blank',
+              rel: 'noopener noreferrer',
+              class: 'llm-source',
             },
-            [h("span", { title: "voir https://github.com/AnswerDotAI/llms-txt" }, ["llms.txt"])],
+            [h('span', { title: 'voir https://github.com/AnswerDotAI/llms-txt' }, ['llms.txt'])],
           ),
           h(
-            "span",
+            'span',
             {
-              type: "button",
-              ariaLabel: "copy source",
-              class: "clipboard-button",
-              "data-href": resolveRelative(
+              type: 'button',
+              ariaLabel: 'copy source',
+              class: 'clipboard-button',
+              'data-href': resolveRelative(
                 fileData.slug!,
-                ((fileData.slug === "arena" ? "are.na" : fileData.slug!) + ".md") as FullSlug,
+                ((fileData.slug === 'arena' ? 'are.na' : fileData.slug!) + '.md') as FullSlug,
               ),
             },
 
-            h("svg", { ...svgOptions, viewbox: "0 -8 24 24", class: "copy-icon" }, [
-              h("use", { href: "#github-copy" }),
+            h('svg', { ...svgOptions, viewbox: '0 -8 24 24', class: 'copy-icon' }, [
+              h('use', { href: '#github-copy' }),
             ]),
-            h("svg", { ...svgOptions, viewbox: "0 -8 24 24", class: "check-icon" }, [
-              h("use", { href: "#github-check" }),
+            h('svg', { ...svgOptions, viewbox: '0 -8 24 24', class: 'check-icon' }, [
+              h('use', { href: '#github-check' }),
             ]),
           ),
         ],
@@ -109,8 +109,8 @@ export default (() => {
     }
 
     return (
-      <ul class={classNames(displayClass, "content-meta")}>
-        {meta.map((el) => (
+      <ul class={classNames(displayClass, 'content-meta')}>
+        {meta.map(el => (
           <Li {...el} />
         ))}
       </ul>

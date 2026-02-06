@@ -1,5 +1,5 @@
 ---
-date: "2024-12-13"
+date: '2024-12-13'
 description: and some more annotations
 id: Relational Algebra
 modified: 2025-10-29 02:16:02 GMT-04:00

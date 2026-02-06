@@ -1,5 +1,5 @@
 ---
-author: "[[thoughts/Freud|Sigmund Freud]]"
+author: '[[thoughts/Freud|Sigmund Freud]]'
 category: philosophy
 language: german
 date: 2024-12-23
@@ -7,7 +7,7 @@ description: freud explores repetition, trauma, and the death drive, extending p
 finished: 2024
 id: Beyond The Pleasure Principle
 modified: 2025-11-19 17:58:26 GMT-05:00
-posters: "[[library/posters/beyond-the-pleasure-principle.jpg]]"
+posters: '[[library/posters/beyond-the-pleasure-principle.jpg]]'
 status: finished
 subcategory: hedonia
 tags:

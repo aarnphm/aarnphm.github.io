@@ -14,7 +14,7 @@ subcategory:
   - being
 author:
   - David Berman
-posters: "[[library/posters/actual-air.png]]"
+posters: '[[library/posters/actual-air.png]]'
 category: poetry
 translator:
 notebook:

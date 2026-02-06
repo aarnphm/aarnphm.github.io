@@ -12,7 +12,7 @@ subcategory:
   - grief
 author:
   - Nancy Lemann
-posters: "[[library/posters/Lives of the Saints.jpg]]"
+posters: '[[library/posters/Lives of the Saints.jpg]]'
 category:
   - p/fiction
 translator:

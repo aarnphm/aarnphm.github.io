@@ -1,7 +1,7 @@
 ---
 aliases:
   - gpus
-date: "2025-09-08"
+date: '2025-09-08'
 description: bedstone of scaling intelligence
 id: GPU programming
 modified: 2026-01-15 18:18:33 GMT-05:00

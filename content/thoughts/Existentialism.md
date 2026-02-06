@@ -1,10 +1,10 @@
 ---
-date: "2024-02-29"
+date: '2024-02-29'
 description: existential crises,angst, courage, and ultimate freedom
 id: Existentialism
 modified: 2026-01-02 02:32:39 GMT-05:00
 seealso:
-  - "[[thoughts/Camus#absurd freedom|absurdism]]"
+  - '[[thoughts/Camus#absurd freedom|absurdism]]'
 socials:
   sep: https://plato.stanford.edu/entries/existentialism/
 tags:

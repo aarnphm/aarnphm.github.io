@@ -1,7 +1,7 @@
-import matter from "gray-matter"
-import { execSync } from "node:child_process"
-import { promises as fs } from "node:fs"
-import path from "node:path"
+import matter from 'gray-matter'
+import { execSync } from 'node:child_process'
+import { promises as fs } from 'node:fs'
+import path from 'node:path'
 
 interface Coordinates {
   lat: string
@@ -17,49 +17,49 @@ interface PlaceEntry {
   address?: string
 }
 
-const ARENA_FILE = path.join(process.cwd(), "content", "are.na.md")
-const PLACES_DIR = path.join(process.cwd(), "content", "places")
-const CATEGORY_LINK = "[[places to go]]"
-const DEFAULT_TAGS = ["places"]
+const ARENA_FILE = path.join(process.cwd(), 'content', 'are.na.md')
+const PLACES_DIR = path.join(process.cwd(), 'content', 'places')
+const CATEGORY_LINK = '[[places to go]]'
+const DEFAULT_TAGS = ['places']
 const DEFAULT_RATING = 5
-const NOMINATIM_ENDPOINT = "https://nominatim.openstreetmap.org/reverse"
+const NOMINATIM_ENDPOINT = 'https://nominatim.openstreetmap.org/reverse'
 const NOMINATIM_USER_AGENT =
-  process.env.NOMINATIM_USER_AGENT ?? "aarnphm-garden-sync/1.0 (contact@aarnphm.xyz)"
-const NOMINATIM_DELAY_MS = Number(process.env.NOMINATIM_DELAY_MS ?? "1100")
+  process.env.NOMINATIM_USER_AGENT ?? 'aarnphm-garden-sync/1.0 (contact@aarnphm.xyz)'
+const NOMINATIM_DELAY_MS = Number(process.env.NOMINATIM_DELAY_MS ?? '1100')
 
 const addressCache = new Map<string, string>()
 
 function sanitizeFileName(title: string): string {
   return title
-    .replace(/[\\/]/g, "-")
-    .replace(/[:*?"<>|]/g, " ")
-    .replace(/\s+/g, " ")
+    .replace(/[\\/]/g, '-')
+    .replace(/[:*?"<>|]/g, ' ')
+    .replace(/\s+/g, ' ')
     .trim()
 }
 
 function stripDecorations(input: string): string {
-  return input.replace(/\s*\[(?:\*\*|--)]\s*$/, "").trim()
+  return input.replace(/\s*\[(?:\*\*|--)]\s*$/, '').trim()
 }
 
 function normalizeDate(value?: string): string | undefined {
   if (!value) {
     return undefined
   }
-  const trimmed = value.trim().replace(/^"|"$/g, "")
+  const trimmed = value.trim().replace(/^"|"$/g, '')
   if (/^\d{4}-\d{2}-\d{2}$/.test(trimmed)) {
     return trimmed
   }
   const slash = trimmed.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/)
   if (slash) {
     const [, month, day, year] = slash
-    const pad = (num: string) => num.padStart(2, "0")
+    const pad = (num: string) => num.padStart(2, '0')
     return `${year}-${pad(month)}-${pad(day)}`
   }
   return trimmed
 }
 
 function normalizeCoordinatePart(value: string): string {
-  return value.trim().replace(/^"|"$/g, "")
+  return value.trim().replace(/^"|"$/g, '')
 }
 
 function normalizeUrl(value?: string): string | undefined {
@@ -74,10 +74,10 @@ function parseCoordinate(value?: string): Coordinates | undefined {
   if (!value) {
     return undefined
   }
-  const inner = value.replace(/^[[]|[\]]$/g, "")
+  const inner = value.replace(/^[[]|[\]]$/g, '')
   const parts = inner
-    .split(",")
-    .map((part) => normalizeCoordinatePart(part))
+    .split(',')
+    .map(part => normalizeCoordinatePart(part))
     .filter(Boolean)
   if (parts.length < 2) {
     return undefined
@@ -91,21 +91,21 @@ function parseTagList(value?: string): string[] {
     return []
   }
   const trimmed = value.trim()
-  if (!trimmed.startsWith("[") || !trimmed.endsWith("]")) {
-    return [trimmed.replace(/^"|"$/g, "")].filter(Boolean)
+  if (!trimmed.startsWith('[') || !trimmed.endsWith(']')) {
+    return [trimmed.replace(/^"|"$/g, '')].filter(Boolean)
   }
   const inner = trimmed.slice(1, -1).trim()
   if (inner.length === 0) {
     return []
   }
   return inner
-    .split(",")
-    .map((item) => item.trim().replace(/^"|"$/g, ""))
+    .split(',')
+    .map(item => item.trim().replace(/^"|"$/g, ''))
     .filter(Boolean)
 }
 
 function delay(ms: number): Promise<void> {
-  return new Promise((resolve) => setTimeout(resolve, ms))
+  return new Promise(resolve => setTimeout(resolve, ms))
 }
 
 function buildAddressFromParts(parts?: Record<string, string>): string | undefined {
@@ -114,14 +114,14 @@ function buildAddressFromParts(parts?: Record<string, string>): string | undefin
   }
 
   const segments: string[] = []
-  const streetComponents = [parts.house_number, parts.road].filter(Boolean).join(" ").trim()
+  const streetComponents = [parts.house_number, parts.road].filter(Boolean).join(' ').trim()
   if (streetComponents.length > 0) {
     segments.push(streetComponents)
   } else if (parts.road) {
     segments.push(parts.road)
   }
 
-  const localityOrder = ["neighbourhood", "suburb", "city_district", "town", "city", "village"]
+  const localityOrder = ['neighbourhood', 'suburb', 'city_district', 'town', 'city', 'village']
   for (const key of localityOrder) {
     const value = parts[key]
     if (value && !segments.includes(value)) {
@@ -139,8 +139,8 @@ function buildAddressFromParts(parts?: Record<string, string>): string | undefin
     segments.push(parts.country)
   }
 
-  const cleaned = segments.map((segment) => segment.trim()).filter((segment) => segment.length > 0)
-  return cleaned.length > 0 ? cleaned.join(", ") : undefined
+  const cleaned = segments.map(segment => segment.trim()).filter(segment => segment.length > 0)
+  return cleaned.length > 0 ? cleaned.join(', ') : undefined
 }
 
 type NominatimResponse = { display_name?: string; address?: Record<string, string> }
@@ -152,13 +152,13 @@ async function reverseGeocode(coords: Coordinates): Promise<string | undefined> 
   }
 
   const url = new URL(NOMINATIM_ENDPOINT)
-  url.searchParams.set("format", "jsonv2")
-  url.searchParams.set("lat", coords.lat)
-  url.searchParams.set("lon", coords.lon)
+  url.searchParams.set('format', 'jsonv2')
+  url.searchParams.set('lat', coords.lat)
+  url.searchParams.set('lon', coords.lon)
 
   try {
     const response = await fetch(url, {
-      headers: { "User-Agent": NOMINATIM_USER_AGENT, Accept: "application/json" },
+      headers: { 'User-Agent': NOMINATIM_USER_AGENT, Accept: 'application/json' },
     })
 
     if (!response.ok) {
@@ -197,13 +197,13 @@ function parseMeta(lines: string[]): ParsedMeta {
     }
     const key = match[1].trim().toLowerCase()
     const value = match[2].trim()
-    if (key === "date") {
+    if (key === 'date') {
       meta.date = normalizeDate(value)
-    } else if (key === "tags") {
+    } else if (key === 'tags') {
       meta.tags = parseTagList(value)
-    } else if (key === "coord") {
+    } else if (key === 'coord') {
       meta.coord = parseCoordinate(value)
-    } else if (key === "title") {
+    } else if (key === 'title') {
       meta.title = value.trim()
     }
   }
@@ -213,7 +213,7 @@ function parseMeta(lines: string[]): ParsedMeta {
 function findPlacesSection(lines: string[]): { start: number; end: number } | null {
   let start = -1
   for (let index = 0; index < lines.length; index += 1) {
-    if (lines[index].trim().toLowerCase() === "## places") {
+    if (lines[index].trim().toLowerCase() === '## places') {
       start = index + 1
       break
     }
@@ -224,7 +224,7 @@ function findPlacesSection(lines: string[]): { start: number; end: number } | nu
   let end = lines.length
   for (let index = start; index < lines.length; index += 1) {
     const trimmed = lines[index].trim()
-    if (trimmed.startsWith("## ") && trimmed.toLowerCase() !== "## places") {
+    if (trimmed.startsWith('## ') && trimmed.toLowerCase() !== '## places') {
       end = index
       break
     }
@@ -248,10 +248,10 @@ function parsePlaces(markdown: string): PlaceEntry[] {
     const [, url, rawTitle] = match
     const title = stripDecorations(rawTitle)
     let metaPointer = index + 1
-    while (metaPointer < section.end && lines[metaPointer].trim() === "") {
+    while (metaPointer < section.end && lines[metaPointer].trim() === '') {
       metaPointer += 1
     }
-    if (!lines[metaPointer]?.startsWith("  - [meta]:")) {
+    if (!lines[metaPointer]?.startsWith('  - [meta]:')) {
       throw new Error(`Missing [meta] block after place "${title}" on line ${index + 1}`)
     }
     const metaLines: string[] = []
@@ -281,7 +281,7 @@ function formatTypeTag(tag: string): string | undefined {
   if (!trimmed) {
     return undefined
   }
-  if (trimmed.startsWith("[[") && trimmed.endsWith("]]")) {
+  if (trimmed.startsWith('[[') && trimmed.endsWith(']]')) {
     return trimmed
   }
   return `${trimmed}`
@@ -309,9 +309,9 @@ function buildTypeList(tags: string[], existingType: unknown): string[] {
 }
 
 function formatModified(date: Date): string {
-  const pad = (value: number) => String(value).padStart(2, "0")
+  const pad = (value: number) => String(value).padStart(2, '0')
   const tzOffsetMinutes = -date.getTimezoneOffset()
-  const sign = tzOffsetMinutes >= 0 ? "+" : "-"
+  const sign = tzOffsetMinutes >= 0 ? '+' : '-'
   const abs = Math.abs(tzOffsetMinutes)
   const hours = pad(Math.floor(abs / 60))
   const minutes = pad(abs % 60)
@@ -336,13 +336,13 @@ function buildFrontmatter(
   const coordinates = entry.coordinates
     ? [entry.coordinates.lat, entry.coordinates.lon]
     : Array.isArray(existing.coordinates)
-      ? existing.coordinates.map((coord) => String(coord))
+      ? existing.coordinates.map(coord => String(coord))
       : undefined
 
   const data: Record<string, unknown> = {}
   if (entry.address && entry.address.trim().length > 0) {
     data.address = entry.address.trim()
-  } else if (typeof existing.address === "string" && existing.address.trim().length > 0) {
+  } else if (typeof existing.address === 'string' && existing.address.trim().length > 0) {
     data.address = existing.address.trim()
   }
   data.category = Array.from(categories)
@@ -351,17 +351,17 @@ function buildFrontmatter(
   }
   if (entry.date) {
     data.date = entry.date
-  } else if (typeof existing.date === "string") {
+  } else if (typeof existing.date === 'string') {
     data.date = existing.date
   }
-  if (typeof existing.description === "string" && existing.description.trim().length > 0) {
+  if (typeof existing.description === 'string' && existing.description.trim().length > 0) {
     data.description = existing.description.trim()
   }
   data.id = entry.title
   data.modified = formatModified(new Date())
-  data.rating = typeof existing.rating === "number" ? existing.rating : DEFAULT_RATING
+  data.rating = typeof existing.rating === 'number' ? existing.rating : DEFAULT_RATING
   if (Array.isArray(existing.tags) && existing.tags.length > 0) {
-    data.tags = existing.tags.map((tag) => String(tag))
+    data.tags = existing.tags.map(tag => String(tag))
   } else {
     data.tags = DEFAULT_TAGS
   }
@@ -375,7 +375,7 @@ type ExistingNote = { data: Record<string, unknown>; body: string }
 
 function parseExistingContent(raw?: string): ExistingNote {
   if (!raw) {
-    return { data: {}, body: "" }
+    return { data: {}, body: '' }
   }
   const parsed = matter(raw)
   return { data: parsed.data as Record<string, unknown>, body: parsed.content.trimEnd() }
@@ -388,7 +388,7 @@ async function buildExistingPlaceIndex(): Promise<Map<string, string>> {
     entries = await fs.readdir(PLACES_DIR)
   } catch (error) {
     const nodeError = error as NodeJS.ErrnoException
-    if (nodeError.code === "ENOENT") {
+    if (nodeError.code === 'ENOENT') {
       return index
     }
     throw error
@@ -396,14 +396,14 @@ async function buildExistingPlaceIndex(): Promise<Map<string, string>> {
 
   await Promise.all(
     entries
-      .filter((file) => file.endsWith(".md"))
-      .map(async (file) => {
+      .filter(file => file.endsWith('.md'))
+      .map(async file => {
         const filePath = path.join(PLACES_DIR, file)
         try {
-          const raw = await fs.readFile(filePath, "utf8")
+          const raw = await fs.readFile(filePath, 'utf8')
           const parsed = matter(raw)
           const normalizedUrl = normalizeUrl(
-            typeof parsed.data.url === "string" ? parsed.data.url : undefined,
+            typeof parsed.data.url === 'string' ? parsed.data.url : undefined,
           )
           if (!normalizedUrl) {
             return
@@ -426,7 +426,7 @@ async function buildExistingPlaceIndex(): Promise<Map<string, string>> {
 
 function renderPlaceFile(entry: PlaceEntry, existing: ExistingNote): string {
   const frontmatter = buildFrontmatter(entry, existing.data)
-  const serializedBody = existing.body.length > 0 ? `${existing.body}\n` : ""
+  const serializedBody = existing.body.length > 0 ? `${existing.body}\n` : ''
   return matter.stringify(serializedBody, frontmatter)
 }
 
@@ -440,7 +440,7 @@ async function ensureAddress(
   }
 
   const existingAddress =
-    typeof existingData.address === "string" ? existingData.address.trim() : undefined
+    typeof existingData.address === 'string' ? existingData.address.trim() : undefined
   if (existingAddress && existingAddress.length > 0) {
     entry.address = existingAddress
     return
@@ -465,10 +465,10 @@ async function writePlace(
   const filePath = (normalizedUrl ? existingIndex.get(normalizedUrl) : undefined) ?? fallbackPath
   let existing: string | undefined
   try {
-    existing = await fs.readFile(filePath, "utf8")
+    existing = await fs.readFile(filePath, 'utf8')
   } catch (error) {
     const nodeError = error as NodeJS.ErrnoException
-    if (nodeError.code !== "ENOENT") {
+    if (nodeError.code !== 'ENOENT') {
       throw error
     }
   }
@@ -483,7 +483,7 @@ async function writePlace(
       hasAddress: Boolean(entry.address && entry.address.length > 0),
     }
   }
-  await fs.writeFile(filePath, nextContent, "utf8")
+  await fs.writeFile(filePath, nextContent, 'utf8')
   if (normalizedUrl) {
     existingIndex.set(normalizedUrl, filePath)
   }
@@ -496,10 +496,10 @@ async function writePlace(
 }
 
 async function main() {
-  const arena = await fs.readFile(ARENA_FILE, "utf8")
+  const arena = await fs.readFile(ARENA_FILE, 'utf8')
   const places = parsePlaces(arena)
   if (places.length === 0) {
-    console.log("No places section found in content/are.na.md")
+    console.log('No places section found in content/are.na.md')
     return
   }
   const existingIndex = await buildExistingPlaceIndex()
@@ -534,17 +534,17 @@ async function main() {
   if (changedFiles.length > 0) {
     console.log(`Formatting ${changedFiles.length} changed file(s) with prettier...`)
     try {
-      execSync(`pnpm prettier --write ${changedFiles.map((f) => `"${f}"`).join(" ")}`, {
+      execSync(`pnpm prettier --write ${changedFiles.map(f => `"${f}"`).join(' ')}`, {
         cwd: process.cwd(),
-        stdio: "inherit",
+        stdio: 'inherit',
       })
     } catch (error) {
-      console.warn("Failed to run prettier:", error)
+      console.warn('Failed to run prettier:', error)
     }
   }
 }
 
-main().catch((error) => {
+main().catch(error => {
   console.error(error)
   process.exitCode = 1
 })

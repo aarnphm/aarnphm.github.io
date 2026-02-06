@@ -8,7 +8,7 @@ description: outlaws as doomed romantics—newman and redford's chemistry filmin
 director: George Roy Hill
 id: butch-cassidy-and-the-sundance-kid
 modified: 2025-10-29 02:14:47 GMT-04:00
-posters: "[[movies/posters/butch-cassidy-and-the-sundance-kid.jpg]]"
+posters: '[[movies/posters/butch-cassidy-and-the-sundance-kid.jpg]]'
 rating: 8
 status: to watch
 studio: 20th century fox

@@ -1,6 +1,6 @@
-document.addEventListener("nav", () => {
-  const noteTags = document.querySelectorAll(".note-tag") as NodeListOf<HTMLElement>
-  const notesList = document.querySelector(".section-ul") as HTMLUListElement
+document.addEventListener('nav', () => {
+  const noteTags = document.querySelectorAll('.note-tag') as NodeListOf<HTMLElement>
+  const notesList = document.querySelector('.section-ul') as HTMLUListElement
   let activeTag: HTMLElement | null = null
   let hiddenNotes: HTMLElement[] = []
 
@@ -10,23 +10,23 @@ document.addEventListener("nav", () => {
 
     // Store and remove non-matching notes
     const notes = [...notesList.children] as HTMLElement[]
-    notes.forEach((li) => {
-      const link = li.querySelector(".note-link") as HTMLAnchorElement
-      const tags = link?.dataset.tags?.split(",") ?? []
+    notes.forEach(li => {
+      const link = li.querySelector('.note-link') as HTMLAnchorElement
+      const tags = link?.dataset.tags?.split(',') ?? []
       if (!tags.includes(tagValue)) {
         hiddenNotes.push(li)
         notesList.removeChild(li)
       }
     })
 
-    noteTags.forEach((otherTag) => {
+    noteTags.forEach(otherTag => {
       if (otherTag !== tag) {
-        otherTag.classList.add("fade-out")
+        otherTag.classList.add('fade-out')
       }
     })
 
     activeTag = tag
-    tag.classList.add("active")
+    tag.classList.add('active')
   }
 
   function resetFilter() {
@@ -41,23 +41,23 @@ document.addEventListener("nav", () => {
 
       // Combine and sort all notes by their original order
       const allNotes = [...visibleNotes, ...hiddenNotes].sort((a, b) => {
-        const aIndex = parseInt(a.dataset.index ?? "0")
-        const bIndex = parseInt(b.dataset.index ?? "0")
+        const aIndex = parseInt(a.dataset.index ?? '0')
+        const bIndex = parseInt(b.dataset.index ?? '0')
         return aIndex - bIndex
       })
 
       // Add all notes back
-      allNotes.forEach((note) => notesList.appendChild(note))
+      allNotes.forEach(note => notesList.appendChild(note))
       hiddenNotes = []
     }
 
-    noteTags.forEach((tag) => {
-      tag.classList.remove("fade-out", "active")
+    noteTags.forEach(tag => {
+      tag.classList.remove('fade-out', 'active')
     })
     activeTag = null
   }
 
-  noteTags.forEach((tag) => {
+  noteTags.forEach(tag => {
     const tagValue = tag.dataset.tag
 
     const onMouseEnter = () => {
@@ -83,22 +83,22 @@ document.addEventListener("nav", () => {
       }
     }
 
-    tag.addEventListener("mouseenter", onMouseEnter)
-    tag.addEventListener("mouseleave", onMouseLeave)
-    tag.addEventListener("click", onClick)
-    tag.style.cursor = "pointer"
+    tag.addEventListener('mouseenter', onMouseEnter)
+    tag.addEventListener('mouseleave', onMouseLeave)
+    tag.addEventListener('click', onClick)
+    tag.style.cursor = 'pointer'
 
     window.addCleanup(() => {
-      tag.removeEventListener("mouseenter", onMouseEnter)
-      tag.removeEventListener("mouseleave", onMouseLeave)
-      tag.removeEventListener("click", onClick)
+      tag.removeEventListener('mouseenter', onMouseEnter)
+      tag.removeEventListener('mouseleave', onMouseLeave)
+      tag.removeEventListener('click', onClick)
     })
   })
 
   function fadeOutOtherTags(currentTag: HTMLElement) {
-    noteTags.forEach((tag) => {
+    noteTags.forEach(tag => {
       if (tag !== currentTag && tag !== activeTag) {
-        tag.classList.add("fade-out")
+        tag.classList.add('fade-out')
       }
     })
   }
@@ -106,24 +106,24 @@ document.addEventListener("nav", () => {
   function fadeOutNonMatchingNotes(tag: string) {
     const notes = [...notesList.children] as HTMLElement[]
 
-    notes.forEach((li) => {
-      const link = li.querySelector(".note-link") as HTMLAnchorElement
-      const tags = link?.dataset.tags?.split(",") ?? []
+    notes.forEach(li => {
+      const link = li.querySelector('.note-link') as HTMLAnchorElement
+      const tags = link?.dataset.tags?.split(',') ?? []
       if (!tags.includes(tag)) {
-        li.classList.add("fade-out")
+        li.classList.add('fade-out')
       }
     })
   }
 
   function removeFadeOut() {
-    noteTags.forEach((tag) => {
+    noteTags.forEach(tag => {
       if (tag !== activeTag) {
-        tag.classList.remove("fade-out")
+        tag.classList.remove('fade-out')
       }
     })
     const notes = [...notesList.children] as HTMLElement[]
-    notes.forEach((li) => {
-      li.classList.remove("fade-out")
+    notes.forEach(li => {
+      li.classList.remove('fade-out')
     })
   }
 })

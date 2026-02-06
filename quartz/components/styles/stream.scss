@@ -1,10 +1,10 @@
-@use "sass:map";
-@use "../../styles/variables.scss" as *;
-@use "../../styles/mixin.scss" as *;
+@use 'sass:map';
+@use '../../styles/variables.scss' as *;
+@use '../../styles/mixin.scss' as *;
 
 .preview-container > .preview-inner:has(.stream-feed),
-[data-slug*="stream"] {
-  section[class~="header"] {
+[data-slug*='stream'] {
+  section[class~='header'] {
     border-bottom: 0;
     padding-bottom: 0;
     position: static !important;
@@ -133,7 +133,7 @@
       background-color: rgb(222, 222, 222);
     }
 
-    [saved-theme="dark"] & {
+    [saved-theme='dark'] & {
       background-color: var(--highlight);
     }
   }
@@ -235,7 +235,7 @@
     }
 
     blockquote {
-      &:not([class~="quotes"]) {
+      &:not([class~='quotes']) {
         border-left: 2px solid var(--secondary);
         padding-left: 1rem;
         margin: 0;

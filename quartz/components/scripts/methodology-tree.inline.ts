@@ -1,6 +1,6 @@
-const STEP_SELECTOR = ".methodology-step"
-const TOGGLE_SELECTOR = "[data-step-toggle]"
-const BODY_SELECTOR = "[data-step-body]"
+const STEP_SELECTOR = '.methodology-step'
+const TOGGLE_SELECTOR = '[data-step-toggle]'
+const BODY_SELECTOR = '[data-step-body]'
 
 const setStepState = (
   step: HTMLElement,
@@ -8,8 +8,8 @@ const setStepState = (
   body: HTMLElement,
   open: boolean,
 ) => {
-  step.classList.toggle("is-open", open)
-  toggle.setAttribute("aria-expanded", open ? "true" : "false")
+  step.classList.toggle('is-open', open)
+  toggle.setAttribute('aria-expanded', open ? 'true' : 'false')
   body.hidden = !open
 }
 
@@ -20,17 +20,17 @@ const setupMethodologySteps = () => {
     const body = step.querySelector<HTMLElement>(BODY_SELECTOR)
     if (!toggle || !body) continue
 
-    const initialOpen = step.dataset.initialOpen !== "false" && step.classList.contains("is-open")
+    const initialOpen = step.dataset.initialOpen !== 'false' && step.classList.contains('is-open')
     setStepState(step, toggle, body, initialOpen)
 
     const handleToggle = () => {
-      const willOpen = !step.classList.contains("is-open")
+      const willOpen = !step.classList.contains('is-open')
       setStepState(step, toggle, body, willOpen)
     }
 
-    toggle.addEventListener("click", handleToggle)
-    window.addCleanup?.(() => toggle.removeEventListener("click", handleToggle))
+    toggle.addEventListener('click', handleToggle)
+    window.addCleanup?.(() => toggle.removeEventListener('click', handleToggle))
   }
 }
 
-document.addEventListener("nav", setupMethodologySteps)
+document.addEventListener('nav', setupMethodologySteps)

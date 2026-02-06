@@ -1,7 +1,7 @@
-@use "sass:map";
-@use "../base.scss";
-@use "../variables.scss" as *;
-@use "../mixin.scss" as *;
+@use 'sass:map';
+@use '../base.scss';
+@use '../variables.scss' as *;
+@use '../mixin.scss' as *;
 
 @mixin menuBorder {
   border: 0px solid var(--lightgray);
@@ -9,7 +9,7 @@
   border-right-width: 1px;
 }
 
-body[data-menu="true"] {
+body[data-menu='true'] {
   text-align: right;
   background-image: unset !important;
 
@@ -22,7 +22,7 @@ body[data-menu="true"] {
     background-color: unset;
 
     &::before {
-      content: "";
+      content: '';
       background-color: var(--tertiary);
       z-index: -1;
       width: calc(100% - 25px);
@@ -42,7 +42,7 @@ body[data-menu="true"] {
   }
 
   article.menu {
-    background-image: url("/static/menu.svg");
+    background-image: url('/static/menu.svg');
     background-repeat: no-repeat;
 
     @include menuBorder;
@@ -60,7 +60,7 @@ body[data-menu="true"] {
   h2,
   h3,
   section[data-function] {
-    font-family: "ITCGaramondStdLtCond", var(--bodyFont);
+    font-family: 'ITCGaramondStdLtCond', var(--bodyFont);
     letter-spacing: -0.0275rem;
     font-weight: normal;
   }
@@ -77,7 +77,7 @@ body[data-menu="true"] {
     margin: 4rem 0 2rem;
 
     &::after {
-      content: "";
+      content: '';
     }
   }
 
@@ -85,7 +85,7 @@ body[data-menu="true"] {
     font-style: italic;
   }
 
-  a[data-role="anchor"] {
+  a[data-role='anchor'] {
     display: none;
   }
 

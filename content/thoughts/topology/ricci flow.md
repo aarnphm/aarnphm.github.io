@@ -1,5 +1,5 @@
 ---
-date: "2025-11-01"
+date: '2025-11-01'
 description: hamilton's ricci flow and perelman's entropy functionals—the analytic machinery behind geometrization.
 id: ricci-flow
 modified: 2025-11-09 01:09:14 GMT-05:00

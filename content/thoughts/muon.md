@@ -1,5 +1,5 @@
 ---
-date: "2025-10-17"
+date: '2025-10-17'
 description: derivation sketch and practical notes for the muon optimizer
 id: muon
 modified: 2025-10-29 02:15:50 GMT-04:00

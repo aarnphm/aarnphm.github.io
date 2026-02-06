@@ -1,4 +1,4 @@
-import { DocumentData } from "flexsearch"
+import { DocumentData } from 'flexsearch'
 
 interface Entity extends DocumentData {
   id: number

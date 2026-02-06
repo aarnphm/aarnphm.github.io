@@ -1,5 +1,5 @@
 ---
-date: "2021-10-10"
+date: '2021-10-10'
 description: and XLA. also known as auto differentiation.
 id: Autograd
 modified: 2025-10-29 02:15:16 GMT-04:00
@@ -8,7 +8,7 @@ tags:
   - ml
 title: Autograd
 seealso:
-  - "[[thoughts/XLA|XLA]]"
+  - '[[thoughts/XLA|XLA]]'
 ---
 
 $$

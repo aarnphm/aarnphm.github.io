@@ -1,5 +1,5 @@
 ---
-date: "2024-12-27"
+date: '2024-12-27'
 description: a few gratitude word I want to send to friends.
 id: index
 layout: L

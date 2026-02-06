@@ -1,2 +1,2 @@
-export { CommentsGitHubHandler } from "./github-comments"
-export { GitHubHandler } from "./github-mcp"
+export { CommentsGitHubHandler } from './github-comments'
+export { GitHubHandler } from './github-mcp'

@@ -1,10 +1,10 @@
-import { Element, ElementContent, Root } from "hast"
-import { headingRank } from "hast-util-heading-rank"
-import { toString as hastToString } from "hast-util-to-string"
-import { QuartzTransformerPlugin } from "../../types/plugin"
+import { Element, ElementContent, Root } from 'hast'
+import { headingRank } from 'hast-util-heading-rank'
+import { toString as hastToString } from 'hast-util-to-string'
+import { QuartzTransformerPlugin } from '../../types/plugin'
 
 export type SlideSection = {
-  type: "intro" | "section"
+  type: 'intro' | 'section'
   id?: string
   title?: string
   level?: number
@@ -14,7 +14,7 @@ export type SlideSection = {
 
 export const Slides: QuartzTransformerPlugin = () => {
   return {
-    name: "Slides",
+    name: 'Slides',
     htmlPlugins() {
       return [
         () => {
@@ -30,7 +30,7 @@ export const Slides: QuartzTransformerPlugin = () => {
             let firstHeadingIdx = -1
             for (let i = 0; i < children.length; i++) {
               const el = children[i]
-              if (el?.type === "element" && headingRank(el as Element)) {
+              if (el?.type === 'element' && headingRank(el as Element)) {
                 firstHeadingIdx = i
                 break
               }
@@ -39,16 +39,16 @@ export const Slides: QuartzTransformerPlugin = () => {
             // intro section (content before first heading)
             if (firstHeadingIdx > 0) {
               sections.push({
-                type: "intro",
-                title: "intro",
+                type: 'intro',
+                title: 'intro',
                 startIndex: 0,
                 endIndex: firstHeadingIdx,
               })
             } else if (firstHeadingIdx === -1 && children.length > 0) {
               // No headings at all; treat whole doc as single intro slide
               sections.push({
-                type: "intro",
-                title: "intro",
+                type: 'intro',
+                title: 'intro',
                 startIndex: 0,
                 endIndex: children.length,
               })
@@ -61,14 +61,14 @@ export const Slides: QuartzTransformerPlugin = () => {
               i++
             ) {
               const el = children[i]
-              if (!(el?.type === "element" && headingRank(el as Element))) continue
+              if (!(el?.type === 'element' && headingRank(el as Element))) continue
 
               const startIndex = i
               const level = headingRank(el as Element) as number
               let endIndex = children.length
               for (let j = i + 1; j < children.length; j++) {
                 const next = children[j]
-                if (next?.type === "element" && headingRank(next as Element)) {
+                if (next?.type === 'element' && headingRank(next as Element)) {
                   const nextLevel = headingRank(next as Element) as number
                   if (nextLevel <= level) {
                     endIndex = j
@@ -81,7 +81,7 @@ export const Slides: QuartzTransformerPlugin = () => {
               const id = (headingEl.properties?.id as string) || undefined
               const title = hastToString(headingEl)
 
-              sections.push({ type: "section", id, title, level, startIndex, endIndex })
+              sections.push({ type: 'section', id, title, level, startIndex, endIndex })
 
               i = endIndex - 1 // skip to end of section
             }
@@ -94,7 +94,7 @@ export const Slides: QuartzTransformerPlugin = () => {
   }
 }
 
-declare module "vfile" {
+declare module 'vfile' {
   interface DataMap {
     slidesIndex: SlideSection[]
   }

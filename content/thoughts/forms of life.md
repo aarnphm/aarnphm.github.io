@@ -1,12 +1,12 @@
 ---
-date: "2025-11-19"
+date: '2025-11-19'
 description: circa PI, Wittgenstein
 id: forms of life
 modified: 2026-01-08 14:35:33 GMT-05:00
 seealso:
-  - "[[thoughts/Wittgenstein|Wittgenstein]]"
-  - "[[library/Philosophical Investigations|PI]]"
-  - "[[library/Civilisation and its Discontents|C&D]]"
+  - '[[thoughts/Wittgenstein|Wittgenstein]]'
+  - '[[library/Philosophical Investigations|PI]]'
+  - '[[library/Civilisation and its Discontents|C&D]]'
 tags:
   - philosophy
   - pattern

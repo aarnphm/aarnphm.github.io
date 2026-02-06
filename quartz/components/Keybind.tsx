@@ -2,55 +2,55 @@ import {
   QuartzComponent,
   QuartzComponentConstructor,
   QuartzComponentProps,
-} from "../types/component"
-import { classNames } from "../util/lang"
+} from '../types/component'
+import { classNames } from '../util/lang'
 // @ts-ignore
-import script from "./scripts/keybind.inline"
-import style from "./styles/keybind.scss"
+import script from './scripts/keybind.inline'
+import style from './styles/keybind.scss'
 
 interface Options {
   default?: string[]
 }
 
 export const KeybindAlias = {
-  "cmd+/": "recherche",
-  "cmd+\\": "page d'accueil",
-  "cmd+j": "curius",
-  "cmd+.": "arena",
-  "cmd+i": "stream",
-  "cmd+b": "lecteur",
-  "cmd+g": "graphique",
-  "cmd+o": "opener",
-  "cmd+p": "connector",
-  "cmd+'": "aide raccourcis",
-  gh: "navigation des titres",
-  D: "mode sombre/clair/système",
-  f: "mode de sélection de liens",
-  "j/k": "défiler haut/bas",
-  gg: "aller au début",
-  G: "aller à la fin",
-  "ctrl+d/u": "demi-page haut/bas",
-  "H/M/L": "haut/milieu/bas du viewport",
+  'cmd+/': 'recherche',
+  'cmd+\\': "page d'accueil",
+  'cmd+j': 'curius',
+  'cmd+.': 'arena',
+  'cmd+i': 'stream',
+  'cmd+b': 'lecteur',
+  'cmd+g': 'graphique',
+  'cmd+o': 'opener',
+  'cmd+p': 'connector',
+  "cmd+'": 'aide raccourcis',
+  gh: 'navigation des titres',
+  D: 'mode sombre/clair/système',
+  f: 'mode de sélection de liens',
+  'j/k': 'défiler haut/bas',
+  gg: 'aller au début',
+  G: 'aller à la fin',
+  'ctrl+d/u': 'demi-page haut/bas',
+  'H/M/L': 'haut/milieu/bas du viewport',
 }
 
 const defaultOptions: Options = { default: ["⌘ '", "⌃ '"] }
 
 const convert = (key: string) =>
   key
-    .replace("cmd", "⌘")
-    .replace("ctrl", "⌃")
-    .replace("alt", "⌥")
-    .replace("shift", "⇧")
-    .replace("+", " ")
+    .replace('cmd', '⌘')
+    .replace('ctrl', '⌃')
+    .replace('alt', '⌥')
+    .replace('shift', '⇧')
+    .replace('+', ' ')
 
 const revert = (key: string) =>
   key
-    .replace("⌘", "cmd")
-    .replace("⌃", "ctrl")
-    .replace("⌥", "alt")
-    .replace("⇧", "shift")
-    .replace(" ", "--")
-    .replace("+", "--")
+    .replace('⌘', 'cmd')
+    .replace('⌃', 'ctrl')
+    .replace('⌥', 'alt')
+    .replace('⇧', 'shift')
+    .replace(' ', '--')
+    .replace('+', '--')
 
 export default ((userOpts?: Partial<Options>) => {
   const opts = { ...defaultOptions, ...userOpts }
@@ -58,7 +58,7 @@ export default ((userOpts?: Partial<Options>) => {
 
   const Keybind: QuartzComponent = ({ displayClass }: QuartzComponentProps) => {
     return (
-      <div class={classNames(displayClass, "keybind")} lang={"fr"}>
+      <div class={classNames(displayClass, 'keybind')} lang={'fr'}>
         <kbd id="shortcut-key" data-mapping={JSON.stringify(opts.default?.map(revert))}>
           {defaultKey}
         </kbd>
@@ -70,7 +70,7 @@ export default ((userOpts?: Partial<Options>) => {
                 <li>
                   <div
                     id="shortcuts"
-                    data-key={convert(key).replace(" ", "--")}
+                    data-key={convert(key).replace(' ', '--')}
                     data-value={value}
                   ></div>
                 </li>

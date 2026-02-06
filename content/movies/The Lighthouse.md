@@ -7,7 +7,7 @@ description: two lighthouse keepers descending into madness on isolated islandâ€
 director: Robert Eggers
 id: the-lighthouse
 modified: 2025-10-29 02:14:59 GMT-04:00
-posters: "[[movies/posters/the-lighthouse.jpg]]"
+posters: '[[movies/posters/the-lighthouse.jpg]]'
 rating: 7.4
 status: recurring
 studio: a24

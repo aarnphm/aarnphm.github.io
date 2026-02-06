@@ -1,5 +1,5 @@
 ---
-date: "2025-08-28"
+date: '2025-08-28'
 description: and kv compression
 id: quantisation basics
 modified: 2025-11-21 06:00:35 GMT-05:00

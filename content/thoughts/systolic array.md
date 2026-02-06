@@ -1,5 +1,5 @@
 ---
-date: "2025-10-06"
+date: '2025-10-06'
 description: specialized computing architecture where data flows rhythmically through processing elements, optimized for matrix operations in hardware.
 draft: true
 id: systolic array

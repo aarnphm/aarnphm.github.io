@@ -1,15 +1,15 @@
-import { Root } from "hast"
-import { toHtml } from "hast-util-to-html"
-import crypto from "node:crypto"
-import fs from "node:fs/promises"
-import path from "path"
-import { ReadTimeResults } from "reading-time"
-import { version } from "../../../package.json"
-import { GlobalConfiguration } from "../../cfg"
-import { formatDate, getDate } from "../../components/Date"
-import { i18n } from "../../i18n"
-import { QuartzEmitterPlugin } from "../../types/plugin"
-import { escapeHTML } from "../../util/escape"
+import { Root } from 'hast'
+import { toHtml } from 'hast-util-to-html'
+import crypto from 'node:crypto'
+import fs from 'node:fs/promises'
+import path from 'path'
+import { ReadTimeResults } from 'reading-time'
+import { version } from '../../../package.json'
+import { GlobalConfiguration } from '../../cfg'
+import { formatDate, getDate } from '../../components/Date'
+import { i18n } from '../../i18n'
+import { QuartzEmitterPlugin } from '../../types/plugin'
+import { escapeHTML } from '../../util/escape'
 import {
   FilePath,
   FullSlug,
@@ -18,23 +18,23 @@ import {
   joinSegments,
   simplifySlug,
   sluggify,
-} from "../../util/path"
-import { ArenaData } from "../transformers/arena"
-import { QuartzPluginData } from "../vfile"
-import { write } from "./helpers"
+} from '../../util/path'
+import { ArenaData } from '../transformers/arena'
+import { QuartzPluginData } from '../vfile'
+import { write } from './helpers'
 
 export type ContentIndexMap = Map<FullSlug, ContentDetails>
 export type ContentLayout =
-  | "default"
-  | "letter"
-  | "technical"
-  | "technical-tractatus"
-  | "reflection"
-  | "letter-poem"
-  | "L->ET|A"
-  | "L->EAT"
-  | "A|L"
-  | "L"
+  | 'default'
+  | 'letter'
+  | 'technical'
+  | 'technical-tractatus'
+  | 'reflection'
+  | 'letter-poem'
+  | 'L->ET|A'
+  | 'L->EAT'
+  | 'A|L'
+  | 'L'
 export type ContentDetails = {
   slug: string
   title: string
@@ -82,7 +82,7 @@ interface AtomFeedOptions {
 const INVALID_XML_CHARS = /[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F]/g
 
 function sanitizeXml(input: string): string {
-  return input.replace(INVALID_XML_CHARS, "")
+  return input.replace(INVALID_XML_CHARS, '')
 }
 
 function sanitizeNullable(input?: string | null): string | undefined {
@@ -94,7 +94,7 @@ function sanitizeNullable(input?: string | null): string | undefined {
 }
 
 function generateSiteMap(cfg: GlobalConfiguration, idx: ContentIndexMap): string {
-  const base = cfg.baseUrl ?? ""
+  const base = cfg.baseUrl ?? ''
   const createURLEntry = (slug: SimpleSlug, content: ContentDetails): string => {
     let modifiedDate = content.date
     if (!modifiedDate && content.fileData!.frontmatter?.modified) {
@@ -108,16 +108,16 @@ function generateSiteMap(cfg: GlobalConfiguration, idx: ContentIndexMap): string
 
   const urls = Array.from(idx)
     .map(([slug, content]) => createURLEntry(simplifySlug(slug), content))
-    .join("")
+    .join('')
   return `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">${urls}</urlset>`
 }
 
 function shouldIncludeInFeed(slug: FullSlug, content: ContentDetails): boolean {
   if (
-    slug.includes(".bases") ||
-    content.fileName.includes(".bases") ||
-    slug.includes(".canvas") ||
-    content.fileName.includes(".canvas")
+    slug.includes('.bases') ||
+    content.fileName.includes('.bases') ||
+    slug.includes('.canvas') ||
+    content.fileName.includes('.canvas')
   ) {
     return false
   }
@@ -139,30 +139,30 @@ function deriveFolderDisplayTitle(
   folderIndex: ContentIndexMap,
 ): string | undefined {
   const slugSegments = folderSlug
-    .split("/")
-    .filter((segment) => segment.length > 0)
-    .map((segment) => segment.toLowerCase())
+    .split('/')
+    .filter(segment => segment.length > 0)
+    .map(segment => segment.toLowerCase())
 
   if (slugSegments.length === 0) {
     return undefined
   }
 
-  const canonicalSlug = slugSegments.join("/")
+  const canonicalSlug = slugSegments.join('/')
 
   for (const [, content] of folderIndex) {
-    const normalizedFileName = content.fileName.replace(/\\/g, "/")
-    const folderPath = normalizedFileName.includes("/")
-      ? normalizedFileName.slice(0, normalizedFileName.lastIndexOf("/"))
-      : ""
+    const normalizedFileName = content.fileName.replace(/\\/g, '/')
+    const folderPath = normalizedFileName.includes('/')
+      ? normalizedFileName.slice(0, normalizedFileName.lastIndexOf('/'))
+      : ''
     if (folderPath.length === 0) {
       continue
     }
 
-    const relativePath = folderPath.startsWith("content/")
-      ? folderPath.slice("content/".length)
+    const relativePath = folderPath.startsWith('content/')
+      ? folderPath.slice('content/'.length)
       : folderPath
 
-    const relativeSegments = relativePath.split("/").filter((segment) => segment.length > 0)
+    const relativeSegments = relativePath.split('/').filter(segment => segment.length > 0)
 
     if (relativeSegments.length < slugSegments.length) {
       continue
@@ -170,11 +170,11 @@ function deriveFolderDisplayTitle(
 
     const candidateSegments = relativeSegments.slice(0, slugSegments.length)
     const canonicalCandidate = candidateSegments
-      .map((segment) => sluggify(segment).toLowerCase())
-      .join("/")
+      .map(segment => sluggify(segment).toLowerCase())
+      .join('/')
 
     if (canonicalCandidate === canonicalSlug) {
-      return candidateSegments.join(" / ")
+      return candidateSegments.join(' / ')
     }
   }
 
@@ -186,7 +186,7 @@ function generateAtomFeed(
   idx: ContentIndexMap,
   options: AtomFeedOptions = {},
 ): string {
-  const base = cfg.baseUrl ?? "example.com"
+  const base = cfg.baseUrl ?? 'example.com'
   const limit = options.limit
 
   const createURLEntry = (slug: SimpleSlug, content: ContentDetails): string => {
@@ -197,8 +197,8 @@ function generateAtomFeed(
       updatedDate = publishedDate
     }
 
-    const summary = escapeHTML(sanitizeNullable(content.description) ?? "")
-    const richContent = sanitizeXml(content.richContent ?? "")
+    const summary = escapeHTML(sanitizeNullable(content.description) ?? '')
+    const richContent = sanitizeXml(content.richContent ?? '')
 
     return `<entry>
     <title>${escapeHTML(content.title)}</title>
@@ -209,7 +209,7 @@ function generateAtomFeed(
     <updated>${updatedDate.toISOString()}</updated>
     <publishedTime>${formatDate(publishedDate, cfg.locale)}</publishedTime>
     <updatedTime>${formatDate(updatedDate, cfg.locale)}</updatedTime>
-    ${content.tags.map((el) => `<category term="${escapeHTML(el)}" label="${escapeHTML(el)}" />`).join("\n")}
+    ${content.tags.map(el => `<category term="${escapeHTML(el)}" label="${escapeHTML(el)}" />`).join('\n')}
     <author>
       <name>Aaron Pham</name>
       <email>contact@aarnphm.xyz</email>
@@ -235,7 +235,7 @@ function generateAtomFeed(
   const limitedEntries = filteredEntries.slice(0, limit ?? filteredEntries.length)
   const items = limitedEntries
     .map(([slug, content]) => createURLEntry(simplifySlug(slug), content))
-    .join("")
+    .join('')
 
   const latestUpdated = limitedEntries.reduce<Date | undefined>((latest, [_, content]) => {
     const frontmatterModified = content.fileData?.frontmatter?.modified
@@ -255,7 +255,7 @@ function generateAtomFeed(
     ? i18n(cfg.locale).pages.rss.lastFewNotes({ count: limit })
     : i18n(cfg.locale).pages.rss.recentNotes
   const feedSubtitle = escapeHTML(options.subtitle ?? `${baseSubtitle} on ${cfg.pageTitle}`)
-  const feedCategory = escapeHTML(options.category ?? "evergreen")
+  const feedCategory = escapeHTML(options.category ?? 'evergreen')
   const feedId = options.linkPath ? absoluteLink : `https://${base}`
   const introHtml = sanitizeNullable(options.introHtml)
 
@@ -277,17 +277,17 @@ function generateAtomFeed(
   <icon>https://${base}/icon.png</icon>
   <generator>Quartz v${version} -- quartz.jzhao.xyz</generator>
   <rights type="html">${escapeHTML(`&amp;copy; ${new Date().getFullYear()} Aaron Pham`)}</rights>
-  ${introHtml ? `<quartz:intro>${introHtml}</quartz:intro>` : ""}
+  ${introHtml ? `<quartz:intro>${introHtml}</quartz:intro>` : ''}
   ${items}
 </feed>`
 }
 
-export const ContentIndex: QuartzEmitterPlugin<Partial<Options>> = (opts) => {
+export const ContentIndex: QuartzEmitterPlugin<Partial<Options>> = opts => {
   opts = { ...defaultOptions, ...opts }
   const folderFeedSlugs = new Set<string>()
 
   return {
-    name: "ContentIndex",
+    name: 'ContentIndex',
     async *emit(ctx, content, _resources) {
       const cfg = ctx.cfg.configuration
 
@@ -296,32 +296,32 @@ export const ContentIndex: QuartzEmitterPlugin<Partial<Options>> = (opts) => {
         let slug = file.data.slug!
         const date = getDate(ctx.cfg.configuration, file.data) ?? new Date()
 
-        if (slug === "are.na") {
-          slug = "arena" as FullSlug
+        if (slug === 'are.na') {
+          slug = 'arena' as FullSlug
         }
 
         // handle canvas files separately - always index them
         if (file.data.canvas) {
           const jcast = file.data.canvas
-          const searchableContent = file.data.text ?? ""
-          const renderedSlug = slug.replace(".canvas", "") as FullSlug
+          const searchableContent = file.data.text ?? ''
+          const renderedSlug = slug.replace('.canvas', '') as FullSlug
 
           linkIndex.set(renderedSlug, {
             slug: renderedSlug,
-            title: file.data.frontmatter?.title ?? path.basename(file.data.filePath!, ".canvas"),
+            title: file.data.frontmatter?.title ?? path.basename(file.data.filePath!, '.canvas'),
             links: file.data.links ?? [],
             filePath: file.data.filePath!,
             fileName: file.data.filePath!,
-            tags: ["canvas", ...(file.data.frontmatter?.tags ?? [])],
+            tags: ['canvas', ...(file.data.frontmatter?.tags ?? [])],
             aliases: file.data.frontmatter?.aliases ?? [],
             content: sanitizeXml(searchableContent),
-            richContent: "",
+            richContent: '',
             date: date,
             readingTime: {
               minutes: Math.max(1, Math.ceil(searchableContent.split(/\s+/).length / 200)),
-              words: searchableContent.split(/\ks+/).filter((w) => w.length > 0).length,
+              words: searchableContent.split(/\ks+/).filter(w => w.length > 0).length,
             },
-            layout: file.data.frontmatter?.pageLayout ?? "default",
+            layout: file.data.frontmatter?.pageLayout ?? 'default',
             description:
               file.data.frontmatter?.description ?? `Canvas with ${jcast.data.nodeMap.size} nodes`,
             fileData: file.data,
@@ -329,8 +329,8 @@ export const ContentIndex: QuartzEmitterPlugin<Partial<Options>> = (opts) => {
           continue
         }
 
-        if (opts?.includeEmptyFiles || (file.data.text && file.data.text !== "")) {
-          const links = (file.data.links ?? []).filter((link) => {
+        if (opts?.includeEmptyFiles || (file.data.text && file.data.text !== '')) {
+          const links = (file.data.links ?? []).filter(link => {
             // @ts-ignore
             const targetFile = content.find(([_, f]) => f.data.slug === link)?.[1]
             if (
@@ -346,26 +346,26 @@ export const ContentIndex: QuartzEmitterPlugin<Partial<Options>> = (opts) => {
 
           const rawHtml = toHtml(tree as Root, { allowDangerousHtml: true })
           const sanitizedRichContent = sanitizeXml(escapeHTML(rawHtml))
-          const sanitizedContent = sanitizeXml(file.data.text ?? "")
+          const sanitizedContent = sanitizeXml(file.data.text ?? '')
           const isProtected = file.data.frontmatter?.protected === true
 
           const getFileName = () => {
             const fullPath = file.data.filePath!
             const relativePath = fullPath.substring(ctx.argv.directory.length + 1)
-            if (relativePath.endsWith(".bases")) return relativePath as FilePath
-            return relativePath.replace(".md", "") as FilePath
+            if (relativePath.endsWith('.bases')) return relativePath as FilePath
+            return relativePath.replace('.md', '') as FilePath
           }
 
           linkIndex.set(slug, {
             slug,
-            title: file.data.frontmatter ? file.data.frontmatter.title! : "",
+            title: file.data.frontmatter ? file.data.frontmatter.title! : '',
             links,
             filePath: file.data.filePath!,
             fileName: getFileName(),
             tags: file.data.frontmatter?.tags ?? [],
             aliases: file.data.frontmatter?.aliases ?? [],
-            content: isProtected ? "" : sanitizedContent,
-            richContent: isProtected ? "" : sanitizedRichContent,
+            content: isProtected ? '' : sanitizedContent,
+            richContent: isProtected ? '' : sanitizedRichContent,
             date: date,
             readingTime: {
               minutes: Math.ceil(file.data.readingTime ? file.data.readingTime.minutes! : 0),
@@ -377,24 +377,24 @@ export const ContentIndex: QuartzEmitterPlugin<Partial<Options>> = (opts) => {
             protected: isProtected,
           })
 
-          if (slug === "arena") {
+          if (slug === 'arena') {
             const arenaData = file.data.arenaData as ArenaData | undefined
             if (arenaData) {
               for (const channel of arenaData.channels) {
-                const channelSlug = joinSegments("arena", channel.slug) as FullSlug
+                const channelSlug = joinSegments('arena', channel.slug) as FullSlug
                 linkIndex.set(channelSlug, {
                   slug: channelSlug,
                   title: channel.name,
-                  links: ["arena" as SimpleSlug],
+                  links: ['arena' as SimpleSlug],
                   filePath: file.data.filePath!,
-                  fileName: file.data.filePath!.replace(".md", "") as FilePath,
+                  fileName: file.data.filePath!.replace('.md', '') as FilePath,
                   tags: file.data.frontmatter?.tags ?? [],
                   aliases: [],
-                  content: channel.blocks.map((b) => b.title || b.content).join(" "),
-                  richContent: "",
+                  content: channel.blocks.map(b => b.title || b.content).join(' '),
+                  richContent: '',
                   date: date,
                   readingTime: { minutes: 1, words: channel.blocks.length * 10 },
-                  layout: "default",
+                  layout: 'default',
                   description: `${channel.blocks.length} blocks in ${channel.name}`,
                 })
               }
@@ -452,31 +452,31 @@ Disallow: /
 User-agent: Perplexity-User
 Disallow: /
 
-Sitemap: https://${joinSegments(cfg.baseUrl ?? "https://example.com", "sitemap.xml")}
+Sitemap: https://${joinSegments(cfg.baseUrl ?? 'https://example.com', 'sitemap.xml')}
 `,
-        slug: "robots" as FullSlug,
-        ext: ".txt",
+        slug: 'robots' as FullSlug,
+        ext: '.txt',
       })
 
       if (opts?.enableSecurity) {
-        const baseDomain = cfg.baseUrl ?? "aarnphm.xyz"
+        const baseDomain = cfg.baseUrl ?? 'aarnphm.xyz'
         const securityPolicyEntry =
-          linkIndex.get("security-policy" as FullSlug) ??
-          Array.from(linkIndex.values()).find((details) => {
-            const normalizedFile = details.fileName.replace(/\\/g, "/")
+          linkIndex.get('security-policy' as FullSlug) ??
+          Array.from(linkIndex.values()).find(details => {
+            const normalizedFile = details.fileName.replace(/\\/g, '/')
             return (
-              normalizedFile === ("content/security policy" as FilePath) ||
-              normalizedFile.endsWith("/security policy") ||
-              details.slug === "security-policy"
+              normalizedFile === ('content/security policy' as FilePath) ||
+              normalizedFile.endsWith('/security policy') ||
+              details.slug === 'security-policy'
             )
           })
 
         const fallbackSlug = securityPolicyEntry
           ? simplifySlug(securityPolicyEntry.slug as FullSlug)
-          : ("security-policy" as SimpleSlug)
+          : ('security-policy' as SimpleSlug)
         const policyPermalink = securityPolicyEntry?.fileData?.frontmatter?.permalinks?.[0]
         const policyHref = policyPermalink
-          ? `https://${joinSegments(baseDomain, policyPermalink.replace(/^\/+/, ""))}`
+          ? `https://${joinSegments(baseDomain, policyPermalink.replace(/^\/+/, ''))}`
           : `https://${joinSegments(baseDomain, fallbackSlug)}`
 
         const modifiedSource =
@@ -489,9 +489,9 @@ Sitemap: https://${joinSegments(cfg.baseUrl ?? "https://example.com", "sitemap.x
         const expiresDate = new Date(safeLastModified.getTime() + 1000 * 60 * 60 * 24 * 180)
 
         const securityTxt = `Contact: mailto:security@aarnphm.xyz
-Encryption: https://${joinSegments(baseDomain, "pgp-key.txt")}
+Encryption: https://${joinSegments(baseDomain, 'pgp-key.txt')}
 Policy: ${policyHref}
-Canonical: https://${joinSegments(baseDomain, ".well-known", "security.txt")}
+Canonical: https://${joinSegments(baseDomain, '.well-known', 'security.txt')}
 Preferred-Languages: en
 Last-Modified: ${safeLastModified.toISOString()}
 Expires: ${expiresDate.toISOString()}
@@ -501,18 +501,18 @@ Expires: ${expiresDate.toISOString()}
         yield write({
           ctx,
           content: securityTxt,
-          slug: joinSegments(".well-known", "security") as FullSlug,
-          ext: ".txt",
+          slug: joinSegments('.well-known', 'security') as FullSlug,
+          ext: '.txt',
         })
-        yield write({ ctx, content: securityTxt, slug: "security" as FullSlug, ext: ".txt" })
+        yield write({ ctx, content: securityTxt, slug: 'security' as FullSlug, ext: '.txt' })
       }
 
       if (opts?.enableSiteMap) {
         yield write({
           ctx,
           content: generateSiteMap(cfg, linkIndex),
-          slug: "sitemap" as FullSlug,
-          ext: ".xml",
+          slug: 'sitemap' as FullSlug,
+          ext: '.xml',
         })
       }
 
@@ -520,8 +520,8 @@ Expires: ${expiresDate.toISOString()}
         yield write({
           ctx,
           content: generateAtomFeed(cfg, linkIndex, { limit: opts.atomLimit }),
-          slug: "index" as FullSlug,
-          ext: ".xml",
+          slug: 'index' as FullSlug,
+          ext: '.xml',
         })
 
         const folderFeedMap = new Map<string, ContentIndexMap>()
@@ -534,7 +534,7 @@ Expires: ${expiresDate.toISOString()}
 
           prefixes.pop()
           for (const prefix of prefixes) {
-            const normalizedPrefix = prefix.replace(/^\/+|\/+$/g, "")
+            const normalizedPrefix = prefix.replace(/^\/+|\/+$/g, '')
             if (normalizedPrefix.length === 0) {
               continue
             }
@@ -556,7 +556,7 @@ Expires: ${expiresDate.toISOString()}
           if (!hasEntries) {
             continue
           }
-          const normalizedSlug = folderSlug.replace(/^\/+/, "")
+          const normalizedSlug = folderSlug.replace(/^\/+/, '')
           folderFeedSlugs.add(normalizedSlug)
 
           const folderKey = folderSlug as FullSlug
@@ -565,20 +565,20 @@ Expires: ${expiresDate.toISOString()}
             Array.from(linkIndex.entries()).find(
               ([existingSlug]) => simplifySlug(existingSlug) === folderSlug,
             )?.[1]
-          const fallbackName = folderSlug.split("/").pop() ?? folderSlug
+          const fallbackName = folderSlug.split('/').pop() ?? folderSlug
           const folderPathTitle =
             deriveFolderDisplayTitle(folderSlug, folderIndex) ??
             folderSlug
-              .split("/")
-              .filter((segment) => segment.length > 0)
-              .map((segment) => decodeURIComponent(segment).replace(/-/g, " "))
-              .join(" / ")
+              .split('/')
+              .filter(segment => segment.length > 0)
+              .map(segment => decodeURIComponent(segment).replace(/-/g, ' '))
+              .join(' / ')
           const title =
             (folderPathTitle.length > 0 ? `/${folderPathTitle}` : undefined) ??
             folderDetails?.title ??
-            fallbackName.replace(/-/g, " ")
+            fallbackName.replace(/-/g, ' ')
           const rawIntro = folderDetails?.fileData?.frontmatter?.rss
-          const folderIntroHtml = typeof rawIntro === "string" ? rawIntro : undefined
+          const folderIntroHtml = typeof rawIntro === 'string' ? rawIntro : undefined
           const subtitle = `${i18n(cfg.locale).pages.rss.recentNotes} in ${title} on ${cfg.pageTitle}`
 
           const feedContent = generateAtomFeed(cfg, folderIndex, {
@@ -593,13 +593,13 @@ Expires: ${expiresDate.toISOString()}
           yield write({
             ctx,
             content: feedContent,
-            slug: joinSegments(folderSlug, "index") as FullSlug,
-            ext: ".xml",
+            slug: joinSegments(folderSlug, 'index') as FullSlug,
+            ext: '.xml',
           })
         }
       }
 
-      const fp = joinSegments("static", "contentIndex") as FullSlug
+      const fp = joinSegments('static', 'contentIndex') as FullSlug
       const simplifiedIndex = Object.fromEntries(
         Array.from(linkIndex).map(([slug, content]) => {
           // remove richContent and fileData from content index as nothing downstream
@@ -611,16 +611,16 @@ Expires: ${expiresDate.toISOString()}
         }),
       )
 
-      yield write({ ctx, content: JSON.stringify(simplifiedIndex), slug: fp, ext: ".json" })
+      yield write({ ctx, content: JSON.stringify(simplifiedIndex), slug: fp, ext: '.json' })
 
       // inform Chrome to yield correct information
       if (
-        process.env.NODE_ENV === "development" ||
-        process.env.NODE_ENV === "test" ||
+        process.env.NODE_ENV === 'development' ||
+        process.env.NODE_ENV === 'test' ||
         ctx.argv.watch
       ) {
         // https://chromium.googlesource.com/devtools/devtools-frontend/+/main/docs/ecosystem/automatic_workspace_folders.md
-        const slug = joinSegments(".well-known", "appspecific", "com.chrome.devtools") as FullSlug
+        const slug = joinSegments('.well-known', 'appspecific', 'com.chrome.devtools') as FullSlug
         const root = path.resolve(path.dirname(ctx.argv.directory)) as FilePath
         const dir = path.dirname(joinSegments(ctx.argv.output, slug)) as FilePath
         await fs.mkdir(dir, { recursive: true })
@@ -630,15 +630,15 @@ Expires: ${expiresDate.toISOString()}
             workspace: {
               root,
               uuid: crypto
-                .createHash("sha256")
+                .createHash('sha256')
                 .update(root)
-                .digest("hex")
-                .replace(/(.{8})(.{4})(.{4})(.{4})(.{12})/, "$1-$2-$3-$4-$5")
+                .digest('hex')
+                .replace(/(.{8})(.{4})(.{4})(.{4})(.{12})/, '$1-$2-$3-$4-$5')
                 .substring(0, 36),
             },
           }),
           slug,
-          ext: ".json",
+          ext: '.json',
         })
       }
     },

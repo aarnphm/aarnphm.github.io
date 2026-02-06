@@ -1,7 +1,7 @@
-import { DurableObject } from "cloudflare:workers"
-import { eq, and, isNull } from "drizzle-orm"
-import { drizzle } from "drizzle-orm/d1"
-import { comments } from "./schema"
+import { DurableObject } from 'cloudflare:workers'
+import { eq, and, isNull } from 'drizzle-orm'
+import { drizzle } from 'drizzle-orm/d1'
+import { comments } from './schema'
 
 type DbComment = typeof comments.$inferSelect
 
@@ -13,9 +13,9 @@ type Anchor = {
   contextWords: [string, string]
 }
 
-type Comment = Omit<DbComment, "anchor"> & { anchor: Anchor | null }
+type Comment = Omit<DbComment, 'anchor'> & { anchor: Anchor | null }
 
-type OperationType = "new" | "update" | "delete" | "resolve"
+type OperationType = 'new' | 'update' | 'delete' | 'resolve'
 
 type OperationInput = { opId: string; type: OperationType; comment: Comment }
 
@@ -30,22 +30,22 @@ const MAX_OP_LOG = 1000
 export class MultiplayerComments extends DurableObject<Env> {
   private sessions: Map<WebSocket, Session>
   private rateLimits: Map<string, RateLimit>
-  private sql: DurableObjectStorage["sql"]
+  private sql: DurableObjectStorage['sql']
 
   constructor(ctx: DurableObjectState, env: any) {
     super(ctx, env)
     this.sessions = new Map()
     this.rateLimits = new Map()
     this.sql = ctx.storage.sql
-    const tableInfo = this.sql.exec("PRAGMA table_info(comment_ops)").toArray() as Array<{
+    const tableInfo = this.sql.exec('PRAGMA table_info(comment_ops)').toArray() as Array<{
       name: string
       pk: number
     }>
-    const hasLegacyPk = tableInfo.some((row) => row.name === "seq" && row.pk === 1)
+    const hasLegacyPk = tableInfo.some(row => row.name === 'seq' && row.pk === 1)
     if (hasLegacyPk) {
-      this.sql.exec("DROP INDEX IF EXISTS idx_comment_ops_page_seq")
-      this.sql.exec("DROP INDEX IF EXISTS idx_comment_ops_page_seq_unique")
-      this.sql.exec("DROP TABLE IF EXISTS comment_ops")
+      this.sql.exec('DROP INDEX IF EXISTS idx_comment_ops_page_seq')
+      this.sql.exec('DROP INDEX IF EXISTS idx_comment_ops_page_seq_unique')
+      this.sql.exec('DROP TABLE IF EXISTS comment_ops')
     }
     this.sql.exec(`
       CREATE TABLE IF NOT EXISTS comment_ops (
@@ -75,13 +75,13 @@ export class MultiplayerComments extends DurableObject<Env> {
   }
 
   private isRecord(value: unknown): value is Record<string, unknown> {
-    return typeof value === "object" && value !== null && !Array.isArray(value)
+    return typeof value === 'object' && value !== null && !Array.isArray(value)
   }
 
   private parseAnchor(value: unknown): Anchor | null {
     if (value === null || value === undefined) return null
     let raw: unknown = value
-    if (typeof raw === "string") {
+    if (typeof raw === 'string') {
       try {
         raw = JSON.parse(raw)
       } catch {
@@ -89,18 +89,18 @@ export class MultiplayerComments extends DurableObject<Env> {
       }
     }
     if (!this.isRecord(raw)) return null
-    const headingId = raw["headingId"]
-    const blockId = raw["blockId"]
-    const paragraphIndex = raw["paragraphIndex"]
-    const localOffset = raw["localOffset"]
-    const contextWords = raw["contextWords"]
+    const headingId = raw['headingId']
+    const blockId = raw['blockId']
+    const paragraphIndex = raw['paragraphIndex']
+    const localOffset = raw['localOffset']
+    const contextWords = raw['contextWords']
 
-    if (headingId !== null && typeof headingId !== "string") return null
-    if (blockId !== null && typeof blockId !== "string") return null
-    if (typeof paragraphIndex !== "number") return null
-    if (typeof localOffset !== "number") return null
+    if (headingId !== null && typeof headingId !== 'string') return null
+    if (blockId !== null && typeof blockId !== 'string') return null
+    if (typeof paragraphIndex !== 'number') return null
+    if (typeof localOffset !== 'number') return null
     if (!Array.isArray(contextWords) || contextWords.length !== 2) return null
-    if (typeof contextWords[0] !== "string" || typeof contextWords[1] !== "string") return null
+    if (typeof contextWords[0] !== 'string' || typeof contextWords[1] !== 'string') return null
 
     return {
       headingId: headingId ?? null,
@@ -145,7 +145,7 @@ export class MultiplayerComments extends DurableObject<Env> {
 
   private getSeqRange(pageId: string): { minSeq: number | null; maxSeq: number | null } {
     const rows = this.sql.exec(
-      "SELECT MIN(seq) AS minSeq, MAX(seq) AS maxSeq FROM comment_ops WHERE pageId = ?",
+      'SELECT MIN(seq) AS minSeq, MAX(seq) AS maxSeq FROM comment_ops WHERE pageId = ?',
       pageId,
     )
     const row = rows.toArray()[0] as { minSeq: number | null; maxSeq: number | null } | undefined
@@ -154,7 +154,7 @@ export class MultiplayerComments extends DurableObject<Env> {
 
   private readOpById(opId: string): OperationRecord | null {
     const rows = this.sql.exec(
-      "SELECT seq, opId, opType, commentJson FROM comment_ops WHERE opId = ?",
+      'SELECT seq, opId, opType, commentJson FROM comment_ops WHERE opId = ?',
       opId,
     )
     const row = rows.toArray()[0] as
@@ -171,11 +171,11 @@ export class MultiplayerComments extends DurableObject<Env> {
 
   private readOpsSince(pageId: string, since: number): OperationRecord[] {
     const rows = this.sql.exec(
-      "SELECT seq, opId, opType, commentJson FROM comment_ops WHERE pageId = ? AND seq > ? ORDER BY seq",
+      'SELECT seq, opId, opType, commentJson FROM comment_ops WHERE pageId = ? AND seq > ? ORDER BY seq',
       pageId,
       since,
     )
-    return rows.toArray().map((row) => {
+    return rows.toArray().map(row => {
       const typedRow = row as { seq: number; opId: string; opType: string; commentJson: string }
       return {
         seq: typedRow.seq,
@@ -187,13 +187,13 @@ export class MultiplayerComments extends DurableObject<Env> {
   }
 
   private nextSeq(pageId: string): number {
-    const rows = this.sql.exec("SELECT seq FROM page_seq WHERE pageId = ?", pageId)
+    const rows = this.sql.exec('SELECT seq FROM page_seq WHERE pageId = ?', pageId)
     const row = rows.toArray()[0] as { seq: number } | undefined
     const next = (row?.seq ?? 0) + 1
     if (row) {
-      this.sql.exec("UPDATE page_seq SET seq = ? WHERE pageId = ?", next, pageId)
+      this.sql.exec('UPDATE page_seq SET seq = ? WHERE pageId = ?', next, pageId)
     } else {
-      this.sql.exec("INSERT INTO page_seq (pageId, seq) VALUES (?, ?)", pageId, next)
+      this.sql.exec('INSERT INTO page_seq (pageId, seq) VALUES (?, ?)', pageId, next)
     }
     return next
   }
@@ -201,7 +201,7 @@ export class MultiplayerComments extends DurableObject<Env> {
   private storeOp(op: OperationInput, comment: Comment, seq: number): boolean {
     try {
       this.sql.exec(
-        "INSERT INTO comment_ops (seq, pageId, opId, opType, commentId, commentJson, createdAt) VALUES (?, ?, ?, ?, ?, ?, ?)",
+        'INSERT INTO comment_ops (seq, pageId, opId, opType, commentId, commentJson, createdAt) VALUES (?, ?, ?, ?, ?, ?, ?)',
         seq,
         comment.pageId,
         op.opId,
@@ -213,7 +213,7 @@ export class MultiplayerComments extends DurableObject<Env> {
       return true
     } catch (err) {
       const message = err instanceof Error ? err.message : String(err)
-      if (message.includes("SQLITE_CONSTRAINT") && message.includes("comment_ops.opId")) {
+      if (message.includes('SQLITE_CONSTRAINT') && message.includes('comment_ops.opId')) {
         return false
       }
       throw err
@@ -223,12 +223,12 @@ export class MultiplayerComments extends DurableObject<Env> {
   private trimOps(pageId: string, seq: number) {
     const minAllowed = seq - MAX_OP_LOG
     if (minAllowed > 0) {
-      this.sql.exec("DELETE FROM comment_ops WHERE pageId = ? AND seq <= ?", pageId, minAllowed)
+      this.sql.exec('DELETE FROM comment_ops WHERE pageId = ? AND seq <= ?', pageId, minAllowed)
     }
   }
 
   private broadcastOp(op: OperationRecord) {
-    const message = JSON.stringify({ type: "op", op })
+    const message = JSON.stringify({ type: 'op', op })
     for (const [ws, session] of this.sessions) {
       if (session.pageId === op.comment.pageId) {
         ws.send(message)
@@ -325,13 +325,13 @@ export class MultiplayerComments extends DurableObject<Env> {
 
     let saved: Comment | null = null
 
-    if (op.type === "new") {
+    if (op.type === 'new') {
       saved = await this.persistNewComment(op.comment)
-    } else if (op.type === "update") {
+    } else if (op.type === 'update') {
       saved = await this.persistUpdateComment(op.comment)
-    } else if (op.type === "delete") {
+    } else if (op.type === 'delete') {
       saved = await this.persistDeleteComment(op.comment.id)
-    } else if (op.type === "resolve") {
+    } else if (op.type === 'resolve') {
       saved = await this.persistResolveComment(op.comment.id)
     }
 
@@ -354,22 +354,22 @@ export class MultiplayerComments extends DurableObject<Env> {
   async fetch(request: Request): Promise<Response> {
     const url = new URL(request.url)
 
-    if (url.pathname === "/comments/websocket") {
-      const upgradeHeader = request.headers.get("Upgrade")
-      if (upgradeHeader !== "websocket") {
-        return new Response("expected websocket", { status: 400 })
+    if (url.pathname === '/comments/websocket') {
+      const upgradeHeader = request.headers.get('Upgrade')
+      if (upgradeHeader !== 'websocket') {
+        return new Response('expected websocket', { status: 400 })
       }
 
-      const pageId = url.searchParams.get("pageId")
+      const pageId = url.searchParams.get('pageId')
       if (!pageId) {
-        return new Response("pageId required", { status: 400 })
+        return new Response('pageId required', { status: 400 })
       }
 
-      const sinceParam = url.searchParams.get("since")
+      const sinceParam = url.searchParams.get('since')
       const since = sinceParam ? Number.parseInt(sinceParam, 10) : null
       const sinceSeq = Number.isFinite(since) ? since : null
 
-      const ip = request.headers.get("CF-Connecting-IP") || "unknown"
+      const ip = request.headers.get('CF-Connecting-IP') || 'unknown'
 
       const pair = new WebSocketPair()
       const [client, server] = Object.values(pair)
@@ -382,7 +382,7 @@ export class MultiplayerComments extends DurableObject<Env> {
 
       if (sinceSeq !== null && minSeq !== null && sinceSeq >= minSeq - 1) {
         const ops = this.readOpsSince(pageId, sinceSeq)
-        server.send(JSON.stringify({ type: "delta", ops, latestSeq }))
+        server.send(JSON.stringify({ type: 'delta', ops, latestSeq }))
       } else {
         const db = drizzle(this.env.COMMENTS_ROOM)
         const existing = await db
@@ -399,8 +399,8 @@ export class MultiplayerComments extends DurableObject<Env> {
 
         server.send(
           JSON.stringify({
-            type: "init",
-            comments: existing.map((comment) => this.normalizeComment(comment)),
+            type: 'init',
+            comments: existing.map(comment => this.normalizeComment(comment)),
             latestSeq,
           }),
         )
@@ -409,10 +409,10 @@ export class MultiplayerComments extends DurableObject<Env> {
       return new Response(null, { status: 101, webSocket: client })
     }
 
-    if (url.pathname === "/comments/export") {
-      const pageId = url.searchParams.get("pageId")
+    if (url.pathname === '/comments/export') {
+      const pageId = url.searchParams.get('pageId')
       if (!pageId) {
-        return new Response("pageId required", { status: 400 })
+        return new Response('pageId required', { status: 400 })
       }
 
       const db = drizzle(this.env.COMMENTS_ROOM)
@@ -426,7 +426,7 @@ export class MultiplayerComments extends DurableObject<Env> {
       const stream = new ReadableStream({
         start(controller) {
           for (const comment of allComments) {
-            const line = JSON.stringify(this.normalizeComment(comment)) + "\n"
+            const line = JSON.stringify(this.normalizeComment(comment)) + '\n'
             controller.enqueue(encoder.encode(line))
           }
           controller.close()
@@ -435,61 +435,61 @@ export class MultiplayerComments extends DurableObject<Env> {
 
       return new Response(stream, {
         headers: {
-          "Content-Type": "application/x-ndjson",
-          "Content-Disposition": `attachment; filename="comments-${pageId.replace(/\//g, "-")}.jsonl"`,
+          'Content-Type': 'application/x-ndjson',
+          'Content-Disposition': `attachment; filename="comments-${pageId.replace(/\//g, '-')}.jsonl"`,
         },
       })
     }
 
-    if (request.method === "POST" && url.pathname === "/comments/add") {
+    if (request.method === 'POST' && url.pathname === '/comments/add') {
       const body = (await request.json()) as { opId?: string; comment?: Comment } | Comment
-      const comment = "comment" in body && body.comment ? body.comment : (body as Comment)
-      const opId = "opId" in body && body.opId ? body.opId : crypto.randomUUID()
-      const op: OperationInput = { opId, type: "new", comment }
+      const comment = 'comment' in body && body.comment ? body.comment : (body as Comment)
+      const opId = 'opId' in body && body.opId ? body.opId : crypto.randomUUID()
+      const op: OperationInput = { opId, type: 'new', comment }
       const record = await this.applyOperation(op, comment.pageId)
-      if (!record) return new Response("failed to save comment", { status: 500 })
+      if (!record) return new Response('failed to save comment', { status: 500 })
       return Response.json({ op: record }, { status: 201 })
     }
 
-    if (request.method === "DELETE" && url.pathname === "/comments/delete") {
-      const commentId = url.searchParams.get("id")
+    if (request.method === 'DELETE' && url.pathname === '/comments/delete') {
+      const commentId = url.searchParams.get('id')
       if (!commentId) {
-        return new Response("comment id required", { status: 400 })
+        return new Response('comment id required', { status: 400 })
       }
-      const pageId = url.searchParams.get("pageId") ?? ""
-      const opId = url.searchParams.get("opId") ?? crypto.randomUUID()
+      const pageId = url.searchParams.get('pageId') ?? ''
+      const opId = url.searchParams.get('opId') ?? crypto.randomUUID()
       const comment = { id: commentId, pageId } as Comment
-      const op: OperationInput = { opId, type: "delete", comment }
+      const op: OperationInput = { opId, type: 'delete', comment }
       const record = await this.applyOperation(op, pageId)
-      if (!record) return new Response("failed to delete comment", { status: 500 })
+      if (!record) return new Response('failed to delete comment', { status: 500 })
       return Response.json({ op: record }, { status: 200 })
     }
 
-    if (request.method === "PATCH" && url.pathname === "/comments/resolve") {
-      const commentId = url.searchParams.get("id")
+    if (request.method === 'PATCH' && url.pathname === '/comments/resolve') {
+      const commentId = url.searchParams.get('id')
       if (!commentId) {
-        return new Response("comment id required", { status: 400 })
+        return new Response('comment id required', { status: 400 })
       }
-      const pageId = url.searchParams.get("pageId") ?? ""
-      const opId = url.searchParams.get("opId") ?? crypto.randomUUID()
+      const pageId = url.searchParams.get('pageId') ?? ''
+      const opId = url.searchParams.get('opId') ?? crypto.randomUUID()
       const comment = { id: commentId, pageId } as Comment
-      const op: OperationInput = { opId, type: "resolve", comment }
+      const op: OperationInput = { opId, type: 'resolve', comment }
       const record = await this.applyOperation(op, pageId)
-      if (!record) return new Response("failed to resolve comment", { status: 500 })
+      if (!record) return new Response('failed to resolve comment', { status: 500 })
       return Response.json({ op: record }, { status: 200 })
     }
 
-    if (request.method === "PATCH" && url.pathname === "/comments/modify") {
+    if (request.method === 'PATCH' && url.pathname === '/comments/modify') {
       const body = (await request.json()) as { opId?: string; comment?: Comment } | Comment
-      const comment = "comment" in body && body.comment ? body.comment : (body as Comment)
-      const opId = "opId" in body && body.opId ? body.opId : crypto.randomUUID()
-      const op: OperationInput = { opId, type: "update", comment }
+      const comment = 'comment' in body && body.comment ? body.comment : (body as Comment)
+      const opId = 'opId' in body && body.opId ? body.opId : crypto.randomUUID()
+      const op: OperationInput = { opId, type: 'update', comment }
       const record = await this.applyOperation(op, comment.pageId)
-      if (!record) return new Response("failed to update comment", { status: 500 })
+      if (!record) return new Response('failed to update comment', { status: 500 })
       return Response.json({ op: record }, { status: 200 })
     }
 
-    return new Response("not found", { status: 404 })
+    return new Response('not found', { status: 404 })
   }
 
   async webSocketMessage(ws: WebSocket, message: string | ArrayBuffer) {
@@ -498,22 +498,22 @@ export class MultiplayerComments extends DurableObject<Env> {
       if (!session) return
 
       if (!this.checkRateLimit(session.ip)) {
-        ws.send(JSON.stringify({ type: "error", message: "rate limit exceeded" }))
+        ws.send(JSON.stringify({ type: 'error', message: 'rate limit exceeded' }))
         return
       }
 
       const data = JSON.parse(message as string) as { type?: string; op?: OperationInput }
-      if (data.type !== "op" || !data.op) return
+      if (data.type !== 'op' || !data.op) return
 
       const record = await this.applyOperation(data.op, session.pageId)
       if (!record) {
-        ws.send(JSON.stringify({ type: "error", message: "operation failed" }))
+        ws.send(JSON.stringify({ type: 'error', message: 'operation failed' }))
         return
       }
 
-      ws.send(JSON.stringify({ type: "ack", opId: record.opId, seq: record.seq }))
+      ws.send(JSON.stringify({ type: 'ack', opId: record.opId, seq: record.seq }))
     } catch (err) {
-      console.error("websocket message error:", err)
+      console.error('websocket message error:', err)
     }
   }
 
@@ -522,23 +522,23 @@ export class MultiplayerComments extends DurableObject<Env> {
   }
 
   webSocketError(ws: WebSocket, error: unknown) {
-    console.error("websocket error:", error)
+    console.error('websocket error:', error)
     this.sessions.delete(ws)
   }
 }
 
-const commentGithubAuthorPrefix = "comment-auth:github:"
+const commentGithubAuthorPrefix = 'comment-auth:github:'
 
 export function normalizeReturnTo(request: Request, raw: string | null): string {
-  if (!raw) return "/"
+  if (!raw) return '/'
   let target: URL
   try {
     target = new URL(raw, request.url)
   } catch {
-    return "/"
+    return '/'
   }
   const origin = new URL(request.url).origin
-  if (target.origin !== origin) return "/"
+  if (target.origin !== origin) return '/'
   return `${target.pathname}${target.search}${target.hash}`
 }
 
@@ -551,7 +551,7 @@ export function normalizeAuthor(raw: string | null): string | null {
 }
 
 function safeJsonForHtml(value: unknown): string {
-  return JSON.stringify(value).replace(/</g, "\\u003c")
+  return JSON.stringify(value).replace(/</g, '\\u003c')
 }
 
 export async function getGithubCommentAuthor(
@@ -566,9 +566,9 @@ export async function getGithubCommentAuthor(
   } catch {
     return null
   }
-  if (!parsed || typeof parsed !== "object") return null
+  if (!parsed || typeof parsed !== 'object') return null
   const value = parsed as { author?: unknown }
-  if (typeof value.author !== "string") return null
+  if (typeof value.author !== 'string') return null
   const normalized = normalizeAuthor(value.author)
   return normalized
 }
@@ -612,5 +612,5 @@ window.location.assign(payload.returnTo);
 </script>
 </body>
 </html>`
-  return new Response(html, { headers: { "Content-Type": "text/html; charset=utf-8" } })
+  return new Response(html, { headers: { 'Content-Type': 'text/html; charset=utf-8' } })
 }

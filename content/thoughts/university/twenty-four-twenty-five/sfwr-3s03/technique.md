@@ -1,5 +1,5 @@
 ---
-date: "2025-01-14"
+date: '2025-01-14'
 description: and high-level strategies methods
 id: technique
 modified: 2025-10-29 02:16:05 GMT-04:00

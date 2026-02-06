@@ -1,6 +1,6 @@
 ---
 category: projets
-date: "2022-01-25"
+date: '2022-01-25'
 description: a remote shell
 id: rsh shell
 modified: 2025-11-21 12:07:47 GMT-05:00

@@ -1,52 +1,52 @@
-import { spawn } from "child_process"
-import fs from "node:fs/promises"
-import { availableParallelism } from "node:os"
-import { styleText } from "node:util"
-import path from "path"
-import * as process from "process"
-import { QuartzConfig } from "../../cfg"
-import { QuartzEmitterPlugin } from "../../types/plugin"
-import { Argv } from "../../util/ctx"
-import { glob } from "../../util/glob"
-import { FilePath, joinSegments, slugifyFilePath } from "../../util/path"
+import { spawn } from 'child_process'
+import fs from 'node:fs/promises'
+import { availableParallelism } from 'node:os'
+import { styleText } from 'node:util'
+import path from 'path'
+import * as process from 'process'
+import { QuartzConfig } from '../../cfg'
+import { QuartzEmitterPlugin } from '../../types/plugin'
+import { Argv } from '../../util/ctx'
+import { glob } from '../../util/glob'
+import { FilePath, joinSegments, slugifyFilePath } from '../../util/path'
 
 const notebookFiles = async (argv: Argv, cfg: QuartzConfig) => {
-  return await glob("**/*.ipynb", argv.directory, [...cfg.configuration.ignorePatterns])
+  return await glob('**/*.ipynb', argv.directory, [...cfg.configuration.ignorePatterns])
 }
 
 // Special case for template path resolution
 // Use path.resolve for absolute paths instead of process.cwd()
 function getTemplatePath(argv: Argv): string {
-  return path.resolve(argv.directory, "templates")
+  return path.resolve(argv.directory, 'templates')
 }
 
 function runConvertCommand(argv: Argv, nbPath: string, targetSlug: string, outputDir: string) {
-  const command = process.env.CF_PAGES === "1" ? "python" : "uvx"
+  const command = process.env.CF_PAGES === '1' ? 'python' : 'uvx'
   const nbConvertArgs = [
-    "--with",
-    "jupyter-contrib-nbextensions",
-    "--with",
-    "notebook<7",
-    "--from",
-    "jupyter-core",
-    "jupyter",
-    "nbconvert",
+    '--with',
+    'jupyter-contrib-nbextensions',
+    '--with',
+    'notebook<7',
+    '--from',
+    'jupyter-core',
+    'jupyter',
+    'nbconvert',
     `--TemplateExporter.extra_template_basedirs=${getTemplatePath(argv)}`,
-    "--to",
-    "html",
-    "--template=quartz-notebooks",
+    '--to',
+    'html',
+    '--template=quartz-notebooks',
     nbPath,
-    "--log-level",
-    "50",
-    "--output",
+    '--log-level',
+    '50',
+    '--output',
     targetSlug,
-    "--output-dir",
+    '--output-dir',
     outputDir,
   ]
 
   // Special case for Cloudflare Pages
   const args =
-    process.env.CF_PAGES === "1" ? ["-m", "uv", "tool", "run", ...nbConvertArgs] : nbConvertArgs
+    process.env.CF_PAGES === '1' ? ['-m', 'uv', 'tool', 'run', ...nbConvertArgs] : nbConvertArgs
 
   return spawn(command, args, {
     env: { ...process.env }, // Ensure we pass environment variables
@@ -55,7 +55,7 @@ function runConvertCommand(argv: Argv, nbPath: string, targetSlug: string, outpu
 
 export const NotebookViewer: QuartzEmitterPlugin = () => {
   return {
-    name: "NotebookViewer",
+    name: 'NotebookViewer',
     async *partialEmit() {},
     async *emit({ argv, cfg }) {
       if (argv.watch && !argv.force) return []
@@ -81,15 +81,15 @@ export const NotebookViewer: QuartzEmitterPlugin = () => {
       const maxWorkers = Math.max(1, Math.min(resolveWorkerLimit(), fps.length))
 
       type NotebookTaskResult =
-        | { status: "fulfilled"; dest: FilePath; fp: FilePath; id: number }
-        | { status: "rejected"; error: unknown; fp: FilePath; id: number }
+        | { status: 'fulfilled'; dest: FilePath; fp: FilePath; id: number }
+        | { status: 'rejected'; error: unknown; fp: FilePath; id: number }
 
       let taskId = 0
       const inflight = new Map<number, Promise<NotebookTaskResult>>()
 
       const convertNotebook = async (fp: FilePath): Promise<FilePath> => {
         const src = joinSegments(argv.directory, fp) as FilePath
-        const outputName = (slugifyFilePath(fp as FilePath, true) + ".html") as FilePath
+        const outputName = (slugifyFilePath(fp as FilePath, true) + '.html') as FilePath
         const dest = joinSegments(argv.output, outputName) as FilePath
         const dir = path.dirname(dest) as FilePath
 
@@ -98,9 +98,9 @@ export const NotebookViewer: QuartzEmitterPlugin = () => {
         await new Promise<void>((resolve, reject) => {
           const proc = runConvertCommand(argv, src, outputName, argv.output)
 
-          proc.on("error", reject)
+          proc.on('error', reject)
 
-          proc.on("exit", (code) => {
+          proc.on('exit', code => {
             if (code === 0) {
               resolve()
             } else {
@@ -115,8 +115,8 @@ export const NotebookViewer: QuartzEmitterPlugin = () => {
       const enqueue = (fp: FilePath) => {
         const id = taskId++
         const task = convertNotebook(fp)
-          .then((dest) => ({ status: "fulfilled" as const, dest, fp, id }))
-          .catch((error) => ({ status: "rejected" as const, error, fp, id }))
+          .then(dest => ({ status: 'fulfilled' as const, dest, fp, id }))
+          .catch(error => ({ status: 'rejected' as const, error, fp, id }))
         inflight.set(id, task)
       }
 
@@ -138,11 +138,11 @@ export const NotebookViewer: QuartzEmitterPlugin = () => {
             continue
           }
 
-          if (result.status === "fulfilled") {
+          if (result.status === 'fulfilled') {
             yield result.dest
           } else {
             console.error(
-              styleText("red", `\n[emit:NotebookViewer] Error processing ${result.fp}:`),
+              styleText('red', `\n[emit:NotebookViewer] Error processing ${result.fp}:`),
               result.error,
             )
           }
@@ -155,11 +155,11 @@ export const NotebookViewer: QuartzEmitterPlugin = () => {
           continue
         }
 
-        if (result.status === "fulfilled") {
+        if (result.status === 'fulfilled') {
           yield result.dest
         } else {
           console.error(
-            styleText("red", `\n[emit:NotebookViewer] Error processing ${result.fp}:`),
+            styleText('red', `\n[emit:NotebookViewer] Error processing ${result.fp}:`),
             result.error,
           )
         }

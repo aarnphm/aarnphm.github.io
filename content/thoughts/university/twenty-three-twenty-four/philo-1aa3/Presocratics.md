@@ -1,5 +1,5 @@
 ---
-date: "2023-09-09"
+date: '2023-09-09'
 description: presocratic philosophers including anaximander's aperion, parmenides on being, empedocles' elements, and democritus's atomism with primary and secondary qualities.
 id: Presocratics
 modified: 2025-10-29 02:16:16 GMT-04:00

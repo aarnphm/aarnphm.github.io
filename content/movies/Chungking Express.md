@@ -8,7 +8,7 @@ description: hong kong loneliness at multiple frame rates—wong kar-wai filming
 director: Wong Kar-wai
 id: chungking-express
 modified: 2025-10-29 02:14:47 GMT-04:00
-posters: "[[movies/posters/chungking-express.jpg]]"
+posters: '[[movies/posters/chungking-express.jpg]]'
 rating: 7.9
 status: to watch
 studio: rolling thunder

@@ -7,7 +7,7 @@ description: journalist following david foster wallace on book tour—ponsoldt f
 director: James Ponsoldt
 id: the-end-of-the-tour
 modified: 2025-10-29 02:14:58 GMT-04:00
-posters: "[[movies/posters/the-end-of-the-tour.jpg]]"
+posters: '[[movies/posters/the-end-of-the-tour.jpg]]'
 rating: 7.2
 status: to watch
 studio: modern man films

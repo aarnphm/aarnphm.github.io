@@ -1,5 +1,5 @@
 ---
-date: "2025-09-19"
+date: '2025-09-19'
 description: reduce parameters size
 id: weight tying
 modified: 2025-10-29 02:16:24 GMT-04:00

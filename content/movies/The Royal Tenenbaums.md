@@ -7,7 +7,7 @@ description: childhood genius as curse—three prodigies frozen by early success
 director: Wes Anderson
 id: the-royal-tenenbaums
 modified: 2025-10-29 02:14:59 GMT-04:00
-posters: "[[movies/posters/the-royal-tenenbaums.jpg]]"
+posters: '[[movies/posters/the-royal-tenenbaums.jpg]]'
 rating: 7.6
 status: recurring
 studio: touchstone

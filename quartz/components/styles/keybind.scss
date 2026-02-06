@@ -1,4 +1,4 @@
-@use "../../styles/variables.scss" as *;
+@use '../../styles/variables.scss' as *;
 
 .keybind {
   flex-grow: 0 !important;
@@ -75,7 +75,7 @@
   }
 
   // Dark mode support
-  :global([saved-theme="dark"]) & > #shortcut-container > #shortcut-space {
+  :global([saved-theme='dark']) & > #shortcut-container > #shortcut-space {
     background: var(--dark);
     border-color: var(--darkgray);
 

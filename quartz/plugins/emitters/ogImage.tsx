@@ -1,18 +1,18 @@
-import satori, { SatoriOptions } from "satori"
-import sharp from "sharp"
-import { Readable } from "stream"
-import { i18n } from "../../i18n"
-import { QuartzEmitterPlugin } from "../../types/plugin"
-import { BuildCtx } from "../../util/ctx"
-import { loadEmoji, getIconCode } from "../../util/emoji"
-import { unescapeHTML } from "../../util/escape"
-import { ImageOptions, SocialImageOptions, defaultImage, getSatoriFonts } from "../../util/og"
-import { FullSlug, getFileExtension } from "../../util/path"
-import { QuartzPluginData } from "../vfile"
-import { write } from "./helpers"
+import satori, { SatoriOptions } from 'satori'
+import sharp from 'sharp'
+import { Readable } from 'stream'
+import { i18n } from '../../i18n'
+import { QuartzEmitterPlugin } from '../../types/plugin'
+import { BuildCtx } from '../../util/ctx'
+import { loadEmoji, getIconCode } from '../../util/emoji'
+import { unescapeHTML } from '../../util/escape'
+import { ImageOptions, SocialImageOptions, defaultImage, getSatoriFonts } from '../../util/og'
+import { FullSlug, getFileExtension } from '../../util/path'
+import { QuartzPluginData } from '../vfile'
+import { write } from './helpers'
 
 const defaultOptions: SocialImageOptions = {
-  colorScheme: "lightMode",
+  colorScheme: 'lightMode',
   width: 1200,
   height: 630,
   imageStructure: defaultImage,
@@ -41,7 +41,7 @@ async function generateSocialImage(
     height,
     fonts,
     loadAdditionalAsset: async (languageCode: string, segment: string) => {
-      if (languageCode === "emoji") {
+      if (languageCode === 'emoji') {
         return `data:image/svg+xml;base64,${btoa(await loadEmoji(getIconCode(segment)))}`
       }
       return languageCode
@@ -54,12 +54,12 @@ async function generateSocialImage(
 async function processOgImage(
   ctx: BuildCtx,
   fileData: QuartzPluginData,
-  fonts: SatoriOptions["fonts"],
+  fonts: SatoriOptions['fonts'],
   fullOptions: SocialImageOptions,
 ) {
   const cfg = ctx.cfg.configuration
   const slug = fileData.slug!
-  const titleSuffix = cfg.pageTitleSuffix ?? ""
+  const titleSuffix = cfg.pageTitleSuffix ?? ''
   const title =
     (fileData.frontmatter?.title ?? i18n(cfg.locale).propertyDefaults.title) + titleSuffix
   const description =
@@ -72,11 +72,11 @@ async function processOgImage(
     fullOptions,
   )
 
-  return write({ ctx, content: stream, slug: `${slug}-og-image` as FullSlug, ext: ".webp" })
+  return write({ ctx, content: stream, slug: `${slug}-og-image` as FullSlug, ext: '.webp' })
 }
 
-export const CustomOgImagesEmitterName = "CustomOgImages"
-export const CustomOgImages: QuartzEmitterPlugin<Partial<SocialImageOptions>> = (userOpts) => {
+export const CustomOgImagesEmitterName = 'CustomOgImages'
+export const CustomOgImages: QuartzEmitterPlugin<Partial<SocialImageOptions>> = userOpts => {
   const fullOptions = { ...defaultOptions, ...userOpts }
 
   return {
@@ -108,12 +108,12 @@ export const CustomOgImages: QuartzEmitterPlugin<Partial<SocialImageOptions>> = 
       for (const changeEvent of changeEvents) {
         if (!changeEvent.file) continue
         if (changeEvent.file.data.frontmatter?.socialImage !== undefined) continue
-        if (changeEvent.type === "add" || changeEvent.type === "change") {
+        if (changeEvent.type === 'add' || changeEvent.type === 'change') {
           yield processOgImage(ctx, changeEvent.file.data, fonts, fullOptions)
         }
       }
     },
-    externalResources: (ctx) => {
+    externalResources: ctx => {
       if (!ctx.cfg.configuration.baseUrl) {
         return {}
       }
@@ -121,7 +121,7 @@ export const CustomOgImages: QuartzEmitterPlugin<Partial<SocialImageOptions>> = 
       const baseUrl = ctx.cfg.configuration.baseUrl
       return {
         additionalHead: [
-          (pageData) => {
+          pageData => {
             const isRealFile = pageData.filePath !== undefined
             const userDefinedOgImagePath = pageData.frontmatter?.socialImage
             const generatedOgImagePath = isRealFile
@@ -130,7 +130,7 @@ export const CustomOgImages: QuartzEmitterPlugin<Partial<SocialImageOptions>> = 
             const defaultOgImagePath = `https://${baseUrl}/static/og-image.webp`
             const ogImagePath = userDefinedOgImagePath ?? generatedOgImagePath ?? defaultOgImagePath
 
-            const ogImageMimeType = `image/${getFileExtension(ogImagePath)!.slice(1) ?? "png"}`
+            const ogImageMimeType = `image/${getFileExtension(ogImagePath)!.slice(1) ?? 'png'}`
             return (
               <>
                 {!userDefinedOgImagePath && (

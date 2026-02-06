@@ -8,7 +8,7 @@ description: redford at seventy-seven alone against the ocean with almost no dia
 director: J.C. Chandor
 id: all-is-lost
 modified: 2025-10-29 02:14:45 GMT-04:00
-posters: "[[movies/posters/all-is-lost.jpg]]"
+posters: '[[movies/posters/all-is-lost.jpg]]'
 rating: 6.9
 status: to watch
 studio: lionsgate

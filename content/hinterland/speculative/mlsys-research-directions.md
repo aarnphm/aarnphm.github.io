@@ -1,5 +1,5 @@
 ---
-date: "2025-10-06"
+date: '2025-10-06'
 description: comprehensive survey of efficient llm serving across disaggregated architectures, throughput optimization, kv cache, moe acceleration, and long-context interpretability with concrete research directions.
 draft: true
 id: mlsys-research-directions

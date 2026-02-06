@@ -13,7 +13,7 @@ subcategory:
   - technology
 author:
   - Vannevar Bush
-posters: "[[library/posters/as-we-may-think.jpg]]"
+posters: '[[library/posters/as-we-may-think.jpg]]'
 category:
   - p/nf
 translator:

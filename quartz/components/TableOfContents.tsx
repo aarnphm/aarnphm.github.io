@@ -1,25 +1,25 @@
-import Slugger from "github-slugger"
-import { fromHtmlIsomorphic } from "hast-util-from-html-isomorphic"
-import { i18n } from "../i18n"
+import Slugger from 'github-slugger'
+import { fromHtmlIsomorphic } from 'hast-util-from-html-isomorphic'
+import { i18n } from '../i18n'
 import {
   QuartzComponent,
   QuartzComponentConstructor,
   QuartzComponentProps,
-} from "../types/component"
-import { htmlToJsx } from "../util/jsx"
-import { classNames } from "../util/lang"
-import OverflowListFactory from "./OverflowList"
+} from '../types/component'
+import { htmlToJsx } from '../util/jsx'
+import { classNames } from '../util/lang'
+import OverflowListFactory from './OverflowList'
 // @ts-ignore
-import script from "./scripts/toc.inline"
-import modernStyle from "./styles/toc.scss"
+import script from './scripts/toc.inline'
+import modernStyle from './styles/toc.scss'
 
 const ghSlugger = new Slugger()
 
 interface Options {
-  layout: "minimal" | "default"
+  layout: 'minimal' | 'default'
 }
 
-const defaultOptions: Options = { layout: "minimal" }
+const defaultOptions: Options = { layout: 'minimal' }
 
 export default ((userOpts?: Partial<Options>) => {
   const opts = { ...defaultOptions, ...userOpts }
@@ -50,7 +50,7 @@ export default ((userOpts?: Partial<Options>) => {
             data-for={entry.slug}
             tabindex={-1}
             type="button"
-            style={{ "--animation-order": idx + 1 }}
+            style={{ '--animation-order': idx + 1 }}
             aria-label={`${entry.text}`}
             title={`${entry.text}`}
           >
@@ -68,7 +68,7 @@ export default ((userOpts?: Partial<Options>) => {
         </button>
         <div id="toc-content">
           <OverflowList id="toc-ul">
-            {fileData.toc!.map((entry) => (
+            {fileData.toc!.map(entry => (
               <li key={entry.slug} class={`depth-${entry.depth}`}>
                 <a href={`#${entry.slug}`} data-for={entry.slug}>
                   {convertFromText(entry.text)}
@@ -81,8 +81,8 @@ export default ((userOpts?: Partial<Options>) => {
     )
 
     return (
-      <div class={classNames(displayClass, "toc")} id="toc" data-layout={opts.layout}>
-        {opts.layout === "minimal" ? <MinimalToc /> : <DefaultToc />}
+      <div class={classNames(displayClass, 'toc')} id="toc" data-layout={opts.layout}>
+        {opts.layout === 'minimal' ? <MinimalToc /> : <DefaultToc />}
       </div>
     )
   }

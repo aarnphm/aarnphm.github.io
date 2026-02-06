@@ -1,5 +1,5 @@
 ---
-date: "2024-12-31"
+date: '2024-12-31'
 description: and a view from a distant friend.
 id: Kelly
 modified: 2025-10-29 02:15:08 GMT-04:00

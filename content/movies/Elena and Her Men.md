@@ -16,5 +16,5 @@ category:
   - drama
   - vintage
 description: a general's widow drifts through romance and politics - renoir treats flirtation like a plot engine.
-posters: "[[movies/posters/elena-and-her-men.jpg]]"
+posters: '[[movies/posters/elena-and-her-men.jpg]]'
 ---

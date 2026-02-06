@@ -1,6 +1,6 @@
 ---
-date: "2024-10-10"
-description: "[[thoughts/Compression|compression]] of key-value in [[thoughts/Transformers]] model"
+date: '2024-10-10'
+description: '[[thoughts/Compression|compression]] of key-value in [[thoughts/Transformers]] model'
 id: KV compression
 modified: 2026-01-15 15:48:56 GMT-05:00
 tags:

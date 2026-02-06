@@ -1,37 +1,37 @@
-import { Repository } from "@napi-rs/simple-git"
-import { Mutex } from "async-mutex"
-import chokidar from "chokidar"
-import { rm } from "fs/promises"
-import { GlobbyFilterFunction, isGitIgnored } from "globby"
-import { minimatch } from "minimatch"
-import path from "path"
-import sourceMapSupport from "source-map-support"
-import { styleText } from "util"
-import cfg from "../quartz.config"
-import { getStaticResourcesFromPlugins } from "./plugins"
-import { ProcessedContent } from "./plugins/vfile"
-import { emitContent } from "./processors/emit"
-import { filterContent } from "./processors/filter"
-import { parseMarkdown } from "./processors/parse"
-import { ChangeEvent } from "./types/plugin"
-import { Argv, BuildCtx } from "./util/ctx"
-import { glob, toPosixPath } from "./util/glob"
-import { FilePath, joinSegments, slugifyFilePath } from "./util/path"
-import { PerfTimer } from "./util/perf"
-import { randomIdNonSecure } from "./util/random"
-import { options } from "./util/sourcemap"
-import { trace } from "./util/trace"
+import { Repository } from '@napi-rs/simple-git'
+import { Mutex } from 'async-mutex'
+import chokidar from 'chokidar'
+import { rm } from 'fs/promises'
+import { GlobbyFilterFunction, isGitIgnored } from 'globby'
+import { minimatch } from 'minimatch'
+import path from 'path'
+import sourceMapSupport from 'source-map-support'
+import { styleText } from 'util'
+import cfg from '../quartz.config'
+import { getStaticResourcesFromPlugins } from './plugins'
+import { ProcessedContent } from './plugins/vfile'
+import { emitContent } from './processors/emit'
+import { filterContent } from './processors/filter'
+import { parseMarkdown } from './processors/parse'
+import { ChangeEvent } from './types/plugin'
+import { Argv, BuildCtx } from './util/ctx'
+import { glob, toPosixPath } from './util/glob'
+import { FilePath, joinSegments, slugifyFilePath } from './util/path'
+import { PerfTimer } from './util/perf'
+import { randomIdNonSecure } from './util/random'
+import { options } from './util/sourcemap'
+import { trace } from './util/trace'
 
 sourceMapSupport.install(options)
 
-type ContentMap = Map<FilePath, { type: "markdown"; content: ProcessedContent } | { type: "other" }>
+type ContentMap = Map<FilePath, { type: 'markdown'; content: ProcessedContent } | { type: 'other' }>
 
 type BuildData = {
   ctx: BuildCtx
   ignored: GlobbyFilterFunction
   mut: Mutex
   contentMap: ContentMap
-  changesSinceLastBuild: Record<FilePath, ChangeEvent["type"]>
+  changesSinceLastBuild: Record<FilePath, ChangeEvent['type']>
   lastBuildMs: number
 }
 
@@ -45,7 +45,7 @@ async function buildQuartz(argv: Argv, mut: Mutex, clientRefresh: () => void) {
       gitCommitSha = head?.target() || undefined
     } catch (e) {
       if (argv.verbose) {
-        console.log(styleText("yellow", "Warning: Unable to get git commit SHA"))
+        console.log(styleText('yellow', 'Warning: Unable to get git commit SHA'))
         console.error(e)
       }
     }
@@ -65,39 +65,39 @@ async function buildQuartz(argv: Argv, mut: Mutex, clientRefresh: () => void) {
   const output = argv.output
 
   const pluginCount = Object.values(cfg.plugins).flat().length
-  const pluginNames = (key: "transformers" | "filters" | "emitters") =>
-    cfg.plugins[key].map((plugin) => plugin.name)
+  const pluginNames = (key: 'transformers' | 'filters' | 'emitters') =>
+    cfg.plugins[key].map(plugin => plugin.name)
   if (argv.verbose) {
     console.log(`Loaded ${pluginCount} plugins`)
-    console.log(`  Transformers: ${pluginNames("transformers").join(", ")}`)
-    console.log(`  Filters: ${pluginNames("filters").join(", ")}`)
-    console.log(`  Emitters: ${pluginNames("emitters").join(", ")}`)
+    console.log(`  Transformers: ${pluginNames('transformers').join(', ')}`)
+    console.log(`  Filters: ${pluginNames('filters').join(', ')}`)
+    console.log(`  Emitters: ${pluginNames('emitters').join(', ')}`)
   }
 
   const release = await mut.acquire()
-  perf.addEvent("clean")
+  perf.addEvent('clean')
   await rm(output, { recursive: true, force: true })
-  console.log(`Removed \`${output}\` in ${perf.timeSince("clean")}`)
+  console.log(`Removed \`${output}\` in ${perf.timeSince('clean')}`)
 
-  perf.addEvent("glob")
-  const allFiles = await glob("**/*.*", argv.directory, cfg.configuration.ignorePatterns)
+  perf.addEvent('glob')
+  const allFiles = await glob('**/*.*', argv.directory, cfg.configuration.ignorePatterns)
   const markdownPaths = allFiles
-    .filter((fp) => fp.endsWith(".md") || fp.endsWith(".base") || fp.endsWith(".canvas"))
+    .filter(fp => fp.endsWith('.md') || fp.endsWith('.base') || fp.endsWith('.canvas'))
     .sort()
   console.log(
-    `Found ${markdownPaths.length} input files from \`${argv.directory}\` in ${perf.timeSince("glob")}`,
+    `Found ${markdownPaths.length} input files from \`${argv.directory}\` in ${perf.timeSince('glob')}`,
   )
 
-  const filePaths = markdownPaths.map((fp) => joinSegments(argv.directory, fp) as FilePath)
+  const filePaths = markdownPaths.map(fp => joinSegments(argv.directory, fp) as FilePath)
   ctx.allFiles = allFiles
-  ctx.allSlugs = allFiles.map((fp) => slugifyFilePath(fp as FilePath))
+  ctx.allSlugs = allFiles.map(fp => slugifyFilePath(fp as FilePath))
 
   const parsedFiles = await parseMarkdown(ctx, filePaths)
   const filteredContent = filterContent(ctx, parsedFiles)
 
   await emitContent(ctx, filteredContent)
   console.log(
-    styleText("green", `Done processing ${markdownPaths.length} files in ${perf.timeSince()}`),
+    styleText('green', `Done processing ${markdownPaths.length} files in ${perf.timeSince()}`),
   )
   release()
 
@@ -118,12 +118,12 @@ async function startWatching(
 
   const contentMap: ContentMap = new Map()
   for (const filePath of allFiles) {
-    contentMap.set(filePath, { type: "other" })
+    contentMap.set(filePath, { type: 'other' })
   }
 
   for (const content of initialContent) {
     const [_tree, vfile] = content
-    contentMap.set(vfile.data.relativePath!, { type: "markdown", content })
+    contentMap.set(vfile.data.relativePath!, { type: 'markdown', content })
   }
 
   const gitIgnoredMatcher = await isGitIgnored()
@@ -131,9 +131,9 @@ async function startWatching(
     ctx,
     mut,
     contentMap,
-    ignored: (fp) => {
+    ignored: fp => {
       const pathStr = toPosixPath(fp.toString())
-      if (pathStr.startsWith(".git/")) return true
+      if (pathStr.startsWith('.git/')) return true
       if (gitIgnoredMatcher(pathStr)) return true
       for (const pattern of cfg.configuration.ignorePatterns) {
         if (minimatch(pathStr, pattern)) {
@@ -148,7 +148,7 @@ async function startWatching(
     lastBuildMs: 0,
   }
 
-  const watcher = chokidar.watch(".", {
+  const watcher = chokidar.watch('.', {
     awaitWriteFinish: { stabilityThreshold: 250 },
     persistent: true,
     cwd: argv.directory,
@@ -157,19 +157,19 @@ async function startWatching(
 
   const changes: ChangeEvent[] = []
   watcher
-    .on("add", (fp) => {
+    .on('add', fp => {
       if (buildData.ignored(fp)) return
-      changes.push({ path: fp as FilePath, type: "add" })
+      changes.push({ path: fp as FilePath, type: 'add' })
       void rebuild(changes, clientRefresh, buildData)
     })
-    .on("change", (fp) => {
+    .on('change', fp => {
       if (buildData.ignored(fp)) return
-      changes.push({ path: fp as FilePath, type: "change" })
+      changes.push({ path: fp as FilePath, type: 'change' })
       void rebuild(changes, clientRefresh, buildData)
     })
-    .on("unlink", (fp) => {
+    .on('unlink', fp => {
       if (buildData.ignored(fp)) return
-      changes.push({ path: fp as FilePath, type: "delete" })
+      changes.push({ path: fp as FilePath, type: 'delete' })
       void rebuild(changes, clientRefresh, buildData)
     })
 
@@ -195,8 +195,8 @@ async function rebuild(changes: ChangeEvent[], clientRefresh: () => void, buildD
   }
 
   const perf = new PerfTimer()
-  perf.addEvent("rebuild")
-  console.log(styleText("yellow", "Detected change, rebuilding..."))
+  perf.addEvent('rebuild')
+  console.log(styleText('yellow', 'Detected change, rebuilding...'))
 
   // update changesSinceLastBuild
   for (const change of changes) {
@@ -207,21 +207,21 @@ async function rebuild(changes: ChangeEvent[], clientRefresh: () => void, buildD
   const pathsToParse: FilePath[] = []
   for (const [fp, type] of Object.entries(changesSinceLastBuild)) {
     const ext = path.extname(fp)
-    if (type === "delete" || (ext !== ".md" && ext !== ".base" && ext !== ".canvas")) continue
+    if (type === 'delete' || (ext !== '.md' && ext !== '.base' && ext !== '.canvas')) continue
     const fullPath = joinSegments(argv.directory, toPosixPath(fp)) as FilePath
     pathsToParse.push(fullPath)
   }
 
   const parsed = await parseMarkdown(ctx, pathsToParse)
   for (const content of parsed) {
-    contentMap.set(content[1].data.relativePath!, { type: "markdown", content })
+    contentMap.set(content[1].data.relativePath!, { type: 'markdown', content })
   }
 
   // update state using changesSinceLastBuild
   // we do this weird play of add => compute change events => remove
   // so that partialEmitters can do appropriate cleanup based on the content of deleted files
   for (const [file, change] of Object.entries(changesSinceLastBuild)) {
-    if (change === "delete") {
+    if (change === 'delete') {
       // universal delete case
       contentMap.delete(file as FilePath)
     }
@@ -229,15 +229,15 @@ async function rebuild(changes: ChangeEvent[], clientRefresh: () => void, buildD
     // manually track non-markdown files as processed files only
     // contains markdown files
     const fileExt = path.extname(file)
-    if (change === "add" && fileExt !== ".md" && fileExt !== ".base" && fileExt !== ".canvas") {
-      contentMap.set(file as FilePath, { type: "other" })
+    if (change === 'add' && fileExt !== '.md' && fileExt !== '.base' && fileExt !== '.canvas') {
+      contentMap.set(file as FilePath, { type: 'other' })
     }
   }
 
   const changeEvents: ChangeEvent[] = Object.entries(changesSinceLastBuild).map(([fp, type]) => {
     const path = fp as FilePath
     const processedContent = contentMap.get(path)
-    if (processedContent?.type === "markdown") {
+    if (processedContent?.type === 'markdown') {
       const [_tree, file] = processedContent.content
       return { type, path, file }
     }
@@ -247,12 +247,12 @@ async function rebuild(changes: ChangeEvent[], clientRefresh: () => void, buildD
 
   // update allFiles and then allSlugs with the consistent view of content map
   ctx.allFiles = Array.from(contentMap.keys())
-  ctx.allSlugs = ctx.allFiles.map((fp) => slugifyFilePath(fp as FilePath))
+  ctx.allSlugs = ctx.allFiles.map(fp => slugifyFilePath(fp as FilePath))
   let processedFiles = filterContent(
     ctx,
     Array.from(contentMap.values())
-      .filter((file) => file.type === "markdown")
-      .map((file) => file.content),
+      .filter(file => file.type === 'markdown')
+      .map(file => file.content),
   )
 
   let emittedFiles = 0
@@ -283,8 +283,8 @@ async function rebuild(changes: ChangeEvent[], clientRefresh: () => void, buildD
     }
   }
 
-  console.log(`Emitted ${emittedFiles} files to \`${argv.output}\` in ${perf.timeSince("rebuild")}`)
-  console.log(styleText("green", `Done rebuilding in ${perf.timeSince()}`))
+  console.log(`Emitted ${emittedFiles} files to \`${argv.output}\` in ${perf.timeSince('rebuild')}`)
+  console.log(styleText('green', `Done rebuilding in ${perf.timeSince()}`))
   changes.splice(0, numChangesInBuild)
   clientRefresh()
   release()
@@ -294,6 +294,6 @@ export default async (argv: Argv, mut: Mutex, clientRefresh: () => void) => {
   try {
     return await buildQuartz(argv, mut, clientRefresh)
   } catch (err) {
-    trace("\nExiting Quartz due to a fatal error", err as Error)
+    trace('\nExiting Quartz due to a fatal error', err as Error)
   }
 }

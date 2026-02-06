@@ -1,5 +1,5 @@
 ---
-date: "2025-12-16"
+date: '2025-12-16'
 description: a campaign from UK Government
 id: sota-number-10
 modified: 2025-12-16 05:23:19 GMT-05:00

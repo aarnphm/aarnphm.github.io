@@ -1,4 +1,4 @@
-@use "../../styles/variables.scss" as *;
+@use '../../styles/variables.scss' as *;
 
 .toc {
   --indicator-position: 4.5rem;
@@ -165,7 +165,7 @@ button#toc {
         }
 
         &::before {
-          content: "";
+          content: '';
           position: absolute;
           left: -0.8rem;
           top: 0;
@@ -185,7 +185,7 @@ button#toc {
         &:has(+ .depth-#{$i - 1}),
         &:has(+ .depth-#{$i + 1}) {
           &::after {
-            content: "";
+            content: '';
             position: absolute;
             left: -0.8rem;
             bottom: 0;

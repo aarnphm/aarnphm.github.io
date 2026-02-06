@@ -1,11 +1,11 @@
-@use "sass:map";
-@use "../variables.scss" as *;
-@use "../mixin.scss" as *;
+@use 'sass:map';
+@use '../variables.scss' as *;
+@use '../mixin.scss' as *;
 
-[data-slug="friends/slides"],
-[data-slug="friends"],
-[data-slug="dating/slides"],
-[data-slug="dating"] {
+[data-slug='friends/slides'],
+[data-slug='friends'],
+[data-slug='dating/slides'],
+[data-slug='dating'] {
   section {
     &[data-activities] {
       &:first-of-type {
@@ -44,15 +44,15 @@
   }
 }
 
-[data-slug="friends/slides"],
-[data-slug="dating/slides"] {
+[data-slug='friends/slides'],
+[data-slug='dating/slides'] {
   #tldr {
     margin-top: 2rem;
   }
 }
 
-[data-slug="friends"],
-[data-slug="dating"] {
+[data-slug='friends'],
+[data-slug='dating'] {
   #tldr {
     border-left: unset;
     border: 2px solid var(--iris);
@@ -65,7 +65,7 @@
     }
 
     &::before {
-      content: "tldr";
+      content: 'tldr';
       position: absolute;
       top: -12px;
       left: 12px;
@@ -78,8 +78,8 @@
     }
 
     &::after {
-      content: "";
-      background-image: url("/static/dotted.svg");
+      content: '';
+      background-image: url('/static/dotted.svg');
       background-repeat: repeat;
       z-index: -10;
       top: 0.5rem;

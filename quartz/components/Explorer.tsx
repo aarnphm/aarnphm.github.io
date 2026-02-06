@@ -1,23 +1,23 @@
-import { i18n } from "../i18n"
+import { i18n } from '../i18n'
 import {
   QuartzComponent,
   QuartzComponentConstructor,
   QuartzComponentProps,
-} from "../types/component"
-import { FileTrieNode } from "../util/fileTrie"
-import { classNames } from "../util/lang"
-import { concatenateResources } from "../util/resources"
-import OverflowListFactory from "./OverflowList"
+} from '../types/component'
+import { FileTrieNode } from '../util/fileTrie'
+import { classNames } from '../util/lang'
+import { concatenateResources } from '../util/resources'
+import OverflowListFactory from './OverflowList'
 // @ts-ignore
-import script from "./scripts/explorer.inline"
-import style from "./styles/explorer.scss"
+import script from './scripts/explorer.inline'
+import style from './styles/explorer.scss'
 
-type OrderEntries = "sort" | "filter" | "map"
+type OrderEntries = 'sort' | 'filter' | 'map'
 
 export interface Options {
   title?: string
-  folderDefaultState: "collapsed" | "open"
-  folderClickBehavior: "collapse" | "link"
+  folderDefaultState: 'collapsed' | 'open'
+  folderClickBehavior: 'collapse' | 'link'
   useSavedState: boolean
   sortFn: (a: FileTrieNode, b: FileTrieNode) => number
   filterFn: (node: FileTrieNode) => boolean
@@ -26,10 +26,10 @@ export interface Options {
 }
 
 const defaultOptions: Options = {
-  folderDefaultState: "collapsed",
-  folderClickBehavior: "link",
+  folderDefaultState: 'collapsed',
+  folderClickBehavior: 'link',
   useSavedState: true,
-  mapFn: (node) => {
+  mapFn: node => {
     return node
   },
   sortFn: (a, b) => {
@@ -39,7 +39,7 @@ const defaultOptions: Options = {
       // sensitivity: "base": Only strings that differ in base letters compare as unequal. Examples: a ≠ b, a = á, a = A
       return a.displayName.localeCompare(b.displayName, undefined, {
         numeric: true,
-        sensitivity: "base",
+        sensitivity: 'base',
       })
     }
 
@@ -49,8 +49,8 @@ const defaultOptions: Options = {
       return -1
     }
   },
-  filterFn: (node) => node.slugSegment !== "tags",
-  order: ["filter", "map", "sort"],
+  filterFn: node => node.slugSegment !== 'tags',
+  order: ['filter', 'map', 'sort'],
 }
 
 export type FolderState = { path: string; collapsed: boolean }
@@ -65,7 +65,7 @@ export default ((userOpts?: Partial<Options>) => {
 
     return (
       <div
-        class={classNames(displayClass, "explorer")}
+        class={classNames(displayClass, 'explorer')}
         data-behavior={opts.folderClickBehavior}
         data-collapsed={opts.folderDefaultState}
         data-savestate={opts.useSavedState}

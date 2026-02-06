@@ -12,7 +12,7 @@ subcategory:
   - society
 author:
   - Viet Thanh Nguyen
-posters: "[[library/posters/to-save-and-to-destroy.jpg]]"
+posters: '[[library/posters/to-save-and-to-destroy.jpg]]'
 category:
   - philosophy
 translator:

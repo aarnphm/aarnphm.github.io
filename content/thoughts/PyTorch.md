@@ -1,5 +1,5 @@
 ---
-date: "2024-11-11"
+date: '2024-11-11'
 description: tidbits
 id: PyTorch
 modified: 2025-11-12 20:26:51 GMT-05:00

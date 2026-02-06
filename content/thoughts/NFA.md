@@ -1,5 +1,5 @@
 ---
-date: "2024-01-30"
+date: '2024-01-30'
 description: via subset construction algorithm of DFA
 id: NFA
 modified: 2025-10-29 02:15:29 GMT-04:00

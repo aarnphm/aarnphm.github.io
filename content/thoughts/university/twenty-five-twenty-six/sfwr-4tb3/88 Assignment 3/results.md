@@ -1,5 +1,5 @@
 ---
-date: "2026-02-03"
+date: '2026-02-03'
 description: AST et al.
 id: results
 modified: 2026-02-03 14:32:02 GMT-05:00
@@ -507,6 +507,7 @@ sed -r 's/(src *= *")([^"]*)/\1\L\2/g' data/q.html
 ```
 
 Pattern breakdown:
+
 - `(src *= *")` captures `src` + optional spaces + `=` + optional spaces + opening `"`
 - `([^"]*)` captures everything until closing quote (the value)
 - `\1\L\2` outputs group 1, then lowercased group 2 (`\L` is GNU sed lowercase)

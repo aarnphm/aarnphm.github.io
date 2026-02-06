@@ -1,17 +1,17 @@
-import type { ChildProcessWithoutNullStreams } from "node:child_process"
+import type { ChildProcessWithoutNullStreams } from 'node:child_process'
 // orchestrates quartz dev rebuilds with wrangler dev resets when public/ is regenerated.
-import { spawn } from "node:child_process"
-import { access, open, writeFile } from "node:fs/promises"
-import path from "node:path"
-import process from "node:process"
-import { fileURLToPath } from "node:url"
+import { spawn } from 'node:child_process'
+import { access, open, writeFile } from 'node:fs/promises'
+import path from 'node:path'
+import process from 'node:process'
+import { fileURLToPath } from 'node:url'
 
 const gitRoot = resolveGitRoot()
-const publicDir = path.join(gitRoot, "public")
+const publicDir = path.join(gitRoot, 'public')
 const pollIntervalMs = 500
 const useColor = process.stdout.isTTY && process.stderr.isTTY
-const RESET = "\x1b[0m"
-const labelNames = { main: "main", quartz: "quartz", wrangler: "wrangler" } as const
+const RESET = '\x1b[0m'
+const labelNames = { main: 'main', quartz: 'quartz', wrangler: 'wrangler' } as const
 type Label = keyof typeof labelNames
 type ManagedChild = ChildProcessWithoutNullStreams & { label: Label }
 const formattedLabels: Record<Label, string> = formatLabels(labelNames)
@@ -23,7 +23,7 @@ let rawInputEnabled = false
 let pnpmDevRetriesRemaining = 0
 let initialBuildComplete = false
 let rebuildInProgress = false
-let quartzOutputBuffer = ""
+let quartzOutputBuffer = ''
 let wranglerStartNotBefore = 0
 let wranglerStopInFlight: Promise<void> | null = null
 const DEFAULT_DEV_PORT = 7373
@@ -44,7 +44,7 @@ function resolveGitRoot(): string {
     return path.resolve(envRoot)
   }
   const current = path.dirname(fileURLToPath(import.meta.url))
-  return path.resolve(current, "..", "..")
+  return path.resolve(current, '..', '..')
 }
 
 interface RuntimeConfig {
@@ -93,22 +93,22 @@ function resolveRuntimeConfig(argv: string[]): RuntimeConfig {
       ? `http://localhost:${effectivePort}`
       : (envBaseUrl ?? `http://localhost:${effectivePort}`)
   const pnpmDevArgs = [
-    "exec",
-    "quartz/bootstrap-cli.mjs",
-    "build",
-    "--concurrency",
-    "10",
-    serve ? "--serve" : "--watch",
-    "--verbose",
-    "--port",
+    'exec',
+    'quartz/bootstrap-cli.mjs',
+    'build',
+    '--concurrency',
+    '10',
+    serve ? '--serve' : '--watch',
+    '--verbose',
+    '--port',
     String(effectivePort),
-    "--wsPort",
+    '--wsPort',
     String(wsPort),
   ]
   if (force) {
-    pnpmDevArgs.push("--force")
+    pnpmDevArgs.push('--force')
   }
-  const wranglerArgs = ["wrangler", "dev", "--port", String(wranglerPort)]
+  const wranglerArgs = ['wrangler', 'dev', '--port', String(wranglerPort)]
   const pnpmDevRetryLimit = retry ?? 3
   return {
     port: effectivePort,
@@ -131,45 +131,45 @@ function parseCliOptions(argv: string[]): CliOptions {
   let bg = false
   for (let index = 0; index < argv.length; index += 1) {
     const token = argv[index]
-    if (token === "--") {
+    if (token === '--') {
       break
     }
-    if (token === "--help" || token === "-h") {
+    if (token === '--help' || token === '-h') {
       help = true
       continue
     }
-    if (token === "--port") {
+    if (token === '--port') {
       const value = argv[index + 1]
       if (!value) {
-        failStartup("missing port value for --port")
+        failStartup('missing port value for --port')
       }
       index += 1
       port = parsePortValue(value)
       continue
     }
-    if (token.startsWith("--port=")) {
-      port = parsePortValue(token.slice("--port=".length))
+    if (token.startsWith('--port=')) {
+      port = parsePortValue(token.slice('--port='.length))
       continue
     }
-    if (token === "--retry") {
+    if (token === '--retry') {
       const value = argv[index + 1]
       if (!value) {
-        failStartup("missing retry value for --retry")
+        failStartup('missing retry value for --retry')
       }
       index += 1
       retry = parseRetryValue(value)
       continue
     }
-    if (token.startsWith("--retry=")) {
-      retry = parseRetryValue(token.slice("--retry=".length))
+    if (token.startsWith('--retry=')) {
+      retry = parseRetryValue(token.slice('--retry='.length))
     }
-    if (token === "--force") {
+    if (token === '--force') {
       force = true
     }
-    if (token === "--serve") {
+    if (token === '--serve') {
       serve = true
     }
-    if (token === "--bg") {
+    if (token === '--bg') {
       bg = true
     }
   }
@@ -194,22 +194,22 @@ function parseRetryValue(raw: string): number {
 }
 
 function printHelp(): void {
-  const prefix = formattedLabels.main ?? "[main]"
+  const prefix = formattedLabels.main ?? '[main]'
   const lines = [
-    "usage: pnpm swarm -- [options]",
-    "",
-    "options:",
-    "  --port <port>       bind pnpm dev to <port>, websocket to <port+1>, wrangler dev to <port+2>",
-    "  --retry <count>     restart pnpm dev up to <count> times when it exits non-zero",
-    "  --force             enforce running all plugins (longer to compile)",
-    "  --bg                run process in the background",
-    "  --help, -h          show this message",
-    "",
-    "environment:",
-    "  PUBLIC_BASE_URL     overrides default http://localhost:<port> when --port is not passed",
-    "",
-    "example:",
-    "  pnpm swarm -- --port 8081",
+    'usage: pnpm swarm -- [options]',
+    '',
+    'options:',
+    '  --port <port>       bind pnpm dev to <port>, websocket to <port+1>, wrangler dev to <port+2>',
+    '  --retry <count>     restart pnpm dev up to <count> times when it exits non-zero',
+    '  --force             enforce running all plugins (longer to compile)',
+    '  --bg                run process in the background',
+    '  --help, -h          show this message',
+    '',
+    'environment:',
+    '  PUBLIC_BASE_URL     overrides default http://localhost:<port> when --port is not passed',
+    '',
+    'example:',
+    '  pnpm swarm -- --port 8081',
   ]
   for (const line of lines) {
     process.stdout.write(`${prefix} ${line}\n`)
@@ -221,7 +221,7 @@ function parsePortFromBase(value?: string): number | null {
     return null
   }
   try {
-    const candidate = value.includes("://") ? value : `http://${value}`
+    const candidate = value.includes('://') ? value : `http://${value}`
     const url = new URL(candidate)
     if (!url.port) {
       return null
@@ -234,34 +234,34 @@ function parsePortFromBase(value?: string): number | null {
 }
 
 function failStartup(message: string): never {
-  const prefix = formattedLabels.main ?? "[main]"
+  const prefix = formattedLabels.main ?? '[main]'
   process.stderr.write(`${prefix} ${message}\n`)
   process.exit(1)
 }
 
 async function main(): Promise<void> {
   log(
-    "main",
+    'main',
     `using dev port ${runtimeConfig.port}, ws ${runtimeConfig.wsPort}, wrangler ${runtimeConfig.wranglerPort}`,
   )
   if (runtimeConfig.bg) {
-    const pidFile = path.join(gitRoot, ".dev.pid")
-    const logFile = path.join(gitRoot, ".dev.log")
-    const errFile = path.join(gitRoot, ".dev.err.log")
-    const stdout = await open(logFile, "a")
-    const stderr = await open(errFile, "a")
+    const pidFile = path.join(gitRoot, '.dev.pid')
+    const logFile = path.join(gitRoot, '.dev.log')
+    const errFile = path.join(gitRoot, '.dev.err.log')
+    const stdout = await open(logFile, 'a')
+    const stderr = await open(errFile, 'a')
     const child = spawn(
       process.execPath,
-      [fileURLToPath(import.meta.url), ...process.argv.slice(2).filter((arg) => arg !== "--bg")],
-      { cwd: gitRoot, detached: true, stdio: ["ignore", stdout.fd, stderr.fd] },
+      [fileURLToPath(import.meta.url), ...process.argv.slice(2).filter(arg => arg !== '--bg')],
+      { cwd: gitRoot, detached: true, stdio: ['ignore', stdout.fd, stderr.fd] },
     )
     child.unref()
     await writeFile(pidFile, String(child.pid ?? process.pid))
-    log("main", `started background process (PID: ${child.pid ?? process.pid})`)
-    log("main", `logs: ${logFile}, errors: ${errFile}`)
+    log('main', `started background process (PID: ${child.pid ?? process.pid})`)
+    log('main', `logs: ${logFile}, errors: ${errFile}`)
     process.exit(0)
   }
-  log("main", `launching pnpm dev (attempt 1/${totalPnpmDevAttempts})`)
+  log('main', `launching pnpm dev (attempt 1/${totalPnpmDevAttempts})`)
   launchPnpmDev()
   registerLifecycle()
   registerCtrlCHandler()
@@ -271,18 +271,18 @@ async function main(): Promise<void> {
 function launchPnpmDev(): void {
   initialBuildComplete = false
   rebuildInProgress = false
-  quartzOutputBuffer = ""
+  quartzOutputBuffer = ''
   wranglerStartNotBefore = 0
-  void stopWrangler("stopping wrangler while quartz restarts")
+  void stopWrangler('stopping wrangler while quartz restarts')
   const attempt = runtimeConfig.pnpmDevRetryLimit - pnpmDevRetriesRemaining + 1
   pnpmDev = startProcess(
     runtimeConfig.pnpmDevArgs,
-    "quartz",
+    'quartz',
     `starting quartz (attempt ${attempt}/${totalPnpmDevAttempts})`,
   )
   const child = pnpmDev
-  child.on("exit", (code, signal) => handlePnpmDevExit(child, code, signal))
-  child.on("error", (err) => handlePnpmDevError(child, err))
+  child.on('exit', (code, signal) => handlePnpmDevExit(child, code, signal))
+  child.on('error', err => handlePnpmDevError(child, err))
 }
 
 function handlePnpmDevExit(
@@ -296,13 +296,13 @@ function handlePnpmDevExit(
   if (shuttingDown) {
     return
   }
-  const stream: "stdout" | "stderr" = code === 0 && signal === null ? "stdout" : "stderr"
-  log("main", `pnpm dev exited with code ${code ?? "null"} signal ${signal ?? "null"}`, stream)
+  const stream: 'stdout' | 'stderr' = code === 0 && signal === null ? 'stdout' : 'stderr'
+  log('main', `pnpm dev exited with code ${code ?? 'null'} signal ${signal ?? 'null'}`, stream)
   if (code === 0 && signal === null) {
     void shutdown(0)
     return
   }
-  retryPnpmDev(`exit code ${code ?? "null"} signal ${signal ?? "null"}`)
+  retryPnpmDev(`exit code ${code ?? 'null'} signal ${signal ?? 'null'}`)
 }
 
 function handlePnpmDevError(child: ManagedChild, err: Error): void {
@@ -312,16 +312,16 @@ function handlePnpmDevError(child: ManagedChild, err: Error): void {
   if (shuttingDown) {
     return
   }
-  log("main", `pnpm dev error: ${describeError(err)}`, "stderr")
-  retryPnpmDev("process error")
+  log('main', `pnpm dev error: ${describeError(err)}`, 'stderr')
+  retryPnpmDev('process error')
 }
 
 function retryPnpmDev(reason: string): void {
   if (pnpmDevRetriesRemaining === 0) {
     log(
-      "main",
+      'main',
       `pnpm dev restart budget exhausted after ${totalPnpmDevAttempts} attempts`,
-      "stderr",
+      'stderr',
     )
     void shutdown(1)
     return
@@ -329,9 +329,9 @@ function retryPnpmDev(reason: string): void {
   pnpmDevRetriesRemaining -= 1
   const attempt = totalPnpmDevAttempts - pnpmDevRetriesRemaining
   log(
-    "main",
+    'main',
     `retrying pnpm dev after ${reason} (attempt ${attempt}/${totalPnpmDevAttempts}, ${pnpmDevRetriesRemaining} retries left)`,
-    "stderr",
+    'stderr',
   )
   launchPnpmDev()
 }
@@ -339,18 +339,18 @@ function retryPnpmDev(reason: string): void {
 function registerLifecycle(): void {
   if (lifecycleRegistered) return
   lifecycleRegistered = true
-  const signals: NodeJS.Signals[] = ["SIGINT", "SIGTERM", "SIGHUP"]
+  const signals: NodeJS.Signals[] = ['SIGINT', 'SIGTERM', 'SIGHUP']
   for (const sig of signals) {
     process.on(sig, () => {
       void shutdown(0, sig)
     })
   }
-  process.on("uncaughtException", (err) => {
-    log("main", `manager encountered error: ${describeError(err)}`, "stderr")
+  process.on('uncaughtException', err => {
+    log('main', `manager encountered error: ${describeError(err)}`, 'stderr')
     void shutdown(1)
   })
-  process.on("unhandledRejection", (reason) => {
-    log("main", `manager unhandled rejection: ${describeError(reason)}`, "stderr")
+  process.on('unhandledRejection', reason => {
+    log('main', `manager unhandled rejection: ${describeError(reason)}`, 'stderr')
     void shutdown(1)
   })
 }
@@ -362,25 +362,25 @@ async function manageWranglerLoop(): Promise<void> {
     const canStart =
       exists && wrangler === null && shouldRunWrangler() && now >= wranglerStartNotBefore
     if (canStart) {
-      wrangler = startProcess(runtimeConfig.wranglerArgs, "wrangler")
-      wrangler.on("exit", (code, signal) => {
+      wrangler = startProcess(runtimeConfig.wranglerArgs, 'wrangler')
+      wrangler.on('exit', (code, signal) => {
         log(
-          "main",
-          `wrangler exited with code ${code ?? "null"} signal ${signal ?? "null"}`,
-          code === 0 && signal === null ? "stdout" : "stderr",
+          'main',
+          `wrangler exited with code ${code ?? 'null'} signal ${signal ?? 'null'}`,
+          code === 0 && signal === null ? 'stdout' : 'stderr',
         )
         wrangler = null
       })
-      wrangler.on("error", (err) => {
-        log("main", `failed to launch wrangler dev: ${describeError(err)}`, "stderr")
+      wrangler.on('error', err => {
+        log('main', `failed to launch wrangler dev: ${describeError(err)}`, 'stderr')
         wrangler = null
       })
     }
     const shouldStop = wrangler !== null && (!exists || !shouldRunWrangler())
     if (shouldStop) {
       const reason = !exists
-        ? "stopping wrangler while public directory is missing"
-        : "stopping wrangler while quartz rebuilds"
+        ? 'stopping wrangler while public directory is missing'
+        : 'stopping wrangler while quartz rebuilds'
       await stopWrangler(reason)
     }
     await delay(pollIntervalMs)
@@ -391,16 +391,16 @@ async function shutdown(code: number, signal?: NodeJS.Signals): Promise<void> {
   if (shuttingDown) return
   shuttingDown = true
   if (signal) {
-    log("main", `received ${signal}, shutting down...`)
+    log('main', `received ${signal}, shutting down...`)
   }
   if (rawInputEnabled && process.stdin.isTTY) {
     process.stdin.setRawMode(false)
     process.stdin.pause()
-    process.stdin.removeListener("data", handleStdin)
+    process.stdin.removeListener('data', handleStdin)
     rawInputEnabled = false
   }
   if (wrangler) {
-    await stopWrangler("stopping wrangler during shutdown")
+    await stopWrangler('stopping wrangler during shutdown')
   }
   if (pnpmDev) {
     await stopProcess(pnpmDev)
@@ -410,15 +410,15 @@ async function shutdown(code: number, signal?: NodeJS.Signals): Promise<void> {
 }
 
 function startProcess(args: string[], label: Label, message?: string): ManagedChild {
-  log("main", message ?? `starting ${label}`)
+  log('main', message ?? `starting ${label}`)
   // @ts-ignore
-  const proc = spawn("pnpm", args, {
+  const proc = spawn('pnpm', args, {
     cwd: gitRoot,
     env: {
       ...process.env,
-      ...(label === "wrangler" ? { PUBLIC_BASE_URL: runtimeConfig.publicBaseUrl } : {}),
+      ...(label === 'wrangler' ? { PUBLIC_BASE_URL: runtimeConfig.publicBaseUrl } : {}),
     },
-    stdio: ["ignore", "pipe", "pipe"],
+    stdio: ['ignore', 'pipe', 'pipe'],
   }) as ManagedChild
   proc.label = label
   pipeStream(proc)
@@ -429,20 +429,20 @@ async function stopProcess(child: ManagedChild): Promise<void> {
   if (child.exitCode !== null || child.signalCode) {
     return
   }
-  const exitPromise = once(child, "exit")
-  child.kill("SIGINT")
+  const exitPromise = once(child, 'exit')
+  child.kill('SIGINT')
   const first = await Promise.race([
-    exitPromise.then(() => "exit" as const),
-    delay(3000).then(() => "timeout" as const),
+    exitPromise.then(() => 'exit' as const),
+    delay(3000).then(() => 'timeout' as const),
   ])
-  if (first === "timeout" && child.exitCode === null) {
-    child.kill("SIGTERM")
+  if (first === 'timeout' && child.exitCode === null) {
+    child.kill('SIGTERM')
     const second = await Promise.race([
-      exitPromise.then(() => "exit" as const),
-      delay(2000).then(() => "timeout" as const),
+      exitPromise.then(() => 'exit' as const),
+      delay(2000).then(() => 'timeout' as const),
     ])
-    if (second === "timeout" && child.exitCode === null) {
-      child.kill("SIGKILL")
+    if (second === 'timeout' && child.exitCode === null) {
+      child.kill('SIGKILL')
       await exitPromise
     }
   }
@@ -458,11 +458,11 @@ async function pathExists(target: string): Promise<boolean> {
 }
 
 function pipeStream(child: ManagedChild): void {
-  child.stdout.on("data", (chunk) => {
+  child.stdout.on('data', chunk => {
     handleChildOutput(child.label, chunk)
     process.stdout.write(formatChunk(child.label, chunk))
   })
-  child.stderr.on("data", (chunk) => {
+  child.stderr.on('data', chunk => {
     handleChildOutput(child.label, chunk)
     process.stderr.write(formatChunk(child.label, chunk))
   })
@@ -473,12 +473,12 @@ function formatChunk(label: Label, chunk: Buffer): string {
   const prefix = formattedLabels[label] ?? `[${label}]`
   return lines
     .split(/(?<=\n)/)
-    .map((line) => (line.length > 0 ? `${prefix} ${line}` : line))
-    .join("")
+    .map(line => (line.length > 0 ? `${prefix} ${line}` : line))
+    .join('')
 }
 
 function delay(ms: number): Promise<void> {
-  return new Promise((resolve) => setTimeout(resolve, ms))
+  return new Promise(resolve => setTimeout(resolve, ms))
 }
 
 function shouldRunWrangler(): boolean {
@@ -498,7 +498,7 @@ async function stopWrangler(reason: string): Promise<void> {
     await wranglerStopInFlight
     return
   }
-  log("main", reason)
+  log('main', reason)
   const current = wrangler
   const stopPromise = stopProcess(current).finally(() => {
     if (wrangler === current) {
@@ -514,30 +514,30 @@ function registerCtrlCHandler(): void {
   if (!process.stdin.isTTY || rawInputEnabled) return
   process.stdin.setRawMode(true)
   process.stdin.resume()
-  process.stdin.on("data", handleStdin)
+  process.stdin.on('data', handleStdin)
   rawInputEnabled = true
 }
 
 function handleStdin(data: Buffer): void {
   for (const byte of data) {
     if (byte === 0x03) {
-      void shutdown(0, "SIGINT")
+      void shutdown(0, 'SIGINT')
       return
     }
   }
 }
 
-function once(child: ManagedChild, event: "exit"): Promise<void> {
-  return new Promise((resolve) => {
+function once(child: ManagedChild, event: 'exit'): Promise<void> {
+  return new Promise(resolve => {
     child.once(event, () => resolve())
   })
 }
 
 function handleChildOutput(label: Label, chunk: Buffer): void {
-  if (label !== "quartz") return
+  if (label !== 'quartz') return
   quartzOutputBuffer += chunk.toString()
   const lines = quartzOutputBuffer.split(/\r?\n/)
-  quartzOutputBuffer = lines.pop() ?? ""
+  quartzOutputBuffer = lines.pop() ?? ''
   for (const line of lines) {
     handleQuartzLine(line)
   }
@@ -546,19 +546,19 @@ function handleChildOutput(label: Label, chunk: Buffer): void {
 function handleQuartzLine(line: string): void {
   const text = stripAnsi(line).trim()
   if (!text) return
-  if (text.includes("Detected change, rebuilding...")) {
+  if (text.includes('Detected change, rebuilding...')) {
     markRebuildStart()
     return
   }
-  if (text.startsWith("Removed `")) {
+  if (text.startsWith('Removed `')) {
     markHardRebuildStart()
     return
   }
-  if (text.includes("Done rebuilding in")) {
+  if (text.includes('Done rebuilding in')) {
     markRebuildEnd()
     return
   }
-  if (text.includes("Done processing")) {
+  if (text.includes('Done processing')) {
     markInitialBuildComplete()
   }
 }
@@ -573,13 +573,13 @@ function markInitialBuildComplete(): void {
 function markRebuildStart(): void {
   if (rebuildInProgress) return
   rebuildInProgress = true
-  void stopWrangler("stopping wrangler while quartz rebuilds")
+  void stopWrangler('stopping wrangler while quartz rebuilds')
 }
 
 function markHardRebuildStart(): void {
   if (rebuildInProgress) return
   rebuildInProgress = true
-  void stopWrangler("stopping wrangler while quartz rebuilds")
+  void stopWrangler('stopping wrangler while quartz rebuilds')
 }
 
 function markRebuildEnd(): void {
@@ -588,17 +588,17 @@ function markRebuildEnd(): void {
   requestWranglerStart(250)
 }
 
-function log(label: Label, message: string, stream: "stdout" | "stderr" = "stdout"): void {
+function log(label: Label, message: string, stream: 'stdout' | 'stderr' = 'stdout'): void {
   const prefix = formattedLabels[label] ?? `[${label}]`
-  const target = stream === "stdout" ? process.stdout : process.stderr
+  const target = stream === 'stdout' ? process.stdout : process.stderr
   target.write(`${prefix} ${message}\n`)
 }
 
 function formatLabels<T extends Record<string, string>>(map: T): Record<keyof T, string> {
-  const widest = Math.max(...Object.values(map).map((value) => value.length))
+  const widest = Math.max(...Object.values(map).map(value => value.length))
   const result = {} as Record<keyof T, string>
   for (const [key, name] of Object.entries(map) as Array<[keyof T, string]>) {
-    const padded = name.padEnd(widest, " ")
+    const padded = name.padEnd(widest, ' ')
     const base = `[${padded}]`
     if (!useColor) {
       result[key] = base
@@ -614,7 +614,7 @@ function describeError(value: unknown): string {
   if (value instanceof Error) {
     return value.stack ?? value.message
   }
-  if (typeof value === "string") {
+  if (typeof value === 'string') {
     return value
   }
   try {
@@ -626,12 +626,12 @@ function describeError(value: unknown): string {
 
 function labelColor(label: Label): string | null {
   switch (label) {
-    case "main":
-      return "\x1b[38;5;39m"
-    case "quartz":
-      return "\x1b[38;5;110m"
-    case "wrangler":
-      return "\x1b[38;5;214m"
+    case 'main':
+      return '\x1b[38;5;39m'
+    case 'quartz':
+      return '\x1b[38;5;110m'
+    case 'wrangler':
+      return '\x1b[38;5;214m'
     default:
       return null
   }
@@ -639,5 +639,5 @@ function labelColor(label: Label): string | null {
 
 function stripAnsi(value: string): string {
   // eslint-disable-next-line no-control-regex
-  return value.replace(/\x1b\[[0-9;]*m/g, "")
+  return value.replace(/\x1b\[[0-9;]*m/g, '')
 }

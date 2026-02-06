@@ -1,11 +1,11 @@
 ---
-date: "2025-11-10"
+date: '2025-11-10'
 description: syntax, semantics, and why computation is insufficient for understanding
 id: chinese room
 modified: 2026-01-08 07:42:15 GMT-05:00
 seealso:
-  - "[[thoughts/functionalism]]"
-  - "[[thoughts/qualia]]"
+  - '[[thoughts/functionalism]]'
+  - '[[thoughts/qualia]]'
 socials:
   sep: https://plato.stanford.edu/entries/chinese-room/
   wikipedia: https://en.wikipedia.org/wiki/Chinese_room

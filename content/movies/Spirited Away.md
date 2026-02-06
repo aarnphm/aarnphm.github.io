@@ -9,7 +9,7 @@ director:
   - Hayao Miyazaki
 id: spirited-away
 modified: 2025-10-29 02:14:56 GMT-04:00
-posters: "[[movies/posters/spirited-away.jpg]]"
+posters: '[[movies/posters/spirited-away.jpg]]'
 rating: 8.6
 status: recurring
 studio: studio ghibli

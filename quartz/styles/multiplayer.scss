@@ -1,8 +1,8 @@
-@use "sass:list";
-@use "sass:meta";
-@use "sass:string";
-@use "sass:math";
-@use "./variables.scss" as *;
+@use 'sass:list';
+@use 'sass:meta';
+@use 'sass:string';
+@use 'sass:math';
+@use './variables.scss' as *;
 
 $primary-blue: #0d99ff;
 $hover-blue: #007be5;
@@ -149,7 +149,7 @@ $avatar-sm: 24px;
         position: relative;
       }
 
-      > div[aria-hidden="true"] {
+      > div[aria-hidden='true'] {
         position: absolute;
         left: 0;
         top: 0;
@@ -165,13 +165,13 @@ $avatar-sm: 24px;
     }
 
     &.composer-empty {
-      .composer-input > div[aria-hidden="true"] {
+      .composer-input > div[aria-hidden='true'] {
         display: block;
       }
     }
 
     &:not(.composer-empty) {
-      .composer-input > div[aria-hidden="true"] {
+      .composer-input > div[aria-hidden='true'] {
         display: none;
       }
     }
@@ -609,7 +609,7 @@ $avatar-sm: 24px;
               }
             }
 
-            > div[aria-hidden="true"] {
+            > div[aria-hidden='true'] {
               position: absolute;
               left: 0;
               pointer-events: none;
@@ -631,7 +631,7 @@ $avatar-sm: 24px;
         > .editable-typeahead-wrapper
           .primitive-wrapper
           .lexical-wrapper
-          > div[aria-hidden="true"] {
+          > div[aria-hidden='true'] {
           display: block;
         }
       }
@@ -640,7 +640,7 @@ $avatar-sm: 24px;
         > .editable-typeahead-wrapper
           .primitive-wrapper
           .lexical-wrapper
-          > div[aria-hidden="true"] {
+          > div[aria-hidden='true'] {
           display: none;
         }
       }
@@ -666,17 +666,17 @@ $avatar-sm: 24px;
           transition: all $transition-fast ease;
           outline: none;
 
-          &[aria-disabled="true"] {
+          &[aria-disabled='true'] {
             opacity: 0.4;
             cursor: not-allowed;
             background: var(--gray);
           }
 
-          &[aria-disabled="false"]:hover {
+          &[aria-disabled='false']:hover {
             background: $hover-blue;
           }
 
-          &[aria-disabled="false"]:active {
+          &[aria-disabled='false']:active {
             background: $active-blue;
           }
 
@@ -943,7 +943,7 @@ body:has(.global-graph-outer.active) {
     font-style: italic;
   }
   code {
-    font-family: "Courier New", monospace;
+    font-family: 'Courier New', monospace;
     background: rgba(0, 0, 0, 0.05);
     padding: 2px $space-2xs;
     border-radius: var(--radius-3);
@@ -1064,7 +1064,7 @@ body:has(.global-graph-outer.active) {
   }
 }
 
-div[class~="cm-tooltip-autocomplete"] > ul {
+div[class~='cm-tooltip-autocomplete'] > ul {
   min-width: inherit !important;
   max-height: 20em !important;
 }

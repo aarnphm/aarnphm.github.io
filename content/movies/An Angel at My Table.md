@@ -14,5 +14,5 @@ category:
   - o/life
   - drama
 description: janet frame's life from isolation to authorship - campion films interiority as survival against institutions that call it madness.
-posters: "[[movies/posters/An Angel at My Table.jpg]]"
+posters: '[[movies/posters/An Angel at My Table.jpg]]'
 ---

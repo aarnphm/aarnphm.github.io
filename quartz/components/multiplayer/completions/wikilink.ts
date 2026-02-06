@@ -1,15 +1,15 @@
-import { CompletionContext, CompletionResult, Completion } from "@codemirror/autocomplete"
-import { EditorView } from "@codemirror/view"
-import type { ContentDetails } from "../../../plugins/emitters/contentIndex"
-import type { FuzzyMatch } from "./types"
-import { isStreamHost } from "../../scripts/util"
-import { getContentIndex } from "./data"
-import { frecencyStore } from "./frecency"
-import { fuzzyMatch, fuzzyMatchMultiple } from "./fuzzy"
+import { CompletionContext, CompletionResult, Completion } from '@codemirror/autocomplete'
+import { EditorView } from '@codemirror/view'
+import type { ContentDetails } from '../../../plugins/emitters/contentIndex'
+import type { FuzzyMatch } from './types'
+import { isStreamHost } from '../../scripts/util'
+import { getContentIndex } from './data'
+import { frecencyStore } from './frecency'
+import { fuzzyMatch, fuzzyMatchMultiple } from './fuzzy'
 
 function extractNamespace(query: string): { prefix: string; remainder: string } {
-  const slashIdx = query.lastIndexOf("/")
-  if (slashIdx === -1) return { prefix: "", remainder: query }
+  const slashIdx = query.lastIndexOf('/')
+  if (slashIdx === -1) return { prefix: '', remainder: query }
   return { prefix: query.slice(0, slashIdx + 1), remainder: query.slice(slashIdx + 1) }
 }
 
@@ -24,18 +24,18 @@ function isInsideWikilink(context: CompletionContext): {
   const textBefore = line.text.slice(0, pos - line.from)
   const textAfter = line.text.slice(pos - line.from)
 
-  const openBracketIndex = textBefore.lastIndexOf("[[")
-  const closeBracketIndex = textBefore.lastIndexOf("]]")
+  const openBracketIndex = textBefore.lastIndexOf('[[')
+  const closeBracketIndex = textBefore.lastIndexOf(']]')
 
   if (openBracketIndex === -1 || closeBracketIndex > openBracketIndex) {
-    return { inside: false, start: 0, query: "", hasClosingBracket: false }
+    return { inside: false, start: 0, query: '', hasClosingBracket: false }
   }
 
   return {
     inside: true,
     start: line.from + openBracketIndex + 2,
     query: textBefore.slice(openBracketIndex + 2),
-    hasClosingBracket: textAfter.startsWith("]]"),
+    hasClosingBracket: textAfter.startsWith(']]'),
   }
 }
 
@@ -43,7 +43,7 @@ interface ScoredItem {
   slug: string
   item: ContentDetails
   match: FuzzyMatch
-  matchedField: "slug" | "title" | "alias"
+  matchedField: 'slug' | 'title' | 'alias'
   matchedAlias?: string
 }
 
@@ -65,13 +65,13 @@ export async function wikilinkCompletionSource(
 
     const slugToMatch = prefix ? slug.slice(prefix.length) : slug
 
-    if (remainder === "") {
+    if (remainder === '') {
       const frecencyBoost = frecencyStore.getBoost(slug)
       scored.push({
         slug,
         item,
         match: { score: frecencyBoost, positions: [] },
-        matchedField: "slug",
+        matchedField: 'slug',
       })
     } else {
       const targets: string[] = [slugToMatch]
@@ -90,15 +90,15 @@ export async function wikilinkCompletionSource(
       }
 
       let finalMatch: FuzzyMatch | null = null
-      let matchedField: "slug" | "title" | "alias" = "slug"
+      let matchedField: 'slug' | 'title' | 'alias' = 'slug'
       let matchedAlias: string | undefined
 
       if (best && (!aliasMatch || best.match.score >= aliasMatch.match.score)) {
         finalMatch = best.match
-        matchedField = best.target === slugToMatch ? "slug" : "title"
+        matchedField = best.target === slugToMatch ? 'slug' : 'title'
       } else if (aliasMatch) {
         finalMatch = aliasMatch.match
-        matchedField = "alias"
+        matchedField = 'alias'
         matchedAlias = aliasMatch.alias
       }
 
@@ -121,27 +121,27 @@ export async function wikilinkCompletionSource(
 
   if (limited.length === 0) return null
 
-  const baseUrl = isStreamHost() ? "https://aarnphm.xyz" : ""
-  const closingSuffix = wikiCtx.hasClosingBracket ? "" : "]]"
+  const baseUrl = isStreamHost() ? 'https://aarnphm.xyz' : ''
+  const closingSuffix = wikiCtx.hasClosingBracket ? '' : ']]'
 
   const completions: Completion[] = limited.map(
     ({ slug, item, match, matchedField, matchedAlias }) => {
-      const label = item.title || slug.split("/").pop() || slug
+      const label = item.title || slug.split('/').pop() || slug
 
       let detail = slug
-      if (matchedField === "alias" && matchedAlias) {
+      if (matchedField === 'alias' && matchedAlias) {
         detail = `${slug} (alias: ${matchedAlias})`
       }
 
       const insertText =
-        matchedField === "alias" && matchedAlias
+        matchedField === 'alias' && matchedAlias
           ? `${baseUrl}${slug}|${matchedAlias}${closingSuffix}`
           : `${baseUrl}${slug}${closingSuffix}`
 
       return {
         label,
         detail,
-        type: "page",
+        type: 'page',
         boost: match.score,
         apply: (view: EditorView, _completion: Completion, from: number, to: number) => {
           frecencyStore.recordAccess(slug)

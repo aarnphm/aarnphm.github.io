@@ -1,5 +1,5 @@
 ---
-date: "2023-11-16"
+date: '2023-11-16'
 description: On Aristotle's Metaphysics.
 id: Questions about Metaphysics
 modified: 2025-10-29 02:15:09 GMT-04:00

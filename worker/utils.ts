@@ -14,11 +14,11 @@ export function getUpstreamAuthorizeUrl({
   state?: string
 }): string {
   const upstream = new URL(upstream_url)
-  upstream.searchParams.set("client_id", client_id)
-  upstream.searchParams.set("redirect_uri", redirect_uri)
-  upstream.searchParams.set("scope", scope)
-  if (state) upstream.searchParams.set("state", state)
-  upstream.searchParams.set("response_type", "code")
+  upstream.searchParams.set('client_id', client_id)
+  upstream.searchParams.set('redirect_uri', redirect_uri)
+  upstream.searchParams.set('scope', scope)
+  if (state) upstream.searchParams.set('state', state)
+  upstream.searchParams.set('response_type', 'code')
   return upstream.href
 }
 
@@ -35,15 +35,15 @@ export async function fetchUpstreamAuthToken({
   redirect_uri: string
   client_id: string
 }): Promise<[string, null] | [null, Response]> {
-  if (!code) return [null, new Response("Missing code", { status: 400 })]
+  if (!code) return [null, new Response('Missing code', { status: 400 })]
   const resp = await fetch(upstream_url, {
     body: new URLSearchParams({ client_id, client_secret, code, redirect_uri }).toString(),
-    headers: { "Content-Type": "application/x-www-form-urlencoded" },
-    method: "POST",
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    method: 'POST',
   })
-  if (!resp.ok) return [null, new Response("Failed to fetch access token", { status: 500 })]
+  if (!resp.ok) return [null, new Response('Failed to fetch access token', { status: 500 })]
   const form = await resp.formData()
-  const accessToken = form.get("access_token") as string | null
-  if (!accessToken) return [null, new Response("Missing access token", { status: 400 })]
+  const accessToken = form.get('access_token') as string | null
+  if (!accessToken) return [null, new Response('Missing access token', { status: 400 })]
   return [accessToken, null]
 }

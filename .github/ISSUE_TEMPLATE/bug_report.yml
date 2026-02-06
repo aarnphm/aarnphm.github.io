@@ -1,7 +1,7 @@
 name: 🐛 Bug Report
 description: Create a bug report.
-title: "bug: "
-labels: ["bug"]
+title: 'bug: '
+labels: ['bug']
 body:
   - type: markdown
     id: issue-already-exists
@@ -39,7 +39,7 @@ body:
       required: false
     attributes:
       label: Expected behavior
-      description: "A clear and concise description of what you would expect to happen."
+      description: 'A clear and concise description of what you would expect to happen.'
   - type: textarea
     id: environment-info
     attributes:

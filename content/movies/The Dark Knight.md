@@ -8,7 +8,7 @@ description: chaos as a philosophy, order as a lie we agree to believe—the jok
 director: Christopher Nolan
 id: the-dark-knight
 modified: 2025-10-29 02:14:57 GMT-04:00
-posters: "[[movies/posters/the-dark-knight.jpg]]"
+posters: '[[movies/posters/the-dark-knight.jpg]]'
 rating: 9.1
 status: recurring
 studio: syncopy

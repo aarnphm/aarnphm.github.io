@@ -1,21 +1,21 @@
-import DOMPurify from "dompurify"
-import hljs from "highlight.js/lib/core"
-import bash from "highlight.js/lib/languages/bash"
-import go from "highlight.js/lib/languages/go"
-import javascript from "highlight.js/lib/languages/javascript"
-import python from "highlight.js/lib/languages/python"
-import rust from "highlight.js/lib/languages/rust"
-import typescript from "highlight.js/lib/languages/typescript"
-import { marked } from "marked"
-import { stripSlashes, splitAnchor, resolveRelative, type FullSlug } from "./path"
-import { extractWikilinks, resolveWikilinkTarget } from "./wikilinks"
+import DOMPurify from 'dompurify'
+import hljs from 'highlight.js/lib/core'
+import bash from 'highlight.js/lib/languages/bash'
+import go from 'highlight.js/lib/languages/go'
+import javascript from 'highlight.js/lib/languages/javascript'
+import python from 'highlight.js/lib/languages/python'
+import rust from 'highlight.js/lib/languages/rust'
+import typescript from 'highlight.js/lib/languages/typescript'
+import { marked } from 'marked'
+import { stripSlashes, splitAnchor, resolveRelative, type FullSlug } from './path'
+import { extractWikilinks, resolveWikilinkTarget } from './wikilinks'
 
-hljs.registerLanguage("javascript", javascript)
-hljs.registerLanguage("typescript", typescript)
-hljs.registerLanguage("python", python)
-hljs.registerLanguage("rust", rust)
-hljs.registerLanguage("go", go)
-hljs.registerLanguage("bash", bash)
+hljs.registerLanguage('javascript', javascript)
+hljs.registerLanguage('typescript', typescript)
+hljs.registerLanguage('python', python)
+hljs.registerLanguage('rust', rust)
+hljs.registerLanguage('go', go)
+hljs.registerLanguage('bash', bash)
 
 const renderer = new marked.Renderer()
 
@@ -25,13 +25,13 @@ marked.use({
   renderer,
   extensions: [
     {
-      name: "mention",
-      level: "inline",
-      start: (src: string) => src.indexOf("@"),
+      name: 'mention',
+      level: 'inline',
+      start: (src: string) => src.indexOf('@'),
       tokenizer(src: string) {
         const match = src.match(/^@([\w-]+)/)
         if (match) {
-          return { type: "mention", raw: match[0], username: match[1] }
+          return { type: 'mention', raw: match[0], username: match[1] }
         }
       },
       renderer(token) {
@@ -52,14 +52,14 @@ function processWikilinks(text: string, currentSlug: FullSlug): string {
     if (!resolved) continue
 
     let dest = resolved.slug
-    if (!dest.startsWith("/")) dest = `/${dest}` as FullSlug
+    if (!dest.startsWith('/')) dest = `/${dest}` as FullSlug
 
     const url = new URL(dest, `https://base.com/${stripSlashes(currentSlug, true)}`)
     let canonicalDest = url.pathname
     let [destCanonical, _destAnchor] = splitAnchor(canonicalDest)
 
-    if (destCanonical.endsWith("/")) {
-      destCanonical += "index"
+    if (destCanonical.endsWith('/')) {
+      destCanonical += 'index'
     }
 
     const finalSlug = decodeURIComponent(stripSlashes(destCanonical, true)) as FullSlug
@@ -76,7 +76,7 @@ function processWikilinks(text: string, currentSlug: FullSlug): string {
 
 export function renderMarkdown(markdown: string, currentSlug?: FullSlug): string {
   if (!markdown || !markdown.trim()) {
-    return ""
+    return ''
   }
 
   let processedMarkdown = markdown
@@ -89,9 +89,9 @@ export function renderMarkdown(markdown: string, currentSlug?: FullSlug): string
     /<pre><code class="language-(\w+)">([\s\S]*?)<\/code><\/pre>/g,
     (_match, lang: string, code: string) => {
       const decodedCode = code
-        .replace(/&lt;/g, "<")
-        .replace(/&gt;/g, ">")
-        .replace(/&amp;/g, "&")
+        .replace(/&lt;/g, '<')
+        .replace(/&gt;/g, '>')
+        .replace(/&amp;/g, '&')
         .replace(/&quot;/g, '"')
       if (lang && hljs.getLanguage(lang)) {
         try {

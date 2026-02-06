@@ -15,5 +15,5 @@ category:
   - drama
   - o/vintage
 description: a love triangle on texas fields - malick turns labor and jealousy into a sunset-lit myth.
-posters: "[[movies/posters/Days of Heaven.jpg]]"
+posters: '[[movies/posters/Days of Heaven.jpg]]'
 ---

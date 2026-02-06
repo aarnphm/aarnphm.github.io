@@ -8,7 +8,7 @@ description: waller-bridge breaking fourth wall as coping mechanism—grief disg
 director: Phoebe Waller-Bridge
 id: fleabag
 modified: 2025-11-17 13:35:39 GMT-05:00
-posters: "[[movies/posters/fleabag.jpg]]"
+posters: '[[movies/posters/fleabag.jpg]]'
 rating: 8.7
 status: finished
 studio: bbc

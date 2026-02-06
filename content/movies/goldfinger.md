@@ -5,7 +5,7 @@ description: bond perfected—connery at peak cool stopping auric goldfinger fro
 director: Guy Hamilton
 id: goldfinger
 modified: 2025-10-29 02:15:04 GMT-04:00
-posters: "[[movies/posters/goldfinger.jpg]]"
+posters: '[[movies/posters/goldfinger.jpg]]'
 rating: 7.7
 status: finished
 studio: united artists

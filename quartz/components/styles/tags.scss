@@ -1,5 +1,5 @@
-@use "../../styles/variables.scss" as *;
-@use "../../styles/mixin.scss" as *;
+@use '../../styles/variables.scss' as *;
+@use '../../styles/mixin.scss' as *;
 
 ul.tags,
 menu.tags,
@@ -51,7 +51,7 @@ ul.tags > li {
   overflow-wrap: normal;
 }
 
-section[class~="byline"] {
+section[class~='byline'] {
   ul.tags,
   div.first,
   menu.tags,

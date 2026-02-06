@@ -1,5 +1,5 @@
 ---
-date: "2025-09-15"
+date: '2025-09-15'
 description: empirical relationships linking model/data/compute to performance
 id: Scaling laws
 modified: 2025-10-29 02:15:34 GMT-04:00

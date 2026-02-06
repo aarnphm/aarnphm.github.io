@@ -1,6 +1,6 @@
-import { Octokit } from "octokit"
-import { fetchUpstreamAuthToken, getUpstreamAuthorizeUrl } from "../utils"
-import { bindStateToSession, createState, OAuthError, validateState } from "../workers-oauth-utils"
+import { Octokit } from 'octokit'
+import { fetchUpstreamAuthToken, getUpstreamAuthorizeUrl } from '../utils'
+import { bindStateToSession, createState, OAuthError, validateState } from '../workers-oauth-utils'
 
 export type GithubOAuthConfig = {
   clientId: (env: Env) => string
@@ -50,7 +50,7 @@ export function createGithubOAuthHandler<TState, TResult>(
     const redirectUri = new URL(config.callbackPath, req.url).href
 
     const authorizeUrl = getUpstreamAuthorizeUrl({
-      upstream_url: "https://github.com/login/oauth/authorize",
+      upstream_url: 'https://github.com/login/oauth/authorize',
       client_id: config.clientId(env),
       scope: config.scopes,
       redirect_uri: redirectUri,
@@ -58,8 +58,8 @@ export function createGithubOAuthHandler<TState, TResult>(
     })
 
     const headers = new Headers(extraHeaders)
-    headers.append("Set-Cookie", setCookie)
-    headers.set("Location", authorizeUrl)
+    headers.append('Set-Cookie', setCookie)
+    headers.set('Location', authorizeUrl)
 
     return new Response(null, { status: 302, headers })
   }
@@ -72,16 +72,16 @@ export function createGithubOAuthHandler<TState, TResult>(
 
     const state = callbacks.parseStatePayload(raw)
     if (!state) {
-      throw new OAuthError("server_error", "Invalid state data", 500)
+      throw new OAuthError('server_error', 'Invalid state data', 500)
     }
 
     const redirectUri = new URL(config.callbackPath, req.url).href
     const [accessToken, errResponse] = await fetchUpstreamAuthToken({
       client_id: config.clientId(env),
       client_secret: config.clientSecret(env),
-      code: new URL(req.url).searchParams.get("code"),
+      code: new URL(req.url).searchParams.get('code'),
       redirect_uri: redirectUri,
-      upstream_url: "https://github.com/login/oauth/access_token",
+      upstream_url: 'https://github.com/login/oauth/access_token',
     })
 
     if (errResponse) return errResponse
@@ -97,7 +97,7 @@ export function createGithubOAuthHandler<TState, TResult>(
     const response = callbacks.formatResult(result, req)
 
     const headers = new Headers(response.headers)
-    headers.append("Set-Cookie", clearCookie)
+    headers.append('Set-Cookie', clearCookie)
 
     return new Response(response.body, {
       status: response.status,

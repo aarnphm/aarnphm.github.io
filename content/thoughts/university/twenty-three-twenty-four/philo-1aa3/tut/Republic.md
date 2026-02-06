@@ -1,5 +1,5 @@
 ---
-date: "2023-09-13"
+date: '2023-09-13'
 description: plato's allegory of the cave from republic discussing ignorance, enlightenment, journey from shadows to knowledge, and the ladder of beauty.
 id: Republic
 modified: 2025-10-29 02:16:17 GMT-04:00

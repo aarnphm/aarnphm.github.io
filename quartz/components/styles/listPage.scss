@@ -1,5 +1,5 @@
-@use "../../styles/variables.scss" as *;
-@use "../../styles/mixin.scss" as *;
+@use '../../styles/variables.scss' as *;
+@use '../../styles/mixin.scss' as *;
 
 ul.section-ul {
   list-style: none;
@@ -55,7 +55,7 @@ li.section-li {
     }
 
     &::before {
-      content: "";
+      content: '';
       display: block;
       height: 0;
       margin-top: calc(var(--align-cap-height) + var(--align-baseline));
@@ -113,7 +113,7 @@ li.section-li {
           font-family: var(--codeFont);
 
           &::after {
-            content: "";
+            content: '';
             border: 1px solid;
             border-radius: var(--radius-none);
             transition: border-color 0.3s;
@@ -180,8 +180,8 @@ li.section-li {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     grid-template-areas:
-      "list evergreen"
-      "article article";
+      'list evergreen'
+      'article article';
     column-gap: calc(var(--kern) * 3);
 
     .folder-layout--list {

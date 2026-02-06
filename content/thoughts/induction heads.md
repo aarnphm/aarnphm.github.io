@@ -1,11 +1,11 @@
 ---
-date: "2025-01-18"
+date: '2025-01-18'
 description: and mathematical framework of transformers
 id: induction heads
 modified: 2025-11-28 17:15:30 GMT-05:00
 seealso:
-  - "[[thoughts/Transformers|Transformers]]"
-  - "[[thoughts/LLMs|LLMs]]"
+  - '[[thoughts/Transformers|Transformers]]'
+  - '[[thoughts/LLMs|LLMs]]'
 tags:
   - interp
   - ml

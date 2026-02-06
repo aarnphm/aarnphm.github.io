@@ -18,8 +18,8 @@
  * ```
  */
 
-import type { Options, Handle } from "mdast-util-to-markdown"
-import type { Wikilink } from "./fromMarkdown"
+import type { Options, Handle } from 'mdast-util-to-markdown'
+import type { Wikilink } from './fromMarkdown'
 
 /**
  * escape special characters in wikilink component.
@@ -30,10 +30,10 @@ import type { Wikilink } from "./fromMarkdown"
  * @returns escaped text with backslashes before special chars
  */
 function escape(text: string, chars: string): string {
-  let result = ""
+  let result = ''
   for (const char of text) {
     if (chars.includes(char)) {
-      result += "\\" + char
+      result += '\\' + char
     } else {
       result += char
     }
@@ -50,8 +50,8 @@ export function wikilinkToMarkdown(): Options {
   return {
     handlers,
     unsafe: [
-      { character: "[", inConstruct: ["phrasing", "label", "reference"] as any },
-      { character: "]", inConstruct: ["phrasing", "label", "reference"] as any },
+      { character: '[', inConstruct: ['phrasing', 'label', 'reference'] as any },
+      { character: ']', inConstruct: ['phrasing', 'label', 'reference'] as any },
     ],
   }
 }
@@ -80,7 +80,7 @@ const handleWikilink: Handle = (node: Wikilink): string => {
   const wikilink = node.data?.wikilink
   if (!wikilink) {
     // fallback: use node value if available
-    return node.value ?? "[[]]"
+    return node.value ?? '[[]]'
   }
 
   // prefer raw original text for exact round-trip serialization
@@ -90,44 +90,44 @@ const handleWikilink: Handle = (node: Wikilink): string => {
   }
 
   // reconstruct from components (may not match original exactly)
-  const { target = "", anchor, metadata, alias, embed = false } = wikilink
+  const { target = '', anchor, metadata, alias, embed = false } = wikilink
 
-  let result = ""
+  let result = ''
 
   // embed prefix
   if (embed) {
-    result += "!"
+    result += '!'
   }
 
   // opening brackets
-  result += "[["
+  result += '[['
 
   // target component
   // escape: \ | # ]
-  result += escape(target, "\\|#]")
+  result += escape(target, '\\|#]')
 
   // anchor component (includes leading # or #^)
   // escape: \ | ]
   if (anchor) {
     // anchor already has # prefix from fromMarkdown.ts
-    result += escape(anchor, "\\|]")
+    result += escape(anchor, '\\|]')
   }
 
   // metadata component
   // metadata already includes braces from exitMetadata
   // escape: \ | ]
   if (metadata) {
-    result += "#" + escape(metadata, "\\|]")
+    result += '#' + escape(metadata, '\\|]')
   }
 
   // alias component
   // escape: \ ]
   if (alias) {
-    result += "|" + escape(alias, "\\]")
+    result += '|' + escape(alias, '\\]')
   }
 
   // closing brackets
-  result += "]]"
+  result += ']]'
 
   return result
 }

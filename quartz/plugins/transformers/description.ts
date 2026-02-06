@@ -1,16 +1,16 @@
-import { Root as HTMLRoot } from "hast"
-import { toString } from "hast-util-to-string"
-import readingTime, { ReadTimeResults } from "reading-time"
-import { i18n } from "../../i18n"
-import { QuartzTransformerPlugin } from "../../types/plugin"
-import { processWikilinksToHtml, renderLatexInString } from "../../util/description"
-import { escapeHTML } from "../../util/escape"
-import { simplifySlug, type FullSlug, type SimpleSlug } from "../../util/path"
+import { Root as HTMLRoot } from 'hast'
+import { toString } from 'hast-util-to-string'
+import readingTime, { ReadTimeResults } from 'reading-time'
+import { i18n } from '../../i18n'
+import { QuartzTransformerPlugin } from '../../types/plugin'
+import { processWikilinksToHtml, renderLatexInString } from '../../util/description'
+import { escapeHTML } from '../../util/escape'
+import { simplifySlug, type FullSlug, type SimpleSlug } from '../../util/path'
 import {
   stripWikilinkFormatting,
   extractWikilinks,
   resolveWikilinkTarget,
-} from "../../util/wikilinks"
+} from '../../util/wikilinks'
 
 export interface Options {
   descriptionLength: number
@@ -26,13 +26,13 @@ const defaultOptions: Options = {
 
 const urlRegex = new RegExp(
   /(https?:\/\/)?(?<domain>([\da-z.-]+)\.([a-z.]{2,6})(:\d+)?)(?<path>[/\w.-]*)(\?[/\w.=&;-]*)?/,
-  "g",
+  'g',
 )
 
-export const Description: QuartzTransformerPlugin<Partial<Options>> = (userOpts) => {
+export const Description: QuartzTransformerPlugin<Partial<Options>> = userOpts => {
   const opts = { ...defaultOptions, ...userOpts }
   return {
-    name: "Description",
+    name: 'Description',
     htmlPlugins({ cfg }) {
       return [
         () => {
@@ -43,7 +43,7 @@ export const Description: QuartzTransformerPlugin<Partial<Options>> = (userOpts)
             let frontMatterDescription = file.data.frontmatter?.description
 
             // Extract and track wikilinks from frontmatter description
-            if (typeof frontMatterDescription === "string") {
+            if (typeof frontMatterDescription === 'string') {
               const wikilinks = extractWikilinks(frontMatterDescription)
               for (const link of wikilinks) {
                 const resolved = resolveWikilinkTarget(link, currentSlug)
@@ -58,14 +58,14 @@ export const Description: QuartzTransformerPlugin<Partial<Options>> = (userOpts)
             if (opts.replaceExternalLinks) {
               frontMatterDescription = frontMatterDescription?.replace(
                 urlRegex,
-                "$<domain>" + "$<path>",
+                '$<domain>' + '$<path>',
               )
-              text = text.replace(urlRegex, "$<domain>" + "$<path>")
+              text = text.replace(urlRegex, '$<domain>' + '$<path>')
             }
 
             const processDescription = (desc: string): string => {
-              const sentences = desc.replace(/\s+/g, " ").split(/\.\s/)
-              let finalDesc = ""
+              const sentences = desc.replace(/\s+/g, ' ').split(/\.\s/)
+              let finalDesc = ''
               let sentenceIdx = 0
 
               // Add full sentences until we exceed the guideline length
@@ -73,20 +73,20 @@ export const Description: QuartzTransformerPlugin<Partial<Options>> = (userOpts)
                 const sentence = sentences[sentenceIdx]
                 if (!sentence) break
 
-                const currentSentence = sentence.endsWith(".") ? sentence : sentence + "."
+                const currentSentence = sentence.endsWith('.') ? sentence : sentence + '.'
                 const nextLength = finalDesc.length + currentSentence.length + (finalDesc ? 1 : 0)
 
                 // Add the sentence if we're under the guideline length
                 // or if this is the first sentence (always include at least one)
                 if (nextLength <= opts.descriptionLength || sentenceIdx === 0) {
-                  finalDesc += (finalDesc ? " " : "") + currentSentence
+                  finalDesc += (finalDesc ? ' ' : '') + currentSentence
                   sentenceIdx++
                 } else {
                   break
                 }
               }
               return finalDesc.length > opts.maxDescriptionLength
-                ? finalDesc.slice(0, opts.maxDescriptionLength) + "..."
+                ? finalDesc.slice(0, opts.maxDescriptionLength) + '...'
                 : finalDesc
             }
 
@@ -147,7 +147,7 @@ export const Description: QuartzTransformerPlugin<Partial<Options>> = (userOpts)
   }
 }
 
-declare module "vfile" {
+declare module 'vfile' {
   interface DataMap {
     description: string
     abstract: string

@@ -16,7 +16,7 @@ author:
 translator: William Kulik
 year: 1936
 category: poetry
-posters: "[[library/posters/the-voice-of-robert-desnos.png]]"
+posters: '[[library/posters/the-voice-of-robert-desnos.png]]'
 id: The Voice of Robert Desnos
 ---
 

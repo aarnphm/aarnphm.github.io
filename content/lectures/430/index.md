@@ -1,5 +1,5 @@
 ---
-date: "2025-10-17"
+date: '2025-10-17'
 description: Deploying DeepSeek R1
 id: index
 modified: 2025-11-11 06:55:33 GMT-05:00

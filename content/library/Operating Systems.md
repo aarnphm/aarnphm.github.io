@@ -1,8 +1,8 @@
 ---
 tags:
   - technical
-id: "Operating Systems: Three Easy Pieces"
-title: "Operating Systems: Three Easy Pieces"
+id: 'Operating Systems: Three Easy Pieces'
+title: 'Operating Systems: Three Easy Pieces'
 date: 2025-12-12
 description: arpaci-dusseau's authoritative os textbook organizing around virtualization, concurrency, and persistence, using real network traces to explain system behavior.
 finished:
@@ -13,7 +13,7 @@ subcategory:
 author:
   - Remzi Arpaci-Dusseau
   - Andrea Arpaci-Dusseau
-posters: "[[library/posters/operating-systems.jpg]]"
+posters: '[[library/posters/operating-systems.jpg]]'
 category:
   - technology
 translator:

@@ -17,5 +17,5 @@ category:
   - drama
   - o/vintage
 description: summer heat, jealousy, and a poolside triangle on the french riviera - deray turns lounging into a pressure cooker and violence into inevitability.
-posters: "[[movies/posters/La piscine.jpg]]"
+posters: '[[movies/posters/La piscine.jpg]]'
 ---

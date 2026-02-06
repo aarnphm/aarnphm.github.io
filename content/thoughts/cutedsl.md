@@ -1,5 +1,5 @@
 ---
-date: "2025-12-12"
+date: '2025-12-12'
 description: and tile primitives
 id: cutedsl
 modified: 2025-12-17 03:49:43 GMT-05:00

@@ -2,13 +2,13 @@ import type {
   QuartzComponent,
   QuartzComponentConstructor,
   QuartzComponentProps,
-} from "../../types/component"
-import { groupStreamEntries } from "../../util/stream"
+} from '../../types/component'
+import { groupStreamEntries } from '../../util/stream'
 // @ts-ignore
-import script from "../scripts/stream.inline"
-import { renderStreamEntry } from "../stream/Entry"
-import StreamSearchConstructor from "../StreamSearch"
-import style from "../styles/stream.scss"
+import script from '../scripts/stream.inline'
+import { renderStreamEntry } from '../stream/Entry'
+import StreamSearchConstructor from '../StreamSearch'
+import style from '../styles/stream.scss'
 
 export default (() => {
   const StreamSearch = StreamSearchConstructor()
@@ -21,18 +21,18 @@ export default (() => {
 
     const canonicalPathRaw = fileData.frontmatter?.streamCanonical
     const canonicalPath =
-      typeof canonicalPathRaw === "string" && canonicalPathRaw.trim().length > 0
-        ? canonicalPathRaw.startsWith("/")
+      typeof canonicalPathRaw === 'string' && canonicalPathRaw.trim().length > 0
+        ? canonicalPathRaw.startsWith('/')
           ? canonicalPathRaw
           : `/${canonicalPathRaw}`
-        : "/stream"
+        : '/stream'
 
-    const slug = fileData.slug ?? ""
-    const isDailyView = typeof slug === "string" && slug.startsWith("stream/on/")
+    const slug = fileData.slug ?? ''
+    const isDailyView = typeof slug === 'string' && slug.startsWith('stream/on/')
 
     const groups = groupStreamEntries(fileData.streamData.entries)
-    const entriesWithContext = groups.flatMap((group) =>
-      group.entries.map((entry) => ({ entry, group })),
+    const entriesWithContext = groups.flatMap(group =>
+      group.entries.map(entry => ({ entry, group })),
     )
 
     return (

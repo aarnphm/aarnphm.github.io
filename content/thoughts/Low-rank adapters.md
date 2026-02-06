@@ -1,5 +1,5 @@
 ---
-date: "2024-02-08"
+date: '2024-02-08'
 description: LoRA
 id: Low-rank adapters
 modified: 2026-01-18 08:15:15 GMT-05:00

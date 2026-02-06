@@ -1,4 +1,4 @@
-import { FullSlug } from "../../util/path"
+import { FullSlug } from '../../util/path'
 
 export interface CalloutTranslation {
   note: string

@@ -1,20 +1,20 @@
 ---
-date: "2025-11-10"
+date: '2025-11-10'
 description: conceivability, possibility, and the limits of functionalism
 id: philosophical-zombies
 modified: 2026-01-01 18:33:28 GMT-05:00
 seealso:
-  - "[[thoughts/functionalism]]"
-  - "[[thoughts/qualia]]"
-  - "[[thoughts/identity]]"
-  - "[[thoughts/knowledge argument]]"
-  - "[[thoughts/inverted spectrum]]"
-  - "[[thoughts/chinese room]]"
-  - "[[thoughts/dualism]]"
-  - "[[thoughts/physicalism]]"
-  - "[[thoughts/phenomenal consciousness]]"
-  - "[[thoughts/access consciousness]]"
-  - "[[thoughts/panpsychism]]"
+  - '[[thoughts/functionalism]]'
+  - '[[thoughts/qualia]]'
+  - '[[thoughts/identity]]'
+  - '[[thoughts/knowledge argument]]'
+  - '[[thoughts/inverted spectrum]]'
+  - '[[thoughts/chinese room]]'
+  - '[[thoughts/dualism]]'
+  - '[[thoughts/physicalism]]'
+  - '[[thoughts/phenomenal consciousness]]'
+  - '[[thoughts/access consciousness]]'
+  - '[[thoughts/panpsychism]]'
 socials:
   sep: https://plato.stanford.edu/entries/zombies/
   wikipedia: https://en.wikipedia.org/wiki/Philosophical_zombie
