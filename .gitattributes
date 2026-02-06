@@ -85,3 +85,8 @@ content/letters/jan-2026.md filter=lfs diff=lfs merge=lfs -text
 content/letters/feb-2026.md filter=lfs diff=lfs merge=lfs -text
 content/thoughts/external-kv-connector-design.md filter=lfs diff=lfs merge=lfs -text
 content/thoughts/external-kv-impl-plan.md filter=lfs diff=lfs merge=lfs -text
+.claude/skills/rfcs/references/rfc-template.md filter=lfs diff=lfs merge=lfs -text
+.claude/skills/rfcs/references/subdir-context.md filter=lfs diff=lfs merge=lfs -text
+.claude/skills/rfcs/SKILL.md filter=lfs diff=lfs merge=lfs -text
+.claude/skills/rfcs filter=lfs diff=lfs merge=lfs -text
+.claude/skills/rfcs/references filter=lfs diff=lfs merge=lfs -text
