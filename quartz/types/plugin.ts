@@ -1,10 +1,10 @@
-import { PluggableList } from "unified"
-import { VFile } from "vfile"
-import { ProcessedContent } from "../plugins/vfile"
-import { BuildCtx } from "../util/ctx"
-import { FilePath } from "../util/path"
-import { StaticResources } from "../util/resources"
-import { QuartzComponent } from "./component"
+import { PluggableList } from 'unified'
+import { VFile } from 'vfile'
+import { ProcessedContent } from '../plugins/vfile'
+import { BuildCtx } from '../util/ctx'
+import { FilePath } from '../util/path'
+import { StaticResources } from '../util/resources'
+import { QuartzComponent } from './component'
 
 export interface PluginTypes {
   transformers: QuartzTransformerPluginInstance[]
@@ -33,7 +33,7 @@ export type QuartzFilterPluginInstance = {
   shouldPublish(ctx: BuildCtx, content: ProcessedContent): boolean
 }
 
-export type ChangeEvent = { type: "add" | "change" | "delete"; path: FilePath; file?: VFile }
+export type ChangeEvent = { type: 'add' | 'change' | 'delete'; path: FilePath; file?: VFile }
 
 export type QuartzEmitterPlugin<Options extends OptionType = undefined> = (
   opts?: Options,

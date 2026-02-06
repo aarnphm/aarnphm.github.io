@@ -13,5 +13,5 @@ category:
   - p/fiction
   - thriller
 description: a disposable employee is sent on a human expedition to colonise the ice world Niflheim. after one iteration dies, a new body is regenerated with most of his memories intact.
-posters: "[[movies/posters/mickey-17.jpg]]"
+posters: '[[movies/posters/mickey-17.jpg]]'
 ---

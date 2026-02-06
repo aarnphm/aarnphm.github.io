@@ -1,5 +1,5 @@
 ---
-date: "2026-01-10"
+date: '2026-01-10'
 description: coup de foudre
 draft: true
 id: lost

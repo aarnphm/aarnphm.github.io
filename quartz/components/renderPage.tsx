@@ -1,28 +1,28 @@
-import crypto from "crypto"
-import { Root, RootContent, Element, ElementContent, Node, Text } from "hast"
-import { fromHtml } from "hast-util-from-html"
-import { headingRank } from "hast-util-heading-rank"
-import { toHtml } from "hast-util-to-html"
-import { h, s } from "hastscript"
-import { JSX } from "preact"
-import { render } from "preact-render-to-string"
-import { EXIT, visit } from "unist-util-visit"
-import type { TranscludeOptions } from "../plugins/transformers/frontmatter"
-import { i18n } from "../i18n"
-import { checkBib, checkBibSection } from "../plugins/transformers/citations"
-import { checkFootnoteRef, checkFootnoteSection } from "../plugins/transformers/gfm"
-import { QuartzPluginData } from "../plugins/vfile"
+import crypto from 'crypto'
+import { Root, RootContent, Element, ElementContent, Node, Text } from 'hast'
+import { fromHtml } from 'hast-util-from-html'
+import { headingRank } from 'hast-util-heading-rank'
+import { toHtml } from 'hast-util-to-html'
+import { h, s } from 'hastscript'
+import { JSX } from 'preact'
+import { render } from 'preact-render-to-string'
+import { EXIT, visit } from 'unist-util-visit'
+import type { TranscludeOptions } from '../plugins/transformers/frontmatter'
+import { i18n } from '../i18n'
+import { checkBib, checkBibSection } from '../plugins/transformers/citations'
+import { checkFootnoteRef, checkFootnoteSection } from '../plugins/transformers/gfm'
+import { QuartzPluginData } from '../plugins/vfile'
 import {
   QuartzComponent,
   QuartzComponentConstructor,
   QuartzComponentProps,
-} from "../types/component"
-import { compileBaseConfig } from "../util/base/compile"
-import { renderBaseViewsForFile } from "../util/base/render"
-import { clone } from "../util/clone"
-import { BuildCtx } from "../util/ctx"
-import { htmlToJsx } from "../util/jsx"
-import { classNames } from "../util/lang"
+} from '../types/component'
+import { compileBaseConfig } from '../util/base/compile'
+import { renderBaseViewsForFile } from '../util/base/render'
+import { clone } from '../util/clone'
+import { BuildCtx } from '../util/ctx'
+import { htmlToJsx } from '../util/jsx'
+import { classNames } from '../util/lang'
 import {
   FullSlug,
   FilePath,
@@ -32,35 +32,35 @@ import {
   normalizeHastElement,
   resolveRelative,
   slugifyFilePath,
-} from "../util/path"
-import { JSResourceToScriptElement, StaticResources } from "../util/resources"
-import BaseViewSelector from "./BaseViewSelector"
-import CodeCopy from "./CodeCopy"
-import Darkmode from "./Darkmode"
-import { getDate, Date as DateComponent } from "./Date"
-import FooterConstructor from "./Footer"
-import Graph from "./Graph"
-import HeaderConstructor from "./Header"
-import HeadingsConstructor from "./Headings"
-import Image from "./Image"
-import Keybind from "./Keybind"
-import { byDateAndAlphabetical } from "./PageList"
-import ContentConstructor from "./pages/Content"
-import Content from "./pages/Content"
-import Palette from "./Palette"
+} from '../util/path'
+import { JSResourceToScriptElement, StaticResources } from '../util/resources'
+import BaseViewSelector from './BaseViewSelector'
+import CodeCopy from './CodeCopy'
+import Darkmode from './Darkmode'
+import { getDate, Date as DateComponent } from './Date'
+import FooterConstructor from './Footer'
+import Graph from './Graph'
+import HeaderConstructor from './Header'
+import HeadingsConstructor from './Headings'
+import Image from './Image'
+import Keybind from './Keybind'
+import { byDateAndAlphabetical } from './PageList'
+import ContentConstructor from './pages/Content'
+import Content from './pages/Content'
+import Palette from './Palette'
 // @ts-ignore
-import collapseHeaderScript from "./scripts/collapse-header.inline"
+import collapseHeaderScript from './scripts/collapse-header.inline'
 //@ts-ignore
-import curiusFriendScript from "./scripts/curius-friends.inline"
+import curiusFriendScript from './scripts/curius-friends.inline'
 //@ts-ignore
-import curiusNavigationScript from "./scripts/curius-navigation.inline"
+import curiusNavigationScript from './scripts/curius-navigation.inline'
 //@ts-ignore
-import curiusScript from "./scripts/curius.inline"
+import curiusScript from './scripts/curius.inline'
 //@ts-ignore
-import transcludeScript from "./scripts/transclude.inline.ts"
-import Search from "./Search"
-import collapseHeaderStyle from "./styles/collapseHeader.inline.scss"
-import { svgOptions, QuartzIcon } from "./svg"
+import transcludeScript from './scripts/transclude.inline.ts'
+import Search from './Search'
+import collapseHeaderStyle from './styles/collapseHeader.inline.scss'
+import { svgOptions, QuartzIcon } from './svg'
 
 interface EncryptedPayload {
   ciphertext: string
@@ -81,12 +81,12 @@ function encryptContent(htmlString: string, password: string): EncryptedPayload 
     salt,
     100000, // iterations
     32, // key length (256 bits)
-    "sha256",
+    'sha256',
   )
 
   // Encrypt with AES-256-GCM
-  const cipher = crypto.createCipheriv("aes-256-gcm", key, iv)
-  let encrypted = cipher.update(htmlString, "utf8")
+  const cipher = crypto.createCipheriv('aes-256-gcm', key, iv)
+  let encrypted = cipher.update(htmlString, 'utf8')
   encrypted = Buffer.concat([encrypted, cipher.final()])
 
   // Get authentication tag
@@ -97,7 +97,7 @@ function encryptContent(htmlString: string, password: string): EncryptedPayload 
 
   // Use base64url encoding (URL-safe, no padding) to avoid HTML attribute issues
   const toBase64Url = (buffer: Buffer): string => {
-    return buffer.toString("base64").replace(/\+/g, "-").replace(/\//g, "_").replace(/=/g, "")
+    return buffer.toString('base64').replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '')
   }
 
   return { ciphertext: toBase64Url(ciphertext), salt: toBase64Url(salt), iv: toBase64Url(iv) }
@@ -128,56 +128,56 @@ function headerElement(
   const originalChildren = [...node.children]
 
   const anchorIndex = originalChildren.findIndex(
-    (child) => child.type === "element" && (child as Element).tagName === "a",
+    child => child.type === 'element' && (child as Element).tagName === 'a',
   )
   const anchorChild =
     anchorIndex >= 0 ? (originalChildren.splice(anchorIndex, 1)[0] as ElementContent) : undefined
 
-  const headingContent = originalChildren.filter((child) => {
-    if (child.type !== "element") {
+  const headingContent = originalChildren.filter(child => {
+    if (child.type !== 'element') {
       return true
     }
     const element = child as Element
     const classes = element.properties?.className
     const normalized = Array.isArray(classes) ? classes : classes ? [classes] : []
-    return !normalized.includes("toggle-button") && !normalized.includes("collapsed-dots")
+    return !normalized.includes('toggle-button') && !normalized.includes('collapsed-dots')
   })
 
   const toggleButton = h(
     `span.toggle-button.collapse-toggle#${buttonId}-toggle`,
     {
-      role: "button",
+      role: 'button',
       ariaExpanded: true,
-      ariaLabel: "Toggle content visibility",
+      ariaLabel: 'Toggle content visibility',
       ariaControls: `${buttonId}-content`,
-      type: "button",
-      ["data-collapse-toggle"]: "",
+      type: 'button',
+      ['data-collapse-toggle']: '',
     },
     [
-      h("span.collapse-rail", { ariaHidden: true }, [
-        h("span.collapse-line.collapse-line--before"),
-        h("button.toggle-icons", [
+      h('span.collapse-rail', { ariaHidden: true }, [
+        h('span.collapse-line.collapse-line--before'),
+        h('button.toggle-icons', [
           s(
-            "svg",
-            { ...svgOptions, fill: "var(--dark)", stroke: "var(--dark)", class: "circle-icon" },
-            [s("use", { href: "#circle-icon" })],
+            'svg',
+            { ...svgOptions, fill: 'var(--dark)', stroke: 'var(--dark)', class: 'circle-icon' },
+            [s('use', { href: '#circle-icon' })],
           ),
           s(
-            "svg",
-            { ...svgOptions, fill: "var(--iris)", stroke: "var(--iris)", class: "expand-icon" },
-            [s("use", { href: "#arrow-down" })],
+            'svg',
+            { ...svgOptions, fill: 'var(--iris)', stroke: 'var(--iris)', class: 'expand-icon' },
+            [s('use', { href: '#arrow-down' })],
           ),
           s(
-            "svg",
-            { ...svgOptions, fill: "var(--foam)", stroke: "var(--foam)", class: "collapse-icon" },
-            [s("use", { href: "#arrow-up" })],
+            'svg',
+            { ...svgOptions, fill: 'var(--foam)', stroke: 'var(--foam)', class: 'collapse-icon' },
+            [s('use', { href: '#arrow-up' })],
           ),
         ]),
-        h("span.collapse-line.collapse-line--after"),
+        h('span.collapse-line.collapse-line--after'),
       ]),
-      h("span.collapse-title", hasNextLevelChild ? { class: "has-next-level-child" } : {}, [
+      h('span.collapse-title', hasNextLevelChild ? { class: 'has-next-level-child' } : {}, [
         ...headingContent,
-        s("svg", { ...svgOptions, class: "collapsed-dots" }, [s("use", { href: "#triple-dots" })]),
+        s('svg', { ...svgOptions, class: 'collapsed-dots' }, [s('use', { href: '#triple-dots' })]),
         ...(anchorChild ? [anchorChild] : []),
       ]),
     ],
@@ -185,36 +185,36 @@ function headerElement(
 
   node.children = [toggleButton]
 
-  let className = ["collapsible-header"]
+  let className = ['collapsible-header']
   if (endHr) {
-    className.push("end-hr")
+    className.push('end-hr')
   }
 
-  return h(`section.${className.join(".")}#${id}`, { "data-level": rank }, [
+  return h(`section.${className.join('.')}#${id}`, { 'data-level': rank }, [
     h(
-      "div.collapse-shell.is-open",
-      { ["data-collapse-shell"]: "", ["data-initial-open"]: "true" },
+      'div.collapse-shell.is-open',
+      { ['data-collapse-shell']: '', ['data-initial-open']: 'true' },
       [
         node,
         h(
-          "div.collapse-body",
+          'div.collapse-body',
           {
             id: `${buttonId}-content`,
-            role: "region",
+            role: 'region',
             ariaLabelledby: `${buttonId}-toggle`,
-            ["data-collapse-body"]: "",
+            ['data-collapse-body']: '',
           },
           [
-            h("span.collapse-rail.collapse-rail--body", { ariaHidden: true }, [
-              h("span.collapse-line.collapse-line--body"),
+            h('span.collapse-rail.collapse-rail--body', { ariaHidden: true }, [
+              h('span.collapse-line.collapse-line--body'),
             ]),
-            h("div.collapse-body-content", [
+            h('div.collapse-body-content', [
               h(
-                ".collapsible-header-content",
+                '.collapsible-header-content',
                 {
-                  ["data-references"]: `${buttonId}-toggle`,
-                  ["data-level"]: `${rank}`,
-                  ["data-heading-id"]: node.properties.id, // HACK: This assumes that rehype-slug already runs this target
+                  ['data-references']: `${buttonId}-toggle`,
+                  ['data-level']: `${rank}`,
+                  ['data-heading-id']: node.properties.id, // HACK: This assumes that rehype-slug already runs this target
                 },
                 content,
               ),
@@ -227,37 +227,37 @@ function headerElement(
 }
 
 function spacerElement(): Element {
-  return h("div.collapsible-header-spacer", { ariaHidden: true }, [
-    h("span.collapse-rail", { ariaHidden: true }, [h("span.collapse-line.collapse-line--spacer")]),
+  return h('div.collapsible-header-spacer', { ariaHidden: true }, [
+    h('span.collapse-rail', { ariaHidden: true }, [h('span.collapse-line.collapse-line--spacer')]),
   ])
 }
 
 function hrElement(): Element {
-  return h("div.collapsible-header-hr", { ariaHidden: true }, [
-    h("span.collapse-rail", { ariaHidden: true }, [h("span.collapse-line.collapse-line--hr")]),
-    h("hr"),
+  return h('div.collapsible-header-hr', { ariaHidden: true }, [
+    h('span.collapse-rail', { ariaHidden: true }, [h('span.collapse-line.collapse-line--hr')]),
+    h('hr'),
   ])
 }
 
 function isCollapsibleHeader(node: ElementContent): boolean {
-  if (node.type !== "element") return false
+  if (node.type !== 'element') return false
   const element = node as Element
-  if (element.tagName !== "section") return false
+  if (element.tagName !== 'section') return false
   const classNames = element.properties?.className
   const normalized = Array.isArray(classNames) ? classNames : classNames ? [classNames] : []
-  return normalized.includes("collapsible-header")
+  return normalized.includes('collapsible-header')
 }
 
 function shouldStopWrapping(node: ElementContent) {
-  if (node.type === "element") {
+  if (node.type === 'element') {
     if (
-      node.properties?.dataReferences === "" ||
-      node.properties?.dataFootnotes === "" ||
-      node.properties?.dataBacklinks === ""
+      node.properties?.dataReferences === '' ||
+      node.properties?.dataFootnotes === '' ||
+      node.properties?.dataBacklinks === ''
     ) {
       return true
     }
-    if (node.tagName === "hr") {
+    if (node.tagName === 'hr') {
       return true
     }
   }
@@ -277,7 +277,7 @@ function processHeaders(nodes: ElementContent[]): ElementContent[] {
   let stack: StackElement[] = []
   for (const node of nodes) {
     if (shouldStopWrapping(node)) {
-      const endHr = (node as Element).tagName === "hr"
+      const endHr = (node as Element).tagName === 'hr'
       while (stack.length > 0) {
         const completedSection = stack.pop()!
         const wrappedElement = headerElement(
@@ -311,7 +311,7 @@ function processHeaders(nodes: ElementContent[]): ElementContent[] {
       } else {
         result.push(node)
       }
-    } else if (node.type === "element" && headingRank(node)) {
+    } else if (node.type === 'element' && headingRank(node)) {
       const level = headingRank(node) as number
 
       while (stack.length > 0 && stack[stack.length - 1].level >= level) {
@@ -387,7 +387,7 @@ type ManualNumberInfo = {
   value: string
   container: Element
   index: number
-  kind: "element" | "text"
+  kind: 'element' | 'text'
   offset?: number
 }
 
@@ -395,26 +395,26 @@ const inlineNumberPattern = /^\s*(\d+(?:\.\d+)+)\s*$/
 const leadingNumberPattern = /^\s*(\d+(?:\.\d+)+)\s*/
 
 function isListElement(node: Element): boolean {
-  return node.tagName === "ul" || node.tagName === "ol"
+  return node.tagName === 'ul' || node.tagName === 'ol'
 }
 
 function isListItem(node: ElementContent): node is Element {
-  return node.type === "element" && (node as Element).tagName === "li"
+  return node.type === 'element' && (node as Element).tagName === 'li'
 }
 
 function isMetaSection(node: Element): boolean {
-  if (node.tagName !== "section") return false
+  if (node.tagName !== 'section') return false
   return (
-    node.properties?.dataReferences === "" ||
-    node.properties?.dataFootnotes === "" ||
-    node.properties?.dataBacklinks === ""
+    node.properties?.dataReferences === '' ||
+    node.properties?.dataFootnotes === '' ||
+    node.properties?.dataBacklinks === ''
   )
 }
 
 function inlineText(node: ElementContent): string | null {
-  if (node.type === "text") return node.value
-  if (node.type === "element") {
-    let value = ""
+  if (node.type === 'text') return node.value
+  if (node.type === 'element') {
+    let value = ''
     for (const child of node.children ?? []) {
       const piece = inlineText(child)
       if (piece === null) return null
@@ -427,9 +427,9 @@ function inlineText(node: ElementContent): string | null {
 
 function findFirstParagraph(li: Element): Element | null {
   for (const child of li.children ?? []) {
-    if (child.type !== "element") continue
+    if (child.type !== 'element') continue
     const element = child as Element
-    if (element.tagName === "p") return element
+    if (element.tagName === 'p') return element
   }
   return null
 }
@@ -441,30 +441,30 @@ function readManualNumber(li: Element): ManualNumberInfo | null {
   let index = -1
   for (let i = 0; i < container.children.length; i += 1) {
     const child = container.children[i]
-    if (child.type === "text" && child.value.trim().length === 0) continue
+    if (child.type === 'text' && child.value.trim().length === 0) continue
     index = i
     break
   }
   if (index < 0) return null
   const first = container.children[index]
-  if (first.type === "text") {
+  if (first.type === 'text') {
     const match = first.value.match(leadingNumberPattern)
     if (!match) return null
-    return { value: match[1], container, index, kind: "text", offset: match[0].length }
+    return { value: match[1], container, index, kind: 'text', offset: match[0].length }
   }
-  if (first.type === "element") {
+  if (first.type === 'element') {
     const element = first as Element
     if (isListElement(element)) return null
     const allowed =
-      element.tagName === "em" ||
-      element.tagName === "strong" ||
-      element.tagName === "span" ||
-      element.tagName === "code"
+      element.tagName === 'em' ||
+      element.tagName === 'strong' ||
+      element.tagName === 'span' ||
+      element.tagName === 'code'
     if (!allowed) return null
     const text = inlineText(element)
     if (!text) return null
     if (!inlineNumberPattern.test(text)) return null
-    return { value: text.trim(), container, index, kind: "element" }
+    return { value: text.trim(), container, index, kind: 'element' }
   }
   return null
 }
@@ -473,9 +473,9 @@ function normalizeLeadingWhitespace(container: Element): void {
   if (!container.children || container.children.length === 0) return
   while (container.children.length > 0) {
     const node = container.children[0]
-    if (node.type !== "text") break
+    if (node.type !== 'text') break
     const textNode = node as Text
-    const trimmed = textNode.value.replace(/^\s+/, "")
+    const trimmed = textNode.value.replace(/^\s+/, '')
     if (trimmed.length === 0) {
       container.children.shift()
       continue
@@ -488,12 +488,12 @@ function normalizeLeadingWhitespace(container: Element): void {
 function stripManualNumber(info: ManualNumberInfo): void {
   const { container, kind } = info
   if (!container.children || container.children.length === 0) return
-  if (kind === "element") {
+  if (kind === 'element') {
     container.children.splice(info.index, 1)
     normalizeLeadingWhitespace(container)
     return
   }
-  if (kind === "text") {
+  if (kind === 'text') {
     const textNode = container.children[info.index] as Text
     textNode.value = textNode.value.slice(info.offset ?? 0)
     if (textNode.value.length === 0) {
@@ -504,9 +504,9 @@ function stripManualNumber(info: ManualNumberInfo): void {
 }
 
 function computeChildNumber(parentNumber: string, index: number): string {
-  const segments = parentNumber.split(".")
+  const segments = parentNumber.split('.')
   const last = segments[segments.length - 1]
-  const prefix = segments.slice(0, -1).join(".")
+  const prefix = segments.slice(0, -1).join('.')
   const suffix = `${last}${index + 1}`
   if (prefix.length === 0) {
     return `${last}.${suffix}`
@@ -518,27 +518,27 @@ function wrapTractatusItem(li: Element, numberLabel: string, depth: number): Ele
   const props = li.properties ?? (li.properties = {})
   const className = Array.isArray(props.className)
     ? props.className.filter((value): value is string | number => {
-        return typeof value === "string" || typeof value === "number"
+        return typeof value === 'string' || typeof value === 'number'
       })
-    : typeof props.className === "string" || typeof props.className === "number"
+    : typeof props.className === 'string' || typeof props.className === 'number'
       ? [props.className]
       : []
-  if (!className.includes("tractatus-item")) className.push("tractatus-item")
+  if (!className.includes('tractatus-item')) className.push('tractatus-item')
   props.className = className
   if (!props.id) {
-    const safeId = numberLabel.replace(/[^0-9A-Za-z.-]/g, "")
+    const safeId = numberLabel.replace(/[^0-9A-Za-z.-]/g, '')
     props.id = `tractatus-${safeId}`
   }
-  const style = typeof props.style === "string" ? props.style : ""
+  const style = typeof props.style === 'string' ? props.style : ''
   const depthStyle = `--tractatus-depth: ${depth};`
-  props.style = style ? `${style.trim().replace(/;?$/, ";")} ${depthStyle}` : depthStyle
-  props["data-tractatus-number"] = numberLabel
-  props["data-tractatus-depth"] = depth
+  props.style = style ? `${style.trim().replace(/;?$/, ';')} ${depthStyle}` : depthStyle
+  props['data-tractatus-number'] = numberLabel
+  props['data-tractatus-depth'] = depth
 
   const nestedLists: Element[] = []
   const contentBlocks: ElementContent[] = []
   for (const child of li.children ?? []) {
-    if (child.type === "element") {
+    if (child.type === 'element') {
       const element = child as Element
       if (isListElement(element)) {
         nestedLists.push(element)
@@ -548,9 +548,9 @@ function wrapTractatusItem(li: Element, numberLabel: string, depth: number): Ele
     contentBlocks.push(child)
   }
 
-  const row = h("div", { className: "tractatus-row" }, [
-    h("span", { className: "tractatus-number" }, [{ type: "text", value: numberLabel }]),
-    h("div", { className: "tractatus-text" }, contentBlocks),
+  const row = h('div', { className: 'tractatus-row' }, [
+    h('span', { className: 'tractatus-number' }, [{ type: 'text', value: numberLabel }]),
+    h('div', { className: 'tractatus-text' }, contentBlocks),
   ])
 
   li.children = [row, ...nestedLists]
@@ -561,12 +561,12 @@ function processTractatusList(list: Element, parentNumber: string | null, depth:
   const props = list.properties ?? (list.properties = {})
   const className = Array.isArray(props.className)
     ? props.className.filter((value): value is string | number => {
-        return typeof value === "string" || typeof value === "number"
+        return typeof value === 'string' || typeof value === 'number'
       })
-    : typeof props.className === "string" || typeof props.className === "number"
+    : typeof props.className === 'string' || typeof props.className === 'number'
       ? [props.className]
       : []
-  if (!className.includes("tractatus-list")) className.push("tractatus-list")
+  if (!className.includes('tractatus-list')) className.push('tractatus-list')
   props.className = className
 
   let itemIndex = 0
@@ -595,7 +595,7 @@ function processTractatusList(list: Element, parentNumber: string | null, depth:
 
 function applyTractatusLayout(root: Root): void {
   const walk = (node: RootContent, inMeta: boolean, inList: boolean): void => {
-    if (node.type !== "element") return
+    if (node.type !== 'element') return
     const element = node as Element
     const nextMeta = inMeta || isMetaSection(element)
     if (isListElement(element)) {
@@ -623,22 +623,22 @@ function mergeReferences(root: Root, appendSuffix?: string | undefined): void {
     //@ts-ignore
     (node: Element) => checkBib(node as Element),
     (node: Element) => {
-      node.properties.href = `${(node as Element).properties.href}${appendSuffix !== undefined ? "-" + appendSuffix : ""}`
+      node.properties.href = `${(node as Element).properties.href}${appendSuffix !== undefined ? '-' + appendSuffix : ''}`
     },
   )
 
   // Find all reference divs and collect their entries
-  visit(root, "element", (node: Element) => {
+  visit(root, 'element', (node: Element) => {
     if (
-      node.type === "element" &&
-      node.tagName === "section" &&
-      node.properties.dataReferences == ""
+      node.type === 'element' &&
+      node.tagName === 'section' &&
+      node.properties.dataReferences == ''
     ) {
       toRemove.push(node)
-      const items = (node.children as Element[]).filter((val) => val.tagName === "ul")[0] // The ul is in here
+      const items = (node.children as Element[]).filter(val => val.tagName === 'ul')[0] // The ul is in here
       finalRefs.push(
-        ...(items.children as Element[]).map((li) => {
-          li.properties.id = `${li.properties?.id}${appendSuffix ? "-" + appendSuffix : ""}`
+        ...(items.children as Element[]).map(li => {
+          li.properties.id = `${li.properties?.id}${appendSuffix ? '-' + appendSuffix : ''}`
           return li
         }),
       )
@@ -650,15 +650,15 @@ function mergeReferences(root: Root, appendSuffix?: string | undefined): void {
   if (toRemove.length === 0) return
 
   // Remove all reference divs except the last one
-  visit(root, "element", (node: Element, index, parent) => {
+  visit(root, 'element', (node: Element, index, parent) => {
     if (toRemove.includes(node)) {
       parent!.children.splice(index!, 1)
     }
   })
 
   // finally, update the final position
-  visit(root, { tagName: "section" }, (node: Element, index, parent) => {
-    if (node.properties.dataReferences == "") {
+  visit(root, { tagName: 'section' }, (node: Element, index, parent) => {
+    if (node.properties.dataReferences == '') {
       // @ts-ignore
       node.children[1].children = finalRefs
       parent!.children.splice(index as number, 1, node)
@@ -667,10 +667,10 @@ function mergeReferences(root: Root, appendSuffix?: string | undefined): void {
 }
 
 const getFootnotesList = (node: Element) =>
-  (node.children as Element[]).filter((val) => val.tagName === "ol")[0]
+  (node.children as Element[]).filter(val => val.tagName === 'ol')[0]
 
 const getBibList = (node: Element) =>
-  (node.children as Element[]).filter((val) => val.tagName === "ul")[0]
+  (node.children as Element[]).filter(val => val.tagName === 'ul')[0]
 
 type FootnoteInfo = {
   originalHref: string
@@ -684,7 +684,7 @@ function mergeFootnotes(root: Root, appendSuffix?: string | undefined): void {
   const noteOrder: FootnoteInfo[] = []
   const finalRefs: Element[] = []
   const toRemove: Element[] = []
-  const suffixFragment = appendSuffix ? `-${appendSuffix}` : ""
+  const suffixFragment = appendSuffix ? `-${appendSuffix}` : ''
 
   visit(
     root,
@@ -713,7 +713,7 @@ function mergeFootnotes(root: Root, appendSuffix?: string | undefined): void {
 
         const current = info
         if (current) {
-          visit(node, "text", (textNode: Text) => {
+          visit(node, 'text', (textNode: Text) => {
             textNode.value = `${current.index}`
           })
         }
@@ -733,7 +733,7 @@ function mergeFootnotes(root: Root, appendSuffix?: string | undefined): void {
   if (noteOrder.length === 0) return
 
   // Remove all reference divs except the last one
-  visit(root, { tagName: "section" }, (node: Element, index, parent) => {
+  visit(root, { tagName: 'section' }, (node: Element, index, parent) => {
     if (toRemove.includes(node)) {
       parent!.children.splice(index as number, 1)
     }
@@ -743,11 +743,11 @@ function mergeFootnotes(root: Root, appendSuffix?: string | undefined): void {
   const seenOriginal = new Set<string>()
 
   for (const note of noteOrder) {
-    const originalId = note.originalHref.replace("#", "")
+    const originalId = note.originalHref.replace('#', '')
     if (seenOriginal.has(originalId)) {
       continue
     }
-    const refIdx = finalRefs.findIndex((ref) => ref.properties?.id === originalId)
+    const refIdx = finalRefs.findIndex(ref => ref.properties?.id === originalId)
     if (refIdx === -1) {
       continue
     }
@@ -758,8 +758,8 @@ function mergeFootnotes(root: Root, appendSuffix?: string | undefined): void {
     ref.properties.id = note.footnoteId
 
     const anchorsToRemove: { parent: Element; index: number }[] = []
-    visit(ref, "element", (child: Element, index, parent) => {
-      if (child.tagName === "a" && child.properties?.dataFootnoteBackref === "") {
+    visit(ref, 'element', (child: Element, index, parent) => {
+      if (child.tagName === 'a' && child.properties?.dataFootnoteBackref === '') {
         anchorsToRemove.push({ parent: parent as Element, index: index as number })
       }
     })
@@ -768,7 +768,7 @@ function mergeFootnotes(root: Root, appendSuffix?: string | undefined): void {
     for (const { parent, index } of anchorsToRemove) {
       parent.children.splice(index, 1)
       const maybeText = parent.children[index - 1] as Text | undefined
-      if (maybeText && maybeText.type === "text" && maybeText.value.trim() === "") {
+      if (maybeText && maybeText.type === 'text' && maybeText.value.trim() === '') {
         parent.children.splice(index - 1, 1)
       }
     }
@@ -776,7 +776,7 @@ function mergeFootnotes(root: Root, appendSuffix?: string | undefined): void {
     let container: Element = ref
     for (let i = ref.children.length - 1; i >= 0; i--) {
       const child = ref.children[i]
-      if (child.type === "element") {
+      if (child.type === 'element') {
         container = child as Element
         break
       }
@@ -784,13 +784,13 @@ function mergeFootnotes(root: Root, appendSuffix?: string | undefined): void {
 
     note.referenceIds.forEach((refId, ordinal) => {
       if (container.children.length > 0) {
-        container.children.push({ type: "text", value: " " } as Text)
+        container.children.push({ type: 'text', value: ' ' } as Text)
       }
       container.children.push(
         h(
-          "a",
-          { href: `#${refId}`, dataFootnoteBackref: "", ariaLabel: "Back to content" },
-          `↩︎${ordinal === 0 ? "" : ordinal + 1}`,
+          'a',
+          { href: `#${refId}`, dataFootnoteBackref: '', ariaLabel: 'Back to content' },
+          `↩︎${ordinal === 0 ? '' : ordinal + 1}`,
         ) as Element,
       )
     })
@@ -799,8 +799,8 @@ function mergeFootnotes(root: Root, appendSuffix?: string | undefined): void {
   }
 
   // finally, update the final position
-  visit(root, { tagName: "section" }, (node: Element) => {
-    if (node.properties.dataFootnotes == "") {
+  visit(root, { tagName: 'section' }, (node: Element) => {
+    if (node.properties.dataFootnotes == '') {
       // HACK: The node.children will have length 4, and ol is the 3rd items
       const ol = node.children[2] as Element
       ol.children = sortedRefs
@@ -815,37 +815,37 @@ export const pageResources = (
 ) =>
   ({
     css: [
-      { content: joinSegments(baseDir, "index.css") },
+      { content: joinSegments(baseDir, 'index.css') },
       { content: collapseHeaderStyle, inline: true },
       ...staticResources.css,
     ],
     js: [
       {
-        src: joinSegments(baseDir, "prescript.js"),
-        loadTime: "beforeDOMReady",
-        contentType: "external",
+        src: joinSegments(baseDir, 'prescript.js'),
+        loadTime: 'beforeDOMReady',
+        contentType: 'external',
       },
       {
-        loadTime: "beforeDOMReady",
-        contentType: "inline",
+        loadTime: 'beforeDOMReady',
+        contentType: 'inline',
         spaPreserve: true,
-        script: `const fetchData = fetch("${joinSegments(baseDir, "static/contentIndex.json")}").then(data => data.json())`,
+        script: `const fetchData = fetch("${joinSegments(baseDir, 'static/contentIndex.json')}").then(data => data.json())`,
       },
       {
-        loadTime: "beforeDOMReady",
-        contentType: "inline",
+        loadTime: 'beforeDOMReady',
+        contentType: 'inline',
         spaPreserve: true,
         script: `const semanticCfg = ${JSON.stringify(ctx.cfg?.configuration?.semanticSearch ?? {})}`,
       },
-      { script: transcludeScript, loadTime: "afterDOMReady", contentType: "inline" },
-      { script: collapseHeaderScript, loadTime: "afterDOMReady", contentType: "inline" },
+      { script: transcludeScript, loadTime: 'afterDOMReady', contentType: 'inline' },
+      { script: collapseHeaderScript, loadTime: 'afterDOMReady', contentType: 'inline' },
       ...staticResources.js,
       {
-        src: joinSegments(baseDir, "postscript.js"),
-        loadTime: "afterDOMReady",
-        moduleType: "module",
-        contentType: "external",
-        crossOrigin: "anonymous",
+        src: joinSegments(baseDir, 'postscript.js'),
+        loadTime: 'afterDOMReady',
+        moduleType: 'module',
+        contentType: 'external',
+        crossOrigin: 'anonymous',
       },
     ],
     additionalHead: staticResources.additionalHead,
@@ -865,7 +865,7 @@ interface TranscludeStats {
 }
 
 type BaseRenderResult = ReturnType<typeof renderBaseViewsForFile>
-type BaseRenderedView = BaseRenderResult["views"][number]
+type BaseRenderedView = BaseRenderResult['views'][number]
 
 const BaseViewSelectorComponent = BaseViewSelector()
 
@@ -900,18 +900,18 @@ function buildBaseEmbedNodes(
       ? `${activeView.totalCount} results`
       : `${activeView.resultCount} of ${activeView.totalCount} results`
   const resultsNode = h(
-    "div.base-embed-results",
-    { dataBaseEmbedResults: "" },
-    h("span", { dataBaseEmbedResultsLabel: "" }, resultsLabel),
+    'div.base-embed-results',
+    { dataBaseEmbedResults: '' },
+    h('span', { dataBaseEmbedResultsLabel: '' }, resultsLabel),
   )
-  const barNode = h("div.base-embed-bar", [...selectorNodes, resultsNode])
-  const viewNodes = rendered.views.map((view) => {
+  const barNode = h('div.base-embed-bar', [...selectorNodes, resultsNode])
+  const viewNodes = rendered.views.map(view => {
     const isActive = view.slug === activeView.slug
     return h(
-      "div.base-embed-view",
+      'div.base-embed-view',
       {
-        className: isActive ? ["base-embed-view", "is-active"] : ["base-embed-view"],
-        dataBaseEmbedView: "",
+        className: isActive ? ['base-embed-view', 'is-active'] : ['base-embed-view'],
+        dataBaseEmbedView: '',
         dataBaseViewName: view.view.name,
         dataBaseViewSlug: view.slug,
         dataBaseViewResultCount: view.resultCount,
@@ -929,7 +929,7 @@ function renderBaseEmbeds(root: Root, componentData: QuartzComponentProps): void
   const slug = fileData.slug as FullSlug | undefined
   if (!slug) return
 
-  visit(root, { tagName: "div" }, (node) => {
+  visit(root, { tagName: 'div' }, node => {
     const baseSource = node.properties?.dataBaseSource as string | undefined
     if (!baseSource) return
     let decoded = baseSource
@@ -954,11 +954,11 @@ function renderBaseEmbeds(root: Root, componentData: QuartzComponentProps): void
     const className = node.properties?.className
     const classList = Array.isArray(className)
       ? className
-      : typeof className === "string"
+      : typeof className === 'string'
         ? [className]
         : []
-    if (!classList.includes("base-embed")) {
-      classList.push("base-embed")
+    if (!classList.includes('base-embed')) {
+      classList.push('base-embed')
     }
     node.properties = { ...node.properties, className: classList }
     delete node.properties.dataBaseSource
@@ -1002,12 +1002,12 @@ export function transcludeFinal(
 
   const pruneLeadingHeading = (nodes: ElementContent[]): ElementContent[] => {
     let removed = false
-    return nodes.filter((node) => {
+    return nodes.filter(node => {
       if (
         !removed &&
         node &&
-        typeof node === "object" &&
-        (node as Element).type === "element" &&
+        typeof node === 'object' &&
+        (node as Element).type === 'element' &&
         headingRank(node as Element)
       ) {
         removed = true
@@ -1025,40 +1025,40 @@ export function transcludeFinal(
   ): Element | null => {
     if (!title) return null
 
-    const [parent, ...children] = url.split("/")
+    const [parent, ...children] = url.split('/')
     const truncated = children.length > 2 ? `${parent}/.../${children[children.length - 1]}` : url
     const metadata: Element[] = [
-      h("li", { style: "font-style: italic; color: var(--gray);" }, [
-        { type: "text", value: `url: ${truncated}` },
+      h('li', { style: 'font-style: italic; color: var(--gray);' }, [
+        { type: 'text', value: `url: ${truncated}` },
       ]),
     ]
 
     if (description) {
       metadata.push(
-        h("li", [
-          h("span", { style: "text-decoration: underline;" }, [
-            { type: "text", value: `description` },
+        h('li', [
+          h('span', { style: 'text-decoration: underline;' }, [
+            { type: 'text', value: `description` },
           ]),
-          { type: "text", value: `: ${description}` },
+          { type: 'text', value: `: ${description}` },
         ]),
       )
     }
 
-    return h(".transclude-ref", { "data-href": href }, [
-      h("ul.metadata", metadata),
+    return h('.transclude-ref', { 'data-href': href }, [
+      h('ul.metadata', metadata),
       h(
-        "button.transclude-title-link",
-        { type: "button", ariaLabel: "Go to original link" },
+        'button.transclude-title-link',
+        { type: 'button', ariaLabel: 'Go to original link' },
         s(
-          "svg",
+          'svg',
           {
             ...svgOptions,
-            fill: "none",
-            stroke: "currentColor",
-            strokewidth: "2",
-            class: "blockquote-link",
+            fill: 'none',
+            stroke: 'currentColor',
+            strokewidth: '2',
+            class: 'blockquote-link',
           },
-          [s("use", { href: "#github-anchor" })],
+          [s('use', { href: '#github-anchor' })],
         ),
       ),
     ])
@@ -1075,40 +1075,40 @@ export function transcludeFinal(
     collapsed: boolean,
   ): void => {
     const foldButton = h(
-      "span.transclude-fold",
+      'span.transclude-fold',
       {
-        role: "button",
-        type: "button",
+        role: 'button',
+        type: 'button',
         ariaExpanded: !collapsed,
-        ariaLabel: "Toggle transclude visibility",
+        ariaLabel: 'Toggle transclude visibility',
       },
       [
         s(
-          "svg",
+          'svg',
           {
             ...svgOptions,
-            fill: "none",
-            stroke: "currentColor",
-            strokeWidth: "2",
-            class: "fold-icon",
+            fill: 'none',
+            stroke: 'currentColor',
+            strokeWidth: '2',
+            class: 'fold-icon',
           },
-          [s("use", { href: collapsed ? "#chevron-right" : "#chevron-down" })],
+          [s('use', { href: collapsed ? '#chevron-right' : '#chevron-down' })],
         ),
       ],
     )
 
-    const titleEl = h(".transclude-title", [
+    const titleEl = h('.transclude-title', [
       foldButton,
-      h("span.transclude-title-text", [{ type: "text", value: titleText }]),
+      h('span.transclude-title-text', [{ type: 'text', value: titleText }]),
     ])
 
-    const contentEl = h(".transclude-content", [h("div", children)])
+    const contentEl = h('.transclude-content', [h('div', children)])
 
     // add collapsible classes to node
     const classNames = (node.properties?.className ?? []) as string[]
-    classNames.push("transclude-collapsible")
+    classNames.push('transclude-collapsible')
     if (collapsed) {
-      classNames.push("is-collapsed")
+      classNames.push('is-collapsed')
     }
     node.properties = { ...node.properties, className: classNames }
 
@@ -1116,29 +1116,29 @@ export function transcludeFinal(
   }
 
   // NOTE: process transcludes in componentData
-  visit(root, { tagName: "blockquote" }, (node) => {
+  visit(root, { tagName: 'blockquote' }, node => {
     const classNames = (node.properties?.className ?? []) as string[]
     const url = node.properties.dataUrl as string
     const alias = (
-      node.properties?.dataEmbedAlias !== "undefined"
+      node.properties?.dataEmbedAlias !== 'undefined'
         ? node.properties?.dataEmbedAlias
         : node.properties?.dataBlock
     ) as string
 
-    if (classNames.includes("transclude")) {
+    if (classNames.includes('transclude')) {
       if (skipTranscludes) {
         return
       }
       const [inner] = node.children as Element[]
-      const transcludeTarget = inner.properties["data-slug"] as FullSlug
+      const transcludeTarget = inner.properties['data-slug'] as FullSlug
       if (visited.has(transcludeTarget)) return
       visited.add(transcludeTarget)
 
       let baseViewSlug: FullSlug | undefined
-      let page = allFiles.find((f) => f.slug === transcludeTarget)
+      let page = allFiles.find(f => f.slug === transcludeTarget)
       if (!page) {
         const baseMatches = allFiles
-          .filter((f) => f.bases && f.slug && transcludeTarget.startsWith(`${f.slug}/`))
+          .filter(f => f.bases && f.slug && transcludeTarget.startsWith(`${f.slug}/`))
           .sort((a, b) => (b.slug?.length ?? 0) - (a.slug?.length ?? 0))
         if (baseMatches.length > 0) {
           page = baseMatches[0]
@@ -1176,35 +1176,35 @@ export function transcludeFinal(
       const { title, headings } = transcludePageOpts
 
       let blockRef = node.properties.dataBlock as string | undefined
-      if (blockRef?.startsWith("#^")) {
+      if (blockRef?.startsWith('#^')) {
         // block transclude
-        blockRef = blockRef.slice("#^".length)
+        blockRef = blockRef.slice('#^'.length)
         let blockNode = page.blocks?.[blockRef]
         if (blockNode) {
-          if (blockNode.tagName === "li") blockNode = h("ul", blockNode)
+          if (blockNode.tagName === 'li') blockNode = h('ul', blockNode)
 
           const children = [normalizeHastElement(blockNode, slug, transcludeTarget)]
-          if (fileData.frontmatter?.pageLayout !== "reflection") {
+          if (fileData.frontmatter?.pageLayout !== 'reflection') {
             children.push(
-              h("a", { href: inner.properties?.href, class: "internal transclude-src" }, [
-                { type: "text", value: i18n(cfg.locale).components.transcludes.linkToOriginal },
+              h('a', { href: inner.properties?.href, class: 'internal transclude-src' }, [
+                { type: 'text', value: i18n(cfg.locale).components.transcludes.linkToOriginal },
               ]),
             )
           }
 
-          if (transcludeMetadata && "collapsed" in transcludeMetadata) {
+          if (transcludeMetadata && 'collapsed' in transcludeMetadata) {
             const titleText = alias || `Block: ${blockRef}`
             wrapCollapsible(
               node,
-              children.filter((c) => c !== null) as ElementContent[],
+              children.filter(c => c !== null) as ElementContent[],
               titleText,
               transcludeMetadata.collapsed,
             )
           } else {
-            node.children = children.filter((c) => c !== null) as ElementContent[]
+            node.children = children.filter(c => c !== null) as ElementContent[]
           }
         }
-      } else if (blockRef?.startsWith("#") && page.htmlAst) {
+      } else if (blockRef?.startsWith('#') && page.htmlAst) {
         // header transclude
         blockRef = blockRef.slice(1)
         let startIdx = undefined
@@ -1212,7 +1212,7 @@ export function transcludeFinal(
         let endIdx = undefined
         for (const [i, el] of page.htmlAst.children.entries()) {
           // skip non-headers
-          if (!(el.type === "element" && headingRank(el))) continue
+          if (!(el.type === 'element' && headingRank(el))) continue
           const depth = headingRank(el) as number
 
           // looking for our blockref
@@ -1232,7 +1232,7 @@ export function transcludeFinal(
         if (startIdx === undefined) return
 
         const normalizedSection = (page.htmlAst.children.slice(startIdx, endIdx) as Element[]).map(
-          (child) => normalizeHastElement(child, slug, transcludeTarget) as ElementContent,
+          child => normalizeHastElement(child, slug, transcludeTarget) as ElementContent,
         )
 
         const sectionContent = headings ? normalizedSection : pruneLeadingHeading(normalizedSection)
@@ -1242,16 +1242,16 @@ export function transcludeFinal(
           ...sectionContent,
         ]
 
-        if (fileData.frontmatter?.pageLayout !== "reflection") {
+        if (fileData.frontmatter?.pageLayout !== 'reflection') {
           children.push(
-            h("a", { href: inner.properties?.href, class: "internal transclude-src" }, [
-              { type: "text", value: i18n(cfg.locale).components.transcludes.linkToOriginal },
+            h('a', { href: inner.properties?.href, class: 'internal transclude-src' }, [
+              { type: 'text', value: i18n(cfg.locale).components.transcludes.linkToOriginal },
             ]),
           )
         }
 
-        const validChildren = children.filter((c) => c !== null) as ElementContent[]
-        if (transcludeMetadata && "collapsed" in transcludeMetadata) {
+        const validChildren = children.filter(c => c !== null) as ElementContent[]
+        if (transcludeMetadata && 'collapsed' in transcludeMetadata) {
           const titleText = alias || page.frontmatter?.title || `Section: ${blockRef}`
           wrapCollapsible(node, validChildren, titleText, transcludeMetadata.collapsed)
         } else {
@@ -1261,7 +1261,7 @@ export function transcludeFinal(
         // support transcluding footnote and bib data
         let footnoteSection: Element | undefined = undefined
         let bibSection: Element | undefined = undefined
-        visit(root, (node) => {
+        visit(root, node => {
           if (checkFootnoteSection(node as Element)) {
             footnoteSection = node as Element
             return EXIT
@@ -1278,25 +1278,25 @@ export function transcludeFinal(
           const node = el as Element
           const { properties } = node
           if (checkFootnoteRef(node)) {
-            visit(page.htmlAst!, { tagName: "section" }, (node) => {
-              if (node.properties.dataFootnotes == "") {
-                const noteId = (properties.href! as string).replace("#", "")
+            visit(page.htmlAst!, { tagName: 'section' }, node => {
+              if (node.properties.dataFootnotes == '') {
+                const noteId = (properties.href! as string).replace('#', '')
                 transcludeFootnoteBlock.push(
                   getFootnotesList(node).children.find(
-                    (ref) => (ref as Element).properties?.id === noteId,
+                    ref => (ref as Element).properties?.id === noteId,
                   ) as Element,
                 )
               }
             })
-          } else if (node.tagName === "cite" && node.children) {
+          } else if (node.tagName === 'cite' && node.children) {
             const linkId = (
-              (node.children as Element[]).find((v) => v.tagName === "a")!.properties.href as string
-            ).replace("#", "")
-            visit(page.htmlAst!, { tagName: "section" }, (node) => {
-              if (node.properties.dataReferences == "") {
+              (node.children as Element[]).find(v => v.tagName === 'a')!.properties.href as string
+            ).replace('#', '')
+            visit(page.htmlAst!, { tagName: 'section' }, node => {
+              if (node.properties.dataReferences == '') {
                 transcludeBibBlock.push(
                   getBibList(node).children.find(
-                    (ref) => (ref as Element).properties?.id === linkId,
+                    ref => (ref as Element).properties?.id === linkId,
                   ) as Element,
                 )
               }
@@ -1314,29 +1314,29 @@ export function transcludeFinal(
         if (filteredFootnotes.length !== 0) {
           if (!footnoteSection) {
             footnoteSection = h(
-              "section.footnotes.main-col",
-              { dataFootnotes: "", dataTransclude: "" },
+              'section.footnotes.main-col',
+              { dataFootnotes: '', dataTransclude: '' },
               h(
-                "h2.sr-only#footnote-label",
-                { dir: "auto" },
-                h("span.highlight-span", [{ type: "text", value: "remarque" }]),
+                'h2.sr-only#footnote-label',
+                { dir: 'auto' },
+                h('span.highlight-span', [{ type: 'text', value: 'remarque' }]),
                 h(
-                  "a.internal#footnote-label",
-                  { "data-role": "anchor", "data-no-popover": "true" },
+                  'a.internal#footnote-label',
+                  { 'data-role': 'anchor', 'data-no-popover': 'true' },
                   s(
-                    "svg",
-                    { ...svgOptions, fill: "none", stroke: "currentColor", strokeWidth: "2" },
-                    s("use", { href: "#github-anchor" }),
+                    'svg',
+                    { ...svgOptions, fill: 'none', stroke: 'currentColor', strokeWidth: '2' },
+                    s('use', { href: '#github-anchor' }),
                   ),
                 ),
               ),
-              { type: "text", value: "\n" },
-              h("ol", { dir: "auto" }, [...filteredFootnotes]),
-              { type: "text", value: "\n" },
+              { type: 'text', value: '\n' },
+              h('ol', { dir: 'auto' }, [...filteredFootnotes]),
+              { type: 'text', value: '\n' },
             )
             root.children.push(footnoteSection)
           } else {
-            visit(footnoteSection, { tagName: "ol" }, (node: Element) => {
+            visit(footnoteSection, { tagName: 'ol' }, (node: Element) => {
               node.children.push(...filteredFootnotes)
             })
           }
@@ -1344,20 +1344,20 @@ export function transcludeFinal(
         if (filteredBibs.length !== 0) {
           if (!bibSection) {
             bibSection = h(
-              "section.bibliography.main-col",
-              { dataReferences: "", dataTransclude: "" },
+              'section.bibliography.main-col',
+              { dataReferences: '', dataTransclude: '' },
               h(
-                "h2#reference-label",
-                { dir: "auto" },
-                h("span.highlight-span", [{ type: "text", value: "bibliographie" }]),
+                'h2#reference-label',
+                { dir: 'auto' },
+                h('span.highlight-span', [{ type: 'text', value: 'bibliographie' }]),
               ),
-              { type: "text", value: "\n" },
-              h("ul", { dir: "auto" }, [...filteredBibs]),
-              { type: "text", value: "\n" },
+              { type: 'text', value: '\n' },
+              h('ul', { dir: 'auto' }, [...filteredBibs]),
+              { type: 'text', value: '\n' },
             )
             root.children.push(bibSection)
           } else {
-            visit(bibSection, { tagName: "ul" }, (node: Element) => {
+            visit(bibSection, { tagName: 'ul' }, (node: Element) => {
               node.children.push(...filteredBibs)
             })
           }
@@ -1370,15 +1370,15 @@ export function transcludeFinal(
           baseRendered = renderBaseViewsForFile(page, allFiles, fileData)
           const baseSlug = page.slug as FullSlug
           let targetSlug = baseViewSlug ?? baseSlug
-          const aliasText = typeof alias === "string" && alias !== "undefined" ? alias.trim() : ""
+          const aliasText = typeof alias === 'string' && alias !== 'undefined' ? alias.trim() : ''
           if (!baseViewSlug && aliasText.length > 0) {
             const aliasSlug = slugifyFilePath(`${aliasText}.tmp` as FilePath, true)
             const aliasLower = aliasText.toLowerCase()
-            const match = baseRendered.allViews.find((view) => {
+            const match = baseRendered.allViews.find(view => {
               const viewName = view.name.trim().toLowerCase()
               if (viewName === aliasLower) return true
-              const viewSegment = view.slug.split("/").pop() || ""
-              const aliasSegment = aliasSlug.split("/").pop() || ""
+              const viewSegment = view.slug.split('/').pop() || ''
+              const aliasSegment = aliasSlug.split('/').pop() || ''
               return viewSegment === aliasSegment
             })
             if (match) {
@@ -1386,7 +1386,7 @@ export function transcludeFinal(
             }
           }
           baseView =
-            baseRendered.views.find((entry) => entry.slug === targetSlug) ?? baseRendered.views[0]
+            baseRendered.views.find(entry => entry.slug === targetSlug) ?? baseRendered.views[0]
           baseTree = baseView ? baseView.tree : baseTree
         }
         if (!baseTree) {
@@ -1399,12 +1399,12 @@ export function transcludeFinal(
             baseRendered,
             baseView,
           )
-          const normalizedViewNodes = viewNodes.map((child) =>
+          const normalizedViewNodes = viewNodes.map(child =>
             normalizeHastElement(child as Element, slug, transcludeTarget),
           )
-          node.tagName = "div"
-          node.properties = { className: ["base-embed"] }
-          const normalizedBarNodes = barNodes.map((child) =>
+          node.tagName = 'div'
+          node.properties = { className: ['base-embed'] }
+          const normalizedBarNodes = barNodes.map(child =>
             normalizeHastElement(child as Element, slug, transcludeTarget),
           )
           node.children = [...normalizedBarNodes, ...normalizedViewNodes]
@@ -1413,9 +1413,9 @@ export function transcludeFinal(
         const children = [
           anchor(inner.properties?.href as string, url, alias, title),
           title
-            ? h("h1", [
+            ? h('h1', [
                 {
-                  type: "text",
+                  type: 'text',
                   value:
                     page.frontmatter?.title ??
                     i18n(cfg.locale).components.transcludes.transcludeOf({
@@ -1424,22 +1424,22 @@ export function transcludeFinal(
                 },
               ])
             : null,
-          ...(baseTree.children as ElementContent[]).map((child) =>
+          ...(baseTree.children as ElementContent[]).map(child =>
             normalizeHastElement(child as Element, slug, transcludeTarget),
           ),
         ]
 
-        if (fileData.frontmatter?.pageLayout !== "reflection") {
+        if (fileData.frontmatter?.pageLayout !== 'reflection') {
           children.push(
-            h("a", { href: inner.properties?.href, class: "internal transclude-src" }, [
-              { type: "text", value: i18n(cfg.locale).components.transcludes.linkToOriginal },
+            h('a', { href: inner.properties?.href, class: 'internal transclude-src' }, [
+              { type: 'text', value: i18n(cfg.locale).components.transcludes.linkToOriginal },
             ]),
           )
         }
 
-        const validChildren = children.filter((c) => c !== null) as ElementContent[]
-        if (transcludeMetadata && "collapsed" in transcludeMetadata) {
-          const titleText = alias || page.frontmatter?.title || page.slug || "Transclude"
+        const validChildren = children.filter(c => c !== null) as ElementContent[]
+        if (transcludeMetadata && 'collapsed' in transcludeMetadata) {
+          const titleText = alias || page.frontmatter?.title || page.slug || 'Transclude'
           wrapCollapsible(node, validChildren, titleText, transcludeMetadata.collapsed)
         } else {
           node.children = validChildren
@@ -1449,7 +1449,7 @@ export function transcludeFinal(
   })
 
   // NOTE: handling collapsible nodes
-  if (dynalist && !slug.includes("posts")) {
+  if (dynalist && !slug.includes('posts')) {
     root.children = processHeaders(root.children as ElementContent[])
   }
 
@@ -1462,9 +1462,9 @@ export function transcludeFinal(
     fileData.readingTime = { ...fileData.readingTime, words: stats.words, minutes: stats.minutes }
   }
 
-  if (slug === "index") {
-    visit(root, { tagName: "a" }, (node: Element) => {
-      node.properties["data-no-popover"] = true
+  if (slug === 'index') {
+    visit(root, { tagName: 'a' }, (node: Element) => {
+      node.properties['data-no-popover'] = true
     })
   }
 
@@ -1483,15 +1483,15 @@ type AliasLinkProp = {
 
 const AliasLink = (props: AliasLinkProp) => {
   const opts = { isInternal: false, newTab: false, enablePopover: true, ...props }
-  const className = ["landing-links"]
-  if (opts.isInternal) className.push("internal")
+  const className = ['landing-links']
+  if (opts.isInternal) className.push('internal')
   if (opts.classes) className.push(...opts.classes)
   return (
     <a
       href={opts.url}
-      target={opts.newTab ? "_blank" : "_self"}
+      target={opts.newTab ? '_blank' : '_self'}
       rel="noopener noreferrer"
-      className={className.join(" ")}
+      className={className.join(' ')}
       data-no-popover={!opts.enablePopover}
       data-skip-icons
     >
@@ -1508,7 +1508,7 @@ const NotesComponent = ((opts?: { slug: SimpleSlug; numLimits?: number; header?:
       .filter((f: QuartzPluginData) => {
         if (f.slug!.startsWith(opts!.slug)) {
           return (
-            !["university", "tags", "library", "index", ...cfg.ignorePatterns].some((it) =>
+            !['university', 'tags', 'library', 'index', ...cfg.ignorePatterns].some(it =>
               (f.slug as FullSlug).includes(it),
             ) && !f.frontmatter?.noindex
           )
@@ -1529,14 +1529,14 @@ const NotesComponent = ((opts?: { slug: SimpleSlug; numLimits?: number; header?:
       })
 
     const remaining = Math.max(0, pages.length - opts!.numLimits!)
-    const classes = ["min-links", "internal"].join(" ")
+    const classes = ['min-links', 'internal'].join(' ')
     return (
-      <section id={`note-item-${opts!.header}`} data-note style={{ marginTop: "1.2em" }}>
+      <section id={`note-item-${opts!.header}`} data-note style={{ marginTop: '1.2em' }}>
         <em>{opts!.header}</em>
         <div class="notes-container">
           <div class="recent-links">
             <ul class="landing-notes">
-              {pages.slice(0, opts!.numLimits).map((page) => {
+              {pages.slice(0, opts!.numLimits).map(page => {
                 const title = page.frontmatter?.title ?? i18n(cfg.locale).propertyDefaults.title
                 return (
                   <li>
@@ -1557,12 +1557,12 @@ const NotesComponent = ((opts?: { slug: SimpleSlug; numLimits?: number; header?:
               })}
             </ul>
             {remaining > 0 && (
-              <p style={{ marginTop: "0" }}>
+              <p style={{ marginTop: '0' }}>
                 <a
                   data-no-popover
                   href={resolveRelative(fileData.slug!, opts!.slug)}
-                  class={classNames(undefined, classes, "see-more")}
-                  style={{ fontSize: "0.9em", textDecoration: "underline" }}
+                  class={classNames(undefined, classes, 'see-more')}
+                  style={{ fontSize: '0.9em', textDecoration: 'underline' }}
                 >
                   {i18n(cfg.locale).components.recentNotes.seeRemainingMore({ remaining })}
                 </a>
@@ -1586,23 +1586,23 @@ const HyperlinksComponent = ((props?: { children: JSX.Element[] }) => {
 const ElementComponent = ((enableRecents: boolean = false) => {
   const Content = ContentConstructor()
   const RecentNotes = NotesComponent({
-    header: "récentes",
-    slug: "thoughts/" as SimpleSlug,
+    header: 'récentes',
+    slug: 'thoughts/' as SimpleSlug,
     numLimits: 9,
   })
   const RecentPosts = NotesComponent({
-    header: "écriture",
-    slug: "posts/" as SimpleSlug,
+    header: 'écriture',
+    slug: 'posts/' as SimpleSlug,
     numLimits: 6,
   })
 
   const Element: QuartzComponent = (componentData: QuartzComponentProps) => {
     const Hyperlink = HyperlinksComponent({
       children: [
-        <section style={{ marginTop: "0.9em" }}>
+        <section style={{ marginTop: '0.9em' }}>
           <em>jardin</em>
           <address class="clickable-container">
-            <AliasLink newTab classes={["external"]} name="notes" url="https://notes.aarnphm.xyz" />
+            <AliasLink newTab classes={['external']} name="notes" url="https://notes.aarnphm.xyz" />
             <AliasLink isInternal enablePopover={false} name="stream" url="/stream" />
             <AliasLink isInternal enablePopover={false} name="workshop" url="/lectures" />
             <AliasLink isInternal enablePopover={false} name="arena" url="/arena" />
@@ -1614,7 +1614,7 @@ const ElementComponent = ((enableRecents: boolean = false) => {
           <address class="clickable-container">
             <AliasLink
               newTab
-              classes={["external"]}
+              classes={['external']}
               name="CC BY-NC-SA"
               url="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en"
             />
@@ -1652,7 +1652,7 @@ const ElementComponent = ((enableRecents: boolean = false) => {
 
 function Functions({ displayClass }: QuartzComponentProps) {
   return (
-    <section class={classNames(displayClass, "menu", "side-col")} data-function={true}>
+    <section class={classNames(displayClass, 'menu', 'side-col')} data-function={true}>
       <a href="../atelier-with-friends" class="internal alias" data-no-popover={true}>
         atelier with friends.
       </a>
@@ -1667,9 +1667,9 @@ export const CuriusContent: QuartzComponent = (props: QuartzComponentProps) => {
 
   return (
     <>
-      <div class={classNames(displayClass, "curius", "curius-col")} id="curius">
+      <div class={classNames(displayClass, 'curius', 'curius-col')} id="curius">
         <div class="curius-page-container">
-          <div class={classNames(displayClass, "curius-header")}>
+          <div class={classNames(displayClass, 'curius-header')}>
             <div class="curius-search">
               <input
                 id="curius-bar"
@@ -1681,7 +1681,7 @@ export const CuriusContent: QuartzComponent = (props: QuartzComponentProps) => {
             </div>
             <div class="curius-title">
               <em>
-                Voir de plus{" "}
+                Voir de plus{' '}
                 <a href="https://curius.app/aaron-pham" target="_blank">
                   curius.app/aaron-pham
                 </a>
@@ -1704,20 +1704,20 @@ CuriusContent.afterDOMLoaded = curiusScript
 export const CuriusFriends: QuartzComponent = (props: QuartzComponentProps) => {
   const { displayClass } = props
   return (
-    <div class={classNames(displayClass, "curius-friends")}>
+    <div class={classNames(displayClass, 'curius-friends')}>
       <h4
         style={[
-          "font-size: initial",
-          "margin-top: unset",
-          "margin-bottom: 0.5rem",
-          "border-bottom: 1px solid var(--gray)",
-        ].join(";")}
+          'font-size: initial',
+          'margin-top: unset',
+          'margin-bottom: 0.5rem',
+          'border-bottom: 1px solid var(--gray)',
+        ].join(';')}
       >
         mes amis
       </h4>
       <ul class="overflow section-ul" id="friends-list" style="margin-top: unset" />
       <div id="see-more-friends">
-        Void{" "}
+        Void{' '}
         <span id="more" style="text-decoration: none !important">
           de plus
         </span>
@@ -1742,12 +1742,12 @@ const CuriusTrail: QuartzComponent = (props: QuartzComponentProps) => {
   const { cfg, displayClass } = props
   return (
     <div
-      class={classNames(displayClass, "curius-trail")}
+      class={classNames(displayClass, 'curius-trail')}
       data-num-trails={3}
       data-limits={4}
       data-locale={cfg.locale}
     >
-      <h4 style={["font-size: initial", "margin-top: unset", "margin-bottom: 0.5rem"].join(";")}>
+      <h4 style={['font-size: initial', 'margin-top: unset', 'margin-bottom: 0.5rem'].join(';')}>
         sentiers
       </h4>
       <ul class="section-ul" id="trail-list" />
@@ -1758,7 +1758,7 @@ const CuriusTrail: QuartzComponent = (props: QuartzComponentProps) => {
 export const CuriusNavigation: QuartzComponent = (props: QuartzComponentProps) => {
   const { displayClass } = props
   return (
-    <div class={classNames(displayClass, "curius-pagination", "curius-col")} id="curius-pagination">
+    <div class={classNames(displayClass, 'curius-pagination', 'curius-col')} id="curius-pagination">
       <span id="curius-prev">(prev)</span>
       <span id="curius-next">next</span>
     </div>
@@ -1787,7 +1787,7 @@ export function renderPage(
   let tree = transcludeFinal(root, componentData, { visited })
   renderBaseEmbeds(tree, componentData)
 
-  if (componentData.fileData.frontmatter?.pageLayout === "technical-tractatus") {
+  if (componentData.fileData.frontmatter?.pageLayout === 'technical-tractatus') {
     applyTractatusLayout(tree)
   }
 
@@ -1812,34 +1812,34 @@ export function renderPage(
 
     // Replace tree with password prompt overlay
     tree = {
-      type: "root",
+      type: 'root',
       children: [
         h(
-          "div.protected-content-wrapper",
+          'div.protected-content-wrapper',
           {
-            dataProtected: "true",
+            dataProtected: 'true',
             dataSlug: componentData.fileData.slug,
             dataEncryptedContent: encodeURIComponent(JSON.stringify(encrypted)),
           },
           [
-            h(".password-prompt-overlay", { id: "password-prompt", style: "display: flex;" }, [
-              h(".password-prompt-container", [
-                h("p", "this content is protected"),
-                h("form.password-form", [
-                  h("input.password-input", {
-                    type: "password",
-                    placeholder: "enter password",
-                    autocomplete: "off",
+            h('.password-prompt-overlay', { id: 'password-prompt', style: 'display: flex;' }, [
+              h('.password-prompt-container', [
+                h('p', 'this content is protected'),
+                h('form.password-form', [
+                  h('input.password-input', {
+                    type: 'password',
+                    placeholder: 'enter password',
+                    autocomplete: 'off',
                     required: true,
-                    id: "protected-password-input",
-                    name: "password input for protected page",
+                    id: 'protected-password-input',
+                    name: 'password input for protected page',
                   }),
-                  h("button.password-submit", { type: "submit" }, "unlock"),
+                  h('button.password-submit', { type: 'submit' }, 'unlock'),
                 ]),
                 h(
-                  "p.password-error",
-                  { style: "display: none; color: var(--rose); margin-top: 2rem;" },
-                  "incorrect password",
+                  'p.password-error',
+                  { style: 'display: none; color: var(--rose); margin-top: 2rem;' },
+                  'incorrect password',
                 ),
               ]),
             ]),
@@ -1859,14 +1859,14 @@ export function renderPage(
   let referenceOrder = Number.MAX_SAFE_INTEGER
   let footnoteOrder = Number.MAX_SAFE_INTEGER
 
-  visit(tree, { tagName: "section" }, (node, index, parent) => {
-    const isReference = node.properties?.dataReferences === ""
-    const isFootnote = node.properties?.dataFootnotes === ""
+  visit(tree, { tagName: 'section' }, (node, index, parent) => {
+    const isReference = node.properties?.dataReferences === ''
+    const isFootnote = node.properties?.dataFootnotes === ''
     if (isReference || isFootnote) {
       const className = Array.isArray(node.properties.className)
         ? node.properties.className
         : (node.properties.className = [])
-      className.push("main-col")
+      className.push('main-col')
       toRemove.push({ parent: parent as Element, index: index!, node })
 
       if (isReference) {
@@ -1885,10 +1885,10 @@ export function renderPage(
     parent.children.splice(index, 1)
   }
 
-  const mergeSectionLists = (sections: Element[], listTag: "ol" | "ul"): Element | undefined => {
+  const mergeSectionLists = (sections: Element[], listTag: 'ol' | 'ul'): Element | undefined => {
     if (sections.length === 0) return undefined
     const base = sections[0]
-    const listGetter = listTag === "ol" ? getFootnotesList : getBibList
+    const listGetter = listTag === 'ol' ? getFootnotesList : getBibList
     const targetList = listGetter(base)
     if (!targetList) return base
 
@@ -1904,7 +1904,7 @@ export function renderPage(
     targetList.children = []
 
     for (const child of allItems) {
-      const childId = (child?.properties?.id as string | undefined) ?? ""
+      const childId = (child?.properties?.id as string | undefined) ?? ''
       if (childId && seenIds.has(childId)) continue
       if (childId) seenIds.add(childId)
       targetList.children.push(child)
@@ -1914,21 +1914,21 @@ export function renderPage(
   }
 
   const retrievalNodes: Element[] = []
-  const mergedReferences = mergeSectionLists(referenceSections, "ul")
-  const mergedFootnotes = mergeSectionLists(footnoteSections, "ol")
+  const mergedReferences = mergeSectionLists(referenceSections, 'ul')
+  const mergedFootnotes = mergeSectionLists(footnoteSections, 'ol')
 
   const orderedNodes: Array<{ order: number; node: Element }> = []
   if (mergedReferences) orderedNodes.push({ order: referenceOrder, node: mergedReferences })
   if (mergedFootnotes) orderedNodes.push({ order: footnoteOrder, node: mergedFootnotes })
   orderedNodes.sort((a, b) => a.order - b.order)
-  retrievalNodes.push(...orderedNodes.map((entry) => entry.node))
+  retrievalNodes.push(...orderedNodes.map(entry => entry.node))
 
   componentData.tree = tree
   updateStreamDataFromTree(tree, componentData)
   isFolderTag = isFolderTag ?? false
 
   const skipSearch = renderOptions?.skipSearch ?? renderOptions?.forEmail ?? false
-  if (slug === "index" && !skipSearch) {
+  if (slug === 'index' && !skipSearch) {
     components = {
       ...components,
       header: [Image(), Graph(), Search(), Palette(), Keybind(), CodeCopy(), Darkmode()],
@@ -1940,13 +1940,13 @@ export function renderPage(
         const Element = ElementComponent(false)
 
         return (
-          <div class={classNames(displayClass, "landing")}>
+          <div class={classNames(displayClass, 'landing')}>
             <Element {...props} />
           </div>
         )
       },
     }
-  } else if (slug === "curius") {
+  } else if (slug === 'curius') {
     components = {
       ...components,
       header: [],
@@ -1954,14 +1954,14 @@ export function renderPage(
       sidebar: [CuriusFriends, CuriusTrail],
       pageBody: CuriusContent,
       afterBody: [CuriusNavigation],
-      footer: FooterConstructor({ layout: "curius" }),
+      footer: FooterConstructor({ layout: 'curius' }),
     }
-  } else if (slug === "lyd") {
+  } else if (slug === 'lyd') {
     components = { ...components, beforeBody: [], sidebar: [], afterBody: [] }
   }
 
   if (componentData.fileData.frontmatter?.poem) {
-    components = { ...components, footer: FooterConstructor({ layout: "poetry" }) }
+    components = { ...components, footer: FooterConstructor({ layout: 'poetry' }) }
   }
 
   let isMenu = false
@@ -1973,11 +1973,11 @@ export function renderPage(
       beforeBody: [],
       sidebar: [],
       afterBody: [Functions],
-      footer: FooterConstructor({ layout: "menu" }),
+      footer: FooterConstructor({ layout: 'menu' }),
     }
   }
 
-  if (componentData.fileData.frontmatter?.pageLayout === "letter-poem") {
+  if (componentData.fileData.frontmatter?.pageLayout === 'letter-poem') {
     components = { ...components, header: [], sidebar: [], afterBody: [], beforeBody: [] }
   }
 
@@ -1995,16 +1995,16 @@ export function renderPage(
 
   // TODO: https://thesolarmonk.com/posts/a-spacebar-for-the-web style
   const lang =
-    (componentData.fileData.frontmatter?.lang ?? componentData.cfg.locale)?.split("-")[0] ?? "en"
-  const pageLayout = componentData.fileData.frontmatter?.pageLayout ?? "default"
+    (componentData.fileData.frontmatter?.lang ?? componentData.cfg.locale)?.split('-')[0] ?? 'en'
+  const pageLayout = componentData.fileData.frontmatter?.pageLayout ?? 'default'
   const isSlides = componentData.fileData.frontmatter?.slides ?? false
-  const isArena = slug === "arena" || slug.startsWith("arena/")
-  const isCurius = slug === "curius"
-  const isArenaSubpage = slug.startsWith("arena/") && slug !== "arena"
+  const isArena = slug === 'arena' || slug.startsWith('arena/')
+  const isCurius = slug === 'curius'
+  const isArenaSubpage = slug.startsWith('arena/') && slug !== 'arena'
   const isBase = componentData.fileData.bases ?? false
-  const isCanvas = componentData.fileData.filePath?.endsWith(".canvas") ?? false
+  const isCanvas = componentData.fileData.filePath?.endsWith('.canvas') ?? false
 
-  const contentAttrs = { "data-plain": !isBoxy }
+  const contentAttrs = { 'data-plain': !isBoxy }
 
   return (
     `<!DOCTYPE html>` +
@@ -2025,15 +2025,15 @@ export function renderPage(
         >
           <main
             id="quartz-root"
-            class={classNames(undefined, "page", slug === "index" ? "grid" : "")}
+            class={classNames(undefined, 'page', slug === 'index' ? 'grid' : '')}
             style={
-              slug !== "index"
-                ? { display: "flex", flexDirection: "column", minHeight: "100vh" }
+              slug !== 'index'
+                ? { display: 'flex', flexDirection: 'column', minHeight: '100vh' }
                 : undefined
             }
           >
             <Header {...componentData}>
-              {header.map((HeaderComponent) => (
+              {header.map(HeaderComponent => (
                 <HeaderComponent {...componentData} />
               ))}
             </Header>
@@ -2043,19 +2043,19 @@ export function renderPage(
               </div>
             </section>
             <div
-              class={classNames(undefined, "all-col", "grid", "page-body-grid")}
-              style={{ flex: "1 1 auto" }}
+              class={classNames(undefined, 'all-col', 'grid', 'page-body-grid')}
+              style={{ flex: '1 1 auto' }}
             >
               {beforeBody.length > 0 && (
                 <section
                   class={classNames(
                     undefined,
-                    "page-header",
-                    "popover-hint",
-                    isArena ? "all-col" : "all-col grid",
+                    'page-header',
+                    'popover-hint',
+                    isArena ? 'all-col' : 'all-col grid',
                   )}
                 >
-                  {beforeBody.map((BodyComponent) => (
+                  {beforeBody.map(BodyComponent => (
                     <BodyComponent {...componentData} />
                   ))}
                 </section>
@@ -2063,14 +2063,14 @@ export function renderPage(
               <section
                 class={classNames(
                   undefined,
-                  "page-content",
-                  slug === "index" ? "side-col" : isArena ? "all-col" : "grid all-col",
+                  'page-content',
+                  slug === 'index' ? 'side-col' : isArena ? 'all-col' : 'grid all-col',
                 )}
                 {...contentAttrs}
               >
                 {sidebar.length > 0 && (
                   <aside class="aside-container left-col">
-                    {sidebar.map((BodyComponent) => (
+                    {sidebar.map(BodyComponent => (
                       <BodyComponent {...componentData} />
                     ))}
                   </aside>
@@ -2089,12 +2089,12 @@ export function renderPage(
                 <section class="page-footer popover-hint grid all-col">
                   {retrievalNodes.length > 0 &&
                     htmlToJsx(componentData.fileData.filePath!, {
-                      type: "root",
+                      type: 'root',
                       children: retrievalNodes,
                     } as Node)}
                   {afterBody.length > 0 &&
-                    afterBody.map((BodyComponent) => <BodyComponent {...componentData} />)}
-                  {slug !== "index" && <Footer {...componentData} />}
+                    afterBody.map(BodyComponent => <BodyComponent {...componentData} />)}
+                  {slug !== 'index' && <Footer {...componentData} />}
                 </section>
               )}
             </div>
@@ -2102,15 +2102,15 @@ export function renderPage(
           </main>
         </body>
         {pageResources.js
-          .filter((resource) => resource.loadTime === "afterDOMReady")
-          .map((res) => JSResourceToScriptElement(res, true))}
+          .filter(resource => resource.loadTime === 'afterDOMReady')
+          .map(res => JSResourceToScriptElement(res, true))}
         {/* Cloudflare Web Analytics */}
         {!ctx.argv.serve && !ctx.argv.watch && (
           <script
             defer
-            src={"https://static.cloudflareinsights.com/beacon.min.js"}
+            src={'https://static.cloudflareinsights.com/beacon.min.js'}
             data-cf-beacon='{"token": "3b6a9ecda4294f8bb5770c2bfb44078c"}'
-            crossOrigin={"anonymous"}
+            crossOrigin={'anonymous'}
             data-persist={true}
           />
         )}
@@ -2122,7 +2122,7 @@ export function renderPage(
 
 function updateStreamDataFromTree(tree: Root, componentData: QuartzComponentProps): void {
   const fileData = componentData.fileData
-  if (fileData.slug !== "stream") return
+  if (fileData.slug !== 'stream') return
 
   const streamData = fileData.streamData
   if (!streamData) return
@@ -2130,15 +2130,15 @@ function updateStreamDataFromTree(tree: Root, componentData: QuartzComponentProp
   type StreamMarker = { node: ElementContent; index: number }
   const nodeBuckets = new Map<string, StreamMarker[]>()
 
-  visit(tree, "element", (node: Element) => {
+  visit(tree, 'element', (node: Element) => {
     const data = node.data as Record<string, unknown> | undefined
     if (!data) return
 
     const entryId = data.streamEntryId
-    if (typeof entryId !== "string") return
+    if (typeof entryId !== 'string') return
 
     const rawIndex = data.streamEntryContentIndex
-    const index = typeof rawIndex === "number" ? rawIndex : Number.POSITIVE_INFINITY
+    const index = typeof rawIndex === 'number' ? rawIndex : Number.POSITIVE_INFINITY
 
     const bucket = nodeBuckets.get(entryId)
     if (bucket) {

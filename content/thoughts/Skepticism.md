@@ -1,5 +1,5 @@
 ---
-date: "2025-12-18"
+date: '2025-12-18'
 description: cartesian skepticism employing the closure principles
 id: Skepticism
 modified: 2025-12-18 03:15:18 GMT-05:00

@@ -1,7 +1,7 @@
-import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js"
-import { McpAgent } from "agents/mcp"
-import { z } from "zod"
-import { semanticSearch } from "./semantic"
+import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
+import { McpAgent } from 'agents/mcp'
+import { z } from 'zod'
+import { semanticSearch } from './semantic'
 
 type ContentIndexEntry = {
   slug: string
@@ -19,17 +19,17 @@ type ContentIndexEntry = {
 
 type SimplifiedIndex = Record<string, ContentIndexEntry>
 
-const INDEX_PATH = "/static/contentIndex.json"
+const INDEX_PATH = '/static/contentIndex.json'
 
 async function fetchAssetText(path: string): Promise<string> {
-  const u = new URL(path.startsWith("/") ? path : `/${path}`, "https://aarnphm.xyz")
-  const res = await fetch(u.toString(), { method: "GET" })
+  const u = new URL(path.startsWith('/') ? path : `/${path}`, 'https://aarnphm.xyz')
+  const res = await fetch(u.toString(), { method: 'GET' })
   if (!res.ok) throw new Error(`asset ${u.pathname} ${res.status}`)
   return await res.text()
 }
 
 function getBaseUrl(): string {
-  return "https://aarnphm.xyz"
+  return 'https://aarnphm.xyz'
 }
 
 let cachedIndex: { data: SimplifiedIndex; ts: number } | null = null
@@ -43,7 +43,7 @@ async function loadIndex(): Promise<SimplifiedIndex> {
 }
 
 function ensureMdPath(p: string): string {
-  if (p.endsWith(".md") || p.endsWith(".mdx") || p.endsWith(".txt")) return p
+  if (p.endsWith('.md') || p.endsWith('.mdx') || p.endsWith('.txt')) return p
   return `${p}.md`
 }
 
@@ -55,21 +55,21 @@ function tokenize(input: string): string[] {
   return input
     .toLowerCase()
     .split(/[^a-z0-9]+/)
-    .map((segment) => segment.trim())
+    .map(segment => segment.trim())
     .filter(Boolean)
 }
 
 function expandTokens(tokens: string[]): string[] {
   const expanded = new Set(tokens)
   for (const token of tokens) {
-    if (token.length > 3 && token.endsWith("s")) expanded.add(token.slice(0, -1))
-    if (token.length > 4 && token.endsWith("es")) expanded.add(token.slice(0, -2))
+    if (token.length > 3 && token.endsWith('s')) expanded.add(token.slice(0, -1))
+    if (token.length > 4 && token.endsWith('es')) expanded.add(token.slice(0, -2))
   }
   return Array.from(expanded)
 }
 
 function bigrams(input: string): string[] {
-  const normalized = input.replace(/[^a-z0-9]/gi, "")
+  const normalized = input.replace(/[^a-z0-9]/gi, '')
   const grams: string[] = []
   for (let i = 0; i < normalized.length - 1; i += 1) grams.push(normalized.slice(i, i + 2))
   return grams
@@ -101,7 +101,7 @@ function computeFieldScore(
 ): number {
   if (!value) return 0
   const lower = value.toLowerCase()
-  const phrase = tokens.join(" ")
+  const phrase = tokens.join(' ')
   let score = 0
   if (phrase && lower === phrase) score += weights.exact * tokens.length
   else if (phrase && lower.includes(phrase)) score += weights.partial * tokens.length
@@ -127,7 +127,7 @@ function computeListScore(
 }
 
 function escapeRegex(token: string): string {
-  return token.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
+  return token.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
 }
 
 function contentTermScore(content: string | undefined, tokens: string[], phrase: string): number {
@@ -135,7 +135,7 @@ function contentTermScore(content: string | undefined, tokens: string[], phrase:
   const lower = content.toLowerCase()
   let score = 0
   if (phrase && phrase.length > 3) {
-    const phraseRegex = new RegExp(`\\b${escapeRegex(phrase)}\\b`, "g")
+    const phraseRegex = new RegExp(`\\b${escapeRegex(phrase)}\\b`, 'g')
     const matches = lower.match(phraseRegex)
     if (matches) score += matches.length * 4
   }
@@ -143,7 +143,7 @@ function contentTermScore(content: string | undefined, tokens: string[], phrase:
   const tokenSet = new Set(contentTokens)
   let coverage = 0
   for (const token of tokens) {
-    const regex = new RegExp(`\\b${escapeRegex(token)}(?:[a-z0-9]+)?\\b`, "g")
+    const regex = new RegExp(`\\b${escapeRegex(token)}(?:[a-z0-9]+)?\\b`, 'g')
     const matches = lower.match(regex)
     if (matches) score += Math.min(matches.length, 6) * 1.2
     if (tokenSet.has(token)) coverage += 1
@@ -169,7 +169,7 @@ function scoreEntry(e: ContentIndexEntry, query: string): number {
   const baseTokens = tokenize(query)
   if (baseTokens.length === 0) return 0
   const tokens = expandTokens(baseTokens)
-  const phrase = baseTokens.join(" ")
+  const phrase = baseTokens.join(' ')
 
   let score = 0
   score += computeFieldScore(e.slug, tokens, { exact: 18, partial: 7, fuzzy: 4 })
@@ -187,15 +187,15 @@ function scoreEntry(e: ContentIndexEntry, query: string): number {
 type Props = { login: string; name: string; email: string; accessToken: string }
 
 export class Garden extends McpAgent<Env, Record<string, never>, Props> {
-  server = new McpServer({ name: "aarnphm.xyz", version: "1.0.0" })
+  server = new McpServer({ name: 'aarnphm.xyz', version: '1.0.0' })
 
   async init() {
     this.server.tool(
-      "search",
+      'search',
       `semantic search over aaron's notes. returns ranked results by embedding similarity. use retrieve to read full content of hits.`,
       {
-        query: z.string().describe("Search query to find relevant content"),
-        limit: z.number().optional().describe("Maximum number of results to return (default: 8)"),
+        query: z.string().describe('Search query to find relevant content'),
+        limit: z.number().optional().describe('Maximum number of results to return (default: 8)'),
       },
       async (args: { query: string; limit?: number }) => {
         const { query, limit = 8 } = args as { query: string; limit?: number }
@@ -210,18 +210,18 @@ export class Garden extends McpAgent<Env, Record<string, never>, Props> {
             const mdPath = ensureMdPath(`/${slug}`)
             return {
               slug,
-              path: mdPath.replace(/^\//, ""),
+              path: mdPath.replace(/^\//, ''),
               url: `${base}${mdPath}`,
               title: entry?.title || slug,
               score,
             }
           })
 
-          return { content: [{ type: "text", text: JSON.stringify({ results }) }] }
+          return { content: [{ type: 'text', text: JSON.stringify({ results }) }] }
         } catch {
           const idx = await loadIndex()
           const ranked = Object.values(idx)
-            .map((e) => ({ e, score: scoreEntry(e, query) }))
+            .map(e => ({ e, score: scoreEntry(e, query) }))
             .filter(({ score }) => score > 0)
             .sort((a, b) => b.score - a.score)
             .slice(0, limit)
@@ -229,7 +229,7 @@ export class Garden extends McpAgent<Env, Record<string, never>, Props> {
               const mdPath = ensureMdPath(`/${e.slug}`)
               return {
                 slug: e.slug,
-                path: mdPath.replace(/^\//, ""),
+                path: mdPath.replace(/^\//, ''),
                 url: `${base}${mdPath}`,
                 title: e.title,
                 score,
@@ -237,14 +237,14 @@ export class Garden extends McpAgent<Env, Record<string, never>, Props> {
             })
 
           return {
-            content: [{ type: "text", text: JSON.stringify({ results: ranked, fallback: true }) }],
+            content: [{ type: 'text', text: JSON.stringify({ results: ranked, fallback: true }) }],
           }
         }
       },
     )
 
     this.server.tool(
-      "retrieve",
+      'retrieve',
       `fetch full markdown content of a note. use after search/rabbithole to read what you found.`,
       {
         slug: z
@@ -260,7 +260,7 @@ export class Garden extends McpAgent<Env, Record<string, never>, Props> {
         } catch {
           throw new Error(`not found: ${slug}`)
         }
-        return { content: [{ type: "text", text }] }
+        return { content: [{ type: 'text', text }] }
       },
     )
   }

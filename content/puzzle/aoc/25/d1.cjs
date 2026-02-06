@@ -1,6 +1,6 @@
-const fs = require("fs")
+const fs = require('fs')
 
-const input = fs.readFileSync("./d1.txt", "utf-8").trim().split("\n")
+const input = fs.readFileSync('./d1.txt', 'utf-8').trim().split('\n')
 
 function p1(i) {
   let position = 50
@@ -9,7 +9,7 @@ function p1(i) {
   for (const line of i) {
     const direction = line[0]
     const distance = parseInt(line.slice(1), 10)
-    if (direction === "R") {
+    if (direction === 'R') {
       position = (position + distance) % 100
     } else {
       position = (((position - distance) % 100) + 100) % 100
@@ -21,7 +21,7 @@ function p1(i) {
 }
 
 function zeros(position, direction, distance) {
-  if (direction === "R") {
+  if (direction === 'R') {
     return Math.floor((position + distance) / 100)
   } else {
     if (position === 0) {
@@ -41,7 +41,7 @@ function p2(i) {
     const distance = parseInt(line.slice(1), 10)
 
     count += zeros(position, direction, distance)
-    if (direction === "R") {
+    if (direction === 'R') {
       position = (position + distance) % 100
     } else {
       position = (((position - distance) % 100) + 100) % 100

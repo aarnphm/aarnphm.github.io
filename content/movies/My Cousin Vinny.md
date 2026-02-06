@@ -5,7 +5,7 @@ description: brooklyn lawyer defending cousin in alabama murder trial—pesci di
 director: Jonathan Lynn
 id: my-cousin-vinny
 modified: 2025-10-29 02:14:54 GMT-04:00
-posters: "[[movies/posters/my-cousin-vinny.jpg]]"
+posters: '[[movies/posters/my-cousin-vinny.jpg]]'
 rating: 7.6
 status: recurring
 studio: 20th century fox

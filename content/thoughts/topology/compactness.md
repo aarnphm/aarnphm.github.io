@@ -1,5 +1,5 @@
 ---
-date: "2025-11-01"
+date: '2025-11-01'
 description: compactness, connectedness, lindelöf, local compactness aligned with mit 18.901 weeks 6–7.
 id: topology-compactness
 modified: 2025-11-02 04:17:38 GMT-05:00

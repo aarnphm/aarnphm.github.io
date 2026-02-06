@@ -1,5 +1,5 @@
 ---
-date: "2024-01-10"
+date: '2024-01-10'
 description: collections of words that I try to put into somewhat of a coherent manner.
 id: index
 modified: 2025-11-21 06:01:38 GMT-05:00

@@ -15,5 +15,5 @@ category:
   - o/life
   - drama
 description: post-grad drift as a kind of paralysis - baumbach's debut about friends who refuse to leave the nest.
-posters: "[[movies/posters/Kicking and Screaming.jpg]]"
+posters: '[[movies/posters/Kicking and Screaming.jpg]]'
 ---

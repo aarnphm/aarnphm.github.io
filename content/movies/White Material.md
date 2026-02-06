@@ -13,5 +13,5 @@ category:
   - drama
   - politics
 description: colonial aftershock on a coffee plantation - denis films white fragility against civil war.
-posters: "[[movies/posters/white-material.jpg]]"
+posters: '[[movies/posters/white-material.jpg]]'
 ---

@@ -1,5 +1,5 @@
 ---
-date: "2025-09-18"
+date: '2025-09-18'
 description: chapter 7
 id: supply chain analytics and capacity growth
 modified: 2025-10-29 02:15:58 GMT-04:00

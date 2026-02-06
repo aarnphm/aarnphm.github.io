@@ -1,11 +1,11 @@
 ---
-date: "2025-08-13"
+date: '2025-08-13'
 description: Mixture of Expert
 id: MoE
 modified: 2026-01-08 14:24:57 GMT-05:00
 seealso:
-  - "[[thoughts/muon|muon]]"
-  - "[[thoughts/optimization#muon]]"
+  - '[[thoughts/muon|muon]]'
+  - '[[thoughts/optimization#muon]]'
 tags:
   - ml
   - inference

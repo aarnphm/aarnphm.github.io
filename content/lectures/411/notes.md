@@ -1,5 +1,5 @@
 ---
-date: "2025-09-12"
+date: '2025-09-12'
 description: linear algebra notes
 id: notes
 modified: 2025-11-11 07:00:35 GMT-05:00

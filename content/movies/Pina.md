@@ -14,5 +14,5 @@ category:
   - arts
   - o/life
 description: wenders translates pina bausch into 3d space - bodies narrate grief, joy, and memory without dialogue.
-posters: "[[movies/posters/Pina.jpg]]"
+posters: '[[movies/posters/Pina.jpg]]'
 ---

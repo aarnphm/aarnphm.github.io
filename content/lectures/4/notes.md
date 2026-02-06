@@ -1,5 +1,5 @@
 ---
-date: "2025-09-05"
+date: '2025-09-05'
 description: 1/n of acceptance-rejection
 id: notes
 modified: 2025-11-11 07:01:15 GMT-05:00

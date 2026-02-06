@@ -12,8 +12,8 @@ subcategory:
   - love
   - o/relationship
 author:
-  - "[[thoughts/Simone de Beauvoir|Simone de Beauvoir]]"
-posters: "[[library/posters/memoirs-of-a-dutiful-daughter.jpg]]"
+  - '[[thoughts/Simone de Beauvoir|Simone de Beauvoir]]'
+posters: '[[library/posters/memoirs-of-a-dutiful-daughter.jpg]]'
 category:
   - philosophy
 translator:

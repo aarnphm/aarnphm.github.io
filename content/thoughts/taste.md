@@ -1,5 +1,5 @@
 ---
-date: "2024-02-19"
+date: '2024-02-19'
 description: aesthetic judgment shaped by internal value systems rather than outsourced approval from committees and social norms.
 id: taste
 modified: 2025-12-30 19:56:43 GMT-05:00

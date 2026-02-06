@@ -10,7 +10,7 @@ subcategory:
   - autobiography
 author:
   - Jim Holt
-posters: "[[library/posters/when-einstein.jpg]]"
+posters: '[[library/posters/when-einstein.jpg]]'
 notebook:
 category:
   - p/nf

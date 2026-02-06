@@ -17,5 +17,5 @@ category:
   - drama
   - o/vintage
 description: 1830s paris theater world - a courtesan is loved by a mime, an actor, a criminal, and an aristocrat, love and performance collapsing into the same stagecraft.
-posters: "[[movies/posters/children-of-paradise.jpg]]"
+posters: '[[movies/posters/children-of-paradise.jpg]]'
 ---

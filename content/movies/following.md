@@ -6,7 +6,7 @@ description: nolan's debut—a writer stalking strangers to steal their stories,
 director: Christopher Nolan
 id: following
 modified: 2025-10-29 02:15:03 GMT-04:00
-posters: "[[movies/posters/following.jpg]]"
+posters: '[[movies/posters/following.jpg]]'
 rating: 7.4
 status: recurring
 studio: syncopy

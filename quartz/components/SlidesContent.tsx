@@ -1,14 +1,14 @@
-import { ElementContent, Root, Element } from "hast"
-import { h } from "hastscript"
-import { visit } from "unist-util-visit"
-import type { SlideSection } from "../plugins/transformers/slides"
+import { ElementContent, Root, Element } from 'hast'
+import { h } from 'hastscript'
+import { visit } from 'unist-util-visit'
+import type { SlideSection } from '../plugins/transformers/slides'
 import {
   QuartzComponent,
   QuartzComponentConstructor,
   QuartzComponentProps,
-} from "../types/component"
-import { clone } from "../util/clone"
-import { htmlToJsx } from "../util/jsx"
+} from '../types/component'
+import { clone } from '../util/clone'
+import { htmlToJsx } from '../util/jsx'
 import {
   FullSlug,
   joinSegments,
@@ -16,11 +16,11 @@ import {
   stripSlashes,
   isAbsoluteURL,
   resolveRelative,
-} from "../util/path"
-import { transcludeFinal } from "./renderPage"
+} from '../util/path'
+import { transcludeFinal } from './renderPage'
 // @ts-ignore
-import slideScript from "./scripts/slides.inline"
-import style from "./styles/slides.scss"
+import slideScript from './scripts/slides.inline'
+import style from './styles/slides.scss'
 
 export default (() => {
   const SlidesContent: QuartzComponent = (componentData: QuartzComponentProps) => {
@@ -34,33 +34,33 @@ export default (() => {
 
     // Re-resolve links so they are correct from <slug>/slides
     const origSlug = fileData.slug as FullSlug
-    const slidesSlug = joinSegments(origSlug, "slides") as FullSlug
+    const slidesSlug = joinSegments(origSlug, 'slides') as FullSlug
     const baseForUrl = `https://local/${stripSlashes(origSlug)}.html`
 
     const rebaseAttr = (val: string): string => {
       if (!val) return val
-      if (val.startsWith("#")) return val
-      if (val.startsWith("mailto:") || val.startsWith("tel:") || val.startsWith("data:")) return val
-      if (val.startsWith("/static")) return val
+      if (val.startsWith('#')) return val
+      if (val.startsWith('mailto:') || val.startsWith('tel:') || val.startsWith('data:')) return val
+      if (val.startsWith('/static')) return val
       if (isAbsoluteURL(val)) return val
 
       try {
         const u = new URL(val, baseForUrl)
-        const absolutePath = u.pathname + (u.hash ?? "")
+        const absolutePath = u.pathname + (u.hash ?? '')
         return joinSegments(pathToRoot(slidesSlug), stripSlashes(absolutePath))
       } catch {
         return val
       }
     }
 
-    visit(processed, "element", (node: Element) => {
+    visit(processed, 'element', (node: Element) => {
       const props = node.properties ?? {}
       if (props.href) props.href = rebaseAttr(String(props.href))
       if (props.src) props.src = rebaseAttr(String(props.src))
     })
 
     const toJsx = (nodes: ElementContent[]) => {
-      const container = h("div", nodes as ElementContent[])
+      const container = h('div', nodes as ElementContent[])
       return htmlToJsx(filePath!, container)
     }
 
@@ -79,7 +79,7 @@ export default (() => {
             >
               {idx === 0 && (
                 <p>
-                  source:{" "}
+                  source:{' '}
                   <a
                     href={resolveRelative(slidesSlug, origSlug)}
                     class="internal"
@@ -88,7 +88,7 @@ export default (() => {
                   >
                     text
                   </a>
-                  ,{" "}
+                  ,{' '}
                   <a data-no-popover data-slug="/" href="/">
                     home
                   </a>

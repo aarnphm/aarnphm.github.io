@@ -1,5 +1,5 @@
 ---
-date: "2025-10-05"
+date: '2025-10-05'
 description: RISC-V based AI accelerators with programmable architecture
 id: Tenstorrent
 modified: 2025-11-10 08:39:32 GMT-05:00

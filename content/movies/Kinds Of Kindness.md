@@ -7,7 +7,7 @@ description: three stories about control and devotion—lanthimos anthology film
 director: Yorgos Lanthimos
 id: kinds-of-kindness
 modified: 2025-10-29 02:14:52 GMT-04:00
-posters: "[[movies/posters/kinds-of-kindness.jpg]]"
+posters: '[[movies/posters/kinds-of-kindness.jpg]]'
 status: to watch
 studio: searchlight
 tags:

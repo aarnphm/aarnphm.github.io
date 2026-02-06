@@ -12,7 +12,7 @@ subcategory:
   - metaphysics
 author:
   - Simon Blackburn
-posters: "[[library/posters/think.jpg]]"
+posters: '[[library/posters/think.jpg]]'
 category:
   - philosophy
 translator: null

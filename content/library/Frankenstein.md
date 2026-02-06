@@ -10,7 +10,7 @@ subcategory:
   - victorian
 author:
   - Mary W. Shelley
-posters: "[[library/posters/frankenstein.jpg]]"
+posters: '[[library/posters/frankenstein.jpg]]'
 id: Frankenstein
 year: 1831
 category:

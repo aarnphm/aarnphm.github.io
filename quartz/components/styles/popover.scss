@@ -1,4 +1,4 @@
-@use "../../styles/variables.scss" as *;
+@use '../../styles/variables.scss' as *;
 
 @keyframes dropin {
   0% {
@@ -72,13 +72,13 @@
   }
 
   & > .popover-inner[data-content-type] {
-    &[data-content-type*="pdf"],
-    &[data-content-type*="image"] {
+    &[data-content-type*='pdf'],
+    &[data-content-type*='image'] {
       padding: 0;
       max-height: 100%;
     }
 
-    &[data-content-type*="image"] {
+    &[data-content-type*='image'] {
       img {
         margin: 0;
         border-radius: var(--radius-none);
@@ -86,7 +86,7 @@
       }
     }
 
-    &[data-content-type*="pdf"] {
+    &[data-content-type*='pdf'] {
       iframe {
         width: 100%;
       }

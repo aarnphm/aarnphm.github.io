@@ -1,5 +1,5 @@
 ---
-date: "2024-10-11"
+date: '2024-10-11'
 description: generative poetry using rita grammar rules to create infinite variations of dog-themed verses.
 id: infinite poem
 modified: 2025-12-24 23:21:53 GMT-05:00
@@ -10,21 +10,21 @@ title: infinite poem
 
 ```js
 const rules = {
-  start: "$line1\n    $line2\n$line3\n  $line4\n$line5",
-  line1: "What shall a $dog_breed do?",
-  line2: "$verbs through the $nature_place,",
-  line3: "Then she $verbs her $dog_feature.",
-  line4: "$human_action, I $human_verb",
-  line5: "This $adj $noun of $emotion.",
-  dog_breed: "labrador (4) | terrier | shepherd | beagle | poodle",
-  dog_feature: "floppy ears | wagging tail | wet nose | playful eyes | soft fur",
-  verbs: "runs | leaps | bounds | trots | dashes",
-  nature_place: "meadow | forest | garden | park | beach",
-  human_action: "Watching | Smiling | Laughing | Wondering | Marveling",
-  human_verb: "contemplate | ponder | appreciate | cherish | admire",
-  adj: "simple | joyful | precious | fleeting | eternal",
-  noun: "moment | bond | connection | friendship | companionship",
-  emotion: "love | happiness | wonder | gratitude | peace",
+  start: '$line1\n    $line2\n$line3\n  $line4\n$line5',
+  line1: 'What shall a $dog_breed do?',
+  line2: '$verbs through the $nature_place,',
+  line3: 'Then she $verbs her $dog_feature.',
+  line4: '$human_action, I $human_verb',
+  line5: 'This $adj $noun of $emotion.',
+  dog_breed: 'labrador (4) | terrier | shepherd | beagle | poodle',
+  dog_feature: 'floppy ears | wagging tail | wet nose | playful eyes | soft fur',
+  verbs: 'runs | leaps | bounds | trots | dashes',
+  nature_place: 'meadow | forest | garden | park | beach',
+  human_action: 'Watching | Smiling | Laughing | Wondering | Marveling',
+  human_verb: 'contemplate | ponder | appreciate | cherish | admire',
+  adj: 'simple | joyful | precious | fleeting | eternal',
+  noun: 'moment | bond | connection | friendship | companionship',
+  emotion: 'love | happiness | wonder | gratitude | peace',
 }
 
 // Generate and print the poem 5 times

@@ -1,22 +1,22 @@
-import { Root } from "hast"
-import { h } from "hastscript"
-import path from "path"
-import { defaultContentPageLayout, sharedPageComponents } from "../../../quartz.layout"
-import { FullPageLayout } from "../../cfg"
-import { Content } from "../../components"
-import CanvasComponent from "../../components/Canvas"
-import { pageResources, renderPage } from "../../components/renderPage"
-import { QuartzComponentProps } from "../../types/component"
-import { QuartzEmitterPlugin } from "../../types/plugin"
-import { pathToRoot, simplifySlug, SimpleSlug, slugifyFilePath } from "../../util/path"
-import { collectCanvasMeta } from "../transformers/canvas"
-import { QuartzPluginData } from "../vfile"
-import { write } from "./helpers"
+import { Root } from 'hast'
+import { h } from 'hastscript'
+import path from 'path'
+import { defaultContentPageLayout, sharedPageComponents } from '../../../quartz.layout'
+import { FullPageLayout } from '../../cfg'
+import { Content } from '../../components'
+import CanvasComponent from '../../components/Canvas'
+import { pageResources, renderPage } from '../../components/renderPage'
+import { QuartzComponentProps } from '../../types/component'
+import { QuartzEmitterPlugin } from '../../types/plugin'
+import { pathToRoot, simplifySlug, SimpleSlug, slugifyFilePath } from '../../util/path'
+import { collectCanvasMeta } from '../transformers/canvas'
+import { QuartzPluginData } from '../vfile'
+import { write } from './helpers'
 
-export const CanvasPage: QuartzEmitterPlugin<Partial<FullPageLayout>> = (userOpts) => {
-  const header = sharedPageComponents.header.filter((component) => {
-    const name = component.displayName || component.name || ""
-    return name !== "Breadcrumbs" && name !== "StackedNotes"
+export const CanvasPage: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts => {
+  const header = sharedPageComponents.header.filter(component => {
+    const name = component.displayName || component.name || ''
+    return name !== 'Breadcrumbs' && name !== 'StackedNotes'
   })
 
   const opts: FullPageLayout = {
@@ -40,7 +40,7 @@ export const CanvasPage: QuartzEmitterPlugin<Partial<FullPageLayout>> = (userOpt
   } = opts
 
   return {
-    name: "CanvasPage",
+    name: 'CanvasPage',
     getQuartzComponents() {
       return [Head, ...Header, ...BeforeBody, pageBody, ...afterBody, ...sidebar, Footer]
     },
@@ -48,7 +48,7 @@ export const CanvasPage: QuartzEmitterPlugin<Partial<FullPageLayout>> = (userOpt
     async *emit(ctx, content, resources) {
       const { cfg } = ctx
 
-      const allFiles = content.map((c) => c[1].data)
+      const allFiles = content.map(c => c[1].data)
 
       for (const [_tree, file] of content) {
         // Only process files marked as canvas files
@@ -59,7 +59,7 @@ export const CanvasPage: QuartzEmitterPlugin<Partial<FullPageLayout>> = (userOpt
 
         const jscastMetadata = collectCanvasMeta(jcast)
 
-        yield write({ ctx, content: JSON.stringify(jscastMetadata), slug, ext: ".meta.json" })
+        yield write({ ctx, content: JSON.stringify(jscastMetadata), slug, ext: '.meta.json' })
 
         // default canvas configuration
         const defaultConfig = {
@@ -74,22 +74,22 @@ export const CanvasPage: QuartzEmitterPlugin<Partial<FullPageLayout>> = (userOpt
           previewMaxLength: 300,
         }
 
-        const resourceBase = slug.startsWith("/") ? slug : `/${slug}`
+        const resourceBase = slug.startsWith('/') ? slug : `/${slug}`
 
         const canvasElement = h(
-          "div.canvas-container",
+          'div.canvas-container',
           {
-            "data-canvas": `${resourceBase}.canvas`,
-            "data-meta": `${resourceBase}.meta.json`,
-            "data-cfg": JSON.stringify(defaultConfig),
-            "data-canvas-bounds": JSON.stringify(jcast.data.bounds),
-            "data-canvas-title": path.basename(file.data.filePath!, ".canvas"),
+            'data-canvas': `${resourceBase}.canvas`,
+            'data-meta': `${resourceBase}.meta.json`,
+            'data-cfg': JSON.stringify(defaultConfig),
+            'data-canvas-bounds': JSON.stringify(jcast.data.bounds),
+            'data-canvas-title': path.basename(file.data.filePath!, '.canvas'),
             style: `position: relative;`,
           },
-          [h("div.canvas-loading", "Loading canvas...")],
+          [h('div.canvas-loading', 'Loading canvas...')],
         )
 
-        const tree: Root = { type: "root", children: [canvasElement] }
+        const tree: Root = { type: 'root', children: [canvasElement] }
 
         //@ts-ignore
         const linkedSlugs = (file.data.links ?? []).map(simplifySlug) as SimpleSlug[]
@@ -97,10 +97,10 @@ export const CanvasPage: QuartzEmitterPlugin<Partial<FullPageLayout>> = (userOpt
         const fileData: QuartzPluginData = {
           ...file.data,
           slug,
-          frontmatter: { title: `${slug}.canvas`, tags: ["canvas"], pageLayout: "default" },
+          frontmatter: { title: `${slug}.canvas`, tags: ['canvas'], pageLayout: 'default' },
           description: `Canvas of ${slug}`,
           htmlAst: tree,
-          text: file.data.text ?? "",
+          text: file.data.text ?? '',
           links: linkedSlugs,
         }
 
@@ -118,7 +118,7 @@ export const CanvasPage: QuartzEmitterPlugin<Partial<FullPageLayout>> = (userOpt
         const content = renderPage(ctx, slug, componentData, opts, externalResources, false)
 
         // write HTML page to output
-        yield write({ ctx, content, slug, ext: ".html" })
+        yield write({ ctx, content, slug, ext: '.html' })
       }
     },
   }

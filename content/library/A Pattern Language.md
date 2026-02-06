@@ -10,11 +10,11 @@ description: a handbook of architectural and urban design patterns showing how t
 external: https://patternlanguage.cc/
 id: A Pattern Language
 modified: 2025-10-29 02:14:26 GMT-04:00
-posters: "[[library/posters/a-pattern-language.jpg]]"
+posters: '[[library/posters/a-pattern-language.jpg]]'
 status: to read
 subcategory: communal
 tags:
   - r/pattern
-title: "A Pattern Language: Towns, Building, Construction"
+title: 'A Pattern Language: Towns, Building, Construction'
 year: 1977
 ---

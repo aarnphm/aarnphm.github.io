@@ -1,6 +1,6 @@
-@use "sass:map";
-@use "../../styles/variables" as *;
-@use "../../styles/mixin" as *;
+@use 'sass:map';
+@use '../../styles/variables' as *;
+@use '../../styles/mixin' as *;
 
 .stacked-copy {
   display: none !important;
@@ -50,7 +50,7 @@
     display: none;
   }
 
-  span[aria-checked="true"] & {
+  span[aria-checked='true'] & {
     .single-view-icon {
       display: none;
     }
@@ -166,7 +166,7 @@ a {
           border-left: none;
         }
 
-        &[data-slug="notes"] {
+        &[data-slug='notes'] {
           .page-footer {
             display: none;
           }

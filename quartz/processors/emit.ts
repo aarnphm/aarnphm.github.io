@@ -1,10 +1,10 @@
-import { styleText } from "node:util"
-import { getStaticResourcesFromPlugins } from "../plugins"
-import { ProcessedContent } from "../plugins/vfile"
-import { BuildCtx } from "../util/ctx"
-import { QuartzLogger } from "../util/log"
-import { PerfTimer } from "../util/perf"
-import { trace } from "../util/trace"
+import { styleText } from 'node:util'
+import { getStaticResourcesFromPlugins } from '../plugins'
+import { ProcessedContent } from '../plugins/vfile'
+import { BuildCtx } from '../util/ctx'
+import { QuartzLogger } from '../util/log'
+import { PerfTimer } from '../util/perf'
+import { trace } from '../util/trace'
 
 export async function emitContent(ctx: BuildCtx, content: ProcessedContent[]) {
   const { argv, cfg } = ctx
@@ -16,7 +16,7 @@ export async function emitContent(ctx: BuildCtx, content: ProcessedContent[]) {
   let emittedFiles = 0
   const staticResources = getStaticResourcesFromPlugins(ctx)
   await Promise.all(
-    cfg.plugins.emitters.map(async (emitter) => {
+    cfg.plugins.emitters.map(async emitter => {
       try {
         const emitted = await emitter.emit(ctx, content, staticResources)
         if (Symbol.asyncIterator in emitted) {
@@ -26,7 +26,7 @@ export async function emitContent(ctx: BuildCtx, content: ProcessedContent[]) {
             if (ctx.argv.verbose) {
               console.log(`[emit:${emitter.name}] ${file}`)
             } else {
-              log.updateText(`${emitter.name} -> ${styleText("gray", file)}`)
+              log.updateText(`${emitter.name} -> ${styleText('gray', file)}`)
             }
           }
         } else {
@@ -36,7 +36,7 @@ export async function emitContent(ctx: BuildCtx, content: ProcessedContent[]) {
             if (ctx.argv.verbose) {
               console.log(`[emit:${emitter.name}] ${file}`)
             } else {
-              log.updateText(`${emitter.name} -> ${styleText("gray", file)}`)
+              log.updateText(`${emitter.name} -> ${styleText('gray', file)}`)
             }
           }
         }

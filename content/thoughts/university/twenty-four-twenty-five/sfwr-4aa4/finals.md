@@ -1,5 +1,5 @@
 ---
-date: "2024-12-16"
+date: '2024-12-16'
 description: final exam review covering laplace and z-transforms, poles and zeros, pid control, and sampled-data systems.
 id: finals
 modified: 2025-10-29 02:16:06 GMT-04:00

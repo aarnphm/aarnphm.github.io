@@ -1,10 +1,10 @@
 ---
-date: "2025-12-13"
+date: '2025-12-13'
 description: and logical coherency
 id: rationality
 modified: 2025-12-18 01:48:35 GMT-05:00
 seealso:
-  - "[[thoughts/functionalism]]"
+  - '[[thoughts/functionalism]]'
 socials:
   jkcarlsmith: https://joecarlsmith.com/category/rationality/
   lw: https://www.lesswrong.com/w/lesswrong-canon-on-rationality

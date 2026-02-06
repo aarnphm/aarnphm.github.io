@@ -10,7 +10,7 @@ id: Waiting for God
 modified: 2025-12-01 20:06:42 GMT-05:00
 notebook:
 pdf: https://antilogicalism.com/wp-content/uploads/2019/04/waiting-god.pdf
-posters: "[[library/posters/waiting-for-god.webp]]"
+posters: '[[library/posters/waiting-for-god.webp]]'
 status: finished
 subcategory:
   - theology

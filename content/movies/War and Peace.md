@@ -17,5 +17,5 @@ category:
   - history
   - o/vintage
 description: napoleon's invasion as personal collapse - aristocrats and soldiers orbit love, duty, and death while history grinds them down.
-posters: "[[movies/posters/war-and-peace.jpg]]"
+posters: '[[movies/posters/war-and-peace.jpg]]'
 ---

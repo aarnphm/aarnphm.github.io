@@ -1,10 +1,10 @@
 ---
-date: "2024-02-07"
+date: '2024-02-07'
 description: to go or look through (a place) carefully
 id: Search
 modified: 2026-01-22 12:43:29 GMT-05:00
 seealso:
-  - "[[thoughts/PageRank|PageRank]]"
+  - '[[thoughts/PageRank|PageRank]]'
 tags:
   - technical
 title: Search

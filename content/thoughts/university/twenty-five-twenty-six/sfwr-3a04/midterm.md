@@ -1,5 +1,5 @@
 ---
-date: "2025-03-03"
+date: '2025-03-03'
 description: and designs.
 id: midterm
 modified: 2025-10-29 02:16:02 GMT-04:00

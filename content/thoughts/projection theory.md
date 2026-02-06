@@ -1,5 +1,5 @@
 ---
-date: "2025-11-07"
+date: '2025-11-07'
 description: 18.156 | Spring 2025 | Graduate
 id: projection theory
 modified: 2025-11-07 17:16:23 GMT-05:00

@@ -1,19 +1,19 @@
-import { Element, Properties } from "hast"
-import { fromHtmlIsomorphic } from "hast-util-from-html-isomorphic"
-import { toHtml } from "hast-util-to-html"
-import { h, s } from "hastscript"
-import { Code, Root as MdRoot } from "mdast"
-import { load, tex, dvi2svg } from "node-tikzjax"
-import { visit } from "unist-util-visit"
-import { svgOptions } from "../../components/svg"
-import { QuartzTransformerPlugin } from "../../types/plugin"
+import { Element, Properties } from 'hast'
+import { fromHtmlIsomorphic } from 'hast-util-from-html-isomorphic'
+import { toHtml } from 'hast-util-to-html'
+import { h, s } from 'hastscript'
+import { Code, Root as MdRoot } from 'mdast'
+import { load, tex, dvi2svg } from 'node-tikzjax'
+import { visit } from 'unist-util-visit'
+import { svgOptions } from '../../components/svg'
+import { QuartzTransformerPlugin } from '../../types/plugin'
 
 async function tex2svg(input: string, showConsole: boolean) {
   await load()
   const dvi = await tex(input, {
-    texPackages: { pgfplots: "", amsmath: "intlimits" },
-    tikzLibraries: "arrows.meta,calc,positioning",
-    addToPreamble: "% comment",
+    texPackages: { pgfplots: '', amsmath: 'intlimits' },
+    tikzLibraries: 'arrows.meta,calc,positioning',
+    addToPreamble: '% comment',
     showConsole,
   })
   const svg = await dvi2svg(dvi)
@@ -28,9 +28,9 @@ interface TikzNode {
 }
 
 function parseStyle(meta: string | null | undefined): string {
-  if (!meta) return ""
+  if (!meta) return ''
   const styleMatch = meta.match(/style\s*=\s*["']([^"']+)["']/)
-  return styleMatch ? styleMatch[1] : ""
+  return styleMatch ? styleMatch[1] : ''
 }
 
 const docs = (node: Code): string => JSON.stringify(node.value)
@@ -38,52 +38,52 @@ const docs = (node: Code): string => JSON.stringify(node.value)
 // mainly for reparse from HTML back to MD
 function makeTikzGraph(node: Code, svg: string, style?: string): Element {
   const mathMl = h(
-    "span.tikz-mathml",
+    'span.tikz-mathml',
     h(
-      "math",
-      { xmlns: "http://www.w3.org/1998/Math/MathML" },
+      'math',
+      { xmlns: 'http://www.w3.org/1998/Math/MathML' },
       h(
-        "semantics",
-        h("annotation", { encoding: "application/x-tex" }, { type: "text", value: docs(node) }),
+        'semantics',
+        h('annotation', { encoding: 'application/x-tex' }, { type: 'text', value: docs(node) }),
       ),
     ),
   )
 
   const sourceCodeCopy = h(
-    "figcaption",
-    h("em", [{ type: "text", value: "source code" }]),
+    'figcaption',
+    h('em', [{ type: 'text', value: 'source code' }]),
     h(
-      "button.source-code-button",
+      'button.source-code-button',
       {
-        ariaLabel: "copy source code for this tikz graph",
-        title: "copy source code for this tikz graph",
+        ariaLabel: 'copy source code for this tikz graph',
+        title: 'copy source code for this tikz graph',
       },
       s(
-        "svg.source-icon",
+        'svg.source-icon',
         {
           ...svgOptions,
           width: 12,
           height: 16,
-          viewbox: "0 -4 24 24",
-          fill: "none",
-          stroke: "currentColor",
+          viewbox: '0 -4 24 24',
+          fill: 'none',
+          stroke: 'currentColor',
           strokewidth: 2,
         },
-        s("use", { href: "#code-icon" }),
+        s('use', { href: '#code-icon' }),
       ),
       s(
-        "svg.check-icon",
-        { ...svgOptions, width: 12, height: 16, viewbox: "0 -4 16 16" },
-        s("use", { href: "#github-check" }),
+        'svg.check-icon',
+        { ...svgOptions, width: 12, height: 16, viewbox: '0 -4 16 16' },
+        s('use', { href: '#github-check' }),
       ),
     ),
   )
 
-  const properties: Properties = { "data-remark-tikz": true, style: "" }
+  const properties: Properties = { 'data-remark-tikz': true, style: '' }
   if (style) properties.style = style
 
   return h(
-    "figure.tikz",
+    'figure.tikz',
     properties,
     mathMl,
     fromHtmlIsomorphic(svg, { fragment: true }),
@@ -100,22 +100,22 @@ const defaultOpts: Options = { showConsole: false }
 export const TikzJax: QuartzTransformerPlugin<Options> = (opts?: Options) => {
   const o = { ...defaultOpts, ...opts }
   return {
-    name: "TikzJax",
+    name: 'TikzJax',
     // TODO: maybe we should render client-side instead of server-side? (build-time would increase).
     // We skip tikz transpilation for now during process (takes too long for a file with a lot of tikz graph)
     markdownPlugins({ argv }) {
       if (argv.watch && !argv.force) return []
 
       return [
-        () => async (tree) => {
+        () => async tree => {
           const nodes: TikzNode[] = []
-          visit(tree, "code", (node: Code, index, parent) => {
+          visit(tree, 'code', (node: Code, index, parent) => {
             let { lang, meta, value } = node
-            if (lang === "tikz") {
+            if (lang === 'tikz') {
               const base64Match = meta?.match(/alt\s*=\s*"data:image\/svg\+xml;base64,([^"]+)"/)
               let base64String = undefined
               if (base64Match) {
-                base64String = Buffer.from(base64Match[1], "base64").toString()
+                base64String = Buffer.from(base64Match[1], 'base64').toString()
               }
               nodes.push({
                 index: index as number,
@@ -134,7 +134,7 @@ export const TikzJax: QuartzTransformerPlugin<Options> = (opts?: Options) => {
             const node = parent.children[index] as Code
 
             parent.children.splice(index, 1, {
-              type: "html",
+              type: 'html',
               value: toHtml(makeTikzGraph(node, svg, parseStyle(node?.meta)), {
                 allowDangerousHtml: true,
               }),
@@ -145,7 +145,7 @@ export const TikzJax: QuartzTransformerPlugin<Options> = (opts?: Options) => {
     },
     externalResources() {
       return {
-        css: [{ content: "https://cdn.jsdelivr.net/npm/node-tikzjax@latest/css/fonts.css" }],
+        css: [{ content: 'https://cdn.jsdelivr.net/npm/node-tikzjax@latest/css/fonts.css' }],
       }
     },
   }

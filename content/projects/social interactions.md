@@ -1,6 +1,6 @@
 ---
 category: letters
-date: "2022-01-25"
+date: '2022-01-25'
 description: a la carte
 id: social interactions
 modified: 2025-11-21 12:13:28 GMT-05:00

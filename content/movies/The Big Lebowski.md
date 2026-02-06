@@ -8,7 +8,7 @@ description: stoner mistaken for millionaire dragged into kidnapping plot—coen
 director: Coen Brothers
 id: the-big-lebowski
 modified: 2025-10-29 02:14:56 GMT-04:00
-posters: "[[movies/posters/the-big-lebowski.jpg]]"
+posters: '[[movies/posters/the-big-lebowski.jpg]]'
 rating: 8.1
 status: to watch
 studio: universal

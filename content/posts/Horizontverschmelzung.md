@@ -2,7 +2,7 @@
 date: 2025-11-11
 description: fusion of horizon
 id: Horizontverschmelzung
-image: "[[posts/images/time-flies.webp]]"
+image: '[[posts/images/time-flies.webp]]'
 modified: 2025-11-14 10:02:04 GMT-05:00
 layout: letter-nf
 socials:

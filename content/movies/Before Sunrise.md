@@ -8,7 +8,7 @@ description: one night in vienna stretched into a lifetime's worth of what-ifsâ€
 director: Richard Linklater
 id: before-sunrise
 modified: 2025-10-29 02:14:46 GMT-04:00
-posters: "[[movies/posters/before-sunrise.jpg]]"
+posters: '[[movies/posters/before-sunrise.jpg]]'
 rating: 8.1
 status: to watch
 studio: columbia pictures

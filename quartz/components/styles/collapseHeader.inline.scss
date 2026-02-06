@@ -1,4 +1,4 @@
-@use "../../styles/variables.scss" as *;
+@use '../../styles/variables.scss' as *;
 
 $connector-width: 1px;
 $toggle-gap: 0rem;
@@ -146,7 +146,7 @@ $toggle-gap: 0rem;
       min-width: 0;
     }
 
-    a[data-role="anchor"] {
+    a[data-role='anchor'] {
       margin-left: 0.35rem;
     }
   }
@@ -181,13 +181,13 @@ $toggle-gap: 0rem;
     display: none;
   }
 
-  .collapse-toggle:hover[aria-expanded="true"] .toggle-icons .collapse-icon,
-  .collapse-toggle:focus-visible[aria-expanded="true"] .toggle-icons .collapse-icon {
+  .collapse-toggle:hover[aria-expanded='true'] .toggle-icons .collapse-icon,
+  .collapse-toggle:focus-visible[aria-expanded='true'] .toggle-icons .collapse-icon {
     display: block;
   }
 
-  .collapse-toggle:hover[aria-expanded="false"] .toggle-icons .expand-icon,
-  .collapse-toggle:focus-visible[aria-expanded="false"] .toggle-icons .expand-icon {
+  .collapse-toggle:hover[aria-expanded='false'] .toggle-icons .expand-icon,
+  .collapse-toggle:focus-visible[aria-expanded='false'] .toggle-icons .expand-icon {
     display: block;
   }
 

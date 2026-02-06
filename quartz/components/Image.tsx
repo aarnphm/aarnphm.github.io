@@ -2,16 +2,16 @@ import {
   QuartzComponent,
   QuartzComponentConstructor,
   QuartzComponentProps,
-} from "../types/component"
-import { classNames } from "../util/lang"
+} from '../types/component'
+import { classNames } from '../util/lang'
 // @ts-ignore
-import script from "./scripts/image.inline"
-import style from "./styles/image.scss"
+import script from './scripts/image.inline'
+import style from './styles/image.scss'
 
 export default (() => {
   const Image: QuartzComponent = ({ displayClass }: QuartzComponentProps) => {
     return (
-      <dialog class={classNames(displayClass, "image-popup-modal")} id="image-popup-modal">
+      <dialog class={classNames(displayClass, 'image-popup-modal')} id="image-popup-modal">
         <div class="image-popup-content">
           <button class="image-popup-close" aria-label="Close popup">
             <svg

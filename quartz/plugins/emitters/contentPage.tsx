@@ -1,22 +1,22 @@
-import { Node } from "unist"
-import { defaultContentPageLayout, sharedPageComponents } from "../../../quartz.layout"
-import { FullPageLayout } from "../../cfg"
-import { HeadingsConstructor, Content } from "../../components"
-import HeaderConstructor from "../../components/Header"
+import { Node } from 'unist'
+import { defaultContentPageLayout, sharedPageComponents } from '../../../quartz.layout'
+import { FullPageLayout } from '../../cfg'
+import { HeadingsConstructor, Content } from '../../components'
+import HeaderConstructor from '../../components/Header'
 import {
   pageResources,
   renderPage,
   CuriusContent,
   CuriusFriends,
   CuriusNavigation,
-} from "../../components/renderPage"
-import { QuartzComponentProps } from "../../types/component"
-import { QuartzEmitterPlugin } from "../../types/plugin"
-import { BuildCtx } from "../../util/ctx"
-import { pathToRoot } from "../../util/path"
-import { StaticResources } from "../../util/resources"
-import { QuartzPluginData } from "../vfile"
-import { write } from "./helpers"
+} from '../../components/renderPage'
+import { QuartzComponentProps } from '../../types/component'
+import { QuartzEmitterPlugin } from '../../types/plugin'
+import { BuildCtx } from '../../util/ctx'
+import { pathToRoot } from '../../util/path'
+import { StaticResources } from '../../util/resources'
+import { QuartzPluginData } from '../vfile'
+import { write } from './helpers'
 
 async function processContent(
   ctx: BuildCtx,
@@ -40,10 +40,10 @@ async function processContent(
   }
 
   const content = renderPage(ctx, slug, componentData, opts, externalResources, false)
-  return write({ ctx, content, slug, ext: ".html" })
+  return write({ ctx, content, slug, ext: '.html' })
 }
 
-export const ContentPage: QuartzEmitterPlugin<Partial<FullPageLayout>> = (userOpts) => {
+export const ContentPage: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts => {
   const opts: FullPageLayout = {
     ...sharedPageComponents,
     ...defaultContentPageLayout,
@@ -56,7 +56,7 @@ export const ContentPage: QuartzEmitterPlugin<Partial<FullPageLayout>> = (userOp
   const Headings = HeadingsConstructor()
 
   return {
-    name: "ContentPage",
+    name: 'ContentPage',
     getQuartzComponents() {
       return [
         Head,
@@ -74,30 +74,30 @@ export const ContentPage: QuartzEmitterPlugin<Partial<FullPageLayout>> = (userOp
       ]
     },
     async *emit(ctx, content, resources) {
-      const allFiles = content.map((c) => c[1].data)
+      const allFiles = content.map(c => c[1].data)
 
       for (const [tree, file] of content) {
         const slug = file.data.slug!
         if (
-          slug.endsWith("/index") ||
-          slug.startsWith("tags/") ||
+          slug.endsWith('/index') ||
+          slug.startsWith('tags/') ||
           file.data.bases ||
           file.data.jsonCanvas ||
           file.data.streamData ||
-          file.data.frontmatter?.layout === "masonry"
+          file.data.frontmatter?.layout === 'masonry'
         )
           continue
         yield processContent(ctx, tree, file.data, allFiles, opts, resources)
       }
     },
     async *partialEmit(ctx, content, resources, changeEvents) {
-      const allFiles = content.map((c) => c[1].data)
+      const allFiles = content.map(c => c[1].data)
 
       // find all slugs that changed or were added
       const changedSlugs = new Set<string>()
       for (const changeEvent of changeEvents) {
         if (!changeEvent.file) continue
-        if (changeEvent.type === "add" || changeEvent.type === "change") {
+        if (changeEvent.type === 'add' || changeEvent.type === 'change') {
           changedSlugs.add(changeEvent.file.data.slug!)
         }
       }
@@ -106,8 +106,8 @@ export const ContentPage: QuartzEmitterPlugin<Partial<FullPageLayout>> = (userOp
         const slug = file.data.slug!
         if (!changedSlugs.has(slug)) continue
         if (
-          slug.endsWith("/index") ||
-          slug.startsWith("tags/") ||
+          slug.endsWith('/index') ||
+          slug.startsWith('tags/') ||
           file.data.bases ||
           file.data.streamData
         )

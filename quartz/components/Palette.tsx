@@ -2,16 +2,16 @@ import {
   QuartzComponent,
   QuartzComponentConstructor,
   QuartzComponentProps,
-} from "../types/component"
-import { classNames } from "../util/lang"
+} from '../types/component'
+import { classNames } from '../util/lang'
 // @ts-ignore
-import script from "./scripts/palette.inline"
-import style from "./styles/palette.scss"
+import script from './scripts/palette.inline'
+import style from './styles/palette.scss'
 
 export default (() => {
-  const placeholder = "sélectionnez une option..."
+  const placeholder = 'sélectionnez une option...'
   const Palette: QuartzComponent = ({ displayClass }: QuartzComponentProps) => (
-    <div class={classNames(displayClass, "palette")}>
+    <div class={classNames(displayClass, 'palette')}>
       <search id="palette-container">
         <div id="space">
           <div class="input-container">

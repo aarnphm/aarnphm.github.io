@@ -1,5 +1,5 @@
 ---
-date: "2024-02-07"
+date: '2024-02-07'
 description: and how we learn.
 id: education
 modified: 2025-11-09 03:13:40 GMT-05:00

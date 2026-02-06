@@ -1,5 +1,5 @@
 ---
-date: "2025-06-16"
+date: '2025-06-16'
 description: and cultural philosophy
 id: Memetics Theory
 modified: 2025-10-29 02:15:28 GMT-04:00

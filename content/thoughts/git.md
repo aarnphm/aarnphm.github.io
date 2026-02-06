@@ -1,5 +1,5 @@
 ---
-date: "2024-02-08"
+date: '2024-02-08'
 description: distributed version control system for tracking changes in source code, with internals based on content-addressable storage and merkle dags.
 id: git
 modified: 2025-10-29 02:15:46 GMT-04:00

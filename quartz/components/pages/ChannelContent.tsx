@@ -1,18 +1,18 @@
-import type { ElementContent, Root } from "hast"
-import type { ComponentChild } from "preact"
-import { fromHtmlIsomorphic } from "hast-util-from-html-isomorphic"
-import { ArenaChannel, ArenaBlock } from "../../plugins/transformers/arena"
+import type { ElementContent, Root } from 'hast'
+import type { ComponentChild } from 'preact'
+import { fromHtmlIsomorphic } from 'hast-util-from-html-isomorphic'
+import { ArenaChannel, ArenaBlock } from '../../plugins/transformers/arena'
 import {
   QuartzComponent,
   QuartzComponentConstructor,
   QuartzComponentProps,
-} from "../../types/component"
-import { toArenaJsx, fromHtmlStringToArenaJsx, arenaBlockTimestamp } from "../../util/arena"
-import { classNames } from "../../util/lang"
-import { FullSlug, slugTag, resolveRelative } from "../../util/path"
-import { extractWikilinksWithPositions, resolveWikilinkTarget } from "../../util/wikilinks"
-import { buildYouTubeEmbed, type YouTubeEmbedSpec } from "../../util/youtube"
-import style from "../styles/arena.scss"
+} from '../../types/component'
+import { toArenaJsx, fromHtmlStringToArenaJsx, arenaBlockTimestamp } from '../../util/arena'
+import { classNames } from '../../util/lang'
+import { FullSlug, slugTag, resolveRelative } from '../../util/path'
+import { extractWikilinksWithPositions, resolveWikilinkTarget } from '../../util/wikilinks'
+import { buildYouTubeEmbed, type YouTubeEmbedSpec } from '../../util/youtube'
+import style from '../styles/arena.scss'
 
 const substackPostRegex = /^https?:\/\/[^/]+\/p\/[^/]+/i
 const pdfUrlRegex = /\.pdf(?:[?#].*)?$/i
@@ -20,14 +20,14 @@ const pdfUrlRegex = /\.pdf(?:[?#].*)?$/i
 const extractFilenameFromUrl = (url: string): string => {
   const urlObj = new URL(url)
   const pathname = urlObj.pathname
-  const parts = pathname.split("/")
+  const parts = pathname.split('/')
   const lastPart = parts[parts.length - 1]
-  return lastPart || "document.pdf"
+  return lastPart || 'document.pdf'
 }
 
 const isPdfUrl = (url: string): boolean => pdfUrlRegex.test(url)
 
-type ArenaModalMapProps = { coordinates?: ArenaBlock["coordinates"]; title?: string }
+type ArenaModalMapProps = { coordinates?: ArenaBlock['coordinates']; title?: string }
 
 const ArenaModalMap = ({ coordinates, title }: ArenaModalMapProps) => {
   if (!coordinates) {
@@ -74,7 +74,7 @@ const ArenaModalMainContent = ({
   } else if (youtubeEmbed) {
     content = (
       <iframe
-        class={classNames(undefined, "arena-modal-iframe", "arena-modal-iframe-youtube")}
+        class={classNames(undefined, 'arena-modal-iframe', 'arena-modal-iframe-youtube')}
         title={`YouTube embed: ${frameTitle}`}
         loading="lazy"
         data-block-id={block.id}
@@ -121,7 +121,7 @@ const ArenaModalMainContent = ({
                 min="1"
                 id="arena-pdf-input"
                 name="arena block pdf input"
-              />{" "}
+              />{' '}
               / <span class="arena-pdf-total">0</span>
             </span>
             <button type="button" class="arena-pdf-btn arena-pdf-next" disabled>
@@ -237,11 +237,11 @@ const ArenaModalMainContent = ({
 
 const rewriteArxivUrl = (rawUrl: string): string => {
   const parsed = new URL(rawUrl)
-  if (!parsed.hostname.toLowerCase().endsWith("arxiv.org")) {
+  if (!parsed.hostname.toLowerCase().endsWith('arxiv.org')) {
     return rawUrl
   }
 
-  const pathSegments = parsed.pathname.split("/").filter(Boolean)
+  const pathSegments = parsed.pathname.split('/').filter(Boolean)
   if (pathSegments.length === 0) {
     return rawUrl
   }
@@ -252,15 +252,15 @@ const rewriteArxivUrl = (rawUrl: string): string => {
   }
 
   const normalizedHead = head.toLowerCase()
-  const remainder = rest.join("/")
+  const remainder = rest.join('/')
   const suffix = `${parsed.search}${parsed.hash}`
 
-  if (normalizedHead === "pdf" || normalizedHead === "html" || normalizedHead === "abs") {
-    const sanitized = remainder.replace(/\.pdf$/i, "")
+  if (normalizedHead === 'pdf' || normalizedHead === 'html' || normalizedHead === 'abs') {
+    const sanitized = remainder.replace(/\.pdf$/i, '')
     return `https://alphaxiv.org/abs/${sanitized}${suffix}`
   }
 
-  return `https://alphaxiv.org/abs/${[head, ...rest].join("/")}${suffix}`
+  return `https://alphaxiv.org/abs/${[head, ...rest].join('/')}${suffix}`
 }
 
 const normalizeDate = (value: string): { display: string; dateTime?: string } => {
@@ -288,9 +288,9 @@ const normalizeDate = (value: string): { display: string; dateTime?: string } =>
   }
 
   const date = new Date(Date.UTC(year, month - 1, day))
-  const formatter = new Intl.DateTimeFormat("en-US", { dateStyle: "medium" })
+  const formatter = new Intl.DateTimeFormat('en-US', { dateStyle: 'medium' })
   const display = formatter.format(date)
-  const iso = `${yearStr.padStart(4, "0")}-${monthStr.padStart(2, "0")}-${dayStr.padStart(2, "0")}`
+  const iso = `${yearStr.padStart(4, '0')}-${monthStr.padStart(2, '0')}-${dayStr.padStart(2, '0')}`
 
   return { display, dateTime: iso }
 }
@@ -305,25 +305,25 @@ export default (() => {
     }
 
     const pinnedBlocks = channel.blocks
-      .filter((b) => b.pinned === true)
+      .filter(b => b.pinned === true)
       .sort((a, b) => arenaBlockTimestamp(b) - arenaBlockTimestamp(a))
 
     const laterBlocks = channel.blocks
-      .filter((b) => b.later === true && b.pinned !== true)
+      .filter(b => b.later === true && b.pinned !== true)
       .sort((a, b) => arenaBlockTimestamp(b) - arenaBlockTimestamp(a))
 
     const regularBlocks = channel.blocks
-      .filter((b) => b.pinned !== true && b.later !== true)
+      .filter(b => b.pinned !== true && b.later !== true)
       .sort((a, b) => arenaBlockTimestamp(b) - arenaBlockTimestamp(a))
 
-    const channelViewPreferenceRaw = channel.metadata?.["view"] ?? channel.metadata?.["layout"]
+    const channelViewPreferenceRaw = channel.metadata?.['view'] ?? channel.metadata?.['layout']
     const channelViewPreference =
-      typeof channelViewPreferenceRaw === "string"
+      typeof channelViewPreferenceRaw === 'string'
         ? channelViewPreferenceRaw.trim().toLowerCase()
         : undefined
-    const defaultViewMode: "grid" | "list" =
-      channelViewPreference === "list" || channelViewPreference === "lists" ? "list" : "grid"
-    const isListDefault = defaultViewMode === "list"
+    const defaultViewMode: 'grid' | 'list' =
+      channelViewPreference === 'list' || channelViewPreference === 'lists' ? 'list' : 'grid'
+    const isListDefault = defaultViewMode === 'list'
 
     const jsxFromNode = (node?: ElementContent) =>
       node
@@ -331,7 +331,7 @@ export default (() => {
         : undefined
 
     const renderInlineText = (text: string) => {
-      if (!text) return ""
+      if (!text) return ''
       const parts: ComponentChild[] = []
       const ranges = extractWikilinksWithPositions(text)
       let lastIndex = 0
@@ -342,7 +342,7 @@ export default (() => {
         }
 
         const parsed = range.wikilink
-        const resolved = resolveWikilinkTarget(parsed, "" as FullSlug)
+        const resolved = resolveWikilinkTarget(parsed, '' as FullSlug)
         const raw = text.slice(range.start, range.end)
 
         if (resolved) {
@@ -389,11 +389,11 @@ export default (() => {
       const isPinned = block.pinned ?? false
       const youtubeEmbed = block.url ? buildYouTubeEmbed(block.url) : undefined
       const accessedRaw =
-        (typeof block.metadata?.accessed === "string" ? block.metadata.accessed : undefined) ??
-        (typeof block.metadata?.accessed_date === "string"
+        (typeof block.metadata?.accessed === 'string' ? block.metadata.accessed : undefined) ??
+        (typeof block.metadata?.accessed_date === 'string'
           ? block.metadata.accessed_date
           : undefined) ??
-        (typeof block.metadata?.date === "string" ? block.metadata.date : undefined)
+        (typeof block.metadata?.date === 'string' ? block.metadata.date : undefined)
       const accessed = accessedRaw ? normalizeDate(accessedRaw) : undefined
       const displayUrl =
         block.url ??
@@ -404,7 +404,7 @@ export default (() => {
 
       if (accessed) {
         metadataEntries.push({
-          label: "accessed",
+          label: 'accessed',
           value: accessed.dateTime ? (
             <time dateTime={accessed.dateTime}>{accessed.display}</time>
           ) : (
@@ -415,31 +415,31 @@ export default (() => {
 
       if (block.importance !== undefined) {
         metadataEntries.push({
-          label: "importance",
+          label: 'importance',
           value: <span class="arena-meta-importance">{block.importance}</span>,
         })
       }
 
       if (block.metadata) {
         const consumedKeys = new Set([
-          "accessed",
-          "accessed_date",
-          "date",
-          "tags",
-          "tag",
-          "coord",
-          "socials",
+          'accessed',
+          'accessed_date',
+          'date',
+          'tags',
+          'tag',
+          'coord',
+          'socials',
         ])
         const additionalEntries = Object.entries(block.metadata)
           .filter((entry): entry is [string, string] => {
             const [key, value] = entry
-            if (typeof value !== "string" || value.trim().length === 0) return false
+            if (typeof value !== 'string' || value.trim().length === 0) return false
             if (consumedKeys.has(key.toLowerCase())) return false
             return true
           })
           .sort(([a], [b]) => a.localeCompare(b))
           .map(([rawKey, rawValue]) => ({
-            label: rawKey.replace(/_/g, " "),
+            label: rawKey.replace(/_/g, ' '),
             value: renderInlineText(rawValue),
           }))
 
@@ -448,10 +448,10 @@ export default (() => {
 
       if (block.tags && block.tags.length > 0) {
         metadataEntries.push({
-          label: block.tags.length === 1 ? "tag" : "tags",
+          label: block.tags.length === 1 ? 'tag' : 'tags',
           value: (
             <span class="arena-meta-taglist">
-              {block.tags.map((tag) => (
+              {block.tags.map(tag => (
                 <span class="tag-link" key={`${block.id}-tag-${slugTag(tag)}`}>
                   {tag}
                 </span>
@@ -462,25 +462,25 @@ export default (() => {
       }
 
       const socials =
-        block.metadata?.socials && typeof block.metadata.socials === "object"
+        block.metadata?.socials && typeof block.metadata.socials === 'object'
           ? (block.metadata.socials as Record<string, unknown>)
           : null
 
       if (socials && Object.keys(socials).length > 0) {
         metadataEntries.push({
-          label: "média",
+          label: 'média',
           value: (
             <span class="arena-meta-socials">
               {Object.entries(socials).map(([name, link]) => {
-                const href = typeof link === "string" ? link : (link?.toString?.() ?? "")
-                const isInternal = href.startsWith("/")
+                const href = typeof link === 'string' ? link : (link?.toString?.() ?? '')
+                const isInternal = href.startsWith('/')
                 return (
                   <address key={name}>
                     <a
                       href={href}
-                      target={!isInternal ? "_blank" : ""}
-                      rel={!isInternal ? "noopener noreferrer" : ""}
-                      class={isInternal ? "internal" : "external"}
+                      target={!isInternal ? '_blank' : ''}
+                      rel={!isInternal ? 'noopener noreferrer' : ''}
+                      class={isInternal ? 'internal' : 'external'}
                       data-no-popover
                     >
                       {name}
@@ -511,9 +511,9 @@ export default (() => {
           key={block.id}
           class={classNames(
             displayClass,
-            "arena-block",
-            block.highlighted ? "highlighted" : "",
-            isPinned ? "pinned" : "",
+            'arena-block',
+            block.highlighted ? 'highlighted' : '',
+            isPinned ? 'pinned' : '',
           )}
           id={`arena-block-${block.id}`}
           data-block-id={block.id}
@@ -560,7 +560,7 @@ export default (() => {
             <div class="arena-block-content">
               {block.titleHtmlNode
                 ? jsxFromNode(block.titleHtmlNode)
-                : renderInlineText(block.title || block.content || "")}
+                : renderInlineText(block.title || block.content || '')}
             </div>
             {hasMetaPreview && (
               <div class="arena-block-meta">
@@ -591,7 +591,7 @@ export default (() => {
                 ) : null}
                 {block.tags && block.tags.length > 0 ? (
                   <span class="arena-block-meta-item arena-block-meta-tags">
-                    {block.tags.map((tag) => (
+                    {block.tags.map(tag => (
                       <span class="tag-link" key={`${block.id}-tag-preview-${slugTag(tag)}`}>
                         {tag}
                       </span>
@@ -714,7 +714,7 @@ export default (() => {
                   <h3 class="arena-modal-title">
                     {block.titleHtmlNode
                       ? jsxFromNode(block.titleHtmlNode)
-                      : renderInlineText(block.title ?? "")}
+                      : renderInlineText(block.title ?? '')}
                   </h3>
                   {metadataEntries.length > 0 && (
                     <div class="arena-modal-meta">
@@ -768,7 +768,7 @@ export default (() => {
                     <ul class="arena-modal-connections-list">
                       {[...block.subItems!]
                         .sort((a, b) => arenaBlockTimestamp(b) - arenaBlockTimestamp(a))
-                        .map((subItem) => (
+                        .map(subItem => (
                           <li key={subItem.id}>
                             {subItem.htmlNode
                               ? jsxFromNode(subItem.htmlNode)
@@ -827,8 +827,8 @@ export default (() => {
               type="button"
               class={classNames(
                 displayClass,
-                "arena-view-toggle-button",
-                !isListDefault ? "active" : "",
+                'arena-view-toggle-button',
+                !isListDefault ? 'active' : '',
               )}
               data-view-mode="grid"
               aria-pressed={!isListDefault}
@@ -853,8 +853,8 @@ export default (() => {
               type="button"
               class={classNames(
                 displayClass,
-                "arena-view-toggle-button",
-                isListDefault ? "active" : "",
+                'arena-view-toggle-button',
+                isListDefault ? 'active' : '',
               )}
               data-view-mode="list"
               aria-pressed={isListDefault}

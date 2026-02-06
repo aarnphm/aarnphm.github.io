@@ -14,5 +14,5 @@ category:
   - drama
   - vintage
 description: memory as montage - tarkovsky splices family, war, and poetry into a single consciousness.
-posters: "[[movies/posters/mirror.jpg]]"
+posters: '[[movies/posters/mirror.jpg]]'
 ---

@@ -1,5 +1,5 @@
-import * as path from "path"
-import { Project } from "ts-morph"
+import * as path from 'path'
+import { Project } from 'ts-morph'
 
 /**
  * Codemod: replace "@/xyz" style imports and other `@` path aliases with a file-relative path.
@@ -17,20 +17,20 @@ import { Project } from "ts-morph"
 const ROOT = process.cwd()
 
 const pathMap: Record<string, string> = {
-  "/": path.join(ROOT, "quartz"), // handles "@/..."
-  "@config": path.join(ROOT, "quartz.config.ts"),
-  "@layout": path.join(ROOT, "quartz.layout.ts"),
-  "@package.json": path.join(ROOT, "package.json"),
+  '/': path.join(ROOT, 'quartz'), // handles "@/..."
+  '@config': path.join(ROOT, 'quartz.config.ts'),
+  '@layout': path.join(ROOT, 'quartz.layout.ts'),
+  '@package.json': path.join(ROOT, 'package.json'),
 }
 
 function toPosix(p: string) {
-  return p.split(path.sep).join("/")
+  return p.split(path.sep).join('/')
 }
 
 function resolveAlias(moduleSpecifier: string, containingFileDir: string): string | null {
-  if (moduleSpecifier.startsWith("@/")) {
+  if (moduleSpecifier.startsWith('@/')) {
     const rest = moduleSpecifier.slice(2) // drop "@/"
-    const absTargetNoExt = path.join(pathMap["/"], rest)
+    const absTargetNoExt = path.join(pathMap['/'], rest)
 
     // Accept target without extension; TypeScript module resolution will pick correct file
     return makeRelative(absTargetNoExt, containingFileDir)
@@ -38,7 +38,7 @@ function resolveAlias(moduleSpecifier: string, containingFileDir: string): strin
 
   if (pathMap[moduleSpecifier]) {
     const absTarget = pathMap[moduleSpecifier]
-    const absNoExt = absTarget.replace(/\.[jt]sx?$/, "")
+    const absNoExt = absTarget.replace(/\.[jt]sx?$/, '')
     return makeRelative(absNoExt, containingFileDir)
   }
 
@@ -47,15 +47,15 @@ function resolveAlias(moduleSpecifier: string, containingFileDir: string): strin
 
 function makeRelative(absTargetNoExt: string, fromDir: string) {
   let rel = path.relative(fromDir, absTargetNoExt)
-  if (!rel.startsWith(".")) {
-    rel = "./" + rel
+  if (!rel.startsWith('.')) {
+    rel = './' + rel
   }
   return toPosix(rel)
 }
 
 function main() {
-  const project = new Project({ tsConfigFilePath: path.join(ROOT, "tsconfig.json") })
-  const sourceFiles = project.getSourceFiles(["**/*.ts", "**/*.tsx", "**/*.mts", "**/*.cts"])
+  const project = new Project({ tsConfigFilePath: path.join(ROOT, 'tsconfig.json') })
+  const sourceFiles = project.getSourceFiles(['**/*.ts', '**/*.tsx', '**/*.mts', '**/*.cts'])
 
   const modified: string[] = []
 
@@ -63,7 +63,7 @@ function main() {
     let changed = false
     const dir = path.dirname(sf.getFilePath())
 
-    sf.getImportDeclarations().forEach((decl) => {
+    sf.getImportDeclarations().forEach(decl => {
       const spec = decl.getModuleSpecifierValue()
       const replacement = resolveAlias(spec, dir)
       if (replacement) {
@@ -72,7 +72,7 @@ function main() {
       }
     })
 
-    sf.getExportDeclarations().forEach((decl) => {
+    sf.getExportDeclarations().forEach(decl => {
       if (!decl.getModuleSpecifierValue) return
       const spec = decl.getModuleSpecifierValue()
       if (!spec) return
@@ -92,7 +92,7 @@ function main() {
 
   console.log(`Updated ${modified.length} files:`)
   for (const file of modified) {
-    console.log("  -", file)
+    console.log('  -', file)
   }
 }
 

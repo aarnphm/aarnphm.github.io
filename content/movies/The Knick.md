@@ -5,7 +5,7 @@ description: 1900s new york hospital where surgery is experimental brutality—s
 director: Steven Soderbergh
 id: the-knick
 modified: 2025-10-29 02:14:59 GMT-04:00
-posters: "[[movies/posters/the-knick.jpg]]"
+posters: '[[movies/posters/the-knick.jpg]]'
 rating: 8.4
 status: recurring
 studio: cinemax

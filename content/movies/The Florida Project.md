@@ -8,7 +8,7 @@ director:
   - Sean Baker
 id: the-florida-project
 modified: 2025-10-29 02:14:58 GMT-04:00
-posters: "[[movies/posters/the-florida-project.jpg]]"
+posters: '[[movies/posters/the-florida-project.jpg]]'
 rating: 7.6
 status: to watch
 studio: a24

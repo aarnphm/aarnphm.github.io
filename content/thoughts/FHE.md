@@ -1,5 +1,5 @@
 ---
-date: "2025-11-21"
+date: '2025-11-21'
 description: fully homomorphic encryption
 id: FHE
 modified: 2025-11-21 14:00:50 GMT-05:00

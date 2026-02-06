@@ -1,17 +1,17 @@
-import type { RootContent, Text } from "hast"
-import { Root, Element } from "hast"
-import { fromHtmlIsomorphic } from "hast-util-from-html-isomorphic"
-import { toHtml } from "hast-util-to-html"
-import { toString } from "hast-util-to-string"
-import { h, s } from "hastscript"
-import isAbsoluteUrl from "is-absolute-url"
-import { Root as MdastRoot, Code } from "mdast"
-import path from "path"
-import { SKIP, visit } from "unist-util-visit"
+import type { RootContent, Text } from 'hast'
+import { Root, Element } from 'hast'
+import { fromHtmlIsomorphic } from 'hast-util-from-html-isomorphic'
+import { toHtml } from 'hast-util-to-html'
+import { toString } from 'hast-util-to-string'
+import { h, s } from 'hastscript'
+import isAbsoluteUrl from 'is-absolute-url'
+import { Root as MdastRoot, Code } from 'mdast'
+import path from 'path'
+import { SKIP, visit } from 'unist-util-visit'
 // @ts-ignore
-import script from "../../components/scripts/telescopic.inline"
-import content from "../../components/styles/telescopic.inline.scss"
-import { svgOptions } from "../../components/svg"
+import script from '../../components/scripts/telescopic.inline'
+import content from '../../components/styles/telescopic.inline.scss'
+import { svgOptions } from '../../components/svg'
 // A small subsets of https://github.com/jackyzha0/telescopic-text
 // turned into remark plugin for Quartz
 //
@@ -29,9 +29,9 @@ import { svgOptions } from "../../components/svg"
 // NOTE: For this, we only a small subset of wikilinks, and it should always be absolute
 //
 // Some deviation: separator=" ", shouldExpandOnMouseOver=false
-import { QuartzTransformerPlugin } from "../../types/plugin"
-import { simplifySlug, splitAnchor, stripSlashes, transformLink } from "../../util/path"
-import { extractWikilinksWithPositions } from "../../util/wikilinks"
+import { QuartzTransformerPlugin } from '../../types/plugin'
+import { simplifySlug, splitAnchor, stripSlashes, transformLink } from '../../util/path'
+import { extractWikilinksWithPositions } from '../../util/wikilinks'
 
 interface Line {
   og: string // the original string to replace
@@ -68,7 +68,7 @@ interface Config {
   shouldExpandOnMouseOver?: boolean
 }
 
-const createEmptyTextNode = (): Text => ({ type: "text", value: "" })
+const createEmptyTextNode = (): Text => ({ type: 'text', value: '' })
 
 function applyInlineFormatting(value: string): string {
   if (!value) {
@@ -78,31 +78,31 @@ function applyInlineFormatting(value: string): string {
   let formatted = value
 
   // Normalize hard and soft line breaks
-  formatted = formatted.replace(/\\n/g, "<br />")
-  formatted = formatted.replace(/\\(?=\s|$)/g, "<br />")
-  formatted = formatted.replace(/\n\s*\n\s*\n/g, "<hr />")
-  formatted = formatted.replace(/\n\s*\n/g, "<hr />")
-  formatted = formatted.replace(/\r?\n/g, "<br />")
-  formatted = formatted.replace(/<br\s*\/?>/gi, "<br />")
-  formatted = formatted.replace(/&softbreak;/gi, "<wbr />")
-  formatted = formatted.replace(/<softbreak\s*\/?>/gi, "<wbr />")
+  formatted = formatted.replace(/\\n/g, '<br />')
+  formatted = formatted.replace(/\\(?=\s|$)/g, '<br />')
+  formatted = formatted.replace(/\n\s*\n\s*\n/g, '<hr />')
+  formatted = formatted.replace(/\n\s*\n/g, '<hr />')
+  formatted = formatted.replace(/\r?\n/g, '<br />')
+  formatted = formatted.replace(/<br\s*\/?>/gi, '<br />')
+  formatted = formatted.replace(/&softbreak;/gi, '<wbr />')
+  formatted = formatted.replace(/<softbreak\s*\/?>/gi, '<wbr />')
 
   // Bold / strong emphasis (**text** or __text__)
-  formatted = formatted.replace(/(?<!\\)\*\*([\s\S]+?)\*\*/g, "<strong>$1</strong>")
-  formatted = formatted.replace(/(?<!\\)__([\s\S]+?)__/g, "<strong>$1</strong>")
+  formatted = formatted.replace(/(?<!\\)\*\*([\s\S]+?)\*\*/g, '<strong>$1</strong>')
+  formatted = formatted.replace(/(?<!\\)__([\s\S]+?)__/g, '<strong>$1</strong>')
 
   // Italic emphasis (*text* or _text_)
-  formatted = formatted.replace(/(?<!\\)\*(?!\*)([^*\n]+?)\*(?!\*)/g, "<em>$1</em>")
-  formatted = formatted.replace(/(?<!\\)_(?!_)([^_\n]+?)_(?!_)/g, "<em>$1</em>")
+  formatted = formatted.replace(/(?<!\\)\*(?!\*)([^*\n]+?)\*(?!\*)/g, '<em>$1</em>')
+  formatted = formatted.replace(/(?<!\\)_(?!_)([^_\n]+?)_(?!_)/g, '<em>$1</em>')
 
   // Strikethrough
-  formatted = formatted.replace(/(?<!\\)~~([\s\S]+?)~~/g, "<del>$1</del>")
+  formatted = formatted.replace(/(?<!\\)~~([\s\S]+?)~~/g, '<del>$1</del>')
 
   // Restore escaped characters that should remain literal
-  formatted = formatted.replace(/\\\*/g, "*")
-  formatted = formatted.replace(/\\_/g, "_")
-  formatted = formatted.replace(/\\~/g, "~")
-  formatted = formatted.replace(/\\\\/g, "\\")
+  formatted = formatted.replace(/\\\*/g, '*')
+  formatted = formatted.replace(/\\_/g, '_')
+  formatted = formatted.replace(/\\~/g, '~')
+  formatted = formatted.replace(/\\\\/g, '\\')
 
   return formatted
 }
@@ -130,10 +130,10 @@ function parseMarkdown(mdContent: string): TelescopicOutput {
   //   const lines = html.split("\n");
   // Also idea for "..." or ellipsis character to represent infinite expansion.
 
-  const BulletSeparators = ["*", "-", "+"]
-  const RegexEscapedBulletSeparators = ["\\*", "-", "\\+"]
+  const BulletSeparators = ['*', '-', '+']
+  const RegexEscapedBulletSeparators = ['\\*', '-', '\\+']
 
-  const lines = mdContent.split("\n")
+  const lines = mdContent.split('\n')
   // NOTE: this should handle normalizing the depth (if its an indented list)
   const root: TelescopicOutput = []
   const nodeStack: TelescopeNode[] = [{ depth: 0, telescopicOut: root }]
@@ -141,10 +141,10 @@ function parseMarkdown(mdContent: string): TelescopicOutput {
   // This is essentially a trie data structure to parse out all the bullet points
   // The algorithm works by assuming that any time you encounter a longer depth than the current one,
   // you are moving onto the next line.
-  const firstNonEmptyLine = lines.find((l) => l.trim().length > 0)
+  const firstNonEmptyLine = lines.find(l => l.trim().length > 0)
   const defaultDepth =
     // @ts-ignore
-    firstNonEmptyLine?.match(`^\\s*(${RegexEscapedBulletSeparators.join("|")})`)?.[0]?.length - 1 ||
+    firstNonEmptyLine?.match(`^\\s*(${RegexEscapedBulletSeparators.join('|')})`)?.[0]?.length - 1 ||
     0
   for (const line of lines) {
     const trimmedLine = line.trim()
@@ -153,14 +153,14 @@ function parseMarkdown(mdContent: string): TelescopicOutput {
     }
 
     // validate that the trimmed line starts with the bullet indicators.
-    if (!BulletSeparators.some((sep) => trimmedLine.startsWith(sep))) {
+    if (!BulletSeparators.some(sep => trimmedLine.startsWith(sep))) {
       console.log(`Invalid line found! ${line}`)
       continue
     }
 
     // count all spaces in front to get current depth
     const currentDepth =
-      line.match(`^\\s*(${RegexEscapedBulletSeparators.join("|")})`)![0].length - 1
+      line.match(`^\\s*(${RegexEscapedBulletSeparators.join('|')})`)![0].length - 1
 
     // if greater depth, attach on to the last one
     // else you can pop back up to one with 1 less depth
@@ -173,7 +173,7 @@ function parseMarkdown(mdContent: string): TelescopicOutput {
     }
 
     const { telescopicOut, ...restLastNode } = nodeStack[nodeStack.length - 1]
-    const strippedLine = trimmedLine.substring(1).replace(/^\s+/, "")
+    const strippedLine = trimmedLine.substring(1).replace(/^\s+/, '')
     // Add current content / node to the stack
     const currentContent: NewContent = { text: strippedLine, expansions: [] }
     if (currentDepth === defaultDepth) {
@@ -191,13 +191,13 @@ function parseMarkdown(mdContent: string): TelescopicOutput {
 }
 
 // Ideally this would not be needed (just used to convert between data structures currently).
-function outputToContent(output: TelescopicOutput, separator: string = " "): Content {
+function outputToContent(output: TelescopicOutput, separator: string = ' '): Content {
   const parseReplacementsFromOutput = (out: TelescopicOutput): Line[] => {
     return out.flatMap((line: NewContent) => {
       if (!line.expansions?.length) {
         return []
       }
-      const newText = line.expansions.map((line) => line.text).join(separator)
+      const newText = line.expansions.map(line => line.text).join(separator)
 
       return [
         {
@@ -215,7 +215,7 @@ function outputToContent(output: TelescopicOutput, separator: string = " "): Con
 }
 
 // Ideally this would not be needed (just used to convert between data structures currently).
-function mdToContent(mdContent: string, separator: string = " "): Content {
+function mdToContent(mdContent: string, separator: string = ' '): Content {
   const output = parseMarkdown(mdContent)
   return outputToContent(output, separator)
 }
@@ -243,17 +243,17 @@ function contentToHast(content: Content, opts: Config) {
         replacements: replacement.replacements,
       })
 
-      const detail: Element = h("span", { class: "details close" }, [
+      const detail: Element = h('span', { class: 'details close' }, [
         // Original text
         h(
-          "span",
-          { class: "summary" },
+          'span',
+          { class: 'summary' },
           summaryChildren.length ? summaryChildren : [createEmptyTextNode()],
         ),
         // Expanded content
         h(
-          "span",
-          { class: "expanded" },
+          'span',
+          { class: 'expanded' },
           expandedChildren.length ? expandedChildren : [createEmptyTextNode()],
         ),
       ])
@@ -273,27 +273,27 @@ function contentToHast(content: Content, opts: Config) {
 
   // Helper to get fully expanded text
   return h(
-    "div#telescope",
-    { "data-expand": opts.shouldExpandOnMouseOver ? "hover" : "click" },
+    'div#telescope',
+    { 'data-expand': opts.shouldExpandOnMouseOver ? 'hover' : 'click' },
     processContent(content),
   )
 }
 
-const defaultOpts: Config = { separator: " ", shouldExpandOnMouseOver: false }
+const defaultOpts: Config = { separator: ' ', shouldExpandOnMouseOver: false }
 
 const linkRegex = /\[([^\]]+)\]\(([^)]+)\)/g
 
-export const TelescopicText: QuartzTransformerPlugin<Partial<Config>> = (userOpts) => {
+export const TelescopicText: QuartzTransformerPlugin<Partial<Config>> = userOpts => {
   const opts = { ...defaultOpts, ...userOpts }
 
   return {
-    name: "TelescopicText",
+    name: 'TelescopicText',
     markdownPlugins() {
       return [
         () => (tree: MdastRoot, file) => {
-          visit(tree, "code", (node: Code) => {
+          visit(tree, 'code', (node: Code) => {
             let { lang, meta } = node
-            if (lang === "telescopic" && meta) {
+            if (lang === 'telescopic' && meta) {
               // Parse the meta string to extract ID
               const idMatch = meta!.match(/id=["']?([^"'\s]+)["']?/)
               if (!idMatch) {
@@ -303,7 +303,7 @@ export const TelescopicText: QuartzTransformerPlugin<Partial<Config>> = (userOpt
                 return SKIP
               }
               node.data = node.data || {}
-              node.data.hProperties = { id: idMatch[1] + "-container" }
+              node.data.hProperties = { id: idMatch[1] + '-container' }
             }
           })
         },
@@ -320,55 +320,55 @@ export const TelescopicText: QuartzTransformerPlugin<Partial<Config>> = (userOpt
             alias: string | undefined,
           ): { dest: string; alias: string } => {
             const fp = target.trim()
-            const resolvedAnchor = anchor?.trim() ?? ""
+            const resolvedAnchor = anchor?.trim() ?? ''
             const resolvedAlias = alias?.trim()
 
             let dest = fp + resolvedAnchor
             const ext: string = path.extname(dest).toLowerCase()
             if (isAbsoluteUrl(dest, { httpOnly: false })) return { dest, alias: dest }
 
-            if (!ext.includes("pdf")) {
+            if (!ext.includes('pdf')) {
               dest = transformLink(file.data.slug!, dest, {
                 allSlugs: ctx.allSlugs,
-                strategy: "absolute",
+                strategy: 'absolute',
               })
             }
 
             // url.resolve is considered legacy
             // WHATWG equivalent https://nodejs.dev/en/api/v18/url/#urlresolvefrom-to
-            const url = new URL(dest, "https://base.com/" + stripSlashes(curSlug, true))
+            const url = new URL(dest, 'https://base.com/' + stripSlashes(curSlug, true))
             const canonicalDest = url.pathname
             let [destCanonical, _destAnchor] = splitAnchor(canonicalDest)
-            if (destCanonical.endsWith("/")) {
-              destCanonical += "index"
+            if (destCanonical.endsWith('/')) {
+              destCanonical += 'index'
             }
             return { dest, alias: resolvedAlias ?? path.basename(fp) }
           }
 
           const checkParsedCodeblock = ({ tagName, children }: Element): boolean => {
-            if (tagName !== "pre" || !Array.isArray(children) || children.length === 0) {
+            if (tagName !== 'pre' || !Array.isArray(children) || children.length === 0) {
               return false
             }
 
             const [code] = children as Element[]
             const { properties, tagName: codeTagName } = code
             return (
-              codeTagName === "code" &&
+              codeTagName === 'code' &&
               Boolean(properties.className) &&
-              (properties.className as string[]).includes("language-telescopic")
+              (properties.className as string[]).includes('language-telescopic')
             )
           }
 
           visit(
             tree,
-            (node) => checkParsedCodeblock(node as Element),
+            node => checkParsedCodeblock(node as Element),
             (node, index, parent) => {
               const code = (node as Element).children[0] as Element
 
               let codeText = toString(code)
               const ranges = extractWikilinksWithPositions(codeText)
               if (ranges.length > 0) {
-                let rewritten = ""
+                let rewritten = ''
                 let lastIndex = 0
                 for (const range of ranges) {
                   if (range.start > lastIndex) {
@@ -381,7 +381,7 @@ export const TelescopicText: QuartzTransformerPlugin<Partial<Config>> = (userOpt
                     parsed.anchor,
                     parsed.alias,
                   )
-                  rewritten += toHtml(h("a", { href: dest }, { type: "text", value: alias }))
+                  rewritten += toHtml(h('a', { href: dest }, { type: 'text', value: alias }))
                   lastIndex = range.end
                 }
                 if (lastIndex < codeText.length) {
@@ -391,49 +391,49 @@ export const TelescopicText: QuartzTransformerPlugin<Partial<Config>> = (userOpt
               }
 
               codeText = codeText.replace(linkRegex, (_match, value, href) => {
-                return toHtml(h("a", { href }, { type: "text", value }))
+                return toHtml(h('a', { href }, { type: 'text', value }))
               })
-              code.children = [{ type: "text", value: codeText }]
+              code.children = [{ type: 'text', value: codeText }]
 
               const content = mdToContent(codeText, opts.separator)
               parent!.children.splice(
                 index!,
                 1,
                 h(
-                  "div.telescopic-container",
+                  'div.telescopic-container',
                   { id: code.properties.id },
                   h(
-                    "span",
-                    { class: "expand", type: "button" },
+                    'span',
+                    { class: 'expand', type: 'button' },
                     s(
-                      "svg",
+                      'svg',
                       {
                         ...svgOptions,
                         height: 12,
                         width: 12,
                         strokewidth: 1,
-                        stroke: "currentColor",
-                        fill: "var(--lightgray)",
-                        title: "expand all state",
-                        ariaLabel: "expand all state",
+                        stroke: 'currentColor',
+                        fill: 'var(--lightgray)',
+                        title: 'expand all state',
+                        ariaLabel: 'expand all state',
                       },
-                      s("use", { href: "#plus-icon" }),
+                      s('use', { href: '#plus-icon' }),
                     ),
                   ),
                   h(
-                    "span",
-                    { class: "replay", type: "button" },
+                    'span',
+                    { class: 'replay', type: 'button' },
                     s(
-                      "svg",
+                      'svg',
                       {
                         ...svgOptions,
                         height: 12,
                         width: 12,
-                        fill: "var(--lightgray)",
-                        title: "refresh telescopic text state",
-                        ariaLabel: "refresh telescopic text state",
+                        fill: 'var(--lightgray)',
+                        title: 'refresh telescopic text state',
+                        ariaLabel: 'refresh telescopic text state',
                       },
-                      s("use", { href: "#refetch-icon" }),
+                      s('use', { href: '#refetch-icon' }),
                     ),
                   ),
                   contentToHast(content, opts),
@@ -446,7 +446,7 @@ export const TelescopicText: QuartzTransformerPlugin<Partial<Config>> = (userOpt
     },
     externalResources() {
       return {
-        js: [{ script, contentType: "inline", loadTime: "afterDOMReady" }],
+        js: [{ script, contentType: 'inline', loadTime: 'afterDOMReady' }],
         css: [{ content, spaPreserve: true, inline: true }],
       }
     },

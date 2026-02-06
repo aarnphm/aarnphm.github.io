@@ -1,7 +1,7 @@
 ---
 aliases:
   - chat
-date: "2024-10-02"
+date: '2024-10-02'
 id: chatgpt
 modified: 2025-10-29 02:15:10 GMT-04:00
 permalinks:

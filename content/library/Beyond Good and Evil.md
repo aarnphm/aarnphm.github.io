@@ -6,7 +6,7 @@ date: 2025-08-13
 description: what is good and evil, what is consider morally good and wrong.
 id: Beyond Good and Evil
 modified: 2025-10-29 02:14:27 GMT-04:00
-posters: "[[library/posters/beyond-good-and-evil.jpg]]"
+posters: '[[library/posters/beyond-good-and-evil.jpg]]'
 status: evergreen
 subcategory: ethics
 tags:

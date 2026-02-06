@@ -1,12 +1,12 @@
 ---
-date: "2025-10-17"
+date: '2025-10-17'
 description: Deploying DeepSeek R1
 id: notes
 modified: 2025-12-15 17:01:53 GMT-05:00
 seealso:
-  - "[[thoughts/Attention#Multi-head Latent Attention]]"
-  - "[[thoughts/LLMs]]"
-  - "[[lectures/430/mla-rope-proofs|MLA proof]]"
+  - '[[thoughts/Attention#Multi-head Latent Attention]]'
+  - '[[thoughts/LLMs]]'
+  - '[[lectures/430/mla-rope-proofs|MLA proof]]'
 slides: true
 tags:
   - workshop

@@ -1,21 +1,21 @@
 // Vendorred from https://github.com/ytliu74/obsidian-pseudocode/blob/master/src/latex_translator.ts
-import katex from "katex"
+import katex from 'katex'
 
 export function translateUnsupportedMacros(input: string): string {
   // handle \DeclarePairedDelimiter
   let output = input.replace(
     /\\DeclarePairedDelimiter\{(.*?)\}\{(.*?)\}\{(.*?)\}/g,
-    "\\newcommand{$1}[1]{\\left$2 #1 \\right$3}",
+    '\\newcommand{$1}[1]{\\left$2 #1 \\right$3}',
   )
 
   // handle \DeclareMathOperator
   output = output.replace(
     /\\DeclareMathOperator\*\{(.*?)\}\{(.*?)\}/g,
-    "\\newcommand{$1}{\\mathop{\\mathrm{$2}}}",
+    '\\newcommand{$1}{\\mathop{\\mathrm{$2}}}',
   )
   output = output.replace(
     /\\DeclareMathOperator\{(.*?)\}\{(.*?)\}/g,
-    "\\newcommand{$1}{\\mathop{\\mathrm{$2}}}",
+    '\\newcommand{$1}{\\mathop{\\mathrm{$2}}}',
   )
   return output
 }
@@ -23,10 +23,10 @@ export function translateUnsupportedMacros(input: string): string {
 // This is a performance improvement for translateUnsupportedMacros
 export function translateUnsupportedMacrosPerf(input: string): string {
   const stripped = input
-    .replace(/(?<!\\)%.*/gm, "")
-    .split("\n")
-    .filter((line) => line.trim() !== "")
-    .join("\n")
+    .replace(/(?<!\\)%.*/gm, '')
+    .split('\n')
+    .filter(line => line.trim() !== '')
+    .join('\n')
 
   return stripped.replace(
     /(\\DeclarePairedDelimiter\{(.*?)\}\{(.*?)\}\{(.*?)\})|(\\DeclareMathOperator\*\{(.*?)\}\{(.*?)\})|(\\DeclareMathOperator\{(.*?)\}\{(.*?)\})/g,
@@ -50,30 +50,30 @@ export function translateUnsupportedMacrosPerf(input: string): string {
 }
 
 export function checkTranslatedMacros(input: string): string {
-  const lines = input.split("\n")
+  const lines = input.split('\n')
   for (let i = 0; i < lines.length; i++) {
     try {
       katex.renderToString(lines[i])
     } catch (error) {
       if (error instanceof katex.ParseError && /redefine/.test(error.message)) {
-        lines[i] = lines[i].replace("\\newcommand", "\\renewcommand")
+        lines[i] = lines[i].replace('\\newcommand', '\\renewcommand')
         console.log(`Redefining ${lines[i]}`)
       } else {
         throw error
       }
     }
   }
-  return lines.join("\n")
+  return lines.join('\n')
 }
 
 export function extractInlineMacros(source: string): [string, string] {
-  const sourceLines = source.split("\n")
-  const macroStartIndex = sourceLines.findIndex((line) => line.includes("\\begin{algorithm}"))
+  const sourceLines = source.split('\n')
+  const macroStartIndex = sourceLines.findIndex(line => line.includes('\\begin{algorithm}'))
 
-  const macroLines = sourceLines.slice(0, macroStartIndex).join("\n")
-  const nonMacroLines = sourceLines.slice(macroStartIndex).join("\n")
+  const macroLines = sourceLines.slice(0, macroStartIndex).join('\n')
+  const nonMacroLines = sourceLines.slice(macroStartIndex).join('\n')
 
-  let inlineMacros = ""
+  let inlineMacros = ''
 
   try {
     const translated = translateUnsupportedMacrosPerf(macroLines)

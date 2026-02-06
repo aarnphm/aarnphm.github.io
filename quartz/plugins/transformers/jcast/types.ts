@@ -1,5 +1,5 @@
-import { Node as UnistNode, Data as UnistData, Parent } from "unist"
-import type { WikilinkData } from "../../../util/wikilinks"
+import { Node as UnistNode, Data as UnistData, Parent } from 'unist'
+import type { WikilinkData } from '../../../util/wikilinks'
 
 /**
  * jcast - JSON Canvas Abstract Syntax Tree
@@ -10,9 +10,9 @@ import type { WikilinkData } from "../../../util/wikilinks"
 
 // ===== JSON Canvas Spec Types =====
 
-export type NodeType = "text" | "file" | "link" | "group"
-export type EdgeEnd = "none" | "arrow"
-export type Side = "top" | "right" | "bottom" | "left"
+export type NodeType = 'text' | 'file' | 'link' | 'group'
+export type EdgeEnd = 'none' | 'arrow'
+export type Side = 'top' | 'right' | 'bottom' | 'left'
 
 /**
  * Raw JSON Canvas node from .canvas file
@@ -127,7 +127,7 @@ export interface JcastResolvedWikilink {
  * Base jcast node - compatible with unist Node
  */
 export interface JcastNode extends UnistNode {
-  type: "canvas" | "canvasNode" | "canvasEdge" | "canvasGroup"
+  type: 'canvas' | 'canvasNode' | 'canvasEdge' | 'canvasGroup'
   id?: string
   data?: JcastData
   children?: JcastNode[]
@@ -137,7 +137,7 @@ export interface JcastNode extends UnistNode {
  * Root canvas node - represents entire .canvas file
  */
 export interface JcastCanvas extends JcastNode {
-  type: "canvas"
+  type: 'canvas'
   children: JcastNode[] // All nodes and edges
   data: JcastData & {
     /**
@@ -157,7 +157,7 @@ export interface JcastCanvas extends JcastNode {
  * Canvas node - represents a node in the canvas
  */
 export interface JcastCanvasNode extends JcastNode {
-  type: "canvasNode"
+  type: 'canvasNode'
   id: string
   data: JcastData & { canvas: JsonCanvasNode; nodeType: NodeType }
   children?: JcastNode[] // For groups, contains child nodes
@@ -167,7 +167,7 @@ export interface JcastCanvasNode extends JcastNode {
  * Canvas edge - represents a connection between nodes
  */
 export interface JcastCanvasEdge extends JcastNode {
-  type: "canvasEdge"
+  type: 'canvasEdge'
   id: string
   data: JcastData & { canvas: JsonCanvasEdge; fromNode: string; toNode: string }
 }
@@ -176,26 +176,26 @@ export interface JcastCanvasEdge extends JcastNode {
  * Canvas group - represents a group container
  */
 export interface JcastCanvasGroup extends JcastNode {
-  type: "canvasGroup"
+  type: 'canvasGroup'
   id: string
-  data: JcastData & { canvas: JsonCanvasNode; nodeType: "group" }
+  data: JcastData & { canvas: JsonCanvasNode; nodeType: 'group' }
   children: JcastNode[] // Nodes contained in this group
 }
 
 export function isJcastCanvas(node: unknown): node is JcastCanvas {
-  return typeof node === "object" && node !== null && (node as JcastNode).type === "canvas"
+  return typeof node === 'object' && node !== null && (node as JcastNode).type === 'canvas'
 }
 
 export function isJcastCanvasNode(node: unknown): node is JcastCanvasNode {
-  return typeof node === "object" && node !== null && (node as JcastNode).type === "canvasNode"
+  return typeof node === 'object' && node !== null && (node as JcastNode).type === 'canvasNode'
 }
 
 export function isJcastCanvasEdge(node: unknown): node is JcastCanvasEdge {
-  return typeof node === "object" && node !== null && (node as JcastNode).type === "canvasEdge"
+  return typeof node === 'object' && node !== null && (node as JcastNode).type === 'canvasEdge'
 }
 
 export function isJcastCanvasGroup(node: unknown): node is JcastCanvasGroup {
-  return typeof node === "object" && node !== null && (node as JcastNode).type === "canvasGroup"
+  return typeof node === 'object' && node !== null && (node as JcastNode).type === 'canvasGroup'
 }
 
 /**
@@ -263,7 +263,7 @@ export interface EdgeBuilderOptions {
   label?: string
 }
 
-export type LayoutAlgorithm = "force-directed" | "hierarchical" | "radial" | "manual"
+export type LayoutAlgorithm = 'force-directed' | 'hierarchical' | 'radial' | 'manual'
 
 export interface LayoutOptions {
   algorithm: LayoutAlgorithm
@@ -276,7 +276,7 @@ export interface LayoutOptions {
   // hierarchical options
   levelSeparation?: number
   nodeSeparation?: number
-  direction?: "TB" | "BT" | "LR" | "RL"
+  direction?: 'TB' | 'BT' | 'LR' | 'RL'
   // radial options
   radius?: number
   startAngle?: number

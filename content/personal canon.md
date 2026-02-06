@@ -1,5 +1,5 @@
 ---
-date: "2025-12-17"
+date: '2025-12-17'
 description: and stuff that have imbibed onto my brain.
 id: personal canon
 modified: 2025-12-18 03:31:46 GMT-05:00

@@ -1,5 +1,5 @@
 ---
-date: "2025-11-01"
+date: '2025-11-01'
 description: scaffolding (munkres ch. 2–5).
 id: point set
 modified: 2025-11-09 01:07:38 GMT-05:00

@@ -1,4 +1,4 @@
-import type { ArenaEffect } from "./model"
+import type { ArenaEffect } from './model'
 import {
   buildSearchIndex,
   clearSearchState,
@@ -15,36 +15,36 @@ import {
   wireSearchResultsInteractions,
   getSearchIndex,
   setSearchIndex,
-} from "./view"
+} from './view'
 
 export const runArenaEffect = (effect: ArenaEffect) => {
   switch (effect.type) {
-    case "modal.open":
-      void showModal(effect.blockId).catch((error) => console.error(error))
+    case 'modal.open':
+      void showModal(effect.blockId).catch(error => console.error(error))
       return
-    case "modal.close":
+    case 'modal.close':
       closeModal()
       return
-    case "block.navigate":
-      void navigateBlock(effect.direction).catch((error) => console.error(error))
+    case 'block.navigate':
+      void navigateBlock(effect.direction).catch(error => console.error(error))
       return
-    case "copy":
+    case 'copy':
       handleCopyButton(effect.button)
       return
-    case "search.focus":
+    case 'search.focus':
       focusSearchInput(effect.prefill)
       return
-    case "search.clear":
+    case 'search.clear':
       clearSearchState({ blur: effect.blur })
       return
-    case "search.close":
+    case 'search.close':
       resetActiveResultHighlight()
       closeSearchDropdown()
       return
-    case "search.result.activate":
+    case 'search.result.activate':
       setActiveResult(effect.index, effect.options)
       return
-    case "search.query": {
+    case 'search.query': {
       if (effect.query.length < 2) {
         resetActiveResultHighlight()
         closeSearchDropdown()
@@ -56,13 +56,13 @@ export const runArenaEffect = (effect: ArenaEffect) => {
       resetActiveResultHighlight()
       return
     }
-    case "search.index.build":
+    case 'search.index.build':
       buildSearchIndex(effect.scope)
-        .then((index) => {
+        .then(index => {
           setSearchIndex(index)
         })
-        .catch((error) => {
-          console.error("Failed to build search index:", error)
+        .catch(error => {
+          console.error('Failed to build search index:', error)
           setSearchIndex([])
         })
       return

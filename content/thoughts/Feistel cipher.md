@@ -1,10 +1,10 @@
 ---
-created: "2025-11-04"
-date: "2025-11-04"
+created: '2025-11-04'
+date: '2025-11-04'
 description: feistel-style block cipher skeletons, their mechanics, guarantees, and notable designs
 id: feistel cipher
 modified: 2025-11-05 03:40:35 GMT-05:00
-published: "2003-10-29"
+published: '2003-10-29'
 source: https://en.wikipedia.org/wiki/Feistel_cipher
 tags:
   - seed
@@ -82,15 +82,15 @@ flowchart LR
     title="classic feistel lineage"
     summary="balanced-round designs that stay close to the luby–rackoff template."
     points={[
-      "blowfish, camellia, cast-128, des and triple des, feal, gost 28147-89",
-      "ice, kasumi, loki97, lucifer, magenta, mars, misty1",
-      "rc5, simon, tea/xtea, twofish",
+      'blowfish, camellia, cast-128, des and triple des, feal, gost 28147-89',
+      'ice, kasumi, loki97, lucifer, magenta, mars, misty1',
+      'rc5, simon, tea/xtea, twofish',
     ]}
   />
   <MethodologyStep
     title="generalised or derivative designs"
     summary="wider-branch or format-preserving variants that alter the round routing."
-    points={["cast-256, clefia, macguffin, rc2, rc6", "skipjack, sms4, threefish (skein)"]}
+    points={['cast-256, clefia, macguffin, rc2, rc6', 'skipjack, sms4, threefish (skein)']}
   />
 </MethodologyTree>
 ```

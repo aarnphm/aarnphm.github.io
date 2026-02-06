@@ -1,8 +1,8 @@
-import { computePosition, flip, inline, Placement, shift, Strategy } from "@floating-ui/dom"
-import xmlFormat from "xml-formatter"
-import { getContentType } from "../../util/mime"
-import { FullSlug, getFullSlug, normalizeRelativeURLs } from "../../util/path"
-import { createSidePanel, fetchCanonical, getOrCreateSidePanel } from "./util"
+import { computePosition, flip, inline, Placement, shift, Strategy } from '@floating-ui/dom'
+import xmlFormat from 'xml-formatter'
+import { getContentType } from '../../util/mime'
+import { FullSlug, getFullSlug, normalizeRelativeURLs } from '../../util/path'
+import { createSidePanel, fetchCanonical, getOrCreateSidePanel } from './util'
 
 type ContentHandler = (
   response: Response,
@@ -59,9 +59,9 @@ function cleanupBlobUrl(blobUrl: string): void {
 
 function cleanAbsoluteElement(element: HTMLDivElement): HTMLDivElement {
   const refsAndNotes = element.querySelectorAll<HTMLDivElement>(
-    "section[data-references], section[data-footnotes], [data-skip-preview], .telescopic-container",
+    'section[data-references], section[data-footnotes], [data-skip-preview], .telescopic-container',
   )
-  refsAndNotes.forEach((section) => section.remove())
+  refsAndNotes.forEach(section => section.remove())
   return element
 }
 
@@ -69,23 +69,23 @@ function createPopoverElement(...classes: string[]): {
   popoverElement: HTMLElement
   popoverInner: HTMLDivElement
 } {
-  const popoverElement = document.createElement("div")
-  popoverElement.classList.add("popover", ...classes)
-  const popoverInner = document.createElement("div")
-  popoverInner.classList.add("popover-inner")
+  const popoverElement = document.createElement('div')
+  popoverElement.classList.add('popover', ...classes)
+  const popoverInner = document.createElement('div')
+  popoverInner.classList.add('popover-inner')
   popoverElement.appendChild(popoverInner)
   return { popoverElement, popoverInner }
 }
 
 async function handleImageContent(targetUrl: URL, popoverInner: HTMLDivElement) {
-  const img = document.createElement("img")
+  const img = document.createElement('img')
   img.src = targetUrl.toString()
   img.alt = targetUrl.pathname
   popoverInner.appendChild(img)
 }
 
 async function handlePdfContent(response: Response, popoverInner: HTMLDivElement) {
-  const pdf = document.createElement("iframe")
+  const pdf = document.createElement('iframe')
   const blob = await response.blob()
   const blobUrl = createManagedBlobUrl(blob)
   pdf.src = blobUrl
@@ -94,9 +94,9 @@ async function handlePdfContent(response: Response, popoverInner: HTMLDivElement
 
 async function handleXmlContent(response: Response, popoverInner: HTMLDivElement) {
   const contents = await response.text()
-  const rss = document.createElement("pre")
-  rss.classList.add("rss-viewer")
-  rss.append(xmlFormat(contents, { indentation: "  ", lineSeparator: "\n" }))
+  const rss = document.createElement('pre')
+  rss.classList.add('rss-viewer')
+  rss.append(xmlFormat(contents, { indentation: '  ', lineSeparator: '\n' }))
   popoverInner.append(rss)
 }
 
@@ -105,16 +105,16 @@ async function handleDefaultContent(
   targetUrl: URL,
   popoverInner: HTMLDivElement,
 ) {
-  popoverInner.classList.add("grid")
+  popoverInner.classList.add('grid')
   const contents = await response.text()
-  const html = p.parseFromString(contents, "text/html")
+  const html = p.parseFromString(contents, 'text/html')
   normalizeRelativeURLs(html, targetUrl)
-  html.querySelectorAll("[id]").forEach((el) => {
+  html.querySelectorAll('[id]').forEach(el => {
     const targetID = `popover-${el.id}`
     el.id = targetID
   })
   const elts = [
-    ...(html.getElementsByClassName("popover-hint") as HTMLCollectionOf<HTMLDivElement>),
+    ...(html.getElementsByClassName('popover-hint') as HTMLCollectionOf<HTMLDivElement>),
   ].map(cleanAbsoluteElement)
   if (elts.length === 0) return
   popoverInner.append(...elts)
@@ -122,9 +122,9 @@ async function handleDefaultContent(
 
 const contentHandlers: Record<string, ContentHandler> = {
   image: async (_, targetUrl, popoverInner) => handleImageContent(targetUrl, popoverInner),
-  "application/pdf": async (response, _targetUrl, popoverInner) =>
+  'application/pdf': async (response, _targetUrl, popoverInner) =>
     handlePdfContent(response, popoverInner),
-  "application/xml": async (response, _targetUrl, popoverInner) =>
+  'application/xml': async (response, _targetUrl, popoverInner) =>
     handleXmlContent(response, popoverInner),
   default: handleDefaultContent,
 }
@@ -134,17 +134,17 @@ async function populatePopoverContent(
   targetUrl: URL,
   popoverInner: HTMLDivElement,
 ) {
-  const headerContentType = response.headers.get("Content-Type")
+  const headerContentType = response.headers.get('Content-Type')
   const contentType = headerContentType
-    ? headerContentType.split(";")[0]
+    ? headerContentType.split(';')[0]
     : getContentType(targetUrl)
-  const [contentTypeCategory] = contentType.split("/")
+  const [contentTypeCategory] = contentType.split('/')
   popoverInner.dataset.contentType = contentType ?? undefined
 
   const handler =
     contentHandlers[contentTypeCategory] ??
     contentHandlers[contentType] ??
-    contentHandlers["default"]
+    contentHandlers['default']
 
   await handler(response, targetUrl, popoverInner)
 }
@@ -152,7 +152,7 @@ async function populatePopoverContent(
 async function setPosition(
   link: HTMLElement,
   popoverElement: HTMLElement,
-  { clientX, clientY, placement, strategy = "fixed" }: PositioningOptions,
+  { clientX, clientY, placement, strategy = 'fixed' }: PositioningOptions,
 ) {
   const middleware = [inline({ x: clientX, y: clientY }), shift(), flip()]
   const {
@@ -173,7 +173,7 @@ async function showPopover(
   options: ShowPopoverOptions = {},
 ) {
   clearActivePopover()
-  popoverElement.classList.add("active-popover")
+  popoverElement.classList.add('active-popover')
 
   await setPosition(link, popoverElement, {
     clientX: pointer.clientX,
@@ -183,28 +183,28 @@ async function showPopover(
   })
 
   const { hash, popoverInner } = options
-  if (hash && hash !== "" && popoverInner) {
-    const targetAnchor = hash.startsWith("#popover") ? hash : `#popover-${hash.slice(1)}`
+  if (hash && hash !== '' && popoverInner) {
+    const targetAnchor = hash.startsWith('#popover') ? hash : `#popover-${hash.slice(1)}`
     const heading = popoverInner.querySelector(targetAnchor) as HTMLElement | null
     if (heading) {
-      popoverInner.scroll({ top: heading.offsetTop - 12, behavior: "instant" })
+      popoverInner.scroll({ top: heading.offsetTop - 12, behavior: 'instant' })
     }
   }
 }
 
 function clearActivePopover() {
   activeAnchor = null
-  const allPopoverElements = document.querySelectorAll(".popover")
-  allPopoverElements.forEach((popoverElement) => popoverElement.classList.remove("active-popover"))
+  const allPopoverElements = document.querySelectorAll('.popover')
+  allPopoverElements.forEach(popoverElement => popoverElement.classList.remove('active-popover'))
 }
 
 function compareUrls(a: URL, b: URL): boolean {
   const u1 = new URL(a.toString())
   const u2 = new URL(b.toString())
-  u1.hash = ""
-  u1.search = ""
-  u2.hash = ""
-  u2.search = ""
+  u1.hash = ''
+  u1.search = ''
+  u2.hash = ''
+  u2.search = ''
   return u1.toString() === u2.toString()
 }
 
@@ -212,10 +212,10 @@ async function handleBibliography(
   link: HTMLAnchorElement,
   pointer: { clientX: number; clientY: number },
 ) {
-  const href = link.getAttribute("href")
+  const href = link.getAttribute('href')
   if (!href) return
 
-  const entryId = href.replace("#", "")
+  const entryId = href.replace('#', '')
   const bibEntry = document.getElementById(entryId) as HTMLLIElement | null
   if (!bibEntry) return
 
@@ -224,30 +224,30 @@ async function handleBibliography(
   let popoverInner: HTMLDivElement | null = null
 
   if (!popoverElement) {
-    const created = createPopoverElement("bib-popover")
+    const created = createPopoverElement('bib-popover')
     popoverElement = created.popoverElement
     popoverInner = created.popoverInner
     popoverElement.id = popoverId
     popoverInner.innerHTML = bibEntry.innerHTML
     document.body.appendChild(popoverElement)
   } else {
-    popoverInner = popoverElement.querySelector(".popover-inner") as HTMLDivElement | null
+    popoverInner = popoverElement.querySelector('.popover-inner') as HTMLDivElement | null
   }
 
   if (!popoverInner) return
 
   link.dataset.popoverId = popoverId
-  await showPopover(link, popoverElement, pointer, { placement: "top" })
+  await showPopover(link, popoverElement, pointer, { placement: 'top' })
 }
 
 async function handleFootnote(
   link: HTMLAnchorElement,
   pointer: { clientX: number; clientY: number },
 ) {
-  const href = link.getAttribute("href")
+  const href = link.getAttribute('href')
   if (!href) return
 
-  const entryId = href.replace("#", "")
+  const entryId = href.replace('#', '')
   const footnoteEntry = document.getElementById(entryId) as HTMLLIElement | null
   if (!footnoteEntry) return
 
@@ -256,21 +256,21 @@ async function handleFootnote(
   let popoverInner: HTMLDivElement | null = null
 
   if (!popoverElement) {
-    const created = createPopoverElement("footnote-popover")
+    const created = createPopoverElement('footnote-popover')
     popoverElement = created.popoverElement
     popoverInner = created.popoverInner
     popoverElement.id = popoverId
     popoverInner.innerHTML = footnoteEntry.innerHTML
-    popoverInner.querySelectorAll("[data-footnote-backref]").forEach((el) => el.remove())
+    popoverInner.querySelectorAll('[data-footnote-backref]').forEach(el => el.remove())
     document.body.appendChild(popoverElement)
   } else {
-    popoverInner = popoverElement.querySelector(".popover-inner") as HTMLDivElement | null
+    popoverInner = popoverElement.querySelector('.popover-inner') as HTMLDivElement | null
   }
 
   if (!popoverInner) return
 
   link.dataset.popoverId = popoverId
-  await showPopover(link, popoverElement, pointer, { placement: "top" })
+  await showPopover(link, popoverElement, pointer, { placement: 'top' })
 }
 
 async function handleStackedNotes(
@@ -286,17 +286,17 @@ async function handleStackedNotes(
     activePopoverReq = null
   }
 
-  const column = stacked.querySelector<HTMLDivElement>(".stacked-notes-column")
+  const column = stacked.querySelector<HTMLDivElement>('.stacked-notes-column')
   if (!column) return
 
   column
     .querySelectorAll<HTMLDivElement>('div[class~="stacked-popover"]')
-    .forEach((popover) => popover.remove())
+    .forEach(popover => popover.remove())
 
   const targetUrl = new URL(link.href)
   const hash = decodeURIComponent(targetUrl.hash)
-  targetUrl.hash = ""
-  targetUrl.search = ""
+  targetUrl.hash = ''
+  targetUrl.search = ''
 
   const controller = new AbortController()
   activePopoverReq = { abort: () => controller.abort(), link }
@@ -304,7 +304,7 @@ async function handleStackedNotes(
   const response = await fetchCanonical(new URL(targetUrl.toString()), {
     signal: controller.signal,
   }).catch((error: Error & { name: string }) => {
-    if (error.name === "AbortError") {
+    if (error.name === 'AbortError') {
       return null
     }
     console.error(error)
@@ -316,7 +316,7 @@ async function handleStackedNotes(
     return
   }
 
-  const { popoverElement, popoverInner } = createPopoverElement("stacked-popover")
+  const { popoverElement, popoverInner } = createPopoverElement('stacked-popover')
   await populatePopoverContent(response, targetUrl, popoverInner)
 
   if (popoverInner.childElementCount === 0) {
@@ -329,34 +329,34 @@ async function handleStackedNotes(
   await setPosition(link, popoverElement, {
     clientX: pointer.clientX,
     clientY: pointer.clientY,
-    placement: "right",
-    strategy: "absolute",
+    placement: 'right',
+    strategy: 'absolute',
   })
 
-  popoverElement.style.visibility = "visible"
-  popoverElement.style.opacity = "1"
+  popoverElement.style.visibility = 'visible'
+  popoverElement.style.opacity = '1'
 
-  if (hash !== "") {
-    const targetAnchor = hash.startsWith("#popover") ? hash : `#popover-${hash.slice(1)}`
+  if (hash !== '') {
+    const targetAnchor = hash.startsWith('#popover') ? hash : `#popover-${hash.slice(1)}`
     const heading = popoverInner.querySelector(targetAnchor) as HTMLElement | null
     if (heading) {
-      popoverInner.scroll({ top: heading.offsetTop - 12, behavior: "instant" })
+      popoverInner.scroll({ top: heading.offsetTop - 12, behavior: 'instant' })
     }
   }
 
   const onMouseLeave = () => {
-    popoverElement.style.visibility = "hidden"
-    popoverElement.style.opacity = "0"
+    popoverElement.style.visibility = 'hidden'
+    popoverElement.style.opacity = '0'
     setTimeout(() => {
-      if (popoverElement.style.visibility === "hidden") {
+      if (popoverElement.style.visibility === 'hidden') {
         popoverElement.remove()
       }
     }, 100)
   }
 
-  link.addEventListener("mouseleave", onMouseLeave)
+  link.addEventListener('mouseleave', onMouseLeave)
   window.addCleanup(() => {
-    link.removeEventListener("mouseleave", onMouseLeave)
+    link.removeEventListener('mouseleave', onMouseLeave)
   })
 
   activePopoverReq = null
@@ -370,23 +370,23 @@ async function mouseEnterHandler(
   activeAnchor = this
   const link = activeAnchor
 
-  if (link.dataset.bib === "") {
+  if (link.dataset.bib === '') {
     await handleBibliography(link, { clientX, clientY })
     return
   }
 
-  if (link.dataset.footnoteRef === "") {
+  if (link.dataset.footnoteRef === '') {
     await handleFootnote(link, { clientX, clientY })
     return
   }
 
-  const container = document.getElementById("stacked-notes-container") as HTMLDivElement | null
+  const container = document.getElementById('stacked-notes-container') as HTMLDivElement | null
 
-  if (link.dataset.noPopover === "" || link.dataset.noPopover === "true") {
+  if (link.dataset.noPopover === '' || link.dataset.noPopover === 'true') {
     return
   }
 
-  if (getFullSlug(window) === "notes" || container?.classList.contains("active")) {
+  if (getFullSlug(window) === 'notes' || container?.classList.contains('active')) {
     await handleStackedNotes(container, link, { clientX, clientY })
     return
   }
@@ -397,31 +397,31 @@ async function mouseEnterHandler(
 
   if (compareUrls(thisUrl, targetUrl)) {
     clearActivePopover()
-    if (hash !== "") {
-      const article = document.querySelector("article")
-      const targetAnchor = hash.startsWith("#popover") ? hash : `#popover-${hash.slice(1)}`
+    if (hash !== '') {
+      const article = document.querySelector('article')
+      const targetAnchor = hash.startsWith('#popover') ? hash : `#popover-${hash.slice(1)}`
       const heading = article?.querySelector(targetAnchor) as HTMLElement | null
       if (heading) {
-        heading.classList.add("dag")
+        heading.classList.add('dag')
         const cleanup = () => {
-          heading.classList.remove("dag")
-          link.removeEventListener("mouseleave", cleanup)
+          heading.classList.remove('dag')
+          link.removeEventListener('mouseleave', cleanup)
         }
-        link.addEventListener("mouseleave", cleanup)
-        window.addCleanup(() => link.removeEventListener("mouseleave", cleanup))
+        link.addEventListener('mouseleave', cleanup)
+        window.addCleanup(() => link.removeEventListener('mouseleave', cleanup))
       }
     }
     return
   }
 
-  targetUrl.hash = ""
-  targetUrl.search = ""
+  targetUrl.hash = ''
+  targetUrl.search = ''
 
   const popoverId = `popover-${targetUrl.pathname}`
   const existingPopover = document.getElementById(popoverId) as HTMLElement | null
 
   if (existingPopover) {
-    const popoverInner = existingPopover.querySelector(".popover-inner") as HTMLDivElement | null
+    const popoverInner = existingPopover.querySelector('.popover-inner') as HTMLDivElement | null
     if (!popoverInner) return
     await showPopover(link, existingPopover, { clientX, clientY }, { hash, popoverInner })
     return
@@ -430,11 +430,11 @@ async function mouseEnterHandler(
   let response: Response | void
   if (link.dataset.arxivId) {
     const url = new URL(`https://aarnphm.xyz/api/arxiv?identifier=${link.dataset.arxivId}`)
-    response = await fetchCanonical(url).catch((error) => {
+    response = await fetchCanonical(url).catch(error => {
       console.error(error)
     })
   } else {
-    response = await fetchCanonical(new URL(targetUrl.toString())).catch((error) => {
+    response = await fetchCanonical(new URL(targetUrl.toString())).catch(error => {
       console.error(error)
     })
   }
@@ -464,12 +464,12 @@ async function mouseClickHandler(evt: MouseEvent) {
   const thisUrl = new URL(document.location.href)
   const targetUrl = new URL(link.href)
   const hash = decodeURIComponent(targetUrl.hash)
-  targetUrl.hash = ""
-  targetUrl.search = ""
+  targetUrl.hash = ''
+  targetUrl.search = ''
 
-  const container = document.getElementById("stacked-notes-container") as HTMLDivElement | null
+  const container = document.getElementById('stacked-notes-container') as HTMLDivElement | null
 
-  if (evt.altKey && !container?.classList.contains("active")) {
+  if (evt.altKey && !container?.classList.contains('active')) {
     evt.preventDefault()
     evt.stopPropagation()
 
@@ -486,34 +486,34 @@ async function mouseClickHandler(evt: MouseEvent) {
         response = await fetchCanonical(url).catch(console.error)
       } else {
         const fetchUrl = new URL(link.href)
-        fetchUrl.hash = ""
-        fetchUrl.search = ""
+        fetchUrl.hash = ''
+        fetchUrl.search = ''
         response = await fetchCanonical(fetchUrl).catch(console.error)
       }
 
       if (!response) return
 
-      const headerContentType = response.headers.get("Content-Type")
+      const headerContentType = response.headers.get('Content-Type')
       const contentType = headerContentType
-        ? headerContentType.split(";")[0]
+        ? headerContentType.split(';')[0]
         : getContentType(targetUrl)
 
-      if (contentType === "application/pdf") {
-        const pdf = document.createElement("iframe")
+      if (contentType === 'application/pdf') {
+        const pdf = document.createElement('iframe')
         const blob = await response.blob()
         const blobUrl = createManagedBlobUrl(blob)
         pdf.src = blobUrl
         createSidePanel(asidePanel, pdf)
       } else {
         const contents = await response.text()
-        const html = p.parseFromString(contents, "text/html")
+        const html = p.parseFromString(contents, 'text/html')
         normalizeRelativeURLs(html, targetUrl)
-        html.querySelectorAll("[id]").forEach((el) => {
+        html.querySelectorAll('[id]').forEach(el => {
           const targetID = `popover-${el.id}`
           el.id = targetID
         })
         const elts = [
-          ...(html.getElementsByClassName("popover-hint") as HTMLCollectionOf<HTMLElement>),
+          ...(html.getElementsByClassName('popover-hint') as HTMLCollectionOf<HTMLElement>),
         ]
         if (elts.length === 0) return
 
@@ -522,35 +522,35 @@ async function mouseClickHandler(evt: MouseEvent) {
 
       window.notifyNav(slug as FullSlug)
     } catch (error) {
-      console.error("Failed to create side panel:", error)
+      console.error('Failed to create side panel:', error)
     }
     return
   }
 
-  if (compareUrls(thisUrl, targetUrl) && hash !== "") {
+  if (compareUrls(thisUrl, targetUrl) && hash !== '') {
     evt.preventDefault()
-    const mainContent = document.querySelector("article")
-    const targetAnchor = hash.startsWith("#popover") ? hash : `#popover-${hash.slice(1)}`
+    const mainContent = document.querySelector('article')
+    const targetAnchor = hash.startsWith('#popover') ? hash : `#popover-${hash.slice(1)}`
     const heading = mainContent?.querySelector(targetAnchor) as HTMLElement | null
     if (heading) {
-      heading.scrollIntoView({ behavior: "smooth" })
-      history.pushState(null, "", hash)
+      heading.scrollIntoView({ behavior: 'smooth' })
+      history.pushState(null, '', hash)
     }
   }
 }
 
 function setupPopoverLinks(container: Document | HTMLElement = document) {
-  const links = [...container.getElementsByClassName("internal")] as HTMLAnchorElement[]
+  const links = [...container.getElementsByClassName('internal')] as HTMLAnchorElement[]
 
   for (const link of links) {
-    link.addEventListener("mouseenter", mouseEnterHandler)
-    link.addEventListener("mouseleave", clearActivePopover)
-    link.addEventListener("click", mouseClickHandler)
+    link.addEventListener('mouseenter', mouseEnterHandler)
+    link.addEventListener('mouseleave', clearActivePopover)
+    link.addEventListener('click', mouseClickHandler)
 
     window.addCleanup(() => {
-      link.removeEventListener("mouseenter", mouseEnterHandler)
-      link.removeEventListener("mouseleave", clearActivePopover)
-      link.removeEventListener("click", mouseClickHandler)
+      link.removeEventListener('mouseenter', mouseEnterHandler)
+      link.removeEventListener('mouseleave', clearActivePopover)
+      link.removeEventListener('click', mouseClickHandler)
 
       for (const blobUrl of Array.from(blobCleanupMap.keys())) {
         cleanupBlobUrl(blobUrl)
@@ -564,11 +564,11 @@ function setupPopoverLinks(container: Document | HTMLElement = document) {
   }
 }
 
-document.addEventListener("nav", () => {
+document.addEventListener('nav', () => {
   setupPopoverLinks()
 })
 
-document.addEventListener("contentdecrypted", (e) => {
+document.addEventListener('contentdecrypted', e => {
   const { content } = e.detail
   if (content) setupPopoverLinks(content)
 })

@@ -1,6 +1,6 @@
-import FlexSearch, { DocumentData } from "flexsearch"
-import { FullSlug, FilePath } from "../../util/path"
-import { encode } from "./util"
+import FlexSearch, { DocumentData } from 'flexsearch'
+import { FullSlug, FilePath } from '../../util/path'
+import { encode } from './util'
 
 export interface SearchItem extends DocumentData {
   id: number
@@ -15,13 +15,13 @@ export interface SearchItem extends DocumentData {
 const searchIndex = new FlexSearch.Document<SearchItem>({
   encode,
   document: {
-    id: "id",
-    tag: "slug",
+    id: 'id',
+    tag: 'slug',
     index: [
-      { field: "title", tokenize: "forward" },
-      { field: "name", tokenize: "forward" },
-      { field: "aliases", tokenize: "forward" },
-      { field: "content", tokenize: "forward" },
+      { field: 'title', tokenize: 'forward' },
+      { field: 'name', tokenize: 'forward' },
+      { field: 'aliases', tokenize: 'forward' },
+      { field: 'content', tokenize: 'forward' },
     ],
   },
 })
@@ -40,8 +40,8 @@ export async function populateSearchIndex(data: ContentIndex): Promise<void> {
       id,
       slug: slug as FullSlug,
       name: fileData.fileName,
-      title: fileData.title ?? "",
-      content: fileData.content ?? "",
+      title: fileData.title ?? '',
+      content: fileData.content ?? '',
       aliases: fileData.aliases,
     }
 
@@ -55,14 +55,14 @@ export async function populateSearchIndex(data: ContentIndex): Promise<void> {
 }
 
 export async function querySearchIndex(query: string, limit: number = 10): Promise<SearchItem[]> {
-  if (!query || query.trim() === "") {
+  if (!query || query.trim() === '') {
     return [...itemsById.values()].slice(0, limit)
   }
 
   const results = await searchIndex.searchAsync({
     query,
     limit,
-    index: ["title", "name", "aliases"],
+    index: ['title', 'name', 'aliases'],
   })
 
   const allIds = new Set<number>()
@@ -73,7 +73,7 @@ export async function querySearchIndex(query: string, limit: number = 10): Promi
   }
 
   return [...allIds]
-    .map((id) => itemsById.get(id))
+    .map(id => itemsById.get(id))
     .filter((item): item is SearchItem => item !== undefined)
     .slice(0, limit)
 }

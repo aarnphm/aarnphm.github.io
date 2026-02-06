@@ -1,11 +1,11 @@
-import { PageLayout, SharedLayout } from "./quartz/cfg"
-import * as Component from "./quartz/components"
+import { PageLayout, SharedLayout } from './quartz/cfg'
+import * as Component from './quartz/components'
 
 // components shared across all pages
 export const sharedPageComponents: SharedLayout = {
   head: Component.Head(),
   header: [
-    Component.Breadcrumbs({ rootName: "~", spacerSymbol: "/", trailingWindow: 1 }),
+    Component.Breadcrumbs({ rootName: '~', spacerSymbol: '/', trailingWindow: 1 }),
     Component.StackedNotes(),
     Component.Image(),
     Component.Graph(),
@@ -17,11 +17,11 @@ export const sharedPageComponents: SharedLayout = {
   ],
   afterBody: [Component.Recommendations(), Component.Backlinks()],
   footer: Component.Footer({
-    layout: "minimal",
+    layout: 'minimal',
     links: {
-      "CC BY-NC-SA": "https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en",
-      github: "https://github.com/aarnphm",
-      twitter: "https://twitter.com/aarnphm",
+      'CC BY-NC-SA': 'https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en',
+      github: 'https://github.com/aarnphm',
+      twitter: 'https://twitter.com/aarnphm',
     },
   }),
 }
@@ -32,10 +32,10 @@ export const defaultContentPageLayout: PageLayout = {
     Component.ArticleTitle(),
     Component.Byline(
       Component.Flex({
-        classNames: ["first"],
-        components: [{ Component: Component.TagList(), grow: true, align: "start" }],
-        direction: "column",
-        gap: "0.5rem",
+        classNames: ['first'],
+        components: [{ Component: Component.TagList(), grow: true, align: 'start' }],
+        direction: 'column',
+        gap: '0.5rem',
       }),
       Component.ContentMeta(),
     ),
@@ -46,7 +46,7 @@ export const defaultContentPageLayout: PageLayout = {
 // components for pages that display lists of pages  (e.g. tags or folders)
 export const defaultListPageLayout: PageLayout = {
   beforeBody: [
-    Component.Breadcrumbs({ rootName: "~", spacerSymbol: "/", trailingWindow: 1 }),
+    Component.Breadcrumbs({ rootName: '~', spacerSymbol: '/', trailingWindow: 1 }),
     Component.StackedNotes(),
     Component.Image(),
     Component.Graph(),

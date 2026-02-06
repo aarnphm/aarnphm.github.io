@@ -1,22 +1,22 @@
-import { CompletionContext, CompletionResult } from "@codemirror/autocomplete"
-import { desc } from "drizzle-orm"
-import { getDB, githubUsers, type GithubUser } from "../../scripts/db"
-import { fuzzyMatchMultiple } from "./fuzzy"
+import { CompletionContext, CompletionResult } from '@codemirror/autocomplete'
+import { desc } from 'drizzle-orm'
+import { getDB, githubUsers, type GithubUser } from '../../scripts/db'
+import { fuzzyMatchMultiple } from './fuzzy'
 
-const SYNC_KEY = "mentions-last-sync"
+const SYNC_KEY = 'mentions-last-sync'
 const SYNC_INTERVAL = 5 * 60 * 1000
 
 let syncPromise: Promise<void> | null = null
 
 async function syncFromD1() {
-  const lastSync = parseInt(localStorage.getItem(SYNC_KEY) || "0")
+  const lastSync = parseInt(localStorage.getItem(SYNC_KEY) || '0')
   if (Date.now() - lastSync < SYNC_INTERVAL) return
 
   try {
     const db = await getDB()
     if (!db) return
 
-    const resp = await fetch("/api/mentions")
+    const resp = await fetch('/api/mentions')
     if (!resp.ok) throw new Error(resp.statusText)
 
     const users = (await resp.json()) as GithubUser[]
@@ -27,7 +27,7 @@ async function syncFromD1() {
 
     localStorage.setItem(SYNC_KEY, Date.now().toString())
   } catch (err) {
-    console.warn("mentions sync failed:", err)
+    console.warn('mentions sync failed:', err)
   }
 }
 
@@ -79,7 +79,7 @@ export async function mentionCompletionSource(
     options: limited.map(({ user, score }) => ({
       label: `@${user.login}`,
       detail: user.displayName && user.displayName !== user.login ? user.displayName : undefined,
-      type: "mention",
+      type: 'mention',
       apply: `@${user.login} `,
       boost: score,
     })),

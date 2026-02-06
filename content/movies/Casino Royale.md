@@ -8,7 +8,7 @@ description: bond rebooted as blunt instrument with feelings—craig's 007 earni
 director: Martin Campbell
 id: casino-royale
 modified: 2025-10-29 02:14:47 GMT-04:00
-posters: "[[movies/posters/casino-royale.jpg]]"
+posters: '[[movies/posters/casino-royale.jpg]]'
 rating: 8
 status: recurring
 studio: columbia pictures

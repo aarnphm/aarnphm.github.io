@@ -1,5 +1,5 @@
 ---
-date: "2025-08-28"
+date: '2025-08-28'
 description: and more notes
 id: notes
 modified: 2025-11-11 07:01:37 GMT-05:00
@@ -140,9 +140,9 @@ Sources for configs & GQA: Llama-2-70B HF config (80 layers, 8192 hidden, 64 hea
 - The **only knobs** in the KV formula are $L$, $h_{\text{kv}}$, $d_h$, and dtype bytes.
 - **GQA/MQA** shrink $h_{\text{kv}}$ dramatically (e.g., 64 → 8), which linearly reduces **both KV memory and bandwidth**. ([NVIDIA Developer][5])
 
-[1]: https://arxiv.org/html/2406.01698v1 "Demystifying Platform Requirements for Diverse LLM ..."
+[1]: https://arxiv.org/html/2406.01698v1 'Demystifying Platform Requirements for Diverse LLM ...'
 [2]: https://martinlwx.github.io/en/llm-inference-optimization-kv-cache/ "LLM inference optimization - KV Cache - MartinLwx's Blog"
-[3]: https://huggingface.co/docs/transformers/en/model_doc/llama2 "Llama 2"
-[4]: https://huggingface.co/TheBloke/Llama-2-70B-fp16/blob/main/config.json "config.json · TheBloke/Llama-2-70B-fp16 at main - Hugging Face"
-[5]: https://developer.nvidia.com/blog/mastering-llm-techniques-inference-optimization/ "Mastering LLM Techniques: Inference Optimization"
-[6]: https://arxiv.org/html/2312.04333v4 "Is Bigger and Deeper Always Better? Probing LLaMA Across Scales ..."
+[3]: https://huggingface.co/docs/transformers/en/model_doc/llama2 'Llama 2'
+[4]: https://huggingface.co/TheBloke/Llama-2-70B-fp16/blob/main/config.json 'config.json · TheBloke/Llama-2-70B-fp16 at main - Hugging Face'
+[5]: https://developer.nvidia.com/blog/mastering-llm-techniques-inference-optimization/ 'Mastering LLM Techniques: Inference Optimization'
+[6]: https://arxiv.org/html/2312.04333v4 'Is Bigger and Deeper Always Better? Probing LLaMA Across Scales ...'

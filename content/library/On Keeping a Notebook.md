@@ -3,15 +3,15 @@ author:
   - Joan Didion
 category:
   - philosophy
-date: "2026-01-02"
+date: '2026-01-02'
 description: part of Slouching Towards Bethlehem (1968)
 external: null
 finished: 2026
 id: On Keeping a Notebook
 modified: 2026-01-06 08:31:00 GMT-05:00
 notebook: null
-pdf: "[[thoughts/pdfs/00-On-Keeping-a-Notebook.pdf]]"
-posters: "[[library/posters/Slouching Towards Bethlehem.jpg]]"
+pdf: '[[thoughts/pdfs/00-On-Keeping-a-Notebook.pdf]]'
+posters: '[[library/posters/Slouching Towards Bethlehem.jpg]]'
 status: finished
 subcategory:
   - writing

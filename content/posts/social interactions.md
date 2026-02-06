@@ -1,5 +1,5 @@
 ---
-date: "2024-02-05"
+date: '2024-02-05'
 description: and on ways we focus on others.
 draft: true
 id: social interactions

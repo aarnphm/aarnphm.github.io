@@ -1,10 +1,10 @@
-import type { Heading, PhrasingContent, Root } from "mdast"
-import Slugger from "github-slugger"
-import { toString } from "mdast-util-to-string"
-import { visit } from "unist-util-visit"
-import type { Wikilink } from "../../extensions/micromark-extension-ofm-wikilinks"
-import { isWikilink } from "../../extensions/micromark-extension-ofm-wikilinks"
-import { QuartzTransformerPlugin } from "../../types/plugin"
+import type { Heading, PhrasingContent, Root } from 'mdast'
+import Slugger from 'github-slugger'
+import { toString } from 'mdast-util-to-string'
+import { visit } from 'unist-util-visit'
+import type { Wikilink } from '../../extensions/micromark-extension-ofm-wikilinks'
+import { isWikilink } from '../../extensions/micromark-extension-ofm-wikilinks'
+import { QuartzTransformerPlugin } from '../../types/plugin'
 
 export interface Options {
   maxDepth: 1 | 2 | 3 | 4 | 5 | 6
@@ -24,7 +24,7 @@ const slugAnchor = new Slugger()
 
 function normalizeWikilinkText(node: PhrasingContent): string {
   if (!isWikilink(node)) {
-    return ""
+    return ''
   }
 
   const { alias, anchor, target } = (node as Wikilink).data?.wikilink ?? {}
@@ -34,7 +34,7 @@ function normalizeWikilinkText(node: PhrasingContent): string {
     return trimmedAlias
   }
 
-  const trimmedAnchor = anchor?.trim().replace(/^#\^?/, "")
+  const trimmedAnchor = anchor?.trim().replace(/^#\^?/, '')
   if (trimmedAnchor) {
     return trimmedAnchor
   }
@@ -44,23 +44,23 @@ function normalizeWikilinkText(node: PhrasingContent): string {
     return trimmedTarget
   }
 
-  return ""
+  return ''
 }
 
 function extractHeadingText(node: Heading): string {
   const content = node.children
-    .map((child) => (isWikilink(child) ? normalizeWikilinkText(child) : toString(child)))
-    .join("")
-    .replace(/\s+/g, " ")
+    .map(child => (isWikilink(child) ? normalizeWikilinkText(child) : toString(child)))
+    .join('')
+    .replace(/\s+/g, ' ')
     .trim()
 
   return content
 }
 
-export const TableOfContents: QuartzTransformerPlugin<Partial<Options>> = (userOpts) => {
+export const TableOfContents: QuartzTransformerPlugin<Partial<Options>> = userOpts => {
   const opts = { ...defaultOptions, ...userOpts }
   return {
-    name: "TableOfContents",
+    name: 'TableOfContents',
     markdownPlugins() {
       return [
         () => {
@@ -70,7 +70,7 @@ export const TableOfContents: QuartzTransformerPlugin<Partial<Options>> = (userO
               slugAnchor.reset()
               const toc: TocEntry[] = []
               let highestDepth: number = opts.maxDepth
-              visit(tree, "heading", (node) => {
+              visit(tree, 'heading', node => {
                 if (node.depth <= opts.maxDepth) {
                   const normalizedText = extractHeadingText(node)
                   const text = normalizedText.length > 0 ? normalizedText : toString(node)
@@ -80,10 +80,7 @@ export const TableOfContents: QuartzTransformerPlugin<Partial<Options>> = (userO
               })
 
               if (toc.length > 0 && toc.length > opts.minEntries) {
-                file.data.toc = toc.map((entry) => ({
-                  ...entry,
-                  depth: entry.depth - highestDepth,
-                }))
+                file.data.toc = toc.map(entry => ({ ...entry, depth: entry.depth - highestDepth }))
               }
             }
           }
@@ -93,7 +90,7 @@ export const TableOfContents: QuartzTransformerPlugin<Partial<Options>> = (userO
   }
 }
 
-declare module "vfile" {
+declare module 'vfile' {
   interface DataMap {
     toc: TocEntry[]
   }

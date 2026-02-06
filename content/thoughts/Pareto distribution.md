@@ -1,5 +1,5 @@
 ---
-date: "2025-01-01"
+date: '2025-01-01'
 description: or "80-20 rule".
 id: Pareto distribution
 modified: 2025-10-29 02:15:32 GMT-04:00

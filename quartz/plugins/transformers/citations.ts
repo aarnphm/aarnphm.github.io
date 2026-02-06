@@ -1,14 +1,14 @@
-import { XMLParser } from "fast-xml-parser"
-import { Element, Text as HastText } from "hast"
-import { h } from "hastscript"
-import { Root, Link, Text } from "mdast"
-import rehypeCitation from "rehype-citation"
-import { visit } from "unist-util-visit"
-import { QuartzTransformerPlugin } from "../../types/plugin"
-import { cacheState, CachedCitationEntry, makeBibKey, normalizeArxivId } from "../stores/citations"
-import "@citation-js/plugin-bibtex"
-import "@citation-js/plugin-doi"
-import { extractArxivId } from "./links"
+import { XMLParser } from 'fast-xml-parser'
+import { Element, Text as HastText } from 'hast'
+import { h } from 'hastscript'
+import { Root, Link, Text } from 'mdast'
+import rehypeCitation from 'rehype-citation'
+import { visit } from 'unist-util-visit'
+import { QuartzTransformerPlugin } from '../../types/plugin'
+import { cacheState, CachedCitationEntry, makeBibKey, normalizeArxivId } from '../stores/citations'
+import '@citation-js/plugin-bibtex'
+import '@citation-js/plugin-doi'
+import { extractArxivId } from './links'
 
 const URL_PATTERN = /https?:\/\/[^\s<>)"]+/g
 
@@ -20,7 +20,7 @@ class RateLimiter {
     const now = Date.now()
     const elapsed = now - this.lastRequest
     if (elapsed < this.minInterval) {
-      await new Promise((resolve) => setTimeout(resolve, this.minInterval - elapsed))
+      await new Promise(resolve => setTimeout(resolve, this.minInterval - elapsed))
     }
     this.lastRequest = Date.now()
   }
@@ -36,35 +36,35 @@ interface LinkType {
 }
 
 const LINK_TYPES: LinkType[] = [
-  { type: "arxiv", pattern: extractArxivId, label: "[arXiv]" },
+  { type: 'arxiv', pattern: extractArxivId, label: '[arXiv]' },
   {
-    type: "lesswrong",
-    pattern: (url: string) => url.toLowerCase().includes("lesswrong.com"),
-    label: "[lesswrong]",
+    type: 'lesswrong',
+    pattern: (url: string) => url.toLowerCase().includes('lesswrong.com'),
+    label: '[lesswrong]',
   },
   {
-    type: "github",
-    pattern: (url: string) => url.toLowerCase().includes("github.com"),
-    label: "[GitHub]",
+    type: 'github',
+    pattern: (url: string) => url.toLowerCase().includes('github.com'),
+    label: '[GitHub]',
   },
   {
-    type: "transformer",
-    pattern: (url: string) => url.toLowerCase().includes("transformer-circuits.pub"),
-    label: "[transformer circuit]",
+    type: 'transformer',
+    pattern: (url: string) => url.toLowerCase().includes('transformer-circuits.pub'),
+    label: '[transformer circuit]',
   },
   {
-    type: "alignment",
-    pattern: (url: string) => url.toLowerCase().includes("alignmentforum.org"),
-    label: "[alignment forum]",
+    type: 'alignment',
+    pattern: (url: string) => url.toLowerCase().includes('alignmentforum.org'),
+    label: '[alignment forum]',
   },
 ]
 
 function createTextNode(value: string): HastText {
-  return { type: "text", value }
+  return { type: 'text', value }
 }
 
 function getLinkType(url: string): LinkType | undefined {
-  return LINK_TYPES.find((type) => type.pattern(url))
+  return LINK_TYPES.find(type => type.pattern(url))
 }
 
 function createLinkElement(href: string): Element {
@@ -72,8 +72,8 @@ function createLinkElement(href: string): Element {
   const displayText = linkType ? linkType.label : href
 
   return h(
-    "a.csl-external-link",
-    { href, target: "_blank", rel: "noopener noreferrer" },
+    'a.csl-external-link',
+    { href, target: '_blank', rel: 'noopener noreferrer' },
     createTextNode(displayText),
   )
 }
@@ -89,7 +89,7 @@ function processTextNode(node: HastText): (Element | HastText)[] {
   const result: (Element | HastText)[] = []
   let lastIndex = 0
 
-  matches.forEach((match) => {
+  matches.forEach(match => {
     const href = match[0]
     const startIndex = match.index!
 
@@ -114,11 +114,11 @@ function processTextNode(node: HastText): (Element | HastText)[] {
 }
 
 function processNodes(nodes: (Element | HastText)[]): (Element | HastText)[] {
-  return nodes.flatMap((node) => {
-    if (node.type === "text") {
+  return nodes.flatMap(node => {
+    if (node.type === 'text') {
       return processTextNode(node)
     }
-    if (node.type === "element") {
+    if (node.type === 'element') {
       return { ...node, children: processNodes(node.children as (Element | HastText)[]) }
     }
     return [node]
@@ -126,10 +126,10 @@ function processNodes(nodes: (Element | HastText)[]): (Element | HastText)[] {
 }
 
 export const checkBib = ({ tagName, properties }: Element) =>
-  tagName === "a" && typeof properties?.href === "string" && properties.href.startsWith("#bib")
+  tagName === 'a' && typeof properties?.href === 'string' && properties.href.startsWith('#bib')
 
 export const checkBibSection = ({ type, tagName, properties }: Element) =>
-  type === "element" && tagName === "section" && properties.dataReferences == ""
+  type === 'element' && tagName === 'section' && properties.dataReferences == ''
 
 interface Options {
   bibliography: string
@@ -144,7 +144,7 @@ interface ArxivMeta {
   url: string
 }
 
-declare module "vfile" {
+declare module 'vfile' {
   interface DataMap {
     citations?: { arxivIds: string[] }
     citationsDisabled?: boolean
@@ -160,9 +160,9 @@ function chunkIds(ids: string[], size: number): string[][] {
 }
 
 function extractIdFromEntry(entry: any): string | null {
-  const raw = typeof entry?.id === "string" ? entry.id : ""
+  const raw = typeof entry?.id === 'string' ? entry.id : ''
   if (!raw) return null
-  const tail = raw.includes("/") ? (raw.split("/").pop() ?? raw) : raw
+  const tail = raw.includes('/') ? (raw.split('/').pop() ?? raw) : raw
   const normalized = normalizeArxivId(tail)
   return normalized || null
 }
@@ -170,21 +170,21 @@ function extractIdFromEntry(entry: any): string | null {
 function parseArxivEntry(entry: any): ArxivMeta | null {
   const id = extractIdFromEntry(entry)
   if (!id) return null
-  const titleRaw = typeof entry?.title === "string" ? entry.title : ""
-  const published = typeof entry?.published === "string" ? entry.published : ""
+  const titleRaw = typeof entry?.title === 'string' ? entry.title : ''
+  const published = typeof entry?.published === 'string' ? entry.published : ''
   const authors = Array.isArray(entry?.author)
     ? entry.author.map((a: any) => a?.name).filter(Boolean)
     : entry?.author?.name
       ? [entry.author.name]
       : []
   const category =
-    entry?.["arxiv:primary_category"] && entry["arxiv:primary_category"]["@_term"]
-      ? entry["arxiv:primary_category"]["@_term"]
-      : ""
+    entry?.['arxiv:primary_category'] && entry['arxiv:primary_category']['@_term']
+      ? entry['arxiv:primary_category']['@_term']
+      : ''
 
   return {
     id,
-    title: titleRaw.trim().replace(/\s+/g, " "),
+    title: titleRaw.trim().replace(/\s+/g, ' '),
     authors,
     year: published.slice(0, 4),
     category,
@@ -193,20 +193,20 @@ function parseArxivEntry(entry: any): ArxivMeta | null {
 }
 
 async function fetchArxivMetadataBatch(ids: string[]): Promise<Map<string, ArxivMeta>> {
-  const unique = Array.from(new Set(ids.map((id) => normalizeArxivId(id)).filter(Boolean)))
+  const unique = Array.from(new Set(ids.map(id => normalizeArxivId(id)).filter(Boolean)))
   const result = new Map<string, ArxivMeta>()
   if (unique.length === 0) return result
 
-  const parser = new XMLParser({ ignoreAttributes: false, attributeNamePrefix: "@_" })
+  const parser = new XMLParser({ ignoreAttributes: false, attributeNamePrefix: '@_' })
   const batches = chunkIds(unique, ARXIV_BATCH_SIZE)
 
   for (const batch of batches) {
     await arxivRateLimiter.wait()
-    const res = await fetch(`http://export.arxiv.org/api/query?id_list=${batch.join(",")}`, {
-      headers: { "User-Agent": "QuartzArxivTransformer/1.0 (+https://github.com/aarnphm)" },
+    const res = await fetch(`http://export.arxiv.org/api/query?id_list=${batch.join(',')}`, {
+      headers: { 'User-Agent': 'QuartzArxivTransformer/1.0 (+https://github.com/aarnphm)' },
     })
 
-    if (!res.ok) throw new Error(`arXiv API error for ${batch.join(",")}: ${res.statusText}`)
+    if (!res.ok) throw new Error(`arXiv API error for ${batch.join(',')}: ${res.statusText}`)
 
     const xml = await res.text()
     const parsed = parser.parse(xml) as any
@@ -227,9 +227,9 @@ async function fetchArxivMetadataBatch(ids: string[]): Promise<Map<string, Arxiv
 }
 
 export const Citations: QuartzTransformerPlugin<Options> = (opts?: Options) => {
-  const bibliography = opts?.bibliography ?? "content/References.bib"
+  const bibliography = opts?.bibliography ?? 'content/References.bib'
   return {
-    name: "Citations",
+    name: 'Citations',
     markdownPlugins: () => [
       () => async (tree: Root, file: any) => {
         const frontmatter = file.data?.frontmatter ?? {}
@@ -242,7 +242,7 @@ export const Citations: QuartzTransformerPlugin<Options> = (opts?: Options) => {
         file.data.citationsDisabled = false
         const arxivNodes: { node: Link; index: number; parent: any; id: string }[] = []
 
-        visit(tree, "link", (node: Link, index: number | undefined, parent: any) => {
+        visit(tree, 'link', (node: Link, index: number | undefined, parent: any) => {
           if (index === undefined || !parent) return
           const arxivId = extractArxivId(node.url)
           if (!arxivId) return
@@ -250,7 +250,7 @@ export const Citations: QuartzTransformerPlugin<Options> = (opts?: Options) => {
           arxivNodes.push({ node, index, parent, id: normalizeArxivId(arxivId) })
         })
 
-        const docIds = Array.from(new Set(arxivNodes.map((entry) => entry.id))).sort()
+        const docIds = Array.from(new Set(arxivNodes.map(entry => entry.id))).sort()
         if (docIds.length > 0) {
           file.data.citations = { arxivIds: docIds }
         } else {
@@ -295,9 +295,9 @@ export const Citations: QuartzTransformerPlugin<Options> = (opts?: Options) => {
           const entry = cacheState.papers.get(id)
           if (!entry) continue
 
-          node.children = [{ type: "text", value: entry.title } as Text]
+          node.children = [{ type: 'text', value: entry.title } as Text]
           parent.children.splice(index, 1, node, {
-            type: "text",
+            type: 'text',
             value: ` [@${entry.bibkey}] `,
           } as Text)
         }
@@ -310,11 +310,11 @@ export const Citations: QuartzTransformerPlugin<Options> = (opts?: Options) => {
           bibliography,
           suppressBibliography: false,
           linkCitations: true,
-          csl: "apa",
+          csl: 'apa',
           lang:
-            cfg.configuration.locale !== "en-US"
+            cfg.configuration.locale !== 'en-US'
               ? `https://raw.githubusercontent.com/citation-style-language/locales/refs/heads/master/locales-${cfg.configuration.locale}.xml`
-              : "en-US",
+              : 'en-US',
         },
       ],
       // Transform the HTML of the citattions; add data-no-popover property to the citation links
@@ -323,10 +323,10 @@ export const Citations: QuartzTransformerPlugin<Options> = (opts?: Options) => {
         if (file?.data?.citationsDisabled) return
         visit(
           tree,
-          (node) => checkBib(node as Element),
+          node => checkBib(node as Element),
           (node, _index, parent) => {
-            node.properties["data-bib"] = true
-            parent.tagName = "cite"
+            node.properties['data-bib'] = true
+            parent.tagName = 'cite'
           },
         )
       },
@@ -335,21 +335,21 @@ export const Citations: QuartzTransformerPlugin<Options> = (opts?: Options) => {
         if (file?.data?.citationsDisabled) return
         visit(
           tree,
-          (node) => {
+          node => {
             const className = (node as Element).properties?.className
-            return Array.isArray(className) && className.includes("references")
+            return Array.isArray(className) && className.includes('references')
           },
           (node, index, parent) => {
             const entries: Element[] = []
             visit(
               node,
-              (node) => {
+              node => {
                 const className = (node as Element).properties?.className
-                return Array.isArray(className) && className.includes("csl-entry")
+                return Array.isArray(className) && className.includes('csl-entry')
               },
-              (node) => {
+              node => {
                 const { properties, children } = node as Element
-                entries.push(h("li", properties, processNodes(children as Element[])))
+                entries.push(h('li', properties, processNodes(children as Element[])))
               },
             )
 
@@ -357,10 +357,10 @@ export const Citations: QuartzTransformerPlugin<Options> = (opts?: Options) => {
               index!,
               1,
               h(
-                "section.bibliography",
+                'section.bibliography',
                 { dataReferences: true },
-                h("h2#reference-label", [{ type: "text", value: "bibliographie" }]),
-                h("ul", ...entries),
+                h('h2#reference-label', [{ type: 'text', value: 'bibliographie' }]),
+                h('ul', ...entries),
               ),
             )
           },

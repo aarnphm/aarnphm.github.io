@@ -1,14 +1,14 @@
-import { i18n } from "../i18n"
-import { CustomOgImagesEmitterName } from "../plugins/emitters/ogImage"
+import { i18n } from '../i18n'
+import { CustomOgImagesEmitterName } from '../plugins/emitters/ogImage'
 import {
   QuartzComponent,
   QuartzComponentConstructor,
   QuartzComponentProps,
-} from "../types/component"
-import { unescapeHTML } from "../util/escape"
-import { FullSlug, getFileExtension, joinSegments, pathToRoot } from "../util/path"
-import { CSSResourceToStyleElement, JSResourceToScriptElement } from "../util/resources"
-import { googleFontHref, googleFontSubsetHref } from "../util/theme"
+} from '../types/component'
+import { unescapeHTML } from '../util/escape'
+import { FullSlug, getFileExtension, joinSegments, pathToRoot } from '../util/path'
+import { CSSResourceToStyleElement, JSResourceToScriptElement } from '../util/resources'
+import { googleFontHref, googleFontSubsetHref } from '../util/theme'
 export default (() => {
   const Head: QuartzComponent = ({
     cfg,
@@ -16,7 +16,7 @@ export default (() => {
     externalResources,
     ctx,
   }: QuartzComponentProps) => {
-    const titleSuffix = cfg.pageTitleSuffix ?? ""
+    const titleSuffix = cfg.pageTitleSuffix ?? ''
     const title =
       (fileData.frontmatter?.title ?? i18n(cfg.locale).propertyDefaults.title) + titleSuffix
     const description =
@@ -26,17 +26,17 @@ export default (() => {
 
     const { css, js, additionalHead } = externalResources
 
-    const url = new URL(`https://${cfg.baseUrl ?? "example.com"}`)
+    const url = new URL(`https://${cfg.baseUrl ?? 'example.com'}`)
     const path = url.pathname as FullSlug
-    const baseDir = fileData.slug === "404" ? path : pathToRoot(fileData.slug!)
-    const iconPath = joinSegments(baseDir, "static/icon.png")
+    const baseDir = fileData.slug === '404' ? path : pathToRoot(fileData.slug!)
+    const iconPath = joinSegments(baseDir, 'static/icon.png')
 
     // Url of current page
     const socialUrl =
-      fileData.slug === "404" ? url.toString() : joinSegments(url.toString(), fileData.slug!)
+      fileData.slug === '404' ? url.toString() : joinSegments(url.toString(), fileData.slug!)
 
     const usesCustomOgImage = ctx.cfg.plugins.emitters.some(
-      (e) => e.name === CustomOgImagesEmitterName,
+      e => e.name === CustomOgImagesEmitterName,
     )
     const ogImageDefaultPath = `https://${cfg.baseUrl}/static/og-image.webp`
 
@@ -44,7 +44,7 @@ export default (() => {
       <head>
         <title>{title}</title>
         <meta charSet="utf-8" />
-        {cfg.theme.cdnCaching && cfg.theme.fontOrigin === "googleFonts" && (
+        {cfg.theme.cdnCaching && cfg.theme.fontOrigin === 'googleFonts' && (
           <>
             <link rel="preconnect" href="https://fonts.googleapis.com" />
             <link rel="preconnect" href="https://fonts.gstatic.com" />
@@ -74,7 +74,7 @@ export default (() => {
             <meta name="twitter:image" content={ogImageDefaultPath} />
             <meta
               property="og:image:type"
-              content={`image/${getFileExtension(ogImageDefaultPath)?.slice(1) ?? "png"}`}
+              content={`image/${getFileExtension(ogImageDefaultPath)?.slice(1) ?? 'png'}`}
             />
           </>
         )}
@@ -91,12 +91,12 @@ export default (() => {
         <meta name="description" content={description} />
         <meta name="generator" content="Quartz" />
 
-        {css.map((resource) => CSSResourceToStyleElement(resource, true))}
+        {css.map(resource => CSSResourceToStyleElement(resource, true))}
         {js
-          .filter((resource) => resource.loadTime === "beforeDOMReady")
-          .map((res) => JSResourceToScriptElement(res, true))}
-        {additionalHead.map((resource) => {
-          if (typeof resource === "function") {
+          .filter(resource => resource.loadTime === 'beforeDOMReady')
+          .map(res => JSResourceToScriptElement(res, true))}
+        {additionalHead.map(resource => {
+          if (typeof resource === 'function') {
             return resource(fileData)
           } else {
             return resource

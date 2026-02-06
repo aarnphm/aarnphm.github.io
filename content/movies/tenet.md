@@ -8,7 +8,7 @@ description: time as a palindrome, entropy running backward—nolan's most herme
 director: Christopher Nolan
 id: tenet
 modified: 2025-10-29 02:15:06 GMT-04:00
-posters: "[[movies/posters/tenet.jpg]]"
+posters: '[[movies/posters/tenet.jpg]]'
 status: recurring
 studio: syncopy
 tags:

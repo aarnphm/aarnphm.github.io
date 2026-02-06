@@ -1,5 +1,5 @@
 ---
-date: "2024-06-12"
+date: '2024-06-12'
 description: en sein.
 id: being
 modified: 2025-12-16 16:12:58 GMT-05:00

@@ -1,8 +1,8 @@
-@use "../base.scss";
-@use "../variables.scss" as *;
+@use '../base.scss';
+@use '../variables.scss' as *;
 
-body[data-layout="technical-tractatus"],
-body[data-layout="technical"] {
+body[data-layout='technical-tractatus'],
+body[data-layout='technical'] {
   .page-footer {
     padding: 0;
 
@@ -13,7 +13,7 @@ body[data-layout="technical"] {
   }
 }
 
-body[data-layout="technical-tractatus"] {
+body[data-layout='technical-tractatus'] {
   .page-content :is(ul, ol) {
     list-style: none;
     padding-inline-start: 0;
@@ -21,7 +21,7 @@ body[data-layout="technical-tractatus"] {
   }
 }
 
-section[class~="tractatus-root"] {
+section[class~='tractatus-root'] {
   ul,
   ol {
     list-style: none;

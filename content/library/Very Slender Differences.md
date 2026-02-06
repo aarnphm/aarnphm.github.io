@@ -7,7 +7,7 @@ description: An essay in The Idler
 finished: 2025
 id: Very Slender Differences
 modified: 2025-11-22 11:39:41 GMT-05:00
-posters: "[[library/posters/very-slender-differences.jpg]]"
+posters: '[[library/posters/very-slender-differences.jpg]]'
 status: finished
 subcategory: friendship
 tags:

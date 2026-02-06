@@ -1,6 +1,6 @@
 ---
-created: "2025-10-01"
-date: "2025-10-01"
+created: '2025-10-01'
+date: '2025-10-01'
 description: Language shapes thought—classical Sapir-Whorf hypothesis finds unexpected validation in language models, where linguistic structure creates measurable emergent properties.
 id: linguistic relativity
 modified: 2025-12-08 21:55:01 GMT-05:00

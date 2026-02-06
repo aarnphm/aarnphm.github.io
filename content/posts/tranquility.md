@@ -1,5 +1,5 @@
 ---
-date: "2025-01-06"
+date: '2025-01-06'
 draft: true
 id: tranquility
 modified: 2025-11-04 18:09:08 GMT-05:00

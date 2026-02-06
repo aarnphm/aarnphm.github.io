@@ -1,5 +1,5 @@
 ---
-date: "2024-02-06"
+date: '2024-02-06'
 description: atmospheric escape mechanisms including jeans escape, thermal escape, stellar winds, and charge exchange processes.
 id: Blackbody Radiation
 modified: 2025-10-29 02:16:11 GMT-04:00

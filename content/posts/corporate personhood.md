@@ -1,7 +1,7 @@
 ---
 aliases:
   - corporate responsibility
-date: "2024-11-19"
+date: '2024-11-19'
 description: and moral responsibilities of corporation.
 id: corporate personhood
 lang: en-US

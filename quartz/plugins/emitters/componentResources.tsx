@@ -1,44 +1,44 @@
-import { transform as transpile, build as bundle } from "esbuild"
-import { globby } from "globby"
-import { Features, transform } from "lightningcss"
-import fs from "node:fs/promises"
-import path from "path"
-import type { QuartzMdxComponent } from "../../components/mdx/registry"
-import { getMdxComponents } from "../../components/mdx/registry"
+import { transform as transpile, build as bundle } from 'esbuild'
+import { globby } from 'globby'
+import { Features, transform } from 'lightningcss'
+import fs from 'node:fs/promises'
+import path from 'path'
+import type { QuartzMdxComponent } from '../../components/mdx/registry'
+import { getMdxComponents } from '../../components/mdx/registry'
 // @ts-ignore
-import notFoundScript from "../../components/scripts/404.inline"
+import notFoundScript from '../../components/scripts/404.inline'
 //@ts-ignore
-import audioScript from "../../components/scripts/audio.inline"
+import audioScript from '../../components/scripts/audio.inline'
 // @ts-ignore
-import baseMapScript from "../../components/scripts/base-map.inline"
+import baseMapScript from '../../components/scripts/base-map.inline'
 // @ts-ignore
-import pseudoScript from "../../components/scripts/clipboard-pseudo.inline"
+import pseudoScript from '../../components/scripts/clipboard-pseudo.inline'
 // @ts-ignore
-import clipboardScript from "../../components/scripts/clipboard.inline"
+import clipboardScript from '../../components/scripts/clipboard.inline'
 // @ts-ignore
-import multiplayerScript from "../../components/scripts/collaborative-comments.inline"
+import multiplayerScript from '../../components/scripts/collaborative-comments.inline'
 // @ts-ignore
-import markerScript from "../../components/scripts/marker.inline"
+import markerScript from '../../components/scripts/marker.inline'
 // @ts-ignore
-import popoverScript from "../../components/scripts/popover.inline"
+import popoverScript from '../../components/scripts/popover.inline'
 //@ts-ignore
-import protectedScript from "../../components/scripts/protected.inline"
+import protectedScript from '../../components/scripts/protected.inline'
 // @ts-ignore
-import spaRouterScript from "../../components/scripts/spa.inline"
-import audioStyle from "../../components/styles/audio.scss"
-import clipboardStyle from "../../components/styles/clipboard.scss"
-import popoverStyle from "../../components/styles/popover.scss"
-import pseudoStyle from "../../components/styles/pseudocode.scss"
-import styles from "../../styles/custom.scss"
-import "../../components/mdx"
-import { QuartzComponent } from "../../types/component"
-import { QuartzEmitterPlugin } from "../../types/plugin"
-import { BuildCtx } from "../../util/ctx"
-import { FullSlug, joinSegments } from "../../util/path"
-import { googleFontHref, joinStyles, processGoogleFonts } from "../../util/theme"
-import { write } from "./helpers"
+import spaRouterScript from '../../components/scripts/spa.inline'
+import audioStyle from '../../components/styles/audio.scss'
+import clipboardStyle from '../../components/styles/clipboard.scss'
+import popoverStyle from '../../components/styles/popover.scss'
+import pseudoStyle from '../../components/styles/pseudocode.scss'
+import styles from '../../styles/custom.scss'
+import '../../components/mdx'
+import { QuartzComponent } from '../../types/component'
+import { QuartzEmitterPlugin } from '../../types/plugin'
+import { BuildCtx } from '../../util/ctx'
+import { FullSlug, joinSegments } from '../../util/path'
+import { googleFontHref, joinStyles, processGoogleFonts } from '../../util/theme'
+import { write } from './helpers'
 
-const name = "ComponentResources"
+const name = 'ComponentResources'
 
 type ComponentResources = { css: string[]; beforeDOMLoaded: string[]; afterDOMLoaded: string[] }
 
@@ -72,9 +72,9 @@ function getComponentResources(ctx: BuildCtx): ComponentResources {
     const normalizedBeforeDOMLoaded = normalizeResource(beforeDOMLoaded)
     const normalizedAfterDOMLoaded = normalizeResource(afterDOMLoaded)
 
-    normalizedCss.forEach((c) => componentResources.css.add(c))
-    normalizedBeforeDOMLoaded.forEach((b) => componentResources.beforeDOMLoaded.add(b))
-    normalizedAfterDOMLoaded.forEach((a) => componentResources.afterDOMLoaded.add(a))
+    normalizedCss.forEach(c => componentResources.css.add(c))
+    normalizedBeforeDOMLoaded.forEach(b => componentResources.beforeDOMLoaded.add(b))
+    normalizedAfterDOMLoaded.forEach(a => componentResources.afterDOMLoaded.add(a))
   }
 
   return {
@@ -86,7 +86,7 @@ function getComponentResources(ctx: BuildCtx): ComponentResources {
 
 async function joinScripts(scripts: string[]): Promise<string> {
   // wrap with iife to prevent scope collision
-  const script = scripts.map((script) => `(function () {${script}})();`).join("\n")
+  const script = scripts.map(script => `(function () {${script}})();`).join('\n')
 
   // minify with esbuild
   const res = await transpile(script, { minify: true })
@@ -115,8 +115,8 @@ function addGlobalPageResources(ctx: BuildCtx, componentResources: ComponentReso
     multiplayerScript,
   )
 
-  if (cfg.analytics?.provider === "plausible") {
-    const plausibleHost = cfg.analytics.host ?? "https://plausible.io"
+  if (cfg.analytics?.provider === 'plausible') {
+    const plausibleHost = cfg.analytics.host ?? 'https://plausible.io'
     componentResources.afterDOMLoaded.push(`
       const plausibleScript = document.createElement("script")
       plausibleScript.src = "${plausibleHost}/js/script.outbound-links.manual.js"
@@ -145,16 +145,16 @@ export const ComponentResources: QuartzEmitterPlugin = () => {
       const cfg = ctx.cfg.configuration
       // component specific scripts and styles
       const componentResources = getComponentResources(ctx)
-      let googleFontsStyleSheet = ""
-      if (cfg.theme.fontOrigin === "local") {
+      let googleFontsStyleSheet = ''
+      if (cfg.theme.fontOrigin === 'local') {
         // let the user do it themselves in css
-      } else if (cfg.theme.fontOrigin === "googleFonts" && !cfg.theme.cdnCaching) {
+      } else if (cfg.theme.fontOrigin === 'googleFonts' && !cfg.theme.cdnCaching) {
         const response = await fetch(googleFontHref(ctx.cfg.configuration.theme))
         googleFontsStyleSheet = await response.text()
 
         if (!cfg.baseUrl) {
           throw new Error(
-            "baseUrl must be defined when using Google Fonts without cfg.theme.cdnCaching",
+            'baseUrl must be defined when using Google Fonts without cfg.theme.cdnCaching',
           )
         }
 
@@ -174,7 +174,7 @@ export const ComponentResources: QuartzEmitterPlugin = () => {
           const buf = await res.arrayBuffer()
           yield write({
             ctx,
-            slug: joinSegments("static", "fonts", fontFile.filename) as FullSlug,
+            slug: joinSegments('static', 'fonts', fontFile.filename) as FullSlug,
             ext: `.${fontFile.extension}`,
             content: Buffer.from(buf),
           })
@@ -201,22 +201,22 @@ export const ComponentResources: QuartzEmitterPlugin = () => {
         name: cfg.pageTitle,
         short_name: cfg.baseUrl,
         icons: [
-          { src: "/android-chrome-192x192.png", sizes: "192x192", type: "image/png" },
-          { src: "/android-chrome-512x512.png", sizes: "512x512", type: "image/png" },
+          { src: '/android-chrome-192x192.png', sizes: '192x192', type: 'image/png' },
+          { src: '/android-chrome-512x512.png', sizes: '512x512', type: 'image/png' },
         ],
-        theme_color: cfg.theme.colors["lightMode"].light,
-        background_color: cfg.theme.colors["lightMode"].light,
-        display: "standalone",
+        theme_color: cfg.theme.colors['lightMode'].light,
+        background_color: cfg.theme.colors['lightMode'].light,
+        display: 'standalone',
         lang: cfg.locale,
-        dir: "auto",
+        dir: 'auto',
       }
 
       yield write({
         ctx,
-        slug: "index" as FullSlug,
-        ext: ".css",
+        slug: 'index' as FullSlug,
+        ext: '.css',
         content: transform({
-          filename: "index.css",
+          filename: 'index.css',
           code: Buffer.from(stylesheet),
           minify: true,
           targets: {
@@ -230,37 +230,37 @@ export const ComponentResources: QuartzEmitterPlugin = () => {
         }).code.toString(),
       })
 
-      yield write({ ctx, slug: "prescript" as FullSlug, ext: ".js", content: prescript })
+      yield write({ ctx, slug: 'prescript' as FullSlug, ext: '.js', content: prescript })
 
-      yield write({ ctx, slug: "postscript" as FullSlug, ext: ".js", content: postscript })
+      yield write({ ctx, slug: 'postscript' as FullSlug, ext: '.js', content: postscript })
 
       yield write({
         ctx,
-        slug: "site" as FullSlug,
-        ext: ".webmanifest",
+        slug: 'site' as FullSlug,
+        ext: '.webmanifest',
         content: JSON.stringify(manifest),
       })
 
-      const workerFiles = await globby(["quartz/**/*.worker.ts"])
+      const workerFiles = await globby(['quartz/**/*.worker.ts'])
       for (const src of workerFiles) {
         const result = await bundle({
           entryPoints: [src],
           bundle: true,
           minify: true,
-          platform: "browser",
-          format: "esm",
+          platform: 'browser',
+          format: 'esm',
           write: false,
         })
         const code = result.outputFiles[0].text
-        const name = path.basename(src).replace(/\.ts$/, "")
-        yield write({ ctx, slug: name as FullSlug, ext: ".js", content: code })
+        const name = path.basename(src).replace(/\.ts$/, '')
+        yield write({ ctx, slug: name as FullSlug, ext: '.js', content: code })
       }
     },
     async *partialEmit(ctx, _content, _resources, changeEvents) {
       for (const changeEvent of changeEvents) {
-        if (!changeEvent.path.endsWith(".worker.ts")) continue
-        if (changeEvent.type === "delete") {
-          const name = path.basename(changeEvent.path).replace(/\.ts$/, "")
+        if (!changeEvent.path.endsWith('.worker.ts')) continue
+        if (changeEvent.type === 'delete') {
+          const name = path.basename(changeEvent.path).replace(/\.ts$/, '')
           const dest = joinSegments(ctx.argv.output, `${name}.js`)
           await fs.unlink(dest)
           continue
@@ -269,13 +269,13 @@ export const ComponentResources: QuartzEmitterPlugin = () => {
           entryPoints: [changeEvent.path],
           bundle: true,
           minify: true,
-          platform: "browser",
-          format: "esm",
+          platform: 'browser',
+          format: 'esm',
           write: false,
         })
         const code = result.outputFiles[0].text
-        const name = path.basename(changeEvent.path).replace(/\.ts$/, "")
-        yield write({ ctx, slug: name as FullSlug, ext: ".js", content: code })
+        const name = path.basename(changeEvent.path).replace(/\.ts$/, '')
+        yield write({ ctx, slug: name as FullSlug, ext: '.js', content: code })
       }
     },
     externalResources: ({ cfg }) => ({

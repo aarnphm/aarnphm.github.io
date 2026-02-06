@@ -12,12 +12,12 @@ subcategory:
   - skepticism
 author:
   - Crispin Wright
-posters: "[[library/posters/truth-and-objectivity.jpeg]]"
+posters: '[[library/posters/truth-and-objectivity.jpeg]]'
 category:
   - philosophy
 translator:
 description: Philosophy, in seeking after truth, must also grapple with questions about the nature and status of truth itself.
-notebook: "[[library/TAO/]]"
+notebook: '[[library/TAO/]]'
 aliases:
   - tao
 external: https://www.hup.harvard.edu/books/9780674910874

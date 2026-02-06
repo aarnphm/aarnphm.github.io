@@ -11,7 +11,7 @@ subcategory:
   - spies
 author:
   - Graham Greene
-posters: "[[library/posters/our-man-in-havana.jpg]]"
+posters: '[[library/posters/our-man-in-havana.jpg]]'
 category:
   - p/fiction
 translator:

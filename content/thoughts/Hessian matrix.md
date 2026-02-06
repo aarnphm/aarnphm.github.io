@@ -1,5 +1,5 @@
 ---
-date: "2025-08-28"
+date: '2025-08-28'
 description: second partial derivatives of an objective function.
 id: Hessian matrix
 modified: 2025-10-29 02:15:24 GMT-04:00

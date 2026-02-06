@@ -1,18 +1,18 @@
 ---
-created: "2025-10-01"
-date: "2025-10-01"
+created: '2025-10-01'
+date: '2025-10-01'
 description: Functional roles, computational hermeneutics, autopoietic critiques
 id: functionalism
 modified: 2026-01-06 20:07:44 GMT-05:00
 seealso:
-  - "[[thoughts/chinese room|chinese room]]"
-  - "[[thoughts/representations|representations]]"
-  - "[[thoughts/emergent behaviour|emergent behaviour]]"
-  - "[[thoughts/dualism]]"
-  - "[[thoughts/physicalism]]"
-  - "[[thoughts/phenomenal consciousness]]"
-  - "[[thoughts/access consciousness]]"
-  - "[[thoughts/panpsychism]]"
+  - '[[thoughts/chinese room|chinese room]]'
+  - '[[thoughts/representations|representations]]'
+  - '[[thoughts/emergent behaviour|emergent behaviour]]'
+  - '[[thoughts/dualism]]'
+  - '[[thoughts/physicalism]]'
+  - '[[thoughts/phenomenal consciousness]]'
+  - '[[thoughts/access consciousness]]'
+  - '[[thoughts/panpsychism]]'
 socials:
   sep: https://plato.stanford.edu/entries/functionalism/
   wikipedia: https://en.wikipedia.org/wiki/Functionalism_(philosophy_of_mind)

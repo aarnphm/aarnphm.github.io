@@ -1,10 +1,10 @@
-import type { Element, ElementContent, Root as HastRoot, RootContent } from "hast"
-import { toHtml } from "hast-util-to-html"
-import { toString } from "hast-util-to-string"
-import yaml from "js-yaml"
-import type { FullSlug } from "../../util/path"
-import { QuartzTransformerPlugin } from "../../types/plugin"
-import { processWikilinksToHtml, renderLatexInString } from "../../util/description"
+import type { Element, ElementContent, Root as HastRoot, RootContent } from 'hast'
+import { toHtml } from 'hast-util-to-html'
+import { toString } from 'hast-util-to-string'
+import yaml from 'js-yaml'
+import type { FullSlug } from '../../util/path'
+import { QuartzTransformerPlugin } from '../../types/plugin'
+import { processWikilinksToHtml, renderLatexInString } from '../../util/description'
 
 export type StreamMetadata = Record<string, unknown>
 
@@ -24,29 +24,29 @@ export interface StreamData {
   entries: StreamEntry[]
 }
 
-declare module "vfile" {
+declare module 'vfile' {
   interface DataMap {
     streamData?: StreamData
   }
 }
 
-const isElement = (node: RootContent | ElementContent): node is Element => node.type === "element"
+const isElement = (node: RootContent | ElementContent): node is Element => node.type === 'element'
 
 const isH2 = (node: RootContent | ElementContent): node is Element =>
-  isElement(node) && node.tagName === "h2"
+  isElement(node) && node.tagName === 'h2'
 
 const isUl = (node: RootContent | ElementContent): node is Element =>
-  isElement(node) && node.tagName === "ul"
+  isElement(node) && node.tagName === 'ul'
 
 const isHr = (node: RootContent | ElementContent): node is Element =>
-  isElement(node) && node.tagName === "hr"
+  isElement(node) && node.tagName === 'hr'
 
 const isLi = (node: RootContent | ElementContent): node is Element =>
-  isElement(node) && node.tagName === "li"
+  isElement(node) && node.tagName === 'li'
 
 const getFirstTextContent = (node: Element): string => {
   for (const child of node.children) {
-    if (child.type === "text") {
+    if (child.type === 'text') {
       return child.value
     }
     if (isElement(child)) {
@@ -54,7 +54,7 @@ const getFirstTextContent = (node: Element): string => {
       if (text) return text
     }
   }
-  return ""
+  return ''
 }
 
 const extractNestedList = (li: Element): Element | null => {
@@ -65,15 +65,15 @@ const extractNestedList = (li: Element): Element | null => {
 }
 
 const cloneContent = <T extends ElementContent>(node: T): T =>
-  typeof structuredClone === "function"
+  typeof structuredClone === 'function'
     ? structuredClone(node)
     : (JSON.parse(JSON.stringify(node)) as T)
 
 const extractInlineNodes = (li: Element): ElementContent[] => {
   const nodes: ElementContent[] = []
   for (const child of li.children as ElementContent[]) {
-    if (isElement(child) && child.tagName === "ul") continue
-    if (isElement(child) && child.tagName === "p") {
+    if (isElement(child) && child.tagName === 'ul') continue
+    if (isElement(child) && child.tagName === 'p') {
       nodes.push(...(child.children as ElementContent[]))
       continue
     }
@@ -82,17 +82,17 @@ const extractInlineNodes = (li: Element): ElementContent[] => {
   return nodes
 }
 
-const escapeRegex = (value: string): string => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
+const escapeRegex = (value: string): string => value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
 
 const stripKeyPrefixFromNodes = (nodes: ElementContent[], key: string): ElementContent[] => {
-  const cloned = nodes.map((node) => cloneContent(node))
-  const pattern = new RegExp(`^\\s*${escapeRegex(key)}\\s*[:\\-–—]?\\s*`, "i")
+  const cloned = nodes.map(node => cloneContent(node))
+  const pattern = new RegExp(`^\\s*${escapeRegex(key)}\\s*[:\\-–—]?\\s*`, 'i')
   let stripped = false
 
   const visit = (node: ElementContent) => {
     if (stripped) return
-    if (node.type === "text") {
-      const nextValue = node.value.replace(pattern, "")
+    if (node.type === 'text') {
+      const nextValue = node.value.replace(pattern, '')
       if (nextValue !== node.value) {
         node.value = nextValue
         stripped = true
@@ -104,7 +104,7 @@ const stripKeyPrefixFromNodes = (nodes: ElementContent[], key: string): ElementC
       return
     }
     if (isElement(node)) {
-      node.children.forEach((child) => visit(child as ElementContent))
+      node.children.forEach(child => visit(child as ElementContent))
     }
   }
 
@@ -121,7 +121,7 @@ const trimLeadingEmptyTextNodes = (nodes: ElementContent[]): ElementContent[] =>
   let leading = true
 
   for (const node of nodes) {
-    if (leading && node.type === "text" && node.value.trim().length === 0) {
+    if (leading && node.type === 'text' && node.value.trim().length === 0) {
       continue
     }
     leading = false
@@ -132,31 +132,31 @@ const trimLeadingEmptyTextNodes = (nodes: ElementContent[]): ElementContent[] =>
 }
 
 const inlineTextFromNodes = (nodes: ElementContent[]): string => {
-  const root: HastRoot = { type: "root", children: nodes }
+  const root: HastRoot = { type: 'root', children: nodes }
   return toString(root).trim()
 }
 
 const normalizeInternalHref = (href: string, dataSlug: string | undefined): string => {
   if (!dataSlug) return href
-  const slug = dataSlug.startsWith("/") ? dataSlug.slice(1) : dataSlug
-  const anchorIndex = href.indexOf("#")
-  const anchor = anchorIndex === -1 ? "" : href.slice(anchorIndex)
+  const slug = dataSlug.startsWith('/') ? dataSlug.slice(1) : dataSlug
+  const anchorIndex = href.indexOf('#')
+  const anchor = anchorIndex === -1 ? '' : href.slice(anchorIndex)
   return `/${slug}${anchor}`
 }
 
 const nodeTextWithLinks = (node: ElementContent): string => {
-  if (node.type === "text") return node.value
-  if (!isElement(node)) return ""
+  if (node.type === 'text') return node.value
+  if (!isElement(node)) return ''
 
-  if (node.tagName === "a") {
+  if (node.tagName === 'a') {
     const props = (node.properties ?? {}) as Record<string, unknown>
-    const href = typeof props.href === "string" ? props.href : ""
-    const dataSlug = typeof props["data-slug"] === "string" ? props["data-slug"] : undefined
+    const href = typeof props.href === 'string' ? props.href : ''
+    const dataSlug = typeof props['data-slug'] === 'string' ? props['data-slug'] : undefined
     const normalized = normalizeInternalHref(href, dataSlug)
     if (normalized.length > 0) return normalized
   }
 
-  let result = ""
+  let result = ''
   for (const child of node.children) {
     result += nodeTextWithLinks(child as ElementContent)
   }
@@ -164,18 +164,18 @@ const nodeTextWithLinks = (node: ElementContent): string => {
 }
 
 const inlineTextFromNodesWithLinks = (nodes: ElementContent[]): string =>
-  nodes.map((node) => nodeTextWithLinks(node)).join("")
+  nodes.map(node => nodeTextWithLinks(node)).join('')
 
 const appendListToYaml = (list: Element, indent: number, lines: string[]): void => {
-  const indentStr = "  ".repeat(indent)
+  const indentStr = '  '.repeat(indent)
 
   for (const child of list.children) {
     if (!isLi(child)) continue
 
     const nested = extractNestedList(child)
-    let rawText = ""
+    let rawText = ''
     for (const ch of child.children as ElementContent[]) {
-      if (isElement(ch) && ch.tagName === "ul") continue
+      if (isElement(ch) && ch.tagName === 'ul') continue
       rawText += inlineTextFromNodesWithLinks([ch])
     }
     rawText = rawText.trim()
@@ -191,9 +191,9 @@ const appendListToYaml = (list: Element, indent: number, lines: string[]): void 
     }
 
     if (rawText.length === 0) continue
-    const normalized = rawText.replace(/^-+\s*/, "").trim()
+    const normalized = rawText.replace(/^-+\s*/, '').trim()
 
-    if (normalized.includes(":")) {
+    if (normalized.includes(':')) {
       lines.push(`${indentStr}${normalized}`)
     } else {
       lines.push(`${indentStr}- ${normalized}`)
@@ -229,23 +229,23 @@ const extractMetadata = (
     let value: string | undefined
 
     if (raw.length > 0) {
-      const delimiterIndex = raw.indexOf(":")
+      const delimiterIndex = raw.indexOf(':')
       if (delimiterIndex !== -1) {
         keySource = raw.slice(0, delimiterIndex).trim()
         value = raw.slice(delimiterIndex + 1).trim()
       } else if (sublist) {
         keySource = raw.trim().toLowerCase()
-        value = ""
+        value = ''
       }
     } else if (sublist) {
-      value = ""
+      value = ''
     }
 
     if (!keySource) continue
 
-    const normalizedKey = keySource.toLowerCase().replace(/\s+/g, "_")
+    const normalizedKey = keySource.toLowerCase().replace(/\s+/g, '_')
 
-    if (normalizedKey === "description") {
+    if (normalizedKey === 'description') {
       const strippedNodes = trimLeadingEmptyTextNodes(
         stripKeyPrefixFromNodes(inlineNodes, keySource),
       )
@@ -253,7 +253,7 @@ const extractMetadata = (
       if (descriptionText.length > 0) {
         metadata[normalizedKey] = descriptionText
       }
-      const htmlRoot: HastRoot = { type: "root", children: strippedNodes }
+      const htmlRoot: HastRoot = { type: 'root', children: strippedNodes }
       const rawHtml = toHtml(htmlRoot)
       const processedHtml = renderLatexInString(processWikilinksToHtml(rawHtml, currentSlug))
       if (processedHtml.trim().length > 0) {
@@ -265,11 +265,11 @@ const extractMetadata = (
     if (sublist && (!value || value.length === 0)) {
       const yamlLines: string[] = []
       appendListToYaml(sublist, 0, yamlLines)
-      const yamlSource = yamlLines.join("\n")
+      const yamlSource = yamlLines.join('\n')
 
       if (yamlSource.trim().length > 0) {
         const parsed = yaml.load(yamlSource)
-        if (parsed && typeof parsed === "object") {
+        if (parsed && typeof parsed === 'object') {
           metadata[normalizedKey] = parsed
           continue
         }
@@ -284,16 +284,16 @@ const extractMetadata = (
 }
 
 const parseDateValue = (value: unknown): { date?: string; timestamp?: number } => {
-  if (typeof value !== "string") return {}
+  if (typeof value !== 'string') return {}
   let trimmed = value.trim()
   if (trimmed.length === 0) return {}
 
-  trimmed = trimmed.replace(/\s+(PST|PDT|EST|EDT|CST|CDT|MST|MDT)$/i, "")
+  trimmed = trimmed.replace(/\s+(PST|PDT|EST|EDT|CST|CDT|MST|MDT)$/i, '')
 
   let timestamp = Date.parse(trimmed)
 
   if (Number.isNaN(timestamp) && /^\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}/.test(trimmed)) {
-    const isoFormat = trimmed.replace(/^(\d{4}-\d{2}-\d{2})\s+(\d{2}:\d{2}.*)$/, "$1T$2")
+    const isoFormat = trimmed.replace(/^(\d{4}-\d{2}-\d{2})\s+(\d{2}:\d{2}.*)$/, '$1T$2')
     timestamp = Date.parse(isoFormat)
   }
 
@@ -310,24 +310,24 @@ interface ParsedEntry {
   descriptionHtml?: string
 }
 
-const anonToken = "<INSERT_HERE>"
+const anonToken = '<INSERT_HERE>'
 
 export const Stream: QuartzTransformerPlugin = () => {
   return {
-    name: "Stream",
+    name: 'Stream',
     textTransform(_, src: any) {
-      return src.split(anonToken).join("M")
+      return src.split(anonToken).join('M')
     },
     htmlPlugins() {
       return [
         () => {
           return (tree: HastRoot, file) => {
-            if (file.data.slug !== "stream") return
-            const currentSlug = (file.data.slug ?? "stream") as FullSlug
+            if (file.data.slug !== 'stream') return
+            const currentSlug = (file.data.slug ?? 'stream') as FullSlug
 
             // at htmlPlugins stage, content is direct children of root (no body wrapper yet)
             const bodyChildren = tree.children.filter(
-              (child) => child.type !== "doctype",
+              child => child.type !== 'doctype',
             ) as RootContent[]
 
             if (bodyChildren.length === 0) return
@@ -339,7 +339,7 @@ export const Stream: QuartzTransformerPlugin = () => {
             for (let i = 0; i < bodyChildren.length; i++) {
               const node = bodyChildren[i]
 
-              if (node.type === "text" && (!node.value || node.value.trim().length === 0)) {
+              if (node.type === 'text' && (!node.value || node.value.trim().length === 0)) {
                 continue
               }
 
@@ -402,7 +402,7 @@ export const Stream: QuartzTransformerPlugin = () => {
               const importanceValue = entry.metadata.importance
               if (importanceValue !== undefined) {
                 const parsed =
-                  typeof importanceValue === "number"
+                  typeof importanceValue === 'number'
                     ? importanceValue
                     : Number.parseFloat(String(importanceValue))
                 if (!Number.isNaN(parsed) && Number.isFinite(parsed)) {
@@ -415,8 +415,8 @@ export const Stream: QuartzTransformerPlugin = () => {
               let description: string | undefined
               if (Array.isArray(descriptionValue)) {
                 const joined = descriptionValue
-                  .map((value) => String(value))
-                  .join(" ")
+                  .map(value => String(value))
+                  .join(' ')
                   .trim()
                 if (joined.length > 0) {
                   description = joined

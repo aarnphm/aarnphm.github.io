@@ -8,7 +8,7 @@ description: journalism as unglamorous phone calls and parking garage meetingsâ€
 director: Alan J. Pakula
 id: all-the-presidents-men
 modified: 2025-10-29 02:14:45 GMT-04:00
-posters: "[[movies/posters/all-the-presidents-men.jpg]]"
+posters: '[[movies/posters/all-the-presidents-men.jpg]]'
 rating: 7.9
 status: to watch
 studio: warner bros

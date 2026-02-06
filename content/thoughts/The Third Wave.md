@@ -1,10 +1,10 @@
 ---
-created: "2025-08-01"
-date: "2025-08-01"
+created: '2025-08-01'
+date: '2025-08-01'
 description: experimental social campaign, 1967
 id: The Third Wave
 modified: 2025-11-11 20:19:03 GMT-05:00
-published: "2023-04-05"
+published: '2023-04-05'
 socials:
   source: https://theanarchistlibrary.org/library/ron-jones-the-third-wave-1967-an-account
 tags:

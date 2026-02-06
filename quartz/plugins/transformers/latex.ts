@@ -1,42 +1,42 @@
-import { KatexOptions } from "katex"
-import rehypeKatex from "rehype-katex"
-import remarkMath from "remark-math"
-import { QuartzTransformerPlugin } from "../../types/plugin"
+import { KatexOptions } from 'katex'
+import rehypeKatex from 'rehype-katex'
+import remarkMath from 'remark-math'
+import { QuartzTransformerPlugin } from '../../types/plugin'
 
 interface Options {
-  renderEngine: "katex"
+  renderEngine: 'katex'
   customMacros: MacroType
-  katexOptions: Omit<KatexOptions, "macros" | "output">
+  katexOptions: Omit<KatexOptions, 'macros' | 'output'>
 }
 
 interface MacroType {
   [key: string]: string
 }
 
-export const Latex: QuartzTransformerPlugin<Partial<Options>> = (opts) => {
-  const engine = opts?.renderEngine ?? "katex"
+export const Latex: QuartzTransformerPlugin<Partial<Options>> = opts => {
+  const engine = opts?.renderEngine ?? 'katex'
   const macros = opts?.customMacros ?? {}
   return {
-    name: "Latex",
+    name: 'Latex',
     markdownPlugins: () => [remarkMath],
     htmlPlugins() {
       switch (engine) {
         default: {
-          return [[rehypeKatex, { output: "htmlAndMathml", macros, ...opts?.katexOptions }]]
+          return [[rehypeKatex, { output: 'htmlAndMathml', macros, ...opts?.katexOptions }]]
         }
       }
     },
     externalResources() {
       switch (engine) {
-        case "katex":
+        case 'katex':
           return {
-            css: [{ content: "https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" }],
+            css: [{ content: 'https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css' }],
             js: [
               {
                 // fix copy behaviour: https://github.com/KaTeX/KaTeX/blob/main/contrib/copy-tex/README.md
-                src: "https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/copy-tex.min.js",
-                loadTime: "afterDOMReady",
-                contentType: "external",
+                src: 'https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/copy-tex.min.js',
+                loadTime: 'afterDOMReady',
+                contentType: 'external',
               },
             ],
           }

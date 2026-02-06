@@ -1,10 +1,10 @@
-import type { ElementContent, Root as HastRoot } from "hast"
-import { fromHtmlIsomorphic } from "hast-util-from-html-isomorphic"
-import { toString as hastToString } from "hast-util-to-string"
-import { ComponentChild } from "preact"
-import type { StreamEntry } from "../../plugins/transformers/stream"
-import type { FilePath } from "../../util/path"
-import { htmlToJsx } from "../../util/jsx"
+import type { ElementContent, Root as HastRoot } from 'hast'
+import { fromHtmlIsomorphic } from 'hast-util-from-html-isomorphic'
+import { toString as hastToString } from 'hast-util-to-string'
+import { ComponentChild } from 'preact'
+import type { StreamEntry } from '../../plugins/transformers/stream'
+import type { FilePath } from '../../util/path'
+import { htmlToJsx } from '../../util/jsx'
 
 export interface StreamEntryRenderOptions {
   groupId: string
@@ -18,7 +18,7 @@ const nodesToJsx = (filePath: FilePath, nodes: ElementContent[]): ComponentChild
   if (!nodes || nodes.length === 0) return null
 
   return nodes.map((node, idx) => {
-    const root: HastRoot = { type: "root", children: [node as any] }
+    const root: HastRoot = { type: 'root', children: [node as any] }
     return <span key={idx}>{htmlToJsx(filePath, root)}</span>
   })
 }
@@ -26,17 +26,17 @@ const nodesToJsx = (filePath: FilePath, nodes: ElementContent[]): ComponentChild
 const countWords = (value: string): number => {
   const trimmed = value.trim()
   if (!trimmed) return 0
-  return trimmed.split(/\s+/).filter((token) => token.length > 0).length
+  return trimmed.split(/\s+/).filter(token => token.length > 0).length
 }
 
 const streamEntryText = (entry: StreamEntry): string => {
-  const root: HastRoot = { type: "root", children: entry.content }
+  const root: HastRoot = { type: 'root', children: entry.content }
   const contentText = hastToString(root)
-  const titleText = entry.title ? String(entry.title) : ""
-  const descriptionText = entry.description ? String(entry.description) : ""
+  const titleText = entry.title ? String(entry.title) : ''
+  const descriptionText = entry.description ? String(entry.description) : ''
   return [titleText, descriptionText, contentText]
-    .filter((part) => part.length > 0)
-    .join(" ")
+    .filter(part => part.length > 0)
+    .join(' ')
     .trim()
 }
 
@@ -49,7 +49,7 @@ export const getStreamEntryWordCount = (entry: StreamEntry): number =>
   countWords(streamEntryText(entry))
 
 export const formatWordCount = (count: number): string =>
-  count === 1 ? "1 word" : `${count} words`
+  count === 1 ? '1 word' : `${count} words`
 
 export const formatStreamDate = (isoDate: string | undefined): string | null => {
   if (!isoDate) return null
@@ -57,15 +57,15 @@ export const formatStreamDate = (isoDate: string | undefined): string | null => 
   const date = new Date(isoDate)
   if (Number.isNaN(date.getTime())) return null
 
-  const formatter = new Intl.DateTimeFormat("en-US", {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-    hour: "numeric",
-    minute: "2-digit",
+  const formatter = new Intl.DateTimeFormat('en-US', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+    hour: 'numeric',
+    minute: '2-digit',
     hour12: false,
-    timeZone: "America/Los_Angeles",
-    timeZoneName: "shortOffset",
+    timeZone: 'America/Los_Angeles',
+    timeZoneName: 'shortOffset',
   })
 
   return formatter.format(date)
@@ -78,8 +78,8 @@ export const buildOnPath = (isoDate: string | undefined): string | null => {
   if (Number.isNaN(date.getTime())) return null
 
   const year = date.getUTCFullYear()
-  const month = String(date.getUTCMonth() + 1).padStart(2, "0")
-  const day = String(date.getUTCDate()).padStart(2, "0")
+  const month = String(date.getUTCMonth() + 1).padStart(2, '0')
+  const day = String(date.getUTCDate()).padStart(2, '0')
 
   return `/stream/on/${year}/${month}/${day}`
 }
@@ -91,12 +91,12 @@ export const renderStreamEntry = (
 ): ComponentChild => {
   const tags = Array.isArray(entry.metadata.tags) ? entry.metadata.tags : []
   const socials =
-    entry.metadata.socials && typeof entry.metadata.socials === "object"
+    entry.metadata.socials && typeof entry.metadata.socials === 'object'
       ? (entry.metadata.socials as Record<string, unknown>)
       : null
 
   const timestampAttr =
-    typeof options.timestampValue === "number" ? String(options.timestampValue) : undefined
+    typeof options.timestampValue === 'number' ? String(options.timestampValue) : undefined
 
   const showDate = options.showDate !== undefined ? options.showDate : true
   const showWordCount = options.showWordCount !== undefined ? options.showWordCount : false
@@ -158,15 +158,15 @@ export const renderStreamEntry = (
         {socials && Object.keys(socials).length > 0 && (
           <div class="stream-entry-socials">
             {Object.entries(socials).map(([name, link]) => {
-              const href = typeof link === "string" ? link : (link?.toString?.() ?? "")
-              const isInternal = href.startsWith("/")
+              const href = typeof link === 'string' ? link : (link?.toString?.() ?? '')
+              const isInternal = href.startsWith('/')
               return (
                 <address key={name}>
                   <a
                     href={href}
-                    target={!isInternal ? "_blank" : ""}
-                    rel={!isInternal ? "noopener noreferrer" : ""}
-                    class={isInternal ? "internal" : "external"}
+                    target={!isInternal ? '_blank' : ''}
+                    rel={!isInternal ? 'noopener noreferrer' : ''}
+                    class={isInternal ? 'internal' : 'external'}
                     data-no-popover
                   >
                     {name}
@@ -178,7 +178,7 @@ export const renderStreamEntry = (
         )}
         {entry.importance !== undefined && (
           <div class="stream-entry-importance">
-            <span class="stream-entry-importance-label">importance:</span>{" "}
+            <span class="stream-entry-importance-label">importance:</span>{' '}
             <span class="stream-entry-importance-value">{entry.importance}</span>
           </div>
         )}

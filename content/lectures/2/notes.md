@@ -1,5 +1,5 @@
 ---
-date: "2025-08-21"
+date: '2025-08-21'
 description: attention and math
 id: notes
 modified: 2025-11-11 07:02:44 GMT-05:00

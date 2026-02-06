@@ -38,29 +38,29 @@ type Manifest = {
 
 type SearchHit = { id: number; score: number }
 
-const supportsSharedArrayBuffer = typeof SharedArrayBuffer !== "undefined"
+const supportsSharedArrayBuffer = typeof SharedArrayBuffer !== 'undefined'
 
 function buildQueryText(query: string, modelId?: string): string {
   if (!modelId) return query
   const modelName = modelId.toLowerCase()
-  if (modelName.includes("e5")) {
+  if (modelName.includes('e5')) {
     return `query: ${query}`
   }
-  if (modelName.includes("qwen") && modelName.includes("embedding")) {
-    const task = "Given a web search query, retrieve relevant passages that answer the query"
+  if (modelName.includes('qwen') && modelName.includes('embedding')) {
+    const task = 'Given a web search query, retrieve relevant passages that answer the query'
     return `Instruct: ${task}\nQuery: ${query}`
   }
-  if (modelName.includes("embeddinggemma")) {
+  if (modelName.includes('embeddinggemma')) {
     return `task: search result | query: ${query}`
   }
   return query
 }
 
 function resolveCfModel(modelId?: string): string {
-  if (!modelId || modelId === "google/embeddinggemma-300m") {
-    return "@cf/google/embeddinggemma-300m"
+  if (!modelId || modelId === 'google/embeddinggemma-300m') {
+    return '@cf/google/embeddinggemma-300m'
   }
-  if (modelId.startsWith("@cf/")) {
+  if (modelId.startsWith('@cf/')) {
     return modelId
   }
   throw new Error(`unsupported embedding model '${modelId}'`)
@@ -88,14 +88,14 @@ class SemanticSearchEngine {
   }
 
   async initialize() {
-    const manifestUrl = "https://aarnphm.xyz/embeddings/manifest.json"
+    const manifestUrl = 'https://aarnphm.xyz/embeddings/manifest.json'
     const res = await fetch(manifestUrl)
     if (!res.ok) {
       throw new Error(`failed to fetch manifest: ${res.status}`)
     }
     this.manifest = (await res.json()) as Manifest
 
-    if (this.manifest.vectors.dtype !== "fp32") {
+    if (this.manifest.vectors.dtype !== 'fp32') {
       throw new Error(
         `unsupported embedding dtype '${this.manifest.vectors.dtype}', regenerate with fp32`,
       )
@@ -133,7 +133,7 @@ class SemanticSearchEngine {
     this.maxLevel = this.manifest.hnsw.maxLevel
     this.efDefault = Math.max(64, this.manifest.hnsw.M * 4)
 
-    this.levelGraph = this.manifest.hnsw.graph.levels.map((level) => {
+    this.levelGraph = this.manifest.hnsw.graph.levels.map(level => {
       const indptr = new Uint32Array(graphBuffer, level.indptr.offset, level.indptr.elements)
       const indices = new Uint32Array(graphBuffer, level.indices.offset, level.indices.elements)
       return { indptr, indices }
@@ -142,7 +142,7 @@ class SemanticSearchEngine {
 
   private vectorSlice(id: number): Float32Array {
     if (!this.vectorsView) {
-      throw new Error("vector buffer not configured")
+      throw new Error('vector buffer not configured')
     }
     const start = id * this.dims
     const end = start + this.dims
@@ -182,7 +182,7 @@ class SemanticSearchEngine {
       this.entryPoint < 0 ||
       this.levelGraph.length === 0
     ) {
-      throw new Error("semantic graph not initialised; ensure embeddings include hnsw metadata")
+      throw new Error('semantic graph not initialised; ensure embeddings include hnsw metadata')
     }
     const ef = Math.max(this.efDefault, k * 10)
     let ep = this.entryPoint
@@ -285,7 +285,7 @@ class SemanticSearchEngine {
     k: number,
   ): Promise<Array<{ slug: string; score: number }>> {
     if (!this.vectorsView) {
-      throw new Error("search engine not initialized")
+      throw new Error('search engine not initialized')
     }
 
     const queryVec = this.formatQueryEmbedding(queryEmbedding)

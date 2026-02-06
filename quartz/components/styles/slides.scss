@@ -1,4 +1,4 @@
-@use "../../styles/variables.scss" as *;
+@use '../../styles/variables.scss' as *;
 
 .slides-root {
   position: relative;
@@ -73,7 +73,7 @@
   }
 }
 
-[data-slides="true"] {
+[data-slides='true'] {
   .transclude-collapsible {
     width: 100%;
   }

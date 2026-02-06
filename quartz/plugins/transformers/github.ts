@@ -1,20 +1,20 @@
-import { Root as HtmlRoot, Element, Text } from "hast"
-import { Root, Link, PhrasingContent } from "mdast"
-import { RegExpMatchObject, findAndReplace as mdastFindReplace } from "mdast-util-find-and-replace"
-import { toString } from "mdast-util-to-string"
+import { Root as HtmlRoot, Element, Text } from 'hast'
+import { Root, Link, PhrasingContent } from 'mdast'
+import { RegExpMatchObject, findAndReplace as mdastFindReplace } from 'mdast-util-find-and-replace'
+import { toString } from 'mdast-util-to-string'
 // modified version of https://github.com/remarkjs/remark-github/blob/main/index.js
 // main change: Update mentionRegex to work with rehype-citation
-import fs from "node:fs"
-import path from "node:path"
-import rehypeGithubEmoji from "rehype-github-emoji"
-import { BuildUrlValues, defaultBuildUrl } from "remark-github"
-import { visit } from "unist-util-visit"
-import { QuartzTransformerPlugin } from "../../types/plugin"
+import fs from 'node:fs'
+import path from 'node:path'
+import rehypeGithubEmoji from 'rehype-github-emoji'
+import { BuildUrlValues, defaultBuildUrl } from 'remark-github'
+import { visit } from 'unist-util-visit'
+import { QuartzTransformerPlugin } from '../../types/plugin'
 
 // Previously, GitHub linked `@mention` and `@mentions` to their blog post about
 // mentions (<https://github.com/blog/821>).
 // Since June 2019, and possibly earlier, they stopped linking those references.
-const denyMention = new Set(["mention", "mentions"])
+const denyMention = new Set(['mention', 'mentions'])
 // Denylist of SHAs that are also valid words.
 //
 // GitHub allows abbreviating SHAs up to 7 characters.
@@ -30,45 +30,45 @@ const denyMention = new Set(["mention", "mentions"])
 //
 // Added a couple forms of 6 character words in GH-20:
 // <https://github.com/remarkjs/remark-github/issues/20>.
-const denyHash = new Set(["acceded", "deedeed", "defaced", "effaced", "fabaceae"])
+const denyHash = new Set(['acceded', 'deedeed', 'defaced', 'effaced', 'fabaceae'])
 // Constants.
 const minShaLength = 7
 // Username may only contain alphanumeric characters or single hyphens, and
 // cannot begin or end with a hyphen*.
 //
 // \* That is: until <https://github.com/remarkjs/remark-github/issues/13>.
-const userGroup = "[\\da-z][-\\da-z]{0,38}"
-const projectGroup = "(?:\\.git[\\w-]|\\.(?!git)|[\\w-])+"
-const repoGroup = "(" + userGroup + ")\\/(" + projectGroup + ")"
+const userGroup = '[\\da-z][-\\da-z]{0,38}'
+const projectGroup = '(?:\\.git[\\w-]|\\.(?!git)|[\\w-])+'
+const repoGroup = '(' + userGroup + ')\\/(' + projectGroup + ')'
 const linkRegex = new RegExp(
-  "^https?:\\/\\/github\\.com\\/" +
+  '^https?:\\/\\/github\\.com\\/' +
     repoGroup +
-    "\\/(commit|compare|issues|pull)\\/([a-f\\d]+(?:\\.{3}[a-f\\d]+)?\\/?(?=[#?]|$))",
-  "i",
+    '\\/(commit|compare|issues|pull)\\/([a-f\\d]+(?:\\.{3}[a-f\\d]+)?\\/?(?=[#?]|$))',
+  'i',
 )
-const repoRegex = new RegExp("(?:^|/(?:repos/)?)" + repoGroup + "(?=\\.git|[\\/#@]|$)", "i")
+const repoRegex = new RegExp('(?:^|/(?:repos/)?)' + repoGroup + '(?=\\.git|[\\/#@]|$)', 'i')
 const referenceRegex = new RegExp(
-  "(" + userGroup + ")(?:\\/(" + projectGroup + "))?(?:#([1-9]\\d*)|@([a-f\\d]{7,40}))",
-  "gi",
+  '(' + userGroup + ')(?:\\/(' + projectGroup + '))?(?:#([1-9]\\d*)|@([a-f\\d]{7,40}))',
+  'gi',
 )
 // Only match mentions within curly braces: {@username}
-const mentionRegex = new RegExp(`\\{@(${userGroup}(?:\\/${userGroup})?)\\}`, "gi")
+const mentionRegex = new RegExp(`\\{@(${userGroup}(?:\\/${userGroup})?)\\}`, 'gi')
 
 function getRepoFromPackage(cwd: string) {
   let pkg
 
   try {
-    pkg = JSON.parse(String(fs.readFileSync(path.join(cwd, "package.json"))))
+    pkg = JSON.parse(String(fs.readFileSync(path.join(cwd, 'package.json'))))
   } catch {}
 
   const repository =
     pkg && pkg.repository
       ? // Object form.
         /* c8 ignore next 2 */
-        typeof pkg.repository === "object"
+        typeof pkg.repository === 'object'
         ? pkg.repository.url
         : pkg.repository
-      : ""
+      : ''
 
   return repository
 }
@@ -86,19 +86,19 @@ type RepositoryInfo = { project: string; user: string }
 type UrlInfo = { comment: boolean; page: string; project: string; reference: string; user: string }
 
 const defaultOptions: Options = {
-  repository: "https://github.com/aarnphm/aarnphm.github.io",
+  repository: 'https://github.com/aarnphm/aarnphm.github.io',
   buildUrl: defaultBuildUrl,
   mentionStrong: true,
-  internalLinks: ["livingalonealone.com"],
-  noTranslateBlock: ["pre", "code"],
+  internalLinks: ['livingalonealone.com'],
+  noTranslateBlock: ['pre', 'code'],
 }
 
-export const GitHub: QuartzTransformerPlugin<Partial<Options>> = (userOpts) => {
+export const GitHub: QuartzTransformerPlugin<Partial<Options>> = userOpts => {
   const opts = { ...defaultOptions, ...userOpts }
   const buildUrl = opts.buildUrl || defaultBuildUrl
 
   return {
-    name: "GitHub",
+    name: 'GitHub',
     markdownPlugins() {
       return [
         () => {
@@ -106,7 +106,7 @@ export const GitHub: QuartzTransformerPlugin<Partial<Options>> = (userOpts) => {
             const repository = opts.repository || getRepoFromPackage(file.cwd)
 
             if (!repository) {
-              throw new Error("Unexpected missing `repository` in `options`")
+              throw new Error('Unexpected missing `repository` in `options`')
             }
 
             // Parse the URL: See the tests for all possible kinds.
@@ -114,7 +114,7 @@ export const GitHub: QuartzTransformerPlugin<Partial<Options>> = (userOpts) => {
 
             if (!repositoryMatch) {
               throw new Error(
-                "Unexpected invalid `repository`, expected for example `user/project`",
+                'Unexpected invalid `repository`, expected for example `user/project`',
               )
             }
 
@@ -134,35 +134,35 @@ export const GitHub: QuartzTransformerPlugin<Partial<Options>> = (userOpts) => {
                 [/\b([a-f\d]{7,40})\.{3}([a-f\d]{7,40})\b/gi, replaceHashRange],
                 [/\b[a-f\d]{7,40}\b/gi, replaceHash],
               ],
-              { ignore: ["link", "linkReference"] },
+              { ignore: ['link', 'linkReference'] },
             )
 
-            visit(tree, "link", function (node) {
+            visit(tree, 'link', function (node) {
               const link = parse(node)
 
               if (!link) {
                 return
               }
 
-              const comment = link.comment ? " (comment)" : ""
+              const comment = link.comment ? ' (comment)' : ''
               // NOTE: Deviate from the original implementation where
               // we always format the base to user/project
-              let base: string = link.user + "/" + link.project
+              let base: string = link.user + '/' + link.project
 
               const children: PhrasingContent[] = []
 
-              if (link.page === "issues" || link.page === "pull") {
-                base += "#"
-                children.push({ type: "text", value: base + link.reference + comment })
+              if (link.page === 'issues' || link.page === 'pull') {
+                base += '#'
+                children.push({ type: 'text', value: base + link.reference + comment })
               } else {
                 if (base) {
-                  children.push({ type: "text", value: base + "@" })
+                  children.push({ type: 'text', value: base + '@' })
                 }
 
-                children.push({ type: "inlineCode", value: link.reference })
+                children.push({ type: 'inlineCode', value: link.reference })
 
                 if (link.comment) {
-                  children.push({ type: "text", value: comment })
+                  children.push({ type: 'text', value: comment })
                 }
               }
 
@@ -184,17 +184,17 @@ export const GitHub: QuartzTransformerPlugin<Partial<Options>> = (userOpts) => {
                 return false
               }
 
-              const url = buildUrl({ type: "mention", user: username })
+              const url = buildUrl({ type: 'mention', user: username })
 
               if (!url) return false
 
-              let node: PhrasingContent = { type: "text", value: "@" + username }
+              let node: PhrasingContent = { type: 'text', value: '@' + username }
 
               if (opts.mentionStrong !== false) {
-                node = { type: "strong", children: [node] }
+                node = { type: 'strong', children: [node] }
               }
 
-              return { type: "link", title: null, url, children: [node] }
+              return { type: 'link', title: null, url, children: [node] }
             }
 
             /**
@@ -208,10 +208,10 @@ export const GitHub: QuartzTransformerPlugin<Partial<Options>> = (userOpts) => {
                 return false
               }
 
-              const url = buildUrl({ no, type: "issue", ...repositoryInfo })
+              const url = buildUrl({ no, type: 'issue', ...repositoryInfo })
 
               return url
-                ? { type: "link", title: null, url, children: [{ type: "text", value }] }
+                ? { type: 'link', title: null, url, children: [{ type: 'text', value }] }
                 : false
             }
 
@@ -232,14 +232,14 @@ export const GitHub: QuartzTransformerPlugin<Partial<Options>> = (userOpts) => {
                 return false
               }
 
-              const url = buildUrl({ base: a, compare: b, type: "compare", ...repositoryInfo })
+              const url = buildUrl({ base: a, compare: b, type: 'compare', ...repositoryInfo })
 
               return url
                 ? {
-                    type: "link",
+                    type: 'link',
                     title: null,
                     url,
-                    children: [{ type: "inlineCode", value: abbr(a) + "..." + abbr(b) }],
+                    children: [{ type: 'inlineCode', value: abbr(a) + '...' + abbr(b) }],
                   }
                 : false
             }
@@ -251,22 +251,22 @@ export const GitHub: QuartzTransformerPlugin<Partial<Options>> = (userOpts) => {
               if (
                 /[^\t\n\r (@[{.]/.test(match.input.charAt(match.index - 1)) ||
                 // For some weird reason GH does link two dots, but not one 🤷‍♂️
-                (match.input.charAt(match.index - 1) === "." &&
-                  match.input.charAt(match.index - 2) !== ".") ||
+                (match.input.charAt(match.index - 1) === '.' &&
+                  match.input.charAt(match.index - 2) !== '.') ||
                 /\w/.test(match.input.charAt(match.index + value.length)) ||
                 denyHash.has(value)
               ) {
                 return false
               }
 
-              const url = buildUrl({ hash: value, type: "commit", ...repositoryInfo })
+              const url = buildUrl({ hash: value, type: 'commit', ...repositoryInfo })
 
               return url
                 ? {
-                    type: "link",
+                    type: 'link',
                     title: null,
                     url,
-                    children: [{ type: "inlineCode", value: abbr(value) }],
+                    children: [{ type: 'inlineCode', value: abbr(value) }],
                   }
                 : false
             }
@@ -291,31 +291,31 @@ export const GitHub: QuartzTransformerPlugin<Partial<Options>> = (userOpts) => {
 
               const project = specificProject || repositoryInfo.project
               const values: BuildUrlValues = no
-                ? { no, project, type: "issue", user }
-                : { hash, project, type: "commit", user }
+                ? { no, project, type: 'issue', user }
+                : { hash, project, type: 'commit', user }
               const url = buildUrl(values)
 
               if (!url) return false
 
               const nodes: PhrasingContent[] = []
-              let value = ""
+              let value = ''
 
               if (project !== repositoryInfo.project) {
-                value += user + "/" + project
+                value += user + '/' + project
               } else if (user !== repositoryInfo.user) {
                 value += user
               }
 
               if (no) {
-                value += "#" + no
+                value += '#' + no
               } else {
-                value += "@"
-                nodes.push({ type: "inlineCode", value: abbr(hash) })
+                value += '@'
+                nodes.push({ type: 'inlineCode', value: abbr(hash) })
               }
 
-              nodes.unshift({ type: "text", value })
+              nodes.unshift({ type: 'text', value })
 
-              return { type: "link", title: null, url, children: nodes }
+              return { type: 'link', title: null, url, children: nodes }
             }
           }
         },
@@ -326,14 +326,14 @@ export const GitHub: QuartzTransformerPlugin<Partial<Options>> = (userOpts) => {
         // automatically add dir https://github.com/rehypejs/rehype-github/blob/main/packages/dir/lib/index.js
         // It is simple enough and I don't want to add a whole deps for it.
         () => {
-          const include = new Set(["div", "h1", "h2", "h3", "h4", "h5", "h6", "ol", "p", "ul"])
+          const include = new Set(['div', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'ol', 'p', 'ul'])
 
           const checkAddDir = ({ type, tagName, properties }: Element) => {
-            if (type !== "element" || !include.has(tagName) || !properties) return false
+            if (type !== 'element' || !include.has(tagName) || !properties) return false
             // Do not add them to `:is(ol, ul).contains-task-list`.
             if (
               Array.isArray(properties.className) &&
-              properties.className.includes("contains-task-list")
+              properties.className.includes('contains-task-list')
             ) {
               return false
             }
@@ -342,49 +342,49 @@ export const GitHub: QuartzTransformerPlugin<Partial<Options>> = (userOpts) => {
           return (tree: HtmlRoot, _file) => {
             visit(
               tree,
-              (node) => checkAddDir(node as Element),
-              (node) => {
+              node => checkAddDir(node as Element),
+              node => {
                 // @ts-ignore
-                node.properties.dir = "auto"
+                node.properties.dir = 'auto'
               },
             )
           }
         },
         // mark as external links for both GitHub and current domain https://github.com/rehypejs/rehype-github/blob/main/packages/link/lib/index.js
         () => {
-          const internals = ["github.com", cfg.configuration.baseUrl, ...opts.internalLinks!]
-          const relations = ["nofollow"]
+          const internals = ['github.com', cfg.configuration.baseUrl, ...opts.internalLinks!]
+          const relations = ['nofollow']
 
           for (const internal of internals) {
             try {
-              const url = new URL("https://" + internal)
+              const url = new URL('https://' + internal)
               if (url.hostname !== internal) {
                 throw new Error(
-                  "Value `" + internal + "` is parsed as hostname `" + url.hostname + "`",
+                  'Value `' + internal + '` is parsed as hostname `' + url.hostname + '`',
                 )
               }
             } catch (error) {
-              const exception = new Error("Expected valid hostname for URL, not `" + internal + "`")
+              const exception = new Error('Expected valid hostname for URL, not `' + internal + '`')
               exception.cause = error
               throw exception
             }
           }
 
           for (const relation of relations) {
-            if (relation.includes(" ")) {
+            if (relation.includes(' ')) {
               throw new Error(
-                "Expected valid `rel` value, without space (note: use arrays to pass multiple values)",
+                'Expected valid `rel` value, without space (note: use arrays to pass multiple values)',
               )
             }
           }
 
           return function (tree) {
-            visit(tree, "element", function (node, index, parent) {
+            visit(tree, 'element', function (node, index, parent) {
               if (
-                node.type === "element" &&
-                node.tagName === "a" &&
+                node.type === 'element' &&
+                node.tagName === 'a' &&
                 parent &&
-                typeof index === "number"
+                typeof index === 'number'
               ) {
                 let url: URL | undefined
 
@@ -392,7 +392,7 @@ export const GitHub: QuartzTransformerPlugin<Partial<Options>> = (userOpts) => {
 
                 if (defaultHostname) {
                   try {
-                    url = new URL(String(node.properties.href), "https://" + defaultHostname)
+                    url = new URL(String(node.properties.href), 'https://' + defaultHostname)
                   } catch {}
                 }
 
@@ -405,7 +405,7 @@ export const GitHub: QuartzTransformerPlugin<Partial<Options>> = (userOpts) => {
                   known = !hostname
 
                   for (const internal of internals) {
-                    if (hostname === internal || hostname.endsWith("." + internal)) {
+                    if (hostname === internal || hostname.endsWith('.' + internal)) {
                       known = true
                       break
                     }
@@ -431,17 +431,17 @@ export const GitHub: QuartzTransformerPlugin<Partial<Options>> = (userOpts) => {
         () => {
           return function (tree) {
             const toAddBlock = ({ type, tagName, properties }: Element) =>
-              type === "element" && opts.noTranslateBlock!.includes(tagName) && Boolean(properties)
+              type === 'element' && opts.noTranslateBlock!.includes(tagName) && Boolean(properties)
             visit(
               tree,
-              "element",
+              'element',
               toAddBlock,
               // @ts-ignore
               (node: Element) => {
                 const className = Array.isArray(node.properties.className)
                   ? node.properties.className
                   : (node.properties.className = [])
-                className.push("notranslate")
+                className.push('notranslate')
               },
             )
           }
@@ -450,12 +450,12 @@ export const GitHub: QuartzTransformerPlugin<Partial<Options>> = (userOpts) => {
         // to only parse user/project
         () => {
           return function (tree) {
-            visit(tree, { tagName: "a" }, (node: Element) => {
-              const githubMatch = ((node.properties.href! as string) ?? "").match(
+            visit(tree, { tagName: 'a' }, (node: Element) => {
+              const githubMatch = ((node.properties.href! as string) ?? '').match(
                 /^https:\/\/github\.com\/([^/]+)\/([^/\s#]+)/,
               )
               if (githubMatch && toString(node) === node.properties.href!) {
-                visit(node, "text", function (el: Text) {
+                visit(node, 'text', function (el: Text) {
                   el.value = `${githubMatch[1]}/${githubMatch[2]}`
                 })
               }
@@ -487,14 +487,14 @@ function parse(node: Link): UrlInfo | undefined {
     !match ||
     // Looks like formatting.
     node.children.length !== 1 ||
-    node.children[0].type !== "text" ||
+    node.children[0].type !== 'text' ||
     toString(node) !== node.url ||
     // SHAs can be min 4, max 40 characters.
-    (match[3] === "commit" && (match[4].length < 4 || match[4].length > 40)) ||
+    (match[3] === 'commit' && (match[4].length < 4 || match[4].length > 40)) ||
     // SHAs can be min 4, max 40 characters.
-    (match[3] === "compare" && !/^[a-f\d]{4,40}\.{3}[a-f\d]{4,40}$/.test(match[4])) ||
+    (match[3] === 'compare' && !/^[a-f\d]{4,40}\.{3}[a-f\d]{4,40}$/.test(match[4])) ||
     // Issues / PRs are decimal only.
-    ((match[3] === "issues" || match[3] === "pull") && /[a-f]/i.test(match[4])) ||
+    ((match[3] === 'issues' || match[3] === 'pull') && /[a-f]/i.test(match[4])) ||
     // Projects can be at most 99 characters.
     match[2].length >= 100
   ) {
@@ -503,15 +503,15 @@ function parse(node: Link): UrlInfo | undefined {
 
   let reference = match[4]
 
-  if (match[3] === "compare") {
-    const [base, compare] = reference.split("...")
-    reference = abbr(base) + "..." + abbr(compare)
+  if (match[3] === 'compare') {
+    const [base, compare] = reference.split('...')
+    reference = abbr(base) + '...' + abbr(compare)
   } else {
     reference = abbr(reference)
   }
 
   return {
-    comment: node.url.charAt(match[0].length) === "#" && match[0].length + 1 < node.url.length,
+    comment: node.url.charAt(match[0].length) === '#' && match[0].length + 1 < node.url.length,
     page: match[3],
     project: match[2],
     reference,

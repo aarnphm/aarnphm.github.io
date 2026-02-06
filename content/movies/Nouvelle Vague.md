@@ -14,5 +14,5 @@ category:
   - o/relationship
   - love
 description: It follows the shooting of Breathless, one of the first feature films of the French New Wave of cinema.
-posters: "[[movies/posters/novelle-vague.jpg]]"
+posters: '[[movies/posters/novelle-vague.jpg]]'
 ---

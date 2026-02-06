@@ -2,19 +2,19 @@ import {
   QuartzComponent,
   QuartzComponentConstructor,
   QuartzComponentProps,
-} from "../types/component"
-import { classNames } from "../util/lang"
+} from '../types/component'
+import { classNames } from '../util/lang'
 // @ts-ignore: this is safe, we don't want to actually make darkmode.inline.ts a module as
 // modules are automatically deferred and we don't want that to happen for critical beforeDOMLoads
 // see: https://v8.dev/features/modules#defer
-import darkmodeScript from "./scripts/darkmode.inline"
-import styles from "./styles/darkmode.scss"
+import darkmodeScript from './scripts/darkmode.inline'
+import styles from './styles/darkmode.scss'
 
 export default (() => {
   const Darkmode: QuartzComponent = ({ displayClass }: QuartzComponentProps) => (
     <span
       id="light-toggle"
-      class={classNames(displayClass, "darkmode")}
+      class={classNames(displayClass, 'darkmode')}
       // @ts-ignore
       type="button"
       role="button"

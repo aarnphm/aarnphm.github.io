@@ -1,5 +1,5 @@
 ---
-date: "2024-01-24"
+date: '2024-01-24'
 description: internal pay structure, job analysis, pay differentials, and criteria for job-based versus person-based organizational structures.
 id: Defining Internal Alignment and Job Analysis
 modified: 2026-01-08 14:35:43 GMT-05:00

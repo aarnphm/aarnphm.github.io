@@ -2,7 +2,7 @@ packages:
   - ./
 
 onlyBuiltDependencies:
-  - "@parcel/watcher"
+  - '@parcel/watcher'
   - bufferutil
   - core-js-pure
   - esbuild

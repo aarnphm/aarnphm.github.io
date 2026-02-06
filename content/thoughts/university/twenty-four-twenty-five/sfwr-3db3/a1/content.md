@@ -1,5 +1,5 @@
 ---
-date: "2024-09-26"
+date: '2024-09-26'
 description: some notes about entity-relationship models and foreign keys
 id: a1
 modified: 2025-11-09 01:40:57 GMT-05:00

@@ -1,7 +1,7 @@
-import { QuartzComponent, QuartzComponentConstructor } from "../types/component"
+import { QuartzComponent, QuartzComponentConstructor } from '../types/component'
 // @ts-ignore
-import script from "./scripts/matuschak.inline"
-import style from "./styles/matuschak.scss"
+import script from './scripts/matuschak.inline'
+import style from './styles/matuschak.scss'
 
 export default (() => {
   const StackedNotes: QuartzComponent = () => {

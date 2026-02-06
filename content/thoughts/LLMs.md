@@ -1,6 +1,6 @@
 ---
 abstract: large language models will probably be the most important piece of technology in the 21st century
-date: "2024-02-07"
+date: '2024-02-07'
 description: a mathematical framework for intelligence
 id: LLMs
 modified: 2025-12-24 00:56:35 GMT-05:00

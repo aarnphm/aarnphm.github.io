@@ -14,7 +14,7 @@ subcategory:
 author:
   - Bertrand Russell
   - Alfred North Whitehead
-posters: "[[library/posters/Principia Mathematica.jpg]]"
+posters: '[[library/posters/Principia Mathematica.jpg]]'
 category:
   - philosophy
 translator:

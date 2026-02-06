@@ -8,7 +8,7 @@ description: two cousins metabolizing inherited trauma differently on a holocaus
 director: Jesse Eisenberg
 id: a-real-pain
 modified: 2025-10-29 02:14:45 GMT-04:00
-posters: "[[movies/posters/a-real-pain.jpg]]"
+posters: '[[movies/posters/a-real-pain.jpg]]'
 rating: 8
 status: finished
 studio: searchlight

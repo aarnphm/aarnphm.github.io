@@ -5,7 +5,7 @@ description: the american dream as criminal enterprise—fast money and faster l
 director: Martin Scorsese
 id: goodfellas
 modified: 2025-10-29 02:15:04 GMT-04:00
-posters: "[[movies/posters/goodfellas.jpg]]"
+posters: '[[movies/posters/goodfellas.jpg]]'
 rating: 8.7
 status: recurring
 studio: warner bros

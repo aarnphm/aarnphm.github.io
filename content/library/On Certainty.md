@@ -2,14 +2,14 @@
 aliases:
   - certainty
   - OC
-author: "[[thoughts/Wittgenstein|Ludwig Wittgenstein]]"
+author: '[[thoughts/Wittgenstein|Ludwig Wittgenstein]]'
 category: philosophy
-date: "2025-09-18"
+date: '2025-09-18'
 description: late wittgenstein notes on knowledge and doubt, examining hinge propositions that sit beneath justification and make inquiry possible.
 id: On Certainty
 modified: 2025-12-31 20:03:08 GMT-05:00
 pdf: http://thatmarcusfamily.org/philosophy/Course_Websites/Readings/Wittgenstein%20On%20Certainty.pdf
-posters: "[[library/posters/on-certainty.jpg]]"
+posters: '[[library/posters/on-certainty.jpg]]'
 status: current
 subcategory: skepticism
 tags:

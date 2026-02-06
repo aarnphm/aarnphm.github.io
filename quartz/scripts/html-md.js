@@ -1,10 +1,10 @@
-import fs from "node:fs/promises"
-import path from "node:path"
-import rehypeParse from "rehype-parse"
-import rehypeRemark from "rehype-remark"
-import remarkGfm from "remark-gfm"
-import remarkStringify from "remark-stringify"
-import { unified } from "unified"
+import fs from 'node:fs/promises'
+import path from 'node:path'
+import rehypeParse from 'rehype-parse'
+import rehypeRemark from 'rehype-remark'
+import remarkGfm from 'remark-gfm'
+import remarkStringify from 'remark-stringify'
+import { unified } from 'unified'
 
 async function htmlToMarkdown(htmlString) {
   // Build a pipeline that:
@@ -24,10 +24,10 @@ async function htmlToMarkdown(htmlString) {
 async function readBaseTemplate() {
   try {
     const currentDir = path.dirname(new URL(import.meta.url).pathname)
-    const templatePath = path.join(currentDir, "base.html")
-    return await fs.readFile(templatePath, "utf8")
+    const templatePath = path.join(currentDir, 'base.html')
+    return await fs.readFile(templatePath, 'utf8')
   } catch (error) {
-    console.error("Error reading base template:", error)
+    console.error('Error reading base template:', error)
     throw error
   }
 }

@@ -1,5 +1,5 @@
 ---
-date: "2024-11-11"
+date: '2024-11-11'
 description: gradient descent but with smoothness properties (differentiable or sub-differentiable)
 id: Stochastic gradient descent
 modified: 2025-10-29 02:16:08 GMT-04:00

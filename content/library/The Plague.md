@@ -12,8 +12,8 @@ status: finished
 subcategory:
   - absurdism
 author:
-  - "[[thoughts/Camus|Abert Camus]]"
-posters: "[[library/posters/the-plague.jpg]]"
+  - '[[thoughts/Camus|Abert Camus]]'
+posters: '[[library/posters/the-plague.jpg]]'
 category:
   - philosophy
 translator:

@@ -1,13 +1,13 @@
 ---
-date: "2025-03-25"
+date: '2025-03-25'
 description: multi-level intermediate representation for compiler infrastructure
 id: MLIR
 modified: 2025-11-28 17:21:14 GMT-05:00
 seealso:
-  - "[[thoughts/Compiler]]"
-  - "[[thoughts/XLA]]"
-  - "[[thoughts/PyTorch]]"
-  - "[[thoughts/GPU programming]]"
+  - '[[thoughts/Compiler]]'
+  - '[[thoughts/XLA]]'
+  - '[[thoughts/PyTorch]]'
+  - '[[thoughts/GPU programming]]'
 tags:
   - ml
   - compilers

@@ -14,16 +14,16 @@
  * format seconds as MM:SS or H:MM:SS
  */
 function formatTime(seconds: number): string {
-  if (isNaN(seconds) || !isFinite(seconds)) return "0:00"
+  if (isNaN(seconds) || !isFinite(seconds)) return '0:00'
 
   const h = Math.floor(seconds / 3600)
   const m = Math.floor((seconds % 3600) / 60)
   const s = Math.floor(seconds % 60)
 
   if (h > 0) {
-    return `${h}:${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`
+    return `${h}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`
   }
-  return `${m}:${s.toString().padStart(2, "0")}`
+  return `${m}:${s.toString().padStart(2, '0')}`
 }
 
 /**
@@ -70,20 +70,20 @@ class AudioPlayer {
 
   constructor(container: HTMLElement) {
     this.container = container
-    this.audio = container.querySelector("audio")!
-    this.playButton = container.querySelector(".audio-play-button")!
-    this.progressContainer = container.querySelector(".audio-progress-container")!
-    this.progressTrack = container.querySelector(".audio-progress-track")!
-    this.progressBar = container.querySelector(".audio-progress-bar")!
-    this.playhead = container.querySelector(".audio-playhead")!
-    this.timeCurrent = container.querySelector(".audio-time-current")!
-    this.timeRemaining = container.querySelector(".audio-time-remaining")!
-    this.speedButton = container.querySelector(".audio-speed")!
+    this.audio = container.querySelector('audio')!
+    this.playButton = container.querySelector('.audio-play-button')!
+    this.progressContainer = container.querySelector('.audio-progress-container')!
+    this.progressTrack = container.querySelector('.audio-progress-track')!
+    this.progressBar = container.querySelector('.audio-progress-bar')!
+    this.playhead = container.querySelector('.audio-playhead')!
+    this.timeCurrent = container.querySelector('.audio-time-current')!
+    this.timeRemaining = container.querySelector('.audio-time-remaining')!
+    this.speedButton = container.querySelector('.audio-speed')!
   }
 
   public init(): void {
     // load saved speed preference
-    const savedSpeed = parseFloat(this.speedButton.dataset.speed || "1")
+    const savedSpeed = parseFloat(this.speedButton.dataset.speed || '1')
     this.audio.playbackRate = savedSpeed
     this.updateSpeedDisplay()
 
@@ -102,23 +102,23 @@ class AudioPlayer {
     }
 
     // attach event listeners
-    this.playButton.addEventListener("click", this.togglePlay)
-    this.audio.addEventListener("timeupdate", this.onTimeUpdate)
-    this.audio.addEventListener("loadedmetadata", this.onMetadataLoaded)
-    this.audio.addEventListener("ended", this.onEnded)
-    this.progressContainer.addEventListener("mousedown", this.onProgressMouseDown)
-    this.speedButton.addEventListener("click", this.cycleSpeed)
-    document.addEventListener("keydown", this.onKeyDown)
+    this.playButton.addEventListener('click', this.togglePlay)
+    this.audio.addEventListener('timeupdate', this.onTimeUpdate)
+    this.audio.addEventListener('loadedmetadata', this.onMetadataLoaded)
+    this.audio.addEventListener('ended', this.onEnded)
+    this.progressContainer.addEventListener('mousedown', this.onProgressMouseDown)
+    this.speedButton.addEventListener('click', this.cycleSpeed)
+    document.addEventListener('keydown', this.onKeyDown)
 
     // register cleanup
     window.addCleanup(() => {
-      this.playButton.removeEventListener("click", this.togglePlay)
-      this.audio.removeEventListener("timeupdate", this.onTimeUpdate)
-      this.audio.removeEventListener("loadedmetadata", this.onMetadataLoaded)
-      this.audio.removeEventListener("ended", this.onEnded)
-      this.progressContainer.removeEventListener("mousedown", this.onProgressMouseDown)
-      this.speedButton.removeEventListener("click", this.cycleSpeed)
-      document.removeEventListener("keydown", this.onKeyDown)
+      this.playButton.removeEventListener('click', this.togglePlay)
+      this.audio.removeEventListener('timeupdate', this.onTimeUpdate)
+      this.audio.removeEventListener('loadedmetadata', this.onMetadataLoaded)
+      this.audio.removeEventListener('ended', this.onEnded)
+      this.progressContainer.removeEventListener('mousedown', this.onProgressMouseDown)
+      this.speedButton.removeEventListener('click', this.cycleSpeed)
+      document.removeEventListener('keydown', this.onKeyDown)
       // pause on cleanup
       if (!this.audio.paused) {
         this.audio.pause()
@@ -132,21 +132,21 @@ class AudioPlayer {
   private togglePlay = (): void => {
     if (this.audio.paused) {
       // pause all other audio players
-      document.querySelectorAll<HTMLAudioElement>(".audio-embed audio").forEach((otherAudio) => {
+      document.querySelectorAll<HTMLAudioElement>('.audio-embed audio').forEach(otherAudio => {
         if (otherAudio !== this.audio && !otherAudio.paused) {
           otherAudio.pause()
         }
       })
 
       this.audio.play()
-      this.container.classList.add("is-playing")
-      this.playButton.setAttribute("aria-label", "Pause")
-      this.playButton.setAttribute("aria-pressed", "true")
+      this.container.classList.add('is-playing')
+      this.playButton.setAttribute('aria-label', 'Pause')
+      this.playButton.setAttribute('aria-pressed', 'true')
     } else {
       this.audio.pause()
-      this.container.classList.remove("is-playing")
-      this.playButton.setAttribute("aria-label", "Play")
-      this.playButton.setAttribute("aria-pressed", "false")
+      this.container.classList.remove('is-playing')
+      this.playButton.setAttribute('aria-label', 'Play')
+      this.playButton.setAttribute('aria-pressed', 'false')
     }
   }
 
@@ -168,9 +168,9 @@ class AudioPlayer {
   }
 
   private onEnded = (): void => {
-    this.container.classList.remove("is-playing")
-    this.playButton.setAttribute("aria-label", "Play")
-    this.playButton.setAttribute("aria-pressed", "false")
+    this.container.classList.remove('is-playing')
+    this.playButton.setAttribute('aria-label', 'Play')
+    this.playButton.setAttribute('aria-pressed', 'false')
     // clear saved progress when finished
     localStorage.removeItem(`audio-progress:${this.audio.src}`)
   }
@@ -180,7 +180,7 @@ class AudioPlayer {
     const duration = this.audio.duration || 0
 
     this.timeCurrent.textContent = formatTime(current)
-    this.timeRemaining.textContent = duration > 0 ? `-${formatTime(duration - current)}` : "0:00"
+    this.timeRemaining.textContent = duration > 0 ? `-${formatTime(duration - current)}` : '0:00'
   }
 
   private updateProgress(): void {
@@ -201,12 +201,12 @@ class AudioPlayer {
 
     const onMouseUp = () => {
       this.isDragging = false
-      document.removeEventListener("mousemove", onMouseMove)
-      document.removeEventListener("mouseup", onMouseUp)
+      document.removeEventListener('mousemove', onMouseMove)
+      document.removeEventListener('mouseup', onMouseUp)
     }
 
-    document.addEventListener("mousemove", onMouseMove)
-    document.addEventListener("mouseup", onMouseUp)
+    document.addEventListener('mousemove', onMouseMove)
+    document.addEventListener('mouseup', onMouseUp)
   }
 
   private seekToPosition(e: MouseEvent): void {
@@ -231,7 +231,7 @@ class AudioPlayer {
   private updateSpeedDisplay(): void {
     const speed = this.audio.playbackRate
     this.speedButton.textContent = `${speed}×`
-    this.speedButton.setAttribute("aria-label", `Playback speed: ${speed}x`)
+    this.speedButton.setAttribute('aria-label', `Playback speed: ${speed}x`)
   }
 
   private onKeyDown = (e: KeyboardEvent): void => {
@@ -240,7 +240,7 @@ class AudioPlayer {
     // only handle if this player's container or controls are focused, or if no other input is focused
     const target = e.target as HTMLElement
     const isInputFocused =
-      target.tagName === "INPUT" || target.tagName === "TEXTAREA" || target.isContentEditable
+      target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable
 
     // check if this player is in focus context
     const isThisPlayerFocused =
@@ -249,7 +249,7 @@ class AudioPlayer {
     if (isInputFocused && !isThisPlayerFocused) return
 
     // space: play/pause (only if this player is focused or playing)
-    if (e.code === "Space" && (isThisPlayerFocused || !this.audio.paused)) {
+    if (e.code === 'Space' && (isThisPlayerFocused || !this.audio.paused)) {
       e.preventDefault()
       this.togglePlay()
       return
@@ -259,19 +259,19 @@ class AudioPlayer {
     if (!isThisPlayerFocused && this.audio.paused) return
 
     switch (e.code) {
-      case "ArrowLeft":
+      case 'ArrowLeft':
         e.preventDefault()
         this.audio.currentTime = Math.max(0, this.audio.currentTime - 5)
         break
-      case "ArrowRight":
+      case 'ArrowRight':
         e.preventDefault()
         this.audio.currentTime = Math.min(this.audio.duration, this.audio.currentTime + 5)
         break
-      case "ArrowUp":
+      case 'ArrowUp':
         e.preventDefault()
         this.cycleSpeed()
         break
-      case "ArrowDown":
+      case 'ArrowDown':
         e.preventDefault()
         // cycle backwards through speeds
         const currentSpeed = this.audio.playbackRate
@@ -285,14 +285,14 @@ class AudioPlayer {
   }
 }
 
-document.addEventListener("nav", () => {
-  const audioEmbeds = document.querySelectorAll(".audio-embed") as NodeListOf<HTMLElement>
+document.addEventListener('nav', () => {
+  const audioEmbeds = document.querySelectorAll('.audio-embed') as NodeListOf<HTMLElement>
 
   for (const embed of audioEmbeds) {
     if (embed.dataset.initialized) continue
 
     const _ = new AudioPlayer(embed)
     _.init()
-    embed.dataset.initialized = "true"
+    embed.dataset.initialized = 'true'
   }
 })

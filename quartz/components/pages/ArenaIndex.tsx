@@ -1,17 +1,17 @@
-import type { ComponentChild } from "preact"
-import { ArenaData, ArenaBlock } from "../../plugins/transformers/arena"
+import type { ComponentChild } from 'preact'
+import { ArenaData, ArenaBlock } from '../../plugins/transformers/arena'
 import {
   QuartzComponent,
   QuartzComponentConstructor,
   QuartzComponentProps,
-} from "../../types/component"
-import { toArenaHeadingInlineJsx, toArenaJsx, arenaBlockTimestamp } from "../../util/arena"
-import { classNames } from "../../util/lang"
-import { resolveRelative, joinSegments, FullSlug } from "../../util/path"
-import { extractWikilinksWithPositions, resolveWikilinkTarget } from "../../util/wikilinks"
+} from '../../types/component'
+import { toArenaHeadingInlineJsx, toArenaJsx, arenaBlockTimestamp } from '../../util/arena'
+import { classNames } from '../../util/lang'
+import { resolveRelative, joinSegments, FullSlug } from '../../util/path'
+import { extractWikilinksWithPositions, resolveWikilinkTarget } from '../../util/wikilinks'
 // @ts-ignore
-import script from "../scripts/arena.inline"
-import style from "../styles/arena.scss"
+import script from '../scripts/arena.inline'
+import style from '../styles/arena.scss'
 
 export default (() => {
   const ArenaIndex: QuartzComponent = (componentData: QuartzComponentProps) => {
@@ -22,14 +22,14 @@ export default (() => {
       return <article class="arena-content">No arena data found</article>
     }
 
-    const arenaBase = "arena" as FullSlug
+    const arenaBase = 'arena' as FullSlug
     const currentSlug = (fileData.slug ?? arenaBase) as FullSlug
     const limits = 5
 
     const sortedChannels = [...arenaData.channels].sort((a, b) => b.blocks.length - a.blocks.length)
 
     const renderInlineText = (text: string) => {
-      if (!text) return ""
+      if (!text) return ''
       const parts: ComponentChild[] = []
       const ranges = extractWikilinksWithPositions(text)
       let lastIndex = 0
@@ -40,7 +40,7 @@ export default (() => {
         }
 
         const parsed = range.wikilink
-        const resolved = resolveWikilinkTarget(parsed, "" as FullSlug)
+        const resolved = resolveWikilinkTarget(parsed, '' as FullSlug)
         const raw = text.slice(range.start, range.end)
 
         if (resolved) {
@@ -77,11 +77,11 @@ export default (() => {
 
     // Collect all preview blocks for modal data
     const allPreviewBlocks: Array<{ block: ArenaBlock; channelSlug: string }> = []
-    sortedChannels.forEach((channel) => {
+    sortedChannels.forEach(channel => {
       const previewBlocks = [...channel.blocks]
         .sort((a, b) => arenaBlockTimestamp(b) - arenaBlockTimestamp(a))
         .slice(0, limits)
-      previewBlocks.forEach((block) => {
+      previewBlocks.forEach(block => {
         allPreviewBlocks.push({ block, channelSlug: channel.slug })
       })
     })
@@ -116,7 +116,7 @@ export default (() => {
           <div id="arena-search-container" class="arena-search-results" />
         </div>
         <div class="arena-channels-list">
-          {sortedChannels.map((channel) => {
+          {sortedChannels.map(channel => {
             const channelPath = joinSegments(arenaBase, channel.slug) as FullSlug
             return (
               <div class="arena-channel-row" key={channel.slug} data-slug={channelPath}>
@@ -140,14 +140,14 @@ export default (() => {
                     </a>
                   </h2>
                   <div class="arena-channel-row-metadata">
-                    {(channel.metadata?.json === "true" || channel.metadata?.json === true) && (
+                    {(channel.metadata?.json === 'true' || channel.metadata?.json === true) && (
                       <a
                         href={resolveRelative(currentSlug, `${channelPath}/json` as FullSlug)}
                         class="arena-channel-json-link"
                         title="JSON export available"
                         data-no-popover
                       >
-                        <span>{"{ }"}</span>
+                        <span>{'{ }'}</span>
                       </a>
                     )}
                     <span class="arena-channel-row-count">
@@ -161,14 +161,14 @@ export default (() => {
                   {[...channel.blocks]
                     .sort((a, b) => arenaBlockTimestamp(b) - arenaBlockTimestamp(a))
                     .slice(0, limits)
-                    .map((block) => {
+                    .map(block => {
                       return (
                         <div
                           key={block.id}
                           class={classNames(
                             undefined,
                             `arena-channel-row-preview-item`,
-                            block.highlighted ? "highlighted" : "",
+                            block.highlighted ? 'highlighted' : '',
                           )}
                           data-block-id={block.id}
                           role="button"
@@ -182,7 +182,7 @@ export default (() => {
                                   currentSlug,
                                   componentData,
                                 )
-                              : renderInlineText(block.title || block.content || "")}
+                              : renderInlineText(block.title || block.content || '')}
                           </div>
                         </div>
                       )

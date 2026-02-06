@@ -6,7 +6,7 @@ aliases:
   - people cannon
   - influence
 comments: false
-date: "2024-01-23"
+date: '2024-01-23'
 description: a thank you letter.
 id: influence
 modified: 2025-11-30 17:01:49 GMT-05:00

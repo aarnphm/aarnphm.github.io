@@ -5,7 +5,7 @@ description: louisiana detectives chasing ritual killer across seventeen yearsâ€
 director: Cary Fukunaga
 id: true-detective
 modified: 2025-10-29 02:15:01 GMT-04:00
-posters: "[[movies/posters/true-detective.jpg]]"
+posters: '[[movies/posters/true-detective.jpg]]'
 rating: 8.9
 status: recurring
 studio: hbo

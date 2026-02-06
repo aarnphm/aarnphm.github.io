@@ -1,9 +1,9 @@
-import { Node } from "hast"
-import { ComponentType, JSX } from "preact"
-import { GlobalConfiguration } from "../cfg"
-import { QuartzPluginData } from "../plugins/vfile"
-import { BuildCtx } from "../util/ctx"
-import { StaticResources, StringResource } from "../util/resources"
+import { Node } from 'hast'
+import { ComponentType, JSX } from 'preact'
+import { GlobalConfiguration } from '../cfg'
+import { QuartzPluginData } from '../plugins/vfile'
+import { BuildCtx } from '../util/ctx'
+import { StaticResources, StringResource } from '../util/resources'
 
 export type QuartzComponentProps = {
   ctx: BuildCtx
@@ -13,7 +13,7 @@ export type QuartzComponentProps = {
   children: (QuartzComponent | JSX.Element)[]
   tree: Node
   allFiles: QuartzPluginData[]
-  displayClass?: "mobile-only" | "desktop-only"
+  displayClass?: 'mobile-only' | 'desktop-only'
 } & JSX.IntrinsicAttributes & { [key: string]: any }
 
 export type QuartzComponent = ComponentType<QuartzComponentProps> & {

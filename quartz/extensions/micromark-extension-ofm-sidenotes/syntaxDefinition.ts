@@ -1,5 +1,5 @@
-import type { Extension, Tokenizer, State, Code } from "micromark-util-types"
-import { factorySpace } from "micromark-factory-space"
+import type { Extension, Tokenizer, State, Code } from 'micromark-util-types'
+import { factorySpace } from 'micromark-factory-space'
 
 const codes = {
   leftCurlyBrace: 123,
@@ -15,7 +15,7 @@ const codes = {
   tab: 9,
 }
 
-const KEYWORD = "sidenotes"
+const KEYWORD = 'sidenotes'
 
 export function sidenoteDefinition(): Extension {
   const tokenize: Tokenizer = function (effects, ok, nok) {
@@ -28,8 +28,8 @@ export function sidenoteDefinition(): Extension {
     function start(code: Code): State | undefined {
       if (code !== codes.leftCurlyBrace) return nok(code)
 
-      effects.enter("sidenoteDefinition")
-      effects.enter("sidenoteDefinitionMarker")
+      effects.enter('sidenoteDefinition')
+      effects.enter('sidenoteDefinitionMarker')
       effects.consume(code)
       markerSize = 1
       labelBalance = 0
@@ -41,7 +41,7 @@ export function sidenoteDefinition(): Extension {
         effects.consume(code)
         markerSize++
         if (markerSize === 2) {
-          effects.exit("sidenoteDefinitionMarker")
+          effects.exit('sidenoteDefinitionMarker')
           return keyword
         }
         return openingBrace
@@ -69,11 +69,11 @@ export function sidenoteDefinition(): Extension {
     }
 
     function labelStart(code: Code): State | undefined {
-      effects.enter("sidenoteDefinitionLabel")
-      effects.enter("sidenoteDefinitionLabelMarker")
+      effects.enter('sidenoteDefinitionLabel')
+      effects.enter('sidenoteDefinitionLabelMarker')
       effects.consume(code)
-      effects.exit("sidenoteDefinitionLabelMarker")
-      effects.enter("sidenoteDefinitionLabelChunk")
+      effects.exit('sidenoteDefinitionLabelMarker')
+      effects.enter('sidenoteDefinitionLabelChunk')
       labelBalance = 0
       return labelInside
     }
@@ -91,11 +91,11 @@ export function sidenoteDefinition(): Extension {
           effects.consume(code)
           return labelInside
         }
-        effects.exit("sidenoteDefinitionLabelChunk")
-        effects.enter("sidenoteDefinitionLabelMarker")
+        effects.exit('sidenoteDefinitionLabelChunk')
+        effects.enter('sidenoteDefinitionLabelMarker')
         effects.consume(code)
-        effects.exit("sidenoteDefinitionLabelMarker")
-        effects.exit("sidenoteDefinitionLabel")
+        effects.exit('sidenoteDefinitionLabelMarker')
+        effects.exit('sidenoteDefinitionLabel')
         return afterLabel
       }
 
@@ -115,7 +115,7 @@ export function sidenoteDefinition(): Extension {
     }
 
     function closingBraceFirst(code: Code): State | undefined {
-      effects.enter("sidenoteDefinitionMarker")
+      effects.enter('sidenoteDefinitionMarker')
       effects.consume(code)
       return closingBraceSecond
     }
@@ -123,7 +123,7 @@ export function sidenoteDefinition(): Extension {
     function closingBraceSecond(code: Code): State | undefined {
       if (code === codes.rightCurlyBrace) {
         effects.consume(code)
-        effects.exit("sidenoteDefinitionMarker")
+        effects.exit('sidenoteDefinitionMarker')
         return afterDefinitionBlock
       }
       return nok(code)
@@ -131,16 +131,16 @@ export function sidenoteDefinition(): Extension {
 
     function afterDefinitionBlock(code: Code): State | undefined {
       if (code === codes.colon) {
-        effects.enter("sidenoteDefinitionMarker")
+        effects.enter('sidenoteDefinitionMarker')
         effects.consume(code)
-        effects.exit("sidenoteDefinitionMarker")
-        return factorySpace(effects, atContent, "sidenoteDefinitionWhitespace")
+        effects.exit('sidenoteDefinitionMarker')
+        return factorySpace(effects, atContent, 'sidenoteDefinitionWhitespace')
       }
       return nok(code)
     }
 
     function atContent(code: Code): State | undefined {
-      effects.exit("sidenoteDefinition")
+      effects.exit('sidenoteDefinition')
       return ok(code)
     }
   }

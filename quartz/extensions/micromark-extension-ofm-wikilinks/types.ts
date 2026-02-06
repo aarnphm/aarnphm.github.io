@@ -7,73 +7,73 @@
  * container token for entire wikilink construct.
  * example: `[[target#anchor|alias]]` or `![[embed]]`
  */
-export type WikilinkToken = "wikilink"
+export type WikilinkToken = 'wikilink'
 
 /**
  * embed prefix `!` before opening brackets.
  * example: `!` in `![[image.png]]`
  */
-export type WikilinkEmbedMarker = "wikilinkEmbedMarker"
+export type WikilinkEmbedMarker = 'wikilinkEmbedMarker'
 
 /**
  * opening `[[` markers.
  */
-export type WikilinkOpenMarker = "wikilinkOpenMarker"
+export type WikilinkOpenMarker = 'wikilinkOpenMarker'
 
 /**
  * closing `]]` markers.
  */
-export type WikilinkCloseMarker = "wikilinkCloseMarker"
+export type WikilinkCloseMarker = 'wikilinkCloseMarker'
 
 /**
  * target file path component.
  * example: `target` in `[[target#anchor|alias]]`
  */
-export type WikilinkTarget = "wikilinkTarget"
+export type WikilinkTarget = 'wikilinkTarget'
 
 /**
  * anchor marker `#` before heading/block ref.
  */
-export type WikilinkAnchorMarker = "wikilinkAnchorMarker"
+export type WikilinkAnchorMarker = 'wikilinkAnchorMarker'
 
 /**
  * anchor text after `#` marker.
  * example: `heading` in `[[file#heading]]`
  * example: `^block-id` in `[[file#^block-id]]`
  */
-export type WikilinkAnchor = "wikilinkAnchor"
+export type WikilinkAnchor = 'wikilinkAnchor'
 
 /**
  * alias marker `|` before display text.
  */
-export type WikilinkAliasMarker = "wikilinkAliasMarker"
+export type WikilinkAliasMarker = 'wikilinkAliasMarker'
 
 /**
  * alias display text after `|` marker.
  * example: `display` in `[[target|display]]`
  */
-export type WikilinkAlias = "wikilinkAlias"
+export type WikilinkAlias = 'wikilinkAlias'
 
 /**
  * metadata marker `#{` before metadata content.
  */
-export type WikilinkMetadataMarker = "wikilinkMetadataMarker"
+export type WikilinkMetadataMarker = 'wikilinkMetadataMarker'
 
 /**
  * metadata content inside braces.
  * example: `{key:value}` in `[[target#{key:value}]]`
  * stored as raw string for downstream parsing.
  */
-export type WikilinkMetadata = "wikilinkMetadata"
+export type WikilinkMetadata = 'wikilinkMetadata'
 
 /**
  * text chunk inside components (used by micromark internals).
  */
 export type WikilinkChunk =
-  | "wikilinkTargetChunk"
-  | "wikilinkAnchorChunk"
-  | "wikilinkMetadataChunk"
-  | "wikilinkAliasChunk"
+  | 'wikilinkTargetChunk'
+  | 'wikilinkAnchorChunk'
+  | 'wikilinkMetadataChunk'
+  | 'wikilinkAliasChunk'
 
 /**
  * union of all wikilink token types.
@@ -92,22 +92,22 @@ export type WikilinkTokenType =
   | WikilinkAlias
   | WikilinkChunk
 
-declare module "micromark-util-types" {
+declare module 'micromark-util-types' {
   interface TokenTypeMap {
-    wikilink: "wikilink"
-    wikilinkEmbedMarker: "wikilinkEmbedMarker"
-    wikilinkOpenMarker: "wikilinkOpenMarker"
-    wikilinkCloseMarker: "wikilinkCloseMarker"
-    wikilinkTarget: "wikilinkTarget"
-    wikilinkTargetChunk: "wikilinkTargetChunk"
-    wikilinkAnchorMarker: "wikilinkAnchorMarker"
-    wikilinkAnchor: "wikilinkAnchor"
-    wikilinkAnchorChunk: "wikilinkAnchorChunk"
-    wikilinkMetadataMarker: "wikilinkMetadataMarker"
-    wikilinkMetadata: "wikilinkMetadata"
-    wikilinkMetadataChunk: "wikilinkMetadataChunk"
-    wikilinkAliasMarker: "wikilinkAliasMarker"
-    wikilinkAlias: "wikilinkAlias"
-    wikilinkAliasChunk: "wikilinkAliasChunk"
+    wikilink: 'wikilink'
+    wikilinkEmbedMarker: 'wikilinkEmbedMarker'
+    wikilinkOpenMarker: 'wikilinkOpenMarker'
+    wikilinkCloseMarker: 'wikilinkCloseMarker'
+    wikilinkTarget: 'wikilinkTarget'
+    wikilinkTargetChunk: 'wikilinkTargetChunk'
+    wikilinkAnchorMarker: 'wikilinkAnchorMarker'
+    wikilinkAnchor: 'wikilinkAnchor'
+    wikilinkAnchorChunk: 'wikilinkAnchorChunk'
+    wikilinkMetadataMarker: 'wikilinkMetadataMarker'
+    wikilinkMetadata: 'wikilinkMetadata'
+    wikilinkMetadataChunk: 'wikilinkMetadataChunk'
+    wikilinkAliasMarker: 'wikilinkAliasMarker'
+    wikilinkAlias: 'wikilinkAlias'
+    wikilinkAliasChunk: 'wikilinkAliasChunk'
   }
 }

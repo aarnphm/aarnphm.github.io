@@ -1,5 +1,5 @@
-@use "../../styles/variables.scss" as *;
-@use "../../styles/mixin.scss" as *;
+@use '../../styles/variables.scss' as *;
+@use '../../styles/mixin.scss' as *;
 
 @mixin tinyCodeFonts {
   @include tinyFonts;
@@ -52,7 +52,7 @@ a[data-list] {
 .perma,
 .permanent-grid {
   &::after {
-    content: "";
+    content: '';
     border: 1px solid var(--dark);
     bottom: -0.5px;
     left: -0.5px;

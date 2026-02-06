@@ -1,5 +1,5 @@
 ---
-date: "2024-01-07"
+date: '2024-01-07'
 description: design document for campus study spot finder app with stakeholder analysis, user personas, interface sketches, and figma prototype.
 draft: true
 id: Design Document

@@ -1,5 +1,5 @@
 ---
-date: "2023-09-29"
+date: '2023-09-29'
 description: plato's symposium ladder of beauty progressing from individual beauty to beauty in minds, institutions, and ultimately absolute beauty.
 id: Symposium
 modified: 2025-10-29 02:16:17 GMT-04:00

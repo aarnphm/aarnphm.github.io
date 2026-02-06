@@ -1,13 +1,13 @@
-import type { Extension as MdastExtension } from "mdast-util-from-markdown"
-import type { Extension as MicromarkExtension } from "micromark-util-types"
-import type { Processor } from "unified"
-import { sidenoteFromMarkdown, type FromMarkdownOptions } from "./fromMarkdown"
-import { sidenote } from "./syntax"
-import { sidenoteDefinition } from "./syntaxDefinition"
-import { sidenoteToMarkdown } from "./toMarkdown"
+import type { Extension as MdastExtension } from 'mdast-util-from-markdown'
+import type { Extension as MicromarkExtension } from 'micromark-util-types'
+import type { Processor } from 'unified'
+import { sidenoteFromMarkdown, type FromMarkdownOptions } from './fromMarkdown'
+import { sidenote } from './syntax'
+import { sidenoteDefinition } from './syntaxDefinition'
+import { sidenoteToMarkdown } from './toMarkdown'
 
 export { sidenote, sidenoteDefinition, sidenoteFromMarkdown, sidenoteToMarkdown }
-export type { Sidenote, SidenoteData, SidenoteDefinition, SidenoteReference } from "./types"
+export type { Sidenote, SidenoteData, SidenoteDefinition, SidenoteReference } from './types'
 
 export interface RemarkSidenoteOptions {
   micromarkExtensions?: MicromarkExtension[]

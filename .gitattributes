@@ -83,3 +83,5 @@ docs/bases-implementation.md filter=lfs diff=lfs merge=lfs -text
 docs/bases-remaining-work.md filter=lfs diff=lfs merge=lfs -text
 content/letters/jan-2026.md filter=lfs diff=lfs merge=lfs -text
 content/letters/feb-2026.md filter=lfs diff=lfs merge=lfs -text
+content/thoughts/external-kv-connector-design.md filter=lfs diff=lfs merge=lfs -text
+content/thoughts/external-kv-impl-plan.md filter=lfs diff=lfs merge=lfs -text

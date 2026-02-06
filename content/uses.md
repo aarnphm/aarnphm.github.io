@@ -1,6 +1,6 @@
 ---
 comments: false
-date: "2024-01-22"
+date: '2024-01-22'
 description: Includes the tools I use, workflow,  etc.
 id: uses
 modified: 2026-01-18 07:14:01 GMT-05:00

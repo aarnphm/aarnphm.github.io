@@ -1,5 +1,5 @@
 ---
-date: "2024-09-09"
+date: '2024-09-09'
 description: relational database concepts covering superkeys, candidate keys, primary keys, foreign keys, and referential integrity constraints.
 id: Keys and Foreign Keys
 modified: 2025-10-29 02:16:02 GMT-04:00

@@ -1,6 +1,6 @@
-import { BuildCtx } from "../util/ctx"
-import { FilePath, FullSlug } from "../util/path"
-import { StaticResources } from "../util/resources"
+import { BuildCtx } from '../util/ctx'
+import { FilePath, FullSlug } from '../util/path'
+import { StaticResources } from '../util/resources'
 
 export function getStaticResourcesFromPlugins(ctx: BuildCtx) {
   const staticResources: StaticResources = { css: [], js: [], additionalHead: [] }
@@ -25,8 +25,8 @@ export function getStaticResourcesFromPlugins(ctx: BuildCtx) {
       : `ws://localhost:${ctx.argv.wsPort}`
 
     staticResources.js.push({
-      loadTime: "afterDOMReady",
-      contentType: "inline",
+      loadTime: 'afterDOMReady',
+      contentType: 'inline',
       script: `
         const socket = new WebSocket('${wsUrl}')
         // reload(true) ensures resources like images and scripts are fetched again in firefox
@@ -38,11 +38,11 @@ export function getStaticResourcesFromPlugins(ctx: BuildCtx) {
   return staticResources
 }
 
-export * from "./transformers"
-export * from "./filters"
-export * from "./emitters"
+export * from './transformers'
+export * from './filters'
+export * from './emitters'
 
-declare module "vfile" {
+declare module 'vfile' {
   // inserted in processors.ts
   interface DataMap {
     slug: FullSlug

@@ -12,7 +12,7 @@
     border-bottom: 1px rgba(34, 34, 34, 0.29) dotted;
     border-radius: var(--radius-none);
 
-    [saved-theme="dark"] & {
+    [saved-theme='dark'] & {
       border-bottom: 1px rgba(255, 255, 255, 0.29) dotted;
     }
 

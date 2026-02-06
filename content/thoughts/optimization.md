@@ -1,5 +1,5 @@
 ---
-date: "2024-10-31"
+date: '2024-10-31'
 description: A list of optimization functions that can be used in ML training to reduce loss, and more.
 id: optimization
 modified: 2025-10-29 02:15:51 GMT-04:00

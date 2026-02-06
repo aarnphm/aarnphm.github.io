@@ -1,5 +1,5 @@
 ---
-date: "2024-11-27"
+date: '2024-11-27'
 description: and fluid dynamics.
 id: Cauchy momentum equation
 modified: 2025-10-29 02:15:17 GMT-04:00

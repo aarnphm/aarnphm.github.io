@@ -1,7 +1,7 @@
-import { CompletionContext, CompletionResult } from "@codemirror/autocomplete"
-import type { FuzzyMatch } from "./types"
-import { getEmojiEntries, type EmojiEntry } from "../../../util/emoji"
-import { fuzzyMatch } from "./fuzzy"
+import { CompletionContext, CompletionResult } from '@codemirror/autocomplete'
+import type { FuzzyMatch } from './types'
+import { getEmojiEntries, type EmojiEntry } from '../../../util/emoji'
+import { fuzzyMatch } from './fuzzy'
 
 interface ScoredEmoji {
   entry: EmojiEntry
@@ -48,7 +48,7 @@ export async function emojiCompletionSource(
       label: `:${entry.name}:`,
       displayLabel: entry.emoji,
       detail: entry.name,
-      type: "emoji",
+      type: 'emoji',
       apply: entry.emoji,
       boost: match.score,
     })),

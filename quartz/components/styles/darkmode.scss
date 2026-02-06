@@ -1,5 +1,5 @@
 .ti {
-  font-family: "tabler-icons" !important;
+  font-family: 'tabler-icons' !important;
   speak: none;
   font-style: normal;
   font-weight: normal;
@@ -68,28 +68,28 @@
 }
 
 :root:not([data-theme-mode]) #light-toggle-system,
-:root[data-theme-mode="system"] #light-toggle-system,
-:root[data-theme-mode="dark"] #light-toggle-dark,
-:root[data-theme-mode="light"] #light-toggle-light {
+:root[data-theme-mode='system'] #light-toggle-system,
+:root[data-theme-mode='dark'] #light-toggle-dark,
+:root[data-theme-mode='light'] #light-toggle-light {
   display: inline-flex;
 }
 
 .ti-sun-moon::before {
-  content: "\f4a3";
+  content: '\f4a3';
 }
 
 .ti-sun-filled::before {
-  content: "\f6a9";
+  content: '\f6a9';
 }
 
 .ti-moon-filled::before {
-  content: "\f684";
+  content: '\f684';
 }
 
-:root[saved-theme="dark"] {
+:root[saved-theme='dark'] {
   color-scheme: dark;
 }
 
-:root[saved-theme="light"] {
+:root[saved-theme='light'] {
   color-scheme: light;
 }

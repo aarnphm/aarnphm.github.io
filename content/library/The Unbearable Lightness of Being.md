@@ -8,7 +8,7 @@ description: novel set in prague that weaves love affairs, politics, and philoso
 external: https://www.cs.cmu.edu/~yangke/lightness.html
 id: The Unbearable Lightness of Being
 modified: 2025-10-29 02:14:42 GMT-04:00
-posters: "[[library/posters/the-unbearable-lightness-of-being.png]]"
+posters: '[[library/posters/the-unbearable-lightness-of-being.png]]'
 status: to read
 subcategory: being
 tags:

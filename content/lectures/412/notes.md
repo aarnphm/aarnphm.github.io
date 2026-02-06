@@ -1,5 +1,5 @@
 ---
-date: "2025-09-12"
+date: '2025-09-12'
 description: linear algebra applications for transformers
 id: notes
 modified: 2025-11-11 06:58:34 GMT-05:00

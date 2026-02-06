@@ -1,5 +1,5 @@
 ---
-date: "2025-09-11"
+date: '2025-09-11'
 description: from scratch frfr
 id: index
 modified: 2026-01-02 02:23:04 GMT-05:00

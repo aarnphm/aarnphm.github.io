@@ -12,7 +12,7 @@ subcategory:
   - ethics
 author:
   - G. E. Moore
-posters: "[[library/posters/principia-ethica.jpg]]"
+posters: '[[library/posters/principia-ethica.jpg]]'
 category:
   - philosophy
 translator:

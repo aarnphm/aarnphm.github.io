@@ -2,19 +2,19 @@ import {
   QuartzComponent,
   QuartzComponentConstructor,
   QuartzComponentProps,
-} from "../types/component"
-import { trieFromAllFiles } from "../util/ctx"
-import { classNames } from "../util/lang"
-import { FullSlug, SimpleSlug, joinSegments, resolveRelative, simplifySlug } from "../util/path"
+} from '../types/component'
+import { trieFromAllFiles } from '../util/ctx'
+import { classNames } from '../util/lang'
+import { FullSlug, SimpleSlug, joinSegments, resolveRelative, simplifySlug } from '../util/path'
 // @ts-ignore
-import script from "./scripts/breadcrumbs.inline"
-import breadcrumbsStyle from "./styles/breadcrumbs.scss"
+import script from './scripts/breadcrumbs.inline'
+import breadcrumbsStyle from './styles/breadcrumbs.scss'
 
 type CrumbData = { displayName: string; path: string }
 
 type BreadcrumbSegment =
-  | { kind: "crumb"; data: CrumbData }
-  | { kind: "overflow"; data: CrumbData[] }
+  | { kind: 'crumb'; data: CrumbData }
+  | { kind: 'overflow'; data: CrumbData[] }
 
 interface BreadcrumbOptions {
   /**
@@ -44,8 +44,8 @@ interface BreadcrumbOptions {
 }
 
 const defaultOptions: BreadcrumbOptions = {
-  spacerSymbol: "❯",
-  rootName: "Home",
+  spacerSymbol: '❯',
+  rootName: 'Home',
   resolveFrontmatterTitle: true,
   showCurrentPage: true,
   leadingWindow: 2,
@@ -56,7 +56,7 @@ type BreadcrumbNodeDescriptor = { displayName: string; slug: FullSlug }
 
 function formatCrumb(displayName: string, baseSlug: FullSlug, currentSlug: SimpleSlug): CrumbData {
   return {
-    displayName: displayName.replaceAll("-", " "),
+    displayName: displayName.replaceAll('-', ' '),
     path: resolveRelative(baseSlug, currentSlug),
   }
 }
@@ -80,7 +80,7 @@ function buildFallbackDescriptors(
     }
 
     traversed.push(segment)
-    const child = current?.children.find((c) => c.slugSegment === segment)
+    const child = current?.children.find(c => c.slugSegment === segment)
     if (child) {
       descriptors.push(nodeToDescriptor(child))
       current = child
@@ -105,11 +105,11 @@ export default ((opts?: Partial<BreadcrumbOptions>) => {
     ctx,
   }: QuartzComponentProps) => {
     const trie = (ctx.trie ??= trieFromAllFiles(allFiles))
-    const slugParts = fileData.slug!.split("/").filter((part) => part.length > 0)
+    const slugParts = fileData.slug!.split('/').filter(part => part.length > 0)
     const pathNodes = trie.ancestryChain(slugParts)
     let nodeDescriptors: BreadcrumbNodeDescriptor[]
     if (pathNodes) {
-      nodeDescriptors = pathNodes.map((node) => nodeToDescriptor(node))
+      nodeDescriptors = pathNodes.map(node => nodeToDescriptor(node))
     } else {
       nodeDescriptors = buildFallbackDescriptors(trie, slugParts, fileData.frontmatter?.title)
     }
@@ -126,7 +126,7 @@ export default ((opts?: Partial<BreadcrumbOptions>) => {
 
       // For last node (current page), set empty path
       if (idx === nodeDescriptors.length - 1) {
-        crumb.path = ""
+        crumb.path = ''
       }
 
       return crumb
@@ -147,28 +147,28 @@ export default ((opts?: Partial<BreadcrumbOptions>) => {
 
       segments = []
       if (leading.length > 0) {
-        segments.push(...leading.map((crumb) => ({ kind: "crumb" as const, data: crumb })))
+        segments.push(...leading.map(crumb => ({ kind: 'crumb' as const, data: crumb })))
       }
       if (overflow.length > 0) {
-        segments.push({ kind: "overflow" as const, data: overflow })
+        segments.push({ kind: 'overflow' as const, data: overflow })
       }
       if (trailing.length > 0) {
-        segments.push(...trailing.map((crumb) => ({ kind: "crumb" as const, data: crumb })))
+        segments.push(...trailing.map(crumb => ({ kind: 'crumb' as const, data: crumb })))
       }
     } else {
-      segments = crumbs.map((crumb) => ({ kind: "crumb" as const, data: crumb }))
+      segments = crumbs.map(crumb => ({ kind: 'crumb' as const, data: crumb }))
     }
 
     if (segments.length === 0) {
-      segments = crumbs.map((crumb) => ({ kind: "crumb" as const, data: crumb }))
+      segments = crumbs.map(crumb => ({ kind: 'crumb' as const, data: crumb }))
     }
 
     return (
-      <nav class={classNames(displayClass, "breadcrumb-container")} aria-label="breadcrumbs">
+      <nav class={classNames(displayClass, 'breadcrumb-container')} aria-label="breadcrumbs">
         {segments.map((segment, segmentIndex) => {
           const showSpacer = segmentIndex !== segments.length - 1
 
-          if (segment.kind === "crumb") {
+          if (segment.kind === 'crumb') {
             const crumb = segment.data
             const key = `${crumb.path}-${segmentIndex}`
 

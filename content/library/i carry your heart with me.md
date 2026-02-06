@@ -8,14 +8,14 @@ finished: 2025
 id: i carry your heart with me
 modified: 2025-11-29 10:07:39 GMT-05:00
 notebook:
-posters: "[[library/posters/623a82240254feaa3fbe220edc44096a89b52002.jpeg]]"
+posters: '[[library/posters/623a82240254feaa3fbe220edc44096a89b52002.jpeg]]'
 status: finished
 subcategory:
   - love
   - absurdism
 tags:
   - love
-title: "[i carry your heart with me(i carry it in]"
+title: '[i carry your heart with me(i carry it in]'
 year: 1952
 ---
 

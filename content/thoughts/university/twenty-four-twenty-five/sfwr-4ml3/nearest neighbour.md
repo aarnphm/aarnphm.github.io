@@ -1,5 +1,5 @@
 ---
-date: "2024-10-28"
+date: '2024-10-28'
 description: k-nearest neighbor classification with zero-one loss, linear classifiers, surrogate loss functions, and linear separability.
 id: nearest neighbor
 modified: 2025-10-29 02:16:10 GMT-04:00

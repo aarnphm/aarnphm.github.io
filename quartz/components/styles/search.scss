@@ -1,6 +1,6 @@
-@use "sass:map";
-@use "../../styles/variables.scss" as *;
-@use "../../styles/mixin.scss" as *;
+@use 'sass:map';
+@use '../../styles/variables.scss' as *;
+@use '../../styles/mixin.scss' as *;
 
 @keyframes semantic-progress-sweep {
   0% {
@@ -174,7 +174,7 @@
           text-overflow: ellipsis;
         }
 
-        .semantic-status[data-state="ready"] {
+        .semantic-status[data-state='ready'] {
           display: none;
         }
       }
@@ -320,7 +320,7 @@
             }
           }
 
-          a[data-role="anchor"] {
+          a[data-role='anchor'] {
             background-color: transparent;
           }
         }
@@ -404,8 +404,8 @@
     background: var(--light);
     max-width: 16rem;
 
-    input[type="text"],
-    input[type="search"] {
+    input[type='text'],
+    input[type='search'] {
       flex: 1 1 auto;
       border: none;
       background: transparent;

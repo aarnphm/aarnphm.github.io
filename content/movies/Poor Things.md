@@ -8,7 +8,7 @@ description: woman resurrected with infant brain discovering the world—lanthim
 director: Yorgos Lanthimos
 id: poor-things
 modified: 2025-10-29 02:14:55 GMT-04:00
-posters: "[[movies/posters/poor-things.jpg]]"
+posters: '[[movies/posters/poor-things.jpg]]'
 rating: 7.9
 status: finished
 studio: searchlight

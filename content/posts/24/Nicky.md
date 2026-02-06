@@ -1,5 +1,5 @@
 ---
-date: "2024-12-26"
+date: '2024-12-26'
 description: and there are certain peculiar difficulties about capturing my emotions for 2024, with you.
 id: Nicky
 modified: 2025-10-29 02:15:08 GMT-04:00

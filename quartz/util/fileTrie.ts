@@ -1,5 +1,5 @@
-import { ContentDetails } from "../plugins/emitters/contentIndex"
-import { FullSlug, joinSegments } from "./path"
+import { ContentDetails } from '../plugins/emitters/contentIndex'
+import { FullSlug, joinSegments } from './path'
 
 interface FileTrieData {
   slug: string
@@ -28,9 +28,9 @@ export class FileTrieNode<T extends FileTrieData = ContentDetails> {
   }
 
   get displayName(): string {
-    const nonIndexTitle = this.data?.title === "index" ? undefined : this.data?.title
+    const nonIndexTitle = this.data?.title === 'index' ? undefined : this.data?.title
     return (
-      this.displayNameOverride ?? nonIndexTitle ?? this.fileSegmentHint ?? this.slugSegment ?? ""
+      this.displayNameOverride ?? nonIndexTitle ?? this.fileSegmentHint ?? this.slugSegment ?? ''
     )
   }
 
@@ -41,7 +41,7 @@ export class FileTrieNode<T extends FileTrieData = ContentDetails> {
   get slug(): FullSlug {
     const path = joinSegments(...this.slugSegments) as FullSlug
     if (this.isFolder) {
-      return joinSegments(path, "index") as FullSlug
+      return joinSegments(path, 'index') as FullSlug
     }
 
     return path
@@ -60,7 +60,7 @@ export class FileTrieNode<T extends FileTrieData = ContentDetails> {
 
   private insert(path: string[], file: T) {
     if (path.length === 0) {
-      throw new Error("path is empty")
+      throw new Error('path is empty')
     }
 
     // if we are inserting, we are a folder
@@ -68,7 +68,7 @@ export class FileTrieNode<T extends FileTrieData = ContentDetails> {
     const segment = path[0]
     if (path.length === 1) {
       // base case, we are at the end of the path
-      if (segment === "index") {
+      if (segment === 'index') {
         this.data ??= file
       } else {
         this.makeChild(path, file)
@@ -76,9 +76,9 @@ export class FileTrieNode<T extends FileTrieData = ContentDetails> {
     } else if (path.length > 1) {
       // recursive case, we are not at the end of the path
       const child =
-        this.children.find((c) => c.slugSegment === segment) ?? this.makeChild(path, undefined)
+        this.children.find(c => c.slugSegment === segment) ?? this.makeChild(path, undefined)
 
-      const fileParts = file.filePath.split("/")
+      const fileParts = file.filePath.split('/')
       child.fileSegmentHint = fileParts.at(-path.length)
       child.insert(path.slice(1), file)
     }
@@ -86,23 +86,23 @@ export class FileTrieNode<T extends FileTrieData = ContentDetails> {
 
   // Add new file to trie
   add(file: T) {
-    this.insert(file.slug.split("/"), file)
+    this.insert(file.slug.split('/'), file)
   }
 
   findNode(path: string[]): FileTrieNode<T> | undefined {
-    if (path.length === 0 || (path.length === 1 && path[0] === "index")) {
+    if (path.length === 0 || (path.length === 1 && path[0] === 'index')) {
       return this
     }
 
-    return this.children.find((c) => c.slugSegment === path[0])?.findNode(path.slice(1))
+    return this.children.find(c => c.slugSegment === path[0])?.findNode(path.slice(1))
   }
 
   ancestryChain(path: string[]): Array<FileTrieNode<T>> | undefined {
-    if (path.length === 0 || (path.length === 1 && path[0] === "index")) {
+    if (path.length === 0 || (path.length === 1 && path[0] === 'index')) {
       return [this]
     }
 
-    const child = this.children.find((c) => c.slugSegment === path[0])
+    const child = this.children.find(c => c.slugSegment === path[0])
     if (!child) {
       return undefined
     }
@@ -120,7 +120,7 @@ export class FileTrieNode<T extends FileTrieData = ContentDetails> {
    */
   filter(filterFn: (node: FileTrieNode<T>) => boolean) {
     this.children = this.children.filter(filterFn)
-    this.children.forEach((child) => child.filter(filterFn))
+    this.children.forEach(child => child.filter(filterFn))
   }
 
   /**
@@ -128,7 +128,7 @@ export class FileTrieNode<T extends FileTrieData = ContentDetails> {
    */
   map(mapFn: (node: FileTrieNode<T>) => void) {
     mapFn(this)
-    this.children.forEach((child) => child.map(mapFn))
+    this.children.forEach(child => child.map(mapFn))
   }
 
   /**
@@ -136,7 +136,7 @@ export class FileTrieNode<T extends FileTrieData = ContentDetails> {
    */
   sort(sortFn: (a: FileTrieNode<T>, b: FileTrieNode<T>) => number) {
     this.children = this.children.sort(sortFn)
-    this.children.forEach((e) => e.sort(sortFn))
+    this.children.forEach(e => e.sort(sortFn))
   }
 
   static fromEntries<T extends FileTrieData>(entries: [FullSlug, T][]) {

@@ -1,6 +1,6 @@
 ---
 category: projets
-date: "2022-01-25"
+date: '2022-01-25'
 description: rethinking version control with merkle-crdts, content-addressable storage, typed nodes, and first-class patches to address git's limitations around merges, renames, and scaling.
 id: newgit
 modified: 2025-11-21 12:11:18 GMT-05:00

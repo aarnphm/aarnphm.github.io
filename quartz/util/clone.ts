@@ -1,3 +1,3 @@
-import rfdc from "rfdc"
+import rfdc from 'rfdc'
 
 export const clone = rfdc()

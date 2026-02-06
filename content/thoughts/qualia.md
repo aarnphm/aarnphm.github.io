@@ -1,22 +1,22 @@
 ---
-date: "2025-11-10"
+date: '2025-11-10'
 description: phenomenal properties and what resists functional explanation
 id: qualia
 modified: 2026-01-30 09:09:58 GMT-05:00
 seealso:
-  - "[[thoughts/functionalism]]"
-  - "[[thoughts/identity]]"
-  - "[[thoughts/representation]]"
-  - "[[thoughts/philosophical zombies]]"
-  - "[[thoughts/knowledge argument]]"
-  - "[[thoughts/inverted spectrum]]"
-  - "[[thoughts/chinese room]]"
-  - "[[thoughts/Attention]]"
-  - "[[thoughts/dualism]]"
-  - "[[thoughts/physicalism]]"
-  - "[[thoughts/phenomenal consciousness]]"
-  - "[[thoughts/access consciousness]]"
-  - "[[thoughts/panpsychism]]"
+  - '[[thoughts/functionalism]]'
+  - '[[thoughts/identity]]'
+  - '[[thoughts/representation]]'
+  - '[[thoughts/philosophical zombies]]'
+  - '[[thoughts/knowledge argument]]'
+  - '[[thoughts/inverted spectrum]]'
+  - '[[thoughts/chinese room]]'
+  - '[[thoughts/Attention]]'
+  - '[[thoughts/dualism]]'
+  - '[[thoughts/physicalism]]'
+  - '[[thoughts/phenomenal consciousness]]'
+  - '[[thoughts/access consciousness]]'
+  - '[[thoughts/panpsychism]]'
 tags:
   - philosophy
   - pattern

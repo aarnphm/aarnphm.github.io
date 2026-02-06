@@ -1,5 +1,5 @@
 ---
-date: "2026-01-06"
+date: '2026-01-06'
 description: and diagrams
 id: index
 modified: 2026-01-07 08:47:33 GMT-05:00

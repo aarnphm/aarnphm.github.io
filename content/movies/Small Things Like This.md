@@ -7,9 +7,9 @@ description: irish coalman discovering girl locked in convent coal bin—mielant
 director: Tim Mielants
 id: small-things-like-this
 modified: 2025-10-29 02:14:56 GMT-04:00
-posters: "[[movies/posters/small-things-like-this.jpg]]"
+posters: '[[movies/posters/small-things-like-this.jpg]]'
 status: to watch
-studio: "[independent]"
+studio: '[independent]'
 tags:
   - history
   - r/politics

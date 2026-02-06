@@ -16,5 +16,5 @@ category:
   - drama
   - o/vintage
 description: hardy tragedy in rural england - a young woman is trapped between desire, honor, and a society that forgives men and punishes her.
-posters: "[[movies/posters/Tess.jpg]]"
+posters: '[[movies/posters/Tess.jpg]]'
 ---

@@ -65,7 +65,7 @@ function calculateTargetDimensions(
 function setupCaptionModal(img: HTMLImageElement, modal: HTMLElement, caption: string) {
   const onMouseEnter = () => {
     modal.textContent = caption
-    modal.classList.add("visible")
+    modal.classList.add('visible')
   }
 
   const onMouseMove = (e: MouseEvent) => {
@@ -74,17 +74,17 @@ function setupCaptionModal(img: HTMLImageElement, modal: HTMLElement, caption: s
   }
 
   const onMouseLeave = () => {
-    modal.classList.remove("visible")
+    modal.classList.remove('visible')
   }
 
-  img.addEventListener("mouseenter", onMouseEnter)
-  img.addEventListener("mousemove", onMouseMove)
-  img.addEventListener("mouseleave", onMouseLeave)
+  img.addEventListener('mouseenter', onMouseEnter)
+  img.addEventListener('mousemove', onMouseMove)
+  img.addEventListener('mouseleave', onMouseLeave)
 
   window.addCleanup(() => {
-    img.removeEventListener("mouseenter", onMouseEnter)
-    img.removeEventListener("mousemove", onMouseMove)
-    img.removeEventListener("mouseleave", onMouseLeave)
+    img.removeEventListener('mouseenter', onMouseEnter)
+    img.removeEventListener('mousemove', onMouseMove)
+    img.removeEventListener('mouseleave', onMouseLeave)
   })
 }
 
@@ -97,30 +97,30 @@ function shuffleArray<T>(array: T[]): T[] {
 }
 
 async function initMasonry() {
-  const container = document.getElementById("masonry-grid") as HTMLElement
+  const container = document.getElementById('masonry-grid') as HTMLElement
   if (!container) return
 
-  const modal = document.getElementById("masonry-caption-modal") as HTMLElement
+  const modal = document.getElementById('masonry-caption-modal') as HTMLElement
   if (!modal) return
 
   const jsonPath = container.dataset.jsonPath
   if (!jsonPath) return
 
   fetch(jsonPath)
-    .then((f) => {
+    .then(f => {
       if (f.status == 404) {
         alert(`unable to find ${jsonPath}`)
       }
       return f.json()
     })
-    .then((imageData) => {
+    .then(imageData => {
       const shuffledData: ImageMetadata[] = shuffleArray(imageData)
       const containerWidth = container.getBoundingClientRect().width
       const positioned: ImagePosition[] = []
       let containerHeight = 600
 
       // calculate dimensions from JSON data
-      const imageDimensions: ImageDimensions[] = shuffledData.map((data) =>
+      const imageDimensions: ImageDimensions[] = shuffledData.map(data =>
         calculateTargetDimensions(data.width, data.height, containerWidth),
       )
 
@@ -148,18 +148,18 @@ async function initMasonry() {
             }
 
             if (!checkCollision(pos, positioned)) {
-              const img = document.createElement("img")
+              const img = document.createElement('img')
               img.alt = data.alt
-              img.className = "masonry-image"
+              img.className = 'masonry-image'
               img.src = data.src
               img.dataset.caption = data.alt
-              img.style.position = "absolute"
+              img.style.position = 'absolute'
               img.style.left = `${x}px`
               img.style.top = `${y}px`
               img.style.width = `${dims.width}px`
               img.style.height = `${dims.height}px`
-              img.loading = "lazy"
-              img.classList.add("positioned")
+              img.loading = 'lazy'
+              img.classList.add('positioned')
 
               pos.element = img
               positioned.push(pos)
@@ -187,5 +187,5 @@ async function initMasonry() {
     })
 }
 
-document.addEventListener("nav", initMasonry)
-document.addEventListener("contentdecrypted", initMasonry)
+document.addEventListener('nav', initMasonry)
+document.addEventListener('contentdecrypted', initMasonry)

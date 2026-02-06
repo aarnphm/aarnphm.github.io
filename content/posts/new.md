@@ -1,7 +1,7 @@
 ---
 aliases:
   - hackathon
-date: "2024-09-30"
+date: '2024-09-30'
 description: And on perplexity of hackathon.
 id: new
 modified: 2025-10-29 02:15:12 GMT-04:00

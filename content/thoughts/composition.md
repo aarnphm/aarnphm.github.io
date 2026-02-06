@@ -1,5 +1,5 @@
 ---
-date: "2024-03-09"
+date: '2024-03-09'
 description: combining visual or conceptual elements to create coherent wholes, often using color and spatial relationships.
 id: composition
 modified: 2025-10-29 02:15:42 GMT-04:00

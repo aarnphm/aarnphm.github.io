@@ -23,14 +23,14 @@ const NOTE_CONTENT_WIDTH = 620
 const NOTE_TITLE_WIDTH = 40
 
 function hashSlug(slug: string): string {
-  const safePath = slug.toString().replace(/\./g, "___DOT___")
-  return btoa(safePath).replace(/=+$/, "")
+  const safePath = slug.toString().replace(/\./g, '___DOT___')
+  return btoa(safePath).replace(/=+$/, '')
 }
 
 async function decodeStackedHash(hash: string): Promise<string | null> {
   try {
     const decoded = atob(hash)
-    const restored = decoded.replace(/___DOT___/g, ".")
+    const restored = decoded.replace(/___DOT___/g, '.')
     if (restored.match(/^[a-zA-Z0-9/.-]+$/)) return restored
   } catch {}
   return null
@@ -39,14 +39,14 @@ async function decodeStackedHash(hash: string): Promise<string | null> {
 function extractTitle(html: string): string {
   const titleMatch = html.match(/<title[^>]*>(.*?)<\/title>/i)
   if (titleMatch) {
-    return titleMatch[1].trim().replace(/ \| .*$/, "")
+    return titleMatch[1].trim().replace(/ \| .*$/, '')
   }
-  return ""
+  return ''
 }
 
 function extractPopoverHintContent(html: string): string {
   const mainMatch = html.match(/<main[^>]*>([\s\S]*?)<\/main>/i)
-  if (!mainMatch) return ""
+  if (!mainMatch) return ''
 
   const mainHtml = mainMatch[1]
 
@@ -54,23 +54,23 @@ function extractPopoverHintContent(html: string): string {
     /<([a-z][a-z0-9]*)\s[^>]*class="[^"]*popover-hint[^"]*"[^>]*>[\s\S]*?<\/\1>/gi
   const matches = [...mainHtml.matchAll(popoverHintRegex)]
 
-  if (matches.length === 0) return ""
+  if (matches.length === 0) return ''
 
   const filtered = matches
-    .map((m) => m[0])
-    .filter((html) => {
-      const isPageFooter = html.includes("page-footer")
+    .map(m => m[0])
+    .filter(html => {
+      const isPageFooter = html.includes('page-footer')
       if (!isPageFooter) return true
 
-      const textContent = html.replace(/<[^>]*>/g, "").trim()
+      const textContent = html.replace(/<[^>]*>/g, '').trim()
       return textContent.length > 0
     })
 
-  return filtered.join("\n")
+  return filtered.join('\n')
 }
 
 async function getContentIndex(env: Env, request: Request): Promise<ContentIndex | null> {
-  const indexUrl = new URL("/static/contentIndex.json", request.url)
+  const indexUrl = new URL('/static/contentIndex.json', request.url)
   const indexResp = await env.ASSETS.fetch(indexUrl.toString())
 
   if (!indexResp.ok) return null
@@ -79,7 +79,7 @@ async function getContentIndex(env: Env, request: Request): Promise<ContentIndex
 }
 
 function buildMetadataFooter(entry: ContentIndexEntry | undefined): string {
-  if (!entry) return ""
+  if (!entry) return ''
 
   const date = entry.fileData?.dates?.modified
     ? new Date(entry.fileData.dates.modified)
@@ -87,7 +87,7 @@ function buildMetadataFooter(entry: ContentIndexEntry | undefined): string {
       ? new Date(entry.date)
       : null
 
-  if (!date) return ""
+  if (!date) return ''
 
   const readingTime = entry.readingTime?.minutes || 0
 
@@ -97,7 +97,7 @@ function buildMetadataFooter(entry: ContentIndexEntry | undefined): string {
 }
 
 function formatDate(date: Date): string {
-  return date.toLocaleDateString("fr-FR", { year: "numeric", month: "short", day: "2-digit" })
+  return date.toLocaleDateString('fr-FR', { year: 'numeric', month: 'short', day: '2-digit' })
 }
 
 async function fetchNoteData(
@@ -107,11 +107,11 @@ async function fetchNoteData(
   contentIndex: ContentIndex | null,
 ): Promise<StackedNoteData | null> {
   const noteUrl = new URL(`/${slug}`, request.url)
-  noteUrl.search = ""
-  noteUrl.hash = ""
+  noteUrl.search = ''
+  noteUrl.hash = ''
 
   const noteResp = await env.ASSETS.fetch(
-    new Request(noteUrl.toString(), { method: "GET", headers: { Accept: "text/html" } }),
+    new Request(noteUrl.toString(), { method: 'GET', headers: { Accept: 'text/html' } }),
   )
 
   if (!noteResp.ok) return null
@@ -130,14 +130,14 @@ async function fetchNoteData(
 }
 
 function buildStackedNoteHtml(note: StackedNoteData, index: number, totalCount: number): string {
-  const escapedSlug = note.slug.replace(/&/g, "&amp;").replace(/"/g, "&quot;")
+  const escapedSlug = note.slug.replace(/&/g, '&amp;').replace(/"/g, '&quot;')
 
   const escapedTitle = note.title
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#x27;")
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#x27;')
 
   const left = index * NOTE_TITLE_WIDTH
   const right =
@@ -146,7 +146,7 @@ function buildStackedNoteHtml(note: StackedNoteData, index: number, totalCount: 
   return `<div class="stacked-note" id="${hashSlug(note.slug)}" data-slug="${escapedSlug}" style="left: ${left}px; right: ${right}px;">
   <div class="stacked-content">
     ${note.content}
-    ${note.metadata || ""}
+    ${note.metadata || ''}
   </div>
   <div class="stacked-title">${escapedTitle}</div>
 </div>`
@@ -158,7 +158,7 @@ export async function handleStackedNotesRequest(
 ): Promise<Response | null> {
   try {
     const url = new URL(request.url)
-    const stackedParams = url.searchParams.getAll("stackedNotes")
+    const stackedParams = url.searchParams.getAll('stackedNotes')
 
     if (stackedParams.length === 0) return null
 
@@ -169,11 +169,11 @@ export async function handleStackedNotesRequest(
 
     const firstSlug = validSlugs[0]
     const baseUrl = new URL(`/${firstSlug}`, request.url)
-    baseUrl.search = ""
-    baseUrl.hash = ""
+    baseUrl.search = ''
+    baseUrl.hash = ''
 
     const baseResp = await env.ASSETS.fetch(
-      new Request(baseUrl.toString(), { method: "GET", headers: { Accept: "text/html" } }),
+      new Request(baseUrl.toString(), { method: 'GET', headers: { Accept: 'text/html' } }),
     )
 
     if (!baseResp.ok) return null
@@ -183,7 +183,7 @@ export async function handleStackedNotesRequest(
     const contentIndex = await getContentIndex(env, request)
 
     const notesData = (
-      await Promise.all(validSlugs.map((slug) => fetchNoteData(slug, env, request, contentIndex)))
+      await Promise.all(validSlugs.map(slug => fetchNoteData(slug, env, request, contentIndex)))
     ).filter(Boolean) as StackedNoteData[]
 
     if (notesData.length === 0) return null
@@ -191,34 +191,34 @@ export async function handleStackedNotesRequest(
     const totalCount = notesData.length
     const stackedNotesHtml = notesData
       .map((note, index) => buildStackedNoteHtml(note, index, totalCount))
-      .join("\n")
+      .join('\n')
 
     const rewriter = new HTMLRewriter()
-      .on(".stacked-notes-column", {
+      .on('.stacked-notes-column', {
         element(el) {
           el.append(stackedNotesHtml, { html: true })
         },
       })
-      .on("#stacked-notes-container", {
+      .on('#stacked-notes-container', {
         element(el) {
-          el.setAttribute("class", "all-col active")
+          el.setAttribute('class', 'all-col active')
         },
       })
-      .on("body", {
+      .on('body', {
         element(el) {
-          const existingClass = el.getAttribute("class") || ""
-          el.setAttribute("class", existingClass + " stack-mode")
+          const existingClass = el.getAttribute('class') || ''
+          el.setAttribute('class', existingClass + ' stack-mode')
         },
       })
-      .on("#stacked-note-toggle", {
+      .on('#stacked-note-toggle', {
         element(el) {
-          el.setAttribute("aria-checked", "true")
+          el.setAttribute('aria-checked', 'true')
         },
       })
-      .on(".header", {
+      .on('.header', {
         element(el) {
-          const existingClass = el.getAttribute("class") || ""
-          el.setAttribute("class", existingClass + " grid all-col")
+          const existingClass = el.getAttribute('class') || ''
+          el.setAttribute('class', existingClass + ' grid all-col')
         },
       })
 
@@ -226,12 +226,12 @@ export async function handleStackedNotesRequest(
 
     return new Response(finalHtml, {
       headers: {
-        "Content-Type": "text/html; charset=utf-8",
-        "Content-Security-Policy": "frame-ancestors 'self' *",
+        'Content-Type': 'text/html; charset=utf-8',
+        'Content-Security-Policy': "frame-ancestors 'self' *",
       },
     })
   } catch (e) {
-    console.error("failed to handle stacked notes request:", e)
+    console.error('failed to handle stacked notes request:', e)
     return null
   }
 }

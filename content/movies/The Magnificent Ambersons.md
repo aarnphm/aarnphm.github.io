@@ -14,5 +14,5 @@ category:
   - drama
   - o/vintage
 description: old money decays as industry arrives - a proud family watches status evaporate while progress rewrites the town.
-posters: "[[movies/posters/The Magnificent Ambersons.jpg]]"
+posters: '[[movies/posters/The Magnificent Ambersons.jpg]]'
 ---

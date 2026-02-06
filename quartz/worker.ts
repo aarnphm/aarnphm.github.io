@@ -1,16 +1,16 @@
-import sourceMapSupport from "source-map-support"
+import sourceMapSupport from 'source-map-support'
 sourceMapSupport.install(options)
-import cfg from "../quartz.config"
-import { MarkdownContent, ProcessedContent } from "./plugins/vfile"
+import cfg from '../quartz.config'
+import { MarkdownContent, ProcessedContent } from './plugins/vfile'
 import {
   createFileParser,
   createHtmlProcessor,
   createMarkdownParser,
   createMdProcessor,
-} from "./processors/parse"
-import { BuildCtx, WorkerSerializableBuildCtx } from "./util/ctx"
-import { FilePath } from "./util/path"
-import { options } from "./util/sourcemap"
+} from './processors/parse'
+import { BuildCtx, WorkerSerializableBuildCtx } from './util/ctx'
+import { FilePath } from './util/path'
+import { options } from './util/sourcemap'
 
 // only called from worker thread
 export async function parseMarkdown(

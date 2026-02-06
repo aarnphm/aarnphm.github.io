@@ -1,5 +1,5 @@
 ---
-date: "2024-01-08"
+date: '2024-01-08'
 description: philosophical position on causation and predictability, drawing from hume's argument.
 id: Determinism
 modified: 2025-12-15 18:18:15 GMT-05:00

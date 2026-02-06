@@ -1,17 +1,17 @@
-import { Element } from "hast"
-import { fromHtmlIsomorphic } from "hast-util-from-html-isomorphic"
-import { toHtml } from "hast-util-to-html"
-import { s, h } from "hastscript"
-import { Root as MdRoot } from "mdast"
+import { Element } from 'hast'
+import { fromHtmlIsomorphic } from 'hast-util-from-html-isomorphic'
+import { toHtml } from 'hast-util-to-html'
+import { s, h } from 'hastscript'
+import { Root as MdRoot } from 'mdast'
 // @ts-ignore
-import Lexer from "pseudocode/src/Lexer.js"
+import Lexer from 'pseudocode/src/Lexer.js'
 // @ts-ignore
-import Parser from "pseudocode/src/Parser.js"
+import Parser from 'pseudocode/src/Parser.js'
 // @ts-ignore
-import Renderer from "pseudocode/src/Renderer.js"
-import { visit } from "unist-util-visit"
-import { QuartzTransformerPlugin } from "../../types/plugin"
-import { extractInlineMacros } from "../../util/latex"
+import Renderer from 'pseudocode/src/Renderer.js'
+import { visit } from 'unist-util-visit'
+import { QuartzTransformerPlugin } from '../../types/plugin'
+import { extractInlineMacros } from '../../util/latex'
 
 export interface Options {
   code: string
@@ -57,29 +57,29 @@ interface RendererOptions {
    */
   titlePrefix?: string
 
-  mathEngine?: "katex"
+  mathEngine?: 'katex'
   mathRenderer?: (input: string) => string
 }
 
 const defaultOptions: Options = {
-  code: "pseudo",
-  css: "latex-pseudo",
+  code: 'pseudo',
+  css: 'latex-pseudo',
   renderer: {
-    indentSize: "0.6em",
-    commentDelimiter: "  ▷",
-    lineNumberPunc: ":",
+    indentSize: '0.6em',
+    commentDelimiter: '  ▷',
+    lineNumberPunc: ':',
     lineNumber: true,
     noEnd: false,
     scopeLines: false,
     captionCount: undefined,
-    titlePrefix: "Algorithm",
-    mathEngine: "katex",
+    titlePrefix: 'Algorithm',
+    mathEngine: 'katex',
     mathRenderer: undefined,
   },
 }
 
 function renderToString(input: string, options?: RendererOptions) {
-  if (input === null || input === undefined) throw new ReferenceError("Input cannot be empty")
+  if (input === null || input === undefined) throw new ReferenceError('Input cannot be empty')
 
   const lexer = new Lexer(input)
   const parser = new Parser(lexer)
@@ -94,22 +94,22 @@ function renderToString(input: string, options?: RendererOptions) {
 }
 
 function parseMeta(meta: string | null, opts: Options) {
-  if (!meta) meta = ""
+  if (!meta) meta = ''
 
   const lineNumberMatch = meta.match(/lineNumber=(false|true|0|1)/i)
   const lnum = lineNumberMatch?.[1] ?? null
   let enableLineNumber: boolean
   if (lnum) {
-    enableLineNumber = lnum === "true" || lnum === "1"
+    enableLineNumber = lnum === 'true' || lnum === '1'
   } else {
     enableLineNumber = opts.renderer?.lineNumber as boolean
   }
-  meta = meta.replace(lineNumberMatch?.[0] ?? "", "")
+  meta = meta.replace(lineNumberMatch?.[0] ?? '', '')
 
   return { enableLineNumber, meta }
 }
 
-export const Pseudocode: QuartzTransformerPlugin<Partial<Options>> = (userOpts) => {
+export const Pseudocode: QuartzTransformerPlugin<Partial<Options>> = userOpts => {
   const opts = { ...defaultOptions, ...userOpts }
   /**
    * Used to store the LaTeX raw string content in order as they are found in the markdown file.
@@ -117,13 +117,13 @@ export const Pseudocode: QuartzTransformerPlugin<Partial<Options>> = (userOpts) 
    */
 
   return {
-    name: "Pseudocode",
+    name: 'Pseudocode',
     markdownPlugins({ argv }) {
       if (argv.watch && !argv.force) return []
 
       return [
         () => (tree: MdRoot, _file) => {
-          visit(tree, "code", (node) => {
+          visit(tree, 'code', node => {
             let { lang, meta, value } = node
             if (lang === opts.code) {
               const { enableLineNumber: lineNumber } = parseMeta(meta!, opts)
@@ -131,7 +131,7 @@ export const Pseudocode: QuartzTransformerPlugin<Partial<Options>> = (userOpts) 
               // PERF: we are currently doing one round trip from text -> html -> hast
               // pseudocode (katex backend) --|renderToString|--> html string --|fromHtml|--> hast
               // ideally, we should cut this down to render directly to hast
-              const [inlineMacros, algo] = extractInlineMacros(value ?? "")
+              const [inlineMacros, algo] = extractInlineMacros(value ?? '')
               // TODO: Might be able to optimize.
               // find all $ enclosements in source, and add the preamble.
               const mathRegex = /\$(.*?)\$/g
@@ -146,39 +146,39 @@ export const Pseudocode: QuartzTransformerPlugin<Partial<Options>> = (userOpts) 
 
               rendered.children = [
                 h(
-                  "span",
+                  'span',
                   {
-                    type: "button",
-                    class: "clipboard-button ps-clipboard",
-                    ariaLabel: "Copy pseudocode to clipboard",
+                    type: 'button',
+                    class: 'clipboard-button ps-clipboard',
+                    ariaLabel: 'Copy pseudocode to clipboard',
                   },
                   [
-                    s("svg", { width: 16, height: 16, viewbox: "0 0 16 16", class: "copy-icon" }, [
-                      s("use", { href: "#github-copy" }),
+                    s('svg', { width: 16, height: 16, viewbox: '0 0 16 16', class: 'copy-icon' }, [
+                      s('use', { href: '#github-copy' }),
                     ]),
-                    s("svg", { width: 16, height: 16, viewbox: "0 0 16 16", class: "check-icon" }, [
-                      s("use", {
-                        href: "#github-check",
-                        fillRule: "evenodd",
-                        fill: "rgb(63, 185, 80)",
+                    s('svg', { width: 16, height: 16, viewbox: '0 0 16 16', class: 'check-icon' }, [
+                      s('use', {
+                        href: '#github-check',
+                        fillRule: 'evenodd',
+                        fill: 'rgb(63, 185, 80)',
                       }),
                     ]),
                   ],
                 ),
-                h("span", { class: "ps-mathml" }, [
-                  h("math", { xmlns: "http://www.w3.org/1998/Math/MathML" }, [
-                    h("semantics", [
-                      h("annotation", { encoding: "application/x-tex" }, [
-                        { type: "text", value: JSON.stringify(algoWithPreamble) },
+                h('span', { class: 'ps-mathml' }, [
+                  h('math', { xmlns: 'http://www.w3.org/1998/Math/MathML' }, [
+                    h('semantics', [
+                      h('annotation', { encoding: 'application/x-tex' }, [
+                        { type: 'text', value: JSON.stringify(algoWithPreamble) },
                       ]),
                     ]),
                   ]),
                 ]),
                 ...rendered.children,
               ]
-              rendered.properties["data-inline-macros"] = inlineMacros ?? ""
+              rendered.properties['data-inline-macros'] = inlineMacros ?? ''
 
-              node.type = "html" as "code"
+              node.type = 'html' as 'code'
               node.value = toHtml(rendered, { allowDangerousHtml: true })
             }
           })

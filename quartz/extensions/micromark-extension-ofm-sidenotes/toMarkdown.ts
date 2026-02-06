@@ -1,5 +1,5 @@
-import type { Options } from "mdast-util-to-markdown"
-import type { Sidenote, SidenoteReference, SidenoteDefinition } from "./types"
+import type { Options } from 'mdast-util-to-markdown'
+import type { Sidenote, SidenoteReference, SidenoteDefinition } from './types'
 
 export function sidenoteToMarkdown(): Options {
   return {
@@ -9,8 +9,8 @@ export function sidenoteToMarkdown(): Options {
       sidenoteDefinition: handleDefinition as any,
     } as any,
     unsafe: [
-      { character: "{", inConstruct: ["phrasing"] },
-      { character: "}", inConstruct: ["phrasing"] },
+      { character: '{', inConstruct: ['phrasing'] },
+      { character: '}', inConstruct: ['phrasing'] },
     ],
   }
 }
@@ -19,20 +19,20 @@ function handleSidenote(node: Sidenote, _: any, state: any, info: any): string {
   const parsed = node.data?.sidenoteParsed
 
   if (!parsed) {
-    return node.value || ""
+    return node.value || ''
   }
 
-  let output = "{{sidenotes"
+  let output = '{{sidenotes'
 
   if (parsed.properties && Object.keys(parsed.properties).length > 0) {
     const props = Object.entries(parsed.properties)
       .map(([k, v]) => {
         if (Array.isArray(v)) {
-          return `${k}: ${v.join(", ")}`
+          return `${k}: ${v.join(', ')}`
         }
         return `${k}: ${v}`
       })
-      .join(", ")
+      .join(', ')
     output += `<${props}>`
   }
 
@@ -40,13 +40,13 @@ function handleSidenote(node: Sidenote, _: any, state: any, info: any): string {
     output += `[${parsed.label}]`
   }
 
-  output += ": "
+  output += ': '
 
-  const exit = state.enter("sidenote")
+  const exit = state.enter('sidenote')
   output += state.containerPhrasing(node, info)
   exit()
 
-  output += "}}"
+  output += '}}'
 
   return output
 }
@@ -56,7 +56,7 @@ function handleReference(node: SidenoteReference): string {
 }
 
 function handleDefinition(node: SidenoteDefinition, _: any, state: any, info: any): string {
-  const exit = state.enter("sidenoteDefinition")
+  const exit = state.enter('sidenoteDefinition')
   const value = state.containerFlow(node, info)
   exit()
 

@@ -1,5 +1,5 @@
 ---
-date: "2026-01-26"
+date: '2026-01-26'
 description: and assignment 2
 id: diagram
 modified: 2026-01-26 22:19:48 GMT-05:00

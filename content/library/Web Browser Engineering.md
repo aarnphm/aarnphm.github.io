@@ -9,7 +9,7 @@ description: book that implements a toy browser step by step, teaching parsing, 
 external: https://browser.engineering/onepage.html
 id: Web Browser Engineering
 modified: 2025-10-29 02:14:43 GMT-04:00
-posters: "[[library/posters/web-browser-engineering.jpg]]"
+posters: '[[library/posters/web-browser-engineering.jpg]]'
 status: finished
 subcategory: programming
 tags:

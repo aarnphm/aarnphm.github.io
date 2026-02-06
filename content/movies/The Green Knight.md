@@ -7,7 +7,7 @@ description: gawain accepting challenge to behead mysterious knight and face sam
 director: David Lowery
 id: the-green-knight
 modified: 2025-10-29 02:14:58 GMT-04:00
-posters: "[[movies/posters/the-green-knight.jpg]]"
+posters: '[[movies/posters/the-green-knight.jpg]]'
 rating: 6.6
 status: recurring
 studio: a24

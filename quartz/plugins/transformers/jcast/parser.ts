@@ -7,7 +7,7 @@ import {
   JcastCanvasEdge,
   JcastCanvasGroup,
   JcastNode,
-} from "./types"
+} from './types'
 
 /**
  * Parse a JSON Canvas file into a jcast AST
@@ -16,11 +16,11 @@ import {
  * AST while preserving graph relationships through ID references and lookup maps.
  */
 export function parseJsonCanvas(json: JsonCanvas | string): JcastCanvas {
-  const canvas: JsonCanvas = typeof json === "string" ? JSON.parse(json) : json
+  const canvas: JsonCanvas = typeof json === 'string' ? JSON.parse(json) : json
 
   // initialize root canvas node
   const ast: JcastCanvas = {
-    type: "canvas",
+    type: 'canvas',
     children: [],
     data: { nodeMap: new Map(), edgeMap: new Map() },
   }
@@ -64,7 +64,7 @@ export function parseJsonCanvas(json: JsonCanvas | string): JcastCanvas {
   const ungroupedNodes: JcastNode[] = []
 
   for (const [id, node] of nodeMap) {
-    if (node.type === "canvasGroup") {
+    if (node.type === 'canvasGroup') {
       groupMap.set(id, node as JcastCanvasGroup)
       if (!node.children) node.children = []
     } else {
@@ -114,16 +114,16 @@ export function parseJsonCanvas(json: JsonCanvas | string): JcastCanvas {
  * Transform a JSON Canvas node to jcast node
  */
 function transformNode(node: JsonCanvasNode): JcastCanvasNode | JcastCanvasGroup {
-  if (node.type === "group") {
+  if (node.type === 'group') {
     return {
-      type: "canvasGroup",
+      type: 'canvasGroup',
       id: node.id,
       data: { canvas: node, nodeType: node.type },
       children: [],
     }
   }
 
-  return { type: "canvasNode", id: node.id, data: { canvas: node, nodeType: node.type } }
+  return { type: 'canvasNode', id: node.id, data: { canvas: node, nodeType: node.type } }
 }
 
 /**
@@ -131,7 +131,7 @@ function transformNode(node: JsonCanvasNode): JcastCanvasNode | JcastCanvasGroup
  */
 function transformEdge(edge: JsonCanvasEdge): JcastCanvasEdge {
   return {
-    type: "canvasEdge",
+    type: 'canvasEdge',
     id: edge.id,
     data: { canvas: edge, fromNode: edge.fromNode, toNode: edge.toNode },
   }
@@ -205,7 +205,7 @@ function resizeGroupToFitChildren(group: JcastCanvasGroup, padding: number = 40)
   if (!group.children || group.children.length === 0) return
 
   const childNodes = group.children.filter(
-    (node) => node.type === "canvasNode" || node.type === "canvasGroup",
+    node => node.type === 'canvasNode' || node.type === 'canvasGroup',
   )
 
   if (childNodes.length === 0) return

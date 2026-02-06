@@ -8,7 +8,7 @@ description: grief conjuring the dead at the exact age they died—haigh filming
 director: Andrew Haigh
 id: all-of-us-stranger
 modified: 2025-10-29 02:14:45 GMT-04:00
-posters: "[[movies/posters/all-of-us-stranger.jpg]]"
+posters: '[[movies/posters/all-of-us-stranger.jpg]]'
 rating: 7.6
 status: to watch
 studio: searchlight

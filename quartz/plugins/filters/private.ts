@@ -1,7 +1,7 @@
-import { QuartzFilterPlugin } from "../../types/plugin"
+import { QuartzFilterPlugin } from '../../types/plugin'
 
 export const RemovePrivate: QuartzFilterPlugin<{}> = () => ({
-  name: "RemovePrivate",
+  name: 'RemovePrivate',
   shouldPublish(ctx, [_tree, vfile]) {
     if (ctx.argv.serve) return true
     const privateFlag = vfile.data?.frontmatter?.private || false

@@ -1,5 +1,5 @@
 ---
-date: "2024-03-06"
+date: '2024-03-06'
 description: steady-state error analysis for control systems with system types defined by number of integrators in forward path and error coefficients.
 id: steady-state error
 modified: 2025-10-29 02:16:23 GMT-04:00

@@ -1,4 +1,4 @@
-declare module "micromorph" {
+declare module 'micromorph' {
   export interface Patch {
     type: number
     [key: string]: unknown

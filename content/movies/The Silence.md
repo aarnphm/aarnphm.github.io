@@ -13,5 +13,5 @@ category:
   - drama
   - vintage
 description: sisters in a foreign city as language fails - desire and resentment fill the silence.
-posters: "[[movies/posters/the-silence.jpg]]"
+posters: '[[movies/posters/the-silence.jpg]]'
 ---

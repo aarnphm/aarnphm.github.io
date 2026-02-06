@@ -3,7 +3,7 @@ aliases:
   - work
   - portfolio
 comments: false
-date: "2021-12-22"
+date: '2021-12-22'
 description: and a celebration for the act of making.
 id: craft
 modified: 2026-01-01 21:35:32 GMT-05:00

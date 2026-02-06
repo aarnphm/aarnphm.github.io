@@ -8,7 +8,7 @@ description: what makes us human if memories can be manufactured—villeneuve's 
 director: Denis Villeneuve
 id: blade-runner-2048
 modified: 2025-10-29 02:14:46 GMT-04:00
-posters: "[[movies/posters/blade-runner-2048.jpg]]"
+posters: '[[movies/posters/blade-runner-2048.jpg]]'
 rating: 8
 status: recurring
 studio: warner bros

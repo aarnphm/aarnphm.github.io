@@ -2,11 +2,11 @@ import {
   QuartzComponent,
   QuartzComponentConstructor,
   QuartzComponentProps,
-} from "../types/component"
-import { classNames } from "../util/lang"
+} from '../types/component'
+import { classNames } from '../util/lang'
 // @ts-ignore
-import script from "./scripts/graph.inline"
-import style from "./styles/graph.scss"
+import script from './scripts/graph.inline'
+import style from './styles/graph.scss'
 
 export interface D3Config {
   drag: boolean
@@ -20,7 +20,7 @@ export interface D3Config {
   opacityScale: number
   removeTags: string[]
   showTags: boolean
-  label: "hover" | "default" | "off"
+  label: 'hover' | 'default' | 'off'
   focusOnHover?: boolean
   enableRadial?: boolean
 }
@@ -30,7 +30,7 @@ export const defaultOptions: Partial<D3Config> | undefined = {
   zoom: true,
   depth: -1,
   scale: 1,
-  label: "hover",
+  label: 'hover',
   repelForce: 0.5,
   centerForce: 0.3,
   linkDistance: 30,
@@ -45,7 +45,7 @@ export const defaultOptions: Partial<D3Config> | undefined = {
 export default ((opts?: Partial<D3Config>) => {
   const cfg = JSON.stringify({ ...defaultOptions, ...opts })
   const Graph: QuartzComponent = ({ displayClass }: QuartzComponentProps) => (
-    <div class={classNames(displayClass, "graph")}>
+    <div class={classNames(displayClass, 'graph')}>
       <div class="global-graph-outer">
         <div class="global-graph-container" data-cfg={cfg} />
       </div>

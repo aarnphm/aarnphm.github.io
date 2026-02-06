@@ -1,10 +1,10 @@
 ---
-created: "2025-08-28"
-date: "2025-09-15"
-description: "The manifold hypothesis: high-dimensional real-world data lies on low-dimensional latent manifolds, enabling effective ML through interpolation."
+created: '2025-08-28'
+date: '2025-09-15'
+description: 'The manifold hypothesis: high-dimensional real-world data lies on low-dimensional latent manifolds, enabling effective ML through interpolation.'
 id: Manifold hypothesis
 modified: 2025-12-18 01:36:52 GMT-05:00
-published: "2021-08-27"
+published: '2021-08-27'
 source: https://en.wikipedia.org/wiki/Manifold_hypothesis
 tags:
   - theory

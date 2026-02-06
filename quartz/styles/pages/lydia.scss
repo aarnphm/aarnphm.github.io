@@ -1,8 +1,8 @@
-@use "../variables.scss" as *;
-@use "../mixin.scss" as *;
-@use "./lydia-frame-decorations.scss";
+@use '../variables.scss' as *;
+@use '../mixin.scss' as *;
+@use './lydia-frame-decorations.scss';
 
-body[data-slug="lyd"] {
+body[data-slug='lyd'] {
   display: flow-root;
   position: relative;
   min-height: 100vh;
@@ -12,7 +12,7 @@ body[data-slug="lyd"] {
   padding-bottom: clamp(6rem, 12vh, 12rem);
 
   .figure-caption,
-  a[data-role="anchor"],
+  a[data-role='anchor'],
   .header-content,
   .page-footer {
     display: none;
@@ -24,10 +24,10 @@ body[data-slug="lyd"] {
   }
 
   &::before {
-    content: "";
+    content: '';
     position: absolute;
     inset: 0;
-    background-image: url("/thoughts/images/cn.ignore.jpg");
+    background-image: url('/thoughts/images/cn.ignore.jpg');
     background-size: cover;
     background-position: center top;
     background-repeat: no-repeat;
@@ -38,7 +38,7 @@ body[data-slug="lyd"] {
 
   // Scrolling mask overlay that reveals the image
   &::after {
-    content: "";
+    content: '';
     position: fixed;
     inset: 0;
     background-image:
@@ -154,7 +154,7 @@ body[data-slug="lyd"] {
 
     // Timeline center line
     &::before {
-      content: "";
+      content: '';
       position: absolute;
       left: 50%;
       top: 0;
@@ -256,7 +256,7 @@ body[data-slug="lyd"] {
     }
 
     // Year label for history items only
-    &[data-type="history"]::before {
+    &[data-type='history']::before {
       content: attr(data-year);
       position: absolute;
       left: calc(60% + 2rem);
@@ -308,7 +308,7 @@ body[data-slug="lyd"] {
     }
   }
 
-  .timeline-item[data-type="place"] .timeline-marker {
+  .timeline-item[data-type='place'] .timeline-marker {
     border-color: var(--foam);
 
     svg {
@@ -316,7 +316,7 @@ body[data-slug="lyd"] {
     }
   }
 
-  .timeline-item[data-type="food"] .timeline-marker {
+  .timeline-item[data-type='food'] .timeline-marker {
     border-color: var(--gold);
 
     svg {
@@ -391,13 +391,13 @@ body[data-slug="lyd"] {
 
   // Decorative flowers on timeline items
   .timeline-item:nth-child(1) .timeline-content::before {
-    content: "";
+    content: '';
     position: absolute;
     top: -15px;
     right: -15px;
     width: 40px;
     height: 40px;
-    background-image: url("/thoughts/images/flowers-1762546860297.ignore.png");
+    background-image: url('/thoughts/images/flowers-1762546860297.ignore.png');
     background-size: contain;
     background-repeat: no-repeat;
     transform: rotate(15deg);
@@ -414,13 +414,13 @@ body[data-slug="lyd"] {
   }
 
   .timeline-item:nth-child(3) .timeline-content::after {
-    content: "";
+    content: '';
     position: absolute;
     bottom: -14px;
     left: -14px;
     width: 36px;
     height: 36px;
-    background-image: url("/thoughts/images/flowers-1762553547674.ignore.png");
+    background-image: url('/thoughts/images/flowers-1762553547674.ignore.png');
     background-size: contain;
     background-repeat: no-repeat;
     transform: rotate(-20deg);
@@ -437,13 +437,13 @@ body[data-slug="lyd"] {
   }
 
   .timeline-item:nth-child(5) .timeline-content::before {
-    content: "";
+    content: '';
     position: absolute;
     top: -16px;
     left: -16px;
     width: 38px;
     height: 38px;
-    background-image: url("/thoughts/images/flowers-1762567287860.ignore.png");
+    background-image: url('/thoughts/images/flowers-1762567287860.ignore.png');
     background-size: contain;
     background-repeat: no-repeat;
     transform: rotate(25deg);
@@ -460,13 +460,13 @@ body[data-slug="lyd"] {
   }
 
   .timeline-item:nth-child(7) .timeline-content::after {
-    content: "";
+    content: '';
     position: absolute;
     bottom: -13px;
     right: -13px;
     width: 41px;
     height: 41px;
-    background-image: url("/thoughts/images/flowers-1762574749363.ignore.png");
+    background-image: url('/thoughts/images/flowers-1762574749363.ignore.png');
     background-size: contain;
     background-repeat: no-repeat;
     transform: rotate(-30deg);
@@ -483,13 +483,13 @@ body[data-slug="lyd"] {
   }
 
   .timeline-item:nth-child(9) .timeline-content::before {
-    content: "";
+    content: '';
     position: absolute;
     top: -17px;
     right: -17px;
     width: 44px;
     height: 44px;
-    background-image: url("/thoughts/images/flowers-1762577418149.ignore.png");
+    background-image: url('/thoughts/images/flowers-1762577418149.ignore.png');
     background-size: contain;
     background-repeat: no-repeat;
     transform: rotate(35deg);
@@ -506,13 +506,13 @@ body[data-slug="lyd"] {
   }
 
   .timeline-item:nth-child(11) .timeline-content::after {
-    content: "";
+    content: '';
     position: absolute;
     bottom: -11px;
     left: -11px;
     width: 37px;
     height: 37px;
-    background-image: url("/thoughts/images/flowers-1762589996181.ignore.png");
+    background-image: url('/thoughts/images/flowers-1762589996181.ignore.png');
     background-size: contain;
     background-repeat: no-repeat;
     transform: rotate(-18deg);
@@ -529,13 +529,13 @@ body[data-slug="lyd"] {
   }
 
   .timeline-item:nth-child(13) .timeline-content::before {
-    content: "";
+    content: '';
     position: absolute;
     top: -18px;
     left: -18px;
     width: 45px;
     height: 45px;
-    background-image: url("/thoughts/images/flowers-1762546860297.ignore.png");
+    background-image: url('/thoughts/images/flowers-1762546860297.ignore.png');
     background-size: contain;
     background-repeat: no-repeat;
     transform: rotate(42deg);
@@ -552,13 +552,13 @@ body[data-slug="lyd"] {
   }
 
   .timeline-item:nth-child(15) .timeline-content::after {
-    content: "";
+    content: '';
     position: absolute;
     bottom: -12px;
     right: -12px;
     width: 39px;
     height: 39px;
-    background-image: url("/thoughts/images/flowers-1762553547674.ignore.png");
+    background-image: url('/thoughts/images/flowers-1762553547674.ignore.png');
     background-size: contain;
     background-repeat: no-repeat;
     transform: rotate(-22deg);
@@ -575,13 +575,13 @@ body[data-slug="lyd"] {
   }
 
   .timeline-item:nth-child(17) .timeline-content::before {
-    content: "";
+    content: '';
     position: absolute;
     top: -14px;
     right: -14px;
     width: 40px;
     height: 40px;
-    background-image: url("/thoughts/images/flowers-1762567287860.ignore.png");
+    background-image: url('/thoughts/images/flowers-1762567287860.ignore.png');
     background-size: contain;
     background-repeat: no-repeat;
     transform: rotate(28deg);
@@ -597,7 +597,7 @@ body[data-slug="lyd"] {
     }
   }
 
-  .timeline-item[data-type="place"] .timeline-content {
+  .timeline-item[data-type='place'] .timeline-content {
     border-color: rgba(134, 189, 182, 0.55);
 
     &:hover {
@@ -608,7 +608,7 @@ body[data-slug="lyd"] {
     }
   }
 
-  .timeline-item[data-type="food"] .timeline-content {
+  .timeline-item[data-type='food'] .timeline-content {
     border-color: rgba(255, 209, 150, 0.55);
 
     &:hover {
@@ -769,7 +769,7 @@ body[data-slug="lyd"] {
   }
 }
 
-body[data-layout="lydia"] {
+body[data-layout='lydia'] {
   background-color: #fff7ef;
   background-image: radial-gradient(circle at top, rgba(255, 224, 196, 0.25), transparent 60%);
   transition: background-color 1s ease-in-out;

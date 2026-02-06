@@ -1,5 +1,5 @@
 ---
-date: "2024-02-07"
+date: '2024-02-07'
 description: a capsule of life
 id: movies
 modified: 2025-10-29 02:15:04 GMT-04:00

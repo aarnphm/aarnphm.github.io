@@ -1,5 +1,5 @@
 ---
-date: "2023-11-09"
+date: '2023-11-09'
 description: On Plato's Apology.
 id: Questions about Apology
 modified: 2025-10-29 02:15:10 GMT-04:00

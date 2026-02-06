@@ -1,5 +1,5 @@
-@use "./variables.scss" as *;
-@use "sass:color";
+@use './variables.scss' as *;
+@use 'sass:color';
 
 .transclude-collapsible {
   border: 1px solid var(--lightgray);

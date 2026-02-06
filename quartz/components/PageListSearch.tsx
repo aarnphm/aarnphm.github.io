@@ -1,18 +1,18 @@
-import { i18n } from "../i18n"
+import { i18n } from '../i18n'
 import {
   QuartzComponent,
   QuartzComponentConstructor,
   QuartzComponentProps,
-} from "../types/component"
+} from '../types/component'
 // @ts-ignore
-import script from "./scripts/pagelist-search.inline"
-import style from "./styles/pageListSearch.scss"
+import script from './scripts/pagelist-search.inline'
+import style from './styles/pageListSearch.scss'
 
 export interface PageListSearchOptions {
   placeholder?: string
 }
 
-const defaultOptions: PageListSearchOptions = { placeholder: "filtering..." }
+const defaultOptions: PageListSearchOptions = { placeholder: 'filtering...' }
 
 export default ((userOpts?: Partial<PageListSearchOptions>) => {
   const PageListSearch: QuartzComponent = ({ cfg, allTags }: QuartzComponentProps) => {

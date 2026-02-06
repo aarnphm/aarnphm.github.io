@@ -106,8 +106,8 @@ This extension introduces three new node types to the mdast tree:
 ## Usage
 
 ```typescript
-import { micromark } from "micromark"
-import { sidenote, sidenoteDefinition } from "micromark-extension-ofm-sidenotes"
+import { micromark } from 'micromark'
+import { sidenote, sidenoteDefinition } from 'micromark-extension-ofm-sidenotes'
 
 const output = micromark(input, {
   extensions: [sidenote(), sidenoteDefinition()],
@@ -118,9 +118,9 @@ const output = micromark(input, {
 For recursive parsing (e.g., wikilinks inside labels), you must pass the relevant extensions to `fromMarkdown`:
 
 ```typescript
-import { fromMarkdown } from "mdast-util-from-markdown"
-import { sidenoteFromMarkdown } from "micromark-extension-ofm-sidenotes"
-import { wikilink, wikilinkFromMarkdown } from "micromark-extension-ofm-wikilinks"
+import { fromMarkdown } from 'mdast-util-from-markdown'
+import { sidenoteFromMarkdown } from 'micromark-extension-ofm-sidenotes'
+import { wikilink, wikilinkFromMarkdown } from 'micromark-extension-ofm-wikilinks'
 
 const tree = fromMarkdown(input, {
   extensions: [sidenote(), wikilink()],

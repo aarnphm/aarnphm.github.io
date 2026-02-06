@@ -1,7 +1,7 @@
 ---
 cssclasses:
   - menu
-date: "2024-03-23"
+date: '2024-03-23'
 description: atelier with friends deux  - orangeville
 id: dundurn
 menu: true

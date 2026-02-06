@@ -1,6 +1,6 @@
-import type { Following, Link, User, Trail } from "../quartz/types/curius"
+import type { Following, Link, User, Trail } from '../quartz/types/curius'
 
-const HEADERS: RequestInit = { headers: { "Content-Type": "application/json" } }
+const HEADERS: RequestInit = { headers: { 'Content-Type': 'application/json' } }
 
 interface ApiResponse {
   user?: User
@@ -12,8 +12,8 @@ interface ApiResponse {
 
 async function queryUsers(): Promise<ApiResponse> {
   try {
-    const r = await fetch("https://curius.app/api/users/aaron-pham", HEADERS)
-    if (!r.ok) throw new Error("Network error")
+    const r = await fetch('https://curius.app/api/users/aaron-pham', HEADERS)
+    if (!r.ok) throw new Error('Network error')
     const d: any = await r.json()
     return { user: d.user }
   } catch {
@@ -24,7 +24,7 @@ async function queryUsers(): Promise<ApiResponse> {
 async function queryLinks(page: number = 0): Promise<ApiResponse> {
   try {
     const r = await fetch(`https://curius.app/api/users/3584/links?page=${page}`, HEADERS)
-    if (!r.ok) throw new Error("Network error")
+    if (!r.ok) throw new Error('Network error')
     const d: any = await r.json()
     return { links: d.userSaved || [], page }
   } catch {
@@ -34,8 +34,8 @@ async function queryLinks(page: number = 0): Promise<ApiResponse> {
 
 async function querySearchLinks(): Promise<ApiResponse> {
   try {
-    const r = await fetch("https://curius.app/api/users/3584/searchLinks", HEADERS)
-    if (!r.ok) throw new Error("Network error")
+    const r = await fetch('https://curius.app/api/users/3584/searchLinks', HEADERS)
+    if (!r.ok) throw new Error('Network error')
     const d: any = await r.json()
     return { links: d.links || [] }
   } catch {
@@ -44,17 +44,17 @@ async function querySearchLinks(): Promise<ApiResponse> {
 }
 
 async function queryTrails(page: number = 0, alias?: string): Promise<ApiResponse> {
-  const hasAlias = typeof alias === "string" && alias.length > 0
+  const hasAlias = typeof alias === 'string' && alias.length > 0
   try {
     if (hasAlias) {
       const r = await fetch(`https://curius.app/api/links?page=${page}&trailHash=${alias}`, HEADERS)
-      if (!r.ok) throw new Error("Network error")
+      if (!r.ok) throw new Error('Network error')
       const d: any = await r.json()
       return { links: d.userSaved || [], page }
     }
 
-    const r = await fetch("https://curius.app/api/trails/3584", HEADERS)
-    if (!r.ok) throw new Error("Network error")
+    const r = await fetch('https://curius.app/api/trails/3584', HEADERS)
+    if (!r.ok) throw new Error('Network error')
     const d: any = await r.json()
     return { trails: d.trails || [] }
   } catch {
@@ -64,41 +64,41 @@ async function queryTrails(page: number = 0, alias?: string): Promise<ApiRespons
 
 async function queryFollowing(): Promise<ApiResponse> {
   try {
-    const r = await fetch("https://curius.app/api/users/3584/followingLinks", HEADERS)
-    if (!r.ok) throw new Error("Network error")
+    const r = await fetch('https://curius.app/api/users/3584/followingLinks', HEADERS)
+    if (!r.ok) throw new Error('Network error')
     const d: { users: Following[] } = await r.json()
-    return { following: d.users.filter((u) => u.user.userLink !== "aaron-pham") }
+    return { following: d.users.filter(u => u.user.userLink !== 'aaron-pham') }
   } catch {
     return { following: [] }
   }
 }
 
 export default async function handleCurius(request: Request): Promise<Response> {
-  if (request.method !== "GET")
-    return new Response(JSON.stringify({ error: "Method not allowed" }), {
+  if (request.method !== 'GET')
+    return new Response(JSON.stringify({ error: 'Method not allowed' }), {
       status: 405,
-      headers: { "Content-Type": "application/json" },
+      headers: { 'Content-Type': 'application/json' },
     })
   const url = new URL(request.url)
-  const query = url.searchParams.get("query")
-  const page = parseInt(url.searchParams.get("page") || "0")
-  const alias = url.searchParams.get("name") || undefined
+  const query = url.searchParams.get('query')
+  const page = parseInt(url.searchParams.get('page') || '0')
+  const alias = url.searchParams.get('name') || undefined
   let resp: Partial<ApiResponse> = {}
   try {
     switch (query) {
-      case "user":
+      case 'user':
         resp = await queryUsers()
         break
-      case "links":
+      case 'links':
         resp = await queryLinks(page)
         break
-      case "searchLinks":
+      case 'searchLinks':
         resp = await querySearchLinks()
         break
-      case "following":
+      case 'following':
         resp = await queryFollowing()
         break
-      case "trails":
+      case 'trails':
         resp = await queryTrails(page, alias)
         break
       default:
@@ -113,12 +113,12 @@ export default async function handleCurius(request: Request): Promise<Response> 
     }
     return new Response(JSON.stringify(resp), {
       status: 200,
-      headers: { "Content-Type": "application/json" },
+      headers: { 'Content-Type': 'application/json' },
     })
   } catch {
     return new Response(JSON.stringify({}), {
       status: 200,
-      headers: { "Content-Type": "application/json" },
+      headers: { 'Content-Type': 'application/json' },
     })
   }
 }

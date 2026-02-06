@@ -1,7 +1,7 @@
-@use "../../styles/variables.scss" as *;
+@use '../../styles/variables.scss' as *;
 
 // Prevent body scroll when password prompt is visible
-body:has(.password-prompt-overlay[style*="display: flex"]) {
+body:has(.password-prompt-overlay[style*='display: flex']) {
   overflow: hidden;
 }
 

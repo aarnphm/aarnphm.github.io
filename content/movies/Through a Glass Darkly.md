@@ -13,5 +13,5 @@ category:
   - drama
   - vintage
 description: faith and fracture on an island - bergman collapses family love into god's silence.
-posters: "[[movies/posters/through-a-glass-darkly.jpg]]"
+posters: '[[movies/posters/through-a-glass-darkly.jpg]]'
 ---

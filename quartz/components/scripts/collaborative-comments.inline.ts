@@ -1,4 +1,4 @@
-import { start } from "../../functional"
+import { start } from '../../functional'
 import {
   createState,
   reduce,
@@ -9,11 +9,11 @@ import {
   createWebSocketManager,
   getCommentPageId,
   createCommentsUi,
-} from "../multiplayer"
+} from '../multiplayer'
 
-document.addEventListener("nav", () => {
+document.addEventListener('nav', () => {
   let services: MultiplayerServices | null = null
-  const resolveAliases = new Set(["aarnphm", "aarnphm-local"])
+  const resolveAliases = new Set(['aarnphm', 'aarnphm-local'])
 
   const program = start({
     init: () => ({ model: createState(), effects: [] as MultiplayerEffect[] }),
@@ -22,13 +22,13 @@ document.addEventListener("nav", () => {
       if (!services) return
       return runMultiplayerEffect(effect, ctx, services)
     },
-    subscriptions: (ctx) => {
+    subscriptions: ctx => {
       services = {
         ui: createCommentsUi({
           getState: ctx.retrieve,
           dispatch: ctx.dispatch,
           canResolveComment: () => {
-            const login = localStorage.getItem("comment-author-github-login")
+            const login = localStorage.getItem('comment-author-github-login')
             if (!login) return false
             return resolveAliases.has(login.toLowerCase())
           },

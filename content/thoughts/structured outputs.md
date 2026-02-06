@@ -4,7 +4,7 @@ aliases:
   - guided decoding
   - structured outputs
   - constrained decoding
-date: "2024-11-18"
+date: '2024-11-18'
 description: structured generations in vLLM a la carte, or in general
 id: structured outputs
 modified: 2025-11-09 04:04:33 GMT-05:00

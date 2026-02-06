@@ -1,6 +1,6 @@
-@use "sass:map";
-@use "../../styles/variables.scss" as *;
-@use "../../styles/mixin.scss" as *;
+@use 'sass:map';
+@use '../../styles/variables.scss' as *;
+@use '../../styles/mixin.scss' as *;
 
 .stream-search-container {
   width: 100%;
@@ -56,6 +56,6 @@
 }
 
 // Hide filtered entries
-.stream-entry[style*="display: none"] {
+.stream-entry[style*='display: none'] {
   display: none;
 }

@@ -1,23 +1,23 @@
 ---
-author: "[[thoughts/Freud|Sigmund Freud]]"
+author: '[[thoughts/Freud|Sigmund Freud]]'
 category: philosophy
 language: german
-date: "2022-08-21"
+date: '2022-08-21'
 description: Freudian theory of egos within societal contract
 finished: 2023
 id: Civilisation and its Discontents
 modified: 2025-11-19 18:01:20 GMT-05:00
-posters: "[[library/posters/civilisation-and-its-discontents.jpg]]"
+posters: '[[library/posters/civilisation-and-its-discontents.jpg]]'
 status: finished
 subcategory: society
 tags:
   - philosophy
 title: Civilisation and its Discontents
 seealso:
-  - "[[thoughts/Freud|Freud]]"
-  - "[[thoughts/identity|identity]]"
-  - "[[thoughts/love|love]]"
-  - "[[thoughts/hermeneutics|hermeneutics]]"
+  - '[[thoughts/Freud|Freud]]'
+  - '[[thoughts/identity|identity]]'
+  - '[[thoughts/love|love]]'
+  - '[[thoughts/hermeneutics|hermeneutics]]'
 year: 1930
 ---
 

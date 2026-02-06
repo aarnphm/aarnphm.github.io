@@ -1,4 +1,4 @@
-import type { ContentDetails } from "../../../plugins/emitters/contentIndex"
+import type { ContentDetails } from '../../../plugins/emitters/contentIndex'
 
 export type ContentIndex = Record<string, ContentDetails>
 

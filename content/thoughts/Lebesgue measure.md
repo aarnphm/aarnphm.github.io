@@ -1,10 +1,10 @@
 ---
-created: "2025-10-29"
-date: "2025-10-29"
+created: '2025-10-29'
+date: '2025-10-29'
 description: Definition, properties, and examples of Lebesgue measure on $R^n$
 id: Lebesgue measure
 modified: 2026-01-17 05:58:49 GMT-05:00
-published: "2001-09-30"
+published: '2001-09-30'
 source: https://en.wikipedia.org/wiki/Lebesgue_measure
 tags:
   - math

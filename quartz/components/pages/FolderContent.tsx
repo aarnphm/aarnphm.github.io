@@ -1,13 +1,13 @@
-import path from "path"
-import { i18n } from "../../i18n"
-import { QuartzPluginData } from "../../plugins/vfile"
+import path from 'path'
+import { i18n } from '../../i18n'
+import { QuartzPluginData } from '../../plugins/vfile'
 import {
   QuartzComponent,
   QuartzComponentConstructor,
   QuartzComponentProps,
-} from "../../types/component"
-import { FileTrieNode } from "../../util/fileTrie"
-import { htmlToJsx } from "../../util/jsx"
+} from '../../types/component'
+import { FileTrieNode } from '../../util/fileTrie'
+import { htmlToJsx } from '../../util/jsx'
 import {
   stripSlashes,
   simplifySlug,
@@ -17,13 +17,13 @@ import {
   FilePath,
   SimpleSlug,
   sluggify,
-} from "../../util/path"
-import { concatenateResources } from "../../util/resources"
-import { parseWikilink } from "../../util/wikilinks"
-import EvergreenConstructor, { AllTags, EvergreenPermanentNotes } from "../Evergreen"
-import PageListConstructor, { byDateAndAlphabetical, SortFn } from "../PageList"
-import PageListSearchConstructor from "../PageListSearch"
-import style from "../styles/listPage.scss"
+} from '../../util/path'
+import { concatenateResources } from '../../util/resources'
+import { parseWikilink } from '../../util/wikilinks'
+import EvergreenConstructor, { AllTags, EvergreenPermanentNotes } from '../Evergreen'
+import PageListConstructor, { byDateAndAlphabetical, SortFn } from '../PageList'
+import PageListSearchConstructor from '../PageListSearch'
+import style from '../styles/listPage.scss'
 
 interface FolderContentOptions {
   /**
@@ -51,7 +51,7 @@ function extensionFilterFn(opts: FolderContentOptions): (filePath: string) => bo
       return pattern.test(filePath)
     }
     // For string patterns, treat them as exact matches (could be file extensions or exact names)
-    if (pattern.startsWith(".")) {
+    if (pattern.startsWith('.')) {
       // If it starts with a dot, treat as extension
       return filePath.toLowerCase().endsWith(pattern.toLowerCase())
     }
@@ -60,8 +60,8 @@ function extensionFilterFn(opts: FolderContentOptions): (filePath: string) => bo
 
   return (filePath: string): boolean => {
     if (!opts.include && !opts.exclude) return true
-    if (opts.exclude?.some((pattern) => matchesPattern(filePath, pattern))) return false
-    return opts.include?.some((pattern) => matchesPattern(filePath, pattern)) ?? true
+    if (opts.exclude?.some(pattern => matchesPattern(filePath, pattern))) return false
+    return opts.include?.some(pattern => matchesPattern(filePath, pattern)) ?? true
   }
 }
 
@@ -73,7 +73,7 @@ const defaultOptions: FolderContentOptions = {
   tags: [],
 }
 
-const Layout = { defn: "L->EAT", etas: "L->ET|A", alsp: "A|L", lovp: "L" } as const
+const Layout = { defn: 'L->EAT', etas: 'L->ET|A', alsp: 'A|L', lovp: 'L' } as const
 
 type FolderLayout = (typeof Layout)[keyof typeof Layout]
 
@@ -157,11 +157,11 @@ export default ((opts?: Partial<FolderContentOptions>) => {
     const processed = new Set<string>()
 
     const folderNode = fullTrie.findNode(folderSlug.split(path.posix.sep))
-    const isImagesPath = (slug: string) => slug.split("/").includes("images")
+    const isImagesPath = (slug: string) => slug.split('/').includes('images')
 
     // Compute a sensible date for the current folder (used as fallback for children)
-    const folderIndexMd = allFiles.find((f) => stripSlashes(simplifySlug(f.slug!)) === folderSlug)
-    const filesUnderCurrent = allFiles.filter((f) =>
+    const folderIndexMd = allFiles.find(f => stripSlashes(simplifySlug(f.slug!)) === folderSlug)
+    const filesUnderCurrent = allFiles.filter(f =>
       stripSlashes(simplifySlug(f.slug!)).startsWith(`${folderSlug}/`),
     )
     const defaultDate = { created: new Date(0), modified: new Date(0), published: new Date(0) }
@@ -193,7 +193,7 @@ export default ((opts?: Partial<FolderContentOptions>) => {
       }
 
       // Pull dates (prefer markdown companion if present), else fallback to current folder date
-      const associatedFiles = allFiles.filter((f) => {
+      const associatedFiles = allFiles.filter(f => {
         const fSlug = stripSlashes(simplifySlug(f.slug!))
         const fBase = path.basename(fSlug, path.extname(fSlug))
         const inFolder = fSlug.startsWith(`${folderSlug}/`)
@@ -210,8 +210,8 @@ export default ((opts?: Partial<FolderContentOptions>) => {
         slug: (fileSlug as FullSlug) ?? (joinSegments(folderSlug, baseFileName) as FullSlug),
         frontmatter: {
           title: mdBySlug.get(fileSlug)?.frontmatter?.title ?? baseFileName,
-          tags: [ext.replace(".", "") || "file"],
-          pageLayout: "default",
+          tags: [ext.replace('.', '') || 'file'],
+          pageLayout: 'default',
         },
         dates,
       })
@@ -228,9 +228,9 @@ export default ((opts?: Partial<FolderContentOptions>) => {
         }
         if (!child.data) continue
         const fileSlug = stripSlashes(child.slug)
-        const isAlias = allFiles.some((f) =>
+        const isAlias = allFiles.some(f =>
           f.aliases?.some(
-            (alias) => simplifySlug(alias) === stripSlashes(simplifySlug(fileSlug as FullSlug)),
+            alias => simplifySlug(alias) === stripSlashes(simplifySlug(fileSlug as FullSlug)),
           ),
         )
         if (isAlias) continue
@@ -245,13 +245,13 @@ export default ((opts?: Partial<FolderContentOptions>) => {
         if (isImagesPath(subfolderSimple) || isImagesPath(subfolderSlugWithIndex)) continue
 
         // If there is a markdown index for this folder, rely on that page (avoid duplicate)
-        const folderIndex = allFiles.find((f) => {
+        const folderIndex = allFiles.find(f => {
           const s = stripSlashes(simplifySlug(f.slug!))
           return s === subfolderSimple
         })
 
         // Determine dates from files under the subfolder
-        const filesInSubfolder = allFiles.filter((file) => {
+        const filesInSubfolder = allFiles.filter(file => {
           const s = stripSlashes(simplifySlug(file.slug!))
           return s.startsWith(`${subfolderSimple}/`)
         })
@@ -268,8 +268,8 @@ export default ((opts?: Partial<FolderContentOptions>) => {
             slug: subfolderSlugWithIndex as FullSlug,
             frontmatter: {
               title: sub.displayName || sub.slugSegment,
-              tags: ["folder"],
-              pageLayout: "default",
+              tags: ['folder'],
+              pageLayout: 'default',
             },
             dates: subfolderDates,
           })
@@ -285,7 +285,7 @@ export default ((opts?: Partial<FolderContentOptions>) => {
       const fileSlug = stripSlashes(simplifySlug(file.slug!))
       if (fileSlug.startsWith(`${folderSlug}/`)) {
         const relativePath = fileSlug.slice(folderSlug.length + 1)
-        if (!relativePath.includes("/")) {
+        if (!relativePath.includes('/')) {
           if (!processed.has(fileSlug)) {
             const folderFallback = currentFolderDates || fileData.dates
             const augmentedDates = {
@@ -302,12 +302,12 @@ export default ((opts?: Partial<FolderContentOptions>) => {
     }
 
     const layout = parseFolderLayout(
-      fileData.frontmatter ? fileData.frontmatter.pageLayout! : "L->ET|A",
+      fileData.frontmatter ? fileData.frontmatter.pageLayout! : 'L->ET|A',
     )
 
     const cssClasses: string[] = fileData.frontmatter?.cssclasses ?? []
-    const baseClassList = ["popover-hint", "notes-list", "side-col", ...cssClasses]
-    const baseListClass = baseClassList.join(" ")
+    const baseClassList = ['popover-hint', 'notes-list', 'side-col', ...cssClasses]
+    const baseListClass = baseClassList.join(' ')
     const listClassName =
       layout === Layout.etas ? `${baseListClass} folder-layout--list` : baseListClass
     const content = htmlToJsx(fileData.filePath!, tree)

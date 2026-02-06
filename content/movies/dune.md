@@ -5,7 +5,7 @@ description: desert prophecy filmed like religious text—villeneuve translating
 director: Denis Villeneuve
 id: dune
 modified: 2025-10-29 02:15:03 GMT-04:00
-posters: "[[movies/posters/dune.jpg]]"
+posters: '[[movies/posters/dune.jpg]]'
 rating: 8
 status: recurring
 studio: warner bros

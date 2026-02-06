@@ -8,7 +8,7 @@ description: janitor returning to hometown after brother's death—lonergan reve
 director: Kenneth Lonergan
 id: manchester-by-the-sea
 modified: 2025-10-29 02:14:53 GMT-04:00
-posters: "[[movies/posters/manchester-by-the-sea.jpg]]"
+posters: '[[movies/posters/manchester-by-the-sea.jpg]]'
 rating: 8.6
 status: finished
 studio: amazon studios

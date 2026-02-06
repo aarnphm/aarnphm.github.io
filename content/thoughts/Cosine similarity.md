@@ -1,5 +1,5 @@
 ---
-date: "2025-08-20"
+date: '2025-08-20'
 description: measurement of similarity between data points.
 id: Cosine similarity
 modified: 2025-10-29 02:15:20 GMT-04:00

@@ -1,5 +1,5 @@
 ---
-date: "2024-02-08"
+date: '2024-02-08'
 description: draft note on block-reference mechanisms in knowledge management systems.
 draft: true
 id: Block-reference mechanism

@@ -1,5 +1,5 @@
 ---
-date: "2024-12-18"
+date: '2024-12-18'
 description: proportional-integral-derivative
 id: PID controller
 modified: 2025-10-29 02:16:05 GMT-04:00

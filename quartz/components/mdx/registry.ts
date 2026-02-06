@@ -1,5 +1,5 @@
-import type { ComponentType } from "preact"
-import type { StringResource } from "../../util/resources"
+import type { ComponentType } from 'preact'
+import type { StringResource } from '../../util/resources'
 
 export type QuartzMdxComponent<Props = any> = ComponentType<Props> & {
   css?: StringResource

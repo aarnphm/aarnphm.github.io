@@ -7,7 +7,7 @@ description: heidegger explores being, temporality, and everyday life, asking wh
 id: Being and Time
 modified: 2025-11-29 22:49:21 GMT-05:00
 notebook: "[[thoughts/being#Heidegger's Being and Time|field notes on being]]"
-posters: "[[library/posters/being-and-time.jpg]]"
+posters: '[[library/posters/being-and-time.jpg]]'
 status: current
 subcategory:
   - being

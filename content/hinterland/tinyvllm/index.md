@@ -1,5 +1,5 @@
 ---
-date: "2025-10-30"
+date: '2025-10-30'
 description: a nano implementation of vLLM and inference-engine alike
 id: index
 layout: A|L

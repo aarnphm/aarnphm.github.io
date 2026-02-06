@@ -1,5 +1,5 @@
 ---
-date: "2025-11-01"
+date: '2025-11-01'
 description: introduction to topology
 id: topology-mit-18-901-psets
 modified: 2025-11-09 01:12:38 GMT-05:00

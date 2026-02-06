@@ -1,5 +1,5 @@
 ---
-date: "2024-01-31"
+date: '2024-01-31'
 description: time response analysis for first and second order systems covering over-damped, critically damped, under-damped responses, natural frequency, damping ratio, and percent overshoot.
 id: Time response
 modified: 2025-10-29 02:16:21 GMT-04:00

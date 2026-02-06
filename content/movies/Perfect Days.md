@@ -8,10 +8,10 @@ description: a tokyo toilet cleaner finding contentment in ritual—wenders film
 director: Wim Wenders
 id: perfect-days
 modified: 2025-11-27 11:04:38 GMT-05:00
-posters: "[[movies/posters/perfect-days.jpg]]"
+posters: '[[movies/posters/perfect-days.jpg]]'
 rating: 7.9
 status: to watch
-studio: "[independent]"
+studio: '[independent]'
 tags:
   - o/life
   - philosophy

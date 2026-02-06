@@ -1,5 +1,5 @@
 ---
-date: "2024-12-10"
+date: '2024-12-10'
 description: and an unstructured overview of patterns in machine learning
 id: finals
 modified: 2025-10-29 02:16:09 GMT-04:00

@@ -1,6 +1,6 @@
-import type { FrecencyEntry } from "./types"
+import type { FrecencyEntry } from './types'
 
-const KEY = "completion-frecency"
+const KEY = 'completion-frecency'
 const HALF_LIFE = 24 * 60 * 60 * 1000
 const MAX = 500
 
@@ -9,7 +9,7 @@ class FrecencyStore {
 
   constructor() {
     try {
-      this.data = JSON.parse(localStorage.getItem(KEY) || "{}")
+      this.data = JSON.parse(localStorage.getItem(KEY) || '{}')
     } catch {}
   }
 

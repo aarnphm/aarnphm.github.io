@@ -1,5 +1,5 @@
 ---
-author: "[[thoughts/Camus|Albert Camus]]"
+author: '[[thoughts/Camus|Albert Camus]]'
 category:
   - p/fiction
 language: french
@@ -8,7 +8,7 @@ description: monologue of a former lawyer in amsterdam, dissecting his own hypoc
 finished: 2025
 id: The Fall
 modified: 2025-11-22 11:59:39 GMT-05:00
-posters: "[[library/posters/the-fall.jpg]]"
+posters: '[[library/posters/the-fall.jpg]]'
 status: finished
 subcategory: existentialism
 tags:

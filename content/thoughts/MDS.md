@@ -1,5 +1,5 @@
 ---
-date: "2025-11-23"
+date: '2025-11-23'
 description: a form of non-linear dimensionality reduction
 id: MDS
 modified: 2025-11-23 16:38:52 GMT-05:00

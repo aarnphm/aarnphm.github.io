@@ -7,7 +7,7 @@ description: jeweler gambling everything on ethiopian opal and sports bets—saf
 director: Safdie Brothers
 id: uncut-gems
 modified: 2025-10-29 02:15:01 GMT-04:00
-posters: "[[movies/posters/uncut-gems.jpg]]"
+posters: '[[movies/posters/uncut-gems.jpg]]'
 rating: 7.4
 status: recurring
 studio: a24

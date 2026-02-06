@@ -1,12 +1,12 @@
 export type SemanticResult = { id: number; score: number }
 
-type ProgressMessage = { type: "progress"; loadedRows: number; totalRows: number }
+type ProgressMessage = { type: 'progress'; loadedRows: number; totalRows: number }
 
-type ReadyMessage = { type: "ready" }
+type ReadyMessage = { type: 'ready' }
 
-type ResultMessage = { type: "search-result"; seq: number; semantic: SemanticResult[] }
+type ResultMessage = { type: 'search-result'; seq: number; semantic: SemanticResult[] }
 
-type ErrorMessage = { type: "error"; seq?: number; message: string }
+type ErrorMessage = { type: 'error'; seq?: number; message: string }
 
 type SearchPayload = { semantic: SemanticResult[] }
 
@@ -24,7 +24,7 @@ export class SemanticClient {
   private lastError: Error | null = null
 
   constructor(private cfg?: any) {
-    this.ready = new Promise((resolve) => {
+    this.ready = new Promise(resolve => {
       this.resolveReady = () => {
         if (this.readySettled) return
         this.readySettled = true
@@ -33,7 +33,7 @@ export class SemanticClient {
     })
 
     if (this.cfg?.enable === false) {
-      this.lastError = new Error("semantic search disabled by configuration")
+      this.lastError = new Error('semantic search disabled by configuration')
       this.resolveReady()
       return
     }
@@ -43,7 +43,7 @@ export class SemanticClient {
 
   private boot() {
     try {
-      this.worker = new Worker("/semantic.worker.js", { type: "module" })
+      this.worker = new Worker('/semantic.worker.js', { type: 'module' })
     } catch (err) {
       this.handleFatal(err)
       return
@@ -58,16 +58,16 @@ export class SemanticClient {
       event: MessageEvent<ProgressMessage | ReadyMessage | ResultMessage | ErrorMessage>,
     ) => {
       const msg = event.data
-      if (msg.type === "progress") {
+      if (msg.type === 'progress') {
         return
       }
-      if (msg.type === "ready") {
+      if (msg.type === 'ready') {
         this.configured = true
         this.lastError = null
         this.resolveReady()
         return
       }
-      if (msg.type === "search-result") {
+      if (msg.type === 'search-result') {
         const pending = this.pending.get(msg.seq)
         if (pending) {
           this.pending.delete(msg.seq)
@@ -75,8 +75,8 @@ export class SemanticClient {
         }
         return
       }
-      if (msg.type === "error") {
-        if (typeof msg.seq === "number") {
+      if (msg.type === 'error') {
+        if (typeof msg.seq === 'number') {
           const pending = this.pending.get(msg.seq)
           if (pending) {
             this.pending.delete(msg.seq)
@@ -92,13 +92,13 @@ export class SemanticClient {
   private startInit() {
     if (!this.worker) return
     const manifestUrl =
-      typeof this.cfg?.manifestUrl === "string" && this.cfg.manifestUrl.length > 0
+      typeof this.cfg?.manifestUrl === 'string' && this.cfg.manifestUrl.length > 0
         ? this.cfg.manifestUrl
-        : "/embeddings/manifest.json"
+        : '/embeddings/manifest.json'
     const disableCache = Boolean(this.cfg?.disableCache)
     const baseUrl =
-      typeof this.cfg?.manifestBaseUrl === "string" ? this.cfg.manifestBaseUrl : undefined
-    this.worker.postMessage({ type: "init", cfg: this.cfg, manifestUrl, baseUrl, disableCache })
+      typeof this.cfg?.manifestBaseUrl === 'string' ? this.cfg.manifestBaseUrl : undefined
+    this.worker.postMessage({ type: 'init', cfg: this.cfg, manifestUrl, baseUrl, disableCache })
   }
 
   private rejectAll(err: Error, fatal = false) {
@@ -117,10 +117,10 @@ export class SemanticClient {
 
   private handleFatal(err: unknown) {
     const error = err instanceof Error ? err : new Error(String(err))
-    console.error("[SemanticClient] initialization failure:", error)
+    console.error('[SemanticClient] initialization failure:', error)
     this.rejectAll(error, true)
     if (this.worker) {
-      this.worker.postMessage({ type: "reset" })
+      this.worker.postMessage({ type: 'reset' })
       this.worker.terminate()
       this.worker = null
     }
@@ -129,31 +129,31 @@ export class SemanticClient {
   async ensureReady() {
     await this.ready
     if (!this.configured) {
-      throw this.lastError ?? new Error("semantic search unavailable")
+      throw this.lastError ?? new Error('semantic search unavailable')
     }
   }
 
   async search(text: string, k: number): Promise<SearchPayload> {
     if (this.disposed) {
-      throw new Error("semantic client has been disposed")
+      throw new Error('semantic client has been disposed')
     }
     await this.ensureReady()
     if (!this.worker || !this.configured) {
-      throw this.lastError ?? new Error("worker unavailable")
+      throw this.lastError ?? new Error('worker unavailable')
     }
     return new Promise<SearchPayload>((resolve, reject) => {
       const seq = ++this.seq
       this.pending.set(seq, { resolve, reject })
-      this.worker?.postMessage({ type: "search", text, k, seq })
+      this.worker?.postMessage({ type: 'search', text, k, seq })
     })
   }
 
   dispose() {
     if (this.disposed) return
     this.disposed = true
-    this.rejectAll(new Error("semantic client disposed"))
+    this.rejectAll(new Error('semantic client disposed'))
     if (this.worker) {
-      this.worker.postMessage({ type: "reset" })
+      this.worker.postMessage({ type: 'reset' })
       this.worker.terminate()
     }
     this.worker = null

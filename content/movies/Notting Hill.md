@@ -8,7 +8,7 @@ description: movie star falling for bookshop owner—michell filming julia rober
 director: Roger Michell
 id: notting-hill
 modified: 2025-10-29 02:14:54 GMT-04:00
-posters: "[[movies/posters/notting-hill.jpg]]"
+posters: '[[movies/posters/notting-hill.jpg]]'
 rating: 7.2
 status: recurring
 studio: universal

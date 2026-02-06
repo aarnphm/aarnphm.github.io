@@ -13,7 +13,7 @@ subcategory:
   - logic
 author:
   - A. J. Ayer
-posters: "[[library/posters/language-truth-logic.jpg]]"
+posters: '[[library/posters/language-truth-logic.jpg]]'
 category:
   - philosophy
 translator:

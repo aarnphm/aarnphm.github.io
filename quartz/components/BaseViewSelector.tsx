@@ -2,12 +2,12 @@ import {
   QuartzComponent,
   QuartzComponentConstructor,
   QuartzComponentProps,
-} from "../types/component"
-import { classNames } from "../util/lang"
-import { resolveRelative } from "../util/path"
+} from '../types/component'
+import { classNames } from '../util/lang'
+import { resolveRelative } from '../util/path'
 // @ts-ignore
-import script from "./scripts/base-view-selector.inline"
-import baseViewSelectorStyle from "./styles/baseViewSelector.scss"
+import script from './scripts/base-view-selector.inline'
+import baseViewSelectorStyle from './styles/baseViewSelector.scss'
 
 // lucide icons as inline SVG
 const icons = {
@@ -168,11 +168,11 @@ const BaseViewSelector: QuartzComponent = ({ fileData, displayClass }: QuartzCom
 
   const currentViewName = baseMeta.currentView
   const allViews = baseMeta.allViews
-  const currentView = allViews.find((v) => v.name === currentViewName)
+  const currentView = allViews.find(v => v.name === currentViewName)
   const currentIcon = currentView ? viewTypeIcons[currentView.type] || icons.table : icons.table
 
   return (
-    <div class={classNames(displayClass, "bases-toolbar")} data-base-view-selector>
+    <div class={classNames(displayClass, 'bases-toolbar')} data-base-view-selector>
       <div class="bases-toolbar-item bases-toolbar-views-menu">
         <span
           class="text-icon-button"
@@ -198,7 +198,7 @@ const BaseViewSelector: QuartzComponent = ({ fileData, displayClass }: QuartzCom
           </div>
           <div class="bases-toolbar-items">
             <div class="suggestion-group" data-group="views" data-view-list>
-              {allViews.map((view) => {
+              {allViews.map(view => {
                 const isActive = view.name === currentViewName
                 const icon = viewTypeIcons[view.type] || icons.table
                 const href = resolveRelative(fileData.slug!, view.slug)
@@ -209,8 +209,8 @@ const BaseViewSelector: QuartzComponent = ({ fileData, displayClass }: QuartzCom
                     data-slug={view.slug}
                     class={
                       isActive
-                        ? "suggestion-item bases-toolbar-menu-item mod-active is-selected"
-                        : "suggestion-item bases-toolbar-menu-item"
+                        ? 'suggestion-item bases-toolbar-menu-item mod-active is-selected'
+                        : 'suggestion-item bases-toolbar-menu-item'
                     }
                     data-view-name={view.name}
                     data-view-type={view.type}

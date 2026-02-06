@@ -1,5 +1,5 @@
-@use "../../styles/variables.scss" as *;
-@use "../../styles/mixin.scss" as *;
+@use '../../styles/variables.scss' as *;
+@use '../../styles/mixin.scss' as *;
 
 $tree-margin-y: 1.75rem;
 $tree-padding-y: 1.5rem;
@@ -230,7 +230,7 @@ $mobile-marker-size: 1.7rem;
       padding-left: 1rem;
 
       &::before {
-        content: "";
+        content: '';
         position: absolute;
         left: 0;
         top: 0.55em;

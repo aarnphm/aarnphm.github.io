@@ -13,7 +13,7 @@ subcategory:
   - good
 author:
   - Iris Murdoch
-posters: "[[library/posters/the-sovereignty-of-good.jpg]]"
+posters: '[[library/posters/the-sovereignty-of-good.jpg]]'
 category:
   - philosophy
 translator:

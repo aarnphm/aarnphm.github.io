@@ -4,7 +4,7 @@ aliases:
   - mechinterp
   - reveng neural net
   - interp
-date: "2024-10-30"
+date: '2024-10-30'
 description: and reverse engineering neural networks.
 id: mechanistic interpretability
 modified: 2026-01-06 10:02:27 GMT-05:00
@@ -984,16 +984,16 @@ Attribution graphs are computational graphs that reveal the mechanisms underlyin
     badge="replacement model"
     summary="Swap SAEs for transcoders (ideally cross-layer) so features capture the computation the original MLP stack performs."
     points={[
-      "Let features read from a single residual stream position and write into downstream MLP layers to bridge non-linear blocks.",
-      "Cross-layer transcoders handle superposition and drastically simplify resulting circuits.",
-      "Replacement models should closely reconstruct the base model to keep feature semantics stable.",
+      'Let features read from a single residual stream position and write into downstream MLP layers to bridge non-linear blocks.',
+      'Cross-layer transcoders handle superposition and drastically simplify resulting circuits.',
+      'Replacement models should closely reconstruct the base model to keep feature semantics stable.',
     ]}
   >
     <MethodologyStep
       title="prefer cross-layer variants"
       summary="Allow features to jump across residual layers instead of following every identity connection."
       points={[
-        "Reduces circuit depth by skipping uninformative residual additions.",
+        'Reduces circuit depth by skipping uninformative residual additions.',
         "Matches the underlying model's outputs in roughly half of substitution trials.",
       ]}
     />
@@ -1003,8 +1003,8 @@ Attribution graphs are computational graphs that reveal the mechanisms underlyin
     badge="context"
     summary="Hold attention weights and normalization denominators fixed so attribution focuses on the induced MLP computation."
     points={[
-      "Splits the problem into understanding behaviour with a fixed attention pattern and separately explaining why the model attends there.",
-      "Removes the largest non-linearities outside the replacement model.",
+      'Splits the problem into understanding behaviour with a fixed attention pattern and separately explaining why the model attends there.',
+      'Removes the largest non-linearities outside the replacement model.',
     ]}
   />
   <MethodologyStep
@@ -1012,8 +1012,8 @@ Attribution graphs are computational graphs that reveal the mechanisms underlyin
     badge="linearity"
     summary="Design the setup so feature-to-feature effects are linear for the chosen input."
     points={[
-      "Transcoder features replace the non-linear MLP while frozen attention removes the remaining activation-dependent terms.",
-      "Enables principled attribution because edges sum to the observed activation.",
+      'Transcoder features replace the non-linear MLP while frozen attention removes the remaining activation-dependent terms.',
+      'Enables principled attribution because edges sum to the observed activation.',
     ]}
   />
   <MethodologyStep
@@ -1021,16 +1021,16 @@ Attribution graphs are computational graphs that reveal the mechanisms underlyin
     badge="graph build"
     summary="Represent every active feature, prompt token, reconstruction error, and output logit as a node."
     points={[
-      "Edges store linear contributions; their weights sum to the downstream activation.",
-      "Multi-hop paths capture indirect mediation via other features.",
+      'Edges store linear contributions; their weights sum to the downstream activation.',
+      'Multi-hop paths capture indirect mediation via other features.',
     ]}
   >
     <MethodologyStep
       title="encode nodes & edges"
       summary="Annotate each node with activation magnitude and each edge with its linear effect."
       points={[
-        "Token and embedding nodes anchor the computation back to the prompt.",
-        "Include reconstruction error nodes so the graph accounts for approximation mismatch.",
+        'Token and embedding nodes anchor the computation back to the prompt.',
+        'Include reconstruction error nodes so the graph accounts for approximation mismatch.',
       ]}
     />
   </MethodologyStep>
@@ -1039,8 +1039,8 @@ Attribution graphs are computational graphs that reveal the mechanisms underlyin
     badge="sparsity"
     summary="Select the smallest subgraph that explains the behaviour at the focus token."
     points={[
-      "Rank nodes and edges by their marginal contribution to the output logits.",
-      "Keep sparse subgraphs so human inspection stays tractable.",
+      'Rank nodes and edges by their marginal contribution to the output logits.',
+      'Keep sparse subgraphs so human inspection stays tractable.',
     ]}
   />
   <MethodologyStep
@@ -1048,8 +1048,8 @@ Attribution graphs are computational graphs that reveal the mechanisms underlyin
     badge="verification"
     summary="Check that the proposed circuit actually drives the behaviour."
     points={[
-      "Ablate or rescale identified features and measure the effect on the model output.",
-      "Confirm the replacement model relies on the same mechanisms as the base model.",
+      'Ablate or rescale identified features and measure the effect on the model output.',
+      'Confirm the replacement model relies on the same mechanisms as the base model.',
     ]}
   />
 </MethodologyTree>

@@ -1,6 +1,6 @@
-import type { RoughAnnotation } from "rough-notation/lib/model"
-import { annotate } from "rough-notation"
-import { registerEscapeHandler } from "./util"
+import type { RoughAnnotation } from 'rough-notation/lib/model'
+import { annotate } from 'rough-notation'
+import { registerEscapeHandler } from './util'
 
 let ag: RoughAnnotation | null = null
 
@@ -22,33 +22,33 @@ let secondaryGroups: Record<string, number[]> = {}
 let secondaryExtmarks: HTMLElement[] = []
 let secondaryKeys: string[] = []
 let searchInput: HTMLInputElement | null = null
-let searchQuery = ""
+let searchQuery = ''
 
 const SECONDARY_CHOICE_KEYS = [
-  "a",
-  "s",
-  "d",
-  "f",
-  "l",
-  ";",
-  "h",
-  "g",
-  "u",
-  "i",
-  "o",
-  "p",
-  "w",
-  "e",
-  "r",
-  "t",
-  "y",
-  "c",
-  "v",
-  "b",
-  "n",
-  "m",
-  "x",
-  "z",
+  'a',
+  's',
+  'd',
+  'f',
+  'l',
+  ';',
+  'h',
+  'g',
+  'u',
+  'i',
+  'o',
+  'p',
+  'w',
+  'e',
+  'r',
+  't',
+  'y',
+  'c',
+  'v',
+  'b',
+  'n',
+  'm',
+  'x',
+  'z',
 ]
 
 function shouldIgnoreShortcutTarget(target: EventTarget | null): boolean {
@@ -61,10 +61,10 @@ function shouldIgnoreShortcutTarget(target: EventTarget | null): boolean {
   if (!el) return false
 
   const tag = el.tagName.toLowerCase()
-  if (tag === "input" || tag === "textarea") return true
+  if (tag === 'input' || tag === 'textarea') return true
   if ((el as HTMLElement).isContentEditable) return true
-  if (el.closest(".search .search-container")) return true
-  if (el.closest(".stream-search-container")) return true
+  if (el.closest('.search .search-container')) return true
+  if (el.closest('.stream-search-container')) return true
 
   return false
 }
@@ -80,7 +80,7 @@ function updateFilteredHeadings() {
   if (query.length === 0) {
     filteredHeadings = [...allHeadings]
   } else {
-    filteredHeadings = allHeadings.filter((heading) => heading.text.toLowerCase().includes(query))
+    filteredHeadings = allHeadings.filter(heading => heading.text.toLowerCase().includes(query))
   }
 
   const visible = getVisibleHeadings()
@@ -96,14 +96,14 @@ function updateFilteredHeadings() {
 
 function extractHeadings(): HeadingInfo[] {
   const headingSelectors =
-    ".page-content h2, .page-content h3, .page-content h4, .page-content h5, .page-content h6"
+    '.page-content h2, .page-content h3, .page-content h4, .page-content h5, .page-content h6'
   const elements = Array.from(document.querySelectorAll(headingSelectors))
   const textCounts = new Map<string, number>()
 
   return elements
     .map((el, index) => {
       const level = parseInt(el.tagName.charAt(1))
-      const text = el.textContent?.trim() || ""
+      const text = el.textContent?.trim() || ''
 
       if (text.length === 0) {
         return null
@@ -137,7 +137,7 @@ function buildLetterGroups(headings: HeadingInfo[]): Record<string, number[]> {
     const text = heading.text.trim()
     addInitial(text)
 
-    initials.forEach((letter) => {
+    initials.forEach(letter => {
       if (!groups[letter]) groups[letter] = []
       if (!groups[letter].includes(index)) {
         groups[letter].push(index)
@@ -149,54 +149,54 @@ function buildLetterGroups(headings: HeadingInfo[]): Record<string, number[]> {
 }
 
 function renderHeadings() {
-  const listContainer = modal?.querySelector(".headings-list")
+  const listContainer = modal?.querySelector('.headings-list')
   if (!listContainer) return
 
-  listContainer.innerHTML = ""
+  listContainer.innerHTML = ''
 
   const visible = getVisibleHeadings()
 
   if (visible.length === 0) {
-    const empty = document.createElement("div")
-    empty.className = "heading-item heading-item-empty"
-    empty.textContent = "no headings match"
+    const empty = document.createElement('div')
+    empty.className = 'heading-item heading-item-empty'
+    empty.textContent = 'no headings match'
     listContainer.appendChild(empty)
     return
   }
 
   visible.forEach((heading, index) => {
-    const item = document.createElement("div")
-    item.className = "heading-item"
+    const item = document.createElement('div')
+    item.className = 'heading-item'
     item.dataset.index = index.toString()
 
     const indent = Math.max(heading.level - 1, 0) * 2
     item.style.paddingLeft = `${indent}ch`
 
     if (index === currentIndex) {
-      item.classList.add("active")
+      item.classList.add('active')
     }
 
     item.textContent = heading.uniqueText
-    item.addEventListener("click", () => jumpToHeading(index))
+    item.addEventListener('click', () => jumpToHeading(index))
 
     listContainer.appendChild(item)
   })
 }
 
 function updateActiveItem() {
-  const items = modal?.querySelectorAll(".heading-item")
+  const items = modal?.querySelectorAll('.heading-item')
   if (!items) return
 
   items.forEach((item, index) => {
     item.classList.toggle(
-      "active",
-      index === currentIndex && !item.classList.contains("heading-item-empty"),
+      'active',
+      index === currentIndex && !item.classList.contains('heading-item-empty'),
     )
   })
 
   const activeItem = items[currentIndex]
   if (activeItem) {
-    activeItem.scrollIntoView({ block: "nearest" })
+    activeItem.scrollIntoView({ block: 'nearest' })
   }
 }
 
@@ -209,30 +209,30 @@ function jumpToHeading(index: number) {
 
   if (ag) ag.hide()
 
-  const highlight = heading.element.querySelector("span.highlight-span") as HTMLElement
+  const highlight = heading.element.querySelector('span.highlight-span') as HTMLElement
   if (highlight) {
     ag = annotate(highlight, {
-      type: "box",
-      color: "rgba(234, 157, 52, 0.45)",
+      type: 'box',
+      color: 'rgba(234, 157, 52, 0.45)',
       animate: false,
       multiline: true,
-      brackets: ["left", "right"],
+      brackets: ['left', 'right'],
     })
     setTimeout(() => ag!.show(), 50)
     setTimeout(() => ag?.hide(), 2500)
   }
 
-  heading.element.style.outline = "none"
+  heading.element.style.outline = 'none'
 
   const headingRect = heading.element.getBoundingClientRect()
   const absoluteTop = window.pageYOffset + headingRect.top
   const middle = absoluteTop - window.innerHeight / 2 + headingRect.height / 2
 
-  window.scrollTo({ top: middle, behavior: "smooth" })
+  window.scrollTo({ top: middle, behavior: 'smooth' })
 }
 
 function clearSecondaryMode() {
-  secondaryExtmarks.forEach((el) => el.remove())
+  secondaryExtmarks.forEach(el => el.remove())
   secondaryExtmarks = []
   secondaryKeys = []
   isSecondaryMode = false
@@ -260,7 +260,7 @@ function enterSecondaryMode(letter: string) {
   isSecondaryMode = true
 
   // Sort by distance from current middle
-  const listContainer = modal?.querySelector(".headings-list")
+  const listContainer = modal?.querySelector('.headings-list')
   if (!listContainer) return
 
   const visible = getVisibleHeadings()
@@ -286,7 +286,7 @@ function enterSecondaryMode(letter: string) {
     const item = listContainer.querySelector(`[data-index="${index}"]`) as HTMLElement
     if (!item) return
 
-    const text = visible[index]?.uniqueText || item.textContent || ""
+    const text = visible[index]?.uniqueText || item.textContent || ''
     const keyIndex = findKeyLetterIndex(text, key)
 
     if (keyIndex !== -1) {
@@ -295,11 +295,11 @@ function enterSecondaryMode(letter: string) {
       const keyChar = text.substring(keyIndex, keyIndex + 1)
       const after = text.substring(keyIndex + 1)
 
-      item.innerHTML = ""
+      item.innerHTML = ''
       if (before) item.appendChild(document.createTextNode(before))
 
-      const mark = document.createElement("mark")
-      mark.className = "key-extmark"
+      const mark = document.createElement('mark')
+      mark.className = 'key-extmark'
       mark.textContent = keyChar
       item.appendChild(mark)
       secondaryExtmarks.push(mark)
@@ -307,11 +307,11 @@ function enterSecondaryMode(letter: string) {
       if (after) item.appendChild(document.createTextNode(after))
     } else {
       // Fallback: prepend the key if not found in text
-      const mark = document.createElement("mark")
-      mark.className = "key-extmark"
+      const mark = document.createElement('mark')
+      mark.className = 'key-extmark'
       mark.textContent = key
       item.prepend(mark)
-      item.prepend(document.createTextNode(" "))
+      item.prepend(document.createTextNode(' '))
       secondaryExtmarks.push(mark)
     }
   })
@@ -328,15 +328,15 @@ function enterSecondaryMode(letter: string) {
       if (index !== undefined) {
         jumpToHeading(parseInt(index))
       }
-    } else if (e.key === "Escape") {
+    } else if (e.key === 'Escape') {
       e.preventDefault()
       clearSecondaryMode()
       renderHeadings() // Re-render to clear marks
     }
   }
 
-  document.addEventListener("keydown", handleSecondaryKey, true)
-  window.addCleanup(() => document.removeEventListener("keydown", handleSecondaryKey, true))
+  document.addEventListener('keydown', handleSecondaryKey, true)
+  window.addCleanup(() => document.removeEventListener('keydown', handleSecondaryKey, true))
 }
 
 function handleLetterKey(letter: string) {
@@ -358,9 +358,9 @@ function openModal() {
   allHeadings = extractHeadings()
   if (allHeadings.length === 0) return
 
-  searchQuery = ""
+  searchQuery = ''
   if (searchInput) {
-    searchInput.value = ""
+    searchInput.value = ''
   }
 
   filteredHeadings = [...allHeadings]
@@ -369,12 +369,12 @@ function openModal() {
   isOpen = true
 
   if (!modal) {
-    modal = document.querySelector(".headings-modal-container")
+    modal = document.querySelector('.headings-modal-container')
   }
 
   if (modal) {
-    modal.style.display = "flex"
-    const modalContent = modal.querySelector(".headings-modal") as HTMLElement
+    modal.style.display = 'flex'
+    const modalContent = modal.querySelector('.headings-modal') as HTMLElement
     modalContent?.focus()
   }
 }
@@ -386,7 +386,7 @@ function closeModal() {
   isOpen = false
 
   if (modal) {
-    modal.style.display = "none"
+    modal.style.display = 'none'
   }
 
   document.body.focus()
@@ -405,31 +405,31 @@ function handleKeyDown(e: KeyboardEvent) {
   }
 
   switch (e.key) {
-    case "Escape":
+    case 'Escape':
       e.preventDefault()
       closeModal()
       break
 
-    case "Enter":
+    case 'Enter':
       e.preventDefault()
       jumpToHeading(currentIndex)
       break
 
-    case "ArrowDown":
-    case "j":
+    case 'ArrowDown':
+    case 'j':
       e.preventDefault()
       currentIndex = Math.min(currentIndex + 1, Math.max(getVisibleHeadings().length - 1, 0))
       updateActiveItem()
       break
 
-    case "ArrowUp":
-    case "k":
+    case 'ArrowUp':
+    case 'k':
       e.preventDefault()
       currentIndex = Math.max(currentIndex - 1, 0)
       updateActiveItem()
       break
 
-    case "/":
+    case '/':
       e.preventDefault()
       if (searchInput) {
         searchInput.focus()
@@ -444,10 +444,10 @@ function handleKeyDown(e: KeyboardEvent) {
         e.key.match(/[a-z]/i) &&
         !e.ctrlKey &&
         !e.metaKey &&
-        e.key !== "/"
+        e.key !== '/'
       ) {
         const letter = e.key.toLowerCase()
-        if (letter !== "j" && letter !== "k") {
+        if (letter !== 'j' && letter !== 'k') {
           // Don't interfere with navigation
           e.preventDefault()
           handleLetterKey(letter)
@@ -463,7 +463,7 @@ function handleGlobalKeyDown(e: KeyboardEvent) {
   if (shouldIgnoreShortcutTarget(e.target)) return
 
   // Check for 'gh' sequence
-  if (e.key === "g" && !e.ctrlKey && !e.metaKey && !e.altKey) {
+  if (e.key === 'g' && !e.ctrlKey && !e.metaKey && !e.altKey) {
     // Set a temporary flag to wait for 'h'
     let waitingForH = true
     const timeout = setTimeout(() => {
@@ -476,71 +476,71 @@ function handleGlobalKeyDown(e: KeyboardEvent) {
         clearTimeout(timeout)
         return
       }
-      if (waitingForH && e2.key === "h") {
+      if (waitingForH && e2.key === 'h') {
         e2.preventDefault()
         clearTimeout(timeout)
-        document.removeEventListener("keydown", handleH)
+        document.removeEventListener('keydown', handleH)
         openModal()
       }
       waitingForH = false
     }
 
-    document.addEventListener("keydown", handleH, { once: true })
+    document.addEventListener('keydown', handleH, { once: true })
     window.addCleanup(() => {
       clearTimeout(timeout)
-      document.removeEventListener("keydown", handleH)
+      document.removeEventListener('keydown', handleH)
     })
   }
 }
 
-document.addEventListener("nav", () => {
-  modal = document.querySelector(".headings-modal-container")
+document.addEventListener('nav', () => {
+  modal = document.querySelector('.headings-modal-container')
 
   if (modal) {
-    const modalContent = modal.querySelector(".headings-modal") as HTMLElement
+    const modalContent = modal.querySelector('.headings-modal') as HTMLElement
     if (modalContent) {
-      modalContent.setAttribute("tabindex", "-1")
+      modalContent.setAttribute('tabindex', '-1')
     }
 
-    const header = modal.querySelector(".headings-modal-header")
-    if (header && !header.querySelector(".headings-modal-search")) {
-      const searchWrapper = document.createElement("div")
-      searchWrapper.className = "headings-modal-search"
+    const header = modal.querySelector('.headings-modal-header')
+    if (header && !header.querySelector('.headings-modal-search')) {
+      const searchWrapper = document.createElement('div')
+      searchWrapper.className = 'headings-modal-search'
 
-      const input = document.createElement("input")
-      input.type = "search"
-      input.placeholder = "search headings (/)"
-      input.autocomplete = "off"
+      const input = document.createElement('input')
+      input.type = 'search'
+      input.placeholder = 'search headings (/)'
+      input.autocomplete = 'off'
       input.spellcheck = false
 
-      input.addEventListener("input", () => {
+      input.addEventListener('input', () => {
         searchQuery = input.value
         updateFilteredHeadings()
         currentIndex = 0
         updateActiveItem()
       })
 
-      input.addEventListener("keydown", (event) => {
-        if (event.key === "Escape") {
+      input.addEventListener('keydown', event => {
+        if (event.key === 'Escape') {
           event.stopPropagation()
           if (input.value) {
-            input.value = ""
-            searchQuery = ""
+            input.value = ''
+            searchQuery = ''
             updateFilteredHeadings()
             currentIndex = 0
             updateActiveItem()
           } else {
             closeModal()
           }
-        } else if (event.key === "ArrowDown") {
+        } else if (event.key === 'ArrowDown') {
           event.preventDefault()
           currentIndex = Math.min(currentIndex + 1, getVisibleHeadings().length - 1)
           updateActiveItem()
-        } else if (event.key === "ArrowUp") {
+        } else if (event.key === 'ArrowUp') {
           event.preventDefault()
           currentIndex = Math.max(currentIndex - 1, 0)
           updateActiveItem()
-        } else if (event.key === "Enter") {
+        } else if (event.key === 'Enter') {
           event.preventDefault()
           jumpToHeading(currentIndex)
         }
@@ -550,38 +550,38 @@ document.addEventListener("nav", () => {
       header.appendChild(searchWrapper)
       searchInput = input
     } else if (header) {
-      searchInput = header.querySelector(".headings-modal-search input") as HTMLInputElement | null
+      searchInput = header.querySelector('.headings-modal-search input') as HTMLInputElement | null
     }
 
     registerEscapeHandler(modal, closeModal)
 
-    const backdrop = modal.querySelector(".headings-modal-backdrop")
+    const backdrop = modal.querySelector('.headings-modal-backdrop')
     if (backdrop) {
-      backdrop.addEventListener("click", closeModal)
-      window.addCleanup(() => backdrop.removeEventListener("click", closeModal))
+      backdrop.addEventListener('click', closeModal)
+      window.addCleanup(() => backdrop.removeEventListener('click', closeModal))
     }
   }
 
-  document.addEventListener("keydown", handleKeyDown)
-  document.addEventListener("keydown", handleGlobalKeyDown)
+  document.addEventListener('keydown', handleKeyDown)
+  document.addEventListener('keydown', handleGlobalKeyDown)
 
   window.addCleanup(() => {
-    document.removeEventListener("keydown", handleKeyDown)
-    document.removeEventListener("keydown", handleGlobalKeyDown)
+    document.removeEventListener('keydown', handleKeyDown)
+    document.removeEventListener('keydown', handleGlobalKeyDown)
     clearSecondaryMode()
   })
 })
 
-document.addEventListener("nav", () => {
+document.addEventListener('nav', () => {
   isOpen = false
   isSecondaryMode = false
   allHeadings = []
   filteredHeadings = []
-  searchQuery = ""
+  searchQuery = ''
   currentIndex = 0
   clearSecondaryMode()
 
   if (modal) {
-    modal.style.display = "none"
+    modal.style.display = 'none'
   }
 })

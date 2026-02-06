@@ -2,7 +2,7 @@ import {
   QuartzComponent,
   QuartzComponentConstructor,
   QuartzComponentProps,
-} from "../types/component"
+} from '../types/component'
 
 type ConditionalRenderConfig = {
   component: QuartzComponent

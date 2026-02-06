@@ -1,10 +1,10 @@
-"use strict"
+'use strict'
 
 /** @type {Record<string, Set<string>>} */
-const optionalDepsToPrune = { agents: new Set(["x402"]) }
+const optionalDepsToPrune = { agents: new Set(['x402']) }
 
 /** @type {Record<string, string>} */
-const allowedPeerRanges = { "use-sync-external-store>react": "^19.0.0", zod: "^3.22.0 || ^4.0.0" }
+const allowedPeerRanges = { 'use-sync-external-store>react': '^19.0.0', zod: '^3.22.0 || ^4.0.0' }
 
 /**
  * Remove noisy optional dependencies we never install.
@@ -38,7 +38,7 @@ const readPackage = (pkg, ctx) => {
  * Requires pnpm >= 10.8.0, older versions ignore this hook.
  * @param {import('@pnpm/pnpmfile').UpdateConfigHookInput} config
  */
-const updateConfig = (config) => {
+const updateConfig = config => {
   config.peerDependencyRules ??= {}
   config.peerDependencyRules.allowedVersions ??= {}
 

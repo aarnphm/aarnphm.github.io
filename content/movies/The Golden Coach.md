@@ -14,5 +14,5 @@ category:
   - drama
   - vintage
 description: commedia troupe meets colonial power - renoir uses theatre to test love, duty, and performance.
-posters: "[[movies/posters/the-golden-coach.jpg]]"
+posters: '[[movies/posters/the-golden-coach.jpg]]'
 ---

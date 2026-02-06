@@ -1,21 +1,21 @@
-import { Root } from "mdast"
-import { QuartzTransformerPlugin } from "../../types/plugin"
-import { compileBaseConfig } from "../../util/base/compile"
-import { BaseExpressionDiagnostic, BasesExpressions } from "../../util/base/compiler"
-import { BaseFile } from "../../util/base/types"
+import { Root } from 'mdast'
+import { QuartzTransformerPlugin } from '../../types/plugin'
+import { compileBaseConfig } from '../../util/base/compile'
+import { BaseExpressionDiagnostic, BasesExpressions } from '../../util/base/compiler'
+import { BaseFile } from '../../util/base/types'
 
 export const ObsidianBases: QuartzTransformerPlugin = () => {
   return {
-    name: "ObsidianBases",
+    name: 'ObsidianBases',
     externalResources() {
-      return { css: [{ content: "https://unpkg.com/lucide-static@latest/font/lucide.css" }] }
+      return { css: [{ content: 'https://unpkg.com/lucide-static@latest/font/lucide.css' }] }
     },
     markdownPlugins() {
       return [
         () => {
           return async (tree: Root, file) => {
             // Detect .base files by extension
-            const isBaseFile = file.path?.endsWith(".base")
+            const isBaseFile = file.path?.endsWith('.base')
 
             if (!isBaseFile) {
               file.data.bases = false
@@ -34,10 +34,10 @@ export const ObsidianBases: QuartzTransformerPlugin = () => {
             tree.children = []
 
             file.data.frontmatter = {
-              title: file.path?.replace(".base", "").split("/").pop() || "",
-              pageLayout: "default" as const,
+              title: file.path?.replace('.base', '').split('/').pop() || '',
+              pageLayout: 'default' as const,
               description: `bases renderer of ${file.data.slug}`,
-              tags: ["bases"],
+              tags: ['bases'],
             }
           }
         },
@@ -46,7 +46,7 @@ export const ObsidianBases: QuartzTransformerPlugin = () => {
   }
 }
 
-declare module "vfile" {
+declare module 'vfile' {
   interface DataMap {
     bases?: boolean
     basesConfig?: BaseFile

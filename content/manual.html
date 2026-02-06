@@ -26,8 +26,8 @@
         --yellow: #d0a215;
         --red: #d14d41;
 
-        --font-write: "Kalam", cursive;
-        --font-hand: "Caveat", cursive;
+        --font-write: 'Kalam', cursive;
+        --font-hand: 'Caveat', cursive;
 
         --ease: cubic-bezier(0.4, 0, 0.2, 1);
         --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
@@ -64,7 +64,7 @@
 
       /* Paper texture overlay */
       body::before {
-        content: "";
+        content: '';
         position: fixed;
         inset: 0;
         background: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
@@ -84,7 +84,7 @@
 
       /* Worn paper edge at bottom of header */
       .header::after {
-        content: "";
+        content: '';
         position: absolute;
         bottom: 1rem;
         left: 10%;
@@ -187,7 +187,7 @@
 
       /* Paper edge on left - ragged */
       .book::before {
-        content: "";
+        content: '';
         position: absolute;
         left: -4px;
         top: 2px;
@@ -230,7 +230,7 @@
 
       /* Torn top edge */
       .book::after {
-        content: "";
+        content: '';
         position: absolute;
         top: -2px;
         left: 5%;
@@ -391,7 +391,7 @@
 
       /* Dog-eared corner on last book */
       .book:nth-child(4) .book-spine::after {
-        content: "";
+        content: '';
         position: absolute;
         top: 0;
         right: 0;
@@ -452,7 +452,7 @@
 
       /* Tape effect on first book */
       .book:nth-child(1) .book-spine::before {
-        content: "";
+        content: '';
         position: absolute;
         top: -5px;
         left: 20%;
@@ -466,7 +466,7 @@
 
       /* Paper clip on second book */
       .book:nth-child(2) .book-spine::before {
-        content: "📎";
+        content: '📎';
         position: absolute;
         top: -8px;
         right: 15%;
@@ -529,7 +529,7 @@
 
       /* Notebook margin line */
       .book.expanded .book-content::before {
-        content: "";
+        content: '';
         position: absolute;
         left: 1rem;
         top: 0.5rem;
@@ -540,7 +540,7 @@
 
       /* Smudge marks */
       .book.expanded .book-content::after {
-        content: "";
+        content: '';
         position: absolute;
         bottom: 3rem;
         right: 2rem;
@@ -629,7 +629,7 @@
       }
 
       .stanza:first-child .line:first-child::after {
-        content: "";
+        content: '';
         position: absolute;
         bottom: 2px;
         left: 0;
@@ -1112,48 +1112,48 @@
       >
     </footer>
     <script>
-      document.addEventListener("DOMContentLoaded", () => {
-        const books = document.querySelectorAll(".book")
+      document.addEventListener('DOMContentLoaded', () => {
+        const books = document.querySelectorAll('.book')
 
-        books.forEach((book) => {
-          book.addEventListener("click", (e) => {
+        books.forEach(book => {
+          book.addEventListener('click', e => {
             // Don't toggle if clicking on expanded content (allow text selection)
-            if (book.classList.contains("expanded") && e.target.closest(".book-content")) {
+            if (book.classList.contains('expanded') && e.target.closest('.book-content')) {
               return
             }
 
-            const isExpanded = book.classList.contains("expanded")
+            const isExpanded = book.classList.contains('expanded')
 
             // Close all other books
-            books.forEach((b) => {
+            books.forEach(b => {
               if (b !== book) {
-                b.classList.remove("expanded")
+                b.classList.remove('expanded')
               }
             })
 
             // Toggle current book
-            book.classList.toggle("expanded")
+            book.classList.toggle('expanded')
 
             // Scroll into view if expanding
             if (!isExpanded) {
               setTimeout(() => {
-                book.scrollIntoView({ behavior: "smooth", block: "nearest" })
+                book.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
               }, 100)
             }
           })
         })
 
         // Close book when clicking outside
-        document.addEventListener("click", (e) => {
-          if (!e.target.closest(".book")) {
-            books.forEach((book) => book.classList.remove("expanded"))
+        document.addEventListener('click', e => {
+          if (!e.target.closest('.book')) {
+            books.forEach(book => book.classList.remove('expanded'))
           }
         })
 
         // Keyboard navigation
-        document.addEventListener("keydown", (e) => {
-          if (e.key === "Escape") {
-            books.forEach((book) => book.classList.remove("expanded"))
+        document.addEventListener('keydown', e => {
+          if (e.key === 'Escape') {
+            books.forEach(book => book.classList.remove('expanded'))
           }
         })
       })

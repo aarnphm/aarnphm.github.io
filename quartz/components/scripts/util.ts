@@ -1,24 +1,24 @@
-import { FullSlug, getFullSlug, resolveRelative } from "../../util/path"
+import { FullSlug, getFullSlug, resolveRelative } from '../../util/path'
 
 export function registerEscapeHandler(outsideContainer: HTMLElement | null, cb: () => void) {
   if (!outsideContainer) return
-  function click(this: HTMLElement, e: HTMLElementEventMap["click"]) {
+  function click(this: HTMLElement, e: HTMLElementEventMap['click']) {
     if (e.target !== this) return
     e.preventDefault()
     e.stopPropagation()
     cb()
   }
 
-  function esc(e: HTMLElementEventMap["keydown"]) {
-    if (!e.key.startsWith("Esc")) return
+  function esc(e: HTMLElementEventMap['keydown']) {
+    if (!e.key.startsWith('Esc')) return
     e.preventDefault()
     cb()
   }
 
-  outsideContainer?.addEventListener("click", click)
-  window.addCleanup(() => outsideContainer?.removeEventListener("click", click))
-  document.addEventListener("keydown", esc)
-  window.addCleanup(() => document.removeEventListener("keydown", esc))
+  outsideContainer?.addEventListener('click', click)
+  window.addCleanup(() => outsideContainer?.removeEventListener('click', click))
+  document.addEventListener('keydown', esc)
+  window.addCleanup(() => document.removeEventListener('keydown', esc))
 }
 
 export function removeAllChildren(node: HTMLElement) {
@@ -31,7 +31,7 @@ export function registerMouseHover(el: HTMLElement, ...classList: string[]) {
   const onMouseEnter = () => el.classList.add(...classList)
   const onMouseLeave = () => el.classList.remove(...classList)
 
-  registerEvents(el, ["mouseenter", onMouseEnter], ["mouseleave", onMouseLeave])
+  registerEvents(el, ['mouseenter', onMouseEnter], ['mouseleave', onMouseLeave])
 }
 
 type EventType = HTMLElementEventMap[keyof HTMLElementEventMap]
@@ -44,7 +44,7 @@ export function registerEvents<
   if (!element) return
 
   events.forEach(([event, cb]) => {
-    const listener: EventListener = (evt) => cb(evt as HTMLElementEventMap[E])
+    const listener: EventListener = evt => cb(evt as HTMLElementEventMap[E])
     element.addEventListener(event, listener)
     window.addCleanup(() => element.removeEventListener(event, listener))
   })
@@ -74,8 +74,8 @@ export function decodeString(el: HTMLSpanElement, targetString: string, duration
 }
 
 export function getRandomString(length: number) {
-  const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
-  let result = ""
+  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
+  let result = ''
   for (let i = 0; i < length; i++) {
     result += characters.charAt(Math.floor(Math.random() * characters.length))
   }
@@ -157,7 +157,7 @@ export class Dag {
   }
 
   getOrderedNodes(): DagNode[] {
-    return this.order.map((slug) => this.nodes.get(slug)!).filter(Boolean)
+    return this.order.map(slug => this.nodes.get(slug)!).filter(Boolean)
   }
 
   truncateAfter(slug: string) {
@@ -166,7 +166,7 @@ export class Dag {
 
     // Remove all nodes after idx from both order and nodes map
     const removed = this.order.splice(idx + 1)
-    removed.forEach((slug) => this.nodes.delete(slug))
+    removed.forEach(slug => this.nodes.delete(slug))
   }
 
   clear() {
@@ -196,7 +196,7 @@ export class Dag {
 const canonicalRegex = /<link rel="canonical" href="([^"]*)">/
 export async function fetchCanonical(url: URL, init?: RequestInit): Promise<Response> {
   const res = await fetch(`${url}`, init)
-  if (!res.headers.get("content-type")?.startsWith("text/html")) {
+  if (!res.headers.get('content-type')?.startsWith('text/html')) {
     return res
   }
   // reading the body can only be done once, so we need to clone the response
@@ -207,20 +207,20 @@ export async function fetchCanonical(url: URL, init?: RequestInit): Promise<Resp
 }
 
 export function isBrowser() {
-  return typeof window !== "undefined"
+  return typeof window !== 'undefined'
 }
 
 export function isStreamHost(): boolean {
-  return window.location.hostname === "stream.aarnphm.xyz"
+  return window.location.hostname === 'stream.aarnphm.xyz'
 }
 
 const contextWindowWords = 30
 export const tokenizeTerm = (term: string) => {
-  const tokens = term.split(/\s+/).filter((t) => t.trim() !== "")
+  const tokens = term.split(/\s+/).filter(t => t.trim() !== '')
   const tokenLen = tokens.length
   if (tokenLen > 1) {
     for (let i = 1; i < tokenLen; i++) {
-      tokens.push(tokens.slice(0, i + 1).join(" "))
+      tokens.push(tokens.slice(0, i + 1).join(' '))
     }
   }
 
@@ -229,13 +229,13 @@ export const tokenizeTerm = (term: string) => {
 
 export function highlight(searchTerm: string, text: string, trim?: boolean) {
   const tokenizedTerms = tokenizeTerm(searchTerm)
-  let tokenizedText = text.split(/\s+/).filter((t) => t !== "")
+  let tokenizedText = text.split(/\s+/).filter(t => t !== '')
 
   let startIndex = 0
   let endIndex = tokenizedText.length - 1
   if (trim) {
     const includesCheck = (tok: string) =>
-      tokenizedTerms.some((term) => tok.toLowerCase().startsWith(term.toLowerCase()))
+      tokenizedTerms.some(term => tok.toLowerCase().startsWith(term.toLowerCase()))
     const occurrencesIndices = tokenizedText.map(includesCheck)
 
     let bestSum = 0
@@ -255,20 +255,20 @@ export function highlight(searchTerm: string, text: string, trim?: boolean) {
   }
 
   const slice = tokenizedText
-    .map((tok) => {
+    .map(tok => {
       // see if this tok is prefixed by any search terms
       for (const searchTok of tokenizedTerms) {
         if (tok.toLowerCase().includes(searchTok.toLowerCase())) {
-          const regex = new RegExp(searchTok.toLowerCase(), "gi")
+          const regex = new RegExp(searchTok.toLowerCase(), 'gi')
           return tok.replace(regex, `<span class="highlight">$&</span>`)
         }
       }
       return tok
     })
-    .join(" ")
+    .join(' ')
 
-  return `${startIndex === 0 ? "" : "..."}${slice}${
-    endIndex === tokenizedText.length - 1 ? "" : "..."
+  return `${startIndex === 0 ? '' : '...'}${slice}${
+    endIndex === tokenizedText.length - 1 ? '' : '...'
   }`
 }
 
@@ -328,11 +328,11 @@ export function getOrCreateSidePanel(): HTMLDivElement {
       'main > div[class~="page-body-grid"]',
     )
     if (!pageContent) {
-      throw new Error("page-content section not found")
+      throw new Error('page-content section not found')
     }
 
-    asidePanel = document.createElement("aside") as HTMLDivElement
-    asidePanel.classList.add("sidepanel-container")
+    asidePanel = document.createElement('aside') as HTMLDivElement
+    asidePanel.classList.add('sidepanel-container')
     pageContent.appendChild(asidePanel)
   }
 
@@ -343,32 +343,32 @@ export function createSidePanel(asidePanel: HTMLDivElement, ...inner: HTMLElemen
   const pageHeader = document.querySelector<HTMLDivElement>(
     "main > * > section[class~='page-header']",
   )
-  if (!asidePanel || !pageHeader) console.error("asidePanel must not be null")
+  if (!asidePanel || !pageHeader) console.error('asidePanel must not be null')
 
-  asidePanel.classList.add("active")
+  asidePanel.classList.add('active')
   removeAllChildren(asidePanel)
 
   const updateSidepanelOffset = () => {
-    const headerSection = document.querySelector<HTMLElement>("main > section.header")
+    const headerSection = document.querySelector<HTMLElement>('main > section.header')
     if (!headerSection) {
-      asidePanel.style.setProperty("--sidepanel-top-offset", "0px")
+      asidePanel.style.setProperty('--sidepanel-top-offset', '0px')
       return
     }
 
     const headerRect = headerSection.getBoundingClientRect()
-    const stickyTop = parseFloat(getComputedStyle(headerSection).top || "0") || 0
+    const stickyTop = parseFloat(getComputedStyle(headerSection).top || '0') || 0
     const offset = Math.max(0, headerRect.height + stickyTop)
-    asidePanel.style.setProperty("--sidepanel-top-offset", `${offset}px`)
+    asidePanel.style.setProperty('--sidepanel-top-offset', `${offset}px`)
   }
 
   updateSidepanelOffset()
 
   const handleResize = () => updateSidepanelOffset()
-  window.addEventListener("resize", handleResize)
-  window.addCleanup(() => window.removeEventListener("resize", handleResize))
+  window.addEventListener('resize', handleResize)
+  window.addCleanup(() => window.removeEventListener('resize', handleResize))
 
   let resizeObserver: ResizeObserver | null = null
-  if (typeof ResizeObserver !== "undefined") {
+  if (typeof ResizeObserver !== 'undefined') {
     const headerSection = document.querySelector<HTMLElement>('main > * > section[class~="header"')
     if (headerSection) {
       resizeObserver = new ResizeObserver(() => updateSidepanelOffset())
@@ -377,29 +377,29 @@ export function createSidePanel(asidePanel: HTMLDivElement, ...inner: HTMLElemen
     }
   }
 
-  const header = document.createElement("div")
-  header.classList.add("sidepanel-header", "all-col")
+  const header = document.createElement('div')
+  header.classList.add('sidepanel-header', 'all-col')
 
-  const closeButton = document.createElement("button")
-  closeButton.classList.add("close-button")
-  closeButton.ariaLabel = "close button"
-  closeButton.title = "close button"
+  const closeButton = document.createElement('button')
+  closeButton.classList.add('close-button')
+  closeButton.ariaLabel = 'close button'
+  closeButton.title = 'close button'
   closeButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width=16 height=16 viewbox="0 0 24 24" fill="currentColor" stroke="currentColor"><use href="#close-button"></svg>`
   function onCloseClick() {
     removeAllChildren(asidePanel)
-    asidePanel.classList.remove("active")
-    asidePanel.style.removeProperty("--sidepanel-top-offset")
-    window.removeEventListener("resize", handleResize)
+    asidePanel.classList.remove('active')
+    asidePanel.style.removeProperty('--sidepanel-top-offset')
+    window.removeEventListener('resize', handleResize)
     resizeObserver?.disconnect()
     resizeObserver = null
   }
-  closeButton.addEventListener("click", onCloseClick)
-  window.addCleanup(() => closeButton.removeEventListener("click", onCloseClick))
+  closeButton.addEventListener('click', onCloseClick)
+  window.addCleanup(() => closeButton.removeEventListener('click', onCloseClick))
 
-  const redirectButton = document.createElement("button")
-  redirectButton.classList.add("redirect-button")
-  redirectButton.ariaLabel = "redirect to page"
-  redirectButton.title = "redirect to page"
+  const redirectButton = document.createElement('button')
+  redirectButton.classList.add('redirect-button')
+  redirectButton.ariaLabel = 'redirect to page'
+  redirectButton.title = 'redirect to page'
   redirectButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width=16 height=16 viewbox="0 0 24 24" fill="var(--gray)" stroke="none"><use href="#triple-dots"></svg>`
   function onRedirectClick() {
     window.spaNavigate(
@@ -409,14 +409,14 @@ export function createSidePanel(asidePanel: HTMLDivElement, ...inner: HTMLElemen
       ),
     )
   }
-  redirectButton.addEventListener("click", onRedirectClick)
-  window.addCleanup(() => redirectButton.removeEventListener("click", onRedirectClick))
+  redirectButton.addEventListener('click', onRedirectClick)
+  window.addCleanup(() => redirectButton.removeEventListener('click', onRedirectClick))
 
   header.appendChild(redirectButton)
   header.appendChild(closeButton)
 
-  const sideInner = document.createElement("div")
-  sideInner.classList.add("sidepanel-inner")
+  const sideInner = document.createElement('div')
+  sideInner.classList.add('sidepanel-inner')
   sideInner.append(...inner, header)
   asidePanel.appendChild(sideInner)
 

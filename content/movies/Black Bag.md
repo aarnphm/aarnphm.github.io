@@ -13,5 +13,5 @@ category:
   - thriller
   - actions
 description: Kathryn and George Woodhouse are both top-tier Intelligence Agents. What happens when Katherine is suspected of treason, and George has to decide whether to side with his wife or his Nation?
-posters: "[[movies/posters/black-bag.jpg]]"
+posters: '[[movies/posters/black-bag.jpg]]'
 ---

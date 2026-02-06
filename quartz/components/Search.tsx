@@ -1,13 +1,13 @@
-import { i18n } from "../i18n"
+import { i18n } from '../i18n'
 import {
   QuartzComponent,
   QuartzComponentConstructor,
   QuartzComponentProps,
-} from "../types/component"
-import { classNames } from "../util/lang"
+} from '../types/component'
+import { classNames } from '../util/lang'
 // @ts-ignore
-import script from "./scripts/search.inline"
-import style from "./styles/search.scss"
+import script from './scripts/search.inline'
+import style from './styles/search.scss'
 
 export interface SearchOptions {
   enablePreview: boolean
@@ -21,7 +21,7 @@ export default ((userOpts?: Partial<SearchOptions>) => {
     const opts = { ...defaultOptions, ...userOpts }
     const searchPlaceholder = i18n(cfg.locale).components.search.searchBarPlaceholder
     return (
-      <div class={classNames(displayClass, "search")}>
+      <div class={classNames(displayClass, 'search')}>
         {opts.includeButton && (
           <button type="button" class="search-button" aria-label="Toggle search mode" tabindex={-1}>
             <svg

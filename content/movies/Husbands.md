@@ -16,5 +16,5 @@ category:
   - drama
   - o/vintage
 description: three friends spiral after a funeral - grief turns into masculine chaos, booze, and a refusal to go back to ordinary life.
-posters: "[[movies/posters/husband.jpg]]"
+posters: '[[movies/posters/husband.jpg]]'
 ---

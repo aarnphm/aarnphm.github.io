@@ -1,5 +1,5 @@
 ---
-date: "2024-02-07"
+date: '2024-02-07'
 description: considered to be a study of action theory
 id: agency
 modified: 2025-12-18 03:33:41 GMT-05:00

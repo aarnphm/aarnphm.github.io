@@ -1,18 +1,18 @@
-import { Mutex } from "async-mutex"
-import chokidar from "chokidar"
-import { randomUUID } from "crypto"
-import esbuild from "esbuild"
-import { sassPlugin } from "esbuild-sass-plugin"
-import { promises } from "fs"
-import fs from "fs"
-import { globby } from "globby"
-import http from "http"
-import { styleText } from "node:util"
-import path from "path"
-import prettyBytes from "pretty-bytes"
-import serveHandler from "serve-handler"
-import { WebSocketServer } from "ws"
-import { version, fp, cacheFile } from "./constants.js"
+import { Mutex } from 'async-mutex'
+import chokidar from 'chokidar'
+import { randomUUID } from 'crypto'
+import esbuild from 'esbuild'
+import { sassPlugin } from 'esbuild-sass-plugin'
+import { promises } from 'fs'
+import fs from 'fs'
+import { globby } from 'globby'
+import http from 'http'
+import { styleText } from 'node:util'
+import path from 'path'
+import prettyBytes from 'pretty-bytes'
+import serveHandler from 'serve-handler'
+import { WebSocketServer } from 'ws'
+import { version, fp, cacheFile } from './constants.js'
 
 const createBuildConfig = () => ({
   entryPoints: [fp],
@@ -21,46 +21,46 @@ const createBuildConfig = () => ({
   keepNames: true,
   minifyWhitespace: true,
   minifySyntax: true,
-  platform: "node",
-  format: "esm",
-  jsx: "automatic",
-  jsxImportSource: "preact",
-  packages: "external",
+  platform: 'node',
+  format: 'esm',
+  jsx: 'automatic',
+  jsxImportSource: 'preact',
+  packages: 'external',
   metafile: true,
   sourcemap: true,
   sourcesContent: false,
   plugins: [
-    sassPlugin({ type: "css-text", cssImports: true }),
-    sassPlugin({ filter: /\.inline\.scss$/, type: "css", cssImports: true }),
+    sassPlugin({ type: 'css-text', cssImports: true }),
+    sassPlugin({ filter: /\.inline\.scss$/, type: 'css', cssImports: true }),
     {
-      name: "inline-script-loader",
+      name: 'inline-script-loader',
       setup(build) {
-        build.onLoad({ filter: /\.inline\.(ts|js)$/ }, async (args) => {
-          let text = await promises.readFile(args.path, "utf8")
+        build.onLoad({ filter: /\.inline\.(ts|js)$/ }, async args => {
+          let text = await promises.readFile(args.path, 'utf8')
 
-          text = text.replace("export default", "")
-          text = text.replace("export", "")
+          text = text.replace('export default', '')
+          text = text.replace('export', '')
 
-          const sourcefile = path.relative(path.resolve("."), args.path)
+          const sourcefile = path.relative(path.resolve('.'), args.path)
           const resolveDir = path.dirname(sourcefile)
           const transpiled = await esbuild.build({
-            stdin: { contents: text, loader: "ts", resolveDir, sourcefile },
+            stdin: { contents: text, loader: 'ts', resolveDir, sourcefile },
             write: false,
             bundle: true,
             minify: true,
-            platform: "browser",
-            format: "esm",
+            platform: 'browser',
+            format: 'esm',
           })
           const rawMod = transpiled.outputFiles[0].text
-          return { contents: rawMod, loader: "text" }
+          return { contents: rawMod, loader: 'text' }
         })
       },
     },
   ],
 })
 
-const printBundleInfo = async (metafile) => {
-  const outputFileName = cacheFile.replace(/^\.\//, "")
+const printBundleInfo = async metafile => {
+  const outputFileName = cacheFile.replace(/^\.\//, '')
   const meta = metafile.outputs[outputFileName]
   if (meta) {
     console.log(
@@ -81,13 +81,13 @@ export async function handleBuild(argv) {
     argv.watch = true
   }
 
-  console.log("\n" + styleText(["bgGreen", "black"], `Quartz v${version}`) + "\n")
+  console.log('\n' + styleText(['bgGreen', 'black'], `Quartz v${version}`) + '\n')
   const ctx = await esbuild.context(createBuildConfig())
 
   const buildMutex = new Mutex()
   let lastBuildMs = 0
   let cleanupBuild = null
-  const build = async (clientRefresh) => {
+  const build = async clientRefresh => {
     const buildStart = new Date().getTime()
     lastBuildMs = buildStart
     const release = await buildMutex.acquire()
@@ -97,13 +97,13 @@ export async function handleBuild(argv) {
     }
 
     if (cleanupBuild) {
-      console.log(styleText("yellow", "Detected a source code change, doing a hard rebuild..."))
+      console.log(styleText('yellow', 'Detected a source code change, doing a hard rebuild...'))
       await cleanupBuild()
     }
 
-    const result = await ctx.rebuild().catch((err) => {
-      console.error(`${styleText("red", "Couldn't parse Quartz configuration:")} ${fp}`)
-      console.log(`Reason: ${styleText("grey", err)}`)
+    const result = await ctx.rebuild().catch(err => {
+      console.error(`${styleText('red', "Couldn't parse Quartz configuration:")} ${fp}`)
+      console.log(`Reason: ${styleText('grey', err)}`)
       process.exit(1)
     })
     release()
@@ -124,10 +124,10 @@ export async function handleBuild(argv) {
   let clientRefresh = () => {}
   if (argv.serve) {
     const connections = []
-    clientRefresh = () => connections.forEach((conn) => conn.send("rebuild"))
+    clientRefresh = () => connections.forEach(conn => conn.send('rebuild'))
 
-    if (argv.baseDir !== "" && !argv.baseDir.startsWith("/")) {
-      argv.baseDir = "/" + argv.baseDir
+    if (argv.baseDir !== '' && !argv.baseDir.startsWith('/')) {
+      argv.baseDir = '/' + argv.baseDir
     }
 
     await build(clientRefresh)
@@ -135,7 +135,7 @@ export async function handleBuild(argv) {
       if (argv.baseDir && !req.url?.startsWith(argv.baseDir)) {
         console.log(
           styleText(
-            "red",
+            'red',
             `[404] ${req.url} (warning: link outside of site, this is likely a Quartz bug)`,
           ),
         )
@@ -153,38 +153,38 @@ export async function handleBuild(argv) {
           public: argv.output,
           directoryListing: false,
           headers: [
-            { source: "**/*.*", headers: [{ key: "Content-Disposition", value: "inline" }] },
-            { source: "**/*.webp", headers: [{ key: "Content-Type", value: "image/webp" }] },
+            { source: '**/*.*', headers: [{ key: 'Content-Disposition', value: 'inline' }] },
+            { source: '**/*.webp', headers: [{ key: 'Content-Type', value: 'image/webp' }] },
             // fixes bug where avif images are displayed as text instead of images (future proof)
-            { source: "**/*.avif", headers: [{ key: "Content-Type", value: "image/avif" }] },
+            { source: '**/*.avif', headers: [{ key: 'Content-Type', value: 'image/avif' }] },
           ],
         })
         const status = res.statusCode
         const statusString =
           status >= 200 && status < 300
-            ? styleText("green", `[${status}]`)
-            : styleText("red", `[${status}]`)
-        console.log(statusString + styleText("grey", ` ${argv.baseDir}${req.url}`))
+            ? styleText('green', `[${status}]`)
+            : styleText('red', `[${status}]`)
+        console.log(statusString + styleText('grey', ` ${argv.baseDir}${req.url}`))
         release()
       }
 
-      const redirect = (newFp) => {
+      const redirect = newFp => {
         newFp = argv.baseDir + newFp
         res.writeHead(302, { Location: newFp })
         console.log(
-          styleText("yellow", "[302]") +
-            styleText("grey", ` ${argv.baseDir}${req.url} -> ${newFp}`),
+          styleText('yellow', '[302]') +
+            styleText('grey', ` ${argv.baseDir}${req.url} -> ${newFp}`),
         )
         res.end()
       }
 
-      let fp = req.url?.split("?")[0] ?? "/"
+      let fp = req.url?.split('?')[0] ?? '/'
 
       // handle redirects
-      if (fp.endsWith("/")) {
+      if (fp.endsWith('/')) {
         // /trailing/
         // does /trailing/index.html exist? if so, serve it
-        const indexFp = path.posix.join(fp, "index.html")
+        const indexFp = path.posix.join(fp, 'index.html')
         if (fs.existsSync(path.posix.join(argv.output, indexFp))) {
           req.url = fp
           return serve()
@@ -192,8 +192,8 @@ export async function handleBuild(argv) {
 
         // does /trailing.html exist? if so, redirect to /trailing
         let base = fp.slice(0, -1)
-        if (path.extname(base) === "") {
-          base += ".html"
+        if (path.extname(base) === '') {
+          base += '.html'
         }
         if (fs.existsSync(path.posix.join(argv.output, base))) {
           return redirect(fp.slice(0, -1))
@@ -202,8 +202,8 @@ export async function handleBuild(argv) {
         // /regular
         // does /regular.html exist? if so, serve it
         let base = fp
-        if (path.extname(base) === "") {
-          base += ".html"
+        if (path.extname(base) === '') {
+          base += '.html'
         }
         if (fs.existsSync(path.posix.join(argv.output, base))) {
           req.url = fp
@@ -211,9 +211,9 @@ export async function handleBuild(argv) {
         }
 
         // does /regular/index.html exist? if so, redirect to /regular/
-        let indexFp = path.posix.join(fp, "index.html")
+        let indexFp = path.posix.join(fp, 'index.html')
         if (fs.existsSync(path.posix.join(argv.output, indexFp))) {
-          return redirect(fp + "/")
+          return redirect(fp + '/')
         }
       }
 
@@ -222,10 +222,10 @@ export async function handleBuild(argv) {
 
     server.listen(argv.port)
     const wss = new WebSocketServer({ port: argv.wsPort })
-    wss.on("connection", (ws) => connections.push(ws))
+    wss.on('connection', ws => connections.push(ws))
     console.log(
       styleText(
-        "cyan",
+        'cyan',
         `[serve] Started a Quartz server listening at http://localhost:${argv.port}${argv.baseDir}`,
       ),
     )
@@ -236,29 +236,29 @@ export async function handleBuild(argv) {
 
   if (argv.watch) {
     const paths = await globby([
-      "**/*.ts",
-      "quartz/cli/*.js",
-      "quartz/static/**/*",
-      "**/*.tsx",
-      "**/*.scss",
-      "package.json",
+      '**/*.ts',
+      'quartz/cli/*.js',
+      'quartz/static/**/*',
+      '**/*.tsx',
+      '**/*.scss',
+      'package.json',
     ])
     chokidar
       .watch(paths, { ignoreInitial: true })
-      .on("add", () => build(clientRefresh))
-      .on("change", () => build(clientRefresh))
-      .on("unlink", () => build(clientRefresh))
+      .on('add', () => build(clientRefresh))
+      .on('change', () => build(clientRefresh))
+      .on('unlink', () => build(clientRefresh))
 
-    console.log(styleText("grey", "hint: exit with ctrl+c"))
+    console.log(styleText('grey', 'hint: exit with ctrl+c'))
   }
 }
 
 export async function handleStats(argv) {
-  console.log("\n" + styleText(["bgGreen", "black"], `Quartz v${version}`) + "\n")
+  console.log('\n' + styleText(['bgGreen', 'black'], `Quartz v${version}`) + '\n')
   const absDir = path.resolve(argv.directory)
-  const files = await globby(["**/*"], { cwd: absDir, dot: true, onlyFiles: true })
+  const files = await globby(['**/*'], { cwd: absDir, dot: true, onlyFiles: true })
   const fileStats = await Promise.all(
-    files.map(async (file) => {
+    files.map(async file => {
       const stat = await promises.stat(path.join(absDir, file))
       return { file, size: stat.size }
     }),
@@ -272,7 +272,7 @@ export async function handleStats(argv) {
 
   for (const { file, size } of fileStats) {
     totalBytes += size
-    if (path.extname(file).toLowerCase() === ".md") {
+    if (path.extname(file).toLowerCase() === '.md') {
       mdFiles += 1
       mdBytes += size
     }
@@ -282,7 +282,7 @@ export async function handleStats(argv) {
     }
   }
 
-  console.log(styleText("cyan", "Vault stats"))
+  console.log(styleText('cyan', 'Vault stats'))
   console.log(`Path: ${absDir}`)
   console.log(`Files: ${files.length} (${mdFiles} markdown, ${files.length - mdFiles} other)`)
   console.log(`Size: ${prettyBytes(totalBytes)} (${totalBytes} bytes)`)
@@ -290,9 +290,9 @@ export async function handleStats(argv) {
   if (largestFile) {
     console.log(`Largest: ${largestFile} (${prettyBytes(largestBytes)})`)
   }
-  console.log("")
+  console.log('')
 
   const result = await esbuild.build({ ...createBuildConfig(), write: false })
-  console.log(styleText("cyan", "Bundle info"))
+  console.log(styleText('cyan', 'Bundle info'))
   await printBundleInfo(result.metafile)
 }

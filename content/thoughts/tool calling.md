@@ -1,5 +1,5 @@
 ---
-date: "2025-05-07"
+date: '2025-05-07'
 description: unification of frontend parsers
 id: tool calling
 modified: 2025-10-29 02:15:54 GMT-04:00

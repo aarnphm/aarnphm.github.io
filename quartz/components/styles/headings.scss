@@ -47,7 +47,7 @@
         }
 
         > .headings-modal-search {
-          > input[type="search"] {
+          > input[type='search'] {
             width: 100%;
             padding: 0.5rem 0.75rem;
             border: 1px solid var(--lightgray);
@@ -151,7 +151,7 @@
 }
 
 // dark mode support
-[saved-theme="dark"] {
+[saved-theme='dark'] {
   .headings-modal-container {
     > .headings-modal {
       background-color: var(--dark);
@@ -168,7 +168,7 @@
           }
 
           > .headings-modal-search {
-            > input[type="search"] {
+            > input[type='search'] {
               background-color: var(--darkgray);
               border-color: var(--gray);
               color: var(--light);

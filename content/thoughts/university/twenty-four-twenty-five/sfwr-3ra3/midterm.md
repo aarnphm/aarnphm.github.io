@@ -1,5 +1,5 @@
 ---
-date: "2024-10-21"
+date: '2024-10-21'
 description: midterm review covering requirements engineering, sson, goals, personas, risk management, and oppression-aware design.
 id: midterm
 modified: 2025-10-29 02:16:04 GMT-04:00

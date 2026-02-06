@@ -8,7 +8,7 @@ description: catholic guilt in little italy—scorsese's breakout, where communi
 director: Martin Scorsese
 id: mean-streets
 modified: 2025-10-29 02:14:53 GMT-04:00
-posters: "[[movies/posters/mean-streets.jpg]]"
+posters: '[[movies/posters/mean-streets.jpg]]'
 rating: 7.2
 status: recurring
 studio: warner bros

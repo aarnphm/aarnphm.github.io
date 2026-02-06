@@ -1,5 +1,5 @@
 ---
-date: "2025-03-01"
+date: '2025-03-01'
 description: not transient notes.
 title: evergreen
 ---

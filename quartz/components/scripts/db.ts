@@ -1,19 +1,19 @@
-import { PGlite } from "@electric-sql/pglite"
-import { pgTable, text, bigint, index } from "drizzle-orm/pg-core"
-import { drizzle, type PgliteDatabase } from "drizzle-orm/pglite"
-import { dependencies } from "../../../package.json"
+import { PGlite } from '@electric-sql/pglite'
+import { pgTable, text, bigint, index } from 'drizzle-orm/pg-core'
+import { drizzle, type PgliteDatabase } from 'drizzle-orm/pglite'
+import { dependencies } from '../../../package.json'
 
-const CDN_BASE = `https://cdn.jsdelivr.net/npm/@electric-sql/pglite@${dependencies["@electric-sql/pglite"].slice(1)}/dist`
+const CDN_BASE = `https://cdn.jsdelivr.net/npm/@electric-sql/pglite@${dependencies['@electric-sql/pglite'].slice(1)}/dist`
 
 export const githubUsers = pgTable(
-  "github_users",
+  'github_users',
   {
-    login: text("login").primaryKey(),
-    displayName: text("display_name"),
-    avatarUrl: text("avatar_url"),
-    lastSeenAt: bigint("last_seen_at", { mode: "number" }).notNull(),
+    login: text('login').primaryKey(),
+    displayName: text('display_name'),
+    avatarUrl: text('avatar_url'),
+    lastSeenAt: bigint('last_seen_at', { mode: 'number' }).notNull(),
   },
-  (table) => [index("idx_github_users_last_seen").on(table.lastSeenAt)],
+  table => [index('idx_github_users_last_seen').on(table.lastSeenAt)],
 )
 
 export type GithubUser = typeof githubUsers.$inferSelect
@@ -27,11 +27,11 @@ export function getDB() {
     try {
       const [wasmModule, fsBundle] = await Promise.all([
         WebAssembly.compileStreaming(fetch(`${CDN_BASE}/pglite.wasm`)),
-        fetch(`${CDN_BASE}/pglite.data`).then((r) => r.blob()),
+        fetch(`${CDN_BASE}/pglite.data`).then(r => r.blob()),
       ])
 
       const client = await PGlite.create({
-        dataDir: "idb://multiplayer-cache",
+        dataDir: 'idb://multiplayer-cache',
         wasmModule,
         fsBundle,
       })
@@ -50,7 +50,7 @@ export function getDB() {
 
       return db
     } catch (err) {
-      console.warn("pglite init failed:", err)
+      console.warn('pglite init failed:', err)
       return null
     }
   })()

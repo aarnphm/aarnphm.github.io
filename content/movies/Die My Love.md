@@ -13,5 +13,5 @@ rating: 8.2
 category:
   - thriller
 description: Grace, a writer and young mother, is slowly slipping into madness. Locked away in an old house in Montana, her increasingly agitated and erratic behaviour leaves her companion, Jackson, worried and helpless.
-posters: "[[movies/posters/die my love.jpg]]"
+posters: '[[movies/posters/die my love.jpg]]'
 ---

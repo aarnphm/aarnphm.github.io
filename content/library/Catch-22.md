@@ -13,7 +13,7 @@ subcategory:
   - absurdism
 author:
   - Joseph Heller
-posters: "[[library/posters/catch-22.jpg]]"
+posters: '[[library/posters/catch-22.jpg]]'
 category:
   - p/fiction
 translator:

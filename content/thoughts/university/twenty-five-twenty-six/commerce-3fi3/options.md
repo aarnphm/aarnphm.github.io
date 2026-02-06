@@ -1,5 +1,5 @@
 ---
-date: "2025-10-27"
+date: '2025-10-27'
 description: fractional, vertical bull/bear spreads
 id: options
 modified: 2025-11-03 03:54:31 GMT-05:00

@@ -1,5 +1,5 @@
 ---
-date: "2024-12-27"
+date: '2024-12-27'
 description: and a lens from a distant friend.
 id: Jacky
 layout: letter

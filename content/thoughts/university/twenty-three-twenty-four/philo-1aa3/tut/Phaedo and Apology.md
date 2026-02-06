@@ -1,5 +1,5 @@
 ---
-date: "2023-09-22"
+date: '2023-09-22'
 description: Phaedo and Apology
 id: Phaedo and Apology
 modified: 2025-10-29 02:16:17 GMT-04:00

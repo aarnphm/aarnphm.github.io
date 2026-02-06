@@ -6,7 +6,7 @@ description: trans allegory disguised as 90s nostalgia horror—schoenbrun filmi
 director: Jane Schoenbrun
 id: i-saw-the-tv-glow
 modified: 2025-10-29 02:14:51 GMT-04:00
-posters: "[[movies/posters/i-saw-the-tv-glow.jpg]]"
+posters: '[[movies/posters/i-saw-the-tv-glow.jpg]]'
 status: to watch
 studio: a24
 tags:

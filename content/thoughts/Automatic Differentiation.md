@@ -1,5 +1,5 @@
 ---
-date: "2024-02-07"
+date: '2024-02-07'
 description: techniques to evaluate partial derivative of a functions specified by CP.
 id: Automatic Differentiation
 modified: 2025-10-29 02:15:16 GMT-04:00
@@ -7,8 +7,8 @@ tags:
   - math
 title: Automatic Differentiation
 seealso:
-  - "[[thoughts/Autograd|Autograd]]"
-  - "[[thoughts/Jax|JAX]]"
+  - '[[thoughts/Autograd|Autograd]]'
+  - '[[thoughts/Jax|JAX]]'
 ---
 
 Input: code compute a function

@@ -2,7 +2,7 @@
 aliases:
   - about
   - me
-date: "2022-04-22"
+date: '2022-04-22'
 description: my working notes, as a form of a digital garden
 id: _index
 modified: 2026-01-20 12:35:29 GMT-05:00

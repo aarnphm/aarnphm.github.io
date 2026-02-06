@@ -12,7 +12,7 @@ subcategory:
   - death
 author:
   - Hua Tsu
-posters: "[[library/posters/stay true.jpg]]"
+posters: '[[library/posters/stay true.jpg]]'
 category:
   - p/nf
 translator:

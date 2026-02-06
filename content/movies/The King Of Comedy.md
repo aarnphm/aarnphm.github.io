@@ -8,7 +8,7 @@ description: delusion weaponized—a wannabe comedian kidnapping his idol for sc
 director: Martin Scorsese
 id: the-king-of-comedy
 modified: 2025-10-29 02:14:59 GMT-04:00
-posters: "[[movies/posters/the-king-of-comedy.jpg]]"
+posters: '[[movies/posters/the-king-of-comedy.jpg]]'
 rating: 7.8
 status: to watch
 studio: 20th century fox

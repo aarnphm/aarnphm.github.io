@@ -7,7 +7,7 @@ director:
   - Olivier Nakache
 id: intouchables
 modified: 2025-10-29 02:15:05 GMT-04:00
-posters: "[[movies/posters/intouchables.webp]]"
+posters: '[[movies/posters/intouchables.webp]]'
 rating: 8.5
 status: recurring
 studio: gaumont

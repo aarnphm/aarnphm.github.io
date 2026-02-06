@@ -14,7 +14,7 @@ subcategory:
   - absurdism
 author:
   - Susan Sontag
-posters: "[[library/posters/regarding-pain-of-others.jpg]]"
+posters: '[[library/posters/regarding-pain-of-others.jpg]]'
 category:
   - p/fiction
 translator:

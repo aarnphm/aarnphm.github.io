@@ -1,5 +1,5 @@
 ---
-date: "2024-08-23"
+date: '2024-08-23'
 description: aesthetic quality that provokes pleasure, meaning, or transcendence through sensory and intellectual engagement.
 draft: true
 id: beauty

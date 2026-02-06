@@ -1,27 +1,27 @@
-import { ElementContent } from "hast"
-import { toHtml } from "hast-util-to-html"
-import { Node } from "unist"
-import { sharedPageComponents, defaultContentPageLayout } from "../../../quartz.layout"
-import { FullPageLayout } from "../../cfg"
-import HeaderConstructor from "../../components/Header"
-import ArenaIndex from "../../components/pages/ArenaIndex"
-import ChannelContent from "../../components/pages/ChannelContent"
-import { pageResources, renderPage } from "../../components/renderPage"
-import { QuartzComponentProps } from "../../types/component"
-import { QuartzEmitterPlugin } from "../../types/plugin"
-import { clone } from "../../util/clone"
-import { BuildCtx } from "../../util/ctx"
-import { pathToRoot, joinSegments, FullSlug } from "../../util/path"
-import { StaticResources } from "../../util/resources"
+import { ElementContent } from 'hast'
+import { toHtml } from 'hast-util-to-html'
+import { Node } from 'unist'
+import { sharedPageComponents, defaultContentPageLayout } from '../../../quartz.layout'
+import { FullPageLayout } from '../../cfg'
+import HeaderConstructor from '../../components/Header'
+import ArenaIndex from '../../components/pages/ArenaIndex'
+import ChannelContent from '../../components/pages/ChannelContent'
+import { pageResources, renderPage } from '../../components/renderPage'
+import { QuartzComponentProps } from '../../types/component'
+import { QuartzEmitterPlugin } from '../../types/plugin'
+import { clone } from '../../util/clone'
+import { BuildCtx } from '../../util/ctx'
+import { pathToRoot, joinSegments, FullSlug } from '../../util/path'
+import { StaticResources } from '../../util/resources'
 import {
   ArenaChannel,
   ArenaBlock,
   ArenaBlockSearchable,
   ArenaChannelSearchable,
   ArenaSearchIndex,
-} from "../transformers/arena"
-import { QuartzPluginData, defaultProcessedContent } from "../vfile"
-import { write } from "./helpers"
+} from '../transformers/arena'
+import { QuartzPluginData, defaultProcessedContent } from '../vfile'
+import { write } from './helpers'
 
 async function processArenaIndex(
   ctx: BuildCtx,
@@ -31,7 +31,7 @@ async function processArenaIndex(
   opts: FullPageLayout,
   resources: StaticResources,
 ) {
-  const slug = "arena" as FullSlug
+  const slug = 'arena' as FullSlug
   const cfg = ctx.cfg.configuration
   const externalResources = pageResources(pathToRoot(slug), resources, ctx)
   const indexFileData = clone(fileData) as QuartzPluginData
@@ -39,8 +39,8 @@ async function processArenaIndex(
   indexFileData.arenaChannel = undefined
   indexFileData.frontmatter = {
     ...indexFileData.frontmatter,
-    title: indexFileData.frontmatter?.title ?? fileData.frontmatter?.title ?? "are.na",
-    pageLayout: indexFileData.frontmatter?.pageLayout ?? "default",
+    title: indexFileData.frontmatter?.title ?? fileData.frontmatter?.title ?? 'are.na',
+    pageLayout: indexFileData.frontmatter?.pageLayout ?? 'default',
   }
   const componentData: QuartzComponentProps = {
     ctx,
@@ -53,7 +53,7 @@ async function processArenaIndex(
   }
 
   const content = renderPage(ctx, slug, componentData, opts, externalResources, false)
-  return write({ ctx, content, slug, ext: ".html" })
+  return write({ ctx, content, slug, ext: '.html' })
 }
 
 async function processChannel(
@@ -64,14 +64,14 @@ async function processChannel(
   opts: FullPageLayout,
   resources: StaticResources,
 ) {
-  const arenaBase = "arena" as FullSlug
+  const arenaBase = 'arena' as FullSlug
   const channelSlug = joinSegments(arenaBase, channel.slug) as FullSlug
   const cfg = ctx.cfg.configuration
 
   const [tree] = defaultProcessedContent({
     slug: channelSlug,
     arenaChannel: channel,
-    frontmatter: { ...baseFileData.frontmatter, title: channel.name, pageLayout: "default" },
+    frontmatter: { ...baseFileData.frontmatter, title: channel.name, pageLayout: 'default' },
   })
 
   const externalResources = pageResources(pathToRoot(channelSlug), resources, ctx)
@@ -81,7 +81,7 @@ async function processChannel(
       ...baseFileData,
       slug: channelSlug,
       arenaChannel: channel,
-      frontmatter: { ...baseFileData.frontmatter, title: channel.name, pageLayout: "default" },
+      frontmatter: { ...baseFileData.frontmatter, title: channel.name, pageLayout: 'default' },
     },
     externalResources,
     cfg,
@@ -91,7 +91,7 @@ async function processChannel(
   }
 
   const content = renderPage(ctx, channelSlug, componentData, opts, externalResources, false)
-  return write({ ctx, content, slug: channelSlug, ext: ".html" })
+  return write({ ctx, content, slug: channelSlug, ext: '.html' })
 }
 
 /**
@@ -146,7 +146,7 @@ function serializeBlock(
 
   // Recursively serialize sub-items
   if (block.subItems && block.subItems.length > 0) {
-    searchable.subItems = block.subItems.map((subBlock) =>
+    searchable.subItems = block.subItems.map(subBlock =>
       serializeBlock(subBlock, channelSlug, channelName, false),
     )
   }
@@ -179,19 +179,19 @@ function buildSearchIndex(channels: ArenaChannel[]): ArenaSearchIndex {
     })
   }
 
-  return { version: "1.0.0", blocks, channels: channelMetadata }
+  return { version: '1.0.0', blocks, channels: channelMetadata }
 }
 
 async function emitSearchIndex(ctx: BuildCtx, searchIndex: ArenaSearchIndex) {
-  const slug = "static/arena-search" as FullSlug
+  const slug = 'static/arena-search' as FullSlug
   const content = JSON.stringify(searchIndex)
 
-  return write({ ctx, content, slug, ext: ".json" })
+  return write({ ctx, content, slug, ext: '.json' })
 }
 
 async function processChannelJson(ctx: BuildCtx, channel: ArenaChannel) {
-  const slug = joinSegments("arena", channel.slug, "json") as FullSlug
-  const baseUrl = ctx.cfg.configuration.baseUrl ?? "aarnphm.xyz"
+  const slug = joinSegments('arena', channel.slug, 'json') as FullSlug
+  const baseUrl = ctx.cfg.configuration.baseUrl ?? 'aarnphm.xyz'
 
   const output: Record<string, Record<string, unknown>> = {}
 
@@ -211,7 +211,7 @@ async function processChannelJson(ctx: BuildCtx, channel: ArenaChannel) {
     if (block.highlighted) entry.highlighted = true
 
     if (block.metadata) {
-      const skip = new Set(["date", "accessed", "tags", "pinned", "later"])
+      const skip = new Set(['date', 'accessed', 'tags', 'pinned', 'later'])
       for (const [k, v] of Object.entries(block.metadata)) {
         if (!skip.has(k) && v) entry[k] = v
       }
@@ -220,13 +220,13 @@ async function processChannelJson(ctx: BuildCtx, channel: ArenaChannel) {
     output[url] = entry
   }
 
-  return write({ ctx, content: JSON.stringify(output, null, 2), slug, ext: "" })
+  return write({ ctx, content: JSON.stringify(output, null, 2), slug, ext: '' })
 }
 
-export const ArenaPage: QuartzEmitterPlugin<Partial<FullPageLayout>> = (userOpts) => {
-  const filteredHeader = sharedPageComponents.header.filter((component) => {
-    const name = component.displayName || component.name || ""
-    return name !== "Breadcrumbs" && name !== "StackedNotes"
+export const ArenaPage: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts => {
+  const filteredHeader = sharedPageComponents.header.filter(component => {
+    const name = component.displayName || component.name || ''
+    return name !== 'Breadcrumbs' && name !== 'StackedNotes'
   })
 
   const indexOpts: FullPageLayout = {
@@ -253,17 +253,17 @@ export const ArenaPage: QuartzEmitterPlugin<Partial<FullPageLayout>> = (userOpts
   const Header = HeaderConstructor()
 
   return {
-    name: "ArenaPage",
+    name: 'ArenaPage',
     getQuartzComponents() {
       return [Head, Header, indexOpts.pageBody, channelOpts.pageBody, Footer]
     },
     async *emit(ctx, content, resources) {
-      const allFiles = content.map((c) => c[1].data)
+      const allFiles = content.map(c => c[1].data)
 
       for (const [tree, file] of content) {
         const slug = file.data.slug!
 
-        if (slug !== "are.na") continue
+        if (slug !== 'are.na') continue
         if (!file.data.arenaData) continue
 
         yield processArenaIndex(ctx, tree, file.data, allFiles, indexOpts, resources)
@@ -271,7 +271,7 @@ export const ArenaPage: QuartzEmitterPlugin<Partial<FullPageLayout>> = (userOpts
         for (const channel of file.data.arenaData.channels) {
           yield processChannel(ctx, channel, file.data, allFiles, channelOpts, resources)
 
-          const jsonEnabled = channel.metadata?.json === "true" || channel.metadata?.json === true
+          const jsonEnabled = channel.metadata?.json === 'true' || channel.metadata?.json === true
           if (jsonEnabled) {
             yield processChannelJson(ctx, channel)
           }
@@ -283,12 +283,12 @@ export const ArenaPage: QuartzEmitterPlugin<Partial<FullPageLayout>> = (userOpts
       }
     },
     async *partialEmit(ctx, content, resources, changeEvents) {
-      const allFiles = content.map((c) => c[1].data)
+      const allFiles = content.map(c => c[1].data)
 
       const changedSlugs = new Set<string>()
       for (const changeEvent of changeEvents) {
         if (!changeEvent.file) continue
-        if (changeEvent.type === "add" || changeEvent.type === "change") {
+        if (changeEvent.type === 'add' || changeEvent.type === 'change') {
           changedSlugs.add(changeEvent.file.data.slug!)
         }
       }
@@ -296,7 +296,7 @@ export const ArenaPage: QuartzEmitterPlugin<Partial<FullPageLayout>> = (userOpts
       for (const [tree, file] of content) {
         const slug = file.data.slug!
         if (!changedSlugs.has(slug)) continue
-        if (slug !== "are.na") continue
+        if (slug !== 'are.na') continue
         if (!file.data.arenaData) continue
 
         yield processArenaIndex(ctx, tree, file.data, allFiles, indexOpts, resources)
@@ -304,7 +304,7 @@ export const ArenaPage: QuartzEmitterPlugin<Partial<FullPageLayout>> = (userOpts
         for (const channel of file.data.arenaData.channels) {
           yield processChannel(ctx, channel, file.data, allFiles, channelOpts, resources)
 
-          const jsonEnabled = channel.metadata?.json === "true" || channel.metadata?.json === true
+          const jsonEnabled = channel.metadata?.json === 'true' || channel.metadata?.json === true
           if (jsonEnabled) {
             yield processChannelJson(ctx, channel)
           }

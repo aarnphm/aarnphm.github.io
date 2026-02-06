@@ -1,10 +1,10 @@
 ---
 category: projets
-date: "2022-01-25"
+date: '2022-01-25'
 description: for neovim
 id: latex-renderer
 modified: 2025-11-21 12:11:10 GMT-05:00
-notebook: "[[uses#^neovim]]"
+notebook: '[[uses#^neovim]]'
 status: idea
 subcategory: tooling
 tags:

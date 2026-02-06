@@ -1,7 +1,7 @@
 ---
 aliases:
   - math/linalg
-date: "2024-09-11"
+date: '2024-09-11'
 description: linear algebra a la carte.
 id: tut1
 modified: 2025-10-29 02:16:10 GMT-04:00

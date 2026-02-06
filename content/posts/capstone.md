@@ -1,5 +1,5 @@
 ---
-date: "2025-04-19"
+date: '2025-04-19'
 description: on nature of North-American pedagogy
 draft: true
 id: capstone

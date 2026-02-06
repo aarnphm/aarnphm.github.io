@@ -1,12 +1,12 @@
-import { styleText } from "node:util"
-import pretty from "pretty-time"
+import { styleText } from 'node:util'
+import pretty from 'pretty-time'
 
 export class PerfTimer {
   evts: { [key: string]: [number, number] }
 
   constructor() {
     this.evts = {}
-    this.addEvent("start")
+    this.addEvent('start')
   }
 
   addEvent(evtName: string) {
@@ -14,6 +14,6 @@ export class PerfTimer {
   }
 
   timeSince(evtName?: string): string {
-    return styleText("yellow", pretty(process.hrtime(this.evts[evtName ?? "start"])))
+    return styleText('yellow', pretty(process.hrtime(this.evts[evtName ?? 'start'])))
   }
 }

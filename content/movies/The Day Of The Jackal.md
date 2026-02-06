@@ -7,7 +7,7 @@ description: professional assassin hired to kill charles de gaulle—zinnemann f
 director: Fred Zinnemann
 id: the-day-of-the-jackal
 modified: 2025-10-29 02:14:57 GMT-04:00
-posters: "[[movies/posters/the-day-of-the-jackal.jpg]]"
+posters: '[[movies/posters/the-day-of-the-jackal.jpg]]'
 rating: 7.8
 status: finished
 studio: universal

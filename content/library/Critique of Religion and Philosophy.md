@@ -13,7 +13,7 @@ subcategory:
   - reason
 author:
   - Walter Kaufmann
-posters: "[[library/posters/critique-of-religion-and-philosophy.avif]]"
+posters: '[[library/posters/critique-of-religion-and-philosophy.avif]]'
 category:
   - philosophy
 translator:

@@ -1,7 +1,7 @@
 ---
 cssclasses:
   - menu
-date: "2024-03-08"
+date: '2024-03-08'
 description: atelier with friends uno - orangeville
 id: orangeville
 lang: it-IT

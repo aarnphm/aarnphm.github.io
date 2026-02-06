@@ -1,5 +1,5 @@
 ---
-date: "2024-11-05"
+date: '2024-11-05'
 description: probably the most beautiful equation in all mathematics
 id: Euler's identity
 modified: 2025-10-29 02:15:22 GMT-04:00

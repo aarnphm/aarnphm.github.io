@@ -1,7 +1,7 @@
-import type { MultiplayerServices } from "./effects"
-import type { MultiplayerEvent, MultiplayerModel } from "./state"
-import { populateSearchIndex } from "../scripts/search-index"
-import { getCommentPageId } from "./identity"
+import type { MultiplayerServices } from './effects'
+import type { MultiplayerEvent, MultiplayerModel } from './state'
+import { populateSearchIndex } from '../scripts/search-index'
+import { getCommentPageId } from './identity'
 
 type MountDeps = {
   dispatch: (event: MultiplayerEvent) => void
@@ -12,7 +12,7 @@ type MountDeps = {
 const parseCommentHash = () => {
   const { hash } = window.location
   if (!hash) return null
-  const prefix = "#comment-"
+  const prefix = '#comment-'
   if (!hash.startsWith(prefix)) return null
   const rawId = hash.slice(prefix.length)
   if (!rawId) return null
@@ -30,16 +30,16 @@ export const mountMultiplayer = ({ dispatch, state, services }: MountDeps) => {
   }
 
   const isTouchDevice = () =>
-    "maxTouchPoints" in navigator ? navigator.maxTouchPoints > 0 : "ontouchstart" in window
+    'maxTouchPoints' in navigator ? navigator.maxTouchPoints > 0 : 'ontouchstart' in window
 
   const init = async () => {
-    dispatch({ type: "nav.enter", pageId: getCommentPageId() })
+    dispatch({ type: 'nav.enter', pageId: getCommentPageId() })
 
     const data = await fetchData
     await populateSearchIndex(data)
 
-    dispatch({ type: "nav.ready" })
-    dispatch({ type: "ui.hash.changed", commentId: parseCommentHash() })
+    dispatch({ type: 'nav.ready' })
+    dispatch({ type: 'ui.hash.changed', commentId: parseCommentHash() })
   }
 
   void init()
@@ -48,7 +48,7 @@ export const mountMultiplayer = ({ dispatch, state, services }: MountDeps) => {
     if (event.button !== 0) return
     if (!event.metaKey && !event.altKey && !event.ctrlKey) return
     if (event.target instanceof Node && event.target.isConnected) {
-      const composer = document.body.querySelector(".comment-composer")
+      const composer = document.body.querySelector('.comment-composer')
       if (composer instanceof HTMLElement && composer.contains(event.target)) {
         return
       }
@@ -61,7 +61,7 @@ export const mountMultiplayer = ({ dispatch, state, services }: MountDeps) => {
     const selection = window.getSelection()
     if (!selection || selection.isCollapsed || selection.rangeCount === 0) return
     if (event.target instanceof Node && event.target.isConnected) {
-      const composer = document.body.querySelector(".comment-composer")
+      const composer = document.body.querySelector('.comment-composer')
       if (composer instanceof HTMLElement && composer.contains(event.target)) {
         return
       }
@@ -86,36 +86,36 @@ export const mountMultiplayer = ({ dispatch, state, services }: MountDeps) => {
     })
   }
 
-  const handleAuthorUpdate = (event: CustomEventMap["commentauthorupdated"]) => {
+  const handleAuthorUpdate = (event: CustomEventMap['commentauthorupdated']) => {
     const detail = event.detail
     if (!detail?.oldAuthor || !detail?.newAuthor) return
-    dispatch({ type: "author.update", oldAuthor: detail.oldAuthor, newAuthor: detail.newAuthor })
+    dispatch({ type: 'author.update', oldAuthor: detail.oldAuthor, newAuthor: detail.newAuthor })
   }
 
   const handleCollapseToggle = () => {
-    dispatch({ type: "dom.collapse" })
+    dispatch({ type: 'dom.collapse' })
   }
 
   const handleHashChange = () => {
-    dispatch({ type: "ui.hash.changed", commentId: parseCommentHash() })
+    dispatch({ type: 'ui.hash.changed', commentId: parseCommentHash() })
   }
 
-  document.addEventListener("mouseup", mouseUp)
-  document.addEventListener("contextmenu", contextMenu)
-  window.addEventListener("resize", handleResize)
-  document.addEventListener("collapsibletoggle", handleCollapseToggle)
-  document.addEventListener("commentauthorupdated", handleAuthorUpdate)
-  window.addEventListener("hashchange", handleHashChange)
+  document.addEventListener('mouseup', mouseUp)
+  document.addEventListener('contextmenu', contextMenu)
+  window.addEventListener('resize', handleResize)
+  document.addEventListener('collapsibletoggle', handleCollapseToggle)
+  document.addEventListener('commentauthorupdated', handleAuthorUpdate)
+  window.addEventListener('hashchange', handleHashChange)
 
   addCleanup(() => {
     services.ui.cleanup()
     services.ws.close()
-    document.removeEventListener("mouseup", mouseUp)
-    document.removeEventListener("contextmenu", contextMenu)
-    window.removeEventListener("resize", handleResize)
-    document.removeEventListener("collapsibletoggle", handleCollapseToggle)
-    document.removeEventListener("commentauthorupdated", handleAuthorUpdate)
-    window.removeEventListener("hashchange", handleHashChange)
+    document.removeEventListener('mouseup', mouseUp)
+    document.removeEventListener('contextmenu', contextMenu)
+    window.removeEventListener('resize', handleResize)
+    document.removeEventListener('collapsibletoggle', handleCollapseToggle)
+    document.removeEventListener('commentauthorupdated', handleAuthorUpdate)
+    window.removeEventListener('hashchange', handleHashChange)
   })
 
   return () => {

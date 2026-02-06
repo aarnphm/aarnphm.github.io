@@ -8,7 +8,7 @@ description: three hours of eating and longing—kechiche filming lesbian desire
 director: Abdellatif Kechiche
 id: blue-is-the-warmest-color
 modified: 2025-10-29 02:14:46 GMT-04:00
-posters: "[[movies/posters/blue-is-the-warmest-color.jpg]]"
+posters: '[[movies/posters/blue-is-the-warmest-color.jpg]]'
 rating: 7.6
 status: to watch
 studio: ifc films

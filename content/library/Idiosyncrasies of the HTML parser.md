@@ -12,7 +12,7 @@ subcategory:
   - web
 author:
   - Simon Pieters
-posters: "[[library/posters/html-parser.png]]"
+posters: '[[library/posters/html-parser.png]]'
 category:
   - technology
 translator:

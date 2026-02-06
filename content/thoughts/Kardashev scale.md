@@ -1,5 +1,5 @@
 ---
-date: "2025-08-19"
+date: '2025-08-19'
 description: measurement of civilization progress
 id: Kardashev scale
 modified: 2025-10-29 02:15:26 GMT-04:00

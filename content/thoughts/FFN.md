@@ -1,5 +1,5 @@
 ---
-date: "2024-12-14"
+date: '2024-12-14'
 description: stateless feed-forward neural networks with universal approximation theorem, backpropagation, and techniques for addressing vanishing gradients through residual connections.
 id: FFN
 modified: 2025-10-29 02:15:22 GMT-04:00

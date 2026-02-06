@@ -1,4 +1,4 @@
-declare module "*.scss" {
+declare module '*.scss' {
   const content: string
   export = content
 }
@@ -7,24 +7,24 @@ declare module "*.scss" {
 interface CustomEventMap {
   prenav: CustomEvent<{}>
   nav: CustomEvent<{ url: FullSlug }>
-  themechange: CustomEvent<{ theme: "light" | "dark" }>
-  readermodechange: CustomEvent<{ mode: "on" | "off" }>
+  themechange: CustomEvent<{ theme: 'light' | 'dark' }>
+  readermodechange: CustomEvent<{ mode: 'on' | 'off' }>
 
   slidechange: CustomEvent<{}>
-  toast: CustomEvent<import("./quartz/components/scripts/toast").ToastEventDetail>
-  collapsibletoggle: CustomEvent<{ toggleId: string; isOpen: "true" | "false" }>
+  toast: CustomEvent<import('./quartz/components/scripts/toast').ToastEventDetail>
+  collapsibletoggle: CustomEvent<{ toggleId: string; isOpen: 'true' | 'false' }>
   commentauthorupdated: CustomEvent<{ oldAuthor: string; newAuthor: string }>
   contentdecrypted: CustomEvent<{ article: HTMLDivElement; content: HTMLDivElement }>
 }
 
 type ContentIndex = Record<FullSlug, ContentDetails>
 declare const fetchData: Promise<ContentIndex>
-declare const semanticCfg: import("./quartz/cfg").GlobalConfiguration["semanticSearch"]
+declare const semanticCfg: import('./quartz/cfg').GlobalConfiguration['semanticSearch']
 
 // base view metadata for dropdown navigation
 interface BaseViewMetadata {
   name: string
-  type: "table" | "list" | "gallery" | "board" | "calendar" | "card" | "cards" | "map"
+  type: 'table' | 'list' | 'gallery' | 'board' | 'calendar' | 'card' | 'cards' | 'map'
   slug: FullSlug
 }
 

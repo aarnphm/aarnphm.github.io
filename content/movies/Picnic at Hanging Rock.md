@@ -16,5 +16,5 @@ category:
   - drama
   - o/vintage
 description: schoolgirls vanish during a picnic - weir lets the landscape swallow answers and the town drown in unease.
-posters: "[[movies/posters/Picnic at Hanging Rock.jpg]]"
+posters: '[[movies/posters/Picnic at Hanging Rock.jpg]]'
 ---

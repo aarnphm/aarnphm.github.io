@@ -1,24 +1,24 @@
-import { OAuthProvider } from "@cloudflare/workers-oauth-provider"
-import { EmailMessage } from "cloudflare:email"
-import { createMimeMessage } from "mimetext"
-import LFS_CONFIG from "./.lfsconfig.txt"
-import handleArxiv from "./arxiv"
+import { OAuthProvider } from '@cloudflare/workers-oauth-provider'
+import { EmailMessage } from 'cloudflare:email'
+import { createMimeMessage } from 'mimetext'
+import LFS_CONFIG from './.lfsconfig.txt'
+import handleArxiv from './arxiv'
 import {
   getGithubCommentAuthor,
   normalizeAuthor,
   setGithubCommentAuthor,
   MultiplayerComments,
-} from "./comments"
-import handleCurius from "./curius"
-import Garden from "./mcp"
-import { handleMentions } from "./mentions"
-import { CommentsGitHubHandler, GitHubHandler } from "./oauth"
-import { isLocalRequest, resolveBaseUrl } from "./request-utils"
-import { handleStackedNotesRequest } from "./stacked"
+} from './comments'
+import handleCurius from './curius'
+import Garden from './mcp'
+import { handleMentions } from './mentions'
+import { CommentsGitHubHandler, GitHubHandler } from './oauth'
+import { isLocalRequest, resolveBaseUrl } from './request-utils'
+import { handleStackedNotesRequest } from './stacked'
 
-const VERSION = "version https://git-lfs.github.com/spec/v1\n"
-const MIME = "application/vnd.git-lfs+json"
-const KEEP_HEADERS = "Cache-Control"
+const VERSION = 'version https://git-lfs.github.com/spec/v1\n'
+const MIME = 'application/vnd.git-lfs+json'
+const KEEP_HEADERS = 'Cache-Control'
 
 type CfCacheStorage = CacheStorage & { readonly default: Cache }
 
@@ -29,7 +29,7 @@ function splitFirst(str: string, delim: string): [string, string?] {
 
 function strictDecode(bytes: Uint8Array): string | null {
   try {
-    return new TextDecoder("utf-8", { fatal: true }).decode(bytes)
+    return new TextDecoder('utf-8', { fatal: true }).decode(bytes)
   } catch {
     return null
   }
@@ -38,21 +38,21 @@ function strictDecode(bytes: Uint8Array): string | null {
 function getLfsUrl(config: string): URL | null {
   // TODO: better parser, accept remote.<remote>.lfsurl...
   let section: string | undefined
-  for (const raw of config.split("\n")) {
-    const line = splitFirst(raw, ";")[0].trim()
-    if (line.startsWith("[") && line.endsWith("]")) {
+  for (const raw of config.split('\n')) {
+    const line = splitFirst(raw, ';')[0].trim()
+    if (line.startsWith('[') && line.endsWith(']')) {
       section = line.slice(1, -1)
-    } else if (section === "lfs") {
-      const [key, val] = splitFirst(line, "=")
+    } else if (section === 'lfs') {
+      const [key, val] = splitFirst(line, '=')
       if (val === undefined) return null
-      if (key.trimEnd() === "url") return new URL(val.trimStart())
+      if (key.trimEnd() === 'url') return new URL(val.trimStart())
     }
   }
   return null
 }
 
 function extendPath(url: URL | string, path: string): URL {
-  const u = typeof url === "string" ? new URL(url) : new URL(url.toString())
+  const u = typeof url === 'string' ? new URL(url) : new URL(url.toString())
   u.pathname = u.pathname.replace(/\/?$/, `/${path}`)
   return u
 }
@@ -86,68 +86,68 @@ function headersToObject(headers: Headers): Record<string, string> {
 }
 
 function getExtension(pathname: string): string | null {
-  const last = pathname.split("/").pop() ?? ""
-  const idx = last.lastIndexOf(".")
+  const last = pathname.split('/').pop() ?? ''
+  const idx = last.lastIndexOf('.')
   return idx === -1 ? null : last.slice(idx + 1).toLowerCase()
 }
 
 function shouldTreatAsDocument(pathname: string): boolean {
   const ext = getExtension(pathname)
   if (!ext) return true
-  return ext === "html" || ext === "htm"
+  return ext === 'html' || ext === 'htm'
 }
 
 function wantsMarkdown(request: Request): boolean {
-  const accept = request.headers.get("Accept")?.toLowerCase() ?? ""
-  if (accept.includes("text/markdown")) return true
-  const ua = request.headers.get("User-Agent")?.toLowerCase() ?? ""
+  const accept = request.headers.get('Accept')?.toLowerCase() ?? ''
+  if (accept.includes('text/markdown')) return true
+  const ua = request.headers.get('User-Agent')?.toLowerCase() ?? ''
   if (!ua) return false
   return (
-    ua.includes("chatgpt") ||
-    ua.includes("claude") ||
-    ua.includes("anthropic") ||
-    ua.includes("openai") ||
-    ua.includes("gptbot")
+    ua.includes('chatgpt') ||
+    ua.includes('claude') ||
+    ua.includes('anthropic') ||
+    ua.includes('openai') ||
+    ua.includes('gptbot')
   )
 }
 
 function markdownPathname(pathname: string): string {
-  if (pathname === "/") return "/index.md"
-  if (pathname.endsWith("/")) return `${pathname.slice(0, -1)}.md`
+  if (pathname === '/') return '/index.md'
+  if (pathname.endsWith('/')) return `${pathname.slice(0, -1)}.md`
   return `${pathname}.md`
 }
 
 function shouldRewriteMarkdown(request: Request, url: URL): boolean {
-  if (request.method !== "GET" && request.method !== "HEAD") return false
+  if (request.method !== 'GET' && request.method !== 'HEAD') return false
   if (!wantsMarkdown(request)) return false
-  if (url.pathname.endsWith(".md")) return false
+  if (url.pathname.endsWith('.md')) return false
   if (getExtension(url.pathname)) return false
-  if (url.pathname.startsWith("/api/")) return false
-  if (url.pathname.startsWith("/comments/")) return false
-  if (url.pathname.startsWith("/mcp")) return false
-  if (url.pathname.startsWith("/sse")) return false
-  if (url.pathname.startsWith("/authorize")) return false
-  if (url.pathname.startsWith("/register")) return false
-  if (url.pathname.startsWith("/token")) return false
-  if (url.pathname.startsWith("/.well-known/")) return false
-  if (url.pathname.startsWith("/_plausible/")) return false
-  if (url.pathname.startsWith("/fonts/")) return false
+  if (url.pathname.startsWith('/api/')) return false
+  if (url.pathname.startsWith('/comments/')) return false
+  if (url.pathname.startsWith('/mcp')) return false
+  if (url.pathname.startsWith('/sse')) return false
+  if (url.pathname.startsWith('/authorize')) return false
+  if (url.pathname.startsWith('/register')) return false
+  if (url.pathname.startsWith('/token')) return false
+  if (url.pathname.startsWith('/.well-known/')) return false
+  if (url.pathname.startsWith('/_plausible/')) return false
+  if (url.pathname.startsWith('/fonts/')) return false
   return true
 }
 
-const commentAuthorRenameAuthorPrefix = "comment-author-rename:author:"
-const commentAuthorRenameIpPrefix = "comment-author-rename:ip:"
+const commentAuthorRenameAuthorPrefix = 'comment-author-rename:author:'
+const commentAuthorRenameIpPrefix = 'comment-author-rename:ip:'
 const commentAuthorRenameWindowSeconds = 60 * 60 * 24 * 90
 
 function getAllowedOrigin(env: Env, request: Request): string | null {
-  const origin = request.headers.get("Origin")
+  const origin = request.headers.get('Origin')
   if (!origin) return null
   try {
     const o = new URL(origin)
     const base = env.PUBLIC_BASE_URL ? new URL(env.PUBLIC_BASE_URL) : null
     if (base && o.origin === base.origin) return origin
-    if (o.hostname === "localhost" || o.hostname === "127.0.0.1") return origin
-    if (o.hostname.endsWith(".workers.dev")) return origin
+    if (o.hostname === 'localhost' || o.hostname === '127.0.0.1') return origin
+    if (o.hostname.endsWith('.workers.dev')) return origin
   } catch {}
   return null
 }
@@ -155,13 +155,13 @@ function getAllowedOrigin(env: Env, request: Request): string | null {
 function buildCorsHeaders(env: Env, request: Request): Record<string, string> {
   const origin = getAllowedOrigin(env, request)
   const headers: Record<string, string> = {
-    "Access-Control-Allow-Methods": "GET,OPTIONS,PATCH,DELETE,POST,PUT",
-    "Access-Control-Allow-Headers":
-      "Authorization, X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version",
+    'Access-Control-Allow-Methods': 'GET,OPTIONS,PATCH,DELETE,POST,PUT',
+    'Access-Control-Allow-Headers':
+      'Authorization, X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version',
   }
   if (origin) {
-    headers["Access-Control-Allow-Origin"] = origin
-    headers["Access-Control-Allow-Credentials"] = "true"
+    headers['Access-Control-Allow-Origin'] = origin
+    headers['Access-Control-Allow-Credentials'] = 'true'
   }
   return headers
 }
@@ -181,14 +181,14 @@ async function getObjectInfo(
   if (!text || !text.startsWith(VERSION)) return null
   const rest = text.slice(VERSION.length)
   let hash_algo: string | undefined, oid: string | undefined, size: number | undefined
-  for (const line of rest.split("\n")) {
-    if (line === "") continue
-    const [key, val] = splitFirst(line, " ")
+  for (const line of rest.split('\n')) {
+    if (line === '') continue
+    const [key, val] = splitFirst(line, ' ')
     if (val === undefined) return null
-    if (key === "oid") {
-      ;[hash_algo, oid] = splitFirst(val, ":")
+    if (key === 'oid') {
+      ;[hash_algo, oid] = splitFirst(val, ':')
       if (oid === undefined) return null
-    } else if (key === "size") {
+    } else if (key === 'size') {
       const n = parseInt(val)
       if (Number.isNaN(n)) return null
       size = n
@@ -201,23 +201,23 @@ async function getObjectAction(
   lfsUrl: URL,
   info: { hash_algo: string; oid: string; size: number },
 ): Promise<{ href: string; header?: Record<string, string> } | null> {
-  const url = extendPath(lfsUrl, "objects/batch")
-  const headers: Record<string, string> = { Accept: MIME, "Content-Type": MIME }
+  const url = extendPath(lfsUrl, 'objects/batch')
+  const headers: Record<string, string> = { Accept: MIME, 'Content-Type': MIME }
   if (url.username || url.password) {
-    headers["Authorization"] = `Basic ${btoa(`${url.username}:${url.password}`)}`
-    url.username = url.password = ""
+    headers['Authorization'] = `Basic ${btoa(`${url.username}:${url.password}`)}`
+    url.username = url.password = ''
   }
   const body = JSON.stringify({
-    operation: "download",
-    transfers: ["basic"],
+    operation: 'download',
+    transfers: ['basic'],
     objects: [{ oid: info.oid, size: info.size }],
     hash_algo: info.hash_algo,
   })
-  const res = await fetch(url.toString(), { method: "POST", headers, body })
-  if (res.ok && res.headers.get("Content-Type")?.startsWith(MIME)) {
+  const res = await fetch(url.toString(), { method: 'POST', headers, body })
+  if (res.ok && res.headers.get('Content-Type')?.startsWith(MIME)) {
     const batch: any = await res.json()
     const obj = batch.objects?.[0]
-    if ((!batch.transfer || batch.transfer === "basic") && obj?.authenticated)
+    if ((!batch.transfer || batch.transfer === 'basic') && obj?.authenticated)
       return obj.actions.download
   }
   return null
@@ -235,16 +235,16 @@ async function getObjectFromBucket(
   const cache = (caches as CfCacheStorage).default
   const cached = await cache.match(cacheKey)
   if (cached) return cached
-  const method = request.method.toLowerCase() as "get" | "head"
+  const method = request.method.toLowerCase() as 'get' | 'head'
   const object = (await bucket[method](path)) as R2ObjectBody
   const headers = new Headers()
   object.writeHttpMetadata(headers)
-  if (object.httpEtag) headers.set("ETag", object.httpEtag)
+  if (object.httpEtag) headers.set('ETag', object.httpEtag)
   const resp = new Response(object.body, { headers })
   ctx.waitUntil(
     cache.put(
       cacheKey,
-      withHeaders(resp.clone(), { "Cache-Control": "immutable, max-age=31536000" }),
+      withHeaders(resp.clone(), { 'Cache-Control': 'immutable, max-age=31536000' }),
     ),
   )
   return resp
@@ -285,17 +285,17 @@ export default {
 
     const provider = new OAuthProvider({
       apiHandlers: {
-        "/mcp": Garden.serve("/mcp", { binding: "MCP_OBJECT" }),
-        "/sse": Garden.serveSSE("/sse"),
+        '/mcp': Garden.serve('/mcp', { binding: 'MCP_OBJECT' }),
+        '/sse': Garden.serveSSE('/sse'),
       },
-      authorizeEndpoint: "/authorize",
-      clientRegistrationEndpoint: "/register",
+      authorizeEndpoint: '/authorize',
+      clientRegistrationEndpoint: '/register',
       // @ts-ignore
       defaultHandler: GitHubHandler,
-      tokenEndpoint: "/token",
+      tokenEndpoint: '/token',
     })
 
-    if (request.method === "OPTIONS") {
+    if (request.method === 'OPTIONS') {
       return new Response(null, { status: 204, headers: buildCorsHeaders(env, request) })
     }
 
@@ -305,63 +305,62 @@ export default {
     const commentsResp = await CommentsGitHubHandler.fetch(request, env, ctx)
     if (commentsResp.status !== 404) return commentsResp
 
-    if (request.method === "POST" && url.pathname === "/internal/email/emit") {
+    if (request.method === 'POST' && url.pathname === '/internal/email/emit') {
       if (
         !env.EMAIL_EMITTER_SECRET ||
-        request.headers.get("x-email-secret") !== env.EMAIL_EMITTER_SECRET
+        request.headers.get('x-email-secret') !== env.EMAIL_EMITTER_SECRET
       ) {
-        return new Response("unauthorized", { status: 401 })
+        return new Response('unauthorized', { status: 401 })
       }
 
       let payload: unknown
       try {
         payload = await request.json()
       } catch {
-        return new Response("invalid json", { status: 400 })
+        return new Response('invalid json', { status: 400 })
       }
-      if (!payload || typeof payload !== "object") {
-        return new Response("invalid payload", { status: 400 })
+      if (!payload || typeof payload !== 'object') {
+        return new Response('invalid payload', { status: 400 })
       }
 
       const payloadRecord = payload as Record<string, unknown>
       const recipients = Array.isArray(payloadRecord.recipients)
         ? payloadRecord.recipients
-            .filter((email) => typeof email === "string")
-            .map((email) => email.trim())
-            .filter((email) => email.length > 0)
-        : typeof payloadRecord.recipients === "string"
-          ? [payloadRecord.recipients.trim()].filter((email) => email.length > 0)
+            .filter(email => typeof email === 'string')
+            .map(email => email.trim())
+            .filter(email => email.length > 0)
+        : typeof payloadRecord.recipients === 'string'
+          ? [payloadRecord.recipients.trim()].filter(email => email.length > 0)
           : []
       if (recipients.length === 0) {
-        return new Response("invalid recipients", { status: 400 })
+        return new Response('invalid recipients', { status: 400 })
       }
 
-      const subject =
-        typeof payloadRecord.subject === "string" ? payloadRecord.subject.trim() : ""
+      const subject = typeof payloadRecord.subject === 'string' ? payloadRecord.subject.trim() : ''
       if (!subject) {
-        return new Response("invalid subject", { status: 400 })
+        return new Response('invalid subject', { status: 400 })
       }
 
-      const text = typeof payloadRecord.text === "string" ? payloadRecord.text : undefined
-      const html = typeof payloadRecord.html === "string" ? payloadRecord.html : undefined
+      const text = typeof payloadRecord.text === 'string' ? payloadRecord.text : undefined
+      const html = typeof payloadRecord.html === 'string' ? payloadRecord.html : undefined
       if (!text && !html) {
-        return new Response("missing content", { status: 400 })
+        return new Response('missing content', { status: 400 })
       }
 
       const attachments = Array.isArray(payloadRecord.attachments)
         ? payloadRecord.attachments
-            .filter((entry) => entry && typeof entry === "object")
-            .map((entry) => {
+            .filter(entry => entry && typeof entry === 'object')
+            .map(entry => {
               const record = entry as Record<string, unknown>
               return {
-                contentId: typeof record.contentId === "string" ? record.contentId : "",
-                filename: typeof record.filename === "string" ? record.filename : "",
-                contentType: typeof record.contentType === "string" ? record.contentType : "",
-                content: typeof record.content === "string" ? record.content : "",
+                contentId: typeof record.contentId === 'string' ? record.contentId : '',
+                filename: typeof record.filename === 'string' ? record.filename : '',
+                contentType: typeof record.contentType === 'string' ? record.contentType : '',
+                content: typeof record.content === 'string' ? record.content : '',
               }
             })
             .filter(
-              (entry) =>
+              entry =>
                 entry.contentId.length > 0 &&
                 entry.filename.length > 0 &&
                 entry.contentType.length > 0 &&
@@ -371,28 +370,20 @@ export default {
 
       const sender = env.EMAIL_SENDER
       if (!sender) {
-        return new Response("missing sender", { status: 500 })
+        return new Response('missing sender', { status: 500 })
       }
       try {
         const buildRawMessage = (recipient: string) => {
           const msg = createMimeMessage()
-          msg.setSender({ name: "Aaron Pham", addr: sender })
-          msg.setRecipient("undisclosed-recipients:;")
+          msg.setSender({ name: 'Aaron Pham', addr: sender })
+          msg.setRecipient('undisclosed-recipients:;')
           msg.setSubject(subject)
           msg.setBcc(recipient)
           if (text) {
-            msg.addMessage({
-              contentType: "text/plain",
-              charset: "utf-8",
-              data: text,
-            })
+            msg.addMessage({ contentType: 'text/plain', charset: 'utf-8', data: text })
           }
           if (html) {
-            msg.addMessage({
-              contentType: "text/html",
-              charset: "utf-8",
-              data: html,
-            })
+            msg.addMessage({ contentType: 'text/html', charset: 'utf-8', data: html })
           }
           for (const attachment of attachments) {
             msg.addAttachment({
@@ -400,16 +391,16 @@ export default {
               contentType: attachment.contentType,
               data: attachment.content,
               inline: true,
-              headers: { "Content-ID": attachment.contentId },
+              headers: { 'Content-ID': attachment.contentId },
             })
           }
-          return msg.asRaw().replace(/\r?\n/g, "\r\n")
+          return msg.asRaw().replace(/\r?\n/g, '\r\n')
         }
-        if (url.searchParams.has("dry")) {
-          const rawMessage = buildRawMessage("no-reply@aarnphm.xyz")
+        if (url.searchParams.has('dry')) {
+          const rawMessage = buildRawMessage('no-reply@aarnphm.xyz')
           return new Response(rawMessage, {
             status: 200,
-            headers: { "Content-Type": "message/rfc822" },
+            headers: { 'Content-Type': 'message/rfc822' },
           })
         }
         for (const recipient of recipients) {
@@ -423,16 +414,16 @@ export default {
 
       return new Response(JSON.stringify({ ok: true, sent: recipients.length }), {
         status: 200,
-        headers: { "Content-Type": "application/json" },
+        headers: { 'Content-Type': 'application/json' },
       })
     }
 
-    if (url.searchParams.has("stackedNotes")) {
+    if (url.searchParams.has('stackedNotes')) {
       const stacked = await handleStackedNotesRequest(request, env)
       if (stacked) return stacked
     }
 
-    if (request.method === "POST" && url.pathname === "/comments/author/rename") {
+    if (request.method === 'POST' && url.pathname === '/comments/author/rename') {
       let payload: { oldAuthor?: unknown; newAuthor?: unknown; githubLogin?: unknown } | null = null
       try {
         payload = (await request.json()) as {
@@ -441,30 +432,30 @@ export default {
           githubLogin?: unknown
         }
       } catch {
-        return new Response("invalid json", { status: 400 })
+        return new Response('invalid json', { status: 400 })
       }
       const oldAuthor =
-        typeof payload?.oldAuthor === "string" ? normalizeAuthor(payload.oldAuthor) : null
+        typeof payload?.oldAuthor === 'string' ? normalizeAuthor(payload.oldAuthor) : null
       const newAuthor =
-        typeof payload?.newAuthor === "string" ? normalizeAuthor(payload.newAuthor) : null
+        typeof payload?.newAuthor === 'string' ? normalizeAuthor(payload.newAuthor) : null
       const githubLogin =
-        typeof payload?.githubLogin === "string" ? normalizeAuthor(payload.githubLogin) : null
+        typeof payload?.githubLogin === 'string' ? normalizeAuthor(payload.githubLogin) : null
 
       if (!oldAuthor || !newAuthor) {
-        return new Response("invalid author", { status: 400 })
+        return new Response('invalid author', { status: 400 })
       }
 
       if (oldAuthor === newAuthor) {
         return new Response(JSON.stringify({ updated: 0 }), {
           status: 200,
-          headers: { "Content-Type": "application/json" },
+          headers: { 'Content-Type': 'application/json' },
         })
       }
 
       const ipRaw =
-        request.headers.get("CF-Connecting-IP") ||
-        request.headers.get("X-Forwarded-For")?.split(",")[0]?.trim() ||
-        ""
+        request.headers.get('CF-Connecting-IP') ||
+        request.headers.get('X-Forwarded-For')?.split(',')[0]?.trim() ||
+        ''
       const authorKey = `${commentAuthorRenameAuthorPrefix}${oldAuthor}`
       const newAuthorKey = `${commentAuthorRenameAuthorPrefix}${newAuthor}`
       const ipKey = ipRaw ? `${commentAuthorRenameIpPrefix}${ipRaw}` : null
@@ -476,15 +467,15 @@ export default {
       }
 
       if (await env.OAUTH_KV.get(authorKey)) {
-        return new Response("comment name can change every 3 months", { status: 429 })
+        return new Response('comment name can change every 3 months', { status: 429 })
       }
 
       if (!localRequest && ipKey && (await env.OAUTH_KV.get(ipKey))) {
-        return new Response("comment name can change every 3 months", { status: 429 })
+        return new Response('comment name can change every 3 months', { status: 429 })
       }
 
       const result = await env.COMMENTS_ROOM.prepare(
-        "UPDATE comments SET author = ? WHERE author = ?",
+        'UPDATE comments SET author = ? WHERE author = ?',
       )
         .bind(newAuthor, oldAuthor)
         .run()
@@ -508,12 +499,12 @@ export default {
 
       return new Response(JSON.stringify({ updated: result.changes ?? 0 }), {
         status: 200,
-        headers: { "Content-Type": "application/json" },
+        headers: { 'Content-Type': 'application/json' },
       })
     }
 
-    if (url.pathname.startsWith("/comments/")) {
-      const id = env.MULTIPLAYER_COMMENTS.idFromName("global")
+    if (url.pathname.startsWith('/comments/')) {
+      const id = env.MULTIPLAYER_COMMENTS.idFromName('global')
       const stub = env.MULTIPLAYER_COMMENTS.get(id)
       return stub.fetch(request)
     }
@@ -523,110 +514,110 @@ export default {
       markdownUrl.pathname = markdownPathname(url.pathname)
       const markdownReq = new Request(markdownUrl.toString(), request)
       const markdownResp = await env.ASSETS.fetch(markdownReq)
-      return withHeaders(markdownResp, { Vary: "Accept, User-Agent" })
+      return withHeaders(markdownResp, { Vary: 'Accept, User-Agent' })
     }
 
     const apiHeaders: Record<string, string> = {
-      "Cache-Control": "s-maxage=300, stale-while-revalidate=59",
+      'Cache-Control': 's-maxage=300, stale-while-revalidate=59',
       ...buildCorsHeaders(env, request),
     }
 
     switch (url.pathname) {
-      case "/are.na":
-        return Response.redirect("https://aarnphm.xyz/arena", 301)
-      case "/view-source":
-        return Response.redirect("https://github.com/aarnphm/aarnphm.github.io", 301)
-      case "/view-profile":
-        return Response.redirect("https://x.com/aarnphm", 301)
-      case "/github":
-        return Response.redirect("https://github.com/aarnphm", 301)
-      case "/substack":
-        return Response.redirect("https://substack.com/@aarnphm", 301)
-      case "/stream":
+      case '/are.na':
+        return Response.redirect('https://aarnphm.xyz/arena', 301)
+      case '/view-source':
+        return Response.redirect('https://github.com/aarnphm/aarnphm.github.io', 301)
+      case '/view-profile':
+        return Response.redirect('https://x.com/aarnphm', 301)
+      case '/github':
+        return Response.redirect('https://github.com/aarnphm', 301)
+      case '/substack':
+        return Response.redirect('https://substack.com/@aarnphm', 301)
+      case '/stream':
         if (localRequest) break
-        return Response.redirect("https://stream.aarnphm.xyz", 308)
-      case "/.lfsconfig":
+        return Response.redirect('https://stream.aarnphm.xyz', 308)
+      case '/.lfsconfig':
         return new Response(null, { status: 404 })
-      case "/.well-known/oauth-protected-resource": {
+      case '/.well-known/oauth-protected-resource': {
         const base = resolveBaseUrl(env, request)
         const body = JSON.stringify({
           resource: `${base}/mcp`,
           authorization_servers: [base],
-          bearer_methods_supported: ["header"],
+          bearer_methods_supported: ['header'],
           resource_documentation: `${base}/`,
         })
         return new Response(body, {
-          headers: { "Content-Type": "application/json", ...apiHeaders },
+          headers: { 'Content-Type': 'application/json', ...apiHeaders },
         })
       }
-      case "/.well-known/oauth-protected-resource/mcp": {
+      case '/.well-known/oauth-protected-resource/mcp': {
         const base = resolveBaseUrl(env, request)
         const body = JSON.stringify({
-          name: "mcp",
+          name: 'mcp',
           sse_url: `${base}/mcp`,
           token_url: `${base}/token`,
         })
         return new Response(body, {
-          headers: { "Content-Type": "application/json", ...apiHeaders },
+          headers: { 'Content-Type': 'application/json', ...apiHeaders },
         })
       }
-      case "/.well-known/oauth-authorization-server": {
+      case '/.well-known/oauth-authorization-server': {
         const base = resolveBaseUrl(env, request)
         const body = JSON.stringify({
           issuer: base,
           authorization_endpoint: `${base}/authorize`,
           token_endpoint: `${base}/token`,
           registration_endpoint: `${base}/register`,
-          response_types_supported: ["code"],
-          grant_types_supported: ["authorization_code"],
-          code_challenge_methods_supported: ["S256"],
-          token_endpoint_auth_methods_supported: ["none"],
+          response_types_supported: ['code'],
+          grant_types_supported: ['authorization_code'],
+          code_challenge_methods_supported: ['S256'],
+          token_endpoint_auth_methods_supported: ['none'],
         })
         return new Response(body, {
-          headers: { "Content-Type": "application/json", ...apiHeaders },
+          headers: { 'Content-Type': 'application/json', ...apiHeaders },
         })
       }
-      case "/.well-known/openid-configuration": {
+      case '/.well-known/openid-configuration': {
         const base = resolveBaseUrl(env, request)
         const body = JSON.stringify({
           issuer: base,
           authorization_endpoint: `${base}/authorize`,
           token_endpoint: `${base}/token`,
           registration_endpoint: `${base}/register`,
-          response_types_supported: ["code"],
-          subject_types_supported: ["public"],
-          code_challenge_methods_supported: ["S256"],
-          id_token_signing_alg_values_supported: ["none"],
+          response_types_supported: ['code'],
+          subject_types_supported: ['public'],
+          code_challenge_methods_supported: ['S256'],
+          id_token_signing_alg_values_supported: ['none'],
         })
         return new Response(body, {
-          headers: { "Content-Type": "application/json", ...apiHeaders },
+          headers: { 'Content-Type': 'application/json', ...apiHeaders },
         })
       }
-      case "/site.webmanifest":
+      case '/site.webmanifest':
         const originResp = await env.ASSETS.fetch(request)
-        return withHeaders(originResp, { ...apiHeaders, "Access-Control-Allow-Origin": "*" })
-      case "/park": {
+        return withHeaders(originResp, { ...apiHeaders, 'Access-Control-Allow-Origin': '*' })
+      case '/park': {
         const originResp = await env.ASSETS.fetch(request)
-        return withHeaders(originResp, { "Content-Type": "text/html; charset=utf-8" })
+        return withHeaders(originResp, { 'Content-Type': 'text/html; charset=utf-8' })
       }
-      case "/api/arxiv": {
+      case '/api/arxiv': {
         const resp = await handleArxiv(request)
         return withHeaders(resp, apiHeaders)
       }
-      case "/api/curius": {
+      case '/api/curius': {
         const resp = await handleCurius(request)
         return withHeaders(resp, apiHeaders)
       }
-      case "/api/mentions": {
+      case '/api/mentions': {
         const resp = await handleMentions(env)
         return withHeaders(resp, apiHeaders)
       }
-      case "/api/pdf-proxy": {
-        const pdfUrl = url.searchParams.get("url")
+      case '/api/pdf-proxy': {
+        const pdfUrl = url.searchParams.get('url')
         if (!pdfUrl) {
-          return new Response("missing url parameter", {
+          return new Response('missing url parameter', {
             status: 400,
-            headers: { ...apiHeaders, "Content-Type": "text/plain" },
+            headers: { ...apiHeaders, 'Content-Type': 'text/plain' },
           })
         }
 
@@ -634,72 +625,72 @@ export default {
         try {
           targetUrl = new URL(pdfUrl)
         } catch {
-          return new Response("invalid url", {
+          return new Response('invalid url', {
             status: 400,
-            headers: { ...apiHeaders, "Content-Type": "text/plain" },
+            headers: { ...apiHeaders, 'Content-Type': 'text/plain' },
           })
         }
 
-        if (targetUrl.protocol !== "https:" && targetUrl.protocol !== "http:") {
-          return new Response("unsupported protocol", {
+        if (targetUrl.protocol !== 'https:' && targetUrl.protocol !== 'http:') {
+          return new Response('unsupported protocol', {
             status: 400,
-            headers: { ...apiHeaders, "Content-Type": "text/plain" },
+            headers: { ...apiHeaders, 'Content-Type': 'text/plain' },
           })
         }
 
         try {
           const pdfResponse = await fetch(targetUrl.toString(), {
-            method: "GET",
+            method: 'GET',
             cf: { cacheTtl: 3600, cacheEverything: true },
           })
 
           if (!pdfResponse.ok) {
             return new Response(`upstream error: ${pdfResponse.status}`, {
               status: 502,
-              headers: { ...apiHeaders, "Content-Type": "text/plain" },
+              headers: { ...apiHeaders, 'Content-Type': 'text/plain' },
             })
           }
 
           return new Response(pdfResponse.body, {
             status: 200,
             headers: {
-              "Content-Type": "application/pdf",
-              "Access-Control-Allow-Origin": "*",
-              "Cache-Control": "public, max-age=3600",
+              'Content-Type': 'application/pdf',
+              'Access-Control-Allow-Origin': '*',
+              'Cache-Control': 'public, max-age=3600',
             },
           })
         } catch (err: any) {
-          return new Response(`proxy error: ${err?.message ?? "unknown"}`, {
+          return new Response(`proxy error: ${err?.message ?? 'unknown'}`, {
             status: 502,
-            headers: { ...apiHeaders, "Content-Type": "text/plain" },
+            headers: { ...apiHeaders, 'Content-Type': 'text/plain' },
           })
         }
       }
-      case "/_plausible/event": {
-        if (request.method !== "POST") {
-          return new Response("method not allowed", {
+      case '/_plausible/event': {
+        if (request.method !== 'POST') {
+          return new Response('method not allowed', {
             status: 405,
-            headers: { ...apiHeaders, Allow: "POST, OPTIONS" },
+            headers: { ...apiHeaders, Allow: 'POST, OPTIONS' },
           })
         }
 
         const upstreamHeaders = new Headers(request.headers)
         const requestOrigin = new URL(request.url).origin
-        upstreamHeaders.set("Origin", requestOrigin)
+        upstreamHeaders.set('Origin', requestOrigin)
 
-        const upstream = await fetch("https://plausible.io/api/event", {
-          method: "POST",
+        const upstream = await fetch('https://plausible.io/api/event', {
+          method: 'POST',
           headers: upstreamHeaders,
           body: request.body,
         })
 
         const headers = new Headers(upstream.headers)
-        const origin = request.headers.get("Origin") ?? requestOrigin
-        headers.set("Access-Control-Allow-Origin", origin)
-        headers.set("Access-Control-Allow-Methods", "POST, OPTIONS")
-        headers.set("Access-Control-Allow-Headers", "content-type")
-        headers.set("Vary", "Origin")
-        headers.set("Cache-Control", "no-store")
+        const origin = request.headers.get('Origin') ?? requestOrigin
+        headers.set('Access-Control-Allow-Origin', origin)
+        headers.set('Access-Control-Allow-Methods', 'POST, OPTIONS')
+        headers.set('Access-Control-Allow-Headers', 'content-type')
+        headers.set('Vary', 'Origin')
+        headers.set('Cache-Control', 'no-store')
 
         return new Response(upstream.body, {
           headers,
@@ -707,103 +698,103 @@ export default {
           statusText: upstream.statusText,
         })
       }
-      case "/api/secrets": {
-        if (request.method !== "GET") {
-          return new Response("method not allowed", {
+      case '/api/secrets': {
+        if (request.method !== 'GET') {
+          return new Response('method not allowed', {
             status: 405,
-            headers: { ...apiHeaders, "Cache-Control": "no-store", Allow: "GET" },
+            headers: { ...apiHeaders, 'Cache-Control': 'no-store', Allow: 'GET' },
           })
         }
 
-        const key = url.searchParams.get("key") ?? ""
-        const allowList: Record<string, keyof Env> = { MAPBOX_API_KEY: "MAPBOX_API_KEY" }
+        const key = url.searchParams.get('key') ?? ''
+        const allowList: Record<string, keyof Env> = { MAPBOX_API_KEY: 'MAPBOX_API_KEY' }
         const envKey = allowList[key]
         if (!envKey) {
-          return new Response("not found", {
+          return new Response('not found', {
             status: 404,
-            headers: { ...apiHeaders, "Cache-Control": "no-store" },
+            headers: { ...apiHeaders, 'Cache-Control': 'no-store' },
           })
         }
 
         const base = new URL(resolveBaseUrl(env, request))
-        const originHeader = request.headers.get("Origin")
+        const originHeader = request.headers.get('Origin')
         if (originHeader) {
           try {
             const originUrl = new URL(originHeader)
             if (originUrl.origin !== base.origin) {
-              return new Response("forbidden", {
+              return new Response('forbidden', {
                 status: 403,
-                headers: { "Cache-Control": "no-store" },
+                headers: { 'Cache-Control': 'no-store' },
               })
             }
           } catch {
-            return new Response("forbidden", {
+            return new Response('forbidden', {
               status: 403,
-              headers: { "Cache-Control": "no-store" },
+              headers: { 'Cache-Control': 'no-store' },
             })
           }
         }
 
-        const refererHeader = request.headers.get("Referer")
+        const refererHeader = request.headers.get('Referer')
         if (refererHeader) {
           try {
             const refererUrl = new URL(refererHeader)
             if (refererUrl.origin !== base.origin) {
-              return new Response("forbidden", {
+              return new Response('forbidden', {
                 status: 403,
-                headers: { "Cache-Control": "no-store" },
+                headers: { 'Cache-Control': 'no-store' },
               })
             }
           } catch {
-            return new Response("forbidden", {
+            return new Response('forbidden', {
               status: 403,
-              headers: { "Cache-Control": "no-store" },
+              headers: { 'Cache-Control': 'no-store' },
             })
           }
         }
 
         const value = env[envKey] as string | undefined
-        if (typeof value !== "string" || value.length === 0) {
-          return new Response("not found", {
+        if (typeof value !== 'string' || value.length === 0) {
+          return new Response('not found', {
             status: 404,
-            headers: { ...apiHeaders, "Cache-Control": "no-store" },
+            headers: { ...apiHeaders, 'Cache-Control': 'no-store' },
           })
         }
 
         const headers = {
-          "Cache-Control": "no-store",
-          "Content-Type": "application/json",
-          "Access-Control-Allow-Origin": base.origin,
-          "Access-Control-Allow-Credentials": "true",
-          Vary: "Origin",
+          'Cache-Control': 'no-store',
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': base.origin,
+          'Access-Control-Allow-Credentials': 'true',
+          Vary: 'Origin',
         }
         return new Response(JSON.stringify({ value }), { status: 200, headers })
       }
     }
 
-    if (url.pathname.startsWith("/fonts/")) {
-      const fontFile = url.pathname.replace(/^\/fonts\//, "")
+    if (url.pathname.startsWith('/fonts/')) {
+      const fontFile = url.pathname.replace(/^\/fonts\//, '')
 
-      const referer = request.headers.get("Referer")
+      const referer = request.headers.get('Referer')
       const allowedHosts = [
-        "aarnphm.xyz",
-        "notes.aarnphm.xyz",
-        "stream.aarnphm.xyz",
-        "localhost",
-        "127.0.0.1",
+        'aarnphm.xyz',
+        'notes.aarnphm.xyz',
+        'stream.aarnphm.xyz',
+        'localhost',
+        '127.0.0.1',
       ]
 
       if (referer) {
         try {
           const refererUrl = new URL(referer)
           const isAllowed = allowedHosts.some(
-            (host) => refererUrl.hostname === host || refererUrl.hostname.endsWith(`.${host}`),
+            host => refererUrl.hostname === host || refererUrl.hostname.endsWith(`.${host}`),
           )
           if (!isAllowed) {
-            return new Response("forbidden", { status: 403 })
+            return new Response('forbidden', { status: 403 })
           }
         } catch {
-          return new Response("forbidden", { status: 403 })
+          return new Response('forbidden', { status: 403 })
         }
       }
 
@@ -813,22 +804,22 @@ export default {
       const cached = await cache.match(cacheKey)
       if (cached) return cached
 
-      const fontData = await env.FONTS.get(fontFile, "arrayBuffer")
+      const fontData = await env.FONTS.get(fontFile, 'arrayBuffer')
       if (!fontData) {
-        return new Response("font not found", { status: 404 })
+        return new Response('font not found', { status: 404 })
       }
 
-      const mimeType = fontFile.endsWith(".woff2")
-        ? "font/woff2"
-        : fontFile.endsWith(".woff")
-          ? "font/woff"
-          : "application/octet-stream"
+      const mimeType = fontFile.endsWith('.woff2')
+        ? 'font/woff2'
+        : fontFile.endsWith('.woff')
+          ? 'font/woff'
+          : 'application/octet-stream'
 
       const headers = new Headers({
-        "Content-Type": mimeType,
-        "Cache-Control": "public, max-age=31536000, immutable",
-        "Access-Control-Allow-Origin": "*",
-        "Cross-Origin-Resource-Policy": "cross-origin",
+        'Content-Type': mimeType,
+        'Cache-Control': 'public, max-age=31536000, immutable',
+        'Access-Control-Allow-Origin': '*',
+        'Cross-Origin-Resource-Policy': 'cross-origin',
       })
 
       const response = new Response(fontData, { headers })
@@ -838,14 +829,14 @@ export default {
       return response
     }
 
-    if (url.hostname === "stream.aarnphm.xyz" && !url.pathname.startsWith("/fonts/")) {
-      const streamPrefix = "/stream"
+    if (url.hostname === 'stream.aarnphm.xyz' && !url.pathname.startsWith('/fonts/')) {
+      const streamPrefix = '/stream'
       let sanitizedPathname = url.pathname
 
       if (sanitizedPathname === streamPrefix || sanitizedPathname === `${streamPrefix}/`) {
-        sanitizedPathname = "/"
+        sanitizedPathname = '/'
       } else if (sanitizedPathname.startsWith(`${streamPrefix}/`)) {
-        sanitizedPathname = sanitizedPathname.slice(streamPrefix.length) || "/"
+        sanitizedPathname = sanitizedPathname.slice(streamPrefix.length) || '/'
       }
 
       if (sanitizedPathname !== url.pathname) {
@@ -857,16 +848,16 @@ export default {
       const pathname = sanitizedPathname
 
       const base = new URL(resolveBaseUrl(env, request))
-      if (base.hostname === url.hostname && base.hostname.startsWith("stream.")) {
-        base.hostname = base.hostname.replace(/^stream\./, "")
+      if (base.hostname === url.hostname && base.hostname.startsWith('stream.')) {
+        base.hostname = base.hostname.replace(/^stream\./, '')
       }
       const isDocument = shouldTreatAsDocument(pathname)
-      const needsStreamPrefix = isDocument && !pathname.startsWith("/stream")
+      const needsStreamPrefix = isDocument && !pathname.startsWith('/stream')
       const targetPath =
-        needsStreamPrefix && pathname !== "/"
+        needsStreamPrefix && pathname !== '/'
           ? `/stream${pathname}`
           : needsStreamPrefix
-            ? "/stream"
+            ? '/stream'
             : pathname
       base.pathname = targetPath
       base.search = url.search
@@ -874,8 +865,8 @@ export default {
       const newReq = new Request(base.toString(), request)
       const resp = await env.ASSETS.fetch(newReq)
       return withHeaders(resp, {
-        "X-Frame-Options": null,
-        "Content-Security-Policy": "frame-ancestors 'self' *",
+        'X-Frame-Options': null,
+        'Content-Security-Policy': "frame-ancestors 'self' *",
       })
     }
 
@@ -885,28 +876,28 @@ export default {
     if (assetsMatch) {
       const originResp = await env.ASSETS.fetch(request)
       return withHeaders(originResp, {
-        "Content-Type": "text/plain; charset=utf-8",
-        "X-Content-Type-Options": "nosniff",
-        "X-Frame-Options": "DENY",
-        "Cache-Control": "no-store, no-cache, must-revalidate",
+        'Content-Type': 'text/plain; charset=utf-8',
+        'X-Content-Type-Options': 'nosniff',
+        'X-Frame-Options': 'DENY',
+        'Cache-Control': 'no-store, no-cache, must-revalidate',
       })
     }
 
-    if (request.method !== "GET" && request.method !== "HEAD")
+    if (request.method !== 'GET' && request.method !== 'HEAD')
       return new Response(null, {
-        status: request.method === "OPTIONS" ? 200 : 405,
-        headers: { Allow: "GET, HEAD, OPTIONS" },
+        status: request.method === 'OPTIONS' ? 200 : 405,
+        headers: { Allow: 'GET, HEAD, OPTIONS' },
       })
 
     const arenaJsonMatch = url.pathname.match(/^\/arena\/([^/]+)\/json$/)
     if (arenaJsonMatch) {
       const originResp = await env.ASSETS.fetch(request)
-      return withHeaders(originResp, { "Content-Type": "application/json", ...apiHeaders })
+      return withHeaders(originResp, { 'Content-Type': 'application/json', ...apiHeaders })
     }
 
-    if (url.pathname.endsWith(".pdf")) {
+    if (url.pathname.endsWith('.pdf')) {
       const rawUrl = `https://raw.githubusercontent.com/aarnphm/aarnphm.github.io/refs/heads/main/content${url.pathname}`
-      const upstream = await fetch(new Request(rawUrl, { method: "GET", headers: request.headers }))
+      const upstream = await fetch(new Request(rawUrl, { method: 'GET', headers: request.headers }))
       if (upstream.body) {
         const info = await getObjectInfo(upstream.clone())
         if (info) {
@@ -920,7 +911,7 @@ export default {
                   request,
                 )
               : await getObjectFromLFS(info, request)
-          const keep = (env.KEEP_HEADERS || KEEP_HEADERS).split(",")
+          const keep = (env.KEEP_HEADERS || KEEP_HEADERS).split(',')
           return withHeadersFromSource(resp, upstream, keep)
         }
       }
@@ -929,8 +920,8 @@ export default {
     const resp = await env.ASSETS.fetch(request)
     if (shouldTreatAsDocument(url.pathname)) {
       return withHeaders(resp, {
-        "X-Frame-Options": null,
-        "Content-Security-Policy": "frame-ancestors 'self' *",
+        'X-Frame-Options': null,
+        'Content-Security-Policy': "frame-ancestors 'self' *",
       })
     }
     return resp

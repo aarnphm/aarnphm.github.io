@@ -1,9 +1,9 @@
-import path from "path"
-import { VFile } from "vfile"
-import { QuartzEmitterPlugin } from "../../types/plugin"
-import { BuildCtx } from "../../util/ctx"
-import { FullSlug, isRelativeURL, resolveRelative, simplifySlug } from "../../util/path"
-import { write } from "./helpers"
+import path from 'path'
+import { VFile } from 'vfile'
+import { QuartzEmitterPlugin } from '../../types/plugin'
+import { BuildCtx } from '../../util/ctx'
+import { FullSlug, isRelativeURL, resolveRelative, simplifySlug } from '../../util/path'
+import { write } from './helpers'
 
 async function* processFile(ctx: BuildCtx, file: VFile) {
   const ogSlug = simplifySlug(file.data.slug!)
@@ -11,7 +11,7 @@ async function* processFile(ctx: BuildCtx, file: VFile) {
   for (const aliasTarget of file.data.aliases ?? []) {
     const aliasTargetSlug = (
       isRelativeURL(aliasTarget)
-        ? path.normalize(path.join(ogSlug, "..", aliasTarget))
+        ? path.normalize(path.join(ogSlug, '..', aliasTarget))
         : aliasTarget
     ) as FullSlug
 
@@ -35,13 +35,13 @@ async function* processFile(ctx: BuildCtx, file: VFile) {
 </html>
         `,
       slug: aliasTargetSlug,
-      ext: ".html",
+      ext: '.html',
     })
   }
 }
 
 export const AliasRedirects: QuartzEmitterPlugin = () => ({
-  name: "AliasRedirects",
+  name: 'AliasRedirects',
   async *emit(ctx, content) {
     for (const [_tree, file] of content) {
       yield* processFile(ctx, file)
@@ -50,7 +50,7 @@ export const AliasRedirects: QuartzEmitterPlugin = () => ({
   async *partialEmit(ctx, _content, _resources, changeEvents) {
     for (const changeEvent of changeEvents) {
       if (!changeEvent.file) continue
-      if (changeEvent.type === "add" || changeEvent.type === "change") {
+      if (changeEvent.type === 'add' || changeEvent.type === 'change') {
         // add new ones if this file still exists
         yield* processFile(ctx, changeEvent.file)
       }

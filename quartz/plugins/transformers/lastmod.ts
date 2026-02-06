@@ -1,14 +1,14 @@
-import { Repository } from "@napi-rs/simple-git"
-import fs from "node:fs/promises"
-import { styleText } from "node:util"
-import path from "path"
-import { QuartzTransformerPlugin } from "../../types/plugin"
+import { Repository } from '@napi-rs/simple-git'
+import fs from 'node:fs/promises'
+import { styleText } from 'node:util'
+import path from 'path'
+import { QuartzTransformerPlugin } from '../../types/plugin'
 
 export interface Options {
-  priority: ("frontmatter" | "git" | "filesystem")[]
+  priority: ('frontmatter' | 'git' | 'filesystem')[]
 }
 
-const defaultOptions: Options = { priority: ["frontmatter", "git", "filesystem"] }
+const defaultOptions: Options = { priority: ['frontmatter', 'git', 'filesystem'] }
 
 // YYYY-MM-DD
 const iso8601DateOnlyRegex = /^\d{4}-\d{2}-\d{2}$/
@@ -17,7 +17,7 @@ function coerceDate(fp: string, d: any): Date {
   // check ISO8601 date-only format
   // we treat this one as local midnight as the normal
   // js date ctor treats YYYY-MM-DD as UTC midnight
-  if (typeof d === "string" && iso8601DateOnlyRegex.test(d)) {
+  if (typeof d === 'string' && iso8601DateOnlyRegex.test(d)) {
     d = `${d}T00:00:00`
   }
 
@@ -26,7 +26,7 @@ function coerceDate(fp: string, d: any): Date {
   if (invalidDate && d !== undefined) {
     console.log(
       styleText(
-        "yellow",
+        'yellow',
         `\nWarning: found invalid date "${d}" in \`${fp}\`. Supported formats: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date#date_time_string_format`,
       ),
     )
@@ -36,10 +36,10 @@ function coerceDate(fp: string, d: any): Date {
 }
 
 type MaybeDate = undefined | string | number
-export const CreatedModifiedDate: QuartzTransformerPlugin<Partial<Options>> = (userOpts) => {
+export const CreatedModifiedDate: QuartzTransformerPlugin<Partial<Options>> = userOpts => {
   const opts = { ...defaultOptions, ...userOpts }
   return {
-    name: "CreatedModifiedDate",
+    name: 'CreatedModifiedDate',
     markdownPlugins(ctx) {
       return [
         () => {
@@ -53,13 +53,13 @@ export const CreatedModifiedDate: QuartzTransformerPlugin<Partial<Options>> = (u
             const fullFp = path.posix.join(ctx.argv.directory, fp)
             for (const source of opts.priority) {
               switch (source) {
-                case "filesystem": {
+                case 'filesystem': {
                   const st = await fs.stat(fullFp)
                   created ||= st.birthtimeMs
                   modified ||= st.mtimeMs
                   break
                 }
-                case "frontmatter": {
+                case 'frontmatter': {
                   if (file.data.frontmatter) {
                     created ||= file.data.frontmatter.created as MaybeDate
                     modified ||= file.data.frontmatter.modified as MaybeDate
@@ -67,7 +67,7 @@ export const CreatedModifiedDate: QuartzTransformerPlugin<Partial<Options>> = (u
                   }
                   break
                 }
-                case "git": {
+                case 'git': {
                   if (!repo) {
                     // Get a reference to the main git repo.
                     // It's either the same as the workdir,
@@ -79,7 +79,7 @@ export const CreatedModifiedDate: QuartzTransformerPlugin<Partial<Options>> = (u
                   } catch {
                     console.log(
                       styleText(
-                        "yellow",
+                        'yellow',
                         `\nWarning: ${file.data
                           .filePath!} isn't yet tracked by git, last modification date is not available for this file`,
                       ),
@@ -102,7 +102,7 @@ export const CreatedModifiedDate: QuartzTransformerPlugin<Partial<Options>> = (u
   }
 }
 
-declare module "vfile" {
+declare module 'vfile' {
   interface DataMap {
     dates: { created: Date; modified: Date; published: Date }
   }

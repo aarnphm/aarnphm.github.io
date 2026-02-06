@@ -1,5 +1,5 @@
 ---
-date: "2024-12-27"
+date: '2024-12-27'
 description: and an "uneventful" year.
 id: Jesse
 modified: 2025-10-29 02:15:08 GMT-04:00

@@ -1,5 +1,5 @@
-@use "sass:map";
-@forward "./tokens";
+@use 'sass:map';
+@forward './tokens';
 
 $base-duration: 1;
 $row-delay: 0.4;
@@ -13,9 +13,9 @@ $breakpoints: (
   desktop: 1400px,
 );
 
-$mobile: "(max-width: #{map.get($breakpoints, mobile)})";
-$tablet: "(min-width: #{map.get($breakpoints, mobile)}) and (max-width: #{map.get($breakpoints, desktop)})";
-$desktop: "(min-width: #{map.get($breakpoints, desktop)})";
+$mobile: '(max-width: #{map.get($breakpoints, mobile)})';
+$tablet: '(min-width: #{map.get($breakpoints, mobile)}) and (max-width: #{map.get($breakpoints, desktop)})';
+$desktop: '(min-width: #{map.get($breakpoints, desktop)})';
 
 $sidePanelWidth: 320px; // 320px - 380px;
 $boldWeight: 700;

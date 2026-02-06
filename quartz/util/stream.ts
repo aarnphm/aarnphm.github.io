@@ -1,4 +1,4 @@
-import type { StreamEntry } from "../plugins/transformers/stream"
+import type { StreamEntry } from '../plugins/transformers/stream'
 
 export interface StreamEntryGroup {
   id: string
@@ -17,7 +17,7 @@ const normalizeToUTCStartOfDay = (date: Date) => {
   const day = date.getUTCDate()
   const timestamp = Date.UTC(year, month, day)
   const iso = new Date(timestamp).toISOString()
-  const key = `day-${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`
+  const key = `day-${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`
   return { key, iso, timestamp }
 }
 
@@ -29,7 +29,7 @@ const deriveDayGrouping = (entry: StreamEntry) => {
     }
   }
 
-  if (typeof entry.timestamp === "number") {
+  if (typeof entry.timestamp === 'number') {
     const date = new Date(entry.timestamp)
     if (!Number.isNaN(date.getTime())) {
       return normalizeToUTCStartOfDay(date)
@@ -68,7 +68,7 @@ export function groupStreamEntries(entries: StreamEntry[]): StreamEntryGroup[] {
     const group: StreamEntryGroup = {
       id: key,
       timestamp:
-        grouping?.timestamp ?? (typeof entry.timestamp === "number" ? entry.timestamp : undefined),
+        grouping?.timestamp ?? (typeof entry.timestamp === 'number' ? entry.timestamp : undefined),
       isoDate: grouping?.iso ?? entry.date,
       entries: [entry],
     }

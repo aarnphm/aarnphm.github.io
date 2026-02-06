@@ -7,7 +7,7 @@ description: the immigrant's unbearable what-ifs—two childhood friends meeting
 director: Celine Song
 id: past-lives
 modified: 2025-10-29 02:14:54 GMT-04:00
-posters: "[[movies/posters/past-lives.webp]]"
+posters: '[[movies/posters/past-lives.webp]]'
 rating: 7.8
 status: recurring
 studio: a24

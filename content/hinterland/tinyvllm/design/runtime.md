@@ -1,5 +1,5 @@
 ---
-date: "2025-10-31"
+date: '2025-10-31'
 description: runtime and scheduler design for tinyvllm
 id: runtime
 modified: 2025-11-09 01:29:53 GMT-05:00

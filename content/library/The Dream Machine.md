@@ -7,7 +7,7 @@ description: biography of j.c.r. licklider, the mit psychologist who envisioned 
 id: The Dream Machine
 modified: 2025-11-29 22:47:25 GMT-05:00
 notebook:
-posters: "[[library/posters/the-dream-machine.jpg]]"
+posters: '[[library/posters/the-dream-machine.jpg]]'
 status: current
 subcategory:
   - internet

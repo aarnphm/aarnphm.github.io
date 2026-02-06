@@ -1,5 +1,5 @@
 ---
-date: "2025-05-22"
+date: '2025-05-22'
 description: and llm-d, dynamo, mammoth
 id: distributed inference
 modified: 2026-01-15 15:54:50 GMT-05:00

@@ -1,5 +1,5 @@
 ---
-date: "2025-08-20"
+date: '2025-08-20'
 description: Vector spaces with a generalized dot product that induces length, angles, orthogonality, and projections; the gateway from Euclidean geometry to Hilbert spaces.
 id: Inner product space
 modified: 2025-10-29 02:15:25 GMT-04:00

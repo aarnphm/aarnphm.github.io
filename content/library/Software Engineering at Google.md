@@ -5,7 +5,7 @@ description: describes google engineering culture, tools, and practices, focusin
 external: https://abseil.io/resources/swe-book/html/toc.html
 id: Software Engineering at Google
 modified: 2025-11-03 03:36:53 GMT-05:00
-posters: "[[library/posters/swe-books.jpeg]]"
+posters: '[[library/posters/swe-books.jpeg]]'
 notebook:
 status: to read
 subcategory:
@@ -14,7 +14,7 @@ subcategory:
 tags:
   - technical
   - computing
-title: "Software Engineering at Google: Lessons Learned from Programming Over Time"
+title: 'Software Engineering at Google: Lessons Learned from Programming Over Time'
 finished:
 author:
   - Hyrum Wright

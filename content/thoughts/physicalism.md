@@ -1,15 +1,15 @@
 ---
-date: "2026-01-28"
+date: '2026-01-28'
 description: the majority view (barely), supervenience, and why consciousness keeps resisting reduction
 id: physicalism
 modified: 2026-01-28 02:30:00 GMT-05:00
 seealso:
-  - "[[thoughts/dualism]]"
-  - "[[thoughts/functionalism]]"
-  - "[[thoughts/qualia]]"
-  - "[[thoughts/phenomenal consciousness]]"
-  - "[[thoughts/philosophical zombies]]"
-  - "[[thoughts/panpsychism]]"
+  - '[[thoughts/dualism]]'
+  - '[[thoughts/functionalism]]'
+  - '[[thoughts/qualia]]'
+  - '[[thoughts/phenomenal consciousness]]'
+  - '[[thoughts/philosophical zombies]]'
+  - '[[thoughts/panpsychism]]'
 tags:
   - philosophy
   - consciousness

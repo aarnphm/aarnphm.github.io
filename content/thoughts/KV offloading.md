@@ -1,10 +1,10 @@
 ---
-date: "2025-08-06"
+date: '2025-08-06'
 description: and LMCache.
 id: KV offloading
 modified: 2026-01-28 12:54:10 GMT-05:00
 seealso:
-  - "[[thoughts/KV connector]]"
+  - '[[thoughts/KV connector]]'
 socials:
   handbook: https://bentoml.com/llm/inference-optimization/kv-cache-offloading
 tags:

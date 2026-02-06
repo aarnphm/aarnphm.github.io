@@ -8,7 +8,7 @@ description: survival stripped to its most visceral—bodies pressed against met
 director: Christopher Nolan
 id: dunkirk
 modified: 2025-10-29 02:15:03 GMT-04:00
-posters: "[[movies/posters/dunkirk.jpg]]"
+posters: '[[movies/posters/dunkirk.jpg]]'
 rating: 7.8
 status: recurring
 studio: syncopy

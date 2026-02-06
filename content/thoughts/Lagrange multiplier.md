@@ -1,5 +1,5 @@
 ---
-date: "2025-08-20"
+date: '2025-08-20'
 description: finding local maxima/minima
 id: Lagrange multiplier
 modified: 2025-10-29 02:15:26 GMT-04:00

@@ -1,5 +1,5 @@
 ---
-date: "2024-04-12"
+date: '2024-04-12'
 description: non-linear optimization techniques for solving economic problems with non-linear objective functions and constraints.
 id: Non-linear optimization
 modified: 2025-10-29 02:16:13 GMT-04:00

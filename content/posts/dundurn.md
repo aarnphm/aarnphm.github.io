@@ -1,6 +1,6 @@
 ---
-date: "2025-06-01"
-description: "tw: addiction"
+date: '2025-06-01'
+description: 'tw: addiction'
 id: dundurn
 modified: 2025-11-14 08:01:56 GMT-05:00
 signature: AP

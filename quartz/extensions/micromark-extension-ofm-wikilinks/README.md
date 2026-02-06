@@ -29,10 +29,10 @@ pnpm install ofm-wikilink
 ### standalone with micromark
 
 ```typescript
-import { fromMarkdown } from "mdast-util-from-markdown"
-import { wikilink, wikilinkFromMarkdown } from "ofm-wikilink"
+import { fromMarkdown } from 'mdast-util-from-markdown'
+import { wikilink, wikilinkFromMarkdown } from 'ofm-wikilink'
 
-const tree = fromMarkdown("[[page#section|alias]]", {
+const tree = fromMarkdown('[[page#section|alias]]', {
   extensions: [wikilink()],
   mdastExtensions: [wikilinkFromMarkdown()], // obsidian: true by default
 })
@@ -59,11 +59,11 @@ yields:
 ### with unified/remark
 
 ```typescript
-import { unified } from "unified"
-import remarkParse from "remark-parse"
-import remarkRehype from "remark-rehype"
-import rehypeStringify from "rehype-stringify"
-import { remarkWikilink } from "ofm-wikilink"
+import { unified } from 'unified'
+import remarkParse from 'remark-parse'
+import remarkRehype from 'remark-rehype'
+import rehypeStringify from 'rehype-stringify'
+import { remarkWikilink } from 'ofm-wikilink'
 
 const processor = unified()
   .use(remarkParse)
@@ -71,7 +71,7 @@ const processor = unified()
   .use(remarkRehype)
   .use(rehypeStringify)
 
-const html = await processor.process("[[page|link]] and ![[image.png|caption]]")
+const html = await processor.process('[[page|link]] and ![[image.png|caption]]')
 ```
 
 yields:
@@ -198,7 +198,7 @@ strips file extensions before slugifying paths (only applies when obsidian mode 
 const processor = unified()
   .use(remarkParse)
   .use(remarkWikilink, {
-    stripExtensions: [".md", ".mdx", ".base"], // default: ['.md', '.base']
+    stripExtensions: ['.md', '.mdx', '.base'], // default: ['.md', '.base']
   })
 
 // input: [[notes.md]]
@@ -383,7 +383,7 @@ the package defines custom mdast node types:
 
 ```typescript
 interface Wikilink extends Node {
-  type: "wikilink"
+  type: 'wikilink'
   value: string // original text: "[[target#anchor|alias]]"
   data: {
     wikilink: {
@@ -445,32 +445,32 @@ chunk tokens (`wikilinkTargetChunk`, etc.) are used internally by micromark for 
 ### basic usage
 
 ```typescript
-import { fromMarkdown } from "mdast-util-from-markdown"
-import { wikilink, wikilinkFromMarkdown } from "ofm-wikilink"
+import { fromMarkdown } from 'mdast-util-from-markdown'
+import { wikilink, wikilinkFromMarkdown } from 'ofm-wikilink'
 
 // simple link
-const tree1 = fromMarkdown("[[page]]", {
+const tree1 = fromMarkdown('[[page]]', {
   extensions: [wikilink()],
   mdastExtensions: [wikilinkFromMarkdown()],
 })
 // → wikilink.data.wikilink = { target: 'page', embed: false }
 
 // with alias
-const tree2 = fromMarkdown("[[page|display text]]", {
+const tree2 = fromMarkdown('[[page|display text]]', {
   extensions: [wikilink()],
   mdastExtensions: [wikilinkFromMarkdown()],
 })
 // → wikilink.data.wikilink = { target: 'page', alias: 'display text', embed: false }
 
 // with anchor
-const tree3 = fromMarkdown("[[page#section]]", {
+const tree3 = fromMarkdown('[[page#section]]', {
   extensions: [wikilink()],
   mdastExtensions: [wikilinkFromMarkdown()],
 })
 // → wikilink.data.wikilink = { target: 'page', anchor: '#section', embed: false }
 
 // embed with all features
-const tree4 = fromMarkdown("![[file#heading|caption]]", {
+const tree4 = fromMarkdown('![[file#heading|caption]]', {
   extensions: [wikilink()],
   mdastExtensions: [wikilinkFromMarkdown()],
 })
@@ -480,11 +480,11 @@ const tree4 = fromMarkdown("![[file#heading|caption]]", {
 ### with unified pipeline
 
 ```typescript
-import { unified } from "unified"
-import remarkParse from "remark-parse"
-import remarkRehype from "remark-rehype"
-import rehypeStringify from "rehype-stringify"
-import { remarkWikilink } from "ofm-wikilink"
+import { unified } from 'unified'
+import remarkParse from 'remark-parse'
+import remarkRehype from 'remark-rehype'
+import rehypeStringify from 'rehype-stringify'
+import { remarkWikilink } from 'ofm-wikilink'
 
 // default usage with obsidian mode (automatic)
 const processor = unified()
@@ -493,13 +493,13 @@ const processor = unified()
   .use(remarkRehype)
   .use(rehypeStringify)
 
-const html = await processor.process("[[Page1|link]] and ![[image.png|caption|100x200]]")
+const html = await processor.process('[[Page1|link]] and ![[image.png|caption|100x200]]')
 // → <a href="page1">link</a> and <figure><img src="image.png" width="100" height="200"><figcaption>caption</figcaption></figure>
 
 // with custom strip extensions
 const customProcessor = unified()
   .use(remarkParse)
-  .use(remarkWikilink, { stripExtensions: [".md", ".mdx"] })
+  .use(remarkWikilink, { stripExtensions: ['.md', '.mdx'] })
   .use(remarkRehype)
   .use(rehypeStringify)
 ```
@@ -509,7 +509,7 @@ const customProcessor = unified()
 if you explicitly set `obsidian: false`, nodes won't be annotated with `hName`/`hProperties`/`hChildren`:
 
 ```typescript
-const tree = fromMarkdown("[[target]]", {
+const tree = fromMarkdown('[[target]]', {
   extensions: [wikilink()],
   mdastExtensions: [wikilinkFromMarkdown({ obsidian: false })],
 })

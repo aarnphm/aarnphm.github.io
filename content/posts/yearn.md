@@ -1,7 +1,7 @@
 ---
 cssclasses:
   - casesense
-date: "2025-10-21"
+date: '2025-10-21'
 description: on yearning.
 id: yearn
 modified: 2025-10-29 02:15:13 GMT-04:00

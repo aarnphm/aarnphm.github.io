@@ -1,13 +1,13 @@
-import Slugger from "github-slugger"
-import { Element, ElementContent, Root as HastRoot, RootContent } from "hast"
-import { toString } from "hast-util-to-string"
-import yaml from "js-yaml"
-import { QuartzTransformerPlugin } from "../../types/plugin"
-import { splitAnchor, transformLink, stripSlashes, FullSlug } from "../../util/path"
-import { extractWikilinksWithPositions, resolveWikilinkTarget } from "../../util/wikilinks"
-import { buildYouTubeEmbed } from "../../util/youtube"
-import { externalLinkRegex } from "./ofm"
-import { fetchTwitterEmbed, twitterUrlRegex } from "./twitter"
+import Slugger from 'github-slugger'
+import { Element, ElementContent, Root as HastRoot, RootContent } from 'hast'
+import { toString } from 'hast-util-to-string'
+import yaml from 'js-yaml'
+import { QuartzTransformerPlugin } from '../../types/plugin'
+import { splitAnchor, transformLink, stripSlashes, FullSlug } from '../../util/path'
+import { extractWikilinksWithPositions, resolveWikilinkTarget } from '../../util/wikilinks'
+import { buildYouTubeEmbed } from '../../util/youtube'
+import { externalLinkRegex } from './ofm'
+import { fetchTwitterEmbed, twitterUrlRegex } from './twitter'
 
 export interface ArenaBlock {
   id: string
@@ -85,7 +85,7 @@ export interface ArenaSearchIndex {
   channels: ArenaChannelSearchable[]
 }
 
-declare module "vfile" {
+declare module 'vfile' {
   interface DataMap {
     arenaData?: ArenaData
     arenaChannel?: ArenaChannel
@@ -106,30 +106,30 @@ const parseLinkTitle = (text: string): { url: string; title?: string } | undefin
 }
 
 const stripTrailingMarkers = (value: string): string =>
-  value.replace(TRAILING_MARKERS_PATTERN, "").trim()
+  value.replace(TRAILING_MARKERS_PATTERN, '').trim()
 
 const isGithubUrl = (rawUrl: string): boolean => {
   if (!rawUrl) return false
   try {
     const { hostname } = new URL(rawUrl)
     const normalized = hostname.toLowerCase()
-    return normalized === "github.com" || normalized.endsWith(".github.com")
+    return normalized === 'github.com' || normalized.endsWith('.github.com')
   } catch {
-    return rawUrl.toLowerCase().includes("github.com/")
+    return rawUrl.toLowerCase().includes('github.com/')
   }
 }
 
 const getTextContentExcludingNestedUl = (li: Element): string => {
-  let text = ""
+  let text = ''
   for (const child of li.children as ElementContent[]) {
-    if (isElement(child) && child.tagName === "ul") continue
+    if (isElement(child) && child.tagName === 'ul') continue
     text += toString(child)
   }
   return text.trim()
 }
 
 const cloneElementContent = <T extends ElementContent>(node: T): T => {
-  return typeof structuredClone === "function"
+  return typeof structuredClone === 'function'
     ? structuredClone(node)
     : (JSON.parse(JSON.stringify(node)) as T)
 }
@@ -157,25 +157,25 @@ const parseCoordinateMetadata = (value: string): { lat: number; lon: number } | 
 }
 
 const elementContainsAnchor = (node: ElementContent): boolean => {
-  if (node.type !== "element") return false
-  if (node.tagName === "a") return true
-  return node.children.some((child) => elementContainsAnchor(child))
+  if (node.type !== 'element') return false
+  if (node.tagName === 'a') return true
+  return node.children.some(child => elementContainsAnchor(child))
 }
 
-const isElement = (node: RootContent | ElementContent): node is Element => node.type === "element"
+const isElement = (node: RootContent | ElementContent): node is Element => node.type === 'element'
 
 const isH2 = (node: RootContent | ElementContent): node is Element =>
-  isElement(node) && node.tagName === "h2"
+  isElement(node) && node.tagName === 'h2'
 
 const isUl = (node: RootContent | ElementContent): node is Element =>
-  isElement(node) && node.tagName === "ul"
+  isElement(node) && node.tagName === 'ul'
 
 const isLi = (node: RootContent | ElementContent): node is Element =>
-  isElement(node) && node.tagName === "li"
+  isElement(node) && node.tagName === 'li'
 
 const getFirstTextContent = (node: Element): string => {
   for (const child of node.children) {
-    if (child.type === "text") {
+    if (child.type === 'text') {
       const value = child.value.trim()
       if (value.length > 0) {
         return value
@@ -189,7 +189,7 @@ const getFirstTextContent = (node: Element): string => {
       }
     }
   }
-  return ""
+  return ''
 }
 
 const extractNestedList = (li: Element): Element | null => {
@@ -200,15 +200,15 @@ const extractNestedList = (li: Element): Element | null => {
 }
 
 const appendListToYaml = (list: Element, indent: number, lines: string[]): void => {
-  const indentStr = "  ".repeat(indent)
+  const indentStr = '  '.repeat(indent)
 
   for (const child of list.children) {
     if (!isLi(child)) continue
 
     const nested = extractNestedList(child)
-    let rawText = ""
+    let rawText = ''
     for (const ch of child.children as ElementContent[]) {
-      if (isElement(ch) && ch.tagName === "ul") continue
+      if (isElement(ch) && ch.tagName === 'ul') continue
       rawText += toString(ch)
     }
     rawText = rawText.trim()
@@ -224,9 +224,9 @@ const appendListToYaml = (list: Element, indent: number, lines: string[]): void 
     }
 
     if (rawText.length === 0) continue
-    const normalized = rawText.replace(/^-+\s*/, "").trim()
+    const normalized = rawText.replace(/^-+\s*/, '').trim()
 
-    if (normalized.includes(":")) {
+    if (normalized.includes(':')) {
       lines.push(`${indentStr}${normalized}`)
     } else {
       lines.push(`${indentStr}- ${normalized}`)
@@ -236,15 +236,15 @@ const appendListToYaml = (list: Element, indent: number, lines: string[]): void 
 
 export const Arena: QuartzTransformerPlugin = () => {
   return {
-    name: "Arena",
+    name: 'Arena',
     htmlPlugins(ctx) {
-      const localeConfig = ctx.cfg.configuration.locale ?? "en"
-      const locale = localeConfig.split("-")[0] ?? "en"
+      const localeConfig = ctx.cfg.configuration.locale ?? 'en'
+      const locale = localeConfig.split('-')[0] ?? 'en'
 
       return [
         () => {
           return async (tree: HastRoot, file) => {
-            if (file.data.slug !== "are.na") return
+            if (file.data.slug !== 'are.na') return
 
             const channels: ArenaChannel[] = []
             const slugger = new Slugger()
@@ -282,25 +282,25 @@ export const Arena: QuartzTransformerPlugin = () => {
               const extractTagTokens = (raw: string): string[] => {
                 let normalized = raw.trim()
                 if (normalized.length === 0) return []
-                normalized = normalized.replace(/^[-•]\s*/, "")
+                normalized = normalized.replace(/^[-•]\s*/, '')
 
                 const first = normalized.charAt(0)
                 const last = normalized.charAt(normalized.length - 1)
-                if ((first === "[" && last === "]") || (first === "(" && last === ")")) {
+                if ((first === '[' && last === ']') || (first === '(' && last === ')')) {
                   normalized = normalized.slice(1, -1)
                 }
 
                 const rawTokens = normalized
                   .split(/[\n,;|]/)
-                  .map((segment) => segment.trim())
-                  .filter((segment) => segment.length > 0)
+                  .map(segment => segment.trim())
+                  .filter(segment => segment.length > 0)
 
                 const cleaned: string[] = []
                 for (const token of rawTokens.length > 0 ? rawTokens : [normalized]) {
                   const stripped = token
-                    .replace(/^[-•]\s*/, "")
-                    .replace(/^['"]/, "")
-                    .replace(/['"]$/, "")
+                    .replace(/^[-•]\s*/, '')
+                    .replace(/^['"]/, '')
+                    .replace(/['"]$/, '')
                     .trim()
                   if (stripped.length > 0) cleaned.push(stripped)
                 }
@@ -317,32 +317,32 @@ export const Arena: QuartzTransformerPlugin = () => {
                 let value: string | undefined
 
                 if (raw.length > 0) {
-                  const delimiterIndex = raw.indexOf(":")
+                  const delimiterIndex = raw.indexOf(':')
                   if (delimiterIndex !== -1) {
                     keySource = raw.slice(0, delimiterIndex).trim()
                     value = raw.slice(delimiterIndex + 1).trim()
                   } else if (sublist) {
                     const normalized = raw.trim().toLowerCase()
-                    if (normalized === "tags" || normalized === "[tags]") {
-                      keySource = "tags"
-                      value = ""
+                    if (normalized === 'tags' || normalized === '[tags]') {
+                      keySource = 'tags'
+                      value = ''
                     } else {
                       keySource = normalized
-                      value = ""
+                      value = ''
                     }
                   }
                 } else if (sublist) {
-                  keySource = "tags"
-                  value = ""
+                  keySource = 'tags'
+                  value = ''
                 }
 
                 if (!keySource) continue
 
-                const normalizedKey = keySource.toLowerCase().replace(/\s+/g, "_")
+                const normalizedKey = keySource.toLowerCase().replace(/\s+/g, '_')
 
-                if (normalizedKey === "tags") {
+                if (normalizedKey === 'tags') {
                   const candidateStrings: string[] = []
-                  if (typeof value === "string" && value.length > 0) {
+                  if (typeof value === 'string' && value.length > 0) {
                     candidateStrings.push(value)
                   }
                   if (sublist) {
@@ -362,11 +362,11 @@ export const Arena: QuartzTransformerPlugin = () => {
                 if (sublist && !value) {
                   const yamlLines: string[] = []
                   appendListToYaml(sublist, 0, yamlLines)
-                  const yamlSource = yamlLines.join("\n")
+                  const yamlSource = yamlLines.join('\n')
 
                   if (yamlSource.trim().length > 0) {
                     const parsed = yaml.load(yamlSource)
-                    if (parsed && typeof parsed === "object" && !Array.isArray(parsed)) {
+                    if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
                       metadata[normalizedKey] = parsed
                       continue
                     }
@@ -390,9 +390,9 @@ export const Arena: QuartzTransformerPlugin = () => {
             ): Record<string, string | boolean> => {
               const normalized: Record<string, string | boolean> = {}
               for (const [key, value] of Object.entries(metadata)) {
-                if (typeof value === "string" || typeof value === "boolean") {
+                if (typeof value === 'string' || typeof value === 'boolean') {
                   normalized[key] = value
-                } else if (typeof value === "number" && Number.isFinite(value)) {
+                } else if (typeof value === 'number' && Number.isFinite(value)) {
                   normalized[key] = String(value)
                 }
               }
@@ -402,7 +402,7 @@ export const Arena: QuartzTransformerPlugin = () => {
             const parseBlock = (li: Element, depth = 0): ArenaBlock | null => {
               const textContent = getTextContentExcludingNestedUl(li)
 
-              const trailingSection = textContent.match(TRAILING_MARKERS_PATTERN)?.[0] ?? ""
+              const trailingSection = textContent.match(TRAILING_MARKERS_PATTERN)?.[0] ?? ''
               const highlighted = HIGHLIGHT_MARKER.test(trailingSection)
               const embedDisabledFromMarker = EMBED_DISABLED_MARKER.test(trailingSection)
               const strippedContent = stripTrailingMarkers(textContent)
@@ -412,7 +412,7 @@ export const Arena: QuartzTransformerPlugin = () => {
 
               const findFirstLink = (node: Element): Element | null => {
                 for (const child of node.children) {
-                  if (isElement(child) && child.tagName === "a") return child
+                  if (isElement(child) && child.tagName === 'a') return child
                   if (isElement(child)) {
                     const found = findFirstLink(child)
                     if (found) return found
@@ -428,12 +428,12 @@ export const Arena: QuartzTransformerPlugin = () => {
                 if (linkText.length > 0) titleCandidate = linkText
 
                 const href = firstLink.properties?.href
-                if (typeof href === "string" && /^https?:\/\//.test(href)) {
+                if (typeof href === 'string' && /^https?:\/\//.test(href)) {
                   url = href
                 }
               }
 
-              if (depth === 0 && strippedContent.toLowerCase().startsWith("http")) {
+              if (depth === 0 && strippedContent.toLowerCase().startsWith('http')) {
                 const parsed = parseLinkTitle(strippedContent)
                 if (parsed) {
                   url = parsed.url
@@ -447,7 +447,7 @@ export const Arena: QuartzTransformerPlugin = () => {
 
               if (depth > 0 && firstLink && !url) {
                 const href = firstLink.properties?.href
-                if (typeof href === "string" && /^https?:\/\//.test(href)) {
+                if (typeof href === 'string' && /^https?:\/\//.test(href)) {
                   url = href
                 }
               }
@@ -461,7 +461,7 @@ export const Arena: QuartzTransformerPlugin = () => {
 
               const block: ArenaBlock = {
                 id: `block-${blockCounter++}`,
-                content: titleCandidate || strippedContent || url || "",
+                content: titleCandidate || strippedContent || url || '',
                 title: titleCandidate,
                 url,
                 highlighted,
@@ -475,7 +475,7 @@ export const Arena: QuartzTransformerPlugin = () => {
                   block.metadata = meta.metadata
 
                   const coordValue = block.metadata?.coord
-                  if (typeof coordValue === "string" && coordValue.length > 0) {
+                  if (typeof coordValue === 'string' && coordValue.length > 0) {
                     const parsedCoords = parseCoordinateMetadata(coordValue)
                     if (parsedCoords) {
                       block.coordinates = parsedCoords
@@ -486,17 +486,17 @@ export const Arena: QuartzTransformerPlugin = () => {
                   const pinnedValue = block.metadata?.pinned
                   if (pinnedValue !== undefined && depth === 0) {
                     const normalizedPinned =
-                      typeof pinnedValue === "string"
+                      typeof pinnedValue === 'string'
                         ? pinnedValue.toLowerCase().trim()
                         : pinnedValue === true
-                          ? "true"
+                          ? 'true'
                           : pinnedValue === false
-                            ? "false"
+                            ? 'false'
                             : undefined
-                    if (normalizedPinned === "true" || normalizedPinned === "yes") {
+                    if (normalizedPinned === 'true' || normalizedPinned === 'yes') {
                       block.pinned = true
                       delete block.metadata?.pinned
-                    } else if (normalizedPinned === "false" || normalizedPinned === "no") {
+                    } else if (normalizedPinned === 'false' || normalizedPinned === 'no') {
                       delete block.metadata?.pinned
                     }
                   }
@@ -504,17 +504,17 @@ export const Arena: QuartzTransformerPlugin = () => {
                   const laterValue = block.metadata?.later
                   if (laterValue !== undefined && depth === 0) {
                     const normalizedLater =
-                      typeof laterValue === "string"
+                      typeof laterValue === 'string'
                         ? laterValue.toLowerCase().trim()
                         : laterValue === true
-                          ? "true"
+                          ? 'true'
                           : laterValue === false
-                            ? "false"
+                            ? 'false'
                             : undefined
-                    if (normalizedLater === "true" || normalizedLater === "yes") {
+                    if (normalizedLater === 'true' || normalizedLater === 'yes') {
                       block.later = true
                       delete block.metadata?.later
-                    } else if (normalizedLater === "false" || normalizedLater === "no") {
+                    } else if (normalizedLater === 'false' || normalizedLater === 'no') {
                       delete block.metadata?.later
                     }
                   }
@@ -522,9 +522,9 @@ export const Arena: QuartzTransformerPlugin = () => {
                   const importanceValue = block.metadata?.importance
                   if (importanceValue !== undefined) {
                     const parsed =
-                      typeof importanceValue === "number"
+                      typeof importanceValue === 'number'
                         ? importanceValue
-                        : typeof importanceValue === "string"
+                        : typeof importanceValue === 'string'
                           ? Number.parseFloat(importanceValue)
                           : Number.NaN
                     if (!Number.isNaN(parsed) && Number.isFinite(parsed)) {
@@ -565,7 +565,7 @@ export const Arena: QuartzTransformerPlugin = () => {
               if (url && twitterUrlRegex.test(url)) {
                 embedPromises.push(
                   fetchTwitterEmbed(url, locale)
-                    .then((html) => {
+                    .then(html => {
                       if (html) block.embedHtml = html
                     })
                     .catch(() => undefined),
@@ -575,7 +575,7 @@ export const Arena: QuartzTransformerPlugin = () => {
               if (url && !block.embedHtml) {
                 const youtubeEmbed = buildYouTubeEmbed(url)
                 if (youtubeEmbed) {
-                  block.embedHtml = `<iframe class="arena-modal-iframe arena-modal-iframe-youtube" title="YouTube embed: ${(block.title ?? block.content ?? block.id).replace(/"/g, "&quot;")}" loading="lazy" data-block-id="${block.id}" src="${youtubeEmbed.src}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>`
+                  block.embedHtml = `<iframe class="arena-modal-iframe arena-modal-iframe-youtube" title="YouTube embed: ${(block.title ?? block.content ?? block.id).replace(/"/g, '&quot;')}" loading="lazy" data-block-id="${block.id}" src="${youtubeEmbed.src}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>`
                 }
               }
 
@@ -587,11 +587,11 @@ export const Arena: QuartzTransformerPlugin = () => {
                   for (const range of ranges) {
                     const start = range.start
                     if (start > lastIndex) {
-                      results.push({ type: "text", value: value.slice(lastIndex, start) })
+                      results.push({ type: 'text', value: value.slice(lastIndex, start) })
                     }
 
                     const parsed = range.wikilink
-                    const resolved = resolveWikilinkTarget(parsed, "" as FullSlug)
+                    const resolved = resolveWikilinkTarget(parsed, '' as FullSlug)
                     const raw = value.slice(range.start, range.end)
 
                     if (resolved) {
@@ -599,64 +599,64 @@ export const Arena: QuartzTransformerPlugin = () => {
                         parsed.anchor ? `/${resolved.slug}${parsed.anchor}` : `/${resolved.slug}`
                       ) as string
                       results.push({
-                        type: "element",
-                        tagName: "a",
+                        type: 'element',
+                        tagName: 'a',
                         properties: {
                           href,
-                          className: ["internal"],
-                          "data-slug": resolved.slug,
-                          "data-no-popover": true,
+                          className: ['internal'],
+                          'data-slug': resolved.slug,
+                          'data-no-popover': true,
                         },
-                        children: [{ type: "text", value: parsed.alias ?? parsed.target ?? raw }],
+                        children: [{ type: 'text', value: parsed.alias ?? parsed.target ?? raw }],
                       })
                     } else {
-                      results.push({ type: "text", value: parsed.alias ?? parsed.target ?? raw })
+                      results.push({ type: 'text', value: parsed.alias ?? parsed.target ?? raw })
                     }
 
                     lastIndex = range.end
                   }
 
                   if (lastIndex < value.length) {
-                    results.push({ type: "text", value: value.slice(lastIndex) })
+                    results.push({ type: 'text', value: value.slice(lastIndex) })
                   }
 
                   return results
                 }
 
                 const visitEl = (el: ElementContent) => {
-                  if (el.type !== "element") return
+                  if (el.type !== 'element') return
                   const e = el as Element
 
-                  if (e.tagName === "a" && typeof e.properties?.href === "string") {
+                  if (e.tagName === 'a' && typeof e.properties?.href === 'string') {
                     let dest = e.properties.href as string
                     const classes = Array.isArray(e.properties.className)
                       ? (e.properties.className as string[])
-                      : typeof e.properties.className === "string"
+                      : typeof e.properties.className === 'string'
                         ? [e.properties.className]
                         : []
 
                     const isExternal = externalLinkRegex.test(dest)
 
-                    if (!isExternal && !dest.startsWith("#")) {
+                    if (!isExternal && !dest.startsWith('#')) {
                       dest = transformLink(file.data.slug!, dest, {
-                        strategy: "absolute",
+                        strategy: 'absolute',
                         allSlugs: ctx.allSlugs,
                       })
                       const url = new URL(
                         dest,
-                        "https://base.com/" + stripSlashes(file.data.slug!, true),
+                        'https://base.com/' + stripSlashes(file.data.slug!, true),
                       )
                       let canonical = url.pathname
                       let [destCanonical] = splitAnchor(canonical)
-                      if (destCanonical.endsWith("/")) destCanonical += "index"
+                      if (destCanonical.endsWith('/')) destCanonical += 'index'
                       const full = decodeURIComponent(stripSlashes(destCanonical, true))
-                      const canonicalHref = `${url.pathname}${url.search}${url.hash}` || "/"
+                      const canonicalHref = `${url.pathname}${url.search}${url.hash}` || '/'
                       e.properties.href = canonicalHref
-                      e.properties["data-slug"] = full
+                      e.properties['data-slug'] = full
 
-                      if (!classes.includes("internal")) classes.push("internal")
+                      if (!classes.includes('internal')) classes.push('internal')
                     } else if (isExternal) {
-                      if (!classes.includes("external")) classes.push("external")
+                      if (!classes.includes('external')) classes.push('external')
                     }
 
                     if (classes.length > 0) {
@@ -667,7 +667,7 @@ export const Arena: QuartzTransformerPlugin = () => {
                   if (el.children) {
                     const newChildren: ElementContent[] = []
                     for (const child of el.children as ElementContent[]) {
-                      if (child.type === "text") {
+                      if (child.type === 'text') {
                         newChildren.push(...processTextNode(child.value))
                       } else {
                         visitEl(child)
@@ -687,7 +687,7 @@ export const Arena: QuartzTransformerPlugin = () => {
                 let contentChildren: ElementContent[] = li.children as ElementContent[]
 
                 for (const child of contentChildren) {
-                  if (isElement(child) && child.tagName === "p") {
+                  if (isElement(child) && child.tagName === 'p') {
                     contentChildren = child.children as ElementContent[]
                     break
                   }
@@ -697,10 +697,10 @@ export const Arena: QuartzTransformerPlugin = () => {
                 let linkElement: Element | undefined
 
                 for (const child of contentChildren) {
-                  if (isElement(child) && child.tagName === "a") {
+                  if (isElement(child) && child.tagName === 'a') {
                     linkElement = child
                     const href = child.properties?.href
-                    if (typeof href === "string") {
+                    if (typeof href === 'string') {
                       linkHref = href
                     }
                     break
@@ -712,11 +712,11 @@ export const Arena: QuartzTransformerPlugin = () => {
                 const titleElements: ElementContent[] = []
 
                 for (const child of contentChildren) {
-                  if (isElement(child) && child.tagName === "ul") break
+                  if (isElement(child) && child.tagName === 'ul') break
 
-                  if (child.type === "text") {
+                  if (child.type === 'text') {
                     const text = child.value.trim()
-                    if (text === "—" || text === "--") {
+                    if (text === '—' || text === '--') {
                       foundSeparator = true
                       continue
                     }
@@ -734,7 +734,7 @@ export const Arena: QuartzTransformerPlugin = () => {
                   if (
                     foundSeparator &&
                     isElement(child) &&
-                    child.tagName === "a" &&
+                    child.tagName === 'a' &&
                     child !== linkElement
                   ) {
                     titleElements.push(child)
@@ -743,14 +743,14 @@ export const Arena: QuartzTransformerPlugin = () => {
 
                 if (linkHref && (titleText || titleElements.length > 0)) {
                   const wrapper: Element = {
-                    type: "element",
-                    tagName: "span",
+                    type: 'element',
+                    tagName: 'span',
                     properties: {},
                     children: [],
                   }
 
                   if (titleText) {
-                    wrapper.children.push({ type: "text", value: titleText })
+                    wrapper.children.push({ type: 'text', value: titleText })
                   }
 
                   wrapper.children.push(...(titleElements as any[]))
@@ -760,7 +760,7 @@ export const Arena: QuartzTransformerPlugin = () => {
 
                 const collected: ElementContent[] = []
                 for (const child of li.children as ElementContent[]) {
-                  if (isElement(child) && child.tagName === "ul") break
+                  if (isElement(child) && child.tagName === 'ul') break
                   const cloned = cloneElementContent(child)
                   collected.push(cloned)
                 }
@@ -768,8 +768,8 @@ export const Arena: QuartzTransformerPlugin = () => {
                 if (collected.length === 0) return undefined
 
                 const wrapper: Element = {
-                  type: "element",
-                  tagName: "span",
+                  type: 'element',
+                  tagName: 'span',
                   properties: {},
                   children: collected,
                 }
@@ -782,13 +782,13 @@ export const Arena: QuartzTransformerPlugin = () => {
               const aggregateListItem = (li: Element): ElementContent => {
                 const collected: ElementContent[] = []
                 for (const child of li.children as ElementContent[]) {
-                  if (isElement(child) && child.tagName === "ul") continue
+                  if (isElement(child) && child.tagName === 'ul') continue
                   const cloned = cloneElementContent(child)
                   collected.push(cloned)
                 }
                 const wrapped: ElementContent = {
-                  type: "element",
-                  tagName: "div",
+                  type: 'element',
+                  tagName: 'div',
                   properties: {},
                   children: collected,
                 }
@@ -800,22 +800,22 @@ export const Arena: QuartzTransformerPlugin = () => {
               const findInternalLink = (
                 node?: ElementContent,
               ): { slug: string; href: string; title: string; hash?: string } | undefined => {
-                if (!node || node.type !== "element") return undefined
+                if (!node || node.type !== 'element') return undefined
                 const el = node as Element
 
-                if (el.tagName === "a") {
+                if (el.tagName === 'a') {
                   const classes = Array.isArray(el.properties?.className)
                     ? el.properties.className
                     : []
-                  const hasInternal = classes.some((c) => c === "internal")
+                  const hasInternal = classes.some(c => c === 'internal')
                   if (hasInternal) {
-                    const slug = el.properties?.["data-slug"]
-                    if (typeof slug === "string" && slug.length > 0) {
+                    const slug = el.properties?.['data-slug']
+                    if (typeof slug === 'string' && slug.length > 0) {
                       const rawHref = el.properties?.href
-                      const hrefString = typeof rawHref === "string" ? rawHref : undefined
-                      const [, anchor] = hrefString ? splitAnchor(hrefString) : ["", ""]
+                      const hrefString = typeof rawHref === 'string' ? rawHref : undefined
+                      const [, anchor] = hrefString ? splitAnchor(hrefString) : ['', '']
                       const canonicalSlug = stripSlashes(slug, true)
-                      const canonicalHref = `/${canonicalSlug}${anchor ?? ""}`
+                      const canonicalHref = `/${canonicalSlug}${anchor ?? ''}`
                       return {
                         slug,
                         href: canonicalHref,
@@ -849,7 +849,7 @@ export const Arena: QuartzTransformerPlugin = () => {
             }
 
             const bodyChildren = tree.children.filter(
-              (child) => child.type !== "doctype",
+              child => child.type !== 'doctype',
             ) as RootContent[]
 
             for (let i = 0; i < bodyChildren.length; i++) {
@@ -858,12 +858,12 @@ export const Arena: QuartzTransformerPlugin = () => {
               if (isH2(node)) {
                 let name = toString(node).trim()
 
-                const linkInH2 = node.children.find((ch) => isElement(ch) && ch.tagName === "a")
+                const linkInH2 = node.children.find(ch => isElement(ch) && ch.tagName === 'a')
                 if (linkInH2 && isElement(linkInH2)) {
                   const href = linkInH2.properties?.href
-                  if (typeof href === "string" && !/^https?:\/\//i.test(href)) {
+                  if (typeof href === 'string' && !/^https?:\/\//i.test(href)) {
                     try {
-                      const parts = decodeURI(href).split("/")
+                      const parts = decodeURI(href).split('/')
                       const base = parts.at(-1)
                       if (base && base.trim().length > 0) {
                         name = base.trim()
@@ -884,10 +884,10 @@ export const Arena: QuartzTransformerPlugin = () => {
 
                 if (elementContainsAnchor(node)) {
                   const span: Element = {
-                    type: "element",
-                    tagName: "span",
+                    type: 'element',
+                    tagName: 'span',
                     properties: {},
-                    children: (node.children ?? []).map((child) =>
+                    children: (node.children ?? []).map(child =>
                       cloneElementContent(child as ElementContent),
                     ),
                   }

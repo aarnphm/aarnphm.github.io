@@ -1,21 +1,21 @@
-@use "sass:map";
-@use "../variables.scss" as *;
-@use "../mixin.scss" as *;
+@use 'sass:map';
+@use '../variables.scss' as *;
+@use '../mixin.scss' as *;
 
 @keyframes dots {
   0%,
   20%,
   100% {
-    content: "";
+    content: '';
   }
   25% {
-    content: ".";
+    content: '.';
   }
   50% {
-    content: "..";
+    content: '..';
   }
   75% {
-    content: "...";
+    content: '...';
   }
 }
 
@@ -39,7 +39,7 @@
   }
 }
 
-body[data-slug="curius"] {
+body[data-slug='curius'] {
   .navigation-container {
     display: none;
     margin-top: 1em;
@@ -128,21 +128,21 @@ body[data-slug="curius"] {
 }
 
 .curius-page-container {
-  & li[id|="curius-item"] {
+  & li[id|='curius-item'] {
     background-color: inherit;
 
     & > * {
       margin-left: 0.25rem;
     }
 
-    &[class~="focus"]:first-child,
-    &[class~="active"]:first-child,
-    &[class="curius-item"]:first-child {
+    &[class~='focus']:first-child,
+    &[class~='active']:first-child,
+    &[class='curius-item']:first-child {
       margin-top: 1rem;
     }
 
-    &[class~="active"],
-    &[class~="focus"] {
+    &[class~='active'],
+    &[class~='focus'] {
       background: var(--lightgray);
       border: 1px solid var(--dark);
     }
@@ -154,7 +154,7 @@ body[data-slug="curius"] {
   margin-top: 1rem;
 
   &::after {
-    content: "";
+    content: '';
     animation: dots 1s infinite;
   }
 
@@ -209,7 +209,7 @@ svg.favorite-icon {
     font-size: 0.8rem;
   }
 
-  div[id="curius-fragments"] {
+  div[id='curius-fragments'] {
     & li {
       list-style: none;
       display: flex;
@@ -219,7 +219,7 @@ svg.favorite-icon {
     }
   }
 
-  & div[id*="curius-misc"] {
+  & div[id*='curius-misc'] {
     list-style: none;
     margin: 0;
     padding: 0;
@@ -229,7 +229,7 @@ svg.favorite-icon {
     font-style: italic;
   }
 
-  & div[id*="curius-highlight"] {
+  & div[id*='curius-highlight'] {
     cursor: pointer;
     color: #886c5a;
     background-color: #fdebd0;
@@ -237,7 +237,7 @@ svg.favorite-icon {
     font-style: normal;
   }
 
-  & [saved-theme="dark"] div[id*="curius-highlight"] {
+  & [saved-theme='dark'] div[id*='curius-highlight'] {
     color: #fdebd0;
     background-color: #795548;
   }
@@ -274,7 +274,7 @@ svg.favorite-icon {
     }
   }
 
-  ul[class="curius-item-tags"] {
+  ul[class='curius-item-tags'] {
     display: flex;
     padding-inline-start: 0px;
     margin-block-start: 0;
@@ -530,7 +530,7 @@ svg.favorite-icon {
   & li {
     gap: 1rem;
 
-    &[class~="focus"] {
+    &[class~='focus'] {
       background: var(--lightgray);
       border: 0px solid var(--dark);
       border-top-width: 1px;
@@ -573,7 +573,7 @@ svg.favorite-icon {
       color: var(--tertiary);
     }
 
-    &[style*="hidden"] {
+    &[style*='hidden'] {
       color: var(--gray);
       cursor: default;
     }

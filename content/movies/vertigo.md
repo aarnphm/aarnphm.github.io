@@ -8,7 +8,7 @@ description: psychological thriller about retired detective with acrophobia hire
 director: Alfred Hitchcock
 id: vertigo
 modified: 2025-10-29 02:15:06 GMT-04:00
-posters: "[[movies/posters/vertigo.jpg]]"
+posters: '[[movies/posters/vertigo.jpg]]'
 rating: 8.2
 status: to watch
 studio: paramount

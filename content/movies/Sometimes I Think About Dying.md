@@ -8,10 +8,10 @@ description: office worker imagining her own death—lambert filming daisy ridle
 director: Rachel Lambert
 id: sometimes-i-think-about-dying
 modified: 2025-10-29 02:14:56 GMT-04:00
-posters: "[[movies/posters/sometimes-i-think-about-dying.jpg]]"
+posters: '[[movies/posters/sometimes-i-think-about-dying.jpg]]'
 rating: 6.6
 status: to watch
-studio: "[independent]"
+studio: '[independent]'
 tags:
   - o/life
   - r/psychology

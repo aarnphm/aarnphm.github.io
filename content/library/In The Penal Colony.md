@@ -9,7 +9,7 @@ description: short story about an elaborate torture machine that carves commandm
 id: In The Penal Colony
 modified: 2025-11-29 21:09:04 GMT-05:00
 notebook:
-posters: "[[library/posters/in-the-penal-colony.jpg]]"
+posters: '[[library/posters/in-the-penal-colony.jpg]]'
 status: to read
 tags:
   - p/fiction

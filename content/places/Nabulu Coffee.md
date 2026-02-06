@@ -3,19 +3,19 @@ address: >-
   7, Irwin Avenue, Bay-Cloverhill, Toronto Centre, Toronto, Golden Horseshoe,
   Ontario, M4Y 1K9, Canada
 category:
-  - "[[places to go]]"
+  - '[[places to go]]'
 coordinates:
-  - "43.66649229071298"
-  - "-79.38570733361347"
-date: "2025-08-05"
+  - '43.66649229071298'
+  - '-79.38570733361347'
+date: '2025-08-05'
 description: church-wellesley cafe with ethiopian coffee ceremonies
 id: Nabulu Coffee
-modified: "2026-01-03 11:36:50 GMT-05:00"
+modified: '2026-01-03 11:36:50 GMT-05:00'
 rating: 5
 tags:
   - places
 title: Nabulu Coffee
 type:
   - coffee shop
-url: "https://maps.app.goo.gl/24Lth72sDeicpzco7"
+url: 'https://maps.app.goo.gl/24Lth72sDeicpzco7'
 ---

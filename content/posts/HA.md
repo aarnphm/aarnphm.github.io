@@ -1,5 +1,5 @@
 ---
-date: "2026-01-30"
+date: '2026-01-30'
 id: HA
 modified: 2026-02-01 13:27:56 GMT-05:00
 noindex: true

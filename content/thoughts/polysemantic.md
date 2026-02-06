@@ -1,5 +1,5 @@
 ---
-date: "2025-10-04"
+date: '2025-10-04'
 description: properties in language models.
 id: Polysemantic
 modified: 2025-10-29 02:15:52 GMT-04:00

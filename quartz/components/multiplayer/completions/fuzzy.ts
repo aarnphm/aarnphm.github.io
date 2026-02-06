@@ -1,9 +1,9 @@
-import type { FuzzyMatch } from "./types"
+import type { FuzzyMatch } from './types'
 
 // Smith-Waterman implementation with position-aware bonuses for fuzzy match
 const W = { MATCH: 16, GAP_START: -3, GAP_EXT: -1, BOUNDARY: 8, CAMEL: 7, CONSECUTIVE: 4, FIRST: 8 }
 
-const SEPARATORS = new Set(["/", ":", "_", "-", " ", "\t", ".", "[", "]"])
+const SEPARATORS = new Set(['/', ':', '_', '-', ' ', '\t', '.', '[', ']'])
 
 function getBonus(t: string, i: number, continued: boolean) {
   let bonus = continued ? W.CONSECUTIVE : 0
@@ -14,13 +14,13 @@ function getBonus(t: string, i: number, continued: boolean) {
 
   if (SEPARATORS.has(prev)) bonus += W.BOUNDARY
 
-  const prevLower = prev >= "a" && prev <= "z"
-  const prevUpper = prev >= "A" && prev <= "Z"
-  const prevDigit = prev >= "0" && prev <= "9"
+  const prevLower = prev >= 'a' && prev <= 'z'
+  const prevUpper = prev >= 'A' && prev <= 'Z'
+  const prevDigit = prev >= '0' && prev <= '9'
   const prevOther = !prevLower && !prevUpper && !prevDigit
 
-  const curLower = cur >= "a" && cur <= "z"
-  const curUpper = cur >= "A" && cur <= "Z"
+  const curLower = cur >= 'a' && cur <= 'z'
+  const curUpper = cur >= 'A' && cur <= 'Z'
 
   if (prevLower && curUpper) bonus += W.CAMEL
   if (prevOther && (curLower || curUpper)) bonus += W.BOUNDARY

@@ -17,8 +17,8 @@
  * start → (embed?) → openFirst → openSecond → target → (anchor?) → (alias?) → closeFirst → closeSecond → ok
  */
 
-import type { Extension, Tokenizer, State, Code } from "micromark-util-types"
-import "./types"
+import type { Extension, Tokenizer, State, Code } from 'micromark-util-types'
+import './types'
 
 const codes = {
   exclamationMark: 33, // !
@@ -38,8 +38,8 @@ const codes = {
 export function wikilink(): Extension {
   return {
     text: {
-      [codes.exclamationMark]: { name: "wikilink", tokenize },
-      [codes.leftSquareBracket]: { name: "wikilink", tokenize },
+      [codes.exclamationMark]: { name: 'wikilink', tokenize },
+      [codes.leftSquareBracket]: { name: 'wikilink', tokenize },
     },
   }
 }
@@ -65,15 +65,15 @@ const tokenize: Tokenizer = function (this, effects, ok, nok) {
    */
   function start(code: Code): State | undefined {
     if (code === codes.exclamationMark) {
-      effects.enter("wikilink")
-      effects.enter("wikilinkEmbedMarker")
+      effects.enter('wikilink')
+      effects.enter('wikilinkEmbedMarker')
       effects.consume(code)
-      effects.exit("wikilinkEmbedMarker")
+      effects.exit('wikilinkEmbedMarker')
       return openFirst
     }
 
     if (code === codes.leftSquareBracket) {
-      effects.enter("wikilink")
+      effects.enter('wikilink')
       return openFirst(code)
     }
 
@@ -95,7 +95,7 @@ const tokenize: Tokenizer = function (this, effects, ok, nok) {
       return nok(code)
     }
 
-    effects.enter("wikilinkOpenMarker")
+    effects.enter('wikilinkOpenMarker')
     effects.consume(code)
     return openSecond
   }
@@ -114,7 +114,7 @@ const tokenize: Tokenizer = function (this, effects, ok, nok) {
     }
 
     effects.consume(code)
-    effects.exit("wikilinkOpenMarker")
+    effects.exit('wikilinkOpenMarker')
     return targetStart
   }
 
@@ -149,8 +149,8 @@ const tokenize: Tokenizer = function (this, effects, ok, nok) {
 
     // start consuming target
     if (code !== null && code !== -5 && code !== -4 && code !== -3) {
-      effects.enter("wikilinkTarget")
-      effects.enter("wikilinkTargetChunk", { contentType: "string" })
+      effects.enter('wikilinkTarget')
+      effects.enter('wikilinkTargetChunk', { contentType: 'string' })
       return targetInside(code)
     }
 
@@ -181,24 +181,24 @@ const tokenize: Tokenizer = function (this, effects, ok, nok) {
 
     // unescaped hash → check for anchor or metadata
     if (code === codes.numberSign && !previousWasBackslash) {
-      effects.exit("wikilinkTargetChunk")
-      effects.exit("wikilinkTarget")
+      effects.exit('wikilinkTargetChunk')
+      effects.exit('wikilinkTarget')
       previousWasBackslash = false
       return anchorMarker(code)
     }
 
     // unescaped pipe → alias
     if (code === codes.verticalBar && !previousWasBackslash) {
-      effects.exit("wikilinkTargetChunk")
-      effects.exit("wikilinkTarget")
+      effects.exit('wikilinkTargetChunk')
+      effects.exit('wikilinkTarget')
       previousWasBackslash = false
       return aliasMarker(code)
     }
 
     // closing bracket → end
     if (code === codes.rightSquareBracket && !previousWasBackslash) {
-      effects.exit("wikilinkTargetChunk")
-      effects.exit("wikilinkTarget")
+      effects.exit('wikilinkTargetChunk')
+      effects.exit('wikilinkTarget')
       previousWasBackslash = false
       return closeFirst(code)
     }
@@ -230,7 +230,7 @@ const tokenize: Tokenizer = function (this, effects, ok, nok) {
       return nok(code)
     }
 
-    effects.enter("wikilinkAnchorMarker")
+    effects.enter('wikilinkAnchorMarker')
     effects.consume(code)
     return anchorMarkerDecide
   }
@@ -241,15 +241,15 @@ const tokenize: Tokenizer = function (this, effects, ok, nok) {
   function anchorMarkerDecide(code: Code): State | undefined {
     // if next char is {, this is metadata marker
     if (code === codes.leftCurlyBrace) {
-      effects.exit("wikilinkAnchorMarker")
-      effects.enter("wikilinkMetadataMarker")
+      effects.exit('wikilinkAnchorMarker')
+      effects.enter('wikilinkMetadataMarker')
       effects.consume(code) // consume {
-      effects.exit("wikilinkMetadataMarker")
+      effects.exit('wikilinkMetadataMarker')
       return metadataStart
     }
 
     // otherwise, it's an anchor
-    effects.exit("wikilinkAnchorMarker")
+    effects.exit('wikilinkAnchorMarker')
     return anchorStart(code)
   }
 
@@ -277,8 +277,8 @@ const tokenize: Tokenizer = function (this, effects, ok, nok) {
 
     // start anchor text
     if (code !== null && code !== -5 && code !== -4 && code !== -3) {
-      effects.enter("wikilinkAnchor")
-      effects.enter("wikilinkAnchorChunk", { contentType: "string" })
+      effects.enter('wikilinkAnchor')
+      effects.enter('wikilinkAnchorChunk', { contentType: 'string' })
       return anchorInside(code)
     }
 
@@ -309,24 +309,24 @@ const tokenize: Tokenizer = function (this, effects, ok, nok) {
 
     // unescaped hash → check for metadata or continue as subheading
     if (code === codes.numberSign && !previousWasBackslash) {
-      effects.exit("wikilinkAnchorChunk")
-      effects.exit("wikilinkAnchor")
+      effects.exit('wikilinkAnchorChunk')
+      effects.exit('wikilinkAnchor')
       previousWasBackslash = false
       return anchorOrMetadata(code)
     }
 
     // unescaped pipe → alias
     if (code === codes.verticalBar && !previousWasBackslash) {
-      effects.exit("wikilinkAnchorChunk")
-      effects.exit("wikilinkAnchor")
+      effects.exit('wikilinkAnchorChunk')
+      effects.exit('wikilinkAnchor')
       previousWasBackslash = false
       return aliasMarker(code)
     }
 
     // closing bracket → end
     if (code === codes.rightSquareBracket && !previousWasBackslash) {
-      effects.exit("wikilinkAnchorChunk")
-      effects.exit("wikilinkAnchor")
+      effects.exit('wikilinkAnchorChunk')
+      effects.exit('wikilinkAnchor')
       previousWasBackslash = false
       return closeFirst(code)
     }
@@ -367,9 +367,9 @@ const tokenize: Tokenizer = function (this, effects, ok, nok) {
   function anchorOrMetadataDecide(code: Code): State | undefined {
     // if next char is {, this is metadata marker
     if (code === codes.leftCurlyBrace) {
-      effects.enter("wikilinkMetadataMarker")
+      effects.enter('wikilinkMetadataMarker')
       effects.consume(code) // consume {
-      effects.exit("wikilinkMetadataMarker")
+      effects.exit('wikilinkMetadataMarker')
       return metadataStart
     }
 
@@ -379,8 +379,8 @@ const tokenize: Tokenizer = function (this, effects, ok, nok) {
     }
 
     // otherwise, it's a subheading - continue anchor parsing
-    effects.enter("wikilinkAnchor")
-    effects.enter("wikilinkAnchorChunk", { contentType: "string" })
+    effects.enter('wikilinkAnchor')
+    effects.enter('wikilinkAnchorChunk', { contentType: 'string' })
     return anchorInside(code)
   }
 
@@ -413,8 +413,8 @@ const tokenize: Tokenizer = function (this, effects, ok, nok) {
 
     // start metadata content
     if (code !== null && code !== -5 && code !== -4 && code !== -3) {
-      effects.enter("wikilinkMetadata")
-      effects.enter("wikilinkMetadataChunk", { contentType: "string" })
+      effects.enter('wikilinkMetadata')
+      effects.enter('wikilinkMetadataChunk', { contentType: 'string' })
       return metadataInside(code, 1) // start with depth 1 (already consumed opening {)
     }
 
@@ -452,8 +452,8 @@ const tokenize: Tokenizer = function (this, effects, ok, nok) {
     if (code === codes.rightCurlyBrace && !previousWasBackslash) {
       if (braceDepth === 1) {
         // reached end of metadata
-        effects.exit("wikilinkMetadataChunk")
-        effects.exit("wikilinkMetadata")
+        effects.exit('wikilinkMetadataChunk')
+        effects.exit('wikilinkMetadata')
         previousWasBackslash = false
         return metadataEnd(code)
       }
@@ -521,9 +521,9 @@ const tokenize: Tokenizer = function (this, effects, ok, nok) {
       return nok(code)
     }
 
-    effects.enter("wikilinkAliasMarker")
+    effects.enter('wikilinkAliasMarker')
     effects.consume(code)
-    effects.exit("wikilinkAliasMarker")
+    effects.exit('wikilinkAliasMarker')
     return aliasStart
   }
 
@@ -546,8 +546,8 @@ const tokenize: Tokenizer = function (this, effects, ok, nok) {
 
     // start alias text
     if (code !== null && code !== -5 && code !== -4 && code !== -3) {
-      effects.enter("wikilinkAlias")
-      effects.enter("wikilinkAliasChunk", { contentType: "string" })
+      effects.enter('wikilinkAlias')
+      effects.enter('wikilinkAliasChunk', { contentType: 'string' })
       return aliasInside(code)
     }
 
@@ -573,8 +573,8 @@ const tokenize: Tokenizer = function (this, effects, ok, nok) {
 
     // closing bracket → end
     if (code === codes.rightSquareBracket && !previousWasBackslash) {
-      effects.exit("wikilinkAliasChunk")
-      effects.exit("wikilinkAlias")
+      effects.exit('wikilinkAliasChunk')
+      effects.exit('wikilinkAlias')
       previousWasBackslash = false
       return closeFirst(code)
     }
@@ -603,7 +603,7 @@ const tokenize: Tokenizer = function (this, effects, ok, nok) {
       return nok(code)
     }
 
-    effects.enter("wikilinkCloseMarker")
+    effects.enter('wikilinkCloseMarker')
     effects.consume(code)
     return closeSecond
   }
@@ -622,8 +622,8 @@ const tokenize: Tokenizer = function (this, effects, ok, nok) {
     }
 
     effects.consume(code)
-    effects.exit("wikilinkCloseMarker")
-    effects.exit("wikilink")
+    effects.exit('wikilinkCloseMarker')
+    effects.exit('wikilink')
     return ok
   }
 }

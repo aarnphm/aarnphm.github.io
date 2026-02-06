@@ -12,12 +12,12 @@ import {
   select,
   drag,
   zoom,
-} from "d3"
-import { Text, Graphics, Application, Container, Circle } from "pixi.js"
-import type { ContentDetails } from "../../plugins/emitters/contentIndex"
-import { FullSlug, SimpleSlug, getFullSlug, resolveRelative, simplifySlug } from "../../util/path"
-import { D3Config } from "../Graph"
-import { registerEscapeHandler, removeAllChildren } from "./util"
+} from 'd3'
+import { Text, Graphics, Application, Container, Circle } from 'pixi.js'
+import type { ContentDetails } from '../../plugins/emitters/contentIndex'
+import { FullSlug, SimpleSlug, getFullSlug, resolveRelative, simplifySlug } from '../../util/path'
+import { D3Config } from '../Graph'
+import { registerEscapeHandler, removeAllChildren } from './util'
 
 type GraphicsInfo = { color: string; gfx: Graphics; alpha: number; active: boolean }
 
@@ -31,9 +31,9 @@ type NodeRenderData = GraphicsInfo & { simulationData: NodeData; label: Text }
 
 type LinkRenderData = { simulationData: LinkData; color: string; alpha: number; active: boolean }
 
-const localStorageKey = "graph-visited"
+const localStorageKey = 'graph-visited'
 function getVisited(): Set<SimpleSlug> {
-  return new Set(JSON.parse(localStorage.getItem(localStorageKey) ?? "[]"))
+  return new Set(JSON.parse(localStorage.getItem(localStorageKey) ?? '[]'))
 }
 
 function addToVisited(slug: SimpleSlug) {
@@ -43,24 +43,24 @@ function addToVisited(slug: SimpleSlug) {
 }
 
 // workaround for pixijs webgpu issue: https://github.com/pixijs/pixijs/issues/11389
-async function determineGraphicsAPI(): Promise<"webgpu" | "webgl"> {
+async function determineGraphicsAPI(): Promise<'webgpu' | 'webgl'> {
   const adapter = await navigator.gpu?.requestAdapter().catch(() => null)
   const device = adapter && (await adapter.requestDevice().catch(() => null))
   if (!device) {
-    return "webgl"
+    return 'webgl'
   }
 
-  const canvas = document.createElement("canvas")
+  const canvas = document.createElement('canvas')
   const gl =
-    (canvas.getContext("webgl2") as WebGL2RenderingContext | null) ??
-    (canvas.getContext("webgl") as WebGLRenderingContext | null)
+    (canvas.getContext('webgl2') as WebGL2RenderingContext | null) ??
+    (canvas.getContext('webgl') as WebGLRenderingContext | null)
 
-  if (!gl) return "webgl"
+  if (!gl) return 'webgl'
 
   const webglMaxTextures = gl.getParameter(gl.MAX_TEXTURE_IMAGE_UNITS)
   const webgpuMaxTextures = device.limits.maxSampledTexturesPerShaderStage
 
-  return webglMaxTextures === webgpuMaxTextures ? "webgpu" : "webgl"
+  return webglMaxTextures === webgpuMaxTextures ? 'webgpu' : 'webgl'
 }
 
 async function renderGraph(graph: HTMLElement, fullSlug: FullSlug) {
@@ -82,8 +82,8 @@ async function renderGraph(graph: HTMLElement, fullSlug: FullSlug) {
     showTags,
     focusOnHover,
     enableRadial,
-    label: labelMode = "default",
-  } = JSON.parse(graph.dataset["cfg"]!) as D3Config
+    label: labelMode = 'default',
+  } = JSON.parse(graph.dataset['cfg']!) as D3Config
 
   const data: Map<SimpleSlug, ContentDetails> = new Map(
     Object.entries<ContentDetails>(await fetchData).map(([k, v]) => [
@@ -122,8 +122,8 @@ async function renderGraph(graph: HTMLElement, fullSlug: FullSlug) {
 
     if (showTags) {
       const localTags = details.tags
-        .filter((tag) => !removeTags.includes(tag))
-        .map((tag) => simplifySlug(("tags/" + tag) as FullSlug))
+        .filter(tag => !removeTags.includes(tag))
+        .map(tag => simplifySlug(('tags/' + tag) as FullSlug))
 
       for (const tag of localTags) {
         tags.add(tag)
@@ -136,13 +136,13 @@ async function renderGraph(graph: HTMLElement, fullSlug: FullSlug) {
   }
 
   const neighbourhood = new Set<SimpleSlug>()
-  const wl: (SimpleSlug | "__SENTINEL")[] = [slug, "__SENTINEL"]
+  const wl: (SimpleSlug | '__SENTINEL')[] = [slug, '__SENTINEL']
   if (depth >= 0) {
     while (depth >= 0 && wl.length > 0) {
       const cur = wl.shift()!
-      if (cur === "__SENTINEL") {
+      if (cur === '__SENTINEL') {
         depth--
-        wl.push("__SENTINEL")
+        wl.push('__SENTINEL')
       } else if (!neighbourhood.has(cur)) {
         neighbourhood.add(cur)
         const neighbors = adjacency.get(cur)
@@ -156,7 +156,7 @@ async function renderGraph(graph: HTMLElement, fullSlug: FullSlug) {
       }
     }
   } else {
-    validLinks.forEach((id) => neighbourhood.add(id))
+    validLinks.forEach(id => neighbourhood.add(id))
     if (showTags) {
       for (const tag of tags) {
         neighbourhood.add(tag)
@@ -164,16 +164,16 @@ async function renderGraph(graph: HTMLElement, fullSlug: FullSlug) {
     }
   }
 
-  const nodes = [...neighbourhood].map((url) => {
-    const text = url.startsWith("tags/") ? "#" + url.substring(5) : (data.get(url)?.title ?? url)
+  const nodes = [...neighbourhood].map(url => {
+    const text = url.startsWith('tags/') ? '#' + url.substring(5) : (data.get(url)?.title ?? url)
     return { id: url, text, tags: data.get(url)?.tags ?? [] }
   })
-  const nodeById = new Map(nodes.map((node) => [node.id, node]))
+  const nodeById = new Map(nodes.map(node => [node.id, node]))
   const graphData: { nodes: NodeData[]; links: LinkData[] } = {
     nodes,
     links: links
-      .filter((l) => neighbourhood.has(l.source) && neighbourhood.has(l.target))
-      .map((l) => ({ source: nodeById.get(l.source)!, target: nodeById.get(l.target)! })),
+      .filter(l => neighbourhood.has(l.source) && neighbourhood.has(l.target))
+      .map(l => ({ source: nodeById.get(l.source)!, target: nodeById.get(l.target)! })),
   }
 
   const nodeDegree = new Map<SimpleSlug, number>()
@@ -192,24 +192,24 @@ async function renderGraph(graph: HTMLElement, fullSlug: FullSlug) {
   const height = Math.max(graph.offsetHeight, 250)
 
   const simulation: Simulation<NodeData, LinkData> = forceSimulation<NodeData>(graphData.nodes)
-    .force("charge", forceManyBody().strength(-100 * repelForce))
-    .force("center", forceCenter().strength(centerForce))
-    .force("link", forceLink(graphData.links).distance(linkDistance))
-    .force("collide", forceCollide<NodeData>((n) => nodeRadius(n)).iterations(3))
+    .force('charge', forceManyBody().strength(-100 * repelForce))
+    .force('center', forceCenter().strength(centerForce))
+    .force('link', forceLink(graphData.links).distance(linkDistance))
+    .force('collide', forceCollide<NodeData>(n => nodeRadius(n)).iterations(3))
 
   if (enableRadial)
-    simulation.force("radial", forceRadial((Math.min(width, height) / 2) * 0.8).strength(0.2))
+    simulation.force('radial', forceRadial((Math.min(width, height) / 2) * 0.8).strength(0.2))
 
   const cssVars = [
-    "--secondary",
-    "--tertiary",
-    "--gray",
-    "--light",
-    "--lightgray",
-    "--dark",
-    "--darkgray",
-    "--bodyFont",
-    "--foam",
+    '--secondary',
+    '--tertiary',
+    '--gray',
+    '--light',
+    '--lightgray',
+    '--dark',
+    '--darkgray',
+    '--bodyFont',
+    '--foam',
   ] as const
   const computedStyleMap = cssVars.reduce(
     (acc, key) => {
@@ -221,37 +221,37 @@ async function renderGraph(graph: HTMLElement, fullSlug: FullSlug) {
   let colorParserCtx: CanvasRenderingContext2D | null = null
   const parseColorToHex = (value: string) => {
     if (!colorParserCtx) {
-      colorParserCtx = document.createElement("canvas").getContext("2d")
+      colorParserCtx = document.createElement('canvas').getContext('2d')
     }
     if (!colorParserCtx) return 0xffffff
     colorParserCtx.fillStyle = value.trim()
     const resolved = colorParserCtx.fillStyle
-    if (resolved.startsWith("#")) {
+    if (resolved.startsWith('#')) {
       const hex = resolved.slice(1)
-      return parseInt(hex.length === 3 ? hex.replace(/(.)/g, "$1$1") : hex, 16)
+      return parseInt(hex.length === 3 ? hex.replace(/(.)/g, '$1$1') : hex, 16)
     }
     const parts = resolved.match(/\d+/g)
     if (!parts) return 0xffffff
-    const [r, g, b] = parts.map((part) => parseInt(part, 10))
+    const [r, g, b] = parts.map(part => parseInt(part, 10))
     return (r << 16) + (g << 8) + b
   }
-  const labelTintBase = parseColorToHex(computedStyleMap["--dark"])
-  const labelTintDimmed = parseColorToHex(computedStyleMap["--lightgray"])
+  const labelTintBase = parseColorToHex(computedStyleMap['--dark'])
+  const labelTintDimmed = parseColorToHex(computedStyleMap['--lightgray'])
 
   const color = (d: NodeData) => {
     const isCurrent = d.id === slug
     if (isCurrent) {
-      return computedStyleMap["--secondary"]
-    } else if (visited.has(d.id) || d.id.startsWith("tags/")) {
-      return computedStyleMap["--tertiary"]
+      return computedStyleMap['--secondary']
+    } else if (visited.has(d.id) || d.id.startsWith('tags/')) {
+      return computedStyleMap['--tertiary']
     } else {
-      return computedStyleMap["--gray"]
+      return computedStyleMap['--gray']
     }
   }
 
   function nodeRadius(d: NodeData) {
     const numLinks = graphData.links.filter(
-      (l) => l.source.id === d.id || l.target.id === d.id,
+      l => l.source.id === d.id || l.target.id === d.id,
     ).length
     return 2 + Math.sqrt(numLinks)
   }
@@ -262,7 +262,7 @@ async function renderGraph(graph: HTMLElement, fullSlug: FullSlug) {
   const updateLabelVisibility = () => {
     if (!labelsContainer) return
     labelsContainer.visible =
-      !dragging && labelMode !== "off" && (labelMode !== "hover" || hoveredNodeId !== null)
+      !dragging && labelMode !== 'off' && (labelMode !== 'hover' || hoveredNodeId !== null)
   }
   const linkRenderData: LinkRenderData[] = []
   const nodeRenderData: NodeRenderData[] = []
@@ -387,7 +387,7 @@ async function renderGraph(graph: HTMLElement, fullSlug: FullSlug) {
     backgroundAlpha: 0,
     preference: await determineGraphicsAPI(),
     resolution: window.devicePixelRatio,
-    eventMode: "static",
+    eventMode: 'static',
   })
   graph.appendChild(app.canvas)
 
@@ -397,7 +397,7 @@ async function renderGraph(graph: HTMLElement, fullSlug: FullSlug) {
   labelsContainer = new Container<Text>({ zIndex: 3, isRenderGroup: true })
   const nodesContainer = new Container<Graphics>({ zIndex: 2, isRenderGroup: true })
   const linkContainer = new Container<Graphics>({ zIndex: 1, isRenderGroup: true })
-  const linksGfx = new Graphics({ interactive: false, eventMode: "none" })
+  const linksGfx = new Graphics({ interactive: false, eventMode: 'none' })
   linkContainer.addChild(linksGfx)
   stage.addChild(nodesContainer, labelsContainer, linkContainer)
   updateLabelVisibility()
@@ -407,40 +407,40 @@ async function renderGraph(graph: HTMLElement, fullSlug: FullSlug) {
 
     const txt = new Text({
       interactive: false,
-      eventMode: "none",
+      eventMode: 'none',
       text,
       alpha: 0,
       anchor: { x: 0.5, y: 1.2 },
       style: {
         fontSize: fontSize * 15,
-        fill: "#ffffff",
-        fontFamily: computedStyleMap["--bodyFont"],
+        fill: '#ffffff',
+        fontFamily: computedStyleMap['--bodyFont'],
       },
       resolution: window.devicePixelRatio * 4,
     })
     txt.tint = labelTintBase
     txt.scale.set(defaultScale * zoomScale)
 
-    const isTagNode = label.startsWith("tags/")
+    const isTagNode = label.startsWith('tags/')
     const gfx = new Graphics({
       interactive: true,
       label,
-      eventMode: "static",
+      eventMode: 'static',
       hitArea: new Circle(0, 0, nodeRadius(simulationData)),
-      cursor: "pointer",
+      cursor: 'pointer',
     })
       .circle(0, 0, nodeRadius(simulationData))
-      .fill({ color: isTagNode ? computedStyleMap["--foam"] : color(simulationData) })
-      .on("pointerover", (e) => {
+      .fill({ color: isTagNode ? computedStyleMap['--foam'] : color(simulationData) })
+      .on('pointerover', e => {
         updateHoverInfo(e.target.label)
         if (!dragging) renderPixiFromD3()
       })
-      .on("pointerleave", () => {
+      .on('pointerleave', () => {
         updateHoverInfo(null)
         if (!dragging) renderPixiFromD3()
       })
 
-    if (isTagNode) gfx.stroke({ width: 1, color: computedStyleMap["--tertiary"] })
+    if (isTagNode) gfx.stroke({ width: 1, color: computedStyleMap['--tertiary'] })
 
     nodesContainer.addChild(gfx)
     labelsContainer.addChild(txt)
@@ -458,13 +458,13 @@ async function renderGraph(graph: HTMLElement, fullSlug: FullSlug) {
   for (const l of graphData.links) {
     linkRenderData.push({
       simulationData: l,
-      color: computedStyleMap["--lightgray"],
+      color: computedStyleMap['--lightgray'],
       alpha: 1,
       active: false,
     })
   }
 
-  simulation.on("tick", () => {
+  simulation.on('tick', () => {
     markLayoutDirty()
   })
 
@@ -473,8 +473,8 @@ async function renderGraph(graph: HTMLElement, fullSlug: FullSlug) {
     select<HTMLCanvasElement, NodeData | undefined>(app.canvas).call(
       drag<HTMLCanvasElement, NodeData | undefined>()
         .container(() => app.canvas)
-        .subject(() => graphData.nodes.find((n) => n.id === hoveredNodeId))
-        .on("start", function dragstarted(event) {
+        .subject(() => graphData.nodes.find(n => n.id === hoveredNodeId))
+        .on('start', function dragstarted(event) {
           if (!event.active) simulation.alphaTarget(1).restart()
           event.subject.fx = event.subject.x
           event.subject.fy = event.subject.y
@@ -489,13 +489,13 @@ async function renderGraph(graph: HTMLElement, fullSlug: FullSlug) {
           updateHoverInfo(null)
           markLayoutDirty()
         })
-        .on("drag", function dragged(event) {
+        .on('drag', function dragged(event) {
           const initPos = event.subject.__initialDragPos
           event.subject.fx = initPos.x + (event.x - initPos.x) / currentTransform.k
           event.subject.fy = initPos.y + (event.y - initPos.y) / currentTransform.k
           markLayoutDirty()
         })
-        .on("end", function dragended(event) {
+        .on('end', function dragended(event) {
           if (!event.active) simulation.alphaTarget(0)
           event.subject.fx = null
           event.subject.fy = null
@@ -512,11 +512,11 @@ async function renderGraph(graph: HTMLElement, fullSlug: FullSlug) {
     )
   } else {
     for (const node of nodeRenderData) {
-      node.gfx.on("click", () => {
+      node.gfx.on('click', () => {
         window.spaNavigate(
           new URL(resolveRelative(fullSlug, node.simulationData.id), window.location.toString()),
         )
-        graph.classList.remove("active")
+        graph.classList.remove('active')
       })
     }
   }
@@ -544,7 +544,7 @@ async function renderGraph(graph: HTMLElement, fullSlug: FullSlug) {
         [width, height],
       ])
       .scaleExtent([0.25, 4])
-      .on("zoom", ({ transform }) => {
+      .on('zoom', ({ transform }) => {
         currentTransform = transform
         handleZoomBehaviour(transform.x, transform.y, transform.k)
       })
@@ -597,7 +597,7 @@ async function renderGraph(graph: HTMLElement, fullSlug: FullSlug) {
       const isDimmed = hoveredNodeId !== null && !isCurrentlyHover && !isConnected
       let labelTargetAlpha = 0
       if (!dragging) {
-        if (labelMode === "default") {
+        if (labelMode === 'default') {
           labelTargetAlpha = hoveredNodeId
             ? isCurrentlyHover
               ? 1
@@ -605,7 +605,7 @@ async function renderGraph(graph: HTMLElement, fullSlug: FullSlug) {
                 ? 0.8
                 : zoomTextAlpha
             : zoomTextAlpha
-        } else if (labelMode === "hover") {
+        } else if (labelMode === 'hover') {
           labelTargetAlpha = hoveredNodeId && (isCurrentlyHover || isConnected) ? 1 : 0
         }
       }
@@ -640,7 +640,7 @@ async function renderGraph(graph: HTMLElement, fullSlug: FullSlug) {
         linksNeedRender = true
       }
       l.alpha = nextLinkAlpha
-      l.color = l.active ? computedStyleMap["--secondary"] : computedStyleMap["--lightgray"]
+      l.color = l.active ? computedStyleMap['--secondary'] : computedStyleMap['--lightgray']
     }
 
     if (linksNeedRender) {
@@ -695,22 +695,22 @@ function cleanupGlobalGraphs() {
   globalGraphCleanups = []
 }
 
-document.addEventListener("nav", async (e: CustomEventMap["nav"]) => {
-  const notes = document.getElementById("stacked-notes-container")
-  if (notes?.classList.contains("active")) return
+document.addEventListener('nav', async (e: CustomEventMap['nav']) => {
+  const notes = document.getElementById('stacked-notes-container')
+  if (notes?.classList.contains('active')) return
 
   const slug = e.detail.url
 
   addToVisited(simplifySlug(slug))
 
-  const containers = [...document.getElementsByClassName("global-graph-outer")] as HTMLElement[]
+  const containers = [...document.getElementsByClassName('global-graph-outer')] as HTMLElement[]
 
   async function renderGlobalGraph() {
     const slug = getFullSlug(window)
 
     for (const container of containers) {
-      container.classList.add("active")
-      const graphContainer = container.querySelector<HTMLElement>(".global-graph-container")
+      container.classList.add('active')
+      const graphContainer = container.querySelector<HTMLElement>('.global-graph-container')
       registerEscapeHandler(container, hideGlobalGraph)
       if (!graphContainer) continue
       globalGraphCleanups.push(await renderGraph(graphContainer, slug))
@@ -720,15 +720,15 @@ document.addEventListener("nav", async (e: CustomEventMap["nav"]) => {
   function hideGlobalGraph() {
     cleanupGlobalGraphs()
     for (const container of containers) {
-      container.classList.remove("active")
+      container.classList.remove('active')
     }
   }
 
-  async function shortcutHandler(e: HTMLElementEventMap["keydown"]) {
-    if ((e.key === ";" || e.key === "g") && (e.ctrlKey || e.metaKey) && !e.shiftKey) {
+  async function shortcutHandler(e: HTMLElementEventMap['keydown']) {
+    if ((e.key === ';' || e.key === 'g') && (e.ctrlKey || e.metaKey) && !e.shiftKey) {
       e.preventDefault()
-      const anyGlobalGraphOpen = containers.some((container) =>
-        container.classList.contains("active"),
+      const anyGlobalGraphOpen = containers.some(container =>
+        container.classList.contains('active'),
       )
       if (anyGlobalGraphOpen) {
         hideGlobalGraph()
@@ -738,15 +738,15 @@ document.addEventListener("nav", async (e: CustomEventMap["nav"]) => {
     }
   }
 
-  const containerIcons = document.getElementsByClassName("global-graph-icon")
-  Array.from(containerIcons).forEach((icon) => {
-    icon.addEventListener("click", renderGlobalGraph)
-    window.addCleanup(() => icon.removeEventListener("click", renderGlobalGraph))
+  const containerIcons = document.getElementsByClassName('global-graph-icon')
+  Array.from(containerIcons).forEach(icon => {
+    icon.addEventListener('click', renderGlobalGraph)
+    window.addCleanup(() => icon.removeEventListener('click', renderGlobalGraph))
   })
 
-  document.addEventListener("keydown", shortcutHandler)
+  document.addEventListener('keydown', shortcutHandler)
   window.addCleanup(() => {
-    document.removeEventListener("keydown", shortcutHandler)
+    document.removeEventListener('keydown', shortcutHandler)
     cleanupGlobalGraphs()
   })
 })

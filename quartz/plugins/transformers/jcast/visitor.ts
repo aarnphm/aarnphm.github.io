@@ -1,4 +1,4 @@
-import { visit as unistVisit, SKIP, CONTINUE, EXIT } from "unist-util-visit"
+import { visit as unistVisit, SKIP, CONTINUE, EXIT } from 'unist-util-visit'
 import {
   JcastNode,
   JcastCanvas,
@@ -7,7 +7,7 @@ import {
   JcastCanvasGroup,
   JcastVisitor,
   JcastGraphVisitor,
-} from "./types"
+} from './types'
 
 /**
  * Visit nodes in a jcast tree (unist-compatible)
@@ -37,7 +37,7 @@ export function visitAllJcast(tree: JcastNode, visitor: JcastVisitor): void {
  * for each node, making it easier to implement graph algorithms.
  */
 export function visitGraph(canvas: JcastCanvas, visitor: JcastGraphVisitor): void {
-  visitJcast(canvas, ["canvasNode", "canvasGroup"], (node, index, parent) => {
+  visitJcast(canvas, ['canvasNode', 'canvasGroup'], (node, index, parent) => {
     const canvasNode = node as JcastCanvasNode | JcastCanvasGroup
 
     // gather incoming and outgoing edges
@@ -71,9 +71,9 @@ export function walkConnected(
   canvas: JcastCanvas,
   startNodeId: string,
   visitor: JcastGraphVisitor,
-  options: { direction?: "incoming" | "outgoing" | "both"; maxDepth?: number } = {},
+  options: { direction?: 'incoming' | 'outgoing' | 'both'; maxDepth?: number } = {},
 ): void {
-  const { direction = "both", maxDepth = Infinity } = options
+  const { direction = 'both', maxDepth = Infinity } = options
 
   const visited = new Set<string>()
   const queue: Array<{ nodeId: string; depth: number }> = [{ nodeId: startNodeId, depth: 0 }]
@@ -111,7 +111,7 @@ export function walkConnected(
     if (result === true) break
 
     // add connected nodes to queue
-    if (direction === "outgoing" || direction === "both") {
+    if (direction === 'outgoing' || direction === 'both') {
       for (const edge of outgoingEdges) {
         if (!visited.has(edge.data.toNode)) {
           queue.push({ nodeId: edge.data.toNode, depth: depth + 1 })
@@ -119,7 +119,7 @@ export function walkConnected(
       }
     }
 
-    if (direction === "incoming" || direction === "both") {
+    if (direction === 'incoming' || direction === 'both') {
       for (const edge of incomingEdges) {
         if (!visited.has(edge.data.fromNode)) {
           queue.push({ nodeId: edge.data.fromNode, depth: depth + 1 })
@@ -138,9 +138,9 @@ export function findPath(
   canvas: JcastCanvas,
   startNodeId: string,
   endNodeId: string,
-  options: { direction?: "incoming" | "outgoing" | "both" } = {},
+  options: { direction?: 'incoming' | 'outgoing' | 'both' } = {},
 ): string[] | null {
-  const { direction = "both" } = options
+  const { direction = 'both' } = options
 
   const visited = new Set<string>()
   const parent = new Map<string, string>()
@@ -169,7 +169,7 @@ export function findPath(
     // explore neighbors
     const neighbors: string[] = []
 
-    if (direction === "outgoing" || direction === "both") {
+    if (direction === 'outgoing' || direction === 'both') {
       if (node.data?.outgoingEdges) {
         for (const edgeId of node.data.outgoingEdges) {
           const edge = canvas.data.edgeMap.get(edgeId)
@@ -178,7 +178,7 @@ export function findPath(
       }
     }
 
-    if (direction === "incoming" || direction === "both") {
+    if (direction === 'incoming' || direction === 'both') {
       if (node.data?.incomingEdges) {
         for (const edgeId of node.data.incomingEdges) {
           const edge = canvas.data.edgeMap.get(edgeId)
@@ -205,14 +205,14 @@ export function findPath(
 export function findReachableNodes(
   canvas: JcastCanvas,
   startNodeId: string,
-  options: { direction?: "incoming" | "outgoing" | "both"; maxDepth?: number } = {},
+  options: { direction?: 'incoming' | 'outgoing' | 'both'; maxDepth?: number } = {},
 ): Set<string> {
   const reachable = new Set<string>()
 
   walkConnected(
     canvas,
     startNodeId,
-    (node) => {
+    node => {
       reachable.add(node.id!)
     },
     options,

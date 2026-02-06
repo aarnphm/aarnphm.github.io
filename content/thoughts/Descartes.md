@@ -1,5 +1,5 @@
 ---
-date: "2023-12-09"
+date: '2023-12-09'
 description: mathematician, philosopher, mind-body dualism
 id: Descartes
 modified: 2025-12-02 17:06:33 GMT-05:00

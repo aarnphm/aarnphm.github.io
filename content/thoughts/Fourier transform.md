@@ -1,5 +1,5 @@
 ---
-date: "2024-12-17"
+date: '2024-12-17'
 description: the idea of any complex signals can be decomposed into simplifer sin waves.
 id: Fourier transform
 modified: 2025-10-29 02:15:23 GMT-04:00

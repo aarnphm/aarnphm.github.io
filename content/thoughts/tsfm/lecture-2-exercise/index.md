@@ -1,5 +1,5 @@
 ---
-date: "2025-09-04"
+date: '2025-09-04'
 description: This exercise focuses on understanding and optimizing a Byte Pair Encoding (BPE) tokenizer.
 id: index
 modified: 2026-01-02 02:23:13 GMT-05:00

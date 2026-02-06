@@ -1,5 +1,5 @@
 ---
-date: "2024-12-13"
+date: '2024-12-13'
 description: and what is database design anw?
 id: finals
 modified: 2025-10-29 02:16:03 GMT-04:00

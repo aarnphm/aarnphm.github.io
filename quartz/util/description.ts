@@ -1,13 +1,13 @@
-import type { KatexOptions } from "katex"
-import katex from "katex"
-import type { FullSlug } from "./path"
-import { extractWikilinks, resolveWikilinkTarget } from "./wikilinks"
+import type { KatexOptions } from 'katex'
+import katex from 'katex'
+import type { FullSlug } from './path'
+import { extractWikilinks, resolveWikilinkTarget } from './wikilinks'
 
-const defaultKatexOptions: Omit<KatexOptions, "output"> = { strict: true, throwOnError: true }
+const defaultKatexOptions: Omit<KatexOptions, 'output'> = { strict: true, throwOnError: true }
 
 export function renderLatexInString(
   text: string,
-  options: Omit<KatexOptions, "output"> = defaultKatexOptions,
+  options: Omit<KatexOptions, 'output'> = defaultKatexOptions,
 ): string {
   let result = text
 
@@ -40,7 +40,7 @@ export function processWikilinksToHtml(text: string, currentSlug: FullSlug): str
     const resolved = resolveWikilinkTarget(link, currentSlug)
     if (resolved) {
       const displayText = link.alias || link.target
-      const href = `/${resolved.slug}${resolved.anchor || ""}`
+      const href = `/${resolved.slug}${resolved.anchor || ''}`
       const htmlLink = `<a href="${href}" class="internal">${displayText}</a>`
       result = result.replace(link.raw, htmlLink)
     }
