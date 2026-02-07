@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-02-04 17:41:42 GMT-05:00
+modified: 2026-02-06 21:45:27 GMT-05:00
 permalinks:
   - /website
   - /tweets
@@ -2116,6 +2116,10 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://removepaywalls.com/https://www.theatlantic.com/culture/2025/11/dear-james-support-group-last-column/684810/ -- Dear James: When It’s Time to Say Goodbye
+  - [meta]:
+    - date: 02/06/2026
+    - tags: [farewell]
 - https://www.darioamodei.com/essay/the-adolescence-of-technology -- The Adolescence of Technology
   - [meta]:
     - date: 01/26/2026
