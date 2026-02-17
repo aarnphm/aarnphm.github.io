@@ -90,3 +90,4 @@ content/thoughts/external-kv-impl-plan.md filter=lfs diff=lfs merge=lfs -text
 .claude/skills/rfcs/SKILL.md filter=lfs diff=lfs merge=lfs -text
 .claude/skills/rfcs filter=lfs diff=lfs merge=lfs -text
 .claude/skills/rfcs/references filter=lfs diff=lfs merge=lfs -text
+content/posts/HA.md filter=lfs diff=lfs merge=lfs -text

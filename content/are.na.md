@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-02-06 21:45:27 GMT-05:00
+modified: 2026-02-13 19:13:04 GMT-05:00
 permalinks:
   - /website
   - /tweets
@@ -3879,6 +3879,14 @@ title: are.na
   - view: list
   - json: true
 
+- https://www.youtube.com/watch?v=9B4kkaGOozA -- 2748 Robust and Interactable World Models in Computer Vision
+  - [meta]:
+    - date: 02/13/2026
+    - tags: [datasets, computer vision]
+- https://www.youtube.com/watch?v=fQcCCSdAFI8 -- GPU MODE 94: tvm-ffi
+  - [meta]:
+    - date: 02/12/2026
+    - tags: [infrastructure]
 - https://samikhan.ai/blog/countdown-rl.html -- Teaching a Language Model Arithmetic with RL
   - [meta]:
     - date: 02/04/2026
