@@ -1,7 +1,7 @@
 ---
 aliases:
   - advice
-date: '2024-01-23'
+date: "2024-01-23"
 description: A collection of quotes, wisdom, and advice.
 id: quotes
 layout: letter
@@ -16,7 +16,7 @@ metadata:
     text_line    = { character - newline } ;
     ws           = { " " } ;
     character    = ? any printable ascii except newline ? ;
-modified: 2026-02-06 21:48:35 GMT-05:00
+modified: 2026-02-24 04:14:27 GMT-05:00
 seealso:
   - '[[word|dictionary]]'
   - '[[research|wip]]'
@@ -30,6 +30,10 @@ transclude:
   dynalist: false
   title: false
 ---
+
+> Great supine protoplasmic invertebrate jellies
+>
+> Boris Johnson, against Brexit
 
 > Where to now? Where can I go now? Not to the Club Not to pay calls Mankind seems so pitiful So poor Compared to that softened, grateful, last glance She gave me through her tears
 >

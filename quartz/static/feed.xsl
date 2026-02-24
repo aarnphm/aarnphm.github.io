@@ -60,7 +60,7 @@
           <xsl:value-of select="atom:link[@rel='alternate']/@href" />
         </xsl:attribute>redirect &#x2192;</a>
 
-      <p>Visit <a href="https://aboutfeeds.com/">About
+      <p style="margin-left: 0">Visit <a href="https://aboutfeeds.com/">About
           Feeds</a> to get started with newsreaders and subscribing. It’s free. </p>
 
       <blockquote

@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-02-23 23:18:25 GMT-05:00
+modified: 2026-02-23 23:23:32 GMT-05:00
 permalinks:
   - /website
   - /tweets
@@ -6742,6 +6742,10 @@ title: are.na
 
 ## design
 
+- https://www.teamlab.art/e/planets/
+  - [meta]:
+    - date: 02/23/2026
+    - tags: [experiment]
 - https://www.aesop.ca/en/city-guides.html -- Aesop city guide
   - [meta]:
     - date: 01/29/2026
