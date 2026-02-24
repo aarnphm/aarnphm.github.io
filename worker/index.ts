@@ -270,14 +270,6 @@ type Env = {
   PUBLIC_BASE_URL?: string
 } & Cloudflare.Env
 
-type EmailPayload = {
-  subject: string
-  text?: string
-  html?: string
-  recipients: string[]
-  attachments?: { contentId: string; filename: string; contentType: string; content: string }[]
-}
-
 export default {
   async fetch(request, env, ctx): Promise<Response> {
     const url = new URL(request.url)

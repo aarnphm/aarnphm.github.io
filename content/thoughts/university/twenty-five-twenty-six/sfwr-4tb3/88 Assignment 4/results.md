@@ -1,5 +1,5 @@
 ---
-date: "2026-02-10"
+date: '2026-02-10'
 description: conversion, parser
 id: results
 modified: 2026-02-10 21:25:16 GMT-05:00
@@ -47,29 +47,32 @@ You can use `console.log(...)` to output to your web browser's JavaScript consol
 
 ```js
 function isValidCreditCard(sText) {
-    var reVisa = /^4\d{12}(\d{3})?$/;
-    var reMasterCard = /^5[1-5]\d{14}$/;
-    var reAmericanExpr = /^3[47]\d{13}$/;
-    if ((reMasterCard.test(sText) || reVisa.test(sText) || reAmericanExpr.test(sText)) && (luhnCheckSum(sText) === 0)) {
-        element.append('Valid!');
-    } else {
-        element.append('Invalid!');
-    }
+  var reVisa = /^4\d{12}(\d{3})?$/
+  var reMasterCard = /^5[1-5]\d{14}$/
+  var reAmericanExpr = /^3[47]\d{13}$/
+  if (
+    (reMasterCard.test(sText) || reVisa.test(sText) || reAmericanExpr.test(sText)) &&
+    luhnCheckSum(sText) === 0
+  ) {
+    element.append('Valid!')
+  } else {
+    element.append('Invalid!')
+  }
 }
 
 function luhnCheckSum(sCardNum) {
-    var sum = 0;
-    var numDigits = sCardNum.length;
-    var parity = numDigits % 2;
-    for (var i = 0; i < numDigits; i++) {
-        var digit = parseInt(sCardNum[i], 10);
-        if (i % 2 === parity) {
-            digit *= 2;
-            if (digit > 9) digit -= 9;
-        }
-        sum += digit;
+  var sum = 0
+  var numDigits = sCardNum.length
+  var parity = numDigits % 2
+  for (var i = 0; i < numDigits; i++) {
+    var digit = parseInt(sCardNum[i], 10)
+    if (i % 2 === parity) {
+      digit *= 2
+      if (digit > 9) digit -= 9
     }
-    return sum % 10;
+    sum += digit
+  }
+  return sum % 10
 }
 
 isValidCreditCard('378282246310005') // American Express
@@ -79,8 +82,8 @@ isValidCreditCard('5105105105105100') // MasterCard
 
 isValidCreditCard('4111111111111111') // Visa
 isValidCreditCard('4222222222222') // Visa
-var br = document.createElement("br");
-element.appendChild(br);
+var br = document.createElement('br')
+element.appendChild(br)
 
 isValidCreditCard('378282246310003')
 

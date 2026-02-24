@@ -42,6 +42,28 @@ function coerceToArray(input: string | string[]): string[] | undefined {
     .map((tag: string | number) => tag.toString())
 }
 
+function coerceToBoolean(input: unknown): boolean | undefined {
+  if (input === undefined || input === null) return undefined
+  if (typeof input === 'boolean') return input
+  if (typeof input === 'number') return input !== 0
+
+  if (Array.isArray(input)) {
+    for (const value of input) {
+      const coerced = coerceToBoolean(value)
+      if (coerced !== undefined) return coerced
+    }
+    return undefined
+  }
+
+  if (typeof input === 'string') {
+    const normalized = input.trim().toLowerCase()
+    if (['true', 't', 'yes', 'y', '1', 'on'].includes(normalized)) return true
+    if (['false', 'f', 'no', 'n', '0', 'off'].includes(normalized)) return false
+  }
+
+  return undefined
+}
+
 export interface FrontmatterLink {
   raw: string
   slug: FullSlug
@@ -159,8 +181,8 @@ export const FrontMatter: QuartzTransformerPlugin = () => ({
         const cssclasses = coerceToArray(coalesceAliases(data, ['cssclasses']))
         if (cssclasses) data.cssclasses = cssclasses
 
-        const noindex = coerceToArray(coalesceAliases(data, ['noindex', 'unlisted']))
-        if (noindex) data.noindex = noindex
+        const noindex = coerceToBoolean(coalesceAliases(data, ['noindex', 'unlisted']))
+        if (noindex !== undefined) data.noindex = noindex
 
         const currentSlug = file.data.slug as FullSlug | undefined
 
