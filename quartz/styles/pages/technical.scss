@@ -11,6 +11,14 @@ body[data-layout='technical'] {
       display: none;
     }
   }
+
+  .collapse-rail {
+    width: 0;
+
+    & > .collapse-line {
+      width: 0;
+    }
+  }
 }
 
 body[data-layout='technical-tractatus'] {

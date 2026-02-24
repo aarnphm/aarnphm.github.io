@@ -41,7 +41,7 @@ metadata:
     letter        = "a".."z" ;
     digit         = "0".."9" ;
     character     = ? any printable ascii except newline ? ;
-modified: 2026-02-23 21:19:27 GMT-05:00
+modified: 2026-02-24 04:11:26 GMT-05:00
 tags:
   - fruit
   - evergreen
@@ -57,6 +57,18 @@ title: stream
 
 it is possible to love someone without rage.
 
+as if i could live life again, i would repeat EVERY MISTAKES so long as it leads me BACK to you.
+
+```quotes
+now boast thee, death, in thy possession lies a lass unparalleled
+
+Shakespeare
+```
+
+> He was a man, take him for all in all. I shall not look upon his like again.
+
+_this line from Hamlet I would probably would say at my papa's funeral_
+
 ---
 
 ## towards what you love is not what you can reason about
@@ -66,67 +78,88 @@ it is possible to love someone without rage.
   - tags:
     - o/life
 
-for forty minutes with S (my therapist) i kept trying to explain why <INSERT_HERE> matters to me, and every explanation failed as soon as i heard it out loud.
+one of the things S and i kept circling was my tendency to rationalize everything. we had been at this for forty minutes and every answer i gave either had fundamental flaws in its reasoning traces, or simply decayed on contact with air, the way sodium does when you cut it open in first-year chem lab, bright silver for half a second before the oxide eats the surface grey. and the room is not sealed, bc the room has a window facing richmond street where the streetcar wires cut the february sky into segments, and the grey presses in like a fourth presence.
 
-first, i described the way she eats: a short pause before the first bite, as if attention lands before appetite. S wrote something down.
+i said something about the way <INSERT_HERE> pauses between lifting her fork and actually eating, a held beat where her frontal cortex registers what she's about to taste, and then the motion updates, adjusts, followed by her wrist tilting to meet the food at the angle it wants, and the whole cadence of it reminds me of reading a lemma and then the proof that follows, the brief suspension where the claim sits alone before the working-out begins. the therapist writes something.
 
-_i tried again._
+_i try again._
 
-i described her hands. on our second evening she moved the lamp, turned my face toward the light, and checked the old pimple patches along my jawline without making a scene of it. she knew where to press and where not to. S wrote another line.
+i said something about her hands. on the second evening she laced her fingers through my hair and tilted my face toward the lamp. she was looking for the old pimple patches along my jawline. i could feel her thumb trace the edge of one. she didn't say anything about it. she moved to the next. her fingers were cool and they knew where to press and where not to and i sat there and let myself be turned, the way you let a barber turn you, except a barber doesn't leave one hand on the back of your neck after. a barber's hands don't stay warm in your memory for three days, don't keep arriving in the middle of a lecture on cache invalidation, the specific pressure of her index finger on the patch below my left ear. the therapist writes something else.
 
-_i tried a third time._
+_i try a third time._
 
-i said recognition came before acquaintance, that i felt "there you are" before i had enough facts to justify saying it. this is not logically neat, but it is what happened.
+i try to say something about the way she fell asleep on the fourth night. her breathing changed and i knew the exact moment she crossed over, and i kept my arm underneath her even after it went numb, and the numbness spreading up past my elbow was. i lost the sentence. the therapist waited. i wanted to say the numbness meant something, that it contained the whole argument, but it didn't contain an argument. it was just my arm and her breathing and the window open to portland street and the feeling of not wanting to move even a little and i couldn't make any of it argue for anything.
 
-each account was true. none of them held the center. then S stopped writing and said:
+each of these is true. each captures maybe eight percent of the phenomenon and leaves the remainder as residue i can't scrape off the sides of the container. the therapist stops writing and looks at me. she said something that stayed with me for a while:
 
 > "what if the feeling doesn't need to fit a pillar?"
 
-i sat there and saw the pattern. someone presents themselves, i reach for a framework, and the framework lets me postpone answering[^twy-1].
+_i sat there_. the question hung in the room the way the grey hung outside the window. i didn't have an answer. i still don't.
 
-*
+[———]
 
-the mistake was not bad data. the mistake was method.
+perhaps the thing i missed is that love doesn't decompose into lemmas. it sits closer to pain or hunger, primary affect, the kind that has no preconditions. whereas anger needs a narrative and joy needs an object. pain arrives before any story about it. and finally, love might be the same.
 
-i was treating the feeling for <INSERT_HERE> as a hypothesis to test instead of a life to enter. i kept comparing categories (limerence, attachment, compatibility, care structures), as if enough classification would produce certainty. but reason and love run on different operations. reason keeps options open. love closes around one person and changes the field by doing so. once you choose, both of you are different, so the option you thought you were evaluating no longer exists in its previous form[^twy-2].
+the spreadsheet phase ended years ago (though i know people still in it, and i used to be one of them). i'd sit across from <INSERT_HERE> at dinner and the checklist would start running in the background: does this match the limerence profile? does this satisfy the criteria for secure attachment? does the care-structure resemble [[thoughts/being#Heidegger's Being and Time|heidegger's]] fürsorge or is it the dominating version? each framework gave me purchase on the feeling, and i kept reaching for more purchase, because purchase is what engineers reach for. murdoch writes about love as attention, the just and loving gaze directed upon an individual reality. attention means your concepts have to go quiet so the thing in front of you can come through. mine were loud. i had limerence theory and attachment models and phenomenological categories all running concurrently and they took up the entire channel. somewhere behind them <INSERT_HERE> was sitting there, pausing between lifting her fork and actually eating, and i was modeling the pause. the model ran fine. the pause was already over.[^twy-2]
 
-this is why the analysis felt precise and still missed the event. i was outside the room, taking notes on a party, then asking why i did not feel the party.
+and the comparing. i kept comparing, holding options open to evaluate them, and comparison requires distance. the moment i started checking whether what i felt matched some template, i had already moved from inside the feeling to above it, narrating. the audit changes the books. the bet changes what you're betting on.
 
-i have done this before. at twenty-one i argued romance was friendship plus physical attraction, therefore manageable by better rules. that reduction bought control, but only by deleting what was irreducible. the engineering move was clean and emotionally false[^twy-3].
+sherry writes that desire isn't caused, it IS. to quote Augustine: "i was not yet in love, yet i loved to love. i sought what i might love, in love with loving." the wanting precedes its object.
+i remember the group chat message at 21, insisting romantic feelings don't exist, that romance is friendship with a different label, that if you subtract the physical the categories collapse. i was trying to decompose the phenomenon into its components, identify the transfer function, and the decomposition destroyed the thing i was decomposing. twenty-one-year-old me had a correct observation (the boundary between friendship and romance is porous) and drew an incorrect conclusion (therefore romance reduces to friendship). the reduction was comfortable because it eliminated the category i couldn't control. if romance is just friendship-plus-physical, then i can engineer it. i know how to be a good friend. i have the algorithm. the terrifying possibility, the one i was defending against, is that romance involves something irreducible, something that resists decomposition, something that the engineering mind cannot grab hold of because it exists in a register below or beside or prior to the register where engineering operates.[^twy-3]
 
-*
+[———]
 
-in vietnamese there is a word for this: duyên (緣).
+In Vietnamese there is a word for this: duyên (緣). In Chinese, this is also known as 緣分 (yuánfèn).
 
-my aunts ask, "có duyên không?" they are not asking for a compatibility matrix. they are asking whether something real exists between two people before either person can fully account for it.
+it sits somewhere between "fated affinity" and "the particular karma between two people" and "invisible thread that binds people," and there is no english equivalent because english is a language built for propositional clarity, for if-then reasoning, for the kind of causal architecture that this essay is arguing love exceeds. when my aunts talk about relationships they ask "có duyên không?" which is a question about whether the connection has the quality of inevitability that precedes and exceeds any rational justification. they do not ask "is she compatible with you" or "do your life goals align" or "what's her attachment style." they ask whether the thing between you has 'duyên', and if it does, the compatibility questions become secondary, and instruments then tuned to a frequency that's already been established beyond its own detection point.
 
-i used to file this under superstition. i was wrong. it is tacit knowledge, precise in a domain where explicit reasons arrive late. when i try to translate duyên into english, i keep landing on clumsy approximations: affinity, fate, timing, grace. the word works better in use than in definition.
+i used to think this was superstition, chalked to pre-modern thinking. this is the kind of reasoning you outgrow when you learn about cognitive biases and base rates.
+i was wrong in ways that engineers are wrong when they dismiss tacit knowledge as imprecise.
+the knowledge isn't imprecise. the precision operates in a domain that propositional language can't reach.
+Damasio showed that the body evaluates options through felt-sense before conscious deliberation begins, and the felt-sense often outperforms the deliberation, especially in domains where the variable space exceeds what sequential reasoning can traverse. pascal and merleau-ponty arrived at versions of this insight. but duyên is the version that lives in my grandmother's kitchen, in the specific cadence of cantonese-inflected vietnamese my parents speak at home, and it belongs here because it is older than any of these european formulations and it was right about the same thing they were right about, which is that there are forms of knowing that the rational mind can only ratify after the fact, never initiate.[^twy-4]
 
-it also locates love in the between, not in isolated traits. "anh ấy với cô ấy có duyên" points to a relation, not a private property[^twy-4].
+[———]
 
-*
+henrik almost turned johanna down. he writes about this with the specific temperature of someone who nearly made the worst mistake of his life. the problem was that he couldn't compress the relationship into a compelling string of words. his friends weren't excited. other, more legible people wanted to date him. their excitement about the legible options confused him about his own feelings. which reminds me of tranströmer, as if you take jellyfish out of the water their entire form disappears, like when an unspeakable truth is lifted up out of the silence and expressed as lifeless gel. the relationship was a jellyfish. it could only exist in its own medium. the moment he tried to translate it into language that his friends could evaluate, the form collapsed.
 
-henrik wrote that he almost turned johanna down because he could not justify her in language that sounded compelling to other people. that detail matters. translation for an audience can flatten what was alive in direct encounter.
+this is the tolstoy pattern. love happens in the group first and then spreads to the individuals who act it out. prince vasili decides his daughter should marry pierre, arranges repeated proximity, the partygoers get excited, and pierre's confusion about his own feelings gets overwritten by collective certainty. the relationship is optimized for legibility rather than resonance. and of course it's the relationship that makes you want to commit [[#being held against lonesome|suicide-by-duel]].
 
-the vermeer story from sherry points to the same structure. they were not optimizing across all paintings. they wanted this one, then walked until they found it. desire came first, criteria came later.
+the rationalization instinct is a version of this. when i sit in the therapy room trying to explain why <INSERT_HERE>, i am translating the jellyfish into gel. each framework i deploy (attachment theory, care-ethics, phenomenological recognition) is an attempt to make the relationship legible to the therapist, who stands in for the social group, who stands in for the part of my own mind that demands propositional justification before it will commit. and the translation destroys what it translates. the eight-percent capture rate is a feature of the operation, a lossy compression applied to a phenomenon that exists at a resolution reason cannot match.
 
-that is what S was naming. the feeling did not need a pillar because it was never a load-bearing theorem. it was weather. i was in it.
+```quotes
 
-*
+you're not falling in love because you've reduced the Other to a function, and love asks for surrender.
 
-H is in another city tonight. her absence has a physical location in my chest, left side, below the clavicle. breath routes around it on its own.
+Sherry
+```
 
-the frameworks are not useless. they are just downstream. the body commits first, language files the report later.
+the capitalized Other doing the work there, levinas's Other, the face that presents itself without mediation through concepts. <INSERT_HERE>'s face presented itself, which makes me feel summoned rather than attracted. attraction is a force you can analyze (physical, intellectual, circumstantial, compatible values), but summoning is a call from outside the system of forces, a demand that precedes and exceeds the framework you would use to evaluate it. the face would demand "do not reduce me" and then i go to therapy and spend forty minutes reducing.[^twy-5]
 
-có duyên không. yes. then we eat.
+[———]
 
-[^twy-1]: three years ago at a bar, N said, "i want you to see me as i really am," and i immediately switched to epistemology: what claim could i make without overclaiming knowledge. same pattern, same defense.
+![[posts/images/The_Art_of_Painting.webp|The Art of Painting, Vermeer, circa 1666, 1668]]
 
-[^twy-2]: this is where the [[#accumulation of jagged taste|ramsey framing]] breaks. in love, choosing is intervention, not observation. the act changes the distribution.
+the kunsthistorisches museum is habsburg-scale, marble floors and klimt on the ceilings, room after room of rubens and titian and raphael. you walk through it the way you scroll a feed: looking, registering, moving on. ennui is the absence of a promise. restlessness haunts the seeker who doesn't know what they're pursuing. i knew what i was pursuing. i walked past centuries of masterwork and none of it stuck because i wanted one painting.
 
-[^twy-3]: this failure mode is common in tpot-rationalist-adjacent circles: strong maps, weak contact. we narrate feelings in real time and mistake narration for contact.
+then i found it. the search had made it holy. everything else became ordinary retroactively. part of what awed me was that the painting met my desire to look for it. the wanting preceded the seeing and the wanting gave the seeing its shape.
 
-[^twy-4]: english asks for causes ("i love you because"). vietnamese often tolerates relation-first statements ("between them, duyên exists"). that grammar matters.
+i didn't compare the vermeer to the raphaels to determine optimal allocation of aesthetic attention. i wanted THIS painting and walked the corridors until i found it and the finding was the redemption of the wanting. the [[#falling in love|lily field]] works the same way. the path chosen by the act of walking rather than by prior calculation. you are already inside the phenomenon by the time you notice.
+
+the therapist was pointing at this. the feeling doesn't need to fit a pillar because feelings are not the kind of thing that fit pillars. pillars are structural elements designed to support load from above. feelings are weather. you are in the weather. you can model the weather with extraordinary precision, and you are still wet when it rains.
+
+and then i opened this file and tried to write about love and the [[#seeing clearly|instruments]] stopped working.
+
+<INSERT_HERE> is in a city i'm not in right now. the specific weight of her absence has a location in my chest, left side, below the clavicle. i can feel my own breath adjusting around it. the adjustment is involuntary, the body accommodating a new presence the way muscle accommodates a bruise. this is what the frameworks are trying to name. the naming always arrives too late, after the body has already committed, after the breath has already changed, and the name is a report filed after the fact by a department that was not present at the scene.
+
+có duyên không? my aunts would ask. and i would say: yes. and they would nod. and the question would be settled. and we would eat.
+
+[^twy-2]: the [[#accumulation of jagged taste|ramsey framework]] structurally breaks down here. love is a domain where the act of choosing changes the probability distribution, because choosing to love someone transforms both you and them. the "outcome" you were trying to evaluate no longer exists as it was when you started. the observation destroys the quantum state.
+
+[^twy-3]: the TPOT-rationalist-adjacent cohort (my cohort) has a specific version of this failure mode. we are VERY good at building frameworks. we can map the entire emotional landscape with extraordinary precision. and the map sometimes becomes a substitute for the territory. you stop feeling the thing and start narrating the feeling to yourself in real-time, which is a form of dissociation dressed as self-awareness. the narration creates distance from the phenomenon, and the distance feels like understanding, and the feeling-like-understanding prevents actual understanding.
+
+[^twy-4]: there's a deeper linguistic argument here. english's subject-verb-object structure predisposes toward causal reasoning ("i love you BECAUSE"). vietnamese's topic-comment structure allows for relational descriptions that don't require causal justification. "anh ấy với cô ấy có duyên" doesn't translate to "he loves her because X." it translates closer to "between him and her, duyên exists." the grammar locates the phenomenon in the space between the people rather than inside either person's head. the locus of love is the between, the zwischen, and english keeps trying to shove it inside a subject.
+
+[^twy-5]: "you have to want it more than you want to perform wanting it, you have to want the real thing more than you want the story you'll tell about it." the frameworks are the story. the therapy session was the story. this essay is the story. the real thing is happening right now, in my chest, below the clavicle, and i am writing about it instead of sitting with it. i know this. i'm writing it anyway.
 
 ---
 
@@ -158,7 +191,7 @@ the first two are linear-readable. the third is the only genuinely nonlinear opt
 
 so linear probes aren't a convenience approximation. rather, they're matched to the geometry the model actually uses. when a probe finds a concept, the concept is there in the way the model's own downstream layers can access it.
 
-*
+[———]
 
 Neel's pragmatic interpretability vision boils down to a ground truth that _complete reverse-engineering of neural networks is probably intractable_[^probe-pragmatic], and thus they are focusing on _proxy tasks_: specific, safety-relevant questions with measurable answers. "if you succeeded on this task, would you actually update toward believing you'd made progress on your north star?" the ambition narrows from "understand everything" to "detect the behaviors that kill you."
 
@@ -166,7 +199,7 @@ linear probes are the natural instrument for this narrower ambition, where you c
 
 the catch is upstream of the probe. the probe answers the question you formulated. it cannot generate questions. which concepts to probe for, at which layers, under which input distributions: decisions that happen before any linear algebra does. olah frames the bottleneck quantitatively[^probe-olah]. testing whether a research idea is good takes months of execution, yielding maybe 5-10 genuine feedback cycles per year. taste is the compression that lets you skip dead branches.
 
-polanyi[^probe-polanyi]: all knowing moves FROM subsidiary awareness of particulars TO focal awareness of a comprehensive entity. the interp researcher indwells the model's activations, looking THROUGH the numbers rather than AT them. the "something" you're attending to depends on trained intuitions, and those intuitions are themselves tacit, the kind of thing that won't decompose under inspection. nanda describes training taste like training a network (the analogy is self-referential in a way he probably intended). the researcher's internal model has the same structure as the thing it studies.
+polanyi[^probe-polanyi] determines all knowing moves FROM subsidiary awareness of particulars TO focal awareness of a comprehensive entity. the interp researcher indwells the model's activations, looking THROUGH the numbers rather than AT them. the "something" you're attending to depends on trained intuitions, and those intuitions are themselves tacit, the kind of thing that won't decompose under inspection. nanda describes training taste like training a network (the analogy is self-referential in a way he probably intended). the researcher's internal model has the same structure as the thing it studies.
 
 the pragmatic vision accepts this dependency. One should iterate on proxy tasks, publish, let collective taste improve through shared feedback. This is also known as bull-push engineering, where you build bridges before you understand quantum chromodynamics. the probe is a load cell. taste is the structural intuition that tells you which beams to test.
 
