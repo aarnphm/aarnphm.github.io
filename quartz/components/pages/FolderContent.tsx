@@ -180,6 +180,7 @@ export default ((opts?: Partial<FolderContentOptions>) => {
       // If this slug corresponds to a markdown page we know about, just use it directly
       const md = mdBySlug.get(fileSlug)
       if (md) {
+        if (md.frontmatter?.noindex === true) return
         // Augment missing dates so PageList can render consistently
         const folderFallback = currentFolderDates || fileData.dates
         const augmentedDates = {
@@ -287,6 +288,7 @@ export default ((opts?: Partial<FolderContentOptions>) => {
         const relativePath = fileSlug.slice(folderSlug.length + 1)
         if (!relativePath.includes('/')) {
           if (!processed.has(fileSlug)) {
+            if (file.frontmatter?.noindex === true) continue
             const folderFallback = currentFolderDates || fileData.dates
             const augmentedDates = {
               created: file.dates?.created ?? folderFallback?.created ?? defaultDate.created,

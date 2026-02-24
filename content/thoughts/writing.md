@@ -2,7 +2,7 @@
 date: '2023-07-29'
 description: a knowledge distillation and learning process
 id: writing
-modified: 2025-12-24 23:31:39 GMT-05:00
+modified: 2026-02-20 14:12:24 GMT-05:00
 seealso:
   - '[[posts|collections of my personal writing]]'
 tags:
@@ -159,6 +159,8 @@ I keep coming back to this idea where most writing advice assumes you already kn
 
 kepano, _[File over app](https://stephango.com/file-over-app)_
 ```
+
+[Dan's view](https://overreacted.io/a-social-filesystem/) towards a file-first social systems, circa [AT Protocol](https://docs.bsky.app/docs/advanced-guides/atproto)
 
 [Zvi](https://substack.com/@thezvi) also wrote a [blogpost](https://thezvi.substack.com/p/on-writing-1) on some prolific characters structure their arguments in essays, including, but not limited to, PG, Andreesen, Visakan Veerasamy (ribbonfarm), Matt Yglesias, etc.
 

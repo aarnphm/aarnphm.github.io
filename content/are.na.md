@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-02-13 19:13:04 GMT-05:00
+modified: 2026-02-23 23:18:25 GMT-05:00
 permalinks:
   - /website
   - /tweets
@@ -143,6 +143,20 @@ title: are.na
 - [meta]:
   - view: list
 
+- https://xcancel.com/melissa/status/1872487282907009057#m -- Who is Michael Ovitz?
+  - [meta]:
+    - date: 02/23/2026
+    - tags: [biography]
+- https://x.com/_Aaditya_Prasad/status/2021639563425591795 -- Reinforcement Learning from Feature Rewards, Goodfire
+  - [meta]:
+    - date: 02/23/2026
+    - tags: [rl, alignment, engineering]
+- https://x.com/nrehiew_/status/2024491391511122304 -- GLM-5 review notes
+  - [meta]:
+    - date: 02/23/2026
+    - tags: [models]
+    - later: true
+    - importance: 6
 - https://x.com/carl_feynman/status/2016967613042303016?s=46&t=E_gPjnJKDBGnwpVrE7Z-WQ -- My dad (Richard Feynman) being a mercenary polymaths
   - [meta]:
     - date: 01/30/2026
@@ -535,6 +549,10 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://code.storage
+  - [meta]:
+    - date: 02/23/2026
+    - tags: [design, interactive]
 - https://www.synesthesia.club -- synesthesia club
   - [meta]:
     - date: 01/22/2026
@@ -2116,6 +2134,18 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://math.ucr.edu/home/baez/teaching.html -- How To Teach Stuff
+  - [meta]:
+    - date: 02/23/2026
+    - tags: [pedagogy]
+- https://interconnected.org/home/2026/01/15/reminders -- The natural home for AI agents is your Reminders app
+  - [meta]:
+    - date: 02/20/2026
+    - tags: [agentic, systems]
+- https://lucumr.pocoo.org/2024/11/8/what-if-my-tribe-is-wrong/ -- What if My Tribe is Wrong?
+  - [meta]:
+    - date: 02/20/2026
+    - tags: [living]
 - https://removepaywalls.com/https://www.theatlantic.com/culture/2025/11/dear-james-support-group-last-column/684810/ -- Dear James: When It’s Time to Say Goodbye
   - [meta]:
     - date: 02/06/2026
@@ -3879,6 +3909,18 @@ title: are.na
   - view: list
   - json: true
 
+- https://www.anthropic.com/constitution -- Claude's Constitution [**]
+  - [meta]:
+    - date: 02/20/2026
+    - tags: [philosophy, agi]
+    - pinned: true
+    - importance: 9
+    - socials:
+      - views: https://www.anthropic.com/news/core-views-on-ai-safety
+- https://www.dbreunig.com/2026/01/08/a-software-library-with-no-code.html -- A Software Library with No Code
+  - [meta]:
+    - date: 02/20/2026
+    - tags: [engineering, longtermism]
 - https://www.youtube.com/watch?v=9B4kkaGOozA -- 2748 Robust and Interactable World Models in Computer Vision
   - [meta]:
     - date: 02/13/2026
@@ -4984,6 +5026,10 @@ title: are.na
 
 ## opinions
 
+- https://giansegato.com/essays/probabilistic-era -- Building AI Products In The Probabilistic Era
+  - [meta]:
+    - date: 02/23/2026
+    - tags: [products]
 - https://thezvi.substack.com/p/chatgpt-self-portrait -- ChatGPT Self-Portrait
   - [meta]:
     - date: 01/20/2026
@@ -5271,6 +5317,21 @@ title: are.na
 
 ## life is literature
 
+- https://www.henrikkarlsson.xyz/p/on-the-compulsion-to-make-art -- On the compulsion to make art [**]
+  - [meta]:
+    - date: 02/23/2026
+    - tags: [life]
+    - importance: 8
+- https://www.sherryning.com/p/youre-not-falling-in-love-because -- You're not falling in love because you don't want to
+  - [meta]:
+    - date: 02/23/2026
+    - tags: [love]
+    - importance: 5
+- https://www.sherryning.com/p/youre-bored-because-you-dont-love -- You’re bored because you don’t love anything
+  - [meta]:
+    - date: 02/23/2026
+    - tags: [love]
+    - importance: 5
 - https://sf2g.com/terms.html -- SF2G terms in San Francisco
   - [meta]:
     - date: 01/22/2026
@@ -7470,6 +7531,11 @@ title: are.na
 
 ## resources
 
+- https://planetscale.com/blog/processes-and-threads -- Processes and threads [**]
+  - [meta]:
+    - date: 02/23/2026
+    - tags: [systems]
+    - importance: 8
 - https://gist.github.com/rexim/6f2349b548fdead7ed790d1a40915ae1 -- XOR trick
   - [meta]:
     - date: 01/20/2026
@@ -7611,6 +7677,12 @@ title: are.na
 
 ## interfaces
 
+- https://worrydream.com/refs/Kay_1968_-_FLEX,_A_Flexible_Extendable_Language.pdf -- FLEX-A FLEXIBLE EXTENDABLE LANGUAGE
+  - [meta]:
+    - date: 02/23/2026
+    - tags: [proposal, history]
+    - later: true
+    - importance: 8
 - https://x.com/_baku89/status/1848878071585378521 -- An interface defines the metric of search space
   - [meta]:
     - date: 10/02/2025
@@ -7626,8 +7698,12 @@ title: are.na
     - tags: [generative, latent]
   - by interpolating between known embeddings
 
-## fonts
+## typography
 
+- https://ohnotype.co/blog/the-process-of-vulf-mono -- The Process of Vulf Mono
+  - [meta]:
+    - date: 02/23/2026
+    - tags: [fonts, process, design]
 - https://usgraphics.com/products -- US Graphics Company [**]
   - [meta]:
     - date: 01/19/2026
@@ -8781,6 +8857,10 @@ title: are.na
   - view: list
   - json: true
 
+- https://arxiv.org/abs/2408.07666
+  - [meta]:
+    - date: 02/23/2026
+    - tags: [distillation]
 - https://arxiv.org/abs/2601.14175
   - [meta]:
     - date: 01/26/2026
