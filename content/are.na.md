@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-02-23 23:23:32 GMT-05:00
+modified: 2026-03-02 16:44:02 GMT-05:00
 permalinks:
   - /website
   - /tweets
@@ -143,6 +143,33 @@ title: are.na
 - [meta]:
   - view: list
 
+- https://x.com/staysaasy/status/2026747108024365441 -- Insult as-if someone's job is Claude Code Skill
+  - [meta]:
+    - date: 03/02/2026
+    - tags: [meme]
+- https://x.com/techbromemes/status/2026799123815387530 -- Hey can i run this regex, sure go ahead
+  - [meta]:
+    - date: 03/02/2026
+    - tags: [meme]
+- https://x.com/slatestarcodex/status/2027052639146627577 -- W4 of February, circa Scott Alexander
+  - [meta]:
+    - date: 03/01/2026
+    - tags: [life]
+- https://x.com/BoWang87/status/2027941789848514643 -- Tracking via Wifi signals
+  - [meta]:
+    - date: 03/01/2026
+    - tags: [surveillance]
+- https://x.com/tri_dao/status/2026854280846610742 -- Mamba 2 bug bias initialization
+  - [meta]:
+    - date: 02/26/2026
+    - tags: [models]
+- https://x.com/AnthropicAI/status/2026062461007167695 -- Why AI sounds surprisingly like human?
+  - [meta]:
+    - date: 02/25/2026
+    - tags: [alignment]
+    - socials:
+      - alignmentblog: https://alignment.anthropic.com/2026/psm/
+  - well, because it is trained mostly on text written by human?
 - https://xcancel.com/melissa/status/1872487282907009057#m -- Who is Michael Ovitz?
   - [meta]:
     - date: 02/23/2026
@@ -549,6 +576,10 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://507movements.com
+  - [meta]:
+    - date: 02/28/2026
+    - tags: [mechanics]
 - https://code.storage
   - [meta]:
     - date: 02/23/2026
@@ -1034,6 +1065,10 @@ title: are.na
 - [meta]:
   - json: true
 
+- http://www.catb.org/~esr/ -- Eric S. Raymond
+  - [meta]:
+    - date: 03/02/2026
+    - tags: [engineer]
 - https://www.daniellitt.com -- Daniel Litt
   - [meta]:
     - date: 01/30/2026
@@ -2134,6 +2169,39 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://borretti.me/fiction/julia -- Julia [**]
+  - [meta]:
+    - date: 03/02/2026
+    - tags: [fiction]
+    - importance: 6
+- https://www.thetedkarchive.com/library/robert-nozick-anarchy-state-and-utopia -- Anarchy, State, and Utopia
+  - [meta]:
+    - date: 03/02/2026
+    - tags: [books]
+    - later: true
+- https://waitbutwhy.com/2018/04/picking-career.html -- How to Pick a Career (That Actually Fits You)
+  - [meta]:
+    - date: 03/01/2026
+    - tags: [career]
+- https://www.anthropic.com/constitution -- Claude's Constitution
+  - [meta]:
+    - date: 03/01/2026
+    - tags: [longtermism, behaviour]
+    - importance: 9
+    - pinned: true
+- https://resonantcomputing.org -- The Resonant Computing Manifesto
+  - [meta]:
+    - date: 03/01/2026
+    - tags: [manifesto, longtermism]
+- https://writings.stephenwolfram.com/2025/01/who-can-understand-the-proof-a-window-on-formalized-mathematics/ -- Who Can Understand the Proof? A Window on Formalized Mathematics?
+  - [meta]:
+    - date: 02/26/2026
+    - tags: [math, phenomenology]
+- https://paulgraham.com/taste.html -- Taste for Makers
+  - [meta]:
+    - date: 02/25/2026
+    - tags: [taste]
+    - importance: 5
 - https://math.ucr.edu/home/baez/teaching.html -- How To Teach Stuff
   - [meta]:
     - date: 02/23/2026
@@ -2579,6 +2647,8 @@ title: are.na
   - [meta]:
     - date: 12/16/2025
     - tags: [workplace]
+    - importance: 6
+    - pinned: true
 - https://mingyuan.substack.com/p/a-glimpse-of-the-other-side -- A glimpse of the other side
   - [meta]:
     - date: 12/16/2025
@@ -3909,6 +3979,20 @@ title: are.na
   - view: list
   - json: true
 
+- https://blog.vllm.ai/2026/02/27/rocm-attention-backend.html -- Beyond Porting: How vLLM Orchestrates High-Performance Inference on AMD ROCm
+  - [meta]:
+    - date: 03/01/2026
+    - tags: [inference]
+- https://convergentthinking.sh/posts/avnorm/ -- AVNorm
+  - [meta]:
+    - date: 02/26/2026
+    - tags: [norms, topology]
+    - later: true
+- https://convergentthinking.sh/posts/attention-normalizes-the-wrong-norm/ -- Attention Normalizes the Wrong Norm
+  - [meta]:
+    - date: 02/26/2026
+    - tags: [algorithm, attention]
+    - later: true
 - https://www.anthropic.com/constitution -- Claude's Constitution [**]
   - [meta]:
     - date: 02/20/2026
@@ -6318,6 +6402,14 @@ title: are.na
 
 ## stream
 
+- https://www.asimovcollective.com/library
+  - [meta]:
+    - date: 03/01/2026
+    - tags: [pictures]
+- https://faster-llms.vercel.app --  Faster LLM Seminar
+  - [meta]:
+    - date: 02/25/2026
+    - tags: [systems]
 - https://www.loot-drop.io -- The Startup Graveyard
   - [meta]:
     - date: 01/20/2026
@@ -6742,6 +6834,14 @@ title: are.na
 
 ## design
 
+- https://www.aidesignfieldguide.com
+  - [meta]:
+    - date: 03/02/2026
+    - tags: [motion, ai]
+- https://origamiarchive.com
+  - [meta]:
+    - date: 03/02/2026
+    - tags: [web]
 - https://www.teamlab.art/e/planets/
   - [meta]:
     - date: 02/23/2026
@@ -7516,6 +7616,7 @@ title: are.na
   - [meta]:
     - date: 01/17/2026
     - tags: [tooling, prompts]
+    - later: true
 - https://x.com/AmandaAskell/status/1765207842993434880 -- Claude 3 System Prompt
   - [meta]:
     - date: 01/11/2026
@@ -7535,6 +7636,10 @@ title: are.na
 
 ## resources
 
+- https://app.pitch.com/app/presentation/99c7432d-ad07-4664-8def-614e90036116/d9efd338-394e-48e3-8714-a7b6da05dddc/a1efd7c9-b70d-4efe-8500-73b91744cbf2 -- MoE Serving at Modular
+  - [meta]:
+    - date: 02/26/2026
+    - tags: [lectures, slides, inference]
 - https://planetscale.com/blog/processes-and-threads -- Processes and threads [**]
   - [meta]:
     - date: 02/23/2026
@@ -8000,6 +8105,14 @@ title: are.na
 
 ## engineering
 
+- https://github.com/microsoft/TypeScript/issues/14973 -- function parameter bivariance in TypeScript
+  - [meta]:
+    - date: 02/26/2026
+    - tags: [theory, type theory]
+- https://fly.io/blog/design-and-implementation/ -- The Design & Implementation of Sprites
+  - [meta]:
+    - date: 02/26/2026
+    - tags: [container, oci]
 - https://github.com/anthropics/claude-code/issues/14391 -- Claude Code workaround with Chrome
   - [meta]:
     - date: 01/26/2026
@@ -8488,6 +8601,26 @@ title: are.na
 
 ## organizations
 
+- https://www.akrivia.com/collection/collection-rexhep-rexhepi/ -- Rexhep Rexhepi Collection
+  - [meta]:
+    - date: 03/01/2026
+    - tags: [watch]
+- https://www.fpjourne.com/en/collection/classique-collection/ffc -- F.P. Journe
+  - [meta]:
+    - date: 03/01/2026
+    - tags: [watch]
+- https://simonbrette.com/en/product/timepiece-chronometre-artisans-titanium/ -- Simon Brette
+  - [meta]:
+    - date: 03/01/2026
+    - tags: [watch]
+- https://www.petermann-bedat.ch/%C3%A0-propos -- Petermann Bedat
+  - [meta]:
+    - date: 03/01/2026
+    - tags: [watch]
+- https://urbanjurgensen.com/products/uj-1 -- Urban Jurgensen [UJ-1]
+  - [meta]:
+    - date: 02/28/2026
+    - tags: [watch]
 - https://archiveofourown.org/works/20223610/chapters/47927191 -- For Guidance, Please See the Corporate Interpersonal Relationship Policy
   - [meta]:
     - date: 01/23/2026

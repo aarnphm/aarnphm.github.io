@@ -268,6 +268,15 @@ wheels = [
 ]
 
 [[package]]
+name = "astor"
+version = "0.8.1"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/5a/21/75b771132fee241dfe601d39ade629548a9626d1d39f333fde31bc46febe/astor-0.8.1.tar.gz", hash = "sha256:6a6effda93f4e1ce9f618779b2dd1d9d84f1e32812c23a29b3fff6fd7f63fa5e", size = 35090, upload-time = "2019-12-10T01:50:35.51Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/c3/88/97eef84f48fa04fbd6750e62dcceafba6c63c81b7ac1420856c8dcc0a3f9/astor-0.8.1-py2.py3-none-any.whl", hash = "sha256:070a54e890cefb5b3739d19f30f5a5ec840ffc9c50ffa7d23cc9fc1a38ebbfc5", size = 27488, upload-time = "2019-12-10T01:50:33.628Z" },
+]
+
+[[package]]
 name = "asttokens"
 version = "3.0.0"
 source = { registry = "https://pypi.org/simple" }
@@ -909,6 +918,7 @@ source = { editable = "." }
 dependencies = [
     { name = "bytecode" },
     { name = "graphviz" },
+    { name = "nb-mypy" },
     { name = "nltk" },
     { name = "numpy" },
     { name = "scipy" },
@@ -949,6 +959,7 @@ dev = [
 requires-dist = [
     { name = "bytecode", specifier = ">=0.17.0" },
     { name = "graphviz", specifier = ">=0.21" },
+    { name = "nb-mypy", specifier = ">=1.0.6" },
     { name = "nltk", specifier = ">=3.9.2" },
     { name = "numpy", specifier = ">=2.1.2" },
     { name = "scipy", specifier = ">=1.14.1" },
@@ -2240,6 +2251,20 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/00/dd/40ff412dabf90ef6b99266b0b74f217bb88733541733849e0153a108c750/narwhals-2.6.0.tar.gz", hash = "sha256:5c9e2ba923e6a0051017e146184e49fb793548936f978ce130c9f55a9a81240e", size = 561649, upload-time = "2025-09-29T09:08:56.482Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/50/3b/0e2c535c3e6970cfc5763b67f6cc31accaab35a7aa3e322fb6a12830450f/narwhals-2.6.0-py3-none-any.whl", hash = "sha256:3215ea42afb452c6c8527e79cefbe542b674aa08d7e2e99d46b2c9708870e0d4", size = 408435, upload-time = "2025-09-29T09:08:54.503Z" },
+]
+
+[[package]]
+name = "nb-mypy"
+version = "1.0.6"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "astor" },
+    { name = "ipython" },
+    { name = "mypy" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/33/e8/c3c9cef8ff4e457f40fb6349266acf81428cd1d30d2d747af5aa83f92a7f/nb_mypy-1.0.6.tar.gz", hash = "sha256:3bc0ba53442fbb05800d4529e47862602c966517b20e56542160f66943b2aa14", size = 11108, upload-time = "2025-07-06T07:07:51.838Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/96/ea/32bdae4f0f60ce907c42c413364c117fa76ef18f083e210fa566010c840d/nb_mypy-1.0.6-py3-none-any.whl", hash = "sha256:d3c0426d3c84b407adaaea961f268abdae353e08044ba420918a459191c7823f", size = 7755, upload-time = "2025-07-06T07:07:50.392Z" },
 ]
 
 [[package]]
