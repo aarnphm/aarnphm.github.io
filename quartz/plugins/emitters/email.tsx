@@ -426,10 +426,10 @@ const applyEmailStyles = (
     }
     switch (node.tagName) {
       case 'article':
-        mergeStyle(node, 'margin: 0;')
+        mergeStyle(node, 'margin: 1rem;')
         break
       case 'section':
-        mergeStyle(node, 'margin: 0;')
+        mergeStyle(node, 'margin: 1rem;')
         break
       case 'p':
         mergeStyle(node, 'margin: 0 0 18px 0;')
