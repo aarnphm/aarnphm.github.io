@@ -370,7 +370,7 @@ export default {
       }))
       const buildPayload = (recipient: string[]) => ({
         from: `Aaron Pham <${env.EMAIL_SENDER}>`,
-        to: [...recipient],
+        bcc: [...recipient],
         subject,
         ...(text ? { text } : {}),
         ...(html ? { html } : {}),
