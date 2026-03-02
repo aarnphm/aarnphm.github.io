@@ -49,9 +49,6 @@ binding = "BROWSER"
 binding = "AI"
 remote = true
 
-[[send_email]]
-name = "EMAIL"
-
 [[routes]]
 pattern = "aarnphm.xyz"
 custom_domain = true

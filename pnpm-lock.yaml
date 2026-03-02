@@ -214,9 +214,6 @@ importers:
       micromorph:
         specifier: ^0.4.5
         version: 0.4.5
-      mimetext:
-        specifier: ^3.0.28
-        version: 3.0.28
       minimatch:
         specifier: ^10.2.4
         version: 10.2.4
