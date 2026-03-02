@@ -90,8 +90,10 @@ export default ((userOpts?: Options) => {
               }}
             />
           )}
-          {slug==="stream" && (
-            <a href="/stream/index.xml" class="internal" data-no-popover style="font-style: italic">rss</a>
+          {slug === 'stream' && (
+            <a href="/stream/index.xml" class="internal" data-no-popover style="font-style: italic">
+              rss
+            </a>
           )}
         </hgroup>
       )

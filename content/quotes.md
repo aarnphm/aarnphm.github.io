@@ -16,7 +16,7 @@ metadata:
     text_line    = { character - newline } ;
     ws           = { " " } ;
     character    = ? any printable ascii except newline ? ;
-modified: 2026-02-24 04:14:27 GMT-05:00
+modified: 2026-02-27 19:03:14 GMT-05:00
 seealso:
   - '[[word|dictionary]]'
   - '[[research|wip]]'
@@ -31,9 +31,29 @@ transclude:
   title: false
 ---
 
+> A person who works with their hand is a labour. A person who works with their hand, and their brain is a craftsman. A person who works with their hand, their brain, and their heart is an artist. _Be an artist_.
+>
+> Marco Pierre White
+
+> All sins are attempts to fill voids.
+>
+> Simone Weil
+
+> ...Copernicus' aesthetic objections to [equants] provided one essential motive for his rejection of the Ptolemaic system....
+>
+> Thomas Kuhn, The Copernican Revolution
+
+> All of us had been trained by Kelly Johnson and believed fanatically in his insistence that an airplane that looked beautiful would fly the same way.
+>
+> Ben Rich, Skunk Works
+
+> Beauty is the first test: there is no permanent place in this world for ugly mathematics.
+>
+> G. H. Hardy, A Mathematician's Apology
+
 > Great supine protoplasmic invertebrate jellies
 >
-> Boris Johnson, against Brexit
+> Boris Johnson, _against Brexit_
 
 > Where to now? Where can I go now? Not to the Club Not to pay calls Mankind seems so pitiful So poor Compared to that softened, grateful, last glance She gave me through her tears
 >

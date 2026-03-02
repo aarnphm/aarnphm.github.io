@@ -27,6 +27,8 @@ import { QuartzPluginData } from '../vfile'
 const name = 'EmailEmitter'
 const emailsPath = path.join(QUARTZ, 'static', 'emails.txt')
 const imageExtensions = new Set(['.avif', '.gif', '.jpg', '.jpeg', '.png', '.svg', '.webp'])
+type EmailAttachment = { contentId: string; filename: string; contentType: string; content: string }
+type EmailSignatureAsset = { contentType: string; content: string; width: number; height: number }
 const EmptyFooter: QuartzComponent = () => null
 const DEFAULT_SANS_SERIF =
   'system-ui, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"'
@@ -245,7 +247,7 @@ const stripEmailNodes = (root: Root) => {
   const parentMap = buildParentMap(root)
   const removals: Array<{ parent: Element | Root; index: number }> = []
   visit(root, 'element', (node: Element, index, parent) => {
-    if (!parent || index === null) return
+    if (!parent || index == null) return
     if (node.tagName === 'script' || node.tagName === 'style') {
       removals.push({ parent: parent as Element | Root, index })
       return
@@ -261,6 +263,57 @@ const stripEmailNodes = (root: Root) => {
   removals
     .sort((a, b) => b.index - a.index)
     .forEach(({ parent, index }) => parent.children.splice(index, 1))
+}
+
+const readEmailSignatureAsset = (fileData: QuartzPluginData): EmailSignatureAsset | null => {
+  const value = fileData.emailSignature
+  if (!value || typeof value !== 'object') return null
+  const candidate = value as Record<string, unknown>
+  if (typeof candidate.contentType !== 'string' || candidate.contentType.length === 0) return null
+  if (typeof candidate.content !== 'string' || candidate.content.length === 0) return null
+  if (typeof candidate.width !== 'number' || !Number.isFinite(candidate.width)) return null
+  if (typeof candidate.height !== 'number' || !Number.isFinite(candidate.height)) return null
+  return {
+    contentType: candidate.contentType,
+    content: candidate.content,
+    width: Math.max(1, Math.ceil(candidate.width)),
+    height: Math.max(1, Math.ceil(candidate.height)),
+  }
+}
+
+const attachSignatureImage = (
+  root: Root,
+  slug: string,
+  signature: EmailSignatureAsset | null,
+  attachments: EmailAttachment[],
+) => {
+  if (!signature) return
+  visit(root, 'element', (node: Element, index, parent) => {
+    if (!parent || index == null) return
+    if (node.tagName !== 'p' || !classList(node).includes('signature')) return
+    const contentId = `${slug.replace(/[^a-z0-9]/gi, '-')}-signature-${attachments.length + 1}`
+    attachments.push({
+      contentId,
+      filename: 'signature.png',
+      contentType: signature.contentType,
+      content: signature.content,
+    })
+    const imgNode: Element = {
+      type: 'element',
+      tagName: 'img',
+      properties: {
+        src: `cid:${contentId}`,
+        alt: 'signature',
+        width: String(signature.width),
+        height: String(signature.height),
+        style: 'display:block;margin:0 0 18px auto;max-width:100%;height:auto;',
+      },
+      children: [],
+    }
+    const container = parent as Element | Root
+    container.children.splice(index, 1, imgNode)
+    return EXIT
+  })
 }
 
 const applySignatureStyles = (root: Root, stroke: string) => {
@@ -667,12 +720,8 @@ export const EmailEmitter: QuartzEmitterPlugin = () => {
         const root = extractEmailRoot(renderedRoot)
         stripEmailNodes(root)
         applySignatureStyles(root, colors.dark)
-        const attachments: {
-          contentId: string
-          filename: string
-          contentType: string
-          content: string
-        }[] = []
+        const attachments: EmailAttachment[] = []
+        attachSignatureImage(root, slug, readEmailSignatureAsset(fileData), attachments)
         const replacements = new Map<string, string>()
         const pending = new Map<string, { nodes: Element[]; sourcePath: string }>()
         const filePath = fileData.filePath!

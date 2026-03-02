@@ -65,6 +65,7 @@ async function convertMedia(contentDir: string) {
         '**/library',
         '**/lyd.md',
         '**/trtllm structured outputs with speculative decoding.md',
+        'content/thoughts/university/twenty-five-twenty-six/**/*',
       ],
     })
 

@@ -1,4 +1,5 @@
 import { Root } from 'hast'
+import type { StreamEntry } from '../transformers/stream'
 import { sharedPageComponents, defaultContentPageLayout } from '../../../quartz.layout'
 import { FullPageLayout } from '../../cfg'
 import HeaderConstructor from '../../components/Header'
@@ -13,6 +14,35 @@ import { StaticResources } from '../../util/resources'
 import { QuartzPluginData } from '../vfile'
 import { write } from './helpers'
 
+const truthyStreamFlag = (value: unknown): boolean => {
+  if (typeof value === 'boolean') return value
+  if (typeof value === 'number') return value !== 0
+  if (typeof value === 'string') {
+    const normalized = value.trim().toLowerCase()
+    return (
+      normalized === 'true' || normalized === '1' || normalized === 'yes' || normalized === 'on'
+    )
+  }
+  return false
+}
+
+const isPublishedStreamEntry = (entry: StreamEntry): boolean => {
+  const metadata = entry.metadata as Record<string, unknown>
+  const draft = truthyStreamFlag(metadata.draft)
+  const privateFlag = truthyStreamFlag(metadata.private)
+  return !draft && !privateFlag
+}
+
+const filterUnpublishedStreamEntries = (fileData: QuartzPluginData): QuartzPluginData => {
+  const entries = fileData.streamData?.entries
+  if (!entries) return fileData
+
+  const publishedEntries = entries.filter(isPublishedStreamEntry)
+  if (publishedEntries.length === entries.length) return fileData
+
+  return { ...fileData, streamData: { ...fileData.streamData, entries: publishedEntries } }
+}
+
 async function processStreamPage(
   ctx: BuildCtx,
   tree: Root,
@@ -22,12 +52,13 @@ async function processStreamPage(
   resources: StaticResources,
 ) {
   const slug = fileData.slug!
+  const publishedFileData = filterUnpublishedStreamEntries(fileData)
   const cfg = ctx.cfg.configuration
   const externalResources = pageResources(pathToRoot(slug), resources, ctx)
 
   const componentData: QuartzComponentProps = {
     ctx,
-    fileData,
+    fileData: publishedFileData,
     externalResources,
     cfg,
     children: [],

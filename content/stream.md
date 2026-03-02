@@ -1,4 +1,7 @@
 ---
+claude:
+  session:
+    de267fbc-83bd-4344-a349-2ab5d4bc3bab: research threads for irreducibility of love
 date: "2025-10-24"
 description: a microblog within a blog, at the middle of the night.
 id: stream
@@ -41,11 +44,32 @@ metadata:
     letter        = "a".."z" ;
     digit         = "0".."9" ;
     character     = ? any printable ascii except newline ? ;
-modified: 2026-02-24 04:11:26 GMT-05:00
+modified: 2026-03-01 17:50:28 GMT-05:00
 tags:
   - fruit
   - evergreen
 title: stream
+---
+
+## the building against the hill
+
+- [meta]:
+  - date: 2026-02-24 10:36:51 GMT-05:00
+  - tags:
+    - progress
+  - description: on transhumanism
+  - draft: true
+
+transhumanism talks about freedom, but most of its institutional forms talk like markets deciding who gets to remain "baseline human".
+
+neofinalism helps me name the hidden structure. every enhancement regime has ends, explicit or implicit. the real question is never "can we upgrade", it is "whose telos gets installed into law, labor, and medicine".
+
+i do not buy the default transhumanist story that technical possibility equals moral progress. without governance constraints, enhancement becomes class sorting, soft coercion, and a narrow metric of human worth.
+
+i still keep one transhumanist intuition: humans can redesign conditions of suffering. but that claim is only defensible inside meliorist limits, reversibility, refusal rights, distributional justice, and institutional accountability.
+
+catastrophic risk remains real. so does everyday domination. a serious future politics has to reduce both.
+
 ---
 
 ## feb, fourteen, twenty six
@@ -54,10 +78,21 @@ title: stream
   - date: 2026-02-14 16:29:20 GMT-05:00
   - tags:
     - love
+  - description: on endgame plays.
 
-it is possible to love someone without rage.
+```poetry
+_it is possible to love someone without rage._
 
-as if i could live life again, i would repeat EVERY MISTAKES so long as it leads me BACK to you.
+    _as if i could live life again_
+    i would repeat EVERY MISTAKES
+      so long as
+        it
+          leads me
+
+BACK to you.
+```
+
+<div class="w-140">
 
 ```quotes
 now boast thee, death, in thy possession lies a lass unparalleled
@@ -65,9 +100,111 @@ now boast thee, death, in thy possession lies a lass unparalleled
 Shakespeare
 ```
 
-> He was a man, take him for all in all. I shall not look upon his like again.
+```quotes
+He was a man, take him for all in all. I shall not look upon his like again.
 
-_this line from Hamlet I would probably would say at my papa's funeral_
+Hamlet, _I would probably would say at my papa's funeral_
+```
+
+> <INSERT_HERE>: Even when we fight?
+>
+> A: _Even when we fight_.
+>
+> <INSERT_HERE>: Even when life gets hard?
+>
+> A: _Especially when_
+>
+> <INSERT_HERE>: What if I mess up?
+>
+> A: _We will figure it out together_.
+>
+> <INSERT_HERE>: What if I fall apart?
+>
+> A: _Then I'll hold the pieces._
+>
+> <INSERT_HERE>: When we're old and wrinkly?
+>
+> A: _I'll still think you are beautiful, poor thing._
+>
+> <INSERT_HERE>: Forever?
+>
+> A: _until the end of time._
+
+</div>
+
+[———]
+
+we have been playing endgames for a long time now. the pattern is legible across every domain where serious people compete: the opening gets recited, the middlegame gets compressed, and human effort migrates to whatever remains unsolved at the terminal position. kasparov burns forty percent of his clock before the middlegame. he plays the first twenty moves from preparation, from memory, from the accumulated weight of every game played by everyone before him. the opening is not where thinking happens anymore. the opening is liturgy. magnus carlsen walked away from the classical world championship not because he couldn't win but because winning had migrated entirely to the endgame, the only position still alive. this is how serious people play now. they recite through the opening, compress the middlegame where they can, and fight only where the tablebase hasn't reached.
+
+war compressed on the same schedule. eisenhower turned the western front into a logistics problem; by the time the men hit the beaches the endgame was already playing. the trenches in eastern ukraine haven't moved in three years. the middlegame is still there, because neither side has the preparation depth to recite past it. technology compresses faster than anything else. when musk tells dwarkesh he reasons from terminal goals, from where the hardware curve will be in five years and works backward, this is a man who has already recited his way to move thirty and is waiting for the endgame to begin. terminal reasoning works for hardware. you can project lithium-ion energy density forward because the curve cooperates. the curve is recitable.
+
+simulation compresses whatever it can reach. human effort migrates to whatever it can't.
+
+[———]
+
+the question the endgame framing never bothers to ask is: endgame of what? toward what terminal position is all this preparation aimed? kasparov's endgame is a won position. eisenhower's is unconditional surrender. musk's is mars. each is identifiable, reachable in principle, the kind of thing you can put on a whiteboard and work backward from. the endgame of chess has a finite number of pieces and a computable tablebase. the endgame of war has a signature on a document. the endgame of technology has a ship on another planet.
+
+and then there is [[thoughts/love|love]]. love presents itself as an endgame. every culture frames it this way: you grow up, you find someone, you build a life together. the terminal position. but love is the only endgame that structurally resists every operation we perform on other endgames. you cannot recite your way to it. you cannot compress the middlegame. you cannot reason backward from the terminal position, because reasoning backward destroys the conditions under which that position could ever be reached.
+
+anne carson understood this before anyone tried to formalize it.[^eg-carson] eros, she writes, is the experience of reaching across the gap between you and the beloved. the gap is not an obstacle to eros. the gap IS eros. the reaching, the distance, the glukupikron, sappho's word for the sweet bitterness of wanting what you cannot fully hold. close the gap and eros ceases to exist, the way a circuit dies when you remove the resistance. carson's eros lives in the space between. the space between is the middlegame. the middlegame is the only place where eros can breathe.
+
+carse drew the line.[^eg-carse] finite games are played for the purpose of winning. infinite games are played for the purpose of continuing the play. chess is a finite game: someone wins, the pieces go back in the box. love is the infinite game. the endgame of love is that there is no endgame. you play to keep playing. the moment you play to win, to reach and lock in the terminal position, you convert the infinite game into a finite one. the finite version is not love. it is acquisition wearing love's face.
+
+byung-chul han sees the mechanism.[^eg-han] the smooth society optimizes friction out of everything: negativity, resistance, discomfort. but eros requires the negativity of the Other, the irreducible strangeness of the person across from you, their capacity to surprise and wound and stay opaque. the dating app is the smoothing machine applied to romance. it eliminates risk, surfaces compatibility, reduces the Other to a profile evaluated before any encounter. badiou warned about exactly this.[^eg-badiou] the attempt to have love without risk, without the event, without the vertigo of committing to someone whose full reality exceeds what you can compute in advance. risk is the event. eliminate the event and there is nothing left to be faithful to.
+
+[———]
+
+the relationship escalator is the endgame script for romance. gahran named it: the default set of milestones every relationship is supposed to hit, in order, on schedule. monogamy, cohabitation, engagement, marriage, children, retirement together. each milestone confirms convergence toward the terminal state. the escalator treats the middlegame of love (the uncertainty, the slow revelation of another person, two nervous systems learning to coexist) as delay, as obstacle, as something to get through. the escalator says: you should be farther along by now.
+
+the rationalist version wears different clothing but runs the same program. compatibility matrices. attachment style diagnostics. the dating spreadsheet. the secretary problem formalized: reject the first thirty-seven percent of candidates, then commit to the next one who exceeds the running maximum.[^eg-secretary] the math is clean. the math also assumes the Other is a passive entry in a database rather than a subject with their own selection criteria, capacity for change, and capacity to choose you back or refuse. the Other's agency breaks the model. it has to break the model. the model requires the Other as object; love requires the Other as subject. you cannot optimize your way to love because the optimization treats the beloved as input to a function, and the beloved is not an input. the beloved is the one asking whether you are worth their risk.
+
+[———]
+
+the middlegame of love is composed entirely of material that resists endgame reasoning. three attempts in a therapy room to say what a feeling is. a fork held midair. pimple patches examined by cool fingers. an arm going numb beneath someone's sleeping weight. none of this recites. none of it compresses into a sequence you can blitz through. every bit of it is small, embodied, unrepeatable, and constitutive.
+
+weil said [[thoughts/Attention|attention]] is the rarest and purest form of generosity. murdoch said it is the just and loving gaze directed upon an individual reality. attention is anti-simulation. simulation compresses; attention expands. simulation extracts the transferable pattern; attention insists on the particular. this person, at this hour, in this light, pausing between lifting the fork and eating. not generalizable. not a data point. not evidence for or against any hypothesis. attending to it is the practice. the practice is the middlegame. there is nothing beyond it.[^eg-attention]
+
+"có duyên không?" is a middlegame question. it does not ask about outcomes (will you marry, will it last, will the position be won). it asks whether the game is live. whether the encounter has the quality of aliveness that precedes evaluation. duyên says nothing about endgames. it says: the position is real. play it.
+
+[———]
+
+hebrews 11 catalogs people who played the middlegame so faithfully it did not matter that they never saw the endgame. abraham left ur for a country he was promised but never possessed. moses led a nation to a border he never crossed. "these all died in faith, not having received the things promised, but having seen them and greeted them from afar." their faithfulness was not in arriving. it was in playing each move as though the terminal position were already present.
+
+cullmann called this inaugurated eschatology.[^eg-eschatology] D-Day has happened. VE-Day has not. the decisive event is behind you, the consummation ahead of you, and you live in the gap. already begun, not yet finished. the promise is sealed. the fulfillment is deferred. you inhabit the tension.
+
+love occupies the same structure. the promise is real. you feel it below the clavicle, in the way your breath adjusts when she falls asleep on your arm. the fulfillment is never fully here. there is no moment in love where you can say: it is finished. every moment of genuine attention is already the complete expression of what love is, and simultaneously not yet everything love will become. the tension is the game. the already-not-yet is the middlegame. there is nowhere else for love to live.
+
+[———]
+
+dogen's shikantaza: just sitting.[^eg-dogen] not sitting in order to reach enlightenment. sitting IS enlightenment. the practice is the end, fully here, in the act. translated: loving IS the arrival. every moment of genuine attention to another person is already the thing itself. you were looking past it.
+
+bataille writes about expenditure without return.[^eg-bataille] the accursed share. the energy every living system produces beyond need demands to be spent. not invested. spent. you do not put time into love hoping for returns. you give it. the giving is irreversible, unrecoverable, non-fungible. the hours do not come back. the economy of love is anti-economical.
+
+the dialogue at the top of this entry. even when we fight? even when life gets hard? what if i mess up? what if i fall apart? every question is a question about the middlegame. every answer is a refusal to skip to the endgame. _we will figure it out together_ is the most middlegame sentence in the language. it promises nothing about the terminal position. it promises only that the next move will be made. that the clock will burn not in the service of winning but in the service of continuing to play.
+
+From the wise word of [Will Manidis](https://x.com/WillManidis):
+
+> Know your vocation. Play the game. Burn the clock.[^eg-marion]
+
+[^eg-carson]: anne carson, _eros the bittersweet_ (princeton, 1986). she reads the greek lyric poets and finds eros structured as a three-part relation: lover, beloved, and the distance sappho calls glukupikron. the sweetness is in the reaching. the bitterness is in the not-having. remove either component and the structure collapses. carson's reading implies that love's middlegame, the reaching, the distance, the bittersweet tension, is not a phase to be overcome but the constitutive structure of eros itself.
+
+[^eg-carse]: james carse, _finite and infinite games_ (1986). "a finite game is played for the purpose of winning, an infinite game for the purpose of continuing the play." if you are playing to win the relationship, to reach and hold the terminal state, you have changed games without noticing.
+
+[^eg-han]: byung-chul han, _the agony of eros_ (2017). "the terror of the Same pervades today's society of positivity." eros requires negativity, the atopic, that which withdraws from the language of the Same. smooth interfaces produce smooth encounters. smooth encounters cannot produce love.
+
+[^eg-badiou]: alain badiou, _in praise of love_ (2012). "the fundamental task of love is the experience of the world from the point of difference and not from the point of identity." the dating app collapses difference into compatibility. the event of love, the irruption of genuine alterity, requires exactly the risk that optimization is designed to eliminate.
+
+[^eg-secretary]: the optimal stopping problem, formalized by lindley (1961). reject the first n/e candidates (~37%), accept the next who exceeds all previous. michael trick, the operations researcher, tested this strategy on his own romantic life and rejected the person he later identified as the best match he'd ever met. the algorithm was optimal. his life was not. in adjacent literature: murray et al. (1996) found relationship satisfaction correlates more strongly with positive illusion about one's partner than with calibrated accuracy. the heart's confusion may be load-bearing. you need to see the person as slightly more wonderful than the evidence strictly warrants, and the rationalist instinct toward calibration actively degrades the mechanism that makes relationships work.
+
+[^eg-attention]: bergson distinguishes durée (qualitative, lived time) from temps (measured, spatialized clock time). love exists in durée. the time you spend with someone you love does not tick. it pools, thickens, sometimes dilates. the clock on the wall measures something else entirely. "burn the clock" works as injunction because the clock is tracking the wrong temporal register. love's time is the time of attention, and attention resists quantification.
+
+[^eg-eschatology]: oscar cullmann, _christ and time_ (1946). the already-not-yet is his framework for the entire period between resurrection and parousia. the promise is sealed, the fulfillment deferred, the faithful inhabit the gap. as theological architecture it maps onto temporal phenomenology without requiring belief in the specific content: the STRUCTURE is the insight. you can be certain something has begun without being able to see its completion.
+
+[^eg-dogen]: dogen zenji, _shobogenzo_. "practice-realization" (shusho-ittō): practice and enlightenment are not sequential stages but one continuous act. the sitting IS buddha-nature, not preparation for it. applied here, the middlegame/endgame distinction collapses entirely. every moment of genuine practice is already the endgame. or equivalently, there is no endgame separate from the practice. the game is the prize.
+
+[^eg-bataille]: georges bataille, _the accursed share_ (1949). the sun gives without receiving. surplus energy in any system must be luxuriously spent, without return. love as potlatch: the gift that resists reciprocation because the giving already constituted its full expression of value.
+
+[^eg-marion]: jean-luc marion, _the erotic phenomenon_ (2003). the lover's question is not "does someone love me?" (which waits for guarantee) but "can i love first?" (which advances without one). marion's "ego amans": the self constituted by loving. you do not exist as yourself and then decide to love. you come into being as yourself through the act of loving. the advance is the constitution. this is why the endgame framing fails for love: there is no self standing outside love, evaluating whether to enter it. the self that could evaluate doesn't exist yet. it will only exist once the advance has been made, and the advance is irreversible.
 
 ---
 
@@ -111,7 +248,7 @@ i remember the group chat message at 21, insisting romantic feelings don't exist
 
 In Vietnamese there is a word for this: duyên (緣). In Chinese, this is also known as 緣分 (yuánfèn).
 
-it sits somewhere between "fated affinity" and "the particular karma between two people" and "invisible thread that binds people," and there is no english equivalent because english is a language built for propositional clarity, for if-then reasoning, for the kind of causal architecture that this essay is arguing love exceeds. when my aunts talk about relationships they ask "có duyên không?" which is a question about whether the connection has the quality of inevitability that precedes and exceeds any rational justification. they do not ask "is she compatible with you" or "do your life goals align" or "what's her attachment style." they ask whether the thing between you has 'duyên', and if it does, the compatibility questions become secondary, and instruments then tuned to a frequency that's already been established beyond its own detection point.
+it sits somewhere between "fated affinity" and "the particular karma between two people" and "invisible thread that binds people," and there is no english equivalent because english is a language built for propositional clarity, for if-then reasoning, for the kind of causal architecture that this essay is arguing love exceeds. when my aunts talk about relationships they ask "có duyên không?" which is a question about whether the connection has the quality of inevitability that precedes and exceeds any rational reasoning. they do not ask "is she compatible with you" or "do your life goals align" or "what's her attachment style." they ask whether the thing between you has 'duyên', and if it does, the compatibility questions become secondary, and instruments then tuned to a frequency that's already been established beyond its own detection point.
 
 i used to think this was superstition, chalked to pre-modern thinking. this is the kind of reasoning you outgrow when you learn about cognitive biases and base rates.
 i was wrong in ways that engineers are wrong when they dismiss tacit knowledge as imprecise.
@@ -147,9 +284,9 @@ i didn't compare the vermeer to the raphaels to determine optimal allocation of 
 
 the therapist was pointing at this. the feeling doesn't need to fit a pillar because feelings are not the kind of thing that fit pillars. pillars are structural elements designed to support load from above. feelings are weather. you are in the weather. you can model the weather with extraordinary precision, and you are still wet when it rains.
 
-and then i opened this file and tried to write about love and the [[#seeing clearly|instruments]] stopped working.
+_i proceeded to open this file and tried to write about love and the [[#seeing clearly|instruments]] stopped working._
 
-<INSERT_HERE> is in a city i'm not in right now. the specific weight of her absence has a location in my chest, left side, below the clavicle. i can feel my own breath adjusting around it. the adjustment is involuntary, the body accommodating a new presence the way muscle accommodates a bruise. this is what the frameworks are trying to name. the naming always arrives too late, after the body has already committed, after the breath has already changed, and the name is a report filed after the fact by a department that was not present at the scene.
+[———]
 
 có duyên không? my aunts would ask. and i would say: yes. and they would nod. and the question would be settled. and we would eat.
 
@@ -379,7 +516,7 @@ still figuring out where this sits. probably a gradient, objects slowly accretin
 
 [inferact.ai](https://x.com/woosuk_k/status/2014383490637443380) dropped today (the corporate crystallization of [[thoughts/vllm|vLLM]]). the announcement played out with the predictable rhythm of a silicon valley press release, and it forced me to confront the fluid ontology of building software in a gold rush. we act as if we are building institutions. we are mostly building eddies in a fast current.
 
-the trajectory is standardized by now. open source project accretes value through sheer utility, utility attracts capital, capital demands the construction of a moat (which invariably means closing something that was once open). redis, elastic, hashicorp. the "communitas" of the early contribution graph yields to the rigid hierarchy of the delaware c-corp. roughly 70% of successful oss projects with corporate backing undergo this phase transition within five years[^trans-1], a statistic closer to biological half-life than business metric.
+we see this pattern happen before. icymi Anyscale started with Ray, where the two co-founder decided to build a company out of their research on distributed systems. Kafka sort of started in the same way (we can also see the pattern here with any project comes out of UC Berkeley): open source project accretes value through sheer utility, utility attracts capital, capital demands the construction of a moat (which invariably means closing something that was once open). redis, elastic, hashicorp. the "communitas" of the early contribution graph yields to the rigid hierarchy of the delaware c-corp. roughly 70% of successful oss projects with corporate backing undergo this phase transition within five years[^trans-1], a statistic closer to biological half-life than business metric.
 
 calling this "selling out" misses what's actually happening. heraclitus: the river's identity depends on the changing of its waters. stop the flow and you get a swamp. whitehead pushed further. actual entities aren't static substances that undergo change. they ARE processes-of-becoming. vLLM 2023 and inferact 2026 aren't the same object painted different colors. different societies of occasions, linked by historical inheritance but ontologically distinct. i contributed to the first. i have no idea what the second is.
 
