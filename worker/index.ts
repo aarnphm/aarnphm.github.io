@@ -1,6 +1,4 @@
 import { OAuthProvider } from '@cloudflare/workers-oauth-provider'
-import { EmailMessage } from 'cloudflare:email'
-import { createMimeMessage } from 'mimetext'
 import LFS_CONFIG from './.lfsconfig.txt'
 import handleArxiv from './arxiv'
 import {
@@ -360,45 +358,44 @@ export default {
             )
         : []
 
-      const sender = env.EMAIL_SENDER
-      if (!sender) {
-        return new Response('missing sender', { status: 500 })
+      const apiKey = env.RESEND_API_KEY
+      if (!apiKey) {
+        return new Response('missing resend api key', { status: 500 })
+      }
+      const resendAttachments = attachments.map(a => ({
+        filename: a.filename,
+        content: a.content,
+        content_type: a.contentType,
+        content_id: a.contentId,
+      }))
+      const buildPayload = (recipient: string[]) => ({
+        from: `Aaron Pham <${env.EMAIL_SENDER}>`,
+        to: [...recipient],
+        subject,
+        ...(text ? { text } : {}),
+        ...(html ? { html } : {}),
+        ...(resendAttachments.length > 0 ? { attachments: resendAttachments } : {}),
+      })
+      if (url.searchParams.has('dry')) {
+        return new Response(JSON.stringify(buildPayload(['no-reply@aarnphm.xyz']), null, 2), {
+          status: 200,
+          headers: { 'Content-Type': 'application/json' },
+        })
       }
       try {
-        const buildRawMessage = (recipient: string) => {
-          const msg = createMimeMessage()
-          msg.setSender({ name: 'Aaron Pham', addr: sender })
-          msg.setRecipient('undisclosed-recipients:;')
-          msg.setSubject(subject)
-          msg.setBcc(recipient)
-          if (text) {
-            msg.addMessage({ contentType: 'text/plain', charset: 'utf-8', data: text })
-          }
-          if (html) {
-            msg.addMessage({ contentType: 'text/html', charset: 'utf-8', data: html })
-          }
-          for (const attachment of attachments) {
-            msg.addAttachment({
-              filename: attachment.filename,
-              contentType: attachment.contentType,
-              data: attachment.content,
-              inline: true,
-              headers: { 'Content-ID': attachment.contentId },
-            })
-          }
-          return msg.asRaw().replace(/\r?\n/g, '\r\n')
-        }
-        if (url.searchParams.has('dry')) {
-          const rawMessage = buildRawMessage('no-reply@aarnphm.xyz')
-          return new Response(rawMessage, {
-            status: 200,
-            headers: { 'Content-Type': 'message/rfc822' },
+          const res = await fetch('https://api.resend.com/emails', {
+            method: 'POST',
+            headers: {
+              Authorization: `Bearer ${apiKey}`,
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(buildPayload(recipients)),
           })
-        }
-        for (const recipient of recipients) {
-          const rawMessage = buildRawMessage(recipient)
-          await env.EMAIL.send(new EmailMessage(sender, recipient, rawMessage))
-        }
+          if (!res.ok) {
+            const body = await res.text()
+            return new Response(`resend error for ${recipients}: ${body}`, { status: 502 })
+          }
+
       } catch (err) {
         const message = err instanceof Error ? err.message : String(err)
         return new Response(message, { status: 500 })

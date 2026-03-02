@@ -104,7 +104,6 @@
     "micromark-util-character": "^2.1.1",
     "micromark-util-symbol": "^2.0.1",
     "micromorph": "^0.4.5",
-    "mimetext": "^3.0.28",
     "minimatch": "^10.2.4",
     "motion": "^12.34.4",
     "node-tikzjax": "^1.0.5",
