@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-03-02 16:44:02 GMT-05:00
+modified: 2026-03-02 17:43:47 GMT-05:00
 permalinks:
   - /website
   - /tweets
@@ -1065,6 +1065,11 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://eatonphil.com -- Phil Eaton
+  - [meta]:
+    - date: 03/02/2026
+    - tags: [engineer]
+  - seems like a cool fella
 - http://www.catb.org/~esr/ -- Eric S. Raymond
   - [meta]:
     - date: 03/02/2026
@@ -2169,6 +2174,12 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://notes.eatonphil.com/2026-02-25-i-started-a-company.html -- Phil Eaton's new company
+  - [meta]:
+    - date: 03/02/2026
+    - tags: [company]
+    - socials:
+      - x: https://x.com/eatonphil/status/2026688847635976473
 - https://borretti.me/fiction/julia -- Julia [**]
   - [meta]:
     - date: 03/02/2026
