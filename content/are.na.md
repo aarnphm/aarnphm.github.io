@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-03-02 17:43:47 GMT-05:00
+modified: 2026-03-04 14:11:17 GMT-05:00
 permalinks:
   - /website
   - /tweets
@@ -1065,6 +1065,10 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://elizabethqiu.com -- Elizabeth Qiu
+  - [meta]:
+    - date: 03/04/2026
+    - tags: [engineer]
 - https://eatonphil.com -- Phil Eaton
   - [meta]:
     - date: 03/02/2026
@@ -2174,6 +2178,18 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://www.newyorker.com/magazine/2014/03/31/my-friend-stalins-daughter -- My Friend, Stalin's Daughter
+  - [meta]:
+    - date: 03/04/2026
+    - tags: [biography]
+- https://stanfordreview.org/editors-note-a-brave-new-world/ -- Editor’s Note: A Brave New World
+  - [meta]:
+    - date: 03/04/2026
+    - tags: [longtermism, stanford]
+- https://briarpatchmagazine.com/articles/view/research-for-transforming-the-world-chris-dixon -- Research for transforming the world
+  - [meta]:
+    - date: 03/04/2026
+    - tags: [work, research]
 - https://notes.eatonphil.com/2026-02-25-i-started-a-company.html -- Phil Eaton's new company
   - [meta]:
     - date: 03/02/2026
@@ -3529,6 +3545,10 @@ title: are.na
   - [meta]:
     - date: 01/17/2025
     - tags: [design]
+- https://www.tylerxhobbs.com/words/the-design-philosophy-of-the-qql-algorithm -- QQL algorithm
+  - [meta]:
+    - date: 03/04/2026
+    - tags: [algorithm, design]
 - https://maalvika.substack.com/p/tiktoks-boyfriend-tests-and-the-spectacle -- tiktok boyfriend test and spectacle of modern love
   - [meta]:
     - date: 01/17/2025
@@ -4042,7 +4062,7 @@ title: are.na
     - date: 01/24/2026
     - tags: [systems, infrastructure, optimization]
     - importance: 6
-- https://tsvibt.blogspot.com/2025/11/abstract-advice-to-researchers-tackling.html -- Abstract advice to researchers tackling the difficult core problems of AGI alignmentj
+- https://tsvibt.blogspot.com/2025/11/abstract-advice-to-researchers-tackling.html -- Abstract advice to researchers tackling the difficult core problems of AGI alignment
   - [meta]:
     - date: 01/20/2026
     - tags: [research, alignment]
@@ -8116,6 +8136,10 @@ title: are.na
 
 ## engineering
 
+- https://john.regehr.org/writing/claude_c_compiler.html -- I fuzzed, and Vibe Fixed, the Vibed C Compiler
+  - [meta]:
+    - date: 03/04/2026
+    - tags: [engineering]
 - https://github.com/microsoft/TypeScript/issues/14973 -- function parameter bivariance in TypeScript
   - [meta]:
     - date: 02/26/2026

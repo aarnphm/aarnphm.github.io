@@ -16,7 +16,7 @@ metadata:
     text_line    = { character - newline } ;
     ws           = { " " } ;
     character    = ? any printable ascii except newline ? ;
-modified: 2026-02-27 19:03:14 GMT-05:00
+modified: 2026-03-04 13:51:57 GMT-05:00
 seealso:
   - '[[word|dictionary]]'
   - '[[research|wip]]'
@@ -30,6 +30,10 @@ transclude:
   dynalist: false
   title: false
 ---
+
+> The human obsession with purpose is merely a distraction from the absurdity of existence
+>
+> Nikolai Gogol
 
 > A person who works with their hand is a labour. A person who works with their hand, and their brain is a craftsman. A person who works with their hand, their brain, and their heart is an artist. _Be an artist_.
 >

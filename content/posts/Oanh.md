@@ -1,14 +1,14 @@
 ---
-date: '2024-09-25'
-description: I saw a dog and a duck sitting on a bench the other day. And on growth after death.
+date: "2026-03-04"
+description: on growth after death, a quarter of century report
 draft: true
 id: Oanh
-modified: 2025-11-21 06:07:08 GMT-05:00
+modified: 2026-03-04 14:16:46 GMT-05:00
 tags:
-  - fruit
+  - grief
+  - love
 title: I saw a dog and a duck sitting on a bench the other day.
 ---
 
-_on growth after death, and how to move on_
-
-I'm currently sitting on a train going to [New Build](https://x.com/newsystems_)
+```quotes
+```
