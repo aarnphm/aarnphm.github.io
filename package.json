@@ -87,7 +87,7 @@
     "image-size": "^2.0.2",
     "is-absolute-url": "^5.0.0",
     "js-yaml": "^4.1.1",
-    "katex": "^0.16.35",
+    "katex": "^0.16.37",
     "lightningcss": "^1.31.1",
     "marked": "^17.0.4",
     "mdast-util-find-and-replace": "^3.0.2",
@@ -158,7 +158,7 @@
     "zod": "^4.3.6"
   },
   "devDependencies": {
-    "@cloudflare/workers-types": "^4.20260305.1",
+    "@cloudflare/workers-types": "^4.20260306.1",
     "@types/d3": "^7.4.3",
     "@types/d3-drag": "^3.0.7",
     "@types/d3-force": "^3.0.10",
@@ -167,13 +167,13 @@
     "@types/js-yaml": "^4.0.9",
     "@types/katex": "^0.16.8",
     "@types/mdast": "^4.0.4",
-    "@types/node": "^25.3.3",
+    "@types/node": "^25.3.5",
     "@types/pretty-time": "^1.1.5",
     "@types/source-map-support": "^0.5.10",
     "@types/unist": "^3.0.3",
     "@types/ws": "^8.18.1",
     "@types/yargs": "^17.0.35",
-    "@typescript/native-preview": "7.0.0-dev.20260305.1",
+    "@typescript/native-preview": "7.0.0-dev.20260306.1",
     "ai": "^6.0.116",
     "bibtex-tidy": "^1.14.0",
     "drizzle-kit": "^0.31.9",
@@ -189,7 +189,7 @@
     "ts-morph": "^27.0.2",
     "tsx": "^4.21.0",
     "typescript": "^5.9.3",
-    "wrangler": "^4.70.0"
+    "wrangler": "^4.71.0"
   },
   "engines": {
     "node": ">=22",
