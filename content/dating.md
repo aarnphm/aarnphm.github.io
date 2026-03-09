@@ -4,10 +4,10 @@ aliases:
   - date-me
   - hinge
   - bumble
-date: '2025-08-09'
+date: "2025-08-09"
 description: just another fish in the sea.
 id: dating
-modified: 2026-01-26 14:20:17 GMT-05:00
+modified: 2026-03-05 11:35:09 GMT-05:00
 slides: true
 tags:
   - evergreen
@@ -235,9 +235,7 @@ design
 - I'm a bit of a horology nerd. Watches are generally good investment, and nice accessory, if you know your stuff.
   > [!note]- my collection so far
   >
-  > ![[thoughts/images/A34D3063-8B5C-4784-BC8E-3C018662D9FC_1_105_c.webp]]
-  > ![[thoughts/images/BB9BEC3A-AEFB-41B2-809A-4700E5C4AA15_1_105_c.webp]]
-  > ![[thoughts/images/1527713E-E480-493B-AEB0-60CBAEF1B3D3_1_105_c.webp]]
+  > ![[watch]]
 
 </section>
 
