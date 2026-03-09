@@ -2,11 +2,11 @@
 aliases:
   - friends
   - not dating
-date: '2026-01-17'
+date: "2026-01-17"
 description: my name is Aaron, and on the virtue of friendship
 id: friends
 layout: technical
-modified: 2026-01-26 14:21:53 GMT-05:00
+modified: 2026-03-05 23:01:01 GMT-05:00
 tags:
   - evergreen
   - friend
@@ -16,7 +16,7 @@ title: making friends.
 
 bonjour.
 
-this document details information about me as a _friend_. I also have [[dating|a date-me doc]] {{sidenotes[that I use in the past]: i wrote this one in january/february 2025; i'm no longer actively dating (i.e. i'm seeing someone), but leaving this up given that it was still, an _important document_ to me.}}, though wanting to have a 🧊 🍧 document/site/notes/whatever they are.
+this document details information about me as a _friend_. I used to have [[dating|a date-me doc]] {{sidenotes[that I use in the past]: i wrote this one in january/february 2025; i'm no longer actively dating (i.e. i'm seeing someone), but leaving this up given that it was still, an _important document_ to me.}}, though wanting to have a friend-equivalent document 🧊 🍧 .
 
 quick tl/dr: i used to live in sf for a bit for work, and moved abroad to vancouver since high school, studied and lived in hamilton, and now in toronto. anyhow, will be in toronto for a while, (i have gotten to know a lot more people in toronto now but wouldn't mind expanding my tribe's, circa [[thoughts/images/bcccdd2e-95e6-4023-9c93-9b72b9a0c26b_178356259078.avif|Dunbar's number]]). i'm pretty well-positioned, i.e. having a decent career prospect and pretty set on what to [[research|do]], especially building towards a joyful-[[thoughts/Roko's Basilisk|amicable]]-[[thoughts/AGI#superintelligence|superintelligence]] systems 🧗
 
@@ -24,8 +24,11 @@ quick tl/dr: i used to live in sf for a bit for work, and moved abroad to vancou
 >
 > _that you would definitely not able to grab from this website_
 >
-> i like to [[thoughts/reading|read]] [[antilibrary|books]] and jazz <br/>
-> i like the smell of lavender, and like tiny-neat-thingy
+> i like to [[thoughts/reading|read]] [[antilibrary|books]] and jazz
+>
+> i like the [[thoughts/Scents|smell]] of lavender, and like tiny-neat-thingy
+>
+> i like [[watch|watches]] as well!
 
 ```quotes
 friends are still our first and sometimes best model of someone who chooses to be always on your side.
@@ -33,7 +36,7 @@ friends are still our first and sometimes best model of someone who chooses to b
 Ava, [bookbear express](https://www.avabear.xyz/p/always-on-your-side)
 ```
 
-i like this framing. before romantic love, before family obligation, there's friendship, the relationship you choose without biological accident or legal contract. someone looks at you and decides to keep showing up. yes, i will allocate a portion of my waking hours to be with this person. the structure is different from romance in a way that c.s. lewis noticed: lovers face each other absorbed in one another while friends stand side by side absorbed in something external. you become friends by caring about the same problems. this is why work-friends feel so intense. you're literally shoulder-to-shoulder looking at the same thing for 40+ hours a week.
+i like this framing. before romantic love, before family obligation, there's friendship, i.e. the relationship you choose without biological accident or legal contract. someone looks at you and decides to keep showing up. yes, i will allocate a portion of my waking hours to be with this person. yes, i will be there to pick you up from the airport.c.s. lewis wrote that _lovers face each other absorbed in one another while friends stand side by side absorbed in something external_. you become friends by caring about the same problems. this is also why I found work-friends feel {{sidenotes[so intense]: you're literally shoulder-to-shoulder looking at the same thing for 40+ hours a week}}.
 
 ```quotes
 friendship was what taught me that love is an endurance sport with no finish line.
@@ -41,7 +44,7 @@ friendship was what taught me that love is an endurance sport with no finish lin
 Ava
 ```
 
-Aristotle distinguished three kinds of philia: utility (we exchange value), pleasure (we enjoy each other's company), and virtue (we love each other as we actually are). the first two dissolve when circumstances change. the third endures, because the foundation is who you are rather than what you provide. [^1]
+Aristotle distinguished three kinds of philia: (1) utility (we exchange value), (2) pleasure (we enjoy each other's company), and (3) virtue (we love each other as we actually are). the first two dissolve when circumstances change. the third endures, because the foundation is who you are rather than what you provide. [^1]
 
 [^1]: this maps onto something karlsson observes: "love is friendship on hard mode." romantic relationships aren't a different category from friendship, they're friendship plus difficulty, plus stakes, plus everything that makes it easier to fuck up.
 
@@ -66,8 +69,6 @@ what i look for is presence over performance: people who can sit in a room witho
 i think about my life as being RLHF'd by the people i surround myself with. we populate our concept of the world with them.
 
 i'm not there yet with everyone, but with the people closest to me, i'm trying.
-
----
 
 ```quotes
 a long friendship really is like a marriage. it takes on a shape all its own over many years, and it is an education in intimacy. like marriage, it's nearly impossible to know in the beginning what it will be at the end.

@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-03-04 14:11:17 GMT-05:00
+modified: 2026-03-09 07:55:18 GMT-04:00
 permalinks:
   - /website
   - /tweets
@@ -576,6 +576,10 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://searchwhole.earth -- The (Searchable) Whole Earth
+  - [meta]:
+    - date: 03/04/2026
+    - tags: [index, fuzzy]
 - https://507movements.com
   - [meta]:
     - date: 02/28/2026
@@ -2178,6 +2182,18 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://pub.sakana.ai/Unofficial_Guide/ -- An Unofficial Guide to Prepare for a Research Position Application
+  - [meta]:
+    - date: 03/09/2026
+    - tags: [research, application]
+- https://atelfo.github.io/2025/12/07/going-direct.html -- Going direct: notes on Eli Lilly at a trillion
+  - [meta]:
+    - date: 03/05/2026
+    - tags: [pharma, growth]
+- https://web.archive.org/web/20251121125239/https://www.keithfrankish.com/the-theseans/ -- The Theseans
+  - [meta]:
+    - date: 03/04/2026
+    - tags: [group, manifesto, consciousness]
 - https://www.newyorker.com/magazine/2014/03/31/my-friend-stalins-daughter -- My Friend, Stalin's Daughter
   - [meta]:
     - date: 03/04/2026
@@ -6433,7 +6449,11 @@ title: are.na
 
 ## stream
 
-- https://www.asimovcollective.com/library
+- https://veryprivateart.com -- Very Private Art
+  - [meta]:
+    - date: 03/04/2026
+    - tags: [painting]
+- https://www.asimovcollective.com/library -- Asimov Collective
   - [meta]:
     - date: 03/01/2026
     - tags: [pictures]

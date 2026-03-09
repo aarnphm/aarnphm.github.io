@@ -18,6 +18,7 @@
   display: inline-block;
   font-family: var(--bodyFont);
   grid-column: 3/4;
+  margin: 1rem 0;
 
   @media all and ($tablet) {
     grid-column: 3/-1;

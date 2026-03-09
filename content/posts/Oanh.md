@@ -3,10 +3,13 @@ date: "2026-03-04"
 description: on growth after death, a quarter of century report
 draft: true
 id: Oanh
-modified: 2026-03-04 14:16:46 GMT-05:00
+modified: 2026-03-04 14:17:42 GMT-05:00
+permalinks:
+  - /posts/twenty-five
 tags:
   - grief
   - love
+  - growth
 title: I saw a dog and a duck sitting on a bench the other day.
 ---
 
