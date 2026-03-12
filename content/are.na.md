@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-03-09 07:55:18 GMT-04:00
+modified: 2026-03-12 04:04:56 GMT-04:00
 permalinks:
   - /website
   - /tweets
@@ -576,6 +576,15 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://www.wgsn.com/en -- WGSN [**]
+  - [meta]:
+    - date: 03/09/2026
+    - tags: [forecasting, predictive market]
+    - importance: 8
+- https://walzr.com/last-statements -- Last Statement
+  - [meta]:
+    - date: 03/09/2026
+    - tags: [website, index]
 - https://searchwhole.earth -- The (Searchable) Whole Earth
   - [meta]:
     - date: 03/04/2026
@@ -1069,6 +1078,11 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://www.alexatartaglini.com -- Alexa R. Tartaglini
+  - [meta]:
+    - date: 03/12/2026
+    - tags: [cs, cognitive science]
+  - Judith Fan's [lab](https://cogtoolslab.github.io/about.html).
 - https://elizabethqiu.com -- Elizabeth Qiu
   - [meta]:
     - date: 03/04/2026
@@ -2182,6 +2196,28 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://tseliot.com/essays/the-perfect-critic -- The Perfect Critic
+  - [meta]:
+    - date: 03/12/2026
+    - tags: [critique]
+    - later: true
+- https://geohot.github.io/blog/jekyll/update/2026/01/27/the-importance-of-diversity.html -- The importance of Diversity
+  - [meta]:
+    - date: 03/12/2026
+    - tags: [technology]
+- https://paulgraham.com/greatwork.html -- How to Do Great Work
+  - [meta]:
+    - date: 03/12/2026
+    - tags: [progress]
+- https://www.overcomingbias.com/p/in-praise-of-extortionhtml -- In Praise Of Blackmail
+  - [meta]:
+    - date: 03/09/2026
+    - tags: [extortion, life]
+- https://www.jsnover.com/blog/2026/02/01/welcome-to-the-room -- Welcome to the Room
+  - [meta]:
+    - date: 03/09/2026
+    - tags: [leadership, fiction]
+    - importance: 5
 - https://pub.sakana.ai/Unofficial_Guide/ -- An Unofficial Guide to Prepare for a Research Position Application
   - [meta]:
     - date: 03/09/2026
@@ -2215,8 +2251,8 @@ title: are.na
 - https://borretti.me/fiction/julia -- Julia [**]
   - [meta]:
     - date: 03/02/2026
-    - tags: [fiction]
-    - importance: 6
+    - tags: [fiction, longtermism]
+    - importance: 7
 - https://www.thetedkarchive.com/library/robert-nozick-anarchy-state-and-utopia -- Anarchy, State, and Utopia
   - [meta]:
     - date: 03/02/2026
@@ -3160,6 +3196,7 @@ title: are.na
     - date: 10/02/2025
     - tags: [cs, design]
   - https://www.makingsoftware.com/chapters/color-spaces-models-and-gamuts -- Color space
+  - https://www.makingsoftware.com/chapters/how-is-data-stored -- How is data stored?
 - https://www.benkuhn.net/outliers/ -- Searching for outliers
   - [meta]:
     - date: 10/02/2025
@@ -4026,6 +4063,26 @@ title: are.na
   - view: list
   - json: true
 
+- https://hamel.dev/blog/posts/llm-judge/ -- Using LLM-as-a-Judge For Evaluation: A Complete Guide
+  - [meta]:
+    - date: 03/12/2026
+    - tags: [evals, behaviour]
+- https://colah.github.io/posts/2015-09-NN-Types-FP -- Neural Network, Types, and Functional Programming
+  - [meta]:
+    - date: 03/12/2026
+    - tags: [ml, scope]
+- https://www.primeintellect.ai/blog/inference -- Planetary-Scale Inference: Previewing our Distributed Inference Stack
+  - [meta]:
+    - date: 03/09/2026
+    - tags: [distributed, inference]
+- https://www.1x.tech/discover/world-model-self-learning -- 1X World Model | From Video to Action: A New Way Robots Learn
+  - [meta]:
+    - date: 03/09/2026
+    - tags: [training, models]
+- https://huggingface.co/spaces/eliebak/sparsity-viz -- MoE Model Sparsity
+  - [meta]:
+    - date: 03/09/2026
+    - tags: [visualisation, architecture]
 - https://blog.vllm.ai/2026/02/27/rocm-attention-backend.html -- Beyond Porting: How vLLM Orchestrates High-Performance Inference on AMD ROCm
   - [meta]:
     - date: 03/01/2026
@@ -5179,6 +5236,10 @@ title: are.na
   - [meta]:
     - date: 01/14/2026
     - tags: [osint, tooling]
+- https://www.theatlantic.com/technology/2026/01/anthropic-is-at-war-with-itself/684892/ -- Anthropic is at war with itself
+  - [meta]:
+    - date: 03/12/2026
+    - tags: [progress, transhumanism]
 - https://antirez.com/news/158 -- Don't fall into the anti-AI hype [--]
   - [meta]:
     - date: 01/11/2026
@@ -5448,6 +5509,14 @@ title: are.na
 
 ## life is literature
 
+- https://medium.com/enspiral-tales/the-vibes-theory-of-organisational-design-937a73f791cd -- The vibes theory of organisational design
+  - [meta]:
+    - date: 03/12/2026
+    - tags: [communal, decision theory]
+- https://colah.github.io/personal/micromarriages/ -- Micromarriages
+  - [meta]:
+    - date: 03/12/2026
+    - tags: [life, love, decision analysis]
 - https://www.henrikkarlsson.xyz/p/on-the-compulsion-to-make-art -- On the compulsion to make art [**]
   - [meta]:
     - date: 02/23/2026
@@ -7163,6 +7232,15 @@ title: are.na
 
 ## video
 
+- https://www.youtube.com/watch?v=DA-CozY2isc -- The Hidden Force That Made Everyone Wear Wiide Leg Pants
+  - [meta]:
+    - date: 03/09/2026
+    - tags: [clothes, trends]
+  - wide-leg pants, circa mom-jeans
+- https://www.youtube.com/watch?v=fJcVa4vYMHs -- Christopher Waltz Closet Pick
+  - [meta]:
+    - date: 03/09/2026
+    - tags: [movies]
 - https://www.youtube.com/watch?v=jFJku8sxLWY -- AI math capabilities could be jagged for a long time — Daniel Litt
   - [meta]:
     - date: 01/30/2026
@@ -7551,6 +7629,14 @@ title: are.na
 
 ## arts
 
+- https://www.ssavaart.com/sketchbooks -- Venice Sketchbook
+  - [meta]:
+    - date: 03/12/2026
+    - tags: [drawing, sketch]
+- https://www.phillips.com/detail/ilya-chashnik/184461 -- Ilya Chashnik, Suprematist Composition (Red Square)
+  - [meta]:
+    - date: 03/09/2026
+    - tags: [painting]
 - https://emergenceprojects.com/3/ -- Emergence Projects
   - [meta]:
     - date: 01/18/2026
@@ -7687,6 +7773,13 @@ title: are.na
 
 ## resources
 
+- https://docs.google.com/document/d/1B3Itxfko-DzyzQlF4_Qc73aSTrcPyLpaySRRyD7-EY0/edit?tab=t.0 -- Big Kink Survey (970k cleaned)
+  - [meta]:
+    - date: 03/09/2026
+    - tags: [sex, data]
+    - importance: 8
+    - socials:
+      - dataset: https://drive.google.com/file/d/1qVh44wQdZU3x0ycLEOARbeVUmsUR9zKx/view
 - https://app.pitch.com/app/presentation/99c7432d-ad07-4664-8def-614e90036116/d9efd338-394e-48e3-8714-a7b6da05dddc/a1efd7c9-b70d-4efe-8500-73b91744cbf2 -- MoE Serving at Modular
   - [meta]:
     - date: 02/26/2026
@@ -8156,6 +8249,14 @@ title: are.na
 
 ## engineering
 
+- https://labs.iximiuz.com/tutorials/nodes-proxy-rce-c9e436a9 -- Kubernetes RCE: Exploiting nodes/proxy GET
+  - [meta]:
+    - date: 03/12/2026
+    - tags: [k8s, distributed]
+- https://www.anthropic.com/engineering/building-c-compiler -- Building the Claude C Compiler (CCC)
+  - [meta]:
+    - date: 03/09/2026
+    - tags: [agentic, claude]
 - https://john.regehr.org/writing/claude_c_compiler.html -- I fuzzed, and Vibe Fixed, the Vibed C Compiler
   - [meta]:
     - date: 03/04/2026
@@ -8318,10 +8419,11 @@ title: are.na
     - date: 01/01/2026
     - tags: [tacit]
   - TIL you can reference page by appending `#page=N`
-- http://infolab.stanford.edu/~backrub/google.html -- The Anatomy of a Large-Scale Hypertextual Web Search Engine
+- http://infolab.stanford.edu/~backrub/google.html -- The Anatomy of a Large-Scale Hypertextual Web Search Engine [**]
   - [meta]:
     - date: 01/01/2026
     - tags: [search engine]
+    - importance: 7
 - https://www.youtube.com/watch?v=AF3XJT9YKpM -- Prof. Judy Fan: Cognitive Tools for Making the Invisible Visible [**]
   - [meta]:
     - date: 12/25/2025
@@ -8654,28 +8756,54 @@ title: are.na
     - tags: [engineering, compilers]
   - see also [[thoughts/pdfs/Efficient Implementation of the Smalltalk-80 System.pdf]]
 
-## organizations
+## watches
 
+- [meta]:
+  - json: true
+
+- https://www.youtube.com/watch?v=LKi6ZjnrHyY -- Independent Watch Brands
+  - [meta]:
+    - date: 03/09/2026
+    - tags: [archive]
+- https://www.danielslondon.com -- George Daniels
+  - [meta]:
+    - date: 03/09/2026
+    - tags: [watchmaker]
 - https://www.akrivia.com/collection/collection-rexhep-rexhepi/ -- Rexhep Rexhepi Collection
   - [meta]:
     - date: 03/01/2026
-    - tags: [watch]
+    - tags: [collection]
 - https://www.fpjourne.com/en/collection/classique-collection/ffc -- F.P. Journe
   - [meta]:
     - date: 03/01/2026
-    - tags: [watch]
+    - tags: [brand]
 - https://simonbrette.com/en/product/timepiece-chronometre-artisans-titanium/ -- Simon Brette
   - [meta]:
     - date: 03/01/2026
-    - tags: [watch]
+    - tags: [brand]
 - https://www.petermann-bedat.ch/%C3%A0-propos -- Petermann Bedat
   - [meta]:
     - date: 03/01/2026
-    - tags: [watch]
+    - tags: [brand]
+- https://www.marcolangwatches.com/en/main-page/#passion -- Marco Lang
+  - [meta]:
+    - date: 03/09/2026
+    - tags: [brand]
 - https://urbanjurgensen.com/products/uj-1 -- Urban Jurgensen [UJ-1]
   - [meta]:
     - date: 02/28/2026
     - tags: [watch]
+- https://www.breitling.com/ca-en/ -- Breitling
+  - [meta]:
+    - date: 03/09/2026
+    - tags: [brand]
+- https://www.jaeger-lecoultre.com/ca-en -- Jaeger-LeCoultre
+  - [meta]:
+    - date: 03/09/2026
+    - tags: [brand]
+
+## organizations
+
 - https://archiveofourown.org/works/20223610/chapters/47927191 -- For Guidance, Please See the Corporate Interpersonal Relationship Policy
   - [meta]:
     - date: 01/23/2026
@@ -8806,10 +8934,11 @@ title: are.na
     - tags: [information theory, math]
     - socials:
       - wikipedia: https://en.wikipedia.org/wiki/Tunstall_coding
-- https://lawrencecpaulson.github.io/2026/01/15/Broken_proofs.html -- Broken proofs and broken provers
+- https://lawrencecpaulson.github.io/2026/01/15/Broken_proofs.html -- Broken proofs and broken provers [**]
   - [meta]:
     - date: 01/17/2026
-    - tags: [verification, memories]
+    - tags: [verification, errors]
+    - importance: 7
   - > A close examination of almost any proof published in a mathematics journal will identify errors. Most are easy to fix, but the persistence of errors must undermine our confidence in published mathematics.
   - ```quotes
     The result of Problem 11 contradicts the results announceed by Levy [1963b]. Unfortunately, the construction presented there cannot be completed.
@@ -9049,10 +9178,31 @@ title: are.na
   - view: list
   - json: true
 
+- https://machinelearning.apple.com/research/streaming-transformer -- Streaming Transformer for Hardware Efficient Voice Trigger Detection and False Trigger Mitigation
+  - [meta]:
+    - date: 03/12/2026
+    - tags: [continual learning, models]
+    - later: true
+- https://machinelearning.apple.com/research/codeact -- CodeAct: Your LLM Agent Acts Better when Generating Code
+  - [meta]:
+    - date: 03/12/2026
+    - tags: [agentic, codegen, rl]
+    - later: true
+- https://pmc.ncbi.nlm.nih.gov/articles/PMC8419822/#Sec13 -- A Review of Parallel Implementations for the Smith–Waterman Algorithm
+  - [meta]:
+    - date: 03/12/2026
+    - tags: [path, optimization, graph theory]
+    - later: true
+- https://www.cell.com/patterns/fulltext/S2666-3899(25)00214-4 --  The widespread adoption of large language model-assisted writing across society
+  - [meta]:
+    - date: 03/09/2026
+    - tags: [writing]
+    - later: true
 - https://arxiv.org/abs/2408.07666
   - [meta]:
     - date: 02/23/2026
     - tags: [distillation]
+    - later: true
 - https://arxiv.org/abs/2601.14175
   - [meta]:
     - date: 01/26/2026

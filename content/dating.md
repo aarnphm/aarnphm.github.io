@@ -4,7 +4,7 @@ aliases:
   - date-me
   - hinge
   - bumble
-date: "2025-08-09"
+date: '2025-08-09'
 description: just another fish in the sea.
 id: dating
 modified: 2026-03-05 11:35:09 GMT-05:00
