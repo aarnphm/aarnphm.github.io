@@ -2,7 +2,7 @@
 aliases:
   - friends
   - not dating
-date: "2026-01-17"
+date: '2026-01-17'
 description: my name is Aaron, and on the virtue of friendship
 id: friends
 layout: technical

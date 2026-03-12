@@ -1,5 +1,5 @@
 ---
-date: "2026-03-04"
+date: '2026-03-04'
 description: horology nerd.
 id: watch
 layout: technical

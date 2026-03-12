@@ -383,19 +383,15 @@ export default {
         })
       }
       try {
-          const res = await fetch('https://api.resend.com/emails', {
-            method: 'POST',
-            headers: {
-              Authorization: `Bearer ${apiKey}`,
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(buildPayload(recipients)),
-          })
-          if (!res.ok) {
-            const body = await res.text()
-            return new Response(`resend error for ${recipients}: ${body}`, { status: 502 })
-          }
-
+        const res = await fetch('https://api.resend.com/emails', {
+          method: 'POST',
+          headers: { Authorization: `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify(buildPayload(recipients)),
+        })
+        if (!res.ok) {
+          const body = await res.text()
+          return new Response(`resend error for ${recipients}: ${body}`, { status: 502 })
+        }
       } catch (err) {
         const message = err instanceof Error ? err.message : String(err)
         return new Response(message, { status: 500 })
