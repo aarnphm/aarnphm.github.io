@@ -1,13 +1,13 @@
 ---
-date: '2024-12-10'
+date: "2024-12-10"
 description: and vLLM integration with XGrammar
 id: structured decoding
-modified: 2025-11-09 01:35:15 GMT-05:00
 layout: technical
+modified: 2026-03-12 13:53:36 GMT-04:00
 socials:
   bentoml blog: https://bentoml.com/blog/structured-decoding-in-vllm-a-gentle-introduction
   hackernews: https://news.ycombinator.com/item?id=42711051
-  official blog: https://blog.vllm.ai/2025/01/14/struct-decode-intro.html
+  official blog: https://vllm.ai/blog/struct-decode-intro.html
   twitter: https://x.com/vllm_project/status/1879979185474859303
 tags:
   - technical
@@ -22,7 +22,7 @@ title: structured decoding, a guide for the impatient
 - Recent XGrammar integration brings up to 5x improvement in time per output token (TPOT) under load
 - Upcoming v1 release focuses on enhanced performance and schedule-level mask broadcasting for mixed-requests batch support
 
-_[vLLM](https://blog.vllm.ai/2023/06/20/vllm.html) is the high-throughput and efficient inference engine for running **large-language models** ([[thoughts/LLMs|LLM]]). In this post, we will explore the annotated history of language models, describe the current state of [[thoughts/structured outputs|structured decoding]] in vLLM, as well as the recent integration with [XGrammar](https://github.com/vllm-project/vllm/pull/10785), and share a tentative roadmap for vLLM's [v1](https://github.com/vllm-project/vllm/issues/8779) improvement for structured decoding._
+_[vLLM](https://vllm.ai/blog/vllm.html) is the high-throughput and efficient inference engine for running **large-language models** ([[thoughts/LLMs|LLM]]). In this post, we will explore the annotated history of language models, describe the current state of [[thoughts/structured outputs|structured decoding]] in vLLM, as well as the recent integration with [XGrammar](https://github.com/vllm-project/vllm/pull/10785), and share a tentative roadmap for vLLM's [v1](https://github.com/vllm-project/vllm/issues/8779) improvement for structured decoding._
 
 > We would also invite users to tackle this blog post from a philosophical perspective, and in the process trying to posit that structured decoding represents a fundamental shift in how we think about LLM outputs. It also plays an important role in building complex agentic system.
 

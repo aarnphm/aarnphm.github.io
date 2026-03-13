@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-03-12 04:04:56 GMT-04:00
+modified: 2026-03-12 22:13:17 GMT-04:00
 permalinks:
   - /website
   - /tweets
@@ -4083,7 +4083,7 @@ title: are.na
   - [meta]:
     - date: 03/09/2026
     - tags: [visualisation, architecture]
-- https://blog.vllm.ai/2026/02/27/rocm-attention-backend.html -- Beyond Porting: How vLLM Orchestrates High-Performance Inference on AMD ROCm
+- https://vllm.ai/blog/rocm-attention-backend.html -- Beyond Porting: How vLLM Orchestrates High-Performance Inference on AMD ROCm
   - [meta]:
     - date: 03/01/2026
     - tags: [inference]
@@ -4273,7 +4273,7 @@ title: are.na
   - [meta]:
     - date: 12/18/2025
     - tags: [performance, optimization]
-  - see also: https://blog.vllm.ai/2025/12/17/large-scale-serving.html
+  - see also: https://vllm.ai/blog/large-scale-serving.html
 - https://blog.google/technology/developers/t5gemma-2/ -- T5Gemma releases (2025)
   - [meta]:
     - date: 12/18/2025
@@ -7745,6 +7745,11 @@ title: are.na
 
 ## prompts
 
+- https://tropes.fyi/tropes-md -- AI writing tropes
+  - [meta]:
+    - date: 03/12/2026
+    - tags: [writing, agency]
+  - It seems interesting that we should just have a linear probe for these types of writing, to then either ablate or learn how they come to be.
 - https://chatgpt.com/c/696fb26d-e738-8327-9b10-01f2b28f4040 -- how ChatGPT sees me
   - [meta]:
     - date: 01/23/2026
