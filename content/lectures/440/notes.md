@@ -1,8 +1,8 @@
 ---
-date: '2025-10-17'
+date: "2025-10-17"
 description: and building a nano inference engine
 id: notes
-modified: 2025-11-11 06:55:26 GMT-05:00
+modified: 2026-03-12 13:54:20 GMT-04:00
 slides: true
 tags:
   - workshop
@@ -26,7 +26,7 @@ see also: [[thoughts/vllm]], [[thoughts/LLMs]], [[thoughts/tsfm/inference-exerci
 >
 > also it is because I work on vLLM 😅
 
-s/o: Michael Goin (RedHat), Nick Hill (RedHat), Simon Go (Berkeley), and [blog post from Aleksa](https://blog.vllm.ai/2025/09/05/anatomy-of-vllm.html)
+s/o: Michael Goin (RedHat), Nick Hill (RedHat), Simon Go (Berkeley), and [blog post from Aleksa](https://vllm.ai/blog/anatomy-of-vllm.html)
 
 [@aarnphm]
 

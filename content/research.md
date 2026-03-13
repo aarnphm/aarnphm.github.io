@@ -1,8 +1,8 @@
 ---
-date: '2025-08-12'
+date: "2025-08-12"
 description: and my interests.
 id: research
-modified: 2026-01-11 10:34:46 GMT-05:00
+modified: 2026-03-12 13:54:34 GMT-04:00
 tags:
   - fruit
 title: research
@@ -72,7 +72,7 @@ Then there's also the kernel problem [^kernel]. Deep learning comprises a lot of
 
 ### **Q**: _Can you walk through what actually happens during inference?_
 
-**A**: Let's trace a request through vLLM, since it's become something of a reference [architecture](https://blog.vllm.ai/2025/09/05/anatomy-of-vllm.html).
+**A**: Let's trace a request through vLLM, since it's become something of a reference [architecture](https://vllm.ai/blog/anatomy-of-vllm.html).
 
 ![[thoughts/images/request-life-in-vllm.webp|A day in life of a request through vLLM]]
 
