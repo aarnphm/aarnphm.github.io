@@ -1,33 +1,15 @@
-import { XMLParser } from 'fast-xml-parser'
 import { Element, Text as HastText } from 'hast'
 import { h } from 'hastscript'
 import { Root, Link, Text } from 'mdast'
 import rehypeCitation from 'rehype-citation'
 import { visit } from 'unist-util-visit'
 import { QuartzTransformerPlugin } from '../../types/plugin'
-import { cacheState, CachedCitationEntry, makeBibKey, normalizeArxivId } from '../stores/citations'
+import { cacheState, makeBibKey, normalizeArxivId } from '../stores/citations'
 import '@citation-js/plugin-bibtex'
 import '@citation-js/plugin-doi'
 import { extractArxivId } from './links'
 
 const URL_PATTERN = /https?:\/\/[^\s<>)"]+/g
-
-class RateLimiter {
-  private lastRequest = 0
-  private readonly minInterval = 3000
-
-  async wait(): Promise<void> {
-    const now = Date.now()
-    const elapsed = now - this.lastRequest
-    if (elapsed < this.minInterval) {
-      await new Promise(resolve => setTimeout(resolve, this.minInterval - elapsed))
-    }
-    this.lastRequest = Date.now()
-  }
-}
-
-const arxivRateLimiter = new RateLimiter()
-const ARXIV_BATCH_SIZE = 50
 
 interface LinkType {
   type: string
@@ -135,15 +117,6 @@ interface Options {
   bibliography: string
 }
 
-interface ArxivMeta {
-  id: string
-  title: string
-  authors: string[]
-  year: string
-  category: string
-  url: string
-}
-
 declare module 'vfile' {
   interface DataMap {
     citations?: { arxivIds: string[] }
@@ -151,87 +124,12 @@ declare module 'vfile' {
   }
 }
 
-function chunkIds(ids: string[], size: number): string[][] {
-  const chunks: string[][] = []
-  for (let i = 0; i < ids.length; i += size) {
-    chunks.push(ids.slice(i, i + size))
-  }
-  return chunks
-}
-
-function extractIdFromEntry(entry: any): string | null {
-  const raw = typeof entry?.id === 'string' ? entry.id : ''
-  if (!raw) return null
-  const tail = raw.includes('/') ? (raw.split('/').pop() ?? raw) : raw
-  const normalized = normalizeArxivId(tail)
-  return normalized || null
-}
-
-function parseArxivEntry(entry: any): ArxivMeta | null {
-  const id = extractIdFromEntry(entry)
-  if (!id) return null
-  const titleRaw = typeof entry?.title === 'string' ? entry.title : ''
-  const published = typeof entry?.published === 'string' ? entry.published : ''
-  const authors = Array.isArray(entry?.author)
-    ? entry.author.map((a: any) => a?.name).filter(Boolean)
-    : entry?.author?.name
-      ? [entry.author.name]
-      : []
-  const category =
-    entry?.['arxiv:primary_category'] && entry['arxiv:primary_category']['@_term']
-      ? entry['arxiv:primary_category']['@_term']
-      : ''
-
-  return {
-    id,
-    title: titleRaw.trim().replace(/\s+/g, ' '),
-    authors,
-    year: published.slice(0, 4),
-    category,
-    url: `https://arxiv.org/abs/${id}`,
-  }
-}
-
-async function fetchArxivMetadataBatch(ids: string[]): Promise<Map<string, ArxivMeta>> {
-  const unique = Array.from(new Set(ids.map(id => normalizeArxivId(id)).filter(Boolean)))
-  const result = new Map<string, ArxivMeta>()
-  if (unique.length === 0) return result
-
-  const parser = new XMLParser({ ignoreAttributes: false, attributeNamePrefix: '@_' })
-  const batches = chunkIds(unique, ARXIV_BATCH_SIZE)
-
-  for (const batch of batches) {
-    await arxivRateLimiter.wait()
-    const res = await fetch(`http://export.arxiv.org/api/query?id_list=${batch.join(',')}`, {
-      headers: { 'User-Agent': 'QuartzArxivTransformer/1.0 (+https://github.com/aarnphm)' },
-    })
-
-    if (!res.ok) throw new Error(`arXiv API error for ${batch.join(',')}: ${res.statusText}`)
-
-    const xml = await res.text()
-    const parsed = parser.parse(xml) as any
-    const entries = Array.isArray(parsed?.feed?.entry)
-      ? parsed.feed.entry
-      : parsed?.feed?.entry
-        ? [parsed.feed.entry]
-        : []
-
-    for (const entry of entries) {
-      const meta = parseArxivEntry(entry)
-      if (!meta) continue
-      result.set(meta.id, meta)
-    }
-  }
-
-  return result
-}
-
 export const Citations: QuartzTransformerPlugin<Options> = (opts?: Options) => {
   const bibliography = opts?.bibliography ?? 'content/References.bib'
   return {
     name: 'Citations',
     markdownPlugins: () => [
-      () => async (tree: Root, file: any) => {
+      () => (tree: Root, file: any) => {
         const frontmatter = file.data?.frontmatter ?? {}
         const disableCitations = frontmatter.citations === false || frontmatter.noCitations === true
         if (disableCitations) {
@@ -246,7 +144,6 @@ export const Citations: QuartzTransformerPlugin<Options> = (opts?: Options) => {
           if (index === undefined || !parent) return
           const arxivId = extractArxivId(node.url)
           if (!arxivId) return
-
           arxivNodes.push({ node, index, parent, id: normalizeArxivId(arxivId) })
         })
 
@@ -259,34 +156,14 @@ export const Citations: QuartzTransformerPlugin<Options> = (opts?: Options) => {
 
         if (arxivNodes.length === 0) return
 
-        const VERIFICATION_TTL = 24 * 60 * 60 * 1000
-        const now = Date.now()
-        const missingIds: string[] = []
         for (const id of docIds) {
-          const cachedEntry = cacheState.papers.get(id)
-          const isFresh =
-            !!cachedEntry &&
-            cachedEntry.inBibFile &&
-            now - cachedEntry.lastVerified <= VERIFICATION_TTL
-          if (!isFresh) {
-            missingIds.push(id)
-          }
-        }
-
-        if (missingIds.length > 0) {
-          const metas = await fetchArxivMetadataBatch(missingIds)
-          for (const id of missingIds) {
-            const cachedEntry = cacheState.papers.get(id)
-            const meta = metas.get(id)
-            const title = cachedEntry?.title ?? meta?.title ?? id
-            const bibkey = cachedEntry?.bibkey ?? makeBibKey(id)
-            const entry: CachedCitationEntry = {
-              title,
-              bibkey,
-              lastVerified: cachedEntry?.lastVerified ?? 0,
-              inBibFile: cachedEntry?.inBibFile ?? false,
-            }
-            cacheState.papers.set(id, entry)
+          if (!cacheState.papers.has(id)) {
+            cacheState.papers.set(id, {
+              title: id,
+              bibkey: makeBibKey(id),
+              lastVerified: 0,
+              inBibFile: false,
+            })
             cacheState.dirty = true
           }
         }
@@ -317,8 +194,6 @@ export const Citations: QuartzTransformerPlugin<Options> = (opts?: Options) => {
               : 'en-US',
         },
       ],
-      // Transform the HTML of the citattions; add data-no-popover property to the citation links
-      // using https://github.com/syntax-tree/unist-util-visit as they're just anochor links
       () => (tree, file: any) => {
         if (file?.data?.citationsDisabled) return
         visit(
@@ -330,7 +205,6 @@ export const Citations: QuartzTransformerPlugin<Options> = (opts?: Options) => {
           },
         )
       },
-      // Format external links correctly
       () => (tree, file: any) => {
         if (file?.data?.citationsDisabled) return
         visit(

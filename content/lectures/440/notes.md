@@ -1,5 +1,5 @@
 ---
-date: "2025-10-17"
+date: '2025-10-17'
 description: and building a nano inference engine
 id: notes
 modified: 2026-03-12 13:54:20 GMT-04:00

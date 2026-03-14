@@ -1,17 +1,26 @@
 import { Cite } from '@citation-js/core'
+import { XMLParser } from 'fast-xml-parser'
 import fs from 'node:fs'
 import { QuartzEmitterPlugin } from '../../types/plugin'
 import { joinSegments, QUARTZ } from '../../util/path'
 import {
+  ArxivMeta,
+  ARXIV_HEADERS,
+  arxivRateLimiter,
   arraysEqual,
   buildCachePayload,
   cacheState,
   CitationsCachePayload,
+  fetchWithRetry,
   hydrateCache,
   makeBibKey,
   normalizeArxivId,
   pruneMetadata,
+  RETRY_COOLDOWN,
   sanitizeLinks,
+  synthesizeBibtex,
+  UNVERIFIED_TTL,
+  VERIFIED_TTL,
 } from '../stores/citations'
 import '@citation-js/plugin-bibtex'
 import '@citation-js/plugin-doi'
@@ -34,22 +43,6 @@ function readCachePayload(): CitationsCachePayload {
 }
 
 hydrateCache(readCachePayload())
-
-class RateLimiter {
-  private lastRequest = 0
-  private readonly minInterval = 3000
-
-  async wait(): Promise<void> {
-    const now = Date.now()
-    const elapsed = now - this.lastRequest
-    if (elapsed < this.minInterval) {
-      await new Promise(resolve => setTimeout(resolve, this.minInterval - elapsed))
-    }
-    this.lastRequest = Date.now()
-  }
-}
-
-const arxivRateLimiter = new RateLimiter()
 
 function documentsEqual(a: Map<string, string[]>, b: Map<string, string[]>): boolean {
   if (a.size !== b.size) return false
@@ -76,78 +69,194 @@ function extractArxivIdFromEntry(entry: any): string | null {
   return null
 }
 
-async function fetchBibtex(id: string): Promise<string> {
+const ARXIV_BATCH_SIZE = 50
+
+function parseArxivEntry(entry: any): ArxivMeta | null {
+  const raw = typeof entry?.id === 'string' ? entry.id : ''
+  if (!raw) return null
+  const tail = raw.includes('/') ? (raw.split('/').pop() ?? raw) : raw
+  const id = normalizeArxivId(tail)
+  if (!id) return null
+
+  const titleRaw = typeof entry?.title === 'string' ? entry.title : ''
+  const published = typeof entry?.published === 'string' ? entry.published : ''
+  const authors = Array.isArray(entry?.author)
+    ? entry.author.map((a: any) => a?.name).filter(Boolean)
+    : entry?.author?.name
+      ? [entry.author.name]
+      : []
+  const category = entry?.['arxiv:primary_category']?.['@_term'] ?? ''
+
+  return {
+    id,
+    title: titleRaw.trim().replace(/\s+/g, ' '),
+    authors,
+    year: published.slice(0, 4),
+    category,
+    url: `https://arxiv.org/abs/${id}`,
+  }
+}
+
+async function fetchMetadataBatch(ids: string[]): Promise<Map<string, ArxivMeta>> {
+  const result = new Map<string, ArxivMeta>()
+  if (ids.length === 0) return result
+
+  const parser = new XMLParser({ ignoreAttributes: false, attributeNamePrefix: '@_' })
+
+  for (let i = 0; i < ids.length; i += ARXIV_BATCH_SIZE) {
+    const batch = ids.slice(i, i + ARXIV_BATCH_SIZE)
+    try {
+      const url = `https://export.arxiv.org/api/query?id_list=${batch.join(',')}`
+      const res = await fetchWithRetry(url, { headers: ARXIV_HEADERS }, arxivRateLimiter)
+      if (!res) {
+        console.warn(`[citations] emitter metadata fetch failed for batch of ${batch.length}`)
+        continue
+      }
+      const xml = await res.text()
+      const parsed = parser.parse(xml) as any
+      const entries = Array.isArray(parsed?.feed?.entry)
+        ? parsed.feed.entry
+        : parsed?.feed?.entry
+          ? [parsed.feed.entry]
+          : []
+      for (const entry of entries) {
+        const meta = parseArxivEntry(entry)
+        if (meta) result.set(meta.id, meta)
+      }
+    } catch (e) {
+      console.warn(`[citations] emitter batch error: ${e instanceof Error ? e.message : e}`)
+    }
+  }
+  return result
+}
+
+async function fetchBibtexFallback(id: string): Promise<string | null> {
   const norm = normalizeArxivId(id)
   const url = `https://arxiv.org/bibtex/${norm}`
-
-  await arxivRateLimiter.wait()
-
-  const res = await fetch(url, {
-    headers: { 'User-Agent': 'QuartzArxivTransformer/1.0 (+https://github.com/aarnphm)' },
-  })
-
-  if (!res.ok) {
-    throw new Error(`arXiv BibTeX fetch failed for ${norm}: ${res.status} ${res.statusText}`)
-  }
-
+  const res = await fetchWithRetry(url, { headers: ARXIV_HEADERS }, arxivRateLimiter)
+  if (!res) return null
   const bibtex = await res.text()
-
-  if (!bibtex.trim().startsWith('@')) {
-    throw new Error(`Invalid BibTeX response for ${norm}`)
-  }
-
+  if (!bibtex.trim().startsWith('@')) return null
   return bibtex.trim()
 }
 
-async function ensureBibEntry(bibPath: string, id: string, desiredKey: string): Promise<string> {
-  const targetArxivId = normalizeArxivId(id)
-  const fileContent = fs.existsSync(bibPath) ? fs.readFileSync(bibPath, 'utf8') : ''
+export async function ensureBibEntries(ids: Iterable<string>, bibliography: string) {
+  const now = Date.now()
+  const fileContent = fs.existsSync(bibliography) ? fs.readFileSync(bibliography, 'utf8') : ''
   const libItems = fileContent.trim()
     ? (new Cite(fileContent, { generateGraph: false }).data as any[])
     : []
 
-  const existingEntry = libItems.find((entry: any) => {
-    const entryArxivId = extractArxivIdFromEntry(entry)
-    return entryArxivId === targetArxivId
-  })
-
-  if (existingEntry) {
-    return existingEntry.id
+  const existingArxivIds = new Set<string>()
+  const existingKeys = new Set<string>()
+  for (const item of libItems) {
+    existingKeys.add(item.id)
+    const arxivId = extractArxivIdFromEntry(item)
+    if (arxivId) existingArxivIds.add(arxivId)
   }
 
-  const bibtex = await fetchBibtex(targetArxivId)
-  const newCite = new Cite(bibtex, { generateGraph: false })
-  let newEntry = newCite.data[0]
-  const key = desiredKey || newEntry.id
-
-  if (libItems.some((x: any) => x.id === key)) {
-    const suffix = targetArxivId.replace(/\./g, '')
-    newEntry = { ...newEntry, id: `${key}-${suffix}` }
-  } else {
-    newEntry = { ...newEntry, id: key }
+  const needsMetadata: string[] = []
+  for (const id of ids) {
+    const entry = cacheState.papers.get(id)
+    if (!entry) continue
+    if (existingArxivIds.has(id)) continue
+    if (entry.authors && entry.year) continue
+    if (entry.failedAt && now - entry.failedAt < RETRY_COOLDOWN) continue
+    needsMetadata.push(id)
   }
 
-  const prefix = fileContent.trim().length ? '\n\n' : ''
-  const rendered = new Cite(newEntry).format('bibtex')
-  fs.appendFileSync(bibPath, `${prefix}${rendered}\n`)
+  if (needsMetadata.length > 0) {
+    console.log(
+      `[citations] fetching metadata for ${needsMetadata.length} papers missing from transformer cache`,
+    )
+    const metas = await fetchMetadataBatch(needsMetadata)
+    for (const id of needsMetadata) {
+      const meta = metas.get(id)
+      if (!meta) continue
+      const existing = cacheState.papers.get(id)!
+      cacheState.papers.set(id, {
+        ...existing,
+        title: meta.title,
+        authors: meta.authors,
+        year: meta.year,
+        category: meta.category,
+        failedAt: undefined,
+      })
+      cacheState.dirty = true
+    }
+  }
 
-  return newEntry.id
-}
-
-export async function ensureBibEntries(ids: Iterable<string>, bibliography: string) {
-  const VERIFICATION_TTL = 24 * 60 * 60 * 1000
-  const now = Date.now()
+  const newEntries: string[] = []
 
   for (const id of ids) {
     const cachedEntry = cacheState.papers.get(id)
     if (!cachedEntry) continue
-    const needsVerification =
-      !cachedEntry.inBibFile || now - cachedEntry.lastVerified > VERIFICATION_TTL
+
+    if (existingArxivIds.has(id)) {
+      if (!cachedEntry.inBibFile || !cachedEntry.bibtex) {
+        const existingItem = libItems.find(item => extractArxivIdFromEntry(item) === id)
+        cacheState.papers.set(id, {
+          ...cachedEntry,
+          bibkey: existingItem?.id ?? cachedEntry.bibkey,
+          inBibFile: true,
+          lastVerified: now,
+        })
+        cacheState.dirty = true
+      }
+      continue
+    }
+
+    const ttl = cachedEntry.inBibFile && cachedEntry.bibtex ? VERIFIED_TTL : UNVERIFIED_TTL
+    const needsVerification = !cachedEntry.inBibFile || now - cachedEntry.lastVerified > ttl
     if (!needsVerification) continue
 
-    const bibkey = await ensureBibEntry(bibliography, id, cachedEntry.bibkey ?? makeBibKey(id))
-    cacheState.papers.set(id, { ...cachedEntry, bibkey, lastVerified: now, inBibFile: true })
-    cacheState.dirty = true
+    if (cachedEntry.failedAt && now - cachedEntry.failedAt < RETRY_COOLDOWN) continue
+
+    try {
+      let bibtex = cachedEntry.bibtex
+      if (!bibtex && cachedEntry.authors && cachedEntry.year) {
+        bibtex = synthesizeBibtex(id, cachedEntry)
+      }
+      if (!bibtex) {
+        bibtex = (await fetchBibtexFallback(id)) ?? undefined
+      }
+      if (!bibtex) {
+        console.warn(`[citations] could not generate bibtex for ${id}`)
+        cacheState.papers.set(id, { ...cachedEntry, failedAt: now })
+        cacheState.dirty = true
+        continue
+      }
+
+      let key = cachedEntry.bibkey ?? makeBibKey(id)
+      if (existingKeys.has(key)) {
+        key = `${key}-${normalizeArxivId(id).replace(/\./g, '')}`
+      }
+
+      const keyedBibtex = bibtex.replace(/^@article\{[^,]*,/, `@article{${key},`)
+      newEntries.push(keyedBibtex)
+      existingKeys.add(key)
+      existingArxivIds.add(id)
+
+      cacheState.papers.set(id, {
+        ...cachedEntry,
+        bibkey: key,
+        bibtex: keyedBibtex,
+        lastVerified: now,
+        inBibFile: true,
+        failedAt: undefined,
+      })
+      cacheState.dirty = true
+    } catch (e) {
+      console.warn(`[citations] error processing ${id}: ${e instanceof Error ? e.message : e}`)
+      cacheState.papers.set(id, { ...cachedEntry, failedAt: now })
+      cacheState.dirty = true
+    }
+  }
+
+  if (newEntries.length > 0) {
+    const prefix = fileContent.trim().length ? '\n\n' : ''
+    fs.appendFileSync(bibliography, `${prefix}${newEntries.join('\n\n')}\n`)
+    console.log(`[citations] appended ${newEntries.length} new entries to ${bibliography}`)
   }
 }
 
