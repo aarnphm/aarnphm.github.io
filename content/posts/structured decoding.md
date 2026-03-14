@@ -1,5 +1,5 @@
 ---
-date: "2024-12-10"
+date: '2024-12-10'
 description: and vLLM integration with XGrammar
 id: structured decoding
 layout: technical
