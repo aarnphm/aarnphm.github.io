@@ -4,9 +4,9 @@
 
 The RISC-V Assembly Programmer's Manual is
 
-  &copy; 2017 Palmer Dabbelt <palmer@dabbelt.com>
-  &copy; 2017 Michael Clark <michaeljclark@mac.com>
-  &copy; 2017 Alex Bradbury <asb@lowrisc.org>
+&copy; 2017 Palmer Dabbelt <palmer@dabbelt.com>
+&copy; 2017 Michael Clark <michaeljclark@mac.com>
+&copy; 2017 Alex Bradbury <asb@lowrisc.org>
 
 It is licensed under the Creative Commons Attribution 4.0 International License
 (CC-BY 4.0). The full license text is available at
@@ -48,48 +48,48 @@ binary interface** (ABI). This is what you will usually see in code listings. If
 you really want to see the numeric register names, the `-M` argument to objdump
 will provide them.
 
-Register  | ABI         | Use by convention                     | Preserved?
-:-------- | :---------- | :---------------                      | ------
-x0        | zero        | hardwired to 0, ignores writes        | _n/a_
-x1        | ra          | return address for jumps              | no
-x2        | sp          | stack pointer                         | yes
-x3        | gp          | global pointer                        | _n/a_
-x4        | tp          | thread pointer                        | _n/a_
-x5        | t0          | temporary register 0                  | no
-x6        | t1          | temporary register 1                  | no
-x7        | t2          | temporary register 2                  | no
-x8        | s0 _or_ fp  | saved register 0 _or_ frame pointer   | yes
-x9        | s1          | saved register 1                      | yes
-x10       | a0          | return value _or_ function argument 0 | no
-x11       | a1          | return value _or_ function argument 1 | no
-x12       | a2          | function argument 2                   | no
-x13       | a3          | function argument 3                   | no
-x14       | a4          | function argument 4                   | no
-x15       | a5          | function argument 5                   | no
-x16       | a6          | function argument 6                   | no
-x17       | a7          | function argument 7                   | no
-x18       | s2          | saved register 2                      | yes
-x19       | s3          | saved register 3                      | yes
-x20       | s4          | saved register 4                      | yes
-x21       | s5          | saved register 5                      | yes
-x22       | s6          | saved register 6                      | yes
-x23       | s7          | saved register 7                      | yes
-x24       | s8          | saved register 8                      | yes
-x25       | s9          | saved register 9                      | yes
-x26       | s10         | saved register 10                     | yes
-x27       | s11         | saved register 11                     | yes
-x28       | t3          | temporary register 3                  | no
-x29       | t4          | temporary register 4                  | no
-x30       | t5          | temporary register 5                  | no
-x31       | t6          | temporary register 6                  | no
-pc        | _(none)_    | program counter                       | _n/a_
+| Register | ABI        | Use by convention                     | Preserved? |
+| :------- | :--------- | :------------------------------------ | ---------- |
+| x0       | zero       | hardwired to 0, ignores writes        | _n/a_      |
+| x1       | ra         | return address for jumps              | no         |
+| x2       | sp         | stack pointer                         | yes        |
+| x3       | gp         | global pointer                        | _n/a_      |
+| x4       | tp         | thread pointer                        | _n/a_      |
+| x5       | t0         | temporary register 0                  | no         |
+| x6       | t1         | temporary register 1                  | no         |
+| x7       | t2         | temporary register 2                  | no         |
+| x8       | s0 _or_ fp | saved register 0 _or_ frame pointer   | yes        |
+| x9       | s1         | saved register 1                      | yes        |
+| x10      | a0         | return value _or_ function argument 0 | no         |
+| x11      | a1         | return value _or_ function argument 1 | no         |
+| x12      | a2         | function argument 2                   | no         |
+| x13      | a3         | function argument 3                   | no         |
+| x14      | a4         | function argument 4                   | no         |
+| x15      | a5         | function argument 5                   | no         |
+| x16      | a6         | function argument 6                   | no         |
+| x17      | a7         | function argument 7                   | no         |
+| x18      | s2         | saved register 2                      | yes        |
+| x19      | s3         | saved register 3                      | yes        |
+| x20      | s4         | saved register 4                      | yes        |
+| x21      | s5         | saved register 5                      | yes        |
+| x22      | s6         | saved register 6                      | yes        |
+| x23      | s7         | saved register 7                      | yes        |
+| x24      | s8         | saved register 8                      | yes        |
+| x25      | s9         | saved register 9                      | yes        |
+| x26      | s10        | saved register 10                     | yes        |
+| x27      | s11        | saved register 11                     | yes        |
+| x28      | t3         | temporary register 3                  | no         |
+| x29      | t4         | temporary register 4                  | no         |
+| x30      | t5         | temporary register 5                  | no         |
+| x31      | t6         | temporary register 6                  | no         |
+| pc       | _(none)_   | program counter                       | _n/a_      |
 
 _Registers of the RV32I. Based on RISC-V documentation and Patterson and
 Waterman "The RISC-V Reader" (2017)_
 
 As a general rule, the **saved registers** `s0` to `s11` are preserved across
 function calls, while the **argument registers** `a0` to `a7` and the
-**temporary registers** `t0` to `t6` are not.  The use of the various
+**temporary registers** `t0` to `t6` are not. The use of the various
 specialized registers such as `sp` by convention will be discussed later in more
 detail.
 
@@ -105,23 +105,25 @@ detail.
 
 (TBA)
 
-
 # Addressing
 
-Addressing formats like %pcrel_lo().  We can just link to the RISC-V PS ABI
+Addressing formats like %pcrel_lo(). We can just link to the RISC-V PS ABI
 document to describe what the relocations actually do.
 
 # Instruction Set
 
 Official Specifications webpage:
+
 - https://riscv.org/specifications/
 
 Latest Specifications draft repository:
+
 - https://github.com/riscv/riscv-isa-manual
 
 ## Instructions
 
 # RISC-V ISA Specifications
+
 https://riscv.org/specifications/
 
 ## Instruction Aliases
@@ -131,7 +133,7 @@ ALIAS line from opcodes/riscv-opc.c
 To better diagnose situations where the program flow reaches an unexpected
 location, you might want to emit there an instruction that's known to trap. You
 can use an `UNIMP` pseudoinstruction, which should trap in nearly all systems.
-The *de facto* standard implementation of this instruction is:
+The _de facto_ standard implementation of this instruction is:
 
 - `C.UNIMP`: `0000`. The all-zeroes pattern is not a valid instruction. Any
   system which traps on invalid instructions will thus trap on this `UNIMP`
@@ -151,50 +153,50 @@ Both the RISC-V-specific and GNU .-prefixed options.
 
 The following table lists assembler directives:
 
-Directive    | Arguments                      | Description
-:----------- | :-------------                 | :---------------
-.align       | integer                        | align to power of 2 (alias for .p2align)
-.file        | "filename"                     | emit filename FILE LOCAL symbol table
-.globl       | symbol_name                    | emit symbol_name to symbol table (scope GLOBAL)
-.local       | symbol_name                    | emit symbol_name to symbol table (scope LOCAL)
-.comm        | symbol_name,size,align         | emit common object to .bss section
-.common      | symbol_name,size,align         | emit common object to .bss section
-.ident       | "string"                       | accepted for source compatibility
-.section     | [{.text,.data,.rodata,.bss}]   | emit section (if not present, default .text) and make current
-.size        | symbol, symbol                 | accepted for source compatibility
-.text        |                                | emit .text section (if not present) and make current
-.data        |                                | emit .data section (if not present) and make current
-.rodata      |                                | emit .rodata section (if not present) and make current
-.bss         |                                | emit .bss section (if not present) and make current
-.string      | "string"                       | emit string
-.asciz       | "string"                       | emit string (alias for .string)
-.equ         | name, value                    | constant definition
-.macro       | name arg1 [, argn]             | begin macro definition \argname to substitute
-.endm        |                                | end macro definition
-.type        | symbol, @function              | accepted for source compatibility
-.option      | {arch,rvc,norvc,pic,nopic,relax,norelax,push,pop} | RISC-V options. Refer to [.option](#.option) for a more detailed description.
-.byte        | expression [, expression]*     | 8-bit comma separated words
-.2byte       | expression [, expression]*     | 16-bit comma separated words
-.half        | expression [, expression]*     | 16-bit comma separated words
-.short       | expression [, expression]*     | 16-bit comma separated words
-.4byte       | expression [, expression]*     | 32-bit comma separated words
-.word        | expression [, expression]*     | 32-bit comma separated words
-.long        | expression [, expression]*     | 32-bit comma separated words
-.8byte       | expression [, expression]*     | 64-bit comma separated words
-.dword       | expression [, expression]*     | 64-bit comma separated words
-.quad        | expression [, expression]*     | 64-bit comma separated words
-.float       | expression [, expression]*     | 32-bit floating point values, see [Floating-point literals](#fp-literal) for the value format.
-.double      | expression [, expression]*     | 64-bit floating point values, see [Floating-point literals](#fp-literal) for the value format.
-.quad        | expression [, expression]*     | 128-bit floating point values, see [Floating-point literals](#fp-literal) for the value format.
-.dtprelword  | expression [, expression]*     | 32-bit thread local word
-.dtpreldword | expression [, expression]*     | 64-bit thread local word
-.sleb128     | expression                     | signed little endian base 128, DWARF
-.uleb128     | expression                     | unsigned little endian base 128, DWARF
-.p2align     | p2,[pad_val=0],max             | align to power of 2
-.balign      | b,[pad_val=0]                  | byte align
-.zero        | integer                        | zero bytes
-.variant_cc  | symbol_name                    | annotate the symbol with variant calling convention
-.attribute   | name, value                    | RISC-V object attributes, more detailed description see [.attribute](#.attribute).
+| Directive    | Arguments                                         | Description                                                                                     |
+| :----------- | :------------------------------------------------ | :---------------------------------------------------------------------------------------------- |
+| .align       | integer                                           | align to power of 2 (alias for .p2align)                                                        |
+| .file        | "filename"                                        | emit filename FILE LOCAL symbol table                                                           |
+| .globl       | symbol_name                                       | emit symbol_name to symbol table (scope GLOBAL)                                                 |
+| .local       | symbol_name                                       | emit symbol_name to symbol table (scope LOCAL)                                                  |
+| .comm        | symbol_name,size,align                            | emit common object to .bss section                                                              |
+| .common      | symbol_name,size,align                            | emit common object to .bss section                                                              |
+| .ident       | "string"                                          | accepted for source compatibility                                                               |
+| .section     | [{.text,.data,.rodata,.bss}]                      | emit section (if not present, default .text) and make current                                   |
+| .size        | symbol, symbol                                    | accepted for source compatibility                                                               |
+| .text        |                                                   | emit .text section (if not present) and make current                                            |
+| .data        |                                                   | emit .data section (if not present) and make current                                            |
+| .rodata      |                                                   | emit .rodata section (if not present) and make current                                          |
+| .bss         |                                                   | emit .bss section (if not present) and make current                                             |
+| .string      | "string"                                          | emit string                                                                                     |
+| .asciz       | "string"                                          | emit string (alias for .string)                                                                 |
+| .equ         | name, value                                       | constant definition                                                                             |
+| .macro       | name arg1 [, argn]                                | begin macro definition \argname to substitute                                                   |
+| .endm        |                                                   | end macro definition                                                                            |
+| .type        | symbol, @function                                 | accepted for source compatibility                                                               |
+| .option      | {arch,rvc,norvc,pic,nopic,relax,norelax,push,pop} | RISC-V options. Refer to [.option](#.option) for a more detailed description.                   |
+| .byte        | expression [, expression]\*                       | 8-bit comma separated words                                                                     |
+| .2byte       | expression [, expression]\*                       | 16-bit comma separated words                                                                    |
+| .half        | expression [, expression]\*                       | 16-bit comma separated words                                                                    |
+| .short       | expression [, expression]\*                       | 16-bit comma separated words                                                                    |
+| .4byte       | expression [, expression]\*                       | 32-bit comma separated words                                                                    |
+| .word        | expression [, expression]\*                       | 32-bit comma separated words                                                                    |
+| .long        | expression [, expression]\*                       | 32-bit comma separated words                                                                    |
+| .8byte       | expression [, expression]\*                       | 64-bit comma separated words                                                                    |
+| .dword       | expression [, expression]\*                       | 64-bit comma separated words                                                                    |
+| .quad        | expression [, expression]\*                       | 64-bit comma separated words                                                                    |
+| .float       | expression [, expression]\*                       | 32-bit floating point values, see [Floating-point literals](#fp-literal) for the value format.  |
+| .double      | expression [, expression]\*                       | 64-bit floating point values, see [Floating-point literals](#fp-literal) for the value format.  |
+| .quad        | expression [, expression]\*                       | 128-bit floating point values, see [Floating-point literals](#fp-literal) for the value format. |
+| .dtprelword  | expression [, expression]\*                       | 32-bit thread local word                                                                        |
+| .dtpreldword | expression [, expression]\*                       | 64-bit thread local word                                                                        |
+| .sleb128     | expression                                        | signed little endian base 128, DWARF                                                            |
+| .uleb128     | expression                                        | unsigned little endian base 128, DWARF                                                          |
+| .p2align     | p2,[pad_val=0],max                                | align to power of 2                                                                             |
+| .balign      | b,[pad_val=0]                                     | byte align                                                                                      |
+| .zero        | integer                                           | zero bytes                                                                                      |
+| .variant_cc  | symbol_name                                       | annotate the symbol with variant calling convention                                             |
+| .attribute   | name, value                                       | RISC-V object attributes, more detailed description see [.attribute](#.attribute).              |
 
 ## <a name=.attribute></a> `.attribute`
 
@@ -261,6 +263,7 @@ should take care to the execution of the code regions around
 `.option push`/`.option arch`/`.option pop`.
 
 Syntax for `.option arch`:
+
 ```
 .option arch, <EXTENSIONS-OR-FULLARCH>
 
@@ -350,7 +353,7 @@ memcpy_norvc:
 NOTE: A typical use case is with `ifunc`, e.g. the C library is built with
 `rv64gc`, but a few functions like memcpy provide two versions, one built with
 `rv64gc` and one built with `rv64gcv`, and then select between them by ifunc
-mechanism at run-time.  However, we don't want to change the minimal execution
+mechanism at run-time. However, we don't want to change the minimal execution
 environment requirement to `rv64gcv`, since the `rv64gcv` version will be
 invoked only if the execution environment supports the vector extension, so
 the minimal execution environment requirement still is `rv64gc`.
@@ -401,23 +404,22 @@ Push/pop current options to/from the options stack.
 
 The following table lists assembler relocation expansions:
 
-Assembler Notation          | Description                    | Instruction / Macro
-:----------------------     | :---------------               | :-------------------
-%hi(symbol)                 | Absolute (HI20)                | lui
-%lo(symbol)                 | Absolute (LO12)                | load, store, add
-%pcrel_hi(symbol)           | PC-relative (HI20)             | auipc
-%pcrel_lo(label)            | PC-relative (LO12)             | load, store, add
-%tprel_hi(symbol)           | TLS LE "Local Exec"            | lui
-%tprel_lo(symbol)           | TLS LE "Local Exec"            | load, store, add
-%tprel_add(symbol)          | TLS LE "Local Exec"            | add
-%tls_ie_pcrel_hi(symbol) \* | TLS IE "Initial Exec" (HI20)   | auipc
-%tls_gd_pcrel_hi(symbol) \* | TLS GD "Global Dynamic" (HI20) | auipc
-%got_pcrel_hi(symbol) \*    | GOT PC-relative (HI20)         | auipc
+| Assembler Notation          | Description                    | Instruction / Macro |
+| :-------------------------- | :----------------------------- | :------------------ |
+| %hi(symbol)                 | Absolute (HI20)                | lui                 |
+| %lo(symbol)                 | Absolute (LO12)                | load, store, add    |
+| %pcrel_hi(symbol)           | PC-relative (HI20)             | auipc               |
+| %pcrel_lo(label)            | PC-relative (LO12)             | load, store, add    |
+| %tprel_hi(symbol)           | TLS LE "Local Exec"            | lui                 |
+| %tprel_lo(symbol)           | TLS LE "Local Exec"            | load, store, add    |
+| %tprel_add(symbol)          | TLS LE "Local Exec"            | add                 |
+| %tls_ie_pcrel_hi(symbol) \* | TLS IE "Initial Exec" (HI20)   | auipc               |
+| %tls_gd_pcrel_hi(symbol) \* | TLS GD "Global Dynamic" (HI20) | auipc               |
+| %got_pcrel_hi(symbol) \*    | GOT PC-relative (HI20)         | auipc               |
 
 \* These reuse %pcrel_lo(label) for their lower half
 
-Labels
-------------
+## Labels
 
 Text labels are used as branch, unconditional jump targets and symbol offsets.
 Text labels are added to the symbol table of the compiled module.
@@ -435,8 +437,7 @@ suffixed with 'f' for a forward reference or 'b' for a backwards reference.
         j 1b
 ```
 
-Absolute addressing
-------------------------
+## Absolute addressing
 
 The following example shows how to load an absolute address:
 
@@ -456,8 +457,7 @@ as seen by `objdump`:
 			4: R_RISCV_LO12_I	msg+0x1
 ```
 
-Relative addressing
-------------------------
+## Relative addressing
 
 The following example shows how to load a PC-relative address:
 
@@ -478,8 +478,7 @@ as seen by `objdump`:
 			4: R_RISCV_PCREL_LO12_I	.L1
 ```
 
-GOT-indirect addressing
-------------------------
+## GOT-indirect addressing
 
 The following example shows how to load an address from the GOT:
 
@@ -500,8 +499,7 @@ as seen by `objdump`:
 			4: R_RISCV_PCREL_LO12_I	.L1
 ```
 
-Load Immediate
--------------------
+## Load Immediate
 
 The following example shows the `li` pseudoinstruction which
 is used to load immediate values:
@@ -520,14 +518,12 @@ Which, for RV32I, generates the following assembler output, as seen by `objdump`
    4:	eef50513          	addi	a0,a0,-273 # deadbeef <CONSTANT+0x0>
 ```
 
-Load Upper Immediate's Immediate
------------------------------------
+## Load Upper Immediate's Immediate
 
-The immediate argument to `lui` is an integer in the interval [0x0, 0xfffff]. 
-Its compressed form, `c.lui`, accepts only those in the subintervals [0x1, 0x1f] and [0xfffe0, 0xfffff]. 
+The immediate argument to `lui` is an integer in the interval [0x0, 0xfffff].
+Its compressed form, `c.lui`, accepts only those in the subintervals [0x1, 0x1f] and [0xfffe0, 0xfffff].
 
-Signed Immediates for I- and S-Type Instructions
--------------------------
+## Signed Immediates for I- and S-Type Instructions
 
 All I- and S-type instructions with 12-bit signed immediates
 --- e.g., `addi` but not `slli` ---
@@ -536,23 +532,22 @@ Integers in the subinterval [-2048, -1] can also be passed by their (unsigned) a
 in the interval [0xfffff800, 0xffffffff] on RV32I, and
 in [0xfffffffffffff800, 0xffffffffffffffff] on both RV32I and RV64I.
 
-<a name=fp-literal></a>Floating-point literals
--------------------
+## <a name=fp-literal></a>Floating-point literals
 
 The Assembler supports the same floating-point literal formats as those defined
 in the C and C++ standards (i.e., decimal floating-point literals with decimal
 exponents as well as hexadecimal floating-point literals with binary exponents).
 
 Here are some examples:
-* 3.14159
-* 0.271828e1
-* 0x0.3p-4
+
+- 3.14159
+- 0.271828e1
+- 0x0.3p-4
 
 NOTE: The detailed format of the floating point immediate value can be
 referenced on [this page](https://en.cppreference.com/w/cpp/language/floating_literal)
 
-Load Floating-point Immediate
--------------------
+## Load Floating-point Immediate
 
 The `Zfa` extension introduces `fli.{h|s|d|q}` instructions for loading a specific
 set of floating-point immediates, supported values can be found in the
@@ -585,50 +580,48 @@ pseudoinstruction (`fl{h|w|d|q}`).
 	flw fa0, .VAL, t0
 ```
 
-
 <a name="fli-operand-value"></a>FLI operands reference table
 
-Value                       | Example legal input values
-:----------------------     | :---------------------
--1.0                        | -0x1p+0, -1.0, -1.0e+0
-Minimum positive normal     | min
-1.0 x 2 ^ -16               | 0x1p-16, 0.0000152587890625, 1.52587890625e-05
-1.0 x 2 ^ -15               | 0x1p-15, 0.000030517578125, 3.0517578125e-05
-1.0 x 2 ^ -8                | 0x1p-8, 0.00390625, 3.90625e-03
-1.0 x 2 ^ -7                | 0x1p-7, 0.0078125, 7.8125e-03
-0.0625 (2 ^ -4)             | 0x1p-4, 0.0625, 6.25e-02
-0.125 (2 ^ -3)              | 0x1p-3, 0.125, 1.25e-01
-0.25                        | 0x1p-2, 0.25, 2.5e-01
-0.3125                      | 0x1.4p-2, 0.3125, 3.125e-01
-0.375                       | 0x1.8p-2, 0.375, 3.75e-01
-0.4375                      | 0x1.cp-2, 0.4375, 4.375e-01
-0.5                         | 0x1p-1, 0.5, 5.0e-01
-0.625                       | 0x1.4p-1, 0.625, 6.25e-01
-0.75                        | 0x1.8p-1, 0.75, 7.5e-01
-0.875                       | 0x1.cp-1, 0.875, 8.75e-01
-1.0                         | 0x1p+0, 1.0, 1.0e+00
-1.25                        | 0x1.4p+0, 1.25, 1.25e+00
-1.5                         | 0x1.8p+0, 1.5, 1.5e+00
-1.75                        | 0x1.cp+0, 1.75, 1.75e+00
-2.0                         | 0x1p+1, 2.0, 2.0e+00
-2.5                         | 0x1.4p+1, 2.5, 2.5e+00
-3                           | 0x1.8p+1, 3.0, 3.0e+00
-4                           | 0x1p+2, 4.0, 4.0e+00
-8                           | 0x1p+3, 8.0, 8.0e+00
-16                          | 0x1p+4, 16.0, 1.6e+01
-128 (2 ^ 7)                 | 0x1p+7, 128.0, 1.28e+02
-256 (2 ^ 8)                 | 0x1p+8, 256.0, 2.56e+02
-2 ^ 15                      | 0x1p+15, 32768.0, 3.2768e+04
-2 ^ 16                      | 0x1p+16, 65536.0, 6.5536e+04
-Positive infinity           | inf
-Canonical NaN               | nan
+| Value                   | Example legal input values                     |
+| :---------------------- | :--------------------------------------------- |
+| -1.0                    | -0x1p+0, -1.0, -1.0e+0                         |
+| Minimum positive normal | min                                            |
+| 1.0 x 2 ^ -16           | 0x1p-16, 0.0000152587890625, 1.52587890625e-05 |
+| 1.0 x 2 ^ -15           | 0x1p-15, 0.000030517578125, 3.0517578125e-05   |
+| 1.0 x 2 ^ -8            | 0x1p-8, 0.00390625, 3.90625e-03                |
+| 1.0 x 2 ^ -7            | 0x1p-7, 0.0078125, 7.8125e-03                  |
+| 0.0625 (2 ^ -4)         | 0x1p-4, 0.0625, 6.25e-02                       |
+| 0.125 (2 ^ -3)          | 0x1p-3, 0.125, 1.25e-01                        |
+| 0.25                    | 0x1p-2, 0.25, 2.5e-01                          |
+| 0.3125                  | 0x1.4p-2, 0.3125, 3.125e-01                    |
+| 0.375                   | 0x1.8p-2, 0.375, 3.75e-01                      |
+| 0.4375                  | 0x1.cp-2, 0.4375, 4.375e-01                    |
+| 0.5                     | 0x1p-1, 0.5, 5.0e-01                           |
+| 0.625                   | 0x1.4p-1, 0.625, 6.25e-01                      |
+| 0.75                    | 0x1.8p-1, 0.75, 7.5e-01                        |
+| 0.875                   | 0x1.cp-1, 0.875, 8.75e-01                      |
+| 1.0                     | 0x1p+0, 1.0, 1.0e+00                           |
+| 1.25                    | 0x1.4p+0, 1.25, 1.25e+00                       |
+| 1.5                     | 0x1.8p+0, 1.5, 1.5e+00                         |
+| 1.75                    | 0x1.cp+0, 1.75, 1.75e+00                       |
+| 2.0                     | 0x1p+1, 2.0, 2.0e+00                           |
+| 2.5                     | 0x1.4p+1, 2.5, 2.5e+00                         |
+| 3                       | 0x1.8p+1, 3.0, 3.0e+00                         |
+| 4                       | 0x1p+2, 4.0, 4.0e+00                           |
+| 8                       | 0x1p+3, 8.0, 8.0e+00                           |
+| 16                      | 0x1p+4, 16.0, 1.6e+01                          |
+| 128 (2 ^ 7)             | 0x1p+7, 128.0, 1.28e+02                        |
+| 256 (2 ^ 8)             | 0x1p+8, 256.0, 2.56e+02                        |
+| 2 ^ 15                  | 0x1p+15, 32768.0, 3.2768e+04                   |
+| 2 ^ 16                  | 0x1p+16, 65536.0, 6.5536e+04                   |
+| Positive infinity       | inf                                            |
+| Canonical NaN           | nan                                            |
 
 A value can be expressed in various forms within the same format. For example,
 6.5536e+04 can be alternatively written as 6553.6e+01 or 65.536e+03. The table
 provides one possible representation, but any equivalent exact value may be used.
 
-Load Address
-------------
+## Load Address
 
 The following example shows the `la` pseudoinstruction which is used to load
 symbol addresses using the correct sequence based on whether the code is being
@@ -646,8 +639,7 @@ The `la` pseudoinstruction is the preferred way for getting the address of
 variables in assembly unless explicit control over PC-relative or GOT-indirect
 addressing is required.
 
-Load Local Address
-------------------
+## Load Local Address
 
 The following example shows the `lla` pseudoinstruction which is used to load
 local symbol addresses:
@@ -666,8 +658,7 @@ This generates the following instructions and relocations as seen by `objdump`:
 			4: R_RISCV_PCREL_LO12_I	.L0
 ```
 
-Load Global Address
-------------------
+## Load Global Address
 
 The following example shows the `lga` pseudoinstruction which is used to load
 global symbol addresses:
@@ -687,19 +678,19 @@ This generates the following instructions and relocations as seen by `objdump`
 			4: R_RISCV_PCREL_LO12_I	.L0
 ```
 
-Load and Store Global
----------------------
+## Load and Store Global
 
 The following pseudoinstructions are available to load from and store to
 global objects:
 
-  * `l{b|h|w|d} <rd>, <symbol>`: load byte, half word, word or double word from global[^1]
-  * `l{bu|hu|wu} <rd>, <symbol>`: load unsigned byte, half word, or word from global[^1]
-  * `s{b|h|w|d} <rd>, <symbol>, <rt>`: store byte, half word, word or double word to global[^2]
-  * `fl{h|w|d|q} <rd>, <symbol>, <rt>`: load half, float, double or quad precision from global[^2]
-  * `fs{h|w|d|q} <rd>, <symbol>, <rt>`: store half, float, double or quad precision to global[^2]
+- `l{b|h|w|d} <rd>, <symbol>`: load byte, half word, word or double word from global[^1]
+- `l{bu|hu|wu} <rd>, <symbol>`: load unsigned byte, half word, or word from global[^1]
+- `s{b|h|w|d} <rd>, <symbol>, <rt>`: store byte, half word, word or double word to global[^2]
+- `fl{h|w|d|q} <rd>, <symbol>, <rt>`: load half, float, double or quad precision from global[^2]
+- `fs{h|w|d|q} <rd>, <symbol>, <rt>`: store half, float, double or quad precision to global[^2]
 
 [^1]: the first operand is implicitly used as a scratch register.
+
 [^2]: the last operand specifies the scratch register to be used.
 
 The following example shows how these pseudoinstructions are used:
@@ -734,8 +725,7 @@ as seen by `objdump`:
 			1c: R_RISCV_PCREL_LO12_S	.L0
 ```
 
-Constants
---------------
+## Constants
 
 The following example shows loading a constant using the `%hi` and
 `%lo` assembler functions.
@@ -756,12 +746,11 @@ as seen by `objdump`:
    4:	08050513          	addi	a0,a0,128 # 40003080 <UART_BASE>
 ```
 
-Far Branches
-------------
+## Far Branches
 
 The assembler will convert conditional branches into far branches when
 necessary, via inserting a short branch with inverted conditions past an
-unconditional jump.  For example
+unconditional jump. For example
 
 ```assembly
 target:
@@ -781,20 +770,22 @@ ends up as
     1008:	ff9fe06f          	j	0 <target>
 ```
 
-Function Calls
---------------
+## Function Calls
 
 The following pseudoinstructions are available to call subroutines far from
 the current position:
 
-  * `call	<symbol>`: call away subroutine[^3]
-  * `call	<rd>, <symbol>`: call away subroutine[^4]
-  * `tail	<symbol>`: tail call away subroutine[^5]
-  * `jump	<symbol>, <rt>`: jump to away routine[^6]
+- `call	<symbol>`: call away subroutine[^3]
+- `call	<rd>, <symbol>`: call away subroutine[^4]
+- `tail	<symbol>`: tail call away subroutine[^5]
+- `jump	<symbol>, <rt>`: jump to away routine[^6]
 
 [^3]: `ra` is implicitly used to save the return address.
+
 [^4]: similar to `call <symbol>`, but `<rd>` is used to save the return address instead.
+
 [^5]: `t1` is implicitly used as a scratch register.
+
 [^6]: similar to `tail <symbol>`, but `<rt>` is used as the scratch register instead.
 
 The following example shows how these pseudoinstructions are used:
@@ -821,8 +812,7 @@ as seen by `objdump`:
   14:	00028067          	jr	t0 # 0x10
 ```
 
-Floating-point rounding modes
------------------------------
+## Floating-point rounding modes
 
 For floating-point instructions with a rounding mode field, the rounding mode
 can be specified by adding an additional operand. e.g. `fcvt.w.s` with
@@ -830,16 +820,16 @@ round-to-zero can be written as `fcvt.w.s a0, fa0, rtz`. If unspecified, the
 default `dyn` rounding mode will be used.
 
 Supported rounding modes are as follows (must be specified in lowercase):
-* `rne`: round to nearest, ties to even
-* `rtz`: round towards zero
-* `rdn`: round down
-* `rup`: round up
-* `rmm`: round to nearest, ties to max magnitude
-* `dyn`: dynamic rounding mode (the rounding mode specified in the `frm` field
-of the `fcsr` register is used)
 
-Control and Status Registers
----------------------------------
+- `rne`: round to nearest, ties to even
+- `rtz`: round towards zero
+- `rdn`: round down
+- `rup`: round up
+- `rmm`: round to nearest, ties to max magnitude
+- `dyn`: dynamic rounding mode (the rounding mode specified in the `frm` field
+  of the `fcsr` register is used)
+
+## Control and Status Registers
 
 The following code sample shows how to enable timer interrupts,
 set and wait for a timer interrupt to occur:
@@ -907,85 +897,85 @@ fail_msg:
 
 ## <a name=pseudoinstructions></a> A listing of standard RISC-V pseudoinstructions
 
-Pseudoinstruction            | Base Instruction(s)                                           | Meaning   | Comment
-:----------------------------|:--------------------------------------------------------------|:----------|:--------|
-la rd, symbol                | auipc rd, symbol[31:12]; addi rd, rd, symbol[11:0]            | Load address | With `.option nopic` (Default)
-la rd, symbol                | auipc rd, symbol@GOT[31:12]; l{w\|d} rd, symbol@GOT[11:0]\(rd\) | Load address | With `.option pic`
-lla rd, symbol               | auipc rd, symbol[31:12]; addi rd, rd, symbol[11:0]            | Load local address
-lga rd, symbol               | auipc rd, symbol@GOT[31:12]; l{w\|d} rd, symbol@GOT[11:0]\(rd\) | Load global address
-l{b\|h\|w\|d} rd, symbol     | auipc rd, symbol[31:12]; l{b\|h\|w\|d} rd, symbol[11:0]\(rd\) | Load global
-l{bu\|hu\|wu} rd, symbol     | auipc rd, symbol[31:12]; l{bu\|hu\|wu} rd, symbol[11:0]\(rd\) | Load global, unsigned
-s{b\|h\|w\|d} rd, symbol, rt | auipc rt, symbol[31:12]; s{b\|h\|w\|d} rd, symbol[11:0]\(rt\) | Store global
-fl{w\|d} rd, symbol, rt      | auipc rt, symbol[31:12]; fl{w\|d} rd, symbol[11:0]\(rt\)      | Floating-point load global
-fs{w\|d} rd, symbol, rt      | auipc rt, symbol[31:12]; fs{w\|d} rd, symbol[11:0]\(rt\)      | Floating-point store global
-nop                          | addi x0, x0, 0                                                | No operation
-li rd, immediate             | *Myriad sequences*                                            | Load immediate
-mv rd, rs                    | addi rd, rs, 0                                                | Copy register
-not rd, rs                   | xori rd, rs, -1                                               | Ones’ complement
-neg rd, rs                   | sub rd, x0, rs                                                | Two’s complement
-negw rd, rs                  | subw rd, x0, rs                                               | Two’s complement word
-sext.b rd, rs                | slli rd, rs, XLEN - 8; srai rd, rd, XLEN - 8                  | Sign extend byte | It will expand to another instruction sequence when B extension is available*[1]
-sext.h rd, rs                | slli rd, rs, XLEN - 16; srai rd, rd, XLEN - 16                | Sign extend half word | It will expand to another instruction sequence when B extension is available*[1]
-sext.w rd, rs                | addiw rd, rs, 0                                               | Sign extend word
-zext.b rd, rs                | andi rd, rs, 255                                              | Zero extend byte
-zext.h rd, rs                | slli rd, rs, XLEN - 16; srli rd, rd, XLEN - 16                | Zero extend half word | It will expand to another instruction sequence when B extension is available*[1]
-zext.w rd, rs                | slli rd, rs, XLEN - 32; srli rd, rd, XLEN - 32                | Zero extend word | It will expand to another instruction sequence when B extension is available*[1]
-seqz rd, rs                  | sltiu rd, rs, 1                                               | Set if = zero
-snez rd, rs                  | sltu rd, x0, rs                                               | Set if != zero
-sltz rd, rs                  | slt rd, rs, x0                                                | Set if < zero
-sgtz rd, rs                  | slt rd, x0, rs                                                | Set if > zero
-fmv.s rd, rs                 | fsgnj.s rd, rs, rs                                            | Copy single-precision register
-fabs.s rd, rs                | fsgnjx.s rd, rs, rs                                           | Single-precision absolute value
-fneg.s rd, rs                | fsgnjn.s rd, rs, rs                                           | Single-precision negate
-fmv.d rd, rs                 | fsgnj.d rd, rs, rs                                            | Copy double-precision register
-fabs.d rd, rs                | fsgnjx.d rd, rs, rs                                           | Double-precision absolute value
-fneg.d rd, rs                | fsgnjn.d rd, rs, rs                                           | Double-precision negate
-beqz rs, offset              | beq rs, x0, offset                                            | Branch if = zero
-bnez rs, offset              | bne rs, x0, offset                                            | Branch if != zero
-blez rs, offset              | bge x0, rs, offset                                            | Branch if ≤ zero
-bgez rs, offset              | bge rs, x0, offset                                            | Branch if ≥ zero
-bltz rs, offset              | blt rs, x0, offset                                            | Branch if < zero
-bgtz rs, offset              | blt x0, rs, offset                                            | Branch if > zero
-bgt rs, rt, offset           | blt rt, rs, offset                                            | Branch if >
-ble rs, rt, offset           | bge rt, rs, offset                                            | Branch if ≤
-bgtu rs, rt, offset          | bltu rt, rs, offset                                           | Branch if >, unsigned
-bleu rs, rt, offset          | bgeu rt, rs, offset                                           | Branch if ≤, unsigned
-j offset                     | jal x0, offset                                                | Jump
-jal offset                   | jal x1, offset                                                | Jump and link
-jr rs                        | jalr x0, rs, 0                                                | Jump register
-jalr rs                      | jalr x1, rs, 0                                                | Jump and link register
-ret                          | jalr x0, x1, 0                                                | Return from subroutine
-call offset                  | auipc x1, offset[31:12]; jalr x1, x1, offset[11:0]            | Call far-away subroutine
-tail offset                  | auipc x6, offset[31:12]; jalr x0, x6, offset[11:0]            | Tail call far-away subroutine
-fence                        | fence iorw, iorw                                              | Fence on all memory and I/O
-pause                        | fence w, 0                                                    | PAUSE hint
+| Pseudoinstruction            | Base Instruction(s)                                             | Meaning                         | Comment                                                                           |
+| :--------------------------- | :-------------------------------------------------------------- | :------------------------------ | :-------------------------------------------------------------------------------- |
+| la rd, symbol                | auipc rd, symbol[31:12]; addi rd, rd, symbol[11:0]              | Load address                    | With `.option nopic` (Default)                                                    |
+| la rd, symbol                | auipc rd, symbol@GOT[31:12]; l{w\|d} rd, symbol@GOT[11:0]\(rd\) | Load address                    | With `.option pic`                                                                |
+| lla rd, symbol               | auipc rd, symbol[31:12]; addi rd, rd, symbol[11:0]              | Load local address              |
+| lga rd, symbol               | auipc rd, symbol@GOT[31:12]; l{w\|d} rd, symbol@GOT[11:0]\(rd\) | Load global address             |
+| l{b\|h\|w\|d} rd, symbol     | auipc rd, symbol[31:12]; l{b\|h\|w\|d} rd, symbol[11:0]\(rd\)   | Load global                     |
+| l{bu\|hu\|wu} rd, symbol     | auipc rd, symbol[31:12]; l{bu\|hu\|wu} rd, symbol[11:0]\(rd\)   | Load global, unsigned           |
+| s{b\|h\|w\|d} rd, symbol, rt | auipc rt, symbol[31:12]; s{b\|h\|w\|d} rd, symbol[11:0]\(rt\)   | Store global                    |
+| fl{w\|d} rd, symbol, rt      | auipc rt, symbol[31:12]; fl{w\|d} rd, symbol[11:0]\(rt\)        | Floating-point load global      |
+| fs{w\|d} rd, symbol, rt      | auipc rt, symbol[31:12]; fs{w\|d} rd, symbol[11:0]\(rt\)        | Floating-point store global     |
+| nop                          | addi x0, x0, 0                                                  | No operation                    |
+| li rd, immediate             | _Myriad sequences_                                              | Load immediate                  |
+| mv rd, rs                    | addi rd, rs, 0                                                  | Copy register                   |
+| not rd, rs                   | xori rd, rs, -1                                                 | Ones’ complement                |
+| neg rd, rs                   | sub rd, x0, rs                                                  | Two’s complement                |
+| negw rd, rs                  | subw rd, x0, rs                                                 | Two’s complement word           |
+| sext.b rd, rs                | slli rd, rs, XLEN - 8; srai rd, rd, XLEN - 8                    | Sign extend byte                | It will expand to another instruction sequence when B extension is available\*[1] |
+| sext.h rd, rs                | slli rd, rs, XLEN - 16; srai rd, rd, XLEN - 16                  | Sign extend half word           | It will expand to another instruction sequence when B extension is available\*[1] |
+| sext.w rd, rs                | addiw rd, rs, 0                                                 | Sign extend word                |
+| zext.b rd, rs                | andi rd, rs, 255                                                | Zero extend byte                |
+| zext.h rd, rs                | slli rd, rs, XLEN - 16; srli rd, rd, XLEN - 16                  | Zero extend half word           | It will expand to another instruction sequence when B extension is available\*[1] |
+| zext.w rd, rs                | slli rd, rs, XLEN - 32; srli rd, rd, XLEN - 32                  | Zero extend word                | It will expand to another instruction sequence when B extension is available\*[1] |
+| seqz rd, rs                  | sltiu rd, rs, 1                                                 | Set if = zero                   |
+| snez rd, rs                  | sltu rd, x0, rs                                                 | Set if != zero                  |
+| sltz rd, rs                  | slt rd, rs, x0                                                  | Set if < zero                   |
+| sgtz rd, rs                  | slt rd, x0, rs                                                  | Set if > zero                   |
+| fmv.s rd, rs                 | fsgnj.s rd, rs, rs                                              | Copy single-precision register  |
+| fabs.s rd, rs                | fsgnjx.s rd, rs, rs                                             | Single-precision absolute value |
+| fneg.s rd, rs                | fsgnjn.s rd, rs, rs                                             | Single-precision negate         |
+| fmv.d rd, rs                 | fsgnj.d rd, rs, rs                                              | Copy double-precision register  |
+| fabs.d rd, rs                | fsgnjx.d rd, rs, rs                                             | Double-precision absolute value |
+| fneg.d rd, rs                | fsgnjn.d rd, rs, rs                                             | Double-precision negate         |
+| beqz rs, offset              | beq rs, x0, offset                                              | Branch if = zero                |
+| bnez rs, offset              | bne rs, x0, offset                                              | Branch if != zero               |
+| blez rs, offset              | bge x0, rs, offset                                              | Branch if ≤ zero                |
+| bgez rs, offset              | bge rs, x0, offset                                              | Branch if ≥ zero                |
+| bltz rs, offset              | blt rs, x0, offset                                              | Branch if < zero                |
+| bgtz rs, offset              | blt x0, rs, offset                                              | Branch if > zero                |
+| bgt rs, rt, offset           | blt rt, rs, offset                                              | Branch if >                     |
+| ble rs, rt, offset           | bge rt, rs, offset                                              | Branch if ≤                     |
+| bgtu rs, rt, offset          | bltu rt, rs, offset                                             | Branch if >, unsigned           |
+| bleu rs, rt, offset          | bgeu rt, rs, offset                                             | Branch if ≤, unsigned           |
+| j offset                     | jal x0, offset                                                  | Jump                            |
+| jal offset                   | jal x1, offset                                                  | Jump and link                   |
+| jr rs                        | jalr x0, rs, 0                                                  | Jump register                   |
+| jalr rs                      | jalr x1, rs, 0                                                  | Jump and link register          |
+| ret                          | jalr x0, x1, 0                                                  | Return from subroutine          |
+| call offset                  | auipc x1, offset[31:12]; jalr x1, x1, offset[11:0]              | Call far-away subroutine        |
+| tail offset                  | auipc x6, offset[31:12]; jalr x0, x6, offset[11:0]              | Tail call far-away subroutine   |
+| fence                        | fence iorw, iorw                                                | Fence on all memory and I/O     |
+| pause                        | fence w, 0                                                      | PAUSE hint                      |
 
-* [1] We don't specify the code sequence when the B-extension is present, since B-extension still not ratified or frozen. We will specify the expansion sequence once it's frozen.
+- [1] We don't specify the code sequence when the B-extension is present, since B-extension still not ratified or frozen. We will specify the expansion sequence once it's frozen.
 
 ## Pseudoinstructions for accessing control and status registers
 
-Pseudoinstruction | Base Instruction(s)        | Meaning
-:---------------- |:---------------------------|:-------
-rdinstret[h] rd   | csrrs rd, instret[h], x0   | Read instructions-retired counter
-rdcycle[h] rd     | csrrs rd, cycle[h], x0     | Read cycle counter
-rdtime[h] rd      | csrrs rd, time[h], x0      | Read real-time clock
-csrr rd, csr      | csrrs rd, csr, x0          | Read CSR
-csrw csr, rs      | csrrw x0, csr, rs          | Write CSR
-csrs csr, rs      | csrrs x0, csr, rs          | Set bits in CSR
-csrc csr, rs      | csrrc x0, csr, rs          | Clear bits in CSR
-csrwi csr, imm    | csrrwi x0, csr, imm        | Write CSR, immediate
-csrsi csr, imm    | csrrsi x0, csr, imm        | Set bits in CSR, immediate
-csrci csr, imm    | csrrci x0, csr, imm        | Clear bits in CSR, immediate
-frcsr rd          | csrrs rd, fcsr, x0         | Read FP control/status register
-fscsr rd, rs      | csrrw rd, fcsr, rs         | Swap FP control/status register
-fscsr rs          | csrrw x0, fcsr, rs         | Write FP control/status register
-frrm rd           | csrrs rd, frm, x0          | Read FP rounding mode
-fsrm rd, rs       | csrrw rd, frm, rs          | Swap FP rounding mode
-fsrm rs           | csrrw x0, frm, rs          | Write FP rounding mode
-fsrmi rd, imm     | csrrwi rd, frm, imm        | Swap FP rounding mode, immediate
-fsrmi imm         | csrrwi x0, frm, imm        | Write FP rounding mode, immediate
-frflags rd        | csrrs rd, fflags, x0       | Read FP exception flags
-fsflags rd, rs    | csrrw rd, fflags, rs       | Swap FP exception flags
-fsflags rs        | csrrw x0, fflags, rs       | Write FP exception flags
-fsflagsi rd, imm  | csrrwi rd, fflags, imm     | Swap FP exception flags, immediate
-fsflagsi imm      | csrrwi x0, fflags, imm     | Write FP exception flags, immediate
+| Pseudoinstruction | Base Instruction(s)      | Meaning                             |
+| :---------------- | :----------------------- | :---------------------------------- |
+| rdinstret[h] rd   | csrrs rd, instret[h], x0 | Read instructions-retired counter   |
+| rdcycle[h] rd     | csrrs rd, cycle[h], x0   | Read cycle counter                  |
+| rdtime[h] rd      | csrrs rd, time[h], x0    | Read real-time clock                |
+| csrr rd, csr      | csrrs rd, csr, x0        | Read CSR                            |
+| csrw csr, rs      | csrrw x0, csr, rs        | Write CSR                           |
+| csrs csr, rs      | csrrs x0, csr, rs        | Set bits in CSR                     |
+| csrc csr, rs      | csrrc x0, csr, rs        | Clear bits in CSR                   |
+| csrwi csr, imm    | csrrwi x0, csr, imm      | Write CSR, immediate                |
+| csrsi csr, imm    | csrrsi x0, csr, imm      | Set bits in CSR, immediate          |
+| csrci csr, imm    | csrrci x0, csr, imm      | Clear bits in CSR, immediate        |
+| frcsr rd          | csrrs rd, fcsr, x0       | Read FP control/status register     |
+| fscsr rd, rs      | csrrw rd, fcsr, rs       | Swap FP control/status register     |
+| fscsr rs          | csrrw x0, fcsr, rs       | Write FP control/status register    |
+| frrm rd           | csrrs rd, frm, x0        | Read FP rounding mode               |
+| fsrm rd, rs       | csrrw rd, frm, rs        | Swap FP rounding mode               |
+| fsrm rs           | csrrw x0, frm, rs        | Write FP rounding mode              |
+| fsrmi rd, imm     | csrrwi rd, frm, imm      | Swap FP rounding mode, immediate    |
+| fsrmi imm         | csrrwi x0, frm, imm      | Write FP rounding mode, immediate   |
+| frflags rd        | csrrs rd, fflags, x0     | Read FP exception flags             |
+| fsflags rd, rs    | csrrw rd, fflags, rs     | Swap FP exception flags             |
+| fsflags rs        | csrrw x0, fflags, rs     | Write FP exception flags            |
+| fsflagsi rd, imm  | csrrwi rd, fflags, imm   | Swap FP exception flags, immediate  |
+| fsflagsi imm      | csrrwi x0, fflags, imm   | Write FP exception flags, immediate |

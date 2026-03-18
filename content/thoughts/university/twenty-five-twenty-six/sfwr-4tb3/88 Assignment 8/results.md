@@ -1,5 +1,5 @@
 ---
-date: "2026-03-17"
+date: '2026-03-17'
 description: RISC-V
 id: results
 modified: 2026-03-17 23:00:42 GMT-04:00
@@ -402,6 +402,7 @@ _expected relative performance_ (fastest to slowest for the sieve with $N=32$):
 4. _Python (CPython)_: `set` objects use hash tables. each `add`/`remove`/`in` test involves hashing, comparisons, and dynamic memory management. for $10^6$ repetitions, wall clock is in the seconds range.
 
 observation:
+
 - P0's bitwise set representation on a 32-element universe turns $O(n)$ set operations into $O(1)$ machine instructions.
 - the Java and Python versions use general-purpose set data structures (hash sets) that are asymptotically equivalent but carry constant factors of $100\text{--}1000\times$ per operation due to hashing, boxing, and cache misses.
 - the pywasm interpreter is slow bc it's interpreting bytecode in Python, adding another layer of indirection on top of the efficient representation.
