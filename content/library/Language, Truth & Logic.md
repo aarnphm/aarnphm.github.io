@@ -5,9 +5,9 @@ id: Language, Truth & Logic
 title: Language, Truth & Logic
 date: 2025-12-18
 description: ayer's logical positivist manifesto arguing that meaningful statements must be verifiable through experience, establishing the verification principle.
-finished:
+finished: 2026
 year: 1936
-status: to read
+status: finished
 subcategory:
   - languages
   - logic

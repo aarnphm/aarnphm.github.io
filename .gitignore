@@ -231,3 +231,4 @@ docs/obsidian
 docs/plans
 *.jsonl
 PROMPTS.md
+*.wasm
