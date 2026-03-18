@@ -3,7 +3,7 @@ import { fromHtmlIsomorphic } from 'hast-util-from-html-isomorphic'
 import { toHtml } from 'hast-util-to-html'
 import { h, s } from 'hastscript'
 import { Code, Root as MdRoot } from 'mdast'
-import { tex2svg } from 'node-tikzjax'
+import tex2svg from 'node-tikzjax'
 import { visit } from 'unist-util-visit'
 import { svgOptions } from '../../components/svg'
 import { QuartzTransformerPlugin } from '../../types/plugin'
@@ -81,6 +81,7 @@ function makeTikzGraph(node: Code, svg: string, style?: string): Element {
 
 interface Options {
   showConsole: boolean
+  disableOptimize: boolean
 }
 
 const defaultOpts: Options = { showConsole: false, disableOptimize: true }
