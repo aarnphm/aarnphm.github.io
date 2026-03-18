@@ -2,7 +2,7 @@
 date: '2025-10-27'
 description: from nytimes
 id: nytimes
-modified: 2026-02-01 14:53:33 GMT-05:00
+modified: 2026-03-18 00:37:24 GMT-04:00
 tags:
   - games
 title: games
@@ -87,6 +87,16 @@ Puzzle #940
 🟪🟪🟪🟪
 🟦🟦🟦🟦
 🟩🟩🟩🟩
+```
+
+```text
+Connections
+Puzzle #1011
+🟩🟨🟩🟦
+🟨🟨🟨🟨
+🟩🟩🟩🟩
+🟪🟪🟪🟪
+🟦🟦🟦🟦
 ```
 
 ## wordle
