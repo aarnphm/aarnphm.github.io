@@ -1,7 +1,7 @@
 ---
 aliases:
   - advice
-date: '2024-01-23'
+date: "2024-01-23"
 description: A collection of quotes, wisdom, and advice.
 id: quotes
 layout: letter
@@ -16,7 +16,7 @@ metadata:
     text_line    = { character - newline } ;
     ws           = { " " } ;
     character    = ? any printable ascii except newline ? ;
-modified: 2026-03-04 13:51:57 GMT-05:00
+modified: 2026-03-17 00:32:31 GMT-04:00
 seealso:
   - '[[word|dictionary]]'
   - '[[research|wip]]'
@@ -30,6 +30,10 @@ transclude:
   dynalist: false
   title: false
 ---
+
+> Stop moving the goalpost if you're still going to miss it.
+>
+> yours truly
 
 > The human obsession with purpose is merely a distraction from the absurdity of existence
 >
