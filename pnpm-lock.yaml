@@ -24,10 +24,10 @@ importers:
         version: 1.1.0
       '@cloudflare/ai-chat':
         specifier: ^0.1.9
-        version: 0.1.9(@ai-sdk/react@3.0.90(react@18.3.1)(zod@4.3.6))(agents@0.7.7)(ai@6.0.116(zod@4.3.6))(react@18.3.1)(zod@4.3.6)
+        version: 0.1.9(@ai-sdk/react@3.0.90(react@18.3.1)(zod@4.3.6))(agents@0.7.9)(ai@6.0.116(zod@4.3.6))(react@18.3.1)(zod@4.3.6)
       '@cloudflare/codemode':
-        specifier: ^0.2.1
-        version: 0.2.1(@modelcontextprotocol/sdk@1.27.1(@cfworker/json-schema@4.1.1)(zod@4.3.6))(ai@6.0.116(zod@4.3.6))(zod@4.3.6)
+        specifier: ^0.2.2
+        version: 0.2.2(@modelcontextprotocol/sdk@1.27.1(@cfworker/json-schema@4.1.1)(zod@4.3.6))(ai@6.0.116(zod@4.3.6))(zod@4.3.6)
       '@cloudflare/puppeteer':
         specifier: ^1.0.6
         version: 1.0.6(bufferutil@4.0.9)(utf-8-validate@5.0.10)
@@ -74,8 +74,8 @@ importers:
         specifier: ^5.0.6
         version: 5.0.6
       agents:
-        specifier: ^0.7.7
-        version: 0.7.7(@ai-sdk/react@3.0.90(react@18.3.1)(zod@4.3.6))(@cloudflare/ai-chat@0.1.9)(@cloudflare/codemode@0.2.1(@modelcontextprotocol/sdk@1.27.1(@cfworker/json-schema@4.1.1)(zod@4.3.6))(ai@6.0.116(zod@4.3.6))(zod@4.3.6))(@cloudflare/workers-types@4.20260317.1)(ai@6.0.116(zod@4.3.6))(react@18.3.1)(zod@4.3.6)
+        specifier: ^0.7.9
+        version: 0.7.9(@ai-sdk/react@3.0.90(react@18.3.1)(zod@4.3.6))(@cloudflare/ai-chat@0.1.9)(@cloudflare/codemode@0.2.2(@modelcontextprotocol/sdk@1.27.1(@cfworker/json-schema@4.1.1)(zod@4.3.6))(ai@6.0.116(zod@4.3.6))(zod@4.3.6))(@cloudflare/workers-types@4.20260317.1)(ai@6.0.116(zod@4.3.6))(react@18.3.1)(zod@4.3.6)
       ansi-truncate:
         specifier: ^1.4.0
         version: 1.4.0
@@ -98,8 +98,8 @@ importers:
         specifier: ^3.7.0
         version: 3.7.0(esbuild@0.27.4)(sass-embedded@1.98.0)
       fast-xml-parser:
-        specifier: ^5.5.6
-        version: 5.5.6
+        specifier: ^5.5.7
+        version: 5.5.7
       flexsearch:
         specifier: ^0.8.212
         version: 0.8.212
@@ -164,8 +164,8 @@ importers:
         specifier: ^4.1.1
         version: 4.1.1
       katex:
-        specifier: ^0.16.38
-        version: 0.16.38
+        specifier: ^0.16.39
+        version: 0.16.39
       lightningcss:
         specifier: ^1.32.0
         version: 1.32.0
@@ -417,8 +417,8 @@ importers:
         specifier: ^17.0.35
         version: 17.0.35
       '@typescript/native-preview':
-        specifier: 7.0.0-dev.20260318.1
-        version: 7.0.0-dev.20260318.1
+        specifier: 7.0.0-dev.20260319.1
+        version: 7.0.0-dev.20260319.1
       ai:
         specifier: ^6.0.116
         version: 6.0.116(zod@4.3.6)
@@ -600,8 +600,8 @@ packages:
       react: ^19.0.0
       zod: ^3.25.0 || ^4.0.0
 
-  '@cloudflare/codemode@0.2.1':
-    resolution: {integrity: sha512-x2oxTjBQSZBlZmu5trSpqpDzOv56VPfQ26SD1Sz95TwNBbd4jQQS1Nyg9jnrWE3s2SmMR8bDO6P2P4+nE3Lq5A==}
+  '@cloudflare/codemode@0.2.2':
+    resolution: {integrity: sha512-uAznlreyHh/Te51t4ylMEVTWZdLLefFj5jJUi/uLkMFwjuETT2FOOGLUDNMt20msntxragxnZdDmLdyKWHV3/g==}
     peerDependencies:
       '@modelcontextprotocol/sdk': ^1.25.0
       ai: ^6.0.0
@@ -2542,43 +2542,43 @@ packages:
   '@types/yauzl@2.10.3':
     resolution: {integrity: sha512-oJoftv0LSuaDZE3Le4DbKX+KS9G36NzOeSap90UIK0yMA/NhKJhqlSGtNDORNRaIbQfzjXDrQa0ytJ6mNRGz/Q==}
 
-  '@typescript/native-preview-darwin-arm64@7.0.0-dev.20260318.1':
-    resolution: {integrity: sha512-hsXZC0M5N2F/KdX/wjRywZPovdGBgWw9ARy0GWCw1dAynqdfDcuceKbUw+QwMSdvvsFbUjSomTlyFdT09p1mcA==}
+  '@typescript/native-preview-darwin-arm64@7.0.0-dev.20260319.1':
+    resolution: {integrity: sha512-CMpCsOVUJ/BLC9x9VaT/DQviTmfHqw/NVwnyAR6ZHVVR1YJynJ6EJBPPHI4oStgTwVSdhna5uTPRiKhUpzvgCA==}
     cpu: [arm64]
     os: [darwin]
 
-  '@typescript/native-preview-darwin-x64@7.0.0-dev.20260318.1':
-    resolution: {integrity: sha512-lQl7DQkROqPZrx4C1MpFP0WNxdqv+9r4lErhd+57M2Kmxx1BmX3K5VMLJT9FZQFRtgntnYbwQAQ774Z17fv8rA==}
+  '@typescript/native-preview-darwin-x64@7.0.0-dev.20260319.1':
+    resolution: {integrity: sha512-gUcJwLYodGDC7Xf8aRDSMyL1impp4I+sE4ySTnnibTCzI5Mi2g8Sckkr81TEgMx5L4B10gkMmREuqr//1E+Y3A==}
     cpu: [x64]
     os: [darwin]
 
-  '@typescript/native-preview-linux-arm64@7.0.0-dev.20260318.1':
-    resolution: {integrity: sha512-1wv0qpJW4okKadShemVi4s7zGuiIRI7zTInRYDV/FfyQVyKrkTOzMtZXB6CF3Reus1HmRpGp5ADyc4MI7CCeJg==}
+  '@typescript/native-preview-linux-arm64@7.0.0-dev.20260319.1':
+    resolution: {integrity: sha512-7JmTBE0URYCmLiHXWZ/wlFoNWMu6YJkHGXXqkR3EGTck8+qi0X+dutRsasKYwGHS4I8Ubn/yWTcJHX5qHf68sQ==}
     cpu: [arm64]
     os: [linux]
 
-  '@typescript/native-preview-linux-arm@7.0.0-dev.20260318.1':
-    resolution: {integrity: sha512-tE7uN00Po/oBg5VYaYM0C/QXroo6gdIRmFVZl543o46ihl0YKEZBMnyStRKKgPCI9oeYXyCNT6WR4MxSMz6ndA==}
+  '@typescript/native-preview-linux-arm@7.0.0-dev.20260319.1':
+    resolution: {integrity: sha512-boLhrOyT6nSWaVARBD7AF99rLPMy7jjQB50KywZMFzJ9Gg9N+MBBHJCzgwqlDK2sfahfPWBSV5JjYfET8AOZMg==}
     cpu: [arm]
     os: [linux]
 
-  '@typescript/native-preview-linux-x64@7.0.0-dev.20260318.1':
-    resolution: {integrity: sha512-aSE7xAKYTOrxsFrIgmcaHjgXSSOnWrZ6ozNBeNxpGzd/gl2Ho3FCIwQb0NCXrDwF9AhpFRtHMWPpAPaJk24+rg==}
+  '@typescript/native-preview-linux-x64@7.0.0-dev.20260319.1':
+    resolution: {integrity: sha512-9LdXkBqR3r8MHmHHwoA7mwv/fkATe2TO+6fLuan/sfmGjob/9y7swyYVvauYzX+aiTbzXjjCkOtEw0klQLxT/A==}
     cpu: [x64]
     os: [linux]
 
-  '@typescript/native-preview-win32-arm64@7.0.0-dev.20260318.1':
-    resolution: {integrity: sha512-TV/Tn8cgWamb+6mvY45X2wF0vrTkQmRFCiN1pRRehEwxslDkqLVlpGAFpZndLaPlMb/wzwVpz1e/926xdAoO1w==}
+  '@typescript/native-preview-win32-arm64@7.0.0-dev.20260319.1':
+    resolution: {integrity: sha512-jKJ+lha8EZtxP5chtsuSNAZOvPInJbFExu0ctoiGVgw01sdMUZeyFYz9TSLoa5oNUs0dboydtiHTK/uyrKThNw==}
     cpu: [arm64]
     os: [win32]
 
-  '@typescript/native-preview-win32-x64@7.0.0-dev.20260318.1':
-    resolution: {integrity: sha512-AgOZODSYeTlQWVTioRG3AxHzIBSLbZZhyK19WPzjHW0LtxCcFi59G/Gn1uIshVL3sp1ESRg9SZ5mSiFdgvfK4g==}
+  '@typescript/native-preview-win32-x64@7.0.0-dev.20260319.1':
+    resolution: {integrity: sha512-GonXb3TBp23brWlPMA+uL42qUvBTNkCHFoE653tQK5SQkCvCSO3GYyY9K5GhEdG6kV2vDpG+Y98p1BYTM5z0Qg==}
     cpu: [x64]
     os: [win32]
 
-  '@typescript/native-preview@7.0.0-dev.20260318.1':
-    resolution: {integrity: sha512-/7LF/2x29K++k147445omxNixPANTmwJl9p/IIzK8NbOeqVOFv1Gj1GQyOQqRdT4j/X6YDwO/p400/JKE+cBOw==}
+  '@typescript/native-preview@7.0.0-dev.20260319.1':
+    resolution: {integrity: sha512-K9evb5u4QmH3Xv2XUg9OWUETYMrIX1C7Hls1ce8DW+Nlbb26NnQ5SPQCt8fGq4FGqZ9BodMwfane1pTd+BWYwQ==}
     hasBin: true
 
   '@ungap/structured-clone@1.3.0':
@@ -2616,15 +2616,14 @@ packages:
     resolution: {integrity: sha512-MnA+YT8fwfJPgBx3m60MNqakm30XOkyIoH1y6huTQvC0PwZG7ki8NacLBcrPbNoo8vEZy7Jpuk7+jMO+CUovTQ==}
     engines: {node: '>= 14'}
 
-  agents@0.7.7:
-    resolution: {integrity: sha512-j2t6fR4AbbipJreASKvSkhMsIgXN3KT5pBtvc/4ezdmmJyyK4LI2itFEbP3MBBY5c+AlTlKGxeojIg2onje6rg==}
+  agents@0.7.9:
+    resolution: {integrity: sha512-NNzFkDLrsZQC9oJlDOcgktQxeNWUfZuftimhGmcin+7kULsmdks1AUPXTXQ4mHJZBilKpL0pQzCq5aQMQCYEKA==}
     hasBin: true
     peerDependencies:
       '@ai-sdk/openai': ^3.0.0
       '@ai-sdk/react': ^3.0.0
       '@cloudflare/ai-chat': ^0.1.9
-      '@cloudflare/codemode': ^0.2.1
-      '@cloudflare/shell': ^0.0.2
+      '@cloudflare/codemode': ^0.2.2
       '@x402/core': ^2.0.0
       '@x402/evm': ^2.0.0
       ai: ^6.0.0
@@ -2639,8 +2638,6 @@ packages:
       '@cloudflare/ai-chat':
         optional: true
       '@cloudflare/codemode':
-        optional: true
-      '@cloudflare/shell':
         optional: true
       '@x402/core':
         optional: true
@@ -3595,8 +3592,8 @@ packages:
   fast-xml-builder@1.1.4:
     resolution: {integrity: sha512-f2jhpN4Eccy0/Uz9csxh3Nu6q4ErKxf0XIsasomfOihuSUa3/xw6w8dnOtCDgEItQFJG8KyXPzQXzcODDrrbOg==}
 
-  fast-xml-parser@5.5.6:
-    resolution: {integrity: sha512-3+fdZyBRVg29n4rXP0joHthhcHdPUHaIC16cuyyd1iLsuaO6Vea36MPrxgAzbZna8lhvZeRL8Bc9GP56/J9xEw==}
+  fast-xml-parser@5.5.7:
+    resolution: {integrity: sha512-LteOsISQ2GEiDHZch6L9hB0+MLoYVLToR7xotrzU0opCICBkxOPgHAy1HxAvtxfJNXDJpgAsQN30mkrfpO2Prg==}
     hasBin: true
 
   fastq@1.20.1:
@@ -4001,6 +3998,9 @@ packages:
   jose@6.2.1:
     resolution: {integrity: sha512-jUaKr1yrbfaImV7R2TN/b3IcZzsw38/chqMpo2XJ7i2F8AfM/lA4G1goC3JVEwg0H7UldTmSt3P68nt31W7/mw==}
 
+  jose@6.2.2:
+    resolution: {integrity: sha512-d7kPDd34KO/YnzaDOlikGpOurfF0ByC2sEV4cANCtdqLlTfBlw2p14O/5d/zv40gJPbIQxfES3nSx1/oYNyuZQ==}
+
   js-base64@3.7.8:
     resolution: {integrity: sha512-hNngCeKxIUQiEUN3GPJOkz4wF/YvdUdbNL9hsBcMQTkKzboD7T/q3OYOuuPZLUE6dBxSGpwhk5mwuDud7JVAow==}
 
@@ -4056,8 +4056,8 @@ packages:
   json-with-bigint@3.5.7:
     resolution: {integrity: sha512-7ei3MdAI5+fJPVnKlW77TKNKwQ5ppSzWvhPuSuINT/GYW9ZOC1eRKOuhV9yHG5aEsUPj9BBx5JIekkmoLHxZOw==}
 
-  katex@0.16.38:
-    resolution: {integrity: sha512-cjHooZUmIAUmDsHBN+1n8LaZdpmbj03LtYeYPyuYB7OuloiaeaV6N4LcfjcnHVzGWjVQmKrxxTrpDcmSzEZQwQ==}
+  katex@0.16.39:
+    resolution: {integrity: sha512-FR2f6y85+81ZLO0GPhyQ+EJl/E5ILNWltJhpAeOTzRny952Z13x2867lTFDmvMZix//Ux3CuMQ2VkLXRbUwOFg==}
     hasBin: true
 
   keyv@4.5.4:
@@ -5254,8 +5254,8 @@ packages:
     resolution: {integrity: sha512-uCC2VHvQRYu+lMh4My/sFNmF2klFymLX1wHJeXnbEJERpV/ZsVuonzerjfrGpIGF7LBVa1O7i9kjiWvJiFck8g==}
     engines: {node: '>=0.10.0'}
 
-  strnum@2.2.0:
-    resolution: {integrity: sha512-Y7Bj8XyJxnPAORMZj/xltsfo55uOiyHcU2tnAVzHUnSJR/KsEX+9RoDeXEnsXtl/CX4fAcrt64gZ13aGaWPeBg==}
+  strnum@2.2.1:
+    resolution: {integrity: sha512-BwRvNd5/QoAtyW1na1y1LsJGQNvRlkde6Q/ipqqEaivoMdV+B1OMOTVdwR+N/cwVUcIt9PYyHmV8HyexCZSupg==}
 
   style-mod@4.1.3:
     resolution: {integrity: sha512-i/n8VsZydrugj3Iuzll8+x/00GH2vnYsk1eomD8QiRrSAeW6ItbCQDtfXCeJHd0iwiNagqjQkvpvREEPtW3IoQ==}
@@ -5879,15 +5879,15 @@ snapshots:
       '@clack/core': 1.1.0
       sisteransi: 1.0.5
 
-  '@cloudflare/ai-chat@0.1.9(@ai-sdk/react@3.0.90(react@18.3.1)(zod@4.3.6))(agents@0.7.7)(ai@6.0.116(zod@4.3.6))(react@18.3.1)(zod@4.3.6)':
+  '@cloudflare/ai-chat@0.1.9(@ai-sdk/react@3.0.90(react@18.3.1)(zod@4.3.6))(agents@0.7.9)(ai@6.0.116(zod@4.3.6))(react@18.3.1)(zod@4.3.6)':
     dependencies:
       '@ai-sdk/react': 3.0.90(react@18.3.1)(zod@4.3.6)
-      agents: 0.7.7(@ai-sdk/react@3.0.90(react@18.3.1)(zod@4.3.6))(@cloudflare/ai-chat@0.1.9)(@cloudflare/codemode@0.2.1(@modelcontextprotocol/sdk@1.27.1(@cfworker/json-schema@4.1.1)(zod@4.3.6))(ai@6.0.116(zod@4.3.6))(zod@4.3.6))(@cloudflare/workers-types@4.20260317.1)(ai@6.0.116(zod@4.3.6))(react@18.3.1)(zod@4.3.6)
+      agents: 0.7.9(@ai-sdk/react@3.0.90(react@18.3.1)(zod@4.3.6))(@cloudflare/ai-chat@0.1.9)(@cloudflare/codemode@0.2.2(@modelcontextprotocol/sdk@1.27.1(@cfworker/json-schema@4.1.1)(zod@4.3.6))(ai@6.0.116(zod@4.3.6))(zod@4.3.6))(@cloudflare/workers-types@4.20260317.1)(ai@6.0.116(zod@4.3.6))(react@18.3.1)(zod@4.3.6)
       ai: 6.0.116(zod@4.3.6)
       react: 18.3.1
       zod: 4.3.6
 
-  '@cloudflare/codemode@0.2.1(@modelcontextprotocol/sdk@1.27.1(@cfworker/json-schema@4.1.1)(zod@4.3.6))(ai@6.0.116(zod@4.3.6))(zod@4.3.6)':
+  '@cloudflare/codemode@0.2.2(@modelcontextprotocol/sdk@1.27.1(@cfworker/json-schema@4.1.1)(zod@4.3.6))(ai@6.0.116(zod@4.3.6))(zod@4.3.6)':
     dependencies:
       '@types/json-schema': 7.0.15
       acorn: 8.16.0
@@ -6727,7 +6727,7 @@ snapshots:
       express: 5.2.1
       express-rate-limit: 8.3.1(express@5.2.1)
       hono: 4.12.8
-      jose: 6.2.1
+      jose: 6.2.2
       json-schema-typed: 8.0.2
       pkce-challenge: 5.0.1
       raw-body: 3.0.2
@@ -7466,36 +7466,36 @@ snapshots:
       '@types/node': 25.5.0
     optional: true
 
-  '@typescript/native-preview-darwin-arm64@7.0.0-dev.20260318.1':
+  '@typescript/native-preview-darwin-arm64@7.0.0-dev.20260319.1':
     optional: true
 
-  '@typescript/native-preview-darwin-x64@7.0.0-dev.20260318.1':
+  '@typescript/native-preview-darwin-x64@7.0.0-dev.20260319.1':
     optional: true
 
-  '@typescript/native-preview-linux-arm64@7.0.0-dev.20260318.1':
+  '@typescript/native-preview-linux-arm64@7.0.0-dev.20260319.1':
     optional: true
 
-  '@typescript/native-preview-linux-arm@7.0.0-dev.20260318.1':
+  '@typescript/native-preview-linux-arm@7.0.0-dev.20260319.1':
     optional: true
 
-  '@typescript/native-preview-linux-x64@7.0.0-dev.20260318.1':
+  '@typescript/native-preview-linux-x64@7.0.0-dev.20260319.1':
     optional: true
 
-  '@typescript/native-preview-win32-arm64@7.0.0-dev.20260318.1':
+  '@typescript/native-preview-win32-arm64@7.0.0-dev.20260319.1':
     optional: true
 
-  '@typescript/native-preview-win32-x64@7.0.0-dev.20260318.1':
+  '@typescript/native-preview-win32-x64@7.0.0-dev.20260319.1':
     optional: true
 
-  '@typescript/native-preview@7.0.0-dev.20260318.1':
+  '@typescript/native-preview@7.0.0-dev.20260319.1':
     optionalDependencies:
-      '@typescript/native-preview-darwin-arm64': 7.0.0-dev.20260318.1
-      '@typescript/native-preview-darwin-x64': 7.0.0-dev.20260318.1
-      '@typescript/native-preview-linux-arm': 7.0.0-dev.20260318.1
-      '@typescript/native-preview-linux-arm64': 7.0.0-dev.20260318.1
-      '@typescript/native-preview-linux-x64': 7.0.0-dev.20260318.1
-      '@typescript/native-preview-win32-arm64': 7.0.0-dev.20260318.1
-      '@typescript/native-preview-win32-x64': 7.0.0-dev.20260318.1
+      '@typescript/native-preview-darwin-arm64': 7.0.0-dev.20260319.1
+      '@typescript/native-preview-darwin-x64': 7.0.0-dev.20260319.1
+      '@typescript/native-preview-linux-arm': 7.0.0-dev.20260319.1
+      '@typescript/native-preview-linux-arm64': 7.0.0-dev.20260319.1
+      '@typescript/native-preview-linux-x64': 7.0.0-dev.20260319.1
+      '@typescript/native-preview-win32-arm64': 7.0.0-dev.20260319.1
+      '@typescript/native-preview-win32-x64': 7.0.0-dev.20260319.1
 
   '@ungap/structured-clone@1.3.0': {}
 
@@ -7523,7 +7523,7 @@ snapshots:
 
   agent-base@7.1.4: {}
 
-  agents@0.7.7(@ai-sdk/react@3.0.90(react@18.3.1)(zod@4.3.6))(@cloudflare/ai-chat@0.1.9)(@cloudflare/codemode@0.2.1(@modelcontextprotocol/sdk@1.27.1(@cfworker/json-schema@4.1.1)(zod@4.3.6))(ai@6.0.116(zod@4.3.6))(zod@4.3.6))(@cloudflare/workers-types@4.20260317.1)(ai@6.0.116(zod@4.3.6))(react@18.3.1)(zod@4.3.6):
+  agents@0.7.9(@ai-sdk/react@3.0.90(react@18.3.1)(zod@4.3.6))(@cloudflare/ai-chat@0.1.9)(@cloudflare/codemode@0.2.2(@modelcontextprotocol/sdk@1.27.1(@cfworker/json-schema@4.1.1)(zod@4.3.6))(ai@6.0.116(zod@4.3.6))(zod@4.3.6))(@cloudflare/workers-types@4.20260317.1)(ai@6.0.116(zod@4.3.6))(react@18.3.1)(zod@4.3.6):
     dependencies:
       '@cfworker/json-schema': 4.1.1
       '@modelcontextprotocol/sdk': 1.26.0(@cfworker/json-schema@4.1.1)(zod@4.3.6)
@@ -7541,8 +7541,8 @@ snapshots:
       zod: 4.3.6
     optionalDependencies:
       '@ai-sdk/react': 3.0.90(react@18.3.1)(zod@4.3.6)
-      '@cloudflare/ai-chat': 0.1.9(@ai-sdk/react@3.0.90(react@18.3.1)(zod@4.3.6))(agents@0.7.7)(ai@6.0.116(zod@4.3.6))(react@18.3.1)(zod@4.3.6)
-      '@cloudflare/codemode': 0.2.1(@modelcontextprotocol/sdk@1.27.1(@cfworker/json-schema@4.1.1)(zod@4.3.6))(ai@6.0.116(zod@4.3.6))(zod@4.3.6)
+      '@cloudflare/ai-chat': 0.1.9(@ai-sdk/react@3.0.90(react@18.3.1)(zod@4.3.6))(agents@0.7.9)(ai@6.0.116(zod@4.3.6))(react@18.3.1)(zod@4.3.6)
+      '@cloudflare/codemode': 0.2.2(@modelcontextprotocol/sdk@1.27.1(@cfworker/json-schema@4.1.1)(zod@4.3.6))(ai@6.0.116(zod@4.3.6))(zod@4.3.6)
     transitivePeerDependencies:
       - '@cloudflare/workers-types'
       - supports-color
@@ -8529,11 +8529,11 @@ snapshots:
     dependencies:
       path-expression-matcher: 1.1.3
 
-  fast-xml-parser@5.5.6:
+  fast-xml-parser@5.5.7:
     dependencies:
       fast-xml-builder: 1.1.4
       path-expression-matcher: 1.1.3
-      strnum: 2.2.0
+      strnum: 2.2.1
 
   fastq@1.20.1:
     dependencies:
@@ -9024,6 +9024,8 @@ snapshots:
 
   jose@6.2.1: {}
 
+  jose@6.2.2: {}
+
   js-base64@3.7.8: {}
 
   js-binary-schema-parser@2.0.3: {}
@@ -9095,7 +9097,7 @@ snapshots:
 
   json-with-bigint@3.5.7: {}
 
-  katex@0.16.38:
+  katex@0.16.39:
     dependencies:
       commander: 8.3.0
 
@@ -9448,7 +9450,7 @@ snapshots:
       dagre-d3-es: 7.0.14
       dayjs: 1.11.20
       dompurify: 3.3.3
-      katex: 0.16.38
+      katex: 0.16.39
       khroma: 2.1.0
       lodash-es: 4.17.23
       marked: 16.4.2
@@ -9545,7 +9547,7 @@ snapshots:
     dependencies:
       '@types/katex': 0.16.8
       devlop: 1.1.0
-      katex: 0.16.38
+      katex: 0.16.39
       micromark-factory-space: 2.0.1
       micromark-util-character: 2.1.1
       micromark-util-symbol: 2.0.1
@@ -10185,7 +10187,7 @@ snapshots:
 
   pseudocode@2.4.1:
     dependencies:
-      katex: 0.16.38
+      katex: 0.16.39
     optionalDependencies:
       mathjax: 3.2.2
 
@@ -10289,7 +10291,7 @@ snapshots:
       '@types/katex': 0.16.8
       hast-util-from-html-isomorphic: 2.0.0
       hast-util-to-text: 4.0.2
-      katex: 0.16.38
+      katex: 0.16.39
       unist-util-visit-parents: 6.0.2
       vfile: 6.0.3
 
@@ -10841,7 +10843,7 @@ snapshots:
 
   strip-bom-string@1.0.0: {}
 
-  strnum@2.2.0: {}
+  strnum@2.2.1: {}
 
   style-mod@4.1.3: {}
 
