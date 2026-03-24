@@ -1,5 +1,6 @@
 import sourceMapSupport from 'source-map-support'
 sourceMapSupport.install(options)
+
 import cfg from '../quartz.config'
 import { MarkdownContent, ProcessedContent } from './plugins/vfile'
 import {

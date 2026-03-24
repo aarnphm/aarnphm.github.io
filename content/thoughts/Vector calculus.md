@@ -2,7 +2,7 @@
 date: '2024-11-27'
 description: just enough vector calculus to be dangerous
 id: Vector calculus
-modified: 2026-03-18 12:43:27 GMT-04:00
+modified: 2026-03-19 02:55:27 GMT-04:00
 tags:
   - math
 title: Vector calculus
@@ -92,7 +92,7 @@ where $df$ is the infinitesimal change in $f$ for an infinitesimal displacement 
 > (\nabla f(x)) \cdot \mathbf{v} = D_v f(x)
 > $$
 
-```tikz
+```tikz disableSanitize=true
 \usepackage{pgfplots}
 \usepackage{tikz-3dplot}
 \pgfplotsset{compat=1.16}

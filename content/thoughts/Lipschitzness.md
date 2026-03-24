@@ -2,7 +2,7 @@
 date: '2025-08-21'
 description: continuity study
 id: Lipschitzness
-modified: 2025-10-29 02:15:27 GMT-04:00
+modified: 2026-03-19 02:54:24 GMT-04:00
 tags:
   - ml
   - math

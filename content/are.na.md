@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-03-12 22:13:17 GMT-04:00
+modified: 2026-03-19 02:37:22 GMT-04:00
 permalinks:
   - /website
   - /tweets
@@ -7958,6 +7958,10 @@ title: are.na
 
 ## typography
 
+- https://www.grillitype.com/typeface/gt-sectra -- GT Sectra
+  - [meta]:
+    - date: 03/19/2026
+    - tags: [serif]
 - https://ohnotype.co/blog/the-process-of-vulf-mono -- The Process of Vulf Mono
   - [meta]:
     - date: 02/23/2026
@@ -8254,6 +8258,11 @@ title: are.na
 
 ## engineering
 
+- https://www.humanityslastmachine.com/ -- Humanity Last Machine
+  - [meta]:
+    - date: 03/19/2026
+    - tags: [autonomous, longtermism, transhumanism]
+    - later: true
 - https://labs.iximiuz.com/tutorials/nodes-proxy-rce-c9e436a9 -- Kubernetes RCE: Exploiting nodes/proxy GET
   - [meta]:
     - date: 03/12/2026
