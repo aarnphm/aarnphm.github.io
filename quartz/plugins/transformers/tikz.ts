@@ -1,18 +1,48 @@
 import { Element, Properties } from 'hast'
-import { fromHtmlIsomorphic } from 'hast-util-from-html-isomorphic'
 import { toHtml } from 'hast-util-to-html'
 import { h, s } from 'hastscript'
 import { Code, Root as MdRoot } from 'mdast'
-import tex2svg from 'node-tikzjax'
+import { load, tex, dvi2svg } from 'node-tikzjax'
 import { visit } from 'unist-util-visit'
 import { svgOptions } from '../../components/svg'
 import { QuartzTransformerPlugin } from '../../types/plugin'
+
+const TIKZ_TIMEOUT = 30_000
+
+async function tex2svg(
+  input: string,
+  opts: { showConsole: boolean; disableSanitize: boolean; disableOptimize: boolean },
+) {
+  await load()
+  const dvi = await tex(input, {
+    texPackages: { pgfplots: '', amsmath: 'intlimits' },
+    tikzLibraries: 'arrows.meta,calc,positioning',
+    addToPreamble: '% comment',
+    showConsole: opts.showConsole,
+  })
+  return dvi2svg(dvi, {
+    disableSanitize: opts.disableSanitize,
+    disableOptimize: opts.disableOptimize,
+  })
+}
+
+function withTimeout<T>(promise: Promise<T>, ms: number, label: string): Promise<T> {
+  let timer: ReturnType<typeof setTimeout>
+  return Promise.race([
+    promise.finally(() => clearTimeout(timer)),
+    new Promise<never>((_, reject) => {
+      timer = setTimeout(() => reject(new Error(`tikz: ${label} timed out after ${ms}ms`)), ms)
+      timer.unref()
+    }),
+  ])
+}
 
 interface TikzNode {
   index: number
   value: string
   parent: MdRoot
   base64?: string
+  disableSanitize: boolean
 }
 
 function parseStyle(meta: string | null | undefined): string {
@@ -23,7 +53,6 @@ function parseStyle(meta: string | null | undefined): string {
 
 const docs = (node: Code): string => JSON.stringify(node.value)
 
-// mainly for reparse from HTML back to MD
 function makeTikzGraph(node: Code, svg: string, style?: string): Element {
   const mathMl = h(
     'span.tikz-mathml',
@@ -70,13 +99,15 @@ function makeTikzGraph(node: Code, svg: string, style?: string): Element {
   const properties: Properties = { 'data-remark-tikz': true, style: '' }
   if (style) properties.style = style
 
-  return h(
-    'figure.tikz',
-    properties,
-    mathMl,
-    fromHtmlIsomorphic(svg, { fragment: true }),
-    sourceCodeCopy,
-  )
+  const encoded = Buffer.from(svg).toString('base64')
+  const imgNode = h('img', {
+    src: `data:image/svg+xml;base64,${encoded}`,
+    alt: 'tikz diagram',
+    loading: 'lazy',
+    decoding: 'async',
+  })
+
+  return h('figure.tikz', properties, mathMl, imgNode, sourceCodeCopy)
 }
 
 interface Options {
@@ -90,11 +121,7 @@ export const TikzJax: QuartzTransformerPlugin<Options> = (opts?: Options) => {
   const o = { ...defaultOpts, ...opts }
   return {
     name: 'TikzJax',
-    // TODO: maybe we should render client-side instead of server-side? (build-time would increase).
-    // We skip tikz transpilation for now during process (takes too long for a file with a lot of tikz graph)
-    markdownPlugins({ argv }) {
-      if (argv.watch && !argv.force) return []
-
+    markdownPlugins() {
       return [
         () => async tree => {
           const nodes: TikzNode[] = []
@@ -111,21 +138,27 @@ export const TikzJax: QuartzTransformerPlugin<Options> = (opts?: Options) => {
                 parent: parent as MdRoot,
                 value,
                 base64: base64String,
+                disableSanitize: !!meta?.match(/disableSanitize\s*=\s*true/),
               })
             }
           })
 
           for (let i = 0; i < nodes.length; i++) {
-            const { index, parent, value, base64 } = nodes[i]
+            const { index, parent, value, base64, disableSanitize } = nodes[i]
             let svg
             if (base64 !== undefined) svg = base64
-            else
-              svg = await tex2svg(value, {
-                texPackages: { pgfplots: '', amsmath: 'intlimits' },
-                tikzLibraries: 'arrows.meta,calc,positioning',
-                addToPreamble: '% comment',
-                ...o,
-              })
+            else {
+              try {
+                svg = await withTimeout(
+                  tex2svg(value, { disableSanitize, ...o }),
+                  TIKZ_TIMEOUT,
+                  `node ${i + 1}/${nodes.length}`,
+                )
+              } catch (e) {
+                console.warn(`[tikz] skipping node ${i + 1}: ${e}`)
+                continue
+              }
+            }
             const node = parent.children[index] as Code
 
             parent.children.splice(index, 1, {
