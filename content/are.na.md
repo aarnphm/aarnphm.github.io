@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-03-19 02:37:22 GMT-04:00
+modified: 2026-03-24 13:45:15 GMT-04:00
 permalinks:
   - /website
   - /tweets
@@ -143,6 +143,10 @@ title: are.na
 - [meta]:
   - view: list
 
+- https://x.com/stefanopopoulos/status/2036458451413418073?s=46&t=E_gPjnJKDBGnwpVrE7Z-WQ -- OSS LLM Landscape, circa march 2026
+  - [meta]:
+    - date: 03/24/2026
+    - tags: [engineering, inference]
 - https://x.com/staysaasy/status/2026747108024365441 -- Insult as-if someone's job is Claude Code Skill
   - [meta]:
     - date: 03/02/2026
@@ -1078,6 +1082,12 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://en.wikipedia.org/wiki/M._C._Escher -- M.C. Escher
+  - [meta]:
+    - date: 03/24/2026
+    - tags: [artist]
+  - circa conformal maps for $\ln(w) \to\;w$
+  - elliptic functions in modern number theory
 - https://www.alexatartaglini.com -- Alexa R. Tartaglini
   - [meta]:
     - date: 03/12/2026
@@ -9192,6 +9202,10 @@ title: are.na
   - view: list
   - json: true
 
+- https://pub.math.leidenuniv.nl/~smitbde/papers/2003-de_smit-lenstra-escher.pdf -- Artful Mathematics: The Heritage of M.C. Escher
+  - [meta]:
+    - date: 03/24/2026
+    - tags: [complex analysis, art]
 - https://machinelearning.apple.com/research/streaming-transformer -- Streaming Transformer for Hardware Efficient Voice Trigger Detection and False Trigger Mitigation
   - [meta]:
     - date: 03/12/2026

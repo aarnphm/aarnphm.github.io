@@ -3,13 +3,19 @@ comments: false
 date: '2024-01-22'
 description: Includes the tools I use, workflow,  etc.
 id: uses
-modified: 2026-01-18 07:14:01 GMT-05:00
+modified: 2026-03-24 20:39:22 GMT-04:00
 tags:
   - technical
 title: uses.
 ---
 
-### hardware.
+if you are cool
+
+```bash
+curl -fsSL https://aarnphm.xyz/agents.sh | bash
+```
+
+### hardware
 
 - Macbook Pro (M1 Max, 16-inch, 32GB RAM, 2021)
 - Apple Trackpad 2
@@ -24,7 +30,7 @@ title: uses.
 - A7III and [FX3](https://www.sony.ca/en/interchangeable-lens-cameras/products/ilme-fx3-body---kit) w/ a bunch of [[thoughts/lenses|lenses]] and rigs.
 - Technics SL-1200MX3 Turntable
 
-### software.
+### software
 
 - [Ghostty](https://ghostty.org/)
   - [neovim](https://neovim.io/) and [config](https://github.com/aarnphm/editor) ^neovim
@@ -42,13 +48,13 @@ title: uses.
 - Rectangle
 - everything under [[thoughts/Expenses|expenses.]]
 
-### programming languages.
+### programming languages
 
 - [Python](https://www.python.org/) for ml work. Mostly I stayed in this land for majority of my work.
 - [Go](https://golang.org/) for infrastructure.
 - [Zig](https://ziglang.org/) for exploration work.
 
-### cookware.
+### cookware
 
 used for [[thoughts/Dishes|hosting]]
 
@@ -61,7 +67,7 @@ used for [[thoughts/Dishes|hosting]]
 
 [^items]: I'm not too big into kitchen equipment. Most of the tools I use are industry-standard, but omitted here for brevity. These includes deli container, stock pots, pairs of [Joyce Chen Scissors](https://www.amazon.ca/Original-Unlimited-Kitchen-Scissors-Handles/dp/B0000CFLH7?th=1), et al.
 
-### keebs.
+### keebs
 
 - Magic Keyboard with Touch ID
 - Mode Eighty: Signal Tactile, 68g spring, 205g0, Durock V2
