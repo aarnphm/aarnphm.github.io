@@ -121,12 +121,11 @@ info "checking for newer files in $CODEX_DIR"
 sync_back "$CODEX_DIR" \
   AGENTS.md \
   config.toml \
-  prompts \
   skills
 sync_agents_back "$CODEX_DIR/agents" "toml"
 
-if ! git -C "$AGENTS_DIR" diff --quiet 2>/dev/null || \
-   [ -n "$(git -C "$AGENTS_DIR" ls-files --others --exclude-standard 2>/dev/null)" ]; then
+if ! git -C "$AGENTS_DIR" diff --quiet 2>/dev/null ||
+  [ -n "$(git -C "$AGENTS_DIR" ls-files --others --exclude-standard 2>/dev/null)" ]; then
   info "sync-back found newer files, committing to repo"
   git -C "$AGENTS_DIR" add -A
   git -C "$AGENTS_DIR" commit -m "sync: pull newer configs from ~/.claude and ~/.codex" --no-gpg-sign 2>/dev/null || true
