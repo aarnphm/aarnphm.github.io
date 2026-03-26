@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-03-24 13:45:15 GMT-04:00
+modified: 2026-03-26 03:34:49 GMT-04:00
 permalinks:
   - /website
   - /tweets
@@ -6528,6 +6528,10 @@ title: are.na
 
 ## stream
 
+- https://www.anthropic.com/science -- Anthropic Science blog
+  - [meta]:
+    - date: 03/26/2026
+    - tags: [synthesis, coexploration]
 - https://veryprivateart.com -- Very Private Art
   - [meta]:
     - date: 03/04/2026
@@ -8828,6 +8832,10 @@ title: are.na
 
 ## organizations
 
+- https://encode.pillar.vc/ -- Encode, AI for science
+  - [meta]:
+    - date: 03/26/2026
+    - tags: [ai, progress]
 - https://archiveofourown.org/works/20223610/chapters/47927191 -- For Guidance, Please See the Corporate Interpersonal Relationship Policy
   - [meta]:
     - date: 01/23/2026
