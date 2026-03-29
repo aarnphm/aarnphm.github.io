@@ -15,12 +15,14 @@ bootstrap_system=${DETACHTOOLS_BOOTSTRAP_SYSTEM:-linux}
 bootstrap_target=${DETACHTOOLS_BOOTSTRAP_TARGET:-ubuntu}
 daemon_log=${DETACHTOOLS_DAEMON_LOG:-/tmp/nix-daemon.log}
 self_url=${DETACHTOOLS_SELF_URL:-https://aarnphm.xyz/detachtools.sh}
+fallback_self_url=${DETACHTOOLS_FALLBACK_SELF_URL:-https://raw.githubusercontent.com/aarnphm/aarnphm.github.io/main/quartz/static/detachtools.sh}
 rustup_toolchain=${DETACHTOOLS_RUSTUP_TOOLCHAIN:-nightly}
 rustup_profile=${DETACHTOOLS_RUSTUP_PROFILE:-complete}
 cargo_path_ready=${DETACHTOOLS_CARGO_PATH_READY:-0}
 cargo_path_injected=0
 rustup_installer_script=
 nix_installer_script=
+reexec_script=
 
 say() {
   printf '%s\n' "[$script_name] $*"
@@ -37,6 +39,9 @@ cleanup() {
   fi
   if [ -n "${nix_installer_script}" ] && [ -f "${nix_installer_script}" ]; then
     rm -f "${nix_installer_script}"
+  fi
+  if [ -n "${reexec_script}" ] && [ -f "${reexec_script}" ]; then
+    rm -f "${reexec_script}"
   fi
 }
 
@@ -137,7 +142,20 @@ reexec_with_cargo_path() {
     exec env DETACHTOOLS_CARGO_PATH_READY=1 PATH="${cargo_bin}:$PATH" "$0" "$@"
   fi
 
-  exec env DETACHTOOLS_CARGO_PATH_READY=1 PATH="${cargo_bin}:$PATH" sh -c 'script_url=$1; shift; curl --proto "=https" --tlsv1.2 -sSf "$script_url" | sh -s -- "$@"' sh "${self_url}" "$@"
+  reexec_script=$(mktemp "${TMPDIR:-/tmp}/detachtools-reexec.XXXXXX")
+  if curl --proto '=https' --tlsv1.2 -sSf "${self_url}" -o "${reexec_script}"; then
+    :
+  elif curl --proto '=https' --tlsv1.2 -sSf "${fallback_self_url}" -o "${reexec_script}"; then
+    say "primary self url failed, fell back to raw github for re-exec"
+  else
+    die "failed to fetch script for re-exec from both ${self_url} and ${fallback_self_url}"
+  fi
+
+  chmod +x "${reexec_script}"
+  exec env DETACHTOOLS_CARGO_PATH_READY=1 PATH="${cargo_bin}:$PATH" \
+    DETACHTOOLS_SELF_URL="${self_url}" \
+    DETACHTOOLS_FALLBACK_SELF_URL="${fallback_self_url}" \
+    "${reexec_script}" "$@"
 }
 
 refresh_nix_path() {
