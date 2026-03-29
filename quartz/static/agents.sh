@@ -148,7 +148,6 @@ mkdir -p "$CODEX_DIR"
 sync_files "$CODEX_DIR" \
   AGENTS.md \
   config.toml \
-  prompts \
   skills
 sync_agents "$CODEX_DIR/agents" "toml"
 
@@ -192,7 +191,7 @@ sync_agents "$HOME/.claude/agents" "md"
 
 sync_files "$HOME/.codex" \
   AGENTS.md config.toml \
-  prompts skills
+  skills
 sync_agents "$HOME/.codex/agents" "toml"
 HOOK
   chmod +x "$HOOK_FILE"
@@ -207,7 +206,7 @@ echo "    <- CLAUDE.md, settings.json, statusline-command.sh"
 echo "    <- agents/*.md, commands/, skills/"
 echo "  codex:       $CODEX_DIR"
 echo "    <- AGENTS.md, config.toml"
-echo "    <- agents/*.toml, prompts/, skills/"
+echo "    <- agents/*.toml, skills/"
 echo ""
 info "post-commit hook installed: changes auto-sync on commit"
 warn "plugins install on first claude code run via enabledPlugins in settings.json"

@@ -581,6 +581,19 @@ export default {
       case '/site.webmanifest':
         const originResp = await env.ASSETS.fetch(request)
         return withHeaders(originResp, { ...apiHeaders, 'Access-Control-Allow-Origin': '*' })
+      case '/agents.sh':
+      case '/detachtools.sh': {
+        const assetUrl = new URL(request.url)
+        assetUrl.pathname = `/static${url.pathname}`
+        const assetReq = new Request(assetUrl.toString(), request)
+        const assetResp = await env.ASSETS.fetch(assetReq)
+        return withHeaders(assetResp, {
+          'Content-Type': 'text/plain; charset=utf-8',
+          'X-Content-Type-Options': 'nosniff',
+          'X-Frame-Options': 'DENY',
+          'Cache-Control': 'no-store, no-cache, must-revalidate',
+        })
+      }
       case '/park': {
         const originResp = await env.ASSETS.fetch(request)
         return withHeaders(originResp, { 'Content-Type': 'text/html; charset=utf-8' })
