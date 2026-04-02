@@ -50,9 +50,9 @@
     "@codemirror/language": "^6.12.3",
     "@codemirror/state": "^6.6.0",
     "@codemirror/view": "^6.41.0",
-    "@electric-sql/pglite": "^0.4.2",
+    "@electric-sql/pglite": "^0.4.3",
     "@floating-ui/dom": "^1.7.6",
-    "@huggingface/transformers": "^4.0.0",
+    "@huggingface/transformers": "^4.0.1",
     "@jax-js/jax": "^0.1.10",
     "@modelcontextprotocol/sdk": "^1.29.0",
     "@napi-rs/simple-git": "^0.1.22",
@@ -83,7 +83,7 @@
     "hast-util-whitespace": "^3.0.0",
     "hastscript": "^9.0.1",
     "highlight.js": "^11.11.1",
-    "hono": "^4.12.9",
+    "hono": "^4.12.10",
     "image-size": "^2.0.2",
     "is-absolute-url": "^5.0.0",
     "js-yaml": "^4.1.1",
@@ -158,7 +158,7 @@
     "zod": "^4.3.6"
   },
   "devDependencies": {
-    "@cloudflare/workers-types": "^4.20260401.1",
+    "@cloudflare/workers-types": "^4.20260402.1",
     "@types/d3": "^7.4.3",
     "@types/d3-drag": "^3.0.7",
     "@types/d3-force": "^3.0.10",
@@ -174,10 +174,10 @@
     "@types/ws": "^8.18.1",
     "@types/yargs": "^17.0.35",
     "@typescript/native-preview": "7.0.0-dev.20260401.1",
-    "ai": "^6.0.142",
+    "ai": "^6.0.143",
     "bibtex-tidy": "^1.14.0",
     "drizzle-kit": "^0.31.10",
-    "esbuild": "^0.27.5",
+    "esbuild": "^0.27.7",
     "eslint": "^10.1.0",
     "mermaid": "^11.14.0",
     "micromark": "^4.0.2",
@@ -189,7 +189,7 @@
     "ts-morph": "^27.0.2",
     "tsx": "^4.21.0",
     "typescript": "^6.0.2",
-    "wrangler": "^4.79.0"
+    "wrangler": "^4.80.0"
   },
   "engines": {
     "node": ">=22",
