@@ -1,5 +1,5 @@
 ---
-date: "2026-03-28"
+date: '2026-03-28'
 description: on moral emotivism
 draft: true
 id: iron ring
