@@ -95,3 +95,5 @@ docs/streams/neofinalism-transhumanism-meliorism-plan.md filter=lfs diff=lfs mer
 docs/helix-parallelism-deep-dive.md filter=lfs diff=lfs merge=lfs -text
 docs/streams filter=lfs diff=lfs merge=lfs -text
 content/letters/mar-2026.md filter=lfs diff=lfs merge=lfs -text
+content/posts/24/Nicky.md filter=lfs diff=lfs merge=lfs -text
+content/posts/helen/bday.md filter=lfs diff=lfs merge=lfs -text
