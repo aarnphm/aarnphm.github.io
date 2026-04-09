@@ -42,7 +42,7 @@
     "@clack/prompts": "^1.2.0",
     "@cloudflare/ai-chat": "^0.4.0",
     "@cloudflare/codemode": "^0.3.4",
-    "@cloudflare/puppeteer": "^1.0.6",
+    "@cloudflare/puppeteer": "^1.0.7",
     "@cloudflare/workers-oauth-provider": "^0.4.0",
     "@codemirror/autocomplete": "^6.20.1",
     "@codemirror/commands": "^6.10.3",
@@ -50,7 +50,7 @@
     "@codemirror/language": "^6.12.3",
     "@codemirror/state": "^6.6.0",
     "@codemirror/view": "^6.41.0",
-    "@electric-sql/pglite": "^0.4.3",
+    "@electric-sql/pglite": "^0.4.4",
     "@floating-ui/dom": "^1.7.6",
     "@huggingface/transformers": "^4.0.1",
     "@jax-js/jax": "^0.1.11",
@@ -158,7 +158,7 @@
     "zod": "^4.3.6"
   },
   "devDependencies": {
-    "@cloudflare/workers-types": "^4.20260408.1",
+    "@cloudflare/workers-types": "^4.20260409.1",
     "@types/d3": "^7.4.3",
     "@types/d3-drag": "^3.0.7",
     "@types/d3-force": "^3.0.10",
@@ -173,7 +173,7 @@
     "@types/unist": "^3.0.3",
     "@types/ws": "^8.18.1",
     "@types/yargs": "^17.0.35",
-    "@typescript/native-preview": "7.0.0-dev.20260408.1",
+    "@typescript/native-preview": "7.0.0-dev.20260409.1",
     "ai": "^6.0.154",
     "bibtex-tidy": "^1.14.0",
     "drizzle-kit": "^0.31.10",
@@ -189,7 +189,7 @@
     "ts-morph": "^27.0.2",
     "tsx": "^4.21.0",
     "typescript": "^6.0.2",
-    "wrangler": "^4.81.0"
+    "wrangler": "^4.81.1"
   },
   "engines": {
     "node": ">=22",
