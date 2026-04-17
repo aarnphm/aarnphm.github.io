@@ -1,8 +1,8 @@
 ---
-date: '2025-10-27'
+date: "2025-10-27"
 description: from nytimes
 id: nytimes
-modified: 2026-03-30 16:53:55 GMT-04:00
+modified: 2026-04-14 15:50:36 GMT-04:00
 tags:
   - games
 title: games
@@ -111,6 +111,16 @@ Puzzle #1023
 🟪🟪🟪🟪
 ```
 
+```text
+Connections
+Puzzle #1038
+🟦🟨🟨🟨
+🟨🟨🟨🟨
+🟪🟪🟪🟪
+🟦🟦🟦🟦
+🟩🟩🟩🟩
+```
+
 ## wordle
 
 ```text
@@ -215,6 +225,14 @@ Wordle 1,665 3/6
 
 ⬜🟨⬜⬜⬜
 ⬜🟩⬜🟨⬜
+🟩🟩🟩🟩🟩
+```
+
+```text
+Wordle 1,760 3/6*
+
+⬜⬜⬜🟨⬜
+⬜🟨⬜⬜🟨
 🟩🟩🟩🟩🟩
 ```
 

@@ -1,12 +1,12 @@
 ---
-date: '2026-03-31'
+date: "2026-03-31"
 description: code optimization, common subexpression elimination, basic blocks
 id: results
-modified: 2026-03-31 16:58:55 GMT-04:00
+modified: 2026-04-07 21:37:51 GMT-04:00
 tags:
   - sfwr4tb3
   - assignment
-title: 'Assignment 10: Code Optimization'
+title: Code Optimization
 ---
 
 ## Q1: Basic Blocks of p2 [4 points]

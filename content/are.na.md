@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-03-26 03:34:49 GMT-04:00
+modified: 2026-04-16 23:13:21 GMT-04:00
 permalinks:
   - /website
   - /tweets
@@ -143,6 +143,10 @@ title: are.na
 - [meta]:
   - view: list
 
+- https://x.com/_lyraaaa_/status/2043480921018707982 -- Reproduction of Anthropic's emotion activation probe
+  - [meta]:
+    - date: 04/14/2026
+    - tags: [interpretability]
 - https://x.com/stefanopopoulos/status/2036458451413418073?s=46&t=E_gPjnJKDBGnwpVrE7Z-WQ -- OSS LLM Landscape, circa march 2026
   - [meta]:
     - date: 03/24/2026
@@ -580,6 +584,10 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://www.briewolfson.com/ -- Brie Wolfson
+  - [meta]:
+    - date: 04/14/2026
+    - tags: [designer]
 - https://www.wgsn.com/en -- WGSN [**]
   - [meta]:
     - date: 03/09/2026
@@ -1082,6 +1090,11 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://logangraham.xyz -- Logan Graham
+  - [meta]:
+    - date: 04/08/2026
+    - tags: [engineer]
+  - lead red team at Anthropic
 - https://en.wikipedia.org/wiki/M._C._Escher -- M.C. Escher
   - [meta]:
     - date: 03/24/2026
@@ -2206,6 +2219,10 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://colah.github.io/posts/2019-05-Collaboration -- Collaboration & Credit Principles
+  - [meta]:
+    - date: 04/16/2026
+    - tags: [meta, good]
 - https://tseliot.com/essays/the-perfect-critic -- The Perfect Critic
   - [meta]:
     - date: 03/12/2026
@@ -6968,6 +6985,26 @@ title: are.na
 
 ## design
 
+- https://takeagander.com
+  - [meta]:
+    - date: 04/16/2026
+    - tags: [studio]
+- https://appandflow.com -- App&Flow
+  - [meta]:
+    - date: 04/16/2026
+    - tags: [react]
+- https://mo1.app/
+  - [meta]:
+    - date: 04/16/2026
+    - tags: [animations, web]
+- https://lefos.com/ -- Lefos
+  - [meta]:
+    - date: 04/08/2026
+    - tags: [utilitarian]
+- https://paper.design/
+  - [meta]:
+    - date: 04/08/2026
+    - tags: [agentic]
 - https://www.aidesignfieldguide.com
   - [meta]:
     - date: 03/02/2026
@@ -8272,6 +8309,14 @@ title: are.na
 
 ## engineering
 
+- https://ona.com/stories/the-last-year-of-localhost -- The last year of localhost
+  - [meta]:
+    - date: 04/16/2026
+    - tags: [agent]
+- https://www.humanlayer.dev/blog/skill-issue-harness-engineering-for-coding-agents -- Harness engineering for coding agents
+  - [meta]:
+    - date: 04/14/2026
+    - tags: [agents, autonomous]
 - https://www.humanityslastmachine.com/ -- Humanity Last Machine
   - [meta]:
     - date: 03/19/2026
@@ -8832,6 +8877,10 @@ title: are.na
 
 ## organizations
 
+- https://earendil.com/ -- Earendil
+  - [meta]:
+    - date: 04/08/2026
+    - tags: [software, foundation]
 - https://encode.pillar.vc/ -- Encode, AI for science
   - [meta]:
     - date: 03/26/2026
