@@ -177,6 +177,7 @@ const config: QuartzConfig = {
             '.mp4',
             '.lean',
             '.svg',
+            '.wat'
           ],
           exclude: [/\.(ignore\.pdf)$/, /400232791/],
           tags: [
