@@ -930,6 +930,7 @@ dependencies = [
     { name = "nb-mypy" },
     { name = "nltk" },
     { name = "numpy" },
+    { name = "pywasm" },
     { name = "scipy" },
     { name = "svgling" },
     { name = "tiktoken" },
@@ -971,6 +972,7 @@ requires-dist = [
     { name = "nb-mypy", specifier = ">=1.0.6" },
     { name = "nltk", specifier = ">=3.9.2" },
     { name = "numpy", specifier = ">=2.1.2" },
+    { name = "pywasm", specifier = ">=2.2.2" },
     { name = "scipy", specifier = ">=1.14.1" },
     { name = "svgling", specifier = ">=0.5.0" },
     { name = "tiktoken", specifier = ">=0.11.0" },
@@ -3433,6 +3435,15 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/c0/75/3df66861bca41394f05c5b818943fd0535bc02d5c5c512f9d859dec921f3/pyupgrade-3.20.0.tar.gz", hash = "sha256:dd6a16c13fc1a7db45796008689a9a35420bd364d681430f640c5e54a3d351ea", size = 45007, upload-time = "2025-05-23T18:55:43.239Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/63/1c/8412744f89cbd251f159f790980492b38468530117f614108196665d3b1a/pyupgrade-3.20.0-py2.py3-none-any.whl", hash = "sha256:cd5bf842b863f50adad324a01c30aef60b9f698a9814848094818659c92cd1f4", size = 62452, upload-time = "2025-05-23T18:55:41.62Z" },
+]
+
+[[package]]
+name = "pywasm"
+version = "2.2.2"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/ac/52/30d4eab9ee4720e91d2f6ff7764407aa192714bd7624f89a37bb1e86efd0/pywasm-2.2.2.tar.gz", hash = "sha256:81351bfe198e3789fd11e9be2511888cd8514e4368ebf8483050b442ffa5c79f", size = 5507789, upload-time = "2026-01-27T03:50:33.21Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/fa/7e/5e3dea69d3e468a2a917a2d4a1d1a4c1e40e4ae151aea7b3493cf76d1b10/pywasm-2.2.2-py2.py3-none-any.whl", hash = "sha256:198327e40cfe70525b8af58e7c2c912ce2bf76949688088f3ddbb6679f2c68bb", size = 44676, upload-time = "2026-01-27T03:50:20.884Z" },
 ]
 
 [[package]]
