@@ -97,3 +97,14 @@ docs/streams filter=lfs diff=lfs merge=lfs -text
 content/letters/mar-2026.md filter=lfs diff=lfs merge=lfs -text
 content/posts/24/Nicky.md filter=lfs diff=lfs merge=lfs -text
 content/posts/helen/bday.md filter=lfs diff=lfs merge=lfs -text
+.claude/agents/p0-compiler.md filter=lfs diff=lfs merge=lfs -text
+.claude/skills/sfwr-4tb3/SKILL.md filter=lfs diff=lfs merge=lfs -text
+.claude/skills/sfwr-4tb3/references/lecture-02-regex.md filter=lfs diff=lfs merge=lfs -text
+.claude/skills/sfwr-4tb3/references/lecture-06-stack-wasm.md filter=lfs diff=lfs merge=lfs -text
+.claude/skills/sfwr-4tb3/references/lecture-10-general.md filter=lfs diff=lfs merge=lfs -text
+.claude/skills/sfwr-4tb3/references/exam-playbook.md filter=lfs diff=lfs merge=lfs -text
+.claude/skills/sfwr-4tb3/references/lecture-07-datatypes.md filter=lfs diff=lfs merge=lfs -text
+.claude/skills/sfwr-4tb3/references/lecture-08-risc.md filter=lfs diff=lfs merge=lfs -text
+.claude/skills/sfwr-4tb3/references/lecture-09-optim.md filter=lfs diff=lfs merge=lfs -text
+.claude/skills/sfwr-4tb3/references/lecture-11-lab.md filter=lfs diff=lfs merge=lfs -text
+.claude/skills/sfwr-4tb3/references/overview.md filter=lfs diff=lfs merge=lfs -text

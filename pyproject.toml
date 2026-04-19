@@ -17,6 +17,7 @@ dependencies = [
   "svgling>=0.5.0",
   "tiktoken>=0.11.0",
   "nb-mypy>=1.0.6",
+  "pywasm>=2.2.2",
 ]
 dynamic = ["version"]
 
