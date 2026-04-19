@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-04-16 23:13:21 GMT-04:00
+modified: 2026-04-17 13:37:29 GMT-04:00
 permalinks:
   - /website
   - /tweets
@@ -2219,6 +2219,18 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://humaniterations.net/2016/05/16/the-orthogonality-thesis-ontological-crises/ -- The Orthogonality Thesis & Ontological Crises
+  - [meta]:
+    - date: 04/17/2026
+    - tags: [longtermism]
+- https://www.nature.com/articles/s41591-026-04287-9 -- An international mega-analysis of psychedelic drug effects on brain circuit function
+  - [meta]:
+    - date: 04/17/2026
+    - tags: [drug]
+- https://blog.kevinzwu.com/lessons-for-the-aspiring-quant/ -- Lessons for the Aspiring Quant
+  - [meta]:
+    - date: 04/17/2026
+    - tags: [life, advice]
 - https://colah.github.io/posts/2019-05-Collaboration -- Collaboration & Credit Principles
   - [meta]:
     - date: 04/16/2026
@@ -5241,6 +5253,10 @@ title: are.na
 
 ## opinions
 
+- https://archive.is/hOYMn -- Sam Altman May Control Our Future—Can He Be Trusted?
+  - [meta]:
+    - date: 04/17/2026
+    - tags: [investigation, being]
 - https://giansegato.com/essays/probabilistic-era -- Building AI Products In The Probabilistic Era
   - [meta]:
     - date: 02/23/2026
@@ -6798,6 +6814,10 @@ title: are.na
   - [meta]:
     - date: 11/13/2025
     - tags: [travelling]
+- https://www.inkhaven.blog/spring-26 -- Inkhaven, Spring 26
+  - [meta]:
+    - date: 04/17/2026
+    - tags: [blogroll]
 - https://www.inkhaven.blog/fall-25 -- Inkhaven, Fall 25 [**]
   - [meta]:
     - date: 11/12/2025
@@ -7829,6 +7849,10 @@ title: are.na
 
 ## resources
 
+- https://uwaterloo.ca/united-college/sites/default/files/uploads/documents/2024-impact-report-4-compressed_0.pdf -- Greenhouse Fall 2024 impact report
+  - [meta]:
+    - date: 04/17/2026
+    - tags: [environmental, report]
 - https://docs.google.com/document/d/1B3Itxfko-DzyzQlF4_Qc73aSTrcPyLpaySRRyD7-EY0/edit?tab=t.0 -- Big Kink Survey (970k cleaned)
   - [meta]:
     - date: 03/09/2026
@@ -8309,6 +8333,10 @@ title: are.na
 
 ## engineering
 
+- https://developer.chrome.com/docs/workbox/modules/workbox-precaching -- workbox-precaching API
+  - [meta]:
+    - date: 04/17/2026
+    - tags: [browser]
 - https://ona.com/stories/the-last-year-of-localhost -- The last year of localhost
   - [meta]:
     - date: 04/16/2026
