@@ -108,3 +108,9 @@ content/posts/helen/bday.md filter=lfs diff=lfs merge=lfs -text
 .claude/skills/sfwr-4tb3/references/lecture-09-optim.md filter=lfs diff=lfs merge=lfs -text
 .claude/skills/sfwr-4tb3/references/lecture-11-lab.md filter=lfs diff=lfs merge=lfs -text
 .claude/skills/sfwr-4tb3/references/overview.md filter=lfs diff=lfs merge=lfs -text
+.claude/skills/sfwr-4tb3/references/lecture-01-syntax.md filter=lfs diff=lfs merge=lfs -text
+.claude/skills/sfwr-4tb3/references/lecture-03-cfl.md filter=lfs diff=lfs merge=lfs -text
+.claude/skills/sfwr-4tb3/references/lecture-04-sdt.md filter=lfs diff=lfs merge=lfs -text
+.claude/skills/sfwr-4tb3/references/content-index.md filter=lfs diff=lfs merge=lfs -text
+.claude/skills/sfwr-4tb3/references/lecture-05-parser.md filter=lfs diff=lfs merge=lfs -text
+content/posts/m/bday.md filter=lfs diff=lfs merge=lfs -text
