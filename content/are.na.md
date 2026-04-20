@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-04-17 13:37:29 GMT-04:00
+modified: 2026-04-20 10:57:12 GMT-04:00
 permalinks:
   - /website
   - /tweets
@@ -1090,6 +1090,12 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://anselmlevskaya.com/
+  - [meta]:
+    - date: 04/20/2026
+    - tags: [researcher, biologist]
+    - later: true
+  - DeepMind, JAX/FLAX team
 - https://logangraham.xyz -- Logan Graham
   - [meta]:
     - date: 04/08/2026
@@ -2219,6 +2225,10 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://dreamofmachin.es/machine_prophecy.html -- Against Prophecy among the machines
+  - [meta]:
+    - date: 04/20/2026
+    - tags: [policy]
 - https://humaniterations.net/2016/05/16/the-orthogonality-thesis-ontological-crises/ -- The Orthogonality Thesis & Ontological Crises
   - [meta]:
     - date: 04/17/2026
