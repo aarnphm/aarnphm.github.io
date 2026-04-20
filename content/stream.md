@@ -44,17 +44,52 @@ metadata:
     letter        = "a".."z" ;
     digit         = "0".."9" ;
     character     = ? any printable ascii except newline ? ;
-modified: 2026-03-13 22:55:36 GMT-04:00
+modified: 2026-04-20 07:51:14 GMT-04:00
 tags:
   - fruit
   - evergreen
 title: stream
 ---
 
+
+## i lost her
+- [meta]:
+  - date: 2026-04-19 07:42:45 GMT-04:00
+  - tags:
+    - updates.
+
+I lost her. I need to change.
+
+You can't cry for excuse, tough up, retard. Look at all the hardship she endures. You can't just sit there any sympathize, just pick up rubber and get fit.
+
+I need to get strong, and I need to bench 315lbs
+
+I need to keep up my pace, that I once had, 9:10mi/h
+
+I need to get a bicycle, the training begins.
+
+I need to stop eating to cope with stress, workout instead fat ass.
+
+You need to get that high-intensity interval training going.
+
+you need to get less stress (though this is nearly impossible with my current duty at Modular)
+
+you need to sleep more and better.
+
+I'm not doing enough.
+
+I need to get my lazy fat ass up, to have a more balanced life. This is the whole point. Don't get loss in the plot. You don't want to just grind all the time away so that you ignore the SINGLE MOST IMPORTANT THING IN YOUR LIFE, that is, _your partner_.
+
+GET REAL, wake up, fuck 9-9-6, just do the thing you set out to do.
+
+You need to read more, I'm not satisfied with our current hobby time/resource allocation (most has been neglected as of late)
+
+---
+
 ## the building against the hill
 
 - [meta]:
-  - date: 2026-02-24 10:36:51 GMT-05:00
+  - date: 2026-03-24 10:36:51 GMT-05:00
   - tags:
     - progress
     - longtermism

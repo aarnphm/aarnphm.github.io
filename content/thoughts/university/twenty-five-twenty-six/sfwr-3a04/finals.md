@@ -1,14 +1,14 @@
 ---
-date: '2025-04-17'
+date: "2025-04-17"
 description: And everything in between
 id: finals
-modified: 2025-10-29 02:16:02 GMT-04:00
+modified: 2026-04-20 06:32:34 GMT-04:00
 tags:
   - sfwr3a04
 title: Software Design 2
 ---
 
-See also: [[thoughts/university/twenty-four-twenty-five/sfwr-3a04/midterm|midterm]]
+See also: [[thoughts/university/twenty-five-twenty-six/sfwr-3a04/midterm|midterm]]
 
 > [!question] 1
 >

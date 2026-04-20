@@ -32,6 +32,7 @@ const configuration: GlobalConfiguration = {
     '**/target',
     '**/data',
     'quartz/static/emails.txt',
+    'content/thoughts/university/twenty-five-twenty-six/sfwr-4tb3/**/*.ipynb',
   ],
   defaultDateType: 'created',
   theme: {
