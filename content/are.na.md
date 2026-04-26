@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-04-20 10:57:12 GMT-04:00
+modified: 2026-04-23 22:47:38 GMT-04:00
 permalinks:
   - /website
   - /tweets
@@ -143,6 +143,10 @@ title: are.na
 - [meta]:
   - view: list
 
+- https://x.com/parveen__tyagi/status/2046533563932410307 -- How to get unstuck
+  - [meta]:
+    - date: 04/23/2026
+    - tags: [life]
 - https://x.com/_lyraaaa_/status/2043480921018707982 -- Reproduction of Anthropic's emotion activation probe
   - [meta]:
     - date: 04/14/2026
@@ -584,6 +588,10 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://walzr.com/amtrak-trains -- Amtrak trains
+  - [meta]:
+    - date: 04/23/2026
+    - tags: [interesting]
 - https://www.briewolfson.com/ -- Brie Wolfson
   - [meta]:
     - date: 04/14/2026
