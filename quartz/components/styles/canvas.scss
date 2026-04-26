@@ -294,12 +294,6 @@ $canvas-accents: (
   width: 100%;
   box-sizing: border-box;
   word-wrap: break-word;
-
-  &::-webkit-scrollbar {
-    display: none;
-  }
-
-  scrollbar-width: none;
   -ms-overflow-style: none;
 }
 
@@ -362,12 +356,6 @@ $canvas-accents: (
     pointer-events: all;
     cursor: pointer;
   }
-
-  &::-webkit-scrollbar {
-    display: none;
-  }
-
-  scrollbar-width: none;
   -ms-overflow-style: none;
 }
 

@@ -82,14 +82,8 @@ ul#helper {
     overflow: hidden auto;
     white-space: normal;
 
-    scrollbar-width: none;
-
     body[data-slug='index'] & {
       border-top-width: 1px;
-    }
-
-    &::-webkit-scrollbar {
-      display: none;
     }
 
     iframe {

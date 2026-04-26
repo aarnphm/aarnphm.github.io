@@ -260,11 +260,6 @@
             max-height: 100%;
             overflow: hidden auto;
             white-space: normal;
-            scrollbar-width: none;
-
-            &::-webkit-scrollbar {
-              display: none;
-            }
 
             &.preview-redacted {
               display: flex;

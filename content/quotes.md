@@ -1,7 +1,7 @@
 ---
 aliases:
   - advice
-date: '2024-01-23'
+date: "2024-01-23"
 description: A collection of quotes, wisdom, and advice.
 id: quotes
 layout: letter
@@ -16,7 +16,7 @@ metadata:
     text_line    = { character - newline } ;
     ws           = { " " } ;
     character    = ? any printable ascii except newline ? ;
-modified: 2026-03-17 00:32:31 GMT-04:00
+modified: 2026-04-25 16:21:27 GMT-04:00
 seealso:
   - '[[word|dictionary]]'
   - '[[research|wip]]'
@@ -30,6 +30,22 @@ transclude:
   dynalist: false
   title: false
 ---
+
+> i saw myself sitting in the crotch of this fig tree, starving to death, just because i couldn’t make up my mind which of the figs i would choose. i wanted each and every one of them, but choosing one meant losing all the rest, and, as i sat there, unable to decide, the figs began to wrinkle and go black, and, one by one, they plopped to the ground at my feet.
+>
+> The Bell Jar, Sylvia Plath (1963)
+
+> A grain of madness is the best of art
+>
+> At Eternity's Gate (2018)
+
+> My head is in the cloud, and she thought that I like being there, instead of being with her, living in the real world. She's right.
+>
+> yours truly
+
+> here’s a lot men don’t understand. Any girl prefers a miserable man to a success story, because she wants love to be active. Men are busy. For them, love is secondary. A little conversation, a walk in the garden, and that’s all. To me loving you means dreaming up ways to cure your anguish, and following you anywhere. If you’re in heaven, I’m in heaven. If you’re down, I’m down with you.
+>
+> The Little Tailor (2010), dir. Louis Garrel
 
 > Stop moving the goalpost if you're still going to miss it.
 >
