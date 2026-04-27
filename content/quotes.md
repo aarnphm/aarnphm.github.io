@@ -16,7 +16,7 @@ metadata:
     text_line    = { character - newline } ;
     ws           = { " " } ;
     character    = ? any printable ascii except newline ? ;
-modified: 2026-04-25 16:21:27 GMT-04:00
+modified: 2026-04-26 20:28:25 GMT-04:00
 seealso:
   - '[[word|dictionary]]'
   - '[[research|wip]]'
@@ -30,6 +30,30 @@ transclude:
   dynalist: false
   title: false
 ---
+
+> The significant of your word is immaculate. I stand in awe. Yet, I welcome the fact that I'm overwhelmed that way, and that I want to be consumed by you. I feel a thousand times happier now, with your vicinity nearby. It isn't just the simple addition of your happiness plus my happiness. Instead, I wanted it to be OUR happiness multiplied by some outside factors that gives a sum much greater than the total of two, circa the power of love—the power I wanted to be dominated my whole life.
+>
+> yours truly
+
+> Life is more like falling in love than it is making a decision. A big transformation in your life is because you fell in love with an activity, you fell in love with a town, you fell in love with an idea, [and you fell in love with another person] and that's happened when there is a combustion.
+>
+> Dan Brooks
+
+> To love at all is to be vulnerable. #love anything and your heart will be wrung and possibly broken. If you want to make sure of keeping it intact you must give it to no one, not even an animal. Wrap it carefully round with hobbies and little luxuries; avoid all entanglements. Lock it up safe in the casket or coffin of your selfishness. But in that casket, safe, dark, motionless, airless, it will change. It will not be broken; it will become unbreakable, impenetrable, irredeemable. To love is to be vulnerable.
+>
+> C. S. Lewis
+
+> If you want to hate America, watch the news. If you want to love America, drive across it.
+>
+> The internet
+
+> In case you didn't know, when I ask you how you're doing, i'm happy to hear the longer version
+>
+> instagram reels
+
+> Few people want to be saints nowadays, but everybody is trying to lose weight.
+>
+> René Girard
 
 > i saw myself sitting in the crotch of this fig tree, starving to death, just because i couldn’t make up my mind which of the figs i would choose. i wanted each and every one of them, but choosing one meant losing all the rest, and, as i sat there, unable to decide, the figs began to wrinkle and go black, and, one by one, they plopped to the ground at my feet.
 >

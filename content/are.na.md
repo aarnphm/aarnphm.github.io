@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-04-23 22:47:38 GMT-04:00
+modified: 2026-04-26 19:50:47 GMT-04:00
 permalinks:
   - /website
   - /tweets
@@ -588,6 +588,18 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://en.wikipedia.org/wiki/Occam%27s_razor -- Occam's razor
+  - [meta]:
+    - date: 04/26/2026
+    - tags: [methodology]
+- https://iamnoman.com/transit -- Transit
+  - [meta]:
+    - date: 04/26/2026
+    - tags: [case study]
+- https://week.wild.plus/athens-26 -- Wild Week, Athens 2026
+  - [meta]:
+    - date: 04/26/2026
+    - tags: [events, design]
 - https://walzr.com/amtrak-trains -- Amtrak trains
   - [meta]:
     - date: 04/23/2026
@@ -1098,6 +1110,11 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://raphaelmilliere.com/
+  - [meta]:
+    - date: 04/26/2026
+    - tags: [alignment, researcher]
+  - Prof at Oxford
 - https://anselmlevskaya.com/
   - [meta]:
     - date: 04/20/2026
@@ -7321,6 +7338,10 @@ title: are.na
 
 ## video
 
+- https://www.youtube.com/watch?v=GvO1Sep15Xk -- when the devil owns the rights to your movie
+  - [meta]:
+    - date: 04/26/2026
+    - tags: [cinema, thriller]
 - https://www.youtube.com/watch?v=DA-CozY2isc -- The Hidden Force That Made Everyone Wear Wiide Leg Pants
   - [meta]:
     - date: 03/09/2026
@@ -8923,6 +8944,10 @@ title: are.na
 
 ## organizations
 
+- https://panthalassa.com/ -- Panthalassa
+  - [meta]:
+    - date: 04/25/2026
+    - tags: [data center]
 - https://earendil.com/ -- Earendil
   - [meta]:
     - date: 04/08/2026
