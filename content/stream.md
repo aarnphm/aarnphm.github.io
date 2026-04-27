@@ -44,7 +44,7 @@ metadata:
     letter        = "a".."z" ;
     digit         = "0".."9" ;
     character     = ? any printable ascii except newline ? ;
-modified: 2026-04-20 07:51:14 GMT-04:00
+modified: 2026-04-26 20:31:22 GMT-04:00
 tags:
   - fruit
   - evergreen
@@ -52,11 +52,105 @@ title: stream
 ---
 
 
+## the second love.
+
+- [meta]:
+  - date: 2026-04-26 20:05:45 GMT-04:00
+  - tags:
+    - relationship
+  - draft: true
+
+---
+
+## rupture and repair
+
+- [meta]:
+  - date: 2026-04-26 19:51:55 GMT-04:00
+  - tags:
+    - relationship
+  - draft: true
+
+We go through rupture and repair, to then create a mutual future together.
+
+be patience, as I want to create a kitchen with blue wall. and it is beautiful. These stories I tell in my life, but to then I need to build towards this.
+
+work on myself, because I don't want to break down those barrier that I want to build the future with you, as in the space for each others.
+
+Attention is the act to attend to others, to perceive, to admire without possessing, Simone Weil
+
+To consent towards each others, and belief that they will grow into it.
+
+> I want her, because I respect her, or _do I deeply admire this person, where they keep their promises?_
+
+_I need to keep my promises, otherwise my words meant nothing_
+
+Love you is to have a small little glass of water in the night.
+
+```quotes
+Find what you love, and let it kill you.
+
+Charles Bukowski
+```
+
+because find what you love is going to ask you for everything, your time, your energy, and your wit, and for your whole life. It won't feel balanced. somedays, it won't be easy, it will be consuming more than you like, stressful, yet you can't let it go. because, it felt like, it is meant to.
+
+maybe that's why it is so powerful. maybe that's why you know it is real, not because it makes your life easier, but it gives your life a purposes, a dream...
+
+---
+
+## stop. thinking.
+
+- [meta]:
+  - date: 2026-04-26 18:38:08 GMT-04:00
+  - tags:
+    - progress
+  - draft: true
+
+STOP THINKING. STOP THINKING.
+
+STOP THINKING. STOP THINKING.
+
+STOP THINKING. STOP THINKING.
+
+STOP THINKING. STOP THINKING.
+
+STOP THINKING. STOP THINKING.
+
+STOP THINKING. STOP THINKING.
+
+STOP THINKING. STOP THINKING.
+
+STOP THINKING. STOP THINKING.
+
+STOP THINKING. STOP THINKING.
+
+STOP THINKING. STOP THINKING.
+
+YOU ARE MISSING OUT ALL OF THE JOY OF BEING. JUST BE.
+
+JUST BE. JUST BE.
+
+JUST BE. JUST BE.
+
+JUST BE. JUST BE.
+
+JUST BE. JUST BE.
+
+JUST BE. JUST BE.
+
+JUST BE. JUST BE.
+
+because the love for her is eternal. you love her more than you love yourself. JUST BE, JUST DO, JUST IMPROVE, THERE AREN'T A MOUNTAIN YOU CAN'T CLIMB.
+
+---
+
 ## i lost her
+
 - [meta]:
   - date: 2026-04-19 07:42:45 GMT-04:00
   - tags:
     - updates.
+  - draft: true
 
 I lost her. I need to change.
 
