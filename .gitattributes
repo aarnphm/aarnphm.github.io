@@ -312,3 +312,4 @@ content/thoughts/university/twenty-five-twenty-six/sfwr-4tb3/Finals/04[[:space:]
 content/thoughts/university/twenty-five-twenty-six/sfwr-4tb3/Finals/CGast.ipynb filter=lfs diff=lfs merge=lfs -text
 content/thoughts/university/twenty-five-twenty-six/sfwr-4tb3/Finals/03[[:space:]]Binary[[:space:]]Constants[[:space:]][4[[:space:]]points].ipynb filter=lfs diff=lfs merge=lfs -text
 content/thoughts/university/twenty-five-twenty-six/sfwr-4tb3/Finals/ST.ipynb filter=lfs diff=lfs merge=lfs -text
+content/stream.md filter=lfs diff=lfs merge=lfs -text
