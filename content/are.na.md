@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-04-26 19:50:47 GMT-04:00
+modified: 2026-04-27 17:48:53 GMT-04:00
 permalinks:
   - /website
   - /tweets
@@ -588,6 +588,14 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://geohot.github.io//blog/jekyll/update/2026/04/24/positivity.html -- Positivity
+  - [meta]:
+    - date: 04/27/2026
+    - tags: [belief, life, agi]
+- https://mitsuhiko.github.io/rope-man-game/src/?seed=water -- Rope man
+  - [meta]:
+    - date: 04/27/2026
+    - tags: [game]
 - https://en.wikipedia.org/wiki/Occam%27s_razor -- Occam's razor
   - [meta]:
     - date: 04/26/2026
@@ -1110,6 +1118,10 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://www.johncgreer.com
+  - [meta]:
+    - date: 04/27/2026
+    - tags: [researcher, theory]
 - https://raphaelmilliere.com/
   - [meta]:
     - date: 04/26/2026
@@ -2250,6 +2262,33 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://www.themarginalian.org/2016/10/13/mating-in-captivity-esther-perel/ -- Esther Perel on Reconciling the Closeness Needed for Intimacy with the Psychological Distance That Fuels Desire
+  - [meta]:
+    - date: 04/27/2026
+    - tags: [love]
+    - pinned: true
+- https://rawandferal.substack.com/p/norman-polycule -- Norman Polycule
+  - [meta]:
+    - date: 04/27/2026
+    - tags: [stun, sociology]
+- https://angelicdissent.substack.com/p/type-face-2-that-wasnt-very-dark -- that wasn’t very dark academia of you
+  - [meta]:
+    - date: 04/27/2026
+    - tags: [aesthetics]
+- https://jason.ml/heuristics -- Do Thing, Do One Thing
+  - [meta]:
+    - date: 04/27/2026
+    - tags: [heuristics]
+    - importance: 8
+    - pinned: true
+- https://ky.fyi/posts/embrace-friction -- Embrace friction
+  - [meta]:
+    - date: 04/27/2026
+    - tags: [life]
+- https://lawrencecpaulson.github.io//2026/04/23/Why_not_Lean.html -- Why not use Lean?
+  - [meta]:
+    - date: 04/27/2026
+    - tags: [formal, proof]
 - https://dreamofmachin.es/machine_prophecy.html -- Against Prophecy among the machines
   - [meta]:
     - date: 04/20/2026
@@ -4137,6 +4176,10 @@ title: are.na
   - view: list
   - json: true
 
+- https://www.pi.website/blog/pi07 -- $\pi_{0.7}$: a Steerable Model with Emergent Capabilities
+  - [meta]:
+    - date: 04/27/2026
+    - tags: [models]
 - https://hamel.dev/blog/posts/llm-judge/ -- Using LLM-as-a-Judge For Evaluation: A Complete Guide
   - [meta]:
     - date: 03/12/2026
@@ -5288,6 +5331,10 @@ title: are.na
 
 ## opinions
 
+- https://firethering.com/openmythos-open-source-claude-mythos-reconstruction -- OpenMythos
+  - [meta]:
+    - date: 04/27/2026
+    - tags: [agi]
 - https://archive.is/hOYMn -- Sam Altman May Control Our Future—Can He Be Trusted?
   - [meta]:
     - date: 04/17/2026
@@ -6113,6 +6160,16 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://plato.stanford.edu/entries/compatibilism/ -- Compatibilism
+  - [meta]:
+    - date: 04/27/2026
+    - tags: [will]
+- https://en.wikipedia.org/wiki/Knowledge_argument -- Knowledge argument
+  - [meta]:
+    - date: 04/27/2026
+    - tags: [qualia]
+    - seealso: [[thoughts/qualia|epiphenomenal qualia]]
+  - https://www.reddit.com/r/freewill/comments/1gxessl/compatibilists_and_hard/
 - https://www.youtube.com/watch?v=4OXtO92x5KA -- My Grandfather Met Napoleon: Bertrand Russell Interview 1952
   - [meta]:
     - date: 01/20/2026
@@ -6983,6 +7040,10 @@ title: are.na
 
 ## poetry
 
+- https://web.mit.edu/daveg/Text/poetry/Manifest:MFLF -- Manifesto: The Mad Farmer Liberation Front
+  - [meta]:
+    - date: 04/27/2026
+    - tags: [manifesto]
 - https://www.poetryfoundation.org/poems/49001/ariel -- Ariel, By Sylvia Plath
   - [meta]:
     - date: 01/12/2026
@@ -7040,6 +7101,10 @@ title: are.na
 
 ## design
 
+- https://avnac.design/
+  - [meta]:
+    - date: 04/27/2026
+    - tags: [ux]
 - https://takeagander.com
   - [meta]:
     - date: 04/16/2026
@@ -8372,6 +8437,12 @@ title: are.na
 
 ## engineering
 
+- https://hawksley.org/2026/02/17/timeframe.html -- How I built Timeframe, our family e-paper dashboard
+  - [meta]:
+    - date: 04/27/2026
+    - tags: [house, diy]
+    - later: true
+  - https://onyxboox.com/boox_mirapro
 - https://developer.chrome.com/docs/workbox/modules/workbox-precaching -- workbox-precaching API
   - [meta]:
     - date: 04/17/2026
@@ -8944,6 +9015,10 @@ title: are.na
 
 ## organizations
 
+- https://seqholdings.com/ -- Sequence Holding
+  - [meta]:
+    - date: 04/27/2026
+    - tags: [vc]
 - https://panthalassa.com/ -- Panthalassa
   - [meta]:
     - date: 04/25/2026
