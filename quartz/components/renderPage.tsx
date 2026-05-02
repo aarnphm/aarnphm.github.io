@@ -1,4 +1,3 @@
-import crypto from 'crypto'
 import { Root, RootContent, Element, ElementContent, Node, Text } from 'hast'
 import { fromHtml } from 'hast-util-from-html'
 import { headingRank } from 'hast-util-heading-rank'
@@ -33,6 +32,7 @@ import {
   resolveRelative,
   slugifyFilePath,
 } from '../util/path'
+import { encryptContent } from '../util/protected'
 import { JSResourceToScriptElement, StaticResources } from '../util/resources'
 import BaseViewSelector from './BaseViewSelector'
 import CodeCopy from './CodeCopy'
@@ -61,47 +61,6 @@ import transcludeScript from './scripts/transclude.inline.ts'
 import Search from './Search'
 import collapseHeaderStyle from './styles/collapseHeader.inline.scss'
 import { svgOptions, QuartzIcon } from './svg'
-
-interface EncryptedPayload {
-  ciphertext: string
-  salt: string
-  iv: string
-}
-
-function encryptContent(htmlString: string, password: string): EncryptedPayload {
-  // Generate random salt (16 bytes)
-  const salt = crypto.randomBytes(16)
-
-  // Generate random IV for AES-GCM (12 bytes)
-  const iv = crypto.randomBytes(12)
-
-  // Derive encryption key using PBKDF2
-  const key = crypto.pbkdf2Sync(
-    password,
-    salt,
-    100000, // iterations
-    32, // key length (256 bits)
-    'sha256',
-  )
-
-  // Encrypt with AES-256-GCM
-  const cipher = crypto.createCipheriv('aes-256-gcm', key, iv)
-  let encrypted = cipher.update(htmlString, 'utf8')
-  encrypted = Buffer.concat([encrypted, cipher.final()])
-
-  // Get authentication tag
-  const authTag = cipher.getAuthTag()
-
-  // Combine ciphertext and auth tag
-  const ciphertext = Buffer.concat([encrypted, authTag])
-
-  // Use base64url encoding (URL-safe, no padding) to avoid HTML attribute issues
-  const toBase64Url = (buffer: Buffer): string => {
-    return buffer.toString('base64').replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '')
-  }
-
-  return { ciphertext: toBase64Url(ciphertext), salt: toBase64Url(salt), iv: toBase64Url(iv) }
-}
 
 interface RenderComponents {
   head: QuartzComponent

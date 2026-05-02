@@ -16,7 +16,7 @@ metadata:
     text_line    = { character - newline } ;
     ws           = { " " } ;
     character    = ? any printable ascii except newline ? ;
-modified: 2026-04-26 20:28:25 GMT-04:00
+modified: 2026-04-29 12:54:09 GMT-04:00
 seealso:
   - '[[word|dictionary]]'
   - '[[research|wip]]'
@@ -30,6 +30,10 @@ transclude:
   dynalist: false
   title: false
 ---
+
+> To love someone else is easy, but to love what you are, the thing that is yourself, is just as if you were embracing a glowing red-hot iron: it burns into you and that is very painful. Therefore, to love somebody else in the first place is always an escape which we all hope for, and we all enjoy it when we are capable of it. But in the long run, it comes back on us. You cannot stay away from yourself forever, you have to return, have to come to that experiment, to know whether you really can love. That is the question: whether you can love yourself, and that will be the test.
+>
+> Carl Jung
 
 > The significant of your word is immaculate. I stand in awe. Yet, I welcome the fact that I'm overwhelmed that way, and that I want to be consumed by you. I feel a thousand times happier now, with your vicinity nearby. It isn't just the simple addition of your happiness plus my happiness. Instead, I wanted it to be OUR happiness multiplied by some outside factors that gives a sum much greater than the total of two, circa the power of love—the power I wanted to be dominated my whole life.
 >

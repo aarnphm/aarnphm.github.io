@@ -34,6 +34,8 @@ export default (() => {
     const entriesWithContext = groups.flatMap(group =>
       group.entries.map(entry => ({ entry, group })),
     )
+    const protectedPayloads = fileData.streamData.protectedPayloads
+    const mode = isDailyView ? 'daily' : 'listing'
 
     return (
       <article class="stream main-col popover-hint" data-stream-canonical={canonicalPath}>
@@ -46,6 +48,8 @@ export default (() => {
               showDate: true,
               resolvedIsoDate: entry.date ?? group.isoDate,
               showWordCount: true,
+              mode,
+              encryptedPayload: protectedPayloads?.[entry.id],
             }),
           )}
         </ol>

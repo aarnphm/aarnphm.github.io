@@ -1,26 +1,7 @@
 import content from '../../components/styles/protected.scss'
 import { QuartzTransformerPlugin } from '../../types/plugin'
-
-function getPasswordForPage(file: any): string {
-  const frontmatter = file.data.frontmatter
-
-  if (frontmatter?.password) {
-    const customPassword = process.env[frontmatter.password]
-    if (customPassword) {
-      return customPassword
-    }
-  }
-
-  const defaultPassword = process.env.PROTECTED_CONTENT_PASSWORD
-  if (defaultPassword) {
-    return defaultPassword
-  }
-
-  throw new Error(
-    `No password found for protected page ${file.data.slug}. ` +
-      `Set ${frontmatter?.password || 'PROTECTED_CONTENT_PASSWORD'} environment variable.`,
-  )
-}
+import { resolveProtectedPassword } from '../../util/protected'
+import type { QuartzPluginData } from '../vfile'
 
 export const Protected: QuartzTransformerPlugin = () => {
   return {
@@ -33,8 +14,7 @@ export const Protected: QuartzTransformerPlugin = () => {
           const frontmatter = file.data.frontmatter
           if (!frontmatter?.protected) return
 
-          const password = getPasswordForPage(file)
-          file.data.protectedPassword = password
+          file.data.protectedPassword = resolveProtectedPassword(file.data as QuartzPluginData)
         }
       },
     ],
