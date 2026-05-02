@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-04-27 17:48:53 GMT-04:00
+modified: 2026-05-02 11:11:03 GMT-04:00
 permalinks:
   - /website
   - /tweets
@@ -1118,6 +1118,10 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://en.wikipedia.org/wiki/Isaiah_Berlin -- Isaiah Berlin
+  - [meta]:
+    - date: 04/28/2026
+    - tags: [philosopher]
 - https://www.johncgreer.com
   - [meta]:
     - date: 04/27/2026
@@ -2262,6 +2266,14 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://aeon.co/essays/the-hard-problem-of-consciousness-is-a-distraction-from-the-real-one -- The real problem of consciousness is a distraction from the real one
+  - [meta]:
+    - date: 04/30/2026
+    - tags: [consciousness]
+- https://www.theatlantic.com/magazine/archive/1945/07/as-we-may-think/303881/ -- As we may think
+  - [meta]:
+    - date: 04/29/2026
+    - tags: [thinking]
 - https://www.themarginalian.org/2016/10/13/mating-in-captivity-esther-perel/ -- Esther Perel on Reconciling the Closeness Needed for Intimacy with the Psychological Distance That Fuels Desire
   - [meta]:
     - date: 04/27/2026
@@ -4474,12 +4486,13 @@ title: are.na
     - date: 12/16/2025
     - tags: [interpretability]
     - later: true
-- https://www.lesswrong.com/posts/vpNG99GhbBoLov9og/claude-4-5-opus-soul-document -- Claude 4.5 Opus' Soul Document
+- https://www.lesswrong.com/posts/vpNG99GhbBoLov9og/claude-4-5-opus-soul-document -- Claude 4.5 Opus' Soul Document [**]
   - [meta]:
     - date: 12/15/2025
     - tags: [ontology, interpretability]
   - gist: https://gist.github.com/Richard-Weiss/efe157692991535403bd7e7fb20b6695
   - Amanda Askell of Anthropic soft confirming some of the content here, and such doc should only be taken as a soft-lossy depiction of this docs during pre-training: https://x.com/AmandaAskell/status/1995610567923695633
+  - Claude's Constitution: https://www.anthropic.com/constitution
 - https://joecarlsmith.com/2025/08/18/giving-ais-safe-motivations -- Giving AI safe motivations
   - [meta]:
     - date: 12/13/2025
@@ -5634,6 +5647,14 @@ title: are.na
 
 ## life is literature
 
+- https://www.reddit.com/r/RSbookclub/comments/1ebhgyl/do_u_guys_like_sexual_personae/ -- Do you like "Sexual Personae"
+  - [meta]:
+    - date: 04/30/2026
+    - tags: [love]
+- https://en.wikipedia.org/wiki/Platanus_occidentalis -- American sycamore
+  - [meta]:
+    - date: 04/29/2026
+    - tags: [tree]
 - https://medium.com/enspiral-tales/the-vibes-theory-of-organisational-design-937a73f791cd -- The vibes theory of organisational design
   - [meta]:
     - date: 03/12/2026
@@ -7101,6 +7122,10 @@ title: are.na
 
 ## design
 
+- https://alexboland.com/
+  - [meta]:
+    - date: 05/02/2026
+    - tags: [designer]
 - https://avnac.design/
   - [meta]:
     - date: 04/27/2026
@@ -7953,6 +7978,14 @@ title: are.na
 
 ## resources
 
+- https://www.reuters.com/business/retail-consumer/pentagon-reaches-agreements-with-leading-ai-companies-2026-05-01/ -- Pentagon reaches agreements with top AI companies, but not Anthropic
+  - [meta]:
+    - date: 05/01/2026
+    - tags: [news, alignment]
+- https://en.wikipedia.org/wiki/Knapsack_problem -- Knapsack problem
+  - [meta]:
+    - date: 04/30/2026
+    - tags: [dp, programming]
 - https://uwaterloo.ca/united-college/sites/default/files/uploads/documents/2024-impact-report-4-compressed_0.pdf -- Greenhouse Fall 2024 impact report
   - [meta]:
     - date: 04/17/2026
@@ -8437,6 +8470,14 @@ title: are.na
 
 ## engineering
 
+- https://alignment.openai.com/monitorability-evals/ -- Monitorability Evaluations
+  - [meta]:
+    - date: 04/29/2026
+    - tags: [alignment]
+- https://www.k-a.in/DeepSeek-V4.html -- DeepSeek-V4 Deep Dive
+  - [meta]:
+    - date: 04/28/2026
+    - tags: [models]
 - https://hawksley.org/2026/02/17/timeframe.html -- How I built Timeframe, our family e-paper dashboard
   - [meta]:
     - date: 04/27/2026
@@ -9151,6 +9192,11 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://mathstodon.xyz/@tao/116438112449752681 -- Framing towards math, Terrence Tao
+  - [meta]:
+    - date: 04/29/2026
+    - tags: [maths]
+  > "The history of every major galactic civilization tends to pass through three distinct and recognizable phases, those of Survival, Inquiry and Sophistication, otherwise known as the How, Why, and Where phases. For instance, the first phase is characterized by the question ‘How can we eat?’, the second by the question ‘Why do we eat?’ and the third by the question, ‘Where shall we have lunch?’" (Douglas Adams, "The Hitchhiker’s Guide to the Galaxy")
 - https://x.com/davidbessis/status/2015756436081357110 -- Lifecycle of a pure math theorem
   - [meta]:
     - date: 01/26/2026
@@ -9405,6 +9451,10 @@ title: are.na
   - view: list
   - json: true
 
+- https://huggingface.co/deepseek-ai/DeepSeek-V4-Pro/blob/main/DeepSeek_V4.pdf -- DeepSeek V4 Technical Reports
+  - [meta]:
+    - date: 04/28/2026
+    - tags: [infrastructure, models]
 - https://pub.math.leidenuniv.nl/~smitbde/papers/2003-de_smit-lenstra-escher.pdf -- Artful Mathematics: The Heritage of M.C. Escher
   - [meta]:
     - date: 03/24/2026

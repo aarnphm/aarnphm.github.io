@@ -12,11 +12,22 @@ import { version } from '../../../package.json'
 import { sharedPageComponents, defaultContentPageLayout } from '../../../quartz.layout'
 import StreamPageComponent from '../../components/pages/StreamPage'
 import { pageResources, renderPage } from '../../components/renderPage'
-import { renderStreamEntry, formatStreamDate, buildOnPath } from '../../components/stream/Entry'
+import {
+  renderStreamEntry,
+  renderProtectedEntryBody,
+  isProtectedEntry,
+  formatStreamDate,
+  buildOnPath,
+} from '../../components/stream/Entry'
 import { QuartzEmitterPlugin } from '../../types/plugin'
 import { BuildCtx } from '../../util/ctx'
 import { escapeHTML } from '../../util/escape'
 import { joinSegments, pathToRoot, FullSlug, normalizeHastElement } from '../../util/path'
+import {
+  EncryptedPayload,
+  encryptContent,
+  resolveProtectedPassword,
+} from '../../util/protected'
 import { groupStreamEntries } from '../../util/stream'
 import { write } from './helpers'
 
@@ -85,6 +96,8 @@ const extractStreamTags = (metadata: Record<string, unknown>): string[] => {
 }
 
 const entrySummary = (entry: StreamEntry): string | undefined => {
+  if (isProtectedEntry(entry)) return 'private'
+
   if (entry.description) {
     const description = String(entry.description).trim()
     if (description.length > 0) {
@@ -98,6 +111,8 @@ const entrySummary = (entry: StreamEntry): string | undefined => {
 }
 
 const entryContentHtml = (entry: StreamEntry): string => {
+  if (isProtectedEntry(entry)) return '<p>private</p>'
+
   const content = sanitizeXml(toHtml({ type: 'root', children: entry.content }))
   const descriptionHtml = sanitizeNullable(entry.descriptionHtml)
   if (descriptionHtml && content.length > 0) return `${descriptionHtml}\n${content}`
@@ -242,6 +257,7 @@ async function* processStreamIndex(
         timestampValue: group.timestamp,
         showDate: true,
         resolvedIsoDate: entry.date ?? group.isoDate,
+        mode: 'listing',
       })
 
       return {
@@ -270,6 +286,11 @@ async function* processStreamIndex(
 
   yield write({ ctx, slug: 'streams' as FullSlug, ext: '.jsonl', content: payload })
 
+  const skipProtection = ctx.argv.watch && !ctx.argv.force
+  const hasAnyProtected = fileData!.streamData!.entries.some(isProtectedEntry)
+  const streamPassword =
+    !skipProtection && hasAnyProtected ? resolveProtectedPassword(fileData) : undefined
+
   for (const group of groups) {
     const isoSource =
       group.isoDate ??
@@ -290,15 +311,30 @@ async function* processStreamIndex(
       ),
     }))
 
+    const groupHasProtected = rebasedEntries.some(isProtectedEntry)
+    const protectedPayloads: Record<string, EncryptedPayload> = {}
+    if (streamPassword) {
+      for (const entry of rebasedEntries) {
+        if (isProtectedEntry(entry)) {
+          const bodyHtml = renderProtectedEntryBody(entry, fileData!.filePath!)
+          protectedPayloads[entry.id] = encryptContent(bodyHtml, streamPassword)
+        }
+      }
+    }
+
     const fileDataForGroup: QuartzPluginData = {
       ...fileData,
       slug,
-      streamData: { entries: rebasedEntries },
+      streamData: {
+        entries: rebasedEntries,
+        ...(Object.keys(protectedPayloads).length > 0 ? { protectedPayloads } : {}),
+      },
       frontmatter: {
         ...fileData!.frontmatter,
         title,
         streamCanonical: '/stream',
         pageLayout: 'default',
+        ...(groupHasProtected ? { protected: true } : {}),
       },
     }
 

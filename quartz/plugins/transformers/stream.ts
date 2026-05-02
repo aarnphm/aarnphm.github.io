@@ -5,6 +5,7 @@ import yaml from 'js-yaml'
 import type { FullSlug } from '../../util/path'
 import { QuartzTransformerPlugin } from '../../types/plugin'
 import { processWikilinksToHtml, renderLatexInString } from '../../util/description'
+import type { EncryptedPayload } from '../../util/protected'
 
 export type StreamMetadata = Record<string, unknown>
 
@@ -22,6 +23,7 @@ export interface StreamEntry {
 
 export interface StreamData {
   entries: StreamEntry[]
+  protectedPayloads?: Record<string, EncryptedPayload>
 }
 
 declare module 'vfile' {

@@ -1,7 +1,6 @@
 @use '../../styles/variables.scss' as *;
 
-// Prevent body scroll when password prompt is visible
-body:has(.password-prompt-overlay[style*='display: flex']) {
+body:has(.protected-content-wrapper:not(.inline) .password-prompt-overlay[style*='display: flex']) {
   overflow: hidden;
 }
 
@@ -14,6 +13,31 @@ body:has(.password-prompt-overlay[style*='display: flex']) {
     height: 100vh;
     top: 0;
     z-index: var(--z-max);
+  }
+
+  &.inline {
+    min-height: auto;
+
+    &:not(:has(.decrypted-content)) {
+      width: 100%;
+      height: auto;
+      top: auto;
+      z-index: auto;
+    }
+
+    .password-prompt-overlay {
+      position: relative;
+      inset: auto;
+      background: transparent;
+      backdrop-filter: none;
+      padding: 1rem 0;
+    }
+
+    .password-prompt-container {
+      width: 100%;
+      min-width: 0;
+      padding: 1rem;
+    }
   }
 
   .password-prompt-overlay {
@@ -107,6 +131,16 @@ body:has(.password-prompt-overlay[style*='display: flex']) {
 .decrypted-content {
   opacity: 0;
   animation: fadeIn 0.5s ease-out forwards;
+}
+
+.stream-entry-private {
+  color: var(--gray);
+  font-style: italic;
+  padding: 0.5rem 0;
+
+  p {
+    margin: 0;
+  }
 }
 
 @keyframes fadeIn {
