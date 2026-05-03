@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-05-02 11:11:03 GMT-04:00
+modified: 2026-05-03 14:31:45 GMT-04:00
 permalinks:
   - /website
   - /tweets
@@ -1118,6 +1118,10 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://nat.org/ -- Nat Friedman
+  - [meta]:
+    - date: 05/03/2026
+    - tags: [entrepreneur]
 - https://en.wikipedia.org/wiki/Isaiah_Berlin -- Isaiah Berlin
   - [meta]:
     - date: 04/28/2026
