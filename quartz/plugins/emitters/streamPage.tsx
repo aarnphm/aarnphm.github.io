@@ -30,7 +30,8 @@ const isPublishedStreamEntry = (entry: StreamEntry): boolean => {
   const metadata = entry.metadata as Record<string, unknown>
   const draft = truthyStreamFlag(metadata.draft)
   const privateFlag = truthyStreamFlag(metadata.private)
-  return !draft && !privateFlag
+  const protectedFlag = truthyStreamFlag(metadata.protected)
+  return !draft && !privateFlag && !protectedFlag
 }
 
 const filterUnpublishedStreamEntries = (fileData: QuartzPluginData): QuartzPluginData => {
