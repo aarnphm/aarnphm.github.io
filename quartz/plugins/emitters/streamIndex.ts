@@ -96,8 +96,6 @@ const extractStreamTags = (metadata: Record<string, unknown>): string[] => {
 }
 
 const entrySummary = (entry: StreamEntry): string | undefined => {
-  if (isProtectedEntry(entry)) return 'private'
-
   if (entry.description) {
     const description = String(entry.description).trim()
     if (description.length > 0) {
@@ -111,8 +109,6 @@ const entrySummary = (entry: StreamEntry): string | undefined => {
 }
 
 const entryContentHtml = (entry: StreamEntry): string => {
-  if (isProtectedEntry(entry)) return '<p>private</p>'
-
   const content = sanitizeXml(toHtml({ type: 'root', children: entry.content }))
   const descriptionHtml = sanitizeNullable(entry.descriptionHtml)
   if (descriptionHtml && content.length > 0) return `${descriptionHtml}\n${content}`
@@ -131,7 +127,7 @@ const generateStreamAtomFeed = (ctx: BuildCtx, fileData: QuartzPluginData): stri
   const cfg = ctx.cfg.configuration
   const base = cfg.baseUrl ?? 'example.com'
   const streamData = fileData.streamData
-  const entries = streamData?.entries ?? []
+  const entries = (streamData?.entries ?? []).filter(entry => !isProtectedEntry(entry))
   const fallbackDate =
     parseDateValue(fileData.frontmatter?.modified) ??
     parseDateValue(fileData.frontmatter?.date) ??
@@ -244,43 +240,48 @@ async function* processStreamIndex(
   const groups = groupStreamEntries(fileData!.streamData!.entries)
   if (groups.length === 0) return
 
-  const lines = groups.map(group => {
-    const isoSource =
-      group.isoDate ??
-      group.entries.find(entry => entry.date)?.date ??
-      (group.timestamp ? new Date(group.timestamp).toISOString() : null)
+  const lines = groups
+    .map(group => {
+      const isoSource =
+        group.isoDate ??
+        group.entries.find(entry => entry.date)?.date ??
+        (group.timestamp ? new Date(group.timestamp).toISOString() : null)
 
-    const path = buildOnPath(isoSource!) ?? null
-    const entries = group.entries.map(entry => {
-      const vnode = renderStreamEntry(entry, fileData!.filePath!, {
-        groupId: group.id,
-        timestampValue: group.timestamp,
-        showDate: true,
-        resolvedIsoDate: entry.date ?? group.isoDate,
-        mode: 'listing',
+      const path = buildOnPath(isoSource!) ?? null
+      const publicEntries = group.entries.filter(entry => !isProtectedEntry(entry))
+      if (publicEntries.length === 0) return null
+
+      const entries = publicEntries.map(entry => {
+        const vnode = renderStreamEntry(entry, fileData!.filePath!, {
+          groupId: group.id,
+          timestampValue: group.timestamp,
+          showDate: true,
+          resolvedIsoDate: entry.date ?? group.isoDate,
+          mode: 'listing',
+        })
+
+        return {
+          id: entry.id,
+          html: render(vnode as VNode<any>),
+          metadata: entry.metadata,
+          isoDate: entry.date ?? group.isoDate ?? null,
+          displayDate:
+            formatIsoAsYMD(entry.date ?? group.isoDate ?? isoSource) ??
+            formatStreamDate(entry.date ?? group.isoDate) ??
+            null,
+        }
       })
 
-      return {
-        id: entry.id,
-        html: render(vnode as VNode<any>),
-        metadata: entry.metadata,
-        isoDate: entry.date ?? group.isoDate ?? null,
-        displayDate:
-          formatIsoAsYMD(entry.date ?? group.isoDate ?? isoSource) ??
-          formatStreamDate(entry.date ?? group.isoDate) ??
-          null,
-      }
+      return JSON.stringify({
+        groupId: group.id,
+        timestamp: group.timestamp ?? null,
+        isoDate: group.isoDate ?? null,
+        groupSize: publicEntries.length,
+        path,
+        entries,
+      })
     })
-
-    return JSON.stringify({
-      groupId: group.id,
-      timestamp: group.timestamp ?? null,
-      isoDate: group.isoDate ?? null,
-      groupSize: group.entries.length,
-      path,
-      entries,
-    })
-  })
+    .filter((line): line is string => line !== null)
 
   const payload = lines.join('\n')
 
