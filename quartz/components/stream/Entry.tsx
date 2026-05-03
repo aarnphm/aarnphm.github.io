@@ -49,8 +49,18 @@ const descriptionToJsx = (filePath: FilePath, descriptionHtml: string): Componen
   return htmlToJsx(filePath, root)
 }
 
-export const isProtectedEntry = (entry: StreamEntry): boolean =>
-  entry.metadata?.protected === true
+export const isProtectedEntry = (entry: StreamEntry): boolean => {
+  const value = entry.metadata?.protected
+  if (typeof value === 'boolean') return value
+  if (typeof value === 'number') return value !== 0
+  if (typeof value === 'string') {
+    const normalized = value.trim().toLowerCase()
+    return (
+      normalized === 'true' || normalized === '1' || normalized === 'yes' || normalized === 'on'
+    )
+  }
+  return false
+}
 
 export const getStreamEntryWordCount = (entry: StreamEntry): number =>
   countWords(streamEntryText(entry))
