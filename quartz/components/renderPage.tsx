@@ -2081,7 +2081,9 @@ export function renderPage(
 
 function updateStreamDataFromTree(tree: Root, componentData: QuartzComponentProps): void {
   const fileData = componentData.fileData
-  if (fileData.slug !== 'stream') return
+  const isStreamRoute =
+    fileData.slug === 'stream' || /^stream\/on\/\d{4}\/\d{2}\/\d{2}$/.test(fileData.slug ?? '')
+  if (!isStreamRoute) return
 
   const streamData = fileData.streamData
   if (!streamData) return

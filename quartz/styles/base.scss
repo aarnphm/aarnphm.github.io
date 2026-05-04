@@ -646,13 +646,13 @@ ol.overflow {
   --grid-center-width: calc(100vw - (var(--kern) * 5) - (var(--kern) * 4));
   --grid-col-width: calc(var(--grid-center-width) / 9);
   --layout-reading-column: 3 / 6;
-  --layout-wide-column: 3 / 10;
-  --layout-side-column: 5 / 10;
+  --layout-wide-column: 3 / 8;
+  --layout-side-column: 6 / 8;
   --layout-header-column: var(--layout-wide-column);
   --layout-byline-column: var(--layout-reading-column);
   --layout-byline-template: minmax(0, 1fr) minmax(12rem, 1fr);
   --layout-control-column: 5 / 6;
-  --layout-search-column: 6 / 10;
+  --layout-search-column: 6 / 8;
 }
 
 .page-body-grid {

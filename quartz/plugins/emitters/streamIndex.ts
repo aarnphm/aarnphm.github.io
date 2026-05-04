@@ -435,15 +435,10 @@ async function* processStreamIndex(
 
     const rebasedEntries = rebaseEntries(group.entries, slug)
 
-    const protectedPayloads = protectedPayloadsForEntries(rebasedEntries)
-
     const fileDataForGroup: QuartzPluginData = {
       ...fileData,
       slug,
-      streamData: {
-        entries: rebasedEntries,
-        ...(Object.keys(protectedPayloads).length > 0 ? { protectedPayloads } : {}),
-      },
+      streamData: { entries: rebasedEntries },
       frontmatter: {
         ...fileData!.frontmatter,
         title,
@@ -463,7 +458,18 @@ async function* processStreamIndex(
       allFiles,
     }
 
-    const html = renderPage(ctx, slug, componentData, layout, externalResources, false)
+    const renderGroupPage = () =>
+      renderPage(ctx, slug, componentData, layout, externalResources, false)
+
+    let html = renderGroupPage()
+    if (streamPassword && rebasedEntries.some(isProtectedEntry)) {
+      const streamData = fileDataForGroup.streamData
+      const protectedPayloads = protectedPayloadsForEntries(streamData?.entries ?? [])
+      if (streamData && Object.keys(protectedPayloads).length > 0) {
+        fileDataForGroup.streamData = { ...streamData, protectedPayloads }
+        html = renderGroupPage()
+      }
+    }
 
     yield write({ ctx, slug, ext: '.html', content: html })
   }
