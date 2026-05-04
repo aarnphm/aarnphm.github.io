@@ -1,13 +1,14 @@
 import type { Root, Element, ElementContent } from 'hast'
-import type { VNode } from 'preact'
 import { toHtml } from 'hast-util-to-html'
 import { toString } from 'hast-util-to-string'
+import { Fragment, h } from 'preact'
 import { render } from 'preact-render-to-string'
 import type { FullPageLayout } from '../../cfg'
 import type { QuartzComponentProps } from '../../types/component'
 import type { StaticResources } from '../../util/resources'
 import type { StreamEntry } from '../transformers/stream'
 import type { QuartzPluginData } from '../vfile'
+import type { ContentLayout } from './contentIndex'
 import { version } from '../../../package.json'
 import { sharedPageComponents, defaultContentPageLayout } from '../../../quartz.layout'
 import StreamPageComponent from '../../components/pages/StreamPage'
@@ -16,19 +17,25 @@ import {
   renderStreamEntry,
   renderProtectedEntryBody,
   isProtectedEntry,
+  isPrivateEntry,
+  isDraftEntry,
+  isRestrictedEntry,
   formatStreamDate,
-  buildOnPath,
 } from '../../components/stream/Entry'
 import { QuartzEmitterPlugin } from '../../types/plugin'
 import { BuildCtx } from '../../util/ctx'
 import { escapeHTML } from '../../util/escape'
 import { joinSegments, pathToRoot, FullSlug, normalizeHastElement } from '../../util/path'
+import { EncryptedPayload, encryptContent, resolveProtectedPassword } from '../../util/protected'
 import {
-  EncryptedPayload,
-  encryptContent,
-  resolveProtectedPassword,
-} from '../../util/protected'
-import { groupStreamEntries } from '../../util/stream'
+  buildStreamDayPathFromIso,
+  buildStreamEntryPathFromIso,
+  buildStreamMonthPath,
+  buildStreamOnPath,
+  buildStreamYearPath,
+  groupStreamEntries,
+  groupStreamEntriesByYear,
+} from '../../util/stream'
 import { write } from './helpers'
 
 const formatIsoAsYMD = (iso?: string | null): string | null => {
@@ -127,7 +134,7 @@ const generateStreamAtomFeed = (ctx: BuildCtx, fileData: QuartzPluginData): stri
   const cfg = ctx.cfg.configuration
   const base = cfg.baseUrl ?? 'example.com'
   const streamData = fileData.streamData
-  const entries = (streamData?.entries ?? []).filter(entry => !isProtectedEntry(entry))
+  const entries = (streamData?.entries ?? []).filter(entry => !isDraftEntry(entry))
   const fallbackDate =
     parseDateValue(fileData.frontmatter?.modified) ??
     parseDateValue(fileData.frontmatter?.date) ??
@@ -156,13 +163,18 @@ const generateStreamAtomFeed = (ctx: BuildCtx, fileData: QuartzPluginData): stri
       }
 
       const isoPublished = published.toISOString()
-      const itemPath = buildOnPath(entry.date) ?? streamPath
+      const itemPath = buildStreamEntryPathFromIso(entry.date, entry.id) ?? streamPath
       const itemLink = absolutePath(base, itemPath)
       const itemId = `${itemLink}#${entry.id}`
       const titleSource = sanitizeNullable(entry.title?.trim()) ?? `stream entry ${idx + 1}`
-      const summary = entrySummary(entry)
+      const restricted = isRestrictedEntry(entry)
+      const summary = restricted
+        ? isPrivateEntry(entry)
+          ? 'private'
+          : 'protected'
+        : entrySummary(entry)
       const tags = extractStreamTags(entry.metadata)
-      const content = entryContentHtml(entry)
+      const content = restricted ? '' : entryContentHtml(entry)
       const escapedContent = escapeHTML(content)
       const publishedTime = formatStreamDate(isoPublished) ?? formatIsoAsYMD(isoPublished) ?? ''
 
@@ -206,6 +218,31 @@ const generateStreamAtomFeed = (ctx: BuildCtx, fileData: QuartzPluginData): stri
 </feed>`
 }
 
+const streamSlugFromPath = (path: string): FullSlug => path.replace(/^\//, '') as FullSlug
+
+const renderStreamRoute = async (
+  ctx: BuildCtx,
+  tree: Root,
+  fileData: QuartzPluginData,
+  allFiles: QuartzPluginData[],
+  resources: StaticResources,
+  layout: FullPageLayout,
+) => {
+  const slug = fileData.slug!
+  const externalResources = pageResources(pathToRoot(slug), resources, ctx)
+  const componentData: QuartzComponentProps = {
+    ctx,
+    fileData,
+    externalResources,
+    cfg: ctx.cfg.configuration,
+    children: [],
+    tree,
+    allFiles,
+  }
+  const html = renderPage(ctx, slug, componentData, layout, externalResources, false)
+  return write({ ctx, slug, ext: '.html', content: html })
+}
+
 async function* processStreamIndex(
   ctx: BuildCtx,
   fileData: QuartzPluginData,
@@ -237,7 +274,8 @@ async function* processStreamIndex(
     pageBody: StreamPageComponent(),
   }
 
-  const groups = groupStreamEntries(fileData!.streamData!.entries)
+  const visibleEntries = fileData!.streamData!.entries.filter(entry => !isDraftEntry(entry))
+  const groups = groupStreamEntries(visibleEntries)
   if (groups.length === 0) return
 
   const lines = groups
@@ -247,8 +285,8 @@ async function* processStreamIndex(
         group.entries.find(entry => entry.date)?.date ??
         (group.timestamp ? new Date(group.timestamp).toISOString() : null)
 
-      const path = buildOnPath(isoSource!) ?? null
-      const publicEntries = group.entries.filter(entry => !isProtectedEntry(entry))
+      const path = buildStreamDayPathFromIso(isoSource) ?? null
+      const publicEntries = group.entries.filter(entry => !isRestrictedEntry(entry))
       if (publicEntries.length === 0) return null
 
       const entries = publicEntries.map(entry => {
@@ -262,7 +300,7 @@ async function* processStreamIndex(
 
         return {
           id: entry.id,
-          html: render(vnode as VNode<any>),
+          html: render(h(Fragment, null, vnode)),
           metadata: entry.metadata,
           isoDate: entry.date ?? group.isoDate ?? null,
           displayDate:
@@ -287,10 +325,74 @@ async function* processStreamIndex(
 
   yield write({ ctx, slug: 'streams' as FullSlug, ext: '.jsonl', content: payload })
 
-  const skipProtection = ctx.argv.watch && !ctx.argv.force
-  const hasAnyProtected = fileData!.streamData!.entries.some(isProtectedEntry)
-  const streamPassword =
-    !skipProtection && hasAnyProtected ? resolveProtectedPassword(fileData) : undefined
+  const yearGroups = groupStreamEntriesByYear(visibleEntries)
+  const legendPageLayout: ContentLayout = 'default'
+  const legendFrontmatter = {
+    ...fileData!.frontmatter,
+    streamCanonical: buildStreamOnPath(),
+    pageLayout: legendPageLayout,
+  }
+
+  yield renderStreamRoute(
+    ctx,
+    tree,
+    {
+      ...fileData,
+      slug: streamSlugFromPath(buildStreamOnPath()),
+      streamData: { entries: visibleEntries },
+      frontmatter: { ...legendFrontmatter, title: 'stream / on' },
+    },
+    allFiles,
+    resources,
+    layout,
+  )
+
+  for (const yearGroup of yearGroups) {
+    yield renderStreamRoute(
+      ctx,
+      tree,
+      {
+        ...fileData,
+        slug: streamSlugFromPath(buildStreamYearPath(yearGroup.yearText)),
+        streamData: { entries: yearGroup.entries },
+        frontmatter: { ...legendFrontmatter, title: `stream / ${yearGroup.yearText}` },
+      },
+      allFiles,
+      resources,
+      layout,
+    )
+
+    for (const monthGroup of yearGroup.months) {
+      yield renderStreamRoute(
+        ctx,
+        tree,
+        {
+          ...fileData,
+          slug: streamSlugFromPath(buildStreamMonthPath(monthGroup.yearText, monthGroup.monthText)),
+          streamData: { entries: monthGroup.entries },
+          frontmatter: {
+            ...legendFrontmatter,
+            title: `stream / ${monthGroup.yearText} / ${monthGroup.monthText}`,
+          },
+        },
+        allFiles,
+        resources,
+        layout,
+      )
+    }
+  }
+
+  const hasAnyProtected = visibleEntries.some(isProtectedEntry)
+  let streamPassword: string | undefined
+  if (hasAnyProtected) {
+    try {
+      streamPassword = resolveProtectedPassword(fileData)
+    } catch (error) {
+      if (!ctx.argv.watch || ctx.argv.force) {
+        throw error
+      }
+    }
+  }
 
   for (const group of groups) {
     const isoSource =
@@ -298,30 +400,42 @@ async function* processStreamIndex(
       group.entries.find(entry => entry.date)?.date ??
       (group.timestamp ? new Date(group.timestamp).toISOString() : null)
 
-    const onPath = buildOnPath(isoSource!)
+    const onPath = buildStreamDayPathFromIso(isoSource)
     if (!onPath) continue
 
     const slug = onPath.replace(/^\//, '') as FullSlug
     const titleDate = formatIsoAsYMD(isoSource) ?? formatIsoAsYMD(group.isoDate)
     const title = titleDate ?? fileData!.frontmatter?.title ?? 'stream'
     const sourceSlug = fileData.slug! as FullSlug
-    const rebasedEntries = group.entries.map(entry => ({
-      ...entry,
-      content: entry.content.map(node =>
-        isElement(node) ? (normalizeHastElement(node, slug, sourceSlug) as ElementContent) : node,
-      ),
-    }))
+    const rebaseEntries = (entries: StreamEntry[], targetSlug: FullSlug): StreamEntry[] =>
+      entries.map(entry => ({
+        ...entry,
+        content: entry.content.map(node =>
+          isElement(node)
+            ? (normalizeHastElement(node, targetSlug, sourceSlug) as ElementContent)
+            : node,
+        ),
+      }))
 
-    const groupHasProtected = rebasedEntries.some(isProtectedEntry)
-    const protectedPayloads: Record<string, EncryptedPayload> = {}
-    if (streamPassword) {
-      for (const entry of rebasedEntries) {
+    const protectedPayloadsForEntries = (
+      entries: StreamEntry[],
+    ): Record<string, EncryptedPayload> => {
+      const payloads: Record<string, EncryptedPayload> = {}
+      if (!streamPassword) return payloads
+
+      for (const entry of entries) {
         if (isProtectedEntry(entry)) {
           const bodyHtml = renderProtectedEntryBody(entry, fileData!.filePath!)
-          protectedPayloads[entry.id] = encryptContent(bodyHtml, streamPassword)
+          payloads[entry.id] = encryptContent(bodyHtml, streamPassword)
         }
       }
+
+      return payloads
     }
+
+    const rebasedEntries = rebaseEntries(group.entries, slug)
+
+    const protectedPayloads = protectedPayloadsForEntries(rebasedEntries)
 
     const fileDataForGroup: QuartzPluginData = {
       ...fileData,
@@ -335,7 +449,6 @@ async function* processStreamIndex(
         title,
         streamCanonical: '/stream',
         pageLayout: 'default',
-        ...(groupHasProtected ? { protected: true } : {}),
       },
     }
 

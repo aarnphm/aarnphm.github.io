@@ -8,20 +8,12 @@ ul.content-meta {
   flex-direction: column;
   cursor: pointer;
   margin: 0;
-  grid-column: 7/9;
+  grid-column: auto;
 
   padding-inline-start: 0;
   list-style: none;
   gap: 0.3rem;
   font-weight: 300;
-
-  @media all and ($tablet) {
-    grid-column: 6/-4;
-  }
-
-  @media all and ($mobile) {
-    grid-column: 6/-4;
-  }
 
   pre {
     color: var(--darkgray);

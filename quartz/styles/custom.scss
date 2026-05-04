@@ -375,6 +375,10 @@ body {
 }
 
 .byline {
+  grid-column: var(--layout-byline-column);
+  display: grid;
+  grid-template-columns: var(--layout-byline-template);
+  align-items: start;
   font-size: 0.8rem;
   line-height: 1.8em;
 
@@ -408,9 +412,13 @@ body {
 }
 
 @media all and ($mobile) {
-  div.first,
-  menu.tags {
-    grid-column: 3/6;
+  .byline {
+    & > * {
+      &:last-child {
+        border-left: 0;
+        border-top: 1px solid var(--lightgray);
+      }
+    }
   }
 }
 
@@ -1163,9 +1171,7 @@ body[data-slug='influence'] {
   }
 }
 
-[data-layout='masonry'],
-[data-slug*='stream'],
-[data-slug='index'] {
+@media all and ($tablet), all and ($desktop) {
   .search-button,
   #light-toggle {
     visibility: hidden;
