@@ -27,6 +27,7 @@ import {
   FilePath,
   SimpleSlug,
   RelativeURL,
+  isFullSlug,
   joinSegments,
   normalizeHastElement,
   resolveRelative,
@@ -1088,8 +1089,10 @@ export function transcludeFinal(
       if (skipTranscludes) {
         return
       }
-      const [inner] = node.children as Element[]
-      const transcludeTarget = inner.properties['data-slug'] as FullSlug
+      const inner = node.children[0]
+      if (inner?.type !== 'element') return
+      const transcludeTarget = inner.properties['data-slug']
+      if (typeof transcludeTarget !== 'string' || !isFullSlug(transcludeTarget)) return
       if (visited.has(transcludeTarget)) return
       visited.add(transcludeTarget)
 
@@ -1463,12 +1466,14 @@ const AliasLink = (props: AliasLinkProp) => {
 const NotesComponent = ((opts?: { slug: SimpleSlug; numLimits?: number; header?: string }) => {
   const Notes: QuartzComponent = (componentData: QuartzComponentProps) => {
     const { allFiles, fileData, cfg } = componentData
+    const noteSlug = opts?.slug
     const pages = allFiles
       .filter((f: QuartzPluginData) => {
-        if (f.slug!.startsWith(opts!.slug)) {
+        const slug = f.slug
+        if (noteSlug && slug?.startsWith(noteSlug)) {
           return (
             !['university', 'tags', 'library', 'index', ...cfg.ignorePatterns].some(it =>
-              (f.slug as FullSlug).includes(it),
+              slug.includes(it),
             ) && !f.frontmatter?.noindex
           )
         }
