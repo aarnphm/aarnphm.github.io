@@ -198,6 +198,10 @@ function clearActivePopover() {
   allPopoverElements.forEach(popoverElement => popoverElement.classList.remove('active-popover'))
 }
 
+function notifyProtectedContentLoaded(container: ParentNode) {
+  document.dispatchEvent(new CustomEvent('protectedcontentloaded', { detail: { container } }))
+}
+
 function compareUrls(a: URL, b: URL): boolean {
   const u1 = new URL(a.toString())
   const u2 = new URL(b.toString())
@@ -326,6 +330,7 @@ async function handleStackedNotes(
   }
 
   column.appendChild(popoverElement)
+  notifyProtectedContentLoaded(popoverInner)
   await setPosition(link, popoverElement, {
     clientX: pointer.clientX,
     clientY: pointer.clientY,
@@ -450,6 +455,7 @@ async function mouseEnterHandler(
   if (document.getElementById(popoverId)) return
 
   document.body.appendChild(popoverElement)
+  notifyProtectedContentLoaded(popoverInner)
   if (activeAnchor !== link) {
     return
   }

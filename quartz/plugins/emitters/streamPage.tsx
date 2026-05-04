@@ -5,6 +5,7 @@ import { FullPageLayout } from '../../cfg'
 import HeaderConstructor from '../../components/Header'
 import StreamPageComponent from '../../components/pages/StreamPage'
 import { pageResources, renderPage } from '../../components/renderPage'
+import { isDraftEntry, isRestrictedEntry } from '../../components/stream/Entry'
 import StreamSearchComponent from '../../components/StreamSearch'
 import { QuartzComponentProps } from '../../types/component'
 import { QuartzEmitterPlugin } from '../../types/plugin'
@@ -14,25 +15,8 @@ import { StaticResources } from '../../util/resources'
 import { QuartzPluginData } from '../vfile'
 import { write } from './helpers'
 
-const truthyStreamFlag = (value: unknown): boolean => {
-  if (typeof value === 'boolean') return value
-  if (typeof value === 'number') return value !== 0
-  if (typeof value === 'string') {
-    const normalized = value.trim().toLowerCase()
-    return (
-      normalized === 'true' || normalized === '1' || normalized === 'yes' || normalized === 'on'
-    )
-  }
-  return false
-}
-
-const isPublishedStreamEntry = (entry: StreamEntry): boolean => {
-  const metadata = entry.metadata as Record<string, unknown>
-  const draft = truthyStreamFlag(metadata.draft)
-  const privateFlag = truthyStreamFlag(metadata.private)
-  const protectedFlag = truthyStreamFlag(metadata.protected)
-  return !draft && !privateFlag && !protectedFlag
-}
+const isPublishedStreamEntry = (entry: StreamEntry): boolean =>
+  !isDraftEntry(entry) && !isRestrictedEntry(entry)
 
 const filterUnpublishedStreamEntries = (fileData: QuartzPluginData): QuartzPluginData => {
   const entries = fileData.streamData?.entries

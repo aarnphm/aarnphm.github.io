@@ -2,31 +2,15 @@
 
 .bases-search {
   margin: 1rem 0;
-  grid-column: 4/5;
-
-  @media all and ($tablet) {
-    grid-column: 3/-1;
-  }
-
-  @media all and ($mobile) {
-    grid-column: 3/-1;
-  }
+  grid-column: var(--layout-search-column);
 }
 
 .bases-toolbar {
   position: relative;
   display: inline-block;
   font-family: var(--bodyFont);
-  grid-column: 3/4;
+  grid-column: var(--layout-control-column);
   margin: 1rem 0;
-
-  @media all and ($tablet) {
-    grid-column: 3/-1;
-  }
-
-  @media all and ($mobile) {
-    grid-column: 3/-1;
-  }
 
   .sidepanel-container &,
   .popover & {

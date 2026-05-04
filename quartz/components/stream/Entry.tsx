@@ -5,8 +5,10 @@ import { ComponentChild } from 'preact'
 import { render } from 'preact-render-to-string'
 import type { StreamEntry } from '../../plugins/transformers/stream'
 import type { FilePath } from '../../util/path'
-import { htmlToJsx } from '../../util/jsx'
 import type { EncryptedPayload } from '../../util/protected'
+import { htmlToJsx } from '../../util/jsx'
+import { buildStreamDayPathFromIso } from '../../util/stream'
+import { StreamUnlockIcon } from './UnlockIcon'
 
 export interface StreamEntryRenderOptions {
   groupId: string
@@ -16,13 +18,14 @@ export interface StreamEntryRenderOptions {
   showWordCount?: boolean
   mode?: 'listing' | 'daily'
   encryptedPayload?: EncryptedPayload
+  protectedPrompt?: 'form' | 'icon'
 }
 
 const nodesToJsx = (filePath: FilePath, nodes: ElementContent[]): ComponentChild => {
   if (!nodes || nodes.length === 0) return null
 
   return nodes.map((node, idx) => {
-    const root: HastRoot = { type: 'root', children: [node as any] }
+    const root: HastRoot = { type: 'root', children: [node] }
     return <span key={idx}>{htmlToJsx(filePath, root)}</span>
   })
 }
@@ -49,8 +52,7 @@ const descriptionToJsx = (filePath: FilePath, descriptionHtml: string): Componen
   return htmlToJsx(filePath, root)
 }
 
-export const isProtectedEntry = (entry: StreamEntry): boolean => {
-  const value = entry.metadata?.protected
+export const truthyStreamFlag = (value: unknown): boolean => {
   if (typeof value === 'boolean') return value
   if (typeof value === 'number') return value !== 0
   if (typeof value === 'string') {
@@ -61,6 +63,17 @@ export const isProtectedEntry = (entry: StreamEntry): boolean => {
   }
   return false
 }
+
+export const isProtectedEntry = (entry: StreamEntry): boolean =>
+  truthyStreamFlag(entry.metadata?.protected)
+
+export const isPrivateEntry = (entry: StreamEntry): boolean =>
+  truthyStreamFlag(entry.metadata?.private)
+
+export const isDraftEntry = (entry: StreamEntry): boolean => truthyStreamFlag(entry.metadata?.draft)
+
+export const isRestrictedEntry = (entry: StreamEntry): boolean =>
+  isProtectedEntry(entry) || isPrivateEntry(entry)
 
 export const getStreamEntryWordCount = (entry: StreamEntry): number =>
   countWords(streamEntryText(entry))
@@ -89,16 +102,7 @@ export const formatStreamDate = (isoDate: string | undefined): string | null => 
 }
 
 export const buildOnPath = (isoDate: string | undefined): string | null => {
-  if (!isoDate) return null
-
-  const date = new Date(isoDate)
-  if (Number.isNaN(date.getTime())) return null
-
-  const year = date.getUTCFullYear()
-  const month = String(date.getUTCMonth() + 1).padStart(2, '0')
-  const day = String(date.getUTCDate()).padStart(2, '0')
-
-  return `/stream/on/${year}/${month}/${day}`
+  return buildStreamDayPathFromIso(isoDate)
 }
 
 const renderEntryBody = (
@@ -152,47 +156,70 @@ export const renderStreamEntry = (
   const onPath = timestampAttr ? buildOnPath(resolvedIsoDate) : null
 
   const protectedEntry = isProtectedEntry(entry)
+  const privateEntry = isPrivateEntry(entry)
   const mode = options.mode ?? 'listing'
+  const protectedPrompt = options.protectedPrompt ?? 'form'
+  const restrictedLabel = privateEntry ? 'private' : 'locked'
 
   let body: ComponentChild
-  if (!protectedEntry) {
+  if (!protectedEntry && !privateEntry) {
     body = (
       <>
         {entry.title && <h2 class="stream-entry-title">{entry.title}</h2>}
         {renderEntryBody(entry, filePath, showWordCount)}
       </>
     )
-  } else if (mode === 'daily' && options.encryptedPayload) {
+  } else if (!privateEntry && mode === 'daily' && options.encryptedPayload) {
+    const encryptedContent = encodeURIComponent(JSON.stringify(options.encryptedPayload))
+
     body = (
       <>
         {entry.title && <h2 class="stream-entry-title">{entry.title}</h2>}
-        <div
-          class="protected-content-wrapper inline"
-          data-protected="true"
-          data-slug={entry.id}
-          data-encrypted-content={encodeURIComponent(JSON.stringify(options.encryptedPayload))}
-        >
-          <div class="password-prompt-overlay" style="display: flex;">
-            <div class="password-prompt-container">
-              <p>this entry is protected</p>
-              <form class="password-form">
-                <input
-                  class="password-input"
-                  type="password"
-                  placeholder="enter password"
-                  autocomplete="off"
-                  required
-                />
-                <button class="password-submit" type="submit">
-                  unlock
-                </button>
-              </form>
-              <p class="password-error" style="display: none;">
-                incorrect password
-              </p>
+        {protectedPrompt === 'icon' ? (
+          <div
+            class="protected-content-wrapper inline compact"
+            data-protected="true"
+            data-slug={entry.id}
+            data-encrypted-content={encryptedContent}
+          >
+            <button
+              type="button"
+              class="stream-protected-lock"
+              data-protected-unlock-trigger
+              aria-label="unlock protected entry"
+            >
+              <StreamUnlockIcon />
+            </button>
+          </div>
+        ) : (
+          <div
+            class="protected-content-wrapper inline"
+            data-protected="true"
+            data-slug={entry.id}
+            data-encrypted-content={encryptedContent}
+          >
+            <div class="password-prompt-overlay" style="display: flex;">
+              <div class="password-prompt-container">
+                <p>this content is protected</p>
+                <form class="password-form">
+                  <input
+                    class="password-input"
+                    type="password"
+                    placeholder="enter password"
+                    autocomplete="off"
+                    required
+                  />
+                  <button class="password-submit" type="submit">
+                    unlock
+                  </button>
+                </form>
+                <p class="password-error" style="display: none;">
+                  incorrect password
+                </p>
+              </div>
             </div>
           </div>
-        </div>
+        )}
       </>
     )
   } else {
@@ -200,7 +227,7 @@ export const renderStreamEntry = (
       <>
         {entry.title && <h2 class="stream-entry-title">{entry.title}</h2>}
         <div class="stream-entry-private">
-          <p>private</p>
+          <p>{restrictedLabel}</p>
         </div>
       </>
     )
@@ -209,6 +236,7 @@ export const renderStreamEntry = (
   return (
     <li
       key={entry.id}
+      id={entry.id}
       class="stream-entry"
       data-entry-id={entry.id}
       data-stream-group-id={options.groupId}

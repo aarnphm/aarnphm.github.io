@@ -12,30 +12,6 @@ body[data-slug='index'] {
     }
   }
 
-  @media all and ($desktop) {
-    .main-col:not(.popover *) {
-      grid-column: 4/-4;
-    }
-
-    .side-col:not(.popover *) {
-      grid-column: 5/8;
-    }
-
-    .grid {
-      --grid-end: 0;
-    }
-  }
-
-  @media all and ($tablet) {
-    .main-col:not(.popover *) {
-      grid-column: 3/-4;
-    }
-
-    .side-col:not(.popover *) {
-      grid-column: 3/-3;
-    }
-  }
-
   .page-content:not([data-plain='true']) {
     margin: 1rem 0;
     border: 1px solid var(--gray);

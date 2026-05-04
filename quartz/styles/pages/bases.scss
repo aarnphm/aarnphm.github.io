@@ -36,31 +36,11 @@
 }
 
 .page-content article.main-col:has(.base-embed) > * {
-  grid-column: 6/9;
+  grid-column: var(--layout-reading-column);
 }
 
 .page-content article.main-col:has(.base-embed) > .base-embed {
-  grid-column: 4/11;
-}
-
-@media all and ($tablet) {
-  .page-content article.main-col:has(.base-embed) > * {
-    grid-column: 3/-3;
-  }
-
-  .page-content article.main-col:has(.base-embed) > .base-embed {
-    grid-column: 3/-3;
-  }
-}
-
-@media all and ($mobile) {
-  .page-content article.main-col:has(.base-embed) > * {
-    grid-column: 3/-3;
-  }
-
-  .page-content article.main-col:has(.base-embed) > .base-embed {
-    grid-column: 3/-3;
-  }
+  grid-column: var(--layout-wide-column);
 }
 
 .base-table {

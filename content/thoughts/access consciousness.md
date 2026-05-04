@@ -1,8 +1,8 @@
 ---
-date: '2026-01-28'
+date: "2026-01-28"
 description: information availability, global workspace, and what interpretability can actually map
 id: access-consciousness
-modified: 2026-01-28 02:30:00 GMT-05:00
+modified: 2026-05-03 17:37:05 GMT-04:00
 seealso:
   - '[[thoughts/phenomenal consciousness]]'
   - '[[thoughts/dualism]]'
@@ -10,12 +10,12 @@ seealso:
   - '[[thoughts/qualia]]'
   - '[[thoughts/Attention]]'
   - '[[thoughts/Mechanistic interpretability]]'
+socials:
+  sep: https://plato.stanford.edu/entries/consciousness-access/
 tags:
   - philosophy
   - consciousness
 title: access consciousness
-socials:
-  sep: https://plato.stanford.edu/entries/consciousness-access/
 ---
 
 _information crossing a threshold where it becomes globally available for report, reasoning, and control is measurable from the outside._
@@ -46,7 +46,7 @@ GWT explains access consciousness. whether it explains [[thoughts/phenomenal con
 
 ### blindsight
 
-patients with damage to primary visual cortex (V1) can respond to visual stimuli in their blind field when forced to guess, performing above chance on discrimination tasks, while reporting no visual experience. [@weiskrantz1986blindsight]
+patients with damage to primary visual cortex (V1) can respond to visual stimuli in their blind field when forced to guess, performing above chance on discrimination tasks, while reporting no [[thoughts/pdfs/Weiskrantz.pdf|visual experience]].
 
 type I blindsight: discrimination capability with complete absence of acknowledged awareness (pure dissociation).
 type II blindsight: some "feeling" of stimulus occurrence without proper seeing.

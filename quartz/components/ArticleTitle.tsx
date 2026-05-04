@@ -8,6 +8,7 @@ import { toArenaHeadingJsx } from '../util/arena'
 import { classNames } from '../util/lang'
 import { renderDescription } from '../util/og'
 import { resolveRelative, FullSlug } from '../util/path'
+import { StreamUnlockIcon } from './stream/UnlockIcon'
 
 export interface Options {
   enableDescription: boolean
@@ -24,6 +25,9 @@ export default ((userOpts?: Options) => {
     const slug = fileData.slug!
     const isArenaIndex = slug === 'arena'
     const isArenaChannel = slug.startsWith('arena/') && slug !== 'arena'
+    const isStreamPage = slug === 'stream' || slug.startsWith('stream/on')
+    const hasStreamProtectedContent =
+      isStreamPage && Object.keys(fileData.streamData?.protectedPayloads ?? {}).length > 0
 
     if (isArenaIndex) {
       const arenaData = fileData.arenaData as ArenaData | undefined
@@ -90,10 +94,31 @@ export default ((userOpts?: Options) => {
               }}
             />
           )}
-          {slug === 'stream' && (
-            <a href="/stream/index.xml" class="internal" data-no-popover style="font-style: italic">
-              rss
-            </a>
+          {isStreamPage && (
+            <nav class="stream-title-actions" aria-label="stream links">
+              {hasStreamProtectedContent && (
+                <button
+                  type="button"
+                  class="stream-title-unlock"
+                  data-protected-unlock-trigger
+                  aria-label="unlock protected stream entries"
+                  title="unlock protected stream entries"
+                >
+                  <StreamUnlockIcon />
+                </button>
+              )}
+              <a
+                href="/stream/index.xml"
+                class="internal"
+                data-no-popover
+                style="font-style: italic"
+              >
+                rss
+              </a>
+              <a href="/stream/on" class="internal" style="font-style: italic" data-no-popover>
+                list
+              </a>
+            </nav>
           )}
         </hgroup>
       )

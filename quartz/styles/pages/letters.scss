@@ -1,15 +1,24 @@
 @use '../base.scss';
 @use '../variables.scss' as *;
 
+body[data-slug='index'] {
+  .darkmode,
+  .search-button {
+    visibility: hidden !important;
+  }
+}
+
 body[data-is-canvas='true'],
 body[data-layout='letter'],
 body[data-layout='letter-poem'],
 body[data-slug='index'],
 body[data-slug='influence'],
 body[data-slides='true'] {
-  .darkmode,
-  .search-button {
-    visibility: hidden !important;
+  @media all and ($tablet), all and ($desktop) {
+    .darkmode,
+    .search-button {
+      visibility: hidden !important;
+    }
   }
 
   section[class~='header'] {

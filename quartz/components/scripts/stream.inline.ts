@@ -2,7 +2,9 @@ function hydrateStreamInteractions() {
   const el = document.querySelector<HTMLElement>('.stream')
   if (!el) return
 
-  const timeElements = el.querySelectorAll<HTMLTimeElement>('.stream-entry-date[datetime]')
+  const timeElements = el.querySelectorAll<HTMLTimeElement>(
+    '.stream-entry-date[datetime], .stream-entry-date time[datetime]',
+  )
 
   if (timeElements.length === 0) return
 
@@ -29,6 +31,39 @@ function hydrateStreamInteractions() {
   const entries = Array.from(el.querySelectorAll<HTMLElement>('.stream-entry'))
   if (entries.length === 0) return
 
+  const notifyProtectedContent = () => {
+    document.dispatchEvent(new CustomEvent('protectedcontentloaded', { detail: { container: el } }))
+  }
+
+  const entryById = new Map<string, HTMLElement>()
+  entries.forEach(entry => {
+    const entryId = entry.dataset.entryId
+    if (entryId) entryById.set(entryId, entry)
+  })
+
+  const updateEntryFilter = (targetEntryId: string | null) => {
+    const hasTarget = targetEntryId !== null && entryById.has(targetEntryId)
+
+    if (hasTarget && targetEntryId) {
+      el.dataset.streamActiveEntry = targetEntryId
+    } else {
+      el.removeAttribute('data-stream-active-entry')
+    }
+
+    entries.forEach(entry => {
+      const matches = hasTarget && entry.dataset.entryId === targetEntryId
+      entry.hidden = hasTarget ? !matches : false
+      entry.classList.toggle('stream-entry-active', matches)
+    })
+
+    notifyProtectedContent()
+  }
+
+  const getEntryFilterFromLocation = () =>
+    new URL(window.location.href).searchParams.get('entry')?.trim() || null
+
+  updateEntryFilter(getEntryFilterFromLocation())
+
   const interactiveLinks = Array.from(
     el.querySelectorAll<HTMLAnchorElement>(
       '.stream-entry-date[data-stream-link][data-stream-timestamp]',
@@ -48,6 +83,9 @@ function hydrateStreamInteractions() {
 
   if (timestampHrefMap.size <= 1) {
     el.removeAttribute('data-stream-active-timestamp')
+    const handleEntryPopstate = () => updateEntryFilter(getEntryFilterFromLocation())
+    window.addEventListener('popstate', handleEntryPopstate)
+    window.addCleanup(() => window.removeEventListener('popstate', handleEntryPopstate))
     return
   }
 
@@ -101,6 +139,8 @@ function hydrateStreamInteractions() {
         link.removeAttribute('aria-current')
       }
     })
+
+    notifyProtectedContent()
 
     if (!updateHistory) return
 
