@@ -491,13 +491,13 @@ m n o,pq r,stuv1
 Lowercasing HTML `src` attribute values. File `data/q.html`:
 
 ```html
-<img src="PiCtuRe.PnG "/>
-<img src="PiCtuRe.PnG"></img>
-<img src="PiCtuRe.PnG">alt</img>
-<img src="PiCtuRe.PnG"> alt   </img>
-<img src ="PiCtuRe.PnG" />
-<img src = "PiCtuRe.PnG"/>
-<img onclick="alert('Clicked!')" src = "PiCtuRe.PnG"/>
+<img src="PiCtuRe.webp "/>
+<img src="PiCtuRe.webp"></img>
+<img src="PiCtuRe.webp">alt</img>
+<img src="PiCtuRe.webp"> alt   </img>
+<img src ="PiCtuRe.webp" />
+<img src = "PiCtuRe.webp"/>
+<img onclick="alert('Clicked!')" src = "PiCtuRe.webp"/>
 ```
 
 ```bash
@@ -513,12 +513,12 @@ Pattern breakdown:
 - `\1\L\2` outputs group 1, then lowercased group 2 (`\L` is GNU sed lowercase)
 
 ```text
-assert str(output) == """<img src="picture.png "/>
-<img src="picture.png"></img>
-<img src="picture.png">alt</img>
-<img src="picture.png"> alt   </img>
-<img src ="picture.png" />
-<img src = "picture.png"/>
-<img onclick="alert('Clicked!')" src = "picture.png"/>
+assert str(output) == """<img src="picture.webp "/>
+<img src="picture.webp"></img>
+<img src="picture.webp">alt</img>
+<img src="picture.webp"> alt   </img>
+<img src ="picture.webp" />
+<img src = "picture.webp"/>
+<img onclick="alert('Clicked!')" src = "picture.webp"/>
 """
 ```
