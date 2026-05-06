@@ -1,7 +1,7 @@
 ---
 aliases:
   - advice
-date: '2024-01-23'
+date: "2024-01-23"
 description: A collection of quotes, wisdom, and advice.
 id: quotes
 layout: letter
@@ -16,7 +16,7 @@ metadata:
     text_line    = { character - newline } ;
     ws           = { " " } ;
     character    = ? any printable ascii except newline ? ;
-modified: 2026-04-29 12:54:09 GMT-04:00
+modified: 2026-05-05 22:36:43 GMT-04:00
 seealso:
   - '[[word|dictionary]]'
   - '[[research|wip]]'
@@ -30,6 +30,10 @@ transclude:
   dynalist: false
   title: false
 ---
+
+> The purpose of life is to be defeated by greater and greater things
+>
+> Rainer Maria Rilke
 
 > To love someone else is easy, but to love what you are, the thing that is yourself, is just as if you were embracing a glowing red-hot iron: it burns into you and that is very painful. Therefore, to love somebody else in the first place is always an escape which we all hope for, and we all enjoy it when we are capable of it. But in the long run, it comes back on us. You cannot stay away from yourself forever, you have to return, have to come to that experiment, to know whether you really can love. That is the question: whether you can love yourself, and that will be the test.
 >
