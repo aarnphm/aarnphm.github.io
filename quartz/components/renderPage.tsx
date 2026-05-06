@@ -1612,6 +1612,30 @@ const ElementComponent = ((enableRecents: boolean = false) => {
   return Element
 }) satisfies QuartzComponentConstructor
 
+function LandingPetSticker() {
+  return (
+    <figure
+      class="landing-pet-sticker"
+      data-pet-widget={true}
+      data-pet-home={true}
+      role="group"
+      aria-label="draggable rocky sticker"
+      tabIndex={0}
+    >
+      <img
+        src="/static/landing/rocky-monomyth/sticker.webp"
+        alt=""
+        width="168"
+        height="178"
+        loading="eager"
+        decoding="async"
+        draggable={false}
+        data-ignore-popup={true}
+      />
+    </figure>
+  )
+}
+
 // Menu components
 
 function Functions({ displayClass }: QuartzComponentProps) {
@@ -1905,6 +1929,7 @@ export function renderPage(
 
         return (
           <div class={classNames(displayClass, 'landing')}>
+            <LandingPetSticker />
             <Element {...props} />
           </div>
         )

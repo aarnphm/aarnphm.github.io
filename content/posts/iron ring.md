@@ -3,7 +3,7 @@ date: "2026-03-28"
 description: on moral emotivism
 draft: true
 id: iron ring
-modified: 2026-04-03 18:41:49 GMT-04:00
+modified: 2026-05-05 20:48:15 GMT-04:00
 tags:
   - life
   - progress
@@ -42,7 +42,7 @@ the obligation of the calling of an engineer is, by its own description, "not an
 
 the full text:
 
-> I, ____________, in the presence of these my betters and my equals in my Calling, bind myself upon my Honour and Cold Iron, that, to the best of my knowledge and power, I will not henceforward suffer or pass, or be privy to the passing of, Bad Workmanship or Faulty Material in aught that concerns my works before mankind as an Engineer, or in my dealings with my conscience. My time I will not refuse; my Thought I will not grudge; my Care I will not deny towards the honour, use, stability and perfection of any works to which I may be called to set my hand.
+> I, ****Aaron Pham****, in the presence of these my betters and my equals in my Calling, bind myself upon my Honour and Cold Iron, that, to the best of my knowledge and power, I will not henceforward suffer or pass, or be privy to the passing of, Bad Workmanship or Faulty Material in aught that concerns my works before mankind as an Engineer, or in my dealings with my conscience. My time I will not refuse; my Thought I will not grudge; my Care I will not deny towards the honour, use, stability and perfection of any works to which I may be called to set my hand.
 
 kipling's prose has weight. the archaisms ("henceforward," "aught," "compass or wrest") create the feeling of ancient tradition in something that was written in 1923. the ceremony is semi-secret, private, attended only by engineers and those being called.[^secrecy] it functions as what [[thoughts/performativity|butler]] would recognize as a constitutive performance: you don't take the obligation because you're an engineer. you become an engineer (in the tribal sense) by taking it. the speech act creates the identity it appears to describe.[^turner]
 

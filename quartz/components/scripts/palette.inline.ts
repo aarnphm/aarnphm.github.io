@@ -272,6 +272,14 @@ document.addEventListener('nav', e => {
       },
     },
     {
+      name: 'pets',
+      auxInnerHtml: '<kbd>↵</kbd> toggle on/off',
+      onClick: () => {
+        const event: CustomEventMap['petstoggle'] = new CustomEvent('petstoggle', { detail: {} })
+        document.dispatchEvent(event)
+      },
+    },
+    {
       name: 'curius',
       auxInnerHtml: '<kbd>↵</kbd> links',
       onClick: () => {
