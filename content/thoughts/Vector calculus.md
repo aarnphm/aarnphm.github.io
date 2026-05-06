@@ -92,7 +92,7 @@ where $df$ is the infinitesimal change in $f$ for an infinitesimal displacement 
 > (\nabla f(x)) \cdot \mathbf{v} = D_v f(x)
 > $$
 
-```tikz disableSanitize=true
+```tikz
 \usepackage{pgfplots}
 \usepackage{tikz-3dplot}
 \pgfplotsset{compat=1.16}
@@ -114,8 +114,8 @@ where $df$ is the infinitesimal change in $f$ for an infinitesimal displacement 
     surf,
     domain=-80:80,
     y domain=-80:80,
-    samples=40,
-    samples y=40,
+    samples=10,
+    samples y=10,
     faceted color=orange,
     fill opacity=0.7,
     mesh/interior colormap={autumn}{color=(yellow) color=(orange)},
@@ -130,8 +130,8 @@ where $df$ is the infinitesimal change in $f$ for an infinitesimal displacement 
         v={4*cos(y)*sin(y)*(cos(x)^2 + cos(y)^2)},
         w=0
     },
-    samples=15,
-    samples y=15,
+    samples=10,
+    samples y=10,
     domain=-80:80,
     y domain=-80:80,
 ] {-4};

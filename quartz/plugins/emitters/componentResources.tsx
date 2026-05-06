@@ -20,6 +20,8 @@ import multiplayerScript from '../../components/scripts/collaborative-comments.i
 // @ts-ignore
 import markerScript from '../../components/scripts/marker.inline'
 // @ts-ignore
+import petScript from '../../components/scripts/pet.inline'
+// @ts-ignore
 import popoverScript from '../../components/scripts/popover.inline'
 //@ts-ignore
 import protectedScript from '../../components/scripts/protected.inline'
@@ -113,6 +115,7 @@ function addGlobalPageResources(ctx: BuildCtx, componentResources: ComponentReso
     audioScript,
     baseMapScript,
     multiplayerScript,
+    petScript,
   )
 
   if (cfg.analytics?.provider === 'plausible') {

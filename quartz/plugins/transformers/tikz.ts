@@ -9,6 +9,16 @@ import { QuartzTransformerPlugin } from '../../types/plugin'
 
 const TIKZ_TIMEOUT = 30_000
 
+const cmMathItalicGlyphs = new Map([
+  ['¼', 'π'],
+  ["'", 'φ'],
+])
+
+const cmSymbolGlyphs = new Map([
+  ['¡', '−'],
+  ['£', '×'],
+])
+
 async function tex2svg(
   input: string,
   opts: { showConsole: boolean; disableSanitize: boolean; disableOptimize: boolean },
@@ -52,6 +62,67 @@ function parseStyle(meta: string | null | undefined): string {
 }
 
 const docs = (node: Code): string => JSON.stringify(node.value)
+
+function decodeNumericEntities(value: string): string {
+  return value.replace(/&#(x[\da-f]+|\d+);/gi, (_, code: string) => {
+    const radix = code.startsWith('x') || code.startsWith('X') ? 16 : 10
+    return String.fromCodePoint(Number.parseInt(code.replace(/^x/i, ''), radix))
+  })
+}
+
+function escapeSvgText(value: string): string {
+  return value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+}
+
+function normalizeComputerModernText(svg: string): string {
+  return svg.replace(/<text\b([^>]*)>([\s\S]*?)<\/text>/g, (match, attrs: string, text: string) => {
+    const font = attrs.match(/\bfont-family="([^"]+)"/)?.[1]
+    if (!font) return match
+
+    const decoded = decodeNumericEntities(text)
+    let glyphs: Map<string, string> | undefined
+    if (font.startsWith('cmmi') || font.startsWith('cmmib')) glyphs = cmMathItalicGlyphs
+    else if (font.startsWith('cmsy') || font.startsWith('cmbsy')) glyphs = cmSymbolGlyphs
+
+    const normalized = [...decoded].map(char => glyphs?.get(char) ?? char).join('')
+    let nextAttrs = attrs
+    if (/^(?:cm|eu|ms)[a-z]+\d+$/.test(font)) {
+      nextAttrs = nextAttrs.replace(/\bfont-family="[^"]+"/, 'font-family="serif"')
+    }
+    if ((font.startsWith('cmmi') || font.startsWith('cmmib')) && !/\bfont-style=/.test(nextAttrs)) {
+      nextAttrs += ' font-style="italic"'
+    }
+
+    return `<text${nextAttrs}>${escapeSvgText(normalized)}</text>`
+  })
+}
+
+function closeDanglingSvgTags(svg: string): string {
+  const stack: string[] = []
+  const tags = svg.matchAll(/<\/?([A-Za-z][\w:.-]*)(?:\s[^<>]*)?>/g)
+
+  for (const tag of tags) {
+    const source = tag[0]
+    const name = tag[1]
+    if (source.startsWith('</')) {
+      for (let i = stack.length - 1; i >= 0; i--) {
+        const open = stack.pop()
+        if (open === name) break
+      }
+    } else if (!source.endsWith('/>')) {
+      stack.push(name)
+    }
+  }
+
+  return `${svg}${stack
+    .reverse()
+    .map(name => `</${name}>`)
+    .join('')}`
+}
+
+function prepareSvgForImage(svg: string): string {
+  return normalizeComputerModernText(closeDanglingSvgTags(svg))
+}
 
 function makeTikzGraph(node: Code, svg: string, style?: string): Element {
   const mathMl = h(
@@ -99,7 +170,7 @@ function makeTikzGraph(node: Code, svg: string, style?: string): Element {
   const properties: Properties = { 'data-remark-tikz': true, style: '' }
   if (style) properties.style = style
 
-  const encoded = Buffer.from(svg).toString('base64')
+  const encoded = Buffer.from(prepareSvgForImage(svg)).toString('base64')
   const imgNode = h('img', {
     src: `data:image/svg+xml;base64,${encoded}`,
     alt: 'tikz diagram',
@@ -111,11 +182,11 @@ function makeTikzGraph(node: Code, svg: string, style?: string): Element {
 }
 
 interface Options {
-  showConsole: boolean
-  disableOptimize: boolean
+  showConsole?: boolean
+  disableOptimize?: boolean
 }
 
-const defaultOpts: Options = { showConsole: false, disableOptimize: true }
+const defaultOpts: Required<Options> = { showConsole: false, disableOptimize: true }
 
 export const TikzJax: QuartzTransformerPlugin<Options> = (opts?: Options) => {
   const o = { ...defaultOpts, ...opts }

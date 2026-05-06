@@ -1,12 +1,12 @@
 ---
-date: "2026-04-07"
+date: '2026-04-07'
 description: earley parsing, PEG, packrat parsing
 id: results
 modified: 2026-04-07 21:37:56 GMT-04:00
 tags:
   - sfwr4tb3
   - assignment
-title: "Assignment 11: Earley and PEG Parsing"
+title: 'Assignment 11: Earley and PEG Parsing'
 ---
 
 ## Q1: Steps with Earley's Parser [6 points]
@@ -15,34 +15,34 @@ title: "Assignment 11: Earley and PEG Parsing"
 
 G1 = (`S→E`, `E→a`, `E→E+E`)
 
-| step |   | set  | item             |
-|:-----|:--|:-----|:-----------------|
-| 0    |   | s[0] | S→ •E, 0        |
-| 1    | P | s[0] | E→•a, 0         |
-| 2    | P | s[0] | E→•E+E, 0       |
-| 3    | M | s[1] | E→a•, 0         |
-| 4    | C | s[1] | S→E•, 0         |
-| 5    | C | s[1] | E→E•+E, 0       |
-| 6    | M | s[2] | E→E+•E, 0       |
-| 7    | P | s[2] | E→•a, 2         |
-| 8    | P | s[2] | E→•E+E, 2       |
-| 9    | M | s[3] | E→a•, 2         |
-| 10   | C | s[3] | E→E•+E, 2       |
-| 11   | C | s[3] | E→E+E•, 0       |
-| 12   | M | s[4] | E→E+•E, 2       |
-| 13   | C | s[3] | S→E•, 0         |
-| 14   | C | s[3] | E→E•+E, 0       |
-| 15   | M | s[4] | E→E+•E, 0       |
-| 16   | P | s[4] | E→•a, 4         |
-| 17   | P | s[4] | E→•E+E, 4       |
-| 18   | M | s[5] | E→a•, 4         |
-| 19   | C | s[5] | E→E+E•, 2       |
-| 20   | C | s[5] | E→E•+E, 4       |
-| 21   | C | s[5] | E→E+E•, 0       |
-| 22   | C | s[5] | E→E•+E, 2       |
-| 23   | C | s[5] | E→E+E•, 0       |
-| 24   | C | s[5] | S→E•, 0         |
-| 25   | C | s[5] | E→E•+E, 0       |
+| step |     | set  | item      |
+| :--- | :-- | :--- | :-------- |
+| 0    |     | s[0] | S→ •E, 0  |
+| 1    | P   | s[0] | E→•a, 0   |
+| 2    | P   | s[0] | E→•E+E, 0 |
+| 3    | M   | s[1] | E→a•, 0   |
+| 4    | C   | s[1] | S→E•, 0   |
+| 5    | C   | s[1] | E→E•+E, 0 |
+| 6    | M   | s[2] | E→E+•E, 0 |
+| 7    | P   | s[2] | E→•a, 2   |
+| 8    | P   | s[2] | E→•E+E, 2 |
+| 9    | M   | s[3] | E→a•, 2   |
+| 10   | C   | s[3] | E→E•+E, 2 |
+| 11   | C   | s[3] | E→E+E•, 0 |
+| 12   | M   | s[4] | E→E+•E, 2 |
+| 13   | C   | s[3] | S→E•, 0   |
+| 14   | C   | s[3] | E→E•+E, 0 |
+| 15   | M   | s[4] | E→E+•E, 0 |
+| 16   | P   | s[4] | E→•a, 4   |
+| 17   | P   | s[4] | E→•E+E, 4 |
+| 18   | M   | s[5] | E→a•, 4   |
+| 19   | C   | s[5] | E→E+E•, 2 |
+| 20   | C   | s[5] | E→E•+E, 4 |
+| 21   | C   | s[5] | E→E+E•, 0 |
+| 22   | C   | s[5] | E→E•+E, 2 |
+| 23   | C   | s[5] | E→E+E•, 0 |
+| 24   | C   | s[5] | S→E•, 0   |
+| 25   | C   | s[5] | E→E•+E, 0 |
 
 The item `S→E•, 0` appears in s[5], confirming that `a+a+a` is accepted.
 

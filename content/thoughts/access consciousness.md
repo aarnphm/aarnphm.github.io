@@ -1,5 +1,5 @@
 ---
-date: "2026-01-28"
+date: '2026-01-28'
 description: information availability, global workspace, and what interpretability can actually map
 id: access-consciousness
 modified: 2026-05-03 17:37:05 GMT-04:00

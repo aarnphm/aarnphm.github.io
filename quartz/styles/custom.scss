@@ -794,10 +794,22 @@ figure.tikz {
   align-items: center;
   row-gap: 1rem;
 
+  & > svg,
+  & > img {
+    max-width: 100%;
+    height: auto;
+  }
+
+  & > img {
+    width: auto;
+    border-radius: 0;
+  }
+
   @media all and ($mobile) {
     margin: 0;
 
-    & > svg {
+    & > svg,
+    & > img {
       transform: scale(0.7);
     }
   }

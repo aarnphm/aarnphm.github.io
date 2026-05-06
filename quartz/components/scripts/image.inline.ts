@@ -34,6 +34,7 @@ document.addEventListener('nav', () => {
   // Add click handlers to all existing images
   const contentImages = document.querySelectorAll('img')
   for (const img of contentImages) {
+    if (img.dataset.noPopover === '' || img.dataset.noPopover === 'true') continue
     if (img instanceof HTMLImageElement) {
       setupImageHandler(img)
     }

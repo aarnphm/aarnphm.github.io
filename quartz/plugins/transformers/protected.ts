@@ -1,7 +1,7 @@
+import type { QuartzPluginData } from '../vfile'
 import content from '../../components/styles/protected.scss'
 import { QuartzTransformerPlugin } from '../../types/plugin'
 import { resolveProtectedPassword } from '../../util/protected'
-import type { QuartzPluginData } from '../vfile'
 
 export const Protected: QuartzTransformerPlugin = () => {
   return {
