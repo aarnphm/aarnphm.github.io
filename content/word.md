@@ -1,11 +1,11 @@
 ---
 cssclasses:
   - nolist
-date: '2024-10-10'
+date: "2024-10-10"
 description: a bag of chips/words/vernacular
 id: word
 layout: technical
-modified: 2026-01-24 12:47:40 GMT-05:00
+modified: 2026-05-07 18:41:49 GMT-04:00
 tags:
   - evergreen
 title: lists
@@ -80,83 +80,84 @@ title: lists
   - fancy decorations on clothes
 - jovial
 - {{sidenotes[claudification]: the [[library/Phenomenology of Perception|phenomena]] where Claude Code "harnesses" tasks by attributing a verb describing what it is doing.}}
-  - accomplishing
-  - actioning
-  - actualizing
-  - baking
-  - booping
-  - brewing
-  - calculating
-  - cerebrating
-  - churning
-  - clauding
-  - coalescing
-  - cogitating
-  - computing
-  - concocting
-  - considering
-  - contemplating
-  - cooking
-  - crafting
-  - creating
-  - crunching
-  - deciphering
-  - deliberating
-  - determining
-  - discombobulating
-  - doing
-  - effecting
-  - enchanting
-  - envisioning
-  - finagling
-  - flibbertigibbeting
-  - forging
-  - forming
-  - frolicking
-  - generating
-  - germinating
-  - hatching
-  - herding
-  - honking
-  - ideating
-  - imagining
-  - incubating
-  - inferring
-  - manifesting
-  - marinating
-  - meandering
-  - moseying
-  - mulling
-  - mustering
-  - musing
-  - noodling
-  - percolating
-  - perusing
-  - philosophising
-  - pontificating
-  - pondering
-  - processing
-  - puttering
-  - puzzling
-  - reticulating
-  - ruminating
-  - scheming
-  - schlepping
-  - simmering
-  - smooshing
-  - spelunking
-  - spinning
-  - stewing
-  - sussing
-  - synthesizing
-  - thinking
-  - tinkering
-  - transmuting
-  - unfurling
-  - unravelling
-  - vibing
-  - wandering
-  - whirring
-  - wibbling
-  - working
-  - wrangling
+- accomplishing
+- actioning
+- actualizing
+- baking
+- booping
+- brewing
+- calculating
+- cerebrating
+- churning
+- clauding
+- coalescing
+- cogitating
+- computing
+- concocting
+- considering
+- contemplating
+- cooking
+- crafting
+- creating
+- crunching
+- deciphering
+- deliberating
+- determining
+- discombobulating
+- doing
+- effecting
+- enchanting
+- envisioning
+- finagling
+- flibbertigibbeting
+- forging
+- forming
+- frolicking
+- generating
+- germinating
+- hatching
+- herding
+- honking
+- ideating
+- imagining
+- incubating
+- inferring
+- manifesting
+- marinating
+- meandering
+- moseying
+- mulling
+- mustering
+- musing
+- noodling
+- percolating
+- perusing
+- philosophising
+- pontificating
+- pondering
+- processing
+- puttering
+- puzzling
+- reticulating
+- ruminating
+- scheming
+- schlepping
+- simmering
+- smooshing
+- spelunking
+- spinning
+- stewing
+- sussing
+- synthesizing
+- thinking
+- tinkering
+- transmuting
+- unfurling
+- unravelling
+- vibing
+- wandering
+- whirring
+- wibbling
+- working
+- wrangling
+- iconoclastic
