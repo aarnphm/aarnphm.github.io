@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-05-03 14:31:45 GMT-04:00
+modified: 2026-05-09 17:51:33 GMT-04:00
 permalinks:
   - /website
   - /tweets
@@ -588,6 +588,10 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://claudelives.com/ -- Claude 3 [**]
+  - [meta]:
+    - date: 05/09/2026
+    - tags: [longevity, machinery]
 - https://geohot.github.io//blog/jekyll/update/2026/04/24/positivity.html -- Positivity
   - [meta]:
     - date: 04/27/2026
@@ -1118,6 +1122,10 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://gowers.wordpress.com/ -- Timothy Gowers
+  - [meta]:
+    - date: 05/09/2026
+    - tags: [mathematician]
 - https://nat.org/ -- Nat Friedman
   - [meta]:
     - date: 05/03/2026
@@ -2270,6 +2278,10 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://www.deepfates.com/projects/sonnet-funeral -- Claude 3 Funeralia
+  - [meta]:
+    - date: 05/09/2026
+    - tags: [longtermism, model]
 - https://aeon.co/essays/the-hard-problem-of-consciousness-is-a-distraction-from-the-real-one -- The real problem of consciousness is a distraction from the real one
   - [meta]:
     - date: 04/30/2026
@@ -7126,6 +7138,10 @@ title: are.na
 
 ## design
 
+- https://tinyui.org/
+  - [meta]:
+    - date: 05/09/2026
+    - tags: [masonry]
 - https://alexboland.com/
   - [meta]:
     - date: 05/02/2026
@@ -7432,6 +7448,10 @@ title: are.na
 
 ## video
 
+- https://www.youtube.com/watch?v=QGo0uCHGyuo
+  - [meta]:
+    - date: 05/06/2026
+    - tags: [music]
 - https://www.youtube.com/watch?v=GvO1Sep15Xk -- when the devil owns the rights to your movie
   - [meta]:
     - date: 04/26/2026
@@ -8474,6 +8494,10 @@ title: are.na
 
 ## engineering
 
+- https://openai.com/index/running-codex-safely/ -- Running Codex safely
+  - [meta]:
+    - date: 05/09/2026
+    - tags: [agents, harness]
 - https://alignment.openai.com/monitorability-evals/ -- Monitorability Evaluations
   - [meta]:
     - date: 04/29/2026
@@ -9060,6 +9084,10 @@ title: are.na
 
 ## organizations
 
+- https://stridercapital.com/ -- Strider Capital
+  - [meta]:
+    - date: 05/06/2026
+    - tags: [investment]
 - https://seqholdings.com/ -- Sequence Holding
   - [meta]:
     - date: 04/27/2026

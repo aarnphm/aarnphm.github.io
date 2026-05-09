@@ -16,7 +16,7 @@ metadata:
     text_line    = { character - newline } ;
     ws           = { " " } ;
     character    = ? any printable ascii except newline ? ;
-modified: 2026-05-05 22:36:43 GMT-04:00
+modified: 2026-05-06 11:57:32 GMT-04:00
 seealso:
   - '[[word|dictionary]]'
   - '[[research|wip]]'
@@ -30,6 +30,10 @@ transclude:
   dynalist: false
   title: false
 ---
+
+> I have this very strong opinion that when you’re young, you feel things on such an intense and detailed level. There’s an attention to detail when you are 17 to 22 years old, and you’re longing, or you’re reaching and grasping but never holding — someone’s attention, or someone’s love, or someone’s dedication — and you just can’t understand why you spend all day thinking about it. You notice everything. You notice candle ash on the cuff of the shirt, and the button, and it’s everything that makes the mythology of those intense feelings that you have. And I’ve always tried to — without being a completely unhinged adult — keep that level of detail and intensity when it comes to trying to describe a feeling.
+>
+> Taylor Swift, [_interview_](https://www.nytimes.com/2026/04/28/magazine/taylor-swift-songwriting-process-interview.html)
 
 > The purpose of life is to be defeated by greater and greater things
 >
