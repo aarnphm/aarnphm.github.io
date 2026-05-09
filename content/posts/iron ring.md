@@ -9,7 +9,7 @@ tags:
 title: iron rings
 ---
 
-![[thoughts/images/Still Life with Apples.png|_Still Life with Apples_. 1895–98. Oil on canvas, 27 x 36 1/2" (68.6 x 92.7 cm). Paul Cézanne.]]
+![[thoughts/images/Still Life with Apples.webp|_Still Life with Apples_. 1895–98. Oil on canvas, 27 x 36 1/2" (68.6 x 92.7 cm). Paul Cézanne.]]
 
 In April 2026, a year after the centennial year of the obligation of the calling of an engineer, I recited words written by Rudyard Kipling in 1923.
 
