@@ -1,8 +1,8 @@
 ---
-date: '2024-02-08'
+date: "2024-02-08"
 description: directed acyclic graph where nodes are content-addressable and immutable, identified by hashing content, used in ipfs, containers, and git.
 id: Merkle DAG
-modified: 2025-10-29 02:15:29 GMT-04:00
+modified: 2026-05-09 17:51:49 GMT-04:00
 tags:
   - seed
   - technical

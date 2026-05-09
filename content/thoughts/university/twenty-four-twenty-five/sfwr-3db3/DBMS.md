@@ -1,8 +1,8 @@
 ---
-date: '2024-09-04'
+date: "2024-09-04"
 description: database management systems covering relational model, entity-relationship model, views, indexes, constraints, and relational algebra.
 id: DBMS
-modified: 2025-10-29 02:16:02 GMT-04:00
+modified: 2026-05-09 17:51:57 GMT-04:00
 tags:
   - sfwr3db3
   - university

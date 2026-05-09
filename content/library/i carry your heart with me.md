@@ -2,12 +2,12 @@
 author:
   - E. E. Cummings
 category: poetry
-date: 2025-11-28
+date: "2025-11-28"
 description: love poem expressing radical intimacy and spiritual union, using natural metaphors and cummings' signature lowercase style to convey eternal connection.
 finished: 2025
 id: i carry your heart with me
-modified: 2025-11-29 10:07:39 GMT-05:00
-notebook:
+modified: 2026-05-09 17:51:40 GMT-04:00
+notebook: null
 posters: '[[library/posters/623a82240254feaa3fbe220edc44096a89b52002.jpeg]]'
 status: finished
 subcategory:

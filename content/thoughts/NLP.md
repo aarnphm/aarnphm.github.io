@@ -1,8 +1,8 @@
 ---
-date: '2024-02-07'
+date: "2024-02-07"
 description: a la natural language processing
 id: NLP
-modified: 2025-11-28 17:19:15 GMT-05:00
+modified: 2026-05-09 17:51:48 GMT-04:00
 seealso:
   - '[[thoughts/LLMs|LLMs]]'
 tags:

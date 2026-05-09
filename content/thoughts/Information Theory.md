@@ -1,8 +1,8 @@
 ---
-date: '2024-01-20'
+date: "2024-01-20"
 description: a la carte.
 id: Information Theory
-modified: 2025-10-29 02:15:25 GMT-04:00
+modified: 2026-05-09 17:51:49 GMT-04:00
 tags:
   - seed
 title: Information Theory

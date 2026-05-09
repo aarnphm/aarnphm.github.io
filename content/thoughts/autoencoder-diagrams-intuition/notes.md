@@ -1,8 +1,8 @@
 ---
-date: '2025-09-06'
+date: "2025-09-06"
 description: on visualisation
 id: notes
-modified: 2025-11-23 16:19:33 GMT-05:00
+modified: 2026-05-09 17:51:54 GMT-04:00
 noindex: true
 tags:
   - seed

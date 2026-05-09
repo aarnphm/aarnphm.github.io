@@ -1,8 +1,8 @@
 ---
-date: '2024-09-04'
+date: "2024-09-04"
 description: software engineering capstone course exploring wysiwyg editor projects and morph development.
 id: index
-modified: 2025-10-29 02:16:08 GMT-04:00
+modified: 2026-05-09 17:51:58 GMT-04:00
 tags:
   - university
   - sfwr4g06ab

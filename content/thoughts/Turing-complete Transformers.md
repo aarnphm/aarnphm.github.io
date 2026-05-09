@@ -1,8 +1,8 @@
 ---
-date: '2024-01-30'
+date: "2024-01-30"
 description: well, here we go again.
 id: Turing-complete Transformers
-modified: 2025-12-24 18:21:52 GMT-05:00
+modified: 2026-05-09 17:51:33 GMT-04:00
 tags:
   - pattern
   - ml

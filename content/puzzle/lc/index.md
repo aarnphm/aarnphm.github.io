@@ -1,8 +1,8 @@
 ---
-date: '2025-12-12'
+date: "2025-12-12"
 description: solutions et al., and runners
 id: index
-modified: 2026-01-02 02:20:32 GMT-05:00
+modified: 2026-05-09 17:51:37 GMT-04:00
 tags:
   - puzzle
 title: leetcode

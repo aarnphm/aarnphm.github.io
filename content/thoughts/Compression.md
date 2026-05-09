@@ -1,8 +1,8 @@
 ---
-date: '2024-02-07'
+date: "2024-02-07"
 description: a [[/thoughts/reductionism|reductionist]] way to transfer data.
 id: Compression
-modified: 2025-11-05 07:06:08 GMT-05:00
+modified: 2026-05-09 17:51:52 GMT-04:00
 tags:
   - math/linalg
   - math

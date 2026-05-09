@@ -1,8 +1,8 @@
 ---
-date: '2024-02-19'
+date: "2024-02-19"
 description: a hobby, and definition of personal taste.
 id: fashion
-modified: 2025-10-29 02:15:45 GMT-04:00
+modified: 2026-05-09 17:51:48 GMT-04:00
 tags:
   - seed
 title: fashion.

@@ -1,8 +1,8 @@
 ---
-date: '2024-02-07'
+date: "2024-02-07"
 description: considered to be a study of action theory
 id: agency
-modified: 2025-12-18 03:33:41 GMT-05:00
+modified: 2026-05-09 17:51:51 GMT-04:00
 tags:
   - pattern
   - philosophy

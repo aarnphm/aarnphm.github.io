@@ -1,8 +1,8 @@
 ---
-date: '2025-10-04'
+date: "2025-10-04"
 description: language games, pictures of states, proposition
 id: Wittgenstein
-modified: 2025-12-16 03:00:52 GMT-05:00
+modified: 2026-05-09 17:51:45 GMT-04:00
 seealso:
   - '[[library/Tractatus Logico-Philosophicus|TLP]]'
   - '[[library/Philosophical Investigations|PI]]'

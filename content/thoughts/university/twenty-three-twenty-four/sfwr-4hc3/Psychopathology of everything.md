@@ -1,8 +1,8 @@
 ---
-date: '2023-10-10'
+date: "2023-10-10"
 description: design principles for human-centered interaction including discoverability, affordances, signifiers, mappings, feedback, and conceptual models.
 id: Psychopathology of everything
-modified: 2025-10-29 02:16:15 GMT-04:00
+modified: 2026-05-09 17:51:56 GMT-04:00
 tags:
   - sfwr4hc3
 title: Psychopathology of everything

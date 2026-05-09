@@ -1,8 +1,8 @@
 ---
-date: '2024-12-23'
+date: "2024-12-23"
 description: excerpt from the papers by Meta Research.
 id: Llama 3
-modified: 2026-01-17 14:51:34 GMT-05:00
+modified: 2026-05-09 17:51:53 GMT-04:00
 seealso:
   - '[[@grattafiori2024llama3herdmodels]]'
   - '[[thoughts/papers/2407.21783v3.pdf|papers]]'

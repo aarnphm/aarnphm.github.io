@@ -1,8 +1,8 @@
 ---
-date: '2025-10-04'
+date: "2025-10-04"
 description: the contradiction or denial of something.
 id: Negation
-modified: 2025-11-02 17:22:31 GMT-05:00
+modified: 2026-05-09 17:51:50 GMT-04:00
 tags:
   - seed
   - philosophy

@@ -2,11 +2,11 @@
 aliases:
   - viet-poem
   - vietnam
-date: '2024-11-18'
+date: "2024-11-18"
 description: dedicated to my roots, Vietnamese born.
 id: Vietnamese poem
 lang: vi-VN
-modified: 2025-11-28 17:34:32 GMT-05:00
+modified: 2026-05-09 17:51:53 GMT-04:00
 noindex: true
 permalinks:
   - /vietnam

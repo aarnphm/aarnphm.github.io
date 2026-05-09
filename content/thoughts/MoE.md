@@ -1,8 +1,8 @@
 ---
-date: '2025-08-13'
+date: "2025-08-13"
 description: Mixture of Expert
 id: MoE
-modified: 2026-01-08 14:24:57 GMT-05:00
+modified: 2026-05-09 17:51:50 GMT-04:00
 seealso:
   - '[[thoughts/muon|muon]]'
   - '[[thoughts/optimization#muon]]'

@@ -1,10 +1,10 @@
 ---
-date: '2023-12-04'
+date: "2023-12-04"
 description: and Zarathustra.
 id: Philosophy and Nietzsche
-modified: 2026-01-11 09:04:16 GMT-05:00
+modified: 2026-05-09 17:51:47 GMT-04:00
 seealso:
-  - "[[thoughts/Nietzsche|Nietzsche's life]]"
+  - '[[thoughts/Nietzsche|Nietzsche''s life]]'
 tags:
   - philosophy
 title: Friedrich Nietzsche

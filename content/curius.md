@@ -1,8 +1,8 @@
 ---
-date: '2024-01-26'
+date: "2024-01-26"
 description: curius dot app slash aaron dash pham
 id: curius
-modified: 2025-11-09 01:46:35 GMT-05:00
+modified: 2026-05-09 17:51:32 GMT-04:00
 tags:
   - evergreen
 title: curius.

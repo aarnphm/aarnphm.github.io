@@ -1,8 +1,8 @@
 ---
-date: '2025-11-19'
+date: "2025-11-19"
 description: internalized aggression turned inward as civilization's self-policing mechanism, explored through freud, linguistic phenomenology, and alternatives in care and recognition ethics.
 id: guilt
-modified: 2026-01-10 08:40:10 GMT-05:00
+modified: 2026-05-09 17:51:55 GMT-04:00
 seealso:
   - '[[thoughts/Freud|Freud]]'
   - '[[library/Civilisation and its Discontents|C&D]]'

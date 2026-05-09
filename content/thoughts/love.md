@@ -6,7 +6,7 @@ aliases:
   - living
   - philia
   - eros
-date: '2025-10-04'
+date: "2025-10-04"
 description: choosing to give your full, continuously.
 gemini:
   session:
@@ -14,7 +14,7 @@ gemini:
     4a0fc1cd7b2da549: love, nihilism, mega deep research threads
     d7f06bc496ea82ea: Tractatus Amor-Politicus
 id: love
-modified: 2026-01-09 05:41:40 GMT-05:00
+modified: 2026-05-09 17:51:47 GMT-04:00
 socials:
   essay: '[[posts/love|mutual becoming]]'
   hermeneutics: '[[posts/romantic epistemology|romantic epistemology]]'

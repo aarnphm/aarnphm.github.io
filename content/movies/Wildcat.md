@@ -2,12 +2,12 @@
 category:
   - o/life
   - drama
-date: '2026-01-08'
+date: "2026-01-08"
 description: flannery o'connor's interior war - hawke threads illness, faith, and fiction into a composite of her stories, maya hawke embodying the author as both witness and weapon.
 director:
   - Ethan Hawke
 id: Wildcat
-modified: 2026-01-08 14:39:43 GMT-05:00
+modified: 2026-05-09 17:51:44 GMT-04:00
 posters: '[[movies/posters/wildcat.jpg]]'
 rating: 7.1
 status: to watch

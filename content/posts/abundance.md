@@ -1,9 +1,9 @@
 ---
-date: '2025-11-05'
+date: "2025-11-05"
 description: interpretable functions of love.
 draft: true
 id: abundance
-modified: 2025-12-14 19:11:12 GMT-05:00
+modified: 2026-05-09 17:51:34 GMT-04:00
 socials:
   hiring: https://docs.google.com/document/d/1qQbCMSJDKlMFtX6kdcWKohkFLUy6dypt9REe1gCBUhc/edit?curius=4841&tab=t.0
 tags:

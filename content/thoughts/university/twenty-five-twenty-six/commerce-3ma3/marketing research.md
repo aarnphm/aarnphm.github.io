@@ -1,7 +1,7 @@
 ---
-date: '2026-01-12'
+date: "2026-01-12"
 id: introduction to marketing research
-modified: 2026-01-12 13:22:04 GMT-05:00
+modified: 2026-05-09 17:51:56 GMT-04:00
 tags:
   - commerce3ma3
 title: marketing research

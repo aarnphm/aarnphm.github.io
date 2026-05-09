@@ -1,8 +1,8 @@
 ---
-date: '2025-11-10'
+date: "2025-11-10"
 description: same function, different phenomenology, and what this means for [[thoughts/reductionism|reductionism]]
 id: inverted spectrum
-modified: 2025-11-18 05:16:51 GMT-05:00
+modified: 2026-05-09 17:51:53 GMT-04:00
 tags:
   - pattern
 title: inverted spectrum

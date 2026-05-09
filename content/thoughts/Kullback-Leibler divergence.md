@@ -1,10 +1,10 @@
 ---
 aliases:
   - kl divergence
-date: '2024-12-12'
+date: "2024-12-12"
 description: also called relative entropy or I-divergence
 id: Kullback-Leibler divergence
-modified: 2025-10-29 02:15:26 GMT-04:00
+modified: 2026-05-09 17:51:53 GMT-04:00
 tags:
   - math
   - probability

@@ -1,8 +1,8 @@
 ---
-date: '2024-11-15'
+date: "2024-11-15"
 description: lab on deriving transfer functions and designing pid controllers from input-output signal analysis.
 id: content
-modified: 2025-10-29 02:16:06 GMT-04:00
+modified: 2026-05-09 17:52:00 GMT-04:00
 tags:
   - sfwr4aa4
   - lab

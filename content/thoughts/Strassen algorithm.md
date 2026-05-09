@@ -1,14 +1,13 @@
 ---
-created: '2025-09-17'
-date: '2025-09-17'
+created: "2025-09-17"
+date: "2025-09-17"
 description: Matrix multiplication algorithm achieving subcubic complexity via recursive divide-and-conquer
 id: Strassen algorithm
-modified: 2025-12-18 01:35:52 GMT-05:00
-published: '2004-07-02'
+modified: 2026-05-09 17:51:52 GMT-04:00
+published: "2004-07-02"
 source: https://en.wikipedia.org/wiki/Strassen_algorithm
 tags:
   - math/linalg
-
 title: Strassen algorithm
 ---
 

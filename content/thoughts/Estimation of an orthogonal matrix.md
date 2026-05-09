@@ -1,8 +1,8 @@
 ---
-date: '2025-08-01'
+date: "2025-08-01"
 description: An Iterative Algorithm for Computing the Best Estimate of an Orthogonal Matrix, by Å. Björck and C. Bowiek
 id: Estimation of an orthogonal matrix
-modified: 2025-12-17 23:08:28 GMT-05:00
+modified: 2026-05-09 17:51:56 GMT-04:00
 seealso:
   pdf: '[[thoughts/papers/2949484.pdf]]'
 tags:

@@ -1,8 +1,8 @@
 ---
-date: '2023-11-11'
+date: "2023-11-11"
 description: film lighting techniques including key light, book light, and diffusion for creating soft contrast.
 id: Lighting
-modified: 2025-10-29 02:15:27 GMT-04:00
+modified: 2026-05-09 17:51:52 GMT-04:00
 tags:
   - seed
   - film

@@ -1,8 +1,8 @@
 ---
-date: '2025-10-17'
+date: "2025-10-17"
 description: Deploying DeepSeek R1
 id: notes
-modified: 2025-12-15 17:01:53 GMT-05:00
+modified: 2026-05-09 17:51:47 GMT-04:00
 seealso:
   - '[[thoughts/Attention#Multi-head Latent Attention]]'
   - '[[thoughts/LLMs]]'

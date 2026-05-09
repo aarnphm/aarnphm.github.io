@@ -1,8 +1,8 @@
 ---
-date: '2024-09-09'
+date: "2024-09-09"
 description: efficient LLM serving engine.
 id: vllm
-modified: 2026-01-30 17:43:07 GMT-05:00
+modified: 2026-05-09 17:51:49 GMT-04:00
 permalinks:
   - /vllm
 seealso:

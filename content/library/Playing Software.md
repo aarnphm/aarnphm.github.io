@@ -1,10 +1,10 @@
 ---
 author: Miguel Sicart
 category: technology
-date: 2025-10-07
+date: "2025-10-07"
 description: examines videogames and software as play machines, asking how code, rules, and interfaces shape human agency and cultural meaning.
 id: Playing Software
-modified: 2025-10-29 02:14:34 GMT-04:00
+modified: 2026-05-09 17:51:40 GMT-04:00
 posters: '[[library/posters/playing-software.jpg]]'
 status: to read
 subcategory: programming

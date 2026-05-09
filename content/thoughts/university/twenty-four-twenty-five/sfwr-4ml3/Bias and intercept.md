@@ -1,15 +1,15 @@
 ---
-date: '2024-09-16'
-id: Bias and intercept
-modified: 2025-10-29 02:16:07 GMT-04:00
-tags:
-  - sfwr4ml3
-title: Bias and intercept
+date: "2024-09-16"
 description: an estimation between scalar response with one or more explanatory variables (regressor or <strong>independent variables</strong>)
+id: Bias and intercept
+modified: 2026-05-09 17:51:58 GMT-04:00
 seealso:
   - '[[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/lec/Lecture3.pdf|slides 3]]'
   - '[[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/lec/Lecture4.pdf|slides 4]]'
   - '[[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/lec/Lecture5.pdf|slides 5]]'
+tags:
+  - sfwr4ml3
+title: Bias and intercept
 ---
 
 ## adding bias in D-dimensions OLS

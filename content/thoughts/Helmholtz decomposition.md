@@ -1,8 +1,8 @@
 ---
-date: '2024-11-27'
+date: "2024-11-27"
 description: decomposition of sufficiently smooth, rapidly decaying vector fields
 id: Helmholtz decomposition
-modified: 2025-11-03 05:15:11 GMT-05:00
+modified: 2026-05-09 17:51:50 GMT-04:00
 tags:
   - math
 title: Helmholtz decomposition

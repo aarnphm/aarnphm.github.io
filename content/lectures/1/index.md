@@ -1,8 +1,8 @@
 ---
-date: '2025-08-14'
+date: "2025-08-14"
 description: overview of transformers
 id: index
-modified: 2025-11-11 07:02:59 GMT-05:00
+modified: 2026-05-09 17:51:45 GMT-04:00
 tags:
   - ml
 title: 0[dot]1

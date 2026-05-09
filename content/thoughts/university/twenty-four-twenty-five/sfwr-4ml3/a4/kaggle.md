@@ -1,8 +1,8 @@
 ---
-date: '2024-12-03'
+date: "2024-12-03"
 description: 'CIFAR Challenge: Classify the World of Objects!'
 id: kaggle
-modified: 2026-01-08 14:33:15 GMT-05:00
+modified: 2026-05-09 17:52:00 GMT-04:00
 tags:
   - sfwr4ml3
 title: CIFAR100 with CNN

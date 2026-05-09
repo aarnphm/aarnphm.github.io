@@ -3,11 +3,11 @@ category:
   - thriller
   - drama
   - o/life
-date: 2024-02-07
+date: "2024-02-07"
 description: three and a half hours of regret slowed to the pace of old age—a hitman in a nursing home realizing loyalty bought him nothing but an empty room.
 director: Martin Scorsese
 id: the-irishman
-modified: 2025-10-29 02:14:58 GMT-04:00
+modified: 2026-05-09 17:51:46 GMT-04:00
 posters: '[[movies/posters/the-irishman.jpg]]'
 rating: 7.8
 status: recurring

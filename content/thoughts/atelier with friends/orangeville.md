@@ -1,12 +1,12 @@
 ---
 cssclasses:
   - menu
-date: '2024-03-08'
+date: "2024-03-08"
 description: atelier with friends uno - orangeville
 id: orangeville
 lang: it-IT
 menu: true
-modified: 2025-10-29 02:15:40 GMT-04:00
+modified: 2026-05-09 17:51:33 GMT-04:00
 tags:
   - menu
 title: orangeville.

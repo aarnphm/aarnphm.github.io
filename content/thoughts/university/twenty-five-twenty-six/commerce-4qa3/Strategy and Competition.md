@@ -1,8 +1,8 @@
 ---
-date: '2025-09-04'
+date: "2025-09-04"
 description: chapter 1
 id: Strategy and Competition
-modified: 2025-10-29 02:15:57 GMT-04:00
+modified: 2026-05-09 17:51:54 GMT-04:00
 tags:
   - commerce4qa3
 title: Strategy and Competition

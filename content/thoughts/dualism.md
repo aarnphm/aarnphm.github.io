@@ -1,8 +1,8 @@
 ---
-date: '2026-01-28'
+date: "2026-01-28"
 description: notes on property dualism, the hard problem, and why physicalism keeps failing
 id: dualism
-modified: 2026-01-28 02:45:00 GMT-05:00
+modified: 2026-05-09 17:51:52 GMT-04:00
 seealso:
   - '[[thoughts/qualia]]'
   - '[[thoughts/philosophical zombies]]'
@@ -11,13 +11,13 @@ seealso:
   - '[[thoughts/phenomenal consciousness]]'
   - '[[thoughts/functionalism]]'
   - '[[thoughts/physicalism]]'
+socials:
+  sep: https://plato.stanford.edu/entries/dualism/
+  wikipedia: https://en.wikipedia.org/wiki/Property_dualism
 tags:
   - philosophy
   - consciousness
 title: dualism and philosophy of mind
-socials:
-  sep: https://plato.stanford.edu/entries/dualism/
-  wikipedia: https://en.wikipedia.org/wiki/Property_dualism
 ---
 
 _functional descriptions of neural processes look complete on their own terms, yet the first-person character doesn't appear anywhere in the machinery._

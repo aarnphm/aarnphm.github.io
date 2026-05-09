@@ -1,8 +1,8 @@
 ---
-date: '2025-07-07'
+date: "2025-07-07"
 description: and the man himself
 id: Feynman
-modified: 2025-10-29 02:15:22 GMT-04:00
+modified: 2026-05-09 17:51:54 GMT-04:00
 tags:
   - seed
 title: Richard Feynman

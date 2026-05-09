@@ -1,8 +1,8 @@
 ---
-date: '2025-11-01'
+date: "2025-11-01"
 description: evergreen hub for topology study anchored on munkres and mit 18.901.
 id: topology
-modified: 2025-12-02 16:43:46 GMT-05:00
+modified: 2026-05-09 17:51:48 GMT-04:00
 socials:
   ocw: https://ocw.mit.edu/courses/18-901-introduction-to-topology-fall-2004/
 tags:

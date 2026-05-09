@@ -1,8 +1,8 @@
 ---
-date: '2025-09-30'
+date: "2025-09-30"
 description: runnable, verifiable cuda kernels demonstrating gpu programming concepts from lecture 0.420, requiring volta or newer architecture.
 id: index
-modified: 2025-10-29 02:14:25 GMT-04:00
+modified: 2026-05-09 17:51:34 GMT-04:00
 tags:
   - seed
   - ml

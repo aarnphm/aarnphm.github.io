@@ -1,8 +1,8 @@
 ---
-date: '2023-11-16'
+date: "2023-11-16"
 description: On Aristotle's Metaphysics.
 id: Questions about Metaphysics
-modified: 2025-10-29 02:15:09 GMT-04:00
+modified: 2026-05-09 17:51:36 GMT-04:00
 tags:
   - philosophy
   - fruit

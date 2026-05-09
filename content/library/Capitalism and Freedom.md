@@ -2,10 +2,11 @@
 author: Milton Friedman
 category:
   - p/nf
-date: 2024-11-27
+date: "2024-11-27"
 description: how do we think about jobs and money
+finished: 2025
 id: Capitalism and Freedom
-modified: 2025-10-29 02:14:27 GMT-04:00
+modified: 2026-05-09 17:51:41 GMT-04:00
 posters: '[[library/posters/capitalism-and-freedom.jpg]]'
 status: finished
 subcategory: economic
@@ -14,7 +15,6 @@ tags:
   - finance
 title: Capitalism and Freedom
 year: 1962
-finished: 2025
 ---
 
 [@friedman1962capitalism]

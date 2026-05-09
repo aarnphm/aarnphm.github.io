@@ -1,8 +1,8 @@
 ---
-date: '2022-10-29'
+date: "2022-10-29"
 description: notes on ownership, borrowing, stack and heap memory management, and foreign-function interfaces in rust.
 id: Rust
-modified: 2025-10-29 02:15:34 GMT-04:00
+modified: 2026-05-09 17:51:47 GMT-04:00
 tags:
   - seed
   - technical

@@ -1,22 +1,23 @@
 ---
+author:
+  - Karl Marx
+  - Friedrich Engels
+category: philosophy
+date: "2025-11-30"
+description: political pamphlet arguing that history is class struggle, and that the proletariat must overthrow the bourgeoisie to end exploitation and establish a classless society.
+finished: null
+id: The Communist Manifesto
+language: german
+modified: 2026-05-09 17:51:39 GMT-04:00
+notebook: null
+posters: '[[library/posters/the-communist-manifesto.avif]]'
+status: to read
+subcategory:
+  - manifesto
+  - sociology
 tags:
   - philosophy
   - r/sociology
 title: The Communist Manifesto
-date: 2025-11-30
-description: political pamphlet arguing that history is class struggle, and that the proletariat must overthrow the bourgeoisie to end exploitation and establish a classless society.
-status: to read
-finished:
-subcategory:
-  - manifesto
-  - sociology
-author:
-  - Karl Marx
-  - Friedrich Engels
-posters: '[[library/posters/the-communist-manifesto.avif]]'
-notebook:
-category: philosophy
-language: german
-id: The Communist Manifesto
 year: 1848
 ---

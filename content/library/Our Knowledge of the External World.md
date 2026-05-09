@@ -1,11 +1,11 @@
 ---
 author: Bertrand Russell
 category: philosophy
-date: '2025-11-30'
+date: "2025-11-30"
 description: AS A FIELD FOR SCIENTIFIC METHOD IN PHILOSOPHY
 external: https://www.gutenberg.org/files/37090/37090-h/37090-h.htm
 id: Our Knowledge of the External World
-modified: 2025-12-20 06:11:07 GMT-05:00
+modified: 2026-05-09 17:51:40 GMT-04:00
 posters: '[[library/posters/our-knowledge-of-the-external-world.png]]'
 status: current
 subcategory: nous

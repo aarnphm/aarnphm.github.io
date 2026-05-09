@@ -1,8 +1,8 @@
 ---
-date: '2025-08-20'
+date: "2025-08-20"
 description: finding local maxima/minima
 id: Lagrange multiplier
-modified: 2025-10-29 02:15:26 GMT-04:00
+modified: 2026-05-09 17:51:49 GMT-04:00
 tags:
   - math
   - optimization

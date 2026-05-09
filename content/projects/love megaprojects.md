@@ -1,9 +1,9 @@
 ---
 category: letters
-date: '2022-01-25'
+date: "2022-01-25"
 description: a working-in-progress hypothesis on love
 id: on love
-modified: 2025-11-25 09:29:03 GMT-05:00
+modified: 2026-05-09 17:51:42 GMT-04:00
 notebook: '[[thoughts/love]]'
 seealso:
   - '[[posts/abundance]]'

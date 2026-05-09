@@ -1,8 +1,8 @@
 ---
-date: '2025-02-11'
+date: "2025-02-11"
 description: and a midterm review.
 id: midterm
-modified: 2025-10-29 02:16:05 GMT-04:00
+modified: 2026-05-09 17:51:58 GMT-04:00
 tags:
   - sfwr3s03
 title: Reviews and Evaluation Methods

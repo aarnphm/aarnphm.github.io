@@ -1,8 +1,8 @@
 ---
-date: '2024-12-14'
+date: "2024-12-14"
 description: theorem stating that no optimization algorithm performs better than others across all possible problems, averaged over all cost functions.
 id: No free lunch
-modified: 2025-10-29 02:15:30 GMT-04:00
+modified: 2026-05-09 17:51:46 GMT-04:00
 tags:
   - seed
 title: No free lunch

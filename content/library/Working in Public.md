@@ -1,11 +1,11 @@
 ---
 author: Nadia Eghbal
 category: technology
-date: 2025-10-07
+date: "2025-10-07"
 description: study of modern open source communities, examining how maintainers work, governance, and attention shape software ecosystems.
 finished: 2021
 id: Working in Public
-modified: 2025-11-30 15:38:33 GMT-05:00
+modified: 2026-05-09 17:51:34 GMT-04:00
 posters: '[[library/posters/working-in-public.jpg]]'
 status: finished
 subcategory: programming

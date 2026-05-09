@@ -1,8 +1,8 @@
 ---
-date: '2025-12-15'
+date: "2025-12-15"
 description: everything related to pretraining a neural network
 id: pre-training
-modified: 2025-12-15 16:48:06 GMT-05:00
+modified: 2026-05-09 17:51:51 GMT-04:00
 socials:
   elie podcast: https://x.com/eliebakouch/status/1980301162734624769
 tags:

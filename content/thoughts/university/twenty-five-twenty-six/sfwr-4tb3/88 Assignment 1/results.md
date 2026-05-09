@@ -2,10 +2,10 @@
 claude:
   session:
     cf21263a-2f1a-436c-9bd8-c71647135817: basic
-date: '2026-01-12'
+date: "2026-01-12"
 description: grammar et al.
 id: results
-modified: 2026-01-15 12:48:51 GMT-05:00
+modified: 2026-05-09 17:51:58 GMT-04:00
 seealso:
   - '[[thoughts/NFA]]'
   - '[[thoughts/Context-Free Grammar]]'

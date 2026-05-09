@@ -1,8 +1,8 @@
 ---
-date: '2026-01-22'
+date: "2026-01-22"
 description: and longest hash matching, i.e a [[thoughts/Search|search]] problem
 id: prefix caching
-modified: 2026-01-22 12:51:48 GMT-05:00
+modified: 2026-05-09 17:51:47 GMT-04:00
 tags:
   - inference
   - ml

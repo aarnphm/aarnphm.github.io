@@ -1,8 +1,8 @@
 ---
-date: '2024-02-06'
+date: "2024-02-06"
 description: stability analysis and natural responses covering bibo stability, pole locations in complex plane, necessary conditions, and routh-hurwitz criterion for determining stability.
 id: stability
-modified: 2025-10-29 02:16:23 GMT-04:00
+modified: 2026-05-09 17:51:55 GMT-04:00
 tags:
   - sfwr3dx4
 title: Stability and natural responses.

@@ -1,8 +1,8 @@
 ---
-date: '2024-12-14'
+date: "2024-12-14"
 description: non-convex loss function for svm that caps hinge loss at 1, offering robustness to outliers but requiring more computational effort than convex hinge loss.
 id: Ramp loss
-modified: 2025-10-29 02:15:33 GMT-04:00
+modified: 2026-05-09 17:51:49 GMT-04:00
 tags:
   - ml
 title: Ramp loss

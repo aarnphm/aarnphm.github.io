@@ -2,10 +2,10 @@
 aliases:
   - pd
   - disaggregated serving
-date: '2025-06-16'
+date: "2025-06-16"
 description: and inference go distributed
 id: pd disaggregated serving
-modified: 2026-01-16 01:38:25 GMT-05:00
+modified: 2026-05-09 17:51:33 GMT-04:00
 seealso:
   - '[[thoughts/KV offloading]]'
   - '[[thoughts/distributed inference|distributed inference]]'

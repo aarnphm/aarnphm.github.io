@@ -1,8 +1,8 @@
 ---
-date: '2024-04-12'
+date: "2024-04-12"
 description: non-linear optimization techniques for solving economic problems with non-linear objective functions and constraints.
 id: Non-linear optimization
-modified: 2025-10-29 02:16:13 GMT-04:00
+modified: 2026-05-09 17:51:59 GMT-04:00
 tags:
   - eng3px3
 title: Non-linear Optimization

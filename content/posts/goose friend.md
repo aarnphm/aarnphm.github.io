@@ -1,9 +1,9 @@
 ---
-date: '2024-10-04'
+date: "2024-10-04"
+description: on turning a year older.
 draft: true
 id: goose friend
-modified: 2025-10-29 02:15:11 GMT-04:00
-description: on turning a year older.
+modified: 2026-05-09 17:51:36 GMT-04:00
 tags:
   - poetry
   - friend

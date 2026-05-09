@@ -1,8 +1,8 @@
 ---
-date: '2025-09-05'
+date: "2025-09-05"
 description: 1/n of acceptance-rejection
 id: notes
-modified: 2025-11-11 07:01:15 GMT-05:00
+modified: 2026-05-09 17:51:34 GMT-04:00
 tags:
   - workshop
 title: supplement to 0.400

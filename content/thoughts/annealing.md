@@ -1,8 +1,8 @@
 ---
-date: '2024-12-23'
+date: "2024-12-23"
 description: a numerical optimization technique
 id: annealing
-modified: 2025-10-29 02:15:40 GMT-04:00
+modified: 2026-05-09 17:51:49 GMT-04:00
 tags:
   - math
 title: annealing

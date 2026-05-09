@@ -1,8 +1,8 @@
 ---
-date: '2025-09-08'
+date: "2025-09-08"
 description: random motion (wiener process); sde/ito; diffusion and links to navier–stokes.
 id: Brownian motion
-modified: 2025-11-01 06:13:21 GMT-04:00
+modified: 2026-05-09 17:51:48 GMT-04:00
 tags:
   - seed
   - physics

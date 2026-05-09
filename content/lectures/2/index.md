@@ -1,8 +1,8 @@
 ---
-date: '2025-08-21'
+date: "2025-08-21"
 description: convex attention, bottom-up approach
 id: index
-modified: 2025-11-11 07:02:40 GMT-05:00
+modified: 2026-05-09 17:51:34 GMT-04:00
 tags:
   - ml
 title: 0[dot]2

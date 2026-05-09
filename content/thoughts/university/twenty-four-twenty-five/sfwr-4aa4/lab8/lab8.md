@@ -1,8 +1,8 @@
 ---
-date: '2024-11-08'
+date: "2024-11-08"
 description: lab on pulse-width modulation and shared memory programming with frequency calculations.
 id: lab8
-modified: 2025-10-29 02:16:06 GMT-04:00
+modified: 2026-05-09 17:51:58 GMT-04:00
 tags:
   - sfwr4aa4
   - lab

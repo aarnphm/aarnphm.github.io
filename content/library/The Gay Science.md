@@ -4,12 +4,12 @@ aliases:
   - joyful
 author: Friedrich Nietzsche
 category: philosophy
-date: '2025-08-13'
+date: "2025-08-13"
 description: aphoristic work where nietzsche plays with song, experiment, and thought, introducing themes like eternal recurrence and the death of god.
 finished: 2025
 id: The Gay Science
 language: german
-modified: 2026-01-11 09:04:12 GMT-05:00
+modified: 2026-05-09 17:51:41 GMT-04:00
 notebook: '[[thoughts/Philosophy and Nietzsche#The Gay Science|field notes on Gay Science]]'
 pdf: '[[thoughts/papers/The Gay Science by Friedrich Nietzsche.pdf]]'
 posters: '[[library/posters/the-gay-science.jpg]]'

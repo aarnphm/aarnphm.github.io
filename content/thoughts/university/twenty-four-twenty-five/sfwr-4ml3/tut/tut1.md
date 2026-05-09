@@ -1,10 +1,10 @@
 ---
 aliases:
   - math/linalg
-date: '2024-09-11'
+date: "2024-09-11"
 description: linear algebra a la carte.
 id: tut1
-modified: 2025-10-29 02:16:10 GMT-04:00
+modified: 2026-05-09 17:51:59 GMT-04:00
 tags:
   - sfwr4ml3
   - math/linalg

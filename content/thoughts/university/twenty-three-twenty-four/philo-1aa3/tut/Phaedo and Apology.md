@@ -1,8 +1,8 @@
 ---
-date: '2023-09-22'
+date: "2023-09-22"
 description: Phaedo and Apology
 id: Phaedo and Apology
-modified: 2025-10-29 02:16:17 GMT-04:00
+modified: 2026-05-09 17:51:56 GMT-04:00
 tags:
   - philosophy
   - philos1aa3

@@ -1,8 +1,8 @@
 ---
-date: '2024-12-16'
+date: "2024-12-16"
 description: final exam review covering laplace and z-transforms, poles and zeros, pid control, and sampled-data systems.
 id: finals
-modified: 2025-10-29 02:16:06 GMT-04:00
+modified: 2026-05-09 17:51:59 GMT-04:00
 tags:
   - sfwr4aa4
 title: Real-time control systems, and scheduling

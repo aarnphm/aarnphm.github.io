@@ -1,8 +1,8 @@
 ---
-date: '2024-02-08'
+date: "2024-02-08"
 description: GIGO
 id: Garbage in Garbage out
-modified: 2025-10-29 02:15:23 GMT-04:00
+modified: 2026-05-09 17:51:38 GMT-04:00
 tags:
   - seed
 title: Garbage in Garbage out

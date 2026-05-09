@@ -1,12 +1,12 @@
 ---
 aliases:
   - chat
-date: '2024-10-02'
+date: "2024-10-02"
+description: And its implication on how we assess learning. an overview.
 id: chatgpt
-modified: 2025-10-29 02:15:10 GMT-04:00
+modified: 2026-05-09 17:51:45 GMT-04:00
 permalinks:
   - /chatgpt
-description: And its implication on how we assess learning. an overview.
 tags:
   - engineer4a03
   - fruit

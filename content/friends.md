@@ -2,11 +2,11 @@
 aliases:
   - friends
   - not dating
-date: '2026-01-17'
+date: "2026-01-17"
 description: my name is Aaron, and on the virtue of friendship
 id: friends
 layout: technical
-modified: 2026-03-05 23:01:01 GMT-05:00
+modified: 2026-05-09 17:51:32 GMT-04:00
 tags:
   - evergreen
   - friend

@@ -1,9 +1,9 @@
 ---
 comments: false
-date: '2024-01-22'
+date: "2024-01-22"
 description: Includes the tools I use, workflow,  etc.
 id: uses
-modified: 2026-03-24 20:39:22 GMT-04:00
+modified: 2026-05-09 17:51:32 GMT-04:00
 tags:
   - technical
 title: uses.

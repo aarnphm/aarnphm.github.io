@@ -1,10 +1,10 @@
 ---
-date: 2025-11-11
+date: "2025-11-11"
 description: fusion of horizon
 id: Horizontverschmelzung
 image: '[[posts/images/time-flies.webp]]'
-modified: 2025-11-14 10:02:04 GMT-05:00
 layout: letter-nf
+modified: 2026-05-09 17:51:45 GMT-04:00
 socials:
   substack: https://livingalonealone.com/p/horizontverschmelzung?r=1z8i4s&utm_campaign=post&utm_medium=web&showWelcomeOnShare=false
 tags:

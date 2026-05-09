@@ -1,8 +1,8 @@
 ---
-date: '2024-02-14'
+date: "2024-02-14"
 description: lab on empirical estimation of transfer functions for first order systems using dc motor, final value theorem, step response, and time constant analysis.
 id: content
-modified: 2025-10-29 02:16:22 GMT-04:00
+modified: 2026-05-09 17:51:57 GMT-04:00
 tags:
   - sfwr3dx4
   - lab

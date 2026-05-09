@@ -1,8 +1,8 @@
 ---
-date: '2024-01-24'
+date: "2024-01-24"
 description: state space representation using time-domain technique, converting transfer functions to controller canonical and observer canonical forms.
 id: State space representation
-modified: 2025-10-29 02:16:21 GMT-04:00
+modified: 2026-05-09 17:51:57 GMT-04:00
 tags:
   - sfwr3dx4
 title: State space representation

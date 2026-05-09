@@ -1,8 +1,8 @@
 ---
-date: '2024-02-09'
+date: "2024-02-09"
 description: ted nelson's concept of non-sequential text with free user movement, envisioning xanadu as global hypertext system with transclusion and fair compensation.
 id: Hypertext
-modified: 2025-10-29 02:15:24 GMT-04:00
+modified: 2026-05-09 17:51:47 GMT-04:00
 tags:
   - seed
 title: Hypertext

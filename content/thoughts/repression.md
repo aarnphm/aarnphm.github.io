@@ -1,8 +1,8 @@
 ---
-date: '2025-11-19'
+date: "2025-11-19"
 description: defense mechanism where one unconsciously block painful thoughts.
 id: repression
-modified: 2025-11-19 14:29:43 GMT-05:00
+modified: 2026-05-09 17:51:48 GMT-04:00
 tags:
   - psychoanalysis
   - pattern

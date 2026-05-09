@@ -4,10 +4,10 @@ aliases:
   - mechinterp
   - reveng neural net
   - interp
-date: '2024-10-30'
+date: "2024-10-30"
 description: and reverse engineering neural networks.
 id: mechanistic interpretability
-modified: 2026-01-06 10:02:27 GMT-05:00
+modified: 2026-05-09 17:51:55 GMT-04:00
 permalinks:
   - /mechinterp
   - /interpretability

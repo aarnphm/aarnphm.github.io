@@ -1,8 +1,8 @@
 ---
-date: '2025-08-21'
+date: "2025-08-21"
 description: continuity study
 id: Lipschitzness
-modified: 2026-03-19 02:54:24 GMT-04:00
+modified: 2026-05-09 17:51:53 GMT-04:00
 tags:
   - ml
   - math

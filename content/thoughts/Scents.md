@@ -1,9 +1,9 @@
 ---
 comments: false
-date: '2024-01-07'
+date: "2024-01-07"
 description: A (mostly) up-to-date scents that I use/like/prefer.
 id: Scents
-modified: 2026-02-01 18:01:44 GMT-05:00
+modified: 2026-05-09 17:51:48 GMT-04:00
 tags:
   - evergreen
 title: Scents

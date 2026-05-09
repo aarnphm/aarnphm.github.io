@@ -1,8 +1,8 @@
 ---
-date: '2025-01-06'
+date: "2025-01-06"
 description: understanding of production & operations management
 id: index
-modified: 2025-10-29 02:15:58 GMT-04:00
+modified: 2026-05-09 17:51:54 GMT-04:00
 tags:
   - university
   - commerce4qa3

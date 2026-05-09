@@ -1,8 +1,8 @@
 ---
-date: '2024-10-29'
+date: "2024-10-29"
 description: curated collection of noteworthy pdf documents and references.
 id: index
-modified: 2026-01-02 02:21:26 GMT-05:00
+modified: 2026-05-09 17:51:54 GMT-04:00
 noindex: true
 tags:
   - pattern

@@ -1,10 +1,10 @@
 ---
-date: '2025-11-08'
+date: "2025-11-08"
 description: a city of neighborhoods, stories, and endless discovery, a guide, for a friend
 id: lyd
-modified: 2025-11-09 01:31:25 GMT-05:00
-noindex: true
 layout: lydia
+modified: 2026-05-09 17:51:35 GMT-04:00
+noindex: true
 tags:
   - postcards
   - evergreen

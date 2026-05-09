@@ -1,8 +1,8 @@
 ---
-date: '2024-11-11'
+date: "2024-11-11"
 description: tidbits
 id: PyTorch
-modified: 2025-11-12 20:26:51 GMT-05:00
+modified: 2026-05-09 17:51:46 GMT-04:00
 tags:
   - ml
   - framework

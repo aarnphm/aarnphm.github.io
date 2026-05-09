@@ -1,8 +1,8 @@
 ---
-date: '2023-09-04'
+date: "2023-09-04"
 description: concurrent system design course covering synchronization, semaphores, monitors, message passing, remote procedure calls, coroutines, and formal methods using jupyter notebooks.
 id: index
-modified: 2025-10-29 02:16:20 GMT-04:00
+modified: 2026-05-09 17:51:56 GMT-04:00
 tags:
   - university
   - sfwr3bb4

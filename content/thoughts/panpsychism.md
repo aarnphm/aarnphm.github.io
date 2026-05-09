@@ -1,8 +1,8 @@
 ---
-date: '2026-01-28'
+date: "2026-01-28"
 description: mentality as fundamental, the combination problem, and why emergence keeps failing
 id: panpsychism
-modified: 2026-01-30 09:13:26 GMT-05:00
+modified: 2026-05-09 17:51:52 GMT-04:00
 seealso:
   - '[[thoughts/dualism]]'
   - '[[thoughts/physicalism]]'

@@ -1,9 +1,9 @@
 ---
-date: '2025-09-07'
+date: "2025-09-07"
 description: intuition for latent mapping
 id: index
 layout: L->ET|A
-modified: 2026-01-02 02:21:08 GMT-05:00
+modified: 2026-05-09 17:51:54 GMT-04:00
 noindex: true
 tags:
   - ml

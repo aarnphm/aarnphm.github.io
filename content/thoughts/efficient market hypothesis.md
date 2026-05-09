@@ -1,8 +1,8 @@
 ---
-date: '2025-09-08'
+date: "2025-09-08"
 description: financial theory stating that share prices reflect all available information, making consistent alpha generation impossible.
 id: efficient market hypothesis
-modified: 2025-10-29 02:15:44 GMT-04:00
+modified: 2026-05-09 17:51:55 GMT-04:00
 tags:
   - seed
   - finance

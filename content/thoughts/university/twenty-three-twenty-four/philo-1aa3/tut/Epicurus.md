@@ -1,8 +1,8 @@
 ---
-date: '2023-09-11'
+date: "2023-09-11"
 description: tutorial notes on epicurus's materialism, denial of afterlife, hedonism with pleasure as highest good, kinetic versus katastematic pleasure.
 id: Epicurus
-modified: 2025-10-29 02:16:17 GMT-04:00
+modified: 2026-05-09 17:51:56 GMT-04:00
 tags:
   - philos1aa3
 title: Epicurus's Hedonism and Materialism

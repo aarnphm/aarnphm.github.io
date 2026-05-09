@@ -1,8 +1,8 @@
 ---
-date: '2025-01-29'
+date: "2025-01-29"
 description: and mechanisms of components.
 id: Attribution parameter decomposition
-modified: 2025-11-05 01:24:38 GMT-05:00
+modified: 2026-05-09 17:51:48 GMT-04:00
 tags:
   - interp
 title: Attribution parameter decomposition

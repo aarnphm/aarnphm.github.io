@@ -1,8 +1,8 @@
 ---
-date: '2026-01-07'
+date: "2026-01-07"
 description: and llvm go brr.
 id: index
-modified: 2026-01-07 08:40:11 GMT-05:00
+modified: 2026-05-09 17:51:59 GMT-04:00
 socials:
   site: https://www.cas.mcmaster.ca/~cs4tb3/outline.html
 tags:

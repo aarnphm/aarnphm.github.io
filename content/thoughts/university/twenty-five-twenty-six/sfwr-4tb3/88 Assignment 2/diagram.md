@@ -1,8 +1,8 @@
 ---
-date: '2026-01-26'
+date: "2026-01-26"
 description: and assignment 2
 id: diagram
-modified: 2026-01-26 22:19:48 GMT-05:00
+modified: 2026-05-09 17:51:59 GMT-04:00
 tags:
   - sfwr4tb3
 title: diagram of the EBNF

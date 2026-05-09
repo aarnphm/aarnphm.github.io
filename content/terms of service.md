@@ -1,18 +1,18 @@
 ---
-date: '2025-02-21'
+date: "2025-02-21"
 description: for Stripe, but shouldn't affect general sites interaction
 id: terms of service
-modified: 2025-10-29 02:15:15 GMT-04:00
-noindex: true
 layout: technical
+modified: 2026-05-09 17:51:33 GMT-04:00
+noindex: true
 permalinks:
   - /tos
 tags:
   - evergreen
 title: Terms of Service
 transclude:
-  title: false
   dynalist: false
+  title: false
 ---
 
 **Effective date**: February 21, 2025

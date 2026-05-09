@@ -1,8 +1,8 @@
 ---
-date: '2025-11-01'
+date: "2025-11-01"
 description: scaffolding (munkres ch. 2–5).
 id: point set
-modified: 2025-11-09 01:07:38 GMT-05:00
+modified: 2026-05-09 17:51:47 GMT-04:00
 tags:
   - math
   - topology

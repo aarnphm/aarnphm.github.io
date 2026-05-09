@@ -1,9 +1,9 @@
 ---
-date: '2024-12-10'
+date: "2024-12-10"
 description: nobby designer word for "the design of the current site"
 id: colophon
 lang: en
-modified: 2026-01-28 19:20:10 GMT-05:00
+modified: 2026-05-09 17:51:37 GMT-04:00
 socials:
   twitter: https://x.com/aarnphm/status/1861550609834402129
 tags:

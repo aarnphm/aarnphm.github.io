@@ -1,10 +1,10 @@
 ---
-date: '2024-12-27'
+date: "2024-12-27"
 description: an unexpected turn of events.
 id: Chi
-modified: 2025-10-29 02:15:07 GMT-04:00
-noindex: true
 layout: letter
+modified: 2026-05-09 17:51:37 GMT-04:00
+noindex: true
 signature: with love and prosperity - Aaron
 tags:
   - friend

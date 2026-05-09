@@ -1,9 +1,9 @@
 ---
-date: '2025-02-14'
+date: "2025-02-14"
 description: on love and the feeling of belongings.
 draft: true
 id: I don't have a healthy relationship with myself
-modified: 2025-11-13 05:59:15 GMT-05:00
+modified: 2026-05-09 17:51:36 GMT-04:00
 tags:
   - love
   - growth

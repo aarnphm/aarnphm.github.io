@@ -1,8 +1,8 @@
 ---
-date: '2024-01-08'
+date: "2024-01-08"
 description: public tool for understanding private life through wittgenstein's language-games, where llms represent massive corpus of human knowledge and patient interaction.
 id: Language
-modified: 2025-12-16 03:01:26 GMT-05:00
+modified: 2026-05-09 17:51:33 GMT-04:00
 tags:
   - seed
 title: Language
