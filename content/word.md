@@ -5,7 +5,7 @@ date: "2024-10-10"
 description: a bag of chips/words/vernacular
 id: word
 layout: technical
-modified: 2026-05-07 18:41:49 GMT-04:00
+modified: 2026-05-09 17:51:33 GMT-04:00
 tags:
   - evergreen
 title: lists

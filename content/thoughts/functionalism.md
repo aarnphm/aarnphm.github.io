@@ -1,9 +1,9 @@
 ---
-created: '2025-10-01'
-date: '2025-10-01'
+created: "2025-10-01"
+date: "2025-10-01"
 description: Functional roles, computational hermeneutics, autopoietic critiques
 id: functionalism
-modified: 2026-01-06 20:07:44 GMT-05:00
+modified: 2026-05-09 17:51:55 GMT-04:00
 seealso:
   - '[[thoughts/chinese room|chinese room]]'
   - '[[thoughts/representations|representations]]'

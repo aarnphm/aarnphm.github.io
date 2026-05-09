@@ -1,10 +1,10 @@
 ---
 author: Michel Foucault
 category: philosophy
-date: '2025-09-18'
+date: "2025-09-18"
 description: traces how western society redefined madness from the middle ages to modernity, arguing that confinement and medicalization reflect power relations rather than humanitarian progress.
 id: Madness & Civilization
-modified: 2025-11-29 21:01:47 GMT-05:00
+modified: 2026-05-09 17:51:38 GMT-04:00
 notebook: null
 posters: '[[library/posters/madness-and-civilization.jpg]]'
 status: to read

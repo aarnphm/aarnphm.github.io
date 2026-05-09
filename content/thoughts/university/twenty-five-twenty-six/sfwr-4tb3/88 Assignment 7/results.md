@@ -1,8 +1,8 @@
 ---
-date: '2026-03-09'
+date: "2026-03-09"
 description: stack controls
 id: results
-modified: 2026-03-09 08:20:44 GMT-04:00
+modified: 2026-05-09 17:51:58 GMT-04:00
 tags:
   - sfwr4tb3
   - assignment

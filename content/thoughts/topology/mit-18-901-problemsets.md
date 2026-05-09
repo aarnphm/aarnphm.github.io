@@ -1,8 +1,8 @@
 ---
-date: '2025-11-01'
+date: "2025-11-01"
 description: introduction to topology
 id: topology-mit-18-901-psets
-modified: 2025-11-09 01:12:38 GMT-05:00
+modified: 2026-05-09 17:51:47 GMT-04:00
 socials:
   ocw: https://ocw.mit.edu/courses/18-901-introduction-to-topology-fall-2004/
 tags:

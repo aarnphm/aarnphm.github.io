@@ -1,10 +1,10 @@
 ---
-created: '2025-12-17'
-date: '2025-12-17'
+created: "2025-12-17"
+date: "2025-12-17"
 description: Class of reinforcement learning algorithms.
 id: Policy gradient
-modified: 2025-12-18 03:41:14 GMT-05:00
-published: '2017-03-01'
+modified: 2026-05-09 17:51:53 GMT-04:00
+published: "2017-03-01"
 seealso:
   - '[[thoughts/Reinforcement learning]]'
 socials:

@@ -1,8 +1,8 @@
 ---
-date: '2023-07-29'
+date: "2023-07-29"
 description: a knowledge distillation and learning process
 id: writing
-modified: 2026-02-20 14:12:24 GMT-05:00
+modified: 2026-05-09 17:51:51 GMT-04:00
 seealso:
   - '[[posts|collections of my personal writing]]'
 tags:

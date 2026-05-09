@@ -1,8 +1,8 @@
 ---
-date: '2025-11-09'
+date: "2025-11-09"
 description: https://nickbostrom.com/papers/vulnerable.pdf
 id: The Vulnerable World Hypothesis
-modified: 2025-11-19 12:01:47 GMT-05:00
+modified: 2026-05-09 17:51:53 GMT-04:00
 tags:
   - philosophy
   - policy

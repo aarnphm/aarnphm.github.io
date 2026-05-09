@@ -1,8 +1,8 @@
 ---
-date: '2024-03-07'
+date: "2024-03-07"
 description: atmospheric properties of exoplanets including scale height, molecular weights, clouds, and wind patterns on tidally-locked planets.
 id: Atmosphere
-modified: 2025-10-29 02:16:10 GMT-04:00
+modified: 2026-05-09 17:51:56 GMT-04:00
 tags:
   - astron2e03
 title: Atmospheric properties for exoplanets

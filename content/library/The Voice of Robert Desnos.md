@@ -1,23 +1,24 @@
 ---
+author:
+  - Robert Desnos
+category: poetry
+date: "2025-11-29"
+description: surrealist poem invoking forces of nature and humanity through repetitive calls, ending with the silence of unrequited love despite the speaker's commanding voice.
+finished: 2025
+id: The Voice of Robert Desnos
+modified: 2026-05-09 17:51:41 GMT-04:00
+notebook: null
+posters: '[[library/posters/the-voice-of-robert-desnos.png]]'
+status: finished
+subcategory:
+  - writing
+  - style
 tags:
   - self
   - aesthetics
 title: The Voice of Robert Desnos
-date: 2025-11-29
-description: surrealist poem invoking forces of nature and humanity through repetitive calls, ending with the silence of unrequited love despite the speaker's commanding voice.
-status: finished
-finished: 2025
-subcategory:
-  - writing
-  - style
-notebook:
-author:
-  - Robert Desnos
 translator: William Kulik
 year: 1936
-category: poetry
-posters: '[[library/posters/the-voice-of-robert-desnos.png]]'
-id: The Voice of Robert Desnos
 ---
 
 ```poetry

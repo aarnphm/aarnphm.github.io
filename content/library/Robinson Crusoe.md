@@ -2,10 +2,10 @@
 author: Daniel Defoe
 category:
   - p/fiction
-date: 2025-03-05
+date: "2025-03-05"
 description: classic adventure novel of shipwreck and survival on a remote island, exploring labor, colonialism, and solitude.
 id: Robinson Crusoe
-modified: 2025-10-29 02:14:36 GMT-04:00
+modified: 2026-05-09 17:51:39 GMT-04:00
 posters: '[[library/posters/robinson-crusoe.jpg]]'
 status: to read
 subcategory: nihilism

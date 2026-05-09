@@ -1,8 +1,8 @@
 ---
-date: '2025-12-12'
+date: "2025-12-12"
 description: and tile primitives
 id: cutedsl
-modified: 2026-05-05 12:54:51 GMT-04:00
+modified: 2026-05-09 17:51:49 GMT-04:00
 socials:
   introduction: https://veitner.bearblog.dev/an-applied-introduction-to-cutedsl/
   layout algebra: https://veitner.bearblog.dev/bridging-math-and-code-cute-layout-algebra-in-cutedsl/

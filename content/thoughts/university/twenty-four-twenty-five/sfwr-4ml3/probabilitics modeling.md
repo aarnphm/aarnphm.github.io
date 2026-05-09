@@ -1,8 +1,8 @@
 ---
-date: '2024-12-14'
+date: "2024-12-14"
 description: discriminant analysis, maximum likelihood estimation, and naive bayes classification with gaussian assumptions for correlated features.
 id: probabilitic modeling
-modified: 2025-10-29 02:16:10 GMT-04:00
+modified: 2026-05-09 17:51:58 GMT-04:00
 tags:
   - sfwr4ml3
 title: probabilitic modeling

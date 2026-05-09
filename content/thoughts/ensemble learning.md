@@ -1,8 +1,8 @@
 ---
-date: '2024-12-14'
+date: "2024-12-14"
 description: machine learning approach combining multiple classifiers through bagging, random forests, and boosting to improve performance via voting procedures.
 id: ensemble learning
-modified: 2025-10-29 02:15:45 GMT-04:00
+modified: 2026-05-09 17:51:55 GMT-04:00
 tags:
   - ml
 title: ensemble learning

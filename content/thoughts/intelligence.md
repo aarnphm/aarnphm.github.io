@@ -1,8 +1,8 @@
 ---
-date: '2024-02-07'
+date: "2024-02-07"
 description: and our understanding of the environment.
 id: intelligence
-modified: 2025-10-29 02:15:47 GMT-04:00
+modified: 2026-05-09 17:51:55 GMT-04:00
 tags:
   - seed
 title: Intelligence

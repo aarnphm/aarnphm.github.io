@@ -2,7 +2,7 @@
 date: '{{date:YYYY-MM-DD}}'
 description: null
 id: null
-modified: '{{date:YYYY-MM-DD}} {{time:HH:mm:SS}} GMT{{time:Z}}'
+modified: 2026-05-09 17:51:33 GMT-04:00
 tags:
   - seed
 title: null

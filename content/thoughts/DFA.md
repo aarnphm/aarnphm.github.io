@@ -1,8 +1,8 @@
 ---
-date: '2024-01-12'
+date: "2024-01-12"
 description: finite automaton where state and input symbol has exactly one next state.
 id: DFA
-modified: 2025-11-12 19:30:51 GMT-05:00
+modified: 2026-05-09 17:51:38 GMT-04:00
 tags:
   - sfwr2fa3
   - math

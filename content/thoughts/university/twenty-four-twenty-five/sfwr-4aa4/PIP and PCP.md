@@ -1,8 +1,8 @@
 ---
-date: '2024-12-18'
+date: "2024-12-18"
 description: priority inheritance protocol and priority ceiling protocol for real-time scheduling with resource contention and deadlock prevention.
 id: PIP and PCP
-modified: 2025-10-29 02:16:05 GMT-04:00
+modified: 2026-05-09 17:51:59 GMT-04:00
 tags:
   - sfwr4aa4
 title: PIP and PCP

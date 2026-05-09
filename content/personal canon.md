@@ -1,8 +1,8 @@
 ---
-date: '2025-12-17'
+date: "2025-12-17"
 description: and stuff that have imbibed onto my brain.
 id: personal canon
-modified: 2026-03-16 00:30:17 GMT-04:00
+modified: 2026-05-09 17:51:32 GMT-04:00
 tags:
   - pattern
   - sapling

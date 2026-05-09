@@ -1,8 +1,8 @@
 ---
-date: '2024-01-30'
+date: "2024-01-30"
 description: via subset construction algorithm of DFA
 id: NFA
-modified: 2025-10-29 02:15:29 GMT-04:00
+modified: 2026-05-09 17:51:49 GMT-04:00
 tags:
   - math
 title: non-deterministic finite automaton

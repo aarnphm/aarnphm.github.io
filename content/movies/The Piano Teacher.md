@@ -1,12 +1,12 @@
 ---
 category:
   - drama
-date: '2026-01-11'
+date: "2026-01-11"
 description: repressed desire turns violent - haneke makes piano discipline into sexual combat.
 director:
   - Michael Haneke
 id: The Piano Teacher
-modified: 2026-01-11 04:48:21 GMT-05:00
+modified: 2026-05-09 17:51:45 GMT-04:00
 posters: '[[movies/posters/the-piano-teacher.jpg]]'
 rating: 7.5
 status: to watch

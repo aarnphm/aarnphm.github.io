@@ -1,8 +1,8 @@
 ---
-date: '2024-01-11'
+date: "2024-01-11"
 description: in information theory
 id: Entropy
-modified: 2025-10-29 02:15:21 GMT-04:00
+modified: 2026-05-09 17:51:47 GMT-04:00
 tags:
   - seed
 title: Entropy

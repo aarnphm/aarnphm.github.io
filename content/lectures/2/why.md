@@ -1,8 +1,8 @@
 ---
-date: '2025-08-21'
+date: "2025-08-21"
 description: motivations of attention
 id: why
-modified: 2026-01-15 08:29:46 GMT-05:00
+modified: 2026-05-09 17:51:34 GMT-04:00
 tags:
   - ml
   - theory

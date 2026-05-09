@@ -1,8 +1,8 @@
 ---
-date: '2024-12-18'
+date: "2024-12-18"
 description: think of Laplace transform, but for sampled data
 id: Z-transform
-modified: 2025-10-29 02:15:39 GMT-04:00
+modified: 2026-05-09 17:51:55 GMT-04:00
 tags:
   - math
   - sfwr4aa4

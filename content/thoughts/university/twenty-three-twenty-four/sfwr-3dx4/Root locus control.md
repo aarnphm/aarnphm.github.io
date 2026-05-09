@@ -1,8 +1,8 @@
 ---
-date: '2024-02-28'
+date: "2024-02-28"
 description: root locus control for improving transient response and steady-state error using pid controllers, ideal integral compensation, and lag compensators.
 id: Root locus control
-modified: 2025-10-29 02:16:21 GMT-04:00
+modified: 2026-05-09 17:51:54 GMT-04:00
 tags:
   - sfwr3dx4
 title: Root locus control

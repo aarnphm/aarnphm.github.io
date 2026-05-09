@@ -1,8 +1,8 @@
 ---
-date: '2025-10-27'
+date: "2025-10-27"
 description: from nytimes
 id: nytimes
-modified: 2026-04-20 12:08:22 GMT-04:00
+modified: 2026-05-09 17:51:32 GMT-04:00
 tags:
   - games
 title: games

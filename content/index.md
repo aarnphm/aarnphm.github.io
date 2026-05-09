@@ -2,10 +2,10 @@
 aliases:
   - about
   - me
-date: '2022-04-22'
+date: "2022-04-22"
 description: my working notes, as a form of a digital garden
 id: _index
-modified: 2026-05-05 11:27:00 GMT-04:00
+modified: 2026-05-09 17:51:32 GMT-04:00
 tags:
   - sapling
   - fruit

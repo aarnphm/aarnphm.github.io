@@ -1,8 +1,8 @@
 ---
-date: '2026-01-15'
+date: "2026-01-15"
 description: formal accountability framework for commerce 3ma3 project team.
 id: contract
-modified: 2026-01-18 16:53:26 GMT-05:00
+modified: 2026-05-09 17:51:57 GMT-04:00
 protected: true
 tags:
   - commerce3ma3

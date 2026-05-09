@@ -1,8 +1,8 @@
 ---
-date: '2025-01-27'
+date: "2025-01-27"
 description: tutorial 1.
 id: annotations
-modified: 2025-10-29 02:16:00 GMT-04:00
+modified: 2026-05-09 17:51:58 GMT-04:00
 tags:
   - sfwr2fa3
 title: annotations

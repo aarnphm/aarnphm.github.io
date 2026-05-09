@@ -1,10 +1,10 @@
 ---
-date: '2025-11-16'
+date: "2025-11-16"
 description: structural orthogonality in the phenomenology of intimacy
 draft: true
 id: romantic epistemology
 layout: letter
-modified: 2025-11-26 11:07:40 GMT-05:00
+modified: 2026-05-09 17:51:37 GMT-04:00
 tags:
   - philosophy
   - pattern

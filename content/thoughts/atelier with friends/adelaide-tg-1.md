@@ -1,12 +1,12 @@
 ---
 cssclasses:
   - menu
-date: '2025-10-13'
+date: "2025-10-13"
 description: atelier with friends trois - thanksgiving 2025
 id: adelaide-tg-1
 lang: fr-FR
 menu: true
-modified: 2025-11-28 17:11:52 GMT-05:00
+modified: 2026-05-09 17:51:38 GMT-04:00
 noindex: true
 tags:
   - menu

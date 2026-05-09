@@ -2,11 +2,12 @@
 author: Haruki Murakami
 category:
   - p/fiction
-language: japanese
-date: 2022-08-21
+date: "2022-08-21"
 description: surreal coming of age story with parallel narratives, talking cats, and strange metaphysics, blending memory, prophecy, and trauma.
+finished: 2022
 id: Kafka on the Shore
-modified: 2025-10-29 02:14:31 GMT-04:00
+language: japanese
+modified: 2026-05-09 17:51:38 GMT-04:00
 posters: '[[library/posters/kafka-on-the-shore.jpg]]'
 status: finished
 subcategory: life
@@ -15,5 +16,4 @@ tags:
   - philosophy
 title: Kafka on the Shore
 year: 2002
-finished: 2022
 ---

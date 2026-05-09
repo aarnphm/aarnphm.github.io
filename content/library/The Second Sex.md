@@ -1,12 +1,12 @@
 ---
 author: '[[thoughts/Simone de Beauvoir|Simone de Beauvoir]]'
 category: philosophy
-language: french
-date: 2025-10-06
+date: "2025-10-06"
 description: the oppresion of women in society
 finished: 2025
 id: The Second Sex
-modified: 2025-11-28 13:47:45 GMT-05:00
+language: french
+modified: 2026-05-09 17:51:42 GMT-04:00
 posters: '[[library/posters/the-second-sex.jpg]]'
 status: finished
 subcategory: feminism

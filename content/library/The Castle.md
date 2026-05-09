@@ -2,11 +2,12 @@
 author: Franz Kafka
 category:
   - p/fiction
-language: german
-date: 2025-10-06
+date: "2025-10-06"
 description: kafka novel about a land surveyor endlessly blocked by opaque authorities, capturing bureaucracy, frustration, and alienation.
+finished: 2025
 id: The Castle
-modified: 2025-10-29 02:14:38 GMT-04:00
+language: german
+modified: 2026-05-09 17:51:45 GMT-04:00
 posters: '[[library/posters/the-castle.jpg]]'
 status: finished
 subcategory:
@@ -16,5 +17,4 @@ tags:
   - philosophy
 title: The Castle
 year: 1926
-finished: 2025
 ---

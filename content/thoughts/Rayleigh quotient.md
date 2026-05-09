@@ -1,15 +1,14 @@
 ---
-created: '2025-09-15'
-date: '2025-09-17'
+created: "2025-09-15"
+date: "2025-09-17"
 description: Mathematical construct for Hermitian matrices relating eigenvalues to quadratic forms via ratios.
 id: Rayleigh quotient
-modified: 2025-10-29 02:15:33 GMT-04:00
-published: '2003-08-27'
+modified: 2026-05-09 17:51:52 GMT-04:00
+published: "2003-08-27"
 source: https://en.wikipedia.org/wiki/Rayleigh_quotient
 tags:
   - math
   - seed
-
 title: Rayleigh quotient
 ---
 

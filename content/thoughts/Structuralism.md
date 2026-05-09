@@ -1,8 +1,8 @@
 ---
-date: '2025-06-12'
+date: "2025-06-12"
 description: and forms.
 id: Structuralism
-modified: 2025-10-29 02:15:35 GMT-04:00
+modified: 2026-05-09 17:51:55 GMT-04:00
 tags:
   - philosophy
 title: Structuralism

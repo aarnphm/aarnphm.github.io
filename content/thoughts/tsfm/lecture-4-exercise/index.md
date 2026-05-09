@@ -1,8 +1,8 @@
 ---
-date: '2025-09-19'
+date: "2025-09-19"
 description: and Modal examples
 id: index
-modified: 2026-01-02 02:23:18 GMT-05:00
+modified: 2026-05-09 17:51:57 GMT-04:00
 tags:
   - ml
   - tsfm

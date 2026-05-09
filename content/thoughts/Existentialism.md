@@ -1,8 +1,8 @@
 ---
-date: '2024-02-29'
+date: "2024-02-29"
 description: existential crises,angst, courage, and ultimate freedom
 id: Existentialism
-modified: 2026-01-02 02:32:39 GMT-05:00
+modified: 2026-05-09 17:51:51 GMT-04:00
 seealso:
   - '[[thoughts/Camus#absurd freedom|absurdism]]'
 socials:

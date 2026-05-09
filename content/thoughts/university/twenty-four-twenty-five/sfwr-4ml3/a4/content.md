@@ -1,8 +1,8 @@
 ---
-date: '2024-11-11'
+date: "2024-11-11"
 description: and image processing.
 id: content
-modified: 2025-10-29 02:16:09 GMT-04:00
+modified: 2026-05-09 17:51:57 GMT-04:00
 tags:
   - sfwr4ml3
 title: Application of Convolutional Neural Network

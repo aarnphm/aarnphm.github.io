@@ -1,8 +1,8 @@
 ---
-date: '2023-09-04'
+date: "2023-09-04"
 description: introduction to philosophy through close reading of classical texts including plato, descartes, hobbes, hume, marx, mill, and nietzsche.
 id: index
-modified: 2025-10-29 02:16:17 GMT-04:00
+modified: 2026-05-09 17:51:56 GMT-04:00
 tags:
   - philos1aa3
   - university

@@ -1,21 +1,19 @@
 ---
-address: >-
-  Gayley's Cafe, 1424, Dundas Street West, Little Portugal, Davenport, Toronto,
-  Golden Horseshoe, Ontario, M6J 1Y5, Canada
+address: Gayley's Cafe, 1424, Dundas Street West, Little Portugal, Davenport, Toronto, Golden Horseshoe, Ontario, M6J 1Y5, Canada
 category:
   - '[[places to go]]'
 coordinates:
-  - '43.6495912'
-  - '-79.4295031'
-date: '2025-11-15'
+  - "43.6495912"
+  - "-79.4295031"
+date: "2025-11-15"
 description: intimate wine bar on dundas with natural wines and low lighting
 id: Bar Niro
-modified: '2026-01-03 11:36:50 GMT-05:00'
+modified: 2026-05-09 17:51:51 GMT-04:00
 rating: 5
 tags:
   - places
 title: Bar Niro
 type:
   - bar
-url: 'https://maps.app.goo.gl/nQBRM1Mws2JdM9vQA'
+url: https://maps.app.goo.gl/nQBRM1Mws2JdM9vQA
 ---

@@ -1,8 +1,8 @@
 ---
-date: '2025-09-11'
+date: "2025-09-11"
 description: chapter 1 and 2
 id: financial analysis
-modified: 2025-10-29 02:15:58 GMT-04:00
+modified: 2026-05-09 17:51:54 GMT-04:00
 tags:
   - commerce4qa3
 title: financial analysis

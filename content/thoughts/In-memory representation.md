@@ -1,8 +1,8 @@
 ---
-date: '2022-10-01'
+date: "2022-10-01"
 description: serialization formats comparing flatbuffer's zero-copy design with protobuf's parsing requirements.
 id: In-memory representation
-modified: 2025-10-29 02:15:24 GMT-04:00
+modified: 2026-05-09 17:51:52 GMT-04:00
 tags:
   - technical
   - seed

@@ -1,8 +1,8 @@
 ---
-date: '2024-12-17'
+date: "2024-12-17"
 description: also known as the superposition theorem.
 id: Kolmogorov-Arnold representation theorem
-modified: 2025-11-04 22:01:56 GMT-05:00
+modified: 2026-05-09 17:51:52 GMT-04:00
 tags:
   - math
 title: Kolmogorov–Arnold representation theorem

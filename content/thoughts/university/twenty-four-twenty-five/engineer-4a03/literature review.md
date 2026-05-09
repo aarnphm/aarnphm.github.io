@@ -1,8 +1,8 @@
 ---
-date: '2024-10-07'
+date: "2024-10-07"
 description: How we understand machine learning system is how we can move towards a safe futures, yet the road ahead lies many troubles to overcome. A literature review into the inception of the field, as well as where do we go from here.
 id: literature review
-modified: 2025-11-22 11:42:26 GMT-05:00
+modified: 2026-05-09 17:51:58 GMT-04:00
 noindex: true
 tags:
   - engineer4a03

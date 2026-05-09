@@ -1,8 +1,8 @@
 ---
-date: '2024-01-30'
+date: "2024-01-30"
 description: a branch of [[/thoughts/Value|value]] theory concerning what makes things aesthetically good or valuable
 id: aesthetic value
-modified: 2025-12-16 06:13:24 GMT-05:00
+modified: 2026-05-09 17:51:52 GMT-04:00
 socials:
   sep: https://plato.stanford.edu/entries/aesthetic-concept/
 tags:

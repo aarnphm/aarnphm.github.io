@@ -2,10 +2,10 @@
 aliases:
   - specdec
   - speculative
-date: '2025-05-21'
+date: "2025-05-21"
 description: draft-and-verify using smaller models to generate a head tokens
 id: Speculative decoding
-modified: 2026-01-15 15:47:00 GMT-05:00
+modified: 2026-05-09 17:51:55 GMT-04:00
 socials:
   slides: https://docs.google.com/presentation/d/1p1xE-EbSAnXpTSiSI0gmy_wdwxN5XaULO3AnCWWoRe4/edit#slide=id.p
 tags:

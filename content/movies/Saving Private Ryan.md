@@ -2,11 +2,11 @@
 category:
   - drama
   - buster
-date: 2024-02-07
+date: "2024-02-07"
 description: omaha beach opening as visceral horror—spielberg filming d-day casualties then sending tom hanks squad to find one paratrooper, the mission questioning whether one life justifies eight, war as jeremiad calling america back to mythic greatest generation.
 director: Steven Spielberg
 id: saving-private-ryan
-modified: 2025-10-29 02:14:56 GMT-04:00
+modified: 2026-05-09 17:51:43 GMT-04:00
 posters: '[[movies/posters/saving-private-ryan.jpg]]'
 rating: 8.6
 status: recurring

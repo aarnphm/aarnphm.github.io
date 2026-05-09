@@ -1,8 +1,8 @@
 ---
-date: '2025-11-01'
+date: "2025-11-01"
 description: structures, decompositions, and geometric properties of 3-dimensional manifolds.
 id: 3 manifolds
-modified: 2025-11-09 01:09:03 GMT-05:00
+modified: 2026-05-09 17:51:47 GMT-04:00
 tags:
   - math
   - topology

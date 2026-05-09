@@ -1,8 +1,8 @@
 ---
-date: '2024-02-08'
+date: "2024-02-08"
 description: concurrent, cache-efficient build system for oci-compliant images using llb intermediate representation, analogous to llvm ir for dockerfiles.
 id: BuildKit
-modified: 2025-10-29 02:15:17 GMT-04:00
+modified: 2026-05-09 17:51:50 GMT-04:00
 tags:
   - seed
   - container

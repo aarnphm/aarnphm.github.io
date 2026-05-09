@@ -1,8 +1,8 @@
 ---
-date: '2025-01-31'
+date: "2025-01-31"
 description: and tools for protocols
 id: Wireshark
-modified: 2025-10-29 02:15:38 GMT-04:00
+modified: 2026-05-09 17:51:52 GMT-04:00
 noindex: true
 tags:
   - networking

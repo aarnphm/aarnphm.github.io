@@ -1,8 +1,8 @@
 ---
-date: '2025-01-15'
+date: "2025-01-15"
 description: and how to prep effectively
 id: Case analysis
-modified: 2025-10-29 02:15:58 GMT-04:00
+modified: 2026-05-09 17:51:57 GMT-04:00
 tags:
   - commerce4pa3
 title: Case analysis

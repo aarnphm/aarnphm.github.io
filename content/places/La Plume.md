@@ -1,15 +1,13 @@
 ---
-address: >-
-  490, Wellington Street West, Wellington Place, Spadina—Fort York, Toronto,
-  Golden Horseshoe, Ontario, M5V 1E3, Canada
+address: 490, Wellington Street West, Wellington Place, Spadina—Fort York, Toronto, Golden Horseshoe, Ontario, M5V 1E3, Canada
 category:
   - '[[places to go]]'
 coordinates:
-  - '43.6432746'
-  - '-79.3986369'
-date: '2025-12-22'
+  - "43.6432746"
+  - "-79.3986369"
+date: "2025-12-22"
 id: La Plume
-modified: '2026-01-03 11:36:50 GMT-05:00'
+modified: 2026-05-09 17:51:50 GMT-04:00
 rating: 5
 tags:
   - places
@@ -17,5 +15,5 @@ title: La Plume
 type:
   - restaurant
   - speakeasy
-url: 'https://maps.app.goo.gl/mvVfWEPSqNNUsjVN7'
+url: https://maps.app.goo.gl/mvVfWEPSqNNUsjVN7
 ---

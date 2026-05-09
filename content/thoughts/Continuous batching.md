@@ -1,8 +1,8 @@
 ---
-date: '2024-02-08'
+date: "2024-02-08"
 description: batching strategy for large scale inference deployment
 id: Continuous batching
-modified: 2025-12-24 23:39:00 GMT-05:00
+modified: 2026-05-09 17:51:33 GMT-04:00
 seealso:
   - '[[thoughts/vllm|vLLM]]'
   - '[[thoughts/Attention#Paged Attention|PagedAttention]]'

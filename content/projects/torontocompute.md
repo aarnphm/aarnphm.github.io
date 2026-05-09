@@ -1,9 +1,9 @@
 ---
 category: companies
-date: '2022-01-25'
+date: "2022-01-25"
 description: sfcompute but in toronto
 id: torontocompute
-modified: 2025-12-10 16:15:18 GMT-05:00
+modified: 2026-05-09 17:51:42 GMT-04:00
 status: idea
 subcategory: computing clusters
 tags:

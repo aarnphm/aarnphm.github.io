@@ -3,11 +3,11 @@ category:
   - o/life
   - comedy
   - drama
-date: 2024-02-07
+date: "2024-02-07"
 description: bus driver writing poetry in his spare moments—jarmusch filming adam driver's quiet attentiveness to matches and water and passengers, the gentle rhythm of work and art as single fabric, proving ordinary existence contains everything extraordinary if you notice it.
 director: Jim Jarmusch
 id: paterson
-modified: 2025-10-29 02:15:05 GMT-04:00
+modified: 2026-05-09 17:51:46 GMT-04:00
 posters: '[[movies/posters/paterson.jpg]]'
 rating: 7.3
 status: to watch

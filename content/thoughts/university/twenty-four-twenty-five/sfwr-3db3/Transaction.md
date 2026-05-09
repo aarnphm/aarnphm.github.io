@@ -1,8 +1,8 @@
 ---
-date: '2024-12-11'
+date: "2024-12-11"
 description: and concurrency control.
 id: Transaction
-modified: 2025-10-29 02:16:03 GMT-04:00
+modified: 2026-05-09 17:51:59 GMT-04:00
 tags:
   - sfwr3db3
 title: Transaction

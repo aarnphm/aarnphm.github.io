@@ -1,8 +1,8 @@
 ---
-date: '2025-08-12'
+date: "2025-08-12"
 description: inference overview
 id: notes
-modified: 2025-11-11 07:03:15 GMT-05:00
+modified: 2026-05-09 17:51:45 GMT-04:00
 tags:
   - workshop
 title: supplement to 0.100

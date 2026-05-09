@@ -1,8 +1,8 @@
 ---
-date: '2025-09-30'
+date: "2025-09-30"
 description: GPUs, CUTLASS, and CuTe
 id: notes
-modified: 2025-12-30 19:06:25 GMT-05:00
+modified: 2026-05-09 17:51:34 GMT-04:00
 slides: true
 tags:
   - workshop

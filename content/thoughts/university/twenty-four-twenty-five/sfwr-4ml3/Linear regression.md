@@ -1,18 +1,18 @@
 ---
-date: '2024-09-10'
-id: Linear regression
-modified: 2025-10-29 02:16:08 GMT-04:00
-tags:
-  - sfwr4ml3
-title: Linear regression
+date: "2024-09-10"
 description: also known as linear predictor functions
-socials:
-  colab: https://colab.research.google.com/drive/1eljHSwYJSR5ox6bB9zopalZmMSJoNl4v?usp=sharing
-  python: '[[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/code/ols_and_kls.py|ols_and_kls.py]]'
+id: Linear regression
+modified: 2026-05-09 17:51:59 GMT-04:00
 seealso:
   - '[[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/lec/Lecture1.pdf|curve fitting]]'
   - '[[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/lec/Lecture2.pdf|regression]]'
   - '[[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/Bias and intercept|bias]]'
+socials:
+  colab: https://colab.research.google.com/drive/1eljHSwYJSR5ox6bB9zopalZmMSJoNl4v?usp=sharing
+  python: '[[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/code/ols_and_kls.py|ols_and_kls.py]]'
+tags:
+  - sfwr4ml3
+title: Linear regression
 ---
 
 ## curve fitting

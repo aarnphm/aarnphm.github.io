@@ -1,9 +1,9 @@
 ---
-date: '2025-10-04'
+date: "2025-10-04"
 description: what neural networks are, ontologically speaking
 id: Connectionist network
-modified: 2025-11-09 06:26:24 GMT-05:00
 layout: technical
+modified: 2026-05-09 17:51:50 GMT-04:00
 signature: with abundance of love and joy - Aaron
 tags:
   - philosophy

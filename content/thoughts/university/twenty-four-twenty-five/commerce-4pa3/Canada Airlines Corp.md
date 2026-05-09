@@ -1,8 +1,8 @@
 ---
-date: '2025-01-22'
+date: "2025-01-22"
 description: a case study.
 id: Canada Airlines Corp
-modified: 2025-10-29 02:15:58 GMT-04:00
+modified: 2026-05-09 17:51:57 GMT-04:00
 tags:
   - commerce4pa3
 title: Canada Airlines Corp

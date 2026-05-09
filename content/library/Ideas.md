@@ -4,11 +4,11 @@ aliases:
 author:
   - Edmund Husserl
 category: philosophy
-date: '2025-11-30'
+date: "2025-11-30"
 description: foundational text of transcendental phenomenology, outlining the method of eidetic reduction and the study of consciousness as pure subjectivity.
 finished: null
 id: Ideas
-modified: 2025-12-16 06:50:48 GMT-05:00
+modified: 2026-05-09 17:51:45 GMT-04:00
 pdf: https://cdn.preterhuman.net/texts/thought_and_writing/philosophy/Husserl,%20Edmund/Husserl%20-%20Ideas%20Pertaining%20To%20A%20Pure%20Phenomenology%20And%20To%20A%20Phenomenological%20Philosophy%20II.pdf
 posters: '[[library/posters/ideas.jpg]]'
 socials:

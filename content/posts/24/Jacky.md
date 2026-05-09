@@ -1,9 +1,9 @@
 ---
-date: '2024-12-27'
+date: "2024-12-27"
 description: and a lens from a distant friend.
 id: Jacky
 layout: letter
-modified: 2025-11-22 11:39:54 GMT-05:00
+modified: 2026-05-09 17:51:37 GMT-04:00
 noindex: true
 signature: with care and appreciation - Aaron
 tags:

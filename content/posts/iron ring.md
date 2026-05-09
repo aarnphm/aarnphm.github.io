@@ -2,7 +2,7 @@
 date: "2026-03-28"
 description: on graduation and learning from university
 id: iron ring
-modified: 2026-05-07 18:50:38 GMT-04:00
+modified: 2026-05-09 17:51:36 GMT-04:00
 tags:
   - life
   - progress

@@ -1,8 +1,8 @@
 ---
-date: '2025-11-10'
+date: "2025-11-10"
 description: phenomenal properties and what resists functional explanation
 id: qualia
-modified: 2026-01-30 09:09:58 GMT-05:00
+modified: 2026-05-09 17:51:46 GMT-04:00
 seealso:
   - '[[thoughts/functionalism]]'
   - '[[thoughts/identity]]'

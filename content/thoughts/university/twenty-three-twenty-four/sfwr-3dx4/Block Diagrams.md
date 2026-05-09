@@ -1,13 +1,13 @@
 ---
-date: '2024-01-24'
+date: "2024-01-24"
 description: control system block diagrams with cascade form, parallel form, feedback loops, summing junctions, and transfer function reduction techniques.
 id: Block Diagrams
-modified: 2025-10-29 02:16:20 GMT-04:00
+modified: 2026-05-09 17:51:57 GMT-04:00
+seealso:
+  - '[[thoughts/university/twenty-three-twenty-four/sfwr-3dx4/block_diagrams.pdf|sides]]'
 tags:
   - sfwr3dx4
 title: Block Diagrams
-seealso:
-  - '[[thoughts/university/twenty-three-twenty-four/sfwr-3dx4/block_diagrams.pdf|sides]]'
 ---
 
 ## Cascade form

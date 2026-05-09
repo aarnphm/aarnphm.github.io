@@ -1,8 +1,8 @@
 ---
-date: '2025-07-14'
+date: "2025-07-14"
 description: higher dimensional generalization of category, where composition of morphism is associative up to natural isomorphism
 id: bordism bicategories
-modified: 2026-01-08 14:33:10 GMT-05:00
+modified: 2026-05-09 17:51:57 GMT-04:00
 tags:
   - topology
   - math

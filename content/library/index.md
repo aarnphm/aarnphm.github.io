@@ -1,8 +1,8 @@
 ---
-date: '2025-10-06'
+date: "2025-10-06"
 description: aesthetics, taste, or whatever you want to call it.
 id: index
-modified: 2025-12-29 02:56:00 GMT-05:00
+modified: 2026-05-09 17:51:39 GMT-04:00
 permalinks:
   - /books
 tags:

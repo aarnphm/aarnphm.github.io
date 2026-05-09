@@ -1,8 +1,8 @@
 ---
-date: '2024-02-07'
+date: "2024-02-07"
 description: an ideology that somewhat contributes to an illogical world we live in.
 id: Behavirourism
-modified: 2025-11-25 14:08:27 GMT-05:00
+modified: 2026-05-09 17:51:48 GMT-04:00
 seealso:
   - '[[thoughts/functionalism]]'
   - '[[thoughts/hermeneutics]]'

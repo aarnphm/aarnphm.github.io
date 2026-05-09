@@ -1,8 +1,8 @@
 ---
-date: '2025-11-19'
+date: "2025-11-19"
 description: language can function as a form of social action and have the effect of change.
 id: performativity
-modified: 2026-01-09 05:36:47 GMT-05:00
+modified: 2026-05-09 17:51:33 GMT-04:00
 seealso:
   - '[[thoughts/identity|identity]]'
   - '[[library/Civilisation and its Discontents|C&D]]'

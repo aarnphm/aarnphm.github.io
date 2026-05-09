@@ -1,8 +1,8 @@
 ---
-date: '2024-01-08'
+date: "2024-01-08"
 description: and compression of human knowledge
 id: large models
-modified: 2025-10-29 02:15:48 GMT-04:00
+modified: 2026-05-09 17:51:49 GMT-04:00
 tags:
   - ml
 title: Foundational models

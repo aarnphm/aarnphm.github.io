@@ -1,8 +1,8 @@
 ---
-date: '2024-11-11'
+date: "2024-11-11"
 description: assignment covering sql queries, relational algebra expressions, and database index design for airline reservation system.
 id: a2
-modified: 2025-11-09 01:41:11 GMT-05:00
+modified: 2026-05-09 17:51:57 GMT-04:00
 tags:
   - sfwr3db3
 title: SQL and Relational Algebra

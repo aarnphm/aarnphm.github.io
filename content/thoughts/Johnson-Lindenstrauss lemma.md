@@ -1,8 +1,8 @@
 ---
-date: '2024-12-13'
+date: "2024-12-13"
 description: random projections preserve pairwise distances when mapping high-dimensional point sets into logarithmic-dimensional space.
 id: Johnson–Lindenstrauss lemma
-modified: 2026-03-30 02:20:32 GMT-04:00
+modified: 2026-05-09 17:51:49 GMT-04:00
 tags:
   - math
   - ml

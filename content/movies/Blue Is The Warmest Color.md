@@ -3,11 +3,11 @@ category:
   - love
   - o/relationship
   - drama
-date: 2024-02-07
+date: "2024-02-07"
 description: three hours of eating and longing—kechiche filming lesbian desire across class lines, first love so consuming it becomes identity, then watching what happens when that identity walks away.
 director: Abdellatif Kechiche
 id: blue-is-the-warmest-color
-modified: 2025-10-29 02:14:46 GMT-04:00
+modified: 2026-05-09 17:51:45 GMT-04:00
 posters: '[[movies/posters/blue-is-the-warmest-color.jpg]]'
 rating: 7.6
 status: to watch

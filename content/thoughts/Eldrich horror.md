@@ -1,8 +1,8 @@
 ---
-date: '2025-11-05'
+date: "2025-11-05"
 description: also known as <em>Lovecraftian horror</em>
 id: Eldrich horror
-modified: 2025-11-08 06:51:15 GMT-05:00
+modified: 2026-05-09 17:51:55 GMT-04:00
 tags:
   - seed
 title: Eldrich horror

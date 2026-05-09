@@ -1,8 +1,8 @@
 ---
-date: '2024-12-14'
+date: "2024-12-14"
 description: learning embeddings where similar samples cluster together and dissimilar ones separate, using positive and negative pairs to optimize representation.
 id: contrastive representation learning
-modified: 2025-10-29 02:15:42 GMT-04:00
+modified: 2026-05-09 17:51:53 GMT-04:00
 tags:
   - ml
 title: contrastive representation learning

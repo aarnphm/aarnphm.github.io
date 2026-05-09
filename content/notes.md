@@ -1,9 +1,9 @@
 ---
-date: '2024-12-08'
+date: "2024-12-08"
 description: zettelkasten, contact[at]aarnphm[dot]xyz
 id: notes
 layout: technical
-modified: 2025-12-10 16:14:48 GMT-05:00
+modified: 2026-05-09 17:51:32 GMT-04:00
 tags:
   - evergreen
 title: procedural notes.

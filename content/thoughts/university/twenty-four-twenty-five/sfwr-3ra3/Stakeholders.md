@@ -1,8 +1,8 @@
 ---
-date: '2024-09-13'
+date: "2024-09-13"
 description: identifying problems through stakeholders and creating varied personas that are vivid, actionable, real, identifiable, exact, and detailed.
 id: Stakeholders
-modified: 2025-10-29 02:16:04 GMT-04:00
+modified: 2026-05-09 17:51:57 GMT-04:00
 tags:
   - sfwr3ra3
 title: Stakeholders

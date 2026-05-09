@@ -1,8 +1,8 @@
 ---
-date: '2024-12-10'
+date: "2024-12-10"
 description: a real-valued function is convex if its epigraph is a convex set
 id: Convex function
-modified: 2025-10-29 02:15:20 GMT-04:00
+modified: 2026-05-09 17:51:48 GMT-04:00
 tags:
   - math
 title: Convex function

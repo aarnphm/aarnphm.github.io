@@ -1,8 +1,8 @@
 ---
-date: '2025-01-15'
+date: "2025-01-15"
 description: and a general management perspective
 id: SAA
-modified: 2025-10-29 02:15:59 GMT-04:00
+modified: 2026-05-09 17:51:59 GMT-04:00
 tags:
   - commerce4pa3
 title: Strategic Analysis and Action

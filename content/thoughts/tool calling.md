@@ -1,8 +1,8 @@
 ---
-date: '2025-05-07'
+date: "2025-05-07"
 description: unification of frontend parsers
 id: tool calling
-modified: 2025-10-29 02:15:54 GMT-04:00
+modified: 2026-05-09 17:51:47 GMT-04:00
 socials:
   github: https://github.com/vllm-project/vllm/issues/17817
 tags:

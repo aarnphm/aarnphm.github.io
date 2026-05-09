@@ -1,14 +1,14 @@
 ---
-date: '2021-10-10'
+date: "2021-10-10"
 description: and XLA. also known as auto differentiation.
 id: Autograd
-modified: 2025-10-29 02:15:16 GMT-04:00
+modified: 2026-05-09 17:51:48 GMT-04:00
+seealso:
+  - '[[thoughts/XLA|XLA]]'
 tags:
   - seed
   - ml
 title: Autograd
-seealso:
-  - '[[thoughts/XLA|XLA]]'
 ---
 
 $$

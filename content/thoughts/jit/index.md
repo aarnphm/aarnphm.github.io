@@ -1,9 +1,9 @@
 ---
-date: '2025-10-05'
+date: "2025-10-05"
 description: educational JIT compiler implementations in Python
 id: bytecode-jit-readme
 layout: L->ET|A
-modified: 2026-01-02 02:21:33 GMT-05:00
+modified: 2026-05-09 17:51:53 GMT-04:00
 tags:
   - seed
   - compilers

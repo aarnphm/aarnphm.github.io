@@ -1,8 +1,8 @@
 ---
-date: '2023-11-09'
+date: "2023-11-09"
 description: epicurus's philosophy on desire, kinetic versus katastematic pleasure, virtues including prudence and friendship, atomism, and challenge to religion.
 id: Epicurus
-modified: 2025-10-29 02:16:16 GMT-04:00
+modified: 2026-05-09 17:51:56 GMT-04:00
 tags:
   - philosophy
   - philos1aa3

@@ -5,10 +5,10 @@ author:
   - Thomas Icard
   - Christopher Potts
   - Noah D. Goodman
-date: '2025-11-23'
+date: "2025-11-23"
 description: generalisation of causal abstraction from mechanism intervention to transformations
 id: '@geiger2025causalabstraction'
-modified: 2026-03-12 04:00:49 GMT-04:00
+modified: 2026-05-09 17:51:56 GMT-04:00
 tags:
   - interp
 title: 'Causal abstraction: A theoretical foundation for mechanistic interpretability'

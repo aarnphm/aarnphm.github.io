@@ -1,9 +1,9 @@
 ---
-date: '2025-01-22'
+date: "2025-01-22"
 description: and on emboddied experience.
 draft: true
 id: physical touch
-modified: 2025-10-29 02:15:12 GMT-04:00
+modified: 2026-05-09 17:51:36 GMT-04:00
 tags:
   - growth
   - love

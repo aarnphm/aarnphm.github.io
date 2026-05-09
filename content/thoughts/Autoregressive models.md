@@ -1,8 +1,8 @@
 ---
-date: '2024-02-07'
+date: "2024-02-07"
 description: as a priori training objectives
 id: Autoregressive models
-modified: 2025-10-29 02:15:16 GMT-04:00
+modified: 2026-05-09 17:51:52 GMT-04:00
 tags:
   - seed
   - ml

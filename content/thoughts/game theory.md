@@ -1,8 +1,8 @@
 ---
-date: '2024-04-12'
+date: "2024-04-12"
 description: mathematical study of strategic decision-making, emerging from von neumann's work using brouwer's fixed-point theorem on continuous mappings into compact convex sets.
 id: game theory
-modified: 2025-10-29 02:15:46 GMT-04:00
+modified: 2026-05-09 17:51:51 GMT-04:00
 tags:
   - seed
 title: game theory

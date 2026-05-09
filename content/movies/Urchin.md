@@ -1,16 +1,19 @@
 ---
+category:
+  - comedy
+date: "2026-05-09"
+description: Sleeping rough on the streets of London, Mike seems unable to escape the chaos of his impulsivity and substance abuse. He's intelligent and charismatic, but when his addiction results in an act of unprovoked violence, he's quickly arrested.
+director:
+  - Harris Dickinson
+id: Urchin
+modified: 2026-05-09 17:51:43 GMT-04:00
+posters: '[[movies/posters/urchin.jpg]]'
+rating: 7.2
+status: to watch
+studio: '[independent]'
 tags:
   - drama
 title: Urchin
-director:
-  - Harris Dickinson
-status: to watch
-studio: '[independent]'
-watched:
+watched: null
 year: 2025
-rating: 7.2
-category:
-  - comedy
-description: Sleeping rough on the streets of London, Mike seems unable to escape the chaos of his impulsivity and substance abuse. He's intelligent and charismatic, but when his addiction results in an act of unprovoked violence, he's quickly arrested.
-posters: '[[movies/posters/urchin.jpg]]'
 ---

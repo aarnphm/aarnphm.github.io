@@ -1,8 +1,8 @@
 ---
-date: '2024-12-09'
+date: "2024-12-09"
 description: convolutional neural networks exploiting sparse connectivity and locality through filters, stride, padding, and 1d/2d convolutions.
 id: Convolutional Neural Network
-modified: 2025-10-29 02:16:08 GMT-04:00
+modified: 2026-05-09 17:52:00 GMT-04:00
 tags:
   - sfwr4ml3
 title: Convolutional Neural Network

@@ -1,8 +1,8 @@
 ---
-date: '2024-01-24'
+date: "2024-01-24"
 description: lab on pid controller design for dc motor with transfer functions for angular velocity and position, final value theorem, and steady-state analysis.
 id: content
-modified: 2025-10-29 02:16:22 GMT-04:00
+modified: 2026-05-09 17:51:58 GMT-04:00
 tags:
   - sfwr3dx4
   - lab

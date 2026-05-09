@@ -1,8 +1,8 @@
 ---
-date: '2026-01-28'
+date: "2026-01-28"
 description: what-it's-like-ness, the hard problem, and why functional explanation keeps missing the target
 id: phenomenal-consciousness
-modified: 2026-01-28 02:30:00 GMT-05:00
+modified: 2026-05-09 17:51:48 GMT-04:00
 seealso:
   - '[[thoughts/access consciousness]]'
   - '[[thoughts/dualism]]'
@@ -10,13 +10,13 @@ seealso:
   - '[[thoughts/philosophical zombies]]'
   - '[[thoughts/functionalism]]'
   - '[[thoughts/physicalism]]'
+socials:
+  sep: https://plato.stanford.edu/entries/consciousness/
+  wikipedia: https://en.wikipedia.org/wiki/Phenomenal_consciousness
 tags:
   - philosophy
   - consciousness
 title: phenomenal consciousness
-socials:
-  sep: https://plato.stanford.edu/entries/consciousness/
-  wikipedia: https://en.wikipedia.org/wiki/Phenomenal_consciousness
 ---
 
 _photons strike retina, neurons fire in patterns we can map, and yet something else is happening: a felt quality, a what-it's-like-ness._

@@ -1,8 +1,8 @@
 ---
-date: '2025-09-14'
+date: "2025-09-14"
 description: criterion for finding difference between input logits and targets.
 id: cross entropy
-modified: 2025-10-29 02:15:43 GMT-04:00
+modified: 2026-05-09 17:51:55 GMT-04:00
 tags:
   - ml
   - probability

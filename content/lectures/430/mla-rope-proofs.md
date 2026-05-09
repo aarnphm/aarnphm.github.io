@@ -1,8 +1,8 @@
 ---
-date: '2025-10-17'
+date: "2025-10-17"
 description: a basic theorem proof
 id: mla-rope-proofs
-modified: 2025-11-11 06:56:02 GMT-05:00
+modified: 2026-05-09 17:51:47 GMT-04:00
 tags:
   - ml
 title: proof for MLA RoPE

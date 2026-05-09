@@ -1,9 +1,9 @@
 ---
-date: '2025-02-21'
+date: "2025-02-21"
 description: for Stripe, but shouldn't affect general sites interaction
 id: privacy policy
 layout: technical
-modified: 2026-01-12 12:52:07 GMT-05:00
+modified: 2026-05-09 17:51:38 GMT-04:00
 noindex: true
 permalinks:
   - /privacy

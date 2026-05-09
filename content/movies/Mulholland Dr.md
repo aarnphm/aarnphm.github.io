@@ -3,12 +3,12 @@ category:
   - thriller
   - drama
   - absurdism
-date: '2026-01-11'
+date: "2026-01-11"
 description: hollywood dream logic where identity splits - lynch turns an audition into a nightmare.
 director:
   - David Lynch
 id: Mulholland Dr
-modified: 2026-01-11 04:48:22 GMT-05:00
+modified: 2026-05-09 17:51:46 GMT-04:00
 posters: '[[movies/posters/mulholland-drive.jpg]]'
 rating: 7.9
 status: to watch

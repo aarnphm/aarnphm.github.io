@@ -1,8 +1,8 @@
 ---
-date: '2024-11-27'
+date: "2024-11-27"
 description: and what it meant to be an engineer
 id: occupational licensure
-modified: 2025-11-22 11:39:08 GMT-05:00
+modified: 2026-05-09 17:51:34 GMT-04:00
 tags:
   - engineer4a03
   - fruit

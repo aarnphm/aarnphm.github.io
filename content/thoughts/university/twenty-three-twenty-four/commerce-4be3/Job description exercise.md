@@ -1,8 +1,8 @@
 ---
-date: '2024-01-31'
+date: "2024-01-31"
 description: evaluating job factors for customer service representative including knowledge, experience, decision-making responsibility, and creativity requirements.
 id: Job Description Exercise
-modified: 2025-10-29 02:16:11 GMT-04:00
+modified: 2026-05-09 17:51:54 GMT-04:00
 tags:
   - commerce4be3
 title: exercise

@@ -1,18 +1,18 @@
 ---
-date: '2025-01-25'
+date: "2025-01-25"
 description: and OSS AI ftw.
 id: DeepSeek
-modified: 2025-12-03 15:07:13 GMT-05:00
+modified: 2026-05-09 17:51:33 GMT-04:00
 seealso:
   - '[[thoughts/DS32]]'
+socials:
+  open-r1: https://github.com/huggingface/open-r1
+  paper: '[[thoughts/papers/2501.12948v1.pdf|pdf]]'
 tags:
   - ml
   - vllm
   - inference
 title: DeepSeek
-socials:
-  open-r1: https://github.com/huggingface/open-r1
-  paper: '[[thoughts/papers/2501.12948v1.pdf|pdf]]'
 ---
 
 _reasoning and distill variants trained on high-quality RL data_

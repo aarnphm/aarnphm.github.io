@@ -1,9 +1,9 @@
 ---
-date: '2025-07-13'
+date: "2025-07-13"
 description: and growing, friendship
 draft: true
 id: confusion
-modified: 2026-01-21 01:27:20 GMT-05:00
+modified: 2026-05-09 17:51:34 GMT-04:00
 tags:
   - love
   - friend

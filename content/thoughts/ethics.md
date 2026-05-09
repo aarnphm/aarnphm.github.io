@@ -1,8 +1,8 @@
 ---
-date: '2024-03-05'
+date: "2024-03-05"
 description: we study ethics in order to improve our life, or Aristotelian ethics
 id: ethics
-modified: 2025-10-29 02:15:45 GMT-04:00
+modified: 2026-05-09 17:51:46 GMT-04:00
 tags:
   - philosophy
   - seed
