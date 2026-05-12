@@ -314,3 +314,4 @@ content/thoughts/university/twenty-five-twenty-six/sfwr-4tb3/Finals/03[[:space:]
 content/thoughts/university/twenty-five-twenty-six/sfwr-4tb3/Finals/ST.ipynb filter=lfs diff=lfs merge=lfs -text
 content/stream.md filter=lfs diff=lfs merge=lfs -text
 docs/neofinalism-transhumanism-meliorism-plan.md filter=lfs diff=lfs merge=lfs -text
+content/posts/m/mo.md filter=lfs diff=lfs merge=lfs -text

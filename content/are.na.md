@@ -143,6 +143,15 @@ title: are.na
 - [meta]:
   - view: list
 
+- https://x.com/tszzl/status/2052864698039820659 -- alignment on good trajectory of frontier models
+  - [meta]:
+    - date: 05/12/2026
+    - tags: [longtermism]
+    - later: true
+- https://x.com/itsjessyin/status/2052825433050095804 -- visual interface exploration of pictures frames
+  - [meta]:
+    - date: 05/12/2026
+    - tags: [interface]
 - https://x.com/parveen__tyagi/status/2046533563932410307 -- How to get unstuck
   - [meta]:
     - date: 04/23/2026
@@ -588,6 +597,10 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://play.fast/ -- Play
+  - [meta]:
+    - date: 05/11/2026
+    - tags: [interface, ai]
 - https://claudelives.com/ -- Claude 3 [**]
   - [meta]:
     - date: 05/09/2026
@@ -2278,6 +2291,19 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://www.wired.com/story/he-couldnt-land-a-job-interview-was-ai-to-blame/ -- He Couldn’t Land a Job Interview. Was AI to Blame?
+  - [meta]:
+    - date: 05/12/2026
+    - tags: [engineering, ai]
+- https://x.com/WillManidis/status/2054181721470620044 -- Black Sun (الشمس السوداء)
+  - [meta]:
+    - date: 05/12/2026
+    - tags: [notes, humanity]
+- https://fugitivemargins.substack.com/p/the-end-of-elsewhere -- The End Of Elsewhere
+  - [meta]:
+    - date: 05/12/2026
+    - tags: [humanity]
+    - importance: 5
 - https://www.deepfates.com/projects/sonnet-funeral -- Claude 3 Funeralia
   - [meta]:
     - date: 05/09/2026
@@ -2765,10 +2791,11 @@ title: are.na
   - [meta]:
     - date: 12/21/2025
     - tags: [alignment, products]
-- https://aligned.substack.com/p/alignment-is-not-solved-but-increasingly-looks-solvable
+- https://aligned.substack.com/p/alignment-is-not-solved-but-increasingly-looks-solvable -- Alignment is not solved
   - [meta]:
     - date: 02/02/2026
     - tags: [alignment, longtermism]
+    - later: true
 - https://www.henrikkarlsson.xyz/p/self-help-for-cocoons -- Self-help for cocoons
   - [meta]:
     - date: 12/21/2025
@@ -9483,6 +9510,14 @@ title: are.na
   - view: list
   - json: true
 
+- https://x.com/IshaanWatts18/status/2052809099234926709 -- Sharpness-Aware-Minimization
+  - [meta]:
+    - date: 05/12/2026
+    - tags: [optimizer]
+- https://bair.berkeley.edu/blog/2026/05/08/adaptive-parallel-reasoning/ -- Adaptive Parallel Reasoning: The Next Paradigm in Efficient Inference Scaling
+  - [meta]:
+    - date: 05/12/2026
+    - tags: [inference, ttt]
 - https://huggingface.co/deepseek-ai/DeepSeek-V4-Pro/blob/main/DeepSeek_V4.pdf -- DeepSeek V4 Technical Reports
   - [meta]:
     - date: 04/28/2026
