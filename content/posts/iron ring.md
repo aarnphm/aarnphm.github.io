@@ -17,6 +17,8 @@ The Corporation of the Seven Wardens, the body that administers the ceremony acr
 
 There are approximately 500,000 engineers taken this obligation since 1925. I am now, one of them. The ring has been on my pinky finger for the last four months, alongside the full set of jewelries I wore daily.
 
+---
+
 _ex opere operato_, "from the work worked." Sacraments produce their effect through the ritual itself, independent of the participant's worthiness. Baptism regenerates you whether or not you believe it does. Communion sanctifies you whether or not you feel sanctified. The ceremony acts on you. The Protestant objection was always the same: no, grace requires faith. The ritual doesn't work mechanically. You have to actually mean it.
 
 The iron ring obligation tries to split the difference and lands nowhere. It asks for the feeling of a vow without the binding of one.
