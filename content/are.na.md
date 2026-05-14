@@ -6,7 +6,7 @@ claude:
     - <h2>: is considered a "channel", where we have a row full of items
     - each list entry under a <h2> is considered as a "block".
     - A block will have the following structure:
-      ```md
+      ```markdown
       - <link> [separator:=--] <title>[optional] [**][optional]
         - [meta]:
           - <metadata>: <value>
@@ -25,7 +25,7 @@ codex:
       - "With regards to <discourse#block-1>, I want to expand on certain topics about money".
         In this example, <discource#block-1> refers to "section discourse first list item"
     A block will have the following structure:
-    - ```md
+    - ```markdown
       - <link> [separator:=--] <title>[optional] [**][optional]
         - [meta]:
           - <metadata>: <value>
@@ -143,6 +143,35 @@ title: are.na
 - [meta]:
   - view: list
 
+- https://x.com/CSProfKGD/status/2053870414397333697
+  - [meta]:
+    - date: 05/12/2026
+    - tags: [meme]
+- https://x.com/eliebakouch/status/2053607014366945461 -- Always listen to what rohan says
+  - [meta]:
+    - date: 05/12/2026
+    - tags: [optimizer, reading]
+- https://x.com/paulbohm/status/2052898355219517708
+  - [meta]:
+    - date: 05/12/2026
+    - tags: [meme]
+- https://x.com/GoodfireAI/status/2052420446910644616 -- Neural networks geometry [**]
+  - [meta]:
+    - date: 05/12/2026
+    - tags: [hypothesis]
+    - pinned: true
+  - https://www.goodfire.ai/research/the-world-inside-neural-networks
+  - https://www.goodfire.ai/research/manifold-steering#
+- https://x.com/_EldarKurtic/status/2053809592061030546?s=20 -- TurboQuant effectiveness and adoption [**]
+  - [meta]:
+    - date: 05/12/2026
+    - tags: [performance]
+    - importance: 8
+    - pinned: true
+- https://x.com/AnthropicAI/status/2052808801040859392 -- Teaching Claude why
+  - [meta]:
+    - date: 05/12/2026
+    - tags: [intelligence machine, ai]
 - https://x.com/tszzl/status/2052864698039820659 -- alignment on good trajectory of frontier models
   - [meta]:
     - date: 05/12/2026
@@ -597,6 +626,10 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://colossus.com/ -- Colossus
+  - [meta]:
+    - date: 05/14/2026
+    - tags: [magazine]
 - https://play.fast/ -- Play
   - [meta]:
     - date: 05/11/2026
@@ -2291,6 +2324,15 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://slatestarcodex.com/2015/01/11/the-phatic-and-the-anti-inductive/ -- The Phatic And The Anti-Inductive
+  - [meta]:
+    - date: 05/12/2026
+    - tags: [epistemology]
+    - later: true
+- https://archive.ph/20260506163507/https://unherd.com/2026/05/is-ai-the-next-phase-of-evolution/ -- When Dawkins met Claude Could this AI be conscious?
+  - [meta]:
+    - date: 05/12/2026
+    - tags: [consciousness]
 - https://www.wired.com/story/he-couldnt-land-a-job-interview-was-ai-to-blame/ -- He Couldn’t Land a Job Interview. Was AI to Blame?
   - [meta]:
     - date: 05/12/2026
@@ -4194,10 +4236,12 @@ title: are.na
        > b. When are empirical results transferable?
        > c. What causes some ideas to get wide uptake, whereas others are forgotten?
        > d. What are the trends in your field? Which lines of work will make the other ones obsolete?
-- https://numinous.productions/ttft/ -- How can we develop transformative tools for thought?
+- https://numinous.productions/ttft/ -- How can we develop transformative tools for thought? [**]
   - [meta]:
     - date: 10/05/2025
     - tags: [tool for thoughts]
+    - pinned: true
+    - importance: 8
   - By Andy Matuschak and Michael Nielsen
   - https://notation.app/n/d1VOwqGv5DbHdDLf
 
@@ -4231,6 +4275,10 @@ title: are.na
   - view: list
   - json: true
 
+- https://x.com/togethercompute/status/2053891740822917606 -- Serving DeepSeek-V4: why million-token context is an inference systems problem
+  - [meta]:
+    - date: 05/12/2026
+    - tags: [inference]
 - https://www.pi.website/blog/pi07 -- $\pi_{0.7}$: a Steerable Model with Emergent Capabilities
   - [meta]:
     - date: 04/27/2026
@@ -4551,7 +4599,7 @@ title: are.na
   - [meta]:
     - date: 12/12/2025
     - tags: [alignment]
-    - later: true
+    - pinned: true
 - https://openai.com/index/gdpval/ -- GDPval
   - [meta]:
     - date: 12/12/2025
@@ -6224,6 +6272,10 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://www.full-stack-alignment.ai/paper -- Full-Stack Alignment: Co‑Aligning AI and Institutions with Thick Models of Value
+  - [meta]:
+    - date: 05/12/2026
+    - tags: [ai, wellfare]
 - https://plato.stanford.edu/entries/compatibilism/ -- Compatibilism
   - [meta]:
     - date: 04/27/2026
@@ -7475,10 +7527,20 @@ title: are.na
 
 ## video
 
-- https://www.youtube.com/watch?v=QGo0uCHGyuo
+- https://www.youtube.com/watch?v=55pTFVoclvE -- I was laid off by Atlassian
+  - [meta]:
+    - date: 05/12/2026
+    - tags: [jobs, tam]
+    - importance: 8
+  - Note that experimental is IMPORTANT!
+- https://www.youtube.com/watch?v=hAs724a3E3o -- Jackson Dahl w/ Nicole Seah (startingwithnix)
+  - [meta]:
+    - date: 05/12/2026
+    - tags: [writing]
+- https://www.youtube.com/watch?v=QGo0uCHGyuo -- Please excuse wife smh.....
   - [meta]:
     - date: 05/06/2026
-    - tags: [music]
+    - tags: [music, meme]
 - https://www.youtube.com/watch?v=GvO1Sep15Xk -- when the devil owns the rights to your movie
   - [meta]:
     - date: 04/26/2026
@@ -8329,6 +8391,10 @@ title: are.na
 
 ## lecture
 
+- https://www.youtube.com/watch?v=HtSuA80QTyo&list=PLUl4u3cNGP61Oq3tWYp6V_F-5jb5L2iHb -- Introduction to Algorithm
+  - [meta]:
+    - date: 05/12/2026
+    - tags: [algorithm, ds]
 - https://www.youtube.com/watch?v=cQP8WApzIQQ -- MIT 6.824, Distributed Systems
   - [meta]:
     - date: 10/08/2025
@@ -8521,6 +8587,11 @@ title: are.na
 
 ## engineering
 
+- https://thinkingmachines.ai/blog/interaction-models/ -- Interaction Models: A Scalable Approach to Human-AI Collaboration
+  - [meta]:
+    - date: 05/12/2026
+    - tags: [models, releases]
+    - importance: 7
 - https://openai.com/index/running-codex-safely/ -- Running Codex safely
   - [meta]:
     - date: 05/09/2026
@@ -8668,7 +8739,7 @@ title: are.na
     - pinned: true
   - https://gist.github.com/jboner/2841832, Latency Numbers Every Programmer Should Know
   - https://mkennedy.codes/posts/python-numbers-every-programmer-should-know, Python Numbers Every Programmer Should Know
-    - ```text
+    - ```bash
       Attribute read (obj.x)                              14   ns
       Dict key lookup                                     22   ns                         1.5x attr
       Function call (empty)                               22   ns
@@ -8689,7 +8760,7 @@ title: are.na
       import json                                  2,900,000   ns      2,900 μs   3 ms   15x write 1MB
       import asyncio                              17,700,000   ns     17,700 μs  18 ms    6x import json
       ```
-    - ```text
+    - ```bash
       Float                                               24   bytes
       Small int (cached 0-256)                            28   bytes
       Empty string                                        41   bytes
@@ -9111,6 +9182,10 @@ title: are.na
 
 ## organizations
 
+- https://positivesum.com/ -- Positive Sum
+  - [meta]:
+    - date: 05/14/2026
+    - tags: [venture]
 - https://stridercapital.com/ -- Strider Capital
   - [meta]:
     - date: 05/06/2026
@@ -9510,10 +9585,11 @@ title: are.na
   - view: list
   - json: true
 
-- https://x.com/IshaanWatts18/status/2052809099234926709 -- Sharpness-Aware-Minimization
+- https://arxiv.org/abs/2605.02105
   - [meta]:
     - date: 05/12/2026
     - tags: [optimizer]
+    - seealso: https://x.com/IshaanWatts18/status/2052809099234926709
 - https://bair.berkeley.edu/blog/2026/05/08/adaptive-parallel-reasoning/ -- Adaptive Parallel Reasoning: The Next Paradigm in Efficient Inference Scaling
   - [meta]:
     - date: 05/12/2026
