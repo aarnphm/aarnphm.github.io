@@ -102,7 +102,7 @@ Problem: atypical vision is functionally different (different discriminations, d
 
 But if phenomenal character is determined by functional role, architectural/training differences that don't affect function shouldn't affect phenomenology. If phenomenal character varies independently of function, we have no way to tell whether AI systems have inverted qualia (or any qualia).
 
-This is practical problem: if qualia can vary independently of function, behavioral tests and [[thoughts/Mechanistic interpretability|mechanistic interpretability]] won't tell you about consciousness. Functional decomposition gives you causal structure, not phenomenology. You need additional theory linking function to phenomenology—but the inverted spectrum suggests no such theory exists (or if it does, it's not functional theory).
+This is practical problem: if qualia can vary independently of function, behavioral tests and [[thoughts/mechanistic interpretability|mechanistic interpretability]] won't tell you about consciousness. Functional decomposition gives you causal structure, not phenomenology. You need additional theory linking function to phenomenology—but the inverted spectrum suggests no such theory exists (or if it does, it's not functional theory).
 
 **Comparative consciousness.** Do bats experience echolocation with unique phenomenal character? Do octopuses have visual qualia we can't imagine? [@nagel1974bat]
 
