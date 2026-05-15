@@ -111,7 +111,7 @@ The knowledge argument says: functional/behavioral capacities aren't phenomenal 
 
 No consensus. Your view on AI consciousness tracks your view on the knowledge argument: if Mary learns something beyond physical/functional facts, so does phenomenal knowledge require something beyond functional organization. If the ability hypothesis works, functional capacities might suffice.
 
-**Mechanistic interpretability.** When we decompose [[thoughts/LLMs|neural networks]], we find functional features: "this direction represents color," "this circuit tracks RGB values." [@geiger2025causalabstraction] Complete functional story—but nothing about what it's like (if anything) for the model to process color.
+**mechanistic interpretability.** When we decompose [[thoughts/LLMs|neural networks]], we find functional features: "this direction represents color," "this circuit tracks RGB values." [@geiger2025causalabstraction] Complete functional story—but nothing about what it's like (if anything) for the model to process color.
 
 This is Mary's epistemic situation. You can know the functional architecture completely and still not know phenomenal character (if present). The knowledge argument predicts this: functional knowledge doesn't entail phenomenal knowledge.
 

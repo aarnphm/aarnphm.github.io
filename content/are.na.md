@@ -626,6 +626,10 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://cohere.com/project-pursue -- Project Pursue
+  - [meta]:
+    - date: 05/14/2026
+    - tags: [embeddings]
 - https://colossus.com/ -- Colossus
   - [meta]:
     - date: 05/14/2026

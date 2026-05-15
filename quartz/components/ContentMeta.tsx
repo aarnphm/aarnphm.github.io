@@ -42,6 +42,36 @@ export default (() => {
     }
 
     const meta: MetaProp[] = []
+
+    const collaboratorsRaw = fileData.frontmatter?.collaborators || fileData.frontmatter?.collaborator
+    if (collaboratorsRaw) {
+      const collaborators = Array.isArray(collaboratorsRaw) ? collaboratorsRaw : [collaboratorsRaw]
+      const collabAliases: Record<string, string> = {
+        opus: 'opus-4.7[1m]',
+        gemini: 'gemini-3.1-pro-review',
+        'gpt': 'gpt-5.5',
+      }
+      const items: JSX.Element[] = []
+      collaborators.forEach((c: string, i: number) => {
+        const alias = collabAliases[c.toLowerCase()] || c
+        const mdLinkMatch = alias.match(/^\[([^\]]+)\]\(([^)]+)\)$/)
+        if (mdLinkMatch) {
+          items.push(h('a', { href: mdLinkMatch[2], target: '_blank', rel: 'noopener noreferrer', class: 'collab-link' }, [mdLinkMatch[1]]))
+        } else if (alias.startsWith('http://') || alias.startsWith('https://')) {
+          items.push(h('a', { href: alias, target: '_blank', rel: 'noopener noreferrer', class: 'collab-link' }, [alias]))
+        } else {
+          items.push(h('span', { class: 'collab-text' }, [alias]))
+        }
+        if (i < collaborators.length - 1) {
+          items.push(h('span', {}, [', ']))
+        }
+      })
+      meta.push({
+        title: 'avec',
+        classes: ['collaborators'],
+        item: items,
+      })
+    }
     if (created !== undefined) {
       meta.push({
         title: 'publié à',

@@ -26,8 +26,9 @@ Here are a few things that I like:
 - [[thoughts/functionalism]]
 - Michel Foucault's The Archaeology of Knowledge
 - [[thoughts/mechanistic interpretability|interpretability megalist]]
-- high performance [[thoughts/vllm|inference]] [[thoughts/LLMs|LLMs]] engine
+- high performance [[thoughts/vllm|inference]] [[thoughts/LLMs|engine]]
 - dimension-3 #topology
+- [[thoughts/algebraic geometry|algebraic geometry]]
 - [[thoughts/homeomorphism]]
 - Synchronizität (synchronicity)
 

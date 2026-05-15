@@ -13,102 +13,49 @@ seealso:
 socials:
   sep: https://plato.stanford.edu/entries/panpsychism/
   wikipedia: https://en.wikipedia.org/wiki/Panpsychism
+collaborators: 
+  - gemini
 tags:
   - philosophy
   - consciousness
 title: panpsychism
 ---
 
-_experience doesn't emerge from non-experience, it was there all along in simpler forms._
+*experience avoids emerging from non-experience; it sits there all along in simpler forms.*
 
-when i reach for panpsychism, i'm trying to make sense of _saying experience "emerges" from totally non-experiential matter_ without explaining what "emerges" actually means.
+- panpsychism claims mentality exists at the fundamental level
+- avoids attributing complex thoughts to inanimate objects
+- whatever realizes physical structure from the inside possesses experiential character
 
-the panpsychists' mentality goes all the way down. some form of experience, or proto-experience, or at least something phenomenal-ish, exists at the fundamental level. this isn't rocks thinking about lunch or electrons believing things, but the claim that whatever realizes physical structure from the inside has some experiential character.
+### emergence relies on eliminativism, type identity theory, or complexity-based emergence
+- emergence fails to explain why specific arrangements of non-experiential matter yield specific feelings
 
-## the emergence problem
+### the russellian move
+- bertrand russell (1927) notes physics outlines relational structure (mass attracts, charges repel)
+- relations require relata; dispositions need underlying categorical nature
+- panpsychists label that intrinsic nature experiential, closing the gap
 
-standard [[thoughts/physicalism]] says experience arises from non-experiential physical processes. but when i ask how, i get three moves that all feel incomplete:
+### historical lineage
+- **leibniz (1714)**: monads have perception; relational structure necessitates mentalistic intrinsic natures
+- **spinoza (1677)**: one substance, infinite attributes; extension (matter) and thought (mind)
+- **whitehead (1929)**: fundamental units operate as actual occasions with experiential character
 
-1. deny experience exists (eliminativism).
-2. claim experience is identical to physical states (type identity theory). this just relabels the gap, doesn't explain it.
-3. say experience emerges from complexity (standard emergentism). but then i need some story about why THESE arrangements of non-experiential stuff yield THIS particular feeling, and the story never arrives.
+### contemporary versions
+- **galen strawson (2006)**: consciousness refuses to emerge from non-conscious matter
+- **philip goff (2017)**: phenomenal properties possess bonding relations linking micro to macro
+- **david chalmers (2015)**: panpsychism acts as dialectical synthesis of materialism and dualism
+- **giulio tononi (IIT)**: integrated information theory assigns minimal consciousness to photodiodes
 
-panpsychism rejects these framing, insofar to experience combines and rearrange non-experience??
+### combination problem
+- william james (1890) notes private experiences resist natural summing
+- chalmers (2017) breaks this into subject-summing, quality combination, and structural mismatch
+- the combination problem remains panpsychism's hard problem
 
-## the russellian move
+### variants
+- **panprotopsychism**: fundamental entities possess proto-phenomenal properties
+- **constitutive vs emergent**: macro-consciousness grounds in micro-consciousness versus remaining fundamental
+- **micropsychism vs cosmopsychism**: fundamental particles hold experience versus the universe operating as the fundamental conscious entity
 
-the cleanest way to think about this runs through bertrand russell (1927): physics tells us about relational structure (mass attracts, charges repel, spin couples to angular momentum). but relations need relata. dispositions need something categorical underneath doing the disposing. what IS that intrinsic nature?
-
-the panpsychist answer: it's experiential. this closes the gap between physical structure and qualitative feel without adding a second substance. [@chalmers2015panpsychism]
-
-## where this comes from historically
-
-**leibniz (1714)**: monads have perception and appetition. perception here isn't consciousness (leibniz distinguishes them explicitly). the move is: if physical description only captures relational structure, we need something mentalistic to characterize intrinsic natures.
-
-**spinoza (1677)**: one substance, infinite attributes, we know two: extension (matter) and thought (mind). every physical mode has a mental mode. leads to: "all individuals, though in different degrees, are nevertheless animated."
-
-**whitehead (1929)**: process philosophy. fundamental units are actual occasions (events), each with experiential character via prehension (grasping/feeling other occasions). he called it panexperientialism to avoid "mind" talk. consciousness is high-grade experience in complex organisms.
-
-## contemporary versions
-
-**galen strawson (2006)**: if you're a genuine [[thoughts/physicalism|physicalist]] and consciousness is real, consciousness must be physical. consciousness can't emerge from entirely non-conscious matter. therefore it goes down. the premise: for certain things A, you can't get A from non-A. experience is one such thing. [@strawson2006realisticmonism]
-
-**philip goff (2017-2024)**: a main contemporary advocate. his "phenomenal bonding solution": phenomenal properties have bonding relations that link micro to macro. he claims this dissolves the combination problem, though most philosophers remain unconvinced. [@goff2017consciousness]
-
-**david chalmers**: sympathetic, not committed. his contribution is taxonomic: constitutive vs non-constitutive, microphenomenal vs macrophenomenal. presents panpsychism as dialectical synthesis (thesis: materialism, antithesis: dualism, synthesis: panpsychism). [@chalmers2015panpsychism]
-
-**giulio tononi (IIT)**: integrated information theory lands on panpsychism. phi (Φ) measures integrated information, consciousness = positive phi. even photodiodes have minimal phi, thus minimal consciousness. differs from traditional panpsychism: digital computers and feedforward networks can't be conscious despite complex computation. [@tononi2023iit4]
-
-## the combination problem
-
-william james (1890) saw this coming:
-
-> take a hundred of them [feelings], shuffle them and pack them as close together as you can; still each remains the same feeling it always was, shut in its own skin, windowless, ignorant of what the other feelings are and mean.
-
-experiences are private, bounded. they don't naturally sum. if i grant that electrons have micro-experiences, i still need to explain how billions of them combine into my unified experience of seeing red. chalmers (2017) breaks this into three sub-problems: [@chalmers2017combination]
-
-1. **subject-summing**: how do many micro-subjects yield one macro-subject
-2. **quality combination**: how do micro-qualia combine into the specific red i'm seeing
-3. **structural mismatch**: why should THIS neural arrangement produce THAT particular experience
-
-proposed solutions include phenomenal bonding (goff), co-consciousness relations, literal fusion, or flipping the direction entirely (cosmopsychism: start with cosmic consciousness, derive individuals through de-combination). none of these has stuck. the combination problem is to panpsychism what the hard problem is to [[thoughts/physicalism]].
-
-## variants
-
-**panprotopsychism**: fundamental entities have proto-phenomenal properties (not full phenomenal properties). these combine to yield full phenomenal consciousness in complex systems. avoids attributing genuine experience to electrons. faces analogous combination problem: how do proto-experiences combine into experiences.
-
-**constitutive vs emergent** (chalmers 2015):
-
-- **constitutive**: macro-consciousness is grounded in micro-consciousness. explains consciousness by composing it from simpler consciousness
-- **emergent**: micro-consciousness exists but macro-consciousness is fundamental/strongly emergent, not grounded in micro
-
-constitutive panpsychism has the combination problem. emergent panpsychism avoids it but loses explanatory advantages (faces causation problems like dualism).
-
-**micropsychism vs cosmopsychism**:
-
-- **micropsychism**: bottom-up. fundamental particles have basic experience. complexity yields complex experience
-- **cosmopsychism** (shani 2015): top-down. the universe as a whole is the fundamental conscious entity. individual consciousnesses are aspects/derivations
-
-cosmopsychism trades the combination problem for a de-combination problem: how does cosmic consciousness individuate into distinct subjects.
-
-## the IIT problem
-
-scott aaronson's critique: he constructed an expander graph (sparse but highly connected) with arbitrarily high phi, thus "more conscious than humans" according to IIT. even simpler: a 2D grid of inactive logic gates has high phi. [@aaronson2014iit]
-
-tononi concedes the counterexample is valid and accepts the implication: expander graphs are conscious.
-
-aaronson's response: you can't both dismiss intuitions about expander graphs not being conscious AND rely on intuitions to motivate IIT's axioms. if your consciousness measure says inactive logic gates are highly conscious, you've defined something other than consciousness.
-
-## implications for AI
-
-**if micropsychism true**: digital computation may be incapable of coherent macro-consciousness. neural function is analog (rates of firing covary monotonically with physical stimuli). digital computation abstracts away from physical magnitudes. micro-experiences in silicon lack the right structure to cohere into macro-experience.
-
-**if IIT true**: feedforward networks cannot be conscious (no recurrence = no integration = phi ≈ 0). current transformers are largely feedforward with attention. consciousness requires recurrent dynamics that create intrinsic cause-effect power.
-
-**panpsychism doesn't solve the "pretty hard problem"** (aaronson's term): even if panpsychism is true, it doesn't tell us which complex systems are conscious. panpsychism speaks to how experience relates to matter fundamentally. determining if a model is conscious requires additional criteria.
-
-## why this keeps coming up
-
-panpsychism is best understood as a move to avoid brute emergence. all the historical lineage, all the variants, are scaffolding around that core intuition: you can't get experience from zero-experience. whether the move works depends on solving combination, which nobody's done yet.
-
-the 22% of philosophers who lean toward [[thoughts/dualism|property dualism]] (philpapers 2020) often find panpsychism or russellian monism more tolerable than alternatives. they share the sense that [[thoughts/physicalism]] is missing something, they just disagree on what to add and where to put it.
+### implications for AI
+- micropsychism: digital computation abstracts physical magnitudes, preventing micro-experiences from cohering
+- IIT: feedforward networks (including most transformers) lack consciousness due to missing recurrent integration
