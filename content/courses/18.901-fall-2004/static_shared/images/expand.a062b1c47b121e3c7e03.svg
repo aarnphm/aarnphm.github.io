@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="16px" height="16px" viewBox="0 0 16 16" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>0001A30E-0517-418E-A661-6CDB34B3B76A</title>
+    <defs>
+        <rect id="path-1" x="0" y="0" width="16" height="16"></rect>
+    </defs>
+    <g id="OCW-Q3-2022" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Mobile---Course-Materials-&amp;-Course-Info-locations" transform="translate(-23.000000, -135.000000)">
+            <g id="Group-2" transform="translate(16.000000, 130.000000)">
+                <g id="arrow-/-expand" transform="translate(7.000000, 5.000000)">
+                    <mask id="mask-2" fill="white">
+                        <use xlink:href="#path-1"></use>
+                    </mask>
+                    <g id="arrow-/-expand-(Background/Mask)"></g>
+                    <path d="M11.3333333,4.66666667 L8,4.66666667 L8,3.33333333 L12.6666667,3.33333333 L12.6615829,8.00000032 L11.3333333,8.00000032 L11.3333333,4.66666667 Z M4.66666683,11.3333333 L8,11.3333333 L8,12.6666667 L3.33333333,12.6666667 L3.33841778,7.99999936 L4.66666714,7.99999936 L4.66666683,11.3333333 Z" fill="#115F83" mask="url(#mask-2)"></path>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

@@ -2,7 +2,7 @@
 date: "2025-11-10"
 description: conceivability, possibility, and the limits of functionalism
 id: philosophical-zombies
-modified: 2026-05-09 17:51:50 GMT-04:00
+modified: 2026-05-15 01:01:20 GMT-04:00
 seealso:
   - '[[thoughts/functionalism]]'
   - '[[thoughts/qualia]]'
@@ -18,8 +18,9 @@ seealso:
 socials:
   sep: https://plato.stanford.edu/entries/zombies/
   wikipedia: https://en.wikipedia.org/wiki/Philosophical_zombie
-collaborators: 
+collaborators:
   - gemini
+  - codex
 tags:
   - pattern
 title: philosophical zombies
@@ -58,4 +59,4 @@ title: philosophical zombies
 - **ai consciousness**: functional tests leave the question of internal experience open
 - **mechanistic interpretability**: causal maps remain silent about experience
 - **clinical criteria**: if consciousness and function decouple, clinical instruments only approximate what we care about
-- acts as a commitment detector between identical functional organization and explanatory gaps
+- use the zombie case to find where a theory pays: deny the duplicate, break the conceivability-to-possibility move, or give up strict physical necessity

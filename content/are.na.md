@@ -143,6 +143,14 @@ title: are.na
 - [meta]:
   - view: list
 
+- https://x.com/tenobrus/status/2055069036149670027 -- ppl always focus on how things that used to be joyful and magical as children lose their luster as adults
+  - [meta]:
+    - date: 05/17/2026
+    - tags: [life]
+- https://x.com/jmrphy/status/2055783465933549885
+  - [meta]:
+    - date: 05/17/2026
+    - tags: [film interpretation]
 - https://x.com/CSProfKGD/status/2053870414397333697
   - [meta]:
     - date: 05/12/2026

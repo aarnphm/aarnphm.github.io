@@ -2,7 +2,7 @@
 date: "2026-01-28"
 description: mentality as fundamental, the combination problem, and why emergence keeps failing
 id: panpsychism
-modified: 2026-05-09 17:51:52 GMT-04:00
+modified: 2026-05-15 01:01:20 GMT-04:00
 seealso:
   - '[[thoughts/dualism]]'
   - '[[thoughts/physicalism]]'
@@ -13,22 +13,24 @@ seealso:
 socials:
   sep: https://plato.stanford.edu/entries/panpsychism/
   wikipedia: https://en.wikipedia.org/wiki/Panpsychism
-collaborators: 
+collaborators:
   - gemini
+  - codex
 tags:
   - philosophy
   - consciousness
 title: panpsychism
 ---
 
-*experience avoids emerging from non-experience; it sits there all along in simpler forms.*
+*panpsychism refuses the transition rule where non-experiential matter suddenly starts feeling like something.*
 
-- panpsychism claims mentality exists at the fundamental level
-- avoids attributing complex thoughts to inanimate objects
-- whatever realizes physical structure from the inside possesses experiential character
+- mentality is fundamental, or at least proto-fundamental
+- the view does not give rocks opinions
+- the bet is that physical structure has an inside, and that inside has experiential character
 
-### emergence relies on eliminativism, type identity theory, or complexity-based emergence
-- emergence fails to explain why specific arrangements of non-experiential matter yield specific feelings
+### why emergence looks too cheap
+- emergence relies on eliminativism, type identity theory, or complexity-based emergence
+- the open wound is why a pile of non-experiential parts should ever yield one felt point of view
 
 ### the russellian move
 - bertrand russell (1927) notes physics outlines relational structure (mass attracts, charges repel)
@@ -43,13 +45,13 @@ title: panpsychism
 ### contemporary versions
 - **galen strawson (2006)**: consciousness refuses to emerge from non-conscious matter
 - **philip goff (2017)**: phenomenal properties possess bonding relations linking micro to macro
-- **david chalmers (2015)**: panpsychism acts as dialectical synthesis of materialism and dualism
+- **david chalmers (2015)**: panpsychism stays live because materialism loses phenomenal facts and dualism loses causal contact
 - **giulio tononi (IIT)**: integrated information theory assigns minimal consciousness to photodiodes
 
 ### combination problem
 - william james (1890) notes private experiences resist natural summing
 - chalmers (2017) breaks this into subject-summing, quality combination, and structural mismatch
-- the combination problem remains panpsychism's hard problem
+- many little subjects do not obviously become one larger subject
 
 ### variants
 - **panprotopsychism**: fundamental entities possess proto-phenomenal properties

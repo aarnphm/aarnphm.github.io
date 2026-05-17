@@ -2,7 +2,7 @@
 date: "2026-01-28"
 description: what-it's-like-ness, the hard problem, and why functional explanation keeps missing the target
 id: phenomenal-consciousness
-modified: 2026-05-09 17:51:48 GMT-04:00
+modified: 2026-05-15 01:01:20 GMT-04:00
 seealso:
   - '[[thoughts/access consciousness]]'
   - '[[thoughts/dualism]]'
@@ -13,18 +13,19 @@ seealso:
 socials:
   sep: https://plato.stanford.edu/entries/consciousness/
   wikipedia: https://en.wikipedia.org/wiki/Phenomenal_consciousness
-collaborators: 
+collaborators:
   - gemini
+  - codex
 tags:
   - philosophy
   - consciousness
 title: phenomenal consciousness
 ---
 
-*photons strike the retina, neurons fire in patterns we map, and something else happens: a felt quality, a what-it's-like-ness.*
+*a 650nm patch gives the lab a wavelength, the retina a cone response, and the subject a red look.*
 
-- phenomenal consciousness points at the felt quality (the redness of red, painfulness of pain)
-- experiencing stands apart from information processing and behavioral outputs
+- phenomenal consciousness points at the felt quality: the redness of red, the painfulness of pain
+- it is what [[thoughts/access consciousness]] can route around without explaining
 - nagel (1974) defines it as "what it is like" to be in a state
 - kriegel splits this into qualitative (what appears) and subjective (that it appears for someone)
 
@@ -53,5 +54,5 @@ title: phenomenal consciousness
 
 ### AI systems
 - other minds problem amplifies due to different substrates and lack of shared lineage
-- behavioral indistinguishability provides zero closure on internal experience
-- third-person observation yields functional properties but evades phenomenal consciousness entirely
+- behavior gives access evidence: reports, task changes, internal circuits
+- the phenomenal variable remains unobserved

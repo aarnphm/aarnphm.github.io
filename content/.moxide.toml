@@ -26,7 +26,7 @@ references_in_codeblocks = true
 # The folder for new files to be created in; this is relevant for the code action that creates
 # from an unresolved link. If not specified, it will import from your obsidian config option titled
 # "Default Location for new notes" -- which is "" by default too.
-new_file_folder_path = "content/thoughts/"
+new_file_folder_path = "thoughts/"
 
 # The folder for new daily notes: this is applied for the create file for unresolved link code action
 # as well as the Today, Tomorrow, Yesterday, and Daily... lsp commands
@@ -57,7 +57,7 @@ inlay_hints = true
 block_transclusion = true
 # Full or Partial, for Partial, block_transclusion_length = { partial = 10 }
 # block_transclusion must be enabled for this to take effect
-block_transclusion_length = "Partial"
+block_transclusion_length = { partial = 10 }
 
 # Link file names only
 # Enables autocompleting by heading but inserting link to filename (instead of filename + heading)

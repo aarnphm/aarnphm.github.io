@@ -31,6 +31,10 @@ transclude:
   title: false
 ---
 
+> If I were only interested in facts I would buy the telephone directory of Manhattan. It has four million entries, and they are all correct, but it does not illuminate.
+>
+> Werner Herzog
+
 > I have this very strong opinion that when you’re young, you feel things on such an intense and detailed level. There’s an attention to detail when you are 17 to 22 years old, and you’re longing, or you’re reaching and grasping but never holding — someone’s attention, or someone’s love, or someone’s dedication — and you just can’t understand why you spend all day thinking about it. You notice everything. You notice candle ash on the cuff of the shirt, and the button, and it’s everything that makes the mythology of those intense feelings that you have. And I’ve always tried to — without being a completely unhinged adult — keep that level of detail and intensity when it comes to trying to describe a feeling.
 >
 > Taylor Swift, [_interview_](https://www.nytimes.com/2026/04/28/magazine/taylor-swift-songwriting-process-interview.html)

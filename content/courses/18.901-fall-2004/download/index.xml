@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Resources on MIT OpenCourseWare</title>
+    <link>/download/</link>
+    <description>Recent content in Resources on MIT OpenCourseWare</description>
+    <generator>Hugo</generator>
+    <language>en-us</language>
+    <atom:link href="/download/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Assignments</title>
+      <link>/resources/assignments/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/resources/assignments/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Lecture Notes</title>
+      <link>/resources/lecture-notes/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/resources/lecture-notes/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Problem Sets</title>
+      <link>/resources/problem-sets/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/resources/problem-sets/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Readings</title>
+      <link>/resources/readings/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/resources/readings/</guid>
+      <description></description>
+    </item>
+  </channel>
+</rss>

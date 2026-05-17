@@ -2,7 +2,7 @@
 date: "2026-01-28"
 description: notes on property dualism, the hard problem, and why physicalism keeps failing
 id: dualism
-modified: 2026-05-09 17:51:52 GMT-04:00
+modified: 2026-05-15 01:01:20 GMT-04:00
 seealso:
   - '[[thoughts/qualia]]'
   - '[[thoughts/philosophical zombies]]'
@@ -14,24 +14,25 @@ seealso:
 socials:
   sep: https://plato.stanford.edu/entries/dualism/
   wikipedia: https://en.wikipedia.org/wiki/Property_dualism
-collaborators: 
+collaborators:
   - gemini
+  - codex
 tags:
   - philosophy
   - consciousness
 title: dualism and philosophy of mind
 ---
 
-*functional descriptions of neural processes look complete on their own terms, yet the first-person character doesn't appear anywhere in the machinery.*
+*you can walk the mill, label every gear, and still fail to find the hurt in pain.*
 
-- dualism points at the gap between exhaustive physical description and missing experience
-- mental properties avoid reducing to physical properties
-- ontology requires both levels
+- dualism starts when the physical inventory finishes and the experience is still missing
+- property dualism keeps the brain-dependence while refusing the reduction
+- substance dualism is the heavier claim; this note mostly needs the property version
 
 ### leibniz's mill (1714)
 - walking through a thinking machine enlarged to mill-size reveals gears and levers
 - perception and feeling remain entirely absent from the machinery
-- modern equivalent: tracing information flow through attention heads leaves experience invisible
+- modern version: tracing information flow through attention heads still leaves experience invisible
 
 ### access vs phenomenal
 - ned block (1995) distinguishes two categories
@@ -40,13 +41,13 @@ title: dualism and philosophy of mind
 - maps of access improve while phenomenal consciousness stays unmeasured
 
 ### the hard problem
-- chalmers argues complete physical knowledge fails to deduce what it is like to be the system
-- property dualism accepts mental properties depend on physical substrates without reducing to them
+- chalmers argues complete physical knowledge still fails to derive what it is like to be the system
+- property dualism says the mental depends on the physical without being identical to it
 
 ### [[thoughts/philosophical zombies]]
 - a physical duplicate lacking inner experience remains conceivable
-- if conceivable, physical facts fail to entail phenomenal facts
-- behavior of AI models discussing [[thoughts/qualia]] fails to settle phenomenology
+- if that duplicate is possible, physical facts fail to entail phenomenal facts
+- an AI system talking cleanly about [[thoughts/qualia]] settles its behavior, not its phenomenology
 
 ### epiphenomenalism
 - if consciousness lacks causal effects, experience leaves no traces in circuits
@@ -61,5 +62,5 @@ title: dualism and philosophy of mind
 
 ### practical implications
 - interpretability yields [[thoughts/access consciousness]] maps
-- no tool reaches [[thoughts/phenomenal consciousness]] from third-person observation
+- third-person observation still misses [[thoughts/phenomenal consciousness]]
 - training capable systems leaves architectures partially uncharacterized
