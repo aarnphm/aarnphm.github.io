@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Problem Sets on MIT OpenCourseWare</title>
+    <link>/resources/problem-sets/</link>
+    <description>Recent content in Problem Sets on MIT OpenCourseWare</description>
+    <generator>Hugo</generator>
+    <language>en-us</language>
+    <atom:link href="/resources/problem-sets/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>commentsonstyle.pdf</title>
+      <link>/resources/commentsonstyle/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/resources/commentsonstyle/data.json</guid>
+      <description>&lt;p&gt;This handout contains suggestions for completing assignments in good mathematical style.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>problemset_5.pdf</title>
+      <link>/resources/problemset_5/data.json</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/resources/problemset_5/data.json</guid>
+      <description>&lt;p&gt;This is an optional problem set intended to make up for any assignment on which the student did poorly.&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

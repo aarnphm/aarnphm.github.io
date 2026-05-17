@@ -16,6 +16,10 @@ tags:
 title: dating me.
 ---
 
+> [!IMPORTANT]
+>
+> i'm no longer actively dating (i.e. i'm actively committed to someone), but I still want to keep this up given that it's still, an _important document_ to me. If you are interested in me as a friend, then I have a [[friends|friends-equivalent]] docs.
+
 This document doesn't represent the whole me, but it should give you a sense of the "non-tech" version of who I am and what I do in {{sidenotes[my downtime]: I'm not actively dating anymore, but this document is still an important part of my life, but you might be interested in [[friends|this docs]] instead.}}.
 
 I hate dating apps. I know it's a numbers game, but I got lazy and tired of the repetition and algorithms, so I decided to make this instead—something I can share with someone I find attractive.

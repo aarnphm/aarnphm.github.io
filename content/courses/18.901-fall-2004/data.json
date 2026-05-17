@@ -1,0 +1,73 @@
+{
+  "course_description": "This course introduces topology, covering topics fundamental to modern analysis and geometry. It also deals with subjects like topological spaces and continuous functions, connectedness, compactness, separation axioms, and selected further topics such as function spaces, metrization theorems, embedding theorems and the fundamental group.\n",
+  "course_description_html": "This course introduces topology, covering topics fundamental to modern analysis and geometry. It also deals with subjects like topological spaces and continuous functions, connectedness, compactness, separation axioms, and selected further topics such as function spaces, metrization theorems, embedding theorems and the fundamental group.",
+  "course_image": {
+    "content": "fd6e6b71-b2a8-4ed4-cc62-a976da33a264",
+    "website": "18-901-introduction-to-topology-fall-2004"
+  },
+  "course_image_metadata": {
+    "content_type": "resource",
+    "description": "A standard example in topology called \"the topologist's sine curve.\" (Image courtesy of Prof. James Munkres.)",
+    "draft": false,
+    "file": "/courses/18-901-introduction-to-topology-fall-2004/fd6e6b71b2a84ed4cc62a976da33a264_18-901f04.jpg",
+    "file_size": 60764,
+    "file_type": "image/jpeg",
+    "image_metadata": {
+      "caption": "A standard example in topology called \"the topologist's sine curve.\" (Image courtesy of Prof. James Munkres.)",
+      "credit": "",
+      "image-alt": "Graphic of the topologist's sine curve."
+    },
+    "iscjklanguage": false,
+    "learning_resource_types": [],
+    "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+    "ocw_type": "OCWImage",
+    "resourcetype": "Image",
+    "title": "18-901f04.jpg",
+    "uid": "fd6e6b71-b2a8-4ed4-cc62-a976da33a264",
+    "video_metadata": {
+      "youtube_id": null
+    }
+  },
+  "course_image_thumbnail": {
+    "content": "d573ba99-1bf4-3b83-c5e6-3856c1db8af2",
+    "website": "18-901-introduction-to-topology-fall-2004"
+  },
+  "course_title": "Introduction to Topology",
+  "department_numbers": [
+    "18"
+  ],
+  "extra_course_numbers": "",
+  "image_src": "./static_resources/fd6e6b71b2a84ed4cc62a976da33a264_18-901f04.jpg",
+  "instructors": [
+    {
+      "first_name": "James",
+      "last_name": "Munkres",
+      "middle_initial": "",
+      "salutation": "Prof.",
+      "title": "Prof. James Munkres",
+      "uid": "476ff88b-974b-2ce2-ca6e-5628ee1bdc98",
+      "url": "https://ocw.mit.edu/search/?q=Prof.+James+Munkres"
+    }
+  ],
+  "learning_resource_types": [
+    "Lecture Notes",
+    "Problem Sets"
+  ],
+  "legacy_uid": "472d0e45-8874-0011-1146-3dab1b753da0",
+  "level": [
+    "Undergraduate"
+  ],
+  "primary_course_number": "18.901",
+  "site_short_id": "18.901-fall-2004",
+  "site_uid": "26002c22-9a0a-4847-ac50-e65ac8ec96f5",
+  "site_url_path": "courses/18-901-introduction-to-topology-fall-2004",
+  "term": "Fall",
+  "title": "Course Metadata",
+  "topics": [
+    [
+      "Mathematics",
+      "Topology and Geometry"
+    ]
+  ],
+  "year": "2004"
+}

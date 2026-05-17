@@ -1,0 +1,24 @@
+{
+  "content": "<p>A standard example in topology called &ldquo;the topologist&rsquo;s sine curve.&rdquo; (Image courtesy of Prof. James Munkres.)</p>\n",
+  "content_type": "resource",
+  "description": "A standard example in topology called \"the topologist's sine curve.\" (Image courtesy of Prof. James Munkres.)",
+  "draft": false,
+  "file": "/courses/18-901-introduction-to-topology-fall-2004/fd6e6b71b2a84ed4cc62a976da33a264_18-901f04.jpg",
+  "file_size": 60764,
+  "file_type": "image/jpeg",
+  "image_metadata": {
+    "caption": "A standard example in topology called \"the topologist's sine curve.\" (Image courtesy of Prof. James Munkres.)",
+    "credit": "",
+    "image-alt": "Graphic of the topologist's sine curve."
+  },
+  "iscjklanguage": false,
+  "learning_resource_types": [],
+  "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+  "ocw_type": "OCWImage",
+  "resourcetype": "Image",
+  "title": "18-901f04.jpg",
+  "uid": "fd6e6b71-b2a8-4ed4-cc62-a976da33a264",
+  "video_metadata": {
+    "youtube_id": null
+  }
+}

@@ -2,7 +2,7 @@
 date: "2026-01-28"
 description: information availability, global workspace, and what interpretability can actually map
 id: access-consciousness
-modified: 2026-05-09 17:51:57 GMT-04:00
+modified: 2026-05-15 01:01:20 GMT-04:00
 seealso:
   - '[[thoughts/phenomenal consciousness]]'
   - '[[thoughts/dualism]]'
@@ -14,17 +14,18 @@ socials:
   sep: https://plato.stanford.edu/entries/consciousness-access/
 collaborators:
   - gemini
+  - codex
 tags:
   - philosophy
   - consciousness
 title: access consciousness
 ---
 
-*information crossing a threshold where it becomes globally available for report, reasoning, and control is measurable from the outside.*
+*access consciousness is the part a lab can catch: the report, the button press, the signal routed into later control.*
 
 - access consciousness tracks information passing through a bottleneck
-- becomes available for verbal report, reasoning, behavioral control
-- maps to what third-person methods and [[thoughts/mechanistic interpretability]] study
+- it becomes available for verbal report, reasoning, and behavioral control
+- it maps to the part third-person methods and [[thoughts/mechanistic interpretability]] can study
 
 ### block's distinction (1995)
 - **access consciousness (a-consciousness)**: availability for reasoning, control, report
@@ -36,7 +37,7 @@ title: access consciousness
 - illuminated items broadcast to unconscious processors
 - competing neural coalitions fight for access
 - winning signals ignite via prefrontal cortex, anterior temporal lobe, inferior parietal lobe, and precuneus
-- explains access consciousness, leaves phenomenal consciousness unaddressed
+- explains the broadcast, leaves the feel untouched
 
 ### dissociation cases
 - **blindsight**: damage to primary visual cortex (V1) leaves patients guessing correctly on visual tasks without [[thoughts/pdfs/Weiskrantz.pdf|visual experience]]
@@ -55,8 +56,8 @@ title: access consciousness
 
 ### interpretability limits
 - [[thoughts/mechanistic interpretability]] maps features, circuits, information flow, and input-output causality
-- yields third-person data mapping access-level structure
-- cannot bridge the gap to first-person phenomenal experience
+- yields a third-person map of access-level structure
+- says where the red-token goes, not whether red feels like anything
 
 ### moral status
 - sentientist view: moral status requires [[thoughts/phenomenal consciousness]]

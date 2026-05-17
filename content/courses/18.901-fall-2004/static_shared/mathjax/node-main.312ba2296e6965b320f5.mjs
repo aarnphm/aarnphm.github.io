@@ -1,0 +1,1 @@
+import"./node-main-setup.cjs";import{MathJax as t}from"./node-main.js";export default t;export const init=t.init;

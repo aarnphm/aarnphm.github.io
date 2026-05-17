@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="24px" height="24px" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>FD1BB86F-CE02-4CCD-B9C7-46420CADC5CE</title>
+    <defs>
+        <rect id="path-1" x="0" y="0" width="24" height="24"></rect>
+    </defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Video-Player-Q1-2023" transform="translate(-1061.000000, -946.000000)">
+            <g id="basic-/-download" transform="translate(1061.000000, 946.000000)">
+                <mask id="mask-2" fill="white">
+                    <use xlink:href="#path-1"></use>
+                </mask>
+                <g id="basic-/-download-(Background/Mask)"></g>
+                <path d="M11,16.1700001 L7.40999985,12.5900002 L6,14 L12,20 L18,14 L16.5900002,12.5900011 L13,16.1700001 L13,4 L11,4 L11,16.1700001 Z M19,22 L19,24 L5,24 L5,22 L19,22 Z" fill="#E8E8E8" mask="url(#mask-2)"></path>
+            </g>
+        </g>
+    </g>
+</svg>

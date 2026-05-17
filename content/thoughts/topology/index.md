@@ -8,3 +8,5 @@ tags:
   - topology
 title: topology entries
 ---
+
+see also: [[thoughts/topology]]

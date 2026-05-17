@@ -2,7 +2,7 @@
 date: "2026-01-28"
 description: the majority view (barely), supervenience, and why consciousness keeps resisting reduction
 id: physicalism
-modified: 2026-05-09 17:51:52 GMT-04:00
+modified: 2026-05-15 01:01:20 GMT-04:00
 seealso:
   - '[[thoughts/dualism]]'
   - '[[thoughts/functionalism]]'
@@ -13,8 +13,9 @@ seealso:
 socials:
   sep: https://plato.stanford.edu/entries/physicalism/
   wikipedia: https://en.wikipedia.org/wiki/Physicalism
-collaborators: 
+collaborators:
   - gemini
+  - codex
 tags:
   - philosophy
   - consciousness
@@ -38,7 +39,7 @@ title: physicalism
   - **weak**: within a world, mental duplicates match physical duplicates
   - **strong**: across all possible worlds, physical duplicates match mental duplicates
   - **global**: no two worlds operate physically identical while mentally different
-- supervenience describes a pattern while gesturing toward an underlying story
+- supervenience gives the dependence claim. it does not give the mechanism.
 
 ### why people accept it
 - **causal closure**: every physical effect requires a sufficient physical cause; mental events cause physical events, necessitating physical embodiment
@@ -57,6 +58,6 @@ title: physicalism
 - putnam's later critique notes different computational states implement the same mental state
 
 ### practical implications
-- if physicalism holds, replicating physical organization replicates consciousness
-- if [[thoughts/functionalism]] operates correctly, consciousness achieves substrate-independence, enabling silicon minds
-- if biological naturalism holds, consciousness requires specific causal powers of biological neurons
+- if physicalism holds, replicating the relevant physical organization replicates consciousness
+- if [[thoughts/functionalism]] is right, silicon can instantiate the relevant organization
+- if biological naturalism holds, copying input-output behavior is the wrong target
