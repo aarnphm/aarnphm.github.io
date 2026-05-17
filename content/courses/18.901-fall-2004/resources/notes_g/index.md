@@ -1,0 +1,24 @@
+---
+title: "notes g"
+description: "Notes G: These Supplementary Notes are optional reading for the corresponding lecture sessions."
+id: "mit-18-901-resource-notes-g"
+tags:
+  - "math"
+  - "topology"
+  - "course"
+  - "lecture notes"
+aliases:
+  - "534f34d4acff6e5733e89234c5e397bf_notes_g.pdf"
+---
+
+up: [[courses/18.901-fall-2004/|mit 18.901]]
+
+![[courses/18.901-fall-2004/static_resources/534f34d4acff6e5733e89234c5e397bf_notes_g.pdf]]
+
+Notes G: These Supplementary Notes are optional reading for the corresponding lecture sessions.
+
+## metadata
+
+- type: document
+- file: [[courses/18.901-fall-2004/static_resources/534f34d4acff6e5733e89234c5e397bf_notes_g.pdf|534f34d4acff6e5733e89234c5e397bf_notes_g.pdf]]
+- source: [mit opencourseware](https://ocw.mit.edu/courses/18-901-introduction-to-topology-fall-2004/534f34d4acff6e5733e89234c5e397bf_notes_g.pdf)

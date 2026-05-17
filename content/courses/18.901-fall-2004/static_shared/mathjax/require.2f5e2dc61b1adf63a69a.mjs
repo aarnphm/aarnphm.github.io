@@ -1,1 +1,0 @@
-import{createRequire as r}from"module";global.require=r(import.meta.url);
