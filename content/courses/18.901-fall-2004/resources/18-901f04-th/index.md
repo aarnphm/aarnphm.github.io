@@ -1,11 +1,16 @@
 ---
 title: "18 901f04 th"
 description: "New image Upload"
-id: "mit-18-901-resource-18-901f04-th"
+id: "mit-18-901-fall-2004-resource-resources-18-901f04-th"
 tags:
-  - "math"
-  - "topology"
   - "course"
+  - "mit"
+  - "ocw"
+  - "mathematics"
+  - "math"
+  - "topology and geometry"
+  - "topology"
+  - "geometry"
 aliases:
   - "d573ba991bf43b83c5e63856c1db8af2_18-901f04-th.jpg"
 ---

@@ -1,11 +1,16 @@
 ---
 title: "comments on style"
 description: "This handout contains suggestions for completing assignments in good mathematical style."
-id: "mit-18-901-resource-comments-on-style"
+id: "mit-18-901-fall-2004-resource-resources-comments-on-style"
 tags:
-  - "math"
-  - "topology"
   - "course"
+  - "mit"
+  - "ocw"
+  - "mathematics"
+  - "math"
+  - "topology and geometry"
+  - "topology"
+  - "geometry"
   - "problem sets"
 aliases:
   - "890ee0429431ba0ea62273ae0043c4f2_commentsonstyle.pdf"

@@ -1,11 +1,16 @@
 ---
 title: "errata for topology"
 description: "This handout contains the errata sheet for the reference book \"Topology\" for second and subsequent printings."
-id: "mit-18-901-resource-errata-for-topology"
+id: "mit-18-901-fall-2004-resource-resources-errata-for-topology"
 tags:
-  - "math"
-  - "topology"
   - "course"
+  - "mit"
+  - "ocw"
+  - "mathematics"
+  - "math"
+  - "topology and geometry"
+  - "topology"
+  - "geometry"
 aliases:
   - "296193819500dc68f6aedff1e470bd12_erratafortop.pdf"
 ---

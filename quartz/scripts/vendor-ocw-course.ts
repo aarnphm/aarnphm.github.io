@@ -8,6 +8,20 @@ import path from 'node:path'
 
 type JsonRecord = Record<string, unknown>
 
+type CourseContext = {
+  root: string
+  slug: string
+  sourcePath: string
+  sourceUrl: string
+  idPrefix: string
+  label: string
+  number: string
+  title: string
+  tags: string[]
+  aliases: string[]
+  linkableDirs: Set<string>
+}
+
 type CoursePage = {
   relDir: string
   title: string
@@ -27,9 +41,17 @@ type CourseResource = {
   originalFile: string
 }
 
-const courseRoot = process.argv[2] ?? path.join('content', 'courses', '18.901-fall-2004')
-const courseSlug = path.posix.join('courses', path.basename(courseRoot))
-const ocwUrl = 'https://ocw.mit.edu/courses/18-901-introduction-to-topology-fall-2004/'
+type CourseCollection = {
+  relDir: string
+  title: string
+  description: string
+  resources: CourseResource[]
+  extraLinks: string[]
+}
+
+const defaultCourseRoot = path.join('content', 'courses')
+const contentRoot = path.resolve('content')
+const mitBaseUrl = 'https://ocw.mit.edu/'
 
 function isRecord(value: unknown): value is JsonRecord {
   return typeof value === 'object' && value !== null && !Array.isArray(value)
@@ -43,7 +65,7 @@ function stringValue(record: JsonRecord, key: string): string {
 function stringList(record: JsonRecord, key: string): string[] {
   const value = record[key]
   if (!Array.isArray(value)) return []
-  return value.filter(item => typeof item === 'string')
+  return value.filter(item => typeof item === 'string').map(normalizeText)
 }
 
 function recordList(record: JsonRecord, key: string): JsonRecord[] {
@@ -57,7 +79,7 @@ function nestedStringLists(record: JsonRecord, key: string): string[][] {
   if (!Array.isArray(value)) return []
   return value
     .filter(item => Array.isArray(item))
-    .map(item => item.filter(child => typeof child === 'string'))
+    .map(item => item.filter(child => typeof child === 'string').map(normalizeText))
     .filter(item => item.length > 0)
 }
 
@@ -82,15 +104,36 @@ function normalizeText(value: string): string {
     .trim()
 }
 
+function titleWithoutExtension(value: string): string {
+  return value.replace(/\.(pdf|jpg|jpeg|png|gif|mp3|mp4|zip|html?)$/i, '')
+}
+
 function normalizeTitle(value: string): string {
-  const withoutExtension = value.replace(/\.(pdf|jpg|jpeg|png)$/i, '')
-  const spaced = withoutExtension
+  const spaced = titleWithoutExtension(value)
     .replace(/commentsonstyle/i, 'comments on style')
     .replace(/erratafortop/i, 'errata for topology')
-    .replace(/problemset/i, 'problem set')
-    .replace(/^18901$/i, 'notes a')
+    .replace(/problem[\s_-]*set/i, 'problem set')
+    .replace(/([a-z])([A-Z])/g, '$1 $2')
     .replace(/[_-]+/g, ' ')
   return normalizeText(spaced).toLowerCase()
+}
+
+function descriptionTitle(description: string): string {
+  const [candidate] = normalizeText(description).split(':')
+  if (candidate.length === 0 || candidate.length > 48) return ''
+  if (!/^[a-zA-Z0-9 ._-]+$/.test(candidate)) return ''
+  return normalizeTitle(candidate)
+}
+
+function resourceTitle(data: JsonRecord, relDir: string): string {
+  const rawTitle = stringValue(data, 'title')
+  const description = stringValue(data, 'description')
+  const titleBase = titleWithoutExtension(rawTitle)
+  const fromDescription = descriptionTitle(description)
+  if (/^\d[\d._-]*$/.test(titleBase) && fromDescription.length > 0) {
+    return fromDescription
+  }
+  return normalizeTitle(rawTitle || description || relDir)
 }
 
 function slugTitle(value: string): string {
@@ -104,8 +147,9 @@ function yamlString(value: string): string {
 }
 
 function yamlList(key: string, values: string[]): string[] {
-  if (values.length === 0) return []
-  return [key + ':', ...values.map(value => `  - ${yamlString(value)}`)]
+  const items = uniqueValues(values.map(normalizeText))
+  if (items.length === 0) return []
+  return [key + ':', ...items.map(value => `  - ${yamlString(value)}`)]
 }
 
 function frontmatter(fields: Record<string, string | string[]>): string {
@@ -129,11 +173,12 @@ async function readJson(filePath: string): Promise<JsonRecord> {
   return raw
 }
 
-async function htmlToMarkdown(html: string): Promise<string> {
+async function htmlToMarkdown(context: CourseContext, html: string): Promise<string> {
   if (html.trim().length === 0) return ''
   const hast = fromHtml(normalizeMalformedHtml(html), { fragment: true })
   const mdast = toMdast(hast)
   return normalizeMarkdown(
+    context,
     toMarkdown(mdast, { bullet: '-', fences: true, extensions: [gfmToMarkdown()] }),
   )
 }
@@ -151,26 +196,26 @@ function normalizeMalformedHtml(value: string): string {
   )
 }
 
-function normalizeMarkdown(value: string): string {
+function normalizeMarkdown(context: CourseContext, value: string): string {
   return normalizeText(value)
     .replace(/^(#{1,6})\s+(.+)$/gm, (_match, hashes: string, title: string) => {
       return `${hashes} ${normalizeText(title).toLowerCase()}`
     })
     .replace(/\[PDF\]/g, '[pdf]')
-    .replace(/\]\(([^)\s]+)index\.html\)/g, (_match, url: string) => {
-      return `](${url.replace(/index\.html$/, '')})`
-    })
-    .replace(/\]\(([^)\s]+)\.html\)/g, (_match, url: string) => {
-      return `](${url.replace(/\.html$/, '/')})`
-    })
-    .replace(/!\[\]\((\.\.\/\.\.\/static_resources\/[^)\s]+)\)/g, (_match, url: string) => {
-      const fileName = path.posix.basename(url)
-      return `![[${courseSlug}/static_resources/${fileName}]]`
+    .replace(/!\[([^\]]*)\]\(([^)\s]+)\)/g, (match: string, _label: string, url: string) => {
+      const fileName = staticResourceFile(context, url)
+      return fileName ? assetEmbed(context, fileName) : match
     })
     .replace(
-      /(^|[^!])\[([^\]]+)\]\((\.\.\/\.\.\/(?:pages|resources)\/[^)\s]+)\)/gm,
-      (_match, prefix: string, label: string, url: string) => {
-        return `${prefix}${resourceLink(courseRelativeDir(url), label)}`
+      /(^|[^!])\[([^\]]+)\]\(([^)\s]+)\)/gm,
+      (match: string, prefix: string, label: string, url: string) => {
+        const relDir = courseRelativeDir(context, url)
+        if (relDir) return `${prefix}${resourceLink(context, relDir, label)}`
+        const fileName = staticResourceFile(context, url)
+        if (fileName) {
+          return `${prefix}[[${context.slug}/static_resources/${fileName}|${normalizeText(label).toLowerCase()}]]`
+        }
+        return match
       },
     )
     .replace(/^(\|.+)$/gm, (line: string) => {
@@ -190,44 +235,90 @@ function normalizeMarkdown(value: string): string {
     .trim()
 }
 
-function courseRelativeDir(url: string): string {
-  const hashStart = url.indexOf('#')
-  const urlWithoutHash = hashStart >= 0 ? url.slice(0, hashStart) : url
-  return urlWithoutHash
-    .replace(/^\.\.\/\.\.\//, '')
-    .replace(/index\.html$/, '')
-    .replace(/\.html$/, '/')
-    .replace(/\/+$/, '')
+function strippedUrlPath(value: string): string {
+  const [withoutHash] = value.split('#')
+  const [withoutQuery] = withoutHash.split('?')
+  return withoutQuery
 }
 
-function resourceLink(relDir: string, label: string): string {
-  const target = relDir.length > 0 ? `${courseSlug}/${relDir}/` : `${courseSlug}/`
+function ocwLocalPath(context: CourseContext, value: string): string {
+  const stripped = strippedUrlPath(value)
+  let local = stripped
+  if (/^https?:\/\//.test(stripped)) {
+    try {
+      const parsed = new URL(stripped)
+      if (parsed.hostname !== 'ocw.mit.edu') return ''
+      local = parsed.pathname.replace(/^\/+/, '')
+    } catch {
+      return ''
+    }
+  } else if (stripped.startsWith('/')) {
+    local = stripped.replace(/^\/+/, '')
+  } else {
+    local = stripped.replace(/^(\.\/|\.\.\/)+/, '')
+  }
+
+  const sourcePath = context.sourcePath.replace(/^\/+|\/+$/g, '')
+  if (sourcePath.length > 0 && local.startsWith(`${sourcePath}/`)) {
+    return local.slice(sourcePath.length + 1)
+  }
+  if (!local.startsWith('courses/')) {
+    return local
+  }
+  return ''
+}
+
+function courseRelativeDir(context: CourseContext, value: string): string {
+  const local = ocwLocalPath(context, value)
+  if (local.length === 0) return ''
+  const candidate = local
+    .replace(/index\.html?$/i, '')
+    .replace(/\.html?$/i, '/')
+    .replace(/\/+$/, '')
+  if (context.linkableDirs.has(candidate)) return candidate
+  if (/^(pages|resources)\//.test(candidate)) return candidate
+  return ''
+}
+
+function staticResourceFile(context: CourseContext, value: string): string {
+  const local = ocwLocalPath(context, value)
+  if (local.length === 0) return ''
+  if (local.startsWith('static_resources/')) return path.posix.basename(local)
+  if (/\.(pdf|jpg|jpeg|png|gif|mp3|mp4|zip|html?)$/i.test(local)) return path.posix.basename(local)
+  return ''
+}
+
+function resourceLink(context: CourseContext, relDir: string, label: string): string {
+  const target = relDir.length > 0 ? `${context.slug}/${relDir}/` : `${context.slug}/`
   return `[[${target}|${normalizeText(label).toLowerCase()}]]`
 }
 
-function assetEmbed(localFile: string): string {
+function assetEmbed(context: CourseContext, localFile: string): string {
   if (localFile.length === 0) return ''
-  return `![[${courseSlug}/static_resources/${localFile}]]`
+  return `![[${context.slug}/static_resources/${localFile}]]`
 }
 
-function originalAssetUrl(originalFile: string, localFile: string): string {
-  if (originalFile.length > 0) {
-    return new URL(path.posix.basename(originalFile), ocwUrl).toString()
-  }
-  if (localFile.length > 0) {
-    return new URL(localFile, ocwUrl).toString()
-  }
-  return ocwUrl
+function originalAssetUrl(context: CourseContext, originalFile: string, localFile: string): string {
+  if (/^https?:\/\//.test(originalFile)) return originalFile
+  if (originalFile.startsWith('/')) return new URL(originalFile, mitBaseUrl).toString()
+  if (originalFile.length > 0)
+    return new URL(path.posix.basename(originalFile), context.sourceUrl).toString()
+  if (localFile.length > 0) return new URL(localFile, context.sourceUrl).toString()
+  return context.sourceUrl
 }
 
-async function writeMarkdown(relDir: string, content: string): Promise<void> {
-  const outPath = path.join(courseRoot, relDir, 'index.md')
+async function writeMarkdown(
+  context: CourseContext,
+  relDir: string,
+  content: string,
+): Promise<void> {
+  const outPath = path.join(context.root, relDir, 'index.md')
   await fs.mkdir(path.dirname(outPath), { recursive: true })
   await fs.writeFile(outPath, `${content.trim()}\n`, 'utf8')
 }
 
 function uniqueValues(values: string[]): string[] {
-  return Array.from(new Set(values.filter(value => value.length > 0)))
+  return Array.from(new Set(values.map(normalizeText).filter(value => value.length > 0)))
 }
 
 function markdownDocument(parts: string[]): string {
@@ -237,8 +328,8 @@ function markdownDocument(parts: string[]): string {
     .trim()
 }
 
-function metadataId(scope: string, value: string): string {
-  return `mit-18-901-${scope}-${slugTitle(value)}`
+function metadataId(context: CourseContext, scope: string, value: string): string {
+  return `${context.idPrefix}-${scope}-${slugTitle(value)}`
 }
 
 function learningTypesForFrontmatter(types: string[]): string[] {
@@ -249,10 +340,9 @@ function parseResource(relDir: string, data: JsonRecord): CourseResource {
   const originalFile = stringValue(data, 'file')
   const localFile = path.posix.basename(originalFile)
   const description = stringValue(data, 'description')
-  const title = normalizeTitle(stringValue(data, 'title') || description || relDir)
   return {
     relDir,
-    title,
+    title: resourceTitle(data, relDir),
     description: normalizeText(description),
     content: stringValue(data, 'content'),
     resourceType: normalizeText(stringValue(data, 'resourcetype')).toLowerCase(),
@@ -273,8 +363,166 @@ function parsePage(relDir: string, data: JsonRecord): CoursePage {
   }
 }
 
-async function courseHome(data: JsonRecord, pages: CoursePage[]): Promise<string> {
-  const title = normalizeText(stringValue(data, 'course_title')).toLowerCase()
+function topicLabels(data: JsonRecord): string[] {
+  return uniqueValues(nestedStringLists(data, 'topics').flatMap(topic => topic))
+}
+
+function topicTags(data: JsonRecord): string[] {
+  const labels = topicLabels(data).flatMap(label => {
+    const normalized = label.toLowerCase()
+    const parts = normalized.split(/\s+and\s+/).map(normalizeText)
+    const aliases = normalized === 'mathematics' ? ['math'] : []
+    return [normalized, ...parts, ...aliases]
+  })
+  return uniqueValues(labels)
+}
+
+function topicSummary(data: JsonRecord): string {
+  return nestedStringLists(data, 'topics')
+    .map(topic => topic.join(' / '))
+    .filter(value => value.length > 0)
+    .join(', ')
+    .toLowerCase()
+}
+
+function extraCourseNumbers(data: JsonRecord): string[] {
+  return stringValue(data, 'extra_course_numbers')
+    .split(',')
+    .map(normalizeText)
+    .filter(value => value.length > 0)
+}
+
+function toPosixPath(value: string): string {
+  return value.split(path.sep).join(path.posix.sep)
+}
+
+function contentSlug(courseRoot: string): string {
+  const relative = toPosixPath(path.relative(contentRoot, path.resolve(courseRoot)))
+  if (relative.length > 0 && !relative.startsWith('..')) return relative
+  return path.posix.join('courses', path.basename(courseRoot))
+}
+
+function sourcePath(data: JsonRecord): string {
+  return stringValue(data, 'site_url_path').replace(/^\/+|\/+$/g, '')
+}
+
+function sourceUrl(data: JsonRecord): string {
+  const value = sourcePath(data)
+  return value.length > 0 ? new URL(`${value}/`, mitBaseUrl).toString() : mitBaseUrl
+}
+
+function siteShortId(courseRoot: string, data: JsonRecord): string {
+  const explicit = stringValue(data, 'site_short_id')
+  if (explicit.length > 0) return explicit
+  const number = stringValue(data, 'primary_course_number')
+  const term = stringValue(data, 'term')
+  const year = stringValue(data, 'year')
+  const fromFields = [number, term, year]
+    .map(normalizeText)
+    .filter(value => value.length > 0)
+    .join('-')
+  return fromFields.length > 0 ? fromFields : path.basename(courseRoot)
+}
+
+function courseContext(courseRoot: string, data: JsonRecord): CourseContext {
+  const number = normalizeText(stringValue(data, 'primary_course_number'))
+  const title = normalizeTitle(stringValue(data, 'course_title') || path.basename(courseRoot))
+  const shortId = siteShortId(courseRoot, data)
+  const aliases = uniqueValues([number, ...extraCourseNumbers(data), title, shortId])
+  const tags = uniqueValues(['course', 'mit', 'ocw', ...topicTags(data)])
+  return {
+    root: courseRoot,
+    slug: contentSlug(courseRoot),
+    sourcePath: sourcePath(data),
+    sourceUrl: sourceUrl(data),
+    idPrefix: `mit-${slugTitle(shortId)}`,
+    label: number.length > 0 ? `mit ${number}` : 'mit ocw',
+    number,
+    title,
+    tags,
+    aliases,
+    linkableDirs: new Set(),
+  }
+}
+
+function resourceTypesInOrder(data: JsonRecord, resources: CourseResource[]): string[] {
+  return uniqueValues([
+    ...stringList(data, 'learning_resource_types'),
+    ...resources.flatMap(resource => resource.resourceTypes),
+  ])
+}
+
+function resourceCollectionRelDir(resourceType: string): string {
+  return path.posix.join('resources', slugTitle(resourceType))
+}
+
+function courseCollections(
+  context: CourseContext,
+  data: JsonRecord,
+  pages: CoursePage[],
+  resources: CourseResource[],
+): CourseCollection[] {
+  const collections: CourseCollection[] = resourceTypesInOrder(data, resources).map(
+    resourceType => {
+      const title = normalizeTitle(resourceType)
+      return {
+        relDir: resourceCollectionRelDir(resourceType),
+        title,
+        description: `${context.label} ${title}`,
+        resources: resources.filter(resource => resource.resourceTypes.includes(resourceType)),
+        extraLinks: [],
+      }
+    },
+  )
+
+  const assignmentPage = pages.find(page => slugTitle(page.title) === 'assignments')
+  if (assignmentPage) {
+    const relDir = resourceCollectionRelDir('Assignments')
+    const pageLink = `- ${resourceLink(context, assignmentPage.relDir, assignmentPage.title)}`
+    const problemSetLink = collections.some(
+      collection => collection.relDir === resourceCollectionRelDir('Problem Sets'),
+    )
+      ? `- ${resourceLink(context, resourceCollectionRelDir('Problem Sets'), 'problem sets')}`
+      : ''
+    const existing = collections.find(collection => collection.relDir === relDir)
+    if (existing) {
+      existing.extraLinks = uniqueValues([pageLink, problemSetLink, ...existing.extraLinks])
+    } else {
+      collections.push({
+        relDir,
+        title: 'assignments',
+        description: `${context.label} assignments`,
+        resources: [],
+        extraLinks: uniqueValues([pageLink, problemSetLink]),
+      })
+    }
+  }
+
+  return collections.filter(
+    collection => collection.resources.length > 0 || collection.extraLinks.length > 0,
+  )
+}
+
+function indexLinkableDirs(
+  context: CourseContext,
+  pages: CoursePage[],
+  resources: CourseResource[],
+  collections: CourseCollection[],
+): void {
+  context.linkableDirs.clear()
+  context.linkableDirs.add('')
+  context.linkableDirs.add('pages')
+  for (const page of pages) context.linkableDirs.add(page.relDir)
+  for (const resource of resources) context.linkableDirs.add(resource.relDir)
+  for (const collection of collections) context.linkableDirs.add(collection.relDir)
+}
+
+async function courseHome(
+  context: CourseContext,
+  data: JsonRecord,
+  pages: CoursePage[],
+  collections: CourseCollection[],
+): Promise<string> {
   const description = normalizeText(
     stringValue(data, 'course_description') || stringValue(data, 'course_description_html'),
   )
@@ -282,37 +530,36 @@ async function courseHome(data: JsonRecord, pages: CoursePage[]): Promise<string
   const instructors = recordList(data, 'instructors')
     .map(instructor => stringValue(instructor, 'title'))
     .filter(value => value.length > 0)
-  const topics = nestedStringLists(data, 'topics')
-    .map(topic => topic.join(' / '))
-    .filter(value => value.length > 0)
   const pageLinks = pages
-    .filter(page => page.relDir.startsWith('pages/') && page.title !== 'pages')
     .sort((left, right) => left.title.localeCompare(right.title))
-    .map(page => `- ${resourceLink(page.relDir, page.title)}`)
+    .map(page => `- ${resourceLink(context, page.relDir, page.title)}`)
+  const collectionLinks = collections.map(
+    collection => `- ${resourceLink(context, collection.relDir, collection.title)}`,
+  )
   const body = [
     frontmatter({
-      title: `mit 18.901: ${title}`,
+      title: `${context.label}: ${context.title}`,
       description,
-      id: 'mit-18-901-fall-2004',
-      tags: ['math', 'topology', 'course', 'mit'],
-      aliases: ['18.901', 'introduction to topology'],
+      id: context.idPrefix,
+      tags: context.tags,
+      aliases: context.aliases,
     }),
     '',
-    assetEmbed(image),
+    assetEmbed(context, image),
     '',
     description,
     '',
     '## course metadata',
     '',
-    `- course: \`${stringValue(data, 'primary_course_number')}\``,
+    `- course: \`${context.number || stringValue(data, 'site_short_id')}\``,
     `- term: ${normalizeText(stringValue(data, 'term')).toLowerCase()} ${stringValue(data, 'year')}`,
     `- level: ${stringList(data, 'level')
       .map(value => value.toLowerCase())
       .join(', ')}`,
     `- instructor: ${instructors.join(', ')}`,
-    `- topics: ${topics.join(', ').toLowerCase()}`,
+    `- topics: ${topicSummary(data)}`,
     `- license: [cc by-nc-sa 4.0](${nestedString(data, 'course_image_metadata', 'license') || 'https://creativecommons.org/licenses/by-nc-sa/4.0/'})`,
-    `- source: [mit opencourseware](${ocwUrl})`,
+    `- source: [mit opencourseware](${context.sourceUrl})`,
     '',
     '## pages',
     '',
@@ -320,105 +567,126 @@ async function courseHome(data: JsonRecord, pages: CoursePage[]): Promise<string
     '',
     '## resources',
     '',
-    `- ${resourceLink('resources/lecture-notes', 'lecture notes')}`,
-    `- ${resourceLink('resources/problem-sets', 'problem sets')}`,
-    `- ${resourceLink('resources/readings', 'readings')}`,
-    `- ${resourceLink('resources/assignments', 'assignments')}`,
+    ...collectionLinks,
   ]
-  return body.join('\n')
+  return markdownDocument(body)
 }
 
-async function pageMarkdown(page: CoursePage): Promise<string> {
-  const content = await htmlToMarkdown(page.content)
-  const tags = ['math', 'topology', 'course', ...learningTypesForFrontmatter(page.resourceTypes)]
+async function pageMarkdown(context: CourseContext, page: CoursePage): Promise<string> {
+  const content = await htmlToMarkdown(context, page.content)
   return markdownDocument([
     frontmatter({
       title: page.title,
-      description: page.description || `mit 18.901 ${page.title}`,
-      id: metadataId('page', page.relDir.replace(/^pages\//, '')),
-      tags: uniqueValues(tags),
+      description: page.description || `${context.label} ${page.title}`,
+      id: metadataId(context, 'page', page.relDir),
+      tags: uniqueValues([...context.tags, ...learningTypesForFrontmatter(page.resourceTypes)]),
     }),
     '',
-    `up: ${resourceLink('', 'mit 18.901')}`,
+    `up: ${resourceLink(context, '', context.label)}`,
     '',
     content,
   ])
 }
 
-async function resourceMarkdown(resource: CourseResource): Promise<string> {
-  const content = await htmlToMarkdown(resource.content)
-  const sourceUrl = originalAssetUrl(resource.originalFile, resource.localFile)
-  const tags = [
-    'math',
-    'topology',
-    'course',
-    ...learningTypesForFrontmatter(resource.resourceTypes),
-  ]
+async function resourceMarkdown(context: CourseContext, resource: CourseResource): Promise<string> {
+  const content = await htmlToMarkdown(context, resource.content)
+  const source = originalAssetUrl(context, resource.originalFile, resource.localFile)
   return markdownDocument([
     frontmatter({
       title: resource.title,
-      description: resource.description || `mit 18.901 ${resource.title}`,
-      id: metadataId('resource', resource.relDir.replace(/^resources\//, '')),
-      tags: uniqueValues(tags),
+      description: resource.description || `${context.label} ${resource.title}`,
+      id: metadataId(context, 'resource', resource.relDir),
+      tags: uniqueValues([...context.tags, ...learningTypesForFrontmatter(resource.resourceTypes)]),
       aliases: [path.posix.basename(resource.originalFile)],
     }),
     '',
-    `up: ${resourceLink('', 'mit 18.901')}`,
+    `up: ${resourceLink(context, '', context.label)}`,
     '',
-    assetEmbed(resource.localFile),
+    assetEmbed(context, resource.localFile),
     '',
     content || resource.description,
     '',
     '## metadata',
     '',
     `- type: ${resource.resourceType || 'resource'}`,
-    `- file: [[${courseSlug}/static_resources/${resource.localFile}|${resource.localFile}]]`,
-    `- source: [mit opencourseware](${sourceUrl})`,
+    `- file: [[${context.slug}/static_resources/${resource.localFile}|${resource.localFile}]]`,
+    `- source: [mit opencourseware](${source})`,
   ])
 }
 
-function collectionMarkdown(
-  title: string,
-  description: string,
-  resources: CourseResource[],
-  extraLinks: string[],
-): string {
+function collectionMarkdown(context: CourseContext, collection: CourseCollection): string {
   const links = [
-    ...extraLinks,
-    ...resources
+    ...collection.extraLinks,
+    ...collection.resources
       .sort((left, right) => left.title.localeCompare(right.title))
-      .map(resource => `- ${resourceLink(resource.relDir, resource.title)}`),
+      .map(resource => `- ${resourceLink(context, resource.relDir, resource.title)}`),
   ]
   return markdownDocument([
     frontmatter({
-      title,
-      description,
-      id: metadataId('collection', title),
-      tags: ['math', 'topology', 'course'],
+      title: collection.title,
+      description: collection.description,
+      id: metadataId(context, 'collection', collection.relDir),
+      tags: context.tags,
     }),
     '',
-    `up: ${resourceLink('', 'mit 18.901')}`,
+    `up: ${resourceLink(context, '', context.label)}`,
     '',
     ...links,
   ])
 }
 
-async function removeDeadHtml(): Promise<void> {
-  const files = await globby(['**/*.html', '**/*.xml', 'sitemap.xml', 'favicon.ico'], {
-    cwd: courseRoot,
-    dot: true,
+async function pathExists(filePath: string): Promise<boolean> {
+  try {
+    await fs.access(filePath)
+    return true
+  } catch {
+    return false
+  }
+}
+
+async function removeGeneratedCollectionMarkdown(context: CourseContext): Promise<void> {
+  const files = await globby(['pages/index.md', 'resources/*/index.md'], {
+    cwd: context.root,
     onlyFiles: true,
   })
   for (const file of files) {
-    await fs.rm(path.join(courseRoot, file), { force: true })
+    const dataPath = path.join(context.root, path.dirname(file), 'data.json')
+    if (!(await pathExists(dataPath))) {
+      await fs.rm(path.join(context.root, file), { force: true })
+    }
   }
-  await fs.rm(path.join(courseRoot, 'static_shared'), { recursive: true, force: true })
 }
 
-async function main(): Promise<void> {
+async function removeDeadOcwShell(context: CourseContext): Promise<void> {
+  const files = await globby(
+    [
+      'index.html',
+      'download/index.html',
+      'download/index.xml',
+      'pages/**/index.html',
+      'resources/**/index.html',
+      'resources/**/index.xml',
+      'static_resources/index.html',
+      'sitemap.xml',
+      'favicon.ico',
+    ],
+    { cwd: context.root, dot: true, onlyFiles: true },
+  )
+  for (const file of files) {
+    await fs.rm(path.join(context.root, file), { force: true })
+  }
+  await fs.rm(path.join(context.root, 'static_shared'), { recursive: true, force: true })
+}
+
+function isCoursePage(relDir: string, contentType: string): boolean {
+  return contentType === 'page' && relDir !== 'pages' && relDir !== 'resources'
+}
+
+async function vendorCourse(courseRoot: string): Promise<void> {
   const rootData = await readJson(path.join(courseRoot, 'data.json'))
+  const context = courseContext(courseRoot, rootData)
   const dataFiles = await globby(['**/data.json'], {
-    cwd: courseRoot,
+    cwd: context.root,
     ignore: ['data.json', 'static_resources/data.json'],
   })
   const pages: CoursePage[] = []
@@ -426,76 +694,73 @@ async function main(): Promise<void> {
 
   for (const dataFile of dataFiles.sort()) {
     const relDir = path.posix.dirname(dataFile)
-    const data = await readJson(path.join(courseRoot, dataFile))
+    const data = await readJson(path.join(context.root, dataFile))
     const contentType = stringValue(data, 'content_type')
     if (contentType === 'resource') {
       resources.push(parseResource(relDir, data))
-    } else if (relDir.startsWith('pages/')) {
+    } else if (isCoursePage(relDir, contentType)) {
       pages.push(parsePage(relDir, data))
     }
   }
 
-  await writeMarkdown('', await courseHome(rootData, pages))
+  const collections = courseCollections(context, rootData, pages, resources)
+  indexLinkableDirs(context, pages, resources, collections)
+
+  await removeGeneratedCollectionMarkdown(context)
+  await writeMarkdown(context, '', await courseHome(context, rootData, pages, collections))
 
   for (const page of pages) {
-    await writeMarkdown(page.relDir, await pageMarkdown(page))
+    await writeMarkdown(context, page.relDir, await pageMarkdown(context, page))
   }
 
   for (const resource of resources) {
-    await writeMarkdown(resource.relDir, await resourceMarkdown(resource))
+    await writeMarkdown(context, resource.relDir, await resourceMarkdown(context, resource))
   }
 
-  const byType = (type: string) =>
-    resources.filter(resource => resource.resourceTypes.includes(type))
-
   await writeMarkdown(
+    context,
     'pages',
-    collectionMarkdown(
-      'course pages',
-      'mit 18.901 course pages',
-      [],
-      pages
-        .filter(page => page.title !== 'pages')
+    collectionMarkdown(context, {
+      relDir: 'pages',
+      title: 'course pages',
+      description: `${context.label} course pages`,
+      resources: [],
+      extraLinks: pages
         .sort((left, right) => left.title.localeCompare(right.title))
-        .map(page => `- ${resourceLink(page.relDir, page.title)}`),
-    ),
-  )
-  await writeMarkdown(
-    'resources/lecture-notes',
-    collectionMarkdown(
-      'lecture notes',
-      'mit 18.901 supplementary lecture notes',
-      byType('Lecture Notes'),
-      [],
-    ),
-  )
-  await writeMarkdown(
-    'resources/problem-sets',
-    collectionMarkdown(
-      'problem sets',
-      'mit 18.901 problem-set resources',
-      byType('Problem Sets'),
-      [],
-    ),
-  )
-  await writeMarkdown(
-    'resources/readings',
-    collectionMarkdown('readings', 'mit 18.901 reading resources', byType('Readings'), []),
-  )
-  await writeMarkdown(
-    'resources/assignments',
-    collectionMarkdown(
-      'assignments',
-      'mit 18.901 assignments',
-      [],
-      [
-        `- ${resourceLink('pages/assignments', 'assignments')}`,
-        `- ${resourceLink('resources/problem-sets', 'problem sets')}`,
-      ],
-    ),
+        .map(page => `- ${resourceLink(context, page.relDir, page.title)}`),
+    }),
   )
 
-  await removeDeadHtml()
+  for (const collection of collections) {
+    await writeMarkdown(context, collection.relDir, collectionMarkdown(context, collection))
+  }
+
+  await removeDeadOcwShell(context)
+}
+
+async function courseRootsFromPath(inputPath: string): Promise<string[]> {
+  if (await pathExists(path.join(inputPath, 'data.json'))) {
+    return [inputPath]
+  }
+  const files = await globby(['*/data.json'], { cwd: inputPath, onlyFiles: true })
+  return files.map(file => path.join(inputPath, path.dirname(file))).sort()
+}
+
+async function courseRoots(inputs: string[]): Promise<string[]> {
+  const roots = await Promise.all(
+    (inputs.length > 0 ? inputs : [defaultCourseRoot]).map(courseRootsFromPath),
+  )
+  return uniqueValues(roots.flat().map(root => path.normalize(root)))
+}
+
+async function main(): Promise<void> {
+  const roots = await courseRoots(process.argv.slice(2))
+  if (roots.length === 0) {
+    throw new Error('No MIT OCW course roots found')
+  }
+  for (const root of roots) {
+    await vendorCourse(root)
+  }
 }
 
 main().catch(error => {

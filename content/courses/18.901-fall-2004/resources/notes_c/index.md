@@ -1,11 +1,16 @@
 ---
 title: "notes c"
 description: "Notes C: These Supplementary Notes are optional reading for the corresponding lecture sessions."
-id: "mit-18-901-resource-notes-c"
+id: "mit-18-901-fall-2004-resource-resources-notes-c"
 tags:
-  - "math"
-  - "topology"
   - "course"
+  - "mit"
+  - "ocw"
+  - "mathematics"
+  - "math"
+  - "topology and geometry"
+  - "topology"
+  - "geometry"
   - "lecture notes"
 aliases:
   - "e319b3a36ca774261b6b8c45e11804c2_notes_c.pdf"

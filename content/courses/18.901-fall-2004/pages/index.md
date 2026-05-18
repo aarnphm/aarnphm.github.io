@@ -1,11 +1,16 @@
 ---
 title: "course pages"
 description: "mit 18.901 course pages"
-id: "mit-18-901-collection-course-pages"
+id: "mit-18-901-fall-2004-collection-pages"
 tags:
-  - "math"
-  - "topology"
   - "course"
+  - "mit"
+  - "ocw"
+  - "mathematics"
+  - "math"
+  - "topology and geometry"
+  - "topology"
+  - "geometry"
 ---
 
 up: [[courses/18.901-fall-2004/|mit 18.901]]

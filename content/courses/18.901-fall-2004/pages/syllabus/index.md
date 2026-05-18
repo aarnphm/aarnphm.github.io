@@ -1,11 +1,16 @@
 ---
 title: "syllabus"
 description: "mit 18.901 syllabus"
-id: "mit-18-901-page-syllabus"
+id: "mit-18-901-fall-2004-page-pages-syllabus"
 tags:
-  - "math"
-  - "topology"
   - "course"
+  - "mit"
+  - "ocw"
+  - "mathematics"
+  - "math"
+  - "topology and geometry"
+  - "topology"
+  - "geometry"
 ---
 
 up: [[courses/18.901-fall-2004/|mit 18.901]]

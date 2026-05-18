@@ -1,11 +1,16 @@
 ---
 title: "assignments"
 description: "mit 18.901 assignments"
-id: "mit-18-901-collection-assignments"
+id: "mit-18-901-fall-2004-collection-resources-assignments"
 tags:
-  - "math"
-  - "topology"
   - "course"
+  - "mit"
+  - "ocw"
+  - "mathematics"
+  - "math"
+  - "topology and geometry"
+  - "topology"
+  - "geometry"
 ---
 
 up: [[courses/18.901-fall-2004/|mit 18.901]]

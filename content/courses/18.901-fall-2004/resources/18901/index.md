@@ -1,11 +1,16 @@
 ---
 title: "notes a"
 description: "Notes A: These Supplementary Notes are optional reading for the corresponding lecture sessions. (Notes courtesy of Dr. Joao P. Santos. Used with permission.)"
-id: "mit-18-901-resource-notes-a"
+id: "mit-18-901-fall-2004-resource-resources-18901"
 tags:
-  - "math"
-  - "topology"
   - "course"
+  - "mit"
+  - "ocw"
+  - "mathematics"
+  - "math"
+  - "topology and geometry"
+  - "topology"
+  - "geometry"
   - "lecture notes"
 aliases:
   - "0162d186ff55f17b25d9c57f6fd211cc_18901.pdf"
