@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-05-09 17:51:33 GMT-04:00
+modified: 2026-05-18 16:13:45 GMT-04:00
 permalinks:
   - /website
   - /tweets
@@ -143,6 +143,10 @@ title: are.na
 - [meta]:
   - view: list
 
+- https://x.com/BecomingCritter/status/1863384564481097973 -- You suck at kissing
+  - [meta]:
+    - date: 05/18/2026
+    - tags: [skills]
 - https://x.com/tenobrus/status/2055069036149670027 -- ppl always focus on how things that used to be joyful and magical as children lose their luster as adults
   - [meta]:
     - date: 05/17/2026
@@ -634,6 +638,10 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://dallygoods.com/ -- Dally Goods
+  - [meta]:
+    - date: 05/18/2026
+    - tags: [design, products]
 - https://govwell.com/ -- GovWell
   - [meta]:
     - date: 05/18/2026
@@ -2340,6 +2348,10 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://thezvi.substack.com/p/dating-roundup-12-sex-and-violence -- Dating Roundup #12: Sex and Violence
+  - [meta]:
+    - date: 05/18/2026
+    - tags: [sex, relationship]
 - https://slatestarcodex.com/2015/01/11/the-phatic-and-the-anti-inductive/ -- The Phatic And The Anti-Inductive
   - [meta]:
     - date: 05/12/2026
@@ -5455,6 +5467,10 @@ title: are.na
 
 ## opinions
 
+- https://www.humansfirst.com/executive-order-letter -- Coalition Letter Supporting Proposed Executive Order for Mandatory Pre-Deployment Testing for Frontier AI Systems
+  - [meta]:
+    - date: 05/18/2026
+    - tags: [infrastructure]
 - https://firethering.com/openmythos-open-source-claude-mythos-reconstruction -- OpenMythos
   - [meta]:
     - date: 04/27/2026
@@ -6789,6 +6805,10 @@ title: are.na
 
 ## stream
 
+- https://www.032carchive.com/articles?view=grid&cols=4 -- 032c archive
+  - [meta]:
+    - date: 05/18/2026
+    - tags: [digital media]
 - https://www.anthropic.com/science -- Anthropic Science blog
   - [meta]:
     - date: 03/26/2026
@@ -8607,6 +8627,10 @@ title: are.na
 
 ## engineering
 
+- https://blog.calif.io/p/first-public-kernel-memory-corruption -- First public macOS kernel memory corruption exploit on Apple M5
+  - [meta]:
+    - date: 05/18/2026
+    - tags: [osint, ai]
 - https://thinkingmachines.ai/blog/interaction-models/ -- Interaction Models: A Scalable Approach to Human-AI Collaboration
   - [meta]:
     - date: 05/12/2026
