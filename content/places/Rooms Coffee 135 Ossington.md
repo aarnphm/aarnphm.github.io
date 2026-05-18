@@ -1,5 +1,5 @@
 ---
-address: Crafted, 135, Ossington Avenue, Trinity-Bellwoods, Spadina—Fort York, Toronto, Golden Horseshoe, Ontario, M6J 2Z2, Canada
+address: 135 Ossington Ave, Toronto, ON M6J 2Z6, Canada
 category:
   - '[[places to go]]'
 coordinates:

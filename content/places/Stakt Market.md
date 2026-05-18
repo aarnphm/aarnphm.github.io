@@ -1,5 +1,5 @@
 ---
-address: 28, Bathurst Street, Wellington Place, Spadina—Fort York, Toronto, Golden Horseshoe, Ontario, M5V 2P1, Canada
+address: 28 Bathurst St, Toronto, ON M5V 0C6, Canada
 category:
   - '[[places to go]]'
 coordinates:

@@ -1,5 +1,5 @@
 ---
-address: 490, Wellington Street West, Wellington Place, Spadina—Fort York, Toronto, Golden Horseshoe, Ontario, M5V 1E3, Canada
+address: 453 Wellington St W, Toronto, ON M5V 1E7, Canada
 category:
   - '[[places to go]]'
 coordinates:

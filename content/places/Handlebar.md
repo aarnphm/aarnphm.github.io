@@ -1,5 +1,5 @@
 ---
-address: Gore Vale Avenue, Trinity-Bellwoods, Spadina—Fort York, Toronto, Golden Horseshoe, Ontario, M6J 1W3, Canada
+address: 159 Augusta Ave, Toronto, ON M5T 2L4, Canada
 category:
   - '[[places to go]]'
 coordinates:

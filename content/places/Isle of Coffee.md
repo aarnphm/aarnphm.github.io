@@ -1,5 +1,5 @@
 ---
-address: 3, Munro Street, South Riverdale, Toronto—Danforth, Toronto, Golden Horseshoe, Ontario, M4M 1G3, Canada
+address: 745 Queen St E, Toronto, ON M4M 1H3, Canada
 category:
   - '[[places to go]]'
 coordinates:

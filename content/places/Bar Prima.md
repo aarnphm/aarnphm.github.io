@@ -1,5 +1,5 @@
 ---
-address: The Theatre Centre, 1115, Queen Street West, Little Portugal, Davenport, Toronto, Golden Horseshoe, Ontario, M6J 3P4, Canada
+address: 1136 Queen St W, Toronto, ON M6J 1J3, Canada
 category:
   - '[[places to go]]'
 coordinates:

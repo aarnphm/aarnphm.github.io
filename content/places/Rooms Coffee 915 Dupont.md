@@ -1,5 +1,5 @@
 ---
-address: 915, Dupont Street, Dovercourt Village, Davenport, Toronto, Golden Horseshoe, Ontario, M6H 2B5, Canada
+address: 915 Dupont St, Toronto, ON M6H 1Z1, Canada
 category:
   - '[[places to go]]'
 coordinates:

@@ -1,6 +1,17 @@
 packages:
   - ./
 
+allowBuilds:
+  '@parcel/watcher': true
+  bufferutil: true
+  core-js-pure: true
+  esbuild: true
+  onnxruntime-node: true
+  protobufjs: true
+  sharp: true
+  utf-8-validate: true
+  workerd: true
+
 onlyBuiltDependencies:
   - '@parcel/watcher'
   - bufferutil

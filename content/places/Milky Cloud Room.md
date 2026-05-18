@@ -1,5 +1,5 @@
 ---
-address: 28 Bathurst St, Toronto, ON M5V 0C6, Canada
+address: 28 Bathurst St, Unit 1107, Toronto, ON M5V 0C6, Canada
 category:
   - '[[places to go]]'
 coordinates:

@@ -1,5 +1,5 @@
 ---
-address: 110;112, Henry Street, Cambridgeport, Cambridge, Middlesex County, Massachusetts, 02139, United States of America
+address: 69 Chestnut St, Cambridge, MA 02139, USA
 category:
   - '[[places to go]]'
 coordinates:

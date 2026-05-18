@@ -1,5 +1,5 @@
 ---
-address: Spadina Avenue, University, University—Rosedale, Toronto, Golden Horseshoe, Ontario, M5T 1R7, Canada
+address: 484 Spadina Ave, Toronto, ON M5S 2H1, Canada
 category:
   - '[[places to go]]'
 coordinates:

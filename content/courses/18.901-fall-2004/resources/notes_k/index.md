@@ -6,14 +6,15 @@ tags:
   - "course"
   - "mit"
   - "ocw"
-  - "mathematics"
   - "math"
-  - "topology and geometry"
   - "topology"
   - "geometry"
   - "lecture notes"
 aliases:
   - "bdcbc277a4da063b13550baf12206a6f_notes_k.pdf"
+layout: "A|L"
+license: "Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International"
+license_url: "https://creativecommons.org/licenses/by-nc-sa/4.0/"
 ---
 
 up: [[courses/18.901-fall-2004/|mit 18.901]]

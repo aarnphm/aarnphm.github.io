@@ -1,5 +1,5 @@
 ---
-address: 1253, Dundas Street West, Trinity-Bellwoods, Spadina—Fort York, Toronto, Golden Horseshoe, Ontario, M6J 1X3, Canada
+address: 1203 Dundas St W, Toronto, ON M6J 1X3, Canada
 category:
   - '[[places to go]]'
 coordinates:

@@ -1,5 +1,5 @@
 ---
-address: The Weld Building, 360, Adelaide Street West, Wellington Place, Spadina—Fort York, Toronto, Golden Horseshoe, Ontario, M5V 1R7, Canada
+address: 350 King St W, Toronto, ON M5V 3X5, Canada
 category:
   - '[[places to go]]'
 coordinates:

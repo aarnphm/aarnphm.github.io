@@ -1,5 +1,5 @@
 ---
-address: Susies, 539, College Street, Trinity-Bellwoods, University—Rosedale, Toronto, Golden Horseshoe, Ontario, M6G 1A9, Canada
+address: 539 College St, Toronto, ON M6G 1A9, Canada
 category:
   - '[[places to go]]'
 coordinates:

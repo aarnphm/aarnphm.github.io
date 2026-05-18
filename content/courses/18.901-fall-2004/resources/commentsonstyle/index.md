@@ -6,14 +6,15 @@ tags:
   - "course"
   - "mit"
   - "ocw"
-  - "mathematics"
   - "math"
-  - "topology and geometry"
   - "topology"
   - "geometry"
   - "problem sets"
 aliases:
   - "890ee0429431ba0ea62273ae0043c4f2_commentsonstyle.pdf"
+layout: "A|L"
+license: "Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International"
+license_url: "https://creativecommons.org/licenses/by-nc-sa/4.0/"
 ---
 
 up: [[courses/18.901-fall-2004/|mit 18.901]]

@@ -1,5 +1,5 @@
 ---
-address: The Rex, Queen Street West, Wellington Place, Spadina—Fort York, Toronto, Golden Horseshoe, Ontario, M5V 1Z1, Canada
+address: 194 Queen St W, Toronto, ON M5V 1Z1, Canada
 category:
   - '[[places to go]]'
 coordinates:

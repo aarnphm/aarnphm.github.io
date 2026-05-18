@@ -1,5 +1,5 @@
 ---
-address: King Street West, Wellington Place, Spadina—Fort York, Toronto, Golden Horseshoe, Ontario, M5V 1M5, Canada
+address: 669 King St W, Toronto, ON M5V 1M9, Canada
 category:
   - '[[places to go]]'
 coordinates:

@@ -13,6 +13,8 @@ type CourseContext = {
   slug: string
   sourcePath: string
   sourceUrl: string
+  licenseName: string
+  licenseUrl: string
   idPrefix: string
   label: string
   number: string
@@ -52,6 +54,9 @@ type CourseCollection = {
 const defaultCourseRoot = path.join('content', 'courses')
 const contentRoot = path.resolve('content')
 const mitBaseUrl = 'https://ocw.mit.edu/'
+const ocwLayout = 'A|L'
+const defaultLicenseName = 'Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International'
+const defaultLicenseUrl = 'https://creativecommons.org/licenses/by-nc-sa/4.0/'
 
 function isRecord(value: unknown): value is JsonRecord {
   return typeof value === 'object' && value !== null && !Array.isArray(value)
@@ -93,6 +98,10 @@ function nestedString(record: JsonRecord, key: string, childKey: string): string
   return child ? stringValue(child, childKey) : ''
 }
 
+function firstString(values: string[]): string {
+  return values.find(value => value.length > 0) ?? ''
+}
+
 function normalizeText(value: string): string {
   return value
     .replace(/\u00a0/g, ' ')
@@ -118,6 +127,10 @@ function normalizeTitle(value: string): string {
   return normalizeText(spaced).toLowerCase()
 }
 
+function compareTitle(left: { title: string }, right: { title: string }): number {
+  return left.title.localeCompare(right.title, undefined, { numeric: true })
+}
+
 function descriptionTitle(description: string): string {
   const [candidate] = normalizeText(description).split(':')
   if (candidate.length === 0 || candidate.length > 48) return ''
@@ -125,7 +138,7 @@ function descriptionTitle(description: string): string {
   return normalizeTitle(candidate)
 }
 
-function resourceTitle(data: JsonRecord, relDir: string): string {
+function resourceTitle(context: CourseContext, data: JsonRecord, relDir: string): string {
   const rawTitle = stringValue(data, 'title')
   const description = stringValue(data, 'description')
   const titleBase = titleWithoutExtension(rawTitle)
@@ -133,7 +146,43 @@ function resourceTitle(data: JsonRecord, relDir: string): string {
   if (/^\d[\d._-]*$/.test(titleBase) && fromDescription.length > 0) {
     return fromDescription
   }
+  if (rawTitle.length === 0 && description.length === 0) {
+    const inferred = inferredResourceTitle(context, data, relDir)
+    if (inferred.length > 0) return inferred
+  }
   return normalizeTitle(rawTitle || description || relDir)
+}
+
+function inferredResourceTitle(context: CourseContext, data: JsonRecord, relDir: string): string {
+  const source = resourceInferenceSource(data, relDir)
+  const lecture = source.match(/\blec(?:ture)?\s*(\d+)\b/)
+  if (lecture) return `${context.title}: lecture ${lecture[1]}`
+  const problemSet = source.match(/\b(?:pset|problem set)\s*(\d+)\b/)
+  if (problemSet) return `${context.title}: problem set ${problemSet[1]}`
+  if (source.includes('lecture notes')) return `${context.title}: lecture notes`
+  return ''
+}
+
+function resourceInferenceSource(data: JsonRecord, relDir: string): string {
+  return normalizeTitle(
+    [
+      stringValue(data, 'title'),
+      stringValue(data, 'description'),
+      stringValue(data, 'file'),
+      path.posix.basename(relDir),
+    ].join(' '),
+  )
+}
+
+function resourceTypes(data: JsonRecord, relDir: string): string[] {
+  const explicit = stringList(data, 'learning_resource_types')
+  if (explicit.length > 0) return explicit
+  const source = resourceInferenceSource(data, relDir)
+  if (/\blec(?:ture)?\s*\d+\b/.test(source) || source.includes('lecture notes')) {
+    return ['Lecture Notes']
+  }
+  if (/\b(?:pset|problem set|assignments?)\s*\d*\b/.test(source)) return ['Assignments']
+  return []
 }
 
 function slugTitle(value: string): string {
@@ -163,6 +212,18 @@ function frontmatter(fields: Record<string, string | string[]>): string {
   }
   lines.push('---')
   return lines.join('\n')
+}
+
+function courseFrontmatter(
+  context: CourseContext,
+  fields: Record<string, string | string[]>,
+): string {
+  return frontmatter({
+    ...fields,
+    layout: ocwLayout,
+    license: context.licenseName,
+    license_url: context.licenseUrl,
+  })
 }
 
 async function readJson(filePath: string): Promise<JsonRecord> {
@@ -336,17 +397,19 @@ function learningTypesForFrontmatter(types: string[]): string[] {
   return uniqueValues(types.map(value => value.toLowerCase()))
 }
 
-function parseResource(relDir: string, data: JsonRecord): CourseResource {
+function parseResource(context: CourseContext, relDir: string, data: JsonRecord): CourseResource {
   const originalFile = stringValue(data, 'file')
   const localFile = path.posix.basename(originalFile)
   const description = stringValue(data, 'description')
   return {
     relDir,
-    title: resourceTitle(data, relDir),
+    title: resourceTitle(context, data, relDir),
     description: normalizeText(description),
     content: stringValue(data, 'content'),
-    resourceType: normalizeText(stringValue(data, 'resourcetype')).toLowerCase(),
-    resourceTypes: stringList(data, 'learning_resource_types'),
+    resourceType: normalizeText(
+      firstString([stringValue(data, 'resourcetype'), stringValue(data, 'resource_type')]),
+    ).toLowerCase(),
+    resourceTypes: resourceTypes(data, relDir),
     localFile,
     originalFile,
   }
@@ -403,12 +466,22 @@ function contentSlug(courseRoot: string): string {
 }
 
 function sourcePath(data: JsonRecord): string {
-  return stringValue(data, 'site_url_path').replace(/^\/+|\/+$/g, '')
+  const explicit = stringValue(data, 'site_url_path')
+  if (explicit.length > 0) return explicit.replace(/^\/+|\/+$/g, '')
+  const imageFile = nestedString(data, 'course_image_metadata', 'file')
+  if (imageFile.startsWith('/courses/')) {
+    return path.posix.dirname(imageFile).replace(/^\/+|\/+$/g, '')
+  }
+  return ''
 }
 
 function sourceUrl(data: JsonRecord): string {
   const value = sourcePath(data)
   return value.length > 0 ? new URL(`${value}/`, mitBaseUrl).toString() : mitBaseUrl
+}
+
+function licenseUrl(data: JsonRecord): string {
+  return nestedString(data, 'course_image_metadata', 'license') || defaultLicenseUrl
 }
 
 function siteShortId(courseRoot: string, data: JsonRecord): string {
@@ -435,6 +508,8 @@ function courseContext(courseRoot: string, data: JsonRecord): CourseContext {
     slug: contentSlug(courseRoot),
     sourcePath: sourcePath(data),
     sourceUrl: sourceUrl(data),
+    licenseName: defaultLicenseName,
+    licenseUrl: licenseUrl(data),
     idPrefix: `mit-${slugTitle(shortId)}`,
     label: number.length > 0 ? `mit ${number}` : 'mit ocw',
     number,
@@ -531,13 +606,13 @@ async function courseHome(
     .map(instructor => stringValue(instructor, 'title'))
     .filter(value => value.length > 0)
   const pageLinks = pages
-    .sort((left, right) => left.title.localeCompare(right.title))
+    .sort(compareTitle)
     .map(page => `- ${resourceLink(context, page.relDir, page.title)}`)
   const collectionLinks = collections.map(
     collection => `- ${resourceLink(context, collection.relDir, collection.title)}`,
   )
   const body = [
-    frontmatter({
+    courseFrontmatter(context, {
       title: `${context.label}: ${context.title}`,
       description,
       id: context.idPrefix,
@@ -558,7 +633,7 @@ async function courseHome(
       .join(', ')}`,
     `- instructor: ${instructors.join(', ')}`,
     `- topics: ${topicSummary(data)}`,
-    `- license: [cc by-nc-sa 4.0](${nestedString(data, 'course_image_metadata', 'license') || 'https://creativecommons.org/licenses/by-nc-sa/4.0/'})`,
+    `- license: [${context.licenseName.toLowerCase()}](${context.licenseUrl})`,
     `- source: [mit opencourseware](${context.sourceUrl})`,
     '',
     '## pages',
@@ -575,7 +650,7 @@ async function courseHome(
 async function pageMarkdown(context: CourseContext, page: CoursePage): Promise<string> {
   const content = await htmlToMarkdown(context, page.content)
   return markdownDocument([
-    frontmatter({
+    courseFrontmatter(context, {
       title: page.title,
       description: page.description || `${context.label} ${page.title}`,
       id: metadataId(context, 'page', page.relDir),
@@ -592,7 +667,7 @@ async function resourceMarkdown(context: CourseContext, resource: CourseResource
   const content = await htmlToMarkdown(context, resource.content)
   const source = originalAssetUrl(context, resource.originalFile, resource.localFile)
   return markdownDocument([
-    frontmatter({
+    courseFrontmatter(context, {
       title: resource.title,
       description: resource.description || `${context.label} ${resource.title}`,
       id: metadataId(context, 'resource', resource.relDir),
@@ -618,11 +693,11 @@ function collectionMarkdown(context: CourseContext, collection: CourseCollection
   const links = [
     ...collection.extraLinks,
     ...collection.resources
-      .sort((left, right) => left.title.localeCompare(right.title))
+      .sort(compareTitle)
       .map(resource => `- ${resourceLink(context, resource.relDir, resource.title)}`),
   ]
   return markdownDocument([
-    frontmatter({
+    courseFrontmatter(context, {
       title: collection.title,
       description: collection.description,
       id: metadataId(context, 'collection', collection.relDir),
@@ -666,6 +741,8 @@ async function removeDeadOcwShell(context: CourseContext): Promise<void> {
       'pages/**/index.html',
       'resources/**/index.html',
       'resources/**/index.xml',
+      'external-resources/**/*.html',
+      'external-resources/**/*.xml',
       'static_resources/index.html',
       'sitemap.xml',
       'favicon.ico',
@@ -679,7 +756,13 @@ async function removeDeadOcwShell(context: CourseContext): Promise<void> {
 }
 
 function isCoursePage(relDir: string, contentType: string): boolean {
-  return contentType === 'page' && relDir !== 'pages' && relDir !== 'resources'
+  if (contentType === 'page') return relDir !== 'pages' && relDir !== 'resources'
+  return relDir.startsWith('pages/') && relDir !== 'pages'
+}
+
+function isCourseResource(relDir: string, data: JsonRecord, contentType: string): boolean {
+  if (contentType === 'resource') return true
+  return relDir.startsWith('resources/') && stringValue(data, 'file').length > 0
 }
 
 async function vendorCourse(courseRoot: string): Promise<void> {
@@ -696,8 +779,8 @@ async function vendorCourse(courseRoot: string): Promise<void> {
     const relDir = path.posix.dirname(dataFile)
     const data = await readJson(path.join(context.root, dataFile))
     const contentType = stringValue(data, 'content_type')
-    if (contentType === 'resource') {
-      resources.push(parseResource(relDir, data))
+    if (isCourseResource(relDir, data, contentType)) {
+      resources.push(parseResource(context, relDir, data))
     } else if (isCoursePage(relDir, contentType)) {
       pages.push(parsePage(relDir, data))
     }
@@ -726,7 +809,7 @@ async function vendorCourse(courseRoot: string): Promise<void> {
       description: `${context.label} course pages`,
       resources: [],
       extraLinks: pages
-        .sort((left, right) => left.title.localeCompare(right.title))
+        .sort(compareTitle)
         .map(page => `- ${resourceLink(context, page.relDir, page.title)}`),
     }),
   )

@@ -1,5 +1,5 @@
 ---
-address: 7, Irwin Avenue, Bay-Cloverhill, Toronto Centre, Toronto, Golden Horseshoe, Ontario, M4Y 1K9, Canada
+address: 6 St Joseph St, Toronto, ON M4Y 1J7, Canada
 category:
   - '[[places to go]]'
 coordinates:

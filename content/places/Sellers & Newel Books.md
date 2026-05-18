@@ -1,5 +1,5 @@
 ---
-address: Toronto Public Library - College/Shaw, 766, College Street, Trinity-Bellwoods, University—Rosedale, Toronto, Golden Horseshoe, Ontario, M6G 1C5, Canada
+address: 672 College St, Toronto, ON M6G 1B8, Canada
 category:
   - '[[places to go]]'
 coordinates:

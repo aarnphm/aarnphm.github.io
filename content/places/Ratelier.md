@@ -1,5 +1,5 @@
 ---
-address: Trinity Park Lane, Trinity-Bellwoods, Spadina—Fort York, Toronto, Golden Horseshoe, Ontario, M6J 1G6, Canada
+address: 9 Trinity Park Lane, Toronto, ON M6K 0E6, Canada
 category:
   - '[[places to go]]'
 coordinates:
