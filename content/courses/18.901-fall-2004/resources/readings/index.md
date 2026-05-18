@@ -1,11 +1,16 @@
 ---
 title: "readings"
-description: "mit 18.901 reading resources"
-id: "mit-18-901-collection-readings"
+description: "mit 18.901 readings"
+id: "mit-18-901-fall-2004-collection-resources-readings"
 tags:
-  - "math"
-  - "topology"
   - "course"
+  - "mit"
+  - "ocw"
+  - "mathematics"
+  - "math"
+  - "topology and geometry"
+  - "topology"
+  - "geometry"
 ---
 
 up: [[courses/18.901-fall-2004/|mit 18.901]]

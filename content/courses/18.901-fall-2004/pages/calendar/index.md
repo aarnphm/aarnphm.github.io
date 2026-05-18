@@ -1,11 +1,16 @@
 ---
 title: "calendar"
 description: "mit 18.901 calendar"
-id: "mit-18-901-page-calendar"
+id: "mit-18-901-fall-2004-page-pages-calendar"
 tags:
-  - "math"
-  - "topology"
   - "course"
+  - "mit"
+  - "ocw"
+  - "mathematics"
+  - "math"
+  - "topology and geometry"
+  - "topology"
+  - "geometry"
 ---
 
 up: [[courses/18.901-fall-2004/|mit 18.901]]

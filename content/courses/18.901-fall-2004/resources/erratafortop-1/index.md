@@ -1,11 +1,16 @@
 ---
 title: "errata for topology"
 description: "This file includes the list of errata and corrections for the course textbook."
-id: "mit-18-901-resource-errata-for-topology-1"
+id: "mit-18-901-fall-2004-resource-resources-errata-for-topology-1"
 tags:
-  - "math"
-  - "topology"
   - "course"
+  - "mit"
+  - "ocw"
+  - "mathematics"
+  - "math"
+  - "topology and geometry"
+  - "topology"
+  - "geometry"
   - "readings"
 aliases:
   - "6b5c389115eec3ad2aeaa75408240c78_erratafortop.pdf"

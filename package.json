@@ -29,6 +29,7 @@
     "test": "tsx --test",
     "swarm": "pnpm exec tsx quartz/scripts/dev.ts",
     "convert": "tsx quartz/scripts/convert.ts",
+    "vendor:ocw": "tsx quartz/scripts/vendor-ocw-course.ts",
     "cf:deploy": "pnpm check && pnpm dlx wrangler deploy",
     "lint": "oxlint",
     "check": "oxfmt --check && oxlint && tsgo --noEmit && tsx --test",

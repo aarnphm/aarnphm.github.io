@@ -1,11 +1,16 @@
 ---
 title: "lecture notes"
 description: "mit 18.901 lecture notes"
-id: "mit-18-901-page-lecture-notes"
+id: "mit-18-901-fall-2004-page-pages-lecture-notes"
 tags:
-  - "math"
-  - "topology"
   - "course"
+  - "mit"
+  - "ocw"
+  - "mathematics"
+  - "math"
+  - "topology and geometry"
+  - "topology"
+  - "geometry"
   - "lecture notes"
 ---
 

@@ -1,11 +1,16 @@
 ---
 title: "notes i"
 description: "Notes I: These Supplementary Notes are optional reading for the corresponding lecture sessions.."
-id: "mit-18-901-resource-notes-i"
+id: "mit-18-901-fall-2004-resource-resources-notes-i"
 tags:
-  - "math"
-  - "topology"
   - "course"
+  - "mit"
+  - "ocw"
+  - "mathematics"
+  - "math"
+  - "topology and geometry"
+  - "topology"
+  - "geometry"
   - "lecture notes"
 aliases:
   - "8fade8afd61bc96576661ee625d076db_notes_i.pdf"

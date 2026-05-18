@@ -1,11 +1,16 @@
 ---
 title: "assignments"
 description: "mit 18.901 assignments"
-id: "mit-18-901-page-assignments"
+id: "mit-18-901-fall-2004-page-pages-assignments"
 tags:
-  - "math"
-  - "topology"
   - "course"
+  - "mit"
+  - "ocw"
+  - "mathematics"
+  - "math"
+  - "topology and geometry"
+  - "topology"
+  - "geometry"
   - "assignments"
 ---
 
