@@ -22,7 +22,7 @@ There is also a [[ideas|backlog]] of unfinished ideas that I might work on, one 
 
 ## writing.
 
-You can find internal monologue under [[/posts/]] index.
+You can find internal monologue under [[/posts/]] index. I also sent out a pseudo-monthly newsletter to all my friends, sort of a pseudo-update into my life.
 
 ## web poetics
 
@@ -35,6 +35,15 @@ You can find internal monologue under [[/posts/]] index.
 - #postcards, a collections of cards for all the places I have lived at.
 
 ## open source.
+
+- **mohaus** - :gear: Builds and publish Mojo binaries as Python packages
+  - Source: [github](https://github.com/aarnphm/mohaus)
+  -
+- **mojo-einsum** - :bento: einsum implementation in Mojo
+  - Source: [github](https://github.com/aarnphm/mojo-einsum)
+
+- **monpy** - :fire: Numpy API array library in Mojo
+  - Source: [github](https://github.com/aarnphm/monpy)
 
 - **vllm-project/vllm** - :seedling: A high-throughput and memory-efficient inference and serving engine for [[thoughts/LLMs]] (2024-)
   - Structured outputs compatibility in V0 and V1 engine https://github.com/vllm-project/vllm/pull/12388 https://github.com/vllm-project/vllm/pull/16577 https://github.com/vllm-project/vllm/pull/15317 https://github.com/vllm-project/vllm/pull/10785 https://github.com/vllm-project/vllm/pull/14868

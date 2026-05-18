@@ -14,7 +14,7 @@
     git-hooks,
     nixpkgs,
   }: let
-    lib = nixpkgs.lib;
+    inherit (nixpkgs) lib;
     fs = lib.fileset;
     systems = [
       "aarch64-darwin"
@@ -24,7 +24,7 @@
     ];
     forAllSystems = lib.genAttrs systems;
     package = builtins.fromJSON (builtins.readFile ./package.json);
-    version = package.version;
+    inherit (package) version;
     gitRev = self.rev or self.dirtyRev or "dirty";
     gardenFiles = fs.unions [
       (./. + "/@types")
@@ -173,7 +173,7 @@
     mkApps = system: let
       pkgs = import nixpkgs {inherit system;};
       nodejs = pkgs.nodejs_24;
-      packages = self.packages.${system};
+      pnpm = pkgs.pnpm_10.override {inherit nodejs;};
       app = drv: {
         type = "app";
         program = "${drv}/bin/${drv.name}";
@@ -209,36 +209,24 @@
       deploy = pkgs.writeShellApplication {
         name = "garden-deploy";
         runtimeInputs = [
+          pkgs.bash
           pkgs.coreutils
+          pkgs.fd
           pkgs.gitMinimal
-          pkgs.nix
+          pkgs.git-lfs
+          pkgs.openssh
           nodejs
+          pnpm
         ];
         text = ''
-          root="''${GARDEN_ROOT:-}"
-          if [ -z "$root" ]; then
-            root="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
+          deploy_root="''${GARDEN_DEPLOY_ROOT:-$HOME/workspace/aarnphm.github.io}"
+          if [ ! -d "$deploy_root/.git" ]; then
+            printf '%s\n' "missing deploy checkout: $deploy_root" >&2
+            exit 1
           fi
-          site="''${GARDEN_SITE_OUT:-}"
-          if [ -z "$site" ]; then
-            site="$(nix build "$root#deployable" --no-link --print-out-paths)"
-          fi
-          tmp="$(mktemp -d)"
-          cleanup() {
-            rm -rf "$tmp"
-          }
-          trap cleanup EXIT
-          cp -a ${packages.quartz}/share/garden/. "$tmp"
-          chmod -R u+w "$tmp"
-          rm -rf "$tmp/public"
-          mkdir -p "$tmp/public"
-          cp -a "$site"/. "$tmp/public"
-          cd "$tmp"
-          if [ -z "''${GITHUB_SHA:-}" ]; then
-            GITHUB_SHA="$(git -C "$root" rev-parse HEAD 2>/dev/null || true)"
-            export GITHUB_SHA
-          fi
-          exec ${packages.quartz}/share/garden/node_modules/.bin/wrangler deploy --minify "$@"
+          cd "$deploy_root"
+          git pull
+          exec bash ./deploy.sh "$@"
         '';
       };
       preview = pkgs.writeShellApplication {
@@ -273,8 +261,26 @@
     checks = forAllSystems (
       system: let
         packages = self.packages.${system};
+        preCommitCheck = git-hooks.lib.${system}.run {
+          src = ./.;
+          hooks = {
+            alejandra = {
+              enable = true;
+              files = "^flake\\.nix$";
+            };
+            deadnix = {
+              enable = true;
+              files = "^flake\\.nix$";
+            };
+            statix = {
+              enable = true;
+              files = "^flake\\.nix$";
+            };
+          };
+        };
       in {
         inherit (packages) deployable quartz vault;
+        pre-commit-check = preCommitCheck;
       }
     );
     devShells = forAllSystems (
@@ -282,31 +288,35 @@
         pkgs = import nixpkgs {inherit system;};
         nodejs = pkgs.nodejs_24;
         pnpm = pkgs.pnpm_10.override {inherit nodejs;};
+        preCommitCheck = self.checks.${system}.pre-commit-check;
       in {
         default = pkgs.mkShell {
-          packages = [
-            nodejs
-            pnpm
-            pkgs.alejandra
-            pkgs.cargo
-            pkgs.clang
-            pkgs.deadnix
-            pkgs.dune_3
-            pkgs.fd
-            pkgs.ghc
-            pkgs.git-lfs
-            pkgs.go
-            pkgs.lua54Packages.lua
-            pkgs.nixd
-            pkgs.ocaml
-            pkgs.ripgrep
-            pkgs.rustc
-            pkgs.statix
-            pkgs.uv
-            pkgs.zig
-            pkgs.python313
-          ];
+          packages =
+            [
+              nodejs
+              pnpm
+              pkgs.alejandra
+              pkgs.cargo
+              pkgs.clang
+              pkgs.deadnix
+              pkgs.dune_3
+              pkgs.fd
+              pkgs.ghc
+              pkgs.git-lfs
+              pkgs.go
+              pkgs.lua54Packages.lua
+              pkgs.nixd
+              pkgs.ocaml
+              pkgs.ripgrep
+              pkgs.rustc
+              pkgs.statix
+              pkgs.uv
+              pkgs.zig
+              pkgs.python313
+            ]
+            ++ preCommitCheck.enabledPackages;
           shellHook = ''
+            ${preCommitCheck.shellHook}
             export COREPACK_ENABLE_DOWNLOAD_PROMPT=0
           '';
         };

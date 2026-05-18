@@ -4287,6 +4287,10 @@ title: are.na
   - view: list
   - json: true
 
+- https://cp4space.hatsya.com/2026/05/03/schanuels-conjecture-and-the-semantics-of-fpsan/ -- Schanuel’s conjecture and the semantics of FPSan
+  - [meta]:
+    - date: 05/17/2026
+    - tags: [compiler, triton, system]
 - https://x.com/togethercompute/status/2053891740822917606 -- Serving DeepSeek-V4: why million-token context is an inference systems problem
   - [meta]:
     - date: 05/12/2026
@@ -9338,6 +9342,16 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://en.wikipedia.org/wiki/Lindemann–Weierstrass_theorem -- Lindemann-Weierstrass theorem
+  - [meta]:
+    - date: 05/17/2026
+    - tags: [number theory]
+    - pinned: true
+- https://en.wikipedia.org/wiki/Schanuel%27s_conjecture -- Schanuel's conjecture
+  - [meta]:
+    - date: 05/17/2026
+    - tags: [number theory]
+    - pinned: true
 - https://mathstodon.xyz/@tao/116438112449752681 -- Framing towards math, Terrence Tao
   - [meta]:
     - date: 04/29/2026
