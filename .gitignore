@@ -209,6 +209,7 @@ content/arena_hast.json
 /scripts
 *.log
 *.lock
+!flake.lock
 Thumbs.db
 dev
 go.sum

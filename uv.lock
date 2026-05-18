@@ -7,12 +7,6 @@ resolution-markers = [
     "python_full_version < '3.12'",
 ]
 
-[manifest]
-members = [
-    "garden",
-    "tinyvllm",
-]
-
 [[package]]
 name = "a2wsgi"
 version = "1.10.10"
@@ -981,7 +975,7 @@ requires-dist = [
 [package.metadata.requires-dev]
 dev = [
     { name = "bentoml", specifier = ">=1.4.39" },
-    { name = "huggingface-hub", extras = ["cli"], specifier = ">=0.35.3" },
+    { name = "huggingface-hub", specifier = ">=0.35.3" },
     { name = "jupyter", specifier = ">=1.1.1" },
     { name = "jupyter-client", specifier = ">=8.6.3" },
     { name = "jupyterlab-vim", specifier = ">=4.1.4" },
@@ -4287,11 +4281,6 @@ sdist = { url = "https://files.pythonhosted.org/packages/7a/fd/7a5ee21fd08ff70d3
 wheels = [
     { url = "https://files.pythonhosted.org/packages/e6/34/ebdc18bae6aa14fbee1a08b63c015c72b64868ff7dae68808ab500c492e2/tinycss2-1.4.0-py3-none-any.whl", hash = "sha256:3a49cf47b7675da0b15d0c6e1df8df4ebd96e9394bb905a5775adb0d884c5289", size = 26610, upload-time = "2024-10-24T14:58:28.029Z" },
 ]
-
-[[package]]
-name = "tinyvllm"
-version = "0.1.0"
-source = { editable = "content/hinterland/tinyvllm" }
 
 [[package]]
 name = "tokenize-rt"
