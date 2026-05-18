@@ -10,6 +10,17 @@ tags:
   - topology
   - evergreen
 title: topology
+seealso:
+  - "[[thoughts/topology/point set|point-set topology]]"
+  - "[[thoughts/topology/separation|separation]]"
+  - "[[thoughts/topology/compactness|compactness]]"
+  - "[[thoughts/topology/fundamental group|fundamental group]]"
+  - "[[thoughts/topology/algebraic bridge|algebraic bridge]]"
+  - "[[thoughts/topology/simply connected|simple connectivity]]"
+  - "[[thoughts/topology/differential foundations|differential foundations]]"
+  - "[[thoughts/topology/3 manifolds|3-manifold topology]]"
+  - "[[thoughts/topology/ricci flow|ricci flow]]"
+  - "[[thoughts/topology/resources|resources]]"
 ---
 
 I'm using {{sidenotes[munkres' topology]: james munkres, _topology_ (2nd ed.)}} and Amstrong's [[library/Basic Topology]] as a base for this.
@@ -20,19 +31,6 @@ I'm using {{sidenotes[munkres' topology]: james munkres, _topology_ (2nd ed.)}} 
 - **phase 3 — compactness + connectedness** (weeks 8–9): compactness, lindelöf, local compactness, connectedness (munkres ch. 26–31). align with mit 18.901 weeks 6–7 problem sets.
 - **phase 4 — algebraic entrance** (weeks 10–12): fundamental group, covering spaces, van kampen (munkres ch. 51–56). follow mit 18.901 weeks 8–11 lectures.
 - **phase 5 — beyond** (weeks 13+): transition into homology and homotopy (munkres appendix, hatcher ch. 0–1) before stepping into mit 18.906.
-
-## subnotes
-
-- [[thoughts/topology/point set|point-set topology]] — definitions, bases, subspaces, product/quotient constructions, sample mit pset solutions.
-- [[thoughts/topology/separation|separation]] — $t_0$ through normality, urysohn, tietze extension, metrization heuristics.
-- [[thoughts/topology/compactness|compactness]] — compact, sequentially compact, lindelöf, local compactness, applications.
-- [[thoughts/topology/fundamental group|fundamental group]] — loop spaces, van kampen, covering theory case studies.
-- [[thoughts/topology/algebraic bridge|algebraic bridge]] — homology theory, chain complexes, stepping stones toward mit 18.906.
-- [[thoughts/topology/simply connected|simple connectivity]] — why $\pi_1=0$ is the right condition, poincaré homology sphere counterexample.
-- [[thoughts/topology/differential foundations|differential foundations]] — smooth manifolds, morse theory (year 2).
-- [[thoughts/topology/3 manifolds|3-manifold topology]] — heegaard, jsj, thurston geometries (year 2-3).
-- [[thoughts/topology/ricci flow|ricci flow]] — hamilton's program, perelman's breakthroughs (year 3-4).
-- [[thoughts/topology/resources|resources]] — curated bibliography by phase.
 
 ## poincaré conjecture
 
