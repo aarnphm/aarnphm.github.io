@@ -1,5 +1,5 @@
 ---
-address: 39, Baldwin Street, Kensington-Chinatown, University—Rosedale, Toronto, Golden Horseshoe, Ontario, M5T 1L1, Canada
+address: 37 Baldwin St, Toronto, ON M5T 1L1, Canada
 category:
   - '[[places to go]]'
 coordinates:

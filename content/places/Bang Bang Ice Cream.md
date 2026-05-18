@@ -1,5 +1,5 @@
 ---
-address: 74, Givins Street, Trinity-Bellwoods, Spadina—Fort York, Toronto, Golden Horseshoe, Ontario, M6J 2X5, Canada
+address: 93A Ossington Ave, Toronto, ON M6J 0G1, Canada
 category:
   - '[[places to go]]'
 coordinates:

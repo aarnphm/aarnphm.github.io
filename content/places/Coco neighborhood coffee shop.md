@@ -1,5 +1,5 @@
 ---
-address: 26, Beatrice Street, Trinity-Bellwoods, University—Rosedale, Toronto, Golden Horseshoe, Ontario, M6J 2S4, Canada
+address: 668 College St, Toronto, ON M6G 1B8, Canada
 category:
   - '[[places to go]]'
 coordinates:

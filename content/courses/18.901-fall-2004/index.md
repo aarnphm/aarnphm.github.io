@@ -6,15 +6,16 @@ tags:
   - "course"
   - "mit"
   - "ocw"
-  - "mathematics"
   - "math"
-  - "topology and geometry"
   - "topology"
   - "geometry"
 aliases:
   - "18.901"
   - "introduction to topology"
   - "18.901-fall-2004"
+layout: "A|L"
+license: "Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International"
+license_url: "https://creativecommons.org/licenses/by-nc-sa/4.0/"
 ---
 
 ![[courses/18.901-fall-2004/static_resources/fd6e6b71b2a84ed4cc62a976da33a264_18-901f04.jpg]]
@@ -28,7 +29,7 @@ This course introduces topology, covering topics fundamental to modern analysis 
 - level: undergraduate
 - instructor: Prof. James Munkres
 - topics: mathematics / topology and geometry
-- license: [cc by-nc-sa 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/)
+- license: [creative commons attribution-noncommercial-sharealike 4.0 international](https://creativecommons.org/licenses/by-nc-sa/4.0/)
 - source: [mit opencourseware](https://ocw.mit.edu/courses/18-901-introduction-to-topology-fall-2004/)
 
 ## pages

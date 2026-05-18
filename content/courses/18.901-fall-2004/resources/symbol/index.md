@@ -6,13 +6,15 @@ tags:
   - "course"
   - "mit"
   - "ocw"
-  - "mathematics"
   - "math"
-  - "topology and geometry"
   - "topology"
   - "geometry"
+  - "assignments"
 aliases:
   - "5e12e0e93d08bc92b9c623a91291e57a_symbol.jpg"
+layout: "A|L"
+license: "Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International"
+license_url: "https://creativecommons.org/licenses/by-nc-sa/4.0/"
 ---
 
 up: [[courses/18.901-fall-2004/|mit 18.901]]

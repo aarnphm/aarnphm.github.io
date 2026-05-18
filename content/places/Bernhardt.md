@@ -1,5 +1,5 @@
 ---
-address: 111, Beaconsfield Avenue, Little Portugal, Davenport, Toronto, Golden Horseshoe, Ontario, M6J 1S8, Canada
+address: 202 Dovercourt Rd, Toronto, ON M6J 3C8, Canada
 category:
   - '[[places to go]]'
 coordinates:

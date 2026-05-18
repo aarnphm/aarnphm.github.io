@@ -1,5 +1,5 @@
 ---
-address: 320, Bloor Street West, University, University—Rosedale, Toronto, Golden Horseshoe, Ontario, M5S 1W5, Canada
+address: 333 Bloor St W, Toronto, ON M5S 1W7, Canada
 category:
   - '[[places to go]]'
 coordinates:

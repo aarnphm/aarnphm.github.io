@@ -1,5 +1,5 @@
 ---
-address: Four Seasons, 60, Yorkville Avenue, Annex, University—Rosedale, Toronto, Golden Horseshoe, Ontario, M4W 1L5, Canada
+address: 53 Scollard St, Toronto, ON M5R 0A1, Canada
 category:
   - '[[places to go]]'
 coordinates:

@@ -1,5 +1,5 @@
 ---
-address: 275, Crawford Street, Trinity-Bellwoods, University—Rosedale, Toronto, Golden Horseshoe, Ontario, M6H 1M4, Canada
+address: 176 Bellwoods Ave, Toronto, ON M6J 2P4, Canada
 category:
   - '[[places to go]]'
 coordinates:

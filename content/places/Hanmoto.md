@@ -1,5 +1,5 @@
 ---
-address: 16, Rolyat Street, Trinity-Bellwoods, Spadina—Fort York, Toronto, Golden Horseshoe, Ontario, M6H 1Y3, Canada
+address: 2 Lakeview Ave, Toronto, ON M6J 1X4, Canada
 category:
   - '[[places to go]]'
 coordinates:

@@ -1,5 +1,5 @@
 ---
-address: Bevy@The Combine, 225, Wellington Street West, Wellington Place, Spadina—Fort York, Toronto, Golden Horseshoe, Ontario, M5V 3C7, Canada
+address: 225 Wellington St W, Toronto, ON M5V 3G7, Canada
 category:
   - '[[places to go]]'
 coordinates:

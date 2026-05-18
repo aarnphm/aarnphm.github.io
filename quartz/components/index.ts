@@ -19,6 +19,7 @@ import Head from './Head'
 import HeadingsConstructor from './Headings'
 import Image from './Image'
 import Keybind from './Keybind'
+import License from './License'
 import MobileOnly from './MobileOnly'
 import PageListSearch from './PageListSearch'
 import NotFound from './pages/404'
@@ -50,6 +51,7 @@ export {
   StackedNotes,
   Byline,
   Image,
+  License,
   Reader,
   Keybind,
   ArticleTitle,

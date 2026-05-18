@@ -15,7 +15,7 @@ export const sharedPageComponents: SharedLayout = {
     Component.Darkmode(),
     Component.CodeCopy(),
   ],
-  afterBody: [Component.Recommendations(), Component.Backlinks()],
+  afterBody: [Component.License(), Component.Recommendations(), Component.Backlinks()],
   footer: Component.Footer({
     layout: 'minimal',
     links: {

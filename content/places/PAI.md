@@ -1,5 +1,5 @@
 ---
-address: Richmond Street West, Wellington Place, Spadina—Fort York, Toronto, Golden Horseshoe, Ontario, M5V 1V6, Canada
+address: 18 Duncan St, Toronto, ON M5H 3G8, Canada
 category:
   - '[[places to go]]'
 coordinates:

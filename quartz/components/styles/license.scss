@@ -1,0 +1,20 @@
+.license-meta {
+  color: var(--gray);
+  font-size: 0.9rem;
+  line-height: 1.5;
+  margin-bottom: 1.9rem;
+
+  h2 {
+    margin-bottom: 0.5rem;
+  }
+
+  p {
+    margin: 0;
+  }
+
+  a {
+    color: inherit;
+    text-decoration: underline;
+    text-decoration-thickness: from-font;
+  }
+}

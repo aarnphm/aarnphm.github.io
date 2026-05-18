@@ -1,5 +1,5 @@
 ---
-address: Denison Square, Kensington Market, University—Rosedale, Toronto, Golden Horseshoe, Ontario, M5T 1M1, Canada
+address: 28 Kensington Ave, Toronto, ON M5T 2K1, Canada
 category:
   - '[[places to go]]'
 coordinates:

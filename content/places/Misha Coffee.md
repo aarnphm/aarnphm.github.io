@@ -1,5 +1,5 @@
 ---
-address: 6242, 21st Street North, Overlee Knolls, East Falls Church, Arlington, Arlington County, Virginia, 22205, United States
+address: 6242 21st St N, Arlington, VA 22205, USA
 category:
   - '[[places to go]]'
 coordinates:
