@@ -2,7 +2,7 @@ name = "portfolio"
 compatibility_date = "2025-01-21"
 compatibility_flags = ["nodejs_compat", "global_fetch_strictly_public"]
 main = "./worker/index.ts"
-preview_urls = true
+preview_urls = false
 workers_dev = true
 rules = [{ type = "Text", globs = ["**/*.txt"], fallthrough = true }]
 
