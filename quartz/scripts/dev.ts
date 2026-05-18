@@ -30,6 +30,7 @@ const DEFAULT_DEV_PORT = 7373
 const WS_PORT_OFFSET = 1
 const WRANGLER_PORT_OFFSET = 707
 const MAX_BASE_PORT = 65535 - WRANGLER_PORT_OFFSET
+const WRANGLER_DEV_NAME = process.env.WRANGLER_DEV_NAME ?? 'portfolio-dev'
 
 const runtimeConfig = resolveRuntimeConfig(process.argv.slice(2))
 const totalPnpmDevAttempts = runtimeConfig.pnpmDevRetryLimit + 1
@@ -108,7 +109,14 @@ function resolveRuntimeConfig(argv: string[]): RuntimeConfig {
   if (force) {
     pnpmDevArgs.push('--force')
   }
-  const wranglerArgs = ['wrangler', 'dev', '--port', String(wranglerPort)]
+  const wranglerArgs = [
+    'wrangler',
+    'dev',
+    '--name',
+    WRANGLER_DEV_NAME,
+    '--port',
+    String(wranglerPort),
+  ]
   const pnpmDevRetryLimit = retry ?? 3
   return {
     port: effectivePort,
@@ -207,6 +215,7 @@ function printHelp(): void {
     '',
     'environment:',
     '  PUBLIC_BASE_URL     overrides default http://localhost:<port> when --port is not passed',
+    '  WRANGLER_DEV_NAME   overrides wrangler dev --name, default portfolio-dev',
     '',
     'example:',
     '  pnpm swarm -- --port 8081',
