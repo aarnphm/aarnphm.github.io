@@ -2,7 +2,11 @@
 date: "2025-11-01"
 description: separation axioms, urysohn lemma, metrization checkpoints for mit 18.901 week 4–5.
 id: topology-separation
-modified: 2026-05-09 17:51:47 GMT-04:00
+modified: 2026-05-19 18:13:30 GMT-04:00
+seealso:
+  - '[[thoughts/topology/point set|point-set]]'
+  - '[[thoughts/topology/compactness|compactness]]'
+  - '[[thoughts/topology|topology hub]]'
 tags:
   - math
   - topology
@@ -25,9 +29,3 @@ title: separation axioms
 - [ ] table of spaces classified by separation level (sierpinski, co-countable, indiscrete, plane with line collapsed).
 - [ ] proof sketches for urysohn and tietze with annotations referencing textbook theorems 18.1–18.3.
 - [ ] metrization theorem crib notes with hypotheses vs conclusions.
-
-## links
-
-- previous: [[thoughts/topology/point-set|point-set]].
-- next: [[thoughts/topology/compactness|compactness]].
-- hub: [[thoughts/topology|topology hub]].

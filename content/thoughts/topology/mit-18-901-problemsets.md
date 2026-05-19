@@ -2,7 +2,9 @@
 date: "2025-11-01"
 description: introduction to topology
 id: topology-mit-18-901-psets
-modified: 2026-05-09 17:51:47 GMT-04:00
+modified: 2026-05-19 18:16:36 GMT-04:00
+seealso:
+  - '[[thoughts/topology]]'
 socials:
   ocw: https://ocw.mit.edu/courses/18-901-introduction-to-topology-fall-2004/
 tags:
@@ -11,25 +13,22 @@ tags:
 title: mit 18.901
 ---
 
-- hub: [[thoughts/topology|topology hub]].
-- supporting notes: [[thoughts/topology/point-set|point-set]], [[thoughts/topology/separation|separation]], [[thoughts/topology/compactness|compactness]], [[thoughts/topology/fundamental-group|fundamental group]].
+- supporting notes: [[thoughts/topology/point set|point-set]], [[thoughts/topology/separation|separation]], [[thoughts/topology/compactness|compactness]], [[thoughts/topology/fundamental group|fundamental group]].
 
 ## schedule
 
 | pset | due (2025) | focus                            | status |
 | ---- | ---------- | -------------------------------- | ------ |
-| 1    | sep 11     | basics, bases, subspace topology | ☐      |
-| 2    | sep 18     | product and quotient spaces      | ☐      |
-| 3    | sep 25     | separation axioms, urysohn       | ☐      |
-| 4    | oct 2      | compactness warm-up              | ☐      |
-| 5    | oct 9      | compactness + connectedness      | ☐      |
-| 6    | oct 23     | fundamental group intro          | ☐      |
-| 7    | oct 30     | van kampen applications          | ☐      |
-| 8    | nov 6      | covering space classification    | ☐      |
-| 9    | nov 13     | advanced covering examples       | ☐      |
-| 10   | nov 20     | review + algebraic bridge        | ☐      |
-
-> [!note] update due dates once official fall 2025 calendar releases; placeholders follow typical schedule from recent offerings.
+| 1    | sep 11     | basics, bases, subspace topology | [ ]      |
+| 2    | sep 18     | product and quotient spaces      | [ ]      |
+| 3    | sep 25     | separation axioms, urysohn       | [ ]      |
+| 4    | oct 2      | compactness warm-up              | [ ]      |
+| 5    | oct 9      | compactness + connectedness      | [ ]      |
+| 6    | oct 23     | fundamental group intro          | [ ]      |
+| 7    | oct 30     | van kampen applications          | [ ]      |
+| 8    | nov 6      | covering space classification    | [ ]      |
+| 9    | nov 13     | advanced covering examples       | [ ]      |
+| 10   | nov 20     | review + algebraic bridge        | [ ]      |
 
 ## workflow
 

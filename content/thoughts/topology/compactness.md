@@ -2,7 +2,10 @@
 date: "2025-11-01"
 description: compactness, connectedness, lindelöf, local compactness aligned with mit 18.901 weeks 6–7.
 id: topology-compactness
-modified: 2026-05-09 17:51:47 GMT-04:00
+modified: 2026-05-19 18:19:46 GMT-04:00
+seealso:
+  - '[[thoughts/topology/separation|separation axioms]]'
+  - '[[thoughts/topology/fundamental group|fundamental group]]'
 tags:
   - math
   - topology
@@ -26,8 +29,3 @@ title: compactness and connectedness
 - [ ] work through alexandroff one-point compactification examples.
 - [ ] record connectedness counterexamples (topologist's sine curve, comb space).
 
-## links
-
-- previous: [[thoughts/topology/separation|separation axioms]].
-- next: [[thoughts/topology/fundamental-group|fundamental group]].
-- hub: [[thoughts/topology|topology hub]].

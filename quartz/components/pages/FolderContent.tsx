@@ -73,6 +73,10 @@ const defaultOptions: FolderContentOptions = {
   tags: [],
 }
 
+const slugForDirectoryEntry = (fp: FilePath): string => {
+  return stripSlashes(slugifyFilePath(fp, path.extname(fp) === '.ipynb'))
+}
+
 const Layout = { defn: 'L->EAT', etas: 'L->ET|A', alsp: 'A|L', lovp: 'L' } as const
 
 type FolderLayout = (typeof Layout)[keyof typeof Layout]
@@ -143,8 +147,7 @@ export default ((opts?: Partial<FolderContentOptions>) => {
     if (!fullTrie) {
       fullTrie = new FileTrieNode([])
       for (const fp of ctx.allFiles) {
-        const slug = slugifyFilePath(fp as FilePath)
-        const fileSlug = stripSlashes(slug)
+        const fileSlug = slugForDirectoryEntry(fp as FilePath)
         const ext = path.extname(fp)
         const base = path.basename(fp, ext)
         const md = mdBySlug.get(fileSlug)

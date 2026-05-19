@@ -2,7 +2,10 @@
 date: "2025-11-01"
 description: covering spaces, van kampen crafted around mit 18.901 weeks 8–11.
 id: fundamental group
-modified: 2026-05-09 17:51:47 GMT-04:00
+modified: 2026-05-19 18:17:18 GMT-04:00
+seealso:
+  - '[[thoughts/topology/compactness|compactness and connectedness]]'
+  - '[[thoughts/topology/algebraic bridge|algebraic bridge]]'
 tags:
   - math
   - topology
@@ -26,8 +29,3 @@ title: fundamental group
 - [ ] work out covering spaces for circle, cylinder, mobius strip, torus.
 - [ ] summarize relationship with group actions preparing for 18.906.
 
-## links
-
-- previous: [[thoughts/topology/compactness|compactness and connectedness]].
-- next: [[thoughts/topology/algebraic-bridge|algebraic bridge]].
-- hub: [[thoughts/topology|topology hub]].

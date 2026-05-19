@@ -2,7 +2,7 @@
 date: "2025-11-01"
 description: structures, decompositions, and geometric properties of 3-dimensional manifolds.
 id: 3 manifolds
-modified: 2026-05-09 17:51:47 GMT-04:00
+modified: 2026-05-19 18:22:40 GMT-04:00
 tags:
   - math
   - topology
@@ -16,17 +16,17 @@ title: 3-manifold topology
 
 comprehensive study of closed 3-manifolds. understand why dimension 3 is goldilocks: not too rigid (like dim 2), not too flexible (like dim 4+).
 
-this phase bridges [[thoughts/topology/algebraic-bridge|algebraic topology]] and [[thoughts/topology/ricci-flow|ricci flow]] by providing geometric-topological foundations.
+this phase bridges [[thoughts/topology/algebraic bridge|algebraic topology]] and [[thoughts/topology/ricci flow|ricci flow]] by providing geometric-topological foundations.
 
 ## major topics
 
 ### examples and constructions
 
-- **$S^3$**: unit quaternions, hopf fibration $S^1 \to S^3 \to S^2$
-- **lens spaces** $L(p,q)$: quotients of $S^3$ by cyclic group action
-- **[[thoughts/topology/simply-connected#poincaré homology sphere|poincaré homology sphere]]**: $(5,2,2)$ surgery on trefoil
-- **torus bundles**: $T^2$ bundles over $S^1$ with monodromy
-- **seifert fibered spaces**: circle bundles over surfaces
+- $S^3$: unit quaternions, hopf fibration $S^1 \to S^3 \to S^2$
+- lens spaces $L(p,q)$: quotients of $S^3$ by cyclic group action
+- [[thoughts/topology/simply connected#poincaré homology sphere|poincaré homology sphere]]: $(5,2,2)$ surgery on trefoil
+- torus bundles: $T^2$ bundles over $S^1$ with monodromy
+- seifert fibered spaces: circle bundles over surfaces
 
 ### surgery theory
 
@@ -44,13 +44,13 @@ this phase bridges [[thoughts/topology/algebraic-bridge|algebraic topology]] and
 
 ### decomposition theorems
 
-**prime decomposition** (kneser-milnor):
+prime decomposition (kneser-milnor):
 
 - every closed 3-manifold: $M = P_1 \# P_2 \# \cdots \# P_k$ (unique up to order)
 - prime: can't be written as nontrivial connected sum
 - $S^3$ is prime (simplest)
 
-**jsj decomposition**:
+jsj decomposition:
 
 - canonical decomposition along incompressible tori
 - decomposes into seifert pieces and hyperbolic pieces
@@ -60,31 +60,31 @@ this phase bridges [[thoughts/topology/algebraic-bridge|algebraic topology]] and
 
 every closed 3-manifold admits geometric decomposition into pieces, each with one of:
 
-1. **spherical** $S^3$: constant positive curvature
-2. **euclidean** $E^3$: flat
-3. **hyperbolic** $H^3$: constant negative curvature
-4. **$S^2 \times \mathbb{R}$**: product geometry
-5. **$H^2 \times \mathbb{R}$**: product geometry
-6. **$\widetilde{SL_2\mathbb{R}}$**: universal cover of unit tangent bundle of hyperbolic plane
-7. **nil**: heisenberg group
-8. **sol**: solvable but not nilpotent lie group
+1. spherical $S^3$: constant positive curvature
+2. euclidean $E^3$: flat
+3. hyperbolic $H^3$: constant negative curvature
+4. $S^2 \times \mathbb{R}$: product geometry
+5. $H^2 \times \mathbb{R}$: product geometry
+6. $\widetilde{SL_2\mathbb{R}}$: universal cover of unit tangent bundle of hyperbolic plane
+7. nil: heisenberg group
+8. sol: solvable but not nilpotent lie group
 
 see also: {{sidenotes[geometrization]: perelman proved thurston's geometrization conjecture, which implies poincaré. simply connected manifolds must be spherical.}}
 
 ## why 3-manifolds are special
 
-**dimension 2**: complete classification (sphere, torus, higher genus surfaces, non-orientable)
+dimension 2: complete classification (sphere, torus, higher genus surfaces, non-orientable)
 
 - simple, well-understood
 - gauss-bonnet relates curvature to topology
 
-**dimension 3**: richest theory
+dimension 3: richest theory
 
 - poincaré conjecture, geometrization
 - fundamental group central role
 - knot theory intertwined
 
-**dimension 4+**: wild west
+dimension 4+: wild west
 
 - exotic structures on $\mathbb{R}^4$
 - poincaré fails (counterexamples exist for dim 4+)
@@ -92,14 +92,14 @@ see also: {{sidenotes[geometrization]: perelman proved thurston's geometrization
 
 ## connection to poincaré conjecture
 
-[[thoughts/topology/simply-connected|simply connected]] 3-manifolds can't have non-trivial prime or jsj decomposition:
+[[thoughts/topology/simply connected|simply connected]] 3-manifolds can't have non-trivial prime or jsj decomposition:
 
 - connected sum with $\pi_1 \neq 0$ factor breaks simple connectivity
 - incompressible torus in simply connected manifold bounds ball on one side
 
 forces single geometric piece. simply connected + compact + geometric structure $\Rightarrow$ must be $S^3/\Gamma$ with $\Gamma \subset SO(4)$ finite. simple connectivity forces $\Gamma = \{e\}$, hence $M \cong S^3$.
 
-the [[thoughts/topology/ricci-flow|ricci flow]] proof by perelman establishes geometrization.
+the [[thoughts/topology/ricci flow|ricci flow]] proof by perelman establishes geometrization.
 
 ## computational tools
 
@@ -140,19 +140,17 @@ primary texts:
 - thurston "three-dimensional geometry and topology" (geometric perspective)
 - rolfsen "knots and links" (surgery constructions)
 
-see [[thoughts/topology/resources#phase-8-3-manifold-topology-year-2-3-parallel|3-manifold resources]] for complete list.
+see [[thoughts/topology/resources#phase 8: 3-manifold topology (year 2-3, parallel)|3-manifold resources]] for complete list.
 
 ## timeline
 
-**year 2-3** (parallel with [[thoughts/topology/differential-foundations|differential topology]] and [[thoughts/manifold|riemannian geometry]]):
+year 2-3 (parallel with [[thoughts/topology/differential foundations|differential topology]] and [[thoughts/manifold|riemannian geometry]]):
 
 - fall year 2: basic constructions (hempel ch 1-4)
 - spring year 2: heegaard theory, jsj (hempel ch 5-8)
 - year 3: geometric structures (thurston ch 1-3)
 
-## next steps
+## further reading
 
-understanding 3-manifolds prepares for:
-
-- [[thoughts/topology/ricci-flow|ricci flow]] (evolution on 3-manifolds)
-- [[thoughts/topology/poincare-roadmap|poincaré proof]] (geometrization via ricci flow)
+- [[thoughts/topology/ricci flow|ricci flow]] (evolution on 3-manifolds)
+- [[thoughts/topology/poincare|poincaré proof]] (geometrization via ricci flow)
