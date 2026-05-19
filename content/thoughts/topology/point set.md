@@ -2,7 +2,10 @@
 date: "2025-11-01"
 description: scaffolding (munkres ch. 2–5).
 id: point set
-modified: 2026-05-09 17:51:47 GMT-04:00
+modified: 2026-05-19 18:12:20 GMT-04:00
+seealso:
+  - '[[thoughts/topology|topology hub]]'
+  - '[[thoughts/topology/separation|separation axioms]]'
 tags:
   - math
   - topology
@@ -33,8 +36,3 @@ title: point-set topology
 - [ ] prove basis-subspace relationships for selected exercises (e.g., munkres 3.2, 3.3).
 - [ ] implement product topology computations for torus and mobius strip.
 - [ ] summarize quotient topology pitfalls using mit pset 2.
-
-## links
-
-- back to [[thoughts/topology|topology hub]].
-- next: [[thoughts/topology/separation|separation axioms]].

@@ -2,7 +2,7 @@
 date: "2025-11-01"
 description: bridge from topological manifolds to smooth manifolds, morse theory, and differential structures.
 id: differential foundations
-modified: 2026-05-09 17:51:47 GMT-04:00
+modified: 2026-05-19 18:18:35 GMT-04:00
 tags:
   - math
   - topology
@@ -48,9 +48,9 @@ transition from topological to smooth manifolds. understand tangent spaces, vect
 - morse inequalities relating critical points to homology
 - morse homology
 
-## connection to main roadmap
+## links
 
-see [[thoughts/topology/poincare-roadmap#level-2a-differential-topology-year-2-semester-1|phase 7]] in poincaré roadmap.
+see [[thoughts/topology/poincare#level 2a differential topology (year 2, semester 1)|phase 7]] in poincaré roadmap.
 
 prerequisites:
 
@@ -80,11 +80,9 @@ leads to:
 
 primary: lee "introduction to smooth manifolds" ch 1-15
 
-see [[thoughts/topology/resources#phase-7-differential-topology-year-2-fall|differential topology resources]] for complete bibliography.
+see [[thoughts/topology/resources#phase 7 differential topology (year 2, fall)|differential topology resources]] for complete bibliography.
 
-## next steps
-
-after completing this phase, move to:
+## further reading
 
 - riemannian geometry (lee "riemannian manifolds")
 - parallel study of [[thoughts/topology/3-manifolds|3-manifold topology]]

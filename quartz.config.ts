@@ -168,6 +168,7 @@ const config: QuartzConfig = {
             '.ml',
             '.cu',
             '.json',
+            '.ipynb',
             '.csv',
             '.webp',
             '.jpg',
@@ -224,7 +225,6 @@ const config: QuartzConfig = {
       Plugin.ContentIndex({ atomLimit: 50 }),
       Plugin.SemanticIndex(configuration.semanticSearch!),
       Plugin.Assets(),
-      Plugin.NotebookViewer(),
       Plugin.Static(),
       Plugin.Favicon(),
       Plugin.NotFoundPage(),
@@ -237,6 +237,7 @@ const config: QuartzConfig = {
       Plugin.StreamIndex(),
       Plugin.Masonry(),
       Plugin.CanvasPage(),
+      Plugin.NotebookViewer({ mode: 'saved' }),
     ],
   },
 }

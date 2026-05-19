@@ -2,130 +2,130 @@
 date: "2025-11-01"
 description: curated bibliography and resources for topology study from point-set through poincaré conjecture.
 id: topology-resources
-modified: 2026-05-09 17:51:47 GMT-04:00
+modified: 2026-05-19 18:14:54 GMT-04:00
 tags:
   - math
   - topology
 title: topology resources
 ---
 
-## by phase (aligned with roadmap)
+## by phase
 
 ### phase 0-5: point-set + algebraic foundations (year 1)
 
-**primary textbooks**:
+_primary textbooks_:
 
 - munkres, james. _topology_ (2nd ed., 2000) — spine of roadmap, ch 1-56
 - hatcher, allen. _algebraic topology_ (2002) — freely available, ch 0-3 for year 1
 
-**supplementary**:
+_supplementary_:
 
 - armstrong, m.a. _basic topology_ (1983) — gentle introduction
 - lee, john m. _introduction to topological manifolds_ (2011) — bridges to smooth manifolds
 - stillwell, john. _classical topology and combinatorial group theory_ (1993) — historical perspective
 
-**mit opencourseware**:
+_mit opencourseware_:
 
 - 18.901 introduction to topology (fall 2025) — primary alignment
 - lecture notes + problem sets available
 
 ### phase 6: homology deep dive (year 1, spring-summer)
 
-**primary**:
+_primary_:
 
 - hatcher ch 2 (homology) — comprehensive treatment
 - munkres. _elements of algebraic topology_ (1984) — computational approach
 
-**supplementary**:
+_supplementary_:
 
 - bredon, glen. _topology and geometry_ (1993) — includes cohomology
 - spanier, edwin. _algebraic topology_ (1966) — comprehensive reference
 
-**problem books**:
+_problem books_:
 
 - viro, oleg et al. _elementary topology problem textbook_ (free online) — 500+ problems
 
 ### phase 7: differential topology (year 2, fall)
 
-**primary**:
+_primary_:
 
 - lee, john m. _introduction to smooth manifolds_ (2nd ed., 2013) — modern standard
 - guillemin & pollack. _differential topology_ (1974) — geometric intuition
 
-**supplementary**:
+_supplementary_:
 
 - milnor, john. _topology from the differentiable viewpoint_ (1965) — elegant, concise
 - hirsch, morris. _differential topology_ (1976) — comprehensive
 
-**morse theory**:
+_morse theory_:
 
 - milnor, john. _morse theory_ (1963) — classic exposition
 - nicolaescu, liviu. _invitation to morse theory_ (2011) — modern approach
 
 ### phase 8: 3-manifold topology (year 2-3, parallel)
 
-**primary**:
+_primary_:
 
 - hempel, john. _3-manifolds_ (1976) — foundational text
 - thurston, william. _three-dimensional geometry and topology_ vol 1 (1997) — visionary
 
-**supplementary**:
+_supplementary_:
 
 - rolfsen, dale. _knots and links_ (1976) — surgery constructions
 - jaco, william. _lectures on three-manifold topology_ (1980) — jsj decomposition
 - scott, peter. _geometries of 3-manifolds_ (1983) — geometric structures
 
-**computational tools**:
+_computational tools_:
 
 - snappy (python) — hyperbolic 3-manifold computations
 - regina — triangulations and normal surfaces
 
 ### phase 9: riemannian geometry (year 2, spring)
 
-**primary**:
+_primary_:
 
 - lee, john m. _riemannian manifolds: an introduction to curvature_ (1997) — accessible
 - do carmo, manfredo. _riemannian geometry_ (1992) — classical approach
 
-**supplementary**:
+_supplementary_:
 
 - petersen, peter. _riemannian geometry_ (3rd ed., 2016) — modern, comprehensive
 - cheeger & ebin. _comparison theorems in riemannian geometry_ (1975) — advanced
 
-**curvature intuition**:
+_curvature intuition_:
 
 - spivak, michael. _comprehensive introduction to differential geometry_ vol 2 (1999) — detailed
 
 ### phase 10: geometric analysis (year 3)
 
-**pdes**:
+_pdes_:
 
 - evans, lawrence. _partial differential equations_ (2nd ed., 2010) — standard graduate text
 - gilbarg & trudinger. _elliptic partial differential equations of second order_ (2001) — classic
 
-**geometric flows**:
+_geometric flows_:
 
 - mantegazza, carlo. _lecture notes on mean curvature flow_ (2011)
 - grayson, matthew. _curve shortening flow_ papers — warmup for ricci flow
 
-**hamilton's toolkit**:
+_hamilton's toolkit_:
 
 - hamilton, richard. _three-manifolds with positive ricci curvature_ (1982) — original paper
 - hamilton's subsequent papers (1986-1997) — developing ricci flow theory
 
 ### phase 11: ricci flow (year 3-4)
 
-**introductory**:
+_introductory_:
 
 - chow, bennett & knopf, dan. _the ricci flow: an introduction_ (2004) — accessible entry
 - topping, peter. _lectures on the ricci flow_ (2006) — concise notes
 
-**advanced**:
+_advanced_:
 
 - chow et al. _the ricci flow: techniques and applications_ (4 volumes, 2007-2015) — encyclopedic
 - hamilton, richard. collected works on ricci flow — primary sources
 
-**perelman's papers** (read last, with guidance):
+_perelman's papers_ (read last, with guidance):
 
 - perelman, grisha. _the entropy formula for the ricci flow and its geometric applications_ (2002, math/0211159)
 - perelman, grisha. _ricci flow with surgery on three-manifolds_ (2003, math/0303109)
@@ -133,18 +133,18 @@ title: topology resources
 
 ### phase 12: perelman's proof (year 4)
 
-**primary expositions**:
+_primary expositions_:
 
 - morgan, john & tian, gang. _ricci flow and the poincaré conjecture_ (2007) — most detailed, 500+ pages
 - kleiner, bruce & lott, john. _notes on perelman's papers_ (2008) — alternative complete exposition
 - cao, huai-dong & zhu, xi-ping. _a complete proof of the poincaré and geometrization conjectures_ (2006, asian journal)
 
-**lecture notes**:
+_lecture notes_:
 
 - kleiner, bruce. _notes on perelman's lectures_ (mit 2003)
 - lott, john. _notes on perelman's papers_ (online)
 
-**survey articles**:
+_survey articles_:
 
 - anderson, michael. _geometrization of 3-manifolds via the ricci flow_ (2004)
 - milnor, john. _towards the poincaré conjecture and the classification of 3-manifolds_ (2003)
@@ -165,13 +165,13 @@ title: topology resources
 
 ## online courses and video lectures
 
-**mit opencourseware**:
+_mit opencourseware_:
 
 - 18.901 introduction to topology (fall)
 - 18.906 algebraic topology ii (spring)
 - 18.950 differential geometry
 
-**other institutions**:
+_other institutions_:
 
 - thurston's lecture videos (msri, 1990s) — geometric intuition from the master
 - perelman's lectures (mit 2003) — accompanied by kleiner's notes
@@ -187,16 +187,16 @@ title: topology resources
 
 ### software
 
-- **snappy** (python): hyperbolic 3-manifold computations, dehn surgery
-- **regina**: 3-manifold triangulations, normal surfaces, homology
-- **sagemath**: general topology and algebra computations
-- **gap**: computational group theory (fundamental groups)
+- _snappy_ (python): hyperbolic 3-manifold computations, dehn surgery
+- _regina_: 3-manifold triangulations, normal surfaces, homology
+- _sagemath_: general topology and algebra computations
+- _gap_: computational group theory (fundamental groups)
 
 ### visualization
 
-- **geomview**: 3d geometric visualization
-- **tikz**: latex drawings for mathematical diagrams
-- **asymptote**: 3d graphics for papers
+- _geomview_: 3d geometric visualization
+- _tikz_: latex drawings for mathematical diagrams
+- _asymptote_: 3d graphics for papers
 
 ## historical papers
 
@@ -207,16 +207,16 @@ title: topology resources
 
 ## community and discussion
 
-**mathoverflow / math.stackexchange**: excellent for specific questions
+_mathoverflow / math.stackexchange_: excellent for specific questions
 
-**key tags**:
+_key tags_:
 
 - geometric-topology
 - differential-topology
 - ricci-flow
 - 3-manifolds
 
-**conferences** (for advanced study):
+_conferences_ (for advanced study):
 
 - joint mathematics meetings (ams)
 - geometry and topology conferences
@@ -225,19 +225,19 @@ title: topology resources
 
 ### active learning
 
-1. **work exercises**: don't just read—compute $\pi_1$, draw diagrams, verify claims
-2. **build intuition**: use snappy/regina for concrete 3-manifolds
-3. **write exposition**: explain concepts in your own words (digital garden)
-4. **study groups**: discuss with others, present proofs
+1. _work exercises_: don't just read—compute $\pi_1$, draw diagrams, verify claims
+2. _build intuition_: use snappy/regina for concrete 3-manifolds
+3. _write exposition_: explain concepts in your own words (digital garden)
+4. _study groups_: discuss with others, present proofs
 
 ### progression markers
 
-- **months 1-3**: comfortable with point-set topology, metric spaces
-- **months 4-6**: computing fundamental groups, using van kampen
-- **months 7-12**: homology calculations, understanding homotopy theory
-- **year 2**: smooth manifolds feel natural, can compute curvature
-- **year 3**: reading pde proofs, understanding evolution equations
-- **year 4**: following perelman's arguments with morgan-tian
+- _months 1-3_: comfortable with point-set topology, metric spaces
+- _months 4-6_: computing fundamental groups, using van kampen
+- _months 7-12_: homology calculations, understanding homotopy theory
+- _year 2_: smooth manifolds feel natural, can compute curvature
+- _year 3_: reading pde proofs, understanding evolution equations
+- _year 4_: following perelman's arguments with morgan-tian
 
 ### when stuck
 
@@ -248,28 +248,28 @@ title: topology resources
 
 ## recommended reading order
 
-**year 1 (current)**:
+_year 1 (current)_:
 
 1. munkres ch 1-31 → ch 51-56 (mit 18.901)
 2. hatcher ch 0-1 (fundamental group)
 3. hatcher ch 2 (homology, mit 18.906)
 4. hempel ch 1-3 (3-manifold basics)
 
-**year 2**:
+_year 2_:
 
 1. lee smooth manifolds ch 1-15
 2. do carmo riemannian geometry ch 1-8
 3. hempel ch 4-8 (heegaard, jsj)
 4. thurston ch 1-3 (geometric structures)
 
-**year 3**:
+_year 3_:
 
 1. evans pde ch 1-7
 2. chow-knopf ricci flow ch 1-6
 3. hamilton 1982 paper (line-by-line)
 4. grayson curve shortening (warmup)
 
-**year 4**:
+_year 4_:
 
 1. morgan-tian vol 1 (foundations)
 2. morgan-tian vol 2 ($\kappa$-solutions)
@@ -278,4 +278,4 @@ title: topology resources
 
 ## further connections
 
-see [[thoughts/topology/poincaré-roadmap|poincaré roadmap]] for integrated timeline and [[thoughts/topology/simply-connected|simple connectivity]] for key conceptual foundation.
+see [[thoughts/topology/poincaré|poincaré roadmap]] for integrated timeline and [[thoughts/topology/simply connected|simple connectivity]] for key conceptual foundation.

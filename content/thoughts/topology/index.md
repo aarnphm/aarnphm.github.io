@@ -9,4 +9,6 @@ tags:
 title: topology entries
 ---
 
-see also: [[thoughts/topology]]
+see also: [[thoughts/topology|main navigator]]
+
+This includes a collection of notes related to topology

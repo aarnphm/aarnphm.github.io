@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-05-18 16:13:45 GMT-04:00
+modified: 2026-05-19 19:15:19 GMT-04:00
 permalinks:
   - /website
   - /tweets
@@ -143,6 +143,16 @@ title: are.na
 - [meta]:
   - view: list
 
+- https://x.com/noampomsky/status/2056815059968639235 -- it is your personal responsibility not to create a soul tie with a loser
+  - [meta]:
+    - date: 05/19/2026
+    - tags: [love]
+    - pinned: true
+  - I hope I would never make M to feel this way, as in I should always be motivate her and push her to be her best-self
+- https://x.com/favelaoverlord/status/2056765475799855275 -- “Anti-data center stuff is CCP propaganda” is usual cope for the fact that the American university-media-TikTok complex produces the most insane and virulent forms of degrowth leftism imaginable.
+  - [meta]:
+    - date: 05/19/2026
+    - tags: [data center, opinions]
 - https://x.com/BecomingCritter/status/1863384564481097973 -- You suck at kissing
   - [meta]:
     - date: 05/18/2026
@@ -173,7 +183,7 @@ title: are.na
     - tags: [hypothesis]
     - pinned: true
   - https://www.goodfire.ai/research/the-world-inside-neural-networks
-  - https://www.goodfire.ai/research/manifold-steering#
+  - https://www.goodfire.ai/research/manifold-steering
 - https://x.com/_EldarKurtic/status/2053809592061030546?s=20 -- TurboQuant effectiveness and adoption [**]
   - [meta]:
     - date: 05/12/2026
@@ -638,6 +648,10 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://www.zhavialabs.com/ -- Zhavia Labs
+  - [meta]:
+    - date: 05/19/2026
+    - tags: [design, labs]
 - https://dallygoods.com/ -- Dally Goods
   - [meta]:
     - date: 05/18/2026
@@ -1192,6 +1206,15 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://mewtwo.bearblog.dev/ -- mewtwo
+  - [meta]:
+    - date: 05/19/2026
+    - tags: [anon, distributed system]
+- https://www.ursulakleguin.com/ -- Ursula Kroeber Le Guin
+  - [meta]:
+    - date: 05/18/2026
+    - tags: [writer, love]
+    - importance: 8
 - https://gowers.wordpress.com/ -- Timothy Gowers
   - [meta]:
     - date: 05/09/2026
@@ -2348,6 +2371,10 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://earlydaysbymerlin.substack.com/p/meeting-eigen -- Entering the eigenworld
+  - [meta]:
+    - date: 05/19/2026
+    - tags: [transhumanism]
 - https://thezvi.substack.com/p/dating-roundup-12-sex-and-violence -- Dating Roundup #12: Sex and Violence
   - [meta]:
     - date: 05/18/2026
@@ -4303,6 +4330,18 @@ title: are.na
   - view: list
   - json: true
 
+- https://x.com/NousResearch/status/2056778746716107193 -- Contrastive Neuron Attribution
+  - [meta]:
+    - date: 05/19/2026
+    - tags: [interpretability]
+- https://x.com/DAlistarh/status/2056661176843436421 -- Gumbel-Softmax Quantization
+  - [meta]:
+    - date: 05/19/2026
+    - tags: [quantization, mlsys]
+- https://cse442-17f.github.io/LinUCB/ -- The Multi-Armed Bandit Problem, An exploration of epsilon greedy and UCB1
+  - [meta]:
+    - date: 05/18/2026
+    - tags: [algorithm]
 - https://cp4space.hatsya.com/2026/05/03/schanuels-conjecture-and-the-semantics-of-fpsan/ -- Schanuel’s conjecture and the semantics of FPSan
   - [meta]:
     - date: 05/17/2026
@@ -7567,6 +7606,10 @@ title: are.na
 
 ## video
 
+- https://aella.substack.com/p/a-girls-guide-to-a-data-driven-orgy -- A Girl's Guide to a Data-Driven Orgy
+  - [meta]:
+    - date: 05/18/2026
+    - tags: [sex]
 - https://www.youtube.com/watch?v=55pTFVoclvE -- I was laid off by Atlassian
   - [meta]:
     - date: 05/12/2026
@@ -8131,6 +8174,10 @@ title: are.na
 
 ## resources
 
+- https://www.startertosf.guide/ -- The starter guide to SF for Founder
+  - [meta]:
+    - date: 05/19/2026
+    - tags: [docs]
 - https://www.reuters.com/business/retail-consumer/pentagon-reaches-agreements-with-leading-ai-companies-2026-05-01/ -- Pentagon reaches agreements with top AI companies, but not Anthropic
   - [meta]:
     - date: 05/01/2026
@@ -9639,6 +9686,15 @@ title: are.na
   - view: list
   - json: true
 
+- https://arxiv.org/abs/2605.12290
+  - [meta]:
+    - date: 05/19/2026
+    - tags: [interpretability]
+    - later: true
+- https://arxiv.org/abs/2604.18556
+  - [meta]:
+    - date: 05/19/2026
+    - tags: [quantization]
 - https://arxiv.org/abs/2605.02105
   - [meta]:
     - date: 05/12/2026

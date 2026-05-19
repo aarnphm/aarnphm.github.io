@@ -2,7 +2,18 @@
 date: "2025-11-01"
 description: evergreen hub for topology study anchored on munkres and mit 18.901.
 id: topology
-modified: 2026-05-09 17:51:48 GMT-04:00
+modified: 2026-05-19 18:12:45 GMT-04:00
+seealso:
+  - '[[thoughts/topology/point set|point-set topology]]'
+  - '[[thoughts/topology/separation|separation]]'
+  - '[[thoughts/topology/compactness|compactness]]'
+  - '[[thoughts/topology/fundamental group|fundamental group]]'
+  - '[[thoughts/topology/algebraic bridge|algebraic bridge]]'
+  - '[[thoughts/topology/simply connected|simple connectivity]]'
+  - '[[thoughts/topology/differential foundations|differential foundations]]'
+  - '[[thoughts/topology/3 manifolds|3-manifold topology]]'
+  - '[[thoughts/topology/ricci flow|ricci flow]]'
+  - '[[thoughts/topology/resources|resources]]'
 socials:
   ocw: https://ocw.mit.edu/courses/18-901-introduction-to-topology-fall-2004/
 tags:
@@ -10,20 +21,9 @@ tags:
   - topology
   - evergreen
 title: topology
-seealso:
-  - "[[thoughts/topology/point set|point-set topology]]"
-  - "[[thoughts/topology/separation|separation]]"
-  - "[[thoughts/topology/compactness|compactness]]"
-  - "[[thoughts/topology/fundamental group|fundamental group]]"
-  - "[[thoughts/topology/algebraic bridge|algebraic bridge]]"
-  - "[[thoughts/topology/simply connected|simple connectivity]]"
-  - "[[thoughts/topology/differential foundations|differential foundations]]"
-  - "[[thoughts/topology/3 manifolds|3-manifold topology]]"
-  - "[[thoughts/topology/ricci flow|ricci flow]]"
-  - "[[thoughts/topology/resources|resources]]"
 ---
 
-I'm using {{sidenotes[munkres' topology]: james munkres, _topology_ (2nd ed.)}} and Amstrong's [[library/Basic Topology]] as a base for this.
+I'm using {{sidenotes[munkres' topology]: james munkres, [[thoughts/pdfs/munkres-topology.pdf|_topology_]] (2nd ed.)}} and Amstrong's [[library/Basic Topology]].
 
 - **phase 0 — foundations**: set theory, logic, proof skills, and metric intuition (munkres ch. 1; see [[thoughts/norm|norm]] for metric-induced topology).
 - **phase 1 — point-set core** (weeks 2–5): topological spaces, bases, subspaces, product and quotient topologies (munkres ch. 2–5). track with [[courses/18.901-fall-2004/|mit 18.901]] weeks 1–3.
@@ -34,6 +34,6 @@ I'm using {{sidenotes[munkres' topology]: james munkres, _topology_ (2nd ed.)}} 
 
 ## poincaré conjecture
 
-I want to understand [[thoughts/topology/poincare-roadmap|poincaré conjecture]].
+I want to understand [[thoughts/topology/poincare|poincaré conjecture]].
 
-[[thoughts/topology/simply-connected|simple connectivity]] ($\pi_1=0$) is strictly stronger than $H_1=0$ (see poincaré homology sphere). this makes it the "right" topological condition.
+[[thoughts/topology/simply connected|simple connectivity]] ($\pi_1=0$) is strictly stronger than $H_1=0$ (see poincaré homology sphere). this makes it the "right" topological condition.
