@@ -44,7 +44,7 @@
     "@cloudflare/ai-chat": "^0.7.1",
     "@cloudflare/codemode": "^0.3.7",
     "@cloudflare/puppeteer": "^1.1.0",
-    "@cloudflare/workers-oauth-provider": "^0.6.0",
+    "@cloudflare/workers-oauth-provider": "^0.7.0",
     "@codemirror/autocomplete": "^6.20.2",
     "@codemirror/commands": "^6.10.3",
     "@codemirror/lang-markdown": "^6.5.0",
@@ -58,7 +58,7 @@
     "@modelcontextprotocol/sdk": "^1.29.0",
     "@napi-rs/simple-git": "^0.1.22",
     "@types/turndown": "^5.0.6",
-    "agents": "^0.13.1",
+    "agents": "^0.13.2",
     "ansi-truncate": "^1.4.0",
     "async-mutex": "^0.5.0",
     "chokidar": "^5.0.0",
@@ -106,7 +106,7 @@
     "micromark-util-symbol": "^2.0.1",
     "micromorph": "^0.4.5",
     "minimatch": "^10.2.5",
-    "motion": "^12.39.0",
+    "motion": "^12.40.0",
     "node-tikzjax": "^1.0.5",
     "octokit": "^5.0.5",
     "onnxruntime-web": "^1.26.0",
@@ -159,7 +159,7 @@
     "zod": "^4.4.3"
   },
   "devDependencies": {
-    "@cloudflare/workers-types": "^4.20260520.1",
+    "@cloudflare/workers-types": "^4.20260521.1",
     "@types/d3": "^7.4.3",
     "@types/d3-drag": "^3.0.7",
     "@types/d3-force": "^3.0.10",
@@ -174,8 +174,8 @@
     "@types/unist": "^3.0.3",
     "@types/ws": "^8.18.1",
     "@types/yargs": "^17.0.35",
-    "@typescript/native-preview": "7.0.0-dev.20260519.1",
-    "ai": "^6.0.187",
+    "@typescript/native-preview": "7.0.0-dev.20260521.1",
+    "ai": "^6.0.190",
     "bibtex-tidy": "^1.14.0",
     "drizzle-kit": "^0.31.10",
     "esbuild": "^0.28.0",
@@ -190,7 +190,7 @@
     "ts-morph": "^28.0.0",
     "tsx": "^4.22.3",
     "typescript": "^6.0.3",
-    "wrangler": "^4.93.0"
+    "wrangler": "^4.93.1"
   },
   "engines": {
     "node": ">=22",
