@@ -343,6 +343,20 @@ function processHeaders(nodes: ElementContent[]): ElementContent[] {
   return result
 }
 
+function hasCssClass(fileData: QuartzPluginData, className: string): boolean {
+  return fileData.frontmatter?.cssclasses?.includes(className) ?? false
+}
+
+function shouldProcessHeaders(
+  fileData: QuartzPluginData,
+  dynalist: boolean,
+  slug: FullSlug,
+): boolean {
+  if (!dynalist || slug.includes('posts')) return false
+  if (fileData.frontmatter?.collapseHeadings === false) return false
+  return !hasCssClass(fileData, 'notebook-page')
+}
+
 type ManualNumberInfo = {
   value: string
   container: Element
@@ -1411,7 +1425,7 @@ export function transcludeFinal(
   })
 
   // NOTE: handling collapsible nodes
-  if (dynalist && !slug.includes('posts')) {
+  if (shouldProcessHeaders(fileData, dynalist, slug)) {
     root.children = processHeaders(root.children as ElementContent[])
   }
 

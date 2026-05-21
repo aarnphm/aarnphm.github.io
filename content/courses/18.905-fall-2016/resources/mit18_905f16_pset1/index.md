@@ -1,20 +1,20 @@
 ---
-title: "algebraic topology i, problem set 1"
-description: "This resource contains information regarding algebraic topology I, problem set 1."
-id: "mit-18-905-fall-2016-resource-resources-mit18-905f16-pset1"
+title: 'algebraic topology i, problem set 1'
+description: 'This resource contains information regarding algebraic topology I, problem set 1.'
+id: 'mit-18-905-fall-2016-resource-resources-mit18-905f16-pset1'
 tags:
-  - "course"
-  - "mit"
-  - "ocw"
-  - "math"
-  - "topology"
-  - "geometry"
-  - "assignments"
+  - 'course'
+  - 'mit'
+  - 'ocw'
+  - 'math'
+  - 'topology'
+  - 'geometry'
+  - 'assignments'
 aliases:
-  - "3bc1cb3c5738726fb810455953c3c821_MIT18_905F16_pset1.pdf"
-layout: "A|L"
-license: "Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International"
-license_url: "https://creativecommons.org/licenses/by-nc-sa/4.0/"
+  - '3bc1cb3c5738726fb810455953c3c821_MIT18_905F16_pset1.pdf'
+layout: 'A|L'
+license: 'Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International'
+license_url: 'https://creativecommons.org/licenses/by-nc-sa/4.0/'
 ---
 
 up: [[courses/18.905-fall-2016/|mit 18.905]]

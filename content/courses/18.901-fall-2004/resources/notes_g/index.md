@@ -1,20 +1,20 @@
 ---
-title: "notes g"
-description: "Notes G: These Supplementary Notes are optional reading for the corresponding lecture sessions."
-id: "mit-18-901-fall-2004-resource-resources-notes-g"
+title: 'notes g'
+description: 'Notes G: These Supplementary Notes are optional reading for the corresponding lecture sessions.'
+id: 'mit-18-901-fall-2004-resource-resources-notes-g'
 tags:
-  - "course"
-  - "mit"
-  - "ocw"
-  - "math"
-  - "topology"
-  - "geometry"
-  - "lecture notes"
+  - 'course'
+  - 'mit'
+  - 'ocw'
+  - 'math'
+  - 'topology'
+  - 'geometry'
+  - 'lecture notes'
 aliases:
-  - "534f34d4acff6e5733e89234c5e397bf_notes_g.pdf"
-layout: "A|L"
-license: "Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International"
-license_url: "https://creativecommons.org/licenses/by-nc-sa/4.0/"
+  - '534f34d4acff6e5733e89234c5e397bf_notes_g.pdf'
+layout: 'A|L'
+license: 'Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International'
+license_url: 'https://creativecommons.org/licenses/by-nc-sa/4.0/'
 ---
 
 up: [[courses/18.901-fall-2004/|mit 18.901]]

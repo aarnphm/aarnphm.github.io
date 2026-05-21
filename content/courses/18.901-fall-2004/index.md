@@ -1,21 +1,21 @@
 ---
-title: "mit 18.901: introduction to topology"
-description: "This course introduces topology, covering topics fundamental to modern analysis and geometry. It also deals with subjects like topological spaces and continuous functions, connectedness, compactness, separation axioms, and selected further topics such as function spaces, metrization theorems, embedding theorems and the fundamental group."
-id: "mit-18-901-fall-2004"
+title: 'mit 18.901: introduction to topology'
+description: 'This course introduces topology, covering topics fundamental to modern analysis and geometry. It also deals with subjects like topological spaces and continuous functions, connectedness, compactness, separation axioms, and selected further topics such as function spaces, metrization theorems, embedding theorems and the fundamental group.'
+id: 'mit-18-901-fall-2004'
 tags:
-  - "course"
-  - "mit"
-  - "ocw"
-  - "math"
-  - "topology"
-  - "geometry"
+  - 'course'
+  - 'mit'
+  - 'ocw'
+  - 'math'
+  - 'topology'
+  - 'geometry'
 aliases:
-  - "18.901"
-  - "introduction to topology"
-  - "18.901-fall-2004"
-layout: "A|L"
-license: "Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International"
-license_url: "https://creativecommons.org/licenses/by-nc-sa/4.0/"
+  - '18.901'
+  - 'introduction to topology'
+  - '18.901-fall-2004'
+layout: 'A|L'
+license: 'Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International'
+license_url: 'https://creativecommons.org/licenses/by-nc-sa/4.0/'
 ---
 
 ![[courses/18.901-fall-2004/static_resources/fd6e6b71b2a84ed4cc62a976da33a264_18-901f04.jpg]]

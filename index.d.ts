@@ -3,6 +3,21 @@ declare module '*.scss' {
   export = content
 }
 
+declare module '*.inline' {
+  const content: string
+  export default content
+}
+
+declare module '*.inline.ts' {
+  const content: string
+  export default content
+}
+
+declare module '*.inline.js' {
+  const content: string
+  export default content
+}
+
 // dom custom event
 interface CustomEventMap {
   prenav: CustomEvent<{}>

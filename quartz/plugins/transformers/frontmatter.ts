@@ -288,6 +288,7 @@ declare module 'vfile' {
         noindex: boolean
         comments: boolean
         slides: boolean
+        collapseHeadings: boolean
         transclude: Partial<TranscludeOptions>
         signature: string
         socials: Record<string, string>

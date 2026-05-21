@@ -1,17 +1,17 @@
 ---
-title: "assignments"
-description: "mit 18.905 assignments"
-id: "mit-18-905-fall-2016-page-pages-assignments"
+title: 'assignments'
+description: 'mit 18.905 assignments'
+id: 'mit-18-905-fall-2016-page-pages-assignments'
 tags:
-  - "course"
-  - "mit"
-  - "ocw"
-  - "math"
-  - "topology"
-  - "geometry"
-layout: "A|L"
-license: "Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International"
-license_url: "https://creativecommons.org/licenses/by-nc-sa/4.0/"
+  - 'course'
+  - 'mit'
+  - 'ocw'
+  - 'math'
+  - 'topology'
+  - 'geometry'
+layout: 'A|L'
+license: 'Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International'
+license_url: 'https://creativecommons.org/licenses/by-nc-sa/4.0/'
 ---
 
 up: [[courses/18.905-fall-2016/|mit 18.905]]

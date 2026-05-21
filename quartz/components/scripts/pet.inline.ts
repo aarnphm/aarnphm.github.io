@@ -9,6 +9,7 @@ const petsEnabledKey = 'garden:pets-enabled:v1'
 const hydrationReminderIntervalMs = 45 * 60 * 1000
 const hydrationReminderVisibleMs = 22 * 1000
 const edgePadding = 12
+const defaultPetsEnabled = Number('__QUARTZ_PETS_DEFAULT_ENABLED__') === 1
 
 type Point = { x: number; y: number }
 type DragState = {
@@ -34,7 +35,11 @@ const readPoint = (key: string): Point | null => {
 const writePoint = (key: string, point: Point) =>
   localStorage.setItem(key, `${Math.round(point.x)},${Math.round(point.y)}`)
 
-const readPetsEnabled = () => localStorage.getItem(petsEnabledKey) !== 'false'
+const readPetsEnabled = () => {
+  const stored = localStorage.getItem(petsEnabledKey)
+  if (stored) return stored !== 'false'
+  return defaultPetsEnabled
+}
 
 const writePetsEnabled = (enabled: boolean) =>
   localStorage.setItem(petsEnabledKey, enabled ? 'true' : 'false')

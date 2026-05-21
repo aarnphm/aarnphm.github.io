@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-05-19 19:15:19 GMT-04:00
+modified: 2026-05-19 19:57:41 GMT-04:00
 permalinks:
   - /website
   - /tweets
@@ -7606,6 +7606,14 @@ title: are.na
 
 ## video
 
+- https://www.youtube.com/watch?v=ocYv0BaicMw -- Bike brands
+  - [meta]:
+    - date: 05/20/2026
+    - tags: [brand, technology]
+- https://www.youtube.com/watch?v=td-uqHvlfYo&t=9s -- Gordon Ramsay's Fish Technique
+  - [meta]:
+    - date: 05/19/2026
+    - tags: [cooking]
 - https://aella.substack.com/p/a-girls-guide-to-a-data-driven-orgy -- A Girl's Guide to a Data-Driven Orgy
   - [meta]:
     - date: 05/18/2026

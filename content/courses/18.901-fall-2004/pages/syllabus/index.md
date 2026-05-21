@@ -1,17 +1,17 @@
 ---
-title: "syllabus"
-description: "mit 18.901 syllabus"
-id: "mit-18-901-fall-2004-page-pages-syllabus"
+title: 'syllabus'
+description: 'mit 18.901 syllabus'
+id: 'mit-18-901-fall-2004-page-pages-syllabus'
 tags:
-  - "course"
-  - "mit"
-  - "ocw"
-  - "math"
-  - "topology"
-  - "geometry"
-layout: "A|L"
-license: "Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International"
-license_url: "https://creativecommons.org/licenses/by-nc-sa/4.0/"
+  - 'course'
+  - 'mit'
+  - 'ocw'
+  - 'math'
+  - 'topology'
+  - 'geometry'
+layout: 'A|L'
+license: 'Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International'
+license_url: 'https://creativecommons.org/licenses/by-nc-sa/4.0/'
 ---
 
 up: [[courses/18.901-fall-2004/|mit 18.901]]
@@ -23,6 +23,7 @@ Lectures: 2 sessions / week, 1.5 hours / session
 ### course objectives
 
 The objectives of this course are four:
+
 - To explore the foundations of mathematics (logic and set theory) at a level and depth appropriate for someone aspiring to study higher-level mathematics and/or to become a professional mathematician.
 - To present an introduction to the field of topology, with emphasis on those aspects of the subject that are basic to higher mathematics.
 - To introduce the student to what it means to do mathematics, as opposed to learning about mathematics or to learning to do computational exercises.
@@ -34,7 +35,7 @@ The prerequisite for the course is a first course in Analysis, at the level of R
 
 ### textbook
 
-The text for the course is: Munkres, James R. *Topology.* 2nd ed. Upper Saddle River, NJ: Prentice-Hall, 28 December 1999. ISBN: 0131816292. An errata sheet ([[courses/18.901-fall-2004/resources/erratafortop/|pdf]]) is available.
+The text for the course is: Munkres, James R. _Topology._ 2nd ed. Upper Saddle River, NJ: Prentice-Hall, 28 December 1999. ISBN: 0131816292. An errata sheet ([[courses/18.901-fall-2004/resources/erratafortop/|pdf]]) is available.
 
 ### expectations
 
