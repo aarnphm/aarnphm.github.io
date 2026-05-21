@@ -237,7 +237,7 @@ const config: QuartzConfig = {
       Plugin.StreamIndex(),
       Plugin.Masonry(),
       Plugin.CanvasPage(),
-      Plugin.NotebookViewer({ mode: 'saved' }),
+      Plugin.NotebookViewer({ mode: 'saved', runtime: { enabled: true } }),
     ],
   },
 }

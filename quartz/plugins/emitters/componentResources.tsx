@@ -98,6 +98,10 @@ async function joinScripts(scripts: string[]): Promise<string> {
 
 function addGlobalPageResources(ctx: BuildCtx, componentResources: ComponentResources) {
   const cfg = ctx.cfg.configuration
+  const resolvedPetScript = petScript.replace(
+    '__QUARTZ_PETS_DEFAULT_ENABLED__',
+    ctx.argv.watch || ctx.argv.serve ? '0' : '1',
+  )
 
   // popovers
   if (cfg.enablePopovers) {
@@ -115,7 +119,7 @@ function addGlobalPageResources(ctx: BuildCtx, componentResources: ComponentReso
     audioScript,
     baseMapScript,
     multiplayerScript,
-    petScript,
+    resolvedPetScript,
   )
 
   if (cfg.analytics?.provider === 'plausible') {

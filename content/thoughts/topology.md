@@ -25,7 +25,9 @@ title: topology
 
 I'm using {{sidenotes[munkres' topology]: james munkres, [[thoughts/pdfs/munkres-topology.pdf|_topology_]] (2nd ed.)}} and Amstrong's [[library/Basic Topology]].
 
-- **phase 0 — foundations**: set theory, logic, proof skills, and metric intuition (munkres ch. 1; see [[thoughts/norm|norm]] for metric-induced topology).
+- foundation:
+  - set theory, logic, proof skills, and metric intuition 
+  - see [[thoughts/norm|norm]] for metric-induced topology
 - **phase 1 — point-set core** (weeks 2–5): topological spaces, bases, subspaces, product and quotient topologies (munkres ch. 2–5). track with [[courses/18.901-fall-2004/|mit 18.901]] weeks 1–3.
 - **phase 2 — separation + countability** (weeks 6–7): separation axioms, urysohn lemma, metrization theorems (munkres ch. 16–22). mirror mit 18.901 weeks 4–5.
 - **phase 3 — compactness + connectedness** (weeks 8–9): compactness, lindelöf, local compactness, connectedness (munkres ch. 26–31). align with mit 18.901 weeks 6–7 problem sets.

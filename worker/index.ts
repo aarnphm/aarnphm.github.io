@@ -17,6 +17,7 @@ import { handleStackedNotesRequest } from './stacked'
 const VERSION = 'version https://git-lfs.github.com/spec/v1\n'
 const MIME = 'application/vnd.git-lfs+json'
 const KEEP_HEADERS = 'Cache-Control'
+const HTML_CONTENT_TYPE = 'text/html; charset=utf-8'
 
 type CfCacheStorage = CacheStorage & { readonly default: Cache }
 
@@ -267,6 +268,11 @@ type Env = {
   KEEP_HEADERS?: string
   PUBLIC_BASE_URL?: string
 } & Cloudflare.Env
+
+async function htmlAssetResponse(request: Request, env: Env): Promise<Response> {
+  const originResp = await env.ASSETS.fetch(request)
+  return withHeaders(originResp, { 'Content-Type': HTML_CONTENT_TYPE })
+}
 
 export default {
   async fetch(request, env, ctx): Promise<Response> {
@@ -594,9 +600,13 @@ export default {
           'Cache-Control': 'no-store, no-cache, must-revalidate',
         })
       }
+      case '/manual':
+      case '/manual/':
+      case '/advent':
+      case '/advent/':
+      case '/park/':
       case '/park': {
-        const originResp = await env.ASSETS.fetch(request)
-        return withHeaders(originResp, { 'Content-Type': 'text/html; charset=utf-8' })
+        return htmlAssetResponse(request, env)
       }
       case '/api/arxiv': {
         const resp = await handleArxiv(request)

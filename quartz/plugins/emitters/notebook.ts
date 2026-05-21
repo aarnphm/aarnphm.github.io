@@ -16,11 +16,13 @@ import {
   pageResources,
   renderPage,
 } from '../../components/renderPage'
+import notebookRuntimeScript from '../../components/scripts/notebook-runtime.inline'
 import { createHtmlProcessor, createMdProcessor } from '../../processors/parse'
 import { ChangeEvent, QuartzEmitterPlugin } from '../../types/plugin'
 import { BuildCtx, Argv } from '../../util/ctx'
 import { glob } from '../../util/glob'
 import { parseNotebook, notebookToMarkdown } from '../../util/notebook'
+import { notebookRuntimeImportCandidates } from '../../util/notebook-runtime'
 import { FilePath, FullSlug, joinSegments, pathToRoot, slugifyFilePath } from '../../util/path'
 import { StaticResources } from '../../util/resources'
 import { ProcessedContent } from '../vfile'
@@ -28,19 +30,35 @@ import { write } from './helpers'
 
 type NotebookRenderMode = 'saved' | 'execute'
 
-type Options = { mode?: NotebookRenderMode; executeTimeoutSeconds?: number; allowErrors?: boolean }
+type NotebookRuntimeOptions = false | { enabled?: boolean; pyodideIndexUrl?: string }
+
+type Options = {
+  mode?: NotebookRenderMode
+  executeTimeoutSeconds?: number
+  allowErrors?: boolean
+  runtime?: NotebookRuntimeOptions
+}
 
 type ResolvedOptions = {
   mode: NotebookRenderMode
   executeTimeoutSeconds: number
   allowErrors: boolean
+  runtime: false | { enabled: true; pyodideIndexUrl: string }
 }
+
+type NotebookDependencies = { imports: Set<FilePath>; assets: Set<FilePath> }
 
 const defaultOptions: ResolvedOptions = {
   mode: 'saved',
   executeTimeoutSeconds: 120,
   allowErrors: false,
+  runtime: false,
 }
+
+const defaultPyodideIndexUrl = 'https://cdn.jsdelivr.net/pyodide/v0.29.4/full/'
+const htmlResourceSrcPattern =
+  /<(?:img|video|audio|iframe)\b[^>]*\bsrc\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s>]+))/gi
+const markdownImageTargetPattern = /!\[[^\]]*\]\(\s*(<[^>]+>|[^)\s]+)[^)]*\)/g
 
 const notebookFiles = async (argv: Argv, cfg: QuartzConfig) => {
   return await glob('**/*.ipynb', argv.directory, [...cfg.configuration.ignorePatterns])
@@ -55,10 +73,21 @@ function normalizeMode(value: string | undefined): NotebookRenderMode | undefine
 }
 
 function resolveOptions(userOpts?: Options): ResolvedOptions {
+  const runtime: ResolvedOptions['runtime'] =
+    userOpts?.runtime === false ||
+    userOpts?.runtime === undefined ||
+    userOpts.runtime.enabled === false
+      ? false
+      : {
+          enabled: true,
+          pyodideIndexUrl: userOpts.runtime.pyodideIndexUrl ?? defaultPyodideIndexUrl,
+        }
+
   return {
     ...defaultOptions,
     ...userOpts,
     mode: normalizeMode(process.env.QUARTZ_NOTEBOOK_MODE) ?? userOpts?.mode ?? defaultOptions.mode,
+    runtime,
   }
 }
 
@@ -73,6 +102,131 @@ type NotebookPage = { fp: FilePath; slug: FullSlug; content: ProcessedContent }
 
 function isNotebookPath(fp: FilePath): boolean {
   return path.extname(fp) === '.ipynb'
+}
+
+function sourceText(value: unknown): string {
+  if (typeof value === 'string') return value
+  if (Array.isArray(value)) return value.map(sourceText).join('')
+  if (value === undefined || value === null) return ''
+  return String(value)
+}
+
+function localNotebookResourcePath(raw: string, fp: FilePath): FilePath | undefined {
+  const trimmed = raw.trim()
+  const value = trimmed.startsWith('<') && trimmed.endsWith('>') ? trimmed.slice(1, -1) : trimmed
+  if (
+    !value ||
+    value.startsWith('#') ||
+    value.startsWith('/') ||
+    /^[A-Za-z][A-Za-z0-9+.-]*:/.test(value)
+  ) {
+    return undefined
+  }
+
+  const match = value.match(/^([^?#]*)([?#].*)?$/)
+  let pathname = match?.[1] ?? value
+  if (!pathname) return undefined
+  try {
+    pathname = decodeURI(pathname)
+  } catch {}
+
+  const resolved = path.posix.normalize(path.posix.join(path.posix.dirname(fp), pathname))
+  if (resolved === '.' || resolved.startsWith('../')) return undefined
+  return resolved as FilePath
+}
+
+function notebookDependencies(raw: string, fp: FilePath): NotebookDependencies {
+  const notebook = parseNotebook(raw, fp)
+  const imports = new Set<FilePath>()
+  const assets = new Set<FilePath>()
+  const dir = path.posix.dirname(fp)
+
+  for (const cell of notebook.cells) {
+    const source = sourceText(cell.source)
+    if (cell.cell_type === 'code') {
+      for (const name of notebookRuntimeImportCandidates(source)) {
+        imports.add(path.posix.join(dir, `${name}.ipynb`) as FilePath)
+      }
+    }
+    if (cell.cell_type !== 'markdown') continue
+
+    for (const match of source.matchAll(htmlResourceSrcPattern)) {
+      const candidate = match[1] ?? match[2] ?? match[3]
+      if (candidate === undefined) continue
+      const dependency = localNotebookResourcePath(candidate, fp)
+      if (dependency !== undefined) assets.add(dependency)
+    }
+
+    for (const match of source.matchAll(markdownImageTargetPattern)) {
+      const dependency = localNotebookResourcePath(match[1], fp)
+      if (dependency !== undefined) assets.add(dependency)
+    }
+  }
+
+  return { imports, assets }
+}
+
+async function readNotebookDependencies(
+  ctx: BuildCtx,
+  fp: FilePath,
+): Promise<NotebookDependencies> {
+  const src = joinSegments(ctx.argv.directory, fp) as FilePath
+  try {
+    return notebookDependencies(await fs.readFile(src, 'utf8'), fp)
+  } catch {
+    return { imports: new Set(), assets: new Set() }
+  }
+}
+
+async function affectedNotebookFiles(
+  ctx: BuildCtx,
+  fps: FilePath[],
+  changeEvents: ChangeEvent[],
+): Promise<FilePath[]> {
+  const available = new Set(fps)
+  const changedPaths = new Set(changeEvents.map(event => event.path))
+  const changedNotebooks = new Set(
+    changeEvents.filter(event => isNotebookPath(event.path)).map(event => event.path),
+  )
+  const affected = new Set<FilePath>()
+
+  for (const event of changeEvents) {
+    if (isNotebookPath(event.path) && event.type !== 'delete' && available.has(event.path)) {
+      affected.add(event.path)
+    }
+  }
+
+  const dependencyPairs = await Promise.all(
+    fps.map(async fp => [fp, await readNotebookDependencies(ctx, fp)] as const),
+  )
+  const reverseImports = new Map<FilePath, Set<FilePath>>()
+  for (const [fp, deps] of dependencyPairs) {
+    for (const target of deps.imports) {
+      const dependents = reverseImports.get(target) ?? new Set<FilePath>()
+      dependents.add(fp)
+      reverseImports.set(target, dependents)
+    }
+    for (const target of deps.assets) {
+      if (changedPaths.has(target)) affected.add(fp)
+    }
+  }
+
+  const queue = [...changedNotebooks]
+  const seen = new Set<FilePath>()
+  while (queue.length > 0) {
+    const current = queue.shift()
+    if (current === undefined) break
+    if (seen.has(current)) continue
+    seen.add(current)
+    for (const dependent of reverseImports.get(current) ?? []) {
+      if (!affected.has(dependent)) {
+        affected.add(dependent)
+        queue.push(dependent)
+      }
+    }
+  }
+
+  return fps.filter(fp => affected.has(fp))
 }
 
 function notebookContext(ctx: BuildCtx, fps: FilePath[]): BuildCtx {
@@ -157,7 +311,9 @@ async function notebookProcessedContent(
   const slug = slugifyFilePath(fp, true)
   const raw = await notebookSource(ctx, fp, opts)
   const notebook = parseNotebook(raw, src)
-  let markdown = notebookToMarkdown(notebook, src).trim()
+  let markdown = notebookToMarkdown(notebook, fp, {
+    runtime: opts.runtime === false ? false : { ...opts.runtime, sourcePath: fp },
+  }).trim()
 
   for (const plugin of ctx.cfg.plugins.transformers.filter(p => p.textTransform)) {
     markdown = plugin.textTransform!(ctx, markdown)
@@ -173,6 +329,11 @@ async function notebookProcessedContent(
   const ast = mdProcessor.parse(file)
   const mdAst = await mdProcessor.run(ast, file)
   const htmlAst = (await htmlProcessor.run(mdAst, file)) as HtmlRoot
+  if (file.data.frontmatter) {
+    file.data.frontmatter.description = ''
+    file.data.frontmatter.socialDescription = ''
+  }
+  file.data.description = ''
 
   return { fp, slug, content: [htmlAst, file] }
 }
@@ -250,6 +411,7 @@ async function* emitNotebookPages(
   resources: StaticResources,
   fps: FilePath[],
   opts: ResolvedOptions,
+  contextFps = fps,
 ): AsyncGenerator<FilePath> {
   if (fps.length === 0) {
     return
@@ -269,7 +431,7 @@ async function* emitNotebookPages(
   }
 
   const maxWorkers = Math.max(1, Math.min(resolveWorkerLimit(), fps.length))
-  const localCtx = notebookContext(ctx, fps)
+  const localCtx = notebookContext(ctx, contextFps)
   const pages = await parseNotebookPages(localCtx, fps, maxWorkers, opts)
   const allFiles = [...content, ...pages.map(page => page.content)]
 
@@ -336,24 +498,33 @@ export const NotebookViewer: QuartzEmitterPlugin<Options> = userOpts => {
       ]
     },
     async *partialEmit(ctx, content, resources, changeEvents) {
-      const notebookChanges = notebookChangeEvents(changeEvents)
-      if (notebookChanges.length === 0) {
-        return
-      }
-
-      for (const changeEvent of notebookChanges) {
+      for (const changeEvent of notebookChangeEvents(changeEvents)) {
         if (changeEvent.type === 'delete') {
           await deleteNotebookPage(ctx, changeEvent.path)
         }
       }
 
       const fps = await notebookFiles(ctx.argv, ctx.cfg)
-      yield* emitNotebookPages(ctx, content, resources, fps, opts)
+      const affected = await affectedNotebookFiles(ctx, fps, changeEvents)
+      yield* emitNotebookPages(ctx, content, resources, affected, opts, fps)
     },
     async *emit(ctx, content, resources) {
       const { argv, cfg } = ctx
       const fps = await notebookFiles(argv, cfg)
       yield* emitNotebookPages(ctx, content, resources, fps, opts)
+    },
+    externalResources() {
+      if (opts.runtime === false) return
+      return {
+        js: [
+          {
+            script: notebookRuntimeScript,
+            loadTime: 'afterDOMReady',
+            contentType: 'inline',
+            moduleType: 'module',
+          },
+        ],
+      }
     },
   }
 }

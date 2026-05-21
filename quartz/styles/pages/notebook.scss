@@ -1,0 +1,217 @@
+body:has(article.notebook-page) [data-article-title] {
+  grid-column: var(--layout-wide-column);
+}
+
+article.notebook-page {
+  grid-column: var(--layout-wide-column);
+
+  hr {
+    background-color: var(--lightgray);
+    overflow: hidden;
+
+    &::before,
+    &::after {
+      content: none;
+      display: none;
+    }
+  }
+
+  .notebook-runtime {
+    margin: 0.75rem 0 1.25rem;
+  }
+
+  .notebook-runtime-toolbar,
+  .notebook-runtime-cell {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    margin: 0.5rem 0;
+  }
+
+  .notebook-runtime-toolbar {
+    flex-wrap: wrap;
+    align-items: center;
+    padding: 0.45rem 0;
+    border-top: 1px solid var(--lightgray);
+    border-bottom: 1px solid var(--lightgray);
+  }
+
+  .notebook-runtime-toolbar > p,
+  .notebook-runtime-cell > p {
+    display: flex;
+    align-items: center;
+    margin: 0;
+    line-height: 1;
+  }
+
+  .notebook-code-cell {
+    display: grid;
+    grid-template-columns: minmax(7.25rem, max-content) minmax(0, 1fr);
+    column-gap: 0.85rem;
+    align-items: start;
+    margin: 1rem 0;
+
+    > figure[data-rehype-pretty-code-figure] {
+      grid-column: 2;
+      margin: 0;
+      min-width: 0;
+    }
+
+    > .notebook-output,
+    > .notebook-runtime-output {
+      grid-column: 2;
+    }
+  }
+
+  .notebook-code-cell > .notebook-runtime-cell {
+    grid-column: 1;
+    grid-row: 1;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.5rem;
+    margin: 0.15rem 0 0;
+    min-height: 1.75rem;
+  }
+
+  .notebook-execution-prompt {
+    color: var(--gray);
+    font-family: var(--codeFont);
+    font-size: 0.78rem;
+    font-variant-numeric: tabular-nums;
+    line-height: 1.2;
+    white-space: nowrap;
+  }
+
+  .notebook-runtime button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 1.75rem;
+    padding: 0.2rem 0.55rem;
+    border: 1px solid var(--lightgray);
+    border-radius: var(--radius-3);
+    background: transparent;
+    color: var(--dark);
+    font-family: var(--bodyFont);
+    font-size: 0.82rem;
+    line-height: 1.2;
+    cursor: pointer;
+  }
+
+  .notebook-runtime button:hover:not(:disabled),
+  .notebook-runtime button:focus-visible {
+    border-color: var(--darkgray);
+    background: var(--highlight);
+  }
+
+  .notebook-runtime button:disabled {
+    cursor: not-allowed;
+    opacity: 0.45;
+  }
+
+  .notebook-runtime-status {
+    display: inline-flex;
+    align-items: center;
+    min-height: 1.75rem;
+    color: var(--gray);
+    font-family: var(--codeFont);
+    font-size: 0.74rem;
+    line-height: 1;
+  }
+
+  .notebook-runtime-output {
+    margin: 0.5rem 0 1rem;
+  }
+
+  .notebook-runtime-frame {
+    position: absolute;
+    width: 0;
+    height: 0;
+    border: 0;
+    visibility: hidden;
+  }
+
+  figure[data-rehype-pretty-code-figure] + .notebook-output {
+    margin-top: -0.35rem;
+  }
+
+  .notebook-output {
+    box-sizing: border-box;
+    width: 100%;
+    margin: 0.55rem 0 1rem;
+    overflow-x: auto;
+  }
+
+  pre.notebook-output {
+    padding: 0.6rem 0.75rem;
+    background: color-mix(in srgb, var(--light) 82%, var(--lightgray));
+    color: var(--dark);
+    font-family: var(--codeFont);
+    font-size: 0.9em;
+    line-height: 1.5;
+    white-space: pre;
+  }
+
+  .notebook-output > samp {
+    display: block;
+    font: inherit;
+    color: inherit;
+    white-space: pre-wrap;
+  }
+
+  .notebook-output[data-output-name]::before {
+    content: attr(data-output-name);
+    display: block;
+    margin-bottom: 0.25rem;
+    color: var(--gray);
+    font-family: var(--codeFont);
+    font-size: 0.72rem;
+    line-height: 1;
+  }
+
+  .notebook-output-stream-stderr,
+  .notebook-output-error {
+    border-left-color: var(--secondary);
+  }
+
+  .notebook-output-stream-stdin {
+    border-left-color: var(--tertiary);
+  }
+
+  .notebook-output-html,
+  .notebook-output-svg {
+    padding: 0.5rem 0;
+  }
+
+  .notebook-output-image {
+    margin: 0.75rem 0 1rem;
+    padding: 0;
+    background: transparent;
+    border: 0;
+  }
+
+  .notebook-output-image img,
+  .notebook-output-svg svg {
+    max-width: 100%;
+    height: auto;
+  }
+
+  li > pre,
+  li > figure[data-rehype-pretty-code-figure] {
+    margin-inline-start: 1.5rem;
+  }
+
+  @media all and (max-width: 800px) {
+    .notebook-code-cell {
+      display: block;
+    }
+
+    .notebook-code-cell > .notebook-runtime-cell {
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+      margin: 0.5rem 0;
+    }
+  }
+}

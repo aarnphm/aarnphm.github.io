@@ -1,19 +1,19 @@
 ---
-title: "18 901f04"
-description: "A standard example in topology called \"the topologist's sine curve.\" (Image courtesy of Prof. James Munkres.)"
-id: "mit-18-901-fall-2004-resource-resources-18-901f04"
+title: '18 901f04'
+description: 'A standard example in topology called "the topologist''s sine curve." (Image courtesy of Prof. James Munkres.)'
+id: 'mit-18-901-fall-2004-resource-resources-18-901f04'
 tags:
-  - "course"
-  - "mit"
-  - "ocw"
-  - "math"
-  - "topology"
-  - "geometry"
+  - 'course'
+  - 'mit'
+  - 'ocw'
+  - 'math'
+  - 'topology'
+  - 'geometry'
 aliases:
-  - "fd6e6b71b2a84ed4cc62a976da33a264_18-901f04.jpg"
-layout: "A|L"
-license: "Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International"
-license_url: "https://creativecommons.org/licenses/by-nc-sa/4.0/"
+  - 'fd6e6b71b2a84ed4cc62a976da33a264_18-901f04.jpg'
+layout: 'A|L'
+license: 'Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International'
+license_url: 'https://creativecommons.org/licenses/by-nc-sa/4.0/'
 ---
 
 up: [[courses/18.901-fall-2004/|mit 18.901]]
