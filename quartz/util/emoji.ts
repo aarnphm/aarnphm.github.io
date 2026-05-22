@@ -30,28 +30,72 @@ function codePointToEmoji(codepoint: string): string {
   return String.fromCodePoint(...codepoints)
 }
 
-type EmojiMap = { codePointToName: Record<string, string>; nameToBase64: Record<string, string> }
-
 export type EmojiEntry = { name: string; codepoint: string; emoji: string }
 
-let emojimap: EmojiMap | undefined = undefined
+let codePointToName: Record<string, string> | undefined = undefined
 let emojiEntries: EmojiEntry[] | null = null
+const base64Chunks = new Map<string, Record<string, string>>()
 
-async function ensureEmojiMap(): Promise<EmojiMap | undefined> {
-  if (!emojimap) {
-    const data = await import('./emojimap.json')
-    emojimap = data
+function isStringRecord(value: unknown): value is Record<string, string> {
+  return (
+    typeof value === 'object' &&
+    value !== null &&
+    !Array.isArray(value) &&
+    Object.values(value).every(item => typeof item === 'string')
+  )
+}
+
+function emojiAssetUrl(assetPath: string): string {
+  const source = new URL(import.meta.url)
+  const scripts = '/static/scripts/'
+  const scriptsIndex = source.pathname.indexOf(scripts)
+  if (scriptsIndex >= 0) {
+    source.pathname = `${source.pathname.slice(0, scriptsIndex + scripts.length)}emoji/${assetPath}`
+    source.search = ''
+    source.hash = ''
+    return source.href
   }
-  return emojimap
+
+  return new URL(`static/scripts/emoji/${assetPath}`, document.baseURI).href
+}
+
+async function fetchEmojiRecord(assetPath: string): Promise<Record<string, string>> {
+  const response = await fetch(emojiAssetUrl(assetPath))
+  if (!response.ok) throw new Error(`failed to load emoji asset ${assetPath}`)
+  const value: unknown = await response.json()
+  if (!isStringRecord(value)) throw new Error(`invalid emoji asset ${assetPath}`)
+  return value
+}
+
+async function ensureCodePointToName(): Promise<Record<string, string>> {
+  if (!codePointToName) {
+    codePointToName = await fetchEmojiRecord('codepoint-to-name.json')
+  }
+  return codePointToName
+}
+
+function emojiBase64Prefix(codepoint: string): string {
+  return codepoint.split('-')[0].toUpperCase().slice(0, 3)
+}
+
+async function ensureBase64Chunk(prefix: string): Promise<Record<string, string>> {
+  const cached = base64Chunks.get(prefix)
+  if (cached) return cached
+  const chunk = await fetchEmojiRecord(`base64/${prefix}.json`)
+  base64Chunks.set(prefix, chunk)
+  return chunk
 }
 
 export async function loadEmoji(code: string) {
-  await ensureEmojiMap()
+  const codepoint = code.toUpperCase()
+  const names = await ensureCodePointToName()
 
-  const name = emojimap!.codePointToName[`${code.toUpperCase()}`]
+  const name = names[codepoint]
   if (!name) throw new Error(`codepoint ${code} not found in map`)
 
-  const b64 = emojimap!.nameToBase64[name]
+  const prefix = emojiBase64Prefix(codepoint)
+  const chunk = await ensureBase64Chunk(prefix)
+  const b64 = chunk[codepoint]
   if (!b64) throw new Error(`name ${name} not found in map`)
 
   return b64
@@ -59,9 +103,9 @@ export async function loadEmoji(code: string) {
 
 export async function getEmojiEntries(): Promise<EmojiEntry[]> {
   if (emojiEntries) return emojiEntries
-  await ensureEmojiMap()
+  const names = await ensureCodePointToName()
 
-  emojiEntries = Object.entries(emojimap!.codePointToName).map(([codepoint, name]) => ({
+  emojiEntries = Object.entries(names).map(([codepoint, name]) => ({
     name,
     codepoint,
     emoji: codePointToEmoji(codepoint),

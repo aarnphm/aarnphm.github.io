@@ -40,3 +40,5 @@ export const BuildArgv = {
 }
 
 export const StatsArgv = { ...CommonArgv }
+
+export const BundleInfoArgv = {}

@@ -47,6 +47,7 @@ describe('notebook parser', () => {
     assert.match(markdown, /title: "Random Number Generator"/)
     assert.match(markdown, /collapseHeadings: false/)
     assert.match(markdown, /\nbody\n/)
+    assert.match(markdown, /notebook-markdown-cell-boundary/)
     assert.doesNotMatch(markdown, /### Random Number Generator/)
     assert.match(markdown, /```python\nprint\("hi"\)\n```/)
     assert.match(
@@ -300,6 +301,28 @@ describe('notebook parser', () => {
         frame,
         node => node.tagName === 'div' && node.properties?.dataNotebookSourceEditor === 'cell-1',
       ),
+    )
+  })
+
+  test('clears raw markdown floats before the next notebook cell', () => {
+    const notebook = parseNotebook(
+      JSON.stringify({
+        cells: [
+          {
+            cell_type: 'markdown',
+            source: '<div style="float:left">\\n\\n```text\\nleft\\n```\\n\\n</div>',
+          },
+          { cell_type: 'markdown', source: 'after' },
+        ],
+      }),
+      'floats.ipynb',
+    )
+
+    const markdown = notebookToMarkdown(notebook, 'floats.ipynb')
+
+    assert.match(
+      markdown,
+      /<\/div>\n\n<div class="notebook-markdown-cell-boundary" aria-hidden="true"><\/div>\n\nafter/,
     )
   })
 

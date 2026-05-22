@@ -36,7 +36,7 @@ import '../../components/mdx'
 import { QuartzComponent } from '../../types/component'
 import { QuartzEmitterPlugin } from '../../types/plugin'
 import { BuildCtx } from '../../util/ctx'
-import { FilePath, FullSlug, joinSegments } from '../../util/path'
+import { FilePath, FullSlug, isFullSlug, joinSegments } from '../../util/path'
 import { googleFontHref, joinStyles, processGoogleFonts } from '../../util/theme'
 import { write } from './helpers'
 
@@ -46,10 +46,13 @@ const collaborativeCommentsClientEntry =
 const notebookRuntimeClientEntry = 'quartz/components/scripts/notebook-runtime.client.ts'
 const notebookRuntimeWorkerEntry = 'quartz/components/scripts/notebook-runtime.pyodide.js'
 const notebookRuntimeBootstrapEntry = 'quartz/components/scripts/notebook-runtime.pyodide.py'
+const notebookRuntimeMlBridgeEntry = 'quartz/components/scripts/notebook-runtime.ml.js'
+const emojiAssetSourceDir = 'quartz/util/emojimap'
 const notebookRuntimeAssetEntries = new Set([
   notebookRuntimeClientEntry,
   notebookRuntimeWorkerEntry,
   notebookRuntimeBootstrapEntry,
+  notebookRuntimeMlBridgeEntry,
   'quartz/components/scripts/notebook-code-editor.ts',
 ])
 
@@ -162,6 +165,18 @@ async function writeCollaborativeCommentsAssets(ctx: BuildCtx): Promise<FilePath
   return await Promise.all(client.outputFiles.map(output => writeScriptBundleOutput(ctx, output)))
 }
 
+async function writeEmojiAssets(ctx: BuildCtx): Promise<FilePath[]> {
+  const files = await globby([`${emojiAssetSourceDir}/**/*.json`])
+  return await Promise.all(
+    files.map(async file => {
+      const rel = path.relative(emojiAssetSourceDir, file).split(path.sep).join('/')
+      const slug = joinSegments('static', 'scripts', 'emoji', rel.slice(0, -'.json'.length))
+      if (!isFullSlug(slug)) throw new Error(`invalid emoji asset slug ${slug}`)
+      return await write({ ctx, slug, ext: '.json', content: await fs.readFile(file) })
+    }),
+  )
+}
+
 function isNotebookRuntimeAssetChange(changePath: string): boolean {
   return notebookRuntimeAssetEntries.has(changePath)
 }
@@ -174,6 +189,10 @@ function isCollaborativeCommentsAssetChange(changePath: string): boolean {
     changePath.startsWith('quartz/components/multiplayer/') ||
     changePath.startsWith('quartz/functional/')
   )
+}
+
+function isEmojiAssetChange(changePath: string): boolean {
+  return changePath.startsWith(`${emojiAssetSourceDir}/`) && changePath.endsWith('.json')
 }
 
 function addGlobalPageResources(ctx: BuildCtx, componentResources: ComponentResources) {
@@ -350,6 +369,10 @@ export const ComponentResources: QuartzEmitterPlugin = () => {
       for (const file of await writeCollaborativeCommentsAssets(ctx)) {
         yield file
       }
+
+      for (const file of await writeEmojiAssets(ctx)) {
+        yield file
+      }
     },
     async *partialEmit(ctx, _content, _resources, changeEvents) {
       if (changeEvents.some(changeEvent => isNotebookRuntimeAssetChange(changeEvent.path))) {
@@ -360,6 +383,12 @@ export const ComponentResources: QuartzEmitterPlugin = () => {
 
       if (changeEvents.some(changeEvent => isCollaborativeCommentsAssetChange(changeEvent.path))) {
         for (const file of await writeCollaborativeCommentsAssets(ctx)) {
+          yield file
+        }
+      }
+
+      if (changeEvents.some(changeEvent => isEmojiAssetChange(changeEvent.path))) {
+        for (const file of await writeEmojiAssets(ctx)) {
           yield file
         }
       }

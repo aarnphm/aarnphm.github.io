@@ -22,6 +22,17 @@ article.notebook-page {
     margin: 0.75rem 0 1.25rem;
   }
 
+  .notebook-markdown-cell-boundary {
+    display: block;
+    clear: both;
+    height: 0;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    font-size: 0;
+    line-height: 0;
+  }
+
   .notebook-runtime-toolbar {
     display: flex;
     align-items: center;

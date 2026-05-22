@@ -305,6 +305,10 @@ function notebookCellRuntimeOutput(cellId: string): string {
   return `<div class="notebook-runtime-output" data-notebook-output="${escapeHTML(cellId)}" hidden></div>`
 }
 
+function notebookMarkdownCellBoundary(): string {
+  return '<div class="notebook-markdown-cell-boundary" aria-hidden="true"></div>'
+}
+
 function mimeBundleOutput(data: unknown): string[] {
   if (!isRecord(data)) return []
 
@@ -430,7 +434,10 @@ function notebookCell(
       resolved = stripped.source
       titleHeadingRemoved = stripped.removed
     }
-    return { chunks: resolved.trim() ? [resolved.trim()] : [], titleHeadingRemoved }
+    return {
+      chunks: resolved.trim() ? [resolved.trim(), notebookMarkdownCellBoundary()] : [],
+      titleHeadingRemoved,
+    }
   }
 
   if (cellType !== 'code') {

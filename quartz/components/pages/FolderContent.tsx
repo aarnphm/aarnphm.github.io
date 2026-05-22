@@ -1,4 +1,5 @@
 import path from 'path'
+import { GlobalConfiguration } from '../../cfg'
 import { i18n } from '../../i18n'
 import { QuartzPluginData } from '../../plugins/vfile'
 import {
@@ -21,7 +22,12 @@ import {
 import { concatenateResources } from '../../util/resources'
 import { parseWikilink } from '../../util/wikilinks'
 import EvergreenConstructor, { AllTags, EvergreenPermanentNotes } from '../Evergreen'
-import PageListConstructor, { byDateAndAlphabetical, SortFn } from '../PageList'
+import PageListConstructor, {
+  byDateAndAlphabetical,
+  byNaturalSlug,
+  byTitleAlphabetical,
+  SortFn,
+} from '../PageList'
 import PageListSearchConstructor from '../PageListSearch'
 import style from '../styles/listPage.scss'
 
@@ -80,6 +86,26 @@ const slugForDirectoryEntry = (fp: FilePath): string => {
 const Layout = { defn: 'L->EAT', etas: 'L->ET|A', alsp: 'A|L', lovp: 'L' } as const
 
 type FolderLayout = (typeof Layout)[keyof typeof Layout]
+type FolderSortMode = 'date' | 'natural' | 'title'
+
+const folderSortAliases: Record<string, FolderSortMode> = {
+  alphabetical: 'title',
+  alphabetic: 'title',
+  title: 'title',
+  date: 'date',
+  chronological: 'date',
+  created: 'date',
+  modified: 'date',
+  published: 'date',
+  natural: 'natural',
+  grammar: 'natural',
+  grammatical: 'natural',
+  lexical: 'natural',
+  lexicographic: 'natural',
+  path: 'natural',
+  file: 'natural',
+  filename: 'natural',
+}
 
 const parseFolderLayout = (input: string): FolderLayout => {
   if (Array.isArray(input)) return parseFolderLayout(input[0])
@@ -87,6 +113,23 @@ const parseFolderLayout = (input: string): FolderLayout => {
   const normalized = input.trim().toUpperCase() as FolderLayout
   const valid = Object.values(Layout)
   return valid.includes(normalized) ? normalized : Layout.defn
+}
+
+const parseFolderSortMode = (input: unknown): FolderSortMode | undefined => {
+  if (Array.isArray(input)) return parseFolderSortMode(input[0])
+  if (typeof input !== 'string') return undefined
+  return folderSortAliases[input.trim().toLowerCase()]
+}
+
+const sortForFolderMode = (mode: FolderSortMode, cfg: GlobalConfiguration): SortFn => {
+  switch (mode) {
+    case 'date':
+      return byDateAndAlphabetical(cfg)
+    case 'natural':
+      return byNaturalSlug(cfg)
+    case 'title':
+      return byTitleAlphabetical(cfg)
+  }
 }
 
 /**
@@ -317,7 +360,13 @@ export default ((opts?: Partial<FolderContentOptions>) => {
       layout === Layout.etas ? `${baseListClass} folder-layout--list` : baseListClass
     const content = htmlToJsx(fileData.filePath!, tree)
 
-    const listProps = { ...props, sort: options.sort, content, allFiles: entries, vaults: allFiles }
+    const sortMode = parseFolderSortMode(
+      fileData.frontmatter?.folderSort ??
+        fileData.frontmatter?.sort ??
+        fileData.frontmatter?.sortBy,
+    )
+    const sort = sortMode ? sortForFolderMode(sortMode, cfg) : options.sort
+    const listProps = { ...props, sort, content, allFiles: entries, vaults: allFiles }
 
     switch (layout) {
       case Layout.etas:

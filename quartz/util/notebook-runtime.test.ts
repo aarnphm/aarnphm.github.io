@@ -68,6 +68,7 @@ describe('notebook browser runtime output', () => {
       'cell magics are unavailable in the browser runtime',
     )
     assert.strictEqual(unsupportedNotebookRuntimeReason('%pip install numpy'), undefined)
+    assert.strictEqual(unsupportedNotebookRuntimeReason('%timeit x.block_until_ready()'), undefined)
     assert.strictEqual(unsupportedNotebookRuntimeReason('!pip install pandas'), undefined)
     assert.strictEqual(unsupportedNotebookRuntimeReason('!uv pip install seaborn'), undefined)
     assert.strictEqual(unsupportedNotebookRuntimeReason('!python -m pip install rich'), undefined)
@@ -89,6 +90,8 @@ describe('notebook browser runtime output', () => {
       notebookRuntimeImportCandidates(
         [
           'import import_ipynb, textwrap',
+          'import jax',
+          'import torch.nn.functional as F',
           'import nbimporter; nbimporter.options["only_defs"] = False',
           'import SC',
           'from ST import Var, Const',
