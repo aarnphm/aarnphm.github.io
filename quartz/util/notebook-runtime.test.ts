@@ -2,6 +2,7 @@ import assert from 'node:assert'
 import test, { describe } from 'node:test'
 import {
   notebookRuntimeImportCandidates,
+  notebookRuntimeLocalSourceKey,
   notebookRuntimeModuleSource,
   renderNotebookRuntimeOutput,
   unsupportedNotebookRuntimeReason,
@@ -16,6 +17,17 @@ describe('notebook browser runtime output', () => {
     assert.match(stdout, /data-output-name="stdout"><samp>hi<\/samp>/)
     assert.match(stderr, /notebook-output-stream-stderr/)
     assert.match(stderr, /data-output-name="stderr"><samp>nope<\/samp>/)
+  })
+
+  test('preserves stdout newlines inside output blocks', () => {
+    const html = renderNotebookRuntimeOutput({
+      type: 'stream',
+      name: 'stdout',
+      text: '.data\nx_:\t.space 4\n\t.text\n',
+    })
+
+    assert.match(html, /\.data\nx_:/)
+    assert.match(html, /x_:\t\.space 4\n\t\.text/)
   })
 
   test('renders exceptions as error output blocks', () => {
@@ -58,17 +70,29 @@ describe('notebook browser runtime output', () => {
     assert.strictEqual(unsupportedNotebookRuntimeReason('print("hi")'), undefined)
   })
 
+  test('builds a stable local browser source key per notebook cell', () => {
+    assert.strictEqual(
+      notebookRuntimeLocalSourceKey(
+        'content/thoughts/university/sfwr-4tb3/03 Out of Registers.ipynb',
+        'cell-1',
+      ),
+      'quartz:notebook-source:content%2Fthoughts%2Funiversity%2Fsfwr-4tb3%2F03%20Out%20of%20Registers.ipynb:cell-1',
+    )
+  })
+
   test('finds sibling notebook imports and skips import hook packages', () => {
     assert.deepStrictEqual(
       notebookRuntimeImportCandidates(
         [
           'import import_ipynb, textwrap',
+          'import nbimporter; nbimporter.options["only_defs"] = False',
           'import SC',
           'from ST import Var, Const',
+          "if target == 'riscv': import CGriscv as CG",
           'from P0.parser import compileString',
         ].join('\n'),
       ),
-      ['textwrap', 'SC', 'ST', 'P0'],
+      ['textwrap', 'SC', 'ST', 'CGriscv', 'P0'],
     )
   })
 

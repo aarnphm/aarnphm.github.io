@@ -19,6 +19,10 @@ export type NotebookRuntimeOutput =
   | NotebookRuntimeTextOutput
   | NotebookRuntimeHtmlOutput
 
+export function notebookRuntimeLocalSourceKey(sourcePath: string, cellId: string): string {
+  return `quartz:notebook-source:${encodeURIComponent(sourcePath)}:${encodeURIComponent(cellId)}`
+}
+
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value)
 }
@@ -34,15 +38,18 @@ export function notebookRuntimeImportCandidates(source: string): string[] {
   const names = new Set<string>()
   for (const line of source.split(/\r?\n/)) {
     const withoutComment = line.replace(/#.*/, '')
-    const importMatch = withoutComment.match(/^\s*import\s+(.+)$/)
-    if (importMatch) {
+    for (const importMatch of withoutComment.matchAll(/(?:^|[;:])\s*import\s+([^;]+)/g)) {
       for (const part of importMatch[1].split(',')) {
-        const name = part.trim().split(/\s+|\./)[0]
+        const name = part
+          .trim()
+          .split(/\s+|\./)[0]
+          ?.replace(/\W+$/, '')
         if (/^[A-Za-z_][A-Za-z0-9_]*$/.test(name)) names.add(name)
       }
     }
-    const fromMatch = withoutComment.match(/^\s*from\s+([A-Za-z_][A-Za-z0-9_]*)\b/)
-    if (fromMatch) {
+    for (const fromMatch of withoutComment.matchAll(
+      /(?:^|[;:])\s*from\s+([A-Za-z_][A-Za-z0-9_]*)\b/g,
+    )) {
       names.add(fromMatch[1])
     }
   }

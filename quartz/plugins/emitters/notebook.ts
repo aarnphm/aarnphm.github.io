@@ -9,13 +9,7 @@ import { defaultContentPageLayout, sharedPageComponents } from '../../../quartz.
 import { FullPageLayout, QuartzConfig } from '../../cfg'
 import * as Component from '../../components'
 import HeaderConstructor from '../../components/Header'
-import {
-  CuriusContent,
-  CuriusFriends,
-  CuriusNavigation,
-  pageResources,
-  renderPage,
-} from '../../components/renderPage'
+import { pageResources, renderPage } from '../../components/renderPage'
 import notebookRuntimeScript from '../../components/scripts/notebook-runtime.inline'
 import { createHtmlProcessor, createMdProcessor } from '../../processors/parse'
 import { ChangeEvent, QuartzEmitterPlugin } from '../../types/plugin'
@@ -75,13 +69,13 @@ function normalizeMode(value: string | undefined): NotebookRenderMode | undefine
 function resolveOptions(userOpts?: Options): ResolvedOptions {
   const runtime: ResolvedOptions['runtime'] =
     userOpts?.runtime === false ||
-    userOpts?.runtime === undefined ||
-    userOpts.runtime.enabled === false
+      userOpts?.runtime === undefined ||
+      userOpts.runtime.enabled === false
       ? false
       : {
-          enabled: true,
-          pyodideIndexUrl: userOpts.runtime.pyodideIndexUrl ?? defaultPyodideIndexUrl,
-        }
+        enabled: true,
+        pyodideIndexUrl: userOpts.runtime.pyodideIndexUrl ?? defaultPyodideIndexUrl,
+      }
 
   return {
     ...defaultOptions,
@@ -128,7 +122,7 @@ function localNotebookResourcePath(raw: string, fp: FilePath): FilePath | undefi
   if (!pathname) return undefined
   try {
     pathname = decodeURI(pathname)
-  } catch {}
+  } catch { }
 
   const resolved = path.posix.normalize(path.posix.join(path.posix.dirname(fp), pathname))
   if (resolved === '.' || resolved.startsWith('../')) return undefined
@@ -485,9 +479,6 @@ export const NotebookViewer: QuartzEmitterPlugin<Options> = userOpts => {
       return [
         Head,
         Header,
-        CuriusFriends,
-        CuriusContent,
-        CuriusNavigation,
         Headings,
         ...header,
         ...beforeBody,

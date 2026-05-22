@@ -1,9 +1,14 @@
 import { autocompletion, completionStatus, moveCompletionSelection } from '@codemirror/autocomplete'
-import { defaultKeymap, historyKeymap, history } from '@codemirror/commands'
+import { defaultKeymap, historyKeymap, history, indentWithTab } from '@codemirror/commands'
+import { go } from '@codemirror/lang-go'
+import { javascript } from '@codemirror/lang-javascript'
 import { markdown } from '@codemirror/lang-markdown'
+import { python } from '@codemirror/lang-python'
+import { rust } from '@codemirror/lang-rust'
 import { syntaxHighlighting, defaultHighlightStyle } from '@codemirror/language'
-import { EditorState, Prec } from '@codemirror/state'
-import { EditorView, keymap } from '@codemirror/view'
+import { EditorState, Prec, type Extension } from '@codemirror/state'
+import { EditorView, keymap, lineNumbers } from '@codemirror/view'
+import { zig } from 'codemirror-lang-zig'
 import TurndownService from 'turndown'
 import { completionSources } from '../multiplayer/completions'
 import { togglePreview, cleanupPreview, onEditorUpdate } from '../multiplayer/completions/preview'
@@ -20,12 +25,29 @@ export interface MarkdownEditorConfig {
   onChange?: (content: string) => void
   onSubmit?: () => void
   onCancel?: () => void
+  mode?: 'markdown' | 'code'
+  language?: string
+  lineWrapping?: boolean
+}
+
+function codeLanguage(language: string | undefined): Extension {
+  const name = (language ?? '').trim().toLowerCase()
+  if (name === 'javascript' || name === 'js') return javascript()
+  if (name === 'jsx') return javascript({ jsx: true })
+  if (name === 'typescript' || name === 'ts') return javascript({ typescript: true })
+  if (name === 'tsx') return javascript({ typescript: true, jsx: true })
+  if (name === 'go' || name === 'golang') return go()
+  if (name === 'rust' || name === 'rs') return rust()
+  if (name === 'zig') return zig()
+  if (name === 'python' || name === 'py' || name === 'python3' || name === 'mojo') return python()
+  return python()
 }
 
 export class MarkdownEditor {
   private view: EditorView
 
   constructor(config: MarkdownEditorConfig) {
+    const mode = config.mode ?? 'markdown'
     const customKeymap = Prec.highest(
       keymap.of([
         {
@@ -78,7 +100,7 @@ export class MarkdownEditor {
       if (update.docChanged && config.onChange) {
         config.onChange(update.state.doc.toString())
       }
-      onEditorUpdate(update)
+      if (mode === 'markdown') onEditorUpdate(update)
     })
 
     const transparentTheme = EditorView.theme({
@@ -145,44 +167,61 @@ export class MarkdownEditor {
       "li[role='option'][aria-selected]": { background: 'var(--foam) !important' },
     })
 
-    const extensions = [
-      markdown(),
+    const extensions: Extension[] = [
       history(),
       customKeymap,
-      keymap.of([...defaultKeymap, ...historyKeymap]),
+      keymap.of(
+        mode === 'code'
+          ? [indentWithTab, ...defaultKeymap, ...historyKeymap]
+          : [...defaultKeymap, ...historyKeymap],
+      ),
       updateListener,
-      syntaxHighlighting(defaultHighlightStyle),
-      EditorView.lineWrapping,
-      autocompletion({ override: completionSources, closeOnBlur: false, activateOnTyping: true }),
-      EditorView.domEventHandlers({
-        paste(event, view) {
-          const html = event.clipboardData?.getData('text/html')
-          if (!html) return false
-
-          if (
-            !html.includes('<p>') &&
-            !html.includes('<div>') &&
-            !html.includes('<h') &&
-            !html.includes('<li>')
-          ) {
-            return false
-          }
-
-          event.preventDefault()
-          const md = turndown.turndown(html)
-
-          view.dispatch({
-            changes: {
-              from: view.state.selection.main.from,
-              to: view.state.selection.main.to,
-              insert: md,
-            },
-          })
-          return true
-        },
-      }),
+      syntaxHighlighting(defaultHighlightStyle, { fallback: true }),
+      EditorState.tabSize.of(2),
       transparentTheme,
     ]
+
+    if (config.lineWrapping ?? mode === 'markdown') {
+      extensions.push(EditorView.lineWrapping)
+    }
+
+    if (mode === 'markdown') {
+      extensions.unshift(markdown())
+      extensions.push(
+        autocompletion({ override: completionSources, closeOnBlur: false, activateOnTyping: true }),
+      )
+      extensions.push(
+        EditorView.domEventHandlers({
+          paste(event, view) {
+            const html = event.clipboardData?.getData('text/html')
+            if (!html) return false
+
+            if (
+              !html.includes('<p>') &&
+              !html.includes('<div>') &&
+              !html.includes('<h') &&
+              !html.includes('<li>')
+            ) {
+              return false
+            }
+
+            event.preventDefault()
+            const md = turndown.turndown(html)
+
+            view.dispatch({
+              changes: {
+                from: view.state.selection.main.from,
+                to: view.state.selection.main.to,
+                insert: md,
+              },
+            })
+            return true
+          },
+        }),
+      )
+    } else {
+      extensions.unshift(lineNumbers(), codeLanguage(config.language))
+    }
 
     const state = EditorState.create({ doc: config.initialContent || '', extensions })
 
