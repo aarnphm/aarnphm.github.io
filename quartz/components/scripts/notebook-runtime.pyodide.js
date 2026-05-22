@@ -11,6 +11,8 @@ const streamBuffers = new Map()
 const stdoutDecoder = new TextDecoder()
 const stderrDecoder = new TextDecoder()
 let stdlibModules
+let debugEnabled = false
+let lastPythonError
 const loadedPackageRequests = new Set()
 const ignoredImportPackages = new Set([
   'import_ipynb',
@@ -78,6 +80,7 @@ const pyodideImportPackages = new Map([
   ['yaml', 'pyyaml'],
 ])
 const runtimeProvidedPackages = new Set(['jax', 'torch'])
+const browserRuntimeExtensionDirectives = new Set(['autoreload', 'nb_mypy'])
 const unsupportedNativePackages = new Map([
   [
     'flax',
@@ -163,14 +166,55 @@ function flushStreamsForCell(cellId) {
     if (text) emitOutputForCell(cellId, { type: 'stream', name, text })
   }
 }
-function emitError(error) {
+function debugOutput(phase, cellId, error) {
+  return {
+    phase,
+    cellId,
+    errorName: error && error.name ? textOf(error.name) : 'Error',
+    errorMessage: textOf(error),
+    stack: error && error.stack ? textOf(error.stack) : undefined,
+  }
+}
+function emitError(error, phase) {
   const text = textOf(error)
-  emitOutput({
+  const output = {
     type: 'error',
     ename: error && error.name ? textOf(error.name) : 'Error',
     evalue: text,
-    traceback: text,
-  })
+    traceback: error && error.stack ? textOf(error.stack) : text,
+  }
+  if (debugEnabled) output.debug = debugOutput(phase || 'runtime', currentCellId, error)
+  emitOutput(output)
+}
+function emitPythonError(error, phase) {
+  if (!lastPythonError) {
+    emitError(error, phase)
+    return
+  }
+  const output = {
+    type: 'error',
+    ename: lastPythonError.ename,
+    evalue: lastPythonError.evalue,
+    traceback: lastPythonError.traceback,
+  }
+  if (debugEnabled) output.debug = debugOutput(phase || 'python', currentCellId, error)
+  lastPythonError = undefined
+  emitOutput(output)
+}
+function handlePythonError(serialized) {
+  try {
+    const value = JSON.parse(textOf(serialized))
+    if (
+      value &&
+      typeof value.ename === 'string' &&
+      typeof value.evalue === 'string' &&
+      typeof value.traceback === 'string'
+    ) {
+      lastPythonError = value
+    }
+  } catch {
+    lastPythonError = undefined
+  }
 }
 function sandboxFetch(input, cellId) {
   const url = typeof input === 'string' ? input : input && input.url
@@ -180,12 +224,14 @@ function sandboxFetch(input, cellId) {
   return new Promise((resolve, reject) => {
     pendingAssets.set(assetId, { resolve, reject, cellId })
   }).catch(error => {
-    emitOutputForCell(cellId, {
+    const output = {
       type: 'error',
       ename: error && error.name ? textOf(error.name) : 'AssetError',
       evalue: textOf(error),
-      traceback: textOf(error),
-    })
+      traceback: error && error.stack ? textOf(error.stack) : textOf(error),
+    }
+    if (debugEnabled) output.debug = debugOutput('asset', cellId, error)
+    emitOutputForCell(cellId, output)
     throw error
   })
 }
@@ -289,19 +335,47 @@ function pipInstallDirective(line) {
   }
   return { requirements }
 }
+function notebookExtensionDirective(line) {
+  const match = line.trim().match(/^%?(?:load_ext|reload_ext)\s+([A-Za-z_][A-Za-z0-9_.]*)\s*$/)
+  return match ? match[1].toLowerCase() : undefined
+}
+function browserRuntimeDirective(line) {
+  const trimmed = line.trim()
+  const extension = notebookExtensionDirective(trimmed)
+  if (extension !== undefined) {
+    if (!browserRuntimeExtensionDirectives.has(extension)) {
+      return { error: `IPython extension ${extension} is unavailable in the browser runtime` }
+    }
+    return {
+      warning:
+        extension === 'nb_mypy'
+          ? 'nb_mypy is unavailable in the browser runtime; continuing without notebook type checking.'
+          : undefined,
+    }
+  }
+  if (/^%autoreload(?:\s|$)/.test(trimmed)) return {}
+  if (/^%matplotlib(?:\s|$)/.test(trimmed)) return {}
+}
 function stripPackageDirectives(code) {
   const lines = []
   const requirements = []
+  const warnings = []
   for (const line of code.split(/\r?\n/)) {
     const directive = pipInstallDirective(line)
-    if (!directive) {
-      lines.push(line)
+    if (directive) {
+      if (directive.error) throw new Error(directive.error)
+      requirements.push(...directive.requirements)
       continue
     }
-    if (directive.error) throw new Error(directive.error)
-    requirements.push(...directive.requirements)
+    const runtimeDirective = browserRuntimeDirective(line)
+    if (runtimeDirective) {
+      if (runtimeDirective.error) throw new Error(runtimeDirective.error)
+      if (runtimeDirective.warning) warnings.push(runtimeDirective.warning)
+      continue
+    }
+    lines.push(line)
   }
-  return { code: lines.join('\n'), requirements }
+  return { code: lines.join('\n'), requirements, warnings }
 }
 function packageRootName(requirement) {
   const match = requirement.trim().match(/^['"]?([A-Za-z0-9_.-]+)/)
@@ -496,11 +570,25 @@ function unsupportedReason(code) {
     const trimmed = line.trim()
     if (!trimmed) continue
     const directive = pipInstallDirective(trimmed)
-    if (directive) return directive.error
+    if (directive) {
+      if (directive.error) return directive.error
+      continue
+    }
+    const runtimeDirective = browserRuntimeDirective(trimmed)
+    if (runtimeDirective) {
+      if (runtimeDirective.error) return runtimeDirective.error
+      continue
+    }
     if (trimmed.startsWith('%timeit')) continue
     if (trimmed.startsWith('%%')) return 'cell magics are unavailable in the browser runtime'
     if (trimmed.startsWith('%')) return 'IPython magics are unavailable in the browser runtime'
     if (trimmed.startsWith('!')) return 'shell escapes are unavailable in the browser runtime'
+  }
+}
+function emitDirectiveWarnings(warnings) {
+  for (const warning of warnings) {
+    if (!warning) continue
+    emitOutput({ type: 'stream', name: 'stderr', text: warning + '\n' })
   }
 }
 async function ensurePyodide(indexURL) {
@@ -519,12 +607,15 @@ async function ensurePyodide(indexURL) {
   })
   globalThis.quartz_notebook_display = handleDisplayPayload
   globalThis.quartz_notebook_fetch = input => sandboxFetch(input, currentCellId)
+  globalThis.quartz_notebook_python_error = handlePythonError
   installNotebookMlBridge(globalThis)
   pyodide.runPython(notebookRuntimeBootstrap)
   return pyodide
 }
 async function runCell(message) {
   currentCellId = message.cellId
+  debugEnabled = message.debug === true
+  lastPythonError = undefined
   const reason = unsupportedReason(message.code)
   if (reason) {
     emitOutput({
@@ -537,13 +628,17 @@ async function runCell(message) {
     currentCellId = ''
     return
   }
+  let phase = 'preparing cell'
   try {
     const prepared = stripPackageDirectives(message.code)
     prepared.code = translateLineMagics(prepared.code)
+    const directiveWarnings = [...prepared.warnings]
+    phase = 'loading pyodide'
     const runtime = await ensurePyodide(message.pyodideIndexUrl)
     const modules = []
     const moduleRequirements = []
     if (Array.isArray(message.modules)) {
+      phase = 'registering notebook imports'
       const register = runtime.globals.get('__quartz_register_notebook_module')
       if (!register || typeof register !== 'function')
         throw new Error('runtime notebook importer is unavailable')
@@ -558,6 +653,7 @@ async function runCell(message) {
         const preparedModule = stripPackageDirectives(module.source)
         preparedModule.code = translateLineMagics(preparedModule.code)
         moduleRequirements.push(...preparedModule.requirements)
+        directiveWarnings.push(...preparedModule.warnings)
         const runtimeModule = {
           name: module.name,
           source: preparedModule.code,
@@ -570,16 +666,20 @@ async function runCell(message) {
         register.destroy()
       }
     }
+    emitDirectiveWarnings(directiveWarnings)
     if (usesNotebookMlRuntime(prepared.code, modules)) {
+      phase = 'loading notebook ml runtime'
       setRuntimeStatus('loading webgpu')
       await ensureNotebookMlRuntime()
     }
+    phase = 'loading packages'
     await preparePackages(
       runtime,
       prepared.code,
       prepared.requirements.concat(moduleRequirements),
       modules,
     )
+    phase = 'running python'
     const runner = runtime.globals.get('__quartz_run_cell')
     if (!runner || typeof runner !== 'function')
       throw new Error('runtime cell runner is unavailable')
@@ -594,11 +694,17 @@ async function runCell(message) {
     }
   } catch (error) {
     flushStreamsForCell(message.cellId)
-    emitError(error)
+    if (phase === 'running python') {
+      emitPythonError(error, phase)
+    } else {
+      emitError(error, phase)
+    }
   } finally {
     flushStreamsForCell(message.cellId)
     post({ type: 'done', cellId: message.cellId })
     currentCellId = ''
+    debugEnabled = false
+    lastPythonError = undefined
   }
 }
 globalThis.addEventListener('message', event => {

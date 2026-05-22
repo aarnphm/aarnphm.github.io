@@ -1,5 +1,5 @@
 ---
-date: "2026-01-07"
+date: '2026-01-07'
 description: and llvm go brr.
 folderSort: natural
 id: index

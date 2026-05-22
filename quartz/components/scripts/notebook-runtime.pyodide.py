@@ -1,10 +1,13 @@
-import ast
+from __future__ import annotations
+
+import ast as _quartz_ast
 import importlib.abc
 import importlib.util
 import json
 import math
 import sys
 import time
+import traceback
 import types
 
 import js
@@ -919,15 +922,40 @@ def __quartz_timeit(statement, global_ns, local_ns, number=None, repeat=None):
     print(f"{_format_timeit(best)} per loop (best of {repeats}, {runs} loops each)")
 
 
-def __quartz_run_cell(source):
-    tree = ast.parse(source, mode="exec")
-    if len(tree.body) > 0 and isinstance(tree.body[-1], ast.Expr):
-        expr = ast.Expression(tree.body.pop().value)
-        ast.fix_missing_locations(tree)
-        ast.fix_missing_locations(expr)
-        exec(compile(tree, "<notebook-cell>", "exec"), globals())
-        value = eval(compile(expr, "<notebook-cell>", "eval"), globals())
-        if value is not None:
-            display(value)
-    else:
-        exec(compile(tree, "<notebook-cell>", "exec"), globals())
+def __quartz_run_cell(
+    source,
+    _parse=_quartz_ast.parse,
+    _expression=_quartz_ast.Expression,
+    _expr=_quartz_ast.Expr,
+    _fix_missing_locations=_quartz_ast.fix_missing_locations,
+    _compile=compile,
+    _eval=eval,
+    _globals=globals,
+    _display=display,
+    _json_dumps=json.dumps,
+    _format_exc=traceback.format_exc,
+    _python_error=js.quartz_notebook_python_error,
+):
+    try:
+        tree = _parse(source, mode="exec")
+        if len(tree.body) > 0 and isinstance(tree.body[-1], _expr):
+            expr = _expression(tree.body.pop().value)
+            _fix_missing_locations(tree)
+            _fix_missing_locations(expr)
+            exec(_compile(tree, "<notebook-cell>", "exec"), _globals())
+            value = _eval(_compile(expr, "<notebook-cell>", "eval"), _globals())
+            if value is not None:
+                _display(value)
+        else:
+            exec(_compile(tree, "<notebook-cell>", "exec"), _globals())
+    except BaseException as exc:
+        _python_error(
+            _json_dumps(
+                {
+                    "ename": exc.__class__.__name__,
+                    "evalue": str(exc),
+                    "traceback": _format_exc(),
+                }
+            )
+        )
+        raise

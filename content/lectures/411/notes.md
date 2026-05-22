@@ -1219,13 +1219,13 @@ for i in 0..m step Mb:                # block rows of A/C
   - Level‑1: vector–vector (dot, axpy).
   - Level‑2: matrix–vector (gemv) — memory‑bound.
   - Level‑3: matrix–matrix (gemm) — compute‑bound and where tiling shines.
-- GEMM contract: `C ← α op(A) op(B) + β C`, where `op(·)` is identity or transpose; choose `β=0` to avoid reading `C`.
+- GEMM contract: $C \leftarrow \alpha \cdot \text{op}(A) \cdot \text{op}(B) + \beta C$, where $\text{op}(\cdot)$ is identity or transpose; choose $\beta = 0$ to avoid reading $C$.
 - Leading dimensions: `lda`, `ldb`, `ldc` are the physical row/column strides; mismatching them with layout corrupts results. Classic Fortran BLAS expects column‑major; C/C++ wrappers often accept row‑major flags.
-- Packing: copy tiles of `A,B` into contiguous, aligned buffers; micro‑kernels use FMA and SIMD. Alignment (e.g., 32–64 bytes) and `mr×nr` tile sizes are architecture‑dependent.
+- Packing: copy tiles of $A, B$ into contiguous, aligned buffers; micro‑kernels use FMA and SIMD. Alignment (e.g., 32–64 bytes) and $mr \times nr$ tile sizes are architecture‑dependent.
 - Implementations: OpenBLAS, BLIS, MKL, Accelerate on CPU; cuBLAS/rocBLAS on GPU. Prefer vendor/tuned builds over custom kernels unless you must specialize.
 
 > [!tip] Choosing dimensions
-> Keep `Mb,Nb,Kb` large enough to amortize packing but small enough to fit L2; choose `mr×nr` to saturate registers/FMA (e.g., 8×6 AVX2, 16×8 AVX‑512, architecture‑dependent).
+> Keep $M_b, N_b, K_b$ large enough to amortize packing but small enough to fit L2; choose $mr \times nr$ to saturate registers/FMA (e.g., $8 \times 6$ AVX2, $16 \times 8$ AVX‑512, architecture‑dependent).
 
 ### CUDA/cuBLAS GEMM
 

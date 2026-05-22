@@ -3,6 +3,7 @@ import type { Extension } from '@codemirror/state'
 export type NotebookCodeEditor = {
   getValue(): string
   setValue(content: string): void
+  setVimMode(enabled: boolean): Promise<void>
   focus(): void
   destroy(): void
 }
@@ -11,6 +12,7 @@ type NotebookCodeEditorConfig = {
   parent: HTMLElement
   initialContent?: string
   language?: string
+  vimMode?: boolean
   onChange?: (content: string) => void
   onSubmit?: () => void
   onCancel?: () => void
@@ -56,7 +58,7 @@ export async function createNotebookCodeEditor(
   const [
     { defaultKeymap, historyKeymap, history, indentWithTab },
     { syntaxHighlighting, defaultHighlightStyle },
-    { EditorState, Prec },
+    { Compartment, EditorState, Prec },
     { EditorView, keymap, lineNumbers },
     language,
   ] = await Promise.all([
@@ -67,24 +69,43 @@ export async function createNotebookCodeEditor(
     languageExtension(config.language),
   ])
 
-  const customKeymap = Prec.highest(
-    keymap.of([
-      {
-        key: 'Mod-Enter',
-        run: () => {
-          config.onSubmit?.()
-          return true
+  const notebookKeymap = (vimMode: boolean): Extension =>
+    Prec.highest(
+      keymap.of([
+        {
+          key: 'Mod-Enter',
+          run: () => {
+            config.onSubmit?.()
+            return true
+          },
         },
-      },
-      {
-        key: 'Escape',
-        run: () => {
-          config.onCancel?.()
-          return true
-        },
-      },
-    ]),
-  )
+        ...(vimMode
+          ? []
+          : [
+              {
+                key: 'Escape',
+                run: () => {
+                  config.onCancel?.()
+                  return true
+                },
+              },
+            ]),
+      ]),
+    )
+
+  const vimExtension = async (enabled: boolean): Promise<Extension> => {
+    if (!enabled) return []
+    const [{ vim }, { drawSelection }] = await Promise.all([
+      import('@replit/codemirror-vim'),
+      import('@codemirror/view'),
+    ])
+    return [vim(), drawSelection()]
+  }
+
+  const initialVimMode = config.vimMode === true
+  const vimCompartment = new Compartment()
+  const keymapCompartment = new Compartment()
+  const initialVimExtension = await vimExtension(initialVimMode)
 
   const updateListener = EditorView.updateListener.of(update => {
     if (update.docChanged) config.onChange?.(update.state.doc.toString())
@@ -120,7 +141,8 @@ export async function createNotebookCodeEditor(
       lineNumbers(),
       language,
       history(),
-      customKeymap,
+      vimCompartment.of(initialVimExtension),
+      keymapCompartment.of(notebookKeymap(initialVimMode)),
       keymap.of([indentWithTab, ...defaultKeymap, ...historyKeymap]),
       updateListener,
       syntaxHighlighting(defaultHighlightStyle, { fallback: true }),
@@ -135,6 +157,14 @@ export async function createNotebookCodeEditor(
     getValue: () => view.state.doc.toString(),
     setValue(content: string) {
       view.dispatch({ changes: { from: 0, to: view.state.doc.length, insert: content } })
+    },
+    async setVimMode(enabled: boolean) {
+      view.dispatch({
+        effects: [
+          vimCompartment.reconfigure(await vimExtension(enabled)),
+          keymapCompartment.reconfigure(notebookKeymap(enabled)),
+        ],
+      })
     },
     focus: () => view.focus(),
     destroy: () => view.destroy(),

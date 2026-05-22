@@ -41,6 +41,33 @@ describe('notebook browser runtime output', () => {
     assert.match(html, /notebook-output-error/)
     assert.match(html, /data-output-name="error"/)
     assert.match(html, /ValueError: bad/)
+    assert.doesNotMatch(html, /data-output-name="debug"/)
+  })
+
+  test('renders error debug metadata only when requested', () => {
+    const output = {
+      type: 'error' as const,
+      ename: 'ValueError',
+      evalue: 'bad <input>',
+      traceback: 'Traceback\nValueError: bad <input>',
+      debug: {
+        phase: 'running python',
+        cellId: 'cell-1',
+        errorName: 'PythonError',
+        errorMessage: 'bad <input>',
+        stack: 'stack <frame>',
+      },
+    }
+
+    const normal = renderNotebookRuntimeOutput(output)
+    const debug = renderNotebookRuntimeOutput(output, { debug: true })
+
+    assert.doesNotMatch(normal, /data-output-name="debug"/)
+    assert.match(debug, /notebook-output-debug/)
+    assert.match(debug, /phase: running python/)
+    assert.match(debug, /cell: cell-1/)
+    assert.match(debug, /stack &lt;frame&gt;/)
+    assert.doesNotMatch(debug, /stack <frame>/)
   })
 
   test('escapes text results before insertion', () => {
@@ -69,6 +96,15 @@ describe('notebook browser runtime output', () => {
     )
     assert.strictEqual(unsupportedNotebookRuntimeReason('%pip install numpy'), undefined)
     assert.strictEqual(unsupportedNotebookRuntimeReason('%timeit x.block_until_ready()'), undefined)
+    assert.strictEqual(unsupportedNotebookRuntimeReason('%load_ext nb_mypy'), undefined)
+    assert.strictEqual(unsupportedNotebookRuntimeReason('load_ext nb_mypy'), undefined)
+    assert.strictEqual(unsupportedNotebookRuntimeReason('%reload_ext autoreload'), undefined)
+    assert.strictEqual(unsupportedNotebookRuntimeReason('%autoreload 2'), undefined)
+    assert.strictEqual(unsupportedNotebookRuntimeReason('%matplotlib inline'), undefined)
+    assert.strictEqual(
+      unsupportedNotebookRuntimeReason('%load_ext local_extension'),
+      'IPython extension local_extension is unavailable in the browser runtime',
+    )
     assert.strictEqual(unsupportedNotebookRuntimeReason('!pip install pandas'), undefined)
     assert.strictEqual(unsupportedNotebookRuntimeReason('!uv pip install seaborn'), undefined)
     assert.strictEqual(unsupportedNotebookRuntimeReason('!python -m pip install rich'), undefined)

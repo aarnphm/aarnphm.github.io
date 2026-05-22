@@ -34,6 +34,12 @@ import {
   slugifyFilePath,
 } from '../util/path'
 import { encryptContent } from '../util/protected'
+import {
+  splitCssBundles,
+  splitJsBundles,
+  staticCssBundlePath,
+  staticJsBundlePath,
+} from '../util/resource-bundles'
 import { JSResourceToScriptElement, StaticResources } from '../util/resources'
 import BaseViewSelector from './BaseViewSelector'
 import CodeCopy from './CodeCopy'
@@ -786,13 +792,41 @@ export const pageResources = (
   baseDir: FullSlug | RelativeURL,
   staticResources: StaticResources,
   ctx: BuildCtx,
-) =>
-  ({
-    css: [
-      { content: joinSegments(baseDir, 'index.css') },
-      { content: collapseHeaderStyle, inline: true },
-      ...staticResources.css,
-    ],
+) => {
+  const css = [
+    { content: joinSegments(baseDir, 'index.css') },
+    ...splitCssBundles(staticResources.css, [collapseHeaderStyle]).map(part =>
+      part.type === 'bundle'
+        ? { content: joinSegments(baseDir, staticCssBundlePath(part.index)) }
+        : part.resource,
+    ),
+  ]
+  const staticJs = [
+    ...splitJsBundles(staticResources.js, 'beforeDOMReady').map(part =>
+      part.type === 'bundle'
+        ? {
+            src: joinSegments(baseDir, staticJsBundlePath(part.loadTime, part.index)),
+            loadTime: part.loadTime,
+            contentType: 'external',
+          }
+        : part.resource,
+    ),
+    ...splitJsBundles(staticResources.js, 'afterDOMReady', [
+      transcludeScript,
+      collapseHeaderScript,
+    ]).map(part =>
+      part.type === 'bundle'
+        ? {
+            src: joinSegments(baseDir, staticJsBundlePath(part.loadTime, part.index)),
+            loadTime: part.loadTime,
+            contentType: 'external',
+          }
+        : part.resource,
+    ),
+  ]
+
+  return {
+    css: [...css],
     js: [
       {
         src: joinSegments(baseDir, 'prescript.js'),
@@ -817,9 +851,7 @@ export const pageResources = (
         spaPreserve: true,
         script: `const semanticCfg = ${JSON.stringify(ctx.cfg?.configuration?.semanticSearch ?? {})}`,
       },
-      { script: transcludeScript, loadTime: 'afterDOMReady', contentType: 'inline' },
-      { script: collapseHeaderScript, loadTime: 'afterDOMReady', contentType: 'inline' },
-      ...staticResources.js,
+      ...staticJs,
       {
         src: joinSegments(baseDir, 'postscript.js'),
         loadTime: 'afterDOMReady',
@@ -829,7 +861,8 @@ export const pageResources = (
       },
     ],
     additionalHead: staticResources.additionalHead,
-  }) satisfies StaticResources
+  } satisfies StaticResources
+}
 
 const defaultTranscludeOpts: TranscludeOptions = {
   dynalist: true,

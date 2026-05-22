@@ -42,6 +42,7 @@
     "*.safetensors",
     "*.bin",
     "**/embeddings/*.json",
+    "quartz/util/emojimap/**/*.json",
     "content/stream.md",
     "content/are.na.md",
     "migrations/"

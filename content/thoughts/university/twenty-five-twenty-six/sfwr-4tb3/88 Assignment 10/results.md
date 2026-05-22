@@ -105,11 +105,11 @@ p1:
 
 **Common subexpression elimination** saves two computations:
 
-1. `x + 3` is computed once (`addi s11, s4, 3`) and reused: first for storing to `z`, then as the right operand of the multiplication `(x + y) × (x + 3)`. Without CSE, a second `addi` instruction and a load of `x` would be needed.
+1. $x + 3$ is computed once (`addi s11, s4, 3`) and reused: first for storing to $z$, then as the right operand of the multiplication $(x + y) \times (x + 3)$. Without CSE, a second `addi` instruction and a load of $x$ would be needed.
 
-2. `x + y` is computed once (`add s10, s4, s8`) and reused: first as the left operand of `(x + y) × (x + 3)`, then as the right operand of the final addition `... + (x + y)`. Without CSE, a second `add` and two loads (`x` and `y`) would be needed.
+2. $x + y$ is computed once (`add s10, s4, s8`) and reused: first as the left operand of $(x + y) \times (x + 3)$, then as the right operand of the final addition $\ldots + (x + y)$. Without CSE, a second `add` and two loads ($x$ and $y$) would be needed.
 
-The entire program body is one basic block (no labels between `p1:` and the epilogue), so all subexpressions are candidates for sharing. The `reguse` dictionary tracks `('add', s4, 3) → s11` and `('add', s4, s8) → s10`, allowing the code generator to reuse these registers instead of recomputing.
+The entire program body is one basic block (no labels between `p1:` and the epilogue), so all subexpressions are candidates for sharing. The `reguse` dictionary tracks `('add', s4, 3)` $\mapsto$ `s11` and `('add', s4, s8)` $\mapsto$ `s10`, allowing the code generator to reuse these registers instead of recomputing.
 
 ---
 
@@ -150,7 +150,7 @@ Because the P0 compiler keeps all subexpressions in registers for potential reus
 
 ### Explicit address calculation
 
-For matrices `a`, `b`, `c` of type `[0..N-1] → [0..N-1] → integer`, `size(integer) = 4`, and row stride `N × 4`:
+For matrices $a$, $b$, $c$ of type $[0..N-1] \to [0..N-1] \to \texttt{integer}$, $\text{size}(\texttt{integer}) = 4$, and row stride $N \times 4$:
 
 $$c[i][j] + a[i][k] \times b[k][j]$$
 
@@ -216,9 +216,9 @@ $23 := $10 + $22
 
 The shared subexpressions are:
 
-- **`$4 = i × (N × 4)`**: the row offset for index `i`, shared between `c[i][j]` and `a[i][k]` (both matrices are indexed by `i` in the first dimension)
-- **`$8 = j × 4`**: the column offset for index `j`, shared between `c[i][j]` and `b[k][j]` (both indexed by `j` in the second dimension)
-- **`$3 = N × 4`** and **`$7 = 4`**: the row stride and element size constants, shared across all three matrix accesses
-- **`$2 = i`**, **`$6 = j`**, **`$13 = k`**: index variables loaded once and reused
+- **`$4` $= i \times (N \times 4)$**: the row offset for index $i$, shared between $c[i][j]$ and $a[i][k]$ (both matrices are indexed by $i$ in the first dimension)
+- **`$8` $= j \times 4$**: the column offset for index $j$, shared between $c[i][j]$ and $b[k][j]$ (both indexed by $j$ in the second dimension)
+- **`$3` $= N \times 4$** and **`$7` $= 4$**: the row stride and element size constants, shared across all three matrix accesses
+- **`$2` $= i$**, **`$6` $= j$**, **`$13` $= k$**: index variables loaded once and reused
 
-Without common subexpression elimination, the expression would require computing `i × (N × 4)` twice, `j × 4` twice, and loading each index variable and constant multiple times. In the context of matrix multiplication (which evaluates this expression in a triply-nested loop), these savings are significant.
+Without common subexpression elimination, the expression would require computing $i \times (N \times 4)$ twice, $j \times 4$ twice, and loading each index variable and constant multiple times. In the context of matrix multiplication (which evaluates this expression in a triply-nested loop), these savings are significant.

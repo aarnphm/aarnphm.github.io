@@ -181,9 +181,9 @@ You can embed a mini-proof or derivation slide showing that, under layer gating 
    - Holding total params fixed, multiple studies find **deeper** transformers often generalize better than purely **wider** ones, up to stability/optimization limits. Practically, don’t try to get all capacity from `d_model`; spread it across more layers and moderate width.
 
 4. **Attention head geometry and KV cache cost constrain width.**
-   - Usually `d_model = n_heads × head_dim`.
-   - The original Transformer used **head_dim $\approx$ 64**; many LLMs still target ~64–80.
-     - dot-products well scaled (the $\sqrt{d_k}$ factor) and constrains **KV-cache memory/bandwidth** at inference, which scales with `n_heads × head_dim × sequence_length`.
+   - Usually $d_\text{model} = n_\text{heads} \times \text{head\_dim}$.
+   - The original Transformer used **head_dim $\approx 64$**; many LLMs still target ~64–80.
+     - dot-products well scaled (the $\sqrt{d_k}$ factor) and constrains **KV-cache memory/bandwidth** at inference, which scales with $n_\text{heads} \times \text{head\_dim} \times \text{sequence\_length}$.
    - So when you raise `d_model`, know you’re also lifting that cache and bandwidth bill unless you adjust heads.
 
 5. **Hardware likes certain widths.**

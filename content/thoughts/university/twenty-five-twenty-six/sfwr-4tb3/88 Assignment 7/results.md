@@ -11,7 +11,7 @@ title: wasm and compile string
 
 ## A1
 
-Half-open intervals `[a .. b)` meaning `[a .. b - 1]`.
+Half-open intervals $[a..b)$ meaning $[a..b - 1]$.
 
 Only the parser (`P0.ipynb`) needs modification, specifically `typ()`. The scanner already recognizes `)` as `RPAREN`.
 
@@ -77,7 +77,7 @@ def number():
 
 Hand-translated `randgcd` to WASM following the translation scheme from the course notes.
 
-`randint`: linear congruential generator with constants $a = 16807$, $c = 11$, $m = 65535$. Updates global `r`, returns `r \mod \text{bound}`.
+`randint`: linear congruential generator with constants $a = 16807$, $c = 11$, $m = 65535$. Updates global $r$, returns $r \bmod \text{bound}$.
 
 `gcd`: Euclid's subtraction algorithm. While loop uses `loop`/`if`/`br 1`/`end`/`end` pattern. Inner if-else for the comparison.
 
