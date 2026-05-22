@@ -3,7 +3,7 @@ category:
   - thriller
   - drama
   - o/life
-date: "2024-02-07"
+date: '2024-02-07'
 description: genocide dressed as love—greed poisoning a marriage and a people, scorsese's most patient indictment of american foundations built on theft and murder.
 director: Martin Scorsese
 id: killers-of-the-flower-moon

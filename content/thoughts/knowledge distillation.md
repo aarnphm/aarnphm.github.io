@@ -1,5 +1,5 @@
 ---
-date: "2025-01-29"
+date: '2025-01-29'
 description: and improving smaller models performance through larger general systems.
 id: knowledge distillation
 modified: 2026-05-09 17:51:50 GMT-04:00

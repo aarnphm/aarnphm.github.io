@@ -2,7 +2,7 @@
 category:
   - o/life
   - drama
-date: "2026-05-09"
+date: '2026-05-09'
 description: janet frame's life from isolation to authorship - campion films interiority as survival against institutions that call it madness.
 director:
   - Jane Campion

@@ -3,7 +3,7 @@ category:
   - thriller
   - drama
   - o/life
-date: "2024-02-07"
+date: '2024-02-07'
 description: three and a half hours of regret slowed to the pace of old age—a hitman in a nursing home realizing loyalty bought him nothing but an empty room.
 director: Martin Scorsese
 id: the-irishman

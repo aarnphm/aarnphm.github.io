@@ -1,7 +1,7 @@
 ---
 author: Rebecca Henderson
 category: finance
-date: "2024-12-23"
+date: '2024-12-23'
 description: argues for reorienting capitalism toward sustainability and justice, showing how firms, investors, and regulation can tackle climate and inequality.
 finished: 2024
 id: Reimagining Capitalism in a World on Fire

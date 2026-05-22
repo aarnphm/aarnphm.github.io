@@ -1,5 +1,5 @@
 ---
-date: "2025-03-25"
+date: '2025-03-25'
 description: multi-level intermediate representation for compiler infrastructure
 id: MLIR
 modified: 2026-05-09 17:51:47 GMT-04:00

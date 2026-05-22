@@ -1,5 +1,5 @@
 ---
-date: "2025-10-23"
+date: '2025-10-23'
 description: build your own inference engine.
 id: index
 modified: 2026-05-09 17:51:54 GMT-04:00

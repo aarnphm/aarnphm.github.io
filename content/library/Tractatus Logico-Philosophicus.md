@@ -4,7 +4,7 @@ aliases:
   - TLP
 author: '[[thoughts/Wittgenstein|Ludwig Wittgenstein]]'
 category: philosophy
-date: "2025-10-07"
+date: '2025-10-07'
 description: Wittgenstein's picture theory of language and its uncanny resonance with modern LLM latent spaces
 finished: 2025
 id: Tractatus Logico-Philosophicus

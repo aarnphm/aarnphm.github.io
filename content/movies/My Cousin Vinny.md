@@ -1,6 +1,6 @@
 ---
 category: thriller
-date: "2024-02-07"
+date: '2024-02-07'
 description: brooklyn lawyer defending cousin in alabama murder trial—pesci discovering courtroom procedure while tomei steals the movie explaining automotive forensics, legal comedy teaching discovery rules better than law school, clash of cultures revealing the underdog can win through commitment.
 director: Jonathan Lynn
 id: my-cousin-vinny

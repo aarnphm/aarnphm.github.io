@@ -2,7 +2,7 @@
 category:
   - o/life
   - drama
-date: "2024-02-07"
+date: '2024-02-07'
 description: traumatized freshman finding friendship and first love—chbosky adapting his own novel about charlie's senior friends teaching him to feel infinite, repressed memories surfacing through mixtapes and rocky horror, high school as temporary shelter before facing what happened in childhood.
 director:
   - Stephen Chbosky

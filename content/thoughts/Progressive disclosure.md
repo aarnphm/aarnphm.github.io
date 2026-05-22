@@ -1,5 +1,5 @@
 ---
-date: "2024-09-02"
+date: '2024-09-02'
 description: design pattern that makes complexity easier to learn while enabling power users to discover advanced workflows progressively.
 id: Progressive disclosure
 modified: 2026-05-09 17:51:46 GMT-04:00

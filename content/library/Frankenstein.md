@@ -3,7 +3,7 @@ author:
   - Mary W. Shelley
 category:
   - p/fiction
-date: "2026-01-07"
+date: '2026-01-07'
 description: or modern day Prometheus
 external: https://www.gutenberg.org/files/42324/42324-h/42324-h.htm
 finished: null

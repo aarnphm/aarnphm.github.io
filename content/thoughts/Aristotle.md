@@ -1,5 +1,5 @@
 ---
-date: "2023-09-11"
+date: '2023-09-11'
 description: and aqua be aqua.
 id: Aristotle
 modified: 2026-05-09 17:51:51 GMT-04:00

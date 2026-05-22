@@ -1,5 +1,5 @@
 ---
-date: "2024-09-04"
+date: '2024-09-04'
 description: course on software requirements engineering and security taught by sébastien mosser.
 id: index
 modified: 2026-05-09 17:51:57 GMT-04:00

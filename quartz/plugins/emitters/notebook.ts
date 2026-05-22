@@ -69,13 +69,13 @@ function normalizeMode(value: string | undefined): NotebookRenderMode | undefine
 function resolveOptions(userOpts?: Options): ResolvedOptions {
   const runtime: ResolvedOptions['runtime'] =
     userOpts?.runtime === false ||
-      userOpts?.runtime === undefined ||
-      userOpts.runtime.enabled === false
+    userOpts?.runtime === undefined ||
+    userOpts.runtime.enabled === false
       ? false
       : {
-        enabled: true,
-        pyodideIndexUrl: userOpts.runtime.pyodideIndexUrl ?? defaultPyodideIndexUrl,
-      }
+          enabled: true,
+          pyodideIndexUrl: userOpts.runtime.pyodideIndexUrl ?? defaultPyodideIndexUrl,
+        }
 
   return {
     ...defaultOptions,
@@ -122,7 +122,7 @@ function localNotebookResourcePath(raw: string, fp: FilePath): FilePath | undefi
   if (!pathname) return undefined
   try {
     pathname = decodeURI(pathname)
-  } catch { }
+  } catch {}
 
   const resolved = path.posix.normalize(path.posix.join(path.posix.dirname(fp), pathname))
   if (resolved === '.' || resolved.startsWith('../')) return undefined

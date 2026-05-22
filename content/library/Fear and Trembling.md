@@ -1,7 +1,7 @@
 ---
 author: Søren Kierkegaard
 category: philosophy
-date: "2022-08-21"
+date: '2022-08-21'
 description: philosophical meditation on faith and ethics, using abraham and isaac to examine the leap of faith beyond rational morality.
 finished: 2024
 id: Fear and Trembling

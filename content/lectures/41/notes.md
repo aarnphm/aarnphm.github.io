@@ -1,5 +1,5 @@
 ---
-date: "2025-09-10"
+date: '2025-09-10'
 description: 2/n some more notes on EAGLE and MTP
 id: notes
 modified: 2026-05-09 17:51:34 GMT-04:00

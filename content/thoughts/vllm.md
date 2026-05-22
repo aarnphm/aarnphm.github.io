@@ -1,5 +1,5 @@
 ---
-date: "2024-09-09"
+date: '2024-09-09'
 description: efficient LLM serving engine.
 id: vllm
 modified: 2026-05-09 17:51:49 GMT-04:00

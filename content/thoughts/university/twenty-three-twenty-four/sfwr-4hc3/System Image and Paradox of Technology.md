@@ -1,5 +1,5 @@
 ---
-date: "2023-09-12"
+date: '2023-09-12'
 description: conceptual models, mental models, and the paradox where technology simplifies yet complicates through added features and complexity.
 id: System Image and Paradox of Technology
 modified: 2026-05-09 17:51:56 GMT-04:00

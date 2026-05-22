@@ -1,5 +1,5 @@
 ---
-date: "2024-01-20"
+date: '2024-01-20'
 description: a la carte.
 id: Information Theory
 modified: 2026-05-09 17:51:49 GMT-04:00

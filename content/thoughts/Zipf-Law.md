@@ -1,5 +1,5 @@
 ---
-date: "2024-12-01"
+date: '2024-12-01'
 description: empirical power law where word frequency inversely relates to rank, most common word appearing twice as often as second.
 id: Zipf-Law
 modified: 2026-05-09 17:51:52 GMT-04:00

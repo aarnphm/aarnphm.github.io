@@ -1,5 +1,5 @@
 ---
-date: "2025-11-01"
+date: '2025-11-01'
 description: structures, decompositions, and geometric properties of 3-dimensional manifolds.
 id: 3 manifolds
 modified: 2026-05-19 18:22:40 GMT-04:00

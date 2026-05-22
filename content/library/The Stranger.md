@@ -3,7 +3,7 @@ author:
   - '[[thoughts/Camus|Abert Camus]]'
 category:
   - p/fiction
-date: "2022-08-21"
+date: '2022-08-21'
 description: spare novel about meursault, who reacts blankly to death and crime, dramatizing absurdity, indifference, and social judgment.
 finished: 2024
 id: The Stranger

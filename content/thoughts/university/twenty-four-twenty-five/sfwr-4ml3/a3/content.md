@@ -1,5 +1,5 @@
 ---
-date: "2024-11-11"
+date: '2024-11-11'
 description: implementation in pure PyTorch
 id: content
 modified: 2026-05-09 17:51:59 GMT-04:00

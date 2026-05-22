@@ -1,7 +1,7 @@
 ---
 author: Plato
 category: philosophy
-date: "2022-08-21"
+date: '2022-08-21'
 description: dialogue that builds an ideal city to explore justice, education, philosopher rulers, and the life of the soul.
 finished: 2023
 id: The Republic

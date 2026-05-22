@@ -1,5 +1,5 @@
 ---
-date: "2024-11-18"
+date: '2024-11-18'
 description: space-optimized prefix trie where single-child nodes merge with parents, enabling o(k) lookup, insertion, and deletion operations.
 id: Radix tree
 modified: 2026-05-09 17:51:51 GMT-04:00

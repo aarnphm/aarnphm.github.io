@@ -1,5 +1,5 @@
 ---
-date: "2023-11-05"
+date: '2023-11-05'
 description: stoicism from epictetus's enchiridion on control, what belongs to us versus others, false belief as source of harm, maintaining tranquility.
 id: Stoic
 modified: 2026-05-09 17:51:56 GMT-04:00

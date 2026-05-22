@@ -3,7 +3,7 @@ category:
   - absurdism
   - buster
   - comedy
-date: "2024-02-07"
+date: '2024-02-07'
 description: dogs exiled to an island of trash, stop-motion fur matted with grime—loyalty persisting through authoritarian cruelty, anderson's bleakest fable.
 director: Wes Anderson
 id: isle-of-dogs

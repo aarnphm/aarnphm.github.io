@@ -1,5 +1,5 @@
 ---
-date: "2025-09-30"
+date: '2025-09-30'
 description: matmul and GPU quirks
 id: index
 modified: 2026-05-09 17:51:34 GMT-04:00

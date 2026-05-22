@@ -4,7 +4,7 @@ category:
   - love
   - history
   - o/vintage
-date: "2026-05-09"
+date: '2026-05-09'
 description: napoleon's invasion as personal collapse - aristocrats and soldiers orbit love, duty, and death while history grinds them down.
 director:
   - Sergei Bondarchuk

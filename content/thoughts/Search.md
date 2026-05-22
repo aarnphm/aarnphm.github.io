@@ -1,5 +1,5 @@
 ---
-date: "2024-02-07"
+date: '2024-02-07'
 description: to go or look through (a place) carefully
 id: Search
 modified: 2026-05-09 17:51:46 GMT-04:00

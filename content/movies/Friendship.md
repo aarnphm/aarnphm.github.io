@@ -1,7 +1,7 @@
 ---
 category:
   - o/relationship
-date: "2026-05-09"
+date: '2026-05-09'
 description: Craig Waterman, a reclusive man, meets his new neighbour, Austin Carmichael, and forms an unexpected friendship with him. As their friendship grows, so does Craig's obsession with Austin.
 director:
   - Andrew DeYoung

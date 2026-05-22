@@ -1,5 +1,5 @@
 ---
-date: "2025-09-15"
+date: '2025-09-15'
 description: Anthropic, 2021
 id: mathematical framework transformers circuits
 modified: 2026-05-09 17:51:50 GMT-04:00

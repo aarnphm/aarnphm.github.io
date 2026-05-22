@@ -1,7 +1,7 @@
 ---
 author: Robert Nystrom
 category: technology
-date: "2025-11-04"
+date: '2025-11-04'
 description: a hands on book that builds a language and bytecode interpreter step by step, teaching compilers and language design by example.
 external: https://craftinginterpreters.com/
 id: Crafting Interpreter

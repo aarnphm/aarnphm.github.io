@@ -1,5 +1,5 @@
 ---
-date: "2025-10-21"
+date: '2025-10-21'
 description: draft reflection on workaholism, yearning, and the twilight space between wanting and waiting, where attention becomes devotion and longing becomes faith.
 draft: true
 id: pure

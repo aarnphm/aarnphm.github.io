@@ -2,7 +2,7 @@
 author: Fyodor Dostoevsky
 category:
   - p/fiction
-date: "2025-07-08"
+date: '2025-07-08'
 description: a psychological novel about guilt, moral law, and redemption as a young student struggles with a murder he believes he can justify.
 finished: 2025
 id: Crime and Punishment

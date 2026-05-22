@@ -1,7 +1,7 @@
 ---
 category:
   - drama
-date: "2024-02-07"
+date: '2024-02-07'
 description: lawrence returning from afghanistan with brain injury—neugebauer filming trauma as quiet fragments, platonic intimacy with mechanic who understands broken things, new orleans pools the only constant.
 director: Lila Neugebauer
 id: causeway

@@ -4,7 +4,7 @@ category:
   - love
   - drama
   - vintage
-date: "2026-05-09"
+date: '2026-05-09'
 description: a general's widow drifts through romance and politics - renoir treats flirtation like a plot engine.
 director:
   - Jean Renoir

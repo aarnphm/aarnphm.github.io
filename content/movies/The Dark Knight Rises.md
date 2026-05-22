@@ -3,7 +3,7 @@ category:
   - thriller
   - actions
   - drama
-date: "2024-02-07"
+date: '2024-02-07'
 description: revolution and reckoning—batman broken in a pit, gotham burning above, the trilogy's attempt to reconcile hope with the violence required to preserve it.
 director: Christopher Nolan
 id: the-dark-knight-rises

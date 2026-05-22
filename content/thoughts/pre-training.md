@@ -1,5 +1,5 @@
 ---
-date: "2025-12-15"
+date: '2025-12-15'
 description: everything related to pretraining a neural network
 id: pre-training
 modified: 2026-05-09 17:51:51 GMT-04:00

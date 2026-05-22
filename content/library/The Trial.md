@@ -2,7 +2,7 @@
 author: Franz Kafka
 category:
   - p/fiction
-date: "2025-10-06"
+date: '2025-10-06'
 description: kafka novel about josef k, arrested without clear charge and consumed by an endless, opaque legal process.
 finished: 2024
 id: The Trial

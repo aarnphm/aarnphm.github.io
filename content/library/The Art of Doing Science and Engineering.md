@@ -1,7 +1,7 @@
 ---
 author: Richard Hamming
 category: progress
-date: "2025-10-07"
+date: '2025-10-07'
 description: hamming reflections on creativity, problem selection, and learning how to do impactful scientific and engineering work.
 id: The Art of Doing Science and Engineering
 modified: 2026-05-09 17:51:40 GMT-04:00

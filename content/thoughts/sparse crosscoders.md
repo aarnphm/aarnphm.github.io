@@ -1,5 +1,5 @@
 ---
-date: "2024-11-03"
+date: '2024-11-03'
 description: and cross-layers observations. SAE is a special case of sparse crosscoders.
 id: sparse crosscoders
 modified: 2026-05-09 17:51:52 GMT-04:00

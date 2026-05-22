@@ -2,7 +2,7 @@
 category:
   - love
   - o/relationship
-date: "2024-02-07"
+date: '2024-02-07'
 description: wartime romance as beautiful lie—bogart choosing the cause over the girl, curtiz filming nobility as renunciation, fog hiding the soundstage.
 director: Michael Curtiz
 id: casablanca

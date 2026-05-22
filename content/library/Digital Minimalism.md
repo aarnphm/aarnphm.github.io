@@ -2,7 +2,7 @@
 author: Cal Newport
 category:
   - p/nf
-date: "2024-12-23"
+date: '2024-12-23'
 description: argues for a focused, intentional relationship with technology, stripping away digital clutter to protect time, attention, and solitude.
 finished: 2024
 id: Digital Minimalism

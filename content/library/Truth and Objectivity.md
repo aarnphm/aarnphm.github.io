@@ -5,7 +5,7 @@ author:
   - Crispin Wright
 category:
   - philosophy
-date: "2026-01-09"
+date: '2026-01-09'
 description: Philosophy, in seeking after truth, must also grapple with questions about the nature and status of truth itself.
 external: https://www.hup.harvard.edu/books/9780674910874
 finished: null

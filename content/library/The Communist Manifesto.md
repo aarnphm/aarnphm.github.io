@@ -3,7 +3,7 @@ author:
   - Karl Marx
   - Friedrich Engels
 category: philosophy
-date: "2025-11-30"
+date: '2025-11-30'
 description: political pamphlet arguing that history is class struggle, and that the proletariat must overthrow the bourgeoisie to end exploitation and establish a classless society.
 finished: null
 id: The Communist Manifesto

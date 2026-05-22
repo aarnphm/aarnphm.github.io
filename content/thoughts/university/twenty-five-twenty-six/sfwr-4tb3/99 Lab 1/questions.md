@@ -1,5 +1,5 @@
 ---
-date: "2026-01-07"
+date: '2026-01-07'
 description: more more more.
 id: lab1
 modified: 2026-05-09 17:51:59 GMT-04:00

@@ -1,5 +1,5 @@
 ---
-date: "2025-11-19"
+date: '2025-11-19'
 description: becoming AGI
 draft: true
 id: you can be friends with them, actually

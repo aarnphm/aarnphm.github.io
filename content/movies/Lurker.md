@@ -2,7 +2,7 @@
 category:
   - o/life
   - thriller
-date: "2026-05-09"
+date: '2026-05-09'
 description: A retail employee infiltrates the inner circle of an artist on the verge of stardom. As he gets closer to the budding music star, access and proximity become a matter of life and death.
 director:
   - Alex Russell

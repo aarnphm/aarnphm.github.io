@@ -2,7 +2,7 @@
 category:
   - o/life
   - romantic
-date: "2026-05-09"
+date: '2026-05-09'
 description: Famous movie star Jay Kelly and his devoted manager, Ron, embark on an unexpectedly profound journey through Europe. Along the way, both men confront the choices they've made, relationships with loved ones, and the legacies they'll leave behind.
 director:
   - Noah Baumbach

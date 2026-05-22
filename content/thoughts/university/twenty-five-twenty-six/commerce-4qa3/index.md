@@ -1,5 +1,5 @@
 ---
-date: "2025-01-06"
+date: '2025-01-06'
 description: understanding of production & operations management
 id: index
 modified: 2026-05-09 17:51:54 GMT-04:00

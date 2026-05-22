@@ -3,7 +3,7 @@ aliases:
   - synapse
 author: John Eccles
 category: philosophy
-date: "2025-11-29"
+date: '2025-11-29'
 description: presentation of eccles' three worlds interactionist dualism with popper, arguing that reality consists of matter, consciousness, and objective knowledge in constant interaction.
 id: The Understanding of the Brain
 modified: 2026-05-09 17:51:40 GMT-04:00

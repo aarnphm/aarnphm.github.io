@@ -1,7 +1,7 @@
 ---
 author: Blaise Pascal
 category: philosophy
-date: "2025-10-07"
+date: '2025-10-07'
 description: collection of pascal fragments on faith, reason, and the human condition, circling around diversion, wretchedness, and the wager.
 external: https://www.gutenberg.org/files/18269/18269-h/18269-h.htm
 id: Pensees

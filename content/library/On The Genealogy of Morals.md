@@ -1,7 +1,7 @@
 ---
 author: Friedrich Nietzsche
 category: philosophy
-date: "2025-08-13"
+date: '2025-08-13'
 description: nietzsche history of moral values, tracing how ressentiment and priestly revolt created guilt, bad conscience, and modern morality.
 finished: 2025
 id: On The Genealogy of Morals

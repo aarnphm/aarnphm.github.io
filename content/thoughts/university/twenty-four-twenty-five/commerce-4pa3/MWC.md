@@ -1,7 +1,7 @@
 ---
 aliases:
   - world congress
-date: "2025-02-06"
+date: '2025-02-06'
 description: and world congress
 id: MWC
 layout: technical

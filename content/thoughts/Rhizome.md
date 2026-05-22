@@ -1,5 +1,5 @@
 ---
-date: "2025-03-25"
+date: '2025-03-25'
 description: assemblage that admits connectsion between any constituent elements
 id: Rhizome
 modified: 2026-05-09 17:51:50 GMT-04:00

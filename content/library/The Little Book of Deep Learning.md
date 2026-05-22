@@ -2,7 +2,7 @@
 author: François Fleuret
 category:
   - p/nf
-date: "2022-08-21"
+date: '2022-08-21'
 description: compact introduction to deep learning theory and practice, emphasizing intuition, proofs, and small code examples over heavy frameworks.
 external: https://fleuret.org/public/lbdl.pdf
 finished: 2024

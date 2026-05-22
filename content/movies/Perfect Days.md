@@ -3,7 +3,7 @@ category:
   - o/life
   - philosophy
   - drama
-date: "2024-02-07"
+date: '2024-02-07'
 description: a tokyo toilet cleaner finding contentment in ritual—wenders filming routine as meditation, each day the same because that sameness is chosen, not endured.
 director: Wim Wenders
 id: perfect-days

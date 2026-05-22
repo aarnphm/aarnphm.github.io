@@ -1,5 +1,5 @@
 ---
-date: "2025-10-04"
+date: '2025-10-04'
 description: what neural networks are, ontologically speaking
 id: Connectionist network
 layout: technical

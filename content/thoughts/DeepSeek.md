@@ -1,5 +1,5 @@
 ---
-date: "2025-01-25"
+date: '2025-01-25'
 description: and OSS AI ftw.
 id: DeepSeek
 modified: 2026-05-09 17:51:33 GMT-04:00

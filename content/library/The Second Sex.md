@@ -1,7 +1,7 @@
 ---
 author: '[[thoughts/Simone de Beauvoir|Simone de Beauvoir]]'
 category: philosophy
-date: "2025-10-06"
+date: '2025-10-06'
 description: the oppresion of women in society
 finished: 2025
 id: The Second Sex

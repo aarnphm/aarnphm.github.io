@@ -1,19 +1,13 @@
-
 {
   "content": "<p>These Supplementary Notes are optional reading for the weeks listed in the table.</p>\n<p><table>\n\n<thead>\n\n<tr>\n\n<th>\n\nWEEK #\n</th>\n\n<th>\n\nTOPICS\n</th>\n\n<th>\n\nNOTES\n</th>\n</p>\n</tr>\n\n<p></thead>\n\n<tr>\n\n<td>\n\n1\n</td>\n\n<td>\n\nLogic and Foundations\n</td>\n\n<td>\n\nNotes A (<a href=\"../../resources/18901/index.html\">PDF</a>) (Courtesy of Dr. Joao P. Santos. Used with permission.)\n</td>\n</p>\n<p></tr>\n\n<tr>\n\n<td>\n\n7\n</td>\n\n<td>\n\nConnected Spaces, Compact Spaces\n</td>\n\n<td>\n\nNotes C (<a href=\"../../resources/notes_c/index.html\">PDF</a>)\n</td>\n</p>\n<p></tr>\n\n<tr>\n\n<td>\n\n9\n</td>\n\n<td>\n\nWell-ordered Sets, Maximum Principle\n</td>\n\n<td>\n\nNotes B (<a href=\"../../resources/notes_b/index.html\">PDF</a>)\n</td>\n</p>\n<p></tr>\n\n<tr>\n\n<td>\n\n10\n</td>\n\n<td>\n\nCountability and Separation Axioms\n</td>\n\n<td>\n\nNotes D (<a href=\"../../resources/notes_d/index.html\">PDF</a>)\n</td>\n</p>\n<p></tr>\n\n<tr>\n\n<td>\n\n11\n</td>\n\n<td>\n\nUrysohn Lemma, Metrization\n</td>\n\n<td>\n\nNotes E (<a href=\"../../resources/notes_e/index.html\">PDF</a>)</p>\n<p>Notes F (<a href=\"../../resources/notes_f/index.html\">PDF</a>)\n</td>\n</p>\n<p></tr>\n\n<tr>\n\n<td>\n\n12\n</td>\n\n<td>\n\nTietze Theorem\n</td>\n\n<td>\n\nNotes G (<a href=\"../../resources/notes_g/index.html\">PDF</a>)</p>\n<p>Notes K (<a href=\"../../resources/notes_k/index.html\">PDF</a>)\n</td>\n</p>\n<p></tr>\n\n<tr>\n\n<td>\n\n13\n</td>\n\n<td>\n\nTychonoff Theorem, Stone-Cech Compactification\n</td>\n\n<td>\n\nNotes H (<a href=\"../../resources/notes_h/index.html\">PDF</a>)\n</td>\n</p>\n<p></tr>\n\n<tr>\n\n<td>\n\n15\n</td>\n\n<td>\n\nImbedding in Euclidean Space\n</td>\n\n<td>\n\nNotes I (<a href=\"../../resources/notes_i/index.html\">PDF</a>)</p>\n<p>Notes J (<a href=\"../../resources/notes_j/index.html\">PDF</a>)\n</td>\n</p>\n</tr>\n\n</table>\n\n",
   "content_type": "page",
   "description": "",
   "draft": false,
   "iscjklanguage": false,
-  "learning_resource_types": [
-    "Lecture Notes"
-  ],
+  "learning_resource_types": ["Lecture Notes"],
   "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
   "ocw_type": "CourseSection",
   "title": "Lecture Notes",
   "uid": "6005873b-23fb-e788-7057-e05ccb7e9c4b",
-  "video_metadata": {
-    "youtube_id": null
-  }
+  "video_metadata": { "youtube_id": null }
 }
-

@@ -3,9 +3,9 @@ address: 484 Spadina Ave, Toronto, ON M5S 2H1, Canada
 category:
   - '[[places to go]]'
 coordinates:
-  - "43.6583573"
-  - "-79.4002914"
-date: "2025-08-05"
+  - '43.6583573'
+  - '-79.4002914'
+date: '2025-08-05'
 description: minimalist coffee bar near campus with solid espresso
 id: 10 DEAN | Waverley
 modified: 2026-05-09 17:51:50 GMT-04:00

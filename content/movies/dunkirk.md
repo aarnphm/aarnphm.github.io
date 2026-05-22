@@ -3,7 +3,7 @@ category:
   - thriller
   - actions
   - drama
-date: "2024-02-07"
+date: '2024-02-07'
 description: survival stripped to its most visceral—bodies pressed against metal, water rising, time fracturing into the immediate terror of staying alive one more minute.
 director: Christopher Nolan
 id: dunkirk

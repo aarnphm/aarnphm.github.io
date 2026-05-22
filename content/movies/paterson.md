@@ -3,7 +3,7 @@ category:
   - o/life
   - comedy
   - drama
-date: "2024-02-07"
+date: '2024-02-07'
 description: bus driver writing poetry in his spare moments—jarmusch filming adam driver's quiet attentiveness to matches and water and passengers, the gentle rhythm of work and art as single fabric, proving ordinary existence contains everything extraordinary if you notice it.
 director: Jim Jarmusch
 id: paterson

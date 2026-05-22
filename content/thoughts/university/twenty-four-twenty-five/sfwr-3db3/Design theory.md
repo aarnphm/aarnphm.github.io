@@ -1,5 +1,5 @@
 ---
-date: "2024-12-13"
+date: '2024-12-13'
 description: for relational database
 id: Design theory
 modified: 2026-05-09 17:51:59 GMT-04:00

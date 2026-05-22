@@ -2,7 +2,7 @@
 author: Joan Didion
 category:
   - p/fiction
-date: "2025-03-05"
+date: '2025-03-05'
 description: spare novel of hollywood despair following maria wyeth through breakdown, abortion, and aimless drives in a sun bleached california.
 id: Play It as It Lays
 modified: 2026-05-09 17:51:34 GMT-04:00

@@ -1,7 +1,7 @@
 ---
 category:
   - absurdism
-date: "2026-05-09"
+date: '2026-05-09'
 description: Two conspiracy-obsessed men kidnap the CEO of a major company when they become convinced that she's an alien who wants to destroy Earth.
 director:
   - Yorgos Lanthimos

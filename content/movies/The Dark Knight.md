@@ -3,7 +3,7 @@ category:
   - thriller
   - actions
   - drama
-date: "2024-02-07"
+date: '2024-02-07'
 description: chaos as a philosophy, order as a lie we agree to believe—the joker laughing at the pretense while batman shoulders the moral cost of maintaining it.
 director: Christopher Nolan
 id: the-dark-knight

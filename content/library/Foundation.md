@@ -2,7 +2,7 @@
 author: Isaac Asimov
 category:
   - p/fiction
-date: "2025-03-05"
+date: '2025-03-05'
 description: classic science fiction about psychohistory and the fall of a galactic empire, following plans to shorten an age of chaos.
 finished: 2025
 id: Foundation

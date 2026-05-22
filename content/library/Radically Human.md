@@ -3,7 +3,7 @@ author:
   - Paul Daugherty
   - H. James Wilson
 category: technology
-date: "2025-10-07"
+date: '2025-10-07'
 description: business book about human centered technology, arguing that ai and automation must amplify curiosity, creativity, and empathy at work.
 finished: 2023
 id: Radically Human

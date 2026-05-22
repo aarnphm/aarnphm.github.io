@@ -1,5 +1,5 @@
 ---
-date: "2025-11-01"
+date: '2025-11-01'
 description: why simple connectivity is the right condition for poincaré conjecture and why homology alone doesn't suffice.
 id: simply-connected
 modified: 2026-05-19 18:13:37 GMT-04:00

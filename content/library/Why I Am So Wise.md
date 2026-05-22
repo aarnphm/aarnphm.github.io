@@ -1,7 +1,7 @@
 ---
 author: Friedrich Nietzsche
 category: philosophy
-date: "2022-08-21"
+date: '2022-08-21'
 description: autobiographical late text where nietzsche comments on his life, books, and health with irony and self mythologizing.
 finished: 2023
 id: Why I Am So Wise

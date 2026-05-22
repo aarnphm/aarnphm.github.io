@@ -1,5 +1,5 @@
 ---
-date: "2024-01-30"
+date: '2024-01-30'
 description: Fisher-Yates shuffle algorithm
 id: Fisher-Yates
 modified: 2026-05-09 17:51:53 GMT-04:00

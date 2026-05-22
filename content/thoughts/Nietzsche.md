@@ -1,5 +1,5 @@
 ---
-date: "2023-11-30"
+date: '2023-11-30'
 description: the man that was most mistakenly understood
 id: Nietzsche
 modified: 2026-05-09 17:51:47 GMT-04:00

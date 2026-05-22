@@ -36,8 +36,8 @@ article.notebook-page {
     border-bottom: 1px solid var(--lightgray);
   }
 
-  .notebook-runtime-toolbar>p,
-  .notebook-runtime-cell>p {
+  .notebook-runtime-toolbar > p,
+  .notebook-runtime-cell > p {
     display: flex;
     align-items: center;
     margin: 0;
@@ -58,24 +58,24 @@ article.notebook-page {
     align-items: start;
     margin: 1.65rem 0 1rem;
 
-    >figure[data-rehype-pretty-code-figure] {
+    > figure[data-rehype-pretty-code-figure] {
       grid-column: 2;
       grid-row: 1;
       margin: 0;
       min-width: 0;
 
-      >pre {
+      > pre {
         margin: 0;
         border-top-left-radius: 0;
       }
     }
 
-    >figure[data-rehype-pretty-code-figure][hidden],
-    >.notebook-source-editor[hidden] {
+    > figure[data-rehype-pretty-code-figure][hidden],
+    > .notebook-source-editor[hidden] {
       display: none;
     }
 
-    >.notebook-source-editor {
+    > .notebook-source-editor {
       grid-column: 2;
       grid-row: 1;
       box-sizing: border-box;
@@ -138,13 +138,13 @@ article.notebook-page {
       }
     }
 
-    >.notebook-output,
-    >.notebook-runtime-output {
+    > .notebook-output,
+    > .notebook-runtime-output {
       grid-column: 2;
     }
   }
 
-  .notebook-code-cell>.notebook-runtime-cell {
+  .notebook-code-cell > .notebook-runtime-cell {
     grid-column: 1;
     grid-row: 1;
     flex-direction: row;
@@ -174,7 +174,7 @@ article.notebook-page {
     box-shadow: 0 1px 0 var(--notebook-code-surface);
   }
 
-  .notebook-code-cell[data-notebook-editing]>.notebook-cell-actions {
+  .notebook-code-cell[data-notebook-editing] > .notebook-cell-actions {
     background: var(--notebook-editor-surface);
     box-shadow: 0 1px 0 var(--notebook-editor-surface);
   }
@@ -316,7 +316,7 @@ article.notebook-page {
     visibility: hidden;
   }
 
-  figure[data-rehype-pretty-code-figure]+.notebook-output {
+  figure[data-rehype-pretty-code-figure] + .notebook-output {
     margin-top: -0.35rem;
   }
 
@@ -337,7 +337,7 @@ article.notebook-page {
     white-space: pre;
   }
 
-  .notebook-output>samp {
+  .notebook-output > samp {
     display: block;
     font: inherit;
     color: inherit;
@@ -381,8 +381,8 @@ article.notebook-page {
     height: auto;
   }
 
-  li>pre,
-  li>figure[data-rehype-pretty-code-figure] {
+  li > pre,
+  li > figure[data-rehype-pretty-code-figure] {
     margin-inline-start: 1.5rem;
   }
 
@@ -391,7 +391,7 @@ article.notebook-page {
       display: block;
     }
 
-    .notebook-code-cell>.notebook-runtime-cell {
+    .notebook-code-cell > .notebook-runtime-cell {
       flex-direction: row;
       align-items: center;
       justify-content: space-between;

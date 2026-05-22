@@ -1,5 +1,5 @@
 ---
-date: "2024-11-26"
+date: '2024-11-26'
 description: on anthropology and how we build ml systems
 draft: true
 id: on safety and alignment

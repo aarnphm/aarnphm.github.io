@@ -1,6 +1,6 @@
 ---
 category: thriller
-date: "2024-02-07"
+date: '2024-02-07'
 description: hope as institutional defiance—darabont filming patient escape through king's prison, morgan freeman narrating quiet dignity, redemption measured in decades of tunneling.
 director: Frank Darabont
 id: shawshank-redemption

@@ -1,5 +1,5 @@
 ---
-date: "2023-10-24"
+date: '2023-10-24'
 description: a moral prejudice, truth-seeking masks will to power and ascetic life
 id: Will to Truth
 modified: 2026-05-09 17:51:45 GMT-04:00

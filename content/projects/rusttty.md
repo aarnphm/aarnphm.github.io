@@ -1,6 +1,6 @@
 ---
 category: projets
-date: "2022-01-25"
+date: '2022-01-25'
 description: terminal emulator in rust with clickable process streaming, vim and emacs integration, and built-in multiplexer.
 id: emulator in rust
 modified: 2026-05-09 17:51:42 GMT-04:00

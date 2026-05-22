@@ -1,5 +1,5 @@
 ---
-date: "2026-03-09"
+date: '2026-03-09'
 description: stack controls
 id: results
 modified: 2026-05-09 17:51:58 GMT-04:00

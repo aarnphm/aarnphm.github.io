@@ -1,5 +1,5 @@
 ---
-date: "2024-02-07"
+date: '2024-02-07'
 description: often involves some sort of contradictory between opposing sides.
 id: dialectics
 modified: 2026-05-09 17:51:52 GMT-04:00

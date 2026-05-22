@@ -5,7 +5,7 @@ author:
   - Murray Silverstein
 category:
   - p/nf
-date: "2025-10-07"
+date: '2025-10-07'
 description: a handbook of architectural and urban design patterns showing how towns, buildings, and rooms can support humane, livable communities.
 external: https://patternlanguage.cc/
 id: A Pattern Language

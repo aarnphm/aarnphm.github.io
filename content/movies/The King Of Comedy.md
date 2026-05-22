@@ -3,7 +3,7 @@ category:
   - comedy
   - thriller
   - drama
-date: "2024-02-07"
+date: '2024-02-07'
 description: delusion weaponized—a wannabe comedian kidnapping his idol for screen time, scorsese's prescient dissection of fame as the last refuge of the desperate.
 director: Martin Scorsese
 id: the-king-of-comedy

@@ -1,7 +1,7 @@
 ---
 category:
   - bond
-date: "2024-02-07"
+date: '2024-02-07'
 description: connery returning to bond twelve years later—kershner's non-canon thunderball remake acknowledging 007's age while delivering stolen nukes and blofeld, the anomaly proving connery still owned the role even outside eon's official franchise.
 director: Irvin Kershner
 id: never-say-never-again
@@ -13,6 +13,6 @@ studio: warner bros
 tags:
   - bond
 title: Never Say Never Again
-watched: "2025-10-14"
+watched: '2025-10-14'
 year: 1983
 ---

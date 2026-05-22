@@ -3,7 +3,7 @@ category:
   - drama
   - vintage
   - thriller
-date: "2026-05-09"
+date: '2026-05-09'
 description: a thief studies his craft as a kind of faith - bresson strips crime down to grace and compulsion.
 director:
   - Robert Bresson

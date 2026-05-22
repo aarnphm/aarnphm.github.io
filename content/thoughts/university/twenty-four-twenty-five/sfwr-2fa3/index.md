@@ -1,5 +1,5 @@
 ---
-date: "2025-01-06"
+date: '2025-01-06'
 description: third time a charm
 id: index
 modified: 2026-05-09 17:51:58 GMT-04:00

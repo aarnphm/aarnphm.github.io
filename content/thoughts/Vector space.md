@@ -1,5 +1,5 @@
 ---
-date: "2024-12-10"
+date: '2024-12-10'
 description: also known as linear space, a set of vectors.
 id: Vector space
 modified: 2026-05-09 17:51:45 GMT-04:00

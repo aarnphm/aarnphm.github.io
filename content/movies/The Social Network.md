@@ -1,6 +1,6 @@
 ---
 category: buster
-date: "2024-02-07"
+date: '2024-02-07'
 description: loneliness scaled to billions—sorkin's dialogue moving at connection speed while fincher films zuckerberg as emperor of isolation, refreshing the page for validation.
 director: David Fincher
 id: the-social-network

@@ -2,7 +2,7 @@
 category:
   - arts
   - o/life
-date: "2026-05-09"
+date: '2026-05-09'
 description: wenders translates pina bausch into 3d space - bodies narrate grief, joy, and memory without dialogue.
 director:
   - Wim Wenders

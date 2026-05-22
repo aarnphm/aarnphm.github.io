@@ -7,9 +7,7 @@
   "file_size": 44804,
   "file_type": "application/pdf",
   "iscjklanguage": false,
-  "learning_resource_types": [
-    "Readings"
-  ],
+  "learning_resource_types": ["Readings"],
   "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
   "ocw_type": "OCWFile",
   "parent_title": "Readings",
@@ -18,7 +16,5 @@
   "resourcetype": "Document",
   "title": "erratafortop.pdf",
   "uid": "6b5c3891-15ee-c3ad-2aea-a75408240c78",
-  "video_metadata": {
-    "youtube_id": null
-  }
+  "video_metadata": { "youtube_id": null }
 }

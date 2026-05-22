@@ -2,7 +2,7 @@
 author: Constantin Stanislavski
 category:
   - p/nf
-date: "2025-08-13"
+date: '2025-08-13'
 description: a practical guide for actors on building believable characters through physical actions, motivation, and disciplined rehearsal.
 finished: 2025
 id: Building A Character

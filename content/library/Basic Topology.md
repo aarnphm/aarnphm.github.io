@@ -3,7 +3,7 @@ aliases:
   - topology
 author: M. A. Amstrong
 category: math
-date: "2025-11-09"
+date: '2025-11-09'
 description: introductory textbook on point set topology, building intuition for continuity, connectedness, compactness, and basic constructions.
 id: Basic Topology
 modified: 2026-05-09 17:51:39 GMT-04:00

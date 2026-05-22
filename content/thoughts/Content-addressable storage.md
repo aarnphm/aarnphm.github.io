@@ -1,5 +1,5 @@
 ---
-date: "2023-04-15"
+date: '2023-04-15'
 description: storage mechanism using cryptographic hashes to retrieve information by content rather than location, enabling immutable objects with mutable references via merkle dags.
 id: Content-addressable storage
 modified: 2026-05-09 17:51:48 GMT-04:00

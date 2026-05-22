@@ -1,5 +1,5 @@
 ---
-date: "2025-12-12"
+date: '2025-12-12'
 description: on futurism and longtermism
 id: Clark's three laws
 modified: 2026-05-09 17:51:49 GMT-04:00

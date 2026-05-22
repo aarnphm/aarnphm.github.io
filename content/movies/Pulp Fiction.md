@@ -3,7 +3,7 @@ category:
   - o/vintage
   - thriller
   - drama
-date: "2024-02-07"
+date: '2024-02-07'
 description: tarantino shattering chronology to make violence cool again—hit men discussing hamburgers, adrenaline shots to the heart, redemption shuffled out of order.
 director: Quentin Tarantino
 id: pulp-fiction

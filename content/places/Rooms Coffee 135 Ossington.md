@@ -3,9 +3,9 @@ address: 135 Ossington Ave, Toronto, ON M6J 2Z6, Canada
 category:
   - '[[places to go]]'
 coordinates:
-  - "43.6472513"
-  - "-79.4197269"
-date: "2025-08-05"
+  - '43.6472513'
+  - '-79.4197269'
+date: '2025-08-05'
 description: ossington outpost with more space for lingering
 id: Rooms Coffee | 135 Ossington
 modified: 2026-05-09 17:51:50 GMT-04:00

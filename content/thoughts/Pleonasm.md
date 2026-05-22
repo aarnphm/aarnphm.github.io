@@ -1,5 +1,5 @@
 ---
-date: "2025-01-06"
+date: '2025-01-06'
 description: or redundancy in linguistic expression.
 id: Pleonasm
 modified: 2026-05-09 17:51:47 GMT-04:00

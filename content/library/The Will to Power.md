@@ -1,7 +1,7 @@
 ---
 author: Friedrich Nietzsche
 category: philosophy
-date: "2025-10-07"
+date: '2025-10-07'
 description: posthumous notebook collection presenting themes of power, value creation, and revaluation, often but controversially read as a system.
 id: The Will to Power
 language: german

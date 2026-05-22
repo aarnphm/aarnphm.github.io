@@ -4,7 +4,7 @@ aliases:
   - joyful
 author: Friedrich Nietzsche
 category: philosophy
-date: "2025-08-13"
+date: '2025-08-13'
 description: aphoristic work where nietzsche plays with song, experiment, and thought, introducing themes like eternal recurrence and the death of god.
 finished: 2025
 id: The Gay Science

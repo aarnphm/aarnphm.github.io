@@ -1,5 +1,5 @@
 ---
-date: "2024-02-09"
+date: '2024-02-09'
 description: first principles, abstract concepts such as [[/thoughts/being]]
 id: Metaphysics
 modified: 2026-05-09 17:51:46 GMT-04:00

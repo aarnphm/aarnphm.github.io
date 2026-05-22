@@ -1,5 +1,5 @@
 ---
-date: "2024-02-12"
+date: '2024-02-12'
 description: constructive communication with llms through quality prompts, including chain-of-thought and least-to-most prompting strategies.
 id: prompt engineering
 modified: 2026-05-09 17:51:52 GMT-04:00

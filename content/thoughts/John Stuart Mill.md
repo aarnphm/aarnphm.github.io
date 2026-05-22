@@ -1,5 +1,5 @@
 ---
-date: "2023-11-30"
+date: '2023-11-30'
 description: philosopher's work on liberty and utilitarianism, emphasizing experiments in living, moral individuality, and maximizing humanity's progress over mere pleasure.
 id: John Stuart Mill
 modified: 2026-05-09 17:51:33 GMT-04:00

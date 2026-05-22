@@ -3,7 +3,7 @@ category:
   - love
   - drama
   - o/vintage
-date: "2026-05-09"
+date: '2026-05-09'
 description: a love triangle on texas fields - malick turns labor and jealousy into a sunset-lit myth.
 director:
   - Terrence Malick

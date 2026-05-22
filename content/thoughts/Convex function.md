@@ -1,5 +1,5 @@
 ---
-date: "2024-12-10"
+date: '2024-12-10'
 description: a real-valued function is convex if its epigraph is a convex set
 id: Convex function
 modified: 2026-05-09 17:51:48 GMT-04:00

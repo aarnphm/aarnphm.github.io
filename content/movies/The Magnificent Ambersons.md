@@ -3,7 +3,7 @@ category:
   - family
   - drama
   - o/vintage
-date: "2026-05-09"
+date: '2026-05-09'
 description: old money decays as industry arrives - a proud family watches status evaporate while progress rewrites the town.
 director:
   - Orson Welles

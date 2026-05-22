@@ -2,7 +2,7 @@
 category:
   - drama
   - vintage
-date: "2026-05-09"
+date: '2026-05-09'
 description: memory as montage - tarkovsky splices family, war, and poetry into a single consciousness.
 director:
   - Andrei Tarkovsky

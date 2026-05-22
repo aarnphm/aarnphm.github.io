@@ -1,5 +1,5 @@
 ---
-date: "2025-08-04"
+date: '2025-08-04'
 description: And maybe you should, or shouldn't.
 id: cf
 modified: 2026-05-09 17:51:33 GMT-04:00

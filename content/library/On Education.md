@@ -2,7 +2,7 @@
 author:
   - John Dewey
 category: philosophy
-date: "2025-11-30"
+date: '2025-11-30'
 description: argues that education is foundational to democracy, emphasizing inquiry-based learning, informed citizenship, and the moral purpose of developing character alongside knowledge.
 finished: null
 id: On Education

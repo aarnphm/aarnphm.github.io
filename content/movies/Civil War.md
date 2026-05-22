@@ -2,7 +2,7 @@
 category:
   - populism
   - social politics
-date: "2024-02-07"
+date: '2024-02-07'
 description: journalists chasing the fall of dc like war tourists—garland filming american collapse while studiously avoiding why it happened, more interested in what we photograph than what we become.
 director: Alex Garland
 id: civil-war
@@ -14,6 +14,6 @@ studio: a24
 tags:
   - a24
 title: Civil War
-watched: "2024-05-10"
+watched: '2024-05-10'
 year: 2024
 ---

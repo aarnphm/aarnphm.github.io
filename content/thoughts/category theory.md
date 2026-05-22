@@ -1,5 +1,5 @@
 ---
-date: "2024-12-30"
+date: '2024-12-30'
 description: general theory of mathematical structures and its relations.
 id: category theory
 modified: 2026-05-09 17:51:51 GMT-04:00

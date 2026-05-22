@@ -4,9 +4,9 @@ address: 1471 Gerrard St E, Toronto, ON M4L 2A1, Canada
 category:
   - '[[places to go]]'
 coordinates:
-  - "43.6723948"
-  - "-79.3206899"
-date: "2025-11-22"
+  - '43.6723948'
+  - '-79.3206899'
+date: '2025-11-22'
 description: pan-asian small plates over japanese charcoal, fusion of filipino, malaysian, and japanese
 tags:
   - places

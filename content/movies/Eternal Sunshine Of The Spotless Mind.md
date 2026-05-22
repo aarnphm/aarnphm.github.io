@@ -3,7 +3,7 @@ category:
   - love
   - o/relationship
   - p/fiction
-date: "2024-02-07"
+date: '2024-02-07'
 description: memory as love's only evidence—kaufman collapsing time into recursive loops, erasing someone from your mind but not your heart, the pain returning anyway.
 director: Michel Gondry
 id: eternal-sunshine-of-the-spotless-mind

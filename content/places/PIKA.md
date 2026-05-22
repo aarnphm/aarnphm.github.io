@@ -3,9 +3,9 @@ address: 69 Chestnut St, Cambridge, MA 02139, USA
 category:
   - '[[places to go]]'
 coordinates:
-  - "42.3565554"
-  - "-71.1107316"
-date: "2025-10-05"
+  - '42.3565554'
+  - '-71.1107316'
+date: '2025-10-05'
 description: mit co-op living space with creative energy and communal dinners
 id: PIKA @ MIT
 modified: 2026-05-09 17:51:51 GMT-04:00

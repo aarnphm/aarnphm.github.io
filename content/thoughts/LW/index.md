@@ -1,5 +1,5 @@
 ---
-date: "2025-11-22"
+date: '2025-11-22'
 description: collection of lesswrong archives exploring rationality, alignment, and ai safety discussions.
 id: index
 modified: 2026-05-09 17:51:49 GMT-04:00

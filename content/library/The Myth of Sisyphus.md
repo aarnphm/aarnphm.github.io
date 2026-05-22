@@ -1,7 +1,7 @@
 ---
 author: Albert Camus
 category: philosophy
-date: "2022-08-21"
+date: '2022-08-21'
 description: essay on the absurd that asks whether life is worth living, ending with the image of sisyphus as defiantly happy.
 finished: 2024
 id: The Myth of Sisyphus

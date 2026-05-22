@@ -3,7 +3,7 @@ category:
   - love
   - o/relationship
   - comedy
-date: "2024-02-07"
+date: '2024-02-07'
 description: viagra salesman falling for parkinson's patient—zwick filming pharmaceutical capitalism alongside romance, anne hathaway refusing pity while jake gyllenhaal learns love means staying when disease makes everything harder, not easier.
 director: Edward Zwick
 id: love-other-drugs
@@ -17,6 +17,6 @@ tags:
   - o/relationship
   - biology
 title: Love & Other Drugs
-watched: "2024-02-25"
+watched: '2024-02-25'
 year: 2010
 ---

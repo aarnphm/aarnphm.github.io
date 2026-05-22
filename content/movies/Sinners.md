@@ -3,7 +3,7 @@ category:
   - horror
   - vampire
   - cinematography
-date: "2026-05-09"
+date: '2026-05-09'
 description: Trying to leave their troubled lives behind, twin brothers return to their Mississippi hometown to start again, only to discover that an even greater evil is waiting to welcome them back.
 director:
   - Ryan Coogler
@@ -17,6 +17,6 @@ tags:
   - horrors
   - action
 title: Sinners
-watched: "2025-09-11"
+watched: '2025-09-11'
 year: 2025
 ---

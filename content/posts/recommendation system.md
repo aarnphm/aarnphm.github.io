@@ -1,5 +1,5 @@
 ---
-date: "2024-02-22"
+date: '2024-02-22'
 description: exploration of algorithmic curation and personalization in social media platforms.
 draft: true
 id: recommendation system

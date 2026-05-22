@@ -1,5 +1,5 @@
 ---
-date: "2025-11-10"
+date: '2025-11-10'
 description: what Mary learns and what physicalism misses
 id: knowledge-argument
 modified: 2026-05-15 01:01:20 GMT-04:00

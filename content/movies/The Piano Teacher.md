@@ -1,7 +1,7 @@
 ---
 category:
   - drama
-date: "2026-01-11"
+date: '2026-01-11'
 description: repressed desire turns violent - haneke makes piano discipline into sexual combat.
 director:
   - Michael Haneke

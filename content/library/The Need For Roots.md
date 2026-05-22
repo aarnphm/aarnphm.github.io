@@ -1,7 +1,7 @@
 ---
 author: Simone Weil
 category: philosophy
-date: "2025-08-10"
+date: '2025-08-10'
 description: weil analysis of modern uprootedness, arguing that people require roots in community, work, and attention to the good.
 finished: 2025
 id: The Need For Roots

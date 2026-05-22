@@ -1,5 +1,5 @@
 ---
-date: "2025-02-21"
+date: '2025-02-21'
 description: for Stripe, but shouldn't affect general sites interaction
 id: terms of service
 layout: technical

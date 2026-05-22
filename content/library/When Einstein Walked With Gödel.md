@@ -3,7 +3,7 @@ author:
   - Jim Holt
 category:
   - p/nf
-date: "2025-11-30"
+date: '2025-11-30'
 description: collection of essays on science and philosophy, covering relativity, quantum mechanics, infinity, turing, and the eccentric thinkers at the edge of thought.
 finished: null
 id: When Einstein Walked With Gödel

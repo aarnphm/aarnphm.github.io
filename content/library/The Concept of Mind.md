@@ -1,7 +1,7 @@
 ---
 author: Gilbert Ryle
 category: philosophy
-date: "2025-09-18"
+date: '2025-09-18'
 description: ryle attack on mind body dualism, arguing that talk of mind is about dispositions and behavior, not a ghost in the machine.
 id: The Concept of Mind
 modified: 2026-05-09 17:51:40 GMT-04:00

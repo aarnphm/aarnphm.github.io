@@ -1,5 +1,5 @@
 ---
-date: "2026-01-11"
+date: '2026-01-11'
 description: into you.
 id: dream
 layout: letter

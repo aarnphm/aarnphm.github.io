@@ -1,5 +1,5 @@
 ---
-date: "2025-10-05"
+date: '2025-10-05'
 description: educational JIT compiler implementations in Python
 id: bytecode-jit-readme
 layout: L->ET|A

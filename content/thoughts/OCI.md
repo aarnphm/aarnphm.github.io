@@ -1,5 +1,5 @@
 ---
-date: "2023-08-10"
+date: '2023-08-10'
 description: open container initiative standard for packaging and running containerized applications with directory structure for location-addressable blobs.
 id: OCI
 modified: 2026-05-09 17:51:55 GMT-04:00

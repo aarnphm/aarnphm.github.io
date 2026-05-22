@@ -1,5 +1,5 @@
 ---
-date: "2025-11-01"
+date: '2025-11-01'
 description: compactness, connectedness, lindelöf, local compactness aligned with mit 18.901 weeks 6–7.
 id: topology-compactness
 modified: 2026-05-19 18:19:46 GMT-04:00
@@ -28,4 +28,3 @@ title: compactness and connectedness
 - [ ] prove equivalences between compactness notions in metric spaces (munkres 27.3).
 - [ ] work through alexandroff one-point compactification examples.
 - [ ] record connectedness counterexamples (topologist's sine curve, comb space).
-

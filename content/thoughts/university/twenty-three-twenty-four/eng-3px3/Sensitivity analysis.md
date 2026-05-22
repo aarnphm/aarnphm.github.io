@@ -1,5 +1,5 @@
 ---
-date: "2024-02-01"
+date: '2024-02-01'
 description: marginal analysis and sensitivity analysis techniques for evaluating net value function changes with respect to input parameters and conversion factors.
 id: Sensitivity analysis
 modified: 2026-05-09 17:51:59 GMT-04:00

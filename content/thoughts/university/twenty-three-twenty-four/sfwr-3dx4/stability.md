@@ -1,5 +1,5 @@
 ---
-date: "2024-02-06"
+date: '2024-02-06'
 description: stability analysis and natural responses covering bibo stability, pole locations in complex plane, necessary conditions, and routh-hurwitz criterion for determining stability.
 id: stability
 modified: 2026-05-09 17:51:55 GMT-04:00

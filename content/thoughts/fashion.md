@@ -1,5 +1,5 @@
 ---
-date: "2024-02-19"
+date: '2024-02-19'
 description: a hobby, and definition of personal taste.
 id: fashion
 modified: 2026-05-09 17:51:48 GMT-04:00

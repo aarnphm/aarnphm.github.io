@@ -3,7 +3,7 @@ author:
   - Joan Didion
 category:
   - philosophy
-date: "2026-01-02"
+date: '2026-01-02'
 description: part of Slouching Towards Bethlehem (1968)
 external: null
 finished: 2026

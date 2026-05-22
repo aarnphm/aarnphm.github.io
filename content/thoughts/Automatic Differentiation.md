@@ -1,5 +1,5 @@
 ---
-date: "2024-02-07"
+date: '2024-02-07'
 description: techniques to evaluate partial derivative of a functions specified by CP.
 id: Automatic Differentiation
 modified: 2026-05-09 17:51:49 GMT-04:00

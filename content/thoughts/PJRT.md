@@ -1,5 +1,5 @@
 ---
-date: "2024-03-04"
+date: '2024-03-04'
 description: PTX equivalent for XLA
 id: PJRT
 modified: 2026-05-09 17:51:48 GMT-04:00

@@ -1,5 +1,5 @@
 ---
-date: "2024-09-16"
+date: '2024-09-16'
 description: an estimation between scalar response with one or more explanatory variables (regressor or <strong>independent variables</strong>)
 id: Bias and intercept
 modified: 2026-05-09 17:51:58 GMT-04:00

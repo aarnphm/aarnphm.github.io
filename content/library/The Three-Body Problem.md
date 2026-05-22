@@ -2,7 +2,7 @@
 author: Liu Cixin
 category:
   - p/fiction
-date: "2024-12-23"
+date: '2024-12-23'
 description: first volume of a sci fi trilogy where contact with an alien civilization intersects with chinese cultural revolution history and physics puzzles.
 finished: 2024
 id: The Three-Body Problem

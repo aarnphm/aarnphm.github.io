@@ -1,5 +1,5 @@
 ---
-date: "2024-09-13"
+date: '2024-09-13'
 description: identifying problems through stakeholders and creating varied personas that are vivid, actionable, real, identifiable, exact, and detailed.
 id: Stakeholders
 modified: 2026-05-09 17:51:57 GMT-04:00

@@ -1,5 +1,5 @@
 ---
-date: "2024-12-14"
+date: '2024-12-14'
 description: techniques preventing overfitting in over-parameterized models through penalty terms, early stopping, noise, and dropout.
 id: regularization
 modified: 2026-05-09 17:51:47 GMT-04:00

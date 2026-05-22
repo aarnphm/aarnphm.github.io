@@ -1,5 +1,5 @@
 ---
-date: "2025-09-26"
+date: '2025-09-26'
 description: made with gpt-5 and claude
 id: deep research
 modified: 2026-05-09 17:51:48 GMT-04:00

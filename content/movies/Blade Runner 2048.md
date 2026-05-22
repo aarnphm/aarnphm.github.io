@@ -3,7 +3,7 @@ category:
   - buster
   - thriller
   - actions
-date: "2024-02-07"
+date: '2024-02-07'
 description: what makes us human if memories can be manufactured—villeneuve's slow meditation on artificial souls, loneliness in orange haze, deakins painting despair.
 director: Denis Villeneuve
 id: blade-runner-2048

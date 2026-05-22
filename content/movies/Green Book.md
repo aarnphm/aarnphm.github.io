@@ -3,7 +3,7 @@ category:
   - drama
   - comedy
   - o/life
-date: "2024-02-07"
+date: '2024-02-07'
 description: white savior road trip barely mentioning the actual green book—farrelly centering the racist italian who learns tolerance, black genius existing as prop for white growth, oscar bait at its most insulting.
 director: Peter Farrelly
 id: green-book

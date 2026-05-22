@@ -1,5 +1,5 @@
 ---
-date: "2023-12-06"
+date: '2023-12-06'
 description: comprehensive equation reference covering machine epsilon, taylor series, polynomial interpolation, numeric integration, least squares, newton's method, and runge-kutta odes.
 id: Equations
 modified: 2026-05-09 17:51:54 GMT-04:00

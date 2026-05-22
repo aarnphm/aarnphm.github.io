@@ -1,5 +1,5 @@
 ---
-date: "2024-01-09"
+date: '2024-01-09'
 description: frequency domain analysis using laplace transforms, transfer functions, stability analysis via poles, partial fraction expansion, and impedance calculations.
 id: Frequency Domain
 modified: 2026-05-09 17:51:54 GMT-04:00

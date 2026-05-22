@@ -4,7 +4,7 @@ category:
   - love
   - thriller
   - temporal
-date: "2026-05-09"
+date: '2026-05-09'
 description: A brilliant but egotistical scientist brings a monstrous creature to life in a daring experiment that ultimately leads to the undoing of both the creator and his tragic creation. Guillermo rendition of Shelley's 1818 novel.
 director:
   - Guillermo Del Toro
@@ -17,6 +17,6 @@ studio: netflix
 tags:
   - love
 title: Frankenstein
-watched: "2025-11-26"
+watched: '2025-11-26'
 year: 2025
 ---

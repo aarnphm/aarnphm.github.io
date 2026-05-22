@@ -1,5 +1,5 @@
 ---
-date: "2025-09-19"
+date: '2025-09-19'
 description: and Modal examples
 id: index
 modified: 2026-05-09 17:51:57 GMT-04:00

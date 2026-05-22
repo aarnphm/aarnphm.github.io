@@ -1,5 +1,5 @@
 ---
-date: "2024-03-20"
+date: '2024-03-20'
 description: a Uber compensation policies case study
 id: Final report
 modified: 2026-05-09 17:51:54 GMT-04:00

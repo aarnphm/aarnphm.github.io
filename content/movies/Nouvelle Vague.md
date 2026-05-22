@@ -2,7 +2,7 @@
 category:
   - o/relationship
   - love
-date: "2026-05-09"
+date: '2026-05-09'
 description: It follows the shooting of Breathless, one of the first feature films of the French New Wave of cinema.
 director:
   - Richard Linklater

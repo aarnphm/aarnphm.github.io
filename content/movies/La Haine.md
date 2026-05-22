@@ -2,7 +2,7 @@
 category:
   - thriller
   - drama
-date: "2024-02-07"
+date: '2024-02-07'
 description: twenty-four hours in paris banlieue after riots—kassovitz filming police brutality in black and white, three friends falling through hatred knowing it's not the fall that kills you but the landing, hate breeding hate.
 director: Mathieu Kassovitz
 id: la-haine
@@ -15,6 +15,6 @@ tags:
   - r/politics
   - thriller
 title: La Haine
-watched: "2024-02-10"
+watched: '2024-02-10'
 year: 1995
 ---

@@ -1,6 +1,6 @@
 ---
 category: projets
-date: "2022-01-25"
+date: '2022-01-25'
 description: tile-abstraction for designing a ML framework
 id: dsl
 modified: 2026-05-09 17:51:42 GMT-04:00

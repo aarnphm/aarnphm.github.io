@@ -1,5 +1,5 @@
 ---
-date: "2024-02-07"
+date: '2024-02-07'
 description: phenomenon where observer's prejudices and expectations unconsciously influence the behavior of subjects being observed.
 id: observer-expectancy effect
 modified: 2026-05-09 17:51:55 GMT-04:00

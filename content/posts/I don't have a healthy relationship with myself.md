@@ -1,5 +1,5 @@
 ---
-date: "2025-02-14"
+date: '2025-02-14'
 description: on love and the feeling of belongings.
 draft: true
 id: I don't have a healthy relationship with myself

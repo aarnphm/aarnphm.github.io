@@ -1,5 +1,5 @@
 ---
-date: "2025-08-12"
+date: '2025-08-12'
 description: and my interests.
 id: research
 modified: 2026-05-09 17:51:32 GMT-04:00

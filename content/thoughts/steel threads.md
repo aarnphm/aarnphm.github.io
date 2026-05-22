@@ -1,5 +1,5 @@
 ---
-date: "2025-05-27"
+date: '2025-05-27'
 description: thin slice of functionality threading through system boundaries, enabling incremental production deployment of narrow use cases.
 id: steel threads
 modified: 2026-05-09 17:51:50 GMT-04:00

@@ -1,7 +1,7 @@
 ---
 author: G. W. F. Hegel
 category: philosophy
-date: "2025-09-18"
+date: '2025-09-18'
 description: hegel journey of consciousness through shapes like sense certainty, self consciousness, and spirit toward a standpoint of absolute knowing.
 id: The Phenomenology of Spirit
 language: german

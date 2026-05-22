@@ -1,5 +1,5 @@
 ---
-date: "2025-08-21"
+date: '2025-08-21'
 description: Entropy-regularized attention as a convex program; Fenchel–Young view, geometry, and verification insights.
 id: convexity
 modified: 2026-05-09 17:51:34 GMT-04:00

@@ -1,5 +1,5 @@
 ---
-date: "2024-09-04"
+date: '2024-09-04'
 description: software engineering capstone course exploring wysiwyg editor projects and morph development.
 id: index
 modified: 2026-05-09 17:51:58 GMT-04:00

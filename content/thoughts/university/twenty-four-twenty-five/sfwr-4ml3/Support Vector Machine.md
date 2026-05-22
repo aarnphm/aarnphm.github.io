@@ -1,5 +1,5 @@
 ---
-date: "2024-11-11"
+date: '2024-11-11'
 description: support vector machines maximizing margin through hard-margin and soft-margin formulations with euclidean distance hyperplanes.
 id: Support Vector Machine
 modified: 2026-05-09 17:51:58 GMT-04:00

@@ -1,5 +1,5 @@
 ---
-date: "2024-01-26"
+date: '2024-01-26'
 description: curius dot app slash aaron dash pham
 id: curius
 modified: 2026-05-09 17:51:32 GMT-04:00

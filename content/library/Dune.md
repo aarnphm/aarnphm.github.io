@@ -2,7 +2,7 @@
 author: Frank Herbert
 category:
   - p/fiction
-date: "2025-10-07"
+date: '2025-10-07'
 description: epic science fiction saga of politics, ecology, and prophecy on the desert planet arrakis, following paul atreides rise and transformation.
 finished: 2022
 id: Dune

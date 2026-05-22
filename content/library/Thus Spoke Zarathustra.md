@@ -1,7 +1,7 @@
 ---
 author: Friedrich Nietzsche
 category: philosophy
-date: "2025-10-07"
+date: '2025-10-07'
 description: prophetic, poetic book in which zarathustra proclaims themes like overman, eternal recurrence, and critique of herd morality.
 external: https://www.gutenberg.org/files/1998/1998-h/1998-h.htm
 id: Thus Spoke Zarathustra

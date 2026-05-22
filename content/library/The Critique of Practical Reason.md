@@ -1,7 +1,7 @@
 ---
 author: Immanuel Kant
 category: philosophy
-date: "2025-10-07"
+date: '2025-10-07'
 description: kant further develops his moral philosophy, focusing on duty, freedom, and the primacy of practical reason over speculative reason.
 id: The Critique of Practical Reason
 language: german

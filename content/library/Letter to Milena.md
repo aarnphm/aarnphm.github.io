@@ -1,7 +1,7 @@
 ---
 author: Franz Kafka
 category: letters
-date: "2025-10-06"
+date: '2025-10-06'
 description: letters from kafka to milena that chart intense, self doubting love across distance, illness, and impossibility.
 finished: 2025
 id: Letter to Milena

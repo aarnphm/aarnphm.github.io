@@ -1,5 +1,5 @@
 ---
-date: "2023-11-08"
+date: '2023-11-08'
 description: fathers of Western philosophical tradition.
 id: Plato
 modified: 2026-05-09 17:51:52 GMT-04:00

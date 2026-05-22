@@ -1,5 +1,5 @@
 ---
-date: "2025-11-01"
+date: '2025-11-01'
 description: evergreen hub for topology study anchored on munkres and mit 18.901.
 id: topology
 modified: 2026-05-21 04:30:02 GMT-04:00

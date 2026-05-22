@@ -1,5 +1,5 @@
 ---
-date: "2022-07-01"
+date: '2022-07-01'
 description: tcp optimization algorithms that maximize data-to-packet ratio by buffering small packets, including nagle's algorithm and delay ack mechanisms.
 id: Nagle and TCP Cork
 modified: 2026-05-09 17:51:48 GMT-04:00

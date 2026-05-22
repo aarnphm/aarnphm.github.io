@@ -1,5 +1,5 @@
 ---
-date: "2024-12-27"
+date: '2024-12-27'
 description: an unexpected turn of events.
 id: Chi
 layout: letter

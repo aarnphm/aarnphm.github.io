@@ -2,7 +2,7 @@
 author: Milton Friedman
 category:
   - p/nf
-date: "2024-11-27"
+date: '2024-11-27'
 description: how do we think about jobs and money
 finished: 2025
 id: Capitalism and Freedom

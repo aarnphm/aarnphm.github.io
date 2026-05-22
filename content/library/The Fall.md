@@ -2,7 +2,7 @@
 author: '[[thoughts/Camus|Albert Camus]]'
 category:
   - p/fiction
-date: "2025-08-10"
+date: '2025-08-10'
 description: monologue of a former lawyer in amsterdam, dissecting his own hypocrisy and guilt while quietly indicting bourgeois morality.
 finished: 2025
 id: The Fall

@@ -1,5 +1,5 @@
 ---
-date: "2024-02-25"
+date: '2024-02-25'
 description: manifestation of malleable software where users shape their computational environments.
 id: personal computing
 modified: 2026-05-09 17:51:49 GMT-04:00

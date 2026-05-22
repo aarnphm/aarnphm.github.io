@@ -2,7 +2,7 @@
 category:
   - o/life
   - drama
-date: "2026-05-09"
+date: '2026-05-09'
 description: three product launches as pressure-cooker chambers - boyle films sorkin's dialogue as combat, jobs engineering machines and emotional debt in equal measure.
 director:
   - Danny Boyle

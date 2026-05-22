@@ -2,7 +2,7 @@
 category:
   - o/life
   - drama
-date: "2026-01-08"
+date: '2026-01-08'
 description: flannery o'connor's interior war - hawke threads illness, faith, and fiction into a composite of her stories, maya hawke embodying the author as both witness and weapon.
 director:
   - Ethan Hawke

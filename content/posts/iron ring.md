@@ -1,5 +1,5 @@
 ---
-date: "2026-03-28"
+date: '2026-03-28'
 description: on graduation and learning from university
 id: iron ring
 modified: 2026-05-19 12:37:32 GMT-04:00
@@ -61,7 +61,7 @@ In the Corporation of the Seven Wardens' own description, the obligation of the 
 
 The text:
 
-> I, ****Aaron Pham****, in the presence of these my betters and my equals in my Calling, bind myself upon my Honour and Cold Iron, that, to the best of my knowledge and power, I will not henceforward suffer or pass, or be privy to the passing of, Bad Workmanship or Faulty Material in aught that concerns my works before mankind as an Engineer, or in my dealings with my conscience. My time I will not refuse; my Thought I will not grudge; my Care I will not deny towards the honour, use, stability and perfection of any works to which I may be called to set my hand.
+> I, \***\*Aaron Pham\*\***, in the presence of these my betters and my equals in my Calling, bind myself upon my Honour and Cold Iron, that, to the best of my knowledge and power, I will not henceforward suffer or pass, or be privy to the passing of, Bad Workmanship or Faulty Material in aught that concerns my works before mankind as an Engineer, or in my dealings with my conscience. My time I will not refuse; my Thought I will not grudge; my Care I will not deny towards the honour, use, stability and perfection of any works to which I may be called to set my hand.
 
 Kipling's archaisms (_henceforward_, _aught_, _compass or wrest_) give the document a 17th-century weight it does not actually have, since the thing was composed by a Victorian in 1923. The ceremony is semi-secret. Only engineers and the engineers about to become engineers are allowed in the room. [[thoughts/performativity|Butler]]'s constitutive performance fits with one catch: the taking of the obligation creates the membership it claims to describe, and the resulting constitution cannot be undone by a later ceremony in the way Butler's framework otherwise allows.[^secrecy][^turner]
 

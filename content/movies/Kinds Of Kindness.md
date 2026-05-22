@@ -2,7 +2,7 @@
 category:
   - actors
   - anthology
-date: "2024-02-07"
+date: '2024-02-07'
 description: three stories about control and devotion—lanthimos anthology filming emma stone and jesse plemons in abusive relationships with bosses, spouses, and cult leaders, kindness revealing itself as cruelty wearing different masks.
 director: Yorgos Lanthimos
 id: kinds-of-kindness
@@ -16,6 +16,6 @@ tags:
   - r/psychology
   - o/relationship
 title: Kinds of Kindness
-watched: "2024-12-30"
+watched: '2024-12-30'
 year: 2024
 ---

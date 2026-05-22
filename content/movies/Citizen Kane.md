@@ -1,7 +1,7 @@
 ---
 category:
   - spy
-date: "2024-02-07"
+date: '2024-02-07'
 description: rosebud as the emptiness at the center—welles inventing deep focus and narrative complexity to dissect american power, hearst as hollow man in a castle.
 director: Orson Welles
 id: citizen-kane
@@ -13,6 +13,6 @@ studio: rko
 tags:
   - o/vintage
 title: Citizen Kane
-watched: "2025-12-12"
+watched: '2025-12-12'
 year: 1941
 ---

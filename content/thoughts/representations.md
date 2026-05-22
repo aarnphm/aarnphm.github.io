@@ -1,5 +1,5 @@
 ---
-date: "2024-02-25"
+date: '2024-02-25'
 description: and the state of being.
 id: representations
 modified: 2026-05-09 17:51:50 GMT-04:00

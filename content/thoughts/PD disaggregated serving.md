@@ -2,7 +2,7 @@
 aliases:
   - pd
   - disaggregated serving
-date: "2025-06-16"
+date: '2025-06-16'
 description: and inference go distributed
 id: pd disaggregated serving
 modified: 2026-05-09 17:51:33 GMT-04:00

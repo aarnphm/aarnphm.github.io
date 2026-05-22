@@ -3,7 +3,7 @@ category:
   - thriller
   - o/vintage
   - drama
-date: "2024-02-07"
+date: '2024-02-07'
 description: loneliness calcifying into violence in a city that won't see you—scorsese's fever dream of isolation, where every interaction confirms the protagonist's invisibility.
 director: Martin Scorsese
 id: taxi-driver

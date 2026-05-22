@@ -2,7 +2,7 @@
 category:
   - drama
   - vintage
-date: "2026-05-09"
+date: '2026-05-09'
 description: sisters in a foreign city as language fails - desire and resentment fill the silence.
 director:
   - Ingmar Bergman

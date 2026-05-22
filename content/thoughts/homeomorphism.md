@@ -1,5 +1,5 @@
 ---
-date: "2024-11-27"
+date: '2024-11-27'
 description: or topological isomorphism.
 id: homeomorphism
 modified: 2026-05-09 17:51:55 GMT-04:00

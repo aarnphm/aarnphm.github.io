@@ -3,9 +3,9 @@ address: 194 Queen St W, Toronto, ON M5V 1Z1, Canada
 category:
   - '[[places to go]]'
 coordinates:
-  - "43.6505964"
-  - "-79.3885233"
-date: "2025-11-22"
+  - '43.6505964'
+  - '-79.3885233'
+date: '2025-11-22'
 description: great spots for pay-what-you-think-it-is-worth music
 id: The Rex Hotel
 modified: 2026-05-09 17:51:50 GMT-04:00

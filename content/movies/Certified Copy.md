@@ -3,7 +3,7 @@ category:
   - love
   - relationship
   - drama
-date: "2026-05-09"
+date: '2026-05-09'
 description: a day in tuscany where a couple may or may not be a couple - kiarostami turns conversation into identity swap.
 director:
   - Abbas Kiarostami

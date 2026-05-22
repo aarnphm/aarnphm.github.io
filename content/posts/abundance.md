@@ -1,5 +1,5 @@
 ---
-date: "2025-11-05"
+date: '2025-11-05'
 description: interpretable functions of love.
 draft: true
 id: abundance

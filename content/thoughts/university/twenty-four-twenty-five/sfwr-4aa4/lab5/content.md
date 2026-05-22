@@ -1,5 +1,5 @@
 ---
-date: "2024-10-04"
+date: '2024-10-04'
 description: lab on external led control implementation in two parts using embedded c.
 id: content
 modified: 2026-05-09 17:51:59 GMT-04:00

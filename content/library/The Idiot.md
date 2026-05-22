@@ -2,7 +2,7 @@
 author: Fyodor Dostoevsky
 category:
   - p/fiction
-date: "2025-03-05"
+date: '2025-03-05'
 description: novel about prince myshkin, a guileless man whose goodness collides with intrigue, jealousy, and violence in russian society.
 id: The Idiot
 language: russian
