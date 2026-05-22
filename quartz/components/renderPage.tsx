@@ -809,6 +809,12 @@ export const pageResources = (
         loadTime: 'beforeDOMReady',
         contentType: 'inline',
         spaPreserve: true,
+        script: `const fetchSearchData = fetch("${joinSegments(baseDir, 'static/searchIndex.json')}").then(data => data.json())`,
+      },
+      {
+        loadTime: 'beforeDOMReady',
+        contentType: 'inline',
+        spaPreserve: true,
         script: `const semanticCfg = ${JSON.stringify(ctx.cfg?.configuration?.semanticSearch ?? {})}`,
       },
       { script: transcludeScript, loadTime: 'afterDOMReady', contentType: 'inline' },

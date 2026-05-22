@@ -218,18 +218,87 @@ export function notebookRuntimeData(
 function notebookRuntimeControls(data: NotebookRuntimeData): string[] {
   return [
     [
-      `<div class="notebook-runtime" data-notebook-runtime="${escapeHTML(data.id)}"></div>`,
+      `<div class="notebook-runtime" data-notebook-runtime="${escapeHTML(data.id)}">`,
+      '<div class="notebook-runtime-toolbar" data-notebook-runtime-toolbar role="toolbar" aria-label="Notebook runtime">',
+      '<button type="button" data-notebook-run-all>Run all</button>',
+      '<button type="button" data-notebook-stop disabled>Stop</button>',
+      '<button type="button" data-notebook-reset>Reset runtime</button>',
+      '<span class="notebook-runtime-status" data-notebook-status aria-live="polite">idle</span>',
+      '</div>',
+      '</div>',
       `<script type="application/json" data-notebook-runtime-data>${runtimeJson(data)}</script>`,
     ].join('\n'),
   ]
+}
+
+type NotebookIcon = 'run' | 'edit' | 'save' | 'revert'
+
+const notebookIconSvg: Record<NotebookIcon, string> = {
+  run: '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M8 5.5v13l10-6.5z"/></svg>',
+  edit: '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m4 16.5-.5 4 4-.5L19 8.5 15.5 5z"/><path d="m14 6.5 3.5 3.5"/></svg>',
+  save: '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 4h11l3 3v13H5z"/><path d="M8 4v6h8V4"/><path d="M8 20v-6h8v6"/></svg>',
+  revert:
+    '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"/></svg>',
+}
+
+function notebookExecutionLabel(count: number | null): string {
+  return count === null ? 'In [ ]:' : `In [${count}]:`
+}
+
+function notebookIconButton(
+  cellId: string,
+  icon: NotebookIcon,
+  dataAttribute: string,
+  label: string,
+  hidden = false,
+): string {
+  const escapedId = escapeHTML(cellId)
+  const escapedLabel = escapeHTML(label)
+  return `<button type="button" class="notebook-icon-button" ${dataAttribute}="${escapedId}" aria-label="${escapedLabel}" title="${escapedLabel}"${
+    hidden ? ' hidden' : ''
+  }>${notebookIconSvg[icon]}</button>`
 }
 
 function notebookCellControls(cell: NotebookRuntimeCell): string[] {
   const cellId = cell.id
   const escaped = escapeHTML(cellId)
   return [
-    `<div class="notebook-runtime-cell" data-notebook-cell="${escaped}" data-notebook-execution-count="${cell.executionIndex ?? ''}"></div>`,
+    `<div class="notebook-runtime-cell" data-notebook-cell="${escaped}" data-notebook-execution-count="${cell.executionIndex ?? ''}">`,
+    `<span class="notebook-execution-prompt" data-notebook-execution-label="${escaped}" aria-live="polite">${escapeHTML(
+      notebookExecutionLabel(cell.executionIndex),
+    )}</span>`,
+    '</div>',
   ]
+}
+
+function notebookCellFrameOpen(cellId: string): string {
+  const escaped = escapeHTML(cellId)
+  return `<div class="notebook-code-cell" data-notebook-cell-frame="${escaped}">`
+}
+
+function notebookCellActions(cell: NotebookRuntimeCell): string {
+  const escaped = escapeHTML(cell.id)
+  return [
+    `<div class="notebook-cell-actions" data-notebook-cell-actions="${escaped}">`,
+    notebookIconButton(cell.id, 'run', 'data-notebook-run-cell', `Run ${cell.id}`),
+    notebookIconButton(cell.id, 'edit', 'data-notebook-edit-cell', `Edit ${cell.id}`),
+    notebookIconButton(cell.id, 'save', 'data-notebook-save-cell', `Save ${cell.id} locally`, true),
+    notebookIconButton(
+      cell.id,
+      'revert',
+      'data-notebook-revert-cell',
+      `Revert ${cell.id} local edit`,
+      true,
+    ),
+    `<span class="notebook-local-source-status" data-notebook-local-source-status="${escaped}" hidden></span>`,
+    '</div>',
+  ].join('\n')
+}
+
+function notebookSourceEditor(cellId: string): string {
+  return `<div class="notebook-source-editor" data-notebook-source-editor="${escapeHTML(
+    cellId,
+  )}" hidden></div>`
 }
 
 function notebookCellRuntimeOutput(cellId: string): string {
@@ -368,13 +437,23 @@ function notebookCell(
     return { chunks: [], titleHeadingRemoved: false }
   }
 
-  const parts = runtimeCell ? notebookCellControls(runtimeCell) : []
+  const parts = runtimeCell
+    ? [
+        notebookCellFrameOpen(runtimeCell.id),
+        ...notebookCellControls(runtimeCell),
+        notebookCellActions(runtimeCell),
+        notebookSourceEditor(runtimeCell.id),
+      ]
+    : []
   if (source.trim()) parts.push(fenced(source, language))
   const outputs = Array.isArray(cell.outputs) ? cell.outputs.filter(isRecord) : []
   for (const output of outputs) {
     parts.push(...notebookOutput(output))
   }
-  if (runtimeCell) parts.push(notebookCellRuntimeOutput(runtimeCell.id))
+  if (runtimeCell) {
+    parts.push(notebookCellRuntimeOutput(runtimeCell.id))
+    parts.push('</div>')
+  }
   return { chunks: parts, titleHeadingRemoved: false }
 }
 

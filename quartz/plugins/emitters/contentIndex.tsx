@@ -18,6 +18,7 @@ import {
   joinSegments,
   simplifySlug,
   sluggify,
+  slugifyFilePath,
 } from '../../util/path'
 import { ArenaData } from '../transformers/arena'
 import { QuartzPluginData } from '../vfile'
@@ -132,6 +133,37 @@ function shouldIncludeInFeed(slug: FullSlug, content: ContentDetails): boolean {
   }
 
   return true
+}
+
+function isContentPageFile(fp: FilePath): boolean {
+  return fp.endsWith('.md') || fp.endsWith('.base') || fp.endsWith('.canvas')
+}
+
+function fileTitle(fp: FilePath): string {
+  const ext = path.extname(fp)
+  const base = path.basename(fp, ext)
+  return base.length > 0 ? base : path.basename(fp)
+}
+
+function fileTags(fp: FilePath): string[] {
+  const ext = path.extname(fp).replace(/^\./, '').toLowerCase()
+  return ext.length > 0 ? [ext, 'file'] : ['file']
+}
+
+function fileSearchContent(fp: FilePath): string {
+  const contentPath = joinSegments('content', fp)
+  return sanitizeXml([fileTitle(fp), fp, contentPath].join(' '))
+}
+
+function serializeContentIndex(idx: ContentIndexMap) {
+  return Object.fromEntries(
+    Array.from(idx).map(([slug, content]) => {
+      const serializable = { ...content }
+      delete serializable.fileData
+      delete serializable.richContent
+      return [slug, serializable]
+    }),
+  )
 }
 
 function deriveFolderDisplayTitle(
@@ -600,18 +632,45 @@ Expires: ${expiresDate.toISOString()}
       }
 
       const fp = joinSegments('static', 'contentIndex') as FullSlug
-      const simplifiedIndex = Object.fromEntries(
-        Array.from(linkIndex).map(([slug, content]) => {
-          // remove richContent and fileData from content index as nothing downstream
-          // actually uses it. we only keep it in the index as we need it
-          // for the RSS feed
-          delete content.fileData
-          delete content.richContent
-          return [slug, content]
-        }),
-      )
+      yield write({
+        ctx,
+        content: JSON.stringify(serializeContentIndex(linkIndex)),
+        slug: fp,
+        ext: '.json',
+      })
 
-      yield write({ ctx, content: JSON.stringify(simplifiedIndex), slug: fp, ext: '.json' })
+      const searchIndex: ContentIndexMap = new Map(linkIndex)
+      for (const file of ctx.allFiles) {
+        if (isContentPageFile(file)) {
+          continue
+        }
+
+        const slug = slugifyFilePath(file, path.extname(file) === '.ipynb')
+        if (searchIndex.has(slug)) {
+          continue
+        }
+
+        const contentPath = joinSegments('content', file)
+        searchIndex.set(slug, {
+          slug,
+          title: fileTitle(file),
+          links: [],
+          filePath: joinSegments(ctx.argv.directory, file) as FilePath,
+          fileName: file,
+          tags: fileTags(file),
+          aliases: [file, contentPath, slug],
+          content: fileSearchContent(file),
+          layout: 'default',
+          description: contentPath,
+        })
+      }
+
+      yield write({
+        ctx,
+        content: JSON.stringify(serializeContentIndex(searchIndex)),
+        slug: joinSegments('static', 'searchIndex') as FullSlug,
+        ext: '.json',
+      })
 
       // inform Chrome to yield correct information
       if (

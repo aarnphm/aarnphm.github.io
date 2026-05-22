@@ -12,6 +12,10 @@ allowBuilds:
   utf-8-validate: true
   workerd: true
 
+minimumReleaseAgeExclude:
+  - '@ai-sdk/gateway@3.0.119'
+  - ai@6.0.190
+
 onlyBuiltDependencies:
   - '@parcel/watcher'
   - bufferutil

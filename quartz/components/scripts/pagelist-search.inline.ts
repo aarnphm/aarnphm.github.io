@@ -1,3 +1,4 @@
+import { pageListItemMatchesQuery } from './pagelist-search'
 import { registerEscapeHandler } from './util'
 
 interface PageListState {
@@ -18,28 +19,17 @@ interface TagSectionState {
   focusedIdx: number
 }
 
-function extractTagsFromQuery(query: string): string[] {
-  const matches = query.match(/#[\w/-]+/g) || []
-  return matches.map(t => t.slice(1).toLowerCase())
-}
-
-function extractTextQuery(query: string): string {
-  return query
-    .replace(/#[\w/-]+/g, '')
-    .trim()
-    .toLowerCase()
-}
-
-function tagMatches(queryTag: string, itemTags: string[]): boolean {
-  return itemTags.some(t => t.includes(queryTag))
-}
-
-function debounce<T extends (...args: any[]) => any>(fn: T, delay: number): T {
+function debounce<Args extends unknown[]>(fn: (...args: Args) => void, delay: number) {
   let timeoutId: ReturnType<typeof setTimeout> | null = null
-  return ((...args: Parameters<T>) => {
+  return (...args: Args) => {
     if (timeoutId) clearTimeout(timeoutId)
     timeoutId = setTimeout(() => fn(...args), delay)
-  }) as T
+  }
+}
+
+function parseItemTags(rawTags: string | undefined): string[] {
+  const parsed: unknown = JSON.parse(rawTags ?? '[]')
+  return Array.isArray(parsed) ? parsed.filter(tag => typeof tag === 'string') : []
 }
 
 function getVisibleItems(state: PageListState): HTMLLIElement[] {
@@ -103,20 +93,12 @@ function filterItems(state: PageListState, query: string) {
     return
   }
 
-  const queryTags = extractTagsFromQuery(query)
-  const textQuery = extractTextQuery(query)
-
   let visible = 0
   items.forEach(li => {
-    const title = (li.dataset.title ?? '').toLowerCase()
-    const itemTags: string[] = JSON.parse(li.dataset.tags ?? '[]').map((t: string) =>
-      t.toLowerCase(),
-    )
+    const title = li.dataset.title ?? ''
+    const tags = parseItemTags(li.dataset.tags)
 
-    const textMatch = !textQuery || title.includes(textQuery)
-    const tagMatch = queryTags.some(qt => tagMatches(qt, itemTags))
-
-    li.hidden = !(textMatch && tagMatch)
+    li.hidden = !pageListItemMatchesQuery({ title, tags }, query)
     if (!li.hidden) visible++
   })
 

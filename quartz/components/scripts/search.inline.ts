@@ -20,6 +20,8 @@ interface Item extends DocumentData {
   tags: string[]
   aliases: string[]
   target: string
+  fileName: string
+  protected?: boolean
   [key: string]: any
 }
 
@@ -122,6 +124,7 @@ const index = new FlexSearch.Document<Item>({
     id: 'id',
     index: [
       { field: 'title', tokenize: 'forward' },
+      { field: 'fileName', tokenize: 'forward' },
       { field: 'content', tokenize: 'forward' },
       { field: 'tags', tokenize: 'forward' },
       { field: 'aliases', tokenize: 'forward' },
@@ -134,6 +137,34 @@ const fetchContentCache: Map<FullSlug, Element[]> = new Map()
 const numSearchResultsLexical = 10
 const numSearchResultsSemantic = 60
 const numTagResults = 10
+
+function fileExtension(fileName: string): string | null {
+  const name = fileName.split('/').at(-1) ?? fileName
+  const index = name.lastIndexOf('.')
+  if (index <= 0 || index === name.length - 1) {
+    return null
+  }
+
+  return name.slice(index).toLowerCase()
+}
+
+function isDirectContentFile(fileName: string): boolean {
+  const ext = fileExtension(fileName)
+  return ext !== null && ext !== '.canvas' && ext !== '.bases'
+}
+
+async function loadSearchData(): Promise<ContentIndex> {
+  if (typeof fetchSearchData === 'undefined') {
+    return fetchData
+  }
+
+  try {
+    return await fetchSearchData
+  } catch (err) {
+    console.warn('[Search] failed to load search index:', err)
+    return fetchData
+  }
+}
 
 function getNumSearchResults(mode: SearchMode): number {
   return mode === 'semantic' ? numSearchResultsSemantic : numSearchResultsLexical
@@ -544,28 +575,29 @@ async function setupSearch(
 
   const formatForDisplay = (term: string, id: number, renderType: SearchType) => {
     const slug = idDataMap[id]
-    if (data[slug].layout === 'letter' || (searchMode === 'semantic' && slug.includes('arena')))
+    const fileData = data[slug]
+    if (!fileData) return null
+    if (fileData.layout === 'letter' || (searchMode === 'semantic' && slug.includes('arena')))
       return null
-    const aliases: string[] = data[slug].aliases
+    const aliases: string[] = fileData.aliases
     const target = aliases.find(alias => alias.toLowerCase().includes(term.toLowerCase())) ?? ''
 
     const queryTokens = tokenizeTerm(term)
-    const titleTokens = tokenizeTerm(data[slug].title ?? '')
+    const titleTokens = tokenizeTerm(fileData.title ?? '')
     const titleMatch = titleTokens.some(t => queryTokens.includes(t))
 
     return {
       id,
       slug,
       title:
-        renderType === 'tags' || target
-          ? data[slug].title
-          : highlight(term, data[slug].title ?? ''),
+        renderType === 'tags' || target ? fileData.title : highlight(term, fileData.title ?? ''),
       target,
-      content: highlight(term, data[slug].content ?? '', true),
-      tags: highlightTags(term, data[slug].tags, renderType),
+      content: highlight(term, fileData.content ?? fileData.fileName ?? '', true),
+      tags: highlightTags(term, fileData.tags, renderType),
       aliases: aliases,
       titleMatch,
-      protected: data[slug].protected,
+      fileName: fileData.fileName,
+      protected: fileData.protected,
     }
   }
 
@@ -591,7 +623,7 @@ async function setupSearch(
   }
 
   const resultToHTML = ({ item, percent }: { item: Item; percent: number | null }) => {
-    const { slug, title, content, tags, target } = item
+    const { slug, title, content, tags, target, fileName } = item
     const isProtected = item.protected === true
     const htmlTags = tags.length > 0 ? `<ul class="tags">${tags.join('')}</ul>` : ``
     const itemTile = document.createElement('a')
@@ -609,11 +641,13 @@ async function setupSearch(
     itemTile.href = resolveUrl(slug).toString()
 
     const fileData = data[slug]
-    const fileName = (fileData?.fileName || slug || '').toLowerCase()
-    const isCanvas = fileName.includes('.canvas')
-    const isBases = fileName.includes('.bases')
+    const resolvedFileName = (fileData?.fileName || fileName || slug || '').toLowerCase()
+    const isCanvas = resolvedFileName.includes('.canvas')
+    const isBases = resolvedFileName.includes('.bases')
+    const isDirectFile = isDirectContentFile(resolvedFileName)
     if (isCanvas) itemTile.dataset.canvas = 'true'
     if (isBases) itemTile.dataset.bases = 'true'
+    if (isDirectFile) itemTile.dataset.directFile = 'true'
 
     if (isProtected) {
       itemTile.dataset.protected = 'true'
@@ -719,7 +753,11 @@ async function setupSearch(
   async function displayPreview(el: HTMLElement | null) {
     if (!enablePreview || !el || !preview) return
     const slug = el.id as FullSlug
-    if (el.dataset.canvas === 'true' || el.dataset.bases === 'true') {
+    if (
+      el.dataset.canvas === 'true' ||
+      el.dataset.bases === 'true' ||
+      el.dataset.directFile === 'true'
+    ) {
       const fileData = data[slug]
       previewInner = document.createElement('div')
       previewInner.classList.add('preview-inner')
@@ -815,7 +853,7 @@ async function setupSearch(
         const results = await index.searchAsync({
           query,
           limit: Math.max(getNumSearchResults(modeForRanking), 10000),
-          index: ['title', 'content', 'aliases'],
+          index: ['title', 'fileName', 'content', 'aliases'],
           tag: { tags: tag },
         })
         if (token !== searchSeq) return
@@ -836,7 +874,7 @@ async function setupSearch(
       const results = await index.searchAsync({
         query: highlightTerm,
         limit: getNumSearchResults(modeForRanking),
-        index: ['title', 'content', 'aliases'],
+        index: ['title', 'fileName', 'content', 'aliases'],
       })
       if (token !== searchSeq) return
       searchResults = Object.values(results)
@@ -863,6 +901,7 @@ async function setupSearch(
     const allIds: Set<number> = new Set([
       ...getByField('aliases'),
       ...getByField('title'),
+      ...getByField('fileName'),
       ...getByField('content'),
       ...getByField('tags'),
     ])
@@ -1074,6 +1113,7 @@ async function fillDocument(data: ContentIndex) {
         id,
         slug: slug as FullSlug,
         title: fileData.title,
+        fileName: fileData.fileName,
         content: fileData.content,
         tags: fileData.tags,
         aliases: fileData.aliases,
@@ -1090,7 +1130,7 @@ async function fillDocument(data: ContentIndex) {
 
 document.addEventListener('nav', async (e: CustomEventMap['nav']) => {
   const currentSlug = e.detail.url
-  const data = await fetchData
+  const data = await loadSearchData()
   const searchElement = document.getElementsByClassName(
     'search',
   ) as HTMLCollectionOf<HTMLDivElement>

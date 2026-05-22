@@ -495,9 +495,14 @@ class NotebookRuntime {
       const controls = document.querySelector<HTMLElement>(
         `[data-notebook-cell="${CSS.escape(cell.id)}"]`,
       )
-      if (!controls || controls.closest('[data-notebook-cell-frame]')) continue
+      if (!controls) continue
       this.ensureCellControls(cell, controls)
       this.setExecutionLabel(cell.id, cell.executionIndex)
+      const existingFrame = controls.closest<HTMLElement>('[data-notebook-cell-frame]')
+      if (existingFrame) {
+        this.decorateSourceEditor(cell, existingFrame)
+        continue
+      }
       const frame = document.createElement('div')
       frame.className = 'notebook-code-cell'
       frame.dataset.notebookCellFrame = cell.id
@@ -518,7 +523,7 @@ class NotebookRuntime {
         }
         break
       }
-      this.decorateSourceEditor(cell, frame, controls)
+      this.decorateSourceEditor(cell, frame)
     }
   }
 
@@ -534,43 +539,36 @@ class NotebookRuntime {
       label.setAttribute('aria-live', 'polite')
       controls.append(label)
     }
-
-    if (
-      !controls.querySelector<HTMLButtonElement>(
-        `[data-notebook-run-cell="${CSS.escape(cell.id)}"]`,
-      )
-    ) {
-      const runButton = document.createElement('button')
-      runButton.type = 'button'
-      runButton.dataset.notebookRunCell = cell.id
-      runButton.setAttribute('aria-label', `Run ${cell.id}`)
-      runButton.textContent = 'Run'
-      controls.append(runButton)
-    }
   }
 
-  private decorateSourceEditor(cell: RuntimeCell, frame: HTMLElement, controls: HTMLElement) {
+  private decorateSourceEditor(cell: RuntimeCell, frame: HTMLElement) {
     if (this.sourceControls.has(cell.id)) return
     const figure =
       frame.querySelector<HTMLElement>('figure[data-rehype-pretty-code-figure]') ?? undefined
-    const actions = document.createElement('div')
+    const actions =
+      frame.querySelector<HTMLElement>(`[data-notebook-cell-actions="${CSS.escape(cell.id)}"]`) ??
+      document.createElement('div')
     actions.className = 'notebook-cell-actions'
     actions.dataset.notebookCellActions = cell.id
 
-    const runButton = controls.querySelector<HTMLButtonElement>(
-      `[data-notebook-run-cell="${CSS.escape(cell.id)}"]`,
-    )
-    if (runButton) {
-      setNotebookIconButton(runButton, 'run', `Run ${cell.id}`)
-      actions.append(runButton)
-    }
+    const runButton =
+      frame.querySelector<HTMLButtonElement>(`[data-notebook-run-cell="${CSS.escape(cell.id)}"]`) ??
+      document.createElement('button')
+    runButton.type = 'button'
+    runButton.dataset.notebookRunCell = cell.id
+    setNotebookIconButton(runButton, 'run', `Run ${cell.id}`)
 
-    const editorHost = document.createElement('div')
+    const editorHost =
+      frame.querySelector<HTMLElement>(`[data-notebook-source-editor="${CSS.escape(cell.id)}"]`) ??
+      document.createElement('div')
     editorHost.className = 'notebook-source-editor'
     editorHost.dataset.notebookSourceEditor = cell.id
     editorHost.hidden = true
 
-    const editButton = document.createElement('button')
+    const editButton =
+      frame.querySelector<HTMLButtonElement>(
+        `[data-notebook-edit-cell="${CSS.escape(cell.id)}"]`,
+      ) ?? document.createElement('button')
     editButton.type = 'button'
     editButton.dataset.notebookEditCell = cell.id
     setNotebookIconButton(editButton, 'edit', `Edit ${cell.id}`)
@@ -579,7 +577,10 @@ class NotebookRuntime {
     }
     editButton.addEventListener('click', editSource)
 
-    const saveButton = document.createElement('button')
+    const saveButton =
+      frame.querySelector<HTMLButtonElement>(
+        `[data-notebook-save-cell="${CSS.escape(cell.id)}"]`,
+      ) ?? document.createElement('button')
     saveButton.type = 'button'
     saveButton.dataset.notebookSaveCell = cell.id
     setNotebookIconButton(saveButton, 'save', `Save ${cell.id} locally`)
@@ -587,7 +588,10 @@ class NotebookRuntime {
     const saveSource = () => this.saveEditorSource(cell)
     saveButton.addEventListener('click', saveSource)
 
-    const revertButton = document.createElement('button')
+    const revertButton =
+      frame.querySelector<HTMLButtonElement>(
+        `[data-notebook-revert-cell="${CSS.escape(cell.id)}"]`,
+      ) ?? document.createElement('button')
     revertButton.type = 'button'
     revertButton.dataset.notebookRevertCell = cell.id
     setNotebookIconButton(revertButton, 'revert', `Revert ${cell.id} local edit`)
@@ -595,17 +599,20 @@ class NotebookRuntime {
     const revertSource = () => this.revertEditorSource(cell)
     revertButton.addEventListener('click', revertSource)
 
-    const status = document.createElement('span')
+    const status =
+      frame.querySelector<HTMLElement>(
+        `[data-notebook-local-source-status="${CSS.escape(cell.id)}"]`,
+      ) ?? document.createElement('span')
     status.className = 'notebook-local-source-status'
     status.dataset.notebookLocalSourceStatus = cell.id
     status.hidden = true
 
-    actions.append(editButton, saveButton, revertButton, status)
-    frame.append(actions)
+    actions.replaceChildren(runButton, editButton, saveButton, revertButton, status)
+    if (!actions.isConnected) frame.append(actions)
     if (figure) {
-      figure.before(editorHost)
+      if (!editorHost.isConnected) figure.before(editorHost)
     } else {
-      frame.append(editorHost)
+      if (!editorHost.isConnected) frame.append(editorHost)
     }
     const stored = this.readStoredSource(cell)
     this.sourceControls.set(cell.id, {

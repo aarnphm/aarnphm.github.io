@@ -253,6 +253,7 @@ export async function handleBuild(argv) {
       'quartz/static/**/*',
       '**/*.tsx',
       '**/*.scss',
+      'quartz/**/*.py',
       'package.json',
     ])
     chokidar
