@@ -54,7 +54,9 @@ export function notebookRuntimeImportCandidates(source: string): string[] {
     }
   }
   names.delete('import_ipynb')
+  names.delete('jax')
   names.delete('nbimporter')
+  names.delete('torch')
   return [...names]
 }
 
@@ -109,6 +111,7 @@ export function unsupportedNotebookRuntimeReason(source: string): string | undef
     const trimmed = line.trim()
     if (trimmed.length === 0) continue
     if (/^%pip\s+install(?:\s|$)/.test(trimmed)) continue
+    if (/^%timeit(?:\s|$)/.test(trimmed)) continue
     if (/^!(?:pip|uv\s+pip|python3?\s+-m\s+pip)\s+install(?:\s|$)/.test(trimmed)) continue
     if (trimmed.startsWith('%%')) return 'cell magics are unavailable in the browser runtime'
     if (trimmed.startsWith('%')) return 'IPython magics are unavailable in the browser runtime'

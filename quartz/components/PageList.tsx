@@ -9,6 +9,40 @@ import { resolveRelative } from '../util/path'
 import { Date as DateComponent, getDate } from './Date'
 
 export type SortFn = (f1: QuartzPluginData, f2: QuartzPluginData) => number
+type LocaleConfig = Pick<GlobalConfiguration, 'locale'>
+
+const collators = new Map<string, Intl.Collator>()
+
+function collatorFor(cfg: LocaleConfig): Intl.Collator {
+  let collator = collators.get(cfg.locale)
+  if (!collator) {
+    collator = new Intl.Collator(cfg.locale, { numeric: true, sensitivity: 'base' })
+    collators.set(cfg.locale, collator)
+  }
+  return collator
+}
+
+function titleFor(file: QuartzPluginData): string {
+  return file.frontmatter?.title ?? ''
+}
+
+function naturalSlugFor(file: QuartzPluginData): string {
+  return (file.slug ?? '').replace(/\/index$/, '').replace(/[-_]+/g, ' ')
+}
+
+export function byTitleAlphabetical(cfg: LocaleConfig): SortFn {
+  const collator = collatorFor(cfg)
+  return (f1, f2) => collator.compare(titleFor(f1), titleFor(f2))
+}
+
+export function byNaturalSlug(cfg: LocaleConfig): SortFn {
+  const collator = collatorFor(cfg)
+  return (f1, f2) => {
+    const slugComparison = collator.compare(naturalSlugFor(f1), naturalSlugFor(f2))
+    if (slugComparison !== 0) return slugComparison
+    return collator.compare(titleFor(f1), titleFor(f2))
+  }
+}
 
 export function byDateAndAlphabetical(cfg: GlobalConfiguration): SortFn {
   return (f1, f2) => {

@@ -1,3 +1,4 @@
+import { ensureNotebookMlRuntime, installNotebookMlBridge } from './notebook-runtime.ml.js'
 import notebookRuntimeBootstrap from './notebook-runtime.pyodide.py'
 
 const source = 'quartz-notebook-runtime'
@@ -11,7 +12,15 @@ const stdoutDecoder = new TextDecoder()
 const stderrDecoder = new TextDecoder()
 let stdlibModules
 const loadedPackageRequests = new Set()
-const ignoredImportPackages = new Set(['import_ipynb', 'ipython', 'js', 'nbimporter', 'pyodide'])
+const ignoredImportPackages = new Set([
+  'import_ipynb',
+  'ipython',
+  'jax',
+  'js',
+  'nbimporter',
+  'pyodide',
+  'torch',
+])
 const pipOptionsWithValues = new Set([
   '--abi',
   '--constraint',
@@ -68,14 +77,11 @@ const pyodideImportPackages = new Map([
   ['pyyaml', 'pyyaml'],
   ['yaml', 'pyyaml'],
 ])
+const runtimeProvidedPackages = new Set(['jax', 'torch'])
 const unsupportedNativePackages = new Map([
   [
     'flax',
     'Flax depends on JAX and jaxlib, which require a native XLA runtime outside this browser Pyodide runtime. Use QUARTZ_NOTEBOOK_MODE=execute or a Colab/server runtime for this cell.',
-  ],
-  [
-    'jax',
-    'JAX requires jaxlib and XLA native runtime support outside this browser Pyodide runtime. Use QUARTZ_NOTEBOOK_MODE=execute or a Colab/server runtime for this cell.',
   ],
   [
     'jaxlib',
@@ -92,10 +98,6 @@ const unsupportedNativePackages = new Map([
   [
     'tensorflow',
     'TensorFlow requires native runtime support outside this browser Pyodide runtime. Use QUARTZ_NOTEBOOK_MODE=execute or a Colab/server runtime for this cell.',
-  ],
-  [
-    'torch',
-    'PyTorch requires native CPython/CUDA or CPU wheels outside this browser Pyodide runtime. Use QUARTZ_NOTEBOOK_MODE=execute or a Colab/server runtime for this cell.',
   ],
   [
     'torchaudio',
@@ -312,6 +314,12 @@ function unsupportedNativeMessageForPackage(name) {
     unsupportedNativePackages.get(normalized.split('-')[0])
   )
 }
+function isRuntimeProvidedPackage(name) {
+  const normalized = name.toLowerCase().replace(/_/g, '-')
+  return (
+    runtimeProvidedPackages.has(normalized) || runtimeProvidedPackages.has(normalized.split('-')[0])
+  )
+}
 function importNames(code) {
   const names = new Set()
   for (const line of code.split(/\r?\n/)) {
@@ -380,11 +388,6 @@ function packageNameForImport(runtime, name) {
   return pyodideImportPackages.get(normalized)
 }
 async function loadPyodideImportPackages(runtime, code) {
-  if (typeof runtime.loadPackagesFromImports === 'function' && importNames(code).length > 0) {
-    setRuntimeStatus('loading imports')
-    await runtime.loadPackagesFromImports(code)
-    return
-  }
   const packages = []
   const seen = new Set()
   for (const name of importNames(code)) {
@@ -410,6 +413,10 @@ async function installPipRequirements(runtime, requirements) {
   for (const requirement of requirements) {
     const packageName = requirement.trim()
     if (!packageName) continue
+    if (isRuntimeProvidedPackage(packageRootName(packageName))) {
+      loadedPackageRequests.add('runtime:' + packageRootName(packageName))
+      continue
+    }
     const nativeMessage = unsupportedNativeMessageForPackage(packageRootName(packageName))
     if (nativeMessage) throw new Error(nativeMessage)
     const key = 'pip:' + packageName
@@ -444,12 +451,53 @@ async function preparePackages(runtime, code, requirements, modules) {
     : ''
   await loadPyodideImportPackages(runtime, code + '\n' + moduleCode)
 }
+function usesNotebookMlRuntime(code, modules) {
+  const names = new Set(importNames(code))
+  if (Array.isArray(modules)) {
+    for (const module of modules) {
+      if (!module || typeof module.source !== 'string') continue
+      for (const name of importNames(module.source)) names.add(name)
+    }
+  }
+  return (
+    names.has('jax') ||
+    names.has('torch') ||
+    /\b(?:jax|jnp|torch|value_and_grad|tree_util)\b/.test(code)
+  )
+}
+function timeitDirective(line) {
+  const match = line.match(/^(\s*)%timeit\b(.*)$/)
+  if (!match) return undefined
+  let rest = match[2].trim()
+  let number = null
+  let repeat = null
+  rest = rest.replace(/(?:^|\s)-n\s*(\d+)/, (_all, value) => {
+    number = Number(value)
+    return ' '
+  })
+  rest = rest.replace(/(?:^|\s)-r\s*(\d+)/, (_all, value) => {
+    repeat = Number(value)
+    return ' '
+  })
+  const statement = rest.trim()
+  if (!statement) throw new Error('%timeit requires a statement')
+  return `${match[1]}__quartz_timeit(${JSON.stringify(statement)}, globals(), locals(), ${
+    number ?? 'None'
+  }, ${repeat ?? 'None'})`
+}
+function translateLineMagics(code) {
+  return code
+    .split(/\r?\n/)
+    .map(line => timeitDirective(line) ?? line)
+    .join('\n')
+}
 function unsupportedReason(code) {
   for (const line of code.split(/\r?\n/)) {
     const trimmed = line.trim()
     if (!trimmed) continue
     const directive = pipInstallDirective(trimmed)
     if (directive) return directive.error
+    if (trimmed.startsWith('%timeit')) continue
     if (trimmed.startsWith('%%')) return 'cell magics are unavailable in the browser runtime'
     if (trimmed.startsWith('%')) return 'IPython magics are unavailable in the browser runtime'
     if (trimmed.startsWith('!')) return 'shell escapes are unavailable in the browser runtime'
@@ -471,6 +519,7 @@ async function ensurePyodide(indexURL) {
   })
   globalThis.quartz_notebook_display = handleDisplayPayload
   globalThis.quartz_notebook_fetch = input => sandboxFetch(input, currentCellId)
+  installNotebookMlBridge(globalThis)
   pyodide.runPython(notebookRuntimeBootstrap)
   return pyodide
 }
@@ -490,6 +539,7 @@ async function runCell(message) {
   }
   try {
     const prepared = stripPackageDirectives(message.code)
+    prepared.code = translateLineMagics(prepared.code)
     const runtime = await ensurePyodide(message.pyodideIndexUrl)
     const modules = []
     const moduleRequirements = []
@@ -506,6 +556,7 @@ async function runCell(message) {
         )
           continue
         const preparedModule = stripPackageDirectives(module.source)
+        preparedModule.code = translateLineMagics(preparedModule.code)
         moduleRequirements.push(...preparedModule.requirements)
         const runtimeModule = {
           name: module.name,
@@ -518,6 +569,10 @@ async function runCell(message) {
       if (register && 'destroy' in register && typeof register.destroy === 'function') {
         register.destroy()
       }
+    }
+    if (usesNotebookMlRuntime(prepared.code, modules)) {
+      setRuntimeStatus('loading webgpu')
+      await ensureNotebookMlRuntime()
     }
     await preparePackages(
       runtime,

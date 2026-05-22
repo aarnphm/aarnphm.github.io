@@ -427,7 +427,6 @@ class NotebookRuntime {
     this.setExecutionLabel(cell.id, '*')
     this.setRunningControls(true)
     this.clearOutput(cell.id)
-    this.hideSavedOutput(cell.id)
     const unsupported = unsupportedNotebookRuntimeReason(source)
     if (unsupported) {
       this.renderOutput(cell.id, {
@@ -442,6 +441,7 @@ class NotebookRuntime {
       this.setStatus('idle')
       return
     }
+    this.hideSavedOutput(cell.id)
     try {
       await this.ensureWorker()
       await this.postRun(cell, source)
@@ -903,6 +903,9 @@ class NotebookRuntime {
         message.output.type === 'html'
           ? { type: 'html', html: sanitizeHtml(message.output.html) }
           : message.output
+      if (output.type === 'error' && output.ename === 'UnsupportedRuntimeFeature') {
+        this.restoreSavedOutput(message.cellId)
+      }
       this.renderOutput(message.cellId, output)
     } else if (message.type === 'done') {
       const waiter = this.waiters.get(message.cellId)

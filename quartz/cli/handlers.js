@@ -84,6 +84,11 @@ const printBundleInfo = async metafile => {
   console.log(await esbuild.analyzeMetafile(metafile, { color: true }))
 }
 
+const printCurrentBundleInfo = async () => {
+  const result = await esbuild.build({ ...createBuildConfig(), write: false })
+  await printBundleInfo(result.metafile)
+}
+
 /**
  * Handles `npx quartz build`
  * @param {import("../util/ctx.ts").Argv} argv arguments for `build`
@@ -305,7 +310,11 @@ export async function handleStats(argv) {
   }
   console.log('')
 
-  const result = await esbuild.build({ ...createBuildConfig(), write: false })
   console.log(styleText('cyan', 'Bundle info'))
-  await printBundleInfo(result.metafile)
+  await printCurrentBundleInfo()
+}
+
+export async function handleBundleInfo() {
+  console.log('\n' + styleText(['bgGreen', 'black'], `Quartz v${version}`) + '\n')
+  await printCurrentBundleInfo()
 }
