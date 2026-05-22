@@ -1,14 +1,27 @@
 import type { NotebookRuntimeOutput } from '../../util/notebook-runtime'
 import {
   notebookRuntimeImportCandidates,
+  notebookRuntimeLocalSourceKey,
   notebookRuntimeModuleSource,
   renderNotebookRuntimeOutput,
   unsupportedNotebookRuntimeReason,
 } from '../../util/notebook-runtime'
+import { MarkdownEditor } from './markdown-editor'
 
 type RuntimeCell = { id: string; source: string; language: string; executionIndex: number | null }
 
 type RuntimeModule = { name: string; sourcePath: string; source: string }
+
+type SourceControls = {
+  frame: HTMLElement
+  editor: MarkdownEditor
+  editorHost: HTMLElement
+  figure: HTMLElement | undefined
+  status: HTMLElement
+  editButton: HTMLButtonElement
+  saveButton: HTMLButtonElement
+  revertButton: HTMLButtonElement
+}
 
 type RuntimePayload = {
   id: string
@@ -36,6 +49,24 @@ type FrameMessage =
   | { type: 'asset'; runtimeId: string; cellId: string; assetId: string; url: string }
 
 type CellWaiter = { resolve: () => void; reject: (error: Error) => void }
+
+type NotebookIcon = 'run' | 'edit' | 'save' | 'revert'
+
+const notebookIconSvg: Record<NotebookIcon, string> = {
+  run: '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M8 5.5v13l10-6.5z"/></svg>',
+  edit: '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m4 16.5-.5 4 4-.5L19 8.5 15.5 5z"/><path d="m14 6.5 3.5 3.5"/></svg>',
+  save: '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 4h11l3 3v13H5z"/><path d="M8 4v6h8V4"/><path d="M8 20v-6h8v6"/></svg>',
+  revert:
+    '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"/></svg>',
+}
+
+function setNotebookIconButton(button: HTMLButtonElement, icon: NotebookIcon, label: string) {
+  button.classList.add('notebook-icon-button')
+  button.setAttribute('aria-label', label)
+  button.title = label
+  button.textContent = ''
+  button.insertAdjacentHTML('afterbegin', notebookIconSvg[icon])
+}
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value)
@@ -183,6 +214,8 @@ let currentCellId = ''
 let assetSequence = 0
 const pendingAssets = new Map()
 const streamBuffers = new Map()
+const stdoutDecoder = new TextDecoder()
+const stderrDecoder = new TextDecoder()
 function post(message, transfer) {
   parent.postMessage({ source, runtimeId, ...message }, '*', transfer || [])
 }
@@ -215,7 +248,18 @@ function bufferStreamForCell(cellId, name, text) {
   const key = cellId + '\u0000' + name
   streamBuffers.set(key, (streamBuffers.get(key) || '') + text)
 }
+function bufferStreamBytesForCell(cellId, name, bytes, decoder) {
+  if (!bytes) return 0
+  const text = decoder.decode(bytes, { stream: true })
+  bufferStreamForCell(cellId, name, text)
+  return bytes.length
+}
+function flushStreamDecoderForCell(cellId, name, decoder) {
+  bufferStreamForCell(cellId, name, decoder.decode())
+}
 function flushStreamsForCell(cellId) {
+  flushStreamDecoderForCell(cellId, 'stdout', stdoutDecoder)
+  flushStreamDecoderForCell(cellId, 'stderr', stderrDecoder)
   for (const [key, text] of [...streamBuffers.entries()]) {
     const [owner, name] = key.split('\u0000')
     if (owner !== cellId) continue
@@ -307,8 +351,12 @@ async function ensurePyodide(indexURL) {
   await loadScript(indexURL.replace(/\/?$/, '/') + 'pyodide.js')
   if (typeof loadPyodide !== 'function') throw new Error('loadPyodide was not installed')
   pyodide = await loadPyodide({ indexURL })
-  pyodide.setStdout({ batched: text => bufferStreamForCell(currentCellId, 'stdout', text) })
-  pyodide.setStderr({ batched: text => bufferStreamForCell(currentCellId, 'stderr', text) })
+  pyodide.setStdout({
+    write: bytes => bufferStreamBytesForCell(currentCellId, 'stdout', bytes, stdoutDecoder),
+  })
+  pyodide.setStderr({
+    write: bytes => bufferStreamBytesForCell(currentCellId, 'stderr', bytes, stderrDecoder),
+  })
   globalThis.quartz_notebook_display = handleDisplayPayload
   pyodide.runPython([
     'import ast',
@@ -377,7 +425,9 @@ async function ensurePyodide(indexURL) {
     'sys.modules["IPython"] = ipython_module',
     'sys.modules["IPython.display"] = display_module',
     'sys.modules["import_ipynb"] = types.ModuleType("import_ipynb")',
-    'sys.modules["nbimporter"] = types.ModuleType("nbimporter")',
+    'nbimporter_module = types.ModuleType("nbimporter")',
+    'nbimporter_module.options = {"only_defs": False}',
+    'sys.modules["nbimporter"] = nbimporter_module',
     '',
     'def __quartz_run_cell(source):',
     '    tree = ast.parse(source, mode="exec")',
@@ -470,6 +520,7 @@ class NotebookRuntime {
   private moduleCache = new Map<string, RuntimeModule | null>()
   private moduleFetches = new Map<string, Promise<RuntimeModule | null>>()
   private savedOutputs = new Map<string, HTMLElement[]>()
+  private sourceControls = new Map<string, SourceControls>()
   private executionCounter: number
   private running = false
   private stopped = false
@@ -520,6 +571,7 @@ class NotebookRuntime {
 
   private runCell = async (cell: RuntimeCell) => {
     if (this.running) return
+    const source = this.sourceForCell(cell)
     const executionCount = this.nextExecutionCount(cell.id)
     this.running = true
     this.setStatus(`running ${cell.id}`)
@@ -527,7 +579,7 @@ class NotebookRuntime {
     this.setRunningControls(true)
     this.clearOutput(cell.id)
     this.hideSavedOutput(cell.id)
-    const unsupported = unsupportedNotebookRuntimeReason(cell.source)
+    const unsupported = unsupportedNotebookRuntimeReason(source)
     if (unsupported) {
       this.renderOutput(cell.id, {
         type: 'error',
@@ -543,7 +595,7 @@ class NotebookRuntime {
     }
     try {
       await this.ensureFrame()
-      await this.postRun(cell)
+      await this.postRun(cell, source)
     } catch (error) {
       const text = error instanceof Error ? error.message : String(error)
       this.renderOutput(cell.id, {
@@ -616,7 +668,195 @@ class NotebookRuntime {
         }
         break
       }
+      this.decorateSourceEditor(cell, frame, controls)
     }
+  }
+
+  private decorateSourceEditor(cell: RuntimeCell, frame: HTMLElement, controls: HTMLElement) {
+    if (this.sourceControls.has(cell.id)) return
+    const figure =
+      frame.querySelector<HTMLElement>('figure[data-rehype-pretty-code-figure]') ?? undefined
+    const actions = document.createElement('div')
+    actions.className = 'notebook-cell-actions'
+    actions.dataset.notebookCellActions = cell.id
+
+    const runButton = controls.querySelector<HTMLButtonElement>(
+      `[data-notebook-run-cell="${CSS.escape(cell.id)}"]`,
+    )
+    if (runButton) {
+      setNotebookIconButton(runButton, 'run', `Run ${cell.id}`)
+      actions.append(runButton)
+    }
+
+    const editorHost = document.createElement('div')
+    editorHost.className = 'notebook-source-editor'
+    editorHost.dataset.notebookSourceEditor = cell.id
+    editorHost.hidden = true
+
+    const editor = new MarkdownEditor({
+      parent: editorHost,
+      initialContent: cell.source,
+      mode: 'code',
+      language: cell.language,
+      lineWrapping: false,
+      onChange: () => this.syncSourceControls(cell),
+      onSubmit: () => this.runCell(cell),
+      onCancel: () => this.revertEditorSource(cell),
+    })
+
+    const editButton = document.createElement('button')
+    editButton.type = 'button'
+    editButton.dataset.notebookEditCell = cell.id
+    setNotebookIconButton(editButton, 'edit', `Edit ${cell.id}`)
+    const editSource = () => this.showSourceEditor(cell, true)
+    editButton.addEventListener('click', editSource)
+
+    const saveButton = document.createElement('button')
+    saveButton.type = 'button'
+    saveButton.dataset.notebookSaveCell = cell.id
+    setNotebookIconButton(saveButton, 'save', `Save ${cell.id} locally`)
+    saveButton.hidden = true
+    const saveSource = () => this.saveEditorSource(cell)
+    saveButton.addEventListener('click', saveSource)
+
+    const revertButton = document.createElement('button')
+    revertButton.type = 'button'
+    revertButton.dataset.notebookRevertCell = cell.id
+    setNotebookIconButton(revertButton, 'revert', `Revert ${cell.id} local edit`)
+    revertButton.hidden = true
+    const revertSource = () => this.revertEditorSource(cell)
+    revertButton.addEventListener('click', revertSource)
+
+    const status = document.createElement('span')
+    status.className = 'notebook-local-source-status'
+    status.dataset.notebookLocalSourceStatus = cell.id
+    status.hidden = true
+
+    actions.append(editButton, saveButton, revertButton, status)
+    frame.append(actions)
+    if (figure) {
+      figure.before(editorHost)
+    } else {
+      frame.append(editorHost)
+    }
+    this.sourceControls.set(cell.id, {
+      frame,
+      editor,
+      editorHost,
+      figure,
+      status,
+      editButton,
+      saveButton,
+      revertButton,
+    })
+
+    const stored = this.readStoredSource(cell)
+    if (stored !== undefined && stored !== cell.source) {
+      editor.setValue(stored)
+      this.showSourceEditor(cell, true)
+    } else if (stored !== undefined) {
+      this.clearStoredSource(cell)
+    }
+    this.syncSourceControls(cell)
+
+    window.addCleanup(() => {
+      editButton.removeEventListener('click', editSource)
+      saveButton.removeEventListener('click', saveSource)
+      revertButton.removeEventListener('click', revertSource)
+      editor.destroy()
+    })
+  }
+
+  private sourceForCell(cell: RuntimeCell): string {
+    const controls = this.sourceControls.get(cell.id)
+    if (controls && !controls.editorHost.hidden) return controls.editor.getValue()
+    return this.readStoredSource(cell) ?? cell.source
+  }
+
+  private sourceStorageKey(cell: RuntimeCell): string {
+    return notebookRuntimeLocalSourceKey(this.payload.sourcePath, cell.id)
+  }
+
+  private readStoredSource(cell: RuntimeCell): string | undefined {
+    try {
+      const value = window.localStorage.getItem(this.sourceStorageKey(cell))
+      return value === null ? undefined : value
+    } catch {
+      return undefined
+    }
+  }
+
+  private writeStoredSource(cell: RuntimeCell, source: string): boolean {
+    try {
+      window.localStorage.setItem(this.sourceStorageKey(cell), source)
+      return true
+    } catch {
+      return false
+    }
+  }
+
+  private clearStoredSource(cell: RuntimeCell) {
+    try {
+      window.localStorage.removeItem(this.sourceStorageKey(cell))
+    } catch {}
+  }
+
+  private showSourceEditor(cell: RuntimeCell, visible: boolean) {
+    const controls = this.sourceControls.get(cell.id)
+    if (!controls) return
+    if (visible) controls.editor.setValue(this.sourceForCell(cell))
+    controls.editorHost.hidden = !visible
+    if (controls.figure) controls.figure.hidden = visible
+    controls.frame.toggleAttribute('data-notebook-editing', visible)
+    this.syncSourceControls(cell)
+    if (visible) controls.editor.focus()
+  }
+
+  private saveEditorSource(cell: RuntimeCell) {
+    const controls = this.sourceControls.get(cell.id)
+    if (!controls) return
+    const source = controls.editor.getValue()
+    if (source === cell.source) {
+      this.clearStoredSource(cell)
+      this.showSourceEditor(cell, false)
+      this.setStatus('idle')
+      return
+    }
+    if (!this.writeStoredSource(cell, source)) {
+      this.setStatus('local save failed')
+      return
+    }
+    this.showSourceEditor(cell, true)
+    this.setStatus('saved local edit')
+  }
+
+  private revertEditorSource(cell: RuntimeCell) {
+    const controls = this.sourceControls.get(cell.id)
+    if (!controls) return
+    controls.editor.setValue(cell.source)
+    this.clearStoredSource(cell)
+    this.showSourceEditor(cell, false)
+    this.setStatus('idle')
+  }
+
+  private syncSourceControls(cell: RuntimeCell) {
+    const controls = this.sourceControls.get(cell.id)
+    if (!controls) return
+    const stored = this.readStoredSource(cell)
+    const editing = !controls.editorHost.hidden
+    const edited = editing && controls.editor.getValue() !== (stored ?? cell.source)
+    const hasStoredSource = stored !== undefined
+    controls.status.hidden = !hasStoredSource && !edited
+    controls.status.dataset.notebookSourceState = edited ? 'edited' : 'local'
+    controls.status.title = edited ? 'edited local source' : 'saved local source'
+    controls.status.setAttribute(
+      'aria-label',
+      edited ? 'edited local source' : 'saved local source',
+    )
+    controls.editButton.hidden = editing
+    controls.saveButton.hidden = !editing
+    controls.revertButton.hidden = !(editing || hasStoredSource)
+    controls.frame.toggleAttribute('data-notebook-local-source', hasStoredSource)
   }
 
   private nextExecutionCount(cellId: string): number {
@@ -656,8 +896,8 @@ class NotebookRuntime {
     return this.ready
   }
 
-  private async postRun(cell: RuntimeCell): Promise<void> {
-    const modules = await this.notebookModulesFor(cell.source)
+  private async postRun(cell: RuntimeCell, source: string): Promise<void> {
+    const modules = await this.notebookModulesFor(source)
     return new Promise((resolve, reject) => {
       this.waiters.set(cell.id, { resolve, reject })
       this.iframe?.contentWindow?.postMessage(
@@ -666,7 +906,7 @@ class NotebookRuntime {
           type: 'run',
           runtimeId: this.payload.id,
           cellId: cell.id,
-          code: cell.source,
+          code: source,
           pyodideIndexUrl: this.payload.pyodideIndexUrl,
           modules,
         },
