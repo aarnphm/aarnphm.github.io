@@ -179,7 +179,7 @@ importers:
         specifier: ^4.1.1
         version: 4.1.1
       katex:
-        specifier: ^0.16.46
+        specifier: ^0.16.47
         version: 0.16.47
       lightningcss:
         specifier: ^1.32.0
@@ -248,10 +248,10 @@ importers:
         specifier: ^8.18.1
         version: 8.18.1
       preact:
-        specifier: ^10.29.1
+        specifier: ^10.29.2
         version: 10.29.2
       preact-render-to-string:
-        specifier: ^6.6.7
+        specifier: ^6.7.0
         version: 6.7.0(preact@10.29.2)
       pretty-bytes:
         specifier: ^7.1.0
