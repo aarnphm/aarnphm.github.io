@@ -218,34 +218,17 @@ export function notebookRuntimeData(
 function notebookRuntimeControls(data: NotebookRuntimeData): string[] {
   return [
     [
-      `<div class="notebook-runtime" data-notebook-runtime="${escapeHTML(data.id)}">`,
-      '<div class="notebook-runtime-toolbar" role="toolbar" aria-label="Notebook runtime">',
-      '<button type="button" data-notebook-run-all>Run all</button>',
-      '<button type="button" data-notebook-stop disabled>Stop</button>',
-      '<button type="button" data-notebook-reset>Reset runtime</button>',
-      '<span class="notebook-runtime-status" data-notebook-status aria-live="polite">idle</span>',
-      '</div>',
+      `<div class="notebook-runtime" data-notebook-runtime="${escapeHTML(data.id)}"></div>`,
       `<script type="application/json" data-notebook-runtime-data>${runtimeJson(data)}</script>`,
-      '</div>',
     ].join('\n'),
   ]
-}
-
-function executionPrompt(executionIndex: number | null): string {
-  return executionIndex === null ? 'In [ ]:' : `In [${executionIndex}]:`
 }
 
 function notebookCellControls(cell: NotebookRuntimeCell): string[] {
   const cellId = cell.id
   const escaped = escapeHTML(cellId)
-  const prompt = escapeHTML(executionPrompt(cell.executionIndex))
   return [
-    [
-      `<div class="notebook-runtime-cell" data-notebook-cell="${escaped}" data-notebook-execution-count="${cell.executionIndex ?? ''}">`,
-      `<span class="notebook-execution-prompt" data-notebook-execution-label="${escaped}" aria-live="polite">${prompt}</span>`,
-      `<button type="button" data-notebook-run-cell="${escaped}" aria-label="Run ${escaped}">Run</button>`,
-      '</div>',
-    ].join('\n'),
+    `<div class="notebook-runtime-cell" data-notebook-cell="${escaped}" data-notebook-execution-count="${cell.executionIndex ?? ''}"></div>`,
   ]
 }
 

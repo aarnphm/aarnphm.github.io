@@ -21,6 +21,7 @@ import Image from './Image'
 import Keybind from './Keybind'
 import License from './License'
 import MobileOnly from './MobileOnly'
+import NotebookRuntimeLoader from './NotebookRuntimeLoader'
 import PageListSearch from './PageListSearch'
 import NotFound from './pages/404'
 import ArenaIndex from './pages/ArenaIndex'
@@ -74,6 +75,7 @@ export {
   Footer,
   DesktopOnly,
   MobileOnly,
+  NotebookRuntimeLoader,
   BaseSearchBar,
   PageListSearch,
   RecentNotes,

@@ -101,6 +101,7 @@ function resolveRuntimeConfig(argv: string[]): RuntimeConfig {
     '10',
     serve ? '--serve' : '--watch',
     '--verbose',
+    '--bundleInfo',
     '--port',
     String(effectivePort),
     '--wsPort',

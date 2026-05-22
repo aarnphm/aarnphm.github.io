@@ -10,7 +10,6 @@ import { FullPageLayout, QuartzConfig } from '../../cfg'
 import * as Component from '../../components'
 import HeaderConstructor from '../../components/Header'
 import { pageResources, renderPage } from '../../components/renderPage'
-import notebookRuntimeScript from '../../components/scripts/notebook-runtime.inline'
 import { createHtmlProcessor, createMdProcessor } from '../../processors/parse'
 import { ChangeEvent, QuartzEmitterPlugin } from '../../types/plugin'
 import { BuildCtx, Argv } from '../../util/ctx'
@@ -87,7 +86,7 @@ function resolveOptions(userOpts?: Options): ResolvedOptions {
 
 const notebookPageLayout: FullPageLayout = {
   ...sharedPageComponents,
-  beforeBody: [Component.ArticleTitle()],
+  beforeBody: [Component.NotebookRuntimeLoader(), Component.ArticleTitle()],
   pageBody: Component.Content(),
   sidebar: defaultContentPageLayout.sidebar,
 }
@@ -503,19 +502,6 @@ export const NotebookViewer: QuartzEmitterPlugin<Options> = userOpts => {
       const { argv, cfg } = ctx
       const fps = await notebookFiles(argv, cfg)
       yield* emitNotebookPages(ctx, content, resources, fps, opts)
-    },
-    externalResources() {
-      if (opts.runtime === false) return
-      return {
-        js: [
-          {
-            script: notebookRuntimeScript,
-            loadTime: 'afterDOMReady',
-            contentType: 'inline',
-            moduleType: 'module',
-          },
-        ],
-      }
     },
   }
 }

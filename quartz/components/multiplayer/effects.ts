@@ -52,7 +52,9 @@ export const runMultiplayerEffect = (
       return
     case 'composer.show':
       if (state.activeSelection) {
-        services.ui.showComposer(state.activeSelection)
+        void services.ui.showComposer(state.activeSelection).catch(error => {
+          console.error('failed to show comment composer', error)
+        })
       }
       return
     case 'composer.hide':

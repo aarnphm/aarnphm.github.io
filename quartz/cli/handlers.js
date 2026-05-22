@@ -14,6 +14,33 @@ import serveHandler from 'serve-handler'
 import { WebSocketServer } from 'ws'
 import { version, fp, cacheFile } from './constants.js'
 
+const inlineScriptFilter = /\.inline\.(ts|js)$/
+
+async function bundleInlineScript(scriptPath) {
+  let text = await promises.readFile(scriptPath, 'utf8')
+
+  text = text.replace('export default', '')
+  text = text.replace('export', '')
+
+  const sourcefile = path.relative(path.resolve('.'), scriptPath)
+  const resolveDir = path.dirname(sourcefile)
+  const transpiled = await esbuild.build({
+    stdin: {
+      contents: text,
+      loader: path.extname(scriptPath) === '.js' ? 'js' : 'ts',
+      resolveDir,
+      sourcefile,
+    },
+    write: false,
+    bundle: true,
+    minify: true,
+    platform: 'browser',
+    format: 'esm',
+    loader: { '.py': 'text' },
+  })
+  return transpiled.outputFiles[0].text
+}
+
 const createBuildConfig = () => ({
   entryPoints: [fp],
   outfile: cacheFile,
@@ -26,6 +53,7 @@ const createBuildConfig = () => ({
   jsx: 'automatic',
   jsxImportSource: 'preact',
   packages: 'external',
+  loader: { '.py': 'text' },
   metafile: true,
   sourcemap: true,
   sourcesContent: false,
@@ -35,24 +63,8 @@ const createBuildConfig = () => ({
     {
       name: 'inline-script-loader',
       setup(build) {
-        build.onLoad({ filter: /\.inline\.(ts|js)$/ }, async args => {
-          let text = await promises.readFile(args.path, 'utf8')
-
-          text = text.replace('export default', '')
-          text = text.replace('export', '')
-
-          const sourcefile = path.relative(path.resolve('.'), args.path)
-          const resolveDir = path.dirname(sourcefile)
-          const transpiled = await esbuild.build({
-            stdin: { contents: text, loader: 'ts', resolveDir, sourcefile },
-            write: false,
-            bundle: true,
-            minify: true,
-            platform: 'browser',
-            format: 'esm',
-          })
-          const rawMod = transpiled.outputFiles[0].text
-          return { contents: rawMod, loader: 'text' }
+        build.onLoad({ filter: inlineScriptFilter }, async args => {
+          return { contents: await bundleInlineScript(args.path), loader: 'text' }
         })
       },
     },

@@ -108,6 +108,8 @@ export function unsupportedNotebookRuntimeReason(source: string): string | undef
   for (const line of source.split(/\r?\n/)) {
     const trimmed = line.trim()
     if (trimmed.length === 0) continue
+    if (/^%pip\s+install(?:\s|$)/.test(trimmed)) continue
+    if (/^!(?:pip|uv\s+pip|python3?\s+-m\s+pip)\s+install(?:\s|$)/.test(trimmed)) continue
     if (trimmed.startsWith('%%')) return 'cell magics are unavailable in the browser runtime'
     if (trimmed.startsWith('%')) return 'IPython magics are unavailable in the browser runtime'
     if (trimmed.startsWith('!')) return 'shell escapes are unavailable in the browser runtime'
