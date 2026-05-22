@@ -1,5 +1,5 @@
 ---
-date: "2024-01-08"
+date: '2024-01-08'
 description: and compression of human knowledge
 id: large models
 modified: 2026-05-09 17:51:49 GMT-04:00

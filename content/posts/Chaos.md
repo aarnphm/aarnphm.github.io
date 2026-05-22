@@ -1,5 +1,5 @@
 ---
-date: "2024-02-18"
+date: '2024-02-18'
 description: on growing one year older. And a few things I learned growing up in a foreign land.
 id: Chaos
 modified: 2026-05-09 17:51:37 GMT-04:00

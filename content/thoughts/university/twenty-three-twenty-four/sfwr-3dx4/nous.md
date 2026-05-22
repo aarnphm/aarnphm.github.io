@@ -1,5 +1,5 @@
 ---
-date: "2024-02-17"
+date: '2024-02-17'
 description: comprehensive control system design notes covering laplace transforms, transfer functions, block diagrams, state space representation, stability, and time response analysis.
 id: nous
 modified: 2026-05-09 17:51:58 GMT-04:00

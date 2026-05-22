@@ -2,7 +2,7 @@
 category:
   - p/fiction
   - thriller
-date: "2026-05-09"
+date: '2026-05-09'
 description: a disposable employee is sent on a human expedition to colonise the ice world Niflheim. after one iteration dies, a new body is regenerated with most of his memories intact.
 director:
   - Bong Joon Ho
@@ -15,6 +15,6 @@ studio: warner bros
 tags:
   - p/scifi
 title: Micky 17
-watched: "2025-04-16"
+watched: '2025-04-16'
 year: 2025
 ---

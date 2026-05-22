@@ -1,5 +1,5 @@
 ---
-date: "2024-01-09"
+date: '2024-01-09'
 description: net value function fundamentals including cost-benefit analysis, marginal value, quantity-dependent conversion factors, and system net value calculations.
 id: Net Value Function
 modified: 2026-05-09 17:51:59 GMT-04:00

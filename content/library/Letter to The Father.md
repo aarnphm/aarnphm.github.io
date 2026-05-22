@@ -1,7 +1,7 @@
 ---
 author: Franz Kafka
 category: letters
-date: "2025-11-27"
+date: '2025-11-27'
 description: A collection of letters that Kafka wrote for his father, never to be seen by his own father.
 id: Letter to The Father
 language: german

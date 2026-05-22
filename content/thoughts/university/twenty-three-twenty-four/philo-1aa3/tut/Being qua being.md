@@ -1,5 +1,5 @@
 ---
-date: "2023-09-15"
+date: '2023-09-15'
 description: aristotle's metaphysics on being qua being, wisdom as episteme versus techne, substances as primary sense of being.
 id: Being qua being
 modified: 2026-05-09 17:51:56 GMT-04:00

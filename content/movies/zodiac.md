@@ -2,7 +2,7 @@
 category:
   - thriller
   - drama
-date: "2024-02-07"
+date: '2024-02-07'
 description: meticulous chronicle of the decades-long investigation into the zodiac killer, following cartoonist, reporter, and detective consumed by obsession with unsolved mystery.
 director:
   - David Fincher

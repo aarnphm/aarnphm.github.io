@@ -1,5 +1,5 @@
 ---
-date: "2025-12-13"
+date: '2025-12-13'
 description: and logical coherency
 id: rationality
 modified: 2026-05-09 17:51:51 GMT-04:00

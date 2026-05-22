@@ -1,5 +1,5 @@
 ---
-date: "2025-11-11"
+date: '2025-11-11'
 description: fusion of horizon
 id: Horizontverschmelzung
 image: '[[posts/images/time-flies.webp]]'

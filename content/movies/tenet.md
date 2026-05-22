@@ -3,7 +3,7 @@ category:
   - temporal
   - thriller
   - actions
-date: "2024-02-07"
+date: '2024-02-07'
 description: time as a palindrome, entropy running backward—nolan's most hermetic puzzle, more interested in the mechanics of temporal pincer movements than emotional clarity.
 director: Christopher Nolan
 id: tenet

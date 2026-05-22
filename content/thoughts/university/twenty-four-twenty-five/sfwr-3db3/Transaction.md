@@ -1,5 +1,5 @@
 ---
-date: "2024-12-11"
+date: '2024-12-11'
 description: and concurrency control.
 id: Transaction
 modified: 2026-05-09 17:51:59 GMT-04:00

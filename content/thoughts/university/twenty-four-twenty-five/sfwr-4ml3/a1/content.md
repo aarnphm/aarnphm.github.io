@@ -1,5 +1,5 @@
 ---
-date: "2024-10-07"
+date: '2024-10-07'
 description: assignment on ordinary least squares regression comparing homogeneous versus non-homogeneous models with overfitting analysis.
 id: content
 modified: 2026-05-09 17:51:58 GMT-04:00

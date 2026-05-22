@@ -1,5 +1,5 @@
 ---
-date: "2025-11-05"
+date: '2025-11-05'
 description: also known as <em>Lovecraftian horror</em>
 id: Eldrich horror
 modified: 2026-05-09 17:51:55 GMT-04:00

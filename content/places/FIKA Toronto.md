@@ -3,9 +3,9 @@ address: 28 Kensington Ave, Toronto, ON M5T 2K1, Canada
 category:
   - '[[places to go]]'
 coordinates:
-  - "43.6535814"
-  - "-79.4030177"
-date: "2025-11-22"
+  - '43.6535814'
+  - '-79.4030177'
+date: '2025-11-22'
 description: swedish cafe culture in kensington market
 id: FIKA Toronto
 modified: 2026-05-09 17:51:52 GMT-04:00

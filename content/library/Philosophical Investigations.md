@@ -3,7 +3,7 @@ aliases:
   - PI
 author: '[[thoughts/Wittgenstein|Ludwig Wittgenstein]]'
 category: philosophy
-date: "2025-10-07"
+date: '2025-10-07'
 description: latter Wittgenstein
 id: Philosophical Investigation
 language: german

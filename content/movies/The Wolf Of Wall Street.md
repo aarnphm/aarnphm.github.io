@@ -3,7 +3,7 @@ category:
   - thriller
   - comedy
   - o/life
-date: "2024-02-07"
+date: '2024-02-07'
 description: three hours of unchecked id—excess as religion, scorsese abandoning moral judgment to let you marinate in the depravity until you're complicit.
 director: Martin Scorsese
 id: the-wolf-of-wall-street

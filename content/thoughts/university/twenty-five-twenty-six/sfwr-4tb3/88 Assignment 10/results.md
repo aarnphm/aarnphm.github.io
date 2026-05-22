@@ -1,5 +1,5 @@
 ---
-date: "2026-03-31"
+date: '2026-03-31'
 description: code optimization, common subexpression elimination, basic blocks
 id: results
 modified: 2026-05-09 17:51:59 GMT-04:00

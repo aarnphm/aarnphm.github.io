@@ -1,7 +1,7 @@
 ---
 category:
   - realism
-date: "2026-05-09"
+date: '2026-05-09'
 description: A realistic examination of the challenges facing healthcare workers in America as seen through the lens of the frontline heroes working in a modern-day hospital in Pittsburgh, Pennsylvania.
 director:
   - R. Scott Gemmill
@@ -14,6 +14,6 @@ studio: hbo
 tags:
   - show
 title: The Pitt
-watched: "2025-09-12"
+watched: '2025-09-12'
 year: 2025
 ---

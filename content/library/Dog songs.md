@@ -1,7 +1,7 @@
 ---
 author: Mary Oliver
 category: poetry
-date: "2022-08-21"
+date: '2022-08-21'
 description: poems celebrating dogs as companions, teachers, and mirrors of love, written with the quiet tenderness and clarity typical of mary oliver.
 finished: 2025
 id: Dog songs

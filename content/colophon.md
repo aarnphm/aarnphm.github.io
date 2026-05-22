@@ -1,5 +1,5 @@
 ---
-date: "2024-12-10"
+date: '2024-12-10'
 description: nobby designer word for "the design of the current site"
 id: colophon
 lang: en

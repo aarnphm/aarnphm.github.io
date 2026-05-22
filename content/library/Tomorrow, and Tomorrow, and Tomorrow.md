@@ -2,7 +2,7 @@
 author: Gabrielle Zevin
 category:
   - p/fiction
-date: "2025-10-07"
+date: '2025-10-07'
 description: novel about two friends and a collaborator who build videogames together, tracing creativity, friendship, and grief over decades.
 finished: 2024
 id: Tomorrow, and Tomorrow, and Tomorrow

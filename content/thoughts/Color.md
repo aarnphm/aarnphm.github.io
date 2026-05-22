@@ -1,5 +1,5 @@
 ---
-date: "2024-03-09"
+date: '2024-03-09'
 description: notes on color theory including complementary, analogous, and triadic schemes, with considerations for contrast and surface area.
 id: Color
 modified: 2026-05-09 17:51:49 GMT-04:00

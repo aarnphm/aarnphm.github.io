@@ -4,7 +4,7 @@ category:
   - comedy
   - love
   - vintage
-date: "2026-05-09"
+date: '2026-05-09'
 description: montmartre builds the moulin rouge - renoir turns spectacle into a love story about making spectacle.
 director:
   - Jean Renoir

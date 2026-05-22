@@ -1,5 +1,5 @@
 ---
-date: "2024-12-31"
+date: '2024-12-31'
 description: and a beginning of a long friendship
 id: Mimi
 layout: letter

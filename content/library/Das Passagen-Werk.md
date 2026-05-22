@@ -1,7 +1,7 @@
 ---
 author: Walter Benjamin
 category: philosophy
-date: "2025-10-07"
+date: '2025-10-07'
 description: fragmentary study of nineteenth century parisian arcades, using notes and quotations to trace capitalism, memory, and modern urban life.
 id: Das Passagen-Werk
 language: german

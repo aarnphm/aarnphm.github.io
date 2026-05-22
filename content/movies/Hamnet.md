@@ -2,7 +2,7 @@
 category:
   - grief
   - love
-date: "2026-05-09"
+date: '2026-05-09'
 description: William Shakespeare and his wife, Agnes, celebrate the birth of their son, Hamnet. However, when tragedy strikes and Hamnet dies at a young age, it inspires Shakespeare to write his timeless masterpiece "Hamlet."
 director:
   - Chloe Zhao

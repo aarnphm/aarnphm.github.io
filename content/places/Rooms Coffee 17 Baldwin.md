@@ -3,9 +3,9 @@ address: 17 Baldwin St, Toronto, ON M5T 1L1, Canada
 category:
   - '[[places to go]]'
 coordinates:
-  - "43.6559416"
-  - "-79.3953671"
-date: "2025-08-05"
+  - '43.6559416'
+  - '-79.3953671'
+date: '2025-08-05'
 description: first rooms location with signature minimal aesthetic
 id: Rooms Coffee | 17 Baldwin
 modified: 2026-05-09 17:51:51 GMT-04:00

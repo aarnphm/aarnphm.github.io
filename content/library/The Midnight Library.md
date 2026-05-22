@@ -2,7 +2,7 @@
 author: Matt Haig
 category:
   - p/fiction
-date: "2022-08-21"
+date: '2022-08-21'
 description: novel where a woman explores alternate lives in a magical library, weighing regret, possibility, and the value of her own path.
 finished: 2023
 id: The Midnight Library

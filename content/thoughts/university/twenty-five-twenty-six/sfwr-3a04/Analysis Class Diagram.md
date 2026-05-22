@@ -1,5 +1,5 @@
 ---
-date: "2025-02-25"
+date: '2025-02-25'
 description: and cohesion coupling
 id: Analysis Class Diagram
 modified: 2026-05-09 17:51:56 GMT-04:00

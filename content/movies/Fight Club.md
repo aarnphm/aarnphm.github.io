@@ -3,7 +3,7 @@ category:
   - thriller
   - buster
   - drama
-date: "2024-02-07"
+date: '2024-02-07'
 description: masculinity as psychotic break—fincher filming ikea catalogs and bare-knuckle therapy, the twist obvious if you're paying attention, misread as endorsement anyway.
 director: David Fincher
 id: fight-club

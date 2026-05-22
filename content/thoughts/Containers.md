@@ -1,5 +1,5 @@
 ---
-date: "2024-02-08"
+date: '2024-02-08'
 description: containerization technology for isolated application environments, following oci specifications.
 id: Containers
 modified: 2026-05-09 17:51:53 GMT-04:00

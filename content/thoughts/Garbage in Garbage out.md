@@ -1,5 +1,5 @@
 ---
-date: "2024-02-08"
+date: '2024-02-08'
 description: GIGO
 id: Garbage in Garbage out
 modified: 2026-05-09 17:51:38 GMT-04:00

@@ -1,5 +1,5 @@
 ---
-date: "2025-09-04"
+date: '2025-09-04'
 description: how machine read different modalities
 id: Tokenization
 modified: 2026-05-09 17:51:55 GMT-04:00

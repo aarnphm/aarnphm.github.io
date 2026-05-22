@@ -2,7 +2,7 @@
 category:
   - buster
   - actions
-date: "2024-02-07"
+date: '2024-02-07'
 description: the multiverse as immigrant generational trauma—nihilism shaped like a bagel, absurdity as the only response to infinite meaninglessness, choosing kindness anyway.
 director:
   - Daniel Scheinert

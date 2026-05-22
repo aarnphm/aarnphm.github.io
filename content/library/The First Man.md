@@ -2,7 +2,7 @@
 author: '[[thoughts/Camus|Abert Camus]]'
 category:
   - p/fiction
-date: "2025-10-06"
+date: '2025-10-06'
 description: unfinished, autobiographical novel about childhood in colonial algeria, exploring poverty, family, and the search for origin.
 finished: 2025
 id: The First Man

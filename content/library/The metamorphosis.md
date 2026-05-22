@@ -2,7 +2,7 @@
 author: Franz Kafka
 category:
   - p/fiction
-date: "2022-08-21"
+date: '2022-08-21'
 description: kafka tale of gregor samsa waking as an insect, depicting alienation, family cruelty, and the erosion of self.
 finished: 2024
 id: The metamorphosis

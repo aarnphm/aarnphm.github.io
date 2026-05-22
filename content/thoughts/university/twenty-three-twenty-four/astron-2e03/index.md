@@ -1,5 +1,5 @@
 ---
-date: "2024-01-08"
+date: '2024-01-08'
 description: course on planetary astronomy covering exoplanet discovery, orbital mechanics, atmospheres, interiors, and formation taught by ryan cloutier.
 id: index
 modified: 2026-05-09 17:51:56 GMT-04:00

@@ -1,7 +1,7 @@
 ---
 category:
   - drama
-date: "2024-02-07"
+date: '2024-02-07'
 description: nature gazing down indifferent at our plans—hamaguchi filming village threatened by glamping resort, the forest teaching father and daughter something capitalism can't comprehend, ending ambiguous as ecology.
 director: Ryusuke Hamaguchi
 id: evil-does-not-exists

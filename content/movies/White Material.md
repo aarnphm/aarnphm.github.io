@@ -2,7 +2,7 @@
 category:
   - drama
   - politics
-date: "2026-05-09"
+date: '2026-05-09'
 description: colonial aftershock on a coffee plantation - denis films white fragility against civil war.
 director:
   - Claire Denis

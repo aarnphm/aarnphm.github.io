@@ -2,7 +2,7 @@
 author: Franz Kafka
 category:
   - p/fiction
-date: "2025-10-06"
+date: '2025-10-06'
 description: kafka novel about a land surveyor endlessly blocked by opaque authorities, capturing bureaucracy, frustration, and alienation.
 finished: 2025
 id: The Castle

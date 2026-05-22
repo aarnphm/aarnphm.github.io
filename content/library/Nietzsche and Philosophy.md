@@ -1,7 +1,7 @@
 ---
 author: Gilles Deleuze
 category: philosophy
-date: "2025-08-13"
+date: '2025-08-13'
 description: being and multiplicity
 external: https://antilogicalism.com/wp-content/uploads/2017/07/nietzsche-and-philosophy.pdf
 finished: 2025

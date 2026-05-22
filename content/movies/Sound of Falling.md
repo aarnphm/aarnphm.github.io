@@ -1,7 +1,7 @@
 ---
 category:
   - o/life
-date: "2026-05-09"
+date: '2026-05-09'
 description: A remote German farm harbours generations of secrets. Four women, separated by decades but united by trauma, uncover the truth behind its weathered walls.
 director:
   - Mascha Schilinski

@@ -2,7 +2,7 @@
 category:
   - o/life
   - drama
-date: "2026-05-09"
+date: '2026-05-09'
 description: college dropout to apple co-founder - a straight-line biopic tracking ambition, friendship, and the cost of focus from the garage to the mac.
 director:
   - Joshua Michael Stern

@@ -3,9 +3,9 @@ address: 104 Portland St, Toronto, ON M5V 2N2, Canada
 category:
   - '[[places to go]]'
 coordinates:
-  - "43.6443953"
-  - "-79.4006169"
-date: "2025-11-22"
+  - '43.6443953'
+  - '-79.4006169'
+date: '2025-11-22'
 description: authentic jamaican kitchen with jerk chicken and oxtail
 id: Chubby's Jamaican Kitchen
 modified: 2026-05-09 17:51:50 GMT-04:00

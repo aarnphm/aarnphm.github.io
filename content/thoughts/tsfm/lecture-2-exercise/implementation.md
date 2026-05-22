@@ -1,5 +1,5 @@
 ---
-date: "2025-09-07"
+date: '2025-09-07'
 description: Python and Rust
 id: implementation
 modified: 2026-05-09 17:51:57 GMT-04:00

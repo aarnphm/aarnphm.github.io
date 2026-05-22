@@ -1,5 +1,5 @@
 ---
-date: "2025-09-15"
+date: '2025-09-15'
 description: Likelihood-based training objective; intuition, derivations, properties, and links to cross‑entropy/KL and MAP/regularization.
 id: Maximum likelihood estimation
 modified: 2026-05-09 17:51:52 GMT-04:00

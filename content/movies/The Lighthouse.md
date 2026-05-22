@@ -2,7 +2,7 @@
 category:
   - horror
   - p/fiction
-date: "2024-02-07"
+date: '2024-02-07'
 description: two lighthouse keepers descending into madness on isolated island—eggers filming pattinson and dafoe's psychological warfare in black and white, mermaids and mythology bleeding into reality, isolation revealing that the light at the top isn't enlightenment but annihilation.
 director: Robert Eggers
 id: the-lighthouse

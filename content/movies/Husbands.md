@@ -3,7 +3,7 @@ category:
   - o/life
   - drama
   - o/vintage
-date: "2026-05-09"
+date: '2026-05-09'
 description: three friends spiral after a funeral - grief turns into masculine chaos, booze, and a refusal to go back to ordinary life.
 director:
   - John Cassavetes

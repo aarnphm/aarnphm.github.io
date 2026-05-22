@@ -1,5 +1,5 @@
 ---
-date: "2024-12-27"
+date: '2024-12-27'
 description: and a year of reconnection.
 id: Simone
 layout: letter

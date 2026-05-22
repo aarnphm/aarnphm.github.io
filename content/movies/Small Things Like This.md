@@ -2,7 +2,7 @@
 category:
   - theology
   - religion
-date: "2024-02-07"
+date: '2024-02-07'
 description: irish coalman discovering girl locked in convent coal bin—mielants filming cillian murphy's quiet confrontation with magdalene laundries, 1980s ireland where catholic church tortured unwed mothers, christianity wavering when cruelty hides behind faith, choosing conscience over complicity.
 director: Tim Mielants
 id: small-things-like-this
@@ -16,6 +16,6 @@ tags:
   - r/politics
   - o/life
 title: Small Things Like This
-watched: "2025-10-07"
+watched: '2025-10-07'
 year: 2024
 ---

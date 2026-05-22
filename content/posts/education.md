@@ -1,5 +1,5 @@
 ---
-date: "2024-02-19"
+date: '2024-02-19'
 description: draft essay arguing that university should remain an aspirational goal for high school students.
 draft: true
 id: education

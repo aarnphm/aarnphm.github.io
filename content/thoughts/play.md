@@ -1,5 +1,5 @@
 ---
-date: "2023-10-18"
+date: '2023-10-18'
 description: the state of being.
 id: play
 modified: 2026-05-09 17:51:53 GMT-04:00

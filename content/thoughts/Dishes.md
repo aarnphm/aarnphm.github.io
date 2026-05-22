@@ -1,5 +1,5 @@
 ---
-date: "2023-10-26"
+date: '2023-10-26'
 description: collection of italian and french recipes including pasta, sauces, duck, chocolate desserts, and choux pastries.
 id: Dishes
 modified: 2026-05-09 17:51:56 GMT-04:00

@@ -1,7 +1,7 @@
 ---
 author: Søren Kierkegaard
 category: philosophy
-date: "2022-08-21"
+date: '2022-08-21'
 description: three sermons that read gospel images of lilies and birds as invitations to simplicity, joy, and trust instead of anxious striving.
 finished: 2024
 id: The Lily of the Field and the Bird of the Air

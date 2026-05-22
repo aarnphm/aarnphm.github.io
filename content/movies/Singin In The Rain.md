@@ -1,6 +1,6 @@
 ---
 category: general
-date: "2024-02-07"
+date: '2024-02-07'
 description: hollywood transitioning from silent films to talkies—kelly and donen filming the anxiety of influence, gene kelly dancing through puddles celebrating survival, musical about movies becoming musical itself, intertextual joy where cinema examines its own essence and evolution.
 director:
   - Gene Kelly

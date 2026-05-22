@@ -1,5 +1,5 @@
 ---
-date: "2024-12-27"
+date: '2024-12-27'
 description: and a year full of shenanigans and possibilities.
 id: Tommy
 layout: letter

@@ -2,7 +2,7 @@
 author:
   - Robert Desnos
 category: poetry
-date: "2025-11-29"
+date: '2025-11-29'
 description: surrealist poem invoking forces of nature and humanity through repetitive calls, ending with the silence of unrequited love despite the speaker's commanding voice.
 finished: 2025
 id: The Voice of Robert Desnos

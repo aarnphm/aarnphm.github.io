@@ -2,7 +2,7 @@
 category:
   - philosophy
   - sociology
-date: "2026-05-09"
+date: '2026-05-09'
 description: Wealthy businessman, Zsa-zsa Korda appoints his only daughter, a nun, as sole heir to his estate. As Korda embarks on a new enterprise, they soon become the target of scheming tycoons, foreign terrorists, and determined assassins.
 director:
   - Wes Anderson

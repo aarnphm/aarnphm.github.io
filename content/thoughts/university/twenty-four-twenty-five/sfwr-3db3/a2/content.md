@@ -1,5 +1,5 @@
 ---
-date: "2024-11-11"
+date: '2024-11-11'
 description: assignment covering sql queries, relational algebra expressions, and database index design for airline reservation system.
 id: a2
 modified: 2026-05-09 17:51:57 GMT-04:00

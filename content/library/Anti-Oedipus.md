@@ -3,7 +3,7 @@ author:
   - Gilles Deleuze
   - Félix Guattari
 category: philosophy
-date: "2025-08-16"
+date: '2025-08-16'
 description: a critique of psychoanalysis and capitalism that reimagines desire as productive flows and traces how power codes bodies and institutions.
 finished: 2025
 id: Anti-Oedipus

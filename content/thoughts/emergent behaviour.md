@@ -1,5 +1,5 @@
 ---
-date: "2024-02-07"
+date: '2024-02-07'
 description: how can complex properties emerge from simple rules.
 id: emergent behaviour
 modified: 2026-05-09 17:51:54 GMT-04:00

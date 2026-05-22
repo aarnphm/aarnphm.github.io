@@ -1,5 +1,5 @@
 ---
-date: "2025-03-01"
+date: '2025-03-01'
 description: what makes us humans
 title: love
 ---

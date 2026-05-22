@@ -1,5 +1,5 @@
 ---
-date: "2024-01-08"
+date: '2024-01-08'
 description: data structures and algorithms course covering complexity analysis, sorting, trees, graphs, hashing with weekly assignments through winter term.
 id: index
 modified: 2026-05-09 17:51:53 GMT-04:00

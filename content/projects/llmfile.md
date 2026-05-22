@@ -1,6 +1,6 @@
 ---
 category: projets
-date: "2022-01-25"
+date: '2022-01-25'
 description: dockerfile frontend for llm workloads using buildkit and oci-compliant tooling, inspired by ollama's modelfile.
 id: dockerfile for llm
 modified: 2026-05-09 17:51:42 GMT-04:00

@@ -1,4 +1,3 @@
-
 {
   "content": "<p><table>\n\n<thead>\n\n<tr>\n\n<th>\n\nWEEK #\n</th>\n\n<th>\n\nTOPICS\n</th>\n\n<th>\n\nKEY DATES\n</th>\n</p>\n</tr>\n\n<p></thead>\n\n<tr>\n\n<td>\n\n1\n</td>\n\n<td>\n\nSes 1: Logic and Foundations\n</td>\n\n<td>\n\nProblem set 0 due\n</td>\n</p>\n<p></tr>\n\n<tr>\n\n<td>\n\n2\n</td>\n\n<td>\n\nSes 2-3: Relations, Cardinality, Axiom of Choice\n</td>\n\n<td>\n</p>\n</td>\n\n<p></tr>\n\n<tr>\n\n<td>\n\n3\n</td>\n\n<td>\n\nSes 4-5: Topologies, Closed Sets\n</td>\n\n<td>\n</p>\n</td>\n\n<p></tr>\n\n<tr>\n\n<td>\n\n4\n</td>\n\n<td>\n\nSes 6-7: Continuous Functions, Arbitrary Products\n</td>\n\n<td>\n\nProblem set 1 due at second session of the week\n</td>\n</p>\n<p></tr>\n\n<tr>\n\n<td>\n\n5\n</td>\n\n<td>\n\nSes 8-9: Metric Topologies\n</td>\n\n<td>\n</p>\n</td>\n\n<p></tr>\n\n<tr>\n\n<td>\n\n6\n</td>\n\n<td>\n\nSes 10: Quotient Topology\n</td>\n\n<td>\n</p>\n</td>\n\n<p></tr>\n\n<tr>\n\n<td>\n\n7\n</td>\n\n<td>\n\nSes 11-12: Connected Spaces, Compact Spaces\n</td>\n\n<td>\n</p>\n</td>\n\n<p></tr>\n\n<tr>\n\n<td>\n\n8\n</td>\n\n<td>\n\nSes 13-14: More about Compactness\n</td>\n\n<td>\n\nProblem set 2 due at second session of the week\n</td>\n</p>\n<p></tr>\n\n<tr>\n\n<td>\n\n9\n</td>\n\n<td>\n\nSes 15: Well-ordered Sets, Maximum Principle</p>\n<p>Ses 16: Midterm Exam\n</td>\n\n<td>\n</p>\n</td>\n\n<p></tr>\n\n<tr>\n\n<td>\n\n10\n</td>\n\n<td>\n\nSes 17-18: Countability and Separation Axioms\n</td>\n\n<td>\n</p>\n</td>\n\n<p></tr>\n\n<tr>\n\n<td>\n\n11\n</td>\n\n<td>\n\nSes 19-20: Urysohn Lemma, Metrization\n</td>\n\n<td>\n\nProblem set 3 due at second session of the week\n</td>\n</p>\n<p></tr>\n\n<tr>\n\n<td>\n\n12\n</td>\n\n<td>\n\nSes 21: Tietze Theorem\n</td>\n\n<td>\n</p>\n</td>\n\n<p></tr>\n\n<tr>\n\n<td>\n\n13\n</td>\n\n<td>\n\nSes 22-23: Tychonoff Theorem, Stone-Cech Compactification\n</td>\n\n<td>\n</p>\n</td>\n\n<p></tr>\n\n<tr>\n\n<td>\n\n14\n</td>\n\n<td>\n\nSes 24-25: Baire Spaces, Dimension Theory\n</td>\n\n<td>\n\nProblem set 4 due at second session of the week\n</td>\n</p>\n<p></tr>\n\n<tr>\n\n<td>\n\n15\n</td>\n\n<td>\n\nSes 26: Imbedding in Euclidean Space\n</td>\n\n<td>\n</p>\n</td>\n\n<p></tr>\n\n<tr>\n\n<td>\n</p>\n<p></td>\n\n<td>\n\nFinal Exam\n</td>\n\n<td>\n\nOptional problem set 5 due\n</td>\n</p>\n</tr>\n\n</table>\n\n",
   "content_type": "page",
@@ -10,8 +9,5 @@
   "ocw_type": "CourseSection",
   "title": "Calendar",
   "uid": "2096a053-9e29-e4e3-9240-c77876483035",
-  "video_metadata": {
-    "youtube_id": null
-  }
+  "video_metadata": { "youtube_id": null }
 }
-

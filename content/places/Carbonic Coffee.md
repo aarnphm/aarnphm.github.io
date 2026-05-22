@@ -3,9 +3,9 @@ address: 37 Baldwin St, Toronto, ON M5T 1L1, Canada
 category:
   - '[[places to go]]'
 coordinates:
-  - "43.655848"
-  - "-79.393523"
-date: "2025-08-05"
+  - '43.655848'
+  - '-79.393523'
+date: '2025-08-05'
 description: tiny baldwin street coffee bar with meticulous pour-overs
 id: Carbonic Coffee
 modified: 2026-05-09 17:51:50 GMT-04:00

@@ -3,7 +3,7 @@ category:
   - drama
   - r/psychology
   - o/vintage
-date: "2026-05-09"
+date: '2026-05-09'
 description: identities blur in a desert spa town - altman turns friendship into a hall of mirrors where personality can be stolen.
 director:
   - Robert Altman

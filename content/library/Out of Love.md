@@ -2,7 +2,7 @@
 author: Hazel Hayes
 category:
   - p/fiction
-date: "2022-08-21"
+date: '2022-08-21'
 description: novel told backwards through a breakup, unpacking how love, resentment, and self discovery emerge once a relationship has already ended.
 finished: 2023
 id: Out of Love

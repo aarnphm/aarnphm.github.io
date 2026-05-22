@@ -1,5 +1,5 @@
 ---
-date: "2024-01-24"
+date: '2024-01-24'
 description: lab on pid controller design for dc motor with transfer functions for angular velocity and position, final value theorem, and steady-state analysis.
 id: content
 modified: 2026-05-09 17:51:58 GMT-04:00

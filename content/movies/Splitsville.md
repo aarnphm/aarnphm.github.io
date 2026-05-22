@@ -3,7 +3,7 @@ category:
   - romantic
   - love
   - o/life
-date: "2026-05-09"
+date: '2026-05-09'
 description: When his wife asks for a divorce, a man runs to his friends for support, only to learn that the secret to their happiness is an open marriage.
 director:
   - Michael Angelo Covino
@@ -16,6 +16,6 @@ studio: neon
 tags:
   - comedy
 title: Splitsville
-watched: "2026-01-07"
+watched: '2026-01-07'
 year: 2025
 ---

@@ -1,7 +1,7 @@
 ---
 author: Yuval Noah Harari
 category: philosophy
-date: "2022-08-21"
+date: '2022-08-21'
 description: essays on technology, politics, religion, and meaning that map the anxieties and possibilities of life in the twenty first century.
 finished: 2022
 id: 21 Lessons for the 21st Century

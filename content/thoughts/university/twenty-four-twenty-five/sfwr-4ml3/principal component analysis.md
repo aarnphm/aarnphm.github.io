@@ -1,5 +1,5 @@
 ---
-date: "2024-10-07"
+date: '2024-10-07'
 description: dimensionality reduction through eigenvalue decomposition minimizing reconstruction error with orthonormal transformations.
 id: principal component analysis
 modified: 2026-05-09 17:51:58 GMT-04:00

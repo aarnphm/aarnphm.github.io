@@ -3,7 +3,7 @@ category:
   - love
   - o/life
   - drama
-date: "2024-02-07"
+date: '2024-02-07'
 description: haneke filming death's slow transformation of the body—retired piano teacher losing autonomy while husband watches, love measured not in romance but how long you can maintain someone's dignity.
 director: Michael Haneke
 id: amour

@@ -3,7 +3,7 @@ category:
   - thriller
   - p/fiction
   - drama
-date: "2024-02-07"
+date: '2024-02-07'
 description: obsession calcified into ritual—two magicians destroying themselves for applause, each sacrifice more grotesque than the last.
 director: Christopher Nolan
 id: the-prestige

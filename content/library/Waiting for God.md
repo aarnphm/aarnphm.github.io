@@ -2,7 +2,7 @@
 author:
   - Simone Weil
 category: philosophy
-date: "2025-11-30"
+date: '2025-11-30'
 description: posthumous collection of letters and essays on faith, suffering, and divine love, detailing weil's mystical experiences and her position on the threshold of christianity.
 finished: 2025
 id: Waiting for God

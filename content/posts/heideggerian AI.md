@@ -1,5 +1,5 @@
 ---
-date: "2025-01-11"
+date: '2025-01-11'
 description: and Heideggerian AI.
 draft: true
 id: heideggerian AI

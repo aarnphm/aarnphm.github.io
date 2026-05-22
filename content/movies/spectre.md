@@ -1,6 +1,6 @@
 ---
 category: bond
-date: "2024-02-07"
+date: '2024-02-07'
 description: blofeld returning with childhood jealousy twist—mendes bringing back spectre organization claiming to orchestrate all craig-era pain, bond discovering waltz's villain as adopted brother, ambitious homecoming trying to tie everything together but revealing retcon's limitations, spectacle without skyfall's depth.
 director: Sam Mendes
 id: spectre

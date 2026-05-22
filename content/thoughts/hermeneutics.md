@@ -1,5 +1,5 @@
 ---
-date: "2025-10-03"
+date: '2025-10-03'
 description: the study of interpretation
 id: hermeneutics
 modified: 2026-05-09 17:51:47 GMT-04:00

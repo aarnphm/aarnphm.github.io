@@ -1,8 +1,8 @@
 ---
-date: "2026-01-08"
+date: '2026-01-08'
 description: «l’embarras du choix»
 draft: true
-id: "2025"
+id: '2025'
 layout: technical
 modified: 2026-05-09 17:51:37 GMT-04:00
 signature: AP

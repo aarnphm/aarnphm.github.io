@@ -1,5 +1,5 @@
 ---
-date: "2025-11-01"
+date: '2025-11-01'
 description: separation axioms, urysohn lemma, metrization checkpoints for mit 18.901 week 4–5.
 id: topology-separation
 modified: 2026-05-19 18:13:30 GMT-04:00

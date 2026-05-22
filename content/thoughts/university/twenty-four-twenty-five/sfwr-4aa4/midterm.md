@@ -1,5 +1,5 @@
 ---
-date: "2024-10-22"
+date: '2024-10-22'
 description: midterm review on real-time operating systems covering clock drift, kernels, syscalls, scheduling, and rtos versus os differences.
 id: midterm
 modified: 2026-05-09 17:51:59 GMT-04:00

@@ -1,5 +1,5 @@
 ---
-date: "2026-01-28"
+date: '2026-01-28'
 id: index
 modified: 2026-05-09 17:51:59 GMT-04:00
 seealso:

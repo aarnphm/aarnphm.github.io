@@ -3,7 +3,7 @@ category:
   - o/vintage
   - thriller
   - drama
-date: "2024-02-07"
+date: '2024-02-07'
 description: journalism as unglamorous phone calls and parking garage meetings—pakula filming watergate as procedural tedium that toppled a presidency, back when the press could still be called watchdogs.
 director: Alan J. Pakula
 id: all-the-presidents-men

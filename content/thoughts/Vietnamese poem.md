@@ -2,7 +2,7 @@
 aliases:
   - viet-poem
   - vietnam
-date: "2024-11-18"
+date: '2024-11-18'
 description: dedicated to my roots, Vietnamese born.
 id: Vietnamese poem
 lang: vi-VN

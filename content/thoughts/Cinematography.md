@@ -1,5 +1,5 @@
 ---
-date: "2023-09-11"
+date: '2023-09-11'
 description: notes on film equipment, anamorphic lenses, camera formats, and compositional techniques including planimetric composition and lighting.
 id: Cinematography
 modified: 2026-05-09 17:51:53 GMT-04:00

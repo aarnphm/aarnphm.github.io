@@ -3,7 +3,7 @@ category:
   - comedy
   - o/life
   - drama
-date: "2026-05-09"
+date: '2026-05-09'
 description: post-grad drift as a kind of paralysis - baumbach's debut about friends who refuse to leave the nest.
 director:
   - Noah Baumbach

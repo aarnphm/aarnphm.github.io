@@ -3,7 +3,7 @@ category:
   - thriller
   - drama
   - absurdism
-date: "2026-01-11"
+date: '2026-01-11'
 description: hollywood dream logic where identity splits - lynch turns an audition into a nightmare.
 director:
   - David Lynch

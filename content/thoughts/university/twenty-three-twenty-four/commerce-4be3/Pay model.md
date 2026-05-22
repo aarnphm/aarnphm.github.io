@@ -1,5 +1,5 @@
 ---
-date: "2024-01-10"
+date: '2024-01-10'
 description: compensation fundamentals including total rewards, internal alignment, external competitiveness, employee contributions, and strategic pay policies.
 id: Pay model
 modified: 2026-05-09 17:51:54 GMT-04:00

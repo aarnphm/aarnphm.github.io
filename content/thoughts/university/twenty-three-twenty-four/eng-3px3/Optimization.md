@@ -1,5 +1,5 @@
 ---
-date: "2024-02-01"
+date: '2024-02-01'
 description: economic optimization framework with decision variables, constraints, objective functions, feasible sets, and optimal value determination.
 id: Optimization
 modified: 2026-05-09 17:51:59 GMT-04:00

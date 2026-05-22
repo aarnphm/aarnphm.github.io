@@ -2,7 +2,7 @@
 category:
   - thriller
   - drama
-date: "2024-02-07"
+date: '2024-02-07'
 description: midnight sun as moral exposure—a detective's guilt illuminated in perpetual daylight, sleep deprivation eroding the line between hunter and hunted.
 director: Christopher Nolan
 id: insomnia

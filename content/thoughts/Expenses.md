@@ -1,5 +1,5 @@
 ---
-date: "2024-01-09"
+date: '2024-01-09'
 description: and my livelihood.
 id: Expenses
 modified: 2026-05-09 17:51:51 GMT-04:00

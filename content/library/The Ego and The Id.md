@@ -1,7 +1,7 @@
 ---
 author: '[[thoughts/Freud|Sigmund Freud]]'
 category: philosophy
-date: "2025-05-31"
+date: '2025-05-31'
 description: freud text that introduces the structural model of id, ego, and superego, linking conflict, repression, and neurosis.
 finished: 2025
 id: The Ego and The Id

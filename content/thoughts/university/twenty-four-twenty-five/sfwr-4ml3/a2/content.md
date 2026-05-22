@@ -1,5 +1,5 @@
 ---
-date: "2024-10-21"
+date: '2024-10-21'
 description: implementation of PCA on LFW and TNC datasets
 id: content
 modified: 2026-05-09 17:51:59 GMT-04:00

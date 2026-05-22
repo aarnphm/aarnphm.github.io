@@ -1,10 +1,10 @@
 ---
-created: "2025-10-29"
-date: "2025-10-29"
+created: '2025-10-29'
+date: '2025-10-29'
 description: Mathematical measure that assigns value 1 to sets containing a fixed point x, 0 otherwise
 id: Dirac measure
 modified: 2026-05-09 17:51:55 GMT-04:00
-published: "2004-09-26"
+published: '2004-09-26'
 source: https://en.wikipedia.org/wiki/Dirac_measure
 tags:
   - math

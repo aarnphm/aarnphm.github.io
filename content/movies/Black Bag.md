@@ -2,7 +2,7 @@
 category:
   - thriller
   - actions
-date: "2026-05-09"
+date: '2026-05-09'
 description: Kathryn and George Woodhouse are both top-tier Intelligence Agents. What happens when Katherine is suspected of treason, and George has to decide whether to side with his wife or his Nation?
 director:
   - Steven Soderbergh
@@ -15,6 +15,6 @@ studio: universal
 tags:
   - thriller
 title: Black Bag
-watched: "2025-06-19"
+watched: '2025-06-19'
 year: 2025
 ---

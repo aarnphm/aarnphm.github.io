@@ -3,7 +3,7 @@ category:
   - drama
   - o/life
   - homosexuality
-date: "2024-02-07"
+date: '2024-02-07'
 description: homophobic texas cowboy forced into queer community by aids—mcconaughey shrinking to nothing while fighting the fda, transformation measured in smuggled drugs and friendships he never imagined needing.
 director: Jean-Marc Vallée
 id: dallas-buyers-club

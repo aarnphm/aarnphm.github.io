@@ -1,7 +1,7 @@
 ---
 author: Sylvia Plath
 category: poetry
-date: "2025-05-31"
+date: '2025-05-31'
 description: by Sylvia Plath
 external: https://www.poetryfoundation.org/poems/57419/the-applicant
 finished: 2025

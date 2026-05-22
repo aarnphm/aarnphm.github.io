@@ -3,7 +3,7 @@ category:
   - o/vintage
   - thriller
   - comedy
-date: "2024-02-07"
+date: '2024-02-07'
 description: murder as publicity stunt—marshall's jazz-age musical where courtroom becomes stage, murderesses performing innocence for cameras, fame so fleeting the acquittal barely registers before the next scandal.
 director: Rob Marshall
 id: chicago

@@ -1,5 +1,5 @@
 ---
-date: "2025-10-23"
+date: '2025-10-23'
 description: from Clearer Thinking.
 id: personality
 layout: letter

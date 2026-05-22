@@ -2,7 +2,7 @@
 author:
   - Søren Kierkegaard
 category: philosophy
-date: "2025-11-30"
+date: '2025-11-30'
 description: series of deliberations on christian agape versus erotic or preferential love, arguing that true love is an eternal duty expressed through works rather than feeling.
 external: https://sorenkierkegaard.org/works-of-love.html
 finished: null

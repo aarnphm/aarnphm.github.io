@@ -1,5 +1,5 @@
 ---
-date: "2025-04-26"
+date: '2025-04-26'
 description: and RL.
 id: Group Relative Policy Optimization
 modified: 2026-05-09 17:51:45 GMT-04:00

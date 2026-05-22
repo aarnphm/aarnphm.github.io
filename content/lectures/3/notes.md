@@ -1,5 +1,5 @@
 ---
-date: "2025-08-28"
+date: '2025-08-28'
 description: and more notes
 id: notes
 modified: 2026-05-09 17:51:34 GMT-04:00

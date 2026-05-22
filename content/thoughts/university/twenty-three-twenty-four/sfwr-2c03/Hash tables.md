@@ -1,5 +1,5 @@
 ---
-date: "2024-02-26"
+date: '2024-02-26'
 description: hash tables and 2-3 tree data structures for efficient search and insertion operations.
 id: Hash tables
 modified: 2026-05-09 17:51:54 GMT-04:00

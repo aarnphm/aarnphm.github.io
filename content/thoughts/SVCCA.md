@@ -1,5 +1,5 @@
 ---
-date: "2024-11-04"
+date: '2024-11-04'
 description: singular vector canonical correlation analysis for comparing neural network representations using svd and cca, invariant to affine transformations and distributed representations.
 id: SVCCA
 modified: 2026-05-09 17:51:51 GMT-04:00

@@ -3,7 +3,7 @@ category:
   - love
   - o/life
   - drama
-date: "2024-02-07"
+date: '2024-02-07'
 description: amnesiac walking out of texas desert to reconnect with abandoned son—wenders filming harry dean stanton's slow remembering, the peep show confession where husband admits his failure to accept wife's autonomy, masculine violence seeking reconciliation it might not deserve.
 director: Wim Wenders
 id: paris-texas

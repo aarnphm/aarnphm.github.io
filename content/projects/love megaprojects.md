@@ -1,6 +1,6 @@
 ---
 category: letters
-date: "2022-01-25"
+date: '2022-01-25'
 description: a working-in-progress hypothesis on love
 id: on love
 modified: 2026-05-09 17:51:42 GMT-04:00

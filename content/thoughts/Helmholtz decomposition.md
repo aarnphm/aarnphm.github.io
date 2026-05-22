@@ -1,5 +1,5 @@
 ---
-date: "2024-11-27"
+date: '2024-11-27'
 description: decomposition of sufficiently smooth, rapidly decaying vector fields
 id: Helmholtz decomposition
 modified: 2026-05-09 17:51:50 GMT-04:00

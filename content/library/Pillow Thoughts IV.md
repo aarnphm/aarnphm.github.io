@@ -1,7 +1,7 @@
 ---
 author: Courtney Peppernell
 category: poetry
-date: "2022-08-21"
+date: '2022-08-21'
 description: poetry and prose about heartbreak, healing, and gentle self compassion, written in short, direct pieces for late night reading.
 finished: 2023
 id: Pillow Thoughts IV

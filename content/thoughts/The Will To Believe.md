@@ -1,5 +1,5 @@
 ---
-date: "2024-02-08"
+date: '2024-02-08'
 description: william james exploring rationality as absence of distress, where feeling emerges from impediment rather than fluent thought.
 id: The Will To Believe
 modified: 2026-05-09 17:51:45 GMT-04:00

@@ -2,7 +2,7 @@
 author: Henry David Thoreau
 category:
   - p/nf
-date: "2024-12-23"
+date: '2024-12-23'
 description: thoreau reflections on simple living in nature paired with an argument for conscientious refusal of unjust laws and taxes.
 finished: 2025
 id: Walden and Civil Disobedience

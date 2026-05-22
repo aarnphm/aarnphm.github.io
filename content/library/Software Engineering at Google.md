@@ -4,7 +4,7 @@ author:
   - Titus Winters
   - Tom Manshreck
 category: technology
-date: "2025-11-03"
+date: '2025-11-03'
 description: describes google engineering culture, tools, and practices, focusing on scale, reliability, code review, and long term maintainability.
 external: https://abseil.io/resources/swe-book/html/toc.html
 finished: null

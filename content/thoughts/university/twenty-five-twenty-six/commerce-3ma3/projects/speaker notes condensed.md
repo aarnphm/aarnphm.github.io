@@ -1,5 +1,5 @@
 ---
-date: "2026-03-26"
+date: '2026-03-26'
 id: speaker notes condensed
 modified: 2026-05-09 17:51:57 GMT-04:00
 tags:

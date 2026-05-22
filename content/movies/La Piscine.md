@@ -4,7 +4,7 @@ category:
   - love
   - drama
   - o/vintage
-date: "2026-05-09"
+date: '2026-05-09'
 description: summer heat, jealousy, and a poolside triangle on the french riviera - deray turns lounging into a pressure cooker and violence into inevitability.
 director:
   - Jacques Deray

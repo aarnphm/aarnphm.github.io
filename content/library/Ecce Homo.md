@@ -1,7 +1,7 @@
 ---
 author: Friedrich Nietzsche
 category: philosophy
-date: "2025-10-07"
+date: '2025-10-07'
 description: late, self reflective book where nietzsche revisits his works, style, and fate with irony, bravado, and looming collapse.
 finished: 2024
 id: Ecce Homo

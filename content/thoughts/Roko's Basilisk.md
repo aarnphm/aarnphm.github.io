@@ -1,5 +1,5 @@
 ---
-date: "2025-08-05"
+date: '2025-08-05'
 description: a thought experiment.
 id: Roko's Basilisk
 modified: 2026-05-09 17:51:47 GMT-04:00

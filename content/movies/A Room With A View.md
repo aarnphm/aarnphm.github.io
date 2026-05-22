@@ -3,7 +3,7 @@ category:
   - love
   - o/relationship
   - o/vintage
-date: "2026-01-08"
+date: '2026-01-08'
 description: edwardian romance cracking open in florence - ivory staging propriety as slow suffocation, lucy choosing desire over drawing-room duty.
 director:
   - James Ivory

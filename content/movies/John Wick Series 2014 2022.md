@@ -1,6 +1,6 @@
 ---
 category: buster
-date: "2024-02-07"
+date: '2024-02-07'
 description: keanu reeves killing everyone over a dead dog—stahelski choreographing gun violence as ballet, underground assassin economy with gold coins and strict etiquette, action cinema's new gold standard.
 director: Chad Stahelski
 id: john-wick-series-2014-2022

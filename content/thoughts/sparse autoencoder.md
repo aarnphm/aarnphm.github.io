@@ -1,5 +1,5 @@
 ---
-date: "2024-11-04"
+date: '2024-11-04'
 description: a variations of autoencoders operate on features sparsity, also known as SAEs.
 id: sparse autoencoder
 modified: 2026-05-09 17:51:55 GMT-04:00

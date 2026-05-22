@@ -1,5 +1,5 @@
 ---
-date: "2024-10-11"
+date: '2024-10-11'
 description: extends Boyer-Moore finding algorithm
 id: Misra-Gries heavy-hitters algorithm
 modified: 2026-05-09 17:51:49 GMT-04:00

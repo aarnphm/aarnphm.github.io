@@ -1,5 +1,5 @@
 ---
-date: "2024-02-05"
+date: '2024-02-05'
 description: reducing neural network memory and compute through low-precision data types like int8 and fp16, using calibration and rounding schemes.
 id: quantization
 modified: 2026-05-09 17:51:53 GMT-04:00

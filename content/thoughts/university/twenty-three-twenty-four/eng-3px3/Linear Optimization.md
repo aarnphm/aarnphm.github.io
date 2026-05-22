@@ -1,5 +1,5 @@
 ---
-date: "2024-02-08"
+date: '2024-02-08'
 description: linear optimization for resource allocation and project selection with continuous variables, linear constraints, sensitivity analysis, and shadow prices.
 id: Linear Optimization
 modified: 2026-05-09 17:51:59 GMT-04:00

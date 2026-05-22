@@ -1,5 +1,5 @@
 ---
-date: "2024-09-11"
+date: '2024-09-11'
 description: database schema design using entity sets, attributes, relationships, and many-to-many or many-to-one relationship constraints.
 id: Entity-Relationship Models
 modified: 2026-05-09 17:51:57 GMT-04:00

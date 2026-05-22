@@ -1,5 +1,5 @@
 ---
-date: "2026-05-09"
+date: '2026-05-09'
 id: RISC-V Assembly Programmer's Manual
 modified: 2026-05-09 17:51:59 GMT-04:00
 tags:

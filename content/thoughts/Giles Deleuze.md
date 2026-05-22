@@ -1,5 +1,5 @@
 ---
-date: "2024-02-24"
+date: '2024-02-24'
 description: french philosopher's work on multiplicity, becoming, and affirmation, reinterpreting nietzsche's will to power as expressive force creating values rather than desire for domination.
 id: Giles Deleuze
 modified: 2026-05-09 17:51:52 GMT-04:00

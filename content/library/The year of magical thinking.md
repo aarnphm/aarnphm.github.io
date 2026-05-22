@@ -2,7 +2,7 @@
 author: Joan Didion
 category:
   - p/fiction
-date: "2025-10-16"
+date: '2025-10-16'
 description: memoir on grief after sudden loss, tracing how didion mind loops through memories, rituals, and magical thinking.
 finished: null
 id: The year of magical thinking

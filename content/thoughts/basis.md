@@ -1,5 +1,5 @@
 ---
-date: "2025-08-20"
+date: '2025-08-20'
 description: a set of vectors as a linear combination of elements of B.
 id: basis
 modified: 2026-05-09 17:51:55 GMT-04:00

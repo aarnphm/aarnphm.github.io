@@ -2,7 +2,7 @@
 author: Haruki Murakami
 category:
   - p/fiction
-date: "2022-08-21"
+date: '2022-08-21'
 description: surreal coming of age story with parallel narratives, talking cats, and strange metaphysics, blending memory, prophecy, and trauma.
 finished: 2022
 id: Kafka on the Shore

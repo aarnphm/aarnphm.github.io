@@ -1,7 +1,7 @@
 ---
 category:
   - comedy
-date: "2026-05-09"
+date: '2026-05-09'
 description: Sleeping rough on the streets of London, Mike seems unable to escape the chaos of his impulsivity and substance abuse. He's intelligent and charismatic, but when his addiction results in an act of unprovoked violence, he's quickly arrested.
 director:
   - Harris Dickinson

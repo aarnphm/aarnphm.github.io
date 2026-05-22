@@ -3,7 +3,7 @@ author:
   - Raymond Carver
 category:
   - p/shorts
-date: "2025-11-29"
+date: '2025-11-29'
 description: collection of minimalist stories about failed communication, working-class disillusionment, and the ways people struggle to define and express love.
 finished: 2025
 id: What we talk about when we talk about love

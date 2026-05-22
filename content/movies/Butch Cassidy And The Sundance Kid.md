@@ -3,7 +3,7 @@ category:
   - o/vintage
   - buster
   - thriller
-date: "2024-02-07"
+date: '2024-02-07'
 description: outlaws as doomed romantics—newman and redford's chemistry filming male friendship as the only constant while running from everything, ending frozen mid-shootout because admitting death would ruin it.
 director: George Roy Hill
 id: butch-cassidy-and-the-sundance-kid

@@ -1,5 +1,5 @@
 ---
-date: "2026-03-04"
+date: '2026-03-04'
 description: on growth after death, a quarter of century report
 draft: true
 id: Oanh

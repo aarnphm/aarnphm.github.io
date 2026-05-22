@@ -1,5 +1,5 @@
 ---
-date: "2023-09-25"
+date: '2023-09-25'
 description: critical evaluation of human-centered design in smartphones, convection ovens, and smart fridges analyzing affordances, signifiers, mappings, and feedback mechanisms.
 id: Interaction Critical Evaluation
 modified: 2026-05-09 17:51:56 GMT-04:00

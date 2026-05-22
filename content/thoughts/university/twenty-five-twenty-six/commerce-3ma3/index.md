@@ -1,5 +1,5 @@
 ---
-date: "2026-01-07"
+date: '2026-01-07'
 description: and research-based tools towards marketing strategies
 id: index
 layout: L->ET|A

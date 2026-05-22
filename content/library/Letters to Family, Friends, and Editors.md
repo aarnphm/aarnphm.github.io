@@ -1,7 +1,7 @@
 ---
 author: Franz Kafka
 category: letters
-date: "2025-11-27"
+date: '2025-11-27'
 description: a collection of letters Kafka wrote for family, friends, and his editors
 id: Letters to Family, Friends, and Editors
 language: german

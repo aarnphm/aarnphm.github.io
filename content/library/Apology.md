@@ -1,7 +1,7 @@
 ---
 author: Plato
 category: philosophy
-date: "2022-08-21"
+date: '2022-08-21'
 description: an account of socrates on trial, defending a life of questioning, virtue, and philosophy against the demands of athens.
 finished: 2023
 id: Apology

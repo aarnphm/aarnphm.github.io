@@ -3,7 +3,7 @@ category:
   - love
   - drama
   - o/vintage
-date: "2026-05-09"
+date: '2026-05-09'
 description: hardy tragedy in rural england - a young woman is trapped between desire, honor, and a society that forgives men and punishes her.
 director:
   - Roman Polanski

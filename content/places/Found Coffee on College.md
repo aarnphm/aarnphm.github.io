@@ -3,9 +3,9 @@ address: 324 College St, Toronto, ON M5T 1S3, Canada
 category:
   - '[[places to go]]'
 coordinates:
-  - "43.6576525"
-  - "-79.4026381"
-date: "2025-08-05"
+  - '43.6576525'
+  - '-79.4026381'
+date: '2025-08-05'
 description: bright corner cafe perfect for morning rituals
 id: Found Coffee on College
 modified: 2026-05-09 17:51:51 GMT-04:00

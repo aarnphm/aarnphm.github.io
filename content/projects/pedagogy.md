@@ -1,6 +1,6 @@
 ---
 category: letters
-date: "2022-01-25"
+date: '2022-01-25'
 description: exploring education discourse and pedagogical approaches that might shape future generations.
 id: pedagogy
 modified: 2026-05-09 17:51:42 GMT-04:00

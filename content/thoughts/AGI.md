@@ -1,5 +1,5 @@
 ---
-date: "2024-02-07"
+date: '2024-02-07'
 description: artificial general intelligence capable of understanding any intellectual task humans can, with ability to learn and improve itself beyond human capabilities.
 id: AGI
 modified: 2026-05-09 17:51:48 GMT-04:00

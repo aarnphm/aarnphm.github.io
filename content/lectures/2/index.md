@@ -1,5 +1,5 @@
 ---
-date: "2025-08-21"
+date: '2025-08-21'
 description: convex attention, bottom-up approach
 id: index
 modified: 2026-05-09 17:51:34 GMT-04:00

@@ -4,7 +4,7 @@ author:
   - Chris Harrelson
 category:
   - p/nf
-date: "2025-08-13"
+date: '2025-08-13'
 description: book that implements a toy browser step by step, teaching parsing, layout, rendering, and browser architecture by building.
 external: https://browser.engineering/onepage.html
 finished: 2024

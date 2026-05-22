@@ -2,7 +2,7 @@
 category:
   - thriller
   - o/vintage
-date: "2024-02-07"
+date: '2024-02-07'
 description: cia analyst's entire office assassinated while he's getting lunch—pollack filming redford running from agency that's supposed to protect him, post-watergate paranoia where you can't trust anyone, conspiracy thriller proving the government will kill to keep secrets secret.
 director:
   - Sydney Pollack

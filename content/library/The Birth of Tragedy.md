@@ -1,7 +1,7 @@
 ---
 author: Friedrich Nietzsche
 category: philosophy
-date: "2025-01-05"
+date: '2025-01-05'
 description: nietzsche early work contrasting apollonian and dionysian art, reading greek tragedy as a response to the horror of existence.
 finished: 2024
 id: The Birth of Tragedy

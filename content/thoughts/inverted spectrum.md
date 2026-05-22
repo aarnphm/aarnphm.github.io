@@ -1,5 +1,5 @@
 ---
-date: "2025-11-10"
+date: '2025-11-10'
 description: same function, different phenomenology, and what this means for [[thoughts/reductionism|reductionism]]
 id: inverted spectrum
 modified: 2026-05-15 01:01:20 GMT-04:00

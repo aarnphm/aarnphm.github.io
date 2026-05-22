@@ -1,7 +1,7 @@
 ---
 category:
   - love
-date: "2024-02-07"
+date: '2024-02-07'
 description: grandson caring for dying grandmother to secure inheritance—boonnitipat filming greed transforming into genuine love, thai family dynamics where terminal cancer becomes teacher, learning that time with someone matters more than the money they leave behind.
 director: Pat Boonnitipat
 id: How To Make Millions Before Grandma Dies
@@ -15,6 +15,6 @@ studio: '[independent]'
 tags:
   - love
 title: How To Make Millions Before Grandma Dies
-watched: "2025-09-18"
+watched: '2025-09-18'
 year: 2024
 ---

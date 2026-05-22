@@ -1,5 +1,5 @@
 ---
-date: "2024-03-07"
+date: '2024-03-07'
 description: atmospheric properties of exoplanets including scale height, molecular weights, clouds, and wind patterns on tidally-locked planets.
 id: Atmosphere
 modified: 2026-05-09 17:51:56 GMT-04:00

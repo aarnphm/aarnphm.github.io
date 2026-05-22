@@ -6,7 +6,7 @@ aliases:
   - living
   - philia
   - eros
-date: "2025-10-04"
+date: '2025-10-04'
 description: choosing to give your full, continuously.
 gemini:
   session:

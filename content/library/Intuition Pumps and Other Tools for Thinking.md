@@ -1,7 +1,7 @@
 ---
 author: Daniel Dennett
 category: philosophy
-date: "2025-09-18"
+date: '2025-09-18'
 description: collection of thought experiments and conceptual tools designed to clarify tricky questions in philosophy of mind, evolution, and consciousness.
 id: Intuition Pumps and Other Tools for Thinking
 modified: 2026-05-09 17:51:40 GMT-04:00

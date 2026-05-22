@@ -1,5 +1,5 @@
 ---
-date: "2025-03-03"
+date: '2025-03-03'
 description: and the most important year of my life.
 draft: true
 id: twenty four

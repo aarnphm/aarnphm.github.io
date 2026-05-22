@@ -3,9 +3,9 @@ address: 6 St Joseph St, Toronto, ON M4Y 1J7, Canada
 category:
   - '[[places to go]]'
 coordinates:
-  - "43.66649229071298"
-  - "-79.38570733361347"
-date: "2025-08-05"
+  - '43.66649229071298'
+  - '-79.38570733361347'
+date: '2025-08-05'
 description: church-wellesley cafe with ethiopian coffee ceremonies
 id: Nabulu Coffee
 modified: 2026-05-09 17:51:51 GMT-04:00

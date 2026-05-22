@@ -1,7 +1,7 @@
 ---
 author: Immanuel Kant
 category: philosophy
-date: "2025-10-07"
+date: '2025-10-07'
 description: kant outlines his moral philosophy, grounding duty and the categorical imperative in the idea of rational autonomy.
 id: Groundwork of the Metaphysics of Morals
 language: german

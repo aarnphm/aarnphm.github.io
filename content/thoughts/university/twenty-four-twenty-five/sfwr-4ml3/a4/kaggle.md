@@ -1,5 +1,5 @@
 ---
-date: "2024-12-03"
+date: '2024-12-03'
 description: 'CIFAR Challenge: Classify the World of Objects!'
 id: kaggle
 modified: 2026-05-09 17:52:00 GMT-04:00

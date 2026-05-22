@@ -3,7 +3,7 @@ category:
   - thriller
   - o/vintage
   - love
-date: "2024-02-07"
+date: '2024-02-07'
 description: psychological thriller about retired detective with acrophobia hired to follow mysterious woman, spiraling into obsession, deception, and the dizzying heights of fixation that blur reality.
 director: Alfred Hitchcock
 id: vertigo

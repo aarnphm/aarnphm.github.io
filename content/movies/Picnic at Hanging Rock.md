@@ -3,7 +3,7 @@ category:
   - thriller
   - drama
   - o/vintage
-date: "2026-05-09"
+date: '2026-05-09'
 description: schoolgirls vanish during a picnic - weir lets the landscape swallow answers and the town drown in unease.
 director:
   - Peter Weir

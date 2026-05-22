@@ -3,9 +3,9 @@ address: 453 Wellington St W, Toronto, ON M5V 1E7, Canada
 category:
   - '[[places to go]]'
 coordinates:
-  - "43.6432746"
-  - "-79.3986369"
-date: "2025-12-22"
+  - '43.6432746'
+  - '-79.3986369'
+date: '2025-12-22'
 id: La Plume
 modified: 2026-05-09 17:51:50 GMT-04:00
 rating: 5

@@ -1,5 +1,5 @@
 ---
-date: "2025-01-15"
+date: '2025-01-15'
 description: and a general management perspective
 id: SAA
 modified: 2026-05-09 17:51:59 GMT-04:00

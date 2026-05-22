@@ -13,5 +13,5 @@ category:
   - drama
   - love
 description: An explosive confession throws the wedding of a seemingly perfect couple off the rails as they spiral to confront whether they can truly make it to "I do."
-posters: "[[movies/posters/the-drama.webp]]"
+posters: '[[movies/posters/the-drama.webp]]'
 ---

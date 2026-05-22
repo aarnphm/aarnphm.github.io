@@ -1,5 +1,5 @@
 ---
-date: "2024-02-07"
+date: '2024-02-07'
 description: explaining complex phenomena through minimal parts, compressing reality into simpler ontological and theoretical frameworks.
 id: reductionism
 modified: 2026-05-09 17:51:55 GMT-04:00

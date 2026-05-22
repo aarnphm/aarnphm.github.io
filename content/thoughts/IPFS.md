@@ -1,5 +1,5 @@
 ---
-date: "2024-02-08"
+date: '2024-02-08'
 description: decentralized storage and delivery network built on p2p networking and content-addressable storage using content identifiers.
 id: IPFS
 modified: 2026-05-09 17:51:48 GMT-04:00

@@ -2,7 +2,7 @@
 author: Alain Deneault
 category:
   - p/nf
-date: "2025-10-07"
+date: '2025-10-07'
 description: critique of how mediocre norms capture politics, culture, and institutions, rewarding conformity and management speak over real thinking.
 id: Mediocracy
 language: french

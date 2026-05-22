@@ -1,11 +1,11 @@
 ---
-created: "2025-12-01"
-date: "2025-12-01"
+created: '2025-12-01'
+date: '2025-12-01'
 description: 'Arrow’s theorem: no ranked rule satisfies Pareto, IIA, and non-dictatorship.'
 external: https://en.wikipedia.org/wiki/Arrow%27s_impossibility_theorem
 id: Arrow's impossibility theorem
 modified: 2026-05-09 17:51:33 GMT-04:00
-published: "2002-09-22"
+published: '2002-09-22'
 seealso:
   - Comparison of electoral systems
   - Condorcet paradox

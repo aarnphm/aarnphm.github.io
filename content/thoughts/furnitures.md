@@ -1,5 +1,5 @@
 ---
-date: "2025-07-04"
+date: '2025-07-04'
 description: what does home mean to you?
 id: furnitures
 layout: technical

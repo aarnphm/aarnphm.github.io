@@ -1,5 +1,5 @@
 ---
-date: "2023-09-11"
+date: '2023-09-11'
 description: sequential programming with correctness assertions, sequential composition rules, arrays as partial functions, and loop invariants for verification.
 id: Sequential programming
 modified: 2026-05-09 17:51:54 GMT-04:00

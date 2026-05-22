@@ -1,5 +1,5 @@
 ---
-date: "2023-07-29"
+date: '2023-07-29'
 description: a knowledge distillation and learning process
 id: writing
 modified: 2026-05-09 17:51:51 GMT-04:00

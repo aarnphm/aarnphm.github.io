@@ -1,5 +1,5 @@
 ---
-date: "2024-02-09"
+date: '2024-02-09'
 description: personal hypertext system where notes and ideas grow organically over time, contrasting the garden metaphor with the stream in knowledge cultivation.
 id: Digital garden
 modified: 2026-05-09 17:51:53 GMT-04:00

@@ -1,5 +1,5 @@
 ---
-date: "2024-11-11"
+date: '2024-11-11'
 description: and image processing.
 id: content
 modified: 2026-05-09 17:51:57 GMT-04:00

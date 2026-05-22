@@ -1,5 +1,5 @@
 ---
-date: "2025-01-18"
+date: '2025-01-18'
 description: and mathematical framework of transformers
 id: induction heads
 modified: 2026-05-09 17:51:49 GMT-04:00

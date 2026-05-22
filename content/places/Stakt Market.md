@@ -3,9 +3,9 @@ address: 28 Bathurst St, Toronto, ON M5V 0C6, Canada
 category:
   - '[[places to go]]'
 coordinates:
-  - "43.6408185"
-  - "-79.4016875"
-date: "2025-08-05"
+  - '43.6408185'
+  - '-79.4016875'
+date: '2025-08-05'
 description: food hall with rotating vendors and communal seating
 id: Stakt Market
 modified: 2026-05-09 17:51:50 GMT-04:00

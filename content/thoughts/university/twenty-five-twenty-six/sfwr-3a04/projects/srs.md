@@ -1,5 +1,5 @@
 ---
-date: "2026-02-05"
+date: '2026-02-05'
 description: and first assignment.
 id: srs
 modified: 2026-05-09 17:51:56 GMT-04:00

@@ -1,5 +1,5 @@
 ---
-date: "2024-10-08"
+date: '2024-10-08'
 description: procedure for solving problems by intuitively effective means, including formation rules for well-formed formulas in propositional calculus.
 id: effective procedure
 modified: 2026-05-09 17:51:51 GMT-04:00

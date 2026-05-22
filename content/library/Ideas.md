@@ -4,7 +4,7 @@ aliases:
 author:
   - Edmund Husserl
 category: philosophy
-date: "2025-11-30"
+date: '2025-11-30'
 description: foundational text of transcendental phenomenology, outlining the method of eidetic reduction and the study of consciousness as pure subjectivity.
 finished: null
 id: Ideas

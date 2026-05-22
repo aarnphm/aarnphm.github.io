@@ -2,7 +2,7 @@
 author: David Wallace-Wells
 category:
   - p/fiction
-date: "2025-10-07"
+date: '2025-10-07'
 description: journalistic book about climate crisis, outlining cascading warming scenarios and their social, economic, and political consequences.
 id: The Uninhabitable Earth
 modified: 2026-05-09 17:51:34 GMT-04:00

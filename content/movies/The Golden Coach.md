@@ -3,7 +3,7 @@ category:
   - arts
   - drama
   - vintage
-date: "2026-05-09"
+date: '2026-05-09'
 description: commedia troupe meets colonial power - renoir uses theatre to test love, duty, and performance.
 director:
   - Jean Renoir

@@ -2,7 +2,7 @@
 author: Graham Greene
 category:
   - p/fiction
-date: "2022-08-21"
+date: '2022-08-21'
 description: novel of adulterous love and faith set in wartime london, mixing jealousy, guilt, and an unexpected encounter with belief.
 finished: 2024
 id: The end of the affair

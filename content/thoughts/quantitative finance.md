@@ -1,5 +1,5 @@
 ---
-date: "2025-09-08"
+date: '2025-09-08'
 description: and the bull market
 id: quantitative finance
 modified: 2026-05-09 17:51:53 GMT-04:00

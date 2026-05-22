@@ -1,5 +1,5 @@
 ---
-date: "2024-12-08"
+date: '2024-12-08'
 description: zettelkasten, contact[at]aarnphm[dot]xyz
 id: notes
 layout: technical

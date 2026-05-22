@@ -2,7 +2,7 @@
 category:
   - thriller
   - drama
-date: "2024-02-07"
+date: '2024-02-07'
 description: professional assassin hired to kill charles de gaulle—zinnemann filming meticulous procedural where you know the ending but watch anyway, edward fox's jackal crafting identities and rifles while french detective closes in, thriller proving suspense lives in the how not the what.
 director: Fred Zinnemann
 id: the-day-of-the-jackal
@@ -14,7 +14,7 @@ studio: universal
 tags:
   - seed
 title: The Day of the Jackal
-watched: "2025-10-15"
+watched: '2025-10-15'
 year: 1973
 ---
 

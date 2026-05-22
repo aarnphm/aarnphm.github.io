@@ -1,6 +1,6 @@
 ---
 category: general
-date: "2024-02-07"
+date: '2024-02-07'
 description: 1977 halloween talk show broadcast gone wrong—cairnes brothers filming found footage as lost master tape, desperate host inviting possessed girl on air for ratings, demonic chaos revealing the deal he made for fame.
 director:
   - Cameron Cairnes

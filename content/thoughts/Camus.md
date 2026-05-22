@@ -1,5 +1,5 @@
 ---
-date: "2024-02-28"
+date: '2024-02-28'
 description: and absurdism, create value by revolting against the nothingness of life.
 id: Camus
 modified: 2026-05-09 17:51:51 GMT-04:00

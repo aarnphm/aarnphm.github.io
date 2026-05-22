@@ -1,5 +1,5 @@
 ---
-date: "2024-12-14"
+date: '2024-12-14'
 description: discriminant analysis, maximum likelihood estimation, and naive bayes classification with gaussian assumptions for correlated features.
 id: probabilitic modeling
 modified: 2026-05-09 17:51:58 GMT-04:00

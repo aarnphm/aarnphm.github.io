@@ -1,6 +1,6 @@
 ---
 category: comedy
-date: "2024-02-07"
+date: '2024-02-07'
 description: ten-year-old nazi with imaginary hitler friend—waititi satirizing fascism through child's eyes, discovering jewish girl in attic forces jojo to choose between propaganda and humanity, scarlett johansson's shoes the film's most devastating image.
 director: Taika Waititi
 id: jojo-rabbit

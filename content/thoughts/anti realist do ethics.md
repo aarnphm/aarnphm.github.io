@@ -1,5 +1,5 @@
 ---
-date: "2025-03-08"
+date: '2025-03-08'
 description: an essay from Joe Carl Smith
 draft: true
 id: anti realist do ethics

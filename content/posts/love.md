@@ -1,6 +1,6 @@
 ---
 alt: valentine
-date: "2025-02-14"
+date: '2025-02-14'
 description: on loneliness, Jungian love, and belongings.
 id: love
 modified: 2026-05-09 17:51:34 GMT-04:00

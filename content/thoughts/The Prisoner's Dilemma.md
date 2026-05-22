@@ -1,5 +1,5 @@
 ---
-date: "2024-04-12"
+date: '2024-04-12'
 description: game theory thought experiment where two rational agents face cooperation versus individual reward.
 id: The Prisoner's Dilemma
 modified: 2026-05-09 17:51:55 GMT-04:00

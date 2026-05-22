@@ -3,7 +3,7 @@ category:
   - horror
   - thriller
   - survival
-date: "2026-01-07"
+date: '2026-01-07'
 description: a family surviving by silence after sound-hunting creatures arrive—krasinski strips horror down to breath control, parenthood as shield.
 director: John Krasinski
 id: a-quiet-place

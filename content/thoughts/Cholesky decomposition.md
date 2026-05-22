@@ -1,5 +1,5 @@
 ---
-date: "2024-10-28"
+date: '2024-10-28'
 description: decomposition of hermitian positive-definite matrices into lower triangular form and conjugate transpose, used for monte carlo simulations.
 id: Cholesky decomposition
 modified: 2026-05-09 17:51:53 GMT-04:00

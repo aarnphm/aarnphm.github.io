@@ -2,7 +2,7 @@
 author: Alain de Botton
 category:
   - p/fiction
-date: "2024-12-23"
+date: '2024-12-23'
 description: novelistic essay cycle tracing a relationship from first attraction to breakup, dissecting romance, projection, and everyday intimacy.
 finished: 2024
 id: Essays in Love

@@ -1,5 +1,5 @@
 ---
-date: "2024-12-10"
+date: '2024-12-10'
 description: supergraph of a function consisting of all points in cartesian product lying on or above the function's graph.
 id: epigraph
 modified: 2026-05-09 17:51:46 GMT-04:00

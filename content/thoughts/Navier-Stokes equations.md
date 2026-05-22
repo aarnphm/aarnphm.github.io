@@ -1,5 +1,5 @@
 ---
-date: "2025-11-01"
+date: '2025-11-01'
 description: partial differential equations for fluid motion. one of seven millennium problems in mathematics.
 id: navier-stokes equations
 modified: 2026-05-09 17:51:52 GMT-04:00

@@ -2,7 +2,7 @@
 category:
   - buster
   - comedy
-date: "2024-02-07"
+date: '2024-02-07'
 description: roald dahl story about gambler learning to see through cards—anderson filming benedict cumberbatch narrating his own transformation, theatrical sets rotating while characters break fourth wall, short film proving wes can make anything look like dollhouse including enlightenment.
 director: Wes Anderson
 id: the-wonderful-story-ofk-henry-sugar

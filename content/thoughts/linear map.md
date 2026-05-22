@@ -1,5 +1,5 @@
 ---
-date: "2025-08-28"
+date: '2025-08-28'
 description: structure-preserving function between vector spaces satisfying additivity and scalar multiplication, fundamental to matrices and differentiation.
 id: linear map
 modified: 2026-05-09 17:51:55 GMT-04:00

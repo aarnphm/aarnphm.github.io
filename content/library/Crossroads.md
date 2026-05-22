@@ -1,7 +1,7 @@
 ---
 author: Louise Glück
 category: poetry
-date: "2025-10-26"
+date: '2025-10-26'
 description: a late poem addressing the body with tenderness at the end of a life, speaking of love, separation, and quiet gratitude.
 external: https://griffinpoetryprize.com/poem/crossroads-gluck
 finished: 2025

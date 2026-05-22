@@ -2,7 +2,7 @@
 author: Fernand Point
 category:
   - p/nf
-date: "2025-08-13"
+date: '2025-08-13'
 description: classic french cookbook and memoir from chef fernand point, celebrating generous, intuitive cooking and the art of hospitality.
 finished: 2025
 id: Ma Gastronomie

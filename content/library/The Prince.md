@@ -1,7 +1,7 @@
 ---
 author: Niccolò Machiavelli
 category: philosophy
-date: "2025-01-05"
+date: '2025-01-05'
 description: short treatise on power that analyzes how rulers gain and keep states, often read as a cold manual of realpolitik.
 finished: 2025
 id: The Prince

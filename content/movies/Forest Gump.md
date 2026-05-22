@@ -3,7 +3,7 @@ category:
   - o/vintage
   - drama
   - love
-date: "2024-02-07"
+date: '2024-02-07'
 description: american innocence as cognitive disability—zemeckis threading simpleton through watergate and vietnam, the myth that goodness gets rewarded while sluts get aids, boomer nostalgia at its most seductive.
 director: Robert Zemeckis
 id: forest-gump

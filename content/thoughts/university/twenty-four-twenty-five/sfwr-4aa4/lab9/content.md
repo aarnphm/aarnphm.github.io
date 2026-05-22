@@ -1,5 +1,5 @@
 ---
-date: "2024-11-15"
+date: '2024-11-15'
 description: lab on deriving transfer functions and designing pid controllers from input-output signal analysis.
 id: content
 modified: 2026-05-09 17:52:00 GMT-04:00

@@ -1,5 +1,5 @@
 ---
-date: "2024-02-26"
+date: '2024-02-26'
 description: greenhouse effect toy model relating surface temperature to atmospheric layers through radiative equilibrium.
 id: Heating Cooling GH effect
 modified: 2026-05-09 17:51:56 GMT-04:00

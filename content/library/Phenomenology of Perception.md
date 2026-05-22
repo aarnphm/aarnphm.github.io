@@ -1,7 +1,7 @@
 ---
 author: Maurice Merleau-Ponty
 category: philosophy
-date: "2025-10-07"
+date: '2025-10-07'
 description: merleau ponty account of embodied perception, arguing that subject and world intertwine through lived, pre reflective experience.
 id: Phenomenology of Perception
 language: french

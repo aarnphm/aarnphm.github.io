@@ -1,5 +1,5 @@
 ---
-date: "2024-01-16"
+date: '2024-01-16'
 description: net value analysis application for laboratory decision-making with gold nanoparticle production comparing purchasing versus fabrication costs.
 id: Net value analysis
 modified: 2026-05-09 17:51:59 GMT-04:00

@@ -1,5 +1,5 @@
 ---
-date: "2024-09-10"
+date: '2024-09-10'
 description: also known as linear predictor functions
 id: Linear regression
 modified: 2026-05-09 17:51:59 GMT-04:00

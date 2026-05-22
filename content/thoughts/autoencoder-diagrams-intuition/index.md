@@ -1,5 +1,5 @@
 ---
-date: "2025-09-07"
+date: '2025-09-07'
 description: intuition for latent mapping
 id: index
 layout: L->ET|A

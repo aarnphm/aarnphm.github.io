@@ -1,5 +1,5 @@
 ---
-date: "2025-10-30"
+date: '2025-10-30'
 description: anatomy of an inference engine
 id: index
 modified: 2026-05-09 17:51:49 GMT-04:00

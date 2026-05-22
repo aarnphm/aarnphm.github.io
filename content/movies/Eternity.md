@@ -1,7 +1,7 @@
 ---
 category:
   - o/eschatology
-date: "2026-05-09"
+date: '2026-05-09'
 description: In an afterlife where souls have one week to decide where to spend eternity, Joan is faced with the impossible choice between the man she spent her life with, and her first love, who died young and has waited decades for her to arrive.
 director:
   - David Freyne
@@ -15,6 +15,6 @@ tags:
   - love
   - o/relationship
 title: Eternity
-watched: "2025-12-13"
+watched: '2025-12-13'
 year: 2025
 ---

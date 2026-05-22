@@ -1,7 +1,7 @@
 ---
 author: Thomas Sowell
 category: philosophy
-date: "2025-09-18"
+date: '2025-09-18'
 description: a study of how competing visions of human nature shape economic policy, justice debates, and modern ideological conflicts.
 id: A Conflict of Visions
 modified: 2026-05-09 17:51:38 GMT-04:00

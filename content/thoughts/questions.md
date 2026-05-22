@@ -1,5 +1,5 @@
 ---
-date: "2024-02-07"
+date: '2024-02-07'
 description: inquiry as innate learning through socratic method's hypothesis elimination and dialectical circles.
 id: questions
 modified: 2026-05-09 17:51:55 GMT-04:00

@@ -1,10 +1,10 @@
 ---
-created: "2025-09-11"
-date: "2025-09-11"
+created: '2025-09-11'
+date: '2025-09-11'
 description: bearish chart pattern when short-term moving average drops below long-term moving average, often followed by above-average returns.
 id: death cross
 modified: 2026-05-09 17:51:52 GMT-04:00
-published: "2003-11-21"
+published: '2003-11-21'
 socials:
   investopedia: https://www.investopedia.com/terms/d/deathcross.asp
 tags:

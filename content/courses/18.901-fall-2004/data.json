@@ -24,18 +24,14 @@
     "resourcetype": "Image",
     "title": "18-901f04.jpg",
     "uid": "fd6e6b71-b2a8-4ed4-cc62-a976da33a264",
-    "video_metadata": {
-      "youtube_id": null
-    }
+    "video_metadata": { "youtube_id": null }
   },
   "course_image_thumbnail": {
     "content": "d573ba99-1bf4-3b83-c5e6-3856c1db8af2",
     "website": "18-901-introduction-to-topology-fall-2004"
   },
   "course_title": "Introduction to Topology",
-  "department_numbers": [
-    "18"
-  ],
+  "department_numbers": ["18"],
   "extra_course_numbers": "",
   "image_src": "./static_resources/fd6e6b71b2a84ed4cc62a976da33a264_18-901f04.jpg",
   "instructors": [
@@ -49,25 +45,15 @@
       "url": "https://ocw.mit.edu/search/?q=Prof.+James+Munkres"
     }
   ],
-  "learning_resource_types": [
-    "Lecture Notes",
-    "Problem Sets"
-  ],
+  "learning_resource_types": ["Lecture Notes", "Problem Sets"],
   "legacy_uid": "472d0e45-8874-0011-1146-3dab1b753da0",
-  "level": [
-    "Undergraduate"
-  ],
+  "level": ["Undergraduate"],
   "primary_course_number": "18.901",
   "site_short_id": "18.901-fall-2004",
   "site_uid": "26002c22-9a0a-4847-ac50-e65ac8ec96f5",
   "site_url_path": "courses/18-901-introduction-to-topology-fall-2004",
   "term": "Fall",
   "title": "Course Metadata",
-  "topics": [
-    [
-      "Mathematics",
-      "Topology and Geometry"
-    ]
-  ],
+  "topics": [["Mathematics", "Topology and Geometry"]],
   "year": "2004"
 }

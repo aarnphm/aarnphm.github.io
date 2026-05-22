@@ -1,7 +1,7 @@
 ---
 author: '[[thoughts/Freud|Sigmund Freud]]'
 category: philosophy
-date: "2022-08-21"
+date: '2022-08-21'
 description: Freudian theory of egos within societal contract
 finished: 2023
 id: Civilisation and its Discontents

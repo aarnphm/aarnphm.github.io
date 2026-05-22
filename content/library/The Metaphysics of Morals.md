@@ -1,7 +1,7 @@
 ---
 author: Immanuel Kant
 category: philosophy
-date: "2025-10-06"
+date: '2025-10-06'
 description: kant systematic account of duties of right and virtue, connecting law, freedom, and respect for persons.
 id: Groundwork of the Metaphysics of Morals
 language: german

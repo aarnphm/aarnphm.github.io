@@ -1,7 +1,7 @@
 ---
 category:
   - thriller
-date: "2026-05-09"
+date: '2026-05-09'
 description: Grace, a writer and young mother, is slowly slipping into madness. Locked away in an old house in Montana, her increasingly agitated and erratic behaviour leaves her companion, Jackson, worried and helpless.
 director:
   - Lynne Ramsay
@@ -15,6 +15,6 @@ tags:
   - thriller
   - philosophy
 title: Die My Love
-watched: "2025-12-29"
+watched: '2025-12-29'
 year: 2025
 ---

@@ -1,5 +1,5 @@
 ---
-date: "2024-12-10"
+date: '2024-12-10'
 description: and what is she descending from, really?
 id: gradient descent
 modified: 2026-05-09 17:51:49 GMT-04:00

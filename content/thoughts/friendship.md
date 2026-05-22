@@ -1,6 +1,6 @@
 ---
 comments: true
-date: "2024-06-22"
+date: '2024-06-22'
 description: reflections on vulnerability, trust, and authentic connection in friendships, questioning whether love alloyed with utility counts as friendship at all.
 id: friendship
 modified: 2026-05-09 17:51:51 GMT-04:00

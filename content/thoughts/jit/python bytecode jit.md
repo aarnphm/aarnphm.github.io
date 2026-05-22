@@ -1,5 +1,5 @@
 ---
-date: "2025-10-05"
+date: '2025-10-05'
 description: building a JIT compiler in Python, from simple AST lowering to IR-based optimization
 id: python-bytecode-jit
 modified: 2026-05-09 17:51:53 GMT-04:00

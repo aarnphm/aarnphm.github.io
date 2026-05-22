@@ -1,7 +1,7 @@
 ---
 author: Déjà Rae
 category: poetry
-date: "2022-08-21"
+date: '2022-08-21'
 description: poetry collection about self love, healing, and returning to your own body after heartbreak and disconnection.
 id: Come Home To Yourself
 modified: 2026-05-09 17:51:39 GMT-04:00

@@ -1,5 +1,5 @@
 ---
-date: "2025-01-06"
+date: '2025-01-06'
 description: on being at ease with myself.
 draft: true
 id: tranquility

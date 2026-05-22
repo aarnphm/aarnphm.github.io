@@ -1,7 +1,7 @@
 ---
 author: A. W. Moore
 category: philosophy
-date: "2025-10-07"
+date: '2025-10-07'
 description: survey of modern metaphysics that traces how philosophers from leibniz onward make sense of reality, possibility, and existence.
 finished: 2025
 id: The Evolution of Modern Metaphysics

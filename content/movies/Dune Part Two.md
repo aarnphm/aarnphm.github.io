@@ -1,6 +1,6 @@
 ---
 category: thriller
-date: "2024-02-07"
+date: '2024-02-07'
 description: Paul Atreides unites with Chani and the Fremen while seeking revenge against the conspirators who destroyed his family
 director: Denis Villeneuve
 id: dune-part-two
@@ -13,6 +13,6 @@ tags:
   - utopia
   - p/scifi
 title: 'Dune: Part Two'
-watched: "2025-06-11"
+watched: '2025-06-11'
 year: 2024
 ---

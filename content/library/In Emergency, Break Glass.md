@@ -1,7 +1,7 @@
 ---
 author: Nate Anderson
 category: philosophy
-date: "2025-10-07"
+date: '2025-10-07'
 description: uses nietzsche to reflect on joy, resentment, and agency in a tech saturated world, offering practices for more joyful living.
 finished: 2023
 id: In Emergency, Break Glass

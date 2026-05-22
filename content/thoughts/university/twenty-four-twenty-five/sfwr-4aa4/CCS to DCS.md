@@ -1,5 +1,5 @@
 ---
-date: "2024-12-18"
+date: '2024-12-18'
 description: to find the difference equations and determine the software implementation
 id: CCS to DCS
 modified: 2026-05-09 17:51:58 GMT-04:00

@@ -5,7 +5,7 @@ author:
   - Kyle H. Wray
 category:
   - math
-date: "2026-01-15"
+date: '2026-01-15'
 description: A broad introduction to algorithms for decision making under uncertainty, introducing the underlying mathematical problem formulations and the algorithms for solving them.Automated decision-making
 external: https://algorithmsbook.com/decisionmaking
 id: Algorithms for Decision Making

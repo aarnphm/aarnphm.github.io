@@ -1,7 +1,7 @@
 ---
 author: Friedrich Nietzsche
 category: philosophy
-date: "2025-08-13"
+date: '2025-08-13'
 description: what is good and evil, what is consider morally good and wrong.
 finished: 2024
 id: Beyond Good and Evil

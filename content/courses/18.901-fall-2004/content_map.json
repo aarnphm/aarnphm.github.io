@@ -1,1 +1,25 @@
-{"0162d186-ff55-f17b-25d9-c57f6fd211cc":"/resources/18901/data.json","0f117279-ece6-ee58-d3b2-d59435a84bd7":"/resources/notes_f/data.json","16cbcb66-664d-f902-fb8f-e13897420436":"/pages/syllabus/data.json","1f0dacb1-efc4-6e13-2d4d-2cece4f41c21":"/pages/readings/data.json","2096a053-9e29-e4e3-9240-c77876483035":"/pages/calendar/data.json","29619381-9500-dc68-f6ae-dff1e470bd12":"/resources/erratafortop/data.json","4cb63501-0675-7012-4591-66df979b6643":"/resources/notes_d/data.json","534f34d4-acff-6e57-33e8-9234c5e397bf":"/resources/notes_g/data.json","5e12e0e9-3d08-bc92-b9c6-23a91291e57a":"/resources/symbol/data.json","6005873b-23fb-e788-7057-e05ccb7e9c4b":"/pages/lecture-notes/data.json","6b5c3891-15ee-c3ad-2aea-a75408240c78":"/resources/erratafortop-1/data.json","6c00ffba-d53d-2ffa-38d0-08116b7307aa":"/resources/notes_h/data.json","7ea62258-95c2-c1b4-1b22-c2b908e21e58":"/pages/assignments/data.json","890ee042-9431-ba0e-a622-73ae0043c4f2":"/resources/commentsonstyle/data.json","8fade8af-d61b-c965-7666-1ee625d076db":"/resources/notes_i/data.json","bdcbc277-a4da-063b-1355-0baf12206a6f":"/resources/notes_k/data.json","d573ba99-1bf4-3b83-c5e6-3856c1db8af2":"/resources/18-901f04-th/data.json","d6c5d6d3-0bf2-6300-b6f1-b2c278791796":"/resources/problemset_5/data.json","d9f0937d-9951-710b-8cb8-bba08fcf8d69":"/resources/notes_j/data.json","e319b3a3-6ca7-7426-1b6b-8c45e11804c2":"/resources/notes_c/data.json","f3446e76-77c3-0d7c-f692-6248861c168d":"/resources/notes_e/data.json","f93d6a1c-19be-f315-c04c-b7266e4fde2f":"/resources/notes_b/data.json","fd6e6b71-b2a8-4ed4-cc62-a976da33a264":"/resources/18-901f04/data.json"}
+{
+  "0162d186-ff55-f17b-25d9-c57f6fd211cc": "/resources/18901/data.json",
+  "0f117279-ece6-ee58-d3b2-d59435a84bd7": "/resources/notes_f/data.json",
+  "16cbcb66-664d-f902-fb8f-e13897420436": "/pages/syllabus/data.json",
+  "1f0dacb1-efc4-6e13-2d4d-2cece4f41c21": "/pages/readings/data.json",
+  "2096a053-9e29-e4e3-9240-c77876483035": "/pages/calendar/data.json",
+  "29619381-9500-dc68-f6ae-dff1e470bd12": "/resources/erratafortop/data.json",
+  "4cb63501-0675-7012-4591-66df979b6643": "/resources/notes_d/data.json",
+  "534f34d4-acff-6e57-33e8-9234c5e397bf": "/resources/notes_g/data.json",
+  "5e12e0e9-3d08-bc92-b9c6-23a91291e57a": "/resources/symbol/data.json",
+  "6005873b-23fb-e788-7057-e05ccb7e9c4b": "/pages/lecture-notes/data.json",
+  "6b5c3891-15ee-c3ad-2aea-a75408240c78": "/resources/erratafortop-1/data.json",
+  "6c00ffba-d53d-2ffa-38d0-08116b7307aa": "/resources/notes_h/data.json",
+  "7ea62258-95c2-c1b4-1b22-c2b908e21e58": "/pages/assignments/data.json",
+  "890ee042-9431-ba0e-a622-73ae0043c4f2": "/resources/commentsonstyle/data.json",
+  "8fade8af-d61b-c965-7666-1ee625d076db": "/resources/notes_i/data.json",
+  "bdcbc277-a4da-063b-1355-0baf12206a6f": "/resources/notes_k/data.json",
+  "d573ba99-1bf4-3b83-c5e6-3856c1db8af2": "/resources/18-901f04-th/data.json",
+  "d6c5d6d3-0bf2-6300-b6f1-b2c278791796": "/resources/problemset_5/data.json",
+  "d9f0937d-9951-710b-8cb8-bba08fcf8d69": "/resources/notes_j/data.json",
+  "e319b3a3-6ca7-7426-1b6b-8c45e11804c2": "/resources/notes_c/data.json",
+  "f3446e76-77c3-0d7c-f692-6248861c168d": "/resources/notes_e/data.json",
+  "f93d6a1c-19be-f315-c04c-b7266e4fde2f": "/resources/notes_b/data.json",
+  "fd6e6b71-b2a8-4ed4-cc62-a976da33a264": "/resources/18-901f04/data.json"
+}

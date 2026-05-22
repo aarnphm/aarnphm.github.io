@@ -4,7 +4,7 @@ author:
   - Elise Misao Hunchuck
   - Maya Indira Ganesh
 category: technology
-date: "2025-10-29"
+date: '2025-10-29'
 description: collection of essays and projects on ai, art, and politics, exploring how machine systems unsettle authorship, control, and resistance.
 external: https://www.creativeapplications.net/books/the-ai-anarchies-book
 id: The AI Anarchies Book

@@ -1,7 +1,7 @@
 ---
 author: Albert Camus
 category: philosophy
-date: "2025-10-07"
+date: '2025-10-07'
 description: camus essays on political violence, revolt, and solidarity, reflecting on resistance, justice, and limits after war and occupation.
 finished: 2025
 id: Resistance, Rebellion, and Death

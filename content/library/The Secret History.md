@@ -2,7 +2,7 @@
 author: Donna Tartt
 category:
   - p/fiction
-date: "2025-10-16"
+date: '2025-10-16'
 description: campus novel about a group of classics students who commit murder, blending aestheticism, guilt, and cult like friendship.
 finished: null
 id: The Secret History

@@ -1,5 +1,5 @@
 ---
-date: "2025-11-01"
+date: '2025-11-01'
 description: point-set topology to understanding perelman's proof of the poincaré conjecture.
 id: poincare
 modified: 2026-05-19 18:15:29 GMT-04:00

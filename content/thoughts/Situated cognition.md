@@ -2,7 +2,7 @@
 claude:
   session:
     738daf3e-3b62-4c88-9318-e8d61862d06a: initial research
-date: "2025-12-16"
+date: '2025-12-16'
 description: knowing is inseparable from doing
 id: Situated cognition
 modified: 2026-05-09 17:51:48 GMT-04:00

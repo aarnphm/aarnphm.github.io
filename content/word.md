@@ -1,7 +1,7 @@
 ---
 cssclasses:
   - nolist
-date: "2024-10-10"
+date: '2024-10-10'
 description: a bag of chips/words/vernacular
 id: word
 layout: technical

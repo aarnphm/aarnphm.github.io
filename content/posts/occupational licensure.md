@@ -1,5 +1,5 @@
 ---
-date: "2024-11-27"
+date: '2024-11-27'
 description: and what it meant to be an engineer
 id: occupational licensure
 modified: 2026-05-09 17:51:34 GMT-04:00

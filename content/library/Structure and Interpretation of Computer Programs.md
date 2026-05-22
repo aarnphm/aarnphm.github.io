@@ -5,7 +5,7 @@ author:
   - Harold Abelson
   - Gerald Jay Sussman
 category: technology
-date: "2025-10-06"
+date: '2025-10-06'
 description: classic computer science text using scheme to teach abstraction, recursion, interpreters, and how to think about programs as building blocks.
 finished: 2024
 id: Structure and Interpretation of Computer Programs

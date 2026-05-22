@@ -2,7 +2,7 @@
 author: George Orwell
 category:
   - p/nf
-date: "2022-08-21"
+date: '2022-08-21'
 description: orwell essay on his motives for writing, politics of language, and the link between prose style and honesty.
 finished: 2023
 id: Why I Write

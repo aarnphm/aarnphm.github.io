@@ -2,7 +2,7 @@
 author: Dr. Anna Lembke
 category:
   - p/nf
-date: "2022-08-21"
+date: '2022-08-21'
 description: examines addiction and pleasure in a dopamine saturated world, showing how compulsive behavior rewires the brain and how to rebalance it.
 finished: 2023
 id: Dopamine Nation

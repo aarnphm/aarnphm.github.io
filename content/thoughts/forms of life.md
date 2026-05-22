@@ -1,5 +1,5 @@
 ---
-date: "2025-11-19"
+date: '2025-11-19'
 description: circa PI, Wittgenstein
 id: forms of life
 modified: 2026-05-09 17:51:50 GMT-04:00
