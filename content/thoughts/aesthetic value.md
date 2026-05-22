@@ -2,7 +2,7 @@
 date: "2024-01-30"
 description: a branch of [[/thoughts/Value|value]] theory concerning what makes things aesthetically good or valuable
 id: aesthetic value
-modified: 2026-05-22 15:22:53 GMT-04:00
+modified: 2026-05-22 15:25:23 GMT-04:00
 socials:
   sep: https://plato.stanford.edu/entries/aesthetic-concept/
 tags:
@@ -43,11 +43,6 @@ aesthetic value sits among:
 > these are irreducibly distinct, potentially incommensurable. No common scale ranks aesthetic against moral value. Conflicts between value types may have no determinate resolution—not epistemic limitation but metaphysical fact.
 
 ## theories of aesthetic value
-
-- [[#aesthetic hedonism|hedonism]]
-- [[#fitting attitude theories|attitude theories]]
-- [[#network theory|network theories]]
-- [[#primitivism about aesthetic value|primitives]]
 
 ### aesthetic hedonism
 
