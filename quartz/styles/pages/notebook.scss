@@ -1,3 +1,5 @@
+@use '../../styles/variables.scss' as *;
+
 body:has(article.notebook-page) [data-article-title] {
   grid-column: var(--layout-wide-column);
 }
@@ -16,32 +18,19 @@ article.notebook-page {
     }
   }
 
-  .notebook-runtime {
+  .notebook-runtime:not(:empty) {
     margin: 0.75rem 0 1.25rem;
   }
 
-  .notebook-runtime-toolbar,
-  .notebook-runtime-cell {
+  .notebook-runtime-toolbar {
     display: flex;
     align-items: center;
     gap: 0.45rem;
     margin: 0.5rem 0;
-  }
-
-  .notebook-runtime-toolbar {
     flex-wrap: wrap;
-    align-items: center;
     padding: 0.45rem 0;
     border-top: 1px solid var(--lightgray);
     border-bottom: 1px solid var(--lightgray);
-  }
-
-  .notebook-runtime-toolbar > p,
-  .notebook-runtime-cell > p {
-    display: flex;
-    align-items: center;
-    margin: 0;
-    line-height: 1;
   }
 
   .notebook-code-cell {
@@ -191,8 +180,7 @@ article.notebook-page {
     white-space: nowrap;
   }
 
-  .notebook-runtime button,
-  .notebook-runtime-cell button {
+  .notebook-runtime button {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -209,21 +197,17 @@ article.notebook-page {
   }
 
   .notebook-runtime button:hover:not(:disabled),
-  .notebook-runtime button:focus-visible,
-  .notebook-runtime-cell button:hover:not(:disabled),
-  .notebook-runtime-cell button:focus-visible {
+  .notebook-runtime button:focus-visible {
     border-color: var(--darkgray);
     background: var(--highlight);
   }
 
-  .notebook-runtime button:disabled,
-  .notebook-runtime-cell button:disabled {
+  .notebook-runtime button:disabled {
     cursor: not-allowed;
     opacity: 0.45;
   }
 
   .notebook-runtime button[hidden],
-  .notebook-runtime-cell button[hidden],
   .notebook-cell-actions button[hidden],
   .notebook-local-source-status[hidden] {
     display: none;

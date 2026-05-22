@@ -1,6 +1,5 @@
 import type { MultiplayerServices } from './effects'
 import type { MultiplayerEvent, MultiplayerModel } from './state'
-import { populateSearchIndex } from '../scripts/search-index'
 import { getCommentPageId } from './identity'
 
 type MountDeps = {
@@ -36,6 +35,7 @@ export const mountMultiplayer = ({ dispatch, state, services }: MountDeps) => {
     dispatch({ type: 'nav.enter', pageId: getCommentPageId() })
 
     const data = await fetchData
+    const { populateSearchIndex } = await import('../scripts/search-index')
     await populateSearchIndex(data)
 
     dispatch({ type: 'nav.ready' })

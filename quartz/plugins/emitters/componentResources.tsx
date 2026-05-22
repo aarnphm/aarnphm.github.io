@@ -16,7 +16,7 @@ import pseudoScript from '../../components/scripts/clipboard-pseudo.inline'
 // @ts-ignore
 import clipboardScript from '../../components/scripts/clipboard.inline'
 // @ts-ignore
-import multiplayerScript from '../../components/scripts/collaborative-comments.inline'
+import collaborativeCommentsScript from '../../components/scripts/collaborative-comments.inline'
 // @ts-ignore
 import markerScript from '../../components/scripts/marker.inline'
 // @ts-ignore
@@ -36,11 +36,22 @@ import '../../components/mdx'
 import { QuartzComponent } from '../../types/component'
 import { QuartzEmitterPlugin } from '../../types/plugin'
 import { BuildCtx } from '../../util/ctx'
-import { FullSlug, joinSegments } from '../../util/path'
+import { FilePath, FullSlug, joinSegments } from '../../util/path'
 import { googleFontHref, joinStyles, processGoogleFonts } from '../../util/theme'
 import { write } from './helpers'
 
 const name = 'ComponentResources'
+const collaborativeCommentsClientEntry =
+  'quartz/components/scripts/collaborative-comments.client.ts'
+const notebookRuntimeClientEntry = 'quartz/components/scripts/notebook-runtime.client.ts'
+const notebookRuntimeWorkerEntry = 'quartz/components/scripts/notebook-runtime.pyodide.js'
+const notebookRuntimeBootstrapEntry = 'quartz/components/scripts/notebook-runtime.pyodide.py'
+const notebookRuntimeAssetEntries = new Set([
+  notebookRuntimeClientEntry,
+  notebookRuntimeWorkerEntry,
+  notebookRuntimeBootstrapEntry,
+  'quartz/components/scripts/notebook-code-editor.ts',
+])
 
 type ComponentResources = { css: string[]; beforeDOMLoaded: string[]; afterDOMLoaded: string[] }
 
@@ -96,6 +107,75 @@ async function joinScripts(scripts: string[]): Promise<string> {
   return res.code
 }
 
+async function writeScriptBundleOutput(ctx: BuildCtx, outputFile: { path: string; text: string }) {
+  const rel = path.relative(ctx.argv.output, outputFile.path).split(path.sep).join('/')
+  const ext = path.extname(rel) as `.${string}`
+  const slug = rel.slice(0, -ext.length) as FullSlug
+  return write({ ctx, slug, ext, content: outputFile.text })
+}
+
+async function writeNotebookRuntimeAssets(ctx: BuildCtx): Promise<FilePath[]> {
+  const outdir = path.join(ctx.argv.output, 'static/scripts')
+  const client = await bundle({
+    entryPoints: { 'notebook-runtime.client': notebookRuntimeClientEntry },
+    bundle: true,
+    minify: true,
+    platform: 'browser',
+    format: 'esm',
+    splitting: true,
+    outdir,
+    entryNames: '[name]',
+    chunkNames: 'chunks/[name]-[hash]',
+    write: false,
+  })
+  const worker = await bundle({
+    entryPoints: [notebookRuntimeWorkerEntry],
+    bundle: true,
+    minify: true,
+    platform: 'browser',
+    format: 'esm',
+    outfile: path.join(outdir, 'notebook-runtime.worker.js'),
+    loader: { '.py': 'text' },
+    write: false,
+  })
+  return await Promise.all(
+    [...client.outputFiles, ...worker.outputFiles].map(output =>
+      writeScriptBundleOutput(ctx, output),
+    ),
+  )
+}
+
+async function writeCollaborativeCommentsAssets(ctx: BuildCtx): Promise<FilePath[]> {
+  const outdir = path.join(ctx.argv.output, 'static/scripts')
+  const client = await bundle({
+    entryPoints: { 'collaborative-comments.client': collaborativeCommentsClientEntry },
+    bundle: true,
+    minify: true,
+    platform: 'browser',
+    format: 'esm',
+    splitting: true,
+    outdir,
+    entryNames: '[name]',
+    chunkNames: 'chunks/[name]-[hash]',
+    write: false,
+  })
+  return await Promise.all(client.outputFiles.map(output => writeScriptBundleOutput(ctx, output)))
+}
+
+function isNotebookRuntimeAssetChange(changePath: string): boolean {
+  return notebookRuntimeAssetEntries.has(changePath)
+}
+
+function isCollaborativeCommentsAssetChange(changePath: string): boolean {
+  return (
+    changePath === collaborativeCommentsClientEntry ||
+    changePath === 'quartz/components/scripts/markdown-editor.ts' ||
+    changePath === 'quartz/components/scripts/search-index.ts' ||
+    changePath.startsWith('quartz/components/multiplayer/') ||
+    changePath.startsWith('quartz/functional/')
+  )
+}
+
 function addGlobalPageResources(ctx: BuildCtx, componentResources: ComponentResources) {
   const cfg = ctx.cfg.configuration
   const resolvedPetScript = petScript.replace(
@@ -118,7 +198,7 @@ function addGlobalPageResources(ctx: BuildCtx, componentResources: ComponentReso
     protectedScript,
     audioScript,
     baseMapScript,
-    multiplayerScript,
+    collaborativeCommentsScript,
     resolvedPetScript,
   )
 
@@ -127,7 +207,7 @@ function addGlobalPageResources(ctx: BuildCtx, componentResources: ComponentReso
     componentResources.afterDOMLoaded.push(`
       const plausibleScript = document.createElement("script")
       plausibleScript.src = "${plausibleHost}/js/script.outbound-links.manual.js"
-      plausibleScript.setAttribute("data-domain", [location.hostname, "notes.aarnphm.xyz", "stream.aarnphm.xyz"].join(','))
+      plausibleScript.setAttribute("data-domain", [location.hostname, "stream.aarnphm.xyz"].join(','))
       plausibleScript.setAttribute("data-api", "/_plausible/event")
       plausibleScript.defer = true
       plausibleScript.onload = () => {
@@ -262,8 +342,28 @@ export const ComponentResources: QuartzEmitterPlugin = () => {
         const name = path.basename(src).replace(/\.ts$/, '')
         yield write({ ctx, slug: name as FullSlug, ext: '.js', content: code })
       }
+
+      for (const file of await writeNotebookRuntimeAssets(ctx)) {
+        yield file
+      }
+
+      for (const file of await writeCollaborativeCommentsAssets(ctx)) {
+        yield file
+      }
     },
     async *partialEmit(ctx, _content, _resources, changeEvents) {
+      if (changeEvents.some(changeEvent => isNotebookRuntimeAssetChange(changeEvent.path))) {
+        for (const file of await writeNotebookRuntimeAssets(ctx)) {
+          yield file
+        }
+      }
+
+      if (changeEvents.some(changeEvent => isCollaborativeCommentsAssetChange(changeEvent.path))) {
+        for (const file of await writeCollaborativeCommentsAssets(ctx)) {
+          yield file
+        }
+      }
+
       for (const changeEvent of changeEvents) {
         if (!changeEvent.path.endsWith('.worker.ts')) continue
         if (changeEvent.type === 'delete') {

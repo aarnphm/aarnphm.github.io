@@ -67,6 +67,10 @@ describe('notebook browser runtime output', () => {
       unsupportedNotebookRuntimeReason('%%writefile x.py'),
       'cell magics are unavailable in the browser runtime',
     )
+    assert.strictEqual(unsupportedNotebookRuntimeReason('%pip install numpy'), undefined)
+    assert.strictEqual(unsupportedNotebookRuntimeReason('!pip install pandas'), undefined)
+    assert.strictEqual(unsupportedNotebookRuntimeReason('!uv pip install seaborn'), undefined)
+    assert.strictEqual(unsupportedNotebookRuntimeReason('!python -m pip install rich'), undefined)
     assert.strictEqual(unsupportedNotebookRuntimeReason('print("hi")'), undefined)
   })
 

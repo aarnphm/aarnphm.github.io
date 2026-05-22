@@ -1,8 +1,8 @@
+import type { MarkdownEditor, MarkdownEditorConfig } from '../scripts/markdown-editor'
 import type { MultiplayerComment, OperationInput } from './model'
 import type { MultiplayerEvent, MultiplayerModel } from './state'
 import { renderMarkdown } from '../../util/markdown-renderer'
 import { getFullSlug } from '../../util/path'
-import { MarkdownEditor } from '../scripts/markdown-editor'
 import {
   computeStructuralAnchor,
   getArticleText,
@@ -11,6 +11,14 @@ import {
   recoverFromStructuralAnchor,
 } from './anchor'
 import { getAuthor, getAvatarUrl, getCommentPageId } from './identity'
+
+let markdownEditorModule: Promise<typeof import('../scripts/markdown-editor')> | null = null
+
+async function createMarkdownEditor(config: MarkdownEditorConfig): Promise<MarkdownEditor> {
+  markdownEditorModule ??= import('../scripts/markdown-editor')
+  const { MarkdownEditor } = await markdownEditorModule
+  return new MarkdownEditor(config)
+}
 
 type UiDeps = {
   getState: () => MultiplayerModel
@@ -297,7 +305,7 @@ export function createCommentsUi({ getState, dispatch, canResolveComment }: UiDe
     setTimeout(() => document.addEventListener('mousedown', closeOnClickOutside), 0)
   }
 
-  const enterEditMode = (comment: MultiplayerComment, textElement: HTMLElement) => {
+  const enterEditMode = async (comment: MultiplayerComment, textElement: HTMLElement) => {
     const wrapper = document.createElement('div')
     wrapper.className = 'comment-edit-wrapper'
 
@@ -347,13 +355,6 @@ export function createCommentsUi({ getState, dispatch, canResolveComment }: UiDe
       exitEditMode()
     }
 
-    markdownEditor = new MarkdownEditor({
-      parent: editorMount,
-      initialContent: comment.content,
-      onSubmit: () => saveButton.click(),
-      onCancel: exitEditMode,
-    })
-
     inputContent.appendChild(editorMount)
     actions.appendChild(cancelButton)
     actions.appendChild(saveButton)
@@ -363,7 +364,19 @@ export function createCommentsUi({ getState, dispatch, canResolveComment }: UiDe
     textElement.style.display = 'none'
     textElement.parentNode?.insertBefore(wrapper, textElement)
 
-    markdownEditor.focus()
+    markdownEditor = await createMarkdownEditor({
+      parent: editorMount,
+      initialContent: comment.content,
+      onSubmit: () => saveButton.click(),
+      onCancel: exitEditMode,
+    })
+
+    if (wrapper.isConnected) {
+      markdownEditor.focus()
+    } else {
+      markdownEditor.destroy()
+      markdownEditor = null
+    }
   }
 
   const showDeleteConfirmation = (
@@ -487,7 +500,11 @@ export function createCommentsUi({ getState, dispatch, canResolveComment }: UiDe
       const buttonRect = actions.getBoundingClientRect()
       showActionsPopover(
         buttonRect,
-        () => enterEditMode(comment, text),
+        () => {
+          void enterEditMode(comment, text).catch(error => {
+            console.error('failed to enter comment edit mode', error)
+          })
+        },
         () => showDeleteConfirmation(comment),
         comment.id,
         comment.parentId !== null,
@@ -666,7 +683,7 @@ export function createCommentsUi({ getState, dispatch, canResolveComment }: UiDe
     lexicalWrapper.className = 'lexical-wrapper'
 
     const editorMount = document.createElement('div')
-    let replyEditor: MarkdownEditor
+    let replyEditor: MarkdownEditor | null = null
 
     const placeholderWrapper = document.createElement('div')
     placeholderWrapper.setAttribute('aria-hidden', 'true')
@@ -695,6 +712,8 @@ export function createCommentsUi({ getState, dispatch, canResolveComment }: UiDe
     replyButton.onclick = async () => {
       if (replyButton.getAttribute('aria-disabled') === 'true') return
 
+      if (!replyEditor) return
+
       const content = replyEditor.getValue().trim()
       if (!content) return
 
@@ -721,21 +740,6 @@ export function createCommentsUi({ getState, dispatch, canResolveComment }: UiDe
       replyButton.setAttribute('aria-disabled', 'true')
     }
 
-    replyEditor = new MarkdownEditor({
-      parent: editorMount,
-      onChange: content => {
-        const isEmpty = content.trim().length === 0
-        if (isEmpty) {
-          inputSectionWrapper.classList.add('composer-empty')
-          replyButton.setAttribute('aria-disabled', 'true')
-        } else {
-          inputSectionWrapper.classList.remove('composer-empty')
-          replyButton.setAttribute('aria-disabled', 'false')
-        }
-      },
-      onSubmit: () => replyButton.click(),
-    })
-
     lexicalWrapper.appendChild(editorMount)
     lexicalWrapper.appendChild(placeholderWrapper)
     primitiveWrapper.appendChild(lexicalWrapper)
@@ -753,6 +757,31 @@ export function createCommentsUi({ getState, dispatch, canResolveComment }: UiDe
     modal.appendChild(replyComposerContainer)
 
     document.body.appendChild(modal)
+
+    void createMarkdownEditor({
+      parent: editorMount,
+      onChange: content => {
+        const isEmpty = content.trim().length === 0
+        if (isEmpty) {
+          inputSectionWrapper.classList.add('composer-empty')
+          replyButton.setAttribute('aria-disabled', 'true')
+        } else {
+          inputSectionWrapper.classList.remove('composer-empty')
+          replyButton.setAttribute('aria-disabled', 'false')
+        }
+      },
+      onSubmit: () => replyButton.click(),
+    })
+      .then(editor => {
+        if (editorMount.isConnected) {
+          replyEditor = editor
+        } else {
+          editor.destroy()
+        }
+      })
+      .catch(error => {
+        console.error('failed to load comment reply editor', error)
+      })
 
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === 'Escape' && activeModal === modal) {
@@ -805,7 +834,7 @@ export function createCommentsUi({ getState, dispatch, canResolveComment }: UiDe
     placeholderText.textContent = 'Commentaire (compatible markdown)'
     placeholderWrapper.appendChild(placeholderText)
 
-    let editor: MarkdownEditor
+    let editor: MarkdownEditor | null = null
 
     const submitButton = document.createElement('button')
     submitButton.className = 'composer-submit'
@@ -813,6 +842,8 @@ export function createCommentsUi({ getState, dispatch, canResolveComment }: UiDe
     submitButton.innerHTML = `<span class="icon"><svg width="24" height="24" fill="none" viewBox="0 0 24 24"><path fill="currentColor" fill-rule="evenodd" d="M12 16a.5.5 0 0 1-.5-.5V8.707l-3.146 3.147a.5.5 0 0 1-.708-.708l4-4a.5.5 0 0 1 .708 0l4 4a.5.5 0 0 1-.708.708L12.5 8.707V15.5a.5.5 0 0 1-.5.5" clip-rule="evenodd"></path></svg></span>`
 
     submitButton.onclick = async () => {
+      if (!editor) return
+
       const content = editor.getValue().trim()
       if (!content) return
 
@@ -840,7 +871,14 @@ export function createCommentsUi({ getState, dispatch, canResolveComment }: UiDe
       hideComposer()
     }
 
-    editor = new MarkdownEditor({
+    inputContainer.appendChild(editorMount)
+    inputContainer.appendChild(placeholderWrapper)
+    inputWrapper.appendChild(inputContainer)
+    inputWrapper.appendChild(submitButton)
+    composer.appendChild(inputWrapper)
+    document.body.appendChild(composer)
+
+    editor = await createMarkdownEditor({
       parent: editorMount,
       onChange: content => {
         const trimmed = content.trim()
@@ -855,14 +893,12 @@ export function createCommentsUi({ getState, dispatch, canResolveComment }: UiDe
       onCancel: () => hideComposer(),
     })
 
-    inputContainer.appendChild(editorMount)
-    inputContainer.appendChild(placeholderWrapper)
-    inputWrapper.appendChild(inputContainer)
-    inputWrapper.appendChild(submitButton)
-    composer.appendChild(inputWrapper)
-    document.body.appendChild(composer)
-
-    editor.focus()
+    if (composer.isConnected) {
+      editor.focus()
+    } else {
+      editor.destroy()
+      editor = null
+    }
   }
 
   const handleTextSelection = () => {

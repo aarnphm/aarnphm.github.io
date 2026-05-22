@@ -1,46 +1,17 @@
-import { start } from '../../functional'
-import {
-  createState,
-  reduce,
-  runMultiplayerEffect,
-  type MultiplayerServices,
-  type MultiplayerEffect,
-  mountMultiplayer,
-  createWebSocketManager,
-  getCommentPageId,
-  createCommentsUi,
-} from '../multiplayer'
+let collaborativeCommentsModule: Promise<{ mountCollaborativeComments: () => void }> | undefined
+
+function scriptAssetUrl(name: string) {
+  return new URL(`static/scripts/${name}`, import.meta.url).href
+}
+
+async function mountCollaborativeComments() {
+  collaborativeCommentsModule ??= import(scriptAssetUrl('collaborative-comments.client.js'))
+  const comments = await collaborativeCommentsModule
+  comments.mountCollaborativeComments()
+}
 
 document.addEventListener('nav', () => {
-  let services: MultiplayerServices | null = null
-  const resolveAliases = new Set(['aarnphm', 'aarnphm-local'])
-
-  const program = start({
-    init: () => ({ model: createState(), effects: [] as MultiplayerEffect[] }),
-    reduce,
-    effects: (effect, ctx) => {
-      if (!services) return
-      return runMultiplayerEffect(effect, ctx, services)
-    },
-    subscriptions: ctx => {
-      services = {
-        ui: createCommentsUi({
-          getState: ctx.retrieve,
-          dispatch: ctx.dispatch,
-          canResolveComment: () => {
-            const login = localStorage.getItem('comment-author-github-login')
-            if (!login) return false
-            return resolveAliases.has(login.toLowerCase())
-          },
-        }),
-        ws: createWebSocketManager({
-          getState: ctx.retrieve,
-          dispatch: ctx.dispatch,
-          getPageId: getCommentPageId,
-        }),
-      }
-      return mountMultiplayer({ dispatch: ctx.dispatch, state: ctx.retrieve, services })
-    },
+  void mountCollaborativeComments().catch(error => {
+    console.error('failed to mount collaborative comments', error)
   })
-  window.addCleanup(program.stop)
 })
