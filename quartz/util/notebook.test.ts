@@ -1,6 +1,28 @@
 import assert from 'node:assert'
 import test, { describe } from 'node:test'
+import rehypeRaw from 'rehype-raw'
+import remarkParse from 'remark-parse'
+import remarkRehype from 'remark-rehype'
+import { unified } from 'unified'
 import { notebookRuntimeData, notebookTitle, notebookToMarkdown, parseNotebook } from './notebook'
+
+type HastElement = {
+  type: string
+  tagName?: string
+  properties?: Record<string, unknown>
+  children?: HastElement[]
+}
+
+function findElement(
+  node: HastElement,
+  predicate: (node: HastElement) => boolean,
+): HastElement | undefined {
+  if (predicate(node)) return node
+  for (const child of node.children ?? []) {
+    const found = findElement(child, predicate)
+    if (found) return found
+  }
+}
 
 describe('notebook parser', () => {
   test('converts markdown and code cells into quartz markdown', () => {
@@ -231,18 +253,54 @@ describe('notebook parser', () => {
     })
 
     assert.match(markdown, /data-notebook-runtime-data/)
+    assert.match(markdown, /notebook-runtime-toolbar/)
+    assert.match(markdown, /data-notebook-run-all/)
+    assert.match(markdown, /data-notebook-stop/)
+    assert.match(markdown, /data-notebook-reset/)
+    assert.match(markdown, /Run all/)
+    assert.match(markdown, /class="notebook-code-cell" data-notebook-cell-frame="cell-1"/)
     assert.match(markdown, /data-notebook-cell="cell-1"/)
-    assert.doesNotMatch(markdown, /notebook-runtime-toolbar/)
-    assert.doesNotMatch(markdown, /data-notebook-run-all/)
-    assert.doesNotMatch(markdown, /data-notebook-stop/)
-    assert.doesNotMatch(markdown, /data-notebook-reset/)
-    assert.doesNotMatch(markdown, /data-notebook-execution-label/)
-    assert.doesNotMatch(markdown, /data-notebook-run-cell/)
-    assert.doesNotMatch(markdown, /Run all/)
+    assert.match(markdown, /data-notebook-execution-label="cell-1"/)
+    assert.match(markdown, /In \[ \]:/)
+    assert.match(markdown, /data-notebook-run-cell="cell-1"/)
+    assert.match(markdown, /data-notebook-edit-cell="cell-1"/)
+    assert.match(markdown, /data-notebook-source-editor="cell-1"/)
     const payload = markdown.match(/<script type="application\/json"[^>]*>(.*?)<\/script>/s)
     assert(payload)
     assert.doesNotMatch(payload[1], /<\/script>/i)
     assert.match(markdown, /\\u003c\/script\\u003e/)
+  })
+
+  test('keeps parsed code fences inside the pre-emitted runtime cell frame', async () => {
+    const notebook = parseNotebook(
+      JSON.stringify({
+        metadata: { language_info: { name: 'python' } },
+        cells: [{ cell_type: 'code', source: 'x = 1' }],
+      }),
+      'runtime.ipynb',
+    )
+
+    const markdown = notebookToMarkdown(notebook, 'runtime.ipynb', {
+      runtime: { enabled: true, sourcePath: 'runtime.ipynb' },
+    })
+    const processor = unified()
+      .use(remarkParse)
+      .use(remarkRehype, { allowDangerousHtml: true })
+      .use(rehypeRaw)
+    const tree = (await processor.run(processor.parse(markdown))) as HastElement
+    const frame = findElement(
+      tree,
+      node => node.tagName === 'div' && node.properties?.dataNotebookCellFrame === 'cell-1',
+    )
+
+    assert(frame)
+    assert(findElement(frame, node => node.tagName === 'pre'))
+    assert(
+      findElement(
+        frame,
+        node => node.tagName === 'div' && node.properties?.dataNotebookSourceEditor === 'cell-1',
+      ),
+    )
   })
 
   test('leaves non-python notebooks without runtime controls', () => {
