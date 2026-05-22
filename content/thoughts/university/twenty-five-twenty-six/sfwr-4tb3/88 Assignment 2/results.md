@@ -59,11 +59,13 @@ Write grammars as below with NLTK and draw the parse trees with NLTK
 
 Consider following grammar for arithmetic expressions:
 
-```
-expression  →  [ '+' | '–' ] term { ( '+' | '–' ) term }
-term  →  factor { ( '×' | '/' ) factor }
-factor  →  number | identifier | '(' expression ')'
-```
+$$
+\begin{aligned}
+\text{expression} &\to [\,\texttt{'+'} \mid \texttt{'–'}\,]\,\text{term}\,\{\,(\,\texttt{'+'} \mid \texttt{'–'}\,)\,\text{term}\,\} \\
+\text{term}       &\to \text{factor}\,\{\,(\,\texttt{'} \times \texttt{'} \mid \texttt{'/'}\,)\,\text{factor}\,\} \\
+\text{factor}     &\to \text{number} \mid \text{identifier} \mid \texttt{'('}\,\text{expression}\,\texttt{')'}
+\end{aligned}
+$$
 
 ### part 1.
 

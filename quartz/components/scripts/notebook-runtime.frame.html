@@ -1,0 +1,131 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+  </head>
+  <body>
+    <script>
+      const source = 'quartz-notebook-runtime'
+      let runtimeId = ''
+      let assetSequence = 0
+      const pendingAssets = new Map()
+
+      function post(message, transfer) {
+        parent.postMessage({ source, runtimeId, ...message }, '*', transfer || [])
+      }
+
+      function textOf(value) {
+        if (value === undefined || value === null) return ''
+        if (typeof value === 'string') return value
+        try {
+          return String(value)
+        } catch {
+          return Object.prototype.toString.call(value)
+        }
+      }
+
+      function emitOutput(cellId, output) {
+        if (!cellId) return
+        post({ type: 'output', cellId, output })
+      }
+
+      function sanitizeDisplayElement(element) {
+        element
+          .querySelectorAll('script, iframe, object, embed, link, meta, base')
+          .forEach(node => node.remove())
+        element.querySelectorAll('*').forEach(node => {
+          for (const attr of Array.from(node.attributes)) {
+            const name = attr.name.toLowerCase()
+            const value = attr.value.trim().toLowerCase()
+            if (name.startsWith('on')) node.removeAttribute(attr.name)
+            if (
+              (name === 'href' || name === 'src' || name === 'xlink:href') &&
+              value.startsWith('javascript:')
+            ) {
+              node.removeAttribute(attr.name)
+            }
+          }
+        })
+      }
+
+      function sandboxFetch(input, cellId) {
+        const url = typeof input === 'string' ? input : input && input.url
+        if (typeof url !== 'string') return Promise.reject(new Error('unsupported fetch input'))
+        const assetId = 'display-asset-' + ++assetSequence
+        post({ type: 'asset', cellId, assetId, url })
+        return new Promise((resolve, reject) => {
+          pendingAssets.set(assetId, { resolve, reject })
+        })
+      }
+
+      async function runDisplay(message) {
+        const cellId = message.cellId
+        const element = document.createElement('div')
+        const appendStream = payload => {
+          emitOutput(cellId, {
+            type: 'stream',
+            name: textOf((payload && payload.name) || 'stdout'),
+            text: textOf(payload && payload.text),
+          })
+        }
+        const context = { append_stream: appendStream }
+        try {
+          const runner = new Function(
+            'element',
+            'append_stream',
+            'fetch',
+            'return (async function () {' + textOf(message.code) + '\n}).call(this)',
+          )
+          await runner.call(context, element, appendStream, input => sandboxFetch(input, cellId))
+          sanitizeDisplayElement(element)
+          if (element.innerHTML.trim())
+            emitOutput(cellId, { type: 'html', html: element.innerHTML })
+        } catch (error) {
+          const text = textOf(error)
+          const output = {
+            type: 'error',
+            ename: error && error.name ? textOf(error.name) : 'Error',
+            evalue: text,
+            traceback: error && error.stack ? textOf(error.stack) : text,
+          }
+          if (message.debug) {
+            output.debug = {
+              phase: 'display-javascript',
+              cellId,
+              errorName: error && error.name ? textOf(error.name) : 'Error',
+              errorMessage: text,
+              stack: error && error.stack ? textOf(error.stack) : undefined,
+            }
+          }
+          emitOutput(cellId, output)
+        }
+      }
+
+      window.addEventListener('message', event => {
+        const message = event.data
+        if (!message || message.source !== source) return
+        if (message.type === 'init') {
+          runtimeId = message.runtimeId
+          post({ type: 'ready' })
+        } else if (message.type === 'run-display' && message.runtimeId === runtimeId) {
+          runDisplay(message)
+        } else if (message.type === 'asset-result' && message.runtimeId === runtimeId) {
+          const pending = pendingAssets.get(message.assetId)
+          if (!pending) return
+          pendingAssets.delete(message.assetId)
+          if (!message.ok) {
+            pending.reject(new Error(message.error || 'failed to fetch notebook asset'))
+            return
+          }
+          pending.resolve(
+            new Response(message.bytes, {
+              status: message.status,
+              statusText: message.statusText,
+              headers: { 'content-type': message.contentType || 'application/octet-stream' },
+            }),
+          )
+        }
+      })
+    </script>
+  </body>
+</html>

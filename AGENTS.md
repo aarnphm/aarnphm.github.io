@@ -8,8 +8,10 @@ This means: no fallbacks, no hacks, no shortcuts. Production-grade, Google-quali
 
 - do not write comments
 - use `pnpm` by default, oxlint, oxfmt, tsgo for the new Go compiler.
+- filename should always, always use `snake-case.ts` in `quartz/util`
 - do not run bundle or build; assume the user runs `dev.ts` and inspect the running process instead of spawning your own
 - do not commit secrets; use `.env` locally and Cloudflare Secrets for the worker
 - transformers under @quartz/plugins/transformers/ MUST NOT use filesystem access
 - when thinking hard about a problem, use extended thinking as much as possible to reason hard about a problem.
 - always use fd, rg as tools (assume these are installed by default)
+- never writes math symbol in ASCII in markdown, and you should ALWAYS write latex block accordingly.

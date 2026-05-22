@@ -205,12 +205,28 @@ article.notebook-page {
     font-size: 0.82rem;
     line-height: 1.2;
     cursor: pointer;
+    transition:
+      background-color 140ms ease,
+      border-color 140ms ease,
+      color 140ms ease,
+      opacity 140ms ease,
+      scale 140ms ease;
   }
 
   .notebook-runtime button:hover:not(:disabled),
   .notebook-runtime button:focus-visible {
     border-color: var(--darkgray);
     background: var(--highlight);
+  }
+
+  .notebook-runtime button[aria-pressed='true'] {
+    border-color: var(--darkgray);
+    background: var(--highlight);
+    color: var(--dark);
+  }
+
+  .notebook-runtime button:active:not(:disabled) {
+    scale: 0.96;
   }
 
   .notebook-runtime button:disabled {
@@ -352,6 +368,11 @@ article.notebook-page {
   .notebook-output-stream-stderr,
   .notebook-output-error {
     border-left-color: var(--secondary);
+  }
+
+  .notebook-output-debug {
+    border-left-color: var(--tertiary);
+    background: color-mix(in srgb, var(--light) 88%, var(--lightgray));
   }
 
   .notebook-output-stream-stdin {

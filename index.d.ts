@@ -18,6 +18,11 @@ declare module '*.inline.js' {
   export default content
 }
 
+declare module '*.html' {
+  const content: string
+  export default content
+}
+
 // dom custom event
 interface CustomEventMap {
   prenav: CustomEvent<{}>

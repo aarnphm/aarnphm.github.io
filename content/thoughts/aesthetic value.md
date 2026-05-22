@@ -1,8 +1,8 @@
 ---
-date: '2024-01-30'
+date: "2024-01-30"
 description: a branch of [[/thoughts/Value|value]] theory concerning what makes things aesthetically good or valuable
 id: aesthetic value
-modified: 2026-05-09 17:51:52 GMT-04:00
+modified: 2026-05-22 15:22:53 GMT-04:00
 socials:
   sep: https://plato.stanford.edu/entries/aesthetic-concept/
 tags:
@@ -45,9 +45,9 @@ aesthetic value sits among:
 ## theories of aesthetic value
 
 - [[#aesthetic hedonism|hedonism]]
-- [[#fitting attitude theories]]
-- [[#network theory]]
-- [[#primitivism about aesthetic value]]
+- [[#fitting attitude theories|attitude theories]]
+- [[#network theory|network theories]]
+- [[#primitivism about aesthetic value|primitives]]
 
 ### aesthetic hedonism
 

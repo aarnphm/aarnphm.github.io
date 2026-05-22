@@ -223,6 +223,8 @@ function notebookRuntimeControls(data: NotebookRuntimeData): string[] {
       '<button type="button" data-notebook-run-all>Run all</button>',
       '<button type="button" data-notebook-stop disabled>Stop</button>',
       '<button type="button" data-notebook-reset>Reset runtime</button>',
+      '<button type="button" data-notebook-debug aria-pressed="false">Debug</button>',
+      '<button type="button" data-notebook-vim-mode aria-pressed="false">Vim</button>',
       '<span class="notebook-runtime-status" data-notebook-status aria-live="polite">idle</span>',
       '</div>',
       '</div>',

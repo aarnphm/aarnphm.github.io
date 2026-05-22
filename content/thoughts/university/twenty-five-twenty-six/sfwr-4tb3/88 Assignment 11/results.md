@@ -13,54 +13,54 @@ title: 'Assignment 11: Earley and PEG Parsing'
 
 ### Part 1: Earley parsing table for `a+a+a` with grammar G1
 
-G1 = (`S→E`, `E→a`, `E→E+E`)
+$G_1 = (S \to E,\ E \to a,\ E \to E+E)$
 
-| step |     | set  | item      |
-| :--- | :-- | :--- | :-------- |
-| 0    |     | s[0] | S→ •E, 0  |
-| 1    | P   | s[0] | E→•a, 0   |
-| 2    | P   | s[0] | E→•E+E, 0 |
-| 3    | M   | s[1] | E→a•, 0   |
-| 4    | C   | s[1] | S→E•, 0   |
-| 5    | C   | s[1] | E→E•+E, 0 |
-| 6    | M   | s[2] | E→E+•E, 0 |
-| 7    | P   | s[2] | E→•a, 2   |
-| 8    | P   | s[2] | E→•E+E, 2 |
-| 9    | M   | s[3] | E→a•, 2   |
-| 10   | C   | s[3] | E→E•+E, 2 |
-| 11   | C   | s[3] | E→E+E•, 0 |
-| 12   | M   | s[4] | E→E+•E, 2 |
-| 13   | C   | s[3] | S→E•, 0   |
-| 14   | C   | s[3] | E→E•+E, 0 |
-| 15   | M   | s[4] | E→E+•E, 0 |
-| 16   | P   | s[4] | E→•a, 4   |
-| 17   | P   | s[4] | E→•E+E, 4 |
-| 18   | M   | s[5] | E→a•, 4   |
-| 19   | C   | s[5] | E→E+E•, 2 |
-| 20   | C   | s[5] | E→E•+E, 4 |
-| 21   | C   | s[5] | E→E+E•, 0 |
-| 22   | C   | s[5] | E→E•+E, 2 |
-| 23   | C   | s[5] | E→E+E•, 0 |
-| 24   | C   | s[5] | S→E•, 0   |
-| 25   | C   | s[5] | E→E•+E, 0 |
+| step |     | set    | item                    |
+| :--- | :-- | :----- | :---------------------- |
+| 0    |     | $s[0]$ | $S \to \bullet E, 0$    |
+| 1    | P   | $s[0]$ | $E \to \bullet a, 0$    |
+| 2    | P   | $s[0]$ | $E \to \bullet E+E, 0$  |
+| 3    | M   | $s[1]$ | $E \to a \bullet, 0$    |
+| 4    | C   | $s[1]$ | $S \to E \bullet, 0$    |
+| 5    | C   | $s[1]$ | $E \to E \bullet +E, 0$ |
+| 6    | M   | $s[2]$ | $E \to E+ \bullet E, 0$ |
+| 7    | P   | $s[2]$ | $E \to \bullet a, 2$    |
+| 8    | P   | $s[2]$ | $E \to \bullet E+E, 2$  |
+| 9    | M   | $s[3]$ | $E \to a \bullet, 2$    |
+| 10   | C   | $s[3]$ | $E \to E \bullet +E, 2$ |
+| 11   | C   | $s[3]$ | $E \to E+E \bullet, 0$  |
+| 12   | M   | $s[4]$ | $E \to E+ \bullet E, 2$ |
+| 13   | C   | $s[3]$ | $S \to E \bullet, 0$    |
+| 14   | C   | $s[3]$ | $E \to E \bullet +E, 0$ |
+| 15   | M   | $s[4]$ | $E \to E+ \bullet E, 0$ |
+| 16   | P   | $s[4]$ | $E \to \bullet a, 4$    |
+| 17   | P   | $s[4]$ | $E \to \bullet E+E, 4$  |
+| 18   | M   | $s[5]$ | $E \to a \bullet, 4$    |
+| 19   | C   | $s[5]$ | $E \to E+E \bullet, 2$  |
+| 20   | C   | $s[5]$ | $E \to E \bullet +E, 4$ |
+| 21   | C   | $s[5]$ | $E \to E+E \bullet, 0$  |
+| 22   | C   | $s[5]$ | $E \to E \bullet +E, 2$ |
+| 23   | C   | $s[5]$ | $E \to E+E \bullet, 0$  |
+| 24   | C   | $s[5]$ | $S \to E \bullet, 0$    |
+| 25   | C   | $s[5]$ | $E \to E \bullet +E, 0$ |
 
-The item `S→E•, 0` appears in s[5], confirming that `a+a+a` is accepted.
+The item $S \to E \bullet, 0$ appears in $s[5]$, confirming that `a+a+a` is accepted.
 
 ### Part 2: Two derivation sequences
 
-The ambiguous grammar G1 = (`S→E`, `E→a`, `E→E+E`) allows two distinct leftmost derivations of `a+a+a`:
+The ambiguous grammar $G_1 = (S \to E,\ E \to a,\ E \to E+E)$ allows two distinct leftmost derivations of `a+a+a`:
 
-**Derivation 1** (left-associative, `(a+a)+a`):
+**Derivation 1** (left-associative, $(a+a)+a$):
 
 $$S \Rightarrow E \Rightarrow E+E \Rightarrow E+E+E \Rightarrow a+E+E \Rightarrow a+a+E \Rightarrow a+a+a$$
 
-Here the left `E` in `E+E` is expanded first as `E+E`, yielding `(E+E)+E`.
+Here the left $E$ in $E+E$ is expanded first as $E+E$, yielding $(E+E)+E$.
 
-**Derivation 2** (right-associative, `a+(a+a)`):
+**Derivation 2** (right-associative, $a+(a+a)$):
 
 $$S \Rightarrow E \Rightarrow E+E \Rightarrow a+E \Rightarrow a+E+E \Rightarrow a+a+E \Rightarrow a+a+a$$
 
-Here the left `E` in `E+E` is expanded as `a`, and the right `E` is then expanded as `E+E`, yielding `E+(E+E)`.
+Here the left $E$ in $E+E$ is expanded as $a$, and the right $E$ is then expanded as $E+E$, yielding $E+(E+E)$.
 
 ---
 
@@ -96,7 +96,7 @@ def parse(g, x, log = False):
     return {σ for (A, σ, τ, j) in s[n] if A == S and τ == '' and j == 0}
 ```
 
-**Line 1** (complete step): Changed `μ + ν[0]` to `μ + ν[0] + '(' + σ + ')'`. When nonterminal `A` completes with recognized string `σ`, the parent item records `A(σ)` instead of just `A`.
+**Line 1** (complete step): Changed `μ + ν[0]` to `μ + ν[0] + '(' + σ + ')'`. When nonterminal $A$ completes with recognized string $\sigma$, the parent item records $A(\sigma)$ instead of just $A$.
 
 **Line 2** (return): Changed `(S, π, '', 0) in s[n]` to `{σ for (A, σ, τ, j) in s[n] if A == S and τ == '' and j == 0}`. Collects all distinct tree strings from completed start-symbol items.
 
@@ -287,4 +287,4 @@ class StatementMemoizing(StatementBacktrack):
         return self.memo[('statement', k)]
 ```
 
-Each nonterminal parsing function checks the memo table `(name, position)` before computing. If cached, returns immediately. Otherwise computes via `super()`, stores the result, and returns it. The `super()` calls resolve to the backtracking implementations, which in turn call `self.ident`, `self.selector` etc. on the memoizing instance, so memoization cascades through all recursive calls.
+Each nonterminal parsing function checks the memo table $(\text{name}, \text{position})$ before computing. If cached, returns immediately. Otherwise computes via `super()`, stores the result, and returns it. The `super()` calls resolve to the backtracking implementations, which in turn call `self.ident`, `self.selector` etc. on the memoizing instance, so memoization cascades through all recursive calls.

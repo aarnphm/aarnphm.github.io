@@ -13,27 +13,27 @@ title: regex equivalence
 
 For each of the following equalities, state either that it is true or give a counterexample if it is false!
 
-1. `(a | b)* a (a | b)* = (a | b)*`
+1. $(a \mid b)^* a (a \mid b)^* = (a \mid b)^*$
 
    **false.** counterexample: $\varepsilon$. the LHS requires at least one $a$ (the middle $a$ is mandatory), so it cannot produce $\varepsilon$ or any string of pure $b$'s. the RHS accepts both.
 
-2. `a* (b a*)* = (a | b)*`
+2. $a^* (b a^*)^* = (a \mid b)^*$
 
    **true.** any string $w \in \{a,b\}^*$ decomposes as: leading $a$'s (matching $a^*$), then repeated segments of a $b$ followed by $a$'s (each matching $ba^*$). conversely, LHS only produces strings over $\{a,b\}$.
 
-3. `(a b | a)* = a (b a)*`
+3. $(a b \mid a)^* = a (b a)^*$
 
    **false.** counterexample: $\varepsilon$. the LHS accepts $\varepsilon$ (zero iterations), while the RHS mandates a leading $a$. additionally, LHS accepts $aa$ (two iterations of the $a$ alternative), while RHS cannot produce $aa$ since $a(ba)^*$ yields strings of the form $a, aba, ababa, \ldots$
 
-4. `(a | ε) b* = b* | a b*`
+4. $(a \mid \varepsilon) b^* = b^* \mid a b^*$
 
    **true.** LHS $= \{\varepsilon, a\} \cdot \{b\}^* = \{b\}^* \cup a\{b\}^* =$ RHS.
 
-5. `(a* b)* a* = (a | b)*`
+5. $(a^* b)^* a^* = (a \mid b)^*$
 
    **true.** any string over $\{a,b\}$ decomposes as segments of $a$'s each terminated by a $b$ (matching $(a^* b)$), followed by trailing $a$'s (matching $a^*$). if $w$ contains no $b$, it matches $(a^* b)^0 \cdot a^* = a^*$.
 
-6. `(a* b a*)* = (a | b)*`
+6. $(a^* b a^*)^* = (a \mid b)^*$
 
    **false.** counterexample: $a$. with zero iterations, LHS yields only $\varepsilon$. with $\geq 1$ iterations, each factor $a^* b \; a^*$ contributes at least one $b$. so LHS $= \{\varepsilon\} \cup \{w \in \{a,b\}^* \mid w \text{ contains at least one } b\}$. strings consisting solely of $a$'s (length $\geq 1$) are excluded.
 

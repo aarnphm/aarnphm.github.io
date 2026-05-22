@@ -307,7 +307,7 @@ expression ::= simpleExpression
     {("=" | "≠" | "<" | "≤" | ">" | "≥" | "∈" | "∉" | "⊆" | "⊇") simpleExpression}
 ```
 
-`∖` binds at the same level as `∩` (in `term`), and `∉` binds at the same level as `∈` (in `expression`). so `a ∉ b ∖ c ∪ d` parses as `a ∉ ((b ∖ c) ∪ d)`.
+$\setminus$ binds at the same level as $\cap$ (in `term`), and $\notin$ binds at the same level as $\in$ (in `expression`). so $a \notin b \setminus c \cup d$ parses as $a \notin ((b \setminus c) \cup d)$.
 
 in `P0.ipynb`, the imports are extended:
 
@@ -338,7 +338,7 @@ while SC.sym in {EQ, NE, LT, LE, GT, GE, ELEMENT, NOTELEMENT, SUBSET, SUPERSET}:
     else: mark('bad type')
 ```
 
-type checking: for `a ∉ b`, if `a` is not `Int`, error `bad type`; if `b` is not a set, error `set expected`. for `a ∖ b`, if both are not sets, error `bad type`.
+type checking: for $a \notin b$, if $a$ is not `Int`, error `bad type`; if $b$ is not a set, error `set expected`. for $a \setminus b$, if both are not sets, error `bad type`.
 
 ### 3. extending the AST (CGast.ipynb)
 
@@ -384,9 +384,9 @@ elif op == DIFFERENCE:
 ['i32.and', 'i32.eqz'] if op == NOTELEMENT else \
 ```
 
-for `i ∉ s`, the generated code is: compute bitmask `1 << i`, AND with `s`, then `eqz`. the result is 1 (true) iff bit `i` is not set in `s`.
+for $i \notin s$, the generated code is: compute bitmask $1 \ll i$, AND with $s$, then `eqz`. the result is $1$ (true) iff bit $i$ is not set in $s$.
 
-for `s ∖ t`, the generated code is: load `t`, XOR with universe (complement), load `s`, AND. this computes $s \cap \complement t$.
+for $s \setminus t$, the generated code is: load $t$, XOR with universe (complement), load $s$, AND. this computes $s \cap \complement t$.
 
 ### 5. evaluating the implementation
 

@@ -4,6 +4,7 @@ import { Features, transform } from 'lightningcss'
 import fs from 'node:fs/promises'
 import path from 'path'
 import type { QuartzMdxComponent } from '../../components/mdx/registry'
+import type { StaticResources } from '../../util/resources'
 import { getMdxComponents } from '../../components/mdx/registry'
 // @ts-ignore
 import notFoundScript from '../../components/scripts/404.inline'
@@ -18,6 +19,8 @@ import clipboardScript from '../../components/scripts/clipboard.inline'
 // @ts-ignore
 import collaborativeCommentsScript from '../../components/scripts/collaborative-comments.inline'
 // @ts-ignore
+import collapseHeaderScript from '../../components/scripts/collapse-header.inline'
+// @ts-ignore
 import markerScript from '../../components/scripts/marker.inline'
 // @ts-ignore
 import petScript from '../../components/scripts/pet.inline'
@@ -27,17 +30,27 @@ import popoverScript from '../../components/scripts/popover.inline'
 import protectedScript from '../../components/scripts/protected.inline'
 // @ts-ignore
 import spaRouterScript from '../../components/scripts/spa.inline'
+// @ts-ignore
+import transcludeScript from '../../components/scripts/transclude.inline.ts'
 import audioStyle from '../../components/styles/audio.scss'
 import clipboardStyle from '../../components/styles/clipboard.scss'
+import collapseHeaderStyle from '../../components/styles/collapseHeader.inline.scss'
 import popoverStyle from '../../components/styles/popover.scss'
 import pseudoStyle from '../../components/styles/pseudocode.scss'
-import styles from '../../styles/custom.scss'
 import '../../components/mdx'
+import styles from '../../styles/custom.scss'
 import { QuartzComponent } from '../../types/component'
 import { QuartzEmitterPlugin } from '../../types/plugin'
 import { BuildCtx } from '../../util/ctx'
 import { FilePath, FullSlug, isFullSlug, joinSegments } from '../../util/path'
+import {
+  splitCssBundles,
+  splitJsBundles,
+  staticCssBundleSlug,
+  staticJsBundleSlug,
+} from '../../util/resource-bundles'
 import { googleFontHref, joinStyles, processGoogleFonts } from '../../util/theme'
+import { isWorkerEntryPath, workerEntryPattern } from '../../util/workers'
 import { write } from './helpers'
 
 const name = 'ComponentResources'
@@ -53,6 +66,7 @@ const notebookRuntimeAssetEntries = new Set([
   notebookRuntimeWorkerEntry,
   notebookRuntimeBootstrapEntry,
   notebookRuntimeMlBridgeEntry,
+  'quartz/components/scripts/notebook-runtime.frame.html',
   'quartz/components/scripts/notebook-code-editor.ts',
 ])
 
@@ -117,6 +131,48 @@ async function writeScriptBundleOutput(ctx: BuildCtx, outputFile: { path: string
   return write({ ctx, slug, ext, content: outputFile.text })
 }
 
+function minifyStylesheet(filename: string, stylesheet: string) {
+  return transform({
+    filename,
+    code: Buffer.from(stylesheet),
+    minify: true,
+    targets: {
+      safari: (15 << 16) | (6 << 8),
+      ios_saf: (15 << 16) | (6 << 8),
+      edge: 115 << 16,
+      firefox: 102 << 16,
+      chrome: 109 << 16,
+    },
+    include: Features.MediaQueries,
+  }).code.toString()
+}
+
+async function* writeStaticResourceBundles(ctx: BuildCtx, resources: StaticResources) {
+  for (const part of splitCssBundles(resources.css, [collapseHeaderStyle])) {
+    if (part.type !== 'bundle') continue
+    yield write({
+      ctx,
+      slug: staticCssBundleSlug(part.index) as FullSlug,
+      ext: '.css',
+      content: minifyStylesheet(`resource-style-${part.index}.css`, part.content),
+    })
+  }
+
+  for (const loadTime of ['beforeDOMReady', 'afterDOMReady'] as const) {
+    const leadingInline =
+      loadTime === 'afterDOMReady' ? [transcludeScript, collapseHeaderScript] : []
+    for (const part of splitJsBundles(resources.js, loadTime, leadingInline)) {
+      if (part.type !== 'bundle') continue
+      yield write({
+        ctx,
+        slug: staticJsBundleSlug(part.loadTime, part.index) as FullSlug,
+        ext: '.js',
+        content: await joinScripts(part.scripts),
+      })
+    }
+  }
+}
+
 async function writeNotebookRuntimeAssets(ctx: BuildCtx): Promise<FilePath[]> {
   const outdir = path.join(ctx.argv.output, 'static/scripts')
   const client = await bundle({
@@ -129,6 +185,7 @@ async function writeNotebookRuntimeAssets(ctx: BuildCtx): Promise<FilePath[]> {
     outdir,
     entryNames: '[name]',
     chunkNames: 'chunks/[name]-[hash]',
+    loader: { '.html': 'text' },
     write: false,
   })
   const worker = await bundle({
@@ -247,7 +304,7 @@ function addGlobalPageResources(ctx: BuildCtx, componentResources: ComponentReso
 export const ComponentResources: QuartzEmitterPlugin = () => {
   return {
     name,
-    async *emit(ctx) {
+    async *emit(ctx, _content, resources) {
       const cfg = ctx.cfg.configuration
       // component specific scripts and styles
       const componentResources = getComponentResources(ctx)
@@ -321,20 +378,10 @@ export const ComponentResources: QuartzEmitterPlugin = () => {
         ctx,
         slug: 'index' as FullSlug,
         ext: '.css',
-        content: transform({
-          filename: 'index.css',
-          code: Buffer.from(stylesheet),
-          minify: true,
-          targets: {
-            safari: (15 << 16) | (6 << 8), // 15.6
-            ios_saf: (15 << 16) | (6 << 8), // 15.6
-            edge: 115 << 16,
-            firefox: 102 << 16,
-            chrome: 109 << 16,
-          },
-          include: Features.MediaQueries,
-        }).code.toString(),
+        content: minifyStylesheet('index.css', stylesheet),
       })
+
+      yield* writeStaticResourceBundles(ctx, resources)
 
       yield write({ ctx, slug: 'prescript' as FullSlug, ext: '.js', content: prescript })
 
@@ -347,7 +394,7 @@ export const ComponentResources: QuartzEmitterPlugin = () => {
         content: JSON.stringify(manifest),
       })
 
-      const workerFiles = await globby(['quartz/**/*.worker.ts'])
+      const workerFiles = await globby([workerEntryPattern])
       for (const src of workerFiles) {
         const result = await bundle({
           entryPoints: [src],
@@ -374,7 +421,9 @@ export const ComponentResources: QuartzEmitterPlugin = () => {
         yield file
       }
     },
-    async *partialEmit(ctx, _content, _resources, changeEvents) {
+    async *partialEmit(ctx, _content, resources, changeEvents) {
+      yield* writeStaticResourceBundles(ctx, resources)
+
       if (changeEvents.some(changeEvent => isNotebookRuntimeAssetChange(changeEvent.path))) {
         for (const file of await writeNotebookRuntimeAssets(ctx)) {
           yield file
@@ -394,7 +443,7 @@ export const ComponentResources: QuartzEmitterPlugin = () => {
       }
 
       for (const changeEvent of changeEvents) {
-        if (!changeEvent.path.endsWith('.worker.ts')) continue
+        if (!isWorkerEntryPath(changeEvent.path)) continue
         if (changeEvent.type === 'delete') {
           const name = path.basename(changeEvent.path).replace(/\.ts$/, '')
           const dest = joinSegments(ctx.argv.output, `${name}.js`)

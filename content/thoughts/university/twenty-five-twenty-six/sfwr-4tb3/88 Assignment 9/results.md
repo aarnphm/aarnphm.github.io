@@ -30,17 +30,17 @@ title: code optimization
 
 the optimizations are algebraic identities:
 
-| expression       | identity                | optimization                            |
-| ---------------- | ----------------------- | --------------------------------------- |
-| `x + 0`, `0 + x` | additive identity       | omit `i32.add`                          |
-| `x - 0`          | subtractive identity    | omit `i32.sub`                          |
-| `x × 1`, `1 × x` | multiplicative identity | omit `i32.mul`                          |
-| `x div 1`        | division identity       | omit `i32.div_s`                        |
-| `x × 2^n`        | strength reduction      | replace `i32.mul` with `i32.shl` by `n` |
+| expression                 | identity                | optimization                            |
+| -------------------------- | ----------------------- | --------------------------------------- |
+| $x + 0$, $0 + x$           | additive identity       | omit `i32.add`                          |
+| $x - 0$                    | subtractive identity    | omit `i32.sub`                          |
+| $x \times 1$, $1 \times x$ | multiplicative identity | omit `i32.mul`                          |
+| $x \div 1$                 | division identity       | omit `i32.div_s`                        |
+| $x \times 2^n$             | strength reduction      | replace `i32.mul` with `i32.shl` by $n$ |
 
 optimizations 1 and 2 (identities for 0 and 1) are handled purely in P0, because the parser already has access to `Const` nodes and can skip the `CG.genBinaryOp` call when the identity element is detected. optimization 3 (shift left) requires CGwat to emit `i32.shl`, which it did not previously support in `genBinaryOp`.
 
-for detecting powers of 2: a value `v` is a power of 2 iff `v > 0 and (v & (v - 1)) == 0`. the shift amount is `v.bit_length() - 1`.
+for detecting powers of 2: a value $v$ is a power of $2$ iff `v > 0 and (v & (v - 1)) == 0`. the shift amount is `v.bit_length() - 1`.
 
 ## A2
 
@@ -58,9 +58,9 @@ The key: constant folding is a peephole optimization that only applies when both
 
 **Part 2 - Can compilers optimize the first and third assignments to add 7?**
 
-**Strict arithmetic** (overflow is an error): yes. Since both constants 3 and 4 are positive, the overflow behavior is preserved. If `x + 3` overflows (positive), then `x + 7` also overflows. If `x + 3` does not overflow but `(x + 3) + 4` does, then `x + 7` also overflows (since the mathematical sum is the same). The optimization would NOT be valid in general if the constants had different signs (e.g., `x + MAX_INT + (-1)` could overflow at the first step while `x + (MAX_INT - 1)` might not).
+**Strict arithmetic** (overflow is an error): yes. Since both constants $3$ and $4$ are positive, the overflow behavior is preserved. If $x + 3$ overflows (positive), then $x + 7$ also overflows. If $x + 3$ does not overflow but $(x + 3) + 4$ does, then $x + 7$ also overflows (since the mathematical sum is the same). The optimization would NOT be valid in general if the constants had different signs (e.g., $x + \text{MAX\_INT} + (-1)$ could overflow at the first step while $x + (\text{MAX\_INT} - 1)$ might not).
 
-**Modulo arithmetic** (wraparound, no overflow error): yes. Two's complement addition is associative: `(x + 3) + 4 ≡ x + (3 + 4) ≡ x + 7 (mod 2^n)` for any x. The optimization is always valid with modulo arithmetic regardless of the constants' signs.
+**Modulo arithmetic** (wraparound, no overflow error): yes. Two's complement addition is associative: $(x + 3) + 4 \equiv x + (3 + 4) \equiv x + 7 \pmod{2^n}$ for any $x$. The optimization is always valid with modulo arithmetic regardless of the constants' signs.
 
 ## A3
 
@@ -88,9 +88,9 @@ The difference between result and reference: with call by result, changes to x d
 
 Given: `procedure sum(i, l, h, x: integer): s := 0; i := l; while i < h do s := s + x; i := i + 1`
 
-Call: `sum(a, 1, n, a × a)` with all parameters by name.
+Call: $\text{sum}(a, 1, n, a \times a)$ with all parameters by name.
 
-By the definition of call by name, each formal parameter is textually replaced by the actual parameter expression, evaluated in the caller's scope each time it is referenced. Substituting i → a, l → 1, h → n, x → a × a:
+By the definition of call by name, each formal parameter is textually replaced by the actual parameter expression, evaluated in the caller's scope each time it is referenced. Substituting $i \to a$, $l \to 1$, $h \to n$, $x \to a \times a$:
 
 ```
 s := 0
@@ -100,15 +100,15 @@ while a < n do
   a := a + 1
 ```
 
-The key: `x` is replaced by `a × a`, and since `a` changes each iteration (via `i := i + 1` becoming `a := a + 1`), the value of `x` changes dynamically.
+The key: $x$ is replaced by $a \times a$, and since $a$ changes each iteration (via `i := i + 1` becoming `a := a + 1`), the value of $x$ changes dynamically.
 
 Trace:
 
-- a = 1: s = 0 + 1×1 = 1, then a = 2
-- a = 2: s = 1 + 2×2 = 5, then a = 3
-- a = 3: s = 5 + 3×3 = 14, then a = 4
-- ...
-- a = n-1: s = ... + (n-1)², then a = n
-- Loop exits when a = n.
+- $a = 1$: $s = 0 + 1 \times 1 = 1$, then $a = 2$
+- $a = 2$: $s = 1 + 2 \times 2 = 5$, then $a = 3$
+- $a = 3$: $s = 5 + 3 \times 3 = 14$, then $a = 4$
+- $\ldots$
+- $a = n-1$: $s = \ldots + (n-1)^2$, then $a = n$
+- Loop exits when $a = n$.
 
-Final value of s = 1² + 2² + 3² + ... + (n-1)² = (n-1)·n·(2n-1) / 6.
+Final value of $s = 1^2 + 2^2 + 3^2 + \ldots + (n-1)^2 = \dfrac{(n-1) \cdot n \cdot (2n-1)}{6}$.

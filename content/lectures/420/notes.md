@@ -1040,9 +1040,9 @@ float4 data = *reinterpret_cast<float4*>(&A[idx]);
 >
 > For a warp loading 128 bytes total:
 >
-> - Scalar loads: 32 threads × 4 bytes = 32 instructions per warp
-> - Vectorized `float4`: 32 threads × 16 bytes = 8 `float4` loads = 8 instructions per warp
-> - **4× instruction reduction** → higher memory throughput, lower register pressure
+> - Scalar loads: $32 \text{ threads} \times 4 \text{ bytes} = 32$ instructions per warp
+> - Vectorized `float4`: $32 \text{ threads} \times 16 \text{ bytes} = 8$ `float4` loads = $8$ instructions per warp
+> - **$4 \times$ instruction reduction** $\to$ higher memory throughput, lower register pressure
 
 **PTX assembly**:
 

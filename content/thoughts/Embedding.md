@@ -32,7 +32,7 @@ see also: @croft2023llm
 
 - Example batch and length: $B \times  T = 5 \times  128$.
 - Lookup and add position: $\text{input\_ids} (B\times T) \to E \to  X (B\times T\times \text{d\_model})$, then `X + P`.
-- Transformer blocks consume these residuals and output logits `L (B×T×|V|)`, which become probabilities after softmax; training uses cross-entropy on the next token.
+- Transformer blocks consume these residuals and output logits $L\ (B \times T \times \lvert V \rvert)$, which become probabilities after softmax; training uses cross-entropy on the next token.
 
 ```mermaid
 flowchart LR
@@ -49,7 +49,7 @@ flowchart LR
 Masks ensure the model only uses valid context and ignores padding:
 
 - Causal mask (look-ahead): disallows attending to future tokens.
-  - `M_c[i,j] = 0` if `j ≤ i`, else `-∞`.
+  - $M_c[i,j] = 0$ if $j \le i$, else $-\infty$.
 - Padding mask: removes contributions of padded positions.
   - Typically $M_p \in \{0, -\infty\}^{B\times 1\times 1\times T}$ or $B \times T$, broadcast to attention score shape.
 - Combined into attention as:

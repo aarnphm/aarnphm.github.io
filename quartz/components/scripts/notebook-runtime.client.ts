@@ -7,10 +7,15 @@ import {
   renderNotebookRuntimeOutput,
   unsupportedNotebookRuntimeReason,
 } from '../../util/notebook-runtime'
+import notebookDisplayFrameSource from './notebook-runtime.frame.html'
 
 type RuntimeCell = { id: string; source: string; language: string; executionIndex: number | null }
 
 type RuntimeModule = { name: string; sourcePath: string; source: string }
+
+type RuntimeErrorOutput = Extract<NotebookRuntimeOutput, { type: 'error' }>
+
+type RuntimeDebugOutput = NonNullable<RuntimeErrorOutput['debug']>
 
 type SourceControls = {
   frame: HTMLElement
@@ -55,6 +60,8 @@ type CellWaiter = { resolve: () => void; reject: (error: Error) => void }
 
 type NotebookIcon = 'run' | 'edit' | 'save' | 'revert'
 
+const notebookRuntimeVimModeKey = 'quartz:notebook-vim-mode'
+
 const notebookIconSvg: Record<NotebookIcon, string> = {
   run: '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M8 5.5v13l10-6.5z"/></svg>',
   edit: '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m4 16.5-.5 4 4-.5L19 8.5 15.5 5z"/><path d="m14 6.5 3.5 3.5"/></svg>',
@@ -93,7 +100,8 @@ function readRuntimeOutput(value: unknown): NotebookRuntimeOutput | undefined {
     const evalue = readString(value, 'evalue')
     const traceback = readString(value, 'traceback')
     if (ename !== undefined && evalue !== undefined && traceback !== undefined) {
-      return { type, ename, evalue, traceback }
+      const debug = readRuntimeDebugOutput(value.debug)
+      return debug ? { type, ename, evalue, traceback, debug } : { type, ename, evalue, traceback }
     }
   }
   if (type === 'text') {
@@ -104,6 +112,22 @@ function readRuntimeOutput(value: unknown): NotebookRuntimeOutput | undefined {
     const html = readString(value, 'html')
     if (html !== undefined) return { type, html }
   }
+}
+
+function readRuntimeDebugOutput(value: unknown): RuntimeDebugOutput | undefined {
+  if (!isRecord(value)) return undefined
+  const phase = readString(value, 'phase')
+  if (!phase) return undefined
+  const debug: RuntimeDebugOutput = { phase }
+  const cellId = readString(value, 'cellId')
+  if (cellId !== undefined) debug.cellId = cellId
+  const errorName = readString(value, 'errorName')
+  if (errorName !== undefined) debug.errorName = errorName
+  const errorMessage = readString(value, 'errorMessage')
+  if (errorMessage !== undefined) debug.errorMessage = errorMessage
+  const stack = readString(value, 'stack')
+  if (stack !== undefined) debug.stack = stack
+  return debug
 }
 
 function readFrameMessage(value: unknown): FrameMessage | undefined {
@@ -211,107 +235,6 @@ function sanitizeHtml(html: string): string {
   return template.innerHTML
 }
 
-const notebookDisplayFrameSource = `
-<!doctype html>
-<html>
-<head><meta charset="utf-8"></head>
-<body>
-<script>
-const source = 'quartz-notebook-runtime'
-let runtimeId = ''
-let assetSequence = 0
-const pendingAssets = new Map()
-function post(message, transfer) {
-  parent.postMessage({ source, runtimeId, ...message }, '*', transfer || [])
-}
-function textOf(value) {
-  if (value === undefined || value === null) return ''
-  if (typeof value === 'string') return value
-  try {
-    return String(value)
-  } catch {
-    return Object.prototype.toString.call(value)
-  }
-}
-function emitOutput(cellId, output) {
-  if (!cellId) return
-  post({ type: 'output', cellId, output })
-}
-function sanitizeDisplayElement(element) {
-  element.querySelectorAll('script, iframe, object, embed, link, meta, base').forEach(node => node.remove())
-  element.querySelectorAll('*').forEach(node => {
-    for (const attr of Array.from(node.attributes)) {
-      const name = attr.name.toLowerCase()
-      const value = attr.value.trim().toLowerCase()
-      if (name.startsWith('on')) node.removeAttribute(attr.name)
-      if ((name === 'href' || name === 'src' || name === 'xlink:href') && value.startsWith('javascript:')) {
-        node.removeAttribute(attr.name)
-      }
-    }
-  })
-}
-function sandboxFetch(input, cellId) {
-  const url = typeof input === 'string' ? input : input && input.url
-  if (typeof url !== 'string') return Promise.reject(new Error('unsupported fetch input'))
-  const assetId = 'display-asset-' + ++assetSequence
-  post({ type: 'asset', cellId, assetId, url })
-  return new Promise((resolve, reject) => {
-    pendingAssets.set(assetId, { resolve, reject })
-  })
-}
-async function runDisplay(message) {
-  const cellId = message.cellId
-  const element = document.createElement('div')
-  const appendStream = payload => {
-    emitOutput(cellId, {
-      type: 'stream',
-      name: textOf((payload && payload.name) || 'stdout'),
-      text: textOf(payload && payload.text),
-    })
-  }
-  const context = { append_stream: appendStream }
-  try {
-    const runner = new Function(
-      'element',
-      'append_stream',
-      'fetch',
-      'return (async function () {' + textOf(message.code) + '\\n}).call(this)',
-    )
-    await runner.call(context, element, appendStream, input => sandboxFetch(input, cellId))
-    sanitizeDisplayElement(element)
-    if (element.innerHTML.trim()) emitOutput(cellId, { type: 'html', html: element.innerHTML })
-  } catch (error) {
-    const text = textOf(error)
-    emitOutput(cellId, { type: 'error', ename: error && error.name ? textOf(error.name) : 'Error', evalue: text, traceback: text })
-  }
-}
-window.addEventListener('message', event => {
-  const message = event.data
-  if (!message || message.source !== source) return
-  if (message.type === 'init') {
-    runtimeId = message.runtimeId
-    post({ type: 'ready' })
-  } else if (message.type === 'run-display' && message.runtimeId === runtimeId) {
-    runDisplay(message)
-  } else if (message.type === 'asset-result' && message.runtimeId === runtimeId) {
-    const pending = pendingAssets.get(message.assetId)
-    if (!pending) return
-    pendingAssets.delete(message.assetId)
-    if (!message.ok) {
-      pending.reject(new Error(message.error || 'failed to fetch notebook asset'))
-      return
-    }
-    pending.resolve(new Response(message.bytes, {
-      status: message.status,
-      statusText: message.statusText,
-      headers: { 'content-type': message.contentType || 'application/octet-stream' },
-    }))
-  }
-})
-</script>
-</body>
-</html>`
-
 class NotebookRuntime {
   private payload: RuntimePayload
   private root: HTMLElement
@@ -328,11 +251,14 @@ class NotebookRuntime {
   private executionCounter: number
   private running = false
   private stopped = false
+  private debug = false
+  private vimMode: boolean
 
   constructor(root: HTMLElement, payload: RuntimePayload) {
     this.root = root
     this.payload = payload
     this.executionCounter = Math.max(0, ...payload.cells.map(cell => cell.executionIndex ?? 0))
+    this.vimMode = this.readStoredVimMode()
   }
 
   mount() {
@@ -341,14 +267,20 @@ class NotebookRuntime {
     const runAll = this.root.querySelector<HTMLButtonElement>('[data-notebook-run-all]')
     const stop = this.root.querySelector<HTMLButtonElement>('[data-notebook-stop]')
     const reset = this.root.querySelector<HTMLButtonElement>('[data-notebook-reset]')
+    const debug = this.root.querySelector<HTMLButtonElement>('[data-notebook-debug]')
+    const vim = this.root.querySelector<HTMLButtonElement>('[data-notebook-vim-mode]')
     runAll?.addEventListener('click', this.runAll)
     stop?.addEventListener('click', this.stop)
     reset?.addEventListener('click', this.reset)
+    debug?.addEventListener('click', this.toggleDebug)
+    vim?.addEventListener('click', this.toggleVimMode)
     window.addEventListener('message', this.onDisplayMessage)
     this.addCleanup(() => {
       runAll?.removeEventListener('click', this.runAll)
       stop?.removeEventListener('click', this.stop)
       reset?.removeEventListener('click', this.reset)
+      debug?.removeEventListener('click', this.toggleDebug)
+      vim?.removeEventListener('click', this.toggleVimMode)
       window.removeEventListener('message', this.onDisplayMessage)
       this.destroyRuntime()
     })
@@ -363,41 +295,106 @@ class NotebookRuntime {
       button.addEventListener('click', handler)
       this.addCleanup(() => button.removeEventListener('click', handler))
     }
+    this.syncToolbarToggles()
   }
 
   private ensureToolbar() {
-    if (this.root.querySelector('[data-notebook-runtime-toolbar]')) return
-
-    const toolbar = document.createElement('div')
+    const toolbar =
+      this.root.querySelector<HTMLElement>('[data-notebook-runtime-toolbar]') ??
+      document.createElement('div')
     toolbar.className = 'notebook-runtime-toolbar'
     toolbar.dataset.notebookRuntimeToolbar = ''
     toolbar.setAttribute('role', 'toolbar')
     toolbar.setAttribute('aria-label', 'Notebook runtime')
 
-    const runAll = document.createElement('button')
-    runAll.type = 'button'
-    runAll.dataset.notebookRunAll = ''
-    runAll.textContent = 'Run all'
-
-    const stop = document.createElement('button')
-    stop.type = 'button'
-    stop.dataset.notebookStop = ''
-    stop.disabled = true
-    stop.textContent = 'Stop'
-
-    const reset = document.createElement('button')
-    reset.type = 'button'
-    reset.dataset.notebookReset = ''
-    reset.textContent = 'Reset runtime'
-
-    const status = document.createElement('span')
+    let status = toolbar.querySelector<HTMLElement>('[data-notebook-status]')
+    if (!status) {
+      status = document.createElement('span')
+    }
     status.className = 'notebook-runtime-status'
     status.dataset.notebookStatus = ''
     status.setAttribute('aria-live', 'polite')
-    status.textContent = 'idle'
+    if (!status.textContent) status.textContent = 'idle'
 
-    toolbar.append(runAll, stop, reset, status)
-    this.root.append(toolbar)
+    const ensureButton = (
+      selector: string,
+      setup: (button: HTMLButtonElement) => void,
+    ): HTMLButtonElement => {
+      const existing = toolbar.querySelector<HTMLButtonElement>(selector)
+      const button = existing ?? document.createElement('button')
+      setup(button)
+      if (!existing) toolbar.insertBefore(button, status.isConnected ? status : null)
+      return button
+    }
+
+    ensureButton('[data-notebook-run-all]', button => {
+      button.type = 'button'
+      button.dataset.notebookRunAll = ''
+      button.textContent = 'Run all'
+    })
+    ensureButton('[data-notebook-stop]', button => {
+      button.type = 'button'
+      button.dataset.notebookStop = ''
+      button.disabled = true
+      button.textContent = 'Stop'
+    })
+    ensureButton('[data-notebook-reset]', button => {
+      button.type = 'button'
+      button.dataset.notebookReset = ''
+      button.textContent = 'Reset runtime'
+    })
+    ensureButton('[data-notebook-debug]', button => {
+      button.type = 'button'
+      button.dataset.notebookDebug = ''
+      button.setAttribute('aria-pressed', 'false')
+      button.textContent = 'Debug'
+    })
+    ensureButton('[data-notebook-vim-mode]', button => {
+      button.type = 'button'
+      button.dataset.notebookVimMode = ''
+      button.setAttribute('aria-pressed', 'false')
+      button.textContent = 'Vim'
+    })
+
+    if (!status.isConnected) toolbar.append(status)
+    if (!toolbar.isConnected) this.root.append(toolbar)
+  }
+
+  private readStoredVimMode(): boolean {
+    try {
+      return window.localStorage.getItem(notebookRuntimeVimModeKey) === 'true'
+    } catch {
+      return false
+    }
+  }
+
+  private writeStoredVimMode(enabled: boolean) {
+    try {
+      window.localStorage.setItem(notebookRuntimeVimModeKey, enabled ? 'true' : 'false')
+    } catch {}
+  }
+
+  private syncToolbarToggles() {
+    const debug = this.root.querySelector<HTMLButtonElement>('[data-notebook-debug]')
+    debug?.setAttribute('aria-pressed', String(this.debug))
+    const vim = this.root.querySelector<HTMLButtonElement>('[data-notebook-vim-mode]')
+    vim?.setAttribute('aria-pressed', String(this.vimMode))
+  }
+
+  private toggleDebug = () => {
+    this.debug = !this.debug
+    this.syncToolbarToggles()
+  }
+
+  private toggleVimMode = () => {
+    this.vimMode = !this.vimMode
+    this.writeStoredVimMode(this.vimMode)
+    this.syncToolbarToggles()
+    for (const controls of this.sourceControls.values()) {
+      void controls.editor?.setVimMode(this.vimMode).catch(error => {
+        this.setStatus(error instanceof Error ? error.message : 'failed to toggle vim mode')
+      })
+    }
   }
 
   private addCleanup(callback: () => void) {
@@ -447,12 +444,14 @@ class NotebookRuntime {
       await this.postRun(cell, source)
     } catch (error) {
       const text = error instanceof Error ? error.message : String(error)
-      this.renderOutput(cell.id, {
+      const output: RuntimeErrorOutput = {
         type: 'error',
         ename: 'RuntimeError',
         evalue: text,
         traceback: text,
-      })
+      }
+      if (this.debug) output.debug = this.debugOutput('client-runtime', cell.id, error)
+      this.renderOutput(cell.id, output)
     } finally {
       this.running = false
       this.setExecutionLabel(cell.id, executionCount)
@@ -627,9 +626,7 @@ class NotebookRuntime {
       source: stored ?? cell.source,
     })
 
-    if (stored !== undefined && stored !== cell.source) {
-      void this.showSourceEditor(cell, true)
-    } else if (stored !== undefined) {
+    if (stored !== undefined && stored === cell.source) {
       this.clearStoredSource(cell)
     }
     this.syncSourceControls(cell)
@@ -685,6 +682,7 @@ class NotebookRuntime {
       parent: controls.editorHost,
       initialContent: controls.source,
       language: cell.language,
+      vimMode: this.vimMode,
       onChange: source => {
         controls.source = source
         this.syncSourceControls(cell)
@@ -717,6 +715,7 @@ class NotebookRuntime {
     if (!controls) return
     const source = this.sourceForCell(cell)
     if (source === cell.source) {
+      controls.source = cell.source
       this.clearStoredSource(cell)
       void this.showSourceEditor(cell, false)
       this.setStatus('idle')
@@ -726,7 +725,8 @@ class NotebookRuntime {
       this.setStatus('local save failed')
       return
     }
-    void this.showSourceEditor(cell, true)
+    controls.source = source
+    void this.showSourceEditor(cell, false)
     this.setStatus('saved local edit')
   }
 
@@ -807,9 +807,23 @@ class NotebookRuntime {
         cellId: cell.id,
         code: source,
         pyodideIndexUrl: this.payload.pyodideIndexUrl,
+        debug: this.debug,
         modules,
       })
     })
+  }
+
+  private debugOutput(phase: string, cellId: string, error: unknown): RuntimeDebugOutput {
+    const debug: RuntimeDebugOutput = {
+      phase,
+      cellId,
+      errorMessage: error instanceof Error ? error.message : String(error),
+    }
+    if (error instanceof Error) {
+      debug.errorName = error.name
+      if (error.stack !== undefined) debug.stack = error.stack
+    }
+    return debug
   }
 
   private async notebookModulesFor(source: string): Promise<RuntimeModule[]> {
@@ -951,6 +965,7 @@ class NotebookRuntime {
           runtimeId: this.payload.id,
           cellId,
           code,
+          debug: this.debug,
         },
         '*',
       )
@@ -1020,7 +1035,10 @@ class NotebookRuntime {
     )
     if (!target) return
     target.hidden = false
-    target.insertAdjacentHTML('beforeend', renderNotebookRuntimeOutput(output))
+    target.insertAdjacentHTML(
+      'beforeend',
+      renderNotebookRuntimeOutput(output, { debug: this.debug }),
+    )
   }
 
   private clearOutput(cellId: string) {

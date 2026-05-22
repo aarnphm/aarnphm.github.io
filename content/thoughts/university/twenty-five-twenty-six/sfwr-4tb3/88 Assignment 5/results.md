@@ -289,8 +289,8 @@ factor(e) → atom(e) [ '*' « e := Star(e) »
 
 where:
 
-- `repeat(e, 0) = ε()`, `repeat(e, n) = Conc(repeat(e, n-1), e)` for `n ≥ 1`
-- `repeatRange(e, n, m) = Choice(repeat(e, n), repeatRange(e, n+1, m))` for `n < m`, `repeatRange(e, n, n) = repeat(e, n)`
+- $\text{repeat}(e, 0) = \epsilon()$, $\text{repeat}(e, n) = \text{Conc}(\text{repeat}(e, n-1), e)$ for $n \ge 1$
+- $\text{repeatRange}(e, n, m) = \text{Choice}(\text{repeat}(e, n), \text{repeatRange}(e, n+1, m))$ for $n < m$, $\text{repeatRange}(e, n, n) = \text{repeat}(e, n)$
 
 Written with attribute rules:
 
