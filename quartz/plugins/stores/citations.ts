@@ -1,5 +1,3 @@
-import { extractArxivId } from '../transformers/links'
-
 export interface ArxivMeta {
   id: string
   title: string
@@ -39,6 +37,21 @@ export const UNVERIFIED_TTL = 24 * 60 * 60 * 1000
 export const ARXIV_HEADERS = { 'User-Agent': 'curl/8.7.1' }
 
 export const cacheState: CacheState = { documents: new Map(), papers: new Map(), dirty: false }
+
+const ARXIV_URL_REGEX =
+  /^https?:\/\/arxiv\.org\/(?:abs|pdf|html)[/\w.-]*?(\d{4}\.\d{4,5})(?:v\d+)?(?:\.pdf)?(?:[?#].*)?$/i
+
+export function extractArxivId(url: string): string | null {
+  try {
+    const urlObj = new URL(url)
+    if (!urlObj.hostname.includes('arxiv.org')) return null
+
+    const match = url.match(ARXIV_URL_REGEX)
+    return match ? match[1] : null
+  } catch {
+    return null
+  }
+}
 
 export class AdaptiveRateLimiter {
   private lastRequest = 0
@@ -123,6 +136,18 @@ export function normalizeArxivId(id: string): string {
 
 export function makeBibKey(id: string): string {
   return `arxiv-${normalizeArxivId(id).replace(/\./g, '')}`
+}
+
+export function ensurePendingPaper(id: string) {
+  const norm = normalizeArxivId(id)
+  if (!norm || cacheState.papers.has(norm)) return
+  cacheState.papers.set(norm, {
+    title: norm,
+    bibkey: makeBibKey(norm),
+    lastVerified: 0,
+    inBibFile: false,
+  })
+  cacheState.dirty = true
 }
 
 export function sanitizeLinks(links: string[]): string[] {

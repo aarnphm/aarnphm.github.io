@@ -189,6 +189,69 @@ const wat2wasmFeatureOptions = new Set([
   '--enable-tail-call',
   '--enable-threads',
 ])
+const notebookLsOptionChars = new Set(['1', 'a', 'h', 'l'])
+
+function notebookShellWords(value: string): string[] {
+  const words: string[] = []
+  let word = ''
+  let quote = ''
+  let escaped = false
+  for (const char of value) {
+    if (escaped) {
+      word += char
+      escaped = false
+      continue
+    }
+    if (char === '\\') {
+      escaped = true
+      continue
+    }
+    if (quote.length > 0) {
+      if (char === quote) {
+        quote = ''
+      } else {
+        word += char
+      }
+      continue
+    }
+    if (char === '"' || char === "'") {
+      quote = char
+      continue
+    }
+    if (/\s/.test(char)) {
+      if (word.length > 0) {
+        words.push(word)
+        word = ''
+      }
+      continue
+    }
+    word += char
+  }
+  if (escaped) word += '\\'
+  if (word.length > 0) words.push(word)
+  return words
+}
+
+function notebookSandboxPathReason(
+  command: string,
+  path: string,
+  allowDot = false,
+): string | undefined {
+  const normalized = path.trim().replace(/\\/g, '/')
+  if (normalized.length === 0 || normalized.includes('\0')) {
+    return `${command} path is unavailable in the browser runtime sandbox`
+  }
+  if (normalized.startsWith('/')) {
+    return `${command} path ${path} is outside the browser runtime sandbox`
+  }
+  const parts = normalized.split('/')
+  if (parts.some(part => part === '..')) {
+    return `${command} path ${path} is outside the browser runtime sandbox`
+  }
+  if (!allowDot && (normalized === '.' || parts.every(part => part === '' || part === '.'))) {
+    return `${command} path ${path} is unavailable in the browser runtime sandbox`
+  }
+}
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value)
@@ -300,32 +363,75 @@ function notebookWriteFileDirectiveReason(source: string): { handled: boolean; r
     if (filename) return { handled: true, reason: '%%writefile accepts one file name' }
     filename = word
   }
-  return filename
-    ? { handled: true }
-    : { handled: true, reason: '%%writefile requires a file name' }
+  if (!filename) return { handled: true, reason: '%%writefile requires a file name' }
+  return { handled: true, reason: notebookSandboxPathReason('%%writefile', filename) }
 }
 
 function notebookShellDirectiveReason(line: string): { handled: boolean; reason?: string } {
   if (!line.startsWith('!')) return { handled: false }
   const command = line.slice(1).trim()
-  if (/^cat(?:\s|$)/.test(command)) return { handled: true }
-  if (/^wat2wasm(?:\s|$)/.test(command)) {
-    const words = command.split(/\s+/).filter(Boolean)
+  if (/^cat(?:\s|$)/.test(command)) {
+    const words = notebookShellWords(command)
+    if (words.length === 1) return { handled: true, reason: 'cat requires a file' }
+    for (let index = 1; index < words.length; index += 1) {
+      const word = words[index]
+      if (word.startsWith('-')) {
+        return { handled: true, reason: 'cat options are unavailable in the browser runtime' }
+      }
+      const pathReason = notebookSandboxPathReason('cat', word)
+      if (pathReason) return { handled: true, reason: pathReason }
+    }
+    return { handled: true }
+  }
+  if (/^ls(?:\s|$)/.test(command)) {
+    const words = notebookShellWords(command)
+    for (let index = 1; index < words.length; index += 1) {
+      const word = words[index]
+      if (word.startsWith('-')) {
+        if (
+          word === '-' ||
+          Array.from(word.slice(1)).some(char => !notebookLsOptionChars.has(char))
+        ) {
+          return {
+            handled: true,
+            reason: `ls option ${word} is unavailable in the browser runtime`,
+          }
+        }
+        continue
+      }
+      const pathReason = notebookSandboxPathReason('ls', word, true)
+      if (pathReason) return { handled: true, reason: pathReason }
+    }
+    return { handled: true }
+  }
+  if (/^(?:wat2wasm|wasm2wat)(?:\s|$)/.test(command)) {
+    const name = command.split(/\s+/, 1)[0] ?? 'wabt'
+    const words = notebookShellWords(command)
     let input = ''
     for (let index = 1; index < words.length; index += 1) {
       const word = words[index]
       if (word === '-o' || word === '--output') {
         index += 1
         if (!words[index]) return { handled: true, reason: `${word} requires a file name` }
+        const pathReason = notebookSandboxPathReason(name, words[index])
+        if (pathReason) return { handled: true, reason: pathReason }
         continue
       }
-      if (word.startsWith('-o') && word.length > 2) continue
-      if (word.startsWith('--output=')) continue
+      if (word.startsWith('-o') && word.length > 2) {
+        const pathReason = notebookSandboxPathReason(name, word.slice(2))
+        if (pathReason) return { handled: true, reason: pathReason }
+        continue
+      }
+      if (word.startsWith('--output=')) {
+        const pathReason = notebookSandboxPathReason(name, word.slice('--output='.length))
+        if (pathReason) return { handled: true, reason: pathReason }
+        continue
+      }
       if (word.startsWith('--enable-')) {
         if (wat2wasmFeatureOptions.has(word)) continue
         return {
           handled: true,
-          reason: `wat2wasm option ${word} is unavailable in the browser runtime`,
+          reason: `${name} option ${word} is unavailable in the browser runtime`,
         }
       }
       if (word.startsWith('--disable-')) {
@@ -333,19 +439,22 @@ function notebookShellDirectiveReason(line: string): { handled: boolean; reason?
         if (wat2wasmFeatureOptions.has(enabled)) continue
         return {
           handled: true,
-          reason: `wat2wasm option ${word} is unavailable in the browser runtime`,
+          reason: `${name} option ${word} is unavailable in the browser runtime`,
         }
       }
+      if (name === 'wasm2wat' && (word === '--fold-exprs' || word === '--inline-exports')) continue
       if (word.startsWith('-')) {
         return {
           handled: true,
-          reason: `wat2wasm option ${word} is unavailable in the browser runtime`,
+          reason: `${name} option ${word} is unavailable in the browser runtime`,
         }
       }
-      if (input) return { handled: true, reason: 'wat2wasm accepts one input file' }
+      if (input) return { handled: true, reason: `${name} accepts one input file` }
+      const pathReason = notebookSandboxPathReason(name, word)
+      if (pathReason) return { handled: true, reason: pathReason }
       input = word
     }
-    return input ? { handled: true } : { handled: true, reason: 'wat2wasm requires an input file' }
+    return input ? { handled: true } : { handled: true, reason: `${name} requires an input file` }
   }
   return { handled: true, reason: 'shell escapes are unavailable in the browser runtime' }
 }

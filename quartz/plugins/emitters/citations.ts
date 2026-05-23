@@ -1,7 +1,7 @@
 import { Cite } from '@citation-js/core'
 import { XMLParser } from 'fast-xml-parser'
 import fs from 'node:fs'
-import { QuartzEmitterPlugin } from '../../types/plugin'
+import type { QuartzEmitterPlugin } from '../../types/plugin'
 import { joinSegments, QUARTZ } from '../../util/path'
 import {
   ArxivMeta,
@@ -11,6 +11,8 @@ import {
   buildCachePayload,
   cacheState,
   CitationsCachePayload,
+  ensurePendingPaper,
+  extractArxivId,
   fetchWithRetry,
   hydrateCache,
   makeBibKey,
@@ -24,7 +26,6 @@ import {
 } from '../stores/citations'
 import '@citation-js/plugin-bibtex'
 import '@citation-js/plugin-doi'
-import { extractArxivId } from '../transformers/links'
 import { write } from './helpers'
 
 interface Options {
@@ -60,10 +61,8 @@ function extractArxivIdFromEntry(entry: any): string | null {
 
   const url = entry?.url ?? entry?.URL
   if (url) {
-    const match = String(url).match(/arxiv\.org\/(?:abs|pdf)\/([0-9]+\.[0-9]+)(?:v\d+)?/i)
-    if (match) {
-      return normalizeArxivId(match[1])
-    }
+    const arxivId = extractArxivId(String(url))
+    if (arxivId) return normalizeArxivId(arxivId)
   }
 
   return null
@@ -140,8 +139,20 @@ async function fetchBibtexFallback(id: string): Promise<string | null> {
   return bibtex.trim()
 }
 
+function extractBibtexKey(bibtex: string): string | null {
+  const match = bibtex.match(/^@\w+\{([^,]+),/)
+  return match?.[1] ?? null
+}
+
+function replaceBibtexKey(bibtex: string, key: string): string {
+  return bibtex.replace(/^@(\w+)\{[^,]*,/, `@$1{${key},`)
+}
+
 export async function ensureBibEntries(ids: Iterable<string>, bibliography: string) {
   const now = Date.now()
+  const normalizedIds = Array.from(
+    new Set(Array.from(ids, id => normalizeArxivId(id)).filter(Boolean)),
+  ).sort((a, b) => a.localeCompare(b))
   const fileContent = fs.existsSync(bibliography) ? fs.readFileSync(bibliography, 'utf8') : ''
   const libItems = fileContent.trim()
     ? (new Cite(fileContent, { generateGraph: false }).data as any[])
@@ -155,8 +166,12 @@ export async function ensureBibEntries(ids: Iterable<string>, bibliography: stri
     if (arxivId) existingArxivIds.add(arxivId)
   }
 
+  for (const id of normalizedIds) {
+    ensurePendingPaper(id)
+  }
+
   const needsMetadata: string[] = []
-  for (const id of ids) {
+  for (const id of normalizedIds) {
     const entry = cacheState.papers.get(id)
     if (!entry) continue
     if (existingArxivIds.has(id)) continue
@@ -188,16 +203,19 @@ export async function ensureBibEntries(ids: Iterable<string>, bibliography: stri
 
   const newEntries: string[] = []
 
-  for (const id of ids) {
+  for (const id of normalizedIds) {
     const cachedEntry = cacheState.papers.get(id)
     if (!cachedEntry) continue
 
     if (existingArxivIds.has(id)) {
-      if (!cachedEntry.inBibFile || !cachedEntry.bibtex) {
-        const existingItem = libItems.find(item => extractArxivIdFromEntry(item) === id)
+      const existingItem = libItems.find(item => extractArxivIdFromEntry(item) === id)
+      const existingKey = existingItem?.id
+      const keyChanged = Boolean(existingKey && existingKey !== cachedEntry.bibkey)
+      if (!cachedEntry.inBibFile || keyChanged) {
         cacheState.papers.set(id, {
           ...cachedEntry,
-          bibkey: existingItem?.id ?? cachedEntry.bibkey,
+          bibkey: existingKey ?? cachedEntry.bibkey,
+          bibtex: keyChanged ? undefined : cachedEntry.bibtex,
           inBibFile: true,
           lastVerified: now,
         })
@@ -213,12 +231,9 @@ export async function ensureBibEntries(ids: Iterable<string>, bibliography: stri
     if (cachedEntry.failedAt && now - cachedEntry.failedAt < RETRY_COOLDOWN) continue
 
     try {
-      let bibtex = cachedEntry.bibtex
+      let bibtex = (await fetchBibtexFallback(id)) ?? cachedEntry.bibtex
       if (!bibtex && cachedEntry.authors && cachedEntry.year) {
         bibtex = synthesizeBibtex(id, cachedEntry)
-      }
-      if (!bibtex) {
-        bibtex = (await fetchBibtexFallback(id)) ?? undefined
       }
       if (!bibtex) {
         console.warn(`[citations] could not generate bibtex for ${id}`)
@@ -227,12 +242,12 @@ export async function ensureBibEntries(ids: Iterable<string>, bibliography: stri
         continue
       }
 
-      let key = cachedEntry.bibkey ?? makeBibKey(id)
+      let key = extractBibtexKey(bibtex) ?? cachedEntry.bibkey ?? makeBibKey(id)
       if (existingKeys.has(key)) {
         key = `${key}-${normalizeArxivId(id).replace(/\./g, '')}`
       }
 
-      const keyedBibtex = bibtex.replace(/^@article\{[^,]*,/, `@article{${key},`)
+      const keyedBibtex = replaceBibtexKey(bibtex, key)
       newEntries.push(keyedBibtex)
       existingKeys.add(key)
       existingArxivIds.add(id)

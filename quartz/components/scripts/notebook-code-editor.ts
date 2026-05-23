@@ -9,17 +9,10 @@ export type NotebookCodeEditor = {
   destroy(): void
 }
 
-export type NotebookCodeEditorLspConfig = { runtimeId: string; cellId: string; language: string }
-
-type NotebookLspBridge = {
-  createEditorExtension(config: NotebookCodeEditorLspConfig): Promise<Extension[]>
-}
-
 type NotebookCodeEditorConfig = {
   parent: HTMLElement
   initialContent?: string
   language?: string
-  lsp?: NotebookCodeEditorLspConfig
   vimMode?: boolean
   onChange?: (content: string) => void
   onSubmit?: () => void
@@ -61,41 +54,6 @@ async function languageExtension(language: string | undefined): Promise<Extensio
   return python()
 }
 
-function isNotebookLspBridge(value: unknown): value is NotebookLspBridge {
-  return (
-    typeof value === 'object' &&
-    value !== null &&
-    !Array.isArray(value) &&
-    typeof value.createEditorExtension === 'function'
-  )
-}
-
-function readNotebookLspBridge(): NotebookLspBridge | undefined {
-  const value = Reflect.get(globalThis, '__quartzNotebookLsp')
-  return isNotebookLspBridge(value) ? value : undefined
-}
-
-async function notebookLspExtensions(
-  config: NotebookCodeEditorLspConfig | undefined,
-): Promise<Extension[]> {
-  if (!config || !config.language.toLowerCase().startsWith('python')) return []
-  let bridge = readNotebookLspBridge()
-  if (!bridge) {
-    try {
-      await import(new URL('notebook-lsp.client.js', import.meta.url).href)
-      bridge = readNotebookLspBridge()
-    } catch {
-      return []
-    }
-  }
-  try {
-    return bridge?.createEditorExtension(config) ?? []
-  } catch (error) {
-    console.warn('failed to create notebook lsp extension', error)
-    return []
-  }
-}
-
 export async function createNotebookCodeEditor(
   config: NotebookCodeEditorConfig,
 ): Promise<NotebookCodeEditor> {
@@ -105,14 +63,12 @@ export async function createNotebookCodeEditor(
     { Compartment, EditorState, Prec },
     { EditorView, keymap, lineNumbers },
     language,
-    lspExtensions,
   ] = await Promise.all([
     import('@codemirror/commands'),
     import('@codemirror/language'),
     import('@codemirror/state'),
     import('@codemirror/view'),
     languageExtension(config.language),
-    notebookLspExtensions(config.lsp),
   ])
 
   const notebookKeymap = (vimMode: boolean): Extension =>
@@ -193,7 +149,6 @@ export async function createNotebookCodeEditor(
     extensions: [
       lineNumbers(),
       language,
-      lspExtensions,
       history(),
       vimCompartment.of(initialVimExtension),
       keymapCompartment.of(notebookKeymap(initialVimMode)),

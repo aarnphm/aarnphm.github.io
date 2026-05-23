@@ -15,6 +15,7 @@ let stdlibModules
 let debugEnabled = false
 let lastPythonError
 let wabtRuntime
+const notebookFilesystemRoot = '/quartz-notebook'
 const loadedPackageRequests = new Set()
 const ignoredImportPackages = new Set([
   'import_ipynb',
@@ -141,6 +142,7 @@ const wat2wasmFeatureFlags = new Map([
   ['--enable-tail-call', 'tail_call'],
   ['--enable-threads', 'threads'],
 ])
+const notebookLsOptionChars = new Set(['1', 'a', 'h', 'l'])
 function post(message, transfer) {
   globalThis.postMessage({ source, runtimeId, ...message }, transfer || [])
 }
@@ -155,6 +157,32 @@ function textOf(value) {
   } catch {
     return Object.prototype.toString.call(value)
   }
+}
+function notebookSandboxPathError(command, path, allowDot) {
+  const normalized = textOf(path).trim().replaceAll('\\', '/')
+  if (!normalized || normalized.includes('\0')) {
+    return `${command} path is unavailable in the browser runtime sandbox`
+  }
+  if (normalized.startsWith('/')) {
+    return `${command} path ${path} is outside the browser runtime sandbox`
+  }
+  const parts = normalized.split('/')
+  if (parts.some(part => part === '..')) {
+    return `${command} path ${path} is outside the browser runtime sandbox`
+  }
+  if (!allowDot && (normalized === '.' || parts.every(part => part === '' || part === '.'))) {
+    return `${command} path ${path} is unavailable in the browser runtime sandbox`
+  }
+}
+function notebookSandboxPath(command, path, allowDot) {
+  const reason = notebookSandboxPathError(command, path, allowDot)
+  if (reason) throw new Error(reason)
+  const parts = textOf(path)
+    .trim()
+    .replaceAll('\\', '/')
+    .split('/')
+    .filter(part => part && part !== '.')
+  return `${notebookFilesystemRoot}/${parts.join('/')}`
 }
 function emitOutput(output) {
   if (!currentCellId) return
@@ -397,10 +425,22 @@ function writeFileDirective(code) {
     filename = word
   }
   if (!filename) return { error: '%%writefile requires a file name' }
+  const pathError = notebookSandboxPathError('%%writefile', filename)
+  if (pathError) return { error: pathError }
   return { filename, append, content: lines.slice(1).join('\n') }
 }
 function defaultWasmOutputPath(input) {
   return input.replace(/(?:\.wat)?$/i, '.wasm')
+}
+function wabtFeatureOption(name, word) {
+  const feature = wat2wasmFeatureFlags.get(word)
+  if (feature) return { feature, enabled: true }
+  if (!word.startsWith('--disable-')) return undefined
+  const enabledFlag = `--enable-${word.slice('--disable-'.length)}`
+  const disabledFeature = wat2wasmFeatureFlags.get(enabledFlag)
+  if (!disabledFeature)
+    return { error: `${name} option ${word} is unavailable in the browser runtime` }
+  return { feature: disabledFeature, enabled: false }
 }
 function wat2wasmDirective(command) {
   const words = shellWords(command)
@@ -413,47 +453,137 @@ function wat2wasmDirective(command) {
     if (word === '-o' || word === '--output') {
       index += 1
       if (!words[index]) return { error: `${word} requires a file name` }
+      const pathError = notebookSandboxPathError('wat2wasm', words[index])
+      if (pathError) return { error: pathError }
       output = words[index]
       continue
     }
     if (word.startsWith('-o') && word.length > 2) {
+      const pathError = notebookSandboxPathError('wat2wasm', word.slice(2))
+      if (pathError) return { error: pathError }
       output = word.slice(2)
       continue
     }
     if (word.startsWith('--output=')) {
+      const pathError = notebookSandboxPathError('wat2wasm', word.slice('--output='.length))
+      if (pathError) return { error: pathError }
       output = word.slice('--output='.length)
       continue
     }
-    const feature = wat2wasmFeatureFlags.get(word)
+    const feature = wabtFeatureOption('wat2wasm', word)
     if (feature) {
-      features[feature] = true
-      continue
-    }
-    if (word.startsWith('--disable-')) {
-      const enabledFlag = `--enable-${word.slice('--disable-'.length)}`
-      const disabledFeature = wat2wasmFeatureFlags.get(enabledFlag)
-      if (!disabledFeature) {
-        return { error: `wat2wasm option ${word} is unavailable in the browser runtime` }
-      }
-      features[disabledFeature] = false
+      if (feature.error) return { error: feature.error }
+      features[feature.feature] = feature.enabled
       continue
     }
     if (word.startsWith('-')) {
       return { error: `wat2wasm option ${word} is unavailable in the browser runtime` }
     }
     if (input) return { error: 'wat2wasm accepts one input file' }
+    const pathError = notebookSandboxPathError('wat2wasm', word)
+    if (pathError) return { error: pathError }
     input = word
   }
   if (!input) return { error: 'wat2wasm requires an input file' }
   return { input, output: output || defaultWasmOutputPath(input), features }
 }
+function wasm2watDirective(command) {
+  const words = shellWords(command)
+  if (words[0] !== 'wasm2wat') return undefined
+  let input = ''
+  let output = ''
+  const features = {}
+  const textOptions = { foldExprs: false, inlineExport: false }
+  for (let index = 1; index < words.length; index += 1) {
+    const word = words[index]
+    if (word === '-o' || word === '--output') {
+      index += 1
+      if (!words[index]) return { error: `${word} requires a file name` }
+      const pathError = notebookSandboxPathError('wasm2wat', words[index])
+      if (pathError) return { error: pathError }
+      output = words[index]
+      continue
+    }
+    if (word.startsWith('-o') && word.length > 2) {
+      const pathError = notebookSandboxPathError('wasm2wat', word.slice(2))
+      if (pathError) return { error: pathError }
+      output = word.slice(2)
+      continue
+    }
+    if (word.startsWith('--output=')) {
+      const pathError = notebookSandboxPathError('wasm2wat', word.slice('--output='.length))
+      if (pathError) return { error: pathError }
+      output = word.slice('--output='.length)
+      continue
+    }
+    if (word === '--fold-exprs') {
+      textOptions.foldExprs = true
+      continue
+    }
+    if (word === '--inline-exports') {
+      textOptions.inlineExport = true
+      continue
+    }
+    const feature = wabtFeatureOption('wasm2wat', word)
+    if (feature) {
+      if (feature.error) return { error: feature.error }
+      features[feature.feature] = feature.enabled
+      continue
+    }
+    if (word.startsWith('-')) {
+      return { error: `wasm2wat option ${word} is unavailable in the browser runtime` }
+    }
+    if (input) return { error: 'wasm2wat accepts one input file' }
+    const pathError = notebookSandboxPathError('wasm2wat', word)
+    if (pathError) return { error: pathError }
+    input = word
+  }
+  if (!input) return { error: 'wasm2wat requires an input file' }
+  return { input, output, features, textOptions }
+}
+function lsDirective(command) {
+  const words = shellWords(command)
+  if (words[0] !== 'ls') return undefined
+  for (let index = 1; index < words.length; index += 1) {
+    const word = words[index]
+    if (!word.startsWith('-')) continue
+    if (word === '-' || Array.from(word.slice(1)).some(char => !notebookLsOptionChars.has(char))) {
+      return { error: `ls option ${word} is unavailable in the browser runtime` }
+    }
+    continue
+  }
+  for (let index = 1; index < words.length; index += 1) {
+    const word = words[index]
+    if (word.startsWith('-')) continue
+    const pathError = notebookSandboxPathError('ls', word, true)
+    if (pathError) return { error: pathError }
+  }
+  return { command }
+}
+function catDirective(command) {
+  const words = shellWords(command)
+  if (words[0] !== 'cat') return undefined
+  if (words.length === 1) return { error: 'cat requires a file' }
+  for (let index = 1; index < words.length; index += 1) {
+    const word = words[index]
+    if (word.startsWith('-')) return { error: 'cat options are unavailable in the browser runtime' }
+    const pathError = notebookSandboxPathError('cat', word)
+    if (pathError) return { error: pathError }
+  }
+  return { command }
+}
 function shellDirective(line) {
   const trimmed = line.trim()
   if (!trimmed.startsWith('!')) return undefined
   const command = trimmed.slice(1).trim()
-  if (/^cat(?:\s|$)/.test(command)) return { command }
+  const cat = catDirective(command)
+  if (cat) return cat.error ? { error: cat.error } : { command: cat.command }
+  const ls = lsDirective(command)
+  if (ls) return ls.error ? { error: ls.error } : { command: ls.command }
   const wat2wasm = wat2wasmDirective(command)
   if (wat2wasm) return wat2wasm.error ? { error: wat2wasm.error } : { wat2wasm }
+  const wasm2wat = wasm2watDirective(command)
+  if (wasm2wat) return wasm2wat.error ? { error: wasm2wat.error } : { wasm2wat }
   return { error: 'shell escapes are unavailable in the browser runtime' }
 }
 function stripPackageDirectives(code) {
@@ -491,6 +621,10 @@ function stripPackageDirectives(code) {
       if (shell.error) throw new Error(shell.error)
       if (shell.wat2wasm) {
         shellCommands.push({ type: 'wat2wasm', ...shell.wat2wasm })
+        continue
+      }
+      if (shell.wasm2wat) {
+        shellCommands.push({ type: 'wasm2wat', ...shell.wasm2wat })
         continue
       }
       lines.push(`__quartz_shell(${JSON.stringify(shell.command)})`)
@@ -689,17 +823,7 @@ function translateLineMagics(code) {
     .join('\n')
 }
 function notebookPath(filename) {
-  const path = textOf(filename).trim().replaceAll('\\', '/')
-  const parts = []
-  for (const part of path.split('/')) {
-    if (!part || part === '.') continue
-    if (part === '..') throw new Error(`notebook file path is unavailable: ${filename}`)
-    parts.push(part)
-  }
-  if (path.startsWith('/') || parts.length === 0) {
-    throw new Error(`notebook file path is unavailable: ${filename}`)
-  }
-  return parts.join('/')
+  return notebookSandboxPath('notebook', filename, false)
 }
 function contentTypeForPath(path) {
   if (/\.wasm$/i.test(path)) return 'application/wasm'
@@ -727,6 +851,10 @@ function writeRuntimeBinaryFile(path, bytes) {
   if (!pyodide) throw new Error('runtime filesystem is unavailable')
   pyodide.FS.writeFile(notebookPath(path), bytes)
 }
+function writeRuntimeTextFile(path, text) {
+  if (!pyodide) throw new Error('runtime filesystem is unavailable')
+  pyodide.FS.writeFile(notebookPath(path), text)
+}
 async function ensureWabt() {
   if (!wabtRuntime) wabtRuntime = await loadWabt()
   return wabtRuntime
@@ -745,10 +873,33 @@ async function runWat2Wasm(command) {
     module.destroy()
   }
 }
+async function runWasm2Wat(command) {
+  setRuntimeStatus(`running wasm2wat ${command.input}`)
+  const wabt = await ensureWabt()
+  const wasm = readRuntimeBinaryFile(command.input)
+  const module = wabt.readWasm(new Uint8Array(wasm.bytes), {
+    readDebugNames: true,
+    ...command.features,
+  })
+  try {
+    module.generateNames()
+    module.applyNames()
+    const text = module.toText(command.textOptions)
+    if (command.output) {
+      writeRuntimeTextFile(command.output, text)
+    } else {
+      emitOutput({ type: 'stream', name: 'stdout', text: text.endsWith('\n') ? text : `${text}\n` })
+    }
+  } finally {
+    module.destroy()
+  }
+}
 async function runNotebookShellCommands(commands) {
   for (const command of commands) {
     if (command.type === 'wat2wasm') {
       await runWat2Wasm(command)
+    } else if (command.type === 'wasm2wat') {
+      await runWasm2Wat(command)
     }
   }
 }

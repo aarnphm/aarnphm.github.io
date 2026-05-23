@@ -3,6 +3,7 @@ import { h, s } from 'hastscript'
 import isAbsoluteUrl from 'is-absolute-url'
 import path from 'path'
 import { visit } from 'unist-util-visit'
+import type { QuartzTransformerPlugin } from '../../types/plugin'
 import type { ArenaBlock, ArenaData } from './arena'
 import type { FrontmatterLink } from './frontmatter'
 import {
@@ -24,7 +25,6 @@ import {
   gwernSvg,
   modularSvg,
 } from '../../components/svg'
-import { QuartzTransformerPlugin } from '../../types/plugin'
 import {
   FullSlug,
   RelativeURL,
@@ -35,6 +35,7 @@ import {
   splitAnchor,
   transformLink,
 } from '../../util/path'
+import { extractArxivId } from '../stores/citations'
 import { filterEmbedTwitter, twitterUrlRegex } from './twitter'
 
 interface Options {
@@ -95,28 +96,6 @@ function metadataDisablesPopover(metadata?: Record<string, any>): boolean {
     return FALSE_LIKE_STRINGS.has(value.trim().toLowerCase())
   }
   return false
-}
-
-/**
- * Match arXiv URLs such as:
- *  - https://arxiv.org/abs/1712.05877
- *  - https://arxiv.org/pdf/1712.05877.pdf
- *  - https://arxiv.org/html/1712.05877
- *  - https://arxiv.org/pdf/1712.05877v1.pdf
- */
-const ARXIV_URL_REGEX =
-  /^https?:\/\/arxiv\.org\/(?:abs|pdf|html)[/\w.-]*?(\d{4}\.\d{4,5})(?:v\d+)?(?:\.pdf)?(?:[?#].*)?$/i
-
-export function extractArxivId(url: string): string | null {
-  try {
-    const urlObj = new URL(url)
-    if (!urlObj.hostname.includes('arxiv.org')) return null
-
-    const match = url.match(ARXIV_URL_REGEX)
-    return match ? match[1] : null
-  } catch {
-    return null
-  }
 }
 
 interface LinkContext {

@@ -1,7 +1,7 @@
 ---
 aliases:
   - images
-date: "2025-01-06"
+date: '2025-01-06'
 description: inspired by https://girl.surgery/website_vibes/ and https://guzey.com/vibes/
 id: vibes
 layout: masonry

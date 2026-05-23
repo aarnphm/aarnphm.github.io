@@ -3,11 +3,15 @@ import { h } from 'hastscript'
 import { Root, Link, Text } from 'mdast'
 import rehypeCitation from 'rehype-citation'
 import { visit } from 'unist-util-visit'
-import { QuartzTransformerPlugin } from '../../types/plugin'
-import { cacheState, makeBibKey, normalizeArxivId } from '../stores/citations'
+import type { QuartzTransformerPlugin } from '../../types/plugin'
+import {
+  cacheState,
+  ensurePendingPaper,
+  extractArxivId,
+  normalizeArxivId,
+} from '../stores/citations'
 import '@citation-js/plugin-bibtex'
 import '@citation-js/plugin-doi'
-import { extractArxivId } from './links'
 
 const URL_PATTERN = /https?:\/\/[^\s<>)"]+/g
 
@@ -157,15 +161,7 @@ export const Citations: QuartzTransformerPlugin<Options> = (opts?: Options) => {
         if (arxivNodes.length === 0) return
 
         for (const id of docIds) {
-          if (!cacheState.papers.has(id)) {
-            cacheState.papers.set(id, {
-              title: id,
-              bibkey: makeBibKey(id),
-              lastVerified: 0,
-              inBibFile: false,
-            })
-            cacheState.dirty = true
-          }
+          ensurePendingPaper(id)
         }
 
         for (const { node, index, parent, id } of arxivNodes) {

@@ -67,7 +67,6 @@
     "agents": "^0.13.2",
     "ansi-truncate": "^1.4.0",
     "async-mutex": "^0.5.0",
-    "browser-basedpyright": "^1.39.5",
     "chokidar": "^5.0.0",
     "codemirror-lang-zig": "^0.1.0",
     "d3": "^7.9.0",

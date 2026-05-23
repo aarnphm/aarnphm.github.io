@@ -89,11 +89,7 @@ function resolveOptions(userOpts?: Options): ResolvedOptions {
 
 const notebookPageLayout: FullPageLayout = {
   ...sharedPageComponents,
-  beforeBody: [
-    Component.NotebookLsp(),
-    Component.NotebookRuntimeLoader(),
-    Component.ArticleTitle(),
-  ],
+  beforeBody: [Component.NotebookRuntimeLoader(), Component.ArticleTitle()],
   pageBody: Component.Content(),
   sidebar: defaultContentPageLayout.sidebar,
 }
