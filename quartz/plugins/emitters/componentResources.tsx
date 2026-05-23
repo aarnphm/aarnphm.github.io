@@ -41,13 +41,24 @@ import '../../components/mdx'
 import styles from '../../styles/custom.scss'
 import { QuartzComponent } from '../../types/component'
 import { QuartzEmitterPlugin } from '../../types/plugin'
-import { assetManifestRecord, assetSlugForContent, resolveAsset } from '../../util/asset-manifest'
+import {
+  assetManifestRecord,
+  assetPath,
+  assetSlugForContent,
+  contentHashSlug,
+  registerExtractedStaticResource,
+  resolveAsset,
+  shouldHashAssets,
+} from '../../util/asset-manifest'
 import { BuildCtx } from '../../util/ctx'
 import { FilePath, FullSlug, isFullSlug, joinSegments } from '../../util/path'
 import {
   splitCssBundles,
   splitJsBundles,
+  componentCssResourceKey,
+  staticCssBundleKey,
   staticCssBundleSlug,
+  staticJsBundleKey,
   staticJsBundleSlug,
 } from '../../util/resource-bundles'
 import { googleFontHref, joinStyles, processGoogleFonts } from '../../util/theme'
@@ -72,7 +83,12 @@ const notebookRuntimeAssetEntries = new Set([
   'quartz/components/scripts/notebook-code-editor.ts',
 ])
 
-type ComponentResources = { css: string[]; beforeDOMLoaded: string[]; afterDOMLoaded: string[] }
+type ComponentResources = {
+  css: string[]
+  componentCss: string[]
+  beforeDOMLoaded: string[]
+  afterDOMLoaded: string[]
+}
 
 export function normalizeResource(resource: string | string[] | undefined): string[] {
   if (!resource) return []
@@ -111,6 +127,7 @@ function getComponentResources(ctx: BuildCtx): ComponentResources {
 
   return {
     css: [...componentResources.css],
+    componentCss: [...componentResources.css],
     beforeDOMLoaded: [...componentResources.beforeDOMLoaded],
     afterDOMLoaded: [...componentResources.afterDOMLoaded],
   }
@@ -184,13 +201,10 @@ function minifyStylesheet(filename: string, stylesheet: string) {
 async function* writeStaticResourceBundles(ctx: BuildCtx, resources: StaticResources) {
   for (const part of splitCssBundles(resources.css, [collapseHeaderStyle])) {
     if (part.type !== 'bundle') continue
-    const content = minifyStylesheet(`resource-style-${part.index}.css`, part.content)
-    yield write({
-      ctx,
-      slug: assetSlugForContent(ctx, staticCssBundleSlug(part.index), '.css', content),
-      ext: '.css',
-      content,
-    })
+    const content = minifyStylesheet('resource-style.css', part.content)
+    const slug = contentHashSlug(staticCssBundleSlug, content)
+    registerExtractedStaticResource(ctx, staticCssBundleKey(part.content), assetPath(slug, '.css'))
+    yield write({ ctx, slug, ext: '.css', content })
   }
 
   for (const loadTime of ['beforeDOMReady', 'afterDOMReady'] as const) {
@@ -199,19 +213,56 @@ async function* writeStaticResourceBundles(ctx: BuildCtx, resources: StaticResou
     for (const part of splitJsBundles(resources.js, loadTime, leadingInline)) {
       if (part.type !== 'bundle') continue
       const content = await joinScripts(part.scripts)
-      yield write({
+      const slug = contentHashSlug(staticJsBundleSlug(part.loadTime), content)
+      registerExtractedStaticResource(
         ctx,
-        slug: assetSlugForContent(
-          ctx,
-          staticJsBundleSlug(part.loadTime, part.index),
-          '.js',
-          content,
-        ),
-        ext: '.js',
-        content,
-      })
+        staticJsBundleKey(part.loadTime, part.scripts),
+        assetPath(slug, '.js'),
+      )
+      yield write({ ctx, slug, ext: '.js', content })
     }
   }
+}
+
+async function* writeComponentStyles(ctx: BuildCtx, resources: ComponentResources) {
+  for (const stylesheet of resources.componentCss) {
+    const content = minifyStylesheet('component.css', `@layer quartz-base {\n${stylesheet}\n}`)
+    const slug = contentHashSlug('component', content)
+    registerExtractedStaticResource(
+      ctx,
+      componentCssResourceKey(stylesheet),
+      assetPath(slug, '.css'),
+    )
+    yield write({ ctx, slug, ext: '.css', content })
+  }
+}
+
+async function writeAfterDomLoadedScripts(ctx: BuildCtx, scripts: string[]) {
+  if (!shouldHashAssets(ctx)) return { postscript: await joinScripts(scripts), files: [] }
+
+  const entries = await Promise.all(
+    scripts.map(async script => {
+      const content = await joinScripts([script])
+      const slug = contentHashSlug('static/scripts/script', content)
+      return {
+        filename: assetPath(slug, '.js'),
+        file: await write({ ctx, slug, ext: '.js', content }),
+      }
+    }),
+  )
+
+  const imports = entries.slice(0, -1).map(({ filename }) => `import("./${filename}")`)
+  const postscript =
+    entries.length === 0
+      ? ''
+      : [
+          imports.length > 0 ? `await Promise.all([\n  ${imports.join(',\n  ')}\n]);` : '',
+          `await import("./${entries[entries.length - 1].filename}");`,
+        ]
+          .filter(Boolean)
+          .join('\n')
+
+  return { postscript, files: entries.map(({ file }) => file) }
 }
 
 async function writeNotebookRuntimeAssets(ctx: BuildCtx): Promise<FilePath[]> {
@@ -426,16 +477,20 @@ export const ComponentResources: QuartzEmitterPlugin = () => {
         }
       }
 
+      yield* writeComponentStyles(ctx, componentResources)
+
+      const componentCss = new Set(componentResources.componentCss)
       const stylesheet = joinStyles(
         ctx.cfg.configuration.theme,
         googleFontsStyleSheet,
-        ...componentResources.css,
+        ...componentResources.css.filter(css => !componentCss.has(css)),
         styles,
       )
-      const [prescript, postscript] = await Promise.all([
+      const [prescript, postscriptResult] = await Promise.all([
         joinScripts(componentResources.beforeDOMLoaded),
-        joinScripts(componentResources.afterDOMLoaded),
+        writeAfterDomLoadedScripts(ctx, componentResources.afterDOMLoaded),
       ])
+      const { postscript, files: postscriptFiles } = postscriptResult
 
       const manifest = {
         name: cfg.pageTitle,
@@ -475,6 +530,10 @@ export const ComponentResources: QuartzEmitterPlugin = () => {
         content: postscript,
       })
 
+      for (const file of postscriptFiles) {
+        yield file
+      }
+
       yield write({
         ctx,
         slug: 'site' as FullSlug,
@@ -512,6 +571,8 @@ export const ComponentResources: QuartzEmitterPlugin = () => {
       yield writeAssetManifest(ctx)
     },
     async *partialEmit(ctx, _content, resources, changeEvents) {
+      const componentResources = await currentComponentResources(ctx)
+      yield* writeComponentStyles(ctx, componentResources)
       yield* writeStaticResourceBundles(ctx, resources)
 
       if (changeEvents.some(changeEvent => isNotebookRuntimeAssetChange(changeEvent.path))) {
@@ -521,12 +582,12 @@ export const ComponentResources: QuartzEmitterPlugin = () => {
       }
 
       if (changeEvents.some(changeEvent => isNotebookRuntimePageScriptChange(changeEvent.path))) {
-        const componentResources = await currentComponentResources(ctx)
         resolveComponentResourceAssets(ctx, componentResources)
-        const [prescript, postscript] = await Promise.all([
+        const [prescript, postscriptResult] = await Promise.all([
           joinScripts(componentResources.beforeDOMLoaded),
-          joinScripts(componentResources.afterDOMLoaded),
+          writeAfterDomLoadedScripts(ctx, componentResources.afterDOMLoaded),
         ])
+        const { postscript, files: postscriptFiles } = postscriptResult
 
         yield write({
           ctx,
@@ -540,6 +601,10 @@ export const ComponentResources: QuartzEmitterPlugin = () => {
           ext: '.js',
           content: postscript,
         })
+
+        for (const file of postscriptFiles) {
+          yield file
+        }
       }
 
       if (changeEvents.some(changeEvent => isCollaborativeCommentsAssetChange(changeEvent.path))) {

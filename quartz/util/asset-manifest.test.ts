@@ -1,7 +1,13 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import type { BuildCtx } from './ctx'
-import { assetManifestRecord, assetPath, assetSlugForContent, resolveAsset } from './asset-manifest'
+import {
+  assetManifestRecord,
+  assetPath,
+  assetSlugForContent,
+  contentHashSlug,
+  resolveAsset,
+} from './asset-manifest'
 
 function testCtx(overrides: Partial<BuildCtx['argv']> = {}): BuildCtx {
   return {
@@ -26,11 +32,18 @@ function testCtx(overrides: Partial<BuildCtx['argv']> = {}): BuildCtx {
 
 test('registers content-hashed production asset names', () => {
   const ctx = testCtx()
-  const slug = assetSlugForContent(ctx, 'static/resource-after-0', '.js', 'console.log(1)')
+  const slug = assetSlugForContent(ctx, 'postscript', '.js', 'console.log(1)')
 
-  assert.match(slug, /^static\/resource-after-0-[0-9a-f]{8}$/)
-  assert.equal(resolveAsset(ctx, 'static/resource-after-0.js'), `${slug}.js`)
-  assert.deepEqual(assetManifestRecord(ctx), { 'static/resource-after-0.js': `${slug}.js` })
+  assert.match(slug, /^postscript-[0-9a-f]{8}$/)
+  assert.equal(resolveAsset(ctx, 'postscript.js'), `${slug}.js`)
+  assert.deepEqual(assetManifestRecord(ctx), { 'postscript.js': `${slug}.js` })
+})
+
+test('creates content-only extracted resource names', () => {
+  assert.match(
+    contentHashSlug('static/resource-after', 'console.log(1)'),
+    /^static\/resource-after-[0-9a-f]{8}$/,
+  )
 })
 
 test('keeps logical names during watch and serve builds', () => {

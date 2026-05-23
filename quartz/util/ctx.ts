@@ -30,6 +30,7 @@ export interface BuildCtx {
   incremental: boolean
   gitCommitSha?: string
   assetManifest?: AssetManifest
+  extractedStaticResources?: Map<string, string>
 }
 
 export function trieFromAllFiles(allFiles: QuartzPluginData[]): FileTrieNode<BuildTimeTrieData> {

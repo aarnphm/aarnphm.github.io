@@ -6,7 +6,7 @@ test('marks content-hashed static assets immutable', () => {
   for (const pathname of [
     '/index-47ac7b09.css',
     '/prescript-47ac7b09.js',
-    '/static/resource-after-0-47ac7b09.js',
+    '/static/resource-after-47ac7b09.js',
     '/static/scripts/notebook-runtime.client-47ac7b09.js',
     '/static/scripts/emoji/twitter/1f44d-47ac7b09.json',
     '/static/scripts/chunks/chunk-NV3MZTQ2.js',
@@ -25,5 +25,5 @@ test('keeps the asset manifest volatile', () => {
 
 test('does not cache unhashed assets or misses as immutable', () => {
   assert.deepEqual(cacheHeadersForStaticAsset('/postscript.js', 200), {})
-  assert.deepEqual(cacheHeadersForStaticAsset('/static/resource-after-0-47ac7b09.js', 404), {})
+  assert.deepEqual(cacheHeadersForStaticAsset('/static/resource-after-47ac7b09.js', 404), {})
 })

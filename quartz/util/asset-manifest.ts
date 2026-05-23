@@ -3,9 +3,14 @@ import type { BuildCtx } from './ctx'
 import type { FullSlug } from './path'
 
 export type AssetManifest = Map<string, string>
+export type ExtractedStaticResources = Map<string, string>
 
 export function hashAssetContent(content: BinaryLike): string {
   return createHash('sha256').update(content).digest('hex').slice(0, 8)
+}
+
+export function contentHashSlug(slug: string, content: BinaryLike): FullSlug {
+  return `${slug}-${hashAssetContent(content)}` as FullSlug
 }
 
 export function shouldHashAssets(ctx: BuildCtx): boolean {
@@ -19,6 +24,26 @@ export function ensureAssetManifest(ctx: BuildCtx): AssetManifest {
 
 export function registerAsset(ctx: BuildCtx, logicalPath: string, emittedPath: string): string {
   ensureAssetManifest(ctx).set(logicalPath, emittedPath)
+  return emittedPath
+}
+
+export function ensureExtractedStaticResources(ctx: BuildCtx): ExtractedStaticResources {
+  ctx.extractedStaticResources ??= new Map()
+  return ctx.extractedStaticResources
+}
+
+export function registerExtractedStaticResource(
+  ctx: BuildCtx,
+  key: string,
+  emittedPath: string,
+): string {
+  ensureExtractedStaticResources(ctx).set(key, emittedPath)
+  return emittedPath
+}
+
+export function resolveExtractedStaticResource(ctx: BuildCtx, key: string): string {
+  const emittedPath = ctx.extractedStaticResources?.get(key)
+  if (!emittedPath) throw new Error(`missing extracted static resource ${key}`)
   return emittedPath
 }
 
