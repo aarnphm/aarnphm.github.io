@@ -18,7 +18,12 @@ from torch.utils.data import DataLoader, Dataset, random_split, Subset
 from tqdm import tqdm
 from safetensors.torch import save_model, load_model
 
-from torchvision.models import efficientnet_v2_s, EfficientNet_V2_S_Weights, EfficientNet_V2_M_Weights, EfficientNet_V2_L_Weights
+from torchvision.models import (
+  efficientnet_v2_s,
+  EfficientNet_V2_S_Weights,
+  EfficientNet_V2_M_Weights,
+  EfficientNet_V2_L_Weights,
+)
 
 from helpers import PretrainedMixin
 
@@ -26,12 +31,13 @@ from helpers import PretrainedMixin
 CIFAR100_MEAN = (0.5071, 0.4867, 0.4408)
 CIFAR100_STD = (0.2675, 0.2565, 0.2761)
 
+
 def test(model, test_csv_path='./test.csv', device='cuda', ncols=100):
   # Define transform for test data
   test_transform = transforms.Compose([
-      transforms.Resize(224),
-      transforms.ToTensor(),
-      transforms.Normalize(CIFAR100_MEAN, CIFAR100_STD)
+    transforms.Resize(224),
+    transforms.ToTensor(),
+    transforms.Normalize(CIFAR100_MEAN, CIFAR100_STD),
   ])
 
   df = pd.read_csv(test_csv_path)
@@ -58,18 +64,22 @@ def test(model, test_csv_path='./test.csv', device='cuda', ncols=100):
       _, predicted = output.max(1)
       predictions.append(predicted.item())
 
-  submission_df = pd.DataFrame({ 'ID': range(0, len(predictions)), 'LABEL': predictions })
+  submission_df = pd.DataFrame({'ID': range(0, len(predictions)), 'LABEL': predictions})
 
   return submission_df
 
-class EfficientNetV2Classifier(nn.Module, PretrainedMixin):
-  variants="s".upper()
 
-  def __init__(self, num_classes=100, variant="s"):
+class EfficientNetV2Classifier(nn.Module, PretrainedMixin):
+  variants = 's'.upper()
+
+  def __init__(self, num_classes=100, variant='s'):
     super(EfficientNetV2Classifier, self).__init__()
-    if variant == "s"   : weights=EfficientNet_V2_S_Weights.DEFAULT
-    elif variant  == "m": weights=EfficientNet_V2_M_Weights.DEFAULT
-    elif variant == "l" : weights=EfficientNet_V2_L_Weights.DEFAULT
+    if variant == 's':
+      weights = EfficientNet_V2_S_Weights.DEFAULT
+    elif variant == 'm':
+      weights = EfficientNet_V2_M_Weights.DEFAULT
+    elif variant == 'l':
+      weights = EfficientNet_V2_L_Weights.DEFAULT
     self.efficientnet = efficientnet_v2_s(weights=weights)
     self.variants = variant.upper()
 
@@ -77,14 +87,17 @@ class EfficientNetV2Classifier(nn.Module, PretrainedMixin):
     num_features = self.efficientnet.classifier[1].in_features
     self.efficientnet.classifier = nn.Sequential(nn.Dropout(p=0.3), nn.Linear(num_features, num_classes))
 
-  def forward(self, x): return self.efficientnet(x)
+  def forward(self, x):
+    return self.efficientnet(x)
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
   test_csv_path = 'test.csv'
-  device = "cuda" if torch.cuda.is_available() else "cpu"
+  device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
-  model, history = EfficientNetV2Classifier.from_pretrained("./model/EfficientNetV2Classifier_20241204_034642.safetensors", device)
+  model, history = EfficientNetV2Classifier.from_pretrained(
+    './model/EfficientNetV2Classifier_20241204_034642.safetensors', device
+  )
 
   submission_df = test(model, test_csv_path=test_csv_path, device=device)
   # Save predictions

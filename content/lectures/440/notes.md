@@ -358,26 +358,7 @@ attention metadata:
 # continuous batching appends new tokens
 input_ids = [1, 2, 3, 4, 5, 14, 1, 6, 5, 7, 8, 9, 10, 15, 1, 12, 13, 16]
 positions = [0, 1, 2, 3, 4, 5, 0, 1, 2, 3, 4, 5, 6, 7, 0, 1, 2, 3]
-slot_mapping = [
-  4,
-  5,
-  6,
-  7,
-  8,
-  9,
-  12,
-  13,
-  14,
-  15,
-  16,
-  17,
-  18,
-  19,
-  20,
-  21,
-  22,
-  23,
-]
+slot_mapping = [4, 5, 6, 7, 8, 9, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23]
 ```
 
 **GPU memory after decode**:
@@ -428,9 +409,7 @@ imagine someone sends a 32k token prompt while you're serving 50 users generatin
 ```python
 max_per_step = 512  # typically
 # split that 32k prompt into 64 chunks
-chunks = [
-  prompt[i : i + max_per_step] for i in range(0, len(prompt), max_per_step)
-]
+chunks = [prompt[i : i + max_per_step] for i in range(0, len(prompt), max_per_step)]
 # interleave with decode requests
 ```
 

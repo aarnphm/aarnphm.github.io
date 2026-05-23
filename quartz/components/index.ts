@@ -21,6 +21,7 @@ import Image from './Image'
 import Keybind from './Keybind'
 import License from './License'
 import MobileOnly from './MobileOnly'
+import NotebookLsp from './NotebookLsp'
 import NotebookRuntimeLoader from './NotebookRuntimeLoader'
 import PageListSearch from './PageListSearch'
 import NotFound from './pages/404'
@@ -75,6 +76,7 @@ export {
   Footer,
   DesktopOnly,
   MobileOnly,
+  NotebookLsp,
   NotebookRuntimeLoader,
   BaseSearchBar,
   PageListSearch,

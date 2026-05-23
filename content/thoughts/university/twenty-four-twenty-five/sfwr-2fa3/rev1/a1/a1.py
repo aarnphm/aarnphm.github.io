@@ -179,11 +179,12 @@ def dfa_3(format):
 
   return m_union
 
+
 def nfa(format):
   dfa = graphviz.Digraph('DFA from NFA', format=format)
   dfa.attr(rankdir='LR', size='8,5')
 
-# Define the node attributes
+  # Define the node attributes
   dfa.attr('node', shape='doublecircle')
   dfa.node('D3')
   dfa.node('D5')
@@ -192,18 +193,18 @@ def nfa(format):
   dfa.node('start', shape='none')
   dfa.node('start', '')
 
-# Define the DFA states based on the transition table given
+  # Define the DFA states based on the transition table given
   dfa_states = {
-      'D0': '{q0}',
-      'D1': '{q0, q1}',
-      'D2': '{q0, q2}',
-      'D3': '{q0, q1, q2}',
-      'D4': '{q0, q3}',
-      'D5': '{q0, q1, q2, q3}',
-      'D6': '{q4}'
+    'D0': '{q0}',
+    'D1': '{q0, q1}',
+    'D2': '{q0, q2}',
+    'D3': '{q0, q1, q2}',
+    'D4': '{q0, q3}',
+    'D5': '{q0, q1, q2, q3}',
+    'D6': '{q4}',
   }
 
-# Define the edges/transitions according to the DFA transition table
+  # Define the edges/transitions according to the DFA transition table
   dfa.edge('start', 'D0', label='')
   dfa.edge('D0', 'D1', label='a')
   dfa.edge('D0', 'D0', label='b')

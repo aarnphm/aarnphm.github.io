@@ -9,6 +9,7 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
   from collections.abc import Sequence
 
+
 def parse_line(s: str) -> tuple[str, list[list[int]], list[int]]:
   # [pattern] (btn1) (btn2) ... {targets}
   pattern = re.search(r'\[([.#]+)\]', s).group(1)
@@ -16,16 +17,22 @@ def parse_line(s: str) -> tuple[str, list[list[int]], list[int]]:
   targets = list(map(int, re.search(r'\{([0-9,]+)\}', s).group(1).split(',')))
   return pattern, buttons, targets
 
+
 # part 1: BFS over XOR state space
-def pattern_to_mask(pat: str) -> int: return sum(1 << i for i, c in enumerate(pat) if c == '#')
+def pattern_to_mask(pat: str) -> int:
+  return sum(1 << i for i, c in enumerate(pat) if c == '#')
+
 
 def button_to_mask(btn: list[int]) -> int:
   mask = 0
-  for i in btn: mask ^= 1 << i
+  for i in btn:
+    mask ^= 1 << i
   return mask
 
+
 def min_press_lights(target: int, masks: list[int]) -> int:
-  if target == 0: return 0
+  if target == 0:
+    return 0
 
   seen = {0}
   q = deque([(0, 0)])
@@ -34,10 +41,12 @@ def min_press_lights(target: int, masks: list[int]) -> int:
     state, dist = q.popleft()
     for m in masks:
       nxt = state ^ m
-      if nxt == target: return dist + 1
+      if nxt == target:
+        return dist + 1
       if nxt not in seen:
         seen.add(nxt)
         q.append((nxt, dist + 1))
+
 
 # part 2: integer linear programming via gaussian elimination
 def gauss_jordan(a: list[list[Fraction]], b: list[Fraction]) -> tuple[list[list[Fraction]], list[Fraction], list[int]]:
@@ -72,8 +81,10 @@ def gauss_jordan(a: list[list[Fraction]], b: list[Fraction]) -> tuple[list[list[
         rhs[i] -= factor * rhs[r]
     pivots.append(c)
     r += 1
-    if r >= rows: break
+    if r >= rows:
+      break
   return mat, rhs, pivots
+
 
 def solve_square(mat: list[list[Fraction]], rhs: list[Fraction]) -> list[Fraction] | None:
   # solve square system via back substitution after gaussian elimination
@@ -81,17 +92,22 @@ def solve_square(mat: list[list[Fraction]], rhs: list[Fraction]) -> list[Fractio
   mat2, rhs2, _ = gauss_jordan(mat, rhs)
   # check for singularity
   for i in range(n):
-    if all(mat2[i][j] == 0 for j in range(n)): return
+    if all(mat2[i][j] == 0 for j in range(n)):
+      return
   # back substitute (already in RREF)
   sol = [Fraction(0)] * n
   for i in range(n - 1, -1, -1):
     lead = next((j for j in range(n) if mat2[i][j] != 0), None)
-    if lead is None: return
+    if lead is None:
+      return
     rest = sum(mat2[i][j] * sol[j] for j in range(lead + 1, n))
     sol[lead] = rhs2[i] - rest
   return sol
 
-def bounds_for_free(constraints: list[tuple[list[Fraction], Fraction]], f: int) -> tuple[list[Fraction], list[Fraction]]:
+
+def bounds_for_free(
+  constraints: list[tuple[list[Fraction], Fraction]], f: int
+) -> tuple[list[Fraction], list[Fraction]]:
   # find min/max bounds for free variables by vertex enumeration
   mins = [None] * f
   maxs = [Fraction(0)] * f
@@ -99,13 +115,17 @@ def bounds_for_free(constraints: list[tuple[list[Fraction], Fraction]], f: int) 
     mat = [constraints[i][0] for i in subset]
     rhs = [constraints[i][1] for i in subset]
     sol = solve_square(mat, rhs)
-    if sol is None: continue
+    if sol is None:
+      continue
     # check feasibility
     if all(sum(c[j] * sol[j] for j in range(f)) <= b for c, b in constraints):
       for j in range(f):
-        if mins[j] is None or sol[j] < mins[j]: mins[j] = sol[j]
-        if sol[j] > maxs[j]: maxs[j] = sol[j]
+        if mins[j] is None or sol[j] < mins[j]:
+          mins[j] = sol[j]
+        if sol[j] > maxs[j]:
+          maxs[j] = sol[j]
   return [m if m is not None else Fraction(0) for m in mins], maxs
+
 
 def min_press_jolts(buttons: Sequence[Sequence[int]], targets: Sequence[int]) -> int:
   # minimize sum(x) subject to Ax = b, x >= 0, x \in \mathcal{R}
@@ -122,7 +142,8 @@ def min_press_jolts(buttons: Sequence[Sequence[int]], targets: Sequence[int]) ->
   if f_count == 0:
     # unique solution
     pivot_vals = [b_red[r] for r in range(len(pivots))]
-    if all(v >= 0 and v.denominator == 1 for v in pivot_vals): return sum(int(v) for v in pivot_vals)
+    if all(v >= 0 and v.denominator == 1 for v in pivot_vals):
+      return sum(int(v) for v in pivot_vals)
     raise RuntimeError('no feasible solution')
 
   # build constraints from reduced system
@@ -141,17 +162,21 @@ def min_press_jolts(buttons: Sequence[Sequence[int]], targets: Sequence[int]) ->
   def search(idx: int, vals: list[int]) -> int:
     if idx == f_count:
       pivot_vals = [b_val - sum(coeff[j] * vals[j] for j in range(f_count)) for b_val, coeff in row_info]
-      if all(v >= 0 and v.denominator == 1 for v in pivot_vals): return sum(vals) + sum(int(v) for v in pivot_vals)
+      if all(v >= 0 and v.denominator == 1 for v in pivot_vals):
+        return sum(vals) + sum(int(v) for v in pivot_vals)
       return 10**18
     lo, hi = bounds[idx]
     best = 10**18
-    for v in range(lo, hi + 1): best = min(best, search(idx + 1, vals + [v]))
+    for v in range(lo, hi + 1):
+      best = min(best, search(idx + 1, vals + [v]))
     return best
 
   return search(0, [])
 
+
 def main():
-  with open('d10.txt') as f: lines = [ln.strip() for ln in f if ln.strip()]
+  with open('d10.txt') as f:
+    lines = [ln.strip() for ln in f if ln.strip()]
 
   p1 = 0
   for ln in lines:
@@ -165,4 +190,6 @@ def main():
   print(f'p1: {p1}')
   print(f'p2: {p2}')
 
-if __name__ == '__main__': main()
+
+if __name__ == '__main__':
+  main()

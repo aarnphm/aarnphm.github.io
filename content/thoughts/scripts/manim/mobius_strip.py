@@ -4,7 +4,7 @@ import numpy as np
 
 class MobiusStrip(ThreeDScene):
   def construct(self):
-    self.set_camera_orientation(phi=70 * DEGREES, theta=20* DEGREES)
+    self.set_camera_orientation(phi=70 * DEGREES, theta=20 * DEGREES)
 
     ax = ThreeDAxes(x_range=(-10, 10, 1), y_range=(-10, 10, 1), z_range=(-10, 10, 1))
 

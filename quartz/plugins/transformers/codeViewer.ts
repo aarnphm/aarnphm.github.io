@@ -1,17 +1,29 @@
+import type { Code, Html, Root, RootContent } from 'mdast'
 import type { Parent } from 'unist'
 import { readFile } from 'fs/promises'
-import { Code, Root } from 'mdast'
 import path from 'path'
 import { visit, SKIP } from 'unist-util-visit'
 import type { Wikilink } from '../../util/wikilinks'
 import { QuartzTransformerPlugin } from '../../types/plugin'
 import { BuildCtx } from '../../util/ctx'
+import {
+  defaultNotebookPyodideIndexUrl,
+  notebookCellActions,
+  notebookCellControls,
+  notebookCellFrameOpen,
+  notebookCellRuntimeOutput,
+  notebookRuntimeControls,
+  notebookRuntimeDataScript,
+  notebookRuntimeId,
+  notebookSourceEditor,
+  type NotebookRuntimeCell,
+  type NotebookRuntimeData,
+} from '../../util/notebook-runtime'
 import { FilePath } from '../../util/path'
 
-type Options = {
-  /** File extensions to treat as code files (lowercase, with dot). */
-  exts?: string[]
-}
+type Options = { exts?: string[]; pyodideIndexUrl?: string }
+
+type ResolvedOptions = { exts: string[]; pyodideIndexUrl: string }
 
 const DEFAULT_EXTS = new Set<string>([
   '.py',
@@ -124,18 +136,15 @@ function resolveToRelativePath(
   const relDir = path.posix.dirname(currentMdRel)
   const targetBase = path.posix.basename(target)
 
-  // 1) sibling resolution
   const sibling = path.posix.join(relDir, target)
   if (ctx.allFiles.includes(sibling as FilePath)) {
     return sibling as FilePath
   }
 
-  // 2) explicit path from vault root
   if (target.includes('/') && ctx.allFiles.includes(target as FilePath)) {
     return target as FilePath
   }
 
-  // 3) basename fallback
   const match = ctx.allFiles.find(fp => path.posix.basename(fp) === targetBase)
   return (match ?? null) as FilePath | null
 }
@@ -146,52 +155,132 @@ async function readCodeFile(ctx: BuildCtx, resolvedRel: FilePath) {
   return buf.toString('utf8')
 }
 
-export const CodeViewer: QuartzTransformerPlugin<Partial<Options>> = userOpts => {
-  const opts = { exts: Array.from(DEFAULT_EXTS), ...userOpts }
-  const exts = new Set(opts.exts!.map(e => e.toLowerCase()))
+function html(value: string): Html {
+  return { type: 'html', value }
+}
 
-  // We implement as a Markdown transformer that preempts OFM on code embeds.
-  // This ensures resulting <pre><code> are present for later syntax-highlighting.
+type CodeNodeData = { codeTranscludeTarget?: unknown; codeTranscludePath?: unknown }
+
+type CodeWithViewerData = Code & { data?: CodeNodeData }
+
+function codeNodeData(node: Code): CodeNodeData {
+  const code = node as CodeWithViewerData
+  code.data ??= {}
+  return code.data
+}
+
+function codeTranscludeTarget(node: Code): string | undefined {
+  const target = (node as CodeWithViewerData).data?.codeTranscludeTarget
+  return typeof target === 'string' ? target : undefined
+}
+
+function codeTranscludePath(node: Code): string | undefined {
+  const target = (node as CodeWithViewerData).data?.codeTranscludePath
+  return typeof target === 'string' ? target : undefined
+}
+
+function hasRootChildren(parent: Parent): parent is Parent & { children: RootContent[] } {
+  return Array.isArray(parent.children)
+}
+
+function sourcePathFromFile(fileData: { relativePath?: unknown }, fallback: string): string {
+  return typeof fileData.relativePath === 'string' ? fileData.relativePath : fallback
+}
+
+function codeLanguage(node: Code): string {
+  return node.lang?.trim().toLowerCase() ?? ''
+}
+
+function metaHasShell(meta: string | null | undefined): boolean {
+  return /\bshell\b/i.test(meta ?? '')
+}
+
+function runsInPythonRuntime(node: Code): boolean {
+  const transcluded = codeTranscludePath(node)
+  if (transcluded && path.extname(transcluded).toLowerCase() === '.py') return true
+
+  const lang = codeLanguage(node)
+  if (lang === 'python-shell' || lang === 'py-shell') return true
+  if (lang !== 'python' && lang !== 'py') return false
+  return metaHasShell(node.meta)
+}
+
+function runtimeCell(id: string, node: Code): NotebookRuntimeCell {
+  return { id, source: node.value, language: 'python', executionIndex: null }
+}
+
+function runtimePayload(
+  sourcePath: string,
+  cells: NotebookRuntimeCell[],
+  pyodideIndexUrl: string,
+): NotebookRuntimeData {
+  return {
+    id: notebookRuntimeId(`code-viewer:${sourcePath}`),
+    sourcePath,
+    language: 'python',
+    pyodideIndexUrl,
+    cells,
+  }
+}
+
+function runtimeCellNodes(cell: NotebookRuntimeCell, node: Code): RootContent[] {
+  return [
+    html(notebookCellFrameOpen(cell.id)),
+    html(notebookCellControls(cell).join('\n')),
+    html(notebookCellActions(cell)),
+    html(notebookSourceEditor(cell.id)),
+    node,
+    html(notebookCellRuntimeOutput(cell.id)),
+    html('</div>'),
+  ]
+}
+
+export const CodeViewer: QuartzTransformerPlugin<Partial<Options>> = userOpts => {
+  const opts: ResolvedOptions = {
+    exts: userOpts?.exts ?? Array.from(DEFAULT_EXTS),
+    pyodideIndexUrl: userOpts?.pyodideIndexUrl ?? defaultNotebookPyodideIndexUrl,
+  }
+  const exts = new Set(opts.exts.map(e => e.toLowerCase()))
+
   return {
     name: 'CodeViewer',
     markdownPlugins(ctx) {
       return [
         () => {
           return async (tree: Root, file) => {
-            // Replace embed wikilink nodes with placeholder code blocks so later passes can hydrate
-            visit(tree, 'wikilink', (node, index, parent) => {
-              if (index === undefined || !parent) return
-              const wikilinkNode = node as unknown as Wikilink
-              const data = wikilinkNode.data?.wikilink
-              if (!data?.embed) return
+            visit(
+              tree,
+              'wikilink',
+              (node: unknown, index: number | undefined, parent: Parent | undefined) => {
+                if (index === undefined || !parent) return
+                const wikilinkNode = node as unknown as Wikilink
+                const data = wikilinkNode.data?.wikilink
+                if (!data?.embed) return
 
-              const fp = (data.target ?? '').trim()
-              if (!fp) return
+                const fp = (data.target ?? '').trim()
+                if (!fp) return
 
-              const ext = path.extname(fp).toLowerCase()
-              if (!ext || !exts.has(ext)) return
+                const ext = path.extname(fp).toLowerCase()
+                if (!ext || !exts.has(ext)) return
 
-              const lang = languageFromExt(ext)
-              const base = path.posix.basename(fp)
-              const codeNode: Code = { type: 'code', lang, meta: `title="${base}"`, value: '' }
+                const lang = languageFromExt(ext)
+                const base = path.posix.basename(fp)
+                const codeNode: Code = { type: 'code', lang, meta: `title="${base}"`, value: '' }
 
-              const dataAny = codeNode as unknown as { data?: Record<string, any> }
-              dataAny.data = { ...dataAny.data, codeTranscludeTarget: fp }
+                codeNodeData(codeNode).codeTranscludeTarget = fp
 
-              const parentNode = parent as Parent
-              if (!parentNode.children) return
-              parentNode.children.splice(index, 1, codeNode)
-              return [SKIP, index]
-            })
+                if (!hasRootChildren(parent)) return
+                parent.children.splice(index, 1, codeNode)
+                return [SKIP, index]
+              },
+            )
 
-            // Resolve and populate code content
             const promises: Promise<void>[] = []
             visit(tree, 'code', (node: Code) => {
-              const dataAny = node as unknown as { data?: Record<string, any> }
-              const target = dataAny.data?.codeTranscludeTarget as string | undefined
+              const target = codeTranscludeTarget(node)
               if (!target) return
-              const currentRel = file.data.relativePath as string
-              const resolved = resolveToRelativePath(ctx as BuildCtx, target, currentRel)
+              const currentRel = sourcePathFromFile(file.data, file.path)
+              const resolved = resolveToRelativePath(ctx, target, currentRel)
               if (!resolved) return
               const titleBase = path.posix.basename(resolved)
               const ext = path.extname(resolved)
@@ -199,9 +288,10 @@ export const CodeViewer: QuartzTransformerPlugin<Partial<Options>> = userOpts =>
               node.meta = node.meta
                 ? `${node.meta} path="${resolved}"`
                 : `title="${titleBase}" path="${resolved}"`
+              codeNodeData(node).codeTranscludePath = resolved
 
               promises.push(
-                readCodeFile(ctx as BuildCtx, resolved).then(content => {
+                readCodeFile(ctx, resolved).then(content => {
                   node.value = content
                   const deps: string[] = (file.data.codeDependencies as string[] | undefined) ?? []
                   if (!deps.includes(resolved)) {
@@ -211,6 +301,38 @@ export const CodeViewer: QuartzTransformerPlugin<Partial<Options>> = userOpts =>
               )
             })
             await Promise.all(promises)
+
+            const sourcePath = sourcePathFromFile(file.data, file.path)
+            const cells: NotebookRuntimeCell[] = []
+            let insertedRuntime = false
+
+            visit(tree, 'code', (node: Code, index, parent) => {
+              if (index === undefined || !parent || !hasRootChildren(parent)) return
+              if (!runsInPythonRuntime(node)) return
+              const cell = runtimeCell(`code-cell-${cells.length + 1}`, node)
+              cells.push(cell)
+              const nodes = runtimeCellNodes(cell, node)
+              if (!insertedRuntime) {
+                nodes.unshift(
+                  ...notebookRuntimeControls(
+                    runtimePayload(sourcePath, [], opts.pyodideIndexUrl),
+                  ).map(html),
+                )
+                insertedRuntime = true
+              }
+              parent.children.splice(index, 1, ...nodes)
+              return [SKIP, index + nodes.length]
+            })
+
+            if (cells.length > 0) {
+              tree.children.push(
+                html(
+                  notebookRuntimeDataScript(
+                    runtimePayload(sourcePath, cells, opts.pyodideIndexUrl),
+                  ),
+                ),
+              )
+            }
           }
         },
       ]

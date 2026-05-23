@@ -9,7 +9,7 @@ import socket, sys, threading, json, os, argparse, logging, signal
 from logging.handlers import RotatingFileHandler
 
 
-def setup_logger(log_level:int=logging.INFO):
+def setup_logger(log_level: int = logging.INFO):
   logger = logging.getLogger(__name__)
   logger.setLevel(log_level)
 
@@ -17,7 +17,7 @@ def setup_logger(log_level:int=logging.INFO):
   console_handler.setLevel(log_level)
 
   # Create file handler with rotation (max 5MB, keep 3 backups)
-  file_handler = RotatingFileHandler('file_synchronizer.log', maxBytes=5*1024*1024, backupCount=3)
+  file_handler = RotatingFileHandler('file_synchronizer.log', maxBytes=5 * 1024 * 1024, backupCount=3)
   file_handler.setLevel(log_level)
 
   formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
@@ -29,15 +29,22 @@ def setup_logger(log_level:int=logging.INFO):
 
   return logger
 
+
 logger = setup_logger()
 
-def validate_ip(s:str)->bool:
-  try: return len((a := s.split('.'))) == 4 and all(x.isdigit() and 0 <= int(x) <= 255 for x in a)
-  except: return False
 
-def validate_port(x:str)->bool:return x.isdigit() and 0 <= int(x) <= 65535
+def validate_ip(s: str) -> bool:
+  try:
+    return len((a := s.split('.'))) == 4 and all(x.isdigit() and 0 <= int(x) <= 255 for x in a)
+  except:
+    return False
 
-def get_file_info(ignored:tuple[str,...]=('.so','.py','.dll'))->list[dict[str,str|int]]:
+
+def validate_port(x: str) -> bool:
+  return x.isdigit() and 0 <= int(x) <= 65535
+
+
+def get_file_info(ignored: tuple[str, ...] = ('.so', '.py', '.dll')) -> list[dict[str, str | int]]:
   return [
     {'name': filename, 'mtime': int(os.path.getmtime(filename))}
     for filename in os.listdir('.')
@@ -45,7 +52,7 @@ def get_file_info(ignored:tuple[str,...]=('.so','.py','.dll'))->list[dict[str,st
   ]
 
 
-def check_port_available(check_port:int)->bool:
+def check_port_available(check_port: int) -> bool:
   with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
     try:
       s.bind(('0.0.0.0', check_port))
@@ -54,16 +61,17 @@ def check_port_available(check_port:int)->bool:
       return False
 
 
-def get_next_available_port(initial_port:int)->int|bool:
+def get_next_available_port(initial_port: int) -> int | bool:
   port = initial_port
   while port <= 65535:
-    if check_port_available(port): return port
+    if check_port_available(port):
+      return port
     port += 1
   return False
 
 
 class FileSynchronizer(threading.Thread):
-  def __init__(self,trackerhost:int,trackerport:int,port:int,host:str='0.0.0.0'):
+  def __init__(self, trackerhost: int, trackerport: int, port: int, host: str = '0.0.0.0'):
     threading.Thread.__init__(self)
     self.daemon = True
 
@@ -109,34 +117,37 @@ class FileSynchronizer(threading.Thread):
   # Ensure sockets are closed on disconnect
   def exit(self):
     """Gracefully shut down the synchronizer"""
-    logger.info("Shutting down file synchronizer...")
+    logger.info('Shutting down file synchronizer...')
     self.running = False
 
     # Cancel any pending sync timer
-    if self.sync_timer and self.sync_timer.is_alive():self.sync_timer.cancel()
+    if self.sync_timer and self.sync_timer.is_alive():
+      self.sync_timer.cancel()
 
     # Close sockets
     try:
       self.server.close()
     except Exception as e:
-      logger.error("Error closing server socket: %s", e)
+      logger.error('Error closing server socket: %s', e)
 
     try:
       self.client.close()
     except Exception as e:
-      logger.error("Error closing client socket: %s", e)
+      logger.error('Error closing client socket: %s', e)
 
-    logger.info("File synchronizer shutdown complete")
+    logger.info('File synchronizer shutdown complete')
 
-  def __del__(self): self.exit()
+  def __del__(self):
+    self.exit()
 
   # Handle file request from a peer(i.e., send the file content to peers)
-  def process_message(self,conn:socket.socket,addr:str):
-    file_name=''
+  def process_message(self, conn: socket.socket, addr: str):
+    file_name = ''
     try:
       file_name = conn.recv(self.BUFFER_SIZE).decode('utf-8')
       logger.info('Received file request: %s from %s', file_name, addr)
-      with open(file_name, 'rb') as file: file_content = file.read()
+      with open(file_name, 'rb') as file:
+        file_content = file.read()
       conn.sendall(file_content)
       logger.info('Sent %d bytes of %s to %s', len(file_content), file_name, addr)
     except FileNotFoundError:
@@ -166,16 +177,17 @@ class FileSynchronizer(threading.Thread):
           continue
         except Exception as e:
           if self.running:  # Only log if we're still supposed to be running
-            logger.error("Error accepting connection: %s", e)
+            logger.error('Error accepting connection: %s', e)
 
-      logger.info("File synchronizer main loop exited")
+      logger.info('File synchronizer main loop exited')
     except Exception as e:
-      logger.error("Error in synchronizer main loop: %s", e)
+      logger.error('Error in synchronizer main loop: %s', e)
 
   # Send Init or KeepAlive message to tracker, handle directory response message
   # and request files from peers
   def sync(self):
-    if not self.running: return
+    if not self.running:
+      return
 
     try:
       logger.info('Connecting to: %s:%s', self.trackerhost, self.trackerport)
@@ -262,91 +274,97 @@ class FileSynchronizer(threading.Thread):
         self.sync_timer.start()
 
     except Exception as e:
-      logger.error("Error in sync operation: %s", e)
+      logger.error('Error in sync operation: %s', e)
       # Still try to schedule next sync if running
       if self.running:
         self.sync_timer = threading.Timer(5, self.sync)
         self.sync_timer.daemon = True
         self.sync_timer.start()
 
-def signal_handler(sig:int, frame):
-    logger.info("Received signal %s, shutting down...", sig)
-    if 'synchronizer' in globals(): globals()['synchronizer'].exit()
-    sys.exit(0)
 
-def main()->int:
-    # Register signal handlers for graceful shutdown
-    signal.signal(signal.SIGINT, signal_handler)
-    signal.signal(signal.SIGTERM, signal_handler)
+def signal_handler(sig: int, frame):
+  logger.info('Received signal %s, shutting down...', sig)
+  if 'synchronizer' in globals():
+    globals()['synchronizer'].exit()
+  sys.exit(0)
 
-    parser = argparse.ArgumentParser(description='File Synchronizer Client')
-    parser.add_argument('tracker_ip', help='Tracker server IP address')
-    parser.add_argument('tracker_port', help='Tracker server port number')
-    parser.add_argument('--log-level', choices=['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL'],
-                       default='INFO', help='Set logging level')
 
-    args = parser.parse_args()
+def main() -> int:
+  # Register signal handlers for graceful shutdown
+  signal.signal(signal.SIGINT, signal_handler)
+  signal.signal(signal.SIGTERM, signal_handler)
 
-    # Calculate IP header checksum
-    data = "4510 003c 1c46 4501 4006 b1e6 ac10 0a63"
-    # Remove spaces and convert to bytes
-    hex_data = data.replace(" ", "")
+  parser = argparse.ArgumentParser(description='File Synchronizer Client')
+  parser.add_argument('tracker_ip', help='Tracker server IP address')
+  parser.add_argument('tracker_port', help='Tracker server port number')
+  parser.add_argument(
+    '--log-level', choices=['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL'], default='INFO', help='Set logging level'
+  )
 
-    # Process 16 bits (2 bytes) at a time
-    sum = 0
-    # Process each 16-bit word (4 hex digits)
-    for i in range(0, len(hex_data), 4):
-        if i+3 < len(hex_data):  # Ensure we have a full 16-bit word
-            word = int(hex_data[i:i+4], 16)
-            sum += word
-            # Handle overflow beyond 16 bits
-            if sum > 0xFFFF:
-                sum = (sum & 0xFFFF) + (sum >> 16)
+  args = parser.parse_args()
 
-    # Take one's complement
-    checksum = (~sum) & 0xFFFF
+  # Calculate IP header checksum
+  data = '4510 003c 1c46 4501 4006 b1e6 ac10 0a63'
+  # Remove spaces and convert to bytes
+  hex_data = data.replace(' ', '')
 
-    print(f"IP Header Checksum: 0x{checksum:04x}")
+  # Process 16 bits (2 bytes) at a time
+  sum = 0
+  # Process each 16-bit word (4 hex digits)
+  for i in range(0, len(hex_data), 4):
+    if i + 3 < len(hex_data):  # Ensure we have a full 16-bit word
+      word = int(hex_data[i : i + 4], 16)
+      sum += word
+      # Handle overflow beyond 16 bits
+      if sum > 0xFFFF:
+        sum = (sum & 0xFFFF) + (sum >> 16)
 
-    # Set log level if specified
-    if args.log_level:
-        logger.setLevel(getattr(logging, args.log_level))
-        for handler in logger.handlers:
-            handler.setLevel(getattr(logging, args.log_level))
+  # Take one's complement
+  checksum = (~sum) & 0xFFFF
 
-    # Validate IP and port
-    if not validate_ip(args.tracker_ip):
-        parser.error('Invalid tracker IP address')
+  print(f'IP Header Checksum: 0x{checksum:04x}')
 
-    if not validate_port(args.tracker_port):
-        parser.error('Invalid tracker port number')
+  # Set log level if specified
+  if args.log_level:
+    logger.setLevel(getattr(logging, args.log_level))
+    for handler in logger.handlers:
+      handler.setLevel(getattr(logging, args.log_level))
 
-    tracker_ip = args.tracker_ip
-    tracker_port = int(args.tracker_port)
+  # Validate IP and port
+  if not validate_ip(args.tracker_ip):
+    parser.error('Invalid tracker IP address')
 
-    # Get free port
-    synchronizer_port = get_next_available_port(8000)
-    if not synchronizer_port:
-        logger.critical("No available ports found")
-        return 1
+  if not validate_port(args.tracker_port):
+    parser.error('Invalid tracker port number')
 
-    logger.info("Starting file synchronizer on port %s", synchronizer_port)
-    global synchronizer
-    synchronizer = FileSynchronizer(tracker_ip, tracker_port, synchronizer_port)
-    synchronizer.start()
+  tracker_ip = args.tracker_ip
+  tracker_port = int(args.tracker_port)
 
-    try:
-        # Keep the main thread alive to handle signals
-        while synchronizer.is_alive():
-            synchronizer.join(1)
-    except KeyboardInterrupt:
-        logger.info("Keyboard interrupt received, shutting down...")
-        synchronizer.exit()
-    except Exception as e:
-        logger.error("Error in main thread: %s", e)
-        synchronizer.exit()
-        return 1
+  # Get free port
+  synchronizer_port = get_next_available_port(8000)
+  if not synchronizer_port:
+    logger.critical('No available ports found')
+    return 1
 
-    return 0
+  logger.info('Starting file synchronizer on port %s', synchronizer_port)
+  global synchronizer
+  synchronizer = FileSynchronizer(tracker_ip, tracker_port, synchronizer_port)
+  synchronizer.start()
 
-if __name__=='__main__':main()
+  try:
+    # Keep the main thread alive to handle signals
+    while synchronizer.is_alive():
+      synchronizer.join(1)
+  except KeyboardInterrupt:
+    logger.info('Keyboard interrupt received, shutting down...')
+    synchronizer.exit()
+  except Exception as e:
+    logger.error('Error in main thread: %s', e)
+    synchronizer.exit()
+    return 1
+
+  return 0
+
+
+if __name__ == '__main__':
+  main()

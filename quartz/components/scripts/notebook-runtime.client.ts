@@ -749,6 +749,7 @@ class NotebookRuntime {
       parent: controls.editorHost,
       initialContent: controls.source,
       language: cell.language,
+      lsp: { runtimeId: this.payload.id, cellId: cell.id, language: cell.language },
       vimMode: this.vimMode,
       onChange: source => {
         controls.source = source

@@ -45,6 +45,7 @@ from time import sleep
 # for r in riders: r.start()
 # for r in riders: r.join()
 
+
 class Rider(Thread):
   def __init__(self, i):
     Thread.__init__(self)
@@ -74,6 +75,7 @@ class Rider(Thread):
       else:
         mutex.release()
     stdout.write(str(self.i) + ' done\n')
+
 
 C, B = 3, 10
 mutex, free, avail = Semaphore(1), Semaphore(0), C

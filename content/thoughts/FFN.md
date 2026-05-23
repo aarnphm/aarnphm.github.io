@@ -24,11 +24,15 @@ Think of just a linear layers with some activation functions
 import torch.optim as optim
 import torch.nn as nn
 
+
 class LinearRegression(nn.Module):
   def __init__(self, input_dim, output_dim):
     super().__init__()
     self.fc = nn.Linear(input_dim, output_dim)
-  def forward(self, x): return self.fc(x)
+
+  def forward(self, x):
+    return self.fc(x)
+
 
 model = LinearRegression(224, 10)
 loss = nn.MSELoss()

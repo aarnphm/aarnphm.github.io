@@ -1,5 +1,26 @@
 import { escapeHTML } from './escape'
 
+export type NotebookRuntimeCell = {
+  id: string
+  source: string
+  language: string
+  executionIndex: number | null
+}
+
+export type NotebookRuntimeConfig = {
+  enabled?: boolean
+  pyodideIndexUrl?: string
+  sourcePath?: string
+}
+
+export type NotebookRuntimeData = {
+  id: string
+  sourcePath: string
+  language: string
+  pyodideIndexUrl: string
+  cells: NotebookRuntimeCell[]
+}
+
 export type NotebookRuntimeStreamOutput = { type: 'stream'; name: string; text: string }
 
 export type NotebookRuntimeErrorOutput = {
@@ -28,8 +49,123 @@ export type NotebookRuntimeOutput =
   | NotebookRuntimeTextOutput
   | NotebookRuntimeHtmlOutput
 
+export const defaultNotebookPyodideIndexUrl = 'https://cdn.jsdelivr.net/pyodide/v0.29.4/full/'
+
 export function notebookRuntimeLocalSourceKey(sourcePath: string, cellId: string): string {
   return `quartz:notebook-source:${encodeURIComponent(sourcePath)}:${encodeURIComponent(cellId)}`
+}
+
+export function notebookRuntimeId(sourcePath: string): string {
+  let hash = 2166136261
+  for (let i = 0; i < sourcePath.length; i += 1) {
+    hash ^= sourcePath.charCodeAt(i)
+    hash = Math.imul(hash, 16777619)
+  }
+  return `notebook-runtime-${(hash >>> 0).toString(36)}`
+}
+
+export function notebookRuntimeJson(value: NotebookRuntimeData): string {
+  return JSON.stringify(value)
+    .replace(/</g, '\\u003c')
+    .replace(/>/g, '\\u003e')
+    .replace(/&/g, '\\u0026')
+    .replace(/\u2028/g, '\\u2028')
+    .replace(/\u2029/g, '\\u2029')
+}
+
+export function notebookRuntimeControls(data: NotebookRuntimeData): string[] {
+  return [
+    [
+      `<div class="notebook-runtime" data-notebook-runtime="${escapeHTML(data.id)}">`,
+      '<div class="notebook-runtime-toolbar" data-notebook-runtime-toolbar role="toolbar" aria-label="Notebook runtime">',
+      '<button type="button" data-notebook-run-all>Run all</button>',
+      '<button type="button" data-notebook-stop disabled>Stop</button>',
+      '<button type="button" data-notebook-reset>Reset runtime</button>',
+      '<button type="button" data-notebook-debug aria-pressed="false">Debug</button>',
+      '<button type="button" data-notebook-vim-mode aria-pressed="false">Vim</button>',
+      '<span class="notebook-runtime-status" data-notebook-status aria-live="polite">idle</span>',
+      '</div>',
+      '</div>',
+    ].join('\n'),
+  ]
+}
+
+export function notebookRuntimeDataScript(data: NotebookRuntimeData): string {
+  return `<script type="application/json" data-notebook-runtime-data>${notebookRuntimeJson(data)}</script>`
+}
+
+type NotebookIcon = 'run' | 'edit' | 'save' | 'revert'
+
+const notebookIconSvg: Record<NotebookIcon, string> = {
+  run: '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M8 5.5v13l10-6.5z"/></svg>',
+  edit: '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m4 16.5-.5 4 4-.5L19 8.5 15.5 5z"/><path d="m14 6.5 3.5 3.5"/></svg>',
+  save: '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 4h11l3 3v13H5z"/><path d="M8 4v6h8V4"/><path d="M8 20v-6h8v6"/></svg>',
+  revert:
+    '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"/></svg>',
+}
+
+function notebookExecutionLabel(count: number | null): string {
+  return count === null ? 'In [ ]:' : `In [${count}]:`
+}
+
+function notebookIconButton(
+  cellId: string,
+  icon: NotebookIcon,
+  dataAttribute: string,
+  label: string,
+  hidden = false,
+): string {
+  const escapedId = escapeHTML(cellId)
+  const escapedLabel = escapeHTML(label)
+  return `<button type="button" class="notebook-icon-button" ${dataAttribute}="${escapedId}" aria-label="${escapedLabel}" title="${escapedLabel}"${
+    hidden ? ' hidden' : ''
+  }>${notebookIconSvg[icon]}</button>`
+}
+
+export function notebookCellControls(cell: NotebookRuntimeCell): string[] {
+  const cellId = cell.id
+  const escaped = escapeHTML(cellId)
+  return [
+    `<div class="notebook-runtime-cell" data-notebook-cell="${escaped}" data-notebook-execution-count="${cell.executionIndex ?? ''}">`,
+    `<span class="notebook-execution-prompt" data-notebook-execution-label="${escaped}" aria-live="polite">${escapeHTML(
+      notebookExecutionLabel(cell.executionIndex),
+    )}</span>`,
+    '</div>',
+  ]
+}
+
+export function notebookCellFrameOpen(cellId: string): string {
+  const escaped = escapeHTML(cellId)
+  return `<div class="notebook-code-cell" data-notebook-cell-frame="${escaped}">`
+}
+
+export function notebookCellActions(cell: NotebookRuntimeCell): string {
+  const escaped = escapeHTML(cell.id)
+  return [
+    `<div class="notebook-cell-actions" data-notebook-cell-actions="${escaped}">`,
+    notebookIconButton(cell.id, 'run', 'data-notebook-run-cell', `Run ${cell.id}`),
+    notebookIconButton(cell.id, 'edit', 'data-notebook-edit-cell', `Edit ${cell.id}`),
+    notebookIconButton(cell.id, 'save', 'data-notebook-save-cell', `Save ${cell.id} locally`, true),
+    notebookIconButton(
+      cell.id,
+      'revert',
+      'data-notebook-revert-cell',
+      `Revert ${cell.id} local edit`,
+      true,
+    ),
+    `<span class="notebook-local-source-status" data-notebook-local-source-status="${escaped}" hidden></span>`,
+    '</div>',
+  ].join('\n')
+}
+
+export function notebookSourceEditor(cellId: string): string {
+  return `<div class="notebook-source-editor" data-notebook-source-editor="${escapeHTML(
+    cellId,
+  )}" hidden></div>`
+}
+
+export function notebookCellRuntimeOutput(cellId: string): string {
+  return `<div class="notebook-runtime-output" data-notebook-output="${escapeHTML(cellId)}" hidden></div>`
 }
 
 const browserRuntimeExtensionDirectives = new Set(['autoreload', 'nb_mypy'])

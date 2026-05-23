@@ -75,9 +75,7 @@ class IRBuilder:
     self.bb_counter += 1
     return self.func.add_block(f'{prefix}{self.bb_counter}')
 
-  def lower_function(
-    self, func_def: ast.FunctionDef, param_types: list[IRType], ret_type: IRType
-  ) -> IRFunction:
+  def lower_function(self, func_def: ast.FunctionDef, param_types: list[IRType], ret_type: IRType) -> IRFunction:
     """lower function AST to IR"""
     # create parameter values
     for arg, ty in zip(func_def.args.args, param_types):

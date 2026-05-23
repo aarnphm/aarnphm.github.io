@@ -341,7 +341,7 @@ augmentation = transforms.Compose([
   # Normalize to improve training stability
   transforms.Normalize((0.1307,), (0.3081,)),  # MNIST mean and std
   # Extremely subtle random noise
-  transforms.RandomAdjustSharpness(sharpness_factor=1.2, p=0.3)
+  transforms.RandomAdjustSharpness(sharpness_factor=1.2, p=0.3),
 ])
 ```
 

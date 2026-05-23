@@ -23,7 +23,7 @@ tags:
 title: topology
 ---
 
-I'm using {{sidenotes[munkres' topology]: james munkres, [[thoughts/pdfs/munkres-topology.pdf|_topology_]] (2nd ed.)}} and Amstrong's [[library/Basic Topology]].
+I'm using {{sidenotes[munkres' topology]: james munkres, [[thoughts/pdfs/munkres-topology.pdf|_topology_]] (2nd ed.)}} and Amstrong's [[library/Basic Topology]]
 
 - foundation:
   - set theory, logic, proof skills, and metric intuition

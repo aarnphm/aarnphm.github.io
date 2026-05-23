@@ -68,12 +68,12 @@ import matplotlib.pyplot as plt
 from scipy.signal import TransferFunction, step
 
 OS, Ts = 0.10, 1.0
-zeta = fsolve(lambda z: np.exp(-z*np.pi/np.sqrt(1-z**2)) - OS, 0.5)[0]
+zeta = fsolve(lambda z: np.exp(-z * np.pi / np.sqrt(1 - z**2)) - OS, 0.5)[0]
 wn = 4 / (zeta * Ts)
 
 # Coefficients from the standard second-order system
 a1 = 2 * zeta * wn  # coefficient of s
-a0 = wn**2          # constant coefficient
+a0 = wn**2  # constant coefficient
 
 # Equating the coefficients to solve for Kp and Kd
 # 7 + Kd = a1 and 5 + Kp = a0
@@ -82,7 +82,7 @@ Kp = a0 - 5
 
 # Confirm the design by plotting the step response
 # First, define the transfer function of the closed-loop system with the calculated Kp and Kd
-G = TransferFunction([Kd, Kp], [1, 7+Kd, 5+Kp])
+G = TransferFunction([Kd, Kp], [1, 7 + Kd, 5 + Kp])
 
 # Now, generate the step response of the system
 time = np.linspace(0, 5, 500)
@@ -123,7 +123,8 @@ We need to solve $s^3 + s^2 + 4s + 2 = 0$ to find the poles of the closed-loop s
 
 ```python
 import numpy as np
-print(np.roots([1,1,4,2]))
+
+print(np.roots([1, 1, 4, 2]))
 ```
 
 which yields `[-0.23341158+1.92265955j -0.23341158-1.92265955j -0.53317683+0.j]` as poles. Since all the poles have negative real parts, the system is stable.
@@ -151,18 +152,14 @@ Applying the Routh-Hurwitz criterion, we have the following table:
 
 ```python
 from sympy import symbols, Matrix
+
 Kd, Kp = symbols('Kd Kp')
 a0 = 10
 a1 = Kp + 1
 a2 = 3 + Kd
 a3 = 1
 
-routh = Matrix([
-  [a3, a1],
-  [a2, a0],
-  [a1 - (a2*a3)/a3, 0],
-  [a0, 0]
-])
+routh = Matrix([[a3, a1], [a2, a0], [a1 - (a2 * a3) / a3, 0], [a0, 0]])
 
 print(routh)
 ```

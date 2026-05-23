@@ -202,9 +202,7 @@ _also known as Prompt Lookup Decoding (PLD)_, [HF's assisted generations](https:
 idea: to use string matching from prompt to generate candidate tokens, instead of using a draft-based models.
 
 ```python
-def find_candidate_pred_tokens(
-  input_ids, max_ngram_size=3, num_pred_tokens=10
-):
+def find_candidate_pred_tokens(input_ids, max_ngram_size=3, num_pred_tokens=10):
   input_length = input_ids.size(1)
 
   for ngram_size in range(max_ngram_size, 0, -1):

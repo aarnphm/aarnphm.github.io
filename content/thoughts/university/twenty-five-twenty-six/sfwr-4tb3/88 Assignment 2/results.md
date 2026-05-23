@@ -136,9 +136,7 @@ from collections.abc import Iterator
 
 
 class Grammar:
-  def __init__(
-    self, T: set[str], N: set[str], P: set[tuple[str, str]], S: str
-  ):
+  def __init__(self, T: set[str], N: set[str], P: set[tuple[str, str]], S: str):
     self.T, self.N, self.P, self.S = T, N, P, S
 
   def L(self, log=False, stats=False) -> Iterator[str]:
@@ -167,9 +165,7 @@ class Grammar:
             i = π.find(σ, i + 1)
 
 
-def derivable(
-  G: Grammar, ω: str, log=False, stats=False
-) -> bool:  # G must be context-sensitive
+def derivable(G: Grammar, ω: str, log=False, stats=False) -> bool:  # G must be context-sensitive
   dd, d, ω = set(), {G.S}, ω.strip()
   if log:
     print('    ', G.S)

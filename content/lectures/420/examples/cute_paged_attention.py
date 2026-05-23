@@ -145,11 +145,7 @@ def paged_attention_triton_kernel(
 
   for page_idx in range(MAX_PAGES):
     within_range = page_idx < num_pages_seq
-    block_num = tl.load(
-      block_table_ptr + seq_idx * stride_bt_seq + page_idx,
-      mask=within_range,
-      other=0,
-    )
+    block_num = tl.load(block_table_ptr + seq_idx * stride_bt_seq + page_idx, mask=within_range, other=0)
 
     page_start = page_idx * PAGE_SIZE
     tokens_left = context_len - page_start
@@ -379,12 +375,7 @@ def paged_attention_cute_launch(
 
 
 @lru_cache(maxsize=None)
-def build_paged_attention_cute_optimized_launch(
-  head_dim: int,
-  page_size: int,
-  max_num_pages: int,
-  tile_tokens: int,
-):
+def build_paged_attention_cute_optimized_launch(head_dim: int, page_size: int, max_num_pages: int, tile_tokens: int):
   """Bake compile-time tile constants into an optimized CuTe kernel."""
 
   head_dim_const = head_dim
@@ -483,15 +474,7 @@ def build_paged_attention_cute_optimized_launch(
     num_heads: cutlass.Int32,
   ):
     paged_attention_cute_kernel_optimized(
-      output,
-      query,
-      key_cache,
-      value_cache,
-      block_tables,
-      context_lens,
-      scale,
-      num_seqs,
-      num_heads,
+      output, query, key_cache, value_cache, block_tables, context_lens, scale, num_seqs, num_heads
     ).launch(grid=(num_heads, num_seqs, 1), block=(1, 1, 1))
 
   return paged_attention_cute_optimized_launch
@@ -583,14 +566,7 @@ def paged_attention_cute_optimized(
 
   launch = build_paged_attention_cute_optimized_launch(head_dim, page_size, max_num_pages, tile_tokens)
 
-  cache_key = (
-    query.shape[0],
-    query.shape[1],
-    head_dim,
-    page_size,
-    max_num_pages,
-    tile_tokens,
-  )
+  cache_key = (query.shape[0], query.shape[1], head_dim, page_size, max_num_pages, tile_tokens)
 
   compiled = _OPT_KERNEL_CACHE.get(cache_key)
 
@@ -630,6 +606,7 @@ def paged_attention_cute_optimized(
 #     python content/lectures/420/examples/cute_paged_attention.py --seq-len 4096 --num-seqs 4 --num-heads 16 --head-dim 128
 #   ncu --set full --metrics sm__inst_executed_pipe_tensor_op_hmma.sum,smsp__warps_active.avg \\
 #     python content/lectures/420/examples/cute_paged_attention.py --seq-len 4096 --num-seqs 4 --num-heads 16 --head-dim 128 --tile-tokens 64
+
 
 def test_paged_attention(
   verbosity: int = 0,
@@ -984,7 +961,9 @@ For production use, see:
 
 def main():
   parser = argparse.ArgumentParser(description='Paged Attention: PyTorch vs CuTe DSL')
-  parser.add_argument('-v', '--verbose', action='count', default=0, help='Increase verbosity (-v for version info, -vv for all details)')
+  parser.add_argument(
+    '-v', '--verbose', action='count', default=0, help='Increase verbosity (-v for version info, -vv for all details)'
+  )
   parser.add_argument('--seq-len', type=int, default=None, help='Sequence length (default: run multiple sizes)')
   parser.add_argument('--num-seqs', type=int, default=2, help='Number of sequences (default: 2)')
   parser.add_argument('--num-heads', type=int, default=4, help='Number of attention heads (default: 4)')
@@ -1010,15 +989,15 @@ def main():
   # Run tests with different sequence lengths
   if args.seq_len is not None:
     # Single test with specified size
-      test_paged_attention(
-        verbosity=args.verbose,
-        num_seqs=args.num_seqs,
-        seq_len=args.seq_len,
-        num_heads=args.num_heads,
-        head_dim=args.head_dim,
-        page_size=args.page_size,
-        tile_tokens=args.tile_tokens,
-      )
+    test_paged_attention(
+      verbosity=args.verbose,
+      num_seqs=args.num_seqs,
+      seq_len=args.seq_len,
+      num_heads=args.num_heads,
+      head_dim=args.head_dim,
+      page_size=args.page_size,
+      tile_tokens=args.tile_tokens,
+    )
   else:
     # Run multiple sizes: small for correctness, large for performance
     test_configs = [
@@ -1029,7 +1008,7 @@ def main():
     for i, config in enumerate(test_configs):
       if i > 0:
         print('\n\n')
-      print(f"Test {i + 1}/{len(test_configs)}: {config['label']}")
+      print(f'Test {i + 1}/{len(test_configs)}: {config["label"]}')
       print()
       test_paged_attention(
         verbosity=args.verbose,
@@ -1041,4 +1020,6 @@ def main():
         tile_tokens=args.tile_tokens,
       )
 
-if __name__ == '__main__': main()
+
+if __name__ == '__main__':
+  main()

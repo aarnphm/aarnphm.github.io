@@ -8,6 +8,7 @@ from time import sleep
 l, f = Semaphore(0), Semaphore(0)
 count_mutx, c = Semaphore(1), 0
 
+
 def pairleader(leadername: str):
   global c
   f.release()
@@ -16,12 +17,14 @@ def pairleader(leadername: str):
     c += 1
     stdout.write(f'{leadername} + {pairedFollower[leadername]}: {c}\n')
 
+
 def pairfollower(followername: str):
   global c
   l.release()
   f.acquire()
   with count_mutx:
     pairedFollower[pairedLeader[followername]] = followername
+
 
 class Leader(Thread):
   def __init__(self, name):
@@ -32,6 +35,7 @@ class Leader(Thread):
     sleep(random())  # up to 1 sec
     pairleader(self.name)
 
+
 class Follower(Thread):
   def __init__(self, name):
     Thread.__init__(self)
@@ -40,6 +44,7 @@ class Follower(Thread):
   def run(self):
     sleep(random())  # up to 1 sec
     pairfollower(self.name)
+
 
 # Dictionaries to keep track of paired leaders and followers
 pairedLeader = {}

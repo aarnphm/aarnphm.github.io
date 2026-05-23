@@ -1,5 +1,21 @@
+import katex from 'katex'
 import path from 'path'
+import { customMacros, katexOptions } from '../cfg'
 import { escapeHTML } from './escape'
+import {
+  defaultNotebookPyodideIndexUrl,
+  notebookCellActions,
+  notebookCellControls,
+  notebookCellFrameOpen,
+  notebookCellRuntimeOutput,
+  notebookRuntimeControls,
+  notebookRuntimeDataScript,
+  notebookRuntimeId,
+  notebookSourceEditor,
+  type NotebookRuntimeCell,
+  type NotebookRuntimeConfig,
+  type NotebookRuntimeData,
+} from './notebook-runtime'
 
 type JsonRecord = Record<string, unknown>
 
@@ -23,30 +39,7 @@ type NotebookCell = JsonRecord & {
 
 export type NotebookDocument = JsonRecord & { cells: NotebookCell[]; metadata?: JsonRecord }
 
-export type NotebookRuntimeConfig = {
-  enabled?: boolean
-  pyodideIndexUrl?: string
-  sourcePath?: string
-}
-
-export type NotebookRuntimeCell = {
-  id: string
-  source: string
-  language: string
-  executionIndex: number | null
-}
-
-export type NotebookRuntimeData = {
-  id: string
-  sourcePath: string
-  language: string
-  pyodideIndexUrl: string
-  cells: NotebookRuntimeCell[]
-}
-
 type NotebookMarkdownOptions = { runtime?: false | NotebookRuntimeConfig }
-
-const defaultPyodideIndexUrl = 'https://cdn.jsdelivr.net/pyodide/v0.29.4/full/'
 
 function isRecord(value: unknown): value is JsonRecord {
   return typeof value === 'object' && value !== null && !Array.isArray(value)
@@ -100,27 +93,53 @@ function outputPre(
   )}</samp></pre>`
 }
 
+function latexSource(value: string): { source: string; displayMode: boolean } {
+  const trimmed = value.trim()
+  const blockMath = trimmed.match(/^\$\$([\s\S]*)\$\$$/)
+  if (blockMath) return { source: blockMath[1].trim(), displayMode: true }
+  const bracketMath = trimmed.match(/^\\\[([\s\S]*)\\\]$/)
+  if (bracketMath) return { source: bracketMath[1].trim(), displayMode: true }
+  const inlineMath = trimmed.match(/^\$([\s\S]*)\$$/)
+  if (inlineMath) return { source: inlineMath[1].trim(), displayMode: false }
+  return { source: trimmed, displayMode: true }
+}
+
+function outputLatex(value: string): string | undefined {
+  if (!value.trim()) return undefined
+  const latex = latexSource(value)
+  try {
+    return `<div class="notebook-output notebook-output-latex" data-output-name="result">${katex.renderToString(
+      latex.source,
+      {
+        output: 'htmlAndMathml',
+        macros: customMacros,
+        ...katexOptions,
+        displayMode: latex.displayMode,
+      },
+    )}</div>`
+  } catch {
+    return outputPre(['notebook-output', 'notebook-output-text'], value, {
+      'data-output-name': 'result',
+    })
+  }
+}
+
 const ipythonDisplayObjectPattern = /^<IPython\.core\.display\.[A-Za-z0-9_]+ object>$/
 const attachmentMimeTypes = ['image/png', 'image/jpeg', 'image/gif', 'image/webp', 'image/svg+xml']
 const htmlImageSrcPattern = /(<img\b[^>]*\bsrc\s*=\s*)(?:"([^"]*)"|'([^']*)'|([^\s>]+))/gi
 const markdownImagePattern = /(!\[[^\]]*\]\()(\s*)([^)\s]+)([^)]*\))/g
 const standaloneHtmlImageLinePattern = /^\s*<img\b[^>\n]*>(?:\s*<\/img>)?\s*$/i
 const markdownFenceLinePattern = /^( {0,3})(`{3,}|~{3,})(.*)$/
+const htmlDivOpenTagPattern = /<div\b[^>]*>/gi
+const htmlDivCloseTagPattern = /<\/div\s*>/gi
+const htmlFloatStylePattern =
+  /\bstyle\s*=\s*(?:"[^"]*\bfloat\s*:\s*(?:left|right)[^"]*"|'[^']*\bfloat\s*:\s*(?:left|right)[^']*'|[^\s>]*\bfloat\s*:\s*(?:left|right)[^\s>]*)/i
 
 function languageName(notebook: NotebookDocument): string {
   const metadata = isRecord(notebook.metadata) ? notebook.metadata : {}
   const languageInfo = isRecord(metadata.language_info) ? metadata.language_info : {}
   const name = typeof languageInfo.name === 'string' ? languageInfo.name : 'python'
   return name.replace(/[^A-Za-z0-9_+#.-]/g, '') || 'python'
-}
-
-function notebookRuntimeId(sourcePath: string): string {
-  let hash = 2166136261
-  for (let i = 0; i < sourcePath.length; i += 1) {
-    hash ^= sourcePath.charCodeAt(i)
-    hash = Math.imul(hash, 16777619)
-  }
-  return `notebook-runtime-${(hash >>> 0).toString(36)}`
 }
 
 function notebookRuntimeLanguage(notebook: NotebookDocument): string {
@@ -179,15 +198,6 @@ function frontmatter(title: string): string {
   ].join('\n')
 }
 
-function runtimeJson(value: NotebookRuntimeData): string {
-  return JSON.stringify(value)
-    .replace(/</g, '\\u003c')
-    .replace(/>/g, '\\u003e')
-    .replace(/&/g, '\\u0026')
-    .replace(/\u2028/g, '\\u2028')
-    .replace(/\u2029/g, '\\u2029')
-}
-
 export function notebookRuntimeData(
   notebook: NotebookDocument,
   sourcePath: string,
@@ -211,105 +221,55 @@ export function notebookRuntimeData(
     id: notebookRuntimeId(runtime.sourcePath ?? sourcePath),
     sourcePath: runtime.sourcePath ?? sourcePath,
     language,
-    pyodideIndexUrl: runtime.pyodideIndexUrl ?? defaultPyodideIndexUrl,
+    pyodideIndexUrl: runtime.pyodideIndexUrl ?? defaultNotebookPyodideIndexUrl,
     cells,
   }
 }
 
-function notebookRuntimeControls(data: NotebookRuntimeData): string[] {
-  return [
-    [
-      `<div class="notebook-runtime" data-notebook-runtime="${escapeHTML(data.id)}">`,
-      '<div class="notebook-runtime-toolbar" data-notebook-runtime-toolbar role="toolbar" aria-label="Notebook runtime">',
-      '<button type="button" data-notebook-run-all>Run all</button>',
-      '<button type="button" data-notebook-stop disabled>Stop</button>',
-      '<button type="button" data-notebook-reset>Reset runtime</button>',
-      '<button type="button" data-notebook-debug aria-pressed="false">Debug</button>',
-      '<button type="button" data-notebook-vim-mode aria-pressed="false">Vim</button>',
-      '<span class="notebook-runtime-status" data-notebook-status aria-live="polite">idle</span>',
-      '</div>',
-      '</div>',
-      `<script type="application/json" data-notebook-runtime-data>${runtimeJson(data)}</script>`,
-    ].join('\n'),
-  ]
-}
-
-type NotebookIcon = 'run' | 'edit' | 'save' | 'revert'
-
-const notebookIconSvg: Record<NotebookIcon, string> = {
-  run: '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M8 5.5v13l10-6.5z"/></svg>',
-  edit: '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m4 16.5-.5 4 4-.5L19 8.5 15.5 5z"/><path d="m14 6.5 3.5 3.5"/></svg>',
-  save: '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 4h11l3 3v13H5z"/><path d="M8 4v6h8V4"/><path d="M8 20v-6h8v6"/></svg>',
-  revert:
-    '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"/></svg>',
-}
-
-function notebookExecutionLabel(count: number | null): string {
-  return count === null ? 'In [ ]:' : `In [${count}]:`
-}
-
-function notebookIconButton(
-  cellId: string,
-  icon: NotebookIcon,
-  dataAttribute: string,
-  label: string,
-  hidden = false,
-): string {
-  const escapedId = escapeHTML(cellId)
-  const escapedLabel = escapeHTML(label)
-  return `<button type="button" class="notebook-icon-button" ${dataAttribute}="${escapedId}" aria-label="${escapedLabel}" title="${escapedLabel}"${
-    hidden ? ' hidden' : ''
-  }>${notebookIconSvg[icon]}</button>`
-}
-
-function notebookCellControls(cell: NotebookRuntimeCell): string[] {
-  const cellId = cell.id
-  const escaped = escapeHTML(cellId)
-  return [
-    `<div class="notebook-runtime-cell" data-notebook-cell="${escaped}" data-notebook-execution-count="${cell.executionIndex ?? ''}">`,
-    `<span class="notebook-execution-prompt" data-notebook-execution-label="${escaped}" aria-live="polite">${escapeHTML(
-      notebookExecutionLabel(cell.executionIndex),
-    )}</span>`,
-    '</div>',
-  ]
-}
-
-function notebookCellFrameOpen(cellId: string): string {
-  const escaped = escapeHTML(cellId)
-  return `<div class="notebook-code-cell" data-notebook-cell-frame="${escaped}">`
-}
-
-function notebookCellActions(cell: NotebookRuntimeCell): string {
-  const escaped = escapeHTML(cell.id)
-  return [
-    `<div class="notebook-cell-actions" data-notebook-cell-actions="${escaped}">`,
-    notebookIconButton(cell.id, 'run', 'data-notebook-run-cell', `Run ${cell.id}`),
-    notebookIconButton(cell.id, 'edit', 'data-notebook-edit-cell', `Edit ${cell.id}`),
-    notebookIconButton(cell.id, 'save', 'data-notebook-save-cell', `Save ${cell.id} locally`, true),
-    notebookIconButton(
-      cell.id,
-      'revert',
-      'data-notebook-revert-cell',
-      `Revert ${cell.id} local edit`,
-      true,
-    ),
-    `<span class="notebook-local-source-status" data-notebook-local-source-status="${escaped}" hidden></span>`,
-    '</div>',
-  ].join('\n')
-}
-
-function notebookSourceEditor(cellId: string): string {
-  return `<div class="notebook-source-editor" data-notebook-source-editor="${escapeHTML(
-    cellId,
-  )}" hidden></div>`
-}
-
-function notebookCellRuntimeOutput(cellId: string): string {
-  return `<div class="notebook-runtime-output" data-notebook-output="${escapeHTML(cellId)}" hidden></div>`
-}
-
 function notebookMarkdownCellBoundary(): string {
   return '<div class="notebook-markdown-cell-boundary" aria-hidden="true"></div>'
+}
+
+function htmlFloatDivOpen(line: string): boolean {
+  for (const match of line.matchAll(htmlDivOpenTagPattern)) {
+    if (htmlFloatStylePattern.test(match[0])) return true
+  }
+  return false
+}
+
+function nextNonEmptyLine(lines: string[], start: number): string | undefined {
+  for (let index = start; index < lines.length; index += 1) {
+    const line = lines[index]
+    if (line.trim()) return line
+  }
+}
+
+function clearRawMarkdownFloatDivs(source: string): string {
+  const lines = source.split(/\r?\n/)
+  const result: string[] = []
+  const divStack: boolean[] = []
+
+  for (let index = 0; index < lines.length; index += 1) {
+    const line = lines[index]
+    for (const match of line.matchAll(htmlDivOpenTagPattern)) {
+      divStack.push(divStack.includes(true) || htmlFloatStylePattern.test(match[0]))
+    }
+
+    result.push(line)
+
+    let closedFloatingDiv = false
+    for (const _match of line.matchAll(htmlDivCloseTagPattern)) {
+      const wasFloatingDiv = divStack.pop() === true
+      closedFloatingDiv ||= wasFloatingDiv && !divStack.includes(true)
+    }
+
+    const next = nextNonEmptyLine(lines, index + 1)
+    if (closedFloatingDiv && next !== undefined && !htmlFloatDivOpen(next)) {
+      result.push('', notebookMarkdownCellBoundary(), '')
+    }
+  }
+
+  return result.join('\n')
 }
 
 function mimeBundleOutput(data: unknown): string[] {
@@ -322,7 +282,8 @@ function mimeBundleOutput(data: unknown): string[] {
   if (markdown.trim()) return [markdown]
 
   const latex = asText(data['text/latex'])
-  if (latex.trim()) return [latex.trim().startsWith('$') ? latex : `$$\n${latex.trim()}\n$$`]
+  const renderedLatex = outputLatex(latex)
+  if (renderedLatex) return [renderedLatex]
 
   const svg = asText(data['image/svg+xml'])
   if (svg.trim()) return [`<div class="notebook-output notebook-output-svg">\n${svg}\n</div>`]
@@ -432,6 +393,7 @@ function notebookCell(
     resolved = resolveNotebookImagePaths(resolved, sourcePath)
     resolved = separateStandaloneHtmlImageLines(resolved)
     resolved = closeDanglingMarkdownFence(resolved)
+    resolved = clearRawMarkdownFloatDivs(resolved)
     let titleHeadingRemoved = false
     if (titleHeading) {
       const stripped = stripFirstTitleHeading(resolved, titleHeading)
@@ -568,6 +530,14 @@ export function notebookToMarkdown(
   sourcePath: string,
   options: NotebookMarkdownOptions = {},
 ): string {
+  return `${notebookToMarkdownChunks(notebook, sourcePath, options).join('\n\n')}\n`
+}
+
+export function notebookToMarkdownChunks(
+  notebook: NotebookDocument,
+  sourcePath: string,
+  options: NotebookMarkdownOptions = {},
+): string[] {
   const language = languageName(notebook)
   const title = notebookTitle(notebook, sourcePath)
   let titleHeading: string | undefined = title
@@ -581,6 +551,7 @@ export function notebookToMarkdown(
 
   if (runtime) {
     chunks.push(...notebookRuntimeControls(runtime))
+    chunks.push(notebookRuntimeDataScript(runtime))
   }
 
   for (const cell of notebook.cells) {
@@ -593,5 +564,5 @@ export function notebookToMarkdown(
     }
   }
 
-  return `${chunks.filter(chunk => chunk.trim()).join('\n\n')}\n`
+  return chunks.filter(chunk => chunk.trim())
 }

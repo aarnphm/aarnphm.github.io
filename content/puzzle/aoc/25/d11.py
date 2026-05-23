@@ -11,13 +11,15 @@ def parse(filename: str):
   graph, names = defaultdict(list), {}
 
   def get_id(name):
-    if name not in names: names[name] = len(names)
+    if name not in names:
+      names[name] = len(names)
     return names[name]
 
   with open(filename) as f:
     for line in f:
       line = line.strip()
-      if not line or ':' not in line: continue
+      if not line or ':' not in line:
+        continue
       src, rest = line.split(':', 1)
       get_id(src := src.strip())
       for dst in rest.split():
@@ -110,19 +112,24 @@ def compute_paths(
   for d in range(src_depth, max_depth):
     level = levels[d]
     sz = len(level)
-    if sz == 0: continue
+    if sz == 0:
+      continue
 
     level_t = from_dlpack(level.__dlpack__())
     blocks = (sz + THREADS - 1) // THREADS
-    propagate_kernel(adj_offset, adj_list, paths, level_t, sz).launch(grid=[blocks, 1, 1], block=[THREADS, 1, 1], stream=stream)
+    propagate_kernel(adj_offset, adj_list, paths, level_t, sz).launch(
+      grid=[blocks, 1, 1], block=[THREADS, 1, 1], stream=stream
+    )
 
 
 def paths_from(adj_offset, adj_list, src, n, topo_order):
   paths = np.zeros(n, dtype=np.int64)
   paths[src] = 1
   for u in topo_order:
-    if paths[u] == 0: continue
-    for i in range(adj_offset[u], adj_offset[u + 1]): paths[adj_list[i]] += paths[u]
+    if paths[u] == 0:
+      continue
+    for i in range(adj_offset[u], adj_offset[u + 1]):
+      paths[adj_list[i]] += paths[u]
   return paths
 
 
@@ -146,4 +153,5 @@ def main():
   print(f'p2: {p2}')
 
 
-if __name__ == '__main__': main()
+if __name__ == '__main__':
+  main()

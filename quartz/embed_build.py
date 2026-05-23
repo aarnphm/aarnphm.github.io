@@ -25,24 +25,24 @@ from langchain_text_splitters import RecursiveCharacterTextSplitter
 
 
 logger = logging.getLogger(__name__)
-DEFAULT_VLLM_URL = os.environ.get("VLLM_URL") or os.environ.get("VLLM_EMBED_URL") or "http://127.0.0.1:8000/v1"
+DEFAULT_VLLM_URL = os.environ.get('VLLM_URL') or os.environ.get('VLLM_EMBED_URL') or 'http://127.0.0.1:8000/v1'
 
 
 def resolve_vllm_base_url(url: str) -> str:
-  trimmed = url.rstrip("/")
-  if trimmed.endswith("/v1/embeddings"):
-    trimmed = trimmed[: -len("/embeddings")]
-  elif trimmed.endswith("/embeddings"):
-    trimmed = trimmed[: trimmed.rfind("/")]
+  trimmed = url.rstrip('/')
+  if trimmed.endswith('/v1/embeddings'):
+    trimmed = trimmed[: -len('/embeddings')]
+  elif trimmed.endswith('/embeddings'):
+    trimmed = trimmed[: trimmed.rfind('/')]
 
-  if not trimmed.endswith("/v1"):
-    trimmed = f"{trimmed}/v1"
+  if not trimmed.endswith('/v1'):
+    trimmed = f'{trimmed}/v1'
 
   return trimmed
 
 
 def load_jsonl(fp: str) -> Iterable[dict]:
-  with open(fp, "r", encoding="utf-8") as f:
+  with open(fp, 'r', encoding='utf-8') as f:
     for line in f:
       line = line.strip()
       if not line:
@@ -58,7 +58,7 @@ def l2_normalize_rows(x: np.ndarray) -> np.ndarray:
 
 @lru_cache(maxsize=1)
 def get_tiktoken_encoder():
-  return tiktoken.get_encoding("o200k_base")
+  return tiktoken.get_encoding('o200k_base')
 
 
 def count_tokens(text: str) -> int:
@@ -71,7 +71,7 @@ def get_text_splitter(chunk_size: int, overlap: int):
   return RecursiveCharacterTextSplitter(
     chunk_size=chunk_size * 4,
     chunk_overlap=overlap * 4,
-    separators=["\n\n", "\n", ". ", " ", ""],
+    separators=['\n\n', '\n', '. ', ' ', ''],
     length_function=lambda t: len(encoder.encode(t)),
     is_separator_regex=False,
   )
@@ -82,10 +82,10 @@ def chunk_document(
   chunk_size: int = 512,
   overlap_tokens: int = 128,
   min_chunk_size: int = 100,
-  model_id: str = "",
+  model_id: str = '',
   model_max_tokens: int = 512,
 ) -> list[dict]:
-  text = doc["text"]
+  text = doc['text']
   token_count = count_tokens(text)
 
   prefix_overhead = get_prefix_overhead(model_id)
@@ -95,12 +95,12 @@ def chunk_document(
   if token_count <= actual_chunk_size:
     return [
       {
-        "slug": doc["slug"],
-        "title": doc.get("title", doc["slug"]),
-        "text": text,
-        "chunk_id": 0,
-        "parent_slug": doc["slug"],
-        "is_chunked": False,
+        'slug': doc['slug'],
+        'title': doc.get('title', doc['slug']),
+        'text': text,
+        'chunk_id': 0,
+        'parent_slug': doc['slug'],
+        'is_chunked': False,
       }
     ]
 
@@ -111,12 +111,12 @@ def chunk_document(
 
   return [
     {
-      "slug": f"{doc['slug']}#chunk{i}",
-      "title": doc.get("title", doc["slug"]),
-      "text": chunk,
-      "chunk_id": i,
-      "parent_slug": doc["slug"],
-      "is_chunked": True,
+      'slug': f'{doc["slug"]}#chunk{i}',
+      'title': doc.get('title', doc['slug']),
+      'text': chunk,
+      'chunk_id': i,
+      'parent_slug': doc['slug'],
+      'is_chunked': True,
     }
     for i, chunk in enumerate(valid_chunks)
   ]
@@ -126,28 +126,26 @@ def write_shards(vectors: np.ndarray, shard_size: int, dtype: str, out_dir: Path
   out_dir.mkdir(parents=True, exist_ok=True)
   rows, dims = vectors.shape
   shards_meta: list[dict] = []
-  np_dtype = np.float16 if dtype == "fp16" else np.float32
+  np_dtype = np.float16 if dtype == 'fp16' else np.float32
   bytes_per_value = np.dtype(np_dtype).itemsize
   row_offset = 0
   for si, start in enumerate(range(0, rows, shard_size)):
     end = min(start + shard_size, rows)
     shard = vectors[start:end]
-    bin_path = out_dir / f"vectors-{si:03d}.bin"
-    payload = shard.astype(np_dtype, copy=False).tobytes(order="C")
+    bin_path = out_dir / f'vectors-{si:03d}.bin'
+    payload = shard.astype(np_dtype, copy=False).tobytes(order='C')
     digest = hashlib.sha256(payload).hexdigest()
-    with open(bin_path, "wb") as f:
+    with open(bin_path, 'wb') as f:
       f.write(payload)
     shard_rows = int(shard.shape[0])
-    shards_meta.append(
-      {
-        "path": f"/embeddings/{bin_path.name}",
-        "rows": shard_rows,
-        "rowOffset": row_offset,
-        "byteLength": len(payload),
-        "sha256": digest,
-        "byteStride": dims * bytes_per_value,
-      },
-    )
+    shards_meta.append({
+      'path': f'/embeddings/{bin_path.name}',
+      'rows': shard_rows,
+      'rowOffset': row_offset,
+      'byteLength': len(payload),
+      'sha256': digest,
+      'byteStride': dims * bytes_per_value,
+    })
     row_offset += shard_rows
   return shards_meta
 
@@ -157,7 +155,7 @@ def write_hnsw_graph(levels: list[list[list[int]]], rows: int, out_path: Path) -
   offset = 0
   meta: list[dict] = []
   digest = hashlib.sha256()
-  with open(out_path, "wb") as f:
+  with open(out_path, 'wb') as f:
     for lvl in levels:
       indptr = np.zeros(rows + 1, dtype=np.uint32)
       edge_accum: list[int] = []
@@ -165,7 +163,7 @@ def write_hnsw_graph(levels: list[list[list[int]]], rows: int, out_path: Path) -
         neighbors = lvl[idx] if idx < len(lvl) else []
         indptr[idx + 1] = indptr[idx] + len(neighbors)
         edge_accum.extend(neighbors)
-      indptr_bytes = indptr.tobytes(order="C")
+      indptr_bytes = indptr.tobytes(order='C')
       indptr_offset = offset
       f.write(indptr_bytes)
       digest.update(indptr_bytes)
@@ -173,40 +171,29 @@ def write_hnsw_graph(levels: list[list[list[int]]], rows: int, out_path: Path) -
 
       if edge_accum:
         indices = np.asarray(edge_accum, dtype=np.uint32)
-        indices_bytes = indices.tobytes(order="C")
+        indices_bytes = indices.tobytes(order='C')
       else:
         indices = np.zeros(0, dtype=np.uint32)
-        indices_bytes = indices.tobytes(order="C")
+        indices_bytes = indices.tobytes(order='C')
       indices_offset = offset
       f.write(indices_bytes)
       digest.update(indices_bytes)
       offset += len(indices_bytes)
 
-      meta.append(
-        {
-          "level": len(meta),
-          "indptr": {
-            "offset": indptr_offset,
-            "elements": int(indptr.shape[0]),
-            "byteLength": len(indptr_bytes),
-          },
-          "indices": {
-            "offset": indices_offset,
-            "elements": int(indices.shape[0]),
-            "byteLength": len(indices_bytes),
-          },
-        },
-      )
+      meta.append({
+        'level': len(meta),
+        'indptr': {'offset': indptr_offset, 'elements': int(indptr.shape[0]), 'byteLength': len(indptr_bytes)},
+        'indices': {'offset': indices_offset, 'elements': int(indices.shape[0]), 'byteLength': len(indices_bytes)},
+      })
   return meta, digest.hexdigest()
-
 
 
 def get_prefix_overhead(model_id: str) -> int:
   model_lower = model_id.lower()
-  if "embeddinggemma" in model_lower:
-    return count_tokens("title: none | text: ")
-  elif "e5" in model_lower:
-    return count_tokens("passage: ")
+  if 'embeddinggemma' in model_lower:
+    return count_tokens('title: none | text: ')
+  elif 'e5' in model_lower:
+    return count_tokens('passage: ')
   return 0
 
 
@@ -220,41 +207,34 @@ def validate_token_limits(texts: list[str], max_tokens: int, model_id: str) -> N
       over_limit.append((i, tokens, effective_max))
   if over_limit:
     logger.error(
-      f"ERROR: {len(over_limit)}/{len(texts)} chunks exceed token limit after prefix. "
-      f"First few: {over_limit[:3]}. "
-      f"This indicates chunking failed - chunk_size ({effective_max}) should prevent this."
+      f'ERROR: {len(over_limit)}/{len(texts)} chunks exceed token limit after prefix. '
+      f'First few: {over_limit[:3]}. '
+      f'This indicates chunking failed - chunk_size ({effective_max}) should prevent this.'
     )
     raise ValueError(
-      f"{len(over_limit)} chunks exceed {max_tokens} token limit (effective: {effective_max} after prefix)"
+      f'{len(over_limit)} chunks exceed {max_tokens} token limit (effective: {effective_max} after prefix)'
     )
 
 
 def embed_vllm(
-  texts: list[str],
-  model_id: str,
-  vllm_url: str,
-  batch_size: int = 64,
-  concurrency: int = 8,
-  max_tokens: int = 512,
+  texts: list[str], model_id: str, vllm_url: str, batch_size: int = 64, concurrency: int = 8, max_tokens: int = 512
 ) -> np.ndarray:
   base_url = resolve_vllm_base_url(vllm_url)
-  api_key = os.environ.get("VLLM_API_KEY") or os.environ.get("OPENAI_API_KEY") or "not-set"
+  api_key = os.environ.get('VLLM_API_KEY') or os.environ.get('OPENAI_API_KEY') or 'not-set'
   client = OpenAI(base_url=base_url, api_key=api_key, timeout=300)
 
   validate_token_limits(texts, max_tokens, model_id)
 
   model_lower = model_id.lower()
-  if "e5" in model_lower:
-    prefixed = [f"passage: {t}" for t in texts]
-  elif "embeddinggemma" in model_lower:
-    prefixed = [f"title: none | text: {t}" for t in texts]
+  if 'e5' in model_lower:
+    prefixed = [f'passage: {t}' for t in texts]
+  elif 'embeddinggemma' in model_lower:
+    prefixed = [f'title: none | text: {t}' for t in texts]
   else:
     prefixed = texts
 
   print(
-    "Embedding"
-    f" {len(prefixed)} texts with vLLM"
-    f" (model={model_id}, batch_size={batch_size}, concurrency={concurrency})",
+    f'Embedding {len(prefixed)} texts with vLLM (model={model_id}, batch_size={batch_size}, concurrency={concurrency})'
   )
 
   batches = []
@@ -281,7 +261,7 @@ def embed_vllm(
         results[idx] = embeddings
         completed += 1
         if completed % max(1, len(batches) // 10) == 0 or completed == len(batches):
-          print(f"  Completed {completed}/{len(batches)} batches ({completed * 100 // len(batches)}%)")
+          print(f'  Completed {completed}/{len(batches)} batches ({completed * 100 // len(batches)}%)')
 
   out: list[np.ndarray] = []
   for i in sorted(results.keys()):
@@ -298,74 +278,70 @@ def embed_hf(texts: list[str], model_id: str, device: str, max_tokens: int = 512
   validate_token_limits(texts, max_tokens, model_id)
 
   model_lower = model_id.lower()
-  if "e5" in model_lower:
-    prefixed = [f"passage: {t}" for t in texts]
-  elif "embeddinggemma" in model_lower:
-    prefixed = [f"title: none | text: {t}" for t in texts]
+  if 'e5' in model_lower:
+    prefixed = [f'passage: {t}' for t in texts]
+  elif 'embeddinggemma' in model_lower:
+    prefixed = [f'title: none | text: {t}' for t in texts]
   else:
     prefixed = texts
 
   vecs = model.encode(
-    prefixed,
-    batch_size=64,
-    normalize_embeddings=True,
-    convert_to_numpy=True,
-    show_progress_bar=True,
+    prefixed, batch_size=64, normalize_embeddings=True, convert_to_numpy=True, show_progress_bar=True
   )
   return vecs.astype(np.float32, copy=False)
 
 
 def main():
-  logging.basicConfig(level=logging.INFO, format="%(message)s")
+  logging.basicConfig(level=logging.INFO, format='%(message)s')
   ap = argparse.ArgumentParser()
-  ap.add_argument("--jsonl", default="public/embeddings-text.jsonl")
-  ap.add_argument("--model", default=os.environ.get("SEM_MODEL", "intfloat/multilingual-e5-large"))
-  ap.add_argument("--dims", type=int, default=int(os.environ.get("SEM_DIMS", "1024")))
-  ap.add_argument("--dtype", choices=["fp16", "fp32"], default=os.environ.get("SEM_DTYPE", "fp32"))
-  ap.add_argument("--shard-size", type=int, default=int(os.environ.get("SEM_SHARD", "1024")))
-  ap.add_argument("--out", default="public/embeddings")
-  ap.add_argument("--use-vllm", action="store_true", default=bool(os.environ.get("USE_VLLM", "")))
+  ap.add_argument('--jsonl', default='public/embeddings-text.jsonl')
+  ap.add_argument('--model', default=os.environ.get('SEM_MODEL', 'intfloat/multilingual-e5-large'))
+  ap.add_argument('--dims', type=int, default=int(os.environ.get('SEM_DIMS', '1024')))
+  ap.add_argument('--dtype', choices=['fp16', 'fp32'], default=os.environ.get('SEM_DTYPE', 'fp32'))
+  ap.add_argument('--shard-size', type=int, default=int(os.environ.get('SEM_SHARD', '1024')))
+  ap.add_argument('--out', default='public/embeddings')
+  ap.add_argument('--use-vllm', action='store_true', default=bool(os.environ.get('USE_VLLM', '')))
   ap.add_argument(
-    "--vllm-url",
+    '--vllm-url',
     default=DEFAULT_VLLM_URL,
-    help="Base URL for the vLLM OpenAI-compatible server (accepts either /v1 or /v1/embeddings)",
+    help='Base URL for the vLLM OpenAI-compatible server (accepts either /v1 or /v1/embeddings)',
   )
-  ap.add_argument("--chunk-size", type=int, default=512, help="Max tokens per chunk")
-  ap.add_argument("--chunk-overlap", type=int, default=128, help="Overlap tokens between chunks")
-  ap.add_argument("--no-chunking", action="store_true", help="Disable chunking (embed full docs)")
+  ap.add_argument('--chunk-size', type=int, default=512, help='Max tokens per chunk')
+  ap.add_argument('--chunk-overlap', type=int, default=128, help='Overlap tokens between chunks')
+  ap.add_argument('--no-chunking', action='store_true', help='Disable chunking (embed full docs)')
   ap.add_argument(
-    "--max-tokens",
+    '--max-tokens',
     type=int,
     default=512,
     help="Model's maximum context length in tokens (e5-large: 512, embeddinggemma: 8192)",
   )
   ap.add_argument(
-    "--concurrency",
+    '--concurrency',
     type=int,
-    default=int(os.environ.get("VLLM_CONCURRENCY", "8")),
-    help="Number of concurrent requests to vLLM (default: 8)",
+    default=int(os.environ.get('VLLM_CONCURRENCY', '8')),
+    help='Number of concurrent requests to vLLM (default: 8)',
   )
   ap.add_argument(
-    "--batch-size",
+    '--batch-size',
     type=int,
-    default=int(os.environ.get("VLLM_BATCH_SIZE", "64")),
-    help="Batch size for vLLM requests (default: 64)",
+    default=int(os.environ.get('VLLM_BATCH_SIZE', '64')),
+    help='Batch size for vLLM requests (default: 64)',
   )
   args = ap.parse_args()
 
   recs = list(load_jsonl(args.jsonl))
   if not recs:
-    print("No input found in public/embeddings-text.jsonl; run the site build first to emit JSONL.")
+    print('No input found in public/embeddings-text.jsonl; run the site build first to emit JSONL.')
     return
 
   # Filter out are.na (423 chunks, structural outlier)
-  recs = [r for r in recs if r["slug"] != "are.na"]
-  print(f"Filtered to {len(recs)} documents (excluding are.na)")
+  recs = [r for r in recs if r['slug'] != 'are.na']
+  print(f'Filtered to {len(recs)} documents (excluding are.na)')
 
   if args.no_chunking:
     chunks = recs
     chunk_metadata = {}
-    print(f"Chunking disabled. Processing {len(chunks)} full documents")
+    print(f'Chunking disabled. Processing {len(chunks)} full documents')
   else:
     chunks = []
     chunk_metadata = {}
@@ -379,28 +355,25 @@ def main():
       )
       chunks.extend(doc_chunks)
       for chunk in doc_chunks:
-        if chunk["is_chunked"]:
-          chunk_metadata[chunk["slug"]] = {
-            "parentSlug": chunk["parent_slug"],
-            "chunkId": chunk["chunk_id"],
-          }
-    chunked_count = sum(1 for c in chunks if c.get("is_chunked", False))
+        if chunk['is_chunked']:
+          chunk_metadata[chunk['slug']] = {'parentSlug': chunk['parent_slug'], 'chunkId': chunk['chunk_id']}
+    chunked_count = sum(1 for c in chunks if c.get('is_chunked', False))
     prefix_overhead = get_prefix_overhead(args.model)
     effective_limit = args.max_tokens - prefix_overhead
     actual_chunk_size = min(args.chunk_size, effective_limit)
     print(
-      f"Chunked {len(recs)} documents into {len(chunks)} chunks "
-      f"({chunked_count} chunked, {len(chunks) - chunked_count} unchanged)"
+      f'Chunked {len(recs)} documents into {len(chunks)} chunks '
+      f'({chunked_count} chunked, {len(chunks) - chunked_count} unchanged)'
     )
     print(
-      f"  Chunk size: {actual_chunk_size} tokens (requested: {args.chunk_size}, "
-      f"model limit: {args.max_tokens}, prefix overhead: {prefix_overhead}), "
-      f"overlap: {args.chunk_overlap} tokens"
+      f'  Chunk size: {actual_chunk_size} tokens (requested: {args.chunk_size}, '
+      f'model limit: {args.max_tokens}, prefix overhead: {prefix_overhead}), '
+      f'overlap: {args.chunk_overlap} tokens'
     )
 
-  ids = [c["slug"] for c in chunks]
-  titles = [c.get("title", c["slug"]) for c in chunks]
-  texts = [c["text"] for c in chunks]
+  ids = [c['slug'] for c in chunks]
+  titles = [c.get('title', c['slug']) for c in chunks]
+  texts = [c['text'] for c in chunks]
 
   if args.use_vllm:
     vecs = embed_vllm(
@@ -412,7 +385,7 @@ def main():
       max_tokens=args.max_tokens,
     )
   else:
-    device = "cuda" if os.environ.get("CUDA_VISIBLE_DEVICES") else "cpu"
+    device = 'cuda' if os.environ.get('CUDA_VISIBLE_DEVICES') else 'cpu'
     vecs = embed_hf(texts, args.model, device, max_tokens=args.max_tokens)
 
   if vecs.shape[1] != args.dims:
@@ -452,11 +425,13 @@ def main():
       visited = set()
       cand: list[tuple[float, int]] = []
       top: list[tuple[float, int]] = []
+
       def push(node: int):
         if node in visited:
           return
         visited.add(node)
         cand.append((sim(q, node), node))
+
       push(ep)
       while cand:
         cand.sort(reverse=True)
@@ -501,48 +476,34 @@ def main():
           unique.sort(key=lambda j: sim(i, j), reverse=True)
           levels[L][i] = unique[:M]
 
-    return {
-      "M": M,
-      "efConstruction": efC,
-      "entryPoint": entry,
-      "maxLevel": max_level,
-      "levels": levels,
-    }
+    return {'M': M, 'efConstruction': efC, 'entryPoint': entry, 'maxLevel': max_level, 'levels': levels}
 
   hnsw = hnsw_build(vecs, M=16, efC=200)
-  hnsw_meta, hnsw_sha = write_hnsw_graph(hnsw["levels"], int(vecs.shape[0]), out_dir / "hnsw.bin")
+  hnsw_meta, hnsw_sha = write_hnsw_graph(hnsw['levels'], int(vecs.shape[0]), out_dir / 'hnsw.bin')
 
   manifest = {
-    "version": 2,
-    "model": args.model,
-    "dims": args.dims,
-    "dtype": args.dtype,
-    "normalized": True,
-    "rows": int(vecs.shape[0]),
-    "shardSizeRows": args.shard_size,
-    "vectors": {
-      "dtype": args.dtype,
-      "rows": int(vecs.shape[0]),
-      "dims": args.dims,
-      "shards": shards,
-    },
-    "ids": ids,
-    "titles": titles,
-    "chunkMetadata": chunk_metadata,
-    "hnsw": {
-      "M": hnsw["M"],
-      "efConstruction": hnsw["efConstruction"],
-      "entryPoint": hnsw["entryPoint"],
-      "maxLevel": hnsw["maxLevel"],
-      "graph": {
-        "path": "/embeddings/hnsw.bin",
-        "sha256": hnsw_sha,
-        "levels": hnsw_meta,
-      },
+    'version': 2,
+    'model': args.model,
+    'dims': args.dims,
+    'dtype': args.dtype,
+    'normalized': True,
+    'rows': int(vecs.shape[0]),
+    'shardSizeRows': args.shard_size,
+    'vectors': {'dtype': args.dtype, 'rows': int(vecs.shape[0]), 'dims': args.dims, 'shards': shards},
+    'ids': ids,
+    'titles': titles,
+    'chunkMetadata': chunk_metadata,
+    'hnsw': {
+      'M': hnsw['M'],
+      'efConstruction': hnsw['efConstruction'],
+      'entryPoint': hnsw['entryPoint'],
+      'maxLevel': hnsw['maxLevel'],
+      'graph': {'path': '/embeddings/hnsw.bin', 'sha256': hnsw_sha, 'levels': hnsw_meta},
     },
   }
-  (out_dir / "manifest.json").write_text(json.dumps(manifest, ensure_ascii=False), encoding="utf-8")
-  print(f"Wrote {len(shards)} vector shard(s), HNSW graph, and manifest to {out_dir}")
+  (out_dir / 'manifest.json').write_text(json.dumps(manifest, ensure_ascii=False), encoding='utf-8')
+  print(f'Wrote {len(shards)} vector shard(s), HNSW graph, and manifest to {out_dir}')
 
-if __name__ == "__main__":
+
+if __name__ == '__main__':
   main()

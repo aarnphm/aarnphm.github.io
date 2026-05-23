@@ -18,7 +18,7 @@ from scipy import stats
 from statsmodels.stats.proportion import proportion_confint
 
 DATA = pathlib.Path(__file__).parent / 'MisterMaki_Survey_Response.xlsx'
-OUT = pathlib.Path(os.getenv("OUT_PATH", '/tmp/mister_maki_charts'))
+OUT = pathlib.Path(os.getenv('OUT_PATH', '/tmp/mister_maki_charts'))
 OUT.mkdir(parents=True, exist_ok=True)
 
 df = pd.read_excel(DATA)

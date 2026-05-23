@@ -154,7 +154,6 @@ def _count_texts_batch(texts: list[str]):
 def build_fineweb_parallel(
   token_budget: int = 1_000_000_000, split: str = 'train', processes: int = 8, batch_docs: int = 1000
 ) -> Counter:
-
   # Load as streaming to iterate lazily and respect token budget
   ds = load_dataset('HuggingFaceFW/fineweb', split=split, streaming=True)
 

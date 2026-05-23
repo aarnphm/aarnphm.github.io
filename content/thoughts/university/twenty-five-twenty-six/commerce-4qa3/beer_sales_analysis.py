@@ -41,6 +41,7 @@ except Exception:
   sys.path.append(os.path.dirname(__file__))
   from timeseries import direction_accuracy
 
+
 class _NoopBar:
   def update(self, n: int = 1) -> None:
     return
@@ -58,18 +59,14 @@ def _make_progress(total: int, desc: str):
   try:
     from tqdm import tqdm  # type: ignore
 
-    return tqdm(total=total, desc=desc, leave=False, unit="it")
+    return tqdm(total=total, desc=desc, leave=False, unit='it')
   except Exception:
     return _NoopBar()
 
+
 def _clean_numeric(s: pd.Series) -> pd.Series:
-  s = (
-    s.astype(str)
-    .str.replace(",", "", regex=False)
-    .str.replace("\u00A0", "", regex=False)
-    .str.strip()
-  )
-  return pd.to_numeric(s, errors="coerce")
+  s = s.astype(str).str.replace(',', '', regex=False).str.replace('\u00a0', '', regex=False).str.strip()
+  return pd.to_numeric(s, errors='coerce')
 
 
 def _read_sheet_with_header(csv_path: Path) -> pd.DataFrame:
@@ -80,12 +77,13 @@ def _read_sheet_with_header(csv_path: Path) -> pd.DataFrame:
   - The row contains tokens like D(t)/D[t] or F(t)/F[t].
   Falls back to the first row otherwise.
   """
-  df_raw = pd.read_csv(csv_path, header=None, engine="python", on_bad_lines="skip", dtype=str)
+  df_raw = pd.read_csv(csv_path, header=None, engine='python', on_bad_lines='skip', dtype=str)
   header_row = None
-  header_first = {"month", "t", "time", "period"}
+  header_first = {'month', 't', 'time', 'period'}
   import re
-  patt_dt = re.compile(r"^\s*d\s*([\[\(])t([\]\)])\s*$", re.IGNORECASE)
-  patt_ft = re.compile(r"^\s*f\s*([\[\(])t([\]\)])", re.IGNORECASE)
+
+  patt_dt = re.compile(r'^\s*d\s*([\[\(])t([\]\)])\s*$', re.IGNORECASE)
+  patt_ft = re.compile(r'^\s*f\s*([\[\(])t([\]\)])', re.IGNORECASE)
   for i in range(len(df_raw)):
     row_vals = [str(x).strip() for x in df_raw.iloc[i].tolist()]
     if not row_vals:
@@ -109,13 +107,13 @@ def _read_sheet_with_header(csv_path: Path) -> pd.DataFrame:
     key = h
     if key in seen:
       seen[key] += 1
-      key = f"{h}_{seen[h]}"
+      key = f'{h}_{seen[h]}'
     else:
       seen[key] = 0
     dedup.append(key)
   data.columns = dedup
   # Drop fully empty columns
-  data = data.dropna(axis=1, how="all")
+  data = data.dropna(axis=1, how='all')
   return data
 
 
@@ -130,49 +128,45 @@ def load_beer_sales(csv_path: Path) -> pd.Series:
   # Clean numeric-looking columns, covering (t) and [t] notations
   for col in df.columns:
     cn = str(col).strip().lower()
-    if (
-      cn in {"t", "d[t]", "d(t)", "d", "naive", "naïve"}
-      or cn.startswith("f[t]")
-      or cn.startswith("f(t)")
-    ):
+    if cn in {'t', 'd[t]', 'd(t)', 'd', 'naive', 'naïve'} or cn.startswith('f[t]') or cn.startswith('f(t)'):
       df[col] = _clean_numeric(df[col])
 
   # Identify demand column
   demand_col = None
   for cand in df.columns:
     cn = str(cand).strip().lower()
-    if cn in {"d[t]", "d(t)", "d"}:
+    if cn in {'d[t]', 'd(t)', 'd'}:
       demand_col = cand
       break
   if demand_col is None:
     demand_col = df.columns[2] if len(df.columns) >= 3 else None
   if demand_col is None:
-    raise ValueError("Could not locate demand column (D[t]) in CSV")
+    raise ValueError('Could not locate demand column (D[t]) in CSV')
 
   # Use 't' when present for ordering
-  if "t" in df.columns:
-    df = df.dropna(subset=["t"]).sort_values("t")
+  if 't' in df.columns:
+    df = df.dropna(subset=['t']).sort_values('t')
   y = df[demand_col].dropna().astype(float).reset_index(drop=True)
   y.index = pd.RangeIndex(start=1, stop=len(y) + 1, step=1)
-  y.name = "D"
+  y.name = 'D'
   return y
 
 
 def mae_mse_rmse(y_true: pd.Series, y_pred: pd.Series) -> Tuple[float, float, float]:
   err = (y_true - y_pred).astype(float)
   mae = float(np.abs(err).mean())
-  mse = float((err ** 2).mean())
+  mse = float((err**2).mean())
   rmse = float(np.sqrt(mse))
   return mae, mse, rmse
 
 
 def naive_forecast(y: pd.Series) -> pd.Series:
-  return y.shift(1).rename("naive")
+  return y.shift(1).rename('naive')
 
 
 def moving_average_forecast(y: pd.Series, window: int) -> pd.Series:
   # Predict t using the mean of the previous `window` actuals
-  return y.shift(1).rolling(window=window, min_periods=window).mean().rename(f"ma{window}")
+  return y.shift(1).rolling(window=window, min_periods=window).mean().rename(f'ma{window}')
 
 
 def exponential_smoothing_forecast(y: pd.Series, alpha: float, init: float | None = None) -> pd.Series:
@@ -181,24 +175,19 @@ def exponential_smoothing_forecast(y: pd.Series, alpha: float, init: float | Non
   Initializes F_1 = init or y_1. Returns a series aligned to y.
   """
   if not (0 < alpha <= 1):
-    raise ValueError("alpha must be in (0, 1]")
+    raise ValueError('alpha must be in (0, 1]')
   if len(y) == 0:
-    return pd.Series(dtype=float, name=f"es{alpha}")
+    return pd.Series(dtype=float, name=f'es{alpha}')
   f = np.empty(len(y))
   f[:] = np.nan
   f[0] = float(y.iloc[0] if init is None else init)
   for i in range(1, len(y)):
     f[i] = alpha * float(y.iloc[i - 1]) + (1.0 - alpha) * f[i - 1]
-  return pd.Series(f, index=y.index, name=f"es{alpha}")
+  return pd.Series(f, index=y.index, name=f'es{alpha}')
 
 
 def holt_linear_forecast(
-  y: pd.Series,
-  alpha: float,
-  beta: float,
-  *,
-  level_init: float | None = None,
-  trend_init: float | None = None,
+  y: pd.Series, alpha: float, beta: float, *, level_init: float | None = None, trend_init: float | None = None
 ) -> pd.Series:
   """Holt's linear (double exponential smoothing).
 
@@ -210,10 +199,10 @@ def holt_linear_forecast(
     F_t = s_{t-1} + b_{t-1} for t >= 1; F_0 = s_0
   """
   if not (0 < alpha <= 1) or not (0 < beta <= 1):
-    raise ValueError("alpha and beta must be in (0, 1]")
+    raise ValueError('alpha and beta must be in (0, 1]')
   n = len(y)
   if n == 0:
-    return pd.Series(dtype=float, name=f"holt{alpha}_{beta}")
+    return pd.Series(dtype=float, name=f'holt{alpha}_{beta}')
 
   yv = y.astype(float).to_numpy()
   s = np.empty(n)
@@ -237,45 +226,39 @@ def holt_linear_forecast(
     s[t] = s_t
     b[t] = b_t
 
-  name = f"holt{alpha}_{beta}"
+  name = f'holt{alpha}_{beta}'
   return pd.Series(f, index=y.index, name=name)
 
 
-def _es_objective(alpha: float, y: pd.Series, init: float, loss: str = "mse") -> float:
+def _es_objective(alpha: float, y: pd.Series, init: float, loss: str = 'mse') -> float:
   # Constrain within (0,1)
   if not (0.0 < alpha < 1.0):
-    return float("inf")
+    return float('inf')
   f = exponential_smoothing_forecast(y, alpha, init=init)
-  df = pd.concat([y.rename("y"), f.rename("f")], axis=1).dropna()
+  df = pd.concat([y.rename('y'), f.rename('f')], axis=1).dropna()
   if len(df) == 0:
-    return float("inf")
-  err = (df["y"] - df["f"]).astype(float)
-  if loss == "mae":
+    return float('inf')
+  err = (df['y'] - df['f']).astype(float)
+  if loss == 'mae':
     return float(np.abs(err).mean())
-  return float((err ** 2).mean())
+  return float((err**2).mean())
 
 
-def optimize_es_alpha(y: pd.Series, init: float, loss: str = "mse") -> tuple[float, dict[str, float]]:
+def optimize_es_alpha(y: pd.Series, init: float, loss: str = 'mse') -> tuple[float, dict[str, float]]:
   res = minimize_scalar(
-    lambda a: _es_objective(a, y, init, loss=loss),
-    bounds=(1e-6, 1 - 1e-6),
-    method="bounded",
-    options={"xatol": 1e-6},
+    lambda a: _es_objective(a, y, init, loss=loss), bounds=(1e-6, 1 - 1e-6), method='bounded', options={'xatol': 1e-6}
   )
   alpha_star = float(res.x)
   f = exponential_smoothing_forecast(y, alpha_star, init=init)
-  df = pd.concat([y.rename("y"), f.rename("f")], axis=1).dropna()
-  mae, mse, rmse = mae_mse_rmse(df["y"], df["f"])
-  dacc = direction_accuracy(df["y"].diff().fillna(0), df["f"].diff().fillna(0))
-  metrics = {"MAD": mae, "MSE": mse, "RMSE": rmse, "direction_acc": dacc}
+  df = pd.concat([y.rename('y'), f.rename('f')], axis=1).dropna()
+  mae, mse, rmse = mae_mse_rmse(df['y'], df['f'])
+  dacc = direction_accuracy(df['y'].diff().fillna(0), df['f'].diff().fillna(0))
+  metrics = {'MAD': mae, 'MSE': mse, 'RMSE': rmse, 'direction_acc': dacc}
   return alpha_star, metrics
 
 
 def milp_optimize_es_alpha(
-  y: pd.Series,
-  *,
-  init: float,
-  grid_points: int = 101,
+  y: pd.Series, *, init: float, grid_points: int = 101
 ) -> tuple[float, pd.Series, dict[str, float]]:
   """MILP: choose alpha from a discrete grid to minimize MAE.
 
@@ -288,14 +271,12 @@ def milp_optimize_es_alpha(
   try:
     import pulp as pl
   except Exception as e:
-    raise SystemExit(
-      "PuLP is required for --milp-es. Install with `pip install pulp` (CBC recommended)."
-    ) from e
+    raise SystemExit('PuLP is required for --milp-es. Install with `pip install pulp` (CBC recommended).') from e
 
   y = y.astype(float).reset_index(drop=True)
   n = len(y)
   if n < 2:
-    raise ValueError("Need at least 2 observations for ES optimization")
+    raise ValueError('Need at least 2 observations for ES optimization')
 
   # Alpha grid
   grid_points = max(3, int(grid_points))
@@ -310,12 +291,12 @@ def milp_optimize_es_alpha(
   M = (U - L) * 10.0
 
   # Model
-  model = pl.LpProblem("ES_Alpha_Selection", pl.LpMinimize)
+  model = pl.LpProblem('ES_Alpha_Selection', pl.LpMinimize)
 
   # Variables
-  F = pl.LpVariable.dicts("F", T, lowBound=L, upBound=U, cat=pl.LpContinuous)
-  e = pl.LpVariable.dicts("e", T, lowBound=0.0, cat=pl.LpContinuous)  # absolute errors
-  z = pl.LpVariable.dicts("z", K, lowBound=0, upBound=1, cat=pl.LpBinary)
+  F = pl.LpVariable.dicts('F', T, lowBound=L, upBound=U, cat=pl.LpContinuous)
+  e = pl.LpVariable.dicts('e', T, lowBound=0.0, cat=pl.LpContinuous)  # absolute errors
+  z = pl.LpVariable.dicts('z', K, lowBound=0, upBound=1, cat=pl.LpBinary)
 
   # Initial forecast
   model += F[0] == float(init)
@@ -324,7 +305,7 @@ def milp_optimize_es_alpha(
   model += pl.lpSum(z[k] for k in K) == 1
 
   # ES recursion with big-M activation for each alpha k, times t>=1 (i.e., index 1..n-1)
-  pbar_rec = _make_progress((n - 1) * len(K), "MILP: building ES recursion")
+  pbar_rec = _make_progress((n - 1) * len(K), 'MILP: building ES recursion')
   for t in range(1, n):
     for k in K:
       a = float(alphas[k])
@@ -335,7 +316,7 @@ def milp_optimize_es_alpha(
   pbar_rec.close()
 
   # Absolute error constraints for t>=1 (first error from second point)
-  pbar_err = _make_progress((n - 1), "MILP: building abs-error constraints")
+  pbar_err = _make_progress((n - 1), 'MILP: building abs-error constraints')
   for t in range(1, n):
     model += e[t] >= float(y.iloc[t]) - F[t]
     model += e[t] >= F[t] - float(y.iloc[t])
@@ -349,10 +330,10 @@ def milp_optimize_es_alpha(
 
   # Solve with CBC (default in PuLP). Silence output.
   solver = pl.PULP_CBC_CMD(msg=False)
-  print("Solving MILP (CBC)...", flush=True)
+  print('Solving MILP (CBC)...', flush=True)
   status = model.solve(solver)
-  if pl.LpStatus[status] != "Optimal":
-    raise RuntimeError(f"MILP did not reach optimality: {pl.LpStatus[status]}")
+  if pl.LpStatus[status] != 'Optimal':
+    raise RuntimeError(f'MILP did not reach optimality: {pl.LpStatus[status]}')
 
   # Extract alpha
   z_vals = np.array([pl.value(z[k]) for k in K])
@@ -361,16 +342,13 @@ def milp_optimize_es_alpha(
 
   # Build forecast series from F variables (t=0..n-1)
   f_vals = [pl.value(F[t]) for t in T]
-  f_ser = pd.Series(f_vals, index=pd.RangeIndex(start=1, stop=n + 1), name=f"es{alpha_star}")
+  f_ser = pd.Series(f_vals, index=pd.RangeIndex(start=1, stop=n + 1), name=f'es{alpha_star}')
 
   # Metrics (align like other evaluations: drop first entry with no error)
-  df = pd.concat([
-    pd.Series(y.values, index=pd.RangeIndex(start=1, stop=n + 1), name="y"),
-    f_ser,
-  ], axis=1).iloc[1:]
-  mae, mse, rmse = mae_mse_rmse(df["y"], df[f"es{alpha_star}"])
-  dacc = direction_accuracy(df["y"].diff().fillna(0), df[f"es{alpha_star}"].diff().fillna(0))
-  metrics = {"MAD": mae, "MSE": mse, "RMSE": rmse, "direction_acc": dacc}
+  df = pd.concat([pd.Series(y.values, index=pd.RangeIndex(start=1, stop=n + 1), name='y'), f_ser], axis=1).iloc[1:]
+  mae, mse, rmse = mae_mse_rmse(df['y'], df[f'es{alpha_star}'])
+  dacc = direction_accuracy(df['y'].diff().fillna(0), df[f'es{alpha_star}'].diff().fillna(0))
+  metrics = {'MAD': mae, 'MSE': mse, 'RMSE': rmse, 'direction_acc': dacc}
   return alpha_star, f_ser, metrics
 
 
@@ -396,13 +374,13 @@ def parse_sheet_forecasts(csv_path: Path) -> Dict[str, pd.Series]:
 
   # Naive (match any column labeled case-insensitively as naive)
   for i, cand in enumerate(df.columns):
-    if str(cand).strip().lower() in {"naive", "naïve"}:
-      out["naive"] = shape_series("naive", df.iloc[:, i])
+    if str(cand).strip().lower() in {'naive', 'naïve'}:
+      out['naive'] = shape_series('naive', df.iloc[:, i])
 
   # F[t](alpha)(beta) or F(t)(alpha)(beta) for Holt double exponential smoothing
   for i, cand in enumerate(df.columns):
     s = str(cand)
-    m2 = re.match(r"\s*F\s*(?:\[t\]|\(t\))[^\d-]*\(([^)]+)\)\s*\(([^)]+)\)\s*$", s)
+    m2 = re.match(r'\s*F\s*(?:\[t\]|\(t\))[^\d-]*\(([^)]+)\)\s*\(([^)]+)\)\s*$', s)
     if not m2:
       continue
     a_val, b_val = m2.group(1).strip(), m2.group(2).strip()
@@ -411,12 +389,12 @@ def parse_sheet_forecasts(csv_path: Path) -> Dict[str, pd.Series]:
       b_num = float(b_val)
     except ValueError:
       continue
-    key = f"holt{a_num}_{b_num}"
+    key = f'holt{a_num}_{b_num}'
     out[key] = shape_series(key, df.iloc[:, i])
 
   # F[t](...) or F(t)(...) single-parameter (MA or single ES)
   for i, cand in enumerate(df.columns):
-    m = re.match(r"\s*F\s*(?:\[t\]|\(t\))\s*\(([^)]+)\)\s*$", str(cand))
+    m = re.match(r'\s*F\s*(?:\[t\]|\(t\))\s*\(([^)]+)\)\s*$', str(cand))
     if not m:
       continue
     val = m.group(1).strip()
@@ -425,51 +403,50 @@ def parse_sheet_forecasts(csv_path: Path) -> Dict[str, pd.Series]:
     except ValueError:
       continue
     if float(num).is_integer():
-      key = f"ma{int(num)}"
+      key = f'ma{int(num)}'
     else:
-      key = f"es{num}"
+      key = f'es{num}'
     out[key] = shape_series(key, df.iloc[:, i])
 
   # Plain F(t) or F[t] one-step forecasts from sheet (no parameters)
   for i, cand in enumerate(df.columns):
-    if re.match(r"^\s*F\s*(?:\[t\]|\(t\))\s*$", str(cand)):
-      out.setdefault("holt", shape_series("holt", df.iloc[:, i]))
+    if re.match(r'^\s*F\s*(?:\[t\]|\(t\))\s*$', str(cand)):
+      out.setdefault('holt', shape_series('holt', df.iloc[:, i]))
 
   return out
 
 
 def build_arg_parser() -> argparse.ArgumentParser:
-  ap = argparse.ArgumentParser(description="Beer sales: naive, moving-average, ES, and Holt-linear")
-  ap.add_argument("--windows", type=int, nargs="*", default=[3], help="Moving average window sizes (default: 3)")
-  ap.add_argument("--alphas", type=float, nargs="*", default=[], help="Exponential smoothing alphas to compute")
-  ap.add_argument("--es-init", type=str, default="first", help="ES init: 'first', 'mean', or a number")
-  ap.add_argument("--optimize-es", action="store_true", help="Search for alpha that minimizes chosen loss")
-  ap.add_argument("--loss", choices=["mse", "mae"], default="mse", help="Loss to optimize for ES alpha")
-  ap.add_argument("--milp-es", action="store_true", help="Use MILP (PuLP/CBC) to select alpha from a grid minimizing MAE")
-  ap.add_argument("--grid-points", type=int, default=101, help="Number of alpha grid points in [0.01,0.99] for MILP")
+  ap = argparse.ArgumentParser(description='Beer sales: naive, moving-average, ES, and Holt-linear')
+  ap.add_argument('--windows', type=int, nargs='*', default=[3], help='Moving average window sizes (default: 3)')
+  ap.add_argument('--alphas', type=float, nargs='*', default=[], help='Exponential smoothing alphas to compute')
+  ap.add_argument('--es-init', type=str, default='first', help="ES init: 'first', 'mean', or a number")
+  ap.add_argument('--optimize-es', action='store_true', help='Search for alpha that minimizes chosen loss')
+  ap.add_argument('--loss', choices=['mse', 'mae'], default='mse', help='Loss to optimize for ES alpha')
   ap.add_argument(
-    "--holt",
+    '--milp-es', action='store_true', help='Use MILP (PuLP/CBC) to select alpha from a grid minimizing MAE'
+  )
+  ap.add_argument('--grid-points', type=int, default=101, help='Number of alpha grid points in [0.01,0.99] for MILP')
+  ap.add_argument(
+    '--holt',
     type=float,
     nargs=2,
-    action="append",
+    action='append',
     default=[],
-    metavar=("ALPHA", "BETA"),
-    help="Compute Holt linear forecasts for (alpha, beta) pairs",
+    metavar=('ALPHA', 'BETA'),
+    help='Compute Holt linear forecasts for (alpha, beta) pairs',
   )
   ap.add_argument(
-    "--csv",
-    type=Path,
-    default=Path(__file__).with_name("BeerSales-Naive.csv"),
-    help="Path to the beer sales CSV",
+    '--csv', type=Path, default=Path(__file__).with_name('BeerSales-Naive.csv'), help='Path to the beer sales CSV'
   )
   return ap
 
 
 def _resolve_es_init(y: pd.Series, es_init: str) -> float:
   s = es_init.strip().lower()
-  if s == "first":
+  if s == 'first':
     return float(y.iloc[0])
-  if s == "mean":
+  if s == 'mean':
     return float(y.mean())
   try:
     return float(es_init)
@@ -488,13 +465,13 @@ def compute_methods(
 ) -> Dict[str, pd.Series]:
   methods: Dict[str, pd.Series] = {}
   # Built-ins
-  methods["naive"] = naive_forecast(y)
+  methods['naive'] = naive_forecast(y)
   for w in windows:
-    methods[f"ma{w}"] = moving_average_forecast(y, w)
+    methods[f'ma{w}'] = moving_average_forecast(y, w)
   for a in alphas:
-    methods[f"es{a}"] = exponential_smoothing_forecast(y, a, init=es_init)
+    methods[f'es{a}'] = exponential_smoothing_forecast(y, a, init=es_init)
   for a, b in holt_pairs:
-    key = f"holt{a}_{b}"
+    key = f'holt{a}_{b}'
     methods[key] = holt_linear_forecast(y, a, b, level_init=es_init)
   # Merge provided from sheet
   if provided:
@@ -507,17 +484,17 @@ def evaluate_methods(y: pd.Series, methods: Dict[str, pd.Series]) -> Dict[str, d
   out: Dict[str, dict[str, float | int | None]] = {}
   for key in sorted(methods.keys()):
     yhat = methods[key]
-    df_eval = pd.concat([y.rename("y"), yhat.rename(key)], axis=1).dropna()
+    df_eval = pd.concat([y.rename('y'), yhat.rename(key)], axis=1).dropna()
     if len(df_eval) == 0:
       continue
-    mae, mse, rmse = mae_mse_rmse(df_eval["y"], df_eval[key])
-    dacc = direction_accuracy(df_eval["y"].diff().fillna(0), df_eval[key].diff().fillna(0))
+    mae, mse, rmse = mae_mse_rmse(df_eval['y'], df_eval[key])
+    dacc = direction_accuracy(df_eval['y'].diff().fillna(0), df_eval[key].diff().fillna(0))
     out[key] = {
-      "rows": int(len(df_eval)),
-      "MAD": float(round(mae, 6)),
-      "MSE": float(round(mse, 6)),
-      "RMSE": float(round(rmse, 6)),
-      "direction_acc": float(round(dacc, 6)) if not np.isnan(dacc) else None,
+      'rows': int(len(df_eval)),
+      'MAD': float(round(mae, 6)),
+      'MSE': float(round(mse, 6)),
+      'RMSE': float(round(rmse, 6)),
+      'direction_acc': float(round(dacc, 6)) if not np.isnan(dacc) else None,
     }
   return out
 
@@ -529,46 +506,41 @@ def run(args: argparse.Namespace) -> None:
   provided = parse_sheet_forecasts(args.csv)
   holt_pairs = [(float(p[0]), float(p[1])) for p in args.holt]
   methods = compute_methods(
-    y,
-    windows=list(args.windows),
-    alphas=list(args.alphas),
-    es_init=es_init,
-    holt_pairs=holt_pairs,
-    provided=provided,
+    y, windows=list(args.windows), alphas=list(args.alphas), es_init=es_init, holt_pairs=holt_pairs, provided=provided
   )
 
   # Scalar ES optimization
   if args.optimize_es:
     alpha_star, metrics = optimize_es_alpha(y, init=es_init, loss=args.loss)
-    methods[f"es{round(alpha_star, 6)}"] = exponential_smoothing_forecast(y, alpha_star, init=es_init)
+    methods[f'es{round(alpha_star, 6)}'] = exponential_smoothing_forecast(y, alpha_star, init=es_init)
     print()
-    print(f"Optimized ES alpha (loss={args.loss}): {alpha_star:.6f}")
+    print(f'Optimized ES alpha (loss={args.loss}): {alpha_star:.6f}')
     print({k: (round(v, 6) if isinstance(v, float) else v) for k, v in metrics.items()})
 
   # MILP alpha selection
   if args.milp_es:
     try:
       alpha_milp, f_milp, metrics_milp = milp_optimize_es_alpha(y, init=es_init, grid_points=args.grid_points)
-      key = f"es{round(alpha_milp, 6)}_milp"
+      key = f'es{round(alpha_milp, 6)}_milp'
       methods[key] = f_milp
       print()
-      print(f"MILP optimized ES alpha: {alpha_milp:.6f} (grid points={args.grid_points})")
+      print(f'MILP optimized ES alpha: {alpha_milp:.6f} (grid points={args.grid_points})')
       print({k: (round(v, 6) if isinstance(v, float) else v) for k, v in metrics_milp.items()})
     except SystemExit as e:
       print(str(e))
       return
 
-  print("\nInput length:", len(y))
+  print('\nInput length:', len(y))
   results = evaluate_methods(y, methods)
   for key in sorted(results.keys()):
     m = results[key]
     print()
-    print(f"{key} forecast metrics (rows={m['rows']}):")
+    print(f'{key} forecast metrics (rows={m["rows"]}):')
     print({
-      "MAD": round(float(m["MAD"]), 3),
-      "MSE": round(float(m["MSE"]), 3),
-      "RMSE": round(float(m["RMSE"]), 3),
-      "direction_acc": (round(float(m["direction_acc"]), 3) if m["direction_acc"] is not None else None),
+      'MAD': round(float(m['MAD']), 3),
+      'MSE': round(float(m['MSE']), 3),
+      'RMSE': round(float(m['RMSE']), 3),
+      'direction_acc': (round(float(m['direction_acc']), 3) if m['direction_acc'] is not None else None),
     })
 
 
@@ -578,5 +550,5 @@ def main() -> None:
   run(args)
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
   main()
