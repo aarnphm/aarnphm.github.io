@@ -35,6 +35,7 @@ export type EmojiEntry = { name: string; codepoint: string; emoji: string }
 let codePointToName: Record<string, string> | undefined = undefined
 let emojiEntries: EmojiEntry[] | null = null
 const base64Chunks = new Map<string, Record<string, string>>()
+let assetManifest: Promise<Record<string, string>> | undefined = undefined
 
 function isStringRecord(value: unknown): value is Record<string, string> {
   return (
@@ -45,22 +46,42 @@ function isStringRecord(value: unknown): value is Record<string, string> {
   )
 }
 
-function emojiAssetUrl(assetPath: string): string {
+function staticScriptsUrl(assetPath: string): string {
   const source = new URL(import.meta.url)
   const scripts = '/static/scripts/'
   const scriptsIndex = source.pathname.indexOf(scripts)
   if (scriptsIndex >= 0) {
-    source.pathname = `${source.pathname.slice(0, scriptsIndex + scripts.length)}emoji/${assetPath}`
+    source.pathname = `${source.pathname.slice(0, scriptsIndex + scripts.length)}${assetPath}`
     source.search = ''
     source.hash = ''
     return source.href
   }
 
-  return new URL(`static/scripts/emoji/${assetPath}`, document.baseURI).href
+  return new URL(`static/scripts/${assetPath}`, document.baseURI).href
+}
+
+async function loadAssetManifest(): Promise<Record<string, string>> {
+  assetManifest ??= fetch(staticScriptsUrl('asset-manifest.json'))
+    .then(async response => (response.ok ? ((await response.json()) as unknown) : {}))
+    .then(value => (isStringRecord(value) ? value : {}))
+    .catch(() => ({}))
+  return assetManifest
+}
+
+async function emojiAssetUrl(assetPath: string): Promise<string> {
+  const manifest = await loadAssetManifest()
+  const logicalPath = `static/scripts/emoji/${assetPath}`
+  const emittedPath = manifest[logicalPath] ?? logicalPath
+  const relativePath = emittedPath.startsWith('static/scripts/')
+    ? emittedPath.slice('static/scripts/'.length)
+    : emittedPath
+  if (relativePath !== emittedPath) return staticScriptsUrl(relativePath)
+
+  return new URL(emittedPath, document.baseURI).href
 }
 
 async function fetchEmojiRecord(assetPath: string): Promise<Record<string, string>> {
-  const response = await fetch(emojiAssetUrl(assetPath))
+  const response = await fetch(await emojiAssetUrl(assetPath))
   if (!response.ok) throw new Error(`failed to load emoji asset ${assetPath}`)
   const value: unknown = await response.json()
   if (!isStringRecord(value)) throw new Error(`invalid emoji asset ${assetPath}`)
