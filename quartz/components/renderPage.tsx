@@ -16,7 +16,7 @@ import {
   QuartzComponentConstructor,
   QuartzComponentProps,
 } from '../types/component'
-import { resolveAsset } from '../util/asset-manifest'
+import { resolveAsset, resolveExtractedStaticResource } from '../util/asset-manifest'
 import { compileBaseConfig } from '../util/base/compile'
 import { renderBaseViewsForFile } from '../util/base/render'
 import { clone } from '../util/clone'
@@ -38,10 +38,16 @@ import { encryptContent } from '../util/protected'
 import {
   splitCssBundles,
   splitJsBundles,
-  staticCssBundlePath,
-  staticJsBundlePath,
+  componentCssResourceKeyPrefix,
+  staticCssBundleKey,
+  staticJsBundleKey,
 } from '../util/resource-bundles'
-import { JSResourceToScriptElement, StaticResources } from '../util/resources'
+import {
+  CSSResource,
+  JSResource,
+  JSResourceToScriptElement,
+  StaticResources,
+} from '../util/resources'
 import BaseViewSelector from './BaseViewSelector'
 import CodeCopy from './CodeCopy'
 import Darkmode from './Darkmode'
@@ -795,35 +801,41 @@ export const pageResources = (
   ctx: BuildCtx,
 ) => {
   const asset = (logicalPath: string) => joinSegments(baseDir, resolveAsset(ctx, logicalPath))
-  const css = [
-    { content: asset('index.css') },
-    ...splitCssBundles(staticResources.css, [collapseHeaderStyle]).map(part =>
-      part.type === 'bundle' ? { content: asset(staticCssBundlePath(part.index)) } : part.resource,
-    ),
+  const extractedAsset = (key: string) =>
+    joinSegments(baseDir, resolveExtractedStaticResource(ctx, key))
+  const componentCss: CSSResource[] = [
+    ...(ctx.extractedStaticResources ?? new Map<string, string>()).entries(),
   ]
-  const staticJs = [
-    ...splitJsBundles(staticResources.js, 'beforeDOMReady').map(part =>
+    .filter(([key]) => key.startsWith(componentCssResourceKeyPrefix))
+    .map(([, content]) => ({ content: joinSegments(baseDir, content) }))
+  const css: CSSResource[] = [
+    { content: asset('index.css') },
+    ...componentCss,
+    ...splitCssBundles(staticResources.css, [collapseHeaderStyle]).map(part =>
       part.type === 'bundle'
-        ? {
-            src: asset(staticJsBundlePath(part.loadTime, part.index)),
-            loadTime: part.loadTime,
-            contentType: 'external',
-          }
+        ? { content: extractedAsset(staticCssBundleKey(part.content)) }
         : part.resource,
     ),
+  ]
+  const staticJs: JSResource[] = []
+  for (const part of [
+    ...splitJsBundles(staticResources.js, 'beforeDOMReady'),
     ...splitJsBundles(staticResources.js, 'afterDOMReady', [
       transcludeScript,
       collapseHeaderScript,
-    ]).map(part =>
-      part.type === 'bundle'
-        ? {
-            src: asset(staticJsBundlePath(part.loadTime, part.index)),
-            loadTime: part.loadTime,
-            contentType: 'external',
-          }
-        : part.resource,
-    ),
-  ]
+    ]),
+  ]) {
+    if (part.type === 'bundle') {
+      const resource: JSResource = {
+        src: extractedAsset(staticJsBundleKey(part.loadTime, part.scripts)),
+        loadTime: part.loadTime,
+        contentType: 'external',
+      }
+      staticJs.push(resource)
+    } else {
+      staticJs.push(part.resource)
+    }
+  }
 
   return {
     css: [...css],

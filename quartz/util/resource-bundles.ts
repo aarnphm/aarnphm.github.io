@@ -1,43 +1,41 @@
 import { CSSResource, JSResource } from './resources'
 
 export type CssBundlePart =
-  | { type: 'bundle'; content: string; index: number }
+  | { type: 'bundle'; content: string }
   | { type: 'resource'; resource: CSSResource }
 
 export type JsBundlePart =
-  | { type: 'bundle'; scripts: string[]; loadTime: JSResource['loadTime']; index: number }
+  | { type: 'bundle'; scripts: string[]; loadTime: JSResource['loadTime'] }
   | { type: 'resource'; resource: JSResource }
 
-export const staticCssBundleSlug = (index: number) => `static/resource-style-${index}`
+export const componentCssResourceKeyPrefix = 'component-css:'
 
-export const staticCssBundlePath = (index: number) => `${staticCssBundleSlug(index)}.css`
+export const componentCssResourceKey = (content: string) =>
+  `${componentCssResourceKeyPrefix}${content}`
 
-export const staticJsBundleSlug = (loadTime: JSResource['loadTime'], index: number) =>
-  `static/resource-${loadTime === 'beforeDOMReady' ? 'before' : 'after'}-${index}`
+export const staticCssBundleSlug = 'static/resource-style'
 
-export const staticJsBundlePath = (loadTime: JSResource['loadTime'], index: number) =>
-  `${staticJsBundleSlug(loadTime, index)}.js`
+export const staticCssBundleKey = (content: string) => `resource-css:${content}`
+
+export const staticJsBundleSlug = (loadTime: JSResource['loadTime']) =>
+  `static/resource-${loadTime === 'beforeDOMReady' ? 'before' : 'after'}`
+
+export const staticJsBundleKey = (loadTime: JSResource['loadTime'], scripts: string[]) =>
+  `resource-js:${loadTime}:${JSON.stringify(scripts)}`
 
 export function splitCssBundles(resources: CSSResource[], leadingInline: string[] = []) {
   const parts: CssBundlePart[] = []
-  let pending = leadingInline.filter(content => content.length > 0)
-  let index = 0
-  const flush = () => {
-    if (pending.length === 0) return
-    parts.push({ type: 'bundle', content: pending.join('\n'), index })
-    pending = []
-    index += 1
+  for (const content of leadingInline) {
+    if (content.length > 0) parts.push({ type: 'bundle', content })
   }
 
   for (const resource of resources) {
     if (resource.inline ?? false) {
-      pending.push(resource.content)
+      if (resource.content.length > 0) parts.push({ type: 'bundle', content: resource.content })
     } else {
-      flush()
       parts.push({ type: 'resource', resource })
     }
   }
-  flush()
 
   return parts
 }
@@ -48,25 +46,19 @@ export function splitJsBundles(
   leadingInline: string[] = [],
 ) {
   const parts: JsBundlePart[] = []
-  let pending = leadingInline.filter(script => script.length > 0)
-  let index = 0
-  const flush = () => {
-    if (pending.length === 0) return
-    parts.push({ type: 'bundle', scripts: pending, loadTime, index })
-    pending = []
-    index += 1
+  for (const script of leadingInline) {
+    if (script.length > 0) parts.push({ type: 'bundle', scripts: [script], loadTime })
   }
 
   for (const resource of resources) {
     if (resource.loadTime !== loadTime) continue
     if (resource.contentType === 'inline') {
-      pending.push(resource.script)
+      if (resource.script.length > 0)
+        parts.push({ type: 'bundle', scripts: [resource.script], loadTime })
     } else {
-      flush()
       parts.push({ type: 'resource', resource })
     }
   }
-  flush()
 
   return parts
 }
