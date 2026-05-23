@@ -13,6 +13,7 @@ import { handleMentions } from './mentions'
 import { CommentsGitHubHandler, GitHubHandler } from './oauth'
 import { isLocalRequest, resolveBaseUrl } from './request-utils'
 import { handleStackedNotesRequest } from './stacked'
+import { cacheHeadersForStaticAsset } from './static-assets'
 
 const VERSION = 'version https://git-lfs.github.com/spec/v1\n'
 const MIME = 'application/vnd.git-lfs+json'
@@ -873,6 +874,7 @@ export default {
       const newReq = new Request(base.toString(), request)
       const resp = await env.ASSETS.fetch(newReq)
       return withHeaders(resp, {
+        ...cacheHeadersForStaticAsset(pathname, resp.status),
         'X-Frame-Options': null,
         'Content-Security-Policy': "frame-ancestors 'self' *",
       })
@@ -926,13 +928,15 @@ export default {
     }
 
     const resp = await env.ASSETS.fetch(request)
+    const cacheHeaders = cacheHeadersForStaticAsset(url.pathname, resp.status)
     if (shouldTreatAsDocument(url.pathname)) {
       return withHeaders(resp, {
+        ...cacheHeaders,
         'X-Frame-Options': null,
         'Content-Security-Policy': "frame-ancestors 'self' *",
       })
     }
-    return resp
+    return withHeaders(resp, cacheHeaders)
   },
 } satisfies ExportedHandler<Env>
 
