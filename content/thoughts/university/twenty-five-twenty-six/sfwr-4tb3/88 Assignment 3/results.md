@@ -137,11 +137,7 @@ class FiniteStateAutomaton:
         'margin': '0',
         'width': '0.25',
       },  # 'nodesep': '0.75', 'ranksep': '0.75'
-      edge_attr={
-        'fontsize': '10',
-        'fontname': 'Noto Sans',
-        'arrowsize': '0.5',
-      },
+      edge_attr={'fontsize': '10', 'fontname': 'Noto Sans', 'arrowsize': '0.5'},
     )  # 'weight': '5.0' # create a directed graph
     for q in self.I:
       dot.node('_' + str(q), label='', shape='none', height='.0', width='.0')
@@ -165,16 +161,9 @@ class FiniteStateAutomaton:
     if trace:
       xlab = {}  # maps states to Graphviz external labels
       for i in range(0, len(trace), 2):
-        xlab[trace[i]] = (
-          xlab[trace[i]] + ', ' + str(i // 2)
-          if trace[i] in xlab
-          else str(i // 2)
-        )
+        xlab[trace[i]] = xlab[trace[i]] + ', ' + str(i // 2) if trace[i] in xlab else str(i // 2)
       for q in xlab:
-        dot.node(
-          wrap(q),
-          xlabel='<<font color="royalblue">' + wrap(xlab[q]) + '</font>>',
-        )
+        dot.node(wrap(q), xlabel='<<font color="royalblue">' + wrap(xlab[q]) + '</font>>')
     return dot
 
   def writepdf(self, name, trace=None):
@@ -201,9 +190,7 @@ class FiniteStateAutomaton:
 
 def parseFSA(fsa: str) -> FiniteStateAutomaton:
   fl = [line for line in fsa.split('\n') if line != '']
-  I = (
-    set(fl[0].split()) if len(fl) > 0 else set()
-  )  # second line: initial initial ...
+  I = set(fl[0].split()) if len(fl) > 0 else set()  # second line: initial initial ...
   Σ, Q, δ, F = set(), set(), {}, set()
   for line in fl[1:]:  # all subsequent lines
     if '→' in line:  # source action → target
@@ -254,13 +241,7 @@ def merge(γ: TransFunc, δ: TransFunc) -> TransFunc:
   return (
     {q: γ[q] for q in γ.keys() - δ.keys()}
     | {q: δ[q] for q in δ.keys() - γ.keys()}
-    | {
-      q: {
-        a: γ[q].get(a, set()) | δ[q].get(a, set())
-        for a in γ[q].keys() | δ[q].keys()
-      }
-      for q in γ.keys() & δ.keys()
-    }
+    | {q: {a: γ[q].get(a, set()) | δ[q].get(a, set()) for a in γ[q].keys() | δ[q].keys()} for q in γ.keys() & δ.keys()}
   )
 
 
@@ -283,9 +264,7 @@ def RegExToFSA(re) -> FiniteStateAutomaton:
         q = QC
         QC += 1
         δ = A1.δ | A2.δ | {q: {'ε': A1.I | A2.I}}
-        return FiniteStateAutomaton(
-          A1.Σ | A2.Σ, A1.Q | A2.Q | {q}, {q}, δ, A1.F | A2.F
-        )
+        return FiniteStateAutomaton(A1.Σ | A2.Σ, A1.Q | A2.Q | {q}, {q}, δ, A1.F | A2.F)
       case Conc(E1=E1, E2=E2):
         A1, A2 = ToFSA(E1), ToFSA(E2)
         δ = merge(A1.δ | A2.δ, {q: {'ε': A2.I} for q in A1.F})
@@ -307,10 +286,11 @@ def RegExToFSA(re) -> FiniteStateAutomaton:
 
    ```python
    def choices(s: str) -> RegEx:
-       result = Sym(s[0])
-       for c in s[1:]:
-           result = Choice(result, Sym(c))
-       return result
+     result = Sym(s[0])
+     for c in s[1:]:
+       result = Choice(result, Sym(c))
+     return result
+
 
    LETTERS = 'abcdefghijklmnopqrstuvwxyz'
    DIGITS = '0123456789'
@@ -339,21 +319,30 @@ def RegExToFSA(re) -> FiniteStateAutomaton:
    Test your answer by expressing it with Python constructors `ε`, `Sym`, `Choice`, `Conc`, `Star` and calling it `C`.
 
    ```python
-   def plus(e: RegEx) -> RegEx: return Conc(e, Star(e))
+   def plus(e: RegEx) -> RegEx:
+     return Conc(e, Star(e))
+
 
    def opt(e: RegEx) -> RegEx:
-       return Choice(ε(), e)
+     return Choice(ε(), e)
+
 
    def seq(*args: RegEx) -> RegEx:
-       result = args[0]
-       for e in args[1:]: result = Conc(result, e)
-       return result
+     result = args[0]
+     for e in args[1:]:
+       result = Conc(result, e)
+     return result
 
-   def digit(): return choices(DIGITS)
+
+   def digit():
+     return choices(DIGITS)
+
 
    def dn(n: int) -> RegEx:
-       if n == 1: return digit()
-       return Conc(digit(), dn(n - 1))
+     if n == 1:
+       return digit()
+     return Conc(digit(), dn(n - 1))
+
 
    d_plus = plus(digit())
    d1_or_d2_or_d3 = Choice(digit(), Choice(dn(2), dn(3)))

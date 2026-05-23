@@ -84,10 +84,7 @@ class Compiler:
   """
 
   def __init__(
-    self,
-    mode: Literal['auto', 'fast', 'optimized'] = 'auto',
-    verbose: bool = False,
-    complexity_threshold: int = 10,
+    self, mode: Literal['auto', 'fast', 'optimized'] = 'auto', verbose: bool = False, complexity_threshold: int = 10
   ):
     self.mode = mode
     self.verbose = verbose

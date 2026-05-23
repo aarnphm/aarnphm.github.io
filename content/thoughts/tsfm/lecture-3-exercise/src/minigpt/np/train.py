@@ -10,6 +10,7 @@ import os
 import threading
 import queue
 import sys
+
 # multiprocessing was used for an experimental DDP path; now removed
 from collections.abc import Iterable
 
@@ -46,6 +47,7 @@ from minigpt.np.ds import LMConfig, LMParams, BlockParams
 # utilities
 # ---------
 
+
 class TinyProfiler:
   class _Section:
     def __init__(self, parent: 'TinyProfiler', name: str):
@@ -78,11 +80,11 @@ class TinyProfiler:
   def report(self) -> str:
     if not self.enabled:
       return ''
-    lines = ["[profile] section | calls | total_s | avg_ms"]
+    lines = ['[profile] section | calls | total_s | avg_ms']
     for k, (n, t) in sorted(self.times.items(), key=lambda x: x[0]):
       avg_ms = (t / max(1, n)) * 1e3
-      lines.append(f"[profile] {k:12s} | {n:5d} | {t:7.3f}s | {avg_ms:7.2f}ms")
-    return "\n".join(lines)
+      lines.append(f'[profile] {k:12s} | {n:5d} | {t:7.3f}s | {avg_ms:7.2f}ms')
+    return '\n'.join(lines)
 
 
 _GLOBAL_PROFILER: TinyProfiler | None = None
@@ -94,6 +96,7 @@ def get_profiler() -> TinyProfiler:
     enabled = _is_truthy(os.environ.get('NP_TRAIN_PROFILE'))
     _GLOBAL_PROFILER = TinyProfiler(enabled=enabled)
   return _GLOBAL_PROFILER
+
 
 try:
   from tqdm.auto import tqdm
@@ -290,12 +293,24 @@ def _size(arr: np.ndarray | None) -> int:
 def _params_all_finite(p: LMParams) -> bool:
   def ok(a: np.ndarray | None) -> bool:
     return True if a is None else bool(np.isfinite(a).all())
+
   if not ok(p.W_E) or not ok(p.W_pos) or not ok(p.gamma_f) or not ok(p.beta_f):
     return False
   if p.W_LM is not None and not ok(p.W_LM):
     return False
   for b in p.blocks:
-    if not (ok(b.W_Q) and ok(b.W_K) and ok(b.W_V) and ok(b.W_O) and ok(b.gamma1) and ok(b.beta1) and ok(b.W1) and ok(b.W2) and ok(b.gamma2) and ok(b.beta2)):
+    if not (
+      ok(b.W_Q)
+      and ok(b.W_K)
+      and ok(b.W_V)
+      and ok(b.W_O)
+      and ok(b.gamma1)
+      and ok(b.beta1)
+      and ok(b.W1)
+      and ok(b.W2)
+      and ok(b.gamma2)
+      and ok(b.beta2)
+    ):
       return False
   return True
 
@@ -972,7 +987,9 @@ class AdamW:
 
 def load_tokenizer(tokenizer: str):
   if AutoTokenizer is None:
-    raise ImportError("transformers is required for load_tokenizer(); please install 'transformers'.")
+    raise ImportError(
+      "transformers is required for load_tokenizer(); please install 'transformers'."
+    )
   tok = AutoTokenizer.from_pretrained(tokenizer, use_fast=True)
   if tok.pad_token is None:
     tok.pad_token = tok.eos_token if tok.eos_token is not None else '<|pad|>'
@@ -986,7 +1003,9 @@ def prepare_text_stream(
   streaming: bool = True,
 ):
   if load_dataset is None:
-    raise ImportError("datasets is required for prepare_text_stream(); please install 'datasets'.")
+    raise ImportError(
+      "datasets is required for prepare_text_stream(); please install 'datasets'."
+    )
   ds = load_dataset(dataset_name, split=split, streaming=streaming)
   for ex in ds:
     txt = ex.get('text', None)
@@ -1459,7 +1478,9 @@ def train(config: LMConfig):
       opt.step(params, grads)
     # finite guard: if params blew up, stop early to avoid cascading NaNs
     if not _params_all_finite(params):
-      pbar.write('[error] non-finite parameters after step; stopping training early')
+      pbar.write(
+        '[error] non-finite parameters after step; stopping training early'
+      )
       break
 
     if step % config.log_every == 0:
@@ -1478,16 +1499,16 @@ def train(config: LMConfig):
     if step % config.eval_every == 0:
       with get_profiler().section('eval'):
         val_loss, val_acc = evaluate_tokens(
-        val_tokens,
-        tokenizer,
-        params,
-        config,
-        steps=20,
-        attn_mask=causal_mask,
-        stride=stride,
-        show_progress=is_interactive(),
-        desc=f'eval@{step}',
-      )
+          val_tokens,
+          tokenizer,
+          params,
+          config,
+          steps=20,
+          attn_mask=causal_mask,
+          stride=stride,
+          show_progress=is_interactive(),
+          desc=f'eval@{step}',
+        )
       val_points.append((step, float(val_loss)))
       val_acc_points.append((step, float(val_acc)))
       pbar.write(
@@ -1553,34 +1574,34 @@ def train(config: LMConfig):
       # Save an intermediate checkpoint at this step as well
       with get_profiler().section('checkpoint'):
         _save_checkpoint(
-        out_dir,
-        step,
-        params,
-        config,
-        tokenizer_name=config.tokenizer,
-        train_losses=train_losses,
-        val_points=val_points,
-        train_accuracies=train_accuracies,
-        val_acc_points=val_acc_points,
-        optimizer=opt,
-      )
+          out_dir,
+          step,
+          params,
+          config,
+          tokenizer_name=config.tokenizer,
+          train_losses=train_losses,
+          val_points=val_points,
+          train_accuracies=train_accuracies,
+          val_acc_points=val_acc_points,
+          optimizer=opt,
+        )
 
     pbar.update(1)
 
   # Final checkpoint at last step
   with get_profiler().section('checkpoint'):
     _save_checkpoint(
-    out_dir,
-    target_step,
-    params,
-    config,
-    tokenizer_name=config.tokenizer,
-    train_losses=train_losses,
-    val_points=val_points,
-    train_accuracies=train_accuracies,
-    val_acc_points=val_acc_points,
-    optimizer=opt,
-  )
+      out_dir,
+      target_step,
+      params,
+      config,
+      tokenizer_name=config.tokenizer,
+      train_losses=train_losses,
+      val_points=val_points,
+      train_accuracies=train_accuracies,
+      val_acc_points=val_acc_points,
+      optimizer=opt,
+    )
   if prefetcher is not None:
     prefetcher.stop()
   rep = get_profiler().report()

@@ -12,8 +12,10 @@ def printleaves(node):
 
 def leaves(tree):
   if isinstance(tree, Iterable):
-    for c in tree: yield from leaves(c)
-  else: yield tree
+    for c in tree:
+      yield from leaves(c)
+  else:
+    yield tree
 
 
 if __name__ == '__main__':

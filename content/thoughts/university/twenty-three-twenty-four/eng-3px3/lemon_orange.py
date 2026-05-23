@@ -16,4 +16,3 @@ x1_bounds = (0, None)
 res = linprog(c, A_ub=A, b_ub=b, bounds=[x0_bounds, x1_bounds], method='highs')
 
 print(res.x, -res.fun)
-

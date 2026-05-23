@@ -28,10 +28,13 @@ After parsing the upper bound expression, check `RBRAK` (closed) vs `RPAREN` (ha
 
 ```python
 if SC.sym == RBRAK:
-    getSym(); halfopen = False
+  getSym()
+  halfopen = False
 elif SC.sym == RPAREN:
-    getSym(); halfopen = True
-else: mark("']' or ')' expected")
+  getSym()
+  halfopen = True
+else:
+  mark("']' or ')' expected")
 ...
 length = y.val - x.val if halfopen else y.val - x.val + 1
 x = Type(CG.genArray(Array(z, x.val, length)))
@@ -55,22 +58,25 @@ When the first digit is `'0'` and the next character is `'b'`, parse binary digi
 
 ```python
 def number():
-    global sym, val
-    sym, val = NUMBER, 0
-    if ch == '0':
+  global sym, val
+  sym, val = NUMBER, 0
+  if ch == '0':
+    getChar()
+    if ch == 'b':
+      getChar()
+      if ch not in ('0', '1'):
+        mark('binary digit expected')
+      while ch == '0' or ch == '1':
+        val = 2 * val + int(ch)
         getChar()
-        if ch == 'b':
-            getChar()
-            if ch not in ('0', '1'): mark('binary digit expected')
-            while ch == '0' or ch == '1':
-                val = 2 * val + int(ch)
-                getChar()
-            if val >= 2**31: mark('number too large')
-            return
-    while '0' <= ch <= '9':
-        val = 10 * val + int(ch)
-        getChar()
-    if val >= 2**31: mark('number too large')
+      if val >= 2**31:
+        mark('number too large')
+      return
+  while '0' <= ch <= '9':
+    val = 10 * val + int(ch)
+    getChar()
+  if val >= 2**31:
+    mark('number too large')
 ```
 
 ## A3

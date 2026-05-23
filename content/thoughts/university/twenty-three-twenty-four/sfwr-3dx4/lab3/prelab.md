@@ -35,7 +35,7 @@ import sympy as sp
 t = sp.symbols('t')
 T = 2
 
-RMS = sp.sqrt(1/T * sp.integrate(1, (t, 0, T/2)))
+RMS = sp.sqrt(1 / T * sp.integrate(1, (t, 0, T / 2)))
 ```
 
 > RMS = $\frac{1}{\sqrt{2}}$
@@ -57,9 +57,9 @@ t = sp.symbols('t')
 T = 1
 A = 0.5
 
-f_t = 2 * A / T * (t - T/2)
+f_t = 2 * A / T * (t - T / 2)
 
-RMS = sp.sqrt(1/T * sp.integrate(f_t**2, (t, 0, T)))
+RMS = sp.sqrt(1 / T * sp.integrate(f_t**2, (t, 0, T)))
 ```
 
 > RMS = $\frac{\sqrt{3}}{6}$

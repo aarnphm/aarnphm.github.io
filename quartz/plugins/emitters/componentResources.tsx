@@ -60,8 +60,15 @@ const notebookRuntimeClientEntry = 'quartz/components/scripts/notebook-runtime.c
 const notebookRuntimeWorkerEntry = 'quartz/components/scripts/notebook-runtime.pyodide.js'
 const notebookRuntimeBootstrapEntry = 'quartz/components/scripts/notebook-runtime.pyodide.py'
 const notebookRuntimeMlBridgeEntry = 'quartz/components/scripts/notebook-runtime.ml.js'
+const notebookLspInlineEntry = 'quartz/components/scripts/notebook-lsp.inline.ts'
+const notebookLspClientEntry = 'quartz/components/scripts/notebook-lsp.client.ts'
 const notebookLspWorkerSource = 'node_modules/browser-basedpyright/dist/pyright.worker.js'
 const notebookLspWorkerSlug = 'pyright.worker'
+const notebookLspAssetEntries = new Set([
+  notebookLspInlineEntry,
+  notebookLspClientEntry,
+  'quartz/util/notebook-lsp-uri.ts',
+])
 const emojiAssetSourceDir = 'quartz/util/emojimap'
 const notebookRuntimeAssetEntries = new Set([
   notebookRuntimeClientEntry,
@@ -209,6 +216,35 @@ async function writeNotebookRuntimeAssets(ctx: BuildCtx): Promise<FilePath[]> {
   )
 }
 
+async function writeNotebookLspAssets(ctx: BuildCtx): Promise<FilePath[]> {
+  const outdir = path.join(ctx.argv.output, 'static/scripts')
+  const [client, workerContent] = await Promise.all([
+    bundle({
+      entryPoints: { 'notebook-lsp.client': notebookLspClientEntry },
+      bundle: true,
+      minify: true,
+      platform: 'browser',
+      format: 'esm',
+      splitting: true,
+      outdir,
+      entryNames: '[name]',
+      chunkNames: 'chunks/[name]-[hash]',
+      write: false,
+    }),
+    fs.readFile(notebookLspWorkerSource),
+  ])
+  const [workerFile, ...clientFiles] = await Promise.all([
+    write({
+      ctx,
+      slug: joinSegments('static', 'scripts', notebookLspWorkerSlug) as FullSlug,
+      ext: '.js',
+      content: workerContent,
+    }),
+    ...client.outputFiles.map(output => writeScriptBundleOutput(ctx, output)),
+  ])
+  return [workerFile, ...clientFiles]
+}
+
 async function writeCollaborativeCommentsAssets(ctx: BuildCtx): Promise<FilePath[]> {
   const outdir = path.join(ctx.argv.output, 'static/scripts')
   const client = await bundle({
@@ -240,6 +276,10 @@ async function writeEmojiAssets(ctx: BuildCtx): Promise<FilePath[]> {
 
 function isNotebookRuntimeAssetChange(changePath: string): boolean {
   return notebookRuntimeAssetEntries.has(changePath)
+}
+
+function isNotebookLspAssetChange(changePath: string): boolean {
+  return notebookLspAssetEntries.has(changePath)
 }
 
 function isCollaborativeCommentsAssetChange(changePath: string): boolean {
@@ -417,6 +457,10 @@ export const ComponentResources: QuartzEmitterPlugin = () => {
         yield file
       }
 
+      for (const file of await writeNotebookLspAssets(ctx)) {
+        yield file
+      }
+
       for (const file of await writeCollaborativeCommentsAssets(ctx)) {
         yield file
       }
@@ -430,6 +474,12 @@ export const ComponentResources: QuartzEmitterPlugin = () => {
 
       if (changeEvents.some(changeEvent => isNotebookRuntimeAssetChange(changeEvent.path))) {
         for (const file of await writeNotebookRuntimeAssets(ctx)) {
+          yield file
+        }
+      }
+
+      if (changeEvents.some(changeEvent => isNotebookLspAssetChange(changeEvent.path))) {
+        for (const file of await writeNotebookLspAssets(ctx)) {
           yield file
         }
       }

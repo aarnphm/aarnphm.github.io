@@ -19,7 +19,7 @@ def check_observability(A, C):
 
 
 observable = check_observability(A, C)
-print(f"The system is {'observable' if observable else 'not observable'}.")
+print(f'The system is {"observable" if observable else "not observable"}.')
 
 # Step 2: Define the observer dynamics
 # Observer gain matrix L will be computed later

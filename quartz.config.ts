@@ -167,6 +167,8 @@ const config: QuartzConfig = {
             '.hs',
             '.ml',
             '.cu',
+            '.cpp',
+            '.c',
             '.json',
             '.ipynb',
             '.csv',

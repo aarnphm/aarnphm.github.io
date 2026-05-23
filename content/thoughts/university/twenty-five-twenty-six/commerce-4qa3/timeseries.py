@@ -18,14 +18,14 @@ Example
 >>> import numpy as np
 >>> import pandas as pd
 >>> from timeseries import TimeSeriesRegressor, ModelName
->>> idx = pd.date_range("2020-01-01", periods=250, freq="B")
+>>> idx = pd.date_range('2020-01-01', periods=250, freq='B')
 >>> # Simulated price path
 >>> rng = np.random.default_rng(0)
 >>> ret = rng.normal(0, 0.01, size=len(idx))
 >>> price = pd.Series(100 * (1 + pd.Series(ret, index=idx)).cumprod(), index=idx)
 >>> # Predict log-returns using a Ridge model and 5 lags
 >>> y = price.pct_change().dropna()
->>> model = TimeSeriesRegressor(model="ridge", n_lags=5)
+>>> model = TimeSeriesRegressor(model='ridge', n_lags=5)
 >>> model.fit(y)
 >>> fc1 = model.forecast(y, steps=5)  # next 5 one-step recursive forecasts
 
@@ -50,27 +50,18 @@ from sklearn.model_selection import TimeSeriesSplit
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
 
-ModelName = Literal[
-  "naive",
-  "sma",
-  "ema",
-  "linear",
-  "ridge",
-  "lasso",
-  "random_forest",
-  "gbrt",
-]
+ModelName = Literal['naive', 'sma', 'ema', 'linear', 'ridge', 'lasso', 'random_forest', 'gbrt']
 
 
-def _check_series(y: pd.Series, name: str = "y") -> pd.Series:
+def _check_series(y: pd.Series, name: str = 'y') -> pd.Series:
   """Validate and normalize a pandas Series.
 
   Ensures a pandas Series with a monotonic increasing index and float dtype.
   """
   if not isinstance(y, pd.Series):
-    raise TypeError(f"{name} must be a pandas Series")
+    raise TypeError(f'{name} must be a pandas Series')
   if y.index.has_duplicates:
-    y = y[~y.index.duplicated(keep="last")]
+    y = y[~y.index.duplicated(keep='last')]
   if not y.index.is_monotonic_increasing:
     y = y.sort_index()
   # Ensure float dtype for models
@@ -83,20 +74,20 @@ def _lag(df: pd.DataFrame | pd.Series, n: int) -> pd.DataFrame:
   The output columns are suffixed with `_lag{n}`.
   """
   if isinstance(df, pd.Series):
-    df = df.to_frame(df.name or "y")
+    df = df.to_frame(df.name or 'y')
   out = df.shift(n)
-  out.columns = [f"{c}_lag{n}" for c in df.columns]
+  out.columns = [f'{c}_lag{n}' for c in df.columns]
   return out
 
 
 def _rolling_mean(y: pd.Series, window: int) -> pd.Series:
   x = y.rolling(window=window, min_periods=window).mean()
-  return x.rename(f"{y.name or 'y'}_sma{window}")
+  return x.rename(f'{y.name or "y"}_sma{window}')
 
 
 def _ema(y: pd.Series, span: int) -> pd.Series:
   x = y.ewm(span=span, adjust=False, min_periods=span).mean()
-  return x.rename(f"{y.name or 'y'}_ema{span}")
+  return x.rename(f'{y.name or "y"}_ema{span}')
 
 
 @dataclass(slots=True)
@@ -119,11 +110,7 @@ class FeatureSpec:
 
 
 def make_features(
-  y: pd.Series,
-  *,
-  feature_spec: FeatureSpec | None = None,
-  exog: pd.DataFrame | None = None,
-  horizon: int = 1,
+  y: pd.Series, *, feature_spec: FeatureSpec | None = None, exog: pd.DataFrame | None = None, horizon: int = 1
 ) -> tuple[pd.DataFrame, pd.Series]:
   """Transform a univariate target into a supervised learning dataset.
 
@@ -144,13 +131,13 @@ def make_features(
   """
   y = _check_series(y)
   if y.name is None:
-    y = y.rename("y")
+    y = y.rename('y')
 
   spec = feature_spec or FeatureSpec()
   if spec.n_lags < 1:
-    raise ValueError("n_lags must be >= 1")
+    raise ValueError('n_lags must be >= 1')
   if horizon < 1:
-    raise ValueError("horizon must be >= 1")
+    raise ValueError('horizon must be >= 1')
 
   feats: list[pd.Series | pd.DataFrame] = []
 
@@ -160,7 +147,7 @@ def make_features(
 
   # Percent return feature (lagged so it's known at time t)
   if spec.add_pct_return:
-    pct = y.pct_change().rename(f"{y.name}_ret1")
+    pct = y.pct_change().rename(f'{y.name}_ret1')
     feats.append(pct.shift(1))
 
   # SMA and EMA features (shifted to avoid peeking)
@@ -172,7 +159,7 @@ def make_features(
   # Exogenous variables (lagged)
   if exog is not None:
     if not isinstance(exog, pd.DataFrame):
-      raise TypeError("exog must be a pandas DataFrame when provided")
+      raise TypeError('exog must be a pandas DataFrame when provided')
     exog = exog.sort_index().astype(float)
     exog = exog.reindex(y.index)
     feats.append(_lag(exog, spec.exog_lag))
@@ -181,9 +168,9 @@ def make_features(
   y_target = y.shift(-horizon)
 
   # Align and drop rows with any NaNs
-  data = pd.concat([X, y_target.rename("target")], axis=1).dropna()
-  X_out = data.drop(columns=["target"])
-  y_out = data["target"]
+  data = pd.concat([X, y_target.rename('target')], axis=1).dropna()
+  X_out = data.drop(columns=['target'])
+  y_out = data['target']
   return X_out, y_out
 
 
@@ -205,12 +192,12 @@ class _NaiveModel(_BaseModel):
 
   def fit(self, X: pd.DataFrame, y: pd.Series) -> None:
     if len(y) == 0:
-      raise ValueError("y is empty")
+      raise ValueError('y is empty')
     self._last = float(y.iloc[-1])
 
   def predict(self, X: pd.DataFrame) -> np.ndarray:
     if self._last is None:
-      raise RuntimeError("Model not fitted")
+      raise RuntimeError('Model not fitted')
     return np.repeat(self._last, repeats=len(X))
 
 
@@ -219,18 +206,18 @@ class _SmaModel(_BaseModel):
 
   def __init__(self, window: int = 5) -> None:
     if window < 1:
-      raise ValueError("window must be >= 1")
+      raise ValueError('window must be >= 1')
     self.window = window
     self._last_mean: float | None = None
 
   def fit(self, X: pd.DataFrame, y: pd.Series) -> None:
     if len(y) < self.window:
-      raise ValueError("Not enough observations for SMA window")
+      raise ValueError('Not enough observations for SMA window')
     self._last_mean = float(y.tail(self.window).mean())
 
   def predict(self, X: pd.DataFrame) -> np.ndarray:
     if self._last_mean is None:
-      raise RuntimeError("Model not fitted")
+      raise RuntimeError('Model not fitted')
     return np.repeat(self._last_mean, repeats=len(X))
 
 
@@ -239,18 +226,18 @@ class _EmaModel(_BaseModel):
 
   def __init__(self, span: int = 10) -> None:
     if span < 1:
-      raise ValueError("span must be >= 1")
+      raise ValueError('span must be >= 1')
     self.span = span
     self._last_ema: float | None = None
 
   def fit(self, X: pd.DataFrame, y: pd.Series) -> None:
     if len(y) < self.span:
-      raise ValueError("Not enough observations for EMA span")
+      raise ValueError('Not enough observations for EMA span')
     self._last_ema = float(y.ewm(span=self.span, adjust=False).mean().iloc[-1])
 
   def predict(self, X: pd.DataFrame) -> np.ndarray:
     if self._last_ema is None:
-      raise RuntimeError("Model not fitted")
+      raise RuntimeError('Model not fitted')
     return np.repeat(self._last_ema, repeats=len(X))
 
 
@@ -263,32 +250,23 @@ class _SklearnModel(_BaseModel):
 
   @staticmethod
   def _make_estimator(name: ModelName) -> Pipeline | RandomForestRegressor | GradientBoostingRegressor:
-    if name == "linear":
+    if name == 'linear':
+      return Pipeline([('scaler', StandardScaler(with_mean=True, with_std=True)), ('model', LinearRegression())])
+    if name == 'ridge':
       return Pipeline([
-        ("scaler", StandardScaler(with_mean=True, with_std=True)),
-        ("model", LinearRegression()),
+        ('scaler', StandardScaler(with_mean=True, with_std=True)),
+        ('model', Ridge(alpha=1.0, random_state=0)),
       ])
-    if name == "ridge":
+    if name == 'lasso':
       return Pipeline([
-        ("scaler", StandardScaler(with_mean=True, with_std=True)),
-        ("model", Ridge(alpha=1.0, random_state=0)),
+        ('scaler', StandardScaler(with_mean=True, with_std=True)),
+        ('model', Lasso(alpha=0.001, max_iter=50_000, random_state=0)),
       ])
-    if name == "lasso":
-      return Pipeline([
-        ("scaler", StandardScaler(with_mean=True, with_std=True)),
-        ("model", Lasso(alpha=0.001, max_iter=50_000, random_state=0)),
-      ])
-    if name == "random_forest":
-      return RandomForestRegressor(
-        n_estimators=300,
-        random_state=0,
-        n_jobs=-1,
-        max_depth=None,
-        min_samples_split=2,
-      )
-    if name == "gbrt":
+    if name == 'random_forest':
+      return RandomForestRegressor(n_estimators=300, random_state=0, n_jobs=-1, max_depth=None, min_samples_split=2)
+    if name == 'gbrt':
       return GradientBoostingRegressor(random_state=0)
-    raise ValueError(f"Unsupported sklearn model: {name}")
+    raise ValueError(f'Unsupported sklearn model: {name}')
 
   def fit(self, X: pd.DataFrame, y: pd.Series) -> None:
     self.model.fit(X.values, y.values)
@@ -298,15 +276,15 @@ class _SklearnModel(_BaseModel):
 
 
 def _build_model(name: ModelName) -> _BaseModel:
-  if name == "naive":
+  if name == 'naive':
     return _NaiveModel()
-  if name == "sma":
+  if name == 'sma':
     return _SmaModel(window=5)
-  if name == "ema":
+  if name == 'ema':
     return _EmaModel(span=10)
-  if name in {"linear", "ridge", "lasso", "random_forest", "gbrt"}:
+  if name in {'linear', 'ridge', 'lasso', 'random_forest', 'gbrt'}:
     return _SklearnModel(name)
-  raise ValueError(f"Unknown model name: {name}")
+  raise ValueError(f'Unknown model name: {name}')
 
 
 @dataclass(slots=True)
@@ -325,7 +303,7 @@ class TimeSeriesRegressor:
       ``steps > 1`` is done recursively from this base model.
   """
 
-  model: ModelName = "ridge"
+  model: ModelName = 'ridge'
   n_lags: int = 5
   feature_spec: FeatureSpec | None = None
   horizon: int = 1
@@ -340,7 +318,7 @@ class TimeSeriesRegressor:
       self.n_lags = self.feature_spec.n_lags
     self._impl: _BaseModel = _build_model(self.model)
 
-  def fit(self, y: pd.Series, exog: pd.DataFrame | None = None) -> "TimeSeriesRegressor":
+  def fit(self, y: pd.Series, exog: pd.DataFrame | None = None) -> 'TimeSeriesRegressor':
     """Fit the underlying model using generated features.
 
     Args:
@@ -349,7 +327,7 @@ class TimeSeriesRegressor:
     """
     X, yt = make_features(y, feature_spec=self.feature_spec, exog=exog, horizon=self.horizon)
     if len(yt) < 1:
-      raise ValueError("Not enough data after feature generation; increase data length or reduce lags.")
+      raise ValueError('Not enough data after feature generation; increase data length or reduce lags.')
     self._impl.fit(X, yt)
     self._cols = list(X.columns)
     return self
@@ -365,10 +343,10 @@ class TimeSeriesRegressor:
     """
     X, yt = make_features(y, feature_spec=self.feature_spec, exog=exog, horizon=self.horizon)
     if self._cols is None:
-      raise RuntimeError("Model not fitted")
+      raise RuntimeError('Model not fitted')
     X = X[self._cols]
     pred = self._impl.predict(X)
-    return pd.Series(pred, index=yt.index, name="y_hat")
+    return pd.Series(pred, index=yt.index, name='y_hat')
 
   def forecast(self, y: pd.Series, exog: pd.DataFrame | None = None, *, steps: int = 1) -> pd.Series:
     """Out-of-sample forecasts for ``steps`` ahead using recursive strategy.
@@ -384,16 +362,16 @@ class TimeSeriesRegressor:
       possible, otherwise a simple RangeIndex starting at 0.
     """
     if steps < 1:
-      raise ValueError("steps must be >= 1")
+      raise ValueError('steps must be >= 1')
     y = _check_series(y)
 
     # Build features on the full history and grab the last row to forecast t+1
     X_hist, _ = make_features(y, feature_spec=self.feature_spec, exog=exog, horizon=self.horizon)
     if self._cols is None:
-      raise RuntimeError("Model not fitted")
+      raise RuntimeError('Model not fitted')
     X_hist = X_hist[self._cols]
     if len(X_hist) == 0:
-      raise ValueError("Not enough history to form features; provide more data.")
+      raise ValueError('Not enough history to form features; provide more data.')
 
     preds: list[float] = []
     y_work = y.copy()
@@ -411,9 +389,12 @@ class TimeSeriesRegressor:
       y_hat = float(self._impl.predict(X_last)[0])
       preds.append(y_hat)
       # Append prediction for recursive forecasting
-      y_work = pd.concat([y_work, pd.Series([y_hat], index=pd.Index([future_index[len(preds) - 1]]), name=y_work.name)])
+      y_work = pd.concat([
+        y_work,
+        pd.Series([y_hat], index=pd.Index([future_index[len(preds) - 1]]), name=y_work.name),
+      ])
 
-    return pd.Series(preds, index=future_index, name="forecast")
+    return pd.Series(preds, index=future_index, name='forecast')
 
 
 @dataclass(slots=True)
@@ -435,16 +416,12 @@ def direction_accuracy(y_true: pd.Series, y_pred: pd.Series) -> float:
   s_pred = np.sign(y_pred.values)
   mask = s_true != 0
   if mask.sum() == 0:
-    return float("nan")
+    return float('nan')
   return float(np.mean(s_true[mask] == s_pred[mask]))
 
 
 def backtest_walk_forward(
-  y: pd.Series,
-  *,
-  model: TimeSeriesRegressor,
-  n_splits: int = 5,
-  exog: pd.DataFrame | None = None,
+  y: pd.Series, *, model: TimeSeriesRegressor, n_splits: int = 5, exog: pd.DataFrame | None = None
 ) -> BacktestResult:
   """Walk-forward validation using sklearn's TimeSeriesSplit.
 
@@ -461,7 +438,7 @@ def backtest_walk_forward(
   y = _check_series(y)
   X_full, y_full = make_features(y, feature_spec=model.feature_spec, exog=exog, horizon=model.horizon)
   if len(y_full) < n_splits + 1:
-    raise ValueError("Not enough data for the requested number of splits")
+    raise ValueError('Not enough data for the requested number of splits')
 
   tscv = TimeSeriesSplit(n_splits=n_splits)
   preds: list[pd.Series] = []
@@ -473,16 +450,13 @@ def backtest_walk_forward(
 
     # Fit a fresh instance to avoid state leakage
     m = TimeSeriesRegressor(
-      model=model.model,
-      n_lags=model.n_lags,
-      feature_spec=model.feature_spec,
-      horizon=model.horizon,
+      model=model.model, n_lags=model.n_lags, feature_spec=model.feature_spec, horizon=model.horizon
     )
     # Internal fit expects raw series; supply pre-made features via private path
     m._impl = _build_model(m.model)  # reset underlying model
     m._impl.fit(X_tr, y_tr)
     m._cols = list(X_tr.columns)
-    y_hat = pd.Series(m._impl.predict(X_te), index=y_te.index, name="y_hat")
+    y_hat = pd.Series(m._impl.predict(X_te), index=y_te.index, name='y_hat')
     preds.append(y_hat)
     trues.append(y_te)
 
@@ -491,7 +465,7 @@ def backtest_walk_forward(
 
   rmse = float(np.sqrt(mean_squared_error(y_true, y_pred)))
   mae = float(mean_absolute_error(y_true, y_pred))
-  with np.errstate(divide="ignore", invalid="ignore"):
+  with np.errstate(divide='ignore', invalid='ignore'):
     mape_arr = np.where(y_true.values != 0, np.abs((y_true.values - y_pred.values) / y_true.values), np.nan)
     mape = float(np.nanmean(mape_arr))
   r2 = float(r2_score(y_true, y_pred))
@@ -501,29 +475,23 @@ def backtest_walk_forward(
 
 
 __all__ = [
-  "BacktestResult",
-  "FeatureSpec",
-  "ModelName",
-  "TimeSeriesRegressor",
-  "backtest_walk_forward",
-  "direction_accuracy",
-  "make_features",
+  'BacktestResult',
+  'FeatureSpec',
+  'ModelName',
+  'TimeSeriesRegressor',
+  'backtest_walk_forward',
+  'direction_accuracy',
+  'make_features',
 ]
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
   # Minimal demo: simulate returns and backtest a Ridge forecaster.
   rng = np.random.default_rng(42)
-  idx = pd.date_range("2021-01-01", periods=500, freq="B")
-  ret = pd.Series(rng.normal(0, 0.01, size=len(idx)), index=idx, name="ret")
-  tsr = TimeSeriesRegressor(model="ridge", n_lags=5)
+  idx = pd.date_range('2021-01-01', periods=500, freq='B')
+  ret = pd.Series(rng.normal(0, 0.01, size=len(idx)), index=idx, name='ret')
+  tsr = TimeSeriesRegressor(model='ridge', n_lags=5)
   tsr.fit(ret)
   res = backtest_walk_forward(ret, model=tsr, n_splits=5)
-  print("Backtest metrics:")
-  print({
-    "rmse": res.rmse,
-    "mae": res.mae,
-    "mape": res.mape,
-    "r2": res.r2,
-    "direction_acc": res.direction_acc,
-  })
+  print('Backtest metrics:')
+  print({'rmse': res.rmse, 'mae': res.mae, 'mape': res.mape, 'r2': res.r2, 'direction_acc': res.direction_acc})

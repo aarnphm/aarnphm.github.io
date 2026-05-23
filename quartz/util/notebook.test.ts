@@ -4,7 +4,13 @@ import rehypeRaw from 'rehype-raw'
 import remarkParse from 'remark-parse'
 import remarkRehype from 'remark-rehype'
 import { unified } from 'unified'
-import { notebookRuntimeData, notebookTitle, notebookToMarkdown, parseNotebook } from './notebook'
+import {
+  notebookRuntimeData,
+  notebookTitle,
+  notebookToMarkdown,
+  notebookToMarkdownChunks,
+  parseNotebook,
+} from './notebook'
 
 type HastElement = {
   type: string
@@ -179,6 +185,35 @@ describe('notebook parser', () => {
     assert.match(markdown, /data-output-name="result"><samp>2<\/samp><\/pre>/)
   })
 
+  test('renders latex results inside notebook output blocks', () => {
+    const notebook = parseNotebook(
+      JSON.stringify({
+        cells: [
+          {
+            cell_type: 'code',
+            source: 'x**2',
+            outputs: [
+              {
+                output_type: 'execute_result',
+                data: { 'text/latex': '$\\displaystyle x^{2}$', 'text/plain': 'x**2' },
+                execution_count: 1,
+              },
+            ],
+          },
+        ],
+      }),
+      'latex.ipynb',
+    )
+
+    const markdown = notebookToMarkdown(notebook, 'latex.ipynb')
+
+    assert.match(markdown, /class="notebook-output notebook-output-latex"/)
+    assert.match(markdown, /data-output-name="result"/)
+    assert.match(markdown, /class="katex"/)
+    assert.doesNotMatch(markdown, /^\$\\displaystyle/m)
+    assert.doesNotMatch(markdown, /<samp>x\*\*2<\/samp>/)
+  })
+
   test('drops inert IPython display placeholders when a richer mime exists', () => {
     const notebook = parseNotebook(
       JSON.stringify({
@@ -329,6 +364,28 @@ describe('notebook parser', () => {
     )
   })
 
+  test('clears raw markdown floats before following markdown blocks in the same cell', () => {
+    const notebook = parseNotebook(
+      JSON.stringify({
+        cells: [
+          {
+            cell_type: 'markdown',
+            source:
+              '<div style="float:left">\n\n```text\nleft\n```\n\n</div>\n\n```text\nright\n```',
+          },
+        ],
+      }),
+      'floats.ipynb',
+    )
+
+    const markdown = notebookToMarkdown(notebook, 'floats.ipynb')
+
+    assert.match(
+      markdown,
+      /<\/div>\n\n<div class="notebook-markdown-cell-boundary" aria-hidden="true"><\/div>\n+```text\nright/,
+    )
+  })
+
   test('closes dangling markdown fences at notebook cell boundaries', () => {
     const notebook = parseNotebook(
       JSON.stringify({
@@ -347,6 +404,27 @@ describe('notebook parser', () => {
       markdown,
       /```\n\n<div class="notebook-markdown-cell-boundary" aria-hidden="true"><\/div>\n\nafter/,
     )
+  })
+
+  test('emits markdown cell chunks for independent parsing', () => {
+    const notebook = parseNotebook(
+      JSON.stringify({
+        cells: [
+          { cell_type: 'markdown', source: '```EBNF\ninstr ::= "throw" name\n' },
+          { cell_type: 'markdown', source: 'after' },
+        ],
+      }),
+      'dangling-fence.ipynb',
+    )
+
+    const chunks = notebookToMarkdownChunks(notebook, 'dangling-fence.ipynb')
+
+    assert.match(chunks[1], /^```EBNF\ninstr ::= "throw" name\n```$/)
+    assert.strictEqual(
+      chunks[2],
+      '<div class="notebook-markdown-cell-boundary" aria-hidden="true"></div>',
+    )
+    assert.strictEqual(chunks[3], 'after')
   })
 
   test('leaves non-python notebooks without runtime controls', () => {

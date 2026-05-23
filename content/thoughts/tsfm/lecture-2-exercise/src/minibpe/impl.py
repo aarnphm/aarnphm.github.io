@@ -253,10 +253,10 @@ class Tokenizer:
     """
     # Choose a readable repeating 256-color palette for backgrounds
     palette = [196, 202, 208, 214, 220, 154, 118, 82, 46, 51, 45, 39, 27, 63, 99, 135, 171]
-    reset = "\x1b[0m"
+    reset = '\x1b[0m'
     # Slightly darker foreground over bright backgrounds
-    fg = "\x1b[30m"
-    block = "▁"  # low underline block; keeps text readable on the line above
+    fg = '\x1b[30m'
+    block = '▁'  # low underline block; keeps text readable on the line above
 
     # Tokenize then decode each token id back to its string span
     token_ids = self.encode(text)
@@ -266,21 +266,15 @@ class Tokenizer:
     underline_parts: list[str] = []
     for i, s in enumerate(spans):
       # Background color from palette, repeat length of span (fallback to 1)
-      color = f"\x1b[48;5;{palette[i % len(palette)]}m"
+      color = f'\x1b[48;5;{palette[i % len(palette)]}m'
       width = max(1, len(s))
-      underline_parts.append(f"{color}{fg}{block * width}{reset}")
+      underline_parts.append(f'{color}{fg}{block * width}{reset}')
 
     text_line = ''.join(spans)
     underline_line = ''.join(underline_parts)
-    return f"{text_line}\n{underline_line}"
+    return f'{text_line}\n{underline_line}'
 
-  def visualize_bpe(
-    self,
-    data: str | bytes,
-    *,
-    max_steps: int | None = None,
-    show_candidates: int = 5,
-  ) -> str:
+  def visualize_bpe(self, data: str | bytes, *, max_steps: int | None = None, show_candidates: int = 5) -> str:
     """
     Trace BPE merges step-by-step for a given input and return a readable log.
 
@@ -302,9 +296,9 @@ class Tokenizer:
 
     n = len(symbols)
     if n == 0:
-      return "<empty>"
+      return '<empty>'
     if n == 1:
-      return f"0 merges (single byte): {symbols}"
+      return f'0 merges (single byte): {symbols}'
 
     # Local copy of the in-place merge state
     ids = list(symbols)
@@ -359,7 +353,7 @@ class Tokenizer:
         return bytes([tok_id])
       sym = self.id_to_sym.get(tok_id)
       if sym is None:
-        return f"<{tok_id}>".encode()
+        return f'<{tok_id}>'.encode()
       # Iterative stack to avoid recursion
       out: list[int] = []
       stack: list[int] = list(sym)
@@ -371,7 +365,7 @@ class Tokenizer:
           inner = self.id_to_sym.get(t)
           if inner is None:
             # Should not happen for well-formed vocabs; fall back
-            return f"<{tok_id}>".encode()
+            return f'<{tok_id}>'.encode()
           stack.extend(reversed(inner))
       return bytes(out)
 
@@ -393,8 +387,8 @@ class Tokenizer:
 
     lines: list[str] = []
     step = 0
-    lines.append(f"input bytes: {symbols}")
-    lines.append(f"tokens: {snapshot_tokens()} :: {render_tokens(snapshot_tokens())}")
+    lines.append(f'input bytes: {symbols}')
+    lines.append(f'tokens: {snapshot_tokens()} :: {render_tokens(snapshot_tokens())}')
     while heap and (max_steps is None or step < max_steps):
       r, i, _, j, new_id = heappop(heap)
       if i < 0 or j < 0:
@@ -410,11 +404,11 @@ class Tokenizer:
 
       # Log step before applying
       pair = (ids[i], ids[j])
-      lines.append(f"step {step}: merge {pair} @ rank {r} -> {new_id}")
+      lines.append(f'step {step}: merge {pair} @ rank {r} -> {new_id}')
       cands = current_candidates()
       if cands:
-        cand_str = ', '.join([f"{p}:{rk}" for rk, p in cands])
-        lines.append(f"  top pairs: {cand_str}")
+        cand_str = ', '.join([f'{p}:{rk}' for rk, p in cands])
+        lines.append(f'  top pairs: {cand_str}')
 
       # Apply merge
       ids[i] = new_id
@@ -432,10 +426,10 @@ class Tokenizer:
         push(i)
 
       toks = snapshot_tokens()
-      lines.append(f"  tokens: {toks} :: {render_tokens(toks)}")
+      lines.append(f'  tokens: {toks} :: {render_tokens(toks)}')
       step += 1
 
-    lines.append("final:")
+    lines.append('final:')
     toks = snapshot_tokens()
-    lines.append(f"  tokens: {toks} :: {render_tokens(toks)}")
-    return "\n".join(lines)
+    lines.append(f'  tokens: {toks} :: {render_tokens(toks)}')
+    return '\n'.join(lines)

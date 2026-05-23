@@ -19,12 +19,14 @@ except Exception:
 
 
 # A: (m, k), B: (k, n)
-def matmul(A: np.ndarray, B: np.ndarray) -> np.ndarray: return np.dot(A, B)
+def matmul(A: np.ndarray, B: np.ndarray) -> np.ndarray:
+  return np.dot(A, B)
 
 
 # Y = X @ W
 # (bs, output_dim) = (bs, input_dim) @ (input_dim, output_dim)
-def forward(X: np.ndarray, W: np.ndarray) -> np.ndarray: return matmul(X, W)
+def forward(X: np.ndarray, W: np.ndarray) -> np.ndarray:
+  return matmul(X, W)
 
 
 # given a `Y = X @ W`, with $X \in \mathbb{R}^{N\times D}, W \in \mathbb{R}^{D\times M}, Y\in \mathbb{R}^{N\times M}$, the [[thoughts/Vector calculus#Jacobian matrix|Jacobian]] is:
@@ -126,4 +128,6 @@ def check() -> None:
   else:
     print('\n[JAX not available] Skipping JAX validation. Install jax & jaxlib to enable this check.')
 
-if __name__ == "__main__":check()
+
+if __name__ == '__main__':
+  check()

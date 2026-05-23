@@ -91,9 +91,7 @@ The idea is to have two stages:
 
 - clustering via pooling => frequent hit-rate attention
   ```python
-  attn_cache = pool1d(
-    attn_weights_sum, kernel_size=kernel_size, padding=kernel_size // 2, stride=1
-  )
+  attn_cache = pool1d(attn_weights_sum, kernel_size=kernel_size, padding=kernel_size // 2, stride=1)
   ```
 
 ## Ada-KV

@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-05-23 15:26:50 GMT-04:00
+modified: 2026-05-23 17:15:30 GMT-04:00
 permalinks:
   - /website
   - /tweets
@@ -2375,6 +2375,10 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://ambient.institute/domain-naming/ -- Domain naming
+  - [meta]:
+    - date: 05/23/2026
+    - tags: [web]
 - https://earlydaysbymerlin.substack.com/p/meeting-eigen -- Entering the eigenworld
   - [meta]:
     - date: 05/19/2026
@@ -4310,6 +4314,18 @@ title: are.na
   - view: list
   - json: true
 
+- [[courses/18.901-fall-2004|MIT 18.901]] -- Introduction to Topology
+  - [meta]:
+    - date: 05/23/2026
+    - tags: [topology]
+- [[courses/18.905-fall-2016|MIT 18.905]] -- algebraic topology I
+  - [meta]:
+    - date: 05/23/2026
+    - tags: [topology]
+- https://www.youtube.com/watch?v=7cAzgUIKI68 -- JHU Poker Course
+  - [meta]:
+    - date: 05/23/2026
+    - tags: [game theory]
 - https://castle.princeton.edu/optimallearning/ -- Optimal Learning
   - [meta]:
     - date: 12/11/2025
@@ -9698,6 +9714,10 @@ title: are.na
   - view: list
   - json: true
 
+- https://arxiv.org/pdf/2410.06205
+  - [meta]:
+    - date: 05/23/2026
+    - tags: [algorithm, interpretability]
 - https://arxiv.org/abs/2605.12290
   - [meta]:
     - date: 05/19/2026

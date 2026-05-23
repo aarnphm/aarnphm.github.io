@@ -1,8 +1,8 @@
 ---
-date: '2022-11-07'
+date: "2022-11-07"
 description: numpy with autograd and xla compilation for accelerators, featuring jit compilation, automatic differentiation, and vectorization with immutable arrays.
 id: Jax
-modified: 2026-05-09 17:51:52 GMT-04:00
+modified: 2026-05-23 17:09:27 GMT-04:00
 tags:
   - seed
   - ml
@@ -13,7 +13,7 @@ Numpy + [[thoughts/Autograd|Autograd]]. Use [[thoughts/XLA|XLA]] to compile and 
 
 Asynchronous dispatch, for sync use `block_until_ready()`
 
-```python
+```python shell
 import jax.numpy as jnp
 from jax import random
 
@@ -38,6 +38,7 @@ from typing import NamedTuple, Tuple
 import jax
 import jax.numpy as jnp
 import jax.scipy as jsp
+
 
 @jax.jit
 def kl_divergence(logp: jnp.ndarray, logq: jnp.ndarray) -> jnp.ndarray:
@@ -76,18 +77,23 @@ The following works:
 ```python /jax.jit/
 @jax.jit
 def f(x):
-  for i in range(3): x = 2 * x
+  for i in range(3):
+    x = 2 * x
   return x
+
 
 print(f(3))
 
+
 @jax.jit
 def g(x):
-  y = 0.
-  for i in range(x.shape[0]): y = y + x[i]
+  y = 0.0
+  for i in range(x.shape[0]):
+    y = y + x[i]
   return y
 
-print(g(jnp.array([1., 2., 3.])))
+
+print(g(jnp.array([1.0, 2.0, 3.0])))
 ```
 
 > [!warning]- doesn't work
@@ -114,7 +120,7 @@ Fix: you can use `static_argnums` to specify which argument should be treated as
 @jit(static_argnums=(0,))
 def f(x):
   if x < 3:
-    return 3. * x ** 2
+    return 3.0 * x**2
   else:
     return -4 * x
 ```

@@ -160,6 +160,7 @@ def train(train_loader, test_loader, model, epochs, loss_function, optimizer, de
 
   return train_loss_epochs, test_loss_epochs
 
+
 def evaluate(dataloader, model, loss_function, epoch, num_epochs, device='cuda'):
   """
   Evaluate the model on the test dataset and return the average loss.

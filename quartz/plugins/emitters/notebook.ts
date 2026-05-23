@@ -1,4 +1,5 @@
 import { Root as HtmlRoot } from 'hast'
+import { Root as MdRoot } from 'mdast'
 import { spawn } from 'node:child_process'
 import fs from 'node:fs/promises'
 import { availableParallelism } from 'node:os'
@@ -14,8 +15,11 @@ import { createHtmlProcessor, createMdProcessor } from '../../processors/parse'
 import { ChangeEvent, QuartzEmitterPlugin } from '../../types/plugin'
 import { BuildCtx, Argv } from '../../util/ctx'
 import { glob } from '../../util/glob'
-import { parseNotebook, notebookToMarkdown } from '../../util/notebook'
-import { notebookRuntimeImportCandidates } from '../../util/notebook-runtime'
+import { parseNotebook, notebookToMarkdownChunks } from '../../util/notebook'
+import {
+  defaultNotebookPyodideIndexUrl,
+  notebookRuntimeImportCandidates,
+} from '../../util/notebook-runtime'
 import { FilePath, FullSlug, joinSegments, pathToRoot, slugifyFilePath } from '../../util/path'
 import { StaticResources } from '../../util/resources'
 import { ProcessedContent } from '../vfile'
@@ -48,7 +52,6 @@ const defaultOptions: ResolvedOptions = {
   runtime: false,
 }
 
-const defaultPyodideIndexUrl = 'https://cdn.jsdelivr.net/pyodide/v0.29.4/full/'
 const htmlResourceSrcPattern =
   /<(?:img|video|audio|iframe)\b[^>]*\bsrc\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s>]+))/gi
 const markdownImageTargetPattern = /!\[[^\]]*\]\(\s*(<[^>]+>|[^)\s]+)[^)]*\)/g
@@ -73,7 +76,7 @@ function resolveOptions(userOpts?: Options): ResolvedOptions {
       ? false
       : {
           enabled: true,
-          pyodideIndexUrl: userOpts.runtime.pyodideIndexUrl ?? defaultPyodideIndexUrl,
+          pyodideIndexUrl: userOpts.runtime.pyodideIndexUrl ?? defaultNotebookPyodideIndexUrl,
         }
 
   return {
@@ -86,7 +89,11 @@ function resolveOptions(userOpts?: Options): ResolvedOptions {
 
 const notebookPageLayout: FullPageLayout = {
   ...sharedPageComponents,
-  beforeBody: [Component.NotebookRuntimeLoader(), Component.ArticleTitle()],
+  beforeBody: [
+    Component.NotebookLsp(),
+    Component.NotebookRuntimeLoader(),
+    Component.ArticleTitle(),
+  ],
   pageBody: Component.Content(),
   sidebar: defaultContentPageLayout.sidebar,
 }
@@ -102,6 +109,27 @@ function sourceText(value: unknown): string {
   if (Array.isArray(value)) return value.map(sourceText).join('')
   if (value === undefined || value === null) return ''
   return String(value)
+}
+
+function applyTextTransforms(ctx: BuildCtx, markdown: string): string {
+  let transformed = markdown
+  for (const plugin of ctx.cfg.plugins.transformers) {
+    if (plugin.textTransform) {
+      transformed = plugin.textTransform(ctx, transformed)
+    }
+  }
+  return transformed
+}
+
+function parseNotebookMarkdownChunks(
+  mdProcessor: ReturnType<typeof createMdProcessor>,
+  chunks: string[],
+): MdRoot {
+  const children: MdRoot['children'] = []
+  for (const chunk of chunks) {
+    children.push(...mdProcessor.parse(chunk).children)
+  }
+  return { type: 'root', children }
 }
 
 function localNotebookResourcePath(raw: string, fp: FilePath): FilePath | undefined {
@@ -304,13 +332,10 @@ async function notebookProcessedContent(
   const slug = slugifyFilePath(fp, true)
   const raw = await notebookSource(ctx, fp, opts)
   const notebook = parseNotebook(raw, src)
-  let markdown = notebookToMarkdown(notebook, fp, {
+  const markdownChunks = notebookToMarkdownChunks(notebook, fp, {
     runtime: opts.runtime === false ? false : { ...opts.runtime, sourcePath: fp },
-  }).trim()
-
-  for (const plugin of ctx.cfg.plugins.transformers.filter(p => p.textTransform)) {
-    markdown = plugin.textTransform!(ctx, markdown)
-  }
+  }).map(chunk => applyTextTransforms(ctx, chunk))
+  const markdown = markdownChunks.join('\n\n').trim()
 
   const file = new VFile({ path: src, value: markdown })
   file.data.filePath = src
@@ -319,7 +344,7 @@ async function notebookProcessedContent(
 
   const mdProcessor = createMdProcessor(ctx)
   const htmlProcessor = createHtmlProcessor(ctx)
-  const ast = mdProcessor.parse(file)
+  const ast = parseNotebookMarkdownChunks(mdProcessor, markdownChunks)
   const mdAst = await mdProcessor.run(ast, file)
   const htmlAst = (await htmlProcessor.run(mdAst, file)) as HtmlRoot
   if (file.data.frontmatter) {

@@ -210,9 +210,7 @@ def gemm_numba(A: np.ndarray, B: np.ndarray, C: np.ndarray, m: int, n: int, k: i
 # =============================================================================
 
 
-def benchmark_op(
-  name: str, c_func, auto_func, numba_func, setup_fn, n_warmup: int = 3, n_runs: int = 10
-) -> None:
+def benchmark_op(name: str, c_func, auto_func, numba_func, setup_fn, n_warmup: int = 3, n_runs: int = 10) -> None:
   """benchmark an operation across three implementations"""
   print(f'\n{"=" * 80}')
   print(f'Benchmark: {name}')
@@ -384,9 +382,7 @@ def main():
   benchmark_op('DOT (dot product, n=1M)', dot_c, dot_auto, dot_numba, lambda: dot_setup(1_000_000))
 
   # gemv: moderate compute intensity
-  benchmark_op(
-    'GEMV (matrix-vector, 2000×2000)', gemv_c, gemv_auto, gemv_numba, lambda: gemv_setup(2000, 2000)
-  )
+  benchmark_op('GEMV (matrix-vector, 2000×2000)', gemv_c, gemv_auto, gemv_numba, lambda: gemv_setup(2000, 2000))
 
   # gemm: compute-bound, numba should win
   benchmark_op(

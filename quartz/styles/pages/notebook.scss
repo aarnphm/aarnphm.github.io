@@ -4,7 +4,8 @@ body:has(article.notebook-page) [data-article-title] {
   grid-column: var(--layout-wide-column);
 }
 
-article.notebook-page {
+article.notebook-page,
+article:has(.notebook-runtime) {
   grid-column: var(--layout-wide-column);
 
   hr {
@@ -407,6 +408,18 @@ article.notebook-page {
     font-size: 0.9em;
     line-height: 1.5;
     white-space: pre;
+  }
+
+  .notebook-output-latex {
+    padding: 0.6rem 0.75rem;
+    background: color-mix(in srgb, var(--light) 82%, var(--lightgray));
+    color: var(--dark);
+
+    .katex-display {
+      margin: 0.25rem 0;
+      overflow-x: auto;
+      overflow-y: hidden;
+    }
   }
 
   pre.notebook-output-stream {

@@ -1,5 +1,5 @@
 ---
-date: "2024-01-30"
+date: '2024-01-30'
 description: a branch of [[/thoughts/Value|value]] theory concerning what makes things aesthetically good or valuable
 id: aesthetic value
 modified: 2026-05-22 15:25:23 GMT-04:00

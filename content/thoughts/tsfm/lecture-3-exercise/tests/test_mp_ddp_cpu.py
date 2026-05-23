@@ -24,7 +24,9 @@ from minigpt.np.train import (
 )
 
 
-def _make_fake_tokens(path: pathlib.Path, n_tokens: int = 2048, vocab: int = 128) -> TokenDataset:
+def _make_fake_tokens(
+  path: pathlib.Path, n_tokens: int = 2048, vocab: int = 128
+) -> TokenDataset:
   path.parent.mkdir(parents=True, exist_ok=True)
   bin_path = path
   meta_path = path.with_suffix('.meta.json')
@@ -63,11 +65,22 @@ def test_smoke_single_process():
   params = init_lm(cfg, tokenizer_vocab_size=vocab)
   # dataset
   tmp_dir = pathlib.Path('checkpoints/_smoke')
-  ds = _make_fake_tokens(tmp_dir / 'smoke.tokens.bin', n_tokens=1024, vocab=vocab)
-  prefetch = BatchPrefetcher(ds, batch_size=cfg.batch_size, seq_len=cfg.max_seq_len, stride=cfg.max_seq_len, seed=42, prefetch=2)
+  ds = _make_fake_tokens(
+    tmp_dir / 'smoke.tokens.bin', n_tokens=1024, vocab=vocab
+  )
+  prefetch = BatchPrefetcher(
+    ds,
+    batch_size=cfg.batch_size,
+    seq_len=cfg.max_seq_len,
+    stride=cfg.max_seq_len,
+    seed=42,
+    prefetch=2,
+  )
   x, y = prefetch.next()
   mask = build_causal_mask(cfg.max_seq_len, cfg.max_seq_len)
-  loss, grads, acc = compute_loss_and_grads(x, y, params, cfg, attn_mask=mask, return_accuracy=True)
+  loss, grads, acc = compute_loss_and_grads(
+    x, y, params, cfg, attn_mask=mask, return_accuracy=True
+  )
   assert np.isfinite(loss), 'loss not finite'
   opt = AdamW(params, lr=1e-3, grad_clip=1.0)
   opt.step(params, grads)
@@ -97,7 +110,9 @@ def test_smoke_multi_process():
 
   # dataset
   tmp_dir = pathlib.Path('checkpoints/_smoke')
-  ds = _make_fake_tokens(tmp_dir / 'smoke_dp.tokens.bin', n_tokens=1024, vocab=vocab)
+  ds = _make_fake_tokens(
+    tmp_dir / 'smoke_dp.tokens.bin', n_tokens=1024, vocab=vocab
+  )
   # build worker args
   ctx = mp.get_context('spawn')
   res_q = ctx.SimpleQueue()  # type: ignore
@@ -108,7 +123,19 @@ def test_smoke_multi_process():
   for r in range(2):
     p = ctx.Process(
       target=_worker_loop,
-      args=(r, cmd_qs[r], res_q, shared.spec, ds.meta, str(ds.path_bin), cfg.max_seq_len, stride, 1234, 1, gradbuf.spec),
+      args=(
+        r,
+        cmd_qs[r],
+        res_q,
+        shared.spec,
+        ds.meta,
+        str(ds.path_bin),
+        cfg.max_seq_len,
+        stride,
+        1234,
+        1,
+        gradbuf.spec,
+      ),
       daemon=False,
     )
     p.start()

@@ -11,6 +11,7 @@ nr, nw = 0, 0
 dr, dw = 0, 0
 data = 0
 
+
 def reader() -> None:
   global nr, nw, dr, dw, data, maxdata
   maxdata = 0
@@ -31,15 +32,18 @@ def reader() -> None:
       e.release()
 
     # critical section
-    if data > maxdata: stdout.write('Reader in critical section read ' + str(data) + '\n')
+    if data > maxdata:
+      stdout.write('Reader in critical section read ' + str(data) + '\n')
     maxdata = data if data > maxdata else maxdata
 
     # exit protocol
     e.acquire()
     nr -= 1
     # if no active readers and there's a waiting writer
-    if nr == 0 and dw > 0: w.release()
+    if nr == 0 and dw > 0:
+      w.release()
     e.release()
+
 
 def writer(numIters: int) -> None:
   global nr, nw, dr, dw, data
@@ -63,12 +67,17 @@ def writer(numIters: int) -> None:
     # exit protocol
     e.acquire()
     nw -= 1
-    if dr > 0: r.release()  # if there are waiting readers
-    elif dw > 0: w.release()  # if there's a waiting writer
-    else: e.release()
+    if dr > 0:
+      r.release()  # if there are waiting readers
+    elif dw > 0:
+      w.release()  # if there's a waiting writer
+    else:
+      e.release()
     sleep(1)
+
 
 def rw(numIters: int) -> None:
   r = Thread(target=reader, daemon=True)
   w = Thread(target=writer, args=(numIters,))
-  r.start(); w.start()  # yapf: disable
+  r.start()
+  w.start()  # yapf: disable

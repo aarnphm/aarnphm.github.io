@@ -1,4 +1,6 @@
+import { transform } from 'esbuild'
 import assert from 'node:assert'
+import { readFile } from 'node:fs/promises'
 import test, { describe } from 'node:test'
 import {
   notebookRuntimeImportCandidates,
@@ -160,5 +162,18 @@ describe('notebook browser runtime output', () => {
     )
 
     assert.strictEqual(source, 'x = 1\ny = 2\n\nz = x + y')
+  })
+
+  test('keeps inline runtime loaders valid browser javascript', async () => {
+    const root = new URL('../components/scripts/', import.meta.url)
+    const scripts = await Promise.all(
+      ['notebook-runtime.inline.ts', 'notebook-lsp.inline.ts'].map(async file => {
+        return await readFile(new URL(file, root), 'utf8')
+      }),
+    )
+
+    await transform(scripts.map(script => `(function(){${script}})();`).join('\n'), {
+      loader: 'js',
+    })
   })
 })

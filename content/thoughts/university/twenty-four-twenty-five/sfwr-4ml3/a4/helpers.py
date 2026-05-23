@@ -105,7 +105,9 @@ class MetricsTracker:
     self.correct += predicted.eq(labels).sum().item()
 
   @property
-  def avg_loss(self): return self.running_loss / self.batch_count if self.batch_count > 0 else 0
+  def avg_loss(self):
+    return self.running_loss / self.batch_count if self.batch_count > 0 else 0
 
   @property
-  def accuracy(self): return 100.0 * self.correct / self.total if self.total > 0 else 0
+  def accuracy(self):
+    return 100.0 * self.correct / self.total if self.total > 0 else 0
