@@ -1,4 +1,5 @@
 import path from 'path'
+import type { AssetManifest } from './asset-manifest'
 import { QuartzConfig } from '../cfg'
 import { QuartzPluginData } from '../plugins/vfile'
 import { FileTrieNode } from './fileTrie'
@@ -28,6 +29,7 @@ export interface BuildCtx {
   trie?: FileTrieNode<BuildTimeTrieData>
   incremental: boolean
   gitCommitSha?: string
+  assetManifest?: AssetManifest
 }
 
 export function trieFromAllFiles(allFiles: QuartzPluginData[]): FileTrieNode<BuildTimeTrieData> {
