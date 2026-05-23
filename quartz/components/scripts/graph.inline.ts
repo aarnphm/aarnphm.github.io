@@ -703,6 +703,42 @@ document.addEventListener('nav', async (e: CustomEventMap['nav']) => {
 
   addToVisited(simplifySlug(slug))
 
+  const localGraphContainers = [
+    ...document.getElementsByClassName('graph-container'),
+  ] as HTMLElement[]
+  const localGraphMedia = window.matchMedia('(min-width: 1400px)')
+  let localGraphCleanups: (() => void)[] = []
+  let localGraphRenderVersion = 0
+
+  function cleanupLocalGraphs() {
+    for (const cleanup of localGraphCleanups) {
+      cleanup()
+    }
+    localGraphCleanups = []
+  }
+
+  async function renderLocalGraphs() {
+    const renderVersion = ++localGraphRenderVersion
+    cleanupLocalGraphs()
+    if (!localGraphMedia.matches) return
+
+    for (const graphContainer of localGraphContainers) {
+      const cleanup = await renderGraph(graphContainer, slug)
+      if (renderVersion === localGraphRenderVersion) {
+        localGraphCleanups.push(cleanup)
+      } else {
+        cleanup()
+      }
+    }
+  }
+
+  const localGraphMediaHandler = () => {
+    void renderLocalGraphs()
+  }
+
+  void renderLocalGraphs()
+  localGraphMedia.addEventListener('change', localGraphMediaHandler)
+
   const containers = [...document.getElementsByClassName('global-graph-outer')] as HTMLElement[]
 
   async function renderGlobalGraph() {
@@ -747,6 +783,9 @@ document.addEventListener('nav', async (e: CustomEventMap['nav']) => {
   document.addEventListener('keydown', shortcutHandler)
   window.addCleanup(() => {
     document.removeEventListener('keydown', shortcutHandler)
+    localGraphMedia.removeEventListener('change', localGraphMediaHandler)
+    localGraphRenderVersion++
+    cleanupLocalGraphs()
     cleanupGlobalGraphs()
   })
 })

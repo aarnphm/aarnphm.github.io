@@ -33,6 +33,26 @@ export function notebookRuntimeLocalSourceKey(sourcePath: string, cellId: string
 }
 
 const browserRuntimeExtensionDirectives = new Set(['autoreload', 'nb_mypy'])
+const wat2wasmFeatureOptions = new Set([
+  '--enable-annotations',
+  '--enable-bulk-memory',
+  '--enable-code-metadata',
+  '--enable-exceptions',
+  '--enable-extended-const',
+  '--enable-function-references',
+  '--enable-gc',
+  '--enable-memory64',
+  '--enable-multi-memory',
+  '--enable-multi-value',
+  '--enable-mutable-globals',
+  '--enable-reference-types',
+  '--enable-relaxed-simd',
+  '--enable-saturating-float-to-int',
+  '--enable-sign-extension',
+  '--enable-simd',
+  '--enable-tail-call',
+  '--enable-threads',
+])
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value)
@@ -124,6 +144,76 @@ function browserRuntimeDirectiveReason(line: string): string | undefined {
   if (/^%matplotlib(?:\s|$)/.test(line)) return undefined
 }
 
+function notebookWriteFileDirectiveReason(source: string): { handled: boolean; reason?: string } {
+  const first = source.split(/\r?\n/, 1)[0]?.trim() ?? ''
+  if (!first.startsWith('%%writefile')) return { handled: false }
+  const words = first
+    .replace(/^%%writefile\b/, '')
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean)
+  let filename = ''
+  for (const word of words) {
+    if (word === '-a') continue
+    if (word.startsWith('-')) {
+      return {
+        handled: true,
+        reason: `%%writefile option ${word} is unavailable in the browser runtime`,
+      }
+    }
+    if (filename) return { handled: true, reason: '%%writefile accepts one file name' }
+    filename = word
+  }
+  return filename
+    ? { handled: true }
+    : { handled: true, reason: '%%writefile requires a file name' }
+}
+
+function notebookShellDirectiveReason(line: string): { handled: boolean; reason?: string } {
+  if (!line.startsWith('!')) return { handled: false }
+  const command = line.slice(1).trim()
+  if (/^cat(?:\s|$)/.test(command)) return { handled: true }
+  if (/^wat2wasm(?:\s|$)/.test(command)) {
+    const words = command.split(/\s+/).filter(Boolean)
+    let input = ''
+    for (let index = 1; index < words.length; index += 1) {
+      const word = words[index]
+      if (word === '-o' || word === '--output') {
+        index += 1
+        if (!words[index]) return { handled: true, reason: `${word} requires a file name` }
+        continue
+      }
+      if (word.startsWith('-o') && word.length > 2) continue
+      if (word.startsWith('--output=')) continue
+      if (word.startsWith('--enable-')) {
+        if (wat2wasmFeatureOptions.has(word)) continue
+        return {
+          handled: true,
+          reason: `wat2wasm option ${word} is unavailable in the browser runtime`,
+        }
+      }
+      if (word.startsWith('--disable-')) {
+        const enabled = `--enable-${word.slice('--disable-'.length)}`
+        if (wat2wasmFeatureOptions.has(enabled)) continue
+        return {
+          handled: true,
+          reason: `wat2wasm option ${word} is unavailable in the browser runtime`,
+        }
+      }
+      if (word.startsWith('-')) {
+        return {
+          handled: true,
+          reason: `wat2wasm option ${word} is unavailable in the browser runtime`,
+        }
+      }
+      if (input) return { handled: true, reason: 'wat2wasm accepts one input file' }
+      input = word
+    }
+    return input ? { handled: true } : { handled: true, reason: 'wat2wasm requires an input file' }
+  }
+  return { handled: true, reason: 'shell escapes are unavailable in the browser runtime' }
+}
+
 export function renderNotebookRuntimeOutput(
   output: NotebookRuntimeOutput,
   options: { debug?: boolean } = {},
@@ -160,6 +250,8 @@ export function renderNotebookRuntimeOutput(
 }
 
 export function unsupportedNotebookRuntimeReason(source: string): string | undefined {
+  const writeFile = notebookWriteFileDirectiveReason(source)
+  if (writeFile.handled) return writeFile.reason
   for (const line of source.split(/\r?\n/)) {
     const trimmed = line.trim()
     if (trimmed.length === 0) continue
@@ -171,6 +263,8 @@ export function unsupportedNotebookRuntimeReason(source: string): string | undef
     if (notebookExtensionDirective(trimmed) !== undefined) continue
     if (/^%autoreload(?:\s|$)/.test(trimmed)) continue
     if (/^%matplotlib(?:\s|$)/.test(trimmed)) continue
+    const shell = notebookShellDirectiveReason(trimmed)
+    if (shell.handled) return shell.reason
     if (trimmed.startsWith('%%')) return 'cell magics are unavailable in the browser runtime'
     if (trimmed.startsWith('%')) return 'IPython magics are unavailable in the browser runtime'
     if (trimmed.startsWith('!')) return 'shell escapes are unavailable in the browser runtime'

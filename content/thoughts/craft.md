@@ -3,10 +3,10 @@ aliases:
   - work
   - portfolio
 comments: false
-date: '2021-12-22'
+date: "2021-12-22"
 description: and a celebration for the act of making.
 id: craft
-modified: 2026-05-09 17:51:49 GMT-04:00
+modified: 2026-05-23 10:25:34 GMT-04:00
 permalinks:
   - /thoughts/work
   - /craft
@@ -16,7 +16,7 @@ tags:
 title: craft.
 ---
 
-There is also a [[ideas|backlog]] of unfinished ideas that I might work on, one day.
+There is also a [[ideas|backlog]] of unfinished ideas that I might work on, one day. I'm also doing [[consult|consulting]]
 
 ---
 
@@ -118,6 +118,18 @@ You can find internal monologue under [[/posts/]] index. I also sent out a pseud
     > This heuristic lays the foundation to the proliferation of conversational user [[thoughts/representations|interfaces]] (CUIs), which is obvious given that chat is a thin wrapper around text modality. Yet, CUIs often prove frustrating when dealing with tasks that require larger sets of information (think of support portals, orders forms, etc.). Additionally, for tasks that require frequent information [[thoughts/RAG|retrieval]] ([[research|research]], travel planning, [[thoughts/writing|writing]], etc.), CUIs are suboptimal as they compel users to unnecessarily maintain information in their working memory (for no reason). For writers, the hardest part of writing or getting over writers block usually relies on how to coherently structure their thoughts onto papers. This requires a step beyond pure conversation partners, an interface that induces both planning and modelling of ideas.
     >
     > Given these challenges, morph doesn’t seek to be a mere tools for rewriting text. morph aims to explore alternative interfaces for text generations models to extend our cognitive abilities. This means developing spatial and visual interfaces that allow for non-linear exploration of information and ideas, through writing.
+
+## positions.
+
+- Modular, 01/2026-Now
+  - Inference Optimization Engineer, MAX Serve
+  - Source: [website](https://www.modular.com/)
+- BentoML, 04/2021-12/2025
+  - Inference Optimization Engineer
+  - vLLM commiter, structured outputs, scheduler
+  - early engineer
+  - _Acquired by Modular_
+  - Source: [website](https://bentoml.com/)
 
 ## talks.
 

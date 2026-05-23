@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-05-19 19:57:41 GMT-04:00
+modified: 2026-05-23 15:26:50 GMT-04:00
 permalinks:
   - /website
   - /tweets
@@ -143,6 +143,10 @@ title: are.na
 - [meta]:
   - view: list
 
+- https://x.com/gabriell_lab/status/2058217175047901310 -- Design terminology
+  - [meta]:
+    - date: 05/23/2026
+    - tags: [frontend]
 - https://x.com/noampomsky/status/2056815059968639235 -- it is your personal responsibility not to create a soul tie with a loser
   - [meta]:
     - date: 05/19/2026
