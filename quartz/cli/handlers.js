@@ -195,14 +195,36 @@ export async function handleBuild(argv) {
         res.end()
       }
 
-      let fp = req.url?.split('?')[0] ?? '/'
+      const outputRoot = path.resolve(argv.output)
+      const normalizeRequestPath = value => {
+        try {
+          const parsed = new URL(value ?? '/', 'http://quartz.local')
+          const decoded = decodeURIComponent(parsed.pathname)
+          if (decoded.includes('\0')) return '/'
+          return path.posix.normalize(`/${decoded}`)
+        } catch {
+          return '/'
+        }
+      }
+      const resolveOutputPath = publicPath => {
+        const resolved = path.resolve(outputRoot, `.${publicPath}`)
+        if (resolved === outputRoot || resolved.startsWith(`${outputRoot}${path.sep}`)) {
+          return resolved
+        }
+      }
+      const existsInOutput = publicPath => {
+        const resolved = resolveOutputPath(publicPath)
+        return resolved !== undefined && fs.existsSync(resolved)
+      }
+
+      let fp = normalizeRequestPath(req.url)
 
       // handle redirects
       if (fp.endsWith('/')) {
         // /trailing/
         // does /trailing/index.html exist? if so, serve it
         const indexFp = path.posix.join(fp, 'index.html')
-        if (fs.existsSync(path.posix.join(argv.output, indexFp))) {
+        if (existsInOutput(indexFp)) {
           req.url = fp
           return serve()
         }
@@ -212,7 +234,7 @@ export async function handleBuild(argv) {
         if (path.extname(base) === '') {
           base += '.html'
         }
-        if (fs.existsSync(path.posix.join(argv.output, base))) {
+        if (existsInOutput(base)) {
           return redirect(fp.slice(0, -1))
         }
       } else {
@@ -222,14 +244,14 @@ export async function handleBuild(argv) {
         if (path.extname(base) === '') {
           base += '.html'
         }
-        if (fs.existsSync(path.posix.join(argv.output, base))) {
+        if (existsInOutput(base)) {
           req.url = fp
           return serve()
         }
 
         // does /regular/index.html exist? if so, redirect to /regular/
         let indexFp = path.posix.join(fp, 'index.html')
-        if (fs.existsSync(path.posix.join(argv.output, indexFp))) {
+        if (existsInOutput(indexFp)) {
           return redirect(fp + '/')
         }
       }

@@ -24,7 +24,8 @@ test('repairs active arxiv ids missing from the paper cache', async t => {
   const fetchStub: typeof fetch = async input => {
     const url = String(input)
     requests.push(url)
-    if (url.includes('https://export.arxiv.org/api/query')) {
+    const parsed = new URL(url)
+    if (parsed.origin === 'https://export.arxiv.org' && parsed.pathname === '/api/query') {
       return new Response(
         [
           '<?xml version="1.0" encoding="UTF-8"?>',

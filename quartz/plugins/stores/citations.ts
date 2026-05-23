@@ -1,3 +1,5 @@
+import { hostnameMatches } from '../../util/url'
+
 export interface ArxivMeta {
   id: string
   title: string
@@ -44,7 +46,7 @@ const ARXIV_URL_REGEX =
 export function extractArxivId(url: string): string | null {
   try {
     const urlObj = new URL(url)
-    if (!urlObj.hostname.includes('arxiv.org')) return null
+    if (!hostnameMatches(urlObj, 'arxiv.org')) return null
 
     const match = url.match(ARXIV_URL_REGEX)
     return match ? match[1] : null

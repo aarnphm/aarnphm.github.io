@@ -23,7 +23,9 @@ describe('sms html fragment parsing', () => {
       { type: 'element', tagName: wrapperTagName, properties: {}, children } as HtmlElement,
       { allowDangerousHtml: true },
     )
-    assert.ok(html.includes('https://example.com'))
+    assert.strictEqual(children.length, 1)
+    assert.strictEqual(children[0].type, 'text')
+    assert.strictEqual(children[0].value, '<https://example.com>')
     assert.ok(!html.includes('<https:'))
   })
 

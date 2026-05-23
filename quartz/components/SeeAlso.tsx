@@ -16,6 +16,19 @@ import '@citation-js/plugin-bibtex'
 const MAX_DEPTH = 5
 const MAX_CHILDREN_PER_NODE = 5
 
+interface CitationEntry {
+  id?: string
+  title?: unknown
+}
+
+interface CitationLibrary {
+  data: CitationEntry[]
+}
+
+function isCitationLibrary(value: unknown): value is CitationLibrary {
+  return typeof value === 'object' && value !== null && 'data' in value && Array.isArray(value.data)
+}
+
 function getDisplayTitle(
   slug: FullSlug,
   file: QuartzComponentProps['fileData'] | undefined,
@@ -34,19 +47,22 @@ function getDisplayTitle(
   return fragment.replace(/\.[^/.]+$/, '').replace(/-/g, ' ')
 }
 
-let loadedBib: any = null
+let loadedBib: CitationLibrary | null = null
 function getCitationTitle(bibKey: string): string | undefined {
   if (!loadedBib) {
     const bibPath = path.join(process.cwd(), 'content/References.bib')
     if (fs.existsSync(bibPath)) {
       const bibContent = fs.readFileSync(bibPath, 'utf8')
-      loadedBib = new Cite(bibContent, { generateGraph: false })
+      const parsedBib = new Cite(bibContent, { generateGraph: false })
+      if (isCitationLibrary(parsedBib)) {
+        loadedBib = parsedBib
+      }
     }
   }
 
   if (loadedBib) {
-    const entry = loadedBib.data.find((item: any) => item.id === bibKey)
-    return entry?.title
+    const entry = loadedBib.data.find(item => item.id === bibKey)
+    return typeof entry?.title === 'string' ? entry.title : undefined
   }
   return undefined
 }
@@ -89,7 +105,6 @@ export default (() => {
     const visited = new Set<string>([currentSlug])
     const lines: JSX.Element[] = []
     const nbsp = '\u00a0'
-    const padAfterLabel = nbsp.repeat(2)
     const segmentPad = nbsp.repeat(3)
     const segmentWithBar = `│${segmentPad}`
     const segmentEmpty = `${nbsp}${segmentPad}`
@@ -100,7 +115,6 @@ export default (() => {
         value = Math.ceil(minutes)
       }
       if (value < 10) {
-        // e.g. "[ 0m]" to keep width aligned with "[12m]"
         return `[${nbsp}${value}m]`
       }
       return `[${value}m]`
@@ -154,20 +168,20 @@ export default (() => {
       const labelText = isCitation ? '[cite]' : formatReadingLabel(minutes)
 
       lines.push(
-        <>
-          {prefix}
+        <div class="seealso-tree-line" key={uniqueId}>
+          <span class="seealso-prefix" aria-hidden="true">
+            {prefix}
+          </span>
           <span class="seealso-label">{labelText}</span>
-          {padAfterLabel}
           <a
             href={href}
-            class={isCitation ? '' : 'internal'}
+            class={isCitation ? 'seealso-title' : 'seealso-title internal'}
             data-no-popover={isCitation}
             data-slug={isCitation ? undefined : targetSlug}
           >
             {title}
           </a>
-          <br />
-        </>,
+        </div>,
       )
 
       if (children && children.length > 0) {
@@ -182,7 +196,7 @@ export default (() => {
 
     return (
       <section class={classNames(displayClass, 'seealso-tree', 'main-col')}>
-        <p class="seealso-tree-lines">{lines}</p>
+        <div class="seealso-tree-lines">{lines}</div>
       </section>
     )
   }

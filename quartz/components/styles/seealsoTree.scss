@@ -27,9 +27,37 @@
     padding: 0;
     font-family: var(--codeFont);
     font-size: 11.1px;
-    line-height: 2%;
-    white-space: pre;
+    line-height: 1.45;
     margin-block: 0;
-    display: inline-block;
+    display: grid;
+    row-gap: 0.125rem;
+  }
+
+  .seealso-tree-line {
+    display: grid;
+    grid-template-columns: max-content max-content minmax(0, 1fr);
+    align-items: baseline;
+  }
+
+  .seealso-prefix,
+  .seealso-label {
+    white-space: pre;
+  }
+
+  .seealso-label {
+    margin-inline-end: 2ch;
+  }
+
+  .seealso-title {
+    line-height: inherit;
+    min-width: 0;
+    overflow-wrap: anywhere;
+    white-space: normal;
+
+    &:hover {
+      background: initial;
+      color: initial;
+      text-decoration: underline;
+    }
   }
 }

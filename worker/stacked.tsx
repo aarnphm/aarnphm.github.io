@@ -44,6 +44,30 @@ function extractTitle(html: string): string {
   return ''
 }
 
+function stripHtmlTags(html: string): string {
+  let text = ''
+  let inTag = false
+  let quote: string | undefined
+  for (const char of html) {
+    if (inTag) {
+      if (quote) {
+        if (char === quote) quote = undefined
+      } else if (char === '"' || char === "'") {
+        quote = char
+      } else if (char === '>') {
+        inTag = false
+      }
+      continue
+    }
+    if (char === '<') {
+      inTag = true
+      continue
+    }
+    text += char
+  }
+  return text
+}
+
 function extractPopoverHintContent(html: string): string {
   const mainMatch = html.match(/<main[^>]*>([\s\S]*?)<\/main>/i)
   if (!mainMatch) return ''
@@ -62,7 +86,7 @@ function extractPopoverHintContent(html: string): string {
       const isPageFooter = html.includes('page-footer')
       if (!isPageFooter) return true
 
-      const textContent = html.replace(/<[^>]*>/g, '').trim()
+      const textContent = stripHtmlTags(html).trim()
       return textContent.length > 0
     })
 

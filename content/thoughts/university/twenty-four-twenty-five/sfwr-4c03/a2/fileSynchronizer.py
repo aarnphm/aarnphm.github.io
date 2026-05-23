@@ -52,26 +52,26 @@ def get_file_info(ignored: tuple[str, ...] = ('.so', '.py', '.dll')) -> list[dic
   ]
 
 
-def check_port_available(check_port: int) -> bool:
+def check_port_available(check_port: int, host: str = '127.0.0.1') -> bool:
   with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
     try:
-      s.bind(('0.0.0.0', check_port))
+      s.bind((host, check_port))
       return True
     except socket.error:
       return False
 
 
-def get_next_available_port(initial_port: int) -> int | bool:
+def get_next_available_port(initial_port: int, host: str = '127.0.0.1') -> int | bool:
   port = initial_port
   while port <= 65535:
-    if check_port_available(port):
+    if check_port_available(port, host):
       return port
     port += 1
   return False
 
 
 class FileSynchronizer(threading.Thread):
-  def __init__(self, trackerhost: int, trackerport: int, port: int, host: str = '0.0.0.0'):
+  def __init__(self, trackerhost: int, trackerport: int, port: int, host: str = '127.0.0.1'):
     threading.Thread.__init__(self)
     self.daemon = True
 
@@ -300,6 +300,7 @@ def main() -> int:
   parser.add_argument(
     '--log-level', choices=['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL'], default='INFO', help='Set logging level'
   )
+  parser.add_argument('--listen-host', default='127.0.0.1', help='Local interface used for peer file requests')
 
   args = parser.parse_args()
 
@@ -337,18 +338,22 @@ def main() -> int:
   if not validate_port(args.tracker_port):
     parser.error('Invalid tracker port number')
 
+  if not validate_ip(args.listen_host):
+    parser.error('Invalid listen host IP address')
+
   tracker_ip = args.tracker_ip
   tracker_port = int(args.tracker_port)
+  listen_host = args.listen_host
 
   # Get free port
-  synchronizer_port = get_next_available_port(8000)
+  synchronizer_port = get_next_available_port(8000, listen_host)
   if not synchronizer_port:
     logger.critical('No available ports found')
     return 1
 
   logger.info('Starting file synchronizer on port %s', synchronizer_port)
   global synchronizer
-  synchronizer = FileSynchronizer(tracker_ip, tracker_port, synchronizer_port)
+  synchronizer = FileSynchronizer(tracker_ip, tracker_port, synchronizer_port, listen_host)
   synchronizer.start()
 
   try:

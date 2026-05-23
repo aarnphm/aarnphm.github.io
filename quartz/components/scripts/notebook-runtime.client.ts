@@ -1,13 +1,12 @@
-import type { NotebookRuntimeOutput } from '../../util/notebook-runtime'
+import DOMPurify from 'dompurify'
+import type { NotebookRuntimeDebugOutput, NotebookRuntimeOutput } from '../../util/notebook-runtime'
 import type { NotebookCodeEditor } from './notebook-code-editor'
 import {
   notebookRuntimeImportCandidates,
   notebookRuntimeLocalSourceKey,
   notebookRuntimeModuleSource,
-  renderNotebookRuntimeOutput,
   unsupportedNotebookRuntimeReason,
 } from '../../util/notebook-runtime'
-import notebookDisplayFrameSource from './notebook-runtime.frame.html'
 
 type RuntimeCell = { id: string; source: string; language: string; executionIndex: number | null }
 
@@ -16,6 +15,8 @@ type RuntimeModule = { name: string; sourcePath: string; source: string }
 type RuntimeErrorOutput = Extract<NotebookRuntimeOutput, { type: 'error' }>
 
 type RuntimeDebugOutput = NonNullable<RuntimeErrorOutput['debug']>
+
+type CellRunResult = { failed: boolean }
 
 type SourceControls = {
   frame: HTMLElement
@@ -51,7 +52,7 @@ type AssetResult = {
 type FrameMessage =
   | { type: 'ready'; runtimeId: string }
   | { type: 'output'; runtimeId: string; cellId: string; output: NotebookRuntimeOutput }
-  | { type: 'done'; runtimeId: string; cellId: string }
+  | { type: 'done'; runtimeId: string; cellId: string; failed: boolean }
   | { type: 'asset'; runtimeId: string; cellId: string; assetId: string; url: string }
   | {
       type: 'file-result'
@@ -64,10 +65,9 @@ type FrameMessage =
       bytes?: ArrayBuffer
       error?: string
     }
-  | { type: 'display-javascript'; runtimeId: string; cellId: string; code: string }
   | { type: 'status'; runtimeId: string; text: string }
 
-type CellWaiter = { resolve: () => void; reject: (error: Error) => void }
+type CellWaiter = { resolve: (result: CellRunResult) => void; reject: (error: Error) => void }
 
 type RuntimeFileWaiter = {
   resolve: (message: Extract<FrameMessage, { type: 'file-result' }>) => void
@@ -128,6 +128,10 @@ function readRuntimeOutput(value: unknown): NotebookRuntimeOutput | undefined {
     const text = readString(value, 'text')
     if (text !== undefined) return { type, text }
   }
+  if (type === 'json') {
+    const text = readString(value, 'text')
+    if (text !== undefined) return { type, text }
+  }
   if (type === 'html') {
     const html = readString(value, 'html')
     if (html !== undefined) return { type, html }
@@ -158,17 +162,12 @@ function readFrameMessage(value: unknown): FrameMessage | undefined {
   if (type === 'ready') return { type, runtimeId }
   if (type === 'done') {
     const cellId = readString(value, 'cellId')
-    if (cellId) return { type, runtimeId, cellId }
+    if (cellId) return { type, runtimeId, cellId, failed: value.failed === true }
   }
   if (type === 'output') {
     const cellId = readString(value, 'cellId')
     const output = readRuntimeOutput(value.output)
     if (cellId && output) return { type, runtimeId, cellId, output }
-  }
-  if (type === 'display-javascript') {
-    const cellId = readString(value, 'cellId')
-    const code = readString(value, 'code')
-    if (cellId && code !== undefined) return { type, runtimeId, cellId, code }
   }
   if (type === 'status') {
     const text = readString(value, 'text')
@@ -234,45 +233,48 @@ function readRuntimePayload(value: unknown): RuntimePayload | undefined {
   }
 }
 
+function decodeRuntimeCodePoint(codePoint: number, fallback: string): string {
+  if (!Number.isInteger(codePoint) || codePoint < 0 || codePoint > 0x10ffff) return fallback
+  try {
+    return String.fromCodePoint(codePoint)
+  } catch {
+    return fallback
+  }
+}
+
+function decodeRuntimeHtmlEntities(text: string): string {
+  return text.replace(
+    /&(?:#(\d+)|#x([0-9a-fA-F]+)|quot|apos|amp|lt|gt);/g,
+    (entity: string, decimal?: string, hex?: string) => {
+      if (decimal !== undefined) {
+        return decodeRuntimeCodePoint(Number.parseInt(decimal, 10), entity)
+      }
+      if (hex !== undefined) {
+        return decodeRuntimeCodePoint(Number.parseInt(hex, 16), entity)
+      }
+      if (entity === '&quot;') return '"'
+      if (entity === '&apos;') return "'"
+      if (entity === '&amp;') return '&'
+      if (entity === '&lt;') return '<'
+      if (entity === '&gt;') return '>'
+      return entity
+    },
+  )
+}
+
 function parseRuntimeJson(text: string): unknown | undefined {
   try {
     return JSON.parse(text)
   } catch {}
 
-  const textarea = document.createElement('textarea')
-  textarea.innerHTML = text
-  if (textarea.value === text) return undefined
+  const decoded = decodeRuntimeHtmlEntities(text)
+  if (decoded === text) return undefined
 
   try {
-    return JSON.parse(textarea.value)
+    return JSON.parse(decoded)
   } catch {
     return undefined
   }
-}
-
-function sanitizeHtml(html: string): string {
-  const template = document.createElement('template')
-  template.innerHTML = html
-  const blocked = template.content.querySelectorAll(
-    'script, iframe, object, embed, link, meta, base',
-  )
-  blocked.forEach(node => node.remove())
-  const elements = template.content.querySelectorAll('*')
-  elements.forEach(element => {
-    const attributes = Array.from(element.attributes)
-    for (const attr of attributes) {
-      const name = attr.name.toLowerCase()
-      const value = attr.value.trim().toLowerCase()
-      if (name.startsWith('on')) element.removeAttribute(attr.name)
-      if (
-        (name === 'href' || name === 'src' || name === 'xlink:href') &&
-        value.startsWith('javascript:')
-      ) {
-        element.removeAttribute(attr.name)
-      }
-    }
-  })
-  return template.innerHTML
 }
 
 function replaceRenderedSource(figure: HTMLElement, source: string) {
@@ -298,12 +300,109 @@ function replaceRenderedSource(figure: HTMLElement, source: string) {
   })
 }
 
+function outputClassToken(value: string): string {
+  return value.replace(/[^A-Za-z0-9_-]/g, '-') || 'output'
+}
+
+function debugOutputText(debug: NotebookRuntimeDebugOutput): string {
+  return [
+    ['phase', debug.phase],
+    ['cell', debug.cellId],
+    ['error', debug.errorName],
+    ['message', debug.errorMessage],
+    ['stack', debug.stack],
+  ]
+    .filter((entry): entry is [string, string] => entry[1] !== undefined && entry[1].length > 0)
+    .map(([key, value]) => `${key}: ${value}`)
+    .join('\n')
+}
+
+function createPreOutput(classes: string[], label: string, value: string): HTMLPreElement {
+  const pre = document.createElement('pre')
+  pre.classList.add(...classes)
+  pre.dataset.outputName = label
+  const samp = document.createElement('samp')
+  samp.textContent = value.replace(/\s+$/, '')
+  pre.appendChild(samp)
+  return pre
+}
+
+function createHtmlOutput(html: string): HTMLDivElement {
+  const output = document.createElement('div')
+  output.classList.add('notebook-output', 'notebook-output-html')
+  output.dataset.outputName = 'display'
+  output.append(
+    DOMPurify.sanitize(html, {
+      FORBID_TAGS: ['script', 'iframe', 'object', 'embed', 'link', 'meta', 'base'],
+      FORBID_ATTR: ['srcdoc'],
+      ALLOWED_URI_REGEXP: /^(?:(?:https?|mailto|tel|cid):|[^a-z]|[a-z+.-]+(?:[^a-z+.:-]|$))/i,
+      RETURN_DOM_FRAGMENT: true,
+    }),
+  )
+  return output
+}
+
+function appendRuntimeOutput(
+  target: HTMLElement,
+  output: NotebookRuntimeOutput,
+  options: { debug?: boolean } = {},
+) {
+  if (output.type === 'stream') {
+    target.appendChild(
+      createPreOutput(
+        [
+          'notebook-output',
+          'notebook-output-stream',
+          `notebook-output-stream-${outputClassToken(output.name)}`,
+        ],
+        output.name,
+        output.text,
+      ),
+    )
+    return
+  }
+
+  if (output.type === 'error') {
+    const text = output.traceback || [output.ename, output.evalue].filter(Boolean).join(': ')
+    target.appendChild(createPreOutput(['notebook-output', 'notebook-output-error'], 'error', text))
+    if (options.debug === true && output.debug) {
+      target.appendChild(
+        createPreOutput(
+          ['notebook-output', 'notebook-output-debug'],
+          'debug',
+          debugOutputText(output.debug),
+        ),
+      )
+    }
+    return
+  }
+
+  if (output.type === 'html') {
+    target.appendChild(createHtmlOutput(output.html))
+    return
+  }
+
+  if (output.type === 'json') {
+    target.appendChild(
+      createPreOutput(
+        ['notebook-output', 'notebook-output-text', 'notebook-output-json'],
+        'json',
+        output.text,
+      ),
+    )
+    return
+  }
+
+  target.appendChild(
+    createPreOutput(['notebook-output', 'notebook-output-text'], 'result', output.text),
+  )
+}
+
 class NotebookRuntime {
   private payload: RuntimePayload
   private root: HTMLElement
+  private cellRoot: Document | HTMLElement
   private worker: Worker | undefined
-  private displayFrame: HTMLIFrameElement | undefined
-  private displayReady: Promise<HTMLIFrameElement> | undefined
   private ready: Promise<void> | undefined
   private readyResolve: (() => void) | undefined
   private waiters = new Map<string, CellWaiter>()
@@ -318,9 +417,12 @@ class NotebookRuntime {
   private stopped = false
   private debug = false
   private vimMode: boolean
+  private activeCellId: string | undefined
+  private pendingKeyPrefix: 'g' | undefined
 
   constructor(root: HTMLElement, payload: RuntimePayload) {
     this.root = root
+    this.cellRoot = root.closest('article') ?? root.parentElement ?? document
     this.payload = payload
     this.executionCounter = Math.max(0, ...payload.cells.map(cell => cell.executionIndex ?? 0))
     this.vimMode = this.readStoredVimMode()
@@ -339,28 +441,148 @@ class NotebookRuntime {
     reset?.addEventListener('click', this.reset)
     debug?.addEventListener('click', this.toggleDebug)
     vim?.addEventListener('click', this.toggleVimMode)
-    window.addEventListener('message', this.onDisplayMessage)
+    document.addEventListener('keydown', this.handleNotebookKeydown, true)
     this.addCleanup(() => {
       runAll?.removeEventListener('click', this.runAll)
       stop?.removeEventListener('click', this.stop)
       reset?.removeEventListener('click', this.reset)
       debug?.removeEventListener('click', this.toggleDebug)
       vim?.removeEventListener('click', this.toggleVimMode)
-      window.removeEventListener('message', this.onDisplayMessage)
+      document.removeEventListener('keydown', this.handleNotebookKeydown, true)
       this.destroyRuntime()
     })
-    for (const cell of this.payload.cells) {
-      const button = document.querySelector<HTMLButtonElement>(
-        `[data-notebook-run-cell="${CSS.escape(cell.id)}"]`,
-      )
-      if (!button) continue
-      const handler = () => {
-        this.runCell(cell)
-      }
-      button.addEventListener('click', handler)
-      this.addCleanup(() => button.removeEventListener('click', handler))
-    }
     this.syncToolbarToggles()
+  }
+
+  private queryCell<T extends Element>(selector: string): T | null {
+    return this.cellRoot.querySelector<T>(selector)
+  }
+
+  private queryCells<T extends Element>(selector: string): NodeListOf<T> {
+    return this.cellRoot.querySelectorAll<T>(selector)
+  }
+
+  private cellById(cellId: string | undefined): RuntimeCell | undefined {
+    if (cellId === undefined) return undefined
+    return this.payload.cells.find(cell => cell.id === cellId)
+  }
+
+  private cellFrame(cellId: string): HTMLElement | null {
+    return this.queryCell<HTMLElement>(`[data-notebook-cell-frame="${CSS.escape(cellId)}"]`)
+  }
+
+  private selectCell(cellId: string) {
+    if (this.activeCellId !== undefined && this.activeCellId !== cellId) {
+      this.cellFrame(this.activeCellId)?.removeAttribute('data-notebook-active-cell')
+    }
+    this.activeCellId = cellId
+    this.cellFrame(cellId)?.setAttribute('data-notebook-active-cell', '')
+  }
+
+  private clearCellSelection() {
+    if (this.activeCellId === undefined) return
+    this.cellFrame(this.activeCellId)?.removeAttribute('data-notebook-active-cell')
+    this.activeCellId = undefined
+  }
+
+  private focusCell(cellId: string) {
+    const frame = this.cellFrame(cellId)
+    if (!frame) return
+    frame.focus({ preventScroll: true })
+    frame.scrollIntoView({ block: 'center', inline: 'nearest' })
+  }
+
+  private selectAdjacentCell(from: RuntimeCell, delta: -1 | 1) {
+    const index = this.payload.cells.findIndex(cell => cell.id === from.id)
+    if (index === -1) return
+    const nextIndex = Math.min(Math.max(index + delta, 0), this.payload.cells.length - 1)
+    const next = this.payload.cells[nextIndex]
+    if (!next) return
+    this.selectCell(next.id)
+    this.focusCell(next.id)
+    this.setStatus(`cell ${nextIndex + 1}/${this.payload.cells.length}`)
+  }
+
+  private cellFromTarget(target: EventTarget | null): RuntimeCell | undefined {
+    if (!(target instanceof Element)) return undefined
+    const frame = target.closest<HTMLElement>('[data-notebook-cell-frame]')
+    if (!frame || !this.cellRoot.contains(frame)) return undefined
+    return this.cellById(frame.dataset.notebookCellFrame)
+  }
+
+  private commandCell(target: EventTarget | null): RuntimeCell | undefined {
+    return this.cellFromTarget(target) ?? this.cellById(this.activeCellId)
+  }
+
+  private targetOwnsKeyboard(target: EventTarget | null): boolean {
+    if (!(target instanceof Element)) return false
+    if (target.closest('.cm-editor')) return true
+    if (target.closest('input, textarea, select, button, a[href], [contenteditable]')) return true
+    return false
+  }
+
+  private siteShortcutLayerActive(): boolean {
+    const palette = document.getElementById('palette-container')
+    if (palette?.classList.contains('active')) return true
+    const shortcuts = document.getElementById('shortcut-container')
+    if (shortcuts?.classList.contains('active')) return true
+    const search = document.querySelector('.search .search-container.active')
+    if (search) return true
+    const headings = document.querySelector<HTMLElement>('.headings-modal-container')
+    return headings?.style.display === 'flex'
+  }
+
+  private claimNotebookKey(event: KeyboardEvent) {
+    event.preventDefault()
+    event.stopPropagation()
+  }
+
+  private handleNotebookKeydown = (event: KeyboardEvent) => {
+    if (event.defaultPrevented || event.ctrlKey || event.metaKey || event.altKey) return
+    if (this.siteShortcutLayerActive() || this.targetOwnsKeyboard(event.target)) {
+      this.pendingKeyPrefix = undefined
+      return
+    }
+    const cell = this.commandCell(event.target)
+    if (!cell) {
+      this.pendingKeyPrefix = undefined
+      return
+    }
+
+    if (event.key === 'g') {
+      this.pendingKeyPrefix = 'g'
+      this.selectCell(cell.id)
+      this.claimNotebookKey(event)
+      return
+    }
+
+    if (this.pendingKeyPrefix === 'g') {
+      this.pendingKeyPrefix = undefined
+      if (event.key === '[' || event.key === ']') {
+        this.claimNotebookKey(event)
+        this.selectAdjacentCell(cell, event.key === '[' ? -1 : 1)
+      }
+      return
+    }
+
+    if (event.key === 'i') {
+      this.selectCell(cell.id)
+      this.claimNotebookKey(event)
+      void this.showSourceEditor(cell, true)
+      return
+    }
+
+    if (event.key !== 'Escape') return
+    const controls = this.sourceControls.get(cell.id)
+    if (controls && !controls.editorHost.hidden) {
+      this.claimNotebookKey(event)
+      this.closeSourceEditor(cell)
+      return
+    }
+    if (this.activeCellId !== undefined) {
+      this.claimNotebookKey(event)
+      this.clearCellSelection()
+    }
   }
 
   private ensureToolbar() {
@@ -476,12 +698,20 @@ class NotebookRuntime {
     this.stopped = false
     for (const cell of this.payload.cells) {
       if (this.stopped) break
-      await this.runCell(cell)
+      const succeeded = await this.runCell(cell)
+      if (!succeeded) {
+        if (!this.stopped) {
+          this.stopped = true
+          this.setStatus(`stopped after ${cell.id}`)
+        }
+        break
+      }
     }
   }
 
-  private runCell = async (cell: RuntimeCell) => {
-    if (this.running) return
+  private runCell = async (cell: RuntimeCell): Promise<boolean> => {
+    if (this.running) return false
+    this.stopped = false
     const source = this.sourceForCell(cell)
     const executionCount = this.nextExecutionCount(cell.id)
     this.running = true
@@ -497,16 +727,13 @@ class NotebookRuntime {
         evalue: unsupported,
         traceback: unsupported,
       })
-      this.running = false
-      this.setExecutionLabel(cell.id, executionCount)
-      this.setRunningControls(false)
-      this.setStatus('idle')
-      return
+      return false
     }
     this.hideSavedOutput(cell.id)
     try {
       await this.ensureWorker()
-      await this.postRun(cell, source)
+      const result = await this.postRun(cell, source)
+      return !result.failed
     } catch (error) {
       const text = error instanceof Error ? error.message : String(error)
       const output: RuntimeErrorOutput = {
@@ -517,6 +744,7 @@ class NotebookRuntime {
       }
       if (this.debug) output.debug = this.debugOutput('client-runtime', cell.id, error)
       this.renderOutput(cell.id, output)
+      return false
     } finally {
       this.running = false
       this.setExecutionLabel(cell.id, executionCount)
@@ -556,9 +784,7 @@ class NotebookRuntime {
 
   private decorateCells() {
     for (const cell of this.payload.cells) {
-      const controls = document.querySelector<HTMLElement>(
-        `[data-notebook-cell="${CSS.escape(cell.id)}"]`,
-      )
+      const controls = this.queryCell<HTMLElement>(`[data-notebook-cell="${CSS.escape(cell.id)}"]`)
       if (!controls) continue
       this.ensureCellControls(cell, controls)
       this.setExecutionLabel(cell.id, cell.executionIndex)
@@ -607,6 +833,15 @@ class NotebookRuntime {
 
   private decorateSourceEditor(cell: RuntimeCell, frame: HTMLElement) {
     if (this.sourceControls.has(cell.id)) return
+    if (!frame.hasAttribute('tabindex')) frame.tabIndex = -1
+    const selectSource = (event: Event) => {
+      this.selectCell(cell.id)
+      if (event.type === 'click' && !this.targetOwnsKeyboard(event.target)) {
+        frame.focus({ preventScroll: true })
+      }
+    }
+    frame.addEventListener('click', selectSource)
+    frame.addEventListener('focusin', selectSource)
     const figure =
       frame.querySelector<HTMLElement>('figure[data-rehype-pretty-code-figure]') ?? undefined
     const actions =
@@ -621,6 +856,8 @@ class NotebookRuntime {
     runButton.type = 'button'
     runButton.dataset.notebookRunCell = cell.id
     setNotebookIconButton(runButton, 'run', `Run ${cell.id}`)
+    const runSource = () => this.runCell(cell)
+    runButton.addEventListener('click', runSource)
 
     const editorHost =
       frame.querySelector<HTMLElement>(`[data-notebook-source-editor="${CSS.escape(cell.id)}"]`) ??
@@ -699,9 +936,12 @@ class NotebookRuntime {
     this.syncSourceControls(cell)
 
     this.addCleanup(() => {
+      runButton.removeEventListener('click', runSource)
       editButton.removeEventListener('click', editSource)
       saveButton.removeEventListener('click', saveSource)
       revertButton.removeEventListener('click', revertSource)
+      frame.removeEventListener('click', selectSource)
+      frame.removeEventListener('focusin', selectSource)
       this.sourceControls.get(cell.id)?.editor?.destroy()
     })
   }
@@ -757,7 +997,7 @@ class NotebookRuntime {
       onSubmit: () => this.runCell(cell),
       onSave: () => this.saveEditorSource(cell),
       onCancel: () => {
-        void this.revertEditorSource(cell)
+        this.closeSourceEditor(cell)
       },
     })
     return controls.editor
@@ -776,6 +1016,16 @@ class NotebookRuntime {
     controls.frame.toggleAttribute('data-notebook-editing', visible)
     this.syncSourceControls(cell)
     if (visible) controls.editor?.focus()
+  }
+
+  private closeSourceEditor(cell: RuntimeCell) {
+    const controls = this.sourceControls.get(cell.id)
+    if (!controls) return
+    if (controls.editor) {
+      controls.source = controls.editor.getValue()
+      if (controls.figure) replaceRenderedSource(controls.figure, controls.source)
+    }
+    void this.showSourceEditor(cell, false)
   }
 
   private saveEditorSource(cell: RuntimeCell) {
@@ -833,15 +1083,13 @@ class NotebookRuntime {
 
   private nextExecutionCount(cellId: string): number {
     this.executionCounter += 1
-    const controls = document.querySelector<HTMLElement>(
-      `[data-notebook-cell="${CSS.escape(cellId)}"]`,
-    )
+    const controls = this.queryCell<HTMLElement>(`[data-notebook-cell="${CSS.escape(cellId)}"]`)
     if (controls) controls.dataset.notebookExecutionCount = String(this.executionCounter)
     return this.executionCounter
   }
 
   private setExecutionLabel(cellId: string, count: number | '*' | null) {
-    const label = document.querySelector<HTMLElement>(
+    const label = this.queryCell<HTMLElement>(
       `[data-notebook-execution-label="${CSS.escape(cellId)}"]`,
     )
     if (!label) return
@@ -867,7 +1115,7 @@ class NotebookRuntime {
     return this.ready
   }
 
-  private async postRun(cell: RuntimeCell, source: string): Promise<void> {
+  private async postRun(cell: RuntimeCell, source: string): Promise<CellRunResult> {
     const modules = await this.notebookModulesFor(source)
     return new Promise((resolve, reject) => {
       this.waiters.set(cell.id, { resolve, reject })
@@ -970,33 +1218,20 @@ class NotebookRuntime {
     this.handleRuntimeMessage(message, this.worker)
   }
 
-  private onDisplayMessage = (event: MessageEvent<unknown>) => {
-    if (this.displayFrame?.contentWindow && event.source !== this.displayFrame.contentWindow) {
-      return
-    }
-    const message = readFrameMessage(event.data)
-    if (!message || message.runtimeId !== this.payload.id) return
-    this.handleRuntimeMessage(message, this.displayFrame?.contentWindow ?? undefined)
-  }
-
-  private handleRuntimeMessage(message: FrameMessage, target: Worker | Window | undefined) {
+  private handleRuntimeMessage(message: FrameMessage, target: Worker | undefined) {
     if (message.type === 'ready') {
       this.readyResolve?.()
       this.readyResolve = undefined
     } else if (message.type === 'output') {
-      const output: NotebookRuntimeOutput =
-        message.output.type === 'html'
-          ? { type: 'html', html: sanitizeHtml(message.output.html) }
-          : message.output
-      if (output.type === 'error' && output.ename === 'UnsupportedRuntimeFeature') {
+      if (message.output.type === 'error' && message.output.ename === 'UnsupportedRuntimeFeature') {
         this.restoreSavedOutput(message.cellId)
       }
-      this.renderOutput(message.cellId, output)
+      this.renderOutput(message.cellId, message.output)
     } else if (message.type === 'done') {
       const waiter = this.waiters.get(message.cellId)
       if (!waiter) return
       this.waiters.delete(message.cellId)
-      waiter.resolve()
+      waiter.resolve({ failed: message.failed })
     } else if (message.type === 'asset') {
       void this.fetchAsset(message, target)
     } else if (message.type === 'file-result') {
@@ -1005,63 +1240,20 @@ class NotebookRuntime {
       if (!waiter) return
       this.runtimeFileWaiters.delete(message.requestId)
       waiter.resolve(message)
-    } else if (message.type === 'display-javascript') {
-      this.runDisplayJavascript(message.cellId, message.code)
     } else if (message.type === 'status') {
       this.setStatus(message.text)
     }
   }
 
-  private ensureDisplayFrame(): Promise<HTMLIFrameElement> {
-    if (this.displayFrame) return Promise.resolve(this.displayFrame)
-    if (this.displayReady) return this.displayReady
-    const iframe = document.createElement('iframe')
-    iframe.className = 'notebook-runtime-frame'
-    iframe.sandbox.add('allow-scripts', 'allow-modals')
-    this.displayReady = new Promise(resolve => {
-      iframe.addEventListener('load', () => {
-        iframe.contentWindow?.postMessage(
-          { source: 'quartz-notebook-runtime', type: 'init', runtimeId: this.payload.id },
-          '*',
-        )
-        resolve(iframe)
-      })
-    })
-    iframe.srcdoc = notebookDisplayFrameSource
-    this.root.appendChild(iframe)
-    this.displayFrame = iframe
-    return this.displayReady
-  }
-
-  private runDisplayJavascript(cellId: string, code: string) {
-    void this.ensureDisplayFrame().then(iframe => {
-      iframe.contentWindow?.postMessage(
-        {
-          source: 'quartz-notebook-runtime',
-          type: 'run-display',
-          runtimeId: this.payload.id,
-          cellId,
-          code,
-          debug: this.debug,
-        },
-        '*',
-      )
-    })
-  }
-
   private async fetchAsset(
     message: Extract<FrameMessage, { type: 'asset' }>,
-    target: Worker | Window | undefined,
+    target: Worker | undefined,
   ) {
     const result = await this.resolveAsset(message)
     if (!target) return
     const transfer = result.bytes ? [result.bytes] : []
     const payload = { source: 'quartz-notebook-runtime', type: 'asset-result', ...result }
-    if (target instanceof Worker) {
-      target.postMessage(payload, transfer)
-    } else {
-      target.postMessage(payload, '*', transfer)
-    }
+    target.postMessage(payload, transfer)
   }
 
   private async resolveAsset(
@@ -1154,21 +1346,14 @@ class NotebookRuntime {
   }
 
   private renderOutput(cellId: string, output: NotebookRuntimeOutput) {
-    const target = document.querySelector<HTMLElement>(
-      `[data-notebook-output="${CSS.escape(cellId)}"]`,
-    )
+    const target = this.queryCell<HTMLElement>(`[data-notebook-output="${CSS.escape(cellId)}"]`)
     if (!target) return
     target.hidden = false
-    target.insertAdjacentHTML(
-      'beforeend',
-      renderNotebookRuntimeOutput(output, { debug: this.debug }),
-    )
+    appendRuntimeOutput(target, output, { debug: this.debug })
   }
 
   private clearOutput(cellId: string) {
-    const target = document.querySelector<HTMLElement>(
-      `[data-notebook-output="${CSS.escape(cellId)}"]`,
-    )
+    const target = this.queryCell<HTMLElement>(`[data-notebook-output="${CSS.escape(cellId)}"]`)
     if (!target) return
     target.replaceChildren()
     target.hidden = true
@@ -1182,9 +1367,7 @@ class NotebookRuntime {
       })
       return
     }
-    const target = document.querySelector<HTMLElement>(
-      `[data-notebook-output="${CSS.escape(cellId)}"]`,
-    )
+    const target = this.queryCell<HTMLElement>(`[data-notebook-output="${CSS.escape(cellId)}"]`)
     if (!target) return
     const saved: HTMLElement[] = []
     let sibling = target.previousElementSibling
@@ -1223,9 +1406,9 @@ class NotebookRuntime {
     this.root
       .querySelector<HTMLButtonElement>('[data-notebook-run-all]')
       ?.toggleAttribute('disabled', running)
-    document
-      .querySelectorAll<HTMLButtonElement>('[data-notebook-run-cell]')
-      .forEach(button => button.toggleAttribute('disabled', running))
+    this.queryCells<HTMLButtonElement>('[data-notebook-run-cell]').forEach(button =>
+      button.toggleAttribute('disabled', running),
+    )
   }
 
   private destroyRuntime() {
@@ -1234,9 +1417,6 @@ class NotebookRuntime {
     this.worker?.terminate()
     this.worker = undefined
     this.runtimeFileWaiters.clear()
-    this.displayFrame?.remove()
-    this.displayFrame = undefined
-    this.displayReady = undefined
     this.ready = undefined
     this.readyResolve = undefined
   }

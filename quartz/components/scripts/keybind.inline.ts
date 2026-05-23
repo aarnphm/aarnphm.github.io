@@ -429,7 +429,10 @@ document.addEventListener('nav', () => {
         // Highlight typed portion
         const typed = hint.slice(0, typedHint.length)
         const remaining = hint.slice(typedHint.length)
-        marker.innerHTML = `<span style="opacity: 0.5">${typed}</span>${remaining}`
+        const typedSpan = document.createElement('span')
+        typedSpan.style.opacity = '0.5'
+        typedSpan.textContent = typed
+        marker.replaceChildren(typedSpan, document.createTextNode(remaining))
       } else {
         marker.style.display = 'none'
       }
@@ -574,11 +577,19 @@ document.addEventListener('nav', () => {
   const shortcuts = container.querySelectorAll(
     'ul[id="shortcut-list"] > li > div[id="shortcuts"]',
   ) as NodeListOf<HTMLElement>
+  const renderShortcut = (node: HTMLElement, binding: string, span: string, prefix?: string) => {
+    node.replaceChildren()
+    const key = document.createElement('kbd')
+    key.className = 'clickable'
+    key.textContent = prefix ? `${prefix} ${binding}` : binding
+    const label = document.createElement('span')
+    label.textContent = span
+    node.append(key, label)
+  }
   for (const short of shortcuts) {
     const binding = short.dataset.key as string
     const span = short.dataset.value as string
 
-    // Check if binding has a prefix (cmd, ctrl, etc.)
     const hasPrefix = binding.includes('--')
 
     if (hasPrefix) {
@@ -590,16 +601,9 @@ document.addEventListener('nav', () => {
         const { mac, def } = spanAliases
         key = browser === 'Safari' ? mac : def
       }
-      short.innerHTML = `
-<kbd class="clickable">${prefix} ${key}</kbd>
-<span>${span}</span>
-`
+      renderShortcut(short, key, span, prefix)
     } else {
-      // Plain keybinding without modifier
-      short.innerHTML = `
-<kbd class="clickable">${binding}</kbd>
-<span>${span}</span>
-`
+      renderShortcut(short, binding, span)
     }
   }
 

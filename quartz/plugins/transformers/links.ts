@@ -35,8 +35,9 @@ import {
   splitAnchor,
   transformLink,
 } from '../../util/path'
+import { hostnameMatches, parseExternalUrl } from '../../util/url'
 import { extractArxivId } from '../stores/citations'
-import { filterEmbedTwitter, twitterUrlRegex } from './twitter'
+import { filterEmbedTwitter } from './twitter'
 
 interface Options {
   enableArxivEmbed: boolean
@@ -86,7 +87,7 @@ const ALLOWED_EXTENSIONS = [
 
 const FALSE_LIKE_STRINGS = new Set(['false', '0', 'no', 'off'])
 
-function metadataDisablesPopover(metadata?: Record<string, any>): boolean {
+function metadataDisablesPopover(metadata?: Record<string, unknown>): boolean {
   if (!metadata) return false
   const value = metadata.popover ?? metadata.noPopover ?? metadata['no-popover']
   if (value === undefined) return false
@@ -104,7 +105,7 @@ interface LinkContext {
   ext: string
   isExternal: boolean
   node: Element
-  metadata?: Record<string, any>
+  metadata?: Record<string, unknown>
 }
 
 export const CrawlLinks: QuartzTransformerPlugin<Partial<Options>> = userOpts => {
@@ -134,9 +135,21 @@ export const CrawlLinks: QuartzTransformerPlugin<Partial<Options>> = userOpts =>
               const classes = (node.properties.className ?? []) as string[]
               let dest = node.properties.href as RelativeURL
               const ext: string = path.extname(dest).toLowerCase()
-              const metadata = JSON.parse((node.properties?.['data-metadata'] ?? '{}') as string)
+              const metadata = JSON.parse(
+                (node.properties?.['data-metadata'] ?? '{}') as string,
+              ) as Record<string, unknown>
 
               const hasProtocol = /^[a-zA-Z][a-zA-Z0-9+.-]*:/.test(dest)
+              const externalUrl = parseExternalUrl(dest)
+              const matchesHost = (hostname: string) => hostnameMatches(externalUrl, hostname)
+              const configuredBaseUrl = cfg.configuration.baseUrl
+              const apexUrl = configuredBaseUrl
+                ? parseExternalUrl(
+                    configuredBaseUrl.includes('://')
+                      ? configuredBaseUrl
+                      : `https://${configuredBaseUrl}`,
+                  )
+                : undefined
 
               const ctx: LinkContext = {
                 classes,
@@ -151,32 +164,33 @@ export const CrawlLinks: QuartzTransformerPlugin<Partial<Options>> = userOpts =>
               }
 
               const linkTypes = {
-                isApexDomain: dest.includes(cfg.configuration.baseUrl!),
+                isApexDomain:
+                  apexUrl !== undefined && hostnameMatches(externalUrl, apexUrl.hostname),
                 isCslNode: classes.includes('csl-external-link'),
                 isEmbedTwitter: filterEmbedTwitter(node),
-                isArxiv: dest.includes('arxiv.org'),
-                isWikipedia: dest.includes('wikipedia.org'),
-                isLessWrong: dest.includes('lesswrong.com'),
-                isBentoml: dest.includes('bentoml.com'),
-                isModular: dest.includes('modular.com'),
-                isSep: dest.includes('plato.stanford.edu'),
-                isYoutube: dest.includes('youtube.com'),
-                isGwern: dest.includes('gwern.net'),
-                isNeovim: dest.includes('neovim.io'),
-                isQuartz: dest.includes('quartz.jzhao.xyz'),
-                isObsidian: dest.includes('obsidian.md'),
-                isGithub: dest.includes('github.com'),
-                isSubstack: dest.includes('substack.com'),
-                isTwitter: twitterUrlRegex.test(dest),
-                isBsky: dest.includes('bsky.app'),
-                isDoi: dest.includes('doi.org'),
-                isOpenai: dest.includes('openai.com'),
-                isHf: dest.includes('huggingface.co'),
-                isYC: dest.includes('ycombinator.com'),
+                isArxiv: matchesHost('arxiv.org'),
+                isWikipedia: matchesHost('wikipedia.org'),
+                isLessWrong: matchesHost('lesswrong.com'),
+                isBentoml: matchesHost('bentoml.com'),
+                isModular: matchesHost('modular.com'),
+                isSep: matchesHost('plato.stanford.edu'),
+                isYoutube: matchesHost('youtube.com') || matchesHost('youtu.be'),
+                isGwern: matchesHost('gwern.net'),
+                isNeovim: matchesHost('neovim.io'),
+                isQuartz: matchesHost('quartz.jzhao.xyz'),
+                isObsidian: matchesHost('obsidian.md'),
+                isGithub: matchesHost('github.com'),
+                isSubstack: matchesHost('substack.com'),
+                isTwitter: matchesHost('x.com') || matchesHost('twitter.com'),
+                isBsky: matchesHost('bsky.app'),
+                isDoi: matchesHost('doi.org'),
+                isOpenai: matchesHost('openai.com'),
+                isHf: matchesHost('huggingface.co'),
+                isYC: matchesHost('ycombinator.com'),
                 isAnthropic:
-                  dest.includes('transformer-circuits.pub') || dest.includes('anthropic.com'),
-                isGoogleDocs: dest.includes('docs.google.com'),
-                isGoogleDrive: dest.includes('drive.google.com'),
+                  matchesHost('transformer-circuits.pub') || matchesHost('anthropic.com'),
+                isGoogleDocs: matchesHost('docs.google.com'),
+                isGoogleDrive: matchesHost('drive.google.com'),
               }
 
               if (linkTypes.isBentoml) {

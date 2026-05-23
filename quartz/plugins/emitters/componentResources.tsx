@@ -56,6 +56,7 @@ import { write } from './helpers'
 const name = 'ComponentResources'
 const collaborativeCommentsClientEntry =
   'quartz/components/scripts/collaborative-comments.client.ts'
+const notebookRuntimeInlineEntry = 'quartz/components/scripts/notebook-runtime.inline.ts'
 const notebookRuntimeClientEntry = 'quartz/components/scripts/notebook-runtime.client.ts'
 const notebookRuntimeWorkerEntry = 'quartz/components/scripts/notebook-runtime.pyodide.js'
 const notebookRuntimeBootstrapEntry = 'quartz/components/scripts/notebook-runtime.pyodide.py'
@@ -66,7 +67,7 @@ const notebookRuntimeAssetEntries = new Set([
   notebookRuntimeWorkerEntry,
   notebookRuntimeBootstrapEntry,
   notebookRuntimeMlBridgeEntry,
-  'quartz/components/scripts/notebook-runtime.frame.html',
+  'quartz/util/notebook-runtime.ts',
   'quartz/components/scripts/notebook-code-editor.ts',
 ])
 
@@ -122,6 +123,26 @@ async function joinScripts(scripts: string[]): Promise<string> {
   const res = await transpile(script, { minify: true })
 
   return res.code
+}
+
+function notebookRuntimeInlineResourceIndex(componentResources: ComponentResources): number {
+  return componentResources.afterDOMLoaded.findIndex(
+    script =>
+      script.includes('notebookRuntimeScriptUrl') && script.includes('data-notebook-runtime-data'),
+  )
+}
+
+async function refreshNotebookRuntimeInlineResource(componentResources: ComponentResources) {
+  const index = notebookRuntimeInlineResourceIndex(componentResources)
+  if (index < 0) return
+  componentResources.afterDOMLoaded[index] = await fs.readFile(notebookRuntimeInlineEntry, 'utf8')
+}
+
+async function currentComponentResources(ctx: BuildCtx): Promise<ComponentResources> {
+  const componentResources = getComponentResources(ctx)
+  await refreshNotebookRuntimeInlineResource(componentResources)
+  addGlobalPageResources(ctx, componentResources)
+  return componentResources
 }
 
 async function writeScriptBundleOutput(ctx: BuildCtx, outputFile: { path: string; text: string }) {
@@ -240,6 +261,10 @@ function isNotebookRuntimeAssetChange(changePath: string): boolean {
   return notebookRuntimeAssetEntries.has(changePath)
 }
 
+function isNotebookRuntimePageScriptChange(changePath: string): boolean {
+  return changePath === notebookRuntimeInlineEntry
+}
+
 function isCollaborativeCommentsAssetChange(changePath: string): boolean {
   return (
     changePath === collaborativeCommentsClientEntry ||
@@ -309,7 +334,7 @@ export const ComponentResources: QuartzEmitterPlugin = () => {
     async *emit(ctx, _content, resources) {
       const cfg = ctx.cfg.configuration
       // component specific scripts and styles
-      const componentResources = getComponentResources(ctx)
+      const componentResources = await currentComponentResources(ctx)
       let googleFontsStyleSheet = ''
       if (cfg.theme.fontOrigin === 'local') {
         // let the user do it themselves in css
@@ -345,11 +370,6 @@ export const ComponentResources: QuartzEmitterPlugin = () => {
           })
         }
       }
-
-      // important that this goes *after* component scripts
-      // as the "nav" event gets triggered here and we should make sure
-      // that everyone else had the chance to register a listener for it
-      addGlobalPageResources(ctx, componentResources)
 
       const stylesheet = joinStyles(
         ctx.cfg.configuration.theme,
@@ -430,6 +450,17 @@ export const ComponentResources: QuartzEmitterPlugin = () => {
         for (const file of await writeNotebookRuntimeAssets(ctx)) {
           yield file
         }
+      }
+
+      if (changeEvents.some(changeEvent => isNotebookRuntimePageScriptChange(changeEvent.path))) {
+        const componentResources = await currentComponentResources(ctx)
+        const [prescript, postscript] = await Promise.all([
+          joinScripts(componentResources.beforeDOMLoaded),
+          joinScripts(componentResources.afterDOMLoaded),
+        ])
+
+        yield write({ ctx, slug: 'prescript' as FullSlug, ext: '.js', content: prescript })
+        yield write({ ctx, slug: 'postscript' as FullSlug, ext: '.js', content: postscript })
       }
 
       if (changeEvents.some(changeEvent => isCollaborativeCommentsAssetChange(changeEvent.path))) {

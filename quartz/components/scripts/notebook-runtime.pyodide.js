@@ -285,10 +285,29 @@ function sandboxFetch(input, cellId) {
     throw error
   })
 }
-async function executeDisplayJavascript(code) {
+async function emitDisplayJavascriptText(code) {
   const cellId = currentCellId
   if (!cellId) return
-  post({ type: 'display-javascript', cellId, code: textOf(code) })
+  emitOutputForCell(cellId, { type: 'text', text: textOf(code) })
+}
+function hasDisplayMime(data, mime) {
+  return Object.prototype.hasOwnProperty.call(data, mime)
+}
+function jsonTextOf(value) {
+  if (typeof value === 'string') {
+    const text = value.trim()
+    if (!text) return ''
+    try {
+      return JSON.stringify(JSON.parse(text), null, 2)
+    } catch {
+      return value
+    }
+  }
+  try {
+    return JSON.stringify(value, null, 2) || textOf(value)
+  } catch {
+    return textOf(value)
+  }
 }
 function handleDisplayPayload(serialized) {
   let data
@@ -300,8 +319,10 @@ function handleDisplayPayload(serialized) {
   }
   if (data['text/html']) {
     emitOutput({ type: 'html', html: textOf(data['text/html']) })
+  } else if (hasDisplayMime(data, 'application/json')) {
+    emitOutput({ type: 'json', text: jsonTextOf(data['application/json']) })
   } else if (data['application/javascript']) {
-    executeDisplayJavascript(textOf(data['application/javascript'])).catch(emitError)
+    emitDisplayJavascriptText(textOf(data['application/javascript'])).catch(emitError)
   } else if (data['text/plain']) {
     emitOutput({ type: 'text', text: textOf(data['text/plain']) })
   }
@@ -816,10 +837,17 @@ function timeitDirective(line) {
     number ?? 'None'
   }, ${repeat ?? 'None'})`
 }
+function timeDirective(line) {
+  const match = line.match(/^(\s*)%time\b(.*)$/)
+  if (!match) return undefined
+  const statement = match[2].trim()
+  if (!statement) throw new Error('%time requires a statement')
+  return `${match[1]}__quartz_time(${JSON.stringify(statement)}, globals(), locals())`
+}
 function translateLineMagics(code) {
   return code
     .split(/\r?\n/)
-    .map(line => timeitDirective(line) ?? line)
+    .map(line => timeitDirective(line) ?? timeDirective(line) ?? line)
     .join('\n')
 }
 function notebookPath(filename) {
@@ -924,7 +952,8 @@ function unsupportedReason(code) {
       if (shell.error) return shell.error
       continue
     }
-    if (trimmed.startsWith('%timeit')) continue
+    if (/^%timeit(?:\s|$)/.test(trimmed)) continue
+    if (/^%time(?:\s|$)/.test(trimmed)) continue
     if (trimmed.startsWith('%%')) return 'cell magics are unavailable in the browser runtime'
     if (trimmed.startsWith('%')) return 'IPython magics are unavailable in the browser runtime'
     if (trimmed.startsWith('!')) return 'shell escapes are unavailable in the browser runtime'
@@ -969,11 +998,12 @@ async function runCell(message) {
       evalue: reason,
       traceback: reason,
     })
-    post({ type: 'done', cellId: message.cellId })
+    post({ type: 'done', cellId: message.cellId, failed: true })
     currentCellId = ''
     return
   }
   let phase = 'preparing cell'
+  let failed = false
   try {
     const prepared = stripPackageDirectives(message.code)
     prepared.code = translateLineMagics(prepared.code)
@@ -1041,6 +1071,7 @@ async function runCell(message) {
       result.destroy()
     }
   } catch (error) {
+    failed = true
     flushStreamsForCell(message.cellId)
     if (phase === 'running python') {
       emitPythonError(error, phase)
@@ -1049,7 +1080,7 @@ async function runCell(message) {
     }
   } finally {
     flushStreamsForCell(message.cellId)
-    post({ type: 'done', cellId: message.cellId })
+    post({ type: 'done', cellId: message.cellId, failed })
     currentCellId = ''
     debugEnabled = false
     lastPythonError = undefined

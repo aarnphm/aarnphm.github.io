@@ -340,7 +340,7 @@ class JaxArray:
     return self
 
   def tolist(self):
-    return json.loads(str(js.quartz_notebook_ml_tojson.dumps(self._quartz_ml_id)))
+    return json.loads(str(js.quartz_notebook_ml_to_json(self._quartz_ml_id)))
 
   def item(self):
     return js.quartz_notebook_ml_item(self._quartz_ml_id)
@@ -866,13 +866,55 @@ class HTML(_QuartzDisplayObject):
     return '<IPython.core.display.HTML object>'
 
 
+def _quartz_jsonable(value, seen=None):
+  if value is None or isinstance(value, (bool, int, float, str)):
+    return value
+  if seen is None:
+    seen = set()
+  value_id = id(value)
+  if value_id in seen:
+    raise TypeError('cyclic notebook values cannot be displayed as JSON')
+  if isinstance(value, dict):
+    seen.add(value_id)
+    try:
+      return {str(key): _quartz_jsonable(item, seen) for key, item in value.items()}
+    finally:
+      seen.remove(value_id)
+  if isinstance(value, (list, tuple)):
+    seen.add(value_id)
+    try:
+      return [_quartz_jsonable(item, seen) for item in value]
+    finally:
+      seen.remove(value_id)
+  if isinstance(value, set):
+    seen.add(value_id)
+    try:
+      return [_quartz_jsonable(item, seen) for item in sorted(value, key=repr)]
+    finally:
+      seen.remove(value_id)
+  if hasattr(value, 'tolist'):
+    return _quartz_jsonable(value.tolist(), seen)
+  raise TypeError(f'notebook value is not JSON-displayable: {type(value).__name__}')
+
+
+def _quartz_json_display_bundle(value):
+  if not isinstance(value, (dict, list, tuple, set)):
+    return None
+  text = json.dumps(_quartz_jsonable(value), ensure_ascii=False, indent=2, sort_keys=True)
+  return {'application/json': text, 'text/plain': text}
+
+
 def display(*objects):
   for obj in objects:
     if hasattr(obj, '_repr_mimebundle_'):
       data, _metadata = obj._repr_mimebundle_()
       js.quartz_notebook_display(json.dumps(data))
     else:
-      js.quartz_notebook_display(json.dumps({'text/plain': str(obj)}))
+      try:
+        data = _quartz_json_display_bundle(obj)
+      except Exception:
+        data = None
+      js.quartz_notebook_display(json.dumps(data if data is not None else {'text/plain': str(obj)}))
 
 
 display_module = types.ModuleType('IPython.display')
@@ -913,6 +955,29 @@ def __quartz_timeit(statement, global_ns, local_ns, number=None, repeat=None):
     durations.append(time.perf_counter() - started)
   best = min(durations) / max(runs, 1)
   print(f'{_format_timeit(best)} per loop (best of {repeats}, {runs} loops each)')
+
+
+def __quartz_time(statement, global_ns, local_ns):
+  try:
+    code = compile(statement, '<time>', 'eval')
+    evaluate = True
+  except SyntaxError:
+    code = compile(statement, '<time>', 'exec')
+    evaluate = False
+  process_started = time.process_time()
+  started = time.perf_counter()
+  if evaluate:
+    value = eval(code, global_ns, local_ns)
+  else:
+    exec(code, global_ns, local_ns)
+    value = None
+  process_elapsed = time.process_time() - process_started
+  wall_elapsed = time.perf_counter() - started
+  print(
+    f'CPU times: user {_format_timeit(process_elapsed)}, sys: 0 ns, total: {_format_timeit(process_elapsed)}'
+  )
+  print(f'Wall time: {_format_timeit(wall_elapsed)}')
+  return value
 
 
 def __quartz_notebook_relative_path(filename, allow_dot=False):

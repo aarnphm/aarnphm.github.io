@@ -334,6 +334,18 @@ describe('notebook parser', () => {
 
     assert(frame)
     assert(findElement(frame, node => node.tagName === 'pre'))
+    const runtimeCell = findElement(
+      frame,
+      node => node.tagName === 'div' && node.properties?.dataNotebookCell === 'cell-1',
+    )
+    assert(runtimeCell)
+    assert(
+      findElement(
+        runtimeCell,
+        node => node.tagName === 'span' && node.properties?.dataNotebookExecutionLabel === 'cell-1',
+      ),
+    )
+    assert(!findElement(runtimeCell, node => node.tagName === 'p'))
     assert(
       findElement(
         frame,

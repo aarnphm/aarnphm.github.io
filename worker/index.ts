@@ -399,8 +399,8 @@ export default {
           return new Response(`resend error for ${recipients}: ${body}`, { status: 502 })
         }
       } catch (err) {
-        const message = err instanceof Error ? err.message : String(err)
-        return new Response(message, { status: 500 })
+        console.error('resend request failed', err)
+        return new Response('email dispatch failed', { status: 500 })
       }
 
       return new Response(JSON.stringify({ ok: true, sent: recipients.length }), {

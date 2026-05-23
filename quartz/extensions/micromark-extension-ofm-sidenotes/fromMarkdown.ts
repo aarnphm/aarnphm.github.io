@@ -249,22 +249,69 @@ function parseLabelNodes(
 
 function parseProperties(raw: string): Record<string, string | string[]> {
   const props: Record<string, string | string[]> = {}
+  let index = 0
 
-  const regex = /(\w+)\s*:\s*((?:\[\[[^\]]+\]\]\s*,?\s*)+|[^,]+?)(?=\s*,\s*\w+\s*:|$)/g
-  let match: RegExpExecArray | null
-
-  while ((match = regex.exec(raw)) !== null) {
-    const key = match[1]?.trim()
-    if (!key) continue
-
-    const value = (match[2] ?? '').trim()
-
-    if (value.includes('[[')) {
-      const wikilinks = value.match(/\[\[[^\]]+\]\]/g) || []
-      props[key] = wikilinks.length > 0 ? wikilinks : value
-    } else {
-      props[key] = value
+  const isNameChar = (char: string | undefined) => char !== undefined && /[A-Za-z0-9_]/.test(char)
+  const skipSpace = () => {
+    while (index < raw.length && /\s/.test(raw[index])) index += 1
+  }
+  const hasNextKey = (start: number): boolean => {
+    let cursor = start
+    while (cursor < raw.length && /\s/.test(raw[cursor])) cursor += 1
+    if (!isNameChar(raw[cursor])) return false
+    while (cursor < raw.length && isNameChar(raw[cursor])) cursor += 1
+    while (cursor < raw.length && /\s/.test(raw[cursor])) cursor += 1
+    return raw[cursor] === ':'
+  }
+  const extractWikilinks = (value: string): string[] => {
+    const links: string[] = []
+    let cursor = 0
+    while (cursor < value.length) {
+      const start = value.indexOf('[[', cursor)
+      if (start === -1) break
+      const end = value.indexOf(']]', start + 2)
+      if (end === -1) break
+      links.push(value.slice(start, end + 2))
+      cursor = end + 2
     }
+    return links
+  }
+
+  while (index < raw.length) {
+    skipSpace()
+    if (raw[index] === ',') {
+      index += 1
+      continue
+    }
+
+    const keyStart = index
+    while (index < raw.length && isNameChar(raw[index])) index += 1
+    const key = raw.slice(keyStart, index).trim()
+    skipSpace()
+    if (!key || raw[index] !== ':') break
+    index += 1
+    skipSpace()
+
+    const valueStart = index
+    let wikilinkDepth = 0
+    while (index < raw.length) {
+      if (raw.startsWith('[[', index)) {
+        wikilinkDepth += 1
+        index += 2
+        continue
+      }
+      if (raw.startsWith(']]', index) && wikilinkDepth > 0) {
+        wikilinkDepth -= 1
+        index += 2
+        continue
+      }
+      if (raw[index] === ',' && wikilinkDepth === 0 && hasNextKey(index + 1)) break
+      index += 1
+    }
+
+    const value = raw.slice(valueStart, index).trim()
+    const wikilinks = extractWikilinks(value)
+    props[key] = wikilinks.length > 0 ? wikilinks : value
   }
 
   return props

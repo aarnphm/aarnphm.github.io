@@ -7,10 +7,6 @@ describe('worker entry matching', () => {
     assert.strictEqual(workerEntryPattern, 'quartz/**/*.worker.ts')
     assert.strictEqual(isWorkerEntryPath('quartz/workers/semantic.worker.ts'), true)
     assert.strictEqual(
-      isWorkerEntryPath('quartz/components/scripts/notebook-runtime.frame.html'),
-      false,
-    )
-    assert.strictEqual(
       isWorkerEntryPath('quartz/components/scripts/notebook-runtime.worker.html'),
       false,
     )
