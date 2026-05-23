@@ -60,6 +60,8 @@ const notebookRuntimeClientEntry = 'quartz/components/scripts/notebook-runtime.c
 const notebookRuntimeWorkerEntry = 'quartz/components/scripts/notebook-runtime.pyodide.js'
 const notebookRuntimeBootstrapEntry = 'quartz/components/scripts/notebook-runtime.pyodide.py'
 const notebookRuntimeMlBridgeEntry = 'quartz/components/scripts/notebook-runtime.ml.js'
+const notebookLspWorkerSource = 'node_modules/browser-basedpyright/dist/pyright.worker.js'
+const notebookLspWorkerSlug = 'pyright.worker'
 const emojiAssetSourceDir = 'quartz/util/emojimap'
 const notebookRuntimeAssetEntries = new Set([
   notebookRuntimeClientEntry,
@@ -195,6 +197,8 @@ async function writeNotebookRuntimeAssets(ctx: BuildCtx): Promise<FilePath[]> {
     platform: 'browser',
     format: 'esm',
     outfile: path.join(outdir, 'notebook-runtime.worker.js'),
+    define: { 'globalThis.process': 'undefined' },
+    external: ['fs'],
     loader: { '.py': 'text' },
     write: false,
   })

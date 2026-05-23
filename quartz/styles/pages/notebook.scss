@@ -132,6 +132,67 @@ article.notebook-page {
         padding: 0;
       }
 
+      .cm-panels {
+        position: static;
+        inset-inline: auto;
+        z-index: 1;
+        box-sizing: border-box;
+        margin: 0.45rem -0.75rem -0.6rem;
+        border: 0;
+        background: transparent;
+        color: var(--dark);
+        font-family: var(--codeFont);
+        font-size: inherit;
+        line-height: inherit;
+      }
+
+      .cm-panels-bottom {
+        border-top: 1px solid color-mix(in srgb, var(--lightgray) 72%, transparent);
+      }
+
+      .cm-panel.cm-vim-panel {
+        display: flex;
+        align-items: center;
+        box-sizing: border-box;
+        min-height: 1.65rem;
+        padding: 0.18rem 0.75rem;
+        background: color-mix(in srgb, var(--notebook-editor-surface) 78%, var(--light));
+        color: var(--dark);
+        font-family: var(--codeFont);
+        font-size: 0.78rem;
+        line-height: 1.35;
+      }
+
+      .cm-vim-panel div,
+      .cm-vim-panel span {
+        min-width: 0;
+        font-family: inherit !important;
+      }
+
+      .cm-vim-panel input {
+        box-sizing: border-box;
+        width: 100%;
+        min-width: 0;
+        height: 1.2rem;
+        padding: 0;
+        border: 0;
+        outline: 0;
+        background: transparent;
+        color: inherit;
+        caret-color: var(--secondary);
+        font: inherit;
+      }
+
+      .cm-vim-panel input::selection {
+        background: var(--highlight);
+      }
+
+      .cm-vim-message {
+        color: var(--secondary);
+        font-family: var(--codeFont);
+        white-space: pre-wrap;
+      }
+
       &[data-notebook-source-editor] {
         field-sizing: content;
         resize: none;
@@ -348,6 +409,12 @@ article.notebook-page {
     white-space: pre;
   }
 
+  pre.notebook-output-stream {
+    max-height: min(18rem, 45vh);
+    overflow: auto;
+    overscroll-behavior: contain;
+  }
+
   .notebook-output > samp {
     display: block;
     font: inherit;
@@ -365,18 +432,8 @@ article.notebook-page {
     line-height: 1;
   }
 
-  .notebook-output-stream-stderr,
-  .notebook-output-error {
-    border-left-color: var(--secondary);
-  }
-
   .notebook-output-debug {
-    border-left-color: var(--tertiary);
     background: color-mix(in srgb, var(--light) 88%, var(--lightgray));
-  }
-
-  .notebook-output-stream-stdin {
-    border-left-color: var(--tertiary);
   }
 
   .notebook-output-html,

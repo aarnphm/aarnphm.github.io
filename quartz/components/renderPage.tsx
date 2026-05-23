@@ -1972,7 +1972,15 @@ export function renderPage(
   if (slug === 'index' && !skipSearch) {
     components = {
       ...components,
-      header: [Image(), Graph(), Search(), Palette(), Keybind(), CodeCopy(), Darkmode()],
+      header: [
+        Image(),
+        Graph({ localGraph: undefined }),
+        Search(),
+        Palette(),
+        Keybind(),
+        CodeCopy(),
+        Darkmode(),
+      ],
       sidebar: [],
       afterBody: [],
       beforeBody: [],

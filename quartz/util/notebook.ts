@@ -105,6 +105,7 @@ const attachmentMimeTypes = ['image/png', 'image/jpeg', 'image/gif', 'image/webp
 const htmlImageSrcPattern = /(<img\b[^>]*\bsrc\s*=\s*)(?:"([^"]*)"|'([^']*)'|([^\s>]+))/gi
 const markdownImagePattern = /(!\[[^\]]*\]\()(\s*)([^)\s]+)([^)]*\))/g
 const standaloneHtmlImageLinePattern = /^\s*<img\b[^>\n]*>(?:\s*<\/img>)?\s*$/i
+const markdownFenceLinePattern = /^( {0,3})(`{3,}|~{3,})(.*)$/
 
 function languageName(notebook: NotebookDocument): string {
   const metadata = isRecord(notebook.metadata) ? notebook.metadata : {}
@@ -430,6 +431,7 @@ function notebookCell(
     let resolved = resolveMarkdownAttachments(source, cell.attachments)
     resolved = resolveNotebookImagePaths(resolved, sourcePath)
     resolved = separateStandaloneHtmlImageLines(resolved)
+    resolved = closeDanglingMarkdownFence(resolved)
     let titleHeadingRemoved = false
     if (titleHeading) {
       const stripped = stripFirstTitleHeading(resolved, titleHeading)
@@ -540,6 +542,25 @@ function separateStandaloneHtmlImageLines(source: string): string {
     }
   }
   return result.join('\n')
+}
+
+function closeDanglingMarkdownFence(source: string): string {
+  let open: { marker: string; length: number } | undefined
+  for (const line of source.split(/\r?\n/)) {
+    const match = line.match(markdownFenceLinePattern)
+    if (!match) continue
+    const fence = match[2]
+    const marker = fence[0]
+    if (open) {
+      if (marker === open.marker && fence.length >= open.length && match[3].trim() === '') {
+        open = undefined
+      }
+      continue
+    }
+    open = { marker, length: fence.length }
+  }
+  if (!open) return source
+  return `${source}${source.endsWith('\n') ? '' : '\n'}${open.marker.repeat(open.length)}`
 }
 
 export function notebookToMarkdown(

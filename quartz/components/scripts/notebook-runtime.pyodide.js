@@ -1,3 +1,4 @@
+import loadWabt from 'wabt'
 import { ensureNotebookMlRuntime, installNotebookMlBridge } from './notebook-runtime.ml.js'
 import notebookRuntimeBootstrap from './notebook-runtime.pyodide.py'
 
@@ -13,6 +14,7 @@ const stderrDecoder = new TextDecoder()
 let stdlibModules
 let debugEnabled = false
 let lastPythonError
+let wabtRuntime
 const loadedPackageRequests = new Set()
 const ignoredImportPackages = new Set([
   'import_ipynb',
@@ -118,6 +120,26 @@ const unsupportedNativePackages = new Map([
     'triton',
     'Triton requires native compiler/runtime support outside this browser Pyodide runtime. Use QUARTZ_NOTEBOOK_MODE=execute or a Colab/server runtime for this cell.',
   ],
+])
+const wat2wasmFeatureFlags = new Map([
+  ['--enable-annotations', 'annotations'],
+  ['--enable-bulk-memory', 'bulk_memory'],
+  ['--enable-code-metadata', 'code_metadata'],
+  ['--enable-exceptions', 'exceptions'],
+  ['--enable-extended-const', 'extended_const'],
+  ['--enable-function-references', 'function_references'],
+  ['--enable-gc', 'gc'],
+  ['--enable-memory64', 'memory64'],
+  ['--enable-multi-memory', 'multi_memory'],
+  ['--enable-multi-value', 'multi_value'],
+  ['--enable-mutable-globals', 'mutable_globals'],
+  ['--enable-reference-types', 'reference_types'],
+  ['--enable-relaxed-simd', 'relaxed_simd'],
+  ['--enable-saturating-float-to-int', 'sat_float_to_int'],
+  ['--enable-sign-extension', 'sign_extension'],
+  ['--enable-simd', 'simd'],
+  ['--enable-tail-call', 'tail_call'],
+  ['--enable-threads', 'threads'],
 ])
 function post(message, transfer) {
   globalThis.postMessage({ source, runtimeId, ...message }, transfer || [])
@@ -356,9 +378,100 @@ function browserRuntimeDirective(line) {
   if (/^%autoreload(?:\s|$)/.test(trimmed)) return {}
   if (/^%matplotlib(?:\s|$)/.test(trimmed)) return {}
 }
+function writeFileDirective(code) {
+  const lines = code.split(/\r?\n/)
+  const first = lines[0]?.trim() ?? ''
+  if (!first.startsWith('%%writefile')) return undefined
+  const words = shellWords(first.replace(/^%%writefile\b/, '').trim())
+  let append = false
+  let filename = ''
+  for (const word of words) {
+    if (word === '-a') {
+      append = true
+      continue
+    }
+    if (word.startsWith('-')) {
+      return { error: `%%writefile option ${word} is unavailable in the browser runtime` }
+    }
+    if (filename) return { error: '%%writefile accepts one file name' }
+    filename = word
+  }
+  if (!filename) return { error: '%%writefile requires a file name' }
+  return { filename, append, content: lines.slice(1).join('\n') }
+}
+function defaultWasmOutputPath(input) {
+  return input.replace(/(?:\.wat)?$/i, '.wasm')
+}
+function wat2wasmDirective(command) {
+  const words = shellWords(command)
+  if (words[0] !== 'wat2wasm') return undefined
+  let input = ''
+  let output = ''
+  const features = {}
+  for (let index = 1; index < words.length; index += 1) {
+    const word = words[index]
+    if (word === '-o' || word === '--output') {
+      index += 1
+      if (!words[index]) return { error: `${word} requires a file name` }
+      output = words[index]
+      continue
+    }
+    if (word.startsWith('-o') && word.length > 2) {
+      output = word.slice(2)
+      continue
+    }
+    if (word.startsWith('--output=')) {
+      output = word.slice('--output='.length)
+      continue
+    }
+    const feature = wat2wasmFeatureFlags.get(word)
+    if (feature) {
+      features[feature] = true
+      continue
+    }
+    if (word.startsWith('--disable-')) {
+      const enabledFlag = `--enable-${word.slice('--disable-'.length)}`
+      const disabledFeature = wat2wasmFeatureFlags.get(enabledFlag)
+      if (!disabledFeature) {
+        return { error: `wat2wasm option ${word} is unavailable in the browser runtime` }
+      }
+      features[disabledFeature] = false
+      continue
+    }
+    if (word.startsWith('-')) {
+      return { error: `wat2wasm option ${word} is unavailable in the browser runtime` }
+    }
+    if (input) return { error: 'wat2wasm accepts one input file' }
+    input = word
+  }
+  if (!input) return { error: 'wat2wasm requires an input file' }
+  return { input, output: output || defaultWasmOutputPath(input), features }
+}
+function shellDirective(line) {
+  const trimmed = line.trim()
+  if (!trimmed.startsWith('!')) return undefined
+  const command = trimmed.slice(1).trim()
+  if (/^cat(?:\s|$)/.test(command)) return { command }
+  const wat2wasm = wat2wasmDirective(command)
+  if (wat2wasm) return wat2wasm.error ? { error: wat2wasm.error } : { wat2wasm }
+  return { error: 'shell escapes are unavailable in the browser runtime' }
+}
 function stripPackageDirectives(code) {
+  const writeFile = writeFileDirective(code)
+  if (writeFile) {
+    if (writeFile.error) throw new Error(writeFile.error)
+    return {
+      code: `__quartz_writefile(${JSON.stringify(writeFile.filename)}, ${JSON.stringify(
+        writeFile.content,
+      )}, ${writeFile.append ? 'True' : 'False'})`,
+      requirements: [],
+      shellCommands: [],
+      warnings: [],
+    }
+  }
   const lines = []
   const requirements = []
+  const shellCommands = []
   const warnings = []
   for (const line of code.split(/\r?\n/)) {
     const directive = pipInstallDirective(line)
@@ -373,9 +486,19 @@ function stripPackageDirectives(code) {
       if (runtimeDirective.warning) warnings.push(runtimeDirective.warning)
       continue
     }
+    const shell = shellDirective(line)
+    if (shell) {
+      if (shell.error) throw new Error(shell.error)
+      if (shell.wat2wasm) {
+        shellCommands.push({ type: 'wat2wasm', ...shell.wat2wasm })
+        continue
+      }
+      lines.push(`__quartz_shell(${JSON.stringify(shell.command)})`)
+      continue
+    }
     lines.push(line)
   }
-  return { code: lines.join('\n'), requirements, warnings }
+  return { code: lines.join('\n'), requirements, shellCommands, warnings }
 }
 function packageRootName(requirement) {
   const match = requirement.trim().match(/^['"]?([A-Za-z0-9_.-]+)/)
@@ -565,7 +688,73 @@ function translateLineMagics(code) {
     .map(line => timeitDirective(line) ?? line)
     .join('\n')
 }
+function notebookPath(filename) {
+  const path = textOf(filename).trim().replaceAll('\\', '/')
+  const parts = []
+  for (const part of path.split('/')) {
+    if (!part || part === '.') continue
+    if (part === '..') throw new Error(`notebook file path is unavailable: ${filename}`)
+    parts.push(part)
+  }
+  if (path.startsWith('/') || parts.length === 0) {
+    throw new Error(`notebook file path is unavailable: ${filename}`)
+  }
+  return parts.join('/')
+}
+function contentTypeForPath(path) {
+  if (/\.wasm$/i.test(path)) return 'application/wasm'
+  if (/\.wat$/i.test(path)) return 'text/plain'
+  return 'application/octet-stream'
+}
+function copyArrayBuffer(bytes) {
+  return bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength)
+}
+function readRuntimeBinaryFile(path) {
+  if (!pyodide) throw new Error('runtime filesystem is unavailable')
+  const normalized = notebookPath(path)
+  const bytes = pyodide.FS.readFile(normalized)
+  return {
+    path: normalized,
+    contentType: contentTypeForPath(normalized),
+    bytes: copyArrayBuffer(bytes),
+  }
+}
+function readRuntimeTextFile(path) {
+  if (!pyodide) throw new Error('runtime filesystem is unavailable')
+  return pyodide.FS.readFile(notebookPath(path), { encoding: 'utf8' })
+}
+function writeRuntimeBinaryFile(path, bytes) {
+  if (!pyodide) throw new Error('runtime filesystem is unavailable')
+  pyodide.FS.writeFile(notebookPath(path), bytes)
+}
+async function ensureWabt() {
+  if (!wabtRuntime) wabtRuntime = await loadWabt()
+  return wabtRuntime
+}
+async function runWat2Wasm(command) {
+  setRuntimeStatus(`running wat2wasm ${command.input}`)
+  const wabt = await ensureWabt()
+  const wat = readRuntimeTextFile(command.input)
+  const module = wabt.parseWat(command.input, wat, command.features)
+  try {
+    module.resolveNames()
+    module.validate(command.features)
+    const binary = module.toBinary({ write_debug_names: true })
+    writeRuntimeBinaryFile(command.output, binary.buffer)
+  } finally {
+    module.destroy()
+  }
+}
+async function runNotebookShellCommands(commands) {
+  for (const command of commands) {
+    if (command.type === 'wat2wasm') {
+      await runWat2Wasm(command)
+    }
+  }
+}
 function unsupportedReason(code) {
+  const writeFile = writeFileDirective(code)
+  if (writeFile) return writeFile.error
   for (const line of code.split(/\r?\n/)) {
     const trimmed = line.trim()
     if (!trimmed) continue
@@ -577,6 +766,11 @@ function unsupportedReason(code) {
     const runtimeDirective = browserRuntimeDirective(trimmed)
     if (runtimeDirective) {
       if (runtimeDirective.error) return runtimeDirective.error
+      continue
+    }
+    const shell = shellDirective(trimmed)
+    if (shell) {
+      if (shell.error) return shell.error
       continue
     }
     if (trimmed.startsWith('%timeit')) continue
@@ -632,6 +826,7 @@ async function runCell(message) {
   try {
     const prepared = stripPackageDirectives(message.code)
     prepared.code = translateLineMagics(prepared.code)
+    const shellCommands = [...prepared.shellCommands]
     const directiveWarnings = [...prepared.warnings]
     phase = 'loading pyodide'
     const runtime = await ensurePyodide(message.pyodideIndexUrl)
@@ -653,6 +848,7 @@ async function runCell(message) {
         const preparedModule = stripPackageDirectives(module.source)
         preparedModule.code = translateLineMagics(preparedModule.code)
         moduleRequirements.push(...preparedModule.requirements)
+        shellCommands.push(...preparedModule.shellCommands)
         directiveWarnings.push(...preparedModule.warnings)
         const runtimeModule = {
           name: module.name,
@@ -667,6 +863,7 @@ async function runCell(message) {
       }
     }
     emitDirectiveWarnings(directiveWarnings)
+    await runNotebookShellCommands(shellCommands)
     if (usesNotebookMlRuntime(prepared.code, modules)) {
       phase = 'loading notebook ml runtime'
       setRuntimeStatus('loading webgpu')
@@ -730,5 +927,31 @@ globalThis.addEventListener('message', event => {
         headers: { 'content-type': message.contentType || 'application/octet-stream' },
       }),
     )
+  } else if (message.type === 'file' && message.runtimeId === runtimeId) {
+    try {
+      const file = readRuntimeBinaryFile(message.path)
+      post(
+        {
+          type: 'file-result',
+          requestId: message.requestId,
+          ok: true,
+          status: 200,
+          statusText: 'OK',
+          contentType: file.contentType,
+          bytes: file.bytes,
+        },
+        [file.bytes],
+      )
+    } catch (error) {
+      post({
+        type: 'file-result',
+        requestId: message.requestId,
+        ok: false,
+        status: 404,
+        statusText: 'Not Found',
+        contentType: 'text/plain',
+        error: textOf(error),
+      })
+    }
   }
 })

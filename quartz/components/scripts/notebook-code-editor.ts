@@ -1,4 +1,5 @@
 import type { Extension } from '@codemirror/state'
+import type { CodeMirror } from '@replit/codemirror-vim'
 
 export type NotebookCodeEditor = {
   getValue(): string
@@ -15,6 +16,7 @@ type NotebookCodeEditorConfig = {
   vimMode?: boolean
   onChange?: (content: string) => void
   onSubmit?: () => void
+  onSave?: () => void
   onCancel?: () => void
 }
 
@@ -93,10 +95,17 @@ export async function createNotebookCodeEditor(
       ]),
     )
 
+  type VimApi = typeof import('@replit/codemirror-vim')
+  let vimApi: Pick<VimApi, 'getCM' | 'vim'> | undefined
+  const loadVimApi = async (): Promise<Pick<VimApi, 'getCM' | 'vim'>> => {
+    vimApi ??= await import('@replit/codemirror-vim')
+    return vimApi
+  }
+
   const vimExtension = async (enabled: boolean): Promise<Extension> => {
     if (!enabled) return []
     const [{ vim }, { drawSelection }] = await Promise.all([
-      import('@replit/codemirror-vim'),
+      loadVimApi(),
       import('@codemirror/view'),
     ])
     return [vim(), drawSelection()]
@@ -152,6 +161,13 @@ export async function createNotebookCodeEditor(
   })
 
   const view = new EditorView({ state, parent: config.parent })
+  const bindVimSave = async () => {
+    if (!config.onSave) return
+    const { getCM } = await loadVimApi()
+    const cm: CodeMirror | null = getCM(view)
+    if (cm) cm.save = config.onSave
+  }
+  if (initialVimMode) await bindVimSave()
 
   return {
     getValue: () => view.state.doc.toString(),
@@ -165,6 +181,7 @@ export async function createNotebookCodeEditor(
           keymapCompartment.reconfigure(notebookKeymap(enabled)),
         ],
       })
+      if (enabled) await bindVimSave()
     },
     focus: () => view.focus(),
     destroy: () => view.destroy(),

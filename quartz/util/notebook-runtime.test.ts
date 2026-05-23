@@ -86,13 +86,20 @@ describe('notebook browser runtime output', () => {
   })
 
   test('reports unsupported browser runtime features before execution', () => {
+    assert.strictEqual(unsupportedNotebookRuntimeReason('!wat2wasm arithmetic.wat'), undefined)
     assert.strictEqual(
-      unsupportedNotebookRuntimeReason('!wat2wasm arithmetic.wat'),
-      'shell escapes are unavailable in the browser runtime',
+      unsupportedNotebookRuntimeReason('!wat2wasm --enable-bulk-memory array.wat'),
+      undefined,
     )
     assert.strictEqual(
-      unsupportedNotebookRuntimeReason('%%writefile x.py'),
-      'cell magics are unavailable in the browser runtime',
+      unsupportedNotebookRuntimeReason('!wat2wasm -v arithmetic.wat'),
+      'wat2wasm option -v is unavailable in the browser runtime',
+    )
+    assert.strictEqual(unsupportedNotebookRuntimeReason('%%writefile x.py'), undefined)
+    assert.strictEqual(unsupportedNotebookRuntimeReason('%%writefile -a x.py\nprint(1)'), undefined)
+    assert.strictEqual(
+      unsupportedNotebookRuntimeReason('%%writefile -q x.py\nprint(1)'),
+      '%%writefile option -q is unavailable in the browser runtime',
     )
     assert.strictEqual(unsupportedNotebookRuntimeReason('%pip install numpy'), undefined)
     assert.strictEqual(unsupportedNotebookRuntimeReason('%timeit x.block_until_ready()'), undefined)
@@ -105,6 +112,7 @@ describe('notebook browser runtime output', () => {
       unsupportedNotebookRuntimeReason('%load_ext local_extension'),
       'IPython extension local_extension is unavailable in the browser runtime',
     )
+    assert.strictEqual(unsupportedNotebookRuntimeReason('!cat sum.s'), undefined)
     assert.strictEqual(unsupportedNotebookRuntimeReason('!pip install pandas'), undefined)
     assert.strictEqual(unsupportedNotebookRuntimeReason('!uv pip install seaborn'), undefined)
     assert.strictEqual(unsupportedNotebookRuntimeReason('!python -m pip install rich'), undefined)

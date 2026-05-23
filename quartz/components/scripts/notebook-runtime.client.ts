@@ -53,10 +53,25 @@ type FrameMessage =
   | { type: 'output'; runtimeId: string; cellId: string; output: NotebookRuntimeOutput }
   | { type: 'done'; runtimeId: string; cellId: string }
   | { type: 'asset'; runtimeId: string; cellId: string; assetId: string; url: string }
+  | {
+      type: 'file-result'
+      runtimeId: string
+      requestId: string
+      ok: boolean
+      status: number
+      statusText: string
+      contentType: string
+      bytes?: ArrayBuffer
+      error?: string
+    }
   | { type: 'display-javascript'; runtimeId: string; cellId: string; code: string }
   | { type: 'status'; runtimeId: string; text: string }
 
 type CellWaiter = { resolve: () => void; reject: (error: Error) => void }
+
+type RuntimeFileWaiter = {
+  resolve: (message: Extract<FrameMessage, { type: 'file-result' }>) => void
+}
 
 type NotebookIcon = 'run' | 'edit' | 'save' | 'revert'
 
@@ -85,6 +100,11 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 function readString(record: Record<string, unknown>, key: string): string | undefined {
   const value = record[key]
   return typeof value === 'string' ? value : undefined
+}
+
+function readNumber(record: Record<string, unknown>, key: string): number | undefined {
+  const value = record[key]
+  return typeof value === 'number' ? value : undefined
 }
 
 function readRuntimeOutput(value: unknown): NotebookRuntimeOutput | undefined {
@@ -159,6 +179,26 @@ function readFrameMessage(value: unknown): FrameMessage | undefined {
     const assetId = readString(value, 'assetId')
     const url = readString(value, 'url')
     if (cellId && assetId && url) return { type, runtimeId, cellId, assetId, url }
+  }
+  if (type === 'file-result') {
+    const requestId = readString(value, 'requestId')
+    const status = readNumber(value, 'status')
+    const statusText = readString(value, 'statusText')
+    const contentType = readString(value, 'contentType')
+    if (!requestId || status === undefined || !statusText || !contentType) return undefined
+    const message: Extract<FrameMessage, { type: 'file-result' }> = {
+      type,
+      runtimeId,
+      requestId,
+      ok: value.ok === true,
+      status,
+      statusText,
+      contentType,
+    }
+    if (value.bytes instanceof ArrayBuffer) message.bytes = value.bytes
+    const error = readString(value, 'error')
+    if (error !== undefined) message.error = error
+    return message
   }
 }
 
@@ -235,6 +275,29 @@ function sanitizeHtml(html: string): string {
   return template.innerHTML
 }
 
+function replaceRenderedSource(figure: HTMLElement, source: string) {
+  const pre = figure.querySelector('pre')
+  if (!pre) {
+    figure.textContent = source
+    return
+  }
+  const code = pre.querySelector('code')
+  if (!code) {
+    pre.textContent = source
+    return
+  }
+
+  code.replaceChildren()
+  const lines = source.split(/\r?\n/)
+  lines.forEach((line, index) => {
+    const span = document.createElement('span')
+    span.dataset.line = ''
+    span.textContent = line
+    code.append(span)
+    if (index < lines.length - 1) code.append(document.createTextNode('\n'))
+  })
+}
+
 class NotebookRuntime {
   private payload: RuntimePayload
   private root: HTMLElement
@@ -244,11 +307,13 @@ class NotebookRuntime {
   private ready: Promise<void> | undefined
   private readyResolve: (() => void) | undefined
   private waiters = new Map<string, CellWaiter>()
+  private runtimeFileWaiters = new Map<string, RuntimeFileWaiter>()
   private moduleCache = new Map<string, RuntimeModule | null>()
   private moduleFetches = new Map<string, Promise<RuntimeModule | null>>()
   private savedOutputs = new Map<string, HTMLElement[]>()
   private sourceControls = new Map<string, SourceControls>()
   private executionCounter: number
+  private runtimeFileSequence = 0
   private running = false
   private stopped = false
   private debug = false
@@ -628,6 +693,8 @@ class NotebookRuntime {
 
     if (stored !== undefined && stored === cell.source) {
       this.clearStoredSource(cell)
+    } else if (stored !== undefined && figure) {
+      replaceRenderedSource(figure, stored)
     }
     this.syncSourceControls(cell)
 
@@ -688,6 +755,7 @@ class NotebookRuntime {
         this.syncSourceControls(cell)
       },
       onSubmit: () => this.runCell(cell),
+      onSave: () => this.saveEditorSource(cell),
       onCancel: () => {
         void this.revertEditorSource(cell)
       },
@@ -717,6 +785,7 @@ class NotebookRuntime {
     if (source === cell.source) {
       controls.source = cell.source
       this.clearStoredSource(cell)
+      if (controls.figure) replaceRenderedSource(controls.figure, cell.source)
       void this.showSourceEditor(cell, false)
       this.setStatus('idle')
       return
@@ -726,6 +795,7 @@ class NotebookRuntime {
       return
     }
     controls.source = source
+    if (controls.figure) replaceRenderedSource(controls.figure, source)
     void this.showSourceEditor(cell, false)
     this.setStatus('saved local edit')
   }
@@ -736,6 +806,7 @@ class NotebookRuntime {
     controls.source = cell.source
     controls.editor?.setValue(cell.source)
     this.clearStoredSource(cell)
+    if (controls.figure) replaceRenderedSource(controls.figure, cell.source)
     void this.showSourceEditor(cell, false)
     this.setStatus('idle')
   }
@@ -928,6 +999,12 @@ class NotebookRuntime {
       waiter.resolve()
     } else if (message.type === 'asset') {
       void this.fetchAsset(message, target)
+    } else if (message.type === 'file-result') {
+      if (!(target instanceof Worker)) return
+      const waiter = this.runtimeFileWaiters.get(message.requestId)
+      if (!waiter) return
+      this.runtimeFileWaiters.delete(message.requestId)
+      waiter.resolve(message)
     } else if (message.type === 'display-javascript') {
       this.runDisplayJavascript(message.cellId, message.code)
     } else if (message.type === 'status') {
@@ -990,11 +1067,24 @@ class NotebookRuntime {
   private async resolveAsset(
     message: Extract<FrameMessage, { type: 'asset' }>,
   ): Promise<AssetResult> {
+    const fallback = (error: unknown): AssetResult => ({
+      runtimeId: message.runtimeId,
+      assetId: message.assetId,
+      ok: false,
+      status: 404,
+      statusText: 'Not Found',
+      contentType: 'text/plain',
+      error: error instanceof Error ? error.message : String(error),
+    })
+
+    let relative = ''
+    let assetUrl = ''
     try {
       const base = new URL(window.location.href)
       const baseDir = new URL('.', base)
       const url = new URL(message.url, base)
-      const relative = url.pathname.slice(baseDir.pathname.length)
+      assetUrl = url.href
+      relative = url.pathname.slice(baseDir.pathname.length)
       if (
         url.origin !== window.location.origin ||
         !url.pathname.startsWith(baseDir.pathname) ||
@@ -1002,7 +1092,12 @@ class NotebookRuntime {
       ) {
         throw new Error(`blocked non-sibling notebook asset: ${message.url}`)
       }
-      const response = await fetch(url)
+    } catch (error) {
+      return fallback(error)
+    }
+
+    try {
+      const response = await fetch(assetUrl)
       if (!response.ok) {
         throw new Error(`missing notebook asset: ${relative || message.url}`)
       }
@@ -1016,17 +1111,46 @@ class NotebookRuntime {
         bytes: await response.arrayBuffer(),
       }
     } catch (error) {
-      const text = error instanceof Error ? error.message : String(error)
-      return {
-        runtimeId: message.runtimeId,
-        assetId: message.assetId,
-        ok: false,
-        status: 404,
-        statusText: 'Not Found',
-        contentType: 'text/plain',
-        error: text,
-      }
+      return (
+        (await this.resolveRuntimeFileAsset(message, relative || message.url)) ?? fallback(error)
+      )
     }
+  }
+
+  private resolveRuntimeFileAsset(
+    message: Extract<FrameMessage, { type: 'asset' }>,
+    path: string,
+  ): Promise<AssetResult | undefined> {
+    if (!this.worker) return Promise.resolve(undefined)
+    const requestId = `runtime-file-${++this.runtimeFileSequence}`
+    return new Promise(resolve => {
+      const timeout = window.setTimeout(() => {
+        this.runtimeFileWaiters.delete(requestId)
+        resolve(undefined)
+      }, 10_000)
+      this.runtimeFileWaiters.set(requestId, {
+        resolve: result => {
+          window.clearTimeout(timeout)
+          resolve({
+            runtimeId: message.runtimeId,
+            assetId: message.assetId,
+            ok: result.ok,
+            status: result.status,
+            statusText: result.statusText,
+            contentType: result.contentType,
+            bytes: result.bytes,
+            error: result.error,
+          })
+        },
+      })
+      this.worker?.postMessage({
+        source: 'quartz-notebook-runtime',
+        type: 'file',
+        runtimeId: this.payload.id,
+        requestId,
+        path,
+      })
+    })
   }
 
   private renderOutput(cellId: string, output: NotebookRuntimeOutput) {
@@ -1109,6 +1233,7 @@ class NotebookRuntime {
     this.worker?.removeEventListener('error', this.onWorkerError)
     this.worker?.terminate()
     this.worker = undefined
+    this.runtimeFileWaiters.clear()
     this.displayFrame?.remove()
     this.displayFrame = undefined
     this.displayReady = undefined

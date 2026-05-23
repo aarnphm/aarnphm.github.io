@@ -329,6 +329,26 @@ describe('notebook parser', () => {
     )
   })
 
+  test('closes dangling markdown fences at notebook cell boundaries', () => {
+    const notebook = parseNotebook(
+      JSON.stringify({
+        cells: [
+          { cell_type: 'markdown', source: '```EBNF\ninstr ::= "throw" name\n' },
+          { cell_type: 'markdown', source: 'after' },
+        ],
+      }),
+      'dangling-fence.ipynb',
+    )
+
+    const markdown = notebookToMarkdown(notebook, 'dangling-fence.ipynb')
+
+    assert.match(markdown, /```EBNF\ninstr ::= "throw" name\n```/)
+    assert.match(
+      markdown,
+      /```\n\n<div class="notebook-markdown-cell-boundary" aria-hidden="true"><\/div>\n\nafter/,
+    )
+  })
+
   test('leaves non-python notebooks without runtime controls', () => {
     const notebook = parseNotebook(
       JSON.stringify({

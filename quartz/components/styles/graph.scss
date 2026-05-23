@@ -2,6 +2,54 @@
 @use '../../styles/mixin.scss' as *;
 
 .graph {
+  &.local-graph-only {
+    display: none;
+    margin-bottom: 1.9rem;
+
+    @media all and ($desktop) {
+      display: block;
+    }
+  }
+
+  & > .graph-local {
+    & > h2 {
+      margin-bottom: 1rem;
+    }
+
+    & > .graph-outer {
+      border: 1px solid var(--gray);
+      box-sizing: border-box;
+      height: 250px;
+      position: relative;
+      overflow: hidden;
+
+      & > .graph-container {
+        height: 100%;
+        width: 100%;
+      }
+
+      & > .global-graph-icon {
+        cursor: pointer;
+        background: transparent;
+        border: none;
+        color: var(--dark);
+        opacity: 0.5;
+        width: 32px;
+        height: 32px;
+        position: absolute;
+        padding: 0.35rem;
+        top: 0.25rem;
+        right: 0.25rem;
+        border-radius: var(--radius-4);
+        transition: background-color 0.2s ease;
+
+        &:hover {
+          background-color: var(--lightgray);
+        }
+      }
+    }
+  }
+
   & > .global-graph-outer {
     @include containerPopover;
 
@@ -10,6 +58,27 @@
       width: 75%;
 
       @include containerInner;
+    }
+  }
+}
+
+@media all and ($desktop) {
+  .page-footer:has(> .graph.local-graph-only) > .recommendations {
+    grid-column: var(--layout-reading-column);
+  }
+
+  .page-footer > .graph.local-graph-only {
+    grid-column: var(--layout-side-column);
+  }
+
+  body[data-layout='technical'],
+  body[data-layout='technical-tractatus'] {
+    .page-footer:has(> .graph.local-graph-only) {
+      padding-top: 2rem;
+    }
+
+    .page-footer > .graph.local-graph-only {
+      grid-column: var(--layout-wide-column);
     }
   }
 }
