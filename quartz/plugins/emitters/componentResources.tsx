@@ -41,7 +41,7 @@ import '../../components/mdx'
 import styles from '../../styles/custom.scss'
 import { QuartzComponent } from '../../types/component'
 import { QuartzEmitterPlugin } from '../../types/plugin'
-import { assetSlugForContent } from '../../util/asset-manifest'
+import { assetManifestRecord, assetSlugForContent, resolveAsset } from '../../util/asset-manifest'
 import { BuildCtx } from '../../util/ctx'
 import { FilePath, FullSlug, isFullSlug, joinSegments } from '../../util/path'
 import {
@@ -146,11 +146,23 @@ async function currentComponentResources(ctx: BuildCtx): Promise<ComponentResour
   return componentResources
 }
 
-async function writeScriptBundleOutput(ctx: BuildCtx, outputFile: { path: string; text: string }) {
+async function writeAssetBundleOutput(ctx: BuildCtx, outputFile: { path: string; text: string }) {
   const rel = path.relative(ctx.argv.output, outputFile.path).split(path.sep).join('/')
   const ext = path.extname(rel) as `.${string}`
-  const slug = rel.slice(0, -ext.length) as FullSlug
+  const logicalSlug = rel.slice(0, -ext.length)
+  const slug = rel.includes('/chunks/')
+    ? (logicalSlug as FullSlug)
+    : assetSlugForContent(ctx, logicalSlug, ext, outputFile.text)
   return write({ ctx, slug, ext, content: outputFile.text })
+}
+
+async function writeAssetManifest(ctx: BuildCtx): Promise<FilePath> {
+  return write({
+    ctx,
+    slug: 'static/scripts/asset-manifest' as FullSlug,
+    ext: '.json',
+    content: JSON.stringify(assetManifestRecord(ctx)),
+  })
 }
 
 function minifyStylesheet(filename: string, stylesheet: string) {
@@ -204,6 +216,22 @@ async function* writeStaticResourceBundles(ctx: BuildCtx, resources: StaticResou
 
 async function writeNotebookRuntimeAssets(ctx: BuildCtx): Promise<FilePath[]> {
   const outdir = path.join(ctx.argv.output, 'static/scripts')
+  const worker = await bundle({
+    entryPoints: [notebookRuntimeWorkerEntry],
+    bundle: true,
+    minify: true,
+    platform: 'browser',
+    format: 'esm',
+    outfile: path.join(outdir, 'notebook-runtime.worker.js'),
+    define: { 'globalThis.process': 'undefined' },
+    external: ['fs'],
+    loader: { '.py': 'text' },
+    write: false,
+  })
+  const workerFiles = await Promise.all(
+    worker.outputFiles.map(output => writeAssetBundleOutput(ctx, output)),
+  )
+  const workerName = path.basename(resolveAsset(ctx, 'static/scripts/notebook-runtime.worker.js'))
   const client = await bundle({
     entryPoints: { 'notebook-runtime.client': notebookRuntimeClientEntry },
     bundle: true,
@@ -217,23 +245,14 @@ async function writeNotebookRuntimeAssets(ctx: BuildCtx): Promise<FilePath[]> {
     loader: { '.html': 'text' },
     write: false,
   })
-  const worker = await bundle({
-    entryPoints: [notebookRuntimeWorkerEntry],
-    bundle: true,
-    minify: true,
-    platform: 'browser',
-    format: 'esm',
-    outfile: path.join(outdir, 'notebook-runtime.worker.js'),
-    define: { 'globalThis.process': 'undefined' },
-    external: ['fs'],
-    loader: { '.py': 'text' },
-    write: false,
-  })
-  return await Promise.all(
-    [...client.outputFiles, ...worker.outputFiles].map(output =>
-      writeScriptBundleOutput(ctx, output),
-    ),
+  const clientOutputs = client.outputFiles.map(output => ({
+    ...output,
+    text: output.text.replaceAll('notebook-runtime.worker.js', workerName),
+  }))
+  const clientFiles = await Promise.all(
+    clientOutputs.map(output => writeAssetBundleOutput(ctx, output)),
   )
+  return [...workerFiles, ...clientFiles]
 }
 
 async function writeCollaborativeCommentsAssets(ctx: BuildCtx): Promise<FilePath[]> {
@@ -250,7 +269,7 @@ async function writeCollaborativeCommentsAssets(ctx: BuildCtx): Promise<FilePath
     chunkNames: 'chunks/[name]-[hash]',
     write: false,
   })
-  return await Promise.all(client.outputFiles.map(output => writeScriptBundleOutput(ctx, output)))
+  return await Promise.all(client.outputFiles.map(output => writeAssetBundleOutput(ctx, output)))
 }
 
 async function writeEmojiAssets(ctx: BuildCtx): Promise<FilePath[]> {
@@ -260,8 +279,32 @@ async function writeEmojiAssets(ctx: BuildCtx): Promise<FilePath[]> {
       const rel = path.relative(emojiAssetSourceDir, file).split(path.sep).join('/')
       const slug = joinSegments('static', 'scripts', 'emoji', rel.slice(0, -'.json'.length))
       if (!isFullSlug(slug)) throw new Error(`invalid emoji asset slug ${slug}`)
-      return await write({ ctx, slug, ext: '.json', content: await fs.readFile(file) })
+      const content = await fs.readFile(file)
+      return await write({
+        ctx,
+        slug: assetSlugForContent(ctx, slug, '.json', content),
+        ext: '.json',
+        content,
+      })
     }),
+  )
+}
+
+function assetBasename(ctx: BuildCtx, logicalPath: string): string {
+  return path.basename(resolveAsset(ctx, logicalPath))
+}
+
+function resolveComponentResourceAssets(ctx: BuildCtx, componentResources: ComponentResources) {
+  componentResources.afterDOMLoaded = componentResources.afterDOMLoaded.map(script =>
+    script
+      .replaceAll(
+        'notebook-runtime.client.js',
+        assetBasename(ctx, 'static/scripts/notebook-runtime.client.js'),
+      )
+      .replaceAll(
+        'collaborative-comments.client.js',
+        assetBasename(ctx, 'static/scripts/collaborative-comments.client.js'),
+      ),
   )
 }
 
@@ -343,6 +386,10 @@ export const ComponentResources: QuartzEmitterPlugin = () => {
       const cfg = ctx.cfg.configuration
       // component specific scripts and styles
       const componentResources = await currentComponentResources(ctx)
+      const notebookRuntimeFiles = await writeNotebookRuntimeAssets(ctx)
+      const collaborativeCommentsFiles = await writeCollaborativeCommentsAssets(ctx)
+      const emojiFiles = await writeEmojiAssets(ctx)
+      resolveComponentResourceAssets(ctx, componentResources)
       let googleFontsStyleSheet = ''
       if (cfg.theme.fontOrigin === 'local') {
         // let the user do it themselves in css
@@ -450,17 +497,19 @@ export const ComponentResources: QuartzEmitterPlugin = () => {
         yield write({ ctx, slug: name as FullSlug, ext: '.js', content: code })
       }
 
-      for (const file of await writeNotebookRuntimeAssets(ctx)) {
+      for (const file of notebookRuntimeFiles) {
         yield file
       }
 
-      for (const file of await writeCollaborativeCommentsAssets(ctx)) {
+      for (const file of collaborativeCommentsFiles) {
         yield file
       }
 
-      for (const file of await writeEmojiAssets(ctx)) {
+      for (const file of emojiFiles) {
         yield file
       }
+
+      yield writeAssetManifest(ctx)
     },
     async *partialEmit(ctx, _content, resources, changeEvents) {
       yield* writeStaticResourceBundles(ctx, resources)
@@ -473,6 +522,7 @@ export const ComponentResources: QuartzEmitterPlugin = () => {
 
       if (changeEvents.some(changeEvent => isNotebookRuntimePageScriptChange(changeEvent.path))) {
         const componentResources = await currentComponentResources(ctx)
+        resolveComponentResourceAssets(ctx, componentResources)
         const [prescript, postscript] = await Promise.all([
           joinScripts(componentResources.beforeDOMLoaded),
           joinScripts(componentResources.afterDOMLoaded),
@@ -524,6 +574,8 @@ export const ComponentResources: QuartzEmitterPlugin = () => {
         const name = path.basename(changeEvent.path).replace(/\.ts$/, '')
         yield write({ ctx, slug: name as FullSlug, ext: '.js', content: code })
       }
+
+      yield writeAssetManifest(ctx)
     },
     externalResources: ({ cfg }) => ({
       additionalHead: [
