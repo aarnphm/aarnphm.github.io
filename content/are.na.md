@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-05-23 17:39:26 GMT-04:00
+modified: 2026-05-23 18:25:09 GMT-04:00
 permalinks:
   - /website
   - /tweets
@@ -1513,6 +1513,7 @@ title: are.na
     - date: 11/25/2025
     - tags: [researcher]
     - pinned: true
+  - https://github.com/g-leech/argmin-gravitas
 - https://fleetingbits.io/
   - [meta]:
     - date: 11/25/2025
@@ -6869,6 +6870,10 @@ title: are.na
 
 ## stream
 
+- https://archive.is/IIP6b -- Gwern's 2019 newsletter
+  - [meta]:
+    - date: 05/23/2026
+    - tags: [epistemology]
 - https://www.032carchive.com/articles?view=grid&cols=4 -- 032c archive
   - [meta]:
     - date: 05/18/2026

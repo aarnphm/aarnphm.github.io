@@ -1,7 +1,7 @@
-import { FilePath, FullSlug, normalizeRelativeURLs, resolveRelative } from '../../util/path'
+import { FullSlug, normalizeRelativeURLs, resolveRelative } from '../../util/path'
 import { populateSearchIndex, querySearchIndex, SearchItem } from './search-index'
 import {
-  highlight,
+  tokenizeTerm,
   registerEscapeHandler,
   removeAllChildren,
   fetchCanonical,
@@ -16,6 +16,76 @@ interface Item extends SearchItem {
 const numSearchResults = 10
 
 const localStorageKey = 'recent-notes'
+
+function appendHighlightedText(parent: HTMLElement, searchTerm: string, text: string) {
+  const terms = tokenizeTerm(searchTerm)
+    .map(term => term.toLowerCase())
+    .filter(term => term.length > 0)
+    .sort((a, b) => b.length - a.length)
+  if (terms.length === 0) {
+    parent.textContent = text
+    return
+  }
+
+  const lowerText = text.toLowerCase()
+  let cursor = 0
+  while (cursor < text.length) {
+    let nextIndex = -1
+    let nextTerm = ''
+    for (const term of terms) {
+      const index = lowerText.indexOf(term, cursor)
+      if (index === -1) continue
+      if (
+        nextIndex === -1 ||
+        index < nextIndex ||
+        (index === nextIndex && term.length > nextTerm.length)
+      ) {
+        nextIndex = index
+        nextTerm = term
+      }
+    }
+
+    if (nextIndex === -1) {
+      parent.append(document.createTextNode(text.slice(cursor)))
+      return
+    }
+    if (nextIndex > cursor) {
+      parent.append(document.createTextNode(text.slice(cursor, nextIndex)))
+    }
+    const highlight = document.createElement('span')
+    highlight.className = 'highlight'
+    highlight.textContent = text.slice(nextIndex, nextIndex + nextTerm.length)
+    parent.append(highlight)
+    cursor = nextIndex + nextTerm.length
+  }
+}
+
+function appendActionAux(parent: HTMLElement, auxInnerHtml: string) {
+  const action = document.createElement('span')
+  action.className = 'suggestion-action'
+  const kbdPrefix = '<kbd>↵</kbd>'
+  const svgMatch = auxInnerHtml.match(
+    /^<svg width="1em" height="1em"><use href="([^"]+)" \/><\/svg>$/,
+  )
+  if (auxInnerHtml.startsWith(kbdPrefix)) {
+    const key = document.createElement('kbd')
+    key.textContent = '↵'
+    action.appendChild(key)
+    action.append(document.createTextNode(auxInnerHtml.slice(kbdPrefix.length)))
+  } else if (svgMatch) {
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
+    svg.setAttribute('width', '1em')
+    svg.setAttribute('height', '1em')
+    const use = document.createElementNS('http://www.w3.org/2000/svg', 'use')
+    use.setAttribute('href', svgMatch[1])
+    svg.appendChild(use)
+    action.appendChild(svg)
+  } else {
+    action.textContent = auxInnerHtml
+  }
+  parent.appendChild(action)
+}
+
 function getRecents(): Set<FullSlug> {
   return new Set(JSON.parse(localStorage.getItem(localStorageKey) ?? '[]'))
 }
@@ -319,11 +389,11 @@ document.addEventListener('nav', e => {
       },
     },
     {
-      name: 'dating me',
-      auxInnerHtml: '<kbd>↵</kbd> as love',
+      name: 'friends',
+      auxInnerHtml: '<kbd>↵</kbd> as virtuosic',
       onClick: () => {
         window.spaNavigate(
-          new URL(resolveRelative(currentSlug, '/dating' as FullSlug), window.location.toString()),
+          new URL(resolveRelative(currentSlug, '/friends' as FullSlug), window.location.toString()),
         )
       },
     },
@@ -380,12 +450,12 @@ document.addEventListener('nav', e => {
     content.classList.add('suggestion-content')
     const title = document.createElement('div')
     title.classList.add('suggestion-title')
-    title.innerHTML = name
+    appendHighlightedText(title, currentSearchTerm, name)
     content.appendChild(title)
 
     const aux = document.createElement('div')
     aux.classList.add('suggestion-aux')
-    aux.innerHTML = `<span class="suggestion-action">${auxInnerHtml}</span>`
+    appendActionAux(aux, auxInnerHtml)
     item.append(content, aux)
 
     function mainOnClick(e: MouseEvent) {
@@ -622,7 +692,7 @@ document.addEventListener('nav', e => {
               item.aliases.find(alias =>
                 alias.toLowerCase().includes(currentSearchTerm.toLowerCase()),
               ) || ''
-            return { ...item, name: highlight(currentSearchTerm, item.name) as FilePath, target }
+            return { ...item, target }
           })
           .sort((a, b) => {
             if ((!a?.target && !b?.target) || (a?.target && b?.target)) return 0
@@ -644,11 +714,7 @@ document.addEventListener('nav', e => {
         : ACTS
 
       getCommandItems(
-        matchedActions.map(({ name, onClick, auxInnerHtml }) => ({
-          name: query ? highlight(currentSearchTerm, name) : name,
-          onClick,
-          auxInnerHtml,
-        })),
+        matchedActions.map(({ name, onClick, auxInnerHtml }) => ({ name, onClick, auxInnerHtml })),
       )
     }
   }
@@ -665,7 +731,19 @@ document.addEventListener('nav', e => {
 
     const noMatchEl = document.createElement('div')
     noMatchEl.classList.add('suggestion-item', 'no-match')
-    noMatchEl.innerHTML = `<div class="suggestion-content"><div class="suggestion-title">${currentSearchTerm}</div></div><div class="suggestion-aux"><span class="suggestion-action">enter to schedule a chat</span></div>`
+    const noMatchContent = document.createElement('div')
+    noMatchContent.className = 'suggestion-content'
+    const noMatchTitle = document.createElement('div')
+    noMatchTitle.className = 'suggestion-title'
+    noMatchTitle.textContent = currentSearchTerm
+    noMatchContent.appendChild(noMatchTitle)
+    const noMatchAux = document.createElement('div')
+    noMatchAux.className = 'suggestion-aux'
+    const noMatchAction = document.createElement('span')
+    noMatchAction.className = 'suggestion-action'
+    noMatchAction.textContent = 'enter to schedule a chat'
+    noMatchAux.appendChild(noMatchAction)
+    noMatchEl.append(noMatchContent, noMatchAux)
 
     const onNoMatchClick = () => {
       window.location.href = `mailto:contact@aarnphm.xyz?subject=Chat about: ${encodeURIComponent(currentSearchTerm)}`
@@ -702,9 +780,14 @@ document.addEventListener('nav', e => {
     content.classList.add('suggestion-content')
     const title = document.createElement('div')
     title.classList.add('suggestion-title')
-    const titleContent = target ? highlight(currentSearchTerm, target) : name
-    const subscript = target ? `${slug}` : ``
-    title.innerHTML = `${titleContent}<br/><span class="subscript">${subscript}</span>`
+    appendHighlightedText(title, currentSearchTerm, target || name)
+    if (target) {
+      title.appendChild(document.createElement('br'))
+      const subscript = document.createElement('span')
+      subscript.className = 'subscript'
+      subscript.textContent = slug
+      title.appendChild(subscript)
+    }
     content.appendChild(title)
 
     const aux = document.createElement('div')

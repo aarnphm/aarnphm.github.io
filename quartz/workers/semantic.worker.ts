@@ -70,6 +70,11 @@ const META_TABLE = 'semantic_meta'
 const EMBEDDINGS_TABLE = 'semantic_embeddings'
 const INDEX_NAME = 'semantic_embeddings_vec_hnsw'
 const CDN_BASE = `https://cdn.jsdelivr.net/npm/@electric-sql/pglite@${dependencies['@electric-sql/pglite'].slice(1)}/dist`
+const ORT_CDN_BASE = `https://cdn.jsdelivr.net/npm/onnxruntime-web@${dependencies['onnxruntime-web'].slice(1)}/dist/`
+const ORT_WASM_PATHS = {
+  mjs: `${ORT_CDN_BASE}ort-wasm-simd-threaded.asyncify.mjs`,
+  wasm: `${ORT_CDN_BASE}ort-wasm-simd-threaded.asyncify.wasm`,
+}
 const VECTOR_BUNDLE_URL = new URL(`${CDN_BASE}/vector.tar.gz`)
 
 let state: WorkerState = 'idle'
@@ -93,11 +98,20 @@ function toAbsolute(path: string, baseUrl?: string): string {
 }
 
 async function fetchBinary(path: string): Promise<ArrayBuffer> {
+  const res = await fetchAsset(path)
+  return await res.arrayBuffer()
+}
+
+async function fetchAsset(path: string): Promise<Response> {
   const res = await fetch(path, { signal: abortController?.signal ?? undefined })
   if (!res.ok) {
     throw new Error(`failed to fetch ${path}: ${res.status} ${res.statusText}`)
   }
-  return await res.arrayBuffer()
+  return res
+}
+
+async function compileWasm(path: string): Promise<WebAssembly.Module> {
+  return await WebAssembly.compileStreaming(fetchAsset(path))
 }
 
 function vectorToLiteral(vec: Float32Array): string {
@@ -116,9 +130,10 @@ function buildManifestId(data: Manifest): string {
 async function openDatabase(disableCache: boolean | undefined): Promise<PGlite> {
   if (!dbPromise) {
     dbPromise = (async () => {
-      const [wasmModule, fsBundle] = await Promise.all([
-        WebAssembly.compileStreaming(fetch(`${CDN_BASE}/pglite.wasm`)),
-        fetch(`${CDN_BASE}/pglite.data`).then(r => r.blob()),
+      const [pgliteWasmModule, initdbWasmModule, fsBundle] = await Promise.all([
+        compileWasm(`${CDN_BASE}/pglite.wasm`),
+        compileWasm(`${CDN_BASE}/initdb.wasm`),
+        fetchAsset(`${CDN_BASE}/pglite.data`).then(r => r.blob()),
       ])
 
       const vector = {
@@ -129,7 +144,13 @@ async function openDatabase(disableCache: boolean | undefined): Promise<PGlite> 
         },
       }
       const dataDir = disableCache ? `memory://${DB_NAME}` : `idb://${DB_NAME}`
-      const db = await PGlite.create({ dataDir, wasmModule, fsBundle, extensions: { vector } })
+      const db = await PGlite.create({
+        dataDir,
+        pgliteWasmModule,
+        initdbWasmModule,
+        fsBundle,
+        extensions: { vector },
+      })
       await db.exec('create extension if not exists vector')
       return db
     })()
@@ -268,8 +289,7 @@ function configureRuntimeEnv() {
   if (!wasmBackend) {
     throw new Error('transformers.js ONNX runtime backend unavailable')
   }
-  const cdnBase = `https://cdn.jsdelivr.net/npm/@huggingface/transformers@${env.version}/dist/`
-  wasmBackend.wasmPaths = cdnBase
+  wasmBackend.wasmPaths = ORT_WASM_PATHS
   envConfigured = true
 }
 

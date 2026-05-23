@@ -49,15 +49,33 @@ article:has(.notebook-runtime) {
     --notebook-code-gap: 0.85rem;
     --notebook-gutter-width: 4.6rem;
     --notebook-action-height: 1.2rem;
+    --notebook-shell-padding: 0.55rem;
+    --notebook-inner-radius: var(--radius-5);
+    --notebook-shell-radius: calc(var(--notebook-inner-radius) + var(--notebook-shell-padding));
+    --notebook-active-green: var(--background-modifier-success, var(--lime));
     --notebook-editor-surface: color-mix(in srgb, var(--light) 84%, var(--lightgray));
     --notebook-code-surface: var(--code-background, var(--notebook-editor-surface));
 
     display: grid;
     position: relative;
+    box-sizing: border-box;
     grid-template-columns: var(--notebook-gutter-width) minmax(0, 1fr);
     column-gap: var(--notebook-code-gap);
     align-items: start;
-    margin: 1.65rem 0 1rem;
+    margin: 2rem 0 1.4rem;
+    padding: var(--notebook-shell-padding);
+    border-radius: var(--notebook-shell-radius);
+    box-shadow: 0 0 0 1px color-mix(in srgb, var(--lightgray) 78%, transparent);
+
+    &[data-notebook-active-cell] {
+      box-shadow:
+        0 0 0 1px color-mix(in srgb, var(--notebook-active-green) 82%, transparent),
+        0 0 0 3px color-mix(in srgb, var(--notebook-active-green) 18%, transparent);
+    }
+
+    &[data-notebook-active-cell] > .notebook-runtime-cell .notebook-execution-prompt {
+      color: var(--notebook-active-green);
+    }
 
     > figure[data-rehype-pretty-code-figure] {
       grid-column: 2;
@@ -67,7 +85,8 @@ article:has(.notebook-runtime) {
 
       > pre {
         margin: 0;
-        border-top-left-radius: 0;
+        border-radius: 0 var(--notebook-inner-radius) var(--notebook-inner-radius)
+          var(--notebook-inner-radius);
       }
     }
 
@@ -87,7 +106,8 @@ article:has(.notebook-runtime) {
       padding: 0.6rem 0.75rem;
       overflow: auto;
       border: 1px solid var(--lightgray);
-      border-radius: 0 var(--radius-3) var(--radius-3) var(--radius-3);
+      border-radius: 0 var(--notebook-inner-radius) var(--notebook-inner-radius)
+        var(--notebook-inner-radius);
       background: var(--notebook-editor-surface);
       color: var(--dark);
       cursor: text;
@@ -209,6 +229,7 @@ article:has(.notebook-runtime) {
   .notebook-code-cell > .notebook-runtime-cell {
     grid-column: 1;
     grid-row: 1;
+    display: flex;
     flex-direction: row;
     align-items: center;
     justify-content: flex-end;
@@ -217,10 +238,16 @@ article:has(.notebook-runtime) {
     min-height: 1.2rem;
   }
 
+  .notebook-code-cell > .notebook-runtime-cell > p {
+    margin: 0;
+  }
+
   .notebook-cell-actions {
     position: absolute;
-    top: calc(-1 * var(--notebook-action-height) + 1px);
-    left: calc(var(--notebook-gutter-width) + var(--notebook-code-gap));
+    top: calc(var(--notebook-shell-padding) - var(--notebook-action-height) + 1px);
+    left: calc(
+      var(--notebook-shell-padding) + var(--notebook-gutter-width) + var(--notebook-code-gap)
+    );
     z-index: 2;
     display: inline-flex;
     align-items: center;
@@ -379,6 +406,23 @@ article:has(.notebook-runtime) {
 
   .notebook-runtime-output {
     margin: 0.5rem 0 1rem;
+  }
+
+  .notebook-code-cell > .notebook-runtime-output {
+    display: flow-root;
+    margin: -0.35rem 0 1rem;
+  }
+
+  .notebook-code-cell > .notebook-runtime-output[hidden] {
+    display: none;
+  }
+
+  .notebook-code-cell > .notebook-runtime-output > .notebook-output:first-child {
+    margin-top: 0;
+  }
+
+  .notebook-code-cell > .notebook-runtime-output > .notebook-output:last-child {
+    margin-bottom: 0;
   }
 
   .notebook-runtime-frame {

@@ -36,13 +36,20 @@ export default (() => {
     const origSlug = fileData.slug as FullSlug
     const slidesSlug = joinSegments(origSlug, 'slides') as FullSlug
     const baseForUrl = `https://local/${stripSlashes(origSlug)}.html`
+    const allowedAbsoluteProtocols = new Set(['http:', 'https:', 'mailto:', 'tel:', 'data:'])
+    const isAllowedAbsoluteAttr = (value: string): boolean => {
+      try {
+        return allowedAbsoluteProtocols.has(new URL(value).protocol.toLowerCase())
+      } catch {
+        return false
+      }
+    }
 
     const rebaseAttr = (val: string): string => {
       if (!val) return val
       if (val.startsWith('#')) return val
-      if (val.startsWith('mailto:') || val.startsWith('tel:') || val.startsWith('data:')) return val
       if (val.startsWith('/static')) return val
-      if (isAbsoluteURL(val)) return val
+      if (isAbsoluteURL(val)) return isAllowedAbsoluteAttr(val) ? val : ''
 
       try {
         const u = new URL(val, baseForUrl)

@@ -15,8 +15,16 @@ const DURATION_REGEX = /(\d+)([hms])/gi
 
 const stripHost = (value: string): string => (value.startsWith('www.') ? value.slice(4) : value)
 
-const isKnownYouTubeHost = (host: string): boolean =>
-  host === 'youtu.be' || host.endsWith('youtube.com') || host.endsWith('youtube-nocookie.com')
+const isKnownYouTubeHost = (host: string): boolean => {
+  const normalized = stripHost(host.toLowerCase())
+  return (
+    normalized === 'youtu.be' ||
+    normalized === 'youtube.com' ||
+    normalized.endsWith('.youtube.com') ||
+    normalized === 'youtube-nocookie.com' ||
+    normalized.endsWith('.youtube-nocookie.com')
+  )
+}
 
 const parseYouTubeTimestamp = (value: string | null): string | undefined => {
   if (!value) return undefined

@@ -1,7 +1,7 @@
 import type { ArenaEvent, SearchResultOptions, SearchScope } from './model'
 import { normalizeRelativeURLs } from '../../util/path'
 import { loadMapbox, applyMonochromeMapPalette } from '../scripts/mapbox-client'
-import { fetchCanonical, tokenizeTerm, highlight } from '../scripts/util'
+import { fetchCanonical, tokenizeTerm } from '../scripts/util'
 
 let currentBlockIndex = 0
 let totalBlocks = 0
@@ -66,6 +66,49 @@ function escapeHtml(value: string): string {
         return char
     }
   })
+}
+
+function appendHighlightedText(parent: HTMLElement, searchTerm: string, text: string) {
+  const terms = tokenizeTerm(searchTerm)
+    .map(term => term.toLowerCase())
+    .filter(term => term.length > 0)
+    .sort((a, b) => b.length - a.length)
+  if (terms.length === 0) {
+    parent.textContent = text
+    return
+  }
+
+  const lowerText = text.toLowerCase()
+  let cursor = 0
+  while (cursor < text.length) {
+    let nextIndex = -1
+    let nextTerm = ''
+    for (const term of terms) {
+      const index = lowerText.indexOf(term, cursor)
+      if (index === -1) continue
+      if (
+        nextIndex === -1 ||
+        index < nextIndex ||
+        (index === nextIndex && term.length > nextTerm.length)
+      ) {
+        nextIndex = index
+        nextTerm = term
+      }
+    }
+
+    if (nextIndex === -1) {
+      parent.append(document.createTextNode(text.slice(cursor)))
+      return
+    }
+    if (nextIndex > cursor) {
+      parent.append(document.createTextNode(text.slice(cursor, nextIndex)))
+    }
+    const highlight = document.createElement('span')
+    highlight.className = 'highlight'
+    highlight.textContent = text.slice(nextIndex, nextIndex + nextTerm.length)
+    parent.append(highlight)
+    cursor = nextIndex + nextTerm.length
+  }
 }
 
 function renderMapFallback(node: HTMLElement, message: string) {
@@ -1272,7 +1315,7 @@ export function renderSearchResults(
 
     const title = document.createElement('div')
     title.className = 'arena-search-result-title'
-    title.innerHTML = searchQuery ? highlight(searchQuery, result.title) : result.title
+    appendHighlightedText(title, searchQuery, result.title)
     resultItem.appendChild(title)
 
     if (result.matchedTags && result.matchedTags.length > 0) {
@@ -1282,7 +1325,7 @@ export function renderSearchResults(
       result.matchedTags.forEach(tag => {
         const tagBadge = document.createElement('li')
         tagBadge.className = 'arena-search-result-tag-badge'
-        tagBadge.innerHTML = searchQuery ? highlight(searchQuery, tag) : tag
+        appendHighlightedText(tagBadge, searchQuery, tag)
         tagsContainer.appendChild(tagBadge)
       })
 
@@ -1760,7 +1803,12 @@ export const mountArena = (dispatch: (event: ArenaEvent) => void) => {
               if (currentSlug === targetChannelSlug) {
                 dispatch({ type: 'ui.modal.open', blockId })
               } else {
-                window.location.href = `/${targetChannelSlug}#${blockId}`
+                const targetUrl = new URL(
+                  `/${['arena', ...channelSlug.split('/')].map(encodeURIComponent).join('/')}`,
+                  window.location.origin,
+                )
+                targetUrl.hash = blockId
+                window.location.assign(targetUrl)
               }
             } else {
               // Last resort: try to show modal anyway

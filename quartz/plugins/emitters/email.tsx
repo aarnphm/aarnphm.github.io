@@ -726,15 +726,10 @@ export const EmailEmitter: QuartzEmitterPlugin = () => {
         const pending = new Map<string, { nodes: Element[]; sourcePath: string }>()
         const filePath = fileData.filePath!
         const fileDir = path.dirname(filePath)
+        const hasUrlScheme = (value: string) => /^[A-Za-z][A-Za-z0-9+.-]*:/.test(value)
         const resolveAttachmentPath = (src: string) => {
           const cleaned = decodeURIComponent(src.split(/[?#]/)[0] ?? '')
-          if (
-            !cleaned ||
-            /^([a-z]+:)?\/\//i.test(cleaned) ||
-            cleaned.startsWith('data:') ||
-            cleaned.startsWith('cid:') ||
-            cleaned.startsWith('mailto:')
-          ) {
+          if (!cleaned || cleaned.startsWith('//') || hasUrlScheme(cleaned)) {
             return null
           }
           const normalized = cleaned.replace(/^\.\//, '')
@@ -786,7 +781,7 @@ export const EmailEmitter: QuartzEmitterPlugin = () => {
           const ext = path.extname(preferredPath).toLowerCase()
           let contentType = contentTypes[ext] ?? 'application/octet-stream'
           let filename = path.basename(preferredPath)
-          let contentBuffer = await fs.readFile(preferredPath)
+          let contentBuffer: Buffer<ArrayBufferLike> = await fs.readFile(preferredPath)
           if (ext === '.webp' || ext === '.avif') {
             try {
               contentBuffer = await sharp(contentBuffer).png().toBuffer()
@@ -815,19 +810,28 @@ export const EmailEmitter: QuartzEmitterPlugin = () => {
             const src = node.properties.src
             const href = node.properties.href
             const normalize = (value: string) => {
-              if (
-                value.startsWith('http://') ||
-                value.startsWith('https://') ||
-                value.startsWith('mailto:') ||
-                value.startsWith('data:') ||
-                value.startsWith('cid:') ||
-                value.startsWith('#') ||
-                value.startsWith('//') ||
-                value.startsWith('javascript:')
-              ) {
-                return value
+              const trimmed = value.trim()
+              if (trimmed.startsWith('#') || trimmed.startsWith('//')) return trimmed
+              try {
+                const absolute = new URL(trimmed)
+                const protocol = absolute.protocol.toLowerCase()
+                if (
+                  protocol === 'http:' ||
+                  protocol === 'https:' ||
+                  protocol === 'mailto:' ||
+                  protocol === 'data:' ||
+                  protocol === 'cid:'
+                ) {
+                  return absolute.toString()
+                }
+                return ''
+              } catch {
+                const resolved = new URL(trimmed, base)
+                const protocol = resolved.protocol.toLowerCase()
+                return protocol === 'javascript:' || protocol === 'vbscript:'
+                  ? ''
+                  : resolved.toString()
               }
-              return new URL(value, base).toString()
             }
             if (typeof src === 'string') {
               node.properties.src = normalize(src)

@@ -1,0 +1,12 @@
+name: garden-codeql
+
+queries:
+  - uses: security-and-quality
+
+paths-ignore:
+  - docs/**
+  - public/**
+  - node_modules/**
+  - .quartz-cache/**
+  - .direnv/**
+  - result/**

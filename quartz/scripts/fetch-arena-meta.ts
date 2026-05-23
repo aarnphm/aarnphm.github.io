@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import fs from 'fs'
 import path from 'path'
+import { hostnameMatches } from '../util/url'
 
 interface ArenaEntry {
   url: string
@@ -118,23 +119,22 @@ function inferTags(entry: ArenaEntry, metaInfo: MetaInfo | null): string[] {
 
   // domain-based tags
   const url = new URL(entry.url)
-  const domain = url.hostname
 
-  if (domain.includes('x.com') || domain.includes('twitter.com')) {
+  if (hostnameMatches(url, 'x.com') || hostnameMatches(url, 'twitter.com')) {
     tags.add('social')
     tags.add('twitter')
-  } else if (domain.includes('arxiv.org')) {
+  } else if (hostnameMatches(url, 'arxiv.org')) {
     tags.add('paper')
     tags.add('academic')
-  } else if (domain.includes('github.com')) {
+  } else if (hostnameMatches(url, 'github.com')) {
     tags.add('code')
     tags.add('repository')
-  } else if (domain.includes('youtube.com') || domain.includes('youtu.be')) {
+  } else if (hostnameMatches(url, 'youtube.com') || hostnameMatches(url, 'youtu.be')) {
     tags.add('video')
-  } else if (domain.includes('lesswrong.com')) {
+  } else if (hostnameMatches(url, 'lesswrong.com')) {
     tags.add('rationality')
     tags.add('discourse')
-  } else if (domain.includes('substack.com')) {
+  } else if (hostnameMatches(url, 'substack.com')) {
     tags.add('article')
     tags.add('newsletter')
   }

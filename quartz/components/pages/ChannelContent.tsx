@@ -10,6 +10,7 @@ import {
 import { toArenaJsx, fromHtmlStringToArenaJsx, arenaBlockTimestamp } from '../../util/arena'
 import { classNames } from '../../util/lang'
 import { FullSlug, slugTag, resolveRelative } from '../../util/path'
+import { hostnameMatches } from '../../util/url'
 import { extractWikilinksWithPositions, resolveWikilinkTarget } from '../../util/wikilinks'
 import { buildYouTubeEmbed, type YouTubeEmbedSpec } from '../../util/youtube'
 import style from '../styles/arena.scss'
@@ -237,7 +238,7 @@ const ArenaModalMainContent = ({
 
 const rewriteArxivUrl = (rawUrl: string): string => {
   const parsed = new URL(rawUrl)
-  if (!parsed.hostname.toLowerCase().endsWith('arxiv.org')) {
+  if (!hostnameMatches(parsed, 'arxiv.org')) {
     return rawUrl
   }
 

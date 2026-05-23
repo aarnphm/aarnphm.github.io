@@ -41,12 +41,15 @@ export type NotebookRuntimeDebugOutput = {
 
 export type NotebookRuntimeTextOutput = { type: 'text'; text: string }
 
+export type NotebookRuntimeJsonOutput = { type: 'json'; text: string }
+
 export type NotebookRuntimeHtmlOutput = { type: 'html'; html: string }
 
 export type NotebookRuntimeOutput =
   | NotebookRuntimeStreamOutput
   | NotebookRuntimeErrorOutput
   | NotebookRuntimeTextOutput
+  | NotebookRuntimeJsonOutput
   | NotebookRuntimeHtmlOutput
 
 export const defaultNotebookPyodideIndexUrl = 'https://cdn.jsdelivr.net/pyodide/v0.29.4/full/'
@@ -126,11 +129,9 @@ export function notebookCellControls(cell: NotebookRuntimeCell): string[] {
   const cellId = cell.id
   const escaped = escapeHTML(cellId)
   return [
-    `<div class="notebook-runtime-cell" data-notebook-cell="${escaped}" data-notebook-execution-count="${cell.executionIndex ?? ''}">`,
-    `<span class="notebook-execution-prompt" data-notebook-execution-label="${escaped}" aria-live="polite">${escapeHTML(
+    `<div class="notebook-runtime-cell" data-notebook-cell="${escaped}" data-notebook-execution-count="${cell.executionIndex ?? ''}"><span class="notebook-execution-prompt" data-notebook-execution-label="${escaped}" aria-live="polite">${escapeHTML(
       notebookExecutionLabel(cell.executionIndex),
-    )}</span>`,
-    '</div>',
+    )}</span></div>`,
   ]
 }
 
@@ -491,6 +492,13 @@ export function renderNotebookRuntimeOutput(
   if (output.type === 'html') {
     return `<div class="notebook-output notebook-output-html" data-output-name="display">${output.html}</div>`
   }
+  if (output.type === 'json') {
+    return preOutput(
+      ['notebook-output', 'notebook-output-text', 'notebook-output-json'],
+      'json',
+      output.text,
+    )
+  }
   return preOutput(['notebook-output', 'notebook-output-text'], 'result', output.text)
 }
 
@@ -502,6 +510,7 @@ export function unsupportedNotebookRuntimeReason(source: string): string | undef
     if (trimmed.length === 0) continue
     if (/^%pip\s+install(?:\s|$)/.test(trimmed)) continue
     if (/^%timeit(?:\s|$)/.test(trimmed)) continue
+    if (/^%time(?:\s|$)/.test(trimmed)) continue
     if (/^!(?:pip|uv\s+pip|python3?\s+-m\s+pip)\s+install(?:\s|$)/.test(trimmed)) continue
     const directiveReason = browserRuntimeDirectiveReason(trimmed)
     if (directiveReason !== undefined) return directiveReason

@@ -4,6 +4,7 @@ import { Root, Link, Text } from 'mdast'
 import rehypeCitation from 'rehype-citation'
 import { visit } from 'unist-util-visit'
 import type { QuartzTransformerPlugin } from '../../types/plugin'
+import { hostnameMatches, parseExternalUrl } from '../../util/url'
 import {
   cacheState,
   ensurePendingPaper,
@@ -17,30 +18,26 @@ const URL_PATTERN = /https?:\/\/[^\s<>)"]+/g
 
 interface LinkType {
   type: string
-  pattern: (url: string) => boolean | string | null
+  pattern: (url: URL, rawUrl: string) => boolean | string | null
   label: string
 }
 
 const LINK_TYPES: LinkType[] = [
-  { type: 'arxiv', pattern: extractArxivId, label: '[arXiv]' },
+  { type: 'arxiv', pattern: (_url, rawUrl) => extractArxivId(rawUrl), label: '[arXiv]' },
   {
     type: 'lesswrong',
-    pattern: (url: string) => url.toLowerCase().includes('lesswrong.com'),
+    pattern: (url: URL) => hostnameMatches(url, 'lesswrong.com'),
     label: '[lesswrong]',
   },
-  {
-    type: 'github',
-    pattern: (url: string) => url.toLowerCase().includes('github.com'),
-    label: '[GitHub]',
-  },
+  { type: 'github', pattern: (url: URL) => hostnameMatches(url, 'github.com'), label: '[GitHub]' },
   {
     type: 'transformer',
-    pattern: (url: string) => url.toLowerCase().includes('transformer-circuits.pub'),
+    pattern: (url: URL) => hostnameMatches(url, 'transformer-circuits.pub'),
     label: '[transformer circuit]',
   },
   {
     type: 'alignment',
-    pattern: (url: string) => url.toLowerCase().includes('alignmentforum.org'),
+    pattern: (url: URL) => hostnameMatches(url, 'alignmentforum.org'),
     label: '[alignment forum]',
   },
 ]
@@ -50,7 +47,9 @@ function createTextNode(value: string): HastText {
 }
 
 function getLinkType(url: string): LinkType | undefined {
-  return LINK_TYPES.find(type => type.pattern(url))
+  const parsed = parseExternalUrl(url)
+  if (!parsed) return undefined
+  return LINK_TYPES.find(type => type.pattern(parsed, url))
 }
 
 function createLinkElement(href: string): Element {

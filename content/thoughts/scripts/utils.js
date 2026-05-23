@@ -1,3 +1,3 @@
 export function escapePipe(str) {
-  return new String(str).replace(/\|/, '\\|')
+  return String(str).replaceAll('|', '\\|')
 }

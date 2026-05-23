@@ -8,9 +8,44 @@ function isRecord(value) {
   return typeof value === 'object' && value !== null && !Array.isArray(value)
 }
 
+const htmlEntityReplacements = new Map([
+  ['&quot;', '"'],
+  ['&#34;', '"'],
+  ['&#x22;', '"'],
+  ['&apos;', "'"],
+  ['&#39;', "'"],
+  ['&#x27;', "'"],
+  ['&lt;', '<'],
+  ['&#60;', '<'],
+  ['&#x3c;', '<'],
+  ['&#x3C;', '<'],
+  ['&gt;', '>'],
+  ['&#62;', '>'],
+  ['&#x3e;', '>'],
+  ['&#x3E;', '>'],
+  ['&amp;', '&'],
+  ['&#38;', '&'],
+  ['&#x26;', '&'],
+])
+
+function decodeHtmlEntity(entity) {
+  return htmlEntityReplacements.get(entity) ?? entity
+}
+
 function runtimeIdFromJson(text) {
   try {
     const parsed = JSON.parse(text)
+    return isRecord(parsed) && typeof parsed.id === 'string' ? parsed.id : undefined
+  } catch {}
+
+  const decoded = text.replace(
+    /&(quot|apos|lt|gt|amp|#34|#x22|#39|#x27|#60|#x3[cC]|#62|#x3[eE]|#38|#x26);/g,
+    decodeHtmlEntity,
+  )
+  if (decoded === text) return undefined
+
+  try {
+    const parsed = JSON.parse(decoded)
     return isRecord(parsed) && typeof parsed.id === 'string' ? parsed.id : undefined
   } catch {
     return undefined
@@ -55,3 +90,4 @@ function scheduleNotebookRuntimeMount() {
 }
 
 document.addEventListener('nav', scheduleNotebookRuntimeMount)
+scheduleNotebookRuntimeMount()

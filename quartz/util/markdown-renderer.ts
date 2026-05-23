@@ -7,6 +7,7 @@ import python from 'highlight.js/lib/languages/python'
 import rust from 'highlight.js/lib/languages/rust'
 import typescript from 'highlight.js/lib/languages/typescript'
 import { marked } from 'marked'
+import { escapeHTML } from './escape'
 import { stripSlashes, splitAnchor, resolveRelative, type FullSlug } from './path'
 import { extractWikilinks, resolveWikilinkTarget } from './wikilinks'
 
@@ -91,17 +92,18 @@ export function renderMarkdown(markdown: string, currentSlug?: FullSlug): string
       const decodedCode = code
         .replace(/&lt;/g, '<')
         .replace(/&gt;/g, '>')
-        .replace(/&amp;/g, '&')
         .replace(/&quot;/g, '"')
+        .replace(/&amp;/g, '&')
+      const escapedCode = escapeHTML(decodedCode)
       if (lang && hljs.getLanguage(lang)) {
         try {
           const highlighted = hljs.highlight(decodedCode, { language: lang }).value
           return `<pre><code class="hljs language-${lang}">${highlighted}</code></pre>`
         } catch {
-          return `<pre><code class="hljs">${decodedCode}</code></pre>`
+          return `<pre><code class="hljs">${escapedCode}</code></pre>`
         }
       }
-      return `<pre><code class="hljs">${decodedCode}</code></pre>`
+      return `<pre><code class="hljs">${escapedCode}</code></pre>`
     },
   )
   return DOMPurify.sanitize(html)

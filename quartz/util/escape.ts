@@ -9,9 +9,9 @@ export const escapeHTML = (unsafe: string) => {
 
 export const unescapeHTML = (html: string) => {
   return html
-    .replaceAll('&amp;', '&')
     .replaceAll('&lt;', '<')
     .replaceAll('&gt;', '>')
     .replaceAll('&quot;', '"')
     .replaceAll('&#039;', "'")
+    .replaceAll('&amp;', '&')
 }

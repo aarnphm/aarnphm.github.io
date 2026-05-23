@@ -15,3 +15,4 @@ This means: no fallbacks, no hacks, no shortcuts. Production-grade, Google-quali
 - when thinking hard about a problem, use extended thinking as much as possible to reason hard about a problem.
 - always use fd, rg as tools (assume these are installed by default)
 - never writes math symbol in ASCII in markdown, and you should ALWAYS write latex block accordingly.
+- don't even bother shim or backward compatibility (too much junk and bloat the codebase)

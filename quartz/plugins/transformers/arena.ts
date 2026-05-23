@@ -4,6 +4,7 @@ import { toString } from 'hast-util-to-string'
 import yaml from 'js-yaml'
 import { QuartzTransformerPlugin } from '../../types/plugin'
 import { splitAnchor, transformLink, stripSlashes, FullSlug } from '../../util/path'
+import { hostnameMatches } from '../../util/url'
 import { extractWikilinksWithPositions, resolveWikilinkTarget } from '../../util/wikilinks'
 import { buildYouTubeEmbed } from '../../util/youtube'
 import { externalLinkRegex } from './ofm'
@@ -111,11 +112,9 @@ const stripTrailingMarkers = (value: string): string =>
 const isGithubUrl = (rawUrl: string): boolean => {
   if (!rawUrl) return false
   try {
-    const { hostname } = new URL(rawUrl)
-    const normalized = hostname.toLowerCase()
-    return normalized === 'github.com' || normalized.endsWith('.github.com')
+    return hostnameMatches(new URL(rawUrl), 'github.com')
   } catch {
-    return rawUrl.toLowerCase().includes('github.com/')
+    return false
   }
 }
 

@@ -19,11 +19,28 @@ const defaultBodyWeight = [400]
 const headerFontLocal = joinSegments('static', 'GT-Sectra-Display-Regular.woff')
 const bodyFontLocal = joinSegments('static', 'GT-Sectra-Book.woff')
 
-/**
- * Strip HTML tags from text for use in OG images
- */
 function stripHtml(text: string): string {
-  return text.replace(/<[^>]*>/g, '')
+  let output = ''
+  let inTag = false
+  let quote: string | undefined
+  for (const char of text) {
+    if (inTag) {
+      if (quote) {
+        if (char === quote) quote = undefined
+      } else if (char === '"' || char === "'") {
+        quote = char
+      } else if (char === '>') {
+        inTag = false
+      }
+      continue
+    }
+    if (char === '<') {
+      inTag = true
+      continue
+    }
+    output += char
+  }
+  return output
 }
 
 export const renderDescription = (description: string | undefined, slug: string) => {
@@ -182,7 +199,7 @@ export async function fetchTtf(
   const css = await cssResponse.text()
 
   // Extract .ttf url from css file
-  const urlRegex = /url\((https:\/\/fonts.gstatic.com\/s\/.*?.ttf)\)/g
+  const urlRegex = /url\((https:\/\/fonts\.gstatic\.com\/s\/[^)]+?\.ttf)\)/g
   const match = urlRegex.exec(css)
 
   if (!match) {
