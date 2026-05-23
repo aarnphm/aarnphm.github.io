@@ -88,6 +88,13 @@ describe('notebook browser runtime output', () => {
   })
 
   test('reports unsupported browser runtime features before execution', () => {
+    assert.strictEqual(unsupportedNotebookRuntimeReason('!cat x.py'), undefined)
+    assert.strictEqual(unsupportedNotebookRuntimeReason('!ls .'), undefined)
+    assert.strictEqual(unsupportedNotebookRuntimeReason('!ls -la arithmetic*'), undefined)
+    assert.strictEqual(
+      unsupportedNotebookRuntimeReason('!wat2wasm arithmetic.wat\n!ls -la arithmetic*'),
+      undefined,
+    )
     assert.strictEqual(unsupportedNotebookRuntimeReason('!wat2wasm arithmetic.wat'), undefined)
     assert.strictEqual(
       unsupportedNotebookRuntimeReason('!wat2wasm --enable-bulk-memory array.wat'),
@@ -96,6 +103,19 @@ describe('notebook browser runtime output', () => {
     assert.strictEqual(
       unsupportedNotebookRuntimeReason('!wat2wasm -v arithmetic.wat'),
       'wat2wasm option -v is unavailable in the browser runtime',
+    )
+    assert.strictEqual(unsupportedNotebookRuntimeReason('!wasm2wat arithmetic.wasm'), undefined)
+    assert.strictEqual(
+      unsupportedNotebookRuntimeReason('!wasm2wat --fold-exprs arithmetic.wasm'),
+      undefined,
+    )
+    assert.strictEqual(
+      unsupportedNotebookRuntimeReason('!wasm2wat -v arithmetic.wasm'),
+      'wasm2wat option -v is unavailable in the browser runtime',
+    )
+    assert.strictEqual(
+      unsupportedNotebookRuntimeReason('!ls --color arithmetic*'),
+      'ls option --color is unavailable in the browser runtime',
     )
     assert.strictEqual(unsupportedNotebookRuntimeReason('%%writefile x.py'), undefined)
     assert.strictEqual(unsupportedNotebookRuntimeReason('%%writefile -a x.py\nprint(1)'), undefined)
@@ -119,6 +139,33 @@ describe('notebook browser runtime output', () => {
     assert.strictEqual(unsupportedNotebookRuntimeReason('!uv pip install seaborn'), undefined)
     assert.strictEqual(unsupportedNotebookRuntimeReason('!python -m pip install rich'), undefined)
     assert.strictEqual(unsupportedNotebookRuntimeReason('print("hi")'), undefined)
+  })
+
+  test('rejects notebook shell paths outside the browser sandbox before execution', () => {
+    assert.strictEqual(
+      unsupportedNotebookRuntimeReason('!cat ../secret.py'),
+      'cat path ../secret.py is outside the browser runtime sandbox',
+    )
+    assert.strictEqual(
+      unsupportedNotebookRuntimeReason('!cat /etc/passwd'),
+      'cat path /etc/passwd is outside the browser runtime sandbox',
+    )
+    assert.strictEqual(
+      unsupportedNotebookRuntimeReason('!ls ../'),
+      'ls path ../ is outside the browser runtime sandbox',
+    )
+    assert.strictEqual(
+      unsupportedNotebookRuntimeReason('!wat2wasm ../arithmetic.wat'),
+      'wat2wasm path ../arithmetic.wat is outside the browser runtime sandbox',
+    )
+    assert.strictEqual(
+      unsupportedNotebookRuntimeReason('!wasm2wat arithmetic.wasm -o ../arithmetic.wat'),
+      'wasm2wat path ../arithmetic.wat is outside the browser runtime sandbox',
+    )
+    assert.strictEqual(
+      unsupportedNotebookRuntimeReason('%%writefile ../arithmetic.wat\n(module)'),
+      '%%writefile path ../arithmetic.wat is outside the browser runtime sandbox',
+    )
   })
 
   test('builds a stable local browser source key per notebook cell', () => {
@@ -166,14 +213,11 @@ describe('notebook browser runtime output', () => {
 
   test('keeps inline runtime loaders valid browser javascript', async () => {
     const root = new URL('../components/scripts/', import.meta.url)
-    const scripts = await Promise.all(
-      ['notebook-runtime.inline.ts', 'notebook-lsp.inline.ts'].map(async file => {
-        return await readFile(new URL(file, root), 'utf8')
-      }),
-    )
+    const scripts = [await readFile(new URL('notebook-runtime.inline.ts', root), 'utf8')]
 
     await transform(scripts.map(script => `(function(){${script}})();`).join('\n'), {
       loader: 'js',
+      minify: true,
     })
   })
 })

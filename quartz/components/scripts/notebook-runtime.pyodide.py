@@ -1,10 +1,12 @@
 from __future__ import annotations
 
 import ast as _quartz_ast
+import glob
 import importlib.abc
 import importlib.util
 import json
 import math
+import os
 import posixpath
 import shlex
 import sys
@@ -15,6 +17,7 @@ import types
 import js
 
 _quartz_notebook_modules = {}
+_quartz_notebook_root = '/quartz-notebook'
 _quartz_native_package_errors = {
   'flax': 'Flax depends on JAX and jaxlib, which require a native XLA runtime outside this browser Pyodide runtime. Use QUARTZ_NOTEBOOK_MODE=execute or a Colab/server runtime for this cell.',
   'jaxlib': 'jaxlib requires native XLA runtime support outside this browser Pyodide runtime. Use QUARTZ_NOTEBOOK_MODE=execute or a Colab/server runtime for this cell.',
@@ -884,6 +887,8 @@ sys.modules['import_ipynb'] = types.ModuleType('import_ipynb')
 nbimporter_module = types.ModuleType('nbimporter')
 nbimporter_module.options = {'only_defs': False}
 sys.modules['nbimporter'] = nbimporter_module
+os.makedirs(_quartz_notebook_root, exist_ok=True)
+os.chdir(_quartz_notebook_root)
 
 
 def _format_timeit(seconds):
@@ -910,11 +915,31 @@ def __quartz_timeit(statement, global_ns, local_ns, number=None, repeat=None):
   print(f'{_format_timeit(best)} per loop (best of {repeats}, {runs} loops each)')
 
 
-def __quartz_notebook_path(filename):
-  path = posixpath.normpath(str(filename).strip())
-  if path in {'', '.'} or path == '..' or path.startswith('/') or path.startswith('../') or '/../' in path:
+def __quartz_notebook_relative_path(filename, allow_dot=False):
+  raw = str(filename).strip().replace('\\', '/')
+  if not raw or '\x00' in raw or raw.startswith('/'):
+    raise ValueError(f'notebook file path is unavailable: {filename}')
+  parts = raw.split('/')
+  if '..' in parts:
+    raise ValueError(f'notebook file path is unavailable: {filename}')
+  path = posixpath.normpath(raw)
+  if not allow_dot and path == '.':
     raise ValueError(f'notebook file path is unavailable: {filename}')
   return path
+
+
+def __quartz_notebook_sandbox_path(filename, allow_dot=False):
+  path = __quartz_notebook_relative_path(filename, allow_dot)
+  absolute = posixpath.join(_quartz_notebook_root, path)
+  real_root = os.path.realpath(_quartz_notebook_root)
+  real_path = os.path.realpath(absolute)
+  if real_path != real_root and not real_path.startswith(real_root + '/'):
+    raise ValueError(f'notebook file path is unavailable: {filename}')
+  return real_path
+
+
+def __quartz_notebook_path(filename):
+  return __quartz_notebook_sandbox_path(filename)
 
 
 def __quartz_writefile(filename, content, append=False):
@@ -923,7 +948,50 @@ def __quartz_writefile(filename, content, append=False):
   with open(path, mode, encoding='utf-8') as file:
     file.write(str(content))
   action = 'Appending to' if append else 'Writing'
-  print(f'{action} {path}')
+  print(f'{action} {posixpath.relpath(path, _quartz_notebook_root)}')
+
+
+def __quartz_shell_ls(words):
+  long = False
+  show_all = False
+  patterns = []
+  for word in words[1:]:
+    if word.startswith('-'):
+      flags = set(word[1:])
+      if not flags or not flags <= {'1', 'a', 'h', 'l'}:
+        raise ValueError(f'ls option {word} is unavailable in the browser runtime')
+      long = long or 'l' in flags
+      show_all = show_all or 'a' in flags
+    else:
+      patterns.append(word)
+  if not patterns:
+    patterns = ['.']
+  entries = []
+  seen = set()
+  for raw_pattern in patterns:
+    pattern = __quartz_notebook_relative_path(raw_pattern, True)
+    matches = (
+      [posixpath.join(_quartz_notebook_root, entry) for entry in sorted(os.listdir(_quartz_notebook_root))]
+      if pattern == '.'
+      else sorted(glob.glob(posixpath.join(_quartz_notebook_root, pattern)))
+    )
+    if not matches:
+      raise FileNotFoundError(f'ls: cannot access {raw_pattern}')
+    for match in matches:
+      path = __quartz_notebook_sandbox_path(posixpath.relpath(match, _quartz_notebook_root), True)
+      display_path = posixpath.relpath(path, _quartz_notebook_root)
+      if not show_all and posixpath.basename(display_path).startswith('.'):
+        continue
+      if display_path in seen:
+        continue
+      seen.add(display_path)
+      entries.append((display_path, path))
+  if long:
+    for display_path, path in entries:
+      suffix = '/' if os.path.isdir(path) else ''
+      print(f'{os.path.getsize(path):>8} {display_path}{suffix}')
+  elif entries:
+    print('  '.join(display_path for display_path, _ in entries))
 
 
 def __quartz_shell(command):
@@ -939,6 +1007,9 @@ def __quartz_shell(command):
       path = __quartz_notebook_path(raw_path)
       with open(path, 'r', encoding='utf-8') as file:
         print(file.read(), end='')
+    return
+  if words[0] == 'ls':
+    __quartz_shell_ls(words)
     return
   raise ValueError(f'shell command {words[0]} is unavailable in the browser runtime')
 
