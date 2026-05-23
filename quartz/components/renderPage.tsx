@@ -16,6 +16,7 @@ import {
   QuartzComponentConstructor,
   QuartzComponentProps,
 } from '../types/component'
+import { resolveAsset } from '../util/asset-manifest'
 import { compileBaseConfig } from '../util/base/compile'
 import { renderBaseViewsForFile } from '../util/base/render'
 import { clone } from '../util/clone'
@@ -793,19 +794,18 @@ export const pageResources = (
   staticResources: StaticResources,
   ctx: BuildCtx,
 ) => {
+  const asset = (logicalPath: string) => joinSegments(baseDir, resolveAsset(ctx, logicalPath))
   const css = [
-    { content: joinSegments(baseDir, 'index.css') },
+    { content: asset('index.css') },
     ...splitCssBundles(staticResources.css, [collapseHeaderStyle]).map(part =>
-      part.type === 'bundle'
-        ? { content: joinSegments(baseDir, staticCssBundlePath(part.index)) }
-        : part.resource,
+      part.type === 'bundle' ? { content: asset(staticCssBundlePath(part.index)) } : part.resource,
     ),
   ]
   const staticJs = [
     ...splitJsBundles(staticResources.js, 'beforeDOMReady').map(part =>
       part.type === 'bundle'
         ? {
-            src: joinSegments(baseDir, staticJsBundlePath(part.loadTime, part.index)),
+            src: asset(staticJsBundlePath(part.loadTime, part.index)),
             loadTime: part.loadTime,
             contentType: 'external',
           }
@@ -817,7 +817,7 @@ export const pageResources = (
     ]).map(part =>
       part.type === 'bundle'
         ? {
-            src: joinSegments(baseDir, staticJsBundlePath(part.loadTime, part.index)),
+            src: asset(staticJsBundlePath(part.loadTime, part.index)),
             loadTime: part.loadTime,
             contentType: 'external',
           }
@@ -828,11 +828,7 @@ export const pageResources = (
   return {
     css: [...css],
     js: [
-      {
-        src: joinSegments(baseDir, 'prescript.js'),
-        loadTime: 'beforeDOMReady',
-        contentType: 'external',
-      },
+      { src: asset('prescript.js'), loadTime: 'beforeDOMReady', contentType: 'external' },
       {
         loadTime: 'beforeDOMReady',
         contentType: 'inline',
@@ -853,7 +849,7 @@ export const pageResources = (
       },
       ...staticJs,
       {
-        src: joinSegments(baseDir, 'postscript.js'),
+        src: asset('postscript.js'),
         loadTime: 'afterDOMReady',
         moduleType: 'module',
         contentType: 'external',

@@ -41,6 +41,7 @@ import '../../components/mdx'
 import styles from '../../styles/custom.scss'
 import { QuartzComponent } from '../../types/component'
 import { QuartzEmitterPlugin } from '../../types/plugin'
+import { assetSlugForContent } from '../../util/asset-manifest'
 import { BuildCtx } from '../../util/ctx'
 import { FilePath, FullSlug, isFullSlug, joinSegments } from '../../util/path'
 import {
@@ -171,11 +172,12 @@ function minifyStylesheet(filename: string, stylesheet: string) {
 async function* writeStaticResourceBundles(ctx: BuildCtx, resources: StaticResources) {
   for (const part of splitCssBundles(resources.css, [collapseHeaderStyle])) {
     if (part.type !== 'bundle') continue
+    const content = minifyStylesheet(`resource-style-${part.index}.css`, part.content)
     yield write({
       ctx,
-      slug: staticCssBundleSlug(part.index) as FullSlug,
+      slug: assetSlugForContent(ctx, staticCssBundleSlug(part.index), '.css', content),
       ext: '.css',
-      content: minifyStylesheet(`resource-style-${part.index}.css`, part.content),
+      content,
     })
   }
 
@@ -184,11 +186,17 @@ async function* writeStaticResourceBundles(ctx: BuildCtx, resources: StaticResou
       loadTime === 'afterDOMReady' ? [transcludeScript, collapseHeaderScript] : []
     for (const part of splitJsBundles(resources.js, loadTime, leadingInline)) {
       if (part.type !== 'bundle') continue
+      const content = await joinScripts(part.scripts)
       yield write({
         ctx,
-        slug: staticJsBundleSlug(part.loadTime, part.index) as FullSlug,
+        slug: assetSlugForContent(
+          ctx,
+          staticJsBundleSlug(part.loadTime, part.index),
+          '.js',
+          content,
+        ),
         ext: '.js',
-        content: await joinScripts(part.scripts),
+        content,
       })
     }
   }
@@ -396,18 +404,29 @@ export const ComponentResources: QuartzEmitterPlugin = () => {
         dir: 'auto',
       }
 
+      const stylesheetContent = minifyStylesheet('index.css', stylesheet)
       yield write({
         ctx,
-        slug: 'index' as FullSlug,
+        slug: assetSlugForContent(ctx, 'index', '.css', stylesheetContent),
         ext: '.css',
-        content: minifyStylesheet('index.css', stylesheet),
+        content: stylesheetContent,
       })
 
       yield* writeStaticResourceBundles(ctx, resources)
 
-      yield write({ ctx, slug: 'prescript' as FullSlug, ext: '.js', content: prescript })
+      yield write({
+        ctx,
+        slug: assetSlugForContent(ctx, 'prescript', '.js', prescript),
+        ext: '.js',
+        content: prescript,
+      })
 
-      yield write({ ctx, slug: 'postscript' as FullSlug, ext: '.js', content: postscript })
+      yield write({
+        ctx,
+        slug: assetSlugForContent(ctx, 'postscript', '.js', postscript),
+        ext: '.js',
+        content: postscript,
+      })
 
       yield write({
         ctx,
@@ -459,8 +478,18 @@ export const ComponentResources: QuartzEmitterPlugin = () => {
           joinScripts(componentResources.afterDOMLoaded),
         ])
 
-        yield write({ ctx, slug: 'prescript' as FullSlug, ext: '.js', content: prescript })
-        yield write({ ctx, slug: 'postscript' as FullSlug, ext: '.js', content: postscript })
+        yield write({
+          ctx,
+          slug: assetSlugForContent(ctx, 'prescript', '.js', prescript),
+          ext: '.js',
+          content: prescript,
+        })
+        yield write({
+          ctx,
+          slug: assetSlugForContent(ctx, 'postscript', '.js', postscript),
+          ext: '.js',
+          content: postscript,
+        })
       }
 
       if (changeEvents.some(changeEvent => isCollaborativeCommentsAssetChange(changeEvent.path))) {
