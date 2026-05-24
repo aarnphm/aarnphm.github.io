@@ -1,8 +1,12 @@
-type NotebookRuntimeModule = { mountNotebookRuntime(root: HTMLElement, data: string): void }
+type NotebookRuntimeModule = {
+  mountNotebookRuntime(root: HTMLElement, data: string): void
+  warmNotebookRuntimeEditorAssets?(data: readonly string[]): Promise<void>
+}
 
 type NotebookRuntimeTarget = { root: HTMLElement; text: string }
 
 let notebookRuntimeModule: Promise<NotebookRuntimeModule> | undefined
+let notebookRuntimeWarmup: Promise<void> | undefined
 
 function notebookRuntimeScriptUrl(name: string) {
   return new URL(name, import.meta.url).href
@@ -57,7 +61,7 @@ function runtimeIdFromJson(text: string) {
 }
 
 function runtimeDataById() {
-  const data = new Map()
+  const data = new Map<string, string>()
   document.querySelectorAll('script[data-notebook-runtime-data]').forEach(script => {
     const text = script.textContent
     if (!text) return
@@ -65,6 +69,34 @@ function runtimeDataById() {
     if (id) data.set(id, text)
   })
   return data
+}
+
+function scheduleNotebookRuntimeIdle(callback: () => void) {
+  if (typeof window.requestIdleCallback === 'function') {
+    window.requestIdleCallback(callback, { timeout: 2500 })
+    return
+  }
+  window.setTimeout(callback, 500)
+}
+
+function warmNotebookRuntimeAssets(data: readonly string[]) {
+  notebookRuntimeWarmup ??= (async () => {
+    const runtime = await (notebookRuntimeModule ??= import(
+      notebookRuntimeScriptUrl('notebook-runtime.client.js')
+    ))
+    await runtime.warmNotebookRuntimeEditorAssets?.(data)
+  })()
+  return notebookRuntimeWarmup
+}
+
+function scheduleNotebookRuntimeWarmup(targets: readonly NotebookRuntimeTarget[]) {
+  if (targets.length === 0 || notebookRuntimeWarmup) return
+  const data = targets.map(target => target.text)
+  scheduleNotebookRuntimeIdle(() => {
+    void warmNotebookRuntimeAssets(data).catch(error => {
+      console.warn('failed to warm notebook runtime assets', error)
+    })
+  })
 }
 
 async function mountNotebookRuntime() {
@@ -83,6 +115,7 @@ async function mountNotebookRuntime() {
   for (const target of targets) {
     runtime.mountNotebookRuntime(target.root, target.text)
   }
+  scheduleNotebookRuntimeWarmup(targets)
 }
 
 function scheduleNotebookRuntimeMount() {

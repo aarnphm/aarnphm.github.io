@@ -86,6 +86,7 @@ const notebookServices = new Map<string, NotebookPythonLspService>()
 
 let notebookTypeshed: Promise<JsonObject> | undefined
 let notebookWorkerUrl: Promise<string> | undefined
+let notebookLspAssetWarmup: Promise<void> | undefined
 let notebookLspSequence = 0
 
 function messageId(value: unknown): JsonRpcId | undefined {
@@ -191,6 +192,15 @@ async function loadNotebookTypeshedChunks(): Promise<JsonObject> {
 async function loadNotebookTypeshed() {
   notebookTypeshed ??= loadNotebookTypeshedChunks()
   return notebookTypeshed
+}
+
+export async function warmNotebookLspAssets(): Promise<void> {
+  notebookLspAssetWarmup ??= Promise.all([
+    import('@codemirror/lsp-client'),
+    loadNotebookTypeshed(),
+    loadNotebookWorkerUrl(),
+  ]).then(() => {})
+  return notebookLspAssetWarmup
 }
 
 function notebookConfiguration(section: string | undefined): JsonValue {
