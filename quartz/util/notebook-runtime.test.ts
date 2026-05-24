@@ -553,6 +553,10 @@ describe('notebook browser runtime output', () => {
     )
     assert.match(
       styleSource,
+      /--notebook-output-tab-column: calc\(var\(--notebook-gutter-width\) \+ var\(--notebook-code-gap\)\)/,
+    )
+    assert.match(
+      styleSource,
       /--notebook-active-green: var\(--background-modifier-success, var\(--lime\)\)/,
     )
     assert.match(
@@ -565,7 +569,19 @@ describe('notebook browser runtime output', () => {
       /border-color: color-mix\(in srgb, var\(--notebook-active-green\) 82%, transparent\)/,
     )
     assert.match(styleSource, /padding: var\(--notebook-shell-padding\)/)
+    assert.match(
+      styleSource,
+      /\.notebook-cell-actions \{[^}]*right: var\(--notebook-shell-padding\);/s,
+    )
+    assert.doesNotMatch(
+      styleSource,
+      /\.notebook-cell-actions \{[^}]*left: calc\(\s*var\(--notebook-shell-padding\) \+ var\(--notebook-gutter-width\) \+ var\(--notebook-code-gap\)\s*\);/s,
+    )
     assert.match(styleSource, /\.notebook-output-tabs \{/)
+    assert.match(
+      styleSource,
+      /\.notebook-output-tabs \{[\s\S]*grid-template-columns: var\(--notebook-output-tab-column\) minmax\(0, 1fr\);/,
+    )
     assert.match(styleSource, /\.notebook-output-tabs \{[\s\S]*column-gap: 0;/)
     assert.match(
       styleSource,
