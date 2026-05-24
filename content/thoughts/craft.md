@@ -6,7 +6,7 @@ comments: false
 date: '2021-12-22'
 description: and a celebration for the act of making.
 id: craft
-modified: 2026-05-24 14:12:27 GMT-04:00
+modified: 2026-05-24 14:35:55 GMT-04:00
 permalinks:
   - /thoughts/work
   - /craft
@@ -62,7 +62,7 @@ You can find internal monologue under [[/posts/]] index. I also sent out a pseud
   - Implemented telescope-style search https://github.com/jackyzha0/quartz/pull/722, https://github.com/jackyzha0/quartz/pull/774, https://github.com/jackyzha0/quartz/pull/782
   - Added sidenotes components, inspired by [Tuffe's CSS](https://edwardtufte.github.io/tufte-css/) https://github.com/jackyzha0/quartz/pull/1555, [[thoughts/mechanistic interpretability|examples]]
   - Added [LLM-readable source](https://x.com/aarnphm/status/1857955302110376342)
-  - Added full Jupyter notebook transpilation and [[thoughts/university/twenty-five-twenty-six/sfwr-4tb3/10 Generalized Parsing/00 Generalied Parsing|executions]] (think of it as a scuffed Modal notebook)
+  - Added full Jupyter notebook transpilation and [[thoughts/university/twenty-five-twenty-six/sfwr-4tb3/10 Generalized Parsing/00 Generalized Parsing|executions]] (think of it as a scuffed Modal notebook)
     ![[thoughts/Jax#asynchronous dispatch|example if per-block transclusion runtime]]
   - Landing page of [[/|this]] website, [morph's documentation](https://engineering.morph-editor.app)
   - Custom components, i.e: [[/thoughts/atelier with friends/dundurn|supper club]], [[/curius|curius]], parsing [[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/a2/PCA|jupyter notebook]]
