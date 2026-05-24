@@ -24,6 +24,11 @@ import { BuildCtx } from '../util/ctx'
 import { htmlToJsx } from '../util/jsx'
 import { classNames } from '../util/lang'
 import {
+  findNotebookCellFrame,
+  notebookCellRef,
+  notebookCellRuntimeNodes,
+} from '../util/notebook-transclude'
+import {
   FullSlug,
   FilePath,
   SimpleSlug,
@@ -1020,6 +1025,7 @@ export function transcludeFinal(
   }
 
   const { dynalist, skipTranscludes } = opts
+  const notebookRuntimeTranscludes = new Map<string, number>()
 
   const pruneLeadingHeading = (nodes: ElementContent[]): ElementContent[] => {
     let removed = false
@@ -1136,6 +1142,58 @@ export function transcludeFinal(
     node.children = [titleEl, contentEl]
   }
 
+  const notebookRuntimeTranscludeCount = (transcludeTarget: FullSlug, cellId: string): number => {
+    const key = `${slug}\u0000${transcludeTarget}\u0000${cellId}`
+    const count = notebookRuntimeTranscludes.get(key) ?? 0
+    notebookRuntimeTranscludes.set(key, count + 1)
+    return count
+  }
+
+  const renderNotebookCellTransclude = (
+    node: Element,
+    pageTree: Root,
+    transcludeTarget: FullSlug,
+    blockRef: string | undefined,
+    inner: Element,
+    alias: string,
+    transcludeMetadata: Record<string, unknown> | undefined,
+  ): boolean => {
+    const cellId = notebookCellRef(blockRef)
+    if (!cellId) return false
+    const cell = findNotebookCellFrame(pageTree, cellId)
+    if (!cell) return false
+
+    const children: (ElementContent | null)[] = [
+      ...notebookCellRuntimeNodes(pageTree, {
+        slug,
+        transcludeTarget,
+        cellId,
+        count: notebookRuntimeTranscludeCount(transcludeTarget, cellId),
+      }),
+      normalizeHastElement(cell, slug, transcludeTarget) as ElementContent,
+    ]
+    if (fileData.frontmatter?.pageLayout !== 'reflection') {
+      children.push(
+        h('a', { href: inner.properties?.href, class: 'internal transclude-src' }, [
+          { type: 'text', value: i18n(cfg.locale).components.transcludes.linkToOriginal },
+        ]),
+      )
+    }
+
+    const validChildren = children.filter(c => c !== null) as ElementContent[]
+    if (transcludeMetadata && 'collapsed' in transcludeMetadata) {
+      wrapCollapsible(
+        node,
+        validChildren,
+        alias || `Cell: ${cellId}`,
+        Boolean(transcludeMetadata.collapsed),
+      )
+    } else {
+      node.children = validChildren
+    }
+    return true
+  }
+
   // NOTE: process transcludes in componentData
   visit(root, { tagName: 'blockquote' }, node => {
     const classNames = (node.properties?.className ?? []) as string[]
@@ -1154,8 +1212,10 @@ export function transcludeFinal(
       if (inner?.type !== 'element') return
       const transcludeTarget = inner.properties['data-slug']
       if (typeof transcludeTarget !== 'string' || !isFullSlug(transcludeTarget)) return
-      if (visited.has(transcludeTarget)) return
-      visited.add(transcludeTarget)
+      let blockRef = node.properties.dataBlock as string | undefined
+      const visitKey = `${transcludeTarget}${blockRef ?? ''}` as FullSlug
+      if (visited.has(visitKey)) return
+      visited.add(visitKey)
 
       let baseViewSlug: FullSlug | undefined
       let page = allFiles.find(f => f.slug === transcludeTarget)
@@ -1173,7 +1233,7 @@ export function transcludeFinal(
       }
 
       // parse metadata to check for collapsed flag
-      let transcludeMetadata: Record<string, any> | undefined
+      let transcludeMetadata: Record<string, unknown> | undefined
       const rawMetadata = node.properties.dataMetadata as string | undefined
       if (rawMetadata) {
         try {
@@ -1198,7 +1258,21 @@ export function transcludeFinal(
 
       const { title, headings } = transcludePageOpts
 
-      let blockRef = node.properties.dataBlock as string | undefined
+      if (
+        page.htmlAst &&
+        renderNotebookCellTransclude(
+          node,
+          page.htmlAst,
+          transcludeTarget,
+          blockRef,
+          inner,
+          alias,
+          transcludeMetadata,
+        )
+      ) {
+        return
+      }
+
       if (blockRef?.startsWith('#^')) {
         // block transclude
         blockRef = blockRef.slice('#^'.length)
@@ -1221,7 +1295,7 @@ export function transcludeFinal(
               node,
               children.filter(c => c !== null) as ElementContent[],
               titleText,
-              transcludeMetadata.collapsed,
+              Boolean(transcludeMetadata.collapsed),
             )
           } else {
             node.children = children.filter(c => c !== null) as ElementContent[]
@@ -1276,7 +1350,7 @@ export function transcludeFinal(
         const validChildren = children.filter(c => c !== null) as ElementContent[]
         if (transcludeMetadata && 'collapsed' in transcludeMetadata) {
           const titleText = alias || page.frontmatter?.title || `Section: ${blockRef}`
-          wrapCollapsible(node, validChildren, titleText, transcludeMetadata.collapsed)
+          wrapCollapsible(node, validChildren, titleText, Boolean(transcludeMetadata.collapsed))
         } else {
           node.children = validChildren
         }
@@ -1463,7 +1537,7 @@ export function transcludeFinal(
         const validChildren = children.filter(c => c !== null) as ElementContent[]
         if (transcludeMetadata && 'collapsed' in transcludeMetadata) {
           const titleText = alias || page.frontmatter?.title || page.slug || 'Transclude'
-          wrapCollapsible(node, validChildren, titleText, transcludeMetadata.collapsed)
+          wrapCollapsible(node, validChildren, titleText, Boolean(transcludeMetadata.collapsed))
         } else {
           node.children = validChildren
         }
