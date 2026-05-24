@@ -7,7 +7,7 @@ import { promises } from 'fs'
 import fs from 'fs'
 import { globby } from 'globby'
 import http from 'http'
-import { styleText } from 'node:util'
+import { inspect, styleText } from 'node:util'
 import path from 'path'
 import prettyBytes from 'pretty-bytes'
 import serveHandler from 'serve-handler'
@@ -15,6 +15,19 @@ import { WebSocketServer } from 'ws'
 import { version, fp, cacheFile } from './constants.js'
 
 const inlineScriptFilter = /\.inline\.(ts|js)$/
+const sourceWatchWriteStabilityMs = 250
+
+export function formatErrorReason(err) {
+  if (typeof err === 'string') {
+    return err
+  }
+
+  if (err instanceof Error) {
+    return err.message.length > 0 ? err.message : String(err)
+  }
+
+  return inspect(err, { depth: 4, colors: false })
+}
 
 async function bundleInlineScript(scriptPath) {
   let text = await promises.readFile(scriptPath, 'utf8')
@@ -120,7 +133,7 @@ export async function handleBuild(argv) {
 
     const result = await ctx.rebuild().catch(err => {
       console.error(`${styleText('red', "Couldn't parse Quartz configuration:")} ${fp}`)
-      console.log(`Reason: ${styleText('gray', err)}`)
+      console.error(`Reason: ${styleText('gray', formatErrorReason(err))}`)
       process.exit(1)
     })
     release()
@@ -284,7 +297,10 @@ export async function handleBuild(argv) {
       'package.json',
     ])
     chokidar
-      .watch(paths, { ignoreInitial: true })
+      .watch(paths, {
+        awaitWriteFinish: { stabilityThreshold: sourceWatchWriteStabilityMs },
+        ignoreInitial: true,
+      })
       .on('add', () => build(clientRefresh))
       .on('change', () => build(clientRefresh))
       .on('unlink', () => build(clientRefresh))

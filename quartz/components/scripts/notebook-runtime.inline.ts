@@ -1,15 +1,31 @@
 type NotebookRuntimeModule = {
-  mountNotebookRuntime(root: HTMLElement, data: string): void
-  warmNotebookRuntimeEditorAssets?(data: readonly string[]): Promise<void>
+  mountNotebookRuntime(root: HTMLElement, data: string, assets: NotebookRuntimeAssets): void
+  warmNotebookRuntimeEditorAssets?(
+    data: readonly string[],
+    assets: NotebookRuntimeAssets,
+  ): Promise<void>
 }
 
 type NotebookRuntimeTarget = { root: HTMLElement; text: string }
+type NotebookRuntimeAssets = {
+  readonly workerUrl: string
+  readonly pyrightWorkerManifestUrl: string
+  readonly pyrightTypeshedManifestUrl: string
+}
 
 let notebookRuntimeModule: Promise<NotebookRuntimeModule> | undefined
 let notebookRuntimeWarmup: Promise<void> | undefined
 
 function notebookRuntimeScriptUrl(name: string) {
   return new URL(name, import.meta.url).href
+}
+
+function notebookRuntimeAssets(): NotebookRuntimeAssets {
+  return {
+    workerUrl: notebookRuntimeScriptUrl('notebook-runtime.worker.js'),
+    pyrightWorkerManifestUrl: notebookRuntimeScriptUrl('notebook-pyright-worker.json'),
+    pyrightTypeshedManifestUrl: notebookRuntimeScriptUrl('notebook-pyright-typeshed.json'),
+  }
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -84,7 +100,7 @@ function warmNotebookRuntimeAssets(data: readonly string[]) {
     const runtime = await (notebookRuntimeModule ??= import(
       notebookRuntimeScriptUrl('notebook-runtime.client.js')
     ))
-    await runtime.warmNotebookRuntimeEditorAssets?.(data)
+    await runtime.warmNotebookRuntimeEditorAssets?.(data, notebookRuntimeAssets())
   })()
   return notebookRuntimeWarmup
 }
@@ -112,8 +128,9 @@ async function mountNotebookRuntime() {
   if (targets.length === 0) return
   notebookRuntimeModule ??= import(notebookRuntimeScriptUrl('notebook-runtime.client.js'))
   const runtime = await notebookRuntimeModule
+  const assets = notebookRuntimeAssets()
   for (const target of targets) {
-    runtime.mountNotebookRuntime(target.root, target.text)
+    runtime.mountNotebookRuntime(target.root, target.text, assets)
   }
   scheduleNotebookRuntimeWarmup(targets)
 }

@@ -240,6 +240,7 @@ const config: QuartzConfig = {
       Plugin.Masonry(),
       Plugin.CanvasPage(),
       Plugin.NotebookViewer({ mode: 'saved', runtime: { enabled: true } }),
+      Plugin.NotebookPagesManifest(),
     ],
   },
 }

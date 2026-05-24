@@ -9,10 +9,7 @@ import {
 } from '@codemirror/lsp-client'
 import { EditorState, Text, type Extension } from '@codemirror/state'
 import DOMPurify from 'dompurify'
-import {
-  notebookPyrightAssetManifestChunks,
-  notebookPyrightTypeshedFiles,
-} from '../../util/notebook-pyright-assets'
+import type { LspBridge, LspConfig } from './bridge'
 import {
   arrayValue,
   isJsonObject,
@@ -24,6 +21,12 @@ import {
   type JsonValue,
   type UnknownRecord,
 } from '../../util/type-guards'
+import { notebookRuntimeAssetUrl } from '../notebook/assets'
+import {
+  notebookPyrightAssetManifestChunks,
+  notebookPyrightAssetManifestEntry,
+  notebookPyrightTypeshedFiles,
+} from './pyright-assets'
 
 export type NotebookLspCell = {
   id: string
@@ -129,11 +132,19 @@ function notebookText(source: string): Text {
 }
 
 function pyrightWorkerManifestUrl() {
-  return new URL(notebookPyrightWorkerManifestName, import.meta.url).href
+  return notebookRuntimeAssetUrl(
+    'pyrightWorkerManifestUrl',
+    notebookPyrightWorkerManifestName,
+    import.meta.url,
+  )
 }
 
 function pyrightTypeshedManifestUrl() {
-  return new URL(notebookPyrightTypeshedManifestName, import.meta.url).href
+  return notebookRuntimeAssetUrl(
+    'pyrightTypeshedManifestUrl',
+    notebookPyrightTypeshedManifestName,
+    import.meta.url,
+  )
 }
 
 async function fetchJsonObject(url: string, label: string): Promise<JsonObject> {
@@ -144,28 +155,12 @@ async function fetchJsonObject(url: string, label: string): Promise<JsonObject> 
   return value
 }
 
-async function fetchText(url: string, label: string): Promise<string> {
-  const response = await fetch(url)
-  if (!response.ok) throw new Error(`${label} request failed with ${response.status}`)
-  return response.text()
-}
-
 async function loadNotebookWorkerUrl(): Promise<string> {
   notebookWorkerUrl ??= (async () => {
-    if (typeof URL.createObjectURL !== 'function') {
-      throw new Error('notebook pyright worker blob URLs are unavailable')
-    }
     const manifestUrl = pyrightWorkerManifestUrl()
     const manifest = await fetchJsonObject(manifestUrl, 'notebook pyright worker manifest')
-    const chunks = await Promise.all(
-      notebookPyrightAssetManifestChunks(manifest, 'notebook pyright worker').map(
-        async chunkName => {
-          const chunkUrl = new URL(chunkName, manifestUrl).href
-          return fetchText(chunkUrl, `notebook pyright worker chunk ${chunkName}`)
-        },
-      ),
-    )
-    return URL.createObjectURL(new Blob(chunks, { type: 'text/javascript' }))
+    const entry = notebookPyrightAssetManifestEntry(manifest, 'notebook pyright worker')
+    return new URL(entry, manifestUrl).href
   })()
   return notebookWorkerUrl
 }
@@ -310,7 +305,7 @@ function handleBackgroundWorker(
   if (message.type !== 'browser/newWorker') return false
   const port = message.port
   if (typeof MessagePort === 'undefined' || !(port instanceof MessagePort)) return true
-  const background = new Worker(workerUrl, { name: nextWorkerName() })
+  const background = new Worker(workerUrl, { name: nextWorkerName(), type: 'module' })
   workers.add(background)
   background.addEventListener('error', event => {
     console.error(`notebook pyright background ${serviceId} failed`, event.message)
@@ -329,7 +324,10 @@ function createPyrightTransport(
   serviceId: number,
 ): Transport {
   if (typeof Worker === 'undefined') throw new Error('browser workers are unavailable')
-  const foreground = new Worker(workerUrl, { name: `Pyright-foreground-${serviceId}` })
+  const foreground = new Worker(workerUrl, {
+    name: `Pyright-foreground-${serviceId}`,
+    type: 'module',
+  })
   const workers = new Set<Worker>([foreground])
   const handlers = new Set<(value: string) => void>()
   let backgroundCount = 0
@@ -640,4 +638,17 @@ export async function notebookLspExtensions(
     console.warn('notebook pyright is unavailable', error)
     return []
   }
+}
+
+export const pyrightLspBridge: LspBridge = {
+  async extensions(config: LspConfig): Promise<readonly Extension[]> {
+    return notebookLspExtensions({
+      enabled: config.enabled,
+      runtimeId: config.runtimeId,
+      sourcePath: config.sourcePath,
+      cellId: String(config.cellId),
+      language: config.language,
+      cells: config.cells ?? (() => []),
+    })
+  },
 }

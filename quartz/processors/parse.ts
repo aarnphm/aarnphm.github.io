@@ -171,6 +171,23 @@ async function transpileWorkerScript() {
   })
 }
 
+async function parseNotebookFileToMdast(file: {
+  path: string
+  value: unknown
+}): Promise<MdRoot | undefined> {
+  if (!file.path.endsWith('.ipynb')) return undefined
+  const { parseNotebookDoc } = await import('../util/notebook/parse')
+  const { isNotebookParseError } = await import('../util/notebook/types')
+  const { notebookDocToFlatMdast } = await import('../extensions/mdast-util-notebook/flatten')
+  const raw = typeof file.value === 'string' ? file.value : (file.value?.toString() ?? '')
+  const parsed = parseNotebookDoc(raw, file.path)
+  if (isNotebookParseError(parsed)) {
+    trace(`\nFailed to parse notebook \`${file.path}\``, new Error(parsed.reason))
+    return undefined
+  }
+  return notebookDocToFlatMdast(parsed)
+}
+
 export function createFileParser(ctx: BuildCtx, fps: FilePath[]) {
   const { argv, cfg } = ctx
   return async (processor: QuartzMdProcessor) => {
@@ -193,7 +210,8 @@ export function createFileParser(ctx: BuildCtx, fps: FilePath[]) {
         file.data.relativePath = path.posix.relative(argv.directory, file.path) as FilePath
         file.data.slug = slugifyFilePath(file.data.relativePath)
 
-        const ast = processor.parse(file)
+        const notebookAst = await parseNotebookFileToMdast({ path: file.path, value: file.value })
+        const ast = notebookAst ?? processor.parse(file)
         const newAst = await processor.run(ast, file)
         res.push([newAst, file])
 

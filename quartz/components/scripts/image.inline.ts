@@ -22,6 +22,16 @@ document.addEventListener('nav', () => {
 
   const imageHandlers = new WeakMap<HTMLImageElement, () => void>()
 
+  function shouldSkipImage(img: HTMLImageElement) {
+    return (
+      img.dataset.noPopover === '' ||
+      img.dataset.noPopover === 'true' ||
+      img.dataset.ignorePopup === '' ||
+      img.dataset.ignorePopup === 'true' ||
+      img.closest('[data-pet-widget]') !== null
+    )
+  }
+
   function setupImageHandler(img: HTMLImageElement) {
     if (imageHandlers.has(img)) return
 
@@ -34,7 +44,7 @@ document.addEventListener('nav', () => {
   // Add click handlers to all existing images
   const contentImages = document.querySelectorAll('img')
   for (const img of contentImages) {
-    if (img.dataset.noPopover === '' || img.dataset.noPopover === 'true') continue
+    if (shouldSkipImage(img)) continue
     if (img instanceof HTMLImageElement) {
       setupImageHandler(img)
     }
@@ -49,6 +59,7 @@ document.addEventListener('nav', () => {
       for (const mutation of mutations) {
         for (const node of mutation.addedNodes) {
           if (node instanceof HTMLImageElement) {
+            if (shouldSkipImage(node)) continue
             setupImageHandler(node)
           }
         }

@@ -1,14 +1,11 @@
 import { Element, ElementContent, Root, Text } from 'hast'
 import { h } from 'hastscript'
 import { EXIT, visit } from 'unist-util-visit'
-import {
-  notebookRuntimeId,
-  notebookRuntimeJson,
-  type NotebookRuntimeCell,
-  type NotebookRuntimeData,
-} from './notebook-runtime'
-import { FullSlug } from './path'
-import { isRecord } from './type-guards'
+import type { NotebookRuntimeCell, NotebookRuntimeData } from '../../runtime/notebook/types'
+import { FullSlug } from '../path'
+import { isRecord } from '../type-guards'
+import { notebookRuntimeJson } from './cell-html'
+import { notebookId } from './identity'
 
 function propertyString(node: Element, key: string): string | undefined {
   const value = node.properties?.[key]
@@ -61,7 +58,7 @@ function notebookRuntimeScriptText(root: Root): string | undefined {
   return text
 }
 
-function notebookRuntimeCell(value: unknown): NotebookRuntimeCell | undefined {
+function readNotebookRuntimeCell(value: unknown): NotebookRuntimeCell | undefined {
   if (!isRecord(value)) return undefined
   const { id, source, language, executionIndex } = value
   if (typeof id !== 'string' || typeof source !== 'string' || typeof language !== 'string') {
@@ -81,23 +78,23 @@ export function notebookRuntimeData(root: Root): NotebookRuntimeData | undefined
     return undefined
   }
   if (!isRecord(parsed) || !Array.isArray(parsed.cells)) return undefined
-  const { id, sourcePath, language, pyodideIndexUrl } = parsed
+  const { id, sourcePath, language, indexUrl } = parsed
   if (
     typeof id !== 'string' ||
     typeof sourcePath !== 'string' ||
     typeof language !== 'string' ||
-    typeof pyodideIndexUrl !== 'string'
+    typeof indexUrl !== 'string'
   ) {
     return undefined
   }
-  const cells = parsed.cells.map(notebookRuntimeCell)
+  const cells = parsed.cells.map(readNotebookRuntimeCell)
   if (cells.some(cell => cell === undefined)) return undefined
   const data: NotebookRuntimeData = {
     id,
     sourcePath,
     language,
-    pyodideIndexUrl,
-    cells: cells.filter(cell => cell !== undefined),
+    indexUrl,
+    cells: cells.filter((cell): cell is NotebookRuntimeCell => cell !== undefined),
   }
   if (typeof parsed.toolbar === 'boolean') data.toolbar = parsed.toolbar
   if (typeof parsed.debug === 'boolean') data.debug = parsed.debug
@@ -121,7 +118,7 @@ export function notebookCellRuntimeNodes(
   if (!data || !cell) return []
   const runtimeData: NotebookRuntimeData = {
     ...data,
-    id: notebookRuntimeId(
+    id: notebookId(
       transcludeSource.count === 0
         ? `notebook-cell-transclude:${transcludeSource.slug}:${transcludeSource.transcludeTarget}:${transcludeSource.cellId}`
         : `notebook-cell-transclude:${transcludeSource.slug}:${transcludeSource.transcludeTarget}:${transcludeSource.cellId}:${transcludeSource.count}`,

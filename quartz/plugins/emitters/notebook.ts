@@ -12,14 +12,15 @@ import * as Component from '../../components'
 import HeaderConstructor from '../../components/Header'
 import { pageResources, renderPage } from '../../components/renderPage'
 import { createHtmlProcessor, createMdProcessor } from '../../processors/parse'
+import '../../runtime/notebook/registry'
+import { backendFor } from '../../runtime/notebook/backend'
 import { ChangeEvent, QuartzEmitterPlugin } from '../../types/plugin'
 import { BuildCtx, Argv } from '../../util/ctx'
 import { glob } from '../../util/glob'
-import { parseNotebook, notebookToMarkdownChunks } from '../../util/notebook'
-import {
-  defaultNotebookPyodideIndexUrl,
-  notebookRuntimeImportCandidates,
-} from '../../util/notebook-runtime'
+import { extractInlineNotebookAssets } from '../../util/notebook/extract-assets'
+import { notebookToMarkdownChunks } from '../../util/notebook/markdown'
+import { parseNotebookDoc } from '../../util/notebook/parse'
+import { isNotebookParseError } from '../../util/notebook/types'
 import { FilePath, FullSlug, joinSegments, pathToRoot, slugifyFilePath } from '../../util/path'
 import { StaticResources } from '../../util/resources'
 import { ProcessedContent } from '../vfile'
@@ -27,7 +28,7 @@ import { write } from './helpers'
 
 type NotebookRenderMode = 'saved' | 'execute'
 
-type NotebookRuntimeOptions = false | { enabled?: boolean; pyodideIndexUrl?: string }
+type NotebookRuntimeOptions = false | { enabled?: boolean; indexUrl?: string }
 
 type Options = {
   mode?: NotebookRenderMode
@@ -40,7 +41,7 @@ type ResolvedOptions = {
   mode: NotebookRenderMode
   executeTimeoutSeconds: number
   allowErrors: boolean
-  runtime: false | { enabled: true; pyodideIndexUrl: string }
+  runtime: false | { enabled: true; indexUrl?: string }
 }
 
 type NotebookDependencies = { imports: Set<FilePath>; assets: Set<FilePath> }
@@ -74,10 +75,7 @@ function resolveOptions(userOpts?: Options): ResolvedOptions {
     userOpts?.runtime === undefined ||
     userOpts.runtime.enabled === false
       ? false
-      : {
-          enabled: true,
-          pyodideIndexUrl: userOpts.runtime.pyodideIndexUrl ?? defaultNotebookPyodideIndexUrl,
-        }
+      : { enabled: true, indexUrl: userOpts.runtime.indexUrl }
 
   return {
     ...defaultOptions,
@@ -98,13 +96,6 @@ type NotebookPage = { fp: FilePath; slug: FullSlug; content: ProcessedContent }
 
 function isNotebookPath(fp: FilePath): boolean {
   return path.extname(fp) === '.ipynb'
-}
-
-function sourceText(value: unknown): string {
-  if (typeof value === 'string') return value
-  if (Array.isArray(value)) return value.map(sourceText).join('')
-  if (value === undefined || value === null) return ''
-  return String(value)
 }
 
 function applyTextTransforms(ctx: BuildCtx, markdown: string): string {
@@ -153,19 +144,22 @@ function localNotebookResourcePath(raw: string, fp: FilePath): FilePath | undefi
 }
 
 function notebookDependencies(raw: string, fp: FilePath): NotebookDependencies {
-  const notebook = parseNotebook(raw, fp)
+  const doc = parseNotebookDoc(raw, fp)
   const imports = new Set<FilePath>()
   const assets = new Set<FilePath>()
+  if (isNotebookParseError(doc)) return { imports, assets }
   const dir = path.posix.dirname(fp)
+  const backend = backendFor(doc.language)
+  const moduleResolver = backend?.moduleResolver
 
-  for (const cell of notebook.cells) {
-    const source = sourceText(cell.source)
-    if (cell.cell_type === 'code') {
-      for (const name of notebookRuntimeImportCandidates(source)) {
+  for (const cell of doc.cells) {
+    const source = cell.source
+    if (cell.cellType === 'code' && moduleResolver) {
+      for (const name of moduleResolver.importNames(source)) {
         imports.add(path.posix.join(dir, `${name}.ipynb`) as FilePath)
       }
     }
-    if (cell.cell_type !== 'markdown') continue
+    if (cell.cellType !== 'markdown') continue
 
     for (const match of source.matchAll(htmlResourceSrcPattern)) {
       const candidate = match[1] ?? match[2] ?? match[3]
@@ -341,8 +335,10 @@ async function notebookProcessedContent(
   const src = joinSegments(ctx.argv.directory, fp) as FilePath
   const slug = slugifyFilePath(fp, true)
   const raw = await notebookSource(ctx, fp, opts)
-  const notebook = parseNotebook(raw, src)
-  const markdownChunks = notebookToMarkdownChunks(notebook, fp, {
+  const notebook = parseNotebookDoc(raw, src)
+  if (isNotebookParseError(notebook))
+    throw new Error(`${src} is not a valid notebook: ${notebook.reason}`)
+  const rawChunks = notebookToMarkdownChunks(notebook, fp, {
     runtime:
       opts.runtime === false
         ? false
@@ -352,6 +348,7 @@ async function notebookProcessedContent(
             importableModules: importableNotebookModules(fp, contextFps),
           },
   }).map(chunk => applyTextTransforms(ctx, chunk))
+  const { chunks: markdownChunks } = await extractInlineNotebookAssets(rawChunks, ctx)
   const markdown = markdownChunks.join('\n\n').trim()
 
   const file = new VFile({ path: src, value: markdown })

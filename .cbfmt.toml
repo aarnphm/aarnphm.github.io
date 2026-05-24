@@ -1,5 +1,7 @@
 [languages]
-python = ['ruff format -']
+python = [
+  'ruff format --config "indent-width=2" --config "line-length=79" --config "preview=true" -',
+]
 rust = ['rustfmt']
 lua = ["stylua -s -"]
 c = ['clang-format -style=Google']

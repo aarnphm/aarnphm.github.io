@@ -1,8 +1,9 @@
 import type { Extension } from '@codemirror/state'
-import type { EditorView as CodeMirrorEditorView } from '@codemirror/view'
+import type { EditorView as CodeMirrorEditorView, KeyBinding } from '@codemirror/view'
 import type { CodeMirror } from '@replit/codemirror-vim'
 import { forceParsing } from '@codemirror/language'
-import type { NotebookLspConfig } from './notebook-lsp'
+import type { NotebookLspConfig } from '../lsp/pyright'
+import { backendFor } from '../notebook/registry'
 
 export type NotebookCodeEditor = {
   getValue(): string
@@ -41,6 +42,14 @@ let notebookCodeEditorLspWarmup: Promise<void> | undefined
 let notebookCodeEditorVimWarmup: Promise<void> | undefined
 const notebookLanguageWarmups = new Map<string, Promise<Extension>>()
 const notebookRunKeys = ['Mod-Enter', 'Ctrl-Enter', 'Shift-Enter', 'Alt-Enter'] as const
+const notebookVimReservedControlKeys = new Set([
+  'Ctrl-b',
+  'Ctrl-d',
+  'Ctrl-e',
+  'Ctrl-f',
+  'Ctrl-u',
+  'Ctrl-y',
+])
 
 function languageWarmupKey(language: string | undefined): string {
   return (language ?? '').trim().toLowerCase() || 'python'
@@ -48,6 +57,8 @@ function languageWarmupKey(language: string | undefined): string {
 
 async function languageExtension(language: string | undefined): Promise<Extension> {
   const name = (language ?? '').trim().toLowerCase()
+  const backendExtension = await backendFor(name)?.editor?.languageExtension?.()
+  if (backendExtension) return backendExtension
   if (name === 'javascript' || name === 'js') {
     const { javascript } = await import('@codemirror/lang-javascript')
     return javascript()
@@ -90,16 +101,19 @@ function warmLanguageExtension(language: string | undefined): Promise<Extension>
   return warmup
 }
 
-function notebookPythonLanguage(language: string | undefined) {
-  const name = (language ?? '').trim().toLowerCase()
-  return name === 'python' || name === 'py' || name === 'ipython'
+function notebookKeyBindingUsesVimControl(binding: KeyBinding): boolean {
+  return [binding.key, binding.mac, binding.win, binding.linux].some(
+    key => key !== undefined && notebookVimReservedControlKeys.has(key),
+  )
 }
 
 async function lspExtensions(config: NotebookLspConfig | undefined): Promise<readonly Extension[]> {
-  if (!config?.enabled || !notebookPythonLanguage(config.language)) return []
+  if (!config?.enabled) return []
+  const bridgeFactory = backendFor(config.language)?.editor?.lspBridge
+  if (!bridgeFactory) return []
   try {
-    const { notebookLspExtensions } = await import('./notebook-lsp')
-    return await notebookLspExtensions(config)
+    const bridge = await bridgeFactory()
+    return await bridge.extensions(config)
   } catch (error) {
     console.warn('notebook lsp extension failed to load', error)
     return []
@@ -204,9 +218,12 @@ export async function warmNotebookCodeEditorAssets(
   ]
 
   if (config.lsp) {
-    notebookCodeEditorLspWarmup ??= import('./notebook-lsp').then(module =>
-      module.warmNotebookLspAssets(),
-    )
+    notebookCodeEditorLspWarmup ??= Promise.all(
+      languages.map(async language => {
+        const bridge = await backendFor(language)?.editor?.lspBridge?.()
+        if (bridge) await import('../lsp/pyright').then(module => module.warmNotebookLspAssets())
+      }),
+    ).then(() => {})
     warmups.push(notebookCodeEditorLspWarmup)
   }
 
@@ -339,6 +356,14 @@ export async function createNotebookCodeEditor(
 
   const initialVimMode = config.vimMode === true
   let vimModeEnabled = initialVimMode
+  const editorKeymap = (): Extension =>
+    keymap.of([
+      indentWithTab,
+      ...(vimModeEnabled
+        ? defaultKeymap.filter(binding => !notebookKeyBindingUsesVimControl(binding))
+        : defaultKeymap),
+      ...historyKeymap,
+    ])
   const notebookKeymap = (): Extension =>
     Prec.highest(
       keymap.of([
@@ -392,6 +417,7 @@ export async function createNotebookCodeEditor(
 
   const vimCompartment = new Compartment()
   const keymapCompartment = new Compartment()
+  const editorKeymapCompartment = new Compartment()
   const vimAcceptsText = (view: CodeMirrorEditorView) =>
     !vimModeEnabled || vimApi?.getCM(view)?.state.vim?.insertMode === true
   const runTextCommand = (
@@ -427,7 +453,7 @@ export async function createNotebookCodeEditor(
       { key: 'Ctrl-p', run: view => moveActiveCompletion(view, moveCompletionUp) },
       { key: 'PageDown', run: view => runTextCommand(view, moveCompletionPageDown) },
       { key: 'PageUp', run: view => runTextCommand(view, moveCompletionPageUp) },
-      { key: 'Enter', run: view => (vimModeEnabled ? false : acceptCompletion(view)) },
+      { key: 'Enter', run: view => runTextCommand(view, acceptCompletion) },
     ]),
   )
   const editorSnippetKeymap = snippetKeymap.of([
@@ -479,7 +505,7 @@ export async function createNotebookCodeEditor(
       completionKeymap,
       editorSnippetKeymap,
       keymapCompartment.of(notebookKeymap()),
-      keymap.of([indentWithTab, ...defaultKeymap, ...historyKeymap]),
+      editorKeymapCompartment.of(editorKeymap()),
       updateListener,
       syntaxHighlighting(defaultHighlightStyle, { fallback: true }),
       EditorState.tabSize.of(2),
@@ -508,6 +534,7 @@ export async function createNotebookCodeEditor(
         effects: [
           vimCompartment.reconfigure(await vimExtension(enabled)),
           keymapCompartment.reconfigure(notebookKeymap()),
+          editorKeymapCompartment.reconfigure(editorKeymap()),
         ],
       })
       if (enabled) await bindVimSave()

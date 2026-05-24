@@ -1,20 +1,16 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import {
-  chunkNotebookPyrightTextAsset,
   chunkNotebookPyrightTypeshedFiles,
   notebookPyrightAssetManifestChunks,
+  notebookPyrightAssetManifestEntry,
   notebookPyrightTypeshedFiles,
-} from './notebook-pyright-assets'
+} from './pyright-assets'
 
 const encoder = new TextEncoder()
 
 function jsonBytes(value: unknown): number {
   return encoder.encode(JSON.stringify(value)).byteLength
-}
-
-function textBytes(value: string): number {
-  return encoder.encode(value).byteLength
 }
 
 test('chunks notebook pyright typeshed files under the byte budget', () => {
@@ -41,14 +37,6 @@ test('chunks notebook pyright typeshed files under the byte budget', () => {
   assert(chunks.every(chunk => jsonBytes({ files: chunk.files }) <= maxBytes))
 })
 
-test('chunks notebook pyright text assets on utf-8 boundaries', () => {
-  const chunks = chunkNotebookPyrightTextAsset('abc\u{1f9ea}def', 4)
-
-  assert.deepEqual(chunks, ['abc', '\u{1f9ea}', 'def'])
-  assert.equal(chunks.join(''), 'abc\u{1f9ea}def')
-  assert(chunks.every(chunk => textBytes(chunk) <= 4))
-})
-
 test('allows one oversized typeshed file to occupy its own chunk', () => {
   const chunks = chunkNotebookPyrightTypeshedFiles(
     { '/typeshed/stdlib/huge.pyi': 'x'.repeat(200), '/typeshed/stdlib/small.pyi': 'y' },
@@ -65,10 +53,15 @@ test('reads notebook pyright typeshed manifests and chunks', () => {
     notebookPyrightAssetManifestChunks({ chunks: ['a.json', 'b.json'] }, 'test asset'),
     ['a.json', 'b.json'],
   )
+  assert.equal(
+    notebookPyrightAssetManifestEntry({ entry: 'notebook-pyright-worker.js' }, 'test worker'),
+    'notebook-pyright-worker.js',
+  )
   assert.deepEqual(
     notebookPyrightTypeshedFiles({ files: { '/typeshed/stdlib/os.pyi': 'class X: ...' } }),
     { '/typeshed/stdlib/os.pyi': 'class X: ...' },
   )
   assert.throws(() => notebookPyrightAssetManifestChunks({ chunks: [] }, 'test asset'))
+  assert.throws(() => notebookPyrightAssetManifestEntry({ entry: '' }, 'test worker'))
   assert.throws(() => notebookPyrightTypeshedFiles({ files: { '/bad.pyi': { nested: true } } }))
 })

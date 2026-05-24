@@ -1,14 +1,15 @@
+function codeBlockClipboardSource(codeBlock: HTMLElement): string {
+  return (codeBlock.dataset.clipboard ?? codeBlock.innerText).replace(/\n\n/g, '\n')
+}
+
 document.addEventListener('nav', () => {
   const els = document.getElementsByTagName('pre')
   for (let i = 0; i < els.length; i++) {
     const codeBlock = els[i].getElementsByTagName('code')[0]
     const button = els[i].querySelector('span.clipboard-button')
     if (codeBlock) {
-      const source = (
-        codeBlock.dataset.clipboard ? codeBlock.dataset.clipboard : codeBlock.innerText
-      ).replace(/\n\n/g, '\n')
       function onClick() {
-        navigator.clipboard.writeText(source).then(
+        navigator.clipboard.writeText(codeBlockClipboardSource(codeBlock)).then(
           () => {
             button?.classList.add('check')
             setTimeout(() => {

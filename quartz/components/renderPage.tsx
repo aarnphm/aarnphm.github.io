@@ -27,7 +27,7 @@ import {
   findNotebookCellFrame,
   notebookCellRef,
   notebookCellRuntimeNodes,
-} from '../util/notebook-transclude'
+} from '../util/notebook/transclude'
 import {
   FullSlug,
   FilePath,
@@ -1753,21 +1753,14 @@ function LandingPetSticker() {
       class="landing-pet-sticker"
       data-pet-widget={true}
       data-pet-home={true}
+      data-pet-src="/static/landing/rocky-monomyth/sticker.webp"
+      data-pet-width="168"
+      data-pet-height="178"
       role="group"
       aria-label="draggable rocky sticker"
       tabIndex={0}
-    >
-      <img
-        src="/static/landing/rocky-monomyth/sticker.webp"
-        alt=""
-        width="168"
-        height="178"
-        loading="eager"
-        decoding="async"
-        draggable={false}
-        data-ignore-popup={true}
-      />
-    </figure>
+      hidden
+    />
   )
 }
 

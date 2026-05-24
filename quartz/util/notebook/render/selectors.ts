@@ -1,0 +1,32 @@
+export const NOTEBOOK_SELECTORS = {
+  runtime: 'data-notebook-runtime',
+  runtimeData: 'data-notebook-runtime-data',
+  runtimeToolbar: 'data-notebook-runtime-toolbar',
+  runAll: 'data-notebook-run-all',
+  stop: 'data-notebook-stop',
+  reset: 'data-notebook-reset',
+  debug: 'data-notebook-debug',
+  vimMode: 'data-notebook-vim-mode',
+  status: 'data-notebook-status',
+  cell: 'data-notebook-cell',
+  cellFrame: 'data-notebook-cell-frame',
+  cellActions: 'data-notebook-cell-actions',
+  runCell: 'data-notebook-run-cell',
+  editCell: 'data-notebook-edit-cell',
+  saveCell: 'data-notebook-save-cell',
+  revertCell: 'data-notebook-revert-cell',
+  localSourceStatus: 'data-notebook-local-source-status',
+  sourceEditor: 'data-notebook-source-editor',
+  output: 'data-notebook-output',
+  outputTabs: 'data-notebook-output-tabs',
+  outputTabbed: 'data-notebook-output-tabbed',
+  outputName: 'data-output-name',
+  executionLabel: 'data-notebook-execution-label',
+  executionCount: 'data-notebook-execution-count',
+  scrollable: 'data-notebook-scrollable',
+  scrollBefore: 'data-notebook-scroll-before',
+  scrollAfter: 'data-notebook-scroll-after',
+} as const
+
+export type NotebookSelectorKey = keyof typeof NOTEBOOK_SELECTORS
+export type NotebookSelectorAttr = (typeof NOTEBOOK_SELECTORS)[NotebookSelectorKey]

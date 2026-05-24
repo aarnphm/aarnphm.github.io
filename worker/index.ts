@@ -13,12 +13,54 @@ import { handleMentions } from './mentions'
 import { CommentsGitHubHandler, GitHubHandler } from './oauth'
 import { isLocalRequest, resolveBaseUrl } from './request-utils'
 import { handleStackedNotesRequest } from './stacked'
-import { cacheHeadersForStaticAsset } from './static-assets'
+import { cacheHeadersForStaticAsset, isolationHeadersForStaticAsset } from './static-assets'
 
 const VERSION = 'version https://git-lfs.github.com/spec/v1\n'
 const MIME = 'application/vnd.git-lfs+json'
 const KEEP_HEADERS = 'Cache-Control'
 const HTML_CONTENT_TYPE = 'text/html; charset=utf-8'
+
+const COOP_COEP_HEADERS: Record<string, string> = {
+  'Cross-Origin-Opener-Policy': 'same-origin',
+  'Cross-Origin-Embedder-Policy': 'require-corp',
+}
+
+let notebookSlugsCache: Promise<ReadonlySet<string>> | undefined
+
+async function loadNotebookSlugs(
+  env: { ASSETS: Fetcher },
+  origin: string,
+): Promise<ReadonlySet<string>> {
+  if (notebookSlugsCache) return notebookSlugsCache
+  notebookSlugsCache = (async () => {
+    try {
+      const manifestUrl = new URL('/notebook-pages.json', origin)
+      const resp = await env.ASSETS.fetch(new Request(manifestUrl.toString()))
+      if (!resp.ok) return new Set<string>()
+      const json = (await resp.json()) as { slugs?: unknown }
+      if (!Array.isArray(json.slugs)) return new Set<string>()
+      return new Set(json.slugs.filter((value): value is string => typeof value === 'string'))
+    } catch {
+      return new Set<string>()
+    }
+  })()
+  return notebookSlugsCache
+}
+
+function normalizeNotebookPathname(pathname: string): string {
+  const trimmed = pathname.replace(/^\/+|\/+$/g, '')
+  if (!trimmed) return ''
+  if (trimmed.endsWith('.html') || trimmed.endsWith('.htm')) {
+    return trimmed.replace(/\.html?$/, '')
+  }
+  if (trimmed.endsWith('/index')) return trimmed.slice(0, -'/index'.length)
+  return trimmed
+}
+
+function isNotebookPath(pathname: string, slugs: ReadonlySet<string>): boolean {
+  if (slugs.size === 0) return false
+  return slugs.has(normalizeNotebookPathname(pathname))
+}
 
 type CfCacheStorage = CacheStorage & { readonly default: Cache }
 
@@ -928,15 +970,21 @@ export default {
     }
 
     const resp = await env.ASSETS.fetch(request)
-    const cacheHeaders = cacheHeadersForStaticAsset(url.pathname, resp.status)
+    const staticAssetHeaders = {
+      ...cacheHeadersForStaticAsset(url.pathname, resp.status),
+      ...isolationHeadersForStaticAsset(url.pathname, resp.status),
+    }
     if (shouldTreatAsDocument(url.pathname)) {
+      const slugs = await loadNotebookSlugs(env, url.origin)
+      const notebookHeaders = isNotebookPath(url.pathname, slugs) ? COOP_COEP_HEADERS : {}
       return withHeaders(resp, {
-        ...cacheHeaders,
+        ...staticAssetHeaders,
+        ...notebookHeaders,
         'X-Frame-Options': null,
         'Content-Security-Policy': "frame-ancestors 'self' *",
       })
     }
-    return withHeaders(resp, cacheHeaders)
+    return withHeaders(resp, staticAssetHeaders)
   },
 } satisfies ExportedHandler<Env>
 

@@ -9,12 +9,16 @@ body[data-slug='index'] {
     position: relative;
   }
 
+  .notebook-code-cell {
+    text-transform: none;
+  }
+
   .landing-pet-sticker {
     position: absolute;
     z-index: var(--z-popover);
     top: clamp(0.4rem, 1.6vw, 1.1rem);
     right: clamp(0.75rem, 8vw, 6rem);
-    width: clamp(4.4rem, 8vw, 6.2rem);
+    width: clamp(3.8rem, 6.8vw, 5.2rem);
     margin: 0;
     padding: 0.28rem;
     border-radius: 6px;
@@ -66,7 +70,7 @@ body[data-slug='index'] {
   @media all and ($tablet) {
     .landing-pet-sticker {
       right: 0.75rem;
-      width: 4.8rem;
+      width: 4.1rem;
     }
   }
 
@@ -74,7 +78,7 @@ body[data-slug='index'] {
     .landing-pet-sticker {
       top: 0.35rem;
       right: 0.25rem;
-      width: 4.1rem;
+      width: 3.5rem;
     }
   }
 }

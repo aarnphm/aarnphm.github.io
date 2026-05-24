@@ -14,10 +14,19 @@ import { getAuthor, getAvatarUrl, getCommentPageId } from './identity'
 
 let markdownEditorModule: Promise<typeof import('../scripts/markdown-editor')> | null = null
 
+const notebookCellBoundarySelector = '.notebook-code-cell'
+
 async function createMarkdownEditor(config: MarkdownEditorConfig): Promise<MarkdownEditor> {
   markdownEditorModule ??= import('../scripts/markdown-editor')
   const { MarkdownEditor } = await markdownEditorModule
   return new MarkdownEditor(config)
+}
+
+function rangeIntersectsNotebookCellBoundary(range: Range): boolean {
+  for (const cell of document.querySelectorAll(notebookCellBoundarySelector)) {
+    if (range.intersectsNode(cell)) return true
+  }
+  return false
 }
 
 type UiDeps = {
@@ -911,6 +920,10 @@ export function createCommentsUi({ getState, dispatch, canResolveComment }: UiDe
     const range = selection.getRangeAt(0)
     const article = document.querySelector('article.popover-hint')
     if (!article || !article.contains(range.commonAncestorContainer)) {
+      dispatch({ type: 'ui.selection.cleared' })
+      return
+    }
+    if (rangeIntersectsNotebookCellBoundary(range)) {
       dispatch({ type: 'ui.selection.cleared' })
       return
     }
