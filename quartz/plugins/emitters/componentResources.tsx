@@ -38,7 +38,8 @@ import collapseHeaderStyle from '../../components/styles/collapseHeader.inline.s
 import popoverStyle from '../../components/styles/popover.scss'
 import pseudoStyle from '../../components/styles/pseudocode.scss'
 import '../../components/mdx'
-import styles from '../../styles/custom.scss'
+import baseStyles from '../../styles/base.scss'
+import customStyles from '../../styles/custom.scss'
 import { QuartzComponent } from '../../types/component'
 import { QuartzEmitterPlugin } from '../../types/plugin'
 import {
@@ -468,12 +469,13 @@ export const ComponentResources: QuartzEmitterPlugin = () => {
       yield* writeComponentStyles(ctx, componentResources)
 
       const componentCss = new Set(componentResources.componentCss)
-      const stylesheet = joinStyles(
+      const quartzBase = joinStyles(
         ctx.cfg.configuration.theme,
         googleFontsStyleSheet,
         ...componentResources.css.filter(css => !componentCss.has(css)),
-        styles,
+        baseStyles,
       )
+      const stylesheet = `@layer quartz-base {\n${quartzBase}\n}\n${customStyles}`
       const [prescript, postscriptResult] = await Promise.all([
         joinScripts(componentResources.beforeDOMLoaded),
         writeAfterDomLoadedScripts(ctx, componentResources.afterDOMLoaded),
