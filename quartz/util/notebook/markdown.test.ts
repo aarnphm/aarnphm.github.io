@@ -5,20 +5,27 @@ import rehypeRaw from 'rehype-raw'
 import remarkParse from 'remark-parse'
 import remarkRehype from 'remark-rehype'
 import { unified } from 'unified'
-import type { FullSlug } from './path'
+import type { FullSlug } from '../path'
+import { unsupportedNotebookRuntimeReason } from '../../runtime/python/can-execute'
+import { notebookCellLanguageBadge } from './cell-html'
 import {
   notebookRuntimeData,
   notebookTitle,
   notebookToMarkdown,
   notebookToMarkdownChunks,
-  parseNotebook,
-} from './notebook'
-import { renderNotebookRuntimeOutput, unsupportedNotebookRuntimeReason } from './notebook-runtime'
-import {
-  findNotebookCellFrame,
-  notebookCellRef,
-  notebookCellRuntimeNodes,
-} from './notebook-transclude'
+} from './markdown'
+import { parseNotebookDoc } from './parse'
+import { renderRuntimeOutputHtml } from './render/runtime-output-to-hast'
+import { findNotebookCellFrame, notebookCellRef, notebookCellRuntimeNodes } from './transclude'
+import { isNotebookParseError, type NotebookDoc } from './types'
+
+function parseNotebook(raw: string, sourcePath: string): NotebookDoc {
+  const doc = parseNotebookDoc(raw, sourcePath)
+  if (isNotebookParseError(doc)) throw new Error(doc.reason)
+  return doc
+}
+
+const renderNotebookRuntimeOutput = renderRuntimeOutputHtml
 
 type HastElement = {
   type: string
@@ -309,7 +316,7 @@ describe('notebook parser', () => {
     const data = notebookRuntimeData(notebook, 'runtime.ipynb', {
       enabled: true,
       sourcePath: 'notes/runtime.ipynb',
-      pyodideIndexUrl: 'https://cdn.jsdelivr.net/pyodide/v0.29.4/full/',
+      indexUrl: 'https://cdn.jsdelivr.net/pyodide/v0.29.4/full/',
       importableModules: ['ST', 'SC', 'SC'],
     })
 
@@ -430,6 +437,13 @@ describe('notebook parser', () => {
     assert.match(markdown, /In \[ \]:/)
     assert.match(markdown, /data-notebook-run-cell="cell-1"/)
     assert.match(markdown, /data-notebook-edit-cell="cell-1"/)
+    assert.match(markdown, /class="notebook-language-badge notebook-language-badge-python"/)
+    assert.match(markdown, /data-notebook-language="python"/)
+    assert.match(
+      notebookCellLanguageBadge('python'),
+      /<span class="notebook-language-icon" aria-hidden="true">Py<\/span><\/span>$/,
+    )
+    assert.doesNotMatch(markdown, /notebook-language-label/)
     assert.match(markdown, /data-notebook-local-source-status="cell-1" hidden/)
     assert.match(markdown, /data-notebook-source-editor="cell-1"/)
     assert.match(markdown, /class="notebook-output notebook-output-success"/)
@@ -489,7 +503,7 @@ describe('notebook parser', () => {
                 id: 'source-runtime',
                 sourcePath: 'thoughts/runtime.ipynb',
                 language: 'python',
-                pyodideIndexUrl: 'https://cdn.example/pyodide/',
+                indexUrl: 'https://cdn.example/pyodide/',
                 cells: [
                   { id: 'cell-1', source: 'x = 1', language: 'python', executionIndex: null },
                   { id: 'cell-2', source: 'y = 2', language: 'python', executionIndex: 2 },
@@ -661,6 +675,31 @@ describe('notebook parser', () => {
     assert.strictEqual(chunks[3], 'after')
   })
 
+  test('shows cell display languages from magics and writefile targets', () => {
+    const notebook = parseNotebook(
+      JSON.stringify({
+        metadata: { language_info: { name: 'python' } },
+        cells: [
+          { cell_type: 'code', source: 'print("hi")' },
+          { cell_type: 'code', source: '%%writefile SetXY.go\npackage main' },
+          { cell_type: 'code', source: '%%capture output\n%%bash\necho hi' },
+          { cell_type: 'code', source: '%%javascript\nconsole.log("hi")' },
+        ],
+      }),
+      'languages.ipynb',
+    )
+
+    const markdown = notebookToMarkdown(notebook, 'languages.ipynb')
+
+    assert.match(markdown, /notebook-language-badge-python/)
+    assert.match(markdown, /notebook-language-badge-go/)
+    assert.match(markdown, /notebook-language-badge-bash/)
+    assert.match(markdown, /notebook-language-badge-javascript/)
+    assert.match(markdown, /```go\n%%writefile SetXY\.go\npackage main\n```/)
+    assert.match(markdown, /```bash\n%%capture output\n%%bash\necho hi\n```/)
+    assert.match(markdown, /```javascript\n%%javascript\nconsole\.log\("hi"\)\n```/)
+  })
+
   test('leaves non-python notebooks without runtime controls', () => {
     const notebook = parseNotebook(
       JSON.stringify({
@@ -676,5 +715,7 @@ describe('notebook parser', () => {
 
     assert.doesNotMatch(markdown, /data-notebook-runtime/)
     assert.doesNotMatch(markdown, /Run cell/)
+    assert.match(markdown, /notebook-language-badge-javascript/)
+    assert.match(markdown, /```javascript\nconsole\.log\("hi"\)\n```/)
   })
 })

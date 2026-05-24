@@ -6,9 +6,6 @@ describe('worker entry matching', () => {
   test('only includes TypeScript worker entrypoints', () => {
     assert.strictEqual(workerEntryPattern, 'quartz/**/*.worker.ts')
     assert.strictEqual(isWorkerEntryPath('quartz/workers/semantic.worker.ts'), true)
-    assert.strictEqual(
-      isWorkerEntryPath('quartz/components/scripts/notebook-runtime.worker.html'),
-      false,
-    )
+    assert.strictEqual(isWorkerEntryPath('quartz/runtime/python/pyodide-worker.js'), false)
   })
 })

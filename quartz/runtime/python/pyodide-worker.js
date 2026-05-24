@@ -1,10 +1,12 @@
 import loadWabt from 'wabt'
-import { ensureNotebookMlRuntime, installNotebookMlBridge } from './notebook-runtime.ml.js'
-import notebookRuntimeBootstrap from './notebook-runtime.pyodide.py'
+import { ensureNotebookMlRuntime, installNotebookMlBridge } from './ml-bridge.js'
+import notebookRuntimeBootstrap from './pyodide-bridge.py'
+import { pyodideStdlibExtensionPackageForImport } from './pyodide-packages'
 
 const source = 'quartz-notebook-runtime'
 let runtimeId = ''
 let pyodide
+let interruptBuffer
 let currentCellId = ''
 let assetSequence = 0
 const pendingAssets = new Map()
@@ -854,6 +856,8 @@ function packageNameForImport(runtime, name) {
   const root = name.split('.')[0]
   const normalized = root.toLowerCase()
   if (ignoredImportPackages.has(normalized)) return undefined
+  const stdlibExtensionPackage = pyodideStdlibExtensionPackageForImport(root)
+  if (stdlibExtensionPackage) return stdlibExtensionPackage
   const stdlib = stdlibSet(runtime)
   if (stdlib.has(root) || stdlib.has(normalized)) return undefined
   if (unsupportedNativePackages.has(normalized)) return undefined
@@ -1087,6 +1091,11 @@ function emitDirectiveWarnings(warnings) {
     emitOutput({ type: 'stream', name: 'stderr', text: warning + '\n' })
   }
 }
+
+function isInterruptBuffer(value) {
+  return typeof SharedArrayBuffer === 'function' && value instanceof SharedArrayBuffer
+}
+
 async function ensurePyodide(indexURL) {
   if (pyodide) return pyodide
   setRuntimeStatus('loading pyodide')
@@ -1095,6 +1104,13 @@ async function ensurePyodide(indexURL) {
   if (typeof loadPyodideRuntime !== 'function') throw new Error('loadPyodide was not installed')
   pyodide = await loadPyodideRuntime({ indexURL })
   setRuntimeStatus('initializing python')
+  if (interruptBuffer) {
+    try {
+      pyodide.setInterruptBuffer(new Int32Array(interruptBuffer))
+    } catch (error) {
+      console.warn('failed to install pyodide interrupt buffer', error)
+    }
+  }
   pyodide.setStdout({
     write: bytes => bufferStreamBytesForCell(currentCellId, 'stdout', bytes, stdoutDecoder),
   })
@@ -1133,7 +1149,7 @@ async function runCell(message) {
     const shellCommands = [...prepared.shellCommands]
     const directiveWarnings = [...prepared.warnings]
     phase = 'loading pyodide'
-    const runtime = await ensurePyodide(message.pyodideIndexUrl)
+    const runtime = await ensurePyodide(message.indexUrl)
     const modules = []
     const moduleRequirements = []
     if (Array.isArray(message.modules)) {
@@ -1217,6 +1233,16 @@ globalThis.addEventListener('message', event => {
   if (!message || message.source !== source) return
   if (message.type === 'init') {
     runtimeId = message.runtimeId
+    if (isInterruptBuffer(message.interruptBuffer)) {
+      interruptBuffer = message.interruptBuffer
+      if (pyodide) {
+        try {
+          pyodide.setInterruptBuffer(new Int32Array(interruptBuffer))
+        } catch (error) {
+          console.warn('failed to install pyodide interrupt buffer', error)
+        }
+      }
+    }
     post({ type: 'ready' })
   } else if (message.type === 'run' && message.runtimeId === runtimeId) {
     runCell(message)

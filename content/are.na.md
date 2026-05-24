@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-05-23 18:25:09 GMT-04:00
+modified: 2026-05-24 18:58:10 GMT-04:00
 permalinks:
   - /website
   - /tweets
@@ -7326,6 +7326,10 @@ title: are.na
 
 ## design
 
+- https://liquid-dom-showcase.vercel.app/ -- Liquid Glass HTML-in-canvas
+  - [meta]:
+    - date: 05/24/2026
+    - tags: [web, design]
 - https://tinyui.org/
   - [meta]:
     - date: 05/09/2026

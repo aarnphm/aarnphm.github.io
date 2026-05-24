@@ -8,6 +8,14 @@ type MountDeps = {
   services: MultiplayerServices
 }
 
+const notebookCellBoundarySelector = '.notebook-code-cell'
+
+const eventTargetInsideNotebookCellBoundary = (target: EventTarget | null): boolean => {
+  if (!(target instanceof Node)) return false
+  const element = target instanceof Element ? target : target.parentElement
+  return element?.closest(notebookCellBoundarySelector) !== null
+}
+
 const parseCommentHash = () => {
   const { hash } = window.location
   if (!hash) return null
@@ -47,6 +55,7 @@ export const mountMultiplayer = ({ dispatch, state, services }: MountDeps) => {
   const mouseUp = (event: MouseEvent) => {
     if (event.button !== 0) return
     if (!event.metaKey && !event.altKey && !event.ctrlKey) return
+    if (eventTargetInsideNotebookCellBoundary(event.target)) return
     if (event.target instanceof Node && event.target.isConnected) {
       const composer = document.body.querySelector('.comment-composer')
       if (composer instanceof HTMLElement && composer.contains(event.target)) {
@@ -60,6 +69,7 @@ export const mountMultiplayer = ({ dispatch, state, services }: MountDeps) => {
     if (!isTouchDevice()) return
     const selection = window.getSelection()
     if (!selection || selection.isCollapsed || selection.rangeCount === 0) return
+    if (eventTargetInsideNotebookCellBoundary(event.target)) return
     if (event.target instanceof Node && event.target.isConnected) {
       const composer = document.body.querySelector('.comment-composer')
       if (composer instanceof HTMLElement && composer.contains(event.target)) {

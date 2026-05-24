@@ -1,18 +1,31 @@
 import DOMPurify from 'dompurify'
-import type { NotebookRuntimeDebugOutput, NotebookRuntimeOutput } from '../../util/notebook-runtime'
-import type { NotebookCodeEditor } from './notebook-code-editor'
+import type { CellId } from '../../util/notebook/types'
+import type { NotebookCodeEditor } from '../editor/code-editor'
+import type { NotebookRuntimeAssetConfig } from './assets'
+import type { ExecutableLanguageBackend, RuntimeModuleResolver } from './backend'
+import type {
+  Kernel,
+  KernelOutput,
+  NotebookModule,
+  RuntimeAssetRequest,
+  RuntimeAssetResult,
+  RuntimeDownload,
+  RuntimeEvent,
+  RuntimeFileResult,
+} from './kernel'
+import { notebookCellLanguageBadge } from '../../util/notebook/cell-html'
+import { renderOutputHtml } from '../../util/notebook/render/output-to-hast'
+import { isRecord, readString } from '../../util/type-guards'
+import { configureNotebookRuntimeAssets } from './assets'
+import { backendFor } from './registry'
 import {
-  notebookSuccessOutputLabel,
-  notebookRuntimeImportCandidates,
   notebookRuntimeLocalSourceKey,
-  notebookRuntimeModuleSource,
-  unsupportedNotebookRuntimeReason,
-} from '../../util/notebook-runtime'
-import { isRecord, readNumber, readString } from '../../util/type-guards'
+  notebookSuccessOutputLabel,
+  type NotebookRuntimeDebugOutput,
+  type NotebookRuntimeOutput,
+} from './types'
 
-type RuntimeCell = { id: string; source: string; language: string; executionIndex: number | null }
-
-type RuntimeModule = { name: string; sourcePath: string; source: string }
+type RuntimeCell = { id: CellId; source: string; language: string; executionIndex: number | null }
 
 type RuntimeErrorOutput = Extract<NotebookRuntimeOutput, { type: 'error' }>
 
@@ -39,7 +52,7 @@ type RuntimePayload = {
   id: string
   sourcePath: string
   language: string
-  pyodideIndexUrl: string
+  indexUrl: string
   cells: RuntimeCell[]
   toolbar?: boolean
   debug?: boolean
@@ -47,64 +60,9 @@ type RuntimePayload = {
   importableModules?: string[]
 }
 
-type AssetResult = {
-  runtimeId: string
-  assetId: string
-  ok: boolean
-  status: number
-  statusText: string
-  contentType: string
-  bytes?: ArrayBuffer
-  error?: string
-}
-
-type FrameMessage =
-  | { type: 'ready'; runtimeId: string }
-  | { type: 'output'; runtimeId: string; cellId: string; output: NotebookRuntimeOutput }
-  | { type: 'done'; runtimeId: string; cellId: string; failed: boolean }
-  | { type: 'asset'; runtimeId: string; cellId: string; assetId: string; url: string }
-  | {
-      type: 'download'
-      runtimeId: string
-      cellId: string
-      filename: string
-      contentType: string
-      bytes: ArrayBuffer
-    }
-  | {
-      type: 'file-result'
-      runtimeId: string
-      requestId: string
-      ok: boolean
-      status: number
-      statusText: string
-      contentType: string
-      bytes?: ArrayBuffer
-      error?: string
-    }
-  | { type: 'status'; runtimeId: string; text: string }
-
-type CellWaiter = { resolve: (result: CellRunResult) => void; reject: (error: Error) => void }
-
-type RuntimeFileWaiter = {
-  resolve: (message: Extract<FrameMessage, { type: 'file-result' }>) => void
-}
-
-type NotebookIcon = 'run' | 'stop' | 'edit' | 'save' | 'revert' | 'copy' | 'check'
+import { notebookIconSvg, type NotebookIcon } from '../../util/notebook/render/icons'
 
 const notebookRuntimeVimModeKey = 'quartz:notebook-vim-mode'
-
-const notebookIconSvg: Record<NotebookIcon, string> = {
-  run: '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M8 5.5v13l10-6.5z"/></svg>',
-  stop: '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7 7h10v10H7z"/></svg>',
-  edit: '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m4 16.5-.5 4 4-.5L19 8.5 15.5 5z"/><path d="m14 6.5 3.5 3.5"/></svg>',
-  save: '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 4h11l3 3v13H5z"/><path d="M8 4v6h8V4"/><path d="M8 20v-6h8v6"/></svg>',
-  revert:
-    '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"/></svg>',
-  copy: '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M8 8h11v11H8z"/><path d="M5 16H4a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1"/></svg>',
-  check:
-    '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m5 12 4 4L19 6"/></svg>',
-}
 
 function setNotebookIconButton(button: HTMLButtonElement, icon: NotebookIcon, label: string) {
   button.classList.add('notebook-icon-button')
@@ -114,9 +72,25 @@ function setNotebookIconButton(button: HTMLButtonElement, icon: NotebookIcon, la
   button.insertAdjacentHTML('afterbegin', notebookIconSvg[icon])
 }
 
-function notebookPythonLanguage(language: string) {
-  const value = language.trim().toLowerCase()
-  return value === 'python' || value === 'py' || value === 'ipython'
+function notebookLanguageBadgeElement(language: string): HTMLElement {
+  const template = document.createElement('template')
+  template.innerHTML = notebookCellLanguageBadge(language)
+  const badge = template.content.firstElementChild
+  if (badge instanceof HTMLElement) return badge
+
+  const fallback = document.createElement('span')
+  fallback.className = 'notebook-language-badge notebook-language-badge-code'
+  fallback.dataset.notebookLanguage = 'code'
+  fallback.setAttribute('aria-label', 'Code cell')
+  fallback.title = 'Code cell'
+
+  const icon = document.createElement('span')
+  icon.className = 'notebook-language-icon'
+  icon.setAttribute('aria-hidden', 'true')
+  icon.textContent = 'code'
+
+  fallback.append(icon)
+  return fallback
 }
 
 function readStoredNotebookVimMode(): boolean {
@@ -124,109 +98,6 @@ function readStoredNotebookVimMode(): boolean {
     return window.localStorage.getItem(notebookRuntimeVimModeKey) === 'true'
   } catch {
     return false
-  }
-}
-
-function readRuntimeOutput(value: unknown): NotebookRuntimeOutput | undefined {
-  if (!isRecord(value)) return undefined
-  const type = readString(value, 'type')
-  if (type === 'stream') {
-    const name = readString(value, 'name')
-    const text = readString(value, 'text')
-    if (name !== undefined && text !== undefined) return { type, name, text }
-  }
-  if (type === 'error') {
-    const ename = readString(value, 'ename')
-    const evalue = readString(value, 'evalue')
-    const traceback = readString(value, 'traceback')
-    if (ename !== undefined && evalue !== undefined && traceback !== undefined) {
-      const debug = readRuntimeDebugOutput(value.debug)
-      return debug ? { type, ename, evalue, traceback, debug } : { type, ename, evalue, traceback }
-    }
-  }
-  if (type === 'text') {
-    const text = readString(value, 'text')
-    if (text !== undefined) return { type, text }
-  }
-  if (type === 'json') {
-    const text = readString(value, 'text')
-    if (text !== undefined) return { type, text }
-  }
-  if (type === 'html') {
-    const html = readString(value, 'html')
-    if (html !== undefined) return { type, html }
-  }
-  if (type === 'success') return { type }
-}
-
-function readRuntimeDebugOutput(value: unknown): RuntimeDebugOutput | undefined {
-  if (!isRecord(value)) return undefined
-  const phase = readString(value, 'phase')
-  if (!phase) return undefined
-  const debug: RuntimeDebugOutput = { phase }
-  const cellId = readString(value, 'cellId')
-  if (cellId !== undefined) debug.cellId = cellId
-  const errorName = readString(value, 'errorName')
-  if (errorName !== undefined) debug.errorName = errorName
-  const errorMessage = readString(value, 'errorMessage')
-  if (errorMessage !== undefined) debug.errorMessage = errorMessage
-  const stack = readString(value, 'stack')
-  if (stack !== undefined) debug.stack = stack
-  return debug
-}
-
-function readFrameMessage(value: unknown): FrameMessage | undefined {
-  if (!isRecord(value) || value.source !== 'quartz-notebook-runtime') return undefined
-  const type = readString(value, 'type')
-  const runtimeId = readString(value, 'runtimeId')
-  if (!type || !runtimeId) return undefined
-  if (type === 'ready') return { type, runtimeId }
-  if (type === 'done') {
-    const cellId = readString(value, 'cellId')
-    if (cellId) return { type, runtimeId, cellId, failed: value.failed === true }
-  }
-  if (type === 'output') {
-    const cellId = readString(value, 'cellId')
-    const output = readRuntimeOutput(value.output)
-    if (cellId && output) return { type, runtimeId, cellId, output }
-  }
-  if (type === 'status') {
-    const text = readString(value, 'text')
-    if (text !== undefined) return { type, runtimeId, text }
-  }
-  if (type === 'asset') {
-    const cellId = readString(value, 'cellId')
-    const assetId = readString(value, 'assetId')
-    const url = readString(value, 'url')
-    if (cellId && assetId && url) return { type, runtimeId, cellId, assetId, url }
-  }
-  if (type === 'download') {
-    const cellId = readString(value, 'cellId')
-    const filename = readString(value, 'filename')
-    const contentType = readString(value, 'contentType')
-    if (cellId && filename && contentType && value.bytes instanceof ArrayBuffer) {
-      return { type, runtimeId, cellId, filename, contentType, bytes: value.bytes }
-    }
-  }
-  if (type === 'file-result') {
-    const requestId = readString(value, 'requestId')
-    const status = readNumber(value, 'status')
-    const statusText = readString(value, 'statusText')
-    const contentType = readString(value, 'contentType')
-    if (!requestId || status === undefined || !statusText || !contentType) return undefined
-    const message: Extract<FrameMessage, { type: 'file-result' }> = {
-      type,
-      runtimeId,
-      requestId,
-      ok: value.ok === true,
-      status,
-      statusText,
-      contentType,
-    }
-    if (value.bytes instanceof ArrayBuffer) message.bytes = value.bytes
-    const error = readString(value, 'error')
-    if (error !== undefined) message.error = error
-    return message
   }
 }
 
@@ -238,7 +109,7 @@ function readRuntimeCell(value: unknown): RuntimeCell | undefined {
   const executionIndex = value.executionIndex
   if (!id || source === undefined || !language) return undefined
   if (typeof executionIndex === 'number' || executionIndex === null) {
-    return { id, source, language, executionIndex }
+    return { id: id as CellId, source, language, executionIndex }
   }
 }
 
@@ -258,8 +129,8 @@ function readRuntimePayload(value: unknown): RuntimePayload | undefined {
   const id = readString(value, 'id')
   const sourcePath = readString(value, 'sourcePath')
   const language = readString(value, 'language')
-  const pyodideIndexUrl = readString(value, 'pyodideIndexUrl')
-  if (!id || !sourcePath || !language || !pyodideIndexUrl || !Array.isArray(value.cells)) {
+  const indexUrl = readString(value, 'indexUrl')
+  if (!id || !sourcePath || !language || !indexUrl || !Array.isArray(value.cells)) {
     return undefined
   }
   const cells = value.cells.map(readRuntimeCell)
@@ -268,7 +139,7 @@ function readRuntimePayload(value: unknown): RuntimePayload | undefined {
     id,
     sourcePath,
     language,
-    pyodideIndexUrl,
+    indexUrl,
     cells: cells.filter(cell => cell !== undefined),
   }
   const toolbar = readBoolean(value.toolbar)
@@ -329,7 +200,11 @@ function parseRuntimeJson(text: string): unknown | undefined {
   }
 }
 
-export async function warmNotebookRuntimeEditorAssets(data: readonly string[]): Promise<void> {
+export async function warmNotebookRuntimeEditorAssets(
+  data: readonly string[],
+  assets: NotebookRuntimeAssetConfig = {},
+): Promise<void> {
+  configureNotebookRuntimeAssets(assets)
   const languages = new Set<string>()
   let lsp = false
   let vimMode = false
@@ -341,12 +216,12 @@ export async function warmNotebookRuntimeEditorAssets(data: readonly string[]): 
     vimMode ||= payload.vimMode ?? readStoredNotebookVimMode()
     for (const cell of payload.cells) {
       languages.add(cell.language)
-      lsp ||= notebookPythonLanguage(cell.language)
+      lsp ||= backendFor(cell.language)?.editor?.lspBridge !== undefined
     }
   }
 
   if (languages.size === 0) languages.add('python')
-  const { warmNotebookCodeEditorAssets } = await import('./notebook-code-editor')
+  const { warmNotebookCodeEditorAssets } = await import('../editor/code-editor')
   await warmNotebookCodeEditorAssets({ languages: [...languages], lsp, vimMode })
 }
 
@@ -366,6 +241,7 @@ function replaceRenderedSource(
     return
   }
 
+  code.dataset.clipboard = source
   code.replaceChildren()
   const lines = source.split(/\r?\n/)
   if (highlightedLines && highlightedLines.length === lines.length) {
@@ -830,18 +706,14 @@ class NotebookRuntime {
   private payload: RuntimePayload
   private root: HTMLElement
   private cellRoot: Document | HTMLElement
-  private worker: Worker | undefined
-  private ready: Promise<void> | undefined
-  private readyResolve: (() => void) | undefined
-  private waiters = new Map<string, CellWaiter>()
-  private runtimeFileWaiters = new Map<string, RuntimeFileWaiter>()
-  private moduleCache = new Map<string, RuntimeModule | null>()
-  private moduleFetches = new Map<string, Promise<RuntimeModule | null>>()
+  private assets: NotebookRuntimeAssetConfig
+  private kernel: Kernel | undefined
+  private moduleCache = new Map<string, NotebookModule | null>()
+  private moduleFetches = new Map<string, Promise<NotebookModule | null>>()
   private importableModules: Set<string> | undefined
   private savedOutputs = new Map<string, HTMLElement[]>()
   private sourceControls = new Map<string, SourceControls>()
   private executionCounter: number
-  private runtimeFileSequence = 0
   private running = false
   private stopped = false
   private runningCellId: string | undefined
@@ -850,9 +722,10 @@ class NotebookRuntime {
   private activeCellId: string | undefined
   private editPrefixTimeout: number | undefined
 
-  constructor(root: HTMLElement, payload: RuntimePayload) {
+  constructor(root: HTMLElement, payload: RuntimePayload, assets: NotebookRuntimeAssetConfig) {
     this.root = root
     this.cellRoot = root.closest('article') ?? root.parentElement ?? document
+    this.assets = assets
     this.payload = payload
     this.importableModules = payload.importableModules
       ? new Set(payload.importableModules)
@@ -1181,18 +1054,20 @@ class NotebookRuntime {
     this.setRunningControls(true)
     this.clearOutput(cell.id)
     try {
-      const unsupported = unsupportedNotebookRuntimeReason(source)
-      if (unsupported) {
+      const check = backendFor(cell.language)?.canExecute(source) ?? {
+        ok: false as const,
+        reason: `${cell.language} notebook cells are not executable in this runtime.`,
+      }
+      if (!check.ok) {
         this.renderOutput(cell.id, {
           type: 'error',
           ename: 'UnsupportedRuntimeFeature',
-          evalue: unsupported,
-          traceback: unsupported,
+          evalue: check.reason,
+          traceback: check.reason,
         })
         return false
       }
-      await this.ensureWorker()
-      const result = await this.postRun(cell, source)
+      const result = await this.runKernelCell(cell, source)
       if (!result.failed) this.renderSuccessOutput(cell.id)
       return !result.failed
     } catch (error) {
@@ -1212,30 +1087,28 @@ class NotebookRuntime {
       this.runningCellId = undefined
       this.setExecutionLabel(cell.id, executionCount)
       this.setRunningControls(false)
-      if (!this.stopped) this.setStatus('idle')
+      this.setStatus(this.stopped ? 'stopped' : 'idle')
     }
   }
 
   private stop = () => {
+    if (this.running && this.kernel) {
+      this.stopped = true
+      this.kernel.interrupt()
+      this.setStatus('interrupting')
+      return
+    }
     this.stopped = true
     this.destroyRuntime()
     this.running = false
     this.runningCellId = undefined
     this.setRunningControls(false)
     this.setStatus('stopped')
-    for (const waiter of this.waiters.values()) {
-      waiter.reject(new Error('runtime stopped'))
-    }
-    this.waiters.clear()
   }
 
   private reset = () => {
     this.stopped = false
     this.destroyRuntime()
-    for (const waiter of this.waiters.values()) {
-      waiter.reject(new Error('runtime reset'))
-    }
-    this.waiters.clear()
     this.running = false
     this.runningCellId = undefined
     this.payload.cells.forEach(cell => {
@@ -1321,6 +1194,12 @@ class NotebookRuntime {
       document.createElement('div')
     actions.className = 'notebook-cell-actions'
     actions.dataset.notebookCellActions = cell.id
+    const languageBadge =
+      actions.querySelector<HTMLElement>('.notebook-language-badge[data-notebook-language]') ??
+      notebookLanguageBadgeElement(cell.language)
+    if (!frame.dataset.notebookLanguage && languageBadge.dataset.notebookLanguage) {
+      frame.dataset.notebookLanguage = languageBadge.dataset.notebookLanguage
+    }
 
     const runButton =
       frame.querySelector<HTMLButtonElement>(`[data-notebook-run-cell="${CSS.escape(cell.id)}"]`) ??
@@ -1390,7 +1269,7 @@ class NotebookRuntime {
     status.dataset.notebookLocalSourceStatus = cell.id
     status.hidden = true
 
-    actions.replaceChildren(runButton, editButton, saveButton, revertButton, status)
+    actions.replaceChildren(languageBadge, runButton, editButton, saveButton, revertButton, status)
     if (!actions.isConnected) frame.append(actions)
     if (figure) {
       if (!editorHost.isConnected) figure.before(editorHost)
@@ -1476,7 +1355,7 @@ class NotebookRuntime {
 
   private async ensureSourceEditor(cell: RuntimeCell, controls: SourceControls) {
     if (controls.editor) return controls.editor
-    const { createNotebookCodeEditor } = await import('./notebook-code-editor')
+    const { createNotebookCodeEditor } = await import('../editor/code-editor')
     controls.editor = await createNotebookCodeEditor({
       parent: controls.editorHost,
       initialContent: controls.source,
@@ -1541,7 +1420,7 @@ class NotebookRuntime {
       return preferredLines
     if (!controls.figure) return undefined
     try {
-      const { renderNotebookHighlightedLines } = await import('./notebook-code-editor')
+      const { renderNotebookHighlightedLines } = await import('../editor/code-editor')
       return await renderNotebookHighlightedLines(source, cell.language)
     } catch {
       return undefined
@@ -1647,40 +1526,80 @@ class NotebookRuntime {
     label.textContent = count === null ? 'In [ ]:' : `In [${count}]:`
   }
 
-  private ensureWorker(): Promise<void> {
-    if (this.ready) return this.ready
-    this.ready = new Promise(resolve => {
-      this.readyResolve = resolve
-    })
-    const worker = new Worker(new URL('notebook-runtime.worker.js', import.meta.url), {
-      type: 'module',
-    })
-    worker.addEventListener('message', this.onWorkerMessage)
-    worker.addEventListener('error', this.onWorkerError)
-    worker.postMessage({
-      source: 'quartz-notebook-runtime',
-      type: 'init',
+  private async ensureKernel(
+    cell: RuntimeCell,
+  ): Promise<{ kernel: Kernel; backend: ExecutableLanguageBackend }> {
+    const backend = backendFor(cell.language)
+    if (!backend) {
+      throw new Error(`${cell.language} notebook cells are not executable here.`)
+    }
+    if (this.kernel?.language === backend.name) return { kernel: this.kernel, backend }
+
+    const previousKernel = this.kernel
+    this.kernel = undefined
+    await previousKernel?.dispose()
+
+    const kernel = await backend.kernelFactory({
       runtimeId: this.payload.id,
+      sourcePath: this.payload.sourcePath,
+      indexUrl: this.payload.indexUrl || backend.defaultIndexUrl,
+      workerUrl: this.assets.workerUrl,
+      resolveAsset: (request, runtimeFile) => this.resolveAsset(request, runtimeFile),
     })
-    this.worker = worker
-    return this.ready
+    await kernel.init({
+      signal: new AbortController().signal,
+      indexUrl: this.payload.indexUrl || backend.defaultIndexUrl,
+    })
+    this.kernel = kernel
+    return { kernel, backend }
   }
 
-  private async postRun(cell: RuntimeCell, source: string): Promise<CellRunResult> {
-    const modules = await this.notebookModulesFor(source)
-    return new Promise((resolve, reject) => {
-      this.waiters.set(cell.id, { resolve, reject })
-      this.worker?.postMessage({
-        source: 'quartz-notebook-runtime',
-        type: 'run',
-        runtimeId: this.payload.id,
-        cellId: cell.id,
-        code: source,
-        pyodideIndexUrl: this.payload.pyodideIndexUrl,
-        debug: this.debug,
-        modules,
-      })
-    })
+  private async runKernelCell(cell: RuntimeCell, source: string): Promise<CellRunResult> {
+    const { kernel, backend } = await this.ensureKernel(cell)
+    const modules = await this.notebookModulesFor(source, backend)
+    let failed = false
+    for await (const event of kernel.execute(cell.id, source, { debug: this.debug, modules })) {
+      failed = this.handleRuntimeEvent(event) || failed
+    }
+    return { failed }
+  }
+
+  private handleRuntimeEvent(event: RuntimeEvent): boolean {
+    if (event.type === 'started') return false
+    if (event.type === 'stream') {
+      this.renderOutput(event.cellId, { type: 'stream', name: event.name, text: event.text })
+      return false
+    }
+    if (event.type === 'output') {
+      if (
+        'type' in event.output &&
+        event.output.type === 'error' &&
+        event.output.ename === 'UnsupportedRuntimeFeature'
+      ) {
+        this.restoreSavedOutput(event.cellId)
+      }
+      this.renderKernelOutput(event.cellId, event.output)
+      return false
+    }
+    if (event.type === 'error') {
+      this.renderKernelOutput(event.cellId, event.output)
+      return true
+    }
+    if (event.type === 'download') {
+      this.downloadRuntimeFile(event.download)
+      return false
+    }
+    if (event.type === 'status') {
+      this.setStatus(event.text)
+      return false
+    }
+    if (event.type === 'interrupted') {
+      return true
+    }
+    if (event.type === 'done') {
+      return event.failed === true
+    }
+    return false
   }
 
   private debugOutput(phase: string, cellId: string, error: unknown): RuntimeDebugOutput {
@@ -1696,35 +1615,44 @@ class NotebookRuntime {
     return debug
   }
 
-  private async notebookModulesFor(source: string): Promise<RuntimeModule[]> {
+  private async notebookModulesFor(
+    source: string,
+    backend: ExecutableLanguageBackend,
+  ): Promise<NotebookModule[]> {
+    const resolver = backend.moduleResolver
+    if (!resolver) return []
     const seen = new Set<string>()
-    const modules = new Map<string, RuntimeModule>()
-    await this.collectNotebookModules(source, seen, modules)
+    const modules = new Map<string, NotebookModule>()
+    await this.collectNotebookModules(source, resolver, seen, modules)
     return [...modules.values()]
   }
 
   private async collectNotebookModules(
     source: string,
+    resolver: RuntimeModuleResolver,
     seen: Set<string>,
-    modules: Map<string, RuntimeModule>,
+    modules: Map<string, NotebookModule>,
   ): Promise<void> {
-    for (const name of notebookRuntimeImportCandidates(source)) {
+    for (const name of resolver.importNames(source)) {
       if (seen.has(name)) continue
       seen.add(name)
-      const module = await this.fetchNotebookModule(name)
+      const module = await this.fetchNotebookModule(name, resolver)
       if (!module) continue
       modules.set(name, module)
-      await this.collectNotebookModules(module.source, seen, modules)
+      await this.collectNotebookModules(module.source, resolver, seen, modules)
     }
   }
 
-  private async fetchNotebookModule(name: string): Promise<RuntimeModule | null> {
+  private async fetchNotebookModule(
+    name: string,
+    resolver: RuntimeModuleResolver,
+  ): Promise<NotebookModule | null> {
     if (!/^[A-Za-z_][A-Za-z0-9_]*$/.test(name)) return null
     const cached = this.moduleCache.get(name)
     if (cached !== undefined) return cached
     const pending = this.moduleFetches.get(name)
     if (pending) return await pending
-    const request = this.loadNotebookModule(name)
+    const request = this.loadNotebookModule(name, resolver)
     this.moduleFetches.set(name, request)
     try {
       const module = await request
@@ -1735,7 +1663,10 @@ class NotebookRuntime {
     }
   }
 
-  private async loadNotebookModule(name: string): Promise<RuntimeModule | null> {
+  private async loadNotebookModule(
+    name: string,
+    resolver: RuntimeModuleResolver,
+  ): Promise<NotebookModule | null> {
     if (this.importableModules !== undefined && !this.importableModules.has(name)) return null
     const url = new URL(`${name}.ipynb`, window.location.href)
     const baseDir = new URL('.', window.location.href)
@@ -1751,75 +1682,21 @@ class NotebookRuntime {
     if (!response.ok) {
       throw new Error(`failed to fetch notebook import ${name}.ipynb: ${response.status}`)
     }
-    const source = notebookRuntimeModuleSource(await response.text(), `${name}.ipynb`)
+    const source = resolver.moduleSource(await response.text(), `${name}.ipynb`)
     return { name, sourcePath: url.pathname, source }
   }
 
-  private onWorkerError = (event: ErrorEvent) => {
-    this.readyResolve?.()
-    this.readyResolve = undefined
-    for (const waiter of this.waiters.values()) {
-      waiter.reject(event.error instanceof Error ? event.error : new Error(event.message))
-    }
-    this.waiters.clear()
-  }
-
-  private onWorkerMessage = (event: MessageEvent<unknown>) => {
-    const message = readFrameMessage(event.data)
-    if (!message || message.runtimeId !== this.payload.id) return
-    this.handleRuntimeMessage(message, this.worker)
-  }
-
-  private handleRuntimeMessage(message: FrameMessage, target: Worker | undefined) {
-    if (message.type === 'ready') {
-      this.readyResolve?.()
-      this.readyResolve = undefined
-    } else if (message.type === 'output') {
-      if (message.output.type === 'error' && message.output.ename === 'UnsupportedRuntimeFeature') {
-        this.restoreSavedOutput(message.cellId)
-      }
-      this.renderOutput(message.cellId, message.output)
-    } else if (message.type === 'done') {
-      const waiter = this.waiters.get(message.cellId)
-      if (!waiter) return
-      this.waiters.delete(message.cellId)
-      waiter.resolve({ failed: message.failed })
-    } else if (message.type === 'asset') {
-      void this.fetchAsset(message, target)
-    } else if (message.type === 'download') {
-      this.downloadRuntimeFile(message)
-    } else if (message.type === 'file-result') {
-      if (!(target instanceof Worker)) return
-      const waiter = this.runtimeFileWaiters.get(message.requestId)
-      if (!waiter) return
-      this.runtimeFileWaiters.delete(message.requestId)
-      waiter.resolve(message)
-    } else if (message.type === 'status') {
-      this.setStatus(message.text)
-    }
-  }
-
-  private downloadRuntimeFile(message: Extract<FrameMessage, { type: 'download' }>) {
+  private downloadRuntimeFile(message: RuntimeDownload) {
     const name = downloadNotebookFile(message.filename, message.contentType, message.bytes)
     this.setStatus(`downloaded ${name}`)
     showNotebookOutputToast(`downloaded ${name}`)
   }
 
-  private async fetchAsset(
-    message: Extract<FrameMessage, { type: 'asset' }>,
-    target: Worker | undefined,
-  ) {
-    const result = await this.resolveAsset(message)
-    if (!target) return
-    const transfer = result.bytes ? [result.bytes] : []
-    const payload = { source: 'quartz-notebook-runtime', type: 'asset-result', ...result }
-    target.postMessage(payload, transfer)
-  }
-
   private async resolveAsset(
-    message: Extract<FrameMessage, { type: 'asset' }>,
-  ): Promise<AssetResult> {
-    const fallback = (error: unknown): AssetResult => ({
+    message: RuntimeAssetRequest,
+    runtimeFile: (path: string) => Promise<RuntimeFileResult | undefined>,
+  ): Promise<RuntimeAssetResult> {
+    const fallback = (error: unknown): RuntimeAssetResult => ({
       runtimeId: message.runtimeId,
       assetId: message.assetId,
       ok: false,
@@ -1864,45 +1741,29 @@ class NotebookRuntime {
       }
     } catch (error) {
       return (
-        (await this.resolveRuntimeFileAsset(message, relative || message.url)) ?? fallback(error)
+        (await this.resolveRuntimeFileAsset(message, relative || message.url, runtimeFile)) ??
+        fallback(error)
       )
     }
   }
 
-  private resolveRuntimeFileAsset(
-    message: Extract<FrameMessage, { type: 'asset' }>,
+  private async resolveRuntimeFileAsset(
+    message: RuntimeAssetRequest,
     path: string,
-  ): Promise<AssetResult | undefined> {
-    if (!this.worker) return Promise.resolve(undefined)
-    const requestId = `runtime-file-${++this.runtimeFileSequence}`
-    return new Promise(resolve => {
-      const timeout = window.setTimeout(() => {
-        this.runtimeFileWaiters.delete(requestId)
-        resolve(undefined)
-      }, 10_000)
-      this.runtimeFileWaiters.set(requestId, {
-        resolve: result => {
-          window.clearTimeout(timeout)
-          resolve({
-            runtimeId: message.runtimeId,
-            assetId: message.assetId,
-            ok: result.ok,
-            status: result.status,
-            statusText: result.statusText,
-            contentType: result.contentType,
-            bytes: result.bytes,
-            error: result.error,
-          })
-        },
-      })
-      this.worker?.postMessage({
-        source: 'quartz-notebook-runtime',
-        type: 'file',
-        runtimeId: this.payload.id,
-        requestId,
-        path,
-      })
-    })
+    runtimeFile: (path: string) => Promise<RuntimeFileResult | undefined>,
+  ): Promise<RuntimeAssetResult | undefined> {
+    const result = await runtimeFile(path)
+    if (!result) return undefined
+    return {
+      runtimeId: message.runtimeId,
+      assetId: message.assetId,
+      ok: result.ok,
+      status: result.status,
+      statusText: result.statusText,
+      contentType: result.contentType,
+      bytes: result.bytes,
+      error: result.error,
+    }
   }
 
   private renderOutput(cellId: string, output: NotebookRuntimeOutput) {
@@ -1911,6 +1772,19 @@ class NotebookRuntime {
     this.hideSavedOutput(cellId)
     target.hidden = false
     appendRuntimeOutput(target, output, { debug: this.debug })
+  }
+
+  private renderKernelOutput(cellId: string, output: KernelOutput) {
+    if ('kind' in output) {
+      const target = this.queryCell<HTMLElement>(`[data-notebook-output="${CSS.escape(cellId)}"]`)
+      if (!target) return
+      this.hideSavedOutput(cellId)
+      target.hidden = false
+      target.insertAdjacentHTML('beforeend', renderOutputHtml(output))
+      syncOutputTabs(target)
+      return
+    }
+    this.renderOutput(cellId, output)
   }
 
   private renderSuccessOutput(cellId: string) {
@@ -1991,22 +1865,23 @@ class NotebookRuntime {
   }
 
   private destroyRuntime() {
-    this.worker?.removeEventListener('message', this.onWorkerMessage)
-    this.worker?.removeEventListener('error', this.onWorkerError)
-    this.worker?.terminate()
-    this.worker = undefined
-    this.runtimeFileWaiters.clear()
-    this.ready = undefined
-    this.readyResolve = undefined
+    const kernel = this.kernel
+    this.kernel = undefined
+    void kernel?.dispose()
   }
 }
 
-export function mountNotebookRuntime(root: HTMLElement, text: string) {
+export function mountNotebookRuntime(
+  root: HTMLElement,
+  text: string,
+  assets: NotebookRuntimeAssetConfig = {},
+) {
   if (root.dataset.runtimeMounted === 'true') return
+  configureNotebookRuntimeAssets(assets)
   const parsed = parseRuntimeJson(text)
   if (parsed === undefined) return
   const payload = readRuntimePayload(parsed)
   if (!payload) return
   root.dataset.runtimeMounted = 'true'
-  new NotebookRuntime(root, payload).mount()
+  new NotebookRuntime(root, payload, assets).mount()
 }

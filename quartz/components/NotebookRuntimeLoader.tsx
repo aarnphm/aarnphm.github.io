@@ -1,5 +1,5 @@
 import { QuartzComponent, QuartzComponentConstructor } from '../types/component'
-//@ts-ignore
+// @ts-ignore
 import script from './scripts/notebook-runtime.inline'
 
 export default (() => {

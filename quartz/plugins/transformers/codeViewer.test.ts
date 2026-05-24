@@ -1,4 +1,5 @@
 import type { Code, Html, Root, RootContent } from 'mdast'
+import { fromMarkdown } from 'mdast-util-from-markdown'
 import assert from 'node:assert'
 import { mkdir, mkdtemp, writeFile } from 'node:fs/promises'
 import os from 'node:os'
@@ -103,6 +104,23 @@ describe('code viewer runtime cells', () => {
     assert.strictEqual(payload.toolbar, false)
     assert.strictEqual(payload.debug, true)
     assert.strictEqual(payload.vimMode, true)
+    assert.deepStrictEqual(
+      payload.cells.map(cell => cell.source),
+      ['print("hi")'],
+    )
+  })
+
+  test('wraps parser-produced python shell fences inside collapsed callouts', async () => {
+    const root = await mkdtemp(nodePath.join(os.tmpdir(), 'quartz-code-viewer-'))
+    const tree = fromMarkdown(`> [!info]- test\n>\n> \`\`\`python shell\n> print("hi")\n> \`\`\`\n`)
+
+    await runCodeViewer(tree, vfile(root, 'notes/page.md'), buildCtx(root))
+
+    const html = collectHtml(tree).join('\n')
+    assert.match(html, /data-notebook-runtime=/)
+    assert.match(html, /data-notebook-cell="code-cell-1"/)
+
+    const payload = runtimePayload(tree)
     assert.deepStrictEqual(
       payload.cells.map(cell => cell.source),
       ['print("hi")'],

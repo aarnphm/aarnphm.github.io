@@ -1,12 +1,10 @@
-import { arrayValue, objectValue, stringValue, type JsonObject } from './type-guards'
+import { arrayValue, objectValue, stringValue, type JsonObject } from '../../util/type-guards'
 
-export const notebookPyrightTextChunkBytes = 1024 * 1024
 export const notebookPyrightTypeshedChunkBytes = 256 * 1024
 
 export type NotebookPyrightTypeshedChunk = { index: number; files: Record<string, string> }
 
 const encoder = new TextEncoder()
-const decoder = new TextDecoder()
 const chunkHeaderBytes = encodedBytes('{"files":{')
 const chunkFooterBytes = encodedBytes('}}')
 
@@ -26,25 +24,6 @@ function ensureChunkSize(maxBytes: number, minimumBytes: number) {
   if (!Number.isInteger(maxBytes) || maxBytes < minimumBytes) {
     throw new Error(`notebook pyright chunk size must be at least ${minimumBytes} bytes`)
   }
-}
-
-export function chunkNotebookPyrightTextAsset(
-  source: string,
-  maxBytes = notebookPyrightTextChunkBytes,
-): string[] {
-  ensureChunkSize(maxBytes, 4)
-  const bytes = encoder.encode(source)
-  if (bytes.byteLength === 0) return ['']
-
-  const chunks: string[] = []
-  let offset = 0
-  while (offset < bytes.byteLength) {
-    let end = Math.min(offset + maxBytes, bytes.byteLength)
-    while (end > offset && end < bytes.byteLength && (bytes[end] & 0xc0) === 0x80) end -= 1
-    chunks.push(decoder.decode(bytes.subarray(offset, end)))
-    offset = end
-  }
-  return chunks
 }
 
 export function chunkNotebookPyrightTypeshedFiles(
@@ -94,6 +73,14 @@ export function notebookPyrightAssetManifestChunks(value: JsonObject, label: str
   }
   if (names.length === 0) throw new Error(`${label} manifest has no chunks`)
   return names
+}
+
+export function notebookPyrightAssetManifestEntry(value: JsonObject, label: string): string {
+  const entry = stringValue(value.entry)
+  if (entry === undefined || entry.length === 0) {
+    throw new Error(`${label} manifest has an invalid entry`)
+  }
+  return entry
 }
 
 export function notebookPyrightTypeshedFiles(value: JsonObject): Record<string, string> {

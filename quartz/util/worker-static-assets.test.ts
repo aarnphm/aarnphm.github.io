@@ -1,6 +1,9 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
-import { cacheHeadersForStaticAsset } from '../../worker/static-assets'
+import {
+  cacheHeadersForStaticAsset,
+  isolationHeadersForStaticAsset,
+} from '../../worker/static-assets'
 
 test('marks content-hashed static assets immutable', () => {
   for (const pathname of [
@@ -26,4 +29,29 @@ test('keeps the asset manifest volatile', () => {
 test('does not cache unhashed assets or misses as immutable', () => {
   assert.deepEqual(cacheHeadersForStaticAsset('/postscript.js', 200), {})
   assert.deepEqual(cacheHeadersForStaticAsset('/static/resource-after-47ac7b09.js', 404), {})
+})
+
+test('marks first-party scripts loadable under notebook isolation', () => {
+  assert.deepEqual(isolationHeadersForStaticAsset('/static/scripts/script-47ac7b09.js', 200), {
+    'Cross-Origin-Resource-Policy': 'same-origin',
+  })
+  assert.deepEqual(
+    isolationHeadersForStaticAsset('/static/scripts/notebook-runtime.worker.js', 200),
+    {
+      'Cross-Origin-Resource-Policy': 'same-origin',
+      'Cross-Origin-Embedder-Policy': 'require-corp',
+    },
+  )
+  assert.deepEqual(isolationHeadersForStaticAsset('/static/scripts/semantic.worker.js', 200), {
+    'Cross-Origin-Resource-Policy': 'same-origin',
+    'Cross-Origin-Embedder-Policy': 'require-corp',
+  })
+})
+
+test('does not add isolation headers to misses or non-script assets', () => {
+  assert.deepEqual(
+    isolationHeadersForStaticAsset('/static/scripts/notebook-runtime.worker.js', 404),
+    {},
+  )
+  assert.deepEqual(isolationHeadersForStaticAsset('/static/contentIndex.json', 200), {})
 })

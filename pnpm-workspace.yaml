@@ -16,6 +16,7 @@ minimumReleaseAgeExclude:
   - '@ai-sdk/gateway@3.0.119'
   - ai@6.0.190
   - ws@8.21.0
+  - basedpyright@1.39.6
 
 onlyBuiltDependencies:
   - '@parcel/watcher'

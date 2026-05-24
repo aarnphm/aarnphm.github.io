@@ -194,6 +194,7 @@ document.addEventListener('nav', () => {
       tag === 'input' ||
       tag === 'textarea' ||
       (el as HTMLElement).isContentEditable ||
+      el.closest('.cm-editor') !== null ||
       el.closest('.search .search-container') !== null ||
       isHeadingsModalOpen
     )

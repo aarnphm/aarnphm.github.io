@@ -1,7 +1,9 @@
-import { transform as transpile, build as bundle } from 'esbuild'
+import { transform as transpile, build as bundle, type Plugin } from 'esbuild'
 import { globby } from 'globby'
 import { Features, transform } from 'lightningcss'
+import { existsSync } from 'node:fs'
 import fs from 'node:fs/promises'
+import { createRequire } from 'node:module'
 import path from 'path'
 import type { QuartzMdxComponent } from '../../components/mdx/registry'
 import type { StaticResources } from '../../util/resources'
@@ -38,6 +40,7 @@ import collapseHeaderStyle from '../../components/styles/collapseHeader.inline.s
 import popoverStyle from '../../components/styles/popover.scss'
 import pseudoStyle from '../../components/styles/pseudocode.scss'
 import '../../components/mdx'
+import { chunkNotebookPyrightTypeshedFiles } from '../../runtime/lsp/pyright-assets'
 import baseStyles from '../../styles/base.scss'
 import customStyles from '../../styles/custom.scss'
 import { QuartzComponent } from '../../types/component'
@@ -51,10 +54,6 @@ import {
   resolveAsset,
 } from '../../util/asset-manifest'
 import { BuildCtx } from '../../util/ctx'
-import {
-  chunkNotebookPyrightTextAsset,
-  chunkNotebookPyrightTypeshedFiles,
-} from '../../util/notebook-pyright-assets'
 import { FilePath, FullSlug, isFullSlug, joinSegments } from '../../util/path'
 import {
   splitCssBundles,
@@ -73,23 +72,27 @@ const name = 'ComponentResources'
 const collaborativeCommentsClientEntry =
   'quartz/components/scripts/collaborative-comments.client.ts'
 const notebookRuntimeInlineEntry = 'quartz/components/scripts/notebook-runtime.inline.ts'
-const notebookRuntimeClientEntry = 'quartz/components/scripts/notebook-runtime.client.ts'
-const notebookRuntimeLspEntry = 'quartz/components/scripts/notebook-lsp.ts'
-const notebookRuntimeWorkerEntry = 'quartz/components/scripts/notebook-runtime.pyodide.js'
-const notebookRuntimeBootstrapEntry = 'quartz/components/scripts/notebook-runtime.pyodide.py'
-const notebookRuntimeMlBridgeEntry = 'quartz/components/scripts/notebook-runtime.ml.js'
-const notebookRuntimePyrightWorkerEntry = 'node_modules/browser-basedpyright/dist/pyright.worker.js'
-const notebookRuntimePyrightWorkerLicenseEntry =
-  'node_modules/browser-basedpyright/dist/pyright.worker.js.LICENSE.txt'
+const notebookRuntimeClientEntry = 'quartz/runtime/notebook/client.ts'
+const notebookRuntimeLspEntry = 'quartz/runtime/lsp/pyright.ts'
+const notebookRuntimeWorkerEntry = 'quartz/runtime/python/pyodide-worker.js'
+const notebookRuntimeBootstrapEntry = 'quartz/runtime/python/pyodide-bridge.py'
+const notebookRuntimeMlBridgeEntry = 'quartz/runtime/python/ml-bridge.js'
+const notebookRuntimePyrightWorkerEntry = 'quartz/util/pyright-browser-worker.js'
+const notebookRuntimePyrightWorkerGlobalsEntry = 'quartz/util/pyright-worker-globals.js'
 const notebookRuntimePyrightTypeshedDir = 'node_modules/basedpyright/dist/typeshed-fallback/stdlib'
 const notebookRuntimePyrightWorkerManifestPath = 'static/scripts/notebook-pyright-worker.json'
-const notebookRuntimePyrightWorkerChunkPrefix = 'static/scripts/notebook-pyright-worker'
-const notebookRuntimePyrightWorkerLicensePath = 'static/scripts/notebook-pyright-worker-license.txt'
 const notebookRuntimePyrightTypeshedPath = 'static/scripts/notebook-pyright-typeshed.json'
 const notebookRuntimePyrightTypeshedChunkPrefix = 'static/scripts/notebook-pyright-typeshed'
+const basedpyrightSourcePackageName = 'basedpyright-source'
+const basedpyrightInternalSourcePackageName = 'basedpyright-internal-source'
+const notebookPyrightWorkerOutputName = 'notebook-pyright-worker'
+const notebookPyrightCommonJsEmptyModule = 'module.exports = {}'
+const notebookPyrightDisabledNodeModulePattern =
+  /^(?:node:)?(?:child_process|crypto|fs|module|net|os|perf_hooks|stream|tls|v8|worker_threads)$/
 const semanticWorkerEntry = 'quartz/workers/semantic.worker.ts'
 const semanticWorkerPath = 'static/scripts/semantic.worker.js'
 const emojiAssetSourceDir = 'quartz/util/emojimap'
+const requireResolve = createRequire(import.meta.url).resolve
 const notebookRuntimeAssetEntries = new Set([
   'quartz/plugins/emitters/componentResources.tsx',
   notebookRuntimeClientEntry,
@@ -97,11 +100,15 @@ const notebookRuntimeAssetEntries = new Set([
   notebookRuntimeWorkerEntry,
   notebookRuntimeBootstrapEntry,
   notebookRuntimeMlBridgeEntry,
-  'quartz/util/notebook-runtime.ts',
-  'quartz/util/notebook-pyright-assets.ts',
+  notebookRuntimePyrightWorkerEntry,
+  notebookRuntimePyrightWorkerGlobalsEntry,
+  'quartz/runtime/lsp/pyright-assets.ts',
   'quartz/util/type-guards.ts',
-  'quartz/components/scripts/notebook-code-editor.ts',
+  'quartz/runtime/notebook/assets.ts',
+  'quartz/runtime/editor/code-editor.ts',
 ])
+
+const notebookRuntimeAssetPrefixes = ['quartz/util/notebook/', 'quartz/runtime/']
 const semanticWorkerAssetEntries = new Set([semanticWorkerEntry, 'package.json'])
 
 type ComponentResources = {
@@ -282,6 +289,116 @@ async function writeAfterDomLoadedScripts(ctx: BuildCtx, scripts: string[]) {
   return { postscript, files: entries.map(({ file }) => file) }
 }
 
+const notebookPyrightLodashModule = `
+function isObject(value) {
+  return typeof value === "object" && value !== null
+}
+
+export function add(left, right) {
+  return left + right
+}
+
+export function zip(...arrays) {
+  const length = arrays.reduce((max, array) => Math.max(max, array?.length ?? 0), 0)
+  return Array.from({ length }, (_, index) => arrays.map(array => array?.[index]))
+}
+
+export function isEqual(left, right) {
+  if (Object.is(left, right)) return true
+  if (Array.isArray(left) || Array.isArray(right)) {
+    if (!Array.isArray(left) || !Array.isArray(right) || left.length !== right.length) return false
+    return left.every((value, index) => isEqual(value, right[index]))
+  }
+  if (isObject(left) || isObject(right)) {
+    if (!isObject(left) || !isObject(right)) return false
+    const leftKeys = Object.keys(left)
+    const rightKeys = Object.keys(right)
+    if (leftKeys.length !== rightKeys.length) return false
+    return leftKeys.every(key => Object.prototype.hasOwnProperty.call(right, key) && isEqual(left[key], right[key]))
+  }
+  return false
+}
+`
+
+function packageDir(packageName: string) {
+  return path.dirname(requireResolve(`${packageName}/package.json`))
+}
+
+function packageNodeModules(packageName: string) {
+  return path.join(packageDir(packageName), 'node_modules')
+}
+
+function basedpyrightInternalSourceDir() {
+  return path.join(packageDir(basedpyrightSourcePackageName), 'packages/pyright-internal/src')
+}
+
+function pyrightInternalSourcePath(importPath: string) {
+  const sourcePath = path.join(
+    basedpyrightInternalSourceDir(),
+    importPath.slice('pyright-internal/'.length),
+  )
+  if (existsSync(sourcePath)) return sourcePath
+  for (const ext of ['.ts', '.tsx', '.js', '.json']) {
+    const candidate = `${sourcePath}${ext}`
+    if (existsSync(candidate)) return candidate
+  }
+  return sourcePath
+}
+
+function pyrightBrowserDependencyPaths() {
+  return [packageNodeModules(basedpyrightInternalSourcePackageName), path.resolve('node_modules')]
+}
+
+function notebookPyrightWorkerPlugin(): Plugin {
+  return {
+    name: 'notebook-pyright-worker',
+    setup(build) {
+      build.onResolve({ filter: /^pyright-internal\// }, args => ({
+        path: pyrightInternalSourcePath(args.path),
+      }))
+      build.onResolve({ filter: /^typeshed-json$/ }, () => ({
+        namespace: 'notebook-pyright-empty',
+        path: 'typeshed-json',
+      }))
+      build.onResolve({ filter: /^is-ci$/ }, () => ({
+        namespace: 'notebook-pyright-is-ci',
+        path: 'is-ci',
+      }))
+      build.onResolve({ filter: /^lodash$/ }, () => ({
+        namespace: 'notebook-pyright-lodash',
+        path: 'lodash',
+      }))
+      build.onResolve({ filter: /^(?:node:)?path$/ }, () => ({
+        path: requireResolve('path-browserify'),
+      }))
+      build.onResolve({ filter: /^(?:node:)?buffer$/ }, () => ({ path: requireResolve('buffer/') }))
+      build.onResolve({ filter: notebookPyrightDisabledNodeModulePattern }, args => ({
+        namespace: 'notebook-pyright-empty',
+        path: args.path,
+      }))
+      build.onLoad({ filter: /.*/, namespace: 'notebook-pyright-empty' }, () => ({
+        contents: notebookPyrightCommonJsEmptyModule,
+        loader: 'js',
+      }))
+      build.onLoad({ filter: /.*/, namespace: 'notebook-pyright-is-ci' }, () => ({
+        contents: 'export default false',
+        loader: 'js',
+      }))
+      build.onLoad({ filter: /.*/, namespace: 'notebook-pyright-lodash' }, () => ({
+        contents: notebookPyrightLodashModule,
+        loader: 'js',
+      }))
+    },
+  }
+}
+
+function notebookPyrightWorkerEntryOutput(outputFiles: readonly { path: string; text: string }[]) {
+  const entryName = `${notebookPyrightWorkerOutputName}.js`
+  const entry = outputFiles.find(output => path.basename(output.path) === entryName)
+  if (!entry) throw new Error('notebook pyright worker entry was not emitted')
+  return entry
+}
+
 function notebookRuntimePyrightChunkPath(prefix: string, index: number, ext: string) {
   return `${prefix}-${index}${ext}`
 }
@@ -330,27 +447,39 @@ async function writeNotebookPyrightTypeshedAssets(ctx: BuildCtx): Promise<FilePa
 }
 
 async function writeNotebookPyrightWorkerAssets(ctx: BuildCtx): Promise<FilePath[]> {
-  const [workerSource, license] = await Promise.all([
-    fs.readFile(notebookRuntimePyrightWorkerEntry, 'utf8'),
-    fs.readFile(notebookRuntimePyrightWorkerLicenseEntry),
-  ])
-  const worker = workerSource
-    .replace(
-      'pyright.worker.js.LICENSE.txt',
-      path.basename(notebookRuntimePyrightWorkerLicensePath),
-    )
-    .replace(/\n?\/\/# sourceMappingURL=pyright\.worker\.js\.map\s*$/, '')
-  const [licenseFile, workerFiles] = await Promise.all([
-    writeRawAsset(ctx, notebookRuntimePyrightWorkerLicensePath, license),
-    writeNotebookPyrightChunkedAsset(
-      ctx,
-      notebookRuntimePyrightWorkerManifestPath,
-      notebookRuntimePyrightWorkerChunkPrefix,
-      '.js',
-      chunkNotebookPyrightTextAsset(worker),
-    ),
-  ])
-  return [licenseFile, ...workerFiles]
+  const outdir = path.join(ctx.argv.output, 'static/scripts')
+  const worker = await bundle({
+    entryPoints: { [notebookPyrightWorkerOutputName]: notebookRuntimePyrightWorkerEntry },
+    bundle: true,
+    minify: true,
+    platform: 'browser',
+    format: 'esm',
+    splitting: true,
+    outdir,
+    entryNames: '[name]',
+    chunkNames: 'chunks/[name]-[hash]',
+    conditions: ['browser'],
+    inject: [notebookRuntimePyrightWorkerGlobalsEntry],
+    legalComments: 'eof',
+    nodePaths: pyrightBrowserDependencyPaths(),
+    plugins: [notebookPyrightWorkerPlugin()],
+    write: false,
+  })
+  const entryOutput = notebookPyrightWorkerEntryOutput(worker.outputFiles)
+  const workerFiles = await Promise.all(
+    worker.outputFiles.map(output => writeAssetBundleOutput(ctx, output)),
+  )
+  const entryLogicalPath = path
+    .relative(ctx.argv.output, entryOutput.path)
+    .split(path.sep)
+    .join('/')
+  const manifest = { entry: path.basename(resolveAsset(ctx, entryLogicalPath)) }
+  const manifestFile = await writeRawAsset(
+    ctx,
+    notebookRuntimePyrightWorkerManifestPath,
+    JSON.stringify(manifest),
+  )
+  return [manifestFile, ...workerFiles]
 }
 
 async function writeNotebookPyrightAssets(ctx: BuildCtx): Promise<FilePath[]> {
@@ -397,10 +526,10 @@ async function writeNotebookRuntimeAssets(ctx: BuildCtx): Promise<FilePath[]> {
     loader: { '.html': 'text' },
     write: false,
   })
+  const workerPath = path.join(outdir, workerName)
   const clientOutputs = client.outputFiles.map(output => ({
     ...output,
-    text: output.text
-      .replaceAll('notebook-runtime.worker.js', workerName)
+    text: replaceNotebookRuntimeWorkerReference(output.text, output.path, workerPath)
       .replaceAll('notebook-pyright-worker.json', pyrightWorkerName)
       .replaceAll('notebook-pyright-typeshed.json', pyrightTypeshedName),
   }))
@@ -470,12 +599,36 @@ function assetBasename(ctx: BuildCtx, logicalPath: string): string {
   return path.basename(resolveAsset(ctx, logicalPath))
 }
 
+function relativeBundleAssetReference(fromFile: string, toFile: string): string {
+  return path.relative(path.dirname(fromFile), toFile).split(path.sep).join('/')
+}
+
+function replaceNotebookRuntimeWorkerReference(text: string, fromFile: string, workerPath: string) {
+  const placeholder = '\0quartz-notebook-runtime-worker\0'
+  return text
+    .replaceAll('../notebook-runtime.worker.js', placeholder)
+    .replaceAll('notebook-runtime.worker.js', placeholder)
+    .replaceAll(placeholder, relativeBundleAssetReference(fromFile, workerPath))
+}
+
 function resolveComponentResourceAssets(ctx: BuildCtx, componentResources: ComponentResources) {
   componentResources.afterDOMLoaded = componentResources.afterDOMLoaded.map(script =>
     script
       .replaceAll(
         'notebook-runtime.client.js',
         assetBasename(ctx, 'static/scripts/notebook-runtime.client.js'),
+      )
+      .replaceAll(
+        'notebook-runtime.worker.js',
+        assetBasename(ctx, 'static/scripts/notebook-runtime.worker.js'),
+      )
+      .replaceAll(
+        'notebook-pyright-worker.json',
+        assetBasename(ctx, notebookRuntimePyrightWorkerManifestPath),
+      )
+      .replaceAll(
+        'notebook-pyright-typeshed.json',
+        assetBasename(ctx, notebookRuntimePyrightTypeshedPath),
       )
       .replaceAll(
         'collaborative-comments.client.js',
@@ -486,7 +639,8 @@ function resolveComponentResourceAssets(ctx: BuildCtx, componentResources: Compo
 }
 
 function isNotebookRuntimeAssetChange(changePath: string): boolean {
-  return notebookRuntimeAssetEntries.has(changePath)
+  if (notebookRuntimeAssetEntries.has(changePath)) return true
+  return notebookRuntimeAssetPrefixes.some(prefix => changePath.startsWith(prefix))
 }
 
 function isNotebookRuntimePageScriptChange(changePath: string): boolean {

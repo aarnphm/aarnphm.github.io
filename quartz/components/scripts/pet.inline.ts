@@ -10,6 +10,8 @@ const hydrationReminderIntervalMs = 45 * 60 * 1000
 const hydrationReminderVisibleMs = 22 * 1000
 const edgePadding = 12
 const defaultPetsEnabled = Number('__QUARTZ_PETS_DEFAULT_ENABLED__') === 1
+const landingStickerWidth = 168
+const landingStickerHeight = 178
 
 type Point = { x: number; y: number }
 type DragState = {
@@ -23,6 +25,10 @@ type DragState = {
 const clamp = (value: number, min: number, max: number) => Math.min(Math.max(value, min), max)
 const randomBetween = (min: number, max: number) =>
   max <= min ? min : min + Math.random() * (max - min)
+const readPositiveInteger = (value: string | undefined, fallback: number) => {
+  const parsed = Number(value)
+  return Number.isInteger(parsed) && parsed > 0 ? parsed : fallback
+}
 
 const readPoint = (key: string): Point | null => {
   const raw = localStorage.getItem(key)
@@ -186,6 +192,30 @@ const removeHydrationPets = () => {
   document.querySelectorAll<HTMLElement>('.hydration-pet').forEach(element => element.remove())
 }
 
+const ensureLandingPetImage = (element: HTMLElement) => {
+  const existing = element.querySelector<HTMLImageElement>('img')
+  if (existing) {
+    existing.draggable = false
+    existing.dataset.noPopover = 'true'
+    return
+  }
+
+  const img = document.createElement('img')
+  img.src = element.dataset.petSrc ?? stickerSrcs[0]
+  img.alt = element.dataset.petAlt ?? ''
+  img.width = readPositiveInteger(element.dataset.petWidth, landingStickerWidth)
+  img.height = readPositiveInteger(element.dataset.petHeight, landingStickerHeight)
+  img.loading = 'eager'
+  img.decoding = 'async'
+  img.draggable = false
+  img.dataset.noPopover = 'true'
+  element.append(img)
+}
+
+const removeLandingPetImage = (element: HTMLElement) => {
+  element.querySelector('img')?.remove()
+}
+
 const spawnHydrationPet = () => {
   if (!readPetsEnabled()) return
   if (document.querySelector('.hydration-pet')) return
@@ -204,6 +234,7 @@ const spawnHydrationPet = () => {
   img.height = 178
   img.decoding = 'async'
   img.draggable = false
+  img.dataset.noPopover = 'true'
 
   const bubble = document.createElement('figcaption')
   bubble.className = 'hydration-pet-bubble'
@@ -285,8 +316,14 @@ const syncPets = () => {
 
   const landingPet = document.querySelector<HTMLElement>('[data-pet-home]')
   if (landingPet) {
-    landingPet.hidden = !enabled
-    if (enabled) makeDraggable(landingPet, landingPositionKey)
+    if (enabled) {
+      ensureLandingPetImage(landingPet)
+      landingPet.hidden = false
+      makeDraggable(landingPet, landingPositionKey)
+    } else {
+      landingPet.hidden = true
+      removeLandingPetImage(landingPet)
+    }
   }
 
   if (!enabled) {

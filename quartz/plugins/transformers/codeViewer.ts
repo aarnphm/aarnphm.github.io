@@ -3,27 +3,31 @@ import type { Parent } from 'unist'
 import { readFile } from 'fs/promises'
 import path from 'path'
 import { visit, SKIP } from 'unist-util-visit'
+import type { NotebookRuntimeCell, NotebookRuntimeData } from '../../runtime/notebook/types'
 import type { Wikilink } from '../../util/wikilinks'
+import {
+  backendFor,
+  backendForShellMagic,
+  type ExecutableLanguageBackend,
+} from '../../runtime/notebook/backend'
 import { QuartzTransformerPlugin } from '../../types/plugin'
 import { BuildCtx } from '../../util/ctx'
 import {
-  defaultNotebookPyodideIndexUrl,
   notebookCellActions,
   notebookCellControls,
   notebookCellFrameOpen,
   notebookCellRuntimeOutput,
   notebookRuntimeControls,
   notebookRuntimeDataScript,
-  notebookRuntimeId,
   notebookSourceEditor,
-  type NotebookRuntimeCell,
-  type NotebookRuntimeData,
-} from '../../util/notebook-runtime'
+} from '../../util/notebook/cell-html'
+import { notebookId } from '../../util/notebook/identity'
 import { FilePath } from '../../util/path'
+import '../../runtime/notebook/registry'
 
-type Options = { exts?: string[]; pyodideIndexUrl?: string }
+type Options = { exts?: string[]; indexUrls?: Readonly<Record<string, string>> }
 
-type ResolvedOptions = { exts: string[]; pyodideIndexUrl: string }
+type ResolvedOptions = { exts: string[]; indexUrls: Map<string, string> }
 
 const DEFAULT_EXTS = new Set<string>([
   '.py',
@@ -250,7 +254,9 @@ function metaBooleanOption(words: string[], key: string, fallback: boolean): boo
 
 type CodeRuntimeOptions = Pick<NotebookRuntimeData, 'toolbar' | 'debug' | 'vimMode'>
 
-function pythonShellRuntimeOptions(words: string[]): CodeRuntimeOptions {
+type CodeRuntimeBinding = { backend: ExecutableLanguageBackend; options: CodeRuntimeOptions }
+
+function shellRuntimeOptions(words: string[]): CodeRuntimeOptions {
   return {
     toolbar: false,
     debug: metaBooleanOption(words, 'debug', true),
@@ -258,32 +264,46 @@ function pythonShellRuntimeOptions(words: string[]): CodeRuntimeOptions {
   }
 }
 
-function runtimeOptionsForCode(node: Code): CodeRuntimeOptions | undefined {
+function backendForTransclude(node: Code): ExecutableLanguageBackend | undefined {
   const transcluded = codeTranscludePath(node)
-  if (transcluded && path.extname(transcluded).toLowerCase() === '.py') return {}
+  if (!transcluded) return undefined
+  return backendFor(path.extname(transcluded).toLowerCase())
+}
+
+function runtimeBindingForCode(node: Code): CodeRuntimeBinding | undefined {
+  const transcludeBackend = backendForTransclude(node)
+  if (transcludeBackend) return { backend: transcludeBackend, options: {} }
 
   const lang = codeLanguage(node)
   const words = metaWords(node.meta)
-  if (lang === 'python-shell' || lang === 'py-shell') return pythonShellRuntimeOptions(words)
-  if (lang !== 'python' && lang !== 'py') return undefined
-  return metaHasShell(words) ? pythonShellRuntimeOptions(words) : undefined
+  const shellBackend = backendForShellMagic(lang)
+  if (shellBackend) return { backend: shellBackend, options: shellRuntimeOptions(words) }
+  const fenceBackend = backendFor(lang)
+  if (!fenceBackend) return undefined
+  if (!metaHasShell(words)) return undefined
+  return { backend: fenceBackend, options: shellRuntimeOptions(words) }
 }
 
-function runtimeCell(id: string, node: Code): NotebookRuntimeCell {
-  return { id, source: node.value, language: 'python', executionIndex: null }
+function runtimeCell(
+  id: string,
+  node: Code,
+  backend: ExecutableLanguageBackend,
+): NotebookRuntimeCell {
+  return { id, source: node.value, language: backend.name, executionIndex: null }
 }
 
 function runtimePayload(
   sourcePath: string,
   cells: NotebookRuntimeCell[],
-  pyodideIndexUrl: string,
+  backend: ExecutableLanguageBackend,
+  indexUrl: string,
   options: CodeRuntimeOptions,
 ): NotebookRuntimeData {
   const payload: NotebookRuntimeData = {
-    id: notebookRuntimeId(`code-viewer:${sourcePath}`),
+    id: notebookId(`code-viewer:${backend.name}:${sourcePath}`),
     sourcePath,
-    language: 'python',
-    pyodideIndexUrl,
+    language: backend.name,
+    indexUrl,
     cells,
   }
   if (options.toolbar !== undefined) payload.toolbar = options.toolbar
@@ -304,10 +324,17 @@ function runtimeCellNodes(cell: NotebookRuntimeCell, node: Code): RootContent[] 
   ]
 }
 
+function resolveIndexUrl(
+  backend: ExecutableLanguageBackend,
+  overrides: Map<string, string>,
+): string {
+  return overrides.get(backend.name) ?? backend.defaultIndexUrl ?? ''
+}
+
 export const CodeViewer: QuartzTransformerPlugin<Partial<Options>> = userOpts => {
   const opts: ResolvedOptions = {
     exts: userOpts?.exts ?? Array.from(DEFAULT_EXTS),
-    pyodideIndexUrl: userOpts?.pyodideIndexUrl ?? defaultNotebookPyodideIndexUrl,
+    indexUrls: new Map(Object.entries(userOpts?.indexUrls ?? {})),
   }
   const exts = new Set(opts.exts.map(e => e.toLowerCase()))
 
@@ -373,21 +400,29 @@ export const CodeViewer: QuartzTransformerPlugin<Partial<Options>> = userOpts =>
 
             const sourcePath = sourcePathFromFile(file.data, file.path)
             const cells: NotebookRuntimeCell[] = []
+            let runtimeBinding: CodeRuntimeBinding | undefined
             let insertedRuntime = false
-            let runtimeOptions: CodeRuntimeOptions = {}
 
             visit(tree, 'code', (node: Code, index, parent) => {
               if (index === undefined || !parent || !hasRootChildren(parent)) return
-              const options = runtimeOptionsForCode(node)
-              if (!options) return
-              if (cells.length === 0) runtimeOptions = options
-              const cell = runtimeCell(`code-cell-${cells.length + 1}`, node)
+              const binding = runtimeBindingForCode(node)
+              if (!binding) return
+              if (runtimeBinding && binding.backend !== runtimeBinding.backend) return
+              if (!runtimeBinding) runtimeBinding = binding
+              const cell = runtimeCell(`code-cell-${cells.length + 1}`, node, binding.backend)
               cells.push(cell)
               const nodes = runtimeCellNodes(cell, node)
               if (!insertedRuntime) {
+                const indexUrl = resolveIndexUrl(runtimeBinding.backend, opts.indexUrls)
                 nodes.unshift(
                   ...notebookRuntimeControls(
-                    runtimePayload(sourcePath, [], opts.pyodideIndexUrl, runtimeOptions),
+                    runtimePayload(
+                      sourcePath,
+                      [],
+                      runtimeBinding.backend,
+                      indexUrl,
+                      runtimeBinding.options,
+                    ),
                   ).map(html),
                 )
                 insertedRuntime = true
@@ -396,11 +431,18 @@ export const CodeViewer: QuartzTransformerPlugin<Partial<Options>> = userOpts =>
               return [SKIP, index + nodes.length]
             })
 
-            if (cells.length > 0) {
+            if (cells.length > 0 && runtimeBinding) {
+              const indexUrl = resolveIndexUrl(runtimeBinding.backend, opts.indexUrls)
               tree.children.push(
                 html(
                   notebookRuntimeDataScript(
-                    runtimePayload(sourcePath, cells, opts.pyodideIndexUrl, runtimeOptions),
+                    runtimePayload(
+                      sourcePath,
+                      cells,
+                      runtimeBinding.backend,
+                      indexUrl,
+                      runtimeBinding.options,
+                    ),
                   ),
                 ),
               )
