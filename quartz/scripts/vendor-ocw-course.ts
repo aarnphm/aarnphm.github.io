@@ -5,6 +5,7 @@ import { gfmToMarkdown } from 'mdast-util-gfm'
 import { toMarkdown } from 'mdast-util-to-markdown'
 import fs from 'node:fs/promises'
 import path from 'node:path'
+import { isRecord } from '../util/type-guards'
 
 type JsonRecord = Record<string, unknown>
 
@@ -57,10 +58,6 @@ const mitBaseUrl = 'https://ocw.mit.edu/'
 const ocwLayout = 'A|L'
 const defaultLicenseName = 'Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International'
 const defaultLicenseUrl = 'https://creativecommons.org/licenses/by-nc-sa/4.0/'
-
-function isRecord(value: unknown): value is JsonRecord {
-  return typeof value === 'object' && value !== null && !Array.isArray(value)
-}
 
 function stringValue(record: JsonRecord, key: string): string {
   const value = record[key]

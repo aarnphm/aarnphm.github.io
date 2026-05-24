@@ -2,6 +2,7 @@ import type { Extension } from '@codemirror/state'
 import type { EditorView as CodeMirrorEditorView } from '@codemirror/view'
 import type { CodeMirror } from '@replit/codemirror-vim'
 import { forceParsing } from '@codemirror/language'
+import type { NotebookLspConfig } from './notebook-lsp'
 
 export type NotebookCodeEditor = {
   getValue(): string
@@ -21,6 +22,7 @@ type NotebookCodeEditorConfig = {
   onSubmit?: () => void
   onSave?: () => void
   onCancel?: () => void
+  lsp?: NotebookLspConfig
 }
 
 type VimApi = typeof import('@replit/codemirror-vim')
@@ -62,6 +64,22 @@ async function languageExtension(language: string | undefined): Promise<Extensio
   }
   const { python } = await import('@codemirror/lang-python')
   return python()
+}
+
+function notebookPythonLanguage(language: string | undefined) {
+  const name = (language ?? '').trim().toLowerCase()
+  return name === 'python' || name === 'py' || name === 'ipython'
+}
+
+async function lspExtensions(config: NotebookLspConfig | undefined): Promise<readonly Extension[]> {
+  if (!config?.enabled || !notebookPythonLanguage(config.language)) return []
+  try {
+    const { notebookLspExtensions } = await import('./notebook-lsp')
+    return await notebookLspExtensions(config)
+  } catch (error) {
+    console.warn('notebook lsp extension failed to load', error)
+    return []
+  }
 }
 
 function offsetForLineStart(lines: string[], lineNumber: number): number {
@@ -239,15 +257,17 @@ export async function createNotebookCodeEditor(
     { Compartment, EditorState, Prec },
     { EditorView, keymap, lineNumbers },
     language,
+    lsp,
   ] = await Promise.all([
     import('@codemirror/commands'),
     import('@codemirror/language'),
     import('@codemirror/state'),
     import('@codemirror/view'),
     languageExtension(config.language),
+    lspExtensions(config.lsp),
   ])
 
-  const notebookKeymap = (vimMode: boolean): Extension =>
+  const notebookKeymap = (): Extension =>
     Prec.highest(
       keymap.of([
         ...notebookRunKeys.map(key => ({
@@ -257,17 +277,27 @@ export async function createNotebookCodeEditor(
             return true
           },
         })),
-        ...(vimMode
-          ? []
-          : [
-              {
-                key: 'Escape',
-                run: () => {
-                  config.onCancel?.()
-                  return true
-                },
-              },
-            ]),
+        {
+          key: 'Mod-s',
+          run: () => {
+            config.onSave?.()
+            return true
+          },
+        },
+        {
+          key: 'Ctrl-s',
+          run: () => {
+            config.onSave?.()
+            return true
+          },
+        },
+        {
+          key: 'Escape',
+          run: () => {
+            config.onCancel?.()
+            return true
+          },
+        },
       ]),
     )
 
@@ -325,9 +355,10 @@ export async function createNotebookCodeEditor(
     extensions: [
       lineNumbers(),
       language,
+      lsp,
       history(),
       vimCompartment.of(initialVimExtension),
-      keymapCompartment.of(notebookKeymap(initialVimMode)),
+      keymapCompartment.of(notebookKeymap()),
       keymap.of([indentWithTab, ...defaultKeymap, ...historyKeymap]),
       updateListener,
       syntaxHighlighting(defaultHighlightStyle, { fallback: true }),
@@ -355,7 +386,7 @@ export async function createNotebookCodeEditor(
       view.dispatch({
         effects: [
           vimCompartment.reconfigure(await vimExtension(enabled)),
-          keymapCompartment.reconfigure(notebookKeymap(enabled)),
+          keymapCompartment.reconfigure(notebookKeymap()),
         ],
       })
       if (enabled) await bindVimSave()

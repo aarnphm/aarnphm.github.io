@@ -1,6 +1,7 @@
 import type { AuthRequest, OAuthHelpers } from '@cloudflare/workers-oauth-provider'
 import { Hono } from 'hono'
 import type { Props } from '../utils'
+import { isRecord } from '../type-guards'
 import {
   addApprovedClient,
   generateCSRFProtection,
@@ -14,10 +15,6 @@ import { createGithubOAuthHandler } from './core'
 type McpOAuthState = { oauthReqInfo: AuthRequest }
 
 type McpOAuthResult = { redirectTo: string }
-
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === 'object' && value !== null && !Array.isArray(value)
-}
 
 function parseAuthRequestFromRecord(obj: Record<string, unknown>): AuthRequest | null {
   const responseType = typeof obj.responseType === 'string' ? obj.responseType : null
@@ -73,8 +70,8 @@ const mcpOAuth = createGithubOAuthHandler<McpOAuthState, McpOAuthResult>(
   },
   {
     parseStatePayload: parseMcpOAuthState,
-    onComplete: async (req, env, state, user, accessToken) => {
-      const provider = (env as any).OAUTH_PROVIDER as OAuthHelpers
+    onComplete: async (_req, env, state, user, accessToken) => {
+      const provider = env.OAUTH_PROVIDER as OAuthHelpers
       const { redirectTo } = await provider.completeAuthorization({
         metadata: { label: user.name },
         props: { accessToken, email: user.email, login: user.login, name: user.name } as Props,

@@ -7,6 +7,7 @@ import {
 } from '../types/component'
 import { classNames } from '../util/lang'
 import { FullSlug, pathToRoot, resolveRelative, slugTag } from '../util/path'
+import { isRecord } from '../util/type-guards'
 import { stripWikilinkFormatting } from '../util/wikilinks'
 import style from './styles/tags.scss'
 
@@ -24,9 +25,6 @@ export default (() => {
 
       return `/${link.slug}${link.anchor ?? ''}`
     }
-
-    const isRecord = (value: unknown): value is Record<string, unknown> =>
-      typeof value === 'object' && value !== null
 
     const normalizeSocialLink = (value: unknown): string => {
       if (typeof value === 'string') return value

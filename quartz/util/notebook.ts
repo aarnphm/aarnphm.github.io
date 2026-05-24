@@ -16,8 +16,9 @@ import {
   type NotebookRuntimeConfig,
   type NotebookRuntimeData,
 } from './notebook-runtime'
+import { isRecord, type UnknownRecord } from './type-guards'
 
-type JsonRecord = Record<string, unknown>
+type JsonRecord = UnknownRecord
 
 type NotebookOutput = JsonRecord & {
   output_type?: unknown
@@ -40,10 +41,6 @@ type NotebookCell = JsonRecord & {
 export type NotebookDocument = JsonRecord & { cells: NotebookCell[]; metadata?: JsonRecord }
 
 type NotebookMarkdownOptions = { runtime?: false | NotebookRuntimeConfig }
-
-function isRecord(value: unknown): value is JsonRecord {
-  return typeof value === 'object' && value !== null && !Array.isArray(value)
-}
 
 function asText(value: unknown): string {
   if (typeof value === 'string') return value

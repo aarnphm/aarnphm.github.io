@@ -1,9 +1,7 @@
 import assert from 'node:assert'
 import test from 'node:test'
+import { isRecord } from '../../type-guards'
 import { parseExpressionSource } from './parser'
-
-const isRecord = (value: unknown): value is Record<string, unknown> =>
-  typeof value === 'object' && value !== null
 
 const strip = (node: unknown): unknown => {
   if (!isRecord(node)) return node

@@ -9,15 +9,12 @@ import {
   setGithubCommentAuthor,
 } from '../comments'
 import { githubUsers } from '../schema'
+import { isRecord } from '../type-guards'
 import { createGithubOAuthHandler, OAuthError } from './core'
 
 type CommentAuthState = { returnTo: string; author: string | null }
 
 type CommentAuthResult = { author: string; returnTo: string; login: string }
-
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === 'object' && value !== null && !Array.isArray(value)
-}
 
 function parseCommentAuthState(raw: string): CommentAuthState | null {
   let parsed: unknown

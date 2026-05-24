@@ -214,6 +214,59 @@ article:has(.notebook-runtime) {
         white-space: pre-wrap;
       }
 
+      .cm-diagnosticRange {
+        text-decoration: underline wavy var(--secondary);
+        text-decoration-thickness: 0.08em;
+        text-underline-offset: 0.18em;
+      }
+
+      .cm-tooltip {
+        box-sizing: border-box;
+        max-width: min(42rem, calc(100vw - 2rem));
+        overflow: auto;
+        border: 1px solid color-mix(in srgb, var(--lightgray) 82%, transparent);
+        border-radius: var(--radius-3);
+        background: color-mix(in srgb, var(--notebook-editor-surface) 92%, var(--light));
+        color: var(--dark);
+        box-shadow: 0 0.35rem 1.2rem color-mix(in srgb, var(--dark) 12%, transparent);
+        font-family: var(--codeFont);
+        font-size: 0.76rem;
+        line-height: 1.45;
+      }
+
+      .cm-tooltip-autocomplete > ul {
+        max-height: min(18rem, 45vh);
+        font-family: var(--codeFont);
+      }
+
+      .cm-tooltip-autocomplete ul li[aria-selected] {
+        background: color-mix(in srgb, var(--notebook-active-green) 18%, var(--light));
+        color: var(--dark);
+      }
+
+      .cm-completionLabel,
+      .cm-completionDetail,
+      .cm-completionInfo,
+      .cm-tooltip-lint,
+      .cm-lsp-documentation,
+      .cm-lsp-signature-tooltip {
+        font-family: var(--codeFont);
+      }
+
+      .cm-completionDetail,
+      .cm-lsp-documentation {
+        color: var(--gray);
+      }
+
+      .cm-lsp-signature-tooltip {
+        padding: 0.45rem 0.6rem;
+      }
+
+      .cm-lsp-active-parameter {
+        color: var(--secondary);
+        font-weight: 700;
+      }
+
       &[data-notebook-source-editor] {
         field-sizing: content;
         resize: none;

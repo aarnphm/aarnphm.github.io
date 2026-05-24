@@ -70,16 +70,27 @@ const collaborativeCommentsClientEntry =
   'quartz/components/scripts/collaborative-comments.client.ts'
 const notebookRuntimeInlineEntry = 'quartz/components/scripts/notebook-runtime.inline.ts'
 const notebookRuntimeClientEntry = 'quartz/components/scripts/notebook-runtime.client.ts'
+const notebookRuntimeLspEntry = 'quartz/components/scripts/notebook-lsp.ts'
 const notebookRuntimeWorkerEntry = 'quartz/components/scripts/notebook-runtime.pyodide.js'
 const notebookRuntimeBootstrapEntry = 'quartz/components/scripts/notebook-runtime.pyodide.py'
 const notebookRuntimeMlBridgeEntry = 'quartz/components/scripts/notebook-runtime.ml.js'
+const notebookRuntimePyrightWorkerEntry = 'node_modules/browser-basedpyright/dist/pyright.worker.js'
+const notebookRuntimePyrightWorkerLicenseEntry =
+  'node_modules/browser-basedpyright/dist/pyright.worker.js.LICENSE.txt'
+const notebookRuntimePyrightTypeshedDir = 'node_modules/basedpyright/dist/typeshed-fallback/stdlib'
+const notebookRuntimePyrightWorkerPath = 'static/scripts/notebook-pyright.worker.js'
+const notebookRuntimePyrightWorkerLicensePath =
+  'static/scripts/notebook-pyright.worker.js.LICENSE.txt'
+const notebookRuntimePyrightTypeshedPath = 'static/scripts/notebook-pyright-typeshed.json'
 const emojiAssetSourceDir = 'quartz/util/emojimap'
 const notebookRuntimeAssetEntries = new Set([
   notebookRuntimeClientEntry,
+  notebookRuntimeLspEntry,
   notebookRuntimeWorkerEntry,
   notebookRuntimeBootstrapEntry,
   notebookRuntimeMlBridgeEntry,
   'quartz/util/notebook-runtime.ts',
+  'quartz/util/type-guards.ts',
   'quartz/components/scripts/notebook-code-editor.ts',
 ])
 
@@ -173,6 +184,13 @@ async function writeAssetBundleOutput(ctx: BuildCtx, outputFile: { path: string;
   return write({ ctx, slug, ext, content: outputFile.text })
 }
 
+async function writeRawAsset(ctx: BuildCtx, logicalPath: string, content: string | Buffer) {
+  const ext = path.extname(logicalPath) as `.${string}`
+  const logicalSlug = logicalPath.slice(0, -ext.length)
+  const slug = assetSlugForContent(ctx, logicalSlug, ext, content)
+  return write({ ctx, slug, ext, content })
+}
+
 async function writeAssetManifest(ctx: BuildCtx): Promise<FilePath> {
   return write({
     ctx,
@@ -254,6 +272,31 @@ async function writeAfterDomLoadedScripts(ctx: BuildCtx, scripts: string[]) {
   return { postscript, files: entries.map(({ file }) => file) }
 }
 
+async function notebookPyrightTypeshedJson() {
+  const entries = (
+    await globby('**/*', { cwd: notebookRuntimePyrightTypeshedDir, onlyFiles: true, dot: true })
+  ).sort()
+  const files: Record<string, string> = {}
+  for (const entry of entries) {
+    const source = await fs.readFile(path.join(notebookRuntimePyrightTypeshedDir, entry), 'utf8')
+    files[`/typeshed/stdlib/${entry.split(path.sep).join('/')}`] = source
+  }
+  return JSON.stringify({ files })
+}
+
+async function writeNotebookPyrightAssets(ctx: BuildCtx): Promise<FilePath[]> {
+  const [worker, license, typeshed] = await Promise.all([
+    fs.readFile(notebookRuntimePyrightWorkerEntry),
+    fs.readFile(notebookRuntimePyrightWorkerLicenseEntry),
+    notebookPyrightTypeshedJson(),
+  ])
+  return Promise.all([
+    writeRawAsset(ctx, notebookRuntimePyrightWorkerPath, worker),
+    writeRawAsset(ctx, notebookRuntimePyrightWorkerLicensePath, license),
+    writeRawAsset(ctx, notebookRuntimePyrightTypeshedPath, typeshed),
+  ])
+}
+
 async function writeNotebookRuntimeAssets(ctx: BuildCtx): Promise<FilePath[]> {
   const outdir = path.join(ctx.argv.output, 'static/scripts')
   const worker = await bundle({
@@ -271,7 +314,10 @@ async function writeNotebookRuntimeAssets(ctx: BuildCtx): Promise<FilePath[]> {
   const workerFiles = await Promise.all(
     worker.outputFiles.map(output => writeAssetBundleOutput(ctx, output)),
   )
+  const pyrightFiles = await writeNotebookPyrightAssets(ctx)
   const workerName = path.basename(resolveAsset(ctx, 'static/scripts/notebook-runtime.worker.js'))
+  const pyrightWorkerName = path.basename(resolveAsset(ctx, notebookRuntimePyrightWorkerPath))
+  const pyrightTypeshedName = path.basename(resolveAsset(ctx, notebookRuntimePyrightTypeshedPath))
   const client = await bundle({
     entryPoints: { 'notebook-runtime.client': notebookRuntimeClientEntry },
     bundle: true,
@@ -287,12 +333,15 @@ async function writeNotebookRuntimeAssets(ctx: BuildCtx): Promise<FilePath[]> {
   })
   const clientOutputs = client.outputFiles.map(output => ({
     ...output,
-    text: output.text.replaceAll('notebook-runtime.worker.js', workerName),
+    text: output.text
+      .replaceAll('notebook-runtime.worker.js', workerName)
+      .replaceAll('notebook-pyright.worker.js', pyrightWorkerName)
+      .replaceAll('notebook-pyright-typeshed.json', pyrightTypeshedName),
   }))
   const clientFiles = await Promise.all(
     clientOutputs.map(output => writeAssetBundleOutput(ctx, output)),
   )
-  return [...workerFiles, ...clientFiles]
+  return [...workerFiles, ...pyrightFiles, ...clientFiles]
 }
 
 async function writeCollaborativeCommentsAssets(ctx: BuildCtx): Promise<FilePath[]> {
@@ -359,6 +408,7 @@ function isNotebookRuntimePageScriptChange(changePath: string): boolean {
 function isCollaborativeCommentsAssetChange(changePath: string): boolean {
   return (
     changePath === collaborativeCommentsClientEntry ||
+    changePath === 'quartz/util/type-guards.ts' ||
     changePath === 'quartz/components/scripts/markdown-editor.ts' ||
     changePath === 'quartz/components/scripts/search-index.ts' ||
     changePath.startsWith('quartz/components/multiplayer/') ||

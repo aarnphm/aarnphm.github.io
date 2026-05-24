@@ -7,6 +7,7 @@ import {
   notebookRuntimeModuleSource,
   unsupportedNotebookRuntimeReason,
 } from '../../util/notebook-runtime'
+import { isRecord, readNumber, readString } from '../../util/type-guards'
 
 type RuntimeCell = { id: string; source: string; language: string; executionIndex: number | null }
 
@@ -95,20 +96,6 @@ function setNotebookIconButton(button: HTMLButtonElement, icon: NotebookIcon, la
   button.title = label
   button.textContent = ''
   button.insertAdjacentHTML('afterbegin', notebookIconSvg[icon])
-}
-
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === 'object' && value !== null && !Array.isArray(value)
-}
-
-function readString(record: Record<string, unknown>, key: string): string | undefined {
-  const value = record[key]
-  return typeof value === 'string' ? value : undefined
-}
-
-function readNumber(record: Record<string, unknown>, key: string): number | undefined {
-  const value = record[key]
-  return typeof value === 'number' ? value : undefined
 }
 
 function readRuntimeOutput(value: unknown): NotebookRuntimeOutput | undefined {
@@ -702,8 +689,21 @@ class NotebookRuntime {
     return this.cellById(frame.dataset.notebookCellFrame)
   }
 
+  private activeCellFromDocument(): RuntimeCell | undefined {
+    const frame = this.cellRoot.querySelector<HTMLElement>(
+      '[data-notebook-cell-frame][data-notebook-active-cell]',
+    )
+    const cell = this.cellById(frame?.dataset.notebookCellFrame)
+    if (cell) this.activeCellId = cell.id
+    return cell
+  }
+
   private commandCell(target: EventTarget | null): RuntimeCell | undefined {
-    return this.cellFromTarget(target) ?? this.cellById(this.activeCellId)
+    return (
+      this.cellFromTarget(target) ??
+      this.activeCellFromDocument() ??
+      this.cellById(this.activeCellId)
+    )
   }
 
   private targetOwnsKeyboard(target: EventTarget | null): boolean {
@@ -735,6 +735,11 @@ class NotebookRuntime {
     )
   }
 
+  private enterEditMode(cell: RuntimeCell) {
+    this.selectCell(cell.id)
+    void this.showSourceEditor(cell, true)
+  }
+
   private handleNotebookKeydown = (event: KeyboardEvent) => {
     if (
       event.defaultPrevented ||
@@ -754,10 +759,9 @@ class NotebookRuntime {
 
     if (event.ctrlKey || event.metaKey || event.altKey) return
 
-    if (event.key === 'i') {
-      this.selectCell(cell.id)
+    if (event.key === 'Enter' || event.key === 'i') {
       this.claimNotebookKey(event)
-      void this.showSourceEditor(cell, true)
+      this.enterEditMode(cell)
       return
     }
 
@@ -1205,6 +1209,13 @@ class NotebookRuntime {
       initialContent: controls.source,
       language: cell.language,
       vimMode: this.vimMode,
+      lsp: {
+        enabled: true,
+        runtimeId: this.payload.id,
+        sourcePath: this.payload.sourcePath,
+        cellId: cell.id,
+        language: cell.language,
+      },
       onChange: source => {
         controls.source = source
         this.syncSourceControls(cell)
@@ -1232,7 +1243,12 @@ class NotebookRuntime {
     if (controls.figure) controls.figure.hidden = visible
     controls.frame.toggleAttribute('data-notebook-editing', visible)
     this.syncSourceControls(cell)
-    if (visible) controls.editor?.focus()
+    if (visible) {
+      controls.editor?.focus()
+    } else {
+      this.selectCell(cell.id)
+      controls.frame.focus({ preventScroll: true })
+    }
   }
 
   private async highlightedSourceLines(
