@@ -1,7 +1,7 @@
 let collaborativeCommentsModule: Promise<{ mountCollaborativeComments: () => void }> | undefined
 
 function scriptAssetUrl(name: string) {
-  return new URL(`static/scripts/${name}`, import.meta.url).href
+  return new URL(name, import.meta.url).href
 }
 
 async function mountCollaborativeComments() {

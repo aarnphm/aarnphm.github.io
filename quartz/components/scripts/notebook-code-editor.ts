@@ -168,7 +168,7 @@ function inlineHighlightStyle(source: HTMLElement, target: HTMLElement) {
   })
 }
 
-function cloneHighlightedNode(node: ChildNode): ChildNode {
+function cloneHighlightedNode(node: ChildNode): Node {
   const cloned = node.cloneNode(true)
   if (node instanceof HTMLElement && cloned instanceof HTMLElement) {
     inlineHighlightStyle(node, cloned)

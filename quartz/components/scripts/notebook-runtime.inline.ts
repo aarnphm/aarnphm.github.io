@@ -1,10 +1,12 @@
-let notebookRuntimeModule
+type NotebookRuntimeModule = { mountNotebookRuntime(root: HTMLElement, text: string): void }
 
-function notebookRuntimeScriptUrl(name) {
-  return new URL(`static/scripts/${name}`, import.meta.url).href
+let notebookRuntimeModule: Promise<NotebookRuntimeModule> | undefined
+
+function notebookRuntimeScriptUrl(name: string) {
+  return new URL(name, import.meta.url).href
 }
 
-function isRecord(value) {
+function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value)
 }
 
@@ -28,11 +30,11 @@ const htmlEntityReplacements = new Map([
   ['&#x26;', '&'],
 ])
 
-function decodeHtmlEntity(entity) {
+function decodeHtmlEntity(entity: string) {
   return htmlEntityReplacements.get(entity) ?? entity
 }
 
-function runtimeIdFromJson(text) {
+function runtimeIdFromJson(text: string) {
   try {
     const parsed = JSON.parse(text)
     return isRecord(parsed) && typeof parsed.id === 'string' ? parsed.id : undefined
@@ -64,7 +66,7 @@ function runtimeDataById() {
 }
 
 async function mountNotebookRuntime() {
-  const roots = document.querySelectorAll('[data-notebook-runtime]')
+  const roots = document.querySelectorAll<HTMLElement>('[data-notebook-runtime]')
   const data = runtimeDataById()
   const targets = Array.from(roots)
     .map(root => {
@@ -72,7 +74,7 @@ async function mountNotebookRuntime() {
       const text = id ? data.get(id) : undefined
       return text && root.dataset.runtimeMounted !== 'true' ? { root, text } : undefined
     })
-    .filter(target => target !== undefined)
+    .filter((target): target is { root: HTMLElement; text: string } => target !== undefined)
   if (targets.length === 0) return
   notebookRuntimeModule ??= import(notebookRuntimeScriptUrl('notebook-runtime.client.js'))
   const runtime = await notebookRuntimeModule
