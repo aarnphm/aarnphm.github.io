@@ -303,6 +303,11 @@ hr {
   isolation: isolate;
 }
 
+body[data-layout='default'] > #quartz-root > section[class~='header'] {
+  background: var(--light);
+  z-index: 99999;
+}
+
 body {
   & {
     --animation-duration: #{$base-duration}s;
