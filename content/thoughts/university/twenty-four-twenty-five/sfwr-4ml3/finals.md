@@ -100,11 +100,11 @@ $$
 type 1: false positive
 type 2: false negative
 
-accuracy: $\frac{\text{TP + TN}}{\text{TP + TN + FP + FN}}$
+accuracy: $\frac{\text{TP} + \text{TN}}{\text{TP} + \text{TN} + \text{FP} + \text{FN}}$
 
-precision is $\frac{\text{TP}}{\text{TP}+\text{FP}^{'}}$
+precision is $\frac{\text{TP}}{\text{TP} + \text{FP}}$
 
-recall is $\frac{\text{TP}}{\text{TP + FN}}$
+recall is $\frac{\text{TP}}{\text{TP} + \text{FN}}$
 
 ![[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/probabilitics modeling]]
 

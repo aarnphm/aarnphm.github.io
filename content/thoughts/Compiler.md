@@ -2,15 +2,20 @@
 date: '2024-10-07'
 description: compilation pipelines, intermediate representations, jit strategies, and dataflow analysis, covering lexing, parsing, optimization, and code generation from source to machine code.
 id: Compiler
-modified: 2026-05-09 17:51:49 GMT-04:00
+modified: 2026-05-24 01:24:01 GMT-04:00
+seealso:
+  - '[[thoughts/JIT/numba_jit.py|numba jit]]'
+  - '[[thoughts/JIT/minimal_jit.py|minimal jit]]'
+  - '[[thoughts/XLA|XLA]]'
+  - '[[thoughts/MLIR|MLIR]]'
+  - '[[thoughts/Autograd|autograd]]'
+  - '[[thoughts/university/twenty-five-twenty-six/sfwr-4tb3]]'
 tags:
   - seed
   - compilers
   - technical
 title: Compiler
 ---
-
-see also: [[thoughts/JIT/numba_jit.py|numba jit]], [[thoughts/JIT/minimal_jit.py|minimal jit]], [[thoughts/XLA|XLA]], [[thoughts/MLIR|MLIR]], [[thoughts/Autograd|autograd]]
 
 ## compilation pipeline
 

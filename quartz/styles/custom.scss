@@ -1,5 +1,6 @@
 @use 'sass:map';
 @use 'sass:list';
+@use './tokens';
 @use './width.scss';
 @use './variables.scss' as *;
 @use './mixin.scss' as *;

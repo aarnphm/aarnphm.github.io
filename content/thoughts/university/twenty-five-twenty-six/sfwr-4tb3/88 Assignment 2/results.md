@@ -61,9 +61,9 @@ Consider following grammar for arithmetic expressions:
 
 $$
 \begin{aligned}
-\text{expression} &\to [\,\texttt{'+'} \mid \texttt{'–'}\,]\,\text{term}\,\{\,(\,\texttt{'+'} \mid \texttt{'–'}\,)\,\text{term}\,\} \\
-\text{term}       &\to \text{factor}\,\{\,(\,\texttt{'} \times \texttt{'} \mid \texttt{'/'}\,)\,\text{factor}\,\} \\
-\text{factor}     &\to \text{number} \mid \text{identifier} \mid \texttt{'('}\,\text{expression}\,\texttt{')'}
+\text{expression} &\to [\, + \mid - \,]\, \text{term}\, \{\, (\, + \mid - \,)\, \text{term}\, \} \\
+\text{term}       &\to \text{factor}\, \{\, (\, \times \mid /\, )\, \text{factor}\, \} \\
+\text{factor}     &\to \text{number} \mid \text{identifier} \mid (\, \text{expression}\, )
 \end{aligned}
 $$
 

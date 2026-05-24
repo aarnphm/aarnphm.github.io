@@ -2,7 +2,14 @@
 date: '2025-10-05'
 description: RISC-V based AI accelerators with programmable architecture
 id: Tenstorrent
-modified: 2026-05-09 17:51:48 GMT-04:00
+modified: 2026-05-24 01:22:26 GMT-04:00
+seealso:
+  - '[[thoughts/GPU programming]]'
+  - '[[thoughts/MLIR]]'
+  - '[[thoughts/Compiler]]'
+  - "[[thoughts/pdfs/88_HC2024.Tenstorrent.Jasmina.Davor.v7.pdf|Jasmina's talk at HotChip]]"
+  - '[[thoughts/XLA]]'
+  - '[[thoughts/PyTorch]]'
 tags:
   - ml
   - asic
@@ -10,11 +17,7 @@ tags:
 title: Tenstorrent
 ---
 
-Jim Keller's company (legendary chip designer, AMD, Tesla, Intel), the man need no introduction.
-
 RISC-V cores, explicit SRAM management, Ethernet fabric. no automatic caching, no hidden schedulers [@pizzini2025tenstorrent; @vasiljevic2024blackhole].
-
-see also: [[thoughts/GPU programming]], [[thoughts/MLIR]], [[thoughts/Compiler]], [[thoughts/pdfs/88_HC2024.Tenstorrent.Jasmina.Davor.v7.pdf|Jasmina's talk at HotChip]]
 
 ## execution model comparison
 
@@ -71,7 +74,7 @@ big RISC-V cores handle control plane, offload host CPU. baby cores manage data 
 
 each Tensix core runs five pipelines concurrently [@pizzini2025tenstorrent]:
 
-```
+```text
 ┌──────────────────────────────────────────────┐
 │                 Tensix Core                  │
 ├──────────────────────────────────────────────┤
@@ -1021,5 +1024,3 @@ younger than tt-metal. fewer contributors, faster iteration.
   - https://github.com/moritztng/grayskull-attention
 - [@pizzini2025tenstorrent] - "Assessing Tenstorrent's RISC-V MatMul Acceleration Capabilities" provides detailed Tensix core analysis (ISC HPC 2025)
 - [@brown2024stencils] - "Accelerating stencils on the Tenstorrent Grayskull RISC-V accelerator" shows 5× energy efficiency vs Xeon (SC24)
-
-see also: [[thoughts/GPU programming]], [[thoughts/MLIR]], [[thoughts/XLA]], [[thoughts/Compiler]], [[thoughts/PyTorch]]

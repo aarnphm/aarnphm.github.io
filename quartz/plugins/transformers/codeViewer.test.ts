@@ -15,6 +15,9 @@ type RuntimePayload = {
   id: string
   sourcePath: string
   language: string
+  toolbar?: boolean
+  debug?: boolean
+  vimMode?: boolean
   cells: Array<{ id: string; source: string; language: string }>
 }
 
@@ -77,7 +80,7 @@ function runtimePayload(tree: Root): RuntimePayload {
 }
 
 describe('code viewer runtime cells', () => {
-  test('wraps python shell fences in notebook runtime controls', async () => {
+  test('wraps python shell fences without a global runtime toolbar', async () => {
     const root = await mkdtemp(nodePath.join(os.tmpdir(), 'quartz-code-viewer-'))
     const tree: Root = {
       type: 'root',
@@ -88,18 +91,39 @@ describe('code viewer runtime cells', () => {
 
     const html = collectHtml(tree).join('\n')
     assert.match(html, /data-notebook-runtime=/)
-    assert.match(html, /data-notebook-debug/)
-    assert.match(html, /data-notebook-vim-mode/)
+    assert.doesNotMatch(html, /notebook-runtime-toolbar/)
+    assert.doesNotMatch(html, /data-notebook-debug/)
+    assert.doesNotMatch(html, /data-notebook-vim-mode/)
     assert.match(html, /data-notebook-run-cell="code-cell-1"/)
 
     const payload = runtimePayload(tree)
     assert.match(payload.id, /^notebook-runtime-/)
     assert.strictEqual(payload.sourcePath, 'notes/page.md')
     assert.strictEqual(payload.language, 'python')
+    assert.strictEqual(payload.toolbar, false)
+    assert.strictEqual(payload.debug, true)
+    assert.strictEqual(payload.vimMode, true)
     assert.deepStrictEqual(
       payload.cells.map(cell => cell.source),
       ['print("hi")'],
     )
+  })
+
+  test('lets python shell meta disable debug and vim defaults', async () => {
+    const root = await mkdtemp(nodePath.join(os.tmpdir(), 'quartz-code-viewer-'))
+    const tree: Root = {
+      type: 'root',
+      children: [
+        { type: 'code', lang: 'python', meta: 'shell vim=false debug=false', value: 'print("hi")' },
+      ],
+    }
+
+    await runCodeViewer(tree, vfile(root, 'notes/page.md'), buildCtx(root))
+
+    const payload = runtimePayload(tree)
+    assert.strictEqual(payload.toolbar, false)
+    assert.strictEqual(payload.debug, false)
+    assert.strictEqual(payload.vimMode, false)
   })
 
   test('leaves ordinary python fences static', async () => {
