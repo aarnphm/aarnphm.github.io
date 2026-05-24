@@ -12,6 +12,7 @@ import {
   notebookRuntimeDataScript,
   notebookRuntimeId,
   notebookSourceEditor,
+  renderNotebookRuntimeOutput,
   type NotebookRuntimeCell,
   type NotebookRuntimeConfig,
   type NotebookRuntimeData,
@@ -417,8 +418,14 @@ function notebookCell(
     : []
   if (source.trim()) parts.push(fenced(source, language))
   const outputs = Array.isArray(cell.outputs) ? cell.outputs.filter(isRecord) : []
+  let renderedOutputCount = 0
   for (const output of outputs) {
-    parts.push(...notebookOutput(output))
+    const renderedOutputs = notebookOutput(output)
+    renderedOutputCount += renderedOutputs.length
+    parts.push(...renderedOutputs)
+  }
+  if (runtimeCell && renderedOutputCount === 0) {
+    parts.push(renderNotebookRuntimeOutput({ type: 'success' }))
   }
   if (runtimeCell) {
     parts.push(notebookCellRuntimeOutput(runtimeCell.id))

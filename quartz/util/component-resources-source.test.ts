@@ -8,7 +8,7 @@ test('keeps postscript as a script orchestrator during watch builds', async () =
     'utf8',
   )
   const start = source.indexOf('async function writeAfterDomLoadedScripts')
-  const end = source.indexOf('async function writeNotebookRuntimeAssets')
+  const end = source.indexOf('async function notebookPyrightTypeshedJson')
   const implementation = source.slice(start, end)
 
   assert.match(implementation, /contentHashSlug\('static\/scripts\/script', content\)/)
@@ -30,11 +30,32 @@ test('loads extracted client assets relative to their script chunks', async () =
     new URL('../components/scripts/collaborative-comments.inline.ts', import.meta.url),
     'utf8',
   )
+  const semanticInline = await readFile(
+    new URL('../components/scripts/semantic.inline.ts', import.meta.url),
+    'utf8',
+  )
 
   assert.match(notebookRuntimeInline, /new URL\(name, import\.meta\.url\)/)
   assert.match(collaborativeCommentsInline, /new URL\(name, import\.meta\.url\)/)
+  assert.match(semanticInline, /new URL\('semantic\.worker\.js', import\.meta\.url\)/)
   assert.doesNotMatch(notebookRuntimeInline, /static\/scripts\/\$\{name\}/)
   assert.doesNotMatch(collaborativeCommentsInline, /static\/scripts\/\$\{name\}/)
+  assert.doesNotMatch(semanticInline, /\/semantic\.worker\.js/)
+})
+
+test('emits semantic worker as a split static script asset', async () => {
+  const source = await readFile(
+    new URL('../plugins/emitters/componentResources.tsx', import.meta.url),
+    'utf8',
+  )
+
+  assert.match(source, /const semanticWorkerEntry = 'quartz\/workers\/semantic\.worker\.ts'/)
+  assert.match(source, /const semanticWorkerPath = 'static\/scripts\/semantic\.worker\.js'/)
+  assert.match(source, /entryPoints: \{ 'semantic\.worker': semanticWorkerEntry \}/)
+  assert.match(source, /splitting: true/)
+  assert.match(source, /assetBasename\(ctx, semanticWorkerPath\)/)
+  assert.match(source, /\.filter\(\s*src => src !== semanticWorkerEntry,\s*\)/)
+  assert.match(source, /if \(changeEvent\.path === semanticWorkerEntry\) continue/)
 })
 
 test('keeps base and component styles in the quartz layer', async () => {

@@ -2,6 +2,7 @@ import DOMPurify from 'dompurify'
 import type { NotebookRuntimeDebugOutput, NotebookRuntimeOutput } from '../../util/notebook-runtime'
 import type { NotebookCodeEditor } from './notebook-code-editor'
 import {
+  notebookSuccessOutputLabel,
   notebookRuntimeImportCandidates,
   notebookRuntimeLocalSourceKey,
   notebookRuntimeModuleSource,
@@ -40,6 +41,9 @@ type RuntimePayload = {
   language: string
   pyodideIndexUrl: string
   cells: RuntimeCell[]
+  toolbar?: boolean
+  debug?: boolean
+  vimMode?: boolean
 }
 
 type AssetResult = {
@@ -127,6 +131,7 @@ function readRuntimeOutput(value: unknown): NotebookRuntimeOutput | undefined {
     const html = readString(value, 'html')
     if (html !== undefined) return { type, html }
   }
+  if (type === 'success') return { type }
 }
 
 function readRuntimeDebugOutput(value: unknown): RuntimeDebugOutput | undefined {
@@ -204,6 +209,10 @@ function readRuntimeCell(value: unknown): RuntimeCell | undefined {
   }
 }
 
+function readBoolean(value: unknown): boolean | undefined {
+  return typeof value === 'boolean' ? value : undefined
+}
+
 function readRuntimePayload(value: unknown): RuntimePayload | undefined {
   if (!isRecord(value)) return undefined
   const id = readString(value, 'id')
@@ -215,13 +224,20 @@ function readRuntimePayload(value: unknown): RuntimePayload | undefined {
   }
   const cells = value.cells.map(readRuntimeCell)
   if (cells.some(cell => cell === undefined)) return undefined
-  return {
+  const payload: RuntimePayload = {
     id,
     sourcePath,
     language,
     pyodideIndexUrl,
     cells: cells.filter(cell => cell !== undefined),
   }
+  const toolbar = readBoolean(value.toolbar)
+  if (toolbar !== undefined) payload.toolbar = toolbar
+  const debug = readBoolean(value.debug)
+  if (debug !== undefined) payload.debug = debug
+  const vimMode = readBoolean(value.vimMode)
+  if (vimMode !== undefined) payload.vimMode = vimMode
+  return payload
 }
 
 function decodeRuntimeCodePoint(codePoint: number, fallback: string): string {
@@ -387,6 +403,29 @@ function createHtmlOutput(html: string): HTMLDivElement {
   return output
 }
 
+function createStatusOutput(label: string, text: string, className: string): HTMLDivElement {
+  const output = document.createElement('div')
+  output.classList.add('notebook-output', className)
+  output.dataset.outputName = label
+  const message = document.createElement('em')
+  message.textContent = text
+  output.append(message)
+  return output
+}
+
+function createSuccessOutput(): HTMLDivElement {
+  const output = document.createElement('div')
+  output.classList.add('notebook-output', 'notebook-output-success')
+  output.dataset.outputName = notebookSuccessOutputLabel
+  return output
+}
+
+function createRunningOutput(): HTMLDivElement {
+  const output = createStatusOutput('running', 'running...', 'notebook-output-placeholder')
+  output.dataset.notebookOutputPlaceholder = ''
+  return output
+}
+
 function outputLabel(output: HTMLElement): string {
   return output.dataset.outputName?.trim() || 'output'
 }
@@ -406,6 +445,21 @@ function collectOutputElements(target: HTMLElement): HTMLElement[] {
     ),
   )
   return [...tabbed, ...direct]
+}
+
+function clearPlaceholderOutputs(target: HTMLElement) {
+  const placeholders = collectOutputElements(target).filter(output =>
+    output.hasAttribute('data-notebook-output-placeholder'),
+  )
+  if (placeholders.length === 0) return
+  target.replaceChildren()
+  target.removeAttribute('data-notebook-output-tabbed')
+}
+
+function hasRenderedOutput(target: HTMLElement): boolean {
+  return collectOutputElements(target).some(
+    output => !output.hasAttribute('data-notebook-output-placeholder'),
+  )
 }
 
 const streamScrollHintTargets = new WeakSet<HTMLElement>()
@@ -434,16 +488,22 @@ function syncStreamScrollHints(root: HTMLElement) {
   }
 }
 
-function selectOutputTab(container: HTMLElement, activeId: string) {
+function selectOutputTab(container: HTMLElement, activeId: string | undefined, focusId = activeId) {
+  container.toggleAttribute('data-notebook-output-collapsed', activeId === undefined)
+  const fallbackFocusId =
+    focusId ??
+    container.querySelector<HTMLButtonElement>('[data-notebook-output-tab]')?.dataset
+      .notebookOutputTab
   for (const tab of container.querySelectorAll<HTMLButtonElement>('[data-notebook-output-tab]')) {
-    const active = tab.dataset.notebookOutputTab === activeId
+    const active = activeId !== undefined && tab.dataset.notebookOutputTab === activeId
     tab.setAttribute('aria-selected', String(active))
-    tab.tabIndex = active ? 0 : -1
+    tab.setAttribute('aria-expanded', String(active))
+    tab.tabIndex = tab.dataset.notebookOutputTab === fallbackFocusId ? 0 : -1
   }
   for (const panel of container.querySelectorAll<HTMLElement>('[data-notebook-output-panel]')) {
-    panel.hidden = panel.dataset.notebookOutputPanel !== activeId
+    panel.hidden = activeId === undefined || panel.dataset.notebookOutputPanel !== activeId
   }
-  syncStreamScrollHints(container)
+  if (activeId !== undefined) syncStreamScrollHints(container)
 }
 
 function syncOutputTabs(target: HTMLElement, cellId = target.dataset.notebookOutput ?? 'cell') {
@@ -461,15 +521,23 @@ function syncOutputTabs(target: HTMLElement, cellId = target.dataset.notebookOut
     group.outputs.push(output)
     groups.set(id, group)
   }
-  const previousActive = target.querySelector<HTMLElement>(
+  const previousContainer = target.querySelector<HTMLElement>(
+    ':scope > [data-notebook-output-tabs]',
+  )
+  const previousActive = previousContainer?.querySelector<HTMLElement>(
     '[data-notebook-output-tab][aria-selected="true"]',
   )?.dataset.notebookOutputTab
+  const wasCollapsed = previousContainer?.hasAttribute('data-notebook-output-collapsed') ?? true
   const orderedGroups = [...groups.values()]
+  const defaultActiveId = orderedGroups.find(
+    group => group.label !== notebookSuccessOutputLabel,
+  )?.id
   const activeId =
-    previousActive && orderedGroups.some(group => group.id === previousActive)
-      ? previousActive
-      : orderedGroups[0]?.id
-  if (!activeId) return
+    previousContainer === null
+      ? defaultActiveId
+      : !wasCollapsed && previousActive && orderedGroups.some(group => group.id === previousActive)
+        ? previousActive
+        : undefined
 
   const container = document.createElement('div')
   container.className = 'notebook-output-tabs'
@@ -477,7 +545,7 @@ function syncOutputTabs(target: HTMLElement, cellId = target.dataset.notebookOut
   const tablist = document.createElement('div')
   tablist.className = 'notebook-output-tablist'
   tablist.setAttribute('role', 'tablist')
-  tablist.setAttribute('aria-orientation', 'vertical')
+  tablist.setAttribute('aria-orientation', 'horizontal')
   const panels = document.createElement('div')
   panels.className = 'notebook-output-panels'
   const outputId = outputClassToken(cellId)
@@ -493,9 +561,17 @@ function syncOutputTabs(target: HTMLElement, cellId = target.dataset.notebookOut
     tab.textContent = group.label
     tab.setAttribute('role', 'tab')
     tab.setAttribute('aria-controls', panelId)
-    tab.addEventListener('click', () => selectOutputTab(container, group.id))
+    tab.addEventListener('click', () => {
+      const active = tab.getAttribute('aria-selected') === 'true'
+      selectOutputTab(container, active ? undefined : group.id, group.id)
+    })
     tab.addEventListener('keydown', event => {
-      const delta = event.key === 'ArrowDown' || event.key === 'ArrowRight' ? 1 : -1
+      if (event.key === 'Enter' || event.key === ' ') {
+        event.preventDefault()
+        const active = tab.getAttribute('aria-selected') === 'true'
+        selectOutputTab(container, active ? undefined : group.id, group.id)
+        return
+      }
       if (
         event.key !== 'ArrowDown' &&
         event.key !== 'ArrowRight' &&
@@ -505,12 +581,19 @@ function syncOutputTabs(target: HTMLElement, cellId = target.dataset.notebookOut
         return
       }
       event.preventDefault()
+      const delta = event.key === 'ArrowDown' || event.key === 'ArrowRight' ? 1 : -1
       const nextGroup = orderedGroups[(index + delta + orderedGroups.length) % orderedGroups.length]
       if (!nextGroup) return
-      selectOutputTab(container, nextGroup.id)
-      tablist
-        .querySelector<HTMLButtonElement>(`[data-notebook-output-tab="${nextGroup.id}"]`)
-        ?.focus()
+      const nextTab = tablist.querySelector<HTMLButtonElement>(
+        `[data-notebook-output-tab="${nextGroup.id}"]`,
+      )
+      if (!nextTab) return
+      if (container.hasAttribute('data-notebook-output-collapsed')) {
+        selectOutputTab(container, undefined, nextGroup.id)
+      } else {
+        selectOutputTab(container, nextGroup.id)
+      }
+      nextTab.focus()
     })
     tablist.append(tab)
 
@@ -549,6 +632,8 @@ function appendRuntimeOutput(
   output: NotebookRuntimeOutput,
   options: { debug?: boolean } = {},
 ) {
+  clearPlaceholderOutputs(target)
+
   if (output.type === 'stream') {
     appendStreamOutput(target, output)
     syncOutputTabs(target)
@@ -589,6 +674,12 @@ function appendRuntimeOutput(
     return
   }
 
+  if (output.type === 'success') {
+    target.appendChild(createSuccessOutput())
+    syncOutputTabs(target)
+    return
+  }
+
   target.appendChild(
     createPreOutput(['notebook-output', 'notebook-output-text'], 'result', output.text),
   )
@@ -622,11 +713,16 @@ class NotebookRuntime {
     this.cellRoot = root.closest('article') ?? root.parentElement ?? document
     this.payload = payload
     this.executionCounter = Math.max(0, ...payload.cells.map(cell => cell.executionIndex ?? 0))
-    this.vimMode = this.readStoredVimMode()
+    this.debug = this.payload.debug ?? false
+    this.vimMode = this.payload.vimMode ?? this.readStoredVimMode()
   }
 
   mount() {
-    this.ensureToolbar()
+    if (this.payload.toolbar === false) {
+      this.root.querySelector<HTMLElement>('[data-notebook-runtime-toolbar]')?.remove()
+    } else {
+      this.ensureToolbar()
+    }
     this.decorateCells()
     const runAll = this.root.querySelector<HTMLButtonElement>('[data-notebook-run-all]')
     const stop = this.root.querySelector<HTMLButtonElement>('[data-notebook-stop]')
@@ -924,9 +1020,9 @@ class NotebookRuntime {
         })
         return false
       }
-      this.hideSavedOutput(cell.id)
       await this.ensureWorker()
       const result = await this.postRun(cell, source)
+      if (!result.failed) this.renderSuccessOutput(cell.id)
       return !result.failed
     } catch (error) {
       if (this.stopped) return false
@@ -1619,15 +1715,23 @@ class NotebookRuntime {
   private renderOutput(cellId: string, output: NotebookRuntimeOutput) {
     const target = this.queryCell<HTMLElement>(`[data-notebook-output="${CSS.escape(cellId)}"]`)
     if (!target) return
+    this.hideSavedOutput(cellId)
     target.hidden = false
     appendRuntimeOutput(target, output, { debug: this.debug })
+  }
+
+  private renderSuccessOutput(cellId: string) {
+    const target = this.queryCell<HTMLElement>(`[data-notebook-output="${CSS.escape(cellId)}"]`)
+    if (!target || hasRenderedOutput(target)) return
+    this.renderOutput(cellId, { type: 'success' })
   }
 
   private clearOutput(cellId: string) {
     const target = this.queryCell<HTMLElement>(`[data-notebook-output="${CSS.escape(cellId)}"]`)
     if (!target) return
-    target.replaceChildren()
-    target.hidden = true
+    target.replaceChildren(createRunningOutput())
+    target.hidden = false
+    syncOutputTabs(target, cellId)
   }
 
   private hideSavedOutput(cellId: string) {

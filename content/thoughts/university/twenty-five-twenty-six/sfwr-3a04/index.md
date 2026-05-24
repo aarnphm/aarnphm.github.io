@@ -35,4 +35,4 @@ $$
 \end{aligned}
 $$
 
-$\text{course grade} = \text{final + quizzes + midterm + deliverables}$
+$\text{course grade} = \text{final} + \text{quizzes} + \text{midterm} + \text{deliverables}$

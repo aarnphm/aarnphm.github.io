@@ -98,6 +98,14 @@ describe('notebook browser runtime output', () => {
     assert.match(html, /&quot;E&quot;/)
   })
 
+  test('renders successful empty cells into notebook output blocks', () => {
+    const html = renderNotebookRuntimeOutput({ type: 'success' })
+
+    assert.match(html, /notebook-output-success/)
+    assert.match(html, /data-output-name="exit 0"/)
+    assert.doesNotMatch(html, /executed successfully|<em>/)
+  })
+
   test('reports unsupported browser runtime features before execution', () => {
     assert.strictEqual(unsupportedNotebookRuntimeReason('!cat x.py'), undefined)
     assert.strictEqual(unsupportedNotebookRuntimeReason('!ls .'), undefined)
@@ -334,7 +342,7 @@ describe('notebook browser runtime output', () => {
     assert.match(lspSource, /method === 'workspace\/configuration'/)
     assert.doesNotMatch(lspSource, /languageServerExtensions/)
     assert.match(styleSource, /\.cm-diagnosticRange/)
-    assert.match(styleSource, /\.cm-tooltip-autocomplete > ul/)
+    assert.match(styleSource, /\.cm-tooltip-autocomplete\s*>\s*ul/)
     assert.match(styleSource, /\.cm-lsp-active-parameter/)
   })
 
@@ -584,6 +592,59 @@ describe('notebook browser runtime output', () => {
     assert.match(clientSource, /controls\.editor\.highlightedLines\(\)/)
     assert.match(clientSource, /function syncOutputTabs\(target: HTMLElement, cellId =/)
     assert.doesNotMatch(clientSource, /groups\.size <= 1/)
+    assert.match(clientSource, /function createSuccessOutput\(\): HTMLDivElement/)
+    assert.match(
+      clientSource,
+      /output\.classList\.add\('notebook-output', 'notebook-output-success'\)/,
+    )
+    assert.match(clientSource, /output\.dataset\.outputName = notebookSuccessOutputLabel/)
+    assert.match(clientSource, /function createRunningOutput\(\): HTMLDivElement/)
+    assert.match(clientSource, /output\.dataset\.notebookOutputPlaceholder = ''/)
+    assert.match(clientSource, /function clearPlaceholderOutputs\(target: HTMLElement\)/)
+    assert.match(clientSource, /function hasRenderedOutput\(target: HTMLElement\): boolean/)
+    assert.match(
+      clientSource,
+      /function selectOutputTab\(container: HTMLElement, activeId: string \| undefined, focusId = activeId\)/,
+    )
+    assert.match(
+      clientSource,
+      /container\.toggleAttribute\('data-notebook-output-collapsed', activeId === undefined\)/,
+    )
+    assert.match(
+      clientSource,
+      /const active = activeId !== undefined && tab\.dataset\.notebookOutputTab === activeId/,
+    )
+    assert.match(
+      clientSource,
+      /panel\.hidden = activeId === undefined \|\| panel\.dataset\.notebookOutputPanel !== activeId/,
+    )
+    assert.match(
+      clientSource,
+      /const wasCollapsed = previousContainer\?\.hasAttribute\('data-notebook-output-collapsed'\) \?\? true/,
+    )
+    assert.match(
+      clientSource,
+      /const defaultActiveId = orderedGroups\.find\(\s*group => group\.label !== notebookSuccessOutputLabel,\s*\)\?\.id/,
+    )
+    assert.match(
+      clientSource,
+      /previousContainer === null[\s\S]*\? defaultActiveId[\s\S]*: !wasCollapsed && previousActive && orderedGroups\.some\(group => group\.id === previousActive\)/,
+    )
+    assert.match(
+      clientSource,
+      /selectOutputTab\(container, active \? undefined : group\.id, group\.id\)/,
+    )
+    assert.match(clientSource, /if \(output\.type === 'success'\)/)
+    assert.match(clientSource, /if \(!result\.failed\) this\.renderSuccessOutput\(cell\.id\)/)
+    assert.match(clientSource, /private renderSuccessOutput\(cellId: string\)/)
+    assert.match(clientSource, /if \(!target \|\| hasRenderedOutput\(target\)\) return/)
+    assert.match(clientSource, /this\.renderOutput\(cellId, \{ type: 'success' \}\)/)
+    assert.match(clientSource, /target\.replaceChildren\(createRunningOutput\(\)\)/)
+    assert.match(clientSource, /syncOutputTabs\(target, cellId\)/)
+    assert.doesNotMatch(
+      clientSource,
+      /this\.hideSavedOutput\(cell\.id\)\s+await this\.ensureWorker\(\)/,
+    )
     assert.match(
       clientSource,
       /function syncStaticOutputTabs\(frame: HTMLElement, cellId: string\)/,
@@ -602,6 +663,7 @@ describe('notebook browser runtime output', () => {
     assert.match(clientSource, /data-notebook-scroll-after/)
     assert.match(clientSource, /syncStreamScrollHints\(container\)/)
     assert.match(clientSource, /role', 'tablist'/)
+    assert.match(clientSource, /aria-orientation', 'horizontal'/)
     assert.match(clientSource, /role', 'tabpanel'/)
     assert.match(editorSource, /forceParsing\(view, view\.state\.doc\.length, 500\)/)
     assert.match(editorSource, /getComputedStyle\(source\)/)
@@ -653,17 +715,25 @@ describe('notebook browser runtime output', () => {
     )
     assert.match(
       styleSource,
-      /@media all and \(\$mobile\) \{[\s\S]*\.notebook-code-cell > \.notebook-cell-actions \{[\s\S]*left: auto;[\s\S]*right: var\(--notebook-shell-padding\);/,
+      /@media all and \(\$mobile\) \{[\s\S]*\.notebook-code-cell\s*>\s*\.notebook-cell-actions \{[\s\S]*left: auto;[\s\S]*right: var\(--notebook-shell-padding\);/,
     )
     assert.match(styleSource, /\.notebook-output-tabs \{/)
     assert.match(
       styleSource,
-      /\.notebook-output-tabs \{[\s\S]*grid-template-columns: minmax\(0, 1fr\);/,
+      /--notebook-output-tab-active-surface: color-mix\([\s\S]*in srgb,[\s\S]*var\(--notebook-active-green\) 16%,[\s\S]*var\(--notebook-output-surface\)[\s\S]*\);/,
+    )
+    assert.match(
+      styleSource,
+      /\.notebook-output-tabs \{[\s\S]*grid-template-rows: 180px var\(--notebook-action-height\);[\s\S]*grid-template-columns: minmax\(0, 1fr\);/,
+    )
+    assert.match(
+      styleSource,
+      /\.notebook-output-tabs\[data-notebook-output-collapsed\] \{[\s\S]*grid-template-rows: 0 var\(--notebook-action-height\);/,
     )
     assert.match(styleSource, /\.notebook-output-tabs \{[\s\S]*grid-column: 2;/)
     assert.match(
       styleSource,
-      /\.notebook-code-cell > \.notebook-runtime-output > \.notebook-output-tabs:first-child \{[\s\S]*margin-top: 0\.65rem/s,
+      /\.notebook-code-cell\s*>\s*\.notebook-runtime-output\s*>\s*\.notebook-output-tabs:first-child \{[\s\S]*margin-top: 0\.65rem/s,
     )
     assert.match(
       styleSource,
@@ -679,22 +749,58 @@ describe('notebook browser runtime output', () => {
     assert.match(styleSource, /\.notebook-output-tablist \{/)
     assert.match(
       styleSource,
-      /\.notebook-output-tablist \{[\s\S]*height: var\(--notebook-action-height\);[\s\S]*border-bottom: 0;[\s\S]*box-shadow: 0 1px 0 var\(--notebook-output-surface\);/,
+      /\.notebook-output-tablist \{[\s\S]*display: inline-flex;[\s\S]*grid-row: 2;[\s\S]*align-items: center;[\s\S]*justify-self: flex-start;[\s\S]*gap: 0;[\s\S]*padding: 0;[\s\S]*border-top: 0;[\s\S]*border-radius: 0 0 var\(--radius-3\) var\(--radius-3\);/,
     )
     assert.match(
       styleSource,
-      /\.notebook-output-tab \{[\s\S]*height: 1\.05rem;[\s\S]*border: 0;[\s\S]*border-radius: var\(--radius-2\);/,
+      /\.notebook-output-tabs\[data-notebook-output-collapsed\] \.notebook-output-tablist \{[\s\S]*border: 1px solid var\(--lightgray\);[\s\S]*border-radius: var\(--radius-3\);/,
+    )
+    assert.match(
+      styleSource,
+      /\.notebook-output-tablist:has\(\.notebook-output-tab\[aria-selected='true'\]\) \{[\s\S]*background: var\(--notebook-output-tab-active-surface\);/,
+    )
+    assert.match(
+      styleSource,
+      /\.notebook-output-tab \{[\s\S]*height: 100%;[\s\S]*border: 0;[\s\S]*border-radius: 0;/,
     )
     assert.match(styleSource, /\.notebook-output-tab:active \{[\s\S]*scale: 0\.96;/)
-    assert.match(styleSource, /\.notebook-output-tab\[aria-selected='true'\]/)
+    assert.match(
+      styleSource,
+      /\.notebook-output-tab\[aria-selected='false'\] \{[\s\S]*background: var\(--notebook-output-surface\);/,
+    )
+    assert.match(
+      styleSource,
+      /\.notebook-output-tab\[aria-selected='true'\] \{[\s\S]*background: var\(--notebook-output-tab-active-surface\);/,
+    )
+    assert.doesNotMatch(styleSource, /\.notebook-output-tab\[aria-selected='true'\]::after/)
+    assert.match(
+      styleSource,
+      /\.notebook-output-panels \{[\s\S]*grid-row: 1;[\s\S]*grid-column: 1;[\s\S]*border-radius: var\(--notebook-inner-radius\) var\(--notebook-inner-radius\)[\s\S]*var\(--notebook-inner-radius\) 0;/,
+    )
+    assert.match(
+      styleSource,
+      /\.notebook-output-tabs\[data-notebook-output-collapsed\] \.notebook-output-panels \{[\s\S]*visibility: hidden;[\s\S]*border-width: 0;/,
+    )
     assert.match(styleSource, /\.notebook-output-panel\[hidden\] \{/)
     assert.match(
       styleSource,
-      /\.notebook-code-cell > \.notebook-output\[data-output-name\]::before/,
+      /\.notebook-output-panel \{[\s\S]*height: 100%;[\s\S]*overflow: auto;/,
     )
     assert.match(
       styleSource,
-      /\.notebook-code-cell > \.notebook-static-output > \.notebook-output\[data-output-name\]::before \{[\s\S]*display: none/s,
+      /\.notebook-output-tabs pre\.notebook-output,[\s\S]*\.notebook-output-tabs \.notebook-output-latex \{[\s\S]*height: 100%;[\s\S]*max-height: none;/,
+    )
+    assert.match(
+      styleSource,
+      /\.notebook-output-success,[\s\S]*\.notebook-output-placeholder \{[\s\S]*min-height: 100%;/,
+    )
+    assert.match(
+      styleSource,
+      /\.notebook-code-cell\s*>\s*\.notebook-output\[data-output-name\]::before/,
+    )
+    assert.match(
+      styleSource,
+      /\.notebook-code-cell\s*>\s*\.notebook-static-output\s*>\s*\.notebook-output\[data-output-name\]::before \{[\s\S]*display: none/s,
     )
   })
 })

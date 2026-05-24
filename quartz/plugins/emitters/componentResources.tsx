@@ -82,6 +82,8 @@ const notebookRuntimePyrightWorkerPath = 'static/scripts/notebook-pyright.worker
 const notebookRuntimePyrightWorkerLicensePath =
   'static/scripts/notebook-pyright.worker.js.LICENSE.txt'
 const notebookRuntimePyrightTypeshedPath = 'static/scripts/notebook-pyright-typeshed.json'
+const semanticWorkerEntry = 'quartz/workers/semantic.worker.ts'
+const semanticWorkerPath = 'static/scripts/semantic.worker.js'
 const emojiAssetSourceDir = 'quartz/util/emojimap'
 const notebookRuntimeAssetEntries = new Set([
   notebookRuntimeClientEntry,
@@ -93,6 +95,7 @@ const notebookRuntimeAssetEntries = new Set([
   'quartz/util/type-guards.ts',
   'quartz/components/scripts/notebook-code-editor.ts',
 ])
+const semanticWorkerAssetEntries = new Set([semanticWorkerEntry, 'package.json'])
 
 type ComponentResources = {
   css: string[]
@@ -361,6 +364,27 @@ async function writeCollaborativeCommentsAssets(ctx: BuildCtx): Promise<FilePath
   return await Promise.all(client.outputFiles.map(output => writeAssetBundleOutput(ctx, output)))
 }
 
+async function writeSemanticWorkerAssets(ctx: BuildCtx): Promise<FilePath[]> {
+  const outdir = path.join(ctx.argv.output, 'static/scripts')
+  const worker = await bundle({
+    entryPoints: { 'semantic.worker': semanticWorkerEntry },
+    bundle: true,
+    minify: true,
+    platform: 'browser',
+    format: 'esm',
+    splitting: true,
+    outdir,
+    entryNames: '[name]',
+    chunkNames: 'chunks/[name]-[hash]',
+    write: false,
+  })
+  return await Promise.all(worker.outputFiles.map(output => writeAssetBundleOutput(ctx, output)))
+}
+
+async function removeSemanticWorkerAsset(ctx: BuildCtx) {
+  await fs.rm(path.join(ctx.argv.output, semanticWorkerPath), { force: true })
+}
+
 async function writeEmojiAssets(ctx: BuildCtx): Promise<FilePath[]> {
   const files = await globby([`${emojiAssetSourceDir}/**/*.json`])
   return await Promise.all(
@@ -393,7 +417,8 @@ function resolveComponentResourceAssets(ctx: BuildCtx, componentResources: Compo
       .replaceAll(
         'collaborative-comments.client.js',
         assetBasename(ctx, 'static/scripts/collaborative-comments.client.js'),
-      ),
+      )
+      .replaceAll('semantic.worker.js', assetBasename(ctx, semanticWorkerPath)),
   )
 }
 
@@ -414,6 +439,10 @@ function isCollaborativeCommentsAssetChange(changePath: string): boolean {
     changePath.startsWith('quartz/components/multiplayer/') ||
     changePath.startsWith('quartz/functional/')
   )
+}
+
+function isSemanticWorkerAssetChange(changePath: string): boolean {
+  return semanticWorkerAssetEntries.has(changePath)
 }
 
 function isEmojiAssetChange(changePath: string): boolean {
@@ -478,6 +507,7 @@ export const ComponentResources: QuartzEmitterPlugin = () => {
       const componentResources = await currentComponentResources(ctx)
       const notebookRuntimeFiles = await writeNotebookRuntimeAssets(ctx)
       const collaborativeCommentsFiles = await writeCollaborativeCommentsAssets(ctx)
+      const semanticWorkerFiles = await writeSemanticWorkerAssets(ctx)
       const emojiFiles = await writeEmojiAssets(ctx)
       resolveComponentResourceAssets(ctx, componentResources)
       let googleFontsStyleSheet = ''
@@ -581,7 +611,9 @@ export const ComponentResources: QuartzEmitterPlugin = () => {
         content: JSON.stringify(manifest),
       })
 
-      const workerFiles = await globby([workerEntryPattern])
+      const workerFiles = (await globby([workerEntryPattern])).filter(
+        src => src !== semanticWorkerEntry,
+      )
       for (const src of workerFiles) {
         const result = await bundle({
           entryPoints: [src],
@@ -601,6 +633,10 @@ export const ComponentResources: QuartzEmitterPlugin = () => {
       }
 
       for (const file of collaborativeCommentsFiles) {
+        yield file
+      }
+
+      for (const file of semanticWorkerFiles) {
         yield file
       }
 
@@ -653,6 +689,17 @@ export const ComponentResources: QuartzEmitterPlugin = () => {
         }
       }
 
+      const semanticWorkerDeleted = changeEvents.some(
+        changeEvent => changeEvent.path === semanticWorkerEntry && changeEvent.type === 'delete',
+      )
+      if (semanticWorkerDeleted) {
+        await removeSemanticWorkerAsset(ctx)
+      } else if (changeEvents.some(changeEvent => isSemanticWorkerAssetChange(changeEvent.path))) {
+        for (const file of await writeSemanticWorkerAssets(ctx)) {
+          yield file
+        }
+      }
+
       if (changeEvents.some(changeEvent => isEmojiAssetChange(changeEvent.path))) {
         for (const file of await writeEmojiAssets(ctx)) {
           yield file
@@ -661,6 +708,7 @@ export const ComponentResources: QuartzEmitterPlugin = () => {
 
       for (const changeEvent of changeEvents) {
         if (!isWorkerEntryPath(changeEvent.path)) continue
+        if (changeEvent.path === semanticWorkerEntry) continue
         if (changeEvent.type === 'delete') {
           const name = path.basename(changeEvent.path).replace(/\.ts$/, '')
           const dest = joinSegments(ctx.argv.output, `${name}.js`)

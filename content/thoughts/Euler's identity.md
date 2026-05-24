@@ -12,7 +12,7 @@ $$
 \begin{aligned}
 e^{i \pi} &+ 1 = 0 \\
 \\
-\because e &: \text{Euler's number} \\
+\because e &: \text{Euler\unicode{x2019}s number} \\
 i &: \text{imaginary unit satisfies } i^{2} = -1 \\
 \pi &: \text{pi}
 \end{aligned}

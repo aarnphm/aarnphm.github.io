@@ -307,8 +307,8 @@ $$
 & R_2 = \sigma_{\substack{
     \text{Age} \geq 20 \\
     \wedge \, \text{Age} \leq 30 \\
-    \wedge \, \big(\text{DietaryPref} = \text{'Vegan'} \\
-    \phantom{\wedge \,} \vee \, \text{DietaryPref} = \text{'Vegetarian'}\big)
+    \wedge \, \big(\text{DietaryPref} = \textsf{Vegan} \\
+    \phantom{\wedge \,} \vee \, \text{DietaryPref} = \textsf{Vegetarian}\big)
 }} (R_1) \\[6pt]
 & \text{Result} = \pi_{\text{PersonID}, \, \text{Name}, \, \text{Age}} (R_2)
 \end{align}
@@ -328,9 +328,9 @@ $$
 \begin{align}
 & R_1 = \text{Airplane} \bowtie_{\text{AirlineAlias = Alias}} \text{Airline} \\[6pt]
 & R_2 = \sigma_{\substack{
-    \text{Name} = \text{'Air Canada'} \\
-    \vee \, \text{Name} = \text{'Etihad Airways'} \\
-    \vee \, \text{Name} = \text{'United Airlines'}
+    \text{Name} = \textsf{Air Canada} \\
+    \vee \, \text{Name} = \textsf{Etihad Airways} \\
+    \vee \, \text{Name} = \textsf{United Airlines}
 }} (R_1) \\[6pt]
 & \text{Result} = \gamma_{\substack{
     \text{Name}, \text{Model}, \\
@@ -352,7 +352,7 @@ $$
     }} \text{ScheduledFlight} \\[6pt]
 & R_2 = R_1 \bowtie_{\text{AirlineAlias = Alias}} \text{Airline} \\[6pt]
 & R_3 = R_2 \Join_{\text{Ticket.TicketNo = Baggage.TicketNo}} \text{Baggage} \\[6pt]
-& R_4 = \sigma_{\text{Name} = \text{'Air Canada'}} (R_3) \\[6pt]
+& R_4 = \sigma_{\text{Name} = \textsf{Air Canada}} (R_3) \\[6pt]
 & R_5 = \pi_{\text{TicketNo}, \text{TotalWeight}} (R_4) \\[6pt]
 & \text{Result} = \\
 & \quad \gamma_{\text{TicketNo}, \, \text{avg}(\text{TotalWeight}) \rightarrow \text{AverageBaggageWeight}} (R_5)
@@ -373,11 +373,11 @@ $$
 } \text{ScheduledFlight} \\[6pt]
 & R_2 = \text{Baggage} \bowtie_{\text{TicketNo = TicketNo}} R_1 \\[6pt]
 & R_3 = \sigma_{\substack{
-    \text{BagType} = \text{'Oversized'} \\
+    \text{BagType} = \textsf{Oversized} \\
     \wedge \, \text{Fragile} = \text{False} \\
     \wedge \, \text{TotalWeight} > 90 \\
-    \wedge \, \text{DepDate} \geq \text{'2023-12-10'} \\
-    \wedge \, \text{DepDate} \leq \text{'2024-01-03'}
+    \wedge \, \text{DepDate} \geq \textsf{2023-12-10} \\
+    \wedge \, \text{DepDate} \leq \textsf{2024-01-03}
 }} (R_2) \\[6pt]
 & \text{Result} = \pi_{\text{TicketNo, TotalWeight}} (R_3)
 \end{align}
@@ -387,7 +387,7 @@ $$
 
 $$
 \begin{align}
-& R_1 = \sigma_{\substack{\text{srcAirport} = \text{'YYZ'} \\ \land \, \text{dstAirport} = \text{'MCO'}}} (\text{Route}) \\[6pt]
+& R_1 = \sigma_{\substack{\text{srcAirport} = \textsf{YYZ} \\ \land \, \text{dstAirport} = \textsf{MCO}}} (\text{Route}) \\[6pt]
 & R_2 = R_1 \bowtie_{\text{Route.RouteID} = \text{ScheduledFlight.RouteID}} \text{ScheduledFlight} \\[6pt]
 & R_3 = R_2 \bowtie_{
     \substack{

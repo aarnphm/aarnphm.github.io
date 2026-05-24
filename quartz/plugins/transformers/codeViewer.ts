@@ -191,18 +191,82 @@ function codeLanguage(node: Code): string {
   return node.lang?.trim().toLowerCase() ?? ''
 }
 
-function metaHasShell(meta: string | null | undefined): boolean {
-  return /\bshell\b/i.test(meta ?? '')
+function metaWords(meta: string | null | undefined): string[] {
+  if (!meta) return []
+  const words: string[] = []
+  let word = ''
+  let quote = ''
+  let escaped = false
+  for (const char of meta) {
+    if (escaped) {
+      word += char
+      escaped = false
+      continue
+    }
+    if (char === '\\') {
+      escaped = true
+      continue
+    }
+    if (quote.length > 0) {
+      if (char === quote) {
+        quote = ''
+      } else {
+        word += char
+      }
+      continue
+    }
+    if (char === '"' || char === "'") {
+      quote = char
+      continue
+    }
+    if (/\s/.test(char)) {
+      if (word.length > 0) {
+        words.push(word)
+        word = ''
+      }
+      continue
+    }
+    word += char
+  }
+  if (word.length > 0) words.push(word)
+  return words
 }
 
-function runsInPythonRuntime(node: Code): boolean {
+function metaHasShell(words: string[]): boolean {
+  return words.some(word => word.toLowerCase() === 'shell')
+}
+
+function metaBooleanOption(words: string[], key: string, fallback: boolean): boolean {
+  const prefix = `${key}=`
+  for (const word of words) {
+    const lower = word.toLowerCase()
+    if (!lower.startsWith(prefix)) continue
+    const value = lower.slice(prefix.length)
+    if (value === 'true') return true
+    if (value === 'false') return false
+  }
+  return fallback
+}
+
+type CodeRuntimeOptions = Pick<NotebookRuntimeData, 'toolbar' | 'debug' | 'vimMode'>
+
+function pythonShellRuntimeOptions(words: string[]): CodeRuntimeOptions {
+  return {
+    toolbar: false,
+    debug: metaBooleanOption(words, 'debug', true),
+    vimMode: metaBooleanOption(words, 'vim', true),
+  }
+}
+
+function runtimeOptionsForCode(node: Code): CodeRuntimeOptions | undefined {
   const transcluded = codeTranscludePath(node)
-  if (transcluded && path.extname(transcluded).toLowerCase() === '.py') return true
+  if (transcluded && path.extname(transcluded).toLowerCase() === '.py') return {}
 
   const lang = codeLanguage(node)
-  if (lang === 'python-shell' || lang === 'py-shell') return true
-  if (lang !== 'python' && lang !== 'py') return false
-  return metaHasShell(node.meta)
+  const words = metaWords(node.meta)
+  if (lang === 'python-shell' || lang === 'py-shell') return pythonShellRuntimeOptions(words)
+  if (lang !== 'python' && lang !== 'py') return undefined
+  return metaHasShell(words) ? pythonShellRuntimeOptions(words) : undefined
 }
 
 function runtimeCell(id: string, node: Code): NotebookRuntimeCell {
@@ -213,14 +277,19 @@ function runtimePayload(
   sourcePath: string,
   cells: NotebookRuntimeCell[],
   pyodideIndexUrl: string,
+  options: CodeRuntimeOptions,
 ): NotebookRuntimeData {
-  return {
+  const payload: NotebookRuntimeData = {
     id: notebookRuntimeId(`code-viewer:${sourcePath}`),
     sourcePath,
     language: 'python',
     pyodideIndexUrl,
     cells,
   }
+  if (options.toolbar !== undefined) payload.toolbar = options.toolbar
+  if (options.debug !== undefined) payload.debug = options.debug
+  if (options.vimMode !== undefined) payload.vimMode = options.vimMode
+  return payload
 }
 
 function runtimeCellNodes(cell: NotebookRuntimeCell, node: Code): RootContent[] {
@@ -305,17 +374,20 @@ export const CodeViewer: QuartzTransformerPlugin<Partial<Options>> = userOpts =>
             const sourcePath = sourcePathFromFile(file.data, file.path)
             const cells: NotebookRuntimeCell[] = []
             let insertedRuntime = false
+            let runtimeOptions: CodeRuntimeOptions = {}
 
             visit(tree, 'code', (node: Code, index, parent) => {
               if (index === undefined || !parent || !hasRootChildren(parent)) return
-              if (!runsInPythonRuntime(node)) return
+              const options = runtimeOptionsForCode(node)
+              if (!options) return
+              if (cells.length === 0) runtimeOptions = options
               const cell = runtimeCell(`code-cell-${cells.length + 1}`, node)
               cells.push(cell)
               const nodes = runtimeCellNodes(cell, node)
               if (!insertedRuntime) {
                 nodes.unshift(
                   ...notebookRuntimeControls(
-                    runtimePayload(sourcePath, [], opts.pyodideIndexUrl),
+                    runtimePayload(sourcePath, [], opts.pyodideIndexUrl, runtimeOptions),
                   ).map(html),
                 )
                 insertedRuntime = true
@@ -328,7 +400,7 @@ export const CodeViewer: QuartzTransformerPlugin<Partial<Options>> = userOpts =>
               tree.children.push(
                 html(
                   notebookRuntimeDataScript(
-                    runtimePayload(sourcePath, cells, opts.pyodideIndexUrl),
+                    runtimePayload(sourcePath, cells, opts.pyodideIndexUrl, runtimeOptions),
                   ),
                 ),
               )

@@ -120,7 +120,7 @@ A highway block for a vector $x \in \mathbb{R}^d$ computes:
 
 $$
 \begin{aligned}
-H(x) &= \mathrm{Transform}(x) = x W_H + b_H \quad (\text{linear + nonlinearity}) \\
+H(x) &= \mathrm{Transform}(x) = x W_H + b_H \quad (\text{linear} + \text{nonlinearity}) \\
 T(x) &= \mathrm{Gate}(x) = \sigma(x W_T + b_T) \\
 C(x) &= 1 - T(x) \quad (\text{carry gate}) \\
 y &= H(x)\, T(x) \;+\; x\, C(x) \\

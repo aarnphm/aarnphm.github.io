@@ -1,6 +1,6 @@
 ---
 date: '2023-12-06'
-description: comprehensive equation reference covering machine epsilon, taylor series, polynomial interpolation, numeric integration, least squares, newton's method, and runge-kutta odes.
+description: comprehensive equation reference covering machine epsilon, taylor series, polynomial interpolation, numeric integration, least squares, newton\unicode{x2019}s method, and runge-kutta odes.
 id: Equations
 modified: 2026-05-09 17:51:54 GMT-04:00
 tags:
@@ -38,7 +38,7 @@ $$
 & \text{lagrange basis: } L_j(x_i) = \begin{cases} 0 & \text{if } i \neq j \\ 1 & \text{if } i = j \end{cases} \\
 & L_j(x) = \prod_{\substack{i=0 \\ i \neq j}}^{n} \frac{x - x_i}{x_j - x_i} \\
 & p_n(x_i) = \sum_{j=0}^{n} y_j L_j(x_i) = \sum_{j=0}^{i-1} y_j L_j(x_i) + y_i L_i(x_i) + \sum_{j=i+1}^{n} y_j L_j(x_i) = y_i \\
-& \text{newton's basis: } \phi_j(x) = \prod_{i=0}^{j-1} (x - x_i),\ j = 0, \ldots, n \\
+& \text{newton\unicode{x2019}s basis: } \phi_j(x) = \prod_{i=0}^{j-1} (x - x_i),\ j = 0, \ldots, n \\
 & p_n(x_i) = c_0 + c_1 (x_i - x_0) + \cdots + c_n (x_i - x_0)(x_i - x_1) \cdots (x_i - x_{n-1}) = f(x_i) \\
 & \text{divided differences: } f[x_i, \ldots, x_j] = \frac{f[x_{i+1}, \ldots, x_j] - f[x_i, \ldots, x_{j-1}]}{x_j - x_i} \\
 & \quad \bullet\ \text{at } x = x_0: c_0 = f(x_0) = f[x_0] \\
@@ -64,7 +64,7 @@ $$
 & I_f = (b - a) f(m) + \frac{1}{2} \int_{a}^{b} f''(\xi(x))(x - m)^2 \, dx \\
 & \exists \eta \in (a, b): \frac{1}{2} \int_{a}^{b} f''(\xi(x))(x - m)^2 \, dx = \frac{f''(\eta)}{24}(b - a)^3 \\
 & \text{therefore } I_f - I_{\text{mid}} = \frac{f''(\eta)}{24}(b - a)^3 \\
-& \text{simpson's rule: } I_f \approx I_{\text{simp}} = \frac{b - a}{6}\left[f(a) + 4 f\left(\frac{a + b}{2}\right) + f(b)\right] \\
+& \text{simpson\unicode{x2019}s rule: } I_f \approx I_{\text{simp}} = \frac{b - a}{6}\left[f(a) + 4 f\left(\frac{a + b}{2}\right) + f(b)\right] \\
 & \text{with } p_2(x),\ n = 2,\ x_0 = a,\ x_1 = \frac{a + b}{2},\ x_2 = b \\
 & \text{therefore } I_f - I_{\text{simpson}} = -\frac{f^{(4)}(\eta)}{90}\left(\frac{b - a}{2}\right)^5,\ \eta \in (a, b) \\[8pt]
 & \text{composite numeric integration} \\
@@ -112,7 +112,7 @@ $$
 & \tilde{E}_2 = \frac{1}{15} (S_2 - S_1) \\
 & \text{if } |\tilde{E}_2| \le \text{tol, return } Q = S_2 + \tilde{E}_2 \\
 & \text{else } Q_1 = \text{quadSimpson}(f, a, c, \text{tol}/2),\ Q_2 = \text{quadSimpson}(f, c, b, \text{tol}/2),\ Q = Q_1 + Q_2 \\[8pt]
-& \text{newton's method for nonlinear equations} \\
+& \text{newton\unicode{x2019}s method for nonlinear equations} \\
 & x_{n+1} = x_n - \frac{f(x_n)}{f'(x_n)} \\
 & \text{convergence: if } f, f', f'' \text{ are continuous near a root } r \text{ of } f \text{ and } f'(r) \neq 0, \text{ then } \exists \delta > 0 \\
 & \text{with } |r - x_0| \le \delta \text{ and } |r - x_n| \le \delta \Rightarrow |r - x_{n+1}| \le c(\delta) |r - x_n|^2 \\
@@ -132,7 +132,7 @@ $$
 & \text{forward euler (explicit): } y_{t_{i+1}} \approx y(t_i) + h f(t_i, y(t_i)) \\
 & \text{where } h = \frac{b - a}{N},\ N > 1,\ h \text{ is step size},\ t_0 = a,\ t_i = a + i h,\ i = 1, \ldots, N \\
 & \text{backward euler (implicit): } y_{i+1} = y_i + h f(t_{i+1}, y_{i+1}) \\
-& \text{nonlinear: apply newton's method} \\
+& \text{nonlinear: apply newton\unicode{x2019}s method} \\
 & \text{fe stability for } y' = \lambda y,\ y(0) = y_0 \\
 & \text{exact solution: } y(t) = y_0 e^{\lambda t} \\
 & \text{fe solution with constant stepsize } h: y_{i+1} = (1 + h \lambda) y_i = (1 + h \lambda)^{i+1} y_0 \\
@@ -156,7 +156,7 @@ $$
 & d_i = \frac{y(t_{i+1}) - y(t_i)}{h} - \frac{1}{2}[f(t_i, y(t_i)) + f(t_{i+1}, y(t_i) + h f(t_i, y(t_i)))] = O(h^2) \\
 & \text{implicit midpoint: } y_{i+1} = y_i + h f\left(t_i + \frac{h}{2}, \frac{y_i + y_{i+1}}{2}\right) \\
 & \text{explicit midpoint: } Y = y_i + \frac{h}{2} f(t_i, y_i) \\
-& \text{classical rk4: based on simpson's quadrature rule with } O(h^4) \text{ accuracy} \\
+& \text{classical rk4: based on simpson\unicode{x2019}s quadrature rule with } O(h^4) \text{ accuracy} \\
 & Y_1 = y_i \\
 & Y_2 = y_i + \frac{h}{2} f(t_i, Y_1) \\
 & Y_3 = y_i + \frac{h}{2} f\left(t_i + \frac{h}{2}, Y_2\right) \\

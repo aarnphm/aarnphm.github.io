@@ -20,6 +20,9 @@ export type NotebookRuntimeData = {
   language: string
   pyodideIndexUrl: string
   cells: NotebookRuntimeCell[]
+  toolbar?: boolean
+  debug?: boolean
+  vimMode?: boolean
 }
 
 export type NotebookRuntimeStreamOutput = { type: 'stream'; name: string; text: string }
@@ -46,14 +49,18 @@ export type NotebookRuntimeJsonOutput = { type: 'json'; text: string }
 
 export type NotebookRuntimeHtmlOutput = { type: 'html'; html: string }
 
+export type NotebookRuntimeSuccessOutput = { type: 'success' }
+
 export type NotebookRuntimeOutput =
   | NotebookRuntimeStreamOutput
   | NotebookRuntimeErrorOutput
   | NotebookRuntimeTextOutput
   | NotebookRuntimeJsonOutput
   | NotebookRuntimeHtmlOutput
+  | NotebookRuntimeSuccessOutput
 
 export const defaultNotebookPyodideIndexUrl = 'https://cdn.jsdelivr.net/pyodide/v0.29.4/full/'
+export const notebookSuccessOutputLabel = 'exit 0'
 
 export function notebookRuntimeLocalSourceKey(sourcePath: string, cellId: string): string {
   return `quartz:notebook-source:${encodeURIComponent(sourcePath)}:${encodeURIComponent(cellId)}`
@@ -78,9 +85,11 @@ export function notebookRuntimeJson(value: NotebookRuntimeData): string {
 }
 
 export function notebookRuntimeControls(data: NotebookRuntimeData): string[] {
+  const root = `<div class="notebook-runtime" data-notebook-runtime="${escapeHTML(data.id)}">`
+  if (data.toolbar === false) return [`${root}</div>`]
   return [
     [
-      `<div class="notebook-runtime" data-notebook-runtime="${escapeHTML(data.id)}">`,
+      root,
       '<div class="notebook-runtime-toolbar" data-notebook-runtime-toolbar role="toolbar" aria-label="Notebook runtime">',
       '<button type="button" data-notebook-run-all>Run all</button>',
       '<button type="button" data-notebook-stop disabled>Stop</button>',
@@ -495,6 +504,9 @@ export function renderNotebookRuntimeOutput(
       'json',
       output.text,
     )
+  }
+  if (output.type === 'success') {
+    return `<div class="notebook-output notebook-output-success" data-output-name="${notebookSuccessOutputLabel}"></div>`
   }
   return preOutput(['notebook-output', 'notebook-output-text'], 'result', output.text)
 }

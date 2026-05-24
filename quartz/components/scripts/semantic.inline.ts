@@ -52,7 +52,7 @@ export class SemanticClient {
 
   private boot() {
     try {
-      this.worker = new Worker('/semantic.worker.js', { type: 'module' })
+      this.worker = new Worker(new URL('semantic.worker.js', import.meta.url), { type: 'module' })
     } catch (err) {
       this.handleFatal(err)
       return
