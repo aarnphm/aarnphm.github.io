@@ -514,6 +514,22 @@ article:has(.notebook-runtime) {
     scale: 0.96;
   }
 
+  .notebook-cell-actions button[data-notebook-vim-cell] {
+    opacity: 0.45;
+  }
+
+  .notebook-cell-actions button[data-notebook-vim-cell][aria-pressed='true'] {
+    background: color-mix(in srgb, #7db643 18%, var(--notebook-code-surface));
+    color: #367533;
+    opacity: 1;
+  }
+
+  .notebook-code-cell[data-notebook-editing]
+    > .notebook-cell-actions
+    button[data-notebook-vim-cell][aria-pressed='true'] {
+    background: color-mix(in srgb, #7db643 18%, var(--notebook-editor-surface));
+  }
+
   .notebook-cell-actions button:hover:not(:disabled),
   .notebook-cell-actions button:focus-visible {
     background: var(--highlight);
@@ -537,6 +553,23 @@ article:has(.notebook-runtime) {
     stroke-width: 1.8;
     stroke-linecap: round;
     stroke-linejoin: round;
+  }
+
+  .notebook-icon-button .notebook-vim-icon path {
+    fill: currentColor;
+    stroke: none;
+  }
+
+  .notebook-icon-button[aria-pressed='true'] .notebook-vim-icon-left {
+    fill: #16b0ed;
+  }
+
+  .notebook-icon-button[aria-pressed='true'] .notebook-vim-icon-cross {
+    fill: #7db643;
+  }
+
+  .notebook-icon-button[aria-pressed='true'] .notebook-vim-icon-right {
+    fill: #367533;
   }
 
   .notebook-local-source-status {

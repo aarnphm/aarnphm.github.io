@@ -41,6 +41,7 @@ type SourceControls = {
   editorHost: HTMLElement
   figure: HTMLElement | undefined
   status: HTMLElement
+  vimButton: HTMLButtonElement
   editButton: HTMLButtonElement
   saveButton: HTMLButtonElement
   revertButton: HTMLButtonElement
@@ -70,6 +71,13 @@ function setNotebookIconButton(button: HTMLButtonElement, icon: NotebookIcon, la
   button.title = label
   button.textContent = ''
   button.insertAdjacentHTML('afterbegin', notebookIconSvg[icon])
+}
+
+function setNotebookVimButtonState(button: HTMLButtonElement, enabled: boolean) {
+  const label = enabled ? 'Disable Vim mode' : 'Enable Vim mode'
+  button.setAttribute('aria-pressed', String(enabled))
+  button.setAttribute('aria-label', label)
+  button.title = label
 }
 
 function notebookLanguageBadgeElement(language: string): HTMLElement {
@@ -266,6 +274,10 @@ function renderedFigureSource(figure: HTMLElement): string | undefined {
   if (lines.length > 0) return lines.map(line => line.textContent ?? '').join('\n')
   const code = figure.querySelector('pre code')
   return code?.textContent ?? undefined
+}
+
+function highlightedLinesHaveInlineStyle(lines: readonly HTMLElement[]): boolean {
+  return lines.some(line => line.hasAttribute('style') || line.querySelector('[style]') !== null)
 }
 
 function outputClassToken(value: string): string {
@@ -1007,6 +1019,11 @@ class NotebookRuntime {
     debug?.setAttribute('aria-pressed', String(this.debug))
     const vim = this.root.querySelector<HTMLButtonElement>('[data-notebook-vim-mode]')
     vim?.setAttribute('aria-pressed', String(this.vimMode))
+    for (const button of this.cellRoot.querySelectorAll<HTMLButtonElement>(
+      '[data-notebook-vim-cell]',
+    )) {
+      setNotebookVimButtonState(button, this.vimMode)
+    }
   }
 
   private toggleDebug = () => {
@@ -1224,6 +1241,17 @@ class NotebookRuntime {
     }
     runButton.addEventListener('click', runSource)
 
+    const vimButton =
+      frame.querySelector<HTMLButtonElement>(`[data-notebook-vim-cell="${CSS.escape(cell.id)}"]`) ??
+      document.createElement('button')
+    vimButton.type = 'button'
+    vimButton.dataset.notebookVimCell = cell.id
+    setNotebookIconButton(vimButton, 'vim', 'Enable Vim mode')
+    const toggleCellVimMode = () => {
+      this.toggleVimMode()
+    }
+    vimButton.addEventListener('click', toggleCellVimMode)
+
     const editorHost =
       frame.querySelector<HTMLElement>(`[data-notebook-source-editor="${CSS.escape(cell.id)}"]`) ??
       document.createElement('div')
@@ -1277,7 +1305,15 @@ class NotebookRuntime {
     status.dataset.notebookLocalSourceStatus = cell.id
     status.hidden = true
 
-    actions.replaceChildren(languageBadge, runButton, editButton, saveButton, revertButton, status)
+    actions.replaceChildren(
+      languageBadge,
+      vimButton,
+      runButton,
+      editButton,
+      saveButton,
+      revertButton,
+      status,
+    )
     if (!actions.isConnected) frame.append(actions)
     if (figure) {
       if (!editorHost.isConnected) figure.before(editorHost)
@@ -1297,6 +1333,7 @@ class NotebookRuntime {
       editorHost,
       figure,
       status,
+      vimButton,
       editButton,
       saveButton,
       revertButton,
@@ -1315,6 +1352,7 @@ class NotebookRuntime {
 
     this.addCleanup(() => {
       runButton.removeEventListener('click', runSource)
+      vimButton.removeEventListener('click', toggleCellVimMode)
       editButton.removeEventListener('click', editSource)
       saveButton.removeEventListener('click', saveSource)
       revertButton.removeEventListener('click', revertSource)
@@ -1424,14 +1462,22 @@ class NotebookRuntime {
     source: string,
     preferredLines?: HTMLElement[],
   ): Promise<HTMLElement[] | undefined> {
-    if (preferredLines && preferredLines.length === source.split(/\r?\n/).length)
+    const lineCount = source.split(/\r?\n/).length
+    const preferredLineCountMatches = preferredLines?.length === lineCount
+    if (
+      preferredLines &&
+      preferredLineCountMatches &&
+      highlightedLinesHaveInlineStyle(preferredLines)
+    ) {
       return preferredLines
+    }
     if (!controls.figure) return undefined
     try {
       const { renderNotebookHighlightedLines } = await import('../editor/code-editor')
-      return await renderNotebookHighlightedLines(source, cell.language)
+      const highlightedLines = await renderNotebookHighlightedLines(source, cell.language)
+      return highlightedLines.length === lineCount ? highlightedLines : preferredLines
     } catch {
-      return undefined
+      return preferredLineCountMatches ? preferredLines : undefined
     }
   }
 

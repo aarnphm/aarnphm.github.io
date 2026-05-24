@@ -1,7 +1,7 @@
 import type { Extension } from '@codemirror/state'
 import type { EditorView as CodeMirrorEditorView, KeyBinding } from '@codemirror/view'
 import type { CodeMirror } from '@replit/codemirror-vim'
-import { forceParsing } from '@codemirror/language'
+import { ensureSyntaxTree, forceParsing, syntaxTreeAvailable } from '@codemirror/language'
 import type { NotebookLspConfig } from '../lsp/pyright'
 import { backendFor } from '../notebook/registry'
 
@@ -50,6 +50,7 @@ const notebookVimReservedControlKeys = new Set([
   'Ctrl-u',
   'Ctrl-y',
 ])
+const notebookHighlightParseTimeoutMs = 1500
 
 function languageWarmupKey(language: string | undefined): string {
   return (language ?? '').trim().toLowerCase() || 'python'
@@ -270,7 +271,11 @@ function cloneHighlightedNode(node: ChildNode): Node {
 }
 
 function highlightedLineSpans(view: CodeMirrorEditorView): HTMLElement[] {
-  forceParsing(view, view.state.doc.length, 500)
+  const upto = view.state.doc.length
+  if (!syntaxTreeAvailable(view.state, upto)) {
+    ensureSyntaxTree(view.state, upto, notebookHighlightParseTimeoutMs)
+    forceParsing(view, upto, notebookHighlightParseTimeoutMs)
+  }
   return Array.from(view.dom.querySelectorAll<HTMLElement>('.cm-content > .cm-line')).map(line => {
     const span = document.createElement('span')
     span.dataset.line = ''
@@ -315,7 +320,7 @@ export async function renderNotebookHighlightedLines(
     ],
   })
   const view = new EditorView({ state, parent: host })
-  forceParsing(view, view.state.doc.length, 500)
+  highlightedLineSpans(view)
   await new Promise<void>(resolve => requestAnimationFrame(() => resolve()))
   const lines = highlightedLineSpans(view)
   view.destroy()

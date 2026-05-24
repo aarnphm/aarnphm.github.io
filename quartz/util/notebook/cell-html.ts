@@ -2,7 +2,7 @@ import type { NotebookRuntimeCell, NotebookRuntimeData } from '../../runtime/not
 import { escapeHTML } from '../escape'
 import { notebookIconSvg } from './render/icons'
 
-type NotebookIcon = 'run' | 'edit' | 'save' | 'revert'
+type NotebookIcon = 'run' | 'edit' | 'save' | 'revert' | 'vim'
 
 type NotebookLanguageInfo = { token: string; label: string; glyph: string }
 
@@ -154,6 +154,7 @@ export function notebookCellActions(cell: NotebookRuntimeCell): string {
   return [
     `<div class="notebook-cell-actions" data-notebook-cell-actions="${escaped}">`,
     notebookCellLanguageBadge(cell.language),
+    notebookIconButton(cell.id, 'vim', 'data-notebook-vim-cell', 'Enable Vim mode'),
     notebookIconButton(cell.id, 'run', 'data-notebook-run-cell', `Run ${cell.id}`),
     notebookIconButton(cell.id, 'edit', 'data-notebook-edit-cell', `Edit ${cell.id}`),
     notebookIconButton(cell.id, 'save', 'data-notebook-save-cell', `Save ${cell.id} locally`, true),
