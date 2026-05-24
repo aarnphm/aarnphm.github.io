@@ -1,4 +1,5 @@
 import yaml from 'js-yaml'
+import { isRecord } from '../type-guards'
 import {
   parseExpressionSource,
   compileExpression,
@@ -10,9 +11,6 @@ import {
 import { Expr, LogicalExpr, UnaryExpr, spanFrom } from './compiler/ast'
 import { BUILTIN_SUMMARY_TYPES } from './compiler/schema'
 import { parseViews, BaseFile, PropertyConfig } from './types'
-
-const isRecord = (value: unknown): value is Record<string, unknown> =>
-  typeof value === 'object' && value !== null && !Array.isArray(value)
 
 const normalizeProperties = (raw: unknown): Record<string, PropertyConfig> | undefined => {
   if (!isRecord(raw)) return undefined

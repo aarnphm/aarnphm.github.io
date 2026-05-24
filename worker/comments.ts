@@ -2,6 +2,7 @@ import { DurableObject } from 'cloudflare:workers'
 import { eq, and, isNull } from 'drizzle-orm'
 import { drizzle } from 'drizzle-orm/d1'
 import { comments } from './schema'
+import { isRecord } from './type-guards'
 
 type DbComment = typeof comments.$inferSelect
 
@@ -74,10 +75,6 @@ export class MultiplayerComments extends DurableObject<Env> {
     `)
   }
 
-  private isRecord(value: unknown): value is Record<string, unknown> {
-    return typeof value === 'object' && value !== null && !Array.isArray(value)
-  }
-
   private parseAnchor(value: unknown): Anchor | null {
     if (value === null || value === undefined) return null
     let raw: unknown = value
@@ -88,7 +85,7 @@ export class MultiplayerComments extends DurableObject<Env> {
         return null
       }
     }
-    if (!this.isRecord(raw)) return null
+    if (!isRecord(raw)) return null
     const headingId = raw['headingId']
     const blockId = raw['blockId']
     const paragraphIndex = raw['paragraphIndex']

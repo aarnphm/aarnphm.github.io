@@ -1,3 +1,5 @@
+import { isStringRecord } from './type-guards'
+
 const U200D = String.fromCharCode(8205)
 const UFE0Fg = /\uFE0F/g
 
@@ -36,15 +38,6 @@ let codePointToName: Record<string, string> | undefined = undefined
 let emojiEntries: EmojiEntry[] | null = null
 const base64Chunks = new Map<string, Record<string, string>>()
 let assetManifest: Promise<Record<string, string>> | undefined = undefined
-
-function isStringRecord(value: unknown): value is Record<string, string> {
-  return (
-    typeof value === 'object' &&
-    value !== null &&
-    !Array.isArray(value) &&
-    Object.values(value).every(item => typeof item === 'string')
-  )
-}
 
 function staticScriptsUrl(assetPath: string): string {
   const source = new URL(import.meta.url)

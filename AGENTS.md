@@ -6,13 +6,14 @@ This means: no fallbacks, no hacks, no shortcuts. Production-grade, Google-quali
 
 ## non-negotiables
 
-- do not write comments
-- use `pnpm` by default, oxlint, oxfmt, tsgo for the new Go compiler.
-- filename should always, always use `snake-case.ts` in `quartz/util`
-- do not run bundle or build; assume the user runs `dev.ts` and inspect the running process instead of spawning your own
-- do not commit secrets; use `.env` locally and Cloudflare Secrets for the worker
-- transformers under @quartz/plugins/transformers/ MUST NOT use filesystem access
-- when thinking hard about a problem, use extended thinking as much as possible to reason hard about a problem.
-- always use fd, rg as tools (assume these are installed by default)
-- never writes math symbol in ASCII in markdown, and you should ALWAYS write latex block accordingly.
-- don't even bother shim or backward compatibility (too much junk and bloat the codebase)
+- Ship minimal production code that fixes the owning boundary.
+- Do not write comments.
+- Use `pnpm`, `oxlint`, `oxfmt`, and `tsgo`.
+- Inspect with `fd` and `rg`.
+- Keep new files in `quartz/util` snake-case.
+- Reuse shared guards and helpers from the owning util module; do not copy `isRecord`, JSON readers, or tiny support functions into call sites.
+- Do not run bundle or build. Inspect the running `dev.ts` process when runtime evidence is needed.
+- Keep secrets in `.env` locally and Cloudflare Secrets in production.
+- Keep filesystem access out of `@quartz/plugins/transformers`.
+- Write markdown math with LaTeX blocks.
+- Skip shims and backward compatibility unless aarnphm asks for them.

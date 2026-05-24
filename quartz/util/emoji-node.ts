@@ -1,18 +1,10 @@
 import { readFile } from 'node:fs/promises'
 import path from 'path'
+import { isStringRecord } from './type-guards'
 
 const emojiAssetRoot = path.join(process.cwd(), 'quartz/util/emojimap')
 const base64Chunks = new Map<string, Record<string, string>>()
 let codePointToName: Record<string, string> | undefined = undefined
-
-function isStringRecord(value: unknown): value is Record<string, string> {
-  return (
-    typeof value === 'object' &&
-    value !== null &&
-    !Array.isArray(value) &&
-    Object.values(value).every(item => typeof item === 'string')
-  )
-}
 
 async function readEmojiRecord(assetPath: string): Promise<Record<string, string>> {
   const raw = await readFile(path.join(emojiAssetRoot, assetPath), 'utf8')

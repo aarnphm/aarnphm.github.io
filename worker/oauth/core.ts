@@ -11,7 +11,12 @@ export type GithubOAuthConfig = {
   callbackPath: string
 }
 
-export type GithubUser = { login: string; name: string | null; email: string | null }
+export type GithubUser = {
+  login: string
+  name: string | null
+  email: string | null
+  avatar_url: string
+}
 
 export type GithubOAuthCallbacks<TState, TResult> = {
   parseStatePayload: (raw: string) => TState | null
@@ -91,6 +96,7 @@ export function createGithubOAuthHandler<TState, TResult>(
       login: data.login,
       name: data.name ?? null,
       email: data.email ?? null,
+      avatar_url: data.avatar_url,
     }
 
     const result = await callbacks.onComplete(req, env, state, user, accessToken)

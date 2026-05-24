@@ -270,6 +270,74 @@ describe('notebook browser runtime output', () => {
     assert.match(source, /'quartz\/util\/notebook-runtime\.ts'/)
   })
 
+  test('chunks browser basedpyright outside the notebook runtime client', async () => {
+    const componentSource = await readFile(
+      new URL('../plugins/emitters/componentResources.tsx', import.meta.url),
+      'utf8',
+    )
+    const clientSource = await readFile(
+      new URL('../components/scripts/notebook-runtime.client.ts', import.meta.url),
+      'utf8',
+    )
+    const editorSource = await readFile(
+      new URL('../components/scripts/notebook-code-editor.ts', import.meta.url),
+      'utf8',
+    )
+    const lspSource = await readFile(
+      new URL('../components/scripts/notebook-lsp.ts', import.meta.url),
+      'utf8',
+    )
+    const styleSource = await readFile(
+      new URL('../styles/pages/notebook.scss', import.meta.url),
+      'utf8',
+    )
+
+    assert.match(componentSource, /const notebookRuntimeLspEntry =/)
+    assert.match(componentSource, /browser-basedpyright\/dist\/pyright\.worker\.js/)
+    assert.match(componentSource, /basedpyright\/dist\/typeshed-fallback\/stdlib/)
+    assert.match(componentSource, /function writeNotebookPyrightAssets/)
+    assert.match(componentSource, /replaceAll\('notebook-pyright\.worker\.js', pyrightWorkerName\)/)
+    assert.match(
+      componentSource,
+      /replaceAll\('notebook-pyright-typeshed\.json', pyrightTypeshedName\)/,
+    )
+    assert.match(
+      editorSource,
+      /const \{ notebookLspExtensions \} = await import\('\.\/notebook-lsp'\)/,
+    )
+    assert.match(editorSource, /lspExtensions\(config\.lsp\)/)
+    assert.match(
+      clientSource,
+      /lsp: \{[\s\S]*runtimeId: this\.payload\.id,[\s\S]*sourcePath: this\.payload\.sourcePath,[\s\S]*cellId: cell\.id/,
+    )
+    assert.match(
+      lspSource,
+      /const notebookPyrightWorkerName = '\.\.\/notebook-pyright\.worker\.js'/,
+    )
+    assert.match(
+      lspSource,
+      /const notebookPyrightTypeshedName = '\.\.\/notebook-pyright-typeshed\.json'/,
+    )
+    assert.match(
+      lspSource,
+      /function notebookRootPath\(config: NotebookLspConfig\)[\s\S]*\/quartz-notebook\/\$\{encodeURIComponent\(config\.runtimeId\)\}/,
+    )
+    assert.match(
+      lspSource,
+      /function notebookWorkspaceFiles\(typeshed: JsonObject, rootPath: string\)/,
+    )
+    assert.match(lspSource, /\[`\$\{rootPath\}\/\.pyright-root`\]: ''/)
+    assert.match(lspSource, /mode: 'foreground'/)
+    assert.match(lspSource, /message\.type !== 'browser\/newWorker'/)
+    assert.match(lspSource, /initializationOptions: \{ files: typeshed \}/)
+    assert.match(lspSource, /createPyrightTransport\(this\.rootUri, workspaceFiles/)
+    assert.match(lspSource, /method === 'workspace\/configuration'/)
+    assert.doesNotMatch(lspSource, /languageServerExtensions/)
+    assert.match(styleSource, /\.cm-diagnosticRange/)
+    assert.match(styleSource, /\.cm-tooltip-autocomplete > ul/)
+    assert.match(styleSource, /\.cm-lsp-active-parameter/)
+  })
+
   test('keeps application/javascript display output inert in the browser runtime', async () => {
     const source = await readFile(
       new URL('../components/scripts/notebook-runtime.pyodide.js', import.meta.url),
@@ -496,10 +564,21 @@ describe('notebook browser runtime output', () => {
     assert.match(keybindSource, /clearGPrefix\(\)/)
     assert.match(clientSource, /event\.key === 'i'/)
     assert.match(clientSource, /private notebookRunKey\(event: KeyboardEvent\): boolean/)
+    assert.match(clientSource, /private enterEditMode\(cell: RuntimeCell\)/)
+    assert.match(clientSource, /private activeCellFromDocument\(\): RuntimeCell \| undefined/)
+    assert.match(clientSource, /\[data-notebook-cell-frame\]\[data-notebook-active-cell\]/)
+    assert.match(clientSource, /if \(cell\) this\.activeCellId = cell\.id/)
+    assert.match(
+      clientSource,
+      /this\.cellFromTarget\(target\)[\s\S]*this\.activeCellFromDocument\(\)[\s\S]*this\.cellById\(this\.activeCellId\)/,
+    )
     assert.match(clientSource, /event\.key === 'Enter'/)
+    assert.match(clientSource, /event\.key === 'Enter' \|\| event\.key === 'i'/)
+    assert.match(clientSource, /this\.enterEditMode\(cell\)/)
     assert.match(clientSource, /void this\.runCell\(cell\)/)
     assert.match(clientSource, /event\.key !== 'Escape'/)
     assert.match(clientSource, /void this\.showSourceEditor\(cell, false\)/)
+    assert.match(clientSource, /controls\.frame\.focus\(\{ preventScroll: true \}\)/)
     assert.match(clientSource, /renderedSource: cell\.source/)
     assert.match(clientSource, /renderNotebookHighlightedLines/)
     assert.match(clientSource, /controls\.editor\.highlightedLines\(\)/)
@@ -537,6 +616,9 @@ describe('notebook browser runtime output', () => {
       /const notebookRunKeys = \['Mod-Enter', 'Ctrl-Enter', 'Shift-Enter', 'Alt-Enter'\]/,
     )
     assert.match(editorSource, /\.\.\.notebookRunKeys\.map\(key => \(\{/)
+    assert.match(editorSource, /key: 'Mod-s'[\s\S]*config\.onSave\?\.\(\)/)
+    assert.match(editorSource, /key: 'Ctrl-s'[\s\S]*config\.onSave\?\.\(\)/)
+    assert.match(editorSource, /key: 'Escape'[\s\S]*config\.onCancel\?\.\(\)/)
     assert.match(
       editorSource,
       /Vim\.mapCommand\([\s\S]*?'J'[\s\S]*?'notebookMoveSelectedLinesDown'/,

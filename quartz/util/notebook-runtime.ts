@@ -1,4 +1,5 @@
 import { escapeHTML } from './escape'
+import { isRecord } from './type-guards'
 
 export type NotebookRuntimeCell = {
   id: string
@@ -252,10 +253,6 @@ function notebookSandboxPathReason(
   if (!allowDot && (normalized === '.' || parts.every(part => part === '' || part === '.'))) {
     return `${command} path ${path} is unavailable in the browser runtime sandbox`
   }
-}
-
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === 'object' && value !== null && !Array.isArray(value)
 }
 
 function sourceText(value: unknown): string {

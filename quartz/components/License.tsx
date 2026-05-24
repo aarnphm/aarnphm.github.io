@@ -4,6 +4,7 @@ import {
   QuartzComponentProps,
 } from '../types/component'
 import { classNames } from '../util/lang'
+import { isRecord } from '../util/type-guards'
 import style from './styles/license.scss'
 
 function frontmatterString(value: unknown): string | undefined {
@@ -12,13 +13,9 @@ function frontmatterString(value: unknown): string | undefined {
   return trimmed.length > 0 ? trimmed : undefined
 }
 
-function isStringRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === 'object' && value !== null && !Array.isArray(value)
-}
-
 export default (() => {
   const License: QuartzComponent = ({ fileData, displayClass }: QuartzComponentProps) => {
-    const frontmatter = isStringRecord(fileData.frontmatter) ? fileData.frontmatter : undefined
+    const frontmatter = isRecord(fileData.frontmatter) ? fileData.frontmatter : undefined
     const license = frontmatterString(frontmatter?.license)
     if (!license) return null
 

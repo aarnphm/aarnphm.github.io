@@ -1,5 +1,6 @@
 import { QuartzPluginData } from '../../../plugins/vfile'
 import { FilePath, FullSlug, simplifySlug, slugifyFilePath, splitAnchor } from '../../path'
+import { isRecord } from '../../type-guards'
 import { parseWikilink, resolveWikilinkTarget } from '../../wikilinks'
 import { BinaryExpr, Literal, Span } from './ast'
 import { BaseExpressionDiagnostic } from './diagnostics'
@@ -97,9 +98,6 @@ const makeRegex = (value: RegExp): RegexValue => ({ kind: 'regex', value })
 const makeHtml = (value: string): HtmlValue => ({ kind: 'html', value })
 const makeIcon = (value: string): IconValue => ({ kind: 'icon', value })
 const makeImage = (value: string): ImageValue => ({ kind: 'image', value })
-
-const isRecord = (value: unknown): value is Record<string, unknown> =>
-  typeof value === 'object' && value !== null && !Array.isArray(value)
 
 const isValue = (value: unknown): value is Value =>
   typeof value === 'object' && value !== null && 'kind' in value

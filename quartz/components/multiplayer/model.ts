@@ -1,3 +1,5 @@
+import { isRecord } from '../../util/type-guards'
+
 export type StructuralAnchor = {
   headingId: string | null
   blockId: string | null
@@ -38,9 +40,7 @@ export type BroadcastMessage =
   | { type: 'ack'; opId: string; seq: number }
   | { type: 'error'; message: string }
 
-export function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === 'object' && value !== null && !Array.isArray(value)
-}
+export { isRecord }
 
 export function isOperationType(value: unknown): value is OperationType {
   return value === 'new' || value === 'update' || value === 'delete' || value === 'resolve'

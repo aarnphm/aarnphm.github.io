@@ -9,9 +9,7 @@ import {
 } from '../util/base/compiler'
 import { Expr, LogicalExpr, UnaryExpr, spanFrom } from '../util/base/compiler/ast'
 import { Diagnostic } from '../util/base/compiler/errors'
-
-const isRecord = (value: unknown): value is Record<string, unknown> =>
-  typeof value === 'object' && value !== null && !Array.isArray(value)
+import { isRecord } from '../util/type-guards'
 
 type CollectedExpression = {
   kind: string

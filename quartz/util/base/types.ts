@@ -1,3 +1,4 @@
+import { isRecord } from '../type-guards'
 import {
   SummaryDefinition,
   ViewSummaryConfig,
@@ -8,9 +9,6 @@ import {
 
 export type { SummaryDefinition, ViewSummaryConfig, PropertyConfig, BuiltinSummaryType }
 export { BUILTIN_SUMMARY_TYPES }
-
-const isRecord = (value: unknown): value is Record<string, unknown> =>
-  typeof value === 'object' && value !== null && !Array.isArray(value)
 
 const isNonEmptyString = (value: unknown): value is string =>
   typeof value === 'string' && value.trim().length > 0
