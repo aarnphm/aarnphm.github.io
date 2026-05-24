@@ -553,10 +553,6 @@ describe('notebook browser runtime output', () => {
     )
     assert.match(
       styleSource,
-      /--notebook-output-tab-column: calc\(var\(--notebook-gutter-width\) \+ var\(--notebook-code-gap\)\)/,
-    )
-    assert.match(
-      styleSource,
       /--notebook-active-green: var\(--background-modifier-success, var\(--lime\)\)/,
     )
     assert.match(
@@ -580,9 +576,12 @@ describe('notebook browser runtime output', () => {
     assert.match(styleSource, /\.notebook-output-tabs \{/)
     assert.match(
       styleSource,
-      /\.notebook-output-tabs \{[\s\S]*grid-template-columns: var\(--notebook-output-tab-column\) minmax\(0, 1fr\);/,
+      /\.notebook-output-tabs \{[\s\S]*grid-template-columns: var\(--notebook-gutter-width\) minmax\(0, 1fr\);/,
     )
-    assert.match(styleSource, /\.notebook-output-tabs \{[\s\S]*column-gap: 0;/)
+    assert.match(
+      styleSource,
+      /\.notebook-output-tabs \{[\s\S]*column-gap: var\(--notebook-code-gap\);/,
+    )
     assert.match(
       styleSource,
       /\.notebook-code-cell > \.notebook-runtime-output > \.notebook-output-tabs:first-child \{[\s\S]*margin-top: 0\.65rem/s,
