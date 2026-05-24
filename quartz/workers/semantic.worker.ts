@@ -35,13 +35,7 @@ type Manifest = {
   hnsw?: { M: number; efConstruction: number }
 }
 
-type InitMessage = {
-  type: 'init'
-  cfg: any
-  manifestUrl: string
-  baseUrl?: string
-  disableCache?: boolean
-}
+type InitMessage = { type: 'init'; cfg?: SemanticWorkerConfig; disableCache?: boolean }
 
 type SearchMessage = { type: 'search'; text: string; k: number; seq: number }
 
@@ -65,10 +59,15 @@ type CandidateRow = { id: number; vec: string; score: number }
 
 type MetaRow = { value: string }
 
+type RuntimeDType = 'fp16' | 'fp32'
+
+type SemanticWorkerConfig = { model?: string; dtype?: RuntimeDType; disableCache?: boolean }
+
 const DB_NAME = 'semantic-search-cache'
 const META_TABLE = 'semantic_meta'
 const EMBEDDINGS_TABLE = 'semantic_embeddings'
 const INDEX_NAME = 'semantic_embeddings_vec_hnsw'
+const MANIFEST_URL = '/embeddings/manifest.json'
 const CDN_BASE = `https://cdn.jsdelivr.net/npm/@electric-sql/pglite@${dependencies['@electric-sql/pglite'].slice(1)}/dist`
 const ORT_CDN_BASE = `https://cdn.jsdelivr.net/npm/onnxruntime-web@${dependencies['onnxruntime-web'].slice(1)}/dist/`
 const ORT_WASM_PATHS = {
@@ -79,7 +78,7 @@ const VECTOR_BUNDLE_URL = new URL(`${CDN_BASE}/vector.tar.gz`)
 
 let state: WorkerState = 'idle'
 let manifest: Manifest | null = null
-let cfg: any = null
+let cfg: SemanticWorkerConfig | null = null
 let dims = 0
 let tokenizer: any = null
 let model: any = null
@@ -89,12 +88,12 @@ let dbPromise: Promise<PGlite> | null = null
 let jaxPromise: Promise<void> | null = null
 let manifestId: string | null = null
 
-function toAbsolute(path: string, baseUrl?: string): string {
-  if (path.startsWith('http://') || path.startsWith('https://')) {
-    return path
+function toAssetUrl(path: string): string {
+  const url = new URL(path, self.location.origin)
+  if (url.origin !== self.location.origin) {
+    throw new Error(`refusing cross-origin semantic asset ${url.origin}`)
   }
-  const base = baseUrl ?? self.location.origin
-  return new URL(path, base).toString()
+  return url.toString()
 }
 
 async function fetchBinary(path: string): Promise<ArrayBuffer> {
@@ -178,7 +177,7 @@ async function ensureJax(): Promise<void> {
   return jaxPromise
 }
 
-async function ensureSchema(db: PGlite, manifest: Manifest, manifestKey: string, baseUrl?: string) {
+async function ensureSchema(db: PGlite, manifest: Manifest, manifestKey: string) {
   await db.exec(
     `create table if not exists ${META_TABLE} (key text primary key, value text not null)`,
   )
@@ -214,7 +213,7 @@ async function ensureSchema(db: PGlite, manifest: Manifest, manifestKey: string,
 
   await Promise.all(
     manifest.vectors.shards.map(async shard => {
-      const absolute = toAbsolute(shard.path, baseUrl)
+      const absolute = toAssetUrl(shard.path)
       const payload = await fetchBinary(absolute)
       const view = new Float32Array(payload)
       if (view.length !== shard.rows * manifest.dims) {
@@ -299,15 +298,22 @@ const MODEL_MAPPING: Record<string, string> = {
   'Qwen/Qwen3-Embedding-0.6B': 'onnx-community/Qwen3-Embedding-0.6B-ONNX',
 }
 
+function resolveDType(value: unknown): RuntimeDType {
+  return value === 'fp16' ? 'fp16' : 'fp32'
+}
+
 async function ensureEncoder() {
   if (tokenizer && model) return
   const modelId = manifest?.model ?? cfg?.model
+  if (!modelId) {
+    throw new Error('semantic model is not configured')
+  }
   const mappedModel = MODEL_MAPPING[modelId] ?? modelId
   configureRuntimeEnv()
-  const dtype = typeof cfg?.dtype === 'string' && cfg.dtype.length > 0 ? cfg.dtype : 'fp32'
+  const dtype = resolveDType(cfg?.dtype)
   tokenizer = await AutoTokenizer.from_pretrained(mappedModel)
   model = await AutoModel.from_pretrained(mappedModel, { dtype })
-  cfg.dtype = dtype
+  if (cfg) cfg.dtype = dtype
 }
 
 async function embed(text: string, isQuery: boolean = false): Promise<Float32Array> {
@@ -436,13 +442,12 @@ async function handleInit(msg: InitMessage) {
   abortController = new AbortController()
 
   try {
-    cfg = msg.cfg
+    cfg = msg.cfg ?? {}
 
-    const manifestUrl = toAbsolute(msg.manifestUrl, msg.baseUrl)
-    const response = await fetch(manifestUrl, { signal: abortController.signal })
+    const response = await fetch(MANIFEST_URL, { signal: abortController.signal })
     if (!response.ok) {
       throw new Error(
-        `failed to fetch manifest ${manifestUrl}: ${response.status} ${response.statusText}`,
+        `failed to fetch manifest ${MANIFEST_URL}: ${response.status} ${response.statusText}`,
       )
     }
     manifest = (await response.json()) as Manifest
@@ -457,7 +462,7 @@ async function handleInit(msg: InitMessage) {
     manifestId = buildManifestId(manifest)
 
     const [db] = await Promise.all([openDatabase(Boolean(msg.disableCache)), ensureJax()])
-    await ensureSchema(db, manifest, manifestId, msg.baseUrl)
+    await ensureSchema(db, manifest, manifestId)
 
     state = 'ready'
     const ready: ReadyMessage = { type: 'ready' }
@@ -516,6 +521,9 @@ function handleReset() {
 }
 
 self.onmessage = (event: MessageEvent<WorkerMessage>) => {
+  const origin = typeof event.origin === 'string' ? event.origin : ''
+  if (origin && origin !== self.location.origin) return
+
   const data = event.data
 
   if (data.type === 'reset') {

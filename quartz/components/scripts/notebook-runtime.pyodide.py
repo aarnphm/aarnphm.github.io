@@ -973,9 +973,7 @@ def __quartz_time(statement, global_ns, local_ns):
     value = None
   process_elapsed = time.process_time() - process_started
   wall_elapsed = time.perf_counter() - started
-  print(
-    f'CPU times: user {_format_timeit(process_elapsed)}, sys: 0 ns, total: {_format_timeit(process_elapsed)}'
-  )
+  print(f'CPU times: user {_format_timeit(process_elapsed)}, sys: 0 ns, total: {_format_timeit(process_elapsed)}')
   print(f'Wall time: {_format_timeit(wall_elapsed)}')
   return value
 

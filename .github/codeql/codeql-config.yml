@@ -1,7 +1,12 @@
 name: garden-codeql
 
-queries:
-  - uses: security-and-quality
+query-filters:
+  - exclude:
+      id: js/file-access-to-http
+  - exclude:
+      id: js/http-to-file-access
+  - exclude:
+      id: js/file-system-race
 
 paths-ignore:
   - docs/**

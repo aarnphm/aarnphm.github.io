@@ -48,7 +48,7 @@ export function createWebSocketManager({ getState, dispatch, getPageId }: WebSoc
       } else if (msg.type === 'ack') {
         dispatch({ type: 'ws.ack', opId: msg.opId, seq: msg.seq })
       } else if (msg.type === 'error') {
-        console.error('multiplayer comments error:', msg.message)
+        console.error('multiplayer comments error')
       }
     }
 
