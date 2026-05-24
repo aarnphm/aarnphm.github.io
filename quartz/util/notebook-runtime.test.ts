@@ -566,6 +566,7 @@ describe('notebook browser runtime output', () => {
     )
     assert.match(styleSource, /padding: var\(--notebook-shell-padding\)/)
     assert.match(styleSource, /\.notebook-output-tabs \{/)
+    assert.match(styleSource, /\.notebook-output-tabs \{[\s\S]*column-gap: 0;/)
     assert.match(
       styleSource,
       /\.notebook-code-cell > \.notebook-runtime-output > \.notebook-output-tabs:first-child \{[\s\S]*margin-top: 0\.65rem/s,
@@ -582,6 +583,15 @@ describe('notebook browser runtime output', () => {
     assert.match(styleSource, /pre\.notebook-output-stream\[data-notebook-scroll-after\]/)
     assert.match(styleSource, /mask-image: linear-gradient/)
     assert.match(styleSource, /\.notebook-output-tablist \{/)
+    assert.match(styleSource, /\.notebook-output-tablist \{[\s\S]*gap: 0;[\s\S]*padding: 0;/)
+    assert.match(
+      styleSource,
+      /\.notebook-output-tab \{[\s\S]*border-radius: var\(--radius-3\) 0 0 var\(--radius-3\);/,
+    )
+    assert.match(
+      styleSource,
+      /\.notebook-output-tab \+ \.notebook-output-tab \{[\s\S]*margin-top: -1px;/,
+    )
     assert.match(styleSource, /\.notebook-output-tab\[aria-selected='true'\]/)
     assert.match(styleSource, /\.notebook-output-panel\[hidden\] \{/)
     assert.match(
