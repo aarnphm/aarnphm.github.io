@@ -64,6 +64,14 @@ type FrameMessage =
   | { type: 'done'; runtimeId: string; cellId: string; failed: boolean }
   | { type: 'asset'; runtimeId: string; cellId: string; assetId: string; url: string }
   | {
+      type: 'download'
+      runtimeId: string
+      cellId: string
+      filename: string
+      contentType: string
+      bytes: ArrayBuffer
+    }
+  | {
       type: 'file-result'
       runtimeId: string
       requestId: string
@@ -178,6 +186,14 @@ function readFrameMessage(value: unknown): FrameMessage | undefined {
     const assetId = readString(value, 'assetId')
     const url = readString(value, 'url')
     if (cellId && assetId && url) return { type, runtimeId, cellId, assetId, url }
+  }
+  if (type === 'download') {
+    const cellId = readString(value, 'cellId')
+    const filename = readString(value, 'filename')
+    const contentType = readString(value, 'contentType')
+    if (cellId && filename && contentType && value.bytes instanceof ArrayBuffer) {
+      return { type, runtimeId, cellId, filename, contentType, bytes: value.bytes }
+    }
   }
   if (type === 'file-result') {
     const requestId = readString(value, 'requestId')
@@ -484,6 +500,25 @@ function showNotebookOutputToast(message: string) {
     detail: { message, containerId: 'notebook-output-toast-container' },
   })
   document.dispatchEvent(event)
+}
+
+function downloadFileName(filename: string): string {
+  const name = filename.replaceAll('\\', '/').split('/').filter(Boolean).at(-1)?.trim()
+  return name && name !== '.' && name !== '..' ? name : 'notebook-file'
+}
+
+function downloadNotebookFile(filename: string, contentType: string, bytes: ArrayBuffer): string {
+  const name = downloadFileName(filename)
+  const url = URL.createObjectURL(new Blob([bytes], { type: contentType }))
+  const link = document.createElement('a')
+  link.href = url
+  link.download = name
+  link.style.display = 'none'
+  document.body.append(link)
+  link.click()
+  link.remove()
+  window.setTimeout(() => URL.revokeObjectURL(url), 60_000)
+  return name
 }
 
 function outputCopyText(outputs: HTMLElement[]): string {
@@ -1670,6 +1705,8 @@ class NotebookRuntime {
       waiter.resolve({ failed: message.failed })
     } else if (message.type === 'asset') {
       void this.fetchAsset(message, target)
+    } else if (message.type === 'download') {
+      this.downloadRuntimeFile(message)
     } else if (message.type === 'file-result') {
       if (!(target instanceof Worker)) return
       const waiter = this.runtimeFileWaiters.get(message.requestId)
@@ -1679,6 +1716,12 @@ class NotebookRuntime {
     } else if (message.type === 'status') {
       this.setStatus(message.text)
     }
+  }
+
+  private downloadRuntimeFile(message: Extract<FrameMessage, { type: 'download' }>) {
+    const name = downloadNotebookFile(message.filename, message.contentType, message.bytes)
+    this.setStatus(`downloaded ${name}`)
+    showNotebookOutputToast(`downloaded ${name}`)
   }
 
   private async fetchAsset(

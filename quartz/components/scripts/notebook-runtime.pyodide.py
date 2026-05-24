@@ -18,6 +18,7 @@ import js
 
 _quartz_notebook_modules = {}
 _quartz_notebook_root = '/quartz-notebook'
+_quartz_threading_runtime_error = 'Python threading and multiprocessing are unavailable in the browser runtime because Pyodide does not support starting threads or processes. Use QUARTZ_NOTEBOOK_MODE=execute or a server Python runtime for this cell.'
 _quartz_native_package_errors = {
   'flax': 'Flax depends on JAX and jaxlib, which require a native XLA runtime outside this browser Pyodide runtime. Use QUARTZ_NOTEBOOK_MODE=execute or a Colab/server runtime for this cell.',
   'jaxlib': 'jaxlib requires native XLA runtime support outside this browser Pyodide runtime. Use QUARTZ_NOTEBOOK_MODE=execute or a Colab/server runtime for this cell.',
@@ -1010,8 +1011,11 @@ def __quartz_writefile(filename, content, append=False):
   mode = 'a' if append else 'w'
   with open(path, mode, encoding='utf-8') as file:
     file.write(str(content))
+  relative = posixpath.relpath(path, _quartz_notebook_root)
+  with open(path, 'r', encoding='utf-8') as file:
+    js.quartz_notebook_download_file(relative, file.read())
   action = 'Appending to' if append else 'Writing'
-  print(f'{action} {posixpath.relpath(path, _quartz_notebook_root)}')
+  print(f'{action} {relative}')
 
 
 def __quartz_shell_ls(words):
@@ -1077,6 +1081,25 @@ def __quartz_shell(command):
   raise ValueError(f'shell command {words[0]} is unavailable in the browser runtime')
 
 
+def _quartz_is_threading_runtime_error(traceback_text):
+  lower = traceback_text.lower()
+  return (
+    '_start_joinable_thread' in traceback_text
+    or ('threading.py' in traceback_text and 'start' in lower and 'thread' in lower)
+    or ('multiprocessing' in lower and ('thread' in lower or 'process' in lower))
+  )
+
+
+def _quartz_python_error_payload(exc, traceback_text):
+  if _quartz_is_threading_runtime_error(traceback_text):
+    return {
+      'ename': 'UnsupportedRuntimeFeature',
+      'evalue': _quartz_threading_runtime_error,
+      'traceback': _quartz_threading_runtime_error,
+    }
+  return {'ename': exc.__class__.__name__, 'evalue': str(exc), 'traceback': traceback_text}
+
+
 def __quartz_run_cell(
   source,
   _parse=_quartz_ast.parse,
@@ -1104,5 +1127,6 @@ def __quartz_run_cell(
     else:
       exec(_compile(tree, '<notebook-cell>', 'exec'), _globals())
   except BaseException as exc:
-    _python_error(_json_dumps({'ename': exc.__class__.__name__, 'evalue': str(exc), 'traceback': _format_exc()}))
+    traceback_text = _format_exc()
+    _python_error(_json_dumps(_quartz_python_error_payload(exc, traceback_text)))
     raise

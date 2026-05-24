@@ -11,6 +11,7 @@ import {
   notebookToMarkdownChunks,
   parseNotebook,
 } from './notebook'
+import { renderNotebookRuntimeOutput, unsupportedNotebookRuntimeReason } from './notebook-runtime'
 
 type HastElement = {
   type: string
@@ -162,6 +163,38 @@ describe('notebook parser', () => {
     assert.match(markdown, /FrontEndBackEnd\.svg"><\/img>\n\nA common split uses/)
   })
 
+  test('keeps html figure captions with their images', async () => {
+    const notebook = parseNotebook(
+      JSON.stringify({
+        cells: [
+          {
+            cell_type: 'markdown',
+            source:
+              '<figure style="width: 20%;float: right;border-left:10px solid transparent;">\n    <img src="./pathfinder-concept.webp"/>\n    <figcaption style="text-align: center;">\n        <small>Credit: <a href="https://www.nasa.gov/mission_pages/pathfinder/overview">NASA</a></small>\n    </figcaption>\n</figure>',
+          },
+        ],
+      }),
+      'thoughts/university/twenty-three-twenty-four/sfwr-3bb4/00 Concurrent System Design/Concurrent System Design.ipynb',
+    )
+
+    const markdown = notebookToMarkdown(
+      notebook,
+      'thoughts/university/twenty-three-twenty-four/sfwr-3bb4/00 Concurrent System Design/Concurrent System Design.ipynb',
+    )
+    const processor = unified()
+      .use(remarkParse)
+      .use(remarkRehype, { allowDangerousHtml: true })
+      .use(rehypeRaw)
+    const tree = (await processor.run(processor.parse(markdown))) as HastElement
+    const figure = findElement(tree, node => node.tagName === 'figure')
+
+    assert(figure)
+    assert(findElement(figure, node => node.tagName === 'img'))
+    assert(findElement(figure, node => node.tagName === 'figcaption'))
+    assert(!findElement(figure, node => node.tagName === 'pre'))
+    assert.doesNotMatch(markdown, /pathfinder-concept\.webp"\/>\n\n    <figcaption/)
+  })
+
   test('renders text results separately from source blocks', () => {
     const notebook = parseNotebook(
       JSON.stringify({
@@ -293,6 +326,56 @@ describe('notebook parser', () => {
     })
 
     assert.deepStrictEqual(data?.importableModules, [])
+  })
+
+  test('reports unsupported browser threading before notebook execution', () => {
+    const reason =
+      'Python threading and multiprocessing are unavailable in the browser runtime because Pyodide does not support starting threads or processes. Use QUARTZ_NOTEBOOK_MODE=execute or a server Python runtime for this cell.'
+
+    assert.strictEqual(
+      unsupportedNotebookRuntimeReason(
+        'from threading import Thread\nThread(target=print).start()',
+      ),
+      reason,
+    )
+    assert.strictEqual(
+      unsupportedNotebookRuntimeReason(
+        'import threading as th\nworker = th.Thread(target=print)\nworker.start()',
+      ),
+      reason,
+    )
+    assert.strictEqual(
+      unsupportedNotebookRuntimeReason(
+        'from concurrent.futures import ThreadPoolExecutor\nThreadPoolExecutor(max_workers=2)',
+      ),
+      reason,
+    )
+
+    const html = renderNotebookRuntimeOutput({
+      type: 'error',
+      ename: 'UnsupportedRuntimeFeature',
+      evalue: reason,
+      traceback: reason,
+    })
+
+    assert.match(html, /notebook-output-error/)
+    assert.match(html, /Pyodide does not support starting threads or processes/)
+    assert.doesNotMatch(html, /threading\.py/)
+  })
+
+  test('allows writefile cells within the browser runtime sandbox', () => {
+    assert.strictEqual(
+      unsupportedNotebookRuntimeReason('%%writefile SetXY.java\npublic class SetXY {}'),
+      undefined,
+    )
+    assert.strictEqual(
+      unsupportedNotebookRuntimeReason('%%writefile -a output.txt\nmore output'),
+      undefined,
+    )
+    assert.strictEqual(
+      unsupportedNotebookRuntimeReason('%%writefile ../SetXY.java\npublic class SetXY {}'),
+      '%%writefile path ../SetXY.java is outside the browser runtime sandbox',
+    )
   })
 
   test('embeds escaped runtime json without raw script terminators', () => {

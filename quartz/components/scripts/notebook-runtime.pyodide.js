@@ -11,6 +11,7 @@ const pendingAssets = new Map()
 const streamBuffers = new Map()
 const stdoutDecoder = new TextDecoder()
 const stderrDecoder = new TextDecoder()
+const downloadEncoder = new TextEncoder()
 let stdlibModules
 let debugEnabled = false
 let lastPythonError
@@ -84,6 +85,8 @@ const pyodideImportPackages = new Map([
 ])
 const runtimeProvidedPackages = new Set(['jax', 'torch'])
 const browserRuntimeExtensionDirectives = new Set(['autoreload', 'nb_mypy'])
+const browserRuntimeThreadingReason =
+  'Python threading and multiprocessing are unavailable in the browser runtime because Pyodide does not support starting threads or processes. Use QUARTZ_NOTEBOOK_MODE=execute or a server Python runtime for this cell.'
 const unsupportedNativePackages = new Map([
   [
     'flax',
@@ -191,6 +194,20 @@ function emitOutput(output) {
 function emitOutputForCell(cellId, output) {
   if (!cellId) return
   post({ type: 'output', cellId, output })
+}
+function downloadRuntimeFile(filename, content) {
+  if (!currentCellId) return
+  const bytes = downloadEncoder.encode(textOf(content)).buffer
+  post(
+    {
+      type: 'download',
+      cellId: currentCellId,
+      filename: textOf(filename),
+      contentType: 'text/plain;charset=utf-8',
+      bytes,
+    },
+    [bytes],
+  )
 }
 function streamKey(cellId, name) {
   return cellId + '\u0000' + name
@@ -450,6 +467,87 @@ function browserRuntimeDirective(line) {
   }
   if (/^%autoreload(?:\s|$)/.test(trimmed)) return {}
   if (/^%matplotlib(?:\s|$)/.test(trimmed)) return {}
+}
+function pythonImportAliases(code, moduleName) {
+  const aliases = new Set()
+  for (const line of code.split(/\r?\n/)) {
+    const withoutComment = line.replace(/#.*/, '')
+    for (const importMatch of withoutComment.matchAll(/(?:^|[;:])\s*import\s+([^;]+)/g)) {
+      for (const part of importMatch[1].split(',')) {
+        const match = part
+          .trim()
+          .match(
+            new RegExp(
+              `^${moduleName.replace(/\./g, '\\.')}\\s*(?:as\\s+([A-Za-z_][A-Za-z0-9_]*))?$`,
+            ),
+          )
+        if (match) aliases.add(match[1] ?? moduleName.split('.').at(-1) ?? moduleName)
+      }
+    }
+  }
+  return aliases
+}
+function pythonFromImportNames(code, moduleName) {
+  const names = new Set()
+  for (const line of code.split(/\r?\n/)) {
+    const withoutComment = line.replace(/#.*/, '')
+    for (const match of withoutComment.matchAll(
+      new RegExp(
+        `(?:^|[;:])\\s*from\\s+${moduleName.replace(/\./g, '\\.')}\\s+import\\s+([^;]+)`,
+        'g',
+      ),
+    )) {
+      for (const part of match[1].split(',')) {
+        const name = part
+          .trim()
+          .split(/\s+as\s+/)[0]
+          ?.trim()
+        if (name) names.add(name)
+      }
+    }
+  }
+  return names
+}
+function hasQualifiedPythonUse(code, aliases, members) {
+  for (const alias of aliases) {
+    const escaped = alias.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+    if (new RegExp(`\\b${escaped}\\s*\\.\\s*(?:${members.join('|')})\\b`).test(code)) {
+      return true
+    }
+  }
+  return false
+}
+function browserRuntimeThreadingReasonForSource(code) {
+  const threadingNames = pythonFromImportNames(code, 'threading')
+  if (threadingNames.has('*') || threadingNames.has('Thread')) {
+    return browserRuntimeThreadingReason
+  }
+  const multiprocessingNames = pythonFromImportNames(code, 'multiprocessing')
+  if (multiprocessingNames.has('*') || multiprocessingNames.has('Process')) {
+    return browserRuntimeThreadingReason
+  }
+  const futuresNames = pythonFromImportNames(code, 'concurrent.futures')
+  if (
+    futuresNames.has('*') ||
+    futuresNames.has('ThreadPoolExecutor') ||
+    futuresNames.has('ProcessPoolExecutor')
+  ) {
+    return browserRuntimeThreadingReason
+  }
+  if (hasQualifiedPythonUse(code, pythonImportAliases(code, 'threading'), ['Thread'])) {
+    return browserRuntimeThreadingReason
+  }
+  if (hasQualifiedPythonUse(code, pythonImportAliases(code, 'multiprocessing'), ['Process'])) {
+    return browserRuntimeThreadingReason
+  }
+  if (
+    hasQualifiedPythonUse(code, pythonImportAliases(code, 'concurrent.futures'), [
+      'ThreadPoolExecutor',
+      'ProcessPoolExecutor',
+    ])
+  ) {
+    return browserRuntimeThreadingReason
+  }
 }
 function writeFileDirective(code) {
   const lines = code.split(/\r?\n/)
@@ -956,6 +1054,8 @@ async function runNotebookShellCommands(commands) {
   }
 }
 function unsupportedReason(code) {
+  const threading = browserRuntimeThreadingReasonForSource(code)
+  if (threading) return threading
   const writeFile = writeFileDirective(code)
   if (writeFile) return writeFile.error
   for (const line of code.split(/\r?\n/)) {
@@ -1006,6 +1106,7 @@ async function ensurePyodide(indexURL) {
   globalThis.quartz_notebook_display = handleDisplayPayload
   globalThis.quartz_notebook_fetch = input => sandboxFetch(input, currentCellId)
   globalThis.quartz_notebook_python_error = handlePythonError
+  globalThis.quartz_notebook_download_file = downloadRuntimeFile
   installNotebookMlBridge(globalThis)
   pyodide.runPython(notebookRuntimeBootstrap)
   return pyodide
