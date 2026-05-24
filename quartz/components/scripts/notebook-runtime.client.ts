@@ -28,6 +28,7 @@ type SourceControls = {
   saveButton: HTMLButtonElement
   revertButton: HTMLButtonElement
   source: string
+  renderedSource: string
 }
 
 type RuntimePayload = {
@@ -277,7 +278,11 @@ function parseRuntimeJson(text: string): unknown | undefined {
   }
 }
 
-function replaceRenderedSource(figure: HTMLElement, source: string) {
+function replaceRenderedSource(
+  figure: HTMLElement,
+  source: string,
+  highlightedLines: HTMLElement[] | undefined,
+) {
   const pre = figure.querySelector('pre')
   if (!pre) {
     figure.textContent = source
@@ -291,6 +296,14 @@ function replaceRenderedSource(figure: HTMLElement, source: string) {
 
   code.replaceChildren()
   const lines = source.split(/\r?\n/)
+  if (highlightedLines && highlightedLines.length === lines.length) {
+    highlightedLines.forEach((line, index) => {
+      line.dataset.line = ''
+      code.append(line)
+      if (index < lines.length - 1) code.append(document.createTextNode('\n'))
+    })
+    return
+  }
   lines.forEach((line, index) => {
     const span = document.createElement('span')
     span.dataset.line = ''
@@ -342,6 +355,163 @@ function createHtmlOutput(html: string): HTMLDivElement {
   return output
 }
 
+function outputLabel(output: HTMLElement): string {
+  return output.dataset.outputName?.trim() || 'output'
+}
+
+function outputTabId(label: string): string {
+  return outputClassToken(label.toLowerCase())
+}
+
+function collectOutputElements(target: HTMLElement): HTMLElement[] {
+  const direct = Array.from(target.children).filter(
+    (child): child is HTMLElement =>
+      child instanceof HTMLElement && child.classList.contains('notebook-output'),
+  )
+  const tabbed = Array.from(
+    target.querySelectorAll<HTMLElement>(
+      ':scope > [data-notebook-output-tabs] > .notebook-output-panels > .notebook-output-panel > .notebook-output',
+    ),
+  )
+  return [...tabbed, ...direct]
+}
+
+const streamScrollHintTargets = new WeakSet<HTMLElement>()
+
+function syncStreamScrollHint(output: HTMLElement) {
+  const slack = 1
+  const scrollable = output.scrollHeight - output.clientHeight > slack
+  output.toggleAttribute('data-notebook-scrollable', scrollable)
+  output.toggleAttribute('data-notebook-scroll-before', scrollable && output.scrollTop > slack)
+  output.toggleAttribute(
+    'data-notebook-scroll-after',
+    scrollable && output.scrollTop + output.clientHeight < output.scrollHeight - slack,
+  )
+}
+
+function syncStreamScrollHints(root: HTMLElement) {
+  const outputs = root.matches('pre.notebook-output-stream')
+    ? [root]
+    : Array.from(root.querySelectorAll<HTMLElement>('pre.notebook-output-stream'))
+  for (const output of outputs) {
+    if (!streamScrollHintTargets.has(output)) {
+      output.addEventListener('scroll', () => syncStreamScrollHint(output), { passive: true })
+      streamScrollHintTargets.add(output)
+    }
+    requestAnimationFrame(() => syncStreamScrollHint(output))
+  }
+}
+
+function selectOutputTab(container: HTMLElement, activeId: string) {
+  for (const tab of container.querySelectorAll<HTMLButtonElement>('[data-notebook-output-tab]')) {
+    const active = tab.dataset.notebookOutputTab === activeId
+    tab.setAttribute('aria-selected', String(active))
+    tab.tabIndex = active ? 0 : -1
+  }
+  for (const panel of container.querySelectorAll<HTMLElement>('[data-notebook-output-panel]')) {
+    panel.hidden = panel.dataset.notebookOutputPanel !== activeId
+  }
+  syncStreamScrollHints(container)
+}
+
+function syncOutputTabs(target: HTMLElement, cellId = target.dataset.notebookOutput ?? 'cell') {
+  const outputs = collectOutputElements(target)
+  if (outputs.length === 0) {
+    target.removeAttribute('data-notebook-output-tabbed')
+    return
+  }
+
+  const groups = new Map<string, { id: string; label: string; outputs: HTMLElement[] }>()
+  for (const output of outputs) {
+    const label = outputLabel(output)
+    const id = outputTabId(label)
+    const group = groups.get(id) ?? { id, label, outputs: [] }
+    group.outputs.push(output)
+    groups.set(id, group)
+  }
+  const previousActive = target.querySelector<HTMLElement>(
+    '[data-notebook-output-tab][aria-selected="true"]',
+  )?.dataset.notebookOutputTab
+  const orderedGroups = [...groups.values()]
+  const activeId =
+    previousActive && orderedGroups.some(group => group.id === previousActive)
+      ? previousActive
+      : orderedGroups[0]?.id
+  if (!activeId) return
+
+  const container = document.createElement('div')
+  container.className = 'notebook-output-tabs'
+  container.dataset.notebookOutputTabs = ''
+  const tablist = document.createElement('div')
+  tablist.className = 'notebook-output-tablist'
+  tablist.setAttribute('role', 'tablist')
+  tablist.setAttribute('aria-orientation', 'vertical')
+  const panels = document.createElement('div')
+  panels.className = 'notebook-output-panels'
+  const outputId = outputClassToken(cellId)
+
+  orderedGroups.forEach((group, index) => {
+    const tabId = `notebook-output-${outputId}-${index}-tab`
+    const panelId = `notebook-output-${outputId}-${index}-panel`
+    const tab = document.createElement('button')
+    tab.type = 'button'
+    tab.className = 'notebook-output-tab'
+    tab.dataset.notebookOutputTab = group.id
+    tab.id = tabId
+    tab.textContent = group.label
+    tab.setAttribute('role', 'tab')
+    tab.setAttribute('aria-controls', panelId)
+    tab.addEventListener('click', () => selectOutputTab(container, group.id))
+    tab.addEventListener('keydown', event => {
+      const delta = event.key === 'ArrowDown' || event.key === 'ArrowRight' ? 1 : -1
+      if (
+        event.key !== 'ArrowDown' &&
+        event.key !== 'ArrowRight' &&
+        event.key !== 'ArrowUp' &&
+        event.key !== 'ArrowLeft'
+      ) {
+        return
+      }
+      event.preventDefault()
+      const nextGroup = orderedGroups[(index + delta + orderedGroups.length) % orderedGroups.length]
+      if (!nextGroup) return
+      selectOutputTab(container, nextGroup.id)
+      tablist
+        .querySelector<HTMLButtonElement>(`[data-notebook-output-tab="${nextGroup.id}"]`)
+        ?.focus()
+    })
+    tablist.append(tab)
+
+    const panel = document.createElement('div')
+    panel.className = 'notebook-output-panel'
+    panel.dataset.notebookOutputPanel = group.id
+    panel.id = panelId
+    panel.setAttribute('role', 'tabpanel')
+    panel.setAttribute('aria-labelledby', tabId)
+    panel.append(...group.outputs)
+    panels.append(panel)
+  })
+
+  container.append(tablist, panels)
+  target.dataset.notebookOutputTabbed = ''
+  target.replaceChildren(container)
+  selectOutputTab(container, activeId)
+}
+
+function syncStaticOutputTabs(frame: HTMLElement, cellId: string) {
+  const outputs = Array.from(frame.children).filter(
+    (child): child is HTMLElement =>
+      child instanceof HTMLElement && child.classList.contains('notebook-output'),
+  )
+  if (outputs.length === 0) return
+  const container = document.createElement('div')
+  container.className = 'notebook-static-output'
+  container.dataset.notebookStaticOutput = cellId
+  outputs[0]?.before(container)
+  container.append(...outputs)
+  syncOutputTabs(container, cellId)
+}
+
 function appendRuntimeOutput(
   target: HTMLElement,
   output: NotebookRuntimeOutput,
@@ -359,6 +529,7 @@ function appendRuntimeOutput(
         output.text,
       ),
     )
+    syncOutputTabs(target)
     return
   }
 
@@ -374,11 +545,13 @@ function appendRuntimeOutput(
         ),
       )
     }
+    syncOutputTabs(target)
     return
   }
 
   if (output.type === 'html') {
     target.appendChild(createHtmlOutput(output.html))
+    syncOutputTabs(target)
     return
   }
 
@@ -390,12 +563,14 @@ function appendRuntimeOutput(
         output.text,
       ),
     )
+    syncOutputTabs(target)
     return
   }
 
   target.appendChild(
     createPreOutput(['notebook-output', 'notebook-output-text'], 'result', output.text),
   )
+  syncOutputTabs(target)
 }
 
 class NotebookRuntime {
@@ -418,7 +593,6 @@ class NotebookRuntime {
   private debug = false
   private vimMode: boolean
   private activeCellId: string | undefined
-  private pendingKeyPrefix: 'g' | undefined
 
   constructor(root: HTMLElement, payload: RuntimePayload) {
     this.root = root
@@ -485,24 +659,6 @@ class NotebookRuntime {
     this.activeCellId = undefined
   }
 
-  private focusCell(cellId: string) {
-    const frame = this.cellFrame(cellId)
-    if (!frame) return
-    frame.focus({ preventScroll: true })
-    frame.scrollIntoView({ block: 'center', inline: 'nearest' })
-  }
-
-  private selectAdjacentCell(from: RuntimeCell, delta: -1 | 1) {
-    const index = this.payload.cells.findIndex(cell => cell.id === from.id)
-    if (index === -1) return
-    const nextIndex = Math.min(Math.max(index + delta, 0), this.payload.cells.length - 1)
-    const next = this.payload.cells[nextIndex]
-    if (!next) return
-    this.selectCell(next.id)
-    this.focusCell(next.id)
-    this.setStatus(`cell ${nextIndex + 1}/${this.payload.cells.length}`)
-  }
-
   private cellFromTarget(target: EventTarget | null): RuntimeCell | undefined {
     if (!(target instanceof Element)) return undefined
     const frame = target.closest<HTMLElement>('[data-notebook-cell-frame]')
@@ -534,36 +690,33 @@ class NotebookRuntime {
 
   private claimNotebookKey(event: KeyboardEvent) {
     event.preventDefault()
-    event.stopPropagation()
+    event.stopImmediatePropagation()
+  }
+
+  private notebookRunKey(event: KeyboardEvent): boolean {
+    return (
+      event.key === 'Enter' && (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey)
+    )
   }
 
   private handleNotebookKeydown = (event: KeyboardEvent) => {
-    if (event.defaultPrevented || event.ctrlKey || event.metaKey || event.altKey) return
-    if (this.siteShortcutLayerActive() || this.targetOwnsKeyboard(event.target)) {
-      this.pendingKeyPrefix = undefined
+    if (
+      event.defaultPrevented ||
+      this.siteShortcutLayerActive() ||
+      this.targetOwnsKeyboard(event.target)
+    )
       return
-    }
     const cell = this.commandCell(event.target)
-    if (!cell) {
-      this.pendingKeyPrefix = undefined
-      return
-    }
+    if (!cell) return
 
-    if (event.key === 'g') {
-      this.pendingKeyPrefix = 'g'
+    if (this.notebookRunKey(event)) {
       this.selectCell(cell.id)
       this.claimNotebookKey(event)
+      void this.runCell(cell)
       return
     }
 
-    if (this.pendingKeyPrefix === 'g') {
-      this.pendingKeyPrefix = undefined
-      if (event.key === '[' || event.key === ']') {
-        this.claimNotebookKey(event)
-        this.selectAdjacentCell(cell, event.key === '[' ? -1 : 1)
-      }
-      return
-    }
+    if (event.ctrlKey || event.metaKey || event.altKey) return
 
     if (event.key === 'i') {
       this.selectCell(cell.id)
@@ -576,7 +729,7 @@ class NotebookRuntime {
     const controls = this.sourceControls.get(cell.id)
     if (controls && !controls.editorHost.hidden) {
       this.claimNotebookKey(event)
-      this.closeSourceEditor(cell)
+      void this.closeSourceEditor(cell)
       return
     }
     if (this.activeCellId !== undefined) {
@@ -719,18 +872,18 @@ class NotebookRuntime {
     this.setExecutionLabel(cell.id, '*')
     this.setRunningControls(true)
     this.clearOutput(cell.id)
-    const unsupported = unsupportedNotebookRuntimeReason(source)
-    if (unsupported) {
-      this.renderOutput(cell.id, {
-        type: 'error',
-        ename: 'UnsupportedRuntimeFeature',
-        evalue: unsupported,
-        traceback: unsupported,
-      })
-      return false
-    }
-    this.hideSavedOutput(cell.id)
     try {
+      const unsupported = unsupportedNotebookRuntimeReason(source)
+      if (unsupported) {
+        this.renderOutput(cell.id, {
+          type: 'error',
+          ename: 'UnsupportedRuntimeFeature',
+          evalue: unsupported,
+          traceback: unsupported,
+        })
+        return false
+      }
+      this.hideSavedOutput(cell.id)
       await this.ensureWorker()
       const result = await this.postRun(cell, source)
       return !result.failed
@@ -790,6 +943,7 @@ class NotebookRuntime {
       this.setExecutionLabel(cell.id, cell.executionIndex)
       const existingFrame = controls.closest<HTMLElement>('[data-notebook-cell-frame]')
       if (existingFrame) {
+        syncStaticOutputTabs(existingFrame, cell.id)
         this.decorateSourceEditor(cell, existingFrame)
         continue
       }
@@ -813,6 +967,7 @@ class NotebookRuntime {
         }
         break
       }
+      syncStaticOutputTabs(frame, cell.id)
       this.decorateSourceEditor(cell, frame)
     }
   }
@@ -836,10 +991,14 @@ class NotebookRuntime {
     if (!frame.hasAttribute('tabindex')) frame.tabIndex = -1
     const selectSource = (event: Event) => {
       this.selectCell(cell.id)
-      if (event.type === 'click' && !this.targetOwnsKeyboard(event.target)) {
+      if (
+        (event.type === 'pointerdown' || event.type === 'click') &&
+        !this.targetOwnsKeyboard(event.target)
+      ) {
         frame.focus({ preventScroll: true })
       }
     }
+    frame.addEventListener('pointerdown', selectSource, true)
     frame.addEventListener('click', selectSource)
     frame.addEventListener('focusin', selectSource)
     const figure =
@@ -886,7 +1045,9 @@ class NotebookRuntime {
     saveButton.dataset.notebookSaveCell = cell.id
     setNotebookIconButton(saveButton, 'save', `Save ${cell.id} locally`)
     saveButton.hidden = true
-    const saveSource = () => this.saveEditorSource(cell)
+    const saveSource = () => {
+      void this.saveEditorSource(cell)
+    }
     saveButton.addEventListener('click', saveSource)
 
     const revertButton =
@@ -897,7 +1058,9 @@ class NotebookRuntime {
     revertButton.dataset.notebookRevertCell = cell.id
     setNotebookIconButton(revertButton, 'revert', `Revert ${cell.id} local edit`)
     revertButton.hidden = true
-    const revertSource = () => this.revertEditorSource(cell)
+    const revertSource = () => {
+      void this.revertEditorSource(cell)
+    }
     revertButton.addEventListener('click', revertSource)
 
     const status =
@@ -926,12 +1089,15 @@ class NotebookRuntime {
       saveButton,
       revertButton,
       source: stored ?? cell.source,
+      renderedSource: cell.source,
     })
+    const controls = this.sourceControls.get(cell.id)
+    if (!controls) return
 
     if (stored !== undefined && stored === cell.source) {
       this.clearStoredSource(cell)
     } else if (stored !== undefined && figure) {
-      replaceRenderedSource(figure, stored)
+      void this.replaceRenderedCellSource(cell, controls, stored)
     }
     this.syncSourceControls(cell)
 
@@ -940,6 +1106,7 @@ class NotebookRuntime {
       editButton.removeEventListener('click', editSource)
       saveButton.removeEventListener('click', saveSource)
       revertButton.removeEventListener('click', revertSource)
+      frame.removeEventListener('pointerdown', selectSource, true)
       frame.removeEventListener('click', selectSource)
       frame.removeEventListener('focusin', selectSource)
       this.sourceControls.get(cell.id)?.editor?.destroy()
@@ -995,9 +1162,11 @@ class NotebookRuntime {
         this.syncSourceControls(cell)
       },
       onSubmit: () => this.runCell(cell),
-      onSave: () => this.saveEditorSource(cell),
+      onSave: () => {
+        void this.saveEditorSource(cell)
+      },
       onCancel: () => {
-        this.closeSourceEditor(cell)
+        void this.closeSourceEditor(cell)
       },
     })
     return controls.editor
@@ -1018,24 +1187,61 @@ class NotebookRuntime {
     if (visible) controls.editor?.focus()
   }
 
-  private closeSourceEditor(cell: RuntimeCell) {
+  private async highlightedSourceLines(
+    cell: RuntimeCell,
+    controls: SourceControls,
+    source: string,
+    preferredLines?: HTMLElement[],
+  ): Promise<HTMLElement[] | undefined> {
+    if (preferredLines && preferredLines.length === source.split(/\r?\n/).length)
+      return preferredLines
+    if (!controls.figure) return undefined
+    try {
+      const { renderNotebookHighlightedLines } = await import('./notebook-code-editor')
+      return await renderNotebookHighlightedLines(source, cell.language)
+    } catch {
+      return undefined
+    }
+  }
+
+  private async replaceRenderedCellSource(
+    cell: RuntimeCell,
+    controls: SourceControls,
+    source: string,
+    preferredLines?: HTMLElement[],
+  ) {
+    if (!controls.figure || controls.renderedSource === source) return
+    const highlightedLines = await this.highlightedSourceLines(
+      cell,
+      controls,
+      source,
+      preferredLines,
+    )
+    replaceRenderedSource(controls.figure, source, highlightedLines)
+    controls.renderedSource = source
+  }
+
+  private async closeSourceEditor(cell: RuntimeCell) {
     const controls = this.sourceControls.get(cell.id)
     if (!controls) return
+    let highlightedLines: HTMLElement[] | undefined
     if (controls.editor) {
       controls.source = controls.editor.getValue()
-      if (controls.figure) replaceRenderedSource(controls.figure, controls.source)
+      highlightedLines = controls.editor.highlightedLines()
     }
+    await this.replaceRenderedCellSource(cell, controls, controls.source, highlightedLines)
     void this.showSourceEditor(cell, false)
   }
 
-  private saveEditorSource(cell: RuntimeCell) {
+  private async saveEditorSource(cell: RuntimeCell) {
     const controls = this.sourceControls.get(cell.id)
     if (!controls) return
     const source = this.sourceForCell(cell)
+    const highlightedLines = controls.editor?.highlightedLines()
     if (source === cell.source) {
       controls.source = cell.source
       this.clearStoredSource(cell)
-      if (controls.figure) replaceRenderedSource(controls.figure, cell.source)
+      await this.replaceRenderedCellSource(cell, controls, cell.source, highlightedLines)
       void this.showSourceEditor(cell, false)
       this.setStatus('idle')
       return
@@ -1045,18 +1251,19 @@ class NotebookRuntime {
       return
     }
     controls.source = source
-    if (controls.figure) replaceRenderedSource(controls.figure, source)
+    await this.replaceRenderedCellSource(cell, controls, source, highlightedLines)
     void this.showSourceEditor(cell, false)
     this.setStatus('saved local edit')
   }
 
-  private revertEditorSource(cell: RuntimeCell) {
+  private async revertEditorSource(cell: RuntimeCell) {
     const controls = this.sourceControls.get(cell.id)
     if (!controls) return
     controls.source = cell.source
     controls.editor?.setValue(cell.source)
+    const highlightedLines = controls.editor?.highlightedLines()
     this.clearStoredSource(cell)
-    if (controls.figure) replaceRenderedSource(controls.figure, cell.source)
+    await this.replaceRenderedCellSource(cell, controls, cell.source, highlightedLines)
     void this.showSourceEditor(cell, false)
     this.setStatus('idle')
   }
@@ -1373,7 +1580,10 @@ class NotebookRuntime {
     let sibling = target.previousElementSibling
     while (sibling instanceof HTMLElement) {
       if (sibling.matches('figure, [data-notebook-cell]')) break
-      if (sibling.classList.contains('notebook-output')) {
+      if (
+        sibling.classList.contains('notebook-output') ||
+        sibling.hasAttribute('data-notebook-static-output')
+      ) {
         saved.unshift(sibling)
       }
       sibling = sibling.previousElementSibling

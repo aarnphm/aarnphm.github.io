@@ -64,13 +64,12 @@ article:has(.notebook-runtime) {
     align-items: start;
     margin: 2rem 0 1.4rem;
     padding: var(--notebook-shell-padding);
+    border: 1px solid color-mix(in srgb, var(--lightgray) 78%, transparent);
     border-radius: var(--notebook-shell-radius);
-    box-shadow: 0 0 0 1px color-mix(in srgb, var(--lightgray) 78%, transparent);
+    outline: 0;
 
     &[data-notebook-active-cell] {
-      box-shadow:
-        0 0 0 1px color-mix(in srgb, var(--notebook-active-green) 82%, transparent),
-        0 0 0 3px color-mix(in srgb, var(--notebook-active-green) 18%, transparent);
+      border-color: color-mix(in srgb, var(--notebook-active-green) 82%, transparent);
     }
 
     &[data-notebook-active-cell] > .notebook-runtime-cell .notebook-execution-prompt {
@@ -425,6 +424,95 @@ article:has(.notebook-runtime) {
     margin-bottom: 0;
   }
 
+  .notebook-output-tabs {
+    display: grid;
+    box-sizing: border-box;
+    grid-template-columns: minmax(4.2rem, max-content) minmax(0, 1fr);
+    width: 100%;
+    margin: 0.55rem 0 1rem;
+    overflow: hidden;
+    border: 1px solid color-mix(in srgb, var(--lightgray) 78%, transparent);
+    border-radius: var(--radius-5);
+    background: color-mix(in srgb, var(--light) 86%, var(--lightgray));
+  }
+
+  .notebook-code-cell > .notebook-runtime-output > .notebook-output-tabs:first-child {
+    margin-top: 0.65rem;
+  }
+
+  .notebook-code-cell > .notebook-runtime-output > .notebook-output-tabs:last-child {
+    margin-bottom: 0;
+  }
+
+  .notebook-output-tablist {
+    display: flex;
+    flex-direction: column;
+    gap: 0.18rem;
+    box-sizing: border-box;
+    min-width: 0;
+    padding: 0.3rem;
+    border-right: 1px solid color-mix(in srgb, var(--lightgray) 72%, transparent);
+    background: color-mix(in srgb, var(--light) 72%, var(--lightgray));
+  }
+
+  .notebook-output-tab {
+    display: block;
+    box-sizing: border-box;
+    min-width: 0;
+    max-width: 8rem;
+    min-height: 1.55rem;
+    padding: 0.25rem 0.45rem;
+    overflow: hidden;
+    border: 1px solid transparent;
+    border-radius: var(--radius-3);
+    background: transparent;
+    color: var(--gray);
+    cursor: pointer;
+    font-family: var(--codeFont);
+    font-size: 0.72rem;
+    line-height: 1.2;
+    text-align: left;
+    text-overflow: ellipsis;
+    transition:
+      background-color 140ms ease,
+      border-color 140ms ease,
+      color 140ms ease;
+    white-space: nowrap;
+  }
+
+  .notebook-output-tab:hover,
+  .notebook-output-tab:focus-visible,
+  .notebook-output-tab[aria-selected='true'] {
+    border-color: color-mix(in srgb, var(--notebook-active-green) 70%, transparent);
+    background: color-mix(in srgb, var(--notebook-active-green) 12%, var(--light));
+    color: var(--dark);
+    outline: 0;
+  }
+
+  .notebook-output-panels,
+  .notebook-output-panel {
+    min-width: 0;
+  }
+
+  .notebook-output-panel[hidden] {
+    display: none;
+  }
+
+  .notebook-output-tabs .notebook-output {
+    margin: 0;
+    border: 0;
+    border-radius: 0;
+  }
+
+  .notebook-output-tabs pre.notebook-output,
+  .notebook-output-tabs .notebook-output-latex {
+    background: transparent;
+  }
+
+  .notebook-output-tabs .notebook-output[data-output-name]::before {
+    display: none;
+  }
+
   .notebook-runtime-frame {
     position: absolute;
     width: 0;
@@ -466,10 +554,54 @@ article:has(.notebook-runtime) {
     }
   }
 
-  pre.notebook-output-stream {
+  pre.notebook-output-stream,
+  pre.notebook-output-json {
     max-height: min(18rem, 45vh);
     overflow: auto;
     overscroll-behavior: contain;
+  }
+
+  pre.notebook-output-stream {
+    --notebook-stream-blur-size: 1.2rem;
+  }
+
+  pre.notebook-output-stream[data-notebook-scroll-before] {
+    -webkit-mask-image: linear-gradient(
+      to bottom,
+      transparent,
+      #000 var(--notebook-stream-blur-size)
+    );
+    mask-image: linear-gradient(to bottom, transparent, #000 var(--notebook-stream-blur-size));
+  }
+
+  pre.notebook-output-stream[data-notebook-scroll-after] {
+    -webkit-mask-image: linear-gradient(
+      to bottom,
+      #000 calc(100% - var(--notebook-stream-blur-size)),
+      transparent
+    );
+    mask-image: linear-gradient(
+      to bottom,
+      #000 calc(100% - var(--notebook-stream-blur-size)),
+      transparent
+    );
+  }
+
+  pre.notebook-output-stream[data-notebook-scroll-before][data-notebook-scroll-after] {
+    -webkit-mask-image: linear-gradient(
+      to bottom,
+      transparent,
+      #000 var(--notebook-stream-blur-size),
+      #000 calc(100% - var(--notebook-stream-blur-size)),
+      transparent
+    );
+    mask-image: linear-gradient(
+      to bottom,
+      transparent,
+      #000 var(--notebook-stream-blur-size),
+      #000 calc(100% - var(--notebook-stream-blur-size)),
+      transparent
+    );
   }
 
   .notebook-output > samp {

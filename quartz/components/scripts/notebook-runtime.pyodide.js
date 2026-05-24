@@ -201,7 +201,7 @@ function bufferStreamBytesForCell(cellId, name, bytes, decoder) {
   if (!bytes) return 0
   const text = decoder.decode(bytes, { stream: true })
   bufferStreamForCell(cellId, name, text)
-  return bytes.length
+  return bytes.byteLength
 }
 function flushStreamDecoderForCell(cellId, name, decoder) {
   bufferStreamForCell(cellId, name, decoder.decode())
@@ -1087,6 +1087,9 @@ async function runCell(message) {
   }
 }
 globalThis.addEventListener('message', event => {
+  const origin = typeof event.origin === 'string' ? event.origin : ''
+  if (origin && origin !== globalThis.location.origin) return
+
   const message = event.data
   if (!message || message.source !== source) return
   if (message.type === 'init') {

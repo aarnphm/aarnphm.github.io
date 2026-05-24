@@ -211,14 +211,18 @@ document.addEventListener('nav', () => {
   let waitingForSecondG = false
   let ggTimeout: number | null = null
 
-  const suppressPaletteBindings = (e: KeyboardEvent) => {
-    if (!isPaletteActive()) return
-    if (e.key !== 'g' && e.key !== 'h') return
+  const clearGPrefix = () => {
     waitingForSecondG = false
     if (ggTimeout) {
       clearTimeout(ggTimeout)
       ggTimeout = null
     }
+  }
+
+  const suppressPaletteBindings = (e: KeyboardEvent) => {
+    if (!isPaletteActive()) return
+    if (e.key !== 'g' && e.key !== 'h') return
+    clearGPrefix()
     e.stopImmediatePropagation()
   }
   document.addEventListener('keydown', suppressPaletteBindings, true)
@@ -439,6 +443,60 @@ document.addEventListener('nav', () => {
     })
   }
 
+  function notebookCellFrames(): HTMLElement[] {
+    return Array.from(document.querySelectorAll<HTMLElement>('[data-notebook-cell-frame]'))
+  }
+
+  function activeNotebookCellIndex(cells: HTMLElement[]): number {
+    const active = document.querySelector<HTMLElement>(
+      '[data-notebook-cell-frame][data-notebook-active-cell]',
+    )
+    if (active) return cells.indexOf(active)
+    const focused = document.activeElement?.closest<HTMLElement>('[data-notebook-cell-frame]')
+    if (focused) return cells.indexOf(focused)
+    return -1
+  }
+
+  function nearestNotebookCellIndex(cells: HTMLElement[]): number {
+    const targetY = window.innerHeight * 0.45
+    let index = -1
+    let distance = Number.POSITIVE_INFINITY
+    cells.forEach((cell, i) => {
+      const rect = cell.getBoundingClientRect()
+      const candidate = Math.min(Math.abs(rect.top - targetY), Math.abs(rect.bottom - targetY))
+      if (candidate < distance) {
+        distance = candidate
+        index = i
+      }
+    })
+    return index
+  }
+
+  function selectNotebookCell(frame: HTMLElement) {
+    for (const active of document.querySelectorAll<HTMLElement>(
+      '[data-notebook-cell-frame][data-notebook-active-cell]',
+    )) {
+      active.removeAttribute('data-notebook-active-cell')
+    }
+    frame.setAttribute('data-notebook-active-cell', '')
+    if (!frame.hasAttribute('tabindex')) frame.tabIndex = -1
+    frame.focus({ preventScroll: true })
+    frame.scrollIntoView({ block: 'center', inline: 'nearest' })
+  }
+
+  function navigateNotebookCell(delta: -1 | 1): boolean {
+    const cells = notebookCellFrames()
+    if (cells.length === 0) return false
+    const activeIndex = activeNotebookCellIndex(cells)
+    const baseIndex = activeIndex >= 0 ? activeIndex : nearestNotebookCellIndex(cells)
+    if (baseIndex < 0) return false
+    const nextIndex = Math.min(Math.max(baseIndex + delta, 0), cells.length - 1)
+    const next = cells[nextIndex]
+    if (!next) return false
+    selectNotebookCell(next)
+    return true
+  }
+
   // Vim navigation handler
   function vimNavigationHandler(e: KeyboardEvent) {
     if (shouldIgnoreTarget(e.target)) return
@@ -468,6 +526,16 @@ document.addEventListener('nav', () => {
 
     if (e.ctrlKey || e.metaKey || e.altKey) return
 
+    if (waitingForSecondG && e.key !== 'g') {
+      const navigated =
+        (e.key === '[' || e.key === ']') && navigateNotebookCell(e.key === '[' ? -1 : 1)
+      clearGPrefix()
+      if (navigated) {
+        e.preventDefault()
+        return
+      }
+    }
+
     switch (e.key) {
       case 'f':
         e.preventDefault()
@@ -494,13 +562,13 @@ document.addEventListener('nav', () => {
           // Second 'g' pressed - scroll to top
           e.preventDefault()
           window.scrollTo({ top: 0, behavior: 'smooth' })
-          waitingForSecondG = false
-          if (ggTimeout) clearTimeout(ggTimeout)
+          clearGPrefix()
         } else {
           // First 'g' pressed - wait for second
           waitingForSecondG = true
           ggTimeout = window.setTimeout(() => {
             waitingForSecondG = false
+            ggTimeout = null
           }, 1000)
         }
         break
@@ -571,7 +639,7 @@ document.addEventListener('nav', () => {
     window.removeEventListener('scroll', clearHintsOnScroll)
     window.removeEventListener('resize', clearHintsOnScroll)
     clearHints()
-    if (ggTimeout) clearTimeout(ggTimeout)
+    clearGPrefix()
   })
 
   const shortcuts = container.querySelectorAll(

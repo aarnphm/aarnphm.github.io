@@ -266,7 +266,7 @@ describe('notebook browser runtime output', () => {
 
     assert.match(source, /const notebookRuntimeInlineEntry =/)
     assert.match(source, /function isNotebookRuntimePageScriptChange/)
-    assert.match(source, /slug: 'postscript' as FullSlug/)
+    assert.match(source, /assetSlugForContent\(ctx, 'postscript', '\.js', postscript\)/)
     assert.match(source, /'quartz\/util\/notebook-runtime\.ts'/)
   })
 
@@ -294,10 +294,32 @@ describe('notebook browser runtime output', () => {
     assert.match(clientSource, /this\.setStatus\(`stopped after \$\{cell\.id\}`\)/)
     assert.match(clientSource, /failed: value\.failed === true/)
     assert.match(clientSource, /waiter\.resolve\(\{ failed: message\.failed \}\)/)
+    assert.match(
+      clientSource,
+      /this\.clearOutput\(cell\.id\)[\s\S]*try \{[\s\S]*const unsupported = unsupportedNotebookRuntimeReason\(source\)/,
+    )
     assert.match(workerSource, /post\(\{ type: 'done', cellId: message\.cellId, failed: true \}\)/)
     assert.match(
       workerSource,
       /let failed = false[\s\S]*catch \(error\) \{[\s\S]*failed = true[\s\S]*post\(\{ type: 'done', cellId: message\.cellId, failed \}\)/,
+    )
+  })
+
+  test('acknowledges bytes written by pyodide stdout streams', async () => {
+    const source = await readFile(
+      new URL('../components/scripts/notebook-runtime.pyodide.js', import.meta.url),
+      'utf8',
+    )
+
+    assert.match(source, /function bufferStreamBytesForCell\(cellId, name, bytes, decoder\)/)
+    assert.match(source, /return bytes\.byteLength/)
+    assert.match(
+      source,
+      /pyodide\.setStdout\(\{[\s\S]*write: bytes => bufferStreamBytesForCell\(currentCellId, 'stdout', bytes, stdoutDecoder\)/,
+    )
+    assert.match(
+      source,
+      /pyodide\.setStderr\(\{[\s\S]*write: bytes => bufferStreamBytesForCell\(currentCellId, 'stderr', bytes, stderrDecoder\)/,
     )
   })
 
@@ -395,7 +417,9 @@ describe('notebook browser runtime output', () => {
       source,
       /target\.closest\('input, textarea, select, button, a\[href\], \[contenteditable\]'\)/,
     )
-    assert.match(source, /event\.stopPropagation\(\)/)
+    assert.match(source, /event\.stopImmediatePropagation\(\)/)
+    assert.match(source, /frame\.addEventListener\('pointerdown', selectSource, true\)/)
+    assert.match(source, /frame\.removeEventListener\('pointerdown', selectSource, true\)/)
   })
 
   test('wires vim-style notebook cell navigation and edit commands', async () => {
@@ -403,17 +427,77 @@ describe('notebook browser runtime output', () => {
       new URL('../components/scripts/notebook-runtime.client.ts', import.meta.url),
       'utf8',
     )
+    const keybindSource = await readFile(
+      new URL('../components/scripts/keybind.inline.ts', import.meta.url),
+      'utf8',
+    )
+    const editorSource = await readFile(
+      new URL('../components/scripts/notebook-code-editor.ts', import.meta.url),
+      'utf8',
+    )
     const styleSource = await readFile(
       new URL('../styles/pages/notebook.scss', import.meta.url),
       'utf8',
     )
 
-    assert.match(clientSource, /event\.key === 'g'/)
-    assert.match(clientSource, /event\.key === '\[' \|\| event\.key === ']'/)
-    assert.match(clientSource, /this\.selectAdjacentCell\(cell, event\.key === '\[' \? -1 : 1\)/)
+    assert.doesNotMatch(clientSource, /event\.key === 'g'/)
+    assert.match(keybindSource, /function navigateNotebookCell\(delta: -1 \| 1\): boolean/)
+    assert.match(keybindSource, /waitingForSecondG && e\.key !== 'g'/)
+    assert.match(
+      keybindSource,
+      /\(e\.key === '\[' \|\| e\.key === ']'\) && navigateNotebookCell\(e\.key === '\[' \? -1 : 1\)/,
+    )
+    assert.match(keybindSource, /clearGPrefix\(\)/)
     assert.match(clientSource, /event\.key === 'i'/)
+    assert.match(clientSource, /private notebookRunKey\(event: KeyboardEvent\): boolean/)
+    assert.match(clientSource, /event\.key === 'Enter'/)
+    assert.match(clientSource, /void this\.runCell\(cell\)/)
     assert.match(clientSource, /event\.key !== 'Escape'/)
     assert.match(clientSource, /void this\.showSourceEditor\(cell, false\)/)
+    assert.match(clientSource, /renderedSource: cell\.source/)
+    assert.match(clientSource, /renderNotebookHighlightedLines/)
+    assert.match(clientSource, /controls\.editor\.highlightedLines\(\)/)
+    assert.match(clientSource, /function syncOutputTabs\(target: HTMLElement, cellId =/)
+    assert.doesNotMatch(clientSource, /groups\.size <= 1/)
+    assert.match(
+      clientSource,
+      /function syncStaticOutputTabs\(frame: HTMLElement, cellId: string\)/,
+    )
+    assert.doesNotMatch(
+      clientSource,
+      /new Set\(outputs\.map\(output => outputTabId\(outputLabel\(output\)\)\)\)\.size <= 1/,
+    )
+    assert.match(clientSource, /if \(outputs\.length === 0\) return/)
+    assert.match(clientSource, /syncStaticOutputTabs\(existingFrame, cell\.id\)/)
+    assert.match(clientSource, /container\.dataset\.notebookStaticOutput = cellId/)
+    assert.match(clientSource, /target\.dataset\.notebookOutputTabbed = ''/)
+    assert.match(clientSource, /sibling\.hasAttribute\('data-notebook-static-output'\)/)
+    assert.match(clientSource, /function syncStreamScrollHint\(output: HTMLElement\)/)
+    assert.match(clientSource, /data-notebook-scroll-before/)
+    assert.match(clientSource, /data-notebook-scroll-after/)
+    assert.match(clientSource, /syncStreamScrollHints\(container\)/)
+    assert.match(clientSource, /role', 'tablist'/)
+    assert.match(clientSource, /role', 'tabpanel'/)
+    assert.match(editorSource, /forceParsing\(view, view\.state\.doc\.length, 500\)/)
+    assert.match(editorSource, /getComputedStyle\(source\)/)
+    assert.match(editorSource, /target\.style\.setProperty\('--shiki-light', style\.color\)/)
+    assert.match(editorSource, /function configureNotebookVimBindings\(vimApi: NotebookVimModule\)/)
+    assert.match(editorSource, /\['insert', 'jj', '<Esc>'\]/)
+    assert.match(editorSource, /\['insert', 'jk', '<Esc>'\]/)
+    assert.match(editorSource, /\['normal', ';', ':'\]/)
+    assert.match(editorSource, /\['normal', '\\\\', ':noh<CR>'\]/)
+    assert.match(
+      editorSource,
+      /const notebookRunKeys = \['Mod-Enter', 'Ctrl-Enter', 'Shift-Enter', 'Alt-Enter'\]/,
+    )
+    assert.match(editorSource, /\.\.\.notebookRunKeys\.map\(key => \(\{/)
+    assert.match(
+      editorSource,
+      /Vim\.mapCommand\([\s\S]*?'J'[\s\S]*?'notebookMoveSelectedLinesDown'/,
+    )
+    assert.match(editorSource, /Vim\.mapCommand\([\s\S]*?'K'[\s\S]*?'notebookMoveSelectedLinesUp'/)
+    assert.match(editorSource, /export async function renderNotebookHighlightedLines/)
+    assert.match(editorSource, /highlightedLines: \(\) => highlightedLineSpans\(view\)/)
     assert.match(styleSource, /\[data-notebook-active-cell\]/)
     assert.match(styleSource, /--notebook-shell-padding: 0\.55rem/)
     assert.match(styleSource, /--notebook-inner-radius: var\(--radius-5\)/)
@@ -427,9 +511,32 @@ describe('notebook browser runtime output', () => {
     )
     assert.match(
       styleSource,
-      /box-shadow: 0 0 0 1px color-mix\(in srgb, var\(--lightgray\) 78%, transparent\)/,
+      /border: 1px solid color-mix\(in srgb, var\(--lightgray\) 78%, transparent\)/,
     )
-    assert.match(styleSource, /var\(--notebook-active-green\) 82%/)
+    assert.match(styleSource, /outline: 0/)
+    assert.match(
+      styleSource,
+      /border-color: color-mix\(in srgb, var\(--notebook-active-green\) 82%, transparent\)/,
+    )
     assert.match(styleSource, /padding: var\(--notebook-shell-padding\)/)
+    assert.match(styleSource, /\.notebook-output-tabs \{/)
+    assert.match(
+      styleSource,
+      /\.notebook-code-cell > \.notebook-runtime-output > \.notebook-output-tabs:first-child \{[\s\S]*margin-top: 0\.65rem/s,
+    )
+    assert.match(
+      styleSource,
+      /pre\.notebook-output-stream,\n  pre\.notebook-output-json \{[\s\S]*max-height: min\(18rem, 45vh\)/,
+    )
+    assert.match(
+      styleSource,
+      /pre\.notebook-output-stream \{[\s\S]*--notebook-stream-blur-size: 1\.2rem/,
+    )
+    assert.match(styleSource, /pre\.notebook-output-stream\[data-notebook-scroll-before\]/)
+    assert.match(styleSource, /pre\.notebook-output-stream\[data-notebook-scroll-after\]/)
+    assert.match(styleSource, /mask-image: linear-gradient/)
+    assert.match(styleSource, /\.notebook-output-tablist \{/)
+    assert.match(styleSource, /\.notebook-output-tab\[aria-selected='true'\]/)
+    assert.match(styleSource, /\.notebook-output-panel\[hidden\] \{/)
   })
 })

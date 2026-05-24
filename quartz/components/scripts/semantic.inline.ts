@@ -12,6 +12,15 @@ type SearchPayload = { semantic: SemanticResult[] }
 
 type PendingResolver = { resolve: (payload: SearchPayload) => void; reject: (err: Error) => void }
 
+type RuntimeDType = 'fp16' | 'fp32'
+
+type SemanticConfig = {
+  enable?: boolean
+  disableCache?: boolean
+  model?: string
+  dtype?: RuntimeDType
+}
+
 export class SemanticClient {
   private ready: Promise<void>
   private resolveReady!: () => void
@@ -23,7 +32,7 @@ export class SemanticClient {
   private configured = false
   private lastError: Error | null = null
 
-  constructor(private cfg?: any) {
+  constructor(private cfg?: SemanticConfig) {
     this.ready = new Promise(resolve => {
       this.resolveReady = () => {
         if (this.readySettled) return
@@ -91,14 +100,8 @@ export class SemanticClient {
 
   private startInit() {
     if (!this.worker) return
-    const manifestUrl =
-      typeof this.cfg?.manifestUrl === 'string' && this.cfg.manifestUrl.length > 0
-        ? this.cfg.manifestUrl
-        : '/embeddings/manifest.json'
     const disableCache = Boolean(this.cfg?.disableCache)
-    const baseUrl =
-      typeof this.cfg?.manifestBaseUrl === 'string' ? this.cfg.manifestBaseUrl : undefined
-    this.worker.postMessage({ type: 'init', cfg: this.cfg, manifestUrl, baseUrl, disableCache })
+    this.worker.postMessage({ type: 'init', cfg: this.cfg, disableCache })
   }
 
   private rejectAll(err: Error, fatal = false) {
