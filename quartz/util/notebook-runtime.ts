@@ -12,6 +12,7 @@ export type NotebookRuntimeConfig = {
   enabled?: boolean
   pyodideIndexUrl?: string
   sourcePath?: string
+  importableModules?: string[]
 }
 
 export type NotebookRuntimeData = {
@@ -23,6 +24,7 @@ export type NotebookRuntimeData = {
   toolbar?: boolean
   debug?: boolean
   vimMode?: boolean
+  importableModules?: string[]
 }
 
 export type NotebookRuntimeStreamOutput = { type: 'stream'; name: string; text: string }

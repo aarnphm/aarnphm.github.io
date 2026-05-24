@@ -77,10 +77,13 @@ const notebookRuntimeMlBridgeEntry = 'quartz/components/scripts/notebook-runtime
 const notebookRuntimePyrightWorkerEntry = 'node_modules/browser-basedpyright/dist/pyright.worker.js'
 const notebookRuntimePyrightWorkerLicenseEntry =
   'node_modules/browser-basedpyright/dist/pyright.worker.js.LICENSE.txt'
+const notebookRuntimePyrightWorkerSourceMapEntry =
+  'node_modules/browser-basedpyright/dist/pyright.worker.js.map'
 const notebookRuntimePyrightTypeshedDir = 'node_modules/basedpyright/dist/typeshed-fallback/stdlib'
 const notebookRuntimePyrightWorkerPath = 'static/scripts/notebook-pyright.worker.js'
 const notebookRuntimePyrightWorkerLicensePath =
   'static/scripts/notebook-pyright.worker.js.LICENSE.txt'
+const notebookRuntimePyrightWorkerSourceMapPath = 'static/scripts/pyright.worker.js.map'
 const notebookRuntimePyrightTypeshedPath = 'static/scripts/notebook-pyright-typeshed.json'
 const semanticWorkerEntry = 'quartz/workers/semantic.worker.ts'
 const semanticWorkerPath = 'static/scripts/semantic.worker.js'
@@ -194,6 +197,13 @@ async function writeRawAsset(ctx: BuildCtx, logicalPath: string, content: string
   return write({ ctx, slug, ext, content })
 }
 
+async function writeLiteralRawAsset(ctx: BuildCtx, logicalPath: string, content: string | Buffer) {
+  const ext = path.extname(logicalPath) as `.${string}`
+  const slug = logicalPath.slice(0, -ext.length)
+  if (!isFullSlug(slug)) throw new Error(`invalid asset slug ${slug}`)
+  return write({ ctx, slug, ext, content })
+}
+
 async function writeAssetManifest(ctx: BuildCtx): Promise<FilePath> {
   return write({
     ctx,
@@ -288,14 +298,16 @@ async function notebookPyrightTypeshedJson() {
 }
 
 async function writeNotebookPyrightAssets(ctx: BuildCtx): Promise<FilePath[]> {
-  const [worker, license, typeshed] = await Promise.all([
+  const [worker, license, sourceMap, typeshed] = await Promise.all([
     fs.readFile(notebookRuntimePyrightWorkerEntry),
     fs.readFile(notebookRuntimePyrightWorkerLicenseEntry),
+    fs.readFile(notebookRuntimePyrightWorkerSourceMapEntry),
     notebookPyrightTypeshedJson(),
   ])
   return Promise.all([
     writeRawAsset(ctx, notebookRuntimePyrightWorkerPath, worker),
     writeRawAsset(ctx, notebookRuntimePyrightWorkerLicensePath, license),
+    writeLiteralRawAsset(ctx, notebookRuntimePyrightWorkerSourceMapPath, sourceMap),
     writeRawAsset(ctx, notebookRuntimePyrightTypeshedPath, typeshed),
   ])
 }

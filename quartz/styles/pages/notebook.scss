@@ -518,17 +518,31 @@ article:has(.notebook-runtime) {
     display: grid;
     box-sizing: border-box;
     grid-template-rows: minmax(0, var(--notebook-output-panel-height)) var(--notebook-action-height);
-    grid-template-columns: minmax(0, 1fr);
+    grid-template-columns: max-content minmax(0, 1fr);
     grid-column: 2;
+    position: relative;
+    isolation: isolate;
     width: 100%;
     height: calc(var(--notebook-output-panel-height) + var(--notebook-action-height));
     min-height: 0;
     margin: 0 0 1rem;
     overflow: visible;
     border: 1px solid color-mix(in srgb, var(--lightgray) 78%, transparent);
+    border-bottom: 0;
     border-radius: var(--notebook-inner-radius) var(--notebook-inner-radius)
-      var(--notebook-inner-radius) 0;
+      var(--notebook-inner-radius) var(--notebook-inner-radius);
     background: var(--notebook-output-surface);
+  }
+
+  .notebook-output-tabs::after {
+    content: '';
+    grid-row: 2;
+    grid-column: 2;
+    align-self: end;
+    z-index: 0;
+    min-width: 0;
+    border-bottom: 1px solid color-mix(in srgb, var(--lightgray) 78%, transparent);
+    pointer-events: none;
   }
 
   .notebook-output-tabs[data-notebook-output-collapsed] {
@@ -541,16 +555,21 @@ article:has(.notebook-runtime) {
     background: transparent;
   }
 
+  .notebook-output-tabs[data-notebook-output-collapsed]::after {
+    display: none;
+  }
+
   .notebook-code-cell > .notebook-runtime-output > .notebook-output-tabs:last-child,
   .notebook-code-cell > .notebook-static-output > .notebook-output-tabs:last-child {
     margin-bottom: 0;
   }
 
   .notebook-output-tablist {
-    z-index: 1;
     display: inline-flex;
     grid-row: 2;
     grid-column: 1;
+    position: relative;
+    z-index: 2;
     align-items: center;
     justify-self: flex-start;
     gap: 0;
@@ -564,20 +583,18 @@ article:has(.notebook-runtime) {
     overflow: hidden;
     border: 1px solid var(--lightgray);
     border-top: 0;
-    border-radius: 0 0 var(--radius-3) var(--radius-3);
+    border-radius: 0 0 0 var(--notebook-inner-radius);
     background: var(--notebook-output-surface);
-    box-shadow: 0 -1px 0 var(--notebook-output-surface);
     isolation: isolate;
   }
 
   .notebook-output-tablist:has(.notebook-output-tab[aria-selected='true']) {
     background: var(--notebook-output-tab-active-surface);
-    box-shadow: 0 -1px 0 var(--notebook-output-tab-active-surface);
   }
 
   .notebook-output-tabs[data-notebook-output-collapsed] .notebook-output-tablist {
     border: 1px solid var(--lightgray);
-    border-radius: var(--radius-3);
+    border-radius: 0 0 0 var(--notebook-inner-radius);
     box-shadow: none;
   }
 
@@ -611,11 +628,11 @@ article:has(.notebook-runtime) {
   }
 
   .notebook-output-tab:first-child {
-    border-bottom-left-radius: calc(var(--radius-3) - 1px);
+    border-bottom-left-radius: calc(var(--notebook-inner-radius) - 1px);
   }
 
   .notebook-output-tab:last-child {
-    border-bottom-right-radius: calc(var(--radius-3) - 1px);
+    border-bottom-right-radius: 0;
   }
 
   .notebook-output-tab:not(:disabled):active {
@@ -651,7 +668,9 @@ article:has(.notebook-runtime) {
 
   .notebook-output-panels {
     grid-row: 1;
-    grid-column: 1;
+    grid-column: 1 / -1;
+    position: relative;
+    z-index: 1;
     align-self: stretch;
     height: 100%;
     overflow: hidden;
@@ -735,7 +754,7 @@ article:has(.notebook-runtime) {
     margin: 0;
     min-height: 100%;
     border: 0;
-    border-radius: 0;
+    border-radius: var(--notebook-inner-radius);
   }
 
   .notebook-output-copy-button {

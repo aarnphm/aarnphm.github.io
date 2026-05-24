@@ -219,6 +219,7 @@ async function affectedNotebookFiles(
   const reverseImports = new Map<FilePath, Set<FilePath>>()
   for (const [fp, deps] of dependencyPairs) {
     for (const target of deps.imports) {
+      if (!available.has(target)) continue
       const dependents = reverseImports.get(target) ?? new Set<FilePath>()
       dependents.add(fp)
       reverseImports.set(target, dependents)
@@ -249,6 +250,18 @@ async function affectedNotebookFiles(
 function notebookContext(ctx: BuildCtx, fps: FilePath[]): BuildCtx {
   const notebookSlugs = fps.map(fp => slugifyFilePath(fp, true))
   return { ...ctx, allSlugs: [...ctx.allSlugs, ...notebookSlugs] }
+}
+
+function importableNotebookModules(fp: FilePath, fps: FilePath[]): string[] {
+  const dir = path.posix.dirname(fp)
+  const modules = new Set<string>()
+  for (const candidate of fps) {
+    if (candidate === fp || path.posix.dirname(candidate) !== dir) continue
+    if (path.extname(candidate) !== '.ipynb') continue
+    const name = path.basename(candidate, '.ipynb')
+    if (/^[A-Za-z_][A-Za-z0-9_]*$/.test(name)) modules.add(name)
+  }
+  return [...modules].sort()
 }
 
 async function executeNotebook(src: FilePath, opts: ResolvedOptions): Promise<string> {
@@ -323,13 +336,21 @@ async function notebookProcessedContent(
   ctx: BuildCtx,
   fp: FilePath,
   opts: ResolvedOptions,
+  contextFps: FilePath[],
 ): Promise<NotebookPage> {
   const src = joinSegments(ctx.argv.directory, fp) as FilePath
   const slug = slugifyFilePath(fp, true)
   const raw = await notebookSource(ctx, fp, opts)
   const notebook = parseNotebook(raw, src)
   const markdownChunks = notebookToMarkdownChunks(notebook, fp, {
-    runtime: opts.runtime === false ? false : { ...opts.runtime, sourcePath: fp },
+    runtime:
+      opts.runtime === false
+        ? false
+        : {
+            ...opts.runtime,
+            sourcePath: fp,
+            importableModules: importableNotebookModules(fp, contextFps),
+          },
   }).map(chunk => applyTextTransforms(ctx, chunk))
   const markdown = markdownChunks.join('\n\n').trim()
 
@@ -357,6 +378,7 @@ async function parseNotebookPages(
   fps: FilePath[],
   maxWorkers: number,
   opts: ResolvedOptions,
+  contextFps: FilePath[],
 ): Promise<NotebookPage[]> {
   const pages: NotebookPage[] = []
 
@@ -367,7 +389,7 @@ async function parseNotebookPages(
         try {
           return {
             status: 'fulfilled' as const,
-            page: await notebookProcessedContent(ctx, fp, opts),
+            page: await notebookProcessedContent(ctx, fp, opts, contextFps),
           }
         } catch (error) {
           return { status: 'rejected' as const, fp, error }
@@ -446,7 +468,7 @@ async function* emitNotebookPages(
 
   const maxWorkers = Math.max(1, Math.min(resolveWorkerLimit(), fps.length))
   const localCtx = notebookContext(ctx, contextFps)
-  const pages = await parseNotebookPages(localCtx, fps, maxWorkers, opts)
+  const pages = await parseNotebookPages(localCtx, fps, maxWorkers, opts, contextFps)
   const allFiles = [...content, ...pages.map(page => page.content)]
 
   for (const page of pages) {

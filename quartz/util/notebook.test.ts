@@ -1,4 +1,5 @@
 import assert from 'node:assert'
+import { readFile } from 'node:fs/promises'
 import test, { describe } from 'node:test'
 import rehypeRaw from 'rehype-raw'
 import remarkParse from 'remark-parse'
@@ -258,6 +259,7 @@ describe('notebook parser', () => {
       enabled: true,
       sourcePath: 'notes/runtime.ipynb',
       pyodideIndexUrl: 'https://cdn.jsdelivr.net/pyodide/v0.29.4/full/',
+      importableModules: ['ST', 'SC', 'SC'],
     })
 
     assert.deepStrictEqual(
@@ -272,7 +274,26 @@ describe('notebook parser', () => {
       ],
     )
     assert.strictEqual(data?.sourcePath, 'notes/runtime.ipynb')
+    assert.deepStrictEqual(data?.importableModules, ['SC', 'ST'])
     assert.match(data?.id ?? '', /^notebook-runtime-/)
+  })
+
+  test('preserves empty runtime import lists to avoid probing normal python modules', () => {
+    const notebook = parseNotebook(
+      JSON.stringify({
+        metadata: { language_info: { name: 'python' } },
+        cells: [{ cell_type: 'code', source: 'from collections.abc import Iterator' }],
+      }),
+      'runtime.ipynb',
+    )
+
+    const data = notebookRuntimeData(notebook, 'runtime.ipynb', {
+      enabled: true,
+      sourcePath: 'runtime.ipynb',
+      importableModules: [],
+    })
+
+    assert.deepStrictEqual(data?.importableModules, [])
   })
 
   test('embeds escaped runtime json without raw script terminators', () => {
@@ -458,4 +479,3 @@ describe('notebook parser', () => {
     assert.doesNotMatch(markdown, /data-notebook-runtime/)
     assert.doesNotMatch(markdown, /Run cell/)
   })
-})
