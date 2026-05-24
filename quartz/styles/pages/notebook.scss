@@ -52,7 +52,6 @@ article:has(.notebook-runtime) {
     --notebook-shell-padding: 0.55rem;
     --notebook-inner-radius: var(--radius-5);
     --notebook-shell-radius: calc(var(--notebook-inner-radius) + var(--notebook-shell-padding));
-    --notebook-output-tab-column: calc(var(--notebook-gutter-width) + var(--notebook-code-gap));
     --notebook-active-green: var(--background-modifier-success, var(--lime));
     --notebook-editor-surface: color-mix(in srgb, var(--light) 84%, var(--lightgray));
     --notebook-code-surface: var(--code-background, var(--notebook-editor-surface));
@@ -445,9 +444,9 @@ article:has(.notebook-runtime) {
   .notebook-output-tabs {
     display: grid;
     box-sizing: border-box;
-    grid-template-columns: var(--notebook-output-tab-column) minmax(0, 1fr);
+    grid-template-columns: var(--notebook-gutter-width) minmax(0, 1fr);
     grid-column: 1 / -1;
-    column-gap: 0;
+    column-gap: var(--notebook-code-gap);
     width: 100%;
     margin: 0 0 1rem;
     overflow: visible;
