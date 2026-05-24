@@ -149,7 +149,7 @@ export function notebookCellControls(cell: NotebookRuntimeCell): string[] {
 
 export function notebookCellFrameOpen(cellId: string): string {
   const escaped = escapeHTML(cellId)
-  return `<div class="notebook-code-cell" data-notebook-cell-frame="${escaped}">`
+  return `<div class="notebook-code-cell" data-notebook-cell-frame="${escaped}" id="${escaped}">`
 }
 
 export function notebookCellActions(cell: NotebookRuntimeCell): string {

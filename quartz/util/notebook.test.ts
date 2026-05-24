@@ -1,9 +1,11 @@
+import type { Element, Root as HtmlRoot } from 'hast'
 import assert from 'node:assert'
 import test, { describe } from 'node:test'
 import rehypeRaw from 'rehype-raw'
 import remarkParse from 'remark-parse'
 import remarkRehype from 'remark-rehype'
 import { unified } from 'unified'
+import type { FullSlug } from './path'
 import {
   notebookRuntimeData,
   notebookTitle,
@@ -12,6 +14,11 @@ import {
   parseNotebook,
 } from './notebook'
 import { renderNotebookRuntimeOutput, unsupportedNotebookRuntimeReason } from './notebook-runtime'
+import {
+  findNotebookCellFrame,
+  notebookCellRef,
+  notebookCellRuntimeNodes,
+} from './notebook-transclude'
 
 type HastElement = {
   type: string
@@ -29,6 +36,18 @@ function findElement(
     const found = findElement(child, predicate)
     if (found) return found
   }
+}
+
+function elementClassNames(node: HastElement): string[] {
+  const className = node.properties?.className
+  return Array.isArray(className) ? className.filter(item => typeof item === 'string') : []
+}
+
+function textChild(node: HastElement): string {
+  return (node.children ?? [])
+    .filter((child): child is HastElement & { value: string } => child.type === 'text')
+    .map(child => child.value)
+    .join('')
 }
 
 describe('notebook parser', () => {
@@ -420,6 +439,97 @@ describe('notebook parser', () => {
     assert(payload)
     assert.doesNotMatch(payload[1], /<\/script>/i)
     assert.match(markdown, /\\u003c\/script\\u003e/)
+  })
+
+  test('adds anchor ids to runtime cell frames', () => {
+    const notebook = parseNotebook(
+      JSON.stringify({
+        metadata: { language_info: { name: 'python' } },
+        cells: [{ cell_type: 'code', source: 'x = 1' }],
+      }),
+      'runtime.ipynb',
+    )
+
+    const markdown = notebookToMarkdown(notebook, 'runtime.ipynb', {
+      runtime: { enabled: true, sourcePath: 'runtime.ipynb' },
+    })
+
+    assert.match(
+      markdown,
+      /class="notebook-code-cell" data-notebook-cell-frame="cell-1" id="cell-1"/,
+    )
+  })
+
+  test('builds scoped runtime payload nodes for a transcluded notebook cell', () => {
+    const sourceCell: Element = {
+      type: 'element',
+      tagName: 'div',
+      properties: { className: ['notebook-code-cell'], dataNotebookCellFrame: 'cell-1' },
+      children: [
+        {
+          type: 'element',
+          tagName: 'pre',
+          properties: {},
+          children: [{ type: 'text', value: 'x = 1' }],
+        },
+      ],
+    }
+    const sourceTree: HtmlRoot = {
+      type: 'root',
+      children: [
+        sourceCell,
+        {
+          type: 'element',
+          tagName: 'script',
+          properties: { type: 'application/json', dataNotebookRuntimeData: '' },
+          children: [
+            {
+              type: 'text',
+              value: JSON.stringify({
+                id: 'source-runtime',
+                sourcePath: 'thoughts/runtime.ipynb',
+                language: 'python',
+                pyodideIndexUrl: 'https://cdn.example/pyodide/',
+                cells: [
+                  { id: 'cell-1', source: 'x = 1', language: 'python', executionIndex: null },
+                  { id: 'cell-2', source: 'y = 2', language: 'python', executionIndex: 2 },
+                ],
+              }),
+            },
+          ],
+        },
+      ],
+    }
+
+    assert.strictEqual(notebookCellRef('#cell-1'), 'cell-1')
+    assert.strictEqual(notebookCellRef('#^cell-1'), 'cell-1')
+    assert.strictEqual(findNotebookCellFrame(sourceTree, 'cell-1'), sourceCell)
+
+    const nodes = notebookCellRuntimeNodes(sourceTree, {
+      slug: 'thoughts/craft' as FullSlug,
+      transcludeTarget: 'thoughts/runtime' as FullSlug,
+      cellId: 'cell-1',
+      count: 0,
+    })
+
+    const runtime = nodes[0] as HastElement
+    assert.ok(runtime)
+    assert(elementClassNames(runtime).includes('notebook-runtime'))
+    const script = nodes[1] as HastElement
+    assert.strictEqual(script.tagName, 'script')
+    assert.strictEqual(script.properties?.dataNotebookRuntimeData, '')
+    assert.ok(script)
+    const payload = JSON.parse(textChild(script)) as {
+      id: string
+      toolbar?: boolean
+      cells: Array<{ id: string; source: string }>
+    }
+    assert.notStrictEqual(payload.id, 'source-runtime')
+    assert.strictEqual(payload.toolbar, false)
+    assert.deepStrictEqual(
+      payload.cells.map(cell => ({ id: cell.id, source: cell.source })),
+      [{ id: 'cell-1', source: 'x = 1' }],
+    )
   })
 
   test('keeps parsed code fences inside the pre-emitted runtime cell frame', async () => {
