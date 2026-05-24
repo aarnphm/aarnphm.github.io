@@ -81,7 +81,7 @@ type RuntimeFileWaiter = {
   resolve: (message: Extract<FrameMessage, { type: 'file-result' }>) => void
 }
 
-type NotebookIcon = 'run' | 'stop' | 'edit' | 'save' | 'revert'
+type NotebookIcon = 'run' | 'stop' | 'edit' | 'save' | 'revert' | 'copy' | 'check'
 
 const notebookRuntimeVimModeKey = 'quartz:notebook-vim-mode'
 
@@ -92,6 +92,9 @@ const notebookIconSvg: Record<NotebookIcon, string> = {
   save: '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 4h11l3 3v13H5z"/><path d="M8 4v6h8V4"/><path d="M8 20v-6h8v6"/></svg>',
   revert:
     '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"/></svg>',
+  copy: '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M8 8h11v11H8z"/><path d="M5 16H4a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1"/></svg>',
+  check:
+    '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m5 12 4 4L19 6"/></svg>',
 }
 
 function setNotebookIconButton(button: HTMLButtonElement, icon: NotebookIcon, label: string) {
@@ -355,7 +358,7 @@ function lastNotebookOutput(target: HTMLElement): HTMLElement | undefined {
   const direct = target.lastElementChild
   if (direct instanceof HTMLElement && direct.classList.contains('notebook-output')) return direct
   const tabbed = target.querySelectorAll<HTMLElement>(
-    ':scope > [data-notebook-output-tabs] > .notebook-output-panels > .notebook-output-panel > .notebook-output',
+    ':scope > [data-notebook-output-tabs] > .notebook-output-panels > .notebook-output-panel-frame > .notebook-output-panel > .notebook-output',
   )
   return tabbed[tabbed.length - 1]
 }
@@ -403,26 +406,10 @@ function createHtmlOutput(html: string): HTMLDivElement {
   return output
 }
 
-function createStatusOutput(label: string, text: string, className: string): HTMLDivElement {
-  const output = document.createElement('div')
-  output.classList.add('notebook-output', className)
-  output.dataset.outputName = label
-  const message = document.createElement('em')
-  message.textContent = text
-  output.append(message)
-  return output
-}
-
 function createSuccessOutput(): HTMLDivElement {
   const output = document.createElement('div')
   output.classList.add('notebook-output', 'notebook-output-success')
   output.dataset.outputName = notebookSuccessOutputLabel
-  return output
-}
-
-function createRunningOutput(): HTMLDivElement {
-  const output = createStatusOutput('running', 'running...', 'notebook-output-placeholder')
-  output.dataset.notebookOutputPlaceholder = ''
   return output
 }
 
@@ -441,30 +428,19 @@ function collectOutputElements(target: HTMLElement): HTMLElement[] {
   )
   const tabbed = Array.from(
     target.querySelectorAll<HTMLElement>(
-      ':scope > [data-notebook-output-tabs] > .notebook-output-panels > .notebook-output-panel > .notebook-output',
+      ':scope > [data-notebook-output-tabs] > .notebook-output-panels > .notebook-output-panel-frame > .notebook-output-panel > .notebook-output',
     ),
   )
   return [...tabbed, ...direct]
 }
 
-function clearPlaceholderOutputs(target: HTMLElement) {
-  const placeholders = collectOutputElements(target).filter(output =>
-    output.hasAttribute('data-notebook-output-placeholder'),
-  )
-  if (placeholders.length === 0) return
-  target.replaceChildren()
-  target.removeAttribute('data-notebook-output-tabbed')
-}
-
 function hasRenderedOutput(target: HTMLElement): boolean {
-  return collectOutputElements(target).some(
-    output => !output.hasAttribute('data-notebook-output-placeholder'),
-  )
+  return collectOutputElements(target).length > 0
 }
 
-const streamScrollHintTargets = new WeakSet<HTMLElement>()
+const outputScrollHintTargets = new WeakSet<HTMLElement>()
 
-function syncStreamScrollHint(output: HTMLElement) {
+function syncOutputScrollHint(output: HTMLElement) {
   const slack = 1
   const scrollable = output.scrollHeight - output.clientHeight > slack
   output.toggleAttribute('data-notebook-scrollable', scrollable)
@@ -475,17 +451,72 @@ function syncStreamScrollHint(output: HTMLElement) {
   )
 }
 
-function syncStreamScrollHints(root: HTMLElement) {
-  const outputs = root.matches('pre.notebook-output-stream')
+function syncOutputScrollHints(root: HTMLElement) {
+  const outputs = root.matches('.notebook-output-panel, pre.notebook-output-stream')
     ? [root]
-    : Array.from(root.querySelectorAll<HTMLElement>('pre.notebook-output-stream'))
+    : Array.from(
+        root.querySelectorAll<HTMLElement>('.notebook-output-panel, pre.notebook-output-stream'),
+      )
   for (const output of outputs) {
-    if (!streamScrollHintTargets.has(output)) {
-      output.addEventListener('scroll', () => syncStreamScrollHint(output), { passive: true })
-      streamScrollHintTargets.add(output)
+    if (!outputScrollHintTargets.has(output)) {
+      output.addEventListener('scroll', () => syncOutputScrollHint(output), { passive: true })
+      outputScrollHintTargets.add(output)
     }
-    requestAnimationFrame(() => syncStreamScrollHint(output))
+    requestAnimationFrame(() => syncOutputScrollHint(output))
   }
+}
+
+function showNotebookOutputToast(message: string) {
+  const event: CustomEventMap['toast'] = new CustomEvent('toast', {
+    detail: { message, containerId: 'notebook-output-toast-container' },
+  })
+  document.dispatchEvent(event)
+}
+
+function outputCopyText(outputs: HTMLElement[]): string {
+  return outputs
+    .map(output => output.textContent ?? '')
+    .join('\n')
+    .trimEnd()
+}
+
+function createOutputCopyButton(outputs: HTMLElement[]): HTMLButtonElement {
+  const button = document.createElement('button')
+  let resetCopiedState: number | undefined
+  button.type = 'button'
+  button.className = 'notebook-output-copy-button'
+  button.classList.add('notebook-icon-button')
+  button.setAttribute('aria-label', 'Copy output')
+  button.title = 'Copy output'
+  const copyIcon = document.createElement('span')
+  copyIcon.className = 'notebook-output-copy-icon'
+  copyIcon.insertAdjacentHTML('afterbegin', notebookIconSvg.copy)
+  const checkIcon = document.createElement('span')
+  checkIcon.className = 'notebook-output-check-icon'
+  checkIcon.insertAdjacentHTML('afterbegin', notebookIconSvg.check)
+  button.append(copyIcon, checkIcon)
+  button.addEventListener('click', async event => {
+    event.preventDefault()
+    event.stopPropagation()
+    const text = outputCopyText(outputs)
+    if (text.length === 0) {
+      showNotebookOutputToast('nothing to copy')
+      return
+    }
+    try {
+      await navigator.clipboard.writeText(text)
+      if (resetCopiedState !== undefined) window.clearTimeout(resetCopiedState)
+      button.classList.add('notebook-output-copy-button-copied')
+      resetCopiedState = window.setTimeout(() => {
+        button.classList.remove('notebook-output-copy-button-copied')
+      }, 2000)
+      showNotebookOutputToast('copied output')
+    } catch {
+      button.classList.remove('notebook-output-copy-button-copied')
+      showNotebookOutputToast('copy failed')
+    }
+  })
+  return button
 }
 
 function selectOutputTab(container: HTMLElement, activeId: string | undefined, focusId = activeId) {
@@ -495,6 +526,12 @@ function selectOutputTab(container: HTMLElement, activeId: string | undefined, f
     container.querySelector<HTMLButtonElement>('[data-notebook-output-tab]')?.dataset
       .notebookOutputTab
   for (const tab of container.querySelectorAll<HTMLButtonElement>('[data-notebook-output-tab]')) {
+    if (tab.disabled) {
+      tab.setAttribute('aria-selected', 'false')
+      tab.removeAttribute('aria-expanded')
+      tab.tabIndex = -1
+      continue
+    }
     const active = activeId !== undefined && tab.dataset.notebookOutputTab === activeId
     tab.setAttribute('aria-selected', String(active))
     tab.setAttribute('aria-expanded', String(active))
@@ -503,7 +540,7 @@ function selectOutputTab(container: HTMLElement, activeId: string | undefined, f
   for (const panel of container.querySelectorAll<HTMLElement>('[data-notebook-output-panel]')) {
     panel.hidden = activeId === undefined || panel.dataset.notebookOutputPanel !== activeId
   }
-  if (activeId !== undefined) syncStreamScrollHints(container)
+  if (activeId !== undefined) syncOutputScrollHints(container)
 }
 
 function syncOutputTabs(target: HTMLElement, cellId = target.dataset.notebookOutput ?? 'cell') {
@@ -532,6 +569,7 @@ function syncOutputTabs(target: HTMLElement, cellId = target.dataset.notebookOut
   const defaultActiveId = orderedGroups.find(
     group => group.label !== notebookSuccessOutputLabel,
   )?.id
+  const selectableGroups = orderedGroups.filter(group => group.label !== notebookSuccessOutputLabel)
   const activeId =
     previousContainer === null
       ? defaultActiveId
@@ -561,11 +599,18 @@ function syncOutputTabs(target: HTMLElement, cellId = target.dataset.notebookOut
     tab.textContent = group.label
     tab.setAttribute('role', 'tab')
     tab.setAttribute('aria-controls', panelId)
+    tab.disabled = group.label === notebookSuccessOutputLabel
+    tab.toggleAttribute('data-notebook-output-disabled', tab.disabled)
+    if (tab.disabled) {
+      tab.setAttribute('aria-disabled', 'true')
+    }
     tab.addEventListener('click', () => {
+      if (tab.disabled) return
       const active = tab.getAttribute('aria-selected') === 'true'
       selectOutputTab(container, active ? undefined : group.id, group.id)
     })
     tab.addEventListener('keydown', event => {
+      if (tab.disabled) return
       if (event.key === 'Enter' || event.key === ' ') {
         event.preventDefault()
         const active = tab.getAttribute('aria-selected') === 'true'
@@ -582,7 +627,12 @@ function syncOutputTabs(target: HTMLElement, cellId = target.dataset.notebookOut
       }
       event.preventDefault()
       const delta = event.key === 'ArrowDown' || event.key === 'ArrowRight' ? 1 : -1
-      const nextGroup = orderedGroups[(index + delta + orderedGroups.length) % orderedGroups.length]
+      const currentIndex = selectableGroups.findIndex(
+        selectableGroup => selectableGroup.id === group.id,
+      )
+      if (currentIndex === -1) return
+      const nextGroup =
+        selectableGroups[(currentIndex + delta + selectableGroups.length) % selectableGroups.length]
       if (!nextGroup) return
       const nextTab = tablist.querySelector<HTMLButtonElement>(
         `[data-notebook-output-tab="${nextGroup.id}"]`,
@@ -597,14 +647,17 @@ function syncOutputTabs(target: HTMLElement, cellId = target.dataset.notebookOut
     })
     tablist.append(tab)
 
+    const panelFrame = document.createElement('div')
+    panelFrame.className = 'notebook-output-panel-frame'
+    panelFrame.dataset.notebookOutputPanel = group.id
+    panelFrame.id = panelId
+    panelFrame.setAttribute('role', 'tabpanel')
+    panelFrame.setAttribute('aria-labelledby', tabId)
     const panel = document.createElement('div')
     panel.className = 'notebook-output-panel'
-    panel.dataset.notebookOutputPanel = group.id
-    panel.id = panelId
-    panel.setAttribute('role', 'tabpanel')
-    panel.setAttribute('aria-labelledby', tabId)
     panel.append(...group.outputs)
-    panels.append(panel)
+    panelFrame.append(panel, createOutputCopyButton(group.outputs))
+    panels.append(panelFrame)
   })
 
   container.append(tablist, panels)
@@ -632,8 +685,6 @@ function appendRuntimeOutput(
   output: NotebookRuntimeOutput,
   options: { debug?: boolean } = {},
 ) {
-  clearPlaceholderOutputs(target)
-
   if (output.type === 'stream') {
     appendStreamOutput(target, output)
     syncOutputTabs(target)
@@ -1729,9 +1780,10 @@ class NotebookRuntime {
   private clearOutput(cellId: string) {
     const target = this.queryCell<HTMLElement>(`[data-notebook-output="${CSS.escape(cellId)}"]`)
     if (!target) return
-    target.replaceChildren(createRunningOutput())
-    target.hidden = false
-    syncOutputTabs(target, cellId)
+    this.hideSavedOutput(cellId)
+    target.replaceChildren()
+    target.hidden = true
+    target.removeAttribute('data-notebook-output-tabbed')
   }
 
   private hideSavedOutput(cellId: string) {

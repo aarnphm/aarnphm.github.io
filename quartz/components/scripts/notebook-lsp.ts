@@ -1,5 +1,6 @@
 import type { LSPClient, Transport } from '@codemirror/lsp-client'
-import type { Extension } from '@codemirror/state'
+import { autocompletion, type CompletionSource } from '@codemirror/autocomplete'
+import { EditorState, type Extension } from '@codemirror/state'
 import DOMPurify from 'dompurify'
 import {
   arrayValue,
@@ -174,6 +175,13 @@ function initializeMessage(message: JsonObject, rootUri: string, typeshed: JsonO
   }
 }
 
+function notebookServerCompletion(serverCompletionSource: CompletionSource): Extension {
+  return [
+    autocompletion({ defaultKeymap: false }),
+    EditorState.languageData.of(() => [{ autocomplete: serverCompletionSource }]),
+  ]
+}
+
 function parseTransportMessage(message: string) {
   const value: unknown = JSON.parse(message)
   if (!isJsonObject(value)) throw new Error('notebook pyright received a non-object message')
@@ -267,7 +275,7 @@ class NotebookPythonLspService {
 
   private async createClient() {
     const [
-      { LSPClient, hoverTooltips, serverCompletion, serverDiagnostics, signatureHelp },
+      { LSPClient, hoverTooltips, serverCompletionSource, serverDiagnostics, signatureHelp },
       typeshed,
     ] = await Promise.all([import('@codemirror/lsp-client'), loadNotebookTypeshed()])
     const workspaceFiles = notebookWorkspaceFiles(typeshed, this.rootPath)
@@ -277,7 +285,7 @@ class NotebookPythonLspService {
       sanitizeHTML: html => DOMPurify.sanitize(html),
       extensions: [
         { clientCapabilities: notebookClientCapabilities },
-        serverCompletion(),
+        notebookServerCompletion(serverCompletionSource),
         hoverTooltips({ hoverTime: 300 }),
         signatureHelp({ keymap: false }),
         serverDiagnostics(),

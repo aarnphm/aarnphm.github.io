@@ -253,6 +253,16 @@ export async function createNotebookCodeEditor(
 ): Promise<NotebookCodeEditor> {
   const [
     { defaultKeymap, historyKeymap, history, indentWithTab },
+    {
+      acceptCompletion,
+      clearSnippet,
+      closeCompletion,
+      moveCompletionSelection,
+      nextSnippetField,
+      prevSnippetField,
+      snippetKeymap,
+      startCompletion,
+    },
     { syntaxHighlighting, defaultHighlightStyle },
     { Compartment, EditorState, Prec },
     { EditorView, keymap, lineNumbers },
@@ -260,6 +270,7 @@ export async function createNotebookCodeEditor(
     lsp,
   ] = await Promise.all([
     import('@codemirror/commands'),
+    import('@codemirror/autocomplete'),
     import('@codemirror/language'),
     import('@codemirror/state'),
     import('@codemirror/view'),
@@ -267,6 +278,8 @@ export async function createNotebookCodeEditor(
     lspExtensions(config.lsp),
   ])
 
+  const initialVimMode = config.vimMode === true
+  let vimModeEnabled = initialVimMode
   const notebookKeymap = (): Extension =>
     Prec.highest(
       keymap.of([
@@ -294,6 +307,7 @@ export async function createNotebookCodeEditor(
         {
           key: 'Escape',
           run: () => {
+            if (vimModeEnabled) return false
             config.onCancel?.()
             return true
           },
@@ -317,9 +331,48 @@ export async function createNotebookCodeEditor(
     return [vim(), drawSelection()]
   }
 
-  const initialVimMode = config.vimMode === true
   const vimCompartment = new Compartment()
   const keymapCompartment = new Compartment()
+  const vimAcceptsText = (view: CodeMirrorEditorView) =>
+    !vimModeEnabled || vimApi?.getCM(view)?.state.vim?.insertMode === true
+  const runTextCommand = (
+    view: CodeMirrorEditorView,
+    command: (target: CodeMirrorEditorView) => boolean,
+  ) => (vimAcceptsText(view) ? command(view) : false)
+  const closeEditorCompletion = (view: CodeMirrorEditorView) => {
+    const closed = closeCompletion(view)
+    return vimModeEnabled ? false : closed
+  }
+  const clearEditorSnippet = (view: CodeMirrorEditorView) => {
+    const cleared = clearSnippet(view)
+    return vimModeEnabled ? false : cleared
+  }
+  const moveCompletionDown = moveCompletionSelection(true)
+  const moveCompletionUp = moveCompletionSelection(false)
+  const moveCompletionPageDown = moveCompletionSelection(true, 'page')
+  const moveCompletionPageUp = moveCompletionSelection(false, 'page')
+  const completionKeymap = Prec.highest(
+    keymap.of([
+      { key: 'Tab', run: view => runTextCommand(view, acceptCompletion) },
+      { key: 'Ctrl-Space', run: view => runTextCommand(view, startCompletion) },
+      { mac: 'Alt-`', run: view => runTextCommand(view, startCompletion) },
+      { mac: 'Alt-i', run: view => runTextCommand(view, startCompletion) },
+      { key: 'Escape', run: closeEditorCompletion },
+      { key: 'ArrowDown', run: view => runTextCommand(view, moveCompletionDown) },
+      { key: 'ArrowUp', run: view => runTextCommand(view, moveCompletionUp) },
+      { key: 'PageDown', run: view => runTextCommand(view, moveCompletionPageDown) },
+      { key: 'PageUp', run: view => runTextCommand(view, moveCompletionPageUp) },
+      { key: 'Enter', run: view => (vimModeEnabled ? false : acceptCompletion(view)) },
+    ]),
+  )
+  const editorSnippetKeymap = snippetKeymap.of([
+    {
+      key: 'Tab',
+      run: view => runTextCommand(view, nextSnippetField),
+      shift: view => runTextCommand(view, prevSnippetField),
+    },
+    { key: 'Escape', run: clearEditorSnippet },
+  ])
   const initialVimExtension = await vimExtension(initialVimMode)
 
   const updateListener = EditorView.updateListener.of(update => {
@@ -358,6 +411,8 @@ export async function createNotebookCodeEditor(
       lsp,
       history(),
       vimCompartment.of(initialVimExtension),
+      completionKeymap,
+      editorSnippetKeymap,
       keymapCompartment.of(notebookKeymap()),
       keymap.of([indentWithTab, ...defaultKeymap, ...historyKeymap]),
       updateListener,
@@ -383,6 +438,7 @@ export async function createNotebookCodeEditor(
     },
     highlightedLines: () => highlightedLineSpans(view),
     async setVimMode(enabled: boolean) {
+      vimModeEnabled = enabled
       view.dispatch({
         effects: [
           vimCompartment.reconfigure(await vimExtension(enabled)),
