@@ -717,6 +717,14 @@ describe('notebook browser runtime output', () => {
       styleSource,
       /@media all and \(\$mobile\) \{[\s\S]*\.notebook-code-cell\s*>\s*\.notebook-cell-actions \{[\s\S]*left: auto;[\s\S]*right: var\(--notebook-shell-padding\);/,
     )
+    assert.match(
+      styleSource,
+      /@media all and \(\$mobile\) \{[\s\S]*\.notebook-code-cell\s*>\s*\.notebook-runtime-output,\s*\.notebook-code-cell\s*>\s*\.notebook-static-output \{[\s\S]*grid-template-columns: minmax\(0, 1fr\);[\s\S]*column-gap: 0;/,
+    )
+    assert.match(
+      styleSource,
+      /@media all and \(\$mobile\) \{[\s\S]*\.notebook-code-cell\s*>\s*\.notebook-runtime-output\s*>\s*\.notebook-output,\s*\.notebook-code-cell\s*>\s*\.notebook-static-output\s*>\s*\.notebook-output,\s*\.notebook-code-cell\s*>\s*\.notebook-runtime-output\s*>\s*\.notebook-output-tabs,\s*\.notebook-code-cell\s*>\s*\.notebook-static-output\s*>\s*\.notebook-output-tabs \{[\s\S]*grid-column: 1;/,
+    )
     assert.match(styleSource, /\.notebook-output-tabs \{/)
     assert.match(
       styleSource,

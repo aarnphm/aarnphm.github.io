@@ -822,5 +822,18 @@ article:has(.notebook-runtime) {
       left: auto;
       right: var(--notebook-shell-padding);
     }
+
+    .notebook-code-cell > .notebook-runtime-output,
+    .notebook-code-cell > .notebook-static-output {
+      grid-template-columns: minmax(0, 1fr);
+      column-gap: 0;
+    }
+
+    .notebook-code-cell > .notebook-runtime-output > .notebook-output,
+    .notebook-code-cell > .notebook-static-output > .notebook-output,
+    .notebook-code-cell > .notebook-runtime-output > .notebook-output-tabs,
+    .notebook-code-cell > .notebook-static-output > .notebook-output-tabs {
+      grid-column: 1;
+    }
   }
 }
