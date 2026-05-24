@@ -114,6 +114,19 @@ function setNotebookIconButton(button: HTMLButtonElement, icon: NotebookIcon, la
   button.insertAdjacentHTML('afterbegin', notebookIconSvg[icon])
 }
 
+function notebookPythonLanguage(language: string) {
+  const value = language.trim().toLowerCase()
+  return value === 'python' || value === 'py' || value === 'ipython'
+}
+
+function readStoredNotebookVimMode(): boolean {
+  try {
+    return window.localStorage.getItem(notebookRuntimeVimModeKey) === 'true'
+  } catch {
+    return false
+  }
+}
+
 function readRuntimeOutput(value: unknown): NotebookRuntimeOutput | undefined {
   if (!isRecord(value)) return undefined
   const type = readString(value, 'type')
@@ -314,6 +327,27 @@ function parseRuntimeJson(text: string): unknown | undefined {
   } catch {
     return undefined
   }
+}
+
+export async function warmNotebookRuntimeEditorAssets(data: readonly string[]): Promise<void> {
+  const languages = new Set<string>()
+  let lsp = false
+  let vimMode = false
+
+  for (const text of data) {
+    const payload = readRuntimePayload(parseRuntimeJson(text))
+    if (!payload) continue
+    languages.add(payload.language)
+    vimMode ||= payload.vimMode ?? readStoredNotebookVimMode()
+    for (const cell of payload.cells) {
+      languages.add(cell.language)
+      lsp ||= notebookPythonLanguage(cell.language)
+    }
+  }
+
+  if (languages.size === 0) languages.add('python')
+  const { warmNotebookCodeEditorAssets } = await import('./notebook-code-editor')
+  await warmNotebookCodeEditorAssets({ languages: [...languages], lsp, vimMode })
 }
 
 function replaceRenderedSource(
@@ -1078,11 +1112,7 @@ class NotebookRuntime {
   }
 
   private readStoredVimMode(): boolean {
-    try {
-      return window.localStorage.getItem(notebookRuntimeVimModeKey) === 'true'
-    } catch {
-      return false
-    }
+    return readStoredNotebookVimMode()
   }
 
   private writeStoredVimMode(enabled: boolean) {

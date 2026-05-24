@@ -25,12 +25,26 @@ type NotebookCodeEditorConfig = {
   lsp?: NotebookLspConfig
 }
 
+type NotebookCodeEditorWarmupConfig = {
+  languages?: readonly string[]
+  lsp?: boolean
+  vimMode?: boolean
+}
+
 type VimApi = typeof import('@replit/codemirror-vim')
 type NotebookCodeMirror = NonNullable<ReturnType<VimApi['getCM']>>
 type NotebookVimModule = Pick<VimApi, 'Vim'>
 
 let notebookVimBindingsConfigured = false
+let notebookCodeEditorCoreWarmup: Promise<void> | undefined
+let notebookCodeEditorLspWarmup: Promise<void> | undefined
+let notebookCodeEditorVimWarmup: Promise<void> | undefined
+const notebookLanguageWarmups = new Map<string, Promise<Extension>>()
 const notebookRunKeys = ['Mod-Enter', 'Ctrl-Enter', 'Shift-Enter', 'Alt-Enter'] as const
+
+function languageWarmupKey(language: string | undefined): string {
+  return (language ?? '').trim().toLowerCase() || 'python'
+}
 
 async function languageExtension(language: string | undefined): Promise<Extension> {
   const name = (language ?? '').trim().toLowerCase()
@@ -64,6 +78,16 @@ async function languageExtension(language: string | undefined): Promise<Extensio
   }
   const { python } = await import('@codemirror/lang-python')
   return python()
+}
+
+function warmLanguageExtension(language: string | undefined): Promise<Extension> {
+  const key = languageWarmupKey(language)
+  let warmup = notebookLanguageWarmups.get(key)
+  if (!warmup) {
+    warmup = languageExtension(language)
+    notebookLanguageWarmups.set(key, warmup)
+  }
+  return warmup
 }
 
 function notebookPythonLanguage(language: string | undefined) {
@@ -160,6 +184,40 @@ function configureNotebookVimBindings(vimApi: NotebookVimModule) {
     {},
     { context: 'visual', isEdit: true },
   )
+}
+
+export async function warmNotebookCodeEditorAssets(
+  config: NotebookCodeEditorWarmupConfig = {},
+): Promise<void> {
+  notebookCodeEditorCoreWarmup ??= Promise.all([
+    import('@codemirror/commands'),
+    import('@codemirror/autocomplete'),
+    import('@codemirror/language'),
+    import('@codemirror/state'),
+    import('@codemirror/view'),
+  ]).then(() => {})
+
+  const languages = config.languages && config.languages.length > 0 ? config.languages : ['python']
+  const warmups: Promise<unknown>[] = [
+    notebookCodeEditorCoreWarmup,
+    ...languages.map(language => warmLanguageExtension(language)),
+  ]
+
+  if (config.lsp) {
+    notebookCodeEditorLspWarmup ??= import('./notebook-lsp').then(module =>
+      module.warmNotebookLspAssets(),
+    )
+    warmups.push(notebookCodeEditorLspWarmup)
+  }
+
+  if (config.vimMode) {
+    notebookCodeEditorVimWarmup ??= import('@replit/codemirror-vim').then(vimApi => {
+      configureNotebookVimBindings(vimApi)
+    })
+    warmups.push(notebookCodeEditorVimWarmup)
+  }
+
+  await Promise.all(warmups)
 }
 
 function inlineHighlightStyle(source: HTMLElement, target: HTMLElement) {

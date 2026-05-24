@@ -2,7 +2,7 @@
 date: '2022-11-07'
 description: numpy with autograd and xla compilation for accelerators, featuring jit compilation, automatic differentiation, and vectorization with immutable arrays.
 id: Jax
-modified: 2026-05-23 17:09:27 GMT-04:00
+modified: 2026-05-24 14:11:04 GMT-04:00
 tags:
   - seed
   - ml
@@ -10,17 +10,6 @@ title: Jax
 ---
 
 Numpy + [[thoughts/Autograd|Autograd]]. Use [[thoughts/XLA|XLA]] to compile and run NumPy code on accelerators.
-
-Asynchronous dispatch, for sync use `block_until_ready()`
-
-```python shell
-import jax.numpy as jnp
-from jax import random
-
-key = random.PRNGKey(0)
-x = random.normal(key, (10,))
-jnp.dot(x, x.T).block_until_ready()
-```
 
 - notable function:
   - `jit()` for compilation of multiple computations
@@ -67,6 +56,19 @@ def normalize_logits(logits: jnp.ndarray, noise_floor: float) -> jnp.ndarray:
 ```
 
 _references: [github](https://github.com/xjdr-alt/entropix/blob/main/entropix/dslider.py)_
+
+## asynchronous dispatch
+
+for sync use `block_until_ready()`
+
+```python shell
+import jax.numpy as jnp
+from jax import random
+
+key = random.PRNGKey(0)
+x = random.normal(key, (10,))
+jnp.dot(x, x.T).block_until_ready()
+```
 
 ## control flow
 

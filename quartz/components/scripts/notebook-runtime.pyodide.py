@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import ast as _quartz_ast
 import dataclasses as _quartz_dataclasses
+import decimal as _quartz_decimal
 import glob
 import importlib.abc
 import importlib.util
@@ -871,6 +872,8 @@ class HTML(_QuartzDisplayObject):
 def _quartz_jsonable(value, seen=None):
   if value is None or isinstance(value, (bool, int, float, str)):
     return value
+  if isinstance(value, _quartz_decimal.Decimal):
+    return str(value)
   if seen is None:
     seen = set()
   value_id = id(value)
@@ -908,8 +911,7 @@ def _quartz_jsonable(value, seen=None):
     seen.add(value_id)
     try:
       return {
-        field.name: _quartz_jsonable(getattr(value, field.name), seen)
-        for field in _quartz_dataclasses.fields(value)
+        field.name: _quartz_jsonable(getattr(value, field.name), seen) for field in _quartz_dataclasses.fields(value)
       }
     finally:
       seen.remove(value_id)
@@ -947,7 +949,11 @@ def _quartz_object_fields(value):
 
 
 def _quartz_json_display_bundle(value):
-  if not isinstance(value, (dict, list, tuple, set)) and _quartz_object_fields(value) is None:
+  if (
+    not isinstance(value, (dict, list, tuple, set))
+    and not (_quartz_dataclasses.is_dataclass(value) and not isinstance(value, type))
+    and _quartz_object_fields(value) is None
+  ):
     return None
   text = json.dumps(_quartz_jsonable(value), ensure_ascii=False, indent=2, sort_keys=True)
   return {'application/json': text, 'text/plain': text}
