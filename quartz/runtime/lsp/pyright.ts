@@ -425,19 +425,21 @@ class NotebookPythonWorkspace extends Workspace {
     if (!file) return
     file.languageId = languageId
     file.view = view
+    const changed = this.updateFileDoc(file, view.state.doc)
     if (!this.opened && this.client.connected) {
       this.openNotebook()
       return
     }
-    this.syncFiles()
+    if (changed) this.sendTextContentChanges([this.textContentChange(file)])
   }
 
   override closeFile(uri: string, view: EditorView) {
     const file = this.filesByUri.get(uri)
     if (!file || file.view !== view) return
-    this.syncFiles()
+    const changed = this.updateFileDoc(file, view.state.doc)
     file.view = null
     if (this.files.every(file => !file.view)) this.closeNotebook()
+    else if (changed) this.sendTextContentChanges([this.textContentChange(file)])
   }
 
   override syncFiles() {
@@ -446,26 +448,34 @@ class NotebookPythonWorkspace extends Workspace {
     for (const file of this.files) {
       const nextDoc = file.view ? file.view.state.doc : notebookText(file.source)
       const plugin = file.view ? LSPPlugin.get(file.view) : undefined
-      if (file.doc.eq(nextDoc)) {
-        plugin?.clear()
-        continue
-      }
-      file.doc = nextDoc
-      file.version = this.nextFileVersion(file.uri)
-      changes.push({
-        document: { uri: file.uri, version: file.version },
-        changes: [{ text: file.doc.toString() }],
-      })
+      if (this.updateFileDoc(file, nextDoc)) changes.push(this.textContentChange(file))
       plugin?.clear()
     }
-    if (this.opened && changes.length > 0) {
-      this.notebookVersion += 1
-      this.client.notification('notebookDocument/didChange', {
-        notebookDocument: { uri: this.notebookUri, version: this.notebookVersion },
-        change: { cells: { textContent: changes } },
-      })
-    }
+    this.sendTextContentChanges(changes)
     return []
+  }
+
+  private updateFileDoc(file: NotebookWorkspaceFile, nextDoc: Text) {
+    if (file.doc.eq(nextDoc)) return false
+    file.doc = nextDoc
+    file.version = this.nextFileVersion(file.uri)
+    return true
+  }
+
+  private textContentChange(file: NotebookWorkspaceFile): NotebookTextContentChange {
+    return {
+      document: { uri: file.uri, version: file.version },
+      changes: [{ text: file.doc.toString() }],
+    }
+  }
+
+  private sendTextContentChanges(changes: NotebookTextContentChange[]) {
+    if (!this.opened || changes.length === 0) return
+    this.notebookVersion += 1
+    this.client.notification('notebookDocument/didChange', {
+      notebookDocument: { uri: this.notebookUri, version: this.notebookVersion },
+      change: { cells: { textContent: changes } },
+    })
   }
 
   private refreshFiles() {

@@ -5,6 +5,7 @@ import { existsSync } from 'node:fs'
 import fs from 'node:fs/promises'
 import { createRequire } from 'node:module'
 import path from 'path'
+import { compileAsync } from 'sass-embedded'
 import type { QuartzMdxComponent } from '../../components/mdx/registry'
 import type { StaticResources } from '../../util/resources'
 import { getMdxComponents } from '../../components/mdx/registry'
@@ -41,8 +42,6 @@ import popoverStyle from '../../components/styles/popover.scss'
 import pseudoStyle from '../../components/styles/pseudocode.scss'
 import '../../components/mdx'
 import { chunkNotebookPyrightTypeshedFiles } from '../../runtime/lsp/pyright-assets'
-import baseStyles from '../../styles/base.scss'
-import customStyles from '../../styles/custom.scss'
 import { QuartzComponent } from '../../types/component'
 import { QuartzEmitterPlugin } from '../../types/plugin'
 import {
@@ -83,6 +82,8 @@ const notebookRuntimePyrightTypeshedDir = 'node_modules/basedpyright/dist/typesh
 const notebookRuntimePyrightWorkerManifestPath = 'static/scripts/notebook-pyright-worker.json'
 const notebookRuntimePyrightTypeshedPath = 'static/scripts/notebook-pyright-typeshed.json'
 const notebookRuntimePyrightTypeshedChunkPrefix = 'static/scripts/notebook-pyright-typeshed'
+const quartzBaseStylesheetEntry = 'quartz/styles/base.scss'
+const quartzCustomStylesheetEntry = 'quartz/styles/custom.scss'
 const basedpyrightSourcePackageName = 'basedpyright-source'
 const basedpyrightInternalSourcePackageName = 'basedpyright-internal-source'
 const notebookPyrightWorkerOutputName = 'notebook-pyright-worker'
@@ -233,6 +234,11 @@ function minifyStylesheet(filename: string, stylesheet: string) {
   }).code.toString()
 }
 
+async function compileStylesheet(sourcePath: string) {
+  const result = await compileAsync(path.resolve(sourcePath), { charset: false, style: 'expanded' })
+  return result.css
+}
+
 async function* writeStaticResourceBundles(ctx: BuildCtx, resources: StaticResources) {
   for (const part of splitCssBundles(resources.css, [collapseHeaderStyle])) {
     if (part.type !== 'bundle') continue
@@ -270,6 +276,39 @@ async function* writeComponentStyles(ctx: BuildCtx, resources: ComponentResource
     )
     yield write({ ctx, slug, ext: '.css', content })
   }
+}
+
+async function indexStylesheetContent(
+  ctx: BuildCtx,
+  componentResources: ComponentResources,
+  googleFontsStyleSheet: string,
+) {
+  const [baseStyles, customStyles] = await Promise.all([
+    compileStylesheet(quartzBaseStylesheetEntry),
+    compileStylesheet(quartzCustomStylesheetEntry),
+  ])
+  const componentCss = new Set(componentResources.componentCss)
+  const quartzBase = joinStyles(
+    ctx.cfg.configuration.theme,
+    googleFontsStyleSheet,
+    ...componentResources.css.filter(css => !componentCss.has(css)),
+    baseStyles,
+  )
+  return minifyStylesheet('index.css', `@layer quartz-base {\n${quartzBase}\n}\n${customStyles}`)
+}
+
+async function writeIndexStylesheet(
+  ctx: BuildCtx,
+  componentResources: ComponentResources,
+  googleFontsStyleSheet = '',
+) {
+  const content = await indexStylesheetContent(ctx, componentResources, googleFontsStyleSheet)
+  return write({
+    ctx,
+    slug: assetSlugForContent(ctx, 'index', '.css', content),
+    ext: '.css',
+    content,
+  })
 }
 
 async function writeAfterDomLoadedScripts(ctx: BuildCtx, scripts: string[]) {
@@ -666,6 +705,10 @@ function isEmojiAssetChange(changePath: string): boolean {
   return changePath.startsWith(`${emojiAssetSourceDir}/`) && changePath.endsWith('.json')
 }
 
+function isIndexStylesheetChange(changePath: string): boolean {
+  return changePath.startsWith('quartz/styles/') && changePath.endsWith('.scss')
+}
+
 function addGlobalPageResources(ctx: BuildCtx, componentResources: ComponentResources) {
   const cfg = ctx.cfg.configuration
   const resolvedPetScript = petScript.replace(
@@ -764,15 +807,8 @@ export const ComponentResources: QuartzEmitterPlugin = () => {
       }
 
       yield* writeComponentStyles(ctx, componentResources)
+      yield await writeIndexStylesheet(ctx, componentResources, googleFontsStyleSheet)
 
-      const componentCss = new Set(componentResources.componentCss)
-      const quartzBase = joinStyles(
-        ctx.cfg.configuration.theme,
-        googleFontsStyleSheet,
-        ...componentResources.css.filter(css => !componentCss.has(css)),
-        baseStyles,
-      )
-      const stylesheet = `@layer quartz-base {\n${quartzBase}\n}\n${customStyles}`
       const [prescript, postscriptResult] = await Promise.all([
         joinScripts(componentResources.beforeDOMLoaded),
         writeAfterDomLoadedScripts(ctx, componentResources.afterDOMLoaded),
@@ -792,14 +828,6 @@ export const ComponentResources: QuartzEmitterPlugin = () => {
         lang: cfg.locale,
         dir: 'auto',
       }
-
-      const stylesheetContent = minifyStylesheet('index.css', stylesheet)
-      yield write({
-        ctx,
-        slug: assetSlugForContent(ctx, 'index', '.css', stylesheetContent),
-        ext: '.css',
-        content: stylesheetContent,
-      })
 
       yield* writeStaticResourceBundles(ctx, resources)
 
@@ -867,6 +895,10 @@ export const ComponentResources: QuartzEmitterPlugin = () => {
       const componentResources = await currentComponentResources(ctx)
       yield* writeComponentStyles(ctx, componentResources)
       yield* writeStaticResourceBundles(ctx, resources)
+
+      if (changeEvents.some(changeEvent => isIndexStylesheetChange(changeEvent.path))) {
+        yield await writeIndexStylesheet(ctx, componentResources)
+      }
 
       if (changeEvents.some(changeEvent => isNotebookRuntimeAssetChange(changeEvent.path))) {
         for (const file of await writeNotebookRuntimeAssets(ctx)) {
