@@ -1458,6 +1458,13 @@ class NotebookRuntime {
         sourcePath: this.payload.sourcePath,
         cellId: cell.id,
         language: cell.language,
+        cells: () =>
+          this.payload.cells.map(runtimeCell => ({
+            id: runtimeCell.id,
+            source: this.sourceForCell(runtimeCell),
+            language: runtimeCell.language,
+            executionIndex: runtimeCell.executionIndex,
+          })),
       },
       onChange: source => {
         controls.source = source

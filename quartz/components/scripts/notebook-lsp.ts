@@ -1,6 +1,13 @@
-import type { LSPClient, Transport } from '@codemirror/lsp-client'
+import type { EditorView } from '@codemirror/view'
 import { autocompletion, type CompletionSource } from '@codemirror/autocomplete'
-import { EditorState, type Extension } from '@codemirror/state'
+import {
+  LSPPlugin,
+  Workspace,
+  type LSPClient,
+  type Transport,
+  type WorkspaceFile,
+} from '@codemirror/lsp-client'
+import { EditorState, Text, type Extension } from '@codemirror/state'
 import DOMPurify from 'dompurify'
 import {
   notebookPyrightAssetManifestChunks,
@@ -18,15 +25,46 @@ import {
   type UnknownRecord,
 } from '../../util/type-guards'
 
+export type NotebookLspCell = {
+  id: string
+  source: string
+  language: string
+  executionIndex: number | null
+}
+
 export type NotebookLspConfig = {
   enabled: boolean
   runtimeId: string
   sourcePath: string
   cellId: string
   language: string
+  cells: () => readonly NotebookLspCell[]
 }
 
 type JsonRpcId = string | number | null
+
+type NotebookExecutionSummary = { executionOrder: number; success?: boolean }
+
+type NotebookCellItem = {
+  kind: 2
+  document: string
+  metadata: JsonObject
+  executionSummary?: NotebookExecutionSummary
+}
+
+type NotebookDocumentItem = {
+  uri: string
+  notebookType: string
+  version: number
+  cells: NotebookCellItem[]
+}
+
+type NotebookTextDocumentItem = { uri: string; languageId: string; version: number; text: string }
+
+type NotebookTextContentChange = {
+  document: { uri: string; version: number }
+  changes: { text: string }[]
+}
 
 const notebookPyrightWorkerManifestName = '../notebook-pyright-worker.json'
 const notebookPyrightTypeshedManifestName = '../notebook-pyright-typeshed.json'
@@ -38,6 +76,9 @@ const notebookAnalysisSettings: JsonObject = {
 }
 
 const notebookClientCapabilities: JsonObject = {
+  notebookDocument: {
+    synchronization: { dynamicRegistration: false, executionSummarySupport: true },
+  },
   workspace: { configuration: true, didChangeConfiguration: {}, workspaceFolders: true },
 }
 
@@ -66,14 +107,24 @@ function notebookRootPath(config: NotebookLspConfig) {
   return `/quartz-notebook/${encodeURIComponent(config.runtimeId)}`
 }
 
+function notebookDocumentUri(rootUri: string, sourcePath: string) {
+  return `${rootUri}${encodeURIComponent(sourcePath)}`
+}
+
+function notebookCellUri(rootUri: string, sourcePath: string, cellId: string) {
+  return `${notebookDocumentUri(rootUri, sourcePath)}/${encodeURIComponent(cellId)}.py`
+}
+
 function notebookFileUri(config: NotebookLspConfig) {
-  return `${notebookRootUri(config)}${encodeURIComponent(config.sourcePath)}/${encodeURIComponent(
-    config.cellId,
-  )}.py`
+  return notebookCellUri(notebookRootUri(config), config.sourcePath, config.cellId)
 }
 
 function notebookServiceKey(config: NotebookLspConfig) {
   return `${config.runtimeId}\u0000${config.sourcePath}`
+}
+
+function notebookText(source: string): Text {
+  return Text.of(source.split('\n'))
 }
 
 function pyrightWorkerManifestUrl() {
@@ -306,13 +357,208 @@ function createPyrightTransport(
   }
 }
 
+class NotebookWorkspaceFile implements WorkspaceFile {
+  constructor(
+    readonly id: string,
+    readonly uri: string,
+    public languageId: string,
+    public version: number,
+    public doc: Text,
+    public source: string,
+    public executionIndex: number | null,
+    public view: EditorView | null = null,
+  ) {}
+
+  getView() {
+    return this.view
+  }
+}
+
+class NotebookPythonWorkspace extends Workspace {
+  files: NotebookWorkspaceFile[] = []
+
+  private readonly notebookUri: string
+  private readonly filesByUri = new Map<string, NotebookWorkspaceFile>()
+  private readonly fileVersions = new Map<string, number>()
+  private notebookVersion = 0
+  private opened = false
+
+  constructor(
+    client: LSPClient,
+    private readonly rootUri: string,
+    private readonly sourcePath: string,
+    private readonly cells: () => readonly NotebookLspCell[],
+  ) {
+    super(client)
+    this.notebookUri = notebookDocumentUri(rootUri, sourcePath)
+    this.refreshFiles()
+  }
+
+  override connected() {
+    this.openNotebook()
+  }
+
+  override disconnected() {
+    this.opened = false
+  }
+
+  override getFile(uri: string) {
+    this.refreshFiles()
+    return this.filesByUri.get(uri) ?? null
+  }
+
+  override requestFile(uri: string) {
+    return Promise.resolve(this.getFile(uri))
+  }
+
+  override openFile(uri: string, languageId: string, view: EditorView) {
+    this.refreshFiles()
+    const file = this.filesByUri.get(uri)
+    if (!file) return
+    file.languageId = languageId
+    file.view = view
+    if (!this.opened && this.client.connected) {
+      this.openNotebook()
+      return
+    }
+    this.syncFiles()
+  }
+
+  override closeFile(uri: string, view: EditorView) {
+    const file = this.filesByUri.get(uri)
+    if (!file || file.view !== view) return
+    this.syncFiles()
+    file.view = null
+    if (this.files.every(file => !file.view)) this.closeNotebook()
+  }
+
+  override syncFiles() {
+    this.refreshFiles()
+    const changes: NotebookTextContentChange[] = []
+    for (const file of this.files) {
+      const nextDoc = file.view ? file.view.state.doc : notebookText(file.source)
+      const plugin = file.view ? LSPPlugin.get(file.view) : undefined
+      if (file.doc.eq(nextDoc)) {
+        plugin?.clear()
+        continue
+      }
+      file.doc = nextDoc
+      file.version = this.nextFileVersion(file.uri)
+      changes.push({
+        document: { uri: file.uri, version: file.version },
+        changes: [{ text: file.doc.toString() }],
+      })
+      plugin?.clear()
+    }
+    if (this.opened && changes.length > 0) {
+      this.notebookVersion += 1
+      this.client.notification('notebookDocument/didChange', {
+        notebookDocument: { uri: this.notebookUri, version: this.notebookVersion },
+        change: { cells: { textContent: changes } },
+      })
+    }
+    return []
+  }
+
+  private refreshFiles() {
+    const nextFiles: NotebookWorkspaceFile[] = []
+    const nextByUri = new Map<string, NotebookWorkspaceFile>()
+    for (const cell of this.cells()) {
+      const uri = notebookCellUri(this.rootUri, this.sourcePath, cell.id)
+      const existing = this.filesByUri.get(uri)
+      if (existing) {
+        existing.source = cell.source
+        existing.languageId = cell.language
+        existing.executionIndex = cell.executionIndex
+        nextFiles.push(existing)
+        nextByUri.set(uri, existing)
+        continue
+      }
+      const file = new NotebookWorkspaceFile(
+        cell.id,
+        uri,
+        cell.language,
+        this.nextFileVersion(uri),
+        notebookText(cell.source),
+        cell.source,
+        cell.executionIndex,
+      )
+      nextFiles.push(file)
+      nextByUri.set(uri, file)
+    }
+    this.files = nextFiles
+    this.filesByUri.clear()
+    nextByUri.forEach((file, uri) => this.filesByUri.set(uri, file))
+  }
+
+  private openNotebook() {
+    if (this.opened) return
+    this.refreshFiles()
+    this.opened = true
+    this.client.notification('notebookDocument/didOpen', {
+      notebookDocument: this.notebookDocument(),
+      cellTextDocuments: this.files.map(file => this.textDocument(file)),
+    })
+  }
+
+  private closeNotebook() {
+    if (!this.opened) return
+    this.opened = false
+    this.client.notification('notebookDocument/didClose', {
+      notebookDocument: { uri: this.notebookUri },
+      cellTextDocuments: this.files.map(file => ({ uri: file.uri })),
+    })
+  }
+
+  private notebookDocument(): NotebookDocumentItem {
+    return {
+      uri: this.notebookUri,
+      notebookType: 'jupyter-notebook',
+      version: this.notebookVersion,
+      cells: this.files.map(file => this.notebookCell(file)),
+    }
+  }
+
+  private notebookCell(file: NotebookWorkspaceFile): NotebookCellItem {
+    const item: NotebookCellItem = { kind: 2, document: file.uri, metadata: { id: file.id } }
+    if (file.executionIndex !== null && file.executionIndex > 0) {
+      item.executionSummary = { executionOrder: file.executionIndex }
+    }
+    return item
+  }
+
+  private textDocument(file: NotebookWorkspaceFile): NotebookTextDocumentItem {
+    return {
+      uri: file.uri,
+      languageId: file.languageId,
+      version: file.version,
+      text: file.doc.toString(),
+    }
+  }
+
+  private nextFileVersion(uri: string) {
+    const version = (this.fileVersions.get(uri) ?? -1) + 1
+    this.fileVersions.set(uri, version)
+    return version
+  }
+}
+
 class NotebookPythonLspService {
   private client: Promise<LSPClient> | undefined
+  private cells: () => readonly NotebookLspCell[]
 
   constructor(
     private readonly rootUri: string,
     private readonly rootPath: string,
-  ) {}
+    private readonly sourcePath: string,
+    cells: () => readonly NotebookLspCell[],
+  ) {
+    this.cells = cells
+  }
+
+  update(config: NotebookLspConfig) {
+    this.cells = config.cells
+  }
 
   async extensions(config: NotebookLspConfig): Promise<readonly Extension[]> {
     const client = await this.ensureClient()
@@ -337,6 +583,8 @@ class NotebookPythonLspService {
     const workspaceFiles = notebookWorkspaceFiles(typeshed, this.rootPath)
     const client = new LSPClient({
       rootUri: this.rootUri,
+      workspace: client =>
+        new NotebookPythonWorkspace(client, this.rootUri, this.sourcePath, () => this.cells()),
       timeout: 8000,
       sanitizeHTML: html => DOMPurify.sanitize(html),
       extensions: [
@@ -359,8 +607,15 @@ function notebookService(config: NotebookLspConfig) {
   const key = notebookServiceKey(config)
   let service = notebookServices.get(key)
   if (!service) {
-    service = new NotebookPythonLspService(notebookRootUri(config), notebookRootPath(config))
+    service = new NotebookPythonLspService(
+      notebookRootUri(config),
+      notebookRootPath(config),
+      config.sourcePath,
+      config.cells,
+    )
     notebookServices.set(key, service)
+  } else {
+    service.update(config)
   }
   return service
 }
