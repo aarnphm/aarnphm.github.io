@@ -17,4 +17,4 @@ This means: no fallbacks, no hacks, no shortcuts. Production-grade, Google-quali
 - Keep filesystem access out of `@quartz/plugins/transformers`.
 - Write markdown math with LaTeX blocks.
 - Skip shims and backward compatibility unless aarnphm asks for them.
-- When you write test DO NOT FUCKING WRITE `await readFile` and regex the actual changes, that is fucking stupid.
+- When you write test DO NOT FUCKING USE `readFile` and regex the actual changes, that is fucking stupid.

@@ -25,6 +25,16 @@ interface CitationLibrary {
   data: CitationEntry[]
 }
 
+interface SeeAlsoTreeNode {
+  uniqueId: string
+  title: string
+  href: string
+  labelText: string
+  isCitation: boolean
+  targetSlug?: FullSlug
+  children: SeeAlsoTreeNode[]
+}
+
 function isCitationLibrary(value: unknown): value is CitationLibrary {
   return typeof value === 'object' && value !== null && 'data' in value && Array.isArray(value.data)
 }
@@ -101,8 +111,9 @@ export default (() => {
     if (!currentSlug) {
       return null
     }
+    const sourceSlug = currentSlug
 
-    const visited = new Set<string>([currentSlug])
+    const visited = new Set<string>([sourceSlug])
     const lines: JSX.Element[] = []
     const nbsp = '\u00a0'
     const segmentPad = nbsp.repeat(3)
@@ -120,25 +131,20 @@ export default (() => {
       return `[${value}m]`
     }
 
-    const addBranch = (
-      link: FrontmatterLink,
-      depth: number,
-      isLast: boolean,
-      ancestorHasSibling: boolean[],
-    ): void => {
+    function buildNode(link: FrontmatterLink, depth: number): SeeAlsoTreeNode | undefined {
       const targetSlug = link.slug
       const isCitation = targetSlug.startsWith('@')
-      const uniqueId = isCitation ? targetSlug : targetSlug
+      const uniqueId = targetSlug
 
       if (visited.has(uniqueId)) {
-        return
+        return undefined
       }
       visited.add(uniqueId)
 
       let title = link.alias || targetSlug
       let href = '#'
       let minutes: number | undefined
-      let children: FrontmatterLink[] = []
+      let childLinks: FrontmatterLink[] = []
 
       if (isCitation) {
         const bibKey = targetSlug.substring(1)
@@ -150,12 +156,39 @@ export default (() => {
       } else {
         const targetFile = slugToFile.get(targetSlug)
         title = getDisplayTitle(targetSlug, targetFile, link.alias)
-        href = resolveRelative(currentSlug, targetSlug)
+        href = resolveRelative(sourceSlug, targetSlug)
         minutes = targetFile?.readingTime?.minutes
         const rawChildren = depth < MAX_DEPTH ? (seealsoBySlug.get(targetSlug) ?? []) : []
-        children = rawChildren.slice(0, MAX_CHILDREN_PER_NODE)
+        childLinks = rawChildren.slice(0, MAX_CHILDREN_PER_NODE)
       }
 
+      return {
+        uniqueId,
+        title,
+        href,
+        labelText: isCitation ? '[cite]' : formatReadingLabel(minutes),
+        isCitation,
+        targetSlug: isCitation ? undefined : targetSlug,
+        children: buildNodes(childLinks, depth + 1),
+      }
+    }
+
+    function buildNodes(links: FrontmatterLink[], depth: number): SeeAlsoTreeNode[] {
+      const nodes: SeeAlsoTreeNode[] = []
+      for (const link of links.slice(0, MAX_CHILDREN_PER_NODE)) {
+        const node = buildNode(link, depth)
+        if (node) {
+          nodes.push(node)
+        }
+      }
+      return nodes
+    }
+
+    const renderNode = (
+      node: SeeAlsoTreeNode,
+      isLast: boolean,
+      ancestorHasSibling: boolean[],
+    ): void => {
       const segments: string[] = []
       for (const hasSibling of ancestorHasSibling) {
         segments.push(hasSibling ? segmentWithBar : segmentEmpty)
@@ -165,34 +198,35 @@ export default (() => {
 
       const nextAncestors = [...ancestorHasSibling, !isLast]
 
-      const labelText = isCitation ? '[cite]' : formatReadingLabel(minutes)
-
       lines.push(
-        <div class="seealso-tree-line" key={uniqueId}>
+        <div class="seealso-tree-line" key={node.uniqueId}>
           <span class="seealso-prefix" aria-hidden="true">
             {prefix}
           </span>
-          <span class="seealso-label">{labelText}</span>
+          <span class="seealso-label">{node.labelText}</span>
           <a
-            href={href}
-            class={isCitation ? 'seealso-title' : 'seealso-title internal'}
-            data-no-popover={isCitation}
-            data-slug={isCitation ? undefined : targetSlug}
+            href={node.href}
+            class={node.isCitation ? 'seealso-title' : 'seealso-title internal'}
+            data-no-popover={node.isCitation}
+            data-slug={node.targetSlug}
           >
-            {title}
+            {node.title}
           </a>
         </div>,
       )
 
-      if (children && children.length > 0) {
-        children.forEach((child, idx) =>
-          addBranch(child, depth + 1, idx === children.length - 1, nextAncestors),
+      if (node.children.length > 0) {
+        node.children.forEach((child, idx) =>
+          renderNode(child, idx === node.children.length - 1, nextAncestors),
         )
       }
     }
 
-    const topLevel = rootLinks.slice(0, MAX_CHILDREN_PER_NODE)
-    topLevel.forEach((link, idx) => addBranch(link, 0, idx === topLevel.length - 1, []))
+    const topLevel = buildNodes(rootLinks, 0)
+    if (topLevel.length === 0) {
+      return null
+    }
+    topLevel.forEach((node, idx) => renderNode(node, idx === topLevel.length - 1, []))
 
     return (
       <section class={classNames(displayClass, 'seealso-tree', 'main-col')}>

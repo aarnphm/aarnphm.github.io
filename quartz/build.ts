@@ -132,8 +132,12 @@ async function startWatching(
     mut,
     contentMap,
     ignored: fp => {
-      const pathStr = toPosixPath(fp.toString())
+      const rawPath = fp.toString()
+      const pathStr = toPosixPath(
+        path.isAbsolute(rawPath) ? path.relative(argv.directory, rawPath) : rawPath,
+      )
       if (pathStr.startsWith('.git/')) return true
+      if (pathStr.endsWith('.test.ts')) return true
       if (gitIgnoredMatcher(pathStr)) return true
       for (const pattern of cfg.configuration.ignorePatterns) {
         if (minimatch(pathStr, pattern)) {
@@ -152,6 +156,7 @@ async function startWatching(
     awaitWriteFinish: { stabilityThreshold: 250 },
     persistent: true,
     cwd: argv.directory,
+    ignored: buildData.ignored,
     ignoreInitial: true,
   })
 

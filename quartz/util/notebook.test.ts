@@ -350,6 +350,12 @@ describe('notebook parser', () => {
       ),
       reason,
     )
+    assert.strictEqual(
+      unsupportedNotebookRuntimeReason(
+        'import concurrent.futures as futures\npool = futures.ThreadPoolExecutor(max_workers=2)',
+      ),
+      reason,
+    )
 
     const html = renderNotebookRuntimeOutput({
       type: 'error',

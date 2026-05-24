@@ -5,7 +5,7 @@ aliases:
 date: '2022-04-22'
 description: my working notes, as a form of a digital garden
 id: _index
-modified: 2026-05-09 17:51:32 GMT-04:00
+modified: 2026-05-24 12:59:46 GMT-04:00
 tags:
   - sapling
   - fruit
@@ -66,9 +66,9 @@ Hi, my name is Aaron. I'm best reached via [twitter](https://twitter.com/aarnphm
                                                 * about their intrinsic [[thoughts/Agency|drive]].
 ```
 
-I [[thoughts/craft|work]] on #ml [[research|systems]] (i.e. [[thoughts/Transformers#inference.|inference]] engine), and they work with me. My frequent interlocutors includes _my close friends_ and a squad of machinery-councils.
+I [[thoughts/craft|work]] on #ml [[research|systems]] (i.e. [[thoughts/Transformers#inference.|inference]] engine), and they work with me. My frequent interlocutors includes _my close friends_.
 
-As far as [[thoughts/aesthetic value|aesthetic]] goes, I [[thoughts/reading|read]] [[antilibrary|most of the time]], enjoy [[cinematheque|cinema]], and [[vibes|collect images]] on the internet. I like to make [[friends|friends]] on the internet, and IRL ✨
+As far as [[thoughts/aesthetic value|aesthetic]] goes, I [[thoughts/reading|read]] [[antilibrary.base|most of the time]], enjoy [[cinematheque.base|cinema]], and [[vibes|collect images]] on the internet. I like to make [[friends|friends]] on the internet, and IRL ✨
 
 <br/>
 
