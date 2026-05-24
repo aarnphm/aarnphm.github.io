@@ -1,8 +1,10 @@
 ---
-date: '2023-09-04'
+date: "2023-09-04"
 description: concurrent system design course covering synchronization, semaphores, monitors, message passing, remote procedure calls, coroutines, and formal methods using jupyter notebooks.
 id: index
-modified: 2026-05-09 17:51:56 GMT-04:00
+layout: A|L
+modified: 2026-05-24 12:21:08 GMT-04:00
+sort: title
 tags:
   - university
   - sfwr3bb4
@@ -21,16 +23,16 @@ See also: [[thoughts/university/twenty-three-twenty-four/sfwr-2c03/index|Data St
 
 ## Lectures
 
-- [[thoughts/university/twenty-three-twenty-four/sfwr-3bb4/00 Concurrent System Design/Concurrent System Design.ipynb|Concurrent System Design]]
-- [[thoughts/university/twenty-three-twenty-four/sfwr-3bb4/01 Sequential Programming/SequentialProgramming.ipynb|Sequential Programming]]
-- [[thoughts/university/twenty-three-twenty-four/sfwr-3bb4/02 Concurrency and Synchronization/Concurrency.ipynb|Concurrency]]
-- [[thoughts/university/twenty-three-twenty-four/sfwr-3bb4/03 Semaphores/Semaphores.ipynb|Semaphores]]
-- [[thoughts/university/twenty-three-twenty-four/sfwr-3bb4/04 Classes/Classes.ipynb|Classes]]
-- [[thoughts/university/twenty-three-twenty-four/sfwr-3bb4/05 Robustness/Robustness.ipynb|Robustness]]
-- [[thoughts/university/twenty-three-twenty-four/sfwr-3bb4/06 Monitors/Monitors.ipynb|Monitors]]
-- [[thoughts/university/twenty-three-twenty-four/sfwr-3bb4/07 Message Passing/MessagePassing.ipynb|Message Passing]]
-- [[thoughts/university/twenty-three-twenty-four/sfwr-3bb4/08 Remote Procedure Calls/RemoteProcedureCalls.ipynb|Remote Procedure Calls]]
-- [[thoughts/university/twenty-three-twenty-four/sfwr-3bb4/09 Coroutines and Futures/CoroutinesAndFutures.ipynb|Coroutines and Futures]]
+- [[thoughts/university/twenty-three-twenty-four/sfwr-3bb4/00 Concurrent System Design/Concurrent System Design|Concurrent System Design]]
+- [[thoughts/university/twenty-three-twenty-four/sfwr-3bb4/01 Sequential Programming/SequentialProgramming|Sequential Programming]]
+- [[thoughts/university/twenty-three-twenty-four/sfwr-3bb4/02 Concurrency and Synchronization/Concurrency|Concurrency]]
+- [[thoughts/university/twenty-three-twenty-four/sfwr-3bb4/03 Semaphores/Semaphores|Semaphores]]
+- [[thoughts/university/twenty-three-twenty-four/sfwr-3bb4/04 Classes/Classes|Classes]]
+- [[thoughts/university/twenty-three-twenty-four/sfwr-3bb4/05 Robustness/Robustness|Robustness]]
+- [[thoughts/university/twenty-three-twenty-four/sfwr-3bb4/06 Monitors/Monitors|Monitors]]
+- [[thoughts/university/twenty-three-twenty-four/sfwr-3bb4/07 Message Passing/MessagePassing|Message Passing]]
+- [[thoughts/university/twenty-three-twenty-four/sfwr-3bb4/08 Remote Procedure Calls/RemoteProcedureCalls|Remote Procedure Calls]]
+- [[thoughts/university/twenty-three-twenty-four/sfwr-3bb4/09 Coroutines and Futures/CoroutinesAndFutures|Coroutines and Futures]]
 
 ## Installation
 
