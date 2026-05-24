@@ -248,16 +248,7 @@ async function writeAfterDomLoadedScripts(ctx: BuildCtx, scripts: string[]) {
     }),
   )
 
-  const imports = entries.slice(0, -1).map(({ filename }) => `import("./${filename}")`)
-  const postscript =
-    entries.length === 0
-      ? ''
-      : [
-          imports.length > 0 ? `await Promise.all([\n  ${imports.join(',\n  ')}\n]);` : '',
-          `await import("./${entries[entries.length - 1].filename}");`,
-        ]
-          .filter(Boolean)
-          .join('\n')
+  const postscript = entries.map(({ filename }) => `await import("./${filename}");`).join('\n')
 
   return { postscript, files: entries.map(({ file }) => file) }
 }
