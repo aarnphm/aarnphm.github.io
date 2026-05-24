@@ -127,11 +127,28 @@ const attachmentMimeTypes = ['image/png', 'image/jpeg', 'image/gif', 'image/webp
 const htmlImageSrcPattern = /(<img\b[^>]*\bsrc\s*=\s*)(?:"([^"]*)"|'([^']*)'|([^\s>]+))/gi
 const markdownImagePattern = /(!\[[^\]]*\]\()(\s*)([^)\s]+)([^)]*\))/g
 const standaloneHtmlImageLinePattern = /^\s*<img\b[^>\n]*>(?:\s*<\/img>)?\s*$/i
+const htmlTagPattern = /<\/?([A-Za-z][A-Za-z0-9:-]*)\b[^>]*>/g
 const markdownFenceLinePattern = /^( {0,3})(`{3,}|~{3,})(.*)$/
 const htmlDivOpenTagPattern = /<div\b[^>]*>/gi
 const htmlDivCloseTagPattern = /<\/div\s*>/gi
 const htmlFloatStylePattern =
   /\bstyle\s*=\s*(?:"[^"]*\bfloat\s*:\s*(?:left|right)[^"]*"|'[^']*\bfloat\s*:\s*(?:left|right)[^']*'|[^\s>]*\bfloat\s*:\s*(?:left|right)[^\s>]*)/i
+const htmlVoidTags = new Set([
+  'area',
+  'base',
+  'br',
+  'col',
+  'embed',
+  'hr',
+  'img',
+  'input',
+  'link',
+  'meta',
+  'param',
+  'source',
+  'track',
+  'wbr',
+])
 
 function languageName(notebook: NotebookDocument): string {
   const metadata = isRecord(notebook.metadata) ? notebook.metadata : {}
@@ -500,16 +517,38 @@ function resolveNotebookImagePaths(source: string, sourcePath: string): string {
   })
 }
 
+function updateHtmlContainerStack(stack: string[], line: string): void {
+  for (const match of line.matchAll(htmlTagPattern)) {
+    const raw = match[0]
+    const tag = match[1].toLowerCase()
+    if (htmlVoidTags.has(tag) || /\/\s*>$/.test(raw)) continue
+    if (raw.startsWith('</')) {
+      const index = stack.lastIndexOf(tag)
+      if (index >= 0) stack.splice(index)
+      continue
+    }
+    stack.push(tag)
+  }
+}
+
 function separateStandaloneHtmlImageLines(source: string): string {
   const lines = source.split(/\r?\n/)
   const result: string[] = []
+  const htmlContainerStack: string[] = []
   for (let index = 0; index < lines.length; index += 1) {
     const line = lines[index]
+    const insideHtmlContainer = htmlContainerStack.length > 0
     result.push(line)
     const next = lines[index + 1]
-    if (standaloneHtmlImageLinePattern.test(line) && next !== undefined && next.trim().length > 0) {
+    if (
+      !insideHtmlContainer &&
+      standaloneHtmlImageLinePattern.test(line) &&
+      next !== undefined &&
+      next.trim().length > 0
+    ) {
       result.push('')
     }
+    updateHtmlContainerStack(htmlContainerStack, line)
   }
   return result.join('\n')
 }

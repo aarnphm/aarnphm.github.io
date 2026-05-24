@@ -182,6 +182,8 @@ export function notebookCellRuntimeOutput(cellId: string): string {
 }
 
 const browserRuntimeExtensionDirectives = new Set(['autoreload', 'nb_mypy'])
+const browserRuntimeThreadingReason =
+  'Python threading and multiprocessing are unavailable in the browser runtime because Pyodide does not support starting threads or processes. Use QUARTZ_NOTEBOOK_MODE=execute or a server Python runtime for this cell.'
 const wat2wasmFeatureOptions = new Set([
   '--enable-annotations',
   '--enable-bulk-memory',
@@ -352,6 +354,91 @@ function browserRuntimeDirectiveReason(line: string): string | undefined {
   if (/^%matplotlib(?:\s|$)/.test(line)) return undefined
 }
 
+function pythonImportAliases(source: string, moduleName: string): Set<string> {
+  const aliases = new Set<string>()
+  for (const line of source.split(/\r?\n/)) {
+    const withoutComment = line.replace(/#.*/, '')
+    for (const importMatch of withoutComment.matchAll(/(?:^|[;:])\s*import\s+([^;]+)/g)) {
+      for (const part of importMatch[1].split(',')) {
+        const match = part
+          .trim()
+          .match(
+            new RegExp(
+              `^${moduleName.replace(/\./g, '\\.')}\\s*(?:as\\s+([A-Za-z_][A-Za-z0-9_]*))?$`,
+            ),
+          )
+        if (match) aliases.add(match[1] ?? moduleName.split('.').at(-1) ?? moduleName)
+      }
+    }
+  }
+  return aliases
+}
+
+function pythonFromImportNames(source: string, moduleName: string): Set<string> {
+  const names = new Set<string>()
+  for (const line of source.split(/\r?\n/)) {
+    const withoutComment = line.replace(/#.*/, '')
+    for (const match of withoutComment.matchAll(
+      new RegExp(
+        `(?:^|[;:])\\s*from\\s+${moduleName.replace(/\./g, '\\.')}\\s+import\\s+([^;]+)`,
+        'g',
+      ),
+    )) {
+      for (const part of match[1].split(',')) {
+        const name = part
+          .trim()
+          .split(/\s+as\s+/)[0]
+          ?.trim()
+        if (name) names.add(name)
+      }
+    }
+  }
+  return names
+}
+
+function hasQualifiedPythonUse(source: string, aliases: Set<string>, members: string[]): boolean {
+  for (const alias of aliases) {
+    const escaped = alias.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+    if (new RegExp(`\\b${escaped}\\s*\\.\\s*(?:${members.join('|')})\\b`).test(source)) {
+      return true
+    }
+  }
+  return false
+}
+
+function browserRuntimeThreadingReasonForSource(source: string): string | undefined {
+  const threadingNames = pythonFromImportNames(source, 'threading')
+  if (threadingNames.has('*') || threadingNames.has('Thread')) {
+    return browserRuntimeThreadingReason
+  }
+  const multiprocessingNames = pythonFromImportNames(source, 'multiprocessing')
+  if (multiprocessingNames.has('*') || multiprocessingNames.has('Process')) {
+    return browserRuntimeThreadingReason
+  }
+  const futuresNames = pythonFromImportNames(source, 'concurrent.futures')
+  if (
+    futuresNames.has('*') ||
+    futuresNames.has('ThreadPoolExecutor') ||
+    futuresNames.has('ProcessPoolExecutor')
+  ) {
+    return browserRuntimeThreadingReason
+  }
+  if (hasQualifiedPythonUse(source, pythonImportAliases(source, 'threading'), ['Thread'])) {
+    return browserRuntimeThreadingReason
+  }
+  if (hasQualifiedPythonUse(source, pythonImportAliases(source, 'multiprocessing'), ['Process'])) {
+    return browserRuntimeThreadingReason
+  }
+  if (
+    hasQualifiedPythonUse(source, pythonImportAliases(source, 'concurrent.futures'), [
+      'ThreadPoolExecutor',
+      'ProcessPoolExecutor',
+    ])
+  ) {
+    return browserRuntimeThreadingReason
+  }
+}
+
 function notebookWriteFileDirectiveReason(source: string): { handled: boolean; reason?: string } {
   const first = source.split(/\r?\n/, 1)[0]?.trim() ?? ''
   if (!first.startsWith('%%writefile')) return { handled: false }
@@ -514,6 +601,8 @@ export function renderNotebookRuntimeOutput(
 }
 
 export function unsupportedNotebookRuntimeReason(source: string): string | undefined {
+  const threading = browserRuntimeThreadingReasonForSource(source)
+  if (threading) return threading
   const writeFile = notebookWriteFileDirectiveReason(source)
   if (writeFile.handled) return writeFile.reason
   for (const line of source.split(/\r?\n/)) {
