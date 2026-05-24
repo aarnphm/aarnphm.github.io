@@ -4,6 +4,7 @@ import crypto from 'node:crypto'
 import fs from 'node:fs/promises'
 import path from 'path'
 import { ReadTimeResults } from 'reading-time'
+import type { BuildCtx } from '../../util/ctx'
 import { version } from '../../../package.json'
 import { GlobalConfiguration } from '../../cfg'
 import { formatDate, getDate } from '../../components/Date'
@@ -139,6 +140,10 @@ function isContentPageFile(fp: FilePath): boolean {
   return fp.endsWith('.md') || fp.endsWith('.base') || fp.endsWith('.canvas')
 }
 
+function isGraphFilePage(fp: FilePath): boolean {
+  return fp.endsWith('.ipynb') || fp.endsWith('.base')
+}
+
 function fileTitle(fp: FilePath): string {
   const ext = path.extname(fp)
   const base = path.basename(fp, ext)
@@ -164,6 +169,27 @@ function serializeContentIndex(idx: ContentIndexMap) {
       return [slug, serializable]
     }),
   )
+}
+
+function addFilePageToIndex(ctx: BuildCtx, idx: ContentIndexMap, file: FilePath) {
+  const slug = slugifyFilePath(file, path.extname(file) === '.ipynb')
+  if (idx.has(slug)) {
+    return
+  }
+
+  const contentPath = joinSegments('content', file)
+  idx.set(slug, {
+    slug,
+    title: fileTitle(file),
+    links: [],
+    filePath: joinSegments(ctx.argv.directory, file) as FilePath,
+    fileName: file,
+    tags: fileTags(file),
+    aliases: [file, contentPath, slug],
+    content: fileSearchContent(file),
+    layout: 'default',
+    description: contentPath,
+  })
 }
 
 function deriveFolderDisplayTitle(
@@ -631,6 +657,12 @@ Expires: ${expiresDate.toISOString()}
         }
       }
 
+      for (const file of ctx.allFiles) {
+        if (isGraphFilePage(file)) {
+          addFilePageToIndex(ctx, linkIndex, file)
+        }
+      }
+
       const fp = joinSegments('static', 'contentIndex') as FullSlug
       yield write({
         ctx,
@@ -645,24 +677,7 @@ Expires: ${expiresDate.toISOString()}
           continue
         }
 
-        const slug = slugifyFilePath(file, path.extname(file) === '.ipynb')
-        if (searchIndex.has(slug)) {
-          continue
-        }
-
-        const contentPath = joinSegments('content', file)
-        searchIndex.set(slug, {
-          slug,
-          title: fileTitle(file),
-          links: [],
-          filePath: joinSegments(ctx.argv.directory, file) as FilePath,
-          fileName: file,
-          tags: fileTags(file),
-          aliases: [file, contentPath, slug],
-          content: fileSearchContent(file),
-          layout: 'default',
-          description: contentPath,
-        })
+        addFilePageToIndex(ctx, searchIndex, file)
       }
 
       yield write({

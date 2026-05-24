@@ -101,6 +101,19 @@ article:has(.notebook-runtime) {
       > figure[data-rehype-pretty-code-figure] > pre,
       > .notebook-source-editor {
         border-bottom-right-radius: 0;
+      }
+    }
+
+    &:has(
+      > .notebook-runtime-output:not([hidden])
+        > .notebook-output-tabs[data-notebook-output-collapsed]
+    ),
+    &:has(
+      > .notebook-static-output:not([hidden])
+        > .notebook-output-tabs[data-notebook-output-collapsed]
+    ) {
+      > figure[data-rehype-pretty-code-figure] > pre,
+      > .notebook-source-editor {
         border-bottom-left-radius: 0;
       }
     }
@@ -582,7 +595,7 @@ article:has(.notebook-runtime) {
     padding: 0;
     overflow: hidden;
     border: 1px solid var(--lightgray);
-    border-top: 0;
+    border-left: 0;
     border-radius: 0 0 0 var(--notebook-inner-radius);
     background: var(--notebook-output-surface);
     isolation: isolate;
@@ -622,8 +635,7 @@ article:has(.notebook-runtime) {
     transition:
       background-color 140ms ease,
       color 140ms ease,
-      opacity 140ms ease,
-      scale 140ms ease;
+      opacity 140ms ease;
     white-space: nowrap;
   }
 
@@ -633,10 +645,6 @@ article:has(.notebook-runtime) {
 
   .notebook-output-tab:last-child {
     border-bottom-right-radius: 0;
-  }
-
-  .notebook-output-tab:not(:disabled):active {
-    scale: 0.96;
   }
 
   .notebook-output-tab:not(:disabled):hover,
