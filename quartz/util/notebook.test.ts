@@ -1,5 +1,4 @@
 import assert from 'node:assert'
-import { readFile } from 'node:fs/promises'
 import test, { describe } from 'node:test'
 import rehypeRaw from 'rehype-raw'
 import remarkParse from 'remark-parse'
@@ -479,3 +478,4 @@ describe('notebook parser', () => {
     assert.doesNotMatch(markdown, /data-notebook-runtime/)
     assert.doesNotMatch(markdown, /Run cell/)
   })
+})

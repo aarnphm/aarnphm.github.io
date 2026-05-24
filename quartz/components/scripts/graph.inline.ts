@@ -250,10 +250,7 @@ async function renderGraph(graph: HTMLElement, fullSlug: FullSlug) {
   }
 
   function nodeRadius(d: NodeData) {
-    const numLinks = graphData.links.filter(
-      l => l.source.id === d.id || l.target.id === d.id,
-    ).length
-    return 2 + Math.sqrt(numLinks)
+    return nodeRadiusById.get(d.id) ?? 4
   }
 
   let hoveredNodeId: string | null = null
@@ -706,7 +703,6 @@ document.addEventListener('nav', async (e: CustomEventMap['nav']) => {
   const localGraphContainers = [
     ...document.getElementsByClassName('graph-container'),
   ] as HTMLElement[]
-  const localGraphMedia = window.matchMedia('(min-width: 1400px)')
   let localGraphCleanups: (() => void)[] = []
   let localGraphRenderVersion = 0
 
@@ -720,9 +716,9 @@ document.addEventListener('nav', async (e: CustomEventMap['nav']) => {
   async function renderLocalGraphs() {
     const renderVersion = ++localGraphRenderVersion
     cleanupLocalGraphs()
-    if (!localGraphMedia.matches) return
 
     for (const graphContainer of localGraphContainers) {
+      if (graphContainer.offsetWidth === 0 || graphContainer.offsetHeight === 0) continue
       const cleanup = await renderGraph(graphContainer, slug)
       if (renderVersion === localGraphRenderVersion) {
         localGraphCleanups.push(cleanup)
@@ -732,12 +728,12 @@ document.addEventListener('nav', async (e: CustomEventMap['nav']) => {
     }
   }
 
-  const localGraphMediaHandler = () => {
+  const localGraphResizeHandler = () => {
     void renderLocalGraphs()
   }
 
   void renderLocalGraphs()
-  localGraphMedia.addEventListener('change', localGraphMediaHandler)
+  window.addEventListener('resize', localGraphResizeHandler)
 
   const containers = [...document.getElementsByClassName('global-graph-outer')] as HTMLElement[]
 
@@ -783,7 +779,7 @@ document.addEventListener('nav', async (e: CustomEventMap['nav']) => {
   document.addEventListener('keydown', shortcutHandler)
   window.addCleanup(() => {
     document.removeEventListener('keydown', shortcutHandler)
-    localGraphMedia.removeEventListener('change', localGraphMediaHandler)
+    window.removeEventListener('resize', localGraphResizeHandler)
     localGraphRenderVersion++
     cleanupLocalGraphs()
     cleanupGlobalGraphs()
