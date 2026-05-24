@@ -68,6 +68,7 @@ article:has(.notebook-runtime) {
     padding: var(--notebook-shell-padding);
     border: 1px solid color-mix(in srgb, var(--lightgray) 78%, transparent);
     border-radius: var(--notebook-shell-radius);
+    background: var(--light);
     outline: 0;
 
     &[data-notebook-active-cell] {
@@ -684,6 +685,27 @@ article:has(.notebook-runtime) {
     box-shadow: none;
   }
 
+  .notebook-output-actions {
+    display: inline-flex;
+    grid-row: 2;
+    grid-column: 2;
+    position: relative;
+    z-index: 2;
+    align-items: center;
+    justify-self: flex-end;
+    align-self: stretch;
+    box-sizing: border-box;
+    width: fit-content;
+    min-width: var(--notebook-action-height);
+    height: var(--notebook-action-height);
+    min-height: var(--notebook-action-height);
+    overflow: hidden;
+  }
+
+  .notebook-output-tabs[data-notebook-output-collapsed] .notebook-output-actions {
+    display: none;
+  }
+
   .notebook-output-tab {
     display: inline-flex;
     align-items: center;
@@ -787,7 +809,6 @@ article:has(.notebook-runtime) {
 
     box-sizing: border-box;
     height: 100%;
-    padding-bottom: 2.2rem;
     overflow: auto;
     overscroll-behavior: contain;
   }
@@ -843,15 +864,11 @@ article:has(.notebook-runtime) {
   }
 
   .notebook-output-copy-button {
-    position: absolute;
-    right: 1px;
-    bottom: 1px;
-    z-index: 2;
     display: grid;
     place-items: center;
-    width: 2.25rem;
-    height: 2.25rem;
-    min-height: 2.25rem;
+    width: var(--notebook-action-height);
+    height: var(--notebook-action-height);
+    min-height: var(--notebook-action-height);
     margin: 0;
     padding: 0;
     border: 0;
@@ -863,6 +880,10 @@ article:has(.notebook-runtime) {
       color 140ms ease,
       opacity 140ms ease,
       scale 140ms ease;
+  }
+
+  .notebook-output-copy-button[hidden] {
+    display: none;
   }
 
   .notebook-output-copy-button:hover,

@@ -505,6 +505,9 @@ function selectOutputTab(container: HTMLElement, activeId: string | undefined, f
   for (const panel of container.querySelectorAll<HTMLElement>('[data-notebook-output-panel]')) {
     panel.hidden = activeId === undefined || panel.dataset.notebookOutputPanel !== activeId
   }
+  for (const action of container.querySelectorAll<HTMLElement>('[data-notebook-output-action]')) {
+    action.hidden = activeId === undefined || action.dataset.notebookOutputAction !== activeId
+  }
   if (activeId !== undefined) syncOutputScrollHints(container)
 }
 
@@ -549,6 +552,8 @@ function syncOutputTabs(target: HTMLElement, cellId = target.dataset.notebookOut
   tablist.className = 'notebook-output-tablist'
   tablist.setAttribute('role', 'tablist')
   tablist.setAttribute('aria-orientation', 'horizontal')
+  const actions = document.createElement('div')
+  actions.className = 'notebook-output-actions'
   const panels = document.createElement('div')
   panels.className = 'notebook-output-panels'
   const outputId = outputClassToken(cellId)
@@ -621,11 +626,14 @@ function syncOutputTabs(target: HTMLElement, cellId = target.dataset.notebookOut
     const panel = document.createElement('div')
     panel.className = 'notebook-output-panel'
     panel.append(...group.outputs)
-    panelFrame.append(panel, createOutputCopyButton(group.outputs))
+    panelFrame.append(panel)
+    const copyButton = createOutputCopyButton(group.outputs)
+    copyButton.dataset.notebookOutputAction = group.id
+    actions.append(copyButton)
     panels.append(panelFrame)
   })
 
-  container.append(tablist, panels)
+  container.append(tablist, actions, panels)
   target.dataset.notebookOutputTabbed = ''
   target.replaceChildren(container)
   selectOutputTab(container, activeId)
