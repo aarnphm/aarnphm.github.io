@@ -106,36 +106,7 @@ article:has(.notebook-runtime) {
 
       > pre {
         margin: 0;
-        border-radius: 0 var(--notebook-inner-radius) var(--notebook-inner-radius)
-          var(--notebook-inner-radius);
-      }
-    }
-
-    &:has(
-      > .notebook-runtime-output:not([hidden])
-        > .notebook-output-tabs:not([data-notebook-output-collapsed])
-    ),
-    &:has(
-      > .notebook-static-output:not([hidden])
-        > .notebook-output-tabs:not([data-notebook-output-collapsed])
-    ) {
-      > figure[data-rehype-pretty-code-figure] > pre,
-      > .notebook-source-editor {
-        border-bottom-right-radius: 0;
-      }
-    }
-
-    &:has(
-      > .notebook-runtime-output:not([hidden])
-        > .notebook-output-tabs[data-notebook-output-collapsed]
-    ),
-    &:has(
-      > .notebook-static-output:not([hidden])
-        > .notebook-output-tabs[data-notebook-output-collapsed]
-    ) {
-      > figure[data-rehype-pretty-code-figure] > pre,
-      > .notebook-source-editor {
-        border-bottom-left-radius: 0;
+        border-radius: var(--notebook-inner-radius);
       }
     }
 
@@ -155,8 +126,7 @@ article:has(.notebook-runtime) {
       padding: 0.6rem 0.75rem;
       overflow: auto;
       border: 1px solid var(--lightgray);
-      border-radius: 0 var(--notebook-inner-radius) var(--notebook-inner-radius)
-        var(--notebook-inner-radius);
+      border-radius: var(--notebook-inner-radius);
       background: var(--notebook-editor-surface);
       color: var(--dark);
       cursor: text;
@@ -562,21 +532,12 @@ article:has(.notebook-runtime) {
     margin: 0 0 1rem;
     overflow: visible;
     border: 1px solid color-mix(in srgb, var(--lightgray) 78%, transparent);
-    border-bottom: 0;
-    border-radius: var(--notebook-inner-radius) var(--notebook-inner-radius)
-      var(--notebook-inner-radius) var(--notebook-inner-radius);
+    border-radius: var(--notebook-inner-radius);
     background: var(--notebook-output-surface);
   }
 
   .notebook-output-tabs::after {
-    content: '';
-    grid-row: 2;
-    grid-column: 2;
-    align-self: end;
-    z-index: 0;
-    min-width: 0;
-    border-bottom: 1px solid color-mix(in srgb, var(--lightgray) 78%, transparent);
-    pointer-events: none;
+    display: none;
   }
 
   .notebook-output-tabs[data-notebook-output-collapsed] {
@@ -617,6 +578,7 @@ article:has(.notebook-runtime) {
     overflow: hidden;
     border: 1px solid var(--lightgray);
     border-left: 0;
+    border-bottom: 0;
     border-radius: 0 0 0 var(--notebook-inner-radius);
     background: var(--notebook-output-surface);
     isolation: isolate;
@@ -716,7 +678,7 @@ article:has(.notebook-runtime) {
     height: 100%;
     overflow: hidden;
     border: 0;
-    border-radius: var(--notebook-inner-radius) var(--notebook-inner-radius) 0 0;
+    border-radius: calc(var(--notebook-inner-radius) - 1px);
     background: transparent;
   }
 
@@ -800,25 +762,22 @@ article:has(.notebook-runtime) {
 
   .notebook-output-copy-button {
     position: absolute;
-    right: 0.45rem;
-    bottom: 0.45rem;
+    right: 1px;
+    bottom: 1px;
     z-index: 2;
     display: grid;
     place-items: center;
-    width: 1.35rem;
-    height: 1.35rem;
-    min-height: 1.35rem;
+    width: 2.25rem;
+    height: 2.25rem;
+    min-height: 2.25rem;
     margin: 0;
     padding: 0;
-    border: 1px solid color-mix(in srgb, var(--lightgray) 86%, transparent);
-    border-radius: var(--radius-3);
-    background: color-mix(in srgb, var(--light) 92%, transparent);
+    border: 0;
+    background: transparent;
     color: var(--gray);
     cursor: pointer;
-    opacity: 0.72;
+    opacity: 0.62;
     transition:
-      background-color 140ms ease,
-      border-color 140ms ease,
       color 140ms ease,
       opacity 140ms ease,
       scale 140ms ease;
@@ -826,8 +785,6 @@ article:has(.notebook-runtime) {
 
   .notebook-output-copy-button:hover,
   .notebook-output-copy-button:focus-visible {
-    border-color: var(--darkgray);
-    background: var(--light);
     color: var(--dark);
     opacity: 1;
     outline: 0;
@@ -844,8 +801,8 @@ article:has(.notebook-runtime) {
   }
 
   .notebook-output-copy-button svg {
-    width: 0.82rem;
-    height: 0.82rem;
+    width: 0.9rem;
+    height: 0.9rem;
   }
 
   .notebook-output-check-icon,

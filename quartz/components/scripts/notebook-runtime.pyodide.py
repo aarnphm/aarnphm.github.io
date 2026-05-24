@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import ast as _quartz_ast
+import dataclasses as _quartz_dataclasses
 import glob
 import importlib.abc
 import importlib.util
@@ -875,6 +876,14 @@ def _quartz_jsonable(value, seen=None):
   value_id = id(value)
   if value_id in seen:
     raise TypeError('cyclic notebook values cannot be displayed as JSON')
+  if isinstance(value, tuple) and hasattr(value, '_fields'):
+    fields = _quartz_object_fields(value)
+    if fields is not None:
+      seen.add(value_id)
+      try:
+        return {key: _quartz_jsonable(item, seen) for key, item in fields.items()}
+      finally:
+        seen.remove(value_id)
   if isinstance(value, dict):
     seen.add(value_id)
     try:
@@ -895,11 +904,50 @@ def _quartz_jsonable(value, seen=None):
       seen.remove(value_id)
   if hasattr(value, 'tolist'):
     return _quartz_jsonable(value.tolist(), seen)
+  if _quartz_dataclasses.is_dataclass(value) and not isinstance(value, type):
+    seen.add(value_id)
+    try:
+      return {
+        field.name: _quartz_jsonable(getattr(value, field.name), seen)
+        for field in _quartz_dataclasses.fields(value)
+      }
+    finally:
+      seen.remove(value_id)
+  fields = _quartz_object_fields(value)
+  if fields is not None:
+    seen.add(value_id)
+    try:
+      return {key: _quartz_jsonable(item, seen) for key, item in fields.items()}
+    finally:
+      seen.remove(value_id)
   raise TypeError(f'notebook value is not JSON-displayable: {type(value).__name__}')
 
 
+def _quartz_object_fields(value):
+  if isinstance(value, type) or getattr(value, '__module__', '') == 'builtins':
+    return None
+  if isinstance(value, tuple) and hasattr(value, '_fields'):
+    return {name: getattr(value, name) for name in value._fields}
+  fields = {}
+  value_dict = getattr(value, '__dict__', None)
+  if isinstance(value_dict, dict):
+    fields.update(value_dict)
+  for owner in type(value).__mro__:
+    slots = getattr(owner, '__slots__', ())
+    names = (slots,) if isinstance(slots, str) else tuple(slots)
+    for name in names:
+      if name in ('__dict__', '__weakref__') or not hasattr(value, name):
+        continue
+      fields[name] = getattr(value, name)
+  return {
+    str(key): item
+    for key, item in fields.items()
+    if isinstance(key, str) and not key.startswith('_') and not callable(item)
+  } or None
+
+
 def _quartz_json_display_bundle(value):
-  if not isinstance(value, (dict, list, tuple, set)):
+  if not isinstance(value, (dict, list, tuple, set)) and _quartz_object_fields(value) is None:
     return None
   text = json.dumps(_quartz_jsonable(value), ensure_ascii=False, indent=2, sort_keys=True)
   return {'application/json': text, 'text/plain': text}
