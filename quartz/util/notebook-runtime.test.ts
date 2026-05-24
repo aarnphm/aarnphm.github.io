@@ -313,6 +313,9 @@ describe('notebook browser runtime output', () => {
 
     assert.match(source, /function bufferStreamBytesForCell\(cellId, name, bytes, decoder\)/)
     assert.match(source, /return bytes\.byteLength/)
+    assert.match(source, /function emitBufferedStreamForCell\(cellId, name, final = false\)/)
+    assert.match(source, /const newline = text\.lastIndexOf\('\\n'\)/)
+    assert.match(source, /emitOutputForCell\(cellId, \{ type: 'stream', name, text: ready \}\)/)
     assert.match(
       source,
       /pyodide\.setStdout\(\{[\s\S]*write: bytes => bufferStreamBytesForCell\(currentCellId, 'stdout', bytes, stdoutDecoder\)/,
@@ -321,6 +324,42 @@ describe('notebook browser runtime output', () => {
       source,
       /pyodide\.setStderr\(\{[\s\S]*write: bytes => bufferStreamBytesForCell\(currentCellId, 'stderr', bytes, stderrDecoder\)/,
     )
+  })
+
+  test('merges streamed browser output chunks into the active output block', async () => {
+    const source = await readFile(
+      new URL('../components/scripts/notebook-runtime.client.ts', import.meta.url),
+      'utf8',
+    )
+
+    assert.match(
+      source,
+      /function appendStreamOutput\(target: HTMLElement, output: RuntimeStreamOutput\)/,
+    )
+    assert.match(
+      source,
+      /function lastNotebookOutput\(target: HTMLElement\): HTMLElement \| undefined/,
+    )
+    assert.match(source, /const previous = lastNotebookOutput\(target\)/)
+    assert.match(source, /data-notebook-output-tabs/)
+    assert.match(source, /sample\.textContent \+= output\.text/)
+    assert.match(source, /previous\.scrollTop = previous\.scrollHeight/)
+    assert.match(source, /\{ trimEnd: false \}/)
+    assert.match(source, /appendStreamOutput\(target, output\)/)
+  })
+
+  test('lets the active running cell interrupt the browser runtime', async () => {
+    const source = await readFile(
+      new URL('../components/scripts/notebook-runtime.client.ts', import.meta.url),
+      'utf8',
+    )
+
+    assert.match(source, /type NotebookIcon = 'run' \| 'stop'/)
+    assert.match(source, /private runningCellId: string \| undefined/)
+    assert.match(source, /this\.running && this\.runningCellId === cell\.id[\s\S]*this\.stop\(\)/)
+    assert.match(source, /button\.toggleAttribute\('disabled', running && !active\)/)
+    assert.match(source, /setNotebookIconButton\(button, 'stop', `Interrupt \$\{cellId\}`\)/)
+    assert.match(source, /this\.worker\?\.terminate\(\)/)
   })
 
   test('routes browser list display payloads through formatted json output', async () => {
@@ -376,12 +415,19 @@ describe('notebook browser runtime output', () => {
 
     assert.match(source, /\.notebook-code-cell > \.notebook-runtime-cell \{[^}]*display: flex/s)
     assert.match(source, /\.notebook-code-cell > \.notebook-runtime-cell > p \{[^}]*margin: 0/s)
-    assert.match(source, /\.notebook-code-cell > \.notebook-runtime-output \{/)
-    assert.match(source, /margin: -0\.35rem 0 1rem/)
-    assert.match(source, /\.notebook-code-cell > \.notebook-runtime-output\[hidden\] \{/)
+    assert.match(source, /> \.notebook-runtime-output \{\s+grid-column: 1 \/ -1;/)
     assert.match(
       source,
-      /\.notebook-code-cell > \.notebook-runtime-output > \.notebook-output:first-child \{/,
+      /\.notebook-code-cell > \.notebook-runtime-output,\s+\.notebook-code-cell > \.notebook-static-output \{[^}]*display: grid/s,
+    )
+    assert.match(source, /margin: -0\.35rem 0 1rem/)
+    assert.match(
+      source,
+      /\.notebook-code-cell > \.notebook-runtime-output\[hidden\],\s+\.notebook-code-cell > \.notebook-static-output\[hidden\] \{[^}]*display: none/s,
+    )
+    assert.match(
+      source,
+      /\.notebook-code-cell > \.notebook-runtime-output > \.notebook-output:first-child,\s+\.notebook-code-cell > \.notebook-static-output > \.notebook-output:first-child \{[^}]*margin-top: 0/s,
     )
   })
 
@@ -538,5 +584,13 @@ describe('notebook browser runtime output', () => {
     assert.match(styleSource, /\.notebook-output-tablist \{/)
     assert.match(styleSource, /\.notebook-output-tab\[aria-selected='true'\]/)
     assert.match(styleSource, /\.notebook-output-panel\[hidden\] \{/)
+    assert.match(
+      styleSource,
+      /\.notebook-code-cell > \.notebook-output\[data-output-name\]::before/,
+    )
+    assert.match(
+      styleSource,
+      /\.notebook-code-cell > \.notebook-static-output > \.notebook-output\[data-output-name\]::before \{[\s\S]*display: none/s,
+    )
   })
 })

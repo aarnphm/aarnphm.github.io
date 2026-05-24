@@ -192,10 +192,34 @@ function emitOutputForCell(cellId, output) {
   if (!cellId) return
   post({ type: 'output', cellId, output })
 }
+function streamKey(cellId, name) {
+  return cellId + '\u0000' + name
+}
+function emitBufferedStreamForCell(cellId, name, final = false) {
+  const key = streamKey(cellId, name)
+  const text = streamBuffers.get(key)
+  if (!text) return
+  if (final) {
+    streamBuffers.delete(key)
+    emitOutputForCell(cellId, { type: 'stream', name, text })
+    return
+  }
+  const newline = text.lastIndexOf('\n')
+  if (newline < 0) return
+  const ready = text.slice(0, newline + 1)
+  const rest = text.slice(newline + 1)
+  if (rest) {
+    streamBuffers.set(key, rest)
+  } else {
+    streamBuffers.delete(key)
+  }
+  emitOutputForCell(cellId, { type: 'stream', name, text: ready })
+}
 function bufferStreamForCell(cellId, name, text) {
   if (!cellId || !text) return
-  const key = cellId + '\u0000' + name
+  const key = streamKey(cellId, name)
   streamBuffers.set(key, (streamBuffers.get(key) || '') + text)
+  emitBufferedStreamForCell(cellId, name)
 }
 function bufferStreamBytesForCell(cellId, name, bytes, decoder) {
   if (!bytes) return 0
@@ -205,15 +229,15 @@ function bufferStreamBytesForCell(cellId, name, bytes, decoder) {
 }
 function flushStreamDecoderForCell(cellId, name, decoder) {
   bufferStreamForCell(cellId, name, decoder.decode())
+  emitBufferedStreamForCell(cellId, name, true)
 }
 function flushStreamsForCell(cellId) {
   flushStreamDecoderForCell(cellId, 'stdout', stdoutDecoder)
   flushStreamDecoderForCell(cellId, 'stderr', stderrDecoder)
-  for (const [key, text] of Array.from(streamBuffers.entries())) {
+  for (const [key] of Array.from(streamBuffers.entries())) {
     const [owner, name] = key.split('\u0000')
     if (owner !== cellId) continue
-    streamBuffers.delete(key)
-    if (text) emitOutputForCell(cellId, { type: 'stream', name, text })
+    emitBufferedStreamForCell(cellId, name, true)
   }
 }
 function debugOutput(phase, cellId, error) {

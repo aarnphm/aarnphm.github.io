@@ -14,6 +14,8 @@ type RuntimeModule = { name: string; sourcePath: string; source: string }
 
 type RuntimeErrorOutput = Extract<NotebookRuntimeOutput, { type: 'error' }>
 
+type RuntimeStreamOutput = Extract<NotebookRuntimeOutput, { type: 'stream' }>
+
 type RuntimeDebugOutput = NonNullable<RuntimeErrorOutput['debug']>
 
 type CellRunResult = { failed: boolean }
@@ -74,12 +76,13 @@ type RuntimeFileWaiter = {
   resolve: (message: Extract<FrameMessage, { type: 'file-result' }>) => void
 }
 
-type NotebookIcon = 'run' | 'edit' | 'save' | 'revert'
+type NotebookIcon = 'run' | 'stop' | 'edit' | 'save' | 'revert'
 
 const notebookRuntimeVimModeKey = 'quartz:notebook-vim-mode'
 
 const notebookIconSvg: Record<NotebookIcon, string> = {
   run: '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M8 5.5v13l10-6.5z"/></svg>',
+  stop: '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7 7h10v10H7z"/></svg>',
   edit: '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m4 16.5-.5 4 4-.5L19 8.5 15.5 5z"/><path d="m14 6.5 3.5 3.5"/></svg>',
   save: '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 4h11l3 3v13H5z"/><path d="M8 4v6h8V4"/><path d="M8 20v-6h8v6"/></svg>',
   revert:
@@ -330,14 +333,56 @@ function debugOutputText(debug: NotebookRuntimeDebugOutput): string {
     .join('\n')
 }
 
-function createPreOutput(classes: string[], label: string, value: string): HTMLPreElement {
+function createPreOutput(
+  classes: string[],
+  label: string,
+  value: string,
+  options: { trimEnd?: boolean } = {},
+): HTMLPreElement {
   const pre = document.createElement('pre')
   pre.classList.add(...classes)
   pre.dataset.outputName = label
   const samp = document.createElement('samp')
-  samp.textContent = value.replace(/\s+$/, '')
+  samp.textContent = options.trimEnd === false ? value : value.replace(/\s+$/, '')
   pre.appendChild(samp)
   return pre
+}
+
+function lastNotebookOutput(target: HTMLElement): HTMLElement | undefined {
+  const direct = target.lastElementChild
+  if (direct instanceof HTMLElement && direct.classList.contains('notebook-output')) return direct
+  const tabbed = target.querySelectorAll<HTMLElement>(
+    ':scope > [data-notebook-output-tabs] > .notebook-output-panels > .notebook-output-panel > .notebook-output',
+  )
+  return tabbed[tabbed.length - 1]
+}
+
+function appendStreamOutput(target: HTMLElement, output: RuntimeStreamOutput) {
+  const previous = lastNotebookOutput(target)
+  if (
+    previous instanceof HTMLPreElement &&
+    previous.classList.contains('notebook-output-stream') &&
+    previous.dataset.outputName === output.name
+  ) {
+    const sample = previous.querySelector('samp')
+    if (sample) {
+      sample.textContent += output.text
+      previous.scrollTop = previous.scrollHeight
+      return
+    }
+  }
+  target.appendChild(
+    createPreOutput(
+      [
+        'notebook-output',
+        'notebook-output-stream',
+        `notebook-output-stream-${outputClassToken(output.name)}`,
+      ],
+      output.name,
+      output.text,
+      { trimEnd: false },
+    ),
+  )
 }
 
 function createHtmlOutput(html: string): HTMLDivElement {
@@ -518,17 +563,7 @@ function appendRuntimeOutput(
   options: { debug?: boolean } = {},
 ) {
   if (output.type === 'stream') {
-    target.appendChild(
-      createPreOutput(
-        [
-          'notebook-output',
-          'notebook-output-stream',
-          `notebook-output-stream-${outputClassToken(output.name)}`,
-        ],
-        output.name,
-        output.text,
-      ),
-    )
+    appendStreamOutput(target, output)
     syncOutputTabs(target)
     return
   }
@@ -590,6 +625,7 @@ class NotebookRuntime {
   private runtimeFileSequence = 0
   private running = false
   private stopped = false
+  private runningCellId: string | undefined
   private debug = false
   private vimMode: boolean
   private activeCellId: string | undefined
@@ -868,6 +904,7 @@ class NotebookRuntime {
     const source = this.sourceForCell(cell)
     const executionCount = this.nextExecutionCount(cell.id)
     this.running = true
+    this.runningCellId = cell.id
     this.setStatus(`running ${cell.id}`)
     this.setExecutionLabel(cell.id, '*')
     this.setRunningControls(true)
@@ -888,6 +925,7 @@ class NotebookRuntime {
       const result = await this.postRun(cell, source)
       return !result.failed
     } catch (error) {
+      if (this.stopped) return false
       const text = error instanceof Error ? error.message : String(error)
       const output: RuntimeErrorOutput = {
         type: 'error',
@@ -900,6 +938,7 @@ class NotebookRuntime {
       return false
     } finally {
       this.running = false
+      this.runningCellId = undefined
       this.setExecutionLabel(cell.id, executionCount)
       this.setRunningControls(false)
       if (!this.stopped) this.setStatus('idle')
@@ -909,6 +948,8 @@ class NotebookRuntime {
   private stop = () => {
     this.stopped = true
     this.destroyRuntime()
+    this.running = false
+    this.runningCellId = undefined
     this.setRunningControls(false)
     this.setStatus('stopped')
     for (const waiter of this.waiters.values()) {
@@ -925,6 +966,7 @@ class NotebookRuntime {
     }
     this.waiters.clear()
     this.running = false
+    this.runningCellId = undefined
     this.payload.cells.forEach(cell => {
       this.clearOutput(cell.id)
       this.restoreSavedOutput(cell.id)
@@ -1015,7 +1057,13 @@ class NotebookRuntime {
     runButton.type = 'button'
     runButton.dataset.notebookRunCell = cell.id
     setNotebookIconButton(runButton, 'run', `Run ${cell.id}`)
-    const runSource = () => this.runCell(cell)
+    const runSource = () => {
+      if (this.running && this.runningCellId === cell.id) {
+        this.stop()
+        return
+      }
+      void this.runCell(cell)
+    }
     runButton.addEventListener('click', runSource)
 
     const editorHost =
@@ -1616,9 +1664,16 @@ class NotebookRuntime {
     this.root
       .querySelector<HTMLButtonElement>('[data-notebook-run-all]')
       ?.toggleAttribute('disabled', running)
-    this.queryCells<HTMLButtonElement>('[data-notebook-run-cell]').forEach(button =>
-      button.toggleAttribute('disabled', running),
-    )
+    this.queryCells<HTMLButtonElement>('[data-notebook-run-cell]').forEach(button => {
+      const cellId = button.dataset.notebookRunCell
+      const active = running && cellId === this.runningCellId
+      button.toggleAttribute('disabled', running && !active)
+      if (running && active && cellId) {
+        setNotebookIconButton(button, 'stop', `Interrupt ${cellId}`)
+      } else if (cellId) {
+        setNotebookIconButton(button, 'run', `Run ${cellId}`)
+      }
+    })
   }
 
   private destroyRuntime() {
