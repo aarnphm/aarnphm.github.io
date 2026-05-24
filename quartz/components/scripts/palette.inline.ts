@@ -554,7 +554,16 @@ document.addEventListener('nav', e => {
     setFocusFirstChild()
   }
 
+  function eventTargetsCodeEditor(e: KeyboardEvent) {
+    const target = e.target
+    if (target instanceof Element && target.closest('.cm-editor')) return true
+    const activeElement = document.activeElement
+    return activeElement instanceof Element && activeElement.closest('.cm-editor') !== null
+  }
+
   async function shortcutHandler(e: HTMLElementEventMap['keydown']) {
+    if (e.defaultPrevented) return
+    if (eventTargetsCodeEditor(e)) return
     const searchOpen = document.querySelector<HTMLDivElement>('search.search-container')
     const noteContainer = document.getElementById('stacked-notes-container')
     if (

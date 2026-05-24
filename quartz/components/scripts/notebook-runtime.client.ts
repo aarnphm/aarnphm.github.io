@@ -44,6 +44,7 @@ type RuntimePayload = {
   toolbar?: boolean
   debug?: boolean
   vimMode?: boolean
+  importableModules?: string[]
 }
 
 type AssetResult = {
@@ -216,6 +217,13 @@ function readBoolean(value: unknown): boolean | undefined {
   return typeof value === 'boolean' ? value : undefined
 }
 
+function readStringArray(value: unknown): string[] | undefined {
+  if (!Array.isArray(value)) return undefined
+  const strings = value.filter((item): item is string => typeof item === 'string')
+  if (strings.length !== value.length) return undefined
+  return strings
+}
+
 function readRuntimePayload(value: unknown): RuntimePayload | undefined {
   if (!isRecord(value)) return undefined
   const id = readString(value, 'id')
@@ -240,6 +248,11 @@ function readRuntimePayload(value: unknown): RuntimePayload | undefined {
   if (debug !== undefined) payload.debug = debug
   const vimMode = readBoolean(value.vimMode)
   if (vimMode !== undefined) payload.vimMode = vimMode
+  if (value.importableModules !== undefined) {
+    const importableModules = readStringArray(value.importableModules)
+    if (importableModules === undefined) return undefined
+    payload.importableModules = importableModules
+  }
   return payload
 }
 
@@ -748,6 +761,7 @@ class NotebookRuntime {
   private runtimeFileWaiters = new Map<string, RuntimeFileWaiter>()
   private moduleCache = new Map<string, RuntimeModule | null>()
   private moduleFetches = new Map<string, Promise<RuntimeModule | null>>()
+  private importableModules: Set<string> | undefined
   private savedOutputs = new Map<string, HTMLElement[]>()
   private sourceControls = new Map<string, SourceControls>()
   private executionCounter: number
@@ -763,6 +777,9 @@ class NotebookRuntime {
     this.root = root
     this.cellRoot = root.closest('article') ?? root.parentElement ?? document
     this.payload = payload
+    this.importableModules = payload.importableModules
+      ? new Set(payload.importableModules)
+      : undefined
     this.executionCounter = Math.max(0, ...payload.cells.map(cell => cell.executionIndex ?? 0))
     this.debug = this.payload.debug ?? false
     this.vimMode = this.payload.vimMode ?? this.readStoredVimMode()
@@ -1603,6 +1620,7 @@ class NotebookRuntime {
   }
 
   private async loadNotebookModule(name: string): Promise<RuntimeModule | null> {
+    if (this.importableModules !== undefined && !this.importableModules.has(name)) return null
     const url = new URL(`${name}.ipynb`, window.location.href)
     const baseDir = new URL('.', window.location.href)
     if (url.origin !== window.location.origin || !url.pathname.startsWith(baseDir.pathname)) {

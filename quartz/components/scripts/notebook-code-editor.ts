@@ -257,6 +257,7 @@ export async function createNotebookCodeEditor(
       acceptCompletion,
       clearSnippet,
       closeCompletion,
+      completionStatus,
       moveCompletionSelection,
       nextSnippetField,
       prevSnippetField,
@@ -339,6 +340,10 @@ export async function createNotebookCodeEditor(
     view: CodeMirrorEditorView,
     command: (target: CodeMirrorEditorView) => boolean,
   ) => (vimAcceptsText(view) ? command(view) : false)
+  const moveActiveCompletion = (
+    view: CodeMirrorEditorView,
+    command: (target: CodeMirrorEditorView) => boolean,
+  ) => (vimAcceptsText(view) && completionStatus(view.state) === 'active' ? command(view) : false)
   const closeEditorCompletion = (view: CodeMirrorEditorView) => {
     const closed = closeCompletion(view)
     return vimModeEnabled ? false : closed
@@ -360,6 +365,8 @@ export async function createNotebookCodeEditor(
       { key: 'Escape', run: closeEditorCompletion },
       { key: 'ArrowDown', run: view => runTextCommand(view, moveCompletionDown) },
       { key: 'ArrowUp', run: view => runTextCommand(view, moveCompletionUp) },
+      { key: 'Ctrl-n', run: view => moveActiveCompletion(view, moveCompletionDown) },
+      { key: 'Ctrl-p', run: view => moveActiveCompletion(view, moveCompletionUp) },
       { key: 'PageDown', run: view => runTextCommand(view, moveCompletionPageDown) },
       { key: 'PageUp', run: view => runTextCommand(view, moveCompletionPageUp) },
       { key: 'Enter', run: view => (vimModeEnabled ? false : acceptCompletion(view)) },

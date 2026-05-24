@@ -215,13 +215,17 @@ export function notebookRuntimeData(
     })
   }
   if (cells.length === 0) return undefined
-  return {
+  const data: NotebookRuntimeData = {
     id: notebookRuntimeId(runtime.sourcePath ?? sourcePath),
     sourcePath: runtime.sourcePath ?? sourcePath,
     language,
     pyodideIndexUrl: runtime.pyodideIndexUrl ?? defaultNotebookPyodideIndexUrl,
     cells,
   }
+  if (runtime.importableModules !== undefined) {
+    data.importableModules = [...new Set(runtime.importableModules)].sort()
+  }
+  return data
 }
 
 function notebookMarkdownCellBoundary(): string {
