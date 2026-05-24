@@ -219,9 +219,16 @@ article:has(.notebook-runtime) {
       }
     }
 
-    > .notebook-output,
-    > .notebook-runtime-output {
+    > .notebook-output {
       grid-column: 2;
+    }
+
+    > .notebook-runtime-output {
+      grid-column: 1 / -1;
+    }
+
+    > .notebook-static-output {
+      grid-column: 1 / -1;
     }
   }
 
@@ -407,33 +414,44 @@ article:has(.notebook-runtime) {
     margin: 0.5rem 0 1rem;
   }
 
-  .notebook-code-cell > .notebook-runtime-output {
-    display: flow-root;
+  .notebook-code-cell > .notebook-runtime-output,
+  .notebook-code-cell > .notebook-static-output {
+    display: grid;
+    grid-template-columns: var(--notebook-gutter-width) minmax(0, 1fr);
+    column-gap: var(--notebook-code-gap);
     margin: -0.35rem 0 1rem;
   }
 
-  .notebook-code-cell > .notebook-runtime-output[hidden] {
+  .notebook-code-cell > .notebook-runtime-output[hidden],
+  .notebook-code-cell > .notebook-static-output[hidden] {
     display: none;
   }
 
-  .notebook-code-cell > .notebook-runtime-output > .notebook-output:first-child {
+  .notebook-code-cell > .notebook-runtime-output > .notebook-output:first-child,
+  .notebook-code-cell > .notebook-static-output > .notebook-output:first-child {
     margin-top: 0;
   }
 
-  .notebook-code-cell > .notebook-runtime-output > .notebook-output:last-child {
+  .notebook-code-cell > .notebook-runtime-output > .notebook-output,
+  .notebook-code-cell > .notebook-static-output > .notebook-output {
+    grid-column: 2;
+    min-width: 0;
+  }
+
+  .notebook-code-cell > .notebook-runtime-output > .notebook-output:last-child,
+  .notebook-code-cell > .notebook-static-output > .notebook-output:last-child {
     margin-bottom: 0;
   }
 
   .notebook-output-tabs {
     display: grid;
     box-sizing: border-box;
-    grid-template-columns: minmax(4.2rem, max-content) minmax(0, 1fr);
+    grid-template-columns: var(--notebook-gutter-width) minmax(0, 1fr);
+    grid-column: 1 / -1;
+    column-gap: var(--notebook-code-gap);
     width: 100%;
     margin: 0.55rem 0 1rem;
-    overflow: hidden;
-    border: 1px solid color-mix(in srgb, var(--lightgray) 78%, transparent);
-    border-radius: var(--radius-5);
-    background: color-mix(in srgb, var(--light) 86%, var(--lightgray));
+    overflow: visible;
   }
 
   .notebook-code-cell > .notebook-runtime-output > .notebook-output-tabs:first-child {
@@ -447,12 +465,11 @@ article:has(.notebook-runtime) {
   .notebook-output-tablist {
     display: flex;
     flex-direction: column;
+    align-items: flex-end;
     gap: 0.18rem;
     box-sizing: border-box;
     min-width: 0;
-    padding: 0.3rem;
-    border-right: 1px solid color-mix(in srgb, var(--lightgray) 72%, transparent);
-    background: color-mix(in srgb, var(--light) 72%, var(--lightgray));
+    padding: 0.35rem 0 0;
   }
 
   .notebook-output-tab {
@@ -463,9 +480,9 @@ article:has(.notebook-runtime) {
     min-height: 1.55rem;
     padding: 0.25rem 0.45rem;
     overflow: hidden;
-    border: 1px solid transparent;
+    border: 1px solid color-mix(in srgb, var(--lightgray) 78%, transparent);
     border-radius: var(--radius-3);
-    background: transparent;
+    background: color-mix(in srgb, var(--light) 86%, var(--lightgray));
     color: var(--gray);
     cursor: pointer;
     font-family: var(--codeFont);
@@ -492,6 +509,14 @@ article:has(.notebook-runtime) {
   .notebook-output-panels,
   .notebook-output-panel {
     min-width: 0;
+  }
+
+  .notebook-output-panels {
+    overflow: hidden;
+    border: 1px solid color-mix(in srgb, var(--lightgray) 78%, transparent);
+    border-radius: 0 var(--notebook-inner-radius) var(--notebook-inner-radius)
+      var(--notebook-inner-radius);
+    background: color-mix(in srgb, var(--light) 86%, var(--lightgray));
   }
 
   .notebook-output-panel[hidden] {
