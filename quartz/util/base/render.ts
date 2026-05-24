@@ -1222,6 +1222,7 @@ export type RenderedBaseView = {
   tree: Root
   resultCount: number
   totalCount: number
+  matchedSlugs: string[]
 }
 
 export type BaseMetadata = { baseSlug: FullSlug; currentView: string; allViews: BaseViewMeta[] }
@@ -1430,7 +1431,11 @@ export function renderBaseViewsForFile(
       children: diagnosticsNode ? [diagnosticsNode, wrapped] : [wrapped],
     }
 
-    views.push({ view, slug, tree, resultCount, totalCount })
+    const matchedSlugs = matchedFiles
+      .map(file => (file.slug ? simplifySlug(file.slug as FullSlug) : undefined))
+      .filter((matchedSlug): matchedSlug is string => matchedSlug !== undefined)
+
+    views.push({ view, slug, tree, resultCount, totalCount, matchedSlugs })
   }
 
   return { views, allViews }

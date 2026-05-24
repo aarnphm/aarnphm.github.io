@@ -9,6 +9,10 @@ body[data-slug='index'] {
     position: relative;
   }
 
+  .collapsible-header-hr > .collapse-rail {
+    display: none;
+  }
+
   .notebook-code-cell {
     text-transform: none;
   }
