@@ -21,6 +21,22 @@ test('keeps postscript as a script orchestrator during watch builds', async () =
   assert.doesNotMatch(implementation, /Promise\.all\(\[/)
 })
 
+test('loads extracted client assets relative to their script chunks', async () => {
+  const notebookRuntimeInline = await readFile(
+    new URL('../components/scripts/notebook-runtime.inline.ts', import.meta.url),
+    'utf8',
+  )
+  const collaborativeCommentsInline = await readFile(
+    new URL('../components/scripts/collaborative-comments.inline.ts', import.meta.url),
+    'utf8',
+  )
+
+  assert.match(notebookRuntimeInline, /new URL\(name, import\.meta\.url\)/)
+  assert.match(collaborativeCommentsInline, /new URL\(name, import\.meta\.url\)/)
+  assert.doesNotMatch(notebookRuntimeInline, /static\/scripts\/\$\{name\}/)
+  assert.doesNotMatch(collaborativeCommentsInline, /static\/scripts\/\$\{name\}/)
+})
+
 test('keeps base and component styles in the quartz layer', async () => {
   const source = await readFile(
     new URL('../plugins/emitters/componentResources.tsx', import.meta.url),

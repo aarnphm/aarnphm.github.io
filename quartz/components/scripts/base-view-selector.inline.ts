@@ -144,21 +144,22 @@ function setupBaseViewSelector() {
     const updateEmbedView = (viewName: string, viewSlug: string, activeLink: HTMLElement) => {
       if (!embedRoot) return
       const views = embedRoot.querySelectorAll<HTMLElement>('[data-base-embed-view]')
-      let activeView: HTMLElement | null = null
-      views.forEach(view => {
+      let activeView: HTMLElement | undefined
+      for (const view of views) {
         const name = view.getAttribute('data-base-view-name') || ''
         const slug = view.getAttribute('data-base-view-slug') || ''
-        const matches =
+        const matches = Boolean(
           (viewSlug && slug === viewSlug) ||
-          (viewName && name.toLowerCase() === viewName.toLowerCase())
+          (viewName && name.toLowerCase() === viewName.toLowerCase()),
+        )
         view.hidden = !matches
         view.classList.toggle('is-active', matches)
         if (matches) {
           activeView = view
         }
-      })
+      }
 
-      if (activeView) {
+      if (activeView !== undefined) {
         const resultCount = activeView.getAttribute('data-base-view-result-count') || ''
         const totalCount = activeView.getAttribute('data-base-view-total-count') || ''
         const label = formatResultsLabel(resultCount, totalCount)
@@ -202,13 +203,14 @@ function setupBaseViewSelector() {
     }
 
     // close dropdown when any view link is clicked
-    const viewLinks = viewList.querySelectorAll('.bases-toolbar-menu-item')
+    const viewLinks = viewList.querySelectorAll<HTMLElement>('.bases-toolbar-menu-item')
     viewLinks.forEach(link => {
-      const handleLinkClick = (e: MouseEvent) => {
+      const handleLinkClick = (e: Event) => {
         if (embedRoot) {
           e.preventDefault()
           e.stopPropagation()
-          const target = e.currentTarget as HTMLElement
+          const target = e.currentTarget
+          if (!(target instanceof HTMLElement)) return
           const viewName = target.getAttribute('data-view-name') || ''
           const viewSlug = target.getAttribute('data-slug') || ''
           updateEmbedView(viewName, viewSlug, target)
