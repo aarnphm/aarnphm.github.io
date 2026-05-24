@@ -48,7 +48,6 @@ import {
   contentHashSlug,
   registerExtractedStaticResource,
   resolveAsset,
-  shouldHashAssets,
 } from '../../util/asset-manifest'
 import { BuildCtx } from '../../util/ctx'
 import { FilePath, FullSlug, isFullSlug, joinSegments } from '../../util/path'
@@ -238,8 +237,6 @@ async function* writeComponentStyles(ctx: BuildCtx, resources: ComponentResource
 }
 
 async function writeAfterDomLoadedScripts(ctx: BuildCtx, scripts: string[]) {
-  if (!shouldHashAssets(ctx)) return { postscript: await joinScripts(scripts), files: [] }
-
   const entries = await Promise.all(
     scripts.map(async script => {
       const content = await joinScripts([script])
