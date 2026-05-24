@@ -53,6 +53,7 @@ article:has(.notebook-runtime) {
     --notebook-inner-radius: var(--radius-5);
     --notebook-shell-radius: calc(var(--notebook-inner-radius) + var(--notebook-shell-padding));
     --notebook-active-green: var(--background-modifier-success, var(--lime));
+    --notebook-error-red: var(--background-modifier-error, var(--color-red, #af3029));
     --notebook-editor-surface: color-mix(in srgb, var(--light) 84%, var(--lightgray));
     --notebook-code-surface: var(--code-background, var(--notebook-editor-surface));
     --notebook-output-surface: color-mix(in srgb, var(--light) 86%, var(--lightgray));
@@ -73,8 +74,28 @@ article:has(.notebook-runtime) {
       border-color: color-mix(in srgb, var(--notebook-active-green) 82%, transparent);
     }
 
+    &[data-notebook-active-cell]:has(
+        > .notebook-runtime-output:not([hidden]) .notebook-output-error
+      ),
+    &[data-notebook-active-cell]:has(
+        > .notebook-static-output:not([hidden]) .notebook-output-error
+      ) {
+      border-color: color-mix(in srgb, var(--notebook-error-red) 82%, transparent);
+    }
+
     &[data-notebook-active-cell] > .notebook-runtime-cell .notebook-execution-prompt {
       color: var(--notebook-active-green);
+    }
+
+    &[data-notebook-active-cell]:has(
+        > .notebook-runtime-output:not([hidden]) .notebook-output-error
+      )
+      > .notebook-runtime-cell
+      .notebook-execution-prompt,
+    &[data-notebook-active-cell]:has(> .notebook-static-output:not([hidden]) .notebook-output-error)
+      > .notebook-runtime-cell
+      .notebook-execution-prompt {
+      color: var(--notebook-error-red);
     }
 
     > figure[data-rehype-pretty-code-figure] {
@@ -605,6 +626,14 @@ article:has(.notebook-runtime) {
     background: var(--notebook-output-tab-active-surface);
   }
 
+  .notebook-output-tabs:has(.notebook-output-error) {
+    --notebook-output-tab-active-surface: color-mix(
+      in srgb,
+      var(--notebook-error-red) 16%,
+      var(--notebook-output-surface)
+    );
+  }
+
   .notebook-output-tabs[data-notebook-output-collapsed] .notebook-output-tablist {
     border: 1px solid var(--lightgray);
     border-radius: 0 0 0 var(--notebook-inner-radius);
@@ -665,6 +694,10 @@ article:has(.notebook-runtime) {
   .notebook-output-tab[aria-selected='true'] {
     background: var(--notebook-output-tab-active-surface);
     color: var(--dark);
+  }
+
+  .notebook-output-tab[data-notebook-output-tab='error'] {
+    color: var(--notebook-error-red);
   }
 
   .notebook-output-panels,

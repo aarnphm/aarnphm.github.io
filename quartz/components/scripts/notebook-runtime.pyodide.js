@@ -468,19 +468,19 @@ function browserRuntimeDirective(line) {
   if (/^%autoreload(?:\s|$)/.test(trimmed)) return {}
   if (/^%matplotlib(?:\s|$)/.test(trimmed)) return {}
 }
+function escapeRegExp(value) {
+  return String(value).replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+}
 function pythonImportAliases(code, moduleName) {
   const aliases = new Set()
+  const escapedModuleName = escapeRegExp(moduleName)
   for (const line of code.split(/\r?\n/)) {
     const withoutComment = line.replace(/#.*/, '')
     for (const importMatch of withoutComment.matchAll(/(?:^|[;:])\s*import\s+([^;]+)/g)) {
       for (const part of importMatch[1].split(',')) {
         const match = part
           .trim()
-          .match(
-            new RegExp(
-              `^${moduleName.replace(/\./g, '\\.')}\\s*(?:as\\s+([A-Za-z_][A-Za-z0-9_]*))?$`,
-            ),
-          )
+          .match(new RegExp(`^${escapedModuleName}\\s*(?:as\\s+([A-Za-z_][A-Za-z0-9_]*))?$`))
         if (match) aliases.add(match[1] ?? moduleName.split('.').at(-1) ?? moduleName)
       }
     }
@@ -489,13 +489,11 @@ function pythonImportAliases(code, moduleName) {
 }
 function pythonFromImportNames(code, moduleName) {
   const names = new Set()
+  const escapedModuleName = escapeRegExp(moduleName)
   for (const line of code.split(/\r?\n/)) {
     const withoutComment = line.replace(/#.*/, '')
     for (const match of withoutComment.matchAll(
-      new RegExp(
-        `(?:^|[;:])\\s*from\\s+${moduleName.replace(/\./g, '\\.')}\\s+import\\s+([^;]+)`,
-        'g',
-      ),
+      new RegExp(`(?:^|[;:])\\s*from\\s+${escapedModuleName}\\s+import\\s+([^;]+)`, 'g'),
     )) {
       for (const part of match[1].split(',')) {
         const name = part
@@ -510,7 +508,7 @@ function pythonFromImportNames(code, moduleName) {
 }
 function hasQualifiedPythonUse(code, aliases, members) {
   for (const alias of aliases) {
-    const escaped = alias.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+    const escaped = escapeRegExp(alias)
     if (new RegExp(`\\b${escaped}\\s*\\.\\s*(?:${members.join('|')})\\b`).test(code)) {
       return true
     }

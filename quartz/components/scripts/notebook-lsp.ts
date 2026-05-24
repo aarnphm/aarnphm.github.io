@@ -3,6 +3,10 @@ import { autocompletion, type CompletionSource } from '@codemirror/autocomplete'
 import { EditorState, type Extension } from '@codemirror/state'
 import DOMPurify from 'dompurify'
 import {
+  notebookPyrightAssetManifestChunks,
+  notebookPyrightTypeshedFiles,
+} from '../../util/notebook-pyright-assets'
+import {
   arrayValue,
   isJsonObject,
   isJsonValue,
@@ -24,8 +28,8 @@ export type NotebookLspConfig = {
 
 type JsonRpcId = string | number | null
 
-const notebookPyrightWorkerName = '../notebook-pyright.worker.js'
-const notebookPyrightTypeshedName = '../notebook-pyright-typeshed.json'
+const notebookPyrightWorkerManifestName = '../notebook-pyright-worker.json'
+const notebookPyrightTypeshedManifestName = '../notebook-pyright-typeshed.json'
 
 const notebookAnalysisSettings: JsonObject = {
   typeCheckingMode: 'basic',
@@ -40,6 +44,7 @@ const notebookClientCapabilities: JsonObject = {
 const notebookServices = new Map<string, NotebookPythonLspService>()
 
 let notebookTypeshed: Promise<JsonObject> | undefined
+let notebookWorkerUrl: Promise<string> | undefined
 let notebookLspSequence = 0
 
 function messageId(value: unknown): JsonRpcId | undefined {
@@ -71,23 +76,69 @@ function notebookServiceKey(config: NotebookLspConfig) {
   return `${config.runtimeId}\u0000${config.sourcePath}`
 }
 
-function pyrightWorkerUrl() {
-  return new URL(notebookPyrightWorkerName, import.meta.url).href
+function pyrightWorkerManifestUrl() {
+  return new URL(notebookPyrightWorkerManifestName, import.meta.url).href
 }
 
-function pyrightTypeshedUrl() {
-  return new URL(notebookPyrightTypeshedName, import.meta.url).href
+function pyrightTypeshedManifestUrl() {
+  return new URL(notebookPyrightTypeshedManifestName, import.meta.url).href
+}
+
+async function fetchJsonObject(url: string, label: string): Promise<JsonObject> {
+  const response = await fetch(url)
+  if (!response.ok) throw new Error(`${label} request failed with ${response.status}`)
+  const value: unknown = await response.json()
+  if (!isJsonObject(value)) throw new Error(`${label} is not a JSON object`)
+  return value
+}
+
+async function fetchText(url: string, label: string): Promise<string> {
+  const response = await fetch(url)
+  if (!response.ok) throw new Error(`${label} request failed with ${response.status}`)
+  return response.text()
+}
+
+async function loadNotebookWorkerUrl(): Promise<string> {
+  notebookWorkerUrl ??= (async () => {
+    if (typeof URL.createObjectURL !== 'function') {
+      throw new Error('notebook pyright worker blob URLs are unavailable')
+    }
+    const manifestUrl = pyrightWorkerManifestUrl()
+    const manifest = await fetchJsonObject(manifestUrl, 'notebook pyright worker manifest')
+    const chunks = await Promise.all(
+      notebookPyrightAssetManifestChunks(manifest, 'notebook pyright worker').map(
+        async chunkName => {
+          const chunkUrl = new URL(chunkName, manifestUrl).href
+          return fetchText(chunkUrl, `notebook pyright worker chunk ${chunkName}`)
+        },
+      ),
+    )
+    return URL.createObjectURL(new Blob(chunks, { type: 'text/javascript' }))
+  })()
+  return notebookWorkerUrl
+}
+
+async function loadNotebookTypeshedChunks(): Promise<JsonObject> {
+  const manifestUrl = pyrightTypeshedManifestUrl()
+  const manifest = await fetchJsonObject(manifestUrl, 'notebook pyright typeshed manifest')
+  const files: Record<string, string> = {}
+  await Promise.all(
+    notebookPyrightAssetManifestChunks(manifest, 'notebook pyright typeshed').map(
+      async chunkName => {
+        const chunkUrl = new URL(chunkName, manifestUrl).href
+        const chunk = await fetchJsonObject(
+          chunkUrl,
+          `notebook pyright typeshed chunk ${chunkName}`,
+        )
+        Object.assign(files, notebookPyrightTypeshedFiles(chunk))
+      },
+    ),
+  )
+  return { files }
 }
 
 async function loadNotebookTypeshed() {
-  notebookTypeshed ??= fetch(pyrightTypeshedUrl()).then(async response => {
-    if (!response.ok) {
-      throw new Error(`notebook pyright typeshed request failed with ${response.status}`)
-    }
-    const value: unknown = await response.json()
-    if (!isJsonObject(value)) throw new Error('notebook pyright typeshed is not a JSON object')
-    return value
-  })
+  notebookTypeshed ??= loadNotebookTypeshedChunks()
   return notebookTypeshed
 }
 
@@ -211,12 +262,12 @@ function handleBackgroundWorker(
 }
 
 function createPyrightTransport(
+  workerUrl: string,
   rootUri: string,
   typeshed: JsonObject,
   serviceId: number,
 ): Transport {
   if (typeof Worker === 'undefined') throw new Error('browser workers are unavailable')
-  const workerUrl = pyrightWorkerUrl()
   const foreground = new Worker(workerUrl, { name: `Pyright-foreground-${serviceId}` })
   const workers = new Set<Worker>([foreground])
   const handlers = new Set<(value: string) => void>()
@@ -277,7 +328,12 @@ class NotebookPythonLspService {
     const [
       { LSPClient, hoverTooltips, serverCompletionSource, serverDiagnostics, signatureHelp },
       typeshed,
-    ] = await Promise.all([import('@codemirror/lsp-client'), loadNotebookTypeshed()])
+      workerUrl,
+    ] = await Promise.all([
+      import('@codemirror/lsp-client'),
+      loadNotebookTypeshed(),
+      loadNotebookWorkerUrl(),
+    ])
     const workspaceFiles = notebookWorkspaceFiles(typeshed, this.rootPath)
     const client = new LSPClient({
       rootUri: this.rootUri,
@@ -291,7 +347,9 @@ class NotebookPythonLspService {
         serverDiagnostics(),
       ],
     })
-    client.connect(createPyrightTransport(this.rootUri, workspaceFiles, notebookLspSequence))
+    client.connect(
+      createPyrightTransport(workerUrl, this.rootUri, workspaceFiles, notebookLspSequence),
+    )
     notebookLspSequence += 1
     return client
   }

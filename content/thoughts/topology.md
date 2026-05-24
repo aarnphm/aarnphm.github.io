@@ -2,7 +2,7 @@
 date: '2025-11-01'
 description: evergreen hub for topology study anchored on munkres and mit 18.901.
 id: topology
-modified: 2026-05-21 04:30:02 GMT-04:00
+modified: 2026-05-24 12:53:26 GMT-04:00
 seealso:
   - '[[thoughts/topology/point set|point-set topology]]'
   - '[[thoughts/topology/separation|separation]]'
@@ -23,7 +23,7 @@ tags:
 title: topology
 ---
 
-I'm using {{sidenotes[munkres' topology]: james munkres, [[thoughts/pdfs/munkres-topology.pdf|_topology_]] (2nd ed.)}} and Amstrong's [[library/Basic Topology]]
+I'm using {{sidenotes[munkres' topology]: james munkres, [[thoughts/pdfs/munkres-topology.pdf|Topology]] (2nd ed.)}} and Amstrong's [[library/Basic Topology]]
 
 - foundation:
   - set theory, logic, proof skills, and metric intuition

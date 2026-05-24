@@ -351,6 +351,13 @@ function replaceRenderedSource(
   })
 }
 
+function renderedFigureSource(figure: HTMLElement): string | undefined {
+  const lines = Array.from(figure.querySelectorAll<HTMLElement>('pre code [data-line]'))
+  if (lines.length > 0) return lines.map(line => line.textContent ?? '').join('\n')
+  const code = figure.querySelector('pre code')
+  return code?.textContent ?? undefined
+}
+
 function outputClassToken(value: string): string {
   return value.replace(/[^A-Za-z0-9_-]/g, '-') || 'output'
 }
@@ -807,6 +814,7 @@ class NotebookRuntime {
   private debug = false
   private vimMode: boolean
   private activeCellId: string | undefined
+  private editPrefixTimeout: number | undefined
 
   constructor(root: HTMLElement, payload: RuntimePayload) {
     this.root = root
@@ -845,6 +853,7 @@ class NotebookRuntime {
       debug?.removeEventListener('click', this.toggleDebug)
       vim?.removeEventListener('click', this.toggleVimMode)
       document.removeEventListener('keydown', this.handleNotebookKeydown, true)
+      this.clearEditPrefix()
       this.destroyRuntime()
     })
     this.syncToolbarToggles()
@@ -935,8 +944,21 @@ class NotebookRuntime {
   }
 
   private enterEditMode(cell: RuntimeCell) {
+    this.clearEditPrefix()
     this.selectCell(cell.id)
     void this.showSourceEditor(cell, true)
+  }
+
+  private clearEditPrefix() {
+    if (this.editPrefixTimeout !== undefined) window.clearTimeout(this.editPrefixTimeout)
+    this.editPrefixTimeout = undefined
+  }
+
+  private armEditPrefix() {
+    this.clearEditPrefix()
+    this.editPrefixTimeout = window.setTimeout(() => {
+      this.editPrefixTimeout = undefined
+    }, 800)
   }
 
   private handleNotebookKeydown = (event: KeyboardEvent) => {
@@ -950,13 +972,29 @@ class NotebookRuntime {
     if (!cell) return
 
     if (this.notebookRunKey(event)) {
+      this.clearEditPrefix()
       this.selectCell(cell.id)
       this.claimNotebookKey(event)
       void this.runCell(cell)
       return
     }
 
-    if (event.ctrlKey || event.metaKey || event.altKey) return
+    if (event.ctrlKey || event.metaKey || event.altKey) {
+      this.clearEditPrefix()
+      return
+    }
+
+    if (this.editPrefixTimeout !== undefined && event.key !== 'e') this.clearEditPrefix()
+
+    if (event.key === 'e') {
+      this.claimNotebookKey(event)
+      if (this.editPrefixTimeout !== undefined) {
+        this.enterEditMode(cell)
+        return
+      }
+      this.armEditPrefix()
+      return
+    }
 
     if (event.key === 'Enter' || event.key === 'i') {
       this.claimNotebookKey(event)
@@ -1330,6 +1368,12 @@ class NotebookRuntime {
       if (!editorHost.isConnected) frame.append(editorHost)
     }
     const stored = this.readStoredSource(cell)
+    const renderedSource = figure ? renderedFigureSource(figure) : undefined
+    const baseSource =
+      renderedSource !== undefined && renderedSource.trimEnd() !== cell.source.trimEnd()
+        ? renderedSource
+        : cell.source
+    cell.source = baseSource
     this.sourceControls.set(cell.id, {
       frame,
       editor: undefined,
@@ -1339,8 +1383,8 @@ class NotebookRuntime {
       editButton,
       saveButton,
       revertButton,
-      source: stored ?? cell.source,
-      renderedSource: cell.source,
+      source: stored ?? baseSource,
+      renderedSource: renderedSource ?? baseSource,
     })
     const controls = this.sourceControls.get(cell.id)
     if (!controls) return

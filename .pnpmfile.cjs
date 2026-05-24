@@ -1,10 +1,16 @@
 'use strict'
 
 /** @type {Record<string, Set<string>>} */
-const optionalDepsToPrune = { agents: new Set(['x402']) }
+const depsToPrune = {
+  agents: new Set(['x402']),
+  'browser-basedpyright': new Set(['crypto-browserify']),
+}
 
 /** @type {Record<string, string>} */
 const allowedPeerRanges = { 'use-sync-external-store>react': '^19.0.0', zod: '^3.22.0 || ^4.0.0' }
+
+/** @type {Record<string, Record<string, string>>} */
+const dependencyOverrides = { '@esbuild-kit/core-utils@3.3.2': { esbuild: '0.25.12' } }
 
 /**
  * Remove noisy optional dependencies we never install.
@@ -12,10 +18,17 @@ const allowedPeerRanges = { 'use-sync-external-store>react': '^19.0.0', zod: '^3
  * @param {import('@pnpm/pnpmfile').ReadPackageContext} ctx
  */
 const readPackage = (pkg, ctx) => {
-  const disallowed = optionalDepsToPrune[pkg.name]
-  if (!disallowed) {
-    return pkg
+  const overrides = dependencyOverrides[`${pkg.name}@${pkg.version ?? ''}`]
+  if (overrides && pkg.dependencies) {
+    for (const [depName, version] of Object.entries(overrides)) {
+      if (depName in pkg.dependencies) {
+        pkg.dependencies[depName] = version
+      }
+    }
   }
+
+  const disallowed = depsToPrune[pkg.name]
+  if (!disallowed) return pkg
 
   for (const depName of disallowed) {
     if (pkg.optionalDependencies && depName in pkg.optionalDependencies) {

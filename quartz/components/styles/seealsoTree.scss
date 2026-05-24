@@ -1,15 +1,9 @@
 @use '../../styles/variables.scss' as *;
 
 .seealso-tree {
-  grid-column: 8/11;
   margin-top: 2rem;
 
-  @media all and ($tablet) {
-    grid-column: 6/-3;
-  }
-
   @media all and ($mobile) {
-    grid-column: 3/-3;
     margin-top: 0.5rem;
   }
 

@@ -51,6 +51,10 @@ import {
   resolveAsset,
 } from '../../util/asset-manifest'
 import { BuildCtx } from '../../util/ctx'
+import {
+  chunkNotebookPyrightTextAsset,
+  chunkNotebookPyrightTypeshedFiles,
+} from '../../util/notebook-pyright-assets'
 import { FilePath, FullSlug, isFullSlug, joinSegments } from '../../util/path'
 import {
   splitCssBundles,
@@ -77,24 +81,24 @@ const notebookRuntimeMlBridgeEntry = 'quartz/components/scripts/notebook-runtime
 const notebookRuntimePyrightWorkerEntry = 'node_modules/browser-basedpyright/dist/pyright.worker.js'
 const notebookRuntimePyrightWorkerLicenseEntry =
   'node_modules/browser-basedpyright/dist/pyright.worker.js.LICENSE.txt'
-const notebookRuntimePyrightWorkerSourceMapEntry =
-  'node_modules/browser-basedpyright/dist/pyright.worker.js.map'
 const notebookRuntimePyrightTypeshedDir = 'node_modules/basedpyright/dist/typeshed-fallback/stdlib'
-const notebookRuntimePyrightWorkerPath = 'static/scripts/notebook-pyright.worker.js'
-const notebookRuntimePyrightWorkerLicensePath =
-  'static/scripts/notebook-pyright.worker.js.LICENSE.txt'
-const notebookRuntimePyrightWorkerSourceMapPath = 'static/scripts/pyright.worker.js.map'
+const notebookRuntimePyrightWorkerManifestPath = 'static/scripts/notebook-pyright-worker.json'
+const notebookRuntimePyrightWorkerChunkPrefix = 'static/scripts/notebook-pyright-worker'
+const notebookRuntimePyrightWorkerLicensePath = 'static/scripts/notebook-pyright-worker-license.txt'
 const notebookRuntimePyrightTypeshedPath = 'static/scripts/notebook-pyright-typeshed.json'
+const notebookRuntimePyrightTypeshedChunkPrefix = 'static/scripts/notebook-pyright-typeshed'
 const semanticWorkerEntry = 'quartz/workers/semantic.worker.ts'
 const semanticWorkerPath = 'static/scripts/semantic.worker.js'
 const emojiAssetSourceDir = 'quartz/util/emojimap'
 const notebookRuntimeAssetEntries = new Set([
+  'quartz/plugins/emitters/componentResources.tsx',
   notebookRuntimeClientEntry,
   notebookRuntimeLspEntry,
   notebookRuntimeWorkerEntry,
   notebookRuntimeBootstrapEntry,
   notebookRuntimeMlBridgeEntry,
   'quartz/util/notebook-runtime.ts',
+  'quartz/util/notebook-pyright-assets.ts',
   'quartz/util/type-guards.ts',
   'quartz/components/scripts/notebook-code-editor.ts',
 ])
@@ -197,13 +201,6 @@ async function writeRawAsset(ctx: BuildCtx, logicalPath: string, content: string
   return write({ ctx, slug, ext, content })
 }
 
-async function writeLiteralRawAsset(ctx: BuildCtx, logicalPath: string, content: string | Buffer) {
-  const ext = path.extname(logicalPath) as `.${string}`
-  const slug = logicalPath.slice(0, -ext.length)
-  if (!isFullSlug(slug)) throw new Error(`invalid asset slug ${slug}`)
-  return write({ ctx, slug, ext, content })
-}
-
 async function writeAssetManifest(ctx: BuildCtx): Promise<FilePath> {
   return write({
     ctx,
@@ -285,7 +282,31 @@ async function writeAfterDomLoadedScripts(ctx: BuildCtx, scripts: string[]) {
   return { postscript, files: entries.map(({ file }) => file) }
 }
 
-async function notebookPyrightTypeshedJson() {
+function notebookRuntimePyrightChunkPath(prefix: string, index: number, ext: string) {
+  return `${prefix}-${index}${ext}`
+}
+
+async function writeNotebookPyrightChunkedAsset(
+  ctx: BuildCtx,
+  manifestPath: string,
+  chunkPrefix: string,
+  ext: string,
+  chunks: string[],
+): Promise<FilePath[]> {
+  const chunkPaths = chunks.map((_chunk, index) =>
+    notebookRuntimePyrightChunkPath(chunkPrefix, index, ext),
+  )
+  const chunkFiles = await Promise.all(
+    chunks.map((chunk, index) => writeRawAsset(ctx, chunkPaths[index], chunk)),
+  )
+  const manifest = {
+    chunks: chunkPaths.map(chunkPath => path.basename(resolveAsset(ctx, chunkPath))),
+  }
+  const manifestFile = await writeRawAsset(ctx, manifestPath, JSON.stringify(manifest))
+  return [manifestFile, ...chunkFiles]
+}
+
+async function notebookPyrightTypeshedFiles() {
   const entries = (
     await globby('**/*', { cwd: notebookRuntimePyrightTypeshedDir, onlyFiles: true, dot: true })
   ).sort()
@@ -294,22 +315,50 @@ async function notebookPyrightTypeshedJson() {
     const source = await fs.readFile(path.join(notebookRuntimePyrightTypeshedDir, entry), 'utf8')
     files[`/typeshed/stdlib/${entry.split(path.sep).join('/')}`] = source
   }
-  return JSON.stringify({ files })
+  return files
+}
+
+async function writeNotebookPyrightTypeshedAssets(ctx: BuildCtx): Promise<FilePath[]> {
+  const chunks = chunkNotebookPyrightTypeshedFiles(await notebookPyrightTypeshedFiles())
+  return writeNotebookPyrightChunkedAsset(
+    ctx,
+    notebookRuntimePyrightTypeshedPath,
+    notebookRuntimePyrightTypeshedChunkPrefix,
+    '.json',
+    chunks.map(chunk => JSON.stringify({ files: chunk.files })),
+  )
+}
+
+async function writeNotebookPyrightWorkerAssets(ctx: BuildCtx): Promise<FilePath[]> {
+  const [workerSource, license] = await Promise.all([
+    fs.readFile(notebookRuntimePyrightWorkerEntry, 'utf8'),
+    fs.readFile(notebookRuntimePyrightWorkerLicenseEntry),
+  ])
+  const worker = workerSource
+    .replace(
+      'pyright.worker.js.LICENSE.txt',
+      path.basename(notebookRuntimePyrightWorkerLicensePath),
+    )
+    .replace(/\n?\/\/# sourceMappingURL=pyright\.worker\.js\.map\s*$/, '')
+  const [licenseFile, workerFiles] = await Promise.all([
+    writeRawAsset(ctx, notebookRuntimePyrightWorkerLicensePath, license),
+    writeNotebookPyrightChunkedAsset(
+      ctx,
+      notebookRuntimePyrightWorkerManifestPath,
+      notebookRuntimePyrightWorkerChunkPrefix,
+      '.js',
+      chunkNotebookPyrightTextAsset(worker),
+    ),
+  ])
+  return [licenseFile, ...workerFiles]
 }
 
 async function writeNotebookPyrightAssets(ctx: BuildCtx): Promise<FilePath[]> {
-  const [worker, license, sourceMap, typeshed] = await Promise.all([
-    fs.readFile(notebookRuntimePyrightWorkerEntry),
-    fs.readFile(notebookRuntimePyrightWorkerLicenseEntry),
-    fs.readFile(notebookRuntimePyrightWorkerSourceMapEntry),
-    notebookPyrightTypeshedJson(),
+  const [workerFiles, typeshedFiles] = await Promise.all([
+    writeNotebookPyrightWorkerAssets(ctx),
+    writeNotebookPyrightTypeshedAssets(ctx),
   ])
-  return Promise.all([
-    writeRawAsset(ctx, notebookRuntimePyrightWorkerPath, worker),
-    writeRawAsset(ctx, notebookRuntimePyrightWorkerLicensePath, license),
-    writeLiteralRawAsset(ctx, notebookRuntimePyrightWorkerSourceMapPath, sourceMap),
-    writeRawAsset(ctx, notebookRuntimePyrightTypeshedPath, typeshed),
-  ])
+  return [...workerFiles, ...typeshedFiles]
 }
 
 async function writeNotebookRuntimeAssets(ctx: BuildCtx): Promise<FilePath[]> {
@@ -331,7 +380,9 @@ async function writeNotebookRuntimeAssets(ctx: BuildCtx): Promise<FilePath[]> {
   )
   const pyrightFiles = await writeNotebookPyrightAssets(ctx)
   const workerName = path.basename(resolveAsset(ctx, 'static/scripts/notebook-runtime.worker.js'))
-  const pyrightWorkerName = path.basename(resolveAsset(ctx, notebookRuntimePyrightWorkerPath))
+  const pyrightWorkerName = path.basename(
+    resolveAsset(ctx, notebookRuntimePyrightWorkerManifestPath),
+  )
   const pyrightTypeshedName = path.basename(resolveAsset(ctx, notebookRuntimePyrightTypeshedPath))
   const client = await bundle({
     entryPoints: { 'notebook-runtime.client': notebookRuntimeClientEntry },
@@ -350,7 +401,7 @@ async function writeNotebookRuntimeAssets(ctx: BuildCtx): Promise<FilePath[]> {
     ...output,
     text: output.text
       .replaceAll('notebook-runtime.worker.js', workerName)
-      .replaceAll('notebook-pyright.worker.js', pyrightWorkerName)
+      .replaceAll('notebook-pyright-worker.json', pyrightWorkerName)
       .replaceAll('notebook-pyright-typeshed.json', pyrightTypeshedName),
   }))
   const clientFiles = await Promise.all(
