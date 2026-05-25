@@ -3,13 +3,13 @@
 .backlinks {
   margin-bottom: 1.9rem;
 
-  & > .overflow {
+  &>.overflow {
     height: auto;
     display: grid;
     gap: 0.5em;
 
     @media all and ($desktop) {
-      grid-template-columns: repeat(3, minmax(0, 1fr));
+      grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 
     a[data-backlink] {
@@ -23,12 +23,12 @@
         background: initial;
       }
 
-      & > .description,
-      & > .small {
+      &>.description,
+      &>.small {
         line-height: 1.3;
       }
 
-      & > .description {
+      &>.description {
         font-weight: normal;
 
         overflow: hidden;
