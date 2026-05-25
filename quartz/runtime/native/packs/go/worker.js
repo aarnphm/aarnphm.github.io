@@ -42,15 +42,60 @@ async function loadScript(url) {
   globalThis.Function(code)()
 }
 
-async function instantiateGo(wasmUrl, go) {
-  const response = await fetch(wasmUrl)
-  if (!response.ok) throw new Error(`Go runtime wasm request failed with ${response.status}`)
-  if (typeof WebAssembly.instantiateStreaming === 'function') {
-    try {
-      return await WebAssembly.instantiateStreaming(response, go.importObject)
-    } catch {}
+function isObject(value) {
+  return typeof value === 'object' && value !== null && !Array.isArray(value)
+}
+
+function readChunkedAssetManifest(value) {
+  if (!isObject(value) || value.version !== 1) return
+  if (!Number.isSafeInteger(value.size) || value.size < 0) return
+  if (!Array.isArray(value.chunks)) return
+  if (!value.chunks.every(chunk => typeof chunk === 'string' && chunk.length > 0)) return
+  return { size: value.size, chunks: value.chunks }
+}
+
+function isChunkedAssetResponse(url, response) {
+  const contentType = response.headers.get('content-type') ?? ''
+  const responseUrl = response.url || url
+  return contentType.includes('json') || responseUrl.includes('.chunks') || url.includes('.chunks')
+}
+
+function concatChunks(chunks, size, label) {
+  const actualSize = chunks.reduce((total, chunk) => total + chunk.byteLength, 0)
+  if (actualSize !== size) throw new Error(`Go ${label} chunk size mismatch`)
+  const bytes = new Uint8Array(size)
+  let offset = 0
+  for (const chunk of chunks) {
+    bytes.set(chunk, offset)
+    offset += chunk.byteLength
   }
-  return await WebAssembly.instantiate(await response.arrayBuffer(), go.importObject)
+  return bytes
+}
+
+async function fetchChunkedBytes(url, manifest, label) {
+  const chunks = await Promise.all(
+    manifest.chunks.map(async chunk => {
+      const chunkUrl = new URL(chunk, url).href
+      const response = await fetch(chunkUrl)
+      if (!response.ok) throw new Error(`Go ${label} chunk request failed with ${response.status}`)
+      return new Uint8Array(await response.arrayBuffer())
+    }),
+  )
+  return concatChunks(chunks, manifest.size, label)
+}
+
+async function fetchBytes(url, label) {
+  const response = await fetch(url)
+  if (!response.ok) throw new Error(`Go ${label} request failed with ${response.status}`)
+  if (!isChunkedAssetResponse(url, response)) return new Uint8Array(await response.arrayBuffer())
+  const manifest = readChunkedAssetManifest(await response.json())
+  if (!manifest) throw new Error(`Go ${label} chunk manifest is invalid`)
+  return await fetchChunkedBytes(url, manifest, label)
+}
+
+async function instantiateGo(wasmUrl, go) {
+  const bytes = await fetchBytes(wasmUrl, 'runtime wasm')
+  return await WebAssembly.instantiate(bytes, go.importObject)
 }
 
 function assetEnding(assets, ending) {

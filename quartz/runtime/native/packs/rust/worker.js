@@ -71,14 +71,66 @@ function assetFor(assets, filename) {
   return asset
 }
 
-async function fetchGzipBytes(url, label) {
+function isObject(value) {
+  return typeof value === 'object' && value !== null && !Array.isArray(value)
+}
+
+function readChunkedAssetManifest(value) {
+  if (!isObject(value) || value.version !== 1) return
+  if (!Number.isSafeInteger(value.size) || value.size < 0) return
+  if (!Array.isArray(value.chunks)) return
+  if (!value.chunks.every(chunk => typeof chunk === 'string' && chunk.length > 0)) return
+  return { size: value.size, chunks: value.chunks }
+}
+
+function isChunkedAssetResponse(url, response) {
+  const contentType = response.headers.get('content-type') ?? ''
+  const responseUrl = response.url || url
+  return contentType.includes('json') || responseUrl.includes('.chunks') || url.includes('.chunks')
+}
+
+function concatChunks(chunks, size, label) {
+  const actualSize = chunks.reduce((total, chunk) => total + chunk.byteLength, 0)
+  if (actualSize !== size) throw new Error(`Rust ${label} chunk size mismatch`)
+  const bytes = new Uint8Array(size)
+  let offset = 0
+  for (const chunk of chunks) {
+    bytes.set(chunk, offset)
+    offset += chunk.byteLength
+  }
+  return bytes
+}
+
+async function fetchChunkedBytes(url, manifest, label) {
+  const chunks = await Promise.all(
+    manifest.chunks.map(async chunk => {
+      const chunkUrl = new URL(chunk, url).href
+      const response = await fetch(chunkUrl)
+      if (!response.ok)
+        throw new Error(`Rust ${label} chunk request failed with ${response.status}`)
+      return new Uint8Array(await response.arrayBuffer())
+    }),
+  )
+  return concatChunks(chunks, manifest.size, label)
+}
+
+async function fetchBytes(url, label) {
   const response = await fetch(url)
   if (!response.ok) throw new Error(`Rust ${label} request failed with ${response.status}`)
+  if (isChunkedAssetResponse(url, response)) {
+    const manifest = readChunkedAssetManifest(await response.json())
+    if (!manifest) throw new Error(`Rust ${label} chunk manifest is invalid`)
+    return await fetchChunkedBytes(url, manifest, label)
+  }
+  return new Uint8Array(await response.arrayBuffer())
+}
+
+async function fetchGzipBytes(url, label) {
+  const bytes = await fetchBytes(url, label)
   if (typeof DecompressionStream !== 'function') {
     throw new Error('Rust runtime needs DecompressionStream for compressed sysroot assets')
   }
-  if (!response.body) throw new Error(`Rust ${label} response has no body`)
-  const stream = response.body.pipeThrough(new DecompressionStream('gzip'))
+  const stream = new Blob([bytes]).stream().pipeThrough(new DecompressionStream('gzip'))
   return new Uint8Array(await new Response(stream).arrayBuffer())
 }
 

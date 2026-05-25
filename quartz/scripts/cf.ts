@@ -15,29 +15,27 @@ function tryRun(command: string, args: string[], opts: SpawnSyncOptions = {}) {
   return res.status === 0
 }
 
-function parseMdLfsPatterns(gitattributesPath: string): string[] {
+function parseBuildLfsPatterns(gitattributesPath: string): string[] {
   if (!existsSync(gitattributesPath)) return []
   const lines = readFileSync(gitattributesPath, 'utf8').split(/\r?\n/)
   const patterns: string[] = []
 
   for (let raw of lines) {
-    // strip trailing comments
     const hash = raw.indexOf('#')
     const line = (hash >= 0 ? raw.slice(0, hash) : raw).trim()
     if (!line) continue
-    if (line.startsWith('[')) continue // attribute macros, ignore
+    if (line.startsWith('[')) continue
 
     const parts = line.match(/\S+/g) ?? []
     if (parts.length === 0) continue
     const pattern = parts[0]
     const attrs = parts.slice(1).join(' ')
 
-    // Only consider patterns that look like they target Markdown files
     const isMarkdown = /(^|\/)\*?\*?[^\s]*\.md(x)?(\b|$)/i.test(pattern!)
-    // Only consider entries that reference LFS in any attribute
+    const isNativeRuntimePack = pattern!.startsWith('quartz/runtime/native/packs/')
     const mentionsLfs = /(^|\s)(filter=lfs|diff=lfs|merge=lfs|lfs)(\s|$)/i.test(attrs)
 
-    if (isMarkdown && mentionsLfs) patterns.push(pattern!)
+    if ((isMarkdown || isNativeRuntimePack) && mentionsLfs) patterns.push(pattern!)
   }
   return patterns
 }
@@ -45,7 +43,7 @@ function parseMdLfsPatterns(gitattributesPath: string): string[] {
 async function main() {
   const cwd = process.cwd()
   const gitattributesPath = resolve(cwd, '.gitattributes')
-  const patterns = parseMdLfsPatterns(gitattributesPath)
+  const patterns = parseBuildLfsPatterns(gitattributesPath)
 
   if (patterns.length > 0) {
     const hasGit = tryRun('git', ['--version'])
@@ -56,17 +54,12 @@ async function main() {
     } else if (!hasLfs) {
       console.warn('git lfs not available; skipping LFS checkout.')
     } else {
-      console.log('Fetching LFS objects for Markdown patterns from .gitattributes...')
-      // Ensure the local repo has LFS enabled (no-op if already configured)
+      console.log('Fetching LFS objects for build patterns from .gitattributes...')
       tryRun('git', ['lfs', 'install'])
-      tryRun('git', ['lfs', 'pull'])
-      // Fetch only the required objects for these patterns to avoid 'content not local'
-      console.log('Checking out LFS-tracked Markdown files...')
-      tryRun('git', ['lfs', 'checkout', 'content/letters/'])
-      tryRun('git', ['lfs', 'checkout', 'content/posts/25/n-bday.md'])
+      tryRun('git', ['lfs', 'pull', `--include=${patterns.join(',')}`])
     }
   } else {
-    console.log('No LFS-tracked *.md patterns found in .gitattributes; skipping checkout.')
+    console.log('No LFS-tracked build patterns found in .gitattributes; skipping checkout.')
   }
 
   console.log('Starting Quartz build...')
