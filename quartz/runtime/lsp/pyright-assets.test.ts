@@ -52,8 +52,11 @@ test('allows one oversized typeshed file to occupy its own chunk', () => {
 
 test('reads notebook pyright typeshed manifests and chunks', () => {
   assert.deepEqual(
-    notebookPyrightAssetManifestChunks({ chunks: ['a.json', 'b.json'] }, 'test asset'),
-    ['a.json', 'b.json'],
+    notebookPyrightAssetManifestChunks(
+      { chunks: ['chunks/0.json', 'chunks/1.json'] },
+      'test asset',
+    ),
+    ['chunks/0.json', 'chunks/1.json'],
   )
   assert.equal(
     notebookPyrightAssetManifestEntry({ entry: 'notebook-pyright-worker.js' }, 'test worker'),

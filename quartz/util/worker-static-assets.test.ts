@@ -11,6 +11,8 @@ test('marks content-hashed static assets immutable', () => {
     '/prescript-47ac7b09.js',
     '/static/resource-after-47ac7b09.js',
     '/static/scripts/notebook-runtime.client-47ac7b09.js',
+    '/static/scripts/notebook-pyright/typeshed/manifest-47ac7b09.json',
+    '/static/scripts/notebook-pyright/typeshed/chunks/0-47ac7b09.json',
     '/static/scripts/emoji/twitter/1f44d-47ac7b09.json',
     '/static/scripts/chunks/chunk-NV3MZTQ2.js',
   ]) {

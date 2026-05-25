@@ -1,3 +1,12 @@
+import {
+  notebookPyrightPackageStubsManifestAsset,
+  notebookPyrightTypeshedManifestAsset,
+  notebookPyrightWorkerManifestAsset,
+  notebookRuntimeClientAsset,
+  notebookRuntimeJavascriptWorkerAsset,
+  notebookRuntimeWorkerAsset,
+} from '../../runtime/notebook/assets'
+
 type NotebookRuntimeModule = {
   mountNotebookRuntime(root: HTMLElement, data: string, assets: NotebookRuntimeAssets): void
   warmNotebookRuntimeEditorAssets?(
@@ -24,11 +33,13 @@ function notebookRuntimeScriptUrl(name: string) {
 
 function notebookRuntimeAssets(): NotebookRuntimeAssets {
   return {
-    workerUrl: notebookRuntimeScriptUrl('notebook-runtime.worker.js'),
-    javascriptWorkerUrl: notebookRuntimeScriptUrl('notebook-runtime.javascript.worker.js'),
-    pyrightWorkerManifestUrl: notebookRuntimeScriptUrl('notebook-pyright-worker.json'),
-    pyrightTypeshedManifestUrl: notebookRuntimeScriptUrl('notebook-pyright-typeshed.json'),
-    pyrightPackageStubsManifestUrl: notebookRuntimeScriptUrl('notebook-pyright-packages.json'),
+    workerUrl: notebookRuntimeScriptUrl(notebookRuntimeWorkerAsset),
+    javascriptWorkerUrl: notebookRuntimeScriptUrl(notebookRuntimeJavascriptWorkerAsset),
+    pyrightWorkerManifestUrl: notebookRuntimeScriptUrl(notebookPyrightWorkerManifestAsset),
+    pyrightTypeshedManifestUrl: notebookRuntimeScriptUrl(notebookPyrightTypeshedManifestAsset),
+    pyrightPackageStubsManifestUrl: notebookRuntimeScriptUrl(
+      notebookPyrightPackageStubsManifestAsset,
+    ),
   }
 }
 
@@ -102,7 +113,7 @@ function scheduleNotebookRuntimeIdle(callback: () => void) {
 function warmNotebookRuntimeAssets(data: readonly string[]) {
   notebookRuntimeWarmup ??= (async () => {
     const runtime = await (notebookRuntimeModule ??= import(
-      notebookRuntimeScriptUrl('notebook-runtime.client.js')
+      notebookRuntimeScriptUrl(notebookRuntimeClientAsset)
     ))
     await runtime.warmNotebookRuntimeEditorAssets?.(data, notebookRuntimeAssets())
   })()
@@ -130,7 +141,7 @@ async function mountNotebookRuntime() {
     })
     .filter((target): target is NotebookRuntimeTarget => target !== undefined)
   if (targets.length === 0) return
-  notebookRuntimeModule ??= import(notebookRuntimeScriptUrl('notebook-runtime.client.js'))
+  notebookRuntimeModule ??= import(notebookRuntimeScriptUrl(notebookRuntimeClientAsset))
   const runtime = await notebookRuntimeModule
   const assets = notebookRuntimeAssets()
   for (const target of targets) {

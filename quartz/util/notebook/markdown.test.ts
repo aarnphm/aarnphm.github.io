@@ -476,9 +476,11 @@ describe('notebook parser', () => {
     assert.match(markdown, /data-notebook-run-all/)
     assert.match(markdown, /data-notebook-stop/)
     assert.match(markdown, /data-notebook-reset/)
-    assert.match(markdown, /data-notebook-debug aria-pressed="false"/)
-    assert.match(markdown, /data-notebook-vim-mode aria-pressed="false"/)
-    assert.match(markdown, /Run all/)
+    assert.match(markdown, /data-notebook-debug/)
+    assert.match(markdown, /data-notebook-vim-mode/)
+    assert.match(markdown, /data-notebook-tooltip="Run all"/)
+    assert.match(markdown, /data-notebook-tooltip="Stop execution"/)
+    assert.doesNotMatch(markdown, />Run all</)
     assert.match(markdown, /class="notebook-code-cell" data-notebook-cell-frame="cell-1"/)
     assert.match(markdown, /data-notebook-cell="cell-1"/)
     assert.match(markdown, /data-notebook-execution-label="cell-1"/)
@@ -497,6 +499,44 @@ describe('notebook parser', () => {
     assert(payload)
     assert.doesNotMatch(payload[1], /<\/script>/i)
     assert.match(markdown, /\\u003c\/script\\u003e/)
+  })
+
+  test('renders notebook runtime toolbar controls as icon buttons with tooltip labels', async () => {
+    const notebook = parseNotebook(
+      JSON.stringify({
+        metadata: { language_info: { name: 'python' } },
+        cells: [{ cell_type: 'code', source: 'x = 1' }],
+      }),
+      'runtime.ipynb',
+    )
+
+    const markdown = notebookToMarkdown(notebook, 'runtime.ipynb', {
+      runtime: { enabled: true, sourcePath: 'runtime.ipynb' },
+    })
+    const tree = await parseHtmlFragment(markdown)
+    const toolbar = findElement(tree, node =>
+      elementClassNames(node).includes('notebook-runtime-toolbar'),
+    )
+    assert(toolbar)
+    const buttons = findElements(toolbar, node => node.tagName === 'button')
+
+    assert.deepStrictEqual(
+      buttons.map(button => button.properties?.dataNotebookTooltip),
+      ['Run all', 'Stop execution', 'Reset runtime', 'Enable debug output', 'Enable Vim mode'],
+    )
+    assert(buttons.every(button => elementClassNames(button).includes('notebook-icon-button')))
+    assert(buttons.every(button => findElement(button, child => child.tagName === 'svg')))
+    assert(buttons.every(button => textChild(button) === ''))
+    const resetButton = buttons.find(button => button.properties?.dataNotebookReset === '')
+    assert(resetButton)
+    assert(
+      findElement(
+        resetButton,
+        child => child.tagName === 'path' && child.properties?.d === 'M9 14 4 9l5-5',
+      ),
+    )
+    assert.strictEqual(buttons[3]?.properties?.ariaPressed, 'false')
+    assert.strictEqual(buttons[4]?.properties?.ariaPressed, 'false')
   })
 
   test('pre-renders runtime output tabs for stored outputs', async () => {
@@ -536,6 +576,17 @@ describe('notebook parser', () => {
     )
     assert(tab)
     assert.strictEqual(tab.properties?.ariaSelected, 'true')
+    const actions = findElement(staticOutput, node =>
+      elementClassNames(node).includes('notebook-output-actions'),
+    )
+    assert(actions)
+    const buttons = (actions.children ?? []).filter(child => child.tagName === 'button')
+    assert.strictEqual(buttons.length, 2)
+    assert.strictEqual(buttons[0]?.properties?.dataNotebookOutputExpandAction, 'stdout')
+    assert.strictEqual(buttons[0]?.properties?.ariaExpanded, 'false')
+    assert(elementClassNames(buttons[0]).includes('notebook-output-expand-button'))
+    assert.strictEqual(buttons[1]?.properties?.dataNotebookOutputAction, 'stdout')
+    assert(elementClassNames(buttons[1]).includes('notebook-output-copy-button'))
     const panel = findElement(
       staticOutput,
       node => node.tagName === 'div' && node.properties?.dataNotebookOutputPanel === 'stdout',

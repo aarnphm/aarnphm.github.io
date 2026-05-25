@@ -29,7 +29,12 @@ import {
   type JsonValue,
   type UnknownRecord,
 } from '../../util/type-guards'
-import { notebookRuntimeAssetUrl } from '../notebook/assets'
+import {
+  notebookPyrightPackageStubsManifestAsset,
+  notebookPyrightTypeshedManifestAsset,
+  notebookPyrightWorkerManifestAsset,
+  notebookRuntimeAssetUrl,
+} from '../notebook/assets'
 import { notebookPyrightAssetManifestEntry } from './pyright-assets'
 
 export type NotebookLspCell = {
@@ -52,9 +57,9 @@ type JsonRpcId = string | number | null
 type NotebookMessageTarget = { postMessage(message: unknown): void }
 type NotebookPyrightWorkspaceFiles = { files: Record<string, string>; extraPaths: string[] }
 
-const notebookPyrightWorkerManifestName = '../notebook-pyright-worker.json'
-const notebookPyrightTypeshedManifestName = '../notebook-pyright-typeshed.json'
-const notebookPyrightPackageStubsManifestName = '../notebook-pyright-packages.json'
+const notebookPyrightWorkerManifestName = `../${notebookPyrightWorkerManifestAsset}`
+const notebookPyrightTypeshedManifestName = `../${notebookPyrightTypeshedManifestAsset}`
+const notebookPyrightPackageStubsManifestName = `../${notebookPyrightPackageStubsManifestAsset}`
 const notebookPyrightSitePackagesUri = 'file:///site-packages'
 
 const notebookAnalysisSettings: JsonObject = {

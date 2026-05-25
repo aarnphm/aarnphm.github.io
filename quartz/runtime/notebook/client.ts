@@ -78,15 +78,21 @@ function setNotebookIconButton(button: HTMLButtonElement, icon: NotebookIcon, la
   button.classList.add('notebook-icon-button')
   button.setAttribute('aria-label', label)
   button.title = label
+  button.dataset.notebookTooltip = label
   button.textContent = ''
   button.insertAdjacentHTML('afterbegin', notebookIconSvg[icon])
 }
 
-function setNotebookVimButtonState(button: HTMLButtonElement, enabled: boolean) {
-  const label = enabled ? 'Disable Vim mode' : 'Enable Vim mode'
+function setNotebookToggleButtonState(button: HTMLButtonElement, enabled: boolean, label: string) {
   button.setAttribute('aria-pressed', String(enabled))
   button.setAttribute('aria-label', label)
   button.title = label
+  button.dataset.notebookTooltip = label
+}
+
+function setNotebookVimButtonState(button: HTMLButtonElement, enabled: boolean) {
+  const label = enabled ? 'Disable Vim mode' : 'Enable Vim mode'
+  setNotebookToggleButtonState(button, enabled, label)
 }
 
 function notebookLanguageBadgeElement(language: string): HTMLElement {
@@ -378,6 +384,7 @@ function appendStreamOutput(target: HTMLElement, output: RuntimeStreamOutput) {
     if (sample) {
       sample.textContent += output.text
       previous.scrollTop = previous.scrollHeight
+      syncOutputScrollHints(target)
       return
     }
   }
@@ -446,13 +453,16 @@ const outputScrollHintTargets = new WeakSet<HTMLElement>()
 
 function syncOutputScrollHint(output: HTMLElement) {
   const slack = 1
-  const scrollable = output.scrollHeight - output.clientHeight > slack
+  const container = output.closest<HTMLElement>('[data-notebook-output-tabs]')
+  const expanded = container?.hasAttribute('data-notebook-output-expanded') ?? false
+  const scrollable = !expanded && output.scrollHeight - output.clientHeight > slack
   output.toggleAttribute('data-notebook-scrollable', scrollable)
   output.toggleAttribute('data-notebook-scroll-before', scrollable && output.scrollTop > slack)
   output.toggleAttribute(
     'data-notebook-scroll-after',
     scrollable && output.scrollTop + output.clientHeight < output.scrollHeight - slack,
   )
+  if (container) syncOutputExpandControls(container)
 }
 
 function syncOutputScrollHints(root: HTMLElement) {
@@ -464,6 +474,7 @@ function syncOutputScrollHints(root: HTMLElement) {
   for (const output of outputs) {
     if (!outputScrollHintTargets.has(output)) {
       output.addEventListener('scroll', () => syncOutputScrollHint(output), { passive: true })
+      output.addEventListener('load', () => syncOutputScrollHint(output), { capture: true })
       outputScrollHintTargets.add(output)
     }
     requestAnimationFrame(() => syncOutputScrollHint(output))
@@ -501,6 +512,74 @@ function outputCopyText(outputs: HTMLElement[]): string {
     .map(output => output.textContent ?? '')
     .join('\n')
     .trimEnd()
+}
+
+function selectedOutputTabId(container: HTMLElement): string | undefined {
+  return container.querySelector<HTMLElement>('[data-notebook-output-tab][aria-selected="true"]')
+    ?.dataset.notebookOutputTab
+}
+
+function activeOutputPanel(container: HTMLElement): HTMLElement | undefined {
+  const selectedId = selectedOutputTabId(container)
+  if (!selectedId) return undefined
+  for (const frame of container.querySelectorAll<HTMLElement>('[data-notebook-output-panel]')) {
+    if (frame.dataset.notebookOutputPanel !== selectedId) continue
+    return frame.querySelector<HTMLElement>(':scope > .notebook-output-panel') ?? undefined
+  }
+}
+
+function outputPanelCollapsedHeight(container: HTMLElement): number {
+  const height = Number.parseFloat(
+    window.getComputedStyle(container).getPropertyValue('--notebook-output-panel-height'),
+  )
+  return Number.isFinite(height) && height > 0 ? height : 150
+}
+
+function syncOutputExpandButton(button: HTMLButtonElement, expandable: boolean, expanded: boolean) {
+  const label = expanded ? 'Collapse output' : 'Expand output'
+  button.toggleAttribute('data-notebook-output-expandable', expandable)
+  button.setAttribute('aria-expanded', String(expanded))
+  button.setAttribute('aria-label', label)
+  button.title = label
+}
+
+function syncOutputExpandControls(container: HTMLElement) {
+  const activeId = selectedOutputTabId(container)
+  const panel = activeOutputPanel(container)
+  const expandable =
+    panel !== undefined && panel.scrollHeight - outputPanelCollapsedHeight(container) > 1
+  if (!expandable) container.removeAttribute('data-notebook-output-expanded')
+  const expanded = expandable && container.hasAttribute('data-notebook-output-expanded')
+  container.toggleAttribute('data-notebook-output-expandable', expandable)
+  for (const button of container.querySelectorAll<HTMLButtonElement>(
+    '[data-notebook-output-expand-action]',
+  )) {
+    const active = activeId !== undefined && button.dataset.notebookOutputExpandAction === activeId
+    syncOutputExpandButton(button, active && expandable, active && expanded)
+  }
+}
+
+function createOutputExpandButton(container: HTMLElement, groupId: string): HTMLButtonElement {
+  const button = document.createElement('button')
+  button.type = 'button'
+  button.className = 'notebook-output-expand-button'
+  button.classList.add('notebook-icon-button')
+  button.dataset.notebookOutputAction = groupId
+  button.dataset.notebookOutputExpandAction = groupId
+  syncOutputExpandButton(button, false, false)
+  const expandIcon = document.createElement('span')
+  expandIcon.className = 'notebook-output-expand-icon'
+  expandIcon.insertAdjacentHTML('afterbegin', notebookIconSvg.expand)
+  button.append(expandIcon)
+  button.addEventListener('click', event => {
+    event.preventDefault()
+    event.stopPropagation()
+    const expanded = !container.hasAttribute('data-notebook-output-expanded')
+    container.toggleAttribute('data-notebook-output-expanded', expanded)
+    syncOutputExpandControls(container)
+    syncOutputScrollHints(container)
+  })
+  return button
 }
 
 function createOutputCopyButton(outputs: HTMLElement[]): HTMLButtonElement {
@@ -566,6 +645,8 @@ function selectOutputTab(container: HTMLElement, activeId: string | undefined, f
   for (const action of container.querySelectorAll<HTMLElement>('[data-notebook-output-action]')) {
     action.hidden = activeId === undefined || action.dataset.notebookOutputAction !== activeId
   }
+  if (activeId === undefined) container.removeAttribute('data-notebook-output-expanded')
+  syncOutputExpandControls(container)
   if (activeId !== undefined) syncOutputScrollHints(container)
 }
 
@@ -685,6 +766,7 @@ function syncOutputTabs(target: HTMLElement, cellId = target.dataset.notebookOut
     panel.className = 'notebook-output-panel'
     panel.append(...group.outputs)
     panelFrame.append(panel)
+    actions.append(createOutputExpandButton(container, group.id))
     const copyButton = createOutputCopyButton(group.outputs)
     copyButton.dataset.notebookOutputAction = group.id
     actions.append(copyButton)
@@ -1025,30 +1107,33 @@ class NotebookRuntime {
     ensureButton('[data-notebook-run-all]', button => {
       button.type = 'button'
       button.dataset.notebookRunAll = ''
-      button.textContent = 'Run all'
+      button.classList.add('notebook-toolbar-button')
+      setNotebookIconButton(button, 'run', 'Run all')
     })
     ensureButton('[data-notebook-stop]', button => {
       button.type = 'button'
       button.dataset.notebookStop = ''
       button.disabled = true
-      button.textContent = 'Stop'
+      button.classList.add('notebook-toolbar-button')
+      setNotebookIconButton(button, 'stop', 'Stop execution')
     })
     ensureButton('[data-notebook-reset]', button => {
       button.type = 'button'
       button.dataset.notebookReset = ''
-      button.textContent = 'Reset'
+      button.classList.add('notebook-toolbar-button')
+      setNotebookIconButton(button, 'revert', 'Reset runtime')
     })
     ensureButton('[data-notebook-debug]', button => {
       button.type = 'button'
       button.dataset.notebookDebug = ''
-      button.setAttribute('aria-pressed', 'false')
-      button.textContent = 'Debug'
+      button.classList.add('notebook-toolbar-button')
+      setNotebookIconButton(button, 'debug', 'Enable debug output')
     })
     ensureButton('[data-notebook-vim-mode]', button => {
       button.type = 'button'
       button.dataset.notebookVimMode = ''
-      button.setAttribute('aria-pressed', 'false')
-      button.textContent = 'Vim'
+      button.classList.add('notebook-toolbar-button')
+      setNotebookIconButton(button, 'vim', 'Enable Vim mode')
     })
 
     if (!status.isConnected) toolbar.append(status)
@@ -1067,9 +1152,15 @@ class NotebookRuntime {
 
   private syncToolbarToggles() {
     const debug = this.root.querySelector<HTMLButtonElement>('[data-notebook-debug]')
-    debug?.setAttribute('aria-pressed', String(this.debug))
+    if (debug) {
+      setNotebookToggleButtonState(
+        debug,
+        this.debug,
+        this.debug ? 'Disable debug output' : 'Enable debug output',
+      )
+    }
     const vim = this.root.querySelector<HTMLButtonElement>('[data-notebook-vim-mode]')
-    vim?.setAttribute('aria-pressed', String(this.vimMode))
+    if (vim) setNotebookVimButtonState(vim, this.vimMode)
     for (const button of this.cellRoot.querySelectorAll<HTMLButtonElement>(
       '[data-notebook-vim-cell]',
     )) {
