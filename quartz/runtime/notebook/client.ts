@@ -70,6 +70,11 @@ type RuntimePayload = {
   importableModules?: string[]
 }
 
+export type NotebookRunKeyEvent = Pick<
+  KeyboardEvent,
+  'key' | 'metaKey' | 'ctrlKey' | 'shiftKey' | 'altKey'
+>
+
 import { notebookIconSvg, type NotebookIcon } from '../../util/notebook/render/icons'
 
 const notebookRuntimeVimModeKey = 'quartz:notebook-vim-mode'
@@ -188,6 +193,24 @@ function readRuntimePayload(value: unknown): RuntimePayload | undefined {
 
 function runtimeCellEditorLanguage(cell: RuntimeCell): string {
   return cell.displayLanguage ?? cell.language
+}
+
+export function notebookRunAndAdvanceKey(event: NotebookRunKeyEvent): boolean {
+  return (
+    event.key === 'Enter' && event.metaKey && !event.ctrlKey && !event.shiftKey && !event.altKey
+  )
+}
+
+export function notebookRunKey(event: NotebookRunKeyEvent): boolean {
+  return event.key === 'Enter' && (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey)
+}
+
+export function nextNotebookCellId(
+  cells: readonly { readonly id: string }[],
+  cellId: string,
+): string | undefined {
+  const index = cells.findIndex(cell => cell.id === cellId)
+  return index === -1 ? undefined : cells[index + 1]?.id
 }
 
 function decodeRuntimeCodePoint(codePoint: number, fallback: string): string {
@@ -997,12 +1020,6 @@ class NotebookRuntime {
     event.stopImmediatePropagation()
   }
 
-  private notebookRunKey(event: KeyboardEvent): boolean {
-    return (
-      event.key === 'Enter' && (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey)
-    )
-  }
-
   private enterEditMode(cell: RuntimeCell) {
     this.clearEditPrefix()
     this.selectCell(cell.id)
@@ -1031,7 +1048,15 @@ class NotebookRuntime {
     const cell = this.commandCell(event.target)
     if (!cell) return
 
-    if (this.notebookRunKey(event)) {
+    if (notebookRunAndAdvanceKey(event)) {
+      this.clearEditPrefix()
+      this.selectCell(cell.id)
+      this.claimNotebookKey(event)
+      this.runCellAndAdvance(cell)
+      return
+    }
+
+    if (notebookRunKey(event)) {
       this.clearEditPrefix()
       this.selectCell(cell.id)
       this.claimNotebookKey(event)
@@ -1207,6 +1232,23 @@ class NotebookRuntime {
         break
       }
     }
+  }
+
+  private nextCell(cell: RuntimeCell): RuntimeCell | undefined {
+    return this.cellById(nextNotebookCellId(this.payload.cells, cell.id))
+  }
+
+  private focusCell(cell: RuntimeCell) {
+    this.selectCell(cell.id)
+    this.cellFrame(cell.id)?.focus()
+  }
+
+  private runCellAndAdvance(cell: RuntimeCell) {
+    if (this.running) return
+    if (!this.saveEditorSource(cell, false)) return
+    const running = this.runCell(cell)
+    this.focusCell(this.nextCell(cell) ?? cell)
+    void running
   }
 
   private runCell = async (cell: RuntimeCell): Promise<boolean> => {
@@ -1423,7 +1465,7 @@ class NotebookRuntime {
     setNotebookIconButton(saveButton, 'save', `Save ${cell.id} locally`)
     saveButton.hidden = true
     const saveSource = () => {
-      void this.saveEditorSource(cell)
+      this.saveEditorSource(cell)
     }
     saveButton.addEventListener('click', saveSource)
 
@@ -1583,8 +1625,9 @@ class NotebookRuntime {
         this.syncSourceControls(cell)
       },
       onSubmit: () => this.runCell(cell),
+      onSubmitAndAdvance: () => this.runCellAndAdvance(cell),
       onSave: () => {
-        void this.saveEditorSource(cell)
+        this.saveEditorSource(cell)
       },
       onCancel: () => {
         void this.closeSourceEditor(cell)
@@ -1593,7 +1636,7 @@ class NotebookRuntime {
     return controls.editor
   }
 
-  private async showSourceEditor(cell: RuntimeCell, visible: boolean) {
+  private async showSourceEditor(cell: RuntimeCell, visible: boolean, restoreFocus = true) {
     const controls = this.sourceControls.get(cell.id)
     if (!controls) return
     if (visible) {
@@ -1609,7 +1652,7 @@ class NotebookRuntime {
     this.syncSourceControls(cell)
     if (visible) {
       controls.editor?.focus()
-    } else {
+    } else if (restoreFocus) {
       this.selectCell(cell.id)
       controls.frame.focus({ preventScroll: true })
     }
@@ -1672,29 +1715,36 @@ class NotebookRuntime {
     void this.showSourceEditor(cell, false)
   }
 
-  private async saveEditorSource(cell: RuntimeCell) {
+  private saveEditorSource(cell: RuntimeCell, restoreFocus = true): boolean {
     const controls = this.sourceControls.get(cell.id)
-    if (!controls) return
+    if (!controls) return true
     const source = this.sourceForCell(cell)
     const highlightedLines = controls.editor?.highlightedLines()
     if (source === cell.source) {
       controls.source = cell.source
       controls.dirty = false
       this.clearStoredSource(cell)
-      await this.replaceRenderedCellSource(cell, controls, cell.source, highlightedLines)
-      void this.showSourceEditor(cell, false)
+      if (controls.figure && controls.renderedSource !== cell.source) {
+        replaceRenderedSource(controls.figure, cell.source, highlightedLines)
+        controls.renderedSource = cell.source
+      }
+      void this.showSourceEditor(cell, false, restoreFocus)
       this.setStatus('idle')
-      return
+      return true
     }
     if (!this.writeStoredSource(cell, source)) {
       this.setStatus('local save failed')
-      return
+      return false
     }
     controls.source = source
     controls.dirty = false
-    await this.replaceRenderedCellSource(cell, controls, source, highlightedLines)
-    void this.showSourceEditor(cell, false)
+    if (controls.figure && controls.renderedSource !== source) {
+      replaceRenderedSource(controls.figure, source, highlightedLines)
+      controls.renderedSource = source
+    }
+    void this.showSourceEditor(cell, false, restoreFocus)
     this.setStatus('saved local edit')
+    return true
   }
 
   private async revertEditorSource(cell: RuntimeCell) {

@@ -608,6 +608,68 @@ describe('notebook parser', () => {
     )
   })
 
+  test('keeps indented stream output inside the static output panel', async () => {
+    const notebook = parseNotebook(
+      JSON.stringify({
+        metadata: { language_info: { name: 'python' } },
+        cells: [
+          {
+            cell_type: 'code',
+            source: 'parser()',
+            execution_count: 25,
+            outputs: [
+              {
+                output_type: 'stream',
+                name: 'stdout',
+                text: ['     S @ 1\n', '\n', '     S => a X @ 0.4\n'],
+              },
+              {
+                output_type: 'execute_result',
+                data: { 'text/plain': "[('a d', '0.32')]" },
+                execution_count: 25,
+              },
+            ],
+          },
+        ],
+      }),
+      'parser.ipynb',
+    )
+
+    const markdown = notebookToMarkdown(notebook, 'parser.ipynb', {
+      runtime: { enabled: true, sourcePath: 'parser.ipynb' },
+    })
+    assert.match(markdown, /<samp>     S @ 1&#10;&#10;     S =&gt; a X @ 0\.4<\/samp>/)
+    const tree = await parseHtmlFragment(markdown)
+    const frame = findElement(
+      tree,
+      node => node.tagName === 'div' && node.properties?.dataNotebookCellFrame === 'cell-1',
+    )
+    assert(frame)
+    const staticOutput = findElement(
+      frame,
+      node => node.tagName === 'div' && node.properties?.dataNotebookStaticOutput === 'cell-1',
+    )
+    assert(staticOutput)
+    const stdoutPanel = findElement(
+      staticOutput,
+      node => node.tagName === 'div' && node.properties?.dataNotebookOutputPanel === 'stdout',
+    )
+    const resultPanel = findElement(
+      staticOutput,
+      node => node.tagName === 'div' && node.properties?.dataNotebookOutputPanel === 'result',
+    )
+    assert(stdoutPanel)
+    assert(resultPanel)
+    const stdout = findElement(stdoutPanel, node =>
+      elementClassNames(node).includes('notebook-output-stream-stdout'),
+    )
+    assert(stdout)
+    const samp = findElement(stdout, node => node.tagName === 'samp')
+    assert(samp)
+    assert.strictEqual(textChild(samp), '     S @ 1\n\n     S => a X @ 0.4')
+    assert(!findElement(samp, node => node.tagName === 'pre'))
+  })
+
   test('renders language badges with svg icons and accessible labels', async () => {
     const tree = await parseHtmlFragment(notebookCellLanguageBadge('javascript'))
     const badge = findElement(tree, node =>

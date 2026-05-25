@@ -188,7 +188,7 @@ article:has(.notebook-runtime) {
 
       > pre {
         margin: 0;
-        border-radius: var(--notebook-inner-radius);
+        border-radius: 0 var(--notebook-inner-radius) var(--notebook-inner-radius) var(--notebook-inner-radius);
 
         > code {
           .hljs-keyword,
