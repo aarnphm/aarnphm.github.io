@@ -7,12 +7,11 @@ export default (() => {
   const StackedNotes: QuartzComponent = () => {
     return (
       <div class="stacked-buttons">
-        <span
+        <button
           id="stacked-note-toggle"
           title="Toggle stacked notes"
           aria-label="Toggle stacked notes"
           role="switch"
-          // @ts-ignore
           type="button"
           aria-checked="false"
         >
@@ -44,7 +43,7 @@ export default (() => {
               <circle cx="10" cy="12" r="6" opacity="0.5" />
             </svg>
           </div>
-        </span>
+        </button>
       </div>
     )
   }

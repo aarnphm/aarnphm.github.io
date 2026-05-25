@@ -129,13 +129,35 @@ export function debounce(fn: Function, delay: number) {
   }
 }
 
+export type StackedNoteState = 'pending' | 'ready' | 'protected' | 'failed'
+
+export interface NoteDocument {
+  slug: string
+  title: string
+  hash?: string
+  bodyHtml: string
+  metadataHtml?: string
+  state: StackedNoteState
+}
+
+export interface MountedNote {
+  shell: HTMLElement
+  bodyHost: HTMLElement
+  titleRail: HTMLElement
+  mounted: boolean
+}
+
+export interface VirtualRange {
+  first: number
+  last: number
+}
+
 export interface DagNode {
   slug: string
   title: string
-  contents: HTMLElement[]
-  note: HTMLElement
+  document: NoteDocument
+  mounted: MountedNote
   anchor?: HTMLElement | null
-  hash?: string
 }
 
 export class Dag {

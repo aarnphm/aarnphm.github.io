@@ -70,6 +70,6 @@ export interface Notes {
   getChain(): string
 
   open(): Promise<boolean>
-  add(href: URL): Promise<boolean>
+  add(href: URL, anchor?: HTMLElement): Promise<boolean>
   navigate(url: URL): Promise<boolean>
 }
