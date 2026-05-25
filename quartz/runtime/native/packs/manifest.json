@@ -2,6 +2,18 @@
   "version": 1,
   "runtimes": {
     "go": { "worker": "go/worker.js", "assets": ["go/wasm_exec.js", "go/yaegi.wasm"] },
-    "ocaml": { "worker": "ocaml/worker.js", "assets": ["ocaml/toplevel.js"] }
+    "haskell": {
+      "available": false,
+      "reason": "Haskell notebook cells need a self-hosted GHCi WebAssembly runtime pack. This site does not ship one yet."
+    },
+    "mojo": {
+      "available": false,
+      "reason": "Mojo notebook cells need a Mojo compiler/runtime target for WebAssembly. This site leaves Mojo runtime support last."
+    },
+    "ocaml": { "worker": "ocaml/worker.js", "assets": ["ocaml/toplevel.js"] },
+    "rust": {
+      "available": false,
+      "reason": "Rust notebook cells need a self-hosted rustc or interpreter WebAssembly runtime pack. This site does not ship one yet."
+    }
   }
 }
