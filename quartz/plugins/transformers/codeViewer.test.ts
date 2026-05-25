@@ -8,6 +8,9 @@ import test, { describe } from 'node:test'
 import { VFile } from 'vfile'
 import type { BuildCtx } from '../../util/ctx'
 import type { FilePath } from '../../util/path'
+import { notebookToMarkdownChunks } from '../../util/notebook/markdown'
+import { parseNotebookDoc } from '../../util/notebook/parse'
+import { isNotebookParseError } from '../../util/notebook/types'
 import { CodeViewer } from './codeViewer'
 
 type Transformer = (tree: Root, file: VFile) => Promise<void> | void
@@ -67,17 +70,36 @@ function collectCode(node: Root | RootContent): Code[] {
   return node.children.flatMap(child => collectCode(child as RootContent))
 }
 
-function runtimePayload(tree: Root): RuntimePayload {
-  const html = collectHtml(tree).join('\n')
-  const match = html.match(
-    /<script type="application\/json" data-notebook-runtime-data>([\s\S]*)<\/script>/,
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value)
+}
+
+function isRuntimePayload(value: unknown): value is RuntimePayload {
+  if (!isRecord(value)) return false
+  return (
+    typeof value.id === 'string' &&
+    typeof value.sourcePath === 'string' &&
+    typeof value.language === 'string' &&
+    Array.isArray(value.cells)
   )
-  assert.ok(match)
-  const parsed: unknown = JSON.parse(match[1])
-  assert.ok(typeof parsed === 'object' && parsed !== null && !Array.isArray(parsed))
-  const payload = parsed as RuntimePayload
-  assert.ok(Array.isArray(payload.cells))
+}
+
+function runtimePayload(tree: Root): RuntimePayload {
+  const [payload] = runtimePayloads(tree)
+  assert.ok(payload)
   return payload
+}
+
+function runtimePayloads(tree: Root): RuntimePayload[] {
+  const html = collectHtml(tree).join('\n')
+  const matches = html.matchAll(
+    /<script type="application\/json" data-notebook-runtime-data>([\s\S]*?)<\/script>/g,
+  )
+  return Array.from(matches, match => {
+    const parsed: unknown = JSON.parse(match[1])
+    assert.ok(isRuntimePayload(parsed))
+    return parsed
+  })
 }
 
 describe('code viewer runtime cells', () => {
@@ -125,6 +147,83 @@ describe('code viewer runtime cells', () => {
       payload.cells.map(cell => cell.source),
       ['print("hi")'],
     )
+  })
+
+  test('wraps shell fences emitted from notebook markdown cells', async () => {
+    const root = await mkdtemp(nodePath.join(os.tmpdir(), 'quartz-code-viewer-'))
+    const notebook = parseNotebookDoc(
+      JSON.stringify({
+        cells: [
+          {
+            cell_type: 'markdown',
+            source: ['```haskell shell\n', 'main = putStrLn "hi"\n', '```\n'],
+          },
+        ],
+      }),
+      'notes/lecture.ipynb',
+    )
+    if (isNotebookParseError(notebook)) throw new Error(notebook.reason)
+    const shellChunk = notebookToMarkdownChunks(notebook, 'notes/lecture.ipynb').find(chunk =>
+      chunk.includes('```haskell shell'),
+    )
+    assert.ok(shellChunk)
+    const tree = fromMarkdown(shellChunk)
+
+    await runCodeViewer(tree, vfile(root, 'notes/lecture.ipynb'), buildCtx(root))
+
+    const html = collectHtml(tree).join('\n')
+    assert.match(html, /data-notebook-runtime=/)
+    assert.match(html, /notebook-language-badge-haskell/)
+    assert.match(html, /data-notebook-language="haskell"/)
+
+    const payload = runtimePayload(tree)
+    assert.strictEqual(payload.sourcePath, 'notes/lecture.ipynb')
+    assert.strictEqual(payload.language, 'haskell')
+    assert.strictEqual(payload.toolbar, false)
+    assert.strictEqual(payload.debug, true)
+    assert.strictEqual(payload.vimMode, true)
+    assert.deepStrictEqual(
+      payload.cells.map(cell => ({ id: cell.id, source: cell.source, language: cell.language })),
+      [{ id: 'code-cell-1', source: 'main = putStrLn "hi"', language: 'haskell' }],
+    )
+  })
+
+  test('wraps multiple shell backends on the same page', async () => {
+    const root = await mkdtemp(nodePath.join(os.tmpdir(), 'quartz-code-viewer-'))
+    const tree = fromMarkdown(
+      [
+        '```python shell',
+        'print("hi")',
+        '```',
+        '',
+        '```javascript shell',
+        'console.log("hi")',
+        '```',
+        '',
+        '```ocaml shell',
+        'print_endline "hi"',
+        '```',
+      ].join('\n'),
+    )
+
+    await runCodeViewer(tree, vfile(root, 'notes/page.md'), buildCtx(root))
+
+    const payloads = runtimePayloads(tree)
+    assert.deepStrictEqual(
+      payloads.map(payload => ({
+        language: payload.language,
+        cells: payload.cells.map(cell => cell.id),
+      })),
+      [
+        { language: 'python', cells: ['code-cell-1'] },
+        { language: 'javascript', cells: ['code-cell-2'] },
+        { language: 'ocaml', cells: ['code-cell-3'] },
+      ],
+    )
+    const html = collectHtml(tree).join('\n')
+    assert.match(html, /notebook-language-badge-python/)
+    assert.match(html, /notebook-language-badge-javascript/)
+    assert.match(html, /notebook-language-badge-ocaml/)
   })
 
   test('lets python shell meta disable debug and vim defaults', async () => {

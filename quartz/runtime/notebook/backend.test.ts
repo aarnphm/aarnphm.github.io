@@ -1,6 +1,7 @@
 import assert from 'node:assert'
 import test, { describe, before } from 'node:test'
 import { javascriptBackend } from '../javascript/backend'
+import { haskellBackend, mojoBackend, ocamlBackend, rustBackend } from '../native/backend'
 import { pythonBackend } from '../python/backend'
 import {
   backendFor,
@@ -26,6 +27,15 @@ describe('LanguageBackend registry', () => {
     assert.strictEqual(backendFor('js'), javascriptBackend)
     assert.strictEqual(backendFor('ijavascript'), javascriptBackend)
     assert.strictEqual(backendFor('.mjs'), javascriptBackend)
+    assert.strictEqual(backendFor('rust'), rustBackend)
+    assert.strictEqual(backendFor('.rs'), rustBackend)
+    assert.strictEqual(backendFor('mojo'), mojoBackend)
+    assert.strictEqual(backendFor('.mojo'), mojoBackend)
+    assert.strictEqual(backendFor('haskell'), haskellBackend)
+    assert.strictEqual(backendFor('runghc'), haskellBackend)
+    assert.strictEqual(backendFor('.hs'), haskellBackend)
+    assert.strictEqual(backendFor('ocaml'), ocamlBackend)
+    assert.strictEqual(backendFor('.ml'), ocamlBackend)
   })
 
   test('resolves a backend by shell magic', () => {
@@ -33,12 +43,16 @@ describe('LanguageBackend registry', () => {
     assert.strictEqual(backendForShellMagic('py-shell'), pythonBackend)
     assert.strictEqual(backendForShellMagic('javascript'), javascriptBackend)
     assert.strictEqual(backendForShellMagic('js'), javascriptBackend)
-    assert.strictEqual(backendForShellMagic('haskell-shell'), undefined)
+    assert.strictEqual(backendForShellMagic('javascript-shell'), javascriptBackend)
+    assert.strictEqual(backendForShellMagic('rust-shell'), rustBackend)
+    assert.strictEqual(backendForShellMagic('mojo-shell'), mojoBackend)
+    assert.strictEqual(backendForShellMagic('haskell-shell'), haskellBackend)
+    assert.strictEqual(backendForShellMagic('ocaml-shell'), ocamlBackend)
   })
 
   test('returns undefined for unregistered languages', () => {
-    assert.strictEqual(backendFor('rust'), undefined)
-    assert.strictEqual(backendFor('ocaml'), undefined)
+    assert.strictEqual(backendFor('ruby'), undefined)
+    assert.strictEqual(backendFor('php'), undefined)
   })
 
   test('listBackends deduplicates by identity', () => {
@@ -96,6 +110,16 @@ describe('LanguageBackend registry', () => {
     assert.strictEqual(kernel.language, 'javascript')
     assert.strictEqual(typeof kernel.execute, 'function')
     assert.strictEqual(typeof kernel.interrupt, 'function')
+  })
+
+  test('native browser backends report unavailable compiler runtimes', async () => {
+    for (const backend of [rustBackend, mojoBackend, haskellBackend, ocamlBackend]) {
+      const accepted = backend.canExecute('main = print "hi"')
+      assert.strictEqual(accepted.ok, false)
+      if (!accepted.ok) assert.match(accepted.reason, /native compiler runtime/)
+      const kernel = await backend.kernelFactory({ runtimeId: 'r', sourcePath: 's' })
+      assert.strictEqual(kernel.language, backend.name)
+    }
   })
 
   test('unregister removes by name and clears shell magics', () => {

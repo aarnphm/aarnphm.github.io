@@ -167,6 +167,9 @@ async function languageExtension(language: string | undefined): Promise<Extensio
     const { rust } = await import('@codemirror/lang-rust')
     return rust()
   }
+  if (name === 'haskell' || name === 'hs' || name === 'ocaml' || name === 'ml' || name === 'mojo') {
+    return []
+  }
   if (name === 'zig') {
     const { zig } = await import('codemirror-lang-zig')
     return zig()
@@ -209,6 +212,12 @@ async function notebookHighlightJsLanguage(
   }
   if (name === 'rust' || name === 'rs') {
     return { name: 'rust', define: (await import('highlight.js/lib/languages/rust')).default }
+  }
+  if (name === 'haskell' || name === 'hs') {
+    return { name: 'haskell', define: (await import('highlight.js/lib/languages/haskell')).default }
+  }
+  if (name === 'ocaml' || name === 'ml') {
+    return { name: 'ocaml', define: (await import('highlight.js/lib/languages/ocaml')).default }
   }
   if (name === 'bash' || name === 'sh' || name === 'shell' || name === 'zsh') {
     return { name: 'bash', define: (await import('highlight.js/lib/languages/bash')).default }
