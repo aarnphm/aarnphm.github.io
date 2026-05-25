@@ -68,28 +68,28 @@ export const rustBackend = nativeBackend({
   name: 'rust',
   fileExts: ['.rs'],
   aliases: ['rust', 'rs'],
-  shellMagics: ['rust', 'rust-shell', 'rs-shell'],
+  shellMagics: ['rust-shell', 'rs-shell'],
 })
 
 export const mojoBackend = nativeBackend({
   name: 'mojo',
   fileExts: ['.mojo'],
   aliases: ['mojo'],
-  shellMagics: ['mojo', 'mojo-shell'],
+  shellMagics: ['mojo-shell'],
 })
 
 export const haskellBackend = nativeBackend({
   name: 'haskell',
   fileExts: ['.hs', '.lhs'],
   aliases: ['haskell', 'hs', 'ghc', 'runghc'],
-  shellMagics: ['haskell', 'hs', 'haskell-shell', 'ghc', 'runghc'],
+  shellMagics: ['haskell-shell', 'hs-shell'],
 })
 
 export const ocamlBackend = nativeBackend({
   name: 'ocaml',
   fileExts: ['.ml', '.mli'],
   aliases: ['ocaml', 'ml', 'utop'],
-  shellMagics: ['ocaml', 'ml', 'ocaml-shell', 'utop'],
+  shellMagics: ['ocaml-shell', 'ml-shell'],
 })
 
 registerBackend(rustBackend)
