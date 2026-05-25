@@ -1,12 +1,10 @@
 import type { CellId } from '../../util/notebook/types'
 import type { Kernel, RuntimeEvent } from '../notebook/kernel'
-import { createHaskellPlaygroundKernel } from '../haskell/playground-kernel'
 import {
   registerBackend,
   type CanExecuteResult,
   type ExecutableLanguageBackend,
 } from '../notebook/backend'
-import { createRustPlaygroundKernel } from '../rust/playground-kernel'
 
 type NativeLanguageSpec = {
   readonly name: string
@@ -50,23 +48,11 @@ class UnavailableNativeKernel implements Kernel {
 }
 
 function nativeRuntimeReason(language: string): string {
-  return `${language} notebook cells need a native compiler runtime, which is unavailable in this browser sandbox. Use a server-backed notebook runtime for this cell.`
+  return `${language} notebook cells need a self-hosted WebAssembly runtime pack, which this site does not ship yet.`
 }
 
 function nativeCanExecute(language: string): CanExecuteResult {
   return { ok: false, reason: nativeRuntimeReason(language) }
-}
-
-function rustCanExecute(source: string): CanExecuteResult {
-  return source.trim().length === 0
-    ? { ok: false, reason: 'rust notebook cells need source code to execute.' }
-    : { ok: true }
-}
-
-function haskellCanExecute(source: string): CanExecuteResult {
-  return source.trim().length === 0
-    ? { ok: false, reason: 'haskell notebook cells need source code to execute.' }
-    : { ok: true }
 }
 
 function nativeBackend(spec: NativeLanguageSpec): ExecutableLanguageBackend {
@@ -78,20 +64,12 @@ function nativeBackend(spec: NativeLanguageSpec): ExecutableLanguageBackend {
   }
 }
 
-export const rustBackend: ExecutableLanguageBackend = {
+export const rustBackend = nativeBackend({
   name: 'rust',
   fileExts: ['.rs'],
   aliases: ['rust', 'rs'],
   shellMagics: ['rust-shell', 'rs-shell'],
-  kernelFactory: async () => createRustPlaygroundKernel(),
-  canExecute: rustCanExecute,
-  editor: {
-    languageExtension: async () => {
-      const mod = await import('@codemirror/lang-rust')
-      return mod.rust()
-    },
-  },
-}
+})
 
 export const mojoBackend = nativeBackend({
   name: 'mojo',
@@ -100,14 +78,12 @@ export const mojoBackend = nativeBackend({
   shellMagics: ['mojo-shell'],
 })
 
-export const haskellBackend: ExecutableLanguageBackend = {
+export const haskellBackend = nativeBackend({
   name: 'haskell',
   fileExts: ['.hs', '.lhs'],
   aliases: ['haskell', 'hs', 'ghc', 'runghc'],
   shellMagics: ['haskell-shell', 'hs-shell'],
-  kernelFactory: async () => createHaskellPlaygroundKernel(),
-  canExecute: haskellCanExecute,
-}
+})
 
 export const ocamlBackend = nativeBackend({
   name: 'ocaml',
@@ -116,7 +92,15 @@ export const ocamlBackend = nativeBackend({
   shellMagics: ['ocaml-shell', 'ml-shell'],
 })
 
+export const goBackend = nativeBackend({
+  name: 'go',
+  fileExts: ['.go'],
+  aliases: ['go', 'golang'],
+  shellMagics: ['go-shell', 'golang-shell'],
+})
+
 registerBackend(rustBackend)
 registerBackend(mojoBackend)
 registerBackend(haskellBackend)
 registerBackend(ocamlBackend)
+registerBackend(goBackend)
