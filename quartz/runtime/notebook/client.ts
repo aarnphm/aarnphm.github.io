@@ -1,6 +1,7 @@
 import DOMPurify from 'dompurify'
 import type { CellId } from '../../util/notebook/types'
 import type { NotebookCodeEditor } from '../editor/code-editor'
+import type { NotebookLspConfig } from '../lsp/pyright'
 import type { NotebookRuntimeAssetConfig } from './assets'
 import type { ExecutableLanguageBackend, RuntimeModuleResolver } from './backend'
 import type {
@@ -52,7 +53,9 @@ type SourceControls = {
   saveButton: HTMLButtonElement
   revertButton: HTMLButtonElement
   source: string
+  storedSource: string | undefined
   renderedSource: string
+  dirty: boolean
 }
 
 type RuntimePayload = {
@@ -231,6 +234,7 @@ export async function warmNotebookRuntimeEditorAssets(
 ): Promise<void> {
   configureNotebookRuntimeAssets(assets)
   const languages = new Set<string>()
+  const lspConfigs: NotebookLspConfig[] = []
   let lsp = false
   let vimMode = false
 
@@ -239,16 +243,40 @@ export async function warmNotebookRuntimeEditorAssets(
     if (!payload) continue
     languages.add(payload.language)
     vimMode ||= payload.vimMode ?? readStoredNotebookVimMode()
+    let lspCell: RuntimeCell | undefined
     for (const cell of payload.cells) {
       const editorLanguage = runtimeCellEditorLanguage(cell)
       languages.add(editorLanguage)
-      lsp ||= backendFor(editorLanguage)?.editor?.lspBridge !== undefined
+      const cellLsp = backendFor(editorLanguage)?.editor?.lspBridge !== undefined
+      lsp ||= cellLsp
+      lspCell ??= cellLsp ? cell : undefined
+    }
+    if (lspCell) {
+      const language = runtimeCellEditorLanguage(lspCell)
+      lspConfigs.push({
+        enabled: true,
+        runtimeId: payload.id,
+        sourcePath: payload.sourcePath,
+        cellId: lspCell.id,
+        language,
+        cells: () =>
+          payload.cells.map(cell => ({
+            id: cell.id,
+            source: cell.source,
+            language: runtimeCellEditorLanguage(cell),
+            executionIndex: cell.executionIndex,
+          })),
+      })
     }
   }
 
   if (languages.size === 0) languages.add('python')
   const { warmNotebookCodeEditorAssets } = await import('../editor/code-editor')
   await warmNotebookCodeEditorAssets({ languages: [...languages], lsp, vimMode })
+  if (lspConfigs.length > 0) {
+    const { warmNotebookLspRuntime } = await import('../lsp/pyright')
+    await Promise.all(lspConfigs.map(config => warmNotebookLspRuntime(config)))
+  }
 }
 
 function replaceRenderedSource(
@@ -670,6 +698,11 @@ function syncOutputTabs(target: HTMLElement, cellId = target.dataset.notebookOut
 }
 
 function syncStaticOutputTabs(frame: HTMLElement, cellId: string) {
+  const existing = frame.querySelector<HTMLElement>(':scope > [data-notebook-static-output]')
+  if (existing) {
+    syncOutputTabs(existing, cellId)
+    return
+  }
   const outputs = Array.from(frame.children).filter(
     (child): child is HTMLElement =>
       child instanceof HTMLElement && child.classList.contains('notebook-output'),
@@ -1357,7 +1390,9 @@ class NotebookRuntime {
       saveButton,
       revertButton,
       source: stored ?? baseSource,
+      storedSource: stored,
       renderedSource: renderedSource ?? baseSource,
+      dirty: false,
     })
     const controls = this.sourceControls.get(cell.id)
     if (!controls) return
@@ -1390,6 +1425,12 @@ class NotebookRuntime {
     return this.readStoredSource(cell) ?? cell.source
   }
 
+  private sourceSnapshotForCell(cell: RuntimeCell): string {
+    const controls = this.sourceControls.get(cell.id)
+    if (controls) return controls.source
+    return this.readStoredSource(cell) ?? cell.source
+  }
+
   private sourceStorageKey(cell: RuntimeCell): string {
     return notebookRuntimeLocalSourceKey(this.payload.sourcePath, cell.id)
   }
@@ -1406,6 +1447,8 @@ class NotebookRuntime {
   private writeStoredSource(cell: RuntimeCell, source: string): boolean {
     try {
       window.localStorage.setItem(this.sourceStorageKey(cell), source)
+      const controls = this.sourceControls.get(cell.id)
+      if (controls) controls.storedSource = source
       return true
     } catch {
       return false
@@ -1416,6 +1459,8 @@ class NotebookRuntime {
     try {
       window.localStorage.removeItem(this.sourceStorageKey(cell))
     } catch {}
+    const controls = this.sourceControls.get(cell.id)
+    if (controls) controls.storedSource = undefined
   }
 
   private async ensureSourceEditor(cell: RuntimeCell, controls: SourceControls) {
@@ -1436,13 +1481,14 @@ class NotebookRuntime {
         cells: () =>
           this.payload.cells.map(runtimeCell => ({
             id: runtimeCell.id,
-            source: this.sourceForCell(runtimeCell),
+            source: this.sourceSnapshotForCell(runtimeCell),
             language: runtimeCellEditorLanguage(runtimeCell),
             executionIndex: runtimeCell.executionIndex,
           })),
       },
-      onChange: source => {
-        controls.source = source
+      onEdited: () => {
+        if (controls.dirty) return
+        controls.dirty = true
         this.syncSourceControls(cell)
       },
       onSubmit: () => this.runCell(cell),
@@ -1461,8 +1507,10 @@ class NotebookRuntime {
     if (!controls) return
     if (visible) {
       const editor = await this.ensureSourceEditor(cell, controls)
-      editor.setValue(this.sourceForCell(cell))
-      controls.source = editor.getValue()
+      const source = this.sourceForCell(cell)
+      editor.setValue(source)
+      controls.source = source
+      controls.dirty = false
     }
     controls.editorHost.hidden = !visible
     if (controls.figure) controls.figure.hidden = visible
@@ -1540,6 +1588,7 @@ class NotebookRuntime {
     const highlightedLines = controls.editor?.highlightedLines()
     if (source === cell.source) {
       controls.source = cell.source
+      controls.dirty = false
       this.clearStoredSource(cell)
       await this.replaceRenderedCellSource(cell, controls, cell.source, highlightedLines)
       void this.showSourceEditor(cell, false)
@@ -1551,6 +1600,7 @@ class NotebookRuntime {
       return
     }
     controls.source = source
+    controls.dirty = false
     await this.replaceRenderedCellSource(cell, controls, source, highlightedLines)
     void this.showSourceEditor(cell, false)
     this.setStatus('saved local edit')
@@ -1560,6 +1610,7 @@ class NotebookRuntime {
     const controls = this.sourceControls.get(cell.id)
     if (!controls) return
     controls.source = cell.source
+    controls.dirty = false
     controls.editor?.setValue(cell.source)
     const highlightedLines = controls.editor?.highlightedLines()
     this.clearStoredSource(cell)
@@ -1571,9 +1622,9 @@ class NotebookRuntime {
   private syncSourceControls(cell: RuntimeCell) {
     const controls = this.sourceControls.get(cell.id)
     if (!controls) return
-    const stored = this.readStoredSource(cell)
+    const stored = controls.storedSource
     const editing = !controls.editorHost.hidden
-    const edited = editing && this.sourceForCell(cell) !== (stored ?? cell.source)
+    const edited = editing && controls.dirty
     const hasStoredSource = stored !== undefined
     controls.status.hidden = !hasStoredSource && !edited
     controls.status.dataset.notebookSourceState = edited ? 'edited' : 'local'

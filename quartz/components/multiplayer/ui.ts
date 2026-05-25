@@ -769,9 +769,8 @@ export function createCommentsUi({ getState, dispatch, canResolveComment }: UiDe
 
     void createMarkdownEditor({
       parent: editorMount,
-      onChange: content => {
-        const isEmpty = content.trim().length === 0
-        if (isEmpty) {
+      onEdited: state => {
+        if (state.empty) {
           inputSectionWrapper.classList.add('composer-empty')
           replyButton.setAttribute('aria-disabled', 'true')
         } else {
@@ -889,10 +888,9 @@ export function createCommentsUi({ getState, dispatch, canResolveComment }: UiDe
 
     editor = await createMarkdownEditor({
       parent: editorMount,
-      onChange: content => {
-        const trimmed = content.trim()
-        submitButton.disabled = trimmed.length === 0
-        if (trimmed.length === 0) {
+      onEdited: state => {
+        submitButton.disabled = state.empty
+        if (state.empty) {
           inputWrapper.classList.add('composer-empty')
         } else {
           inputWrapper.classList.remove('composer-empty')

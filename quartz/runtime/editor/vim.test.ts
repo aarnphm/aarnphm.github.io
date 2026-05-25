@@ -1,10 +1,17 @@
+import { Text } from '@codemirror/state'
 import assert from 'node:assert'
 import test, { describe } from 'node:test'
 import type { NotebookVimBindingsApi } from './code-editor'
 import {
+  notebookCursorCoordinate,
+  notebookCursorCoordinateInText,
+  notebookEditorStatusText,
+  notebookEditorStatusTextInText,
   notebookLeapMotionForKey,
   notebookLeapTargets,
+  notebookLeapTargetsInText,
   notebookSurroundingPairRange,
+  notebookSurroundingPairRangeInText,
   notebookSurroundKeyPlan,
   notebookSurroundPair,
   notebookVimNoremaps,
@@ -155,6 +162,49 @@ describe('notebook surround ranges', () => {
       closeTo: 5,
     })
   })
+
+  test('finds bracket and quote surrounds from CodeMirror Text', () => {
+    assert.deepStrictEqual(notebookSurroundingPairRangeInText(Text.of(['call(foo)']), 6, ')'), {
+      openFrom: 4,
+      openTo: 5,
+      closeFrom: 8,
+      closeTo: 9,
+    })
+    assert.deepStrictEqual(notebookSurroundingPairRangeInText(Text.of(['call(foo)']), 8, '('), {
+      openFrom: 4,
+      openTo: 5,
+      closeFrom: 8,
+      closeTo: 9,
+    })
+    assert.deepStrictEqual(notebookSurroundingPairRangeInText(Text.of(['"foo"']), 2, '"'), {
+      openFrom: 0,
+      openTo: 1,
+      closeFrom: 4,
+      closeTo: 5,
+    })
+    assert.deepStrictEqual(notebookSurroundingPairRangeInText(Text.of(['"foo"']), 4, '"'), {
+      openFrom: 0,
+      openTo: 1,
+      closeFrom: 4,
+      closeTo: 5,
+    })
+  })
+
+  test('finds surrounds across CodeMirror Text line break chunks', () => {
+    assert.deepStrictEqual(
+      notebookSurroundingPairRangeInText(Text.of(['call(', 'foo', ')']), 7, ')'),
+      { openFrom: 4, openTo: 5, closeFrom: 10, closeTo: 11 },
+    )
+  })
+
+  test('ignores unmatched closes before the selected CodeMirror Text surround', () => {
+    assert.deepStrictEqual(notebookSurroundingPairRangeInText(Text.of([') call(foo)']), 8, ')'), {
+      openFrom: 6,
+      openTo: 7,
+      closeFrom: 10,
+      closeTo: 11,
+    })
+  })
 })
 
 describe('notebook surround key planning', () => {
@@ -285,5 +335,64 @@ describe('notebook leap char motions', () => {
         { matchFrom: 14, matchTo: 15, target: 14 },
       ],
     )
+  })
+
+  test('finds targets from CodeMirror Text without flattening the document', () => {
+    const motion = notebookLeapMotionForKey('f')
+    assert(motion)
+    const doc = Text.of(['alpha beta', 'banana'])
+    assert.deepStrictEqual(notebookLeapTargetsInText(doc, 0, 'a', motion), [
+      { matchFrom: 4, matchTo: 5, target: 4 },
+      { matchFrom: 9, matchTo: 10, target: 9 },
+      { matchFrom: 12, matchTo: 13, target: 12 },
+      { matchFrom: 14, matchTo: 15, target: 14 },
+      { matchFrom: 16, matchTo: 17, target: 16 },
+    ])
+  })
+
+  test('finds targets across CodeMirror Text line break chunks', () => {
+    const motion = notebookLeapMotionForKey('f')
+    assert(motion)
+    const doc = Text.of(['a', 'a'])
+    assert.deepStrictEqual(notebookLeapTargetsInText(doc, 0, 'a', motion), [
+      { matchFrom: 2, matchTo: 3, target: 2 },
+    ])
+  })
+})
+
+describe('notebook editor status text', () => {
+  test('reports one-based cursor coordinates', () => {
+    assert.deepStrictEqual(notebookCursorCoordinate('one\ntwo', 0), { line: 1, column: 1 })
+    assert.deepStrictEqual(notebookCursorCoordinate('one\ntwo', 3), { line: 1, column: 4 })
+    assert.deepStrictEqual(notebookCursorCoordinate('one\ntwo', 4), { line: 2, column: 1 })
+    assert.deepStrictEqual(notebookCursorCoordinate('one\ntwo', 99), { line: 2, column: 4 })
+  })
+
+  test('reports one-based cursor coordinates from CodeMirror Text', () => {
+    const doc = Text.of(['one', 'two'])
+    assert.deepStrictEqual(notebookCursorCoordinateInText(doc, 0), { line: 1, column: 1 })
+    assert.deepStrictEqual(notebookCursorCoordinateInText(doc, 3), { line: 1, column: 4 })
+    assert.deepStrictEqual(notebookCursorCoordinateInText(doc, 4), { line: 2, column: 1 })
+    assert.deepStrictEqual(notebookCursorCoordinateInText(doc, 99), { line: 2, column: 4 })
+  })
+
+  test('includes pending and active leap strings', () => {
+    assert.strictEqual(notebookEditorStatusText('one\ntwo', 5), '2:2')
+    assert.strictEqual(notebookEditorStatusText('one\ntwo', 5, { key: 'f' }), 'f_ | 2:2')
+    assert.strictEqual(
+      notebookEditorStatusText('one\ntwo', 5, {
+        key: 'f',
+        character: 'o',
+        activeIndex: 1,
+        targetCount: 3,
+      }),
+      'fo 2/3 | 2:2',
+    )
+  })
+
+  test('formats status text from CodeMirror Text', () => {
+    const doc = Text.of(['one', 'two'])
+    assert.strictEqual(notebookEditorStatusTextInText(doc, 5), '2:2')
+    assert.strictEqual(notebookEditorStatusTextInText(doc, 5, { key: 'f' }), 'f_ | 2:2')
   })
 })

@@ -1,4 +1,4 @@
-import type { Extension } from '@codemirror/state'
+import type { EditorState as CodeMirrorEditorState, Extension, Text } from '@codemirror/state'
 import type { EditorView as CodeMirrorEditorView, KeyBinding } from '@codemirror/view'
 import type { CodeMirror } from '@replit/codemirror-vim'
 import type { LanguageFn } from 'highlight.js'
@@ -20,6 +20,7 @@ type NotebookCodeEditorConfig = {
   initialContent?: string
   language?: string
   vimMode?: boolean
+  onEdited?: () => void
   onChange?: (content: string) => void
   onSubmit?: () => void
   onSave?: () => void
@@ -71,8 +72,16 @@ export type NotebookLeapMotion = {
 }
 export type NotebookLeapTarget = { matchFrom: number; matchTo: number; target: number }
 export type NotebookLeapSearchRange = { from: number; to: number }
+export type NotebookCursorCoordinate = { line: number; column: number }
+export type NotebookLeapStatus = {
+  key: string
+  character?: string
+  activeIndex?: number
+  targetCount?: number
+}
 type NotebookLeapSession = {
   motion: NotebookLeapMotion
+  character: string
   targets: readonly NotebookLeapTarget[]
   activeIndex: number
   visualMode: boolean
@@ -111,6 +120,9 @@ const notebookSurroundPairs = new Map<string, readonly [string, string]>([
   ['`', ['`', '`']],
 ])
 const notebookSurroundPrefixes = new Set(['y', 'ys', 'ysi', 'ysa', 'c', 'd'])
+const notebookLeapPendingDelayMs = 900
+const notebookLeapTraversalDelayMs = 2800
+const notebookLeapSliceSearchMaxLength = 16384
 export const notebookVimNoremaps = [
   ['insert', 'jj', '<Esc>'],
   ['insert', 'jk', '<Esc>'],
@@ -281,18 +293,6 @@ async function lspExtensions(config: NotebookLspConfig | undefined): Promise<rea
   }
 }
 
-function offsetForLineStart(lines: string[], lineNumber: number): number {
-  let offset = 0
-  for (let index = 0; index < lineNumber - 1; index++) {
-    offset += (lines[index]?.length ?? 0) + 1
-  }
-  return offset
-}
-
-function offsetForLineEnd(lines: string[], lineNumber: number): number {
-  return offsetForLineStart(lines, lineNumber) + (lines[lineNumber - 1]?.length ?? 0)
-}
-
 function moveSelectedLines(cm: NotebookCodeMirror, direction: -1 | 1) {
   const view = cm.cm6
   const doc = view.state.doc
@@ -304,19 +304,31 @@ function moveSelectedLines(cm: NotebookCodeMirror, direction: -1 | 1) {
   if (direction < 0 && startLineNumber === 1) return
   if (direction > 0 && endLineNumber === doc.lines) return
 
-  const lines = doc.toString().split('\n')
-  const startIndex = startLineNumber - 1
-  const selected = lines.splice(startIndex, endLineNumber - startLineNumber + 1)
-  lines.splice(direction < 0 ? startIndex - 1 : startIndex + 1, 0, ...selected)
+  const startLine = doc.line(startLineNumber)
+  const endLine = doc.line(endLineNumber)
+  const selectedText = doc.sliceString(startLine.from, endLine.to)
 
-  const nextStartLineNumber = startLineNumber + direction
-  const nextEndLineNumber = endLineNumber + direction
+  if (direction < 0) {
+    const previousLine = doc.line(startLineNumber - 1)
+    const previousText = doc.sliceString(previousLine.from, previousLine.to)
+    view.dispatch({
+      changes: {
+        from: previousLine.from,
+        to: endLine.to,
+        insert: `${selectedText}\n${previousText}`,
+      },
+      selection: { anchor: previousLine.from, head: previousLine.from + selectedText.length },
+      scrollIntoView: true,
+    })
+    return
+  }
+
+  const nextLine = doc.line(endLineNumber + 1)
+  const nextText = doc.sliceString(nextLine.from, nextLine.to)
+  const nextSelectionFrom = startLine.from + nextText.length + 1
   view.dispatch({
-    changes: { from: 0, to: doc.length, insert: lines.join('\n') },
-    selection: {
-      anchor: offsetForLineStart(lines, nextStartLineNumber),
-      head: offsetForLineEnd(lines, nextEndLineNumber),
-    },
+    changes: { from: startLine.from, to: nextLine.to, insert: `${nextText}\n${selectedText}` },
+    selection: { anchor: nextSelectionFrom, head: nextSelectionFrom + selectedText.length },
     scrollIntoView: true,
   })
 }
@@ -422,6 +434,110 @@ export function notebookLeapTargets(
   return matches.sort((left, right) =>
     motion.backward ? right.matchFrom - left.matchFrom : left.matchFrom - right.matchFrom,
   )
+}
+
+export function notebookLeapTargetsInText(
+  doc: Text,
+  cursor: number,
+  character: string,
+  motion: NotebookLeapMotion,
+  ranges: readonly NotebookLeapSearchRange[] = [{ from: 0, to: doc.length }],
+): readonly NotebookLeapTarget[] {
+  if (character.length !== 1) return []
+  const matches: NotebookLeapTarget[] = []
+  for (const range of ranges) {
+    const from = Math.min(Math.max(0, range.from), doc.length)
+    const to = Math.min(Math.max(from, range.to), doc.length)
+    if (to - from <= notebookLeapSliceSearchMaxLength) {
+      const text = doc.sliceString(from, to)
+      let relativeIndex = text.indexOf(character)
+      while (relativeIndex >= 0) {
+        const index = from + relativeIndex
+        if ((!motion.backward && index > cursor) || (motion.backward && index < cursor)) {
+          matches.push({
+            matchFrom: index,
+            matchTo: index + character.length,
+            target: notebookLeapTargetPosition(index, doc.length, motion.offset),
+          })
+        }
+        relativeIndex = text.indexOf(character, relativeIndex + character.length)
+      }
+    } else {
+      const iterator = doc.iterRange(from, to)
+      let offset = from
+      while (!iterator.next().done) {
+        const text = iterator.value
+        let relativeIndex = text.indexOf(character)
+        while (relativeIndex >= 0) {
+          const index = offset + relativeIndex
+          if ((!motion.backward && index > cursor) || (motion.backward && index < cursor)) {
+            matches.push({
+              matchFrom: index,
+              matchTo: index + character.length,
+              target: notebookLeapTargetPosition(index, doc.length, motion.offset),
+            })
+          }
+          relativeIndex = text.indexOf(character, relativeIndex + character.length)
+        }
+        offset += text.length
+      }
+    }
+  }
+  return matches.sort((left, right) =>
+    motion.backward ? right.matchFrom - left.matchFrom : left.matchFrom - right.matchFrom,
+  )
+}
+
+export function notebookCursorCoordinate(source: string, cursor: number): NotebookCursorCoordinate {
+  const clampedCursor = Math.min(Math.max(0, cursor), source.length)
+  let line = 1
+  let lineStart = 0
+  for (let index = 0; index < clampedCursor; index++) {
+    if (source.charCodeAt(index) === 10) {
+      line++
+      lineStart = index + 1
+    }
+  }
+  return { line, column: clampedCursor - lineStart + 1 }
+}
+
+export function notebookCursorCoordinateInText(
+  doc: Text,
+  cursor: number,
+): NotebookCursorCoordinate {
+  const clampedCursor = Math.min(Math.max(0, cursor), doc.length)
+  const line = doc.lineAt(clampedCursor)
+  return { line: line.number, column: clampedCursor - line.from + 1 }
+}
+
+function notebookEditorStatusTextForCoordinate(
+  coordinate: NotebookCursorCoordinate,
+  leap?: NotebookLeapStatus,
+) {
+  const position = `${coordinate.line}:${coordinate.column}`
+  if (!leap) return position
+  if (leap.character === undefined) return `${leap.key}_ | ${position}`
+  const targetPosition =
+    leap.activeIndex !== undefined && leap.targetCount !== undefined && leap.targetCount > 0
+      ? ` ${leap.activeIndex + 1}/${leap.targetCount}`
+      : ''
+  return `${leap.key}${leap.character}${targetPosition} | ${position}`
+}
+
+export function notebookEditorStatusText(
+  source: string,
+  cursor: number,
+  leap?: NotebookLeapStatus,
+): string {
+  return notebookEditorStatusTextForCoordinate(notebookCursorCoordinate(source, cursor), leap)
+}
+
+export function notebookEditorStatusTextInText(
+  doc: Text,
+  cursor: number,
+  leap?: NotebookLeapStatus,
+): string {
+  return notebookEditorStatusTextForCoordinate(notebookCursorCoordinateInText(doc, cursor), leap)
 }
 
 function isNotebookWordChar(char: string | undefined) {
@@ -534,6 +650,127 @@ export function notebookSurroundingPairRange(
   return { openFrom, openTo: openFrom + open.length, closeFrom, closeTo: closeFrom + close.length }
 }
 
+function textIndexOf(
+  doc: Text,
+  character: string,
+  from: number,
+  to = doc.length,
+): number | undefined {
+  const start = Math.min(Math.max(0, from), doc.length)
+  const end = Math.min(Math.max(start, to), doc.length)
+  const iterator = doc.iterRange(start, end)
+  let offset = start
+  while (!iterator.next().done) {
+    const index = iterator.value.indexOf(character)
+    if (index >= 0) return offset + index
+    offset += iterator.value.length
+  }
+}
+
+function textLastIndexOf(doc: Text, character: string, toInclusive: number): number | undefined {
+  const end = Math.min(Math.max(0, toInclusive + 1), doc.length)
+  const iterator = doc.iterRange(end, 0)
+  let offset = end
+  while (!iterator.next().done) {
+    offset -= iterator.value.length
+    const index = iterator.value.lastIndexOf(character)
+    if (index >= 0) return offset + index
+  }
+}
+
+function previousSurroundOpenInText(
+  doc: Text,
+  cursor: number,
+  open: string,
+  close: string,
+): number | undefined {
+  const end = Math.min(Math.max(0, cursor + 1), doc.length)
+  const iterator = doc.iterRange(end, 0)
+  let offset = end
+  let depth = 0
+  while (!iterator.next().done) {
+    const text = iterator.value
+    offset -= text.length
+    for (let index = text.length - 1; index >= 0; index -= 1) {
+      const character = text[index]
+      if (character === close) {
+        depth += 1
+      } else if (character === open) {
+        if (depth === 0) return offset + index
+        depth -= 1
+      }
+    }
+  }
+}
+
+function nextSurroundCloseInText(
+  doc: Text,
+  cursor: number,
+  open: string,
+  close: string,
+): number | undefined {
+  const start = Math.min(Math.max(0, cursor), doc.length)
+  const iterator = doc.iterRange(start, doc.length)
+  let offset = start
+  let depth = 0
+  while (!iterator.next().done) {
+    const text = iterator.value
+    for (let index = 0; index < text.length; index += 1) {
+      const character = text[index]
+      if (character === open) {
+        depth += 1
+      } else if (character === close) {
+        if (depth === 0) return offset + index
+        depth -= 1
+      }
+    }
+    offset += text.length
+  }
+}
+
+export function notebookSurroundingPairRangeInText(
+  doc: Text,
+  cursor: number,
+  token: string | undefined,
+): NotebookSurroundingPairRange | undefined {
+  const pair = notebookSurroundPair(token)
+  if (!pair || doc.length === 0) return undefined
+  const [open, close] = pair
+  if (open === close) {
+    const quoteCursor = Math.min(Math.max(0, cursor), doc.length - 1)
+    const nextQuote = textIndexOf(doc, close, quoteCursor + close.length)
+    const atQuote = doc.sliceString(quoteCursor, quoteCursor + open.length) === open
+    const openFrom =
+      atQuote && nextQuote === undefined
+        ? textLastIndexOf(doc, open, quoteCursor - open.length)
+        : textLastIndexOf(doc, open, quoteCursor)
+    if (openFrom === undefined) return undefined
+    const closeFrom = textIndexOf(doc, close, Math.max(openFrom + open.length, cursor))
+    if (closeFrom === undefined || closeFrom === openFrom) return undefined
+    return {
+      openFrom,
+      openTo: openFrom + open.length,
+      closeFrom,
+      closeTo: closeFrom + close.length,
+    }
+  }
+  const searchCursor = Math.min(Math.max(0, cursor), doc.length - 1)
+  const openSearchCursor =
+    doc.sliceString(searchCursor, searchCursor + close.length) === close
+      ? searchCursor - close.length
+      : searchCursor
+  const openFrom = previousSurroundOpenInText(doc, openSearchCursor, open, close)
+  if (openFrom === undefined) return undefined
+  const closeFrom = nextSurroundCloseInText(
+    doc,
+    Math.max(cursor, openFrom + open.length),
+    open,
+    close,
+  )
+  if (closeFrom === undefined) return undefined
+  return { openFrom, openTo: openFrom + open.length, closeFrom, closeTo: closeFrom + close.length }
+}
+
 function surroundRange(
   view: CodeMirrorEditorView,
   range: NotebookTextRange | undefined,
@@ -553,9 +790,8 @@ function surroundRange(
 }
 
 function deleteSurroundRange(view: CodeMirrorEditorView, token: string | undefined) {
-  const source = view.state.doc.toString()
   const head = view.state.selection.main.head
-  const range = notebookSurroundingPairRange(source, head, token)
+  const range = notebookSurroundingPairRangeInText(view.state.doc, head, token)
   if (!range) return
   const pair = notebookSurroundPair(token)
   if (!pair) return
@@ -577,8 +813,11 @@ function changeSurroundRange(
   oldToken: string | undefined,
   replacementToken: string | undefined,
 ) {
-  const source = view.state.doc.toString()
-  const range = notebookSurroundingPairRange(source, view.state.selection.main.head, oldToken)
+  const range = notebookSurroundingPairRangeInText(
+    view.state.doc,
+    view.state.selection.main.head,
+    oldToken,
+  )
   const replacement = notebookSurroundPair(replacementToken)
   if (!range || !replacement) return
   const [open, close] = replacement
@@ -990,6 +1229,28 @@ export async function createNotebookCodeEditor(
   let leapPendingMotion: NotebookLeapMotion | undefined
   let leapSession: NotebookLeapSession | undefined
   let leapClearTimer: number | undefined
+  const statusElement = document.createElement('div')
+  statusElement.className = 'cm-notebookStatus'
+  const currentLeapStatus = (): NotebookLeapStatus | undefined =>
+    leapSession
+      ? {
+          key: leapSession.motion.key,
+          character: leapSession.character,
+          activeIndex: leapSession.activeIndex,
+          targetCount: leapSession.targets.length,
+        }
+      : leapPendingMotion
+        ? { key: leapPendingMotion.key }
+        : undefined
+  const updateStatusElement = (state: CodeMirrorEditorState) => {
+    const leap = currentLeapStatus()
+    statusElement.textContent = notebookEditorStatusTextInText(
+      state.doc,
+      state.selection.main.head,
+      leap,
+    )
+    statusElement.dataset.active = leap ? 'true' : 'false'
+  }
   const clearLeapTimer = () => {
     if (leapClearTimer !== undefined) {
       window.clearTimeout(leapClearTimer)
@@ -1002,9 +1263,9 @@ export async function createNotebookCodeEditor(
     clearLeapTimer()
     view.dispatch({ effects: leapHighlightEffect.of(undefined) })
   }
-  const scheduleLeapClear = () => {
+  const scheduleLeapClear = (delayMs: number) => {
     clearLeapTimer()
-    leapClearTimer = window.setTimeout(() => clearLeap(), 2200)
+    leapClearTimer = window.setTimeout(() => clearLeap(), delayMs)
   }
   const applyLeapTarget = (
     session: NotebookLeapSession,
@@ -1021,7 +1282,7 @@ export async function createNotebookCodeEditor(
       effects: leapHighlightEffect.of({ targets: session.targets, activeIndex }),
       scrollIntoView: true,
     })
-    scheduleLeapClear()
+    scheduleLeapClear(notebookLeapTraversalDelayMs)
   }
   const visibleLeapRanges = (
     targetView: CodeMirrorEditorView,
@@ -1072,8 +1333,8 @@ export async function createNotebookCodeEditor(
           leapPendingMotion = undefined
           const selection = target.state.selection.main
           const cursor = selection.head
-          const targets = notebookLeapTargets(
-            target.state.doc.toString(),
+          const targets = notebookLeapTargetsInText(
+            target.state.doc,
             cursor,
             key,
             motion,
@@ -1086,6 +1347,7 @@ export async function createNotebookCodeEditor(
           applyLeapTarget(
             {
               motion,
+              character: key,
               targets,
               activeIndex: 0,
               visualMode: vimState.visualMode === true,
@@ -1104,6 +1366,8 @@ export async function createNotebookCodeEditor(
         clearLeapTimer()
         leapPendingMotion = motion
         leapSession = undefined
+        updateStatusElement(target.state)
+        scheduleLeapClear(notebookLeapPendingDelayMs)
         return true
       },
     }),
@@ -1191,8 +1455,19 @@ export async function createNotebookCodeEditor(
   )
   const initialVimExtension = await vimExtension(initialVimMode)
 
+  let suppressChangeNotification = false
   const updateListener = EditorView.updateListener.of(update => {
-    if (update.docChanged) config.onChange?.(update.state.doc.toString())
+    const userDocChanged = update.docChanged && !suppressChangeNotification
+    if (update.docChanged) {
+      if (userDocChanged) config.onEdited?.()
+      if (config.onChange && userDocChanged) config.onChange(update.state.doc.toString())
+    }
+    const leapChanged = update.transactions.some(transaction =>
+      transaction.effects.some(effect => effect.is(leapHighlightEffect)),
+    )
+    if (update.docChanged || update.selectionSet || update.focusChanged || leapChanged) {
+      updateStatusElement(update.state)
+    }
   })
 
   const transparentTheme = EditorView.theme({
@@ -1206,20 +1481,29 @@ export async function createNotebookCodeEditor(
       color: 'inherit',
       height: 'auto',
       padding: '0',
+      position: 'relative',
     },
     '&.cm-focused': {
       outline: 'none !important',
       border: 'none !important',
       boxShadow: 'none !important',
     },
-    '.cm-content': { padding: '0 !important', minHeight: '20px', caretColor: 'inherit' },
+    '.cm-content': {
+      padding: '0 0 1.15rem 0 !important',
+      minHeight: '20px',
+      caretColor: 'inherit',
+    },
     '.cm-gutter': { minHeight: '20px' },
     '.cm-scroller': { overflow: 'visible', fontFamily: 'inherit !important', fontSize: 'inherit' },
     '.cm-line': { padding: '0' },
     '.cm-cursor': { borderLeftColor: 'inherit' },
     '.cm-notebookLeapBackdrop': {
+      backgroundColor: 'transparent',
       color: 'var(--code-comment, var(--gray)) !important',
       fontStyle: 'italic',
+      transitionProperty: 'color, background-color',
+      transitionDuration: '120ms',
+      transitionTimingFunction: 'cubic-bezier(0.2, 0, 0, 1)',
     },
     '.cm-notebookLeapMatch': {
       borderRadius: '2px',
@@ -1230,6 +1514,35 @@ export async function createNotebookCodeEditor(
       transitionProperty: 'color, background-color',
       transitionDuration: '80ms',
       transitionTimingFunction: 'cubic-bezier(0.2, 0, 0, 1)',
+    },
+    '.cm-notebookStatus': {
+      position: 'absolute',
+      right: '4px',
+      bottom: '1px',
+      zIndex: '4',
+      maxWidth: 'min(60%, 12rem)',
+      overflow: 'hidden',
+      padding: '1px 5px',
+      borderRadius: '4px',
+      backgroundColor: 'color-mix(in srgb, var(--light) 82%, transparent)',
+      color: 'color-mix(in srgb, var(--gray) 78%, var(--dark) 22%)',
+      fontSize: '0.72em',
+      fontVariantNumeric: 'tabular-nums',
+      letterSpacing: '0',
+      lineHeight: '1.25',
+      opacity: '0.72',
+      pointerEvents: 'none',
+      textAlign: 'right',
+      textOverflow: 'ellipsis',
+      whiteSpace: 'nowrap',
+      transitionProperty: 'color, background-color, opacity',
+      transitionDuration: '120ms',
+      transitionTimingFunction: 'cubic-bezier(0.2, 0, 0, 1)',
+    },
+    '.cm-notebookStatus[data-active="true"]': {
+      backgroundColor: 'color-mix(in srgb, var(--notebook-active-green) 18%, var(--light))',
+      color: 'var(--notebook-active-green)',
+      opacity: '1',
     },
   })
 
@@ -1256,6 +1569,8 @@ export async function createNotebookCodeEditor(
   })
 
   const view = new EditorView({ state, parent: config.parent })
+  view.dom.append(statusElement)
+  updateStatusElement(view.state)
   const bindVimSave = async () => {
     if (!config.onSave) return
     const { getCM } = await loadVimApi()
@@ -1267,7 +1582,14 @@ export async function createNotebookCodeEditor(
   return {
     getValue: () => view.state.doc.toString(),
     setValue(content: string) {
-      view.dispatch({ changes: { from: 0, to: view.state.doc.length, insert: content } })
+      if (view.state.doc.length === content.length && view.state.doc.sliceString(0) === content)
+        return
+      suppressChangeNotification = true
+      try {
+        view.dispatch({ changes: { from: 0, to: view.state.doc.length, insert: content } })
+      } finally {
+        suppressChangeNotification = false
+      }
     },
     highlightedLines: () => highlightedLineSpans(view),
     async setVimMode(enabled: boolean) {

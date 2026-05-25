@@ -11,6 +11,8 @@ import {
   type NotebookImageBinaryMimeType,
 } from '../mime'
 
+export type NotebookOutputHtml = { label: string; html: string }
+
 const ipythonDisplayPlaceholder = /^<IPython\.core\.display\.[A-Za-z0-9_]+ object>$/
 
 const ansiPattern = new RegExp(`${String.fromCharCode(27)}\\[[0-?]*[ -/]*[@-~]`, 'g')
@@ -39,6 +41,12 @@ function preSamp(classes: string[], name: string, text: string): ElementContent 
     { className: classes, 'data-output-name': name },
     h('samp', {}, trimTrailing(text)),
   )
+}
+
+function outputName(node: ElementContent): string {
+  if (node.type !== 'element') return 'output'
+  const value = node.properties?.dataOutputName ?? node.properties?.['data-output-name']
+  return typeof value === 'string' && value.trim() ? value : 'output'
 }
 
 function rawBlock(classes: string[], rawHtml: string): ElementContent {
@@ -172,8 +180,20 @@ export function renderOutputHtml(output: Output): string {
     .join('')
 }
 
+export function renderOutputHtmlBlocks(output: Output): NotebookOutputHtml[] {
+  return renderOutput(output).map(node => ({
+    label: outputName(node),
+    html: toHtml(node, { allowDangerousHtml: true }),
+  }))
+}
+
 export function renderSuccessMarkerHtml(): string {
   return toHtml(renderSuccessMarker())
+}
+
+export function renderSuccessMarkerHtmlBlock(): NotebookOutputHtml {
+  const node = renderSuccessMarker()
+  return { label: outputName(node), html: toHtml(node) }
 }
 
 export const NOTEBOOK_OUTPUT_MIME_LIST: readonly string[] = NOTEBOOK_OUTPUT_MIME_PRIORITY
