@@ -1,3 +1,8 @@
+import {
+  commentRoomToggleEvent,
+  readCommentRoomEnabled,
+  writeCommentRoomEnabled,
+} from '../../util/comment-room'
 import { FullSlug, normalizeRelativeURLs, resolveRelative } from '../../util/path'
 import { populateSearchIndex, querySearchIndex, SearchItem } from './search-index'
 import {
@@ -347,6 +352,20 @@ document.addEventListener('nav', e => {
       onClick: () => {
         const event: CustomEventMap['petstoggle'] = new CustomEvent('petstoggle', { detail: {} })
         document.dispatchEvent(event)
+      },
+    },
+    {
+      name: 'comments room',
+      auxInnerHtml: '<kbd>↵</kbd> toggle on/off',
+      onClick: () => {
+        const enabled = !readCommentRoomEnabled()
+        writeCommentRoomEnabled(enabled)
+        const event: CustomEventMap['commentsroomtoggle'] = new CustomEvent(
+          commentRoomToggleEvent,
+          { detail: { enabled } },
+        )
+        document.dispatchEvent(event)
+        notifyToast(`comments ${enabled ? 'on' : 'off'}`)
       },
     },
     {

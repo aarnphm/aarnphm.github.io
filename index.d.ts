@@ -30,6 +30,7 @@ interface CustomEventMap {
   themechange: CustomEvent<{ theme: 'light' | 'dark' }>
   readermodechange: CustomEvent<{ mode: 'on' | 'off' }>
   petstoggle: CustomEvent<{ enabled?: boolean }>
+  commentsroomtoggle: CustomEvent<{ enabled?: boolean }>
 
   slidechange: CustomEvent<{}>
   toast: CustomEvent<import('./quartz/components/scripts/toast').ToastEventDetail>

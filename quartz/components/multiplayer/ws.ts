@@ -9,6 +9,8 @@ type WebSocketManagerDeps = {
 
 export function createWebSocketManager({ getState, dispatch, getPageId }: WebSocketManagerDeps) {
   let ws: WebSocket | null = null
+  let reconnectTimer = 0
+  let reconnectEnabled = false
 
   const send = (op: OperationInput) => {
     if (ws && ws.readyState === WebSocket.OPEN) {
@@ -24,19 +26,27 @@ export function createWebSocketManager({ getState, dispatch, getPageId }: WebSoc
   }
 
   const connect = () => {
+    reconnectEnabled = true
+    if (reconnectTimer) {
+      window.clearTimeout(reconnectTimer)
+      reconnectTimer = 0
+    }
+    if (ws && (ws.readyState === WebSocket.OPEN || ws.readyState === WebSocket.CONNECTING)) return
+
     const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:'
     const { hasSnapshot, lastSeq } = getState()
     const pageId = encodeURIComponent(getPageId())
     const sinceParam = hasSnapshot && lastSeq > 0 ? `&since=${lastSeq}` : ''
     const wsUrl = `${protocol}//${window.location.host}/comments/websocket?pageId=${pageId}${sinceParam}`
 
-    ws = new WebSocket(wsUrl)
+    const socket = new WebSocket(wsUrl)
+    ws = socket
 
-    ws.onopen = () => {
+    socket.onopen = () => {
       flushPending()
     }
 
-    ws.onmessage = event => {
+    socket.onmessage = event => {
       const msg: BroadcastMessage = JSON.parse(event.data)
 
       if (msg.type === 'init') {
@@ -52,26 +62,39 @@ export function createWebSocketManager({ getState, dispatch, getPageId }: WebSoc
       }
     }
 
-    ws.onclose = event => {
+    socket.onclose = event => {
+      if (ws === socket) ws = null
       console.debug('multiplayer comments disconnected:', {
         code: event.code,
         reason: event.reason,
         wasClean: event.wasClean,
       })
-      setTimeout(connect, 3000)
+      if (!reconnectEnabled) return
+      reconnectTimer = window.setTimeout(connect, 3000)
     }
 
-    ws.onerror = err => {
+    socket.onerror = err => {
       console.error('multiplayer comments websocket error:', err)
-      console.error('websocket state:', ws!.readyState)
-      console.error('websocket url:', ws!.url)
+      console.error('websocket state:', socket.readyState)
+      console.error('websocket url:', socket.url)
     }
   }
 
   const close = () => {
-    if (ws) {
-      ws.close()
-      ws = null
+    reconnectEnabled = false
+    if (reconnectTimer) {
+      window.clearTimeout(reconnectTimer)
+      reconnectTimer = 0
+    }
+    const socket = ws
+    ws = null
+    if (!socket) return
+    socket.onopen = null
+    socket.onmessage = null
+    socket.onclose = null
+    socket.onerror = null
+    if (socket.readyState === WebSocket.OPEN || socket.readyState === WebSocket.CONNECTING) {
+      socket.close(1000, 'disabled')
     }
   }
 
