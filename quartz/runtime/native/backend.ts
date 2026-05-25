@@ -1,5 +1,6 @@
 import type { CellId } from '../../util/notebook/types'
 import type { Kernel, RuntimeEvent } from '../notebook/kernel'
+import { createHaskellPlaygroundKernel } from '../haskell/playground-kernel'
 import {
   registerBackend,
   type CanExecuteResult,
@@ -62,6 +63,12 @@ function rustCanExecute(source: string): CanExecuteResult {
     : { ok: true }
 }
 
+function haskellCanExecute(source: string): CanExecuteResult {
+  return source.trim().length === 0
+    ? { ok: false, reason: 'haskell notebook cells need source code to execute.' }
+    : { ok: true }
+}
+
 function nativeBackend(spec: NativeLanguageSpec): ExecutableLanguageBackend {
   return {
     ...spec,
@@ -93,12 +100,14 @@ export const mojoBackend = nativeBackend({
   shellMagics: ['mojo-shell'],
 })
 
-export const haskellBackend = nativeBackend({
+export const haskellBackend: ExecutableLanguageBackend = {
   name: 'haskell',
   fileExts: ['.hs', '.lhs'],
   aliases: ['haskell', 'hs', 'ghc', 'runghc'],
   shellMagics: ['haskell-shell', 'hs-shell'],
-})
+  kernelFactory: async () => createHaskellPlaygroundKernel(),
+  canExecute: haskellCanExecute,
+}
 
 export const ocamlBackend = nativeBackend({
   name: 'ocaml',
