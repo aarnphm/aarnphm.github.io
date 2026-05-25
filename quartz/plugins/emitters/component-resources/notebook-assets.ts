@@ -67,11 +67,15 @@ import { writeChunkedFileAsset } from './chunked-file-assets'
 type NativeRuntimePackWrittenFile = {
   readonly filename: string
   readonly reference: string
-  readonly file: FilePath
+  readonly files: readonly FilePath[]
 }
+
+export type NativeRuntimePackGitLfsPointer = { readonly oid: string; readonly size: number }
 
 const requireResolve = createRequire(import.meta.url).resolve
 const notebookPyrightCommonJsEmptyModule = 'module.exports = {}'
+export const nativeRuntimePackChunkBytes = 20 * 1024 * 1024
+const nativeRuntimePackGitLfsPointerHeader = 'version https://git-lfs.github.com/spec/v1'
 const notebookPyrightDisabledNodeModulePattern =
   /^(?:node:)?(?:child_process|crypto|fs|module|net|os|perf_hooks|stream|tls|v8|worker_threads)$/
 
@@ -367,7 +371,10 @@ async function writeNativeRuntimePackFile(
   filename: string,
 ): Promise<NativeRuntimePackWrittenFile> {
   const logicalPath = `${path.posix.dirname(notebookNativeRuntimeManifestPath)}/${filename}`
-  const content = await fs.readFile(path.join(notebookNativeRuntimePacksDir, filename))
+  const content = await readNativeRuntimePackFile(filename)
+  if (content.byteLength > nativeRuntimePackChunkBytes) {
+    return writeChunkedNativeRuntimePackFile(ctx, filename, logicalPath, content)
+  }
   const file = await writeRawAsset(ctx, logicalPath, content)
   return {
     filename,
@@ -375,7 +382,122 @@ async function writeNativeRuntimePackFile(
       notebookNativeRuntimeManifestPath,
       resolveAssetPath(ctx, logicalPath),
     ),
-    file,
+    files: [file],
+  }
+}
+
+export function readNativeRuntimePackGitLfsPointer(
+  content: Buffer,
+  filename: string,
+): NativeRuntimePackGitLfsPointer | undefined {
+  if (content.byteLength > 1024) return undefined
+  const source = content.toString('utf8').trimEnd()
+  if (!source.startsWith(nativeRuntimePackGitLfsPointerHeader)) return undefined
+  const oid = /^oid sha256:([0-9a-f]{64})$/m.exec(source)?.[1]
+  const rawSize = /^size ([0-9]+)$/m.exec(source)?.[1]
+  const size = rawSize === undefined ? Number.NaN : Number(rawSize)
+  if (!oid || !Number.isSafeInteger(size)) {
+    throw new Error(`native runtime pack asset ${filename} has an invalid Git LFS pointer`)
+  }
+  return { oid, size }
+}
+
+async function readNativeRuntimeGitDir(): Promise<string> {
+  const gitPath = path.resolve('.git')
+  const stat = await fs.stat(gitPath)
+  if (stat.isDirectory()) return gitPath
+  const source = await fs.readFile(gitPath, 'utf8')
+  const gitDir = /^gitdir: (.+)$/m.exec(source)?.[1]
+  if (!gitDir) throw new Error('native runtime pack Git directory is invalid')
+  return path.resolve(path.dirname(gitPath), gitDir)
+}
+
+async function readNativeRuntimeGitCommonDir(): Promise<string> {
+  const gitDir = await readNativeRuntimeGitDir()
+  const commonDirPath = path.join(gitDir, 'commondir')
+  if (!existsSync(commonDirPath)) return gitDir
+  const commonDir = (await fs.readFile(commonDirPath, 'utf8')).trim()
+  return path.resolve(gitDir, commonDir)
+}
+
+async function readNativeRuntimePackGitLfsObject(
+  filename: string,
+  pointer: NativeRuntimePackGitLfsPointer,
+): Promise<Buffer> {
+  const commonDir = await readNativeRuntimeGitCommonDir()
+  const objectPath = path.join(
+    commonDir,
+    'lfs/objects',
+    pointer.oid.slice(0, 2),
+    pointer.oid.slice(2, 4),
+    pointer.oid,
+  )
+  if (!existsSync(objectPath)) {
+    throw new Error(
+      `native runtime pack asset ${filename} is a Git LFS pointer; run git lfs pull --include=${path.join(
+        notebookNativeRuntimePacksDir,
+        filename,
+      )}`,
+    )
+  }
+  const content = await fs.readFile(objectPath)
+  if (content.byteLength !== pointer.size) {
+    throw new Error(`native runtime pack asset ${filename} Git LFS object size is invalid`)
+  }
+  return content
+}
+
+async function readNativeRuntimePackFile(filename: string): Promise<Buffer> {
+  const sourcePath = path.join(notebookNativeRuntimePacksDir, filename)
+  const content = await fs.readFile(sourcePath)
+  const pointer = readNativeRuntimePackGitLfsPointer(content, filename)
+  return pointer ? await readNativeRuntimePackGitLfsObject(filename, pointer) : content
+}
+
+export function nativeRuntimePackFileChunks(
+  content: Buffer,
+  maxBytes = nativeRuntimePackChunkBytes,
+): readonly Buffer[] {
+  if (!Number.isSafeInteger(maxBytes) || maxBytes < 1) {
+    throw new Error('native runtime pack chunk size is invalid')
+  }
+  const chunks: Buffer[] = []
+  for (let offset = 0; offset < content.byteLength; offset += maxBytes) {
+    chunks.push(content.subarray(offset, offset + maxBytes))
+  }
+  return chunks
+}
+
+async function writeChunkedNativeRuntimePackFile(
+  ctx: BuildCtx,
+  filename: string,
+  logicalPath: string,
+  content: Buffer,
+): Promise<NativeRuntimePackWrittenFile> {
+  const chunks = nativeRuntimePackFileChunks(content)
+  const chunkLogicalPaths = chunks.map((_chunk, chunkIndex) => {
+    const index = chunkIndex.toString().padStart(4, '0')
+    return `${logicalPath}.chunk-${index}.bin`
+  })
+  const chunkFiles = await Promise.all(
+    chunks.map((chunk, chunkIndex) => writeRawAsset(ctx, chunkLogicalPaths[chunkIndex], chunk)),
+  )
+  const manifestLogicalPath = `${logicalPath}.chunks.json`
+  const manifest = {
+    version: 1,
+    size: content.byteLength,
+    chunks: chunkLogicalPaths.map(chunkPath =>
+      relativeAssetReference(manifestLogicalPath, resolveAssetPath(ctx, chunkPath)),
+    ),
+  }
+  const manifestFile = await writeRawAsset(ctx, manifestLogicalPath, JSON.stringify(manifest))
+  return {
+    filename,
+    reference: relativeAssetReference(
+      notebookNativeRuntimeManifestPath,
+      resolveAssetPath(ctx, manifestLogicalPath),
+    ),
+    files: [manifestFile, ...chunkFiles],
   }
 }
 
@@ -422,7 +544,7 @@ async function writeNativeRuntimePackAssets(ctx: BuildCtx): Promise<FilePath[]> 
     notebookNativeRuntimeManifestPath,
     JSON.stringify(manifest),
   )
-  return [manifestFile, ...files.map(file => file.file)]
+  return [manifestFile, ...files.flatMap(file => file.files)]
 }
 
 function replaceNotebookRuntimeWorkerReference(text: string, fromFile: string, workerPath: string) {
