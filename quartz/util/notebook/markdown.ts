@@ -9,6 +9,7 @@ import type { Cell, CodeCell, MarkdownCell, NotebookDoc, Output } from './types'
 import { backendFor } from '../../runtime/notebook/backend'
 import { isRecord } from '../type-guards'
 import {
+  type NotebookRenderedOutput,
   notebookCellActions,
   notebookCellControls,
   notebookCellFrameOpen,
@@ -16,10 +17,11 @@ import {
   notebookRuntimeControls,
   notebookRuntimeDataScript,
   notebookSourceEditor,
+  notebookStaticOutputTabs,
   notebookStaticCellActions,
 } from './cell-html'
 import { codeCellId, notebookId } from './identity'
-import { renderOutputHtml, renderSuccessMarkerHtml } from './render/output-to-hast'
+import { renderOutputHtmlBlocks, renderSuccessMarkerHtmlBlock } from './render/output-to-hast'
 
 export type NotebookMarkdownOptions = { runtime?: false | NotebookRuntimeConfig }
 
@@ -414,7 +416,14 @@ export function notebookRuntimeData(
   return data
 }
 
-function outputToString(output: Output, raw?: Readonly<Record<string, unknown>>): string[] {
+type RenderedCodeOutput =
+  | { kind: 'markdown'; value: string }
+  | { kind: 'notebook-output'; output: NotebookRenderedOutput }
+
+function renderCodeOutput(
+  output: Output,
+  raw?: Readonly<Record<string, unknown>>,
+): RenderedCodeOutput[] {
   // Pass through `text/markdown` if it's the only payload — the markdown processor handles it directly.
   if (output.kind === 'display_data' || output.kind === 'execute_result') {
     const data = output.data
@@ -430,15 +439,17 @@ function outputToString(output: Output, raw?: Readonly<Record<string, unknown>>)
       })
       if (!otherHasContent) {
         // Reparse from raw if present (preserves original whitespace); fall back to bundled value.
-        if (raw && typeof raw['text/markdown'] === 'string') {
-          return [raw['text/markdown'] as string]
+        const rawMarkdown = raw?.['text/markdown']
+        if (typeof rawMarkdown === 'string') {
+          return [{ kind: 'markdown', value: rawMarkdown }]
         }
-        return [markdownText]
+        return [{ kind: 'markdown', value: markdownText }]
       }
     }
   }
-  const html = renderOutputHtml(output)
-  return html ? [html] : []
+  return renderOutputHtmlBlocks(output)
+    .filter(block => block.html.length > 0)
+    .map(block => ({ kind: 'notebook-output', output: block }))
 }
 
 function stripFirstTitleHeading(
@@ -517,14 +528,28 @@ function renderCodeCell(
         notebookStaticCellActions(cell.id, displayLanguage),
       ]
   if (cell.source.trim()) parts.push(fenced(cell.source, displayLanguage))
+  const staticOutputs: NotebookRenderedOutput[] = []
   let renderedOutputCount = 0
   cell.outputs.forEach((output, outputIndex) => {
     const rawData = rawOutputDataFor(doc, cellIndex, outputIndex)
-    const rendered = outputToString(output, rawData)
+    const rendered = renderCodeOutput(output, rawData)
     renderedOutputCount += rendered.length
-    parts.push(...rendered)
+    for (const item of rendered) {
+      if (item.kind === 'markdown') {
+        parts.push(item.value)
+      } else {
+        staticOutputs.push(item.output)
+      }
+    }
   })
-  if (runtimeCell && renderedOutputCount === 0) parts.push(renderSuccessMarkerHtml())
+  if (runtimeCell && renderedOutputCount === 0) {
+    staticOutputs.push(renderSuccessMarkerHtmlBlock())
+  }
+  if (runtimeCell && staticOutputs.length > 0) {
+    parts.push(notebookStaticOutputTabs(runtimeCell.id, staticOutputs))
+  } else {
+    parts.push(...staticOutputs.map(output => output.html))
+  }
   if (runtimeCell) parts.push(notebookCellRuntimeOutput(runtimeCell.id))
   parts.push('</div>')
   return parts

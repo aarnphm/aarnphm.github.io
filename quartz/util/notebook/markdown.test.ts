@@ -499,6 +499,64 @@ describe('notebook parser', () => {
     assert.match(markdown, /\\u003c\/script\\u003e/)
   })
 
+  test('pre-renders runtime output tabs for stored outputs', async () => {
+    const notebook = parseNotebook(
+      JSON.stringify({
+        metadata: { language_info: { name: 'python' } },
+        cells: [
+          {
+            cell_type: 'code',
+            source: 'print("hi")',
+            execution_count: 1,
+            outputs: [{ output_type: 'stream', name: 'stdout', text: ['hi\n'] }],
+          },
+        ],
+      }),
+      'runtime.ipynb',
+    )
+
+    const markdown = notebookToMarkdown(notebook, 'runtime.ipynb', {
+      runtime: { enabled: true, sourcePath: 'runtime.ipynb' },
+    })
+    const tree = await parseHtmlFragment(markdown)
+    const frame = findElement(
+      tree,
+      node => node.tagName === 'div' && node.properties?.dataNotebookCellFrame === 'cell-1',
+    )
+    assert(frame)
+    const staticOutput = findElement(
+      frame,
+      node => node.tagName === 'div' && node.properties?.dataNotebookStaticOutput === 'cell-1',
+    )
+    assert(staticOutput)
+    assert.strictEqual(staticOutput.properties?.dataNotebookOutputTabbed, '')
+    const tab = findElement(
+      staticOutput,
+      node => node.tagName === 'button' && node.properties?.dataNotebookOutputTab === 'stdout',
+    )
+    assert(tab)
+    assert.strictEqual(tab.properties?.ariaSelected, 'true')
+    const panel = findElement(
+      staticOutput,
+      node => node.tagName === 'div' && node.properties?.dataNotebookOutputPanel === 'stdout',
+    )
+    assert(panel)
+    assert.strictEqual(panel.properties?.hidden, undefined)
+    const stdout = findElement(panel, node =>
+      elementClassNames(node).includes('notebook-output-stream-stdout'),
+    )
+    assert(stdout)
+    const samp = findElement(stdout, node => node.tagName === 'samp')
+    assert(samp)
+    assert.strictEqual(textChild(samp), 'hi')
+    assert(
+      findElement(
+        frame,
+        node => node.tagName === 'div' && node.properties?.dataNotebookOutput === 'cell-1',
+      ),
+    )
+  })
+
   test('renders language badges with svg icons and accessible labels', async () => {
     const tree = await parseHtmlFragment(notebookCellLanguageBadge('javascript'))
     const badge = findElement(tree, node =>

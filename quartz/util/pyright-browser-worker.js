@@ -31,14 +31,61 @@ function isRecord(value) {
   return typeof value === 'object' && value !== null && !Array.isArray(value)
 }
 
+function stringValue(value) {
+  return typeof value === 'string' ? value : undefined
+}
+
+function stringArrayValue(value) {
+  if (!Array.isArray(value)) return undefined
+  return value.every(item => typeof item === 'string') ? value : undefined
+}
+
 function initialFilesFromOptions(value) {
   if (!isRecord(value)) return undefined
   return isRecord(value.files) ? value.files : value
 }
 
+function typeshedManifestUrlFromOptions(value) {
+  return isRecord(value) ? stringValue(value.typeshedManifestUrl) : undefined
+}
+
+function typeshedFilesFromChunk(value, label) {
+  const files = isRecord(value) && isRecord(value.files) ? value.files : undefined
+  if (!files) throw new Error(`${label} has invalid files`)
+  for (const [path, content] of Object.entries(files)) {
+    if (typeof content !== 'string') throw new Error(`${label} contains invalid file ${path}`)
+  }
+  return files
+}
+
+async function fetchJsonObject(url, label) {
+  const response = await fetch(url)
+  if (!response.ok) throw new Error(`${label} request failed with ${response.status}`)
+  const value = await response.json()
+  if (!isRecord(value)) throw new Error(`${label} is not a JSON object`)
+  return value
+}
+
+async function loadTypeshedFiles(manifestUrl) {
+  const manifest = await fetchJsonObject(manifestUrl, 'notebook pyright typeshed manifest')
+  const chunks = stringArrayValue(manifest.chunks)
+  if (!chunks) throw new Error('notebook pyright typeshed manifest has invalid chunks')
+  const files = {}
+  await Promise.all(
+    chunks.map(async chunkName => {
+      const chunkUrl = new URL(chunkName, manifestUrl).href
+      const chunk = await fetchJsonObject(chunkUrl, `notebook pyright typeshed chunk ${chunkName}`)
+      Object.assign(files, typeshedFilesFromChunk(chunk, chunkName))
+    }),
+  )
+  return files
+}
+
 function createNotebookFileSystem() {
   return new TestFileSystem(false, { cwd: normalizeSlashes('/') })
 }
+
+let notebookTypeshedFiles
 
 class NotebookPyrightBrowserServer extends RealLanguageServer {
   #initialFiles
@@ -93,12 +140,16 @@ class NotebookPyrightBrowserServer extends RealLanguageServer {
     })
   }
 
-  initialize(params, supportedCommands, supportedCodeActions) {
-    const initialFiles = initialFilesFromOptions(params.initializationOptions?.files)
-    if (initialFiles) {
-      this.#initialFiles = initialFiles
-      this.serverOptions.serviceProvider.fs().apply(initialFiles)
-    }
+  async initialize(params, supportedCommands, supportedCodeActions) {
+    const options = params.initializationOptions
+    const initialFiles = initialFilesFromOptions(options?.files) ?? {}
+    const typeshedManifestUrl = typeshedManifestUrlFromOptions(options)
+    const typeshedFiles = typeshedManifestUrl
+      ? (notebookTypeshedFiles ??= loadTypeshedFiles(typeshedManifestUrl))
+      : undefined
+    const files = { ...(typeshedFiles ? await typeshedFiles : {}), ...initialFiles }
+    this.#initialFiles = files
+    this.serverOptions.serviceProvider.fs().apply(files)
     return super.initialize(params, supportedCommands, supportedCodeActions)
   }
 
@@ -233,11 +284,15 @@ function wrapOnReceive(value) {
   )
 }
 
-function bootForeground() {
+function bootForeground(port) {
+  if (!(port instanceof MessagePort))
+    throw new Error('notebook pyright foreground boot has invalid port')
   initializeWorkersHost(new NotebookPyrightWorkersHost())
+  port.start()
   workerScope.notebookPyrightApp = new NotebookPyrightBrowserServer(
-    createConnection(new BrowserMessageReader(workerScope), new BrowserMessageWriter(workerScope)),
+    createConnection(new BrowserMessageReader(port), new BrowserMessageWriter(port)),
   )
+  workerScope.postMessage({ type: 'browser/ready' })
 }
 
 function bootBackground(initialData, port) {
@@ -253,7 +308,7 @@ workerScope.addEventListener('message', event => {
   if (!isRecord(event.data) || event.data.type !== 'browser/boot') return
   try {
     if (event.data.mode === 'foreground') {
-      bootForeground()
+      bootForeground(event.data.port)
       return
     }
     if (event.data.mode === 'background') {

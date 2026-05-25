@@ -8,5 +8,13 @@ const pyrightProcess = {
 }
 
 const pyrightGlobal = globalThis
+const pyrightDirname = '/'
+const pyrightFilename = '/pyright-worker.js'
 
-export { PyrightBuffer as Buffer, pyrightGlobal as global, pyrightProcess as process }
+export {
+  PyrightBuffer as Buffer,
+  pyrightDirname as __dirname,
+  pyrightFilename as __filename,
+  pyrightGlobal as global,
+  pyrightProcess as process,
+}

@@ -30,11 +30,7 @@ import {
   type UnknownRecord,
 } from '../../util/type-guards'
 import { notebookRuntimeAssetUrl } from '../notebook/assets'
-import {
-  notebookPyrightAssetManifestChunks,
-  notebookPyrightAssetManifestEntry,
-  notebookPyrightTypeshedFiles,
-} from './pyright-assets'
+import { notebookPyrightAssetManifestEntry } from './pyright-assets'
 
 export type NotebookLspCell = {
   id: string
@@ -53,6 +49,7 @@ export type NotebookLspConfig = {
 }
 
 type JsonRpcId = string | number | null
+type NotebookMessageTarget = { postMessage(message: unknown): void }
 
 const notebookPyrightWorkerManifestName = '../notebook-pyright-worker.json'
 const notebookPyrightTypeshedManifestName = '../notebook-pyright-typeshed.json'
@@ -70,7 +67,6 @@ const notebookClientCapabilities: JsonObject = {
 
 const notebookServices = new Map<string, NotebookPythonLspService>()
 
-let notebookTypeshed: Promise<JsonObject> | undefined
 let notebookWorkerUrl: Promise<string> | undefined
 let notebookLspAssetWarmup: Promise<void> | undefined
 let notebookLspSequence = 0
@@ -161,34 +157,9 @@ async function loadNotebookWorkerUrl(): Promise<string> {
   return notebookWorkerUrl
 }
 
-async function loadNotebookTypeshedChunks(): Promise<JsonObject> {
-  const manifestUrl = pyrightTypeshedManifestUrl()
-  const manifest = await fetchJsonObject(manifestUrl, 'notebook pyright typeshed manifest')
-  const files: Record<string, string> = {}
-  await Promise.all(
-    notebookPyrightAssetManifestChunks(manifest, 'notebook pyright typeshed').map(
-      async chunkName => {
-        const chunkUrl = new URL(chunkName, manifestUrl).href
-        const chunk = await fetchJsonObject(
-          chunkUrl,
-          `notebook pyright typeshed chunk ${chunkName}`,
-        )
-        Object.assign(files, notebookPyrightTypeshedFiles(chunk))
-      },
-    ),
-  )
-  return { files }
-}
-
-async function loadNotebookTypeshed() {
-  notebookTypeshed ??= loadNotebookTypeshedChunks()
-  return notebookTypeshed
-}
-
 export async function warmNotebookLspAssets(): Promise<void> {
   notebookLspAssetWarmup ??= Promise.all([
     import('@codemirror/lsp-client'),
-    loadNotebookTypeshed(),
     loadNotebookWorkerUrl(),
   ]).then(() => {})
   return notebookLspAssetWarmup
@@ -217,20 +188,17 @@ function responseMessage(id: JsonRpcId, result: JsonValue): JsonObject {
   return { jsonrpc: '2.0', id, result }
 }
 
-function notebookWorkspaceFiles(typeshed: JsonObject, rootPath: string): JsonObject {
-  return {
-    ...typeshed,
-    files: { ...objectValue(typeshed.files), [`${rootPath}/.pyright-root`]: '' },
-  }
+function notebookWorkspaceFiles(rootPath: string): JsonObject {
+  return { files: { [`${rootPath}/.pyright-root`]: '' } }
 }
 
-function handleServerRequest(message: UnknownRecord, worker: Worker) {
+function handleServerRequest(message: UnknownRecord, target: NotebookMessageTarget) {
   const method = stringValue(message.method)
   const id = messageId(message.id)
   if (method === undefined || id === undefined) return false
 
   if (method === 'workspace/configuration') {
-    worker.postMessage(
+    target.postMessage(
       responseMessage(
         id,
         configurationResult(isJsonValue(message.params) ? message.params : undefined),
@@ -243,17 +211,22 @@ function handleServerRequest(message: UnknownRecord, worker: Worker) {
     method === 'client/unregisterCapability' ||
     method === 'window/workDoneProgress/create'
   ) {
-    worker.postMessage(responseMessage(id, null))
+    target.postMessage(responseMessage(id, null))
     return true
   }
   if (method === 'workspace/applyEdit') {
-    worker.postMessage(responseMessage(id, { applied: false }))
+    target.postMessage(responseMessage(id, { applied: false }))
     return true
   }
   return false
 }
 
-function initializeMessage(message: JsonObject, rootUri: string, typeshed: JsonObject): JsonObject {
+function initializeMessage(
+  message: JsonObject,
+  rootUri: string,
+  initialFiles: JsonObject,
+  typeshedManifestUrl: string,
+): JsonObject {
   if (message.method !== 'initialize') return message
   const params = objectValue(message.params) ?? {}
   const capabilities = objectValue(params.capabilities) ?? {}
@@ -264,7 +237,7 @@ function initializeMessage(message: JsonObject, rootUri: string, typeshed: JsonO
       ...params,
       rootUri,
       workspaceFolders: [{ name: 'notebook', uri: rootUri }],
-      initializationOptions: { files: typeshed },
+      initializationOptions: { files: initialFiles, typeshedManifestUrl },
       capabilities: {
         ...capabilities,
         workspace: {
@@ -354,29 +327,6 @@ function reportPyrightWorkerError(scope: string, serviceId: number, message: str
   if (message) console.warn(`notebook pyright ${scope} ${serviceId} failed`, message)
 }
 
-function tracePyrightMessage(direction: string, message: UnknownRecord) {
-  const method = stringValue(message.method)
-  const id = messageId(message.id)
-  const params = isJsonValue(message.params) ? objectValue(message.params) : undefined
-  const textDocument = objectValue(params?.textDocument)
-  const position = objectValue(params?.position)
-  const result = isJsonValue(message.result) ? objectValue(message.result) : undefined
-  const items = arrayValue(result?.items)
-  console.debug(
-    'notebook pyright trace',
-    JSON.stringify({
-      direction,
-      method,
-      id,
-      uri: stringValue(textDocument?.uri),
-      version: textDocument?.version,
-      position,
-      text: stringValue(textDocument?.text)?.slice(-120),
-      resultItems: items?.slice(0, 12).map(item => objectValue(item)?.label),
-    }),
-  )
-}
-
 function handleBackgroundWorker(
   message: UnknownRecord,
   workerUrl: string,
@@ -402,7 +352,8 @@ function handleBackgroundWorker(
 function createPyrightTransport(
   workerUrl: string,
   rootUri: string,
-  typeshed: JsonObject,
+  initialFiles: JsonObject,
+  typeshedManifestUrl: string,
   serviceId: number,
 ): Transport {
   if (typeof Worker === 'undefined') throw new Error('browser workers are unavailable')
@@ -412,7 +363,11 @@ function createPyrightTransport(
   })
   const workers = new Set<Worker>([foreground])
   const handlers = new Set<(value: string) => void>()
+  const channel = new MessageChannel()
+  const foregroundPort = channel.port2
+  const pendingMessages: JsonObject[] = []
   let backgroundCount = 0
+  let foregroundReady = false
 
   const nextWorkerName = () => {
     backgroundCount += 1
@@ -421,22 +376,43 @@ function createPyrightTransport(
 
   foreground.addEventListener('message', event => {
     if (!isRecord(event.data)) return
+    if (event.data.type === 'browser/ready') {
+      foregroundReady = true
+      for (const message of pendingMessages.splice(0)) foregroundPort.postMessage(message)
+      return
+    }
     if (handleBackgroundWorker(event.data, workerUrl, workers, serviceId, nextWorkerName)) return
-    if (handleServerRequest(event.data, foreground)) return
-    tracePyrightMessage('server', event.data)
+  })
+  foregroundPort.addEventListener('message', event => {
+    if (!isRecord(event.data)) return
+    if (handleServerRequest(event.data, foregroundPort)) return
     const message = JSON.stringify(event.data)
     for (const handler of handlers) handler(message)
   })
   foreground.addEventListener('error', event => {
     reportPyrightWorkerError('foreground', serviceId, event.message)
   })
-  foreground.postMessage({ type: 'browser/boot', mode: 'foreground' })
+  foreground.addEventListener('messageerror', () => {
+    console.warn(`notebook pyright foreground ${serviceId} message failed`)
+  })
+  foregroundPort.start()
+  foreground.postMessage({ type: 'browser/boot', mode: 'foreground', port: channel.port1 }, [
+    channel.port1,
+  ])
 
   return {
     send(message: string) {
-      const payload = initializeMessage(parseTransportMessage(message), rootUri, typeshed)
-      tracePyrightMessage('client', payload)
-      foreground.postMessage(payload)
+      const payload = initializeMessage(
+        parseTransportMessage(message),
+        rootUri,
+        initialFiles,
+        typeshedManifestUrl,
+      )
+      if (foregroundReady) {
+        foregroundPort.postMessage(payload)
+      } else {
+        pendingMessages.push(payload)
+      }
     },
     subscribe(handler: (value: string) => void) {
       handlers.add(handler)
@@ -444,6 +420,7 @@ function createPyrightTransport(
     unsubscribe(handler: (value: string) => void) {
       handlers.delete(handler)
       if (handlers.size > 0) return
+      foregroundPort.close()
       for (const worker of workers) worker.terminate()
       workers.clear()
     },
@@ -457,7 +434,6 @@ class NotebookWorkspaceFile implements WorkspaceFile {
     public languageId: string,
     public version: number,
     public doc: Text,
-    public source: string,
     public executionIndex: number | null,
     public view: EditorView | null = null,
   ) {}
@@ -526,14 +502,12 @@ class NotebookPythonWorkspace extends Workspace {
   }
 
   override syncFiles() {
-    this.refreshFiles()
     const updates = []
     for (const file of this.files) {
       const plugin = file.view ? LSPPlugin.get(file.view) : undefined
       if (!file.view || !plugin || plugin.unsyncedChanges.empty) continue
       updates.push({ file, prevDoc: file.doc, changes: plugin.unsyncedChanges })
       file.doc = file.view.state.doc
-      file.source = file.doc.toString()
       file.version = this.nextFileVersion(file.uri)
       plugin.clear()
     }
@@ -562,9 +536,12 @@ class NotebookPythonWorkspace extends Workspace {
       const uri = notebookCellUri(this.rootUri, this.sourcePath, cell.id)
       const existing = this.filesByUri.get(uri)
       if (existing) {
-        existing.source = cell.source
         existing.languageId = cell.language
         existing.executionIndex = cell.executionIndex
+        if (!existing.view) {
+          const changed = this.updateFileDoc(existing, notebookText(cell.source))
+          if (changed) this.sendTextChange(existing)
+        }
         nextFiles.push(existing)
         nextByUri.set(uri, existing)
         continue
@@ -575,7 +552,6 @@ class NotebookPythonWorkspace extends Workspace {
         cell.language,
         this.nextFileVersion(uri),
         notebookText(cell.source),
-        cell.source,
         cell.executionIndex,
       )
       nextFiles.push(file)
@@ -638,6 +614,10 @@ class NotebookPythonLspService {
     this.cells = config.cells
   }
 
+  async warm(): Promise<void> {
+    await this.ensureClient()
+  }
+
   async extensions(config: NotebookLspConfig): Promise<readonly Extension[]> {
     const client = await this.ensureClient()
     return [client.plugin(notebookFileUri(config), 'python')]
@@ -649,16 +629,9 @@ class NotebookPythonLspService {
   }
 
   private async createClient() {
-    const [
-      { LSPClient, serverCompletionSource, serverDiagnostics, signatureHelp },
-      typeshed,
-      workerUrl,
-    ] = await Promise.all([
-      import('@codemirror/lsp-client'),
-      loadNotebookTypeshed(),
-      loadNotebookWorkerUrl(),
-    ])
-    const workspaceFiles = notebookWorkspaceFiles(typeshed, this.rootPath)
+    const [{ LSPClient, serverCompletionSource, serverDiagnostics, signatureHelp }, workerUrl] =
+      await Promise.all([import('@codemirror/lsp-client'), loadNotebookWorkerUrl()])
+    const workspaceFiles = notebookWorkspaceFiles(this.rootPath)
     const client = new LSPClient({
       rootUri: this.rootUri,
       workspace: client =>
@@ -674,7 +647,13 @@ class NotebookPythonLspService {
       ],
     })
     client.connect(
-      createPyrightTransport(workerUrl, this.rootUri, workspaceFiles, notebookLspSequence),
+      createPyrightTransport(
+        workerUrl,
+        this.rootUri,
+        workspaceFiles,
+        pyrightTypeshedManifestUrl(),
+        notebookLspSequence,
+      ),
     )
     notebookLspSequence += 1
     return client
@@ -707,6 +686,15 @@ export async function notebookLspExtensions(
   } catch (error) {
     console.warn('notebook pyright is unavailable', error)
     return []
+  }
+}
+
+export async function warmNotebookLspRuntime(config: NotebookLspConfig): Promise<void> {
+  if (!config.enabled || !pythonLanguage(config.language)) return
+  try {
+    await notebookService(config).warm()
+  } catch (error) {
+    console.warn('notebook pyright warmup failed', error)
   }
 }
 

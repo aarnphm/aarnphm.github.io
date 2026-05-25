@@ -10,6 +10,7 @@ import { EditorState, Prec, type Extension } from '@codemirror/state'
 import { EditorView, keymap, lineNumbers } from '@codemirror/view'
 import { zig } from 'codemirror-lang-zig'
 import TurndownService from 'turndown'
+import { codemirrorChangedTextIsBlank, codemirrorTextIsBlank } from '../../util/codemirror-text'
 import { completionSources } from '../multiplayer/completions'
 import { togglePreview, cleanupPreview, onEditorUpdate } from '../multiplayer/completions/preview'
 
@@ -22,6 +23,7 @@ const turndown = new TurndownService({
 export interface MarkdownEditorConfig {
   parent: HTMLElement
   initialContent?: string
+  onEdited?: (state: { empty: boolean }) => void
   onChange?: (content: string) => void
   onSubmit?: () => void
   onCancel?: () => void
@@ -45,6 +47,7 @@ function codeLanguage(language: string | undefined): Extension {
 
 export class MarkdownEditor {
   private view: EditorView
+  private empty: boolean
 
   constructor(config: MarkdownEditorConfig) {
     const mode = config.mode ?? 'markdown'
@@ -97,8 +100,10 @@ export class MarkdownEditor {
     )
 
     const updateListener = EditorView.updateListener.of(update => {
-      if (update.docChanged && config.onChange) {
-        config.onChange(update.state.doc.toString())
+      if (update.docChanged) {
+        this.empty = codemirrorChangedTextIsBlank(this.empty, update.state.doc, update.changes)
+        config.onEdited?.({ empty: this.empty })
+        if (config.onChange) config.onChange(update.state.doc.toString())
       }
       if (mode === 'markdown') onEditorUpdate(update)
     })
@@ -224,6 +229,7 @@ export class MarkdownEditor {
     }
 
     const state = EditorState.create({ doc: config.initialContent || '', extensions })
+    this.empty = codemirrorTextIsBlank(state.doc)
 
     this.view = new EditorView({ state, parent: config.parent })
   }
@@ -233,6 +239,11 @@ export class MarkdownEditor {
   }
 
   setValue(content: string): void {
+    if (
+      this.view.state.doc.length === content.length &&
+      this.view.state.doc.sliceString(0) === content
+    )
+      return
     this.view.dispatch({ changes: { from: 0, to: this.view.state.doc.length, insert: content } })
   }
 

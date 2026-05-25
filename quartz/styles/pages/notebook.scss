@@ -749,7 +749,7 @@ article:has(.notebook-runtime) {
   }
 
   .notebook-output-tabs {
-    --notebook-output-panel-height: min(120px, 20vh);
+    --notebook-output-panel-height: minmax(120px, 20vh);
     --notebook-output-tab-active-surface: color-mix(
       in srgb,
       var(--notebook-active-green) 16%,
