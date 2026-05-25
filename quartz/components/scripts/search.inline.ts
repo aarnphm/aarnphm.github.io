@@ -61,6 +61,8 @@ let rawSearchTerm: string = ''
 let semantic: SemanticClient | null = null
 let semanticReady = false
 let semanticInitFailed = false
+let searchDataPromise: Promise<ContentIndex> | null = null
+const configuredSearchElements = new WeakSet<HTMLDivElement>()
 type SimilarityResult = { item: Item; similarity: number }
 let chunkMetadata: Record<string, { parentSlug: string; chunkId: number }> = {}
 let manifestIds: string[] = []
@@ -166,6 +168,11 @@ async function loadSearchData(): Promise<ContentIndex> {
   }
 }
 
+function getSearchData(): Promise<ContentIndex> {
+  searchDataPromise ??= loadSearchData()
+  return searchDataPromise
+}
+
 function getNumSearchResults(mode: SearchMode): number {
   return mode === 'semantic' ? numSearchResultsSemantic : numSearchResultsLexical
 }
@@ -210,11 +217,11 @@ function highlightHTML(searchTerm: string, el: HTMLElement) {
   return html.body
 }
 
-async function setupSearch(
-  searchElement: HTMLDivElement,
-  currentSlug: FullSlug,
-  data: ContentIndex,
-) {
+async function setupSearch(searchElement: HTMLDivElement, currentSlug: FullSlug) {
+  searchElement.dataset.currentSlug = currentSlug
+  if (configuredSearchElements.has(searchElement)) return
+  configuredSearchElements.add(searchElement)
+
   const container = searchElement.querySelector<HTMLDivElement>('.search-container')
   if (!container) return
 
@@ -259,9 +266,22 @@ async function setupSearch(
     progressBar.style.backgroundPosition = '-100% 0'
   }
 
-  const idDataMap = Object.keys(data) as FullSlug[]
-  const slugToIndex = new Map<FullSlug, number>()
-  idDataMap.forEach((slug, idx) => slugToIndex.set(slug, idx))
+  let data: ContentIndex | null = null
+  let idDataMap: FullSlug[] = []
+  let slugToIndex = new Map<FullSlug, number>()
+  const requireData = () => {
+    if (!data) throw new Error('search data is not loaded')
+    return data
+  }
+  const ensureSearchData = async () => {
+    if (data) return data
+    data = await getSearchData()
+    idDataMap = Object.keys(data) as FullSlug[]
+    slugToIndex = new Map<FullSlug, number>()
+    idDataMap.forEach((slug, idx) => slugToIndex.set(slug, idx))
+    await fillDocument(data)
+    return data
+  }
   const el = searchSpace.querySelector('ul#helper')
   const modeToggle = searchSpace.querySelector('.search-mode-toggle') as HTMLDivElement | null
   const modeButtons = modeToggle
@@ -302,7 +322,7 @@ async function setupSearch(
     searchLayout.dataset.mode = mode
   }
 
-  const setSemanticState = (state: 'loading' | 'ready' | 'unavailable') => {
+  const setSemanticState = (state: 'idle' | 'loading' | 'ready' | 'unavailable') => {
     if (semanticStatus) {
       semanticStatus.dataset.state = state
       semanticStatus.textContent =
@@ -310,12 +330,14 @@ async function setupSearch(
           ? ''
           : state === 'loading'
             ? 'semantic (loading)'
-            : 'semantic (unavailable)'
+            : state === 'unavailable'
+              ? 'semantic (unavailable)'
+              : ''
     }
     modeButtons.forEach(button => {
       const btnMode = (button.dataset.mode as SearchMode) ?? 'lexical'
       if (btnMode !== 'semantic') return
-      const disabled = state !== 'ready'
+      const disabled = state === 'loading' || state === 'unavailable'
       button.disabled = disabled
       button.setAttribute('aria-disabled', String(disabled))
     })
@@ -327,54 +349,61 @@ async function setupSearch(
 
   const enablePreview = searchLayout.dataset.preview === 'true'
   const storedMode = loadStoredSearchMode()
-  const bootSemantic = (client: SemanticClient) => {
+  let semanticBooting: Promise<boolean> | null = null
+  const bootSemantic = async (client: SemanticClient): Promise<boolean> => {
     setSemanticState('loading')
-    void client
-      .ensureReady()
-      .then(async () => {
-        semantic = client
-        semanticReady = true
-        setSemanticState('ready')
+    try {
+      await client.ensureReady()
+      semantic = client
+      semanticReady = true
+      setSemanticState('ready')
 
-        try {
-          const manifestUrl = '/embeddings/manifest.json'
-          const res = await fetch(manifestUrl)
-          if (res.ok) {
-            const manifest = await res.json()
-            chunkMetadata = manifest.chunkMetadata || {}
-            manifestIds = manifest.ids || []
+      try {
+        const manifestUrl = '/embeddings/manifest.json'
+        const res = await fetch(manifestUrl)
+        if (res.ok) {
+          const manifest = (await res.json()) as {
+            chunkMetadata?: Record<string, { parentSlug: string; chunkId: number }>
+            ids?: string[]
           }
-        } catch (err) {
-          console.warn('[Search] failed to load chunk metadata:', err)
-          chunkMetadata = {}
-          manifestIds = []
+          chunkMetadata = manifest.chunkMetadata || {}
+          manifestIds = manifest.ids || []
         }
-
-        if (storedMode === 'semantic') {
-          searchMode = storedMode
-          updateModeUI(searchMode)
-        }
-      })
-      .catch(err => {
-        console.warn('[SemanticClient] initialization failed:', err)
-        client.dispose()
-        semantic = null
-        semanticReady = false
-        semanticInitFailed = true
-        setSemanticState('unavailable')
-      })
+      } catch (err) {
+        console.warn('[Search] failed to load chunk metadata:', err)
+        chunkMetadata = {}
+        manifestIds = []
+      }
+      return true
+    } catch (err) {
+      console.warn('[SemanticClient] initialization failed:', err)
+      client.dispose()
+      semantic = null
+      semanticReady = false
+      semanticInitFailed = true
+      setSemanticState('unavailable')
+      return false
+    }
   }
 
-  if (!semantic && !semanticInitFailed) {
-    const client = new SemanticClient(semanticCfg)
-    semantic = client
-    bootSemantic(client)
-  } else if (semantic && !semanticReady) {
-    bootSemantic(semantic)
-  } else if (semanticReady) {
+  const ensureSemantic = async (): Promise<boolean> => {
+    if (semanticReady) return true
+    if (semanticInitFailed) return false
+    if (!semantic) {
+      semantic = new SemanticClient(semanticCfg)
+    }
+    semanticBooting ??= bootSemantic(semantic).finally(() => {
+      semanticBooting = null
+    })
+    return semanticBooting
+  }
+
+  if (semanticReady) {
     setSemanticState('ready')
   } else if (semanticInitFailed) {
     setSemanticState('unavailable')
+  } else {
+    setSemanticState('idle')
   }
   if (storedMode === 'semantic') {
     if (semanticReady) {
@@ -419,6 +448,9 @@ async function setupSearch(
 
   const triggerSearchWithMode = (mode: SearchMode) => {
     if (mode === 'semantic' && !semanticReady) {
+      void ensureSemantic().then(ready => {
+        if (ready) triggerSearchWithMode('semantic')
+      })
       return
     }
     if (searchMode === mode) return
@@ -437,8 +469,8 @@ async function setupSearch(
   modeButtons.forEach(button => {
     const btnMode = (button.dataset.mode as SearchMode) ?? 'lexical'
     if (btnMode === 'semantic') {
-      button.disabled = !semanticReady
-      button.setAttribute('aria-disabled', String(!semanticReady))
+      button.disabled = semanticInitFailed
+      button.setAttribute('aria-disabled', String(semanticInitFailed))
     }
     const handler = () => triggerSearchWithMode(btnMode)
     button.addEventListener('click', handler)
@@ -478,6 +510,7 @@ async function setupSearch(
 
   function showSearch(type: SearchType) {
     container!.classList.add('active')
+    void ensureSearchData()
     if (type === 'tags') {
       searchBar!.value = '#'
       rawSearchTerm = '#'
@@ -575,7 +608,7 @@ async function setupSearch(
 
   const formatForDisplay = (term: string, id: number, renderType: SearchType) => {
     const slug = idDataMap[id]
-    const fileData = data[slug]
+    const fileData = requireData()[slug]
     if (!fileData) return null
     if (fileData.layout === 'letter' || (searchMode === 'semantic' && slug.includes('arena')))
       return null
@@ -619,7 +652,8 @@ async function setupSearch(
   }
 
   function resolveUrl(slug: FullSlug): URL {
-    return new URL(resolveRelative(currentSlug, slug), location.toString())
+    const baseSlug = (searchElement.dataset.currentSlug as FullSlug | undefined) ?? currentSlug
+    return new URL(resolveRelative(baseSlug, slug), location.toString())
   }
 
   const resultToHTML = ({ item, percent }: { item: Item; percent: number | null }) => {
@@ -640,7 +674,7 @@ async function setupSearch(
     itemTile.id = slug
     itemTile.href = resolveUrl(slug).toString()
 
-    const fileData = data[slug]
+    const fileData = requireData()[slug]
     const resolvedFileName = (fileData?.fileName || fileName || slug || '').toLowerCase()
     const isCanvas = resolvedFileName.includes('.canvas')
     const isBases = resolvedFileName.includes('.bases')
@@ -758,7 +792,7 @@ async function setupSearch(
       el.dataset.bases === 'true' ||
       el.dataset.directFile === 'true'
     ) {
-      const fileData = data[slug]
+      const fileData = requireData()[slug]
       previewInner = document.createElement('div')
       previewInner.classList.add('preview-inner')
 
@@ -788,7 +822,7 @@ async function setupSearch(
       return
     }
 
-    const isProtected = el.dataset.protected === 'true' || data[slug]?.protected === true
+    const isProtected = el.dataset.protected === 'true' || requireData()[slug]?.protected === true
     if (isProtected) {
       previewInner = document.createElement('div')
       previewInner.classList.add('preview-inner', 'preview-redacted')
@@ -825,6 +859,7 @@ async function setupSearch(
   }
 
   async function runSearch(rawTerm: string, token: number) {
+    await ensureSearchData()
     const trimmed = rawTerm.trim()
     if (trimmed === '') {
       removeAllChildren(results)
@@ -1099,7 +1134,7 @@ async function setupSearch(
   })
 
   registerEscapeHandler(container, hideSearch)
-  await fillDocument(data)
+  window.addCleanup(() => configuredSearchElements.delete(searchElement))
 }
 
 let indexPopulated = false
@@ -1130,11 +1165,10 @@ async function fillDocument(data: ContentIndex) {
 
 document.addEventListener('nav', async (e: CustomEventMap['nav']) => {
   const currentSlug = e.detail.url
-  const data = await loadSearchData()
   const searchElement = document.getElementsByClassName(
     'search',
   ) as HTMLCollectionOf<HTMLDivElement>
   for (const element of searchElement) {
-    await setupSearch(element, currentSlug, data)
+    await setupSearch(element, currentSlug)
   }
 })

@@ -16,7 +16,6 @@ export declare global {
     notifyNav(url: FullSlug)
     addCleanup(fn: (...args: any[]) => void)
     stacked: import('./quartz/types/plugin').Notes
-    stackedNotes?: URL[]
     quartzToast: import('./quartz/components/scripts/toast').Toast
     plausible: { (eventName: string, options: { props: { path: string } }): void }
     twttr: { ready(f: (twttr: any) => void): void }

@@ -1554,16 +1554,13 @@ export const mountArena = (dispatch: (event: ArenaEvent) => void) => {
       // Check if this is a wikilink trail anchor - open in stacked notes
       const isWikilinkTrail = internalLink.classList.contains('arena-wikilink-trail-anchor')
 
-      if (isWikilinkTrail && typeof window.stackedNotes !== 'undefined') {
-        // Open in stacked notes view
+      if (isWikilinkTrail && typeof window.stacked !== 'undefined') {
         try {
           const destination = new URL(internalLink.href)
-          window.stackedNotes.push(destination)
-          // Keep modal open so user can see both arena block and note
+          await window.stacked.navigate(destination)
           return
         } catch (err) {
           console.error('Failed to open in stacked notes:', err)
-          // Fall through to regular navigation
         }
       }
 
