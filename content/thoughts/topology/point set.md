@@ -8,7 +8,7 @@ seealso:
   - '[[thoughts/topology/separation|separation axioms]]'
 tags:
   - math
-  - topology
+  - math/topology
 title: point-set topology
 ---
 

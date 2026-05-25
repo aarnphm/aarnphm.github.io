@@ -8,7 +8,7 @@ seealso:
   - '[[thoughts/topology/fundamental group|fundamental group]]'
 tags:
   - math
-  - topology
+  - math/topology
 title: compactness and connectedness
 ---
 

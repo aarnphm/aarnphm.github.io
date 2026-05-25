@@ -5,7 +5,7 @@ id: poincare
 modified: 2026-05-19 18:15:29 GMT-04:00
 tags:
   - math
-  - topology
+  - math/topology
 title: poincaré conjecture
 ---
 

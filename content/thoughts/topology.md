@@ -18,7 +18,7 @@ socials:
   ocw: https://ocw.mit.edu/courses/18-901-introduction-to-topology-fall-2004/
 tags:
   - math
-  - topology
+  - math/topology
   - evergreen
 title: topology
 ---

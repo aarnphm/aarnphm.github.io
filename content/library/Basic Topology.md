@@ -1,6 +1,6 @@
 ---
 aliases:
-  - topology
+  - math/topology
 author: M. A. Amstrong
 category: math
 date: '2025-11-09'
@@ -14,7 +14,7 @@ status: current
 subcategory: topology
 tags:
   - math
-  - topology
+  - math/topology
 title: Basic Topology
 year: 1983
 ---

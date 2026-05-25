@@ -1,7 +1,7 @@
 ---
 category:
   - love
-  - relationship
+  - o/relationship
   - drama
   - comedy
 date: '2026-01-11'
@@ -9,7 +9,7 @@ description: quarter-life drift as romance - julie moves through love, career, a
 director:
   - Joachim Trier
 id: The Worst Person in the World
-modified: 2026-05-09 17:51:45 GMT-04:00
+modified: 2026-05-25 00:31:16 GMT-04:00
 posters: '[[movies/posters/the-worst-person-in-the-world.jpg]]'
 rating: 7.8
 status: to watch

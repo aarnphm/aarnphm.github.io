@@ -5,7 +5,7 @@ id: topology-resources
 modified: 2026-05-19 18:14:54 GMT-04:00
 tags:
   - math
-  - topology
+  - math/topology
 title: topology resources
 ---
 

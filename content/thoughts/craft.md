@@ -6,7 +6,7 @@ comments: false
 date: '2021-12-22'
 description: and a celebration for the act of making.
 id: craft
-modified: 2026-05-24 14:35:55 GMT-04:00
+modified: 2026-05-25 00:12:21 GMT-04:00
 permalinks:
   - /thoughts/work
   - /craft
@@ -31,14 +31,13 @@ You can find internal monologue under [[/posts/]] index. I also sent out a pseud
     - A hybrid of A\* and a BFS search for pathfinding algorithm.
     - polyalphabetic cipher with deterministic reversible transformations includes a Fiestel network structure with MurmurHash3 mixing of 32-bit avalanche mixer
     - Source: [site but password protected](https://nicky.day/)
-      ![[thoughts/images/nb-day.webp]]
 - #postcards, a collections of cards for all the places I have lived at.
 
 ## open source.
 
 - **mohaus** - :gear: Builds and publish Mojo binaries as Python packages
   - Source: [github](https://github.com/aarnphm/mohaus)
-  -
+
 - **mojo-einsum** - :bento: einsum implementation in Mojo
   - Source: [github](https://github.com/aarnphm/mojo-einsum)
 
@@ -46,12 +45,10 @@ You can find internal monologue under [[/posts/]] index. I also sent out a pseud
   - Source: [github](https://github.com/aarnphm/monpy)
 
 - **vllm-project/vllm** - :seedling: A high-throughput and memory-efficient inference and serving engine for [[thoughts/LLMs]] (2024-)
+  - Core maintainer group
   - Structured outputs compatibility in V0 and V1 engine https://github.com/vllm-project/vllm/pull/12388 https://github.com/vllm-project/vllm/pull/16577 https://github.com/vllm-project/vllm/pull/15317 https://github.com/vllm-project/vllm/pull/10785 https://github.com/vllm-project/vllm/pull/14868
     - Jump-forward decoding https://github.com/vllm-project/vllm/pull/15490
-      - Design docs: [[thoughts/structured outputs#jump-forward decoding|wip]] ^[In practice, jump-forward decoding doesn't add a lot of value given that the overhead of detokenization overweighs the actual benefits of skipping forward a few FSM state.]
-  - V1 tool calling support
-    - WIP Rust tool parser
-  - V1 MLP speculator support https://github.com/vllm-project/vllm/pull/18719
+      - source: [[thoughts/structured outputs#jump-forward decoding|design docs]] ^[In practice, jump-forward decoding doesn't add a lot of value given that the overhead of detokenization overweighs the actual benefits of skipping forward a few FSM state.]
   - Source: [github](https://github.com/vllm-project/vllm), [docs](docs.vllm.ai), [[thoughts/vllm|notes]]
 
 - **Quartz** - :seedling: a fast, batteries-included static-site generator that transforms Markdown content into fully functional websites (2023-) ^quartz
@@ -62,8 +59,11 @@ You can find internal monologue under [[/posts/]] index. I also sent out a pseud
   - Implemented telescope-style search https://github.com/jackyzha0/quartz/pull/722, https://github.com/jackyzha0/quartz/pull/774, https://github.com/jackyzha0/quartz/pull/782
   - Added sidenotes components, inspired by [Tuffe's CSS](https://edwardtufte.github.io/tufte-css/) https://github.com/jackyzha0/quartz/pull/1555, [[thoughts/mechanistic interpretability|examples]]
   - Added [LLM-readable source](https://x.com/aarnphm/status/1857955302110376342)
-  - Added full Jupyter notebook transpilation and [[thoughts/university/twenty-five-twenty-six/sfwr-4tb3/10 Generalized Parsing/00 Generalized Parsing|executions]] (think of it as a scuffed Modal notebook)
-    ![[thoughts/Jax#asynchronous dispatch|example if per-block transclusion runtime]]
+  - Added Jupyter notebook transpilation and [[thoughts/university/twenty-five-twenty-six/sfwr-4tb3/10 Generalized Parsing/00 Generalized Parsing|executions]] (think of it as a scuffed Modal notebook)
+    <div class="nolist">
+    - ![[thoughts/Jax#asynchronous dispatch|example if per-block transclusion runtime]]
+    - ![[thoughts/university/twenty-five-twenty-six/sfwr-4tb3/10 Generalized Parsing/00 Generalized Parsing#{collapsed: true}]]
+    </div>
   - Landing page of [[/|this]] website, [morph's documentation](https://engineering.morph-editor.app)
   - Custom components, i.e: [[/thoughts/atelier with friends/dundurn|supper club]], [[/curius|curius]], parsing [[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/a2/PCA|jupyter notebook]]
   - Source: [github](https://github.com/jackyzha0/quartz), [site](https://quartz.jzhao.xyz/)

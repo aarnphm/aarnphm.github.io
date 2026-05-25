@@ -5,7 +5,7 @@ id: 3 manifolds
 modified: 2026-05-19 18:22:40 GMT-04:00
 tags:
   - math
-  - topology
+  - math/topology
   - 3 manifolds
 title: 3-manifold topology
 ---

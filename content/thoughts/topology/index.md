@@ -5,7 +5,7 @@ id: index
 modified: 2026-05-09 17:51:47 GMT-04:00
 tags:
   - math
-  - topology
+  - math/topology
 title: topology entries
 ---
 

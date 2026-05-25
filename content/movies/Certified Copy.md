@@ -1,14 +1,14 @@
 ---
 category:
   - love
-  - relationship
+  - o/relationship
   - drama
 date: '2026-05-09'
 description: a day in tuscany where a couple may or may not be a couple - kiarostami turns conversation into identity swap.
 director:
   - Abbas Kiarostami
 id: Certified Copy
-modified: 2026-05-09 17:51:45 GMT-04:00
+modified: 2026-05-25 00:31:16 GMT-04:00
 posters: '[[movies/posters/certified-copy.jpg]]'
 rating: 7.3
 status: to watch

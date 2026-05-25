@@ -9,7 +9,7 @@ seealso:
   - '[[thoughts/topology|topology hub]]'
 tags:
   - math
-  - topology
+  - math/topology
 title: separation axioms
 ---
 
