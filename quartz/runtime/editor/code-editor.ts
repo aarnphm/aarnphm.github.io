@@ -1,6 +1,7 @@
 import type { Extension } from '@codemirror/state'
 import type { EditorView as CodeMirrorEditorView, KeyBinding } from '@codemirror/view'
 import type { CodeMirror } from '@replit/codemirror-vim'
+import type { LanguageFn } from 'highlight.js'
 import { ensureSyntaxTree, forceParsing, syntaxTreeAvailable } from '@codemirror/language'
 import type { NotebookLspConfig } from '../lsp/pyright'
 import { backendFor } from '../notebook/registry'
@@ -42,6 +43,7 @@ let notebookCodeEditorLspWarmup: Promise<void> | undefined
 let notebookCodeEditorVimWarmup: Promise<void> | undefined
 const notebookLanguageWarmups = new Map<string, Promise<Extension>>()
 const notebookRunKeys = ['Mod-Enter', 'Ctrl-Enter', 'Shift-Enter', 'Alt-Enter'] as const
+const notebookHighlightJsLanguages = new Set<string>()
 const notebookVimReservedControlKeys = new Set([
   'Ctrl-b',
   'Ctrl-d',
@@ -100,6 +102,95 @@ function warmLanguageExtension(language: string | undefined): Promise<Extension>
     notebookLanguageWarmups.set(key, warmup)
   }
   return warmup
+}
+
+async function notebookHighlightJsLanguage(
+  language: string | undefined,
+): Promise<{ name: string; define: LanguageFn } | undefined> {
+  const name = languageWarmupKey(language)
+  if (name === 'python' || name === 'py' || name === 'ipython') {
+    return { name: 'python', define: (await import('highlight.js/lib/languages/python')).default }
+  }
+  if (name === 'javascript' || name === 'js' || name === 'jsx') {
+    return {
+      name: 'javascript',
+      define: (await import('highlight.js/lib/languages/javascript')).default,
+    }
+  }
+  if (name === 'typescript' || name === 'ts' || name === 'tsx') {
+    return {
+      name: 'typescript',
+      define: (await import('highlight.js/lib/languages/typescript')).default,
+    }
+  }
+  if (name === 'go' || name === 'golang') {
+    return { name: 'go', define: (await import('highlight.js/lib/languages/go')).default }
+  }
+  if (name === 'rust' || name === 'rs') {
+    return { name: 'rust', define: (await import('highlight.js/lib/languages/rust')).default }
+  }
+  if (name === 'bash' || name === 'sh' || name === 'shell' || name === 'zsh') {
+    return { name: 'bash', define: (await import('highlight.js/lib/languages/bash')).default }
+  }
+}
+
+async function highlightNotebookSource(source: string, language: string | undefined) {
+  const languageDefinition = await notebookHighlightJsLanguage(language)
+  if (!languageDefinition) return undefined
+  const hljs = (await import('highlight.js/lib/core')).default
+  if (!notebookHighlightJsLanguages.has(languageDefinition.name)) {
+    hljs.registerLanguage(languageDefinition.name, languageDefinition.define)
+    notebookHighlightJsLanguages.add(languageDefinition.name)
+  }
+  return hljs.highlight(source, { language: languageDefinition.name, ignoreIllegals: true }).value
+}
+
+function createHighlightedLine(): HTMLElement {
+  const line = document.createElement('span')
+  line.dataset.line = ''
+  return line
+}
+
+function appendWrappedText(line: HTMLElement, wrappers: readonly HTMLElement[], text: string) {
+  if (text.length === 0) return
+  let node: Node = document.createTextNode(text)
+  for (let index = wrappers.length - 1; index >= 0; index -= 1) {
+    const wrapper = wrappers[index]?.cloneNode(false)
+    if (!(wrapper instanceof HTMLElement)) continue
+    wrapper.append(node)
+    node = wrapper
+  }
+  line.append(node)
+}
+
+function highlightedHtmlLineSpans(html: string): HTMLElement[] {
+  const template = document.createElement('template')
+  template.innerHTML = html
+  const lines = [createHighlightedLine()]
+  const wrappers: HTMLElement[] = []
+  const currentLine = () => lines[lines.length - 1] ?? lines[0]
+  const startLine = () => {
+    lines.push(createHighlightedLine())
+  }
+  const visit = (node: ChildNode) => {
+    if (node.nodeType === Node.TEXT_NODE) {
+      const parts = (node.textContent ?? '').split('\n')
+      parts.forEach((part, index) => {
+        appendWrappedText(currentLine(), wrappers, part)
+        if (index < parts.length - 1) startLine()
+      })
+      return
+    }
+    if (node instanceof HTMLElement) {
+      wrappers.push(node)
+      for (const child of Array.from(node.childNodes)) visit(child)
+      wrappers.pop()
+      return
+    }
+    for (const child of Array.from(node.childNodes)) visit(child)
+  }
+  for (const child of Array.from(template.content.childNodes)) visit(child)
+  return lines
 }
 
 function notebookKeyBindingUsesVimControl(binding: KeyBinding): boolean {
@@ -290,6 +381,9 @@ export async function renderNotebookHighlightedLines(
   source: string,
   languageName: string | undefined,
 ): Promise<HTMLElement[]> {
+  const highlightedSource = await highlightNotebookSource(source, languageName)
+  if (highlightedSource !== undefined) return highlightedHtmlLineSpans(highlightedSource)
+
   const [{ syntaxHighlighting, defaultHighlightStyle }, { EditorState }, { EditorView }, language] =
     await Promise.all([
       import('@codemirror/language'),

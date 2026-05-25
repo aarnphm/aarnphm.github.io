@@ -1431,9 +1431,9 @@ export function renderBaseViewsForFile(
       children: diagnosticsNode ? [diagnosticsNode, wrapped] : [wrapped],
     }
 
-    const matchedSlugs = matchedFiles
-      .map(file => (file.slug ? simplifySlug(file.slug as FullSlug) : undefined))
-      .filter((matchedSlug): matchedSlug is string => matchedSlug !== undefined)
+    const matchedSlugs = matchedFiles.flatMap(file =>
+      file.slug ? [simplifySlug(file.slug as FullSlug)] : [],
+    )
 
     views.push({ view, slug, tree, resultCount, totalCount, matchedSlugs })
   }

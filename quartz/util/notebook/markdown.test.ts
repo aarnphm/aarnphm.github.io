@@ -7,7 +7,7 @@ import remarkRehype from 'remark-rehype'
 import { unified } from 'unified'
 import type { FullSlug } from '../path'
 import { unsupportedNotebookRuntimeReason } from '../../runtime/python/can-execute'
-import { notebookCellLanguageBadge } from './cell-html'
+import { notebookCellActions, notebookCellLanguageBadge } from './cell-html'
 import {
   notebookRuntimeData,
   notebookTitle,
@@ -45,6 +45,16 @@ function findElement(
   }
 }
 
+function findElements(
+  node: HastElement,
+  predicate: (node: HastElement) => boolean,
+  results: HastElement[] = [],
+): HastElement[] {
+  if (predicate(node)) results.push(node)
+  for (const child of node.children ?? []) findElements(child, predicate, results)
+  return results
+}
+
 function elementClassNames(node: HastElement): string[] {
   const className = node.properties?.className
   return Array.isArray(className) ? className.filter(item => typeof item === 'string') : []
@@ -55,6 +65,14 @@ function textChild(node: HastElement): string {
     .filter((child): child is HastElement & { value: string } => child.type === 'text')
     .map(child => child.value)
     .join('')
+}
+
+async function parseHtmlFragment(value: string): Promise<HastElement> {
+  const processor = unified()
+    .use(remarkParse)
+    .use(remarkRehype, { allowDangerousHtml: true })
+    .use(rehypeRaw)
+  return (await processor.run(processor.parse(value))) as HastElement
 }
 
 describe('notebook parser', () => {
@@ -336,6 +354,36 @@ describe('notebook parser', () => {
     assert.match(data?.id ?? '', /^notebook-runtime-/)
   })
 
+  test('emits javascript runtime cells from javascript magics', () => {
+    const notebook = parseNotebook(
+      JSON.stringify({
+        metadata: { language_info: { name: 'python' } },
+        cells: [
+          { cell_type: 'code', source: 'x = 1' },
+          { cell_type: 'code', source: '%%javascript\nconsole.log("hi")' },
+        ],
+      }),
+      'mixed-runtime.ipynb',
+    )
+
+    const data = notebookRuntimeData(notebook, 'mixed-runtime.ipynb', {
+      enabled: true,
+      sourcePath: 'mixed-runtime.ipynb',
+    })
+
+    assert.deepStrictEqual(
+      data?.cells.map(cell => ({
+        id: cell.id,
+        language: cell.language,
+        displayLanguage: cell.displayLanguage,
+      })),
+      [
+        { id: 'cell-1', language: 'python', displayLanguage: undefined },
+        { id: 'cell-2', language: 'javascript', displayLanguage: undefined },
+      ],
+    )
+  })
+
   test('preserves empty runtime import lists to avoid probing normal python modules', () => {
     const notebook = parseNotebook(
       JSON.stringify({
@@ -439,11 +487,7 @@ describe('notebook parser', () => {
     assert.match(markdown, /data-notebook-edit-cell="cell-1"/)
     assert.match(markdown, /class="notebook-language-badge notebook-language-badge-python"/)
     assert.match(markdown, /data-notebook-language="python"/)
-    assert.match(
-      notebookCellLanguageBadge('python'),
-      /<span class="notebook-language-icon" aria-hidden="true">Py<\/span><\/span>$/,
-    )
-    assert.doesNotMatch(markdown, /notebook-language-label/)
+    assert.match(markdown, /notebook-language-label/)
     assert.match(markdown, /data-notebook-local-source-status="cell-1" hidden/)
     assert.match(markdown, /data-notebook-source-editor="cell-1"/)
     assert.match(markdown, /class="notebook-output notebook-output-success"/)
@@ -453,6 +497,68 @@ describe('notebook parser', () => {
     assert(payload)
     assert.doesNotMatch(payload[1], /<\/script>/i)
     assert.match(markdown, /\\u003c\/script\\u003e/)
+  })
+
+  test('renders language badges with svg icons and accessible labels', async () => {
+    const tree = await parseHtmlFragment(notebookCellLanguageBadge('javascript'))
+    const badge = findElement(tree, node =>
+      elementClassNames(node).includes('notebook-language-badge-javascript'),
+    )
+
+    assert(badge)
+    assert.strictEqual(badge.properties?.dataNotebookLanguage, 'javascript')
+    assert.strictEqual(badge.properties?.title, 'JavaScript cell')
+    const icon = findElement(badge, node =>
+      elementClassNames(node).includes('notebook-language-icon'),
+    )
+    assert(icon)
+    assert.strictEqual(icon.properties?.ariaHidden, 'true')
+    assert(findElement(icon, node => elementClassNames(node).includes('notebook-language-svg')))
+    const label = findElement(badge, node =>
+      elementClassNames(node).includes('notebook-language-label'),
+    )
+    assert(label)
+    assert.strictEqual(textChild(label), 'JavaScript cell')
+
+    const fallbackTree = await parseHtmlFragment(notebookCellLanguageBadge('nixlang'))
+    const fallbackBadge = findElement(fallbackTree, node =>
+      elementClassNames(node).includes('notebook-language-badge-nixlang'),
+    )
+    assert(fallbackBadge)
+    assert(
+      !findElement(fallbackBadge, node =>
+        elementClassNames(node).includes('notebook-language-svg'),
+      ),
+    )
+    const fallbackText = findElement(fallbackBadge, node =>
+      elementClassNames(node).includes('notebook-language-text'),
+    )
+    assert(fallbackText)
+    assert.strictEqual(textChild(fallbackText), 'ni')
+    const fallbackLabel = findElement(fallbackBadge, node =>
+      elementClassNames(node).includes('notebook-language-label'),
+    )
+    assert(fallbackLabel)
+    assert.strictEqual(textChild(fallbackLabel), 'nixlang cell')
+  })
+
+  test('renders one vim action with centered icon geometry', async () => {
+    const tree = await parseHtmlFragment(
+      notebookCellActions({
+        id: 'cell-1',
+        source: 'print("hi")',
+        language: 'python',
+        executionIndex: null,
+      }),
+    )
+    const vimButtons = findElements(tree, node => node.properties?.dataNotebookVimCell === 'cell-1')
+
+    assert.strictEqual(vimButtons.length, 1)
+    const icon = findElement(vimButtons[0], node =>
+      elementClassNames(node).includes('notebook-vim-icon'),
+    )
+    assert(icon)
+    assert.strictEqual(icon.properties?.viewBox, '0 0 602 734')
   })
 
   test('adds anchor ids to runtime cell frames', () => {
@@ -700,7 +806,7 @@ describe('notebook parser', () => {
     assert.match(markdown, /```javascript\n%%javascript\nconsole\.log\("hi"\)\n```/)
   })
 
-  test('leaves non-python notebooks without runtime controls', () => {
+  test('emits runtime controls for javascript notebooks', () => {
     const notebook = parseNotebook(
       JSON.stringify({
         metadata: { language_info: { name: 'javascript' } },
@@ -713,8 +819,9 @@ describe('notebook parser', () => {
       runtime: { enabled: true, sourcePath: 'runtime.ipynb' },
     })
 
-    assert.doesNotMatch(markdown, /data-notebook-runtime/)
-    assert.doesNotMatch(markdown, /Run cell/)
+    assert.match(markdown, /data-notebook-runtime/)
+    assert.match(markdown, /data-notebook-run-all/)
+    assert.match(markdown, /data-notebook-run-cell="cell-1"/)
     assert.match(markdown, /notebook-language-badge-javascript/)
     assert.match(markdown, /```javascript\nconsole\.log\("hi"\)\n```/)
   })

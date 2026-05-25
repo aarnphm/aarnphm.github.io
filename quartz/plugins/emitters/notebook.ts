@@ -1,6 +1,5 @@
 import { Root as HtmlRoot } from 'hast'
 import { Root as MdRoot } from 'mdast'
-import { spawn } from 'node:child_process'
 import fs from 'node:fs/promises'
 import { availableParallelism } from 'node:os'
 import path from 'node:path'
@@ -26,32 +25,18 @@ import { StaticResources } from '../../util/resources'
 import { ProcessedContent } from '../vfile'
 import { write } from './helpers'
 
-type NotebookRenderMode = 'saved' | 'execute'
-
 type NotebookRuntimeOptions = false | { enabled?: boolean; indexUrl?: string }
 
-type Options = {
-  mode?: NotebookRenderMode
-  executeTimeoutSeconds?: number
-  allowErrors?: boolean
-  runtime?: NotebookRuntimeOptions
-}
+type Options = { executeTimeoutSeconds?: number; runtime?: NotebookRuntimeOptions }
 
 type ResolvedOptions = {
-  mode: NotebookRenderMode
   executeTimeoutSeconds: number
-  allowErrors: boolean
   runtime: false | { enabled: true; indexUrl?: string }
 }
 
 type NotebookDependencies = { imports: Set<FilePath>; assets: Set<FilePath> }
 
-const defaultOptions: ResolvedOptions = {
-  mode: 'saved',
-  executeTimeoutSeconds: 120,
-  allowErrors: false,
-  runtime: false,
-}
+const defaultOptions: ResolvedOptions = { executeTimeoutSeconds: 120, runtime: false }
 
 const htmlResourceSrcPattern =
   /<(?:img|video|audio|iframe)\b[^>]*\bsrc\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s>]+))/gi
@@ -59,14 +44,6 @@ const markdownImageTargetPattern = /!\[[^\]]*\]\(\s*(<[^>]+>|[^)\s]+)[^)]*\)/g
 
 const notebookFiles = async (argv: Argv, cfg: QuartzConfig) => {
   return await glob('**/*.ipynb', argv.directory, [...cfg.configuration.ignorePatterns])
-}
-
-function normalizeMode(value: string | undefined): NotebookRenderMode | undefined {
-  if (value === undefined) return undefined
-  if (value === 'saved' || value === 'execute') return value
-  if (value === 'clean') return 'saved'
-  if (value === 'run' || value === 'full') return 'execute'
-  throw new Error(`Invalid notebook render mode: ${value}`)
 }
 
 function resolveOptions(userOpts?: Options): ResolvedOptions {
@@ -77,12 +54,7 @@ function resolveOptions(userOpts?: Options): ResolvedOptions {
       ? false
       : { enabled: true, indexUrl: userOpts.runtime.indexUrl }
 
-  return {
-    ...defaultOptions,
-    ...userOpts,
-    mode: normalizeMode(process.env.QUARTZ_NOTEBOOK_MODE) ?? userOpts?.mode ?? defaultOptions.mode,
-    runtime,
-  }
+  return { ...defaultOptions, ...userOpts, runtime }
 }
 
 const notebookPageLayout: FullPageLayout = {
@@ -258,74 +230,6 @@ function importableNotebookModules(fp: FilePath, fps: FilePath[]): string[] {
   return [...modules].sort()
 }
 
-async function executeNotebook(src: FilePath, opts: ResolvedOptions): Promise<string> {
-  const nbConvertArgs = [
-    '--with',
-    'jupyter',
-    '--with',
-    'nbconvert',
-    '--with',
-    'jupyter-contrib-nbextensions',
-    '--with',
-    'notebook<7',
-    '--with',
-    'ipykernel',
-    '--with',
-    'import-ipynb',
-    '--from',
-    'jupyter-core',
-    'jupyter',
-    'nbconvert',
-    '--to',
-    'notebook',
-    '--execute',
-    '--stdout',
-    `--ExecutePreprocessor.timeout=${opts.executeTimeoutSeconds}`,
-    '--log-level',
-    '50',
-  ]
-
-  if (opts.allowErrors) {
-    nbConvertArgs.push('--allow-errors')
-  }
-
-  nbConvertArgs.push(src)
-
-  const command = process.env.CF_PAGES === '1' ? 'python' : 'uvx'
-  const args =
-    process.env.CF_PAGES === '1' ? ['-m', 'uv', 'tool', 'run', ...nbConvertArgs] : nbConvertArgs
-
-  return await new Promise<string>((resolve, reject) => {
-    const proc = spawn(command, args, { cwd: path.dirname(src), env: { ...process.env } })
-    let stdout = ''
-    let stderr = ''
-
-    proc.stdout.on('data', chunk => {
-      stdout += chunk
-    })
-    proc.stderr.on('data', chunk => {
-      stderr += chunk
-    })
-    proc.on('error', reject)
-    proc.on('exit', code => {
-      if (code === 0) {
-        resolve(stdout)
-      } else {
-        reject(new Error(`Notebook execution failed with code ${code}: ${stderr}`))
-      }
-    })
-  })
-}
-
-async function notebookSource(ctx: BuildCtx, fp: FilePath, opts: ResolvedOptions): Promise<string> {
-  const src = joinSegments(ctx.argv.directory, fp) as FilePath
-  if (opts.mode === 'execute') {
-    return await executeNotebook(src, opts)
-  }
-
-  return await fs.readFile(src, 'utf8')
-}
-
 async function notebookProcessedContent(
   ctx: BuildCtx,
   fp: FilePath,
@@ -334,7 +238,7 @@ async function notebookProcessedContent(
 ): Promise<NotebookPage> {
   const src = joinSegments(ctx.argv.directory, fp) as FilePath
   const slug = slugifyFilePath(fp, true)
-  const raw = await notebookSource(ctx, fp, opts)
+  const raw = await fs.readFile(joinSegments(ctx.argv.directory, fp) as FilePath, 'utf8')
   const notebook = parseNotebookDoc(raw, src)
   if (isNotebookParseError(notebook))
     throw new Error(`${src} is not a valid notebook: ${notebook.reason}`)

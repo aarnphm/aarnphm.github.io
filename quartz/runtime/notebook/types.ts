@@ -2,6 +2,7 @@ export type NotebookRuntimeCell = {
   id: string
   source: string
   language: string
+  displayLanguage?: string
   executionIndex: number | null
 }
 
@@ -16,7 +17,7 @@ export type NotebookRuntimeData = {
   id: string
   sourcePath: string
   language: string
-  indexUrl: string
+  indexUrl?: string
   cells: NotebookRuntimeCell[]
   toolbar?: boolean
   debug?: boolean

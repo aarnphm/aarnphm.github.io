@@ -25,7 +25,13 @@ import {
   type NotebookRuntimeOutput,
 } from './types'
 
-type RuntimeCell = { id: CellId; source: string; language: string; executionIndex: number | null }
+type RuntimeCell = {
+  id: CellId
+  source: string
+  language: string
+  displayLanguage?: string
+  executionIndex: number | null
+}
 
 type RuntimeErrorOutput = Extract<NotebookRuntimeOutput, { type: 'error' }>
 
@@ -53,7 +59,7 @@ type RuntimePayload = {
   id: string
   sourcePath: string
   language: string
-  indexUrl: string
+  indexUrl?: string
   cells: RuntimeCell[]
   toolbar?: boolean
   debug?: boolean
@@ -114,10 +120,13 @@ function readRuntimeCell(value: unknown): RuntimeCell | undefined {
   const id = readString(value, 'id')
   const source = readString(value, 'source')
   const language = readString(value, 'language')
+  const displayLanguage = readString(value, 'displayLanguage')
   const executionIndex = value.executionIndex
-  if (!id || source === undefined || !language) return undefined
+  if (!isRuntimeCellId(id) || source === undefined || !language) return undefined
   if (typeof executionIndex === 'number' || executionIndex === null) {
-    return { id: id as CellId, source, language, executionIndex }
+    return displayLanguage
+      ? { id, source, language, displayLanguage, executionIndex }
+      : { id, source, language, executionIndex }
   }
 }
 
@@ -132,13 +141,17 @@ function readStringArray(value: unknown): string[] | undefined {
   return strings
 }
 
+function isRuntimeCellId(value: unknown): value is CellId {
+  return typeof value === 'string' && value.length > 0
+}
+
 function readRuntimePayload(value: unknown): RuntimePayload | undefined {
   if (!isRecord(value)) return undefined
   const id = readString(value, 'id')
   const sourcePath = readString(value, 'sourcePath')
   const language = readString(value, 'language')
   const indexUrl = readString(value, 'indexUrl')
-  if (!id || !sourcePath || !language || !indexUrl || !Array.isArray(value.cells)) {
+  if (!id || !sourcePath || !language || !Array.isArray(value.cells)) {
     return undefined
   }
   const cells = value.cells.map(readRuntimeCell)
@@ -147,9 +160,9 @@ function readRuntimePayload(value: unknown): RuntimePayload | undefined {
     id,
     sourcePath,
     language,
-    indexUrl,
     cells: cells.filter(cell => cell !== undefined),
   }
+  if (indexUrl !== undefined) payload.indexUrl = indexUrl
   const toolbar = readBoolean(value.toolbar)
   if (toolbar !== undefined) payload.toolbar = toolbar
   const debug = readBoolean(value.debug)
@@ -162,6 +175,10 @@ function readRuntimePayload(value: unknown): RuntimePayload | undefined {
     payload.importableModules = importableModules
   }
   return payload
+}
+
+function runtimeCellEditorLanguage(cell: RuntimeCell): string {
+  return cell.displayLanguage ?? cell.language
 }
 
 function decodeRuntimeCodePoint(codePoint: number, fallback: string): string {
@@ -223,8 +240,9 @@ export async function warmNotebookRuntimeEditorAssets(
     languages.add(payload.language)
     vimMode ||= payload.vimMode ?? readStoredNotebookVimMode()
     for (const cell of payload.cells) {
-      languages.add(cell.language)
-      lsp ||= backendFor(cell.language)?.editor?.lspBridge !== undefined
+      const editorLanguage = runtimeCellEditorLanguage(cell)
+      languages.add(editorLanguage)
+      lsp ||= backendFor(editorLanguage)?.editor?.lspBridge !== undefined
     }
   }
 
@@ -1219,9 +1237,10 @@ class NotebookRuntime {
       document.createElement('div')
     actions.className = 'notebook-cell-actions'
     actions.dataset.notebookCellActions = cell.id
+    const editorLanguage = runtimeCellEditorLanguage(cell)
     const languageBadge =
       actions.querySelector<HTMLElement>('.notebook-language-badge[data-notebook-language]') ??
-      notebookLanguageBadgeElement(cell.language)
+      notebookLanguageBadgeElement(editorLanguage)
     if (!frame.dataset.notebookLanguage && languageBadge.dataset.notebookLanguage) {
       frame.dataset.notebookLanguage = languageBadge.dataset.notebookLanguage
     }
@@ -1402,22 +1421,23 @@ class NotebookRuntime {
   private async ensureSourceEditor(cell: RuntimeCell, controls: SourceControls) {
     if (controls.editor) return controls.editor
     const { createNotebookCodeEditor } = await import('../editor/code-editor')
+    const editorLanguage = runtimeCellEditorLanguage(cell)
     controls.editor = await createNotebookCodeEditor({
       parent: controls.editorHost,
       initialContent: controls.source,
-      language: cell.language,
+      language: editorLanguage,
       vimMode: this.vimMode,
       lsp: {
-        enabled: true,
+        enabled: backendFor(editorLanguage)?.editor?.lspBridge !== undefined,
         runtimeId: this.payload.id,
         sourcePath: this.payload.sourcePath,
         cellId: cell.id,
-        language: cell.language,
+        language: editorLanguage,
         cells: () =>
           this.payload.cells.map(runtimeCell => ({
             id: runtimeCell.id,
             source: this.sourceForCell(runtimeCell),
-            language: runtimeCell.language,
+            language: runtimeCellEditorLanguage(runtimeCell),
             executionIndex: runtimeCell.executionIndex,
           })),
       },
@@ -1474,7 +1494,10 @@ class NotebookRuntime {
     if (!controls.figure) return undefined
     try {
       const { renderNotebookHighlightedLines } = await import('../editor/code-editor')
-      const highlightedLines = await renderNotebookHighlightedLines(source, cell.language)
+      const highlightedLines = await renderNotebookHighlightedLines(
+        source,
+        runtimeCellEditorLanguage(cell),
+      )
       return highlightedLines.length === lineCount ? highlightedLines : preferredLines
     } catch {
       return preferredLineCountMatches ? preferredLines : undefined
@@ -1560,6 +1583,7 @@ class NotebookRuntime {
       edited ? 'edited local source' : 'saved local source',
     )
     controls.editButton.hidden = editing
+    controls.vimButton.hidden = !editing
     controls.saveButton.hidden = !editing
     controls.revertButton.hidden = !(editing || hasStoredSource)
     controls.frame.toggleAttribute('data-notebook-local-source', hasStoredSource)
@@ -1597,7 +1621,9 @@ class NotebookRuntime {
       runtimeId: this.payload.id,
       sourcePath: this.payload.sourcePath,
       indexUrl: this.payload.indexUrl || backend.defaultIndexUrl,
-      workerUrl: this.assets.workerUrl,
+      workerUrl: backend.workerAssetKey
+        ? this.assets[backend.workerAssetKey]
+        : this.assets.workerUrl,
       resolveAsset: (request, runtimeFile) => this.resolveAsset(request, runtimeFile),
     })
     await kernel.init({

@@ -11,7 +11,7 @@ import cfg from '../quartz.config'
 import { getStaticResourcesFromPlugins } from './plugins'
 import { ProcessedContent } from './plugins/vfile'
 import { emitContent } from './processors/emit'
-import { filterContent } from './processors/filter'
+import { filterContentResult, type FilterContentResult } from './processors/filter'
 import { parseMarkdown } from './processors/parse'
 import { ChangeEvent } from './types/plugin'
 import { Argv, BuildCtx } from './util/ctx'
@@ -25,6 +25,47 @@ import { trace } from './util/trace'
 sourceMapSupport.install(options)
 
 type ContentMap = Map<FilePath, { type: 'markdown'; content: ProcessedContent } | { type: 'other' }>
+
+const markdownExtensions = new Set(['.md', '.base', '.canvas'])
+
+const isMarkdownPath = (fp: string): boolean => markdownExtensions.has(path.extname(fp))
+
+const syncCtxFiles = (ctx: BuildCtx, contentMap: ContentMap) => {
+  ctx.allFiles = Array.from(contentMap.keys())
+  ctx.allSlugs = ctx.allFiles.map(fp => slugifyFilePath(fp))
+}
+
+const seedContentMap = (allFiles: FilePath[], content: ProcessedContent[]): ContentMap => {
+  const contentMap: ContentMap = new Map()
+  for (const filePath of allFiles) {
+    if (!isMarkdownPath(filePath)) {
+      contentMap.set(filePath, { type: 'other' })
+    }
+  }
+
+  for (const item of content) {
+    const relativePath = item[1].data.relativePath
+    if (relativePath) {
+      contentMap.set(relativePath, { type: 'markdown', content: item })
+    }
+  }
+
+  return contentMap
+}
+
+const markdownContentByPath = (content: ProcessedContent[]): Map<FilePath, ProcessedContent> => {
+  const byPath = new Map<FilePath, ProcessedContent>()
+  for (const item of content) {
+    const relativePath = item[1].data.relativePath
+    if (relativePath) {
+      byPath.set(relativePath, item)
+    }
+  }
+  return byPath
+}
+
+const publishedMarkdownContent = (contentMap: ContentMap): ProcessedContent[] =>
+  Array.from(contentMap.values()).flatMap(file => (file.type === 'markdown' ? [file.content] : []))
 
 type BuildData = {
   ctx: BuildCtx
@@ -93,7 +134,9 @@ async function buildQuartz(argv: Argv, mut: Mutex, clientRefresh: () => void) {
   ctx.allSlugs = allFiles.map(fp => slugifyFilePath(fp as FilePath))
 
   const parsedFiles = await parseMarkdown(ctx, filePaths)
-  const filteredContent = filterContent(ctx, parsedFiles)
+  const filteredContent = filterContentResult(ctx, parsedFiles).published
+  const contentMap = seedContentMap(allFiles, filteredContent)
+  syncCtxFiles(ctx, contentMap)
 
   await emitContent(ctx, filteredContent)
   console.log(
@@ -103,7 +146,7 @@ async function buildQuartz(argv: Argv, mut: Mutex, clientRefresh: () => void) {
 
   if (argv.watch) {
     ctx.incremental = true
-    return startWatching(ctx, mut, parsedFiles, clientRefresh)
+    return startWatching(ctx, mut, filteredContent, clientRefresh)
   }
 }
 
@@ -116,15 +159,7 @@ async function startWatching(
 ) {
   const { argv, allFiles } = ctx
 
-  const contentMap: ContentMap = new Map()
-  for (const filePath of allFiles) {
-    contentMap.set(filePath, { type: 'other' })
-  }
-
-  for (const content of initialContent) {
-    const [_tree, vfile] = content
-    contentMap.set(vfile.data.relativePath!, { type: 'markdown', content })
-  }
+  const contentMap = seedContentMap(allFiles, initialContent)
 
   const gitIgnoredMatcher = await isGitIgnored()
   const buildData: BuildData = {
@@ -207,58 +242,78 @@ async function rebuild(changes: ChangeEvent[], clientRefresh: () => void, buildD
   for (const change of changes) {
     changesSinceLastBuild[change.path] = change.type
   }
+  const pendingChanges = Object.entries(changesSinceLastBuild) as Array<
+    [FilePath, ChangeEvent['type']]
+  >
 
   const staticResources = getStaticResourcesFromPlugins(ctx)
   const pathsToParse: FilePath[] = []
-  for (const [fp, type] of Object.entries(changesSinceLastBuild)) {
-    const ext = path.extname(fp)
-    if (type === 'delete' || (ext !== '.md' && ext !== '.base' && ext !== '.canvas')) continue
+  for (const [fp, type] of pendingChanges) {
+    if (type === 'delete' || !isMarkdownPath(fp)) continue
     const fullPath = joinSegments(argv.directory, toPosixPath(fp)) as FilePath
     pathsToParse.push(fullPath)
   }
 
+  const previousMarkdown = new Map<FilePath, ProcessedContent>()
+  for (const [fp, file] of contentMap) {
+    if (file.type === 'markdown') {
+      previousMarkdown.set(fp, file.content)
+    }
+  }
+
   const parsed = await parseMarkdown(ctx, pathsToParse)
-  for (const content of parsed) {
-    contentMap.set(content[1].data.relativePath!, { type: 'markdown', content })
+  const parsedResult: FilterContentResult =
+    parsed.length > 0 ? filterContentResult(ctx, parsed) : { published: [], removed: [] }
+  const publishedByPath = markdownContentByPath(parsedResult.published)
+
+  const changeEvents: ChangeEvent[] = []
+  for (const [path, type] of pendingChanges) {
+    if (isMarkdownPath(path)) {
+      const previous = previousMarkdown.get(path)
+
+      if (type === 'delete') {
+        contentMap.delete(path)
+        if (previous) {
+          changeEvents.push({ type: 'delete', path, file: previous[1] })
+        }
+        continue
+      }
+
+      const published = publishedByPath.get(path)
+      if (published) {
+        contentMap.set(path, { type: 'markdown', content: published })
+        changeEvents.push({ type: previous ? 'change' : 'add', path, file: published[1] })
+        continue
+      }
+
+      contentMap.delete(path)
+      if (previous) {
+        changeEvents.push({ type: 'delete', path, file: previous[1] })
+      }
+      continue
+    }
+
+    if (type === 'delete') {
+      contentMap.delete(path)
+    } else if (type === 'add') {
+      contentMap.set(path, { type: 'other' })
+    }
+    changeEvents.push({ type, path })
   }
 
-  // update state using changesSinceLastBuild
-  // we do this weird play of add => compute change events => remove
-  // so that partialEmitters can do appropriate cleanup based on the content of deleted files
-  for (const [file, change] of Object.entries(changesSinceLastBuild)) {
-    if (change === 'delete') {
-      // universal delete case
-      contentMap.delete(file as FilePath)
-    }
+  syncCtxFiles(ctx, contentMap)
+  const processedFiles = publishedMarkdownContent(contentMap)
 
-    // manually track non-markdown files as processed files only
-    // contains markdown files
-    const fileExt = path.extname(file)
-    if (change === 'add' && fileExt !== '.md' && fileExt !== '.base' && fileExt !== '.canvas') {
-      contentMap.set(file as FilePath, { type: 'other' })
+  if (changeEvents.length === 0) {
+    console.log(`Emitted 0 files to \`${argv.output}\` in ${perf.timeSince('rebuild')}`)
+    console.log(styleText('green', `Done rebuilding in ${perf.timeSince()}`))
+    for (const [fp] of pendingChanges) {
+      delete changesSinceLastBuild[fp]
     }
+    changes.splice(0, numChangesInBuild)
+    release()
+    return
   }
-
-  const changeEvents: ChangeEvent[] = Object.entries(changesSinceLastBuild).map(([fp, type]) => {
-    const path = fp as FilePath
-    const processedContent = contentMap.get(path)
-    if (processedContent?.type === 'markdown') {
-      const [_tree, file] = processedContent.content
-      return { type, path, file }
-    }
-
-    return { type, path }
-  })
-
-  // update allFiles and then allSlugs with the consistent view of content map
-  ctx.allFiles = Array.from(contentMap.keys())
-  ctx.allSlugs = ctx.allFiles.map(fp => slugifyFilePath(fp as FilePath))
-  let processedFiles = filterContent(
-    ctx,
-    Array.from(contentMap.values())
-      .filter(file => file.type === 'markdown')
-      .map(file => file.content),
-  )
 
   let emittedFiles = 0
   for (const emitter of cfg.plugins.emitters) {
@@ -290,6 +345,9 @@ async function rebuild(changes: ChangeEvent[], clientRefresh: () => void, buildD
 
   console.log(`Emitted ${emittedFiles} files to \`${argv.output}\` in ${perf.timeSince('rebuild')}`)
   console.log(styleText('green', `Done rebuilding in ${perf.timeSince()}`))
+  for (const [fp] of pendingChanges) {
+    delete changesSinceLastBuild[fp]
+  }
   changes.splice(0, numChangesInBuild)
   clientRefresh()
   release()

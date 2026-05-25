@@ -5,33 +5,42 @@ import { pageResources, renderPage } from '../../components/renderPage'
 import { QuartzComponentProps } from '../../types/component'
 import { QuartzEmitterPlugin } from '../../types/plugin'
 import { BaseExpressionDiagnostic, BasesExpressions } from '../../util/base/compiler'
-import { BaseMetadata, renderBaseViewsForFile } from '../../util/base/render'
+import {
+  BaseRenderPlan,
+  BaseViewPartialState,
+  planBaseViewPartialEmit,
+} from '../../util/base/partial-emit'
+import { BaseMetadata } from '../../util/base/render'
 import { BuildCtx } from '../../util/ctx'
 import { pathToRoot, FullSlug } from '../../util/path'
 import { StaticResources } from '../../util/resources'
 import { QuartzPluginData } from '../vfile'
 import { write } from './helpers'
 
-async function* emitBaseViewsForFile(
+async function* emitBaseViewsForPlan(
   ctx: BuildCtx,
-  baseFileData: QuartzPluginData,
+  baseSlug: FullSlug,
+  plan: BaseRenderPlan,
   allFiles: QuartzPluginData[],
   resources: StaticResources,
   layout: FullPageLayout,
 ) {
-  if (!baseFileData.basesConfig || !baseFileData.slug) return
-  const baseSlug = baseFileData.slug as FullSlug
-  const rendered = renderBaseViewsForFile(baseFileData, allFiles, baseFileData)
+  const { baseData, rendered } = plan
 
   for (const renderedView of rendered.views) {
     const slug = renderedView.slug
-    const fileData: QuartzPluginData = { ...baseFileData }
+    const fileData: QuartzPluginData = { ...baseData }
     fileData.slug = slug
     fileData.htmlAst = renderedView.tree
+    const frontmatter = fileData.frontmatter
+    const title =
+      typeof frontmatter?.title === 'string' && frontmatter.title.length > 0
+        ? frontmatter.title
+        : baseSlug
     fileData.frontmatter = {
-      ...fileData.frontmatter,
-      title: `${fileData.frontmatter?.title || baseSlug} - ${renderedView.view.name}`,
-      pageLayout: fileData.frontmatter!.pageLayout || 'default',
+      ...frontmatter,
+      title: `${title} - ${renderedView.view.name}`,
+      pageLayout: frontmatter?.pageLayout ?? 'default',
     }
     fileData.basesMetadata = {
       baseSlug,
@@ -67,6 +76,7 @@ export const BasePage: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts =
   }
 
   const { head: Head, header, beforeBody, pageBody, afterBody, sidebar, footer: Footer } = opts
+  let partialState: BaseViewPartialState | undefined
 
   return {
     name: 'BaseViewPage',
@@ -74,69 +84,21 @@ export const BasePage: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts =
       return [Head, ...header, ...beforeBody, pageBody, ...afterBody, ...sidebar, Footer]
     },
     async *partialEmit(ctx, content, resources, changeEvents) {
-      const allFiles = content.map(c => c[1].data)
-      const baseFilesBySlug = new Map<FullSlug, QuartzPluginData>()
+      const plan = planBaseViewPartialEmit(content, changeEvents, partialState)
+      partialState = plan.nextState
 
-      for (const [, file] of content) {
-        if (file.data.bases && file.data.basesConfig && file.data.slug) {
-          baseFilesBySlug.set(file.data.slug as FullSlug, file.data)
-        }
-      }
-
-      if (baseFilesBySlug.size === 0) {
-        return
-      }
-
-      const slugsToRebuild = new Set<FullSlug>()
-      let rebuildAllBases = false
-
-      for (const changeEvent of changeEvents) {
-        if (changeEvent.file) {
-          const data = changeEvent.file.data
-          if (data.bases && data.slug) {
-            slugsToRebuild.add(data.slug as FullSlug)
-          } else {
-            rebuildAllBases = true
-          }
-          continue
-        }
-
-        if (changeEvent.type === 'delete') {
-          rebuildAllBases = true
-          continue
-        }
-
-        const changedPath = changeEvent.path
-        for (const [slug, baseData] of baseFilesBySlug.entries()) {
-          const deps = (baseData.codeDependencies as string[] | undefined) ?? []
-          if (deps.includes(changedPath)) {
-            slugsToRebuild.add(slug)
-          }
-        }
-      }
-
-      if (rebuildAllBases) {
-        for (const slug of baseFilesBySlug.keys()) {
-          slugsToRebuild.add(slug)
-        }
-      }
-
-      if (slugsToRebuild.size === 0) {
-        return
-      }
-
-      for (const slug of slugsToRebuild) {
-        const baseData = baseFilesBySlug.get(slug)
-        if (!baseData) continue
-        yield* emitBaseViewsForFile(ctx, baseData, allFiles, resources, opts)
+      for (const slug of plan.slugsToRebuild) {
+        const basePlan = plan.basePlans.get(slug)
+        if (!basePlan) continue
+        yield* emitBaseViewsForPlan(ctx, slug, basePlan, plan.allFiles, resources, opts)
       }
     },
     async *emit(ctx, content, resources) {
-      const allFiles = content.map(c => c[1].data)
+      const plan = planBaseViewPartialEmit(content, [], undefined)
+      partialState = plan.nextState
 
-      for (const [, file] of content) {
-        if (!file.data.bases || !file.data.basesConfig || !file.data.slug) continue
-        yield* emitBaseViewsForFile(ctx, file.data, allFiles, resources, opts)
+      for (const [slug, basePlan] of plan.basePlans) {
+        yield* emitBaseViewsForPlan(ctx, slug, basePlan, plan.allFiles, resources, opts)
       }
     },
   }

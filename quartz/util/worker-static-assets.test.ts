@@ -42,6 +42,13 @@ test('marks first-party scripts loadable under notebook isolation', () => {
       'Cross-Origin-Embedder-Policy': 'require-corp',
     },
   )
+  assert.deepEqual(
+    isolationHeadersForStaticAsset('/static/scripts/notebook-runtime.javascript.worker.js', 200),
+    {
+      'Cross-Origin-Resource-Policy': 'same-origin',
+      'Cross-Origin-Embedder-Policy': 'require-corp',
+    },
+  )
   assert.deepEqual(isolationHeadersForStaticAsset('/static/scripts/semantic.worker.js', 200), {
     'Cross-Origin-Resource-Policy': 'same-origin',
     'Cross-Origin-Embedder-Policy': 'require-corp',

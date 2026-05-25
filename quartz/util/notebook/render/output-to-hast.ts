@@ -70,7 +70,7 @@ function renderError(output: ErrorOutput): ElementContent[] {
   const header = [output.ename, output.evalue].filter(Boolean).join(': ')
   const text = traceback || header
   if (!text.trim()) return []
-  return [preSamp(['notebook-output', 'notebook-output-error'], 'error', text)]
+  return [preSamp(['notebook-output', 'notebook-output-error'], 'exit 1', text)]
 }
 
 function latexSource(value: string): { source: string; displayMode: boolean } {

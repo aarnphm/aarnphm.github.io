@@ -35,6 +35,10 @@ const languageCellMagics = new Map<string, string>([
   ['html', 'html'],
   ['sql', 'sql'],
 ])
+const runtimeCellMagics = new Map<string, string>([
+  ['javascript', 'javascript'],
+  ['js', 'javascript'],
+])
 const filenameLanguageExtensions = new Map<string, string>([
   ['bash', 'bash'],
   ['c', 'c'],
@@ -336,12 +340,33 @@ function cellMagicLanguage(source: string): string | undefined {
   }
 }
 
+function cellMagicRuntimeLanguage(source: string): string | undefined {
+  for (const line of source.split(/\r?\n/)) {
+    const trimmed = line.trim()
+    if (!trimmed) continue
+    const magic = trimmed.match(cellMagicPattern)?.[1]?.toLowerCase()
+    if (magic === undefined) return undefined
+    const language = runtimeCellMagics.get(magic)
+    if (language) return language
+    if (!captureCellMagics.has(magic)) return undefined
+  }
+}
+
 function notebookCellDisplayLanguage(
   metadata: Readonly<Record<string, unknown>>,
   source: string,
   language: string,
 ): string {
   return cellMagicLanguage(source) ?? notebookCellMetadataLanguage(metadata) ?? language
+}
+
+function notebookCellRuntimeBackend(cell: CodeCell, notebookLanguage: string) {
+  const runtimeLanguage = cellMagicRuntimeLanguage(cell.source)
+  if (runtimeLanguage !== undefined) {
+    const backend = backendFor(runtimeLanguage)
+    if (backend) return backend
+  }
+  return backendFor(notebookLanguage)
 }
 
 export function notebookSupportsRuntime(doc: NotebookDoc): boolean {
@@ -361,24 +386,28 @@ export function notebookRuntimeData(
   for (const cell of doc.cells) {
     if (cell.cellType !== 'code') continue
     codeIndex += 1
+    const cellBackend = notebookCellRuntimeBackend(cell, doc.language)
+    if (!cellBackend) continue
+    const displayLanguage = notebookCellDisplayLanguage(cell.metadata, cell.source, doc.language)
+    const displayLanguageField = displayLanguage === cellBackend.name ? {} : { displayLanguage }
     cells.push({
       id: codeCellId(codeIndex),
       source: cell.source,
-      language: backend.name,
+      language: cellBackend.name,
+      ...displayLanguageField,
       executionIndex: cell.executionCount,
     })
   }
   if (cells.length === 0) return undefined
   const targetSourcePath = runtime.sourcePath ?? sourcePath
   const indexUrl = runtime.indexUrl ?? backend.defaultIndexUrl
-  if (!indexUrl) return undefined
   const data: NotebookRuntimeData = {
     id: notebookId(targetSourcePath),
     sourcePath: targetSourcePath,
     language: backend.name,
-    indexUrl,
     cells,
   }
+  if (indexUrl !== undefined) data.indexUrl = indexUrl
   if (runtime.importableModules !== undefined) {
     data.importableModules = [...new Set(runtime.importableModules)].sort()
   }

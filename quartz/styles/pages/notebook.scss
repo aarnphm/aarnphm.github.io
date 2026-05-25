@@ -64,7 +64,7 @@ article:has(.notebook-runtime) {
     grid-template-columns: var(--notebook-gutter-width) minmax(0, 1fr);
     column-gap: var(--notebook-code-gap);
     align-items: start;
-    margin: 2rem 0 1.4rem;
+    margin: 0.2rem 0 1.4rem;
     padding: var(--notebook-shell-padding);
     border: 1px solid color-mix(in srgb, var(--lightgray) 78%, transparent);
     border-radius: var(--notebook-shell-radius);
@@ -108,6 +108,53 @@ article:has(.notebook-runtime) {
       > pre {
         margin: 0;
         border-radius: var(--notebook-inner-radius);
+
+        > code {
+          .hljs-keyword,
+          .hljs-selector-tag,
+          .hljs-literal,
+          .hljs-section,
+          .hljs-link {
+            color: var(--code-keyword);
+          }
+
+          .hljs-string,
+          .hljs-regexp,
+          .hljs-addition {
+            color: var(--code-string);
+          }
+
+          .hljs-title,
+          .hljs-name,
+          .hljs-function,
+          .hljs-attr {
+            color: var(--code-function);
+          }
+
+          .hljs-number,
+          .hljs-symbol,
+          .hljs-bullet {
+            color: var(--code-value);
+          }
+
+          .hljs-comment,
+          .hljs-quote {
+            color: var(--code-comment);
+            font-style: italic;
+          }
+
+          .hljs-built_in,
+          .hljs-type,
+          .hljs-class {
+            color: var(--code-tag);
+          }
+
+          .hljs-meta,
+          .hljs-doctag,
+          .hljs-deletion {
+            color: var(--code-important);
+          }
+        }
       }
     }
 
@@ -353,9 +400,17 @@ article:has(.notebook-runtime) {
     --notebook-language-color: #3776ab;
   }
 
-  .notebook-language-badge-javascript,
-  .notebook-language-badge-typescript {
+  .notebook-language-badge-python .notebook-language-icon {
+    height: 1.05rem;
+    background: transparent;
+  }
+
+  .notebook-language-badge-javascript {
     --notebook-language-color: #c7922b;
+  }
+
+  .notebook-language-badge-typescript {
+    --notebook-language-color: #3178c6;
   }
 
   .notebook-language-badge-java {
@@ -383,6 +438,35 @@ article:has(.notebook-runtime) {
     --notebook-language-color: #654ff0;
   }
 
+  .notebook-language-badge-html {
+    --notebook-language-color: #d94a25;
+  }
+
+  .notebook-language-badge-css {
+    --notebook-language-color: #1572b6;
+  }
+
+  .notebook-language-badge-json,
+  .notebook-language-badge-csv {
+    --notebook-language-color: #5b6472;
+  }
+
+  .notebook-language-badge-markdown {
+    --notebook-language-color: #46637f;
+  }
+
+  .notebook-language-badge-zig {
+    --notebook-language-color: #d88a27;
+  }
+
+  .notebook-language-badge-ocaml {
+    --notebook-language-color: #c75f22;
+  }
+
+  .notebook-language-badge-text {
+    --notebook-language-color: #69707a;
+  }
+
   .notebook-language-icon {
     display: inline-grid;
     place-items: center;
@@ -393,15 +477,41 @@ article:has(.notebook-runtime) {
     height: 0.82rem;
     padding: 0;
     border-radius: var(--radius-1);
-    background: color-mix(in srgb, var(--notebook-language-color) 18%, var(--light));
     color: color-mix(in srgb, var(--notebook-language-color) 88%, var(--dark));
     font-size: 0.5rem;
     font-weight: 700;
     letter-spacing: 0;
   }
 
+  .notebook-language-svg {
+    display: block;
+    width: 0.72rem;
+    height: 0.72rem;
+    overflow: visible;
+  }
+
+  .notebook-python-icon {
+    width: 0.92rem;
+    height: 0.98rem;
+  }
+
+  .notebook-language-text {
+    display: block;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: clip;
+  }
+
   .notebook-language-label {
-    display: none;
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+    border: 0;
   }
 
   .notebook-cell-actions {
@@ -514,6 +624,12 @@ article:has(.notebook-runtime) {
     scale: 0.96;
   }
 
+  .notebook-code-cell:not([data-notebook-editing])
+    > .notebook-cell-actions
+    button[data-notebook-vim-cell] {
+    display: none;
+  }
+
   .notebook-cell-actions button[data-notebook-vim-cell] {
     opacity: 0.45;
   }
@@ -545,6 +661,11 @@ article:has(.notebook-runtime) {
     width: 0.82rem;
     height: 0.82rem;
     overflow: visible;
+  }
+
+  .notebook-icon-button .notebook-vim-icon {
+    width: 0.68rem;
+    height: 0.82rem;
   }
 
   .notebook-icon-button svg path {
