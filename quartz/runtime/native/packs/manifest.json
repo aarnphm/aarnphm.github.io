@@ -3,8 +3,15 @@
   "runtimes": {
     "go": { "worker": "go/worker.js", "assets": ["go/wasm_exec.js", "go/yaegi.wasm"] },
     "haskell": {
-      "available": false,
-      "reason": "Haskell notebook cells need a self-hosted GHCi WebAssembly runtime pack. This site does not ship one yet."
+      "worker": "haskell/worker.js",
+      "assets": [
+        "haskell/browser-wasi-shim.mjs",
+        "haskell/bsdtar.wasm",
+        "haskell/dyld.mjs",
+        "haskell/post-link.mjs",
+        "haskell/prelude.mjs",
+        "haskell/rootfs.tar.zst"
+      ]
     },
     "mojo": {
       "available": false,
