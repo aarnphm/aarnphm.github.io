@@ -51,6 +51,7 @@ export default (() => {
         opus: 'opus-4.7[1m]',
         gemini: 'gemini-3.1-pro-review',
         gpt: 'gpt-5.5',
+        codex: 'gpt-5.5',
       }
       const items: JSX.Element[] = []
       collaborators.forEach((c: string, i: number) => {
@@ -81,7 +82,7 @@ export default (() => {
           items.push(h('span', { class: 'collab-text' }, [alias]))
         }
         if (i < collaborators.length - 1) {
-          items.push(h('span', {}, [', ']))
+          items.push(h('span', {}, [',']))
         }
       })
       meta.push({ title: 'avec', classes: ['collaborators'], item: items })

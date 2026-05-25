@@ -8,7 +8,7 @@ seealso:
   - '[[thoughts/topology/algebraic bridge|algebraic bridge]]'
 tags:
   - math
-  - topology
+  - math/topology
 title: fundamental group
 ---
 

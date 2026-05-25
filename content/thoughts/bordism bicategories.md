@@ -4,7 +4,7 @@ description: higher dimensional generalization of category, where composition of
 id: bordism bicategories
 modified: 2026-05-09 17:51:57 GMT-04:00
 tags:
-  - topology
+  - math/topology
   - math
 title: bordism bicategories
 ---

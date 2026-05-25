@@ -5,7 +5,7 @@ id: simply-connected
 modified: 2026-05-19 18:13:37 GMT-04:00
 tags:
   - math
-  - topology
+  - math/topology
   - fundamental group
 title: simple connectivity
 ---

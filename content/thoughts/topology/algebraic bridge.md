@@ -10,7 +10,7 @@ seealso:
   - '[[thoughts/topology/poincare|poincaré roadmap]]'
 tags:
   - math
-  - topology
+  - math/topology
 title: algebraic view
 ---
 
