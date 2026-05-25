@@ -1,10 +1,11 @@
-import type { ElementContent } from 'hast'
+import type { Element, ElementContent } from 'hast'
 import { fromHtml } from 'hast-util-from-html'
 import { toHtml } from 'hast-util-to-html'
 import { h } from 'hastscript'
 import katex from 'katex'
 import type { ErrorOutput, MimeBundle, Output, StreamOutput } from '../types'
 import { customMacros, katexOptions } from '../../../cfg'
+import { escapeHTML } from '../../escape'
 import {
   NOTEBOOK_IMAGE_BINARY_MIME_TYPES,
   NOTEBOOK_OUTPUT_MIME_PRIORITY,
@@ -29,6 +30,10 @@ function trimTrailing(value: string): string {
   return value.replace(/\s+$/, '')
 }
 
+function escapedPreText(value: string): string {
+  return escapeHTML(value).replaceAll('\r\n', '\n').replaceAll('\r', '\n').replaceAll('\n', '&#10;')
+}
+
 function mimeText(value: string | readonly string[] | undefined): string {
   if (typeof value === 'string') return value
   if (Array.isArray(value)) return value.join('')
@@ -47,6 +52,35 @@ function outputName(node: ElementContent): string {
   if (node.type !== 'element') return 'output'
   const value = node.properties?.dataOutputName ?? node.properties?.['data-output-name']
   return typeof value === 'string' && value.trim() ? value : 'output'
+}
+
+function classNames(node: Element): string[] {
+  const value = node.properties?.className
+  if (typeof value === 'string') return value.split(/\s+/).filter(Boolean)
+  if (!Array.isArray(value)) return []
+  return value.filter((item): item is string => typeof item === 'string')
+}
+
+function textContent(node: ElementContent): string | undefined {
+  if (node.type === 'text') return node.value
+}
+
+function serializedPreSamp(node: ElementContent): string | undefined {
+  if (node.type !== 'element' || node.tagName !== 'pre') return undefined
+  const classes = classNames(node)
+  if (!classes.includes('notebook-output')) return undefined
+  if (node.children.length !== 1) return undefined
+  const samp = node.children[0]
+  if (samp.type !== 'element' || samp.tagName !== 'samp') return undefined
+  const text = samp.children.map(textContent)
+  if (text.some(value => value === undefined)) return undefined
+  const classAttribute = escapeHTML(classes.join(' '))
+  const nameAttribute = escapeHTML(outputName(node))
+  return `<pre class="${classAttribute}" data-output-name="${nameAttribute}"><samp>${escapedPreText(text.join(''))}</samp></pre>`
+}
+
+function renderOutputNodeHtml(node: ElementContent): string {
+  return serializedPreSamp(node) ?? toHtml(node, { allowDangerousHtml: true })
 }
 
 function rawBlock(classes: string[], rawHtml: string): ElementContent {
@@ -175,15 +209,13 @@ export function renderSuccessMarker(): ElementContent {
 }
 
 export function renderOutputHtml(output: Output): string {
-  return renderOutput(output)
-    .map(node => toHtml(node, { allowDangerousHtml: true }))
-    .join('')
+  return renderOutput(output).map(renderOutputNodeHtml).join('')
 }
 
 export function renderOutputHtmlBlocks(output: Output): NotebookOutputHtml[] {
   return renderOutput(output).map(node => ({
     label: outputName(node),
-    html: toHtml(node, { allowDangerousHtml: true }),
+    html: renderOutputNodeHtml(node),
   }))
 }
 

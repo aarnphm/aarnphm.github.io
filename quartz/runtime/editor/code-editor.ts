@@ -23,6 +23,7 @@ type NotebookCodeEditorConfig = {
   onEdited?: () => void
   onChange?: (content: string) => void
   onSubmit?: () => void
+  onSubmitAndAdvance?: () => void
   onSave?: () => void
   onCancel?: () => void
   lsp?: NotebookLspConfig
@@ -93,7 +94,7 @@ let notebookCodeEditorCoreWarmup: Promise<void> | undefined
 let notebookCodeEditorLspWarmup: Promise<void> | undefined
 let notebookCodeEditorVimWarmup: Promise<void> | undefined
 const notebookLanguageWarmups = new Map<string, Promise<Extension>>()
-const notebookRunKeys = ['Mod-Enter', 'Ctrl-Enter', 'Shift-Enter', 'Alt-Enter'] as const
+const notebookRunKeys = ['Ctrl-Enter', 'Shift-Enter', 'Alt-Enter'] as const
 const notebookHighlightJsLanguages = new Set<string>()
 const notebookVimReservedControlKeys = new Set([
   'Ctrl-b',
@@ -1108,16 +1109,23 @@ export async function createNotebookCodeEditor(
         : defaultKeymap),
       ...historyKeymap,
     ])
+  const submit = () => {
+    config.onSubmit?.()
+    return true
+  }
+  const submitAndAdvance = () => {
+    if (config.onSubmitAndAdvance) {
+      config.onSubmitAndAdvance()
+    } else {
+      config.onSubmit?.()
+    }
+    return true
+  }
   const notebookKeymap = (): Extension =>
     Prec.highest(
       keymap.of([
-        ...notebookRunKeys.map(key => ({
-          key,
-          run: () => {
-            config.onSubmit?.()
-            return true
-          },
-        })),
+        { key: 'Mod-Enter', run: submitAndAdvance },
+        ...notebookRunKeys.map(key => ({ key, run: submit })),
         {
           key: 'Mod-s',
           run: () => {
