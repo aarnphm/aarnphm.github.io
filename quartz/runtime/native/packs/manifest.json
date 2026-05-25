@@ -1,4 +1,7 @@
 {
   "version": 1,
-  "runtimes": { "go": { "worker": "go/worker.js", "assets": ["go/wasm_exec.js", "go/yaegi.wasm"] } }
+  "runtimes": {
+    "go": { "worker": "go/worker.js", "assets": ["go/wasm_exec.js", "go/yaegi.wasm"] },
+    "ocaml": { "worker": "ocaml/worker.js", "assets": ["ocaml/toplevel.js"] }
+  }
 }

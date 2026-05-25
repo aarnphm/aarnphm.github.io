@@ -1,0 +1,33 @@
+(executable
+ (name toplevel)
+ (libraries js_of_ocaml js_of_ocaml-toplevel)
+ (link_flags
+  (:standard -linkall))
+ (modes byte)
+ (preprocess
+  (pps js_of_ocaml-ppx)))
+
+(rule
+ (targets export.txt)
+ (deps toplevel.bc)
+ (action
+  (run jsoo_listunits -o %{targets} stdlib)))
+
+(rule
+ (targets toplevel.generated.js)
+ (deps toplevel.bc export.txt)
+ (action
+  (run
+   %{bin:js_of_ocaml}
+   --export
+   %{dep:export.txt}
+   --toplevel
+   -w
+   no-missing-effects-backend
+   %{dep:toplevel.bc}
+   -o
+   %{targets})))
+
+(alias
+ (name default)
+ (deps toplevel.generated.js))
