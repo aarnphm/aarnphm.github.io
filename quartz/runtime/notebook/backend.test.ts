@@ -16,7 +16,12 @@ import {
   registerBackend,
   unregisterBackend,
 } from './backend'
-import { nextNotebookCellId, notebookRunAndAdvanceKey, notebookRunKey } from './client'
+import {
+  nextNotebookCellId,
+  notebookRunAndAdvanceKey,
+  notebookRunKey,
+  notebookRuntimePreloadLanguages,
+} from './client'
 
 before(async () => {
   await import('./registry')
@@ -55,6 +60,23 @@ describe('Notebook runtime keyboard commands', () => {
     assert.strictEqual(nextNotebookCellId(cells, 'cell-1'), 'cell-2')
     assert.strictEqual(nextNotebookCellId(cells, 'cell-3'), undefined)
     assert.strictEqual(nextNotebookCellId(cells, 'missing'), undefined)
+  })
+
+  test('deduplicates executable runtime preload languages in notebook order', () => {
+    assert.deepStrictEqual(
+      notebookRuntimePreloadLanguages({
+        language: 'python',
+        cells: [
+          { language: 'python' },
+          { language: 'javascript' },
+          { language: 'rust' },
+          { language: 'js' },
+          { language: 'haskell' },
+          { language: 'wat' },
+        ],
+      }),
+      ['python', 'javascript', 'rust', 'haskell'],
+    )
   })
 })
 

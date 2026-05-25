@@ -70,6 +70,11 @@ type RuntimePayload = {
   importableModules?: string[]
 }
 
+export type NotebookRuntimePreloadPayload = {
+  readonly language: string
+  readonly cells: readonly { readonly language: string }[]
+}
+
 export type NotebookRunKeyEvent = Pick<
   KeyboardEvent,
   'key' | 'metaKey' | 'ctrlKey' | 'shiftKey' | 'altKey'
@@ -211,6 +216,18 @@ export function nextNotebookCellId(
 ): string | undefined {
   const index = cells.findIndex(cell => cell.id === cellId)
   return index === -1 ? undefined : cells[index + 1]?.id
+}
+
+export function notebookRuntimePreloadLanguages(payload: NotebookRuntimePreloadPayload): string[] {
+  const languages: string[] = []
+  const seen = new Set<string>()
+  for (const cell of payload.cells) {
+    const backend = backendFor(cell.language)
+    if (!backend || seen.has(backend.name)) continue
+    seen.add(backend.name)
+    languages.push(backend.name)
+  }
+  return languages
 }
 
 function decodeRuntimeCodePoint(codePoint: number, fallback: string): string {
@@ -821,6 +838,18 @@ function syncStaticOutputTabs(frame: HTMLElement, cellId: string) {
   syncOutputTabs(container, cellId)
 }
 
+function scheduleNotebookRuntimePreload(callback: () => void) {
+  if (typeof window.requestIdleCallback === 'function') {
+    window.requestIdleCallback(callback, { timeout: 1500 })
+    return
+  }
+  window.setTimeout(callback, 750)
+}
+
+function notebookRuntimeWasDisposed(error: unknown): boolean {
+  return error instanceof Error && error.message === 'notebook runtime was disposed'
+}
+
 function appendRuntimeOutput(
   target: HTMLElement,
   output: NotebookRuntimeOutput,
@@ -883,7 +912,9 @@ class NotebookRuntime {
   private root: HTMLElement
   private cellRoot: Document | HTMLElement
   private assets: NotebookRuntimeAssetConfig
-  private kernel: Kernel | undefined
+  private kernels = new Map<string, Kernel>()
+  private kernelRequests = new Map<string, Promise<Kernel>>()
+  private runningKernel: Kernel | undefined
   private moduleCache = new Map<string, NotebookModule | null>()
   private moduleFetches = new Map<string, Promise<NotebookModule | null>>()
   private importableModules: Set<string> | undefined
@@ -897,6 +928,9 @@ class NotebookRuntime {
   private vimMode: boolean
   private activeCellId: string | undefined
   private editPrefixTimeout: number | undefined
+  private runtimePreload: Promise<void> | undefined
+  private runtimeEpoch = 0
+  private disposed = false
 
   constructor(root: HTMLElement, payload: RuntimePayload, assets: NotebookRuntimeAssetConfig) {
     this.root = root
@@ -937,9 +971,11 @@ class NotebookRuntime {
       vim?.removeEventListener('click', this.toggleVimMode)
       document.removeEventListener('keydown', this.handleNotebookKeydown, true)
       this.clearEditPrefix()
+      this.disposed = true
       this.destroyRuntime()
     })
     this.syncToolbarToggles()
+    this.scheduleRuntimePreload()
   }
 
   private queryCell<T extends Element>(selector: string): T | null {
@@ -1301,9 +1337,9 @@ class NotebookRuntime {
   }
 
   private stop = () => {
-    if (this.running && this.kernel) {
+    if (this.running && this.runningKernel) {
       this.stopped = true
-      this.kernel.interrupt()
+      this.runningKernel.interrupt()
       this.setStatus('interrupting')
       return
     }
@@ -1328,6 +1364,7 @@ class NotebookRuntime {
     this.executionCounter = Math.max(0, ...this.payload.cells.map(cell => cell.executionIndex ?? 0))
     this.setRunningControls(false)
     this.setStatus('idle')
+    this.scheduleRuntimePreload()
   }
 
   private decorateCells() {
@@ -1803,12 +1840,29 @@ class NotebookRuntime {
     if (!backend) {
       throw new Error(`${cell.language} notebook cells are not executable here.`)
     }
-    if (this.kernel?.language === backend.name) return { kernel: this.kernel, backend }
+    return { kernel: await this.ensureBackendKernel(backend), backend }
+  }
 
-    const previousKernel = this.kernel
-    this.kernel = undefined
-    await previousKernel?.dispose()
+  private async ensureBackendKernel(backend: ExecutableLanguageBackend): Promise<Kernel> {
+    const existing = this.kernels.get(backend.name)
+    if (existing) return existing
+    const pending = this.kernelRequests.get(backend.name)
+    if (pending) return await pending
+    const epoch = this.runtimeEpoch
+    const request = this.createBackendKernel(backend, epoch)
+    this.kernelRequests.set(backend.name, request)
+    try {
+      return await request
+    } finally {
+      if (this.kernelRequests.get(backend.name) === request)
+        this.kernelRequests.delete(backend.name)
+    }
+  }
 
+  private async createBackendKernel(
+    backend: ExecutableLanguageBackend,
+    epoch: number,
+  ): Promise<Kernel> {
     const kernel = await backend.kernelFactory({
       runtimeId: this.payload.id,
       sourcePath: this.payload.sourcePath,
@@ -1818,22 +1872,67 @@ class NotebookRuntime {
         : this.assets.workerUrl,
       resolveAsset: (request, runtimeFile) => this.resolveAsset(request, runtimeFile),
     })
-    await kernel.init({
-      signal: new AbortController().signal,
-      indexUrl: this.payload.indexUrl || backend.defaultIndexUrl,
-    })
-    this.kernel = kernel
-    return { kernel, backend }
+    try {
+      await kernel.init({
+        signal: new AbortController().signal,
+        indexUrl: this.payload.indexUrl || backend.defaultIndexUrl,
+      })
+    } catch (error) {
+      await kernel.dispose()
+      throw error
+    }
+    if (this.disposed || this.runtimeEpoch !== epoch) {
+      await kernel.dispose()
+      throw new Error('notebook runtime was disposed')
+    }
+    this.kernels.set(backend.name, kernel)
+    return kernel
   }
 
   private async runKernelCell(cell: RuntimeCell, source: string): Promise<CellRunResult> {
     const { kernel, backend } = await this.ensureKernel(cell)
     const modules = await this.notebookModulesFor(source, backend)
     let failed = false
-    for await (const event of kernel.execute(cell.id, source, { debug: this.debug, modules })) {
-      failed = this.handleRuntimeEvent(event) || failed
+    this.runningKernel = kernel
+    try {
+      for await (const event of kernel.execute(cell.id, source, { debug: this.debug, modules })) {
+        failed = this.handleRuntimeEvent(event) || failed
+      }
+    } finally {
+      if (this.runningKernel === kernel) this.runningKernel = undefined
     }
     return { failed }
+  }
+
+  private scheduleRuntimePreload() {
+    if (this.runtimePreload) return
+    scheduleNotebookRuntimePreload(() => {
+      if (this.disposed) return
+      if (this.running) {
+        this.runtimePreload = undefined
+        this.scheduleRuntimePreload()
+        return
+      }
+      this.runtimePreload = this.preloadRuntimeLanguages()
+    })
+  }
+
+  private async preloadRuntimeLanguages(): Promise<void> {
+    for (const language of notebookRuntimePreloadLanguages(this.payload)) {
+      if (this.disposed || this.running) {
+        this.runtimePreload = undefined
+        this.scheduleRuntimePreload()
+        return
+      }
+      const backend = backendFor(language)
+      if (!backend) continue
+      try {
+        await this.ensureBackendKernel(backend)
+      } catch (error) {
+        if (this.disposed || notebookRuntimeWasDisposed(error)) return
+        console.warn(`failed to preload ${backend.name} notebook runtime`, error)
+      }
+    }
   }
 
   private handleRuntimeEvent(event: RuntimeEvent): boolean {
@@ -2137,9 +2236,13 @@ class NotebookRuntime {
   }
 
   private destroyRuntime() {
-    const kernel = this.kernel
-    this.kernel = undefined
-    void kernel?.dispose()
+    this.runtimeEpoch += 1
+    this.runtimePreload = undefined
+    const kernels = [...this.kernels.values()]
+    this.kernels.clear()
+    this.kernelRequests.clear()
+    this.runningKernel = undefined
+    for (const kernel of kernels) void kernel.dispose()
   }
 }
 
