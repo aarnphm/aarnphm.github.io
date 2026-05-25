@@ -15,6 +15,7 @@ import {
 } from '../../../runtime/lsp/pyright-assets'
 import {
   isNativeRuntimeLanguage,
+  isNativeRuntimePackAvailableEntry,
   readNativeRuntimePackManifest,
   type NativeRuntimePackEntry,
   type NativeRuntimePackManifest,
@@ -354,7 +355,7 @@ async function readNativeRuntimePackSourceManifest(): Promise<NativeRuntimePackM
 function nativeRuntimePackFiles(manifest: NativeRuntimePackManifest): readonly string[] {
   const files = new Set<string>()
   for (const entry of Object.values(manifest.runtimes)) {
-    if (!entry) continue
+    if (!entry || !isNativeRuntimePackAvailableEntry(entry)) continue
     files.add(normalizeNativeRuntimePackPath(entry.worker))
     for (const asset of entry.assets) files.add(normalizeNativeRuntimePackPath(asset))
   }
@@ -388,6 +389,7 @@ function rewriteNativeRuntimePackEntry(
   references: Map<string, string>,
   entry: NativeRuntimePackEntry,
 ): NativeRuntimePackEntry {
+  if (!isNativeRuntimePackAvailableEntry(entry)) return entry
   return {
     worker: runtimePackAssetReference(references, entry.worker),
     assets: entry.assets.map(asset => runtimePackAssetReference(references, asset)),

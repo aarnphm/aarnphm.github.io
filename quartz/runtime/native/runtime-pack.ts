@@ -16,7 +16,20 @@ import { AsyncEventQueue } from '../notebook/async-event-queue'
 
 export type NativeRuntimeLanguage = 'go' | 'haskell' | 'mojo' | 'ocaml' | 'rust'
 
-export type NativeRuntimePackEntry = { readonly worker: string; readonly assets: readonly string[] }
+export type NativeRuntimePackAvailableEntry = {
+  readonly available?: true
+  readonly worker: string
+  readonly assets: readonly string[]
+}
+
+export type NativeRuntimePackUnavailableEntry = {
+  readonly available: false
+  readonly reason: string
+}
+
+export type NativeRuntimePackEntry =
+  | NativeRuntimePackAvailableEntry
+  | NativeRuntimePackUnavailableEntry
 
 export type NativeRuntimePackManifest = {
   readonly version: 1
@@ -141,9 +154,19 @@ function readRuntimeOutput(value: unknown): NotebookRuntimeOutput | undefined {
 
 function readPackEntry(value: unknown): NativeRuntimePackEntry | undefined {
   if (!isRecord(value)) return undefined
+  if (value.available === false) {
+    const reason = readString(value, 'reason')
+    return reason ? { available: false, reason } : undefined
+  }
   const worker = readString(value, 'worker')
   if (!worker) return undefined
   return { worker, assets: readStringArray(value.assets) ?? [] }
+}
+
+export function isNativeRuntimePackAvailableEntry(
+  value: NativeRuntimePackEntry,
+): value is NativeRuntimePackAvailableEntry {
+  return value.available !== false
 }
 
 export function readNativeRuntimePackManifest(
@@ -243,6 +266,7 @@ export class NativeRuntimePackKernel implements Kernel {
   private readyResolve: (() => void) | undefined
   private readyReject: ((error: unknown) => void) | undefined
   private active: ActiveExecution | undefined
+  private unavailableReason: string | undefined
   private fileSequence = 0
   private fileWaiters = new Map<string, (result: RuntimeFileResult | undefined) => void>()
 
@@ -269,6 +293,21 @@ export class NativeRuntimePackKernel implements Kernel {
   ): AsyncIterable<RuntimeEvent> {
     if (this.active) throw new Error(`runtime is already executing ${this.active.cellId}`)
     await this.init({ signal: new AbortController().signal })
+    if (this.unavailableReason) {
+      yield { type: 'started', cellId }
+      yield {
+        type: 'output',
+        cellId,
+        output: {
+          type: 'error',
+          ename: 'UnsupportedRuntimeFeature',
+          evalue: this.unavailableReason,
+          traceback: this.unavailableReason,
+        },
+      }
+      yield { type: 'done', cellId, executionCount: null, failed: true }
+      return
+    }
     const queue = new AsyncEventQueue<RuntimeEvent>()
     this.active = { cellId, queue }
     queue.push({ type: 'started', cellId })
@@ -302,12 +341,17 @@ export class NativeRuntimePackKernel implements Kernel {
   }
 
   private async start(): Promise<void> {
+    this.unavailableReason = undefined
     const manifest = await runtimePackManifest(this.manifestUrl)
     const entry = manifest.runtimes[this.language]
     if (!entry) {
       throw new Error(
         `${this.language} notebook cells need a self-hosted WebAssembly runtime pack. ${this.manifestUrl} does not list ${this.language}.`,
       )
+    }
+    if (!isNativeRuntimePackAvailableEntry(entry)) {
+      this.unavailableReason = entry.reason
+      return
     }
     if (typeof Worker === 'undefined') throw new Error('browser workers are unavailable')
     await new Promise<void>((resolve, reject) => {
@@ -434,6 +478,7 @@ export class NativeRuntimePackKernel implements Kernel {
     this.ready = undefined
     this.readyResolve = undefined
     this.readyReject = undefined
+    this.unavailableReason = undefined
     this.active?.queue.fail(error)
     this.active = undefined
     for (const waiter of this.fileWaiters.values()) waiter(undefined)
