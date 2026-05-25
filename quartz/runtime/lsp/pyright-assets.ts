@@ -7,6 +7,7 @@ export type NotebookPyrightTypeshedChunk = { index: number; files: Record<string
 const encoder = new TextEncoder()
 const chunkHeaderBytes = encodedBytes('{"files":{')
 const chunkFooterBytes = encodedBytes('}}')
+const pythonModuleNamePattern = /^[A-Za-z_][A-Za-z0-9_]*(?:\.[A-Za-z_][A-Za-z0-9_]*)*$/
 
 function encodedBytes(value: string): number {
   return encoder.encode(value).byteLength
@@ -95,4 +96,42 @@ export function notebookPyrightTypeshedFiles(value: JsonObject): Record<string, 
     result[filePath] = text
   }
   return result
+}
+
+function validPythonModuleName(value: string): boolean {
+  return pythonModuleNamePattern.test(value)
+}
+
+function notebookPyrightModuleStubPath(sitePackagesPath: string, moduleName: string): string {
+  return `${sitePackagesPath}/${moduleName.split('.').join('/')}/__init__.pyi`
+}
+
+export function notebookPyrightPyodidePackageImports(value: JsonObject): string[] {
+  const packages = objectValue(value.packages)
+  if (!packages) throw new Error('pyodide package lock is missing packages')
+  const names = new Set<string>()
+  for (const entry of Object.values(packages)) {
+    const imports = arrayValue(objectValue(entry)?.imports)
+    if (!imports) continue
+    for (const item of imports) {
+      const name = stringValue(item)
+      if (name && validPythonModuleName(name)) names.add(name)
+    }
+  }
+  return [...names].sort((left, right) => left.localeCompare(right))
+}
+
+export function notebookPyrightPackageStubFiles(
+  sitePackagesPath: string,
+  moduleNames: readonly string[],
+  source: string,
+): Record<string, string> {
+  const files: Record<string, string> = {}
+  for (const moduleName of [...new Set(moduleNames)].sort((left, right) =>
+    left.localeCompare(right),
+  )) {
+    if (!validPythonModuleName(moduleName)) continue
+    files[notebookPyrightModuleStubPath(sitePackagesPath, moduleName)] = source
+  }
+  return files
 }

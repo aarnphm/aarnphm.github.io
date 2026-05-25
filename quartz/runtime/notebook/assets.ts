@@ -3,6 +3,7 @@ export type NotebookRuntimeAssets = {
   readonly javascriptWorkerUrl: string
   readonly pyrightWorkerManifestUrl: string
   readonly pyrightTypeshedManifestUrl: string
+  readonly pyrightPackageStubsManifestUrl: string
 }
 
 export type NotebookRuntimeAssetConfig = Partial<NotebookRuntimeAssets>

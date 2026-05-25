@@ -4,6 +4,8 @@ import {
   chunkNotebookPyrightTypeshedFiles,
   notebookPyrightAssetManifestChunks,
   notebookPyrightAssetManifestEntry,
+  notebookPyrightPackageStubFiles,
+  notebookPyrightPyodidePackageImports,
   notebookPyrightTypeshedFiles,
 } from './pyright-assets'
 
@@ -64,4 +66,36 @@ test('reads notebook pyright typeshed manifests and chunks', () => {
   assert.throws(() => notebookPyrightAssetManifestChunks({ chunks: [] }, 'test asset'))
   assert.throws(() => notebookPyrightAssetManifestEntry({ entry: '' }, 'test worker'))
   assert.throws(() => notebookPyrightTypeshedFiles({ files: { '/bad.pyi': { nested: true } } }))
+})
+
+test('reads pyodide package imports for notebook completion stubs', () => {
+  assert.deepEqual(
+    notebookPyrightPyodidePackageImports({
+      packages: {
+        numpy: { imports: ['numpy'] },
+        matplotlib: { imports: ['pylab', 'mpl_toolkits', 'matplotlib'] },
+        invalid: { imports: ['bad-name', 'also bad'] },
+        duplicate: { imports: ['numpy'] },
+        empty: { imports: [] },
+      },
+    }),
+    ['matplotlib', 'mpl_toolkits', 'numpy', 'pylab'],
+  )
+  assert.throws(() => notebookPyrightPyodidePackageImports({ packages: [] }))
+})
+
+test('creates package stubs under notebook site-packages', () => {
+  const packageFiles = notebookPyrightPackageStubFiles(
+    '/runtime/site-packages',
+    ['numpy', 'bad-name', 'PIL', 'numpy'],
+    'from typing import Any\n',
+  )
+  assert.deepEqual(Object.keys(packageFiles), [
+    '/runtime/site-packages/numpy/__init__.pyi',
+    '/runtime/site-packages/PIL/__init__.pyi',
+  ])
+  assert.equal(
+    packageFiles['/runtime/site-packages/numpy/__init__.pyi'],
+    'from typing import Any\n',
+  )
 })

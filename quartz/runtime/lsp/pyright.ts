@@ -50,9 +50,12 @@ export type NotebookLspConfig = {
 
 type JsonRpcId = string | number | null
 type NotebookMessageTarget = { postMessage(message: unknown): void }
+type NotebookPyrightWorkspaceFiles = { files: Record<string, string>; extraPaths: string[] }
 
 const notebookPyrightWorkerManifestName = '../notebook-pyright-worker.json'
 const notebookPyrightTypeshedManifestName = '../notebook-pyright-typeshed.json'
+const notebookPyrightPackageStubsManifestName = '../notebook-pyright-packages.json'
+const notebookPyrightSitePackagesUri = 'file:///site-packages'
 
 const notebookAnalysisSettings: JsonObject = {
   typeCheckingMode: 'basic',
@@ -139,6 +142,14 @@ function pyrightTypeshedManifestUrl() {
   )
 }
 
+function pyrightPackageStubsManifestUrl() {
+  return notebookRuntimeAssetUrl(
+    'pyrightPackageStubsManifestUrl',
+    notebookPyrightPackageStubsManifestName,
+    import.meta.url,
+  )
+}
+
 async function fetchJsonObject(url: string, label: string): Promise<JsonObject> {
   const response = await fetch(url)
   if (!response.ok) throw new Error(`${label} request failed with ${response.status}`)
@@ -188,8 +199,11 @@ function responseMessage(id: JsonRpcId, result: JsonValue): JsonObject {
   return { jsonrpc: '2.0', id, result }
 }
 
-function notebookWorkspaceFiles(rootPath: string): JsonObject {
-  return { files: { [`${rootPath}/.pyright-root`]: '' } }
+function notebookWorkspaceFiles(rootPath: string): NotebookPyrightWorkspaceFiles {
+  return {
+    files: { [`${rootPath}/.pyright-root`]: '' },
+    extraPaths: [notebookPyrightSitePackagesUri],
+  }
 }
 
 function handleServerRequest(message: UnknownRecord, target: NotebookMessageTarget) {
@@ -224,8 +238,9 @@ function handleServerRequest(message: UnknownRecord, target: NotebookMessageTarg
 function initializeMessage(
   message: JsonObject,
   rootUri: string,
-  initialFiles: JsonObject,
+  workspaceFiles: NotebookPyrightWorkspaceFiles,
   typeshedManifestUrl: string,
+  packageStubsManifestUrl: string,
 ): JsonObject {
   if (message.method !== 'initialize') return message
   const params = objectValue(message.params) ?? {}
@@ -237,7 +252,12 @@ function initializeMessage(
       ...params,
       rootUri,
       workspaceFolders: [{ name: 'notebook', uri: rootUri }],
-      initializationOptions: { files: initialFiles, typeshedManifestUrl },
+      initializationOptions: {
+        files: workspaceFiles.files,
+        extraPaths: workspaceFiles.extraPaths,
+        typeshedManifestUrl,
+        packageStubsManifestUrl,
+      },
       capabilities: {
         ...capabilities,
         workspace: {
@@ -352,8 +372,9 @@ function handleBackgroundWorker(
 function createPyrightTransport(
   workerUrl: string,
   rootUri: string,
-  initialFiles: JsonObject,
+  workspaceFiles: NotebookPyrightWorkspaceFiles,
   typeshedManifestUrl: string,
+  packageStubsManifestUrl: string,
   serviceId: number,
 ): Transport {
   if (typeof Worker === 'undefined') throw new Error('browser workers are unavailable')
@@ -405,8 +426,9 @@ function createPyrightTransport(
       const payload = initializeMessage(
         parseTransportMessage(message),
         rootUri,
-        initialFiles,
+        workspaceFiles,
         typeshedManifestUrl,
+        packageStubsManifestUrl,
       )
       if (foregroundReady) {
         foregroundPort.postMessage(payload)
@@ -652,6 +674,7 @@ class NotebookPythonLspService {
         this.rootUri,
         workspaceFiles,
         pyrightTypeshedManifestUrl(),
+        pyrightPackageStubsManifestUrl(),
         notebookLspSequence,
       ),
     )

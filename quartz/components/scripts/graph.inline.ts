@@ -250,7 +250,10 @@ async function renderGraph(graph: HTMLElement, fullSlug: FullSlug) {
   }
 
   function nodeRadius(d: NodeData) {
-    return nodeRadiusById.get(d.id) ?? 4
+    const numLinks = graphData.links.filter(
+      l => l.source.id === d.id || l.target.id === d.id,
+    ).length
+    return 2 + Math.sqrt(numLinks)
   }
 
   let hoveredNodeId: string | null = null
@@ -700,9 +703,11 @@ function registerActiveGraphCleanup() {
   })
 }
 
-function hydrateGraphs(slug: FullSlug) {
+document.addEventListener('nav', async (e: CustomEventMap['nav']) => {
   const notes = document.getElementById('stacked-notes-container')
   if (notes?.classList.contains('active')) return
+
+  const slug = e.detail.url
 
   cleanupActiveGraphView()
   registerActiveGraphCleanup()
@@ -850,9 +855,4 @@ function hydrateGraphs(slug: FullSlug) {
     globalGraphRenderVersion++
     cleanupGlobalGraphs()
   }
-}
-
-document.addEventListener('nav', e => hydrateGraphs(e.detail.url))
-if (typeof window.addCleanup === 'function') {
-  hydrateGraphs(getFullSlug(window))
-}
+})
