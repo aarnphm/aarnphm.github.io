@@ -72,7 +72,7 @@ export const emptyNativeRuntimePackManifest: NativeRuntimePackManifest = {
   runtimes: {},
 }
 
-function isNativeRuntimeLanguage(value: string): value is NativeRuntimeLanguage {
+export function isNativeRuntimeLanguage(value: string): value is NativeRuntimeLanguage {
   switch (value) {
     case 'go':
     case 'haskell':

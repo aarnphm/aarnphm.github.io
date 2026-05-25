@@ -28,6 +28,8 @@ export const notebookRuntimePyrightGenericStubPath = 'quartz/util/pyright-stubs/
 export const notebookRuntimePyrightSitePackagesPath = '/site-packages'
 export const notebookRuntimePyrightPyodideLockUrl =
   'https://cdn.jsdelivr.net/pyodide/v0.29.4/full/pyodide-lock.json'
+export const notebookNativeRuntimePacksDir = 'quartz/runtime/native/packs'
+export const notebookNativeRuntimeManifestSourcePath = `${notebookNativeRuntimePacksDir}/manifest.json`
 export const quartzBaseStylesheetEntry = 'quartz/styles/base.scss'
 export const quartzCustomStylesheetEntry = 'quartz/styles/custom.scss'
 export const basedpyrightSourcePackageName = 'basedpyright-source'
