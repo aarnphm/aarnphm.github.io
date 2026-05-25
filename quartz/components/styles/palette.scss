@@ -222,6 +222,10 @@ ul#helper {
         list-style: none;
         overflow-y: auto;
 
+        &[data-palette-transition] {
+          animation: palette-continuity 180ms ease-out;
+        }
+
         .suggestion-item {
           align-items: baseline;
           display: flex;
@@ -281,5 +285,17 @@ ul#helper {
         }
       }
     }
+  }
+}
+
+@keyframes palette-continuity {
+  from {
+    opacity: 0.35;
+    transform: translateY(4px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }

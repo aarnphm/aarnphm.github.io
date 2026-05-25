@@ -3,6 +3,12 @@ import {
   readCommentRoomEnabled,
   writeCommentRoomEnabled,
 } from '../../util/comment-room'
+import {
+  notebookKernelCommandEvent,
+  notebookKernelRequestEvent,
+  type NotebookKernelCommand,
+  type NotebookKernelSnapshot,
+} from '../../util/notebook-kernel-events'
 import { FullSlug, normalizeRelativeURLs, resolveRelative } from '../../util/path'
 import { populateSearchIndex, querySearchIndex, SearchItem } from './search-index'
 import {
@@ -109,6 +115,39 @@ const commentAuthorRenameWindowMs = 1000 * 60 * 60 * 24 * 90
 
 function notifyToast(message: string) {
   document.dispatchEvent(new CustomEvent('toast', { detail: { message } }))
+}
+
+function notebookKernelSnapshots(): NotebookKernelSnapshot[] {
+  const snapshots: NotebookKernelSnapshot[] = []
+  const event: CustomEventMap['notebookkernelrequest'] = new CustomEvent(
+    notebookKernelRequestEvent,
+    { detail: { respond: snapshot => snapshots.push(snapshot) } },
+  )
+  document.dispatchEvent(event)
+  return snapshots
+}
+
+function notebookKernelSourceLabel(sourcePath: string): string {
+  const name = sourcePath.split('/').filter(Boolean).at(-1)
+  return name ?? sourcePath
+}
+
+function notebookKernelStatusLabel(snapshot: NotebookKernelSnapshot): string {
+  if (snapshot.status === 'running' && snapshot.runningCellId) {
+    return `running ${snapshot.runningCellId}`
+  }
+  return snapshot.status
+}
+
+function dispatchNotebookKernelCommand(
+  snapshot: NotebookKernelSnapshot,
+  command: NotebookKernelCommand,
+) {
+  const event: CustomEventMap['notebookkernelcommand'] = new CustomEvent(
+    notebookKernelCommandEvent,
+    { detail: { runtimeId: snapshot.runtimeId, language: snapshot.language, command } },
+  )
+  document.dispatchEvent(event)
 }
 
 function dispatchCommentAuthorUpdated(oldAuthor: string, newAuthor: string) {
@@ -239,6 +278,8 @@ interface Action {
   name: string
   onClick: (e: MouseEvent) => void
   auxInnerHtml: string
+  keepOpen?: boolean
+  detail?: string
 }
 
 let actionType: ActionType = 'quick_open'
@@ -293,15 +334,32 @@ document.addEventListener('nav', e => {
     recentItems = []
   }
 
+  function commandInputValue(query = '') {
+    return query.length === 0 ? '> ' : `> ${query}`
+  }
+
+  function commandSearchTerm(value: string) {
+    return value.replace(/^\s*>\s?/, '').trimStart()
+  }
+
+  function syncCommandHelper() {
+    helper.querySelectorAll<HTMLLIElement>('li[data-quick-open]').forEach(el => {
+      el.style.display = actionType === 'command' ? 'none' : ''
+    })
+  }
+
   function showPalette(actionTypeNew: ActionType) {
     actionType = actionTypeNew
     container?.classList.add('active')
     if (actionType === 'command') {
-      helper.querySelectorAll<HTMLLIElement>('li[data-quick-open]').forEach(el => {
-        el.style.display = 'none'
-        getCommandItems(ACTS)
-      })
+      bar.value = commandInputValue()
+      currentSearchTerm = ''
+      syncCommandHelper()
+      getCommandItems(ACTS)
     } else if (actionType === 'quick_open') {
+      bar.value = ''
+      currentSearchTerm = ''
+      syncCommandHelper()
       if (data) {
         getRecentItems()
       } else if (output) {
@@ -311,6 +369,7 @@ document.addEventListener('nav', e => {
     }
 
     bar?.focus()
+    bar?.setSelectionRange(bar.value.length, bar.value.length)
   }
 
   const ACTS: Action[] = [
@@ -354,6 +413,14 @@ document.addEventListener('nav', e => {
         )
         document.dispatchEvent(event)
         notifyToast(`comments ${enabled ? 'on' : 'off'}`)
+      },
+    },
+    {
+      name: 'show available kernels',
+      auxInnerHtml: '<kbd>↵</kbd> notebooks',
+      keepOpen: true,
+      onClick: () => {
+        showKernelItems()
       },
     },
     {
@@ -450,7 +517,7 @@ document.addEventListener('nav', e => {
     },
   ]
 
-  const createActComponent = ({ name, auxInnerHtml, onClick }: Action) => {
+  const createActComponent = ({ name, auxInnerHtml, onClick, keepOpen, detail }: Action) => {
     const item = document.createElement('div')
     item.classList.add('suggestion-item')
 
@@ -460,6 +527,12 @@ document.addEventListener('nav', e => {
     title.classList.add('suggestion-title')
     appendHighlightedText(title, currentSearchTerm, name)
     content.appendChild(title)
+    if (detail) {
+      const subscript = document.createElement('span')
+      subscript.className = 'subscript'
+      subscript.textContent = detail
+      content.appendChild(subscript)
+    }
 
     const aux = document.createElement('div')
     aux.classList.add('suggestion-aux')
@@ -469,14 +542,23 @@ document.addEventListener('nav', e => {
     function mainOnClick(e: MouseEvent) {
       e.preventDefault()
       onClick(e)
-      hidePalette()
+      if (keepOpen !== true) hidePalette()
     }
     item.addEventListener('click', mainOnClick)
     window.addCleanup(() => item.removeEventListener('click', mainOnClick))
     return item
   }
 
-  function getCommandItems(acts: Action[]) {
+  function transitionCommandItems() {
+    output.removeAttribute('data-palette-transition')
+    void output.offsetHeight
+    output.dataset.paletteTransition = ''
+    window.setTimeout(() => {
+      output.removeAttribute('data-palette-transition')
+    }, 220)
+  }
+
+  function getCommandItems(acts: Action[], transition = false) {
     if (output) {
       removeAllChildren(output)
     }
@@ -490,6 +572,68 @@ document.addEventListener('nav', e => {
       output.append(...acts.map(createActComponent))
     }
     setFocusFirstChild()
+    if (transition) transitionCommandItems()
+  }
+
+  function showKernelItems() {
+    actionType = 'command'
+    syncCommandHelper()
+    bar.value = commandInputValue('kernels')
+    currentSearchTerm = ''
+    const snapshots = notebookKernelSnapshots()
+    const acts: Action[] =
+      snapshots.length === 0
+        ? [
+            {
+              name: 'no notebook kernels in this view',
+              auxInnerHtml: '',
+              keepOpen: true,
+              onClick: () => {},
+            },
+          ]
+        : snapshots.map(snapshot => ({
+            name: `${snapshot.language} kernel`,
+            detail: notebookKernelSourceLabel(snapshot.sourcePath),
+            auxInnerHtml: `<kbd>↵</kbd> ${notebookKernelStatusLabel(snapshot)}`,
+            keepOpen: true,
+            onClick: () => showKernelActionItems(snapshot),
+          }))
+    getCommandItems(acts, true)
+  }
+
+  function showKernelActionItems(snapshot: NotebookKernelSnapshot) {
+    actionType = 'command'
+    syncCommandHelper()
+    bar.value = commandInputValue(`kernels ${snapshot.language}`)
+    currentSearchTerm = ''
+    const detail = `${notebookKernelSourceLabel(snapshot.sourcePath)} - ${notebookKernelStatusLabel(
+      snapshot,
+    )}`
+    const action = (command: NotebookKernelCommand): Action => ({
+      name: `${command} ${snapshot.language} kernel`,
+      detail,
+      auxInnerHtml: '<kbd>↵</kbd>',
+      keepOpen: true,
+      onClick: () => {
+        dispatchNotebookKernelCommand(snapshot, command)
+        notifyToast(`${snapshot.language} kernel ${command} requested`)
+        window.setTimeout(showKernelItems, 140)
+      },
+    })
+    getCommandItems(
+      [
+        action('interrupt'),
+        action('restart'),
+        action('kill'),
+        {
+          name: 'back to available kernels',
+          auxInnerHtml: '<kbd>↵</kbd>',
+          keepOpen: true,
+          onClick: showKernelItems,
+        },
+      ],
+      true,
+    )
   }
 
   let recentItems: Item[] = []
@@ -586,7 +730,7 @@ document.addEventListener('nav', e => {
       if (barOpen) {
         hidePalette()
       } else {
-        showPalette('quick_open')
+        showPalette('command')
       }
       return
     } else if (e.key === 'p' && (e.altKey || e.metaKey || e.ctrlKey)) {
@@ -668,8 +812,10 @@ document.addEventListener('nav', e => {
       const focusedElement = currentHover
         ? currentHover
         : output.querySelector<HTMLDivElement>('.suggestion-item.focus')
-      bar.value = currentSearchTerm =
-        focusedElement?.querySelector<HTMLDivElement>('.suggestion-title')!.textContent ?? ''
+      currentSearchTerm =
+        focusedElement?.querySelector<HTMLDivElement>('.suggestion-title')?.textContent ?? ''
+      bar.value =
+        actionType === 'command' ? commandInputValue(currentSearchTerm) : currentSearchTerm
       return await querySearch(currentSearchTerm)
     } else if (e.key === 'ArrowDown' || (e.ctrlKey && e.key === 'n')) {
       e.preventDefault()
@@ -726,18 +872,23 @@ document.addEventListener('nav', e => {
         ? ACTS.filter(
             action =>
               action.name.toLowerCase().includes(query) ||
+              action.detail?.toLowerCase().includes(query) ||
               action.auxInnerHtml.toLowerCase().includes(query),
           )
         : ACTS
 
-      getCommandItems(
-        matchedActions.map(({ name, onClick, auxInnerHtml }) => ({ name, onClick, auxInnerHtml })),
-      )
+      getCommandItems(matchedActions)
     }
   }
 
   async function onType(e: HTMLElementEventMap['input']) {
-    currentSearchTerm = (e.target as HTMLInputElement).value
+    const value = (e.target as HTMLInputElement).value
+    const nextActionType: ActionType = value.trimStart().startsWith('>') ? 'command' : 'quick_open'
+    if (actionType !== nextActionType) {
+      actionType = nextActionType
+      syncCommandHelper()
+    }
+    currentSearchTerm = actionType === 'command' ? commandSearchTerm(value) : value
     await querySearch(currentSearchTerm)
   }
 

@@ -1,4 +1,10 @@
 import DOMPurify from 'dompurify'
+import type {
+  NotebookKernelCommandDetail,
+  NotebookKernelRequestDetail,
+  NotebookKernelSnapshot,
+  NotebookKernelStatus,
+} from '../../util/notebook-kernel-events'
 import type { CellId } from '../../util/notebook/types'
 import type { NotebookCodeEditor } from '../editor/code-editor'
 import type { NotebookLspConfig } from '../lsp/pyright'
@@ -14,6 +20,10 @@ import type {
   RuntimeEvent,
   RuntimeFileResult,
 } from './kernel'
+import {
+  notebookKernelCommandEvent,
+  notebookKernelRequestEvent,
+} from '../../util/notebook-kernel-events'
 import { notebookCellLanguageBadge } from '../../util/notebook/cell-html'
 import { renderOutputHtml } from '../../util/notebook/render/output-to-hast'
 import { isRecord, readString } from '../../util/type-guards'
@@ -914,6 +924,7 @@ class NotebookRuntime {
   private assets: NotebookRuntimeAssetConfig
   private kernels = new Map<string, Kernel>()
   private kernelRequests = new Map<string, Promise<Kernel>>()
+  private kernelEpochs = new Map<string, number>()
   private runningKernel: Kernel | undefined
   private moduleCache = new Map<string, NotebookModule | null>()
   private moduleFetches = new Map<string, Promise<NotebookModule | null>>()
@@ -963,6 +974,8 @@ class NotebookRuntime {
     debug?.addEventListener('click', this.toggleDebug)
     vim?.addEventListener('click', this.toggleVimMode)
     document.addEventListener('keydown', this.handleNotebookKeydown, true)
+    document.addEventListener(notebookKernelRequestEvent, this.handleKernelRequest)
+    document.addEventListener(notebookKernelCommandEvent, this.handleKernelCommand)
     this.addCleanup(() => {
       runAll?.removeEventListener('click', this.runAll)
       stop?.removeEventListener('click', this.stop)
@@ -970,6 +983,8 @@ class NotebookRuntime {
       debug?.removeEventListener('click', this.toggleDebug)
       vim?.removeEventListener('click', this.toggleVimMode)
       document.removeEventListener('keydown', this.handleNotebookKeydown, true)
+      document.removeEventListener(notebookKernelRequestEvent, this.handleKernelRequest)
+      document.removeEventListener(notebookKernelCommandEvent, this.handleKernelCommand)
       this.clearEditPrefix()
       this.disposed = true
       this.destroyRuntime()
@@ -1252,6 +1267,76 @@ class NotebookRuntime {
     } else {
       window.addEventListener('beforeunload', callback, { once: true })
     }
+  }
+
+  private handleKernelRequest = (event: Event) => {
+    const detail = (event as CustomEvent<NotebookKernelRequestDetail>).detail
+    if (!detail || typeof detail.respond !== 'function') return
+    for (const snapshot of this.kernelSnapshots()) detail.respond(snapshot)
+  }
+
+  private handleKernelCommand = (event: Event) => {
+    const detail = (event as CustomEvent<NotebookKernelCommandDetail>).detail
+    if (!detail || detail.runtimeId !== this.payload.id) return
+    void this.applyKernelCommand(detail).catch(error => {
+      this.setStatus(error instanceof Error ? error.message : 'kernel command failed')
+    })
+  }
+
+  private kernelSnapshots(): NotebookKernelSnapshot[] {
+    return notebookRuntimePreloadLanguages(this.payload).map(language => {
+      const backend = backendFor(language)
+      const backendName = backend?.name ?? language
+      const snapshot: NotebookKernelSnapshot = {
+        runtimeId: this.payload.id,
+        sourcePath: this.payload.sourcePath,
+        language: backendName,
+        status: this.kernelStatus(backendName),
+      }
+      if (snapshot.status === 'running' && this.runningCellId) {
+        return { ...snapshot, runningCellId: this.runningCellId }
+      }
+      return snapshot
+    })
+  }
+
+  private kernelStatus(backendName: string): NotebookKernelStatus {
+    const kernel = this.kernels.get(backendName)
+    if (kernel && this.running && this.runningKernel === kernel) return 'running'
+    if (this.kernelRequests.has(backendName)) return 'warming'
+    return kernel ? 'ready' : 'available'
+  }
+
+  private async applyKernelCommand(detail: NotebookKernelCommandDetail): Promise<void> {
+    const backend = backendFor(detail.language)
+    if (!backend) return
+    if (detail.command === 'interrupt') {
+      this.interruptBackendKernel(backend)
+      return
+    }
+    this.disposeBackendKernel(backend)
+    if (detail.command === 'kill') {
+      this.setStatus(`killed ${backend.name}`)
+      return
+    }
+    this.setStatus(`restarting ${backend.name}`)
+    try {
+      await this.ensureBackendKernel(backend)
+      if (!this.running) this.setStatus(`${backend.name} ready`)
+    } catch (error) {
+      this.setStatus(error instanceof Error ? error.message : `${backend.name} restart failed`)
+    }
+  }
+
+  private interruptBackendKernel(backend: ExecutableLanguageBackend) {
+    const kernel = this.kernels.get(backend.name)
+    if (kernel && this.running && this.runningKernel === kernel) {
+      this.stopped = true
+      kernel.interrupt()
+      this.setStatus(`interrupting ${backend.name}`)
+      return
+    }
+    this.setStatus(`${backend.name} kernel is idle`)
   }
 
   private runAll = async () => {
@@ -1849,7 +1934,8 @@ class NotebookRuntime {
     const pending = this.kernelRequests.get(backend.name)
     if (pending) return await pending
     const epoch = this.runtimeEpoch
-    const request = this.createBackendKernel(backend, epoch)
+    const kernelEpoch = this.kernelEpoch(backend.name)
+    const request = this.createBackendKernel(backend, epoch, kernelEpoch)
     this.kernelRequests.set(backend.name, request)
     try {
       return await request
@@ -1862,6 +1948,7 @@ class NotebookRuntime {
   private async createBackendKernel(
     backend: ExecutableLanguageBackend,
     epoch: number,
+    kernelEpoch: number,
   ): Promise<Kernel> {
     const kernel = await backend.kernelFactory({
       runtimeId: this.payload.id,
@@ -1881,12 +1968,36 @@ class NotebookRuntime {
       await kernel.dispose()
       throw error
     }
-    if (this.disposed || this.runtimeEpoch !== epoch) {
+    if (
+      this.disposed ||
+      this.runtimeEpoch !== epoch ||
+      this.kernelEpoch(backend.name) !== kernelEpoch
+    ) {
       await kernel.dispose()
       throw new Error('notebook runtime was disposed')
     }
     this.kernels.set(backend.name, kernel)
     return kernel
+  }
+
+  private kernelEpoch(backendName: string): number {
+    return this.kernelEpochs.get(backendName) ?? 0
+  }
+
+  private invalidateBackendKernel(backendName: string) {
+    this.kernelEpochs.set(backendName, this.kernelEpoch(backendName) + 1)
+  }
+
+  private disposeBackendKernel(backend: ExecutableLanguageBackend) {
+    this.invalidateBackendKernel(backend.name)
+    this.kernelRequests.delete(backend.name)
+    const kernel = this.kernels.get(backend.name)
+    this.kernels.delete(backend.name)
+    if (kernel && this.running && this.runningKernel === kernel) {
+      this.stopped = true
+      this.setStatus(`killing ${backend.name}`)
+    }
+    void kernel?.dispose()
   }
 
   private async runKernelCell(cell: RuntimeCell, source: string): Promise<CellRunResult> {

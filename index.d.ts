@@ -31,6 +31,12 @@ interface CustomEventMap {
   readermodechange: CustomEvent<{ mode: 'on' | 'off' }>
   petstoggle: CustomEvent<{ enabled?: boolean }>
   commentsroomtoggle: CustomEvent<{ enabled?: boolean }>
+  notebookkernelrequest: CustomEvent<
+    import('./quartz/util/notebook-kernel-events').NotebookKernelRequestDetail
+  >
+  notebookkernelcommand: CustomEvent<
+    import('./quartz/util/notebook-kernel-events').NotebookKernelCommandDetail
+  >
 
   slidechange: CustomEvent<{}>
   toast: CustomEvent<import('./quartz/components/scripts/toast').ToastEventDetail>

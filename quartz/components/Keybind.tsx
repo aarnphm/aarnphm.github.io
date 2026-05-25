@@ -20,7 +20,7 @@ export const KeybindAlias = {
   'cmd+i': 'stream',
   'cmd+b': 'lecteur',
   'cmd+g': 'graphique',
-  'cmd+o': 'opener',
+  'cmd+o': 'palette de commandes',
   'cmd+p': 'connector',
   "cmd+'": 'aide raccourcis',
   gh: 'navigation des titres',
