@@ -715,9 +715,9 @@ ol.overflow {
     --layout-byline-template: minmax(0, 1fr) minmax(12rem, 1fr);
     --layout-control-column: var(--layout-wide-column);
     --layout-search-column: var(--layout-wide-column);
-    grid-template-columns: var(--grid-end) calc(var(--kern) * 3) repeat(9, 1fr) calc(
-        var(--kern) * 3
-      ) var(--grid-end);
+    grid-template-columns:
+      var(--grid-end) calc(var(--kern) * 3) repeat(9, 1fr) calc(var(--kern) * 3)
+      var(--grid-end);
   }
 }
 

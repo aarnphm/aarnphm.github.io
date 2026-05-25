@@ -6,7 +6,7 @@ import {
 import { escapeHTML } from '../escape'
 import { notebookIconSvg, notebookLanguageIconSvg } from './render/icons'
 
-type NotebookIcon = 'run' | 'edit' | 'save' | 'revert' | 'vim'
+type NotebookIcon = 'run' | 'stop' | 'reset' | 'debug' | 'edit' | 'save' | 'revert' | 'vim'
 
 type NotebookLanguageInfo = { token: string; label: string; glyph: string }
 
@@ -91,6 +91,18 @@ function notebookIconButton(
   }>${notebookIconSvg[icon]}</button>`
 }
 
+function notebookToolbarButton(
+  icon: NotebookIcon,
+  dataAttribute: string,
+  label: string,
+  options: { disabled?: boolean; pressed?: boolean } = {},
+): string {
+  const escapedLabel = escapeHTML(label)
+  const disabled = options.disabled === true ? ' disabled' : ''
+  const pressed = options.pressed === undefined ? '' : ` aria-pressed="${String(options.pressed)}"`
+  return `<button type="button" class="notebook-icon-button notebook-toolbar-button" ${dataAttribute} aria-label="${escapedLabel}" title="${escapedLabel}" data-notebook-tooltip="${escapedLabel}"${pressed}${disabled}>${notebookIconSvg[icon]}</button>`
+}
+
 export function notebookRuntimeJson(value: NotebookRuntimeData): string {
   return JSON.stringify(value)
     .replace(/</g, '\\u003c')
@@ -107,11 +119,21 @@ export function notebookRuntimeControls(data: NotebookRuntimeData): string[] {
     [
       root,
       '<div class="notebook-runtime-toolbar" data-notebook-runtime-toolbar role="toolbar" aria-label="Notebook runtime">',
-      '<button type="button" data-notebook-run-all>Run all</button>',
-      '<button type="button" data-notebook-stop disabled>Stop</button>',
-      '<button type="button" data-notebook-reset>Reset</button>',
-      '<button type="button" data-notebook-debug aria-pressed="false">Debug</button>',
-      '<button type="button" data-notebook-vim-mode aria-pressed="false">Vim</button>',
+      notebookToolbarButton('run', 'data-notebook-run-all', 'Run all'),
+      notebookToolbarButton('stop', 'data-notebook-stop', 'Stop execution', { disabled: true }),
+      notebookToolbarButton('reset', 'data-notebook-reset', 'Reset runtime'),
+      notebookToolbarButton(
+        'debug',
+        'data-notebook-debug',
+        data.debug === true ? 'Disable debug output' : 'Enable debug output',
+        { pressed: data.debug === true },
+      ),
+      notebookToolbarButton(
+        'vim',
+        'data-notebook-vim-mode',
+        data.vimMode === true ? 'Disable Vim mode' : 'Enable Vim mode',
+        { pressed: data.vimMode === true },
+      ),
       '<span class="notebook-runtime-status" data-notebook-status aria-live="polite">idle</span>',
       '</div>',
       '</div>',
@@ -228,9 +250,12 @@ export function notebookStaticOutputTabs(
   const actions = orderedGroups
     .map(group => {
       const active = activeId === group.id && group.label !== notebookSuccessOutputLabel
-      return `<button type="button" class="notebook-output-copy-button notebook-icon-button" aria-label="Copy output" title="Copy output" data-notebook-output-action="${escapeHTML(
-        group.id,
-      )}"${active ? '' : ' hidden'}><span class="notebook-output-copy-icon">${notebookIconSvg.copy}</span><span class="notebook-output-check-icon">${notebookIconSvg.check}</span></button>`
+      const escapedId = escapeHTML(group.id)
+      return `<button type="button" class="notebook-output-expand-button notebook-icon-button" aria-label="Expand output" title="Expand output" aria-expanded="false" data-notebook-output-action="${escapedId}" data-notebook-output-expand-action="${escapedId}"${
+        active ? '' : ' hidden'
+      }><span class="notebook-output-expand-icon">${notebookIconSvg.expand}</span></button><button type="button" class="notebook-output-copy-button notebook-icon-button" aria-label="Copy output" title="Copy output" data-notebook-output-action="${escapedId}"${
+        active ? '' : ' hidden'
+      }><span class="notebook-output-copy-icon">${notebookIconSvg.copy}</span><span class="notebook-output-check-icon">${notebookIconSvg.check}</span></button>`
     })
     .join('')
   const panels = orderedGroups

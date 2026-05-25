@@ -343,6 +343,20 @@ document.addEventListener('nav', e => {
       },
     },
     {
+      name: 'comments room',
+      auxInnerHtml: '<kbd>↵</kbd> toggle on/off',
+      onClick: () => {
+        const enabled = !readCommentRoomEnabled()
+        writeCommentRoomEnabled(enabled)
+        const event: CustomEventMap['commentsroomtoggle'] = new CustomEvent(
+          commentRoomToggleEvent,
+          { detail: { enabled } },
+        )
+        document.dispatchEvent(event)
+        notifyToast(`comments ${enabled ? 'on' : 'off'}`)
+      },
+    },
+    {
       name: 'commenter name',
       auxInnerHtml: '<kbd>↵</kbd> set comment handle',
       onClick: () => {
@@ -362,41 +376,6 @@ document.addEventListener('nav', e => {
       onClick: () => {
         const event: CustomEventMap['petstoggle'] = new CustomEvent('petstoggle', { detail: {} })
         document.dispatchEvent(event)
-      },
-    },
-    {
-      name: 'comments room',
-      auxInnerHtml: '<kbd>↵</kbd> toggle on/off',
-      onClick: () => {
-        const enabled = !readCommentRoomEnabled()
-        writeCommentRoomEnabled(enabled)
-        const event: CustomEventMap['commentsroomtoggle'] = new CustomEvent(
-          commentRoomToggleEvent,
-          { detail: { enabled } },
-        )
-        document.dispatchEvent(event)
-        notifyToast(`comments ${enabled ? 'on' : 'off'}`)
-      },
-    },
-    {
-      name: 'curius',
-      auxInnerHtml: '<kbd>↵</kbd> links',
-      onClick: () => {
-        window.spaNavigate(
-          new URL(resolveRelative(currentSlug, '/curius' as FullSlug), window.location.toString()),
-        )
-      },
-    },
-    {
-      name: 'research',
-      auxInnerHtml: '<kbd>↵</kbd> a peak into my research interests',
-      onClick: () => {
-        window.spaNavigate(
-          new URL(
-            resolveRelative(currentSlug, '/research' as FullSlug),
-            window.location.toString(),
-          ),
-        )
       },
     },
     {
@@ -434,7 +413,7 @@ document.addEventListener('nav', e => {
       },
     },
     {
-      name: 'current work',
+      name: 'work',
       auxInnerHtml: '<kbd>↵</kbd> as craft',
       onClick: () => {
         window.spaNavigate(

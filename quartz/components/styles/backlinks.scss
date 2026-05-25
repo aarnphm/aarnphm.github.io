@@ -3,7 +3,7 @@
 .backlinks {
   margin-bottom: 1.9rem;
 
-  &>.overflow {
+  & > .overflow {
     height: auto;
     display: grid;
     gap: 0.5em;
@@ -23,12 +23,12 @@
         background: initial;
       }
 
-      &>.description,
-      &>.small {
+      & > .description,
+      & > .small {
         line-height: 1.3;
       }
 
-      &>.description {
+      & > .description {
         font-weight: normal;
 
         overflow: hidden;

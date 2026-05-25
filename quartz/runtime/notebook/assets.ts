@@ -1,3 +1,11 @@
+export const notebookRuntimeClientAsset = 'notebook-runtime.client.js'
+export const notebookRuntimeWorkerAsset = 'notebook-runtime.worker.js'
+export const notebookRuntimeJavascriptWorkerAsset = 'notebook-runtime.javascript.worker.js'
+export const notebookPyrightWorkerManifestAsset = 'notebook-pyright/worker/manifest.json'
+export const notebookPyrightTypeshedManifestAsset = 'notebook-pyright/typeshed/manifest.json'
+export const notebookPyrightPackageStubsManifestAsset =
+  'notebook-pyright/site-packages/manifest.json'
+
 export type NotebookRuntimeAssets = {
   readonly workerUrl: string
   readonly javascriptWorkerUrl: string

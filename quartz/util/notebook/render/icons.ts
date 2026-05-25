@@ -1,8 +1,21 @@
-export type NotebookIcon = 'run' | 'stop' | 'edit' | 'save' | 'revert' | 'copy' | 'check' | 'vim'
+export type NotebookIcon =
+  | 'run'
+  | 'stop'
+  | 'reset'
+  | 'debug'
+  | 'edit'
+  | 'save'
+  | 'revert'
+  | 'copy'
+  | 'check'
+  | 'expand'
+  | 'vim'
 
 export const notebookIconSvg: Record<NotebookIcon, string> = {
   run: '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M8 5.5v13l10-6.5z"/></svg>',
   stop: '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7 7h10v10H7z"/></svg>',
+  debug:
+    '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M8 8h8v9a4 4 0 0 1-8 0z"/><path d="M9 4l2 4"/><path d="m15 4-2 4"/><path d="M4 13h4"/><path d="M16 13h4"/><path d="M5 19l3-2"/><path d="m19 19-3-2"/></svg>',
   edit: '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m4 16.5-.5 4 4-.5L19 8.5 15.5 5z"/><path d="m14 6.5 3.5 3.5"/></svg>',
   save: '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 4h11l3 3v13H5z"/><path d="M8 4v6h8V4"/><path d="M8 20v-6h8v6"/></svg>',
   revert:
@@ -10,6 +23,8 @@ export const notebookIconSvg: Record<NotebookIcon, string> = {
   copy: '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M8 8h11v11H8z"/><path d="M5 16H4a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1"/></svg>',
   check:
     '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m5 12 4 4L19 6"/></svg>',
+  expand:
+    '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 5v14"/><path d="m6 13 6 6 6-6"/></svg>',
   vim: [
     '<svg class="notebook-vim-icon" viewBox="0 0 602 734" aria-hidden="true" focusable="false">',
     '<g transform="translate(2 3)">',

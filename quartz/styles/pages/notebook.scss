@@ -36,6 +36,7 @@ article:has(.notebook-runtime) {
 
   .notebook-runtime-toolbar {
     display: flex;
+    position: relative;
     align-items: center;
     gap: 0.45rem;
     margin: 0.5rem 0;
@@ -43,6 +44,86 @@ article:has(.notebook-runtime) {
     padding: 0.45rem 0;
     border-top: 1px solid var(--lightgray);
     border-bottom: 1px solid var(--lightgray);
+  }
+
+  .notebook-runtime-toolbar .notebook-icon-button {
+    display: inline-grid;
+    position: relative;
+    place-items: center;
+    width: 1.5rem;
+    height: 1.5rem;
+    min-width: 1.5rem;
+    min-height: 1.5rem;
+    padding: 0;
+    border: 1px solid color-mix(in srgb, var(--lightgray) 86%, transparent);
+    border-radius: var(--radius-6);
+    background: transparent;
+    color: var(--dark);
+    cursor: pointer;
+    line-height: 1;
+    transition:
+      background-color 140ms ease,
+      border-color 140ms ease,
+      color 140ms ease,
+      opacity 140ms ease,
+      scale 140ms ease;
+  }
+
+  .notebook-runtime-toolbar .notebook-icon-button:hover:not(:disabled),
+  .notebook-runtime-toolbar .notebook-icon-button:focus-visible {
+    border-color: var(--gray);
+    background: var(--highlight);
+    outline: 0;
+  }
+
+  .notebook-runtime-toolbar .notebook-icon-button:active:not(:disabled) {
+    scale: 0.96;
+  }
+
+  .notebook-runtime-toolbar .notebook-icon-button:disabled {
+    cursor: default;
+    opacity: 0.35;
+  }
+
+  .notebook-runtime-toolbar .notebook-icon-button[aria-pressed='true'] {
+    border-color: var(--gray);
+    background: color-mix(in srgb, var(--lightgray) 70%, transparent);
+  }
+
+  .notebook-runtime-toolbar .notebook-icon-button svg {
+    width: 1rem;
+    height: 1rem;
+  }
+
+  .notebook-runtime-toolbar .notebook-icon-button[data-notebook-tooltip]::after {
+    content: attr(data-notebook-tooltip);
+    display: block;
+    position: absolute;
+    z-index: var(--z-tooltip);
+    bottom: calc(100% + 0.45rem);
+    left: 50%;
+    max-width: 14rem;
+    padding: 0.32rem 0.48rem;
+    border-radius: var(--radius-5);
+    background: var(--dark);
+    color: var(--light);
+    font-family: var(--bodyFont);
+    font-size: 0.72rem;
+    line-height: 1.1;
+    opacity: 0;
+    pointer-events: none;
+    text-align: center;
+    transform: translate(-50%, 0.2rem);
+    transition:
+      opacity 140ms ease,
+      transform 140ms ease;
+    white-space: nowrap;
+  }
+
+  .notebook-runtime-toolbar .notebook-icon-button[data-notebook-tooltip]:hover::after,
+  .notebook-runtime-toolbar .notebook-icon-button[data-notebook-tooltip]:focus-visible::after {
+    opacity: 1;
+    transform: translate(-50%, 0);
   }
 
   .notebook-code-cell {
@@ -749,7 +830,7 @@ article:has(.notebook-runtime) {
   }
 
   .notebook-output-tabs {
-    --notebook-output-panel-height: minmax(120px, 20vh);
+    --notebook-output-panel-height: 150px;
     --notebook-output-tab-active-surface: color-mix(
       in srgb,
       var(--notebook-active-green) 16%,
@@ -785,6 +866,14 @@ article:has(.notebook-runtime) {
     border: 0;
     border-radius: 0;
     background: transparent;
+  }
+
+  .notebook-output-tabs[data-notebook-output-expanded] {
+    grid-template-rows: minmax(var(--notebook-output-panel-height), auto) var(
+        --notebook-action-height
+      );
+    height: auto;
+    min-height: calc(var(--notebook-output-panel-height) + var(--notebook-action-height));
   }
 
   .notebook-output-tabs[data-notebook-output-collapsed]::after {
@@ -946,6 +1035,11 @@ article:has(.notebook-runtime) {
     background: transparent;
   }
 
+  .notebook-output-tabs[data-notebook-output-expanded] .notebook-output-panels {
+    height: auto;
+    overflow: visible;
+  }
+
   .notebook-output-panel-frame[hidden] {
     display: none;
   }
@@ -958,6 +1052,11 @@ article:has(.notebook-runtime) {
     border-radius: inherit;
   }
 
+  .notebook-output-tabs[data-notebook-output-expanded] .notebook-output-panel-frame {
+    height: auto;
+    overflow: visible;
+  }
+
   .notebook-output-panel {
     --notebook-output-scroll-fade-size: 1.2rem;
 
@@ -965,6 +1064,13 @@ article:has(.notebook-runtime) {
     height: 100%;
     overflow: auto;
     overscroll-behavior: contain;
+  }
+
+  .notebook-output-tabs[data-notebook-output-expanded] .notebook-output-panel {
+    height: auto;
+    overflow: visible;
+    -webkit-mask-image: none;
+    mask-image: none;
   }
 
   .notebook-output-panel[data-notebook-scroll-before] {
@@ -1017,7 +1123,8 @@ article:has(.notebook-runtime) {
     border-radius: var(--notebook-inner-radius);
   }
 
-  .notebook-output-copy-button {
+  .notebook-output-copy-button,
+  .notebook-output-expand-button {
     display: grid;
     place-items: center;
     width: var(--notebook-action-height);
@@ -1036,30 +1143,46 @@ article:has(.notebook-runtime) {
       scale 140ms ease;
   }
 
-  .notebook-output-copy-button[hidden] {
+  .notebook-output-copy-button[hidden],
+  .notebook-output-expand-button[hidden],
+  .notebook-output-expand-button:not([data-notebook-output-expandable]) {
     display: none;
   }
 
   .notebook-output-copy-button:hover,
-  .notebook-output-copy-button:focus-visible {
+  .notebook-output-copy-button:focus-visible,
+  .notebook-output-expand-button:hover,
+  .notebook-output-expand-button:focus-visible {
     color: var(--dark);
     opacity: 1;
     outline: 0;
   }
 
-  .notebook-output-copy-button:active {
+  .notebook-output-copy-button:active,
+  .notebook-output-expand-button:active {
     scale: 0.96;
   }
 
   .notebook-output-copy-button svg,
+  .notebook-output-expand-button svg,
   .notebook-output-copy-icon,
-  .notebook-output-check-icon {
+  .notebook-output-check-icon,
+  .notebook-output-expand-icon {
     display: block;
   }
 
-  .notebook-output-copy-button svg {
+  .notebook-output-copy-button svg,
+  .notebook-output-expand-button svg {
     width: 0.9rem;
     height: 0.9rem;
+  }
+
+  .notebook-output-expand-button svg {
+    transition: transform 140ms ease;
+  }
+
+  .notebook-output-expand-button[aria-expanded='true'] svg {
+    transform: rotate(180deg);
   }
 
   .notebook-output-check-icon,
