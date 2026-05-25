@@ -21,6 +21,14 @@ import type {
   RuntimeFileResult,
 } from './kernel'
 import {
+  activeNotebookCellFrame,
+  clearActiveNotebookCellFrames,
+  notebookCellFrameFromElement,
+  notebookCellFrameId,
+  notebookCellFrameIsActive,
+  selectNotebookCellFrame,
+} from '../../util/notebook-active-cell'
+import {
   notebookKernelCommandEvent,
   notebookKernelRequestEvent,
 } from '../../util/notebook-kernel-events'
@@ -1010,42 +1018,53 @@ class NotebookRuntime {
     return this.queryCell<HTMLElement>(`[data-notebook-cell-frame="${CSS.escape(cellId)}"]`)
   }
 
+  private cellFromFrame(frame: HTMLElement | undefined): RuntimeCell | undefined {
+    if (!frame || !this.cellRoot.contains(frame)) return undefined
+    return this.cellById(notebookCellFrameId(frame))
+  }
+
   private selectCell(cellId: string) {
-    if (this.activeCellId !== undefined && this.activeCellId !== cellId) {
-      this.cellFrame(this.activeCellId)?.removeAttribute('data-notebook-active-cell')
-    }
+    const frame = this.cellFrame(cellId)
+    if (!frame) return
+    selectNotebookCellFrame(frame)
     this.activeCellId = cellId
-    this.cellFrame(cellId)?.setAttribute('data-notebook-active-cell', '')
   }
 
   private clearCellSelection() {
     if (this.activeCellId === undefined) return
-    this.cellFrame(this.activeCellId)?.removeAttribute('data-notebook-active-cell')
+    clearActiveNotebookCellFrames(document)
     this.activeCellId = undefined
   }
 
   private cellFromTarget(target: EventTarget | null): RuntimeCell | undefined {
     if (!(target instanceof Element)) return undefined
-    const frame = target.closest<HTMLElement>('[data-notebook-cell-frame]')
-    if (!frame || !this.cellRoot.contains(frame)) return undefined
-    return this.cellById(frame.dataset.notebookCellFrame)
+    return this.cellFromFrame(notebookCellFrameFromElement(target))
   }
 
-  private activeCellFromDocument(): RuntimeCell | undefined {
-    const frame = this.cellRoot.querySelector<HTMLElement>(
-      '[data-notebook-cell-frame][data-notebook-active-cell]',
-    )
-    const cell = this.cellById(frame?.dataset.notebookCellFrame)
-    if (cell) this.activeCellId = cell.id
+  private activeCellFromDocument(
+    frame = activeNotebookCellFrame(document),
+  ): RuntimeCell | undefined {
+    if (!frame) return undefined
+    const cell = this.cellFromFrame(frame)
+    this.activeCellId = cell?.id
     return cell
   }
 
+  private activeCellFromCache(): RuntimeCell | undefined {
+    if (this.activeCellId === undefined) return undefined
+    const frame = this.cellFrame(this.activeCellId)
+    if (!frame || !notebookCellFrameIsActive(frame)) {
+      this.activeCellId = undefined
+      return undefined
+    }
+    return this.cellById(this.activeCellId)
+  }
+
   private commandCell(target: EventTarget | null): RuntimeCell | undefined {
-    return (
-      this.cellFromTarget(target) ??
-      this.activeCellFromDocument() ??
-      this.cellById(this.activeCellId)
-    )
+    const activeFrame = activeNotebookCellFrame(document)
+    const activeCell = this.activeCellFromDocument(activeFrame)
+    if (activeFrame) return activeCell
+    return this.cellFromTarget(target) ?? this.activeCellFromCache()
   }
 
   private targetOwnsKeyboard(target: EventTarget | null): boolean {

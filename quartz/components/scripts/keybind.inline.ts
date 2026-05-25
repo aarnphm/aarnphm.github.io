@@ -1,3 +1,9 @@
+import {
+  activeNotebookCellFrame,
+  notebookCellFrameFromElement,
+  notebookCellFrames,
+  selectNotebookCellFrame,
+} from '../../util/notebook-active-cell'
 import { registerEscapeHandler } from './util'
 
 type Browser = 'Safari' | 'Chrome' | 'Firefox' | 'Edge' | 'Opera' | 'Other'
@@ -444,16 +450,16 @@ document.addEventListener('nav', () => {
     })
   }
 
-  function notebookCellFrames(): HTMLElement[] {
-    return Array.from(document.querySelectorAll<HTMLElement>('[data-notebook-cell-frame]'))
-  }
-
   function activeNotebookCellIndex(cells: HTMLElement[]): number {
-    const active = document.querySelector<HTMLElement>(
-      '[data-notebook-cell-frame][data-notebook-active-cell]',
-    )
-    if (active) return cells.indexOf(active)
-    const focused = document.activeElement?.closest<HTMLElement>('[data-notebook-cell-frame]')
+    const active = activeNotebookCellFrame(document)
+    if (active) {
+      const index = cells.indexOf(active)
+      if (index >= 0) return index
+    }
+    const focused =
+      document.activeElement instanceof Element
+        ? notebookCellFrameFromElement(document.activeElement)
+        : undefined
     if (focused) return cells.indexOf(focused)
     return -1
   }
@@ -474,19 +480,13 @@ document.addEventListener('nav', () => {
   }
 
   function selectNotebookCell(frame: HTMLElement) {
-    for (const active of document.querySelectorAll<HTMLElement>(
-      '[data-notebook-cell-frame][data-notebook-active-cell]',
-    )) {
-      active.removeAttribute('data-notebook-active-cell')
-    }
-    frame.setAttribute('data-notebook-active-cell', '')
-    if (!frame.hasAttribute('tabindex')) frame.tabIndex = -1
+    selectNotebookCellFrame(frame)
     frame.focus({ preventScroll: true })
     frame.scrollIntoView({ block: 'center', inline: 'nearest' })
   }
 
   function navigateNotebookCell(delta: -1 | 1): boolean {
-    const cells = notebookCellFrames()
+    const cells = notebookCellFrames(document)
     if (cells.length === 0) return false
     const activeIndex = activeNotebookCellIndex(cells)
     const baseIndex = activeIndex >= 0 ? activeIndex : nearestNotebookCellIndex(cells)
