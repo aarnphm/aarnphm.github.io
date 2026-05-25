@@ -61,6 +61,16 @@ class NotebookPyrightBrowserServer extends RealLanguageServer {
     return analysis
   }
 
+  async getSettings(workspace) {
+    const settings = await super.getSettings(workspace)
+    settings.typeshedPath = Uri.parse('file:///typeshed', this.serverOptions.serviceProvider)
+    settings.extraPaths = [
+      ...(Array.isArray(settings.extraPaths) ? settings.extraPaths : []),
+      Uri.parse('file:///typeshed/stdlib', this.serverOptions.serviceProvider),
+    ]
+    return settings
+  }
+
   setupConnection(supportedCommands, supportedCodeActions) {
     super.setupConnection(supportedCommands, supportedCodeActions)
     this.connection.onNotification('pyright/createFile', params => {

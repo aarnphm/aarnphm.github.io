@@ -1003,7 +1003,7 @@ class NotebookRuntime {
     ensureButton('[data-notebook-reset]', button => {
       button.type = 'button'
       button.dataset.notebookReset = ''
-      button.textContent = 'Reset runtime'
+      button.textContent = 'Reset'
     })
     ensureButton('[data-notebook-debug]', button => {
       button.type = 'button'
