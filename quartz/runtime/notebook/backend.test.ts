@@ -10,9 +10,46 @@ import {
   registerBackend,
   unregisterBackend,
 } from './backend'
+import { nextNotebookCellId, notebookRunAndAdvanceKey, notebookRunKey } from './client'
 
 before(async () => {
   await import('./registry')
+})
+
+describe('Notebook runtime keyboard commands', () => {
+  test('classifies Cmd+Enter as run and advance', () => {
+    const cmdEnter = { key: 'Enter', metaKey: true, ctrlKey: false, shiftKey: false, altKey: false }
+    assert.strictEqual(notebookRunAndAdvanceKey(cmdEnter), true)
+    assert.strictEqual(notebookRunKey(cmdEnter), true)
+  })
+
+  test('keeps other modified Enter gestures on the run-only path', () => {
+    const ctrlEnter = {
+      key: 'Enter',
+      metaKey: false,
+      ctrlKey: true,
+      shiftKey: false,
+      altKey: false,
+    }
+    const shiftEnter = {
+      key: 'Enter',
+      metaKey: false,
+      ctrlKey: false,
+      shiftKey: true,
+      altKey: false,
+    }
+    assert.strictEqual(notebookRunAndAdvanceKey(ctrlEnter), false)
+    assert.strictEqual(notebookRunKey(ctrlEnter), true)
+    assert.strictEqual(notebookRunAndAdvanceKey(shiftEnter), false)
+    assert.strictEqual(notebookRunKey(shiftEnter), true)
+  })
+
+  test('resolves the next runtime cell without wrapping', () => {
+    const cells = [{ id: 'cell-1' }, { id: 'cell-2' }, { id: 'cell-3' }]
+    assert.strictEqual(nextNotebookCellId(cells, 'cell-1'), 'cell-2')
+    assert.strictEqual(nextNotebookCellId(cells, 'cell-3'), undefined)
+    assert.strictEqual(nextNotebookCellId(cells, 'missing'), undefined)
+  })
 })
 
 describe('LanguageBackend registry', () => {
