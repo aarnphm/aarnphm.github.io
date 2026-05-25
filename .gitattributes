@@ -315,4 +315,9 @@ content/thoughts/university/twenty-five-twenty-six/sfwr-4tb3/Finals/ST.ipynb fil
 content/stream.md filter=lfs diff=lfs merge=lfs -text
 docs/neofinalism-transhumanism-meliorism-plan.md filter=lfs diff=lfs merge=lfs -text
 content/posts/m/mo.md filter=lfs diff=lfs merge=lfs -text
-quartz/runtime/native/packs/haskell/rootfs.tar.zst filter=lfs diff=lfs merge=lfs -text
+quartz/runtime/native/packs/**/*.wasm filter=lfs diff=lfs merge=lfs -text
+quartz/runtime/native/packs/**/*.wasm.gz filter=lfs diff=lfs merge=lfs -text
+quartz/runtime/native/packs/**/*.rlib.gz filter=lfs diff=lfs merge=lfs -text
+quartz/runtime/native/packs/**/*.so.gz filter=lfs diff=lfs merge=lfs -text
+quartz/runtime/native/packs/**/*.tar.zst filter=lfs diff=lfs merge=lfs -text
+quartz/runtime/native/packs/ocaml/toplevel.js filter=lfs diff=lfs merge=lfs -text
