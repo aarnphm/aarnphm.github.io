@@ -209,6 +209,10 @@ describe('code viewer runtime cells', () => {
         'import "fmt"',
         'func main() { fmt.Println("hi") }',
         '```',
+        '',
+        '```rust shell',
+        'println!("hi");',
+        '```',
       ].join('\n'),
     )
 
@@ -225,6 +229,7 @@ describe('code viewer runtime cells', () => {
         { language: 'javascript', cells: ['code-cell-2'] },
         { language: 'ocaml', cells: ['code-cell-3'] },
         { language: 'go', cells: ['code-cell-4'] },
+        { language: 'rust', cells: ['code-cell-5'] },
       ],
     )
     const html = collectHtml(tree).join('\n')
@@ -232,6 +237,7 @@ describe('code viewer runtime cells', () => {
     assert.match(html, /notebook-language-badge-javascript/)
     assert.match(html, /notebook-language-badge-ocaml/)
     assert.match(html, /notebook-language-badge-go/)
+    assert.match(html, /notebook-language-badge-rust/)
   })
 
   test('lets python shell meta disable debug and vim defaults', async () => {
