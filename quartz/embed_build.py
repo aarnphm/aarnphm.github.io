@@ -4,6 +4,7 @@
 #     "langchain-text-splitters",
 #     "numpy",
 #     "openai",
+#     "tqdm",
 #     "sentence-transformers",
 #     "tiktoken",
 # ]
@@ -11,7 +12,7 @@
 
 from __future__ import annotations
 
-import os, json, argparse, hashlib, math, random, logging, re, html
+import os, json, argparse, hashlib, math, random, logging, re, html, fnmatch, subprocess
 
 from pathlib import Path
 from functools import lru_cache
@@ -22,6 +23,7 @@ import tiktoken, numpy as np
 
 from openai import OpenAI
 from langchain_text_splitters import RecursiveCharacterTextSplitter
+from tqdm.auto import tqdm
 
 
 logger = logging.getLogger(__name__)
@@ -29,6 +31,13 @@ DEFAULT_VLLM_URL = os.environ.get('VLLM_URL') or os.environ.get('VLLM_EMBED_URL'
 NOTEBOOK_TEXT_MIMES = ('text/markdown', 'text/plain')
 NOTEBOOK_HTML_TAG = re.compile(r'<[^>]+>')
 NOTEBOOK_HEADING = re.compile(r'^#{1,6}\s+(.+?)\s*#*\s*$')
+QUOTED_STRING = re.compile(r"'(?:\\.|[^'\\])*'|\"(?:\\.|[^\"\\])*\"|`(?:\\.|[^`\\])*`", re.S)
+
+
+def configure_logging() -> None:
+  logging.basicConfig(level=logging.INFO, format='%(message)s')
+  for noisy_logger in ('httpx', 'httpcore', 'openai'):
+    logging.getLogger(noisy_logger).setLevel(logging.WARNING)
 
 
 def resolve_vllm_base_url(url: str) -> str:
@@ -194,7 +203,81 @@ def slugify_file_path(fp: str, exclude_ext: bool = False) -> str:
   return f'{slug}{ext}'
 
 
-def notebook_records_from_content_index(content_index: Path, root: Path) -> list[dict]:
+def ts_array_body(source: str, key: str) -> str | None:
+  key_index = source.find(f'{key}:')
+  if key_index < 0:
+    return None
+  start = source.find('[', key_index)
+  if start < 0:
+    return None
+  depth = 0
+  quote = ''
+  escaped = False
+  for index in range(start, len(source)):
+    char = source[index]
+    if quote:
+      if escaped:
+        escaped = False
+      elif char == '\\':
+        escaped = True
+      elif char == quote:
+        quote = ''
+      continue
+    if char in ('"', "'", '`'):
+      quote = char
+      continue
+    if char == '[':
+      depth += 1
+      continue
+    if char == ']':
+      depth -= 1
+      if depth == 0:
+        return source[start + 1 : index]
+  return None
+
+
+def unquote_ts_string(value: str) -> str:
+  quote = value[0]
+  inner = value[1:-1]
+  if quote == '`':
+    return inner.replace('\\`', '`').replace('\\\\', '\\')
+  return bytes(inner, 'utf-8').decode('unicode_escape')
+
+
+def quartz_ignore_patterns(config_path: Path) -> list[str]:
+  if not config_path.exists():
+    return []
+  try:
+    source = config_path.read_text(encoding='utf-8')
+  except OSError as exc:
+    logger.warning('Could not read Quartz config %s: %s', config_path, exc)
+    return []
+  body = ts_array_body(source, 'ignorePatterns')
+  if body is None:
+    return []
+  return [unquote_ts_string(match.group(0)) for match in QUOTED_STRING.finditer(body)]
+
+
+def content_relative_path(fp: Path, content_dir: Path) -> str | None:
+  content_root = content_dir.resolve()
+  try:
+    return fp.resolve().relative_to(content_root).as_posix()
+  except ValueError:
+    return None
+
+
+def content_path(candidate: str, content_dir: Path) -> tuple[Path, str] | None:
+  content_root = content_dir.resolve()
+  fp = Path(candidate)
+  if not fp.is_absolute():
+    fp = content_root.parent / fp if candidate.startswith('content/') else content_root / fp
+  rel = content_relative_path(fp, content_root)
+  if rel is None:
+    return None
+  return fp, rel
+
+
+def content_index_file_records(content_index: Path, content_dir: Path, suffix: str | None = None) -> list[dict]:
   if not content_index.exists():
     return []
   try:
@@ -211,15 +294,27 @@ def notebook_records_from_content_index(content_index: Path, root: Path) -> list
       continue
     file_path = value.get('filePath')
     file_name = value.get('fileName')
-    candidate = file_path if isinstance(file_path, str) and file_path.endswith('.ipynb') else file_name
-    if not isinstance(candidate, str) or not candidate.endswith('.ipynb'):
+    candidate = file_path if isinstance(file_path, str) else file_name
+    if not isinstance(candidate, str):
       continue
-    fp = Path(candidate)
-    if not fp.is_absolute():
-      fp = root / fp
+    if suffix is not None and not candidate.endswith(suffix):
+      continue
+    resolved = content_path(candidate, content_dir)
+    if resolved is None:
+      continue
+    fp, rel = resolved
     title = value.get('title')
-    records.append({'slug': slug, 'title': title if isinstance(title, str) and title else fp.stem, 'path': fp})
+    records.append({
+      'slug': slug,
+      'title': title if isinstance(title, str) and title else fp.stem,
+      'path': fp,
+      'relative_path': rel,
+    })
   return records
+
+
+def notebook_records_from_content_index(content_index: Path, content_dir: Path) -> list[dict]:
+  return content_index_file_records(content_index, content_dir, '.ipynb')
 
 
 def notebook_records_from_content_dir(content_dir: Path) -> list[dict]:
@@ -228,19 +323,78 @@ def notebook_records_from_content_dir(content_dir: Path) -> list[dict]:
   records: list[dict] = []
   for fp in sorted(content_dir.rglob('*.ipynb')):
     rel = fp.relative_to(content_dir).as_posix()
-    records.append({'slug': slugify_file_path(rel, True), 'title': fp.stem, 'path': fp})
+    records.append({'slug': slugify_file_path(rel, True), 'title': fp.stem, 'path': fp, 'relative_path': rel})
   return records
 
 
-def load_notebook_documents(content_index: Path, content_dir: Path) -> list[dict]:
-  root = content_dir.parent if content_dir.name == 'content' else Path.cwd()
-  records = notebook_records_from_content_index(content_index, root)
+def git_ignored_paths(paths: list[str], content_dir: Path) -> set[str]:
+  if not paths:
+    return set()
+  try:
+    result = subprocess.run(
+      ['git', 'check-ignore', '--stdin', '-z', '--no-index'],
+      input=('\0'.join(paths) + '\0').encode(),
+      stdout=subprocess.PIPE,
+      stderr=subprocess.DEVNULL,
+      cwd=content_dir,
+      check=False,
+    )
+  except OSError:
+    return set()
+  if result.returncode not in (0, 1):
+    return set()
+  return {path for path in result.stdout.decode().split('\0') if path}
+
+
+def ignore_pattern_matches(path: str, pattern: str) -> bool:
+  normalized = pattern.strip().strip('/')
+  if not normalized:
+    return False
+  if normalized.startswith('!'):
+    return False
+  if normalized.startswith('content/') and ignore_pattern_matches(path, normalized[len('content/') :]):
+    return True
+  if fnmatch.fnmatch(path, normalized):
+    return True
+  if fnmatch.fnmatch(f'/{path}', normalized):
+    return True
+  if '/' not in normalized:
+    parts = path.split('/')
+    return normalized in parts or any(fnmatch.fnmatch(part, normalized) for part in parts)
+  return path.startswith(f'{normalized}/') or fnmatch.fnmatch(path, f'{normalized}/**')
+
+
+def filter_notebook_records(records: list[dict], content_dir: Path, ignore_patterns: list[str]) -> list[dict]:
+  ignored = git_ignored_paths([record['relative_path'] for record in records], content_dir)
+  return [
+    record
+    for record in records
+    if record['relative_path'] not in ignored
+    and not any(ignore_pattern_matches(record['relative_path'], pattern) for pattern in ignore_patterns)
+  ]
+
+
+def ignored_slugs_from_content_index(content_index: Path, content_dir: Path, ignore_patterns: list[str]) -> set[str]:
+  records = content_index_file_records(content_index, content_dir)
+  ignored = git_ignored_paths([record['relative_path'] for record in records], content_dir)
+  return {
+    record['slug']
+    for record in records
+    if record['relative_path'] in ignored
+    or any(ignore_pattern_matches(record['relative_path'], pattern) for pattern in ignore_patterns)
+  }
+
+
+def load_notebook_documents(content_index: Path, content_dir: Path, ignore_patterns: list[str]) -> list[dict]:
+  content_dir = content_dir.resolve()
+  records = notebook_records_from_content_index(content_index, content_dir)
   if not records:
     records = notebook_records_from_content_dir(content_dir)
+  records = filter_notebook_records(records, content_dir, ignore_patterns)
   docs: list[dict] = []
   failed = 0
   seen: set[str] = set()
-  for record in records:
+  for record in tqdm(records, desc='Loading notebooks', unit='notebook'):
     slug = record['slug']
     if slug in seen:
       continue
@@ -270,7 +424,7 @@ def merge_documents(recs: list[dict], additions: list[dict]) -> list[dict]:
   merged = list(recs)
   index_by_slug = {rec.get('slug'): i for i, rec in enumerate(merged)}
   replaced = 0
-  for addition in additions:
+  for addition in tqdm(additions, desc='Merging notebook docs', unit='doc', disable=len(additions) == 0):
     idx = index_by_slug.get(addition['slug'])
     if idx is None:
       index_by_slug[addition['slug']] = len(merged)
@@ -362,7 +516,8 @@ def write_shards(vectors: np.ndarray, shard_size: int, dtype: str, out_dir: Path
   np_dtype = np.float16 if dtype == 'fp16' else np.float32
   bytes_per_value = np.dtype(np_dtype).itemsize
   row_offset = 0
-  for si, start in enumerate(range(0, rows, shard_size)):
+  shard_starts = range(0, rows, shard_size)
+  for si, start in enumerate(tqdm(shard_starts, total=len(shard_starts), desc='Writing vector shards', unit='shard')):
     end = min(start + shard_size, rows)
     shard = vectors[start:end]
     bin_path = out_dir / f'vectors-{si:03d}.bin'
@@ -389,7 +544,7 @@ def write_hnsw_graph(levels: list[list[list[int]]], rows: int, out_path: Path) -
   meta: list[dict] = []
   digest = hashlib.sha256()
   with open(out_path, 'wb') as f:
-    for lvl in levels:
+    for lvl in tqdm(levels, desc='Writing HNSW graph', unit='level'):
       indptr = np.zeros(rows + 1, dtype=np.uint32)
       edge_accum: list[int] = []
       for idx in range(rows):
@@ -491,13 +646,9 @@ def embed_vllm(
   else:
     with ThreadPoolExecutor(max_workers=concurrency) as executor:
       futures = {executor.submit(send_batch, batch_info): batch_info[0] for batch_info in batches}
-      completed = 0
-      for future in as_completed(futures):
+      for future in tqdm(as_completed(futures), total=len(futures), desc='Embedding batches', unit='batch'):
         idx, embeddings = future.result()
         results[idx] = embeddings
-        completed += 1
-        if completed % max(1, len(batches) // 10) == 0 or completed == len(batches):
-          print(f'  Completed {completed}/{len(batches)} batches ({completed * 100 // len(batches)}%)')
 
   out: list[np.ndarray] = []
   for i in sorted(results.keys()):
@@ -528,11 +679,13 @@ def embed_hf(texts: list[str], model_id: str, device: str, max_tokens: int = 512
 
 
 def main():
-  logging.basicConfig(level=logging.INFO, format='%(message)s')
+  configure_logging()
   ap = argparse.ArgumentParser()
   ap.add_argument('--jsonl', default='public/embeddings-text.jsonl')
   ap.add_argument('--content-dir', default='content')
   ap.add_argument('--content-index')
+  ap.add_argument('--quartz-config', default='quartz.config.ts')
+  ap.add_argument('--ignore-pattern', action='append', default=[])
   ap.add_argument('--no-notebooks', action='store_true')
   ap.add_argument('--model', default=os.environ.get('SEM_MODEL', 'intfloat/multilingual-e5-large'))
   ap.add_argument('--dims', type=int, default=int(os.environ.get('SEM_DIMS', '1024')))
@@ -569,12 +722,19 @@ def main():
   args = ap.parse_args()
 
   jsonl_path = Path(args.jsonl)
+  content_dir = Path(args.content_dir)
+  content_index = (
+    Path(args.content_index) if args.content_index else jsonl_path.parent / 'static' / 'contentIndex.json'
+  )
+  ignore_patterns = [*quartz_ignore_patterns(Path(args.quartz_config)), *args.ignore_pattern]
   recs = list(load_jsonl(args.jsonl))
+  ignored_slugs = ignored_slugs_from_content_index(content_index, content_dir, ignore_patterns)
+  if ignored_slugs:
+    before_filter = len(recs)
+    recs = [rec for rec in recs if rec.get('slug') not in ignored_slugs]
+    print(f'Filtered {before_filter - len(recs)} ignored document(s) from embeddings input')
   if not args.no_notebooks:
-    content_index = (
-      Path(args.content_index) if args.content_index else jsonl_path.parent / 'static' / 'contentIndex.json'
-    )
-    recs = merge_documents(recs, load_notebook_documents(content_index, Path(args.content_dir)))
+    recs = merge_documents(recs, load_notebook_documents(content_index, content_dir, ignore_patterns))
   if not recs:
     print(f'No input found in {args.jsonl}; run the site build first to emit JSONL.')
     return
@@ -590,7 +750,7 @@ def main():
   else:
     chunks = []
     chunk_metadata = {}
-    for rec in recs:
+    for rec in tqdm(recs, desc='Chunking documents', unit='doc'):
       doc_chunks = chunk_document(
         rec,
         chunk_size=args.chunk_size,
@@ -687,7 +847,7 @@ def main():
       top.sort(reverse=True)
       return [n for _, n in top]
 
-    for i in range(N):
+    for i in tqdm(range(N), desc='Building HNSW graph', unit='vector'):
       if i == 0:
         continue
       lvl = node_levels[i]
@@ -708,7 +868,7 @@ def main():
         entry = i
         entry_level = lvl
 
-    for L in range(len(levels)):
+    for L in tqdm(range(len(levels)), desc='Pruning HNSW graph', unit='level'):
       for i in range(N):
         if len(levels[L][i]) > M:
           nb = levels[L][i]
