@@ -6,7 +6,7 @@ comments: false
 date: '2021-12-22'
 description: and a celebration for the act of making.
 id: craft
-modified: 2026-05-25 01:26:57 GMT-04:00
+modified: 2026-05-25 01:49:45 GMT-04:00
 permalinks:
   - /thoughts/work
   - /craft
@@ -17,18 +17,6 @@ title: craft.
 ---
 
 There is also a [[ideas|backlog]] of unfinished ideas that I might work on, one day. I'm also doing [[consult|consulting]]
-
-## lives
-
-- Modular, 01/2026—Now
-  - Inference Optimization Engineer, MAX Serve
-  - Source: [website](https://www.modular.com/)
-- BentoML, 04/2021—12/2025
-  - Inference Optimization Engineer
-  - vLLM commiter, structured outputs, scheduler
-  - early engineer
-  - _Acquired by Modular_
-  - Source: [website](https://bentoml.com/)
 
 ## open source
 
@@ -42,7 +30,7 @@ There is also a [[ideas|backlog]] of unfinished ideas that I might work on, one 
   - Source: [github](https://github.com/aarnphm/monpy)
 
 - **vllm-project/vllm** - :seedling: A high-throughput and memory-efficient inference and serving engine for [[thoughts/LLMs]] (2024-)
-  - Core maintainer group
+  - Core maintainer group, structured outputs and tool calling
   - Structured outputs compatibility in V0 and V1 engine https://github.com/vllm-project/vllm/pull/12388 https://github.com/vllm-project/vllm/pull/16577 https://github.com/vllm-project/vllm/pull/15317 https://github.com/vllm-project/vllm/pull/10785 https://github.com/vllm-project/vllm/pull/14868
     - Jump-forward decoding https://github.com/vllm-project/vllm/pull/15490
       - source: [[thoughts/structured outputs#jump-forward decoding|design docs]] ^[In practice, jump-forward decoding doesn't add a lot of value given that the overhead of detokenization overweighs the actual benefits of skipping forward a few FSM state.]
@@ -117,6 +105,18 @@ There is also a [[ideas|backlog]] of unfinished ideas that I might work on, one 
     > This heuristic lays the foundation to the proliferation of conversational user [[thoughts/representations|interfaces]] (CUIs), which is obvious given that chat is a thin wrapper around text modality. Yet, CUIs often prove frustrating when dealing with tasks that require larger sets of information (think of support portals, orders forms, etc.). Additionally, for tasks that require frequent information [[thoughts/RAG|retrieval]] ([[research|research]], travel planning, [[thoughts/writing|writing]], etc.), CUIs are suboptimal as they compel users to unnecessarily maintain information in their working memory (for no reason). For writers, the hardest part of writing or getting over writers block usually relies on how to coherently structure their thoughts onto papers. This requires a step beyond pure conversation partners, an interface that induces both planning and modelling of ideas.
     >
     > Given these challenges, morph doesn’t seek to be a mere tools for rewriting text. morph aims to explore alternative interfaces for text generations models to extend our cognitive abilities. This means developing spatial and visual interfaces that allow for non-linear exploration of information and ideas, through writing.
+
+## lives
+
+- Modular, 01/2026—Now
+  - Inference Optimization Engineer, MAX Serve
+  - Source: [website](https://www.modular.com/)
+- BentoML, 04/2021—12/2025
+  - Inference Optimization Engineer
+  - vLLM commiter, structured outputs, scheduler
+  - early engineer
+  - _Acquired by Modular_
+  - Source: [website](https://bentoml.com/)
 
 ## writing
 
