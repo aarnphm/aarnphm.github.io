@@ -4,6 +4,7 @@ import type { CodeMirror } from '@replit/codemirror-vim'
 import type { LanguageFn } from 'highlight.js'
 import { ensureSyntaxTree, forceParsing, syntaxTreeAvailable } from '@codemirror/language'
 import type { NotebookLspConfig } from '../lsp/pyright'
+import { codemirrorCodeLanguage } from '../../util/codemirror-language'
 import { backendFor } from '../notebook/registry'
 
 export type NotebookCodeEditor = {
@@ -140,50 +141,20 @@ function languageWarmupKey(language: string | undefined): string {
   return (language ?? '').trim().toLowerCase() || 'python'
 }
 
-async function languageExtension(language: string | undefined): Promise<Extension> {
+export async function notebookCodeEditorLanguageExtension(
+  language: string | undefined,
+): Promise<Extension> {
   const name = (language ?? '').trim().toLowerCase()
   const backendExtension = await backendFor(name)?.editor?.languageExtension?.()
   if (backendExtension) return backendExtension
-  if (name === 'javascript' || name === 'js') {
-    const { javascript } = await import('@codemirror/lang-javascript')
-    return javascript()
-  }
-  if (name === 'jsx') {
-    const { javascript } = await import('@codemirror/lang-javascript')
-    return javascript({ jsx: true })
-  }
-  if (name === 'typescript' || name === 'ts') {
-    const { javascript } = await import('@codemirror/lang-javascript')
-    return javascript({ typescript: true })
-  }
-  if (name === 'tsx') {
-    const { javascript } = await import('@codemirror/lang-javascript')
-    return javascript({ typescript: true, jsx: true })
-  }
-  if (name === 'go' || name === 'golang') {
-    const { go } = await import('@codemirror/lang-go')
-    return go()
-  }
-  if (name === 'rust' || name === 'rs') {
-    const { rust } = await import('@codemirror/lang-rust')
-    return rust()
-  }
-  if (name === 'haskell' || name === 'hs' || name === 'ocaml' || name === 'ml' || name === 'mojo') {
-    return []
-  }
-  if (name === 'zig') {
-    const { zig } = await import('codemirror-lang-zig')
-    return zig()
-  }
-  const { python } = await import('@codemirror/lang-python')
-  return python()
+  return codemirrorCodeLanguage(language)
 }
 
 function warmLanguageExtension(language: string | undefined): Promise<Extension> {
   const key = languageWarmupKey(language)
   let warmup = notebookLanguageWarmups.get(key)
   if (!warmup) {
-    warmup = languageExtension(language)
+    warmup = notebookCodeEditorLanguageExtension(language)
     notebookLanguageWarmups.set(key, warmup)
   }
   return warmup
@@ -1035,7 +1006,7 @@ export async function renderNotebookHighlightedLines(
       import('@codemirror/language'),
       import('@codemirror/state'),
       import('@codemirror/view'),
-      languageExtension(languageName),
+      notebookCodeEditorLanguageExtension(languageName),
     ])
   const lineCount = source.split(/\r?\n/).length
   const host = document.createElement('div')
@@ -1095,7 +1066,7 @@ export async function createNotebookCodeEditor(
     import('@codemirror/language'),
     import('@codemirror/state'),
     import('@codemirror/view'),
-    languageExtension(config.language),
+    notebookCodeEditorLanguageExtension(config.language),
     lspExtensions(config.lsp),
   ])
 
