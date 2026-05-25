@@ -273,7 +273,8 @@ async function fetchContent(currentSlug: FullSlug, slug: FullSlug): Promise<HTML
   return contents
 }
 
-type ActionType = 'quick_open' | 'command'
+type ActionType = 'quick_open' | 'connector' | 'command'
+type FallbackActionType = Exclude<ActionType, 'command'>
 interface Action {
   name: string
   onClick: (e: MouseEvent) => void
@@ -283,6 +284,7 @@ interface Action {
 }
 
 let actionType: ActionType = 'quick_open'
+let fallbackActionType: FallbackActionType = 'quick_open'
 let currentSearchTerm: string = ''
 document.addEventListener('nav', e => {
   const currentSlug = e.detail.url
@@ -342,24 +344,31 @@ document.addEventListener('nav', e => {
     return value.replace(/^\s*>\s?/, '').trimStart()
   }
 
-  function syncCommandHelper() {
+  function syncPaletteHelper() {
     helper.querySelectorAll<HTMLLIElement>('li[data-quick-open]').forEach(el => {
-      el.style.display = actionType === 'command' ? 'none' : ''
+      el.style.display = actionType === 'quick_open' ? '' : 'none'
     })
   }
 
-  function showPalette(actionTypeNew: ActionType) {
+  function showPalette(actionTypeNew: ActionType, fallbackActionTypeNew?: FallbackActionType) {
     actionType = actionTypeNew
+    fallbackActionType =
+      actionTypeNew === 'command' ? (fallbackActionTypeNew ?? fallbackActionType) : actionTypeNew
     container?.classList.add('active')
     if (actionType === 'command') {
       bar.value = commandInputValue()
       currentSearchTerm = ''
-      syncCommandHelper()
-      getCommandItems(ACTS)
+      syncPaletteHelper()
+      getCommandItems(COMMAND_ACTS)
+    } else if (actionType === 'connector') {
+      bar.value = ''
+      currentSearchTerm = ''
+      syncPaletteHelper()
+      getCommandItems(CONNECTOR_ACTS)
     } else if (actionType === 'quick_open') {
       bar.value = ''
       currentSearchTerm = ''
-      syncCommandHelper()
+      syncPaletteHelper()
       if (data) {
         getRecentItems()
       } else if (output) {
@@ -372,7 +381,7 @@ document.addEventListener('nav', e => {
     bar?.setSelectionRange(bar.value.length, bar.value.length)
   }
 
-  const ACTS: Action[] = [
+  const CONNECTOR_ACTS: Action[] = [
     {
       name: 'x.com (formerly Twitter)',
       auxInnerHtml: `<svg width="1em" height="1em"><use href="#twitter-icon" /></svg>`,
@@ -413,14 +422,6 @@ document.addEventListener('nav', e => {
         )
         document.dispatchEvent(event)
         notifyToast(`comments ${enabled ? 'on' : 'off'}`)
-      },
-    },
-    {
-      name: 'show available kernels',
-      auxInnerHtml: '<kbd>↵</kbd> notebooks',
-      keepOpen: true,
-      onClick: () => {
-        showKernelItems()
       },
     },
     {
@@ -517,6 +518,17 @@ document.addEventListener('nav', e => {
     },
   ]
 
+  const COMMAND_ACTS: Action[] = [
+    {
+      name: 'show available kernels',
+      auxInnerHtml: '<kbd>↵</kbd> notebooks',
+      keepOpen: true,
+      onClick: () => {
+        showKernelItems()
+      },
+    },
+  ]
+
   const createActComponent = ({ name, auxInnerHtml, onClick, keepOpen, detail }: Action) => {
     const item = document.createElement('div')
     item.classList.add('suggestion-item')
@@ -564,9 +576,12 @@ document.addEventListener('nav', e => {
     }
     if (acts.length === 0) {
       if (bar.matches(':focus') && currentSearchTerm === '') {
-        output.append(...ACTS.map(createActComponent))
+        output.append(
+          ...(actionType === 'command' ? COMMAND_ACTS : CONNECTOR_ACTS).map(createActComponent),
+        )
       } else {
-        output.append(createActComponent(ACTS[0]))
+        const fallbackAction = actionType === 'command' ? COMMAND_ACTS[0] : CONNECTOR_ACTS[0]
+        if (fallbackAction) output.append(createActComponent(fallbackAction))
       }
     } else {
       output.append(...acts.map(createActComponent))
@@ -577,7 +592,7 @@ document.addEventListener('nav', e => {
 
   function showKernelItems() {
     actionType = 'command'
-    syncCommandHelper()
+    syncPaletteHelper()
     bar.value = commandInputValue('kernels')
     currentSearchTerm = ''
     const snapshots = notebookKernelSnapshots()
@@ -603,7 +618,7 @@ document.addEventListener('nav', e => {
 
   function showKernelActionItems(snapshot: NotebookKernelSnapshot) {
     actionType = 'command'
-    syncCommandHelper()
+    syncPaletteHelper()
     bar.value = commandInputValue(`kernels ${snapshot.language}`)
     currentSearchTerm = ''
     const detail = `${notebookKernelSourceLabel(snapshot.sourcePath)} - ${notebookKernelStatusLabel(
@@ -730,7 +745,7 @@ document.addEventListener('nav', e => {
       if (barOpen) {
         hidePalette()
       } else {
-        showPalette('command')
+        showPalette('quick_open')
       }
       return
     } else if (e.key === 'p' && (e.altKey || e.metaKey || e.ctrlKey)) {
@@ -739,7 +754,7 @@ document.addEventListener('nav', e => {
       if (barOpen) {
         hidePalette()
       } else {
-        showPalette('command')
+        showPalette('command', 'connector')
       }
       return
     } else if (
@@ -866,16 +881,16 @@ document.addEventListener('nav', e => {
         currentSearchTerm,
       )
     } else {
-      // Search actions directly (simple string matching)
       const query = currentSearchTerm.toLowerCase().trim()
+      const actions = actionType === 'command' ? COMMAND_ACTS : CONNECTOR_ACTS
       const matchedActions = query
-        ? ACTS.filter(
+        ? actions.filter(
             action =>
               action.name.toLowerCase().includes(query) ||
               action.detail?.toLowerCase().includes(query) ||
               action.auxInnerHtml.toLowerCase().includes(query),
           )
-        : ACTS
+        : actions
 
       getCommandItems(matchedActions)
     }
@@ -883,10 +898,17 @@ document.addEventListener('nav', e => {
 
   async function onType(e: HTMLElementEventMap['input']) {
     const value = (e.target as HTMLInputElement).value
-    const nextActionType: ActionType = value.trimStart().startsWith('>') ? 'command' : 'quick_open'
+    const commandMode = value.trimStart().startsWith('>')
+    let nextActionType: ActionType
+    if (commandMode) {
+      if (actionType !== 'command') fallbackActionType = actionType
+      nextActionType = 'command'
+    } else {
+      nextActionType = actionType === 'command' ? fallbackActionType : actionType
+    }
     if (actionType !== nextActionType) {
       actionType = nextActionType
-      syncCommandHelper()
+      syncPaletteHelper()
     }
     currentSearchTerm = actionType === 'command' ? commandSearchTerm(value) : value
     await querySearch(currentSearchTerm)
