@@ -260,17 +260,22 @@ document.addEventListener('nav', e => {
     isActive = false
   })
 
-  const dataReady = fetchData.then(async resolved => {
-    if (!isActive) return resolved
-    data = resolved
-    idDataMap = Object.keys(resolved) as FullSlug[]
-    await fillDocument(resolved)
-    if (!isActive) return resolved
-    if (actionType === 'quick_open' && container.classList.contains('active')) {
-      getRecentItems()
-    }
-    return resolved
-  })
+  let dataReady: Promise<ContentIndex> | null = null
+
+  function ensureData() {
+    dataReady ??= fetchData.then(async resolved => {
+      if (!isActive) return resolved
+      data = resolved
+      idDataMap = Object.keys(resolved) as FullSlug[]
+      await fillDocument(resolved)
+      if (!isActive) return resolved
+      if (actionType === 'quick_open' && container?.classList.contains('active')) {
+        getRecentItems()
+      }
+      return resolved
+    })
+    return dataReady
+  }
 
   function hidePalette() {
     container?.classList.remove('active')
@@ -297,7 +302,12 @@ document.addEventListener('nav', e => {
         getCommandItems(ACTS)
       })
     } else if (actionType === 'quick_open') {
-      getRecentItems()
+      if (data) {
+        getRecentItems()
+      } else if (output) {
+        removeAllChildren(output)
+        void ensureData()
+      }
     }
 
     bar?.focus()
@@ -710,7 +720,7 @@ document.addEventListener('nav', e => {
 
   async function querySearch(currentSearchTerm: string) {
     if (actionType === 'quick_open') {
-      await dataReady
+      await ensureData()
       const searchResults = await querySearchIndex(currentSearchTerm, numSearchResults)
 
       displayResults(

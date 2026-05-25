@@ -30,7 +30,15 @@ function unmountCollaborativeComments() {
   collaborativeCommentsCleanup?.()
 }
 
+function stackedNotesActive() {
+  return document.getElementById('stacked-notes-container')?.classList.contains('active') === true
+}
+
 document.addEventListener('nav', () => {
+  if (stackedNotesActive()) {
+    unmountCollaborativeComments()
+    return
+  }
   if (!readCommentRoomEnabled()) return
   void mountCollaborativeComments().catch(error => {
     console.error('failed to mount collaborative comments', error)
@@ -44,6 +52,7 @@ document.addEventListener(commentRoomToggleEvent, (event: CustomEventMap['commen
     unmountCollaborativeComments()
     return
   }
+  if (stackedNotesActive()) return
   void mountCollaborativeComments().catch(error => {
     console.error('failed to mount collaborative comments', error)
   })

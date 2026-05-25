@@ -14,7 +14,7 @@ gemini:
     4a0fc1cd7b2da549: love, nihilism, mega deep research threads
     d7f06bc496ea82ea: Tractatus Amor-Politicus
 id: love
-modified: 2026-05-09 17:51:47 GMT-04:00
+modified: 2026-05-25 02:27:57 GMT-04:00
 socials:
   essay: '[[posts/love|mutual becoming]]'
   hermeneutics: '[[posts/romantic epistemology|romantic epistemology]]'
@@ -52,11 +52,6 @@ he argues that there are three components to love:
 ## boxes
 
 I propose a box model where one can decompose our feelings into interpretable components, in so far that when one of these components seem lacking,
-
-- [[#hermeneutics nature]]
-- [[#passion]]
-- [[#cohabitation]]
-- [[#future projections]]
 
 ### hermeneutics nature
 
