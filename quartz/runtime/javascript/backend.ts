@@ -20,7 +20,7 @@ export const javascriptBackend: ExecutableLanguageBackend = {
   name: 'javascript',
   fileExts: ['.js', '.mjs', '.cjs'],
   aliases: ['javascript', 'js', 'node', 'nodejs', 'ijavascript', 'ecmascript'],
-  shellMagics: ['javascript', 'js'],
+  shellMagics: ['javascript', 'js', 'javascript-shell', 'js-shell'],
   workerAssetKey: 'javascriptWorkerUrl',
   kernelFactory: javascriptKernelFactory,
   canExecute: javascriptCanExecute,

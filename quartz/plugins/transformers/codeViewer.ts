@@ -254,6 +254,8 @@ type CodeRuntimeOptions = Pick<NotebookRuntimeData, 'toolbar' | 'debug' | 'vimMo
 
 type CodeRuntimeBinding = { backend: ExecutableLanguageBackend; options: CodeRuntimeOptions }
 
+type CodeRuntimeGroup = CodeRuntimeBinding & { cells: NotebookRuntimeCell[]; inserted: boolean }
+
 function shellRuntimeOptions(words: string[]): CodeRuntimeOptions {
   return {
     toolbar: false,
@@ -303,7 +305,7 @@ function runtimePayload(
 
 function runtimeCellNodes(cell: NotebookRuntimeCell, node: Code): RootContent[] {
   return [
-    html(notebookCellFrameOpen(cell.id)),
+    html(notebookCellFrameOpen(cell.id, cell.displayLanguage ?? cell.language)),
     html(notebookCellControls(cell).join('\n')),
     html(notebookCellActions(cell)),
     html(notebookSourceEditor(cell.id)),
@@ -387,50 +389,43 @@ export const CodeViewer: QuartzTransformerPlugin<Partial<Options>> = userOpts =>
             await Promise.all(promises)
 
             const sourcePath = sourcePathFromFile(file.data, file.path)
-            const cells: NotebookRuntimeCell[] = []
-            let runtimeBinding: CodeRuntimeBinding | undefined
-            let insertedRuntime = false
+            const runtimeGroups = new Map<string, CodeRuntimeGroup>()
+            let runtimeCellCount = 0
 
             visit(tree, 'code', (node: Code, index, parent) => {
               if (index === undefined || !parent || !hasRootChildren(parent)) return
               const binding = runtimeBindingForCode(node)
               if (!binding) return
-              if (runtimeBinding && binding.backend !== runtimeBinding.backend) return
-              if (!runtimeBinding) runtimeBinding = binding
-              const cell = runtimeCell(`code-cell-${cells.length + 1}`, node, binding.backend)
-              cells.push(cell)
+              const group = runtimeGroups.get(binding.backend.name) ?? {
+                ...binding,
+                cells: [],
+                inserted: false,
+              }
+              runtimeGroups.set(binding.backend.name, group)
+              runtimeCellCount += 1
+              const cell = runtimeCell(`code-cell-${runtimeCellCount}`, node, binding.backend)
+              group.cells.push(cell)
               const nodes = runtimeCellNodes(cell, node)
-              if (!insertedRuntime) {
-                const indexUrl = resolveIndexUrl(runtimeBinding.backend, opts.indexUrls)
+              if (!group.inserted) {
+                const indexUrl = resolveIndexUrl(group.backend, opts.indexUrls)
                 nodes.unshift(
                   ...notebookRuntimeControls(
-                    runtimePayload(
-                      sourcePath,
-                      [],
-                      runtimeBinding.backend,
-                      indexUrl,
-                      runtimeBinding.options,
-                    ),
+                    runtimePayload(sourcePath, [], group.backend, indexUrl, group.options),
                   ).map(html),
                 )
-                insertedRuntime = true
+                group.inserted = true
               }
               parent.children.splice(index, 1, ...nodes)
               return [SKIP, index + nodes.length]
             })
 
-            if (cells.length > 0 && runtimeBinding) {
-              const indexUrl = resolveIndexUrl(runtimeBinding.backend, opts.indexUrls)
+            for (const group of runtimeGroups.values()) {
+              if (group.cells.length === 0) continue
+              const indexUrl = resolveIndexUrl(group.backend, opts.indexUrls)
               tree.children.push(
                 html(
                   notebookRuntimeDataScript(
-                    runtimePayload(
-                      sourcePath,
-                      cells,
-                      runtimeBinding.backend,
-                      indexUrl,
-                      runtimeBinding.options,
-                    ),
+                    runtimePayload(sourcePath, group.cells, group.backend, indexUrl, group.options),
                   ),
                 ),
               )
