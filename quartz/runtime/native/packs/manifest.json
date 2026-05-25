@@ -1,1 +1,4 @@
-{ "version": 1, "runtimes": {} }
+{
+  "version": 1,
+  "runtimes": { "go": { "worker": "go/worker.js", "assets": ["go/wasm_exec.js", "go/yaegi.wasm"] } }
+}
