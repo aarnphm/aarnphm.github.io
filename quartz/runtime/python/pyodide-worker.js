@@ -1243,7 +1243,14 @@ globalThis.addEventListener('message', event => {
         }
       }
     }
-    post({ type: 'ready' })
+    ensurePyodide(message.indexUrl)
+      .then(() => {
+        post({ type: 'ready' })
+      })
+      .catch(error => {
+        post({ type: 'status', text: `Python runtime init failed: ${textOf(error)}` })
+        throw error
+      })
   } else if (message.type === 'run' && message.runtimeId === runtimeId) {
     runCell(message)
   } else if (message.type === 'asset-result' && message.runtimeId === runtimeId) {

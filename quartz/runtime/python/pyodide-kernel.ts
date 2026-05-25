@@ -184,7 +184,7 @@ export class PyodideKernel implements Kernel {
     this.status = opts.status
   }
 
-  async init(_opts: KernelInitOptions): Promise<void> {
+  async init(opts: KernelInitOptions): Promise<void> {
     if (this.ready) return this.ready
     if (typeof Worker === 'undefined') throw new Error('browser workers are unavailable')
     this.ready = new Promise((resolve, reject) => {
@@ -199,6 +199,7 @@ export class PyodideKernel implements Kernel {
       source: 'quartz-notebook-runtime',
       type: 'init',
       runtimeId: this.runtimeId,
+      indexUrl: opts.indexUrl ?? this.indexUrl,
       interruptBuffer: this.ensureInterruptBuffer(),
     })
     return this.ready
