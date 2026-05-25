@@ -43,6 +43,8 @@
     "*.bin",
     "**/embeddings/*.json",
     "quartz/util/emojimap/**/*.json",
+    "quartz/runtime/native/packs/**/*.js",
+    "quartz/runtime/native/packs/**/*.mjs",
     "content/stream.md",
     "content/are.na.md",
     "migrations/"

@@ -11,7 +11,7 @@
 
 from __future__ import annotations
 
-import os, json, argparse, hashlib, math, random, logging
+import os, json, argparse, hashlib, math, random, logging, re, html
 
 from pathlib import Path
 from functools import lru_cache
@@ -26,6 +26,9 @@ from langchain_text_splitters import RecursiveCharacterTextSplitter
 
 logger = logging.getLogger(__name__)
 DEFAULT_VLLM_URL = os.environ.get('VLLM_URL') or os.environ.get('VLLM_EMBED_URL') or 'http://127.0.0.1:8000/v1'
+NOTEBOOK_TEXT_MIMES = ('text/markdown', 'text/plain')
+NOTEBOOK_HTML_TAG = re.compile(r'<[^>]+>')
+NOTEBOOK_HEADING = re.compile(r'^#{1,6}\s+(.+?)\s*#*\s*$')
 
 
 def resolve_vllm_base_url(url: str) -> str:
@@ -48,6 +51,236 @@ def load_jsonl(fp: str) -> Iterable[dict]:
       if not line:
         continue
       yield json.loads(line)
+
+
+def as_text(value) -> str:
+  if isinstance(value, str):
+    return value
+  if isinstance(value, list):
+    return ''.join(as_text(item) for item in value)
+  if value is None:
+    return ''
+  return json.dumps(value, ensure_ascii=False)
+
+
+def normalize_notebook_text(value: str) -> str:
+  lines = [line.rstrip() for line in value.replace('\r\n', '\n').replace('\r', '\n').split('\n')]
+  cleaned: list[str] = []
+  previous_blank = False
+  for line in lines:
+    blank = not line.strip()
+    if blank and previous_blank:
+      continue
+    cleaned.append(line)
+    previous_blank = blank
+  return '\n'.join(cleaned).strip()
+
+
+def notebook_output_text(output: dict) -> str:
+  output_type = output.get('output_type')
+  if output_type == 'stream':
+    return as_text(output.get('text'))
+  if output_type == 'error':
+    traceback = output.get('traceback')
+    if isinstance(traceback, list) and traceback:
+      return '\n'.join(as_text(line) for line in traceback)
+    return normalize_notebook_text(f'{as_text(output.get("ename"))}: {as_text(output.get("evalue"))}')
+  if output_type not in {'display_data', 'execute_result'}:
+    return ''
+
+  data = output.get('data')
+  if not isinstance(data, dict):
+    return ''
+  for mime in NOTEBOOK_TEXT_MIMES:
+    text = as_text(data.get(mime))
+    if text.strip():
+      return text
+  html_text = as_text(data.get('text/html'))
+  if html_text.strip():
+    return html.unescape(NOTEBOOK_HTML_TAG.sub(' ', html_text))
+  return ''
+
+
+def notebook_language(metadata: dict) -> str:
+  language_info = metadata.get('language_info')
+  kernelspec = metadata.get('kernelspec')
+  candidates = []
+  if isinstance(language_info, dict):
+    candidates.append(language_info.get('name'))
+  if isinstance(kernelspec, dict):
+    candidates.extend([kernelspec.get('language'), kernelspec.get('name')])
+  for value in candidates:
+    if isinstance(value, str) and value.strip():
+      return re.sub(r'[^A-Za-z0-9_+#.-]', '', value) or 'python'
+  return 'python'
+
+
+def markdown_heading_title(source: str) -> str | None:
+  for line in source.splitlines():
+    match = NOTEBOOK_HEADING.match(line)
+    if not match:
+      continue
+    title = re.sub(r'\[([^\]]+)\]\([^)]+\)', r'\1', match.group(1))
+    title = title.replace('*', '').replace('_', '').replace('`', '').strip()
+    if title:
+      return title
+  return None
+
+
+def notebook_title(doc: dict, fp: Path) -> str:
+  cells = doc.get('cells')
+  if isinstance(cells, list):
+    for raw_cell in cells:
+      if not isinstance(raw_cell, dict) or raw_cell.get('cell_type') != 'markdown':
+        continue
+      title = markdown_heading_title(as_text(raw_cell.get('source')))
+      if title:
+        return title
+  return fp.stem
+
+
+def notebook_text(doc: dict) -> str:
+  cells = doc.get('cells')
+  if not isinstance(cells, list):
+    return ''
+  language = notebook_language(doc.get('metadata') if isinstance(doc.get('metadata'), dict) else {})
+  parts: list[str] = []
+  for raw_cell in cells:
+    if not isinstance(raw_cell, dict):
+      continue
+    cell_type = raw_cell.get('cell_type')
+    source = normalize_notebook_text(as_text(raw_cell.get('source')))
+    if source:
+      if cell_type == 'code':
+        parts.append(f'```{language}\n{source}\n```')
+      else:
+        parts.append(source)
+    outputs = raw_cell.get('outputs')
+    if cell_type == 'code' and isinstance(outputs, list):
+      for output in outputs:
+        if not isinstance(output, dict):
+          continue
+        text = normalize_notebook_text(notebook_output_text(output))
+        if text:
+          parts.append(text)
+  return normalize_notebook_text('\n\n'.join(parts))
+
+
+def sluggify(value: str) -> str:
+  return '/'.join(
+    segment
+    .replace(' ', '-')
+    .replace('\t', '-')
+    .replace('\n', '-')
+    .replace('\r', '-')
+    .replace('\f', '-')
+    .replace('&', '-and-')
+    .replace('%', '-percent')
+    .replace('?', '')
+    .replace('#', '')
+    for segment in value.split('/')
+  ).rstrip('/')
+
+
+def slugify_file_path(fp: str, exclude_ext: bool = False) -> str:
+  fp = fp.strip('/')
+  ext = Path(fp).suffix
+  without_ext = fp[: -len(ext)] if ext else fp
+  if exclude_ext or ext in {'.md', '.html', '.base', ''}:
+    ext = ''
+  slug = sluggify(without_ext)
+  if slug.endswith('_index'):
+    slug = f'{slug[: -len("_index")]}index'
+  return f'{slug}{ext}'
+
+
+def notebook_records_from_content_index(content_index: Path, root: Path) -> list[dict]:
+  if not content_index.exists():
+    return []
+  try:
+    raw = json.loads(content_index.read_text(encoding='utf-8'))
+  except json.JSONDecodeError as exc:
+    logger.warning('Could not parse notebook content index %s: %s', content_index, exc)
+    return []
+  if not isinstance(raw, dict):
+    return []
+
+  records: list[dict] = []
+  for slug, value in raw.items():
+    if not isinstance(slug, str) or not isinstance(value, dict):
+      continue
+    file_path = value.get('filePath')
+    file_name = value.get('fileName')
+    candidate = file_path if isinstance(file_path, str) and file_path.endswith('.ipynb') else file_name
+    if not isinstance(candidate, str) or not candidate.endswith('.ipynb'):
+      continue
+    fp = Path(candidate)
+    if not fp.is_absolute():
+      fp = root / fp
+    title = value.get('title')
+    records.append({'slug': slug, 'title': title if isinstance(title, str) and title else fp.stem, 'path': fp})
+  return records
+
+
+def notebook_records_from_content_dir(content_dir: Path) -> list[dict]:
+  if not content_dir.exists():
+    return []
+  records: list[dict] = []
+  for fp in sorted(content_dir.rglob('*.ipynb')):
+    rel = fp.relative_to(content_dir).as_posix()
+    records.append({'slug': slugify_file_path(rel, True), 'title': fp.stem, 'path': fp})
+  return records
+
+
+def load_notebook_documents(content_index: Path, content_dir: Path) -> list[dict]:
+  root = content_dir.parent if content_dir.name == 'content' else Path.cwd()
+  records = notebook_records_from_content_index(content_index, root)
+  if not records:
+    records = notebook_records_from_content_dir(content_dir)
+  docs: list[dict] = []
+  failed = 0
+  seen: set[str] = set()
+  for record in records:
+    slug = record['slug']
+    if slug in seen:
+      continue
+    seen.add(slug)
+    fp = record['path']
+    try:
+      notebook = json.loads(fp.read_text(encoding='utf-8'))
+    except (OSError, json.JSONDecodeError) as exc:
+      failed += 1
+      logger.warning('Skipping notebook %s: %s', fp, exc)
+      continue
+    if not isinstance(notebook, dict):
+      failed += 1
+      logger.warning('Skipping notebook %s: notebook root is not an object', fp)
+      continue
+    text = notebook_text(notebook)
+    if not text:
+      continue
+    title = notebook_title(notebook, fp)
+    docs.append({'slug': slug, 'title': title or record['title'], 'text': text})
+  if docs or failed:
+    print(f'Loaded {len(docs)} notebook document(s) for embeddings ({failed} skipped)')
+  return docs
+
+
+def merge_documents(recs: list[dict], additions: list[dict]) -> list[dict]:
+  merged = list(recs)
+  index_by_slug = {rec.get('slug'): i for i, rec in enumerate(merged)}
+  replaced = 0
+  for addition in additions:
+    idx = index_by_slug.get(addition['slug'])
+    if idx is None:
+      index_by_slug[addition['slug']] = len(merged)
+      merged.append(addition)
+      continue
+    merged[idx] = {**merged[idx], **addition}
+    replaced += 1
+  if additions:
+    print(f'Merged {len(additions)} notebook document(s) ({replaced} replaced, {len(additions) - replaced} added)')
+  return merged
 
 
 def l2_normalize_rows(x: np.ndarray) -> np.ndarray:
@@ -207,9 +440,12 @@ def validate_token_limits(texts: list[str], max_tokens: int, model_id: str) -> N
       over_limit.append((i, tokens, effective_max))
   if over_limit:
     logger.error(
-      f'ERROR: {len(over_limit)}/{len(texts)} chunks exceed token limit after prefix. '
-      f'First few: {over_limit[:3]}. '
-      f'This indicates chunking failed - chunk_size ({effective_max}) should prevent this.'
+      'ERROR: %d/%d chunks exceed token limit after prefix. First few: %s. '
+      'This indicates chunking failed - chunk_size (%d) should prevent this.',
+      len(over_limit),
+      len(texts),
+      over_limit[:3],
+      effective_max,
     )
     raise ValueError(
       f'{len(over_limit)} chunks exceed {max_tokens} token limit (effective: {effective_max} after prefix)'
@@ -295,6 +531,9 @@ def main():
   logging.basicConfig(level=logging.INFO, format='%(message)s')
   ap = argparse.ArgumentParser()
   ap.add_argument('--jsonl', default='public/embeddings-text.jsonl')
+  ap.add_argument('--content-dir', default='content')
+  ap.add_argument('--content-index')
+  ap.add_argument('--no-notebooks', action='store_true')
   ap.add_argument('--model', default=os.environ.get('SEM_MODEL', 'intfloat/multilingual-e5-large'))
   ap.add_argument('--dims', type=int, default=int(os.environ.get('SEM_DIMS', '1024')))
   ap.add_argument('--dtype', choices=['fp16', 'fp32'], default=os.environ.get('SEM_DTYPE', 'fp32'))
@@ -329,9 +568,15 @@ def main():
   )
   args = ap.parse_args()
 
+  jsonl_path = Path(args.jsonl)
   recs = list(load_jsonl(args.jsonl))
+  if not args.no_notebooks:
+    content_index = (
+      Path(args.content_index) if args.content_index else jsonl_path.parent / 'static' / 'contentIndex.json'
+    )
+    recs = merge_documents(recs, load_notebook_documents(content_index, Path(args.content_dir)))
   if not recs:
-    print('No input found in public/embeddings-text.jsonl; run the site build first to emit JSONL.')
+    print(f'No input found in {args.jsonl}; run the site build first to emit JSONL.')
     return
 
   # Filter out are.na (423 chunks, structural outlier)
@@ -400,8 +645,7 @@ def main():
 
   def hnsw_build(data: np.ndarray, M: int = 16, efC: int = 200, seed: int = 0) -> dict:
     rng = random.Random(seed)
-    N, D = data.shape
-    levels: list[list[list[int]]] = []
+    N, _D = data.shape
 
     node_levels = []
     for _ in range(N):
@@ -410,8 +654,7 @@ def main():
         lvl += 1
       node_levels.append(lvl)
     max_level = max(node_levels) if N > 0 else 0
-    for _ in range(max_level + 1):
-      levels.append([[] for _ in range(N)])
+    levels: list[list[list[int]]] = [[[] for _ in range(N)] for _ in range(max_level + 1)]
 
     def sim(i: int, j: int) -> float:
       return float((data[i] * data[j]).sum())

@@ -1,7 +1,0 @@
-quartz/runtime/native/packs/go/wasm_exec.js
-quartz/runtime/native/packs/haskell/browser-wasi-shim.mjs
-quartz/runtime/native/packs/haskell/dyld.mjs
-quartz/runtime/native/packs/haskell/post-link.mjs
-quartz/runtime/native/packs/haskell/prelude.mjs
-quartz/runtime/native/packs/ocaml/toplevel.js
-quartz/runtime/native/packs/rust/browser-wasi-shim.mjs

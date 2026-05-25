@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-05-24 18:58:10 GMT-04:00
+modified: 2026-05-25 17:02:32 GMT-04:00
 permalinks:
   - /website
   - /tweets
@@ -1210,6 +1210,11 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://rsms.me/ -- Rasmus Andersson
+  - [meta]:
+    - date: 05/25/2026
+    - tags: [engineer, personal computing]
+    - pinned: true
 - https://mewtwo.bearblog.dev/ -- mewtwo
   - [meta]:
     - date: 05/19/2026
