@@ -163,12 +163,15 @@ describe('LanguageBackend registry', () => {
     assert.strictEqual(typeof kernel.interrupt, 'function')
   })
 
-  test('native browser backends require self-hosted runtime packs', async () => {
+  test('native browser backends boot through self-hosted runtime packs', async () => {
     for (const backend of [rustBackend, mojoBackend, haskellBackend, ocamlBackend, goBackend]) {
       const accepted = backend.canExecute('main = print "hi"')
-      assert.strictEqual(accepted.ok, false)
-      if (!accepted.ok) assert.match(accepted.reason, /WebAssembly runtime pack/)
-      const kernel = await backend.kernelFactory({ runtimeId: 'r', sourcePath: 's' })
+      assert.strictEqual(accepted.ok, true)
+      const kernel = await backend.kernelFactory({
+        runtimeId: 'r',
+        sourcePath: 's',
+        workerUrl: '/static/scripts/notebook-runtimes/manifest.json',
+      })
       assert.strictEqual(kernel.language, backend.name)
     }
   })

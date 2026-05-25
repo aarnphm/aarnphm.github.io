@@ -2,6 +2,7 @@ import {
   notebookPyrightPackageStubsManifestAsset,
   notebookPyrightTypeshedManifestAsset,
   notebookPyrightWorkerManifestAsset,
+  notebookNativeRuntimeManifestAsset,
   notebookRuntimeClientAsset,
   notebookRuntimeJavascriptWorkerAsset,
   notebookRuntimeWorkerAsset,
@@ -38,6 +39,7 @@ export const emojiAssetSourceDir = 'quartz/util/emojimap'
 export const notebookRuntimeClientPath = `${staticScriptsDir}/${notebookRuntimeClientAsset}`
 export const notebookRuntimeWorkerPath = `${staticScriptsDir}/${notebookRuntimeWorkerAsset}`
 export const notebookRuntimeJavascriptWorkerPath = `${staticScriptsDir}/${notebookRuntimeJavascriptWorkerAsset}`
+export const notebookNativeRuntimeManifestPath = `${staticScriptsDir}/${notebookNativeRuntimeManifestAsset}`
 export const collaborativeCommentsClientPath = `${staticScriptsDir}/collaborative-comments.client.js`
 export const notebookPyrightWorkerManifestPath = `${staticScriptsDir}/${notebookPyrightWorkerManifestAsset}`
 export const notebookPyrightTypeshedManifestPath = `${staticScriptsDir}/${notebookPyrightTypeshedManifestAsset}`
