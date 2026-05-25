@@ -15,12 +15,12 @@
     },
     "mojo": {
       "available": false,
-      "reason": "Mojo notebook cells need a Mojo compiler/runtime target for WebAssembly. This site leaves Mojo runtime support last."
+      "reason": "Mojo notebook cells need a Mojo compiler/runtime target for WebAssembly. The current Mojo toolchain in this repo exposes no wasm target, so this site leaves Mojo runtime support last."
     },
     "ocaml": { "worker": "ocaml/worker.js", "assets": ["ocaml/toplevel.js"] },
     "rust": {
       "available": false,
-      "reason": "Rust notebook cells need a self-hosted rustc or interpreter WebAssembly runtime pack. This site does not ship one yet."
+      "reason": "Rust notebook cells need a self-hosted source-to-execution pack. The available browser rustc.wasm path compiles to objects and still needs a linker/runner, so this site does not ship it yet."
     }
   }
 }
