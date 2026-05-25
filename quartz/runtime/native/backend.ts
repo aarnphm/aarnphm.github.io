@@ -5,6 +5,7 @@ import {
   type CanExecuteResult,
   type ExecutableLanguageBackend,
 } from '../notebook/backend'
+import { createRustPlaygroundKernel } from '../rust/playground-kernel'
 
 type NativeLanguageSpec = {
   readonly name: string
@@ -55,6 +56,12 @@ function nativeCanExecute(language: string): CanExecuteResult {
   return { ok: false, reason: nativeRuntimeReason(language) }
 }
 
+function rustCanExecute(source: string): CanExecuteResult {
+  return source.trim().length === 0
+    ? { ok: false, reason: 'rust notebook cells need source code to execute.' }
+    : { ok: true }
+}
+
 function nativeBackend(spec: NativeLanguageSpec): ExecutableLanguageBackend {
   return {
     ...spec,
@@ -64,12 +71,20 @@ function nativeBackend(spec: NativeLanguageSpec): ExecutableLanguageBackend {
   }
 }
 
-export const rustBackend = nativeBackend({
+export const rustBackend: ExecutableLanguageBackend = {
   name: 'rust',
   fileExts: ['.rs'],
   aliases: ['rust', 'rs'],
   shellMagics: ['rust-shell', 'rs-shell'],
-})
+  kernelFactory: async () => createRustPlaygroundKernel(),
+  canExecute: rustCanExecute,
+  editor: {
+    languageExtension: async () => {
+      const mod = await import('@codemirror/lang-rust')
+      return mod.rust()
+    },
+  },
+}
 
 export const mojoBackend = nativeBackend({
   name: 'mojo',
