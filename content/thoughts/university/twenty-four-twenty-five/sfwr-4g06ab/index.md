@@ -2,7 +2,7 @@
 date: '2024-09-04'
 description: software engineering capstone course exploring wysiwyg editor projects and morph development.
 id: index
-modified: 2026-05-09 17:51:58 GMT-04:00
+modified: 2026-05-25 01:21:29 GMT-04:00
 tags:
   - university
   - sfwr4g06ab
@@ -11,7 +11,7 @@ title: Software Enginering Capstone a la carte.
 
 ## projects
 
-See [morph](https://engineering.morph-editor.app/)
+See [morph](https://morph-editor.app/)
 
 ## statement and goals.
 
@@ -24,7 +24,7 @@ See [morph](https://engineering.morph-editor.app/)
      - natural language -> commands
    - Configuration, maybe in Lua
    - stretch goal: new shell based on rust syntax and borrowing concept of variables.
-2. WYSIWYG editor (choosen, see [docs](https://engineering.morph-editor.app/))
+2. WYSIWYG editor (choosen)
    - Markdown renderer
    - train [SAE](https://transformer-circuits.pub/2023/monosemantic-features/index.html) for specific type of writing tonality => manual steering for text generation on creative writing
    - exploration of internals writing features based on text

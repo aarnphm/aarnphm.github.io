@@ -6,7 +6,7 @@ comments: false
 date: '2021-12-22'
 description: and a celebration for the act of making.
 id: craft
-modified: 2026-05-25 00:12:21 GMT-04:00
+modified: 2026-05-25 01:26:57 GMT-04:00
 permalinks:
   - /thoughts/work
   - /craft
@@ -18,22 +18,19 @@ title: craft.
 
 There is also a [[ideas|backlog]] of unfinished ideas that I might work on, one day. I'm also doing [[consult|consulting]]
 
----
+## lives
 
-## writing.
+- Modular, 01/2026—Now
+  - Inference Optimization Engineer, MAX Serve
+  - Source: [website](https://www.modular.com/)
+- BentoML, 04/2021—12/2025
+  - Inference Optimization Engineer
+  - vLLM commiter, structured outputs, scheduler
+  - early engineer
+  - _Acquired by Modular_
+  - Source: [website](https://bentoml.com/)
 
-You can find internal monologue under [[/posts/]] index. I also sent out a pseudo-monthly newsletter to all my friends, sort of a pseudo-update into my life.
-
-## web poetics
-
-- #bday, a collection of online artifacts I built in addition with some [[/posts|writing]] to celebrate my friends' birthday.
-  - a fun [self-replicating spacecraft](https://en.wikipedia.org/wiki/Self-replicating_spacecraft) game
-    - A hybrid of A\* and a BFS search for pathfinding algorithm.
-    - polyalphabetic cipher with deterministic reversible transformations includes a Fiestel network structure with MurmurHash3 mixing of 32-bit avalanche mixer
-    - Source: [site but password protected](https://nicky.day/)
-- #postcards, a collections of cards for all the places I have lived at.
-
-## open source.
+## open source
 
 - **mohaus** - :gear: Builds and publish Mojo binaries as Python packages
   - Source: [github](https://github.com/aarnphm/mohaus)
@@ -52,7 +49,7 @@ You can find internal monologue under [[/posts/]] index. I also sent out a pseud
   - Source: [github](https://github.com/vllm-project/vllm), [docs](docs.vllm.ai), [[thoughts/vllm|notes]]
 
 - **Quartz** - :seedling: a fast, batteries-included static-site generator that transforms Markdown content into fully functional websites (2023-) ^quartz
-  - A set of tools that helps you publish your [[thoughts/Digital garden|digital garden]] and notes as a website for free.
+  - A set of [[colophon|tools]] that helps you publish your [[thoughts/Digital garden|digital garden]] and notes as a website for free.
   - Improved performance of graph interaction with Canvas https://github.com/jackyzha0/quartz/pull/1328
   - Added support for PDF in popover modal https://github.com/jackyzha0/quartz/pull/913
   - Implemented font-fetching before runtime https://github.com/jackyzha0/quartz/pull/817
@@ -62,9 +59,10 @@ You can find internal monologue under [[/posts/]] index. I also sent out a pseud
   - Added Jupyter notebook transpilation and [[thoughts/university/twenty-five-twenty-six/sfwr-4tb3/10 Generalized Parsing/00 Generalized Parsing|executions]] (think of it as a scuffed Modal notebook)
     <div class="nolist">
     - ![[thoughts/Jax#asynchronous dispatch|example if per-block transclusion runtime]]
-    - ![[thoughts/university/twenty-five-twenty-six/sfwr-4tb3/10 Generalized Parsing/00 Generalized Parsing#{collapsed: true}]]
+
     </div>
-  - Landing page of [[/|this]] website, [morph's documentation](https://engineering.morph-editor.app)
+
+  - Landing page of [[/|this]] website
   - Custom components, i.e: [[/thoughts/atelier with friends/dundurn|supper club]], [[/curius|curius]], parsing [[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/a2/PCA|jupyter notebook]]
   - Source: [github](https://github.com/jackyzha0/quartz), [site](https://quartz.jzhao.xyz/)
 
@@ -82,7 +80,7 @@ You can find internal monologue under [[/posts/]] index. I also sent out a pseud
   - Dynamic inference graph with structured outputs endpoints for steered [suggestions](https://github.com/aarnphm/morph/blob/cd5f916776273aea5d27c5ed08e300e3ca04a1f5/python/asteraceae/service.py#L748), a search RAG to infer author style and tonality with [Exa](https://exa.ai) and [LlamaIndex](https://www.llamaindex.ai/)
   - Similarity search via embedded [PGlite](https://pglite.dev/) within the browser to ensure no data ever leave users computer.
   - Markdown editor with [CodeMirror](https://codemirror.net/6/doc/manual.html) and additional plugins for rendering with remark-rehype ecosystem. Built with Next.js 15 and [Flexoki](https://stephango.com/flexoki) design system.
-  - source: [github](https://github.com/aarnphm/morph), [engineering docs](https://engineering.morph-editor.app/), [wip user docs](https://docs.morph-editor.app), [demo](https://morph-editor.app)
+  - source: [github](https://github.com/aarnphm/morph), [demo](https://morph-editor.app)
 
 - **OpenLLM** - :gear: Run any open-source [[thoughts/LLMs|LLMs]] as OpenAI compatible API endpoint in the cloud. (2023-)
   - 🔬 Build for fast and production usages
@@ -112,8 +110,7 @@ You can find internal monologue under [[/posts/]] index. I also sent out a pseud
   - Built using AWS Fargate, React Native, TypeScript, GraphQL, Apache Spark MLlib, Google Maps API
   - Source: [github](https://github.com/tiproad/omw), [devpost](https://devpost.com/software/twogether)
 
-[^morph]:
-    An excerpt from the [problem statement](https://engineering.morph-editor.app/ProblemStatementAndGoals/ProblemStatement):
+[^morph]: An excerpt from the problem statement:
 
     > [[thoughts/Autoregressive models]] excels at surfacing machines’ internal [[thoughts/representations|representations]] of the world through a simple interface: given a blob of [[thoughts/Language|text]], the model will generate a contiguous piece of text that it predicts as the most probable tokens. For example, if you give it a Wikipedia article, the model should produce text consistent with the remainder of said article. These models works well given the following assumption: the inputs prompt must be coherent and well-structured surrounding a given problem the users want to achieve. A writer might provide paragraphs from their favourite authors - let’s say Joan Didion, as context to formulate their arguments for a certain writing. The model then “suggests” certain ideas that simulate Didion’s style of writing. Here is a big catch: [[thoughts/Garbage in Garbage out|garbage in, garbage out]]. If your prompt are disconnected or incoherent, the model will generate text that is equally incoherent.
     >
@@ -121,24 +118,32 @@ You can find internal monologue under [[/posts/]] index. I also sent out a pseud
     >
     > Given these challenges, morph doesn’t seek to be a mere tools for rewriting text. morph aims to explore alternative interfaces for text generations models to extend our cognitive abilities. This means developing spatial and visual interfaces that allow for non-linear exploration of information and ideas, through writing.
 
-## positions.
+## writing
 
-- Modular, 01/2026-Now
-  - Inference Optimization Engineer, MAX Serve
-  - Source: [website](https://www.modular.com/)
-- BentoML, 04/2021-12/2025
-  - Inference Optimization Engineer
-  - vLLM commiter, structured outputs, scheduler
-  - early engineer
-  - _Acquired by Modular_
-  - Source: [website](https://bentoml.com/)
+You can find internal monologue under [[/posts/]] index. I also sent out a pseudo-monthly newsletter to all my friends, sort of a pseudo-update into my life.
 
-## talks.
+BentoML Blog: Get 3x Faster LLM Inference with Speculative Decoding Using the Right Draft Model
 
-- OpenLLM, and everything about running LLMs in production at Hack The North (2023)
-  - Source: [[thoughts/images/htn-openllm.pdf|slides]]
-    ![[thoughts/images/htn-2023-speaks.webp]]
-- infer, a [[/lectures|workshop series]] at New Stadium (2025-)
+- Collaborate with larme to train specific EAGLE weights with some custom kernels
+- Link: [original](https://bentoml.com/blog/3x-faster-llm-inference-with-speculative-decoding)
+
+vLLM Blog: Structured Decoding in vLLM: a gentle introduction
+
+- Collaborate with Michael Goin (RedHat), Russell Bryant (RedHat) for most of the integration for vLLM's structured outputs kernels and scheduler.
+- Link: [original](https://vllm.ai/blog/2025-01-14-struct-decode-intro), [[/posts/structured outputs|personal mirror]]
+
+## web poetics
+
+- #bday, a collection of online artifacts I built in addition with some [[/posts|writing]] to celebrate my friends' birthday.
+  - a fun [self-replicating spacecraft](https://en.wikipedia.org/wiki/Self-replicating_spacecraft) game
+    - A hybrid of A\* and a BFS search for pathfinding algorithm.
+    - polyalphabetic cipher with deterministic reversible transformations includes a Fiestel network structure with MurmurHash3 mixing of 32-bit avalanche mixer
+    - Source: [site but password protected](https://nicky.day/)
+- #postcards, a collections of cards for all the places I have lived at.
+
+## talks
+
+- infer, a [[/lectures|workshop series]] at New Stadium (2025)
   - Everything about inference engine and in between.
   - so far:
     - [[lectures/1/notes|1. overview of transformers-based inference]]
@@ -153,5 +158,10 @@ You can find internal monologue under [[/posts/]] index. I also sent out a pseud
       - [[lectures/440/notes|440. tinyvllm]]
 - vLLM Toronto Meetup, 2025
   - Source: [slides](https://docs.google.com/presentation/d/1IYJYmJcu9fLpID5N5RbW_vO0XLo0CGOR14IXOjB61V8/edit?slide=id.g375ced4d028_0_43#slide=id.g375ced4d028_0_43)
+
     ![[thoughts/images/707B74A0-FAEB-47A1-827F-A8B13777F438_1_105_c.webp]]
     ![[thoughts/images/A69C8544-3228-4450-A112-AF9FA032662B_1_201_a.webp]]
+
+- OpenLLM, and everything about running LLMs in production at Hack The North (2023)
+  - Source: [[thoughts/images/htn-openllm.pdf|slides]]
+    ![[thoughts/images/htn-2023-speaks.webp]]

@@ -417,6 +417,18 @@ body {
   }
 }
 
+#stacked-notes-container .stacked-note {
+  .stacked-content .byline {
+    display: none;
+    grid-column: auto;
+  }
+
+  .graph-local,
+  .graph.local-graph-only {
+    display: none;
+  }
+}
+
 @media all and ($mobile) {
   .byline {
     & > * {

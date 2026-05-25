@@ -44,5 +44,5 @@ export function mountCollaborativeComments() {
       return mountMultiplayer({ dispatch: ctx.dispatch, state: ctx.retrieve, services })
     },
   })
-  window.addCleanup(program.stop)
+  return program.stop
 }

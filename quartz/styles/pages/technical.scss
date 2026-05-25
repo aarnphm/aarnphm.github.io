@@ -5,6 +5,7 @@ body[data-layout='technical'] {
   .page-footer {
     padding: 0;
 
+    & > .graph,
     & > .recommendations,
     & > .backlinks {
       display: none;

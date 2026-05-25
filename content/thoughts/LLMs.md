@@ -30,7 +30,7 @@ Incredibly hard to scale, mainly due to their [[thoughts/large models|large]] me
 
 ### [[thoughts/optimization|Optimization]]
 
-I did a [[thoughts/images/htn-openllm.pdf|talk at HackTheNorth 2023]] on this topic and rationale behind building [[thoughts/craft#open source.|OpenLLM]]
+I did a [[thoughts/images/htn-openllm.pdf|talk at HackTheNorth 2023]] on this topic and rationale behind building [[thoughts/craft#open source|OpenLLM]]
 
 - [[thoughts/quantization|Quantization]]: reduce computational and memory costs of running inference with representing the weight and activations with low-precision data type
 - [[thoughts/Continuous batching]]: Implementing [[thoughts/Attention#Paged Attention]] with custom scheduler to manage swapping kv-cache for better resource utilisation
