@@ -203,6 +203,12 @@ describe('code viewer runtime cells', () => {
         '```ocaml shell',
         'print_endline "hi"',
         '```',
+        '',
+        '```go shell',
+        'package main',
+        'import "fmt"',
+        'func main() { fmt.Println("hi") }',
+        '```',
       ].join('\n'),
     )
 
@@ -218,12 +224,14 @@ describe('code viewer runtime cells', () => {
         { language: 'python', cells: ['code-cell-1'] },
         { language: 'javascript', cells: ['code-cell-2'] },
         { language: 'ocaml', cells: ['code-cell-3'] },
+        { language: 'go', cells: ['code-cell-4'] },
       ],
     )
     const html = collectHtml(tree).join('\n')
     assert.match(html, /notebook-language-badge-python/)
     assert.match(html, /notebook-language-badge-javascript/)
     assert.match(html, /notebook-language-badge-ocaml/)
+    assert.match(html, /notebook-language-badge-go/)
   })
 
   test('lets python shell meta disable debug and vim defaults', async () => {
@@ -266,6 +274,7 @@ describe('code viewer runtime cells', () => {
       children: [
         { type: 'code', lang: 'haskell', value: 'main = putStrLn "hi"' },
         { type: 'code', lang: 'ocaml', value: 'print_endline "hi"' },
+        { type: 'code', lang: 'go', value: 'package main' },
       ],
     }
 
@@ -274,7 +283,7 @@ describe('code viewer runtime cells', () => {
     assert.strictEqual(collectHtml(tree).length, 0)
     assert.deepStrictEqual(
       collectCode(tree).map(node => node.lang),
-      ['haskell', 'ocaml'],
+      ['haskell', 'ocaml', 'go'],
     )
   })
 

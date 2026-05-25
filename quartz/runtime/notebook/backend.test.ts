@@ -1,7 +1,13 @@
 import assert from 'node:assert'
 import test, { describe, before } from 'node:test'
 import { javascriptBackend } from '../javascript/backend'
-import { haskellBackend, mojoBackend, ocamlBackend, rustBackend } from '../native/backend'
+import {
+  goBackend,
+  haskellBackend,
+  mojoBackend,
+  ocamlBackend,
+  rustBackend,
+} from '../native/backend'
 import { pythonBackend } from '../python/backend'
 import {
   backendFor,
@@ -73,6 +79,9 @@ describe('LanguageBackend registry', () => {
     assert.strictEqual(backendFor('.hs'), haskellBackend)
     assert.strictEqual(backendFor('ocaml'), ocamlBackend)
     assert.strictEqual(backendFor('.ml'), ocamlBackend)
+    assert.strictEqual(backendFor('go'), goBackend)
+    assert.strictEqual(backendFor('golang'), goBackend)
+    assert.strictEqual(backendFor('.go'), goBackend)
   })
 
   test('resolves a backend by shell magic', () => {
@@ -88,6 +97,8 @@ describe('LanguageBackend registry', () => {
     assert.strictEqual(backendForShellMagic('haskell'), undefined)
     assert.strictEqual(backendForShellMagic('ocaml-shell'), ocamlBackend)
     assert.strictEqual(backendForShellMagic('ocaml'), undefined)
+    assert.strictEqual(backendForShellMagic('go-shell'), goBackend)
+    assert.strictEqual(backendForShellMagic('go'), undefined)
   })
 
   test('returns undefined for unregistered languages', () => {
@@ -152,25 +163,11 @@ describe('LanguageBackend registry', () => {
     assert.strictEqual(typeof kernel.interrupt, 'function')
   })
 
-  test('rust backend executes through the playground sandbox', () => {
-    assert.strictEqual(rustBackend.canExecute('fn main() { println!("hi"); }').ok, true)
-    const rejected = rustBackend.canExecute('')
-    assert.strictEqual(rejected.ok, false)
-    if (!rejected.ok) assert.match(rejected.reason, /source code/)
-  })
-
-  test('haskell backend executes through the playground sandbox', () => {
-    assert.strictEqual(haskellBackend.canExecute('main = putStrLn "hi"').ok, true)
-    const rejected = haskellBackend.canExecute('')
-    assert.strictEqual(rejected.ok, false)
-    if (!rejected.ok) assert.match(rejected.reason, /source code/)
-  })
-
-  test('native browser backends report unavailable compiler runtimes', async () => {
-    for (const backend of [mojoBackend, ocamlBackend]) {
+  test('native browser backends require self-hosted runtime packs', async () => {
+    for (const backend of [rustBackend, mojoBackend, haskellBackend, ocamlBackend, goBackend]) {
       const accepted = backend.canExecute('main = print "hi"')
       assert.strictEqual(accepted.ok, false)
-      if (!accepted.ok) assert.match(accepted.reason, /native compiler runtime/)
+      if (!accepted.ok) assert.match(accepted.reason, /WebAssembly runtime pack/)
       const kernel = await backend.kernelFactory({ runtimeId: 'r', sourcePath: 's' })
       assert.strictEqual(kernel.language, backend.name)
     }
