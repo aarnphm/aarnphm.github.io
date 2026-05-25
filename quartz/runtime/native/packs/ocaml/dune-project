@@ -1,0 +1,8 @@
+(lang dune 3.19)
+
+(package
+ (name garden_ocaml_notebook_runtime)
+ (depends
+  js_of_ocaml
+  js_of_ocaml-ppx
+  js_of_ocaml-toplevel))

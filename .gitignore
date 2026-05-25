@@ -236,3 +236,4 @@ PROMPTS.md
 *.wasm
 !quartz/runtime/native/packs/**/*.wasm
 !quartz/runtime/native/packs/**/go.sum
+quartz/runtime/native/packs/**/_build/

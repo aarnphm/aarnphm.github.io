@@ -12,12 +12,16 @@ describe('native runtime pack manifest', () => {
       version: 1,
       runtimes: {
         go: { worker: 'go/worker.js', assets: ['go/main.wasm', 'go/wasm_exec.js'] },
+        ocaml: { worker: 'ocaml/worker.js', assets: ['ocaml/toplevel.js'] },
         unknown: { worker: 'nope.js' },
       },
     })
     assert.deepStrictEqual(manifest, {
       version: 1,
-      runtimes: { go: { worker: 'go/worker.js', assets: ['go/main.wasm', 'go/wasm_exec.js'] } },
+      runtimes: {
+        go: { worker: 'go/worker.js', assets: ['go/main.wasm', 'go/wasm_exec.js'] },
+        ocaml: { worker: 'ocaml/worker.js', assets: ['ocaml/toplevel.js'] },
+      },
     })
   })
 
