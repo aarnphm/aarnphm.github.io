@@ -188,7 +188,8 @@ article:has(.notebook-runtime) {
 
       > pre {
         margin: 0;
-        border-radius: 0 var(--notebook-inner-radius) var(--notebook-inner-radius) var(--notebook-inner-radius);
+        border-radius: 0 var(--notebook-inner-radius) var(--notebook-inner-radius)
+          var(--notebook-inner-radius);
 
         > code {
           .hljs-keyword,
@@ -574,6 +575,21 @@ article:has(.notebook-runtime) {
   .notebook-python-icon {
     width: 0.92rem;
     height: 0.98rem;
+  }
+
+  .notebook-go-icon {
+    width: 1.18rem;
+    height: 0.45rem;
+  }
+
+  .notebook-rust-icon {
+    width: 0.82rem;
+    height: 0.82rem;
+  }
+
+  .notebook-ocaml-icon {
+    width: 0.84rem;
+    height: 0.74rem;
   }
 
   .notebook-language-text {

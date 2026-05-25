@@ -96,7 +96,7 @@ importers:
         version: 5.0.6
       agents:
         specifier: ^0.13.2
-        version: 0.13.2(@babel/core@7.29.0)(@babel/runtime@7.29.2)(@cloudflare/ai-chat@0.7.1)(@cloudflare/codemode@0.3.7(@modelcontextprotocol/sdk@1.29.0(@cfworker/json-schema@4.1.1)(zod@4.4.3))(ai@6.0.191(zod@4.4.3))(zod@4.4.3))(@cloudflare/workers-types@4.20260523.1)(ai@6.0.191(zod@4.4.3))(react@19.2.6)(rolldown@1.0.2)(zod@4.4.3)
+        version: 0.13.2(@babel/core@7.29.0)(@babel/runtime@7.29.2)(@cloudflare/ai-chat@0.7.1)(@cloudflare/codemode@0.3.7(@modelcontextprotocol/sdk@1.29.0(@cfworker/json-schema@4.1.1)(zod@4.4.3))(ai@6.0.191(zod@4.4.3))(zod@4.4.3))(@cloudflare/workers-types@4.20260524.1)(ai@6.0.191(zod@4.4.3))(react@19.2.6)(rolldown@1.0.2)(zod@4.4.3)
       ansi-truncate:
         specifier: ^1.4.0
         version: 1.4.0
@@ -129,7 +129,7 @@ importers:
         version: 3.4.5
       drizzle-orm:
         specifier: ^0.45.2
-        version: 0.45.2(@cloudflare/workers-types@4.20260523.1)(@electric-sql/pglite@0.4.5)(@opentelemetry/api@1.9.1)
+        version: 0.45.2(@cloudflare/workers-types@4.20260524.1)(@electric-sql/pglite@0.4.5)(@opentelemetry/api@1.9.1)
       esbuild-sass-plugin:
         specifier: ^3.7.0
         version: 3.7.0(esbuild@0.28.0)(sass-embedded@1.100.0)
@@ -423,8 +423,8 @@ importers:
         version: 4.4.3
     devDependencies:
       '@cloudflare/workers-types':
-        specifier: ^4.20260523.1
-        version: 4.20260523.1
+        specifier: ^4.20260524.1
+        version: 4.20260524.1
       '@types/d3':
         specifier: ^7.4.3
         version: 7.4.3
@@ -500,9 +500,6 @@ importers:
       oxlint:
         specifier: ^1.66.0
         version: 1.66.0
-      prettier:
-        specifier: ^3.8.3
-        version: 3.8.3
       rehype-stringify:
         specifier: ^10.0.1
         version: 10.0.1
@@ -517,7 +514,7 @@ importers:
         version: 6.0.3
       wrangler:
         specifier: ^4.94.0
-        version: 4.94.0(@cloudflare/workers-types@4.20260523.1)
+        version: 4.94.0(@cloudflare/workers-types@4.20260524.1)
 
 packages:
 
@@ -821,8 +818,8 @@ packages:
   '@cloudflare/workers-oauth-provider@0.7.0':
     resolution: {integrity: sha512-w0s740/aV76mOkCgTcAQ31Lcju38Bt2BN3gbWPfhF9TvN6ED8nv08TSkNPARJa7X2AZzWhxqRlMrbWzEDPcY+Q==}
 
-  '@cloudflare/workers-types@4.20260523.1':
-    resolution: {integrity: sha512-Kr66Jip2K3t0srdoLLImzblTTx2T409Zk2J6AHANmlB950rlHr2henMQx7+cdQOLm2p1CttuBcYB1UVjdiFN8Q==}
+  '@cloudflare/workers-types@4.20260524.1':
+    resolution: {integrity: sha512-9o939wce6hAlfNAIG4W58bySW7twgkqgPkxmSNrk/DV0eEexjTPyqChGdsQeKZEXJAjxSUFklaebMYJWg1GM0g==}
 
   '@codemirror/autocomplete@6.20.2':
     resolution: {integrity: sha512-G5FPkgIiLjOgZMjqVjvuKQ1rGPtHogLldJr33eFJdVLtmwY+giGrlv/ewljLz6b9BSQLkjxuwBc6g6omDM+YxQ==}
@@ -5137,11 +5134,6 @@ packages:
     resolution: {integrity: sha512-vkcDPrRZo1QZLbn5RLGPpg/WmIQ65qoWWhcGKf/b5eplkkarX0m9z8ppCat4mlOqUsWpyNuYgO3VRyrYHSzX5g==}
     engines: {node: '>= 0.8.0'}
 
-  prettier@3.8.3:
-    resolution: {integrity: sha512-7igPTM53cGHMW8xWuVTydi2KO233VFiTNyF5hLJqpilHfmn8C8gPf+PS7dUT64YcXFbiMGZxS9pCSxL/Dxm/Jw==}
-    engines: {node: '>=14'}
-    hasBin: true
-
   pretty-bytes@7.1.0:
     resolution: {integrity: sha512-nODzvTiYVRGRqAOvE84Vk5JDPyyxsVk0/fbA/bq7RqlnhksGpset09XTxbpvLTIjoaF7K8Z8DG8yHtKGTPSYRw==}
     engines: {node: '>=20'}
@@ -5186,7 +5178,7 @@ packages:
     engines: {node: '>=6'}
 
   pyright-internal@https://codeload.github.com/DetachHead/basedpyright/tar.gz/ad82d91ce241116737e65e660c5420dd0366f405#path:packages/pyright-internal:
-    resolution: {gitHosted: true, integrity: sha512-FnxSUSM/VlQS83K/hHxAdDfdxVsjuYAmRqGxDZ3Ad+MX0SWJ+vJ8cEOmywPE+Q6Qo9Y+G6XL1XxJy9F9N6wfmQ==, tarball: https://codeload.github.com/DetachHead/basedpyright/tar.gz/ad82d91ce241116737e65e660c5420dd0366f405}
+    resolution: {gitHosted: true, path: packages/pyright-internal, tarball: https://codeload.github.com/DetachHead/basedpyright/tar.gz/ad82d91ce241116737e65e660c5420dd0366f405}
     version: 1.1.410
 
   pyright-root@https://github.com/DetachHead/basedpyright/archive/refs/tags/v1.39.6.tar.gz:
@@ -6530,7 +6522,7 @@ snapshots:
   '@cloudflare/ai-chat@0.7.1(@ai-sdk/react@3.0.191(react@19.2.6)(zod@4.4.3))(agents@0.13.2)(ai@6.0.191(zod@4.4.3))(react@19.2.6)(zod@4.4.3)':
     dependencies:
       '@ai-sdk/react': 3.0.191(react@19.2.6)(zod@4.4.3)
-      agents: 0.13.2(@babel/core@7.29.0)(@babel/runtime@7.29.2)(@cloudflare/ai-chat@0.7.1)(@cloudflare/codemode@0.3.7(@modelcontextprotocol/sdk@1.29.0(@cfworker/json-schema@4.1.1)(zod@4.4.3))(ai@6.0.191(zod@4.4.3))(zod@4.4.3))(@cloudflare/workers-types@4.20260523.1)(ai@6.0.191(zod@4.4.3))(react@19.2.6)(rolldown@1.0.2)(zod@4.4.3)
+      agents: 0.13.2(@babel/core@7.29.0)(@babel/runtime@7.29.2)(@cloudflare/ai-chat@0.7.1)(@cloudflare/codemode@0.3.7(@modelcontextprotocol/sdk@1.29.0(@cfworker/json-schema@4.1.1)(zod@4.4.3))(ai@6.0.191(zod@4.4.3))(zod@4.4.3))(@cloudflare/workers-types@4.20260524.1)(ai@6.0.191(zod@4.4.3))(react@19.2.6)(rolldown@1.0.2)(zod@4.4.3)
       ai: 6.0.191(zod@4.4.3)
       nanoid: 5.1.11
       react: 19.2.6
@@ -6584,7 +6576,7 @@ snapshots:
 
   '@cloudflare/workers-oauth-provider@0.7.0': {}
 
-  '@cloudflare/workers-types@4.20260523.1': {}
+  '@cloudflare/workers-types@4.20260524.1': {}
 
   '@codemirror/autocomplete@6.20.2':
     dependencies:
@@ -8284,7 +8276,7 @@ snapshots:
 
   agent-base@7.1.4: {}
 
-  agents@0.13.2(@babel/core@7.29.0)(@babel/runtime@7.29.2)(@cloudflare/ai-chat@0.7.1)(@cloudflare/codemode@0.3.7(@modelcontextprotocol/sdk@1.29.0(@cfworker/json-schema@4.1.1)(zod@4.4.3))(ai@6.0.191(zod@4.4.3))(zod@4.4.3))(@cloudflare/workers-types@4.20260523.1)(ai@6.0.191(zod@4.4.3))(react@19.2.6)(rolldown@1.0.2)(zod@4.4.3):
+  agents@0.13.2(@babel/core@7.29.0)(@babel/runtime@7.29.2)(@cloudflare/ai-chat@0.7.1)(@cloudflare/codemode@0.3.7(@modelcontextprotocol/sdk@1.29.0(@cfworker/json-schema@4.1.1)(zod@4.4.3))(ai@6.0.191(zod@4.4.3))(zod@4.4.3))(@cloudflare/workers-types@4.20260524.1)(ai@6.0.191(zod@4.4.3))(react@19.2.6)(rolldown@1.0.2)(zod@4.4.3):
     dependencies:
       '@babel/plugin-proposal-decorators': 7.29.0(@babel/core@7.29.0)
       '@cfworker/json-schema': 4.1.1
@@ -8294,7 +8286,7 @@ snapshots:
       cron-schedule: 6.0.0
       mimetext: 3.0.28
       nanoid: 5.1.11
-      partyserver: 0.5.6(@cloudflare/workers-types@4.20260523.1)
+      partyserver: 0.5.6(@cloudflare/workers-types@4.20260524.1)
       partysocket: 1.1.19(react@19.2.6)
       react: 19.2.6
       yargs: 18.0.0
@@ -8993,9 +8985,9 @@ snapshots:
       esbuild: 0.25.12
       tsx: 4.22.3
 
-  drizzle-orm@0.45.2(@cloudflare/workers-types@4.20260523.1)(@electric-sql/pglite@0.4.5)(@opentelemetry/api@1.9.1):
+  drizzle-orm@0.45.2(@cloudflare/workers-types@4.20260524.1)(@electric-sql/pglite@0.4.5)(@opentelemetry/api@1.9.1):
     optionalDependencies:
-      '@cloudflare/workers-types': 4.20260523.1
+      '@cloudflare/workers-types': 4.20260524.1
       '@electric-sql/pglite': 0.4.5
       '@opentelemetry/api': 1.9.1
 
@@ -10864,9 +10856,9 @@ snapshots:
 
   parseurl@1.3.3: {}
 
-  partyserver@0.5.6(@cloudflare/workers-types@4.20260523.1):
+  partyserver@0.5.6(@cloudflare/workers-types@4.20260524.1):
     dependencies:
-      '@cloudflare/workers-types': 4.20260523.1
+      '@cloudflare/workers-types': 4.20260524.1
       nanoid: 5.1.11
 
   partysocket@1.1.19(react@19.2.6):
@@ -10938,8 +10930,6 @@ snapshots:
   preact@10.29.2: {}
 
   prelude-ls@1.2.1: {}
-
-  prettier@3.8.3: {}
 
   pretty-bytes@7.1.0: {}
 
@@ -12144,7 +12134,7 @@ snapshots:
 
   workerpool@10.0.2: {}
 
-  wrangler@4.94.0(@cloudflare/workers-types@4.20260523.1):
+  wrangler@4.94.0(@cloudflare/workers-types@4.20260524.1):
     dependencies:
       '@cloudflare/kv-asset-handler': 0.5.0
       '@cloudflare/unenv-preset': 2.16.1(unenv@2.0.0-rc.24)(workerd@1.20260521.1)
@@ -12156,7 +12146,7 @@ snapshots:
       unenv: 2.0.0-rc.24
       workerd: 1.20260521.1
     optionalDependencies:
-      '@cloudflare/workers-types': 4.20260523.1
+      '@cloudflare/workers-types': 4.20260524.1
       fsevents: 2.3.3
     transitivePeerDependencies:
       - bufferutil

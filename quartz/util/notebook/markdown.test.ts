@@ -713,6 +713,22 @@ describe('notebook parser', () => {
     assert.strictEqual(textChild(fallbackLabel), 'nixlang cell')
   })
 
+  test('renders official Go Rust and OCaml language logos', async () => {
+    const expectedIcons = [
+      ['go', 'notebook-go-icon', '0 0 207 78'],
+      ['rust', 'notebook-rust-icon', '0 0 106 106'],
+      ['ocaml', 'notebook-ocaml-icon', '0 0 165.552 144.277'],
+    ]
+
+    for (const [language, iconClassName, viewBox] of expectedIcons) {
+      const tree = await parseHtmlFragment(notebookCellLanguageBadge(language))
+      const icon = findElement(tree, node => elementClassNames(node).includes(iconClassName))
+
+      assert(icon)
+      assert.strictEqual(icon.properties?.viewBox, viewBox)
+    }
+  })
+
   test('renders one vim action with centered icon geometry', async () => {
     const tree = await parseHtmlFragment(
       notebookCellActions({
