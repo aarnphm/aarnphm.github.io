@@ -1,15 +1,11 @@
 import { autocompletion, completionStatus, moveCompletionSelection } from '@codemirror/autocomplete'
 import { defaultKeymap, historyKeymap, history, indentWithTab } from '@codemirror/commands'
-import { go } from '@codemirror/lang-go'
-import { javascript } from '@codemirror/lang-javascript'
 import { markdown } from '@codemirror/lang-markdown'
-import { python } from '@codemirror/lang-python'
-import { rust } from '@codemirror/lang-rust'
 import { syntaxHighlighting, defaultHighlightStyle } from '@codemirror/language'
 import { EditorState, Prec, type Extension } from '@codemirror/state'
 import { EditorView, keymap, lineNumbers } from '@codemirror/view'
-import { zig } from 'codemirror-lang-zig'
 import TurndownService from 'turndown'
+import { codemirrorCodeLanguage } from '../../util/codemirror-language'
 import { codemirrorChangedTextIsBlank, codemirrorTextIsBlank } from '../../util/codemirror-text'
 import { completionSources } from '../multiplayer/completions'
 import { togglePreview, cleanupPreview, onEditorUpdate } from '../multiplayer/completions/preview'
@@ -30,19 +26,6 @@ export interface MarkdownEditorConfig {
   mode?: 'markdown' | 'code'
   language?: string
   lineWrapping?: boolean
-}
-
-function codeLanguage(language: string | undefined): Extension {
-  const name = (language ?? '').trim().toLowerCase()
-  if (name === 'javascript' || name === 'js') return javascript()
-  if (name === 'jsx') return javascript({ jsx: true })
-  if (name === 'typescript' || name === 'ts') return javascript({ typescript: true })
-  if (name === 'tsx') return javascript({ typescript: true, jsx: true })
-  if (name === 'go' || name === 'golang') return go()
-  if (name === 'rust' || name === 'rs') return rust()
-  if (name === 'zig') return zig()
-  if (name === 'python' || name === 'py' || name === 'python3' || name === 'mojo') return python()
-  return python()
 }
 
 export class MarkdownEditor {
@@ -225,7 +208,7 @@ export class MarkdownEditor {
         }),
       )
     } else {
-      extensions.unshift(lineNumbers(), codeLanguage(config.language))
+      extensions.unshift(lineNumbers(), codemirrorCodeLanguage(config.language))
     }
 
     const state = EditorState.create({ doc: config.initialContent || '', extensions })
