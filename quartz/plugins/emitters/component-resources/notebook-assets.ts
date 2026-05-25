@@ -13,7 +13,12 @@ import {
   notebookPyrightPyodidePackageImports,
   notebookPyrightTypeshedChunkBytes,
 } from '../../../runtime/lsp/pyright-assets'
-import { emptyNativeRuntimePackManifest } from '../../../runtime/native/runtime-pack'
+import {
+  isNativeRuntimeLanguage,
+  readNativeRuntimePackManifest,
+  type NativeRuntimePackEntry,
+  type NativeRuntimePackManifest,
+} from '../../../runtime/native/runtime-pack'
 import {
   notebookNativeRuntimeManifestAsset,
   notebookPyrightPackageStubsManifestAsset,
@@ -25,7 +30,9 @@ import { isJsonObject } from '../../../util/type-guards'
 import {
   basedpyrightInternalSourcePackageName,
   basedpyrightSourcePackageName,
+  notebookNativeRuntimeManifestSourcePath,
   notebookNativeRuntimeManifestPath,
+  notebookNativeRuntimePacksDir,
   notebookPyrightPackageStubsBaseDir,
   notebookPyrightPackageStubsManifestPath,
   notebookPyrightTypeshedBaseDir,
@@ -55,6 +62,12 @@ import {
   writeRawAsset,
 } from './asset-writer'
 import { writeChunkedFileAsset } from './chunked-file-assets'
+
+type NativeRuntimePackWrittenFile = {
+  readonly filename: string
+  readonly reference: string
+  readonly file: FilePath
+}
 
 const requireResolve = createRequire(import.meta.url).resolve
 const notebookPyrightCommonJsEmptyModule = 'module.exports = {}'
@@ -319,14 +332,95 @@ async function writeNotebookPyrightAssets(ctx: BuildCtx): Promise<FilePath[]> {
   return [...workerFiles, ...typeshedFiles, ...packageStubFiles]
 }
 
-async function writeNativeRuntimePackAssets(ctx: BuildCtx): Promise<FilePath[]> {
-  return [
-    await writeRawAsset(
-      ctx,
+function normalizeNativeRuntimePackPath(value: string): string {
+  const normalized = value.split(path.sep).join('/')
+  if (normalized.length === 0 || path.posix.isAbsolute(normalized)) {
+    throw new Error(`native runtime pack asset path is invalid: ${value}`)
+  }
+  if (normalized.split('/').includes('..')) {
+    throw new Error(`native runtime pack asset path escapes its pack: ${value}`)
+  }
+  return normalized
+}
+
+async function readNativeRuntimePackSourceManifest(): Promise<NativeRuntimePackManifest> {
+  const source = await fs.readFile(notebookNativeRuntimeManifestSourcePath, 'utf8')
+  const value: unknown = JSON.parse(source)
+  const manifest = readNativeRuntimePackManifest(value)
+  if (!manifest) throw new Error('native runtime pack manifest is invalid')
+  return manifest
+}
+
+function nativeRuntimePackFiles(manifest: NativeRuntimePackManifest): readonly string[] {
+  const files = new Set<string>()
+  for (const entry of Object.values(manifest.runtimes)) {
+    if (!entry) continue
+    files.add(normalizeNativeRuntimePackPath(entry.worker))
+    for (const asset of entry.assets) files.add(normalizeNativeRuntimePackPath(asset))
+  }
+  return Array.from(files).sort()
+}
+
+async function writeNativeRuntimePackFile(
+  ctx: BuildCtx,
+  filename: string,
+): Promise<NativeRuntimePackWrittenFile> {
+  const logicalPath = `${path.posix.dirname(notebookNativeRuntimeManifestPath)}/${filename}`
+  const content = await fs.readFile(path.join(notebookNativeRuntimePacksDir, filename))
+  const file = await writeRawAsset(ctx, logicalPath, content)
+  return {
+    filename,
+    reference: relativeAssetReference(
       notebookNativeRuntimeManifestPath,
-      JSON.stringify(emptyNativeRuntimePackManifest),
+      resolveAssetPath(ctx, logicalPath),
     ),
-  ]
+    file,
+  }
+}
+
+function runtimePackAssetReference(references: Map<string, string>, filename: string): string {
+  const reference = references.get(normalizeNativeRuntimePackPath(filename))
+  if (!reference) throw new Error(`native runtime pack asset is missing: ${filename}`)
+  return reference
+}
+
+function rewriteNativeRuntimePackEntry(
+  references: Map<string, string>,
+  entry: NativeRuntimePackEntry,
+): NativeRuntimePackEntry {
+  return {
+    worker: runtimePackAssetReference(references, entry.worker),
+    assets: entry.assets.map(asset => runtimePackAssetReference(references, asset)),
+  }
+}
+
+function rewriteNativeRuntimePackManifest(
+  manifest: NativeRuntimePackManifest,
+  references: Map<string, string>,
+): NativeRuntimePackManifest {
+  const runtimes: NativeRuntimePackManifest['runtimes'] = {}
+  for (const [language, entry] of Object.entries(manifest.runtimes)) {
+    if (!isNativeRuntimeLanguage(language) || !entry) continue
+    runtimes[language] = rewriteNativeRuntimePackEntry(references, entry)
+  }
+  return { version: 1, runtimes }
+}
+
+async function writeNativeRuntimePackAssets(ctx: BuildCtx): Promise<FilePath[]> {
+  const sourceManifest = await readNativeRuntimePackSourceManifest()
+  const files = await Promise.all(
+    nativeRuntimePackFiles(sourceManifest).map(filename =>
+      writeNativeRuntimePackFile(ctx, filename),
+    ),
+  )
+  const references = new Map(files.map(file => [file.filename, file.reference]))
+  const manifest = rewriteNativeRuntimePackManifest(sourceManifest, references)
+  const manifestFile = await writeRawAsset(
+    ctx,
+    notebookNativeRuntimeManifestPath,
+    JSON.stringify(manifest),
+  )
+  return [manifestFile, ...files.map(file => file.file)]
 }
 
 function replaceNotebookRuntimeWorkerReference(text: string, fromFile: string, workerPath: string) {
