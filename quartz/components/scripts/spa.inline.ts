@@ -1,5 +1,4 @@
 import micromorph from 'micromorph'
-import { ContentDetails } from '../../plugins'
 import {
   FullSlug,
   RelativeURL,
@@ -7,9 +6,15 @@ import {
   normalizeRelativeURLs,
   sluggify,
 } from '../../util/path'
-import { formatDate } from '../Date'
 import { Toast } from './toast'
-import { removeAllChildren, Dag, DagNode, NoteDocument, VirtualRange } from './util'
+import {
+  removeAllChildren,
+  Dag,
+  DagNode,
+  NoteDocument,
+  StackedNoteState,
+  VirtualRange,
+} from './util'
 import { fetchCanonical, startViewTransition } from './util'
 
 // adapted from `micromorph`
@@ -267,7 +272,7 @@ class StackedNoteManager {
     this.isActive = true
     await this.initFromParams()
     this.updateURL()
-    this.render({ scrollToTail: false })
+    this.render({ scrollToTail: url.searchParams.getAll('stackedNotes').length > 1 })
   }
 
   private async initFromParams() {
@@ -294,13 +299,22 @@ class StackedNoteManager {
         const noteTitle = noteElement.querySelector<HTMLElement>('.stacked-title')
         const noteContent = noteElement.querySelector<HTMLElement>('.stacked-content')
         const title = noteTitle?.textContent || slug
-        const document = {
-          slug,
-          title,
-          hash: '',
-          bodyHtml: noteContent?.innerHTML ?? '',
-          metadataHtml: '',
-          state: 'ready' as const,
+        const state = noteElement.dataset.state
+        let noteDocument: NoteDocument
+        if (state === 'pending') {
+          noteDocument = this.pendingDocument(slug, new URL(`/${slug}`, window.location.toString()))
+          noteDocument.title = title
+        } else {
+          const noteState: StackedNoteState =
+            state === 'failed' || state === 'protected' || state === 'ready' ? state : 'ready'
+          noteDocument = {
+            slug,
+            title,
+            hash: '',
+            bodyHtml: noteContent?.innerHTML ?? '',
+            metadataHtml: '',
+            state: noteState,
+          }
         }
         const bodyHost = noteContent ?? window.document.createElement('div')
         const titleRail = noteTitle ?? window.document.createElement('div')
@@ -308,16 +322,27 @@ class StackedNoteManager {
         titleRail.classList.add('stacked-title')
         if (!noteContent) noteElement.prepend(bodyHost)
         if (!noteTitle) noteElement.append(titleRail)
-        noteElement.classList.add('ready')
-        noteElement.dataset.state = 'ready'
+        if (noteDocument.state === 'pending') {
+          removeAllChildren(bodyHost)
+          bodyHost.dataset.virtualized = 'unmounted'
+        } else {
+          bodyHost.dataset.virtualized = 'mounted'
+        }
+        noteElement.classList.add(noteDocument.state)
+        noteElement.dataset.state = noteDocument.state
         transformHostInternalLinks(noteElement)
-        this.documentCache.set(slug, document)
+        this.documentCache.set(slug, noteDocument)
         this.dag.addNode({
           slug,
           title,
-          document,
+          document: noteDocument,
           anchor: null,
-          mounted: { shell: noteElement, bodyHost, titleRail, mounted: true },
+          mounted: {
+            shell: noteElement,
+            bodyHost,
+            titleRail,
+            mounted: noteDocument.state !== 'pending',
+          },
         })
 
         notifyNav(slug as FullSlug)
@@ -471,9 +496,8 @@ class StackedNoteManager {
 
     const title = this.extractTitle(html, target, slug)
     const bodyHtml = this.serializeElements([...contents])
-    const metadataHtml = await this.metadataFor(slug)
 
-    return { slug, title, hash, bodyHtml, metadataHtml, state: 'ready' }
+    return { slug, title, hash, bodyHtml, metadataHtml: '', state: 'ready' }
   }
 
   private extractTitle(html: Document, url: URL, slug: string): string {
@@ -500,31 +524,6 @@ class StackedNoteManager {
       metadataHtml: '',
       state: 'failed',
     }
-  }
-
-  private allFiles: ContentIndex | null = null
-  private async loadData() {
-    if (!this.allFiles) {
-      const data = await fetchData
-      this.allFiles = new Map(Object.entries(data) as [FullSlug, ContentDetails][])
-    }
-    return this.allFiles
-  }
-
-  private async metadataFor(slug: string): Promise<string> {
-    const allFiles = await this.loadData().catch(error => {
-      console.warn('[StackedNotes] failed to load note metadata:', error)
-      return null
-    })
-    const el = allFiles?.get(slug as FullSlug)
-    if (!el) return ''
-    const date = el.fileData
-      ? new Date(el.fileData.dates!.modified)
-      : el.date
-        ? new Date(el.date)
-        : null
-    if (!date) return ''
-    return `<div class="published"><span lang="fr" class="metadata" dir="auto">dernière modification par <time datetime="${date.toISOString()}">${formatDate(date)}</time> (${el.readingTime ? el.readingTime.minutes! : 0} min de lecture)</span></div>`
   }
 
   private pendingDocument(slug: string, href: URL): NoteDocument {
@@ -668,7 +667,7 @@ class StackedNoteManager {
     this.ensureElements()
     const nodes = this.dag.getOrderedNodes()
     if (nodes.length === 0) return
-    if (scrollToTail) this.scrollToIndex(nodes.length - 1)
+    if (scrollToTail) this.scrollToIndex(nodes.length - 1, 'instant')
     this.updateStackState(nodes)
     const range = this.virtualRange(nodes)
     const tailIndex = nodes.length - 1
@@ -683,6 +682,7 @@ class StackedNoteManager {
         this.unmountBody(node)
       }
     })
+    this.loadVisiblePendingBodies(nodes, range)
   }
 
   private updateStackState(nodes: DagNode[]) {
@@ -720,10 +720,22 @@ class StackedNoteManager {
       return { first: tail, last: tail }
     }
     const { contentWidth } = this.dimensions()
-    const first = Math.max(0, Math.floor(this.main.scrollLeft / contentWidth) - STACKED_OVERSCAN)
-    const visibleCount = Math.ceil(this.main.clientWidth / contentWidth) + 1
-    const last = Math.min(nodes.length - 1, first + visibleCount + STACKED_OVERSCAN * 2)
+    const visibleFirst = Math.max(0, Math.floor(this.main.scrollLeft / contentWidth))
+    const visibleLast = Math.ceil((this.main.scrollLeft + this.main.clientWidth) / contentWidth)
+    const first = Math.max(0, visibleFirst - STACKED_OVERSCAN)
+    const last = Math.min(nodes.length - 1, visibleLast + STACKED_OVERSCAN)
     return { first, last }
+  }
+
+  private loadVisiblePendingBodies(nodes: DagNode[], range: VirtualRange) {
+    const tailIndex = nodes.length - 1
+    nodes.forEach((node, index) => {
+      if (node.document.state !== 'pending') return
+      const visible = index >= range.first && index <= range.last
+      const folded = node.mounted.shell.classList.contains('collapsed')
+      if (index !== tailIndex && (!visible || folded)) return
+      void this.loadAndApply(new URL(`/${node.slug}`, window.location.toString()), node.slug)
+    })
   }
 
   private scrollToShell(shell: HTMLElement) {
@@ -731,12 +743,12 @@ class StackedNoteManager {
     if (index >= 0) this.scrollToIndex(index)
   }
 
-  private scrollToIndex(index: number) {
+  private scrollToIndex(index: number, behavior: ScrollBehavior = this.motion()) {
     const { contentWidth } = this.dimensions()
     const maxLeft = Math.max(0, this.column.scrollWidth - this.main.clientWidth)
     const tail = this.dag.getOrderedNodes().length - 1
     const left = index === tail ? maxLeft : Math.min(index * contentWidth, maxLeft)
-    this.main.scrollTo({ left, behavior: this.motion() })
+    this.main.scrollTo({ left, behavior })
   }
 
   private highlightNode(node: DagNode) {

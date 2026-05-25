@@ -3,7 +3,7 @@ export interface StackedNoteData {
   title: string
   content: string
   metadata?: string
-  state: 'ready' | 'failed'
+  state: 'pending' | 'ready' | 'failed'
 }
 
 interface ContentIndexEntry {
@@ -46,6 +46,7 @@ declare const HTMLRewriter: { new (): HtmlRewriter }
 const NOTE_CONTENT_WIDTH = 620
 const NOTE_TITLE_WIDTH = 40
 const CONTENT_INDEX_TTL_MS = 60_000
+const SERVER_BODY_TAIL_COUNT = 1
 const STACKED_NOTE_START = '<!--__STACKED_NOTE_START__-->'
 const STACKED_NOTE_END = '<!--__STACKED_NOTE_END__-->'
 
@@ -186,6 +187,20 @@ export function failedNoteData(slug: string, title: string = slug): StackedNoteD
   }
 }
 
+function pendingNoteData(slug: string, contentIndex: ContentIndex | null): StackedNoteData {
+  return {
+    slug,
+    title: contentIndex?.[slug]?.title || slug,
+    content: '<div class="stacked-note-status" role="status">chargement...</div>',
+    metadata: '',
+    state: 'pending',
+  }
+}
+
+function shouldIncludeServerBody(index: number, totalCount: number): boolean {
+  return index >= Math.max(0, totalCount - SERVER_BODY_TAIL_COUNT)
+}
+
 async function fetchNoteData(
   slug: string,
   env: StackedEnv,
@@ -294,13 +309,19 @@ export async function handleStackedNotesRequest(
 
     const contentIndex = await timed('contentIndex', timings, () => getContentIndex(env, request))
 
+    const totalCount = validSlugs.length
     const notesData = await timed('notes', timings, () =>
-      Promise.all(validSlugs.map(slug => fetchNoteData(slug, env, request, contentIndex))),
+      Promise.all(
+        validSlugs.map((slug, index) =>
+          shouldIncludeServerBody(index, totalCount)
+            ? fetchNoteData(slug, env, request, contentIndex)
+            : Promise.resolve(pendingNoteData(slug, contentIndex)),
+        ),
+      ),
     )
 
     if (notesData.length === 0) return null
 
-    const totalCount = notesData.length
     const stackedNotesHtml = notesData
       .map((note, index) => buildStackedNoteHtml(note, index, totalCount))
       .join('\n')

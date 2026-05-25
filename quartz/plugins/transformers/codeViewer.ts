@@ -166,7 +166,7 @@ function html(value: string): Html {
   return { type: 'html', value }
 }
 
-type CodeNodeData = { codeTranscludeTarget?: unknown; codeTranscludePath?: unknown }
+type CodeNodeData = { codeTranscludeTarget?: unknown }
 
 type CodeWithViewerData = Code & { data?: CodeNodeData }
 
@@ -178,11 +178,6 @@ function codeNodeData(node: Code): CodeNodeData {
 
 function codeTranscludeTarget(node: Code): string | undefined {
   const target = (node as CodeWithViewerData).data?.codeTranscludeTarget
-  return typeof target === 'string' ? target : undefined
-}
-
-function codeTranscludePath(node: Code): string | undefined {
-  const target = (node as CodeWithViewerData).data?.codeTranscludePath
   return typeof target === 'string' ? target : undefined
 }
 
@@ -267,16 +262,7 @@ function shellRuntimeOptions(words: string[]): CodeRuntimeOptions {
   }
 }
 
-function backendForTransclude(node: Code): ExecutableLanguageBackend | undefined {
-  const transcluded = codeTranscludePath(node)
-  if (!transcluded) return undefined
-  return backendFor(path.extname(transcluded).toLowerCase())
-}
-
 function runtimeBindingForCode(node: Code): CodeRuntimeBinding | undefined {
-  const transcludeBackend = backendForTransclude(node)
-  if (transcludeBackend) return { backend: transcludeBackend, options: {} }
-
   const lang = codeLanguage(node)
   const words = metaWords(node.meta)
   const shellBackend = backendForShellMagic(lang)
@@ -387,7 +373,6 @@ export const CodeViewer: QuartzTransformerPlugin<Partial<Options>> = userOpts =>
               node.meta = node.meta
                 ? `${node.meta} path="${resolved}"`
                 : `title="${titleBase}" path="${resolved}"`
-              codeNodeData(node).codeTranscludePath = resolved
 
               promises.push(
                 readCodeFile(ctx, resolved).then(content => {

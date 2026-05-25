@@ -160,7 +160,7 @@ describe('code viewer runtime cells', () => {
     )
   })
 
-  test('wraps transcluded python files in notebook runtime controls', async () => {
+  test('leaves transcluded python files static', async () => {
     const root = await mkdtemp(nodePath.join(os.tmpdir(), 'quartz-code-viewer-'))
     await mkdir(nodePath.join(root, 'notes'), { recursive: true })
     await writeFile(nodePath.join(root, 'notes', 'script.py'), 'print("from file")\n')
@@ -182,11 +182,6 @@ describe('code viewer runtime cells', () => {
     assert.strictEqual(code.lang, 'python')
     assert.strictEqual(code.value, 'print("from file")\n')
     assert.deepStrictEqual(file.data.codeDependencies, ['notes/script.py'])
-
-    const payload = runtimePayload(tree)
-    assert.deepStrictEqual(
-      payload.cells.map(cell => cell.source),
-      ['print("from file")\n'],
-    )
+    assert.strictEqual(collectHtml(tree).length, 0)
   })
 })

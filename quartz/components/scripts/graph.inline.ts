@@ -17,7 +17,7 @@ import { Text, Graphics, Application, Container, Circle } from 'pixi.js'
 import type { ContentDetails } from '../../plugins/emitters/contentIndex'
 import { FullSlug, SimpleSlug, getFullSlug, resolveRelative, simplifySlug } from '../../util/path'
 import { D3Config } from '../Graph'
-import { registerEscapeHandler, removeAllChildren } from './util'
+import { removeAllChildren } from './util'
 
 type GraphicsInfo = { color: string; gfx: Graphics; alpha: number; active: boolean }
 
@@ -679,32 +679,43 @@ async function renderGraph(graph: HTMLElement, fullSlug: FullSlug) {
       animationFrame = null
     }
     simulation.stop()
-    app.destroy()
+    app.destroy({ removeView: true })
   }
 }
 
-let globalGraphCleanups: (() => void)[] = []
+let activeGraphCleanup: (() => void) | null = null
+let activeGraphCleanupRegistered = false
 
-function cleanupGlobalGraphs() {
-  for (const cleanup of globalGraphCleanups) {
-    cleanup()
-  }
-  globalGraphCleanups = []
+function cleanupActiveGraphView() {
+  activeGraphCleanup?.()
+  activeGraphCleanup = null
 }
 
-document.addEventListener('nav', async (e: CustomEventMap['nav']) => {
+function registerActiveGraphCleanup() {
+  if (activeGraphCleanupRegistered) return
+  activeGraphCleanupRegistered = true
+  window.addCleanup(() => {
+    activeGraphCleanupRegistered = false
+    cleanupActiveGraphView()
+  })
+}
+
+function hydrateGraphs(slug: FullSlug) {
   const notes = document.getElementById('stacked-notes-container')
   if (notes?.classList.contains('active')) return
 
-  const slug = e.detail.url
+  cleanupActiveGraphView()
+  registerActiveGraphCleanup()
 
   addToVisited(simplifySlug(slug))
 
-  const localGraphContainers = [
-    ...document.getElementsByClassName('graph-container'),
-  ] as HTMLElement[]
+  const localGraphContainers = Array.from(
+    document.getElementsByClassName('graph-container'),
+  ).filter((container): container is HTMLElement => container instanceof HTMLElement)
   let localGraphCleanups: (() => void)[] = []
   let localGraphRenderVersion = 0
+  let localGraphAnimationFrame: number | null = null
+  const localGraphResizeObserver = new ResizeObserver(scheduleLocalGraphRender)
 
   function cleanupLocalGraphs() {
     for (const cleanup of localGraphCleanups) {
@@ -728,35 +739,74 @@ document.addEventListener('nav', async (e: CustomEventMap['nav']) => {
     }
   }
 
-  const localGraphResizeHandler = () => {
-    void renderLocalGraphs()
+  function scheduleLocalGraphRender() {
+    if (localGraphAnimationFrame !== null) return
+    localGraphAnimationFrame = requestAnimationFrame(() => {
+      localGraphAnimationFrame = null
+      void renderLocalGraphs()
+    })
   }
 
-  void renderLocalGraphs()
-  window.addEventListener('resize', localGraphResizeHandler)
+  for (const graphContainer of localGraphContainers) {
+    localGraphResizeObserver.observe(graphContainer)
+  }
+  scheduleLocalGraphRender()
 
-  const containers = [...document.getElementsByClassName('global-graph-outer')] as HTMLElement[]
+  const containers = Array.from(document.getElementsByClassName('global-graph-outer')).filter(
+    (container): container is HTMLElement => container instanceof HTMLElement,
+  )
+  let globalGraphCleanups: (() => void)[] = []
+  let globalGraphRenderVersion = 0
+
+  function cleanupGlobalGraphs() {
+    for (const cleanup of globalGraphCleanups) {
+      cleanup()
+    }
+    globalGraphCleanups = []
+  }
 
   async function renderGlobalGraph() {
-    const slug = getFullSlug(window)
-
+    const renderVersion = ++globalGraphRenderVersion
+    cleanupGlobalGraphs()
+    const currentSlug = getFullSlug(window)
     for (const container of containers) {
       container.classList.add('active')
       const graphContainer = container.querySelector<HTMLElement>('.global-graph-container')
-      registerEscapeHandler(container, hideGlobalGraph)
       if (!graphContainer) continue
-      globalGraphCleanups.push(await renderGraph(graphContainer, slug))
+      const cleanup = await renderGraph(graphContainer, currentSlug)
+      if (renderVersion === globalGraphRenderVersion) {
+        globalGraphCleanups.push(cleanup)
+      } else {
+        cleanup()
+      }
     }
   }
 
   function hideGlobalGraph() {
+    globalGraphRenderVersion++
     cleanupGlobalGraphs()
     for (const container of containers) {
       container.classList.remove('active')
     }
   }
 
-  async function shortcutHandler(e: HTMLElementEventMap['keydown']) {
+  function globalGraphBackdropHandler(this: HTMLElement, e: HTMLElementEventMap['click']) {
+    if (e.target !== this) return
+    e.preventDefault()
+    e.stopPropagation()
+    hideGlobalGraph()
+  }
+
+  function shortcutHandler(e: HTMLElementEventMap['keydown']) {
+    if (
+      e.key.startsWith('Esc') &&
+      containers.some(container => container.classList.contains('active'))
+    ) {
+      e.preventDefault()
+      hideGlobalGraph()
+      return
+    }
+
     if ((e.key === ';' || e.key === 'g') && (e.ctrlKey || e.metaKey) && !e.shiftKey) {
       e.preventDefault()
       const anyGlobalGraphOpen = containers.some(container =>
@@ -765,23 +815,44 @@ document.addEventListener('nav', async (e: CustomEventMap['nav']) => {
       if (anyGlobalGraphOpen) {
         hideGlobalGraph()
       } else {
-        renderGlobalGraph()
+        void renderGlobalGraph()
       }
     }
   }
 
   const containerIcons = document.getElementsByClassName('global-graph-icon')
-  Array.from(containerIcons).forEach(icon => {
+  for (const icon of Array.from(containerIcons)) {
     icon.addEventListener('click', renderGlobalGraph)
-    window.addCleanup(() => icon.removeEventListener('click', renderGlobalGraph))
-  })
+  }
+
+  for (const container of containers) {
+    container.addEventListener('click', globalGraphBackdropHandler)
+  }
 
   document.addEventListener('keydown', shortcutHandler)
-  window.addCleanup(() => {
+
+  activeGraphCleanup = () => {
     document.removeEventListener('keydown', shortcutHandler)
-    window.removeEventListener('resize', localGraphResizeHandler)
+    for (const icon of Array.from(containerIcons)) {
+      icon.removeEventListener('click', renderGlobalGraph)
+    }
+    for (const container of containers) {
+      container.removeEventListener('click', globalGraphBackdropHandler)
+      container.classList.remove('active')
+    }
+    if (localGraphAnimationFrame !== null) {
+      cancelAnimationFrame(localGraphAnimationFrame)
+      localGraphAnimationFrame = null
+    }
+    localGraphResizeObserver.disconnect()
     localGraphRenderVersion++
     cleanupLocalGraphs()
+    globalGraphRenderVersion++
     cleanupGlobalGraphs()
-  })
-})
+  }
+}
+
+document.addEventListener('nav', e => hydrateGraphs(e.detail.url))
+if (typeof window.addCleanup === 'function') {
+  hydrateGraphs(getFullSlug(window))
+}

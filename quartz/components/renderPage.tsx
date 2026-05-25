@@ -850,13 +850,13 @@ export const pageResources = (
         loadTime: 'beforeDOMReady',
         contentType: 'inline',
         spaPreserve: true,
-        script: `const fetchData = fetch("${joinSegments(baseDir, 'static/contentIndex.json')}").then(data => data.json())`,
+        script: `const lazyFetchJson = url => { let promise; const load = () => promise ??= fetch(url).then(data => data.json()); return { then: (onFulfilled, onRejected) => load().then(onFulfilled, onRejected), catch: onRejected => load().catch(onRejected), finally: onFinally => load().finally(onFinally), get [Symbol.toStringTag]() { return "Promise" } } }; const fetchData = lazyFetchJson("${joinSegments(baseDir, 'static/contentIndex.json')}")`,
       },
       {
         loadTime: 'beforeDOMReady',
         contentType: 'inline',
         spaPreserve: true,
-        script: `const fetchSearchData = fetch("${joinSegments(baseDir, 'static/searchIndex.json')}").then(data => data.json())`,
+        script: `const fetchSearchData = lazyFetchJson("${joinSegments(baseDir, 'static/searchIndex.json')}")`,
       },
       {
         loadTime: 'beforeDOMReady',

@@ -546,7 +546,9 @@ async function mouseClickHandler(evt: MouseEvent) {
 }
 
 function setupPopoverLinks(container: Document | HTMLElement = document) {
-  const links = [...container.getElementsByClassName('internal')] as HTMLAnchorElement[]
+  const links = ([...container.getElementsByClassName('internal')] as HTMLAnchorElement[]).filter(
+    link => !link.closest('#stacked-notes-container'),
+  )
 
   for (const link of links) {
     link.addEventListener('mouseenter', mouseEnterHandler)
