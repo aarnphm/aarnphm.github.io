@@ -3,7 +3,10 @@
 set -e
 
 git pull
-git lfs pull && git lfs checkout
+git lfs install --local
+git lfs pull
+git lfs pull --include="quartz/runtime/native/packs/**"
+git lfs checkout
 
 export GITHUB_SHA="$(git rev-parse HEAD)"
 
