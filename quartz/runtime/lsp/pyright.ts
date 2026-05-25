@@ -54,42 +54,17 @@ export type NotebookLspConfig = {
 
 type JsonRpcId = string | number | null
 
-type NotebookExecutionSummary = { executionOrder: number; success?: boolean }
-
-type NotebookCellItem = {
-  kind: 2
-  document: string
-  metadata: JsonObject
-  executionSummary?: NotebookExecutionSummary
-}
-
-type NotebookDocumentItem = {
-  uri: string
-  notebookType: string
-  version: number
-  cells: NotebookCellItem[]
-}
-
-type NotebookTextDocumentItem = { uri: string; languageId: string; version: number; text: string }
-
-type NotebookTextContentChange = {
-  document: { uri: string; version: number }
-  changes: { text: string }[]
-}
-
 const notebookPyrightWorkerManifestName = '../notebook-pyright-worker.json'
 const notebookPyrightTypeshedManifestName = '../notebook-pyright-typeshed.json'
 
 const notebookAnalysisSettings: JsonObject = {
   typeCheckingMode: 'basic',
   diagnosticMode: 'openFilesOnly',
+  typeshedPaths: ['file:///typeshed'],
   diagnosticSeverityOverrides: { reportMissingImports: 'none', reportMissingModuleSource: 'none' },
 }
 
 const notebookClientCapabilities: JsonObject = {
-  notebookDocument: {
-    synchronization: { dynamicRegistration: false, executionSummarySupport: true },
-  },
   workspace: { configuration: true, didChangeConfiguration: {}, workspaceFolders: true },
 }
 
@@ -119,12 +94,8 @@ function notebookRootPath(config: NotebookLspConfig) {
   return `/quartz-notebook/${encodeURIComponent(config.runtimeId)}`
 }
 
-function notebookDocumentUri(rootUri: string, sourcePath: string) {
-  return `${rootUri}${encodeURIComponent(sourcePath)}`
-}
-
 function notebookCellUri(rootUri: string, sourcePath: string, cellId: string) {
-  return `${notebookDocumentUri(rootUri, sourcePath)}/${encodeURIComponent(cellId)}.py`
+  return `${rootUri}${encodeURIComponent(sourcePath)}/${encodeURIComponent(cellId)}.py`
 }
 
 function notebookFileUri(config: NotebookLspConfig) {
@@ -383,6 +354,29 @@ function reportPyrightWorkerError(scope: string, serviceId: number, message: str
   if (message) console.warn(`notebook pyright ${scope} ${serviceId} failed`, message)
 }
 
+function tracePyrightMessage(direction: string, message: UnknownRecord) {
+  const method = stringValue(message.method)
+  const id = messageId(message.id)
+  const params = isJsonValue(message.params) ? objectValue(message.params) : undefined
+  const textDocument = objectValue(params?.textDocument)
+  const position = objectValue(params?.position)
+  const result = isJsonValue(message.result) ? objectValue(message.result) : undefined
+  const items = arrayValue(result?.items)
+  console.debug(
+    'notebook pyright trace',
+    JSON.stringify({
+      direction,
+      method,
+      id,
+      uri: stringValue(textDocument?.uri),
+      version: textDocument?.version,
+      position,
+      text: stringValue(textDocument?.text)?.slice(-120),
+      resultItems: items?.slice(0, 12).map(item => objectValue(item)?.label),
+    }),
+  )
+}
+
 function handleBackgroundWorker(
   message: UnknownRecord,
   workerUrl: string,
@@ -429,6 +423,7 @@ function createPyrightTransport(
     if (!isRecord(event.data)) return
     if (handleBackgroundWorker(event.data, workerUrl, workers, serviceId, nextWorkerName)) return
     if (handleServerRequest(event.data, foreground)) return
+    tracePyrightMessage('server', event.data)
     const message = JSON.stringify(event.data)
     for (const handler of handlers) handler(message)
   })
@@ -439,7 +434,9 @@ function createPyrightTransport(
 
   return {
     send(message: string) {
-      foreground.postMessage(initializeMessage(parseTransportMessage(message), rootUri, typeshed))
+      const payload = initializeMessage(parseTransportMessage(message), rootUri, typeshed)
+      tracePyrightMessage('client', payload)
+      foreground.postMessage(payload)
     },
     subscribe(handler: (value: string) => void) {
       handlers.add(handler)
@@ -473,11 +470,9 @@ class NotebookWorkspaceFile implements WorkspaceFile {
 class NotebookPythonWorkspace extends Workspace {
   files: NotebookWorkspaceFile[] = []
 
-  private readonly notebookUri: string
   private readonly filesByUri = new Map<string, NotebookWorkspaceFile>()
   private readonly fileVersions = new Map<string, number>()
-  private notebookVersion = 0
-  private opened = false
+  private readonly openedUris = new Set<string>()
   private opening: Promise<void> | undefined
 
   constructor(
@@ -487,16 +482,15 @@ class NotebookPythonWorkspace extends Workspace {
     private readonly cells: () => readonly NotebookLspCell[],
   ) {
     super(client)
-    this.notebookUri = notebookDocumentUri(rootUri, sourcePath)
     this.refreshFiles()
   }
 
   override connected() {
-    this.queueOpenNotebook()
+    this.queueOpenFiles()
   }
 
   override disconnected() {
-    this.opened = false
+    this.openedUris.clear()
     this.opening = undefined
   }
 
@@ -516,11 +510,11 @@ class NotebookPythonWorkspace extends Workspace {
     file.languageId = languageId
     file.view = view
     const changed = this.updateFileDoc(file, view.state.doc)
-    if (!this.opened && this.client.connected) {
-      this.queueOpenNotebook()
+    if (!this.openedUris.has(file.uri)) {
+      if (this.client.connected) this.queueOpenFiles()
       return
     }
-    if (changed) this.sendTextContentChanges([this.textContentChange(file)])
+    if (changed) this.sendTextChange(file)
   }
 
   override closeFile(uri: string, view: EditorView) {
@@ -528,21 +522,22 @@ class NotebookPythonWorkspace extends Workspace {
     if (!file || file.view !== view) return
     const changed = this.updateFileDoc(file, view.state.doc)
     file.view = null
-    if (this.files.every(file => !file.view)) this.closeNotebook()
-    else if (changed) this.sendTextContentChanges([this.textContentChange(file)])
+    if (changed) this.sendTextChange(file)
   }
 
   override syncFiles() {
     this.refreshFiles()
-    const changes: NotebookTextContentChange[] = []
+    const updates = []
     for (const file of this.files) {
-      const nextDoc = file.view ? file.view.state.doc : notebookText(file.source)
       const plugin = file.view ? LSPPlugin.get(file.view) : undefined
-      if (this.updateFileDoc(file, nextDoc)) changes.push(this.textContentChange(file))
-      plugin?.clear()
+      if (!file.view || !plugin || plugin.unsyncedChanges.empty) continue
+      updates.push({ file, prevDoc: file.doc, changes: plugin.unsyncedChanges })
+      file.doc = file.view.state.doc
+      file.source = file.doc.toString()
+      file.version = this.nextFileVersion(file.uri)
+      plugin.clear()
     }
-    this.sendTextContentChanges(changes)
-    return []
+    return updates
   }
 
   private updateFileDoc(file: NotebookWorkspaceFile, nextDoc: Text) {
@@ -552,19 +547,11 @@ class NotebookPythonWorkspace extends Workspace {
     return true
   }
 
-  private textContentChange(file: NotebookWorkspaceFile): NotebookTextContentChange {
-    return {
-      document: { uri: file.uri, version: file.version },
-      changes: [{ text: file.doc.toString() }],
-    }
-  }
-
-  private sendTextContentChanges(changes: NotebookTextContentChange[]) {
-    if (!this.opened || changes.length === 0) return
-    this.notebookVersion += 1
-    this.client.notification('notebookDocument/didChange', {
-      notebookDocument: { uri: this.notebookUri, version: this.notebookVersion },
-      change: { cells: { textContent: changes } },
+  private sendTextChange(file: NotebookWorkspaceFile) {
+    if (!this.openedUris.has(file.uri)) return
+    this.client.notification('textDocument/didChange', {
+      textDocument: { uri: file.uri, version: file.version },
+      contentChanges: [{ text: file.doc.toString() }],
     })
   }
 
@@ -594,17 +581,23 @@ class NotebookPythonWorkspace extends Workspace {
       nextFiles.push(file)
       nextByUri.set(uri, file)
     }
+    const removedUris = new Set(this.filesByUri.keys())
+    for (const uri of nextByUri.keys()) removedUris.delete(uri)
+    for (const uri of removedUris) {
+      if (!this.openedUris.delete(uri)) continue
+      this.client.didClose(uri)
+    }
     this.files = nextFiles
     this.filesByUri.clear()
     nextByUri.forEach((file, uri) => this.filesByUri.set(uri, file))
   }
 
-  private queueOpenNotebook() {
-    if (this.opened || this.opening) return
+  private queueOpenFiles() {
+    if (this.opening) return
     this.opening = this.client.initializing
       .then(() => {
         this.opening = undefined
-        if (this.client.connected) this.openNotebook()
+        if (this.client.connected) this.openFiles()
       })
       .catch(error => {
         this.opening = undefined
@@ -612,48 +605,12 @@ class NotebookPythonWorkspace extends Workspace {
       })
   }
 
-  private openNotebook() {
-    if (this.opened) return
+  private openFiles() {
     this.refreshFiles()
-    this.opened = true
-    this.client.notification('notebookDocument/didOpen', {
-      notebookDocument: this.notebookDocument(),
-      cellTextDocuments: this.files.map(file => this.textDocument(file)),
-    })
-  }
-
-  private closeNotebook() {
-    if (!this.opened) return
-    this.opened = false
-    this.client.notification('notebookDocument/didClose', {
-      notebookDocument: { uri: this.notebookUri },
-      cellTextDocuments: this.files.map(file => ({ uri: file.uri })),
-    })
-  }
-
-  private notebookDocument(): NotebookDocumentItem {
-    return {
-      uri: this.notebookUri,
-      notebookType: 'jupyter-notebook',
-      version: this.notebookVersion,
-      cells: this.files.map(file => this.notebookCell(file)),
-    }
-  }
-
-  private notebookCell(file: NotebookWorkspaceFile): NotebookCellItem {
-    const item: NotebookCellItem = { kind: 2, document: file.uri, metadata: { id: file.id } }
-    if (file.executionIndex !== null && file.executionIndex > 0) {
-      item.executionSummary = { executionOrder: file.executionIndex }
-    }
-    return item
-  }
-
-  private textDocument(file: NotebookWorkspaceFile): NotebookTextDocumentItem {
-    return {
-      uri: file.uri,
-      languageId: file.languageId,
-      version: file.version,
-      text: file.doc.toString(),
+    for (const file of this.files) {
+      if (this.openedUris.has(file.uri)) continue
+      this.client.didOpen(file)
+      this.openedUris.add(file.uri)
     }
   }
 
