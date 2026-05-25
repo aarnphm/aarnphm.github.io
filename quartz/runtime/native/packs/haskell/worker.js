@@ -4,6 +4,8 @@ let currentCellId = ''
 let mainFunc
 let stderrText = ''
 
+const topLevelMainPattern = /^main(?:[ \t]*::|[ \t]*(?:[^\s=][^=\n]*)?=)/m
+
 function post(message) {
   globalThis.postMessage({ source, runtimeId, ...message })
 }
@@ -25,6 +27,13 @@ function emitStream(name, text) {
 function emitError(cellId, error) {
   const text = textOf(error)
   emitOutput(cellId, { type: 'error', ename: 'HaskellError', evalue: text, traceback: text })
+}
+
+export function haskellNotebookSource(code) {
+  if (topLevelMainPattern.test(code)) return code
+  const source = code.trimEnd()
+  const separator = source.length > 0 ? '\n\n' : ''
+  return `${source}${separator}main :: IO ()\nmain = pure ()\n`
 }
 
 function assetToken(assets, token) {
@@ -171,7 +180,7 @@ async function run(message) {
   let failed = false
   try {
     if (typeof mainFunc !== 'function') throw new Error('Haskell runtime is not ready')
-    await mainFunc('', code)
+    await mainFunc('', haskellNotebookSource(code))
     if (stderrText.length > 0) failed = true
   } catch (error) {
     failed = true
@@ -182,7 +191,7 @@ async function run(message) {
   }
 }
 
-globalThis.addEventListener('message', event => {
+function handleMessage(event) {
   const origin = typeof event.origin === 'string' ? event.origin : ''
   if (origin && origin !== globalThis.location.origin) return
   const message = event.data
@@ -198,4 +207,8 @@ globalThis.addEventListener('message', event => {
   } else if (message.type === 'run' && message.runtimeId === runtimeId) {
     void run(message)
   }
-})
+}
+
+if (typeof globalThis.addEventListener === 'function') {
+  globalThis.addEventListener('message', handleMessage)
+}
