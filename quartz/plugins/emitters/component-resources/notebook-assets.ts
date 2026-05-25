@@ -13,7 +13,9 @@ import {
   notebookPyrightPyodidePackageImports,
   notebookPyrightTypeshedChunkBytes,
 } from '../../../runtime/lsp/pyright-assets'
+import { emptyNativeRuntimePackManifest } from '../../../runtime/native/runtime-pack'
 import {
+  notebookNativeRuntimeManifestAsset,
   notebookPyrightPackageStubsManifestAsset,
   notebookPyrightTypeshedManifestAsset,
   notebookPyrightWorkerManifestAsset,
@@ -23,6 +25,7 @@ import { isJsonObject } from '../../../util/type-guards'
 import {
   basedpyrightInternalSourcePackageName,
   basedpyrightSourcePackageName,
+  notebookNativeRuntimeManifestPath,
   notebookPyrightPackageStubsBaseDir,
   notebookPyrightPackageStubsManifestPath,
   notebookPyrightTypeshedBaseDir,
@@ -316,6 +319,16 @@ async function writeNotebookPyrightAssets(ctx: BuildCtx): Promise<FilePath[]> {
   return [...workerFiles, ...typeshedFiles, ...packageStubFiles]
 }
 
+async function writeNativeRuntimePackAssets(ctx: BuildCtx): Promise<FilePath[]> {
+  return [
+    await writeRawAsset(
+      ctx,
+      notebookNativeRuntimeManifestPath,
+      JSON.stringify(emptyNativeRuntimePackManifest),
+    ),
+  ]
+}
+
 function replaceNotebookRuntimeWorkerReference(text: string, fromFile: string, workerPath: string) {
   const placeholder = '\0quartz-notebook-runtime-worker\0'
   return text
@@ -354,7 +367,10 @@ export async function writeNotebookRuntimeAssets(ctx: BuildCtx): Promise<FilePat
       writeAssetBundleOutput(ctx, output),
     ),
   )
-  const pyrightFiles = await writeNotebookPyrightAssets(ctx)
+  const [nativeRuntimeFiles, pyrightFiles] = await Promise.all([
+    writeNativeRuntimePackAssets(ctx),
+    writeNotebookPyrightAssets(ctx),
+  ])
   const client = await bundle({
     entryPoints: { 'notebook-runtime.client': notebookRuntimeClientEntry },
     bundle: true,
@@ -377,6 +393,10 @@ export async function writeNotebookRuntimeAssets(ctx: BuildCtx): Promise<FilePat
         staticScriptAssetReference(ctx, notebookRuntimeJavascriptWorkerPath),
       )
       .replaceAll(
+        notebookNativeRuntimeManifestAsset,
+        staticScriptAssetReference(ctx, notebookNativeRuntimeManifestPath),
+      )
+      .replaceAll(
         notebookPyrightWorkerManifestAsset,
         staticScriptAssetReference(ctx, notebookPyrightWorkerManifestPath),
       )
@@ -392,5 +412,5 @@ export async function writeNotebookRuntimeAssets(ctx: BuildCtx): Promise<FilePat
   const clientFiles = await Promise.all(
     clientOutputs.map(output => writeAssetBundleOutput(ctx, output)),
   )
-  return [...workerFiles, ...pyrightFiles, ...clientFiles]
+  return [...workerFiles, ...nativeRuntimeFiles, ...pyrightFiles, ...clientFiles]
 }

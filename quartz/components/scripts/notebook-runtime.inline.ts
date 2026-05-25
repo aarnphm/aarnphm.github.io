@@ -2,6 +2,7 @@ import {
   notebookPyrightPackageStubsManifestAsset,
   notebookPyrightTypeshedManifestAsset,
   notebookPyrightWorkerManifestAsset,
+  notebookNativeRuntimeManifestAsset,
   notebookRuntimeClientAsset,
   notebookRuntimeJavascriptWorkerAsset,
   notebookRuntimeWorkerAsset,
@@ -19,6 +20,7 @@ type NotebookRuntimeTarget = { root: HTMLElement; text: string }
 type NotebookRuntimeAssets = {
   readonly workerUrl: string
   readonly javascriptWorkerUrl: string
+  readonly nativeRuntimeManifestUrl: string
   readonly pyrightWorkerManifestUrl: string
   readonly pyrightTypeshedManifestUrl: string
   readonly pyrightPackageStubsManifestUrl: string
@@ -35,6 +37,7 @@ function notebookRuntimeAssets(): NotebookRuntimeAssets {
   return {
     workerUrl: notebookRuntimeScriptUrl(notebookRuntimeWorkerAsset),
     javascriptWorkerUrl: notebookRuntimeScriptUrl(notebookRuntimeJavascriptWorkerAsset),
+    nativeRuntimeManifestUrl: notebookRuntimeScriptUrl(notebookNativeRuntimeManifestAsset),
     pyrightWorkerManifestUrl: notebookRuntimeScriptUrl(notebookPyrightWorkerManifestAsset),
     pyrightTypeshedManifestUrl: notebookRuntimeScriptUrl(notebookPyrightTypeshedManifestAsset),
     pyrightPackageStubsManifestUrl: notebookRuntimeScriptUrl(

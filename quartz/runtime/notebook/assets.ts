@@ -1,6 +1,7 @@
 export const notebookRuntimeClientAsset = 'notebook-runtime.client.js'
 export const notebookRuntimeWorkerAsset = 'notebook-runtime.worker.js'
 export const notebookRuntimeJavascriptWorkerAsset = 'notebook-runtime.javascript.worker.js'
+export const notebookNativeRuntimeManifestAsset = 'notebook-runtimes/manifest.json'
 export const notebookPyrightWorkerManifestAsset = 'notebook-pyright/worker/manifest.json'
 export const notebookPyrightTypeshedManifestAsset = 'notebook-pyright/typeshed/manifest.json'
 export const notebookPyrightPackageStubsManifestAsset =
@@ -9,6 +10,7 @@ export const notebookPyrightPackageStubsManifestAsset =
 export type NotebookRuntimeAssets = {
   readonly workerUrl: string
   readonly javascriptWorkerUrl: string
+  readonly nativeRuntimeManifestUrl: string
   readonly pyrightWorkerManifestUrl: string
   readonly pyrightTypeshedManifestUrl: string
   readonly pyrightPackageStubsManifestUrl: string
