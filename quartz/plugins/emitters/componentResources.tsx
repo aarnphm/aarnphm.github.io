@@ -41,7 +41,11 @@ import collapseHeaderStyle from '../../components/styles/collapseHeader.inline.s
 import popoverStyle from '../../components/styles/popover.scss'
 import pseudoStyle from '../../components/styles/pseudocode.scss'
 import '../../components/mdx'
-import { chunkNotebookPyrightTypeshedFiles } from '../../runtime/lsp/pyright-assets'
+import {
+  chunkNotebookPyrightTypeshedFiles,
+  notebookPyrightPackageStubFiles,
+  notebookPyrightPyodidePackageImports,
+} from '../../runtime/lsp/pyright-assets'
 import { QuartzComponent } from '../../types/component'
 import { QuartzEmitterPlugin } from '../../types/plugin'
 import {
@@ -64,6 +68,7 @@ import {
   staticJsBundleSlug,
 } from '../../util/resource-bundles'
 import { googleFontHref, joinStyles, processGoogleFonts } from '../../util/theme'
+import { isJsonObject } from '../../util/type-guards'
 import { isWorkerEntryPath, workerEntryPattern } from '../../util/workers'
 import { write } from './helpers'
 
@@ -83,6 +88,13 @@ const notebookRuntimePyrightTypeshedDir = 'node_modules/basedpyright/dist/typesh
 const notebookRuntimePyrightWorkerManifestPath = 'static/scripts/notebook-pyright-worker.json'
 const notebookRuntimePyrightTypeshedPath = 'static/scripts/notebook-pyright-typeshed.json'
 const notebookRuntimePyrightTypeshedChunkPrefix = 'static/scripts/notebook-pyright-typeshed'
+const notebookRuntimePyrightPackageStubsPath = 'static/scripts/notebook-pyright-packages.json'
+const notebookRuntimePyrightPackageStubsChunkPrefix = 'static/scripts/notebook-pyright-packages'
+const notebookRuntimePyrightPackageStubsDir = 'quartz/util/pyright-stubs/site-packages'
+const notebookRuntimePyrightGenericStubPath = 'quartz/util/pyright-stubs/generic-module.pyi'
+const notebookRuntimePyrightSitePackagesPath = '/site-packages'
+const notebookRuntimePyrightPyodideLockUrl =
+  'https://cdn.jsdelivr.net/pyodide/v0.29.4/full/pyodide-lock.json'
 const quartzBaseStylesheetEntry = 'quartz/styles/base.scss'
 const quartzCustomStylesheetEntry = 'quartz/styles/custom.scss'
 const basedpyrightSourcePackageName = 'basedpyright-source'
@@ -111,7 +123,11 @@ const notebookRuntimeAssetEntries = new Set([
   'quartz/runtime/editor/code-editor.ts',
 ])
 
-const notebookRuntimeAssetPrefixes = ['quartz/util/notebook/', 'quartz/runtime/']
+const notebookRuntimeAssetPrefixes = [
+  'quartz/util/notebook/',
+  'quartz/runtime/',
+  'quartz/util/pyright-stubs/',
+]
 const semanticWorkerAssetEntries = new Set([semanticWorkerEntry, 'package.json'])
 
 type ComponentResources = {
@@ -476,12 +492,65 @@ async function notebookPyrightTypeshedFiles() {
   return files
 }
 
+async function notebookPyrightLocalPackageStubFiles() {
+  const entries = (
+    await globby('**/*.pyi', {
+      cwd: notebookRuntimePyrightPackageStubsDir,
+      onlyFiles: true,
+      dot: true,
+    })
+  ).sort()
+  const files: Record<string, string> = {}
+  for (const entry of entries) {
+    const source = await fs.readFile(
+      path.join(notebookRuntimePyrightPackageStubsDir, entry),
+      'utf8',
+    )
+    files[`${notebookRuntimePyrightSitePackagesPath}/${entry.split(path.sep).join('/')}`] = source
+  }
+  return files
+}
+
+async function notebookPyrightPyodidePackageStubFiles() {
+  const [response, genericStub] = await Promise.all([
+    fetch(notebookRuntimePyrightPyodideLockUrl),
+    fs.readFile(notebookRuntimePyrightGenericStubPath, 'utf8'),
+  ])
+  if (!response.ok) throw new Error(`pyodide package lock request failed with ${response.status}`)
+  const value: unknown = await response.json()
+  if (!isJsonObject(value)) throw new Error('pyodide package lock is not a JSON object')
+  return notebookPyrightPackageStubFiles(
+    notebookRuntimePyrightSitePackagesPath,
+    notebookPyrightPyodidePackageImports(value),
+    genericStub,
+  )
+}
+
+async function notebookPyrightPackageStubAssetFiles() {
+  const [pyodideFiles, localFiles] = await Promise.all([
+    notebookPyrightPyodidePackageStubFiles(),
+    notebookPyrightLocalPackageStubFiles(),
+  ])
+  return { ...pyodideFiles, ...localFiles }
+}
+
 async function writeNotebookPyrightTypeshedAssets(ctx: BuildCtx): Promise<FilePath[]> {
   const chunks = chunkNotebookPyrightTypeshedFiles(await notebookPyrightTypeshedFiles())
   return writeNotebookPyrightChunkedAsset(
     ctx,
     notebookRuntimePyrightTypeshedPath,
     notebookRuntimePyrightTypeshedChunkPrefix,
+    '.json',
+    chunks.map(chunk => JSON.stringify({ files: chunk.files })),
+  )
+}
+
+async function writeNotebookPyrightPackageStubAssets(ctx: BuildCtx): Promise<FilePath[]> {
+  const chunks = chunkNotebookPyrightTypeshedFiles(await notebookPyrightPackageStubAssetFiles())
+  return writeNotebookPyrightChunkedAsset(
+    ctx,
+    notebookRuntimePyrightPackageStubsPath,
+    notebookRuntimePyrightPackageStubsChunkPrefix,
     '.json',
     chunks.map(chunk => JSON.stringify({ files: chunk.files })),
   )
@@ -530,11 +599,12 @@ async function writeNotebookPyrightWorkerAssets(ctx: BuildCtx): Promise<FilePath
 }
 
 async function writeNotebookPyrightAssets(ctx: BuildCtx): Promise<FilePath[]> {
-  const [workerFiles, typeshedFiles] = await Promise.all([
+  const [workerFiles, typeshedFiles, packageStubFiles] = await Promise.all([
     writeNotebookPyrightWorkerAssets(ctx),
     writeNotebookPyrightTypeshedAssets(ctx),
+    writeNotebookPyrightPackageStubAssets(ctx),
   ])
-  return [...workerFiles, ...typeshedFiles]
+  return [...workerFiles, ...typeshedFiles, ...packageStubFiles]
 }
 
 async function writeNotebookRuntimeAssets(ctx: BuildCtx): Promise<FilePath[]> {
@@ -576,6 +646,9 @@ async function writeNotebookRuntimeAssets(ctx: BuildCtx): Promise<FilePath[]> {
     resolveAsset(ctx, notebookRuntimePyrightWorkerManifestPath),
   )
   const pyrightTypeshedName = path.basename(resolveAsset(ctx, notebookRuntimePyrightTypeshedPath))
+  const pyrightPackageStubsName = path.basename(
+    resolveAsset(ctx, notebookRuntimePyrightPackageStubsPath),
+  )
   const client = await bundle({
     entryPoints: { 'notebook-runtime.client': notebookRuntimeClientEntry },
     bundle: true,
@@ -595,7 +668,8 @@ async function writeNotebookRuntimeAssets(ctx: BuildCtx): Promise<FilePath[]> {
     text: replaceNotebookRuntimeWorkerReference(output.text, output.path, workerPath)
       .replaceAll('notebook-runtime.javascript.worker.js', javascriptWorkerName)
       .replaceAll('notebook-pyright-worker.json', pyrightWorkerName)
-      .replaceAll('notebook-pyright-typeshed.json', pyrightTypeshedName),
+      .replaceAll('notebook-pyright-typeshed.json', pyrightTypeshedName)
+      .replaceAll('notebook-pyright-packages.json', pyrightPackageStubsName),
   }))
   const clientFiles = await Promise.all(
     clientOutputs.map(output => writeAssetBundleOutput(ctx, output)),
@@ -699,6 +773,10 @@ function resolveComponentResourceAssets(ctx: BuildCtx, componentResources: Compo
         assetBasename(ctx, notebookRuntimePyrightTypeshedPath),
       )
       .replaceAll(
+        'notebook-pyright-packages.json',
+        assetBasename(ctx, notebookRuntimePyrightPackageStubsPath),
+      )
+      .replaceAll(
         'collaborative-comments.client.js',
         assetBasename(ctx, 'static/scripts/collaborative-comments.client.js'),
       )
@@ -740,10 +818,6 @@ function isIndexStylesheetChange(changePath: string): boolean {
 
 function addGlobalPageResources(ctx: BuildCtx, componentResources: ComponentResources) {
   const cfg = ctx.cfg.configuration
-  const resolvedPetScript = petScript.replace(
-    '__QUARTZ_PETS_DEFAULT_ENABLED__',
-    ctx.argv.watch || ctx.argv.serve ? '0' : '1',
-  )
 
   // popovers
   if (cfg.enablePopovers) {
@@ -761,7 +835,7 @@ function addGlobalPageResources(ctx: BuildCtx, componentResources: ComponentReso
     audioScript,
     baseMapScript,
     collaborativeCommentsScript,
-    resolvedPetScript,
+    petScript,
   )
 
   if (cfg.analytics?.provider === 'plausible') {

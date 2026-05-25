@@ -49,6 +49,14 @@ function typeshedManifestUrlFromOptions(value) {
   return isRecord(value) ? stringValue(value.typeshedManifestUrl) : undefined
 }
 
+function packageStubsManifestUrlFromOptions(value) {
+  return isRecord(value) ? stringValue(value.packageStubsManifestUrl) : undefined
+}
+
+function extraPathsFromOptions(value) {
+  return isRecord(value) ? (stringArrayValue(value.extraPaths) ?? []) : []
+}
+
 function typeshedFilesFromChunk(value, label) {
   const files = isRecord(value) && isRecord(value.files) ? value.files : undefined
   if (!files) throw new Error(`${label} has invalid files`)
@@ -66,18 +74,26 @@ async function fetchJsonObject(url, label) {
   return value
 }
 
-async function loadTypeshedFiles(manifestUrl) {
-  const manifest = await fetchJsonObject(manifestUrl, 'notebook pyright typeshed manifest')
+async function loadManifestFiles(manifestUrl, label) {
+  const manifest = await fetchJsonObject(manifestUrl, `${label} manifest`)
   const chunks = stringArrayValue(manifest.chunks)
-  if (!chunks) throw new Error('notebook pyright typeshed manifest has invalid chunks')
+  if (!chunks) throw new Error(`${label} manifest has invalid chunks`)
   const files = {}
   await Promise.all(
     chunks.map(async chunkName => {
       const chunkUrl = new URL(chunkName, manifestUrl).href
-      const chunk = await fetchJsonObject(chunkUrl, `notebook pyright typeshed chunk ${chunkName}`)
+      const chunk = await fetchJsonObject(chunkUrl, `${label} chunk ${chunkName}`)
       Object.assign(files, typeshedFilesFromChunk(chunk, chunkName))
     }),
   )
+  return files
+}
+
+function cachedManifestFiles(cache, manifestUrl, label) {
+  const existing = cache.get(manifestUrl)
+  if (existing) return existing
+  const files = loadManifestFiles(manifestUrl, label)
+  cache.set(manifestUrl, files)
   return files
 }
 
@@ -85,10 +101,12 @@ function createNotebookFileSystem() {
   return new TestFileSystem(false, { cwd: normalizeSlashes('/') })
 }
 
-let notebookTypeshedFiles
+const notebookTypeshedFiles = new Map()
+const notebookPackageStubFiles = new Map()
 
 class NotebookPyrightBrowserServer extends RealLanguageServer {
   #initialFiles
+  #extraPaths = []
 
   constructor(connection) {
     const fileSystem = createNotebookFileSystem()
@@ -114,6 +132,9 @@ class NotebookPyrightBrowserServer extends RealLanguageServer {
     settings.extraPaths = [
       ...(Array.isArray(settings.extraPaths) ? settings.extraPaths : []),
       Uri.parse('file:///typeshed/stdlib', this.serverOptions.serviceProvider),
+      ...this.#extraPaths.map(extraPath =>
+        Uri.parse(extraPath, this.serverOptions.serviceProvider),
+      ),
     ]
     return settings
   }
@@ -143,11 +164,24 @@ class NotebookPyrightBrowserServer extends RealLanguageServer {
   async initialize(params, supportedCommands, supportedCodeActions) {
     const options = params.initializationOptions
     const initialFiles = initialFilesFromOptions(options?.files) ?? {}
+    this.#extraPaths = extraPathsFromOptions(options)
     const typeshedManifestUrl = typeshedManifestUrlFromOptions(options)
+    const packageStubsManifestUrl = packageStubsManifestUrlFromOptions(options)
     const typeshedFiles = typeshedManifestUrl
-      ? (notebookTypeshedFiles ??= loadTypeshedFiles(typeshedManifestUrl))
+      ? cachedManifestFiles(notebookTypeshedFiles, typeshedManifestUrl, 'notebook pyright typeshed')
       : undefined
-    const files = { ...(typeshedFiles ? await typeshedFiles : {}), ...initialFiles }
+    const packageStubFiles = packageStubsManifestUrl
+      ? cachedManifestFiles(
+          notebookPackageStubFiles,
+          packageStubsManifestUrl,
+          'notebook pyright package stubs',
+        )
+      : undefined
+    const files = {
+      ...(typeshedFiles ? await typeshedFiles : {}),
+      ...(packageStubFiles ? await packageStubFiles : {}),
+      ...initialFiles,
+    }
     this.#initialFiles = files
     this.serverOptions.serviceProvider.fs().apply(files)
     return super.initialize(params, supportedCommands, supportedCodeActions)

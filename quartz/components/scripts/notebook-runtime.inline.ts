@@ -12,6 +12,7 @@ type NotebookRuntimeAssets = {
   readonly javascriptWorkerUrl: string
   readonly pyrightWorkerManifestUrl: string
   readonly pyrightTypeshedManifestUrl: string
+  readonly pyrightPackageStubsManifestUrl: string
 }
 
 let notebookRuntimeModule: Promise<NotebookRuntimeModule> | undefined
@@ -27,6 +28,7 @@ function notebookRuntimeAssets(): NotebookRuntimeAssets {
     javascriptWorkerUrl: notebookRuntimeScriptUrl('notebook-runtime.javascript.worker.js'),
     pyrightWorkerManifestUrl: notebookRuntimeScriptUrl('notebook-pyright-worker.json'),
     pyrightTypeshedManifestUrl: notebookRuntimeScriptUrl('notebook-pyright-typeshed.json'),
+    pyrightPackageStubsManifestUrl: notebookRuntimeScriptUrl('notebook-pyright-packages.json'),
   }
 }
 
