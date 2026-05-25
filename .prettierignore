@@ -4,3 +4,4 @@ quartz/runtime/native/packs/haskell/dyld.mjs
 quartz/runtime/native/packs/haskell/post-link.mjs
 quartz/runtime/native/packs/haskell/prelude.mjs
 quartz/runtime/native/packs/ocaml/toplevel.js
+quartz/runtime/native/packs/rust/browser-wasi-shim.mjs
