@@ -48,6 +48,7 @@ describe('LanguageBackend registry', () => {
     assert.strictEqual(backendForShellMagic('mojo-shell'), mojoBackend)
     assert.strictEqual(backendForShellMagic('haskell-shell'), haskellBackend)
     assert.strictEqual(backendForShellMagic('ocaml-shell'), ocamlBackend)
+    assert.strictEqual(backendForShellMagic('ocaml'), undefined)
   })
 
   test('returns undefined for unregistered languages', () => {

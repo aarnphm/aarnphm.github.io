@@ -259,6 +259,25 @@ describe('code viewer runtime cells', () => {
     )
   })
 
+  test('leaves ordinary native-language fences static', async () => {
+    const root = await mkdtemp(nodePath.join(os.tmpdir(), 'quartz-code-viewer-'))
+    const tree: Root = {
+      type: 'root',
+      children: [
+        { type: 'code', lang: 'haskell', value: 'main = putStrLn "hi"' },
+        { type: 'code', lang: 'ocaml', value: 'print_endline "hi"' },
+      ],
+    }
+
+    await runCodeViewer(tree, vfile(root, 'notes/page.md'), buildCtx(root))
+
+    assert.strictEqual(collectHtml(tree).length, 0)
+    assert.deepStrictEqual(
+      collectCode(tree).map(node => node.lang),
+      ['haskell', 'ocaml'],
+    )
+  })
+
   test('leaves transcluded python files static', async () => {
     const root = await mkdtemp(nodePath.join(os.tmpdir(), 'quartz-code-viewer-'))
     await mkdir(nodePath.join(root, 'notes'), { recursive: true })
