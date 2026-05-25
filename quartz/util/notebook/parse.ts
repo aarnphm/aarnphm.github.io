@@ -49,7 +49,15 @@ function asMimeBundle(value: unknown): MimeBundle {
 
 function languageFromMetadata(metadata: UnknownRecord): string {
   const languageInfo = isRecord(metadata.language_info) ? metadata.language_info : {}
-  const name = typeof languageInfo.name === 'string' ? languageInfo.name : 'python'
+  const kernelspec = isRecord(metadata.kernelspec) ? metadata.kernelspec : {}
+  const name =
+    typeof languageInfo.name === 'string'
+      ? languageInfo.name
+      : typeof kernelspec.language === 'string'
+        ? kernelspec.language
+        : typeof kernelspec.name === 'string'
+          ? kernelspec.name
+          : 'python'
   return name.replace(/[^A-Za-z0-9_+#.-]/g, '') || 'python'
 }
 

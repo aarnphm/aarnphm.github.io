@@ -1,5 +1,6 @@
 import type { Extension } from '@codemirror/state'
 import type { LspBridge } from '../lsp/bridge'
+import type { NotebookRuntimeAssets } from './assets'
 import type { Kernel, NotebookModule } from './kernel'
 import type {
   RuntimeAssetRequest,
@@ -35,6 +36,7 @@ type LanguageBackendBase = {
   readonly fileExts: readonly string[]
   readonly aliases: readonly string[]
   readonly shellMagics: readonly string[]
+  readonly workerAssetKey?: keyof NotebookRuntimeAssets
   readonly defaultIndexUrl?: string
   readonly canExecute: (source: string) => CanExecuteResult
   readonly editor?: {

@@ -1,6 +1,6 @@
 import type { NotebookRuntimeCell, NotebookRuntimeData } from '../../runtime/notebook/types'
 import { escapeHTML } from '../escape'
-import { notebookIconSvg } from './render/icons'
+import { notebookIconSvg, notebookLanguageIconSvg } from './render/icons'
 
 type NotebookIcon = 'run' | 'edit' | 'save' | 'revert' | 'vim'
 
@@ -118,7 +118,10 @@ export function notebookCellLanguageBadge(language: string): string {
   const escapedToken = escapeHTML(info.token)
   const escapedLabel = escapeHTML(info.label)
   const escapedGlyph = escapeHTML(info.glyph)
-  return `<span class="notebook-language-badge notebook-language-badge-${escapedToken}" data-notebook-language="${escapedToken}" aria-label="${escapedLabel} cell" title="${escapedLabel} cell"><span class="notebook-language-icon" aria-hidden="true">${escapedGlyph}</span></span>`
+  const visual =
+    notebookLanguageIconSvg[info.token] ??
+    `<span class="notebook-language-text">${escapedGlyph}</span>`
+  return `<span class="notebook-language-badge notebook-language-badge-${escapedToken}" data-notebook-language="${escapedToken}" title="${escapedLabel} cell"><span class="notebook-language-icon" aria-hidden="true">${visual}</span><span class="notebook-language-label">${escapedLabel} cell</span></span>`
 }
 
 export function notebookStaticCellActions(cellId: string, language: string): string {
@@ -151,10 +154,10 @@ export function notebookCellFrameOpen(cellId: string, language?: string): string
 
 export function notebookCellActions(cell: NotebookRuntimeCell): string {
   const escaped = escapeHTML(cell.id)
+  const language = cell.displayLanguage ?? cell.language
   return [
     `<div class="notebook-cell-actions" data-notebook-cell-actions="${escaped}">`,
-    notebookCellLanguageBadge(cell.language),
-    notebookIconButton(cell.id, 'vim', 'data-notebook-vim-cell', 'Enable Vim mode'),
+    notebookCellLanguageBadge(language),
     notebookIconButton(cell.id, 'run', 'data-notebook-run-cell', `Run ${cell.id}`),
     notebookIconButton(cell.id, 'edit', 'data-notebook-edit-cell', `Edit ${cell.id}`),
     notebookIconButton(cell.id, 'save', 'data-notebook-save-cell', `Save ${cell.id} locally`, true),
@@ -165,6 +168,7 @@ export function notebookCellActions(cell: NotebookRuntimeCell): string {
       `Revert ${cell.id} local edit`,
       true,
     ),
+    notebookIconButton(cell.id, 'vim', 'data-notebook-vim-cell', 'Enable Vim mode', true),
     `<span class="notebook-local-source-status" data-notebook-local-source-status="${escaped}" hidden></span>`,
     '</div>',
   ].join('\n')

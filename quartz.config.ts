@@ -150,6 +150,7 @@ const config: QuartzConfig = {
           include: [
             '.pdf',
             '.py',
+            '.mojo',
             '.go',
             '.c',
             '.cpp',
@@ -239,7 +240,7 @@ const config: QuartzConfig = {
       Plugin.StreamIndex(),
       Plugin.Masonry(),
       Plugin.CanvasPage(),
-      Plugin.NotebookViewer({ mode: 'saved', runtime: { enabled: true } }),
+      Plugin.NotebookViewer({ runtime: { enabled: true } }),
       Plugin.NotebookPagesManifest(),
     ],
   },

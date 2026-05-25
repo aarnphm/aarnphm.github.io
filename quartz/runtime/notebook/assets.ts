@@ -1,5 +1,6 @@
 export type NotebookRuntimeAssets = {
   readonly workerUrl: string
+  readonly javascriptWorkerUrl: string
   readonly pyrightWorkerManifestUrl: string
   readonly pyrightTypeshedManifestUrl: string
 }

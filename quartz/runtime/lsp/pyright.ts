@@ -1,4 +1,10 @@
-import type { EditorView } from '@codemirror/view'
+import type {
+  Hover,
+  HoverParams,
+  MarkedString,
+  MarkupContent,
+  Position,
+} from 'vscode-languageserver-protocol'
 import { autocompletion, type CompletionSource } from '@codemirror/autocomplete'
 import {
   LSPPlugin,
@@ -8,8 +14,10 @@ import {
   type WorkspaceFile,
 } from '@codemirror/lsp-client'
 import { EditorState, Text, type Extension } from '@codemirror/state'
+import { hoverTooltip, type EditorView, type Tooltip } from '@codemirror/view'
 import DOMPurify from 'dompurify'
 import type { LspBridge, LspConfig } from './bridge'
+import { escapeHTML } from '../../util/escape'
 import {
   arrayValue,
   isJsonObject,
@@ -129,6 +137,23 @@ function notebookServiceKey(config: NotebookLspConfig) {
 
 function notebookText(source: string): Text {
   return Text.of(source.split('\n'))
+}
+
+function notebookPositionOffset(doc: Text, position: Position): number {
+  const line = doc.line(Math.min(doc.lines, Math.max(1, position.line + 1)))
+  return Math.min(line.to, line.from + position.character)
+}
+
+function notebookLspRequestTimedOut(error: unknown): boolean {
+  return error instanceof Error && error.message === 'Request timed out'
+}
+
+function notebookLspRequestCancelled(error: unknown): boolean {
+  return isRecord(error) && error.code === -32800
+}
+
+function notebookIgnoredLspError(error: unknown): boolean {
+  return notebookLspRequestTimedOut(error) || notebookLspRequestCancelled(error)
 }
 
 function pyrightWorkerManifestUrl() {
@@ -283,16 +308,79 @@ function initializeMessage(message: JsonObject, rootUri: string, typeshed: JsonO
 }
 
 function notebookServerCompletion(serverCompletionSource: CompletionSource): Extension {
+  const quietServerCompletionSource: CompletionSource = context =>
+    Promise.resolve(serverCompletionSource(context)).catch(error => {
+      if (notebookIgnoredLspError(error)) return null
+      return Promise.reject(error)
+    })
   return [
     autocompletion({ defaultKeymap: false }),
-    EditorState.languageData.of(() => [{ autocomplete: serverCompletionSource }]),
+    EditorState.languageData.of(() => [{ autocomplete: quietServerCompletionSource }]),
   ]
+}
+
+function renderNotebookMarkedString(plugin: LSPPlugin, value: MarkedString): string {
+  if (typeof value === 'string') return plugin.docToHTML(value, 'markdown')
+  return `<pre><code>${escapeHTML(value.value)}</code></pre>`
+}
+
+function renderNotebookHoverContent(
+  plugin: LSPPlugin,
+  value: string | MarkupContent | MarkedString | MarkedString[],
+): string {
+  if (Array.isArray(value)) {
+    return value.map(item => renderNotebookMarkedString(plugin, item)).join('<br>')
+  }
+  if (typeof value === 'string' || 'language' in value) {
+    return renderNotebookMarkedString(plugin, value)
+  }
+  return plugin.docToHTML(value)
+}
+
+function notebookHoverTooltips(hoverTime: number): Extension {
+  return hoverTooltip(
+    (view, pos): Promise<Tooltip | null> => {
+      const plugin = LSPPlugin.get(view)
+      if (!plugin || plugin.client.serverCapabilities?.hoverProvider === false) {
+        return Promise.resolve(null)
+      }
+      plugin.client.sync()
+      return plugin.client
+        .request<HoverParams, Hover | null>('textDocument/hover', {
+          position: plugin.toPosition(pos),
+          textDocument: { uri: plugin.uri },
+        })
+        .then(result => {
+          if (!result) return null
+          return {
+            pos: result.range ? notebookPositionOffset(view.state.doc, result.range.start) : pos,
+            end: result.range ? notebookPositionOffset(view.state.doc, result.range.end) : pos,
+            create() {
+              const element = document.createElement('div')
+              element.className = 'cm-lsp-hover-tooltip cm-lsp-documentation'
+              element.innerHTML = renderNotebookHoverContent(plugin, result.contents)
+              return { dom: element }
+            },
+            above: true,
+          }
+        })
+        .catch(error => {
+          if (notebookIgnoredLspError(error)) return null
+          return Promise.reject(error)
+        })
+    },
+    { hideOn: transaction => transaction.docChanged, hoverTime },
+  )
 }
 
 function parseTransportMessage(message: string) {
   const value: unknown = JSON.parse(message)
   if (!isJsonObject(value)) throw new Error('notebook pyright received a non-object message')
   return value
+}
+
+function reportPyrightWorkerError(scope: string, serviceId: number, message: string | undefined) {
+  if (message) console.warn(`notebook pyright ${scope} ${serviceId} failed`, message)
 }
 
 function handleBackgroundWorker(
@@ -308,7 +396,7 @@ function handleBackgroundWorker(
   const background = new Worker(workerUrl, { name: nextWorkerName(), type: 'module' })
   workers.add(background)
   background.addEventListener('error', event => {
-    console.error(`notebook pyright background ${serviceId} failed`, event.message)
+    reportPyrightWorkerError('background', serviceId, event.message)
   })
   background.postMessage(
     { type: 'browser/boot', mode: 'background', initialData: message.initialData, port },
@@ -345,7 +433,7 @@ function createPyrightTransport(
     for (const handler of handlers) handler(message)
   })
   foreground.addEventListener('error', event => {
-    console.error(`notebook pyright foreground ${serviceId} failed`, event.message)
+    reportPyrightWorkerError('foreground', serviceId, event.message)
   })
   foreground.postMessage({ type: 'browser/boot', mode: 'foreground' })
 
@@ -390,6 +478,7 @@ class NotebookPythonWorkspace extends Workspace {
   private readonly fileVersions = new Map<string, number>()
   private notebookVersion = 0
   private opened = false
+  private opening: Promise<void> | undefined
 
   constructor(
     client: LSPClient,
@@ -403,11 +492,12 @@ class NotebookPythonWorkspace extends Workspace {
   }
 
   override connected() {
-    this.openNotebook()
+    this.queueOpenNotebook()
   }
 
   override disconnected() {
     this.opened = false
+    this.opening = undefined
   }
 
   override getFile(uri: string) {
@@ -427,7 +517,7 @@ class NotebookPythonWorkspace extends Workspace {
     file.view = view
     const changed = this.updateFileDoc(file, view.state.doc)
     if (!this.opened && this.client.connected) {
-      this.openNotebook()
+      this.queueOpenNotebook()
       return
     }
     if (changed) this.sendTextContentChanges([this.textContentChange(file)])
@@ -507,6 +597,19 @@ class NotebookPythonWorkspace extends Workspace {
     this.files = nextFiles
     this.filesByUri.clear()
     nextByUri.forEach((file, uri) => this.filesByUri.set(uri, file))
+  }
+
+  private queueOpenNotebook() {
+    if (this.opened || this.opening) return
+    this.opening = this.client.initializing
+      .then(() => {
+        this.opening = undefined
+        if (this.client.connected) this.openNotebook()
+      })
+      .catch(error => {
+        this.opening = undefined
+        if (!notebookIgnoredLspError(error)) console.warn('notebook pyright open failed', error)
+      })
   }
 
   private openNotebook() {
@@ -590,7 +693,7 @@ class NotebookPythonLspService {
 
   private async createClient() {
     const [
-      { LSPClient, hoverTooltips, serverCompletionSource, serverDiagnostics, signatureHelp },
+      { LSPClient, serverCompletionSource, serverDiagnostics, signatureHelp },
       typeshed,
       workerUrl,
     ] = await Promise.all([
@@ -603,12 +706,12 @@ class NotebookPythonLspService {
       rootUri: this.rootUri,
       workspace: client =>
         new NotebookPythonWorkspace(client, this.rootUri, this.sourcePath, () => this.cells()),
-      timeout: 8000,
+      timeout: 20000,
       sanitizeHTML: html => DOMPurify.sanitize(html),
       extensions: [
         { clientCapabilities: notebookClientCapabilities },
         notebookServerCompletion(serverCompletionSource),
-        hoverTooltips({ hoverTime: 300 }),
+        notebookHoverTooltips(300),
         signatureHelp({ keymap: false }),
         serverDiagnostics(),
       ],

@@ -74,6 +74,7 @@ const notebookRuntimeInlineEntry = 'quartz/components/scripts/notebook-runtime.i
 const notebookRuntimeClientEntry = 'quartz/runtime/notebook/client.ts'
 const notebookRuntimeLspEntry = 'quartz/runtime/lsp/pyright.ts'
 const notebookRuntimeWorkerEntry = 'quartz/runtime/python/pyodide-worker.js'
+const notebookRuntimeJavascriptWorkerEntry = 'quartz/runtime/javascript/browser-worker.ts'
 const notebookRuntimeBootstrapEntry = 'quartz/runtime/python/pyodide-bridge.py'
 const notebookRuntimeMlBridgeEntry = 'quartz/runtime/python/ml-bridge.js'
 const notebookRuntimePyrightWorkerEntry = 'quartz/util/pyright-browser-worker.js'
@@ -99,6 +100,7 @@ const notebookRuntimeAssetEntries = new Set([
   notebookRuntimeClientEntry,
   notebookRuntimeLspEntry,
   notebookRuntimeWorkerEntry,
+  notebookRuntimeJavascriptWorkerEntry,
   notebookRuntimeBootstrapEntry,
   notebookRuntimeMlBridgeEntry,
   notebookRuntimePyrightWorkerEntry,
@@ -531,23 +533,39 @@ async function writeNotebookPyrightAssets(ctx: BuildCtx): Promise<FilePath[]> {
 
 async function writeNotebookRuntimeAssets(ctx: BuildCtx): Promise<FilePath[]> {
   const outdir = path.join(ctx.argv.output, 'static/scripts')
-  const worker = await bundle({
-    entryPoints: [notebookRuntimeWorkerEntry],
-    bundle: true,
-    minify: true,
-    platform: 'browser',
-    format: 'esm',
-    outfile: path.join(outdir, 'notebook-runtime.worker.js'),
-    define: { 'globalThis.process': 'undefined' },
-    external: ['fs'],
-    loader: { '.py': 'text' },
-    write: false,
-  })
+  const [worker, javascriptWorker] = await Promise.all([
+    bundle({
+      entryPoints: [notebookRuntimeWorkerEntry],
+      bundle: true,
+      minify: true,
+      platform: 'browser',
+      format: 'esm',
+      outfile: path.join(outdir, 'notebook-runtime.worker.js'),
+      define: { 'globalThis.process': 'undefined' },
+      external: ['fs'],
+      loader: { '.py': 'text' },
+      write: false,
+    }),
+    bundle({
+      entryPoints: [notebookRuntimeJavascriptWorkerEntry],
+      bundle: true,
+      minify: true,
+      platform: 'browser',
+      format: 'esm',
+      outfile: path.join(outdir, 'notebook-runtime.javascript.worker.js'),
+      write: false,
+    }),
+  ])
   const workerFiles = await Promise.all(
-    worker.outputFiles.map(output => writeAssetBundleOutput(ctx, output)),
+    [...worker.outputFiles, ...javascriptWorker.outputFiles].map(output =>
+      writeAssetBundleOutput(ctx, output),
+    ),
   )
   const pyrightFiles = await writeNotebookPyrightAssets(ctx)
   const workerName = path.basename(resolveAsset(ctx, 'static/scripts/notebook-runtime.worker.js'))
+  const javascriptWorkerName = path.basename(
+    resolveAsset(ctx, 'static/scripts/notebook-runtime.javascript.worker.js'),
+  )
   const pyrightWorkerName = path.basename(
     resolveAsset(ctx, notebookRuntimePyrightWorkerManifestPath),
   )
@@ -569,6 +587,7 @@ async function writeNotebookRuntimeAssets(ctx: BuildCtx): Promise<FilePath[]> {
   const clientOutputs = client.outputFiles.map(output => ({
     ...output,
     text: replaceNotebookRuntimeWorkerReference(output.text, output.path, workerPath)
+      .replaceAll('notebook-runtime.javascript.worker.js', javascriptWorkerName)
       .replaceAll('notebook-pyright-worker.json', pyrightWorkerName)
       .replaceAll('notebook-pyright-typeshed.json', pyrightTypeshedName),
   }))
@@ -660,6 +679,10 @@ function resolveComponentResourceAssets(ctx: BuildCtx, componentResources: Compo
       .replaceAll(
         'notebook-runtime.worker.js',
         assetBasename(ctx, 'static/scripts/notebook-runtime.worker.js'),
+      )
+      .replaceAll(
+        'notebook-runtime.javascript.worker.js',
+        assetBasename(ctx, 'static/scripts/notebook-runtime.javascript.worker.js'),
       )
       .replaceAll(
         'notebook-pyright-worker.json',

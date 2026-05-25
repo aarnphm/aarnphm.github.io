@@ -1,3 +1,4 @@
+import { rm } from 'node:fs/promises'
 import { Node } from 'unist'
 import { defaultContentPageLayout, sharedPageComponents } from '../../../quartz.layout'
 import { FullPageLayout } from '../../cfg'
@@ -13,10 +14,23 @@ import {
 import { QuartzComponentProps } from '../../types/component'
 import { QuartzEmitterPlugin } from '../../types/plugin'
 import { BuildCtx } from '../../util/ctx'
-import { pathToRoot } from '../../util/path'
+import { FilePath, FullSlug, joinSegments, pathToRoot } from '../../util/path'
 import { StaticResources } from '../../util/resources'
 import { QuartzPluginData } from '../vfile'
 import { write } from './helpers'
+
+const isContentPage = (fileData: QuartzPluginData): boolean => {
+  const slug = fileData.slug
+  if (!slug) return false
+  return !(
+    slug.endsWith('/index') ||
+    slug.startsWith('tags/') ||
+    fileData.bases ||
+    fileData.jsonCanvas ||
+    fileData.streamData ||
+    fileData.frontmatter?.layout === 'masonry'
+  )
+}
 
 async function processContent(
   ctx: BuildCtx,
@@ -41,6 +55,11 @@ async function processContent(
 
   const content = renderPage(ctx, slug, componentData, opts, externalResources, false)
   return write({ ctx, content, slug, ext: '.html' })
+}
+
+async function deleteContent(ctx: BuildCtx, slug: FullSlug): Promise<void> {
+  const dest = joinSegments(ctx.argv.output, `${slug}.html`) as FilePath
+  await rm(dest, { force: true })
 }
 
 export const ContentPage: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts => {
@@ -77,41 +96,32 @@ export const ContentPage: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpt
       const allFiles = content.map(c => c[1].data)
 
       for (const [tree, file] of content) {
-        const slug = file.data.slug!
-        if (
-          slug.endsWith('/index') ||
-          slug.startsWith('tags/') ||
-          file.data.bases ||
-          file.data.jsonCanvas ||
-          file.data.streamData ||
-          file.data.frontmatter?.layout === 'masonry'
-        )
-          continue
+        if (!isContentPage(file.data)) continue
         yield processContent(ctx, tree, file.data, allFiles, opts, resources)
       }
     },
     async *partialEmit(ctx, content, resources, changeEvents) {
       const allFiles = content.map(c => c[1].data)
 
-      // find all slugs that changed or were added
       const changedSlugs = new Set<string>()
       for (const changeEvent of changeEvents) {
         if (!changeEvent.file) continue
+        const fileData = changeEvent.file.data
+        if (changeEvent.type === 'delete') {
+          if (isContentPage(fileData)) {
+            await deleteContent(ctx, fileData.slug as FullSlug)
+          }
+          continue
+        }
         if (changeEvent.type === 'add' || changeEvent.type === 'change') {
-          changedSlugs.add(changeEvent.file.data.slug!)
+          changedSlugs.add(fileData.slug!)
         }
       }
 
       for (const [tree, file] of content) {
         const slug = file.data.slug!
         if (!changedSlugs.has(slug)) continue
-        if (
-          slug.endsWith('/index') ||
-          slug.startsWith('tags/') ||
-          file.data.bases ||
-          file.data.streamData
-        )
-          continue
+        if (!isContentPage(file.data)) continue
 
         yield processContent(ctx, tree, file.data, allFiles, opts, resources)
       }

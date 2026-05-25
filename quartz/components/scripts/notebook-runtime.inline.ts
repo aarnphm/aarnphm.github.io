@@ -9,6 +9,7 @@ type NotebookRuntimeModule = {
 type NotebookRuntimeTarget = { root: HTMLElement; text: string }
 type NotebookRuntimeAssets = {
   readonly workerUrl: string
+  readonly javascriptWorkerUrl: string
   readonly pyrightWorkerManifestUrl: string
   readonly pyrightTypeshedManifestUrl: string
 }
@@ -23,6 +24,7 @@ function notebookRuntimeScriptUrl(name: string) {
 function notebookRuntimeAssets(): NotebookRuntimeAssets {
   return {
     workerUrl: notebookRuntimeScriptUrl('notebook-runtime.worker.js'),
+    javascriptWorkerUrl: notebookRuntimeScriptUrl('notebook-runtime.javascript.worker.js'),
     pyrightWorkerManifestUrl: notebookRuntimeScriptUrl('notebook-pyright-worker.json'),
     pyrightTypeshedManifestUrl: notebookRuntimeScriptUrl('notebook-pyright-typeshed.json'),
   }

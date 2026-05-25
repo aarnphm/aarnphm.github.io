@@ -60,12 +60,15 @@ function notebookRuntimeScriptText(root: Root): string | undefined {
 
 function readNotebookRuntimeCell(value: unknown): NotebookRuntimeCell | undefined {
   if (!isRecord(value)) return undefined
-  const { id, source, language, executionIndex } = value
+  const { id, source, language, displayLanguage, executionIndex } = value
   if (typeof id !== 'string' || typeof source !== 'string' || typeof language !== 'string') {
     return undefined
   }
+  if (displayLanguage !== undefined && typeof displayLanguage !== 'string') return undefined
   if (typeof executionIndex !== 'number' && executionIndex !== null) return undefined
-  return { id, source, language, executionIndex }
+  return displayLanguage === undefined
+    ? { id, source, language, executionIndex }
+    : { id, source, language, displayLanguage, executionIndex }
 }
 
 export function notebookRuntimeData(root: Root): NotebookRuntimeData | undefined {
@@ -83,7 +86,7 @@ export function notebookRuntimeData(root: Root): NotebookRuntimeData | undefined
     typeof id !== 'string' ||
     typeof sourcePath !== 'string' ||
     typeof language !== 'string' ||
-    typeof indexUrl !== 'string'
+    (indexUrl !== undefined && typeof indexUrl !== 'string')
   ) {
     return undefined
   }
@@ -93,9 +96,9 @@ export function notebookRuntimeData(root: Root): NotebookRuntimeData | undefined
     id,
     sourcePath,
     language,
-    indexUrl,
     cells: cells.filter((cell): cell is NotebookRuntimeCell => cell !== undefined),
   }
+  if (typeof indexUrl === 'string') data.indexUrl = indexUrl
   if (typeof parsed.toolbar === 'boolean') data.toolbar = parsed.toolbar
   if (typeof parsed.debug === 'boolean') data.debug = parsed.debug
   if (typeof parsed.vimMode === 'boolean') data.vimMode = parsed.vimMode

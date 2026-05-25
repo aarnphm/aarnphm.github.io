@@ -31,6 +31,7 @@ type ResolvedOptions = { exts: string[]; indexUrls: Map<string, string> }
 
 const DEFAULT_EXTS = new Set<string>([
   '.py',
+  '.mojo',
   '.rs',
   '.go',
   '.c',
@@ -71,6 +72,8 @@ function languageFromExt(ext: string): string | undefined {
   switch (e) {
     case 'py':
       return 'python'
+    case 'mojo':
+      return 'mojo'
     case 'ts':
     case 'tsx':
       return e
