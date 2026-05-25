@@ -28,6 +28,7 @@
     "bundle:dev": "CF_PAGES=1 NODE_ENV=development pnpm bundle",
     "prod": "NODE_ENV=production pnpm bundle",
     "test": "tsx --test",
+    "embed": "USE_VLLM=1 VLLM_URL=\"http://localhost:8000/v1/embeddings\" uv run quartz/embed_build.py --jsonl public/embeddings-text.jsonl --model \"google/embeddinggemma-300m\" --out content/embeddings --dtype fp32 --dims 768 --chunk-size 128 --chunk-overlap 64 --concurrency 24 --batch-size 192 --max-tokens 2048",
     "swarm": "pnpm exec tsx quartz/scripts/dev.ts",
     "convert": "tsx quartz/scripts/convert.ts",
     "vendor:ocw": "tsx quartz/scripts/vendor-ocw-course.ts",
