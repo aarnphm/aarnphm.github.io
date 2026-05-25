@@ -48,6 +48,7 @@ describe('LanguageBackend registry', () => {
     assert.strictEqual(backendForShellMagic('rust'), undefined)
     assert.strictEqual(backendForShellMagic('mojo-shell'), mojoBackend)
     assert.strictEqual(backendForShellMagic('haskell-shell'), haskellBackend)
+    assert.strictEqual(backendForShellMagic('haskell'), undefined)
     assert.strictEqual(backendForShellMagic('ocaml-shell'), ocamlBackend)
     assert.strictEqual(backendForShellMagic('ocaml'), undefined)
   })
@@ -121,8 +122,15 @@ describe('LanguageBackend registry', () => {
     if (!rejected.ok) assert.match(rejected.reason, /source code/)
   })
 
+  test('haskell backend executes through the playground sandbox', () => {
+    assert.strictEqual(haskellBackend.canExecute('main = putStrLn "hi"').ok, true)
+    const rejected = haskellBackend.canExecute('')
+    assert.strictEqual(rejected.ok, false)
+    if (!rejected.ok) assert.match(rejected.reason, /source code/)
+  })
+
   test('native browser backends report unavailable compiler runtimes', async () => {
-    for (const backend of [mojoBackend, haskellBackend, ocamlBackend]) {
+    for (const backend of [mojoBackend, ocamlBackend]) {
       const accepted = backend.canExecute('main = print "hi"')
       assert.strictEqual(accepted.ok, false)
       if (!accepted.ok) assert.match(accepted.reason, /native compiler runtime/)

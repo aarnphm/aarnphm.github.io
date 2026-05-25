@@ -208,6 +208,97 @@ function buildCorsHeaders(env: Env, request: Request): Record<string, string> {
   return headers
 }
 
+function sameSiteApiRequest(env: Env, request: Request): boolean {
+  const origin = request.headers.get('Origin')
+  if (origin) return getAllowedOrigin(env, request) !== null
+  const referer = request.headers.get('Referer')
+  if (!referer) return isLocalRequest(request)
+  try {
+    const base = new URL(resolveBaseUrl(env, request))
+    const refererUrl = new URL(referer)
+    return refererUrl.origin === base.origin || isLocalRequest(request)
+  } catch {
+    return false
+  }
+}
+
+type HaskellPlaygroundRequest = {
+  readonly code: string
+  readonly version?: string
+  readonly opt?: string
+  readonly output?: string
+}
+
+function isJsonRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value)
+}
+
+function readHaskellPlaygroundRequest(value: unknown): HaskellPlaygroundRequest | undefined {
+  if (!isJsonRecord(value)) return undefined
+  if (typeof value.code !== 'string' || value.code.trim().length === 0) return undefined
+  const request: HaskellPlaygroundRequest = { code: value.code }
+  if (typeof value.version === 'string') request.version = value.version
+  if (typeof value.opt === 'string') request.opt = value.opt
+  if (typeof value.output === 'string') request.output = value.output
+  return request
+}
+
+async function haskellPlaygroundProxy(request: Request, env: Env): Promise<Response> {
+  const corsHeaders = buildCorsHeaders(env, request)
+  if (request.method !== 'POST') {
+    return new Response('method not allowed', {
+      status: 405,
+      headers: { ...corsHeaders, 'Cache-Control': 'no-store', Allow: 'POST, OPTIONS' },
+    })
+  }
+  if (!sameSiteApiRequest(env, request)) {
+    return new Response('forbidden', {
+      status: 403,
+      headers: { ...corsHeaders, 'Cache-Control': 'no-store' },
+    })
+  }
+
+  let body: unknown
+  try {
+    body = await request.json()
+  } catch {
+    return new Response('invalid json', {
+      status: 400,
+      headers: { ...corsHeaders, 'Cache-Control': 'no-store' },
+    })
+  }
+
+  const payload = readHaskellPlaygroundRequest(body)
+  if (!payload) {
+    return new Response('invalid request', {
+      status: 400,
+      headers: { ...corsHeaders, 'Cache-Control': 'no-store' },
+    })
+  }
+
+  const upstream = await fetch('https://play.haskell.org/submit', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      code: payload.code,
+      version: payload.version ?? '9.14.1',
+      opt: payload.opt ?? 'O0',
+      output: payload.output ?? 'run',
+    }),
+  })
+
+  return new Response(upstream.body, {
+    status: upstream.status,
+    statusText: upstream.statusText,
+    headers: {
+      ...corsHeaders,
+      'Cache-Control': 'no-store',
+      'Content-Type': 'application/json',
+      Vary: 'Origin',
+    },
+  })
+}
+
 async function getObjectInfo(
   response: Response,
 ): Promise<{ hash_algo: string; oid: string; size: number } | null> {
@@ -663,6 +754,9 @@ export default {
         const resp = await handleMentions(env)
         return withHeaders(resp, apiHeaders)
       }
+      case '/api/haskell-playground':
+      case '/api/haskell-playground/':
+        return haskellPlaygroundProxy(request, env)
       case '/api/pdf-proxy': {
         const pdfUrl = url.searchParams.get('url')
         if (!pdfUrl) {
