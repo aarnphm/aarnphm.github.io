@@ -5,12 +5,16 @@ date: '2024-10-10'
 description: a bag of chips/words/vernacular
 id: word
 layout: technical
-modified: 2026-05-18 15:59:04 GMT-04:00
+modified: 2026-05-26 18:09:44 GMT-04:00
 tags:
   - evergreen
 title: lists
 ---
 
+- {{sidenotes[transitions]: in CSS or terminology}}
+  - context transition
+  - drill transition
+  - continuity [transition](https://x.com/gabriell_lab/status/2058217175047901310)
 - Vim magic
   - `[&|?]curius=\v\d+(,\s*\d+)*`
 - SAXPY: single-precision a \* x plus y

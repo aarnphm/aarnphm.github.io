@@ -37,9 +37,17 @@ declare const HTMLRewriter: { new (): HtmlRewriter }
 
 const NOTE_CONTENT_WIDTH = 620
 const NOTE_TITLE_WIDTH = 40
-const SERVER_BODY_TAIL_COUNT = 1
+const SERVER_BODY_HEAD_COUNT = 1
 const STACKED_NOTE_START = '<!--__STACKED_NOTE_START__-->'
 const STACKED_NOTE_END = '<!--__STACKED_NOTE_END__-->'
+const STACKED_NOTE_RETRY_BUTTON_HTML = `<button type="button" data-stacked-retry aria-label="Réessayer">
+  <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+    <path d="M20 6v5h-5" />
+    <path d="M4 18v-5h5" />
+    <path d="M18.5 9a7 7 0 0 0-12.3-2.4L4 8.7" />
+    <path d="M5.5 15a7 7 0 0 0 12.3 2.4L20 15.3" />
+  </svg>
+</button>`
 
 export function hashSlug(slug: string): string {
   return hashStackedNoteSlug(slug)
@@ -112,7 +120,7 @@ export function failedNoteData(slug: string, title: string = slug): StackedNoteD
   return {
     slug,
     title,
-    content: `<div class="stacked-note-status stacked-note-status-failed"><p>Impossible de charger cette note.</p></div>`,
+    content: `<div class="stacked-note-status stacked-note-status-failed"><p>Impossible de charger cette note.</p>${STACKED_NOTE_RETRY_BUTTON_HTML}</div>`,
     metadata: '',
     state: 'failed',
   }
@@ -145,8 +153,21 @@ export function pendingNoteData(slug: string): StackedNoteData {
   }
 }
 
-function shouldIncludeServerBody(index: number, totalCount: number): boolean {
-  return index >= Math.max(0, totalCount - SERVER_BODY_TAIL_COUNT)
+export function shouldIncludeServerBody(index: number): boolean {
+  return index < SERVER_BODY_HEAD_COUNT
+}
+
+async function noteDataFromHtml(slug: string, html: string): Promise<StackedNoteData> {
+  const title = extractTitle(html) || slug
+  if (/<article\b[^>]*\bdata-protected=["']true["']/i.test(html)) {
+    return protectedNoteData(slug, title)
+  }
+
+  const content = await extractPopoverHintContent(html)
+
+  if (!content) return failedNoteData(slug, title)
+
+  return { slug, title, content, metadata: '', state: 'ready' }
 }
 
 async function fetchNoteData(
@@ -165,16 +186,7 @@ async function fetchNoteData(
   if (!noteResp.ok) return failedNoteData(slug)
 
   const html = await noteResp.text()
-  const title = extractTitle(html) || slug
-  if (/<article\b[^>]*\bdata-protected=["']true["']/i.test(html)) {
-    return protectedNoteData(slug, title)
-  }
-
-  const content = await extractPopoverHintContent(html)
-
-  if (!content) return failedNoteData(slug, title)
-
-  return { slug, title, content, metadata: '', state: 'ready' }
+  return noteDataFromHtml(slug, html)
 }
 
 export function buildStackedNoteHtml(
@@ -281,15 +293,13 @@ export async function handleStackedNotesRequest(
 
     const baseHtml = await timed('baseText', timings, () => baseResp.text())
 
+    const firstNoteData = await timed('firstNote', timings, () =>
+      noteDataFromHtml(firstSlug, baseHtml),
+    )
+
     const totalCount = validSlugs.length
-    const notesData = await timed('notes', timings, () =>
-      Promise.all(
-        validSlugs.map((slug, index) =>
-          shouldIncludeServerBody(index, totalCount)
-            ? fetchNoteData(slug, env, request)
-            : Promise.resolve(pendingNoteData(slug)),
-        ),
-      ),
+    const notesData = validSlugs.map((slug, index) =>
+      shouldIncludeServerBody(index) ? firstNoteData : pendingNoteData(slug),
     )
 
     if (notesData.length === 0) return null

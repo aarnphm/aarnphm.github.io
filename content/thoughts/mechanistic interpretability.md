@@ -209,8 +209,10 @@ see also: @elhage2021mathematical, [[thoughts/mathematical framework transformer
 
 ### residual stream
 
-```jsx imports={ResidualStream}
-<ResidualStream caption="Residual stream view of a transformer: each attention head and MLP layer reads from and writes back into the same shared stream." />
+```jsx imports={Zoomable,ResidualStream}
+<Zoomable label="residual stream diagram">
+  <ResidualStream caption="Residual stream view of a transformer: each attention head and MLP layer reads from and writes back into the same shared stream." />
+</Zoomable>
 ```
 
 intuition: we can think of residual as highway networks, in a sense portrays linearity of the {{sidenotes[network]: Constructing models with a residual stream traces back to early work by the Schmidhuber group, such as highway networks and LSTMs, which have found significant modern success in the more recent residual network architecture. In transformers, the residual stream vectors are often called the "embedding" - we prefer the residual stream terminology because it emphasizes the residual nature and because the residual stream often dedicates subspaces to tokens other than the present token.}}

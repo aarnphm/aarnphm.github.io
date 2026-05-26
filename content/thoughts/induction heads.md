@@ -18,8 +18,10 @@ transclude:
 
 ## virtual weights
 
-```jsx imports={VirtualWeights}
-<VirtualWeights caption="Note that the high linearity of the network is very much specific to Transformers; even ResNets, with non-linear activation functions between layers, do not factor this cleanly." />
+```jsx imports={Zoomable,VirtualWeights}
+<Zoomable label="virtual weights diagram">
+  <VirtualWeights caption="Note that the high linearity of the network is very much specific to Transformers; even ResNets, with non-linear activation functions between layers, do not factor this cleanly." />
+</Zoomable>
 ```
 
 ```sms
