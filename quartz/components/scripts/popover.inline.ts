@@ -2,6 +2,12 @@ import { computePosition, flip, inline, Placement, shift, Strategy } from '@floa
 import xmlFormat from 'xml-formatter'
 import { getContentType } from '../../util/mime'
 import { FullSlug, getFullSlug, normalizeRelativeURLs } from '../../util/path'
+import {
+  readWikipediaPreviewResponse,
+  wikipediaActionApiUrl,
+  type WikipediaPreview,
+  type WikipediaTarget,
+} from '../../util/wikipedia'
 import { createSidePanel, fetchCanonical, getOrCreateSidePanel } from './util'
 
 type ContentHandler = (
@@ -202,6 +208,10 @@ function notifyProtectedContentLoaded(container: ParentNode) {
   document.dispatchEvent(new CustomEvent('protectedcontentloaded', { detail: { container } }))
 }
 
+function isAbortError(error: unknown): boolean {
+  return error instanceof DOMException && error.name === 'AbortError'
+}
+
 function compareUrls(a: URL, b: URL): boolean {
   const u1 = new URL(a.toString())
   const u2 = new URL(b.toString())
@@ -275,6 +285,130 @@ async function handleFootnote(
 
   link.dataset.popoverId = popoverId
   await showPopover(link, popoverElement, pointer, { placement: 'top' })
+}
+
+function wikipediaTargetFromLink(link: HTMLAnchorElement): WikipediaTarget | undefined {
+  const { wikipediaLang, wikipediaTitle } = link.dataset
+  if (!wikipediaLang || !wikipediaTitle) return undefined
+  return { lang: wikipediaLang, title: wikipediaTitle }
+}
+
+function renderWikipediaPreview(preview: WikipediaPreview, popoverInner: HTMLDivElement) {
+  popoverInner.dataset.contentType = 'text/x-wikipedia'
+
+  const card = document.createElement('article')
+  card.classList.add('wikipedia-popover-card')
+  if (preview.thumbnail) card.classList.add('has-thumbnail')
+
+  const header = document.createElement('header')
+  header.classList.add('wikipedia-popover-header')
+
+  const heading = document.createElement('ul')
+  heading.classList.add('wikipedia-popover-heading')
+
+  const title = document.createElement('li')
+  title.classList.add('wikipedia-popover-title')
+
+  const titleLink = document.createElement('a')
+  titleLink.href = preview.pageUrl
+  titleLink.target = '_blank'
+  titleLink.rel = 'noopener noreferrer'
+  titleLink.textContent = preview.title
+  title.appendChild(titleLink)
+  heading.appendChild(title)
+
+  if (preview.description) {
+    const description = document.createElement('li')
+    description.classList.add('wikipedia-popover-description')
+    description.textContent = preview.description
+    heading.appendChild(description)
+  }
+
+  header.appendChild(heading)
+  card.appendChild(header)
+
+  if (preview.thumbnail) {
+    const thumbnail = document.createElement('img')
+    thumbnail.classList.add('wikipedia-popover-thumbnail')
+    thumbnail.src = preview.thumbnail.source
+    thumbnail.alt = preview.title
+    thumbnail.decoding = 'async'
+    if (preview.thumbnail.width) thumbnail.width = preview.thumbnail.width
+    if (preview.thumbnail.height) thumbnail.height = preview.thumbnail.height
+    card.appendChild(thumbnail)
+  }
+
+  const extract = document.createElement('p')
+  extract.classList.add('wikipedia-popover-extract')
+  extract.textContent = preview.extract
+  card.appendChild(extract)
+
+  const source = document.createElement('a')
+  source.classList.add('wikipedia-popover-source')
+  source.href = preview.pageUrl
+  source.target = '_blank'
+  source.rel = 'noopener noreferrer'
+  source.textContent = 'Wikipedia'
+  card.appendChild(source)
+
+  popoverInner.appendChild(card)
+}
+
+async function handleWikipedia(
+  link: HTMLAnchorElement,
+  pointer: { clientX: number; clientY: number },
+) {
+  const target = wikipediaTargetFromLink(link)
+  if (!target) return
+
+  const popoverId =
+    link.dataset.popoverId ?? `popover-wikipedia-${target.lang}-${encodeURIComponent(target.title)}`
+  const existingPopover = document.getElementById(popoverId)
+  if (existingPopover) {
+    await showPopover(link, existingPopover, pointer)
+    return
+  }
+
+  if (activePopoverReq && activePopoverReq.link !== link) {
+    activePopoverReq.abort()
+    activePopoverReq = null
+  }
+
+  const controller = new AbortController()
+  activePopoverReq = { abort: () => controller.abort(), link }
+
+  const response = await fetch(wikipediaActionApiUrl(target), { signal: controller.signal }).catch(
+    error => {
+      if (!isAbortError(error)) console.error(error)
+      return null
+    },
+  )
+  if (!response || !response.ok) {
+    activePopoverReq = null
+    return
+  }
+
+  const preview = readWikipediaPreviewResponse(await response.json(), target)
+  if (!preview || activeAnchor !== link) {
+    activePopoverReq = null
+    return
+  }
+
+  const { popoverElement, popoverInner } = createPopoverElement('wikipedia-popover')
+  popoverElement.id = popoverId
+  renderWikipediaPreview(preview, popoverInner)
+
+  if (document.getElementById(popoverId)) {
+    activePopoverReq = null
+    return
+  }
+
+  link.dataset.popoverId = popoverId
+  document.body.appendChild(popoverElement)
+  activePopoverReq = null
+
+  if (activeAnchor !== link) return
+  await showPopover(link, popoverElement, pointer, { popoverInner })
 }
 
 async function handleStackedNotes(
@@ -391,6 +525,11 @@ async function mouseEnterHandler(
     return
   }
 
+  if (link.dataset.wikipediaLang && link.dataset.wikipediaTitle) {
+    await handleWikipedia(link, { clientX, clientY })
+    return
+  }
+
   if (getFullSlug(window) === 'notes' || container?.classList.contains('active')) {
     await handleStackedNotes(container, link, { clientX, clientY })
     return
@@ -474,6 +613,10 @@ async function mouseClickHandler(evt: MouseEvent) {
   targetUrl.search = ''
 
   const container = document.getElementById('stacked-notes-container') as HTMLDivElement | null
+
+  if (link.dataset.wikipediaLang && link.dataset.wikipediaTitle) {
+    return
+  }
 
   if (evt.altKey && !container?.classList.contains('active')) {
     evt.preventDefault()

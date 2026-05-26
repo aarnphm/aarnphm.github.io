@@ -1,4 +1,4 @@
-(* Emil Sekerinski, McMaster University, Fall 2025 *)
+(* Emil Sekerinski, McMaster University, Fall 2025
 
 This file is meant as a template for cutting and pasting pieces.
 Trying to run it will lead to (intentional) errors.
