@@ -250,10 +250,25 @@ ul#helper {
             margin-inline-end: auto;
 
             .suggestion-title {
+              align-items: center;
+              display: flex;
+              gap: 8px;
               overflow-wrap: break-word;
 
               & .highlight {
                 font-weight: bold;
+              }
+
+              & > .suggestion-title-prefix {
+                align-items: center;
+                color: var(--gray);
+                display: inline-flex;
+                flex-shrink: 0;
+
+                svg {
+                  height: 1em;
+                  width: 1em;
+                }
               }
 
               .subscript {

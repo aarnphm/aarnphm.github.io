@@ -31,6 +31,7 @@ import {
 import {
   notebookKernelCommandEvent,
   notebookKernelRequestEvent,
+  notebookKernelRunAllEvent,
 } from '../../util/notebook-kernel-events'
 import { notebookLocalSourcesClearedEvent } from '../../util/notebook-source-events'
 import { notebookCellLanguageBadge } from '../../util/notebook/cell-html'
@@ -989,6 +990,7 @@ class NotebookRuntime {
     document.addEventListener('keydown', this.handleNotebookKeydown, true)
     document.addEventListener(notebookKernelRequestEvent, this.handleKernelRequest)
     document.addEventListener(notebookKernelCommandEvent, this.handleKernelCommand)
+    document.addEventListener(notebookKernelRunAllEvent, this.handleKernelRunAll)
     document.addEventListener(notebookLocalSourcesClearedEvent, this.handleLocalSourcesCleared)
     this.addCleanup(() => {
       runAll?.removeEventListener('click', this.runAll)
@@ -999,6 +1001,7 @@ class NotebookRuntime {
       document.removeEventListener('keydown', this.handleNotebookKeydown, true)
       document.removeEventListener(notebookKernelRequestEvent, this.handleKernelRequest)
       document.removeEventListener(notebookKernelCommandEvent, this.handleKernelCommand)
+      document.removeEventListener(notebookKernelRunAllEvent, this.handleKernelRunAll)
       document.removeEventListener(notebookLocalSourcesClearedEvent, this.handleLocalSourcesCleared)
       this.clearEditPrefix()
       this.disposed = true
@@ -1307,6 +1310,10 @@ class NotebookRuntime {
     void this.applyKernelCommand(detail).catch(error => {
       this.setStatus(error instanceof Error ? error.message : 'kernel command failed')
     })
+  }
+
+  private handleKernelRunAll = () => {
+    void this.runAll()
   }
 
   private handleLocalSourcesCleared = () => {

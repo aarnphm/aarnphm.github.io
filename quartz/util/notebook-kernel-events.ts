@@ -1,5 +1,6 @@
 export const notebookKernelRequestEvent = 'notebookkernelrequest'
 export const notebookKernelCommandEvent = 'notebookkernelcommand'
+export const notebookKernelRunAllEvent = 'notebookkernelrunall'
 
 export type NotebookKernelStatus =
   | 'available'
@@ -31,3 +32,5 @@ export type NotebookKernelCommandDetail = {
   readonly language: string
   readonly command: NotebookKernelCommand
 }
+
+export type NotebookKernelRunAllDetail = Record<string, never>

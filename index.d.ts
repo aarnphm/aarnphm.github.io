@@ -37,6 +37,9 @@ interface CustomEventMap {
   notebookkernelcommand: CustomEvent<
     import('./quartz/util/notebook-kernel-events').NotebookKernelCommandDetail
   >
+  notebookkernelrunall: CustomEvent<
+    import('./quartz/util/notebook-kernel-events').NotebookKernelRunAllDetail
+  >
   notebooklocalsourcescleared: CustomEvent<
     import('./quartz/util/notebook-source-events').NotebookLocalSourcesClearedDetail
   >
