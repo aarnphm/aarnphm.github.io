@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-05-25 17:02:32 GMT-04:00
+modified: 2026-05-25 20:27:52 GMT-04:00
 permalinks:
   - /website
   - /tweets
@@ -1946,6 +1946,7 @@ title: are.na
   - [meta]:
     - date: 07/29/2025
     - tags: [mathematician, professor]
+    - pinned: true
   - Floer homology and dimension-4 topology
 - https://thezvi.wordpress.com/ -- Zvi Mowshowitz
   - [meta]:

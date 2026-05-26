@@ -14,9 +14,8 @@ Ownership and Borrowing
 - Stack and heaps
 
 ```rust
-
 fn main() {
-	let s = String::from("Hello");
+    let s = String::from("Hello");
 }
 ```
 
