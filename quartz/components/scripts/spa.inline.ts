@@ -6,12 +6,18 @@ import {
   normalizeRelativeURLs,
   sluggify,
 } from '../../util/path'
+import { decodeStackedNoteHash, hashStackedNoteSlug } from '../../util/stacked-notes'
 import { Toast } from './toast'
 import {
-  removeAllChildren,
+  cacheStackedNotePayload,
   Dag,
   DagNode,
+  getCachedStackedNotePayload,
   NoteDocument,
+  readStackedNotePayload,
+  removeAllChildren,
+  stackedNotePayloadUrl,
+  StackedNotePayload,
   StackedNoteState,
   VirtualRange,
 } from './util'
@@ -131,6 +137,7 @@ function stopLoading() {
 
 let p: DOMParser
 const STACKED_OVERSCAN = 2
+
 class StackedNoteManager {
   private dag: Dag = new Dag()
   private documentCache: Map<string, NoteDocument> = new Map()
@@ -352,26 +359,19 @@ class StackedNoteManager {
       return
     }
 
-    const pending = stackedNotes.map(noteHash => {
+    stackedNotes.forEach(noteHash => {
       const slug = this.decodeHash(noteHash)
-      if (!slug) return null
+      if (!slug) return
 
       const href = new URL(`/${slug}`, window.location.toString())
 
       if (this.dag.has(slug)) {
         notifyNav(href.pathname as FullSlug)
-        return null
+        return
       }
 
       this.addPendingNode(slug, href, null)
-      return { slug, href }
     })
-
-    this.render({ scrollToTail: false })
-    for (const entry of pending) {
-      if (!entry) continue
-      void this.loadAndApply(entry.href, entry.slug).then(() => notifyNav(entry.slug as FullSlug))
-    }
   }
 
   private dedupe(values: string[]): string[] {
@@ -407,44 +407,46 @@ class StackedNoteManager {
       .join('&')
   }
 
-  /** Generates URL-safe hash for a slug. Uses base64 with special handling for dots */
   private generateHash(slug: string): string {
-    // Replace dots with a safe character sequence before encoding
-    const safePath = slug.toString().replace(/\./g, '___DOT___')
-    return btoa(safePath).replace(/=+$/, '')
+    return hashStackedNoteSlug(slug)
   }
 
   private decodeHash(hash: string): string {
-    try {
-      const decoded = atob(hash)
-      // Restore dots after decoding
-      const restoredPath = decoded.replace(/___DOT___/g, '.')
-      // Validate the path only contains allowed characters
-      if (restoredPath.match(/^[a-zA-Z0-9/.-]+$/)) {
-        return restoredPath
-      }
-      throw new Error('Invalid path characters')
-    } catch (e) {
-      console.error('Failed to decode hash:', e)
-      return ''
-    }
+    return decodeStackedNoteHash(hash) ?? ''
   }
 
-  // Map to store hash -> slug mappings
   private hashes: Map<string, string> = new Map()
   private slugs: Map<string, string> = new Map()
 
   private hashSlug(slug: string): string {
-    // Check if we already have a hash for this slug
     if (this.slugs.has(slug)) {
       return this.slugs.get(slug)!
     }
 
-    // Generate new hash
     const hash = this.generateHash(slug)
     this.hashes.set(hash, slug)
     this.slugs.set(slug, hash)
     return hash
+  }
+
+  private payloadDocument(payload: StackedNotePayload, target: URL, slug: string, hash: string) {
+    p = p || new DOMParser()
+    const html = p.parseFromString(payload.content, 'text/html')
+    normalizeRelativeURLs(html, target)
+    transformHostInternalLinks(html)
+
+    const elements = Array.from(html.body.children).flatMap(el =>
+      el instanceof HTMLElement ? [el] : [],
+    )
+
+    return {
+      slug,
+      title: payload.title,
+      hash,
+      bodyHtml: this.serializeElements(elements),
+      metadataHtml: payload.metadata ?? '',
+      state: payload.state,
+    }
   }
 
   private async fetchContent(url: URL, slug: string): Promise<NoteDocument> {
@@ -455,60 +457,26 @@ class StackedNoteManager {
     target.hash = ''
     target.search = ''
 
-    const response = await fetchCanonical(target).catch(error => {
+    const cachedPayload = getCachedStackedNotePayload(slug)
+    if (cachedPayload) return this.payloadDocument(cachedPayload, target, slug, hash)
+
+    const response = await fetch(stackedNotePayloadUrl(slug), {
+      headers: { Accept: 'application/json' },
+    }).catch(error => {
       console.error(error)
       return null
     })
     if (!response || !response.ok) return this.failedDocument(slug, hash)
 
-    const txt = await response.text()
-    const html = p.parseFromString(txt, 'text/html')
-    normalizeRelativeURLs(html, target)
-    transformHostInternalLinks(html)
+    const json = await response.json().catch(error => {
+      console.error(error)
+      return null
+    })
+    const payload = readStackedNotePayload(json)
+    if (!payload) return this.failedDocument(slug, hash)
+    cacheStackedNotePayload(payload)
 
-    const protectedArticle = html.querySelector('article[data-protected="true"]')
-    if (protectedArticle) {
-      const title = this.extractTitle(html, target, slug)
-      const bodyHtml = `
-        <div class="protected-stacked-note">
-        <div class="protected-overlay">
-          <div class="protected-message">
-            <p>ce contenu est protégé</p>
-            <p class="protected-hint">visitez la page principale pour y accéder</p>
-          </div>
-        </div>
-        </div>
-      `
-      return { slug, title, hash, bodyHtml, metadataHtml: '', state: 'protected' }
-    }
-
-    const contents = new Set<HTMLElement>()
-    for (const el of Array.from(html.getElementsByClassName('popover-hint'))) {
-      if (!(el instanceof HTMLElement)) continue
-      if (el.classList.contains('page-footer') && !el.textContent?.trim()) {
-        el.remove()
-        continue
-      }
-      contents.add(el)
-    }
-    if (contents.size === 0)
-      return this.failedDocument(slug, hash, this.extractTitle(html, target, slug))
-
-    const title = this.extractTitle(html, target, slug)
-    const bodyHtml = this.serializeElements([...contents])
-
-    return { slug, title, hash, bodyHtml, metadataHtml: '', state: 'ready' }
-  }
-
-  private extractTitle(html: Document, url: URL, slug: string): string {
-    const h1 = html.querySelector<HTMLElement>('h1')
-    return (
-      h1?.innerText ??
-      h1?.textContent ??
-      this.getSlug(url) ??
-      html.querySelector('title')?.textContent ??
-      slug
-    )
+    return this.payloadDocument(payload, target, slug, hash)
   }
 
   private serializeElements(elements: HTMLElement[]): string {
@@ -542,6 +510,7 @@ class StackedNoteManager {
     note.className = 'stacked-note'
     note.id = this.hashSlug(noteDocument.slug)
     note.dataset.slug = noteDocument.slug
+    note.dataset.entering = 'true'
 
     const noteContent = window.document.createElement('div')
     noteContent.className = 'stacked-content'
@@ -585,6 +554,11 @@ class StackedNoteManager {
     shell.classList.toggle('ready', node.document.state === 'ready')
     shell.classList.toggle('protected', node.document.state === 'protected')
     shell.classList.toggle('failed', node.document.state === 'failed')
+    if (shell.dataset.entering === 'true') {
+      requestAnimationFrame(() => {
+        delete shell.dataset.entering
+      })
+    }
     titleRail.textContent = node.document.title
     this.applyGeometry(node, index, total)
   }

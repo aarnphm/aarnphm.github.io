@@ -5,23 +5,25 @@ import type { QuartzMdxComponent } from '../../../components/mdx/registry'
 import type { QuartzComponent } from '../../../types/component'
 import type { BuildCtx } from '../../../util/ctx'
 import { getMdxComponents } from '../../../components/mdx/registry'
-import notFoundScript from '../../../components/scripts/404.inline'
-import audioScript from '../../../components/scripts/audio.inline'
-import baseMapScript from '../../../components/scripts/base-map.inline'
-import pseudoScript from '../../../components/scripts/clipboard-pseudo.inline'
-import clipboardScript from '../../../components/scripts/clipboard.inline'
-import collaborativeCommentsScript from '../../../components/scripts/collaborative-comments.inline'
-import markerScript from '../../../components/scripts/marker.inline'
-import petScript from '../../../components/scripts/pet.inline'
-import popoverScript from '../../../components/scripts/popover.inline'
-import protectedScript from '../../../components/scripts/protected.inline'
-import spaRouterScript from '../../../components/scripts/spa.inline'
 import audioStyle from '../../../components/styles/audio.scss'
 import clipboardStyle from '../../../components/styles/clipboard.scss'
 import '../../../components/mdx'
 import popoverStyle from '../../../components/styles/popover.scss'
 import pseudoStyle from '../../../components/styles/pseudocode.scss'
 import { notebookRuntimeInlineEntry } from './asset-paths'
+
+const notFoundInlineEntry = 'quartz/components/scripts/404.inline.ts'
+const audioInlineEntry = 'quartz/components/scripts/audio.inline.ts'
+const baseMapInlineEntry = 'quartz/components/scripts/base-map.inline.ts'
+const pseudoInlineEntry = 'quartz/components/scripts/clipboard-pseudo.inline.ts'
+const clipboardInlineEntry = 'quartz/components/scripts/clipboard.inline.ts'
+const collaborativeCommentsInlineEntry =
+  'quartz/components/scripts/collaborative-comments.inline.ts'
+const markerInlineEntry = 'quartz/components/scripts/marker.inline.ts'
+const petInlineEntry = 'quartz/components/scripts/pet.inline.ts'
+const popoverInlineEntry = 'quartz/components/scripts/popover.inline.ts'
+const protectedInlineEntry = 'quartz/components/scripts/protected.inline.ts'
+const spaInlineEntry = 'quartz/components/scripts/spa.inline.ts'
 
 export type ComponentResourceSet = {
   css: string[]
@@ -82,7 +84,7 @@ async function refreshNotebookRuntimeInlineResource(componentResources: Componen
   componentResources.afterDOMLoaded[index] = await bundleInlineScript(notebookRuntimeInlineEntry)
 }
 
-async function bundleInlineScript(scriptPath: string): Promise<string> {
+export async function bundleInlineScript(scriptPath: string): Promise<string> {
   let text = await fs.readFile(scriptPath, 'utf8')
   text = text.replace('export default', '')
   text = text.replace('export', '')
@@ -105,10 +107,34 @@ async function bundleInlineScript(scriptPath: string): Promise<string> {
   return transpiled.outputFiles[0].text
 }
 
-function addGlobalPageResources(ctx: BuildCtx, componentResources: ComponentResourceSet) {
+async function addGlobalPageResources(ctx: BuildCtx, componentResources: ComponentResourceSet) {
   const cfg = ctx.cfg.configuration
+  const [
+    notFoundScript,
+    audioScript,
+    baseMapScript,
+    pseudoScript,
+    clipboardScript,
+    collaborativeCommentsScript,
+    markerScript,
+    petScript,
+    protectedScript,
+    spaRouterScript,
+  ] = await Promise.all([
+    bundleInlineScript(notFoundInlineEntry),
+    bundleInlineScript(audioInlineEntry),
+    bundleInlineScript(baseMapInlineEntry),
+    bundleInlineScript(pseudoInlineEntry),
+    bundleInlineScript(clipboardInlineEntry),
+    bundleInlineScript(collaborativeCommentsInlineEntry),
+    bundleInlineScript(markerInlineEntry),
+    bundleInlineScript(petInlineEntry),
+    bundleInlineScript(protectedInlineEntry),
+    bundleInlineScript(spaInlineEntry),
+  ])
 
   if (cfg.enablePopovers) {
+    const popoverScript = await bundleInlineScript(popoverInlineEntry)
     componentResources.afterDOMLoaded.push(popoverScript)
     componentResources.css.push(popoverStyle)
   }
@@ -151,6 +177,6 @@ function addGlobalPageResources(ctx: BuildCtx, componentResources: ComponentReso
 export async function currentComponentResources(ctx: BuildCtx): Promise<ComponentResourceSet> {
   const componentResources = getComponentResources(ctx)
   await refreshNotebookRuntimeInlineResource(componentResources)
-  addGlobalPageResources(ctx, componentResources)
+  await addGlobalPageResources(ctx, componentResources)
   return componentResources
 }

@@ -1,24 +1,16 @@
+import {
+  decodeStackedNoteHash,
+  hashStackedNoteSlug,
+  normalizeStackedNoteSlug,
+} from '../quartz/util/stacked-notes'
+
 export interface StackedNoteData {
   slug: string
   title: string
   content: string
   metadata?: string
-  state: 'pending' | 'ready' | 'failed'
+  state: 'pending' | 'ready' | 'protected' | 'failed'
 }
-
-interface ContentIndexEntry {
-  title: string
-  links: string[]
-  tags: string[]
-  content: string
-  richContent?: string
-  date?: string
-  description?: string
-  fileData?: { dates?: { created: string; modified: string } }
-  readingTime?: { text: string; minutes: number; time: number; words: number }
-}
-
-type ContentIndex = Record<string, ContentIndexEntry>
 
 interface StackedEnv {
   ASSETS: { fetch(input: RequestInfo | URL, init?: RequestInit): Promise<Response> }
@@ -45,27 +37,15 @@ declare const HTMLRewriter: { new (): HtmlRewriter }
 
 const NOTE_CONTENT_WIDTH = 620
 const NOTE_TITLE_WIDTH = 40
-const CONTENT_INDEX_TTL_MS = 60_000
 const SERVER_BODY_TAIL_COUNT = 1
 const STACKED_NOTE_START = '<!--__STACKED_NOTE_START__-->'
 const STACKED_NOTE_END = '<!--__STACKED_NOTE_END__-->'
 
-let contentIndexCache: { value: ContentIndex | null; expires: number } | null = null
-let contentIndexInflight: Promise<ContentIndex | null> | null = null
-
 export function hashSlug(slug: string): string {
-  const safePath = slug.toString().replace(/\./g, '___DOT___')
-  return btoa(safePath).replace(/=+$/, '')
+  return hashStackedNoteSlug(slug)
 }
 
-async function decodeStackedHash(hash: string): Promise<string | null> {
-  try {
-    const decoded = atob(hash)
-    const restored = decoded.replace(/___DOT___/g, '.')
-    if (restored.match(/^[a-zA-Z0-9/.-]+$/)) return restored
-  } catch {}
-  return null
-}
+export { normalizeStackedNoteSlug }
 
 function extractTitle(html: string): string {
   const titleMatch = html.match(/<title[^>]*>(.*?)<\/title>/i)
@@ -128,55 +108,6 @@ async function extractPopoverHintContent(html: string): Promise<string> {
   return chunks.join('\n')
 }
 
-async function getContentIndex(env: StackedEnv, request: Request): Promise<ContentIndex | null> {
-  const now = Date.now()
-  if (contentIndexCache && contentIndexCache.expires > now) {
-    return contentIndexCache.value
-  }
-  if (contentIndexInflight) return contentIndexInflight
-
-  const indexUrl = new URL('/static/contentIndex.json', request.url)
-  contentIndexInflight = env.ASSETS.fetch(indexUrl.toString())
-    .then(indexResp => {
-      if (!indexResp.ok) return null
-      return indexResp.json() as Promise<ContentIndex>
-    })
-    .then(value => {
-      contentIndexCache = { value, expires: Date.now() + CONTENT_INDEX_TTL_MS }
-      contentIndexInflight = null
-      return value
-    })
-    .catch(error => {
-      console.error('failed to fetch content index:', error)
-      contentIndexInflight = null
-      return null
-    })
-
-  return contentIndexInflight
-}
-
-function buildMetadataFooter(entry: ContentIndexEntry | undefined): string {
-  if (!entry) return ''
-
-  const date = entry.fileData?.dates?.modified
-    ? new Date(entry.fileData.dates.modified)
-    : entry.date
-      ? new Date(entry.date)
-      : null
-
-  if (!date) return ''
-
-  const readingTime = entry.readingTime?.minutes || 0
-
-  return `<div class="published">
-  <span lang="fr" class="metadata" dir="auto">dernière modification par <time datetime="${date.toISOString()}">${formatDate(date)}</time> (${readingTime} min de lecture)</span>
-</div>`
-}
-
-function formatDate(date: Date): string {
-  return date.toLocaleDateString('fr-FR', { year: 'numeric', month: 'short', day: '2-digit' })
-}
-
 export function failedNoteData(slug: string, title: string = slug): StackedNoteData {
   return {
     slug,
@@ -187,10 +118,27 @@ export function failedNoteData(slug: string, title: string = slug): StackedNoteD
   }
 }
 
-function pendingNoteData(slug: string, contentIndex: ContentIndex | null): StackedNoteData {
+function protectedNoteData(slug: string, title: string): StackedNoteData {
   return {
     slug,
-    title: contentIndex?.[slug]?.title || slug,
+    title,
+    content: `<div class="protected-stacked-note">
+  <div class="protected-overlay">
+    <div class="protected-message">
+      <p>ce contenu est protégé</p>
+      <p class="protected-hint">visitez la page principale pour y accéder</p>
+    </div>
+  </div>
+</div>`,
+    metadata: '',
+    state: 'protected',
+  }
+}
+
+export function pendingNoteData(slug: string): StackedNoteData {
+  return {
+    slug,
+    title: slug,
     content: '<div class="stacked-note-status" role="status">chargement...</div>',
     metadata: '',
     state: 'pending',
@@ -205,7 +153,6 @@ async function fetchNoteData(
   slug: string,
   env: StackedEnv,
   request: Request,
-  contentIndex: ContentIndex | null,
 ): Promise<StackedNoteData> {
   const noteUrl = new URL(`/${slug}`, request.url)
   noteUrl.search = ''
@@ -218,15 +165,16 @@ async function fetchNoteData(
   if (!noteResp.ok) return failedNoteData(slug)
 
   const html = await noteResp.text()
-  const content = await extractPopoverHintContent(html)
   const title = extractTitle(html) || slug
+  if (/<article\b[^>]*\bdata-protected=["']true["']/i.test(html)) {
+    return protectedNoteData(slug, title)
+  }
+
+  const content = await extractPopoverHintContent(html)
 
   if (!content) return failedNoteData(slug, title)
 
-  const entry = contentIndex?.[slug]
-  const metadata = buildMetadataFooter(entry)
-
-  return { slug, title, content, metadata, state: 'ready' }
+  return { slug, title, content, metadata: '', state: 'ready' }
 }
 
 export function buildStackedNoteHtml(
@@ -276,6 +224,32 @@ async function timed<T>(name: string, timings: string[], fn: () => Promise<T>): 
   }
 }
 
+export async function handleStackedNoteDataRequest(
+  request: Request,
+  env: StackedEnv,
+): Promise<Response> {
+  const timings: string[] = []
+  const url = new URL(request.url)
+  const slug = normalizeStackedNoteSlug(url.searchParams.get('slug'))
+
+  if (!slug) {
+    return new Response('missing slug', {
+      status: 400,
+      headers: { 'Content-Type': 'text/plain; charset=utf-8' },
+    })
+  }
+
+  const note = await timed('note', timings, () => fetchNoteData(slug, env, request))
+
+  return new Response(JSON.stringify(note), {
+    headers: {
+      'Content-Type': 'application/json; charset=utf-8',
+      'Cache-Control': 'public, max-age=60, stale-while-revalidate=300',
+      'Server-Timing': timings.join(', '),
+    },
+  })
+}
+
 export async function handleStackedNotesRequest(
   request: Request,
   env: StackedEnv,
@@ -287,7 +261,7 @@ export async function handleStackedNotesRequest(
 
     if (stackedParams.length === 0) return null
 
-    const slugs = await Promise.all(stackedParams.map(decodeStackedHash))
+    const slugs = stackedParams.map(decodeStackedNoteHash)
     const validSlugs = dedupeSlugs(slugs.filter(Boolean) as string[])
 
     if (validSlugs.length === 0) return null
@@ -307,15 +281,13 @@ export async function handleStackedNotesRequest(
 
     const baseHtml = await timed('baseText', timings, () => baseResp.text())
 
-    const contentIndex = await timed('contentIndex', timings, () => getContentIndex(env, request))
-
     const totalCount = validSlugs.length
     const notesData = await timed('notes', timings, () =>
       Promise.all(
         validSlugs.map((slug, index) =>
           shouldIncludeServerBody(index, totalCount)
-            ? fetchNoteData(slug, env, request, contentIndex)
-            : Promise.resolve(pendingNoteData(slug, contentIndex)),
+            ? fetchNoteData(slug, env, request)
+            : Promise.resolve(pendingNoteData(slug)),
         ),
       ),
     )

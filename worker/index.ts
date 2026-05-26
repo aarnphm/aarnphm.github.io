@@ -12,7 +12,7 @@ import Garden from './mcp'
 import { handleMentions } from './mentions'
 import { CommentsGitHubHandler, GitHubHandler } from './oauth'
 import { isLocalRequest, resolveBaseUrl } from './request-utils'
-import { handleStackedNotesRequest } from './stacked'
+import { handleStackedNoteDataRequest, handleStackedNotesRequest } from './stacked'
 import { cacheHeadersForStaticAsset, isolationHeadersForStaticAsset } from './static-assets'
 
 const VERSION = 'version https://git-lfs.github.com/spec/v1\n'
@@ -661,6 +661,10 @@ export default {
       }
       case '/api/mentions': {
         const resp = await handleMentions(env)
+        return withHeaders(resp, apiHeaders)
+      }
+      case '/api/stacked-note': {
+        const resp = await handleStackedNoteDataRequest(request, env)
         return withHeaders(resp, apiHeaders)
       }
       case '/api/pdf-proxy': {

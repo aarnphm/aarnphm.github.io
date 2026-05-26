@@ -2,14 +2,22 @@ import { computePosition, flip, inline, Placement, shift, Strategy } from '@floa
 import xmlFormat from 'xml-formatter'
 import { getContentType } from '../../util/mime'
 import { FullSlug, getFullSlug, normalizeRelativeURLs } from '../../util/path'
-import { isRecord, readString } from '../../util/type-guards'
 import {
   readWikipediaPreviewResponse,
   wikipediaActionApiUrl,
   type WikipediaPreview,
   type WikipediaTarget,
 } from '../../util/wikipedia'
-import { createSidePanel, fetchCanonical, getOrCreateSidePanel } from './util'
+import {
+  cacheStackedNotePayload,
+  createSidePanel,
+  fetchCanonical,
+  getCachedStackedNotePayload,
+  getOrCreateSidePanel,
+  readStackedNotePayload,
+  stackedNotePayloadUrl,
+  StackedNotePayload,
+} from './util'
 
 type ContentHandler = (
   response: Response,
@@ -29,14 +37,6 @@ interface ShowPopoverOptions {
   strategy?: Strategy
   hash?: string
   popoverInner?: HTMLElement
-}
-
-interface StackedNotePayload {
-  slug: string
-  title: string
-  content: string
-  metadata?: string
-  state: 'pending' | 'ready' | 'protected' | 'failed'
 }
 
 const blobCleanupMap = new Map<string, NodeJS.Timeout>()
@@ -172,30 +172,9 @@ async function populatePopoverContent(
   await handler(response, targetUrl, popoverInner)
 }
 
-function isStackedNotePayloadState(value: unknown): value is StackedNotePayload['state'] {
-  return value === 'pending' || value === 'ready' || value === 'protected' || value === 'failed'
-}
-
-function readStackedNotePayload(value: unknown): StackedNotePayload | null {
-  if (!isRecord(value)) return null
-  const slug = readString(value, 'slug')
-  const title = readString(value, 'title')
-  const content = readString(value, 'content')
-  const metadata = readString(value, 'metadata')
-  const state = readString(value, 'state')
-  if (!slug || !title || !content || !isStackedNotePayloadState(state)) return null
-  return { slug, title, content, metadata, state }
-}
-
 function stackedNoteSlugFromUrl(targetUrl: URL): string {
   const slug = targetUrl.pathname.replace(/^\/+|\/+$/g, '')
   return slug === '' ? 'index' : slug
-}
-
-function stackedNotePayloadUrl(targetUrl: URL): URL {
-  const url = new URL('/api/stacked-note', window.location.toString())
-  url.searchParams.set('slug', stackedNoteSlugFromUrl(targetUrl))
-  return url
 }
 
 function isNoteDocumentUrl(targetUrl: URL): boolean {
@@ -207,7 +186,11 @@ async function fetchStackedNotePayload(
   targetUrl: URL,
   signal: AbortSignal,
 ): Promise<StackedNotePayload | null> {
-  const response = await fetch(stackedNotePayloadUrl(targetUrl), {
+  const slug = stackedNoteSlugFromUrl(targetUrl)
+  const cached = getCachedStackedNotePayload(slug)
+  if (cached) return cached
+
+  const response = await fetch(stackedNotePayloadUrl(slug), {
     headers: { Accept: 'application/json' },
     signal,
   }).catch(error => {
@@ -219,7 +202,11 @@ async function fetchStackedNotePayload(
     console.error(error)
     return null
   })
-  return readStackedNotePayload(json)
+  const payload = readStackedNotePayload(json)
+  if (payload?.state === 'ready') {
+    cacheStackedNotePayload(payload)
+  }
+  return payload
 }
 
 function populateStackedPayloadContent(
@@ -496,7 +483,7 @@ async function handleWikipedia(
 }
 
 async function handleStackedNotes(
-  stacked: HTMLDivElement | null,
+  stacked: HTMLElement | null,
   link: HTMLAnchorElement,
   pointer: { clientX: number; clientY: number },
 ) {
@@ -564,9 +551,6 @@ async function handleStackedNotes(
     strategy: 'absolute',
   })
 
-  popoverElement.style.visibility = 'visible'
-  popoverElement.style.opacity = '1'
-
   if (hash !== '') {
     const heading = findHashTarget(popoverInner, hash, 'popover-')
     if (heading) {
@@ -574,7 +558,9 @@ async function handleStackedNotes(
     }
   }
 
-  requestAnimationFrame(() => popoverElement.classList.add('active-popover'))
+  requestAnimationFrame(() => {
+    if (activeAnchor === link) popoverElement.classList.add('active-popover')
+  })
 
   activePopoverReq = null
 }
@@ -609,7 +595,7 @@ function hideStackedPopovers(stacked: HTMLElement) {
       if (!popoverElement.classList.contains('active-popover')) {
         popoverElement.remove()
       }
-    }, 120)
+    }, 180)
   })
 }
 
@@ -618,7 +604,7 @@ function setupStackedPopoverLinks() {
   stackedPopoverEvents = null
 
   const stacked = document.getElementById('stacked-notes-container')
-  if (!(stacked instanceof HTMLDivElement)) return
+  if (!(stacked instanceof HTMLElement)) return
 
   const events = new AbortController()
   stackedPopoverEvents = events
@@ -669,7 +655,7 @@ async function mouseEnterHandler(
     return
   }
 
-  const container = document.getElementById('stacked-notes-container') as HTMLDivElement | null
+  const container = document.getElementById('stacked-notes-container')
 
   if (link.dataset.noPopover === '' || link.dataset.noPopover === 'true') {
     return
@@ -761,7 +747,7 @@ async function mouseClickHandler(evt: MouseEvent) {
   targetUrl.hash = ''
   targetUrl.search = ''
 
-  const container = document.getElementById('stacked-notes-container') as HTMLDivElement | null
+  const container = document.getElementById('stacked-notes-container')
 
   if (link.dataset.wikipediaLang && link.dataset.wikipediaTitle) {
     return

@@ -77,7 +77,7 @@ export const ComponentResources: QuartzEmitterPlugin = () => {
         yield* yieldFiles(await writeNotebookRuntimeAssets(ctx))
       }
 
-      if (changes.notebookRuntimePageScript) {
+      if (changes.pageScripts) {
         resolveComponentResourceAssets(ctx, componentResources)
         yield* yieldFiles(await writePageScripts(ctx, componentResources))
       }

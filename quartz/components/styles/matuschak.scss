@@ -151,7 +151,19 @@ a {
 
       .stacked-popover {
         z-index: var(--z-overlay);
-        will-change: transform;
+        scale: 0.98;
+        transform-origin: top left;
+        transition:
+          opacity 120ms linear,
+          scale 160ms cubic-bezier(0.2, 0, 0, 1),
+          visibility 0ms linear 120ms;
+        will-change: opacity, scale;
+
+        &.active-popover,
+        &:hover {
+          scale: 1;
+          transition-delay: 0ms;
+        }
 
         .page-footer,
         .byline {
@@ -204,6 +216,11 @@ a {
 
         &.hidden-note {
           opacity: 0.98;
+        }
+
+        &[data-entering='true'] {
+          opacity: 0;
+          transform: translateX(16px);
         }
 
         &:last-child {
@@ -361,6 +378,7 @@ a {
   .view-toggle-switch,
   .view-toggle-switch svg,
   #stacked-notes-container > #stacked-notes-main > .stacked-notes-column,
+  #stacked-notes-container > #stacked-notes-main > .stacked-notes-column .stacked-popover,
   #stacked-notes-container > #stacked-notes-main > .stacked-notes-column .stacked-note,
   #stacked-notes-container
     > #stacked-notes-main
