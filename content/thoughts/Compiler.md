@@ -19,8 +19,6 @@ title: Compiler
 
 ## compilation pipeline
 
-compilers translate source code through multiple phases, each lowering abstraction while preserving semantics.
-
 ### lexical analysis
 
 tokenization converts character streams to tokens:
@@ -63,19 +61,19 @@ instruction selection chooses machine instructions for ir operations. tree patte
 
 ## compilation strategies
 
-three fundamental approaches to executing code, each making different trade-offs between compilation overhead and runtime performance.
+aot, interpret, jit — the trade is when you pay the cost.
 
-ahead-of-time compilation produces native code before execution. gcc and clang spend minutes optimizing C++ to squeeze out every cycle. rust's borrow checker runs at compile time. go compiles fast but optimizes less aggressively. you pay compilation cost once, get predictable performance. no runtime information means missing optimization opportunities - can't inline virtual calls without knowing actual types, can't optimize branches without execution frequencies.
+ahead-of-time produces native code before execution. gcc and clang spend minutes optimizing C++ for peak cycles; rust's borrow checker runs here; go compiles fast and optimizes less. you pay once, get predictable performance. no runtime info means you miss the speculative wins — can't inline virtual calls without knowing actual types, can't reorder branches without frequencies.
 
-interpretation executes source directly. cpython walks an ast or bytecode, ruby's mri does similar. simple implementation, fast startup, trivial debugging. pays parsing and dispatch overhead on every execution. python loops run 50-100x slower than C because each iteration decodes bytecodes, performs type checks, boxes/unboxes values.
+interpretation walks the source (or bytecode) every time. cpython and ruby's mri are the canonical cases. fast startup, trivial to debug, decode/dispatch overhead on every instruction. python loops run 50-100x slower than C because each iteration decodes bytecodes, type-checks, boxes/unboxes.
 
-just-in-time compilation observes execution then compiles hot code. hotspot watches java bytecode execution, v8 profiles javascript, pypy traces python interpreter loops. compilation happens during execution when profiling data justifies the cost. speculative optimizations become possible - inline monomorphic call sites, eliminate type checks when types are stable, reorder branches by frequency.
+jit observes execution and compiles the hot parts. hotspot watches java bytecode, v8 profiles javascript, pypy traces interpreter loops. compilation cost is paid mid-run when profiling data says it'll amortize. speculative optimizations open up: inline monomorphic call sites, eliminate type checks when types are stable, reorder branches by observed frequency.
 
 ## just-in-time compilation
 
 [[thoughts/JIT]] systems defer native code generation until they have runtime information.
 
-The observation is that most programs spend time in small hot regions. Compile those regions with profile-guided optimization.
+intuition: most programs are hot in small regions. compile those with pgo.
 
 ### tiered compilation model
 
@@ -193,16 +191,16 @@ deoptimization reconstructs interpreter state from optimized code - restores sta
 
 compilation cost must amortize over executions:
 
-```
-total_time = compile_time + n_executions × runtime(optimized)
-```
+$$
+t_\text{total} = t_\text{compile} + n_\text{executions} \cdot t_\text{run(optimized)}
+$$
 
 fibonacci example:
 
-- compile_time: 50ms
-- runtime(interpreted): 100µs per call
-- runtime(jit): 1µs per call
-- break-even: 50ms / 99µs ≈ 505 calls
+- $t_\text{compile} = 50\text{ms}$
+- $t_\text{run(interpreted)} = 100\mu s$ per call
+- $t_\text{run(jit)} = 1\mu s$ per call
+- break-even: $50\text{ms} / 99\mu s \approx 505$ calls
 
 typical break-even points depend on optimization level - tier 1 pays off after 10-100 executions, tier 2 after 100-1000, aggressive optimization needs 1000-10000.
 
@@ -335,43 +333,46 @@ which definitions reach each program point? definition of x reaches point p if t
 
 dataflow equations:
 
-```
-IN[B] = ∪ OUT[P] for P in predecessors(B)
-OUT[B] = GEN[B] ∪ (IN[B] - KILL[B])
+$$
+\begin{aligned}
+\text{IN}[B] &= \bigcup_{P \in \text{pred}(B)} \text{OUT}[P] \\
+\text{OUT}[B] &= \text{GEN}[B] \cup (\text{IN}[B] \setminus \text{KILL}[B])
+\end{aligned}
+$$
 
-GEN[B] = definitions in B
-KILL[B] = definitions of same variables elsewhere
-```
+with $\text{GEN}[B]$ = definitions in $B$, $\text{KILL}[B]$ = definitions of the same variables elsewhere.
 
 forward analysis - information flows from entry to exit. used for constant propagation, copy propagation.
 
 ### liveness analysis
 
-which variables are live (will be used) at each point? variable x live at point p if there exists path from p to a use of x with no intervening definition.
+which variables are live (will be used) at each point? variable $x$ live at point $p$ if there exists path from $p$ to a use of $x$ with no intervening definition.
 
 dataflow equations:
 
-```
-OUT[B] = ∪ IN[S] for S in successors(B)
-IN[B] = USE[B] ∪ (OUT[B] - DEF[B])
+$$
+\begin{aligned}
+\text{OUT}[B] &= \bigcup_{S \in \text{succ}(B)} \text{IN}[S] \\
+\text{IN}[B] &= \text{USE}[B] \cup (\text{OUT}[B] \setminus \text{DEF}[B])
+\end{aligned}
+$$
 
-USE[B] = variables used before definition in B
-DEF[B] = variables defined in B
-```
+with $\text{USE}[B]$ = variables used before definition in $B$, $\text{DEF}[B]$ = variables defined in $B$.
 
 backward analysis - information flows from exit to entry. critical for register allocation (determines interference), dead code elimination (unused values).
 
 ### available expressions
 
-which expressions have been computed and not invalidated? expression `x + y` available at point p if every path to p evaluates `x + y` and neither x nor y redefined.
+which expressions have been computed and not invalidated? expression `x + y` available at point $p$ if every path to $p$ evaluates `x + y` and neither $x$ nor $y$ redefined.
 
-```
-IN[B] = ∩ OUT[P] for P in predecessors(B)  # must property
-OUT[B] = GEN[B] ∪ (IN[B] - KILL[B])
+$$
+\begin{aligned}
+\text{IN}[B] &= \bigcap_{P \in \text{pred}(B)} \text{OUT}[P] \quad \text{(must property)} \\
+\text{OUT}[B] &= \text{GEN}[B] \cup (\text{IN}[B] \setminus \text{KILL}[B])
+\end{aligned}
+$$
 
-GEN[B] = expressions computed in B
-KILL[B] = expressions invalidated by definitions in B
-```
+with $\text{GEN}[B]$ = expressions computed in $B$, $\text{KILL}[B]$ = expressions invalidated by definitions in $B$.
 
 forward must analysis - intersection of paths. enables common subexpression elimination.
 
@@ -468,7 +469,7 @@ graph LR
     F --> G[Output]
 ```
 
-transformations: constant folding across ops, common subexpression elimination, algebraic simplification (x × 1 → x), operation reordering, vertical fusion (producer-consumer), horizontal fusion (parallel ops).
+transformations: constant folding across ops, common subexpression elimination, algebraic simplification ($x \times 1 \to x$), operation reordering, vertical fusion (producer-consumer), horizontal fusion (parallel ops).
 
 static graphs (tensorflow 1.x, jax) build once, optimize aggressively. dynamic graphs (pytorch eager) rebuild per execution, easier debugging but less optimization opportunity.
 
