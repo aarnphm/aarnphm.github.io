@@ -250,9 +250,6 @@ ul#helper {
             margin-inline-end: auto;
 
             .suggestion-title {
-              align-items: center;
-              display: flex;
-              gap: 8px;
               overflow-wrap: break-word;
 
               & .highlight {
@@ -264,6 +261,8 @@ ul#helper {
                 color: var(--gray);
                 display: inline-flex;
                 flex-shrink: 0;
+                margin-inline-end: 8px;
+                vertical-align: -0.125em;
 
                 svg {
                   height: 1em;
