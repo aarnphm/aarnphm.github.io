@@ -1,5 +1,11 @@
 import type { EditorState as CodeMirrorEditorState, Extension, Text } from '@codemirror/state'
-import type { EditorView as CodeMirrorEditorView, KeyBinding } from '@codemirror/view'
+import type {
+  Decoration as CodeMirrorDecoration,
+  EditorView as CodeMirrorEditorView,
+  KeyBinding,
+  ViewUpdate as CodeMirrorViewUpdate,
+  WidgetType as CodeMirrorWidgetType,
+} from '@codemirror/view'
 import type { CodeMirror } from '@replit/codemirror-vim'
 import type { LanguageFn } from 'highlight.js'
 import { ensureSyntaxTree, forceParsing, syntaxTreeAvailable } from '@codemirror/language'
@@ -89,6 +95,13 @@ type NotebookLeapSession = {
   visualMode: boolean
   anchor: number
 }
+export type NotebookWhitespaceKind = 'lead' | 'trail' | 'tab' | 'nbsp'
+export type NotebookWhitespaceGlyph = {
+  from: number
+  to: number
+  text: string
+  kind: NotebookWhitespaceKind
+}
 
 let notebookVimBindingsConfigured = false
 let notebookCodeEditorCoreWarmup: Promise<void> | undefined
@@ -125,6 +138,10 @@ const notebookSurroundPrefixes = new Set(['y', 'ys', 'ysi', 'ysa', 'c', 'd'])
 const notebookLeapPendingDelayMs = 900
 const notebookLeapTraversalDelayMs = 2800
 const notebookLeapSliceSearchMaxLength = 16384
+const notebookWhitespaceLeadMultispace = ['»', '·', '·', '·'] as const
+const notebookWhitespaceTab = '»·'
+const notebookWhitespaceNbsp = '+'
+const notebookWhitespaceTrail = '·'
 export const notebookVimNoremaps = [
   ['insert', 'jj', '<Esc>'],
   ['insert', 'jk', '<Esc>'],
@@ -272,6 +289,39 @@ async function lspExtensions(config: NotebookLspConfig | undefined): Promise<rea
     console.warn('notebook lsp extension failed to load', error)
     return []
   }
+}
+
+export function notebookWhitespaceGlyphs(
+  line: string,
+  lineFrom = 0,
+): readonly NotebookWhitespaceGlyph[] {
+  const glyphs: NotebookWhitespaceGlyph[] = []
+  const contentStart = line.search(/[^ \t\u00a0]/)
+  const leadingTo = contentStart < 0 ? line.length : contentStart
+  const trailingMatch = /[ \t\u00a0]+$/.exec(line)
+  const trailingFrom = trailingMatch && leadingTo < line.length ? trailingMatch.index : line.length
+  let leadingSpaceIndex = 0
+
+  for (let index = 0; index < line.length; index += 1) {
+    const character = line[index]
+    const from = lineFrom + index
+    if (character === '\t') {
+      glyphs.push({ from, to: from + 1, text: notebookWhitespaceTab, kind: 'tab' })
+    } else if (character === '\u00a0') {
+      glyphs.push({ from, to: from + 1, text: notebookWhitespaceNbsp, kind: 'nbsp' })
+    } else if (character === ' ' && index < leadingTo) {
+      const text =
+        notebookWhitespaceLeadMultispace[
+          leadingSpaceIndex % notebookWhitespaceLeadMultispace.length
+        ]
+      glyphs.push({ from, to: from + 1, text, kind: 'lead' })
+      leadingSpaceIndex += 1
+    } else if (character === ' ' && index >= trailingFrom) {
+      glyphs.push({ from, to: from + 1, text: notebookWhitespaceTrail, kind: 'trail' })
+    }
+  }
+
+  return glyphs
 }
 
 function moveSelectedLines(cm: NotebookCodeMirror, direction: -1 | 1) {
@@ -1056,8 +1106,8 @@ export async function createNotebookCodeEditor(
       startCompletion,
     },
     { syntaxHighlighting, defaultHighlightStyle },
-    { Compartment, EditorState, Prec, StateEffect, StateField },
-    { Decoration, EditorView, keymap, lineNumbers },
+    { Compartment, EditorState, Prec, RangeSetBuilder, StateEffect, StateField },
+    { Decoration, EditorView, ViewPlugin, WidgetType, keymap, lineNumbers },
     language,
     lsp,
   ] = await Promise.all([
@@ -1457,6 +1507,74 @@ export async function createNotebookCodeEditor(
       updateStatusElement(update.state)
     }
   })
+  class NotebookWhitespaceWidget extends WidgetType {
+    constructor(
+      readonly text: string,
+      readonly kind: NotebookWhitespaceKind,
+    ) {
+      super()
+    }
+
+    eq(other: CodeMirrorWidgetType) {
+      return (
+        other instanceof NotebookWhitespaceWidget &&
+        other.text === this.text &&
+        other.kind === this.kind
+      )
+    }
+
+    toDOM() {
+      const element = document.createElement('span')
+      element.className = `cm-notebookWhitespace cm-notebookWhitespace-${this.kind}`
+      element.textContent = this.text
+      element.setAttribute('aria-hidden', 'true')
+      return element
+    }
+
+    ignoreEvent() {
+      return true
+    }
+  }
+  const notebookWhitespaceDecorations = (targetView: CodeMirrorEditorView) => {
+    const builder = new RangeSetBuilder<CodeMirrorDecoration>()
+    let lastLineNumber = 0
+    for (const range of targetView.visibleRanges) {
+      const startLine = targetView.state.doc.lineAt(range.from)
+      const endLine = targetView.state.doc.lineAt(range.to)
+      const firstLineNumber = Math.max(startLine.number, lastLineNumber + 1)
+      for (let lineNumber = firstLineNumber; lineNumber <= endLine.number; lineNumber += 1) {
+        const line = targetView.state.doc.line(lineNumber)
+        for (const glyph of notebookWhitespaceGlyphs(line.text, line.from)) {
+          builder.add(
+            glyph.from,
+            glyph.to,
+            Decoration.replace({
+              widget: new NotebookWhitespaceWidget(glyph.text, glyph.kind),
+              inclusive: false,
+            }),
+          )
+        }
+      }
+      lastLineNumber = Math.max(lastLineNumber, endLine.number)
+    }
+    return builder.finish()
+  }
+  class NotebookWhitespaceView {
+    decorations: ReturnType<typeof notebookWhitespaceDecorations>
+
+    constructor(view: CodeMirrorEditorView) {
+      this.decorations = notebookWhitespaceDecorations(view)
+    }
+
+    update(update: CodeMirrorViewUpdate) {
+      if (update.docChanged || update.viewportChanged) {
+        this.decorations = notebookWhitespaceDecorations(update.view)
+      }
+    }
+  }
+  const whitespaceExtension = ViewPlugin.fromClass(NotebookWhitespaceView, {
+    decorations: value => value.decorations,
+  })
 
   const transparentTheme = EditorView.theme({
     '&': {
@@ -1485,6 +1603,16 @@ export async function createNotebookCodeEditor(
     '.cm-scroller': { overflow: 'visible', fontFamily: 'inherit !important', fontSize: 'inherit' },
     '.cm-line': { padding: '0' },
     '.cm-cursor': { borderLeftColor: 'inherit' },
+    '.cm-notebookWhitespace': {
+      color: 'color-mix(in srgb, var(--gray) 64%, transparent)',
+      fontStyle: 'normal',
+      fontWeight: '400',
+      opacity: '0.72',
+      textDecorationLine: 'none',
+    },
+    '.cm-notebookWhitespace-trail': {
+      color: 'color-mix(in srgb, var(--gray) 74%, var(--notebook-active-green) 26%)',
+    },
     '.cm-notebookLeapBackdrop': {
       backgroundColor: 'transparent',
       color: 'var(--code-comment, var(--gray)) !important',
@@ -1552,6 +1680,7 @@ export async function createNotebookCodeEditor(
       updateListener,
       syntaxHighlighting(defaultHighlightStyle, { fallback: true }),
       EditorState.tabSize.of(2),
+      whitespaceExtension,
       transparentTheme,
     ],
   })

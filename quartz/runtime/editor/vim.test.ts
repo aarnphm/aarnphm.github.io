@@ -15,6 +15,7 @@ import {
   notebookSurroundKeyPlan,
   notebookSurroundPair,
   notebookVimNoremaps,
+  notebookWhitespaceGlyphs,
   notebookWordRangeAt,
   registerNotebookSurroundBindings,
 } from './code-editor'
@@ -41,6 +42,30 @@ class MemoryStorage implements Storage {
     return Array.from(this.store.keys())[index] ?? null
   }
 }
+
+describe('notebook whitespace glyphs', () => {
+  test('mirrors local vim listchars for leading spaces, tabs, nbsp, and trails', () => {
+    assert.deepStrictEqual(notebookWhitespaceGlyphs('    value  ', 10), [
+      { from: 10, to: 11, text: '»', kind: 'lead' },
+      { from: 11, to: 12, text: '·', kind: 'lead' },
+      { from: 12, to: 13, text: '·', kind: 'lead' },
+      { from: 13, to: 14, text: '·', kind: 'lead' },
+      { from: 19, to: 20, text: '·', kind: 'trail' },
+      { from: 20, to: 21, text: '·', kind: 'trail' },
+    ])
+
+    assert.deepStrictEqual(notebookWhitespaceGlyphs('\t\u00a0x\t ', 2), [
+      { from: 2, to: 3, text: '»·', kind: 'tab' },
+      { from: 3, to: 4, text: '+', kind: 'nbsp' },
+      { from: 5, to: 6, text: '»·', kind: 'tab' },
+      { from: 6, to: 7, text: '·', kind: 'trail' },
+    ])
+  })
+
+  test('keeps interior ordinary spaces invisible', () => {
+    assert.deepStrictEqual(notebookWhitespaceGlyphs('value = item'), [])
+  })
+})
 
 describe('vim mode setting', () => {
   test('round-trips through storage', () => {
