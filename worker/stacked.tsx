@@ -1,7 +1,9 @@
 import {
+  STACKED_NOTE_METADATA_CLASSES,
   decodeStackedNoteHash,
   hashStackedNoteSlug,
   normalizeStackedNoteSlug,
+  stackedNoteMetadataHtml,
 } from '../quartz/util/stacked-notes'
 
 export interface StackedNoteData {
@@ -40,6 +42,9 @@ const NOTE_TITLE_WIDTH = 40
 const SERVER_BODY_HEAD_COUNT = 1
 const STACKED_NOTE_START = '<!--__STACKED_NOTE_START__-->'
 const STACKED_NOTE_END = '<!--__STACKED_NOTE_END__-->'
+const STACKED_NOTE_METADATA_SELECTORS = STACKED_NOTE_METADATA_CLASSES.map(
+  className => `main .page-header .content-meta > li.${className}`,
+)
 const STACKED_NOTE_RETRY_BUTTON_HTML = `<button type="button" data-stacked-retry aria-label="Réessayer">
   <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
     <path d="M20 6v5h-5" />
@@ -87,14 +92,20 @@ function stripHtmlTags(html: string): string {
   return text
 }
 
-async function extractPopoverHintContent(html: string): Promise<string> {
-  const markedHtml = await new HTMLRewriter()
-    .on('main .popover-hint', {
-      element(el) {
-        el.before(STACKED_NOTE_START, { html: true })
-        el.after(STACKED_NOTE_END, { html: true })
-      },
-    })
+async function extractHtmlFragments(html: string, selectors: string[]): Promise<string[]> {
+  let rewriter = new HTMLRewriter()
+  const handler: HtmlRewriterHandlers = {
+    element(el) {
+      el.before(STACKED_NOTE_START, { html: true })
+      el.after(STACKED_NOTE_END, { html: true })
+    },
+  }
+
+  for (const selector of selectors) {
+    rewriter = rewriter.on(selector, handler)
+  }
+
+  const markedHtml = await rewriter
     .transform(new Response(html, { headers: { 'Content-Type': 'text/html; charset=utf-8' } }))
     .text()
 
@@ -109,11 +120,21 @@ async function extractPopoverHintContent(html: string): Promise<string> {
     const chunk = markedHtml.slice(contentStart, end).trim()
     offset = end + STACKED_NOTE_END.length
     if (!chunk) continue
-    if (chunk.includes('page-footer') && stripHtmlTags(chunk).trim().length === 0) continue
     chunks.push(chunk)
   }
 
-  return chunks.join('\n')
+  return chunks
+}
+
+async function extractPopoverHintContent(html: string): Promise<string> {
+  const chunks = await extractHtmlFragments(html, ['main .popover-hint'])
+  return chunks
+    .filter(chunk => !(chunk.includes('page-footer') && stripHtmlTags(chunk).trim().length === 0))
+    .join('\n')
+}
+
+async function extractStackedNoteMetadata(html: string): Promise<string> {
+  return stackedNoteMetadataHtml(await extractHtmlFragments(html, STACKED_NOTE_METADATA_SELECTORS))
 }
 
 export function failedNoteData(slug: string, title: string = slug): StackedNoteData {
@@ -163,11 +184,14 @@ async function noteDataFromHtml(slug: string, html: string): Promise<StackedNote
     return protectedNoteData(slug, title)
   }
 
-  const content = await extractPopoverHintContent(html)
+  const [content, metadata] = await Promise.all([
+    extractPopoverHintContent(html),
+    extractStackedNoteMetadata(html),
+  ])
 
   if (!content) return failedNoteData(slug, title)
 
-  return { slug, title, content, metadata: '', state: 'ready' }
+  return { slug, title, content, metadata, state: 'ready' }
 }
 
 async function fetchNoteData(

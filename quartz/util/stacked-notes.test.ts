@@ -9,7 +9,11 @@ import {
   pendingNoteData,
   shouldIncludeServerBody,
 } from '../../worker/stacked'
-import { decodeStackedNoteHash, hashStackedNoteSlug } from './stacked-notes'
+import {
+  decodeStackedNoteHash,
+  hashStackedNoteSlug,
+  stackedNoteMetadataHtml,
+} from './stacked-notes'
 
 test('dedupeSlugs preserves first-seen order', () => {
   assert.deepEqual(dedupeSlugs(['notes', 'thoughts/kant', 'notes', 'base']), [
@@ -46,6 +50,18 @@ test('stacked refresh seeds the first note body before pending successors', () =
   assert.equal(shouldIncludeServerBody(0), true)
   assert.equal(shouldIncludeServerBody(1), false)
   assert.equal(shouldIncludeServerBody(3), false)
+})
+
+test('stacked note metadata footer prioritizes modified date', () => {
+  const footer = stackedNoteMetadataHtml([
+    '<li class="published-time"><h2>publié à</h2><div class="container">30 oct. 2024</div></li>',
+    '<li class="reading-time"><h2>durée</h2><div class="container">1 min</div></li>',
+    '<li class="modified-time"><h2>modifié à</h2><div class="container">26 mai 2026</div></li>',
+  ])
+
+  assert.equal(footer.startsWith('<footer class="stacked-note-footer"'), true)
+  assert.ok(footer.indexOf('modified-time') < footer.indexOf('published-time'))
+  assert.ok(footer.indexOf('published-time') < footer.indexOf('reading-time'))
 })
 
 test('normalizeStackedNoteSlug accepts only route-like slugs', () => {
