@@ -165,11 +165,6 @@ function notebookKernelLanguageToken(language: string): string {
   return normalized
 }
 
-function notebookKernelLanguageLabel(language: string): string {
-  const token = notebookKernelLanguageToken(language)
-  return token === language ? language : `${token} ${language}`
-}
-
 function notebookKernelLanguageIcon(language: string): string {
   const normalized = language.toLowerCase()
   if (Object.hasOwn(notebookLanguageIconSvg, normalized)) return notebookLanguageIconSvg[normalized]
@@ -601,7 +596,7 @@ document.addEventListener('nav', e => {
       },
     },
     {
-      name: 'show available kernels',
+      name: 'kernels: show all',
       auxInnerHtml: '<kbd>↵</kbd> notebooks',
       keepOpen: true,
       onClick: () => {
@@ -609,15 +604,7 @@ document.addEventListener('nav', e => {
       },
     },
     {
-      name: 'show command listing',
-      auxInnerHtml: '<kbd>↵</kbd> commands',
-      keepOpen: true,
-      onClick: () => {
-        showCommandItems(true)
-      },
-    },
-    {
-      name: 'clean all local code segments',
+      name: 'general: reset code segments',
       auxInnerHtml: '<kbd>↵</kbd> localStorage',
       keepOpen: true,
       onClick: () => {
@@ -770,7 +757,7 @@ document.addEventListener('nav', e => {
             },
           ]
         : snapshots.map(snapshot => ({
-            name: notebookKernelLanguageLabel(snapshot.language),
+            name: notebookKernelLanguageToken(snapshot.language),
             detail: notebookKernelSourceLabel(snapshot.sourcePath),
             titlePrefixInnerHtml: notebookKernelLanguageIcon(snapshot.language),
             auxInnerHtml: '',
@@ -798,7 +785,7 @@ document.addEventListener('nav', e => {
       ? `${notebookKernelSourceLabel(snapshot.sourcePath)} - ${statusLabel}`
       : notebookKernelSourceLabel(snapshot.sourcePath)
     const action = (command: NotebookKernelCommand): Action => ({
-      name: `${command} ${snapshot.language} kernel`,
+      name: `${command}`,
       detail,
       auxInnerHtml: '',
       keepOpen: true,

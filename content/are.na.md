@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-05-25 22:11:11 GMT-04:00
+modified: 2026-05-25 22:20:46 GMT-04:00
 permalinks:
   - /website
   - /tweets
@@ -7711,6 +7711,10 @@ title: are.na
 
 ## video
 
+- https://www.youtube.com/watch?v=bwDrHqNZ9lo -- Geographical limit between Balkan and Central Europe
+  - [meta]:
+    - date: 05/25/2026
+    - tags: [interesting]
 - https://www.youtube.com/watch?v=ocYv0BaicMw -- Bike brands
   - [meta]:
     - date: 05/20/2026
