@@ -3,7 +3,7 @@ aliases:
   - work
   - portfolio
 comments: false
-date: "2021-12-22"
+date: '2021-12-22'
 description: and a celebration for the act of making.
 id: craft
 modified: 2026-05-25 17:45:03 GMT-04:00
@@ -46,7 +46,6 @@ There is also a [[ideas|backlog]] of unfinished ideas that I might work on, one 
   - Added [LLM-readable source](https://x.com/aarnphm/status/1857955302110376342)
   - Added Jupyter notebook transpilation and [[thoughts/university/twenty-five-twenty-six/sfwr-4tb3/10 Generalized Parsing/00 Generalized Parsing|executions]] (think of it as a scuffed Modal notebook)
     <div class="nolist">
-
     - ![[thoughts/Jax#cell-1|example if per-block transclusion runtime]]
 
     </div>

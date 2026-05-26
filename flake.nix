@@ -297,6 +297,7 @@
               pnpm
               pkgs.alejandra
               pkgs.cargo
+              pkgs.cbfmt
               pkgs.clang
               pkgs.deadnix
               pkgs.dune_3
@@ -307,8 +308,11 @@
               pkgs.lua54Packages.lua
               pkgs.nixd
               pkgs.ocaml
+              pkgs.ocamlformat_0_28_1
+              pkgs.ormolu
               pkgs.ripgrep
               pkgs.rustc
+              pkgs.rustfmt
               pkgs.statix
               pkgs.uv
               pkgs.zig
