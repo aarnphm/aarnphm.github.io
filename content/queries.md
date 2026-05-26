@@ -449,7 +449,7 @@ _topology, union-find_, approx: 30 min
 >
 > [Ciprian Manolescu](https://web.stanford.edu/~cm5/topology.html)
 
-Now, Glue the sides of a polygon together in pairs and you always land on a closed surface, a [sphere with some number of handles](<https://en.wikipedia.org/wiki/Surface_(topology)>) [@massey1967algebraic]. The problem is you can't really eyeball the count given that gluing sides will scrambles all of the pairs!
+Now, glue the sides of a polygon together in pairs and you always land on a closed surface, a [sphere with some number of handles](<https://en.wikipedia.org/wiki/Surface_(topology)>) [@massey1967algebraic]. The problem is you can't really eyeball the count given that gluing sides will scrambles all of the pairs!
 
 Here is a flat 16-gon, walked counter-clockwise, where each side wears an oriented edge label, and identical labels get glued head-to-head and tail-to-tail along their arrows. Your task, is to ==count what the gluing leaves behind==. The algorithm is as follows:
 
