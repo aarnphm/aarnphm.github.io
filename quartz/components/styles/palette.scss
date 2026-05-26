@@ -307,11 +307,13 @@ ul#helper {
               white-space: nowrap;
 
               &::before {
+                animation: palette-status-pulse 1.8s ease-in-out infinite;
                 background: currentColor;
                 border-radius: 999px;
                 box-shadow: 0 0 0 3px color-mix(in srgb, currentColor 18%, transparent);
                 content: '';
                 height: 8px;
+                transform-origin: center;
                 width: 8px;
               }
 
