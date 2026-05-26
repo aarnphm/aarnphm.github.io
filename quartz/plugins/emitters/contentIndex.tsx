@@ -4,6 +4,7 @@ import crypto from 'node:crypto'
 import fs from 'node:fs/promises'
 import path from 'path'
 import { ReadTimeResults } from 'reading-time'
+import type { ChangeEvent } from '../../types/plugin'
 import type { BuildCtx } from '../../util/ctx'
 import { version } from '../../../package.json'
 import { GlobalConfiguration } from '../../cfg'
@@ -22,7 +23,7 @@ import {
   slugifyFilePath,
 } from '../../util/path'
 import { ArenaData } from '../transformers/arena'
-import { QuartzPluginData } from '../vfile'
+import { ProcessedContent, QuartzPluginData } from '../vfile'
 import { write } from './helpers'
 
 export type ContentIndexMap = Map<FullSlug, ContentDetails>
@@ -340,126 +341,428 @@ function generateAtomFeed(
 </feed>`
 }
 
-export const ContentIndex: QuartzEmitterPlugin<Partial<Options>> = opts => {
-  opts = { ...defaultOptions, ...opts }
+function buildLinkIndex(
+  ctx: BuildCtx,
+  content: ProcessedContent[],
+  opts: Options,
+): ContentIndexMap {
+  const linkIndex: ContentIndexMap = new Map()
+  for (const [tree, file] of content) {
+    let slug = file.data.slug!
+    const date = getDate(ctx.cfg.configuration, file.data) ?? new Date()
+
+    if (slug === 'are.na') {
+      slug = 'arena' as FullSlug
+    }
+
+    if (file.data.canvas) {
+      const jcast = file.data.canvas
+      const searchableContent = file.data.text ?? ''
+      const renderedSlug = slug.replace('.canvas', '') as FullSlug
+
+      linkIndex.set(renderedSlug, {
+        slug: renderedSlug,
+        title: file.data.frontmatter?.title ?? path.basename(file.data.filePath!, '.canvas'),
+        links: file.data.links ?? [],
+        filePath: file.data.filePath!,
+        fileName: file.data.filePath!,
+        tags: ['canvas', ...(file.data.frontmatter?.tags ?? [])],
+        aliases: file.data.frontmatter?.aliases ?? [],
+        content: sanitizeXml(searchableContent),
+        richContent: '',
+        date: date,
+        readingTime: {
+          minutes: Math.max(1, Math.ceil(searchableContent.split(/\s+/).length / 200)),
+          words: searchableContent.split(/\ks+/).filter(w => w.length > 0).length,
+        },
+        layout: file.data.frontmatter?.pageLayout ?? 'default',
+        description:
+          file.data.frontmatter?.description ?? `Canvas with ${jcast.data.nodeMap.size} nodes`,
+        fileData: file.data,
+      })
+      continue
+    }
+
+    if (opts.includeEmptyFiles || (file.data.text && file.data.text !== '')) {
+      const links = (file.data.links ?? []).filter(link => {
+        const targetFile = content.find(([, target]) => String(target.data.slug) === link)?.[1]
+        if (
+          targetFile?.data.frontmatter?.noindex === true ||
+          targetFile?.data.frontmatter?.protected === true
+        )
+          return false
+
+        return true
+      })
+
+      file.data.links = links
+
+      const rawHtml = toHtml(tree as Root, { allowDangerousHtml: true })
+      const sanitizedRichContent = sanitizeXml(escapeHTML(rawHtml))
+      const sanitizedContent = sanitizeXml(file.data.text ?? '')
+      const isProtected = file.data.frontmatter?.protected === true
+
+      const getFileName = () => {
+        const fullPath = file.data.filePath!
+        const relativePath = fullPath.substring(ctx.argv.directory.length + 1)
+        if (relativePath.endsWith('.bases')) return relativePath as FilePath
+        return relativePath.replace('.md', '') as FilePath
+      }
+
+      linkIndex.set(slug, {
+        slug,
+        title: file.data.frontmatter ? file.data.frontmatter.title! : '',
+        links,
+        filePath: file.data.filePath!,
+        fileName: getFileName(),
+        tags: file.data.frontmatter?.tags ?? [],
+        aliases: file.data.frontmatter?.aliases ?? [],
+        content: isProtected ? '' : sanitizedContent,
+        richContent: isProtected ? '' : sanitizedRichContent,
+        date: date,
+        readingTime: {
+          minutes: Math.ceil(file.data.readingTime ? file.data.readingTime.minutes! : 0),
+          words: Math.ceil(file.data.readingTime ? file.data.readingTime.words! : 0),
+        },
+        fileData: file.data,
+        layout: file.data.frontmatter!.pageLayout,
+        description: file.data.description,
+        protected: isProtected,
+      })
+
+      if (slug === 'arena') {
+        const arenaData = file.data.arenaData as ArenaData | undefined
+        if (arenaData) {
+          for (const channel of arenaData.channels) {
+            const channelSlug = joinSegments('arena', channel.slug) as FullSlug
+            linkIndex.set(channelSlug, {
+              slug: channelSlug,
+              title: channel.name,
+              links: ['arena' as SimpleSlug],
+              filePath: file.data.filePath!,
+              fileName: file.data.filePath!.replace('.md', '') as FilePath,
+              tags: file.data.frontmatter?.tags ?? [],
+              aliases: [],
+              content: channel.blocks.map(b => b.title || b.content).join(' '),
+              richContent: '',
+              date: date,
+              readingTime: { minutes: 1, words: channel.blocks.length * 10 },
+              layout: 'default',
+              description: `${channel.blocks.length} blocks in ${channel.name}`,
+            })
+          }
+        }
+      }
+    }
+  }
+
+  return linkIndex
+}
+
+function buildFolderFeedMap(linkIndex: ContentIndexMap): Map<string, ContentIndexMap> {
+  const folderFeedMap = new Map<string, ContentIndexMap>()
+  for (const [slug, details] of linkIndex) {
+    const prefixes = getAllSegmentPrefixes(slug)
+    if (prefixes.length <= 1) {
+      continue
+    }
+
+    prefixes.pop()
+    for (const prefix of prefixes) {
+      const normalizedPrefix = prefix.replace(/^\/+|\/+$/g, '')
+      if (normalizedPrefix.length === 0) {
+        continue
+      }
+      if (!folderFeedMap.has(normalizedPrefix)) {
+        folderFeedMap.set(normalizedPrefix, new Map())
+      }
+      folderFeedMap.get(normalizedPrefix)!.set(slug, details)
+    }
+  }
+
+  return folderFeedMap
+}
+
+function hasFeedEntries(folderIndex: ContentIndexMap): boolean {
+  return Array.from(folderIndex).some(([slug, content]) => shouldIncludeInFeed(slug, content))
+}
+
+function addGraphFilePages(ctx: BuildCtx, linkIndex: ContentIndexMap) {
+  for (const file of ctx.allFiles) {
+    if (isGraphFilePage(file)) {
+      addFilePageToIndex(ctx, linkIndex, file)
+    }
+  }
+}
+
+function buildSearchIndex(ctx: BuildCtx, linkIndex: ContentIndexMap): ContentIndexMap {
+  const searchIndex: ContentIndexMap = new Map(linkIndex)
+  for (const file of ctx.allFiles) {
+    if (isContentPageFile(file)) {
+      continue
+    }
+
+    addFilePageToIndex(ctx, searchIndex, file)
+  }
+
+  return searchIndex
+}
+
+async function* writeSecurityFiles(
+  ctx: BuildCtx,
+  cfg: GlobalConfiguration,
+  linkIndex: ContentIndexMap,
+): AsyncGenerator<FilePath> {
+  const baseDomain = cfg.baseUrl ?? 'aarnphm.xyz'
+  const securityPolicyEntry =
+    linkIndex.get('security-policy' as FullSlug) ??
+    Array.from(linkIndex.values()).find(details => {
+      const normalizedFile = details.fileName.replace(/\\/g, '/')
+      return (
+        normalizedFile === ('content/security policy' as FilePath) ||
+        normalizedFile.endsWith('/security policy') ||
+        details.slug === 'security-policy'
+      )
+    })
+
+  const fallbackSlug = securityPolicyEntry
+    ? simplifySlug(securityPolicyEntry.slug as FullSlug)
+    : ('security-policy' as SimpleSlug)
+  const policyPermalink = securityPolicyEntry?.fileData?.frontmatter?.permalinks?.[0]
+  const policyHref = policyPermalink
+    ? `https://${joinSegments(baseDomain, policyPermalink.replace(/^\/+/, ''))}`
+    : `https://${joinSegments(baseDomain, fallbackSlug)}`
+
+  const modifiedSource =
+    securityPolicyEntry?.fileData?.frontmatter?.modified ?? securityPolicyEntry?.date?.toISOString()
+  const lastModifiedDate = modifiedSource ? new Date(modifiedSource) : new Date()
+  const safeLastModified = Number.isNaN(lastModifiedDate.getTime()) ? new Date() : lastModifiedDate
+  const expiresDate = new Date(safeLastModified.getTime() + 1000 * 60 * 60 * 24 * 180)
+
+  const securityTxt = `Contact: mailto:security@aarnphm.xyz
+Encryption: https://${joinSegments(baseDomain, 'pgp-key.txt')}
+Policy: ${policyHref}
+Canonical: https://${joinSegments(baseDomain, '.well-known', 'security.txt')}
+Preferred-Languages: en
+Last-Modified: ${safeLastModified.toISOString()}
+Expires: ${expiresDate.toISOString()}
+`
+
+  yield write({
+    ctx,
+    content: securityTxt,
+    slug: joinSegments('.well-known', 'security') as FullSlug,
+    ext: '.txt',
+  })
+  yield write({ ctx, content: securityTxt, slug: 'security' as FullSlug, ext: '.txt' })
+}
+
+async function writeSiteMap(
+  ctx: BuildCtx,
+  cfg: GlobalConfiguration,
+  linkIndex: ContentIndexMap,
+): Promise<FilePath> {
+  return write({
+    ctx,
+    content: generateSiteMap(cfg, linkIndex),
+    slug: 'sitemap' as FullSlug,
+    ext: '.xml',
+  })
+}
+
+async function writeRootAtomFeed(
+  ctx: BuildCtx,
+  cfg: GlobalConfiguration,
+  linkIndex: ContentIndexMap,
+  opts: Options,
+): Promise<FilePath> {
+  return write({
+    ctx,
+    content: generateAtomFeed(cfg, linkIndex, { limit: opts.atomLimit }),
+    slug: 'index' as FullSlug,
+    ext: '.xml',
+  })
+}
+
+async function writeFolderAtomFeed(
+  ctx: BuildCtx,
+  cfg: GlobalConfiguration,
+  linkIndex: ContentIndexMap,
+  folderSlug: string,
+  folderIndex: ContentIndexMap,
+  opts: Options,
+): Promise<FilePath | undefined> {
+  if (!hasFeedEntries(folderIndex)) {
+    return undefined
+  }
+
+  const folderKey = folderSlug as FullSlug
+  const folderDetails =
+    linkIndex.get(folderKey) ??
+    Array.from(linkIndex.entries()).find(
+      ([existingSlug]) => simplifySlug(existingSlug) === folderSlug,
+    )?.[1]
+  const fallbackName = folderSlug.split('/').pop() ?? folderSlug
+  const folderPathTitle =
+    deriveFolderDisplayTitle(folderSlug, folderIndex) ??
+    folderSlug
+      .split('/')
+      .filter(segment => segment.length > 0)
+      .map(segment => decodeURIComponent(segment).replace(/-/g, ' '))
+      .join(' / ')
+  const title =
+    (folderPathTitle.length > 0 ? `/${folderPathTitle}` : undefined) ??
+    folderDetails?.title ??
+    fallbackName.replace(/-/g, ' ')
+  const rawIntro = folderDetails?.fileData?.frontmatter?.rss
+  const folderIntroHtml = typeof rawIntro === 'string' ? rawIntro : undefined
+  const subtitle = `${i18n(cfg.locale).pages.rss.recentNotes} in ${title} on ${cfg.pageTitle}`
+
+  return write({
+    ctx,
+    content: generateAtomFeed(cfg, folderIndex, {
+      limit: opts.atomLimit,
+      title,
+      subtitle,
+      linkPath: folderSlug,
+      category: folderSlug,
+      introHtml: folderIntroHtml,
+    }),
+    slug: joinSegments(folderSlug, 'index') as FullSlug,
+    ext: '.xml',
+  })
+}
+
+async function removeFolderAtomFeed(ctx: BuildCtx, folderSlug: string) {
+  const file = joinSegments(ctx.argv.output, folderSlug, 'index.xml') as FilePath
+  await fs.rm(file, { force: true })
+}
+
+async function writeContentIndexJson(ctx: BuildCtx, linkIndex: ContentIndexMap): Promise<FilePath> {
+  return write({
+    ctx,
+    content: JSON.stringify(serializeContentIndex(linkIndex)),
+    slug: joinSegments('static', 'contentIndex') as FullSlug,
+    ext: '.json',
+  })
+}
+
+async function writeSearchIndexJson(
+  ctx: BuildCtx,
+  searchIndex: ContentIndexMap,
+): Promise<FilePath> {
+  return write({
+    ctx,
+    content: JSON.stringify(serializeContentIndex(searchIndex)),
+    slug: joinSegments('static', 'searchIndex') as FullSlug,
+    ext: '.json',
+  })
+}
+
+function isSourcePath(path: FilePath): boolean {
+  return (
+    path.startsWith('quartz/') ||
+    path.startsWith('worker/') ||
+    path.startsWith('.github/') ||
+    path === ('package.json' as FilePath) ||
+    path === ('pnpm-lock.yaml' as FilePath) ||
+    path === ('tsconfig.json' as FilePath)
+  )
+}
+
+function changeSlug(changeEvent: ChangeEvent): FullSlug | undefined {
+  const slug = changeEvent.file?.data.slug
+  if (typeof slug === 'string') {
+    return slug as FullSlug
+  }
+  if (isContentPageFile(changeEvent.path) || isGraphFilePage(changeEvent.path)) {
+    return slugifyFilePath(changeEvent.path, path.extname(changeEvent.path) === '.ipynb')
+  }
+  return undefined
+}
+
+function affectedFolderFeedSlugs(changeEvents: readonly ChangeEvent[]): Set<string> {
+  const slugs = new Set<string>()
+  for (const changeEvent of changeEvents) {
+    const slug = changeSlug(changeEvent)
+    if (!slug) continue
+    const prefixes = getAllSegmentPrefixes(slug)
+    prefixes.pop()
+    for (const prefix of prefixes) {
+      const normalizedPrefix = prefix.replace(/^\/+|\/+$/g, '')
+      if (normalizedPrefix.length > 0) {
+        slugs.add(normalizedPrefix)
+      }
+    }
+  }
+
+  return slugs
+}
+
+function isSecurityPolicyChange(changeEvent: ChangeEvent): boolean {
+  if (changeEvent.file?.data.slug === 'security-policy') {
+    return true
+  }
+  const normalized = changeEvent.path.replace(/\\/g, '/')
+  return normalized === 'security policy.md' || normalized.endsWith('/security policy.md')
+}
+
+type ContentIndexPartialPlan = {
+  content: boolean
+  graph: boolean
+  search: boolean
+  security: boolean
+  affectedFolders: Set<string>
+}
+
+function planPartialContentIndex(changeEvents: readonly ChangeEvent[]): ContentIndexPartialPlan {
+  let content = false
+  let graph = false
+  let search = false
+  let security = false
+
+  for (const changeEvent of changeEvents) {
+    if (isSourcePath(changeEvent.path)) {
+      continue
+    }
+
+    const hasParsedFile = changeEvent.file !== undefined
+    if (hasParsedFile) {
+      content = true
+      search = true
+      security ||= isSecurityPolicyChange(changeEvent)
+      continue
+    }
+
+    if (isGraphFilePage(changeEvent.path)) {
+      graph ||= changeEvent.type !== 'change'
+      search ||= changeEvent.type !== 'change'
+      continue
+    }
+
+    if (!isContentPageFile(changeEvent.path) && changeEvent.type !== 'change') {
+      search = true
+    }
+  }
+
+  return {
+    content,
+    graph,
+    search,
+    security,
+    affectedFolders: affectedFolderFeedSlugs(changeEvents),
+  }
+}
+
+export const ContentIndex: QuartzEmitterPlugin<Partial<Options>> = userOpts => {
+  const opts: Options = { ...defaultOptions, ...userOpts }
   const folderFeedSlugs = new Set<string>()
 
   return {
     name: 'ContentIndex',
     async *emit(ctx, content, _resources) {
       const cfg = ctx.cfg.configuration
-
-      const linkIndex: ContentIndexMap = new Map()
-      for (const [tree, file] of content) {
-        let slug = file.data.slug!
-        const date = getDate(ctx.cfg.configuration, file.data) ?? new Date()
-
-        if (slug === 'are.na') {
-          slug = 'arena' as FullSlug
-        }
-
-        // handle canvas files separately - always index them
-        if (file.data.canvas) {
-          const jcast = file.data.canvas
-          const searchableContent = file.data.text ?? ''
-          const renderedSlug = slug.replace('.canvas', '') as FullSlug
-
-          linkIndex.set(renderedSlug, {
-            slug: renderedSlug,
-            title: file.data.frontmatter?.title ?? path.basename(file.data.filePath!, '.canvas'),
-            links: file.data.links ?? [],
-            filePath: file.data.filePath!,
-            fileName: file.data.filePath!,
-            tags: ['canvas', ...(file.data.frontmatter?.tags ?? [])],
-            aliases: file.data.frontmatter?.aliases ?? [],
-            content: sanitizeXml(searchableContent),
-            richContent: '',
-            date: date,
-            readingTime: {
-              minutes: Math.max(1, Math.ceil(searchableContent.split(/\s+/).length / 200)),
-              words: searchableContent.split(/\ks+/).filter(w => w.length > 0).length,
-            },
-            layout: file.data.frontmatter?.pageLayout ?? 'default',
-            description:
-              file.data.frontmatter?.description ?? `Canvas with ${jcast.data.nodeMap.size} nodes`,
-            fileData: file.data,
-          })
-          continue
-        }
-
-        if (opts?.includeEmptyFiles || (file.data.text && file.data.text !== '')) {
-          const links = (file.data.links ?? []).filter(link => {
-            // @ts-ignore
-            const targetFile = content.find(([_, f]) => f.data.slug === link)?.[1]
-            if (
-              targetFile?.data.frontmatter?.noindex === true ||
-              targetFile?.data.frontmatter?.protected === true
-            )
-              return false
-
-            return true
-          })
-
-          file.data.links = links
-
-          const rawHtml = toHtml(tree as Root, { allowDangerousHtml: true })
-          const sanitizedRichContent = sanitizeXml(escapeHTML(rawHtml))
-          const sanitizedContent = sanitizeXml(file.data.text ?? '')
-          const isProtected = file.data.frontmatter?.protected === true
-
-          const getFileName = () => {
-            const fullPath = file.data.filePath!
-            const relativePath = fullPath.substring(ctx.argv.directory.length + 1)
-            if (relativePath.endsWith('.bases')) return relativePath as FilePath
-            return relativePath.replace('.md', '') as FilePath
-          }
-
-          linkIndex.set(slug, {
-            slug,
-            title: file.data.frontmatter ? file.data.frontmatter.title! : '',
-            links,
-            filePath: file.data.filePath!,
-            fileName: getFileName(),
-            tags: file.data.frontmatter?.tags ?? [],
-            aliases: file.data.frontmatter?.aliases ?? [],
-            content: isProtected ? '' : sanitizedContent,
-            richContent: isProtected ? '' : sanitizedRichContent,
-            date: date,
-            readingTime: {
-              minutes: Math.ceil(file.data.readingTime ? file.data.readingTime.minutes! : 0),
-              words: Math.ceil(file.data.readingTime ? file.data.readingTime.words! : 0),
-            },
-            fileData: file.data,
-            layout: file.data.frontmatter!.pageLayout,
-            description: file.data.description,
-            protected: isProtected,
-          })
-
-          if (slug === 'arena') {
-            const arenaData = file.data.arenaData as ArenaData | undefined
-            if (arenaData) {
-              for (const channel of arenaData.channels) {
-                const channelSlug = joinSegments('arena', channel.slug) as FullSlug
-                linkIndex.set(channelSlug, {
-                  slug: channelSlug,
-                  title: channel.name,
-                  links: ['arena' as SimpleSlug],
-                  filePath: file.data.filePath!,
-                  fileName: file.data.filePath!.replace('.md', '') as FilePath,
-                  tags: file.data.frontmatter?.tags ?? [],
-                  aliases: [],
-                  content: channel.blocks.map(b => b.title || b.content).join(' '),
-                  richContent: '',
-                  date: date,
-                  readingTime: { minutes: 1, words: channel.blocks.length * 10 },
-                  layout: 'default',
-                  description: `${channel.blocks.length} blocks in ${channel.name}`,
-                })
-              }
-            }
-          }
-        }
-      }
+      const linkIndex = buildLinkIndex(ctx, content, opts)
 
       yield write({
         ctx,
@@ -516,184 +819,41 @@ Sitemap: https://${joinSegments(cfg.baseUrl ?? 'https://example.com', 'sitemap.x
         ext: '.txt',
       })
 
-      if (opts?.enableSecurity) {
-        const baseDomain = cfg.baseUrl ?? 'aarnphm.xyz'
-        const securityPolicyEntry =
-          linkIndex.get('security-policy' as FullSlug) ??
-          Array.from(linkIndex.values()).find(details => {
-            const normalizedFile = details.fileName.replace(/\\/g, '/')
-            return (
-              normalizedFile === ('content/security policy' as FilePath) ||
-              normalizedFile.endsWith('/security policy') ||
-              details.slug === 'security-policy'
-            )
-          })
-
-        const fallbackSlug = securityPolicyEntry
-          ? simplifySlug(securityPolicyEntry.slug as FullSlug)
-          : ('security-policy' as SimpleSlug)
-        const policyPermalink = securityPolicyEntry?.fileData?.frontmatter?.permalinks?.[0]
-        const policyHref = policyPermalink
-          ? `https://${joinSegments(baseDomain, policyPermalink.replace(/^\/+/, ''))}`
-          : `https://${joinSegments(baseDomain, fallbackSlug)}`
-
-        const modifiedSource =
-          securityPolicyEntry?.fileData?.frontmatter?.modified ??
-          securityPolicyEntry?.date?.toISOString()
-        const lastModifiedDate = modifiedSource ? new Date(modifiedSource) : new Date()
-        const safeLastModified = Number.isNaN(lastModifiedDate.getTime())
-          ? new Date()
-          : lastModifiedDate
-        const expiresDate = new Date(safeLastModified.getTime() + 1000 * 60 * 60 * 24 * 180)
-
-        const securityTxt = `Contact: mailto:security@aarnphm.xyz
-Encryption: https://${joinSegments(baseDomain, 'pgp-key.txt')}
-Policy: ${policyHref}
-Canonical: https://${joinSegments(baseDomain, '.well-known', 'security.txt')}
-Preferred-Languages: en
-Last-Modified: ${safeLastModified.toISOString()}
-Expires: ${expiresDate.toISOString()}
-`
-
-        // fallback for both options.
-        yield write({
-          ctx,
-          content: securityTxt,
-          slug: joinSegments('.well-known', 'security') as FullSlug,
-          ext: '.txt',
-        })
-        yield write({ ctx, content: securityTxt, slug: 'security' as FullSlug, ext: '.txt' })
+      if (opts.enableSecurity) {
+        yield* writeSecurityFiles(ctx, cfg, linkIndex)
       }
 
-      if (opts?.enableSiteMap) {
-        yield write({
-          ctx,
-          content: generateSiteMap(cfg, linkIndex),
-          slug: 'sitemap' as FullSlug,
-          ext: '.xml',
-        })
+      if (opts.enableSiteMap) {
+        yield writeSiteMap(ctx, cfg, linkIndex)
       }
 
-      if (opts?.enableAtom) {
-        yield write({
-          ctx,
-          content: generateAtomFeed(cfg, linkIndex, { limit: opts.atomLimit }),
-          slug: 'index' as FullSlug,
-          ext: '.xml',
-        })
-
-        const folderFeedMap = new Map<string, ContentIndexMap>()
+      if (opts.enableAtom) {
+        yield writeRootAtomFeed(ctx, cfg, linkIndex, opts)
+        const folderFeedMap = buildFolderFeedMap(linkIndex)
         folderFeedSlugs.clear()
-        for (const [slug, details] of linkIndex) {
-          const prefixes = getAllSegmentPrefixes(slug)
-          if (prefixes.length <= 1) {
-            continue
-          }
-
-          prefixes.pop()
-          for (const prefix of prefixes) {
-            const normalizedPrefix = prefix.replace(/^\/+|\/+$/g, '')
-            if (normalizedPrefix.length === 0) {
-              continue
-            }
-            if (!folderFeedMap.has(normalizedPrefix)) {
-              folderFeedMap.set(normalizedPrefix, new Map())
-            }
-            folderFeedMap.get(normalizedPrefix)!.set(slug, details)
-          }
-        }
-
         const sortedFolderFeeds = Array.from(folderFeedMap.entries()).sort(([a], [b]) =>
           a.localeCompare(b),
         )
 
         for (const [folderSlug, folderIndex] of sortedFolderFeeds) {
-          const hasEntries = Array.from(folderIndex).some(([slug, content]) =>
-            shouldIncludeInFeed(slug, content),
-          )
-          if (!hasEntries) {
+          const file = await writeFolderAtomFeed(ctx, cfg, linkIndex, folderSlug, folderIndex, opts)
+          if (!file) {
             continue
           }
-          const normalizedSlug = folderSlug.replace(/^\/+/, '')
-          folderFeedSlugs.add(normalizedSlug)
-
-          const folderKey = folderSlug as FullSlug
-          const folderDetails =
-            linkIndex.get(folderKey) ??
-            Array.from(linkIndex.entries()).find(
-              ([existingSlug]) => simplifySlug(existingSlug) === folderSlug,
-            )?.[1]
-          const fallbackName = folderSlug.split('/').pop() ?? folderSlug
-          const folderPathTitle =
-            deriveFolderDisplayTitle(folderSlug, folderIndex) ??
-            folderSlug
-              .split('/')
-              .filter(segment => segment.length > 0)
-              .map(segment => decodeURIComponent(segment).replace(/-/g, ' '))
-              .join(' / ')
-          const title =
-            (folderPathTitle.length > 0 ? `/${folderPathTitle}` : undefined) ??
-            folderDetails?.title ??
-            fallbackName.replace(/-/g, ' ')
-          const rawIntro = folderDetails?.fileData?.frontmatter?.rss
-          const folderIntroHtml = typeof rawIntro === 'string' ? rawIntro : undefined
-          const subtitle = `${i18n(cfg.locale).pages.rss.recentNotes} in ${title} on ${cfg.pageTitle}`
-
-          const feedContent = generateAtomFeed(cfg, folderIndex, {
-            limit: opts.atomLimit,
-            title,
-            subtitle,
-            linkPath: folderSlug,
-            category: folderSlug,
-            introHtml: folderIntroHtml,
-          })
-
-          yield write({
-            ctx,
-            content: feedContent,
-            slug: joinSegments(folderSlug, 'index') as FullSlug,
-            ext: '.xml',
-          })
+          folderFeedSlugs.add(folderSlug.replace(/^\/+/, ''))
+          yield file
         }
       }
 
-      for (const file of ctx.allFiles) {
-        if (isGraphFilePage(file)) {
-          addFilePageToIndex(ctx, linkIndex, file)
-        }
-      }
+      addGraphFilePages(ctx, linkIndex)
+      yield writeContentIndexJson(ctx, linkIndex)
+      yield writeSearchIndexJson(ctx, buildSearchIndex(ctx, linkIndex))
 
-      const fp = joinSegments('static', 'contentIndex') as FullSlug
-      yield write({
-        ctx,
-        content: JSON.stringify(serializeContentIndex(linkIndex)),
-        slug: fp,
-        ext: '.json',
-      })
-
-      const searchIndex: ContentIndexMap = new Map(linkIndex)
-      for (const file of ctx.allFiles) {
-        if (isContentPageFile(file)) {
-          continue
-        }
-
-        addFilePageToIndex(ctx, searchIndex, file)
-      }
-
-      yield write({
-        ctx,
-        content: JSON.stringify(serializeContentIndex(searchIndex)),
-        slug: joinSegments('static', 'searchIndex') as FullSlug,
-        ext: '.json',
-      })
-
-      // inform Chrome to yield correct information
       if (
         process.env.NODE_ENV === 'development' ||
         process.env.NODE_ENV === 'test' ||
         ctx.argv.watch
       ) {
-        // https://chromium.googlesource.com/devtools/devtools-frontend/+/main/docs/ecosystem/automatic_workspace_folders.md
         const slug = joinSegments('.well-known', 'appspecific', 'com.chrome.devtools') as FullSlug
         const root = path.resolve(path.dirname(ctx.argv.directory)) as FilePath
         const dir = path.dirname(joinSegments(ctx.argv.output, slug)) as FilePath
@@ -716,6 +876,70 @@ Expires: ${expiresDate.toISOString()}
         })
       }
     },
+    async *partialEmit(ctx, content, _resources, changeEvents) {
+      const plan = planPartialContentIndex(changeEvents)
+      if (!plan.content && !plan.graph && !plan.search && !plan.security) {
+        return
+      }
+
+      const cfg = ctx.cfg.configuration
+      const linkIndex = buildLinkIndex(ctx, content, opts)
+
+      if (opts.enableSecurity && plan.security) {
+        yield* writeSecurityFiles(ctx, cfg, linkIndex)
+      }
+
+      if (plan.content) {
+        if (opts.enableSiteMap) {
+          yield writeSiteMap(ctx, cfg, linkIndex)
+        }
+
+        if (opts.enableAtom) {
+          yield writeRootAtomFeed(ctx, cfg, linkIndex, opts)
+          const folderFeedMap = buildFolderFeedMap(linkIndex)
+          folderFeedSlugs.clear()
+
+          for (const [folderSlug, folderIndex] of folderFeedMap) {
+            if (hasFeedEntries(folderIndex)) {
+              folderFeedSlugs.add(folderSlug.replace(/^\/+/, ''))
+            }
+          }
+
+          const affectedFeeds = Array.from(plan.affectedFolders).sort((a, b) => a.localeCompare(b))
+          for (const folderSlug of affectedFeeds) {
+            const folderIndex = folderFeedMap.get(folderSlug)
+            if (!folderIndex) {
+              await removeFolderAtomFeed(ctx, folderSlug)
+              continue
+            }
+
+            const file = await writeFolderAtomFeed(
+              ctx,
+              cfg,
+              linkIndex,
+              folderSlug,
+              folderIndex,
+              opts,
+            )
+            if (file) {
+              yield file
+            } else {
+              await removeFolderAtomFeed(ctx, folderSlug)
+            }
+          }
+        }
+      }
+
+      const writesContentIndex = plan.content || plan.graph
+      if (writesContentIndex) {
+        addGraphFilePages(ctx, linkIndex)
+        yield writeContentIndexJson(ctx, linkIndex)
+      }
+
+      if (plan.content || plan.graph || plan.search) {
+        yield writeSearchIndexJson(ctx, buildSearchIndex(ctx, linkIndex))
+      }
+    },
     externalResources: ({ cfg }) => {
       const additionalHead = [
         <link
@@ -727,7 +951,7 @@ Expires: ${expiresDate.toISOString()}
         />,
       ]
 
-      if (opts?.enableAtom) {
+      if (opts.enableAtom) {
         additionalHead.push(
           <link
             rel="alternate"

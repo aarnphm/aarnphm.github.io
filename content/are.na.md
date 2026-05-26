@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-05-25 22:20:46 GMT-04:00
+modified: 2026-05-25 23:24:36 GMT-04:00
 permalinks:
   - /website
   - /tweets
@@ -443,7 +443,7 @@ title: are.na
     - tags: [rl]
   - https://x.com/cloneofsimo/status/1994047852788764864
   - https://x.com/giffmana/status/1993754340096659960
-- https://x.com/eigenrobot/status/1782957877856018514 -- @eigenrobots' system prompts
+- https://x.com/eigenrobot/status/1782957877856018514 -- @eigenrobot system prompts
   - [meta]:
     - date: 11/23/2025
     - tags: [llm, tools]
@@ -2371,6 +2371,10 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://geohot.github.io//blog/jekyll/update/2026/05/24/the-eternal-sloptember.html -- The Eternal Sloptember
+  - [meta]:
+    - date: 05/25/2026
+    - tags: [engineering]
 - https://www.vatican.va/content/leo-xiv/en/encyclicals/documents/20260515-magnifica-humanitas.html -- ENCYCLICAL LETTER MAGNIFICA HUMANITAS OF HIS HOLINESS POPE LEO XIV ON SAFEGUARDING THE HUMAN PERSON IN THE TIME OF ARTIFICIAL INTELLIGENCE
   - [meta]:
     - date: 05/25/2026
@@ -7711,6 +7715,10 @@ title: are.na
 
 ## video
 
+- https://www.youtube.com/watch?v=l3SCK6V-BFw -- Golfing and stylistically aligning a proof using Claude Code
+  - [meta]:
+    - date: 05/25/2026
+    - tags: [proof, machine assisted]
 - https://www.youtube.com/watch?v=bwDrHqNZ9lo -- Geographical limit between Balkan and Central Europe
   - [meta]:
     - date: 05/25/2026
@@ -8799,6 +8807,11 @@ title: are.na
 
 ## engineering
 
+- https://github.com/uccl-project/mKernel -- mKernel
+  - [meta]:
+    - date: 05/25/2026
+    - tags: [distributed, kernels]
+    - importance: 7
 - https://www.femm.info/doku/doku.php -- Finite Element Method Magnetics
   - [meta]:
     - date: 05/25/2026
@@ -9555,6 +9568,10 @@ title: are.na
   - view: list
   - json: true
 
+- https://www.youtube.com/watch?v=P2HZelQm7Lw -- Legrendre Transform
+  - [meta]:
+    - date: 05/25/2026
+    - tags: [algebra, static analysis]
 - https://en.wikipedia.org/wiki/Rule_110 -- Rule 110
   - [meta]:
     - date: 05/25/2026
