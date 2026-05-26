@@ -1,26 +1,57 @@
 @use '../../styles/variables.scss' as *;
 
 .toc {
-  --indicator-position: 4.5rem;
-  --fill-width: 1rem;
-
   display: flex;
   flex-direction: column;
   position: relative;
-  min-width: var(--indicator-position);
 }
 
-body.toc-hover {
-  header,
-  footer,
-  .page-header,
-  .page-footer,
-  .page-content > article {
+.toc[data-layout='minimal'] {
+  --toc-rail-width: 7.25rem;
+  --toc-label-offset: calc(var(--toc-rail-width) + 1.5rem);
+  --toc-left-offset: 0.8rem;
+  --fill-width: 1rem;
+  --toc-stick-top: clamp(7rem, 30svh, 18rem);
+  --toc-scroll-buffer: 48px;
+  --toc-mask-buffer: 32px;
+
+  position: sticky;
+  top: var(--toc-stick-top);
+  z-index: var(--z-sticky);
+  width: var(--toc-rail-width);
+  max-width: calc(100vw - var(--toc-left-offset));
+  max-height: calc(100svh - var(--toc-stick-top) - var(--toc-scroll-buffer));
+  min-width: 0;
+  overflow: visible;
+  align-self: start;
+  left: auto;
+  margin-left: var(--toc-left-offset);
+
+  @media all and ($tablet), all and ($mobile) {
+    display: none;
+  }
+}
+
+body:has(.toc[data-layout='minimal']) {
+  .header,
+  #stacked-notes-container,
+  .page-body-grid > .page-header,
+  .page-body-grid > .page-footer,
+  .page-content > :not(.aside-container) {
+    transition:
+      filter 0.18s cubic-bezier(0.2, 0, 0, 1),
+      opacity 0.18s cubic-bezier(0.2, 0, 0, 1);
+  }
+}
+
+body:has(.toc[data-layout='minimal'].is-hovering) {
+  .header,
+  #stacked-notes-container,
+  .page-body-grid > .page-header,
+  .page-body-grid > .page-footer,
+  .page-content > :not(.aside-container) {
     filter: blur(4px);
     opacity: 0.2;
-    transition:
-      filter 0.3s ease,
-      opacity 0.3s ease;
     pointer-events: none;
   }
 }
@@ -39,25 +70,82 @@ nav#toc-vertical {
 
   display: flex;
   flex-direction: column;
-
-  position: fixed;
-  inset: 30% 0 0;
+  position: relative;
   cursor: pointer;
   z-index: var(--z-popover);
-  max-width: calc(var(--indicator-position) * 0.8);
+  width: min(100%, var(--toc-rail-width));
+  max-width: var(--toc-rail-width);
+  max-height: inherit;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: none;
+  scroll-padding-block: var(--toc-scroll-buffer);
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  &.is-scrollable {
+    -webkit-mask-image: linear-gradient(
+      to bottom,
+      transparent 0,
+      black var(--toc-mask-buffer),
+      black calc(100% - var(--toc-mask-buffer)),
+      transparent 100%
+    );
+    mask-image: linear-gradient(
+      to bottom,
+      transparent 0,
+      black var(--toc-mask-buffer),
+      black calc(100% - var(--toc-mask-buffer)),
+      transparent 100%
+    );
+  }
+
+  &.is-scrollable.at-start {
+    -webkit-mask-image: linear-gradient(
+      to bottom,
+      black calc(100% - var(--toc-mask-buffer)),
+      transparent 100%
+    );
+    mask-image: linear-gradient(
+      to bottom,
+      black calc(100% - var(--toc-mask-buffer)),
+      transparent 100%
+    );
+  }
+
+  &.is-scrollable.at-end {
+    -webkit-mask-image: linear-gradient(
+      to bottom,
+      transparent 0,
+      black var(--toc-mask-buffer),
+      black 100%
+    );
+    mask-image: linear-gradient(to bottom, transparent 0, black var(--toc-mask-buffer), black 100%);
+  }
+
+  &.is-scrollable.at-start.at-end {
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
 
   button.toc-item {
     display: inline-flex;
+    flex: none;
     border: none;
     background: inherit;
     height: var(--button-height);
+    min-block-size: var(--button-height);
     max-width: var(--fill-width);
     position: relative;
     align-items: center;
     text-indent: 1rem;
+    padding: 0;
 
     transform-origin: center;
-    transition: transform 0.3s ease;
+    transition: transform 0.3s cubic-bezier(0.2, 0, 0, 1);
 
     &.in-view {
       & > .fill {
@@ -76,26 +164,41 @@ nav#toc-vertical {
       transform-origin: 0 0;
       animation: fillExpand 0.5s forwards;
       animation-delay: calc((var(--animation-order) - 1) * 0.1s + 0.5s);
+      transition:
+        transform 0.08s cubic-bezier(0.2, 0, 0, 1),
+        opacity 0.08s cubic-bezier(0.2, 0, 0, 1);
+      will-change: transform, opacity;
     }
 
     & > .indicator {
       display: none;
-      font-family: var(--bodyFont);
-      position: absolute;
-      padding-left: var(--indicator-position);
-      white-space: nowrap;
-      left: 0;
-      top: -3px;
-      transform-origin: 0 50%;
-      height: 100%;
-    }
-
-    &:hover {
-      & > .indicator {
-        display: inline-block;
-      }
     }
   }
+}
+
+.toc[data-layout='minimal'] > .toc-label {
+  position: absolute;
+  top: 0;
+  left: var(--toc-label-offset);
+  max-width: min(22rem, calc(100vw - var(--toc-left-offset) - var(--toc-label-offset) - 1rem));
+  color: var(--dark);
+  font-family: var(--bodyFont);
+  font-size: 0.8rem;
+  font-weight: 700;
+  line-height: 1;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  opacity: 0;
+  overflow: hidden;
+  pointer-events: none;
+  transform: translate3d(0, var(--toc-label-y, 0px), 0) translateY(-50%);
+  transform-origin: 0 50%;
+  transition: opacity 0.12s cubic-bezier(0.2, 0, 0, 1);
+  will-change: transform, opacity;
+}
+
+.toc[data-layout='minimal'].is-hovering > .toc-label.is-visible {
+  opacity: 1;
 }
 
 button#toc {

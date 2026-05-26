@@ -3,7 +3,10 @@ abstract: large language models will probably be the most important piece of tec
 date: '2024-02-07'
 description: a mathematical framework for intelligence
 id: LLMs
-modified: 2026-05-09 17:51:46 GMT-04:00
+modified: 2026-05-26 14:42:30 GMT-04:00
+seealso:
+  - '[[thoughts/mechanistic interpretability]]'
+  - '[[thoughts/Alignment|Alignment]]'
 tags:
   - sapling
   - ml
@@ -50,8 +53,6 @@ We do math to internalise the concept, and practice to thinking coherently. Simi
 The process of rephrasing and arranging sentences poses a challenges for the writer, and in doing so, teach you how to think coherently. Writing essays is an exercise for students to articulate their thoughts, rather than testing the understanding of the materials.
 
 ### on [[thoughts/ethics|ethics]]
-
-See also [[thoughts/Alignment|Alignment]].
 
 There are ethical concerns with the act of "hallucinating" content, therefore alignment research is crucial to ensure that the model is not producing harmful content.
 
@@ -128,7 +129,3 @@ Data provenance and governance ?
 https://x.com/leonardtang_/status/1927396709870489634
 
 _outperform opus and gpt-4o_
-
----
-
-![[thoughts/mechanistic interpretability]]

@@ -40,25 +40,27 @@ export default ((userOpts?: Partial<Options>) => {
     }
 
     const MinimalToc = () => (
-      <nav id="toc-vertical">
-        {fileData.toc!.map((entry, idx) => (
-          <button
-            key={entry.slug}
-            class={`depth-${entry.depth} toc-item`}
-            data-depth={entry.depth}
-            data-href={`#${entry.slug}`}
-            data-for={entry.slug}
-            tabindex={-1}
-            type="button"
-            style={{ '--animation-order': idx + 1 }}
-            aria-label={`${entry.text}`}
-            title={`${entry.text}`}
-          >
-            <div class="fill" />
-            <div class="indicator">{convertFromText(entry.text)}</div>
-          </button>
-        ))}
-      </nav>
+      <>
+        <nav id="toc-vertical">
+          {fileData.toc!.map((entry, idx) => (
+            <button
+              key={entry.slug}
+              class={`depth-${entry.depth} toc-item`}
+              data-depth={entry.depth}
+              data-href={`#${entry.slug}`}
+              data-for={entry.slug}
+              tabindex={-1}
+              type="button"
+              style={{ '--animation-order': idx + 1 }}
+              aria-label={`${entry.text}`}
+            >
+              <div class="fill" />
+              <div class="indicator">{convertFromText(entry.text)}</div>
+            </button>
+          ))}
+        </nav>
+        <div class="toc-label" aria-hidden="true" />
+      </>
     )
 
     const DefaultToc = () => (

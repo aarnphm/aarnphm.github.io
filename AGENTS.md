@@ -18,3 +18,4 @@ This means: no fallbacks, no hacks, no shortcuts. Production-grade, Google-quali
 - Write markdown math with LaTeX blocks.
 - Skip shims and backward compatibility unless aarnphm asks for them.
 - When you write test NEVER USE `readFile` and create unit tests that regex the actual changes for regression, that is fucking stupid.
+- Make sure that `window.addCleanup` must always written within `document.addEventListener('nav', () => {})` here

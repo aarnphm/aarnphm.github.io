@@ -10,6 +10,7 @@ import type { TranscludeOptions } from '../plugins/transformers/frontmatter'
 import { i18n } from '../i18n'
 import { checkBib, checkBibSection } from '../plugins/transformers/citations'
 import { checkFootnoteRef, checkFootnoteSection } from '../plugins/transformers/gfm'
+import { collectHtmlToc } from '../plugins/transformers/toc'
 import { QuartzPluginData } from '../plugins/vfile'
 import {
   QuartzComponent,
@@ -992,6 +993,23 @@ function renderBaseEmbeds(root: Root, componentData: QuartzComponentProps): void
     const { barNodes, viewNodes } = buildBaseEmbedNodes(baseFileData, componentData, rendered, view)
     node.children = [...barNodes, ...viewNodes]
   })
+}
+
+function updateTocDataFromTree(root: Root, componentData: QuartzComponentProps): void {
+  const opts = componentData.fileData.tocOptions
+  if (!opts) return
+
+  if (!opts.display) {
+    delete componentData.fileData.toc
+    return
+  }
+
+  const toc = collectHtmlToc(root, opts)
+  if (toc.length > 0) {
+    componentData.fileData.toc = toc
+  } else {
+    delete componentData.fileData.toc
+  }
 }
 
 export function transcludeFinal(
@@ -2040,6 +2058,7 @@ export function renderPage(
   retrievalNodes.push(...orderedNodes.map(entry => entry.node))
 
   componentData.tree = tree
+  updateTocDataFromTree(tree, componentData)
   updateStreamDataFromTree(tree, componentData)
   isFolderTag = isFolderTag ?? false
 
