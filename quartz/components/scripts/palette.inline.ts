@@ -910,7 +910,7 @@ document.addEventListener('nav', e => {
       if (barOpen) {
         hidePalette()
       } else {
-        showPalette('command', 'connector')
+        showPalette('quick_open')
       }
       return
     } else if (
