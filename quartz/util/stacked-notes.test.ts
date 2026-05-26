@@ -7,6 +7,7 @@ import {
   hashSlug,
   normalizeStackedNoteSlug,
   pendingNoteData,
+  shouldIncludeServerBody,
 } from '../../worker/stacked'
 import { decodeStackedNoteHash, hashStackedNoteSlug } from './stacked-notes'
 
@@ -27,6 +28,9 @@ test('buildStackedNoteHtml renders a visible failed note state', () => {
   assert.ok(html.includes('class="stacked-note failed"'))
   assert.ok(html.includes('data-state="failed"'))
   assert.ok(html.includes('Kant'))
+  assert.ok(html.includes('data-stacked-retry'))
+  assert.ok(html.includes('<svg'))
+  assert.equal(html.includes('>retry<'), false)
 })
 
 test('pendingNoteData does not need global index metadata', () => {
@@ -36,6 +40,12 @@ test('pendingNoteData does not need global index metadata', () => {
   assert.equal(note.title, 'thoughts/kant')
   assert.equal(note.metadata, '')
   assert.equal(note.state, 'pending')
+})
+
+test('stacked refresh seeds the first note body before pending successors', () => {
+  assert.equal(shouldIncludeServerBody(0), true)
+  assert.equal(shouldIncludeServerBody(1), false)
+  assert.equal(shouldIncludeServerBody(3), false)
 })
 
 test('normalizeStackedNoteSlug accepts only route-like slugs', () => {

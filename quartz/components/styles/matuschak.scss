@@ -275,23 +275,53 @@ a {
         .stacked-note-status {
           min-height: 50vh;
           display: grid;
-          place-items: center;
+          place-content: center;
+          justify-items: center;
           gap: 0.75rem;
           color: var(--gray);
           font-size: 0.9rem;
+          text-align: center;
 
-          button {
+          p {
+            margin: 0;
+          }
+
+          button[data-stacked-retry] {
             border: 1px solid var(--lightgray);
             border-radius: var(--radius-8);
             background: var(--light);
             color: var(--dark);
             cursor: pointer;
-            min-height: 40px;
-            padding: 0 0.85rem;
+            display: inline-grid;
+            place-items: center;
+            inline-size: 40px;
+            block-size: 40px;
+            padding: 0;
             transition:
               background-color 120ms linear,
               box-shadow 120ms linear,
               transform 120ms linear;
+
+            svg {
+              inline-size: 1.05rem;
+              block-size: 1.05rem;
+              fill: none;
+              stroke: currentColor;
+              stroke-width: 1.8;
+              stroke-linecap: round;
+              stroke-linejoin: round;
+            }
+
+            &:hover,
+            &:focus-visible {
+              background: color-mix(in srgb, var(--light) 72%, var(--lightgray));
+              box-shadow: 0 1px 4px rgb(0 0 0 / 8%);
+            }
+
+            &:focus-visible {
+              outline: 2px solid var(--tertiary);
+              outline-offset: 2px;
+            }
 
             &:active {
               transform: scale(0.96);

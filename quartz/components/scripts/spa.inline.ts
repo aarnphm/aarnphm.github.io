@@ -42,6 +42,14 @@ const isSamePage = (url: URL): boolean => {
   const samePath = url.pathname === window.location.pathname
   return sameOrigin && samePath
 }
+const STACKED_NOTE_RETRY_BUTTON_HTML = `<button type="button" data-stacked-retry aria-label="Réessayer">
+  <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+    <path d="M20 6v5h-5" />
+    <path d="M4 18v-5h5" />
+    <path d="M18.5 9a7 7 0 0 0-12.3-2.4L4 8.7" />
+    <path d="M5.5 15a7 7 0 0 0 12.3 2.4L20 15.3" />
+  </svg>
+</button>`
 
 const getOpts = ({ target }: Event): { url: URL; scroll?: boolean } | undefined => {
   if (!isElement(target)) return
@@ -152,6 +160,7 @@ class StackedNoteManager {
   private events: AbortController | null = null
   private layoutFrame: number | null = null
   private pendingTailScroll = false
+  private hydratingInitialStack = false
 
   private isActive: boolean = false
 
@@ -286,7 +295,13 @@ class StackedNoteManager {
     this.isActive = true
     await this.initFromParams()
     this.updateURL()
-    this.render({ scrollToTail: url.searchParams.getAll('stackedNotes').length > 1 })
+    if (this.dag.getOrderedNodes().length > 1) {
+      this.hydratingInitialStack = true
+      this.render({ scrollToTail: false })
+      await this.hydrateInitialStackInOrder()
+      return
+    }
+    this.render({ scrollToTail: false })
   }
 
   private async initFromParams() {
@@ -499,7 +514,7 @@ class StackedNoteManager {
       slug,
       title: title || slug,
       hash,
-      bodyHtml: `<div class="stacked-note-status stacked-note-status-failed"><p>Impossible de charger cette note.</p><button type="button" data-stacked-retry>retry</button></div>`,
+      bodyHtml: `<div class="stacked-note-status stacked-note-status-failed"><p>Impossible de charger cette note.</p>${STACKED_NOTE_RETRY_BUTTON_HTML}</div>`,
       metadataHtml: '',
       state: 'failed',
     }
@@ -668,7 +683,41 @@ class StackedNoteManager {
         this.unmountBody(node)
       }
     })
-    this.loadVisiblePendingBodies(nodes, range)
+    if (!this.hydratingInitialStack) {
+      this.loadVisiblePendingBodies(nodes, range)
+    }
+  }
+
+  private async hydrateInitialStackInOrder() {
+    const slugs = this.dag.getOrderedNodes().map(node => node.slug)
+
+    try {
+      this.scrollToIndex(0, 'instant')
+      await this.nextPaint()
+
+      for (const slug of slugs) {
+        const node = this.dag.get(slug)
+        if (!node) continue
+        const index = this.dag.getOrderedNodes().findIndex(current => current.slug === slug)
+        if (index === -1) continue
+
+        if (node.document.state === 'pending') {
+          await this.loadAndApply(new URL(`/${slug}`, window.location.toString()), slug)
+        }
+
+        this.scrollToIndex(index, 'instant')
+        await this.nextPaint()
+      }
+    } finally {
+      this.hydratingInitialStack = false
+      this.render({ scrollToTail: true })
+    }
+  }
+
+  private nextPaint(): Promise<void> {
+    return new Promise(resolve => {
+      window.requestAnimationFrame(() => resolve())
+    })
   }
 
   private updateStackState(nodes: DagNode[]) {
@@ -1147,7 +1196,7 @@ if (window.location.host === 'notes.aarnphm.xyz') {
       if (!data) return
       document
         .querySelectorAll(
-          'main > section[class~="page-footer"], main > section[class~="page-header"], main > section[class~="page-content"], nav.breadcrumb-container, header > .keybind, header > .search, header > .graph',
+          'main > section[class~="page-header"], main > section[class~="page-content"], nav.breadcrumb-container, header > .keybind, header > .search, header > .graph',
         )
         .forEach(el => el.remove())
     })

@@ -1,0 +1,198 @@
+@use '../../styles/variables.scss' as *;
+
+.zoomable {
+  position: relative;
+}
+
+.zoomable-placeholder {
+  display: block;
+  width: 100%;
+}
+
+.zoomable > .zoomable-content {
+  display: block;
+}
+
+.zoomable > .zoomable-content > figure,
+.zoomable > .zoomable-content > * {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+.zoomable-trigger {
+  position: absolute;
+  top: 0.65rem;
+  right: 0.65rem;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  margin: 0;
+  padding: 0;
+  background: color-mix(in srgb, var(--light) 88%, transparent);
+  border: 1px solid color-mix(in srgb, var(--gray) 32%, transparent);
+  border-radius: 6px;
+  cursor: zoom-in;
+  color: var(--darkgray);
+  opacity: 0;
+  transform: translateY(-2px);
+  transition:
+    opacity 0.18s ease,
+    transform 0.18s ease,
+    color 0.18s ease,
+    background 0.18s ease;
+  -webkit-appearance: none;
+  appearance: none;
+  font: inherit;
+
+  & > svg {
+    width: 16px;
+    height: 16px;
+    display: block;
+  }
+
+  .zoomable-trigger-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    & > svg {
+      width: 16px;
+      height: 16px;
+      display: block;
+    }
+  }
+
+  .zoomable-trigger-icon--collapse {
+    display: none;
+  }
+
+  &:hover,
+  &:focus-visible {
+    color: var(--dark);
+    background: var(--light);
+    outline: none;
+  }
+
+  &:focus-visible {
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--secondary) 70%, transparent);
+  }
+}
+
+.zoomable:hover > .zoomable-trigger,
+.zoomable:focus-within > .zoomable-trigger,
+.zoomable.is-zoomed > .zoomable-trigger {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.zoomable.is-zoomed {
+  position: fixed;
+  inset: 4vh 4vw;
+  z-index: 1000;
+  margin: 0;
+  background: var(--light);
+  border: 1px solid color-mix(in srgb, var(--gray) 28%, transparent);
+  border-radius: var(--radius-7-2, 10px);
+  box-shadow:
+    0 30px 80px color-mix(in srgb, var(--dark) 30%, transparent),
+    0 8px 24px color-mix(in srgb, var(--dark) 16%, transparent);
+  padding: 1.5rem 1.5rem 1rem;
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+
+  & > .zoomable-content {
+    flex: 1 1 auto;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: center;
+  }
+
+  & > .zoomable-content > figure {
+    margin: 0;
+    border: none;
+    box-shadow: none;
+    background: var(--light);
+    padding: 0;
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  & > .zoomable-trigger {
+    cursor: zoom-out;
+    background: color-mix(in srgb, var(--lightgray) 70%, transparent);
+
+    &:hover,
+    &:focus-visible {
+      background: var(--lightgray);
+    }
+
+    .zoomable-trigger-icon--expand {
+      display: none;
+    }
+
+    .zoomable-trigger-icon--collapse {
+      display: inline-flex;
+    }
+  }
+}
+
+.zoomable-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 999;
+  background: color-mix(in srgb, var(--dark) 55%, transparent);
+  cursor: zoom-out;
+  backdrop-filter: blur(2px);
+  opacity: 0;
+  animation: zoomable-backdrop-in 0.25s ease forwards;
+}
+
+@keyframes zoomable-backdrop-in {
+  to {
+    opacity: 1;
+  }
+}
+
+::view-transition-group(zoomable-active) {
+  animation-duration: 0.42s;
+  animation-timing-function: cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+::view-transition-old(zoomable-active),
+::view-transition-new(zoomable-active) {
+  animation-duration: 0.42s;
+  animation-timing-function: cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .zoomable-backdrop {
+    animation: none;
+    opacity: 1;
+  }
+
+  ::view-transition-group(zoomable-active),
+  ::view-transition-old(zoomable-active),
+  ::view-transition-new(zoomable-active) {
+    animation-duration: 0.01s;
+  }
+}
+
+@media #{$mobile} {
+  .zoomable.is-zoomed {
+    inset: 2vh 2vw;
+    padding: 1rem;
+  }
+
+  .zoomable-trigger {
+    opacity: 1;
+    transform: none;
+  }
+}
