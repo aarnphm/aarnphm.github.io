@@ -69,8 +69,12 @@ class PretrainedMixin:
     timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
 
     # Create filenames with model name and timestamp
-    model_filename = f'{self.__class__.__qualname__}_{self.variants}_{timestamp}.safetensors'
-    history_filename = f'{self.__class__.__qualname__}_{self.variants}_{timestamp}_history.npy'
+    model_filename = (
+      f'{self.__class__.__qualname__}_{self.variants}_{timestamp}.safetensors'
+    )
+    history_filename = (
+      f'{self.__class__.__qualname__}_{self.variants}_{timestamp}_history.npy'
+    )
 
     model_filepath = os.path.join(base_path, model_filename)
     history_filepath = os.path.join(base_path, history_filename)
@@ -81,7 +85,9 @@ class PretrainedMixin:
     # Save the history if provided
     if history is not None:
       history.save(history_filepath)
-      print(f'Model and history saved to {model_filepath} and {history_filepath}')
+      print(
+        f'Model and history saved to {model_filepath} and {history_filepath}'
+      )
     else:
       print(f'Model saved to {model_filepath}')
 

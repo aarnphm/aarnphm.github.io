@@ -34,7 +34,9 @@ for K in K_range:
 # Print the gain value
 print(f'The gain K for a damping ratio of 0.2588 is approximately: {K:.3f}')
 print(f'The poles are: {poles}')
-print(f'the roots of the transfer function with K={K:.3f} are: {np.roots([1, 4, 13, K])}')
+print(
+  f'the roots of the transfer function with K={K:.3f} are: {np.roots([1, 4, 13, K])}'
+)
 
 # Extract the imaginary part of the complex poles
 wn = np.abs(poles[0].imag)

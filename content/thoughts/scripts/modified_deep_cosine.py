@@ -13,13 +13,20 @@ class ModifiedDeepNNCosine(nn.Module):
       nn.ReLU(),
       nn.MaxPool2d(kernel_size=2, stride=2),
     )
-    self.classifier = nn.Sequential(nn.Linear(2048, 512), nn.ReLU(), nn.Dropout(0.1), nn.Linear(512, num_classes))
+    self.classifier = nn.Sequential(
+      nn.Linear(2048, 512),
+      nn.ReLU(),
+      nn.Dropout(0.1),
+      nn.Linear(512, num_classes),
+    )
 
   def forward(self, x):
     x = self.features(x)
     flattened_conv_output = torch.flatten(x, 1)
     x = self.classifier(flattened_conv_output)
-    flattened_conv_output_after_pooling = torch.nn.functional.avg_pool1d(flattened_conv_output, 2)
+    flattened_conv_output_after_pooling = torch.nn.functional.avg_pool1d(
+      flattened_conv_output, 2
+    )
     return x, flattened_conv_output_after_pooling
 
 
@@ -35,7 +42,12 @@ class ModifiedLightNNCosine(nn.Module):
       nn.ReLU(),
       nn.MaxPool2d(kernel_size=2, stride=2),
     )
-    self.classifier = nn.Sequential(nn.Linear(1024, 256), nn.ReLU(), nn.Dropout(0.1), nn.Linear(256, num_classes))
+    self.classifier = nn.Sequential(
+      nn.Linear(1024, 256),
+      nn.ReLU(),
+      nn.Dropout(0.1),
+      nn.Linear(256, num_classes),
+    )
 
   def forward(self, x):
     x = self.features(x)
@@ -45,7 +57,14 @@ class ModifiedLightNNCosine(nn.Module):
 
 
 def train_cosine_loss(
-  teacher, student, train_loader, epochs, learning_rate, hidden_rep_loss_weight, ce_loss_weight, device
+  teacher,
+  student,
+  train_loader,
+  epochs,
+  learning_rate,
+  hidden_rep_loss_weight,
+  ce_loss_weight,
+  device,
 ):
   ce_loss = nn.CrossEntropyLoss()
   cosine_loss = nn.CosineEmbeddingLoss()
@@ -72,21 +91,27 @@ def train_cosine_loss(
 
       # Calculate the cosine loss. Target is a vector of ones. From the loss formula above we can see that is the case where loss minimization leads to cosine similarity increase.
       hidden_rep_loss = cosine_loss(
-        student_hidden_representation, teacher_hidden_representation, target=torch.ones(inputs.size(0)).to(device)
+        student_hidden_representation,
+        teacher_hidden_representation,
+        target=torch.ones(inputs.size(0)).to(device),
       )
 
       # Calculate the true label loss
       label_loss = ce_loss(student_logits, labels)
 
       # Weighted sum of the two losses
-      loss = hidden_rep_loss_weight * hidden_rep_loss + ce_loss_weight * label_loss
+      loss = (
+        hidden_rep_loss_weight * hidden_rep_loss + ce_loss_weight * label_loss
+      )
 
       loss.backward()
       optimizer.step()
 
       running_loss += loss.item()
 
-    print(f'Epoch {epoch + 1}/{epochs}, Loss: {running_loss / len(train_loader)}')
+    print(
+      f'Epoch {epoch + 1}/{epochs}, Loss: {running_loss / len(train_loader)}'
+    )
 
 
 def test_multiple_outputs(model, test_loader, device):
@@ -117,10 +142,19 @@ if __name__ == '__main__':
   modified_nn_deep.load_state_dict(nn_deep.state_dict())
 
   # Once again ensure the norm of the first layer is the same for both networks
-  print('Norm of 1st layer for deep_nn:', torch.norm(nn_deep.features[0].weight).item())
-  print('Norm of 1st layer for modified_deep_nn:', torch.norm(modified_nn_deep.features[0].weight).item())
+  print(
+    'Norm of 1st layer for deep_nn:',
+    torch.norm(nn_deep.features[0].weight).item(),
+  )
+  print(
+    'Norm of 1st layer for modified_deep_nn:',
+    torch.norm(modified_nn_deep.features[0].weight).item(),
+  )
 
   # Initialize a modified lightweight network with the same seed as our other lightweight instances. This will be trained from scratch to examine the effectiveness of cosine loss minimization.
   torch.manual_seed(42)
   modified_nn_light = ModifiedLightNNCosine(num_classes=10).to(device)
-  print('Norm of 1st layer:', torch.norm(modified_nn_light.features[0].weight).item())
+  print(
+    'Norm of 1st layer:',
+    torch.norm(modified_nn_light.features[0].weight).item(),
+  )

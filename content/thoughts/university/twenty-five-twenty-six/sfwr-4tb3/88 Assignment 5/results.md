@@ -186,7 +186,10 @@ escapedchar(e)  → '\\' ( '(' « e := Sym('(') » | ')' | ... | '|' « e := Sym
 _sol_:
 
 ```python
-PlainChars = ' !"#$%&\',-./0123456789:;<=>@ABCDEFGHIJKLMNO' + 'PQRSTUVWXYZ[]^_`abcdefghijklmnopqrstuvwxyz{}~'
+PlainChars = (
+  ' !"#$%&\',-./0123456789:;<=>@ABCDEFGHIJKLMNO'
+  + 'PQRSTUVWXYZ[]^_`abcdefghijklmnopqrstuvwxyz{}~'
+)
 EscapedChars = '()*+?\\|'
 FirstFactor = PlainChars + '\\('
 
@@ -311,7 +314,10 @@ digit(d) → '0' « d := 0 » | ... | '9' « d := 9 »
 _sol_:
 
 ```python
-PlainChars = ' !"#$%&\',-./0123456789:;<=>@ABCDEFGHIJKLMNO' + 'PQRSTUVWXYZ[]^_`abcdefghijklmnopqrstuvwxyz~'
+PlainChars = (
+  ' !"#$%&\',-./0123456789:;<=>@ABCDEFGHIJKLMNO'
+  + 'PQRSTUVWXYZ[]^_`abcdefghijklmnopqrstuvwxyz~'
+)
 EscapedChars = '()*+?\\|{}'
 FirstFactor = PlainChars + '\\('
 

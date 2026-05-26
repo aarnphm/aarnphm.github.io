@@ -98,16 +98,22 @@ The updated loops as follow [^internal]:
 [^internal]: Naturally, we have to update the hidden representation:
 
     ```python
-    sample_input = torch.randn(128, 3, 32, 32).to(device)  # Batch size: 128, Filters: 3, Image size: 32x32
+    sample_input = torch.randn(128, 3, 32, 32).to(
+      device
+    )  # Batch size: 128, Filters: 3, Image size: 32x32
     logits, hidden_representation = modified_nn_light(sample_input)
 
     print('Student logits shape:', logits.shape)  # batch_size x total_classes
-    print('Student hidden representation shape:', hidden_representation.shape)  # batch_size x hidden_representation_size
+    print(
+      'Student hidden representation shape:', hidden_representation.shape
+    )  # batch_size x hidden_representation_size
 
     logits, hidden_representation = modified_nn_deep(sample_input)
 
     print('Teacher logits shape:', logits.shape)  # batch_size x total_classes
-    print('Teacher hidden representation shape:', hidden_representation.shape)  # batch_size x hidden_representation_size
+    print(
+      'Teacher hidden representation shape:', hidden_representation.shape
+    )  # batch_size x hidden_representation_size
     ```
 
 ![[thoughts/modified_deep_cosine.py]]

@@ -38,7 +38,9 @@ class IRType(Enum):
     return self in (IRType.PTR_INT, IRType.PTR_FLOAT)
 
   def deref(self) -> IRType:
-    return {IRType.PTR_INT: IRType.INT, IRType.PTR_FLOAT: IRType.FLOAT}.get(self, IRType.UNKNOWN)
+    return {IRType.PTR_INT: IRType.INT, IRType.PTR_FLOAT: IRType.FLOAT}.get(
+      self, IRType.UNKNOWN
+    )
 
   def to_c(self) -> str:
     return {
@@ -185,7 +187,9 @@ class Store(IRInstr):
 class Phi(IRInstr):
   """phi node: result = phi [val1, bb1], [val2, bb2], ..."""
 
-  incoming: list[tuple[IRValue, str]] = field(default_factory=list)  # (value, block_name)
+  incoming: list[tuple[IRValue, str]] = field(
+    default_factory=list
+  )  # (value, block_name)
 
   def uses(self) -> list[IRValue]:
     return [v for v, _ in self.incoming]
@@ -295,7 +299,9 @@ class IRFunction:
     return bb
 
   def __str__(self) -> str:
-    lines = [f'function {self.name}({", ".join(str(p) for p in self.params)}):']
+    lines = [
+      f'function {self.name}({", ".join(str(p) for p in self.params)}):'
+    ]
     for bb in self.blocks.values():
       lines.append(str(bb))
     return '\n'.join(lines)
@@ -393,12 +399,18 @@ class ConstantFolding:
     for bb in func.blocks.values():
       new_instrs = []
       for instr in bb.instrs:
-        if isinstance(instr, BinOp) and instr.lhs in const_vals and instr.rhs in const_vals:
+        if (
+          isinstance(instr, BinOp)
+          and instr.lhs in const_vals
+          and instr.rhs in const_vals
+        ):
           lhs_val = const_vals[instr.lhs]
           rhs_val = const_vals[instr.rhs]
           result_val = self._eval_binop(instr.op, lhs_val, rhs_val)
           if result_val is not None and instr.result:
-            new_instrs.append(Const(result=instr.result, const_value=result_val))
+            new_instrs.append(
+              Const(result=instr.result, const_value=result_val)
+            )
             const_vals[instr.result] = result_val
             changed = True
             continue
@@ -440,7 +452,11 @@ class DeadCodeElimination:
     for bb in func.blocks.values():
       new_instrs = []
       for instr in bb.instrs:
-        if instr.result and instr.result not in live and not isinstance(instr, (Store, Ret, Br, Jump)):
+        if (
+          instr.result
+          and instr.result not in live
+          and not isinstance(instr, (Store, Ret, Br, Jump))
+        ):
           changed = True
           continue
         new_instrs.append(instr)
@@ -470,15 +486,21 @@ class PhiElimination:
             # create const 0
             zero = self._make_zero(value.ty)
             # insert assignment before terminator (last instruction should be jump/br)
-            if pred_bb.instrs and isinstance(pred_bb.instrs[-1], (Jump, Br, Ret)):
+            if pred_bb.instrs and isinstance(
+              pred_bb.instrs[-1], (Jump, Br, Ret)
+            ):
               # insert const and assign before terminator
               pred_bb.instrs.insert(-1, Const(result=zero, const_value=0))
-              assign = BinOp(result=instr.result, op='add', lhs=value, rhs=zero)
+              assign = BinOp(
+                result=instr.result, op='add', lhs=value, rhs=zero
+              )
               pred_bb.instrs.insert(-1, assign)
             else:
               # no terminator, just append
               pred_bb.instrs.append(Const(result=zero, const_value=0))
-              assign = BinOp(result=instr.result, op='add', lhs=value, rhs=zero)
+              assign = BinOp(
+                result=instr.result, op='add', lhs=value, rhs=zero
+              )
               pred_bb.instrs.append(assign)
         else:
           new_instrs.append(instr)
@@ -509,7 +531,9 @@ class CCodegen:
     lines = []
 
     # function signature
-    ret_ty = func.ret_type.to_c() if func.ret_type != IRType.UNKNOWN else 'void'
+    ret_ty = (
+      func.ret_type.to_c() if func.ret_type != IRType.UNKNOWN else 'void'
+    )
     params = ', '.join(f'{p.ty.to_c()} {p.name}' for p in func.params)
     lines.append(f'{ret_ty} {func.name}({params}) {{')
 
@@ -552,7 +576,12 @@ class CCodegen:
       return f'{instr.result} = {instr.op}{instr.operand};'
     if isinstance(instr, Call):
       # map Python intrinsics to C equivalents
-      c_func_map = {'min': 'fminf', 'max': 'fmaxf', 'abs': 'fabsf', 'sqrt': 'sqrtf'}
+      c_func_map = {
+        'min': 'fminf',
+        'max': 'fmaxf',
+        'abs': 'fabsf',
+        'sqrt': 'sqrtf',
+      }
       c_func = c_func_map.get(instr.func, instr.func)
       args = ', '.join(str(a) for a in instr.args)
       return f'{instr.result} = {c_func}({args});'
@@ -567,7 +596,9 @@ class CCodegen:
     if isinstance(instr, Jump):
       return f'goto {instr.target};'
     if isinstance(instr, Br):
-      return f'if ({instr.cond}) goto {instr.true_bb}; else goto {instr.false_bb};'
+      return (
+        f'if ({instr.cond}) goto {instr.true_bb}; else goto {instr.false_bb};'
+      )
     if isinstance(instr, Phi):
       # phi nodes eliminated during CFG linearization, shouldn't reach here
       return f'/* phi node: {instr} */'

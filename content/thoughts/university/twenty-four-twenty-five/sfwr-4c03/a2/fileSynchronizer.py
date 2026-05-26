@@ -17,10 +17,14 @@ def setup_logger(log_level: int = logging.INFO):
   console_handler.setLevel(log_level)
 
   # Create file handler with rotation (max 5MB, keep 3 backups)
-  file_handler = RotatingFileHandler('file_synchronizer.log', maxBytes=5 * 1024 * 1024, backupCount=3)
+  file_handler = RotatingFileHandler(
+    'file_synchronizer.log', maxBytes=5 * 1024 * 1024, backupCount=3
+  )
   file_handler.setLevel(log_level)
 
-  formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+  formatter = logging.Formatter(
+    '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+  )
   console_handler.setFormatter(formatter)
   file_handler.setFormatter(formatter)
 
@@ -35,7 +39,9 @@ logger = setup_logger()
 
 def validate_ip(s: str) -> bool:
   try:
-    return len((a := s.split('.'))) == 4 and all(x.isdigit() and 0 <= int(x) <= 255 for x in a)
+    return len((a := s.split('.'))) == 4 and all(
+      x.isdigit() and 0 <= int(x) <= 255 for x in a
+    )
   except:
     return False
 
@@ -44,7 +50,9 @@ def validate_port(x: str) -> bool:
   return x.isdigit() and 0 <= int(x) <= 65535
 
 
-def get_file_info(ignored: tuple[str, ...] = ('.so', '.py', '.dll')) -> list[dict[str, str | int]]:
+def get_file_info(
+  ignored: tuple[str, ...] = ('.so', '.py', '.dll'),
+) -> list[dict[str, str | int]]:
   return [
     {'name': filename, 'mtime': int(os.path.getmtime(filename))}
     for filename in os.listdir('.')
@@ -61,7 +69,9 @@ def check_port_available(check_port: int, host: str = '127.0.0.1') -> bool:
       return False
 
 
-def get_next_available_port(initial_port: int, host: str = '127.0.0.1') -> int | bool:
+def get_next_available_port(
+  initial_port: int, host: str = '127.0.0.1'
+) -> int | bool:
   port = initial_port
   while port <= 65535:
     if check_port_available(port, host):
@@ -71,7 +81,13 @@ def get_next_available_port(initial_port: int, host: str = '127.0.0.1') -> int |
 
 
 class FileSynchronizer(threading.Thread):
-  def __init__(self, trackerhost: int, trackerport: int, port: int, host: str = '127.0.0.1'):
+  def __init__(
+    self,
+    trackerhost: int,
+    trackerport: int,
+    port: int,
+    host: str = '127.0.0.1',
+  ):
     threading.Thread.__init__(self)
     self.daemon = True
 
@@ -149,7 +165,9 @@ class FileSynchronizer(threading.Thread):
       with open(file_name, 'rb') as file:
         file_content = file.read()
       conn.sendall(file_content)
-      logger.info('Sent %d bytes of %s to %s', len(file_content), file_name, addr)
+      logger.info(
+        'Sent %d bytes of %s to %s', len(file_content), file_name, addr
+      )
     except FileNotFoundError:
       logger.error('File not found: %s', file_name)
       conn.sendall(b'')
@@ -169,7 +187,9 @@ class FileSynchronizer(threading.Thread):
       while self.running:
         try:
           conn, addr = self.server.accept()
-          client_thread = threading.Thread(target=self.process_message, args=(conn, addr))
+          client_thread = threading.Thread(
+            target=self.process_message, args=(conn, addr)
+          )
           client_thread.daemon = True
           client_thread.start()
         except socket.timeout:
@@ -223,8 +243,13 @@ class FileSynchronizer(threading.Thread):
             file_mtime = file_info['mtime']
 
             # Check if file is new or more recent than our local copy
-            if file_name not in local_files or file_mtime > local_files[file_name]:
-              logger.info('Requesting file %s from %s:%s', file_name, file_ip, file_port)
+            if (
+              file_name not in local_files
+              or file_mtime > local_files[file_name]
+            ):
+              logger.info(
+                'Requesting file %s from %s:%s', file_name, file_ip, file_port
+              )
               peer_socket = None
               try:
                 # Create a socket to connect to the peer
@@ -252,10 +277,17 @@ class FileSynchronizer(threading.Thread):
                 # Set the modified time to match the timestamp in the directory
                 os.utime(file_name, (file_mtime, file_mtime))
 
-                logger.info('Downloaded file %s from %s:%s', file_name, file_ip, file_port)
+                logger.info(
+                  'Downloaded file %s from %s:%s',
+                  file_name,
+                  file_ip,
+                  file_port,
+                )
 
               except (socket.error, socket.timeout) as e:
-                logger.error('Error connecting to peer %s:%s: %s', file_ip, file_port, e)
+                logger.error(
+                  'Error connecting to peer %s:%s: %s', file_ip, file_port, e
+                )
                 # Skip this file and proceed to the next
               finally:
                 # Close the connection
@@ -298,9 +330,16 @@ def main() -> int:
   parser.add_argument('tracker_ip', help='Tracker server IP address')
   parser.add_argument('tracker_port', help='Tracker server port number')
   parser.add_argument(
-    '--log-level', choices=['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL'], default='INFO', help='Set logging level'
+    '--log-level',
+    choices=['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL'],
+    default='INFO',
+    help='Set logging level',
   )
-  parser.add_argument('--listen-host', default='127.0.0.1', help='Local interface used for peer file requests')
+  parser.add_argument(
+    '--listen-host',
+    default='127.0.0.1',
+    help='Local interface used for peer file requests',
+  )
 
   args = parser.parse_args()
 
@@ -353,7 +392,9 @@ def main() -> int:
 
   logger.info('Starting file synchronizer on port %s', synchronizer_port)
   global synchronizer
-  synchronizer = FileSynchronizer(tracker_ip, tracker_port, synchronizer_port, listen_host)
+  synchronizer = FileSynchronizer(
+    tracker_ip, tracker_port, synchronizer_port, listen_host
+  )
   synchronizer.start()
 
   try:

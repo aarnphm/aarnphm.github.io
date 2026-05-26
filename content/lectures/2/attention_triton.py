@@ -44,7 +44,9 @@ def attn_two_pass(
     )
     # Load K-block [N, D]
     k = tl.load(
-      K + (col_start + n_offs)[:, None] * stride_km + d_offs[None, :] * stride_kd,
+      K
+      + (col_start + n_offs)[:, None] * stride_km
+      + d_offs[None, :] * stride_kd,
       mask=((col_start + n_offs)[:, None] < n) & (d_offs[None, :] < d),
       other=0.0,
     )
@@ -75,7 +77,9 @@ def attn_two_pass(
       other=0.0,
     )
     k = tl.load(
-      K + (col_start + n_offs)[:, None] * stride_km + d_offs[None, :] * stride_kd,
+      K
+      + (col_start + n_offs)[:, None] * stride_km
+      + d_offs[None, :] * stride_kd,
       mask=((col_start + n_offs)[:, None] < n) & (d_offs[None, :] < d),
       other=0.0,
     )
@@ -87,7 +91,9 @@ def attn_two_pass(
 
     # Load V-block [N, Dv]
     v = tl.load(
-      V + (col_start + n_offs)[:, None] * stride_vm + d_offs[None, :] * stride_vd,
+      V
+      + (col_start + n_offs)[:, None] * stride_vm
+      + d_offs[None, :] * stride_vd,
       mask=((col_start + n_offs)[:, None] < n) & (d_offs[None, :] < dv),
       other=0.0,
     )

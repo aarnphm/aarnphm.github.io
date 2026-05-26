@@ -79,7 +79,11 @@ def group_levels(depth: np.ndarray, max_d: int):
 
 @cute.kernel
 def propagate_kernel(
-  adj_offset: cute.Tensor, adj_list: cute.Tensor, paths: cute.Tensor, level_nodes: cute.Tensor, level_size: int
+  adj_offset: cute.Tensor,
+  adj_list: cute.Tensor,
+  paths: cute.Tensor,
+  level_nodes: cute.Tensor,
+  level_size: int,
 ):
   tidx, _, _ = cute.arch.thread_idx()
   bidx, _, _ = cute.arch.block_idx()
@@ -96,7 +100,12 @@ def propagate_kernel(
   for i in range(adj_offset[node], adj_offset[node + 1]):
     neighbor = adj_list[i]
     ptr = paths.iterator + neighbor
-    nvvm.atomicrmw(res=T.i64(), op=nvvm.AtomicOpKind.ADD, ptr=ptr.llvm_ptr, a=node_paths.ir_value())
+    nvvm.atomicrmw(
+      res=T.i64(),
+      op=nvvm.AtomicOpKind.ADD,
+      ptr=ptr.llvm_ptr,
+      a=node_paths.ir_value(),
+    )
 
 
 @cute.jit
@@ -140,7 +149,13 @@ def main():
   depth, topo_order, max_d = topo_depth(adj_offset, adj_list, n)
 
   get = lambda k: names.get(k, -1)
-  you, out, svr, dac, fft = get('you'), get('out'), get('svr'), get('dac'), get('fft')
+  you, out, svr, dac, fft = (
+    get('you'),
+    get('out'),
+    get('svr'),
+    get('dac'),
+    get('fft'),
+  )
 
   p1 = paths_from(adj_offset, adj_list, you, n, topo_order)[out]
   print(f'p1: {p1}')
@@ -149,7 +164,10 @@ def main():
   from_dac = paths_from(adj_offset, adj_list, dac, n, topo_order)
   from_fft = paths_from(adj_offset, adj_list, fft, n, topo_order)
 
-  p2 = from_svr[dac] * from_dac[fft] * from_fft[out] + from_svr[fft] * from_fft[dac] * from_dac[out]
+  p2 = (
+    from_svr[dac] * from_dac[fft] * from_fft[out]
+    + from_svr[fft] * from_fft[dac] * from_dac[out]
+  )
   print(f'p2: {p2}')
 
 

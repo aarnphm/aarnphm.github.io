@@ -34,7 +34,9 @@ def forward(X: np.ndarray, W: np.ndarray) -> np.ndarray:
 # $$
 # dW = X^{T}dY, dW = dY W^{T}
 # $$
-def backward(X: np.ndarray, W: np.ndarray, dY: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
+def backward(
+  X: np.ndarray, W: np.ndarray, dY: np.ndarray
+) -> Tuple[np.ndarray, np.ndarray]:
   # apriori: assume dims are matched, otherwise uncomment this check. Usually we don't want to check for assert here.
   # assert X.ndim == W.ndim == dY.ndim == 2
   # N, D = X.shape
@@ -81,8 +83,12 @@ def check() -> None:
   Y_torch.backward(dY_torch)
 
   # Extract gradients
-  assert W_torch.grad is not None, 'W_torch.grad should not be None after backward()'
-  assert X_torch.grad is not None, 'X_torch.grad should not be None after backward()'
+  assert W_torch.grad is not None, (
+    'W_torch.grad should not be None after backward()'
+  )
+  assert X_torch.grad is not None, (
+    'X_torch.grad should not be None after backward()'
+  )
   dW_torch = W_torch.grad.detach().numpy()
   dX_torch = X_torch.grad.detach().numpy()
 
@@ -116,17 +122,25 @@ def check() -> None:
 
   if JAX_AVAILABLE:
     print('\nJAX forward comparison:')
-    print(f'Y (NumPy vs JAX) matches: {np.allclose(Y, Y_jax_np, rtol=1e-10, atol=0)}')
+    print(
+      f'Y (NumPy vs JAX) matches: {np.allclose(Y, Y_jax_np, rtol=1e-10, atol=0)}'
+    )
 
     print('\nGradient comparisons vs JAX:')
-    print(f'dW (manual vs JAX) matches: {np.allclose(dW_manual, dW_jax_np, rtol=1e-10, atol=0)}')
-    print(f'dX (manual vs JAX) matches: {np.allclose(dX_manual, dX_jax_np, rtol=1e-10, atol=0)}')
+    print(
+      f'dW (manual vs JAX) matches: {np.allclose(dW_manual, dW_jax_np, rtol=1e-10, atol=0)}'
+    )
+    print(
+      f'dX (manual vs JAX) matches: {np.allclose(dX_manual, dX_jax_np, rtol=1e-10, atol=0)}'
+    )
 
     print('\nMaximum absolute differences (manual vs JAX):')
     print(f'dW max diff: {np.max(np.abs(dW_manual - dW_jax_np))}')
     print(f'dX max diff: {np.max(np.abs(dX_manual - dX_jax_np))}')
   else:
-    print('\n[JAX not available] Skipping JAX validation. Install jax & jaxlib to enable this check.')
+    print(
+      '\n[JAX not available] Skipping JAX validation. Install jax & jaxlib to enable this check.'
+    )
 
 
 if __name__ == '__main__':

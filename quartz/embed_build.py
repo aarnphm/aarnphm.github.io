@@ -27,11 +27,17 @@ from tqdm.auto import tqdm
 
 
 logger = logging.getLogger(__name__)
-DEFAULT_VLLM_URL = os.environ.get('VLLM_URL') or os.environ.get('VLLM_EMBED_URL') or 'http://127.0.0.1:8000/v1'
+DEFAULT_VLLM_URL = (
+  os.environ.get('VLLM_URL')
+  or os.environ.get('VLLM_EMBED_URL')
+  or 'http://127.0.0.1:8000/v1'
+)
 NOTEBOOK_TEXT_MIMES = ('text/markdown', 'text/plain')
 NOTEBOOK_HTML_TAG = re.compile(r'<[^>]+>')
 NOTEBOOK_HEADING = re.compile(r'^#{1,6}\s+(.+?)\s*#*\s*$')
-QUOTED_STRING = re.compile(r"'(?:\\.|[^'\\])*'|\"(?:\\.|[^\"\\])*\"|`(?:\\.|[^`\\])*`", re.S)
+QUOTED_STRING = re.compile(
+  r"'(?:\\.|[^'\\])*'|\"(?:\\.|[^\"\\])*\"|`(?:\\.|[^`\\])*`", re.S
+)
 
 
 def configure_logging() -> None:
@@ -73,7 +79,10 @@ def as_text(value) -> str:
 
 
 def normalize_notebook_text(value: str) -> str:
-  lines = [line.rstrip() for line in value.replace('\r\n', '\n').replace('\r', '\n').split('\n')]
+  lines = [
+    line.rstrip()
+    for line in value.replace('\r\n', '\n').replace('\r', '\n').split('\n')
+  ]
   cleaned: list[str] = []
   previous_blank = False
   for line in lines:
@@ -93,7 +102,9 @@ def notebook_output_text(output: dict) -> str:
     traceback = output.get('traceback')
     if isinstance(traceback, list) and traceback:
       return '\n'.join(as_text(line) for line in traceback)
-    return normalize_notebook_text(f'{as_text(output.get("ename"))}: {as_text(output.get("evalue"))}')
+    return normalize_notebook_text(
+      f'{as_text(output.get("ename"))}: {as_text(output.get("evalue"))}'
+    )
   if output_type not in {'display_data', 'execute_result'}:
     return ''
 
@@ -140,7 +151,10 @@ def notebook_title(doc: dict, fp: Path) -> str:
   cells = doc.get('cells')
   if isinstance(cells, list):
     for raw_cell in cells:
-      if not isinstance(raw_cell, dict) or raw_cell.get('cell_type') != 'markdown':
+      if (
+        not isinstance(raw_cell, dict)
+        or raw_cell.get('cell_type') != 'markdown'
+      ):
         continue
       title = markdown_heading_title(as_text(raw_cell.get('source')))
       if title:
@@ -152,7 +166,9 @@ def notebook_text(doc: dict) -> str:
   cells = doc.get('cells')
   if not isinstance(cells, list):
     return ''
-  language = notebook_language(doc.get('metadata') if isinstance(doc.get('metadata'), dict) else {})
+  language = notebook_language(
+    doc.get('metadata') if isinstance(doc.get('metadata'), dict) else {}
+  )
   parts: list[str] = []
   for raw_cell in cells:
     if not isinstance(raw_cell, dict):
@@ -255,7 +271,9 @@ def quartz_ignore_patterns(config_path: Path) -> list[str]:
   body = ts_array_body(source, 'ignorePatterns')
   if body is None:
     return []
-  return [unquote_ts_string(match.group(0)) for match in QUOTED_STRING.finditer(body)]
+  return [
+    unquote_ts_string(match.group(0)) for match in QUOTED_STRING.finditer(body)
+  ]
 
 
 def content_relative_path(fp: Path, content_dir: Path) -> str | None:
@@ -270,20 +288,28 @@ def content_path(candidate: str, content_dir: Path) -> tuple[Path, str] | None:
   content_root = content_dir.resolve()
   fp = Path(candidate)
   if not fp.is_absolute():
-    fp = content_root.parent / fp if candidate.startswith('content/') else content_root / fp
+    fp = (
+      content_root.parent / fp
+      if candidate.startswith('content/')
+      else content_root / fp
+    )
   rel = content_relative_path(fp, content_root)
   if rel is None:
     return None
   return fp, rel
 
 
-def content_index_file_records(content_index: Path, content_dir: Path, suffix: str | None = None) -> list[dict]:
+def content_index_file_records(
+  content_index: Path, content_dir: Path, suffix: str | None = None
+) -> list[dict]:
   if not content_index.exists():
     return []
   try:
     raw = json.loads(content_index.read_text(encoding='utf-8'))
   except json.JSONDecodeError as exc:
-    logger.warning('Could not parse notebook content index %s: %s', content_index, exc)
+    logger.warning(
+      'Could not parse notebook content index %s: %s', content_index, exc
+    )
     return []
   if not isinstance(raw, dict):
     return []
@@ -313,7 +339,9 @@ def content_index_file_records(content_index: Path, content_dir: Path, suffix: s
   return records
 
 
-def notebook_records_from_content_index(content_index: Path, content_dir: Path) -> list[dict]:
+def notebook_records_from_content_index(
+  content_index: Path, content_dir: Path
+) -> list[dict]:
   return content_index_file_records(content_index, content_dir, '.ipynb')
 
 
@@ -323,7 +351,12 @@ def notebook_records_from_content_dir(content_dir: Path) -> list[dict]:
   records: list[dict] = []
   for fp in sorted(content_dir.rglob('*.ipynb')):
     rel = fp.relative_to(content_dir).as_posix()
-    records.append({'slug': slugify_file_path(rel, True), 'title': fp.stem, 'path': fp, 'relative_path': rel})
+    records.append({
+      'slug': slugify_file_path(rel, True),
+      'title': fp.stem,
+      'path': fp,
+      'relative_path': rel,
+    })
   return records
 
 
@@ -352,7 +385,9 @@ def ignore_pattern_matches(path: str, pattern: str) -> bool:
     return False
   if normalized.startswith('!'):
     return False
-  if normalized.startswith('content/') and ignore_pattern_matches(path, normalized[len('content/') :]):
+  if normalized.startswith('content/') and ignore_pattern_matches(
+    path, normalized[len('content/') :]
+  ):
     return True
   if fnmatch.fnmatch(path, normalized):
     return True
@@ -360,32 +395,52 @@ def ignore_pattern_matches(path: str, pattern: str) -> bool:
     return True
   if '/' not in normalized:
     parts = path.split('/')
-    return normalized in parts or any(fnmatch.fnmatch(part, normalized) for part in parts)
-  return path.startswith(f'{normalized}/') or fnmatch.fnmatch(path, f'{normalized}/**')
+    return normalized in parts or any(
+      fnmatch.fnmatch(part, normalized) for part in parts
+    )
+  return path.startswith(f'{normalized}/') or fnmatch.fnmatch(
+    path, f'{normalized}/**'
+  )
 
 
-def filter_notebook_records(records: list[dict], content_dir: Path, ignore_patterns: list[str]) -> list[dict]:
-  ignored = git_ignored_paths([record['relative_path'] for record in records], content_dir)
+def filter_notebook_records(
+  records: list[dict], content_dir: Path, ignore_patterns: list[str]
+) -> list[dict]:
+  ignored = git_ignored_paths(
+    [record['relative_path'] for record in records], content_dir
+  )
   return [
     record
     for record in records
     if record['relative_path'] not in ignored
-    and not any(ignore_pattern_matches(record['relative_path'], pattern) for pattern in ignore_patterns)
+    and not any(
+      ignore_pattern_matches(record['relative_path'], pattern)
+      for pattern in ignore_patterns
+    )
   ]
 
 
-def ignored_slugs_from_content_index(content_index: Path, content_dir: Path, ignore_patterns: list[str]) -> set[str]:
+def ignored_slugs_from_content_index(
+  content_index: Path, content_dir: Path, ignore_patterns: list[str]
+) -> set[str]:
   records = content_index_file_records(content_index, content_dir)
-  ignored = git_ignored_paths([record['relative_path'] for record in records], content_dir)
+  ignored = git_ignored_paths(
+    [record['relative_path'] for record in records], content_dir
+  )
   return {
     record['slug']
     for record in records
     if record['relative_path'] in ignored
-    or any(ignore_pattern_matches(record['relative_path'], pattern) for pattern in ignore_patterns)
+    or any(
+      ignore_pattern_matches(record['relative_path'], pattern)
+      for pattern in ignore_patterns
+    )
   }
 
 
-def load_notebook_documents(content_index: Path, content_dir: Path, ignore_patterns: list[str]) -> list[dict]:
+def load_notebook_documents(
+  content_index: Path, content_dir: Path, ignore_patterns: list[str]
+) -> list[dict]:
   content_dir = content_dir.resolve()
   records = notebook_records_from_content_index(content_index, content_dir)
   if not records:
@@ -408,15 +463,23 @@ def load_notebook_documents(content_index: Path, content_dir: Path, ignore_patte
       continue
     if not isinstance(notebook, dict):
       failed += 1
-      logger.warning('Skipping notebook %s: notebook root is not an object', fp)
+      logger.warning(
+        'Skipping notebook %s: notebook root is not an object', fp
+      )
       continue
     text = notebook_text(notebook)
     if not text:
       continue
     title = notebook_title(notebook, fp)
-    docs.append({'slug': slug, 'title': title or record['title'], 'text': text})
+    docs.append({
+      'slug': slug,
+      'title': title or record['title'],
+      'text': text,
+    })
   if docs or failed:
-    print(f'Loaded {len(docs)} notebook document(s) for embeddings ({failed} skipped)')
+    print(
+      f'Loaded {len(docs)} notebook document(s) for embeddings ({failed} skipped)'
+    )
   return docs
 
 
@@ -424,7 +487,12 @@ def merge_documents(recs: list[dict], additions: list[dict]) -> list[dict]:
   merged = list(recs)
   index_by_slug = {rec.get('slug'): i for i, rec in enumerate(merged)}
   replaced = 0
-  for addition in tqdm(additions, desc='Merging notebook docs', unit='doc', disable=len(additions) == 0):
+  for addition in tqdm(
+    additions,
+    desc='Merging notebook docs',
+    unit='doc',
+    disable=len(additions) == 0,
+  ):
     idx = index_by_slug.get(addition['slug'])
     if idx is None:
       index_by_slug[addition['slug']] = len(merged)
@@ -433,7 +501,9 @@ def merge_documents(recs: list[dict], additions: list[dict]) -> list[dict]:
     merged[idx] = {**merged[idx], **addition}
     replaced += 1
   if additions:
-    print(f'Merged {len(additions)} notebook document(s) ({replaced} replaced, {len(additions) - replaced} added)')
+    print(
+      f'Merged {len(additions)} notebook document(s) ({replaced} replaced, {len(additions) - replaced} added)'
+    )
   return merged
 
 
@@ -509,7 +579,9 @@ def chunk_document(
   ]
 
 
-def write_shards(vectors: np.ndarray, shard_size: int, dtype: str, out_dir: Path) -> list[dict]:
+def write_shards(
+  vectors: np.ndarray, shard_size: int, dtype: str, out_dir: Path
+) -> list[dict]:
   out_dir.mkdir(parents=True, exist_ok=True)
   rows, dims = vectors.shape
   shards_meta: list[dict] = []
@@ -517,7 +589,14 @@ def write_shards(vectors: np.ndarray, shard_size: int, dtype: str, out_dir: Path
   bytes_per_value = np.dtype(np_dtype).itemsize
   row_offset = 0
   shard_starts = range(0, rows, shard_size)
-  for si, start in enumerate(tqdm(shard_starts, total=len(shard_starts), desc='Writing vector shards', unit='shard')):
+  for si, start in enumerate(
+    tqdm(
+      shard_starts,
+      total=len(shard_starts),
+      desc='Writing vector shards',
+      unit='shard',
+    )
+  ):
     end = min(start + shard_size, rows)
     shard = vectors[start:end]
     bin_path = out_dir / f'vectors-{si:03d}.bin'
@@ -538,7 +617,9 @@ def write_shards(vectors: np.ndarray, shard_size: int, dtype: str, out_dir: Path
   return shards_meta
 
 
-def write_hnsw_graph(levels: list[list[list[int]]], rows: int, out_path: Path) -> tuple[list[dict], str]:
+def write_hnsw_graph(
+  levels: list[list[list[int]]], rows: int, out_path: Path
+) -> tuple[list[dict], str]:
   out_path.parent.mkdir(parents=True, exist_ok=True)
   offset = 0
   meta: list[dict] = []
@@ -570,8 +651,16 @@ def write_hnsw_graph(levels: list[list[list[int]]], rows: int, out_path: Path) -
 
       meta.append({
         'level': len(meta),
-        'indptr': {'offset': indptr_offset, 'elements': int(indptr.shape[0]), 'byteLength': len(indptr_bytes)},
-        'indices': {'offset': indices_offset, 'elements': int(indices.shape[0]), 'byteLength': len(indices_bytes)},
+        'indptr': {
+          'offset': indptr_offset,
+          'elements': int(indptr.shape[0]),
+          'byteLength': len(indptr_bytes),
+        },
+        'indices': {
+          'offset': indices_offset,
+          'elements': int(indices.shape[0]),
+          'byteLength': len(indices_bytes),
+        },
       })
   return meta, digest.hexdigest()
 
@@ -585,7 +674,9 @@ def get_prefix_overhead(model_id: str) -> int:
   return 0
 
 
-def validate_token_limits(texts: list[str], max_tokens: int, model_id: str) -> None:
+def validate_token_limits(
+  texts: list[str], max_tokens: int, model_id: str
+) -> None:
   prefix_overhead = get_prefix_overhead(model_id)
   effective_max = max_tokens - prefix_overhead
   over_limit = []
@@ -608,10 +699,19 @@ def validate_token_limits(texts: list[str], max_tokens: int, model_id: str) -> N
 
 
 def embed_vllm(
-  texts: list[str], model_id: str, vllm_url: str, batch_size: int = 64, concurrency: int = 8, max_tokens: int = 512
+  texts: list[str],
+  model_id: str,
+  vllm_url: str,
+  batch_size: int = 64,
+  concurrency: int = 8,
+  max_tokens: int = 512,
 ) -> np.ndarray:
   base_url = resolve_vllm_base_url(vllm_url)
-  api_key = os.environ.get('VLLM_API_KEY') or os.environ.get('OPENAI_API_KEY') or 'not-set'
+  api_key = (
+    os.environ.get('VLLM_API_KEY')
+    or os.environ.get('OPENAI_API_KEY')
+    or 'not-set'
+  )
   client = OpenAI(base_url=base_url, api_key=api_key, timeout=300)
 
   validate_token_limits(texts, max_tokens, model_id)
@@ -633,10 +733,14 @@ def embed_vllm(
     batch = prefixed[i : i + batch_size]
     batches.append((i, batch))
 
-  def send_batch(batch_info: tuple[int, list[str]]) -> tuple[int, list[np.ndarray]]:
+  def send_batch(
+    batch_info: tuple[int, list[str]],
+  ) -> tuple[int, list[np.ndarray]]:
     idx, batch = batch_info
     response = client.embeddings.create(model=model_id, input=batch)
-    embeddings = [np.asarray(item.embedding, dtype=np.float32) for item in response.data]
+    embeddings = [
+      np.asarray(item.embedding, dtype=np.float32) for item in response.data
+    ]
     return (idx, embeddings)
 
   results: dict[int, list[np.ndarray]] = {}
@@ -645,8 +749,16 @@ def embed_vllm(
     results[idx] = embeddings
   else:
     with ThreadPoolExecutor(max_workers=concurrency) as executor:
-      futures = {executor.submit(send_batch, batch_info): batch_info[0] for batch_info in batches}
-      for future in tqdm(as_completed(futures), total=len(futures), desc='Embedding batches', unit='batch'):
+      futures = {
+        executor.submit(send_batch, batch_info): batch_info[0]
+        for batch_info in batches
+      }
+      for future in tqdm(
+        as_completed(futures),
+        total=len(futures),
+        desc='Embedding batches',
+        unit='batch',
+      ):
         idx, embeddings = future.result()
         results[idx] = embeddings
 
@@ -657,7 +769,9 @@ def embed_vllm(
   return np.stack(out, axis=0)
 
 
-def embed_hf(texts: list[str], model_id: str, device: str, max_tokens: int = 512) -> np.ndarray:
+def embed_hf(
+  texts: list[str], model_id: str, device: str, max_tokens: int = 512
+) -> np.ndarray:
   from sentence_transformers import SentenceTransformer
 
   model = SentenceTransformer(model_id, device=device)
@@ -673,7 +787,11 @@ def embed_hf(texts: list[str], model_id: str, device: str, max_tokens: int = 512
     prefixed = texts
 
   vecs = model.encode(
-    prefixed, batch_size=64, normalize_embeddings=True, convert_to_numpy=True, show_progress_bar=True
+    prefixed,
+    batch_size=64,
+    normalize_embeddings=True,
+    convert_to_numpy=True,
+    show_progress_bar=True,
   )
   return vecs.astype(np.float32, copy=False)
 
@@ -687,20 +805,46 @@ def main():
   ap.add_argument('--quartz-config', default='quartz.config.ts')
   ap.add_argument('--ignore-pattern', action='append', default=[])
   ap.add_argument('--no-notebooks', action='store_true')
-  ap.add_argument('--model', default=os.environ.get('SEM_MODEL', 'intfloat/multilingual-e5-large'))
-  ap.add_argument('--dims', type=int, default=int(os.environ.get('SEM_DIMS', '1024')))
-  ap.add_argument('--dtype', choices=['fp16', 'fp32'], default=os.environ.get('SEM_DTYPE', 'fp32'))
-  ap.add_argument('--shard-size', type=int, default=int(os.environ.get('SEM_SHARD', '1024')))
+  ap.add_argument(
+    '--model',
+    default=os.environ.get('SEM_MODEL', 'intfloat/multilingual-e5-large'),
+  )
+  ap.add_argument(
+    '--dims', type=int, default=int(os.environ.get('SEM_DIMS', '1024'))
+  )
+  ap.add_argument(
+    '--dtype',
+    choices=['fp16', 'fp32'],
+    default=os.environ.get('SEM_DTYPE', 'fp32'),
+  )
+  ap.add_argument(
+    '--shard-size', type=int, default=int(os.environ.get('SEM_SHARD', '1024'))
+  )
   ap.add_argument('--out', default='public/embeddings')
-  ap.add_argument('--use-vllm', action='store_true', default=bool(os.environ.get('USE_VLLM', '')))
+  ap.add_argument(
+    '--use-vllm',
+    action='store_true',
+    default=bool(os.environ.get('USE_VLLM', '')),
+  )
   ap.add_argument(
     '--vllm-url',
     default=DEFAULT_VLLM_URL,
     help='Base URL for the vLLM OpenAI-compatible server (accepts either /v1 or /v1/embeddings)',
   )
-  ap.add_argument('--chunk-size', type=int, default=512, help='Max tokens per chunk')
-  ap.add_argument('--chunk-overlap', type=int, default=128, help='Overlap tokens between chunks')
-  ap.add_argument('--no-chunking', action='store_true', help='Disable chunking (embed full docs)')
+  ap.add_argument(
+    '--chunk-size', type=int, default=512, help='Max tokens per chunk'
+  )
+  ap.add_argument(
+    '--chunk-overlap',
+    type=int,
+    default=128,
+    help='Overlap tokens between chunks',
+  )
+  ap.add_argument(
+    '--no-chunking',
+    action='store_true',
+    help='Disable chunking (embed full docs)',
+  )
   ap.add_argument(
     '--max-tokens',
     type=int,
@@ -724,19 +868,33 @@ def main():
   jsonl_path = Path(args.jsonl)
   content_dir = Path(args.content_dir)
   content_index = (
-    Path(args.content_index) if args.content_index else jsonl_path.parent / 'static' / 'contentIndex.json'
+    Path(args.content_index)
+    if args.content_index
+    else jsonl_path.parent / 'static' / 'contentIndex.json'
   )
-  ignore_patterns = [*quartz_ignore_patterns(Path(args.quartz_config)), *args.ignore_pattern]
+  ignore_patterns = [
+    *quartz_ignore_patterns(Path(args.quartz_config)),
+    *args.ignore_pattern,
+  ]
   recs = list(load_jsonl(args.jsonl))
-  ignored_slugs = ignored_slugs_from_content_index(content_index, content_dir, ignore_patterns)
+  ignored_slugs = ignored_slugs_from_content_index(
+    content_index, content_dir, ignore_patterns
+  )
   if ignored_slugs:
     before_filter = len(recs)
     recs = [rec for rec in recs if rec.get('slug') not in ignored_slugs]
-    print(f'Filtered {before_filter - len(recs)} ignored document(s) from embeddings input')
+    print(
+      f'Filtered {before_filter - len(recs)} ignored document(s) from embeddings input'
+    )
   if not args.no_notebooks:
-    recs = merge_documents(recs, load_notebook_documents(content_index, content_dir, ignore_patterns))
+    recs = merge_documents(
+      recs,
+      load_notebook_documents(content_index, content_dir, ignore_patterns),
+    )
   if not recs:
-    print(f'No input found in {args.jsonl}; run the site build first to emit JSONL.')
+    print(
+      f'No input found in {args.jsonl}; run the site build first to emit JSONL.'
+    )
     return
 
   # Filter out are.na (423 chunks, structural outlier)
@@ -761,7 +919,10 @@ def main():
       chunks.extend(doc_chunks)
       for chunk in doc_chunks:
         if chunk['is_chunked']:
-          chunk_metadata[chunk['slug']] = {'parentSlug': chunk['parent_slug'], 'chunkId': chunk['chunk_id']}
+          chunk_metadata[chunk['slug']] = {
+            'parentSlug': chunk['parent_slug'],
+            'chunkId': chunk['chunk_id'],
+          }
     chunked_count = sum(1 for c in chunks if c.get('is_chunked', False))
     prefix_overhead = get_prefix_overhead(args.model)
     effective_limit = args.max_tokens - prefix_overhead
@@ -803,7 +964,9 @@ def main():
   out_dir = Path(args.out)
   shards = write_shards(vecs, args.shard_size, args.dtype, out_dir)
 
-  def hnsw_build(data: np.ndarray, M: int = 16, efC: int = 200, seed: int = 0) -> dict:
+  def hnsw_build(
+    data: np.ndarray, M: int = 16, efC: int = 200, seed: int = 0
+  ) -> dict:
     rng = random.Random(seed)
     N, _D = data.shape
 
@@ -814,7 +977,9 @@ def main():
         lvl += 1
       node_levels.append(lvl)
     max_level = max(node_levels) if N > 0 else 0
-    levels: list[list[list[int]]] = [[[] for _ in range(N)] for _ in range(max_level + 1)]
+    levels: list[list[list[int]]] = [
+      [[] for _ in range(N)] for _ in range(max_level + 1)
+    ]
 
     def sim(i: int, j: int) -> float:
       return float((data[i] * data[j]).sum())
@@ -879,10 +1044,18 @@ def main():
           unique.sort(key=lambda j: sim(i, j), reverse=True)
           levels[L][i] = unique[:M]
 
-    return {'M': M, 'efConstruction': efC, 'entryPoint': entry, 'maxLevel': max_level, 'levels': levels}
+    return {
+      'M': M,
+      'efConstruction': efC,
+      'entryPoint': entry,
+      'maxLevel': max_level,
+      'levels': levels,
+    }
 
   hnsw = hnsw_build(vecs, M=16, efC=200)
-  hnsw_meta, hnsw_sha = write_hnsw_graph(hnsw['levels'], int(vecs.shape[0]), out_dir / 'hnsw.bin')
+  hnsw_meta, hnsw_sha = write_hnsw_graph(
+    hnsw['levels'], int(vecs.shape[0]), out_dir / 'hnsw.bin'
+  )
 
   manifest = {
     'version': 2,
@@ -892,7 +1065,12 @@ def main():
     'normalized': True,
     'rows': int(vecs.shape[0]),
     'shardSizeRows': args.shard_size,
-    'vectors': {'dtype': args.dtype, 'rows': int(vecs.shape[0]), 'dims': args.dims, 'shards': shards},
+    'vectors': {
+      'dtype': args.dtype,
+      'rows': int(vecs.shape[0]),
+      'dims': args.dims,
+      'shards': shards,
+    },
     'ids': ids,
     'titles': titles,
     'chunkMetadata': chunk_metadata,
@@ -901,11 +1079,19 @@ def main():
       'efConstruction': hnsw['efConstruction'],
       'entryPoint': hnsw['entryPoint'],
       'maxLevel': hnsw['maxLevel'],
-      'graph': {'path': '/embeddings/hnsw.bin', 'sha256': hnsw_sha, 'levels': hnsw_meta},
+      'graph': {
+        'path': '/embeddings/hnsw.bin',
+        'sha256': hnsw_sha,
+        'levels': hnsw_meta,
+      },
     },
   }
-  (out_dir / 'manifest.json').write_text(json.dumps(manifest, ensure_ascii=False), encoding='utf-8')
-  print(f'Wrote {len(shards)} vector shard(s), HNSW graph, and manifest to {out_dir}')
+  (out_dir / 'manifest.json').write_text(
+    json.dumps(manifest, ensure_ascii=False), encoding='utf-8'
+  )
+  print(
+    f'Wrote {len(shards)} vector shard(s), HNSW graph, and manifest to {out_dir}'
+  )
 
 
 if __name__ == '__main__':

@@ -76,13 +76,17 @@ def paged_attention_torch(
     # Compute attention: Q @ K^T
     # query[seq_idx]: [num_heads, head_dim]
     # keys: [num_heads, context_len, head_dim]
-    scores = torch.einsum('hd,hkd->hk', query[seq_idx], keys) * scale  # [num_heads, context_len]
+    scores = (
+      torch.einsum('hd,hkd->hk', query[seq_idx], keys) * scale
+    )  # [num_heads, context_len]
 
     # Softmax
     attn_weights = torch.softmax(scores, dim=-1)  # [num_heads, context_len]
 
     # Attention @ V
-    out = torch.einsum('hk,hkd->hd', attn_weights, values)  # [num_heads, head_dim]
+    out = torch.einsum(
+      'hk,hkd->hd', attn_weights, values
+    )  # [num_heads, head_dim]
 
     output[seq_idx] = out
 
@@ -133,7 +137,12 @@ def paged_attention_triton_kernel(
   token_offsets = tl.arange(0, PAGE_SIZE)
   dim_offsets = tl.arange(0, HEAD_DIM)
 
-  q_ptrs = q_ptr + seq_idx * stride_q_seq + head_idx * stride_q_head + dim_offsets * stride_q_d
+  q_ptrs = (
+    q_ptr
+    + seq_idx * stride_q_seq
+    + head_idx * stride_q_head
+    + dim_offsets * stride_q_d
+  )
   q = tl.load(q_ptrs, mask=dim_offsets < HEAD_DIM, other=0.0).to(tl.float32)
 
   row_max = tl.full((1,), -float('inf'), dtype=tl.float32)
@@ -145,7 +154,11 @@ def paged_attention_triton_kernel(
 
   for page_idx in range(MAX_PAGES):
     within_range = page_idx < num_pages_seq
-    block_num = tl.load(block_table_ptr + seq_idx * stride_bt_seq + page_idx, mask=within_range, other=0)
+    block_num = tl.load(
+      block_table_ptr + seq_idx * stride_bt_seq + page_idx,
+      mask=within_range,
+      other=0,
+    )
 
     page_start = page_idx * PAGE_SIZE
     tokens_left = context_len - page_start
@@ -160,8 +173,16 @@ def paged_attention_triton_kernel(
 
     token_mask = page_active & (token_offsets < tokens_in_page)
 
-    k_ptrs = k_base + token_offsets[:, None] * stride_k_token + dim_offsets[None, :] * stride_k_d
-    v_ptrs = v_base + token_offsets[:, None] * stride_v_token + dim_offsets[None, :] * stride_v_d
+    k_ptrs = (
+      k_base
+      + token_offsets[:, None] * stride_k_token
+      + dim_offsets[None, :] * stride_k_d
+    )
+    v_ptrs = (
+      v_base
+      + token_offsets[:, None] * stride_v_token
+      + dim_offsets[None, :] * stride_v_d
+    )
 
     k = tl.load(k_ptrs, mask=token_mask[:, None], other=0.0).to(tl.float32)
     v = tl.load(v_ptrs, mask=token_mask[:, None], other=0.0).to(tl.float32)
@@ -183,7 +204,12 @@ def paged_attention_triton_kernel(
   inv_row_sum = 1.0 / tl.maximum(row_sum, 1e-9)
   acc = acc * inv_row_sum
 
-  out_ptrs = out_ptr + seq_idx * stride_o_seq + head_idx * stride_o_head + dim_offsets * stride_o_d
+  out_ptrs = (
+    out_ptr
+    + seq_idx * stride_o_seq
+    + head_idx * stride_o_head
+    + dim_offsets * stride_o_d
+  )
   tl.store(out_ptrs, acc.to(tl.float32), mask=dim_offsets < HEAD_DIM)
 
 
@@ -208,8 +234,12 @@ def paged_attention_triton(
   output = torch.zeros_like(query_contig)
 
   stride_q_seq, stride_q_head, stride_q_d = query_contig.stride()
-  stride_k_page, stride_k_head, stride_k_token, stride_k_d = key_contig.stride()
-  stride_v_page, stride_v_head, stride_v_token, stride_v_d = value_contig.stride()
+  stride_k_page, stride_k_head, stride_k_token, stride_k_d = (
+    key_contig.stride()
+  )
+  stride_v_page, stride_v_head, stride_v_token, stride_v_d = (
+    value_contig.stride()
+  )
   stride_o_seq, stride_o_head, stride_o_d = output.stride()
   stride_bt_seq, _ = block_tables_contig.stride()
 
@@ -311,7 +341,9 @@ def paged_attention_cute_kernel(
           qk_score = 0.0
 
           for d in range(head_dim):
-            qk_score += q_local[d] * key_cache[block_num, head_idx, token_idx, d]
+            qk_score += (
+              q_local[d] * key_cache[block_num, head_idx, token_idx, d]
+            )
 
           qk_score *= scale
 
@@ -319,7 +351,11 @@ def paged_attention_cute_kernel(
           prev_max = row_max
           row_max = max(row_max, qk_score)
 
-          exp_prev = 0.0 if prev_max == float('-inf') else cute_math.exp(prev_max - row_max)
+          exp_prev = (
+            0.0
+            if prev_max == float('-inf')
+            else cute_math.exp(prev_max - row_max)
+          )
           exp_curr = cute_math.exp(qk_score - row_max)
 
           row_sum = row_sum * exp_prev + exp_curr
@@ -332,7 +368,9 @@ def paged_attention_cute_kernel(
           attn_weight = exp_curr
 
           for d in range(head_dim):
-            acc[d] += attn_weight * value_cache[block_num, head_idx, token_idx, d]
+            acc[d] += (
+              attn_weight * value_cache[block_num, head_idx, token_idx, d]
+            )
 
     # Final normalization and write output
     inv_row_sum = 0.0 if row_sum == 0.0 else 1.0 / row_sum
@@ -375,14 +413,18 @@ def paged_attention_cute_launch(
 
 
 @lru_cache(maxsize=None)
-def build_paged_attention_cute_optimized_launch(head_dim: int, page_size: int, max_num_pages: int, tile_tokens: int):
+def build_paged_attention_cute_optimized_launch(
+  head_dim: int, page_size: int, max_num_pages: int, tile_tokens: int
+):
   """Bake compile-time tile constants into an optimized CuTe kernel."""
 
   head_dim_const = head_dim
   page_size_const = page_size
   max_pages_const = max_num_pages
   tile_tokens_const = max(1, min(tile_tokens, page_size_const))
-  tiles_per_page_const = (page_size_const + tile_tokens_const - 1) // tile_tokens_const
+  tiles_per_page_const = (
+    page_size_const + tile_tokens_const - 1
+  ) // tile_tokens_const
 
   @cute.kernel
   def paged_attention_cute_kernel_optimized(
@@ -427,7 +469,11 @@ def build_paged_attention_cute_optimized_launch(head_dim: int, page_size: int, m
           for tile_idx in range(tiles_per_page_const):
             tile_base = tile_idx * tile_tokens_const
             tokens_remaining = tokens_in_page - tile_base
-            valid_tokens = tile_tokens_const if tokens_remaining >= tile_tokens_const else max(tokens_remaining, 0)
+            valid_tokens = (
+              tile_tokens_const
+              if tokens_remaining >= tile_tokens_const
+              else max(tokens_remaining, 0)
+            )
 
             if valid_tokens > 0:
               for token_offset in range(tile_tokens_const):
@@ -447,14 +493,20 @@ def build_paged_attention_cute_optimized_launch(head_dim: int, page_size: int, m
                   prev_max = row_max
                   row_max = max(row_max, qk_score)
 
-                  exp_prev = 0.0 if prev_max == float('-inf') else cute_math.exp(prev_max - row_max)
+                  exp_prev = (
+                    0.0
+                    if prev_max == float('-inf')
+                    else cute_math.exp(prev_max - row_max)
+                  )
                   exp_curr = cute_math.exp(qk_score - row_max)
 
                   row_sum = row_sum * exp_prev + exp_curr
 
                   for d in range(head_dim_const):
                     v_val_half = value_cache[block_num, head_idx, token_idx, d]
-                    acc[d] = acc[d] * exp_prev + exp_curr * cutlass.Float32(v_val_half)
+                    acc[d] = acc[d] * exp_prev + exp_curr * cutlass.Float32(
+                      v_val_half
+                    )
 
       inv_row_sum = 0.0 if row_sum == 0.0 else 1.0 / row_sum
 
@@ -474,7 +526,15 @@ def build_paged_attention_cute_optimized_launch(head_dim: int, page_size: int, m
     num_heads: cutlass.Int32,
   ):
     paged_attention_cute_kernel_optimized(
-      output, query, key_cache, value_cache, block_tables, context_lens, scale, num_seqs, num_heads
+      output,
+      query,
+      key_cache,
+      value_cache,
+      block_tables,
+      context_lens,
+      scale,
+      num_seqs,
+      num_heads,
     ).launch(grid=(num_heads, num_seqs, 1), block=(1, 1, 1))
 
   return paged_attention_cute_optimized_launch
@@ -564,9 +624,18 @@ def paged_attention_cute_optimized(
   max_num_pages = block_tables.shape[1]
   tile_tokens = max(1, min(tile_tokens, page_size))
 
-  launch = build_paged_attention_cute_optimized_launch(head_dim, page_size, max_num_pages, tile_tokens)
+  launch = build_paged_attention_cute_optimized_launch(
+    head_dim, page_size, max_num_pages, tile_tokens
+  )
 
-  cache_key = (query.shape[0], query.shape[1], head_dim, page_size, max_num_pages, tile_tokens)
+  cache_key = (
+    query.shape[0],
+    query.shape[1],
+    head_dim,
+    page_size,
+    max_num_pages,
+    tile_tokens,
+  )
 
   compiled = _OPT_KERNEL_CACHE.get(cache_key)
 
@@ -621,22 +690,42 @@ def test_paged_attention(
   max_num_pages = (seq_len + page_size - 1) // page_size
 
   # Context lengths for each sequence (all at max for this test)
-  context_lens = torch.full((num_seqs,), seq_len, dtype=torch.int32, device='cuda')
+  context_lens = torch.full(
+    (num_seqs,), seq_len, dtype=torch.int32, device='cuda'
+  )
 
   # Calculate total pages needed
   total_pages = num_seqs * max_num_pages
 
   # Block tables (maps logical pages to physical pages)
-  block_tables = torch.zeros((num_seqs, max_num_pages), dtype=torch.int32, device='cuda')
+  block_tables = torch.zeros(
+    (num_seqs, max_num_pages), dtype=torch.int32, device='cuda'
+  )
   for seq_idx in range(num_seqs):
     pages_for_seq = max_num_pages
     for page_idx in range(pages_for_seq):
       block_tables[seq_idx, page_idx] = seq_idx * max_num_pages + page_idx
 
   # Allocate tensors
-  query = torch.randn(num_seqs, num_heads, head_dim, dtype=torch.float32, device='cuda')
-  key_cache = torch.randn(total_pages, num_heads, page_size, head_dim, dtype=torch.float32, device='cuda')
-  value_cache = torch.randn(total_pages, num_heads, page_size, head_dim, dtype=torch.float32, device='cuda')
+  query = torch.randn(
+    num_seqs, num_heads, head_dim, dtype=torch.float32, device='cuda'
+  )
+  key_cache = torch.randn(
+    total_pages,
+    num_heads,
+    page_size,
+    head_dim,
+    dtype=torch.float32,
+    device='cuda',
+  )
+  value_cache = torch.randn(
+    total_pages,
+    num_heads,
+    page_size,
+    head_dim,
+    dtype=torch.float32,
+    device='cuda',
+  )
 
   scale = 1.0 / np.sqrt(head_dim)
   total_tokens = int(context_lens.sum().item())
@@ -661,11 +750,15 @@ def test_paged_attention(
   print('-' * 70)
 
   if verbosity >= 1:
-    print(f'Benchmarking with {100 if seq_len <= 128 else 20} iterations (3 warmup runs)')
+    print(
+      f'Benchmarking with {100 if seq_len <= 128 else 20} iterations (3 warmup runs)'
+    )
 
   # Warmup
   for _ in range(3):
-    _ = paged_attention_torch(query, key_cache, value_cache, block_tables, context_lens, scale)
+    _ = paged_attention_torch(
+      query, key_cache, value_cache, block_tables, context_lens, scale
+    )
   torch.cuda.synchronize()
 
   # Time PyTorch implementation (fewer iterations for larger inputs)
@@ -673,9 +766,13 @@ def test_paged_attention(
   torch.cuda.synchronize()
   start = time.perf_counter()
   for _ in range(num_iterations):
-    output_ref = paged_attention_torch(query, key_cache, value_cache, block_tables, context_lens, scale)
+    output_ref = paged_attention_torch(
+      query, key_cache, value_cache, block_tables, context_lens, scale
+    )
   torch.cuda.synchronize()
-  pytorch_time = (time.perf_counter() - start) / num_iterations * 1000  # Convert to ms
+  pytorch_time = (
+    (time.perf_counter() - start) / num_iterations * 1000
+  )  # Convert to ms
 
   print(f'Output shape: {output_ref.shape}')
   if verbosity >= 1:
@@ -692,12 +789,16 @@ def test_paged_attention(
   print('-' * 70)
 
   for _ in range(3):
-    output_triton = paged_attention_triton(query, key_cache, value_cache, block_tables, context_lens, scale)
+    output_triton = paged_attention_triton(
+      query, key_cache, value_cache, block_tables, context_lens, scale
+    )
   torch.cuda.synchronize()
 
   start = time.perf_counter()
   for _ in range(num_iterations):
-    output_triton = paged_attention_triton(query, key_cache, value_cache, block_tables, context_lens, scale)
+    output_triton = paged_attention_triton(
+      query, key_cache, value_cache, block_tables, context_lens, scale
+    )
   torch.cuda.synchronize()
   triton_time = (time.perf_counter() - start) / num_iterations * 1000
 
@@ -792,7 +893,9 @@ def test_paged_attention(
     key_cache_fp16_ = from_dlpack(key_cache_fp16, assumed_align=16)
     value_cache_fp16_ = from_dlpack(value_cache_fp16, assumed_align=16)
 
-    opt_launch = build_paged_attention_cute_optimized_launch(head_dim, page_size, max_num_pages, tile_tokens)
+    opt_launch = build_paged_attention_cute_optimized_launch(
+      head_dim, page_size, max_num_pages, tile_tokens
+    )
     paged_attention_opt = cute.compile(
       opt_launch,
       output_opt_,
@@ -852,25 +955,37 @@ def test_paged_attention(
 
   except Exception as e:
     print(f'Error running CuTe DSL kernels: {e}')
-    print('Note: CuTe DSL is in beta and may require specific CUDA/driver versions')
+    print(
+      'Note: CuTe DSL is in beta and may require specific CUDA/driver versions'
+    )
 
-  if any(v is not None for v in (baseline_max_diff, opt_max_diff, triton_max_diff)):
+  if any(
+    v is not None for v in (baseline_max_diff, opt_max_diff, triton_max_diff)
+  ):
     print('\n' + '-' * 70)
     print('Verification vs. PyTorch reference')
     print('-' * 70)
     tolerance = 1e-3
     diffs = []
     if baseline_max_diff is not None:
-      print(f'Baseline CuTe max |Δ|: {baseline_max_diff:.6f} (mean {baseline_mean_diff:.6f})')
+      print(
+        f'Baseline CuTe max |Δ|: {baseline_max_diff:.6f} (mean {baseline_mean_diff:.6f})'
+      )
       diffs.append(baseline_max_diff)
     if opt_max_diff is not None:
-      print(f'Optimized CuTe max |Δ|: {opt_max_diff:.6f} (mean {opt_mean_diff:.6f})')
+      print(
+        f'Optimized CuTe max |Δ|: {opt_max_diff:.6f} (mean {opt_mean_diff:.6f})'
+      )
       diffs.append(opt_max_diff)
     if triton_max_diff is not None:
-      print(f'Triton kernel max |Δ|: {triton_max_diff:.6f} (mean {triton_mean_diff:.6f})')
+      print(
+        f'Triton kernel max |Δ|: {triton_max_diff:.6f} (mean {triton_mean_diff:.6f})'
+      )
       diffs.append(triton_max_diff)
     if diffs:
-      status = 'PASSED' if all(diff < tolerance for diff in diffs) else 'FAILED'
+      status = (
+        'PASSED' if all(diff < tolerance for diff in diffs) else 'FAILED'
+      )
       print(f'Comparison status: {status} (tolerance {tolerance})')
 
   print('\n' + '-' * 70)
@@ -878,7 +993,9 @@ def test_paged_attention(
   print('-' * 70)
   pytorch_tflops = tflops_from_ms(pytorch_time)
   if pytorch_tflops is not None:
-    print(f'PyTorch reference: {pytorch_time:.3f} ms ({pytorch_tflops:.3f} TFLOP/s)')
+    print(
+      f'PyTorch reference: {pytorch_time:.3f} ms ({pytorch_tflops:.3f} TFLOP/s)'
+    )
   else:
     print(f'PyTorch reference: {pytorch_time:.3f} ms')
   if triton_time is not None:
@@ -919,18 +1036,26 @@ def test_paged_attention(
   max_len = seq_len
   avg_len = max(seq_len // 4, page_size)
 
-  print(f'\nScenario: {num_seqs} sequences with max_len={max_len}, avg_len={avg_len}')
+  print(
+    f'\nScenario: {num_seqs} sequences with max_len={max_len}, avg_len={avg_len}'
+  )
   print(
     f'KV cache element size: {num_heads} heads × {head_dim} dim × 4 bytes = {num_heads * head_dim * 4} bytes/token'
   )
 
   # Traditional pre-allocated cache
-  traditional_memory = num_seqs * max_len * num_heads * head_dim * 4 * 2  # 2 for K and V
+  traditional_memory = (
+    num_seqs * max_len * num_heads * head_dim * 4 * 2
+  )  # 2 for K and V
   print('\nTraditional (pre-allocated):')
-  print(f'  Memory: {num_seqs} seqs × {max_len} tokens × {num_heads * head_dim * 4 * 2} bytes')
+  print(
+    f'  Memory: {num_seqs} seqs × {max_len} tokens × {num_heads * head_dim * 4 * 2} bytes'
+  )
   print(f'  Total: {traditional_memory / 1024 / 1024:.2f} MB')
   print(f'  Utilization: {avg_len / max_len * 100:.1f}%')
-  print(f'  Wasted: {(max_len - avg_len) * num_seqs * num_heads * head_dim * 4 * 2 / 1024 / 1024:.2f} MB')
+  print(
+    f'  Wasted: {(max_len - avg_len) * num_seqs * num_heads * head_dim * 4 * 2 / 1024 / 1024:.2f} MB'
+  )
 
   # Paged attention
   pages_needed = num_seqs * ((avg_len + page_size - 1) // page_size)
@@ -938,7 +1063,9 @@ def test_paged_attention(
   print('\nPaged attention:')
   print(f'  Pages needed: {pages_needed} pages × {page_size} tokens')
   print(f'  Memory: {paged_memory / 1024 / 1024:.2f} MB')
-  print(f'  Savings: {(traditional_memory - paged_memory) / traditional_memory * 100:.1f}%')
+  print(
+    f'  Savings: {(traditional_memory - paged_memory) / traditional_memory * 100:.1f}%'
+  )
   print(f'  Fragmentation: < {page_size} tokens per sequence')
 
   if verbosity >= 2:
@@ -960,16 +1087,46 @@ For production use, see:
 
 
 def main():
-  parser = argparse.ArgumentParser(description='Paged Attention: PyTorch vs CuTe DSL')
-  parser.add_argument(
-    '-v', '--verbose', action='count', default=0, help='Increase verbosity (-v for version info, -vv for all details)'
+  parser = argparse.ArgumentParser(
+    description='Paged Attention: PyTorch vs CuTe DSL'
   )
-  parser.add_argument('--seq-len', type=int, default=None, help='Sequence length (default: run multiple sizes)')
-  parser.add_argument('--num-seqs', type=int, default=2, help='Number of sequences (default: 2)')
-  parser.add_argument('--num-heads', type=int, default=4, help='Number of attention heads (default: 4)')
-  parser.add_argument('--head-dim', type=int, default=64, help='Head dimension (default: 64)')
-  parser.add_argument('--page-size', type=int, default=16, help='Page size in tokens (default: 16)')
-  parser.add_argument('--tile-tokens', type=int, default=32, help='Optimized CuTe kernel tile size (default: 32)')
+  parser.add_argument(
+    '-v',
+    '--verbose',
+    action='count',
+    default=0,
+    help='Increase verbosity (-v for version info, -vv for all details)',
+  )
+  parser.add_argument(
+    '--seq-len',
+    type=int,
+    default=None,
+    help='Sequence length (default: run multiple sizes)',
+  )
+  parser.add_argument(
+    '--num-seqs', type=int, default=2, help='Number of sequences (default: 2)'
+  )
+  parser.add_argument(
+    '--num-heads',
+    type=int,
+    default=4,
+    help='Number of attention heads (default: 4)',
+  )
+  parser.add_argument(
+    '--head-dim', type=int, default=64, help='Head dimension (default: 64)'
+  )
+  parser.add_argument(
+    '--page-size',
+    type=int,
+    default=16,
+    help='Page size in tokens (default: 16)',
+  )
+  parser.add_argument(
+    '--tile-tokens',
+    type=int,
+    default=32,
+    help='Optimized CuTe kernel tile size (default: 32)',
+  )
   args = parser.parse_args()
 
   if not torch.cuda.is_available():

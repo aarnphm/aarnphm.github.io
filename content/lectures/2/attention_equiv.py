@@ -29,7 +29,9 @@ def normalize_rows(X: np.ndarray, target_norm: float = 1.0) -> np.ndarray:
   return X / nrm * target_norm
 
 
-def attention(Q: np.ndarray, K: np.ndarray, V: np.ndarray, T: float = 1.0) -> Tuple[np.ndarray, np.ndarray]:
+def attention(
+  Q: np.ndarray, K: np.ndarray, V: np.ndarray, T: float = 1.0
+) -> Tuple[np.ndarray, np.ndarray]:
   d = Q.shape[1]
   logits = (Q @ K.T) / np.sqrt(d) / T
   P = softmax(logits, axis=1)

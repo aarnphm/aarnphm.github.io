@@ -86,7 +86,13 @@ def merge(γ: TransFunc, δ: TransFunc) -> TransFunc:
   return (
     {q: γ[q] for q in γ.keys() - δ.keys()}
     | {q: δ[q] for q in δ.keys() - γ.keys()}
-    | {q: {a: γ[q].get(a, set()) | δ[q].get(a, set()) for a in γ[q].keys() | δ[q].keys()} for q in γ.keys() & δ.keys()}
+    | {
+      q: {
+        a: γ[q].get(a, set()) | δ[q].get(a, set())
+        for a in γ[q].keys() | δ[q].keys()
+      }
+      for q in γ.keys() & δ.keys()
+    }
   )
 
 
@@ -109,7 +115,9 @@ def RegExToFSA(re) -> FiniteStateAutomaton:
         q = QC
         QC += 1
         δ = A1.δ | A2.δ | {q: {'ε': A1.I | A2.I}}
-        return FiniteStateAutomaton(A1.Σ | A2.Σ, A1.Q | A2.Q | {q}, {q}, δ, A1.F | A2.F)
+        return FiniteStateAutomaton(
+          A1.Σ | A2.Σ, A1.Q | A2.Q | {q}, {q}, δ, A1.F | A2.F
+        )
       case Conc(E1=E1, E2=E2):
         A1, A2 = ToFSA(E1), ToFSA(E2)
         δ = merge(A1.δ | A2.δ, {q: {'ε': A2.I} for q in A1.F})

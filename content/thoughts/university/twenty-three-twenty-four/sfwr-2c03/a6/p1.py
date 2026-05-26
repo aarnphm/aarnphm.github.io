@@ -117,7 +117,13 @@ class RedBlackTree:
 
     def add_nodes_edges(node, parent=None, edge_label=''):
       if node:
-        dot.node(str(node.value), str(node.value), color=colors[node.color], style='filled', fontcolor='white')
+        dot.node(
+          str(node.value),
+          str(node.value),
+          color=colors[node.color],
+          style='filled',
+          fontcolor='white',
+        )
         if parent:
           dot.edge(str(parent.value), str(node.value), label=edge_label)
         add_nodes_edges(node.left, node, 'L')

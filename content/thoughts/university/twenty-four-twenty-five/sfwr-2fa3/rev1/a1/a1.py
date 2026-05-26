@@ -149,9 +149,9 @@ def dfa_3(format):
   # Product states combining M1 and M2 states
   union_states = [(q, p) for q in m1_states for p in m2_states]
   union_start_state = (m1_start_state, m2_start_state)
-  union_accept_states = [(q, p) for q in m1_accept_states for p in m2_states] + [
-    (q, p) for q in m1_states for p in m2_accept_states
-  ]
+  union_accept_states = [
+    (q, p) for q in m1_accept_states for p in m2_states
+  ] + [(q, p) for q in m1_states for p in m2_accept_states]
 
   # Transitions for the union DFA
   union_edges = []
@@ -159,9 +159,19 @@ def dfa_3(format):
     for p1 in m2_states:
       for a in ['a', 'b']:
         # Find the next state for q1 in M1
-        next_q1 = next((end for start, input, end in m1_edges if start == q1 and input == a), None)
+        next_q1 = next(
+          (
+            end for start, input, end in m1_edges if start == q1 and input == a
+          ),
+          None,
+        )
         # Find the next state for p1 in M2
-        next_p1 = next((end for start, input, end in m2_edges if start == p1 and input == a), None)
+        next_p1 = next(
+          (
+            end for start, input, end in m2_edges if start == p1 and input == a
+          ),
+          None,
+        )
         # Add the transition to the union edges
         if next_q1 and next_p1:
           union_edges.append(((q1, p1), a, (next_q1, next_p1)))
@@ -227,8 +237,18 @@ if __name__ == '__main__':
 
   parser = argparse.ArgumentParser()
   parser.add_argument('question', type=str, help='Question number')
-  parser.add_argument('--output-type', type=str, choices=['svg', 'png'], default='svg', help='Output file type')
+  parser.add_argument(
+    '--output-type',
+    type=str,
+    choices=['svg', 'png'],
+    default='svg',
+    help='Output file type',
+  )
   args = parser.parse_args()
-  output_path = f'./a1/dfa_2{args.question}' if args.question in ['a', 'b', 'c', '3'] else f'./a1/dfa_4{args.question}'
+  output_path = (
+    f'./a1/dfa_2{args.question}'
+    if args.question in ['a', 'b', 'c', '3']
+    else f'./a1/dfa_4{args.question}'
+  )
   dfa = m[args.question](args.output_type)
   dfa.render(output_path, view=False)

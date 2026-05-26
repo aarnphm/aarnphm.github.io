@@ -43,7 +43,9 @@ def parallelmax(a, p=2):
   max_values = [0] * p
   threads = []
   for i in range(p):
-    thread = threading.Thread(target=lambda i=i: max_values.__setitem__(i, max_sub(sub[i])))
+    thread = threading.Thread(
+      target=lambda i=i: max_values.__setitem__(i, max_sub(sub[i]))
+    )
     thread.start()
     threads.append(thread)
 

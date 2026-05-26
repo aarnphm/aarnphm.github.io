@@ -3,8 +3,24 @@ from pathlib import Path
 import svgling
 from nltk import Tree
 
-tree1 = Tree('S', ['a', Tree('S', ['ε']), 'b', Tree('S', ['a', Tree('S', ['ε']), 'b', Tree('S', ['ε'])])])
-tree2 = Tree('S', ['a', Tree('S', ['b', Tree('S', ['ε']), 'a', Tree('S', ['ε'])]), 'b', Tree('S', ['ε'])])
+tree1 = Tree(
+  'S',
+  [
+    'a',
+    Tree('S', ['ε']),
+    'b',
+    Tree('S', ['a', Tree('S', ['ε']), 'b', Tree('S', ['ε'])]),
+  ],
+)
+tree2 = Tree(
+  'S',
+  [
+    'a',
+    Tree('S', ['b', Tree('S', ['ε']), 'a', Tree('S', ['ε'])]),
+    'b',
+    Tree('S', ['ε']),
+  ],
+)
 
 
 def save_tree(tree: Tree, output_path: Path) -> None:

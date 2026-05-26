@@ -86,9 +86,21 @@ reorder_raw = df.iloc[:, 24]
 value_raw = df.iloc[:, 25]
 
 # ── encoding functions ──────────────────────────────────────────────────
-SAT_MAP = {'Very Satisfied': 5, 'Satisfied': 4, 'Neutral': 3, 'Dissatisfied': 2, 'Very Dissatisfied': 1}
+SAT_MAP = {
+  'Very Satisfied': 5,
+  'Satisfied': 4,
+  'Neutral': 3,
+  'Dissatisfied': 2,
+  'Very Dissatisfied': 1,
+}
 
-BUDGET_MAP = {'Less than $20': 1, '$20 - $40': 2, '$41 - $60': 3, '$61 - $80': 4, 'More than $80': 5}
+BUDGET_MAP = {
+  'Less than $20': 1,
+  '$20 - $40': 2,
+  '$41 - $60': 3,
+  '$61 - $80': 4,
+  'More than $80': 5,
+}
 
 
 def leading_digit(s):
@@ -106,7 +118,12 @@ trial_binary = (mm_trial == 'Yes').astype(int)
 sat_encoded = pd.DataFrame({k: v.map(SAT_MAP) for k, v in sat_cols.items()})
 budget_ord = budget.map(BUDGET_MAP)
 
-mm_aware = aided_awareness.fillna('').str.contains('Mister Maki', case=False).astype(int)
+mm_aware = (
+  aided_awareness
+  .fillna('')
+  .str.contains('Mister Maki', case=False)
+  .astype(int)
+)
 
 is_wom = (first_learned == 'Friend / classmate / family').astype(int)
 
@@ -141,8 +158,12 @@ def log(text):
 
 log('=' * 80)
 log('MISTER MAKI SURVEY — STATISTICAL ANALYSIS v2')
-log(f'N = {N}  |  Students = {is_student.sum()}  |  Residents = {is_resident.sum()}')
-log(f'MM Customers (trial=Yes) = {(mm_trial == "Yes").sum()}  |  Non-customers = {(mm_trial == "No").sum()}')
+log(
+  f'N = {N}  |  Students = {is_student.sum()}  |  Residents = {is_resident.sum()}'
+)
+log(
+  f'MM Customers (trial=Yes) = {(mm_trial == "Yes").sum()}  |  Non-customers = {(mm_trial == "No").sum()}'
+)
 log('=' * 80)
 log('')
 
@@ -163,10 +184,16 @@ ci_res = wilson_ci(a_res, n_res)
 log('  H0: Proportion aware of MM is equal across segments')
 log('  H1: Proportion aware of MM differs by segment')
 log("  Test: Fisher's exact (2×2, small cells)")
-log(f'  Students aware: {a_stu}/{n_stu} = {a_stu / n_stu:.1%}  CI95 [{ci_stu[0]:.1%}, {ci_stu[1]:.1%}]')
-log(f'  Residents aware: {a_res}/{n_res} = {a_res / n_res:.1%}  CI95 [{ci_res[0]:.1%}, {ci_res[1]:.1%}]')
+log(
+  f'  Students aware: {a_stu}/{n_stu} = {a_stu / n_stu:.1%}  CI95 [{ci_stu[0]:.1%}, {ci_stu[1]:.1%}]'
+)
+log(
+  f'  Residents aware: {a_res}/{n_res} = {a_res / n_res:.1%}  CI95 [{ci_res[0]:.1%}, {ci_res[1]:.1%}]'
+)
 log(f"  p = {p_h1:.4f}  |  Cramér's V = {v_h1:.3f}")
-log(f'  Decision: {"Reject H0" if p_h1 < 0.05 else "Fail to reject H0"} at α=0.05')
+log(
+  f'  Decision: {"Reject H0" if p_h1 < 0.05 else "Fail to reject H0"} at α=0.05'
+)
 results.append((
   'H1',
   'Aided awareness × segment',
@@ -188,7 +215,10 @@ wom_stu = is_wom[is_student & valid_h2].sum()
 n_stu_h2 = (is_student & valid_h2).sum()
 wom_res = is_wom[is_resident & valid_h2].sum()
 n_res_h2 = (is_resident & valid_h2).sum()
-table_h2 = np.array([[wom_stu, n_stu_h2 - wom_stu], [wom_res, n_res_h2 - wom_res]])
+table_h2 = np.array([
+  [wom_stu, n_stu_h2 - wom_stu],
+  [wom_res, n_res_h2 - wom_res],
+])
 _, p_h2 = stats.fisher_exact(table_h2)
 v_h2 = cramers_v(table_h2)
 
@@ -198,7 +228,9 @@ log("  Test: Fisher's exact (2×2)")
 log(f'  Students WOM: {wom_stu}/{n_stu_h2} = {wom_stu / n_stu_h2:.1%}')
 log(f'  Residents WOM: {wom_res}/{n_res_h2} = {wom_res / n_res_h2:.1%}')
 log(f"  p = {p_h2:.4f}  |  Cramér's V = {v_h2:.3f}")
-log(f'  Decision: {"Reject H0" if p_h2 < 0.05 else "Fail to reject H0"} at α=0.05')
+log(
+  f'  Decision: {"Reject H0" if p_h2 < 0.05 else "Fail to reject H0"} at α=0.05'
+)
 results.append((
   'H2',
   'WOM discovery × segment',
@@ -221,10 +253,16 @@ if len(vp_stu) > 0 and len(vp_res) > 0:
   log('  H0: Value perception distribution is equal across segments')
   log('  H1: Value perception distribution differs by segment')
   log('  Test: Mann-Whitney U (ordinal data)')
-  log(f'  Students: median={vp_stu.median():.0f}, mean={vp_stu.mean():.2f}, n={len(vp_stu)}')
-  log(f'  Residents: median={vp_res.median():.0f}, mean={vp_res.mean():.2f}, n={len(vp_res)}')
+  log(
+    f'  Students: median={vp_stu.median():.0f}, mean={vp_stu.mean():.2f}, n={len(vp_stu)}'
+  )
+  log(
+    f'  Residents: median={vp_res.median():.0f}, mean={vp_res.mean():.2f}, n={len(vp_res)}'
+  )
   log(f'  U = {u_h3:.1f}  |  p = {p_h3:.4f}  |  rank-biserial r = {rb_h3:.3f}')
-  log(f'  Decision: {"Reject H0" if p_h3 < 0.05 else "Fail to reject H0"} at α=0.05')
+  log(
+    f'  Decision: {"Reject H0" if p_h3 < 0.05 else "Fail to reject H0"} at α=0.05'
+  )
   results.append((
     'H3',
     'Value perception × segment',
@@ -235,7 +273,14 @@ if len(vp_stu) > 0 and len(vp_res) > 0:
   ))
 else:
   log('  Insufficient data for comparison')
-  results.append(('H3', 'Value perception × segment', 'Mann-Whitney U', 'N/A', 'N/A', 'N/A'))
+  results.append((
+    'H3',
+    'Value perception × segment',
+    'Mann-Whitney U',
+    'N/A',
+    'N/A',
+    'N/A',
+  ))
 log('')
 
 # ── H4: Temaki familiarity × MM trial ──────────────────────────────────
@@ -254,7 +299,9 @@ log('  H1: Higher temaki familiarity is associated with MM trial')
 log('  Test: Point-biserial r (continuous × binary)')
 log(f'  r_pb = {rpb:.3f}  |  p = {p_rpb:.4f}')
 log(f'  Robustness: Spearman ρ = {rho:.3f}  |  p = {p_rho:.4f}')
-log(f'  Decision: {"Reject H0" if p_rpb < 0.05 else "Fail to reject H0"} at α=0.05')
+log(
+  f'  Decision: {"Reject H0" if p_rpb < 0.05 else "Fail to reject H0"} at α=0.05'
+)
 results.append((
   'H4',
   'Temaki fam. × trial',
@@ -281,8 +328,12 @@ if n_cust >= 3:
   fr_stat, p_fr = stats.friedmanchisquare(*[sat_df[c] for c in sat_df.columns])
   w_kendall = fr_stat / (n_cust * (len(sat_df.columns) - 1))
   log('  Test: Friedman χ² (repeated-measures ordinal)')
-  log(f"  χ² = {fr_stat:.3f}  |  p = {p_fr:.4f}  |  Kendall's W = {w_kendall:.3f}")
-  log(f'  Decision: {"Reject H0" if p_fr < 0.05 else "Fail to reject H0"} at α=0.05')
+  log(
+    f"  χ² = {fr_stat:.3f}  |  p = {p_fr:.4f}  |  Kendall's W = {w_kendall:.3f}"
+  )
+  log(
+    f'  Decision: {"Reject H0" if p_fr < 0.05 else "Fail to reject H0"} at α=0.05'
+  )
 
   if p_fr < 0.05:
     log('  Post-hoc Wilcoxon signed-rank with Bonferroni correction:')
@@ -290,10 +341,17 @@ if n_cust >= 3:
     n_comparisons = len(cols) * (len(cols) - 1) // 2
     for i in range(len(cols)):
       for j in range(i + 1, len(cols)):
-        w_stat, p_w = stats.wilcoxon(sat_df[cols[i]], sat_df[cols[j]], zero_method='wilcox', alternative='two-sided')
+        w_stat, p_w = stats.wilcoxon(
+          sat_df[cols[i]],
+          sat_df[cols[j]],
+          zero_method='wilcox',
+          alternative='two-sided',
+        )
         p_adj = min(p_w * n_comparisons, 1.0)
         sig = '*' if p_adj < 0.05 else ''
-        log(f'    {cols[i]} vs {cols[j]}: W={w_stat:.0f}, p_adj={p_adj:.4f} {sig}')
+        log(
+          f'    {cols[i]} vs {cols[j]}: W={w_stat:.0f}, p_adj={p_adj:.4f} {sig}'
+        )
 
   results.append((
     'H5',
@@ -305,7 +363,14 @@ if n_cust >= 3:
   ))
 else:
   log('  Too few customers for Friedman test')
-  results.append(('H5', 'Satisfaction across dims', 'Friedman', 'N/A', 'N/A', 'N/A'))
+  results.append((
+    'H5',
+    'Satisfaction across dims',
+    'Friedman',
+    'N/A',
+    'N/A',
+    'N/A',
+  ))
 log('')
 
 # ── H6: Budget × trial ─────────────────────────────────────────────────
@@ -322,10 +387,16 @@ rb_h6 = rank_biserial(u_h6, len(bud_yes), len(bud_no))
 log('  H0: Budget distribution is equal for trial=Yes vs trial=No')
 log('  H1: Budget distribution differs by trial status')
 log('  Test: Mann-Whitney U')
-log(f'  Trial=Yes: median={bud_yes.median():.0f}, mean={bud_yes.mean():.2f}, n={len(bud_yes)}')
-log(f'  Trial=No:  median={bud_no.median():.0f}, mean={bud_no.mean():.2f}, n={len(bud_no)}')
+log(
+  f'  Trial=Yes: median={bud_yes.median():.0f}, mean={bud_yes.mean():.2f}, n={len(bud_yes)}'
+)
+log(
+  f'  Trial=No:  median={bud_no.median():.0f}, mean={bud_no.mean():.2f}, n={len(bud_no)}'
+)
 log(f'  U = {u_h6:.1f}  |  p = {p_h6:.4f}  |  rank-biserial r = {rb_h6:.3f}')
-log(f'  Decision: {"Reject H0" if p_h6 < 0.05 else "Fail to reject H0"} at α=0.05')
+log(
+  f'  Decision: {"Reject H0" if p_h6 < 0.05 else "Fail to reject H0"} at α=0.05'
+)
 results.append((
   'H6',
   'Budget × trial',
@@ -340,7 +411,10 @@ log('')
 log('─' * 80)
 log('H7: Dining frequency associated with MM trial')
 
-freq_regular = dining_freq.isin(['Regularly (1-2 times a week)', 'Frequently (3+ times a week)'])
+freq_regular = dining_freq.isin([
+  'Regularly (1-2 times a week)',
+  'Frequently (3+ times a week)',
+])
 reg_trial = (freq_regular & (mm_trial == 'Yes')).sum()
 reg_no = (freq_regular & (mm_trial == 'No')).sum()
 occ_trial = (~freq_regular & (mm_trial == 'Yes')).sum()
@@ -363,7 +437,9 @@ log(
   f'  Occasional- diners trial rate: {occ_trial}/{total_occ} = {occ_trial / total_occ:.1%}  CI95 [{ci_occ[0]:.1%}, {ci_occ[1]:.1%}]'
 )
 log(f"  p = {p_h7:.4f}  |  Cramér's V = {v_h7:.3f}")
-log(f'  Decision: {"Reject H0" if p_h7 < 0.05 else "Fail to reject H0"} at α=0.05')
+log(
+  f'  Decision: {"Reject H0" if p_h7 < 0.05 else "Fail to reject H0"} at α=0.05'
+)
 results.append((
   'H7',
   'Dining freq × trial',
@@ -388,7 +464,9 @@ log('  H0: No correlation between mean satisfaction and reorder intent')
 log('  H1: Positive correlation exists')
 log('  Test: Spearman rank correlation (ordinal)')
 log(f'  n = {valid_h8.sum()}  |  ρ = {rho_h8:.3f}  |  p = {p_h8:.4f}')
-log(f'  Decision: {"Reject H0" if p_h8 < 0.05 else "Fail to reject H0"} at α=0.05')
+log(
+  f'  Decision: {"Reject H0" if p_h8 < 0.05 else "Fail to reject H0"} at α=0.05'
+)
 results.append((
   'H8',
   'Reorder × satisfaction',
@@ -411,10 +489,16 @@ rb_h9 = rank_biserial(u_h9, len(fam_yes), len(fam_no))
 log('  H0: Temaki familiarity distribution is equal for trial=Yes vs No')
 log('  H1: Temaki familiarity differs by trial status')
 log('  Test: Mann-Whitney U')
-log(f'  Trial=Yes: median={fam_yes.median():.0f}, mean={fam_yes.mean():.2f}, n={len(fam_yes)}')
-log(f'  Trial=No:  median={fam_no.median():.0f}, mean={fam_no.mean():.2f}, n={len(fam_no)}')
+log(
+  f'  Trial=Yes: median={fam_yes.median():.0f}, mean={fam_yes.mean():.2f}, n={len(fam_yes)}'
+)
+log(
+  f'  Trial=No:  median={fam_no.median():.0f}, mean={fam_no.mean():.2f}, n={len(fam_no)}'
+)
 log(f'  U = {u_h9:.1f}  |  p = {p_h9:.4f}  |  rank-biserial r = {rb_h9:.3f}')
-log(f'  Decision: {"Reject H0" if p_h9 < 0.05 else "Fail to reject H0"} at α=0.05')
+log(
+  f'  Decision: {"Reject H0" if p_h9 < 0.05 else "Fail to reject H0"} at α=0.05'
+)
 results.append((
   'H9',
   'Temaki fam. (cust vs non)',
@@ -432,10 +516,21 @@ log('H10: Discovery source (WOM vs walk-by) associated with trial')
 valid_sources = ['Friend / classmate / family', 'Walked or drove past']
 h10_mask = first_learned.isin(valid_sources) & mm_trial.notna()
 h10_df = df[h10_mask]
-wom_trial = ((h10_df.iloc[:, 14] == 'Friend / classmate / family') & (h10_df.iloc[:, 17] == 'Yes')).sum()
-wom_notrial = ((h10_df.iloc[:, 14] == 'Friend / classmate / family') & (h10_df.iloc[:, 17] == 'No')).sum()
-walk_trial = ((h10_df.iloc[:, 14] == 'Walked or drove past') & (h10_df.iloc[:, 17] == 'Yes')).sum()
-walk_notrial = ((h10_df.iloc[:, 14] == 'Walked or drove past') & (h10_df.iloc[:, 17] == 'No')).sum()
+wom_trial = (
+  (h10_df.iloc[:, 14] == 'Friend / classmate / family')
+  & (h10_df.iloc[:, 17] == 'Yes')
+).sum()
+wom_notrial = (
+  (h10_df.iloc[:, 14] == 'Friend / classmate / family')
+  & (h10_df.iloc[:, 17] == 'No')
+).sum()
+walk_trial = (
+  (h10_df.iloc[:, 14] == 'Walked or drove past')
+  & (h10_df.iloc[:, 17] == 'Yes')
+).sum()
+walk_notrial = (
+  (h10_df.iloc[:, 14] == 'Walked or drove past') & (h10_df.iloc[:, 17] == 'No')
+).sum()
 
 table_h10 = np.array([[wom_trial, wom_notrial], [walk_trial, walk_notrial]])
 _, p_h10 = stats.fisher_exact(table_h10)
@@ -446,10 +541,20 @@ log('  H1: Trial rate differs by discovery channel')
 log("  Test: Fisher's exact (2×2, drop rare categories)")
 n_wom = wom_trial + wom_notrial
 n_walk = walk_trial + walk_notrial
-log(f'  WOM trial: {wom_trial}/{n_wom} = {wom_trial / n_wom:.1%}' if n_wom > 0 else '  WOM: n=0')
-log(f'  Walk-by trial: {walk_trial}/{n_walk} = {walk_trial / n_walk:.1%}' if n_walk > 0 else '  Walk-by: n=0')
+log(
+  f'  WOM trial: {wom_trial}/{n_wom} = {wom_trial / n_wom:.1%}'
+  if n_wom > 0
+  else '  WOM: n=0'
+)
+log(
+  f'  Walk-by trial: {walk_trial}/{n_walk} = {walk_trial / n_walk:.1%}'
+  if n_walk > 0
+  else '  Walk-by: n=0'
+)
 log(f"  p = {p_h10:.4f}  |  Cramér's V = {v_h10:.3f}")
-log(f'  Decision: {"Reject H0" if p_h10 < 0.05 else "Fail to reject H0"} at α=0.05')
+log(
+  f'  Decision: {"Reject H0" if p_h10 < 0.05 else "Fail to reject H0"} at α=0.05'
+)
 results.append((
   'H10',
   'Discovery × trial',
@@ -486,7 +591,9 @@ FIG_W, FIG_H = 1600 / DPI, 900 / DPI
 
 
 def save(fig, name):
-  fig.savefig(OUT / name, dpi=DPI, bbox_inches='tight', facecolor=fig.get_facecolor())
+  fig.savefig(
+    OUT / name, dpi=DPI, bbox_inches='tight', facecolor=fig.get_facecolor()
+  )
   plt.close(fig)
   print(f'  saved → {OUT / name}')
 
@@ -497,10 +604,23 @@ fig.set_facecolor(CREAM)
 ax.set_facecolor(CREAM)
 ax.axis('off')
 
-col_labels = ['Hypothesis', 'Description', 'Test', 'Stat / p-value', 'Effect Size', 'Decision']
+col_labels = [
+  'Hypothesis',
+  'Description',
+  'Test',
+  'Stat / p-value',
+  'Effect Size',
+  'Decision',
+]
 cell_text = [list(r) for r in results]
 
-table = ax.table(cellText=cell_text, colLabels=col_labels, loc='center', cellLoc='left', colLoc='left')
+table = ax.table(
+  cellText=cell_text,
+  colLabels=col_labels,
+  loc='center',
+  cellLoc='left',
+  colLoc='left',
+)
 table.auto_set_font_size(False)
 table.set_fontsize(7)
 table.scale(1, 1.6)
@@ -518,7 +638,13 @@ for (row, col), cell in table.get_celld().items():
     if 'Reject' == decision.strip():
       cell.set_facecolor('#FEF9C3')
 
-fig.suptitle('HYPOTHESIS TESTING SUMMARY', fontfamily=FONT_MONO, fontsize=11, fontweight='bold', y=0.96)
+fig.suptitle(
+  'HYPOTHESIS TESTING SUMMARY',
+  fontfamily=FONT_MONO,
+  fontsize=11,
+  fontweight='bold',
+  y=0.96,
+)
 save(fig, 'hypothesis_summary.png')
 
 # ── 2. Trial by segment ────────────────────────────────────────────────
@@ -540,7 +666,10 @@ bars = ax.barh(
 )
 
 for bar, pct, n_grp, n_trial in zip(
-  bars, [pct_res, pct_stu], [is_resident.sum(), is_student.sum()], [trial_res, trial_stu]
+  bars,
+  [pct_res, pct_stu],
+  [is_resident.sum(), is_student.sum()],
+  [trial_res, trial_stu],
 ):
   ax.text(
     bar.get_width() + 1.5,
@@ -555,9 +684,19 @@ for bar, pct, n_grp, n_trial in zip(
 ax.set_xlim(0, 80)
 ax.set_xticks([])
 ax.set_yticks([0, 1])
-ax.set_yticklabels(['Hamilton Residents', 'McMaster Students'], fontsize=12, fontfamily=FONT_BODY)
+ax.set_yticklabels(
+  ['Hamilton Residents', 'McMaster Students'],
+  fontsize=12,
+  fontfamily=FONT_BODY,
+)
 ax.invert_yaxis()
-fig.suptitle('MISTER MAKI TRIAL RATE BY SEGMENT', fontfamily=FONT_MONO, fontsize=13, fontweight='bold', y=0.95)
+fig.suptitle(
+  'MISTER MAKI TRIAL RATE BY SEGMENT',
+  fontfamily=FONT_MONO,
+  fontsize=13,
+  fontweight='bold',
+  y=0.95,
+)
 ax.text(
   0,
   -0.6,
@@ -577,7 +716,13 @@ fig.set_facecolor(CREAM)
 ax.set_facecolor(CREAM)
 
 colors = [PINK if 'Portion' in dim else LIGHT_BLUE for dim in sat_means.index]
-bars = ax.barh(range(len(sat_means)), sat_means.values, color=colors, height=0.55, edgecolor='none')
+bars = ax.barh(
+  range(len(sat_means)),
+  sat_means.values,
+  color=colors,
+  height=0.55,
+  edgecolor='none',
+)
 
 for i, (bar, val) in enumerate(zip(bars, sat_means.values)):
   ax.text(
@@ -594,7 +739,13 @@ ax.set_yticks(range(len(sat_means)))
 ax.set_yticklabels(sat_means.index, fontsize=10, fontfamily=FONT_BODY)
 ax.set_xlim(0, 5.5)
 ax.set_xticks([])
-fig.suptitle('CUSTOMER SATISFACTION BY DIMENSION', fontfamily=FONT_MONO, fontsize=13, fontweight='bold', y=0.95)
+fig.suptitle(
+  'CUSTOMER SATISFACTION BY DIMENSION',
+  fontfamily=FONT_MONO,
+  fontsize=13,
+  fontweight='bold',
+  y=0.95,
+)
 ax.text(
   0.01,
   -0.05,
@@ -607,7 +758,10 @@ ax.text(
 save(fig, 'satisfaction.png')
 
 # ── 4. Familiarity → trial rate ─────────────────────────────────────────
-fam_trial_df = pd.DataFrame({'fam': temaki_fam, 'trial': trial_binary}).dropna()
+fam_trial_df = pd.DataFrame({
+  'fam': temaki_fam,
+  'trial': trial_binary,
+}).dropna()
 fam_groups = fam_trial_df.groupby('fam')['trial']
 fam_rates = fam_groups.mean() * 100
 fam_counts = fam_groups.size()
@@ -617,7 +771,13 @@ fig.set_facecolor(CREAM)
 ax.set_facecolor(CREAM)
 
 x = fam_rates.index.astype(int)
-bars = ax.bar(x, fam_rates.values, color=[PALETTE[int(i) % len(PALETTE)] for i in x], width=0.6, edgecolor='none')
+bars = ax.bar(
+  x,
+  fam_rates.values,
+  color=[PALETTE[int(i) % len(PALETTE)] for i in x],
+  width=0.6,
+  edgecolor='none',
+)
 
 for bar, rate, n in zip(bars, fam_rates.values, fam_counts.values):
   ax.text(
@@ -633,10 +793,20 @@ for bar, rate, n in zip(bars, fam_rates.values, fam_counts.values):
 
 ax.set_xticks(x)
 ax.set_xticklabels([f'{int(v)}' for v in x], fontsize=11, fontfamily=FONT_BODY)
-ax.set_xlabel('Temaki Familiarity (1=None → 5=Regular eater)', fontsize=10, fontfamily=FONT_BODY)
+ax.set_xlabel(
+  'Temaki Familiarity (1=None → 5=Regular eater)',
+  fontsize=10,
+  fontfamily=FONT_BODY,
+)
 ax.set_ylim(0, 110)
 ax.set_yticks([])
-fig.suptitle('TRIAL RATE BY TEMAKI FAMILIARITY', fontfamily=FONT_MONO, fontsize=13, fontweight='bold', y=0.95)
+fig.suptitle(
+  'TRIAL RATE BY TEMAKI FAMILIARITY',
+  fontfamily=FONT_MONO,
+  fontsize=13,
+  fontweight='bold',
+  y=0.95,
+)
 ax.text(
   0.01,
   -0.08,
@@ -656,13 +826,24 @@ freq_labels_ordered = [
   'Regularly (1-2 times a week)',
   'Frequently (3+ times a week)',
 ]
-freq_trial_df = pd.DataFrame({'freq': dining_freq, 'trial': trial_binary}).dropna()
-freq_trial_df['freq'] = pd.Categorical(freq_trial_df['freq'], categories=freq_labels_ordered, ordered=True)
+freq_trial_df = pd.DataFrame({
+  'freq': dining_freq,
+  'trial': trial_binary,
+}).dropna()
+freq_trial_df['freq'] = pd.Categorical(
+  freq_trial_df['freq'], categories=freq_labels_ordered, ordered=True
+)
 freq_grp = freq_trial_df.groupby('freq', observed=False)['trial']
 freq_rates = freq_grp.mean() * 100
 freq_ns = freq_grp.size()
 
-short_labels = ['Never', 'Rarely\n(<1x/mo)', 'Occasionally\n(1-2x/mo)', 'Regularly\n(1-2x/wk)', 'Frequently\n(3+/wk)']
+short_labels = [
+  'Never',
+  'Rarely\n(<1x/mo)',
+  'Occasionally\n(1-2x/mo)',
+  'Regularly\n(1-2x/wk)',
+  'Frequently\n(3+/wk)',
+]
 
 fig, ax = plt.subplots(figsize=(FIG_W, FIG_H))
 fig.set_facecolor(CREAM)
@@ -694,7 +875,11 @@ ax.set_xticklabels(short_labels, fontsize=9, fontfamily=FONT_BODY)
 ax.set_ylim(0, 110)
 ax.set_yticks([])
 fig.suptitle(
-  'MISTER MAKI TRIAL RATE BY DINING FREQUENCY', fontfamily=FONT_MONO, fontsize=13, fontweight='bold', y=0.95
+  'MISTER MAKI TRIAL RATE BY DINING FREQUENCY',
+  fontfamily=FONT_MONO,
+  fontsize=13,
+  fontweight='bold',
+  y=0.95,
 )
 ax.text(
   0.01,
@@ -709,14 +894,26 @@ save(fig, 'dining_trial.png')
 
 # ── 6. Value perception by segment ─────────────────────────────────────
 vp_all = pd.DataFrame({'segment': segment, 'value': value_perc}).dropna()
-vp_stu_dist = vp_all[vp_all['segment'] == 'McMaster student']['value'].value_counts().sort_index()
+vp_stu_dist = (
+  vp_all[vp_all['segment'] == 'McMaster student']['value']
+  .value_counts()
+  .sort_index()
+)
 vp_res_dist = (
-  vp_all[vp_all['segment'] == 'Hamilton resident (not a McMaster student)']['value'].value_counts().sort_index()
+  vp_all[vp_all['segment'] == 'Hamilton resident (not a McMaster student)'][
+    'value'
+  ]
+  .value_counts()
+  .sort_index()
 )
 
 all_vals = [1, 2, 3, 4, 5]
-vp_stu_pct = pd.Series([vp_stu_dist.get(v, 0) for v in all_vals], index=all_vals)
-vp_res_pct = pd.Series([vp_res_dist.get(v, 0) for v in all_vals], index=all_vals)
+vp_stu_pct = pd.Series(
+  [vp_stu_dist.get(v, 0) for v in all_vals], index=all_vals
+)
+vp_res_pct = pd.Series(
+  [vp_res_dist.get(v, 0) for v in all_vals], index=all_vals
+)
 
 fig, ax = plt.subplots(figsize=(FIG_W, FIG_H))
 fig.set_facecolor(CREAM)
@@ -724,8 +921,22 @@ ax.set_facecolor(CREAM)
 
 width = 0.35
 x = np.array(all_vals)
-b1 = ax.bar(x - width / 2, vp_stu_pct.values, width, label='Students', color=LIGHT_BLUE, edgecolor='none')
-b2 = ax.bar(x + width / 2, vp_res_pct.values, width, label='Residents', color=LAVENDER, edgecolor='none')
+b1 = ax.bar(
+  x - width / 2,
+  vp_stu_pct.values,
+  width,
+  label='Students',
+  color=LIGHT_BLUE,
+  edgecolor='none',
+)
+b2 = ax.bar(
+  x + width / 2,
+  vp_res_pct.values,
+  width,
+  label='Residents',
+  color=LAVENDER,
+  edgecolor='none',
+)
 
 for bar in list(b1) + list(b2):
   h = bar.get_height()
@@ -742,15 +953,39 @@ for bar in list(b1) + list(b2):
 
 ax.set_xticks(all_vals)
 ax.set_xticklabels(
-  ['1\nPoor', '2\nSomewhat\npoor', '3\nAverage', '4\nSomewhat\ngood', '5\nExcellent'], fontsize=9, fontfamily=FONT_BODY
+  [
+    '1\nPoor',
+    '2\nSomewhat\npoor',
+    '3\nAverage',
+    '4\nSomewhat\ngood',
+    '5\nExcellent',
+  ],
+  fontsize=9,
+  fontfamily=FONT_BODY,
 )
 ax.set_yticks([])
 ax.legend(fontsize=10, frameon=False)
-fig.suptitle('VALUE PERCEPTION BY SEGMENT', fontfamily=FONT_MONO, fontsize=13, fontweight='bold', y=0.95)
-stat_txt = (
-  f'Mann-Whitney U = {u_h3:.1f}, p = {p_h3:.4f}' if len(vp_stu) > 0 and len(vp_res) > 0 else 'insufficient data'
+fig.suptitle(
+  'VALUE PERCEPTION BY SEGMENT',
+  fontfamily=FONT_MONO,
+  fontsize=13,
+  fontweight='bold',
+  y=0.95,
 )
-ax.text(0.01, -0.1, stat_txt, fontsize=9, fontfamily=FONT_MONO, color='#666666', transform=ax.transAxes)
+stat_txt = (
+  f'Mann-Whitney U = {u_h3:.1f}, p = {p_h3:.4f}'
+  if len(vp_stu) > 0 and len(vp_res) > 0
+  else 'insufficient data'
+)
+ax.text(
+  0.01,
+  -0.1,
+  stat_txt,
+  fontsize=9,
+  fontfamily=FONT_MONO,
+  color='#666666',
+  transform=ax.transAxes,
+)
 save(fig, 'value_by_segment.png')
 
 print('\n✓ all charts saved to', OUT)

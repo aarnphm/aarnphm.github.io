@@ -20,7 +20,10 @@ single-pass AST → C translation. 50-150ms compile, 20-80× runtime speedup.
 jit = TinyCJIT()
 
 
-@jit(restype=None, argtypes=[POINTER(c_float), POINTER(c_float), POINTER(c_float), c_int])
+@jit(
+  restype=None,
+  argtypes=[POINTER(c_float), POINTER(c_float), POINTER(c_float), c_int],
+)
 def vector_add(a, b, out, n):
   for i in range(n):
     out[i] = a[i] + b[i]

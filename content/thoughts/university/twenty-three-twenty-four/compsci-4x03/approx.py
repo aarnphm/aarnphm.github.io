@@ -12,11 +12,15 @@ if __name__ == '__main__':
   f = lambda y, t: y - t**2 + 1
   analytical = lambda t: (t + 1) ** 2 - 0.5 * np.exp(t)  # solved by hand
 
-  y_numerical = np.zeros(n_steps + 1)  # numerical value # array of [n_steps, 1]
+  y_numerical = np.zeros(
+    n_steps + 1
+  )  # numerical value # array of [n_steps, 1]
   y_numerical[0] = y0
 
   for i in range(1, n_steps + 1):
-    y_numerical[i] = y_numerical[i - 1] + f(y_numerical[i - 1], t_points[i - 1]) * dt
+    y_numerical[i] = (
+      y_numerical[i - 1] + f(y_numerical[i - 1], t_points[i - 1]) * dt
+    )
 
   y_exact = analytical(t_points)
 

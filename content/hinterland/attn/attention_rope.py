@@ -65,7 +65,9 @@ def apply_rope(x: torch.Tensor, freqs: torch.Tensor) -> torch.Tensor:
   return out
 
 
-def precompute_freqs(dim: int, max_seq_len: int, theta: float = 10000.0) -> torch.Tensor:
+def precompute_freqs(
+  dim: int, max_seq_len: int, theta: float = 10000.0
+) -> torch.Tensor:
   """precompute RoPE frequencies"""
   freqs = 1.0 / (theta ** (torch.arange(0, dim, 2).float() / dim))
   t = torch.arange(max_seq_len)
@@ -87,7 +89,9 @@ class MHA(nn.Module):
     self.W_v = nn.Linear(cfg.d_model, cfg.n_heads * cfg.d_head, bias=False)
     self.W_o = nn.Linear(cfg.n_heads * cfg.d_head, cfg.d_model, bias=False)
 
-    self.register_buffer('freqs', precompute_freqs(cfg.d_head, cfg.max_seq_len))
+    self.register_buffer(
+      'freqs', precompute_freqs(cfg.d_head, cfg.max_seq_len)
+    )
 
   def forward(self, x: torch.Tensor, kv_cache: Optional[Tuple] = None):
     B, T, _ = x.shape
@@ -142,7 +146,9 @@ class MQA(nn.Module):
     self.W_v = nn.Linear(cfg.d_model, cfg.d_head, bias=False)
     self.W_o = nn.Linear(cfg.n_heads * cfg.d_head, cfg.d_model, bias=False)
 
-    self.register_buffer('freqs', precompute_freqs(cfg.d_head, cfg.max_seq_len))
+    self.register_buffer(
+      'freqs', precompute_freqs(cfg.d_head, cfg.max_seq_len)
+    )
 
   def forward(self, x: torch.Tensor, kv_cache: Optional[Tuple] = None):
     B, T, _ = x.shape
@@ -171,7 +177,10 @@ class MQA(nn.Module):
     out = attn @ v
 
     out = out.transpose(1, 2).reshape(B, T, -1)
-    return self.W_o(out), (k[:, :, :1].transpose(1, 2), v[:, :, :1].transpose(1, 2))
+    return self.W_o(out), (
+      k[:, :, :1].transpose(1, 2),
+      v[:, :, :1].transpose(1, 2),
+    )
 
   @staticmethod
   def kv_cache_size(cfg: AttentionConfig) -> int:
@@ -198,7 +207,9 @@ class GQA(nn.Module):
     self.W_v = nn.Linear(cfg.d_model, cfg.n_kv_heads * cfg.d_head, bias=False)
     self.W_o = nn.Linear(cfg.n_heads * cfg.d_head, cfg.d_model, bias=False)
 
-    self.register_buffer('freqs', precompute_freqs(cfg.d_head, cfg.max_seq_len))
+    self.register_buffer(
+      'freqs', precompute_freqs(cfg.d_head, cfg.max_seq_len)
+    )
 
   def forward(self, x: torch.Tensor, kv_cache: Optional[Tuple] = None):
     B, T, _ = x.shape
@@ -275,13 +286,21 @@ class MLA(nn.Module):
     self.d_rope = cfg.d_rope
 
     # query compression and up-projection
-    self.W_dq = nn.Linear(cfg.d_model, cfg.d_c_q, bias=False)  # down-proj query
-    self.W_uq = nn.Linear(cfg.d_c_q, cfg.n_heads * cfg.d_head, bias=False)  # up-proj query
+    self.W_dq = nn.Linear(
+      cfg.d_model, cfg.d_c_q, bias=False
+    )  # down-proj query
+    self.W_uq = nn.Linear(
+      cfg.d_c_q, cfg.n_heads * cfg.d_head, bias=False
+    )  # up-proj query
 
     # KV compression (shared latent)
     self.W_dkv = nn.Linear(cfg.d_model, cfg.d_c, bias=False)  # down-proj kv
-    self.W_uk = nn.Linear(cfg.d_c, cfg.n_heads * cfg.d_head, bias=False)  # up-proj key
-    self.W_uv = nn.Linear(cfg.d_c, cfg.n_heads * cfg.d_head, bias=False)  # up-proj value
+    self.W_uk = nn.Linear(
+      cfg.d_c, cfg.n_heads * cfg.d_head, bias=False
+    )  # up-proj key
+    self.W_uv = nn.Linear(
+      cfg.d_c, cfg.n_heads * cfg.d_head, bias=False
+    )  # up-proj value
 
     # decoupled RoPE projections (separate small pathway)
     self.W_qr = nn.Linear(cfg.d_c_q, cfg.d_rope, bias=False)  # query rope
@@ -290,7 +309,9 @@ class MLA(nn.Module):
     self.W_o = nn.Linear(cfg.n_heads * cfg.d_head, cfg.d_model, bias=False)
 
     # rope freqs for the decoupled pathway
-    self.register_buffer('freqs', precompute_freqs(cfg.d_rope, cfg.max_seq_len))
+    self.register_buffer(
+      'freqs', precompute_freqs(cfg.d_rope, cfg.max_seq_len)
+    )
 
     # layernorm for latents (deepseek uses this for stability)
     self.kv_norm = nn.RMSNorm(cfg.d_c)
@@ -308,7 +329,9 @@ class MLA(nn.Module):
     # rope query (decoupled)
     q_rope = self.W_qr(c_q)  # (B, T, d_rope)
     q_rope = apply_rope(q_rope, self.freqs)  # apply RoPE
-    q_rope = q_rope.unsqueeze(2).expand(-1, -1, self.n_heads, -1)  # share across heads
+    q_rope = q_rope.unsqueeze(2).expand(
+      -1, -1, self.n_heads, -1
+    )  # share across heads
 
     # compress KV into shared latent
     c_kv = self.kv_norm(self.W_dkv(x))  # (B, T, d_c)
@@ -346,14 +369,19 @@ class MLA(nn.Module):
     content_scores = q_content @ k_content.transpose(-2, -1)
     rope_scores = q_rope @ k_rope.transpose(-2, -1)
 
-    attn = (content_scores + rope_scores) / math.sqrt(self.d_head + self.d_rope)
+    attn = (content_scores + rope_scores) / math.sqrt(
+      self.d_head + self.d_rope
+    )
     attn = F.softmax(attn, dim=-1)
     out = attn @ v
 
     out = out.transpose(1, 2).reshape(B, T, -1)
 
     # cache is just the latent + rope keys
-    return self.W_o(out), (c_kv, k_rope[:, :, 0].transpose(1, 2))  # only need one head's rope
+    return self.W_o(out), (
+      c_kv,
+      k_rope[:, :, 0].transpose(1, 2),
+    )  # only need one head's rope
 
   @staticmethod
   def kv_cache_size(cfg: AttentionConfig) -> int:
@@ -393,8 +421,12 @@ class NSA(nn.Module):
     self.W_o = nn.Linear(cfg.n_heads * cfg.d_head, cfg.d_model, bias=False)
 
     # compression pathway: pool blocks into single vectors
-    self.compress_k = nn.Linear(cfg.d_head * cfg.block_size, cfg.d_head, bias=False)
-    self.compress_v = nn.Linear(cfg.d_head * cfg.block_size, cfg.d_head, bias=False)
+    self.compress_k = nn.Linear(
+      cfg.d_head * cfg.block_size, cfg.d_head, bias=False
+    )
+    self.compress_v = nn.Linear(
+      cfg.d_head * cfg.block_size, cfg.d_head, bias=False
+    )
 
     # block importance scoring for selection
     self.importance_score = nn.Linear(cfg.d_head, 1, bias=False)
@@ -402,7 +434,9 @@ class NSA(nn.Module):
     # gating to combine three branches
     self.gate = nn.Linear(cfg.d_model, 3, bias=False)
 
-    self.register_buffer('freqs', precompute_freqs(cfg.d_head, cfg.max_seq_len))
+    self.register_buffer(
+      'freqs', precompute_freqs(cfg.d_head, cfg.max_seq_len)
+    )
 
   def _compress_attention(self, q, k, v, B, T, S):
     """coarse-grained: compress blocks then attend"""
@@ -449,10 +483,14 @@ class NSA(nn.Module):
     )
     # mean pool for scoring
     k_mean = k_blocked.mean(dim=3)  # (B, n_kv_heads, n_blocks, d_head)
-    scores = self.importance_score(k_mean).squeeze(-1)  # (B, n_kv_heads, n_blocks)
+    scores = self.importance_score(k_mean).squeeze(
+      -1
+    )  # (B, n_kv_heads, n_blocks)
 
     # select top-k blocks
-    _, top_idx = scores.topk(self.n_selected, dim=-1)  # (B, n_kv_heads, n_selected)
+    _, top_idx = scores.topk(
+      self.n_selected, dim=-1
+    )  # (B, n_kv_heads, n_selected)
 
     # gather selected blocks (simplified - in practice this is more complex)
     # for demo, just use full attention with masking
@@ -543,8 +581,12 @@ def print_kv_cache_comparison(cfg: AttentionConfig):
   print('\n' + '=' * 60)
   print('KV cache size comparison (floats per token)')
   print('=' * 60)
-  print(f'config: d_model={cfg.d_model}, n_heads={cfg.n_heads}, d_head={cfg.d_head}')
-  print(f'        n_kv_heads={cfg.n_kv_heads}, d_c={cfg.d_c}, d_rope={cfg.d_rope}')
+  print(
+    f'config: d_model={cfg.d_model}, n_heads={cfg.n_heads}, d_head={cfg.d_head}'
+  )
+  print(
+    f'        n_kv_heads={cfg.n_kv_heads}, d_c={cfg.d_c}, d_rope={cfg.d_rope}'
+  )
   print('-' * 60)
 
   for name, size in mechanisms:
@@ -583,7 +625,9 @@ def demo_forward_pass(cfg: AttentionConfig):
       cache_shape = [c.shape for c in cache]
     else:
       cache_shape = 'special'
-    print(f'{name:4s}: output shape={tuple(out.shape)}, cache shapes={cache_shape}')
+    print(
+      f'{name:4s}: output shape={tuple(out.shape)}, cache shapes={cache_shape}'
+    )
 
 
 def explain_decoupled_rope():

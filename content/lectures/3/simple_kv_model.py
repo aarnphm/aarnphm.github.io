@@ -147,7 +147,9 @@ class DecoderBlock(nn.Module):
 
 # 1-L attention model
 class OneLayerModelForCausalLM(nn.Module):
-  def __init__(self, vocab_size, d_model=768, n_layers=1, n_heads=12, max_len=8192):
+  def __init__(
+    self, vocab_size, d_model=768, n_layers=1, n_heads=12, max_len=8192
+  ):
     super().__init__()
     self.vocab_size = vocab_size
     self.d_model = d_model
@@ -162,7 +164,9 @@ class OneLayerModelForCausalLM(nn.Module):
     self.ln_f = nn.LayerNorm(d_model)
     self.lm_head = nn.Linear(d_model, vocab_size, bias=False)
 
-  def forward_step(self, input_ids: torch.Tensor, kv_cache: KVCache, is_prefill: bool):
+  def forward_step(
+    self, input_ids: torch.Tensor, kv_cache: KVCache, is_prefill: bool
+  ):
     # input_ids: [B, T]  (T can be prompt length during prefill, or 1 during decode)
     # T is also known as seq_len
     # returns: logits: [B, T, vocab]
@@ -203,14 +207,18 @@ def generate(
 
   # 1) PREFILL: run full prompt once; caches K/V for all layers
   logits = model.forward_step(prompt_ids, kv_cache=kv, is_prefill=True)
-  next_token = sample_from_logits(logits[:, -1, :], temperature=temperature, top_k=top_k)  # [B]
+  next_token = sample_from_logits(
+    logits[:, -1, :], temperature=temperature, top_k=top_k
+  )  # [B]
   out = [prompt_ids, next_token.unsqueeze(1)]
 
   # 2) DECODE: feed only last token, reuse kv cache
   cur = next_token.unsqueeze(1)  # [B,1]
   for _ in range(max_new_tokens - 1):
     logits = model.forward_step(cur, kv_cache=kv, is_prefill=False)
-    cur = sample_from_logits(logits[:, -1, :], temperature=temperature, top_k=top_k).unsqueeze(1)
+    cur = sample_from_logits(
+      logits[:, -1, :], temperature=temperature, top_k=top_k
+    ).unsqueeze(1)
     out.append(cur)
 
     # Optional sliding window eviction per layer

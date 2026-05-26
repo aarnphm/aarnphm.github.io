@@ -63,7 +63,9 @@ class IRBuilder:
     self.verbose = verbose
     self.value_counter = 0
     self.bb_counter = 0
-    self.sym_table: dict[str, IRValue] = {}  # variable name → current SSA value
+    self.sym_table: dict[
+      str, IRValue
+    ] = {}  # variable name → current SSA value
 
   def fresh_value(self, prefix: str = 'v') -> IRValue:
     """generate fresh SSA value name"""
@@ -75,7 +77,12 @@ class IRBuilder:
     self.bb_counter += 1
     return self.func.add_block(f'{prefix}{self.bb_counter}')
 
-  def lower_function(self, func_def: ast.FunctionDef, param_types: list[IRType], ret_type: IRType) -> IRFunction:
+  def lower_function(
+    self,
+    func_def: ast.FunctionDef,
+    param_types: list[IRType],
+    ret_type: IRType,
+  ) -> IRFunction:
     """lower function AST to IR"""
     # create parameter values
     for arg, ty in zip(func_def.args.args, param_types):
@@ -94,7 +101,9 @@ class IRBuilder:
 
     # add implicit return if function doesn't end with one
     assert self.current_bb
-    if not self.current_bb.instrs or not isinstance(self.current_bb.instrs[-1], Ret):
+    if not self.current_bb.instrs or not isinstance(
+      self.current_bb.instrs[-1], Ret
+    ):
       self.current_bb.append(Ret(value=None))
 
     return self.func
@@ -122,7 +131,9 @@ class IRBuilder:
       raise NotImplementedError('loop target must be simple name')
 
     # parse range(start, stop, step)
-    if not isinstance(node.iter, ast.Call) or not isinstance(node.iter.func, ast.Name):
+    if not isinstance(node.iter, ast.Call) or not isinstance(
+      node.iter.func, ast.Name
+    ):
       raise NotImplementedError('only range loops supported')
     if node.iter.func.id != 'range':
       raise NotImplementedError('only range loops supported')
@@ -188,7 +199,9 @@ class IRBuilder:
     # branch to body or exit
     from ir import Br
 
-    self.current_bb.append(Br(cond=cond, true_bb=loop_body.name, false_bb=loop_exit.name))
+    self.current_bb.append(
+      Br(cond=cond, true_bb=loop_body.name, false_bb=loop_exit.name)
+    )
     self.current_bb.succs.extend([loop_body.name, loop_exit.name])
     loop_body.preds.append(loop_header.name)
     loop_exit.preds.append(loop_header.name)
@@ -385,7 +398,11 @@ class IRCompiler:
     self.work_dir.mkdir(parents=True, exist_ok=True)
 
   def __call__(
-    self, *, restype: type | None = None, argtypes: Sequence[type], headers: Sequence[str] | None = None
+    self,
+    *,
+    restype: type | None = None,
+    argtypes: Sequence[type],
+    headers: Sequence[str] | None = None,
   ) -> Callable[[Callable[..., Any]], Callable[..., Any]]:
     headers = list(headers) if headers is not None else []
 
@@ -395,7 +412,11 @@ class IRCompiler:
     return decorator
 
   def _compile(
-    self, func: Callable[..., Any], restype: type | None, argtypes: Sequence[type], headers: Sequence[str]
+    self,
+    func: Callable[..., Any],
+    restype: type | None,
+    argtypes: Sequence[type],
+    headers: Sequence[str],
   ) -> Callable[..., Any]:
     """compile Python function to native code via IR"""
     if self.verbose:
@@ -404,7 +425,9 @@ class IRCompiler:
     # parse source
     source = textwrap.dedent(inspect.getsource(func))
     tree = ast.parse(source)
-    func_def = next((node for node in tree.body if isinstance(node, ast.FunctionDef)), None)
+    func_def = next(
+      (node for node in tree.body if isinstance(node, ast.FunctionDef)), None
+    )
     if not func_def:
       raise ValueError('unable to find function definition')
 
@@ -461,7 +484,11 @@ class IRCompiler:
     c_code = '\n'.join(lines)
 
     # wrap in includes + proper signature
-    includes = ['#include <stddef.h>', '#include <stdint.h>', '#include <math.h>'] + list(headers)
+    includes = [
+      '#include <stddef.h>',
+      '#include <stdint.h>',
+      '#include <math.h>',
+    ] + list(headers)
     full_src = '\n'.join(includes) + '\n\n' + c_code
 
     if self.verbose:
@@ -503,11 +530,22 @@ class IRCompiler:
     """compile C code to shared object"""
     import shutil
 
-    compiler = shutil.which('clang') or shutil.which('gcc') or shutil.which('cc')
+    compiler = (
+      shutil.which('clang') or shutil.which('gcc') or shutil.which('cc')
+    )
     if not compiler:
       raise RuntimeError('no C compiler found')
 
-    cmd = [compiler, '-O3', '-fPIC', '-shared', str(c_path), '-o', str(so_path), '-lm']
+    cmd = [
+      compiler,
+      '-O3',
+      '-fPIC',
+      '-shared',
+      str(c_path),
+      '-o',
+      str(so_path),
+      '-lm',
+    ]
     if sys.platform == 'darwin':
       cmd.insert(1, '-dynamiclib')
 
@@ -520,7 +558,9 @@ class IRCompiler:
     """prepare argument for ctypes call"""
     if hasattr(ctype, '_type_'):  # pointer
       if isinstance(value, np.ndarray):
-        arr = value if value.flags['C_CONTIGUOUS'] else np.ascontiguousarray(value)
+        arr = (
+          value if value.flags['C_CONTIGUOUS'] else np.ascontiguousarray(value)
+        )
         return arr.ctypes.data_as(ctype), arr
       if isinstance(value, ctypes.Array):
         return ctypes.cast(value, ctype), value

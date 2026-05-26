@@ -333,7 +333,9 @@ The following augmentation achieves higher test accuracy comparing to `ModifiedM
 ```python
 augmentation = transforms.Compose([
   # Small random rotation with higher probability of small angles
-  transforms.RandomRotation(degrees=3, fill=0),  # Even more conservative rotation
+  transforms.RandomRotation(
+    degrees=3, fill=0
+  ),  # Even more conservative rotation
   # Very subtle random perspective
   transforms.RandomPerspective(distortion_scale=0.15, p=0.3, fill=0),
   # Convert to tensor

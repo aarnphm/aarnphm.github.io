@@ -6,7 +6,11 @@ import torchvision.datasets as datasets
 
 # Check if the current `accelerator <https://pytorch.org/docs/stable/torch.html#accelerators>`__
 # is available, and if not, use the CPU
-device = torch.accelerator.current_accelerator().type if torch.accelerator.is_available() else 'cpu'
+device = (
+  torch.accelerator.current_accelerator().type
+  if torch.accelerator.is_available()
+  else 'cpu'
+)
 print(f'Using {device} device')
 
 # Below we are preprocessing data for CIFAR-10. We use an arbitrary batch size of 128.
@@ -16,8 +20,12 @@ transforms_cifar = transforms.Compose([
 ])
 
 # Loading the CIFAR-10 dataset:
-train_dataset = datasets.CIFAR10(root='./data', train=True, download=True, transform=transforms_cifar)
-test_dataset = datasets.CIFAR10(root='./data', train=False, download=True, transform=transforms_cifar)
+train_dataset = datasets.CIFAR10(
+  root='./data', train=True, download=True, transform=transforms_cifar
+)
+test_dataset = datasets.CIFAR10(
+  root='./data', train=False, download=True, transform=transforms_cifar
+)
 
 
 # Deeper neural network class to be used as teacher:
@@ -36,7 +44,12 @@ class DeepNN(nn.Module):
       nn.ReLU(),
       nn.MaxPool2d(kernel_size=2, stride=2),
     )
-    self.classifier = nn.Sequential(nn.Linear(2048, 512), nn.ReLU(), nn.Dropout(0.1), nn.Linear(512, num_classes))
+    self.classifier = nn.Sequential(
+      nn.Linear(2048, 512),
+      nn.ReLU(),
+      nn.Dropout(0.1),
+      nn.Linear(512, num_classes),
+    )
 
   def forward(self, x):
     x = self.features(x)
@@ -57,7 +70,12 @@ class LightNN(nn.Module):
       nn.ReLU(),
       nn.MaxPool2d(kernel_size=2, stride=2),
     )
-    self.classifier = nn.Sequential(nn.Linear(1024, 256), nn.ReLU(), nn.Dropout(0.1), nn.Linear(256, num_classes))
+    self.classifier = nn.Sequential(
+      nn.Linear(1024, 256),
+      nn.ReLU(),
+      nn.Dropout(0.1),
+      nn.Linear(256, num_classes),
+    )
 
   def forward(self, x):
     x = self.features(x)
@@ -90,7 +108,9 @@ def train(model, train_loader, epochs, learning_rate, device):
 
       running_loss += loss.item()
 
-    print(f'Epoch {epoch + 1}/{epochs}, Loss: {running_loss / len(train_loader)}')
+    print(
+      f'Epoch {epoch + 1}/{epochs}, Loss: {running_loss / len(train_loader)}'
+    )
 
 
 def test(model, test_loader, device):
@@ -116,7 +136,15 @@ def test(model, test_loader, device):
 
 
 def train_knowledge_distillation(
-  teacher, student, train_loader, epochs, learning_rate, T, soft_target_loss_weight, ce_loss_weight, device
+  teacher,
+  student,
+  train_loader,
+  epochs,
+  learning_rate,
+  T,
+  soft_target_loss_weight,
+  ce_loss_weight,
+  device,
 ):
   ce_loss = nn.CrossEntropyLoss()
   optimizer = optim.Adam(student.parameters(), lr=learning_rate)
@@ -143,20 +171,29 @@ def train_knowledge_distillation(
       soft_prob = nn.functional.log_softmax(student_logits / T, dim=-1)
 
       # Calculate the soft targets loss. Scaled by T**2 as suggested by the authors of the paper "Distilling the knowledge in a neural network"
-      soft_targets_loss = torch.sum(soft_targets * (soft_targets.log() - soft_prob)) / soft_prob.size()[0] * (T**2)
+      soft_targets_loss = (
+        torch.sum(soft_targets * (soft_targets.log() - soft_prob))
+        / soft_prob.size()[0]
+        * (T**2)
+      )
 
       # Calculate the true label loss
       label_loss = ce_loss(student_logits, labels)
 
       # Weighted sum of the two losses
-      loss = soft_target_loss_weight * soft_targets_loss + ce_loss_weight * label_loss
+      loss = (
+        soft_target_loss_weight * soft_targets_loss
+        + ce_loss_weight * label_loss
+      )
 
       loss.backward()
       optimizer.step()
 
       running_loss += loss.item()
 
-    print(f'Epoch {epoch + 1}/{epochs}, Loss: {running_loss / len(train_loader)}')
+    print(
+      f'Epoch {epoch + 1}/{epochs}, Loss: {running_loss / len(train_loader)}'
+    )
 
 
 if __name__ == '__main__':
@@ -168,8 +205,14 @@ if __name__ == '__main__':
   # Instantiate the lightweight network:
   torch.manual_seed(42)
   nn_light = LightNN(num_classes=10).to(device)
-  print('Norm of 1st layer of nn_light:', torch.norm(nn_light.features[0].weight).item())
-  print('Norm of 1st layer of new_nn_light:', torch.norm(new_nn_light.features[0].weight).item())
+  print(
+    'Norm of 1st layer of nn_light:',
+    torch.norm(nn_light.features[0].weight).item(),
+  )
+  print(
+    'Norm of 1st layer of new_nn_light:',
+    torch.norm(new_nn_light.features[0].weight).item(),
+  )
   train(nn_light, train_loader, epochs=10, learning_rate=0.001, device=device)
   test_accuracy_light_ce = test(nn_light, test_loader, device)
 

@@ -11,7 +11,10 @@ def update_index_md_with_pdfs(directory: str, index_file: str) -> None:
   (
     pdf_files := [
       f
-      for f in [os.path.basename(f) for f in glob.glob(os.path.join(directory, '*.pdf'))]
+      for f in [
+        os.path.basename(f)
+        for f in glob.glob(os.path.join(directory, '*.pdf'))
+      ]
       if not f.endswith('.ignore.pdf')
     ]
   ).sort()
@@ -26,10 +29,15 @@ def update_index_md_with_pdfs(directory: str, index_file: str) -> None:
       break
 
   if start is None or end is None:
-    raise ValueError('Could not find update section markers in the index.md file.')
+    raise ValueError(
+      'Could not find update section markers in the index.md file.'
+    )
   lines = (
     lines[:start]
-    + [f'- [[thoughts/{directory.split("/")[-1]}/{pdf}|{pdf[:-4]}]]\n' for pdf in pdf_files]
+    + [
+      f'- [[thoughts/{directory.split("/")[-1]}/{pdf}|{pdf[:-4]}]]\n'
+      for pdf in pdf_files
+    ]
     + lines[end:]
   )
   with open(index_file, 'w', encoding='utf-8') as file:
@@ -39,7 +47,9 @@ def update_index_md_with_pdfs(directory: str, index_file: str) -> None:
 # fmt: on
 
 if __name__ == '__main__':
-  parser = argparse.ArgumentParser(description='Update index.md with PDF files from a directory')
+  parser = argparse.ArgumentParser(
+    description='Update index.md with PDF files from a directory'
+  )
   parser.add_argument(
     '--directory',
     '-d',

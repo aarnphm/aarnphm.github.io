@@ -11,13 +11,19 @@ def G(s):
 w = np.logspace(-2, 3, 1000)
 
 # Compute magnitude and phase
-mag = 300 * np.abs(1j * w + 100) / (np.abs(1j * w) * np.abs(1j * w + 10) * np.abs(1j * w + 40))
+mag = (
+  300
+  * np.abs(1j * w + 100)
+  / (np.abs(1j * w) * np.abs(1j * w + 10) * np.abs(1j * w + 40))
+)
 phase = np.angle(G(1j * w), deg=True)
 
 # Asymptotic magnitude approximation
 asymp_mag = np.zeros_like(w)
 asymp_mag[w < 10] = 300 * 100 / (10 * 40)  # DC gain
-asymp_mag[(w >= 10) & (w < 40)] = 300 * 100 / (w[np.where((w >= 10) & (w < 40))] * 40)  # -20 dB/dec slope
+asymp_mag[(w >= 10) & (w < 40)] = (
+  300 * 100 / (w[np.where((w >= 10) & (w < 40))] * 40)
+)  # -20 dB/dec slope
 asymp_mag[w >= 40] = 300 * 100 / (w[w >= 40] ** 2)  # -40 dB/dec slope
 
 # Asymptotic phase approximation

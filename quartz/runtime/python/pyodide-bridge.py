@@ -48,7 +48,9 @@ class _QuartzNotebookFinder(importlib.abc.MetaPathFinder):
   def find_spec(self, fullname, path=None, target=None):
     if fullname in _quartz_notebook_modules:
       return importlib.util.spec_from_loader(
-        fullname, _QuartzNotebookLoader(), origin=_quartz_notebook_modules[fullname][1]
+        fullname,
+        _QuartzNotebookLoader(),
+        origin=_quartz_notebook_modules[fullname][1],
       )
     return None
 
@@ -65,9 +67,14 @@ def __quartz_register_notebook_module(name, source, filename):
   _quartz_notebook_modules[name] = (source, filename)
 
 
-if not any(isinstance(finder, _QuartzNotebookFinder) for finder in sys.meta_path):
+if not any(
+  isinstance(finder, _QuartzNotebookFinder) for finder in sys.meta_path
+):
   sys.meta_path.insert(0, _QuartzNotebookFinder())
-if not any(isinstance(finder, _QuartzUnsupportedPackageFinder) for finder in sys.meta_path):
+if not any(
+  isinstance(finder, _QuartzUnsupportedPackageFinder)
+  for finder in sys.meta_path
+):
   sys.meta_path.append(_QuartzUnsupportedPackageFinder())
 
 
@@ -93,7 +100,10 @@ def _descriptor(value):
   if isinstance(value, list):
     return {'kind': 'list', 'items': [_descriptor(item) for item in value]}
   if isinstance(value, dict):
-    return {'kind': 'dict', 'items': {str(key): _descriptor(item) for key, item in value.items()}}
+    return {
+      'kind': 'dict',
+      'items': {str(key): _descriptor(item) for key, item in value.items()},
+    }
   if hasattr(value, 'tolist'):
     return _descriptor(value.tolist())
   raise TypeError(f'unsupported notebook ML value: {type(value).__name__}')
@@ -102,7 +112,9 @@ def _descriptor(value):
 def _leaf_descriptor(value):
   descriptor = _descriptor(value)
   if descriptor['kind'] in ('dict',):
-    raise TypeError('notebook ML array operations require array or scalar leaves')
+    raise TypeError(
+      'notebook ML array operations require array or scalar leaves'
+    )
   return json.dumps(descriptor)
 
 
@@ -131,7 +143,9 @@ def _wrap_tree(descriptor):
   raise TypeError(f'unsupported notebook ML descriptor: {kind}')
 
 
-js.quartz_notebook_ml_register_callbacks(__quartz_ml_wrap_tree, __quartz_ml_describe_tree)
+js.quartz_notebook_ml_register_callbacks(
+  __quartz_ml_wrap_tree, __quartz_ml_describe_tree
+)
 
 
 def _wrap_id(value_id):
@@ -143,15 +157,27 @@ def _wrap_json(serialized):
 
 
 def _binary(name, left, right):
-  return _wrap_id(js.quartz_notebook_ml_binary(name, _leaf_descriptor(left), _leaf_descriptor(right)))
+  return _wrap_id(
+    js.quartz_notebook_ml_binary(
+      name, _leaf_descriptor(left), _leaf_descriptor(right)
+    )
+  )
 
 
 def _unary(name, value, **options):
-  return _wrap_id(js.quartz_notebook_ml_unary(name, _leaf_descriptor(value), json.dumps(options)))
+  return _wrap_id(
+    js.quartz_notebook_ml_unary(
+      name, _leaf_descriptor(value), json.dumps(options)
+    )
+  )
 
 
 def _reduce(name, value, axis=None, keepdims=False):
-  return _wrap_id(js.quartz_notebook_ml_reduce(name, _leaf_descriptor(value), json.dumps(axis), bool(keepdims)))
+  return _wrap_id(
+    js.quartz_notebook_ml_reduce(
+      name, _leaf_descriptor(value), json.dumps(axis), bool(keepdims)
+    )
+  )
 
 
 def _index_descriptor(index):
@@ -168,7 +194,12 @@ def _index_descriptor(index):
     elif isinstance(item, int):
       parts.append({'kind': 'int', 'value': item})
     elif isinstance(item, slice):
-      parts.append({'kind': 'slice', 'start': item.start, 'stop': item.stop, 'step': item.step})
+      parts.append({
+        'kind': 'slice',
+        'start': item.start,
+        'stop': item.stop,
+        'step': item.step,
+      })
     else:
       parts.append({'kind': 'tensor', 'id': asarray(item)._quartz_ml_id})
   return json.dumps(parts)
@@ -181,7 +212,11 @@ class _AtSelection:
 
   def set(self, value):
     return _wrap_id(
-      js.quartz_notebook_ml_at_set(self.array._quartz_ml_id, _index_descriptor(self.index), _leaf_descriptor(value))
+      js.quartz_notebook_ml_at_set(
+        self.array._quartz_ml_id,
+        _index_descriptor(self.index),
+        _leaf_descriptor(value),
+      )
     )
 
 
@@ -201,7 +236,9 @@ class JaxArray:
 
   @property
   def shape(self):
-    return tuple(json.loads(str(js.quartz_notebook_ml_shape(self._quartz_ml_id))))
+    return tuple(
+      json.loads(str(js.quartz_notebook_ml_shape(self._quartz_ml_id)))
+    )
 
   @property
   def dtype(self):
@@ -236,7 +273,9 @@ class JaxArray:
       yield self[i]
 
   def __getitem__(self, index):
-    return _wrap_id(js.quartz_notebook_ml_slice(self._quartz_ml_id, _index_descriptor(index)))
+    return _wrap_id(
+      js.quartz_notebook_ml_slice(self._quartz_ml_id, _index_descriptor(index))
+    )
 
   def __array__(self, dtype=None):
     value = self.tolist()
@@ -313,7 +352,11 @@ class JaxArray:
   def reshape(self, *shape):
     if len(shape) == 1 and isinstance(shape[0], (tuple, list)):
       shape = tuple(shape[0])
-    return _wrap_id(js.quartz_notebook_ml_reshape(self._quartz_ml_id, json.dumps(list(shape))))
+    return _wrap_id(
+      js.quartz_notebook_ml_reshape(
+        self._quartz_ml_id, json.dumps(list(shape))
+      )
+    )
 
   def transpose(self, axes=None):
     return transpose(self, axes)
@@ -339,7 +382,9 @@ class JaxArray:
 
   def addressable_data(self, index):
     if index != 0:
-      raise IndexError('browser notebook runtime has one addressable WebGPU device')
+      raise IndexError(
+        'browser notebook runtime has one addressable WebGPU device'
+      )
     return self
 
   def tolist(self):
@@ -358,7 +403,9 @@ Tensor = JaxArray
 def array(values, dtype=None):
   if isinstance(values, JaxArray):
     return values.astype(dtype) if dtype is not None else values
-  return _wrap_id(js.quartz_notebook_ml_array(json.dumps(values), _dtype_name(dtype)))
+  return _wrap_id(
+    js.quartz_notebook_ml_array(json.dumps(values), _dtype_name(dtype))
+  )
 
 
 def asarray(values, dtype=None):
@@ -366,35 +413,55 @@ def asarray(values, dtype=None):
 
 
 def zeros(shape, dtype=None):
-  return _wrap_id(js.quartz_notebook_ml_zeros(json.dumps(_shape(shape)), _dtype_name(dtype)))
+  return _wrap_id(
+    js.quartz_notebook_ml_zeros(json.dumps(_shape(shape)), _dtype_name(dtype))
+  )
 
 
 def ones(shape, dtype=None):
-  return _wrap_id(js.quartz_notebook_ml_ones(json.dumps(_shape(shape)), _dtype_name(dtype)))
+  return _wrap_id(
+    js.quartz_notebook_ml_ones(json.dumps(_shape(shape)), _dtype_name(dtype))
+  )
 
 
 def full(shape, fill_value, dtype=None):
   return _wrap_id(
-    js.quartz_notebook_ml_full(json.dumps(_shape(shape)), _leaf_descriptor(fill_value), _dtype_name(dtype))
+    js.quartz_notebook_ml_full(
+      json.dumps(_shape(shape)),
+      _leaf_descriptor(fill_value),
+      _dtype_name(dtype),
+    )
   )
 
 
 def arange(start, stop=None, step=None, dtype=None):
-  return _wrap_id(js.quartz_notebook_ml_arange(start, stop, step, _dtype_name(dtype)))
+  return _wrap_id(
+    js.quartz_notebook_ml_arange(start, stop, step, _dtype_name(dtype))
+  )
 
 
 def zeros_like(value, dtype=None):
-  return _wrap_id(js.quartz_notebook_ml_like('zeros', _leaf_descriptor(value), _dtype_name(dtype)))
+  return _wrap_id(
+    js.quartz_notebook_ml_like(
+      'zeros', _leaf_descriptor(value), _dtype_name(dtype)
+    )
+  )
 
 
 def ones_like(value, dtype=None):
-  return _wrap_id(js.quartz_notebook_ml_like('ones', _leaf_descriptor(value), _dtype_name(dtype)))
+  return _wrap_id(
+    js.quartz_notebook_ml_like(
+      'ones', _leaf_descriptor(value), _dtype_name(dtype)
+    )
+  )
 
 
 def full_like(value, fill_value, dtype=None):
   return _wrap_id(
     js.quartz_notebook_ml_full(
-      json.dumps(list(asarray(value).shape)), _leaf_descriptor(fill_value), _dtype_name(dtype or asarray(value).dtype)
+      json.dumps(list(asarray(value).shape)),
+      _leaf_descriptor(fill_value),
+      _dtype_name(dtype or asarray(value).dtype),
     )
   )
 
@@ -452,14 +519,20 @@ def transpose(value, axes=None):
 
 
 def swapaxes(value, axis1, axis2):
-  return _wrap_id(js.quartz_notebook_ml_swapaxes(asarray(value)._quartz_ml_id, axis1, axis2))
+  return _wrap_id(
+    js.quartz_notebook_ml_swapaxes(asarray(value)._quartz_ml_id, axis1, axis2)
+  )
 
 
 def split(value, indices_or_sections, axis=0):
   return [
     _wrap_id(item)
     for item in json.loads(
-      str(js.quartz_notebook_ml_split(asarray(value)._quartz_ml_id, json.dumps(indices_or_sections), axis))
+      str(
+        js.quartz_notebook_ml_split(
+          asarray(value)._quartz_ml_id, json.dumps(indices_or_sections), axis
+        )
+      )
     )
   ]
 
@@ -469,11 +542,19 @@ def tril(value, k=0):
 
 
 def where(cond, left, right):
-  return _wrap_id(js.quartz_notebook_ml_where(_leaf_descriptor(cond), _leaf_descriptor(left), _leaf_descriptor(right)))
+  return _wrap_id(
+    js.quartz_notebook_ml_where(
+      _leaf_descriptor(cond), _leaf_descriptor(left), _leaf_descriptor(right)
+    )
+  )
 
 
 def take(value, indices, axis=None):
-  return _wrap_id(js.quartz_notebook_ml_take(asarray(value)._quartz_ml_id, _leaf_descriptor(indices), axis))
+  return _wrap_id(
+    js.quartz_notebook_ml_take(
+      asarray(value)._quartz_ml_id, _leaf_descriptor(indices), axis
+    )
+  )
 
 
 def take_along_axis(value, indices, axis):
@@ -522,13 +603,19 @@ def PRNGKey(seed=0):
 
 
 def random_split(key, num=2):
-  return _wrap_id(js.quartz_notebook_ml_random_split(asarray(key)._quartz_ml_id, json.dumps(num)))
+  return _wrap_id(
+    js.quartz_notebook_ml_random_split(
+      asarray(key)._quartz_ml_id, json.dumps(num)
+    )
+  )
 
 
 def random_normal(key, shape=None, dtype=None):
   return _wrap_id(
     js.quartz_notebook_ml_random_normal(
-      asarray(key)._quartz_ml_id, json.dumps(_shape(shape or ())), _dtype_name(dtype)
+      asarray(key)._quartz_ml_id,
+      json.dumps(_shape(shape or ())),
+      _dtype_name(dtype),
     )
   )
 
@@ -536,7 +623,11 @@ def random_normal(key, shape=None, dtype=None):
 def random_uniform(key, shape=None, minval=0.0, maxval=1.0, dtype=None):
   return _wrap_id(
     js.quartz_notebook_ml_random_uniform(
-      asarray(key)._quartz_ml_id, json.dumps(_shape(shape or ())), minval, maxval, _dtype_name(dtype)
+      asarray(key)._quartz_ml_id,
+      json.dumps(_shape(shape or ())),
+      minval,
+      maxval,
+      _dtype_name(dtype),
     )
   )
 
@@ -544,18 +635,31 @@ def random_uniform(key, shape=None, minval=0.0, maxval=1.0, dtype=None):
 def random_randint(key, shape, minval, maxval, dtype='int32'):
   return _wrap_id(
     js.quartz_notebook_ml_random_randint(
-      asarray(key)._quartz_ml_id, json.dumps(_shape(shape)), minval, maxval, _dtype_name(dtype)
+      asarray(key)._quartz_ml_id,
+      json.dumps(_shape(shape)),
+      minval,
+      maxval,
+      _dtype_name(dtype),
     )
   )
 
 
 def tree_map(fn, tree, *rest):
   if isinstance(tree, dict):
-    return {key: tree_map(fn, tree[key], *(other[key] for other in rest)) for key in tree}
+    return {
+      key: tree_map(fn, tree[key], *(other[key] for other in rest))
+      for key in tree
+    }
   if isinstance(tree, list):
-    return [tree_map(fn, item, *(other[index] for other in rest)) for index, item in enumerate(tree)]
+    return [
+      tree_map(fn, item, *(other[index] for other in rest))
+      for index, item in enumerate(tree)
+    ]
   if isinstance(tree, tuple):
-    return tuple(tree_map(fn, item, *(other[index] for other in rest)) for index, item in enumerate(tree))
+    return tuple(
+      tree_map(fn, item, *(other[index] for other in rest))
+      for index, item in enumerate(tree)
+    )
   return fn(tree, *rest)
 
 
@@ -567,8 +671,14 @@ def jit_function(fn=None, **options):
   def decorate(inner):
     def wrapped(*args, **kwargs):
       if kwargs:
-        raise TypeError('keyword arguments are unavailable in browser notebook jit')
-      return _wrap_json(js.quartz_notebook_ml_jit(inner, _transform_args(args), json.dumps(options)))
+        raise TypeError(
+          'keyword arguments are unavailable in browser notebook jit'
+        )
+      return _wrap_json(
+        js.quartz_notebook_ml_jit(
+          inner, _transform_args(args), json.dumps(options)
+        )
+      )
 
     return wrapped
 
@@ -578,8 +688,14 @@ def jit_function(fn=None, **options):
 def grad_function(fn, **options):
   def wrapped(*args, **kwargs):
     if kwargs:
-      raise TypeError('keyword arguments are unavailable in browser notebook grad')
-    return _wrap_json(js.quartz_notebook_ml_grad(fn, _transform_args(args), json.dumps(options)))
+      raise TypeError(
+        'keyword arguments are unavailable in browser notebook grad'
+      )
+    return _wrap_json(
+      js.quartz_notebook_ml_grad(
+        fn, _transform_args(args), json.dumps(options)
+      )
+    )
 
   return wrapped
 
@@ -587,8 +703,16 @@ def grad_function(fn, **options):
 def value_and_grad(fn, **options):
   def wrapped(*args, **kwargs):
     if kwargs:
-      raise TypeError('keyword arguments are unavailable in browser notebook value_and_grad')
-    return tuple(_wrap_json(js.quartz_notebook_ml_value_and_grad(fn, _transform_args(args), json.dumps(options))))
+      raise TypeError(
+        'keyword arguments are unavailable in browser notebook value_and_grad'
+      )
+    return tuple(
+      _wrap_json(
+        js.quartz_notebook_ml_value_and_grad(
+          fn, _transform_args(args), json.dumps(options)
+        )
+      )
+    )
 
   return wrapped
 
@@ -596,14 +720,18 @@ def value_and_grad(fn, **options):
 def make_jaxpr(fn):
   def wrapped(*args, **kwargs):
     if kwargs:
-      raise TypeError('keyword arguments are unavailable in browser notebook make_jaxpr')
+      raise TypeError(
+        'keyword arguments are unavailable in browser notebook make_jaxpr'
+      )
     return js.quartz_notebook_ml_make_jaxpr(fn, _transform_args(args))
 
   return wrapped
 
 
 def block_until_ready(value):
-  return _wrap_json(js.quartz_notebook_ml_block_until_ready(json.dumps(_descriptor(value))))
+  return _wrap_json(
+    js.quartz_notebook_ml_block_until_ready(json.dumps(_descriptor(value)))
+  )
 
 
 def device_put(value, device=None):
@@ -696,11 +824,19 @@ def _torch_shape(args):
 
 
 def torch_randn(*shape, dtype=None, device=None):
-  return random_normal(PRNGKey(int(time.time() * 1000) % 2147483647), _torch_shape(shape), dtype=dtype)
+  return random_normal(
+    PRNGKey(int(time.time() * 1000) % 2147483647),
+    _torch_shape(shape),
+    dtype=dtype,
+  )
 
 
 def torch_compile(fn=None, **options):
-  return jit_function(fn, **options) if fn is not None else lambda inner: jit_function(inner, **options)
+  return (
+    jit_function(fn, **options)
+    if fn is not None
+    else lambda inner: jit_function(inner, **options)
+  )
 
 
 def set_float32_matmul_precision(value):
@@ -785,7 +921,12 @@ nn_module = _install_module(
 tree_util_module = _install_module('jax.tree_util', {'tree_map': tree_map})
 lax_module = _install_module('jax.lax', {'stop_gradient': stop_gradient})
 sharding_module = _install_module(
-  'jax.sharding', {'Mesh': Mesh, 'NamedSharding': NamedSharding, 'PartitionSpec': PartitionSpec}
+  'jax.sharding',
+  {
+    'Mesh': Mesh,
+    'NamedSharding': NamedSharding,
+    'PartitionSpec': PartitionSpec,
+  },
 )
 jax_module = _install_module(
   'jax',
@@ -810,8 +951,12 @@ jax_module = _install_module(
 )
 jax_module.__path__ = []
 torch_cuda = TorchCuda()
-torch_nn_functional = _install_module('torch.nn.functional', {'relu': relu, 'gelu': gelu})
-torch_nn = _install_module('torch.nn', {'Module': TorchModule, 'functional': torch_nn_functional})
+torch_nn_functional = _install_module(
+  'torch.nn.functional', {'relu': relu, 'gelu': gelu}
+)
+torch_nn = _install_module(
+  'torch.nn', {'Module': TorchModule, 'functional': torch_nn_functional}
+)
 torch_nn.__path__ = []
 torch_module = _install_module(
   'torch',
@@ -821,8 +966,12 @@ torch_module = _install_module(
     'cuda': torch_cuda,
     'float32': 'float32',
     'randn': torch_randn,
-    'zeros': lambda *shape, dtype=None, device=None: zeros(_torch_shape(shape), dtype=dtype),
-    'ones': lambda *shape, dtype=None, device=None: ones(_torch_shape(shape), dtype=dtype),
+    'zeros': lambda *shape, dtype=None, device=None: zeros(
+      _torch_shape(shape), dtype=dtype
+    ),
+    'ones': lambda *shape, dtype=None, device=None: ones(
+      _torch_shape(shape), dtype=dtype
+    ),
     'compile': torch_compile,
     'set_float32_matmul_precision': set_float32_matmul_precision,
     'tanh': tanh,
@@ -884,13 +1033,17 @@ def _quartz_jsonable(value, seen=None):
     if fields is not None:
       seen.add(value_id)
       try:
-        return {key: _quartz_jsonable(item, seen) for key, item in fields.items()}
+        return {
+          key: _quartz_jsonable(item, seen) for key, item in fields.items()
+        }
       finally:
         seen.remove(value_id)
   if isinstance(value, dict):
     seen.add(value_id)
     try:
-      return {str(key): _quartz_jsonable(item, seen) for key, item in value.items()}
+      return {
+        str(key): _quartz_jsonable(item, seen) for key, item in value.items()
+      }
     finally:
       seen.remove(value_id)
   if isinstance(value, (list, tuple)):
@@ -911,7 +1064,8 @@ def _quartz_jsonable(value, seen=None):
     seen.add(value_id)
     try:
       return {
-        field.name: _quartz_jsonable(getattr(value, field.name), seen) for field in _quartz_dataclasses.fields(value)
+        field.name: _quartz_jsonable(getattr(value, field.name), seen)
+        for field in _quartz_dataclasses.fields(value)
       }
     finally:
       seen.remove(value_id)
@@ -919,10 +1073,14 @@ def _quartz_jsonable(value, seen=None):
   if fields is not None:
     seen.add(value_id)
     try:
-      return {key: _quartz_jsonable(item, seen) for key, item in fields.items()}
+      return {
+        key: _quartz_jsonable(item, seen) for key, item in fields.items()
+      }
     finally:
       seen.remove(value_id)
-  raise TypeError(f'notebook value is not JSON-displayable: {type(value).__name__}')
+  raise TypeError(
+    f'notebook value is not JSON-displayable: {type(value).__name__}'
+  )
 
 
 def _quartz_object_fields(value):
@@ -951,11 +1109,15 @@ def _quartz_object_fields(value):
 def _quartz_json_display_bundle(value):
   if (
     not isinstance(value, (dict, list, tuple, set))
-    and not (_quartz_dataclasses.is_dataclass(value) and not isinstance(value, type))
+    and not (
+      _quartz_dataclasses.is_dataclass(value) and not isinstance(value, type)
+    )
     and _quartz_object_fields(value) is None
   ):
     return None
-  text = json.dumps(_quartz_jsonable(value), ensure_ascii=False, indent=2, sort_keys=True)
+  text = json.dumps(
+    _quartz_jsonable(value), ensure_ascii=False, indent=2, sort_keys=True
+  )
   return {'application/json': text, 'text/plain': text}
 
 
@@ -969,7 +1131,9 @@ def display(*objects):
         data = _quartz_json_display_bundle(obj)
       except Exception:
         data = None
-      js.quartz_notebook_display(json.dumps(data if data is not None else {'text/plain': str(obj)}))
+      js.quartz_notebook_display(
+        json.dumps(data if data is not None else {'text/plain': str(obj)})
+      )
 
 
 display_module = types.ModuleType('IPython.display')
@@ -1009,7 +1173,9 @@ def __quartz_timeit(statement, global_ns, local_ns, number=None, repeat=None):
       exec(code, global_ns, local_ns)
     durations.append(time.perf_counter() - started)
   best = min(durations) / max(runs, 1)
-  print(f'{_format_timeit(best)} per loop (best of {repeats}, {runs} loops each)')
+  print(
+    f'{_format_timeit(best)} per loop (best of {repeats}, {runs} loops each)'
+  )
 
 
 def __quartz_time(statement, global_ns, local_ns):
@@ -1028,7 +1194,9 @@ def __quartz_time(statement, global_ns, local_ns):
     value = None
   process_elapsed = time.process_time() - process_started
   wall_elapsed = time.perf_counter() - started
-  print(f'CPU times: user {_format_timeit(process_elapsed)}, sys: 0 ns, total: {_format_timeit(process_elapsed)}')
+  print(
+    f'CPU times: user {_format_timeit(process_elapsed)}, sys: 0 ns, total: {_format_timeit(process_elapsed)}'
+  )
   print(f'Wall time: {_format_timeit(wall_elapsed)}')
   return value
 
@@ -1080,7 +1248,9 @@ def __quartz_shell_ls(words):
     if word.startswith('-'):
       flags = set(word[1:])
       if not flags or not flags <= {'1', 'a', 'h', 'l'}:
-        raise ValueError(f'ls option {word} is unavailable in the browser runtime')
+        raise ValueError(
+          f'ls option {word} is unavailable in the browser runtime'
+        )
       long = long or 'l' in flags
       show_all = show_all or 'a' in flags
     else:
@@ -1092,14 +1262,19 @@ def __quartz_shell_ls(words):
   for raw_pattern in patterns:
     pattern = __quartz_notebook_relative_path(raw_pattern, True)
     matches = (
-      [posixpath.join(_quartz_notebook_root, entry) for entry in sorted(os.listdir(_quartz_notebook_root))]
+      [
+        posixpath.join(_quartz_notebook_root, entry)
+        for entry in sorted(os.listdir(_quartz_notebook_root))
+      ]
       if pattern == '.'
       else sorted(glob.glob(posixpath.join(_quartz_notebook_root, pattern)))
     )
     if not matches:
       raise FileNotFoundError(f'ls: cannot access {raw_pattern}')
     for match in matches:
-      path = __quartz_notebook_sandbox_path(posixpath.relpath(match, _quartz_notebook_root), True)
+      path = __quartz_notebook_sandbox_path(
+        posixpath.relpath(match, _quartz_notebook_root), True
+      )
       display_path = posixpath.relpath(path, _quartz_notebook_root)
       if not show_all and posixpath.basename(display_path).startswith('.'):
         continue
@@ -1132,15 +1307,23 @@ def __quartz_shell(command):
   if words[0] == 'ls':
     __quartz_shell_ls(words)
     return
-  raise ValueError(f'shell command {words[0]} is unavailable in the browser runtime')
+  raise ValueError(
+    f'shell command {words[0]} is unavailable in the browser runtime'
+  )
 
 
 def _quartz_is_threading_runtime_error(traceback_text):
   lower = traceback_text.lower()
   return (
     '_start_joinable_thread' in traceback_text
-    or ('threading.py' in traceback_text and 'start' in lower and 'thread' in lower)
-    or ('multiprocessing' in lower and ('thread' in lower or 'process' in lower))
+    or (
+      'threading.py' in traceback_text
+      and 'start' in lower
+      and 'thread' in lower
+    )
+    or (
+      'multiprocessing' in lower and ('thread' in lower or 'process' in lower)
+    )
   )
 
 
@@ -1151,7 +1334,11 @@ def _quartz_python_error_payload(exc, traceback_text):
       'evalue': _quartz_threading_runtime_error,
       'traceback': _quartz_threading_runtime_error,
     }
-  return {'ename': exc.__class__.__name__, 'evalue': str(exc), 'traceback': traceback_text}
+  return {
+    'ename': exc.__class__.__name__,
+    'evalue': str(exc),
+    'traceback': traceback_text,
+  }
 
 
 def __quartz_run_cell(
@@ -1182,5 +1369,7 @@ def __quartz_run_cell(
       exec(_compile(tree, '<notebook-cell>', 'exec'), _globals())
   except BaseException as exc:
     traceback_text = _format_exc()
-    _python_error(_json_dumps(_quartz_python_error_payload(exc, traceback_text)))
+    _python_error(
+      _json_dumps(_quartz_python_error_payload(exc, traceback_text))
+    )
     raise

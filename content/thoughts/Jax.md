@@ -50,7 +50,9 @@ def ent_varent(logp: jnp.ndarray) -> Tuple[jnp.ndarray, jnp.ndarray]:
 def normalize_logits(logits: jnp.ndarray, noise_floor: float) -> jnp.ndarray:
   """Normalize logits to log probabilities with noise floor truncation."""
   shifted = logits - jnp.max(logits, axis=-1, keepdims=True)
-  normalized = shifted - jax.nn.logsumexp(shifted + EPS, axis=-1, keepdims=True)
+  normalized = shifted - jax.nn.logsumexp(
+    shifted + EPS, axis=-1, keepdims=True
+  )
   # noise floor calculated for bfloat16
   return jnp.where(normalized < noise_floor, jnp.log(EPS), normalized)
 ```

@@ -32,7 +32,9 @@ def main():
 
   words = content.split()
   chars = len(content)
-  chars_no_ws = len(content.replace(' ', '').replace('\n', '').replace('\t', ''))
+  chars_no_ws = len(
+    content.replace(' ', '').replace('\n', '').replace('\t', '')
+  )
 
   stats = {
     'source': source,

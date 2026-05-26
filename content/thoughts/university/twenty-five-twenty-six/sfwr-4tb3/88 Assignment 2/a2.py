@@ -37,7 +37,10 @@ def compile_latex():
   tex_file = BASE_DIR / 'prettyprintgrammar.tex'
   print(f'Compiling {tex_file}...')
   result = subprocess.run(
-    ['pdflatex', '-interaction=nonstopmode', str(tex_file)], cwd=BASE_DIR, capture_output=True, text=True
+    ['pdflatex', '-interaction=nonstopmode', str(tex_file)],
+    cwd=BASE_DIR,
+    capture_output=True,
+    text=True,
   )
   if result.returncode == 0:
     print(f'Success! Output: {BASE_DIR / "prettyprintgrammar.pdf"}')
@@ -53,7 +56,9 @@ def generate_railroad_diagrams():
 
   print(f'Generating railroad diagrams from {grammar_file}...')
   result = subprocess.run(
-    ['java', '-jar', str(jar_file), f'-out:{output_file}', str(grammar_file)], capture_output=True, text=True
+    ['java', '-jar', str(jar_file), f'-out:{output_file}', str(grammar_file)],
+    capture_output=True,
+    text=True,
   )
   if result.returncode == 0:
     print(f'Success! Output: {output_file}')

@@ -2,7 +2,10 @@ from pathlib import Path
 
 
 def parse(path: str) -> list[tuple[int, int]]:
-  return [tuple(map(int, line.split(','))) for line in Path(path).read_text().strip().split('\n')]
+  return [
+    tuple(map(int, line.split(',')))
+    for line in Path(path).read_text().strip().split('\n')
+  ]
 
 
 def area(p1: tuple[int, int], p2: tuple[int, int]) -> int:
@@ -18,7 +21,9 @@ def p2(points: list[tuple[int, int]]) -> int:
   edges = [(points[i], points[(i + 1) % n]) for i in range(n)]
 
   # separate vertical edges for ray casting
-  vertical_edges = [(ax, min(ay, by), max(ay, by)) for (ax, ay), (bx, by) in edges if ax == bx]
+  vertical_edges = [
+    (ax, min(ay, by), max(ay, by)) for (ax, ay), (bx, by) in edges if ax == bx
+  ]
 
   # ray casting counting vertical edges. odd is inside, even is outside
   def point_in_polygon(px: int, py: int) -> bool:
@@ -72,7 +77,10 @@ def p2(points: list[tuple[int, int]]) -> int:
 
     return True
 
-  return max((area(pa, pb) for pa in points for pb in points if rect_valid(pa, pb)), default=0)
+  return max(
+    (area(pa, pb) for pa in points for pb in points if rect_valid(pa, pb)),
+    default=0,
+  )
 
 
 if __name__ == '__main__':

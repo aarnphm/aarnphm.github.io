@@ -133,7 +133,9 @@ class ExpressionEmitter(ast.NodeVisitor):
     raise NotImplementedError(f'constant {node.value!r} unsupported')
 
   def visit_BinOp(self, node: ast.BinOp) -> str:
-    op = {ast.Add: '+', ast.Sub: '-', ast.Mult: '*', ast.Div: '/'}.get(type(node.op))
+    op = {ast.Add: '+', ast.Sub: '-', ast.Mult: '*', ast.Div: '/'}.get(
+      type(node.op)
+    )
     if op is None:
       raise NotImplementedError(f'binary op {ast.dump(node.op)} unsupported')
     return f'({self.emit(node.left)} {op} {self.emit(node.right)})'
@@ -172,10 +174,14 @@ class StatementEmitter:
         args = ', '.join(self.expr.emit(arg) for arg in call.args)
         return f'{call.func.id}({args});'
     if isinstance(stmt, ast.AugAssign):
-      op = {ast.Add: '+=', ast.Sub: '-=', ast.Mult: '*=', ast.Div: '/='}.get(type(stmt.op))
+      op = {ast.Add: '+=', ast.Sub: '-=', ast.Mult: '*=', ast.Div: '/='}.get(
+        type(stmt.op)
+      )
       if op is None:
         raise NotImplementedError('augmented assign unsupported')
-      return f'{self.expr.emit(stmt.target)} {op} {self.expr.emit(stmt.value)};'
+      return (
+        f'{self.expr.emit(stmt.target)} {op} {self.expr.emit(stmt.value)};'
+      )
     if isinstance(stmt, ast.Return):
       if stmt.value is None:
         return 'return;'
@@ -184,14 +190,25 @@ class StatementEmitter:
 
 
 class CTraceCompiler:
-  def __init__(self, compiler: str | None = None, verbose: bool = False) -> None:
+  def __init__(
+    self, compiler: str | None = None, verbose: bool = False
+  ) -> None:
     self.compiler = compiler or _detect_compiler()
     self.work_dir = Path(tempfile.gettempdir()) / 'tracing_cjit'
     self.work_dir.mkdir(parents=True, exist_ok=True)
-    env_debug = int(os.environ.get('DEBUG', '0')) if os.environ.get('DEBUG', '0').isdigit() else 0
+    env_debug = (
+      int(os.environ.get('DEBUG', '0'))
+      if os.environ.get('DEBUG', '0').isdigit()
+      else 0
+    )
     self.debug = max(env_debug, 1 if verbose else 0)
 
-  def compile(self, func: Callable[..., Any], restype: type | None, argtypes: Sequence[type]) -> Callable:
+  def compile(
+    self,
+    func: Callable[..., Any],
+    restype: type | None,
+    argtypes: Sequence[type],
+  ) -> Callable:
     source = textwrap.dedent(inspect.getsource(func))
     tree = ast.parse(source)
     tracer = LoopTracer()
@@ -207,12 +224,17 @@ class CTraceCompiler:
 
     c_body = []
     for seg in tracer.segments:
-      c_body.append(f'for (int {seg.index_var} = {seg.start}; {seg.index_var} < {seg.stop}; {seg.index_var}++) {{')
+      c_body.append(
+        f'for (int {seg.index_var} = {seg.start}; {seg.index_var} < {seg.stop}; {seg.index_var}++) {{'
+      )
       c_body.append(textwrap.indent(seg.body, '  '))
       c_body.append('}')
 
     arg_names = func.__code__.co_varnames[: func.__code__.co_argcount]
-    arg_decls = [f'{_ctype_to_cstring(tp)} {name}' for name, tp in zip(arg_names, argtypes)]
+    arg_decls = [
+      f'{_ctype_to_cstring(tp)} {name}'
+      for name, tp in zip(arg_names, argtypes)
+    ]
     ret_decl = _ctype_to_cstring(restype)
     c_src = '\n'.join([
       '#include <stddef.h>',
@@ -233,7 +255,16 @@ class CTraceCompiler:
     so_path = self.work_dir / f'{func.__name__}_{key}{_shared_suffix()}'
     if not so_path.exists():
       c_path.write_text(c_src)
-      cmd = [self.compiler, str(c_path), '-shared', '-fPIC', '-O3', '-o', str(so_path), '-lm']
+      cmd = [
+        self.compiler,
+        str(c_path),
+        '-shared',
+        '-fPIC',
+        '-O3',
+        '-o',
+        str(so_path),
+        '-lm',
+      ]
       if sys.platform == 'darwin':
         cmd.insert(1, '-dynamiclib')
       if self.debug >= 1:

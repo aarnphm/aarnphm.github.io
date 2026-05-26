@@ -34,7 +34,9 @@ jit_c = TinyCJIT(verbose=False)
 jit_auto = Compiler(mode='auto', verbose=False, complexity_threshold=10)
 
 
-@jit_c(restype=None, argtypes=[c_float, POINTER(c_float), POINTER(c_float), c_int])
+@jit_c(
+  restype=None, argtypes=[c_float, POINTER(c_float), POINTER(c_float), c_int]
+)
 def saxpy_c(a, x, y, n):
   """y = a*x + y (single-precision a*x plus y)"""
   for i in range(n):
@@ -50,7 +52,16 @@ def dot_c(x, y, n):
   return total
 
 
-@jit_c(restype=None, argtypes=[POINTER(c_float), POINTER(c_float), POINTER(c_float), c_int, c_int])
+@jit_c(
+  restype=None,
+  argtypes=[
+    POINTER(c_float),
+    POINTER(c_float),
+    POINTER(c_float),
+    c_int,
+    c_int,
+  ],
+)
 def gemv_c(A, x, y, m, n):
   """y = A @ x (matrix-vector product, A is m×n row-major)"""
   for i in range(m):
@@ -60,7 +71,17 @@ def gemv_c(A, x, y, m, n):
     y[i] = total
 
 
-@jit_c(restype=None, argtypes=[POINTER(c_float), POINTER(c_float), POINTER(c_float), c_int, c_int, c_int])
+@jit_c(
+  restype=None,
+  argtypes=[
+    POINTER(c_float),
+    POINTER(c_float),
+    POINTER(c_float),
+    c_int,
+    c_int,
+    c_int,
+  ],
+)
 def gemm_c(A, B, C, m, n, k):
   """C = A @ B (matrix-matrix, A is m×k, B is k×n, C is m×n, all row-major)"""
   for i in range(m):
@@ -72,12 +93,28 @@ def gemm_c(A, B, C, m, n, k):
 
 
 # hand-optimized blocked gemm with aggressive compiler flags
-jit_c_opt = TinyCJIT(verbose=False, extra_cflags=['-O3', '-march=native', '-ffast-math', '-funroll-loops', '-fPIC'])
+jit_c_opt = TinyCJIT(
+  verbose=False,
+  extra_cflags=[
+    '-O3',
+    '-march=native',
+    '-ffast-math',
+    '-funroll-loops',
+    '-fPIC',
+  ],
+)
 
 
 @jit_c_opt(
   restype=None,
-  argtypes=[POINTER(c_float), POINTER(c_float), POINTER(c_float), c_int, c_int, c_int],
+  argtypes=[
+    POINTER(c_float),
+    POINTER(c_float),
+    POINTER(c_float),
+    c_int,
+    c_int,
+    c_int,
+  ],
   headers=['#define BLOCK_SIZE 32'],
 )
 def gemm_c_blocked(A, B, C, m, n, k):
@@ -101,14 +138,18 @@ def gemm_c_blocked(A, B, C, m, n, k):
 # =============================================================================
 
 
-@jit_auto(restype=None, argtypes=[c_float, POINTER(c_float), POINTER(c_float), c_int])
+@jit_auto(
+  restype=None, argtypes=[c_float, POINTER(c_float), POINTER(c_float), c_int]
+)
 def saxpy_auto(a, x, y, n):
   """y = a*x + y (single-precision a*x plus y)"""
   for i in range(n):
     y[i] = a * x[i] + y[i]
 
 
-@jit_auto(restype=c_float, argtypes=[POINTER(c_float), POINTER(c_float), c_int])
+@jit_auto(
+  restype=c_float, argtypes=[POINTER(c_float), POINTER(c_float), c_int]
+)
 def dot_auto(x, y, n):
   """dot product"""
   total = 0.0
@@ -117,7 +158,16 @@ def dot_auto(x, y, n):
   return total
 
 
-@jit_auto(restype=None, argtypes=[POINTER(c_float), POINTER(c_float), POINTER(c_float), c_int, c_int])
+@jit_auto(
+  restype=None,
+  argtypes=[
+    POINTER(c_float),
+    POINTER(c_float),
+    POINTER(c_float),
+    c_int,
+    c_int,
+  ],
+)
 def gemv_auto(A, x, y, m, n):
   """y = A @ x (matrix-vector product, A is m×n row-major)"""
   for i in range(m):
@@ -127,7 +177,17 @@ def gemv_auto(A, x, y, m, n):
     y[i] = total
 
 
-@jit_auto(restype=None, argtypes=[POINTER(c_float), POINTER(c_float), POINTER(c_float), c_int, c_int, c_int])
+@jit_auto(
+  restype=None,
+  argtypes=[
+    POINTER(c_float),
+    POINTER(c_float),
+    POINTER(c_float),
+    c_int,
+    c_int,
+    c_int,
+  ],
+)
 def gemm_auto(A, B, C, m, n, k):
   """C = A @ B (matrix-matrix, A is m×k, B is k×n, C is m×n, all row-major)"""
   for i in range(m):
@@ -144,7 +204,14 @@ jit_auto_opt = Compiler(mode='auto', verbose=False, complexity_threshold=15)
 
 @jit_auto_opt(
   restype=None,
-  argtypes=[POINTER(c_float), POINTER(c_float), POINTER(c_float), c_int, c_int, c_int],
+  argtypes=[
+    POINTER(c_float),
+    POINTER(c_float),
+    POINTER(c_float),
+    c_int,
+    c_int,
+    c_int,
+  ],
   headers=['#define BLOCK_SIZE 32'],
 )
 def gemm_auto_blocked(A, B, C, m, n, k):
@@ -185,7 +252,9 @@ def dot_numba(x: np.ndarray, y: np.ndarray, n: int) -> float:
 
 
 @numba.jit(nopython=True, fastmath=True)
-def gemv_numba(A: np.ndarray, x: np.ndarray, y: np.ndarray, m: int, n: int) -> None:
+def gemv_numba(
+  A: np.ndarray, x: np.ndarray, y: np.ndarray, m: int, n: int
+) -> None:
   """y = A @ x"""
   for i in range(m):
     total = 0.0
@@ -195,7 +264,9 @@ def gemv_numba(A: np.ndarray, x: np.ndarray, y: np.ndarray, m: int, n: int) -> N
 
 
 @numba.jit(nopython=True, fastmath=True)
-def gemm_numba(A: np.ndarray, B: np.ndarray, C: np.ndarray, m: int, n: int, k: int) -> None:
+def gemm_numba(
+  A: np.ndarray, B: np.ndarray, C: np.ndarray, m: int, n: int, k: int
+) -> None:
   """C = A @ B"""
   for i in range(m):
     for j in range(n):
@@ -210,7 +281,15 @@ def gemm_numba(A: np.ndarray, B: np.ndarray, C: np.ndarray, m: int, n: int, k: i
 # =============================================================================
 
 
-def benchmark_op(name: str, c_func, auto_func, numba_func, setup_fn, n_warmup: int = 3, n_runs: int = 10) -> None:
+def benchmark_op(
+  name: str,
+  c_func,
+  auto_func,
+  numba_func,
+  setup_fn,
+  n_warmup: int = 3,
+  n_runs: int = 10,
+) -> None:
   """benchmark an operation across three implementations"""
   print(f'\n{"=" * 80}')
   print(f'Benchmark: {name}')
@@ -263,7 +342,9 @@ def benchmark_op(name: str, c_func, auto_func, numba_func, setup_fn, n_warmup: i
 
   # benchmark pure numpy (reference)
   if 'reference' in setup_fn.__name__:
-    ref_func = setup_fn.__globals__.get(f'{setup_fn.__name__.replace("_setup", "_ref")}')
+    ref_func = setup_fn.__globals__.get(
+      f'{setup_fn.__name__.replace("_setup", "_ref")}'
+    )
     if ref_func:
       times_ref = []
       for _ in range(n_runs):
@@ -289,7 +370,11 @@ def benchmark_op(name: str, c_func, auto_func, numba_func, setup_fn, n_warmup: i
   print(f'  Numba:      {runtime_numba * 1e6:8.2f} µs')
 
   # find winner
-  times = {'TinyCJIT': runtime_c, 'Compiler': runtime_auto, 'Numba': runtime_numba}
+  times = {
+    'TinyCJIT': runtime_c,
+    'Compiler': runtime_auto,
+    'Numba': runtime_numba,
+  }
   winner = min(times.items(), key=lambda x: x[1])
   print(f'  Winner:     {winner[0]}')
   for name, time_val in times.items():
@@ -376,17 +461,39 @@ def main():
   print('- Numba: LLVM-based optimization\n')
 
   # saxpy: bandwidth-bound, should be competitive
-  benchmark_op('SAXPY (y = a*x + y, n=1M)', saxpy_c, saxpy_auto, saxpy_numba, lambda: saxpy_setup(1_000_000))
+  benchmark_op(
+    'SAXPY (y = a*x + y, n=1M)',
+    saxpy_c,
+    saxpy_auto,
+    saxpy_numba,
+    lambda: saxpy_setup(1_000_000),
+  )
 
   # dot product: reduction, more compute
-  benchmark_op('DOT (dot product, n=1M)', dot_c, dot_auto, dot_numba, lambda: dot_setup(1_000_000))
+  benchmark_op(
+    'DOT (dot product, n=1M)',
+    dot_c,
+    dot_auto,
+    dot_numba,
+    lambda: dot_setup(1_000_000),
+  )
 
   # gemv: moderate compute intensity
-  benchmark_op('GEMV (matrix-vector, 2000×2000)', gemv_c, gemv_auto, gemv_numba, lambda: gemv_setup(2000, 2000))
+  benchmark_op(
+    'GEMV (matrix-vector, 2000×2000)',
+    gemv_c,
+    gemv_auto,
+    gemv_numba,
+    lambda: gemv_setup(2000, 2000),
+  )
 
   # gemm: compute-bound, numba should win
   benchmark_op(
-    'GEMM naive (matrix-matrix, 256×256×256)', gemm_c, gemm_auto, gemm_numba, lambda: gemm_setup(256, 256, 256)
+    'GEMM naive (matrix-matrix, 256×256×256)',
+    gemm_c,
+    gemm_auto,
+    gemm_numba,
+    lambda: gemm_setup(256, 256, 256),
   )
 
   # gemm blocked: hand-optimized with cache tiling

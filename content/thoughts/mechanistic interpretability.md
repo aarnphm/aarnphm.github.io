@@ -98,7 +98,12 @@ Current SAE deployments (Goodfire, Transluce) run as separate inference services
 The plugin leverages vLLM v1's modular architecture and plugin system via Python entry points:
 
 ```python title="setup.py"
-setup(name='vllm-sae-plugin', entry_points={'vllm.general_plugins': ['register_sae = vllm_sae_plugin:register']})
+setup(
+  name='vllm-sae-plugin',
+  entry_points={
+    'vllm.general_plugins': ['register_sae = vllm_sae_plugin:register']
+  },
+)
 ```
 
 Components:
@@ -133,21 +138,31 @@ class InterceptionConfig:
 def create_interception_config(
   sae_registry: dict[tuple[int, str], Any], target_modules: list[str]
 ) -> InterceptionConfig:
-  return InterceptionConfig(sae_registry=sae_registry, target_modules=tuple(target_modules), intervention_cache={})
+  return InterceptionConfig(
+    sae_registry=sae_registry,
+    target_modules=tuple(target_modules),
+    intervention_cache={},
+  )
 
 
-def get_sae_for_layer(registry: dict[tuple[int, str], Any], layer_idx: int, module_type: str) -> Any | None:
+def get_sae_for_layer(
+  registry: dict[tuple[int, str], Any], layer_idx: int, module_type: str
+) -> Any | None:
   return registry.get((layer_idx, module_type))
 
 
 def apply_steering(
-  sparse_features: torch.Tensor, interventions: dict[int, dict[str, Any]], layer_idx: int
+  sparse_features: torch.Tensor,
+  interventions: dict[int, dict[str, Any]],
+  layer_idx: int,
 ) -> torch.Tensor:
   if layer_idx not in interventions:
     return sparse_features
 
   intervention = interventions[layer_idx]
-  return sparse_features + intervention.get('bias', 0) * intervention.get('scale', 1.0)
+  return sparse_features + intervention.get('bias', 0) * intervention.get(
+    'scale', 1.0
+  )
 
 
 def process_activations(
@@ -168,24 +183,36 @@ def process_activations(
 
 
 def create_attention_hook(
-  config: InterceptionConfig, layer_idx: int, drift_monitor: Callable[[torch.Tensor, int], None]
+  config: InterceptionConfig,
+  layer_idx: int,
+  drift_monitor: Callable[[torch.Tensor, int], None],
 ) -> Callable:
   def hook(module, input, output):
     activations = output[0]
     sae = get_sae_for_layer(config.sae_registry, layer_idx, 'attn')
-    reconstructed = process_activations(activations, sae, config.intervention_cache, layer_idx, drift_monitor)
+    reconstructed = process_activations(
+      activations, sae, config.intervention_cache, layer_idx, drift_monitor
+    )
     return (reconstructed,) + output[1:]
 
   return hook
 
 
-def register_hooks(config: InterceptionConfig, model, drift_monitor: Callable[[torch.Tensor, int], None]):
+def register_hooks(
+  config: InterceptionConfig,
+  model,
+  drift_monitor: Callable[[torch.Tensor, int], None],
+):
   target_layers = [
-    idx for idx in range(model.config.num_hidden_layers) if f'layer.{idx}.attn' in config.target_modules
+    idx
+    for idx in range(model.config.num_hidden_layers)
+    if f'layer.{idx}.attn' in config.target_modules
   ]
 
   return [
-    model.layers[idx].self_attn.register_forward_hook(create_attention_hook(config, idx, drift_monitor))
+    model.layers[idx].self_attn.register_forward_hook(
+      create_attention_hook(config, idx, drift_monitor)
+    )
     for idx in target_layers
   ]
 ```
@@ -212,7 +239,9 @@ class CLTConfig(NamedTuple):
 def create_clt_config(clt_checkpoint) -> CLTConfig:
   clt = load_clt(clt_checkpoint)
   return CLTConfig(
-    clt=clt, source_layer=clt_checkpoint.source_layer, target_layers=tuple(clt_checkpoint.target_layers)
+    clt=clt,
+    source_layer=clt_checkpoint.source_layer,
+    target_layers=tuple(clt_checkpoint.target_layers),
   )
 
 
@@ -220,7 +249,9 @@ def encode_source_activations(
   clt: Any, activations: torch.Tensor, position_ids: torch.Tensor
 ) -> tuple[torch.Tensor, dict[int, torch.Tensor]]:
   sparse_features = clt.encode(activations)
-  feature_cache = {pos.item(): sparse_features[idx] for idx, pos in enumerate(position_ids)}
+  feature_cache = {
+    pos.item(): sparse_features[idx] for idx, pos in enumerate(position_ids)
+  }
   return sparse_features, feature_cache
 
 
@@ -242,8 +273,14 @@ def create_clt_pipeline(config: CLTConfig):
   def encode(activations: torch.Tensor, position_ids: torch.Tensor):
     return encode_source_activations(config.clt, activations, position_ids)
 
-  def decode(feature_cache: dict[int, torch.Tensor], layer_idx: int, position_ids: torch.Tensor):
-    return apply_cached_to_target(config.clt, feature_cache, config.target_layers, layer_idx, position_ids)
+  def decode(
+    feature_cache: dict[int, torch.Tensor],
+    layer_idx: int,
+    position_ids: torch.Tensor,
+  ):
+    return apply_cached_to_target(
+      config.clt, feature_cache, config.target_layers, layer_idx, position_ids
+    )
 
   return encode, decode
 ```
@@ -268,7 +305,9 @@ class MatryoshkaConfig(NamedTuple):
   complexity_estimator: Callable[[torch.Tensor], torch.Tensor]
 
 
-def create_matryoshka_config(checkpoint, sparsity_levels: list[int] | None = None) -> MatryoshkaConfig:
+def create_matryoshka_config(
+  checkpoint, sparsity_levels: list[int] | None = None
+) -> MatryoshkaConfig:
   if sparsity_levels is None:
     sparsity_levels = [32, 64, 128, 256]
 
@@ -280,7 +319,9 @@ def create_matryoshka_config(checkpoint, sparsity_levels: list[int] | None = Non
   )
 
 
-def select_sparsity_level(complexity_score: float, thresholds: tuple[float, ...] = (0.3, 0.6, 0.85)) -> int:
+def select_sparsity_level(
+  complexity_score: float, thresholds: tuple[float, ...] = (0.3, 0.6, 0.85)
+) -> int:
   levels = [32, 64, 128, 256]
   for i, threshold in enumerate(thresholds):
     if complexity_score < threshold:
@@ -288,14 +329,18 @@ def select_sparsity_level(complexity_score: float, thresholds: tuple[float, ...]
   return levels[-1]
 
 
-def create_sparse_features(all_features: torch.Tensor, k: int, idx: int) -> torch.Tensor:
+def create_sparse_features(
+  all_features: torch.Tensor, k: int, idx: int
+) -> torch.Tensor:
   topk_vals, topk_idx = torch.topk(all_features[idx], k)
   sparse = torch.zeros_like(all_features[idx])
   sparse.scatter_(0, topk_idx, topk_vals)
   return sparse
 
 
-def decode_with_sparsity(sparse_features: torch.Tensor, decoders: dict[int, Any], k: int) -> torch.Tensor:
+def decode_with_sparsity(
+  sparse_features: torch.Tensor, decoders: dict[int, Any], k: int
+) -> torch.Tensor:
   return decoders[k](sparse_features)
 
 
@@ -310,7 +355,9 @@ def adaptive_encode_decode(
     sparse = create_sparse_features(all_features, k, idx)
     return decode_with_sparsity(sparse, config.decoders, k)
 
-  reconstructed = [process_token(i, score) for i, score in enumerate(complexity)]
+  reconstructed = [
+    process_token(i, score) for i, score in enumerate(complexity)
+  ]
 
   return torch.stack(reconstructed)
 ```
@@ -352,7 +399,9 @@ def create_drift_state(n_features: int, window_size: int = 1000) -> DriftState:
   )
 
 
-def update_welford_statistics(state: DriftState, sparse_features: torch.Tensor) -> DriftState:
+def update_welford_statistics(
+  state: DriftState, sparse_features: torch.Tensor
+) -> DriftState:
   active_mask = sparse_features != 0
   new_counts = state.activation_counts + active_mask.sum(dim=0)
 
@@ -371,15 +420,27 @@ def update_welford_statistics(state: DriftState, sparse_features: torch.Tensor) 
         new_vars[i] += delta * delta2
 
   return state._replace(
-    activation_counts=new_counts, activation_means=new_means, activation_vars=new_vars, total_samples=total
+    activation_counts=new_counts,
+    activation_means=new_means,
+    activation_vars=new_vars,
+    total_samples=total,
   )
 
 
-def compute_kl_divergence(freq_current: torch.Tensor, freq_baseline: torch.Tensor, epsilon: float = 1e-10) -> float:
-  return torch.sum(freq_current * torch.log(freq_current / (freq_baseline + epsilon) + epsilon)).item()
+def compute_kl_divergence(
+  freq_current: torch.Tensor,
+  freq_baseline: torch.Tensor,
+  epsilon: float = 1e-10,
+) -> float:
+  return torch.sum(
+    freq_current
+    * torch.log(freq_current / (freq_baseline + epsilon) + epsilon)
+  ).item()
 
 
-def detect_frequency_drift(state: DriftState, threshold: float = 0.1) -> tuple[str, float] | None:
+def detect_frequency_drift(
+  state: DriftState, threshold: float = 0.1
+) -> tuple[str, float] | None:
   if state.baseline_counts is None:
     return None
 
@@ -391,7 +452,9 @@ def detect_frequency_drift(state: DriftState, threshold: float = 0.1) -> tuple[s
   return ('frequency_drift', kl_div) if kl_div > threshold else None
 
 
-def detect_mean_shift(state: DriftState, threshold: float = 2.0) -> tuple[str, list[int]] | None:
+def detect_mean_shift(
+  state: DriftState, threshold: float = 2.0
+) -> tuple[str, list[int]] | None:
   if state.baseline_means is None:
     return None
 
@@ -405,13 +468,19 @@ def detect_mean_shift(state: DriftState, threshold: float = 2.0) -> tuple[str, l
   return None
 
 
-def check_drift(state: DriftState, alert_fn: Callable[[str, Any], None]) -> DriftState:
+def check_drift(
+  state: DriftState, alert_fn: Callable[[str, Any], None]
+) -> DriftState:
   if state.baseline_counts is None:
     return state._replace(
-      baseline_counts=state.activation_counts.clone(), baseline_means=state.activation_means.clone()
+      baseline_counts=state.activation_counts.clone(),
+      baseline_means=state.activation_means.clone(),
     )
 
-  for drift_result in [detect_frequency_drift(state), detect_mean_shift(state)]:
+  for drift_result in [
+    detect_frequency_drift(state),
+    detect_mean_shift(state),
+  ]:
     if drift_result is not None:
       drift_type, details = drift_result
       alert_fn(drift_type, details)
@@ -420,7 +489,9 @@ def check_drift(state: DriftState, alert_fn: Callable[[str, Any], None]) -> Drif
 
 
 def update_drift_monitor(
-  state: DriftState, sparse_features: torch.Tensor, alert_fn: Callable[[str, Any], None]
+  state: DriftState,
+  sparse_features: torch.Tensor,
+  alert_fn: Callable[[str, Any], None],
 ) -> DriftState:
   new_state = update_welford_statistics(state, sparse_features)
 
@@ -431,7 +502,9 @@ def update_drift_monitor(
 
 
 def emit_drift_alert(drift_type: str, details: Any) -> None:
-  logger.warning(f'Feature drift detected: {drift_type}', extra={'details': details})
+  logger.warning(
+    f'Feature drift detected: {drift_type}', extra={'details': details}
+  )
 ```
 
 ### optimization: batched sparse operations
@@ -445,7 +518,9 @@ import torch
 
 
 @torch.compile(mode='max-autotune')
-def fused_topk_decode(encoded: torch.Tensor, decoder_weights: torch.Tensor, k: int) -> torch.Tensor:
+def fused_topk_decode(
+  encoded: torch.Tensor, decoder_weights: torch.Tensor, k: int
+) -> torch.Tensor:
   batch, seq_len, n_features = encoded.shape
   topk_vals, topk_idx = torch.topk(encoded, k, dim=-1)
   selected_weights = decoder_weights[topk_idx]
@@ -494,21 +569,30 @@ class CacheConfig(NamedTuple):
 def create_cache_state(config: CacheConfig) -> CacheState:
   return CacheState(
     sparse_indices=torch.zeros(
-      (config.max_batch_size, config.max_seq_len, config.k), dtype=torch.int32, device=config.device
+      (config.max_batch_size, config.max_seq_len, config.k),
+      dtype=torch.int32,
+      device=config.device,
     ),
     sparse_values=torch.zeros(
-      (config.max_batch_size, config.max_seq_len, config.k), dtype=config.dtype, device=config.device
+      (config.max_batch_size, config.max_seq_len, config.k),
+      dtype=config.dtype,
+      device=config.device,
     ),
     position_map={},
   )
 
 
-def extract_topk_features(sparse_features: torch.Tensor, k: int = 128) -> tuple[torch.Tensor, torch.Tensor]:
+def extract_topk_features(
+  sparse_features: torch.Tensor, k: int = 128
+) -> tuple[torch.Tensor, torch.Tensor]:
   return torch.topk(sparse_features, k, dim=-1)
 
 
 def update_cache_diff(
-  state: CacheState, request_id: str, new_positions: list[int], sparse_features: torch.Tensor
+  state: CacheState,
+  request_id: str,
+  new_positions: list[int],
+  sparse_features: torch.Tensor,
 ) -> CacheState:
   base_idx = state.position_map.get(request_id, 0)
   topk_vals, topk_idx = extract_topk_features(sparse_features)
@@ -522,10 +606,16 @@ def update_cache_diff(
 
   new_position_map = {**state.position_map, request_id: base_idx + n_new}
 
-  return CacheState(sparse_indices=new_indices, sparse_values=new_values, position_map=new_position_map)
+  return CacheState(
+    sparse_indices=new_indices,
+    sparse_values=new_values,
+    position_map=new_position_map,
+  )
 
 
-def reconstruct_from_cache(state: CacheState, request_id: str, decoder_weights: torch.Tensor) -> torch.Tensor:
+def reconstruct_from_cache(
+  state: CacheState, request_id: str, decoder_weights: torch.Tensor
+) -> torch.Tensor:
   positions = state.position_map.get(request_id, 0)
   indices = state.sparse_indices[:positions]
   values = state.sparse_values[:positions]
@@ -537,10 +627,16 @@ def reconstruct_from_cache(state: CacheState, request_id: str, decoder_weights: 
 def create_cache_manager(config: CacheConfig):
   state_ref = [create_cache_state(config)]
 
-  def update(request_id: str, new_positions: list[int], sparse_features: torch.Tensor):
-    state_ref[0] = update_cache_diff(state_ref[0], request_id, new_positions, sparse_features)
+  def update(
+    request_id: str, new_positions: list[int], sparse_features: torch.Tensor
+  ):
+    state_ref[0] = update_cache_diff(
+      state_ref[0], request_id, new_positions, sparse_features
+    )
 
-  def reconstruct(request_id: str, decoder_weights: torch.Tensor) -> torch.Tensor:
+  def reconstruct(
+    request_id: str, decoder_weights: torch.Tensor
+  ) -> torch.Tensor:
     return reconstruct_from_cache(state_ref[0], request_id, decoder_weights)
 
   return update, reconstruct
@@ -567,7 +663,11 @@ llm = LLM(
     enable_drift_monitoring=True,
     drift_window=1000,  # samples
     cache_config={'max_cached_features': 100_000, 'eviction_policy': 'lru'},
-    optimization={'use_custom_kernels': True, 'compile_mode': 'max-autotune', 'enable_persistent_cache': True},
+    optimization={
+      'use_custom_kernels': True,
+      'compile_mode': 'max-autotune',
+      'enable_persistent_cache': True,
+    },
   ),
 )
 
@@ -582,7 +682,9 @@ steering = SteeringVector(
 )
 
 # Generate with steering
-outputs = llm.generate('The weather in California is', steering_vectors=[steering], temperature=0.7)
+outputs = llm.generate(
+  'The weather in California is', steering_vectors=[steering], temperature=0.7
+)
 
 # Access drift metrics
 drift_report = llm.sae_plugin.get_drift_report()
@@ -627,7 +729,9 @@ def compute_activation_rate(drift_state: DriftState) -> list[float]:
   return (drift_state.activation_counts / drift_state.total_samples).tolist()
 
 
-def detect_dead_features(drift_state: DriftState, threshold: float = 0.001) -> list[int]:
+def detect_dead_features(
+  drift_state: DriftState, threshold: float = 0.001
+) -> list[int]:
   activation_rate = drift_state.activation_counts / drift_state.total_samples
   dead_mask = activation_rate < threshold
   return torch.where(dead_mask)[0].tolist()
@@ -638,16 +742,22 @@ def compute_current_kl_divergence(drift_state: DriftState) -> float | None:
     return None
 
   freq_current = drift_state.activation_counts / drift_state.total_samples
-  freq_baseline = drift_state.baseline_counts / drift_state.baseline_counts.sum()
+  freq_baseline = (
+    drift_state.baseline_counts / drift_state.baseline_counts.sum()
+  )
 
   return compute_kl_divergence(freq_current, freq_baseline)
 
 
-def export_metrics(drift_state: DriftState, config: MetricsConfig) -> dict[str, Any]:
+def export_metrics(
+  drift_state: DriftState, config: MetricsConfig
+) -> dict[str, Any]:
   return {
     'feature_activation_rate': compute_activation_rate(drift_state),
     'drift_kl': compute_current_kl_divergence(drift_state),
-    'dead_features': detect_dead_features(drift_state, config.dead_feature_threshold),
+    'dead_features': detect_dead_features(
+      drift_state, config.dead_feature_threshold
+    ),
   }
 
 

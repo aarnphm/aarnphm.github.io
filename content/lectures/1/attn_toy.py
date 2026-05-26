@@ -30,7 +30,9 @@ def token_features(tok, pos, verb_pos):
 
 def build_K(tokens):
   verb_pos = tokens.index('jumps')
-  K = np.stack([token_features(tok, i, verb_pos) for i, tok in enumerate(tokens)])
+  K = np.stack([
+    token_features(tok, i, verb_pos) for i, tok in enumerate(tokens)
+  ])
   return K
 
 
@@ -48,7 +50,11 @@ S1 = 'The quick brown fox jumps over the lazy dog'.split()
 
 # Insert many adverbs between "fox" and "jumps" to enlarge distance without adding competing nouns
 fillers = 'really truly extremely absolutely definitely surely'.split()
-S2 = 'The quick brown fox ' + ' '.join(fillers * 4) + ' jumps over the very lazy dog'
+S2 = (
+  'The quick brown fox '
+  + ' '.join(fillers * 4)
+  + ' jumps over the very lazy dog'
+)
 S2 = S2.split()
 
 K1 = build_K(S1)
@@ -70,7 +76,9 @@ def plot_weights(tokens, w, title):
 
 
 plot_weights(S1, w1, "Attention from 'jumps' (short sentence)")
-plot_weights(S2, w2, "Attention from 'jumps' (long distance, no competing nouns)")
+plot_weights(
+  S2, w2, "Attention from 'jumps' (long distance, no competing nouns)"
+)
 
 
 def topk(tokens, w, k=3):

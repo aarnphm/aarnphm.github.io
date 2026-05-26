@@ -7,7 +7,9 @@ from .impl import Tokenizer as PyTokenizer
 from ._core import Tokenizer as RustTokenizer
 
 
-def _load_valid_text(dataset: t.Literal['toy', 'tinygpt', 'tinygpt-train'] = 'toy') -> str:
+def _load_valid_text(
+  dataset: t.Literal['toy', 'tinygpt', 'tinygpt-train'] = 'toy',
+) -> str:
   base_dir = os.path.dirname(__file__)
   if dataset == 'toy':
     path = os.path.join(base_dir, 'data', 'toy_data.txt')
@@ -16,7 +18,9 @@ def _load_valid_text(dataset: t.Literal['toy', 'tinygpt', 'tinygpt-train'] = 'to
   return open(path, 'r', encoding='utf-8', errors='ignore').read()
 
 
-def _timings_ms(model: PyTokenizer | RustTokenizer, text: str) -> tuple[float, float, float]:
+def _timings_ms(
+  model: PyTokenizer | RustTokenizer, text: str
+) -> tuple[float, float, float]:
   enc_start = time.perf_counter()
   ids = model.encode(text)
   enc_ms = (time.perf_counter() - enc_start) * 1000
@@ -29,12 +33,19 @@ def _timings_ms(model: PyTokenizer | RustTokenizer, text: str) -> tuple[float, f
 
 
 def benchmark(
-  dataset: t.Literal['toy', 'tinygpt-train'] = 'toy', merges: int = 500, processes: int = 4, batch_size: int = 1
+  dataset: t.Literal['toy', 'tinygpt-train'] = 'toy',
+  merges: int = 500,
+  processes: int = 4,
+  batch_size: int = 1,
 ) -> None:
   text = _load_valid_text(dataset)
 
-  py_model = PyTokenizer.from_pretrained(os.path.join(os.path.dirname(__file__), dataset))
-  r_model = RustTokenizer.from_pretrained(os.path.join(os.path.dirname(__file__), dataset))
+  py_model = PyTokenizer.from_pretrained(
+    os.path.join(os.path.dirname(__file__), dataset)
+  )
+  r_model = RustTokenizer.from_pretrained(
+    os.path.join(os.path.dirname(__file__), dataset)
+  )
 
   # train_path = resolve_ds(dataset)
   # # Train Python
@@ -52,7 +63,9 @@ def benchmark(
   r_enc_ms, r_dec_ms, r_rt_ms = _timings_ms(r_model, text)
 
   print(f'dataset={dataset}')
-  header = f'{"model":<10} {"encode_ms":>12} {"decode_ms":>12} {"roundtrip_ms":>14}'
+  header = (
+    f'{"model":<10} {"encode_ms":>12} {"decode_ms":>12} {"roundtrip_ms":>14}'
+  )
   print(header)
   print('-' * len(header))
   print(f'{"python":<10} {py_enc_ms:12.2f} {py_dec_ms:12.2f} {py_rt_ms:14.2f}')

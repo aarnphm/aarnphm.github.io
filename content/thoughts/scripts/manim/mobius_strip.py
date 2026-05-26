@@ -6,7 +6,9 @@ class MobiusStrip(ThreeDScene):
   def construct(self):
     self.set_camera_orientation(phi=70 * DEGREES, theta=20 * DEGREES)
 
-    ax = ThreeDAxes(x_range=(-10, 10, 1), y_range=(-10, 10, 1), z_range=(-10, 10, 1))
+    ax = ThreeDAxes(
+      x_range=(-10, 10, 1), y_range=(-10, 10, 1), z_range=(-10, 10, 1)
+    )
 
     mobius = Surface(
       lambda u, v: np.array([
@@ -23,5 +25,7 @@ class MobiusStrip(ThreeDScene):
     self.play(DrawBorderThenFill(ax), run_time=1.5)
 
     self.play(Write(mobius), run_time=4)
-    self.move_camera(phi=160 * DEGREES, theta=55 * DEGREES, run_time=5, zoom=1.25)
+    self.move_camera(
+      phi=160 * DEGREES, theta=55 * DEGREES, run_time=5, zoom=1.25
+    )
     self.wait()
