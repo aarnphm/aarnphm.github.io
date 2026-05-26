@@ -7,11 +7,13 @@ import {
 import {
   notebookKernelCommandEvent,
   notebookKernelRequestEvent,
+  notebookKernelRunAllEvent,
   type NotebookKernelCommand,
   type NotebookKernelSnapshot,
   type NotebookKernelStatus,
 } from '../../util/notebook-kernel-events'
 import { notebookLocalSourcesClearedEvent } from '../../util/notebook-source-events'
+import { notebookLanguageIconSvg } from '../../util/notebook/render/icons'
 import { FullSlug, normalizeRelativeURLs, resolveRelative } from '../../util/path'
 import { populateSearchIndex, querySearchIndex, SearchItem } from './search-index'
 import {
@@ -37,7 +39,7 @@ function appendHighlightedText(parent: HTMLElement, searchTerm: string, text: st
     .filter(term => term.length > 0)
     .sort((a, b) => b.length - a.length)
   if (terms.length === 0) {
-    parent.textContent = text
+    parent.append(document.createTextNode(text))
     return
   }
 
@@ -100,6 +102,13 @@ function appendActionAux(parent: HTMLElement, auxInnerHtml: string) {
   parent.appendChild(action)
 }
 
+function appendTrustedSvg(parent: HTMLElement, svgMarkup: string) {
+  const template = document.createElement('template')
+  template.innerHTML = svgMarkup
+  const svg = template.content.firstElementChild
+  if (svg) parent.append(svg)
+}
+
 function getRecents(): Set<FullSlug> {
   return new Set(JSON.parse(localStorage.getItem(localStorageKey) ?? '[]'))
 }
@@ -135,12 +144,36 @@ function notebookKernelSourceLabel(sourcePath: string): string {
   return name ?? sourcePath
 }
 
-function notebookKernelStatusLabel(snapshot: NotebookKernelSnapshot): string {
+function notebookKernelStatusLabel(snapshot: NotebookKernelSnapshot): string | undefined {
+  if (snapshot.status === 'ready') return undefined
   const detail = snapshot.status === 'running' ? snapshot.runningCellId : snapshot.statusDetail
   if (detail) {
     return `${snapshot.status} ${detail}`
   }
   return snapshot.status
+}
+
+function notebookKernelLanguageToken(language: string): string {
+  const normalized = language.toLowerCase()
+  if (normalized === 'python') return 'py'
+  if (normalized === 'javascript') return 'js'
+  if (normalized === 'typescript') return 'ts'
+  if (normalized === 'haskell') return 'hs'
+  if (normalized === 'rust') return 'rs'
+  if (normalized === 'ocaml') return 'ml'
+  if (normalized === 'bash') return 'sh'
+  return normalized
+}
+
+function notebookKernelLanguageLabel(language: string): string {
+  const token = notebookKernelLanguageToken(language)
+  return token === language ? language : `${token} ${language}`
+}
+
+function notebookKernelLanguageIcon(language: string): string {
+  const normalized = language.toLowerCase()
+  if (Object.hasOwn(notebookLanguageIconSvg, normalized)) return notebookLanguageIconSvg[normalized]
+  return notebookLanguageIconSvg.text
 }
 
 function dispatchNotebookKernelCommand(
@@ -151,6 +184,13 @@ function dispatchNotebookKernelCommand(
     notebookKernelCommandEvent,
     { detail: { runtimeId: snapshot.runtimeId, language: snapshot.language, command } },
   )
+  document.dispatchEvent(event)
+}
+
+function dispatchNotebookKernelRunAll() {
+  const event: CustomEventMap['notebookkernelrunall'] = new CustomEvent(notebookKernelRunAllEvent, {
+    detail: {},
+  })
   document.dispatchEvent(event)
 }
 
@@ -304,6 +344,7 @@ interface Action {
   auxInnerHtml: string
   keepOpen?: boolean
   detail?: string
+  titlePrefixInnerHtml?: string
   statusLabel?: string
   statusTone?: NotebookKernelStatus
 }
@@ -550,6 +591,16 @@ document.addEventListener('nav', e => {
 
   const COMMAND_ACTS: Action[] = [
     {
+      name: 'kernels: run all',
+      auxInnerHtml: '<kbd>↵</kbd> current page',
+      keepOpen: true,
+      onClick: () => {
+        dispatchNotebookKernelRunAll()
+        notifyToast('running all notebook kernels')
+        showKernelItems(true)
+      },
+    },
+    {
       name: 'show available kernels',
       auxInnerHtml: '<kbd>↵</kbd> notebooks',
       keepOpen: true,
@@ -582,11 +633,12 @@ document.addEventListener('nav', e => {
     },
   ]
 
-  function createStatusComponent(tone: NotebookKernelStatus, label: string) {
+  function createStatusComponent(tone: NotebookKernelStatus, label: string | undefined) {
     const status = document.createElement('span')
     status.className = 'suggestion-status'
     status.dataset.statusTone = tone
-    status.textContent = label
+    status.setAttribute('aria-label', label ? `${tone}: ${label}` : tone)
+    if (label) status.textContent = label
     return status
   }
 
@@ -596,6 +648,7 @@ document.addEventListener('nav', e => {
     onClick,
     keepOpen,
     detail,
+    titlePrefixInnerHtml,
     statusLabel,
     statusTone,
   }: Action) => {
@@ -606,6 +659,12 @@ document.addEventListener('nav', e => {
     content.classList.add('suggestion-content')
     const title = document.createElement('div')
     title.classList.add('suggestion-title')
+    if (titlePrefixInnerHtml) {
+      const prefix = document.createElement('span')
+      prefix.className = 'suggestion-title-prefix'
+      appendTrustedSvg(prefix, titlePrefixInnerHtml)
+      title.append(prefix)
+    }
     appendHighlightedText(title, currentSearchTerm, name)
     content.appendChild(title)
     if (detail) {
@@ -617,8 +676,8 @@ document.addEventListener('nav', e => {
 
     const aux = document.createElement('div')
     aux.classList.add('suggestion-aux')
-    if (statusTone && statusLabel) aux.append(createStatusComponent(statusTone, statusLabel))
-    appendActionAux(aux, auxInnerHtml)
+    if (statusTone) aux.append(createStatusComponent(statusTone, statusLabel))
+    if (auxInnerHtml.length > 0) appendActionAux(aux, auxInnerHtml)
     item.append(content, aux)
 
     function mainOnClick(e: MouseEvent) {
@@ -711,9 +770,10 @@ document.addEventListener('nav', e => {
             },
           ]
         : snapshots.map(snapshot => ({
-            name: `${snapshot.language} kernel`,
+            name: notebookKernelLanguageLabel(snapshot.language),
             detail: notebookKernelSourceLabel(snapshot.sourcePath),
-            auxInnerHtml: '<kbd>↵</kbd>',
+            titlePrefixInnerHtml: notebookKernelLanguageIcon(snapshot.language),
+            auxInnerHtml: '',
             keepOpen: true,
             statusLabel: notebookKernelStatusLabel(snapshot),
             statusTone: snapshot.status,
@@ -733,13 +793,14 @@ document.addEventListener('nav', e => {
   function renderKernelActionItems(snapshot: NotebookKernelSnapshot, transition = true) {
     bar.value = commandInputValue(`kernels ${snapshot.language}`)
     currentSearchTerm = ''
-    const detail = `${notebookKernelSourceLabel(snapshot.sourcePath)} - ${notebookKernelStatusLabel(
-      snapshot,
-    )}`
+    const statusLabel = notebookKernelStatusLabel(snapshot)
+    const detail = statusLabel
+      ? `${notebookKernelSourceLabel(snapshot.sourcePath)} - ${statusLabel}`
+      : notebookKernelSourceLabel(snapshot.sourcePath)
     const action = (command: NotebookKernelCommand): Action => ({
       name: `${command} ${snapshot.language} kernel`,
       detail,
-      auxInnerHtml: '<kbd>↵</kbd>',
+      auxInnerHtml: '',
       keepOpen: true,
       onClick: () => {
         dispatchNotebookKernelCommand(snapshot, command)
@@ -747,20 +808,7 @@ document.addEventListener('nav', e => {
         window.setTimeout(() => showKernelItems(true, false), 140)
       },
     })
-    getCommandItems(
-      [
-        action('interrupt'),
-        action('restart'),
-        action('kill'),
-        {
-          name: 'back to available kernels',
-          auxInnerHtml: '<kbd>↵</kbd>',
-          keepOpen: true,
-          onClick: () => showKernelItems(true),
-        },
-      ],
-      transition,
-    )
+    getCommandItems([action('interrupt'), action('restart'), action('kill')], transition)
   }
 
   function navigateCommandHistory(delta: -1 | 1): boolean {
