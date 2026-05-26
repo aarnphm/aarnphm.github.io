@@ -61,6 +61,8 @@ type RuntimeDebugOutput = NonNullable<RuntimeErrorOutput['debug']>
 
 type CellRunResult = { failed: boolean }
 
+type KernelPresence = { readonly status: NotebookKernelStatus; readonly statusDetail?: string }
+
 type SourceControls = {
   frame: HTMLElement
   editor: NotebookCodeEditor | undefined
@@ -934,7 +936,9 @@ class NotebookRuntime {
   private kernels = new Map<string, Kernel>()
   private kernelRequests = new Map<string, Promise<Kernel>>()
   private kernelEpochs = new Map<string, number>()
+  private kernelPresences = new Map<string, KernelPresence>()
   private runningKernel: Kernel | undefined
+  private runningBackendName: string | undefined
   private moduleCache = new Map<string, NotebookModule | null>()
   private moduleFetches = new Map<string, Promise<NotebookModule | null>>()
   private importableModules: Set<string> | undefined
@@ -1331,24 +1335,44 @@ class NotebookRuntime {
     return notebookRuntimePreloadLanguages(this.payload).map(language => {
       const backend = backendFor(language)
       const backendName = backend?.name ?? language
+      const presence = this.kernelPresence(backendName)
       const snapshot: NotebookKernelSnapshot = {
         runtimeId: this.payload.id,
         sourcePath: this.payload.sourcePath,
         language: backendName,
-        status: this.kernelStatus(backendName),
+        status: presence.status,
       }
       if (snapshot.status === 'running' && this.runningCellId) {
-        return { ...snapshot, runningCellId: this.runningCellId }
+        return { ...snapshot, runningCellId: this.runningCellId, statusDetail: this.runningCellId }
+      }
+      if (presence.statusDetail !== undefined) {
+        return { ...snapshot, statusDetail: presence.statusDetail }
       }
       return snapshot
     })
   }
 
-  private kernelStatus(backendName: string): NotebookKernelStatus {
+  private kernelPresence(backendName: string): KernelPresence {
     const kernel = this.kernels.get(backendName)
-    if (kernel && this.running && this.runningKernel === kernel) return 'running'
-    if (this.kernelRequests.has(backendName)) return 'warming'
-    return kernel ? 'ready' : 'available'
+    const presence = this.kernelPresences.get(backendName)
+    if (kernel && this.running && this.runningKernel === kernel) {
+      if (presence?.status === 'interrupting') return presence
+      return { status: 'running', statusDetail: this.runningCellId }
+    }
+    if (this.kernelRequests.has(backendName)) return { status: 'warming' }
+    if (presence) return presence
+    return { status: kernel ? 'ready' : 'available' }
+  }
+
+  private setKernelPresence(
+    backendName: string,
+    status: NotebookKernelStatus,
+    statusDetail?: string,
+  ) {
+    this.kernelPresences.set(
+      backendName,
+      statusDetail === undefined ? { status } : { status, statusDetail },
+    )
   }
 
   private async applyKernelCommand(detail: NotebookKernelCommandDetail): Promise<void> {
@@ -1360,14 +1384,18 @@ class NotebookRuntime {
     }
     this.disposeBackendKernel(backend)
     if (detail.command === 'kill') {
+      this.setKernelPresence(backend.name, 'killed')
       this.setStatus(`killed ${backend.name}`)
       return
     }
+    this.setKernelPresence(backend.name, 'warming')
     this.setStatus(`restarting ${backend.name}`)
     try {
       await this.ensureBackendKernel(backend)
+      this.setKernelPresence(backend.name, 'ready')
       if (!this.running) this.setStatus(`${backend.name} ready`)
     } catch (error) {
+      this.setKernelPresence(backend.name, 'failed')
       this.setStatus(error instanceof Error ? error.message : `${backend.name} restart failed`)
     }
   }
@@ -1376,6 +1404,11 @@ class NotebookRuntime {
     const kernel = this.kernels.get(backend.name)
     if (kernel && this.running && this.runningKernel === kernel) {
       this.stopped = true
+      this.setKernelPresence(
+        backend.name,
+        'interrupting',
+        this.runningCellId === undefined ? undefined : this.runningCellId,
+      )
       kernel.interrupt()
       this.setStatus(`interrupting ${backend.name}`)
       return
@@ -1428,11 +1461,13 @@ class NotebookRuntime {
     this.setRunningControls(true)
     this.clearOutput(cell.id)
     try {
-      const check = backendFor(cell.language)?.canExecute(source) ?? {
+      const backend = backendFor(cell.language)
+      const check = backend?.canExecute(source) ?? {
         ok: false as const,
         reason: `${cell.language} notebook cells are not executable in this runtime.`,
       }
       if (!check.ok) {
+        if (backend) this.setKernelPresence(backend.name, 'failed', cell.id)
         this.renderOutput(cell.id, {
           type: 'error',
           ename: 'UnsupportedRuntimeFeature',
@@ -1468,6 +1503,13 @@ class NotebookRuntime {
   private stop = () => {
     if (this.running && this.runningKernel) {
       this.stopped = true
+      if (this.runningBackendName) {
+        this.setKernelPresence(
+          this.runningBackendName,
+          'interrupting',
+          this.runningCellId === undefined ? undefined : this.runningCellId,
+        )
+      }
       this.runningKernel.interrupt()
       this.setStatus('interrupting')
       return
@@ -1476,6 +1518,10 @@ class NotebookRuntime {
     this.destroyRuntime()
     this.running = false
     this.runningCellId = undefined
+    for (const language of notebookRuntimePreloadLanguages(this.payload)) {
+      const backend = backendFor(language)
+      this.setKernelPresence(backend?.name ?? language, 'stopped')
+    }
     this.setRunningControls(false)
     this.setStatus('stopped')
   }
@@ -1483,6 +1529,7 @@ class NotebookRuntime {
   private reset = () => {
     this.stopped = false
     this.destroyRuntime()
+    this.kernelPresences.clear()
     this.running = false
     this.runningCellId = undefined
     this.payload.cells.forEach(cell => {
@@ -2021,6 +2068,7 @@ class NotebookRuntime {
       throw new Error('notebook runtime was disposed')
     }
     this.kernels.set(backend.name, kernel)
+    this.setKernelPresence(backend.name, 'ready')
     return kernel
   }
 
@@ -2039,6 +2087,11 @@ class NotebookRuntime {
     this.kernels.delete(backend.name)
     if (kernel && this.running && this.runningKernel === kernel) {
       this.stopped = true
+      this.setKernelPresence(
+        backend.name,
+        'interrupting',
+        this.runningCellId === undefined ? undefined : this.runningCellId,
+      )
       this.setStatus(`killing ${backend.name}`)
     }
     void kernel?.dispose()
@@ -2048,13 +2101,31 @@ class NotebookRuntime {
     const { kernel, backend } = await this.ensureKernel(cell)
     const modules = await this.notebookModulesFor(source, backend)
     let failed = false
+    let threw = false
+    let interrupted = false
     this.runningKernel = kernel
+    this.runningBackendName = backend.name
+    this.setKernelPresence(backend.name, 'running', cell.id)
     try {
       for await (const event of kernel.execute(cell.id, source, { debug: this.debug, modules })) {
+        if (event.type === 'interrupted') interrupted = true
         failed = this.handleRuntimeEvent(event) || failed
       }
+    } catch (error) {
+      threw = true
+      this.setKernelPresence(backend.name, 'failed', cell.id)
+      throw error
     } finally {
       if (this.runningKernel === kernel) this.runningKernel = undefined
+      if (this.runningBackendName === backend.name) this.runningBackendName = undefined
+      const presence = this.kernelPresences.get(backend.name)
+      if (!threw && presence?.status !== 'killed') {
+        this.setKernelPresence(
+          backend.name,
+          interrupted || this.stopped ? 'interrupted' : failed ? 'failed' : 'ready',
+          failed || interrupted || this.stopped ? cell.id : undefined,
+        )
+      }
     }
     return { failed }
   }
@@ -2397,6 +2468,7 @@ class NotebookRuntime {
     this.kernels.clear()
     this.kernelRequests.clear()
     this.runningKernel = undefined
+    this.runningBackendName = undefined
     for (const kernel of kernels) void kernel.dispose()
   }
 }

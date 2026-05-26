@@ -38,6 +38,9 @@ export default (() => {
             <li data-quick-open>
               <kbd>⌘ ⌥ ↵</kbd> pour ouvrir dans un panneau
             </li>
+            <li data-command style={{ display: 'none' }}>
+              <kbd>←→</kbd> pour naviguer
+            </li>
             <li>
               <kbd>esc</kbd> pour rejeter
             </li>
