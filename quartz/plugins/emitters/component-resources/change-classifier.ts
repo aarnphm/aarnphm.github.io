@@ -15,6 +15,7 @@ export type ComponentResourceChanges = {
   indexStylesheet: boolean
   notebookRuntime: boolean
   notebookRuntimePageScript: boolean
+  pageScripts: boolean
   collaborativeComments: boolean
   semanticWorker: boolean
   semanticWorkerDeleted: boolean
@@ -29,6 +30,17 @@ export function isNotebookRuntimeAssetChange(changePath: string): boolean {
 
 export function isNotebookRuntimePageScriptChange(changePath: string): boolean {
   return changePath === notebookRuntimeInlineEntry
+}
+
+export function isPageScriptChange(changePath: string): boolean {
+  if (changePath.startsWith('quartz/components/scripts/')) return true
+  return (
+    changePath === 'quartz/util/mime.ts' ||
+    changePath === 'quartz/util/path.ts' ||
+    changePath === 'quartz/util/stacked-notes.ts' ||
+    changePath === 'quartz/util/type-guards.ts' ||
+    changePath === 'quartz/util/wikipedia.ts'
+  )
 }
 
 export function isCollaborativeCommentsAssetChange(changePath: string): boolean {
@@ -51,14 +63,20 @@ export function isIndexStylesheetChange(changePath: string): boolean {
 export function classifyResourceChanges(
   changeEvents: readonly ChangeEvent[],
 ): ComponentResourceChanges {
+  const notebookRuntimePageScript = changeEvents.some(changeEvent =>
+    isNotebookRuntimePageScriptChange(changeEvent.path),
+  )
+  const pageScripts =
+    notebookRuntimePageScript ||
+    changeEvents.some(changeEvent => isPageScriptChange(changeEvent.path))
+
   return {
     indexStylesheet: changeEvents.some(changeEvent => isIndexStylesheetChange(changeEvent.path)),
     notebookRuntime: changeEvents.some(changeEvent =>
       isNotebookRuntimeAssetChange(changeEvent.path),
     ),
-    notebookRuntimePageScript: changeEvents.some(changeEvent =>
-      isNotebookRuntimePageScriptChange(changeEvent.path),
-    ),
+    notebookRuntimePageScript,
+    pageScripts,
     collaborativeComments: changeEvents.some(changeEvent =>
       isCollaborativeCommentsAssetChange(changeEvent.path),
     ),

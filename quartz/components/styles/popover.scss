@@ -26,6 +26,9 @@
   will-change: transform;
   visibility: hidden;
   opacity: 0;
+  transition:
+    opacity 120ms linear,
+    visibility 0ms linear 120ms;
 
   .grid {
     --layout-reading-column: 1 / -1;
@@ -221,6 +224,7 @@
 .popover:hover {
   opacity: 1;
   visibility: visible;
+  transition-delay: 0ms;
 }
 
 .preview-skeleton {

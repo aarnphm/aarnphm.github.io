@@ -35,6 +35,7 @@ import {
   semanticWorkerPath,
 } from './asset-paths'
 import { assetSlugForContent, staticScriptAssetReference } from './asset-writer'
+import { bundleInlineScript } from './resource-set'
 
 export type ScriptAssetReplacement = { placeholder: string; logicalPath: string }
 
@@ -110,11 +111,10 @@ export async function* writeStaticJsResourceBundles(
 
 async function staticJsLeadingInline(loadTime: 'beforeDOMReady' | 'afterDOMReady') {
   if (loadTime === 'beforeDOMReady') return []
-  const [transcludeScript, collapseHeaderScript] = await Promise.all([
-    import('../../../components/scripts/transclude.inline.ts'),
-    import('../../../components/scripts/collapse-header.inline'),
+  return Promise.all([
+    bundleInlineScript('quartz/components/scripts/transclude.inline.ts'),
+    bundleInlineScript('quartz/components/scripts/collapse-header.inline.ts'),
   ])
-  return [transcludeScript.default, collapseHeaderScript.default]
 }
 
 async function writeAfterDomLoadedScripts(

@@ -1,4 +1,5 @@
 import { FullSlug, getFullSlug, resolveRelative } from '../../util/path'
+import { isRecord, readString } from '../../util/type-guards'
 
 export function registerEscapeHandler(outsideContainer: HTMLElement | null, cb: () => void) {
   if (!outsideContainer) return
@@ -131,6 +132,14 @@ export function debounce(fn: Function, delay: number) {
 
 export type StackedNoteState = 'pending' | 'ready' | 'protected' | 'failed'
 
+export interface StackedNotePayload {
+  slug: string
+  title: string
+  content: string
+  metadata?: string
+  state: StackedNoteState
+}
+
 export interface NoteDocument {
   slug: string
   title: string
@@ -208,6 +217,44 @@ export class Dag {
     const lastSlug = this.order[this.order.length - 1]
     return lastSlug ? this.nodes.get(lastSlug) : undefined
   }
+}
+
+function isStackedNoteState(value: unknown): value is StackedNoteState {
+  return value === 'pending' || value === 'ready' || value === 'protected' || value === 'failed'
+}
+
+function sharedStackedNotePayloadCache(): Map<string, StackedNotePayload> {
+  if (!window.stackedNotePayloadCache) {
+    window.stackedNotePayloadCache = new Map()
+  }
+  return window.stackedNotePayloadCache
+}
+
+export function stackedNotePayloadUrl(slug: string): URL {
+  const url = new URL('/api/stacked-note', window.location.toString())
+  url.searchParams.set('slug', slug)
+  return url
+}
+
+export function getCachedStackedNotePayload(slug: string): StackedNotePayload | null {
+  return window.stackedNotePayloadCache?.get(slug) ?? null
+}
+
+export function cacheStackedNotePayload(payload: StackedNotePayload): void {
+  if (payload.state === 'ready') {
+    sharedStackedNotePayloadCache().set(payload.slug, payload)
+  }
+}
+
+export function readStackedNotePayload(value: unknown): StackedNotePayload | null {
+  if (!isRecord(value)) return null
+  const slug = readString(value, 'slug')
+  const title = readString(value, 'title')
+  const content = readString(value, 'content')
+  const metadata = readString(value, 'metadata')
+  const state = readString(value, 'state')
+  if (!slug || !title || !content || !isStackedNoteState(state)) return null
+  return { slug, title, content, metadata, state }
 }
 
 // AliasRedirect emits HTML redirects which also have the link[rel="canonical"]
@@ -445,11 +492,15 @@ export function createSidePanel(asidePanel: HTMLDivElement, ...inner: HTMLElemen
   return sideInner
 }
 
-/**
- * Wraps a DOM update in a View Transition if supported by the browser.
- * Falls back to immediate execution if the API is unavailable.
- * @param callback - The function containing DOM updates to animate
- */
 export function startViewTransition(callback: () => void): void {
-  callback()
+  if (
+    window.matchMedia('(prefers-reduced-motion: reduce)').matches ||
+    typeof document.startViewTransition !== 'function'
+  ) {
+    callback()
+    return
+  }
+
+  const transition = document.startViewTransition(callback)
+  void transition.finished.catch(() => undefined)
 }

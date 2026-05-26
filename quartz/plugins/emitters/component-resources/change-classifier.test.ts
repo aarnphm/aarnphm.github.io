@@ -12,6 +12,8 @@ test('classifies component resource partial emit changes by asset family', () =>
     change('quartz/styles/custom.scss'),
     change('quartz/runtime/notebook/client.ts'),
     change('quartz/components/scripts/notebook-runtime.inline.ts'),
+    change('quartz/components/scripts/popover.inline.ts'),
+    change('quartz/components/scripts/util.ts'),
     change('quartz/components/multiplayer/ws.ts'),
     change('quartz/workers/semantic.worker.ts'),
     change('quartz/util/emojimap/codepoint-to-name.json'),
@@ -22,6 +24,7 @@ test('classifies component resource partial emit changes by asset family', () =>
   assert.equal(changes.indexStylesheet, true)
   assert.equal(changes.notebookRuntime, true)
   assert.equal(changes.notebookRuntimePageScript, true)
+  assert.equal(changes.pageScripts, true)
   assert.equal(changes.collaborativeComments, true)
   assert.equal(changes.semanticWorker, true)
   assert.equal(changes.semanticWorkerDeleted, false)
@@ -33,6 +36,13 @@ test('classifies component resource partial emit changes by asset family', () =>
       ['delete', 'quartz/workers/stale.worker.ts'],
     ],
   )
+})
+
+test('classifies shared browser utilities as page script changes', () => {
+  const changes = classifyResourceChanges([change('quartz/util/stacked-notes.ts')])
+
+  assert.equal(changes.notebookRuntimePageScript, false)
+  assert.equal(changes.pageScripts, true)
 })
 
 test('classifies semantic worker deletion separately from generic workers', () => {
