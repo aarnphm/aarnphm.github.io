@@ -8,7 +8,7 @@ export declare global {
       type: K,
       listener: (this: Document, ev: CustomEventMap[K]) => void,
     ): void
-    dispatchEvent<K extends keyof CustomEventMap>(ev: CustomEventMap[K] | UIEvent): void
+    dispatchEvent<K extends keyof CustomEventMap>(ev: CustomEventMap[K] | UIEvent): boolean
   }
 
   interface Window {

@@ -40,7 +40,7 @@ aesthetic value sits among:
 >
 > _(Berlin, Williams)_
 >
-> these are irreducibly distinct, potentially incommensurable. No common scale ranks aesthetic against moral value. Conflicts between value types may have no determinate resolution—not epistemic limitation but metaphysical fact.
+> these are irreducibly distinct, potentially incommensurable. No common scale ranks aesthetic against moral value. Conflicts between value types may have no determinate resolution. The indeterminacy is metaphysical, not epistemic.
 
 ## theories of aesthetic value
 
@@ -186,7 +186,7 @@ _(1889-1943)_
 
 art as expression of emotion (expressionist theory) [@collingwood1938principles].
 
-expression ≠ arousal or description. expression = becoming conscious of emotion through creative articulation. imagination transforms inchoate feelings into conscious experiences.
+expression $\neq$ arousal or description. expression $=$ becoming conscious of emotion through creative articulation. imagination transforms inchoate feelings into conscious experiences.
 
 art vs craft: craft has a predetermined end (make chair, build house), planned execution. art is spontaneous, the end discovered through process. the artist doesn't know what emotion will be expressed until expressing it.
 

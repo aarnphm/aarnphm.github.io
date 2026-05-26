@@ -3,6 +3,7 @@ import {
   QuartzComponentConstructor,
   QuartzComponentProps,
 } from '../types/component'
+import { inheritComponentSourceNames } from '../util/component-source'
 import { concatenateResources } from '../util/resources'
 
 type GridConfig = {
@@ -54,6 +55,10 @@ export default ((config: GridConfig) => {
     )
   }
 
+  Grid.sourceNames = inheritComponentSourceNames(
+    'Grid',
+    config.components.map(c => c.Component),
+  )
   Grid.afterDOMLoaded = concatenateResources(
     ...config.components.map(c => c.Component.afterDOMLoaded),
   )

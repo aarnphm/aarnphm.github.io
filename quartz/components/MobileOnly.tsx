@@ -3,6 +3,7 @@ import {
   QuartzComponentConstructor,
   QuartzComponentProps,
 } from '../types/component'
+import { componentSourceNames } from '../util/component-source'
 
 export default ((component: QuartzComponent) => {
   const Component = component
@@ -11,6 +12,7 @@ export default ((component: QuartzComponent) => {
   }
 
   MobileOnly.displayName = component.displayName
+  MobileOnly.sourceNames = componentSourceNames(component)
   MobileOnly.afterDOMLoaded = component?.afterDOMLoaded
   MobileOnly.beforeDOMLoaded = component?.beforeDOMLoaded
   MobileOnly.css = component?.css

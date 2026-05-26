@@ -6,6 +6,7 @@ import {
   QuartzComponentConstructor,
   QuartzComponentProps,
 } from '../../types/component'
+import { inheritComponentSourceNames } from '../../util/component-source'
 import { htmlToJsx } from '../../util/jsx'
 import { FullSlug, getAllSegmentPrefixes, simplifySlug } from '../../util/path'
 import PageListConstructor, { SortFn } from '../PageList'
@@ -125,6 +126,7 @@ export default ((opts?: Partial<TagContentOptions>) => {
   }
 
   TagContent.css = style + PageListSearch.css
+  TagContent.sourceNames = inheritComponentSourceNames('TagContent', [PageList, PageListSearch])
   TagContent.afterDOMLoaded = PageListSearch.afterDOMLoaded
   return TagContent
 }) satisfies QuartzComponentConstructor

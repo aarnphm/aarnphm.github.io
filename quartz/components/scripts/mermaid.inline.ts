@@ -1,5 +1,5 @@
 import type { Mermaid } from 'mermaid'
-import { registerEscapeHandler, removeAllChildren } from './util'
+import { removeAllChildren } from './util'
 
 interface Position {
   x: number
@@ -82,7 +82,7 @@ class DiagramPanZoom {
     button.textContent = text
     button.className = 'mermaid-control-button'
     button.addEventListener('click', onClick)
-    window.addCleanup(() => button.removeEventListener('click', onClick))
+    this.cleanups.push(() => button.removeEventListener('click', onClick))
     return button
   }
 
@@ -183,17 +183,21 @@ let textMapping: WeakMap<HTMLElement, string> = new WeakMap()
 let panZoomInstances: WeakMap<HTMLElement, DiagramPanZoom> = new WeakMap()
 let popupObserver: MutationObserver | null = null
 let setupDiagrams: WeakSet<HTMLElement> = new WeakSet()
+let observedPopupContainers: WeakSet<Element> = new WeakSet()
 
-async function renderMermaidDiagrams() {
+function mermaidBlocks(root: Document | HTMLElement = document): HTMLDivElement[] {
   const isSlides = document.documentElement.getAttribute('data-slides') === 'true'
-  let nodes: NodeListOf<HTMLDivElement>
-  if (isSlides) {
+  if (root === document && isSlides) {
     const activeSlide = document.querySelector('.slide.active')
-    if (!activeSlide) return
-    nodes = activeSlide.querySelectorAll<HTMLDivElement>('pre:has(code.mermaid)')
-  } else {
-    nodes = document.querySelectorAll<HTMLDivElement>('pre:has(code.mermaid)')
+    if (!activeSlide) return []
+    return Array.from(activeSlide.querySelectorAll<HTMLDivElement>('pre:has(code.mermaid)'))
   }
+
+  return Array.from(root.querySelectorAll<HTMLDivElement>('pre:has(code.mermaid)'))
+}
+
+async function renderMermaidDiagrams(root: Document | HTMLElement = document) {
+  const nodes = mermaidBlocks(root)
   if (nodes.length === 0) return
 
   mermaidImport ||= await import(
@@ -243,44 +247,37 @@ async function renderMermaidDiagrams() {
   })
 }
 
-async function setupMermaid() {
-  // Skip mermaid rendering in stacked notes view - causes memory issues
+async function setupMermaid(root: Document | HTMLElement = document) {
   const stackedContainer = document.getElementById('stacked-notes-container')
-  if (stackedContainer?.classList.contains('active')) return
+  if (root === document && stackedContainer?.classList.contains('active')) return
 
-  const isSlides = document.documentElement.getAttribute('data-slides') === 'true'
-  let nodes: NodeListOf<HTMLDivElement>
-  if (isSlides) {
-    const activeSlide = document.querySelector('.slide.active')
-    if (!activeSlide) return
-    nodes = activeSlide.querySelectorAll<HTMLDivElement>('pre:has(code.mermaid)')
-  } else {
-    nodes = document.querySelectorAll<HTMLDivElement>('pre:has(code.mermaid)')
-  }
+  const nodes = mermaidBlocks(root)
   if (nodes.length === 0) return
 
-  // preserve original text content for all mermaid blocks on the page
-  const allNodes = document.querySelectorAll<HTMLDivElement>('pre:has(code.mermaid)')
-  for (const node of allNodes) {
+  for (const node of nodes) {
     const n = node.querySelector('code.mermaid') as HTMLDivElement
     if (!textMapping.has(n)) {
       textMapping.set(n, n.textContent ?? '')
     }
   }
 
-  await renderMermaidDiagrams()
+  await renderMermaidDiagrams(root)
 
-  // only set up event listeners once
   if (!isSetup) {
-    document.addEventListener('themechange', renderMermaidDiagrams)
+    const rerenderMermaid = () => {
+      void renderMermaidDiagrams()
+    }
+    document.addEventListener('themechange', rerenderMermaid)
     window.addCleanup(() => {
-      document.removeEventListener('themechange', renderMermaidDiagrams)
+      document.removeEventListener('themechange', rerenderMermaid)
       popupObserver?.disconnect()
+      popupObserver = null
+      observedPopupContainers = new WeakSet()
+      isSetup = false
     })
     isSetup = true
   }
 
-  // set up pan-zoom controls for each mermaid diagram (only once per diagram)
   for (let i = 0; i < nodes.length; i++) {
     const pre = nodes[i]
     if (setupDiagrams.has(pre)) continue
@@ -289,12 +286,10 @@ async function setupMermaid() {
     const clipboardBtn = pre.querySelector('.clipboard-button') as HTMLElement | null
     const expandBtn = pre.querySelector('.expand-button') as HTMLElement | null
 
-    // If either control is missing, skip this block (don't abort handler)
     if (!(clipboardBtn instanceof Element) || !(expandBtn instanceof HTMLElement)) {
       continue
     }
 
-    // Compute total width of clipboard button including horizontal margins
     let clipboardWidth = 0
     try {
       const clipboardStyle = window.getComputedStyle(clipboardBtn)
@@ -303,14 +298,11 @@ async function setupMermaid() {
         parseFloat(clipboardStyle.marginLeft || '0') +
         parseFloat(clipboardStyle.marginRight || '0')
     } catch {
-      // Fall back to a sane default if getComputedStyle fails
       clipboardWidth = clipboardBtn.offsetWidth || 0
     }
 
-    // Set expand button position relative to the clipboard button
     expandBtn.style.right = `calc(${clipboardWidth}px + 0.3rem)`
 
-    // query popup container
     const popupContainer = pre.querySelector('#mermaid-container') as HTMLElement | null
     if (!popupContainer) {
       continue
@@ -322,15 +314,12 @@ async function setupMermaid() {
       if (!content) return
       removeAllChildren(content)
 
-      // Clone the mermaid content
       const mermaidContent = codeBlock.querySelector('svg')!.cloneNode(true) as SVGElement
       content.appendChild(mermaidContent)
 
-      // Show container
       popupContainer?.classList.add('active')
       container.style.cursor = 'grab'
 
-      // Initialize pan-zoom after showing the popup
       const panZoom = new DiagramPanZoom(container, content)
       panZoomInstances.set(popupContainer!, panZoom)
     }
@@ -342,19 +331,33 @@ async function setupMermaid() {
       panZoomInstances.delete(popupContainer!)
     }
 
+    const onEscape = (event: KeyboardEvent) => {
+      if (!event.key.startsWith('Esc')) return
+      event.preventDefault()
+      hideMermaid()
+    }
+    const onOutsideClick = (event: MouseEvent) => {
+      if (event.target !== popupContainer) return
+      event.preventDefault()
+      event.stopPropagation()
+      hideMermaid()
+    }
+
     expandBtn.addEventListener('click', showMermaid)
-    registerEscapeHandler(popupContainer, hideMermaid)
+    popupContainer.addEventListener('click', onOutsideClick)
+    document.addEventListener('keydown', onEscape)
 
     window.addCleanup(() => {
       const panZoom = panZoomInstances.get(popupContainer!)
       panZoom?.cleanup()
       expandBtn.removeEventListener('click', showMermaid)
+      popupContainer.removeEventListener('click', onOutsideClick)
+      document.removeEventListener('keydown', onEscape)
     })
 
     setupDiagrams.add(pre)
   }
 
-  // set up observer to cleanup pan-zoom instances when popups close (only once)
   if (!popupObserver) {
     popupObserver = new MutationObserver(mutations => {
       for (const mutation of mutations) {
@@ -372,13 +375,20 @@ async function setupMermaid() {
         }
       }
     })
-
-    // observe all mermaid containers for class changes
-    document.querySelectorAll('#mermaid-container').forEach(container => {
-      popupObserver!.observe(container, { attributes: true, attributeFilter: ['class'] })
-    })
   }
+
+  root.querySelectorAll('#mermaid-container').forEach(container => {
+    if (observedPopupContainers.has(container)) return
+    popupObserver!.observe(container, { attributes: true, attributeFilter: ['class'] })
+    observedPopupContainers.add(container)
+  })
 }
-document.addEventListener('nav', setupMermaid)
-document.addEventListener('contentdecrypted', setupMermaid)
-document.addEventListener('slidechange', setupMermaid)
+document.addEventListener('nav', () => {
+  void setupMermaid()
+})
+document.addEventListener('contentdecrypted', event => {
+  void setupMermaid(event.detail.content)
+})
+document.addEventListener('slidechange', () => {
+  void setupMermaid()
+})

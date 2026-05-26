@@ -50,13 +50,13 @@ export const SlidesPage: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts
     sidebar: [],
   }
 
-  const { head: Head, footer: Footer } = sharedPageComponents
+  const { head: Head, header, beforeBody, pageBody, afterBody, sidebar, footer: Footer } = opts
   const Header = HeaderConstructor()
 
   return {
     name: emitterName,
     getQuartzComponents() {
-      return [Head, Header, opts.pageBody, Footer]
+      return [Head, Header, ...header, ...beforeBody, pageBody, ...afterBody, ...sidebar, Footer]
     },
     async *emit(ctx, content, resources) {
       const allFiles = content.map(c => c[1].data)

@@ -7,21 +7,28 @@ function toggleCallout(this: HTMLElement) {
   content.style.gridTemplateRows = collapsed ? '0fr' : '1fr'
 }
 
-function setupCallout() {
-  const collapsible = document.getElementsByClassName(
-    `callout is-collapsible`,
-  ) as HTMLCollectionOf<HTMLElement>
+const hydratedCalloutTitles = new WeakSet<HTMLElement>()
+
+function setupCallout(root: Document | HTMLElement = document) {
+  const collapsible = root.querySelectorAll<HTMLElement>('.callout.is-collapsible')
   for (const div of collapsible) {
     const title = div.getElementsByClassName('callout-title')[0] as HTMLElement
     const content = div.getElementsByClassName('callout-content')[0] as HTMLElement
     if (!title || !content) continue
 
-    title.addEventListener('click', toggleCallout)
-    window.addCleanup(() => title.removeEventListener('click', toggleCallout))
+    if (!hydratedCalloutTitles.has(title)) {
+      hydratedCalloutTitles.add(title)
+      title.addEventListener('click', toggleCallout)
+    }
 
     const collapsed = div.classList.contains('is-collapsed')
     content.style.gridTemplateRows = collapsed ? '0fr' : '1fr'
   }
 }
 
-document.addEventListener('nav', setupCallout)
+document.addEventListener('nav', () => {
+  setupCallout()
+})
+document.addEventListener('contentdecrypted', event => {
+  setupCallout(event.detail.content)
+})

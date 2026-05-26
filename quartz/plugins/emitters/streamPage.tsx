@@ -74,14 +74,24 @@ export const StreamPage: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts
     pageBody: StreamPageComponent(),
   }
 
-  const { head: Head, header, beforeBody, pageBody, footer: Footer } = opts
+  const { head: Head, header, beforeBody, pageBody, afterBody, sidebar, footer: Footer } = opts
   const Header = HeaderConstructor()
   const StreamSearch = StreamSearchComponent()
 
   return {
     name: 'StreamPage',
     getQuartzComponents() {
-      return [Head, Header, ...header, ...beforeBody, pageBody, Footer, StreamSearch]
+      return [
+        Head,
+        Header,
+        ...header,
+        ...beforeBody,
+        pageBody,
+        ...afterBody,
+        ...sidebar,
+        Footer,
+        StreamSearch,
+      ]
     },
     async *emit(ctx, content, resources) {
       const allFiles = content.map(c => c[1].data)

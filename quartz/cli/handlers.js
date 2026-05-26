@@ -16,6 +16,13 @@ import { version, fp, cacheFile } from './constants.js'
 
 const inlineScriptFilter = /\.inline\.(ts|js)$/
 const sourceWatchWriteStabilityMs = 250
+const componentSourcePathPrefix = 'quartz/components/'
+
+const normalizeWatchedPath = fp => fp.split(path.sep).join('/')
+const isTestSourcePath = fp => fp.endsWith('.test.ts') || fp.endsWith('.test.tsx')
+const isComponentSourcePath = fp =>
+  fp.startsWith(componentSourcePathPrefix) && !isTestSourcePath(fp)
+const toSourceChange = (fp, type) => ({ path: normalizeWatchedPath(fp), type })
 
 export function formatErrorReason(err) {
   if (typeof err === 'string') {
@@ -116,7 +123,38 @@ export async function handleBuild(argv) {
 
   const buildMutex = new Mutex()
   let lastBuildMs = 0
-  let cleanupBuild = null
+  let activeBuild = null
+  const componentSourceChanges = []
+
+  const disposeActiveBuild = async () => {
+    if (!activeBuild) return
+    if (typeof activeBuild === 'function') {
+      await activeBuild()
+    } else {
+      await activeBuild.dispose()
+    }
+    activeBuild = null
+  }
+
+  const activeBuildHandoff = () => {
+    if (!activeBuild || typeof activeBuild === 'function') return null
+    return typeof activeBuild.handoff === 'function' ? activeBuild.handoff() : null
+  }
+
+  const rebuildQuartzBundle = async () => {
+    const result = await ctx.rebuild().catch(err => {
+      console.error(`${styleText('red', "Couldn't parse Quartz configuration:")} ${fp}`)
+      console.error(`Reason: ${styleText('gray', formatErrorReason(err))}`)
+      process.exit(1)
+    })
+
+    if (argv.bundleInfo) {
+      await printBundleInfo(result.metafile)
+    }
+
+    return import(`../../${cacheFile}?update=${randomUUID()}`)
+  }
+
   const build = async clientRefresh => {
     const buildStart = new Date().getTime()
     lastBuildMs = buildStart
@@ -126,29 +164,60 @@ export async function handleBuild(argv) {
       return
     }
 
-    if (cleanupBuild) {
+    if (activeBuild) {
       console.log(styleText('yellow', 'Detected a source code change, doing a hard rebuild...'))
-      await cleanupBuild()
+      await disposeActiveBuild()
     }
 
-    const result = await ctx.rebuild().catch(err => {
-      console.error(`${styleText('red', "Couldn't parse Quartz configuration:")} ${fp}`)
-      console.error(`Reason: ${styleText('gray', formatErrorReason(err))}`)
-      process.exit(1)
-    })
+    componentSourceChanges.length = 0
+    const { default: buildQuartz } = await rebuildQuartzBundle()
     release()
 
-    if (argv.bundleInfo) {
-      await printBundleInfo(result.metafile)
+    activeBuild = await buildQuartz(argv, buildMutex, clientRefresh)
+    clientRefresh()
+  }
+
+  const buildComponentSource = async clientRefresh => {
+    const buildStart = new Date().getTime()
+    lastBuildMs = buildStart
+    const release = await buildMutex.acquire()
+    if (lastBuildMs > buildStart) {
+      release()
+      return
     }
 
-    // bypass module cache
-    // https://github.com/nodejs/modules/issues/307
-    const { default: buildQuartz } = await import(`../../${cacheFile}?update=${randomUUID()}`)
-    // ^ this import is relative, so base "cacheFile" path can't be used
+    const changeCount = componentSourceChanges.length
+    const changes = componentSourceChanges.slice(0, changeCount)
+    const handoff = activeBuildHandoff()
+    if (!handoff) {
+      release()
+      componentSourceChanges.splice(0, changeCount)
+      await build(clientRefresh)
+      return
+    }
+    if (handoff.pendingChanges?.length > 0) {
+      release()
+      componentSourceChanges.splice(0, changeCount)
+      await build(clientRefresh)
+      return
+    }
 
-    cleanupBuild = await buildQuartz(argv, buildMutex, clientRefresh)
-    clientRefresh()
+    await disposeActiveBuild()
+    const quartzBuild = await rebuildQuartzBundle()
+    release()
+
+    if (typeof quartzBuild.rebuildQuartzSource === 'function') {
+      activeBuild = await quartzBuild.rebuildQuartzSource(
+        handoff,
+        buildMutex,
+        clientRefresh,
+        changes,
+      )
+    } else {
+      activeBuild = await quartzBuild.default(argv, buildMutex, clientRefresh)
+      clientRefresh()
+    }
+    componentSourceChanges.splice(0, changeCount)
   }
 
   let clientRefresh = () => {}
@@ -301,9 +370,27 @@ export async function handleBuild(argv) {
         awaitWriteFinish: { stabilityThreshold: sourceWatchWriteStabilityMs },
         ignoreInitial: true,
       })
-      .on('add', () => build(clientRefresh))
-      .on('change', () => build(clientRefresh))
-      .on('unlink', () => build(clientRefresh))
+      .on('add', fp => {
+        const change = toSourceChange(fp, 'add')
+        if (isTestSourcePath(change.path)) return
+        if (!isComponentSourcePath(change.path)) return build(clientRefresh)
+        componentSourceChanges.push(change)
+        return buildComponentSource(clientRefresh)
+      })
+      .on('change', fp => {
+        const change = toSourceChange(fp, 'change')
+        if (isTestSourcePath(change.path)) return
+        if (!isComponentSourcePath(change.path)) return build(clientRefresh)
+        componentSourceChanges.push(change)
+        return buildComponentSource(clientRefresh)
+      })
+      .on('unlink', fp => {
+        const change = toSourceChange(fp, 'delete')
+        if (isTestSourcePath(change.path)) return
+        if (!isComponentSourcePath(change.path)) return build(clientRefresh)
+        componentSourceChanges.push(change)
+        return buildComponentSource(clientRefresh)
+      })
 
     console.log(styleText('gray', 'hint: exit with ctrl+c'))
   }

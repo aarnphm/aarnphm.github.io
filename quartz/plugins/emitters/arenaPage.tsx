@@ -274,7 +274,21 @@ export const ArenaPage: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts 
   return {
     name: 'ArenaPage',
     getQuartzComponents() {
-      return [Head, Header, indexOpts.pageBody, channelOpts.pageBody, Footer]
+      return [
+        Head,
+        Header,
+        ...indexOpts.header,
+        ...indexOpts.beforeBody,
+        indexOpts.pageBody,
+        ...indexOpts.afterBody,
+        ...indexOpts.sidebar,
+        ...channelOpts.header,
+        ...channelOpts.beforeBody,
+        channelOpts.pageBody,
+        ...channelOpts.afterBody,
+        ...channelOpts.sidebar,
+        Footer,
+      ]
     },
     async *emit(ctx, content, resources) {
       const allFiles = content.map(c => c[1].data)

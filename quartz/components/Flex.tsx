@@ -3,6 +3,7 @@ import {
   QuartzComponentConstructor,
   QuartzComponentProps,
 } from '../types/component'
+import { inheritComponentSourceNames } from '../util/component-source'
 import { classNames } from '../util/lang'
 import { concatenateResources } from '../util/resources'
 
@@ -53,6 +54,10 @@ export default ((config: FlexConfig) => {
     )
   }
 
+  Flex.sourceNames = inheritComponentSourceNames(
+    'Flex',
+    config.components.map(c => c.Component),
+  )
   Flex.afterDOMLoaded = concatenateResources(
     ...config.components.map(c => c.Component.afterDOMLoaded),
   )

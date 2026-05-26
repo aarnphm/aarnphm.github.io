@@ -34,6 +34,9 @@ export function isNotebookRuntimePageScriptChange(changePath: string): boolean {
 
 export function isPageScriptChange(changePath: string): boolean {
   if (changePath.startsWith('quartz/components/scripts/')) return true
+  if (changePath.startsWith('quartz/components/') && /\.(tsx|ts|jsx|js)$/.test(changePath)) {
+    return true
+  }
   return (
     changePath === 'quartz/util/mime.ts' ||
     changePath === 'quartz/util/path.ts' ||

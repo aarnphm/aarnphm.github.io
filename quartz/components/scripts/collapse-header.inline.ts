@@ -1,9 +1,18 @@
+function isElement(target: EventTarget | null): target is Element {
+  return target instanceof Element
+}
+
+function targetOwnsNavigation(event: Event, toggle: HTMLElement): boolean {
+  if (!isElement(event.target)) return false
+  const navigable = event.target.closest('a, [data-role="anchor"]')
+  return navigable !== null && toggle.contains(navigable)
+}
+
 function handleToggleClick(event: Event) {
   const toggle = event.currentTarget as HTMLElement | null
   if (!toggle) return
 
-  const anchor = (event.target as HTMLElement | null)?.closest('a[data-role="anchor"]')
-  if (anchor) return
+  if (targetOwnsNavigation(event, toggle)) return
 
   event.stopPropagation()
 
@@ -17,11 +26,9 @@ function handleToggleClick(event: Event) {
   const isOpen = shell.classList.contains('is-open')
 
   toggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false')
+  const slug = toggle.dataset.collapseSlug ?? window.document.body.dataset.slug ?? ''
 
-  localStorage.setItem(
-    `${window.document.body.dataset.slug!.replace(/\//g, '--')}-${toggle.id}`,
-    isOpen ? 'true' : 'false',
-  )
+  localStorage.setItem(collapseStorageKey(slug, toggle.id), isOpen ? 'true' : 'false')
 
   document.dispatchEvent(
     new CustomEvent('collapsibletoggle', { detail: { toggleId: toggle.id, isOpen } }),
@@ -35,45 +42,58 @@ function handleToggleKeydown(event: KeyboardEvent) {
   const toggle = event.currentTarget as HTMLElement | null
   if (!toggle) return
 
+  if (targetOwnsNavigation(event, toggle)) return
+
   event.preventDefault()
   toggle.click()
 }
 
-function hydrateCollapsibleHeaders() {
-  document.querySelectorAll<HTMLElement>('section.collapsible-header').forEach(section => {
+const hydratedCollapseToggles = new WeakSet<HTMLElement>()
+const hydratedTranscludeButtons = new WeakSet<Element>()
+
+function collapseStorageKey(slug: string, toggleId: string) {
+  return `${slug.replace(/\//g, '--')}-${toggleId}`
+}
+
+function hydrateCollapsibleHeaders(
+  root: Document | HTMLElement = document,
+  slug: string | undefined = window.document.body.dataset.slug,
+) {
+  const storageSlug = slug ?? window.document.body.dataset.slug ?? ''
+  root.querySelectorAll<HTMLElement>('section.collapsible-header').forEach(section => {
     const shell = section.querySelector<HTMLElement>('[data-collapse-shell]')
     if (!shell) return
 
     const toggle = section.querySelector<HTMLElement>('[data-collapse-toggle]')
     if (!toggle) return
 
-    const initialOpen = shell.dataset.initialOpen !== 'false'
-    const stored = localStorage.getItem(
-      `${window.document.body.dataset.slug!.replace(/\//g, '--')}-${toggle.id}`,
-    )
-    const isOpen = stored ? stored === 'true' : initialOpen
+    if (!hydratedCollapseToggles.has(toggle)) {
+      const initialOpen = shell.dataset.initialOpen !== 'false'
+      const stored = localStorage.getItem(collapseStorageKey(storageSlug, toggle.id))
+      const isOpen = stored ? stored === 'true' : initialOpen
 
-    if (isOpen) {
-      shell.classList.add('is-open')
-    } else {
-      shell.classList.remove('is-open')
+      if (isOpen) {
+        shell.classList.add('is-open')
+      } else {
+        shell.classList.remove('is-open')
+      }
+      toggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false')
+
+      if (toggle.tabIndex === -1) {
+        toggle.tabIndex = 0
+      }
+
+      hydratedCollapseToggles.add(toggle)
+      toggle.dataset.collapseSlug = storageSlug
+      toggle.addEventListener('click', handleToggleClick)
+      toggle.addEventListener('keydown', handleToggleKeydown)
     }
-    toggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false')
-
-    if (toggle.tabIndex === -1) {
-      toggle.tabIndex = 0
-    }
-
-    toggle.addEventListener('click', handleToggleClick)
-    toggle.addEventListener('keydown', handleToggleKeydown)
-    window.addCleanup?.(() => {
-      toggle.removeEventListener('click', handleToggleClick)
-      toggle.removeEventListener('keydown', handleToggleKeydown)
-    })
   })
 
-  const transcludeButtons = document.querySelectorAll('button.transclude-title-link')
+  const transcludeButtons = root.querySelectorAll('button.transclude-title-link')
   for (const button of transcludeButtons) {
+    if (hydratedTranscludeButtons.has(button)) continue
+    hydratedTranscludeButtons.add(button)
     const parent = button.parentElement as HTMLElement | null
     if (!parent || !parent.dataset.href) continue
 
@@ -96,9 +116,15 @@ function hydrateCollapsibleHeaders() {
     }
 
     button.addEventListener('click', navigate)
-    window.addCleanup?.(() => button.removeEventListener('click', navigate))
   }
 }
 
-document.addEventListener('nav', hydrateCollapsibleHeaders)
-window.addEventListener('resize', hydrateCollapsibleHeaders)
+document.addEventListener('nav', () => {
+  hydrateCollapsibleHeaders()
+})
+window.addEventListener('resize', () => {
+  hydrateCollapsibleHeaders()
+})
+document.addEventListener('contentdecrypted', event => {
+  hydrateCollapsibleHeaders(event.detail.content, event.detail.slug)
+})

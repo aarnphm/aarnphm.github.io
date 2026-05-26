@@ -1,0 +1,249 @@
+@use '../../styles/variables.scss' as *;
+@use '../../styles/mixin.scss' as *;
+
+.residual-stream {
+  margin: 1.75rem 0;
+  padding: 1.5rem 1.75rem;
+  border-radius: var(--radius-7-2);
+  border: 1px solid color-mix(in srgb, var(--gray) 28%, transparent);
+  background: color-mix(in srgb, var(--light) 94%, transparent);
+  color: var(--dark);
+
+  --rs-stroke: color-mix(in srgb, var(--darkgray) 70%, transparent);
+  --rs-stroke-soft: color-mix(in srgb, var(--gray) 55%, transparent);
+  --rs-divider: color-mix(in srgb, var(--gray) 35%, transparent);
+  --rs-divider-soft: color-mix(in srgb, var(--gray) 22%, transparent);
+  --rs-note-fg: color-mix(in srgb, var(--darkgray) 78%, var(--dark) 22%);
+  --rs-box-accent: color-mix(in srgb, var(--tertiary) 80%, var(--light));
+  --rs-box-neutral: var(--lightgray);
+}
+
+:root[saved-theme='dark'] .residual-stream {
+  --rs-box-accent: color-mix(in srgb, var(--tertiary) 28%, var(--lightgray));
+}
+
+.rs-frame {
+  display: grid;
+  grid-template-columns: minmax(190px, 1fr) 1px minmax(0, 1.3fr) auto;
+  grid-template-rows: 170fr 180fr 200fr 150fr;
+  align-items: stretch;
+  gap: 0 1.4rem;
+}
+
+.rs-graph {
+  grid-column: 1;
+  grid-row: 1 / -1;
+  width: 100%;
+  height: 100%;
+  max-height: 660px;
+  display: block;
+
+  .rs-box {
+    stroke: var(--rs-stroke);
+    stroke-width: 1;
+
+    &.rs-box-neutral {
+      fill: var(--rs-box-neutral);
+    }
+
+    &.rs-box-accent {
+      fill: var(--rs-box-accent);
+    }
+  }
+
+  .rs-box-text {
+    fill: var(--dark);
+    font-family: inherit;
+    font-size: 13px;
+    text-anchor: middle;
+    dominant-baseline: middle;
+
+    &.rs-box-text--sm {
+      font-size: 11px;
+    }
+
+    .rs-italic {
+      font-style: italic;
+    }
+  }
+
+  .rs-axis-label {
+    fill: var(--rs-note-fg);
+    font-family: inherit;
+    font-size: 12px;
+    font-style: italic;
+    dominant-baseline: middle;
+  }
+
+  .rs-line {
+    stroke: var(--rs-stroke);
+    stroke-width: 1.2;
+    fill: none;
+
+    &.rs-line--dotted {
+      stroke-dasharray: 3 3;
+    }
+  }
+
+  .rs-arrowhead {
+    fill: var(--rs-stroke);
+  }
+
+  .rs-node {
+    fill: var(--light);
+    stroke: var(--rs-stroke);
+    stroke-width: 1.2;
+  }
+
+  .rs-node-glyph {
+    stroke: var(--rs-stroke);
+    stroke-width: 1;
+  }
+}
+
+.rs-divider {
+  grid-column: 2;
+  grid-row: 1 / -1;
+  background: var(--rs-divider);
+  width: 1px;
+}
+
+.rs-note {
+  grid-column: 3;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.6rem 0;
+  min-height: 0;
+
+  & > p {
+    margin: 0;
+    color: var(--rs-note-fg);
+    line-height: 1.45;
+    font-size: 0.95rem;
+  }
+
+  & + .rs-note {
+    border-top: 1px dashed var(--rs-divider-soft);
+  }
+}
+
+.rs-note--unembed {
+  grid-row: 1;
+}
+
+.rs-note--mlp {
+  grid-row: 2;
+}
+
+.rs-note--attn {
+  grid-row: 3;
+}
+
+.rs-note--embed {
+  grid-row: 4;
+}
+
+.rs-bracket {
+  grid-column: 4;
+  grid-row: 2 / 4;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  color: var(--rs-note-fg);
+}
+
+.rs-bracket-line {
+  width: 8px;
+  align-self: stretch;
+  border-top: 1px solid currentColor;
+  border-right: 1px solid currentColor;
+  border-bottom: 1px solid currentColor;
+}
+
+.rs-bracket-label {
+  line-height: 1.25;
+}
+
+.rs-math {
+  color: inherit;
+
+  .katex {
+    color: inherit;
+  }
+
+  .katex-display {
+    margin: 0.15rem 0;
+    text-align: left;
+  }
+
+  .katex-display > .katex {
+    text-align: left;
+  }
+}
+
+.rs-math--inline {
+  display: inline-block;
+}
+
+.rs-math--display {
+  display: block;
+}
+
+.rs-caption {
+  margin-top: 0.9rem;
+  color: color-mix(in srgb, var(--gray) 70%, var(--dark) 30%);
+  font-size: 0.85rem;
+  text-align: center;
+}
+
+@media #{$mobile} {
+  .residual-stream {
+    padding: 1.1rem 1.1rem;
+  }
+
+  .rs-frame {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto;
+    gap: 1.25rem 0;
+  }
+
+  .rs-graph {
+    grid-column: 1;
+    grid-row: 1;
+    max-width: 260px;
+    margin: 0 auto;
+    max-height: none;
+  }
+
+  .rs-divider {
+    display: none;
+  }
+
+  .rs-note {
+    grid-column: 1;
+    padding: 0.5rem 0;
+  }
+
+  .rs-note--unembed {
+    grid-row: 2;
+  }
+
+  .rs-note--mlp {
+    grid-row: 3;
+  }
+
+  .rs-note--attn {
+    grid-row: 4;
+  }
+
+  .rs-note--embed {
+    grid-row: 5;
+  }
+
+  .rs-bracket {
+    display: none;
+  }
+}
