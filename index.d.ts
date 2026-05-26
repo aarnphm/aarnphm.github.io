@@ -37,6 +37,9 @@ interface CustomEventMap {
   notebookkernelcommand: CustomEvent<
     import('./quartz/util/notebook-kernel-events').NotebookKernelCommandDetail
   >
+  notebooklocalsourcescleared: CustomEvent<
+    import('./quartz/util/notebook-source-events').NotebookLocalSourcesClearedDetail
+  >
 
   slidechange: CustomEvent<{}>
   toast: CustomEvent<import('./quartz/components/scripts/toast').ToastEventDetail>

@@ -1,3 +1,4 @@
+import { cellSourceLegacyPrefix, cellSourceStoragePrefix } from '../../runtime/notebook/persistence'
 import {
   commentRoomToggleEvent,
   readCommentRoomEnabled,
@@ -9,6 +10,7 @@ import {
   type NotebookKernelCommand,
   type NotebookKernelSnapshot,
 } from '../../util/notebook-kernel-events'
+import { notebookLocalSourcesClearedEvent } from '../../util/notebook-source-events'
 import { FullSlug, normalizeRelativeURLs, resolveRelative } from '../../util/path'
 import { populateSearchIndex, querySearchIndex, SearchItem } from './search-index'
 import {
@@ -148,6 +150,21 @@ function dispatchNotebookKernelCommand(
     { detail: { runtimeId: snapshot.runtimeId, language: snapshot.language, command } },
   )
   document.dispatchEvent(event)
+}
+
+function clearNotebookLocalSources(storage: Storage = localStorage): number {
+  const keys: string[] = []
+  for (let i = 0; i < storage.length; i++) {
+    const key = storage.key(i)
+    if (
+      key &&
+      (key.startsWith(cellSourceStoragePrefix) || key.startsWith(cellSourceLegacyPrefix))
+    ) {
+      keys.push(key)
+    }
+  }
+  for (const key of keys) storage.removeItem(key)
+  return keys.length
 }
 
 function dispatchCommentAuthorUpdated(oldAuthor: string, newAuthor: string) {
@@ -298,6 +315,7 @@ document.addEventListener('nav', e => {
   let data: ContentIndex | null = null
   let idDataMap: FullSlug[] = []
   let isActive = true
+  let queryGeneration = 0
 
   window.addCleanup(() => {
     isActive = false
@@ -321,6 +339,7 @@ document.addEventListener('nav', e => {
   }
 
   function hidePalette() {
+    queryGeneration += 1
     container?.classList.remove('active')
     if (bar) {
       bar.value = '' // clear the input when we dismiss the search
@@ -351,15 +370,13 @@ document.addEventListener('nav', e => {
   }
 
   function showPalette(actionTypeNew: ActionType, fallbackActionTypeNew?: FallbackActionType) {
+    queryGeneration += 1
     actionType = actionTypeNew
     fallbackActionType =
       actionTypeNew === 'command' ? (fallbackActionTypeNew ?? fallbackActionType) : actionTypeNew
     container?.classList.add('active')
     if (actionType === 'command') {
-      bar.value = commandInputValue()
-      currentSearchTerm = ''
-      syncPaletteHelper()
-      getCommandItems(COMMAND_ACTS)
+      showCommandItems()
     } else if (actionType === 'connector') {
       bar.value = ''
       currentSearchTerm = ''
@@ -527,6 +544,29 @@ document.addEventListener('nav', e => {
         showKernelItems()
       },
     },
+    {
+      name: 'show command listing',
+      auxInnerHtml: '<kbd>↵</kbd> commands',
+      keepOpen: true,
+      onClick: () => {
+        showCommandItems(true)
+      },
+    },
+    {
+      name: 'clean all local code segments',
+      auxInnerHtml: '<kbd>↵</kbd> localStorage',
+      keepOpen: true,
+      onClick: () => {
+        const count = clearNotebookLocalSources()
+        const event: CustomEventMap['notebooklocalsourcescleared'] = new CustomEvent(
+          notebookLocalSourcesClearedEvent,
+          { detail: { count } },
+        )
+        document.dispatchEvent(event)
+        notifyToast(`cleared ${count} saved code segment${count === 1 ? '' : 's'}`)
+        showCommandItems(true)
+      },
+    },
   ]
 
   const createActComponent = ({ name, auxInnerHtml, onClick, keepOpen, detail }: Action) => {
@@ -588,6 +628,15 @@ document.addEventListener('nav', e => {
     }
     setFocusFirstChild()
     if (transition) transitionCommandItems()
+  }
+
+  function showCommandItems(transition = false) {
+    queryGeneration += 1
+    actionType = 'command'
+    syncPaletteHelper()
+    bar.value = commandInputValue()
+    currentSearchTerm = ''
+    getCommandItems(COMMAND_ACTS, transition)
   }
 
   function showKernelItems() {
@@ -831,7 +880,8 @@ document.addEventListener('nav', e => {
         focusedElement?.querySelector<HTMLDivElement>('.suggestion-title')?.textContent ?? ''
       bar.value =
         actionType === 'command' ? commandInputValue(currentSearchTerm) : currentSearchTerm
-      return await querySearch(currentSearchTerm)
+      queryGeneration += 1
+      return await querySearch(currentSearchTerm, queryGeneration)
     } else if (e.key === 'ArrowDown' || (e.ctrlKey && e.key === 'n')) {
       e.preventDefault()
       const items = output.querySelectorAll<HTMLDivElement>('.suggestion-item')
@@ -858,10 +908,13 @@ document.addEventListener('nav', e => {
     }
   }
 
-  async function querySearch(currentSearchTerm: string) {
+  async function querySearch(currentSearchTerm: string, generation = queryGeneration) {
+    const queryActionType = actionType
     if (actionType === 'quick_open') {
       await ensureData()
+      if (generation !== queryGeneration || queryActionType !== actionType) return
       const searchResults = await querySearchIndex(currentSearchTerm, numSearchResults)
+      if (generation !== queryGeneration || queryActionType !== actionType) return
 
       displayResults(
         searchResults
@@ -897,6 +950,7 @@ document.addEventListener('nav', e => {
   }
 
   async function onType(e: HTMLElementEventMap['input']) {
+    queryGeneration += 1
     const value = (e.target as HTMLInputElement).value
     const commandMode = value.trimStart().startsWith('>')
     let nextActionType: ActionType
@@ -911,10 +965,11 @@ document.addEventListener('nav', e => {
       syncPaletteHelper()
     }
     currentSearchTerm = actionType === 'command' ? commandSearchTerm(value) : value
-    await querySearch(currentSearchTerm)
+    await querySearch(currentSearchTerm, queryGeneration)
   }
 
   function displayResults(finalResults: Item[], currentSearchTerm: string) {
+    if (actionType !== 'quick_open') return
     if (!finalResults) return
 
     removeAllChildren(output)

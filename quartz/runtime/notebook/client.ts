@@ -32,6 +32,7 @@ import {
   notebookKernelCommandEvent,
   notebookKernelRequestEvent,
 } from '../../util/notebook-kernel-events'
+import { notebookLocalSourcesClearedEvent } from '../../util/notebook-source-events'
 import { notebookCellLanguageBadge } from '../../util/notebook/cell-html'
 import { renderOutputHtml } from '../../util/notebook/render/output-to-hast'
 import { isRecord, readString } from '../../util/type-guards'
@@ -984,6 +985,7 @@ class NotebookRuntime {
     document.addEventListener('keydown', this.handleNotebookKeydown, true)
     document.addEventListener(notebookKernelRequestEvent, this.handleKernelRequest)
     document.addEventListener(notebookKernelCommandEvent, this.handleKernelCommand)
+    document.addEventListener(notebookLocalSourcesClearedEvent, this.handleLocalSourcesCleared)
     this.addCleanup(() => {
       runAll?.removeEventListener('click', this.runAll)
       stop?.removeEventListener('click', this.stop)
@@ -993,6 +995,7 @@ class NotebookRuntime {
       document.removeEventListener('keydown', this.handleNotebookKeydown, true)
       document.removeEventListener(notebookKernelRequestEvent, this.handleKernelRequest)
       document.removeEventListener(notebookKernelCommandEvent, this.handleKernelCommand)
+      document.removeEventListener(notebookLocalSourcesClearedEvent, this.handleLocalSourcesCleared)
       this.clearEditPrefix()
       this.disposed = true
       this.destroyRuntime()
@@ -1300,6 +1303,28 @@ class NotebookRuntime {
     void this.applyKernelCommand(detail).catch(error => {
       this.setStatus(error instanceof Error ? error.message : 'kernel command failed')
     })
+  }
+
+  private handleLocalSourcesCleared = () => {
+    void this.clearLocalSourcesFromRuntime()
+  }
+
+  private async clearLocalSourcesFromRuntime() {
+    for (const cell of this.payload.cells) {
+      const controls = this.sourceControls.get(cell.id)
+      this.clearStoredSource(cell)
+      if (!controls) continue
+      const preserveEditorSource = !controls.editorHost.hidden && controls.dirty
+      if (preserveEditorSource) {
+        this.syncSourceControls(cell)
+        continue
+      }
+      controls.source = cell.source
+      controls.dirty = false
+      controls.editor?.setValue(cell.source)
+      await this.replaceRenderedCellSource(cell, controls, cell.source)
+      this.syncSourceControls(cell)
+    }
   }
 
   private kernelSnapshots(): NotebookKernelSnapshot[] {
