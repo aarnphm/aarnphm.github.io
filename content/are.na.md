@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-05-25 20:27:52 GMT-04:00
+modified: 2026-05-25 20:41:36 GMT-04:00
 permalinks:
   - /website
   - /tweets
@@ -331,10 +331,6 @@ title: are.na
   - [meta]:
     - date: 12/26/2025
     - tags: [meme]
-- https://x.com/MathGuyTFL/status/2003805778088714487 -- transformations of functions
-  - [meta]:
-    - date: 12/26/2025
-    - tags: [lagrangian, series]
 - https://x.com/repligate/status/2003625427915669953?s=46 -- on Opus 3 and love [**]
   - [meta]:
     - date: 12/25/2025
@@ -360,10 +356,6 @@ title: are.na
     - date: 12/15/2025
     - tags: [continual learning]
     - later: true
-- https://x.com/jessemhan/status/2000659168773202340 -- mechanized proof for definition of a mathematicians to be then widen
-  - [meta]:
-    - date: 12/15/2025
-    - tags: [mathematics, agi]
 - https://x.com/LydNot/status/1999219527993938318 -- Emergent misalignment argues incompetent and evil are more closely aligned
   - [meta]:
     - date: 12/15/2025
@@ -413,10 +405,6 @@ title: are.na
   - [meta]:
     - date: 12/04/2025
     - tags: [love]
-- https://x.com/_Dave__White_/status/1947461492783386827 -- OpenAI IMO news hits mathematicians
-  - [meta]:
-    - date: 12/04/2025
-    - tags: [logic]
 - https://x.com/thegoodtimeline/status/1995557717843316795 -- Janus' interview [**]
   - [meta]:
     - date: 12/03/2025
@@ -480,10 +468,6 @@ title: are.na
   - [meta]:
     - date: 11/12/2025
     - tags: [job market]
-- https://x.com/cloneofsimo/status/1988752407799689616 -- Gaussian is the best form of signal and noise provider
-  - [meta]:
-    - date: 11/12/2025
-    - tags: [math]
 - https://x.com/gormankind/status/1988714956095901949 -- design @ Stanford
   - [meta]:
     - date: 11/12/2025
@@ -537,17 +521,6 @@ title: are.na
   - [meta]:
     - date: 10/27/2025
     - tags: [research]
-- https://x.com/jeremyphoward/status/1980973242438570325 -- Learning math through the act of working through ML problems.
-  - [meta]:
-    - date: 10/24/2025
-    - tags: [math]
-  - imitation learning
-  - see also: https://x.com/TacoCohen/status/1981278509663129912
-- https://x.com/joincolossus/status/1981323901192843612 -- Taste in Math
-  - [meta]:
-    - date: 10/24/2025
-    - tags: [math]
-  - https://x.com/klyap_/status/1981529243189465163
 - https://x.com/thehonestlypod/status/1981063153459879954?s=46&t=E_gPjnJKDBGnwpVrE7Z-WQ -- make ChatGPT do what it is told
   - [meta]:
     - date: 10/24/2025
@@ -1210,6 +1183,10 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://en.wikipedia.org/wiki/Jane_Addams -- Jane Addams
+  - [meta]:
+    - date: 05/25/2026
+    - tags: [sociologist]
 - https://rsms.me/ -- Rasmus Andersson
   - [meta]:
     - date: 05/25/2026
@@ -6183,8 +6160,86 @@ title: are.na
     - date: 10/04/2025
     - tags: [life, being]
 
+## math
+
+- [meta]:
+  - view: list
+  - json: true
+
+- https://en.wikipedia.org/wiki/Rule_110 -- Rule 110
+  - [meta]:
+    - date: 05/25/2026
+    - tags: [automata]
+  - https://content.wolfram.com/sites/13/2018/02/15-1-1.pdf
+- https://en.wikipedia.org/wiki/Stable_matching_problem -- Stable matching problem
+  - [meta]:
+    - date: 05/25/2026
+    - tags: [optimization]
+    - pinned: true
+  - https://en.wikipedia.org/wiki/Gale–Shapley_algorithm
+- https://en.wikipedia.org/wiki/Perceptron -- Perceptron
+  - [meta]:
+    - date: 05/25/2026
+    - tags: [information theory]
+- https://en.wikipedia.org/wiki/Euler_characteristic -- Euler characteristics
+  - [meta]:
+    - date: 05/25/2026
+    - tags: [topology]
+- https://x.com/joincolossus/status/1981323901192843612 -- Taste in Math
+  - [meta]:
+    - date: 10/24/2025
+    - tags: [math]
+  - https://x.com/klyap_/status/1981529243189465163
+- https://x.com/jeremyphoward/status/1980973242438570325 -- Learning math through the act of working through ML problems.
+  - [meta]:
+    - date: 10/24/2025
+    - tags: [math]
+  - imitation learning
+  - see also: https://x.com/TacoCohen/status/1981278509663129912
+- https://x.com/cloneofsimo/status/1988752407799689616 -- Gaussian is the best form of signal and noise provider
+  - [meta]:
+    - date: 11/12/2025
+    - tags: [math]
+- https://x.com/_Dave__White_/status/1947461492783386827 -- OpenAI IMO news hits mathematicians
+  - [meta]:
+    - date: 12/04/2025
+    - tags: [logic, math]
+- https://x.com/jessemhan/status/2000659168773202340 -- mechanized proof for definition of a mathematicians to be then widen
+  - [meta]:
+    - date: 12/15/2025
+    - tags: [math, agi]
+- https://x.com/MathGuyTFL/status/2003805778088714487 -- transformations of functions
+  - [meta]:
+    - date: 12/26/2025
+    - tags: [lagrangian, series]
+- https://www.youtube.com/watch?v=_Hp11d1Z-78 -- Lagrangian vs Newtonian Mechanics
+  - [meta]:
+    - date: 01/26/2026
+    - tags: [physics, math, theory]
+- https://ffbandf.wordpress.com/ -- Forking, Forcing and back&Forthing
+  - [meta]:
+    - date: 01/13/2026
+    - tags: [math]
+    - later: true
+- https://en.wikipedia.org/wiki/Bradley–Terry_model -- Bradley–Terry model
+  - [meta]:
+    - date: 05/25/2026
+    - tags: [bayesian, probability]
+
 ## computer science
 
+- [meta]:
+  - view: list
+  - json: true
+
+- https://rosettacode.org/wiki/Pseudo-random_numbers/Splitmix64 -- splitmix64
+  - [meta]:
+    - date: 05/25/2026
+    - tags: [random]
+- https://en.wikipedia.org/wiki/Matrix_chain_multiplication -- Matrix chain multiplication
+  - [meta]:
+    - date: 05/25/2026
+    - tags: [linalg, cs]
 - https://sean.heelan.io/2026/01/18/on-the-coming-industrialisation-of-exploit-generation-with-llms/ -- On the Coming Industrialisation of Exploit Generation with LLMs
   - [meta]:
     - date: 01/22/2026
@@ -6931,11 +6986,6 @@ title: are.na
     - date: 01/14/2026
     - tags: [progress, longtermism]
     - pinned: true
-- https://ffbandf.wordpress.com/ -- Forking, Forcing and back&Forthing
-  - [meta]:
-    - date: 01/13/2026
-    - tags: [math]
-    - later: true
 - https://reflectivedisequilibrium.blogspot.com/ -- Reflective Disequilibrium
   - [meta]:
     - date: 01/13/2026
@@ -7695,10 +7745,6 @@ title: are.na
     - tags: [film, writing, process]
     - socials:
       - talks at google: https://www.youtube.com/watch?v=ZQrfxgW2EXQ
-- https://www.youtube.com/watch?v=_Hp11d1Z-78 -- Lagrangian vs Newtonian Mechanics
-  - [meta]:
-    - date: 01/26/2026
-    - tags: [physics, mathematics, theory]
 - https://www.youtube.com/watch?v=belyWyeN32c -- The line you only ski once
   - [meta]:
     - date: 01/20/2026
