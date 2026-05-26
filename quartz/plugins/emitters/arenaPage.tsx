@@ -1,5 +1,6 @@
 import { ElementContent } from 'hast'
 import { toHtml } from 'hast-util-to-html'
+import fs from 'node:fs/promises'
 import { Node } from 'unist'
 import { sharedPageComponents, defaultContentPageLayout } from '../../../quartz.layout'
 import { FullPageLayout } from '../../cfg'
@@ -9,6 +10,12 @@ import ChannelContent from '../../components/pages/ChannelContent'
 import { pageResources, renderPage } from '../../components/renderPage'
 import { QuartzComponentProps } from '../../types/component'
 import { QuartzEmitterPlugin } from '../../types/plugin'
+import {
+  collectArenaEmitState,
+  isArenaChannelJsonEnabled,
+  planArenaPartialEmit,
+  type ArenaEmitState,
+} from '../../util/arena-page-partial'
 import { clone } from '../../util/clone'
 import { BuildCtx } from '../../util/ctx'
 import { pathToRoot, joinSegments, FullSlug } from '../../util/path'
@@ -223,6 +230,17 @@ async function processChannelJson(ctx: BuildCtx, channel: ArenaChannel) {
   return write({ ctx, content: JSON.stringify(output, null, 2), slug, ext: '' })
 }
 
+async function removeChannelOutputs(
+  ctx: BuildCtx,
+  channelSlug: string,
+  jsonEnabled: boolean,
+): Promise<void> {
+  await fs.rm(joinSegments(ctx.argv.output, 'arena', `${channelSlug}.html`), { force: true })
+  if (jsonEnabled) {
+    await fs.rm(joinSegments(ctx.argv.output, 'arena', channelSlug, 'json'), { force: true })
+  }
+}
+
 export const ArenaPage: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts => {
   const filteredHeader = sharedPageComponents.header.filter(component => {
     const name = component.displayName || component.name || ''
@@ -251,6 +269,7 @@ export const ArenaPage: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts 
 
   const { head: Head, footer: Footer } = sharedPageComponents
   const Header = HeaderConstructor()
+  let arenaEmitState: ArenaEmitState | undefined
 
   return {
     name: 'ArenaPage',
@@ -266,20 +285,20 @@ export const ArenaPage: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts 
         if (slug !== 'are.na') continue
         if (!file.data.arenaData) continue
 
+        const channels = file.data.arenaData.channels
         yield processArenaIndex(ctx, tree, file.data, allFiles, indexOpts, resources)
 
-        for (const channel of file.data.arenaData.channels) {
+        for (const channel of channels) {
           yield processChannel(ctx, channel, file.data, allFiles, channelOpts, resources)
 
-          const jsonEnabled = channel.metadata?.json === 'true' || channel.metadata?.json === true
-          if (jsonEnabled) {
+          if (isArenaChannelJsonEnabled(channel)) {
             yield processChannelJson(ctx, channel)
           }
         }
 
-        // Build and emit search index JSON after all channels are processed
-        const searchIndex = buildSearchIndex(file.data.arenaData.channels)
+        const searchIndex = buildSearchIndex(channels)
         yield emitSearchIndex(ctx, searchIndex)
+        arenaEmitState = collectArenaEmitState(channels)
       }
     },
     async *partialEmit(ctx, content, resources, changeEvents) {
@@ -299,20 +318,34 @@ export const ArenaPage: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts 
         if (slug !== 'are.na') continue
         if (!file.data.arenaData) continue
 
+        const channels = file.data.arenaData.channels
+        const plan = planArenaPartialEmit(arenaEmitState, channels)
+        if (!plan.hasChanges) {
+          arenaEmitState = plan.nextState
+          continue
+        }
+
         yield processArenaIndex(ctx, tree, file.data, allFiles, indexOpts, resources)
 
-        for (const channel of file.data.arenaData.channels) {
+        for (const channel of plan.changedChannels) {
+          const previous = arenaEmitState?.channelStates.get(channel.slug)
           yield processChannel(ctx, channel, file.data, allFiles, channelOpts, resources)
 
-          const jsonEnabled = channel.metadata?.json === 'true' || channel.metadata?.json === true
-          if (jsonEnabled) {
+          if (isArenaChannelJsonEnabled(channel)) {
             yield processChannelJson(ctx, channel)
+          } else if (previous?.jsonEnabled) {
+            await fs.rm(joinSegments(ctx.argv.output, 'arena', channel.slug, 'json'), {
+              force: true,
+            })
           }
         }
 
-        // Build and emit search index JSON after all channels are processed
-        const searchIndex = buildSearchIndex(file.data.arenaData.channels)
-        yield emitSearchIndex(ctx, searchIndex)
+        for (const [channelSlug, previous] of plan.deletedChannels) {
+          await removeChannelOutputs(ctx, channelSlug, previous.jsonEnabled)
+        }
+
+        yield emitSearchIndex(ctx, buildSearchIndex(channels))
+        arenaEmitState = plan.nextState
       }
     },
     externalResources: () => ({ additionalHead: [] }),

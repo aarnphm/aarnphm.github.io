@@ -78,7 +78,7 @@ function runtimeIdFromJson(text: string) {
   try {
     const parsed = JSON.parse(text)
     return isRecord(parsed) && typeof parsed.id === 'string' ? parsed.id : undefined
-  } catch {}
+  } catch { }
 
   const decoded = text.replace(
     /&(quot|apos|lt|gt|amp|#34|#x22|#39|#x27|#60|#x3[cC]|#62|#x3[eE]|#38|#x26);/g,
