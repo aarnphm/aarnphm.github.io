@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-05-25 22:06:02 GMT-04:00
+modified: 2026-05-25 22:11:11 GMT-04:00
 permalinks:
   - /website
   - /tweets
@@ -5872,6 +5872,10 @@ title: are.na
 
 ## life is literature
 
+- https://jenseneats.danliu.xyz/ -- Jensen Eats
+  - [meta]:
+    - date: 05/25/2026
+    - tags: [restaurant]
 - https://www.reddit.com/r/RSbookclub/comments/1ebhgyl/do_u_guys_like_sexual_personae/ -- Do you like "Sexual Personae"
   - [meta]:
     - date: 04/30/2026
