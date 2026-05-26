@@ -9,7 +9,7 @@ tags:
 title: interp plugins
 ---
 
-The plugin leverages vLLM v1's modular architecture and plugin system via Python entry points:
+Registers against vLLM v1's plugin system via Python entry points:
 
 ```python title="setup.py"
 setup(
@@ -131,7 +131,7 @@ def register_hooks(
   ]
 ```
 
-## design: cross-layer transcoder support
+## cross-layer transcoders
 
 CLTs read from one layer and write to multiple downstream layers, requiring special handling:
 
@@ -201,7 +201,7 @@ def create_clt_pipeline(config: CLTConfig):
 
 ### matryoshka SAE support
 
-Matryoshka SAEs enable dynamic sparsity levels - use fewer features for simple tokens, more for complex:
+Matryoshka SAEs let $k$ vary per token. Below picks $k \in \{32, 64, 128, 256\}$ from a complexity score on the input:
 
 ```python title="matryoshka.py"
 from __future__ import annotations
@@ -421,9 +421,9 @@ def emit_drift_alert(drift_type: str, details: Any) -> None:
   )
 ```
 
-## optimization: batched sparse operations
+## batched sparse ops
 
-Critical for <5% overhead - fuse TopK selection and reconstruction:
+Target: <5% decode-time overhead vs. the no-SAE baseline. Fuses TopK + reconstruction in one compiled call:
 
 ```python title="kernels.py"
 from __future__ import annotations
@@ -453,9 +453,9 @@ def register_sae_custom_op():
   return SAETopKDecode
 ```
 
-## optimization: persistent caching
+## persistent caching
 
-Leverage vLLM v1's persistent batch technique for SAE state:
+Reuses vLLM v1's persistent-batch buffer for SAE state across decode steps:
 
 ```python title="cache.py"
 from __future__ import annotations
@@ -556,26 +556,25 @@ def create_cache_manager(config: CacheConfig):
   return update, reconstruct
 ```
 
-## API design
+## top-level API
 
-Production-first configuration API:
+Steering is a `{feature_id: scalar}` map; `mode` collapses to a single `(scale, bias)` tuple at the hook site. Per-layer checkpoints in a single dict so CLT / Matryoshka / standard SAEs share one entry point.
 
 ```python
 from vllm import LLM
 from vllm_sae_plugin import SAEConfig, SteeringVector
 
-# Initialize with SAE config
 llm = LLM(
   model='meta-llama/Llama-3.2-3B',
   sae_config=SAEConfig(
     checkpoints={
-      'attn_15': 'path/to/clt_layer15.pt',  # CLT
-      'attn_20': 'path/to/matryoshka_layer20.pt',  # Matryoshka
-      'mlp_23': 'path/to/standard_sae_layer23.pt',  # Standard
+      'attn_15': 'path/to/clt_layer15.pt',
+      'attn_20': 'path/to/matryoshka_layer20.pt',
+      'mlp_23': 'path/to/standard_sae_layer23.pt',
     },
-    target_modules=['attn_output'],  # Hook attention outputs
+    target_modules=['attn_output'],
     enable_drift_monitoring=True,
-    drift_window=1000,  # samples
+    drift_window=1000,
     cache_config={'max_cached_features': 100_000, 'eviction_policy': 'lru'},
     optimization={
       'use_custom_kernels': True,
@@ -585,35 +584,23 @@ llm = LLM(
   ),
 )
 
-# Define steering intervention
 steering = SteeringVector(
   layer=15,
-  features={
-    1337: 2.5,  # Amplify feature 1337 by 2.5x
-    4242: -1.0,  # Suppress feature 4242
-  },
-  mode='additive',  # or "multiplicative"
+  features={1337: 2.5, 4242: -1.0},
+  mode='additive',
 )
 
-# Generate with steering
 outputs = llm.generate(
   'The weather in California is', steering_vectors=[steering], temperature=0.7
 )
 
-# Access drift metrics
 drift_report = llm.sae_plugin.get_drift_report()
-# {
-#   "layer_15": {
-#     "kl_divergence": 0.03,
-#     "shifted_features": [128, 1337, 2048],
-#     "dead_features": [42, 99],
-#   }
-# }
+# {"layer_15": {"kl_divergence": 0.03, "shifted_features": [128, 1337, 2048], "dead_features": [42, 99]}}
 ```
 
-## monitoring and observability
+## monitoring
 
-Integration with production monitoring stacks:
+Prometheus / OTel export off the drift state:
 
 ```python title="metrics.py"
 from __future__ import annotations
@@ -686,10 +673,10 @@ def create_metrics_exporter(config: MetricsConfig):
   return export
 ```
 
-## future notes
+## deferred
 
-1. Multi-SAE ensembles - Run multiple SAEs per layer for robustness
-2. Adaptive sparsity scheduling - Vary k based on token importance
-3. Feature attribution caching - Pre-compute common steering vectors
-4. Cross-request feature analysis - Aggregate statistics across users
-5. Online SAE finetuning - Adapt to distribution shift automatically
+- multi-SAE ensembles per layer — composes with the existing registry, but the hook needs to fan out and aggregate. cost: another full forward pass per layer per SAE; not worth it until single-SAE drift evidence motivates it.
+- adaptive sparsity scheduling beyond Matryoshka's discrete levels — would need a learned `k` predictor on the residual; defer until matryoshka deployment numbers say the discrete levels miss real cases.
+- pre-computing steering vectors for common feature combinations — caching at the `SteeringController` layer, keyed by feature-set hash. defer until a steering vector shows up >100 times in the request log.
+- cross-request feature aggregation for population-level drift — needs a separate aggregator process; current per-process drift state doesn't compose across replicas. defer to the metrics service.
+- online SAE finetuning during inference — out of scope; needs training infra and changes the SAE-as-frozen-decoder contract this plugin relies on.

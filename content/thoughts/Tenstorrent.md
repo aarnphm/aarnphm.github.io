@@ -975,28 +975,9 @@ tt-mlir/
 
 younger than tt-metal. fewer contributors, faster iteration.
 
-## future roadmap
+## roadmap
 
-### near-term (2025-2026)
-
-- Blackhole production availability
-- MLIR optimization passes (fusion, memory planning)
-- PyTorch 2.0 integration (torch.compile backend)
-- model zoo expansion (Llama, Mistral, Stable Diffusion)
-
-### mid-term (2026-2027)
-
-- next-gen silicon (post-Blackhole): 3nm, HBM3, higher core count
-- 64-128 chip clusters
-- auto-tuning framework (tile size search, layout optimization)
-- profiler and debugger tools
-
-### long-term (2027+)
-
-- 1,000+ chip clusters
-- custom silicon licensing (hyperscalers integrate Tensix IP)
-- competitive training performance (not just inference)
-- ecosystem parity with CUDA (libraries, frameworks, tools)
+near-term, Tenstorrent has publicly committed to Blackhole production rollout and a PyTorch 2.0 `torch.compile` backend; the model zoo (Llama, Mistral, SD) is in flight. Beyond that the public information thins out — anything I'd write here would be vibes-roadmap. See [Tenstorrent's official roadmap](https://tenstorrent.com/) for what they've actually announced.
 
 ## references
 

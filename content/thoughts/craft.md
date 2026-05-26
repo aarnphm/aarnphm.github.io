@@ -6,7 +6,7 @@ comments: false
 date: '2021-12-22'
 description: and a celebration for the act of making.
 id: craft
-modified: 2026-05-25 17:45:03 GMT-04:00
+modified: 2026-05-26 15:18:48 GMT-04:00
 permalinks:
   - /thoughts/work
   - /craft
@@ -62,12 +62,13 @@ There is also a [[ideas|backlog]] of unfinished ideas that I might work on, one 
   - Added Rust crates for `.avanterules` templates https://github.com/yetone/avante.nvim/pull/466
   - Source: [github](https://github.com/yetone/avante.nvim)
 
-- **morph** - :writing_hand: An exploration into how we build interfaces for machine-assisted writing tool (2024-) [^morph]
-  - Trained [[thoughts/sparse autoencoder]] to interpret QwQ CoT and features [@templeton2024scaling]
-  - Build a custom [[thoughts/vLLM]] plugins to support activation intervention. Served on [BentoCloud](https://bentoml.com/cloud) with scale-to-zero enabled
-  - Dynamic inference graph with structured outputs endpoints for steered [suggestions](https://github.com/aarnphm/morph/blob/cd5f916776273aea5d27c5ed08e300e3ca04a1f5/python/asteraceae/service.py#L748), a search RAG to infer author style and tonality with [Exa](https://exa.ai) and [LlamaIndex](https://www.llamaindex.ai/)
-  - Similarity search via embedded [PGlite](https://pglite.dev/) within the browser to ensure no data ever leave users computer.
-  - Markdown editor with [CodeMirror](https://codemirror.net/6/doc/manual.html) and additional plugins for rendering with remark-rehype ecosystem. Built with Next.js 15 and [Flexoki](https://stephango.com/flexoki) design system.
+- **morph** - :writing_hand: machine-assisted writing — non-chat interface for thinking through drafts (2024-) [^morph]
+  - Trained [[thoughts/sparse autoencoder]] on QwQ CoT to surface interpretable features [@templeton2024scaling]
+  - Built a custom [[thoughts/vLLM]] plugin for activation intervention; served on [BentoCloud](https://bentoml.com/cloud) with scale-to-zero
+  - Dynamic inference graph for steered [suggestions](https://github.com/aarnphm/morph/blob/cd5f916776273aea5d27c5ed08e300e3ca04a1f5/python/asteraceae/service.py#L748), structured-outputs endpoints
+  - RAG over [Exa](https://exa.ai) + [LlamaIndex](https://www.llamaindex.ai/) to infer author style and tonality
+  - In-browser similarity search via [PGlite](https://pglite.dev/) — data never leaves the client
+  - Markdown editor on [CodeMirror](https://codemirror.net/6/doc/manual.html) + remark-rehype, Next.js 15, [Flexoki](https://stephango.com/flexoki) palette
   - source: [github](https://github.com/aarnphm/morph), [demo](https://morph-editor.app)
 
 - **OpenLLM** - :gear: Run any open-source [[thoughts/LLMs|LLMs]] as OpenAI compatible API endpoint in the cloud. (2023-)
@@ -91,11 +92,11 @@ There is also a [[ideas|backlog]] of unfinished ideas that I might work on, one 
   - Demoed at [New Build'24](https://x.com/newsystems_/status/1828455648377327976)
   - Source: [stream](https://x.com/i/broadcasts/1OwxWNvzRejJQ), [[posts/new|posts]]
 
-- **onw** - A real-time navigation tools for safer commute (2021)
-  - Implemented route optimization, heat map visualization to identify hot zones, peer notification system.
-  - Added a heuristic Gaussian Mixture Model to find the safest path between different locations, trained on past assault data provided by Toronto Police Department.
-  - Awarded: Finalists at [Hack the North 2021](https://devpost.com/software/twogether).
-  - Built using AWS Fargate, React Native, TypeScript, GraphQL, Apache Spark MLlib, Google Maps API
+- **onw** - hackathon project: routing that avoids high-assault zones on the way home (2021)
+  - Trained a Gaussian Mixture Model on Toronto Police assault data; path-cost function adds GMM density as a penalty so A\* prefers low-density routes.
+  - Heat-map viz + peer notifications.
+  - Finalist, [Hack the North 2021](https://devpost.com/software/twogether).
+  - Stack: AWS Fargate, React Native, TS, GraphQL, Spark MLlib, Google Maps.
   - Source: [github](https://github.com/tiproad/omw), [devpost](https://devpost.com/software/twogether)
 
 [^morph]: An excerpt from the problem statement:
@@ -113,14 +114,14 @@ There is also a [[ideas|backlog]] of unfinished ideas that I might work on, one 
   - Source: [website](https://www.modular.com/)
 - BentoML, 04/2021—12/2025
   - Inference Optimization Engineer
-  - vLLM commiter, structured outputs, scheduler
-  - early engineer
+  - vLLM committer, structured outputs, scheduler
+  - Joined as number 2, and join Modular post-acquisition.
   - _Acquired by Modular_
   - Source: [website](https://bentoml.com/)
 
 ## writing
 
-You can find internal monologue under [[/posts/]] index. I also sent out a pseudo-monthly newsletter to all my friends, sort of a pseudo-update into my life.
+You can find internal monologue under [[/posts/]] index. I also send a ~monthly newsletter to friends, mostly life updates.
 
 BentoML Blog: Get 3x Faster LLM Inference with Speculative Decoding Using the Right Draft Model
 
@@ -144,7 +145,7 @@ vLLM Blog: Structured Decoding in vLLM: a gentle introduction
 ## talks
 
 - infer, a [[/lectures|workshop series]] at New Stadium (2025)
-  - Everything about inference engine and in between.
+  - LLM inference from the kernel up to the serving layer — attention, KV cache, speculative decoding, deployment.
   - so far:
     - [[lectures/1/notes|1. overview of transformers-based inference]]
     - [[lectures/2/notes|2. attention convexity]]

@@ -2,6 +2,7 @@ import { computePosition, flip, inline, Placement, shift, Strategy } from '@floa
 import xmlFormat from 'xml-formatter'
 import { getContentType } from '../../util/mime'
 import { FullSlug, getFullSlug, normalizeRelativeURLs } from '../../util/path'
+import { isRecord, readString } from '../../util/type-guards'
 import {
   readWikipediaPreviewResponse,
   wikipediaActionApiUrl,
@@ -30,12 +31,21 @@ interface ShowPopoverOptions {
   popoverInner?: HTMLElement
 }
 
+interface StackedNotePayload {
+  slug: string
+  title: string
+  content: string
+  metadata?: string
+  state: 'pending' | 'ready' | 'protected' | 'failed'
+}
+
 const blobCleanupMap = new Map<string, NodeJS.Timeout>()
 const DEFAULT_BLOB_TIMEOUT = 30 * 60 * 1000 // 30 minutes
 
 const p = new DOMParser()
 let activeAnchor: HTMLAnchorElement | null = null
 let activePopoverReq: { abort: () => void; link: HTMLAnchorElement } | null = null
+let stackedPopoverEvents: AbortController | null = null
 
 function createManagedBlobUrl(blob: Blob, timeoutMs: number = DEFAULT_BLOB_TIMEOUT): string {
   const blobUrl = URL.createObjectURL(blob)
@@ -63,8 +73,8 @@ function cleanupBlobUrl(blobUrl: string): void {
   }
 }
 
-function cleanAbsoluteElement(element: HTMLDivElement): HTMLDivElement {
-  const refsAndNotes = element.querySelectorAll<HTMLDivElement>(
+function cleanAbsoluteElement(element: HTMLElement): HTMLElement {
+  const refsAndNotes = element.querySelectorAll<HTMLElement>(
     'section[data-references], section[data-footnotes], [data-skip-preview], .telescopic-container',
   )
   refsAndNotes.forEach(section => section.remove())
@@ -160,6 +170,74 @@ async function populatePopoverContent(
     contentHandlers['default']
 
   await handler(response, targetUrl, popoverInner)
+}
+
+function isStackedNotePayloadState(value: unknown): value is StackedNotePayload['state'] {
+  return value === 'pending' || value === 'ready' || value === 'protected' || value === 'failed'
+}
+
+function readStackedNotePayload(value: unknown): StackedNotePayload | null {
+  if (!isRecord(value)) return null
+  const slug = readString(value, 'slug')
+  const title = readString(value, 'title')
+  const content = readString(value, 'content')
+  const metadata = readString(value, 'metadata')
+  const state = readString(value, 'state')
+  if (!slug || !title || !content || !isStackedNotePayloadState(state)) return null
+  return { slug, title, content, metadata, state }
+}
+
+function stackedNoteSlugFromUrl(targetUrl: URL): string {
+  const slug = targetUrl.pathname.replace(/^\/+|\/+$/g, '')
+  return slug === '' ? 'index' : slug
+}
+
+function stackedNotePayloadUrl(targetUrl: URL): URL {
+  const url = new URL('/api/stacked-note', window.location.toString())
+  url.searchParams.set('slug', stackedNoteSlugFromUrl(targetUrl))
+  return url
+}
+
+function isNoteDocumentUrl(targetUrl: URL): boolean {
+  const leaf = targetUrl.pathname.split('/').pop() ?? ''
+  return leaf === '' || !leaf.includes('.') || leaf.endsWith('.html') || leaf.endsWith('.htm')
+}
+
+async function fetchStackedNotePayload(
+  targetUrl: URL,
+  signal: AbortSignal,
+): Promise<StackedNotePayload | null> {
+  const response = await fetch(stackedNotePayloadUrl(targetUrl), {
+    headers: { Accept: 'application/json' },
+    signal,
+  }).catch(error => {
+    if (!isAbortError(error)) console.error(error)
+    return null
+  })
+  if (!response || !response.ok) return null
+  const json = await response.json().catch(error => {
+    console.error(error)
+    return null
+  })
+  return readStackedNotePayload(json)
+}
+
+function populateStackedPayloadContent(
+  payload: StackedNotePayload,
+  targetUrl: URL,
+  popoverInner: HTMLDivElement,
+) {
+  popoverInner.classList.add('grid')
+  const html = p.parseFromString(payload.content, 'text/html')
+  normalizeRelativeURLs(html, targetUrl)
+  html.querySelectorAll('[id]').forEach(el => {
+    const targetID = `popover-${el.id}`
+    el.id = targetID
+  })
+  const elements = Array.from(html.body.children).flatMap(el =>
+    el instanceof HTMLElement ? [cleanAbsoluteElement(el)] : [],
+  )
+  popoverInner.append(...elements)
 }
 
 async function setPosition(
@@ -424,6 +502,7 @@ async function handleStackedNotes(
 ) {
   if (!stacked) return
   clearActivePopover()
+  activeAnchor = link
 
   if (activePopoverReq && activePopoverReq.link !== link) {
     activePopoverReq.abort()
@@ -445,23 +524,30 @@ async function handleStackedNotes(
   const controller = new AbortController()
   activePopoverReq = { abort: () => controller.abort(), link }
 
-  const response = await fetchCanonical(new URL(targetUrl.toString()), {
-    signal: controller.signal,
-  }).catch((error: Error & { name: string }) => {
-    if (error.name === 'AbortError') {
-      return null
-    }
-    console.error(error)
-    return null
-  })
-
-  if (!response) {
-    activePopoverReq = null
-    return
-  }
-
   const { popoverElement, popoverInner } = createPopoverElement('stacked-popover')
-  await populatePopoverContent(response, targetUrl, popoverInner)
+  if (isNoteDocumentUrl(targetUrl)) {
+    const payload = await fetchStackedNotePayload(targetUrl, controller.signal)
+    if (!payload || activeAnchor !== link) {
+      popoverElement.remove()
+      activePopoverReq = null
+      return
+    }
+    populateStackedPayloadContent(payload, targetUrl, popoverInner)
+  } else {
+    const response = await fetchCanonical(new URL(targetUrl.toString()), {
+      signal: controller.signal,
+    }).catch(error => {
+      if (!isAbortError(error)) console.error(error)
+      return null
+    })
+
+    if (!response || activeAnchor !== link) {
+      popoverElement.remove()
+      activePopoverReq = null
+      return
+    }
+    await populatePopoverContent(response, targetUrl, popoverInner)
+  }
 
   if (popoverInner.childElementCount === 0) {
     popoverElement.remove()
@@ -488,22 +574,81 @@ async function handleStackedNotes(
     }
   }
 
-  const onMouseLeave = () => {
-    popoverElement.style.visibility = 'hidden'
-    popoverElement.style.opacity = '0'
-    setTimeout(() => {
-      if (popoverElement.style.visibility === 'hidden') {
-        popoverElement.remove()
-      }
-    }, 100)
-  }
-
-  link.addEventListener('mouseleave', onMouseLeave)
-  window.addCleanup(() => {
-    link.removeEventListener('mouseleave', onMouseLeave)
-  })
+  requestAnimationFrame(() => popoverElement.classList.add('active-popover'))
 
   activePopoverReq = null
+}
+
+function closestStackedPopoverLink(
+  target: EventTarget | null,
+  stacked: HTMLElement,
+): HTMLAnchorElement | null {
+  if (!target || !(target instanceof Element)) return null
+  const link = target.closest('a.internal')
+  if (!(link instanceof HTMLAnchorElement)) return null
+  if (!stacked.contains(link)) return null
+  return link
+}
+
+function containsRelatedTarget(link: HTMLAnchorElement, relatedTarget: EventTarget | null) {
+  return relatedTarget instanceof Node && link.contains(relatedTarget)
+}
+
+function allowsStackedPopover(link: HTMLAnchorElement): boolean {
+  if (link.dataset.wikipediaLang && link.dataset.wikipediaTitle) return false
+  if (link.dataset.noPopover === '' || link.dataset.noPopover === 'true') {
+    return link.dataset.backlink !== undefined
+  }
+  return true
+}
+
+function hideStackedPopovers(stacked: HTMLElement) {
+  stacked.querySelectorAll<HTMLElement>('.stacked-popover').forEach(popoverElement => {
+    popoverElement.classList.remove('active-popover')
+    window.setTimeout(() => {
+      if (!popoverElement.classList.contains('active-popover')) {
+        popoverElement.remove()
+      }
+    }, 120)
+  })
+}
+
+function setupStackedPopoverLinks() {
+  stackedPopoverEvents?.abort()
+  stackedPopoverEvents = null
+
+  const stacked = document.getElementById('stacked-notes-container')
+  if (!(stacked instanceof HTMLDivElement)) return
+
+  const events = new AbortController()
+  stackedPopoverEvents = events
+
+  stacked.addEventListener(
+    'mouseover',
+    event => {
+      const link = closestStackedPopoverLink(event.target, stacked)
+      if (!link || containsRelatedTarget(link, event.relatedTarget)) return
+      if (!allowsStackedPopover(link)) return
+      activeAnchor = link
+      void handleStackedNotes(stacked, link, { clientX: event.clientX, clientY: event.clientY })
+    },
+    { signal: events.signal },
+  )
+
+  stacked.addEventListener(
+    'mouseout',
+    event => {
+      const link = closestStackedPopoverLink(event.target, stacked)
+      if (!link || containsRelatedTarget(link, event.relatedTarget)) return
+      if (activeAnchor === link) activeAnchor = null
+      if (activePopoverReq?.link === link) {
+        activePopoverReq.abort()
+        activePopoverReq = null
+      }
+      hideStackedPopovers(stacked)
+    },
+    { signal: events.signal },
+  )
 }
 
 async function mouseEnterHandler(
@@ -719,6 +864,7 @@ function setupPopoverLinks(container: Document | HTMLElement = document) {
 
 document.addEventListener('nav', () => {
   setupPopoverLinks()
+  setupStackedPopoverLinks()
 })
 
 document.addEventListener('contentdecrypted', e => {

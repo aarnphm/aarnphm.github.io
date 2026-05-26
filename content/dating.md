@@ -7,7 +7,7 @@ aliases:
 date: '2025-08-09'
 description: just another fish in the sea.
 id: dating
-modified: 2026-05-26 14:46:20 GMT-04:00
+modified: 2026-05-26 15:16:38 GMT-04:00
 slides: true
 tags:
   - evergreen
@@ -113,10 +113,10 @@ Most people know me online as `aarnphm` /urn-fm/, but you can call me _Aaron_ (o
 
 I'm currently an [[thoughts/Transformers#inference.|inference]] optimization [[/|engineer]] at [bentoml](https://bentoml.com/), which means I'm a software engineer working on optimizing [[thoughts/LLMs|LLMs]], based in Toronto, Canada.
 
-I'm rather attentive and assiduous in my [[thoughts/craft|work]]. I interned at the business analytics division of a bank back in 2018, doing behavioral analysis on customer usage patterns.
+I take my [[thoughts/craft|work]] seriously. I interned at the business analytics division of a bank back in 2018, doing behavioral analysis on customer usage patterns.
 This was my first real exposure to [supervised learning](https://en.wikipedia.org/wiki/Supervised_learning) and I was immediately hooked.
 
-I pretty much didn't know a thing back then, but that didn't bother me much: I found the problem space fascinating and knew I would _try_ to solve it. Not because someone _asked me to_, but because _I wanted to_. I'm definitely still have a ton to learn, but over time you tend to pick up skills and knowledge along the way.
+I pretty much didn't know a thing back then, but that didn't bother me much: I found the problem fascinating and knew I would _try_ to solve it, because I wanted to. I definitely still have a ton to learn, but over time you tend to pick up skills along the way.
 
 Early on, I noticed that most of [[thoughts/Machine learning|ML]]'s [technical debt](https://proceedings.neurips.cc/paper_files/paper/2015/file/86df7dcfd896fcaf2674f757a2463eba-Paper.pdf) comes down to scaling, which inherently is an _engineering_ problem.
 This led me to join my current startup, as a software engineer. The mission statement has shifted quite a bit since then, but the core remains the same: optimizing [[thoughts/LLMs|statistical models]] to be as fast and accessible as possible.
@@ -129,7 +129,7 @@ My approach to problems has stayed consistent since I learned arithmetic: ==don'
 
 I might not be good at something initially, but i find being autistic enough to care about a specific domain (_scaling [[thoughts/AGI|intelligence]]_) has got me to a spot that make 5-year-old Aaron proud.
 
-I have some [[research|research interests]] that I'm currently exploring, so I implore you to read it. I know that it is a bit long, so feel free to skip it [[#personal life.|to the next topic]]! Otherwise hopefully it captures topics I'm currently fascinated with (as of oct, 2025)
+I have some [[research|research interests]] I'm currently chasing — read them if you're curious. I know it's a bit long, so feel free to skip [[#personal life.|to the next topic]]. Otherwise hopefully it captures what I'm fascinated with as of Oct, 2025.
 
 ---
 
@@ -149,7 +149,7 @@ My mom says I was always shy growing up. These days I'm much more social, though
 
 [^being-human]: Regardless, this was life-changing, as it taught me a lot about [[thoughts/being]] _human_.
 
-[[influence|Friends]] mean the world to me. I'd go so far as to say that my understanding of relationships—of care itself—has been shaped entirely by my friendships:
+[[influence|Friends]] mean the world to me. I'd go so far as to say my whole model of relationships came out of my friendships:
 
 ```quotes
 One cannot be a friend to many people in the sense of having friendship of the perfect type with them, just as one cannot be in love with many people at once (for love is a sort of excess of feeling, and it is the nature of such only to be felt towards one person); and it is not easy for many people at the same time to please the same person very greatly, or perhaps even to be good in his eyes.
@@ -181,8 +181,8 @@ bouldering
 
 cooking
 
-- I [[thoughts/love|love]] food. There's something mystical about Michelin-starred chefs dedicating their entire lives to perfecting the art of food making.
-- Food nourishes the soul, and cooking—working on a dish from start to finish—feels deeply rewarding.
+- I [[thoughts/love|love]] food. Michelin-starred chefs spend decades on one cuisine—I find that obsession beautiful.
+- Cooking a dish start-to-finish is the closest thing I have to therapy.
 - It's also how I show love to my friends.
 - I [[thoughts/atelier with friends|host]] dinners regularly, mostly centered around French and Italian cuisine.
   - These are usually four-course meals for 4-6 people, and at the end, you can pay me _whatever you think the meal is worth_.
@@ -246,7 +246,7 @@ design
 [[thoughts/writing|writing]]
 
 - ![[thoughts/writing#^ava-writing]]
-- I mainly write for myself and this garden serves as a personal archival.
+- I mainly write for myself, and this garden is my simulacrum.
   - I use [curius](curius.app) to save links on the go, but often transfer them back here later.
   - If you're interested in [[colophon|how this website was built]]
 - I find essay and fiction formats very refreshing.
