@@ -13,7 +13,8 @@ import { ProcessedContent } from './plugins/vfile'
 import { emitContent } from './processors/emit'
 import { filterContentResult, type FilterContentResult } from './processors/filter'
 import { parseMarkdown } from './processors/parse'
-import { ChangeEvent } from './types/plugin'
+import { ChangeEvent, QuartzEmitterPluginInstance } from './types/plugin'
+import { affectedComponentPageEmitters } from './util/component-source'
 import { Argv, BuildCtx } from './util/ctx'
 import { glob, toPosixPath } from './util/glob'
 import { FilePath, joinSegments, slugifyFilePath } from './util/path'
@@ -74,6 +75,55 @@ type BuildData = {
   contentMap: ContentMap
   changesSinceLastBuild: Record<FilePath, ChangeEvent['type']>
   lastBuildMs: number
+}
+
+type WatchHandoff = {
+  ctx: BuildCtx
+  contentMap: ContentMap
+  changesSinceLastBuild: Record<FilePath, ChangeEvent['type']>
+  pendingChanges: ChangeEvent[]
+}
+
+type WatchRuntime = { dispose(): Promise<void>; handoff(): WatchHandoff }
+
+type EmitResult = FilePath[] | AsyncGenerator<FilePath> | null
+
+async function countEmittedFiles(
+  ctx: BuildCtx,
+  emitterName: string,
+  emitted: EmitResult,
+): Promise<number> {
+  if (emitted === null) return 0
+
+  if (Symbol.asyncIterator in emitted) {
+    let emittedFiles = 0
+    for await (const file of emitted) {
+      emittedFiles++
+      if (ctx.argv.verbose) {
+        console.log(`[emit:${emitterName}] ${file}`)
+      }
+    }
+    return emittedFiles
+  }
+
+  if (ctx.argv.verbose) {
+    for (const file of emitted) {
+      console.log(`[emit:${emitterName}] ${file}`)
+    }
+  }
+  return emitted.length
+}
+
+async function emitFromPlugin(
+  ctx: BuildCtx,
+  emitter: QuartzEmitterPluginInstance,
+  content: ProcessedContent[],
+  resources: ReturnType<typeof getStaticResourcesFromPlugins>,
+  changeEvents: ChangeEvent[],
+): Promise<number> {
+  const emitFn = emitter.partialEmit ?? emitter.emit
+  const emitted = await emitFn(ctx, content, resources, changeEvents)
+  return countEmittedFiles(ctx, emitter.name, emitted)
 }
 
 async function buildQuartz(argv: Argv, mut: Mutex, clientRefresh: () => void) {
@@ -150,40 +200,52 @@ async function buildQuartz(argv: Argv, mut: Mutex, clientRefresh: () => void) {
   }
 }
 
-// setup watcher for rebuilds
 async function startWatching(
   ctx: BuildCtx,
   mut: Mutex,
   initialContent: ProcessedContent[],
   clientRefresh: () => void,
-) {
-  const { argv, allFiles } = ctx
+): Promise<WatchRuntime> {
+  const contentMap = seedContentMap(ctx.allFiles, initialContent)
+  return startWatchingContentMap(ctx, mut, contentMap, clientRefresh, {})
+}
 
-  const contentMap = seedContentMap(allFiles, initialContent)
-
+async function createIgnoredFilter(ctx: BuildCtx): Promise<GlobbyFilterFunction> {
+  const { argv, cfg } = ctx
   const gitIgnoredMatcher = await isGitIgnored()
+  return fp => {
+    const rawPath = fp.toString()
+    const pathStr = toPosixPath(
+      path.isAbsolute(rawPath) ? path.relative(argv.directory, rawPath) : rawPath,
+    )
+    if (pathStr.startsWith('.git/')) return true
+    if (pathStr.endsWith('.test.ts')) return true
+    if (gitIgnoredMatcher(pathStr)) return true
+    for (const pattern of cfg.configuration.ignorePatterns) {
+      if (minimatch(pathStr, pattern)) {
+        return true
+      }
+    }
+
+    return false
+  }
+}
+
+async function startWatchingContentMap(
+  ctx: BuildCtx,
+  mut: Mutex,
+  contentMap: ContentMap,
+  clientRefresh: () => void,
+  changesSinceLastBuild: Record<FilePath, ChangeEvent['type']>,
+): Promise<WatchRuntime> {
+  const { argv } = ctx
+  const ignored = await createIgnoredFilter(ctx)
   const buildData: BuildData = {
     ctx,
     mut,
     contentMap,
-    ignored: fp => {
-      const rawPath = fp.toString()
-      const pathStr = toPosixPath(
-        path.isAbsolute(rawPath) ? path.relative(argv.directory, rawPath) : rawPath,
-      )
-      if (pathStr.startsWith('.git/')) return true
-      if (pathStr.endsWith('.test.ts')) return true
-      if (gitIgnoredMatcher(pathStr)) return true
-      for (const pattern of cfg.configuration.ignorePatterns) {
-        if (minimatch(pathStr, pattern)) {
-          return true
-        }
-      }
-
-      return false
-    },
-
-    changesSinceLastBuild: {},
+    ignored,
+    changesSinceLastBuild,
     lastBuildMs: 0,
   }
 
@@ -213,8 +275,13 @@ async function startWatching(
       void rebuild(changes, clientRefresh, buildData)
     })
 
-  return async () => {
-    await watcher.close()
+  return {
+    async dispose() {
+      await watcher.close()
+    },
+    handoff() {
+      return { ctx, contentMap, changesSinceLastBuild, pendingChanges: changes.slice() }
+    },
   }
 }
 
@@ -317,30 +384,13 @@ async function rebuild(changes: ChangeEvent[], clientRefresh: () => void, buildD
 
   let emittedFiles = 0
   for (const emitter of cfg.plugins.emitters) {
-    // Try to use partialEmit if available, otherwise assume the output is static
-    const emitFn = emitter.partialEmit ?? emitter.emit
-    const emitted = await emitFn(ctx, processedFiles, staticResources, changeEvents)
-    if (emitted === null) {
-      continue
-    }
-
-    if (Symbol.asyncIterator in emitted) {
-      // Async generator case
-      for await (const file of emitted) {
-        emittedFiles++
-        if (ctx.argv.verbose) {
-          console.log(`[emit:${emitter.name}] ${file}`)
-        }
-      }
-    } else {
-      // Array case
-      emittedFiles += emitted.length
-      if (ctx.argv.verbose) {
-        for (const file of emitted) {
-          console.log(`[emit:${emitter.name}] ${file}`)
-        }
-      }
-    }
+    emittedFiles += await emitFromPlugin(
+      ctx,
+      emitter,
+      processedFiles,
+      staticResources,
+      changeEvents,
+    )
   }
 
   console.log(`Emitted ${emittedFiles} files to \`${argv.output}\` in ${perf.timeSince('rebuild')}`)
@@ -351,6 +401,68 @@ async function rebuild(changes: ChangeEvent[], clientRefresh: () => void, buildD
   changes.splice(0, numChangesInBuild)
   clientRefresh()
   release()
+}
+
+async function emitComponentSourceChanges(
+  ctx: BuildCtx,
+  contentMap: ContentMap,
+  changeEvents: ChangeEvent[],
+): Promise<number> {
+  syncCtxFiles(ctx, contentMap)
+  const content = publishedMarkdownContent(contentMap)
+  const resources = getStaticResourcesFromPlugins(ctx)
+  const emitters = ctx.cfg.plugins.emitters
+  const pageEmitterPlan = affectedComponentPageEmitters(ctx, emitters, changeEvents)
+  let emittedFiles = 0
+
+  const componentResources = emitters.find(emitter => emitter.name === 'ComponentResources')
+  if (componentResources) {
+    emittedFiles += await emitFromPlugin(ctx, componentResources, content, resources, changeEvents)
+  }
+
+  for (const emitter of emitters) {
+    if (emitter.name === 'ComponentResources') continue
+    if (!emitter.getQuartzComponents) continue
+    if (!pageEmitterPlan.all && !pageEmitterPlan.names.has(emitter.name)) continue
+    emittedFiles += await countEmittedFiles(
+      ctx,
+      emitter.name,
+      await emitter.emit(ctx, content, resources),
+    )
+  }
+
+  return emittedFiles
+}
+
+export async function rebuildQuartzSource(
+  state: WatchHandoff,
+  mut: Mutex,
+  clientRefresh: () => void,
+  changeEvents: ChangeEvent[],
+): Promise<WatchRuntime> {
+  const { ctx, contentMap, changesSinceLastBuild } = state
+  ctx.cfg = cfg
+  ctx.incremental = true
+  ctx.buildId = randomIdNonSecure()
+
+  const release = await mut.acquire()
+  const perf = new PerfTimer()
+  perf.addEvent('rebuild')
+  console.log(styleText('yellow', 'Detected change, rebuilding...'))
+
+  let emittedFiles = 0
+  try {
+    emittedFiles = await emitComponentSourceChanges(ctx, contentMap, changeEvents)
+  } finally {
+    release()
+  }
+
+  console.log(
+    `Emitted ${emittedFiles} files to \`${ctx.argv.output}\` in ${perf.timeSince('rebuild')}`,
+  )
+  console.log(styleText('green', `Done rebuilding in ${perf.timeSince()}`))
+  clientRefresh()
+  return startWatchingContentMap(ctx, mut, contentMap, clientRefresh, changesSinceLastBuild)
 }
 
 export default async (argv: Argv, mut: Mutex, clientRefresh: () => void) => {

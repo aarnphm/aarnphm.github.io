@@ -206,6 +206,13 @@ class StackedNoteManager {
     return window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'
   }
 
+  private notifyContentMounted(article: HTMLElement, content: HTMLElement, slug: string) {
+    const event: CustomEventMap['contentdecrypted'] = new CustomEvent('contentdecrypted', {
+      detail: { article, content, slug },
+    })
+    document.dispatchEvent(event)
+  }
+
   private closestStackLink(target: EventTarget | null): HTMLAnchorElement | null {
     if (!isElement(target)) return null
     const link = target.closest('a.internal')
@@ -351,6 +358,10 @@ class StackedNoteManager {
             mounted: noteDocument.state !== 'pending',
           },
         })
+
+        if (noteDocument.state !== 'pending') {
+          this.notifyContentMounted(noteElement, bodyHost, slug)
+        }
 
         notifyNav(slug as FullSlug)
       }
@@ -571,6 +582,7 @@ class StackedNoteManager {
     transformHostInternalLinks(bodyHost)
     this.updateDagClasses(bodyHost)
     node.mounted.mounted = true
+    this.notifyContentMounted(node.mounted.shell, bodyHost, node.slug)
     this.scrollToHash(node)
   }
 

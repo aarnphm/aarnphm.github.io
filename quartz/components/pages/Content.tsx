@@ -3,6 +3,7 @@ import {
   QuartzComponentConstructor,
   QuartzComponentProps,
 } from '../../types/component'
+import { inheritComponentSourceNames } from '../../util/component-source'
 import { htmlToJsx } from '../../util/jsx'
 import { FullSlug, joinSegments, resolveRelative } from '../../util/path'
 import { concatenateResources } from '../../util/resources'
@@ -53,6 +54,7 @@ export default (() => {
 
   Content.afterDOMLoaded = lydiaScript
   Content.css = concatenateResources(SeeAlso.css)
+  Content.sourceNames = inheritComponentSourceNames('Content', [SeeAlso])
 
   return Content
 }) satisfies QuartzComponentConstructor

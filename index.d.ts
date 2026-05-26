@@ -48,7 +48,7 @@ interface CustomEventMap {
   toast: CustomEvent<import('./quartz/components/scripts/toast').ToastEventDetail>
   collapsibletoggle: CustomEvent<{ toggleId: string; isOpen: 'true' | 'false' }>
   commentauthorupdated: CustomEvent<{ oldAuthor: string; newAuthor: string }>
-  contentdecrypted: CustomEvent<{ article: HTMLDivElement; content: HTMLDivElement }>
+  contentdecrypted: CustomEvent<{ article: HTMLElement; content: HTMLElement; slug?: string }>
 }
 
 type ContentIndex = Record<FullSlug, ContentDetails>

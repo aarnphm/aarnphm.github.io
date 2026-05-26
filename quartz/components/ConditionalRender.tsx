@@ -3,6 +3,7 @@ import {
   QuartzComponentConstructor,
   QuartzComponentProps,
 } from '../types/component'
+import { componentSourceNames } from '../util/component-source'
 
 type ConditionalRenderConfig = {
   component: QuartzComponent
@@ -18,6 +19,7 @@ export default ((config: ConditionalRenderConfig) => {
     return null
   }
 
+  ConditionalRender.sourceNames = componentSourceNames(config.component)
   ConditionalRender.afterDOMLoaded = config.component.afterDOMLoaded
   ConditionalRender.beforeDOMLoaded = config.component.beforeDOMLoaded
   ConditionalRender.css = config.component.css

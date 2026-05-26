@@ -1,7 +1,6 @@
 ---
 aliases:
   - dilectio
-  - lydn
   - nb
   - living
   - philia
@@ -14,7 +13,7 @@ gemini:
     4a0fc1cd7b2da549: love, nihilism, mega deep research threads
     d7f06bc496ea82ea: Tractatus Amor-Politicus
 id: love
-modified: 2026-05-25 02:27:57 GMT-04:00
+modified: 2026-05-26 16:53:56 GMT-04:00
 socials:
   essay: '[[posts/love|mutual becoming]]'
   hermeneutics: '[[posts/romantic epistemology|romantic epistemology]]'

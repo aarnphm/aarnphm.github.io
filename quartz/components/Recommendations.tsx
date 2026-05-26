@@ -1,10 +1,18 @@
-import { QuartzComponentConstructor, QuartzComponentProps } from '../types/component'
+import {
+  QuartzComponent,
+  QuartzComponentConstructor,
+  QuartzComponentProps,
+} from '../types/component'
 import { LCG } from '../util/helpers'
 import { classNames } from '../util/lang'
 import { FilePath, resolveRelative, slugifyFilePath } from '../util/path'
 
-export default (() =>
-  ({ fileData, allFiles, displayClass }: QuartzComponentProps) => {
+export default (() => {
+  const Recommendations: QuartzComponent = ({
+    fileData,
+    allFiles,
+    displayClass,
+  }: QuartzComponentProps) => {
     let p = fileData.slug as string
     if (fileData.filePath) p = fileData.filePath
     const seed =
@@ -41,4 +49,7 @@ export default (() =>
         </menu>
       </section>
     )
-  }) satisfies QuartzComponentConstructor
+  }
+
+  return Recommendations
+}) satisfies QuartzComponentConstructor

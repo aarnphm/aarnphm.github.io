@@ -7,7 +7,7 @@ aliases:
 date: '2024-10-30'
 description: and reverse engineering neural networks.
 id: mechanistic interpretability
-modified: 2026-05-26 14:40:55 GMT-04:00
+modified: 2026-05-26 17:28:04 GMT-04:00
 permalinks:
   - /mechinterp
   - /interpretability
@@ -48,19 +48,9 @@ see also: [neuronpedia aug 25 landscape reports](https://www.neuronpedia.org/gra
 
 ## transcoders
 
-variants of SAEs that reconstruct the output of a component given its input, instead of reconstructing the input activations from themselves [@paulo2025transcodersbeatsparseautoencoders]. SAEs encode and decode at one layer; transcoders bridge layers by predicting downstream activations from upstream ones.
+[@paulo2025transcodersbeatsparseautoencoders]. SAE variant: reconstruct component output from input, not activations from themselves. CLT (cross-layer transcoder): feature reads residual at L, writes into MLPs at layers > L. ~50% substitution match. Skip transcoders: affine skip connections.
 
-vs SAEs:
-
-- features map cleaner onto interpretable concepts.
-- feature→feature edges are linear, so attribution stays well-defined across the MLP nonlinearity.
-- they're what attribution graphs actually substitute the MLP with. {{sidenotes[Skip transcoders add affine skip connections, lower reconstruction loss, no interpretability hit.]}}
-
-> [!note] Cross-layer transcoders
->
-> each feature reads the residual at one layer and writes into every downstream MLP. handles cross-layer superposition without separate machinery; lets features skip identity-like residual hops. substituted CLT replacement model matches base model outputs ~50% of substitution trials.
-
-why this matters for [[thoughts/Attribution parameter decomposition|attribution graphs]]: with the MLP replaced by a transcoder, feature→feature contributions are linear, so edge weights sum to downstream activations.
+linear attribution: MLP replaced by transcoder → feature edges linear → [[thoughts/Attribution parameter decomposition|attribution graphs]] well-defined.
 
 ## inference
 
@@ -219,7 +209,9 @@ see also: @elhage2021mathematical, [[thoughts/mathematical framework transformer
 
 ### residual stream
 
-![[thoughts/images/residual-stream-illustration.webp|Residual stream illustration]]
+```jsx imports={ResidualStream}
+<ResidualStream caption="Residual stream view of a transformer: each attention head and MLP layer reads from and writes back into the same shared stream." />
+```
 
 intuition: we can think of residual as highway networks, in a sense portrays linearity of the {{sidenotes[network]: Constructing models with a residual stream traces back to early work by the Schmidhuber group, such as highway networks and LSTMs, which have found significant modern success in the more recent residual network architecture. In transformers, the residual stream vectors are often called the "embedding" - we prefer the residual stream terminology because it emphasizes the residual nature and because the residual stream often dedicates subspaces to tokens other than the present token.}}
 
@@ -240,108 +232,71 @@ $$
 
 See also: [writeup](https://www.alignmentforum.org/posts/N6WM6hs7RQMKDhYjB/a-mechanistic-interpretability-analysis-of-grokking), [code](https://colab.research.google.com/drive/1F6_1_cWXE5M7WocUcpQWp3v8z4b1jL20), [circuit threads](https://transformer-circuits.pub/2022/in-context-learning-and-induction-heads/index.html)
 
-> A phenomena discovered by [@power2022grokkinggeneralizationoverfittingsmall] where small algorithmic tasks like modular addition will initially memorise training data, but after a long time ti will suddenly learn to generalise to unseen data
+> A phenomena discovered by @power2022grokkinggeneralizationoverfittingsmall where small algorithmic tasks like modular addition will initially memorise training data, but after a long time ti will suddenly learn to generalise to unseen data
 
-> [!important] empirical claims
->
-> related to phase change
+The idea is somewhat similar to phase change in [[thoughts/Fourier transform|Fourier transform]]
 
 ## attribution graph
 
 see also [[thoughts/Attribution parameter decomposition]], [Circuit Tracing: Revealing Computational Graphs in Language Models](https://transformer-circuits.pub/2025/attribution-graphs/methods.html), [On the Biology of a Large Language Model](https://transformer-circuits.pub/2025/attribution-graphs/biology.html)
 
-computational graphs over the replacement model's features: nodes are feature activations, prompt tokens, reconstruction-error terms and output logits; edges are linear contributions; paths trace how a given output logit got produced.
+graphs over replacement-model features. nodes: feature activations + tokens + recon-error + logits. edges: linear contributions.
 
 ```jsx imports={MethodologyStep,MethodologyTree}
-<MethodologyTree
-  title="methodology"
-  description="train a sparse replacement model, freeze attention, prune the feature graph until what's left is human-readable."
->
+<MethodologyTree title="methodology" description="transcoders + frozen attention + pruning.">
   <MethodologyStep
-    title="train interpretable transcoders"
-    badge="replacement model"
-    summary="use transcoders (CLT preferred) instead of SAEs so each feature corresponds to actual MLP computation, not just activation reconstruction."
-    points={[
-      'features read residual at layer L, write into every MLP at layers > L.',
-      'CLT absorbs cross-layer superposition; downstream circuits get shorter.',
-      "reconstruction loss has to stay low; otherwise the features don't mean what the base model means.",
-    ]}
+    title="train transcoders"
+    badge="replacement"
+    summary="CLT preferred. feature reads residual L, writes MLP > L."
   >
-    <MethodologyStep
-      title="prefer cross-layer variants"
-      summary="skip identity-like residual hops; resulting circuits are shallower."
-      points={[
-        'CLT features can jump across residual layers instead of following every identity connection.',
-        "~50% of substitutions reproduce the base model's outputs.",
-      ]}
-    />
+    <MethodologyStep title="cross-layer" summary="shallower circuits. ~50% substitution match." />
   </MethodologyStep>
   <MethodologyStep
-    title="freeze attention patterns"
+    title="freeze attention"
     badge="context"
-    summary="freeze attention weights and LayerNorm denominators so only the MLP-substituted part contributes to attribution."
-    points={[
-      'splits the explanation in two: (a) what happens given this attention pattern, (b) why the model attends there. (b) needs QK attribution separately.',
-      'kills the remaining activation-dependent nonlinearity so edges stay linear.',
-    ]}
+    summary="freeze QK + LayerNorm denom. (b) needs QK attribution."
   />
   <MethodologyStep
-    title="construct the feature graph"
-    badge="graph build"
-    summary="node = feature activation magnitude; edge = linear contribution from an upstream node."
-    points={[
-      'edge weights = linear contributions; sum over incoming edges = node activation.',
-      'multi-hop paths = mediation by intermediate features.',
-    ]}
+    title="build graph"
+    badge="graph"
+    summary="node = activation. edge = linear contribution."
   >
     <MethodologyStep
-      title="encode nodes & edges"
-      summary="annotate each node with activation magnitude and each edge with its linear effect."
-      points={[
-        'token and embedding nodes ground the graph in the prompt.',
-        'reconstruction-error nodes capture what the transcoder approximation drops.',
-      ]}
+      title="encode"
+      summary="token nodes anchor. recon-error nodes for approximation."
     />
   </MethodologyStep>
   <MethodologyStep
-    title="prune for interpretability"
+    title="prune"
     badge="sparsity"
-    summary="keep the smallest subgraph that still produces the target logit."
-    points={[
-      'rank by marginal contribution to the focus logit; drop the long tail.',
-      'tractability for humans is the binding constraint, not loss.',
-    ]}
+    summary="smallest subgraph hitting target logit."
   />
   <MethodologyStep
-    title="validate with perturbations"
-    badge="verification"
-    summary="ablate identified features; the output should move the way the graph predicts."
-    points={[
-      'rescale or zero individual features, measure logit delta.',
-      "if the replacement model's circuit doesn't transfer to the base model, the circuit isn't real.",
-    ]}
+    title="validate"
+    badge="verify"
+    summary="ablate features. measure logit delta."
   />
 </MethodologyTree>
 ```
 
 ### parameter decomposition
 
-attribution graphs work at activation level (which features fire and in what order); parameter decomposition works at weight level (which parameter directions implement those features). same superposition problem, different decomposition target. see [[thoughts/Attribution parameter decomposition|APD]] and @bushnaq2025stochasticparameterdecomposition.
+activation level vs weight level. see [[thoughts/Attribution parameter decomposition|APD]], @bushnaq2025stochasticparameterdecomposition.
 
 ### limitations
 
-- attention circuits are missing — frozen QK means [[thoughts/QK attributions]] has to fill that in separately.
-- replacement model $\neq$ base model; perturbation tests are the validity check, nothing weaker counts.
-- pruning is subjective: different importance criteria pick different "important" circuits for the same prompt.
-- single-forward-pass only. nothing about whether a circuit reused across prompts is the _same_ circuit.
+- attention circuits missing → [[thoughts/QK attributions]]
+- replacement model $\neq$ base
+- pruning subjective
+- single-forward-pass only
 
 ### applications
 
-- mechanism discovery (which circuit produces a behavior on which prompts)
-- targeted editing (ablate the circuit, kill the behavior — see APD for the weight-level version)
-- mechanistic anomaly detection (a circuit fires that shouldn't, given the input distribution)
-- cross-model: do Claude 3.5 and GPT-4 share the same indirect-object circuit?
-- developmental: when in training does the IOI circuit emerge?
+- mechanism discovery
+- targeted editing (via APD)
+- mechanistic anomaly detection
+- cross-model circuit transfer
+- developmental: IOI emergence in training
 
 ## stochastic parameter decomposition
 

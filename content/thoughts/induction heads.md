@@ -2,7 +2,7 @@
 date: '2025-01-18'
 description: and mathematical framework of transformers
 id: induction heads
-modified: 2026-05-09 17:51:49 GMT-04:00
+modified: 2026-05-26 17:06:17 GMT-04:00
 seealso:
   - '[[thoughts/Transformers|Transformers]]'
   - '[[thoughts/LLMs|LLMs]]'
@@ -14,11 +14,13 @@ transclude:
   title: false
 ---
 
-notes from [@elhage2021mathematical; @olsson2022context]
+@elhage2021mathematical, @olsson2022context
 
 ## virtual weights
 
-![[thoughts/images/virtual-weights-res-stream.webp|Note that the highly linearity of the network is very much specific to Transformers. Even with ResNet where they have non-linear activation functions]]
+```jsx imports={VirtualWeights}
+<VirtualWeights caption="Note that the high linearity of the network is very much specific to Transformers; even ResNets, with non-linear activation functions between layers, do not factor this cleanly." />
+```
 
 ```sms
 Each layer performing an arbitrary linear transformations to "read in" information, and performs another arbitrary linear transformers to "write out" back to the residual stream.

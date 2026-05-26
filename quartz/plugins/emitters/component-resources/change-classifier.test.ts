@@ -14,6 +14,7 @@ test('classifies component resource partial emit changes by asset family', () =>
     change('quartz/components/scripts/notebook-runtime.inline.ts'),
     change('quartz/components/scripts/popover.inline.ts'),
     change('quartz/components/scripts/util.ts'),
+    change('quartz/components/ArticleTitle.tsx'),
     change('quartz/components/multiplayer/ws.ts'),
     change('quartz/workers/semantic.worker.ts'),
     change('quartz/util/emojimap/codepoint-to-name.json'),

@@ -1,4 +1,12 @@
-import { computePosition, flip, inline, Placement, shift, Strategy } from '@floating-ui/dom'
+import {
+  arrow as floatingArrow,
+  computePosition,
+  flip,
+  inline,
+  Placement,
+  shift,
+  Strategy,
+} from '@floating-ui/dom'
 import xmlFormat from 'xml-formatter'
 import { getContentType } from '../../util/mime'
 import { FullSlug, getFullSlug, normalizeRelativeURLs } from '../../util/path'
@@ -87,10 +95,50 @@ function createPopoverElement(...classes: string[]): {
 } {
   const popoverElement = document.createElement('div')
   popoverElement.classList.add('popover', ...classes)
+  const popoverArrow = document.createElement('div')
+  popoverArrow.classList.add('popover-arrow')
   const popoverInner = document.createElement('div')
   popoverInner.classList.add('popover-inner')
-  popoverElement.appendChild(popoverInner)
+  popoverElement.append(popoverArrow, popoverInner)
   return { popoverElement, popoverInner }
+}
+
+function placementSide(placement: Placement): 'top' | 'right' | 'bottom' | 'left' {
+  if (placement.startsWith('top')) return 'top'
+  if (placement.startsWith('right')) return 'right'
+  if (placement.startsWith('bottom')) return 'bottom'
+  return 'left'
+}
+
+function positionPopoverArrow(
+  arrowElement: HTMLElement,
+  placement: Placement,
+  x: number | undefined,
+  y: number | undefined,
+) {
+  arrowElement.style.left = ''
+  arrowElement.style.right = ''
+  arrowElement.style.top = ''
+  arrowElement.style.bottom = ''
+
+  if (x !== undefined) arrowElement.style.left = `${Math.round(x)}px`
+  if (y !== undefined) arrowElement.style.top = `${Math.round(y)}px`
+
+  const offset = 'var(--popover-arrow-inset)'
+  switch (placementSide(placement)) {
+    case 'top':
+      arrowElement.style.bottom = offset
+      break
+    case 'right':
+      arrowElement.style.left = offset
+      break
+    case 'bottom':
+      arrowElement.style.top = offset
+      break
+    case 'left':
+      arrowElement.style.right = offset
+      break
+  }
 }
 
 function findHashTarget(container: ParentNode, hash: string, prefix = ''): HTMLElement | null {
@@ -232,16 +280,31 @@ async function setPosition(
   popoverElement: HTMLElement,
   { clientX, clientY, placement, strategy = 'fixed' }: PositioningOptions,
 ) {
-  const middleware = [inline({ x: clientX, y: clientY }), shift(), flip()]
+  const arrowElement = popoverElement.querySelector<HTMLElement>('.popover-arrow')
+  const middleware = [
+    inline({ x: clientX, y: clientY }),
+    shift(),
+    flip(),
+    arrowElement ? floatingArrow({ element: arrowElement, padding: 12 }) : null,
+  ]
   const {
     x,
     y,
     placement: finalPlacement,
+    middlewareData,
   } = await computePosition(link, popoverElement, { placement, strategy, middleware })
 
   popoverElement.style.position = strategy
   popoverElement.style.transform = `translate(${Math.round(x)}px, ${Math.round(y)}px)`
   popoverElement.dataset.placement = finalPlacement
+  if (arrowElement) {
+    positionPopoverArrow(
+      arrowElement,
+      finalPlacement,
+      middlewareData.arrow?.x,
+      middlewareData.arrow?.y,
+    )
+  }
 }
 
 async function showPopover(

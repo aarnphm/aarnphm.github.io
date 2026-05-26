@@ -1,11 +1,16 @@
 import { getFullSlug } from '../../util/path'
 
-function setupCheckbox() {
-  const checkboxes = document.querySelectorAll(
-    'input.checkbox-toggle',
-  ) as NodeListOf<HTMLInputElement>
+const hydratedCheckboxes = new WeakSet<HTMLInputElement>()
+
+function setupCheckbox(
+  root: Document | HTMLElement = document,
+  slug: string = getFullSlug(window),
+) {
+  const checkboxes = root.querySelectorAll<HTMLInputElement>('input.checkbox-toggle')
   checkboxes.forEach((el, index) => {
-    const elId = `${getFullSlug(window)}-checkbox-${index}`
+    const elId = `${slug}-checkbox-${index}`
+    if (hydratedCheckboxes.has(el)) return
+    hydratedCheckboxes.add(el)
 
     function switchState(e: Event) {
       const newCheckboxState = (e.target as HTMLInputElement)?.checked ? 'true' : 'false'
@@ -13,12 +18,15 @@ function setupCheckbox() {
     }
 
     el.addEventListener('change', switchState)
-    window.addCleanup(() => el.removeEventListener('change', switchState))
     if (localStorage.getItem(elId) === 'true') {
       el.checked = true
     }
   })
 }
 
-document.addEventListener('nav', setupCheckbox)
-document.addEventListener('contentdecrypted', setupCheckbox)
+document.addEventListener('nav', () => {
+  setupCheckbox()
+})
+document.addEventListener('contentdecrypted', event => {
+  setupCheckbox(event.detail.content, event.detail.slug)
+})

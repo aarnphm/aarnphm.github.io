@@ -3,13 +3,13 @@ date: '2024-12-08'
 description: zettelkasten, contact[at]aarnphm[dot]xyz
 id: notes
 layout: technical
-modified: 2026-05-09 17:51:32 GMT-04:00
+modified: 2026-05-26 17:28:49 GMT-04:00
 tags:
   - evergreen
 title: procedural notes.
 ---
 
-Hi, I'm aaron. This is my working notes. This is inspired by [Andy's working notes](https://notes.andymatuschak.org/)
+Hi, I'm Aaron. This is my working notes. The layout is from [Andy's working notes](https://notes.andymatuschak.org/)
 
 Much of these notes/writings are written for my own consumption, i.e. #evergreen notes. If any of these doesn't make sense for you, welp, touche 😅
 
@@ -27,11 +27,13 @@ Here are a few things that I like:
 - Michel Foucault's The Archaeology of Knowledge
 - [[thoughts/mechanistic interpretability|interpretability megalist]]
 - high performance [[thoughts/vllm|inference]] [[thoughts/LLMs|engine]]
-- dimension-3 #topology
+- [[thoughts/topology|dimension-3]] #math/topology
 - [[thoughts/algebraic geometry|algebraic geometry]]
 - [[thoughts/homeomorphism]]
 - Synchronizität (synchronicity)
 
 :wave: you can also reach out via [twitter](https://twitter.com/aarnphm) or [email](mailto:contact@aarnphm.xyz), I always love meeting new people!
 
-If you are familiar with PGP encryption, you can use this key to send me email: `gpg --locate-keys contact@aarnphm.xyz`
+If you are familiar with PGP encryption, you can use this key to send me email:
+
+`gpg --locate-keys contact@aarnphm.xyz`

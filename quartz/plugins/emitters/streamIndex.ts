@@ -11,6 +11,7 @@ import type { QuartzPluginData } from '../vfile'
 import type { ContentLayout } from './contentIndex'
 import { version } from '../../../package.json'
 import { sharedPageComponents, defaultContentPageLayout } from '../../../quartz.layout'
+import HeaderConstructor from '../../components/Header'
 import StreamPageComponent from '../../components/pages/StreamPage'
 import { pageResources, renderPage } from '../../components/renderPage'
 import {
@@ -476,8 +477,36 @@ async function* processStreamIndex(
 }
 
 export const StreamIndex: QuartzEmitterPlugin = () => {
+  const Header = HeaderConstructor()
   return {
     name: 'StreamIndex',
+    getQuartzComponents() {
+      const filteredHeader = sharedPageComponents.header.filter(component => {
+        const name = component.displayName || component.name || ''
+        return name !== 'Breadcrumbs' && name !== 'StackedNotes'
+      })
+      const filteredBefore = defaultContentPageLayout.beforeBody.filter(
+        c => c.displayName !== 'Byline' || c.name !== 'Byline',
+      )
+      const layout: FullPageLayout = {
+        ...sharedPageComponents,
+        ...defaultContentPageLayout,
+        header: filteredHeader,
+        beforeBody: filteredBefore,
+        afterBody: [],
+        pageBody: StreamPageComponent(),
+      }
+      return [
+        layout.head,
+        Header,
+        ...layout.header,
+        ...layout.beforeBody,
+        layout.pageBody,
+        ...layout.afterBody,
+        ...layout.sidebar,
+        layout.footer,
+      ]
+    },
     async *emit(ctx, content, resources) {
       const allFiles = content.map(([, file]) => file.data as QuartzPluginData)
 

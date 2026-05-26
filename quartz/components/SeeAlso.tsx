@@ -230,7 +230,12 @@ export default (() => {
 
     return (
       <section class={classNames(displayClass, 'seealso-tree', 'main-col')}>
-        <div class="seealso-tree-lines">{lines}</div>
+        <div class="seealso-tree-body">
+          <span class="seealso-rail" aria-hidden="true">
+            <span class="seealso-rail-line" />
+          </span>
+          <div class="seealso-tree-lines">{lines}</div>
+        </div>
       </section>
     )
   }

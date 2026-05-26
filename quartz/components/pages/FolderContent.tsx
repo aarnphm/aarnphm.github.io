@@ -7,6 +7,7 @@ import {
   QuartzComponentConstructor,
   QuartzComponentProps,
 } from '../../types/component'
+import { inheritComponentSourceNames } from '../../util/component-source'
 import { FileTrieNode } from '../../util/fileTrie'
 import { htmlToJsx } from '../../util/jsx'
 import {
@@ -435,6 +436,11 @@ export default ((opts?: Partial<FolderContentOptions>) => {
   }
 
   FolderContent.css = concatenateResources(style, Evergreen.css, PageListSearch.css)
+  FolderContent.sourceNames = inheritComponentSourceNames('FolderContent', [
+    Evergreen,
+    PageList,
+    PageListSearch,
+  ])
   FolderContent.afterDOMLoaded = concatenateResources(
     Evergreen.afterDOMLoaded,
     PageListSearch.afterDOMLoaded,

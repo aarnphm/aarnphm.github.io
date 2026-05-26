@@ -1,5 +1,7 @@
-document.addEventListener('nav', () => {
-  const codeElements = document.querySelectorAll<HTMLElement>('code:not(pre > code):not(.no-copy)')
+const hydratedCodeElements = new WeakSet<HTMLElement>()
+
+function setupCodeCopy(root: Document | HTMLElement = document) {
+  const codeElements = root.querySelectorAll<HTMLElement>('code:not(pre > code):not(.no-copy)')
 
   const copyToClipboard = async (text: string): Promise<boolean> => {
     try {
@@ -19,7 +21,8 @@ document.addEventListener('nav', () => {
   }
 
   codeElements.forEach(code => {
-    // Add visual indication that code is clickable
+    if (hydratedCodeElements.has(code)) return
+    hydratedCodeElements.add(code)
     code.style.cursor = 'pointer'
     code.title = 'Click to copy'
 
@@ -33,6 +36,12 @@ document.addEventListener('nav', () => {
     }
 
     code.addEventListener('click', onClick)
-    window.addCleanup(() => code.removeEventListener('click', onClick))
   })
+}
+
+document.addEventListener('nav', () => {
+  setupCodeCopy()
+})
+document.addEventListener('contentdecrypted', event => {
+  setupCodeCopy(event.detail.content)
 })
