@@ -90,7 +90,9 @@ $$
 entropy $H(p^{(\tau)})$ monotonically increases with $\tau$.
 
 ```python
-def apply_temperature(logits: torch.Tensor, temp: torch.Tensor) -> torch.Tensor:
+def apply_temperature(
+  logits: torch.Tensor, temp: torch.Tensor
+) -> torch.Tensor:
   temp = torch.where(temp < 1e-5, 1.0, temp)
   return logits.div_(temp.unsqueeze(dim=1))
 ```

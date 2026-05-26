@@ -71,14 +71,25 @@ class Tokenizer:
   vocab: dict[tuple[int, ...], int]
   id_to_sym: dict[int, tuple[int, ...]] = dataclasses.field(init=False)
   ranks: dict[tuple[int, int], int] = dataclasses.field(init=False)
-  encode_cache: dict[bytes, tuple[int, ...]] = dataclasses.field(default_factory=dict, init=False)
+  encode_cache: dict[bytes, tuple[int, ...]] = dataclasses.field(
+    default_factory=dict, init=False
+  )
   cache_max_token_bytes: int = 100
 
   def __post_init__(self) -> None:
     # Build id -> symbol table for decoding (only non-byte ids >=256)
-    self.id_to_sym = {tok_id: tuple(symbol) for symbol, tok_id in self.vocab.items() if tok_id >= 256}
+    self.id_to_sym = {
+      tok_id: tuple(symbol)
+      for symbol, tok_id in self.vocab.items()
+      if tok_id >= 256
+    }
     # Convert merges table to ranks (lower rank merges first)
-    self.ranks = {pair: rank for rank, (pair, _) in enumerate(sorted(self.merges.items(), key=lambda kv: kv[1]))}
+    self.ranks = {
+      pair: rank
+      for rank, (pair, _) in enumerate(
+        sorted(self.merges.items(), key=lambda kv: kv[1])
+      )
+    }
 
   @classmethod
   def from_pretrained(cls, fp: str) -> 'Tokenizer':
@@ -86,11 +97,15 @@ class Tokenizer:
     vocab_fp = os.path.join(fp, 'vocab.txt')
     procs = max(1, multiprocessing.cpu_count() - 1)
     with multiprocessing.Pool(procs) as pool:
-      merges_parts = pool.imap_unordered(_parse_merges_batch, _batched_line_reader(merges_fp), chunksize=1)
+      merges_parts = pool.imap_unordered(
+        _parse_merges_batch, _batched_line_reader(merges_fp), chunksize=1
+      )
       merges: dict[tuple[int, int], int] = {}
       for part in merges_parts:
         merges.update(part)
-      vocab_parts = pool.imap_unordered(_parse_vocab_batch, _batched_line_reader(vocab_fp), chunksize=1)
+      vocab_parts = pool.imap_unordered(
+        _parse_vocab_batch, _batched_line_reader(vocab_fp), chunksize=1
+      )
       vocab: dict[tuple[int, ...], int] = {}
       for part in vocab_parts:
         vocab.update(part)
@@ -252,7 +267,25 @@ class Tokenizer:
     This is useful for visually inspecting BPE segments. Uses ANSI colors.
     """
     # Choose a readable repeating 256-color palette for backgrounds
-    palette = [196, 202, 208, 214, 220, 154, 118, 82, 46, 51, 45, 39, 27, 63, 99, 135, 171]
+    palette = [
+      196,
+      202,
+      208,
+      214,
+      220,
+      154,
+      118,
+      82,
+      46,
+      51,
+      45,
+      39,
+      27,
+      63,
+      99,
+      135,
+      171,
+    ]
     reset = '\x1b[0m'
     # Slightly darker foreground over bright backgrounds
     fg = '\x1b[30m'
@@ -274,7 +307,13 @@ class Tokenizer:
     underline_line = ''.join(underline_parts)
     return f'{text_line}\n{underline_line}'
 
-  def visualize_bpe(self, data: str | bytes, *, max_steps: int | None = None, show_candidates: int = 5) -> str:
+  def visualize_bpe(
+    self,
+    data: str | bytes,
+    *,
+    max_steps: int | None = None,
+    show_candidates: int = 5,
+  ) -> str:
     """
     Trace BPE merges step-by-step for a given input and return a readable log.
 
@@ -370,7 +409,10 @@ class Tokenizer:
       return bytes(out)
 
     def render_tokens(toks: list[int]) -> str:
-      parts: list[str] = [(flatten_token(t).decode('utf-8', errors='replace'))[::-1] for t in toks]
+      parts: list[str] = [
+        (flatten_token(t).decode('utf-8', errors='replace'))[::-1]
+        for t in toks
+      ]
       return ' | '.join(parts)
 
     def current_candidates() -> list[tuple[int, tuple[int, int]]]:
@@ -388,7 +430,9 @@ class Tokenizer:
     lines: list[str] = []
     step = 0
     lines.append(f'input bytes: {symbols}')
-    lines.append(f'tokens: {snapshot_tokens()} :: {render_tokens(snapshot_tokens())}')
+    lines.append(
+      f'tokens: {snapshot_tokens()} :: {render_tokens(snapshot_tokens())}'
+    )
     while heap and (max_steps is None or step < max_steps):
       r, i, _, j, new_id = heappop(heap)
       if i < 0 or j < 0:

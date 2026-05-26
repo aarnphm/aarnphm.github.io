@@ -11,7 +11,11 @@ r = 28
 
 # Lorenz equations
 def lorenz(t: list[int], y: list[int]) -> list[float]:
-  return [sigma * (y[1] - y[0]), r * y[0] - y[1] - y[0] * y[2], y[0] * y[1] - b * y[2]]
+  return [
+    sigma * (y[1] - y[0]),
+    r * y[0] - y[1] - y[0] * y[2],
+    y[0] * y[1] - b * y[2],
+  ]
 
 
 # Initial conditions
@@ -71,7 +75,9 @@ def show_diff(sol):
   y0_modified = [y + 1e-10 for y in y0]
 
   # Solve ODE with modified initial conditions
-  sol_modified = solve_ivp(lorenz, t_span, y0_modified, t_eval=np.linspace(0, 100, 10000))
+  sol_modified = solve_ivp(
+    lorenz, t_span, y0_modified, t_eval=np.linspace(0, 100, 10000)
+  )
 
   # Plotting differences
   plt.figure(figsize=(15, 5))

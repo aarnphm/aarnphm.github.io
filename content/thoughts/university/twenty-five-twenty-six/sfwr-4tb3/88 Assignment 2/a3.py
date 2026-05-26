@@ -23,7 +23,9 @@ All productions are monotonic (length-preserving or increasing).
 
 
 class Grammar:
-  def __init__(self, T: set[str], N: set[str], P: set[tuple[str, str]], S: str):
+  def __init__(
+    self, T: set[str], N: set[str], P: set[tuple[str, str]], S: str
+  ):
     self.T, self.N, self.P, self.S = T, N, P, S
 
   def derivable(self, ω: str, log=False, stats=False) -> bool:

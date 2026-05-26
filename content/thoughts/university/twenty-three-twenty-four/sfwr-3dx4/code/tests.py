@@ -15,14 +15,20 @@ K_i = symbols('K_i')
 
 def routh_table(coefficients):
   # Start the Routh-Hurwitz table using the coefficients of the polynomial
-  routh = [coefficients[0:2], coefficients[1:3]]  # Initialize the first two rows
+  routh = [
+    coefficients[0:2],
+    coefficients[1:3],
+  ]  # Initialize the first two rows
   rows = len(coefficients) - 1
 
   for i in range(2, rows):
     row = []
     for j in range(len(routh[0]) - 1):
       # Calculate the Routh-Hurwitz table elements using the formula
-      numerator = routh[i - 1][0] * routh[i - 2][j + 1] - routh[i - 2][0] * routh[i - 1][j + 1]
+      numerator = (
+        routh[i - 1][0] * routh[i - 2][j + 1]
+        - routh[i - 2][0] * routh[i - 1][j + 1]
+      )
       denominator = routh[i - 1][0]
       # Check if the denominator is zero to avoid division by zero
       if denominator == 0:
@@ -35,7 +41,9 @@ def routh_table(coefficients):
     routh.append(row)
     # If the entire row is zero, use the special rule (add epsilon if necessary)
     if all([sp.simplify(term) == 0 for term in row]):
-      row = [(sp.symbols('s') ** (rows - i - 1 - k)) for k in range(len(row) + 1)]
+      row = [
+        (sp.symbols('s') ** (rows - i - 1 - k)) for k in range(len(row) + 1)
+      ]
       routh.append(row)
 
   return routh
@@ -123,7 +131,9 @@ def q5():
   while steady_state_error(K_min) > 0.05:
     K_min += 1
 
-  print(f'The minimum value of K that ensures a steady-state error of at most 5% is: {K_min}')
+  print(
+    f'The minimum value of K that ensures a steady-state error of at most 5% is: {K_min}'
+  )
 
   # Verify the steady-state error for the minimum K value
   ess_min = steady_state_error(K_min)
@@ -165,7 +175,9 @@ def q7():
   a = den_d
 
   print('\nDifference equation:')
-  print(f'y[k] = {a[1]:.4f}*y[k-1] + {a[2]:.4f}*y[k-2] + {b[0]:.4f}*u[k] + {b[1]:.4f}*u[k-1]')
+  print(
+    f'y[k] = {a[1]:.4f}*y[k-1] + {a[2]:.4f}*y[k-2] + {b[0]:.4f}*u[k] + {b[1]:.4f}*u[k-1]'
+  )
 
   # Simulate the discrete-time system
   t = np.arange(0, 1, dt)

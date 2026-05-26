@@ -2,11 +2,20 @@ import numpy as np, pathlib
 
 
 def parse(path: str) -> np.ndarray:
-  return np.array([list(map(int, line.split(','))) for line in pathlib.Path(path).read_text().strip().split('\n')])
+  return np.array([
+    list(map(int, line.split(',')))
+    for line in pathlib.Path(path).read_text().strip().split('\n')
+  ])
 
 
 def p1(pts: np.ndarray) -> int:
-  return int(((np.abs(pts[:, 0, None] - pts[None, :, 0]) + 1) * np.abs(pts[:, 1, None] - pts[None, :, 1]) + 1).max())
+  return int(
+    (
+      (np.abs(pts[:, 0, None] - pts[None, :, 0]) + 1)
+      * np.abs(pts[:, 1, None] - pts[None, :, 1])
+      + 1
+    ).max()
+  )
 
 
 def p2(pts: np.ndarray) -> int:

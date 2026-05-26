@@ -31,7 +31,12 @@ def parse_dtype(dtype_str: str) -> torch.dtype:
   return mapping[dtype_str.lower()]
 
 
-def naive_attention(query: torch.Tensor, key: torch.Tensor, value: torch.Tensor, scale: bool = True) -> torch.Tensor:
+def naive_attention(
+  query: torch.Tensor,
+  key: torch.Tensor,
+  value: torch.Tensor,
+  scale: bool = True,
+) -> torch.Tensor:
   """
   Naive scaled dot-product attention.
 
@@ -59,7 +64,11 @@ def naive_attention(query: torch.Tensor, key: torch.Tensor, value: torch.Tensor,
 
 
 def sdpa_attention(
-  query: torch.Tensor, key: torch.Tensor, value: torch.Tensor, is_causal: bool = False, dropout_p: float = 0.0
+  query: torch.Tensor,
+  key: torch.Tensor,
+  value: torch.Tensor,
+  is_causal: bool = False,
+  dropout_p: float = 0.0,
 ) -> torch.Tensor:
   """
   FlashAttention via torch.nn.functional.scaled_dot_product_attention.
@@ -67,15 +76,30 @@ def sdpa_attention(
   """
   # Try to force Flash backend; if not available, fall back to default selection
   try:
-    cm = torch.backends.cuda.sdp_kernel(enable_flash=True, enable_math=False, enable_mem_efficient=False)
+    cm = torch.backends.cuda.sdp_kernel(
+      enable_flash=True, enable_math=False, enable_mem_efficient=False
+    )
   except Exception:
     cm = nullcontext()
   with cm:
-    return F.scaled_dot_product_attention(query, key, value, attn_mask=None, dropout_p=dropout_p, is_causal=is_causal)
+    return F.scaled_dot_product_attention(
+      query,
+      key,
+      value,
+      attn_mask=None,
+      dropout_p=dropout_p,
+      is_causal=is_causal,
+    )
 
 
 def make_inputs(
-  batch_size: int, num_heads: int, seq_len: int, head_dim: int, dtype: torch.dtype, device: torch.device, seed: int = 0
+  batch_size: int,
+  num_heads: int,
+  seq_len: int,
+  head_dim: int,
+  dtype: torch.dtype,
+  device: torch.device,
+  seed: int = 0,
 ) -> Tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
   if seed is not None:
     torch.manual_seed(seed)
@@ -97,14 +121,21 @@ def profile_with_torch_profiler(
   logdir: Optional[str],
   impl: str = 'naive',
 ):
-  from torch.profiler import ProfilerActivity, profile, schedule, tensorboard_trace_handler
+  from torch.profiler import (
+    ProfilerActivity,
+    profile,
+    schedule,
+    tensorboard_trace_handler,
+  )
 
   is_cuda = q.device.type == 'cuda'
   activities = [ProfilerActivity.CPU]
   if is_cuda:
     activities.append(ProfilerActivity.CUDA)
 
-  prof_schedule = schedule(wait=0, warmup=warmup_steps, active=active_steps, repeat=1)
+  prof_schedule = schedule(
+    wait=0, warmup=warmup_steps, active=active_steps, repeat=1
+  )
 
   on_ready = None
   if logdir:
@@ -131,7 +162,9 @@ def profile_with_torch_profiler(
 
 
 def main():
-  parser = argparse.ArgumentParser(description='Naive attention with torch.profiler')
+  parser = argparse.ArgumentParser(
+    description='Naive attention with torch.profiler'
+  )
   parser.add_argument('--B', type=int, default=4, help='Batch size')
   parser.add_argument('--H', type=int, default=8, help='Number of heads')
   parser.add_argument('--S', type=int, default=1024, help='Sequence length')
@@ -143,12 +176,28 @@ def main():
     choices=['fp32', 'float32', 'fp16', 'float16', 'bf16', 'bfloat16'],
     help='Tensor dtype',
   )
-  parser.add_argument('--device', type=str, default='cuda', choices=['cuda', 'cpu', 'mps'], help='Device')
-  parser.add_argument('--iters', type=int, default=20, help='Active profiler steps / timing iters')
-  parser.add_argument('--warmup', type=int, default=10, help='Warmup steps before measuring')
+  parser.add_argument(
+    '--device',
+    type=str,
+    default='cuda',
+    choices=['cuda', 'cpu', 'mps'],
+    help='Device',
+  )
+  parser.add_argument(
+    '--iters',
+    type=int,
+    default=20,
+    help='Active profiler steps / timing iters',
+  )
+  parser.add_argument(
+    '--warmup', type=int, default=10, help='Warmup steps before measuring'
+  )
   parser.add_argument('--seed', type=int, default=0, help='Random seed')
   parser.add_argument(
-    '--logdir', type=str, default='', help='If set, write PyTorch profiler traces for TensorBoard here'
+    '--logdir',
+    type=str,
+    default='',
+    help='If set, write PyTorch profiler traces for TensorBoard here',
   )
   parser.add_argument(
     '--impl',
@@ -166,10 +215,18 @@ def main():
 
   dtype = parse_dtype(args.dtype)
 
-  q, k, v = make_inputs(args.B, args.H, args.S, args.D, dtype, device, seed=args.seed)
+  q, k, v = make_inputs(
+    args.B, args.H, args.S, args.D, dtype, device, seed=args.seed
+  )
 
   profile_with_torch_profiler(
-    q, k, v, warmup_steps=args.warmup, active_steps=args.iters, logdir=(args.logdir or None), impl=args.impl
+    q,
+    k,
+    v,
+    warmup_steps=args.warmup,
+    active_steps=args.iters,
+    logdir=(args.logdir or None),
+    impl=args.impl,
   )
 
 
@@ -187,13 +244,19 @@ try:
   TRACE_DIR = Path('/traces')
 
   app = modal.App('naive-attn-profiling')
-  image = modal.Image.debian_slim(python_version='3.11').pip_install('torch==2.5.1')
+  image = modal.Image.debian_slim(python_version='3.11').pip_install(
+    'torch==2.5.1'
+  )
   config = {'gpu': 'h100', 'image': image}
 
   def _make_output_dir(label: Optional[str]) -> Path:
     from uuid import uuid4
 
-    base = TRACE_DIR / ('naive_attention' + (f'_{label}' if label else '')) / str(uuid4())
+    base = (
+      TRACE_DIR
+      / ('naive_attention' + (f'_{label}' if label else ''))
+      / str(uuid4())
+    )
     base.mkdir(parents=True, exist_ok=True)
     return base
 
@@ -217,10 +280,22 @@ try:
 
     output_dir = _make_output_dir(label)
 
-    profile_with_torch_profiler(q, k, v, warmup_steps=warmup, active_steps=iters, logdir=str(output_dir), impl=impl)
+    profile_with_torch_profiler(
+      q,
+      k,
+      v,
+      warmup_steps=warmup,
+      active_steps=iters,
+      logdir=str(output_dir),
+      impl=impl,
+    )
 
     # Return the most recent profiler JSON file path (TensorBoard handler writes many files)
-    json_traces = sorted(output_dir.glob('**/*.pt.trace.json'), key=lambda p: p.stat().st_mtime, reverse=True)
+    json_traces = sorted(
+      output_dir.glob('**/*.pt.trace.json'),
+      key=lambda p: p.stat().st_mtime,
+      reverse=True,
+    )
     if json_traces:
       rel = json_traces[0].relative_to(TRACE_DIR)
       print(f'[remote] trace saved to {rel}')
@@ -256,13 +331,17 @@ try:
     )
 
     # Save a copy locally for chrome://tracing
-    local_out = Path('/tmp') / (Path(remote_rel_path).name or 'trace.pt.trace.json')
+    local_out = Path('/tmp') / (
+      Path(remote_rel_path).name or 'trace.pt.trace.json'
+    )
     try:
       if results:
         local_out.write_text(results)
         print(f'[local] trace saved at {local_out}')
       else:
-        print(f'[local] no trace content returned; remote dir: {remote_rel_path}')
+        print(
+          f'[local] no trace content returned; remote dir: {remote_rel_path}'
+        )
     except Exception as e:
       print(f'[local] failed to write local trace copy: {e}')
 

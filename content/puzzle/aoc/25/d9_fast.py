@@ -4,7 +4,10 @@ from collections import defaultdict
 
 
 def parse(path: str) -> list[tuple[int, int]]:
-  return [tuple(map(int, line.split(','))) for line in Path(path).read_text().strip().split('\n')]
+  return [
+    tuple(map(int, line.split(',')))
+    for line in Path(path).read_text().strip().split('\n')
+  ]
 
 
 def area(p1: tuple[int, int], p2: tuple[int, int]) -> int:
@@ -24,8 +27,12 @@ def p2(points: list[tuple[int, int]]) -> int:
   n = len(points)
 
   # group edges by coordinate for fast lookup
-  h_edges: dict[int, list[tuple[int, int]]] = defaultdict(list)  # y -> [(x1, x2), ...]
-  v_edges: dict[int, list[tuple[int, int]]] = defaultdict(list)  # x -> [(y1, y2), ...]
+  h_edges: dict[int, list[tuple[int, int]]] = defaultdict(
+    list
+  )  # y -> [(x1, x2), ...]
+  v_edges: dict[int, list[tuple[int, int]]] = defaultdict(
+    list
+  )  # x -> [(y1, y2), ...]
 
   for i in range(n):
     (ax, ay), (bx, by) = points[i], points[(i + 1) % n]
@@ -56,7 +63,14 @@ def p2(points: list[tuple[int, int]]) -> int:
     return True
 
   # sort pairs by area descending, early termination on first valid
-  pairs = sorted(((area(points[i], points[j]), i, j) for i in range(n) for j in range(i + 1, n)), reverse=True)
+  pairs = sorted(
+    (
+      (area(points[i], points[j]), i, j)
+      for i in range(n)
+      for j in range(i + 1, n)
+    ),
+    reverse=True,
+  )
 
   for a, i, j in pairs:
     if rect_valid(points[i], points[j]):

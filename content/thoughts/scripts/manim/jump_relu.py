@@ -14,7 +14,9 @@ class JumpReLU(Scene):
     jump_relu_graph.add(Line(axes.c2p(-4, 0), axes.c2p(1, 0), color=ORANGE))
 
     # Add the diagonal line for x>1
-    jump_relu_graph.add(axes.get_graph(lambda x: x, color=ORANGE, x_range=[1, 4]))
+    jump_relu_graph.add(
+      axes.get_graph(lambda x: x, color=ORANGE, x_range=[1, 4])
+    )
 
     # Add open and closed dots at the jump point
     jump_point_lower = Dot(axes.c2p(1, 0), color=RED, fill_opacity=0)
@@ -40,6 +42,7 @@ class JumpReLU(Scene):
 
     # Highlight the jump points
     self.play(
-      Flash(jump_point_lower, color=RED, flash_radius=0.3), Flash(jump_point_upper, color=RED, flash_radius=0.3)
+      Flash(jump_point_lower, color=RED, flash_radius=0.3),
+      Flash(jump_point_upper, color=RED, flash_radius=0.3),
     )
     self.wait()

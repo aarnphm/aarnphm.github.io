@@ -22,7 +22,9 @@ Example
 >>> # Simulated price path
 >>> rng = np.random.default_rng(0)
 >>> ret = rng.normal(0, 0.01, size=len(idx))
->>> price = pd.Series(100 * (1 + pd.Series(ret, index=idx)).cumprod(), index=idx)
+>>> price = pd.Series(
+...   100 * (1 + pd.Series(ret, index=idx)).cumprod(), index=idx
+... )
 >>> # Predict log-returns using a Ridge model and 5 lags
 >>> y = price.pct_change().dropna()
 >>> model = TimeSeriesRegressor(model='ridge', n_lags=5)
@@ -50,7 +52,9 @@ from sklearn.model_selection import TimeSeriesSplit
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
 
-ModelName = Literal['naive', 'sma', 'ema', 'linear', 'ridge', 'lasso', 'random_forest', 'gbrt']
+ModelName = Literal[
+  'naive', 'sma', 'ema', 'linear', 'ridge', 'lasso', 'random_forest', 'gbrt'
+]
 
 
 def _check_series(y: pd.Series, name: str = 'y') -> pd.Series:
@@ -110,7 +114,11 @@ class FeatureSpec:
 
 
 def make_features(
-  y: pd.Series, *, feature_spec: FeatureSpec | None = None, exog: pd.DataFrame | None = None, horizon: int = 1
+  y: pd.Series,
+  *,
+  feature_spec: FeatureSpec | None = None,
+  exog: pd.DataFrame | None = None,
+  horizon: int = 1,
 ) -> tuple[pd.DataFrame, pd.Series]:
   """Transform a univariate target into a supervised learning dataset.
 
@@ -177,10 +185,14 @@ def make_features(
 class _BaseModel:
   """Minimal interface shared by all models used here."""
 
-  def fit(self, X: pd.DataFrame, y: pd.Series) -> None:  # pragma: no cover - simple pass-through
+  def fit(
+    self, X: pd.DataFrame, y: pd.Series
+  ) -> None:  # pragma: no cover - simple pass-through
     raise NotImplementedError
 
-  def predict(self, X: pd.DataFrame) -> np.ndarray:  # pragma: no cover - simple pass-through
+  def predict(
+    self, X: pd.DataFrame
+  ) -> np.ndarray:  # pragma: no cover - simple pass-through
     raise NotImplementedError
 
 
@@ -249,9 +261,14 @@ class _SklearnModel(_BaseModel):
     self.model = self._make_estimator(name)
 
   @staticmethod
-  def _make_estimator(name: ModelName) -> Pipeline | RandomForestRegressor | GradientBoostingRegressor:
+  def _make_estimator(
+    name: ModelName,
+  ) -> Pipeline | RandomForestRegressor | GradientBoostingRegressor:
     if name == 'linear':
-      return Pipeline([('scaler', StandardScaler(with_mean=True, with_std=True)), ('model', LinearRegression())])
+      return Pipeline([
+        ('scaler', StandardScaler(with_mean=True, with_std=True)),
+        ('model', LinearRegression()),
+      ])
     if name == 'ridge':
       return Pipeline([
         ('scaler', StandardScaler(with_mean=True, with_std=True)),
@@ -263,7 +280,13 @@ class _SklearnModel(_BaseModel):
         ('model', Lasso(alpha=0.001, max_iter=50_000, random_state=0)),
       ])
     if name == 'random_forest':
-      return RandomForestRegressor(n_estimators=300, random_state=0, n_jobs=-1, max_depth=None, min_samples_split=2)
+      return RandomForestRegressor(
+        n_estimators=300,
+        random_state=0,
+        n_jobs=-1,
+        max_depth=None,
+        min_samples_split=2,
+      )
     if name == 'gbrt':
       return GradientBoostingRegressor(random_state=0)
     raise ValueError(f'Unsupported sklearn model: {name}')
@@ -318,37 +341,51 @@ class TimeSeriesRegressor:
       self.n_lags = self.feature_spec.n_lags
     self._impl: _BaseModel = _build_model(self.model)
 
-  def fit(self, y: pd.Series, exog: pd.DataFrame | None = None) -> 'TimeSeriesRegressor':
+  def fit(
+    self, y: pd.Series, exog: pd.DataFrame | None = None
+  ) -> 'TimeSeriesRegressor':
     """Fit the underlying model using generated features.
 
     Args:
       y: Target series (prices or returns).
       exog: Optional exogenous variables aligned to ``y``.
     """
-    X, yt = make_features(y, feature_spec=self.feature_spec, exog=exog, horizon=self.horizon)
+    X, yt = make_features(
+      y, feature_spec=self.feature_spec, exog=exog, horizon=self.horizon
+    )
     if len(yt) < 1:
-      raise ValueError('Not enough data after feature generation; increase data length or reduce lags.')
+      raise ValueError(
+        'Not enough data after feature generation; increase data length or reduce lags.'
+      )
     self._impl.fit(X, yt)
     self._cols = list(X.columns)
     return self
 
   @overload
-  def predict(self, y: pd.Series, exog: pd.DataFrame | None = None) -> pd.Series: ...
+  def predict(
+    self, y: pd.Series, exog: pd.DataFrame | None = None
+  ) -> pd.Series: ...
 
-  def predict(self, y: pd.Series, exog: pd.DataFrame | None = None) -> pd.Series:
+  def predict(
+    self, y: pd.Series, exog: pd.DataFrame | None = None
+  ) -> pd.Series:
     """In-sample, aligned one-step-ahead predictions over the fit domain.
 
     Returns a series indexed like the supervised target (i.e., shifted by
     ``-horizon``). Useful to assess in-sample fit and residual structure.
     """
-    X, yt = make_features(y, feature_spec=self.feature_spec, exog=exog, horizon=self.horizon)
+    X, yt = make_features(
+      y, feature_spec=self.feature_spec, exog=exog, horizon=self.horizon
+    )
     if self._cols is None:
       raise RuntimeError('Model not fitted')
     X = X[self._cols]
     pred = self._impl.predict(X)
     return pd.Series(pred, index=yt.index, name='y_hat')
 
-  def forecast(self, y: pd.Series, exog: pd.DataFrame | None = None, *, steps: int = 1) -> pd.Series:
+  def forecast(
+    self, y: pd.Series, exog: pd.DataFrame | None = None, *, steps: int = 1
+  ) -> pd.Series:
     """Out-of-sample forecasts for ``steps`` ahead using recursive strategy.
 
     Args:
@@ -366,32 +403,49 @@ class TimeSeriesRegressor:
     y = _check_series(y)
 
     # Build features on the full history and grab the last row to forecast t+1
-    X_hist, _ = make_features(y, feature_spec=self.feature_spec, exog=exog, horizon=self.horizon)
+    X_hist, _ = make_features(
+      y, feature_spec=self.feature_spec, exog=exog, horizon=self.horizon
+    )
     if self._cols is None:
       raise RuntimeError('Model not fitted')
     X_hist = X_hist[self._cols]
     if len(X_hist) == 0:
-      raise ValueError('Not enough history to form features; provide more data.')
+      raise ValueError(
+        'Not enough history to form features; provide more data.'
+      )
 
     preds: list[float] = []
     y_work = y.copy()
 
     # Infer future index if DatetimeIndex with fixed freq
-    if isinstance(y_work.index, pd.DatetimeIndex) and y_work.index.freq is not None:
-      future_index = pd.date_range(start=y_work.index[-1] + y_work.index.freq, periods=steps, freq=y_work.index.freq)
+    if (
+      isinstance(y_work.index, pd.DatetimeIndex)
+      and y_work.index.freq is not None
+    ):
+      future_index = pd.date_range(
+        start=y_work.index[-1] + y_work.index.freq,
+        periods=steps,
+        freq=y_work.index.freq,
+      )
     else:
       future_index = pd.RangeIndex(start=0, stop=steps)
 
     for _ in range(steps):
       # Recompute features for the current last point
-      X_last, _ = make_features(y_work, feature_spec=self.feature_spec, exog=exog, horizon=self.horizon)
+      X_last, _ = make_features(
+        y_work, feature_spec=self.feature_spec, exog=exog, horizon=self.horizon
+      )
       X_last = X_last[self._cols].tail(1)
       y_hat = float(self._impl.predict(X_last)[0])
       preds.append(y_hat)
       # Append prediction for recursive forecasting
       y_work = pd.concat([
         y_work,
-        pd.Series([y_hat], index=pd.Index([future_index[len(preds) - 1]]), name=y_work.name),
+        pd.Series(
+          [y_hat],
+          index=pd.Index([future_index[len(preds) - 1]]),
+          name=y_work.name,
+        ),
       ])
 
     return pd.Series(preds, index=future_index, name='forecast')
@@ -421,7 +475,11 @@ def direction_accuracy(y_true: pd.Series, y_pred: pd.Series) -> float:
 
 
 def backtest_walk_forward(
-  y: pd.Series, *, model: TimeSeriesRegressor, n_splits: int = 5, exog: pd.DataFrame | None = None
+  y: pd.Series,
+  *,
+  model: TimeSeriesRegressor,
+  n_splits: int = 5,
+  exog: pd.DataFrame | None = None,
 ) -> BacktestResult:
   """Walk-forward validation using sklearn's TimeSeriesSplit.
 
@@ -436,7 +494,9 @@ def backtest_walk_forward(
     BacktestResult with concatenated predictions over all test folds.
   """
   y = _check_series(y)
-  X_full, y_full = make_features(y, feature_spec=model.feature_spec, exog=exog, horizon=model.horizon)
+  X_full, y_full = make_features(
+    y, feature_spec=model.feature_spec, exog=exog, horizon=model.horizon
+  )
   if len(y_full) < n_splits + 1:
     raise ValueError('Not enough data for the requested number of splits')
 
@@ -450,7 +510,10 @@ def backtest_walk_forward(
 
     # Fit a fresh instance to avoid state leakage
     m = TimeSeriesRegressor(
-      model=model.model, n_lags=model.n_lags, feature_spec=model.feature_spec, horizon=model.horizon
+      model=model.model,
+      n_lags=model.n_lags,
+      feature_spec=model.feature_spec,
+      horizon=model.horizon,
     )
     # Internal fit expects raw series; supply pre-made features via private path
     m._impl = _build_model(m.model)  # reset underlying model
@@ -466,12 +529,24 @@ def backtest_walk_forward(
   rmse = float(np.sqrt(mean_squared_error(y_true, y_pred)))
   mae = float(mean_absolute_error(y_true, y_pred))
   with np.errstate(divide='ignore', invalid='ignore'):
-    mape_arr = np.where(y_true.values != 0, np.abs((y_true.values - y_pred.values) / y_true.values), np.nan)
+    mape_arr = np.where(
+      y_true.values != 0,
+      np.abs((y_true.values - y_pred.values) / y_true.values),
+      np.nan,
+    )
     mape = float(np.nanmean(mape_arr))
   r2 = float(r2_score(y_true, y_pred))
   dacc = direction_accuracy(y_true, y_pred)
 
-  return BacktestResult(y_true=y_true, y_pred=y_pred, rmse=rmse, mae=mae, mape=mape, r2=r2, direction_acc=dacc)
+  return BacktestResult(
+    y_true=y_true,
+    y_pred=y_pred,
+    rmse=rmse,
+    mae=mae,
+    mape=mape,
+    r2=r2,
+    direction_acc=dacc,
+  )
 
 
 __all__ = [
@@ -494,4 +569,10 @@ if __name__ == '__main__':
   tsr.fit(ret)
   res = backtest_walk_forward(ret, model=tsr, n_splits=5)
   print('Backtest metrics:')
-  print({'rmse': res.rmse, 'mae': res.mae, 'mape': res.mape, 'r2': res.r2, 'direction_acc': res.direction_acc})
+  print({
+    'rmse': res.rmse,
+    'mae': res.mae,
+    'mape': res.mape,
+    'r2': res.r2,
+    'direction_acc': res.direction_acc,
+  })

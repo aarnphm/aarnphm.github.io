@@ -21,7 +21,9 @@ from scipy.stats import linregress
 
 
 def parse_args() -> argparse.Namespace:
-  parser = argparse.ArgumentParser(description='Fit a trend+seasonality regression on the TV sets datasets.')
+  parser = argparse.ArgumentParser(
+    description='Fit a trend+seasonality regression on the TV sets datasets.'
+  )
   parser.add_argument(
     'data_path',
     type=Path,
@@ -30,10 +32,16 @@ def parse_args() -> argparse.Namespace:
     help='Path to the CSV file with columns t, Sales (Y), and optionally Q.',
   )
   parser.add_argument(
-    '--horizon', type=int, default=4, help='Number of future quarters to forecast once the model is fitted.'
+    '--horizon',
+    type=int,
+    default=4,
+    help='Number of future quarters to forecast once the model is fitted.',
   )
   parser.add_argument(
-    '--export', type=Path, default=None, help='Optional path to persist the cleaned dataset and forecasts as CSV.'
+    '--export',
+    type=Path,
+    default=None,
+    help='Optional path to persist the cleaned dataset and forecasts as CSV.',
   )
   parser.add_argument(
     '--plot',
@@ -77,7 +85,9 @@ def _load_tidy_csv(path: Path) -> pd.DataFrame:
   missing = required - set(df.columns)
   if missing:
     missing_cols = ', '.join(sorted(missing))
-    raise ValueError(f'Dataset {path} is missing required columns: {missing_cols}.')
+    raise ValueError(
+      f'Dataset {path} is missing required columns: {missing_cols}.'
+    )
   return _finalise_dataframe(df)
 
 
@@ -91,7 +101,9 @@ def _load_messy_csv(path: Path) -> pd.DataFrame:
       header_index = idx
       break
   if header_index is None:
-    raise ValueError(f'Dataset {path} does not contain required headers {expected}.')
+    raise ValueError(
+      f'Dataset {path} does not contain required headers {expected}.'
+    )
   header_row = rows[header_index]
   column_index = {label: header_row.index(label) for label in expected}
   max_index = max(column_index.values())
@@ -111,8 +123,15 @@ def _load_messy_csv(path: Path) -> pd.DataFrame:
     if not t_token or not sales_token:
       continue
     if last_year is None:
-      raise ValueError(f'Encountered observation {raw} before any year value was observed.')
-    records.append({'Year': last_year, 'Q': q_token, 't': t_token, 'Sales (Y)': sales_token})
+      raise ValueError(
+        f'Encountered observation {raw} before any year value was observed.'
+      )
+    records.append({
+      'Year': last_year,
+      'Q': q_token,
+      't': t_token,
+      'Sales (Y)': sales_token,
+    })
   if not records:
     raise ValueError(f'No usable observations recovered from {path}.')
   df = pd.DataFrame.from_records(records)
@@ -141,7 +160,9 @@ def _finalise_dataframe(df: pd.DataFrame) -> pd.DataFrame:
   return df
 
 
-def build_design_matrix(df: pd.DataFrame, seasonality: str) -> tuple[np.ndarray, list[str], np.ndarray]:
+def build_design_matrix(
+  df: pd.DataFrame, seasonality: str
+) -> tuple[np.ndarray, list[str], np.ndarray]:
   y = df['Sales (Y)'].to_numpy(dtype=float)
   trend = df['t'].to_numpy(dtype=float).reshape(-1, 1)
   intercept = np.ones((len(df), 1), dtype=float)
@@ -155,7 +176,9 @@ def build_design_matrix(df: pd.DataFrame, seasonality: str) -> tuple[np.ndarray,
   return X, feature_names, y
 
 
-def solve_ols(X: np.ndarray, y: np.ndarray) -> tuple[np.ndarray, dict[str, float]]:
+def solve_ols(
+  X: np.ndarray, y: np.ndarray
+) -> tuple[np.ndarray, dict[str, float]]:
   beta, residuals, rank, singular_values = np.linalg.lstsq(X, y, rcond=None)
   fitted = X @ beta
   residual = y - fitted
@@ -163,7 +186,11 @@ def solve_ols(X: np.ndarray, y: np.ndarray) -> tuple[np.ndarray, dict[str, float
   ss_tot = float(np.dot(y - y.mean(), y - y.mean()))
   r2 = 1 - ss_res / ss_tot if ss_tot else float('nan')
   rmse = float(np.sqrt(ss_res / len(y)))
-  cond = float(singular_values[0] / singular_values[-1]) if singular_values[-1] else float('inf')
+  cond = (
+    float(singular_values[0] / singular_values[-1])
+    if singular_values[-1]
+    else float('inf')
+  )
   stats = {
     'fitted': fitted,
     'residuals': residual,
@@ -177,16 +204,28 @@ def solve_ols(X: np.ndarray, y: np.ndarray) -> tuple[np.ndarray, dict[str, float
   return beta, stats
 
 
-def format_coefficients(beta: np.ndarray, feature_names: list[str]) -> list[str]:
-  return [f'{name:>10s}: {value: .4f}' for name, value in zip(feature_names, beta)]
+def format_coefficients(
+  beta: np.ndarray, feature_names: list[str]
+) -> list[str]:
+  return [
+    f'{name:>10s}: {value: .4f}' for name, value in zip(feature_names, beta)
+  ]
 
 
 def fit_linear_trend(df: pd.DataFrame) -> tuple[float, float]:
-  result = linregress(df['t'].to_numpy(dtype=float), df['Sales (Y)'].to_numpy(dtype=float))
+  result = linregress(
+    df['t'].to_numpy(dtype=float), df['Sales (Y)'].to_numpy(dtype=float)
+  )
   return float(result.intercept), float(result.slope)
 
 
-def forecast(beta: np.ndarray, feature_names: list[str], last_t: int, horizon: int, seasonality: str) -> pd.DataFrame:
+def forecast(
+  beta: np.ndarray,
+  feature_names: list[str],
+  last_t: int,
+  horizon: int,
+  seasonality: str,
+) -> pd.DataFrame:
   records = []
   for step in range(1, horizon + 1):
     t_future = last_t + step
@@ -200,7 +239,11 @@ def forecast(beta: np.ndarray, feature_names: list[str], last_t: int, horizon: i
     else:
       vector = np.array([1.0, float(t_future)], dtype=float)
     prediction = float(np.dot(beta, vector))
-    records.append({'future_t': t_future, 'quarter': quarter, 'prediction': prediction})
+    records.append({
+      'future_t': t_future,
+      'quarter': quarter,
+      'prediction': prediction,
+    })
   return pd.DataFrame.from_records(records)
 
 
@@ -212,7 +255,9 @@ def plot_series(
   plot_path: Path,
   spec_label: str,
 ) -> None:
-  plot_path = plot_path.with_suffix('.png') if plot_path.suffix == '' else plot_path
+  plot_path = (
+    plot_path.with_suffix('.png') if plot_path.suffix == '' else plot_path
+  )
   plot_path.parent.mkdir(parents=True, exist_ok=True)
   fig, ax = plt.subplots(figsize=(8, 4.8))
   ax.plot(data['t'], data['Sales (Y)'], 'o', label='observed')
@@ -220,10 +265,27 @@ def plot_series(
   if linear_coeffs is not None:
     intercept, slope = linear_coeffs
     x_vals = np.arange(data['t'].min(), data['t'].max() + len(projection) + 1)
-    ax.plot(x_vals, intercept + slope * x_vals, '--', color='#d62728', label='linear trend')
+    ax.plot(
+      x_vals,
+      intercept + slope * x_vals,
+      '--',
+      color='#d62728',
+      label='linear trend',
+    )
   if not projection.empty:
-    ax.plot(projection['future_t'], projection['prediction'], '--', color='#2ca02c', label='forecast')
-    ax.scatter(projection['future_t'], projection['prediction'], marker='x', color='#2ca02c')
+    ax.plot(
+      projection['future_t'],
+      projection['prediction'],
+      '--',
+      color='#2ca02c',
+      label='forecast',
+    )
+    ax.scatter(
+      projection['future_t'],
+      projection['prediction'],
+      marker='x',
+      color='#2ca02c',
+    )
   ax.set_xlabel('t (time index)')
   ax.set_ylabel('Sales (Y)')
   ax.set_title(f'TV sets regression ({spec_label})')
@@ -240,7 +302,9 @@ def main() -> None:
   data = load_dataset(args.data_path)
   X, feature_names, y = build_design_matrix(data, args.seasonality)
   beta, stats = solve_ols(X, y)
-  spec = 'quarter dummies' if args.seasonality == 'quarter' else 'no seasonality'
+  spec = (
+    'quarter dummies' if args.seasonality == 'quarter' else 'no seasonality'
+  )
   linear_coeffs = None
   if args.linear_trend:
     linear_coeffs = fit_linear_trend(data)
@@ -260,13 +324,21 @@ def main() -> None:
   print(f'  RMSE: {stats["rmse"]:.4f}\n')
   last_t = int(data['t'].iloc[-1])
   horizon = max(args.horizon, 0)
-  projection = forecast(beta, feature_names, last_t, horizon, args.seasonality) if horizon else pd.DataFrame()
+  projection = (
+    forecast(beta, feature_names, last_t, horizon, args.seasonality)
+    if horizon
+    else pd.DataFrame()
+  )
   if not projection.empty:
     print('Quarterly forecasts:')
     for row in projection.to_dict('records'):
-      print(f'  t={row["future_t"]:2d}, quarter={row["quarter"]}: prediction={row["prediction"]:.4f}')
+      print(
+        f'  t={row["future_t"]:2d}, quarter={row["quarter"]}: prediction={row["prediction"]:.4f}'
+      )
   if args.plot is not None:
-    plot_series(data, stats['fitted'], projection, linear_coeffs, args.plot, spec)
+    plot_series(
+      data, stats['fitted'], projection, linear_coeffs, args.plot, spec
+    )
   if args.export is not None:
     export_path = args.export
     export_path.parent.mkdir(parents=True, exist_ok=True)

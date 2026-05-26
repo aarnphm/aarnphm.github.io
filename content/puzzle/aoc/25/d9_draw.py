@@ -2,10 +2,15 @@ import pathlib
 
 
 def parse(path: str) -> list[tuple[int, int]]:
-  return [tuple(map(int, line.split(','))) for line in pathlib.Path(path).read_text().strip().split('\n')]
+  return [
+    tuple(map(int, line.split(',')))
+    for line in pathlib.Path(path).read_text().strip().split('\n')
+  ]
 
 
-def draw_polygon(points: list[tuple[int, int]], width: int = 120, height: int = 60):
+def draw_polygon(
+  points: list[tuple[int, int]], width: int = 120, height: int = 60
+):
   if not points:
     return
 

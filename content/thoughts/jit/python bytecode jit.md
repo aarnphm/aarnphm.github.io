@@ -45,7 +45,10 @@ from ctypes import POINTER, c_float, c_int
 jit = TinyCJIT(verbose=True)
 
 
-@jit(restype=None, argtypes=[POINTER(c_float), POINTER(c_float), POINTER(c_float), c_int])
+@jit(
+  restype=None,
+  argtypes=[POINTER(c_float), POINTER(c_float), POINTER(c_float), c_int],
+)
 def vector_add(a, b, out, n):
   for i in range(n):
     out[i] = a[i] + b[i]

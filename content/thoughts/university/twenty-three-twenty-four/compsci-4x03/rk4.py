@@ -12,7 +12,12 @@ def equations(t, u):
   u1, u1_prime, u2, u2_prime = u
   delta1 = ((u1 + mu) ** 2 + u2**2) ** 1.5
   delta2 = ((u1 - mu_hat) ** 2 + u2**2) ** 1.5
-  du1_primedt = u1 + 2 * u2_prime - mu_hat * (u1 + mu) / delta1 - mu * (u1 - mu_hat) / delta2
+  du1_primedt = (
+    u1
+    + 2 * u2_prime
+    - mu_hat * (u1 + mu) / delta1
+    - mu * (u1 - mu_hat) / delta2
+  )
   du2_primedt = u2 - 2 * u1_prime - mu_hat * u2 / delta1 - mu * u2 / delta2
 
   #       du1dt                  du2dt

@@ -87,18 +87,38 @@ def parse(g, x, log=False):
         f = (A, σ + τ[0], τ[1:], j)
         s[i + 1].add(f)
         if log:
-          print('M  s[', i + 1, ']: ', f[0], '→', f[1], '•', f[2], ', ', f[3], sep='')
+          print(
+            'M  s[',
+            i + 1,
+            ']: ',
+            f[0],
+            '→',
+            f[1],
+            '•',
+            f[2],
+            ', ',
+            f[3],
+            sep='',
+          )
       elif len(τ) > 0:
         for f in ((r[0], '', r[2:], i) for r in g if r[0] == τ[0]):
           s[i].add(f)
           if log:
-            print('P  s[', i, ']: ', f[0], '→', f[1], '•', f[2], ', ', f[3], sep='')
+            print(
+              'P  s[', i, ']: ', f[0], '→', f[1], '•', f[2], ', ', f[3], sep=''
+            )
       else:
         # MODIFIED: wrap completed nonterminal with tree notation A(σ)
-        for f in ((B, μ + ν[0] + '(' + σ + ')', ν[1:], k) for (B, μ, ν, k) in s[j] if len(ν) > 0 and ν[0] == A):
+        for f in (
+          (B, μ + ν[0] + '(' + σ + ')', ν[1:], k)
+          for (B, μ, ν, k) in s[j]
+          if len(ν) > 0 and ν[0] == A
+        ):
           s[i].add(f)
           if log:
-            print('C  s[', i, ']: ', f[0], '→', f[1], '•', f[2], ', ', f[3], sep='')
+            print(
+              'C  s[', i, ']: ', f[0], '→', f[1], '•', f[2], ', ', f[3], sep=''
+            )
   # MODIFIED: return set of all parse trees
   return {σ for (A, σ, τ, j) in s[n] if A == S and τ == '' and j == 0}
 ```

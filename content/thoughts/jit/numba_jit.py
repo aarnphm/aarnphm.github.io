@@ -194,7 +194,9 @@ def compare_implementations(implementations, args_list, test_name):
     result, compile_time, exec_time = benchmark(func, *args, name=name)
     results.append((name, result, compile_time, exec_time))
 
-    print(f'{name:30} | compile: {compile_time * 1000:8.3f}ms | execute: {exec_time * 1e6:10.3f}µs')
+    print(
+      f'{name:30} | compile: {compile_time * 1000:8.3f}ms | execute: {exec_time * 1e6:10.3f}µs'
+    )
 
   # verify correctness
   print('\nCorrectness check:')
@@ -260,7 +262,9 @@ def run_fibonacci_benchmark():
 
   args_list = [(n,)] * len(implementations)
 
-  compare_implementations(implementations, args_list, 'Fibonacci(30) Benchmark')
+  compare_implementations(
+    implementations, args_list, 'Fibonacci(30) Benchmark'
+  )
 
   # show compilation effect on large n
   print('\n' + '=' * 80)
@@ -278,11 +282,17 @@ def run_dct_benchmark():
   signal_size = 1024
   signal = np.random.random(signal_size).astype(np.float64)
 
-  implementations = [('dct_numpy', dct_numpy), ('dct_jit', dct_jit), ('dct_jit_parallel', dct_jit_parallel)]
+  implementations = [
+    ('dct_numpy', dct_numpy),
+    ('dct_jit', dct_jit),
+    ('dct_jit_parallel', dct_jit_parallel),
+  ]
 
   args_list = [(signal,)] * len(implementations)
 
-  compare_implementations(implementations, args_list, f'DCT(n={signal_size}) Benchmark')
+  compare_implementations(
+    implementations, args_list, f'DCT(n={signal_size}) Benchmark'
+  )
 
 
 def run_matmul_benchmark():
@@ -299,10 +309,16 @@ def run_matmul_benchmark():
 
   args_list = [(A, B)] * len(implementations)
 
-  compare_implementations(implementations, args_list, f'Matrix Multiply ({size}x{size}) Benchmark')
+  compare_implementations(
+    implementations, args_list, f'Matrix Multiply ({size}x{size}) Benchmark'
+  )
 
-  print('\nNote: NumPy uses optimized BLAS (MKL/OpenBLAS) which is hard to beat')
-  print("Numba JIT is competitive but doesn't match hand-tuned BLAS for large matrices")
+  print(
+    '\nNote: NumPy uses optimized BLAS (MKL/OpenBLAS) which is hard to beat'
+  )
+  print(
+    "Numba JIT is competitive but doesn't match hand-tuned BLAS for large matrices"
+  )
 
 
 def demonstrate_compilation_overhead():
@@ -329,9 +345,15 @@ def demonstrate_compilation_overhead():
 
   print(f'First call (compile + execute): {compile_time * 1000:.3f}ms')
   print(f'Subsequent calls (cached):      {avg_exec * 1e6:.3f}µs')
-  print(f'Compilation overhead:           {compile_time / avg_exec:.0f}x execution time')
-  print(f'Break-even point:               {int(compile_time / avg_exec)} executions')
-  print(f'Conclusion: JIT compilation pays off after ~{int(compile_time / avg_exec)} calls')
+  print(
+    f'Compilation overhead:           {compile_time / avg_exec:.0f}x execution time'
+  )
+  print(
+    f'Break-even point:               {int(compile_time / avg_exec)} executions'
+  )
+  print(
+    f'Conclusion: JIT compilation pays off after ~{int(compile_time / avg_exec)} calls'
+  )
 
 
 def main():

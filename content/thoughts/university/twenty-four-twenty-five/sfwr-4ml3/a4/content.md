@@ -26,14 +26,18 @@ class SVHNClassifier(nn.Module, PretrainedMixin):
     )
 
     self.convblock2 = nn.Sequential(
-      nn.Conv2d(in_channels=32, out_channels=64, kernel_size=3, stride=1, padding=1),
+      nn.Conv2d(
+        in_channels=32, out_channels=64, kernel_size=3, stride=1, padding=1
+      ),
       nn.BatchNorm2d(64),
       nn.ReLU(),
       nn.MaxPool2d(kernel_size=2, stride=2),
     )
 
     self.convblock3 = nn.Sequential(
-      nn.Conv2d(in_channels=64, out_channels=128, kernel_size=3, stride=1, padding=1),
+      nn.Conv2d(
+        in_channels=64, out_channels=128, kernel_size=3, stride=1, padding=1
+      ),
       nn.BatchNorm2d(128),
       nn.ReLU(),
       nn.MaxPool2d(kernel_size=2, stride=2),
@@ -43,7 +47,9 @@ class SVHNClassifier(nn.Module, PretrainedMixin):
     # Input image: 32x32
     # After 3 max pooling layers (32 -> 16 -> 8 -> 4)
     # With 128 channels: 128 * 4 * 4 = 2048
-    self.fc = nn.Sequential(nn.Linear(128 * 4 * 4, 128), nn.ReLU(), nn.Linear(128, 10))
+    self.fc = nn.Sequential(
+      nn.Linear(128 * 4 * 4, 128), nn.ReLU(), nn.Linear(128, 10)
+    )
 
   def forward(self, x):
     x = self.convblock1(x)
@@ -66,7 +72,9 @@ class PretrainedMixin:
     return model
 
   def save_pretrained(self, base_path='./model'):
-    save_pretrained(self, name=self.__class__.__qualname__, base_path=base_path)
+    save_pretrained(
+      self, name=self.__class__.__qualname__, base_path=base_path
+    )
 ```
 
 Plot for training metrics can be found as follow:
@@ -84,12 +92,16 @@ class ImageDenoisingCNN(nn.Module, PretrainedMixin):
 
     # First Convolutional Layer
     # Input: 32x32x3 -> Output: 32x32x30
-    self.conv1 = nn.Conv2d(in_channels=3, out_channels=30, kernel_size=3, padding=1, stride=1)
+    self.conv1 = nn.Conv2d(
+      in_channels=3, out_channels=30, kernel_size=3, padding=1, stride=1
+    )
     self.relu = nn.ReLU()
 
     # Second Convolutional Layer
     # Input: 32x32x30 -> Output: 32x32x3
-    self.conv2 = nn.Conv2d(in_channels=30, out_channels=3, kernel_size=3, padding=1, stride=1)
+    self.conv2 = nn.Conv2d(
+      in_channels=30, out_channels=3, kernel_size=3, padding=1, stride=1
+    )
     self.sigmoid = nn.Sigmoid()
 
   def forward(self, x):
@@ -107,7 +119,15 @@ class ImageDenoisingCNN(nn.Module, PretrainedMixin):
 training and eval loop:
 
 ```python
-def train(train_loader, test_loader, model, epochs, loss_function, optimizer, device='cuda'):
+def train(
+  train_loader,
+  test_loader,
+  model,
+  epochs,
+  loss_function,
+  optimizer,
+  device='cuda',
+):
   """
   Train the model on the training dataset and evaluate it on the test dataset.
   """
@@ -122,7 +142,10 @@ def train(train_loader, test_loader, model, epochs, loss_function, optimizer, de
 
     # Use context manager for batch progress bar
     with tqdm(
-      enumerate(train_loader), total=len(train_loader), desc=f'epoch {epoch + 1}/{epochs}', ncols=100
+      enumerate(train_loader),
+      total=len(train_loader),
+      desc=f'epoch {epoch + 1}/{epochs}',
+      ncols=100,
     ) as batch_pbar:
       for batch_idx, (clean_images, noisy_images) in batch_pbar:
         # Move data to device
@@ -146,22 +169,32 @@ def train(train_loader, test_loader, model, epochs, loss_function, optimizer, de
 
         # Display sample results every 5 epochs, at the last batch
         if epoch % 5 == 0 and batch_idx == len(train_loader) - 1:
-          show_images_grid2(clean_images[:5].detach().cpu(), title='Clean', cols=5)
-          show_images_grid2(noisy_images[:5].detach().cpu(), title='Noisy', cols=5)
-          show_images_grid2(denoised_images[:5].detach().cpu(), title='Denoised', cols=5)
+          show_images_grid2(
+            clean_images[:5].detach().cpu(), title='Clean', cols=5
+          )
+          show_images_grid2(
+            noisy_images[:5].detach().cpu(), title='Noisy', cols=5
+          )
+          show_images_grid2(
+            denoised_images[:5].detach().cpu(), title='Denoised', cols=5
+          )
 
     # Calculate average training loss for the epoch
     train_loss_epoch = np.mean(train_loss_batches)
     train_loss_epochs.append(train_loss_epoch)
 
     # Evaluate model on test set
-    test_loss_epoch = evaluate(test_loader, model, loss_function, epoch + 1, num_epochs, device=device)
+    test_loss_epoch = evaluate(
+      test_loader, model, loss_function, epoch + 1, num_epochs, device=device
+    )
     test_loss_epochs.append(test_loss_epoch)
 
   return train_loss_epochs, test_loss_epochs
 
 
-def evaluate(dataloader, model, loss_function, epoch, num_epochs, device='cuda'):
+def evaluate(
+  dataloader, model, loss_function, epoch, num_epochs, device='cuda'
+):
   """
   Evaluate the model on the test dataset and return the average loss.
   """
@@ -169,7 +202,9 @@ def evaluate(dataloader, model, loss_function, epoch, num_epochs, device='cuda')
   test_losses = []
 
   with torch.no_grad():
-    with tqdm(dataloader, desc=f'eval  {epoch}/{num_epochs}', ncols=100) as eval_pbar:
+    with tqdm(
+      dataloader, desc=f'eval  {epoch}/{num_epochs}', ncols=100
+    ) as eval_pbar:
       for clean_images, noisy_images in eval_pbar:
         # Move data to device
         clean_images = clean_images.to(device)
@@ -210,8 +245,12 @@ plt.figure(figsize=(10, 6))
 
 # Plot training and test losses
 epochs = range(1, len(train_loss_epochs) + 1)
-plt.plot(epochs, train_loss_epochs, label='Training Loss', color='blue', linestyle='-')
-plt.plot(epochs, test_loss_epochs, label='Test Loss', color='red', linestyle='-')
+plt.plot(
+  epochs, train_loss_epochs, label='Training Loss', color='blue', linestyle='-'
+)
+plt.plot(
+  epochs, test_loss_epochs, label='Test Loss', color='red', linestyle='-'
+)
 
 # Customize the plot
 plt.title('Training and Test Losses Over Time', fontsize=14, pad=15)

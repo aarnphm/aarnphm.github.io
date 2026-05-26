@@ -165,7 +165,9 @@ def translate(input_string: str) -> str:
     slug = text.lower().replace(' ', '-')
     return f'<h{level} id="{slug}">{text}</h{level}>'
 
-  return re.sub(r'^(#{1,6})\s+(.+)$', header_replace, input_string, flags=re.MULTILINE)
+  return re.sub(
+    r'^(#{1,6})\s+(.+)$', header_replace, input_string, flags=re.MULTILINE
+  )
 ```
 
 `(#{1,6})` captures the hash marks (determines heading level via `len`), `\s+` eats the whitespace gap, `(.+)` captures the header text. the replacement function computes the slug from the text.

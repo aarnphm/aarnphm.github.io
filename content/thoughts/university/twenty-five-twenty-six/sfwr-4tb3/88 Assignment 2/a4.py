@@ -71,7 +71,18 @@ Formally: L = {w ∈ {a,b,c}* | w matches pattern a*(ba*ca*)*}
 
 In:  "", "a", "aaa", "bc", "bac", "baac", "abc", "abca", "bcbc", "abcabc", "abacabaca"
 Out: "b", "c", "cb", "bcc", "bbc", "acb", "bcb" (unmatched or misordered b/c)""",
-      ['', 'a', 'aa', 'bc', 'bac', 'abc', 'abca', 'bcbc', 'abacbc', 'aabaaaca'],
+      [
+        '',
+        'a',
+        'aa',
+        'bc',
+        'bac',
+        'abc',
+        'abca',
+        'bcbc',
+        'abacbc',
+        'aabaaaca',
+      ],
     ),
     # Q5
     (
@@ -104,7 +115,9 @@ Out: "b", "ab", "bb", "bab", "abb", "abab" (ends in b, or contains "bb")""",
     ),
   ]
 
-  for i, (regex, short_desc, explanation, examples) in enumerate(explanations, 1):
+  for i, (regex, short_desc, explanation, examples) in enumerate(
+    explanations, 1
+  ):
     print(f'\n{"─" * 70}')
     print(f'Q{i}: {regex}')
     print(f'{"─" * 70}')
@@ -112,7 +125,9 @@ Out: "b", "ab", "bb", "bab", "abb", "abab" (ends in b, or contains "bb")""",
     print(f'\n  Explanation:')
     for line in explanation.strip().split('\n'):
       print(f'    {line}')
-    print(f'\n  Examples in L: {", ".join(repr(s) if s else "ε" for s in examples)}')
+    print(
+      f'\n  Examples in L: {", ".join(repr(s) if s else "ε" for s in examples)}'
+    )
 
   # Verification section
   print(f'\n{"=" * 70}')

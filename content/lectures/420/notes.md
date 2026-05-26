@@ -3590,7 +3590,9 @@ def elementwise_add_launch(mA: cute.Tensor, mB: cute.Tensor, mC: cute.Tensor):
   m, n = mA.shape
   num_blocks = (m * n + num_threads_per_block - 1) // num_threads_per_block
 
-  elementwise_add_kernel(mA, mB, mC).launch(grid=(num_blocks, 1, 1), block=(num_threads_per_block, 1, 1))
+  elementwise_add_kernel(mA, mB, mC).launch(
+    grid=(num_blocks, 1, 1), block=(num_threads_per_block, 1, 1)
+  )
 
 
 # Step 3: Prepare and convert tensors
@@ -3653,7 +3655,8 @@ def vectorized_add_launch(mA: cute.Tensor, mB: cute.Tensor, mC: cute.Tensor):
 
   # Launch kernel
   vectorized_add_kernel(gA, gB, gC).launch(
-    grid=(cute.size(gC, mode=[1]), 1, 1), block=(cute.size(tv_layout, mode=[0]), 1, 1)
+    grid=(cute.size(gC, mode=[1]), 1, 1),
+    block=(cute.size(tv_layout, mode=[0]), 1, 1),
   )
 
 
@@ -3724,7 +3727,9 @@ def launch_wrapper(a: cute.Tensor, b: cute.Tensor, c: cute.Tensor):
   tiled_b = cute.zipped_divide(b, tile_shape)
 
   # Launch kernel with grid/block configuration
-  my_kernel(tiled_a, tiled_b, c).launch(grid=(num_blocks, 1, 1), block=(256, 1, 1))
+  my_kernel(tiled_a, tiled_b, c).launch(
+    grid=(num_blocks, 1, 1), block=(256, 1, 1)
+  )
 
 
 # Step 3: Convert tensors
@@ -3819,7 +3824,9 @@ Grid and block dimensions must be tuples of 3 integers:
 my_kernel(tensor_).launch(grid=256, block=128)
 
 # ✅ Correct - always 3D tuples
-my_kernel(tensor_).launch(grid=(num_blocks, 1, 1), block=(threads_per_block, 1, 1))
+my_kernel(tensor_).launch(
+  grid=(num_blocks, 1, 1), block=(threads_per_block, 1, 1)
+)
 
 # Using CuTe size helpers
 my_kernel(tiled_tensor).launch(

@@ -821,7 +821,9 @@ XLA generates NVPTX IR → PTX → SASS (GPU assembly).
 ```python
 @jax.jit
 def gelu(x):
-  return 0.5 * x * (1.0 + jnp.tanh(jnp.sqrt(2.0 / jnp.pi) * (x + 0.044715 * x**3)))
+  return (
+    0.5 * x * (1.0 + jnp.tanh(jnp.sqrt(2.0 / jnp.pi) * (x + 0.044715 * x**3)))
+  )
 
 
 # XLA fuses entire GELU into single CUDA kernel
@@ -1198,7 +1200,9 @@ def triton_add(x, y):
   N = x.size
   grid = lambda meta: (triton.cdiv(N, meta['BLOCK_SIZE']),)
 
-  kernel = jax_triton.triton_call(x, y, out, kernel=add_kernel, grid=grid, BLOCK_SIZE=1024)
+  kernel = jax_triton.triton_call(
+    x, y, out, kernel=add_kernel, grid=grid, BLOCK_SIZE=1024
+  )
   return kernel
 
 
@@ -1389,7 +1393,10 @@ def custom_op_abstract(x):
 def custom_op_lowering(ctx, x):
   # emit XLA custom call
   return xla.custom_call(
-    'my_custom_kernel', result_types=[ctx.avals_out[0]], operands=[x], backend_config={'param': 42}
+    'my_custom_kernel',
+    result_types=[ctx.avals_out[0]],
+    operands=[x],
+    backend_config={'param': 42},
   )
 
 

@@ -769,7 +769,9 @@ num_groups = 4  # expert groups (for hierarchical routing)
 num_nodes = 2
 num_gpus = 8  # per node
 
-phy2log, log2phy, logcnt = eplb.rebalance_experts(weight, num_replicas, num_groups, num_nodes, num_gpus)
+phy2log, log2phy, logcnt = eplb.rebalance_experts(
+  weight, num_replicas, num_groups, num_nodes, num_gpus
+)
 
 # phy2log: physical expert → logical expert IDs
 # shape: [256] (one entry per physical expert)

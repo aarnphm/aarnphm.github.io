@@ -41,4 +41,6 @@ def retention(alpha, D):
 
 print('Retention at D=4 and D=20 for different mean forget gates E[f]=alpha:')
 for a in alphas:
-  print(f'  alpha={a:.2f}:  D=4 -> {retention(a, 4):.4f},  D=20 -> {retention(a, 20):.6f}')
+  print(
+    f'  alpha={a:.2f}:  D=4 -> {retention(a, 4):.4f},  D=20 -> {retention(a, 20):.6f}'
+  )

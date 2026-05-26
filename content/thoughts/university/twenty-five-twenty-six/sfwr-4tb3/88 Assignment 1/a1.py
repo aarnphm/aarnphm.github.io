@@ -17,7 +17,9 @@ G0_PRIME = CFG.fromstring("""
 """)
 
 
-def parse_and_draw(grammar: CFG, sentence: str, output_path: Path | None = None) -> str:
+def parse_and_draw(
+  grammar: CFG, sentence: str, output_path: Path | None = None
+) -> str:
   tokens = sentence.split()
   parser = nltk.ChartParser(grammar)
 
@@ -36,4 +38,8 @@ def parse_and_draw(grammar: CFG, sentence: str, output_path: Path | None = None)
 
 if __name__ == '__main__':
   here = Path(__file__).parent
-  svg = parse_and_draw(G0_PRIME, 'the child eats a banana in the park', here / 'img' / 'parse_tree_a1.svg')
+  svg = parse_and_draw(
+    G0_PRIME,
+    'the child eats a banana in the park',
+    here / 'img' / 'parse_tree_a1.svg',
+  )

@@ -44,10 +44,15 @@ def test(model, test_csv_path='./test.csv', device='cuda', ncols=100):
   predictions = []
 
   model.eval()
-  with torch.no_grad(), tqdm(df.iterrows(), total=len(df), desc='inference', ncols=ncols) as pbar:
+  with (
+    torch.no_grad(),
+    tqdm(df.iterrows(), total=len(df), desc='inference', ncols=ncols) as pbar,
+  ):
     for index, row in pbar:
       # Extract pixel data and convert to numpy array
-      pixel_data = row[[f'pixel_{i}' for i in range(1, 3073)]].values.astype(np.float32)
+      pixel_data = row[[f'pixel_{i}' for i in range(1, 3073)]].values.astype(
+        np.float32
+      )
       # Reshape to (3, 32, 32)
       image = pixel_data.reshape(3, 32, 32)
       # Convert to torch tensor
@@ -64,7 +69,10 @@ def test(model, test_csv_path='./test.csv', device='cuda', ncols=100):
       _, predicted = output.max(1)
       predictions.append(predicted.item())
 
-  submission_df = pd.DataFrame({'ID': range(0, len(predictions)), 'LABEL': predictions})
+  submission_df = pd.DataFrame({
+    'ID': range(0, len(predictions)),
+    'LABEL': predictions,
+  })
 
   return submission_df
 
@@ -85,7 +93,9 @@ class EfficientNetV2Classifier(nn.Module, PretrainedMixin):
 
     # patch image1k with cifar100
     num_features = self.efficientnet.classifier[1].in_features
-    self.efficientnet.classifier = nn.Sequential(nn.Dropout(p=0.3), nn.Linear(num_features, num_classes))
+    self.efficientnet.classifier = nn.Sequential(
+      nn.Dropout(p=0.3), nn.Linear(num_features, num_classes)
+    )
 
   def forward(self, x):
     return self.efficientnet(x)

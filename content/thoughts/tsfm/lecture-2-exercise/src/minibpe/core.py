@@ -27,9 +27,13 @@ def _init_worker(fpath: str, special_token: str):
   _WORKER_SPECIAL_TOKEN_BYTES = special_token.encode('utf-8')
 
 
-def pretokenize_chunk(start_end_indices: tuple[int, int]) -> Counter[list[str]]:
+def pretokenize_chunk(
+  start_end_indices: tuple[int, int],
+) -> Counter[list[str]]:
   start, end = start_end_indices
-  assert (_WORKER_MMAP is not None) and (_WORKER_SPECIAL_TOKEN_BYTES is not None)
+  assert (_WORKER_MMAP is not None) and (
+    _WORKER_SPECIAL_TOKEN_BYTES is not None
+  )
   chunk_bytes = _WORKER_MMAP[start:end]
   if chunk_bytes.startswith(_WORKER_SPECIAL_TOKEN_BYTES):
     chunk_bytes = chunk_bytes[len(_WORKER_SPECIAL_TOKEN_BYTES) :]
@@ -76,13 +80,22 @@ def chunk_text_file(
   final_counts = Counter()
   if pt_batch <= 0:
     pt_batch = 1
-  batched_boundaries = [chunk_boundaries[i : i + pt_batch] for i in range(0, len(chunk_boundaries), pt_batch)]
+  batched_boundaries = [
+    chunk_boundaries[i : i + pt_batch]
+    for i in range(0, len(chunk_boundaries), pt_batch)
+  ]
 
   if num_processes and num_processes > 1:
     chunksize = max(1, len(batched_boundaries) // (num_processes * 4) or 1)
-    with mp.Pool(num_processes, initializer=_init_worker, initargs=(file_path, special_token)) as p:
+    with mp.Pool(
+      num_processes,
+      initializer=_init_worker,
+      initargs=(file_path, special_token),
+    ) as p:
       bar = tqdm(total=len(chunk_boundaries), desc='Pretokenizing')
-      for counter, processed in p.imap_unordered(pretokenize_batch, batched_boundaries, chunksize=chunksize):
+      for counter, processed in p.imap_unordered(
+        pretokenize_batch, batched_boundaries, chunksize=chunksize
+      ):
         final_counts.update(counter)
         bar.update(processed)
 
@@ -152,7 +165,10 @@ def _count_texts_batch(texts: list[str]):
 
 
 def build_fineweb_parallel(
-  token_budget: int = 1_000_000_000, split: str = 'train', processes: int = 8, batch_docs: int = 1000
+  token_budget: int = 1_000_000_000,
+  split: str = 'train',
+  processes: int = 8,
+  batch_docs: int = 1000,
 ) -> Counter:
   # Load as streaming to iterate lazily and respect token budget
   ds = load_dataset('HuggingFaceFW/fineweb', split=split, streaming=True)
@@ -192,7 +208,9 @@ def build_fineweb_parallel(
   return counts
 
 
-def collect_fineweb_texts(token_budget: int = 1_000_000_000, split: str = 'train') -> list[str]:
+def collect_fineweb_texts(
+  token_budget: int = 1_000_000_000, split: str = 'train'
+) -> list[str]:
   from datasets import load_dataset
 
   ds = load_dataset('HuggingFaceFW/fineweb', split=split, streaming=True)
@@ -210,9 +228,13 @@ def collect_fineweb_texts(token_budget: int = 1_000_000_000, split: str = 'train
   return texts
 
 
-def train_bpe(pretokenized_freq: Counter[str], num_merges: int, batch_size: int = 1):
+def train_bpe(
+  pretokenized_freq: Counter[str], num_merges: int, batch_size: int = 1
+):
   # Represent every token as a list[int] so we can edit in place
-  corpus = {tuple(token.encode()): count for token, count in pretokenized_freq.items()}
+  corpus = {
+    tuple(token.encode()): count for token, count in pretokenized_freq.items()
+  }
   vocab = {tuple([i]): i for i in range(256)}  # byte → id
   next_id = 256
   merges: dict[tuple[int, int], int] = {}
@@ -274,7 +296,9 @@ def train_bpe(pretokenized_freq: Counter[str], num_merges: int, batch_size: int 
 
 
 def main(
-  dataset: t.Literal['toy', 'tinygpt-train', 'tinygpt-valid', 'fineweb'] = 'toy',
+  dataset: t.Literal[
+    'toy', 'tinygpt-train', 'tinygpt-valid', 'fineweb'
+  ] = 'toy',
   vocab_size: int = 131459,
   proc: int = 8,
   profile: t.Literal['none', 'speedscope'] = 'none',
@@ -300,7 +324,9 @@ def main(
         merges_tbl = {(a, b): nid for a, b, nid in model.merges_list()}
         vocab = {tuple(pair): nid for pair, nid in model.vocab_pairs()}
         return merges_tbl, vocab
-      pretokenized_frequency_table = build_fineweb_parallel(token_budget, split=fineweb_split, processes=proc)
+      pretokenized_frequency_table = build_fineweb_parallel(
+        token_budget, split=fineweb_split, processes=proc
+      )
     else:
       datapath = resolve_ds(dataset)
       if fast:
@@ -309,10 +335,16 @@ def main(
         vocab = {tuple(pair): nid for pair, nid in model.vocab_pairs()}
         return merges_tbl, vocab
       pretokenized_frequency_table = chunk_text_file(
-        datapath, proc, special_token, memory_interval=memory_interval, memory_log_path=memory_log_path
+        datapath,
+        proc,
+        special_token,
+        memory_interval=memory_interval,
+        memory_log_path=memory_log_path,
       )
 
-    merges_tbl, vocab = train_bpe(pretokenized_frequency_table, merges, batch_size=batch_size)
+    merges_tbl, vocab = train_bpe(
+      pretokenized_frequency_table, merges, batch_size=batch_size
+    )
     return merges_tbl, vocab
 
   if profile.lower() == 'speedscope':

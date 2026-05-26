@@ -651,7 +651,9 @@ communication: $O(S)$ per device for full ring rotation, overlaps with compute
 - N/D array of devices
 
 ```python
-mesh_2d = init_device_mesh('cuda', (2, 4), mesh_dim_names=('replicate', 'shard'))
+mesh_2d = init_device_mesh(
+  'cuda', (2, 4), mesh_dim_names=('replicate', 'shard')
+)
 
 # Users can access the underlying process group thru `get_group` API.
 replicate_group = mesh_2d.get_group(mesh_dim='replicate')
@@ -664,7 +666,9 @@ shard_group = mesh_2d.get_group(mesh_dim='shard')
 - also similar to JAX
 
 ```python
-dtensor = DTensor.from_local(tensor, device_mesh=device_mesh, placements=[Shard(0)])
+dtensor = DTensor.from_local(
+  tensor, device_mesh=device_mesh, placements=[Shard(0)]
+)
 ```
 
 ## torchtitan

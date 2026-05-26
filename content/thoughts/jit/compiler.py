@@ -84,7 +84,10 @@ class Compiler:
   """
 
   def __init__(
-    self, mode: Literal['auto', 'fast', 'optimized'] = 'auto', verbose: bool = False, complexity_threshold: int = 10
+    self,
+    mode: Literal['auto', 'fast', 'optimized'] = 'auto',
+    verbose: bool = False,
+    complexity_threshold: int = 10,
   ):
     self.mode = mode
     self.verbose = verbose
@@ -93,7 +96,9 @@ class Compiler:
     self.opt_compiler = IRCompiler(verbose=verbose, optimize=True)
     self.stats = {'fast': 0, 'optimized': 0}
 
-  def __call__(self, **kwargs) -> Callable[[Callable[..., Any]], Callable[..., Any]]:
+  def __call__(
+    self, **kwargs
+  ) -> Callable[[Callable[..., Any]], Callable[..., Any]]:
     """decorator interface matching TinyCJIT/IRCompiler"""
     restype = kwargs.get('restype')
     argtypes = kwargs.get('argtypes', [])
@@ -107,7 +112,9 @@ class Compiler:
         strategy = 'optimized'
       else:  # auto
         complexity = _estimate_complexity(func)
-        strategy = 'optimized' if complexity >= self.complexity_threshold else 'fast'
+        strategy = (
+          'optimized' if complexity >= self.complexity_threshold else 'fast'
+        )
 
       self.stats[strategy] += 1
 
@@ -116,9 +123,13 @@ class Compiler:
 
       # dispatch to appropriate compiler
       if strategy == 'fast':
-        compiled = self.fast_compiler(restype=restype, argtypes=argtypes, headers=headers)(func)
+        compiled = self.fast_compiler(
+          restype=restype, argtypes=argtypes, headers=headers
+        )(func)
       else:
-        compiled = self.opt_compiler(restype=restype, argtypes=argtypes, headers=headers)(func)
+        compiled = self.opt_compiler(
+          restype=restype, argtypes=argtypes, headers=headers
+        )(func)
 
       # attach metadata
       compiled._compiler_strategy = strategy  # type: ignore
@@ -171,17 +182,23 @@ def demo_compiler():
 
   # test simple
   result1 = simple_add(3.0, 4.0)
-  print(f'simple_add(3.0, 4.0) = {result1:.1f} (strategy: {simple_add._compiler_strategy})')
+  print(
+    f'simple_add(3.0, 4.0) = {result1:.1f} (strategy: {simple_add._compiler_strategy})'
+  )
 
   # test complex
   result2 = complex_compute(3.0, 4.0)
-  print(f'complex_compute(3.0, 4.0) = {result2:.1f} (strategy: {complex_compute._compiler_strategy})')
+  print(
+    f'complex_compute(3.0, 4.0) = {result2:.1f} (strategy: {complex_compute._compiler_strategy})'
+  )
 
   print('\n' + '=' * 80)
   print('Compiler statistics:')
   print('=' * 80)
   print(f'Fast path (TinyCJIT):      {jit_auto.stats["fast"]} functions')
-  print(f'Optimized path (IRCompiler): {jit_auto.stats["optimized"]} functions')
+  print(
+    f'Optimized path (IRCompiler): {jit_auto.stats["optimized"]} functions'
+  )
 
   # benchmark compile time
   print('\n' + '=' * 80)
@@ -196,12 +213,16 @@ def demo_compiler():
 
   # TinyCJIT compile time
   start = time.perf_counter()
-  fast_fn = jit_fast(restype=ctypes.c_float, argtypes=[ctypes.c_float, ctypes.c_float])(benchmark_func)
+  fast_fn = jit_fast(
+    restype=ctypes.c_float, argtypes=[ctypes.c_float, ctypes.c_float]
+  )(benchmark_func)
   fast_time = time.perf_counter() - start
 
   # IRCompiler compile time
   start = time.perf_counter()
-  opt_fn = jit_opt(restype=ctypes.c_float, argtypes=[ctypes.c_float, ctypes.c_float])(benchmark_func)
+  opt_fn = jit_opt(
+    restype=ctypes.c_float, argtypes=[ctypes.c_float, ctypes.c_float]
+  )(benchmark_func)
   opt_time = time.perf_counter() - start
 
   print(f'TinyCJIT:    {fast_time * 1000:6.2f} ms')

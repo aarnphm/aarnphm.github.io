@@ -55,7 +55,13 @@ def describe_python_kernel(func: Callable[..., Any]) -> None:
 # ---------------------------------------------------------------------------
 
 
-_BINOP_MAP = {ast.Add: '+', ast.Sub: '-', ast.Mult: '*', ast.Div: '/', ast.Mod: '%'}
+_BINOP_MAP = {
+  ast.Add: '+',
+  ast.Sub: '-',
+  ast.Mult: '*',
+  ast.Div: '/',
+  ast.Mod: '%',
+}
 _AUGMENTED_MAP = {ast.Add: '+=', ast.Sub: '-=', ast.Mult: '*=', ast.Div: '/='}
 _UNARY_MAP = {ast.UAdd: '+', ast.USub: '-'}
 
@@ -153,7 +159,12 @@ class _ExprEmitter(ast.NodeVisitor):
       func_name = node.func.id
       args = ', '.join(self.visit(arg) for arg in node.args)
       # map Python functions to C equivalents
-      c_name = {'min': 'fminf', 'max': 'fmaxf', 'abs': 'fabsf', 'sqrt': 'sqrtf'}.get(func_name, func_name)
+      c_name = {
+        'min': 'fminf',
+        'max': 'fmaxf',
+        'abs': 'fabsf',
+        'sqrt': 'sqrtf',
+      }.get(func_name, func_name)
       return f'{c_name}({args})'
     raise NotImplementedError(f'unsupported call: {ast.dump(node)}')
 
@@ -193,7 +204,11 @@ class _CBodyGenerator(ast.NodeVisitor):
     self.emit('}')
 
   def _parse_range(self, node: ast.AST) -> tuple[str, str, str]:
-    if not isinstance(node, ast.Call) or not isinstance(node.func, ast.Name) or node.func.id != 'range':
+    if (
+      not isinstance(node, ast.Call)
+      or not isinstance(node.func, ast.Name)
+      or node.func.id != 'range'
+    ):
       raise NotImplementedError('only range(...) loops are supported')
     args = node.args
     if len(args) == 1:
@@ -201,8 +216,14 @@ class _CBodyGenerator(ast.NodeVisitor):
     if len(args) == 2:
       return self.expr.visit(args[0]), self.expr.visit(args[1]), '1'
     if len(args) == 3:
-      return self.expr.visit(args[0]), self.expr.visit(args[1]), self.expr.visit(args[2])
-    raise NotImplementedError('range() with more than three arguments is unsupported')
+      return (
+        self.expr.visit(args[0]),
+        self.expr.visit(args[1]),
+        self.expr.visit(args[2]),
+      )
+    raise NotImplementedError(
+      'range() with more than three arguments is unsupported'
+    )
 
   def visit_Assign(self, node: ast.Assign) -> None:
     if len(node.targets) != 1:
@@ -238,8 +259,14 @@ class _CBodyGenerator(ast.NodeVisitor):
     # skip docstrings
     if isinstance(node.value, (ast.Constant, ast.Str)):
       return
-    if isinstance(node.value, ast.Call) and isinstance(node.value.func, ast.Name):
-      call = f'{node.value.func.id}(' + ', '.join(self.expr.visit(arg) for arg in node.value.args) + ');'
+    if isinstance(node.value, ast.Call) and isinstance(
+      node.value.func, ast.Name
+    ):
+      call = (
+        f'{node.value.func.id}('
+        + ', '.join(self.expr.visit(arg) for arg in node.value.args)
+        + ');'
+      )
       self.emit(call)
       return
     raise NotImplementedError('only function-call expressions are allowed')
@@ -260,15 +287,31 @@ class TinyCJIT:
     link_flags: Sequence[str] | None = None,
   ) -> None:
     self.compiler = compiler or _detect_compiler()
-    self.work_dir = Path(work_dir) if work_dir else Path(tempfile.gettempdir()) / 'minimal_cjit'
+    self.work_dir = (
+      Path(work_dir)
+      if work_dir
+      else Path(tempfile.gettempdir()) / 'minimal_cjit'
+    )
     self.work_dir.mkdir(parents=True, exist_ok=True)
-    self.extra_cflags = list(extra_cflags) if extra_cflags is not None else ['-O3', '-std=c11', '-fPIC']
+    self.extra_cflags = (
+      list(extra_cflags)
+      if extra_cflags is not None
+      else ['-O3', '-std=c11', '-fPIC']
+    )
     self.link_flags = list(link_flags) if link_flags is not None else ['-lm']
-    env_level = int(os.environ.get('DEBUG', '0')) if os.environ.get('DEBUG', '0').isdigit() else 0
+    env_level = (
+      int(os.environ.get('DEBUG', '0'))
+      if os.environ.get('DEBUG', '0').isdigit()
+      else 0
+    )
     self.debug_level = max(env_level, 1 if verbose else 0)
 
   def __call__(
-    self, *, restype: type | None = None, argtypes: Sequence[type], headers: Sequence[str] | None = None
+    self,
+    *,
+    restype: type | None = None,
+    argtypes: Sequence[type],
+    headers: Sequence[str] | None = None,
   ) -> Callable[[Callable[..., Any]], Callable[..., Any]]:
     headers = list(headers) if headers is not None else []
 
@@ -279,23 +322,38 @@ class TinyCJIT:
 
   # compilation ----------------------------------------------------------
   def _compile_function(
-    self, func: Callable[..., Any], restype: type | None, argtypes: Sequence[type], headers: Sequence[str]
+    self,
+    func: Callable[..., Any],
+    restype: type | None,
+    argtypes: Sequence[type],
+    headers: Sequence[str],
   ) -> Callable[..., Any]:
     source = textwrap.dedent(inspect.getsource(func))
     tree = ast.parse(source)
-    func_def = next((node for node in tree.body if isinstance(node, ast.FunctionDef)), None)
+    func_def = next(
+      (node for node in tree.body if isinstance(node, ast.FunctionDef)), None
+    )
     if func_def is None:
       raise ValueError('unable to recover function definition')
     if len(func_def.args.args) != len(argtypes):
       raise ValueError('argtypes length must match python signature')
 
-    arg_decls = [f'{_ctype_to_cstring(tp)} {py_arg.arg}' for py_arg, tp in zip(func_def.args.args, argtypes)]
+    arg_decls = [
+      f'{_ctype_to_cstring(tp)} {py_arg.arg}'
+      for py_arg, tp in zip(func_def.args.args, argtypes)
+    ]
     body_src = _CBodyGenerator().generate(func_def.body)
 
-    includes = ['#include <stddef.h>', '#include <stdint.h>', '#include <math.h>'] + list(headers)
+    includes = [
+      '#include <stddef.h>',
+      '#include <stdint.h>',
+      '#include <math.h>',
+    ] + list(headers)
     ret_decl = _ctype_to_cstring(restype)
     fn_decl = f'__attribute__((visibility("default"))) {ret_decl} {func_def.name}({", ".join(arg_decls)})'
-    module_src = '\n'.join(includes) + '\n\n' + fn_decl + ' {\n' + body_src + '}\n'
+    module_src = (
+      '\n'.join(includes) + '\n\n' + fn_decl + ' {\n' + body_src + '}\n'
+    )
 
     if self.debug_level >= 2:
       print('\n[TinyCJIT] generated C source:\n' + module_src)
@@ -350,10 +408,14 @@ class TinyCJIT:
       print('[TinyCJIT]', ' '.join(cmd))
     subprocess.run(cmd, check=True)
 
-  def _prepare_argument(self, value: Any, ctype_expected: type) -> tuple[Any, Any | None]:
+  def _prepare_argument(
+    self, value: Any, ctype_expected: type
+  ) -> tuple[Any, Any | None]:
     if _is_pointer(ctype_expected):
       if isinstance(value, np.ndarray):
-        arr = value if value.flags['C_CONTIGUOUS'] else np.ascontiguousarray(value)
+        arr = (
+          value if value.flags['C_CONTIGUOUS'] else np.ascontiguousarray(value)
+        )
         return arr.ctypes.data_as(ctype_expected), arr
       if isinstance(value, ctypes.Array):
         return ctypes.cast(value, ctype_expected), value

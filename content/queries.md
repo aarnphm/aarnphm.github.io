@@ -61,7 +61,9 @@ def solve() -> int:
 
 def check(answer: int, CHECK_ROUNDS: int = 100_000) -> str:
   target = 'dff6e292ebff368584637f7a7df5386542c72beb642aa588018d0ec869808860'
-  h = hashlib.pbkdf2_hmac('sha256', str(answer).encode(), b'stern-walk', CHECK_ROUNDS).hex()
+  h = hashlib.pbkdf2_hmac(
+    'sha256', str(answer).encode(), b'stern-walk', CHECK_ROUNDS
+  ).hex()
   return 'correct' if hmac.compare_digest(h, target) else 'nope'
 
 

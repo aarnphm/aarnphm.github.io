@@ -9,9 +9,15 @@ def parse():
 
 # ylecun init_norm_
 def ylecun_(hidden: int, output_size: int) -> tuple[np.ndarray, ...]:
-  W2, b2 = np.random.randn(hidden, 2) * (scale := np.sqrt(1 / hidden)), np.zeros((hidden, 1))
+  W2, b2 = (
+    np.random.randn(hidden, 2) * (scale := np.sqrt(1 / hidden)),
+    np.zeros((hidden, 1)),
+  )
   W3, b3 = np.random.randn(hidden, hidden) * scale, np.zeros((hidden, 1))
-  W4, b4 = np.random.randn(output_size, hidden) * scale, np.zeros((output_size, 1))
+  W4, b4 = (
+    np.random.randn(output_size, hidden) * scale,
+    np.zeros((output_size, 1)),
+  )
   return W2, b2, W3, b3, W4, b4
 
 
@@ -35,14 +41,21 @@ def sigmoid(z: float) -> float:
 
 
 def actfn(z: float, activation: int = 1) -> float:
-  return {Activation.LeakyReLU: leaky_relu, Activation.ReLU: relu, Activation.Sigmoid: sigmoid}[
-    Activation(activation)
-  ](z)
+  return {
+    Activation.LeakyReLU: leaky_relu,
+    Activation.ReLU: relu,
+    Activation.Sigmoid: sigmoid,
+  }[Activation(activation)](z)
 
 
 # cost and accuracy function
 def cost(a4, labels, epsilon=1e-12):
-  return -np.sum(labels * np.log(a4 + epsilon) + (1 - labels) * np.log(1 - a4 + epsilon)) / labels.shape[1]
+  return (
+    -np.sum(
+      labels * np.log(a4 + epsilon) + (1 - labels) * np.log(1 - a4 + epsilon)
+    )
+    / labels.shape[1]
+  )
 
 
 def accuracy(a4, labels):
@@ -73,10 +86,19 @@ def backward(x, labels, a2, a3, a4, W3, W4):
 
 
 def train(
-  hidden=20, eta=1e-3, alpha=0.89, lambda_=1e-3, batch_size=24, epochs=int(1e6), decay_rate=0.98, decay_step=10000
+  hidden=20,
+  eta=1e-3,
+  alpha=0.89,
+  lambda_=1e-3,
+  batch_size=24,
+  epochs=int(1e6),
+  decay_rate=0.98,
+  decay_step=10000,
 ) -> int:
   x, labels = parse()
-  x = (x - np.mean(x, axis=1, keepdims=True)) / np.std(x, axis=1, keepdims=True)  # normalise datasets
+  x = (x - np.mean(x, axis=1, keepdims=True)) / np.std(
+    x, axis=1, keepdims=True
+  )  # normalise datasets
 
   W2, b2, W3, b3, W4, b4 = ylecun_(hidden, labels.shape[0])
   mW2, mb2 = np.zeros_like(W2), np.zeros_like(b2)
@@ -87,7 +109,9 @@ def train(
   for count in range(epochs):
     batch_idx = np.random.choice(x.shape[1], batch_size, replace=False)
     a2, a3, a4 = forward((_xb := x[:, batch_idx]), W2, b2, W3, b3, W4, b4)
-    gradW4, gradb4, gradW3, gradb3, gradW2, gradb2 = backward(_xb, labels[:, batch_idx], a2, a3, a4, W3, W4)
+    gradW4, gradb4, gradW3, gradb3, gradW2, gradb2 = backward(
+      _xb, labels[:, batch_idx], a2, a3, a4, W3, W4
+    )
 
     # update
     mW2 = alpha * mW2 - eta * (gradW2 + lambda_ * W2 / batch_size)
@@ -107,7 +131,9 @@ def train(
       _, _, a4f = forward(x, W2, b2, W3, b3, W4, b4)
       costs[count] = cost(a4f, labels)
       accuracies[count] = accuracy(a4f, labels)
-      print(f'Iteration {count}: Cost {costs[count]:.4f}, Accuracy {accuracies[count]:.2f}%')
+      print(
+        f'Iteration {count}: Cost {costs[count]:.4f}, Accuracy {accuracies[count]:.2f}%'
+      )
       if accuracies[count] >= 95:
         print(f'Early stopping: Reached 95% accuracy at iteration {count}')
         break
@@ -135,7 +161,9 @@ def plot_decision_boundary(x, labels, W2, b2, W3, b3, W4, b4, h=0.01):
   plt.contourf(xx, yy, Z.reshape(xx.shape), cmap=plt.cm.Spectral)
   plt.ylabel('x2')
   plt.xlabel('x1')
-  plt.scatter(x[0, :], x[1, :], c=np.argmax(labels, axis=0), cmap=plt.cm.Spectral)
+  plt.scatter(
+    x[0, :], x[1, :], c=np.argmax(labels, axis=0), cmap=plt.cm.Spectral
+  )
 
 
 def plot_relations(count, costs, accuracies):

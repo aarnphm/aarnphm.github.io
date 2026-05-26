@@ -46,7 +46,9 @@ def example_code_object_inspection():
   print(f'  co_varnames:    {code.co_varnames}')
   print(f'  co_consts:      {code.co_consts}')
   print(f'  co_names:       {code.co_names}')
-  print(f'  co_code (raw):  {code.co_code[:20]}... ({len(code.co_code)} bytes)')
+  print(
+    f'  co_code (raw):  {code.co_code[:20]}... ({len(code.co_code)} bytes)'
+  )
 
   print('\nDisassembly:')
   dis.dis(sample_function)
@@ -77,8 +79,12 @@ def example_constant_folding():
   print('\nPython 3.11+ bytecode (already optimized by compiler):')
   dis.dis(original)
 
-  print("\nNote: Python's peephole optimizer already folded 10+20→30 and 5*4→20")
-  print("To demonstrate the optimization, we'll manually construct unoptimized bytecode:\n")
+  print(
+    "\nNote: Python's peephole optimizer already folded 10+20→30 and 5*4→20"
+  )
+  print(
+    "To demonstrate the optimization, we'll manually construct unoptimized bytecode:\n"
+  )
 
   # manually construct unoptimized bytecode
   print('Manually constructed bytecode (before constant folding):')
@@ -97,7 +103,9 @@ def example_constant_folding():
   ])
   unoptimized.name = 'unoptimized'
 
-  unoptimized_func = types.FunctionType(unoptimized.to_code(), {}, 'unoptimized')
+  unoptimized_func = types.FunctionType(
+    unoptimized.to_code(), {}, 'unoptimized'
+  )
 
   dis.dis(unoptimized_func)
 
@@ -204,7 +212,11 @@ def example_dead_code_elimination():
 
   optimized_code = optimized_bytecode.to_code()
   optimized = types.FunctionType(
-    optimized_code, original.__globals__, original.__name__, original.__defaults__, original.__closure__
+    optimized_code,
+    original.__globals__,
+    original.__name__,
+    original.__defaults__,
+    original.__closure__,
   )
 
   print('\nOptimized bytecode (dead code removed):')
@@ -378,7 +390,11 @@ def example_identity_operations():
 
   optimized_code = optimized_bytecode.to_code()
   optimized = types.FunctionType(
-    optimized_code, original.__globals__, original.__name__, original.__defaults__, original.__closure__
+    optimized_code,
+    original.__globals__,
+    original.__name__,
+    original.__defaults__,
+    original.__closure__,
   )
 
   print('\nOptimized bytecode:')

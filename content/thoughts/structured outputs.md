@@ -232,7 +232,10 @@ A way to adapt character regex to work with tokens in `outlines`:
 
 ```python
 import outlines.fsm as fsm
-from outlines.fsm.regex import make_deterministic_fsm, create_fsm_index_tokenizer
+from outlines.fsm.regex import (
+  make_deterministic_fsm,
+  create_fsm_index_tokenizer,
+)
 
 new_fsm, _ = make_deterministic_fsm(fsm)
 idx, _ = create_fsm_index_tokenizer(new_fsm, tokenizer)
@@ -261,7 +264,10 @@ stateDiagram-v2
 
 ```python
 idx_with_tokens = {
-  state: {tokenizer.tokenizer.decode([key]): value for key, value in transitions.items()}
+  state: {
+    tokenizer.tokenizer.decode([key]): value
+    for key, value in transitions.items()
+  }
   for state, transitions in idx.items()
 }
 ```

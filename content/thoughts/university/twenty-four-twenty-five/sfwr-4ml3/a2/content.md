@@ -92,10 +92,19 @@ def mse(train_data, reconstructed):
 # Loop through each specified number of components for PCA
 for n_components in c_components:
   # Apply PCA and then inverse PCA to the training data
-  transformed_train, Vt_train, mean_train = pca_transform(X_train, n_components)
+  transformed_train, Vt_train, mean_train = pca_transform(
+    X_train, n_components
+  )
 
   # Calculate the Mean Squared Error (MSE) as the reconstruction error for the training set
-  train_errors.append(mse(X_train, pca_inverse_transform(transformed_train, Vt_train, n_components, mean_train)))
+  train_errors.append(
+    mse(
+      X_train,
+      pca_inverse_transform(
+        transformed_train, Vt_train, n_components, mean_train
+      ),
+    )
+  )
   # Normalize the test data. Transform the test data using the train data's PCA components # and reconstruct the test data.
   # Calculate the Mean Squared Error (MSE) as the reconstruction error for the test set
   test_errors.append(mse(X_test,
@@ -104,7 +113,9 @@ for n_components in c_components:
 
 # Print the average reconstruction errors for each number of components
 for i, n_components in enumerate(c_components):
-  print(f'Components: {n_components}\n\tTrain Error: {train_errors[i]:.4f}\n\tTest Error: {test_errors[i]:.4f}')
+  print(
+    f'Components: {n_components}\n\tTrain Error: {train_errors[i]:.4f}\n\tTest Error: {test_errors[i]:.4f}'
+  )
 ```
 
 yields the following observation
@@ -155,7 +166,19 @@ Applied a `StandardScaler` to `X_TNC` and plot 3x4 grid with the (1,1) being the
 Run on `n_components=2`
 
 ```python
-gamma_values = [0.0001, 0.0005, 0.001, 0.005, 0.01, 0.02, 0.05, 0.1, 0.2, 0.5, 1]
+gamma_values = [
+  0.0001,
+  0.0005,
+  0.001,
+  0.005,
+  0.01,
+  0.02,
+  0.05,
+  0.1,
+  0.2,
+  0.5,
+  1,
+]
 n_components = 2
 
 # Standardize the features

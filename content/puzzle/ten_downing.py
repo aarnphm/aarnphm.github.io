@@ -15,7 +15,9 @@ def color(cell: Cell) -> Color:
 def neighbors(cell: Cell) -> list[Cell]:
   i, j = cell
   return [
-    (x, y) for x, y in [(i - 1, j), (i + 1, j), (i, j - 1), (i, j + 1)] if 1 <= x <= GRID_SIZE and 1 <= y <= GRID_SIZE
+    (x, y)
+    for x, y in [(i - 1, j), (i + 1, j), (i, j - 1), (i, j + 1)]
+    if 1 <= x <= GRID_SIZE and 1 <= y <= GRID_SIZE
   ]
 
 
@@ -27,7 +29,9 @@ def find_domino(remaining: set[Cell]) -> tuple[Cell, Cell] | None:
 
 
 def simulate_optimal() -> int:
-  r = {(i, j) for i in range(1, GRID_SIZE + 1) for j in range(1, GRID_SIZE + 1)}
+  r = {
+    (i, j) for i in range(1, GRID_SIZE + 1) for j in range(1, GRID_SIZE + 1)
+  }
   lily = 0
 
   while True:
@@ -48,7 +52,9 @@ def simulate_optimal() -> int:
 
 def simulate_random(seed: int = 42) -> int:
   random.seed(seed)
-  r = {(i, j) for i in range(1, GRID_SIZE + 1) for j in range(1, GRID_SIZE + 1)}
+  r = {
+    (i, j) for i in range(1, GRID_SIZE + 1) for j in range(1, GRID_SIZE + 1)
+  }
   lily = 0
 
   while r:
