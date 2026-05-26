@@ -1,14 +1,11 @@
-@use 'sass:map';
-@use '../../styles/variables.scss' as *;
-
 :root[reader-mode='on'] {
-  section[class~='page-header'] > .byline,
-  section[class~='page-content'] > .left-col,
+  .byline,
+  .page-content > .left-col,
   .seealso-tree,
   #wc-modal,
   .headings-modal-container,
   .page-footer {
-    display: none;
+    display: none !important;
     transition: display 0.2s ease;
   }
 }

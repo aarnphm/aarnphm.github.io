@@ -4,6 +4,7 @@ import type { FilePath } from '../../../util/path'
 import type { StaticResources } from '../../../util/resources'
 import type { ComponentResourceSet } from './resource-set'
 import {
+  notebookNativeRuntimeManifestAsset,
   notebookPyrightPackageStubsManifestAsset,
   notebookPyrightTypeshedManifestAsset,
   notebookPyrightWorkerManifestAsset,
@@ -24,6 +25,7 @@ import {
 import { write } from '../helpers'
 import {
   collaborativeCommentsClientPath,
+  notebookNativeRuntimeManifestPath,
   notebookPyrightPackageStubsManifestPath,
   notebookPyrightTypeshedManifestPath,
   notebookPyrightWorkerManifestPath,
@@ -42,6 +44,10 @@ export const componentScriptAssetReplacements: ScriptAssetReplacement[] = [
   {
     placeholder: notebookRuntimeJavascriptWorkerAsset,
     logicalPath: notebookRuntimeJavascriptWorkerPath,
+  },
+  {
+    placeholder: notebookNativeRuntimeManifestAsset,
+    logicalPath: notebookNativeRuntimeManifestPath,
   },
   {
     placeholder: notebookPyrightWorkerManifestAsset,

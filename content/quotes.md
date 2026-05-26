@@ -16,7 +16,7 @@ metadata:
     text_line    = { character - newline } ;
     ws           = { " " } ;
     character    = ? any printable ascii except newline ? ;
-modified: 2026-05-09 17:51:35 GMT-04:00
+modified: 2026-05-25 22:02:02 GMT-04:00
 seealso:
   - '[[word|dictionary]]'
   - '[[research|wip]]'
@@ -30,6 +30,10 @@ transclude:
   dynalist: false
   title: false
 ---
+
+> We live in a world where ther eis more and more information, and less and less meaning
+>
+> Jean Baudrillard
 
 > If I were only interested in facts I would buy the telephone directory of Manhattan. It has four million entries, and they are all correct, but it does not illuminate.
 >

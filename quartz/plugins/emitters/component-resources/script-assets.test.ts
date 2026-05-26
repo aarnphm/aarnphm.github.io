@@ -42,6 +42,11 @@ test('resolves component script placeholders to static-script-relative hashed pa
     'static/scripts/notebook-pyright/site-packages/manifest.json',
     'static/scripts/notebook-pyright/site-packages/manifest-33333333.json',
   )
+  registerAsset(
+    ctx,
+    'static/scripts/notebook-runtimes/manifest.json',
+    'static/scripts/notebook-runtimes/manifest-44444444.json',
+  )
 
   const resources: ComponentResourceSet = {
     css: [],
@@ -52,6 +57,7 @@ test('resolves component script placeholders to static-script-relative hashed pa
         'notebookRuntimeScriptUrl("notebook-runtime.client.js")',
         'notebookRuntimeScriptUrl("notebook-pyright/typeshed/manifest.json")',
         'notebookRuntimeScriptUrl("notebook-pyright/site-packages/manifest.json")',
+        'notebookRuntimeScriptUrl("notebook-runtimes/manifest.json")',
       ].join(';'),
     ],
   }
@@ -64,6 +70,7 @@ test('resolves component script placeholders to static-script-relative hashed pa
       'notebookRuntimeScriptUrl("notebook-runtime.client-11111111.js")',
       'notebookRuntimeScriptUrl("notebook-pyright/typeshed/manifest-22222222.json")',
       'notebookRuntimeScriptUrl("notebook-pyright/site-packages/manifest-33333333.json")',
+      'notebookRuntimeScriptUrl("notebook-runtimes/manifest-44444444.json")',
     ].join(';'),
   )
 })

@@ -70,7 +70,7 @@ plugins = ["numpy.typing.mypy_plugin"]
 [tool.ruff]
 extend-include = ["*.ipynb"]
 preview = true
-line-length = 119
+line-length = 79
 indent-width = 2
 
 [tool.ruff.format]

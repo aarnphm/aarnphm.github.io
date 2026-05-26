@@ -1,9 +1,9 @@
 ---
-date: "2026-05-25"
+date: '2026-05-25'
 description: "\U0001F9E9 \U0001F6E4️\U0001F6E5️\U0001F698 \U0001F6D5 \U0001F6F7"
 id: queries
 layout: letter
-modified: 2026-05-25 20:47:19 GMT-04:00
+modified: 2026-05-25 20:53:51 GMT-04:00
 seealso:
   - '[[puzzle]]'
   - '[[thoughts/craft]]'
@@ -61,9 +61,7 @@ def solve() -> int:
 
 def check(answer: int, CHECK_ROUNDS: int = 100_000) -> str:
   target = 'dff6e292ebff368584637f7a7df5386542c72beb642aa588018d0ec869808860'
-  h = hashlib.pbkdf2_hmac(
-    'sha256', str(answer).encode(), b'stern-walk', CHECK_ROUNDS
-  ).hex()
+  h = hashlib.pbkdf2_hmac('sha256', str(answer).encode(), b'stern-walk', CHECK_ROUNDS).hex()
   return 'correct' if hmac.compare_digest(h, target) else 'nope'
 
 
@@ -82,7 +80,7 @@ check(solve())
 
 _cellular automata, modular arithmetic_, approx: 20 min
 
-[Rule 110](https://en.wikipedia.org/wiki/Rule_110) cellular automaton is considered Turing-complete (circa Matthew Cook, 2004 [@cook2004universality]), which settles a conjecture of Wolfram's [@wolfram2002newkind].
+[Rule 110](https://en.wikipedia.org/wiki/Rule_110) cellular automaton is considered Turing-complete circa [@cook2004universality], which settles a conjecture of Wolfram's [@wolfram2002newkind].
 
 Interestingly, this is _the only one_ for which Turing completeness has been directly proven. According to Wolfram's, Rule 110 exihibits a "[Class 4](https://en.wikipedia.org/wiki/Cellular_automaton#Classification) behaviour", which is neither completely stable nor completely chaotic.
 

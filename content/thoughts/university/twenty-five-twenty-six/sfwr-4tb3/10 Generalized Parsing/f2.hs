@@ -1,3 +1,5 @@
+import Control.Exception (ErrorCall (..), evaluate, try)
+
 type Source = (Int, String)
 
 sourceError :: Int -> String -> a
@@ -37,15 +39,18 @@ exprList s =
     any        -> any
 
 parse :: String -> IO ()
-parse s =
-  case expression (1, s) of
-    (p, t) -> putStrLn (show (p - 1) ++ " characters parsed")
+parse s = do
+  r <- try (evaluate (expression (1, s))) :: IO (Either ErrorCall Source)
+  case r of
+    Right (p, _)         -> putStrLn (show (p - 1) ++ " characters parsed")
+    Left (ErrorCall msg) -> putStrLn msg
 
 -- Examples:
--- parse "a+(b/c)"
--- parse "a+b/c"
--- parse "a*b*c"
--- parse "a+("
--- parse "1+*"
--- parse "a+"
--- parse "ab"
+-- parse "a+(b/c)"   -- 7 characters parsed
+-- parse "a+b/c"     -- 5 characters parsed
+-- parse "a*b*c"     -- 5 characters parsed
+-- parse "a+(b"      -- error at 5: missing )
+-- parse "a+("       -- error at 4: unexpected end
+-- parse "1+*"       -- error at 1: id or ( expected
+-- parse "a+"        -- error at 3: unexpected end
+-- parse "ab"        -- 1 characters parsed

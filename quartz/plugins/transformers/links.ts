@@ -36,6 +36,7 @@ import {
   transformLink,
 } from '../../util/path'
 import { hostnameMatches, parseExternalUrl } from '../../util/url'
+import { parseWikipediaTarget } from '../../util/wikipedia'
 import { extractArxivId } from '../stores/citations'
 import { filterEmbedTwitter } from './twitter'
 
@@ -192,6 +193,9 @@ export const CrawlLinks: QuartzTransformerPlugin<Partial<Options>> = userOpts =>
                 isGoogleDocs: matchesHost('docs.google.com'),
                 isGoogleDrive: matchesHost('drive.google.com'),
               }
+              const wikipediaTarget = linkTypes.isWikipedia
+                ? parseWikipediaTarget(ctx.dest)
+                : undefined
 
               if (linkTypes.isBentoml) {
                 if (!classes.includes('bentoml-link')) {
@@ -215,19 +219,14 @@ export const CrawlLinks: QuartzTransformerPlugin<Partial<Options>> = userOpts =>
               }
 
               if (
-                linkTypes.isWikipedia &&
+                wikipediaTarget &&
                 node.children.length === 1 &&
                 node.children[0].type === 'text' &&
                 node.children[0].value === dest
               ) {
-                try {
-                  const u = new URL(dest)
-                  const lang = u.hostname.split('.')[0]
-                  const m = u.pathname.match(/\/wiki\/(.+)/)
-                  if (m) {
-                    node.children[0].value = `wikipedia/${lang !== 'simple' ? lang + '/' : ''}${m[1]}`
-                  }
-                } catch {}
+                const langPrefix =
+                  wikipediaTarget.lang !== 'simple' ? `${wikipediaTarget.lang}/` : ''
+                node.children[0].value = `wikipedia/${langPrefix}${wikipediaTarget.title}`
               }
 
               if (
@@ -291,6 +290,14 @@ export const CrawlLinks: QuartzTransformerPlugin<Partial<Options>> = userOpts =>
                 return false
               }
 
+              const handleWikipedia = (ctx: LinkContext) => {
+                if (!wikipediaTarget || metadataDisablesPopover(ctx.metadata)) return false
+                ctx.classes.push('internal')
+                ctx.node.properties.dataWikipediaLang = wikipediaTarget.lang
+                ctx.node.properties.dataWikipediaTitle = wikipediaTarget.title
+                return true
+              }
+
               const handleCdnLinks = (ctx: LinkContext) => {
                 if (ctx.isExternal && opts.enableRawEmbed) {
                   if (
@@ -317,7 +324,7 @@ export const CrawlLinks: QuartzTransformerPlugin<Partial<Options>> = userOpts =>
                 )
 
               // Add appropriate icons based on link type
-              if (!handleArxiv(ctx) && !linkTypes.isEmbedTwitter) {
+              if (!handleArxiv(ctx) && !handleWikipedia(ctx) && !linkTypes.isEmbedTwitter) {
                 ctx.classes.push(ctx.isExternal ? 'external' : 'internal')
               }
 
