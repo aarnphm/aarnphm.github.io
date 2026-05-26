@@ -588,11 +588,9 @@ document.addEventListener('nav', e => {
     {
       name: 'kernels: run all',
       auxInnerHtml: '<kbd>↵</kbd> current page',
-      keepOpen: true,
       onClick: () => {
         dispatchNotebookKernelRunAll()
         notifyToast('running all notebook kernels')
-        showKernelItems(true)
       },
     },
     {
