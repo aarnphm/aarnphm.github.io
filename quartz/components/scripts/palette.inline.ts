@@ -9,6 +9,7 @@ import {
   notebookKernelRequestEvent,
   type NotebookKernelCommand,
   type NotebookKernelSnapshot,
+  type NotebookKernelStatus,
 } from '../../util/notebook-kernel-events'
 import { notebookLocalSourcesClearedEvent } from '../../util/notebook-source-events'
 import { FullSlug, normalizeRelativeURLs, resolveRelative } from '../../util/path'
@@ -135,8 +136,9 @@ function notebookKernelSourceLabel(sourcePath: string): string {
 }
 
 function notebookKernelStatusLabel(snapshot: NotebookKernelSnapshot): string {
-  if (snapshot.status === 'running' && snapshot.runningCellId) {
-    return `running ${snapshot.runningCellId}`
+  const detail = snapshot.status === 'running' ? snapshot.runningCellId : snapshot.statusDetail
+  if (detail) {
+    return `${snapshot.status} ${detail}`
   }
   return snapshot.status
 }
@@ -292,12 +294,18 @@ async function fetchContent(currentSlug: FullSlug, slug: FullSlug): Promise<HTML
 
 type ActionType = 'quick_open' | 'connector' | 'command'
 type FallbackActionType = Exclude<ActionType, 'command'>
+type CommandLocation =
+  | { readonly type: 'commands' }
+  | { readonly type: 'kernels' }
+  | { readonly type: 'kernel-actions'; readonly snapshot: NotebookKernelSnapshot }
 interface Action {
   name: string
   onClick: (e: MouseEvent) => void
   auxInnerHtml: string
   keepOpen?: boolean
   detail?: string
+  statusLabel?: string
+  statusTone?: NotebookKernelStatus
 }
 
 let actionType: ActionType = 'quick_open'
@@ -316,6 +324,8 @@ document.addEventListener('nav', e => {
   let idDataMap: FullSlug[] = []
   let isActive = true
   let queryGeneration = 0
+  let commandHistory: CommandLocation[] = []
+  let commandHistoryIndex = -1
 
   window.addCleanup(() => {
     isActive = false
@@ -349,9 +359,9 @@ document.addEventListener('nav', e => {
     }
 
     actionType = 'quick_open' // reset search type after closing
-    helper.querySelectorAll<HTMLLIElement>('li[data-quick-open]').forEach(el => {
-      el.style.display = ''
-    })
+    commandHistory = []
+    commandHistoryIndex = -1
+    syncPaletteHelper()
     recentItems = []
   }
 
@@ -366,6 +376,9 @@ document.addEventListener('nav', e => {
   function syncPaletteHelper() {
     helper.querySelectorAll<HTMLLIElement>('li[data-quick-open]').forEach(el => {
       el.style.display = actionType === 'quick_open' ? '' : 'none'
+    })
+    helper.querySelectorAll<HTMLLIElement>('li[data-command]').forEach(el => {
+      el.style.display = actionType === 'command' ? '' : 'none'
     })
   }
 
@@ -569,7 +582,23 @@ document.addEventListener('nav', e => {
     },
   ]
 
-  const createActComponent = ({ name, auxInnerHtml, onClick, keepOpen, detail }: Action) => {
+  function createStatusComponent(tone: NotebookKernelStatus, label: string) {
+    const status = document.createElement('span')
+    status.className = 'suggestion-status'
+    status.dataset.statusTone = tone
+    status.textContent = label
+    return status
+  }
+
+  const createActComponent = ({
+    name,
+    auxInnerHtml,
+    onClick,
+    keepOpen,
+    detail,
+    statusLabel,
+    statusTone,
+  }: Action) => {
     const item = document.createElement('div')
     item.classList.add('suggestion-item')
 
@@ -588,6 +617,7 @@ document.addEventListener('nav', e => {
 
     const aux = document.createElement('div')
     aux.classList.add('suggestion-aux')
+    if (statusTone && statusLabel) aux.append(createStatusComponent(statusTone, statusLabel))
     appendActionAux(aux, auxInnerHtml)
     item.append(content, aux)
 
@@ -630,18 +660,43 @@ document.addEventListener('nav', e => {
     if (transition) transitionCommandItems()
   }
 
-  function showCommandItems(transition = false) {
+  function recordCommandLocation(location: CommandLocation) {
+    commandHistory = commandHistory.slice(0, commandHistoryIndex + 1)
+    commandHistory.push(location)
+    commandHistoryIndex = commandHistory.length - 1
+  }
+
+  function renderCommandLocation(location: CommandLocation, transition = false) {
     queryGeneration += 1
     actionType = 'command'
     syncPaletteHelper()
-    bar.value = commandInputValue()
-    currentSearchTerm = ''
-    getCommandItems(COMMAND_ACTS, transition)
+    if (location.type === 'commands') {
+      bar.value = commandInputValue()
+      currentSearchTerm = ''
+      getCommandItems(COMMAND_ACTS, transition)
+      return
+    }
+    if (location.type === 'kernels') {
+      renderKernelItems(transition)
+      return
+    }
+    renderKernelActionItems(location.snapshot, transition)
   }
 
-  function showKernelItems() {
-    actionType = 'command'
-    syncPaletteHelper()
+  function showCommandLocation(location: CommandLocation, transition = false, record = true) {
+    if (record) recordCommandLocation(location)
+    renderCommandLocation(location, transition)
+  }
+
+  function showCommandItems(transition = false, record = true) {
+    showCommandLocation({ type: 'commands' }, transition, record)
+  }
+
+  function showKernelItems(transition = true, record = true) {
+    showCommandLocation({ type: 'kernels' }, transition, record)
+  }
+
+  function renderKernelItems(transition = true) {
     bar.value = commandInputValue('kernels')
     currentSearchTerm = ''
     const snapshots = notebookKernelSnapshots()
@@ -658,16 +713,24 @@ document.addEventListener('nav', e => {
         : snapshots.map(snapshot => ({
             name: `${snapshot.language} kernel`,
             detail: notebookKernelSourceLabel(snapshot.sourcePath),
-            auxInnerHtml: `<kbd>↵</kbd> ${notebookKernelStatusLabel(snapshot)}`,
+            auxInnerHtml: '<kbd>↵</kbd>',
             keepOpen: true,
+            statusLabel: notebookKernelStatusLabel(snapshot),
+            statusTone: snapshot.status,
             onClick: () => showKernelActionItems(snapshot),
           }))
-    getCommandItems(acts, true)
+    getCommandItems(acts, transition)
   }
 
-  function showKernelActionItems(snapshot: NotebookKernelSnapshot) {
-    actionType = 'command'
-    syncPaletteHelper()
+  function showKernelActionItems(
+    snapshot: NotebookKernelSnapshot,
+    transition = true,
+    record = true,
+  ) {
+    showCommandLocation({ type: 'kernel-actions', snapshot }, transition, record)
+  }
+
+  function renderKernelActionItems(snapshot: NotebookKernelSnapshot, transition = true) {
     bar.value = commandInputValue(`kernels ${snapshot.language}`)
     currentSearchTerm = ''
     const detail = `${notebookKernelSourceLabel(snapshot.sourcePath)} - ${notebookKernelStatusLabel(
@@ -681,7 +744,7 @@ document.addEventListener('nav', e => {
       onClick: () => {
         dispatchNotebookKernelCommand(snapshot, command)
         notifyToast(`${snapshot.language} kernel ${command} requested`)
-        window.setTimeout(showKernelItems, 140)
+        window.setTimeout(() => showKernelItems(true, false), 140)
       },
     })
     getCommandItems(
@@ -693,11 +756,20 @@ document.addEventListener('nav', e => {
           name: 'back to available kernels',
           auxInnerHtml: '<kbd>↵</kbd>',
           keepOpen: true,
-          onClick: showKernelItems,
+          onClick: () => showKernelItems(true),
         },
       ],
-      true,
+      transition,
     )
+  }
+
+  function navigateCommandHistory(delta: -1 | 1): boolean {
+    if (actionType !== 'command') return false
+    const nextIndex = commandHistoryIndex + delta
+    if (nextIndex < 0 || nextIndex >= commandHistory.length) return false
+    commandHistoryIndex = nextIndex
+    renderCommandLocation(commandHistory[commandHistoryIndex], true)
+    return true
   }
 
   let recentItems: Item[] = []
@@ -847,6 +919,8 @@ document.addEventListener('nav', e => {
         e.preventDefault()
         anchor.click()
       }
+    } else if (actionType === 'command' && (e.key === 'ArrowLeft' || e.key === 'ArrowRight')) {
+      if (navigateCommandHistory(e.key === 'ArrowLeft' ? -1 : 1)) e.preventDefault()
     } else if (e.key === 'ArrowUp' || (e.ctrlKey && e.key === 'p')) {
       e.preventDefault()
       const items = output.querySelectorAll<HTMLDivElement>('.suggestion-item')
@@ -962,6 +1036,9 @@ document.addEventListener('nav', e => {
     }
     if (actionType !== nextActionType) {
       actionType = nextActionType
+      if (actionType === 'command' && commandHistoryIndex === -1) {
+        recordCommandLocation({ type: 'commands' })
+      }
       syncPaletteHelper()
     }
     currentSearchTerm = actionType === 'command' ? commandSearchTerm(value) : value

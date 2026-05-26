@@ -1,7 +1,16 @@
 export const notebookKernelRequestEvent = 'notebookkernelrequest'
 export const notebookKernelCommandEvent = 'notebookkernelcommand'
 
-export type NotebookKernelStatus = 'available' | 'warming' | 'ready' | 'running'
+export type NotebookKernelStatus =
+  | 'available'
+  | 'warming'
+  | 'ready'
+  | 'running'
+  | 'failed'
+  | 'interrupting'
+  | 'interrupted'
+  | 'killed'
+  | 'stopped'
 export type NotebookKernelCommand = 'kill' | 'restart' | 'interrupt'
 
 export type NotebookKernelSnapshot = {
@@ -10,6 +19,7 @@ export type NotebookKernelSnapshot = {
   readonly language: string
   readonly status: NotebookKernelStatus
   readonly runningCellId?: string
+  readonly statusDetail?: string
 }
 
 export type NotebookKernelRequestDetail = {
