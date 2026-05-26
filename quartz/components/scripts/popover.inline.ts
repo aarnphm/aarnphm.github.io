@@ -1,12 +1,5 @@
-import {
-  arrow as floatingArrow,
-  computePosition,
-  flip,
-  inline,
-  Placement,
-  shift,
-  Strategy,
-} from '@floating-ui/dom'
+import type { Placement, ReferenceElement, Strategy, VirtualElement } from '@floating-ui/dom'
+import { arrow as floatingArrow, computePosition, flip, shift } from '@floating-ui/dom'
 import xmlFormat from 'xml-formatter'
 import { getContentType } from '../../util/mime'
 import { FullSlug, getFullSlug, normalizeRelativeURLs } from '../../util/path'
@@ -45,6 +38,11 @@ interface ShowPopoverOptions {
   strategy?: Strategy
   hash?: string
   popoverInner?: HTMLElement
+}
+
+interface Point {
+  x: number
+  y: number
 }
 
 const blobCleanupMap = new Map<string, NodeJS.Timeout>()
@@ -139,6 +137,69 @@ function positionPopoverArrow(
       arrowElement.style.right = offset
       break
   }
+}
+
+function isVisibleRect(rect: DOMRectReadOnly): boolean {
+  return rect.width > 0 && rect.height > 0
+}
+
+function squaredDistanceToRect(point: Point, rect: DOMRectReadOnly): number {
+  const dx = point.x < rect.left ? rect.left - point.x : Math.max(point.x - rect.right, 0)
+  const dy = point.y < rect.top ? rect.top - point.y : Math.max(point.y - rect.bottom, 0)
+  return dx * dx + dy * dy
+}
+
+function closestRectToPoint(rects: DOMRect[], point: Point): DOMRect | undefined {
+  let closest = rects[0]
+  let closestDistance = closest ? squaredDistanceToRect(point, closest) : Number.POSITIVE_INFINITY
+
+  for (let index = 1; index < rects.length; index++) {
+    const rect = rects[index]
+    const distance = squaredDistanceToRect(point, rect)
+    if (distance < closestDistance) {
+      closest = rect
+      closestDistance = distance
+    }
+  }
+
+  return closest
+}
+
+function textClientRects(element: HTMLElement): DOMRect[] {
+  const rects: DOMRect[] = []
+  const walker = document.createTreeWalker(element, NodeFilter.SHOW_TEXT, {
+    acceptNode(node) {
+      return node.textContent?.trim() ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT
+    },
+  })
+  const range = document.createRange()
+
+  while (walker.nextNode()) {
+    range.selectNodeContents(walker.currentNode)
+    rects.push(...Array.from(range.getClientRects()).filter(isVisibleRect))
+  }
+
+  range.detach()
+  return rects
+}
+
+function pointRectFromContentRect(rect: DOMRectReadOnly, point: Point): DOMRect {
+  const x = Math.min(Math.max(point.x, rect.left), rect.right)
+  const y = Math.min(Math.max(point.y, rect.top), rect.bottom)
+  return new DOMRect(x, y, 0, 0)
+}
+
+function popoverReference(link: HTMLElement, point: Point): ReferenceElement {
+  const textRect = closestRectToPoint(textClientRects(link), point)
+  if (!textRect) return link
+
+  const rect = pointRectFromContentRect(textRect, point)
+  const reference: VirtualElement = {
+    contextElement: link,
+    getBoundingClientRect: () => rect,
+    getClientRects: () => [rect],
+  }
+  return reference
 }
 
 function findHashTarget(container: ParentNode, hash: string, prefix = ''): HTMLElement | null {
@@ -281,8 +342,9 @@ async function setPosition(
   { clientX, clientY, placement, strategy = 'fixed' }: PositioningOptions,
 ) {
   const arrowElement = popoverElement.querySelector<HTMLElement>('.popover-arrow')
+  const point = { x: clientX, y: clientY }
+  const reference = popoverReference(link, point)
   const middleware = [
-    inline({ x: clientX, y: clientY }),
     shift(),
     flip(),
     arrowElement ? floatingArrow({ element: arrowElement, padding: 12 }) : null,
@@ -292,7 +354,7 @@ async function setPosition(
     y,
     placement: finalPlacement,
     middlewareData,
-  } = await computePosition(link, popoverElement, { placement, strategy, middleware })
+  } = await computePosition(reference, popoverElement, { placement, strategy, middleware })
 
   popoverElement.style.position = strategy
   popoverElement.style.transform = `translate(${Math.round(x)}px, ${Math.round(y)}px)`

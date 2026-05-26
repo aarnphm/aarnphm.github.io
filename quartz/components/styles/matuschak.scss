@@ -329,6 +329,47 @@ a {
           }
         }
 
+        .stacked-note-footer {
+          border-top: 1px solid var(--lightgray);
+          color: var(--gray);
+          font-size: 0.72rem;
+          font-weight: 300;
+          line-height: 1.45;
+          margin-top: 2.25rem;
+          padding-top: 0.85rem;
+
+          .stacked-note-content-meta {
+            cursor: default;
+            display: flex;
+            flex-flow: row wrap;
+            gap: 0.35rem 0.8rem;
+            margin: 0;
+            padding: 0;
+          }
+
+          li {
+            align-items: baseline;
+            display: inline-flex;
+            gap: 0.28rem;
+            min-width: 0;
+          }
+
+          h2 {
+            color: var(--gray);
+            font: inherit;
+            margin: 0;
+            opacity: 0.72;
+            text-transform: lowercase;
+          }
+
+          .container {
+            align-items: baseline;
+            display: inline-flex;
+            gap: 0.25rem;
+            min-width: 0;
+          }
+        }
+
         .stacked-title {
           writing-mode: vertical-rl;
           background: var(--light);

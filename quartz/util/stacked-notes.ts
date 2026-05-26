@@ -1,4 +1,5 @@
 const DOT_ESCAPE = '___DOT___'
+export const STACKED_NOTE_METADATA_CLASSES = ['modified-time', 'published-time', 'reading-time']
 
 function bytesToBase64(bytes: Uint8Array): string {
   let binary = ''
@@ -57,4 +58,30 @@ export function decodeStackedNoteHash(hash: string): string | null {
   }
 
   return normalizeStackedNoteSlug(decoded.replace(/___DOT___/g, '.'))
+}
+
+function fragmentHasClass(fragment: string, className: string): boolean {
+  return (
+    fragment.includes(`"${className}`) ||
+    fragment.includes(` ${className}`) ||
+    fragment.includes(`${className}"`)
+  )
+}
+
+export function stackedNoteMetadataHtml(items: string[]): string {
+  const ordered: string[] = []
+  for (const className of STACKED_NOTE_METADATA_CLASSES) {
+    for (const item of items) {
+      if (!fragmentHasClass(item, className) || ordered.includes(item)) continue
+      ordered.push(item)
+    }
+  }
+
+  if (ordered.length === 0) return ''
+
+  return `<footer class="stacked-note-footer" aria-label="note metadata">
+  <ul class="content-meta stacked-note-content-meta">
+${ordered.map(item => `    ${item}`).join('\n')}
+  </ul>
+</footer>`
 }

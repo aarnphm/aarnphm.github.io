@@ -6,7 +6,12 @@ import {
   normalizeRelativeURLs,
   sluggify,
 } from '../../util/path'
-import { decodeStackedNoteHash, hashStackedNoteSlug } from '../../util/stacked-notes'
+import {
+  STACKED_NOTE_METADATA_CLASSES,
+  decodeStackedNoteHash,
+  hashStackedNoteSlug,
+  stackedNoteMetadataHtml,
+} from '../../util/stacked-notes'
 import { Toast } from './toast'
 import {
   cacheStackedNotePayload,
@@ -460,6 +465,10 @@ class StackedNoteManager {
     const html = p.parseFromString(payload.content, 'text/html')
     normalizeRelativeURLs(html, target)
     transformHostInternalLinks(html)
+    const metadataHtml =
+      payload.metadata && payload.metadata.trim().length > 0
+        ? payload.metadata
+        : this.metadataHtmlFromDocument(html)
 
     const elements = Array.from(html.body.children).flatMap(el =>
       el instanceof HTMLElement ? [el] : [],
@@ -470,9 +479,17 @@ class StackedNoteManager {
       title: payload.title,
       hash,
       bodyHtml: this.serializeElements(elements),
-      metadataHtml: payload.metadata ?? '',
+      metadataHtml,
       state: payload.state,
     }
+  }
+
+  private metadataHtmlFromDocument(html: Document): string {
+    const items = STACKED_NOTE_METADATA_CLASSES.flatMap(className => {
+      const item = html.querySelector(`.page-header .content-meta > li.${className}`)
+      return item instanceof HTMLElement ? [item.outerHTML] : []
+    })
+    return stackedNoteMetadataHtml(items)
   }
 
   private async fetchContent(url: URL, slug: string): Promise<NoteDocument> {

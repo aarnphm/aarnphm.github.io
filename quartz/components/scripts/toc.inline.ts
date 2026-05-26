@@ -5,8 +5,15 @@ let ag: RoughAnnotation | null = null
 let tocController: AbortController | null = null
 const tocScrollBuffer = 48
 const tocHoverSigma = 42
+const tocHoverRadius = tocHoverSigma * 3
 const tocHoverLerp = 0.32
 const tocHoverEpsilon = 0.08
+
+interface TocButtonMetric {
+  button: HTMLButtonElement
+  fill: HTMLElement | null
+  centerY: number
+}
 const observer = new IntersectionObserver(entries => {
   for (const entry of entries) {
     const slug = entry.target.id
@@ -25,7 +32,7 @@ const observer = new IntersectionObserver(entries => {
     const inView = entry.boundingClientRect.y < windowHeight
     if (layout === 'minimal') {
       tocEntryElement.classList.toggle('in-view', inView)
-      if (inView && tocEntryElement instanceof HTMLButtonElement) {
+      if (entry.isIntersecting && tocEntryElement instanceof HTMLButtonElement) {
         scrollTocButtonIntoView(tocEntryElement)
       }
     } else {
@@ -133,6 +140,8 @@ function setupToc() {
   const controller = new AbortController()
   const { signal } = controller
   tocController = controller
+  let metrics = readTocButtonMetrics(buttons)
+  let maxScale = readTocMaxScale(nav, metrics)
 
   for (const button of buttons) {
     button.addEventListener('click', onClick, { signal })
@@ -143,6 +152,7 @@ function setupToc() {
   let targetMouseY = 0
   let activeButton: HTMLButtonElement | null = null
   let hovering = false
+  let touchedButtons = new Set<HTMLButtonElement>()
 
   const scheduleHover = () => {
     if (frame === 0) {
@@ -169,29 +179,34 @@ function setupToc() {
     activeButton = null
     hideTocLabel(toc)
     resetTocButtons(buttons)
+    touchedButtons.clear()
   }
 
   const updateHover = () => {
     frame = 0
     currentMouseY += (targetMouseY - currentMouseY) * tocHoverLerp
 
-    const fill = buttons[0]?.querySelector<HTMLElement>('.fill')
-    const baseWidth = Math.max(1, fill?.offsetWidth ?? 1)
-    const maxScale = Math.max(1, nav.clientWidth / baseWidth)
-    let nearestButton: HTMLButtonElement | null = null
-    let nearestDistance = Number.POSITIVE_INFINITY
+    const contentMouseY = currentMouseY + nav.scrollTop
+    const nextTouchedButtons = new Set<HTMLButtonElement>()
+    const startIndex = firstTocMetricIndexAt(metrics, contentMouseY - tocHoverRadius)
+    const endIndex = firstTocMetricIndexAt(metrics, contentMouseY + tocHoverRadius)
 
-    buttons.forEach(button => {
-      const distance = updateTocButtonFill(button, nav, currentMouseY, maxScale)
-      const absoluteDistance = Math.abs(distance)
-      if (absoluteDistance < nearestDistance) {
-        nearestDistance = absoluteDistance
-        nearestButton = button
+    for (let index = startIndex; index < endIndex; index++) {
+      const metric = metrics[index]
+      updateTocButtonFill(metric, contentMouseY, maxScale)
+      nextTouchedButtons.add(metric.button)
+    }
+
+    touchedButtons.forEach(button => {
+      if (!nextTouchedButtons.has(button)) {
+        resetTocButton(button)
       }
     })
+    touchedButtons = nextTouchedButtons
 
-    if (nearestButton) {
-      activeButton = updateTocLabel(toc, nearestButton, activeButton, currentMouseY)
+    const nearestMetric = nearestTocMetric(metrics, contentMouseY)
+    if (nearestMetric) {
+      activeButton = updateTocLabel(toc, nearestMetric.button, activeButton, currentMouseY)
     }
 
     if (hovering && Math.abs(targetMouseY - currentMouseY) > tocHoverEpsilon) {
@@ -219,32 +234,72 @@ function setupToc() {
     { passive: true, signal },
   )
 
-  requestAnimationFrame(() => updateTocOverflow(nav))
-}
-
-function resetTocButtons(buttons?: NodeListOf<HTMLButtonElement>) {
-  buttons?.forEach(button => {
-    const fill = button.querySelector<HTMLElement>('.fill')
-    if (!fill) return
-
-    fill.style.animation = 'none'
-    fill.style.transform = 'scaleX(1)'
-    fill.style.opacity = ''
+  requestAnimationFrame(() => {
+    metrics = readTocButtonMetrics(buttons)
+    maxScale = readTocMaxScale(nav, metrics)
+    updateTocOverflow(nav)
   })
 }
 
-function updateTocButtonFill(
-  button: HTMLButtonElement,
-  nav: HTMLElement,
-  mouseY: number,
-  maxScale: number,
-): number {
-  const fill = button.querySelector<HTMLElement>('.fill')
-  if (!fill) return Number.POSITIVE_INFINITY
+function resetTocButtons(buttons?: NodeListOf<HTMLButtonElement>) {
+  buttons?.forEach(resetTocButton)
+}
 
-  const buttonHeight = button.offsetHeight
-  const buttonY = button.offsetTop - nav.scrollTop + buttonHeight / 2
-  const distance = mouseY - buttonY
+function resetTocButton(button: HTMLButtonElement) {
+  const fill = button.querySelector<HTMLElement>('.fill')
+  if (!fill) return
+
+  fill.style.animation = 'none'
+  fill.style.transform = 'scaleX(1)'
+  fill.style.opacity = ''
+}
+
+function readTocButtonMetrics(buttons: NodeListOf<HTMLButtonElement>): TocButtonMetric[] {
+  const metrics: TocButtonMetric[] = []
+  buttons.forEach(button => {
+    metrics.push({
+      button,
+      fill: button.querySelector<HTMLElement>('.fill'),
+      centerY: button.offsetTop + button.offsetHeight / 2,
+    })
+  })
+  return metrics
+}
+
+function readTocMaxScale(nav: HTMLElement, metrics: TocButtonMetric[]): number {
+  const baseWidth = Math.max(1, metrics[0]?.fill?.offsetWidth ?? 1)
+  return Math.max(1, nav.clientWidth / baseWidth)
+}
+
+function firstTocMetricIndexAt(metrics: TocButtonMetric[], centerY: number): number {
+  let low = 0
+  let high = metrics.length
+  while (low < high) {
+    const mid = Math.floor((low + high) / 2)
+    if (metrics[mid].centerY < centerY) {
+      low = mid + 1
+    } else {
+      high = mid
+    }
+  }
+  return low
+}
+
+function nearestTocMetric(metrics: TocButtonMetric[], centerY: number): TocButtonMetric | null {
+  const nextIndex = firstTocMetricIndexAt(metrics, centerY)
+  const previous = metrics[nextIndex - 1]
+  const next = metrics[nextIndex]
+  if (!previous) return next ?? null
+  if (!next) return previous
+
+  return centerY - previous.centerY <= next.centerY - centerY ? previous : next
+}
+
+function updateTocButtonFill(metric: TocButtonMetric, mouseY: number, maxScale: number): void {
+  const { button, fill } = metric
+  if (!fill) return
+
+  const distance = mouseY - metric.centerY
   const falloff = Math.exp(-(distance * distance) / (2 * tocHoverSigma * tocHoverSigma))
   const scale = 1 + (maxScale - 1) * falloff
   const restingOpacity = button.classList.contains('in-view') ? 0.75 : 0.35
@@ -253,7 +308,6 @@ function updateTocButtonFill(
   fill.style.animation = 'none'
   fill.style.opacity = opacity.toFixed(3)
   fill.style.transform = `scaleX(${scale.toFixed(3)})`
-  return distance
 }
 
 function hideTocLabel(toc: HTMLElement) {
@@ -311,7 +365,7 @@ function scrollTocButtonIntoView(button: HTMLButtonElement) {
   }
 
   if (Math.abs(nextScroll - nav.scrollTop) >= 1) {
-    nav.scrollTo({ top: nextScroll, behavior: 'smooth' })
+    nav.scrollTop = nextScroll
   }
 }
 
