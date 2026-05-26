@@ -846,7 +846,7 @@ article:has(.notebook-runtime) {
   }
 
   .notebook-output-tabs {
-    --notebook-output-panel-height: 150px;
+    --notebook-output-panel-height: 120px;
     --notebook-output-tab-active-surface: color-mix(
       in srgb,
       var(--notebook-active-green) 16%,
