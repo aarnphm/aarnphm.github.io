@@ -895,7 +895,8 @@ document.addEventListener('nav', e => {
     )
       return
 
-    if (e.key === 'o' && (e.ctrlKey || e.metaKey)) {
+    const key = e.key.toLowerCase()
+    if (key === 'o' && (e.ctrlKey || e.metaKey)) {
       e.preventDefault()
       const barOpen = container?.classList.contains('active')
       if (barOpen) {
@@ -904,7 +905,16 @@ document.addEventListener('nav', e => {
         showPalette('quick_open')
       }
       return
-    } else if (e.key === 'p' && (e.altKey || e.metaKey || e.ctrlKey)) {
+    } else if (key === 'p' && e.shiftKey && (e.ctrlKey || e.metaKey)) {
+      e.preventDefault()
+      const barOpen = container?.classList.contains('active')
+      if (barOpen) {
+        hidePalette()
+      } else {
+        showPalette('command', 'quick_open')
+      }
+      return
+    } else if (key === 'p' && (e.altKey || e.metaKey || e.ctrlKey)) {
       e.preventDefault()
       const barOpen = container?.classList.contains('active')
       if (barOpen) {
