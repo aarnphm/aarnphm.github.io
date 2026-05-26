@@ -83,6 +83,13 @@ function createPopoverElement(...classes: string[]): {
   return { popoverElement, popoverInner }
 }
 
+function findHashTarget(container: ParentNode, hash: string, prefix = ''): HTMLElement | null {
+  const rawId = hash.startsWith('#') ? hash.slice(1) : hash
+  if (!rawId) return null
+  const id = prefix && !rawId.startsWith(prefix) ? `${prefix}${rawId}` : rawId
+  return container.querySelector<HTMLElement>(`#${CSS.escape(id)}`)
+}
+
 async function handleImageContent(targetUrl: URL, popoverInner: HTMLDivElement) {
   const img = document.createElement('img')
   img.src = targetUrl.toString()
@@ -190,8 +197,7 @@ async function showPopover(
 
   const { hash, popoverInner } = options
   if (hash && hash !== '' && popoverInner) {
-    const targetAnchor = hash.startsWith('#popover') ? hash : `#popover-${hash.slice(1)}`
-    const heading = popoverInner.querySelector(targetAnchor) as HTMLElement | null
+    const heading = findHashTarget(popoverInner, hash, 'popover-')
     if (heading) {
       popoverInner.scroll({ top: heading.offsetTop - 12, behavior: 'instant' })
     }
@@ -476,8 +482,7 @@ async function handleStackedNotes(
   popoverElement.style.opacity = '1'
 
   if (hash !== '') {
-    const targetAnchor = hash.startsWith('#popover') ? hash : `#popover-${hash.slice(1)}`
-    const heading = popoverInner.querySelector(targetAnchor) as HTMLElement | null
+    const heading = findHashTarget(popoverInner, hash, 'popover-')
     if (heading) {
       popoverInner.scroll({ top: heading.offsetTop - 12, behavior: 'instant' })
     }
@@ -543,8 +548,7 @@ async function mouseEnterHandler(
     clearActivePopover()
     if (hash !== '') {
       const article = document.querySelector('article')
-      const targetAnchor = hash.startsWith('#popover') ? hash : `#popover-${hash.slice(1)}`
-      const heading = article?.querySelector(targetAnchor) as HTMLElement | null
+      const heading = article ? findHashTarget(article, hash) : null
       if (heading) {
         heading.classList.add('dag')
         const cleanup = () => {
@@ -677,14 +681,12 @@ async function mouseClickHandler(evt: MouseEvent) {
   }
 
   if (compareUrls(thisUrl, targetUrl) && hash !== '') {
-    evt.preventDefault()
     const mainContent = document.querySelector('article')
-    const targetAnchor = hash.startsWith('#popover') ? hash : `#popover-${hash.slice(1)}`
-    const heading = mainContent?.querySelector(targetAnchor) as HTMLElement | null
-    if (heading) {
-      heading.scrollIntoView({ behavior: 'smooth' })
-      history.pushState(null, '', hash)
-    }
+    const heading = mainContent ? findHashTarget(mainContent, hash) : null
+    if (!heading) return
+    evt.preventDefault()
+    heading.scrollIntoView({ behavior: 'smooth' })
+    history.pushState(null, '', hash)
   }
 }
 

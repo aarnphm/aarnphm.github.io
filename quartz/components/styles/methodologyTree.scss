@@ -4,7 +4,6 @@
 $tree-margin-y: 1.75rem;
 $tree-padding-y: 1.5rem;
 $tree-padding-x: 1.75rem;
-$tree-border-radius: var(--radius-none);
 $header-margin-bottom: 1.5rem;
 $step-gap: 0.85rem;
 $rail-width: 1.65rem;
@@ -20,7 +19,7 @@ $mobile-marker-size: 1.7rem;
 .methodology-tree {
   margin: $tree-margin-y 0;
   padding: $tree-padding-y $tree-padding-x;
-  border-radius: $tree-border-radius;
+  border-radius: var(--radius-7-2);
   border: 1px solid color-mix(in srgb, var(--gray) 28%, transparent);
   background: color-mix(in srgb, var(--light) 94%, rgba(255, 255, 255, 0));
 
@@ -164,7 +163,6 @@ $mobile-marker-size: 1.7rem;
     justify-content: center;
     background: color-mix(in srgb, var(--foam) 32%, transparent);
     border: 1px solid color-mix(in srgb, var(--iris) 28%, transparent);
-    box-shadow: 0 6px 14px -10px color-mix(in srgb, var(--iris) 45%, transparent);
   }
 
   .step-sequence {

@@ -7,7 +7,7 @@ aliases:
 date: '2025-08-09'
 description: just another fish in the sea.
 id: dating
-modified: 2026-05-09 17:51:35 GMT-04:00
+modified: 2026-05-26 14:46:20 GMT-04:00
 slides: true
 tags:
   - evergreen
@@ -129,9 +129,7 @@ My approach to problems has stayed consistent since I learned arithmetic: ==don'
 
 I might not be good at something initially, but i find being autistic enough to care about a specific domain (_scaling [[thoughts/AGI|intelligence]]_) has got me to a spot that make 5-year-old Aaron proud.
 
-> I know that the next section on my research interest can be a bit long, feel free to skip it [[#personal life.|to the next topic]]! Otherwise hopefully it captures topics I'm currently fascinated with (as of oct, 2025)
-
-![[research#{collapsed: true}|research interests]]
+I have some [[research|research interests]] that I'm currently exploring, so I implore you to read it. I know that it is a bit long, so feel free to skip it [[#personal life.|to the next topic]]! Otherwise hopefully it captures topics I'm currently fascinated with (as of oct, 2025)
 
 ---
 

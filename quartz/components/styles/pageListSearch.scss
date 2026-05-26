@@ -89,3 +89,7 @@ li.section-li {
     background: var(--lightgray);
   }
 }
+
+.preview-container > .preview-inner:has(.page-list-search-container) {
+  margin-top: 1rem;
+}
