@@ -784,6 +784,29 @@ body[data-arena-subpage='true'] {
     height: 100%;
     min-height: 0;
     display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    overflow: hidden;
+  }
+
+  .arena-modal-capture-link {
+    display: block;
+    width: auto;
+    height: auto;
+    max-width: 100%;
+    max-height: 100%;
+    cursor: pointer;
+  }
+
+  .arena-modal-capture {
+    display: block;
+    width: auto;
+    height: auto;
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    object-position: top center;
+    background: var(--light);
   }
 
   .arena-modal-iframe-youtube {

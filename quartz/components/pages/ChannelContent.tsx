@@ -8,7 +8,11 @@ import {
   QuartzComponentProps,
 } from '../../types/component'
 import { toArenaJsx, fromHtmlStringToArenaJsx, arenaBlockTimestamp } from '../../util/arena'
-import { arenaEmbedHtmlPath, type ArenaExternalEmbedMode } from '../../util/arena-embed'
+import {
+  arenaEmbedCapturePath,
+  arenaEmbedHtmlPath,
+  type ArenaExternalEmbedMode,
+} from '../../util/arena-embed'
 import { classNames } from '../../util/lang'
 import { FullSlug, slugTag, resolveRelative } from '../../util/path'
 import { hostnameMatches } from '../../util/url'
@@ -193,6 +197,30 @@ const ArenaModalMainContent = ({
             open in new tab →
           </a>
         </div>
+      </div>
+    )
+  } else if (targetUrl && externalEmbedMode === 'capture') {
+    content = (
+      <div
+        class="arena-modal-external-host"
+        data-block-id={block.id}
+        data-arena-url={targetUrl}
+        data-arena-embed-mode={externalEmbedMode}
+      >
+        <a
+          href={targetUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="arena-modal-capture-link"
+        >
+          <img
+            class="arena-modal-capture"
+            loading="lazy"
+            decoding="async"
+            alt={`Captured preview: ${frameTitle}`}
+            src={arenaEmbedCapturePath(targetUrl)}
+          />
+        </a>
       </div>
     )
   } else if (targetUrl) {

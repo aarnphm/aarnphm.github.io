@@ -1,5 +1,20 @@
+import puppeteer, { type BrowserWorker } from '@cloudflare/puppeteer'
+
 const ARENA_EMBED_USER_AGENT =
   'Mozilla/5.0 (compatible; AarnphmGardenArena/1.0; +https://aarnphm.xyz/arena)'
+const ARENA_CAPTURE_USER_AGENT =
+  'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36'
+const ARENA_CAPTURE_DEFAULT_WIDTH = 1600
+const ARENA_CAPTURE_DEFAULT_HEIGHT = 900
+const ARENA_CAPTURE_DEFAULT_DPR = 2
+const ARENA_CAPTURE_MIN_WIDTH = 640
+const ARENA_CAPTURE_MAX_WIDTH = 2200
+const ARENA_CAPTURE_MIN_HEIGHT = 360
+const ARENA_CAPTURE_MAX_HEIGHT = 1400
+const ARENA_CAPTURE_MIN_DPR = 1
+const ARENA_CAPTURE_MAX_DPR = 2
+const ARENA_CAPTURE_CACHE_CONTROL =
+  'public, max-age=86400, s-maxage=604800, stale-while-revalidate=86400'
 const ARENA_EMBED_HTML_CSP = [
   "default-src 'none'",
   'img-src https: data:',
@@ -11,7 +26,7 @@ const ARENA_EMBED_HTML_CSP = [
   "form-action 'none'",
 ].join('; ')
 
-type ArenaEmbedCapabilityMode = 'iframe' | 'fetch' | 'disabled'
+type ArenaEmbedCapabilityMode = 'iframe' | 'fetch' | 'capture' | 'disabled'
 type ArenaEmbedUrlUse = 'document' | 'resource'
 type ArenaEmbedBlockReason =
   | 'ok'
@@ -33,6 +48,20 @@ interface ArenaEmbedCapability {
   mode: ArenaEmbedCapabilityMode
   finalUrl?: string
   reason: ArenaEmbedBlockReason
+}
+
+interface ArenaEmbedBrowserEnv {
+  BROWSER: BrowserWorker
+}
+
+interface ArenaEmbedExecutionContext {
+  waitUntil(promise: Promise<unknown>): void
+}
+
+export interface ArenaEmbedCaptureViewport {
+  width: number
+  height: number
+  dpr: number
 }
 
 type ArenaEmbedTarget =
@@ -157,6 +186,85 @@ function arenaTextResponse(message: string, status: number): Response {
   })
 }
 
+function arenaCaptureHeaders(cacheStatus: 'HIT' | 'MISS'): Headers {
+  return new Headers({
+    'Content-Type': 'image/webp',
+    'Cache-Control': ARENA_CAPTURE_CACHE_CONTROL,
+    'X-Content-Type-Options': 'nosniff',
+    'X-Arena-Capture-Cache': cacheStatus,
+  })
+}
+
+function byteArrayBody(bytes: Uint8Array): ArrayBuffer {
+  const body = new Uint8Array(bytes.byteLength)
+  body.set(bytes)
+  return body.buffer
+}
+
+function clampNumber(value: number, min: number, max: number): number {
+  return Math.min(max, Math.max(min, value))
+}
+
+function readBoundedInteger(
+  value: string | null,
+  fallback: number,
+  min: number,
+  max: number,
+): number {
+  if (!value) return fallback
+  const parsed = Number.parseInt(value, 10)
+  if (!Number.isFinite(parsed)) return fallback
+  return clampNumber(parsed, min, max)
+}
+
+function readBoundedNumber(
+  value: string | null,
+  fallback: number,
+  min: number,
+  max: number,
+): number {
+  if (!value) return fallback
+  const parsed = Number.parseFloat(value)
+  if (!Number.isFinite(parsed)) return fallback
+  return clampNumber(parsed, min, max)
+}
+
+export function readArenaEmbedCaptureViewport(params: URLSearchParams): ArenaEmbedCaptureViewport {
+  return {
+    width: readBoundedInteger(
+      params.get('w'),
+      ARENA_CAPTURE_DEFAULT_WIDTH,
+      ARENA_CAPTURE_MIN_WIDTH,
+      ARENA_CAPTURE_MAX_WIDTH,
+    ),
+    height: readBoundedInteger(
+      params.get('h'),
+      ARENA_CAPTURE_DEFAULT_HEIGHT,
+      ARENA_CAPTURE_MIN_HEIGHT,
+      ARENA_CAPTURE_MAX_HEIGHT,
+    ),
+    dpr: readBoundedNumber(
+      params.get('dpr'),
+      ARENA_CAPTURE_DEFAULT_DPR,
+      ARENA_CAPTURE_MIN_DPR,
+      ARENA_CAPTURE_MAX_DPR,
+    ),
+  }
+}
+
+function arenaEmbedCaptureCacheRequest(
+  requestUrl: URL,
+  targetUrl: URL,
+  viewport: ArenaEmbedCaptureViewport,
+): Request {
+  const cacheUrl = new URL('/api/arena-embed/capture', requestUrl.origin)
+  cacheUrl.searchParams.set('url', targetUrl.toString())
+  cacheUrl.searchParams.set('w', String(viewport.width))
+  cacheUrl.searchParams.set('h', String(viewport.height))
+  cacheUrl.searchParams.set('dpr', String(viewport.dpr))
+  return new Request(cacheUrl.toString(), { method: 'GET' })
+}
+
 function isHtmlResponse(headers: Headers): boolean {
   return (headers.get('Content-Type') ?? '').split(';')[0].trim().toLowerCase() === 'text/html'
 }
@@ -256,16 +364,16 @@ export function classifyArenaFrameHeaders(
   try {
     embedder = new URL(embedderOrigin)
   } catch {
-    return { mode: 'fetch', reason: 'frame-ancestors-mismatch' }
+    return { mode: 'capture', reason: 'frame-ancestors-mismatch' }
   }
 
   for (const sources of frameAncestorSources(headers)) {
-    if (sources.length === 0) return { mode: 'fetch', reason: 'frame-ancestors-empty' }
+    if (sources.length === 0) return { mode: 'capture', reason: 'frame-ancestors-empty' }
     if (sources.some(source => source === "'none'")) {
-      return { mode: 'fetch', reason: 'frame-ancestors-none' }
+      return { mode: 'capture', reason: 'frame-ancestors-none' }
     }
     if (!sources.some(source => sourceMatchesFrameAncestor(source, embedder, targetUrl))) {
-      return { mode: 'fetch', reason: 'frame-ancestors-mismatch' }
+      return { mode: 'capture', reason: 'frame-ancestors-mismatch' }
     }
   }
 
@@ -276,9 +384,9 @@ export function classifyArenaFrameHeaders(
       .map(value => value.trim().toUpperCase())
       .filter(value => value.length > 0)
 
-    if (values.includes('DENY')) return { mode: 'fetch', reason: 'x-frame-options-deny' }
+    if (values.includes('DENY')) return { mode: 'capture', reason: 'x-frame-options-deny' }
     if (values.includes('SAMEORIGIN') && targetUrl.origin !== embedder.origin) {
-      return { mode: 'fetch', reason: 'x-frame-options-sameorigin' }
+      return { mode: 'capture', reason: 'x-frame-options-sameorigin' }
     }
   }
 
@@ -317,7 +425,10 @@ export async function handleArenaEmbedCapability(request: Request): Promise<Resp
     }
 
     const decision = classifyArenaFrameHeaders(upstream.headers, finalUrl, requestUrl.origin)
-    if (decision.mode === 'fetch' && !isHtmlResponse(upstream.headers)) {
+    if (
+      (decision.mode === 'fetch' || decision.mode === 'capture') &&
+      !isHtmlResponse(upstream.headers)
+    ) {
       return arenaJsonResponse(
         { mode: 'disabled', finalUrl: finalUrl.toString(), reason: 'non-html' },
         200,
@@ -327,6 +438,75 @@ export async function handleArenaEmbedCapability(request: Request): Promise<Resp
     return arenaJsonResponse({ ...decision, finalUrl: finalUrl.toString() })
   } catch {
     return arenaJsonResponse({ mode: 'disabled', reason: 'fetch-error' }, 502)
+  }
+}
+
+export async function handleArenaEmbedCapture(
+  request: Request,
+  env: ArenaEmbedBrowserEnv,
+  ctx?: ArenaEmbedExecutionContext,
+): Promise<Response> {
+  if (request.method !== 'GET' && request.method !== 'HEAD') {
+    return arenaTextResponse('method not allowed', 405)
+  }
+
+  const requestUrl = new URL(request.url)
+  const target = validateArenaEmbedTarget(requestUrl.searchParams.get('url'))
+  if (!target.ok) return arenaTextResponse(target.message, target.status)
+  const viewport = readArenaEmbedCaptureViewport(requestUrl.searchParams)
+  const cacheKey = arenaEmbedCaptureCacheRequest(requestUrl, target.url, viewport)
+  const cache = await caches.open('arena-embed-capture')
+  const cached = await cache.match(cacheKey)
+  if (cached) {
+    const headers = new Headers(cached.headers)
+    headers.set('X-Arena-Capture-Cache', 'HIT')
+    if (request.method === 'HEAD') return new Response(null, { headers })
+    return new Response(cached.body, {
+      status: cached.status,
+      statusText: cached.statusText,
+      headers,
+    })
+  }
+
+  if (request.method === 'HEAD') {
+    return new Response(null, { headers: arenaCaptureHeaders('MISS') })
+  }
+
+  let browser: Awaited<ReturnType<typeof puppeteer.launch>> | null = null
+  try {
+    browser = await puppeteer.launch(env.BROWSER)
+    const page = await browser.newPage()
+    await page.setUserAgent(ARENA_CAPTURE_USER_AGENT)
+    await page.setViewport({
+      width: viewport.width,
+      height: viewport.height,
+      deviceScaleFactor: viewport.dpr,
+    })
+    const response = await page.goto(target.url.toString(), {
+      waitUntil: 'networkidle2',
+      timeout: 15000,
+    })
+    if (response && !response.ok())
+      return arenaTextResponse(`upstream error: ${response.status()}`, 502)
+
+    const image = await page.screenshot({
+      type: 'webp',
+      quality: 82,
+      fullPage: false,
+      optimizeForSpeed: true,
+    })
+    const output = new Response(byteArrayBody(image), { headers: arenaCaptureHeaders('MISS') })
+    const cachePut = cache.put(cacheKey, output.clone())
+    if (ctx) {
+      ctx.waitUntil(cachePut)
+    } else {
+      await cachePut
+    }
+    return output
+  } catch {
+    return arenaTextResponse('capture error', 502)
+  } finally {
+    if (browser) await browser.close()
   }
 }
 

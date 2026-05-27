@@ -1,6 +1,8 @@
 import type { ArenaEvent, SearchResultOptions, SearchScope } from './model'
 import {
   arenaEmbedCapabilityPath,
+  arenaEmbedCapturePath,
+  type ArenaEmbedCaptureOptions,
   arenaEmbedHtmlPath,
   type ArenaExternalEmbedMode,
 } from '../../util/arena-embed'
@@ -22,7 +24,7 @@ let registerCleanup: ((cleanup: () => void) => void) | null = null
 const arenaEmbedCapabilityCache = new Map<string, Promise<ArenaEmbedCapability | null>>()
 
 interface ArenaEmbedCapability {
-  mode: 'iframe' | 'fetch' | 'disabled'
+  mode: 'iframe' | 'fetch' | 'capture' | 'disabled'
   finalUrl?: string
   reason?: string
 }
@@ -37,7 +39,9 @@ function readArenaEmbedCapability(value: unknown): ArenaEmbedCapability | null {
   if (!isRecord(value)) return null
 
   const mode = readString(value, 'mode')
-  if (mode !== 'iframe' && mode !== 'fetch' && mode !== 'disabled') return null
+  if (mode !== 'iframe' && mode !== 'fetch' && mode !== 'capture' && mode !== 'disabled') {
+    return null
+  }
 
   const finalUrl = readString(value, 'finalUrl')
   const reason = readString(value, 'reason')
@@ -48,7 +52,9 @@ function readArenaEmbedCapability(value: unknown): ArenaEmbedCapability | null {
 }
 
 function readArenaExternalModeDataset(value: string | undefined): ArenaExternalEmbedMode {
-  if (value === 'iframe' || value === 'fetch' || value === 'none') return value
+  if (value === 'iframe' || value === 'fetch' || value === 'capture' || value === 'none') {
+    return value
+  }
   return 'auto'
 }
 
@@ -107,6 +113,35 @@ function renderFetchedExternalEmbed(host: HTMLElement, targetUrl: string) {
   iframe.src = arenaEmbedHtmlPath(targetUrl)
 }
 
+function captureOptionsForHost(host: HTMLElement): ArenaEmbedCaptureOptions {
+  const rect = host.getBoundingClientRect()
+  const width = Math.round(rect.width || host.clientWidth || window.innerWidth)
+  const hostHeight = rect.height || host.clientHeight || window.innerHeight
+  const height = Math.round(Math.min(hostHeight, window.innerHeight))
+  const dpr = Math.min(2, Math.max(1, Math.ceil(window.devicePixelRatio || 1)))
+  return { width, height, dpr }
+}
+
+function renderCapturedExternalEmbed(host: HTMLElement, targetUrl: string) {
+  host.innerHTML = ''
+  const link = document.createElement('a')
+  link.href = targetUrl
+  link.target = '_blank'
+  link.rel = 'noopener noreferrer'
+  link.className = 'arena-modal-capture-link'
+  const image = document.createElement('img')
+  image.className = 'arena-modal-capture'
+  image.loading = 'lazy'
+  image.decoding = 'async'
+  image.alt = 'Captured preview'
+  const captureOptions = captureOptionsForHost(host)
+  image.width = captureOptions.width ?? 0
+  image.height = captureOptions.height ?? 0
+  image.src = arenaEmbedCapturePath(targetUrl, captureOptions)
+  link.appendChild(image)
+  host.appendChild(link)
+}
+
 async function hydrateExternalEmbedHost(host: HTMLElement) {
   if (!host.isConnected) return
   const targetUrl = host.dataset.arenaUrl
@@ -129,6 +164,12 @@ async function hydrateExternalEmbedHost(host: HTMLElement) {
     return
   }
 
+  if (mode === 'capture') {
+    renderCapturedExternalEmbed(host, targetUrl)
+    host.dataset.arenaEmbedStatus = 'loaded'
+    return
+  }
+
   if (mode === 'iframe') {
     host.dataset.arenaEmbedStatus = 'loaded'
     return
@@ -144,6 +185,8 @@ async function hydrateExternalEmbedHost(host: HTMLElement) {
 
   if (capability.mode === 'fetch') {
     renderFetchedExternalEmbed(host, capability.finalUrl ?? targetUrl)
+  } else if (capability.mode === 'capture') {
+    renderCapturedExternalEmbed(host, capability.finalUrl ?? targetUrl)
   } else if (capability.mode === 'disabled') {
     renderExternalEmbedFallback(host, capability.finalUrl ?? targetUrl)
   }
@@ -838,6 +881,27 @@ function renderExternalModalHtml(
         </div>
       </div>
     `
+  }
+
+  if (mode === 'capture') {
+    return `
+    <div
+      class="arena-modal-external-host"
+      data-block-id="${escapeHtml(block.id)}"
+      data-arena-url="${escapedUrl}"
+      data-arena-embed-mode="${mode}"
+    >
+      <a href="${escapedUrl}" target="_blank" rel="noopener noreferrer" class="arena-modal-capture-link">
+        <img
+          class="arena-modal-capture"
+          loading="lazy"
+          decoding="async"
+          alt="Captured preview: ${escapeHtml(block.title ?? block.content ?? 'Block')}"
+          src="${escapeHtml(arenaEmbedCapturePath(targetUrl))}"
+        />
+      </a>
+    </div>
+  `
   }
 
   const fetched = mode === 'fetch'
