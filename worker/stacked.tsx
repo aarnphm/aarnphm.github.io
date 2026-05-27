@@ -4,6 +4,7 @@ import {
   hashStackedNoteSlug,
   normalizeStackedNoteSlug,
   stackedNoteMetadataHtml,
+  withStackedNoteMetadata,
 } from '../quartz/util/stacked-notes'
 
 export interface StackedNoteData {
@@ -231,10 +232,11 @@ export function buildStackedNoteHtml(
   const right =
     -(NOTE_CONTENT_WIDTH - NOTE_TITLE_WIDTH) + (totalCount - index - 1) * NOTE_TITLE_WIDTH
 
+  const content = withStackedNoteMetadata(note.content, note.metadata)
+
   return `<div class="stacked-note ${note.state}" id="${hashSlug(note.slug)}" data-slug="${escapedSlug}" data-state="${note.state}" style="left: ${left}px; right: ${right}px;">
   <div class="stacked-content">
-    ${note.content}
-    ${note.metadata || ''}
+    ${content}
   </div>
   <div class="stacked-title">${escapedTitle}</div>
 </div>`

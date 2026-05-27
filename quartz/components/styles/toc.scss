@@ -38,13 +38,18 @@ body:has(.toc[data-layout='minimal']) {
   }
 }
 
+body:has(.toc[data-layout='minimal']) .page-content:has(.toc[data-layout='minimal']) {
+  position: relative;
+  isolation: isolate;
+}
+
 body:has(.toc[data-layout='minimal']) .aside-container:has(.toc[data-layout='minimal']) {
   position: relative;
   z-index: var(--z-popover);
   isolation: isolate;
 }
 
-body:has(.toc[data-layout='minimal']) #quartz-root::before {
+body:has(.toc[data-layout='minimal']) .page-content:has(.toc[data-layout='minimal'])::before {
   content: '';
   position: fixed;
   inset: 0;
@@ -57,7 +62,8 @@ body:has(.toc[data-layout='minimal']) #quartz-root::before {
   transition: opacity 0.18s cubic-bezier(0.2, 0, 0, 1);
 }
 
-body:has(.toc[data-layout='minimal'].is-hovering) #quartz-root::before {
+body:has(.toc[data-layout='minimal'].is-hovering)
+  .page-content:has(.toc[data-layout='minimal'])::before {
   opacity: 1;
 }
 

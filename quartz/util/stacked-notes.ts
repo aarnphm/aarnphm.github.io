@@ -85,3 +85,33 @@ ${ordered.map(item => `    ${item}`).join('\n')}
   </ul>
 </footer>`
 }
+
+function tagHasClass(tag: string, className: string): boolean {
+  const classMatch = tag.match(/\sclass=(["'])(.*?)\1/i)
+  if (!classMatch) return false
+  return classMatch[2].split(/\s+/).includes(className)
+}
+
+function findPageFooterIndex(html: string): number {
+  let offset = 0
+  while (offset < html.length) {
+    const start = html.indexOf('<', offset)
+    if (start === -1) return -1
+    const end = html.indexOf('>', start + 1)
+    if (end === -1) return -1
+    const tag = html.slice(start, end + 1)
+    if (!tag.startsWith('</') && tagHasClass(tag, 'page-footer')) return start
+    offset = end + 1
+  }
+  return -1
+}
+
+export function withStackedNoteMetadata(content: string, metadata: string | undefined): string {
+  const footer = metadata?.trim()
+  if (!footer) return content
+
+  const pageFooterIndex = findPageFooterIndex(content)
+  if (pageFooterIndex === -1) return `${content}\n${footer}`
+
+  return `${content.slice(0, pageFooterIndex)}${footer}\n${content.slice(pageFooterIndex)}`
+}

@@ -11,6 +11,7 @@ import {
   decodeStackedNoteHash,
   hashStackedNoteSlug,
   stackedNoteMetadataHtml,
+  withStackedNoteMetadata,
 } from '../../util/stacked-notes'
 import { Toast } from './toast'
 import {
@@ -609,7 +610,7 @@ class StackedNoteManager {
   private mountBody(node: DagNode) {
     if (node.mounted.mounted) return
     const { bodyHost } = node.mounted
-    bodyHost.innerHTML = `${node.document.bodyHtml}${node.document.metadataHtml ?? ''}`
+    bodyHost.innerHTML = withStackedNoteMetadata(node.document.bodyHtml, node.document.metadataHtml)
     bodyHost.dataset.virtualized = 'mounted'
     transformHostInternalLinks(bodyHost)
     this.updateDagClasses(bodyHost)
