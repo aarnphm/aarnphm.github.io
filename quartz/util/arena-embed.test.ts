@@ -4,7 +4,9 @@ import {
   arenaEmbedCapabilityPath,
   arenaEmbedCapturePath,
   arenaEmbedHtmlPath,
+  arenaPdfFilenameFromUrl,
   defaultArenaExternalEmbedMode,
+  isArenaPdfUrl,
   readArenaExternalEmbedMode,
 } from './arena-embed'
 
@@ -59,5 +61,17 @@ describe('arena embeds', () => {
       arenaEmbedCapturePath(rawUrl, { width: 1800, height: 920, dpr: 2 }),
       '/api/arena-embed/capture?url=https%3A%2F%2Fstripe.dev%2F%3Fq%3Da%20b&w=1800&h=920&dpr=2',
     )
+  })
+
+  test('detects PDF URLs and extracts stable filenames', () => {
+    const rawUrl =
+      'https://static1.squarespace.com/static/5e17b4d3834ea27accf7ef85/t/6837d373c8563c07dea5e115/1748489076368/Anderson%2C+Phenomenology+and+the+Ethics+of+Love+article+Symposium.pdf'
+    assert.strictEqual(isArenaPdfUrl(rawUrl), true)
+    assert.strictEqual(isArenaPdfUrl('https://stripe.dev/'), false)
+    assert.strictEqual(
+      arenaPdfFilenameFromUrl(rawUrl),
+      'Anderson,+Phenomenology+and+the+Ethics+of+Love+article+Symposium.pdf',
+    )
+    assert.strictEqual(arenaPdfFilenameFromUrl('https://example.com/'), 'document.pdf')
   })
 })

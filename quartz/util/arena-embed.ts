@@ -2,6 +2,8 @@ import { hostnameMatches } from './url'
 
 export type ArenaExternalEmbedMode = 'auto' | 'iframe' | 'fetch' | 'capture' | 'none'
 
+const arenaPdfUrlRegex = /\.pdf(?:[?#].*)?$/i
+
 export interface ArenaEmbedCaptureOptions {
   width?: number
   height?: number
@@ -45,6 +47,21 @@ export function defaultArenaExternalEmbedMode(
   }
 
   return 'auto'
+}
+
+export function isArenaPdfUrl(rawUrl: string): boolean {
+  return arenaPdfUrlRegex.test(rawUrl)
+}
+
+export function arenaPdfFilenameFromUrl(rawUrl: string): string {
+  try {
+    const url = new URL(rawUrl, 'https://arena.local')
+    const parts = url.pathname.split('/').filter(Boolean)
+    const filename = parts[parts.length - 1]
+    return filename ? decodeURIComponent(filename) : 'document.pdf'
+  } catch {
+    return 'document.pdf'
+  }
 }
 
 export function arenaEmbedHtmlPath(rawUrl: string): string {
