@@ -13,6 +13,7 @@ import {
   decodeStackedNoteHash,
   hashStackedNoteSlug,
   stackedNoteMetadataHtml,
+  withStackedNoteMetadata,
 } from './stacked-notes'
 
 test('dedupeSlugs preserves first-seen order', () => {
@@ -62,6 +63,16 @@ test('stacked note metadata footer prioritizes modified date', () => {
   assert.equal(footer.startsWith('<footer class="stacked-note-footer"'), true)
   assert.ok(footer.indexOf('modified-time') < footer.indexOf('published-time'))
   assert.ok(footer.indexOf('published-time') < footer.indexOf('reading-time'))
+})
+
+test('stacked note metadata renders before page footer', () => {
+  const metadata = '<footer class="stacked-note-footer">modifié à 26 mai 2026</footer>'
+  const html = withStackedNoteMetadata(
+    '<article>body</article><section class="page-footer popover-hint">backlinks</section>',
+    metadata,
+  )
+
+  assert.ok(html.indexOf('stacked-note-footer') < html.indexOf('page-footer'))
 })
 
 test('normalizeStackedNoteSlug accepts only route-like slugs', () => {
