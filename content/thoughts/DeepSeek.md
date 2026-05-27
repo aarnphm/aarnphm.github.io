@@ -194,9 +194,9 @@ finer-grained expert specialization:
 
 training objective: predict next $k$ tokens simultaneously.
 
-```
-L = sum_{i=1}^{k} CE(y_{t+i}, f_i(h_t))
-```
+$$
+\mathcal{L}_{\text{MTP}} = \sum_{i=1}^{k} \text{CE}\bigl(y_{t+i},\, f_i(h_t)\bigr)
+$$
 
 where $h_t$ is hidden state at position $t$, $f_i$ are prediction heads.
 
