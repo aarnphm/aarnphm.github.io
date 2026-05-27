@@ -33,17 +33,8 @@
 }
 
 body:has(.toc[data-layout='minimal']) {
-  &::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    z-index: var(--z-sticky);
-    pointer-events: none;
-    opacity: 0;
-    background: color-mix(in srgb, var(--light) 56%, transparent);
-    -webkit-backdrop-filter: blur(4px);
-    backdrop-filter: blur(4px);
-    transition: opacity 0.18s cubic-bezier(0.2, 0, 0, 1);
+  #quartz-root {
+    isolation: isolate;
   }
 }
 
@@ -53,7 +44,20 @@ body:has(.toc[data-layout='minimal']) .aside-container:has(.toc[data-layout='min
   isolation: isolate;
 }
 
-body:has(.toc[data-layout='minimal'].is-hovering)::before {
+body:has(.toc[data-layout='minimal']) #quartz-root::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-sticky);
+  pointer-events: none;
+  opacity: 0;
+  background: color-mix(in srgb, var(--light) 56%, transparent);
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+  transition: opacity 0.18s cubic-bezier(0.2, 0, 0, 1);
+}
+
+body:has(.toc[data-layout='minimal'].is-hovering) #quartz-root::before {
   opacity: 1;
 }
 

@@ -299,7 +299,6 @@ a {
             padding: 0;
             transition:
               background-color 120ms linear,
-              box-shadow 120ms linear,
               transform 120ms linear;
 
             svg {
@@ -315,7 +314,6 @@ a {
             &:hover,
             &:focus-visible {
               background: color-mix(in srgb, var(--light) 72%, var(--lightgray));
-              box-shadow: 0 1px 4px rgb(0 0 0 / 8%);
             }
 
             &:focus-visible {
