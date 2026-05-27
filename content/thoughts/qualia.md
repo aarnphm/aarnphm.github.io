@@ -62,13 +62,24 @@ for [[thoughts/functionalism]], if mental states are just functional roles, and 
 
 when i read functionalist responses, they mostly fall into three patterns in my head:
 
-1. **deny the extra thing.** qualia don’t exist as separate properties. "what it's like" talk is confused. all consciousness is access consciousness; phenomenal talk just picks out functional properties we haven’t analyzed clearly yet. [@dennett1988quining]\n - this still feels like a topic shift to me. when i ask about subjective experience and get told it's really just functional access, i notice a sense of loss—like the thing i was pointing at has been renamed away.\n\n2. **stuff qualia into the role.** expand the functional role: pain isn't just "state caused by damage that causes avoidance"; it's "state with phenomenal character q that's caused by damage and causes avoidance." [@levin2024functionalism]\n - this reads to me as labeling rather than explaining. the phenomenal character is now in the spec, but i don't see why _that_ character shows up, or how multiple realization is supposed to work if different phenomenal characters all satisfy the same role.\n\n3. **reduce experience to representation.** representationalism says phenomenal properties _are_ representational properties: what it's like to see red = representing red in the right way. representation is functional (information, tracking, control), so phenomenal properties reduce to functional properties after all. [@tye1995ten; @dretske1995naturalizing]\n - here i get stuck on underdetermination: same representational content, different phenomenal character (the [[thoughts/inverted spectrum]] stories). and some experiences—pains, moods, background bodily feelings—don’t obviously represent anything external.\n\nnone of these fully defuse my sense of an explanatory gap, but they do change how i think about what the gap might be _about_ (concepts? cognitive architecture? something metaphysical?).
+1. **deny the extra thing.** qualia don’t exist as separate properties. "what it's like" talk is confused. all consciousness is access consciousness; phenomenal talk just picks out functional properties we haven’t analyzed clearly yet. [@dennett1988quining]
+   - this still feels like a topic shift to me. when i ask about subjective experience and get told it's really just functional access, i notice a sense of loss, like the thing i was pointing at has been renamed away.
+
+2. **stuff qualia into the role.** expand the functional role: pain isn't just "state caused by damage that causes avoidance"; it's "state with phenomenal character q that's caused by damage and causes avoidance." [@levin2024functionalism]
+   - this reads to me as labeling rather than explaining. the phenomenal character is now in the spec, but i don't see why _that_ character shows up, or how multiple realization is supposed to work if different phenomenal characters all satisfy the same role.
+
+3. **reduce experience to representation.** representationalism says phenomenal properties _are_ representational properties: what it's like to see red = representing red in the right way. representation is functional (information, tracking, control), so phenomenal properties reduce to functional properties after all. [@tye1995ten; @dretske1995naturalizing]
+   - here i get stuck on underdetermination: same representational content, different phenomenal character (the [[thoughts/inverted spectrum]] stories). and some experiences (pains, moods, background bodily feelings) don’t obviously represent anything external.
+
+none of these fully defuse my sense of an explanatory gap, but they do change how i think about what the gap might be _about_ (concepts? cognitive architecture? something metaphysical?).
 
 ## modal pressure i still feel
 
 conceivability arguments keep this whole topic live for me:
 
-- [[thoughts/philosophical zombies]]: functional duplicates without consciousness. if i can coherently imagine them, that tempts me to treat phenomenal properties as additional to functional properties.\n- [[thoughts/inverted spectrum]]: same functional role, different phenomenal character (your red = my green). if that really holds together, function doesn’t fix phenomenology.\n- [[thoughts/knowledge argument]]: knowing all functional facts still seems compatible (from the armchair) with not knowing what red looks like.
+- [[thoughts/philosophical zombies]]: functional duplicates without consciousness. if i can coherently imagine them, that tempts me to treat phenomenal properties as additional to functional properties.
+- [[thoughts/inverted spectrum]]: same functional role, different phenomenal character (your red = my green). if that really holds together, function doesn’t fix phenomenology.
+- [[thoughts/knowledge argument]]: knowing all functional facts still seems compatible (from the armchair) with not knowing what red looks like.
 
 all three use the same pattern: show that phenomenal properties can vary independently of functional properties. if they can vary independently even in imagination, my brain wants to treat them as different kinds of thing—even if i’m not sure that’s good metaphysics.
 

@@ -17,6 +17,18 @@ document.addEventListener('nav', () => {
   let idx = 0
   const clamp = (v: number) => Math.max(0, Math.min(slides.length - 1, v))
 
+  const updateTocOverflow = () => {
+    if (!tocScroller) return
+
+    const scrollable = tocScroller.scrollHeight > tocScroller.clientHeight + 1
+    const atStart = tocScroller.scrollTop <= 1
+    const atEnd = tocScroller.scrollTop + tocScroller.clientHeight >= tocScroller.scrollHeight - 1
+
+    tocScroller.classList.toggle('is-scrollable', scrollable)
+    tocScroller.classList.toggle('at-start', scrollable && atStart)
+    tocScroller.classList.toggle('at-end', scrollable && atEnd)
+  }
+
   const parseHash = () => {
     const h = window.location.hash
     const m = h.match(/slide-(\d+)/)
@@ -59,6 +71,7 @@ document.addEventListener('nav', () => {
       } else if (itemRect.bottom > tocRect.bottom) {
         tocScroller.scrollTop += itemRect.bottom - tocRect.bottom + 12
       }
+      updateTocOverflow()
     }
     deck.scrollTop = 0
     if (scroll) {
@@ -68,6 +81,7 @@ document.addEventListener('nav', () => {
     history.replaceState(null, '', `#slide-${idx}`)
     requestAnimationFrame(() => {
       deck.classList.toggle('gradient-active', deck.scrollHeight > deck.clientHeight)
+      updateTocOverflow()
     })
 
     document.dispatchEvent(new CustomEvent('slidechange', { detail: {} }))
@@ -152,16 +166,22 @@ document.addEventListener('nav', () => {
     deck.classList.toggle('gradient-active', !atBottom)
   }
 
+  updateTocOverflow()
+
   prev.addEventListener('click', goPrev)
   next.addEventListener('click', goNext)
   toc?.addEventListener('click', tocClick)
   window.addEventListener('keydown', keyEvent)
+  window.addEventListener('resize', updateTocOverflow)
   deck.addEventListener('scroll', onDeckScroll)
+  tocScroller?.addEventListener('scroll', updateTocOverflow, { passive: true })
   window.addCleanup(() => {
     prev.removeEventListener('click', goPrev)
     next.removeEventListener('click', goNext)
     toc?.removeEventListener('click', tocClick)
     window.removeEventListener('keydown', keyEvent)
+    window.removeEventListener('resize', updateTocOverflow)
     deck.removeEventListener('scroll', onDeckScroll)
+    tocScroller?.removeEventListener('scroll', updateTocOverflow)
   })
 })

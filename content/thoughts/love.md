@@ -45,7 +45,7 @@ Helen Fisher claimed that there must be a correlations between these three brain
 he argues that there are three components to love:
 
 - intimacy
-- challenge
+- passion
 - commitment
 
 ## boxes

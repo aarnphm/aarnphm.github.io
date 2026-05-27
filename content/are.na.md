@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-05-27 03:26:25 GMT-04:00
+modified: 2026-05-27 03:55:54 GMT-04:00
 permalinks:
   - /website
   - /tweets
@@ -646,6 +646,10 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://alivetheory.net/ -- alive internet theory
+  - [meta]:
+    - date: 05/27/2026
+    - tags: [communial, digital garden]
 - https://read.clarebir.ch/magnifica/ -- Magnifica Humanitas
   - [meta]:
     - date: 05/26/2026
@@ -1209,6 +1213,15 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://boydkane.com/ -- Boyd Kane
+  - [meta]:
+    - date: 05/27/2026
+    - tags: [researcher, interp]
+  - MATS 9.0 scholar
+- https://stanford.edu/~ellenjxu/ -- Ellen Xu
+  - [meta]:
+    - date: 05/27/2026
+    - tags: [engineer, to meet]
 - https://jonathanweisberg.org/ -- Jonathan Weisberg
   - [meta]:
     - date: 05/25/2026
@@ -2389,6 +2402,18 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://www.nytimes.com/2026/03/29/opinion/ai-claude-chatgpt-gemini-mcluhan.html -- I Saw Something New in San Francisco, Ezra Klein
+  - [meta]:
+    - date: 05/27/2026
+    - tags: [longtermism, systems, ai]
+- https://mandate.beehiiv.com/p/the-next-trillion-dollar-company -- the next trillion dollar company will be a partnership
+  - [meta]:
+    - date: 05/27/2026
+    - tags: [futurism]
+- https://gowers.wordpress.com/2026/05/08/a-recent-experience-with-chatgpt-5-5-pro -- A recent experience with ChatGPT 5.5 Pro
+  - [meta]:
+    - date: 05/27/2026
+    - tags: [epistemology]
 - https://clairebookworm.substack.com/p/i-think-about-it-all-the-time -- I think about it all the time
   - [meta]:
     - date: 05/27/2026
@@ -5915,6 +5940,10 @@ title: are.na
 
 ## life is literature
 
+- https://archive.fo/20260313093942/https://www.theaustralian.com.au/business/technology/tech-boss-uses-ai-and-chatgpt-to-create-cancer-vaccine-for-his-dying-dog/news-story/292a21bcbe93efa17810bfcfcdfadbf7 -- Using ChatGPT to create vaccine to save his dying dogs
+  - [meta]:
+    - date: 05/27/2026
+    - tags: [biology, autonomous research]
 - https://jenseneats.danliu.xyz/ -- Jensen Eats
   - [meta]:
     - date: 05/25/2026
@@ -6970,6 +6999,15 @@ title: are.na
 
 ## stream
 
+- https://fefifo.fm/ -- fefifo.fm
+  - [meta]:
+    - date: 05/27/2026
+    - tags: [radio, music]
+- https://katiewav-book-archive.vercel.app/ -- katiewav's library
+  - [meta]:
+    - date: 05/27/2026
+    - tags: [books]
+    - seealso: [[antilibrary]]
 - https://bampfa.org/program/complete-stanley-kubrick -- A Complete Stanley Kubrick
   - [meta]:
     - date: 05/25/2026
@@ -7440,6 +7478,12 @@ title: are.na
 
 ## design
 
+- https://glimm.dev/ -- glimm.dev
+  - [meta]:
+    - date: 05/27/2026
+    - tags: [page transition, webgl, performance]
+    - importance: 6
+    - later: true
 - https://liquid-dom-showcase.vercel.app/ -- Liquid Glass HTML-in-canvas
   - [meta]:
     - date: 05/24/2026
@@ -9458,6 +9502,14 @@ title: are.na
 
 ## organizations
 
+- https://ponder.ai/ -- Ponder
+  - [meta]:
+    - date: 05/27/2026
+    - tags: [tools, editing]
+- https://science.xyz/
+  - [meta]:
+    - date: 05/27/2026
+    - tags: [transhumanism, startup]
 - https://fathom.org/
   - [meta]:
     - date: 05/27/2026
@@ -9620,6 +9672,11 @@ title: are.na
   - view: list
   - json: true
 
+- https://www.abelianpi.dev/post/lean-prove-1080-sets -- Using Lean to prove 1080 sets
+  - [meta]:
+    - date: 05/27/2026
+    - tags: [formal proof, sets]
+    - later: true
 - https://www.youtube.com/watch?v=P2HZelQm7Lw -- Legrendre Transform
   - [meta]:
     - date: 05/25/2026
