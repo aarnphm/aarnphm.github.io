@@ -54,12 +54,12 @@
   .rs-box-text {
     fill: var(--dark);
     font-family: inherit;
-    font-size: 13px;
+    font-size: 17px;
     text-anchor: middle;
     dominant-baseline: middle;
 
     &.rs-box-text--sm {
-      font-size: 11px;
+      font-size: 14px;
     }
 
     .rs-italic {
@@ -70,7 +70,7 @@
   .rs-axis-label {
     fill: var(--rs-note-fg);
     font-family: inherit;
-    font-size: 12px;
+    font-size: 15px;
     font-style: italic;
     dominant-baseline: middle;
   }
