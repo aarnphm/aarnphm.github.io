@@ -2,7 +2,7 @@
 date: '2025-09-12'
 description: linear algebra notes
 id: notes
-modified: 2026-05-09 17:51:38 GMT-04:00
+modified: 2026-05-26 22:37:35 GMT-04:00
 slides: true
 tags:
   - workshop
@@ -1363,7 +1363,7 @@ for i in 0..m step Mb:                # block rows of A/C
 
 Minimal reference implementation (educational; not tuned):
 
-```python
+```python shell
 import numpy as np
 
 

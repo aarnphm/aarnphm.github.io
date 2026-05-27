@@ -1,4 +1,6 @@
+import katex from 'katex'
 import { type FunctionalComponent } from 'preact'
+import { customMacros, katexOptions } from '../../cfg'
 import style from '../styles/virtualWeights.scss'
 import { registerMdxComponent, type QuartzMdxComponent } from './registry'
 
@@ -12,16 +14,31 @@ const LAYER_HEIGHT = 80
 const LAYER_TOPS = [40, 240, 440]
 const CORNER = 5
 
-const SuperSubW: FunctionalComponent<{ sup: string | number; sub: string }> = ({ sup, sub }) => (
-  <>
-    <tspan class="vw-italic">W</tspan>
-    <tspan baseline-shift="super" font-size="7" dx="-1">
-      {sup}
-    </tspan>
-    <tspan baseline-shift="sub" font-size="7" dx="-3">
-      {sub}
-    </tspan>
-  </>
+function renderMath(tex: string): string {
+  return katex.renderToString(tex, {
+    ...katexOptions,
+    displayMode: false,
+    output: 'htmlAndMathml',
+    macros: customMacros,
+    strict: false,
+    throwOnError: false,
+  })
+}
+
+const MathFO: FunctionalComponent<{
+  x: number
+  y: number
+  w: number
+  h: number
+  tex: string
+  cls?: string
+}> = ({ x, y, w, h, tex, cls }) => (
+  <foreignObject x={x} y={y} width={w} height={h}>
+    <div
+      class={`vw-fo ${cls ?? ''}`.trim()}
+      dangerouslySetInnerHTML={{ __html: renderMath(tex) }}
+    />
+  </foreignObject>
 )
 
 const Layer: FunctionalComponent<LayerProps> = ({ k, topY, arrowId, emphasis }) => {
@@ -44,14 +61,10 @@ const Layer: FunctionalComponent<LayerProps> = ({ k, topY, arrowId, emphasis }) 
         <line class="vw-line" x1="55" y1={topY} x2="37" y2={topY} marker-end={`url(#${arrowId})`} />
 
         <rect class="vw-box vw-box-weight" x="55" y={topY - 12} width="40" height="24" rx="3" />
-        <text class="vw-box-text" x="75" y={topY}>
-          <SuperSubW sup={k} sub="O" />
-        </text>
+        <MathFO x={55} y={topY - 12} w={40} h={24} tex={`W^{${k}}_O`} />
 
         <rect class="vw-box vw-box-weight" x="55" y={botY - 12} width="40" height="24" rx="3" />
-        <text class="vw-box-text" x="75" y={botY}>
-          <SuperSubW sup={k} sub="I" />
-        </text>
+        <MathFO x={55} y={botY - 12} w={40} h={24} tex={`W^{${k}}_I`} />
 
         <circle class="vw-node" cx="30" cy={topY} r="7" />
         <text class="vw-node-text" x="30" y={topY}>
@@ -76,25 +89,15 @@ const VirtualLabel: FunctionalComponent<{
   sub2: string
 }> = ({ x, y, sup1, sub1, sup2, sub2 }) => (
   <g transform={`translate(${x}, ${y})`}>
-    <rect class="vw-vw-bg" x="-30" y="-13" width="60" height="26" rx="3" />
-    <text class="vw-vw-text" x="0" y="0">
-      <tspan class="vw-italic">W</tspan>
-      <tspan baseline-shift="super" font-size="8" dx="-1">
-        {sup1}
-      </tspan>
-      <tspan baseline-shift="sub" font-size="8" dx="-3">
-        {sub1}
-      </tspan>
-      <tspan class="vw-italic" dx="2">
-        W
-      </tspan>
-      <tspan baseline-shift="super" font-size="8" dx="-1">
-        {sup2}
-      </tspan>
-      <tspan baseline-shift="sub" font-size="8" dx="-3">
-        {sub2}
-      </tspan>
-    </text>
+    <rect class="vw-vw-bg" x="-36" y="-15" width="72" height="30" rx="3" />
+    <MathFO
+      x={-36}
+      y={-15}
+      w={72}
+      h={30}
+      tex={`W^{${sup1}}_{${sub1}}\\, W^{${sup2}}_{${sub2}}`}
+      cls="vw-fo--compound"
+    />
   </g>
 )
 

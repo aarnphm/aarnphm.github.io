@@ -128,6 +128,10 @@
       max-height: 100%;
     }
 
+    &[data-state='loading'] {
+      overflow: hidden;
+    }
+
     &[data-content-type*='image'] {
       img {
         margin: 0;
@@ -137,8 +141,17 @@
     }
 
     &[data-content-type*='pdf'] {
+      width: min(30rem, calc(100vw - 2rem));
+      height: min(20rem, calc(100vh - 2rem));
+      background: #2b2b2b;
+      overflow: hidden;
+
       iframe {
+        display: block;
         width: 100%;
+        height: 100%;
+        border: 0;
+        background: #2b2b2b;
       }
     }
   }
@@ -251,9 +264,6 @@
 }
 
 .lesswrong-popover-card {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  gap: 0.85rem;
   padding: 0.95rem;
 }
 
@@ -338,9 +348,14 @@ span.internal.tag-link.lesswrong-popover-tag {
 
 .lesswrong-popover-toc {
   display: grid;
+  float: right;
   gap: 0.35rem;
-  padding-top: 0.3rem;
-  border-top: 1px solid color-mix(in srgb, var(--lightgray) 70%, transparent);
+  width: min(62%, 10rem);
+  box-sizing: border-box;
+  margin: 0.85rem 0 0.65rem 0.9rem;
+  padding: 0.55rem 0.65rem 0.6rem;
+  border: 1px solid color-mix(in srgb, var(--lightgray) 70%, transparent);
+  border-radius: var(--radius-none);
 }
 
 .lesswrong-popover-toc-title {
@@ -383,12 +398,14 @@ span.internal.tag-link.lesswrong-popover-tag {
 }
 
 .lesswrong-popover-extract {
-  margin: 0;
+  margin: 0.85rem 0;
   font-size: 0.92rem;
   line-height: 1.45;
 }
 
 .lesswrong-popover-source {
+  display: inline-block;
+  clear: both;
   color: var(--gray);
   font-size: 0.78rem;
   text-decoration: none;
@@ -467,4 +484,50 @@ span.internal.tag-link.lesswrong-popover-tag {
   color: var(--gray);
   font-style: italic;
   padding: 1rem 0;
+}
+
+.popover-loading {
+  display: grid;
+  place-items: center;
+  align-content: center;
+  width: 100%;
+  height: 100%;
+  min-height: inherit;
+  background: #2b2b2b;
+}
+
+.popover-loading-dots {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.42rem;
+}
+
+.popover-loading-dots span {
+  width: 0.36rem;
+  height: 0.36rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.64);
+  animation: popover-loading-dot 900ms ease-in-out infinite;
+}
+
+.popover-loading-dots span:nth-child(2) {
+  animation-delay: 120ms;
+}
+
+.popover-loading-dots span:nth-child(3) {
+  animation-delay: 240ms;
+}
+
+@keyframes popover-loading-dot {
+  0%,
+  100% {
+    opacity: 0.28;
+    transform: scale(0.72);
+  }
+
+  45% {
+    opacity: 1;
+    transform: scale(1);
+  }
 }

@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-05-26 20:52:10 GMT-04:00
+modified: 2026-05-26 22:26:51 GMT-04:00
 permalinks:
   - /website
   - /tweets
@@ -641,6 +641,10 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://stripe.dev/ -- stripe[dot]dev
+  - [meta]:
+    - date: 05/26/2026
+    - tags: [design]
 - https://www.zhavialabs.com/ -- Zhavia Labs
   - [meta]:
     - date: 05/19/2026

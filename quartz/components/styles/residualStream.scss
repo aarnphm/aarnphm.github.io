@@ -53,7 +53,7 @@
 
   .rs-box-text {
     fill: var(--dark);
-    font-family: inherit;
+    font-family: var(--bodyFont);
     font-size: 17px;
     text-anchor: middle;
     dominant-baseline: middle;
@@ -69,10 +69,52 @@
 
   .rs-axis-label {
     fill: var(--rs-note-fg);
-    font-family: inherit;
+    font-family: var(--bodyFont);
     font-size: 15px;
     font-style: italic;
     dominant-baseline: middle;
+  }
+
+  .rs-fo {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    color: var(--dark);
+    font-size: 14px;
+    line-height: 1;
+    overflow: visible;
+
+    .katex {
+      color: inherit;
+      font-size: 1em;
+      line-height: 1;
+    }
+
+    .katex-display {
+      margin: 0;
+    }
+  }
+
+  .rs-fo--center {
+    justify-content: center;
+  }
+
+  .rs-fo--start {
+    justify-content: flex-start;
+  }
+
+  .rs-fo--sm {
+    font-size: 12px;
+  }
+
+  .rs-fo--axis {
+    color: var(--rs-note-fg);
+    font-size: 13px;
+  }
+
+  .rs-fo--mlp {
+    font-size: 15px;
   }
 
   .rs-line {

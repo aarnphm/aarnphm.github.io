@@ -2,6 +2,7 @@
 
 .zoomable {
   position: relative;
+  margin-top: 1rem;
 }
 
 .zoomable-placeholder {
@@ -152,7 +153,7 @@
   cursor: zoom-out;
   backdrop-filter: blur(2px);
   opacity: 0;
-  animation: zoomable-backdrop-in 0.25s ease forwards;
+  animation: zoomable-backdrop-in 0.55s cubic-bezier(0.32, 0.72, 0, 1) forwards;
 }
 
 @keyframes zoomable-backdrop-in {
@@ -162,14 +163,24 @@
 }
 
 ::view-transition-group(zoomable-active) {
-  animation-duration: 0.42s;
-  animation-timing-function: cubic-bezier(0.2, 0.8, 0.2, 1);
+  animation-duration: 0.55s;
+  animation-timing-function: cubic-bezier(0.32, 0.72, 0, 1);
 }
 
-::view-transition-old(zoomable-active),
+::view-transition-image-pair(zoomable-active) {
+  isolation: auto;
+}
+
+::view-transition-old(zoomable-active) {
+  animation: none;
+  opacity: 0;
+  mix-blend-mode: normal;
+}
+
 ::view-transition-new(zoomable-active) {
-  animation-duration: 0.42s;
-  animation-timing-function: cubic-bezier(0.2, 0.8, 0.2, 1);
+  animation: none;
+  opacity: 1;
+  mix-blend-mode: normal;
 }
 
 @media (prefers-reduced-motion: reduce) {

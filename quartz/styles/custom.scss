@@ -715,13 +715,6 @@ svg[data-icon] {
 
 .popover {
   & > .popover-inner {
-    &[data-content-type*='pdf'] {
-      iframe {
-        min-height: 600px;
-        min-width: 600px;
-      }
-    }
-
     pre {
       border: 0;
       padding: 0;

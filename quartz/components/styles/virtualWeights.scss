@@ -95,13 +95,13 @@
 
   .vw-box-text {
     fill: var(--dark);
-    font-family: inherit;
-    font-size: 13px;
+    font-family: var(--bodyFont);
+    font-size: 17px;
     text-anchor: middle;
     dominant-baseline: middle;
 
     &.vw-box-text--sm {
-      font-size: 11px;
+      font-size: 14px;
     }
 
     .vw-italic {
@@ -117,8 +117,8 @@
 
   .vw-node-text {
     fill: var(--vw-stroke);
-    font-family: inherit;
-    font-size: 9px;
+    font-family: var(--bodyFont);
+    font-size: 12px;
     text-anchor: middle;
     dominant-baseline: middle;
   }
@@ -144,16 +144,30 @@
     stroke-width: 1;
   }
 
-  .vw-vw-text {
-    fill: var(--dark);
-    font-family: inherit;
-    font-size: 12px;
-    text-anchor: middle;
-    dominant-baseline: middle;
+  .vw-fo {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--dark);
+    font-size: 14px;
+    line-height: 1;
+    overflow: visible;
 
-    .vw-italic {
-      font-style: italic;
+    .katex {
+      color: inherit;
+      font-size: 1em;
+      line-height: 1;
     }
+
+    .katex-display {
+      margin: 0;
+    }
+  }
+
+  .vw-fo--compound {
+    font-size: 13px;
   }
 }
 
