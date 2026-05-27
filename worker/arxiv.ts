@@ -1,6 +1,7 @@
 import { XMLParser } from 'fast-xml-parser'
 
 const ARXIV_API_BASE = 'http://export.arxiv.org/api/query'
+const ARXIV_PDF_BASE = 'https://arxiv.org/pdf'
 const USER_AGENT = 'Mozilla/5.0 (compatible; ArxivFetcher/1.0; mailto:contact@aarnphm.xyz)'
 
 interface ArxivResponse {
@@ -18,7 +19,12 @@ interface ArxivResponse {
 }
 
 function cleanIdentifier(identifier: string) {
-  return identifier.replace(/^(arxiv:)?(pdf\/)?/, '').replace('.pdf', '')
+  return identifier.replace(/^(arxiv:)?(pdf\/)?/i, '').replace(/\.pdf$/i, '')
+}
+
+function arxivPdfUrl(identifier: string) {
+  const path = cleanIdentifier(identifier).split('/').map(encodeURIComponent).join('/')
+  return `${ARXIV_PDF_BASE}/${path}`
 }
 
 async function getArxivMetadata(identifier: string) {
@@ -61,12 +67,13 @@ export default async function handleArxiv(request: Request): Promise<Response> {
         status: 400,
         headers: { 'Content-Type': 'application/json' },
       })
-    const metadata = await getArxivMetadata(identifier)
-    if (url.searchParams.get('metadata') === 'true')
+    if (url.searchParams.get('metadata') === 'true') {
+      const metadata = await getArxivMetadata(identifier)
       return new Response(JSON.stringify(metadata), {
         headers: { 'Content-Type': 'application/json' },
       })
-    const pdfResp = await fetch(metadata.pdfUrl, { headers: { 'User-Agent': USER_AGENT } })
+    }
+    const pdfResp = await fetch(arxivPdfUrl(identifier), { headers: { 'User-Agent': USER_AGENT } })
     if (!pdfResp.ok || !pdfResp.body)
       return new Response(JSON.stringify({ error: `Failed to fetch PDF: ${pdfResp.statusText}` }), {
         status: 500,
