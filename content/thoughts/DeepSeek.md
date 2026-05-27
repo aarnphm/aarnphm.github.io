@@ -2,7 +2,7 @@
 date: '2025-01-25'
 description: and OSS AI ftw.
 id: DeepSeek
-modified: 2026-05-09 17:51:33 GMT-04:00
+modified: 2026-05-27 02:48:12 GMT-04:00
 seealso:
   - '[[thoughts/DS32]]'
 socials:
@@ -21,9 +21,9 @@ scaling [[thoughts/Transformers#inference.|inference-time]] [compute](https://op
 
 three major components:
 
-- [[#R1-Zero]]: pure RL on base models without any SFT
-- [[#R1]]: RL on pure CoT, not any clever training data
-- [[#Distill]]: [[thoughts/knowledge distillation]] from R1 to improve smaller variants
+- [[#R1-Zero|R1-Zero]]: pure RL on base models without any SFT
+- [[#R1|R1]]: RL on pure CoT, not any clever training data
+- [[#Distill|R1 Distill]]: [[thoughts/knowledge distillation]] from R1 to improve smaller variants
 
 ## R1-Zero
 

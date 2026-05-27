@@ -17,7 +17,7 @@
 
   position: sticky;
   top: var(--toc-stick-top);
-  z-index: var(--z-popover);
+  z-index: 100001;
   width: var(--toc-rail-width);
   max-width: calc(100vw - var(--toc-left-offset));
   max-height: calc(100svh - var(--toc-stick-top) - var(--toc-scroll-buffer));
@@ -34,35 +34,23 @@
 
 .page-content.has-minimal-toc {
   position: relative;
-  isolation: isolate;
 }
 
 .page-content.has-minimal-toc > .aside-container {
   position: relative;
-  z-index: var(--z-popover);
+  z-index: 100001;
   isolation: isolate;
 }
 
-.page-content.has-minimal-toc::before {
+:root.toc-hovering body::before {
   content: '';
   position: fixed;
   inset: 0;
-  z-index: var(--z-sticky);
+  z-index: 100000;
   pointer-events: none;
-  opacity: 0;
   background: color-mix(in srgb, var(--light) 56%, transparent);
   -webkit-backdrop-filter: blur(4px);
   backdrop-filter: blur(4px);
-  transition: opacity 0.18s cubic-bezier(0.2, 0, 0, 1);
-}
-
-.page-content.has-minimal-toc.toc-hovering::before {
-  opacity: 1;
-}
-
-.page-content.has-minimal-toc.toc-dense::before {
-  -webkit-backdrop-filter: none;
-  backdrop-filter: none;
 }
 
 @keyframes fillExpand {

@@ -62,7 +62,7 @@ function onClick(evt: MouseEvent) {
   const toc = button.closest<HTMLElement>('.toc')
   if (toc) {
     toc.classList.remove('is-hovering')
-    toc.closest<HTMLElement>('.page-content')?.classList.remove('toc-hovering')
+    setTocHovering(toc.closest<HTMLElement>('.page-content'), false)
     hideTocLabel(toc)
   }
   resetTocButtons(toc?.querySelectorAll<HTMLButtonElement>('button[data-for]'))
@@ -179,7 +179,7 @@ function setupToc() {
   const onMouseEnter = (evt: MouseEvent) => {
     hovering = true
     toc.classList.add('is-hovering')
-    pageContent?.classList.add('toc-hovering')
+    setTocHovering(pageContent, true)
     navViewportTop = nav.getBoundingClientRect().top
     targetMouseY = evt.clientY - navViewportTop
     currentMouseY = targetMouseY
@@ -195,7 +195,7 @@ function setupToc() {
     }
     activeButton?.classList.remove('is-active')
     activeButton = null
-    pageContent?.classList.remove('toc-hovering')
+    setTocHovering(pageContent, false)
     hideTocLabel(toc)
     resetTocButtons(buttons)
     touchedMetrics.length = 0
@@ -271,7 +271,7 @@ function setupToc() {
     activeButton?.classList.remove('is-active')
     activeButton = null
     toc.classList.remove('is-hovering')
-    pageContent?.classList.remove('toc-hovering')
+    setTocHovering(pageContent, false)
     hideTocLabel(toc)
     resetTocButtons(buttons)
     touchedMetrics.length = 0
@@ -296,9 +296,15 @@ function cacheTocEntries() {
 }
 
 function resetTocPageContentClasses() {
+  document.documentElement.classList.remove('toc-hovering')
   document.querySelectorAll<HTMLElement>('.page-content.has-minimal-toc').forEach(pageContent => {
     pageContent.classList.remove('has-minimal-toc', 'toc-hovering', 'toc-dense')
   })
+}
+
+function setTocHovering(pageContent: HTMLElement | null | undefined, hovering: boolean) {
+  pageContent?.classList.toggle('toc-hovering', hovering)
+  document.documentElement.classList.toggle('toc-hovering', hovering)
 }
 
 function resetTocButtons(buttons?: NodeListOf<HTMLButtonElement>) {

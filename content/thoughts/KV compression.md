@@ -2,7 +2,7 @@
 date: '2024-10-10'
 description: '[[thoughts/Compression|compression]] of key-value in [[thoughts/Transformers]] model'
 id: KV compression
-modified: 2026-05-09 17:51:33 GMT-04:00
+modified: 2026-05-27 02:48:48 GMT-04:00
 tags:
   - ml
   - llm
@@ -142,7 +142,7 @@ Motivation:
 
 KV compression algorithm doesn't have GQA design in mind.
 
-- [[#Pyramid-KV]] cache and compress KV _after_ repetition for alignment with query tensors
+- [[#Pyramid-KV|Pyramid-KV]] cache and compress KV _after_ repetition for alignment with query tensors
 - Redundancy in cache before compression
 
 > modification of eviction-based methods per groups

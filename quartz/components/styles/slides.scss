@@ -218,6 +218,7 @@ body[data-slides='true'][data-slug$='/slides'] .page-content {
   transition-property: color, opacity, transform;
   transition-duration: 160ms;
   transition-timing-function: cubic-bezier(0.2, 0, 0, 1);
+  outline: none;
 }
 
 .slides-toc-item::before {

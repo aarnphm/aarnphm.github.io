@@ -8,7 +8,7 @@ author:
 date: '2025-11-23'
 description: generalisation of causal abstraction from mechanism intervention to transformations
 id: '@geiger2025causalabstraction'
-modified: 2026-05-09 17:51:56 GMT-04:00
+modified: 2026-05-27 02:49:54 GMT-04:00
 tags:
   - interp
 title: 'Causal abstraction: A theoretical foundation for mechanistic interpretability'
@@ -104,7 +104,7 @@ the paper's main payoff is showing that ~12 interpretability methods sit at spec
 
 **DAS** (distributed alignment search) [@geiger2024finding] tests the full commute with _learned_ distributed interchange interventions. DAS optimizes a linear projection that defines the alignment map $\tau$, then measures IIA across the full intervention space. this is the strongest standard method because it searches over the alignment space rather than assuming a fixed axis. [^daslinear]
 
-[^daslinear]: the restriction to _linear_ projections is doing enormous work here. see [[#the non-linear representation dilemma]].
+[^daslinear]: the restriction to _linear_ projections is doing enormous work here. see [[#the non-linear representation dilemma|the non-linear representation dilemma]].
 
 **[[thoughts/sparse autoencoder|SAEs]]** and **[[thoughts/sparse crosscoders|sparse crosscoders]]** provide a decomposition of representations into features, which amounts to a specific choice of $\tau$ (the encoder). the decomposition is not itself a causal abstraction test. it's a proposal for what the alignment maps _could_ be, which then needs to be validated with interventions. [[thoughts/Attribution parameter decomposition]] operates in parameter space rather than activation space but faces the same requirement: decomposition is necessary, not sufficient.
 
