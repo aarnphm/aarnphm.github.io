@@ -53,6 +53,7 @@ interface Point {
 
 const blobCleanupMap = new Map<string, NodeJS.Timeout>()
 const DEFAULT_BLOB_TIMEOUT = 30 * 60 * 1000 // 30 minutes
+const PDF_VIEW_PARAMS = new URLSearchParams({ navpanes: '0', pagemode: 'none', view: 'FitH' })
 
 const p = new DOMParser()
 let activeAnchor: HTMLAnchorElement | null = null
@@ -105,6 +106,39 @@ function createPopoverElement(...classes: string[]): {
   popoverInner.classList.add('popover-inner')
   popoverElement.append(popoverArrow, popoverInner)
   return { popoverElement, popoverInner }
+}
+
+function arxivPdfUrl(identifier: string): URL {
+  const url = new URL('https://aarnphm.xyz/api/arxiv')
+  url.searchParams.set('identifier', identifier)
+  return url
+}
+
+function pdfViewerSrc(blobUrl: string): string {
+  return `${blobUrl}#${PDF_VIEW_PARAMS.toString()}`
+}
+
+function setPopoverLoading(popoverInner: HTMLDivElement, label: string, contentType?: string) {
+  popoverInner.replaceChildren()
+  popoverInner.dataset.state = 'loading'
+  if (contentType) popoverInner.dataset.contentType = contentType
+
+  const loading = document.createElement('div')
+  loading.classList.add('popover-loading')
+  loading.role = 'status'
+  loading.ariaLabel = label
+  loading.ariaLive = 'polite'
+
+  const dots = document.createElement('span')
+  dots.classList.add('popover-loading-dots')
+  dots.ariaHidden = 'true'
+
+  for (let index = 0; index < 3; index++) {
+    dots.appendChild(document.createElement('span'))
+  }
+
+  loading.appendChild(dots)
+  popoverInner.appendChild(loading)
 }
 
 function placementSide(placement: Placement): 'top' | 'right' | 'bottom' | 'left' {
@@ -220,7 +254,7 @@ async function handlePdfContent(response: Response, popoverInner: HTMLDivElement
   const pdf = document.createElement('iframe')
   const blob = await response.blob()
   const blobUrl = createManagedBlobUrl(blob)
-  pdf.src = blobUrl
+  pdf.src = pdfViewerSrc(blobUrl)
   popoverInner.appendChild(pdf)
 }
 
@@ -266,6 +300,8 @@ async function populatePopoverContent(
   targetUrl: URL,
   popoverInner: HTMLDivElement,
 ) {
+  delete popoverInner.dataset.state
+  popoverInner.replaceChildren()
   const headerContentType = response.headers.get('Content-Type')
   const contentType = headerContentType
     ? headerContentType.split(';')[0]
@@ -393,6 +429,17 @@ async function showPopover(
       popoverInner.scroll({ top: heading.offsetTop - 12, behavior: 'instant' })
     }
   }
+}
+
+async function showLoadingPopover(
+  link: HTMLAnchorElement,
+  popoverElement: HTMLElement,
+  pointer: { clientX: number; clientY: number },
+) {
+  clearActivePopover()
+  activeAnchor = link
+  popoverElement.classList.add('active-popover')
+  await setPosition(link, popoverElement, { clientX: pointer.clientX, clientY: pointer.clientY })
 }
 
 function clearActivePopover() {
@@ -934,6 +981,10 @@ function mouseLeaveHandler(this: HTMLAnchorElement, event: MouseEvent) {
     return
   }
 
+  if (activePopoverReq?.link === this) {
+    activePopoverReq.abort()
+    activePopoverReq = null
+  }
   clearActivePopover()
 }
 
@@ -1085,10 +1136,37 @@ async function mouseEnterHandler(
 
   let response: Response | void
   if (link.dataset.arxivId) {
-    const url = new URL(`https://aarnphm.xyz/api/arxiv?identifier=${link.dataset.arxivId}`)
-    response = await fetchCanonical(url).catch(error => {
-      console.error(error)
+    const controller = new AbortController()
+    activePopoverReq = { abort: () => controller.abort(), link }
+
+    const { popoverElement, popoverInner } = createPopoverElement()
+    popoverElement.id = popoverId
+    setPopoverLoading(popoverInner, 'Fetching arXiv PDF', 'application/pdf')
+    document.body.appendChild(popoverElement)
+    await showLoadingPopover(link, popoverElement, { clientX, clientY })
+
+    response = await fetchCanonical(arxivPdfUrl(link.dataset.arxivId), {
+      signal: controller.signal,
+    }).catch(error => {
+      if (!isAbortError(error)) console.error(error)
     })
+    activePopoverReq = null
+
+    if (!response || !response.ok || activeAnchor !== link) {
+      popoverElement.remove()
+      return
+    }
+
+    await populatePopoverContent(response, targetUrl, popoverInner)
+
+    if (activeAnchor !== link) {
+      popoverElement.remove()
+      return
+    }
+
+    notifyProtectedContentLoaded(popoverInner)
+    await setPosition(link, popoverElement, { clientX, clientY })
+    return
   } else {
     response = await fetchCanonical(new URL(targetUrl.toString())).catch(error => {
       console.error(error)
@@ -1147,8 +1225,7 @@ async function mouseClickHandler(evt: MouseEvent) {
 
       let response: Response | void
       if (link.dataset.arxivId) {
-        const url = new URL(`https://aarnphm.xyz/api/arxiv?identifier=${link.dataset.arxivId}`)
-        response = await fetchCanonical(url).catch(console.error)
+        response = await fetchCanonical(arxivPdfUrl(link.dataset.arxivId)).catch(console.error)
       } else {
         const fetchUrl = new URL(link.href)
         fetchUrl.hash = ''
@@ -1167,7 +1244,7 @@ async function mouseClickHandler(evt: MouseEvent) {
         const pdf = document.createElement('iframe')
         const blob = await response.blob()
         const blobUrl = createManagedBlobUrl(blob)
-        pdf.src = blobUrl
+        pdf.src = pdfViewerSrc(blobUrl)
         createSidePanel(asidePanel, pdf)
       } else {
         const contents = await response.text()

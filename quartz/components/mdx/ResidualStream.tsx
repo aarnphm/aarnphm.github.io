@@ -1,4 +1,5 @@
 import katex from 'katex'
+import { type FunctionalComponent } from 'preact'
 import { customMacros, katexOptions } from '../../cfg'
 import style from '../styles/residualStream.scss'
 import { registerMdxComponent, type QuartzMdxComponent } from './registry'
@@ -22,6 +23,23 @@ function MathLabel({ tex, display = false }: { tex: string; display?: boolean })
   const Tag = display ? 'div' : 'span'
   return <Tag class={cls} dangerouslySetInnerHTML={{ __html: html }} />
 }
+
+const MathFO: FunctionalComponent<{
+  x: number
+  y: number
+  w: number
+  h: number
+  tex: string
+  cls?: string
+  align?: 'center' | 'start'
+}> = ({ x, y, w, h, tex, cls, align = 'center' }) => (
+  <foreignObject x={x} y={y} width={w} height={h}>
+    <div
+      class={`rs-fo rs-fo--${align} ${cls ?? ''}`.trim()}
+      dangerouslySetInnerHTML={{ __html: renderMath(tex, false) }}
+    />
+  </foreignObject>
+)
 
 const ResidualStreamImpl: QuartzMdxComponent<Props> = ({ caption, markerId }) => {
   const arrowId = markerId ?? 'rs-arrow'
@@ -67,12 +85,7 @@ const ResidualStreamImpl: QuartzMdxComponent<Props> = ({ caption, markerId }) =>
             y2="118"
             marker-end={`url(#${arrowId})`}
           />
-          <text class="rs-axis-label" x="200" y="148">
-            x
-            <tspan baseline-shift="sub" font-size="8">
-              −1
-            </tspan>
-          </text>
+          <MathFO x={200} y={138} w={40} h={20} tex="x_{-1}" align="start" cls="rs-fo--axis" />
 
           <line class="rs-line" x1="185" y1="207" x2="185" y2="370" />
           <path
@@ -81,22 +94,12 @@ const ResidualStreamImpl: QuartzMdxComponent<Props> = ({ caption, markerId }) =>
             marker-end={`url(#${arrowId})`}
           />
           <rect class="rs-box rs-box-accent" x="50" y="255" width="120" height="30" rx="3" />
-          <text class="rs-box-text" x="110" y="270">
-            <tspan>MLP</tspan>
-            <tspan class="rs-italic" dx="6">
-              m
-            </tspan>
-          </text>
+          <MathFO x={50} y={255} w={120} h={30} tex="\text{MLP}\, m" cls="rs-fo--mlp" />
 
           <circle class="rs-node" cx="185" cy="200" r="7" />
           <line class="rs-node-glyph" x1="180" y1="200" x2="190" y2="200" />
           <line class="rs-node-glyph" x1="185" y1="195" x2="185" y2="205" />
-          <text class="rs-axis-label" x="200" y="200">
-            x
-            <tspan baseline-shift="sub" font-size="8">
-              i+2
-            </tspan>
-          </text>
+          <MathFO x={200} y={190} w={40} h={20} tex="x_{i+2}" align="start" cls="rs-fo--axis" />
 
           <line class="rs-line" x1="185" y1="387" x2="185" y2="540" />
           <path class="rs-line" d="M 185 510 L 115 510 Q 110 510 110 505 L 110 478" />
@@ -116,19 +119,9 @@ const ResidualStreamImpl: QuartzMdxComponent<Props> = ({ caption, markerId }) =>
           <line class="rs-line" x1="110" y1="448" x2="110" y2="452" />
           <line class="rs-line" x1="110" y1="478" x2="110" y2="474" />
           <rect class="rs-box rs-box-accent" x="64" y="452" width="28" height="22" rx="3" />
-          <text class="rs-box-text rs-box-text--sm" x="78" y="463">
-            <tspan class="rs-italic">h</tspan>
-            <tspan baseline-shift="sub" font-size="7">
-              0
-            </tspan>
-          </text>
+          <MathFO x={64} y={452} w={28} h={22} tex="h_0" cls="rs-fo--sm" />
           <rect class="rs-box rs-box-accent" x="96" y="452" width="28" height="22" rx="3" />
-          <text class="rs-box-text rs-box-text--sm" x="110" y="463">
-            <tspan class="rs-italic">h</tspan>
-            <tspan baseline-shift="sub" font-size="7">
-              1
-            </tspan>
-          </text>
+          <MathFO x={96} y={452} w={28} h={22} tex="h_1" cls="rs-fo--sm" />
           <rect class="rs-box rs-box-accent" x="128" y="452" width="28" height="22" rx="3" />
           <text class="rs-box-text rs-box-text--sm" x="142" y="463">
             …
@@ -137,19 +130,9 @@ const ResidualStreamImpl: QuartzMdxComponent<Props> = ({ caption, markerId }) =>
           <circle class="rs-node" cx="185" cy="380" r="7" />
           <line class="rs-node-glyph" x1="180" y1="380" x2="190" y2="380" />
           <line class="rs-node-glyph" x1="185" y1="375" x2="185" y2="385" />
-          <text class="rs-axis-label" x="200" y="380">
-            x
-            <tspan baseline-shift="sub" font-size="8">
-              i+1
-            </tspan>
-          </text>
+          <MathFO x={200} y={370} w={40} h={20} tex="x_{i+1}" align="start" cls="rs-fo--axis" />
 
-          <text class="rs-axis-label" x="200" y="540">
-            x
-            <tspan baseline-shift="sub" font-size="8">
-              i
-            </tspan>
-          </text>
+          <MathFO x={200} y={530} w={40} h={20} tex="x_i" align="start" cls="rs-fo--axis" />
           <line
             class="rs-line rs-line--dotted"
             x1="185"
@@ -158,12 +141,7 @@ const ResidualStreamImpl: QuartzMdxComponent<Props> = ({ caption, markerId }) =>
             y2="555"
             marker-end={`url(#${arrowId})`}
           />
-          <text class="rs-axis-label" x="200" y="590">
-            x
-            <tspan baseline-shift="sub" font-size="8">
-              0
-            </tspan>
-          </text>
+          <MathFO x={200} y={580} w={40} h={20} tex="x_0" align="start" cls="rs-fo--axis" />
           <rect class="rs-box rs-box-accent" x="145" y="600" width="80" height="32" rx="3" />
           <text class="rs-box-text" x="185" y="616">
             embed

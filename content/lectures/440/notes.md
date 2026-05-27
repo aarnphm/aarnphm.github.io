@@ -2,7 +2,7 @@
 date: '2025-10-17'
 description: and building a nano inference engine
 id: notes
-modified: 2026-05-09 17:51:49 GMT-04:00
+modified: 2026-05-26 22:34:08 GMT-04:00
 slides: true
 tags:
   - workshop
@@ -11,7 +11,7 @@ transclude:
   title: false
 ---
 
-see also: [[thoughts/vllm]], [[thoughts/LLMs]], [[thoughts/tsfm/inference-exercise|BYOIE]], [[thoughts/Transformers|Transformers]], [[thoughts/Attention|Attention]], [[hinterland/tinyvllm]]
+see also: [[thoughts/vllm]], [[thoughts/LLMs]], [[thoughts/tsfm/inference-exercise|BYOIE]], [[thoughts/Transformers|Transformers]], [[thoughts/Attention|Attention]]
 
 > here's what we're doing today: understanding how inference engines actually work.
 >

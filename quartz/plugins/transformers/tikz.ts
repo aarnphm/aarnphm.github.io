@@ -3,11 +3,20 @@ import { toHtml } from 'hast-util-to-html'
 import { h, s } from 'hastscript'
 import { Code, Root as MdRoot } from 'mdast'
 import { load, tex, dvi2svg } from 'node-tikzjax'
+import { createHash, randomUUID } from 'node:crypto'
+import { mkdir, readFile, rename, rm, writeFile } from 'node:fs/promises'
+import path from 'node:path'
 import { visit } from 'unist-util-visit'
-import { svgOptions } from '../../components/svg'
 import { QuartzTransformerPlugin } from '../../types/plugin'
+import { QUARTZ } from '../../util/path'
+import { svgOptions } from '../../util/svg-options'
 
 const TIKZ_TIMEOUT = 30_000
+const TIKZ_CACHE_VERSION = 1
+const TIKZ_CACHE_DIR = path.join(QUARTZ, '.quartz-cache', 'tikz')
+const texPackages = { pgfplots: '', amsmath: 'intlimits' }
+const tikzLibraries = 'arrows.meta,calc,positioning'
+const addToPreamble = '% comment'
 
 const cmMathItalicGlyphs = new Map([
   ['¼', 'π'],
@@ -19,15 +28,85 @@ const cmSymbolGlyphs = new Map([
   ['£', '×'],
 ])
 
-async function tex2svg(
+const cmRomanGlyphs = new Map([
+  ['®', 'ff'],
+  ['¯', 'fi'],
+  ['°', 'fl'],
+  ['±', 'ffi'],
+  ['²', 'ffl'],
+])
+
+export interface TikzRenderOptions {
+  showConsole: boolean
+  disableSanitize: boolean
+  disableOptimize: boolean
+}
+
+type TikzRenderer = (input: string, opts: TikzRenderOptions) => Promise<string>
+
+function tikzCacheKey(input: string, opts: TikzRenderOptions): string {
+  return createHash('sha256')
+    .update(
+      JSON.stringify({
+        version: TIKZ_CACHE_VERSION,
+        input,
+        texPackages,
+        tikzLibraries,
+        addToPreamble,
+        opts,
+      }),
+    )
+    .digest('hex')
+}
+
+function isMissingFile(error: unknown): boolean {
+  return error instanceof Error && 'code' in error && error.code === 'ENOENT'
+}
+
+async function readTikzCache(cacheDir: string, key: string): Promise<string | undefined> {
+  try {
+    const cached = await readFile(path.join(cacheDir, `${key}.svg`), 'utf8')
+    return cached.length > 0 ? cached : undefined
+  } catch (error) {
+    if (isMissingFile(error)) return undefined
+    throw error
+  }
+}
+
+async function writeTikzCache(cacheDir: string, key: string, svg: string): Promise<void> {
+  await mkdir(cacheDir, { recursive: true })
+  const target = path.join(cacheDir, `${key}.svg`)
+  const temp = path.join(cacheDir, `${key}.${randomUUID()}.tmp`)
+  await writeFile(temp, svg)
+  try {
+    await rename(temp, target)
+  } catch (error) {
+    await rm(temp, { force: true })
+    throw error
+  }
+}
+
+export async function cachedTikzSvg(
   input: string,
-  opts: { showConsole: boolean; disableSanitize: boolean; disableOptimize: boolean },
-) {
+  opts: TikzRenderOptions,
+  render: TikzRenderer = tex2svg,
+  cacheDir: string = TIKZ_CACHE_DIR,
+): Promise<string> {
+  const key = tikzCacheKey(input, opts)
+  const cached = await readTikzCache(cacheDir, key)
+  if (cached !== undefined) return cached
+
+  const svg = await render(input, opts)
+  await writeTikzCache(cacheDir, key, svg)
+  return svg
+}
+
+async function tex2svg(input: string, opts: TikzRenderOptions) {
   await load()
   const dvi = await tex(input, {
-    texPackages: { pgfplots: '', amsmath: 'intlimits' },
-    tikzLibraries: 'arrows.meta,calc,positioning',
-    addToPreamble: '% comment',
+    texPackages,
+    tikzLibraries,
+    addToPreamble,
     showConsole: opts.showConsole,
   })
   return dvi2svg(dvi, {
@@ -83,6 +162,7 @@ function normalizeComputerModernText(svg: string): string {
     let glyphs: Map<string, string> | undefined
     if (font.startsWith('cmmi') || font.startsWith('cmmib')) glyphs = cmMathItalicGlyphs
     else if (font.startsWith('cmsy') || font.startsWith('cmbsy')) glyphs = cmSymbolGlyphs
+    else if (/^cm(?:r|bx|ti|sl|csc|ss)\d/.test(font)) glyphs = cmRomanGlyphs
 
     const normalized = [...decoded].map(char => glyphs?.get(char) ?? char).join('')
     let nextAttrs = attrs
@@ -221,7 +301,7 @@ export const TikzJax: QuartzTransformerPlugin<Options> = (opts?: Options) => {
             else {
               try {
                 svg = await withTimeout(
-                  tex2svg(value, { disableSanitize, ...o }),
+                  cachedTikzSvg(value, { disableSanitize, ...o }),
                   TIKZ_TIMEOUT,
                   `node ${i + 1}/${nodes.length}`,
                 )
