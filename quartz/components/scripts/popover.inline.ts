@@ -53,6 +53,7 @@ interface Point {
 
 const blobCleanupMap = new Map<string, NodeJS.Timeout>()
 const DEFAULT_BLOB_TIMEOUT = 30 * 60 * 1000 // 30 minutes
+const PDF_LOAD_TIMEOUT = 8 * 1000
 const PDF_VIEW_PARAMS = new URLSearchParams({ navpanes: '0', pagemode: 'none', view: 'FitH' })
 
 const p = new DOMParser()
@@ -108,14 +109,73 @@ function createPopoverElement(...classes: string[]): {
   return { popoverElement, popoverInner }
 }
 
+function cleanArxivIdentifier(identifier: string): string {
+  return identifier.replace(/^(arxiv:)?(pdf\/)?/i, '').replace(/\.pdf$/i, '')
+}
+
 function arxivPdfUrl(identifier: string): URL {
-  const url = new URL('https://aarnphm.xyz/api/arxiv')
-  url.searchParams.set('identifier', identifier)
-  return url
+  const path = cleanArxivIdentifier(identifier).split('/').map(encodeURIComponent).join('/')
+  return new URL(`https://arxiv.org/pdf/${path}`)
 }
 
 function pdfViewerSrc(blobUrl: string): string {
   return `${blobUrl}#${PDF_VIEW_PARAMS.toString()}`
+}
+
+function createPdfFrame(src?: string): HTMLIFrameElement {
+  const pdf = document.createElement('iframe')
+  if (src) pdf.src = pdfViewerSrc(src)
+  return pdf
+}
+
+function clearPopoverLoading(popoverInner: HTMLDivElement) {
+  delete popoverInner.dataset.state
+  popoverInner.querySelector<HTMLElement>(':scope > .popover-loading')?.remove()
+}
+
+function loadPdfFrame(
+  pdf: HTMLIFrameElement,
+  src: string,
+  signal: AbortSignal,
+  onReady: () => void,
+  onFailed: () => void,
+) {
+  let settled = false
+  const timeoutId = window.setTimeout(() => ready(), PDF_LOAD_TIMEOUT)
+
+  function cleanup() {
+    window.clearTimeout(timeoutId)
+    pdf.removeEventListener('load', ready)
+    pdf.removeEventListener('error', failed)
+    signal.removeEventListener('abort', aborted)
+  }
+
+  function finish(cb: () => void) {
+    if (settled) return
+    settled = true
+    cleanup()
+    cb()
+  }
+
+  function ready() {
+    finish(onReady)
+  }
+
+  function failed() {
+    finish(onFailed)
+  }
+
+  function aborted() {
+    pdf.removeAttribute('src')
+    finish(onFailed)
+  }
+
+  pdf.addEventListener('load', ready)
+  pdf.addEventListener('error', failed)
+  signal.addEventListener('abort', aborted, { once: true })
+  pdf.src = pdfViewerSrc(src)
+
+  if (signal.aborted) aborted()
 }
 
 function setPopoverLoading(popoverInner: HTMLDivElement, label: string, contentType?: string) {
@@ -251,7 +311,7 @@ async function handleImageContent(targetUrl: URL, popoverInner: HTMLDivElement) 
 }
 
 async function handlePdfContent(response: Response, popoverInner: HTMLDivElement) {
-  const pdf = document.createElement('iframe')
+  const pdf = createPdfFrame()
   const blob = await response.blob()
   const blobUrl = createManagedBlobUrl(blob)
   pdf.src = pdfViewerSrc(blobUrl)
@@ -1136,6 +1196,11 @@ async function mouseEnterHandler(
 
   let response: Response | void
   if (link.dataset.arxivId) {
+    if (activePopoverReq && activePopoverReq.link !== link) {
+      activePopoverReq.abort()
+      activePopoverReq = null
+    }
+
     const controller = new AbortController()
     activePopoverReq = { abort: () => controller.abort(), link }
 
@@ -1145,21 +1210,25 @@ async function mouseEnterHandler(
     document.body.appendChild(popoverElement)
     await showLoadingPopover(link, popoverElement, { clientX, clientY })
 
-    response = await fetchCanonical(arxivPdfUrl(link.dataset.arxivId), {
-      signal: controller.signal,
-    }).catch(error => {
-      if (!isAbortError(error)) console.error(error)
-    })
-    activePopoverReq = null
-
-    if (!response || !response.ok || activeAnchor !== link) {
-      popoverElement.remove()
-      return
-    }
-
-    await populatePopoverContent(response, targetUrl, popoverInner)
+    const pdf = createPdfFrame()
+    popoverInner.appendChild(pdf)
+    loadPdfFrame(
+      pdf,
+      arxivPdfUrl(link.dataset.arxivId).toString(),
+      controller.signal,
+      () => {
+        clearPopoverLoading(popoverInner)
+        if (activePopoverReq?.link === link) activePopoverReq = null
+      },
+      () => {
+        popoverElement.remove()
+        if (activePopoverReq?.link === link) activePopoverReq = null
+      },
+    )
 
     if (activeAnchor !== link) {
+      controller.abort()
+      activePopoverReq = null
       popoverElement.remove()
       return
     }
@@ -1223,15 +1292,17 @@ async function mouseClickHandler(evt: MouseEvent) {
       const asidePanel = getOrCreateSidePanel()
       asidePanel.dataset.slug = slug
 
-      let response: Response | void
       if (link.dataset.arxivId) {
-        response = await fetchCanonical(arxivPdfUrl(link.dataset.arxivId)).catch(console.error)
-      } else {
-        const fetchUrl = new URL(link.href)
-        fetchUrl.hash = ''
-        fetchUrl.search = ''
-        response = await fetchCanonical(fetchUrl).catch(console.error)
+        createSidePanel(asidePanel, createPdfFrame(arxivPdfUrl(link.dataset.arxivId).toString()))
+        window.notifyNav(slug as FullSlug)
+        return
       }
+
+      let response: Response | void
+      const fetchUrl = new URL(link.href)
+      fetchUrl.hash = ''
+      fetchUrl.search = ''
+      response = await fetchCanonical(fetchUrl).catch(console.error)
 
       if (!response) return
 
@@ -1241,7 +1312,7 @@ async function mouseClickHandler(evt: MouseEvent) {
         : getContentType(targetUrl)
 
       if (contentType === 'application/pdf') {
-        const pdf = document.createElement('iframe')
+        const pdf = createPdfFrame()
         const blob = await response.blob()
         const blobUrl = createManagedBlobUrl(blob)
         pdf.src = pdfViewerSrc(blobUrl)

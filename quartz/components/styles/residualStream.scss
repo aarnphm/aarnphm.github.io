@@ -2,6 +2,8 @@
 @use '../../styles/mixin.scss' as *;
 
 .residual-stream {
+  container-type: inline-size;
+  container-name: rs-figure;
   margin: 1.75rem 0;
   padding: 1.5rem 1.75rem;
   border-radius: var(--radius-7-2);
@@ -241,7 +243,30 @@
   text-align: center;
 }
 
-@media #{$mobile} {
+@container rs-figure (max-width: 660px) {
+  .rs-frame {
+    grid-template-columns: minmax(170px, 1fr) 1px minmax(0, 1.4fr);
+    gap: 0 1rem;
+  }
+
+  .rs-graph {
+    max-height: 560px;
+  }
+
+  .rs-note {
+    padding: 0.4rem 0;
+
+    & > p {
+      font-size: 0.88rem;
+    }
+  }
+
+  .rs-bracket {
+    display: none;
+  }
+}
+
+@container rs-figure (max-width: 460px) {
   .residual-stream {
     padding: 1.1rem 1.1rem;
   }
@@ -255,7 +280,7 @@
   .rs-graph {
     grid-column: 1;
     grid-row: 1;
-    max-width: 260px;
+    max-width: 240px;
     margin: 0 auto;
     max-height: none;
   }
@@ -283,9 +308,5 @@
 
   .rs-note--embed {
     grid-row: 5;
-  }
-
-  .rs-bracket {
-    display: none;
   }
 }

@@ -5,7 +5,7 @@ date: '2024-10-10'
 description: a bag of chips/words/vernacular
 id: word
 layout: technical
-modified: 2026-05-26 21:05:07 GMT-04:00
+modified: 2026-05-26 23:16:33 GMT-04:00
 tags:
   - evergreen
 title: lists
@@ -171,3 +171,4 @@ title: lists
 - asinine
 - {{sidenotes[semiotic]: the study of signs}}
 - [[thoughts/sheafification]]
+- {{sidenotes[chauvinist]: a person who displays an aggressive, unreasonable, and fanatical beelif in the superiority of their own group}}

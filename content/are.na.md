@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-05-26 22:26:51 GMT-04:00
+modified: 2026-05-26 23:25:58 GMT-04:00
 permalinks:
   - /website
   - /tweets
@@ -143,6 +143,11 @@ title: are.na
 - [meta]:
   - view: list
 
+- https://x.com/ch402/status/2058907108725211476 -- Remarks on Magnifica Humanitas
+  - [meta]:
+    - date: 05/26/2026
+    - tags: [religion, ai]
+    - importance: 8
 - https://x.com/QiaochuYuan/status/2058942003317281276 -- Sam Kriss on AI writing
   - [meta]:
     - date: 05/26/2026
@@ -641,6 +646,10 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://read.clarebir.ch/magnifica/ -- Magnifica Humanitas
+  - [meta]:
+    - date: 05/26/2026
+    - tags: [design]
 - https://stripe.dev/ -- stripe[dot]dev
   - [meta]:
     - date: 05/26/2026
@@ -2397,6 +2406,8 @@ title: are.na
   - [meta]:
     - date: 05/25/2026
     - tags: [belief, longtermism]
+    - importance: 8
+    - pinned: true
 - https://www.e-flux.com/journal/116/379446/refusing-completion-a-conversation -- Refusing Completion: A Conversation
   - [meta]:
     - date: 05/25/2026
