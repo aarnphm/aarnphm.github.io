@@ -25,6 +25,7 @@ import {
   gwernSvg,
   modularSvg,
 } from '../../components/svg'
+import { parseLessWrongTarget } from '../../util/lesswrong'
 import {
   FullSlug,
   RelativeURL,
@@ -196,6 +197,9 @@ export const CrawlLinks: QuartzTransformerPlugin<Partial<Options>> = userOpts =>
               const wikipediaTarget = linkTypes.isWikipedia
                 ? parseWikipediaTarget(ctx.dest)
                 : undefined
+              const lessWrongTarget = linkTypes.isLessWrong
+                ? parseLessWrongTarget(ctx.dest)
+                : undefined
 
               if (linkTypes.isBentoml) {
                 if (!classes.includes('bentoml-link')) {
@@ -227,6 +231,15 @@ export const CrawlLinks: QuartzTransformerPlugin<Partial<Options>> = userOpts =>
                 const langPrefix =
                   wikipediaTarget.lang !== 'simple' ? `${wikipediaTarget.lang}/` : ''
                 node.children[0].value = `wikipedia/${langPrefix}${wikipediaTarget.title}`
+              }
+
+              if (
+                lessWrongTarget &&
+                node.children.length === 1 &&
+                node.children[0].type === 'text' &&
+                node.children[0].value === dest
+              ) {
+                node.children[0].value = `lesswrong/${lessWrongTarget.slug ?? lessWrongTarget.postId}`
               }
 
               if (
@@ -298,6 +311,16 @@ export const CrawlLinks: QuartzTransformerPlugin<Partial<Options>> = userOpts =>
                 return true
               }
 
+              const handleLessWrong = (ctx: LinkContext) => {
+                if (!lessWrongTarget || metadataDisablesPopover(ctx.metadata)) return false
+                ctx.classes.push('internal')
+                ctx.node.properties.dataLesswrongPostId = lessWrongTarget.postId
+                if (lessWrongTarget.slug) {
+                  ctx.node.properties.dataLesswrongSlug = lessWrongTarget.slug
+                }
+                return true
+              }
+
               const handleCdnLinks = (ctx: LinkContext) => {
                 if (ctx.isExternal && opts.enableRawEmbed) {
                   if (
@@ -324,7 +347,12 @@ export const CrawlLinks: QuartzTransformerPlugin<Partial<Options>> = userOpts =>
                 )
 
               // Add appropriate icons based on link type
-              if (!handleArxiv(ctx) && !handleWikipedia(ctx) && !linkTypes.isEmbedTwitter) {
+              if (
+                !handleArxiv(ctx) &&
+                !handleWikipedia(ctx) &&
+                !handleLessWrong(ctx) &&
+                !linkTypes.isEmbedTwitter
+              ) {
                 ctx.classes.push(ctx.isExternal ? 'external' : 'internal')
               }
 

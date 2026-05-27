@@ -11,6 +11,13 @@ import {
   semanticWorkerEntry,
 } from './asset-paths'
 
+const indexStylesheetComponentStyles = new Set([
+  'quartz/components/styles/audio.scss',
+  'quartz/components/styles/clipboard.scss',
+  'quartz/components/styles/popover.scss',
+  'quartz/components/styles/pseudocode.scss',
+])
+
 export type ComponentResourceChanges = {
   indexStylesheet: boolean
   notebookRuntime: boolean
@@ -40,6 +47,7 @@ export function isPageScriptChange(changePath: string): boolean {
   return (
     changePath === 'quartz/util/mime.ts' ||
     changePath === 'quartz/util/path.ts' ||
+    changePath === 'quartz/util/lesswrong.ts' ||
     changePath === 'quartz/util/stacked-notes.ts' ||
     changePath === 'quartz/util/type-guards.ts' ||
     changePath === 'quartz/util/wikipedia.ts'
@@ -60,7 +68,8 @@ export function isEmojiAssetChange(changePath: string): boolean {
 }
 
 export function isIndexStylesheetChange(changePath: string): boolean {
-  return changePath.startsWith('quartz/styles/') && changePath.endsWith('.scss')
+  if (changePath.startsWith('quartz/styles/') && changePath.endsWith('.scss')) return true
+  return indexStylesheetComponentStyles.has(changePath)
 }
 
 export function classifyResourceChanges(

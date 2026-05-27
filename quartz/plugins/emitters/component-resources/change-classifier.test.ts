@@ -46,6 +46,12 @@ test('classifies shared browser utilities as page script changes', () => {
   assert.equal(changes.pageScripts, true)
 })
 
+test('classifies global component styles as index stylesheet changes', () => {
+  const changes = classifyResourceChanges([change('quartz/components/styles/popover.scss')])
+
+  assert.equal(changes.indexStylesheet, true)
+})
+
 test('classifies semantic worker deletion separately from generic workers', () => {
   const changes = classifyResourceChanges([change('quartz/workers/semantic.worker.ts', 'delete')])
 

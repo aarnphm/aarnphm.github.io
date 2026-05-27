@@ -149,7 +149,12 @@ li.section-li {
     padding-right: 0;
   }
 
-  .tag-highlights,
+  .tag-highlights {
+    display: none !important;
+  }
+}
+
+@media all and ($mobile), all and ($tablet) {
   .notes-evergreen {
     display: none !important;
   }
@@ -203,11 +208,13 @@ li.section-li {
     }
 
     @media all and ($mobile) {
-      display: block;
-
       .folder-layout--list {
         padding-right: 0;
       }
+    }
+
+    @media all and ($mobile), all and ($tablet) {
+      display: block;
 
       .folder-layout--evergreen {
         display: none;

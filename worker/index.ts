@@ -1,4 +1,6 @@
 import { OAuthProvider } from '@cloudflare/workers-oauth-provider'
+import { greaterWrongPostUrl, lessWrongTargetFromSearchParams } from '../quartz/util/lesswrong'
+import { readGreaterWrongPreviewHtml } from '../quartz/util/lesswrong-preview'
 import LFS_CONFIG from './.lfsconfig.txt'
 import handleArxiv from './arxiv'
 import {
@@ -19,6 +21,8 @@ const VERSION = 'version https://git-lfs.github.com/spec/v1\n'
 const MIME = 'application/vnd.git-lfs+json'
 const KEEP_HEADERS = 'Cache-Control'
 const HTML_CONTENT_TYPE = 'text/html; charset=utf-8'
+const LESSWRONG_PREVIEW_USER_AGENT =
+  'Mozilla/5.0 (compatible; AarnphmGarden/1.0; +https://aarnphm.xyz)'
 
 const COOP_COEP_HEADERS: Record<string, string> = {
   'Cross-Origin-Opener-Policy': 'same-origin',
@@ -315,6 +319,46 @@ type Env = {
 async function htmlAssetResponse(request: Request, env: Env): Promise<Response> {
   const originResp = await env.ASSETS.fetch(request)
   return withHeaders(originResp, { 'Content-Type': HTML_CONTENT_TYPE })
+}
+
+async function handleLessWrong(request: Request): Promise<Response> {
+  if (request.method !== 'GET') {
+    return new Response(JSON.stringify({ error: 'Method not allowed' }), {
+      status: 405,
+      headers: { 'Content-Type': 'application/json', Allow: 'GET' },
+    })
+  }
+
+  const url = new URL(request.url)
+  const target = lessWrongTargetFromSearchParams(url.searchParams)
+  if (!target) {
+    return new Response(JSON.stringify({ error: 'LessWrong postId is required' }), {
+      status: 400,
+      headers: { 'Content-Type': 'application/json' },
+    })
+  }
+
+  const response = await fetch(greaterWrongPostUrl(target), {
+    headers: { Accept: 'text/html', 'User-Agent': LESSWRONG_PREVIEW_USER_AGENT },
+    cf: { cacheTtl: 300, cacheEverything: true },
+  })
+
+  if (!response.ok) {
+    return new Response(JSON.stringify({ error: 'LessWrong preview unavailable' }), {
+      status: response.status === 404 ? 404 : 502,
+      headers: { 'Content-Type': 'application/json' },
+    })
+  }
+
+  const preview = readGreaterWrongPreviewHtml(await response.text(), target)
+  if (!preview) {
+    return new Response(JSON.stringify({ error: 'LessWrong preview unavailable' }), {
+      status: 404,
+      headers: { 'Content-Type': 'application/json' },
+    })
+  }
+
+  return new Response(JSON.stringify(preview), { headers: { 'Content-Type': 'application/json' } })
 }
 
 export default {
@@ -653,6 +697,10 @@ export default {
       }
       case '/api/arxiv': {
         const resp = await handleArxiv(request)
+        return withHeaders(resp, apiHeaders)
+      }
+      case '/api/lesswrong': {
+        const resp = await handleLessWrong(request)
         return withHeaders(resp, apiHeaders)
       }
       case '/api/curius': {
