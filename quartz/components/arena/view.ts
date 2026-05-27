@@ -4,6 +4,8 @@ import {
   arenaEmbedCapturePath,
   type ArenaEmbedCaptureOptions,
   arenaEmbedHtmlPath,
+  arenaPdfFilenameFromUrl,
+  isArenaPdfUrl,
   type ArenaExternalEmbedMode,
 } from '../../util/arena-embed'
 import { normalizeRelativeURLs } from '../../util/path'
@@ -860,7 +862,7 @@ function cleanupPdfs(root: HTMLElement) {
       delete node.dataset.pdfBlobUrl
     }
 
-    node.dataset.pdfStatus = ''
+    delete node.dataset.pdfStatus
   })
 }
 
@@ -926,6 +928,18 @@ function renderExternalModalHtml(
         ${sandbox}
         src="${escapeHtml(iframeSrc)}"
       ></iframe>
+    </div>
+  `
+}
+
+function renderPdfModalHtml(pdfUrl: string): string {
+  return `
+    <div
+      class="arena-modal-embed arena-modal-embed-pdf"
+      data-pdf-url="${escapeHtml(pdfUrl)}"
+      data-pdf-filename="${escapeHtml(arenaPdfFilenameFromUrl(pdfUrl))}"
+    >
+      <span class="arena-loading-spinner" role="status" aria-label="Loading PDF viewer"></span>
     </div>
   `
 }
@@ -1032,6 +1046,8 @@ function createModalDataFromJson(block: ArenaBlockSearchable, channelSlug: strin
         <span class="arena-loading-spinner" role="status" aria-label="Loading Substack preview"></span>
       </div>
     `
+  } else if (block.url && isArenaPdfUrl(block.url)) {
+    mainContentHtml = renderPdfModalHtml(block.url)
   } else if (block.url) {
     const externalEmbedMode = block.embedMode ?? 'auto'
     mainContentHtml = renderExternalModalHtml(block, block.url, externalEmbedMode)

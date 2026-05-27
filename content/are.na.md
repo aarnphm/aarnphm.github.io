@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-05-27 03:20:44 GMT-04:00
+modified: 2026-05-27 03:26:25 GMT-04:00
 permalinks:
   - /website
   - /tweets
@@ -687,10 +687,6 @@ title: are.na
   - [meta]:
     - date: 04/27/2026
     - tags: [belief, life, agi]
-- https://mitsuhiko.github.io/rope-man-game/src/?seed=water -- Rope man
-  - [meta]:
-    - date: 04/27/2026
-    - tags: [game]
 - https://en.wikipedia.org/wiki/Occam%27s_razor -- Occam's razor
   - [meta]:
     - date: 04/26/2026
@@ -4369,6 +4365,10 @@ title: are.na
   - view: list
   - json: true
 
+- https://www.youtube.com/watch?v=ErJp91YBXbo -- Stochastic Calculus
+  - [meta]:
+    - date: 05/27/2026
+    - tags: [statistics]
 - https://ocw.mit.edu/courses/21h-151-dynastic-china-fall-2024/ -- Dynastic China
   - [meta]:
     - date: 05/23/2026
