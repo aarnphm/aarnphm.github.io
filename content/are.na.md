@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-05-25 23:24:36 GMT-04:00
+modified: 2026-05-26 20:52:10 GMT-04:00
 permalinks:
   - /website
   - /tweets
@@ -143,6 +143,14 @@ title: are.na
 - [meta]:
   - view: list
 
+- https://x.com/QiaochuYuan/status/2058942003317281276 -- Sam Kriss on AI writing
+  - [meta]:
+    - date: 05/26/2026
+    - tags: [epistemology, writing]
+- https://x.com/allgarbled/status/2059024654996767072 -- seppuku skill for Claude
+  - [meta]:
+    - date: 05/26/2026
+    - tags: [meme]
 - https://x.com/JakeOrthwein/status/2058203387959685573 -- Christopher Lasch, on optimisim and faith
   - [meta]:
     - date: 05/25/2026
@@ -2371,6 +2379,12 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://www.lesswrong.com/posts/ytzrakjgcvCfLCCZp/contra-wentworth-on-physical-attractiveness-for-men -- Contra Wentworth on Physical Attractiveness for Men
+  - [meta]:
+    - date: 05/26/2026
+    - tags: [attraction, epistemology]
+    - importance: 6
+    - seealso: https://www.lesswrong.com/posts/w3y9G4ybNb3rmTgev/why-physical-attractiveness-matters-for-men-s-dating
 - https://geohot.github.io//blog/jekyll/update/2026/05/24/the-eternal-sloptember.html -- The Eternal Sloptember
   - [meta]:
     - date: 05/25/2026

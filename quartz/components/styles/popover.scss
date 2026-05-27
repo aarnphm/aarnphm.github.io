@@ -241,6 +241,164 @@
   }
 }
 
+.lesswrong-popover {
+  color: var(--dark);
+
+  & > .popover-inner {
+    padding: 0;
+    max-height: 25rem;
+  }
+}
+
+.lesswrong-popover-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0.85rem;
+  padding: 0.95rem;
+}
+
+.lesswrong-popover-header {
+  display: grid;
+  gap: 0.45rem;
+  justify-items: start;
+  min-width: 0;
+}
+
+.lesswrong-popover-title {
+  margin: 0;
+  padding: 0;
+  font-size: 1.08rem;
+  font-weight: 700;
+  line-height: 1.18;
+
+  a {
+    color: var(--dark);
+    text-decoration: none;
+
+    &:hover {
+      background: transparent;
+      color: var(--secondary);
+    }
+  }
+}
+
+.lesswrong-popover-meta,
+ul.tags.lesswrong-popover-tags {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.35rem 0.55rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  color: var(--darkgray);
+  font-size: 0.78rem;
+  line-height: 1.25;
+}
+
+.lesswrong-popover-meta {
+  justify-content: flex-start;
+
+  .author {
+    color: var(--dark);
+    font-weight: 600;
+  }
+}
+
+ul.tags.lesswrong-popover-tags {
+  gap: 0.4rem;
+  margin: 0;
+  line-height: 1.4rem;
+
+  li {
+    display: inline-block;
+    margin: 0;
+    overflow-wrap: normal;
+    white-space: nowrap;
+  }
+}
+
+span.internal.tag-link.lesswrong-popover-tag {
+  display: inline;
+  padding: 3px;
+  margin: -1px;
+  color: var(--darkgray);
+  font-family: var(--bodyFont);
+  font-size: 1em;
+  font-weight: 400;
+  line-height: inherit;
+  text-decoration: none;
+  border: 1px solid var(--telescope-border);
+  background: transparent;
+
+  &::before {
+    content: '#';
+  }
+}
+
+.lesswrong-popover-toc {
+  display: grid;
+  gap: 0.35rem;
+  padding-top: 0.3rem;
+  border-top: 1px solid color-mix(in srgb, var(--lightgray) 70%, transparent);
+}
+
+.lesswrong-popover-toc-title {
+  color: var(--gray);
+  font-family: var(--bodyFont);
+  font-size: 0.68rem;
+  font-weight: 600;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.lesswrong-popover-toc-list {
+  display: grid;
+  gap: 0.2rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.lesswrong-popover-toc-item {
+  min-width: 0;
+  margin: 0;
+  padding-left: var(--lesswrong-popover-toc-indent, 0);
+}
+
+.lesswrong-popover-toc-link {
+  display: block;
+  overflow: hidden;
+  color: var(--darkgray);
+  font-size: 0.78rem;
+  line-height: 1.22;
+  text-decoration: none;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  &:hover {
+    background: transparent;
+    color: var(--secondary);
+  }
+}
+
+.lesswrong-popover-extract {
+  margin: 0;
+  font-size: 0.92rem;
+  line-height: 1.45;
+}
+
+.lesswrong-popover-source {
+  color: var(--gray);
+  font-size: 0.78rem;
+  text-decoration: none;
+
+  &:hover {
+    background: transparent;
+    color: var(--secondary);
+  }
+}
+
 .active-popover,
 .popover:hover {
   opacity: 1;

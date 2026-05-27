@@ -2,15 +2,13 @@
 date: '2024-01-11'
 description: in information theory
 id: Entropy
-modified: 2026-05-09 17:51:47 GMT-04:00
+modified: 2026-05-26 20:18:50 GMT-04:00
 tags:
   - seed
 title: Entropy
 ---
 
 https://x.com/karpathy/status/1632800082679705600
-
-see also: [lesswrong](https://www.lesswrong.com/posts/D7PumeYTDPfBTp3i7/the-waluigi-effect-mega-post)
 
 idea: quantifies average level of uncertainty information associated with a variable's potential states or possible outcome.
 
@@ -23,6 +21,12 @@ idea: quantifies average level of uncertainty information associated with a vari
 > $$
 
 Base 2 gives unit of "bits" (or "shannons"), while natural base gives "natural units" (or "nat"), and base 10 gives unit of "dits" (or "bans", or "hartleys")
+
+## The Waluigi Effect
+
+[_source_](https://www.lesswrong.com/posts/D7PumeYTDPfBTp3i7/the-waluigi-effect-mega-post)
+
+talks more about the semiotic phenomena which arise within LLMs, and how hallucination come to be.
 
 ## joint
 
