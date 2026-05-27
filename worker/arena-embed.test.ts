@@ -3,6 +3,7 @@ import test, { describe } from 'node:test'
 import {
   arenaEmbedAttributeNamesToRemove,
   classifyArenaFrameHeaders,
+  readArenaEmbedCaptureViewport,
   rebaseArenaEmbedSrcset,
   rebaseArenaEmbedUrl,
   validateArenaEmbedTarget,
@@ -31,7 +32,7 @@ describe('arena embed worker helpers', () => {
         target,
         embedderOrigin,
       ),
-      { mode: 'fetch', reason: 'frame-ancestors-none' },
+      { mode: 'capture', reason: 'frame-ancestors-none' },
     )
 
     assert.deepStrictEqual(
@@ -40,7 +41,7 @@ describe('arena embed worker helpers', () => {
         target,
         embedderOrigin,
       ),
-      { mode: 'fetch', reason: 'frame-ancestors-mismatch' },
+      { mode: 'capture', reason: 'frame-ancestors-mismatch' },
     )
 
     assert.deepStrictEqual(
@@ -49,7 +50,7 @@ describe('arena embed worker helpers', () => {
         target,
         embedderOrigin,
       ),
-      { mode: 'fetch', reason: 'x-frame-options-sameorigin' },
+      { mode: 'capture', reason: 'x-frame-options-sameorigin' },
     )
 
     assert.deepStrictEqual(classifyArenaFrameHeaders(new Headers({}), target, embedderOrigin), {
@@ -95,6 +96,17 @@ describe('arena embed worker helpers', () => {
         ['data-id', '1'],
       ]),
       ['onclick', 'srcdoc', 'nonce'],
+    )
+  })
+
+  test('normalizes capture viewport dimensions for cache keys', () => {
+    assert.deepStrictEqual(
+      readArenaEmbedCaptureViewport(new URLSearchParams('w=1920&h=970&dpr=2')),
+      { width: 1920, height: 970, dpr: 2 },
+    )
+    assert.deepStrictEqual(
+      readArenaEmbedCaptureViewport(new URLSearchParams('w=20&h=9999&dpr=9')),
+      { width: 640, height: 1400, dpr: 2 },
     )
   })
 })

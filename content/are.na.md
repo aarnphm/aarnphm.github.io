@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-05-27 03:00:41 GMT-04:00
+modified: 2026-05-27 03:20:44 GMT-04:00
 permalinks:
   - /website
   - /tweets
@@ -1016,7 +1016,7 @@ title: are.na
     - date: 10/03/2025
     - tags: [web poetic]
   - Arrowssssss
-- https://brand.dropbox.com/ -- Dropbox brand design [--]
+- https://brand.dropbox.com/ -- Dropbox brand design
   - [meta]:
     - date: 10/03/2025
     - tags: [design, landing]
@@ -2393,6 +2393,11 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://clairebookworm.substack.com/p/i-think-about-it-all-the-time -- I think about it all the time
+  - [meta]:
+    - date: 05/27/2026
+    - tags: [love, relationship, epistemology]
+    - importance: 8
 - https://www.lesswrong.com/posts/ytzrakjgcvCfLCCZp/contra-wentworth-on-physical-attractiveness-for-men -- Contra Wentworth on Physical Attractiveness for Men
   - [meta]:
     - date: 05/26/2026
@@ -3586,7 +3591,7 @@ title: are.na
   - [meta]:
     - date: 11/09/2025
     - tags: [game]
-- https://www.bbc.com/future/article/20240206-why-flirting-might-be-good-for-your-relationship -- How to be a good flirt, according to science [--]
+- https://www.bbc.com/future/article/20240206-why-flirting-might-be-good-for-your-relationship -- How to be a good flirt, according to science
   - [meta]:
     - date: 11/09/2025
     - tags: [dating]
@@ -3807,7 +3812,7 @@ title: are.na
   - [meta]:
     - date: 10/09/2025
     - tags: [productivity]
-- https://www.lightspeedmagazine.com/fiction/state-change/ -- State change [--]
+- https://www.lightspeedmagazine.com/fiction/state-change/ -- State change
   - [meta]:
     - date: 10/09/2025
     - tags: [culture]
@@ -3815,7 +3820,7 @@ title: are.na
   - [meta]:
     - date: 10/07/2025
     - tags: [friendship]
-- https://christophlocher.com/notes/ethnographic-research-on-dynamicland -- Götz Bachmann’s Ethnographic Research on Dynamicland [**] [--]
+- https://christophlocher.com/notes/ethnographic-research-on-dynamicland -- Götz Bachmann’s Ethnographic Research on Dynamicland [**]
   - [meta]:
     - date: 10/07/2025
     - tags: [tool for thought]
@@ -5112,7 +5117,7 @@ title: are.na
   - https://leimao.github.io/blog/CuTe-Blocked-Raked-Products/
   - https://leimao.github.io/blog/CuTe-Index-To-Coordinate/
   - https://leimao.github.io/blog/CUDA-Driver-Runtime-Load-Run-Kernel/
-- https://hanlab.mit.edu/blog/svdquant-nvfp4 -- SVDQuant Meets NVFP4: 4× Smaller and 3× Faster FLUX with 16-bit Quality on NVIDIA Blackwell GPUs [--]
+- https://hanlab.mit.edu/blog/svdquant-nvfp4 -- SVDQuant Meets NVFP4: 4× Smaller and 3× Faster FLUX with 16-bit Quality on NVIDIA Blackwell GPUs
   - [meta]:
     - date: 10/06/2025
     - tags: [inference, optimization]
@@ -7504,7 +7509,7 @@ title: are.na
     - date: 01/19/2026
     - tags: [design, agentic, autonomous, ideas]
   - seealso: https://roughnotation.com
-- https://brand.dropbox.com/color -- Dropbox Design Principle, Color [--]
+- https://brand.dropbox.com/color -- Dropbox Design Principle, Color
   - [meta]:
     - date: 01/19/2026
     - tags: [design system]
@@ -8841,6 +8846,10 @@ title: are.na
 
 ## engineering
 
+- https://docs.google.com/presentation/d/1q5g3-Lx2mJxHBmB58nXTLunFfgDWqfIq/edit?slide=id.p1#slide=id.p1 -- When AI starts writing systems code
+  - [meta]:
+    - date: 05/27/2026
+    - tags: [systems, agentic]
 - https://github.com/uccl-project/mKernel -- mKernel
   - [meta]:
     - date: 05/25/2026

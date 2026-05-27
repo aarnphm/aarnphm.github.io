@@ -355,6 +355,10 @@ body {
   font-weight: 800;
   margin-top: 0;
   font-family: var(--headerFont);
+
+  & > a {
+    outline: none;
+  }
 }
 
 .page-header:not(aside[class~='sidepanel-container'] *) {
