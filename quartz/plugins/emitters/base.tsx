@@ -73,6 +73,7 @@ export const BasePage: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts =
     pageBody: Content(),
     beforeBody: [BaseViewSelector(), BaseSearchBar()],
     afterBody: [],
+    sidebar: [],
   }
 
   const { head: Head, header, beforeBody, pageBody, afterBody, sidebar, footer: Footer } = opts

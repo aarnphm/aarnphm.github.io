@@ -10,7 +10,7 @@ import type { TranscludeOptions } from '../plugins/transformers/frontmatter'
 import { i18n } from '../i18n'
 import { checkBib, checkBibSection } from '../plugins/transformers/citations'
 import { checkFootnoteRef, checkFootnoteSection } from '../plugins/transformers/gfm'
-import { collectHtmlToc } from '../plugins/transformers/toc'
+import { collectHtmlTocData } from '../plugins/transformers/toc'
 import { QuartzPluginData } from '../plugins/vfile'
 import {
   QuartzComponent,
@@ -1004,9 +1004,10 @@ function updateTocDataFromTree(root: Root, componentData: QuartzComponentProps):
     return
   }
 
-  const toc = collectHtmlToc(root, opts)
-  if (toc.length > 0) {
-    componentData.fileData.toc = toc
+  const toc = collectHtmlTocData(root, opts)
+  componentData.fileData.tocOptions = { ...opts, sourceEntries: toc.sourceEntries }
+  if (toc.entries.length > 0) {
+    componentData.fileData.toc = toc.entries
   } else {
     delete componentData.fileData.toc
   }
@@ -2141,7 +2142,7 @@ export function renderPage(
   const lang =
     (componentData.fileData.frontmatter?.lang ?? componentData.cfg.locale)?.split('-')[0] ?? 'en'
   const pageLayout = componentData.fileData.frontmatter?.pageLayout ?? 'default'
-  const isSlides = componentData.fileData.frontmatter?.slides ?? false
+  const isSlides = (componentData.fileData.frontmatter?.slides ?? false) && slug.endsWith('/slides')
   const isArena = slug === 'arena' || slug.startsWith('arena/')
   const isCurius = slug === 'curius'
   const isArenaSubpage = slug.startsWith('arena/') && slug !== 'arena'
@@ -2171,9 +2172,11 @@ export function renderPage(
             id="quartz-root"
             class={classNames(undefined, 'page', slug === 'index' ? 'grid' : '')}
             style={
-              slug !== 'index'
-                ? { display: 'flex', flexDirection: 'column', minHeight: '100vh' }
-                : undefined
+              slug === 'index'
+                ? undefined
+                : isSlides
+                  ? { display: 'flex', flexDirection: 'column' }
+                  : { display: 'flex', flexDirection: 'column', minHeight: '100vh' }
             }
           >
             <Header {...componentData}>

@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-05-26 23:25:58 GMT-04:00
+modified: 2026-05-27 02:21:34 GMT-04:00
 permalinks:
   - /website
   - /tweets
@@ -9444,6 +9444,11 @@ title: are.na
 
 ## organizations
 
+- https://pierre.computer/ -- Pierre Computer
+  - [meta]:
+    - date: 05/27/2026
+    - tags: [engineering, performance]
+    - pinned: true
 - https://www.untillabs.com/ -- until
   - [meta]:
     - date: 05/25/2026

@@ -6,7 +6,7 @@ import {
   QuartzComponentProps,
 } from '../types/component'
 import { classNames } from '../util/lang'
-import { FullSlug, resolveRelative } from '../util/path'
+import { FullSlug, joinSegments, resolveRelative } from '../util/path'
 import { Date as DateComponent, getDate } from './Date'
 //@ts-ignore
 import script from './scripts/content-meta.inline'
@@ -111,6 +111,38 @@ export default (() => {
     }
 
     meta.push({ title: 'durée', classes: ['reading-time'], item: h('span', {}, [displayedTime]) })
+
+    if (fileData.frontmatter?.slides) {
+      const slidesSlug = joinSegments(fileData.slug!, 'slides') as FullSlug
+      const slidesHref = resolveRelative(fileData.slug!, slidesSlug)
+
+      meta.push({
+        title: 'slides',
+        classes: ['slides-links'],
+        item: [
+          h(
+            'a',
+            {
+              href: slidesHref,
+              class: 'internal content-meta-link',
+              'data-slug': slidesHref,
+              'data-no-popover': true,
+            },
+            ['deck'],
+          ),
+          h(
+            'a',
+            {
+              href: '/',
+              class: 'internal content-meta-link',
+              'data-slug': '/',
+              'data-no-popover': true,
+            },
+            ['home'],
+          ),
+        ],
+      })
+    }
 
     if (fileData.frontmatter?.protected !== true) {
       meta.push({

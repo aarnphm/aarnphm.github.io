@@ -3,8 +3,12 @@ import { Element, ElementContent, Root as HastRoot, RootContent } from 'hast'
 import { toString } from 'hast-util-to-string'
 import yaml from 'js-yaml'
 import { QuartzTransformerPlugin } from '../../types/plugin'
+import {
+  ArenaExternalEmbedMode,
+  defaultArenaExternalEmbedMode,
+  readArenaExternalEmbedMode,
+} from '../../util/arena-embed'
 import { splitAnchor, transformLink, stripSlashes, FullSlug } from '../../util/path'
-import { hostnameMatches } from '../../util/url'
 import { extractWikilinksWithPositions, resolveWikilinkTarget } from '../../util/wikilinks'
 import { buildYouTubeEmbed } from '../../util/youtube'
 import { externalLinkRegex } from './ofm'
@@ -29,7 +33,7 @@ export interface ArenaBlock {
   internalHash?: string
   internalTitle?: string
   tags?: string[]
-  embedDisabled?: boolean
+  embedMode?: ArenaExternalEmbedMode
   importance?: number
 }
 
@@ -69,7 +73,7 @@ export interface ArenaBlockSearchable {
   tags?: string[]
   subItems?: ArenaBlockSearchable[]
   hasModalInDom: boolean
-  embedDisabled?: boolean
+  embedMode?: ArenaExternalEmbedMode
   importance?: number
 }
 
@@ -108,15 +112,6 @@ const parseLinkTitle = (text: string): { url: string; title?: string } | undefin
 
 const stripTrailingMarkers = (value: string): string =>
   value.replace(TRAILING_MARKERS_PATTERN, '').trim()
-
-const isGithubUrl = (rawUrl: string): boolean => {
-  if (!rawUrl) return false
-  try {
-    return hostnameMatches(new URL(rawUrl), 'github.com')
-  } catch {
-    return false
-  }
-}
 
 const getTextContentExcludingNestedUl = (li: Element): string => {
   let text = ''
@@ -458,13 +453,14 @@ export const Arena: QuartzTransformerPlugin = () => {
                 titleCandidate = url
               }
 
+              const defaultEmbedMode = defaultArenaExternalEmbedMode(url, embedDisabledFromMarker)
               const block: ArenaBlock = {
                 id: `block-${blockCounter++}`,
                 content: titleCandidate || strippedContent || url || '',
                 title: titleCandidate,
                 url,
                 highlighted,
-                embedDisabled: embedDisabledFromMarker || (url ? isGithubUrl(url) : false),
+                embedMode: defaultEmbedMode,
               }
 
               const nestedList = extractNestedList(li)
@@ -530,6 +526,13 @@ export const Arena: QuartzTransformerPlugin = () => {
                       block.importance = parsed
                     }
                     delete block.metadata?.importance
+                  }
+
+                  const embedValue = block.metadata?.embed
+                  const embedMode = readArenaExternalEmbedMode(embedValue)
+                  if (embedMode) {
+                    block.embedMode = embedMode
+                    delete block.metadata?.embed
                   }
 
                   if (block.metadata && Object.keys(block.metadata).length === 0) {

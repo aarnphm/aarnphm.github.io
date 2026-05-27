@@ -5,7 +5,7 @@ date: '2024-10-10'
 description: a bag of chips/words/vernacular
 id: word
 layout: technical
-modified: 2026-05-26 23:16:33 GMT-04:00
+modified: 2026-05-27 01:58:54 GMT-04:00
 tags:
   - evergreen
 title: lists
@@ -16,7 +16,8 @@ title: lists
   - drill transition
   - continuity [transition](https://x.com/gabriell_lab/status/2058217175047901310)
 - Vim magic
-  - `[&|?]curius=\v\d+(,\s*\d+)*`
+  - `[&|?]curius=\v\d+(,\s*\d+)*//g`
+  - `\v\((O[^|]*)\)(\s*\|)/$\1$\2/g`
 - SAXPY: single-precision a \* x plus y
 - BLAS: Basic Linear Algebra Subprograms
   - L1: scalar,vector,vector-vector ops
@@ -24,6 +25,19 @@ title: lists
   - L3: matrix-matrix ops
   - ![[thoughts/images/BLAS.webp]]
 - $$\begin{aligned} &\text{Big O(micron)}: O \text{ or } \mathcal{O} \\ &\text{Big Omega}: \Omega \\ &\text{Big Theta}: \Theta \\ &\text{Small O(micron)}: o \\ &\text{Small Omega}: \omega \\ &\text{On the order of}: \sim \end{aligned}$$
+- time complexity of algorithm
+  | Algorithm | Best | Average | Worst | Stable | In-place |
+  | -------------- | ------------ | ------------ | ------------ | ------- | -------- |
+  | Bubble Sort | $O(n)$ | $O(n^2)$ | $O(n^2)$ | Yes | Yes |
+  | Selection Sort | $O(n^2)$ | $O(n^2)$ | $O(n^2)$ | No | Yes |
+  | Insertion Sort | $O(n)$ | $O(n^2)$ | $O(n^2)$ | Yes | Yes |
+  | Merge Sort | $O(n\log n)$ | $O(n\log n)$ | $O(n\log n)$ | Yes | No |
+  | Quick Sort | $O(n\log n)$ | $O(n\log n)$ | $O(n^2)$ | No | Yes-ish |
+  | Heap Sort | $O(n\log n)$ | $O(n\log n)$ | $O(n\log n)$ | No | Yes |
+  | Counting Sort | $O(n+k)$ | $O(n+k)$ | $O(n+k)$ | Yes | No |
+  | Radix Sort | $O(d(n+k))$ | $O(d(n+k))$ | $O(d(n+k))$ | Yes | No |
+  | Bucket Sort | $O(n+k)$ | $O(n+k)$ | $O(n^2)$ | Depends | Depends |
+  | TimSort | $O(n)$ | $O(n\log n)$ | $O(n\log n)$ | Yes | No-ish |
 - tomfoolering
 - ostreperous
 - carthusian

@@ -32,24 +32,18 @@
   }
 }
 
-body:has(.toc[data-layout='minimal']) {
-  #quartz-root {
-    isolation: isolate;
-  }
-}
-
-body:has(.toc[data-layout='minimal']) .page-content:has(.toc[data-layout='minimal']) {
+.page-content.has-minimal-toc {
   position: relative;
   isolation: isolate;
 }
 
-body:has(.toc[data-layout='minimal']) .aside-container:has(.toc[data-layout='minimal']) {
+.page-content.has-minimal-toc > .aside-container {
   position: relative;
   z-index: var(--z-popover);
   isolation: isolate;
 }
 
-body:has(.toc[data-layout='minimal']) .page-content:has(.toc[data-layout='minimal'])::before {
+.page-content.has-minimal-toc::before {
   content: '';
   position: fixed;
   inset: 0;
@@ -62,9 +56,13 @@ body:has(.toc[data-layout='minimal']) .page-content:has(.toc[data-layout='minima
   transition: opacity 0.18s cubic-bezier(0.2, 0, 0, 1);
 }
 
-body:has(.toc[data-layout='minimal'].is-hovering)
-  .page-content:has(.toc[data-layout='minimal'])::before {
+.page-content.has-minimal-toc.toc-hovering::before {
   opacity: 1;
+}
+
+.page-content.has-minimal-toc.toc-dense::before {
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
 }
 
 @keyframes fillExpand {
@@ -176,16 +174,20 @@ nav#toc-vertical {
       animation: fillExpand 0.5s forwards;
       animation-delay: calc((var(--animation-order) - 1) * 0.1s + 0.5s);
       transition:
-        transform 0.08s cubic-bezier(0.2, 0, 0, 1),
         background-color 0.08s cubic-bezier(0.2, 0, 0, 1),
         opacity 0.08s cubic-bezier(0.2, 0, 0, 1);
-      will-change: transform, opacity;
+      will-change: transform;
     }
 
     & > .indicator {
       display: none;
     }
   }
+}
+
+.toc[data-layout='minimal'][data-density='dense'] nav#toc-vertical button.toc-item > .fill {
+  animation: none;
+  transform: scaleX(1);
 }
 
 .toc[data-layout='minimal'].is-hovering nav#toc-vertical button.toc-item > .fill {

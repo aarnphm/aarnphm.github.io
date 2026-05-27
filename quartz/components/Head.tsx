@@ -39,19 +39,11 @@ export default (() => {
       e => e.name === CustomOgImagesEmitterName,
     )
     const ogImageDefaultPath = `https://${cfg.baseUrl}/static/og-image.webp`
-    const coreStylesheet = css.find(resource => !(resource.inline ?? false))?.content
-    const coreScript = js.find(
-      resource => resource.loadTime === 'beforeDOMReady' && resource.contentType === 'external',
-    )
 
     return (
       <head>
         <title>{title}</title>
         <meta charSet="utf-8" />
-        {coreStylesheet && <link rel="preload" href={coreStylesheet} as="style" />}
-        {coreScript?.contentType === 'external' && (
-          <link rel="preload" href={coreScript.src} as="script" />
-        )}
         {cfg.theme.cdnCaching && cfg.theme.fontOrigin === 'googleFonts' && (
           <>
             <link rel="preconnect" href="https://fonts.googleapis.com" />

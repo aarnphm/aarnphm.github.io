@@ -16,6 +16,7 @@ export interface Options {
 }
 
 const defaultOptions: Options = { maxDepth: 3, minEntries: 1, showByDefault: true }
+const maxDetailedTocEntries = 50
 
 export interface TocEntry {
   depth: number
@@ -23,7 +24,15 @@ export interface TocEntry {
   slug: string // this is just the anchor (#some-slug), not the canonical slug
 }
 
-export type TocRenderOptions = Pick<Options, 'maxDepth' | 'minEntries'> & { display: boolean }
+export interface TocCollection {
+  entries: TocEntry[]
+  sourceEntries: number
+}
+
+export type TocRenderOptions = Pick<Options, 'maxDepth' | 'minEntries'> & {
+  display: boolean
+  sourceEntries: number
+}
 type TocHeadingChild = Heading['children'][number] | Wikilink
 
 const slugAnchor = new Slugger()
@@ -61,15 +70,23 @@ function extractHeadingText(node: Heading): string {
   return normalizeHeadingText(content)
 }
 
-function finalizeToc(toc: TocEntry[], highestDepth: number, minEntries: number): TocEntry[] {
-  if (toc.length === 0 || toc.length <= minEntries) return []
-  return toc.map(entry => ({ ...entry, depth: entry.depth - highestDepth }))
+function finalizeToc(toc: TocEntry[], highestDepth: number, minEntries: number): TocCollection {
+  if (toc.length === 0 || toc.length <= minEntries)
+    return { entries: [], sourceEntries: toc.length }
+
+  const visibleToc =
+    toc.length > maxDetailedTocEntries ? toc.filter(entry => entry.depth === highestDepth) : toc
+
+  return {
+    entries: visibleToc.map(entry => ({ ...entry, depth: entry.depth - highestDepth })),
+    sourceEntries: toc.length,
+  }
 }
 
-export function collectMarkdownToc(
+export function collectMarkdownTocData(
   tree: Root,
   opts: Pick<Options, 'maxDepth' | 'minEntries'>,
-): TocEntry[] {
+): TocCollection {
   slugAnchor.reset()
   const toc: TocEntry[] = []
   let highestDepth: number = opts.maxDepth
@@ -86,37 +103,70 @@ export function collectMarkdownToc(
   return finalizeToc(toc, highestDepth, opts.minEntries)
 }
 
+export function collectMarkdownToc(
+  tree: Root,
+  opts: Pick<Options, 'maxDepth' | 'minEntries'>,
+): TocEntry[] {
+  return collectMarkdownTocData(tree, opts).entries
+}
+
 function headingId(node: HastElement): string | undefined {
   const id = node.properties?.id
   return typeof id === 'string' && id.length > 0 ? id : undefined
+}
+
+function hasClass(node: HastElement, name: string): boolean {
+  const className = node.properties?.className
+  if (typeof className === 'string') {
+    return className.split(/\s+/).includes(name)
+  }
+  return Array.isArray(className) && className.includes(name)
+}
+
+export function collectHtmlTocData(
+  tree: HastRoot,
+  opts: Pick<Options, 'maxDepth' | 'minEntries'>,
+): TocCollection {
+  slugAnchor.reset()
+  const toc: TocEntry[] = []
+  let highestDepth: number = opts.maxDepth
+
+  const collect = (node: HastRoot | HastElement, insideBaseEmbed: boolean): void => {
+    for (const child of node.children) {
+      if (child.type !== 'element') continue
+
+      const childInsideBaseEmbed = insideBaseEmbed || hasClass(child, 'base-embed')
+      const depth = headingRank(child)
+      if (!childInsideBaseEmbed && depth !== undefined && depth <= opts.maxDepth) {
+        const text = normalizeHeadingText(toText(child))
+        if (text.length > 0) {
+          const fallbackSlug = slugAnchor.slug(text)
+          const slug = headingId(child) ?? fallbackSlug
+          if (!headingId(child)) {
+            child.properties = { ...child.properties, id: slug }
+          }
+
+          highestDepth = Math.min(highestDepth, depth)
+          toc.push({ depth, text, slug })
+        }
+      }
+
+      if (child.children.length > 0) {
+        collect(child, childInsideBaseEmbed)
+      }
+    }
+  }
+
+  collect(tree, false)
+
+  return finalizeToc(toc, highestDepth, opts.minEntries)
 }
 
 export function collectHtmlToc(
   tree: HastRoot,
   opts: Pick<Options, 'maxDepth' | 'minEntries'>,
 ): TocEntry[] {
-  slugAnchor.reset()
-  const toc: TocEntry[] = []
-  let highestDepth: number = opts.maxDepth
-
-  visit(tree, 'element', node => {
-    const depth = headingRank(node)
-    if (depth === undefined || depth > opts.maxDepth) return
-
-    const text = normalizeHeadingText(toText(node))
-    if (text.length === 0) return
-
-    const fallbackSlug = slugAnchor.slug(text)
-    const slug = headingId(node) ?? fallbackSlug
-    if (!headingId(node)) {
-      node.properties = { ...node.properties, id: slug }
-    }
-
-    highestDepth = Math.min(highestDepth, depth)
-    toc.push({ depth, text, slug })
-  })
-
-  return finalizeToc(toc, highestDepth, opts.minEntries)
+  return collectHtmlTocData(tree, opts).entries
 }
 
 export const TableOfContents: QuartzTransformerPlugin<Partial<Options>> = userOpts => {
@@ -132,10 +182,12 @@ export const TableOfContents: QuartzTransformerPlugin<Partial<Options>> = userOp
               maxDepth: opts.maxDepth,
               minEntries: opts.minEntries,
               display: !!display,
+              sourceEntries: 0,
             }
             if (display) {
-              const toc = collectMarkdownToc(tree, opts)
-              if (toc.length > 0) file.data.toc = toc
+              const toc = collectMarkdownTocData(tree, opts)
+              file.data.tocOptions.sourceEntries = toc.sourceEntries
+              if (toc.entries.length > 0) file.data.toc = toc.entries
             }
           }
         },
