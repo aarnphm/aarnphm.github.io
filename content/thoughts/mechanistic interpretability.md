@@ -7,7 +7,7 @@ aliases:
 date: '2024-10-30'
 description: and reverse engineering neural networks.
 id: mechanistic interpretability
-modified: 2026-05-26 17:28:04 GMT-04:00
+modified: 2026-05-26 22:02:45 GMT-04:00
 permalinks:
   - /mechinterp
   - /interpretability
@@ -15,6 +15,9 @@ seealso:
   - '[[thoughts/sparse autoencoder]]'
   - '[[thoughts/sparse crosscoders]]'
   - '[[thoughts/Attribution parameter decomposition]]'
+socials:
+  glossary: https://dynalist.io/d/n2ZWtnoYHrU1s4vnFSAQ519J
+  tour: https://www.youtube.com/watch?v=veT2VI4vHyU&ab_channel=FAR%E2%80%A4AI
 tags:
   - ml
   - alignment
@@ -22,8 +25,6 @@ tags:
   - interp
 title: mechanistic interpretability
 ---
-
-[whirlwind tour](https://www.youtube.com/watch?v=veT2VI4vHyU&ab_channel=FAR%E2%80%A4AI), [[thoughts/pdfs/tinymorph exploration.pdf|initial exploration]], [glossary](https://dynalist.io/d/n2ZWtnoYHrU1s4vnFSAQ519J)
 
 > The subfield of alignment that delves into reverse engineering of a neural network, especially [[thoughts/LLMs]]
 

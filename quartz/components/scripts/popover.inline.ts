@@ -865,6 +865,7 @@ async function handleStackedNotes(
   }
 
   column.appendChild(popoverElement)
+  hideStackedPopoversOnLeave(stacked, link, popoverElement)
   notifyProtectedContentLoaded(popoverInner)
   await setPosition(link, popoverElement, {
     clientX: pointer.clientX,
@@ -892,10 +893,17 @@ function closestStackedPopoverLink(
   stacked: HTMLElement,
 ): HTMLAnchorElement | null {
   if (!target || !(target instanceof Element)) return null
+  if (stackedPopoverForTarget(target)) return null
   const link = target.closest('a.internal')
   if (!(link instanceof HTMLAnchorElement)) return null
   if (!stacked.contains(link)) return null
   return link
+}
+
+function stackedPopoverForTarget(target: EventTarget | null): HTMLElement | null {
+  if (!target || !(target instanceof Element)) return null
+  const popover = target.closest('.stacked-popover')
+  return popover instanceof HTMLElement ? popover : null
 }
 
 function containsRelatedTarget(element: HTMLElement, relatedTarget: EventTarget | null) {
@@ -949,6 +957,18 @@ function hideStackedPopovers(stacked: HTMLElement) {
   })
 }
 
+function hideStackedPopoversOnLeave(
+  stacked: HTMLElement,
+  link: HTMLAnchorElement,
+  popoverElement: HTMLElement,
+) {
+  popoverElement.addEventListener('mouseleave', event => {
+    if (containsRelatedTarget(link, event.relatedTarget)) return
+    if (activeAnchor === link) activeAnchor = null
+    hideStackedPopovers(stacked)
+  })
+}
+
 function setupStackedPopoverLinks() {
   stackedPopoverEvents?.abort()
   stackedPopoverEvents = null
@@ -964,6 +984,7 @@ function setupStackedPopoverLinks() {
     event => {
       const link = closestStackedPopoverLink(event.target, stacked)
       if (!link || containsRelatedTarget(link, event.relatedTarget)) return
+      if (activeAnchor === link && stackedPopoverForTarget(event.relatedTarget)) return
       if (!allowsStackedPopover(link)) return
       activeAnchor = link
       void handleStackedNotes(stacked, link, { clientX: event.clientX, clientY: event.clientY })
@@ -976,6 +997,7 @@ function setupStackedPopoverLinks() {
     event => {
       const link = closestStackedPopoverLink(event.target, stacked)
       if (!link || containsRelatedTarget(link, event.relatedTarget)) return
+      if (stackedPopoverForTarget(event.relatedTarget)) return
       if (activeAnchor === link) activeAnchor = null
       if (activePopoverReq?.link === link) {
         activePopoverReq.abort()

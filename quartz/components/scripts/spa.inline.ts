@@ -35,12 +35,31 @@ const NODE_TYPE_ELEMENT = 1
 let announcer = document.createElement('route-announcer')
 const isElement = (target: EventTarget | null): target is Element =>
   (target as Node)?.nodeType === NODE_TYPE_ELEMENT
-const isLocalUrl = (href: string) => {
+
+const linkUrl = (link: HTMLAnchorElement): URL | null => {
+  const href = link.getAttribute('href')
+  if (!href) return null
   try {
-    const url = new URL(href)
-    if (window.location.origin === url.origin) return true
-  } catch {}
-  return false
+    return new URL(href, window.location.toString())
+  } catch {
+    return null
+  }
+}
+
+const isHttpUrl = (url: URL): boolean => url.protocol === 'http:' || url.protocol === 'https:'
+
+const isLocalHttpUrl = (url: URL): boolean =>
+  isHttpUrl(url) && url.origin === window.location.origin
+
+const ensureExternalLinkTarget = (link: HTMLAnchorElement, url: URL): boolean => {
+  if (!isHttpUrl(url) || url.origin === window.location.origin) return false
+  link.target = '_blank'
+  const rel = link.rel.split(/\s+/).filter(Boolean)
+  for (const value of ['noopener', 'noreferrer']) {
+    if (!rel.includes(value)) rel.push(value)
+  }
+  link.rel = rel.join(' ')
+  return true
 }
 
 const isSamePage = (url: URL): boolean => {
@@ -59,13 +78,15 @@ const STACKED_NOTE_RETRY_BUTTON_HTML = `<button type="button" data-stacked-retry
 
 const getOpts = ({ target }: Event): { url: URL; scroll?: boolean } | undefined => {
   if (!isElement(target)) return
-  if (target.attributes.getNamedItem('target')?.value === '_blank') return
   const a = target.closest('a')
-  if (!a) return
+  if (!(a instanceof HTMLAnchorElement)) return
+  const url = linkUrl(a)
+  if (!url) return
+  if (ensureExternalLinkTarget(a, url)) return
+  if (a.target === '_blank') return
   if ('routerIgnore' in a.dataset) return
-  const { href } = a
-  if (!isLocalUrl(href)) return
-  return { url: new URL(href), scroll: 'routerNoscroll' in a.dataset ? false : undefined }
+  if (!isLocalHttpUrl(url)) return
+  return { url, scroll: 'routerNoscroll' in a.dataset ? false : undefined }
 }
 
 function notifyNav(url: FullSlug) {
@@ -234,6 +255,11 @@ class StackedNoteManager {
     if (!(link instanceof HTMLAnchorElement)) return null
     if (!this.column.contains(link)) return null
     if ('routerIgnore' in link.dataset) return null
+    const url = linkUrl(link)
+    if (!url) return null
+    if (ensureExternalLinkTarget(link, url)) return null
+    if (!isLocalHttpUrl(url)) return null
+    if (!link.dataset.slug || link.dataset.role === 'anchor') return null
     return link
   }
 
@@ -253,7 +279,8 @@ class StackedNoteManager {
         return
       }
       const title = target.closest('.stacked-title')
-      if (title && this.column.contains(title)) {
+      const titleLink = target.closest('a')
+      if (title && this.column.contains(title) && (!titleLink || !title.contains(titleLink))) {
         event.preventDefault()
         event.stopPropagation()
         const shell = title.closest<HTMLElement>('.stacked-note')
