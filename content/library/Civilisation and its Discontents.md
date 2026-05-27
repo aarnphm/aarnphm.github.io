@@ -6,7 +6,7 @@ description: Freudian theory of egos within societal contract
 finished: 2023
 id: Civilisation and its Discontents
 language: german
-modified: 2026-05-09 17:51:39 GMT-04:00
+modified: 2026-05-26 21:59:05 GMT-04:00
 posters: '[[library/posters/civilisation-and-its-discontents.jpg]]'
 seealso:
   - '[[thoughts/Freud|Freud]]'
@@ -180,7 +180,7 @@ implications: the unconscious isn't pre-linguistic natural fact—it's partly pr
 
 ## exploratory connections: freud and wittgenstein on language games
 
-{{sidenotes[exploratory-status]: these connections are speculative and provisional. they're meant as field notes for future development, not finished arguments. some connections may not hold under scrutiny. the goal is mapping conceptual terrain, identifying where freudian psychoanalysis and wittgensteinian philosophy of language might illuminate each other.}}
+{{sidenotes[exploratory status]: these connections are speculative and provisional. they're meant as field notes for future development, not finished arguments. some connections may not hold under scrutiny. the goal is mapping conceptual terrain, identifying where freudian psychoanalysis and wittgensteinian philosophy of language might illuminate each other.}}
 
 ### language games and socialization
 
