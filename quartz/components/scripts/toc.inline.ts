@@ -176,6 +176,7 @@ function setupToc() {
       cancelAnimationFrame(frame)
       frame = 0
     }
+    activeButton?.classList.remove('is-active')
     activeButton = null
     hideTocLabel(toc)
     resetTocButtons(buttons)
@@ -247,6 +248,7 @@ function resetTocButtons(buttons?: NodeListOf<HTMLButtonElement>) {
 
 function resetTocButton(button: HTMLButtonElement) {
   const fill = button.querySelector<HTMLElement>('.fill')
+  button.classList.remove('is-active')
   if (!fill) return
 
   fill.style.animation = 'none'
@@ -296,17 +298,14 @@ function nearestTocMetric(metrics: TocButtonMetric[], centerY: number): TocButto
 }
 
 function updateTocButtonFill(metric: TocButtonMetric, mouseY: number, maxScale: number): void {
-  const { button, fill } = metric
+  const { fill } = metric
   if (!fill) return
 
   const distance = mouseY - metric.centerY
   const falloff = Math.exp(-(distance * distance) / (2 * tocHoverSigma * tocHoverSigma))
   const scale = 1 + (maxScale - 1) * falloff
-  const restingOpacity = button.classList.contains('in-view') ? 0.75 : 0.35
-  const opacity = Math.max(restingOpacity, 0.35 + 0.65 * falloff)
 
   fill.style.animation = 'none'
-  fill.style.opacity = opacity.toFixed(3)
   fill.style.transform = `scaleX(${scale.toFixed(3)})`
 }
 
@@ -324,6 +323,8 @@ function updateTocLabel(
   if (!label) return button
 
   if (button !== activeButton) {
+    activeButton?.classList.remove('is-active')
+    button.classList.add('is-active')
     const indicator = button.querySelector<HTMLElement>('.indicator')
     label.replaceChildren()
     if (indicator && indicator.childNodes.length > 0) {

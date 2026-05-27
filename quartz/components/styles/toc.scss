@@ -177,6 +177,7 @@ nav#toc-vertical {
       animation-delay: calc((var(--animation-order) - 1) * 0.1s + 0.5s);
       transition:
         transform 0.08s cubic-bezier(0.2, 0, 0, 1),
+        background-color 0.08s cubic-bezier(0.2, 0, 0, 1),
         opacity 0.08s cubic-bezier(0.2, 0, 0, 1);
       will-change: transform, opacity;
     }
@@ -187,6 +188,16 @@ nav#toc-vertical {
   }
 }
 
+.toc[data-layout='minimal'].is-hovering nav#toc-vertical button.toc-item > .fill {
+  background-color: var(--darkgray);
+  opacity: 0.45;
+}
+
+.toc[data-layout='minimal'].is-hovering nav#toc-vertical button.toc-item.is-active > .fill {
+  background-color: var(--dark);
+  opacity: 0.9;
+}
+
 .toc[data-layout='minimal'] > .toc-label {
   position: absolute;
   top: 0;
@@ -195,8 +206,9 @@ nav#toc-vertical {
   color: var(--dark);
   font-family: var(--bodyFont);
   font-size: 0.8rem;
-  font-weight: 700;
-  line-height: 1;
+  font-weight: 400;
+  line-height: 1.3;
+  padding-block: 0.1em;
   white-space: nowrap;
   text-overflow: ellipsis;
   opacity: 0;
