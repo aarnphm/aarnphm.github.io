@@ -125,18 +125,6 @@ export default (() => {
               aria-hidden={idx === 0 ? 'false' : 'true'}
               aria-roledescription="slide"
             >
-              {idx === 0 && (
-                <p>
-                  source:{' '}
-                  <a href={sourceHref} class="internal" data-slug={sourceHref} data-no-popover>
-                    text
-                  </a>
-                  ,{' '}
-                  <a data-no-popover data-slug="/" href="/">
-                    home
-                  </a>
-                </p>
-              )}
               {toJsx(
                 ((processed.children as ElementContent[]) || []).slice(s.startIndex, s.endIndex),
               )}
