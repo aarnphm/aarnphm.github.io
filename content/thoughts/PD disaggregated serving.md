@@ -5,7 +5,7 @@ aliases:
 date: '2025-06-16'
 description: and inference go distributed
 id: pd disaggregated serving
-modified: 2026-05-09 17:51:33 GMT-04:00
+modified: 2026-05-27 02:47:53 GMT-04:00
 seealso:
   - '[[thoughts/KV offloading]]'
   - '[[thoughts/distributed inference|distributed inference]]'
@@ -32,7 +32,7 @@ _notation are borrowed from [Jax's scaling book](https://jax-ml.github.io/scalin
 
 see also: [dot-product intensity](https://gist.github.com/mikasenghaas/f3663a1f26acbb95cc880db12e9547ea)
 
-To skip to ratio calculation, see [[#ratio calculation]]
+To skip to ratio calculation, see [[#ratio calculation|ratio calculation]]
 
 ### notation
 
@@ -656,7 +656,7 @@ Rearranging: $\frac{m_p}{m_d} = \frac{\mathbb{E}[S_p]}{\mathbb{E}[S_d]} = \frac{
 
 from [[#pool throughputs|pool throughputs]]:
 
-using derived values from [[#prefill]] and [[#decode]]:
+using derived values from [[#prefill|prefill]] and [[#decode|decode]]:
 
 - $\lambda_d^{\text{node}} = \frac{cc_d \times 8}{\text{OSL} \times t_d} = \frac{448}{200 \times 0.00514} = 436 \text{ req/s}$
 - $\lambda_p^{\text{node}} = \frac{1}{t_p}$

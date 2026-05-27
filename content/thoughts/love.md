@@ -13,7 +13,7 @@ gemini:
     4a0fc1cd7b2da549: love, nihilism, mega deep research threads
     d7f06bc496ea82ea: Tractatus Amor-Politicus
 id: love
-modified: 2026-05-26 16:53:56 GMT-04:00
+modified: 2026-05-27 02:49:35 GMT-04:00
 socials:
   essay: '[[posts/love|mutual becoming]]'
   hermeneutics: '[[posts/romantic epistemology|romantic epistemology]]'
@@ -28,7 +28,7 @@ transclude:
   headings: false
 ---
 
-Love is [[#not a feeling]] that happens to you but a drive that is the _essence of life_.
+Love is [[#not a feeling|not a feeling]] that happens to you but a drive that is the _essence of life_.
 
 It's a discipline, a practice, a continuous choice to attend to someone despite there are no {{sidenotes<inline: true>[guarantees.]: You choose to stay in the hermeneutic circle, to keep interpreting generously, to refuse instrumental understanding. [@kierkegaard1847worksoflove; @fromm1956art; @hooks2000love]}} for reciprocation. In a way, love is a [[thoughts/hedonism|hedonistic]] pursuit.
 
@@ -36,7 +36,7 @@ It's a discipline, a practice, a continuous choice to attend to someone despite 
 >
 > love = choice + [[thoughts/Attention|attention]] + practice.
 
-Contrary to popular beliefs, love is _not_ conditioned response. You decide to make someone ::central:: to your being, and adapt your [[#boxes]] around them.
+Contrary to popular beliefs, love is _not_ conditioned response. You decide to make someone ::central:: to your being, and adapt your [[#boxes|boxes]] around them.
 
 Helen Fisher claimed that there must be a correlations between these three brain systems: sex drives, feelings for intensive love, and emotional attachment _must_ have something to do with how we love.
 
@@ -93,7 +93,7 @@ bell hooks: love is action. [@hooks2000love] When you understand love as action,
 
 ## what it requires
 
-three things: [[#attention]], [[#choice]], and [[#thoughts/Epistemology epistemic humility]]
+three things: [[#attention|attention]], [[#choice|choice]], and [[#thoughts/Epistemology epistemic humility|epistemic humility]]
 
 ### attention
 

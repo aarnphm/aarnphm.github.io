@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-05-27 02:21:34 GMT-04:00
+modified: 2026-05-27 03:00:41 GMT-04:00
 permalinks:
   - /website
   - /tweets
@@ -654,6 +654,7 @@ title: are.na
   - [meta]:
     - date: 05/26/2026
     - tags: [design]
+    - embed: fetch
 - https://www.zhavialabs.com/ -- Zhavia Labs
   - [meta]:
     - date: 05/19/2026
@@ -5598,6 +5599,10 @@ title: are.na
 
 ## opinions
 
+- https://www.nytimes.com/2025/08/02/opinion/artificial-intelligence-enlightenment.html -- A.I. Is Shedding Enlightenment Values
+  - [meta]:
+    - date: 05/27/2026
+    - tags: [epistemology, behavioural]
 - https://www.humansfirst.com/executive-order-letter -- Coalition Letter Supporting Proposed Executive Order for Mandatory Pre-Deployment Testing for Frontier AI Systems
   - [meta]:
     - date: 05/18/2026
@@ -9444,6 +9449,10 @@ title: are.na
 
 ## organizations
 
+- https://fathom.org/
+  - [meta]:
+    - date: 05/27/2026
+    - tags: [501c3]
 - https://pierre.computer/ -- Pierre Computer
   - [meta]:
     - date: 05/27/2026

@@ -2,7 +2,7 @@
 date: '2025-11-01'
 description: why simple connectivity is the right condition for poincaré conjecture and why homology alone doesn't suffice.
 id: simply-connected
-modified: 2026-05-19 18:13:37 GMT-04:00
+modified: 2026-05-27 02:48:40 GMT-04:00
 tags:
   - math
   - math/topology
@@ -26,7 +26,7 @@ naively, one might ask: why not use $H_1(X) = 0$ instead of $\pi_1(X) = 0$?
 
 the hurewicz theorem tells us $H_1(X) \cong \pi_1(X)^{\text{ab}}$ (abelianization of fundamental group). so $\pi_1 = 0 \Rightarrow H_1 = 0$, but the converse fails.
 
-the canonical counterexample: [[#poincaré homology sphere]].
+the canonical counterexample: [[#poincaré homology sphere|poincaré homology sphere]].
 
 ## poincaré's insight
 

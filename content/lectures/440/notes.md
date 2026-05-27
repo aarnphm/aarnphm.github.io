@@ -2,7 +2,7 @@
 date: '2025-10-17'
 description: and building a nano inference engine
 id: notes
-modified: 2026-05-26 22:34:08 GMT-04:00
+modified: 2026-05-27 02:45:38 GMT-04:00
 slides: true
 tags:
   - workshop
@@ -32,14 +32,14 @@ s/o: Michael Goin (RedHat), Nick Hill (RedHat), Simon Go (Berkeley), and [blog p
 
 ## agenda
 
-- [[#fundamentals]]
-- [[#features]]
-  - [[#chunked prefill]]
-  - [[#prefix caching]]
-  - [[#structured outputs]]
-  - [[#speculative decoding]]
-- [[#parallelism]]
-- [[#distributed inference]]
+- [[#fundamentals|fundamentals]]
+- [[#features|features]]
+  - [[#chunked prefill|chunked prefill]]
+  - [[#prefix caching|prefix caching]]
+  - [[#structured outputs|structured outputs]]
+  - [[#speculative decoding|speculative decoding]]
+- [[#parallelism|parallelism]]
+- [[#distributed inference|distibuted inference]]
 
 vLLM historically has V0 and V1 interfaces
 

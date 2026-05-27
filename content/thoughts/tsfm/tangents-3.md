@@ -3,7 +3,7 @@ author: matej
 date: '2025-10-17'
 description: and primitives
 id: tangents-3
-modified: 2026-05-09 17:51:54 GMT-04:00
+modified: 2026-05-27 02:46:49 GMT-04:00
 tags:
   - ml
   - tsfm
@@ -47,10 +47,10 @@ flops_per_tok = params_per_tok * 6
 
 ## communication primitives
 
-- [[#reduce-scatter]]
-- [[#all-gather]]
-- [[#all-reduce]]
-- [[#all2all]]
+- [[#reduce-scatter|reduce-scatter]]
+- [[#all-gather|all gather]]
+- [[#all-reduce|all reduce]]
+- [[#all2all|all2all]]
 - nccl
 
 ### all-gather

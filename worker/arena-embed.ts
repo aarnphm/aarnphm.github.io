@@ -371,14 +371,23 @@ export function rebaseArenaEmbedSrcset(rawValue: string, baseUrl: URL): string {
     .join(', ')
 }
 
-function rewriteArenaEmbedElement(element: ArenaHtmlRewriterElement, baseUrl: URL) {
-  for (const attribute of element.attributes) {
+export function arenaEmbedAttributeNamesToRemove(attributes: Iterable<string[]>): string[] {
+  const names: string[] = []
+  for (const attribute of attributes) {
     const name = attribute[0]
     if (!name) continue
     const normalized = name.toLowerCase()
     if (normalized.startsWith('on') || normalized === 'srcdoc' || normalized === 'nonce') {
-      element.removeAttribute(name)
+      names.push(name)
     }
+  }
+  return names
+}
+
+function rewriteArenaEmbedElement(element: ArenaHtmlRewriterElement, baseUrl: URL) {
+  const namesToRemove = arenaEmbedAttributeNamesToRemove(element.attributes)
+  for (const name of namesToRemove) {
+    element.removeAttribute(name)
   }
 
   const tagName = element.tagName.toLowerCase()

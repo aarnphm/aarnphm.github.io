@@ -1,6 +1,7 @@
 import assert from 'node:assert'
 import test, { describe } from 'node:test'
 import {
+  arenaEmbedAttributeNamesToRemove,
   classifyArenaFrameHeaders,
   rebaseArenaEmbedSrcset,
   rebaseArenaEmbedUrl,
@@ -81,6 +82,19 @@ describe('arena embed worker helpers', () => {
     assert.strictEqual(
       rebaseArenaEmbedSrcset('/a.png 1x, ./b.png 2x', base),
       'https://example.com/a.png 1x, https://example.com/path/b.png 2x',
+    )
+  })
+
+  test('snapshots unsafe attributes before mutation', () => {
+    assert.deepStrictEqual(
+      arenaEmbedAttributeNamesToRemove([
+        ['href', 'https://example.com'],
+        ['onclick', 'alert(1)'],
+        ['srcdoc', '<script></script>'],
+        ['nonce', 'abc'],
+        ['data-id', '1'],
+      ]),
+      ['onclick', 'srcdoc', 'nonce'],
     )
   })
 })

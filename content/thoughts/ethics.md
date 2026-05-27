@@ -2,7 +2,7 @@
 date: '2024-03-05'
 description: we study ethics in order to improve our life, or Aristotelian ethics
 id: ethics
-modified: 2026-05-09 17:51:46 GMT-04:00
+modified: 2026-05-27 02:48:29 GMT-04:00
 tags:
   - philosophy
   - seed
@@ -31,7 +31,7 @@ What should you do? Normative ethics provides frameworks for answering. Three ma
 
 Plus care ethics (relationships matter). Each offers different criteria for right action.
 
-There is also an argument about [[#normative excellence]] versus [[#absolute excellence]] where certain values are aligned based on personal goals.
+There is also an argument about [[#normative excellence|normative excellence]] versus [[#absolute excellence|absolute excellence]] where certain values are aligned based on personal goals.
 
 ### normative excellence
 
