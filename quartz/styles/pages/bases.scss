@@ -31,16 +31,8 @@
   white-space: nowrap;
 }
 
-.page-content article.main-col:has(.base-embed) {
-  display: contents;
-}
-
-.page-content article.main-col:has(.base-embed) > * {
-  grid-column: var(--layout-reading-column);
-}
-
-.page-content article.main-col:has(.base-embed) > .base-embed {
-  grid-column: var(--layout-wide-column);
+.page-content article.main-col > .base-embed {
+  margin: 1.5rem 0;
 }
 
 .base-table {

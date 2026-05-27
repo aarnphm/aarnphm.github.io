@@ -12,5 +12,5 @@
     "noEmit": true
   },
   "include": ["**/*.ts", "**/*.tsx"],
-  "exclude": ["../build/**/*.d.ts"]
+  "exclude": ["../build/**/*.d.ts", "**/*.test.ts"]
 }

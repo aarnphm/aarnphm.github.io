@@ -833,6 +833,32 @@ ol.overflow {
 }
 
 body[data-is-base='true'] {
+  .grid {
+    --layout-reading-column: 3 / -3;
+    --layout-wide-column: 3 / -3;
+    --layout-side-column: 3 / -3;
+    --layout-control-column: var(--layout-wide-column);
+    --layout-search-column: var(--layout-wide-column);
+  }
+
+  #quartz-root > .page-body-grid > .page-header {
+    grid-column: var(--layout-wide-column);
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+  }
+
+  #quartz-root > .page-body-grid > .page-header > .bases-search {
+    flex: 1 1 18rem;
+    max-width: 28rem;
+    min-width: min(100%, 16rem);
+  }
+
+  #quartz-root > .page-body-grid > .page-header > .bases-search #base-search-bar {
+    max-width: 100%;
+  }
+
   .main-col {
     grid-column: var(--layout-wide-column);
   }

@@ -2,7 +2,7 @@
 date: '2025-09-12'
 description: linear algebra notes
 id: notes
-modified: 2026-05-26 22:37:35 GMT-04:00
+modified: 2026-05-27 02:11:33 GMT-04:00
 slides: true
 tags:
   - workshop
@@ -524,7 +524,7 @@ because $n$ = number of columns = dimension of the domain of the linear map $x \
 >
 > In RREF, each pivot is 1 and each pivot column has zeros above and below the pivot.
 
-### REF vs RREF (comparison)
+### REF vs RREF
 
 | Aspect                     | Row Echelon Form (REF)                                                     | Reduced Row Echelon Form (RREF)                                                    |
 | -------------------------- | -------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
@@ -536,13 +536,10 @@ because $n$ = number of columns = dimension of the domain of the linear map $x \
 | Row space basis            | Nonzero rows span the row space                                            | Nonzero rows form a canonical basis of the row space                               |
 | Column space basis         | Pivot columns of the original matrix (pivot locations found from REF/RREF) | Same pivot columns in the original matrix                                          |
 | Inversion via augmentation | Work on \[A \| I\] to reach \[I \| A^{-1}\]                                | RREF required to obtain the identity on the left                                   |
-| Cost (dense n×n)           | ~ $\tfrac{2}{3}n^3$ flops (forward)                                        | Slightly higher (clear above pivots too; ~ $n^3$)                                  |
+| Cost (dense $n \times n$)  | ~ $\tfrac{2}{3}n^3$ flops (forward)                                        | Slightly higher (clear above pivots too; $\approx n^3$)                            |
 | Numerical note             | Use partial pivoting ($PA=LU$) for stability                               | More operations can amplify roundoff; prefer factorization (LU/QR) for numerics    |
 
-> [!example] See also the small “REF vs. RREF” example above for a concrete 3×3 illustration.
-
 > [!warning] Pitfall
->
 > Row operations preserve the row space but change the column space. Always take pivot columns from the original $A$ when constructing a column-space basis.
 
 ## columnspace, nullspace, rowspace
@@ -1137,32 +1134,33 @@ This model assumes scalar multiplication and addition are constant-time operatio
 
 NumPy (use Fortran order to match the column‑major “vec” in formulas):
 
-```python
+```python shell
 import numpy as np
 
 
 def kron_apply_vec(
   A: np.ndarray, B: np.ndarray, x: np.ndarray, n: int, p: int
 ) -> np.ndarray:
-  """Return y = (B.T ⊗ A) vec(X) without forming B.T ⊗ A.
-  Shapes: A ∈ R^{m×n}, B ∈ R^{p×q}, x = vec(X) with X ∈ R^{n×p} (column-major vec).
+  """Return y = (B.T \otimes A) vec(X) without forming B.T \otimes A.
+  Shapes: A \in R^{m x n}, B \in R^{p x q}, x = vec(X) with X \in R^{n x p} (column-major vec).
   """
   m, nA = A.shape
   pX = p
   assert nA == n and x.size == n * pX
-  X = np.reshape(x, (n, pX), order='F')  # column-major vec → matrix
+  X = np.reshape(x, (n, pX), order='F')  # column-major vec to matrix
   Z = A @ X @ B  # two GEMMs
   y = np.reshape(Z, (m * B.shape[1],), order='F')
   return y
 
 
 # Example consistency check
-A = np.array([[1.0, 2.0], [0.0, 1.0]])  # 2×2
-B = np.array([[2.0, 0.0], [0.0, 3.0]])  # 2×2
-X = np.array([[1.0, 4.0], [2.0, 5.0]])  # 2×2
-x = np.reshape(X, (-1,), order='F')  # vec(X)
+A = np.array([[1.0, 2.0], [0.0, 1.0]])  # 2x2
+B = np.array([[2.0, 0.0], [0.0, 3.0]])  # 2x2
+X = np.array([[1.0, 4.0], [2.0, 5.0]])  # 2x2
+x = X.flatten(order='F')  # vec(X)
 y = kron_apply_vec(A, B, x, n=2, p=2)
 # y equals vec(A @ X @ B)
+assert np.allclose(y, np.kron(B.T, A) @ x)
 ```
 
 PyTorch (emulates column‑major vec via transpose views):
@@ -1174,10 +1172,10 @@ import torch
 def kron_apply_vec_torch(
   A: torch.Tensor, B: torch.Tensor, x: torch.Tensor, n: int, p: int
 ) -> torch.Tensor:
-  """y = (B.T ⊗ A) vec(X) with X ∈ R^{n×p}, using BLAS-backed matmuls internally."""
+  """y = (B.T \otimes A) vec(X) with X \in R^{n x p}, using BLAS-backed matmuls internally."""
   m = A.shape[0]
   q = B.shape[1]
-  # Reinterpret x as column-major vec: view as (p, n) row-major, then transpose → (n, p)
+  # Reinterpret x as column-major vec: view as (p, n) row-major, then transpose \to (n, p)
   X = x.view(p, n).T
   Z = A @ X @ B
   # Return column-major vec(Z): transpose back to (q, m) and flatten row-major
@@ -1188,7 +1186,7 @@ def kron_apply_vec_torch(
 > [!warning] vec convention
 > The identity $\operatorname{vec}(AXB)=(B^\top\!\otimes A)\operatorname{vec}(X)$ assumes column‑major `vec`. In NumPy, use `order='F'` for reshape/ravel; in PyTorch, transpose before/after `view` as shown.
 
-### Fast matrix multiplication in practice (GEMM)
+### Fast matrix multiplication (GEMM)
 
 - Use a blocked (tiled) algorithm to respect caches and registers. High‑performance libraries pack panels of $A$ and $B$ and compute small “micro‑kernels” that map well to SIMD.
 - Parallelize over outer tiles; keep inner micro‑kernel single‑threaded for cache locality.
@@ -1336,7 +1334,7 @@ for i in 0..m step Mb:                # block rows of A/C
 > - Alignment: Tensor Cores prefer dimensions that are multiples of 8/16 (FP16/BF16); pad or use Lt heuristics.
 > - Streams: associate a CUDA stream with `cublasSetStream` to overlap transfers/compute; ensure lifetime of inputs until the GEMM completes.
 
-### [[thoughts/Strassen algorithm|Strassen]]’s algorithm (case)
+### [[thoughts/Strassen algorithm|Strassen]]’s algorithm
 
 - Idea: partition $A,B$ into 2×2 blocks of size $n/2$ and compute 7 block products instead of 8 via linear combinations, reducing complexity to $O(n^{\log_2 7})\approx O(n^{2.807})$.
 - One recursion step (square powers of two for simplicity):
@@ -1401,6 +1399,15 @@ def strassen(A: np.ndarray, B: np.ndarray, cutoff: int = 128) -> np.ndarray:
 
   Cp = _stras(Ap, Bp)
   return Cp[: A.shape[0], : B.shape[1]]
+
+
+A = np.random.randn(200, 150)
+B = np.random.randn(150, 200)
+
+# Check precision
+assert np.allclose(strassen(A, B), A @ B)
+
+strassen(A, B)
 ```
 
 > [!note] when to use strassen
@@ -1421,7 +1428,8 @@ def strassen(A: np.ndarray, B: np.ndarray, cutoff: int = 128) -> np.ndarray:
 ### Worked examples
 
 - Vec/Kronecker: let $A=\begin{bmatrix}1&2\\0&1\end{bmatrix}$, $B=\begin{bmatrix}2&0\\0&3\end{bmatrix}$, $X=\begin{bmatrix}1&4\\2&5\end{bmatrix}$. Then $AXB=\begin{bmatrix}10&42\\4&15\end{bmatrix}$ so $\operatorname{vec}(AXB)=[10,\,4,\,42,\,15]^\top$. Also $(B^\top\!\otimes A)\operatorname{vec}(X)=[10,\,4,\,42,\,15]^\top$.
-- Chain order cost: $A(10\!\times\!100)$, $B(100\!\times\!5)$, $C(5\!\times\!50)$. $(AB)C$: $10\cdot100\cdot5+10\cdot5\cdot50=7{,}500$ mults; $A(BC)$: $100\cdot5\cdot50+10\cdot100\cdot50=75{,}000$. Parenthesization matters.
+- Chain order cost: $A(10\!\times\!100)$, $B(100\!\times\!5)$, $C(5\!\times\!50)$. $(AB)C$: $10\cdot100\cdot5+10\cdot5\cdot50=7{,}500$ mults; $A(BC)$: $100\cdot5\cdot50+10\cdot100\cdot50=75{,}000$.
+  - Parenthesization matters!!
 
 ## linear transformations
 

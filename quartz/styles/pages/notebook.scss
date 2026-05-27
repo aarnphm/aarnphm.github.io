@@ -7,7 +7,11 @@ body:has(article.notebook-page) [data-article-title] {
 article.notebook-page,
 article:has(.notebook-runtime) {
   grid-column: var(--layout-wide-column);
+}
 
+article.notebook-page,
+article:has(.notebook-runtime),
+.slides-root {
   hr {
     background-color: var(--lightgray);
     overflow: hidden;

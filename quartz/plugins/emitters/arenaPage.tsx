@@ -124,7 +124,7 @@ function serializeBlock(
 
   if (block.title) searchable.title = block.title
   if (block.url) searchable.url = block.url
-  if (block.embedDisabled) searchable.embedDisabled = block.embedDisabled
+  if (block.embedMode) searchable.embedMode = block.embedMode
   if (block.embedHtml) searchable.embedHtml = block.embedHtml
   if (block.metadata) searchable.metadata = block.metadata
   if (block.coordinates) searchable.coordinates = block.coordinates

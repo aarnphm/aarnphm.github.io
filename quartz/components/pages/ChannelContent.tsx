@@ -8,11 +8,11 @@ import {
   QuartzComponentProps,
 } from '../../types/component'
 import { toArenaJsx, fromHtmlStringToArenaJsx, arenaBlockTimestamp } from '../../util/arena'
+import { arenaEmbedHtmlPath, type ArenaExternalEmbedMode } from '../../util/arena-embed'
 import { classNames } from '../../util/lang'
 import { FullSlug, slugTag, resolveRelative } from '../../util/path'
 import { hostnameMatches } from '../../util/url'
 import { extractWikilinksWithPositions, resolveWikilinkTarget } from '../../util/wikilinks'
-import { buildYouTubeEmbed, type YouTubeEmbedSpec } from '../../util/youtube'
 import style from '../styles/arena.scss'
 
 const substackPostRegex = /^https?:\/\/[^/]+\/p\/[^/]+/i
@@ -50,41 +50,28 @@ const ArenaModalMap = ({ coordinates, title }: ArenaModalMapProps) => {
 type ArenaModalMainContentProps = {
   block: ArenaBlock
   embedHtml?: string
-  youtubeEmbed?: YouTubeEmbedSpec
   isSubstackCandidate: boolean
   isPdfCandidate: boolean
   targetUrl?: string
   frameTitle: string
+  externalEmbedMode: ArenaExternalEmbedMode
   convertFromText: (html: string) => ComponentChild
 }
 
 const ArenaModalMainContent = ({
   block,
   embedHtml,
-  youtubeEmbed,
   isSubstackCandidate,
   isPdfCandidate,
   targetUrl,
   frameTitle,
+  externalEmbedMode,
   convertFromText,
 }: ArenaModalMainContentProps) => {
   let content: ComponentChild
 
   if (embedHtml) {
     content = convertFromText(embedHtml)
-  } else if (youtubeEmbed) {
-    content = (
-      <iframe
-        class={classNames(undefined, 'arena-modal-iframe', 'arena-modal-iframe-youtube')}
-        title={`YouTube embed: ${frameTitle}`}
-        loading="lazy"
-        data-block-id={block.id}
-        src={youtubeEmbed.src}
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-        allowFullScreen
-        referrerPolicy="strict-origin-when-cross-origin"
-      />
-    )
   } else if (isSubstackCandidate && block.url) {
     content = (
       <div class="arena-modal-embed arena-modal-embed-substack" data-substack-url={block.url}>
@@ -192,7 +179,7 @@ const ArenaModalMainContent = ({
         <span class="arena-loading-spinner" role="status" aria-label="Loading PDF viewer" />
       </div>
     )
-  } else if (block.embedDisabled && targetUrl) {
+  } else if (externalEmbedMode === 'none' && targetUrl) {
     content = (
       <div class="arena-iframe-error">
         <div class="arena-iframe-error-content">
@@ -209,15 +196,33 @@ const ArenaModalMainContent = ({
       </div>
     )
   } else if (targetUrl) {
+    const fetched = externalEmbedMode === 'fetch'
+    const iframeSrc = fetched ? arenaEmbedHtmlPath(targetUrl) : targetUrl
     content = (
-      <iframe
-        class="arena-modal-iframe"
-        title={`Embedded block: ${frameTitle}`}
-        loading="lazy"
+      <div
+        class="arena-modal-external-host"
         data-block-id={block.id}
-        sandbox="allow-same-origin allow-scripts allow-popups allow-popups-to-escape-sandbox allow-forms"
-        src={targetUrl}
-      />
+        data-arena-url={targetUrl}
+        data-arena-embed-mode={externalEmbedMode}
+      >
+        <iframe
+          class={classNames(
+            undefined,
+            'arena-modal-iframe',
+            fetched ? 'arena-modal-iframe-fetched' : '',
+          )}
+          title={`Embedded block: ${frameTitle}`}
+          loading="lazy"
+          data-block-id={block.id}
+          sandbox={
+            fetched
+              ? ''
+              : 'allow-same-origin allow-scripts allow-popups allow-popups-to-escape-sandbox allow-forms'
+          }
+          referrerPolicy={fetched ? 'no-referrer' : undefined}
+          src={iframeSrc}
+        />
+      </div>
     )
   } else {
     content = (
@@ -381,14 +386,12 @@ export default (() => {
     const renderBlock = (block: ArenaBlock, blockIndex: number) => {
       const hasSubItems = block.subItems && block.subItems.length > 0
       const frameTitle = block.title ?? block.content ?? `Block ${blockIndex + 1}`
-      const resolvedUrl = block.url ? rewriteArxivUrl(block.url) : undefined
-      const targetUrl = block.url ? (resolvedUrl ?? block.url) : undefined
-      // No srcDoc fallback for internal links; we'll hydrate with popover-hint content
+      const targetUrl = block.url ? rewriteArxivUrl(block.url) : undefined
       const embedHtml = block.embedHtml
       const isSubstackCandidate = block.url ? substackPostRegex.test(block.url) : false
       const isPdfCandidate = block.url ? isPdfUrl(block.url) : false
       const isPinned = block.pinned ?? false
-      const youtubeEmbed = block.url ? buildYouTubeEmbed(block.url) : undefined
+      const externalEmbedMode = block.embedMode ?? 'auto'
       const accessedRaw =
         (typeof block.metadata?.accessed === 'string' ? block.metadata.accessed : undefined) ??
         (typeof block.metadata?.accessed_date === 'string'
@@ -701,11 +704,11 @@ export default (() => {
                   <ArenaModalMainContent
                     block={block}
                     embedHtml={embedHtml}
-                    youtubeEmbed={youtubeEmbed}
                     isSubstackCandidate={isSubstackCandidate}
                     isPdfCandidate={isPdfCandidate}
                     targetUrl={targetUrl}
                     frameTitle={frameTitle}
+                    externalEmbedMode={externalEmbedMode}
                     convertFromText={convertFromText}
                   />
                 )}

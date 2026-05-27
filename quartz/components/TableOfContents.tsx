@@ -14,6 +14,7 @@ import script from './scripts/toc.inline'
 import modernStyle from './styles/toc.scss'
 
 const ghSlugger = new Slugger()
+const denseTocThreshold = 50
 
 interface Options {
   layout: 'minimal' | 'default'
@@ -82,8 +83,17 @@ export default ((userOpts?: Partial<Options>) => {
       </nav>
     )
 
+    const tocEntries = Math.max(fileData.toc.length, fileData.tocOptions?.sourceEntries ?? 0)
+    const density =
+      opts.layout === 'minimal' && tocEntries > denseTocThreshold ? 'dense' : undefined
+
     return (
-      <div class={classNames(displayClass, 'toc')} id="toc" data-layout={opts.layout}>
+      <div
+        class={classNames(displayClass, 'toc')}
+        id="toc"
+        data-layout={opts.layout}
+        data-density={density}
+      >
         {opts.layout === 'minimal' ? <MinimalToc /> : <DefaultToc />}
       </div>
     )

@@ -2,27 +2,32 @@ import type { RoughAnnotation } from 'rough-notation/lib/model'
 import { annotate } from 'rough-notation'
 
 let ag: RoughAnnotation | null = null
-let tocController: AbortController | null = null
+let tocCleanup: (() => void) | null = null
 const tocScrollBuffer = 48
 const tocHoverSigma = 42
 const tocHoverRadius = tocHoverSigma * 3
 const tocHoverLerp = 0.32
 const tocHoverEpsilon = 0.08
+const tocDenseThreshold = 50
 
 interface TocButtonMetric {
   button: HTMLButtonElement
   fill: HTMLElement | null
   centerY: number
+  label: string
+  touched: boolean
 }
+
+let activeToc: HTMLDivElement | null = null
+let tocEntryBySlug = new Map<string, HTMLElement>()
+
 const observer = new IntersectionObserver(entries => {
   for (const entry of entries) {
     const slug = entry.target.id
-    const tocEntryElement = document.querySelector<HTMLElement>(
-      `.toc [data-for="${CSS.escape(slug)}"]`,
-    )
+    const tocEntryElement = tocEntryBySlug.get(slug)
     if (!tocEntryElement) continue
 
-    const toc = document.querySelector<HTMLDivElement>('.toc')
+    const toc = activeToc
     if (!toc) continue
 
     const windowHeight = entry.rootBounds?.height
@@ -57,6 +62,7 @@ function onClick(evt: MouseEvent) {
   const toc = button.closest<HTMLElement>('.toc')
   if (toc) {
     toc.classList.remove('is-hovering')
+    toc.closest<HTMLElement>('.page-content')?.classList.remove('toc-hovering')
     hideTocLabel(toc)
   }
   resetTocButtons(toc?.querySelectorAll<HTMLButtonElement>('button[data-for]'))
@@ -123,8 +129,8 @@ document.addEventListener('nav', (ev: CustomEventMap['nav']) => {
 })
 
 function setupToc() {
-  tocController?.abort()
-  tocController = null
+  cleanupToc()
+  resetTocPageContentClasses()
 
   const toc = document.querySelector<HTMLElement>('.toc[data-layout="minimal"]')
   if (!toc) return
@@ -137,22 +143,32 @@ function setupToc() {
   const buttons = toc.querySelectorAll<HTMLButtonElement>('button[data-for]')
   if (buttons.length === 0) return
 
+  const pageContent = toc.closest<HTMLElement>('.page-content')
+  const isDenseToc = toc.dataset.density === 'dense' || buttons.length >= tocDenseThreshold
+  if (isDenseToc) toc.dataset.density = 'dense'
+  pageContent?.classList.add('has-minimal-toc')
+  pageContent?.classList.toggle('toc-dense', isDenseToc)
+
   const controller = new AbortController()
   const { signal } = controller
-  tocController = controller
   let metrics = readTocButtonMetrics(buttons)
   let maxScale = readTocMaxScale(nav, metrics)
-
-  for (const button of buttons) {
-    button.addEventListener('click', onClick, { signal })
-  }
+  let navViewportTop = nav.getBoundingClientRect().top
 
   let frame = 0
   let currentMouseY = 0
   let targetMouseY = 0
   let activeButton: HTMLButtonElement | null = null
   let hovering = false
-  let touchedButtons = new Set<HTMLButtonElement>()
+  let touchedMetrics: TocButtonMetric[] = []
+  let nextTouchedMetrics: TocButtonMetric[] = []
+
+  const refreshTocGeometry = () => {
+    navViewportTop = nav.getBoundingClientRect().top
+    metrics = readTocButtonMetrics(buttons)
+    maxScale = readTocMaxScale(nav, metrics)
+    updateTocOverflow(nav)
+  }
 
   const scheduleHover = () => {
     if (frame === 0) {
@@ -163,8 +179,9 @@ function setupToc() {
   const onMouseEnter = (evt: MouseEvent) => {
     hovering = true
     toc.classList.add('is-hovering')
-    const navRect = nav.getBoundingClientRect()
-    targetMouseY = evt.clientY - navRect.top
+    pageContent?.classList.add('toc-hovering')
+    navViewportTop = nav.getBoundingClientRect().top
+    targetMouseY = evt.clientY - navViewportTop
     currentMouseY = targetMouseY
     scheduleHover()
   }
@@ -178,9 +195,11 @@ function setupToc() {
     }
     activeButton?.classList.remove('is-active')
     activeButton = null
+    pageContent?.classList.remove('toc-hovering')
     hideTocLabel(toc)
     resetTocButtons(buttons)
-    touchedButtons.clear()
+    touchedMetrics.length = 0
+    nextTouchedMetrics.length = 0
   }
 
   const updateHover = () => {
@@ -188,26 +207,34 @@ function setupToc() {
     currentMouseY += (targetMouseY - currentMouseY) * tocHoverLerp
 
     const contentMouseY = currentMouseY + nav.scrollTop
-    const nextTouchedButtons = new Set<HTMLButtonElement>()
+    nextTouchedMetrics.length = 0
     const startIndex = firstTocMetricIndexAt(metrics, contentMouseY - tocHoverRadius)
     const endIndex = firstTocMetricIndexAt(metrics, contentMouseY + tocHoverRadius)
 
     for (let index = startIndex; index < endIndex; index++) {
       const metric = metrics[index]
+      metric.touched = true
       updateTocButtonFill(metric, contentMouseY, maxScale)
-      nextTouchedButtons.add(metric.button)
+      nextTouchedMetrics.push(metric)
     }
 
-    touchedButtons.forEach(button => {
-      if (!nextTouchedButtons.has(button)) {
-        resetTocButton(button)
+    for (const metric of touchedMetrics) {
+      if (!metric.touched) {
+        resetTocButton(metric.button)
       }
-    })
-    touchedButtons = nextTouchedButtons
+    }
+
+    for (const metric of nextTouchedMetrics) {
+      metric.touched = false
+    }
+
+    const previousTouchedMetrics = touchedMetrics
+    touchedMetrics = nextTouchedMetrics
+    nextTouchedMetrics = previousTouchedMetrics
 
     const nearestMetric = nearestTocMetric(metrics, contentMouseY)
     if (nearestMetric) {
-      activeButton = updateTocLabel(toc, nearestMetric.button, activeButton, currentMouseY)
+      activeButton = updateTocLabel(toc, nearestMetric, activeButton, currentMouseY)
     }
 
     if (hovering && Math.abs(targetMouseY - currentMouseY) > tocHoverEpsilon) {
@@ -215,15 +242,15 @@ function setupToc() {
     }
   }
 
-  const onMouseMove = (evt: MouseEvent) => {
-    const navRect = nav.getBoundingClientRect()
-    targetMouseY = evt.clientY - navRect.top
+  const onPointerMove = (evt: PointerEvent) => {
+    targetMouseY = evt.clientY - navViewportTop
     scheduleHover()
   }
 
+  nav.addEventListener('click', onClick, { signal })
   nav.addEventListener('mouseenter', onMouseEnter, { signal })
   nav.addEventListener('mouseleave', onMouseLeave, { signal })
-  nav.addEventListener('mousemove', onMouseMove, { signal })
+  nav.addEventListener('pointermove', onPointerMove, { passive: true, signal })
   nav.addEventListener(
     'scroll',
     () => {
@@ -235,10 +262,42 @@ function setupToc() {
     { passive: true, signal },
   )
 
-  requestAnimationFrame(() => {
-    metrics = readTocButtonMetrics(buttons)
-    maxScale = readTocMaxScale(nav, metrics)
-    updateTocOverflow(nav)
+  tocCleanup = () => {
+    controller.abort()
+    if (frame !== 0) {
+      cancelAnimationFrame(frame)
+      frame = 0
+    }
+    activeButton?.classList.remove('is-active')
+    activeButton = null
+    toc.classList.remove('is-hovering')
+    pageContent?.classList.remove('toc-hovering')
+    hideTocLabel(toc)
+    resetTocButtons(buttons)
+    touchedMetrics.length = 0
+    nextTouchedMetrics.length = 0
+  }
+
+  requestAnimationFrame(refreshTocGeometry)
+}
+
+function cleanupToc() {
+  tocCleanup?.()
+  tocCleanup = null
+}
+
+function cacheTocEntries() {
+  activeToc = document.querySelector<HTMLDivElement>('.toc')
+  tocEntryBySlug = new Map()
+  activeToc?.querySelectorAll<HTMLElement>('[data-for]').forEach(entry => {
+    const slug = entry.dataset.for
+    if (slug) tocEntryBySlug.set(slug, entry)
+  })
+}
+
+function resetTocPageContentClasses() {
+  document.querySelectorAll<HTMLElement>('.page-content.has-minimal-toc').forEach(pageContent => {
+    pageContent.classList.remove('has-minimal-toc', 'toc-hovering', 'toc-dense')
   })
 }
 
@@ -263,6 +322,8 @@ function readTocButtonMetrics(buttons: NodeListOf<HTMLButtonElement>): TocButton
       button,
       fill: button.querySelector<HTMLElement>('.fill'),
       centerY: button.offsetTop + button.offsetHeight / 2,
+      label: button.getAttribute('aria-label') ?? '',
+      touched: false,
     })
   })
   return metrics
@@ -315,23 +376,18 @@ function hideTocLabel(toc: HTMLElement) {
 
 function updateTocLabel(
   toc: HTMLElement,
-  button: HTMLButtonElement,
+  metric: TocButtonMetric,
   activeButton: HTMLButtonElement | null,
   labelY: number,
 ): HTMLButtonElement {
+  const { button } = metric
   const label = toc.querySelector<HTMLElement>('.toc-label')
   if (!label) return button
 
   if (button !== activeButton) {
     activeButton?.classList.remove('is-active')
     button.classList.add('is-active')
-    const indicator = button.querySelector<HTMLElement>('.indicator')
-    label.replaceChildren()
-    if (indicator && indicator.childNodes.length > 0) {
-      indicator.childNodes.forEach(child => label.appendChild(child.cloneNode(true)))
-    } else {
-      label.textContent = button.getAttribute('aria-label') ?? ''
-    }
+    label.textContent = metric.label
   }
 
   toc.style.setProperty('--toc-label-y', `${labelY.toFixed(1)}px`)
@@ -373,13 +429,13 @@ function scrollTocButtonIntoView(button: HTMLButtonElement) {
 window.addEventListener('resize', setupToc)
 document.addEventListener('nav', () => {
   setupToc()
+  cacheTocEntries()
   observer.disconnect()
   document
     .querySelectorAll('h1[id], h2[id], h3[id], h4[id], h5[id], h6[id]')
     .forEach(header => observer.observe(header))
 
   window.addCleanup(() => {
-    tocController?.abort()
-    tocController = null
+    cleanupToc()
   })
 })

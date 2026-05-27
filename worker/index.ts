@@ -2,6 +2,7 @@ import { OAuthProvider } from '@cloudflare/workers-oauth-provider'
 import { greaterWrongPostUrl, lessWrongTargetFromSearchParams } from '../quartz/util/lesswrong'
 import { readGreaterWrongPreviewHtml } from '../quartz/util/lesswrong-preview'
 import LFS_CONFIG from './.lfsconfig.txt'
+import { handleArenaEmbedCapability, handleArenaEmbedHtml } from './arena-embed'
 import handleArxiv from './arxiv'
 import {
   getGithubCommentAuthor,
@@ -715,6 +716,12 @@ export default {
         const resp = await handleStackedNoteDataRequest(request, env)
         return withHeaders(resp, apiHeaders)
       }
+      case '/api/arena-embed/capability': {
+        const resp = await handleArenaEmbedCapability(request)
+        return withHeaders(resp, buildCorsHeaders(env, request))
+      }
+      case '/api/arena-embed/html':
+        return handleArenaEmbedHtml(request)
       case '/api/pdf-proxy': {
         const pdfUrl = url.searchParams.get('url')
         if (!pdfUrl) {

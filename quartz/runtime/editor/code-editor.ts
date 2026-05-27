@@ -16,7 +16,6 @@ import { backendFor } from '../notebook/registry'
 export type NotebookCodeEditor = {
   getValue(): string
   setValue(content: string): void
-  highlightedLines(): HTMLElement[]
   setVimMode(enabled: boolean): Promise<void>
   focus(): void
   destroy(): void
@@ -1708,7 +1707,6 @@ export async function createNotebookCodeEditor(
         suppressChangeNotification = false
       }
     },
-    highlightedLines: () => highlightedLineSpans(view),
     async setVimMode(enabled: boolean) {
       clearSurroundPending()
       clearLeap()

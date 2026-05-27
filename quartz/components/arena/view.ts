@@ -1,5 +1,11 @@
 import type { ArenaEvent, SearchResultOptions, SearchScope } from './model'
+import {
+  arenaEmbedCapabilityPath,
+  arenaEmbedHtmlPath,
+  type ArenaExternalEmbedMode,
+} from '../../util/arena-embed'
 import { normalizeRelativeURLs } from '../../util/path'
+import { isRecord, readString } from '../../util/type-guards'
 import { loadMapbox, applyMonochromeMapPalette } from '../scripts/mapbox-client'
 import { fetchCanonical, tokenizeTerm } from '../scripts/util'
 
@@ -13,11 +19,142 @@ let scrollLockState: { x: number; y: number } | null = null
 let searchInput: HTMLInputElement | null = null
 let activeResultIndex: number | null = null
 let registerCleanup: ((cleanup: () => void) => void) | null = null
+const arenaEmbedCapabilityCache = new Map<string, Promise<ArenaEmbedCapability | null>>()
+
+interface ArenaEmbedCapability {
+  mode: 'iframe' | 'fetch' | 'disabled'
+  finalUrl?: string
+  reason?: string
+}
 
 const addCleanup = (cleanup: () => void) => {
   if (registerCleanup) {
     registerCleanup(cleanup)
   }
+}
+
+function readArenaEmbedCapability(value: unknown): ArenaEmbedCapability | null {
+  if (!isRecord(value)) return null
+
+  const mode = readString(value, 'mode')
+  if (mode !== 'iframe' && mode !== 'fetch' && mode !== 'disabled') return null
+
+  const finalUrl = readString(value, 'finalUrl')
+  const reason = readString(value, 'reason')
+  const capability: ArenaEmbedCapability = { mode }
+  if (finalUrl) capability.finalUrl = finalUrl
+  if (reason) capability.reason = reason
+  return capability
+}
+
+function readArenaExternalModeDataset(value: string | undefined): ArenaExternalEmbedMode {
+  if (value === 'iframe' || value === 'fetch' || value === 'none') return value
+  return 'auto'
+}
+
+async function fetchArenaEmbedCapability(rawUrl: string): Promise<ArenaEmbedCapability | null> {
+  const cached = arenaEmbedCapabilityCache.get(rawUrl)
+  if (cached) return cached
+
+  const pending = fetch(arenaEmbedCapabilityPath(rawUrl), { credentials: 'same-origin' })
+    .then(async response => {
+      if (!response.ok) return null
+      return readArenaEmbedCapability(await response.json())
+    })
+    .catch(error => {
+      console.error(error)
+      return null
+    })
+
+  arenaEmbedCapabilityCache.set(rawUrl, pending)
+  return pending
+}
+
+function renderExternalEmbedFallback(host: HTMLElement, targetUrl: string) {
+  host.innerHTML = ''
+  const shell = document.createElement('div')
+  shell.className = 'arena-iframe-error'
+  const content = document.createElement('div')
+  content.className = 'arena-iframe-error-content'
+  const message = document.createElement('p')
+  message.textContent = 'embedded content unavailable'
+  const link = document.createElement('a')
+  link.href = targetUrl
+  link.target = '_blank'
+  link.rel = 'noopener noreferrer'
+  link.className = 'arena-iframe-error-link'
+  link.textContent = 'open in new tab ->'
+  content.append(message, link)
+  shell.appendChild(content)
+  host.appendChild(shell)
+}
+
+function renderFetchedExternalEmbed(host: HTMLElement, targetUrl: string) {
+  let iframe = host.querySelector<HTMLIFrameElement>('iframe.arena-modal-iframe')
+  if (!iframe) {
+    host.innerHTML = ''
+    iframe = document.createElement('iframe')
+    iframe.className = 'arena-modal-iframe'
+    iframe.loading = 'lazy'
+    const blockId = host.dataset.blockId
+    if (blockId) iframe.dataset.blockId = blockId
+    host.appendChild(iframe)
+  }
+
+  iframe.classList.add('arena-modal-iframe-fetched')
+  iframe.setAttribute('sandbox', '')
+  iframe.referrerPolicy = 'no-referrer'
+  iframe.src = arenaEmbedHtmlPath(targetUrl)
+}
+
+async function hydrateExternalEmbedHost(host: HTMLElement) {
+  if (!host.isConnected) return
+  const targetUrl = host.dataset.arenaUrl
+  if (!targetUrl) return
+
+  const mode = readArenaExternalModeDataset(host.dataset.arenaEmbedMode)
+  if (host.dataset.arenaEmbedStatus === 'loading' || host.dataset.arenaEmbedStatus === 'loaded') {
+    return
+  }
+
+  if (mode === 'none') {
+    renderExternalEmbedFallback(host, targetUrl)
+    host.dataset.arenaEmbedStatus = 'loaded'
+    return
+  }
+
+  if (mode === 'fetch') {
+    renderFetchedExternalEmbed(host, targetUrl)
+    host.dataset.arenaEmbedStatus = 'loaded'
+    return
+  }
+
+  if (mode === 'iframe') {
+    host.dataset.arenaEmbedStatus = 'loaded'
+    return
+  }
+
+  host.dataset.arenaEmbedStatus = 'loading'
+  const capability = await fetchArenaEmbedCapability(targetUrl)
+  if (!host.isConnected) return
+  if (!capability) {
+    host.dataset.arenaEmbedStatus = 'loaded'
+    return
+  }
+
+  if (capability.mode === 'fetch') {
+    renderFetchedExternalEmbed(host, capability.finalUrl ?? targetUrl)
+  } else if (capability.mode === 'disabled') {
+    renderExternalEmbedFallback(host, capability.finalUrl ?? targetUrl)
+  }
+
+  host.dataset.arenaEmbedStatus = 'loaded'
+}
+
+function hydrateExternalEmbeds(root: HTMLElement) {
+  root.querySelectorAll<HTMLElement>('.arena-modal-external-host[data-arena-url]').forEach(host => {
+    void hydrateExternalEmbedHost(host)
+  })
 }
 
 function lockPageScroll() {
@@ -684,7 +821,57 @@ function cleanupPdfs(root: HTMLElement) {
   })
 }
 
-// Dynamically create modal data from search index JSON
+function renderExternalModalHtml(
+  block: ArenaBlockSearchable,
+  targetUrl: string,
+  mode: ArenaExternalEmbedMode,
+): string {
+  const escapedUrl = escapeHtml(targetUrl)
+  if (mode === 'none') {
+    return `
+      <div class="arena-iframe-error">
+        <div class="arena-iframe-error-content">
+          <p>embedded content unavailable</p>
+          <a href="${escapedUrl}" target="_blank" rel="noopener noreferrer" class="arena-iframe-error-link">
+            open in new tab ->
+          </a>
+        </div>
+      </div>
+    `
+  }
+
+  const fetched = mode === 'fetch'
+  const frameTitle = escapeHtml(block.title ?? block.content ?? 'Block')
+  const iframeSrc = fetched ? arenaEmbedHtmlPath(targetUrl) : targetUrl
+  const sandbox = fetched
+    ? 'sandbox="" referrerpolicy="no-referrer"'
+    : 'sandbox="allow-same-origin allow-scripts allow-popups allow-popups-to-escape-sandbox allow-forms"'
+
+  return `
+    <div
+      class="arena-modal-external-host"
+      data-block-id="${escapeHtml(block.id)}"
+      data-arena-url="${escapedUrl}"
+      data-arena-embed-mode="${mode}"
+    >
+      <iframe
+        class="arena-modal-iframe${fetched ? ' arena-modal-iframe-fetched' : ''}"
+        title="Embedded block: ${frameTitle}"
+        loading="lazy"
+        data-block-id="${escapeHtml(block.id)}"
+        ${sandbox}
+        src="${escapeHtml(iframeSrc)}"
+      ></iframe>
+    </div>
+  `
+}
+
+function renderArenaSearchSubItemHtml(block: ArenaBlockSearchable): string {
+  if (block.blockHtml) return block.blockHtml
+  if (block.titleHtml) return block.titleHtml
+  return escapeHtml(block.title ?? block.content)
+}
+
 function createModalDataFromJson(block: ArenaBlockSearchable, channelSlug: string): HTMLElement {
   const container = document.createElement('div')
   container.className = 'arena-block-modal-data'
@@ -693,12 +880,11 @@ function createModalDataFromJson(block: ArenaBlockSearchable, channelSlug: strin
   container.dataset.channelSlug = channelSlug
   container.style.display = 'none'
 
-  // Build display URL
   const displayUrl =
     block.url ??
     (block.internalSlug ? `${window.location.origin}/${block.internalSlug}` : undefined)
+  const escapedDisplayUrl = displayUrl ? escapeHtml(displayUrl) : ''
 
-  // Build metadata entries
   const metadataHtml: string[] = []
 
   if (block.metadata) {
@@ -715,8 +901,8 @@ function createModalDataFromJson(block: ArenaBlockSearchable, channelSlug: strin
       const label = key.replace(/_/g, ' ')
       metadataHtml.push(`
         <div class="arena-meta-item">
-          <span class="arena-meta-label">${label}</span>
-          <em class="arena-meta-value">${value}</em>
+          <span class="arena-meta-label">${escapeHtml(label)}</span>
+          <em class="arena-meta-value">${escapeHtml(value)}</em>
         </div>
       `)
     }
@@ -724,7 +910,9 @@ function createModalDataFromJson(block: ArenaBlockSearchable, channelSlug: strin
 
   if (block.tags && block.tags.length > 0) {
     const tagsLabel = block.tags.length === 1 ? 'tag' : 'tags'
-    const tagsList = block.tags.map(tag => `<span class="tag-link">${tag}</span>`).join('')
+    const tagsList = block.tags
+      .map(tag => `<span class="tag-link">${escapeHtml(tag)}</span>`)
+      .join('')
     metadataHtml.push(`
       <div class="arena-meta-item">
         <span class="arena-meta-label">${tagsLabel}</span>
@@ -735,27 +923,27 @@ function createModalDataFromJson(block: ArenaBlockSearchable, channelSlug: strin
     `)
   }
 
-  // Build sub-items (connections)
-  const hasSubItems = block.subItems && block.subItems.length > 0
-  const subItemsHtml = hasSubItems
-    ? `
+  const subItems = block.subItems ?? []
+  const subItemsHtml =
+    subItems.length > 0
+      ? `
     <div class="arena-modal-connections">
       <div class="arena-modal-connections-header">
         <span class="arena-modal-connections-title">notes</span>
-        <span class="arena-modal-connections-count">${block.subItems!.length}</span>
+        <span class="arena-modal-connections-count">${subItems.length}</span>
       </div>
       <ul class="arena-modal-connections-list">
-        ${block
-          .subItems!.map(
+        ${subItems
+          .map(
             subItem => `
-          <li>${subItem.blockHtml || subItem.titleHtml || subItem.title || subItem.content}</li>
+          <li>${renderArenaSearchSubItemHtml(subItem)}</li>
         `,
           )
           .join('')}
       </ul>
     </div>
   `
-    : ''
+      : ''
 
   const mapTitle = block.title || block.content || block.url || ''
   const mapHtml = block.coordinates
@@ -774,42 +962,23 @@ function createModalDataFromJson(block: ArenaBlockSearchable, channelSlug: strin
   if (block.embedHtml) {
     mainContentHtml = block.embedHtml
   } else if (block.url && SUBSTACK_POST_REGEX.test(block.url)) {
+    const escapedUrl = escapeHtml(block.url)
     mainContentHtml = `
-      <div class="arena-modal-embed arena-modal-embed-substack" data-substack-url="${block.url}">
+      <div class="arena-modal-embed arena-modal-embed-substack" data-substack-url="${escapedUrl}">
         <span class="arena-loading-spinner" role="status" aria-label="Loading Substack preview"></span>
       </div>
     `
-  } else if (block.embedDisabled && block.url) {
-    mainContentHtml = `
-      <div class="arena-iframe-error">
-        <div class="arena-iframe-error-content">
-          <p>embedded content unavailable</p>
-          <a href="${block.url}" target="_blank" rel="noopener noreferrer" class="arena-iframe-error-link">
-            open in new tab →
-          </a>
-        </div>
-      </div>
-    `
   } else if (block.url) {
-    const frameTitle = block.title ?? block.content ?? 'Block'
-    mainContentHtml = `
-      <iframe
-        class="arena-modal-iframe"
-        title="Embedded block: ${frameTitle}"
-        loading="lazy"
-        data-block-id="${block.id}"
-        sandbox="allow-same-origin allow-scripts allow-popups allow-popups-to-escape-sandbox allow-forms"
-        src="${block.url}"
-      ></iframe>
-    `
+    const externalEmbedMode = block.embedMode ?? 'auto'
+    mainContentHtml = renderExternalModalHtml(block, block.url, externalEmbedMode)
   } else if (block.internalSlug) {
     mainContentHtml = `
       <div
         class="arena-modal-internal-host"
-        data-block-id="${block.id}"
-        data-internal-slug="${block.internalSlug}"
-        data-internal-href="${block.internalHref || ''}"
-        data-internal-hash="${block.internalHash || ''}"
+        data-block-id="${escapeHtml(block.id)}"
+        data-internal-slug="${escapeHtml(block.internalSlug)}"
+        data-internal-href="${escapeHtml(block.internalHref || '')}"
+        data-internal-hash="${escapeHtml(block.internalHash || '')}"
       >
         <div class="arena-modal-internal-preview grid"></div>
       </div>
@@ -825,7 +994,7 @@ function createModalDataFromJson(block: ArenaBlockSearchable, channelSlug: strin
           displayUrl
             ? `
           <div class="arena-modal-url-bar">
-            <button type="button" class="arena-url-copy-button" data-url="${displayUrl}" role="button" tabIndex="0" aria-label="Copy URL to clipboard">
+            <button type="button" class="arena-url-copy-button" data-url="${escapedDisplayUrl}" role="button" tabIndex="0" aria-label="Copy URL to clipboard">
               <svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg" class="copy-icon">
                 <path d="M7.49996 1.80002C4.35194 1.80002 1.79996 4.352 1.79996 7.50002C1.79996 10.648 4.35194 13.2 7.49996 13.2C10.648 13.2 13.2 10.648 13.2 7.50002C13.2 4.352 10.648 1.80002 7.49996 1.80002ZM0.899963 7.50002C0.899963 3.85494 3.85488 0.900024 7.49996 0.900024C11.145 0.900024 14.1 3.85494 14.1 7.50002C14.1 11.1451 11.145 14.1 7.49996 14.1C3.85488 14.1 0.899963 11.1451 0.899963 7.50002Z" fill="currentColor" fill-rule="evenodd" clip-rule="evenodd"/>
                 <path d="M13.4999 7.89998H1.49994V7.09998H13.4999V7.89998Z" fill="currentColor" fill-rule="evenodd" clip-rule="evenodd"/>
@@ -839,8 +1008,8 @@ function createModalDataFromJson(block: ArenaBlockSearchable, channelSlug: strin
             ${
               block.url
                 ? `
-              <a href="${block.url}" target="_blank" rel="noopener noreferrer" class="arena-modal-link">
-                <div class="arena-modal-link-text">${displayUrl}</div>
+              <a href="${escapeHtml(block.url)}" target="_blank" rel="noopener noreferrer" class="arena-modal-link">
+                <div class="arena-modal-link-text">${escapedDisplayUrl}</div>
                 <svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path fill-rule="evenodd" clip-rule="evenodd" d="M12 13C12.5523 13 13 12.5523 13 12V3C13 2.44771 12.5523 2 12 2H3C2.44771 2 2 2.44771 2 3V6.5C2 6.77614 2.22386 7 2.5 7C2.77614 7 3 6.77614 3 6.5V3H12V12H8.5C8.22386 12 8 12.2239 8 12.5C8 12.7761 8.22386 13 8.5 13H12ZM9 6.5C9 6.5001 9 6.50021 9 6.50031V6.50035V9.5C9 9.77614 8.77614 10 8.5 10C8.22386 10 8 9.77614 8 9.5V7.70711L2.85355 12.8536C2.65829 13.0488 2.34171 13.0488 2.14645 12.8536C1.95118 12.6583 1.95118 12.3417 2.14645 12.1464L7.29289 7H5.5C5.22386 7 5 6.77614 5 6.5C5 6.22386 5.22386 6 5.5 6H8.5C8.56779 6 8.63244 6.01349 8.69139 6.03794C8.74949 6.06198 8.80398 6.09744 8.85143 6.14433C8.94251 6.23434 8.9992 6.35909 8.99999 6.49708L8.99999 6.49738" fill="currentColor"/>
                 </svg>
@@ -848,7 +1017,7 @@ function createModalDataFromJson(block: ArenaBlockSearchable, channelSlug: strin
             `
                 : `
               <span class="arena-modal-link">
-                <div class="arena-modal-link-text">${displayUrl}</div>
+                <div class="arena-modal-link-text">${escapedDisplayUrl}</div>
               </span>
             `
             }
@@ -864,7 +1033,7 @@ function createModalDataFromJson(block: ArenaBlockSearchable, channelSlug: strin
       <div class="arena-modal-sidebar">
         <div class="arena-modal-info">
           <h3 class="arena-modal-title">
-            ${block.titleHtml || block.title || ''}
+            ${block.titleHtml ?? escapeHtml(block.title ?? '')}
           </h3>
           ${
             metadataHtml.length > 0
@@ -922,6 +1091,7 @@ export async function showModal(blockId: string) {
   }
 
   hydrateSubstackEmbeds(modalBody)
+  hydrateExternalEmbeds(modalBody)
   hydrateInternalHosts(modalBody)
   hydrateMapboxMaps(modalBody)
   hydratePdfEmbeds(modalBody)
@@ -1037,7 +1207,7 @@ interface ArenaBlockSearchable {
   tags?: string[]
   subItems?: ArenaBlockSearchable[]
   hasModalInDom: boolean
-  embedDisabled?: boolean
+  embedMode?: ArenaExternalEmbedMode
 }
 
 interface ArenaChannelSearchable {

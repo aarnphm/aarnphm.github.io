@@ -390,10 +390,6 @@ function renderedFigureSource(figure: HTMLElement): string | undefined {
   return code?.textContent ?? undefined
 }
 
-function highlightedLinesHaveInlineStyle(lines: readonly HTMLElement[]): boolean {
-  return lines.some(line => line.hasAttribute('style') || line.querySelector('[style]') !== null)
-}
-
 function outputClassToken(value: string): string {
   return value.replace(/[^A-Za-z0-9_-]/g, '-') || 'output'
 }
@@ -1132,7 +1128,7 @@ class NotebookRuntime {
       this.clearEditPrefix()
       this.selectCell(cell.id)
       this.claimNotebookKey(event)
-      this.runCellAndAdvance(cell)
+      void this.runCellAndAdvance(cell)
       return
     }
 
@@ -1448,9 +1444,10 @@ class NotebookRuntime {
     this.cellFrame(cell.id)?.focus()
   }
 
-  private runCellAndAdvance(cell: RuntimeCell) {
+  private async runCellAndAdvance(cell: RuntimeCell) {
     if (this.running) return
-    if (!this.saveEditorSource(cell, false)) return
+    if (!(await this.saveEditorSource(cell, false))) return
+    if (this.running) return
     const running = this.runCell(cell)
     this.focusCell(this.nextCell(cell) ?? cell)
     void running
@@ -1685,7 +1682,7 @@ class NotebookRuntime {
     setNotebookIconButton(saveButton, 'save', `Save ${cell.id} locally`)
     saveButton.hidden = true
     const saveSource = () => {
-      this.saveEditorSource(cell)
+      void this.saveEditorSource(cell)
     }
     saveButton.addEventListener('click', saveSource)
 
@@ -1847,7 +1844,7 @@ class NotebookRuntime {
       onSubmit: () => this.runCell(cell),
       onSubmitAndAdvance: () => this.runCellAndAdvance(cell),
       onSave: () => {
-        this.saveEditorSource(cell)
+        void this.saveEditorSource(cell)
       },
       onCancel: () => {
         void this.closeSourceEditor(cell)
@@ -1882,17 +1879,8 @@ class NotebookRuntime {
     cell: RuntimeCell,
     controls: SourceControls,
     source: string,
-    preferredLines?: HTMLElement[],
   ): Promise<HTMLElement[] | undefined> {
     const lineCount = source.split(/\r?\n/).length
-    const preferredLineCountMatches = preferredLines?.length === lineCount
-    if (
-      preferredLines &&
-      preferredLineCountMatches &&
-      highlightedLinesHaveInlineStyle(preferredLines)
-    ) {
-      return preferredLines
-    }
     if (!controls.figure) return undefined
     try {
       const { renderNotebookHighlightedLines } = await import('../editor/code-editor')
@@ -1900,9 +1888,9 @@ class NotebookRuntime {
         source,
         runtimeCellEditorLanguage(cell),
       )
-      return highlightedLines.length === lineCount ? highlightedLines : preferredLines
+      return highlightedLines.length === lineCount ? highlightedLines : undefined
     } catch {
-      return preferredLineCountMatches ? preferredLines : undefined
+      return undefined
     }
   }
 
@@ -1910,15 +1898,9 @@ class NotebookRuntime {
     cell: RuntimeCell,
     controls: SourceControls,
     source: string,
-    preferredLines?: HTMLElement[],
   ) {
     if (!controls.figure || controls.renderedSource === source) return
-    const highlightedLines = await this.highlightedSourceLines(
-      cell,
-      controls,
-      source,
-      preferredLines,
-    )
+    const highlightedLines = await this.highlightedSourceLines(cell, controls, source)
     replaceRenderedSource(controls.figure, source, highlightedLines)
     controls.renderedSource = source
   }
@@ -1926,29 +1908,23 @@ class NotebookRuntime {
   private async closeSourceEditor(cell: RuntimeCell) {
     const controls = this.sourceControls.get(cell.id)
     if (!controls) return
-    let highlightedLines: HTMLElement[] | undefined
     if (controls.editor) {
       controls.source = controls.editor.getValue()
-      highlightedLines = controls.editor.highlightedLines()
     }
-    await this.replaceRenderedCellSource(cell, controls, controls.source, highlightedLines)
+    await this.replaceRenderedCellSource(cell, controls, controls.source)
     void this.showSourceEditor(cell, false)
   }
 
-  private saveEditorSource(cell: RuntimeCell, restoreFocus = true): boolean {
+  private async saveEditorSource(cell: RuntimeCell, restoreFocus = true): Promise<boolean> {
     const controls = this.sourceControls.get(cell.id)
     if (!controls) return true
     const source = this.sourceForCell(cell)
-    const highlightedLines = controls.editor?.highlightedLines()
     if (source === cell.source) {
       controls.source = cell.source
       controls.dirty = false
       this.clearStoredSource(cell)
-      if (controls.figure && controls.renderedSource !== cell.source) {
-        replaceRenderedSource(controls.figure, cell.source, highlightedLines)
-        controls.renderedSource = cell.source
-      }
-      void this.showSourceEditor(cell, false, restoreFocus)
+      await this.replaceRenderedCellSource(cell, controls, cell.source)
+      await this.showSourceEditor(cell, false, restoreFocus)
       this.setStatus('idle')
       return true
     }
@@ -1958,11 +1934,8 @@ class NotebookRuntime {
     }
     controls.source = source
     controls.dirty = false
-    if (controls.figure && controls.renderedSource !== source) {
-      replaceRenderedSource(controls.figure, source, highlightedLines)
-      controls.renderedSource = source
-    }
-    void this.showSourceEditor(cell, false, restoreFocus)
+    await this.replaceRenderedCellSource(cell, controls, source)
+    await this.showSourceEditor(cell, false, restoreFocus)
     this.setStatus('saved local edit')
     return true
   }
@@ -1973,9 +1946,8 @@ class NotebookRuntime {
     controls.source = cell.source
     controls.dirty = false
     controls.editor?.setValue(cell.source)
-    const highlightedLines = controls.editor?.highlightedLines()
     this.clearStoredSource(cell)
-    await this.replaceRenderedCellSource(cell, controls, cell.source, highlightedLines)
+    await this.replaceRenderedCellSource(cell, controls, cell.source)
     void this.showSourceEditor(cell, false)
     this.setStatus('idle')
   }
