@@ -851,6 +851,12 @@ def _install_module(name, attrs):
   return module
 
 
+def _install_package(name, attrs):
+  module = _install_module(name, attrs)
+  module.__path__ = []
+  return module
+
+
 jnp_module = _install_module(
   'jax.numpy',
   {
@@ -1136,14 +1142,31 @@ def display(*objects):
       )
 
 
-display_module = types.ModuleType('IPython.display')
-display_module.display = display
-display_module.Javascript = Javascript
-display_module.HTML = HTML
-ipython_module = types.ModuleType('IPython')
-ipython_module.display = display_module
-sys.modules['IPython'] = ipython_module
-sys.modules['IPython.display'] = display_module
+def extract_module_locals(depth=0):
+  frame = sys._getframe(depth + 1)
+  module = sys.modules[frame.f_globals['__name__']]
+  return module, frame.f_locals
+
+
+display_module = _install_module(
+  'IPython.display',
+  {'display': display, 'Javascript': Javascript, 'HTML': HTML},
+)
+frame_module = _install_module(
+  'IPython.utils.frame', {'extract_module_locals': extract_module_locals}
+)
+utils_module = _install_package('IPython.utils', {'frame': frame_module})
+core_module = _install_package('IPython.core', {'display': display_module})
+ipython_module = _install_package(
+  'IPython',
+  {
+    'core': core_module,
+    'display': display_module,
+    'utils': utils_module,
+    'extract_module_locals': extract_module_locals,
+  },
+)
+sys.modules['IPython.core.display'] = display_module
 sys.modules['import_ipynb'] = types.ModuleType('import_ipynb')
 nbimporter_module = types.ModuleType('nbimporter')
 nbimporter_module.options = {'only_defs': False}
