@@ -5,10 +5,13 @@
   container-type: inline-size;
   container-name: vw-figure;
   margin: 1.75rem 0;
-  padding: 1.5rem 1.75rem;
-  border-radius: var(--radius-7-2);
-  border: 1px solid color-mix(in srgb, var(--gray) 28%, transparent);
-  background: color-mix(in srgb, var(--light) 94%, transparent);
+  content-visibility: auto;
+  contain-intrinsic-size: auto 46rem;
+  padding: 0;
+  border-radius: 0;
+  border: 0;
+  box-shadow: none;
+  background: transparent;
   color: var(--dark);
 
   --vw-stroke: color-mix(in srgb, var(--darkgray) 70%, transparent);
@@ -95,34 +98,10 @@
     opacity: var(--vw-frame-faded-opacity);
   }
 
-  .vw-box-text {
-    fill: var(--dark);
-    font-family: var(--bodyFont);
-    font-size: 17px;
-    text-anchor: middle;
-    dominant-baseline: middle;
-
-    &.vw-box-text--sm {
-      font-size: 14px;
-    }
-
-    .vw-italic {
-      font-style: italic;
-    }
-  }
-
   .vw-node {
     fill: var(--light);
     stroke: var(--vw-stroke);
     stroke-width: 1.2;
-  }
-
-  .vw-node-text {
-    fill: var(--vw-stroke);
-    font-family: var(--bodyFont);
-    font-size: 12px;
-    text-anchor: middle;
-    dominant-baseline: middle;
   }
 
   .vw-arrowhead {
@@ -170,6 +149,15 @@
 
   .vw-fo--compound {
     font-size: 13px;
+  }
+
+  .vw-fo--node {
+    color: var(--vw-stroke);
+    font-size: 12px;
+  }
+
+  .vw-fo--dots {
+    font-size: 12px;
   }
 }
 
@@ -244,7 +232,7 @@
 
 @container vw-figure (max-width: 440px) {
   .virtual-weights {
-    padding: 1.1rem 1.1rem;
+    padding: 0;
   }
 
   .vw-panels {

@@ -1,0 +1,447 @@
+@use '../../styles/variables.scss' as *;
+@use '../../styles/mixin.scss' as *;
+
+.attention-circuits {
+  container-type: inline-size;
+  container-name: acir-figure;
+  margin: 1.75rem 0;
+  content-visibility: auto;
+  contain-intrinsic-size: auto 42rem;
+  padding: 0;
+  border-radius: 0;
+  border: 0;
+  background: transparent;
+  color: var(--dark);
+
+  --acir-line: color-mix(in srgb, var(--gray) 24%, transparent);
+  --acir-stroke: color-mix(in srgb, var(--darkgray) 70%, transparent);
+  --acir-stroke-soft: color-mix(in srgb, var(--gray) 55%, transparent);
+  --acir-note-fg: color-mix(in srgb, var(--darkgray) 78%, var(--dark) 22%);
+  --acir-box: var(--light);
+  --acir-box-soft: color-mix(in srgb, var(--lightgray) 80%, var(--light));
+  --acir-input: color-mix(in srgb, var(--gray) 18%, var(--light));
+  --acir-output: color-mix(in srgb, var(--tertiary) 30%, var(--light));
+  --acir-softmax: color-mix(in srgb, var(--lightgray) 55%, var(--light));
+  --acir-qk: #fdb2a2;
+  --acir-qk-fill: color-mix(in srgb, #fdb2a2 28%, var(--light));
+  --acir-ov: #cdd597;
+  --acir-ov-fill: color-mix(in srgb, #cdd597 32%, var(--light));
+
+  box-shadow: none;
+}
+
+:root[saved-theme='dark'] .attention-circuits {
+  --acir-box: var(--lightgray);
+  --acir-box-soft: color-mix(in srgb, var(--lightgray) 80%, var(--dark));
+  --acir-input: color-mix(in srgb, var(--gray) 22%, var(--lightgray));
+  --acir-output: color-mix(in srgb, var(--tertiary) 22%, var(--lightgray));
+  --acir-softmax: color-mix(in srgb, var(--lightgray) 65%, var(--dark));
+  --acir-qk-fill: color-mix(in srgb, #fdb2a2 22%, var(--lightgray));
+  --acir-ov-fill: color-mix(in srgb, #cdd597 22%, var(--lightgray));
+}
+
+.acir-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.1rem;
+  padding-bottom: 0.9rem;
+  box-shadow: 0 1px 0 var(--acir-line);
+}
+
+.acir-circuit-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin: 0;
+  padding: 0;
+  border: none;
+
+  legend {
+    float: left;
+    margin-right: 0.6rem;
+    color: var(--acir-note-fg);
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+}
+
+.acir-pill {
+  appearance: none;
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.82rem;
+  min-height: 2.5rem;
+  padding: 0.32rem 0.7rem;
+  border-radius: var(--radius-6);
+  border: 0;
+  background: var(--light);
+  color: var(--dark);
+  box-shadow: 0 0 0 1px var(--acir-stroke-soft) inset;
+  transition:
+    background 120ms ease,
+    box-shadow 120ms ease,
+    transform 120ms ease;
+
+  &:focus-visible {
+    outline: 2px solid var(--acir-stroke);
+    outline-offset: 2px;
+  }
+  &:hover:not([aria-pressed='true']) {
+    box-shadow: 0 0 0 1px var(--acir-stroke) inset;
+  }
+  &:active {
+    transform: scale(0.96);
+  }
+
+  &.acir-pill--qk[aria-pressed='true'] {
+    background: var(--acir-qk-fill);
+    box-shadow:
+      0 0 0 1px color-mix(in srgb, var(--acir-qk) 72%, var(--acir-stroke)) inset,
+      0 8px 18px color-mix(in srgb, var(--acir-qk) 18%, transparent);
+  }
+  &.acir-pill--ov[aria-pressed='true'] {
+    background: var(--acir-ov-fill);
+    box-shadow:
+      0 0 0 1px color-mix(in srgb, var(--acir-ov) 72%, var(--acir-stroke)) inset,
+      0 8px 18px color-mix(in srgb, var(--acir-ov) 18%, transparent);
+  }
+  &.acir-pill--none[aria-pressed='true'] {
+    background: var(--acir-box-soft);
+    box-shadow: 0 0 0 1px var(--acir-stroke) inset;
+  }
+}
+
+.acir-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.82rem;
+  color: var(--acir-note-fg);
+  cursor: pointer;
+
+  input[type='checkbox'] {
+    width: 1rem;
+    height: 1rem;
+    flex: 0 0 auto;
+    appearance: none;
+    border: 0;
+    border-radius: 4px;
+    background: color-mix(in srgb, var(--light) 88%, transparent);
+    box-shadow: 0 0 0 1px color-mix(in srgb, var(--darkgray) 48%, transparent) inset;
+    cursor: pointer;
+    transition:
+      transform 120ms ease,
+      box-shadow 160ms ease;
+  }
+
+  input[type='checkbox']:checked {
+    background: color-mix(in srgb, var(--darkgray) 82%, var(--light));
+    box-shadow:
+      0 0 0 3px color-mix(in srgb, var(--light) 96%, transparent) inset,
+      0 0 0 1px color-mix(in srgb, var(--dark) 24%, transparent);
+  }
+
+  input[type='checkbox']:active {
+    transform: scale(0.96);
+  }
+}
+
+.acir-panels {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 1.5rem;
+  align-items: stretch;
+}
+
+.acir-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  min-width: 0;
+  padding: 0.6rem 0;
+  border-radius: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.acir-panel-title {
+  margin: 0;
+  font-family: var(--bodyFont);
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: var(--dark);
+  letter-spacing: 0;
+}
+
+.acir-panel-sub {
+  margin: 0;
+  font-size: 0.84rem;
+  color: var(--acir-note-fg);
+  line-height: 1.45;
+  .katex {
+    font-size: 0.95em;
+  }
+}
+
+.acir-graph {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 320 / 460;
+  display: block;
+
+  .acir-box {
+    fill: var(--acir-box);
+    stroke: var(--acir-stroke);
+    stroke-width: 1;
+
+    &.acir-box--input {
+      fill: var(--acir-input);
+    }
+    &.acir-box--output {
+      fill: var(--acir-output);
+    }
+    &.acir-box--softmax {
+      fill: var(--acir-softmax);
+    }
+    &.acir-box--value {
+      fill: var(--acir-box-soft);
+    }
+    &.acir-box--qk-pattern {
+      fill: var(--acir-qk-fill);
+      stroke: color-mix(in srgb, var(--acir-qk) 65%, var(--acir-stroke));
+    }
+    &.acir-box--ov-rank {
+      fill: var(--acir-ov-fill);
+      stroke: color-mix(in srgb, var(--acir-ov) 65%, var(--acir-stroke));
+    }
+  }
+
+  .acir-line {
+    stroke: var(--acir-stroke);
+    stroke-width: 1.2;
+    fill: none;
+
+    &.acir-line--qk {
+      stroke: color-mix(in srgb, var(--acir-qk) 35%, var(--acir-stroke));
+    }
+    &.acir-line--ov {
+      stroke: color-mix(in srgb, var(--acir-ov) 35%, var(--acir-stroke));
+    }
+  }
+
+  .acir-arrowhead {
+    fill: var(--acir-stroke);
+  }
+  .acir-node {
+    fill: var(--light);
+    stroke: var(--acir-stroke);
+    stroke-width: 1.2;
+  }
+
+  .acir-fo {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--dark);
+    font-size: 14px;
+    line-height: 1;
+    overflow: visible;
+    .katex {
+      color: inherit;
+      font-size: 1em;
+      line-height: 1;
+    }
+    .katex-display {
+      margin: 0;
+    }
+  }
+
+  .acir-fo--big {
+    font-size: 18px;
+  }
+  .acir-fo--sm {
+    font-size: 12px;
+  }
+  .acir-fo--xs {
+    font-size: 10px;
+    color: var(--acir-note-fg);
+  }
+  .acir-fo--label {
+    font-size: 11px;
+    color: var(--acir-note-fg);
+  }
+  .acir-fo--axis {
+    color: var(--acir-note-fg);
+    font-size: 12px;
+  }
+  .acir-fo--qk-label {
+    color: color-mix(in srgb, var(--acir-qk) 60%, var(--dark));
+  }
+  .acir-fo--ov-label {
+    color: color-mix(in srgb, var(--acir-ov) 50%, var(--dark));
+  }
+  .acir-fo--rank {
+    font-style: italic;
+  }
+  .acir-fo--display {
+    font-size: 14px;
+  }
+
+  .acir-attn-cell {
+    fill: color-mix(in srgb, var(--acir-qk) 55%, var(--dark));
+  }
+  .acir-aij-bar {
+    fill: color-mix(in srgb, var(--acir-qk) 70%, var(--dark));
+  }
+
+  .acir-sum-bg {
+    fill: transparent;
+    stroke: none;
+  }
+
+  .acir-weight {
+    transition: filter 160ms ease;
+  }
+
+  &.is-highlight-qk {
+    .acir-weight[data-acir-circuit='qk'] .acir-box--weight {
+      fill: var(--acir-qk-fill);
+      stroke: var(--acir-qk);
+      filter: drop-shadow(0 0 6px color-mix(in srgb, var(--acir-qk) 60%, transparent));
+    }
+    .acir-line--qk {
+      stroke: color-mix(in srgb, var(--acir-qk) 80%, var(--acir-stroke));
+      stroke-width: 1.6;
+      animation: acir-pulse 1.4s ease-in-out infinite;
+    }
+    .acir-attn-cell,
+    .acir-aij-bar {
+      animation: acir-pulse 1.4s ease-in-out infinite;
+    }
+    .acir-box--qk-pattern {
+      stroke: var(--acir-qk);
+      stroke-width: 1.6;
+    }
+  }
+
+  &.is-highlight-ov {
+    .acir-weight[data-acir-circuit='ov'] .acir-box--weight {
+      fill: var(--acir-ov-fill);
+      stroke: var(--acir-ov);
+      filter: drop-shadow(0 0 6px color-mix(in srgb, var(--acir-ov) 60%, transparent));
+    }
+    .acir-line--ov {
+      stroke: color-mix(in srgb, var(--acir-ov) 80%, var(--acir-stroke));
+      stroke-width: 1.6;
+      animation: acir-pulse 1.4s ease-in-out infinite;
+    }
+    .acir-box--ov-rank {
+      stroke: var(--acir-ov);
+      stroke-width: 1.6;
+    }
+  }
+}
+
+@keyframes acir-pulse {
+  0%,
+  100% {
+    opacity: 0.95;
+  }
+  50% {
+    opacity: 0.55;
+  }
+}
+
+.acir-props {
+  margin: 1.1rem 0 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 0.85rem;
+}
+
+.acir-prop {
+  margin: 0;
+  padding: 0.7rem 0;
+  border-radius: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+
+  dt {
+    margin: 0 0 0.3rem;
+    font-family: var(--bodyFont);
+    font-size: 0.74rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--acir-note-fg);
+  }
+
+  dd {
+    margin: 0;
+    font-size: 0.86rem;
+    color: var(--dark);
+    line-height: 1.5;
+    .katex {
+      font-size: 0.95em;
+    }
+    .katex-display {
+      margin: 0.35rem 0 0;
+    }
+  }
+}
+
+.acir-caption {
+  margin-top: 0.9rem;
+  color: color-mix(in srgb, var(--gray) 70%, var(--dark) 30%);
+  font-size: 0.85rem;
+  text-align: center;
+  line-height: 1.5;
+}
+
+@container acir-figure (max-width: 760px) {
+  .acir-panels {
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+  }
+  .acir-controls {
+    gap: 0.8rem;
+  }
+  .acir-graph {
+    max-width: 360px;
+    margin: 0 auto;
+  }
+  .acir-panel-sub {
+    font-size: 0.8rem;
+  }
+}
+
+@container acir-figure (max-width: 460px) {
+  .attention-circuits {
+    padding: 0;
+  }
+  .acir-circuit-toggle {
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    legend {
+      flex-basis: 100%;
+      margin: 0 0 0.25rem;
+    }
+  }
+  .acir-pill {
+    font-size: 0.78rem;
+    padding: 0.28rem 0.6rem;
+  }
+  .acir-panel {
+    padding: 0.55rem 0;
+  }
+  .acir-props {
+    grid-template-columns: 1fr;
+  }
+}

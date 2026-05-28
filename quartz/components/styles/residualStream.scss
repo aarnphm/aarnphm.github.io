@@ -5,10 +5,13 @@
   container-type: inline-size;
   container-name: rs-figure;
   margin: 1.75rem 0;
-  padding: 1.5rem 1.75rem;
-  border-radius: var(--radius-7-2);
-  border: 1px solid color-mix(in srgb, var(--gray) 28%, transparent);
-  background: color-mix(in srgb, var(--light) 94%, transparent);
+  content-visibility: auto;
+  contain-intrinsic-size: auto 46rem;
+  padding: 0;
+  border-radius: 0;
+  border: 0;
+  box-shadow: none;
+  background: transparent;
   color: var(--dark);
 
   --rs-stroke: color-mix(in srgb, var(--darkgray) 70%, transparent);
@@ -51,30 +54,6 @@
     &.rs-box-accent {
       fill: var(--rs-box-accent);
     }
-  }
-
-  .rs-box-text {
-    fill: var(--dark);
-    font-family: var(--bodyFont);
-    font-size: 17px;
-    text-anchor: middle;
-    dominant-baseline: middle;
-
-    &.rs-box-text--sm {
-      font-size: 14px;
-    }
-
-    .rs-italic {
-      font-style: italic;
-    }
-  }
-
-  .rs-axis-label {
-    fill: var(--rs-note-fg);
-    font-family: var(--bodyFont);
-    font-size: 15px;
-    font-style: italic;
-    dominant-baseline: middle;
   }
 
   .rs-fo {
@@ -169,7 +148,7 @@
   }
 
   & + .rs-note {
-    border-top: 1px dashed var(--rs-divider-soft);
+    box-shadow: 0 -1px 0 var(--rs-divider-soft);
   }
 }
 
@@ -202,9 +181,9 @@
 .rs-bracket-line {
   width: 8px;
   align-self: stretch;
-  border-top: 1px solid currentColor;
-  border-right: 1px solid currentColor;
-  border-bottom: 1px solid currentColor;
+  box-shadow: 0 -1px 0 currentColor;
+  box-shadow: -1px 0 0 currentColor inset;
+  box-shadow: 0 1px 0 currentColor;
 }
 
 .rs-bracket-label {
@@ -268,7 +247,7 @@
 
 @container rs-figure (max-width: 460px) {
   .residual-stream {
-    padding: 1.1rem 1.1rem;
+    padding: 0;
   }
 
   .rs-frame {

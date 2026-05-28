@@ -586,6 +586,12 @@ article:has(.notebook-runtime),
     height: 0.45rem;
   }
 
+  .notebook-c-icon,
+  .notebook-cpp-icon {
+    width: 0.72rem;
+    height: 0.82rem;
+  }
+
   .notebook-rust-icon {
     width: 0.82rem;
     height: 0.82rem;

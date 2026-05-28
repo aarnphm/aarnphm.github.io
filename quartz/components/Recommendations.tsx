@@ -3,6 +3,7 @@ import {
   QuartzComponentConstructor,
   QuartzComponentProps,
 } from '../types/component'
+import { renderDataFor } from '../util/ctx'
 import { LCG } from '../util/helpers'
 import { classNames } from '../util/lang'
 import { FilePath, resolveRelative, slugifyFilePath } from '../util/path'
@@ -12,6 +13,7 @@ export default (() => {
     fileData,
     allFiles,
     displayClass,
+    ctx,
   }: QuartzComponentProps) => {
     let p = fileData.slug as string
     if (fileData.filePath) p = fileData.filePath
@@ -21,8 +23,8 @@ export default (() => {
         .reduce((acc, char) => acc + char.charCodeAt(0), 0) ?? 0
     const rng = new LCG(seed)
 
-    const distributions = allFiles.filter(
-      f => f.slug !== fileData.slug && !f.slug!.includes('university'),
+    const distributions = renderDataFor(ctx, allFiles).recommendationPool.filter(
+      f => f.slug !== fileData.slug,
     )
 
     // We will use 9 recs for now

@@ -4,6 +4,7 @@ import {
   QuartzComponentConstructor,
   QuartzComponentProps,
 } from '../types/component'
+import { renderDataFor } from '../util/ctx'
 import { classNames } from '../util/lang'
 import { resolveRelative, simplifySlug } from '../util/path'
 import style from './styles/backlinks.scss'
@@ -14,9 +15,10 @@ export default (() => {
     allFiles,
     displayClass,
     cfg,
+    ctx,
   }: QuartzComponentProps) => {
     const slug = simplifySlug(fileData.slug!)
-    const backlinkFiles = allFiles.filter(file => file.links?.includes(slug))
+    const backlinkFiles = renderDataFor(ctx, allFiles).backlinksBySlug.get(slug) ?? []
     if (backlinkFiles.length === 0) {
       return null
     }

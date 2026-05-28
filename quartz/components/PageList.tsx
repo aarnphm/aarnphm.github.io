@@ -64,7 +64,7 @@ export function byDateAndAlphabetical(cfg: GlobalConfiguration): SortFn {
   }
 }
 
-type Props = { limit?: number; sort?: SortFn } & QuartzComponentProps
+type Props = { limit?: number; sort?: SortFn; presorted?: boolean } & QuartzComponentProps
 
 interface Options {
   highlightTags: string[]
@@ -75,9 +75,16 @@ const defaultOptions: Options = { highlightTags: [] }
 export default ((userOpts?: Options) => {
   const opts = { ...defaultOptions, ...userOpts }
 
-  const PageList: QuartzComponent = ({ cfg, fileData, allFiles, limit, sort }: Props) => {
+  const PageList: QuartzComponent = ({
+    cfg,
+    fileData,
+    allFiles,
+    limit,
+    sort,
+    presorted,
+  }: Props) => {
     const sorter = sort ?? byDateAndAlphabetical(cfg)
-    let list = allFiles.sort(sorter)
+    let list = presorted ? allFiles : [...allFiles].sort(sorter)
     if (limit) {
       list = list.slice(0, limit)
     }

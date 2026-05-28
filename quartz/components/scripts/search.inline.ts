@@ -1149,7 +1149,7 @@ async function fillDocument(data: ContentIndex) {
         slug: slug as FullSlug,
         title: fileData.title,
         fileName: fileData.fileName,
-        content: fileData.content,
+        content: fileData.content ?? '',
         tags: fileData.tags,
         aliases: fileData.aliases,
         target: '',

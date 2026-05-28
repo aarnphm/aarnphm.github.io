@@ -8,6 +8,7 @@ import {
   QuartzComponentConstructor,
   QuartzComponentProps,
 } from '../types/component'
+import { renderDataFor } from '../util/ctx'
 import { classNames } from '../util/lang'
 import { FullSlug, resolveRelative } from '../util/path'
 import style from './styles/seealsoTree.scss'
@@ -78,7 +79,12 @@ function getCitationTitle(bibKey: string): string | undefined {
 }
 
 export default (() => {
-  const SeeAlso: QuartzComponent = ({ fileData, allFiles, displayClass }: QuartzComponentProps) => {
+  const SeeAlso: QuartzComponent = ({
+    fileData,
+    allFiles,
+    displayClass,
+    ctx,
+  }: QuartzComponentProps) => {
     const fmLinks = fileData.frontmatterLinks as Record<string, FrontmatterLink[]> | undefined
 
     const rootLinks = fmLinks?.['seealso']
@@ -87,25 +93,9 @@ export default (() => {
       return null
     }
 
-    const slugToFile = new Map<FullSlug, QuartzComponentProps['fileData']>()
-    for (const data of allFiles) {
-      const slug = data.slug as FullSlug | undefined
-      if (slug) {
-        slugToFile.set(slug, data)
-      }
-    }
-
-    const seealsoBySlug = new Map<FullSlug, FrontmatterLink[]>()
-    for (const data of allFiles) {
-      const slug = data.slug as FullSlug | undefined
-      if (!slug) continue
-      const links = (data.frontmatterLinks as Record<string, FrontmatterLink[]> | undefined)?.[
-        'seealso'
-      ]
-      if (links && links.length > 0) {
-        seealsoBySlug.set(slug, links)
-      }
-    }
+    const renderData = renderDataFor(ctx, allFiles)
+    const seealsoBySlug =
+      renderData.frontmatterLinksByKey.get('seealso') ?? new Map<FullSlug, FrontmatterLink[]>()
 
     const currentSlug = fileData.slug as FullSlug | undefined
     if (!currentSlug) {
@@ -154,7 +144,7 @@ export default (() => {
         }
         href = `#bib-${bibKey.toLowerCase()}`
       } else {
-        const targetFile = slugToFile.get(targetSlug)
+        const targetFile = renderData.bySlug.get(targetSlug)
         title = getDisplayTitle(targetSlug, targetFile, link.alias)
         href = resolveRelative(sourceSlug, targetSlug)
         minutes = targetFile?.readingTime?.minutes

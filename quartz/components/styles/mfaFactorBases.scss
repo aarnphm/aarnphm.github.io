@@ -1,0 +1,376 @@
+@use '../../styles/variables.scss' as *;
+@use '../../styles/mixin.scss' as *;
+
+.mfa-factor-bases {
+  container-type: inline-size;
+  container-name: mfa-figure;
+  margin: 1.75rem 0;
+  content-visibility: auto;
+  contain-intrinsic-size: auto 38rem;
+  padding: 1.5rem 1.75rem;
+  border-radius: var(--radius-7-2);
+  box-shadow: none;
+  background: color-mix(in srgb, var(--light) 94%, transparent);
+  color: var(--dark);
+  --mfa-stroke-soft: color-mix(in srgb, var(--gray) 40%, transparent);
+  --mfa-divider: color-mix(in srgb, var(--gray) 28%, transparent);
+  --mfa-frame-border: color-mix(in srgb, var(--gray) 34%, transparent);
+  --mfa-note-fg: color-mix(in srgb, var(--darkgray) 78%, var(--dark) 22%);
+  --mfa-cell-bg: color-mix(in srgb, var(--lightgray) 35%, var(--light));
+  --mfa-neg: color-mix(in srgb, var(--gray) 70%, var(--dark) 30%);
+  --mfa-salmon: #fdb2a2;
+  --mfa-sage: #cdd597;
+
+  border: 1px solid var(--mfa-frame-border);
+  box-sizing: border-box;
+}
+
+:root[saved-theme='dark'] .mfa-factor-bases {
+  --mfa-cell-bg: color-mix(in srgb, var(--lightgray) 22%, var(--dark));
+  --mfa-neg: color-mix(in srgb, var(--gray) 55%, var(--light));
+  --mfa-frame-border: color-mix(in srgb, var(--gray) 46%, transparent);
+}
+
+.mfa-stage {
+  display: grid;
+  grid-template-columns: minmax(0, 1.7fr) minmax(220px, 1fr);
+  gap: 1.5rem;
+  align-items: stretch;
+}
+
+.mfa-graph {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 560 / 390;
+  display: block;
+
+  .mfa-grid-frame,
+  .mfa-factor-frame {
+    fill: none;
+    stroke: var(--mfa-stroke-soft);
+    stroke-width: 1;
+    transition: stroke 220ms ease;
+  }
+  .mfa-factor-frame {
+    stroke-width: 0.7;
+  }
+  .mfa-cell,
+  .mfa-factor-cell {
+    fill: var(--mfa-cell-bg);
+    stroke: color-mix(in srgb, var(--lightgray) 60%, transparent);
+    stroke-width: 0.4;
+    transition: fill 220ms ease;
+  }
+  .mfa-factor-cell {
+    stroke-width: 0.3;
+  }
+  .mfa-factor {
+    transition: opacity 220ms ease;
+    &[data-mfa-active='false'] {
+      opacity: 0.28;
+      .mfa-factor-frame {
+        stroke: color-mix(in srgb, var(--mfa-stroke-soft) 40%, transparent);
+      }
+    }
+  }
+  .mfa-factor-label-fo {
+    font-size: 10px;
+    color: var(--mfa-note-fg);
+    transition: color 200ms ease;
+    gap: 0.1em;
+    .mfa-factor-gate {
+      font-style: normal;
+      opacity: 0.7;
+    }
+    .mfa-factor-gate[data-mfa-active='false'] {
+      display: none;
+    }
+  }
+  .mfa-fo {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--dark);
+    font-size: 12px;
+    line-height: 1;
+    overflow: visible;
+    pointer-events: none;
+    .katex {
+      color: inherit;
+      font-size: 1em;
+    }
+  }
+  .mfa-fo--sm {
+    font-size: 11px;
+  }
+  .mfa-fo--title,
+  .mfa-fo--factor-label {
+    color: var(--mfa-note-fg);
+    font-size: 12px;
+  }
+}
+
+.mfa-side {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  min-width: 0;
+}
+
+.mfa-readout {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  margin: 0;
+  padding: 0.8rem 0.95rem;
+  background: color-mix(in srgb, var(--light) 80%, transparent);
+  border: 1px solid var(--mfa-frame-border);
+  box-shadow: none;
+  border-radius: 6px;
+  font-size: 0.83rem;
+  color: var(--mfa-note-fg);
+}
+
+.mfa-readout-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: baseline;
+  gap: 0.5rem;
+  margin: 0;
+  > dt {
+    margin: 0;
+    font-weight: 500;
+  }
+  > dd {
+    margin: 0;
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.35rem;
+    color: var(--dark);
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+[data-mfa-readout-state][data-mfa-active='false'] {
+  display: none;
+}
+
+.mfa-equation {
+  padding: 0.6rem 0.75rem;
+  background: color-mix(in srgb, var(--mfa-sage) 8%, transparent);
+  border: 1px solid var(--mfa-frame-border);
+  border-radius: 6px;
+  font-size: 0.85rem;
+  overflow-x: auto;
+  .katex-display {
+    margin: 0;
+  }
+}
+
+.mfa-math {
+  display: inline-block;
+  color: inherit;
+  .katex {
+    color: inherit;
+    font-size: 0.95em;
+  }
+}
+
+.mfa-math--display {
+  display: block;
+}
+
+.mfa-controls {
+  margin-top: 0.9rem;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) max-content;
+  gap: 0.45rem 0.8rem;
+  align-items: center;
+}
+
+.mfa-control {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  min-height: 1.65rem;
+  min-width: 0;
+}
+
+.mfa-control--toggle {
+  justify-content: flex-end;
+}
+
+.mfa-label {
+  color: var(--mfa-note-fg);
+  font-size: 0.74rem;
+  white-space: nowrap;
+}
+
+.mfa-slider {
+  flex: 1 1 auto;
+  min-width: 0;
+  @include stableRangeControl;
+
+  min-height: 1.55rem;
+
+  &::-webkit-slider-runnable-track {
+    height: 0.28rem;
+  }
+
+  &::-webkit-slider-thumb {
+    width: 0.78rem;
+    height: 0.78rem;
+    margin-top: -0.25rem;
+    box-shadow:
+      0 0 0 2px color-mix(in srgb, var(--light) 96%, transparent),
+      0 0.2rem 0.45rem color-mix(in srgb, var(--dark) 14%, transparent);
+  }
+
+  &::-moz-range-track,
+  &::-moz-range-progress {
+    height: 0.28rem;
+  }
+
+  &::-moz-range-thumb {
+    width: 0.78rem;
+    height: 0.78rem;
+    box-shadow:
+      0 0 0 2px color-mix(in srgb, var(--light) 96%, transparent),
+      0 0.2rem 0.45rem color-mix(in srgb, var(--dark) 14%, transparent);
+  }
+}
+
+.mfa-checkbox {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  min-height: 1.4rem;
+  cursor: pointer;
+  font-size: 0.74rem;
+  color: var(--dark);
+  line-height: 1;
+  user-select: none;
+
+  input[type='checkbox'] {
+    position: absolute;
+    inline-size: 1px;
+    block-size: 1px;
+    opacity: 0;
+    overflow: hidden;
+    clip-path: inset(50%);
+    pointer-events: none;
+  }
+
+  .mfa-checkbox-box {
+    position: relative;
+    flex: 0 0 auto;
+    width: 0.82rem;
+    height: 0.82rem;
+    border-radius: 3px;
+    background: color-mix(in srgb, var(--light) 92%, transparent);
+    border: 1px solid color-mix(in srgb, var(--dark) 22%, transparent);
+    transition:
+      transform 120ms ease,
+      background 160ms ease,
+      border-color 160ms ease;
+
+    &::after {
+      content: '';
+      position: absolute;
+      left: 0.26rem;
+      top: 0.12rem;
+      width: 0.22rem;
+      height: 0.42rem;
+      border: solid var(--light);
+      border-width: 0 1.5px 1.5px 0;
+      opacity: 0;
+      transform: rotate(45deg) scale(0.82);
+      transition:
+        opacity 120ms ease,
+        transform 120ms ease;
+    }
+  }
+
+  input[type='checkbox']:checked + .mfa-checkbox-box {
+    background: color-mix(in srgb, var(--darkgray) 74%, var(--light));
+    border-color: color-mix(in srgb, var(--dark) 24%, transparent);
+
+    &::after {
+      opacity: 1;
+      transform: rotate(45deg) scale(1);
+    }
+  }
+
+  input[type='checkbox']:focus-visible + .mfa-checkbox-box {
+    outline: 2px solid color-mix(in srgb, var(--darkgray) 30%, transparent);
+    outline-offset: 2px;
+  }
+
+  input[type='checkbox']:checked:focus-visible + .mfa-checkbox-box {
+    outline: 2px solid color-mix(in srgb, var(--darkgray) 34%, transparent);
+    outline-offset: 2px;
+  }
+
+  input[type='checkbox']:active + .mfa-checkbox-box {
+    transform: scale(0.96);
+  }
+
+  .mfa-checkbox-text {
+    color: var(--dark);
+  }
+}
+
+.mfa-intuition {
+  margin: 1.1rem 0 0;
+  padding: 0.75rem 0.9rem;
+  box-shadow: 2px 0 0 var(--mfa-salmon) inset;
+  color: var(--mfa-note-fg);
+  font-size: 0.88rem;
+  line-height: 1.55;
+  strong {
+    color: var(--dark);
+    font-weight: 600;
+  }
+}
+
+.mfa-caption {
+  margin-top: 0.9rem;
+  color: color-mix(in srgb, var(--gray) 70%, var(--dark) 30%);
+  font-size: 0.78rem;
+  line-height: 1.45;
+  text-align: left;
+  text-wrap: pretty;
+
+  .mfa-math {
+    margin: 0 0.22em;
+    vertical-align: -0.03em;
+  }
+}
+
+.zoomable.is-zoomed > .zoomable-content > .mfa-factor-bases {
+  padding: 1.5rem 1.75rem;
+  border: 1px solid var(--mfa-frame-border);
+  background: color-mix(in srgb, var(--light) 94%, transparent);
+}
+
+@container mfa-figure (max-width: 760px) {
+  .mfa-stage,
+  .mfa-controls {
+    grid-template-columns: 1fr;
+  }
+  .mfa-stage {
+    gap: 1.25rem;
+  }
+  .mfa-control--toggle {
+    justify-content: flex-start;
+  }
+}
+
+@container mfa-figure (max-width: 460px) {
+  .mfa-factor-bases {
+    padding: 1.1rem 1.1rem;
+  }
+}

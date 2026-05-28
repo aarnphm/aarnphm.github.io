@@ -14,5 +14,3 @@ tags:
 title: We Won't Grow Old Together
 year: 1972
 ---
-
-- A married man's (Jean Yanne) six-year affair with a much-younger mistress (Marlène Jobert) reaches its end.A married man's (Jean Yanne) six-year affair with a much-younger mistress (Marlène Jobert) reaches its end.

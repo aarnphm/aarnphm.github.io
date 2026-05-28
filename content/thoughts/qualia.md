@@ -83,33 +83,8 @@ conceivability arguments keep this whole topic live for me:
 
 all three use the same pattern: show that phenomenal properties can vary independently of functional properties. if they can vary independently even in imagination, my brain wants to treat them as different kinds of thing—even if i’m not sure that’s good metaphysics.
 
-## contemporary handles
-
-**mechanistic interpretability and qualia.** When we decompose [[thoughts/LLMs]] into functional features via sparse autoencoders, we find causally individuated representations: direction X means "in French," direction Y means "talking about code." [@geiger2025causalabstraction] These are access properties—information available for downstream use. No pressure toward phenomenal properties.
-
-Does the model have _what-it's-like_ to process French? Nothing in the functional decomposition tells you. The mechanistic story is complete without it. This is either evidence that qualia don't exist (functionalist conclusion) or evidence that functional analysis misses something (anti-functionalist conclusion).
-
-The interpretability work doesn't settle the metaphysics. It just makes the question sharper: if we have complete functional understanding, complete causal decomposition, complete ability to predict and intervene—and still no phenomenal story—what are we missing? Or are we missing anything?
-
-**embodied and enactive approaches.** Maybe the problem is treating qualia as intrinsic properties of brain states. Phenomenal character might be relational: how body-in-environment makes sense of perturbations, how organism maintains viability, how sensorimotor loops couple perception and action. [@thompson2007mind]
-
-Redness isn't property of neurons or even neural-functional states. It's how visual system differentiates certain wavelengths for action-relevant purposes in ecological context. "What it's like" is _how it enables you to cope_. Functional role plus embodied context plus developmental history. Richer functional story, not escape from functionalism.
-
-But does this capture first-person givenness? Or does it just add more third-person structure (embodiment, action, context) to the functional story? The enactivist says these aren't third-person when you're _living_ them—they're your engaged perspective. The critic says this still doesn't explain why engagement feels like anything.
-
-The qualia problem is a live question for:
-
-- **AI consciousness:** If we build systems that pass every functional test (report their states, behave appropriately, show attention dynamics), do they have phenomenal experience? Functional equivalence doesn't tell you. You need additional criteria—but what criteria, and why? [@chalmers1996consciousmind]
-- **Clinical states:** Anesthesia, vegetative states, locked-in syndrome. What distinguishes unconscious functional processing from conscious functional processing? Access and report can fail while phenomenal experience continues (locked-in). They can be present while phenomenal experience is absent (general anesthesia, maybe). Clinical decisions require distinguishing these, but functional tests conflate them. [@block1995confusion]
-- **Animal consciousness:** Which animals have phenomenal experience? Functional complexity (neural processing, behavioral flexibility) is measurable. Phenomenal consciousness isn't—unless you think it reduces to functional properties. The ethical stakes are high: suffering requires phenomenal consciousness, not just functional responses to damage.
-- **Self-knowledge:** You have direct access to your phenomenal states but only indirect access to your functional states. You know what red looks like; you don't know how your visual system processes wavelengths. If mental states are functional roles, you don't know your own mind directly. Counterintuitive. Maybe self-knowledge is phenomenal knowledge, not functional knowledge.
-
-The functionalist wants to explain mind in terms of causal structure—what things do, how they relate, what role they play. Qualia seem to be leftovers: properties that don't reduce to structure. Either they're illusions (eliminativism), or they're additional to functional story (dualism), or they're functional properties we haven't analyzed right yet (functionalism, optimistic). No consensus.
-
 ```quote
 The aspects of things that are most important for us are hidden because of their simplicity and familiarity.
 
 Wittgenstein, _[[library/Philosophical Investigations|PI, 153]]_
 ```
-
-Maybe qualia are too close, too immediate, too familiar to capture in functional terms. Or maybe the appearance of irreducibility is confusion—mistaking familiarity for metaphysical depth.

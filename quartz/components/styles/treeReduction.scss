@@ -1,0 +1,274 @@
+@use '../../styles/variables.scss' as *;
+@use '../../styles/mixin.scss' as *;
+
+.tree-reduction {
+  container-type: inline-size;
+  container-name: tr-figure;
+  margin: 1.75rem 0;
+  content-visibility: auto;
+  contain-intrinsic-size: auto 34rem;
+  padding: 0;
+  border-radius: 0;
+  border: 0;
+  box-shadow: none;
+  background: transparent;
+  color: var(--dark);
+
+  --tr-stroke: color-mix(in srgb, var(--darkgray) 70%, transparent);
+  --tr-stroke-soft: color-mix(in srgb, var(--gray) 45%, transparent);
+  --tr-fill-idle: color-mix(in srgb, var(--lightgray) 80%, transparent);
+  --tr-fill-active-soft: color-mix(in srgb, #cdd597 28%, var(--light));
+  --tr-fill-pulse: #fdb2a2;
+  --tr-note-fg: color-mix(in srgb, var(--darkgray) 78%, var(--dark) 22%);
+}
+
+:root[saved-theme='dark'] .tree-reduction {
+  --tr-fill-active-soft: color-mix(in srgb, #cdd597 18%, var(--lightgray));
+}
+
+.tr-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.75rem 1rem;
+  margin-bottom: 1.1rem;
+}
+
+.tr-stage {
+  font-family: var(--bodyFont);
+  font-size: 0.85rem;
+  color: var(--tr-note-fg);
+  font-variant-numeric: tabular-nums;
+}
+
+.tr-actions {
+  display: inline-flex;
+  gap: 0.4rem;
+}
+
+.tr-btn {
+  border: 0;
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--gray) 38%, transparent) inset;
+  background: color-mix(in srgb, var(--light) 98%, transparent);
+  color: var(--dark);
+  padding: 0.32rem 0.7rem;
+  border-radius: var(--radius-md, 6px);
+  font-family: var(--bodyFont);
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition:
+    background 0.15s ease,
+    box-shadow 0.15s ease,
+    opacity 0.15s ease;
+
+  &:hover:not(:disabled) {
+    background: var(--tr-fill-active-soft);
+    box-shadow: 0 0 0 1px color-mix(in srgb, #cdd597 60%, var(--gray) 40%) inset;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--tertiary);
+    outline-offset: 2px;
+  }
+
+  &:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+
+  &.tr-btn--primary {
+    background: var(--tr-fill-active-soft);
+    box-shadow: 0 0 0 1px color-mix(in srgb, #cdd597 55%, var(--gray) 45%) inset;
+  }
+}
+
+.tr-stage-area {
+  display: grid;
+  grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr);
+  gap: 1.4rem;
+  align-items: stretch;
+}
+
+.tr-svg {
+  width: 100%;
+  height: auto;
+  display: block;
+
+  .tr-edge {
+    stroke: var(--tr-stroke-soft);
+    stroke-width: 1.2;
+    fill: none;
+    opacity: 0.55;
+    transition:
+      stroke 0.25s ease,
+      stroke-width 0.25s ease,
+      opacity 0.25s ease;
+
+    &.tr-active {
+      stroke: var(--tr-stroke);
+      stroke-width: 1.5;
+      opacity: 1;
+    }
+  }
+
+  .tr-node-shape {
+    fill: var(--tr-fill-idle);
+    stroke: var(--tr-stroke);
+    stroke-width: 1;
+    transition:
+      fill 0.25s ease,
+      stroke 0.25s ease;
+  }
+
+  .tr-node {
+    transform-box: fill-box;
+    transform-origin: center;
+    transition: transform 0.25s ease;
+
+    &.tr-active .tr-node-shape,
+    &.tr-settled .tr-node-shape {
+      fill: var(--tr-fill-active-soft);
+    }
+
+    &.tr-settled .tr-node-shape {
+      stroke: color-mix(in srgb, #cdd597 80%, var(--darkgray) 20%);
+    }
+
+    &.tr-pulse .tr-node-shape {
+      fill: var(--tr-fill-pulse);
+      stroke: color-mix(in srgb, #fdb2a2 70%, var(--darkgray) 30%);
+      animation: tr-pulse 0.7s ease-out;
+    }
+  }
+
+  .tr-fo {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--dark);
+    font-size: 11px;
+    line-height: 1;
+    overflow: visible;
+
+    .katex {
+      color: inherit;
+      font-size: 1em;
+      line-height: 1;
+    }
+  }
+
+  .tr-fo--root {
+    font-size: 12px;
+  }
+
+  .tr-fo--stage {
+    justify-content: flex-end;
+    color: var(--tr-note-fg);
+    font-size: 11px;
+  }
+}
+
+@keyframes tr-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.08);
+  }
+}
+
+.tr-aside {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  min-width: 0;
+}
+
+.tr-card {
+  border-radius: var(--radius-md, 6px);
+  padding: 0.85rem 0.95rem;
+  border: 0;
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--gray) 28%, transparent) inset;
+  background: color-mix(in srgb, var(--light) 96%, transparent);
+
+  & > h5 {
+    margin: 0 0 0.35rem;
+    font-size: 0.82rem;
+    font-weight: $semiBoldWeight;
+    color: var(--tr-note-fg);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  & > p {
+    margin: 0;
+    font-size: 0.86rem;
+    line-height: 1.5;
+    color: var(--tr-note-fg);
+  }
+}
+
+.tr-complexity {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+
+  & > div {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    padding: 0.55rem 0.6rem;
+    border-radius: var(--radius-md, 6px);
+    border: 0;
+    box-shadow: 0 0 0 1px color-mix(in srgb, var(--gray) 22%, transparent) inset;
+
+    & > span:first-child {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--tr-note-fg);
+    }
+
+    & > span:last-child {
+      font-size: 0.95rem;
+      color: var(--dark);
+    }
+  }
+
+  & > .tr-complexity-tree {
+    background: var(--tr-fill-active-soft);
+    box-shadow: 0 0 0 1px color-mix(in srgb, #cdd597 60%, var(--gray) 40%) inset;
+  }
+}
+
+.tr-caption {
+  margin-top: 0.9rem;
+  color: color-mix(in srgb, var(--gray) 70%, var(--dark) 30%);
+  font-size: 0.85rem;
+  text-align: center;
+}
+
+@container tr-figure (max-width: 720px) {
+  .tr-stage-area {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+}
+
+@container tr-figure (max-width: 460px) {
+  .tree-reduction {
+    padding: 0;
+  }
+
+  .tr-svg .tr-fo {
+    font-size: 10px;
+  }
+
+  .tr-complexity {
+    grid-template-columns: 1fr;
+  }
+}

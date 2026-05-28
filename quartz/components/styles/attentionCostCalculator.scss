@@ -1,0 +1,360 @@
+@use '../../styles/variables.scss' as *;
+@use '../../styles/mixin.scss' as *;
+
+.attention-cost-calculator {
+  container-type: inline-size;
+  container-name: acc-figure;
+  margin: 1.75rem 0;
+  content-visibility: auto;
+  contain-intrinsic-size: auto 34rem;
+  padding: 0;
+  border-radius: 0;
+  border: 0;
+  background: transparent;
+  color: var(--dark);
+  --acc-line: color-mix(in srgb, var(--gray) 24%, transparent);
+  --acc-surface-shadow:
+    0 0 0 1px var(--acc-line) inset, 0 18px 46px color-mix(in srgb, var(--dark) 7%, transparent);
+  --acc-panel-shadow: 0 0 0 1px color-mix(in srgb, var(--gray) 18%, transparent) inset;
+  --acc-stroke: color-mix(in srgb, var(--darkgray) 70%, transparent);
+  --acc-div: color-mix(in srgb, var(--gray) 28%, transparent);
+  --acc-note: color-mix(in srgb, var(--darkgray) 78%, var(--dark) 22%);
+  --acc-salmon: #fdb2a2;
+  --acc-sage: #cdd597;
+  --acc-salmon-edge: color-mix(in srgb, var(--acc-salmon) 90%, var(--dark));
+  --acc-sage-edge: color-mix(in srgb, var(--acc-sage) 90%, var(--dark));
+  --acc-card-bg: color-mix(in srgb, var(--light) 96%, transparent);
+  --acc-card-bg-salmon: color-mix(in srgb, var(--acc-salmon) 16%, var(--light));
+  --acc-card-bg-sage: color-mix(in srgb, var(--acc-sage) 18%, var(--light));
+  --acc-track-bg: color-mix(in srgb, var(--lightgray) 45%, var(--light));
+
+  box-shadow: none;
+}
+
+:root[saved-theme='dark'] .attention-cost-calculator {
+  --acc-card-bg: color-mix(in srgb, var(--lightgray) 22%, var(--dark));
+  --acc-card-bg-salmon: color-mix(in srgb, var(--acc-salmon) 32%, var(--lightgray));
+  --acc-card-bg-sage: color-mix(in srgb, var(--acc-sage) 28%, var(--lightgray));
+  --acc-track-bg: color-mix(in srgb, var(--lightgray) 28%, var(--dark));
+}
+
+.acc-stage {
+  display: grid;
+  grid-template-columns: minmax(220px, 1fr) minmax(0, 1.45fr);
+  gap: 1.4rem;
+  align-items: start;
+}
+
+.acc-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+  padding: 0.95rem 1.05rem;
+  background: color-mix(in srgb, var(--light) 80%, transparent);
+  border: 0;
+  border-radius: var(--radius-7-2);
+  box-shadow: var(--acc-panel-shadow);
+  min-width: 0;
+}
+
+.acc-control {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-rows: auto auto;
+  align-items: center;
+  column-gap: 0.5rem;
+  row-gap: 0.2rem;
+}
+
+.acc-control--dropdown {
+  grid-template-rows: auto;
+  grid-template-columns: auto minmax(0, 1fr);
+  margin-top: 0.25rem;
+}
+
+.acc-label {
+  grid-column: 1 / 3;
+  color: var(--acc-note);
+  font-size: 0.8rem;
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.35rem;
+  min-width: 0;
+}
+
+.acc-control--dropdown .acc-label {
+  grid-column: 1 / 2;
+}
+
+.acc-label-lbl {
+  color: var(--acc-note);
+}
+
+.acc-slider {
+  grid-column: 1 / 2;
+  min-width: 0;
+  @include stableRangeControl;
+}
+
+.acc-value {
+  grid-column: 2 / 3;
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  min-width: 5ch;
+  text-align: right;
+  color: var(--dark);
+}
+
+.acc-select {
+  grid-column: 2 / 3;
+  font-family: inherit;
+  font-size: 0.82rem;
+  padding: 0.25rem 0.4rem;
+  border: 0;
+  border-radius: 4px;
+  background: var(--light);
+  box-shadow: 0 0 0 1px var(--acc-div) inset;
+  color: var(--dark);
+}
+
+.acc-warning {
+  margin: 0.2rem 0 0;
+  padding: 0.4rem 0.55rem;
+  font-size: 0.74rem;
+  color: var(--acc-salmon-edge);
+  background: color-mix(in srgb, var(--acc-salmon) 10%, transparent);
+  border-radius: 3px;
+  box-shadow: 2px 0 0 color-mix(in srgb, var(--acc-salmon) 78%, transparent) inset;
+  line-height: 1.4;
+}
+
+.acc-cards {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.7rem;
+  min-width: 0;
+}
+
+.acc-card {
+  padding: 0.7rem 0.85rem;
+  border-radius: var(--radius-7-2);
+  border: 0;
+  background: var(--acc-card-bg);
+  box-shadow: var(--acc-panel-shadow);
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  min-width: 0;
+  transition:
+    background 220ms ease,
+    box-shadow 220ms ease;
+}
+
+.acc-card--salmon {
+  background: var(--acc-card-bg-salmon);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--acc-salmon) 32%, var(--acc-div)) inset;
+}
+.acc-card--sage {
+  background: var(--acc-card-bg-sage);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--acc-sage) 32%, var(--acc-div)) inset;
+}
+
+.acc-card--flash {
+  box-shadow:
+    0 0 0 2px color-mix(in srgb, var(--acc-salmon) 48%, transparent),
+    0 12px 24px color-mix(in srgb, var(--acc-salmon) 12%, transparent);
+}
+
+.acc-card-head {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  min-width: 0;
+}
+
+.acc-card-label {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--acc-note);
+  font-weight: 600;
+}
+
+.acc-card-eq {
+  font-size: 0.75rem;
+  color: var(--acc-note);
+  overflow-x: auto;
+  overflow-y: hidden;
+  .katex {
+    font-size: 0.95em;
+    color: inherit;
+  }
+}
+
+.acc-card-body {
+  display: flex;
+  align-items: baseline;
+  gap: 0.45rem;
+  min-width: 0;
+}
+
+.acc-card-num {
+  font-size: 1.25rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--dark);
+  letter-spacing: -0.01em;
+  line-height: 1.1;
+}
+
+.acc-card--salmon .acc-card-num {
+  color: var(--acc-salmon-edge);
+}
+.acc-card--sage .acc-card-num {
+  color: var(--acc-sage-edge);
+}
+
+.acc-card-delta {
+  font-size: 0.72rem;
+  color: var(--acc-note);
+  font-variant-numeric: tabular-nums;
+  opacity: 0.85;
+  &:empty {
+    display: none;
+  }
+}
+
+.acc-bar {
+  margin-top: 1.1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  padding: 0.85rem 1rem;
+  border-radius: var(--radius-7-2);
+  border: 0;
+  background: color-mix(in srgb, var(--light) 90%, transparent);
+  box-shadow: var(--acc-panel-shadow);
+}
+
+.acc-bar-row {
+  display: grid;
+  grid-template-columns: 90px minmax(0, 1fr) 90px;
+  align-items: center;
+  gap: 0.55rem;
+  font-size: 0.78rem;
+}
+
+.acc-bar-tag {
+  color: var(--acc-note);
+  font-variant-numeric: tabular-nums;
+}
+
+.acc-bar-track {
+  position: relative;
+  height: 8px;
+  border-radius: 4px;
+  background: var(--acc-track-bg);
+  overflow: hidden;
+}
+
+.acc-bar-track--bytes {
+  background: color-mix(in srgb, var(--acc-salmon) 8%, var(--acc-track-bg));
+}
+
+.acc-bar-fill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  height: 100%;
+  border-radius: 4px;
+  transition: width 220ms ease;
+}
+
+.acc-bar-fill--attn {
+  background: color-mix(in srgb, var(--acc-sage) 80%, var(--dark));
+}
+.acc-bar-fill--ffn {
+  background: color-mix(in srgb, var(--acc-sage) 35%, var(--lightgray));
+}
+.acc-bar-fill--kv {
+  background: color-mix(in srgb, var(--acc-salmon) 78%, var(--dark));
+}
+.acc-bar-fill--params {
+  background: color-mix(in srgb, var(--acc-sage) 55%, var(--lightgray));
+}
+
+.acc-bar-val {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  color: var(--dark);
+  font-weight: 600;
+}
+
+.acc-summary {
+  margin: 0.9rem 0 0;
+  padding: 0.7rem 0.9rem;
+  background: color-mix(in srgb, var(--acc-salmon) 6%, transparent);
+  box-shadow: 2px 0 0 color-mix(in srgb, var(--acc-salmon) 78%, transparent) inset;
+  color: var(--dark);
+  font-size: 0.85rem;
+  line-height: 1.5;
+  font-variant-numeric: tabular-nums;
+  strong {
+    color: var(--acc-salmon-edge);
+    font-weight: 600;
+  }
+}
+
+.acc-summary-hint {
+  display: block;
+  margin-top: 0.3rem;
+  color: var(--acc-note);
+  font-size: 0.78rem;
+  font-variant-numeric: normal;
+}
+
+.acc-math {
+  display: inline-block;
+  color: inherit;
+  .katex {
+    color: inherit;
+    font-size: 0.95em;
+  }
+}
+.acc-math--display {
+  display: block;
+  .katex-display {
+    margin: 0;
+    overflow-x: auto;
+    overflow-y: hidden;
+    text-align: left;
+    & > .katex {
+      text-align: left;
+    }
+  }
+}
+
+.acc-caption {
+  margin-top: 0.9rem;
+  color: color-mix(in srgb, var(--gray) 70%, var(--dark) 30%);
+  font-size: 0.85rem;
+  text-align: center;
+}
+
+@container acc-figure (max-width: 760px) {
+  .acc-stage {
+    grid-template-columns: 1fr;
+  }
+}
+
+@container acc-figure (max-width: 520px) {
+  .attention-cost-calculator {
+    padding: 0;
+  }
+  .acc-cards {
+    grid-template-columns: 1fr;
+  }
+  .acc-bar-row {
+    grid-template-columns: 70px minmax(0, 1fr) 70px;
+    font-size: 0.74rem;
+  }
+}

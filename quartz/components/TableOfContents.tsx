@@ -1,19 +1,15 @@
-import Slugger from 'github-slugger'
-import { fromHtmlIsomorphic } from 'hast-util-from-html-isomorphic'
 import { i18n } from '../i18n'
 import {
   QuartzComponent,
   QuartzComponentConstructor,
   QuartzComponentProps,
 } from '../types/component'
-import { htmlToJsx } from '../util/jsx'
 import { classNames } from '../util/lang'
 import OverflowListFactory from './OverflowList'
 // @ts-ignore
 import script from './scripts/toc.inline'
 import modernStyle from './styles/toc.scss'
 
-const ghSlugger = new Slugger()
 const denseTocThreshold = 50
 
 interface Options {
@@ -33,13 +29,6 @@ export default ((userOpts?: Partial<Options>) => {
   }: QuartzComponentProps) => {
     if (!fileData.toc) return null
 
-    ghSlugger.reset()
-
-    const convertFromText = (text: string) => {
-      const tocAst = fromHtmlIsomorphic(text, { fragment: true })
-      return htmlToJsx(fileData.filePath!, tocAst)
-    }
-
     const MinimalToc = () => (
       <>
         <nav id="toc-vertical">
@@ -56,7 +45,7 @@ export default ((userOpts?: Partial<Options>) => {
               aria-label={`${entry.text}`}
             >
               <div class="fill" />
-              <div class="indicator">{convertFromText(entry.text)}</div>
+              <div class="indicator">{entry.text}</div>
             </button>
           ))}
         </nav>
@@ -74,7 +63,7 @@ export default ((userOpts?: Partial<Options>) => {
             {fileData.toc!.map(entry => (
               <li key={entry.slug} class={`depth-${entry.depth}`}>
                 <a href={`#${entry.slug}`} data-for={entry.slug}>
-                  {convertFromText(entry.text)}
+                  {entry.text}
                 </a>
               </li>
             ))}
