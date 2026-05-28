@@ -2,7 +2,7 @@
 date: '2026-05-27'
 description: two-stage attention filter, cheap scorer prunes key blocks, expensive exact attention only on survivors.
 id: attention-cascade
-modified: 2026-05-27 23:16:18 GMT-04:00
+modified: 2026-05-28 13:03:20 GMT-04:00
 seealso:
   - '[[thoughts/Attention|main stage]]'
   - '[[thoughts/flash attention|FlashAttention]]'
@@ -12,7 +12,7 @@ tags:
   - ml
   - llm
   - technical
-title: cascade attention
+title: Cascade Attention
 ---
 
 CascadeAttention builds a two-stage filter for attention scores. A cheap scorer (for example, a low-rank approximation or sparse lookup) first estimates which key blocks are likely to matter. Only those candidates are passed to the expensive exact attention, meaning most tokens never touch the quadratic computation.
@@ -21,33 +21,34 @@ CascadeAttention builds a two-stage filter for attention scores. A cheap scorer 
 \usepackage{tikz}
 \begin{document}
 \begin{tikzpicture}[
-  font=\sffamily\small,
+  font=\small,
   tile/.style={draw=black, rounded corners=2pt, minimum width=0.9cm, minimum height=0.55cm, inner sep=2pt},
   kept/.style={tile, fill=cyan!40},
   dropped/.style={tile, fill=gray!15, draw=gray!50, text=gray!60},
-  stage/.style={draw=black, dashed, rounded corners=4pt, inner sep=8pt},
   arr/.style={->, >=latex, thick}
 ]
-  % coarse stage
-  \node[tile, fill=orange!25] (b0) at (0, 3) {$b_0$};
-  \node[tile, fill=orange!25] (b1) at (1.0, 3) {$b_1$};
-  \node[tile, fill=orange!25] (b2) at (2.0, 3) {$b_2$};
-  \node[tile, fill=orange!25] (b3) at (3.0, 3) {$b_3$};
-  \node[font=\sffamily\bfseries, above] at (1.5, 3.4) {coarse scorer};
+  \path[use as bounding box] (-1.3, -0.75) rectangle (4.3, 4.2);
 
-  % fine stage (kept blocks only)
-  \node[kept] (k1) at (1.0, 0.8) {$b_1$};
-  \node[kept] (k3) at (3.0, 0.8) {$b_3$};
-  \node[dropped] (d0) at (0, 0.8) {$b_0$};
-  \node[dropped] (d2) at (2.0, 0.8) {$b_2$};
-  \node[font=\sffamily\bfseries, below] at (1.5, 0.4) {fine attention (kept only)};
+  % coarse stage: every block scored cheaply
+  \node[font=\bfseries] at (1.5, 3.85) {coarse scorer};
+  \node[tile, fill=orange!25] (b0) at (0, 3) {$b_0$};
+  \node[tile, fill=orange!25] (b1) at (1, 3) {$b_1$};
+  \node[tile, fill=orange!25] (b2) at (2, 3) {$b_2$};
+  \node[tile, fill=orange!25] (b3) at (3, 3) {$b_3$};
+
+  % fine stage: only survivors reach exact softmax
+  \node[dropped] (d0) at (0, 1.05) {$b_0$};
+  \node[kept]    (k1) at (1, 1.05) {$b_1$};
+  \node[dropped] (d2) at (2, 1.05) {$b_2$};
+  \node[kept]    (k3) at (3, 1.05) {$b_3$};
 
   \draw[arr] (b0) -- (d0);
   \draw[arr] (b1) -- (k1);
   \draw[arr] (b2) -- (d2);
   \draw[arr] (b3) -- (k3);
 
-  \node[anchor=west, font=\sffamily\itshape, gray] at (4.0, 0.8) {exact softmax on survivors};
+  \node[font=\bfseries] at (1.5, 0.42) {exact softmax};
+  \node[font=\itshape, gray] at (1.5, -0.28) {$\mathcal{S} = \{\, b_i : s_i \ge \tau \,\}$};
 \end{tikzpicture}
 \end{document}
 ```
@@ -55,7 +56,7 @@ CascadeAttention builds a two-stage filter for attention scores. A cheap scorer 
 ```jsx imports={Zoomable,CascadeFilter}
 <Zoomable label="cascade filter pipeline">
   <CascadeFilter
-    caption="drag the threshold to trade recall for speedup; spiky distributions show why two-stage filtering wins on real attention."
+    caption="drag the threshold $\tau$: only blocks scoring $s_j \ge \tau$ join the survivor set $\mathcal{S}$ and reach exact softmax, so a spiky score distribution buys a large $n/k$ speedup at near-full recall."
     tiles={16}
   />
 </Zoomable>

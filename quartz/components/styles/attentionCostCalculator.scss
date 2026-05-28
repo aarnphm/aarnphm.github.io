@@ -7,11 +7,13 @@
   margin: 1.75rem 0;
   content-visibility: auto;
   contain-intrinsic-size: auto 34rem;
-  padding: 0;
-  border-radius: 0;
-  border: 0;
-  background: transparent;
+  box-sizing: border-box;
+  padding: 1.5rem 1.75rem;
+  border-radius: var(--radius-7-2);
+  border: 1px solid var(--acc-frame-border);
+  background: color-mix(in srgb, var(--light) 94%, transparent);
   color: var(--dark);
+  --acc-frame-border: color-mix(in srgb, var(--gray) 34%, transparent);
   --acc-line: color-mix(in srgb, var(--gray) 24%, transparent);
   --acc-surface-shadow:
     0 0 0 1px var(--acc-line) inset, 0 18px 46px color-mix(in srgb, var(--dark) 7%, transparent);
@@ -32,6 +34,7 @@
 }
 
 :root[saved-theme='dark'] .attention-cost-calculator {
+  --acc-frame-border: color-mix(in srgb, var(--gray) 46%, transparent);
   --acc-card-bg: color-mix(in srgb, var(--lightgray) 22%, var(--dark));
   --acc-card-bg-salmon: color-mix(in srgb, var(--acc-salmon) 32%, var(--lightgray));
   --acc-card-bg-sage: color-mix(in srgb, var(--acc-sage) 28%, var(--lightgray));
@@ -336,8 +339,15 @@
 .acc-caption {
   margin-top: 0.9rem;
   color: color-mix(in srgb, var(--gray) 70%, var(--dark) 30%);
-  font-size: 0.85rem;
-  text-align: center;
+  font-size: 0.78rem;
+  line-height: 1.45;
+  text-align: left;
+  text-wrap: pretty;
+
+  .acc-math {
+    margin: 0 0.22em;
+    vertical-align: -0.03em;
+  }
 }
 
 @container acc-figure (max-width: 760px) {
@@ -357,4 +367,11 @@
     grid-template-columns: 70px minmax(0, 1fr) 70px;
     font-size: 0.74rem;
   }
+}
+
+.zoomable.is-zoomed > .zoomable-content > .attention-cost-calculator {
+  padding: 1.5rem 1.75rem;
+  border: 1px solid var(--acc-frame-border);
+  border-radius: var(--radius-7-2);
+  background: color-mix(in srgb, var(--light) 94%, transparent);
 }

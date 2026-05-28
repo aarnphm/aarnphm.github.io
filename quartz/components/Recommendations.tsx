@@ -27,7 +27,6 @@ export default (() => {
       f => f.slug !== fileData.slug,
     )
 
-    // We will use 9 recs for now
     const recs = rng.shuffle(distributions).slice(0, 9)
 
     return (

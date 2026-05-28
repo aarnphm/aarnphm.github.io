@@ -1,0 +1,248 @@
+@use '../../styles/variables.scss' as *;
+@use '../../styles/mixin.scss' as *;
+
+.kv-cache-variants {
+  container-type: inline-size;
+  container-name: kvc-figure;
+  margin: 1.75rem 0;
+  content-visibility: auto;
+  contain-intrinsic-size: auto 22rem;
+  padding: 1.5rem 1.75rem;
+  border-radius: var(--radius-7-2);
+  border: 1px solid var(--kvc-frame-border);
+  box-shadow: none;
+  background: transparent;
+  color: var(--dark);
+
+  --kvc-frame-border: color-mix(in srgb, var(--gray) 34%, transparent);
+  --kvc-stroke: color-mix(in srgb, var(--darkgray) 70%, transparent);
+  --kvc-soft: color-mix(in srgb, var(--gray) 50%, transparent);
+  --kvc-div: color-mix(in srgb, var(--gray) 32%, transparent);
+  --kvc-note: color-mix(in srgb, var(--darkgray) 78%, var(--dark) 22%);
+  --kvc-salmon: #fdb2a2;
+  --kvc-sage: #cdd597;
+  --kvc-cached-bg: color-mix(in srgb, var(--kvc-salmon) 26%, var(--light));
+  --kvc-cached-edge: color-mix(in srgb, var(--kvc-salmon) 90%, var(--dark));
+  --kvc-hatch: color-mix(in srgb, var(--kvc-salmon) 92%, var(--dark));
+  --kvc-recompute-bg: color-mix(in srgb, var(--kvc-sage) 42%, var(--light));
+  --kvc-recompute-edge: color-mix(in srgb, var(--kvc-sage) 88%, var(--dark));
+  --kvc-query-bg: color-mix(in srgb, var(--lightgray) 62%, var(--light));
+}
+
+:root[saved-theme='dark'] .kv-cache-variants {
+  --kvc-cached-bg: color-mix(in srgb, var(--kvc-salmon) 22%, var(--lightgray));
+  --kvc-recompute-bg: color-mix(in srgb, var(--kvc-sage) 24%, var(--lightgray));
+  --kvc-query-bg: color-mix(in srgb, var(--lightgray) 55%, var(--dark));
+  --kvc-hatch: color-mix(in srgb, var(--kvc-salmon) 78%, var(--light));
+}
+
+.kvc-legend {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.4rem 1.3rem;
+  margin-bottom: 0.7rem;
+  font-size: 0.8rem;
+  color: var(--kvc-note);
+}
+
+.kvc-legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.kvc-swatch {
+  display: inline-block;
+  width: 0.95rem;
+  height: 0.95rem;
+  border-radius: 2px;
+  flex: none;
+}
+
+.kvc-swatch--cached {
+  background:
+    repeating-linear-gradient(45deg, var(--kvc-hatch) 0 1px, transparent 1px 4px),
+    var(--kvc-cached-bg);
+  box-shadow: 0 0 0 1px var(--kvc-cached-edge) inset;
+}
+
+.kvc-swatch--recompute {
+  background: var(--kvc-recompute-bg);
+  box-shadow: 0 0 0 1px var(--kvc-recompute-edge) inset;
+}
+
+.kvc-swatch--query {
+  background: var(--kvc-query-bg);
+  box-shadow: 0 0 0 1px var(--kvc-soft) inset;
+}
+
+.kvc-stage {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.kvc-graph {
+  display: block;
+  width: 100%;
+  min-width: 660px;
+  height: auto;
+  aspect-ratio: 980 / 332;
+
+  .kvc-bar {
+    stroke-width: 1.1;
+  }
+  .kvc-bar--query {
+    fill: var(--kvc-query-bg);
+    stroke: var(--kvc-soft);
+  }
+  .kvc-bar--cached {
+    fill: var(--kvc-cached-bg);
+    stroke: var(--kvc-cached-edge);
+  }
+  .kvc-bar--recompute {
+    fill: var(--kvc-recompute-bg);
+    stroke: var(--kvc-recompute-edge);
+  }
+  .kvc-bar--latent {
+    fill: var(--kvc-cached-bg);
+    stroke: var(--kvc-cached-edge);
+    stroke-width: 1.4;
+  }
+
+  .kvc-hatch-fill {
+    stroke: none;
+    pointer-events: none;
+  }
+  .kvc-hatch-line {
+    stroke: var(--kvc-hatch);
+    stroke-width: 1;
+  }
+
+  .kvc-link {
+    stroke: var(--kvc-soft);
+    stroke-width: 1;
+    fill: none;
+    stroke-dasharray: 2 2.5;
+  }
+
+  .kvc-divider {
+    stroke: var(--kvc-div);
+    stroke-width: 1;
+    stroke-dasharray: 4 4;
+  }
+
+  .kvc-proj {
+    stroke: var(--kvc-cached-edge);
+    stroke-width: 2.4;
+    fill: none;
+  }
+  .kvc-arrowhead {
+    fill: var(--kvc-cached-edge);
+  }
+  .kvc-wedge {
+    stroke: var(--kvc-cached-edge);
+    stroke-width: 1;
+    fill: none;
+    stroke-dasharray: 2 2.5;
+    opacity: 0.6;
+  }
+
+  .kvc-fo {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--dark);
+    line-height: 1;
+    overflow: visible;
+    pointer-events: none;
+
+    .katex {
+      color: inherit;
+      font-size: 1em;
+    }
+    .katex-display {
+      margin: 0;
+    }
+  }
+
+  .kvc-fo--title {
+    flex-direction: column;
+    gap: 1px;
+  }
+  .kvc-title-main {
+    font-weight: 600;
+    font-size: 13px;
+    letter-spacing: 0;
+  }
+  .kvc-title-sub {
+    font-size: 9.5px;
+    color: var(--kvc-note);
+    letter-spacing: 0;
+  }
+
+  .kvc-fo--row {
+    justify-content: flex-end;
+    padding-right: 7px;
+    color: var(--kvc-note);
+    font-size: 11px;
+    letter-spacing: 0;
+  }
+
+  .kvc-cost {
+    flex-direction: column;
+    gap: 2px;
+  }
+  .kvc-cost-tag {
+    font-size: 8.5px;
+    letter-spacing: 0;
+    color: var(--kvc-note);
+  }
+  .kvc-cost-math {
+    font-size: 12px;
+  }
+
+  .kvc-fo--proj {
+    color: var(--kvc-cached-edge);
+    font-style: italic;
+    font-size: 11px;
+  }
+  .kvc-fo--latent {
+    flex-direction: column;
+    color: var(--kvc-cached-edge);
+    font-size: 10px;
+    text-align: center;
+    line-height: 1.2;
+  }
+}
+
+.kvc-caption {
+  margin-top: 0.9rem;
+  color: color-mix(in srgb, var(--gray) 70%, var(--dark) 30%);
+  font-size: 0.78rem;
+  line-height: 1.45;
+  text-align: left;
+  text-wrap: pretty;
+  display: inline-block;
+}
+
+.kvc-math {
+  display: inline-block;
+  color: inherit;
+  margin: 0 0.2em;
+  vertical-align: -0.03em;
+
+  .katex {
+    color: inherit;
+    font-size: 0.95em;
+  }
+}
+
+@container kvc-figure (max-width: 560px) {
+  .kvc-legend {
+    font-size: 0.74rem;
+    gap: 0.35rem 0.9rem;
+  }
+}

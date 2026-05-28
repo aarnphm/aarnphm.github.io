@@ -1,7 +1,6 @@
-import type { Element, ElementContent, Root as HastRoot, RootContent } from 'hast'
+import type { Element, ElementContent, Properties, Root as HastRoot, RootContent } from 'hast'
 import type { Code as MdastCode, Root as MdastRoot } from 'mdast'
 import type { VFile } from 'vfile'
-import { toHtml } from 'hast-util-to-html'
 import { h, s } from 'hastscript'
 import rehypePrettyCode, { Options as CodeOptions, Theme as CodeTheme } from 'rehype-pretty-code'
 import { Processor } from 'unified'
@@ -25,7 +24,7 @@ const defaultOptions: Options = {
   keepBackground: false,
 }
 
-const MAX_HIGHLIGHT_CACHE_ENTRIES = 512
+const MAX_HIGHLIGHT_CACHE_ENTRIES = 4096
 const highlightedCodeCache = new Map<string, Element>()
 
 type HastChild = RootContent | ElementContent
@@ -96,8 +95,47 @@ function codeOptionsKey(opts: CodeOptions): string {
   )
 }
 
+function propertyValueKey(value: unknown): unknown {
+  if (Array.isArray(value)) return value.map(propertyValueKey)
+  if (
+    typeof value === 'string' ||
+    typeof value === 'number' ||
+    typeof value === 'boolean' ||
+    value == null
+  ) {
+    return value
+  }
+  return String(value)
+}
+
+function propertiesKey(properties: Properties): string {
+  return JSON.stringify(
+    Object.keys(properties)
+      .sort()
+      .map(key => [key, propertyValueKey(properties[key])]),
+  )
+}
+
+function elementText(node: Element): string {
+  let text = ''
+  for (const child of node.children) {
+    if (child.type === 'text') {
+      text += child.value
+    } else if (isElement(child)) {
+      text += elementText(child)
+    }
+  }
+  return text
+}
+
 function codeBlockKey(optsKey: string, node: Element): string {
-  return `${optsKey}:${toHtml(node)}`
+  const code = preCodeElement(node)
+  return JSON.stringify([
+    optsKey,
+    propertiesKey(node.properties),
+    code ? propertiesKey(code.properties) : '',
+    code ? elementText(code) : '',
+  ])
 }
 
 function cloneElement(node: Element): Element | undefined {

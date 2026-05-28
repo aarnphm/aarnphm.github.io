@@ -1,17 +1,9 @@
 import type { BuildCtx } from '../../util/ctx'
 import { QuartzEmitterPlugin } from '../../types/plugin'
-import { glob } from '../../util/glob'
 import { FilePath, slugifyFilePath } from '../../util/path'
 import { write } from './helpers'
 
 const MANIFEST_NAME = 'notebook-pages.json'
-
-async function notebookFilePaths(
-  argv: { directory: string },
-  cfg: { configuration: { ignorePatterns: string[] } },
-): Promise<FilePath[]> {
-  return (await glob('**/*.ipynb', argv.directory, cfg.configuration.ignorePatterns)) as FilePath[]
-}
 
 function isNotebookPath(fp: FilePath): boolean {
   return fp.endsWith('.ipynb')
@@ -24,7 +16,7 @@ function changesNotebookMembership(changeEvents: readonly { path: FilePath; type
 }
 
 async function writeNotebookManifest(ctx: BuildCtx): Promise<FilePath> {
-  const fps = await notebookFilePaths(ctx.argv, ctx.cfg)
+  const fps = ctx.allFiles.filter(isNotebookPath)
   const slugs = fps.map(fp => slugifyFilePath(fp, true)).sort()
   const payload = JSON.stringify({ slugs }, null, 2)
   return write({

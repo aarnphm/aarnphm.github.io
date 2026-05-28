@@ -157,7 +157,9 @@ const setupCascade = (root: HTMLElement): (() => void) | null => {
     if (!next || next === state.preset) return
     state.preset = next
     for (const b of presetBtns) {
-      b.setAttribute('aria-checked', b === btn ? 'true' : 'false')
+      const active = b === btn
+      b.setAttribute('aria-selected', active ? 'true' : 'false')
+      b.setAttribute('tabindex', active ? '0' : '-1')
     }
     root.setAttribute('data-preset', next)
     renderCascade(state)

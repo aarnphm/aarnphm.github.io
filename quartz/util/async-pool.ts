@@ -1,10 +1,9 @@
 import { availableParallelism } from 'node:os'
 
-export const defaultEmitterConcurrency = Math.min(
-  Math.max(Math.floor(availableParallelism() / 2), 2),
-  4,
-)
-export const defaultIoConcurrency = 8
+const parallelism = availableParallelism()
+
+export const defaultEmitterConcurrency = Math.min(Math.max(parallelism, 4), 8)
+export const defaultIoConcurrency = Math.min(Math.max(parallelism * 2, 8), 24)
 
 export async function mapConcurrent<T, R>(
   items: readonly T[],

@@ -7,7 +7,7 @@ aliases:
 date: '2024-10-30'
 description: and reverse engineering neural networks.
 id: mechanistic interpretability
-modified: 2026-05-26 22:02:45 GMT-04:00
+modified: 2026-05-28 12:49:42 GMT-04:00
 permalinks:
   - /mechinterp
   - /interpretability
@@ -138,7 +138,7 @@ In a sense, superposition is a form of **lossy [[thoughts/Compression|compressio
 This is plausible because:
 
 - almost _orthogonal vectors_
-  - it's only possible to have $n$ orthogonal vectors in an $n$-dimensional space, it's possible to have $\exp (n)$ many "almost orthogonal" ($< \epsilon$ cosine similarity) vectors in {{sidenotes[high-dimensional spaces.]: See the [Johnson–Lindenstrauss lemma](https://en.wikipedia.org/wiki/Johnson%E2%80%93Lindenstrauss_lemma) for the mathematical foundation.}}
+  - it's only possible to have $n$ orthogonal vectors in an $n$-dimensional space, it's possible to have $\exp (n)$ many "almost orthogonal" ($< \epsilon$ cosine similarity) vectors in {{sidenotes[high-dimensional spaces.]: See the [[thoughts/Johnson-Lindenstrauss lemma]] for the mathematical foundation.}}
 - compressed sensing
   - In general, if one projects a vector into a lower-dimensional space, one can't reconstruct the {{sidenotes<inline: true>[original vector.]: However, this changes if one knows that the original vector is sparse - in this case, it is often possible to recover the original vector.}}
 

@@ -6,20 +6,24 @@
   container-name: mla-figure;
   margin: 1.75rem 0;
   content-visibility: auto;
-  contain-intrinsic-size: auto 36rem;
-  padding: 0;
-  border-radius: 0;
-  border: 0;
+  contain-intrinsic-size: auto 42rem;
+  padding: 1.5rem 1.75rem;
+  border-radius: var(--radius-7-2);
+  border: 1px solid var(--mla-frame-border);
   box-shadow: none;
-  background: transparent;
+  background: color-mix(in srgb, var(--light) 94%, transparent);
   color: var(--dark);
   --mla-stroke: color-mix(in srgb, var(--darkgray) 70%, transparent);
   --mla-div: color-mix(in srgb, var(--gray) 28%, transparent);
+  --mla-frame-border: color-mix(in srgb, var(--gray) 34%, transparent);
   --mla-note: color-mix(in srgb, var(--darkgray) 78%, var(--dark) 22%);
   --mla-salmon: #fdb2a2;
   --mla-sage: #cdd597;
+  --mla-cyan: #bfe8f2;
   --mla-cached-bg: color-mix(in srgb, var(--mla-salmon) 70%, var(--light));
   --mla-cached-edge: color-mix(in srgb, var(--mla-salmon) 90%, var(--dark));
+  --mla-query-bg: color-mix(in srgb, var(--mla-cyan) 62%, var(--light));
+  --mla-query-edge: color-mix(in srgb, var(--mla-cyan) 78%, var(--dark));
   --mla-head-bg: color-mix(in srgb, var(--mla-sage) 65%, var(--light));
   --mla-head-edge: color-mix(in srgb, var(--mla-sage) 90%, var(--dark));
   --mla-neutral-bg: color-mix(in srgb, var(--lightgray) 55%, var(--light));
@@ -28,14 +32,16 @@
 
 :root[saved-theme='dark'] .mla-latent-path {
   --mla-cached-bg: color-mix(in srgb, var(--mla-salmon) 40%, var(--lightgray));
+  --mla-query-bg: color-mix(in srgb, var(--mla-cyan) 34%, var(--lightgray));
   --mla-head-bg: color-mix(in srgb, var(--mla-sage) 32%, var(--lightgray));
   --mla-neutral-bg: color-mix(in srgb, var(--lightgray) 35%, var(--dark));
   --mla-concat-bg: color-mix(in srgb, var(--lightgray) 22%, var(--dark));
+  --mla-frame-border: color-mix(in srgb, var(--gray) 46%, transparent);
 }
 
 .mla-stage {
   display: grid;
-  grid-template-columns: minmax(0, 1.55fr) minmax(220px, 1fr);
+  grid-template-columns: minmax(0, 1.7fr) minmax(220px, 1fr);
   gap: 1.5rem;
   align-items: stretch;
 }
@@ -43,7 +49,7 @@
 .mla-graph {
   width: 100%;
   height: auto;
-  aspect-ratio: 720 / 360;
+  aspect-ratio: 760 / 420;
   display: block;
 
   .mla-arrowhead {
@@ -71,6 +77,10 @@
     fill: var(--mla-cached-bg);
     stroke: var(--mla-cached-edge);
   }
+  .mla-box--query {
+    fill: var(--mla-query-bg);
+    stroke: var(--mla-query-edge);
+  }
   .mla-box--head {
     fill: var(--mla-head-bg);
     stroke: var(--mla-head-edge);
@@ -79,6 +89,10 @@
     fill: var(--mla-concat-bg);
     stroke: var(--mla-stroke);
     stroke-dasharray: 3 2;
+  }
+  .mla-box--attn {
+    fill: color-mix(in srgb, var(--light) 86%, transparent);
+    stroke: var(--mla-stroke);
   }
 
   .mla-edge {
@@ -94,6 +108,9 @@
   }
   .mla-edge--rope {
     stroke: var(--mla-cached-edge);
+  }
+  .mla-edge--attention {
+    stroke-width: 1.1;
   }
 
   .mla-fo {
@@ -133,22 +150,6 @@
     color: var(--mla-note);
     font-size: 12px;
     font-variant-numeric: tabular-nums;
-
-    .mla-dyn-math {
-      font-family: KaTeX_Math, 'Times New Roman', serif;
-      font-style: italic;
-      line-height: 1;
-    }
-
-    sub,
-    sup {
-      font-size: 0.68em;
-      line-height: 0;
-    }
-
-    sup {
-      margin-left: 0.04em;
-    }
   }
 }
 
@@ -161,18 +162,22 @@
 
 .mla-card {
   padding: 0.85rem 0.95rem;
-  border-radius: var(--radius-7-2);
-  border: 0;
-  box-shadow: 0 0 0 1px var(--mla-div) inset;
+  border-radius: 6px;
+  border: 1px solid var(--mla-frame-border);
+  box-shadow: none;
   background: color-mix(in srgb, var(--light) 96%, transparent);
+}
 
-  h4 {
-    margin: 0 0 0.5rem;
-    font-size: 0.78rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    color: var(--mla-note);
+.mla-card-label {
+  display: block;
+  margin: 0 0 0.5rem;
+  color: var(--mla-note);
+  font-size: 0.76rem;
+  font-weight: 500;
+  line-height: 1.25;
+
+  .mla-math .katex {
+    font-size: 0.96em;
   }
 }
 
@@ -198,8 +203,8 @@
   width: 0.85rem;
   height: 0.85rem;
   border-radius: 2px;
-  border: 0;
-  box-shadow: 0 0 0 1px var(--mla-cached-edge) inset;
+  border: 1px solid var(--mla-cached-edge);
+  box-shadow: none;
 }
 .mla-swatch--cached {
   background: var(--mla-cached-bg);
@@ -210,6 +215,12 @@
   color: var(--mla-note);
   font-size: 0.78rem;
   line-height: 1.45;
+  text-wrap: pretty;
+
+  .mla-math {
+    margin: 0 0.14em;
+    vertical-align: -0.03em;
+  }
 }
 
 .mla-readout {
@@ -219,8 +230,8 @@
   margin: 0;
   padding: 0.8rem 0.95rem;
   background: color-mix(in srgb, var(--light) 80%, transparent);
-  border: 0;
-  box-shadow: 0 0 0 1px var(--mla-div) inset;
+  border: 1px solid var(--mla-frame-border);
+  box-shadow: none;
   border-radius: 6px;
   font-size: 0.82rem;
   color: var(--mla-note);
@@ -314,6 +325,34 @@
   grid-column: 1 / 2;
   min-width: 0;
   @include stableRangeControl;
+
+  min-height: 1.55rem;
+
+  &::-webkit-slider-runnable-track {
+    height: 0.28rem;
+  }
+
+  &::-webkit-slider-thumb {
+    width: 0.78rem;
+    height: 0.78rem;
+    margin-top: -0.25rem;
+    box-shadow:
+      0 0 0 2px color-mix(in srgb, var(--light) 96%, transparent),
+      0 0.2rem 0.45rem color-mix(in srgb, var(--dark) 14%, transparent);
+  }
+
+  &::-moz-range-track,
+  &::-moz-range-progress {
+    height: 0.28rem;
+  }
+
+  &::-moz-range-thumb {
+    width: 0.78rem;
+    height: 0.78rem;
+    box-shadow:
+      0 0 0 2px color-mix(in srgb, var(--light) 96%, transparent),
+      0 0.2rem 0.45rem color-mix(in srgb, var(--dark) 14%, transparent);
+  }
 }
 
 .mla-value {
@@ -331,9 +370,9 @@
 .mla-eqs {
   margin-top: 1rem;
   padding: 0.85rem 1rem;
-  border-radius: var(--radius-7-2);
-  border: 0;
-  box-shadow: 0 0 0 1px var(--mla-div) inset;
+  border-radius: 6px;
+  border: 1px solid var(--mla-frame-border);
+  box-shadow: none;
   background: color-mix(in srgb, var(--light) 96%, transparent);
   display: flex;
   flex-direction: column;
@@ -344,7 +383,8 @@
 .mla-bet {
   margin: 0.2rem 0 0;
   padding: 0.55rem 0.75rem;
-  box-shadow: 2px 0 0 var(--mla-salmon) inset;
+  border-left: 2px solid var(--mla-salmon);
+  box-shadow: none;
   background: color-mix(in srgb, var(--mla-salmon) 6%, transparent);
   color: var(--mla-note);
   font-size: 0.86rem;
@@ -354,8 +394,34 @@
 .mla-caption {
   margin-top: 0.9rem;
   color: color-mix(in srgb, var(--gray) 70%, var(--dark) 30%);
-  font-size: 0.85rem;
-  text-align: center;
+  font-size: 0.78rem;
+  line-height: 1.45;
+  text-align: left;
+  text-wrap: pretty;
+  display: inline-block;
+
+  .mla-math {
+    margin: 0 0.22em;
+    vertical-align: -0.03em;
+  }
+}
+
+.zoomable.is-zoomed > .zoomable-content > .mla-latent-path {
+  width: min(100%, 1200px);
+  margin: auto;
+  flex: 0 1 auto;
+  justify-content: flex-start;
+  padding: 1.5rem 1.75rem;
+  background: color-mix(in srgb, var(--light) 94%, transparent);
+}
+
+.zoomable.is-zoomed > .zoomable-content > .mla-latent-path .mla-stage {
+  grid-template-columns: minmax(0, 1.55fr) minmax(240px, 0.9fr);
+  align-items: start;
+}
+
+.zoomable.is-zoomed > .zoomable-content > .mla-latent-path .mla-graph {
+  max-height: 520px;
 }
 
 @container mla-figure (max-width: 760px) {

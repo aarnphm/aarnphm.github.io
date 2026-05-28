@@ -1,5 +1,4 @@
-import { readFileSync } from 'node:fs'
-import { rm } from 'node:fs/promises'
+import { readFile, rm } from 'node:fs/promises'
 import { Node } from 'unist'
 import { defaultContentPageLayout, sharedPageComponents } from '../../../quartz.layout'
 import { FullPageLayout } from '../../cfg'
@@ -23,6 +22,8 @@ import { StaticResources } from '../../util/resources'
 import { PageTitlePatch, pageTitlePatchEvents } from '../../util/title-patch'
 import { QuartzPluginData } from '../vfile'
 import { write, writeKnownChanged } from './helpers'
+
+const contentPageConcurrency = 32
 
 const isContentPage = (fileData: QuartzPluginData): boolean => {
   const slug = fileData.slug
@@ -58,7 +59,9 @@ async function processContent(
     allFiles,
   }
 
+  const perf = new PerfTimer()
   const content = renderPage(ctx, slug, componentData, opts, externalResources, false)
+  logBuildSpan(ctx.argv, 'contentPage:render', slug, perf.elapsedMs())
   return write({ ctx, content, slug, ext: '.html' })
 }
 
@@ -117,7 +120,7 @@ async function patchContentPageTitle(
   patch: PageTitlePatch,
 ): Promise<FilePath | undefined> {
   const pathToPage = joinSegments(ctx.argv.output, `${patch.slug}.html`) as FilePath
-  const currentHtml = readFileSync(pathToPage, 'utf8')
+  const currentHtml = await readFile(pathToPage, 'utf8')
   const patchedHtml = patchContentPageTitleHtml(currentHtml, patch)
   if (!patchedHtml || patchedHtml === currentHtml) return undefined
   return writeKnownChanged({ ctx, content: patchedHtml, slug: patch.slug, ext: '.html' })
@@ -156,7 +159,7 @@ export const ContentPage: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpt
     async *emit(ctx, content, resources) {
       const allFiles = contentDataFor(content)
       const pages = content.filter(([, file]) => isContentPage(file.data))
-      const files = await mapConcurrent(pages, defaultIoConcurrency, ([tree, file]) =>
+      const files = await mapConcurrent(pages, contentPageConcurrency, ([tree, file]) =>
         processContent(ctx, tree, file.data, allFiles, opts, resources),
       )
 
@@ -205,7 +208,7 @@ export const ContentPage: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpt
         const slug = file.data.slug!
         return changedSlugs.has(slug) && isContentPage(file.data)
       })
-      const files = await mapConcurrent(pages, defaultIoConcurrency, ([tree, file]) =>
+      const files = await mapConcurrent(pages, contentPageConcurrency, ([tree, file]) =>
         processContent(ctx, tree, file.data, allFiles, opts, resources),
       )
 

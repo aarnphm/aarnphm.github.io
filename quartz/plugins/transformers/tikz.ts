@@ -15,7 +15,7 @@ const TIKZ_TIMEOUT = 30_000
 const TIKZ_CACHE_VERSION = 1
 const TIKZ_FAILURE_CACHE_MS = 5 * 60_000
 const TIKZ_CACHE_DIR = path.join(QUARTZ, '.quartz-cache', 'tikz')
-const texPackages = { pgfplots: '', amsmath: 'intlimits' }
+const texPackages = { pgfplots: '', amsmath: 'intlimits', amssymb: '' }
 const tikzLibraries = 'arrows.meta,calc,positioning'
 const addToPreamble = '% comment'
 const tikzFailureCache = new Map<string, { message: string; expiresAt: number }>()
@@ -55,6 +55,7 @@ const cmMathItalicGlyphs = new Map([
   ['Ã', 'ψ'],
   ['Ä', 'ω'],
   ["'", 'φ'],
+  [';', ','],
 ])
 
 const cmSymbolGlyphs = new Map([
@@ -68,9 +69,24 @@ const cmSymbolGlyphs = new Map([
   ['¨', '∓'],
   ['µ', '≤'],
   ['¶', '≥'],
+  ['¸', '≥'],
   ['¹', '∼'],
   ['º', '≈'],
   ['¼', '⊃'],
+  ['f', '{'],
+  ['g', '}'],
+  ['!', '→'],
+  ['2', '∈'],
+])
+
+const cmBlackboardGlyphs = new Map([
+  ['C', 'ℂ'],
+  ['H', 'ℍ'],
+  ['N', 'ℕ'],
+  ['P', 'ℙ'],
+  ['Q', 'ℚ'],
+  ['R', 'ℝ'],
+  ['Z', 'ℤ'],
 ])
 
 const cmRomanGlyphs = new Map([
@@ -255,7 +271,8 @@ function normalizeComputerModernText(svg: string): string {
     let glyphs: Map<string, string> | undefined
     if (font.startsWith('cmmi') || font.startsWith('cmmib')) glyphs = cmMathItalicGlyphs
     else if (font.startsWith('cmsy') || font.startsWith('cmbsy')) glyphs = cmSymbolGlyphs
-    else if (/^cm(?:r|bx|ti|sl|csc|ss)\d/.test(font)) glyphs = cmRomanGlyphs
+    else if (font.startsWith('msbm') || font.startsWith('msam')) glyphs = cmBlackboardGlyphs
+    else if (/^cm(?:r|bx|ti|sl|csc|ss[a-z]*)\d/.test(font)) glyphs = cmRomanGlyphs
 
     const normalized = [...decoded].map(char => glyphs?.get(char) ?? char).join('')
     let nextAttrs = attrs

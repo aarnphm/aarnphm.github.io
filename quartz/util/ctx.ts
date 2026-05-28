@@ -19,6 +19,7 @@ export interface Argv {
   remoteDevHost?: string
   concurrency?: number
   slowBuildThreshold?: number
+  allBuildSpans?: boolean
 }
 
 export type BuildTimeTrieData = QuartzPluginData & { slug: string; title: string; filePath: string }
@@ -46,6 +47,7 @@ export interface BuildCtx {
   renderData?: RenderData
   pageResourceCacheBuildId?: string
   pageResourceCache?: Map<string, StaticResources>
+  cleanOutput?: boolean
 }
 
 export function trieFromAllFiles(allFiles: QuartzPluginData[]): FileTrieNode<BuildTimeTrieData> {

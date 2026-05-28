@@ -7,11 +7,13 @@
   margin: 1.75rem 0;
   content-visibility: auto;
   contain-intrinsic-size: auto 36rem;
-  padding: 0;
-  border-radius: 0;
-  border: 0;
-  background: transparent;
+  box-sizing: border-box;
+  padding: 1.5rem 1.75rem;
+  border-radius: var(--radius-7-2);
+  border: 1px solid var(--oht-frame-border);
+  background: color-mix(in srgb, var(--light) 94%, transparent);
   color: var(--dark);
+  --oht-frame-border: color-mix(in srgb, var(--gray) 34%, transparent);
   --oht-line: color-mix(in srgb, var(--gray) 24%, transparent);
   --oht-surface-shadow:
     0 0 0 1px var(--oht-line) inset, 0 18px 46px color-mix(in srgb, var(--dark) 7%, transparent);
@@ -28,6 +30,7 @@
 }
 
 :root[saved-theme='dark'] .offset-heads-toy {
+  --oht-frame-border: color-mix(in srgb, var(--gray) 46%, transparent);
   --oht-head1: color-mix(in srgb, #fdb2a2 78%, var(--lightgray));
   --oht-head2: color-mix(in srgb, #cdd597 78%, var(--lightgray));
   --oht-surrogate: color-mix(in srgb, var(--gray) 50%, var(--lightgray));
@@ -359,8 +362,15 @@
 .oht-caption {
   margin-top: 0.9rem;
   color: color-mix(in srgb, var(--gray) 70%, var(--dark) 30%);
-  font-size: 0.85rem;
-  text-align: center;
+  font-size: 0.78rem;
+  line-height: 1.45;
+  text-align: left;
+  text-wrap: pretty;
+
+  .oht-math {
+    margin: 0 0.22em;
+    vertical-align: -0.03em;
+  }
 }
 
 .oht-sr {
@@ -402,4 +412,11 @@
   .oht-panel {
     padding: 0.7rem 0.7rem 0.75rem;
   }
+}
+
+.zoomable.is-zoomed > .zoomable-content > .offset-heads-toy {
+  padding: 1.5rem 1.75rem;
+  border: 1px solid var(--oht-frame-border);
+  border-radius: var(--radius-7-2);
+  background: color-mix(in srgb, var(--light) 94%, transparent);
 }

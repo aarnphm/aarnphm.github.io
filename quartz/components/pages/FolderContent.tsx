@@ -8,6 +8,7 @@ import {
   QuartzComponentProps,
 } from '../../types/component'
 import { inheritComponentSourceNames } from '../../util/component-source'
+import { BuildCtx } from '../../util/ctx'
 import { FileTrieNode } from '../../util/fileTrie'
 import { htmlToJsx } from '../../util/jsx'
 import {
@@ -160,11 +161,149 @@ const normalizePath = (pathEntry: string): SimpleSlug => {
   return simplifySlug(stripSlashes(slugified) as FullSlug)
 }
 
+type FolderContentIndex = {
+  allFiles: QuartzPluginData[]
+  allPaths: FilePath[]
+  aliases: Set<string>
+  descendantsByFolder: Map<string, QuartzPluginData[]>
+  firstDescendantByFolderBase: Map<string, QuartzPluginData>
+  firstDescendantByFolder: Map<string, QuartzPluginData>
+  fullTrie: FileTrieNode<{ slug: string; title: string; filePath: string }>
+  immediateMarkdownByFolder: Map<string, QuartzPluginData[]>
+  mdBySlug: Map<string, QuartzPluginData>
+  navigableFolders: Set<string>
+}
+
+function pushMapArray<K, V>(map: Map<K, V[]>, key: K, value: V): void {
+  const values = map.get(key)
+  if (values) {
+    values.push(value)
+  } else {
+    map.set(key, [value])
+  }
+}
+
+function parentFolders(slug: string): string[] {
+  const folders: string[] = []
+  let folder = path.posix.dirname(slug)
+  while (folder !== '.') {
+    folders.push(folder)
+    folder = path.posix.dirname(folder)
+  }
+  return folders
+}
+
+const folderPageSourceExtensions = new Set(['.md', '.base', '.canvas', '.ipynb'])
+
+function isFolderPageSourcePath(fp: FilePath): boolean {
+  return folderPageSourceExtensions.has(path.extname(fp))
+}
+
+function folderPageSourceSlug(fp: FilePath): string {
+  return stripSlashes(slugifyFilePath(fp, path.extname(fp) === '.ipynb'))
+}
+
+function folderPageAncestors(slug: string): string[] {
+  const folders: string[] = []
+  let folder = path.posix.dirname(slug)
+  while (folder !== '.' && folder !== '/') {
+    const simple = stripSlashes(simplifySlug(folder as FullSlug))
+    if (simple !== 'tags') folders.push(simple)
+    folder = path.posix.dirname(folder)
+  }
+  return folders
+}
+
+function folderBaseKey(folder: string, base: string): string {
+  return `${folder}\u0000${base}`
+}
+
+function firstByDate(
+  files: QuartzPluginData[],
+  cfg: GlobalConfiguration,
+): QuartzPluginData | undefined {
+  return files.length > 0 ? [...files].sort(byDateAndAlphabetical(cfg))[0] : undefined
+}
+
+function buildFolderContentIndex(
+  ctx: BuildCtx,
+  allFiles: QuartzPluginData[],
+  cfg: GlobalConfiguration,
+): FolderContentIndex {
+  const mdBySlug = new Map<string, QuartzPluginData>()
+  const descendantsByFolder = new Map<string, QuartzPluginData[]>()
+  const descendantsByFolderBase = new Map<string, QuartzPluginData[]>()
+  const immediateMarkdownByFolder = new Map<string, QuartzPluginData[]>()
+  const aliases = new Set<string>()
+  const navigableFolders = new Set<string>()
+
+  for (const file of allFiles) {
+    const slug = file.slug
+    if (!slug) continue
+    for (const folder of folderPageAncestors(slug)) {
+      navigableFolders.add(folder)
+    }
+    const simple = stripSlashes(simplifySlug(slug))
+    mdBySlug.set(simple, file)
+
+    const immediateFolder = path.posix.dirname(simple)
+    if (immediateFolder !== '.') {
+      pushMapArray(immediateMarkdownByFolder, immediateFolder, file)
+    }
+    const base = path.posix.basename(simple, path.posix.extname(simple))
+    for (const folder of parentFolders(simple)) {
+      pushMapArray(descendantsByFolder, folder, file)
+      pushMapArray(descendantsByFolderBase, folderBaseKey(folder, base), file)
+    }
+
+    for (const alias of file.aliases ?? []) {
+      aliases.add(stripSlashes(simplifySlug(alias)))
+    }
+  }
+
+  const firstDescendantByFolder = new Map<string, QuartzPluginData>()
+  for (const [folder, files] of descendantsByFolder) {
+    const first = firstByDate(files, cfg)
+    if (first) firstDescendantByFolder.set(folder, first)
+  }
+  const firstDescendantByFolderBase = new Map<string, QuartzPluginData>()
+  for (const [key, files] of descendantsByFolderBase) {
+    const first = firstByDate(files, cfg)
+    if (first) firstDescendantByFolderBase.set(key, first)
+  }
+
+  const fullTrie = new FileTrieNode<{ slug: string; title: string; filePath: string }>([])
+  for (const fp of ctx.allFiles) {
+    if (isFolderPageSourcePath(fp)) {
+      for (const folder of folderPageAncestors(folderPageSourceSlug(fp))) {
+        navigableFolders.add(folder)
+      }
+    }
+    const fileSlug = slugForDirectoryEntry(fp)
+    const ext = path.extname(fp)
+    const base = path.basename(fp, ext)
+    const md = mdBySlug.get(fileSlug)
+    fullTrie.add({ slug: fileSlug, title: md?.frontmatter?.title ?? base, filePath: fp })
+  }
+
+  return {
+    allFiles,
+    allPaths: ctx.allFiles,
+    aliases,
+    descendantsByFolder,
+    firstDescendantByFolderBase,
+    firstDescendantByFolder,
+    fullTrie,
+    immediateMarkdownByFolder,
+    mdBySlug,
+    navigableFolders,
+  }
+}
+
 export default ((opts?: Partial<FolderContentOptions>) => {
   const options: FolderContentOptions = { ...defaultOptions, ...opts }
 
-  // Trie covering ALL files in content (any extension), built from ctx
-  let fullTrie: FileTrieNode<{ slug: string; title: string; filePath: string }>
+  let folderContentIndex: FolderContentIndex | undefined
 
   const shouldIncludeFile = extensionFilterFn(options)
 
@@ -181,23 +320,23 @@ export default ((opts?: Partial<FolderContentOptions>) => {
 
   const FolderContent: QuartzComponent = (props: QuartzComponentProps) => {
     const { tree, fileData, allFiles, ctx, cfg } = props
-    // Map markdown/pdf plugin data by slug for metadata lookups
-    const mdBySlug = new Map<string, QuartzPluginData>()
-    for (const f of allFiles) {
-      if (f.slug) mdBySlug.set(stripSlashes(f.slug), f)
+    if (
+      !folderContentIndex ||
+      folderContentIndex.allFiles !== allFiles ||
+      folderContentIndex.allPaths !== ctx.allFiles
+    ) {
+      folderContentIndex = buildFolderContentIndex(ctx, allFiles, cfg)
     }
-
-    // Initialize a trie with ALL files from the vault (ctx)
-    if (!fullTrie) {
-      fullTrie = new FileTrieNode([])
-      for (const fp of ctx.allFiles) {
-        const fileSlug = slugForDirectoryEntry(fp as FilePath)
-        const ext = path.extname(fp)
-        const base = path.basename(fp, ext)
-        const md = mdBySlug.get(fileSlug)
-        fullTrie.add({ slug: fileSlug, title: md?.frontmatter?.title ?? base, filePath: fp })
-      }
-    }
+    const {
+      aliases,
+      descendantsByFolder,
+      firstDescendantByFolderBase,
+      firstDescendantByFolder,
+      fullTrie,
+      immediateMarkdownByFolder,
+      mdBySlug,
+      navigableFolders,
+    } = folderContentIndex
 
     const folderSlug = stripSlashes(simplifySlug(fileData.slug!))
     const entries: QuartzPluginData[] = []
@@ -207,14 +346,12 @@ export default ((opts?: Partial<FolderContentOptions>) => {
     const isImagesPath = (slug: string) => slug.split('/').includes('images')
 
     // Compute a sensible date for the current folder (used as fallback for children)
-    const folderIndexMd = allFiles.find(f => stripSlashes(simplifySlug(f.slug!)) === folderSlug)
-    const filesUnderCurrent = allFiles.filter(f =>
-      stripSlashes(simplifySlug(f.slug!)).startsWith(`${folderSlug}/`),
-    )
+    const folderIndexMd = mdBySlug.get(folderSlug)
+    const filesUnderCurrent = descendantsByFolder.get(folderSlug) ?? []
     const defaultDate = { created: new Date(0), modified: new Date(0), published: new Date(0) }
     const currentFolderDates =
       filesUnderCurrent.length > 0
-        ? filesUnderCurrent.sort(byDateAndAlphabetical(cfg))[0].dates
+        ? firstDescendantByFolder.get(folderSlug)?.dates
         : (folderIndexMd?.dates ?? fileData?.dates)
 
     const pushFileEntry = (fileSlug: string, filePathStr: string) => {
@@ -241,18 +378,11 @@ export default ((opts?: Partial<FolderContentOptions>) => {
       }
 
       // Pull dates (prefer markdown companion if present), else fallback to current folder date
-      const associatedFiles = allFiles.filter(f => {
-        const fSlug = stripSlashes(simplifySlug(f.slug!))
-        const fBase = path.basename(fSlug, path.extname(fSlug))
-        const inFolder = fSlug.startsWith(`${folderSlug}/`)
-        return inFolder && fBase === baseFileName
-      })
+      const associatedFirst = firstDescendantByFolderBase.get(
+        folderBaseKey(folderSlug, baseFileName),
+      )
 
-      const sortedFiles = associatedFiles.sort(byDateAndAlphabetical(cfg))
-      const dates =
-        sortedFiles.length > 0
-          ? sortedFiles[0].dates || currentFolderDates || fileData.dates || defaultDate
-          : currentFolderDates || fileData.dates || defaultDate
+      const dates = associatedFirst?.dates || currentFolderDates || fileData.dates || defaultDate
 
       entries.push({
         slug: (fileSlug as FullSlug) ?? (joinSegments(folderSlug, baseFileName) as FullSlug),
@@ -276,11 +406,7 @@ export default ((opts?: Partial<FolderContentOptions>) => {
         }
         if (!child.data) continue
         const fileSlug = stripSlashes(child.slug)
-        const isAlias = allFiles.some(f =>
-          f.aliases?.some(
-            alias => simplifySlug(alias) === stripSlashes(simplifySlug(fileSlug as FullSlug)),
-          ),
-        )
+        const isAlias = aliases.has(stripSlashes(simplifySlug(fileSlug as FullSlug)))
         if (isAlias) continue
         pushFileEntry(fileSlug, child.data.filePath)
       }
@@ -291,22 +417,17 @@ export default ((opts?: Partial<FolderContentOptions>) => {
         const subfolderSlugWithIndex = stripSlashes(sub.slug)
         const subfolderSimple = stripSlashes(simplifySlug(sub.slug as FullSlug))
         if (isImagesPath(subfolderSimple) || isImagesPath(subfolderSlugWithIndex)) continue
+        if (!navigableFolders.has(subfolderSimple)) continue
 
         // If there is a markdown index for this folder, rely on that page (avoid duplicate)
-        const folderIndex = allFiles.find(f => {
-          const s = stripSlashes(simplifySlug(f.slug!))
-          return s === subfolderSimple
-        })
+        const folderIndex = mdBySlug.get(subfolderSimple)
 
         // Determine dates from files under the subfolder
-        const filesInSubfolder = allFiles.filter(file => {
-          const s = stripSlashes(simplifySlug(file.slug!))
-          return s.startsWith(`${subfolderSimple}/`)
-        })
+        const filesInSubfolder = descendantsByFolder.get(subfolderSimple) ?? []
 
         const subfolderDates =
           filesInSubfolder.length > 0
-            ? filesInSubfolder.sort(byDateAndAlphabetical(cfg))[0].dates
+            ? firstDescendantByFolder.get(subfolderSimple)?.dates
             : (folderIndex?.dates ?? fileData?.dates)
 
         // Only generate a synthetic folder entry if no explicit folder index exists
@@ -329,24 +450,18 @@ export default ((opts?: Partial<FolderContentOptions>) => {
     }
 
     // Fallback: ensure immediate markdown children are present
-    for (const file of allFiles) {
+    for (const file of immediateMarkdownByFolder.get(folderSlug) ?? []) {
       const fileSlug = stripSlashes(simplifySlug(file.slug!))
-      if (fileSlug.startsWith(`${folderSlug}/`)) {
-        const relativePath = fileSlug.slice(folderSlug.length + 1)
-        if (!relativePath.includes('/')) {
-          if (!processed.has(fileSlug)) {
-            if (file.frontmatter?.noindex === true) continue
-            const folderFallback = currentFolderDates || fileData.dates
-            const augmentedDates = {
-              created: file.dates?.created ?? folderFallback?.created ?? defaultDate.created,
-              modified: file.dates?.modified ?? folderFallback?.modified ?? defaultDate.modified,
-              published:
-                file.dates?.published ?? folderFallback?.published ?? defaultDate.published,
-            }
-            entries.push({ ...file, dates: augmentedDates })
-            processed.add(fileSlug)
-          }
+      if (!processed.has(fileSlug)) {
+        if (file.frontmatter?.noindex === true) continue
+        const folderFallback = currentFolderDates || fileData.dates
+        const augmentedDates = {
+          created: file.dates?.created ?? folderFallback?.created ?? defaultDate.created,
+          modified: file.dates?.modified ?? folderFallback?.modified ?? defaultDate.modified,
+          published: file.dates?.published ?? folderFallback?.published ?? defaultDate.published,
         }
+        entries.push({ ...file, dates: augmentedDates })
+        processed.add(fileSlug)
       }
     }
 

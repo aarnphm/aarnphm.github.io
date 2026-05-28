@@ -2,9 +2,11 @@ import type { Element, ElementContent, Root as HtmlRoot } from 'hast'
 import type { Parents as MdastParents, PhrasingContent, Root as MdRoot } from 'mdast'
 import type { Handler, Options as ToHastOptions, State } from 'mdast-util-to-hast'
 import esbuild from 'esbuild'
+import { globby } from 'globby'
 import matter from 'gray-matter'
 import yaml from 'js-yaml'
 import { toHast } from 'mdast-util-to-hast'
+import fs from 'node:fs/promises'
 import path from 'path'
 import remarkParse from 'remark-parse'
 import { read } from 'to-vfile'
@@ -283,8 +285,35 @@ function timedTransformer(ctx: BuildCtx, label: string, transformer: Transformer
 }
 
 type ProcessorCache = { cfg: BuildCtx['cfg']; md: QuartzMdProcessor; html: QuartzHtmlProcessor }
+type ProcessedContentCacheEntry = { signature: string; content: ProcessedContent }
+type ProcessedContentCacheState = {
+  sourceSalt: string | undefined
+  content: Map<FilePath, ProcessedContentCacheEntry>
+}
 
 const processorCache = new WeakMap<BuildCtx, ProcessorCache>()
+declare global {
+  var __quartzProcessedContentCache: ProcessedContentCacheState | undefined
+}
+
+const processedContentCache = (globalThis.__quartzProcessedContentCache ??= {
+  sourceSalt: undefined,
+  content: new Map<FilePath, ProcessedContentCacheEntry>(),
+})
+
+const processedContentCacheSourcePatterns = [
+  'quartz.config.ts',
+  'quartz/processors/parse.ts',
+  'quartz/extensions/**/*.{ts,js}',
+  'quartz/plugins/transformers/**/*.{ts,tsx,js}',
+]
+const processedContentCacheSourceIgnores = [
+  '**/*.test.ts',
+  '**/*.test.tsx',
+  '**/.quartz-cache/**',
+  'node_modules/**',
+  'public/**',
+]
 
 export function transformMarkdownSource(ctx: BuildCtx, value: string): string {
   let source = value.trim()
@@ -465,6 +494,56 @@ function* chunks<T>(arr: T[], n: number) {
   }
 }
 
+async function fileStatSignature(fp: FilePath): Promise<string> {
+  try {
+    const stat = await fs.stat(fp)
+    return `${stat.mtimeMs}:${stat.size}`
+  } catch {
+    return 'missing'
+  }
+}
+
+async function sourceFileSignature(fp: string): Promise<string> {
+  try {
+    const stat = await fs.stat(fp)
+    return `${fp}:${stat.mtimeMs}:${stat.size}`
+  } catch {
+    return `${fp}:missing`
+  }
+}
+
+async function processedContentCacheSourceSalt(): Promise<string> {
+  const fps = await globby(processedContentCacheSourcePatterns, {
+    gitignore: true,
+    ignore: processedContentCacheSourceIgnores,
+  })
+  const signatures = await Promise.all(fps.sort().map(sourceFileSignature))
+  return signatures.join('|')
+}
+
+async function syncProcessedContentCacheSource(ctx: BuildCtx): Promise<void> {
+  const sourceSalt = ctx.argv.watch ? await processedContentCacheSourceSalt() : undefined
+  if (processedContentCache.sourceSalt === sourceSalt) return
+  processedContentCache.sourceSalt = sourceSalt
+  processedContentCache.content.clear()
+}
+
+async function cachedProcessedContent(
+  fp: FilePath,
+): Promise<{ fp: FilePath; signature: string; content?: ProcessedContent }> {
+  const signature = await fileStatSignature(fp)
+  const cached = processedContentCache.content.get(fp)
+  if (cached?.signature === signature) {
+    return { fp, signature, content: cached.content }
+  }
+  return { fp, signature }
+}
+
+function filePathForProcessedContent(content: ProcessedContent): FilePath | undefined {
+  const fp = content[1].data.filePath ?? content[1].path
+  return typeof fp === 'string' ? (fp as FilePath) : undefined
+}
+
 export const TEXT_PARSE_CHUNK_SIZE = 128
 export const HTML_PARSE_CHUNK_SIZE = 16
 
@@ -519,11 +598,7 @@ async function parseNotebookFileToMdast(file: {
   return notebookDocToFlatMdast(parsed)
 }
 
-export function createFileParser(
-  ctx: BuildCtx,
-  fps: FilePath[],
-  htmlReuseCache?: ReadonlyMap<FilePath, ProcessedContent>,
-) {
+export function createFileParser(ctx: BuildCtx, fps: FilePath[]) {
   const { argv } = ctx
   return async (processor: QuartzMdProcessor) => {
     const res: MarkdownContent[] = []
@@ -538,16 +613,6 @@ export function createFileParser(
         file.data.relativePath = path.posix.relative(argv.directory, file.path) as FilePath
         file.data.slug = slugifyFilePath(file.data.relativePath)
         file.data.rawMarkdownSource = rawSource
-
-        const previous = htmlReuseCache?.get(file.data.relativePath)
-        const reused = previous
-          ? reuseMarkdownForTitleOnlyChange(ctx, file, previous, rawSource)
-          : undefined
-        if (reused) {
-          res.push(reused)
-          logBuildSpan(argv, 'markdown:reuse', `${fp} -> ${file.data.slug}`, perf.elapsedMs())
-          continue
-        }
 
         file.value = transformMarkdownSource(ctx, rawSource)
 
@@ -575,24 +640,12 @@ declare module 'vfile' {
   }
 }
 
-export function createMarkdownParser(
-  ctx: BuildCtx,
-  mdContent: MarkdownContent[],
-  htmlReuseCache?: ReadonlyMap<FilePath, ProcessedContent>,
-) {
+export function createMarkdownParser(ctx: BuildCtx, mdContent: MarkdownContent[]) {
   return async (processor: QuartzHtmlProcessor) => {
     const res: ProcessedContent[] = []
     for (const [ast, file] of mdContent) {
       try {
         const perf = new PerfTimer()
-        const relativePath = file.data.relativePath
-        const previous = relativePath ? htmlReuseCache?.get(relativePath) : undefined
-        if (previous && canReuseProcessedHtml(file, previous)) {
-          res.push(reuseProcessedHtml(file, previous))
-          logBuildSpan(ctx.argv, 'html', `${file.data.slug}`, perf.elapsedMs())
-          continue
-        }
-
         const hastPerf = new PerfTimer()
         const hast = mdastToHastRoot(ast)
         logBuildSpan(ctx.argv, 'ast:hast', `${file.data.slug}`, hastPerf.elapsedMs())
@@ -615,25 +668,48 @@ export function createMarkdownParser(
 const clamp = (num: number, min: number, max: number) =>
   Math.min(Math.max(Math.round(num), min), max)
 
-export async function parseMarkdown(
-  ctx: BuildCtx,
-  fps: FilePath[],
-  htmlReuseCache?: ReadonlyMap<FilePath, ProcessedContent>,
-): Promise<ProcessedContent[]> {
+export async function parseMarkdown(ctx: BuildCtx, fps: FilePath[]): Promise<ProcessedContent[]> {
   const { argv } = ctx
   if (fps.length === 0) return []
 
   const perf = new PerfTimer()
   const log = new QuartzLogger(argv.verbose)
-  const concurrency = parseWorkerConcurrency(fps.length, ctx.argv.concurrency)
+  const useCache = argv.watch
+  await syncProcessedContentCacheSource(ctx)
+  const cached = useCache ? await Promise.all(fps.map(cachedProcessedContent)) : []
+  const cacheHits = cached.filter(entry => entry.content !== undefined).length
+  const missSignatures = new Map<FilePath, string>()
+  const cachedContent = new Map<FilePath, ProcessedContent>()
+  if (useCache) {
+    for (const entry of cached) {
+      if (entry.content) {
+        cachedContent.set(entry.fp, entry.content)
+      } else {
+        missSignatures.set(entry.fp, entry.signature)
+      }
+    }
+  }
+
+  const fpsToParse = useCache ? fps.filter(fp => !cachedContent.has(fp)) : fps
+  const concurrency = parseWorkerConcurrency(fpsToParse.length, ctx.argv.concurrency)
 
   let res: ProcessedContent[] = []
+  if (fpsToParse.length === 0) {
+    res = fps.flatMap(fp => {
+      const content = cachedContent.get(fp)
+      return content ? [content] : []
+    })
+    log.start(`Parsing input files using cache`)
+    log.end(`Parsed ${res.length} Markdown files in ${perf.timeSince()} (${cacheHits} cached)`)
+    return res
+  }
+
   log.start(`Parsing input files using ${concurrency} threads`)
   if (concurrency === 1) {
     try {
       const processors = cachedProcessors(ctx)
-      const mdRes = await createFileParser(ctx, fps, htmlReuseCache)(processors.md)
-      res = await createMarkdownParser(ctx, mdRes, htmlReuseCache)(processors.html)
+      const mdRes = await createFileParser(ctx, fpsToParse)(processors.md)
+      res = await createMarkdownParser(ctx, mdRes)(processors.html)
     } catch (error) {
       log.end()
       throw error
@@ -660,7 +736,7 @@ export async function parseMarkdown(
 
     const textToMarkdownPromises: WorkerPromise<MarkdownContent[]>[] = []
     let processedFiles = 0
-    for (const chunk of chunks(fps, TEXT_PARSE_CHUNK_SIZE)) {
+    for (const chunk of chunks(fpsToParse, TEXT_PARSE_CHUNK_SIZE)) {
       textToMarkdownPromises.push(pool.exec('parseMarkdown', [serializableCtx, chunk]))
     }
 
@@ -668,7 +744,9 @@ export async function parseMarkdown(
       textToMarkdownPromises.map(async promise => {
         const result = await promise
         processedFiles += result.length
-        log.updateText(`text->markdown ${styleText('gray', `${processedFiles}/${fps.length}`)}`)
+        log.updateText(
+          `text->markdown ${styleText('gray', `${processedFiles}/${fpsToParse.length}`)}`,
+        )
         return result
       }),
     ).catch(errorHandler)
@@ -682,7 +760,9 @@ export async function parseMarkdown(
       markdownToHtmlPromises.map(async promise => {
         const result = await promise
         processedFiles += result.length
-        log.updateText(`markdown->html ${styleText('gray', `${processedFiles}/${fps.length}`)}`)
+        log.updateText(
+          `markdown->html ${styleText('gray', `${processedFiles}/${fpsToParse.length}`)}`,
+        )
         return result
       }),
     ).catch(errorHandler)
@@ -691,6 +771,21 @@ export async function parseMarkdown(
     await pool.terminate()
   }
 
-  log.end(`Parsed ${res.length} Markdown files in ${perf.timeSince()}`)
+  if (useCache) {
+    for (const content of res) {
+      const fp = filePathForProcessedContent(content)
+      if (!fp) continue
+      const signature = missSignatures.get(fp)
+      if (!signature) continue
+      processedContentCache.content.set(fp, { signature, content })
+      cachedContent.set(fp, content)
+    }
+    res = fps.flatMap(fp => {
+      const content = cachedContent.get(fp)
+      return content ? [content] : []
+    })
+  }
+
+  log.end(`Parsed ${res.length} Markdown files in ${perf.timeSince()} (${cacheHits} cached)`)
   return res
 }

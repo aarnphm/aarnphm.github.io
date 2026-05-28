@@ -18,10 +18,20 @@ const inlineScriptFilter = /\.inline\.(ts|js)$/
 const sourceWatchWriteStabilityMs = 250
 
 const normalizeWatchedPath = fp => fp.split(path.sep).join('/')
+const isGeneratedSourcePath = fp => {
+  const normalized = normalizeWatchedPath(fp)
+  return (
+    normalized.startsWith('.quartz-cache/') ||
+    normalized.includes('/.quartz-cache/') ||
+    normalized.startsWith('public/') ||
+    normalized.includes('/public/')
+  )
+}
 const isTestSourcePath = fp => {
   const normalized = normalizeWatchedPath(fp)
   return normalized.endsWith('.test.ts') || normalized.endsWith('.test.tsx')
 }
+const shouldIgnoreSourcePath = fp => isTestSourcePath(fp) || isGeneratedSourcePath(fp)
 
 export function formatErrorReason(err) {
   if (typeof err === 'string') {
@@ -148,7 +158,7 @@ export async function handleBuild(argv) {
     return import(`../../${cacheFile}?update=${randomUUID()}`)
   }
 
-  const build = async clientRefresh => {
+  const build = async (clientRefresh, sourcePath) => {
     const buildStart = new Date().getTime()
     lastBuildMs = buildStart
     const release = await buildMutex.acquire()
@@ -158,7 +168,13 @@ export async function handleBuild(argv) {
     }
 
     if (activeBuild) {
-      console.log(styleText('yellow', 'Detected a source code change, doing a hard rebuild...'))
+      const sourceSuffix = sourcePath ? ` at ${normalizeWatchedPath(sourcePath)}` : ''
+      console.log(
+        styleText(
+          'yellow',
+          `Detected a source code change${sourceSuffix}, doing a hard rebuild...`,
+        ),
+      )
       await disposeActiveBuild()
     }
 
@@ -318,24 +334,25 @@ export async function handleBuild(argv) {
         'quartz/static/**/*',
         'package.json',
       ],
-      { gitignore: true, ignore: ['.quartz-cache/**', 'node_modules/**', 'public/**'] },
+      { gitignore: true, ignore: ['**/.quartz-cache/**', 'node_modules/**', 'public/**'] },
     )
     chokidar
       .watch(paths, {
         awaitWriteFinish: { stabilityThreshold: sourceWatchWriteStabilityMs },
+        ignored: shouldIgnoreSourcePath,
         ignoreInitial: true,
       })
       .on('add', fp => {
-        if (isTestSourcePath(fp)) return
-        return build(clientRefresh)
+        if (shouldIgnoreSourcePath(fp)) return
+        return build(clientRefresh, fp)
       })
       .on('change', fp => {
-        if (isTestSourcePath(fp)) return
-        return build(clientRefresh)
+        if (shouldIgnoreSourcePath(fp)) return
+        return build(clientRefresh, fp)
       })
       .on('unlink', fp => {
-        if (isTestSourcePath(fp)) return
-        return build(clientRefresh)
+        if (shouldIgnoreSourcePath(fp)) return
+        return build(clientRefresh, fp)
       })
 
     console.log(styleText('gray', 'hint: exit with ctrl+c'))

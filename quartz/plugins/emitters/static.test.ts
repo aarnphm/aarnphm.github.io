@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict'
-import { mkdir, mkdtemp, rm, stat, writeFile } from 'node:fs/promises'
+import { lstat, mkdir, mkdtemp, rm, stat, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import path from 'node:path'
 import test from 'node:test'
@@ -93,7 +93,36 @@ test('static partial emit copies only changed quartz static files', async () => 
     const expected = path.join(ctx.argv.output, 'static/feed.xsl')
     assert.deepEqual(emitted, [expected])
     await stat(expected)
+    assert.equal((await lstat(expected)).isSymbolicLink(), false)
   } finally {
+    await rm(root, { recursive: true, force: true })
+  }
+})
+
+test('Cloudflare Pages watch static partial emit writes regular files', async () => {
+  const root = await mkdtemp(path.join(tmpdir(), 'quartz-static-partial-cf-pages-'))
+  const previousCfPages = process.env.CF_PAGES
+  try {
+    process.env.CF_PAGES = '1'
+    const ctx = testCtx(root)
+    ctx.argv.watch = true
+    const plugin = Static()
+
+    const emitted = await collectEmitted(
+      plugin.partialEmit?.(ctx, [], resources, [
+        { type: 'change', path: 'quartz/static/feed.xsl' as FilePath },
+      ]) ?? null,
+    )
+
+    const expected = path.join(ctx.argv.output, 'static/feed.xsl')
+    assert.deepEqual(emitted, [expected])
+    assert.equal((await lstat(expected)).isSymbolicLink(), false)
+  } finally {
+    if (previousCfPages === undefined) {
+      delete process.env.CF_PAGES
+    } else {
+      process.env.CF_PAGES = previousCfPages
+    }
     await rm(root, { recursive: true, force: true })
   }
 })

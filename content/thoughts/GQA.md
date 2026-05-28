@@ -14,7 +14,7 @@ tags:
 title: Group-Query Attention
 ---
 
-idea: reduce number of KV heads $n_k$ to a fraction $n_k^{'} = \frac{n_q}{k}$ of number of query heads $n_q$ (evenly dividing the query heads into $n_k$ groups with $r$ heads)
+idea: reduce number of KV heads $n_k$ to a fraction $n_k^{'} = \frac{n_q}{r}$ of number of query heads $n_q$ (evenly dividing the query heads into $n_k$ groups with $r$ heads)
 
 Let $n_q$ be the number of query heads, $r$ the group size, and $g(i) = \lfloor i / r \rfloor$ the group index. Group-Query Attention keeps per-head query projections but shares the key/value projections within each group:
 
@@ -25,10 +25,10 @@ n_k &= n_q / r,\quad W_{K,g}, W_{V,g} \in \mathbb{R}^{d_{\text{model}} \times d_
 \end{aligned}
 $$
 
-During prefill we materialise all groups so gradients flow through distinct queries, but during decode the runtime reuses the $g(i)$th $K,V$ pair for every head inside the group. Bias term $B_i$ can encode rotary or [[thoughts/positional embeddings|positional]] adjustments per query head without duplicating the high-bandwidth value tensors.
+Each query head keeps its own projection, so the model retains $n_q$ distinct query subspaces, but during decode the runtime reuses the $g(i)$th $K,V$ pair for every head inside the group. Bias term $B_i$ can encode [[thoughts/positional embeddings|positional]] adjustments per query head without duplicating the high-bandwidth value tensors.
 
 > [!math] grouped cache reuse
-> For each time step only $n_k$ key/value tiles are fetched from device memory, so the bandwidth term shrinks from $\Theta(h d_h)$ to $\Theta(n_k d_h)$. Choosing $r=4$ halves the cache loads compared with $h=8$ multi-head without sacrificing $Q$-space diversity, matching the decode speedups reported in [@ainslie2023gqatraininggeneralizedmultiquery].
+> For each time step only $n_k$ key/value tiles are fetched from device memory, so the bandwidth term shrinks from $\Theta(h d_h)$ to $\Theta(n_k d_h)$. Choosing $r=2$ halves the cache loads compared with $h=8$ multi-head without sacrificing $Q$-space diversity, matching the decode speedups reported in [@ainslie2023gqatraininggeneralizedmultiquery].
 
 ```tikz
 \usepackage{tikz}

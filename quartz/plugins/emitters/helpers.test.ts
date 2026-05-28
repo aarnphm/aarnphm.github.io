@@ -88,3 +88,40 @@ test('resetWriteCache invalidates cached writes after output removal', async () 
     resetWriteCache()
   }
 })
+
+test('binary write cache tracks unchanged and changed buffers', async () => {
+  const output = await mkdtemp(path.join(tmpdir(), 'quartz-write-cache-'))
+  try {
+    const buildCtx = ctx(output)
+    buildCtx.argv.watch = true
+    const file = await write({
+      ctx: buildCtx,
+      slug: 'static/asset',
+      ext: '.bin',
+      content: Buffer.from('same'),
+    })
+
+    buildCtx.incremental = true
+    await write({
+      ctx: buildCtx,
+      slug: 'static/asset',
+      ext: '.bin',
+      content: Buffer.from('changed'),
+    })
+
+    const changed = await stat(file)
+    assert.equal(changed.size, Buffer.byteLength('changed'))
+
+    await rm(output, { recursive: true, force: true })
+    resetWriteCache()
+    buildCtx.incremental = false
+    await write({ ctx: buildCtx, slug: 'static/asset', ext: '.bin', content: Buffer.from('same') })
+
+    const result = await stat(file)
+    assert.equal(result.isFile(), true)
+    assert.equal(result.size, Buffer.byteLength('same'))
+  } finally {
+    await rm(output, { recursive: true, force: true })
+    resetWriteCache()
+  }
+})
