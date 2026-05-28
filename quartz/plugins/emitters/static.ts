@@ -1,8 +1,9 @@
 import fs from 'node:fs/promises'
-import { dirname } from 'path'
 import type { ChangeEvent } from '../../types/plugin'
 import { QuartzEmitterPlugin } from '../../types/plugin'
+import { defaultIoConcurrency, mapConcurrent } from '../../util/async-pool'
 import { glob } from '../../util/glob'
+import { linkOrCopyFile } from '../../util/link-or-copy-file'
 import { FilePath, QUARTZ, joinSegments } from '../../util/path'
 
 const staticPath = joinSegments(QUARTZ, 'static')
@@ -17,12 +18,10 @@ function staticRelativePath(changeEvent: ChangeEvent): FilePath | undefined {
   return relativePath.length > 0 ? (relativePath as FilePath) : undefined
 }
 
-async function copyStaticFile(output: string, fp: FilePath): Promise<FilePath> {
+async function copyStaticFile(output: string, fp: FilePath, hardLink: boolean): Promise<FilePath> {
   const src = joinSegments(staticPath, fp) as FilePath
   const dest = joinSegments(output, 'static', fp) as FilePath
-  await fs.mkdir(dirname(dest), { recursive: true })
-  await fs.copyFile(src, dest)
-  return dest
+  return linkOrCopyFile(src, dest, { hardLink })
 }
 
 export const Static: QuartzEmitterPlugin = () => ({
@@ -31,8 +30,12 @@ export const Static: QuartzEmitterPlugin = () => ({
     const outputStaticPath = joinSegments(argv.output, 'static')
     const fps = await glob('**', staticPath, cfg.configuration.ignorePatterns)
     await fs.mkdir(outputStaticPath, { recursive: true })
-    for (const fp of fps) {
-      yield copyStaticFile(argv.output, fp)
+    const hardLink = argv.watch && process.env.CF_PAGES !== '1'
+    const files = await mapConcurrent(fps, defaultIoConcurrency, fp =>
+      copyStaticFile(argv.output, fp, hardLink),
+    )
+    for (const file of files) {
+      yield file
     }
   },
   async *partialEmit({ argv }, _content, _resources, changeEvents) {
@@ -48,7 +51,7 @@ export const Static: QuartzEmitterPlugin = () => ({
         continue
       }
 
-      yield copyStaticFile(argv.output, fp)
+      yield copyStaticFile(argv.output, fp, argv.watch && process.env.CF_PAGES !== '1')
     }
   },
 })

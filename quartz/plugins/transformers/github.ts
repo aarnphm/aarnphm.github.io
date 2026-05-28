@@ -1,15 +1,17 @@
-import { Root as HtmlRoot, Element, Text } from 'hast'
-import { Root, Link, PhrasingContent } from 'mdast'
-import { RegExpMatchObject, findAndReplace as mdastFindReplace } from 'mdast-util-find-and-replace'
+import type { Element, Root as HtmlRoot } from 'hast'
+import type { Link, PhrasingContent, Root } from 'mdast'
+import type { RegExpMatchObject } from 'mdast-util-find-and-replace'
+import { findAndReplace as mdastFindReplace } from 'mdast-util-find-and-replace'
 import { toString } from 'mdast-util-to-string'
 // modified version of https://github.com/remarkjs/remark-github/blob/main/index.js
 // main change: Update mentionRegex to work with rehype-citation
 import fs from 'node:fs'
 import path from 'node:path'
 import rehypeGithubEmoji from 'rehype-github-emoji'
-import { BuildUrlValues, defaultBuildUrl } from 'remark-github'
+import { type BuildUrlValues, defaultBuildUrl } from 'remark-github'
 import { visit } from 'unist-util-visit'
-import { QuartzTransformerPlugin } from '../../types/plugin'
+import type { QuartzTransformerPlugin } from '../../types/plugin'
+import { isRecord } from '../../util/type-guards'
 
 // Previously, GitHub linked `@mention` and `@mentions` to their blog post about
 // mentions (<https://github.com/blog/821>).
@@ -91,6 +93,91 @@ const defaultOptions: Options = {
   mentionStrong: true,
   internalLinks: ['livingalonealone.com'],
   noTranslateBlock: ['pre', 'code'],
+}
+
+const dirTags = new Set(['div', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'ol', 'p', 'ul'])
+const defaultRelations = ['nofollow']
+
+function isElement(node: unknown): node is Element {
+  return isRecord(node) && node.type === 'element' && typeof node.tagName === 'string'
+}
+
+function isString(value: unknown): value is string {
+  return typeof value === 'string' && value.length > 0
+}
+
+function classList(element: Element): unknown[] {
+  const className = element.properties.className
+  if (Array.isArray(className)) return className
+  const next: string[] = []
+  element.properties.className = next
+  return next
+}
+
+function shouldAddDir(element: Element): boolean {
+  if (!dirTags.has(element.tagName) || !element.properties) return false
+  const className = element.properties.className
+  return !(Array.isArray(className) && className.includes('contains-task-list'))
+}
+
+function validateHostname(internal: string): void {
+  try {
+    const url = new URL('https://' + internal)
+    if (url.hostname === internal) return
+    throw new Error('Value `' + internal + '` is parsed as hostname `' + url.hostname + '`')
+  } catch (error) {
+    const exception = new Error('Expected valid hostname for URL, not `' + internal + '`')
+    exception.cause = error
+    throw exception
+  }
+}
+
+function validateRelation(relation: string): void {
+  if (!relation.includes(' ')) return
+  throw new Error(
+    'Expected valid `rel` value, without space (note: use arrays to pass multiple values)',
+  )
+}
+
+function isKnownHostname(hostname: string, internals: string[]): boolean {
+  for (const internal of internals) {
+    if (hostname === internal || hostname.endsWith('.' + internal)) return true
+  }
+  return false
+}
+
+function addExternalRelations(
+  element: Element,
+  internals: string[],
+  defaultHostname: string,
+): void {
+  if (element.tagName !== 'a') return
+  const href = element.properties.href
+  if (typeof href !== 'string') return
+
+  let url: URL | undefined
+  try {
+    url = new URL(href, 'https://' + defaultHostname)
+  } catch {}
+
+  if (!url || !url.hostname || isKnownHostname(url.hostname, internals)) return
+
+  const rel = Array.isArray(element.properties.rel) ? element.properties.rel : []
+  for (const relation of defaultRelations) {
+    if (!rel.includes(relation)) rel.push(relation)
+  }
+  element.properties.rel = rel
+}
+
+function shortenGithubLink(element: Element): void {
+  if (element.tagName !== 'a') return
+  const href = element.properties.href
+  if (typeof href !== 'string') return
+
+  const githubMatch = href.match(/^https:\/\/github\.com\/([^/]+)\/([^/\s#]+)/)
+  if (!githubMatch || toString(element) !== href) return
+
+  element.children = [{ type: 'text', value: `${githubMatch[1]}/${githubMatch[2]}` }]
 }
 
 export const GitHub: QuartzTransformerPlugin<Partial<Options>> = userOpts => {
@@ -322,146 +409,30 @@ export const GitHub: QuartzTransformerPlugin<Partial<Options>> = userOpts => {
       ]
     },
     htmlPlugins({ cfg }) {
+      const internals = [
+        'github.com',
+        cfg.configuration.baseUrl,
+        ...(opts.internalLinks ?? []),
+      ].filter(isString)
+      const noTranslateBlock = new Set(opts.noTranslateBlock ?? [])
+
+      for (const internal of internals) validateHostname(internal)
+      for (const relation of defaultRelations) validateRelation(relation)
+
+      const defaultHostname = internals[0]
+
       return [
-        // automatically add dir https://github.com/rehypejs/rehype-github/blob/main/packages/dir/lib/index.js
-        // It is simple enough and I don't want to add a whole deps for it.
-        () => {
-          const include = new Set(['div', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'ol', 'p', 'ul'])
-
-          const checkAddDir = ({ type, tagName, properties }: Element) => {
-            if (type !== 'element' || !include.has(tagName) || !properties) return false
-            // Do not add them to `:is(ol, ul).contains-task-list`.
-            if (
-              Array.isArray(properties.className) &&
-              properties.className.includes('contains-task-list')
-            ) {
-              return false
+        () => (tree: HtmlRoot) => {
+          visit(tree, node => {
+            if (!isElement(node)) return
+            if (shouldAddDir(node)) node.properties.dir = 'auto'
+            if (noTranslateBlock.has(node.tagName)) {
+              const classes = classList(node)
+              if (!classes.includes('notranslate')) classes.push('notranslate')
             }
-            return true
-          }
-          return (tree: HtmlRoot, _file) => {
-            visit(
-              tree,
-              node => checkAddDir(node as Element),
-              node => {
-                // @ts-ignore
-                node.properties.dir = 'auto'
-              },
-            )
-          }
-        },
-        // mark as external links for both GitHub and current domain https://github.com/rehypejs/rehype-github/blob/main/packages/link/lib/index.js
-        () => {
-          const internals = ['github.com', cfg.configuration.baseUrl, ...opts.internalLinks!]
-          const relations = ['nofollow']
-
-          for (const internal of internals) {
-            try {
-              const url = new URL('https://' + internal)
-              if (url.hostname !== internal) {
-                throw new Error(
-                  'Value `' + internal + '` is parsed as hostname `' + url.hostname + '`',
-                )
-              }
-            } catch (error) {
-              const exception = new Error('Expected valid hostname for URL, not `' + internal + '`')
-              exception.cause = error
-              throw exception
-            }
-          }
-
-          for (const relation of relations) {
-            if (relation.includes(' ')) {
-              throw new Error(
-                'Expected valid `rel` value, without space (note: use arrays to pass multiple values)',
-              )
-            }
-          }
-
-          return function (tree) {
-            visit(tree, 'element', function (node, index, parent) {
-              if (
-                node.type === 'element' &&
-                node.tagName === 'a' &&
-                parent &&
-                typeof index === 'number'
-              ) {
-                let url: URL | undefined
-
-                const defaultHostname = internals[0]
-
-                if (defaultHostname) {
-                  try {
-                    url = new URL(String(node.properties.href), 'https://' + defaultHostname)
-                  } catch {}
-                }
-
-                let known = false
-
-                if (url) {
-                  const hostname = url.hostname
-
-                  // For `mailto:` and such.
-                  known = !hostname
-
-                  for (const internal of internals) {
-                    if (hostname === internal || hostname.endsWith('.' + internal)) {
-                      known = true
-                      break
-                    }
-                  }
-                }
-
-                if (known) {
-                  // Local or known.
-                } else {
-                  const rel = Array.isArray(node.properties.rel)
-                    ? node.properties.rel
-                    : (node.properties.rel = [])
-
-                  for (const relation of relations) {
-                    if (!rel.includes(relation)) rel.push(relation)
-                  }
-                }
-              }
-            })
-          }
-        },
-        // parsing notranslate block, default to <pre> and <code> https://github.com/rehypejs/rehype-github/blob/main/packages/notranslate/lib/index.js
-        () => {
-          return function (tree) {
-            const toAddBlock = ({ type, tagName, properties }: Element) =>
-              type === 'element' && opts.noTranslateBlock!.includes(tagName) && Boolean(properties)
-            visit(
-              tree,
-              'element',
-              toAddBlock,
-              // @ts-ignore
-              (node: Element) => {
-                const className = Array.isArray(node.properties.className)
-                  ? node.properties.className
-                  : (node.properties.className = [])
-                className.push('notranslate')
-              },
-            )
-          }
-        },
-        // Special parsing for https://github.com bare URL from autolink literals of gfm
-        // to only parse user/project
-        () => {
-          return function (tree) {
-            visit(tree, { tagName: 'a' }, (node: Element) => {
-              const githubMatch = ((node.properties.href! as string) ?? '').match(
-                /^https:\/\/github\.com\/([^/]+)\/([^/\s#]+)/,
-              )
-              if (githubMatch && toString(node) === node.properties.href!) {
-                visit(node, 'text', function (el: Text) {
-                  el.value = `${githubMatch[1]}/${githubMatch[2]}`
-                })
-              }
-            })
-            return
-          }
+            addExternalRelations(node, internals, defaultHostname)
+            shortenGithubLink(node)
+          })
         },
         rehypeGithubEmoji,
       ]

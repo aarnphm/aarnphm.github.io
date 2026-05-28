@@ -26,20 +26,32 @@ import { renderOutputHtmlBlocks, renderSuccessMarkerHtmlBlock } from './render/o
 export type NotebookMarkdownOptions = { runtime?: false | NotebookRuntimeConfig }
 
 const writefileMagicPattern = /^%%(?:writefile|file)\b(.*)$/i
-const cellMagicPattern = /^%%([A-Za-z_][A-Za-z0-9_-]*)\b/
+const cellMagicPattern = /^%%([A-Za-z_][A-Za-z0-9_+.-]*)(?=\s|$)/
 const captureCellMagics = new Set(['capture'])
 const languageCellMagics = new Map<string, string>([
   ['bash', 'bash'],
+  ['c', 'c'],
+  ['cpp', 'cpp'],
+  ['c++', 'cpp'],
+  ['cxx', 'cpp'],
   ['script', 'bash'],
   ['sh', 'bash'],
   ['javascript', 'javascript'],
   ['js', 'javascript'],
   ['html', 'html'],
   ['sql', 'sql'],
+  ['wasm', 'wasm'],
+  ['wat', 'wasm'],
 ])
 const runtimeCellMagics = new Map<string, string>([
+  ['c', 'c'],
+  ['cpp', 'cpp'],
+  ['c++', 'cpp'],
+  ['cxx', 'cpp'],
   ['javascript', 'javascript'],
   ['js', 'javascript'],
+  ['wasm', 'wasm'],
+  ['wat', 'wasm'],
 ])
 const filenameLanguageExtensions = new Map<string, string>([
   ['bash', 'bash'],
@@ -50,7 +62,9 @@ const filenameLanguageExtensions = new Map<string, string>([
   ['cxx', 'cpp'],
   ['go', 'go'],
   ['h', 'c'],
+  ['hh', 'cpp'],
   ['hpp', 'cpp'],
+  ['hxx', 'cpp'],
   ['html', 'html'],
   ['java', 'java'],
   ['js', 'javascript'],
@@ -67,6 +81,7 @@ const filenameLanguageExtensions = new Map<string, string>([
   ['tsx', 'tsx'],
   ['txt', 'text'],
   ['wat', 'wasm'],
+  ['wasm', 'wasm'],
   ['zig', 'zig'],
 ])
 

@@ -78,6 +78,55 @@ test('base view partial emit rebuilds when a matched file changes', () => {
   assert.deepEqual(rebuiltSlugs(plan), ['library'])
 })
 
+test('base view partial emit ignores matched file body changes with stable metadata', () => {
+  const base = baseFile()
+  const index = note('index', 'index.md')
+  const previousBook = note('library/book', 'library/book.md')
+  const previousContent = [base, index, previousBook]
+  const previous = planBaseViewPartialEmit(previousContent, []).nextState
+  const nextBook = note('library/book', 'library/book.md')
+
+  const plan = planBaseViewPartialEmit(
+    [base, index, nextBook],
+    [
+      {
+        type: 'change',
+        path: 'library/book.md' as FilePath,
+        file: nextBook[1],
+        previousFile: previousBook[1],
+      },
+    ],
+    previous,
+  )
+
+  assert.deepEqual(rebuiltSlugs(plan), [])
+})
+
+test('base view partial emit rebuilds when matched file metadata changes', () => {
+  const base = baseFile()
+  const index = note('index', 'index.md')
+  const previousBook = note('library/book', 'library/book.md')
+  const previousContent = [base, index, previousBook]
+  const previous = planBaseViewPartialEmit(previousContent, []).nextState
+  const nextBook = note('library/book', 'library/book.md')
+  nextBook[1].data.frontmatter = { title: 'book, revised', pageLayout: 'default' }
+
+  const plan = planBaseViewPartialEmit(
+    [base, index, nextBook],
+    [
+      {
+        type: 'change',
+        path: 'library/book.md' as FilePath,
+        file: nextBook[1],
+        previousFile: previousBook[1],
+      },
+    ],
+    previous,
+  )
+
+  assert.deepEqual(rebuiltSlugs(plan), ['library'])
+})
+
 test('base view partial emit rebuilds when a file enters the base result set', () => {
   const base = baseFile()
   const index = note('index', 'index.md')

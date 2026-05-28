@@ -11,7 +11,7 @@ import { MasonryPage, Footer as FooterConstructor } from '../../components/'
 import { pageResources, renderPage } from '../../components/renderPage'
 import { QuartzComponentProps } from '../../types/component'
 import { QuartzEmitterPlugin } from '../../types/plugin'
-import { BuildCtx } from '../../util/ctx'
+import { BuildCtx, contentDataFor } from '../../util/ctx'
 import { pathToRoot, slugifyFilePath, FilePath, FullSlug } from '../../util/path'
 import { StaticResources } from '../../util/resources'
 import { parseWikilink, resolveWikilinkTarget } from '../../util/wikilinks'
@@ -83,7 +83,7 @@ export const Masonry: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts =>
       return [Head, ...Header, ...BeforeBody, pageBody, ...afterBody, ...sidebar, Footer]
     },
     async *partialEmit(ctx, content, resources, changeEvents) {
-      const allFiles = content.map(c => c[1].data)
+      const allFiles = contentDataFor(content)
 
       // find all slugs that changed or were added
       const changedSlugs = new Set<string>()
@@ -103,7 +103,7 @@ export const Masonry: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts =>
       }
     },
     async *emit(ctx, content, resources) {
-      const allFiles = content.map(c => c[1].data)
+      const allFiles = contentDataFor(content)
 
       for (const [tree, file] of content) {
         if (file.data.frontmatter?.layout !== 'masonry') continue

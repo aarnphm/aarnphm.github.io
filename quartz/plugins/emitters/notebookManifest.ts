@@ -1,3 +1,4 @@
+import type { BuildCtx } from '../../util/ctx'
 import { QuartzEmitterPlugin } from '../../types/plugin'
 import { glob } from '../../util/glob'
 import { FilePath, slugifyFilePath } from '../../util/path'
@@ -12,18 +13,36 @@ async function notebookFilePaths(
   return (await glob('**/*.ipynb', argv.directory, cfg.configuration.ignorePatterns)) as FilePath[]
 }
 
+function isNotebookPath(fp: FilePath): boolean {
+  return fp.endsWith('.ipynb')
+}
+
+function changesNotebookMembership(changeEvents: readonly { path: FilePath; type: string }[]) {
+  return changeEvents.some(
+    changeEvent => isNotebookPath(changeEvent.path) && changeEvent.type !== 'change',
+  )
+}
+
+async function writeNotebookManifest(ctx: BuildCtx): Promise<FilePath> {
+  const fps = await notebookFilePaths(ctx.argv, ctx.cfg)
+  const slugs = fps.map(fp => slugifyFilePath(fp, true)).sort()
+  const payload = JSON.stringify({ slugs }, null, 2)
+  return write({
+    ctx,
+    content: payload,
+    slug: MANIFEST_NAME.replace(/\.json$/, '') as ReturnType<typeof slugifyFilePath>,
+    ext: '.json',
+  })
+}
+
 export const NotebookPagesManifest: QuartzEmitterPlugin = () => ({
   name: 'NotebookPagesManifest',
   async *emit(ctx) {
-    const fps = await notebookFilePaths(ctx.argv, ctx.cfg)
-    const slugs = fps.map(fp => slugifyFilePath(fp, true)).sort()
-    const payload = JSON.stringify({ slugs }, null, 2)
-    yield write({
-      ctx,
-      content: payload,
-      slug: MANIFEST_NAME.replace(/\.json$/, '') as ReturnType<typeof slugifyFilePath>,
-      ext: '.json',
-    })
+    yield writeNotebookManifest(ctx)
+  },
+  async *partialEmit(ctx, _content, _resources, changeEvents) {
+    if (!changesNotebookMembership(changeEvents)) return
+    yield writeNotebookManifest(ctx)
   },
 })
 

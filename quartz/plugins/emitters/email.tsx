@@ -10,7 +10,7 @@ import { Content, Head } from '../../components'
 import { pageResources, renderPage } from '../../components/renderPage'
 import { QuartzComponent, QuartzComponentProps } from '../../types/component'
 import { QuartzEmitterPlugin } from '../../types/plugin'
-import { BuildCtx } from '../../util/ctx'
+import { BuildCtx, contentDataFor } from '../../util/ctx'
 import {
   FilePath,
   FullSlug,
@@ -674,7 +674,7 @@ export const EmailEmitter: QuartzEmitterPlugin = () => {
       const codeFont = buildFontStack(getFontSpecificationName(typography.code), DEFAULT_MONO)
       const colors = cfg.theme.colors.lightMode
 
-      const allFiles = content.map(c => c[1].data)
+      const allFiles = contentDataFor(content)
       const contentRoot = ctx.argv.directory
       const staticRoot = path.join(QUARTZ, 'static')
       const contentTypes: Record<string, string> = {

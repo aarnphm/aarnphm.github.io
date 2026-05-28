@@ -1,4 +1,3 @@
-import { Root as HtmlRoot } from 'hast'
 import { Root as MdRoot } from 'mdast'
 import fs from 'node:fs/promises'
 import { availableParallelism } from 'node:os'
@@ -10,11 +9,13 @@ import { FullPageLayout, QuartzConfig } from '../../cfg'
 import * as Component from '../../components'
 import HeaderConstructor from '../../components/Header'
 import { pageResources, renderPage } from '../../components/renderPage'
-import { createHtmlProcessor, createMdProcessor } from '../../processors/parse'
+import { createHtmlProcessor, createMdProcessor, mdastToHastRoot } from '../../processors/parse'
 import '../../runtime/notebook/registry'
 import { backendFor } from '../../runtime/notebook/backend'
 import { ChangeEvent, QuartzEmitterPlugin } from '../../types/plugin'
-import { BuildCtx, Argv } from '../../util/ctx'
+import { hashAssetContent } from '../../util/asset-manifest'
+import { defaultIoConcurrency, mapConcurrent } from '../../util/async-pool'
+import { BuildCtx, Argv, contentDataFor } from '../../util/ctx'
 import { glob } from '../../util/glob'
 import { extractInlineNotebookAssets } from '../../util/notebook/extract-assets'
 import { notebookToMarkdownChunks } from '../../util/notebook/markdown'
@@ -22,7 +23,7 @@ import { parseNotebookDoc } from '../../util/notebook/parse'
 import { isNotebookParseError } from '../../util/notebook/types'
 import { FilePath, FullSlug, joinSegments, pathToRoot, slugifyFilePath } from '../../util/path'
 import { StaticResources } from '../../util/resources'
-import { ProcessedContent } from '../vfile'
+import { ProcessedContent, QuartzPluginData } from '../vfile'
 import { write } from './helpers'
 
 type NotebookRuntimeOptions = false | { enabled?: boolean; indexUrl?: string }
@@ -35,8 +36,32 @@ type ResolvedOptions = {
 }
 
 type NotebookDependencies = { imports: Set<FilePath>; assets: Set<FilePath> }
+type NotebookProcessors = {
+  md: ReturnType<typeof createMdProcessor>
+  html: ReturnType<typeof createHtmlProcessor>
+}
+type NotebookPageCacheEntry = { key: string; page: NotebookPage }
+type NotebookPageCacheOptions = { salt: string | undefined; read: boolean; write: boolean }
+
+declare global {
+  var __quartzNotebookPageCache: Map<FilePath, NotebookPageCacheEntry> | undefined
+}
 
 const defaultOptions: ResolvedOptions = { executeTimeoutSeconds: 120, runtime: false }
+
+const notebookPageCache = (globalThis.__quartzNotebookPageCache ??= new Map<
+  FilePath,
+  NotebookPageCacheEntry
+>())
+const notebookCacheSourcePaths: FilePath[] = [
+  'quartz/plugins/emitters/notebook.ts' as FilePath,
+  'quartz/processors/parse.ts' as FilePath,
+  'quartz/util/notebook/cell-html.ts' as FilePath,
+  'quartz/util/notebook/extract-assets.ts' as FilePath,
+  'quartz/util/notebook/markdown.ts' as FilePath,
+  'quartz/util/notebook/parse.ts' as FilePath,
+  'quartz/util/notebook/render/icons.ts' as FilePath,
+]
 
 const htmlResourceSrcPattern =
   /<(?:img|video|audio|iframe)\b[^>]*\bsrc\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s>]+))/gi
@@ -68,6 +93,17 @@ type NotebookPage = { fp: FilePath; slug: FullSlug; content: ProcessedContent }
 
 function isNotebookPath(fp: FilePath): boolean {
   return path.extname(fp) === '.ipynb'
+}
+
+function isMarkdownContentPath(fp: FilePath): boolean {
+  const ext = path.extname(fp)
+  return ext === '.md' || ext === '.base' || ext === '.canvas'
+}
+
+function mayAffectNotebookPages(changeEvents: ChangeEvent[]): boolean {
+  return changeEvents.some(
+    changeEvent => isNotebookPath(changeEvent.path) || !isMarkdownContentPath(changeEvent.path),
+  )
 }
 
 function applyTextTransforms(ctx: BuildCtx, markdown: string): string {
@@ -230,27 +266,65 @@ function importableNotebookModules(fp: FilePath, fps: FilePath[]): string[] {
   return [...modules].sort()
 }
 
+async function notebookSourceSignature(fp: FilePath): Promise<string> {
+  try {
+    const stat = await fs.stat(fp)
+    return `${fp}:${stat.mtimeMs}:${stat.size}`
+  } catch {
+    return `${fp}:missing`
+  }
+}
+
+async function notebookPageCacheSalt(ctx: BuildCtx): Promise<string | undefined> {
+  if (!ctx.argv.watch) return undefined
+  return (await Promise.all(notebookCacheSourcePaths.map(notebookSourceSignature))).join('|')
+}
+
+function notebookRuntimeCacheKey(opts: ResolvedOptions): string {
+  if (opts.runtime === false) return 'runtime:false'
+  return `runtime:${opts.runtime.indexUrl ?? ''}`
+}
+
+function notebookPageCacheKey(
+  raw: string,
+  opts: ResolvedOptions,
+  sourceSalt: string,
+  importableModules: readonly string[],
+): string {
+  return [
+    sourceSalt,
+    hashAssetContent(raw),
+    notebookRuntimeCacheKey(opts),
+    importableModules.join('\0'),
+  ].join('\u0001')
+}
+
 async function notebookProcessedContent(
   ctx: BuildCtx,
   fp: FilePath,
   opts: ResolvedOptions,
   contextFps: FilePath[],
+  cacheOptions: NotebookPageCacheOptions,
+  processors: () => NotebookProcessors,
 ): Promise<NotebookPage> {
   const src = joinSegments(ctx.argv.directory, fp) as FilePath
   const slug = slugifyFilePath(fp, true)
   const raw = await fs.readFile(joinSegments(ctx.argv.directory, fp) as FilePath, 'utf8')
+  const importableModules = importableNotebookModules(fp, contextFps)
+  const cacheKey = cacheOptions.salt
+    ? notebookPageCacheKey(raw, opts, cacheOptions.salt, importableModules)
+    : undefined
+  if (cacheKey && cacheOptions.read) {
+    const cached = notebookPageCache.get(fp)
+    if (cached?.key === cacheKey) return cached.page
+  }
+
   const notebook = parseNotebookDoc(raw, src)
   if (isNotebookParseError(notebook))
     throw new Error(`${src} is not a valid notebook: ${notebook.reason}`)
   const rawChunks = notebookToMarkdownChunks(notebook, fp, {
     runtime:
-      opts.runtime === false
-        ? false
-        : {
-            ...opts.runtime,
-            sourcePath: fp,
-            importableModules: importableNotebookModules(fp, contextFps),
-          },
+      opts.runtime === false ? false : { ...opts.runtime, sourcePath: fp, importableModules },
   }).map(chunk => applyTextTransforms(ctx, chunk))
   const { chunks: markdownChunks } = await extractInlineNotebookAssets(rawChunks, ctx)
   const markdown = markdownChunks.join('\n\n').trim()
@@ -260,18 +334,46 @@ async function notebookProcessedContent(
   file.data.relativePath = fp
   file.data.slug = slug
 
-  const mdProcessor = createMdProcessor(ctx)
-  const htmlProcessor = createHtmlProcessor(ctx)
+  const { md: mdProcessor, html: htmlProcessor } = processors()
   const ast = parseNotebookMarkdownChunks(mdProcessor, markdownChunks)
   const mdAst = await mdProcessor.run(ast, file)
-  const htmlAst = (await htmlProcessor.run(mdAst, file)) as HtmlRoot
+  const htmlAst = await htmlProcessor.run(mdastToHastRoot(mdAst), file)
   if (file.data.frontmatter) {
     file.data.frontmatter.description = ''
     file.data.frontmatter.socialDescription = ''
   }
   file.data.description = ''
 
-  return { fp, slug, content: [htmlAst, file] }
+  const page = { fp, slug, content: [htmlAst, file] } satisfies NotebookPage
+  if (cacheKey && cacheOptions.write) {
+    notebookPageCache.set(fp, { key: cacheKey, page })
+  }
+  return page
+}
+
+async function parseNotebookQueue(
+  ctx: BuildCtx,
+  fps: FilePath[],
+  opts: ResolvedOptions,
+  contextFps: FilePath[],
+  cacheOptions: NotebookPageCacheOptions,
+): Promise<Array<NotebookPage | { fp: FilePath; error: unknown }>> {
+  let processorCache: NotebookProcessors | undefined
+  const processors = () => {
+    processorCache ??= { md: createMdProcessor(ctx), html: createHtmlProcessor(ctx) }
+    return processorCache
+  }
+  const pages: Array<NotebookPage | { fp: FilePath; error: unknown }> = []
+  for (const fp of fps) {
+    try {
+      pages.push(
+        await notebookProcessedContent(ctx, fp, opts, contextFps, cacheOptions, processors),
+      )
+    } catch (error) {
+      pages.push({ fp, error })
+    }
+  }
+  return pages
 }
 
 async function parseNotebookPages(
@@ -282,31 +384,25 @@ async function parseNotebookPages(
   contextFps: FilePath[],
 ): Promise<NotebookPage[]> {
   const pages: NotebookPage[] = []
+  const workerCount = Math.max(1, Math.min(maxWorkers, fps.length))
+  const queues = Array.from({ length: workerCount }, () => [] as FilePath[])
+  for (let i = 0; i < fps.length; i += 1) {
+    queues[i % workerCount].push(fps[i])
+  }
+  const salt = await notebookPageCacheSalt(ctx)
+  const cacheOptions = { salt, read: Boolean(salt && ctx.incremental), write: Boolean(salt) }
+  const results = await Promise.all(
+    queues.map(queue => parseNotebookQueue(ctx, queue, opts, contextFps, cacheOptions)),
+  )
 
-  for (let start = 0; start < fps.length; start += maxWorkers) {
-    const batch = fps.slice(start, start + maxWorkers)
-    const results = await Promise.all(
-      batch.map(async fp => {
-        try {
-          return {
-            status: 'fulfilled' as const,
-            page: await notebookProcessedContent(ctx, fp, opts, contextFps),
-          }
-        } catch (error) {
-          return { status: 'rejected' as const, fp, error }
-        }
-      }),
-    )
-
-    for (const result of results) {
-      if (result.status === 'fulfilled') {
-        pages.push(result.page)
-      } else {
-        console.error(
-          styleText('red', `\n[emit:NotebookViewer] Error processing ${result.fp}:`),
-          result.error,
-        )
-      }
+  for (const result of results.flat()) {
+    if ('content' in result) {
+      pages.push(result)
+    } else {
+      console.error(
+        styleText('red', `\n[emit:NotebookViewer] Error processing ${result.fp}:`),
+        result.error,
+      )
     }
   }
 
@@ -316,7 +412,7 @@ async function parseNotebookPages(
 async function emitNotebookPage(
   ctx: BuildCtx,
   page: NotebookPage,
-  allFiles: ProcessedContent[],
+  allFiles: QuartzPluginData[],
   resources: StaticResources,
 ): Promise<FilePath> {
   const [tree, file] = page.content
@@ -328,7 +424,7 @@ async function emitNotebookPage(
     cfg: ctx.cfg.configuration,
     children: [],
     tree,
-    allFiles: allFiles.map(([, pageFile]) => pageFile.data),
+    allFiles,
   }
 
   const html = renderPage(
@@ -370,14 +466,18 @@ async function* emitNotebookPages(
   const maxWorkers = Math.max(1, Math.min(resolveWorkerLimit(), fps.length))
   const localCtx = notebookContext(ctx, contextFps)
   const pages = await parseNotebookPages(localCtx, fps, maxWorkers, opts, contextFps)
-  const allFiles = [...content, ...pages.map(page => page.content)]
-
-  for (const page of pages) {
+  const allFiles = [...contentDataFor(content), ...pages.map(page => page.content[1].data)]
+  const files = await mapConcurrent(pages, defaultIoConcurrency, async page => {
     try {
-      yield await emitNotebookPage(localCtx, page, allFiles, resources)
+      return await emitNotebookPage(localCtx, page, allFiles, resources)
     } catch (error) {
       console.error(styleText('red', `\n[emit:NotebookViewer] Error processing ${page.fp}:`), error)
+      return undefined
     }
+  })
+
+  for (const file of files) {
+    if (file) yield file
   }
 }
 
@@ -432,6 +532,10 @@ export const NotebookViewer: QuartzEmitterPlugin<Options> = userOpts => {
       ]
     },
     async *partialEmit(ctx, content, resources, changeEvents) {
+      if (!mayAffectNotebookPages(changeEvents)) {
+        return
+      }
+
       for (const changeEvent of notebookChangeEvents(changeEvents)) {
         if (changeEvent.type === 'delete') {
           await deleteNotebookPage(ctx, changeEvent.path)

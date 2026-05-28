@@ -9,16 +9,17 @@ import ArenaIndex from '../../components/pages/ArenaIndex'
 import ChannelContent from '../../components/pages/ChannelContent'
 import { pageResources, renderPage } from '../../components/renderPage'
 import { QuartzComponentProps } from '../../types/component'
-import { QuartzEmitterPlugin } from '../../types/plugin'
+import { ChangeEvent, QuartzEmitterPlugin } from '../../types/plugin'
 import {
   collectArenaEmitState,
   isArenaChannelJsonEnabled,
   planArenaPartialEmit,
   type ArenaEmitState,
 } from '../../util/arena-page-partial'
+import { defaultIoConcurrency, mapConcurrent } from '../../util/async-pool'
 import { clone } from '../../util/clone'
-import { BuildCtx } from '../../util/ctx'
-import { pathToRoot, joinSegments, FullSlug } from '../../util/path'
+import { BuildCtx, contentDataFor } from '../../util/ctx'
+import { pathToRoot, joinSegments, FullSlug, FilePath } from '../../util/path'
 import { StaticResources } from '../../util/resources'
 import {
   ArenaChannel,
@@ -101,10 +102,6 @@ async function processChannel(
   return write({ ctx, content, slug: channelSlug, ext: '.html' })
 }
 
-/**
- * Convert ArenaBlock to searchable JSON format.
- * Serializes ElementContent nodes to HTML strings for JSON compatibility.
- */
 function serializeBlock(
   block: ArenaBlock,
   channelSlug: string,
@@ -134,24 +131,18 @@ function serializeBlock(
   if (block.internalTitle) searchable.internalTitle = block.internalTitle
   if (block.tags) searchable.tags = block.tags
 
-  // Serialize ElementContent to HTML strings
   if (block.titleHtmlNode) {
     try {
       searchable.titleHtml = toHtml(block.titleHtmlNode as ElementContent)
-    } catch {
-      // Fallback to title if serialization fails
-    }
+    } catch {}
   }
 
   if (block.htmlNode) {
     try {
       searchable.blockHtml = toHtml(block.htmlNode as ElementContent)
-    } catch {
-      // Fallback to content if serialization fails
-    }
+    } catch {}
   }
 
-  // Recursively serialize sub-items
   if (block.subItems && block.subItems.length > 0) {
     searchable.subItems = block.subItems.map(subBlock =>
       serializeBlock(subBlock, channelSlug, channelName, false),
@@ -161,10 +152,6 @@ function serializeBlock(
   return searchable
 }
 
-/**
- * Build complete search index from arena data.
- * Tracks which blocks have prerendered modals in DOM (first 5 per channel).
- */
 function buildSearchIndex(channels: ArenaChannel[]): ArenaSearchIndex {
   const PREVIEW_BLOCK_LIMIT = 5
 
@@ -180,7 +167,6 @@ function buildSearchIndex(channels: ArenaChannel[]): ArenaSearchIndex {
     })
 
     channel.blocks.forEach((block, index) => {
-      // First 5 blocks per channel have prerendered modals in index page
       const hasModalInDom = index < PREVIEW_BLOCK_LIMIT
       blocks.push(serializeBlock(block, channel.slug, channel.name, hasModalInDom))
     })
@@ -230,6 +216,39 @@ async function processChannelJson(ctx: BuildCtx, channel: ArenaChannel) {
   return write({ ctx, content: JSON.stringify(output, null, 2), slug, ext: '' })
 }
 
+async function processChannelOutputs(
+  ctx: BuildCtx,
+  channel: ArenaChannel,
+  baseFileData: QuartzPluginData,
+  allFiles: QuartzPluginData[],
+  opts: FullPageLayout,
+  resources: StaticResources,
+): Promise<FilePath[]> {
+  const files = [await processChannel(ctx, channel, baseFileData, allFiles, opts, resources)]
+  if (isArenaChannelJsonEnabled(channel)) {
+    files.push(await processChannelJson(ctx, channel))
+  }
+  return files
+}
+
+async function processChangedChannelOutputs(
+  ctx: BuildCtx,
+  channel: ArenaChannel,
+  previous: { jsonEnabled: boolean } | undefined,
+  baseFileData: QuartzPluginData,
+  allFiles: QuartzPluginData[],
+  opts: FullPageLayout,
+  resources: StaticResources,
+): Promise<FilePath[]> {
+  const files = [await processChannel(ctx, channel, baseFileData, allFiles, opts, resources)]
+  if (isArenaChannelJsonEnabled(channel)) {
+    files.push(await processChannelJson(ctx, channel))
+  } else if (previous?.jsonEnabled) {
+    await fs.rm(joinSegments(ctx.argv.output, 'arena', channel.slug, 'json'), { force: true })
+  }
+  return files
+}
+
 async function removeChannelOutputs(
   ctx: BuildCtx,
   channelSlug: string,
@@ -239,6 +258,14 @@ async function removeChannelOutputs(
   if (jsonEnabled) {
     await fs.rm(joinSegments(ctx.argv.output, 'arena', channelSlug, 'json'), { force: true })
   }
+}
+
+function hasArenaPageChange(changeEvents: readonly ChangeEvent[]): boolean {
+  for (const changeEvent of changeEvents) {
+    const slug = changeEvent.file?.data.slug ?? changeEvent.previousFile?.data.slug
+    if (slug === 'are.na') return true
+  }
+  return false
 }
 
 export const ArenaPage: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts => {
@@ -291,7 +318,7 @@ export const ArenaPage: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts 
       ]
     },
     async *emit(ctx, content, resources) {
-      const allFiles = content.map(c => c[1].data)
+      const allFiles = contentDataFor(content)
 
       for (const [tree, file] of content) {
         const slug = file.data.slug!
@@ -302,12 +329,12 @@ export const ArenaPage: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts 
         const channels = file.data.arenaData.channels
         yield processArenaIndex(ctx, tree, file.data, allFiles, indexOpts, resources)
 
-        for (const channel of channels) {
-          yield processChannel(ctx, channel, file.data, allFiles, channelOpts, resources)
+        const channelFiles = await mapConcurrent(channels, defaultIoConcurrency, channel =>
+          processChannelOutputs(ctx, channel, file.data, allFiles, channelOpts, resources),
+        )
 
-          if (isArenaChannelJsonEnabled(channel)) {
-            yield processChannelJson(ctx, channel)
-          }
+        for (const files of channelFiles) {
+          yield* files
         }
 
         const searchIndex = buildSearchIndex(channels)
@@ -315,52 +342,67 @@ export const ArenaPage: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts 
         arenaEmitState = collectArenaEmitState(channels)
       }
     },
-    async *partialEmit(ctx, content, resources, changeEvents) {
-      const allFiles = content.map(c => c[1].data)
+    partialEmit(ctx, content, resources, changeEvents) {
+      if (!hasArenaPageChange(changeEvents)) return null
 
-      const changedSlugs = new Set<string>()
-      for (const changeEvent of changeEvents) {
-        if (!changeEvent.file) continue
-        if (changeEvent.type === 'add' || changeEvent.type === 'change') {
-          changedSlugs.add(changeEvent.file.data.slug!)
-        }
-      }
+      return (async function* () {
+        const allFiles = contentDataFor(content)
 
-      for (const [tree, file] of content) {
-        const slug = file.data.slug!
-        if (!changedSlugs.has(slug)) continue
-        if (slug !== 'are.na') continue
-        if (!file.data.arenaData) continue
-
-        const channels = file.data.arenaData.channels
-        const plan = planArenaPartialEmit(arenaEmitState, channels)
-        if (!plan.hasChanges) {
-          arenaEmitState = plan.nextState
-          continue
-        }
-
-        yield processArenaIndex(ctx, tree, file.data, allFiles, indexOpts, resources)
-
-        for (const channel of plan.changedChannels) {
-          const previous = arenaEmitState?.channelStates.get(channel.slug)
-          yield processChannel(ctx, channel, file.data, allFiles, channelOpts, resources)
-
-          if (isArenaChannelJsonEnabled(channel)) {
-            yield processChannelJson(ctx, channel)
-          } else if (previous?.jsonEnabled) {
-            await fs.rm(joinSegments(ctx.argv.output, 'arena', channel.slug, 'json'), {
-              force: true,
-            })
+        const changedSlugs = new Set<string>()
+        for (const changeEvent of changeEvents) {
+          if (!changeEvent.file) continue
+          if (changeEvent.type === 'add' || changeEvent.type === 'change') {
+            changedSlugs.add(changeEvent.file.data.slug!)
           }
         }
 
-        for (const [channelSlug, previous] of plan.deletedChannels) {
-          await removeChannelOutputs(ctx, channelSlug, previous.jsonEnabled)
-        }
+        for (const [tree, file] of content) {
+          const slug = file.data.slug!
+          if (!changedSlugs.has(slug)) continue
+          if (slug !== 'are.na') continue
+          if (!file.data.arenaData) continue
 
-        yield emitSearchIndex(ctx, buildSearchIndex(channels))
-        arenaEmitState = plan.nextState
-      }
+          const channels = file.data.arenaData.channels
+          const plan = planArenaPartialEmit(arenaEmitState, channels)
+          if (!plan.hasChanges) {
+            arenaEmitState = plan.nextState
+            continue
+          }
+
+          yield processArenaIndex(ctx, tree, file.data, allFiles, indexOpts, resources)
+
+          const changedChannelFiles = await mapConcurrent(
+            plan.changedChannels,
+            defaultIoConcurrency,
+            async channel => {
+              const previous = arenaEmitState?.channelStates.get(channel.slug)
+              return processChangedChannelOutputs(
+                ctx,
+                channel,
+                previous,
+                file.data,
+                allFiles,
+                channelOpts,
+                resources,
+              )
+            },
+          )
+
+          for (const files of changedChannelFiles) {
+            yield* files
+          }
+
+          await mapConcurrent(
+            [...plan.deletedChannels],
+            defaultIoConcurrency,
+            ([channelSlug, previous]) =>
+              removeChannelOutputs(ctx, channelSlug, previous.jsonEnabled),
+          )
+
+          yield emitSearchIndex(ctx, buildSearchIndex(channels))
+          arenaEmitState = plan.nextState
+        }
+      })()
     },
     externalResources: () => ({ additionalHead: [] }),
   }

@@ -7,13 +7,17 @@ import type { StaticResources } from '../../../util/resources'
 import type { ComponentResourceSet } from './resource-set'
 import collapseHeaderStyle from '../../../components/styles/collapseHeader.inline.scss'
 import {
+  assetReferenceForContent,
   assetPath,
   contentHashSlug,
+  ensureExtractedStaticResources,
   registerExtractedStaticResource,
+  shouldHashAssets,
 } from '../../../util/asset-manifest'
 import { joinSegments } from '../../../util/path'
 import {
-  componentCssResourceKey,
+  componentCssBundleKey,
+  componentCssResourceKeyPrefix,
   splitCssBundles,
   staticCssBundleKey,
   staticCssBundleSlug,
@@ -24,6 +28,13 @@ import { quartzBaseStylesheetEntry, quartzCustomStylesheetEntry } from './asset-
 import { assetSlugForContent } from './asset-writer'
 
 export type FontAssetResult = { googleFontsStyleSheet: string; files: FilePath[] }
+
+const componentCssBundleSlug = 'static/component'
+
+function extractedCssSlug(ctx: BuildCtx, index: number, content: string): FullSlug {
+  if (shouldHashAssets(ctx)) return contentHashSlug(staticCssBundleSlug, content)
+  return (index === 0 ? staticCssBundleSlug : `${staticCssBundleSlug}-${index}`) as FullSlug
+}
 
 export function minifyStylesheet(filename: string, stylesheet: string): string {
   return transform({
@@ -93,10 +104,12 @@ export async function* writeStaticCssResourceBundles(
   ctx: BuildCtx,
   resources: StaticResources,
 ): AsyncGenerator<FilePath> {
+  let index = 0
   for (const part of splitCssBundles(resources.css, [collapseHeaderStyle])) {
     if (part.type !== 'bundle') continue
     const content = minifyStylesheet('resource-style.css', part.content)
-    const slug = contentHashSlug(staticCssBundleSlug, content)
+    const slug = extractedCssSlug(ctx, index, content)
+    index += 1
     registerExtractedStaticResource(ctx, staticCssBundleKey(part.content), assetPath(slug, '.css'))
     yield write({ ctx, slug, ext: '.css', content })
   }
@@ -106,16 +119,22 @@ export async function* writeComponentStyles(
   ctx: BuildCtx,
   resources: ComponentResourceSet,
 ): AsyncGenerator<FilePath> {
-  for (const stylesheet of resources.componentCss) {
-    const content = minifyStylesheet('component.css', `@layer quartz-base {\n${stylesheet}\n}`)
-    const slug = contentHashSlug('component', content)
-    registerExtractedStaticResource(
-      ctx,
-      componentCssResourceKey(stylesheet),
-      assetPath(slug, '.css'),
-    )
-    yield write({ ctx, slug, ext: '.css', content })
+  const extractedResources = ensureExtractedStaticResources(ctx)
+  for (const key of extractedResources.keys()) {
+    if (key.startsWith(componentCssResourceKeyPrefix)) {
+      extractedResources.delete(key)
+    }
   }
+
+  if (resources.componentCss.length === 0) {
+    return
+  }
+
+  const stylesheet = resources.componentCss.join('\n')
+  const content = minifyStylesheet('component.css', `@layer quartz-base {\n${stylesheet}\n}`)
+  const asset = assetReferenceForContent(ctx, componentCssBundleSlug, '.css', content)
+  registerExtractedStaticResource(ctx, componentCssBundleKey, asset.path)
+  yield write({ ctx, slug: asset.slug, ext: '.css', content })
 }
 
 async function indexStylesheetContent(

@@ -66,6 +66,39 @@ function outputPaths(ctx: BuildCtx, files: FilePath[]): string[] {
   return files.map(file => path.relative(ctx.argv.output, file).split(path.sep).join('/')).sort()
 }
 
+function isSearchChunkPath(file: string): boolean {
+  return file.startsWith('static/search-index/') && file.endsWith('.json')
+}
+
+function searchChunkPaths(paths: string[]): string[] {
+  return paths.filter(isSearchChunkPath)
+}
+
+function withoutSearchIndexFiles(paths: string[]): string[] {
+  return paths.filter(file => file !== 'static/searchIndex.json' && !isSearchChunkPath(file))
+}
+
+function assertSearchIndexFiles(paths: string[]): void {
+  assert.ok(paths.includes('static/searchIndex.json'))
+  assert.equal(searchChunkPaths(paths).length, 64)
+}
+
+async function loadSearchIndex(ctx: BuildCtx): Promise<Record<string, { content: string }>> {
+  const raw = await readFile(path.join(ctx.argv.output, 'static/searchIndex.json'), 'utf8')
+  const parsed = JSON.parse(raw) as { kind?: string; chunks?: string[] }
+  if (parsed.kind !== 'quartz-search-index-v1' || !Array.isArray(parsed.chunks)) {
+    return parsed as Record<string, { content: string }>
+  }
+
+  const chunks = await Promise.all(
+    parsed.chunks.map(async chunk => {
+      const chunkRaw = await readFile(path.join(ctx.argv.output, 'static', chunk), 'utf8')
+      return JSON.parse(chunkRaw) as Record<string, { content: string }>
+    }),
+  )
+  return Object.assign({}, ...chunks)
+}
+
 test('content index includes notebook and base file graph pages', async () => {
   const root = await mkdtemp(path.join(tmpdir(), 'quartz-content-index-'))
   try {
@@ -137,13 +170,266 @@ test('content index partial emit limits markdown changes to global indexes and a
       ]) ?? null,
     )
 
-    assert.deepEqual(outputPaths(ctx, emitted), [
+    const paths = outputPaths(ctx, emitted)
+    assert.deepEqual(withoutSearchIndexFiles(paths), [
       'index.xml',
       'sitemap.xml',
       'static/contentIndex.json',
-      'static/searchIndex.json',
       'thoughts/index.xml',
     ])
+    assertSearchIndexFiles(paths)
+  } finally {
+    await rm(root, { recursive: true, force: true })
+  }
+})
+
+test('content index partial emit skips feeds for body-only markdown changes outside the feed window', async () => {
+  const root = await mkdtemp(path.join(tmpdir(), 'quartz-content-index-partial-body-'))
+  try {
+    const ctx = testCtx(root)
+    ctx.allFiles = ['thoughts/note.md' as FilePath]
+    ctx.allSlugs = ['thoughts/note' as FullSlug]
+    const filePath = path.join(ctx.argv.directory, 'thoughts/note.md') as FilePath
+    const content = defaultProcessedContent({
+      slug: 'thoughts/note' as FullSlug,
+      filePath,
+      relativePath: 'thoughts/note.md' as FilePath,
+      frontmatter: { title: 'note', pageLayout: 'default', tags: [] },
+      text: 'new body',
+      links: [],
+    })
+    const previous = defaultProcessedContent({
+      slug: 'thoughts/note' as FullSlug,
+      filePath,
+      relativePath: 'thoughts/note.md' as FilePath,
+      frontmatter: { title: 'note', pageLayout: 'default', tags: [] },
+      text: 'old body',
+      links: [],
+    })
+    const plugin = ContentIndex({ enableSecurity: false, atomLimit: 0 })
+
+    const emitted = await collectEmitted(
+      plugin.partialEmit?.(ctx, [content], resources, [
+        {
+          type: 'change',
+          path: 'thoughts/note.md' as FilePath,
+          file: content[1],
+          previousFile: previous[1],
+        },
+      ]) ?? null,
+    )
+
+    const paths = outputPaths(ctx, emitted)
+    assert.deepEqual(withoutSearchIndexFiles(paths), [])
+    assertSearchIndexFiles(paths)
+  } finally {
+    await rm(root, { recursive: true, force: true })
+  }
+})
+
+test('content index partial emit skips unchanged markdown search data', async () => {
+  const root = await mkdtemp(path.join(tmpdir(), 'quartz-content-index-partial-unchanged-'))
+  try {
+    const ctx = testCtx(root)
+    ctx.allFiles = ['thoughts/note.md' as FilePath]
+    ctx.allSlugs = ['thoughts/note' as FullSlug]
+    const filePath = path.join(ctx.argv.directory, 'thoughts/note.md') as FilePath
+    const content = defaultProcessedContent({
+      slug: 'thoughts/note' as FullSlug,
+      filePath,
+      relativePath: 'thoughts/note.md' as FilePath,
+      frontmatter: { title: 'note', pageLayout: 'default', tags: [] },
+      text: 'same body',
+      links: [],
+    })
+    const previous = defaultProcessedContent({
+      slug: 'thoughts/note' as FullSlug,
+      filePath,
+      relativePath: 'thoughts/note.md' as FilePath,
+      frontmatter: { title: 'note', pageLayout: 'default', tags: [] },
+      text: 'same body',
+      links: [],
+    })
+    const plugin = ContentIndex({ enableSecurity: false, atomLimit: 0 })
+
+    const emitted = await collectEmitted(
+      plugin.partialEmit?.(ctx, [content], resources, [
+        {
+          type: 'change',
+          path: 'thoughts/note.md' as FilePath,
+          file: content[1],
+          previousFile: previous[1],
+        },
+      ]) ?? null,
+    )
+
+    assert.deepEqual(outputPaths(ctx, emitted), [])
+  } finally {
+    await rm(root, { recursive: true, force: true })
+  }
+})
+
+test('content index partial emit patches cached search entries for body-only changes', async () => {
+  const root = await mkdtemp(path.join(tmpdir(), 'quartz-content-index-partial-search-cache-'))
+  try {
+    const ctx = testCtx(root)
+    ctx.allFiles = ['thoughts/note.md' as FilePath, 'thoughts/other.md' as FilePath]
+    ctx.allSlugs = ['thoughts/note' as FullSlug, 'thoughts/other' as FullSlug]
+    const notePath = path.join(ctx.argv.directory, 'thoughts/note.md') as FilePath
+    const otherPath = path.join(ctx.argv.directory, 'thoughts/other.md') as FilePath
+    const previous = defaultProcessedContent({
+      slug: 'thoughts/note' as FullSlug,
+      filePath: notePath,
+      relativePath: 'thoughts/note.md' as FilePath,
+      frontmatter: { title: 'note', pageLayout: 'default', tags: [] },
+      text: 'old body',
+      links: [],
+    })
+    const updated = defaultProcessedContent({
+      slug: 'thoughts/note' as FullSlug,
+      filePath: notePath,
+      relativePath: 'thoughts/note.md' as FilePath,
+      frontmatter: { title: 'note', pageLayout: 'default', tags: [] },
+      text: 'new body',
+      links: [],
+    })
+    const other = defaultProcessedContent({
+      slug: 'thoughts/other' as FullSlug,
+      filePath: otherPath,
+      relativePath: 'thoughts/other.md' as FilePath,
+      frontmatter: { title: 'other', pageLayout: 'default', tags: [] },
+      text: 'stable body',
+      links: [],
+    })
+    const plugin = ContentIndex({ enableSecurity: false, atomLimit: 0 })
+
+    await collectEmitted(plugin.emit(ctx, [previous, other], resources))
+    const emitted = await collectEmitted(
+      plugin.partialEmit?.(ctx, [updated, other], resources, [
+        {
+          type: 'change',
+          path: 'thoughts/note.md' as FilePath,
+          file: updated[1],
+          previousFile: previous[1],
+        },
+      ]) ?? null,
+    )
+
+    const paths = outputPaths(ctx, emitted)
+    assert.equal(paths.length, 1)
+    assert.ok(isSearchChunkPath(paths[0]))
+    const index = await loadSearchIndex(ctx)
+    assert.equal(index['thoughts/note']?.content, 'new body')
+    assert.equal(index['thoughts/other']?.content, 'stable body')
+  } finally {
+    await rm(root, { recursive: true, force: true })
+  }
+})
+
+test('content index partial emit patches cached search entries for metadata changes', async () => {
+  const root = await mkdtemp(path.join(tmpdir(), 'quartz-content-index-partial-metadata-cache-'))
+  try {
+    const ctx = testCtx(root)
+    ctx.allFiles = ['thoughts/note.md' as FilePath, 'thoughts/other.md' as FilePath]
+    ctx.allSlugs = ['thoughts/note' as FullSlug, 'thoughts/other' as FullSlug]
+    const notePath = path.join(ctx.argv.directory, 'thoughts/note.md') as FilePath
+    const otherPath = path.join(ctx.argv.directory, 'thoughts/other.md') as FilePath
+    const previous = defaultProcessedContent({
+      slug: 'thoughts/note' as FullSlug,
+      filePath: notePath,
+      relativePath: 'thoughts/note.md' as FilePath,
+      frontmatter: { title: 'old note', pageLayout: 'default', tags: [] },
+      text: 'stable body',
+      links: [],
+    })
+    const updated = defaultProcessedContent({
+      slug: 'thoughts/note' as FullSlug,
+      filePath: notePath,
+      relativePath: 'thoughts/note.md' as FilePath,
+      frontmatter: { title: 'new note', pageLayout: 'default', tags: [] },
+      text: 'stable body',
+      links: [],
+    })
+    const other = defaultProcessedContent({
+      slug: 'thoughts/other' as FullSlug,
+      filePath: otherPath,
+      relativePath: 'thoughts/other.md' as FilePath,
+      frontmatter: { title: 'other', pageLayout: 'default', tags: [] },
+      text: 'stable body',
+      links: [],
+    })
+    const plugin = ContentIndex({ enableAtom: false, enableSiteMap: false, enableSecurity: false })
+
+    await collectEmitted(plugin.emit(ctx, [previous, other], resources))
+    const emitted = await collectEmitted(
+      plugin.partialEmit?.(ctx, [updated, other], resources, [
+        {
+          type: 'change',
+          path: 'thoughts/note.md' as FilePath,
+          file: updated[1],
+          previousFile: previous[1],
+        },
+      ]) ?? null,
+    )
+
+    const paths = outputPaths(ctx, emitted)
+    assert.deepEqual(withoutSearchIndexFiles(paths), ['static/contentIndex.json'])
+    assert.equal(searchChunkPaths(paths).length, 1)
+  } finally {
+    await rm(root, { recursive: true, force: true })
+  }
+})
+
+test('content index partial emit skips sitemap for title-only metadata changes', async () => {
+  const root = await mkdtemp(path.join(tmpdir(), 'quartz-content-index-partial-title-sitemap-'))
+  try {
+    const ctx = testCtx(root)
+    ctx.allFiles = ['thoughts/note.md' as FilePath, 'thoughts/other.md' as FilePath]
+    ctx.allSlugs = ['thoughts/note' as FullSlug, 'thoughts/other' as FullSlug]
+    const notePath = path.join(ctx.argv.directory, 'thoughts/note.md') as FilePath
+    const otherPath = path.join(ctx.argv.directory, 'thoughts/other.md') as FilePath
+    const previous = defaultProcessedContent({
+      slug: 'thoughts/note' as FullSlug,
+      filePath: notePath,
+      relativePath: 'thoughts/note.md' as FilePath,
+      frontmatter: { title: 'old note', pageLayout: 'default', tags: [] },
+      text: 'stable body',
+      links: [],
+    })
+    const updated = defaultProcessedContent({
+      slug: 'thoughts/note' as FullSlug,
+      filePath: notePath,
+      relativePath: 'thoughts/note.md' as FilePath,
+      frontmatter: { title: 'new note', pageLayout: 'default', tags: [] },
+      text: 'stable body',
+      links: [],
+    })
+    const other = defaultProcessedContent({
+      slug: 'thoughts/other' as FullSlug,
+      filePath: otherPath,
+      relativePath: 'thoughts/other.md' as FilePath,
+      frontmatter: { title: 'other', pageLayout: 'default', tags: [] },
+      text: 'stable body',
+      links: [],
+    })
+    const plugin = ContentIndex({ enableAtom: false, enableSecurity: false })
+
+    await collectEmitted(plugin.emit(ctx, [previous, other], resources))
+    const emitted = await collectEmitted(
+      plugin.partialEmit?.(ctx, [updated, other], resources, [
+        {
+          type: 'change',
+          path: 'thoughts/note.md' as FilePath,
+          file: updated[1],
+          previousFile: previous[1],
+        },
+      ]) ?? null,
+    )
+
+    const paths = outputPaths(ctx, emitted)
+    assert.deepEqual(withoutSearchIndexFiles(paths), ['static/contentIndex.json'])
+    assert.equal(paths.includes('sitemap.xml'), false)
+    assert.equal(searchChunkPaths(paths).length, 1)
   } finally {
     await rm(root, { recursive: true, force: true })
   }
@@ -163,7 +449,9 @@ test('content index partial emit updates only search index for added file assets
       ]) ?? null,
     )
 
-    assert.deepEqual(outputPaths(ctx, emitted), ['static/searchIndex.json'])
+    const paths = outputPaths(ctx, emitted)
+    assert.deepEqual(withoutSearchIndexFiles(paths), [])
+    assertSearchIndexFiles(paths)
   } finally {
     await rm(root, { recursive: true, force: true })
   }
@@ -183,10 +471,9 @@ test('content index partial emit updates graph and search indexes for added note
       ]) ?? null,
     )
 
-    assert.deepEqual(outputPaths(ctx, emitted), [
-      'static/contentIndex.json',
-      'static/searchIndex.json',
-    ])
+    const paths = outputPaths(ctx, emitted)
+    assert.deepEqual(withoutSearchIndexFiles(paths), ['static/contentIndex.json'])
+    assertSearchIndexFiles(paths)
   } finally {
     await rm(root, { recursive: true, force: true })
   }

@@ -4,6 +4,7 @@ import type { FullSlug } from './path'
 
 export type AssetManifest = Map<string, string>
 export type ExtractedStaticResources = Map<string, string>
+export type AssetContentReference = { slug: FullSlug; path: string }
 
 export function hashAssetContent(content: BinaryLike): string {
   return createHash('sha256').update(content).digest('hex').slice(0, 8)
@@ -64,6 +65,20 @@ export function assetSlugForContent(
   const emittedSlug = shouldHashAssets(ctx) ? `${slug}-${hashAssetContent(content)}` : slug
   registerAsset(ctx, assetPath(slug, ext), assetPath(emittedSlug, ext))
   return emittedSlug as FullSlug
+}
+
+export function assetReferenceForContent(
+  ctx: BuildCtx,
+  slug: string,
+  ext: `.${string}`,
+  content: BinaryLike,
+): AssetContentReference {
+  const emittedSlug = assetSlugForContent(ctx, slug, ext, content)
+  const path = assetPath(emittedSlug, ext)
+  return {
+    slug: emittedSlug,
+    path: shouldHashAssets(ctx) ? path : `${path}?v=${hashAssetContent(content)}`,
+  }
 }
 
 export function assetManifestRecord(ctx: BuildCtx): Record<string, string> {

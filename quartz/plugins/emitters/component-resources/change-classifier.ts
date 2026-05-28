@@ -18,7 +18,24 @@ const indexStylesheetComponentStyles = new Set([
   'quartz/components/styles/pseudocode.scss',
 ])
 
+const staticStylesheetEntries = new Set([
+  'quartz/components/styles/collapseHeader.inline.scss',
+  'quartz/components/styles/mermaid.inline.scss',
+  'quartz/components/styles/protected.scss',
+  'quartz/components/styles/sidenotes.inline.scss',
+  'quartz/components/styles/signatures.scss',
+  'quartz/components/styles/telescopic.inline.scss',
+])
+
+const staticScriptEntries = new Set([
+  'quartz/components/scripts/collapse-header.inline.ts',
+  'quartz/components/scripts/transclude.inline.ts',
+])
+
 export type ComponentResourceChanges = {
+  componentStyles: boolean
+  staticStyles: boolean
+  staticScripts: boolean
   indexStylesheet: boolean
   notebookRuntime: boolean
   notebookRuntimePageScript: boolean
@@ -40,6 +57,7 @@ export function isNotebookRuntimePageScriptChange(changePath: string): boolean {
 }
 
 export function isPageScriptChange(changePath: string): boolean {
+  if (isStaticScriptChange(changePath)) return false
   if (changePath.startsWith('quartz/components/scripts/')) return true
   if (changePath.startsWith('quartz/components/') && /\.(tsx|ts|jsx|js)$/.test(changePath)) {
     return true
@@ -72,6 +90,23 @@ export function isIndexStylesheetChange(changePath: string): boolean {
   return indexStylesheetComponentStyles.has(changePath)
 }
 
+export function isComponentStylesheetChange(changePath: string): boolean {
+  return (
+    changePath.startsWith('quartz/components/styles/') &&
+    changePath.endsWith('.scss') &&
+    !isStaticStylesheetChange(changePath) &&
+    !isIndexStylesheetChange(changePath)
+  )
+}
+
+export function isStaticStylesheetChange(changePath: string): boolean {
+  return staticStylesheetEntries.has(changePath)
+}
+
+export function isStaticScriptChange(changePath: string): boolean {
+  return staticScriptEntries.has(changePath)
+}
+
 export function classifyResourceChanges(
   changeEvents: readonly ChangeEvent[],
 ): ComponentResourceChanges {
@@ -83,6 +118,11 @@ export function classifyResourceChanges(
     changeEvents.some(changeEvent => isPageScriptChange(changeEvent.path))
 
   return {
+    componentStyles: changeEvents.some(changeEvent =>
+      isComponentStylesheetChange(changeEvent.path),
+    ),
+    staticStyles: changeEvents.some(changeEvent => isStaticStylesheetChange(changeEvent.path)),
+    staticScripts: changeEvents.some(changeEvent => isStaticScriptChange(changeEvent.path)),
     indexStylesheet: changeEvents.some(changeEvent => isIndexStylesheetChange(changeEvent.path)),
     notebookRuntime: changeEvents.some(changeEvent =>
       isNotebookRuntimeAssetChange(changeEvent.path),
@@ -102,4 +142,21 @@ export function classifyResourceChanges(
         isWorkerEntryPath(changeEvent.path) && changeEvent.path !== semanticWorkerEntry,
     ),
   }
+}
+
+export function hasComponentResourceChanges(changes: ComponentResourceChanges): boolean {
+  return (
+    changes.componentStyles ||
+    changes.staticStyles ||
+    changes.staticScripts ||
+    changes.indexStylesheet ||
+    changes.notebookRuntime ||
+    changes.notebookRuntimePageScript ||
+    changes.pageScripts ||
+    changes.collaborativeComments ||
+    changes.semanticWorker ||
+    changes.semanticWorkerDeleted ||
+    changes.emoji ||
+    changes.genericWorkerChanges.length > 0
+  )
 }

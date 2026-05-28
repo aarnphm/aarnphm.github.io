@@ -8,6 +8,7 @@ import CanvasComponent from '../../components/Canvas'
 import { pageResources, renderPage } from '../../components/renderPage'
 import { QuartzComponentProps } from '../../types/component'
 import { QuartzEmitterPlugin } from '../../types/plugin'
+import { contentDataFor } from '../../util/ctx'
 import { pathToRoot, simplifySlug, SimpleSlug, slugifyFilePath } from '../../util/path'
 import { collectCanvasMeta } from '../transformers/canvas'
 import { QuartzPluginData } from '../vfile'
@@ -48,7 +49,7 @@ export const CanvasPage: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts
     async *emit(ctx, content, resources) {
       const { cfg } = ctx
 
-      const allFiles = content.map(c => c[1].data)
+      const allFiles = contentDataFor(content)
 
       for (const [_tree, file] of content) {
         // Only process files marked as canvas files

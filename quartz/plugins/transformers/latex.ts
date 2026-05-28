@@ -1,7 +1,7 @@
 import { KatexOptions } from 'katex'
-import rehypeKatex from 'rehype-katex'
 import remarkMath from 'remark-math'
 import { QuartzTransformerPlugin } from '../../types/plugin'
+import cachedKatex from '../../util/cached-katex'
 
 interface Options {
   renderEngine: 'katex'
@@ -22,7 +22,7 @@ export const Latex: QuartzTransformerPlugin<Partial<Options>> = opts => {
     htmlPlugins() {
       switch (engine) {
         default: {
-          return [[rehypeKatex, { output: 'htmlAndMathml', macros, ...opts?.katexOptions }]]
+          return [[cachedKatex, { output: 'htmlAndMathml', macros, ...opts?.katexOptions }]]
         }
       }
     },
