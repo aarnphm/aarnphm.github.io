@@ -23,6 +23,7 @@ let rawInputEnabled = false
 let pnpmDevRetriesRemaining = 0
 let initialBuildComplete = false
 let rebuildInProgress = false
+let hardRebuildInProgress = false
 let quartzOutputBuffer = ''
 let wranglerStartNotBefore = 0
 let wranglerStopInFlight: Promise<void> | null = null
@@ -30,6 +31,7 @@ const DEFAULT_DEV_PORT = 7373
 const WS_PORT_OFFSET = 1
 const WRANGLER_PORT_OFFSET = 707
 const MAX_BASE_PORT = 65535 - WRANGLER_PORT_OFFSET
+const SLOW_BUILD_THRESHOLD_MS = 100
 const WRANGLER_DEV_NAME = process.env.WRANGLER_DEV_NAME ?? 'portfolio-dev'
 
 const runtimeConfig = resolveRuntimeConfig(process.argv.slice(2))
@@ -100,8 +102,8 @@ function resolveRuntimeConfig(argv: string[]): RuntimeConfig {
     '--concurrency',
     '10',
     serve ? '--serve' : '--watch',
-    '--verbose',
-    '--bundleInfo',
+    '--slowBuildThreshold',
+    String(SLOW_BUILD_THRESHOLD_MS),
     '--port',
     String(effectivePort),
     '--wsPort',
@@ -281,6 +283,7 @@ async function main(): Promise<void> {
 function launchPnpmDev(): void {
   initialBuildComplete = false
   rebuildInProgress = false
+  hardRebuildInProgress = false
   quartzOutputBuffer = ''
   wranglerStartNotBefore = 0
   void stopWrangler('stopping wrangler while quartz restarts')
@@ -386,11 +389,11 @@ async function manageWranglerLoop(): Promise<void> {
         wrangler = null
       })
     }
-    const shouldStop = wrangler !== null && (!exists || !shouldRunWrangler())
+    const shouldStop = wrangler !== null && (!exists || hardRebuildInProgress)
     if (shouldStop) {
       const reason = !exists
         ? 'stopping wrangler while public directory is missing'
-        : 'stopping wrangler while quartz rebuilds'
+        : 'stopping wrangler while public is regenerated'
       await stopWrangler(reason)
     }
     await delay(pollIntervalMs)
@@ -492,7 +495,7 @@ function delay(ms: number): Promise<void> {
 }
 
 function shouldRunWrangler(): boolean {
-  return initialBuildComplete && !rebuildInProgress
+  return initialBuildComplete && !hardRebuildInProgress
 }
 
 function requestWranglerStart(delayMs: number): void {
@@ -577,24 +580,26 @@ function markInitialBuildComplete(): void {
   if (initialBuildComplete) return
   initialBuildComplete = true
   rebuildInProgress = false
+  hardRebuildInProgress = false
   requestWranglerStart(250)
 }
 
 function markRebuildStart(): void {
   if (rebuildInProgress) return
   rebuildInProgress = true
-  void stopWrangler('stopping wrangler while quartz rebuilds')
 }
 
 function markHardRebuildStart(): void {
   if (rebuildInProgress) return
   rebuildInProgress = true
-  void stopWrangler('stopping wrangler while quartz rebuilds')
+  hardRebuildInProgress = true
+  void stopWrangler('stopping wrangler while public is regenerated')
 }
 
 function markRebuildEnd(): void {
   if (!rebuildInProgress) return
   rebuildInProgress = false
+  hardRebuildInProgress = false
   requestWranglerStart(250)
 }
 

@@ -1,3 +1,4 @@
+import { readFileSync } from 'node:fs'
 import { rm } from 'node:fs/promises'
 import { Node } from 'unist'
 import { defaultContentPageLayout, sharedPageComponents } from '../../../quartz.layout'
@@ -13,11 +14,15 @@ import {
 } from '../../components/renderPage'
 import { QuartzComponentProps } from '../../types/component'
 import { QuartzEmitterPlugin } from '../../types/plugin'
-import { BuildCtx } from '../../util/ctx'
+import { defaultIoConcurrency, mapConcurrent } from '../../util/async-pool'
+import { BuildCtx, contentDataFor } from '../../util/ctx'
+import { escapeHTML } from '../../util/escape'
 import { FilePath, FullSlug, joinSegments, pathToRoot } from '../../util/path'
+import { logBuildSpan, PerfTimer } from '../../util/perf'
 import { StaticResources } from '../../util/resources'
+import { PageTitlePatch, pageTitlePatchEvents } from '../../util/title-patch'
 import { QuartzPluginData } from '../vfile'
-import { write } from './helpers'
+import { write, writeKnownChanged } from './helpers'
 
 const isContentPage = (fileData: QuartzPluginData): boolean => {
   const slug = fileData.slug
@@ -62,6 +67,62 @@ async function deleteContent(ctx: BuildCtx, slug: FullSlug): Promise<void> {
   await rm(dest, { force: true })
 }
 
+function replaceRequired(html: string, search: string, replacement: string): string | undefined {
+  const next = html.replace(search, replacement)
+  return next === html ? undefined : next
+}
+
+function replaceOptional(html: string, search: string, replacement: string): string {
+  return html.replace(search, replacement)
+}
+
+function patchContentPageTitleHtml(html: string, patch: PageTitlePatch): string | undefined {
+  const previousTitle = escapeHTML(patch.previousTitle)
+  const currentTitle = escapeHTML(patch.currentTitle)
+  let next = html
+  const withTitle = replaceRequired(
+    next,
+    `<title>${previousTitle}</title>`,
+    `<title>${currentTitle}</title>`,
+  )
+  if (!withTitle) return undefined
+  const withOpenGraph = replaceRequired(
+    withTitle,
+    `property="og:title" content="${previousTitle}"`,
+    `property="og:title" content="${currentTitle}"`,
+  )
+  if (!withOpenGraph) return undefined
+  const withTwitter = replaceRequired(
+    withOpenGraph,
+    `name="twitter:title" content="${previousTitle}"`,
+    `name="twitter:title" content="${currentTitle}"`,
+  )
+  if (!withTwitter) return undefined
+  next = withTwitter
+  next = replaceOptional(
+    next,
+    `data-breadcrumbs="true">${previousTitle}</a>`,
+    `data-breadcrumbs="true">${currentTitle}</a>`,
+  )
+  next = replaceOptional(
+    next,
+    `class="article-title">${previousTitle}</h1>`,
+    `class="article-title">${currentTitle}</h1>`,
+  )
+  return next
+}
+
+async function patchContentPageTitle(
+  ctx: BuildCtx,
+  patch: PageTitlePatch,
+): Promise<FilePath | undefined> {
+  const pathToPage = joinSegments(ctx.argv.output, `${patch.slug}.html`) as FilePath
+  const currentHtml = readFileSync(pathToPage, 'utf8')
+  const patchedHtml = patchContentPageTitleHtml(currentHtml, patch)
+  if (!patchedHtml || patchedHtml === currentHtml) return undefined
+  return writeKnownChanged({ ctx, content: patchedHtml, slug: patch.slug, ext: '.html' })
+}
+
 export const ContentPage: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts => {
   const opts: FullPageLayout = {
     ...sharedPageComponents,
@@ -93,15 +154,37 @@ export const ContentPage: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpt
       ]
     },
     async *emit(ctx, content, resources) {
-      const allFiles = content.map(c => c[1].data)
+      const allFiles = contentDataFor(content)
+      const pages = content.filter(([, file]) => isContentPage(file.data))
+      const files = await mapConcurrent(pages, defaultIoConcurrency, ([tree, file]) =>
+        processContent(ctx, tree, file.data, allFiles, opts, resources),
+      )
 
-      for (const [tree, file] of content) {
-        if (!isContentPage(file.data)) continue
-        yield processContent(ctx, tree, file.data, allFiles, opts, resources)
-      }
+      yield* files
     },
     async *partialEmit(ctx, content, resources, changeEvents) {
-      const allFiles = content.map(c => c[1].data)
+      const titlePatches = pageTitlePatchEvents(changeEvents)
+      if (
+        titlePatches &&
+        changeEvents.every(changeEvent => changeEvent.file && isContentPage(changeEvent.file.data))
+      ) {
+        const perf = new PerfTimer()
+        const files = await mapConcurrent(titlePatches, defaultIoConcurrency, patch =>
+          patchContentPageTitle(ctx, patch),
+        )
+        if (files.every(file => file !== undefined)) {
+          logBuildSpan(
+            ctx.argv,
+            'contentPage:titlePatch',
+            `${files.length} files`,
+            perf.elapsedMs(),
+          )
+          yield* files
+          return
+        }
+      }
+
+      const allFiles = contentDataFor(content)
 
       const changedSlugs = new Set<string>()
       for (const changeEvent of changeEvents) {
@@ -118,13 +201,15 @@ export const ContentPage: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpt
         }
       }
 
-      for (const [tree, file] of content) {
+      const pages = content.filter(([, file]) => {
         const slug = file.data.slug!
-        if (!changedSlugs.has(slug)) continue
-        if (!isContentPage(file.data)) continue
+        return changedSlugs.has(slug) && isContentPage(file.data)
+      })
+      const files = await mapConcurrent(pages, defaultIoConcurrency, ([tree, file]) =>
+        processContent(ctx, tree, file.data, allFiles, opts, resources),
+      )
 
-        yield processContent(ctx, tree, file.data, allFiles, opts, resources)
-      }
+      yield* files
     },
   }
 }

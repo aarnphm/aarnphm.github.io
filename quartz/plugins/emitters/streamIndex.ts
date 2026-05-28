@@ -24,7 +24,8 @@ import {
   formatStreamDate,
 } from '../../components/stream/Entry'
 import { QuartzEmitterPlugin } from '../../types/plugin'
-import { BuildCtx } from '../../util/ctx'
+import { defaultIoConcurrency, mapConcurrent } from '../../util/async-pool'
+import { BuildCtx, contentDataFor } from '../../util/ctx'
 import { escapeHTML } from '../../util/escape'
 import { joinSegments, pathToRoot, FullSlug, normalizeHastElement } from '../../util/path'
 import { EncryptedPayload, encryptContent, resolveProtectedPassword } from '../../util/protected'
@@ -334,54 +335,45 @@ async function* processStreamIndex(
     pageLayout: legendPageLayout,
   }
 
-  yield renderStreamRoute(
-    ctx,
-    tree,
+  const routeData = [
     {
-      ...fileData,
       slug: streamSlugFromPath(buildStreamOnPath()),
-      streamData: { entries: visibleEntries },
-      frontmatter: { ...legendFrontmatter, title: 'stream / on' },
+      entries: visibleEntries,
+      title: 'stream / on',
     },
-    allFiles,
-    resources,
-    layout,
-  )
-
+  ]
   for (const yearGroup of yearGroups) {
-    yield renderStreamRoute(
+    routeData.push({
+      slug: streamSlugFromPath(buildStreamYearPath(yearGroup.yearText)),
+      entries: yearGroup.entries,
+      title: `stream / ${yearGroup.yearText}`,
+    })
+
+    for (const monthGroup of yearGroup.months) {
+      routeData.push({
+        slug: streamSlugFromPath(buildStreamMonthPath(monthGroup.yearText, monthGroup.monthText)),
+        entries: monthGroup.entries,
+        title: `stream / ${monthGroup.yearText} / ${monthGroup.monthText}`,
+      })
+    }
+  }
+
+  const routeFiles = await mapConcurrent(routeData, defaultIoConcurrency, route =>
+    renderStreamRoute(
       ctx,
       tree,
       {
         ...fileData,
-        slug: streamSlugFromPath(buildStreamYearPath(yearGroup.yearText)),
-        streamData: { entries: yearGroup.entries },
-        frontmatter: { ...legendFrontmatter, title: `stream / ${yearGroup.yearText}` },
+        slug: route.slug,
+        streamData: { entries: route.entries },
+        frontmatter: { ...legendFrontmatter, title: route.title },
       },
       allFiles,
       resources,
       layout,
-    )
-
-    for (const monthGroup of yearGroup.months) {
-      yield renderStreamRoute(
-        ctx,
-        tree,
-        {
-          ...fileData,
-          slug: streamSlugFromPath(buildStreamMonthPath(monthGroup.yearText, monthGroup.monthText)),
-          streamData: { entries: monthGroup.entries },
-          frontmatter: {
-            ...legendFrontmatter,
-            title: `stream / ${monthGroup.yearText} / ${monthGroup.monthText}`,
-          },
-        },
-        allFiles,
-        resources,
-        layout,
-      )
-    }
-  }
+    ),
+  )
+  yield* routeFiles
 
   const hasAnyProtected = visibleEntries.some(isProtectedEntry)
   let streamPassword: string | undefined
@@ -395,44 +387,45 @@ async function* processStreamIndex(
     }
   }
 
-  for (const group of groups) {
+  const sourceSlug = fileData.slug! as FullSlug
+  const rebaseEntries = (entries: StreamEntry[], targetSlug: FullSlug): StreamEntry[] =>
+    entries.map(entry => ({
+      ...entry,
+      content: entry.content.map(node =>
+        isElement(node)
+          ? (normalizeHastElement(node, targetSlug, sourceSlug) as ElementContent)
+          : node,
+      ),
+    }))
+
+  const protectedPayloadsForEntries = (
+    entries: StreamEntry[],
+  ): Record<string, EncryptedPayload> => {
+    const payloads: Record<string, EncryptedPayload> = {}
+    if (!streamPassword) return payloads
+
+    for (const entry of entries) {
+      if (isProtectedEntry(entry)) {
+        const bodyHtml = renderProtectedEntryBody(entry, fileData!.filePath!)
+        payloads[entry.id] = encryptContent(bodyHtml, streamPassword)
+      }
+    }
+
+    return payloads
+  }
+
+  const groupFiles = await mapConcurrent(groups, defaultIoConcurrency, async group => {
     const isoSource =
       group.isoDate ??
       group.entries.find(entry => entry.date)?.date ??
       (group.timestamp ? new Date(group.timestamp).toISOString() : null)
 
     const onPath = buildStreamDayPathFromIso(isoSource)
-    if (!onPath) continue
+    if (!onPath) return undefined
 
     const slug = onPath.replace(/^\//, '') as FullSlug
     const titleDate = formatIsoAsYMD(isoSource) ?? formatIsoAsYMD(group.isoDate)
     const title = titleDate ?? fileData!.frontmatter?.title ?? 'stream'
-    const sourceSlug = fileData.slug! as FullSlug
-    const rebaseEntries = (entries: StreamEntry[], targetSlug: FullSlug): StreamEntry[] =>
-      entries.map(entry => ({
-        ...entry,
-        content: entry.content.map(node =>
-          isElement(node)
-            ? (normalizeHastElement(node, targetSlug, sourceSlug) as ElementContent)
-            : node,
-        ),
-      }))
-
-    const protectedPayloadsForEntries = (
-      entries: StreamEntry[],
-    ): Record<string, EncryptedPayload> => {
-      const payloads: Record<string, EncryptedPayload> = {}
-      if (!streamPassword) return payloads
-
-      for (const entry of entries) {
-        if (isProtectedEntry(entry)) {
-          const bodyHtml = renderProtectedEntryBody(entry, fileData!.filePath!)
-          payloads[entry.id] = encryptContent(bodyHtml, streamPassword)
-        }
-      }
-
-      return payloads
-    }
 
     const rebasedEntries = rebaseEntries(group.entries, slug)
 
@@ -472,7 +465,11 @@ async function* processStreamIndex(
       }
     }
 
-    yield write({ ctx, slug, ext: '.html', content: html })
+    return write({ ctx, slug, ext: '.html', content: html })
+  })
+
+  for (const file of groupFiles) {
+    if (file) yield file
   }
 }
 
@@ -508,7 +505,7 @@ export const StreamIndex: QuartzEmitterPlugin = () => {
       ]
     },
     async *emit(ctx, content, resources) {
-      const allFiles = content.map(([, file]) => file.data as QuartzPluginData)
+      const allFiles = contentDataFor(content)
 
       for (const [tree, file] of content) {
         const data = file.data as QuartzPluginData
@@ -518,7 +515,7 @@ export const StreamIndex: QuartzEmitterPlugin = () => {
       }
     },
     async *partialEmit(ctx, content, resources, changeEvents) {
-      const allFiles = content.map(([, file]) => file.data as QuartzPluginData)
+      const allFiles = contentDataFor(content)
       const changedSlugs = new Set<string>()
 
       for (const changeEvent of changeEvents) {

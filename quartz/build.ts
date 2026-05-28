@@ -1,7 +1,7 @@
 import { Repository } from '@napi-rs/simple-git'
 import { Mutex } from 'async-mutex'
 import chokidar from 'chokidar'
-import { rm } from 'fs/promises'
+import { readFile, rm } from 'fs/promises'
 import { GlobbyFilterFunction, isGitIgnored } from 'globby'
 import { minimatch } from 'minimatch'
 import path from 'path'
@@ -9,13 +9,18 @@ import sourceMapSupport from 'source-map-support'
 import { styleText } from 'util'
 import cfg from '../quartz.config'
 import { getStaticResourcesFromPlugins } from './plugins'
+import { resetWriteCache } from './plugins/emitters/helpers'
 import { ProcessedContent } from './plugins/vfile'
 import { emitContent } from './processors/emit'
 import { filterContentResult, type FilterContentResult } from './processors/filter'
-import { parseMarkdown } from './processors/parse'
-import { ChangeEvent, QuartzEmitterPluginInstance } from './types/plugin'
-import { affectedComponentPageEmitters } from './util/component-source'
+import {
+  parseMarkdown,
+  reuseProcessedTitleOnlyChange,
+  transformMarkdownSource,
+} from './processors/parse'
+import { ChangeEvent } from './types/plugin'
 import { Argv, BuildCtx } from './util/ctx'
+import { emitChangedContent } from './util/emit-scheduler'
 import { glob, toPosixPath } from './util/glob'
 import { FilePath, joinSegments, slugifyFilePath } from './util/path'
 import { PerfTimer } from './util/perf'
@@ -34,6 +39,8 @@ const isMarkdownPath = (fp: string): boolean => markdownExtensions.has(path.extn
 const syncCtxFiles = (ctx: BuildCtx, contentMap: ContentMap) => {
   ctx.allFiles = Array.from(contentMap.keys())
   ctx.allSlugs = ctx.allFiles.map(fp => slugifyFilePath(fp))
+  delete ctx.trie
+  delete ctx.renderData
 }
 
 const seedContentMap = (allFiles: FilePath[], content: ProcessedContent[]): ContentMap => {
@@ -77,54 +84,7 @@ type BuildData = {
   lastBuildMs: number
 }
 
-type WatchHandoff = {
-  ctx: BuildCtx
-  contentMap: ContentMap
-  changesSinceLastBuild: Record<FilePath, ChangeEvent['type']>
-  pendingChanges: ChangeEvent[]
-}
-
-type WatchRuntime = { dispose(): Promise<void>; handoff(): WatchHandoff }
-
-type EmitResult = FilePath[] | AsyncGenerator<FilePath> | null
-
-async function countEmittedFiles(
-  ctx: BuildCtx,
-  emitterName: string,
-  emitted: EmitResult,
-): Promise<number> {
-  if (emitted === null) return 0
-
-  if (Symbol.asyncIterator in emitted) {
-    let emittedFiles = 0
-    for await (const file of emitted) {
-      emittedFiles++
-      if (ctx.argv.verbose) {
-        console.log(`[emit:${emitterName}] ${file}`)
-      }
-    }
-    return emittedFiles
-  }
-
-  if (ctx.argv.verbose) {
-    for (const file of emitted) {
-      console.log(`[emit:${emitterName}] ${file}`)
-    }
-  }
-  return emitted.length
-}
-
-async function emitFromPlugin(
-  ctx: BuildCtx,
-  emitter: QuartzEmitterPluginInstance,
-  content: ProcessedContent[],
-  resources: ReturnType<typeof getStaticResourcesFromPlugins>,
-  changeEvents: ChangeEvent[],
-): Promise<number> {
-  const emitFn = emitter.partialEmit ?? emitter.emit
-  const emitted = await emitFn(ctx, content, resources, changeEvents)
-  return countEmittedFiles(ctx, emitter.name, emitted)
-}
+type WatchRuntime = { dispose(): Promise<void> }
 
 async function buildQuartz(argv: Argv, mut: Mutex, clientRefresh: () => void) {
   let gitCommitSha: string | undefined
@@ -168,6 +128,7 @@ async function buildQuartz(argv: Argv, mut: Mutex, clientRefresh: () => void) {
   const release = await mut.acquire()
   perf.addEvent('clean')
   await rm(output, { recursive: true, force: true })
+  resetWriteCache()
   console.log(`Removed \`${output}\` in ${perf.timeSince('clean')}`)
 
   perf.addEvent('glob')
@@ -279,9 +240,6 @@ async function startWatchingContentMap(
     async dispose() {
       await watcher.close()
     },
-    handoff() {
-      return { ctx, contentMap, changesSinceLastBuild, pendingChanges: changes.slice() }
-    },
   }
 }
 
@@ -315,9 +273,25 @@ async function rebuild(changes: ChangeEvent[], clientRefresh: () => void, buildD
 
   const staticResources = getStaticResourcesFromPlugins(ctx)
   const pathsToParse: FilePath[] = []
+  const unchangedMarkdown = new Set<FilePath>()
+  const reusedMarkdown = new Map<FilePath, ProcessedContent>()
   for (const [fp, type] of pendingChanges) {
     if (type === 'delete' || !isMarkdownPath(fp)) continue
     const fullPath = joinSegments(argv.directory, toPosixPath(fp)) as FilePath
+    const previous = contentMap.get(fp)
+    if (type === 'change' && previous?.type === 'markdown') {
+      const rawSource = await readFile(fullPath, 'utf8')
+      const reused = reuseProcessedTitleOnlyChange(ctx, fullPath, rawSource, previous.content)
+      if (reused) {
+        reusedMarkdown.set(fp, reused)
+        continue
+      }
+      const source = transformMarkdownSource(ctx, rawSource)
+      if (source === previous.content[1].value?.toString()) {
+        unchangedMarkdown.add(fp)
+        continue
+      }
+    }
     pathsToParse.push(fullPath)
   }
 
@@ -328,20 +302,26 @@ async function rebuild(changes: ChangeEvent[], clientRefresh: () => void, buildD
     }
   }
 
-  const parsed = await parseMarkdown(ctx, pathsToParse)
+  const parsed = await parseMarkdown(ctx, pathsToParse, previousMarkdown)
   const parsedResult: FilterContentResult =
     parsed.length > 0 ? filterContentResult(ctx, parsed) : { published: [], removed: [] }
   const publishedByPath = markdownContentByPath(parsedResult.published)
+  for (const [path, content] of reusedMarkdown) {
+    publishedByPath.set(path, content)
+  }
 
   const changeEvents: ChangeEvent[] = []
   for (const [path, type] of pendingChanges) {
+    if (unchangedMarkdown.has(path)) {
+      continue
+    }
     if (isMarkdownPath(path)) {
       const previous = previousMarkdown.get(path)
 
       if (type === 'delete') {
         contentMap.delete(path)
         if (previous) {
-          changeEvents.push({ type: 'delete', path, file: previous[1] })
+          changeEvents.push({ type: 'delete', path, file: previous[1], previousFile: previous[1] })
         }
         continue
       }
@@ -349,13 +329,18 @@ async function rebuild(changes: ChangeEvent[], clientRefresh: () => void, buildD
       const published = publishedByPath.get(path)
       if (published) {
         contentMap.set(path, { type: 'markdown', content: published })
-        changeEvents.push({ type: previous ? 'change' : 'add', path, file: published[1] })
+        changeEvents.push({
+          type: previous ? 'change' : 'add',
+          path,
+          file: published[1],
+          previousFile: previous?.[1],
+        })
         continue
       }
 
       contentMap.delete(path)
       if (previous) {
-        changeEvents.push({ type: 'delete', path, file: previous[1] })
+        changeEvents.push({ type: 'delete', path, file: previous[1], previousFile: previous[1] })
       }
       continue
     }
@@ -382,16 +367,13 @@ async function rebuild(changes: ChangeEvent[], clientRefresh: () => void, buildD
     return
   }
 
-  let emittedFiles = 0
-  for (const emitter of cfg.plugins.emitters) {
-    emittedFiles += await emitFromPlugin(
-      ctx,
-      emitter,
-      processedFiles,
-      staticResources,
-      changeEvents,
-    )
-  }
+  const emittedFiles = await emitChangedContent(
+    ctx,
+    cfg.plugins.emitters,
+    processedFiles,
+    staticResources,
+    changeEvents,
+  )
 
   console.log(`Emitted ${emittedFiles} files to \`${argv.output}\` in ${perf.timeSince('rebuild')}`)
   console.log(styleText('green', `Done rebuilding in ${perf.timeSince()}`))
@@ -401,68 +383,6 @@ async function rebuild(changes: ChangeEvent[], clientRefresh: () => void, buildD
   changes.splice(0, numChangesInBuild)
   clientRefresh()
   release()
-}
-
-async function emitComponentSourceChanges(
-  ctx: BuildCtx,
-  contentMap: ContentMap,
-  changeEvents: ChangeEvent[],
-): Promise<number> {
-  syncCtxFiles(ctx, contentMap)
-  const content = publishedMarkdownContent(contentMap)
-  const resources = getStaticResourcesFromPlugins(ctx)
-  const emitters = ctx.cfg.plugins.emitters
-  const pageEmitterPlan = affectedComponentPageEmitters(ctx, emitters, changeEvents)
-  let emittedFiles = 0
-
-  const componentResources = emitters.find(emitter => emitter.name === 'ComponentResources')
-  if (componentResources) {
-    emittedFiles += await emitFromPlugin(ctx, componentResources, content, resources, changeEvents)
-  }
-
-  for (const emitter of emitters) {
-    if (emitter.name === 'ComponentResources') continue
-    if (!emitter.getQuartzComponents) continue
-    if (!pageEmitterPlan.all && !pageEmitterPlan.names.has(emitter.name)) continue
-    emittedFiles += await countEmittedFiles(
-      ctx,
-      emitter.name,
-      await emitter.emit(ctx, content, resources),
-    )
-  }
-
-  return emittedFiles
-}
-
-export async function rebuildQuartzSource(
-  state: WatchHandoff,
-  mut: Mutex,
-  clientRefresh: () => void,
-  changeEvents: ChangeEvent[],
-): Promise<WatchRuntime> {
-  const { ctx, contentMap, changesSinceLastBuild } = state
-  ctx.cfg = cfg
-  ctx.incremental = true
-  ctx.buildId = randomIdNonSecure()
-
-  const release = await mut.acquire()
-  const perf = new PerfTimer()
-  perf.addEvent('rebuild')
-  console.log(styleText('yellow', 'Detected change, rebuilding...'))
-
-  let emittedFiles = 0
-  try {
-    emittedFiles = await emitComponentSourceChanges(ctx, contentMap, changeEvents)
-  } finally {
-    release()
-  }
-
-  console.log(
-    `Emitted ${emittedFiles} files to \`${ctx.argv.output}\` in ${perf.timeSince('rebuild')}`,
-  )
-  console.log(styleText('green', `Done rebuilding in ${perf.timeSince()}`))
-  clientRefresh()
-  return startWatchingContentMap(ctx, mut, contentMap, clientRefresh, changesSinceLastBuild)
 }
 
 export default async (argv: Argv, mut: Mutex, clientRefresh: () => void) => {

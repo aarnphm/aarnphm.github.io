@@ -4,7 +4,7 @@ import { getStaticResourcesFromPlugins } from '../plugins'
 import { ProcessedContent } from '../plugins/vfile'
 import { BuildCtx } from '../util/ctx'
 import { QuartzLogger } from '../util/log'
-import { PerfTimer } from '../util/perf'
+import { logBuildSpan, PerfTimer } from '../util/perf'
 import { trace } from '../util/trace'
 
 async function runEmitter(
@@ -15,6 +15,7 @@ async function runEmitter(
   log: QuartzLogger,
 ) {
   let emittedFiles = 0
+  const perf = new PerfTimer()
   try {
     const emitted = await emitter.emit(ctx, content, staticResources)
     if (Symbol.asyncIterator in emitted) {
@@ -39,6 +40,7 @@ async function runEmitter(
   } catch (err) {
     trace(`Failed to emit from plugin \`${emitter.name}\``, err as Error)
   }
+  logBuildSpan(ctx.argv, `emit:${emitter.name}`, `${emittedFiles} files`, perf.elapsedMs())
   return emittedFiles
 }
 

@@ -81,10 +81,37 @@ const notebookOcamlLanguageLogoSvg = [
   '</svg>',
 ].join('')
 
+const notebookCLanguageLogoSvg = [
+  '<svg class="notebook-language-svg notebook-c-icon" viewBox="0 0 38.000089 42.000031" aria-hidden="true" focusable="false">',
+  '<path fill="#004482" fill-rule="evenodd" clip-rule="evenodd" d="m17.903.28628166c.679-.381 1.515-.381 2.193 0 3.355 1.88300004 13.451 7.55100004 16.807 9.43400004C37.582 10.100282 38 10.804282 38 11.566282v18.867c0 .762-.418 1.466-1.097 1.847-3.355 1.883-13.451 7.551-16.807 9.434-.679.381-1.515.381-2.193 0-3.355-1.883-13.451-7.551-16.807-9.434C.418 31.899282 0 31.196282 0 30.434282v-18.867c0-.762.418-1.466 1.097-1.8470003C4.451 7.8372817 14.549 2.1692817 17.903.28628166z"/>',
+  '<path fill="#659ad2" fill-rule="evenodd" clip-rule="evenodd" d="M.304 31.404282C.038 31.048282 0 30.710282 0 30.255282v-18.759c0-.758.417-1.458 1.094-1.8360003 3.343-1.872 13.405-7.507 16.748-9.38000004.677-.379 1.594-.371 2.271.008 3.343 1.87200004 13.371 7.45900004 16.714 9.33100004.27.152.476.335.66.5760003z"/>',
+  '<path fill="#fff" fill-rule="evenodd" clip-rule="evenodd" d="M19 7.0002817c7.727 0 14 6.2730003 14 14.0000003 0 7.727-6.273 14-14 14s-14-6.273-14-14c0-7.727 6.273-14.0000003 14-14.0000003zm0 7.0000003c3.863 0 7 3.136 7 7 0 3.863-3.137 7-7 7s-7-3.137-7-7c0-3.864 3.136-7 7-7z"/>',
+  '<path fill="#00599c" fill-rule="evenodd" clip-rule="evenodd" d="M37.485 10.205282c.516.483.506 1.211.506 1.784 0 3.795-.032 14.589.009 18.384.004.396-.127.813-.323 1.127l-19.084-10.5z"/>',
+  '</svg>',
+].join('')
+
+const notebookCppLanguageLogoSvg = [
+  '<svg class="notebook-language-svg notebook-cpp-icon" viewBox="0 0 306 344.35" aria-hidden="true" focusable="false">',
+  '<path fill="#00599c" d="M302.107 258.262c2.401-4.159 3.893-8.845 3.893-13.053V99.14c0-4.208-1.49-8.893-3.892-13.052L153 172.175z"/>',
+  '<path fill="#004482" d="m166.25 341.193 126.5-73.034c3.644-2.104 6.956-5.737 9.357-9.897L153 172.175 3.893 258.263c2.401 4.159 5.714 7.793 9.357 9.896l126.5 73.034c7.287 4.208 19.213 4.208 26.5 0z"/>',
+  '<path fill="#659ad2" d="M302.108 86.087c-2.402-4.16-5.715-7.793-9.358-9.897L166.25 3.156c-7.287-4.208-19.213-4.208-26.5 0L13.25 76.19C5.962 80.397 0 90.725 0 99.14v146.069c0 4.208 1.491 8.894 3.893 13.053L153 172.175z"/>',
+  '<path fill="#fff" d="M153 274.175c-56.243 0-102-45.757-102-102s45.757-102 102-102c36.292 0 70.139 19.53 88.331 50.968l-44.143 25.544c-9.105-15.736-26.038-25.512-44.188-25.512-28.122 0-51 22.878-51 51 0 28.121 22.878 51 51 51 18.152 0 35.085-9.776 44.191-25.515l44.143 25.543c-18.192 31.441-52.04 50.972-88.334 50.972z"/>',
+  '<polygon fill="#fff" points="255 166.508 243.666 166.508 243.666 155.175 232.334 155.175 232.334 166.508 221 166.508 221 177.841 232.334 177.841 232.334 189.175 243.666 189.175 243.666 177.841 255 177.841"/>',
+  '<polygon fill="#fff" points="297.5 166.508 286.166 166.508 286.166 155.175 274.834 155.175 274.834 166.508 263.5 166.508 263.5 177.841 274.834 177.841 274.834 189.175 286.166 189.175 286.166 177.841 297.5 177.841"/>',
+  '</svg>',
+].join('')
+
+const notebookWasmLanguageLogoSvg = [
+  '<svg class="notebook-language-svg notebook-wasm-icon" viewBox="0 0 612 612" aria-hidden="true" focusable="false">',
+  '<path fill="#654ff0" d="M376 0v3.3c0 38.76-31.42 70.17-70.17 70.17-38.76 0-70.17-31.42-70.17-70.17V0H0v612h612V0z"/>',
+  '<path fill="#fff" d="M142.16 329.81h40.56l27.69 147.47h.5l33.28-147.47h37.94l30.06 149.28h.59l31.56-149.28h39.78L332.43 546.5h-40.25l-29.81-147.47h-.78L229.68 546.5h-41zm287.69 0h63.94l63.5 216.69h-41.84l-13.81-48.22H428.8l-10.66 48.22h-40.75zm24.34 53.41-17.69 79.5h55.06l-20.31-79.5z"/>',
+  '</svg>',
+].join('')
+
 export const notebookLanguageIconSvg: Readonly<Record<string, string>> = {
   bash: '<svg class="notebook-language-svg" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6.5h16v11H4zM7 10l2 2-2 2m5 0h4"/></svg>',
-  c: '<svg class="notebook-language-svg" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d="m12 2 8.5 5v10L12 22l-8.5-5V7z"/><text x="12" y="16" text-anchor="middle" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="10" font-weight="800" fill="var(--light)">C</text></svg>',
-  cpp: '<svg class="notebook-language-svg" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d="m12 2 8.5 5v10L12 22l-8.5-5V7z"/><text x="12" y="15.6" text-anchor="middle" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="7" font-weight="800" fill="var(--light)">C++</text></svg>',
+  c: notebookCLanguageLogoSvg,
+  cpp: notebookCppLanguageLogoSvg,
   css: '<svg class="notebook-language-svg" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d="M5 3h14l-1.3 15.1L12 21l-5.7-2.9z"/><path fill="var(--light)" d="M9 7h7l-.2 2H11l.1 1.5h4.5l-.5 5.2-3.1.9-3.1-.9-.2-2.4h2l.1 1 1.2.3 1.2-.3.2-1.8H8.6z"/></svg>',
   go: notebookGoLanguageLogoSvg,
   html: '<svg class="notebook-language-svg" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d="M5 3h14l-1.3 15.1L12 21l-5.7-2.9z"/><path fill="var(--light)" d="M8.6 7h6.8l-.2 2h-4.5l.1 1.5H15l-.5 5.2-2.5.8-2.5-.8-.2-2.4h2l.1.9.6.2.6-.2.2-1.7H9z"/></svg>',
@@ -101,6 +128,6 @@ export const notebookLanguageIconSvg: Readonly<Record<string, string>> = {
   text: '<svg class="notebook-language-svg" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="2" d="M6 7h12M6 12h12M6 17h8"/></svg>',
   typescript:
     '<svg class="notebook-language-svg" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect width="18" height="18" x="3" y="3" fill="currentColor" rx="2"/><text x="12" y="16.5" text-anchor="middle" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="7.5" font-weight="900" fill="var(--light)">TS</text></svg>',
-  wasm: '<svg class="notebook-language-svg" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d="M5 5h14v14H5z"/><path fill="var(--light)" d="m8 16-1-8h2l.4 4.8L10.2 8h1.6l.8 4.8L13 8h2l-1 8h-2l-1-4.5L10 16zm8.2 0h-1.8l2-8h2l2 8h-1.8l-.3-1.4h-1.8zm.7-3.1h1l-.5-2.3z"/></svg>',
+  wasm: notebookWasmLanguageLogoSvg,
   zig: '<svg class="notebook-language-svg" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d="M5 5h14v3L9.5 19H5v-3L14.5 5H19v3L9.5 19H5z"/></svg>',
 }

@@ -7,8 +7,11 @@ import { pageResources, renderPage } from '../../components/renderPage'
 import { i18n, TRANSLATIONS } from '../../i18n'
 import { QuartzComponentProps } from '../../types/component'
 import { QuartzEmitterPlugin } from '../../types/plugin'
-import { BuildCtx } from '../../util/ctx'
+import { defaultIoConcurrency, mapConcurrent } from '../../util/async-pool'
+import { BuildCtx, contentDataFor } from '../../util/ctx'
+import { pageListingChanged } from '../../util/listing-signature'
 import {
+  FilePath,
   FullSlug,
   SimpleSlug,
   stripSlashes,
@@ -30,27 +33,37 @@ async function* processFolderInfo(
   opts: FullPageLayout,
   resources: StaticResources,
 ) {
-  for (const [folder, folderContent] of Object.entries(folderInfo) as [
-    SimpleSlug,
-    ProcessedContent,
-  ][]) {
-    const slug = joinSegments(folder, 'index') as FullSlug
-    const [tree, file] = folderContent
-    const cfg = ctx.cfg.configuration
-    const externalResources = pageResources(pathToRoot(slug), resources, ctx)
-    const componentData: QuartzComponentProps = {
-      ctx,
-      fileData: file.data,
-      externalResources,
-      cfg,
-      children: [],
-      tree,
-      allFiles,
-    }
+  const entries = Object.entries(folderInfo) as [SimpleSlug, ProcessedContent][]
+  const files = await mapConcurrent(entries, defaultIoConcurrency, ([folder, folderContent]) =>
+    processFolderPage(ctx, folder, folderContent, allFiles, opts, resources),
+  )
+  yield* files
+}
 
-    const content = renderPage(ctx, slug, componentData, opts, externalResources, true)
-    yield write({ ctx, content, slug, ext: '.html' })
+async function processFolderPage(
+  ctx: BuildCtx,
+  folder: SimpleSlug,
+  folderContent: ProcessedContent,
+  allFiles: QuartzPluginData[],
+  opts: FullPageLayout,
+  resources: StaticResources,
+): Promise<FilePath> {
+  const slug = joinSegments(folder, 'index') as FullSlug
+  const [tree, file] = folderContent
+  const cfg = ctx.cfg.configuration
+  const externalResources = pageResources(pathToRoot(slug), resources, ctx)
+  const componentData: QuartzComponentProps = {
+    ctx,
+    fileData: file.data,
+    externalResources,
+    cfg,
+    children: [],
+    tree,
+    allFiles,
   }
+
+  const content = renderPage(ctx, slug, componentData, opts, externalResources, true)
+  return write({ ctx, content, slug, ext: '.html' })
 }
 
 function computeFolderInfo(
@@ -58,7 +71,6 @@ function computeFolderInfo(
   content: ProcessedContent[],
   locale: keyof typeof TRANSLATIONS,
 ): Record<SimpleSlug, ProcessedContent> {
-  // Create default folder descriptions
   const folderInfo: Record<SimpleSlug, ProcessedContent> = Object.fromEntries(
     [...folders].map(folder => [
       folder,
@@ -73,7 +85,6 @@ function computeFolderInfo(
     ]),
   )
 
-  // Update with actual content if available
   for (const [tree, file] of content) {
     const slug = stripSlashes(simplifySlug(file.data.slug!)) as SimpleSlug
     if (folders.has(slug)) {
@@ -115,10 +126,9 @@ export const FolderPage: QuartzEmitterPlugin<Partial<FolderPageOptions>> = userO
       return [Head, Header, ...header, ...beforeBody, pageBody, ...afterBody, ...sidebar, Footer]
     },
     async *emit(ctx, content, resources) {
-      const mdFiles = content.map(c => c[1].data)
+      const mdFiles = contentDataFor(content)
       const cfg = ctx.cfg.configuration
 
-      // Build folder set from all slugs (includes non-markdown files)
       const folders: Set<SimpleSlug> = new Set(
         ctx.allSlugs
           .filter((slug): slug is FullSlug => typeof slug === 'string')
@@ -131,13 +141,18 @@ export const FolderPage: QuartzEmitterPlugin<Partial<FolderPageOptions>> = userO
       yield* processFolderInfo(ctx, folderInfo, mdFiles, opts, resources)
     },
     async *partialEmit(ctx, content, resources, changeEvents) {
-      const allFiles = content.map(c => c[1].data)
+      const allFiles = contentDataFor(content)
       const cfg = ctx.cfg.configuration
 
-      // Find all folders that need to be updated based on changed files
       const affectedFolders: Set<SimpleSlug> = new Set()
       for (const changeEvent of changeEvents) {
         if (!changeEvent.file) continue
+        if (
+          changeEvent.type === 'change' &&
+          !pageListingChanged(changeEvent.file.data, changeEvent.previousFile?.data)
+        ) {
+          continue
+        }
         const slug = changeEvent.file.data.slug!
         const folders = _getFolders(slug).filter(
           folderName => folderName !== '.' && folderName !== 'tags',
@@ -145,7 +160,6 @@ export const FolderPage: QuartzEmitterPlugin<Partial<FolderPageOptions>> = userO
         folders.forEach(folder => affectedFolders.add(folder))
       }
 
-      // If there are affected folders, rebuild their pages
       if (affectedFolders.size > 0) {
         const folderInfo = computeFolderInfo(affectedFolders, content, cfg.locale)
         yield* processFolderInfo(ctx, folderInfo, allFiles, opts, resources)

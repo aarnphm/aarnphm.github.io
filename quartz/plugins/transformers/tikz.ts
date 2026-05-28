@@ -13,10 +13,12 @@ import { svgOptions } from '../../util/svg-options'
 
 const TIKZ_TIMEOUT = 30_000
 const TIKZ_CACHE_VERSION = 1
+const TIKZ_FAILURE_CACHE_MS = 5 * 60_000
 const TIKZ_CACHE_DIR = path.join(QUARTZ, '.quartz-cache', 'tikz')
 const texPackages = { pgfplots: '', amsmath: 'intlimits' }
 const tikzLibraries = 'arrows.meta,calc,positioning'
 const addToPreamble = '% comment'
+const tikzFailureCache = new Map<string, { message: string; expiresAt: number }>()
 
 const cmMathItalicGlyphs = new Map([
   ['£', 'Γ'],
@@ -112,6 +114,29 @@ function tikzCacheKey(input: string, opts: TikzRenderOptions): string {
     .digest('hex')
 }
 
+function tikzFailureCacheKey(cacheDir: string, key: string): string {
+  return `${path.resolve(cacheDir)}\0${key}`
+}
+
+function tikzErrorMessage(error: unknown): string {
+  return error instanceof Error ? error.message : String(error)
+}
+
+function readTikzFailure(key: string): string | undefined {
+  const cached = tikzFailureCache.get(key)
+  if (!cached) return undefined
+  if (cached.expiresAt > Date.now()) return cached.message
+  tikzFailureCache.delete(key)
+  return undefined
+}
+
+function writeTikzFailure(key: string, error: unknown): void {
+  tikzFailureCache.set(key, {
+    message: tikzErrorMessage(error),
+    expiresAt: Date.now() + TIKZ_FAILURE_CACHE_MS,
+  })
+}
+
 function isMissingFile(error: unknown): boolean {
   return error instanceof Error && 'code' in error && error.code === 'ENOENT'
 }
@@ -146,12 +171,27 @@ export async function cachedTikzSvg(
   cacheDir: string = TIKZ_CACHE_DIR,
 ): Promise<string> {
   const key = tikzCacheKey(input, opts)
+  const failureKey = tikzFailureCacheKey(cacheDir, key)
   const cached = await readTikzCache(cacheDir, key)
-  if (cached !== undefined) return cached
+  if (cached !== undefined) {
+    tikzFailureCache.delete(failureKey)
+    return cached
+  }
 
-  const svg = await render(input, opts)
-  await writeTikzCache(cacheDir, key, svg)
-  return svg
+  const failure = readTikzFailure(failureKey)
+  if (failure !== undefined) {
+    throw new Error(`cached render failure: ${failure}`)
+  }
+
+  try {
+    const svg = await render(input, opts)
+    tikzFailureCache.delete(failureKey)
+    await writeTikzCache(cacheDir, key, svg)
+    return svg
+  } catch (error) {
+    writeTikzFailure(failureKey, error)
+    throw error
+  }
 }
 
 async function tex2svg(input: string, opts: TikzRenderOptions) {

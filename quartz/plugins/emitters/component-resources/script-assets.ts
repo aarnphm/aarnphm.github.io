@@ -16,6 +16,7 @@ import {
   assetPath,
   contentHashSlug,
   registerExtractedStaticResource,
+  shouldHashAssets,
 } from '../../../util/asset-manifest'
 import {
   splitJsBundles,
@@ -95,10 +96,14 @@ export async function* writeStaticJsResourceBundles(
 ): AsyncGenerator<FilePath> {
   for (const loadTime of ['beforeDOMReady', 'afterDOMReady'] as const) {
     const leadingInline = await staticJsLeadingInline(loadTime)
+    let index = 0
     for (const part of splitJsBundles(resources.js, loadTime, leadingInline)) {
       if (part.type !== 'bundle') continue
       const content = await joinScripts(part.scripts)
-      const slug = contentHashSlug(staticJsBundleSlug(part.loadTime), content)
+      const baseSlug = staticJsBundleSlug(part.loadTime)
+      const devSlug = index === 0 ? baseSlug : `${baseSlug}-${index}`
+      const slug = shouldHashAssets(ctx) ? contentHashSlug(baseSlug, content) : devSlug
+      index += 1
       registerExtractedStaticResource(
         ctx,
         staticJsBundleKey(part.loadTime, part.scripts),

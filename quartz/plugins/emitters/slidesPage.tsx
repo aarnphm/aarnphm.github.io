@@ -6,7 +6,7 @@ import HeaderConstructor from '../../components/Header'
 import { pageResources, renderPage } from '../../components/renderPage'
 import { QuartzComponentProps } from '../../types/component'
 import { QuartzEmitterPlugin } from '../../types/plugin'
-import { BuildCtx } from '../../util/ctx'
+import { BuildCtx, contentDataFor } from '../../util/ctx'
 import { pathToRoot, joinSegments, FullSlug } from '../../util/path'
 import { StaticResources } from '../../util/resources'
 import { QuartzPluginData } from '../vfile'
@@ -59,7 +59,7 @@ export const SlidesPage: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts
       return [Head, Header, ...header, ...beforeBody, pageBody, ...afterBody, ...sidebar, Footer]
     },
     async *emit(ctx, content, resources) {
-      const allFiles = content.map(c => c[1].data)
+      const allFiles = contentDataFor(content)
 
       for (const [tree, file] of content) {
         const slug = file.data.slug!
@@ -71,7 +71,7 @@ export const SlidesPage: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts
       }
     },
     async *partialEmit(ctx, content, resources, changeEvents) {
-      const allFiles = content.map(c => c[1].data)
+      const allFiles = contentDataFor(content)
 
       const changedSlugs = new Set<string>()
       for (const changeEvent of changeEvents) {

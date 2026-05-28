@@ -2,7 +2,6 @@ import { Element, Properties, Root as HastRoot } from 'hast'
 import { fromHtml } from 'hast-util-from-html'
 import { Code, Root as MdRoot } from 'mdast'
 import render from 'preact-render-to-string'
-import rehypeKatex from 'rehype-katex'
 import remarkMath from 'remark-math'
 import remarkMdx from 'remark-mdx'
 import remarkParse from 'remark-parse'
@@ -12,6 +11,7 @@ import { visit } from 'unist-util-visit'
 import { VFile } from 'vfile'
 import { customMacros, katexOptions } from '../../cfg'
 import { QuartzTransformerPlugin } from '../../types/plugin'
+import cachedKatex from '../../util/cached-katex'
 import { htmlToJsx } from '../../util/jsx'
 import { FilePath } from '../../util/path'
 
@@ -136,7 +136,7 @@ const mdxProcessor = unified()
       }),
     },
   })
-  .use(rehypeKatex, { output: 'htmlAndMathml', macros: customMacros, ...katexOptions })
+  .use(cachedKatex, { output: 'htmlAndMathml', macros: customMacros, ...katexOptions })
 
 function renderJsxSnippet(snippet: string): HastRoot | null {
   try {

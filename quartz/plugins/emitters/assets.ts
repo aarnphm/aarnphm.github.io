@@ -2,15 +2,15 @@ import fs from 'node:fs/promises'
 import path from 'path'
 import { QuartzConfig } from '../../cfg'
 import { QuartzEmitterPlugin } from '../../types/plugin'
+import { defaultIoConcurrency, mapConcurrent } from '../../util/async-pool'
 import { Argv } from '../../util/ctx'
 import { glob } from '../../util/glob'
+import { linkOrCopyFile } from '../../util/link-or-copy-file'
 import { FilePath, joinSegments, slugifyFilePath } from '../../util/path'
 
 const filesToCopy = async (argv: Argv, cfg: QuartzConfig) => {
-  // glob all non MD files in content folder and copy it over
   const patterns = ['**/*.md', '**/*.base', ...cfg.configuration.ignorePatterns]
 
-  // Skip PDFs when running in Cloudflare Pages
   if (process.env.CF_PAGES === '1' || argv.watch) {
     patterns.push('**/*.pdf', '**.ddl', '**.mat')
   }
@@ -24,12 +24,7 @@ const copyFile = async (argv: Argv, fp: FilePath) => {
   const name = slugifyFilePath(fp)
   const dest = joinSegments(argv.output, name) as FilePath
 
-  // ensure dir exists
-  const dir = path.dirname(dest) as FilePath
-  await fs.mkdir(dir, { recursive: true })
-
-  await fs.copyFile(src, dest)
-  return dest
+  return linkOrCopyFile(src, dest, { hardLink: argv.watch && process.env.CF_PAGES !== '1' })
 }
 
 export const Assets: QuartzEmitterPlugin = () => {
@@ -37,8 +32,9 @@ export const Assets: QuartzEmitterPlugin = () => {
     name: 'Assets',
     async *emit({ argv, cfg }) {
       const fps = await filesToCopy(argv, cfg)
-      for (const fp of fps) {
-        yield copyFile(argv, fp)
+      const files = await mapConcurrent(fps, defaultIoConcurrency, fp => copyFile(argv, fp))
+      for (const file of files) {
+        yield file
       }
     },
     async *partialEmit(ctx, _content, _resources, changeEvents) {

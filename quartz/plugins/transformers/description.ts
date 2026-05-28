@@ -29,6 +29,36 @@ const urlRegex = new RegExp(
   'g',
 )
 
+const MAX_TEXT_CACHE_ENTRIES = 512
+const textCache = new Map<string, { text: string; readingTime: ReadTimeResults }>()
+
+function markdownBody(source: string): string {
+  const frontmatter = /^---\r?\n[\s\S]*?\r?\n---\r?\n?/.exec(source)
+  return frontmatter ? source.slice(frontmatter[0].length) : source
+}
+
+function sourceFingerprint(source: string): string {
+  const body = markdownBody(source)
+  let hash = 0x811c9dc5
+  for (let i = 0; i < body.length; i += 1) {
+    hash ^= body.charCodeAt(i)
+    hash = Math.imul(hash, 0x01000193) >>> 0
+  }
+  return `${body.length}:${hash}`
+}
+
+function textCacheKey(fileValue: unknown, slug: FullSlug): string | undefined {
+  const source = typeof fileValue === 'string' ? fileValue : fileValue?.toString()
+  return source ? `${slug}:${sourceFingerprint(source)}` : undefined
+}
+
+function setTextCache(key: string, value: { text: string; readingTime: ReadTimeResults }): void {
+  textCache.set(key, value)
+  if (textCache.size <= MAX_TEXT_CACHE_ENTRIES) return
+  const first = textCache.keys().next().value
+  if (first) textCache.delete(first)
+}
+
 export const Description: QuartzTransformerPlugin<Partial<Options>> = userOpts => {
   const opts = { ...defaultOptions, ...userOpts }
   return {
@@ -53,14 +83,11 @@ export const Description: QuartzTransformerPlugin<Partial<Options>> = userOpts =
               }
             }
 
-            let text = escapeHTML(toString(tree))
-
             if (opts.replaceExternalLinks) {
               frontMatterDescription = frontMatterDescription?.replace(
                 urlRegex,
                 '$<domain>' + '$<path>',
               )
-              text = text.replace(urlRegex, '$<domain>' + '$<path>')
             }
 
             const processDescription = (desc: string): string => {
@@ -94,6 +121,21 @@ export const Description: QuartzTransformerPlugin<Partial<Options>> = userOpts =
             let processedFrontMatterDesc = frontMatterDescription
               ? renderLatexInString(processWikilinksToHtml(frontMatterDescription, currentSlug))
               : undefined
+
+            const cacheKey = textCacheKey(file.value, currentSlug)
+            const cachedText = cacheKey ? textCache.get(cacheKey) : undefined
+            let text = cachedText?.text
+            let textReadingTime = cachedText?.readingTime
+            if (!text || !textReadingTime) {
+              text = escapeHTML(toString(tree))
+              if (opts.replaceExternalLinks) {
+                text = text.replace(urlRegex, '$<domain>' + '$<path>')
+              }
+              textReadingTime = readingTime(text)
+              if (cacheKey) {
+                setTextCache(cacheKey, { text, readingTime: textReadingTime })
+              }
+            }
 
             // For length calculation and truncation, use plain text
             const plainTextForProcessing = frontMatterDescription
@@ -133,7 +175,7 @@ export const Description: QuartzTransformerPlugin<Partial<Options>> = userOpts =
 
             file.data.abstract = abstractText ?? processDescription(text)
             file.data.text = text
-            file.data.readingTime = readingTime(file.data.text!)
+            file.data.readingTime = textReadingTime
 
             // Merge description links with existing links
             if (descriptionLinks.size > 0) {

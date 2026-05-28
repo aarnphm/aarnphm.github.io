@@ -1,7 +1,11 @@
 import { ProcessedContent, QuartzPluginData } from '../../plugins/vfile'
 import { ChangeEvent } from '../../types/plugin'
 import { FilePath, FullSlug, simplifySlug, slugifyFilePath } from '../path'
+import { pageTitlePatchEvents } from '../title-patch'
+import { isRecord } from '../type-guards'
+import { ProgramIR } from './compiler'
 import { renderBaseViewsForFile } from './render'
+import { BaseFile } from './types'
 
 type RenderedBaseFile = ReturnType<typeof renderBaseViewsForFile>
 
@@ -46,6 +50,36 @@ const sameSet = (left: Set<string> | undefined, right: Set<string> | undefined):
     if (!rightSet.has(value)) return false
   }
   return true
+}
+
+function stableSerialize(value: unknown): string {
+  if (value instanceof Date) return JSON.stringify(value.toISOString())
+  if (value === null || typeof value !== 'object') return JSON.stringify(value)
+  if (Array.isArray(value)) return `[${value.map(stableSerialize).join(',')}]`
+  if (!isRecord(value)) return JSON.stringify(value)
+
+  return `{${Object.keys(value)
+    .sort()
+    .map(key => `${JSON.stringify(key)}:${stableSerialize(value[key])}`)
+    .join(',')}}`
+}
+
+function sortedStringList(value: unknown): string[] {
+  if (!Array.isArray(value)) return []
+  return value.map(item => String(item)).sort()
+}
+
+function baseRelevantDataSignature(data: QuartzPluginData): string {
+  return stableSerialize({
+    slug: data.slug ?? null,
+    filePath: data.filePath ?? null,
+    relativePath: data.relativePath ?? null,
+    frontmatter: data.frontmatter ?? null,
+    dates: data.dates ?? null,
+    description: data.description ?? null,
+    links: sortedStringList(data.links),
+    embeds: sortedStringList(data.embeds),
+  })
 }
 
 const collectBaseFiles = (content: ProcessedContent[]): Map<FullSlug, QuartzPluginData> => {
@@ -158,11 +192,97 @@ const addBasesLinkingToSlug = (
   }
 }
 
+const programMayUseTitleForMembership = (program: ProgramIR | null | undefined): boolean => {
+  if (!program) return false
+  for (const instruction of program.instructions) {
+    if (instruction.op === 'ident' && instruction.name === 'title') return true
+    if (instruction.op === 'member' && instruction.property === 'title') return true
+    if (instruction.op === 'load_formula') return true
+    if (instruction.op === 'filter' || instruction.op === 'map') {
+      if (programMayUseTitleForMembership(instruction.program)) return true
+    }
+    if (instruction.op === 'reduce') {
+      if (programMayUseTitleForMembership(instruction.program)) return true
+      if (programMayUseTitleForMembership(instruction.initial)) return true
+    }
+  }
+  return false
+}
+
+const baseFiltersMayUseTitle = (data: QuartzPluginData): boolean => {
+  const config = data.basesConfig as BaseFile | undefined
+  if (!config) return false
+  const expressions = data.basesExpressions
+  if (!expressions) {
+    return Boolean(config.filters || config.views.some(view => view.filters))
+  }
+  if (programMayUseTitleForMembership(expressions.filters)) return true
+  return Object.values(expressions.viewFilters).some(programMayUseTitleForMembership)
+}
+
+const planTitleOnlyBaseSkip = (
+  content: ProcessedContent[],
+  changeEvents: ChangeEvent[],
+  previousState: BaseViewPartialState | undefined,
+): BaseViewPartialPlan | undefined => {
+  if (!previousState) return undefined
+  const titlePatches = pageTitlePatchEvents(changeEvents)
+  if (!titlePatches) return undefined
+
+  const allFiles = content.map(([, file]) => file.data)
+  const baseFilesBySlug = collectBaseFiles(content)
+  for (const data of baseFilesBySlug.values()) {
+    if (baseFiltersMayUseTitle(data)) return undefined
+  }
+
+  const slugsToRebuild = new Set<FullSlug>()
+  for (const patch of titlePatches) {
+    const slug = simplifySlug(patch.slug)
+    for (const [baseSlug, members] of previousState.baseMemberSlugs) {
+      if (members.has(slug) && baseFilesBySlug.has(baseSlug)) {
+        slugsToRebuild.add(baseSlug)
+      }
+    }
+  }
+
+  if (slugsToRebuild.size > 0) return undefined
+  return { allFiles, basePlans: new Map(), nextState: previousState, slugsToRebuild }
+}
+
+const planInvariantBaseSkip = (
+  changeEvents: ChangeEvent[],
+  previousState: BaseViewPartialState | undefined,
+): BaseViewPartialPlan | undefined => {
+  if (!previousState || changeEvents.length === 0) return undefined
+
+  for (const changeEvent of changeEvents) {
+    if (changeEvent.type !== 'change' || !changeEvent.file || !changeEvent.previousFile) {
+      return undefined
+    }
+
+    const current = changeEvent.file.data
+    const previous = changeEvent.previousFile.data
+    if (baseSlugForData(current) || baseSlugForData(previous)) return undefined
+    if (slugKeyForData(current) !== slugKeyForData(previous)) return undefined
+    if (baseRelevantDataSignature(current) !== baseRelevantDataSignature(previous)) {
+      return undefined
+    }
+  }
+
+  return { allFiles: [], basePlans: new Map(), nextState: previousState, slugsToRebuild: new Set() }
+}
+
 export function planBaseViewPartialEmit(
   content: ProcessedContent[],
   changeEvents: ChangeEvent[],
   previousState?: BaseViewPartialState,
 ): BaseViewPartialPlan {
+  const titleOnlyPlan = planTitleOnlyBaseSkip(content, changeEvents, previousState)
+  if (titleOnlyPlan) return titleOnlyPlan
+
+  const invariantPlan = planInvariantBaseSkip(changeEvents, previousState)
+  if (invariantPlan) return invariantPlan
+
   const allFiles = content.map(([, file]) => file.data)
   const baseFilesBySlug = collectBaseFiles(content)
   const basePlans = collectBaseRenderPlans(baseFilesBySlug, allFiles)

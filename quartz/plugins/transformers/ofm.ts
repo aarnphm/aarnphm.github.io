@@ -20,9 +20,9 @@ import { toHast } from 'mdast-util-to-hast'
 import { toString } from 'mdast-util-to-string'
 import { math } from 'micromark-extension-math'
 import rehypeRaw from 'rehype-raw'
-import { PluggableList } from 'unified'
+import { PluggableList, unified } from 'unified'
 import { remove } from 'unist-util-remove'
-import { SKIP, visit } from 'unist-util-visit'
+import { EXIT, SKIP, visit } from 'unist-util-visit'
 // @ts-ignore
 import calloutScript from '../../components/scripts/callout.inline.ts'
 //@ts-ignore
@@ -79,6 +79,15 @@ const defaultOptions: Options = {
   enableInlineFootnotes: true,
   enableImageGrid: true,
   enableMarker: true,
+}
+
+function hasRawHtml(tree: HtmlRoot): boolean {
+  let found = false
+  visit(tree, 'raw', () => {
+    found = true
+    return EXIT
+  })
+  return found
 }
 
 const calloutMapping = {
@@ -713,7 +722,13 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options>>
       return plugins
     },
     htmlPlugins() {
-      const plugins: PluggableList = [rehypeRaw]
+      const rawProcessor = unified().use(rehypeRaw)
+      const plugins: PluggableList = [
+        () => (tree: HtmlRoot, file) => {
+          if (!hasRawHtml(tree)) return
+          return rawProcessor.run(tree, file)
+        },
+      ]
 
       if (opts.parseBlockReferences) {
         plugins.push(() => {

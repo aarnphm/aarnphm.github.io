@@ -384,6 +384,41 @@ describe('notebook parser', () => {
     )
   })
 
+  test('emits native runtime cells from C C++ and wasm magics', () => {
+    const notebook = parseNotebook(
+      JSON.stringify({
+        metadata: { language_info: { name: 'python' } },
+        cells: [
+          { cell_type: 'code', source: '%%c\nprintf("hi\\n");' },
+          { cell_type: 'code', source: '%%c++\nstd::cout << "hi\\n";' },
+          {
+            cell_type: 'code',
+            source: '%%wat\n(module (func (export "main") (result i32) i32.const 7))',
+          },
+        ],
+      }),
+      'native-runtime.ipynb',
+    )
+
+    const data = notebookRuntimeData(notebook, 'native-runtime.ipynb', {
+      enabled: true,
+      sourcePath: 'native-runtime.ipynb',
+    })
+
+    assert.deepStrictEqual(
+      data?.cells.map(cell => ({
+        id: cell.id,
+        language: cell.language,
+        displayLanguage: cell.displayLanguage,
+      })),
+      [
+        { id: 'cell-1', language: 'c', displayLanguage: undefined },
+        { id: 'cell-2', language: 'cpp', displayLanguage: undefined },
+        { id: 'cell-3', language: 'wasm', displayLanguage: undefined },
+      ],
+    )
+  })
+
   test('preserves empty runtime import lists to avoid probing normal python modules', () => {
     const notebook = parseNotebook(
       JSON.stringify({
@@ -729,6 +764,22 @@ describe('notebook parser', () => {
     }
   })
 
+  test('renders dedicated C C++ and wasm language svgs', async () => {
+    const expectedIcons = [
+      ['c', 'notebook-c-icon', '0 0 38.000089 42.000031'],
+      ['cpp', 'notebook-cpp-icon', '0 0 306 344.35'],
+      ['wasm', 'notebook-wasm-icon', '0 0 612 612'],
+    ]
+
+    for (const [language, iconClassName, viewBox] of expectedIcons) {
+      const tree = await parseHtmlFragment(notebookCellLanguageBadge(language))
+      const icon = findElement(tree, node => elementClassNames(node).includes(iconClassName))
+
+      assert(icon)
+      assert.strictEqual(icon.properties?.viewBox, viewBox)
+    }
+  })
+
   test('renders one vim action with centered icon geometry', async () => {
     const tree = await parseHtmlFragment(
       notebookCellActions({
@@ -977,6 +1028,7 @@ describe('notebook parser', () => {
           { cell_type: 'code', source: '%%writefile SetXY.go\npackage main' },
           { cell_type: 'code', source: '%%capture output\n%%bash\necho hi' },
           { cell_type: 'code', source: '%%javascript\nconsole.log("hi")' },
+          { cell_type: 'code', source: '%%writefile module.wat\n(module)' },
         ],
       }),
       'languages.ipynb',
@@ -988,9 +1040,11 @@ describe('notebook parser', () => {
     assert.match(markdown, /notebook-language-badge-go/)
     assert.match(markdown, /notebook-language-badge-bash/)
     assert.match(markdown, /notebook-language-badge-javascript/)
+    assert.match(markdown, /notebook-language-badge-wasm/)
     assert.match(markdown, /```go\n%%writefile SetXY\.go\npackage main\n```/)
     assert.match(markdown, /```bash\n%%capture output\n%%bash\necho hi\n```/)
     assert.match(markdown, /```javascript\n%%javascript\nconsole\.log\("hi"\)\n```/)
+    assert.match(markdown, /```wasm\n%%writefile module\.wat\n\(module\)\n```/)
   })
 
   test('emits runtime controls for javascript notebooks', () => {

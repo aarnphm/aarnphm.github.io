@@ -1,7 +1,10 @@
 import type { QuartzEmitterPlugin } from '../../types/plugin'
 import type { FilePath } from '../../util/path'
 import { writeAssetManifest } from './component-resources/asset-writer'
-import { classifyResourceChanges } from './component-resources/change-classifier'
+import {
+  classifyResourceChanges,
+  hasComponentResourceChanges,
+} from './component-resources/change-classifier'
 import { writeEmojiAssets } from './component-resources/emoji-assets'
 import { writeNotebookRuntimeAssets } from './component-resources/notebook-assets'
 import { currentComponentResources } from './component-resources/resource-set'
@@ -64,12 +67,29 @@ export const ComponentResources: QuartzEmitterPlugin = () => {
     },
     async *partialEmit(ctx, _content, resources, changeEvents) {
       const changes = classifyResourceChanges(changeEvents)
-      const componentResources = await currentComponentResources(ctx)
-      yield* writeComponentStyles(ctx, componentResources)
-      yield* writeStaticCssResourceBundles(ctx, resources)
-      yield* writeStaticJsResourceBundles(ctx, resources)
+      if (!hasComponentResourceChanges(changes)) {
+        return
+      }
 
-      if (changes.indexStylesheet) {
+      const needsComponentResources =
+        changes.componentStyles || changes.indexStylesheet || changes.pageScripts
+      const componentResources = needsComponentResources
+        ? await currentComponentResources(ctx)
+        : undefined
+
+      if (changes.componentStyles && componentResources) {
+        yield* writeComponentStyles(ctx, componentResources)
+      }
+
+      if (changes.staticStyles) {
+        yield* writeStaticCssResourceBundles(ctx, resources)
+      }
+
+      if (changes.staticScripts) {
+        yield* writeStaticJsResourceBundles(ctx, resources)
+      }
+
+      if (changes.indexStylesheet && componentResources) {
         yield await writeIndexStylesheet(ctx, componentResources)
       }
 
@@ -77,7 +97,7 @@ export const ComponentResources: QuartzEmitterPlugin = () => {
         yield* yieldFiles(await writeNotebookRuntimeAssets(ctx))
       }
 
-      if (changes.pageScripts) {
+      if (changes.pageScripts && componentResources) {
         resolveComponentResourceAssets(ctx, componentResources)
         yield* yieldFiles(await writePageScripts(ctx, componentResources))
       }

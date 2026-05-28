@@ -37,6 +37,10 @@ export const BuildArgv = {
   },
   bundleInfo: { boolean: true, default: false, describe: 'show detailed bundle information' },
   concurrency: { number: true, describe: 'how many threads to use to parse notes' },
+  slowBuildThreshold: {
+    number: true,
+    describe: 'print markdown, html, and emitter spans at or above this many milliseconds',
+  },
 }
 
 export const StatsArgv = { ...CommonArgv }

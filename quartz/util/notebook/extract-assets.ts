@@ -1,13 +1,19 @@
+import fs from 'node:fs/promises'
+import path from 'node:path'
 import type { BuildCtx } from '../ctx'
-import type { FullSlug } from '../path'
 import { write } from '../../plugins/emitters/helpers'
 import { hashAssetContent } from '../asset-manifest'
+import { defaultIoConcurrency, mapConcurrent } from '../async-pool'
+import { linkOrCopyFile } from '../link-or-copy-file'
+import { QUARTZ, joinSegments, type FilePath, type FullSlug } from '../path'
+import { logBuildSpan, PerfTimer } from '../perf'
 
 const DATA_URI_PATTERN = /data:(image\/(?:png|jpe?g|gif|svg\+xml));base64,([A-Za-z0-9+/=\s]+)/g
 
 const MIN_EXTRACTION_BYTES = 2048
 
 const NOTEBOOK_ASSETS_DIR = 'static/notebook-assets'
+const NOTEBOOK_ASSET_CACHE_DIR = path.join(QUARTZ, '.quartz-cache', 'notebook-assets')
 
 const MIME_EXTENSION: Record<string, `.${string}`> = {
   'image/png': '.png',
@@ -29,6 +35,12 @@ export type AssetExtractionResult = {
   readonly extracted: ExtractedAsset[]
 }
 
+type NotebookAssetWriteCache = WeakMap<BuildCtx, Set<string>>
+
+declare global {
+  var __quartzNotebookAssetWrites: NotebookAssetWriteCache | undefined
+}
+
 function decodeBase64(input: string): Uint8Array {
   const stripped = input.replace(/\s+/g, '')
   if (typeof globalThis.atob === 'function') {
@@ -45,7 +57,10 @@ function mimeExtension(mime: string): `.${string}` | undefined {
   return MIME_EXTENSION[mime.toLowerCase()]
 }
 
-const writtenAssets = new WeakMap<BuildCtx, Set<string>>()
+const writtenAssets = (globalThis.__quartzNotebookAssetWrites ??= new WeakMap<
+  BuildCtx,
+  Set<string>
+>())
 
 function rememberWritten(ctx: BuildCtx, key: string): boolean {
   let set = writtenAssets.get(ctx)
@@ -58,12 +73,45 @@ function rememberWritten(ctx: BuildCtx, key: string): boolean {
   return true
 }
 
+function isExistingFileError(error: unknown): boolean {
+  return typeof error === 'object' && error !== null && 'code' in error && error.code === 'EEXIST'
+}
+
+async function ensureCachedNotebookAsset(cachePath: FilePath, content: Buffer): Promise<void> {
+  await fs.mkdir(path.dirname(cachePath), { recursive: true })
+  try {
+    await fs.writeFile(cachePath, content, { flag: 'wx' })
+  } catch (error) {
+    if (!isExistingFileError(error)) throw error
+  }
+}
+
+async function writeExtractedNotebookAsset(
+  ctx: BuildCtx,
+  slug: FullSlug,
+  ext: `.${string}`,
+  hash: string,
+  content: Buffer,
+): Promise<void> {
+  if (!ctx.argv.watch) {
+    await write({ ctx, slug, ext, content })
+    return
+  }
+
+  const perf = new PerfTimer()
+  const cachePath = path.join(NOTEBOOK_ASSET_CACHE_DIR, `${hash}${ext}`) as FilePath
+  await ensureCachedNotebookAsset(cachePath, content)
+  const dest = joinSegments(ctx.argv.output, `${slug}${ext}`) as FilePath
+  await linkOrCopyFile(cachePath, dest, { hardLink: true })
+  logBuildSpan(ctx.argv, 'write:notebook-asset', dest, perf.elapsedMs())
+}
+
 export async function extractInlineNotebookAssets(
   chunks: readonly string[],
   ctx: BuildCtx,
 ): Promise<AssetExtractionResult> {
   const extracted: ExtractedAsset[] = []
-  const writes: Promise<void>[] = []
+  const writes: Array<() => Promise<void>> = []
   const updated = chunks.map(chunk =>
     chunk.replace(DATA_URI_PATTERN, (match, mime: string, payload: string) => {
       const ext = mimeExtension(mime)
@@ -79,13 +127,14 @@ export async function extractInlineNotebookAssets(
       const slug = `${NOTEBOOK_ASSETS_DIR}/${hash}` as FullSlug
       const url = `/${slug}${ext}`
       if (rememberWritten(ctx, `${slug}${ext}`)) {
-        writes.push(write({ ctx, slug, ext, content: Buffer.from(bytes) }).then(() => undefined))
+        const content = Buffer.from(bytes)
+        writes.push(() => writeExtractedNotebookAsset(ctx, slug, ext, hash, content))
       }
       extracted.push({ hash, url, mime, byteLength: bytes.byteLength })
       return url
     }),
   )
-  await Promise.all(writes)
+  await mapConcurrent(writes, defaultIoConcurrency, write => write())
   return { chunks: updated, extracted }
 }
 

@@ -16,13 +16,12 @@ import { version, fp, cacheFile } from './constants.js'
 
 const inlineScriptFilter = /\.inline\.(ts|js)$/
 const sourceWatchWriteStabilityMs = 250
-const componentSourcePathPrefix = 'quartz/components/'
 
 const normalizeWatchedPath = fp => fp.split(path.sep).join('/')
-const isTestSourcePath = fp => fp.endsWith('.test.ts') || fp.endsWith('.test.tsx')
-const isComponentSourcePath = fp =>
-  fp.startsWith(componentSourcePathPrefix) && !isTestSourcePath(fp)
-const toSourceChange = (fp, type) => ({ path: normalizeWatchedPath(fp), type })
+const isTestSourcePath = fp => {
+  const normalized = normalizeWatchedPath(fp)
+  return normalized.endsWith('.test.ts') || normalized.endsWith('.test.tsx')
+}
 
 export function formatErrorReason(err) {
   if (typeof err === 'string') {
@@ -124,7 +123,6 @@ export async function handleBuild(argv) {
   const buildMutex = new Mutex()
   let lastBuildMs = 0
   let activeBuild = null
-  const componentSourceChanges = []
 
   const disposeActiveBuild = async () => {
     if (!activeBuild) return
@@ -134,11 +132,6 @@ export async function handleBuild(argv) {
       await activeBuild.dispose()
     }
     activeBuild = null
-  }
-
-  const activeBuildHandoff = () => {
-    if (!activeBuild || typeof activeBuild === 'function') return null
-    return typeof activeBuild.handoff === 'function' ? activeBuild.handoff() : null
   }
 
   const rebuildQuartzBundle = async () => {
@@ -169,55 +162,11 @@ export async function handleBuild(argv) {
       await disposeActiveBuild()
     }
 
-    componentSourceChanges.length = 0
     const { default: buildQuartz } = await rebuildQuartzBundle()
     release()
 
     activeBuild = await buildQuartz(argv, buildMutex, clientRefresh)
     clientRefresh()
-  }
-
-  const buildComponentSource = async clientRefresh => {
-    const buildStart = new Date().getTime()
-    lastBuildMs = buildStart
-    const release = await buildMutex.acquire()
-    if (lastBuildMs > buildStart) {
-      release()
-      return
-    }
-
-    const changeCount = componentSourceChanges.length
-    const changes = componentSourceChanges.slice(0, changeCount)
-    const handoff = activeBuildHandoff()
-    if (!handoff) {
-      release()
-      componentSourceChanges.splice(0, changeCount)
-      await build(clientRefresh)
-      return
-    }
-    if (handoff.pendingChanges?.length > 0) {
-      release()
-      componentSourceChanges.splice(0, changeCount)
-      await build(clientRefresh)
-      return
-    }
-
-    await disposeActiveBuild()
-    const quartzBuild = await rebuildQuartzBundle()
-    release()
-
-    if (typeof quartzBuild.rebuildQuartzSource === 'function') {
-      activeBuild = await quartzBuild.rebuildQuartzSource(
-        handoff,
-        buildMutex,
-        clientRefresh,
-        changes,
-      )
-    } else {
-      activeBuild = await quartzBuild.default(argv, buildMutex, clientRefresh)
-      clientRefresh()
-    }
-    componentSourceChanges.splice(0, changeCount)
   }
 
   let clientRefresh = () => {}
@@ -352,44 +301,41 @@ export async function handleBuild(argv) {
     )
   } else {
     await build(clientRefresh)
-    ctx.dispose()
+    if (!argv.watch) {
+      ctx.dispose()
+    }
   }
 
   if (argv.watch) {
-    const paths = await globby([
-      '**/*.ts',
-      'quartz/cli/*.js',
-      'quartz/static/**/*',
-      '**/*.tsx',
-      '**/*.scss',
-      'quartz/**/*.py',
-      'package.json',
-    ])
+    const paths = await globby(
+      [
+        'quartz.config.ts',
+        'quartz/**/*.ts',
+        'quartz/**/*.tsx',
+        'quartz/**/*.scss',
+        'quartz/**/*.py',
+        'quartz/cli/*.js',
+        'quartz/static/**/*',
+        'package.json',
+      ],
+      { gitignore: true, ignore: ['.quartz-cache/**', 'node_modules/**', 'public/**'] },
+    )
     chokidar
       .watch(paths, {
         awaitWriteFinish: { stabilityThreshold: sourceWatchWriteStabilityMs },
         ignoreInitial: true,
       })
       .on('add', fp => {
-        const change = toSourceChange(fp, 'add')
-        if (isTestSourcePath(change.path)) return
-        if (!isComponentSourcePath(change.path)) return build(clientRefresh)
-        componentSourceChanges.push(change)
-        return buildComponentSource(clientRefresh)
+        if (isTestSourcePath(fp)) return
+        return build(clientRefresh)
       })
       .on('change', fp => {
-        const change = toSourceChange(fp, 'change')
-        if (isTestSourcePath(change.path)) return
-        if (!isComponentSourcePath(change.path)) return build(clientRefresh)
-        componentSourceChanges.push(change)
-        return buildComponentSource(clientRefresh)
+        if (isTestSourcePath(fp)) return
+        return build(clientRefresh)
       })
       .on('unlink', fp => {
-        const change = toSourceChange(fp, 'delete')
-        if (isTestSourcePath(change.path)) return
-        if (!isComponentSourcePath(change.path)) return build(clientRefresh)
-        componentSourceChanges.push(change)
-        return buildComponentSource(clientRefresh)
+        if (isTestSourcePath(fp)) return
+        return build(clientRefresh)
       })
 
     console.log(styleText('gray', 'hint: exit with ctrl+c'))

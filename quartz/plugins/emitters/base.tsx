@@ -84,15 +84,18 @@ export const BasePage: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts =
     getQuartzComponents() {
       return [Head, ...header, ...beforeBody, pageBody, ...afterBody, ...sidebar, Footer]
     },
-    async *partialEmit(ctx, content, resources, changeEvents) {
+    partialEmit(ctx, content, resources, changeEvents) {
       const plan = planBaseViewPartialEmit(content, changeEvents, partialState)
       partialState = plan.nextState
+      if (plan.slugsToRebuild.size === 0) return null
 
-      for (const slug of plan.slugsToRebuild) {
-        const basePlan = plan.basePlans.get(slug)
-        if (!basePlan) continue
-        yield* emitBaseViewsForPlan(ctx, slug, basePlan, plan.allFiles, resources, opts)
-      }
+      return (async function* () {
+        for (const slug of plan.slugsToRebuild) {
+          const basePlan = plan.basePlans.get(slug)
+          if (!basePlan) continue
+          yield* emitBaseViewsForPlan(ctx, slug, basePlan, plan.allFiles, resources, opts)
+        }
+      })()
     },
     async *emit(ctx, content, resources) {
       const plan = planBaseViewPartialEmit(content, [], undefined)

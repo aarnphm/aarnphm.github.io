@@ -10,8 +10,7 @@ export type JsBundlePart =
 
 export const componentCssResourceKeyPrefix = 'component-css:'
 
-export const componentCssResourceKey = (content: string) =>
-  `${componentCssResourceKeyPrefix}${content}`
+export const componentCssBundleKey = `${componentCssResourceKeyPrefix}bundle`
 
 export const staticCssBundleSlug = 'static/resource-style'
 
