@@ -1,21 +1,11 @@
 @use '../../styles/variables.scss' as *;
 @use '../../styles/mixin.scss' as *;
+@use './figure.scss' as *;
 
 .mla-latent-path {
-  container-type: inline-size;
-  container-name: mla-figure;
-  margin: 1.75rem 0;
-  content-visibility: auto;
-  contain-intrinsic-size: auto 42rem;
-  padding: 1.5rem 1.75rem;
-  border-radius: var(--radius-7-2);
-  border: 1px solid var(--mla-frame-border);
-  box-shadow: none;
-  background: color-mix(in srgb, var(--light) 94%, transparent);
-  color: var(--dark);
+  @include figure-frame('mla-figure', 42rem, $zoom: false);
   --mla-stroke: color-mix(in srgb, var(--darkgray) 70%, transparent);
   --mla-div: color-mix(in srgb, var(--gray) 28%, transparent);
-  --mla-frame-border: color-mix(in srgb, var(--gray) 34%, transparent);
   --mla-note: color-mix(in srgb, var(--darkgray) 78%, var(--dark) 22%);
   --mla-salmon: #fdb2a2;
   --mla-sage: #cdd597;
@@ -36,7 +26,6 @@
   --mla-head-bg: color-mix(in srgb, var(--mla-sage) 32%, var(--lightgray));
   --mla-neutral-bg: color-mix(in srgb, var(--lightgray) 35%, var(--dark));
   --mla-concat-bg: color-mix(in srgb, var(--lightgray) 22%, var(--dark));
-  --mla-frame-border: color-mix(in srgb, var(--gray) 46%, transparent);
 }
 
 .mla-stage {
@@ -114,22 +103,10 @@
   }
 
   .mla-fo {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
+    @include figure-fo;
     justify-content: center;
-    color: var(--dark);
-    line-height: 1;
     overflow: visible;
     pointer-events: none;
-    .katex {
-      color: inherit;
-      font-size: 1em;
-    }
-    .katex-display {
-      margin: 0;
-    }
   }
   .mla-fo--node {
     font-size: 13px;
@@ -163,7 +140,7 @@
 .mla-card {
   padding: 0.85rem 0.95rem;
   border-radius: 6px;
-  border: 1px solid var(--mla-frame-border);
+  border: 1px solid var(--fig-frame-border);
   box-shadow: none;
   background: color-mix(in srgb, var(--light) 96%, transparent);
 }
@@ -230,7 +207,7 @@
   margin: 0;
   padding: 0.8rem 0.95rem;
   background: color-mix(in srgb, var(--light) 80%, transparent);
-  border: 1px solid var(--mla-frame-border);
+  border: 1px solid var(--fig-frame-border);
   box-shadow: none;
   border-radius: 6px;
   font-size: 0.82rem;
@@ -275,12 +252,7 @@
 }
 
 .mla-math {
-  display: inline-block;
-  color: inherit;
-  .katex {
-    color: inherit;
-    font-size: 0.95em;
-  }
+  @include figure-inline-math;
 }
 
 .mla-math--display {
@@ -371,7 +343,7 @@
   margin-top: 1rem;
   padding: 0.85rem 1rem;
   border-radius: 6px;
-  border: 1px solid var(--mla-frame-border);
+  border: 1px solid var(--fig-frame-border);
   box-shadow: none;
   background: color-mix(in srgb, var(--light) 96%, transparent);
   display: flex;
@@ -392,17 +364,11 @@
 }
 
 .mla-caption {
-  margin-top: 0.9rem;
-  color: color-mix(in srgb, var(--gray) 70%, var(--dark) 30%);
-  font-size: 0.78rem;
-  line-height: 1.45;
-  text-align: left;
-  text-wrap: pretty;
+  @include figure-caption;
   display: inline-block;
 
   .mla-math {
-    margin: 0 0.22em;
-    vertical-align: -0.03em;
+    @include figure-caption-math-gap;
   }
 }
 

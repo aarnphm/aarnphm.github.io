@@ -140,7 +140,7 @@ const CascadeFilterImpl: QuartzMdxComponent<Props> = ({ caption, tiles = 16 }) =
         </div>
         <div class="cf-slider-wrap">
           <label class="cf-slider-label" for="cf-threshold">
-            threshold <MathLabel tex="\tau" />
+            <MathLabel tex="\text{threshold}\;\tau" />
           </label>
           <input
             id="cf-threshold"
@@ -156,9 +156,11 @@ const CascadeFilterImpl: QuartzMdxComponent<Props> = ({ caption, tiles = 16 }) =
             aria-valuenow={tau}
             aria-valuetext={`tau equals ${tau.toFixed(2)}`}
           />
-          <span class="cf-slider-value" data-cf-tau>
-            {tau.toFixed(2)}
-          </span>
+          <span
+            class="cf-slider-value"
+            data-cf-tau
+            dangerouslySetInnerHTML={{ __html: renderMath(tau.toFixed(2), false) }}
+          />
         </div>
       </header>
 
@@ -274,16 +276,28 @@ const CascadeFilterImpl: QuartzMdxComponent<Props> = ({ caption, tiles = 16 }) =
           <dl class="cf-stats">
             <dt>survivors</dt>
             <dd>
-              <strong data-cf-stat="kept">0</strong>
-              <span class="cf-stat-of">/ {n}</span>
+              <strong
+                data-cf-stat="kept"
+                dangerouslySetInnerHTML={{ __html: renderMath('0', false) }}
+              />
+              <span
+                class="cf-stat-of"
+                dangerouslySetInnerHTML={{ __html: renderMath(`/\\,${n}`, false) }}
+              />
             </dd>
             <dt>speedup</dt>
             <dd>
-              <strong data-cf-stat="speedup">0.0x</strong>
+              <strong
+                data-cf-stat="speedup"
+                dangerouslySetInnerHTML={{ __html: renderMath('0.0\\times', false) }}
+              />
             </dd>
             <dt>recall</dt>
             <dd>
-              <strong data-cf-stat="recall">0%</strong>
+              <strong
+                data-cf-stat="recall"
+                dangerouslySetInnerHTML={{ __html: renderMath('0\\%', false) }}
+              />
             </dd>
           </dl>
         </div>

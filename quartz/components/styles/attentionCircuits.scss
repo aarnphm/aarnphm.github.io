@@ -1,19 +1,9 @@
 @use '../../styles/variables.scss' as *;
 @use '../../styles/mixin.scss' as *;
+@use './figure.scss' as *;
 
 .attention-circuits {
-  container-type: inline-size;
-  container-name: acir-figure;
-  margin: 1.75rem 0;
-  content-visibility: auto;
-  contain-intrinsic-size: auto 42rem;
-  box-sizing: border-box;
-  padding: 1.5rem 1.75rem;
-  border-radius: var(--radius-7-2);
-  border: 1px solid var(--acir-frame-border);
-  background: color-mix(in srgb, var(--light) 94%, transparent);
-  color: var(--dark);
-  --acir-frame-border: color-mix(in srgb, var(--gray) 34%, transparent);
+  @include figure-frame('acir-figure', 42rem);
 
   --acir-line: color-mix(in srgb, var(--gray) 24%, transparent);
   --acir-stroke: color-mix(in srgb, var(--darkgray) 70%, transparent);
@@ -28,12 +18,9 @@
   --acir-qk-fill: color-mix(in srgb, #fdb2a2 28%, var(--light));
   --acir-ov: #cdd597;
   --acir-ov-fill: color-mix(in srgb, #cdd597 32%, var(--light));
-
-  box-shadow: none;
 }
 
 :root[saved-theme='dark'] .attention-circuits {
-  --acir-frame-border: color-mix(in srgb, var(--gray) 46%, transparent);
   --acir-box: var(--lightgray);
   --acir-box-soft: color-mix(in srgb, var(--lightgray) 80%, var(--dark));
   --acir-input: color-mix(in srgb, var(--gray) 22%, var(--lightgray));
@@ -247,22 +234,12 @@
   }
 
   .acir-fo {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
+    @include figure-fo;
     justify-content: center;
-    color: var(--dark);
     font-size: 14px;
-    line-height: 1;
     overflow: visible;
     .katex {
-      color: inherit;
-      font-size: 1em;
       line-height: 1;
-    }
-    .katex-display {
-      margin: 0;
     }
   }
 
@@ -401,25 +378,14 @@
 }
 
 .acir-math {
-  display: inline-block;
-  color: inherit;
-  .katex {
-    color: inherit;
-    font-size: 0.95em;
-  }
+  @include figure-inline-math;
 }
 
 .acir-caption {
-  margin-top: 0.9rem;
-  color: color-mix(in srgb, var(--gray) 70%, var(--dark) 30%);
-  font-size: 0.78rem;
-  line-height: 1.45;
-  text-align: left;
-  text-wrap: pretty;
+  @include figure-caption;
 
   .acir-math {
-    margin: 0 0.22em;
-    vertical-align: -0.03em;
+    @include figure-caption-math-gap;
   }
 }
 
@@ -462,11 +428,4 @@
   .acir-props {
     grid-template-columns: 1fr;
   }
-}
-
-.zoomable.is-zoomed > .zoomable-content > .attention-circuits {
-  padding: 1.5rem 1.75rem;
-  border: 1px solid var(--acir-frame-border);
-  border-radius: var(--radius-7-2);
-  background: color-mix(in srgb, var(--light) 94%, transparent);
 }

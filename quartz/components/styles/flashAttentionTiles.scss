@@ -1,20 +1,9 @@
 @use '../../styles/variables.scss' as *;
 @use '../../styles/mixin.scss' as *;
+@use './figure.scss' as *;
 
 .flash-attention-tiles {
-  container-type: inline-size;
-  container-name: fat-figure;
-  margin: 1.75rem 0;
-  content-visibility: auto;
-  contain-intrinsic-size: auto 32rem;
-  box-sizing: border-box;
-  padding: 1.5rem 1.75rem;
-  border-radius: var(--radius-7-2);
-  border: 1px solid var(--fat-frame-border);
-  box-shadow: none;
-  background: color-mix(in srgb, var(--light) 94%, transparent);
-  color: var(--dark);
-  --fat-frame-border: color-mix(in srgb, var(--gray) 34%, transparent);
+  @include figure-frame('fat-figure', 32rem);
 
   --fat-stroke: color-mix(in srgb, var(--darkgray) 70%, transparent);
   --fat-stroke-soft: color-mix(in srgb, var(--gray) 45%, transparent);
@@ -29,7 +18,6 @@
 }
 
 :root[saved-theme='dark'] .flash-attention-tiles {
-  --fat-frame-border: color-mix(in srgb, var(--gray) 46%, transparent);
   --fat-active-bg: color-mix(in srgb, #fdb2a2 25%, var(--lightgray));
   --fat-done-bg: color-mix(in srgb, #cdd597 22%, var(--lightgray));
   --fat-bg-cell: color-mix(in srgb, var(--lightgray) 35%, var(--dark));
@@ -129,14 +117,9 @@
   }
 
   .fat-fo {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
+    @include figure-fo;
     justify-content: center;
     font-size: 12px;
-    color: var(--dark);
-    line-height: 1;
   }
 }
 
@@ -201,12 +184,7 @@
   box-shadow: 0 0 0 1px var(--fat-divider) inset;
   background: color-mix(in srgb, var(--light) 96%, transparent);
   h4 {
-    margin: 0 0 0.5rem;
-    font-size: 0.82rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    color: var(--fat-note-fg);
+    @include figure-card-heading(0.82rem);
   }
 }
 
@@ -259,16 +237,10 @@
 }
 
 .fat-caption {
-  margin-top: 0.9rem;
-  color: color-mix(in srgb, var(--gray) 70%, var(--dark) 30%);
-  font-size: 0.78rem;
-  line-height: 1.45;
-  text-align: left;
-  text-wrap: pretty;
+  @include figure-caption;
 
   .fat-math {
-    margin: 0 0.22em;
-    vertical-align: -0.03em;
+    @include figure-caption-math-gap;
   }
 }
 
@@ -283,11 +255,4 @@
   .flash-attention-tiles {
     padding: 0;
   }
-}
-
-.zoomable.is-zoomed > .zoomable-content > .flash-attention-tiles {
-  padding: 1.5rem 1.75rem;
-  border: 1px solid var(--fat-frame-border);
-  border-radius: var(--radius-7-2);
-  background: color-mix(in srgb, var(--light) 94%, transparent);
 }

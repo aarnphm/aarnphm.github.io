@@ -1,18 +1,8 @@
 @use '../../styles/variables.scss' as *;
+@use './figure.scss' as *;
 
 .attention-family-map {
-  container-type: inline-size;
-  container-name: afm-figure;
-  margin: 1.75rem 0;
-  content-visibility: auto;
-  contain-intrinsic-size: auto 42rem;
-  box-sizing: border-box;
-  padding: 1.5rem 1.75rem;
-  border-radius: var(--radius-7-2);
-  border: 1px solid var(--afm-frame-border);
-  background: color-mix(in srgb, var(--light) 94%, transparent);
-  color: var(--dark);
-  --afm-frame-border: color-mix(in srgb, var(--gray) 34%, transparent);
+  @include figure-frame('afm-figure', 42rem);
 
   --afm-line: color-mix(in srgb, var(--gray) 24%, transparent);
   --afm-surface-shadow:
@@ -27,12 +17,9 @@
   --afm-chip-fg: color-mix(in srgb, var(--dark) 80%, var(--gray) 20%);
   --afm-detail-bg: color-mix(in srgb, var(--light) 96%, transparent);
   --afm-detail-shadow: 0 8px 24px color-mix(in srgb, var(--dark) 14%, transparent);
-
-  box-shadow: none;
 }
 
 :root[saved-theme='dark'] .attention-family-map {
-  --afm-frame-border: color-mix(in srgb, var(--gray) 46%, transparent);
   --afm-card-bg: color-mix(in srgb, var(--lightgray) 38%, transparent);
   --afm-card-bg-hover: color-mix(in srgb, var(--lightgray) 55%, transparent);
   --afm-chip-bg: color-mix(in srgb, var(--lightgray) 50%, transparent);
@@ -353,16 +340,10 @@
 }
 
 .afm-caption {
-  margin-top: 0.9rem;
-  color: color-mix(in srgb, var(--gray) 70%, var(--dark) 30%);
-  font-size: 0.78rem;
-  line-height: 1.45;
-  text-align: left;
-  text-wrap: pretty;
+  @include figure-caption;
 
   .afm-math {
-    margin: 0 0.22em;
-    vertical-align: -0.03em;
+    @include figure-caption-math-gap;
   }
 }
 
@@ -414,11 +395,4 @@
   .attention-family-map {
     margin: 1.25rem 0;
   }
-}
-
-.zoomable.is-zoomed > .zoomable-content > .attention-family-map {
-  padding: 1.5rem 1.75rem;
-  border: 1px solid var(--afm-frame-border);
-  border-radius: var(--radius-7-2);
-  background: color-mix(in srgb, var(--light) 94%, transparent);
 }
