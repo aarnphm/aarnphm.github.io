@@ -5,7 +5,7 @@ import path from 'node:path'
 import { styleText } from 'node:util'
 import { VFile } from 'vfile'
 import { defaultContentPageLayout, sharedPageComponents } from '../../../quartz.layout'
-import { FullPageLayout, QuartzConfig } from '../../cfg'
+import { FullPageLayout } from '../../cfg'
 import * as Component from '../../components'
 import HeaderConstructor from '../../components/Header'
 import { pageResources, renderPage } from '../../components/renderPage'
@@ -13,15 +13,14 @@ import { createHtmlProcessor, createMdProcessor, mdastToHastRoot } from '../../p
 import '../../runtime/notebook/registry'
 import { backendFor } from '../../runtime/notebook/backend'
 import { ChangeEvent, QuartzEmitterPlugin } from '../../types/plugin'
-import { hashAssetContent } from '../../util/asset-manifest'
 import { defaultIoConcurrency, mapConcurrent } from '../../util/async-pool'
-import { BuildCtx, Argv, contentDataFor } from '../../util/ctx'
-import { glob } from '../../util/glob'
+import { BuildCtx, contentDataFor } from '../../util/ctx'
 import { extractInlineNotebookAssets } from '../../util/notebook/extract-assets'
 import { notebookToMarkdownChunks } from '../../util/notebook/markdown'
 import { parseNotebookDoc } from '../../util/notebook/parse'
 import { isNotebookParseError } from '../../util/notebook/types'
 import { FilePath, FullSlug, joinSegments, pathToRoot, slugifyFilePath } from '../../util/path'
+import { logBuildSpan, PerfTimer } from '../../util/perf'
 import { StaticResources } from '../../util/resources'
 import { ProcessedContent, QuartzPluginData } from '../vfile'
 import { write } from './helpers'
@@ -42,6 +41,7 @@ type NotebookProcessors = {
 }
 type NotebookPageCacheEntry = { key: string; page: NotebookPage }
 type NotebookPageCacheOptions = { salt: string | undefined; read: boolean; write: boolean }
+type NotebookPageResult = { page: NotebookPage; cacheHit: boolean }
 
 declare global {
   var __quartzNotebookPageCache: Map<FilePath, NotebookPageCacheEntry> | undefined
@@ -67,10 +67,6 @@ const htmlResourceSrcPattern =
   /<(?:img|video|audio|iframe)\b[^>]*\bsrc\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s>]+))/gi
 const markdownImageTargetPattern = /!\[[^\]]*\]\(\s*(<[^>]+>|[^)\s]+)[^)]*\)/g
 
-const notebookFiles = async (argv: Argv, cfg: QuartzConfig) => {
-  return await glob('**/*.ipynb', argv.directory, [...cfg.configuration.ignorePatterns])
-}
-
 function resolveOptions(userOpts?: Options): ResolvedOptions {
   const runtime: ResolvedOptions['runtime'] =
     userOpts?.runtime === false ||
@@ -93,6 +89,10 @@ type NotebookPage = { fp: FilePath; slug: FullSlug; content: ProcessedContent }
 
 function isNotebookPath(fp: FilePath): boolean {
   return path.extname(fp) === '.ipynb'
+}
+
+function notebookFiles(ctx: BuildCtx): FilePath[] {
+  return ctx.allFiles.filter(isNotebookPath).sort()
 }
 
 function isMarkdownContentPath(fp: FilePath): boolean {
@@ -286,14 +286,14 @@ function notebookRuntimeCacheKey(opts: ResolvedOptions): string {
 }
 
 function notebookPageCacheKey(
-  raw: string,
+  sourceSignature: string,
   opts: ResolvedOptions,
   sourceSalt: string,
   importableModules: readonly string[],
 ): string {
   return [
     sourceSalt,
-    hashAssetContent(raw),
+    sourceSignature,
     notebookRuntimeCacheKey(opts),
     importableModules.join('\0'),
   ].join('\u0001')
@@ -306,19 +306,20 @@ async function notebookProcessedContent(
   contextFps: FilePath[],
   cacheOptions: NotebookPageCacheOptions,
   processors: () => NotebookProcessors,
-): Promise<NotebookPage> {
+): Promise<NotebookPageResult> {
   const src = joinSegments(ctx.argv.directory, fp) as FilePath
   const slug = slugifyFilePath(fp, true)
-  const raw = await fs.readFile(joinSegments(ctx.argv.directory, fp) as FilePath, 'utf8')
   const importableModules = importableNotebookModules(fp, contextFps)
+  const sourceSignature = await notebookSourceSignature(src)
   const cacheKey = cacheOptions.salt
-    ? notebookPageCacheKey(raw, opts, cacheOptions.salt, importableModules)
+    ? notebookPageCacheKey(sourceSignature, opts, cacheOptions.salt, importableModules)
     : undefined
   if (cacheKey && cacheOptions.read) {
     const cached = notebookPageCache.get(fp)
-    if (cached?.key === cacheKey) return cached.page
+    if (cached?.key === cacheKey) return { page: cached.page, cacheHit: true }
   }
 
+  const raw = await fs.readFile(src, 'utf8')
   const notebook = parseNotebookDoc(raw, src)
   if (isNotebookParseError(notebook))
     throw new Error(`${src} is not a valid notebook: ${notebook.reason}`)
@@ -348,7 +349,7 @@ async function notebookProcessedContent(
   if (cacheKey && cacheOptions.write) {
     notebookPageCache.set(fp, { key: cacheKey, page })
   }
-  return page
+  return { page, cacheHit: false }
 }
 
 async function parseNotebookQueue(
@@ -357,13 +358,13 @@ async function parseNotebookQueue(
   opts: ResolvedOptions,
   contextFps: FilePath[],
   cacheOptions: NotebookPageCacheOptions,
-): Promise<Array<NotebookPage | { fp: FilePath; error: unknown }>> {
+): Promise<Array<NotebookPageResult | { fp: FilePath; error: unknown }>> {
   let processorCache: NotebookProcessors | undefined
   const processors = () => {
     processorCache ??= { md: createMdProcessor(ctx), html: createHtmlProcessor(ctx) }
     return processorCache
   }
-  const pages: Array<NotebookPage | { fp: FilePath; error: unknown }> = []
+  const pages: Array<NotebookPageResult | { fp: FilePath; error: unknown }> = []
   for (const fp of fps) {
     try {
       pages.push(
@@ -382,22 +383,24 @@ async function parseNotebookPages(
   maxWorkers: number,
   opts: ResolvedOptions,
   contextFps: FilePath[],
-): Promise<NotebookPage[]> {
+): Promise<{ pages: NotebookPage[]; cacheHits: number }> {
   const pages: NotebookPage[] = []
+  let cacheHits = 0
   const workerCount = Math.max(1, Math.min(maxWorkers, fps.length))
   const queues = Array.from({ length: workerCount }, () => [] as FilePath[])
   for (let i = 0; i < fps.length; i += 1) {
     queues[i % workerCount].push(fps[i])
   }
   const salt = await notebookPageCacheSalt(ctx)
-  const cacheOptions = { salt, read: Boolean(salt && ctx.incremental), write: Boolean(salt) }
+  const cacheOptions = { salt, read: Boolean(salt && ctx.argv.watch), write: Boolean(salt) }
   const results = await Promise.all(
     queues.map(queue => parseNotebookQueue(ctx, queue, opts, contextFps, cacheOptions)),
   )
 
   for (const result of results.flat()) {
-    if ('content' in result) {
-      pages.push(result)
+    if ('page' in result) {
+      pages.push(result.page)
+      if (result.cacheHit) cacheHits += 1
     } else {
       console.error(
         styleText('red', `\n[emit:NotebookViewer] Error processing ${result.fp}:`),
@@ -406,7 +409,7 @@ async function parseNotebookPages(
     }
   }
 
-  return pages
+  return { pages, cacheHits }
 }
 
 async function emitNotebookPage(
@@ -451,6 +454,7 @@ async function* emitNotebookPages(
   }
 
   const { argv } = ctx
+  const perf = new PerfTimer()
   const resolveWorkerLimit = () => {
     if (argv.concurrency && argv.concurrency > 0) {
       return argv.concurrency
@@ -465,8 +469,15 @@ async function* emitNotebookPages(
 
   const maxWorkers = Math.max(1, Math.min(resolveWorkerLimit(), fps.length))
   const localCtx = notebookContext(ctx, contextFps)
-  const pages = await parseNotebookPages(localCtx, fps, maxWorkers, opts, contextFps)
+  const { pages, cacheHits } = await parseNotebookPages(localCtx, fps, maxWorkers, opts, contextFps)
+  logBuildSpan(
+    ctx.argv,
+    'notebook:parse',
+    `${pages.length} pages, ${cacheHits} cache hits`,
+    perf.elapsedMs(),
+  )
   const allFiles = [...contentDataFor(content), ...pages.map(page => page.content[1].data)]
+  perf.addEvent('render')
   const files = await mapConcurrent(pages, defaultIoConcurrency, async page => {
     try {
       return await emitNotebookPage(localCtx, page, allFiles, resources)
@@ -475,6 +486,7 @@ async function* emitNotebookPages(
       return undefined
     }
   })
+  logBuildSpan(ctx.argv, 'notebook:render', `${pages.length} pages`, perf.elapsedMs('render'))
 
   for (const file of files) {
     if (file) yield file
@@ -542,13 +554,12 @@ export const NotebookViewer: QuartzEmitterPlugin<Options> = userOpts => {
         }
       }
 
-      const fps = await notebookFiles(ctx.argv, ctx.cfg)
+      const fps = notebookFiles(ctx)
       const affected = await affectedNotebookFiles(ctx, fps, changeEvents)
       yield* emitNotebookPages(ctx, content, resources, affected, opts, fps)
     },
     async *emit(ctx, content, resources) {
-      const { argv, cfg } = ctx
-      const fps = await notebookFiles(argv, cfg)
+      const fps = notebookFiles(ctx)
       yield* emitNotebookPages(ctx, content, resources, fps, opts)
     },
   }

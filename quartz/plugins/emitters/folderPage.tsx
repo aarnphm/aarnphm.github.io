@@ -18,12 +18,23 @@ import {
   joinSegments,
   pathToRoot,
   simplifySlug,
+  slugifyFilePath,
 } from '../../util/path'
 import { StaticResources } from '../../util/resources'
 import { ProcessedContent, QuartzPluginData, defaultProcessedContent } from '../vfile'
 import { write } from './helpers'
 interface FolderPageOptions extends FullPageLayout {
   sort?: (f1: QuartzPluginData, f2: QuartzPluginData) => number
+}
+
+const folderPageSourceExtensions = new Set(['.md', '.base', '.canvas', '.ipynb'])
+
+function isFolderPageSourcePath(fp: FilePath): boolean {
+  return folderPageSourceExtensions.has(path.extname(fp))
+}
+
+function sourcePathSlug(fp: FilePath): FullSlug {
+  return slugifyFilePath(fp, path.extname(fp) === '.ipynb')
 }
 
 async function* processFolderInfo(
@@ -130,8 +141,9 @@ export const FolderPage: QuartzEmitterPlugin<Partial<FolderPageOptions>> = userO
       const cfg = ctx.cfg.configuration
 
       const folders: Set<SimpleSlug> = new Set(
-        ctx.allSlugs
-          .filter((slug): slug is FullSlug => typeof slug === 'string')
+        ctx.allFiles
+          .filter(isFolderPageSourcePath)
+          .map(sourcePathSlug)
           .flatMap(slug =>
             _getFolders(slug).filter(folderName => folderName !== '.' && folderName !== 'tags'),
           ),

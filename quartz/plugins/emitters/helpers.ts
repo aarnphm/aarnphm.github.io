@@ -1,3 +1,4 @@
+import { createHash } from 'crypto'
 import fs from 'fs'
 import path from 'path'
 import { Readable } from 'stream'
@@ -15,20 +16,26 @@ type WriteOptions = {
 
 type KnownChangedWriteOptions = Omit<WriteOptions, 'content'> & { content: string | Buffer }
 
-type ContentCacheEntry = { size: number; content: string }
+type ContentCacheEntry = { size: number; kind: 'text' | 'bytes'; fingerprint: string }
 type WriteCacheState = {
   writtenContent: Map<FilePath, ContentCacheEntry>
-  ensuredDirs: Set<string>
+  ensuredDirs: Map<string, Promise<void>>
 }
 
 declare global {
   var __quartzWriteCache: WriteCacheState | undefined
 }
 
-const writeCache = (globalThis.__quartzWriteCache ??= {
-  writtenContent: new Map<FilePath, ContentCacheEntry>(),
-  ensuredDirs: new Set<string>(),
-})
+const existingWriteCache = globalThis.__quartzWriteCache
+const writeCache =
+  existingWriteCache && existingWriteCache.ensuredDirs instanceof Map
+    ? existingWriteCache
+    : {
+        writtenContent:
+          existingWriteCache?.writtenContent ?? new Map<FilePath, ContentCacheEntry>(),
+        ensuredDirs: new Map<string, Promise<void>>(),
+      }
+globalThis.__quartzWriteCache = writeCache
 const { writtenContent, ensuredDirs } = writeCache
 
 export function resetWriteCache(): void {
@@ -43,8 +50,23 @@ function contentSize(content: WriteOptions['content']): number | undefined {
 }
 
 function contentCacheEntry(content: WriteOptions['content']): ContentCacheEntry | undefined {
-  if (typeof content !== 'string') return undefined
-  return { size: Buffer.byteLength(content), content }
+  if (typeof content === 'string') {
+    return {
+      size: Buffer.byteLength(content),
+      kind: 'text',
+      fingerprint: createHash('sha256').update(content).digest('base64url'),
+    }
+  }
+
+  if (Buffer.isBuffer(content)) {
+    return {
+      size: content.byteLength,
+      kind: 'bytes',
+      fingerprint: createHash('sha256').update(content).digest('base64url'),
+    }
+  }
+
+  return undefined
 }
 
 function contentEquals(existing: Buffer, content: WriteOptions['content']): boolean {
@@ -61,7 +83,11 @@ async function shouldWrite(
   if (cacheEntry) {
     const previous = writtenContent.get(pathToPage)
     if (previous) {
-      return previous.size !== cacheEntry.size || previous.content !== cacheEntry.content
+      return (
+        previous.size !== cacheEntry.size ||
+        previous.kind !== cacheEntry.kind ||
+        previous.fingerprint !== cacheEntry.fingerprint
+      )
     }
   }
 
@@ -88,19 +114,28 @@ function cachedContentStatus(
 ): 'changed' | 'same' | undefined {
   const previous = writtenContent.get(pathToPage)
   if (!previous) return undefined
-  if (previous.size !== cacheEntry.size || previous.content !== cacheEntry.content) return 'changed'
+  if (
+    previous.size !== cacheEntry.size ||
+    previous.kind !== cacheEntry.kind ||
+    previous.fingerprint !== cacheEntry.fingerprint
+  ) {
+    return 'changed'
+  }
   return 'same'
 }
 
-function writeCachedContent(pathToPage: FilePath, content: string | Buffer): void {
-  fs.writeFileSync(pathToPage, content)
-}
-
-function ensureOutputDir(dir: string): Promise<void> | undefined {
-  if (ensuredDirs.has(dir)) return undefined
-  return fs.promises.mkdir(dir, { recursive: true }).then(() => {
-    ensuredDirs.add(dir)
-  })
+function ensureOutputDir(dir: string): Promise<void> {
+  const existing = ensuredDirs.get(dir)
+  if (existing) return existing
+  const pending = fs.promises
+    .mkdir(dir, { recursive: true })
+    .then(() => undefined)
+    .catch(error => {
+      ensuredDirs.delete(dir)
+      throw error
+    })
+  ensuredDirs.set(dir, pending)
+  return pending
 }
 
 function canWriteCachedContent(content: WriteOptions['content']): content is string | Buffer {
@@ -121,9 +156,13 @@ export const write = async ({ ctx, slug, ext, content }: WriteOptions): Promise<
   const perf = new PerfTimer()
   const pathToPage = joinSegments(ctx.argv.output, slug + ext) as FilePath
   const dir = path.dirname(pathToPage)
-  const dirWrite = ensureOutputDir(dir)
-  if (dirWrite) await dirWrite
-  const cacheEntry = contentCacheEntry(content)
+  await ensureOutputDir(dir)
+  if (ctx.cleanOutput) {
+    await fs.promises.writeFile(pathToPage, content)
+    logBuildSpan(ctx.argv, 'write', pathToPage, perf.elapsedMs())
+    return pathToPage
+  }
+  const cacheEntry = ctx.incremental || ctx.argv.watch ? contentCacheEntry(content) : undefined
   if (!ctx.incremental) {
     await fs.promises.writeFile(pathToPage, content)
     cacheWrittenContent(pathToPage, cacheEntry)
@@ -137,7 +176,7 @@ export const write = async ({ ctx, slug, ext, content }: WriteOptions): Promise<
     return pathToPage
   }
   if (cachedStatus === 'changed' && canWriteCachedContent(content)) {
-    writeCachedContent(pathToPage, content)
+    await fs.promises.writeFile(pathToPage, content)
     cacheWrittenContent(pathToPage, cacheEntry)
     logBuildSpan(ctx.argv, 'write', pathToPage, perf.elapsedMs())
     return pathToPage
@@ -160,8 +199,12 @@ export async function writeKnownChanged({
 }: KnownChangedWriteOptions): Promise<FilePath> {
   const perf = new PerfTimer()
   const pathToPage = joinSegments(ctx.argv.output, slug + ext) as FilePath
-  const dirWrite = ensureOutputDir(path.dirname(pathToPage))
-  if (dirWrite) await dirWrite
+  await ensureOutputDir(path.dirname(pathToPage))
+  if (ctx.cleanOutput) {
+    await fs.promises.writeFile(pathToPage, content)
+    logBuildSpan(ctx.argv, 'write', pathToPage, perf.elapsedMs())
+    return pathToPage
+  }
   await fs.promises.writeFile(pathToPage, content)
   cacheWrittenContent(pathToPage, contentCacheEntry(content))
   logBuildSpan(ctx.argv, 'write', pathToPage, perf.elapsedMs())

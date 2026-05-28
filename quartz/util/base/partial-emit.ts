@@ -79,6 +79,10 @@ function baseRelevantDataSignature(data: QuartzPluginData): string {
     description: data.description ?? null,
     links: sortedStringList(data.links),
     embeds: sortedStringList(data.embeds),
+    bases: data.bases ?? null,
+    basesConfig: data.basesConfig ?? null,
+    basesExpressions: data.basesExpressions ?? null,
+    codeDependencies: sortedStringList(data.codeDependencies),
   })
 }
 

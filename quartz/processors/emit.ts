@@ -2,6 +2,7 @@ import { styleText } from 'node:util'
 import type { QuartzEmitterPluginInstance } from '../types/plugin'
 import { getStaticResourcesFromPlugins } from '../plugins'
 import { ProcessedContent } from '../plugins/vfile'
+import { defaultEmitterConcurrency, mapConcurrent } from '../util/async-pool'
 import { BuildCtx } from '../util/ctx'
 import { QuartzLogger } from '../util/log'
 import { logBuildSpan, PerfTimer } from '../util/perf'
@@ -63,8 +64,8 @@ export async function emitContent(ctx: BuildCtx, content: ProcessedContent[]) {
   const otherEmitters = cfg.plugins.emitters.filter(
     emitter => emitter.name !== 'ComponentResources',
   )
-  const counts = await Promise.all(
-    otherEmitters.map(emitter => runEmitter(emitter, ctx, content, staticResources, log)),
+  const counts = await mapConcurrent(otherEmitters, defaultEmitterConcurrency, emitter =>
+    runEmitter(emitter, ctx, content, staticResources, log),
   )
   emittedFiles += counts.reduce((sum, count) => sum + count, 0)
 

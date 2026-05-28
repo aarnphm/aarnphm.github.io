@@ -2,14 +2,14 @@
 date: '2024-12-13'
 description: random projections preserve pairwise distances when mapping high-dimensional point sets into logarithmic-dimensional space.
 id: Johnson–Lindenstrauss lemma
-modified: 2026-05-09 17:51:49 GMT-04:00
+modified: 2026-05-28 12:49:42 GMT-04:00
 tags:
   - math
   - ml
 title: Johnson–Lindenstrauss lemma
 ---
 
-the Johnson-Lindenstrauss (JL) lemma: you can crush $N$ points from $\mathbb{R}^n$ down to $\mathbb{R}^k$ with $k = O(\log N / \varepsilon^2)$, and every pairwise distance stays within a $(1 \pm \varepsilon)$ factor of where it started. the target dimension $k$ depends on $\log N$ and the distortion tolerance $\varepsilon$. the ambient dimension $n$ drops out.
+[Johnson–Lindenstrauss lemma](https://en.wikipedia.org/wiki/Johnson%E2%80%93Lindenstrauss_lemma) said that you can crush $N$ points from $\mathbb{R}^n$ down to $\mathbb{R}^k$ with $k = O(\log N / \varepsilon^2)$, and every pairwise distance stays within a $(1 \pm \varepsilon)$ factor of where it started. the target dimension $k$ depends on $\log N$ and the distortion tolerance $\varepsilon$. the ambient dimension $n$ drops out.
 
 this is the foundational result behind [[thoughts/Embedding|random projections]] in practice: [[thoughts/NLP|NLP]] embeddings, [[thoughts/Compression|compressed sensing]], [[thoughts/Embedding|locality-sensitive hashing]], approximate [[thoughts/Search|nearest-neighbor search]].
 
@@ -236,8 +236,6 @@ the JL lemma connects to several threads:
 - [[thoughts/Compression|compressed sensing]]: the restricted isometry property (RIP) is a strengthening of JL. a matrix satisfying RIP preserves [[thoughts/norm|norms]] of all $s$-sparse vectors simultaneously, which subsumes JL-type guarantees for point sets that happen to be sparse.
 - [[thoughts/Embedding|embeddings]] in [[thoughts/LLMs|LLMs]]: transformer embedding layers map tokens into $\mathbb{R}^{d_\text{model}}$ where $d_\text{model}$ is typically 768 to 12288. JL says the pairwise geometry of $N$ token embeddings is faithfully representable in $O(\log N)$ dimensions. for a vocabulary of 50k-200k tokens, that's $\log N \approx 11$-12, well below $d_\text{model}$. the remaining dimensions are doing something else.
 - [[thoughts/geometric projections|projection theory]]: JL is probabilistic, random projections succeed with high probability over the choice of matrix. the deterministic theory of [[thoughts/geometric projections|geometric projections]] studies specific orthogonal projections, where the guarantees depend on the geometry of the set rather than its cardinality.
-
-## references
 
 [^5]: Larsen, Kasper Green; Nelson, Jelani (2017), "Optimality of the Johnson-Lindenstrauss Lemma", _Proceedings of the 58th Annual IEEE Symposium on Foundations of Computer Science (FOCS)_, pp. 633-638, [arXiv:1609.02094](https://arxiv.org/abs/1609.02094)
 

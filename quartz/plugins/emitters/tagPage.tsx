@@ -1,5 +1,4 @@
-import { readFileSync } from 'node:fs'
-import { rm } from 'node:fs/promises'
+import { readFile, rm } from 'node:fs/promises'
 import { defaultListPageLayout, sharedPageComponents } from '../../../quartz.layout'
 import { FullPageLayout, GlobalConfiguration } from '../../cfg'
 import { TagContent } from '../../components'
@@ -429,7 +428,7 @@ export const TagPage: QuartzEmitterPlugin<Partial<TagPageOptions>> = userOpts =>
                 if (!cachedTagInfo!.tags.has(tag)) return undefined
                 const slug = joinSegments('tags', tag) as FullSlug
                 const pathToPage = joinSegments(ctx.argv.output, `${slug}.html`) as FilePath
-                const currentHtml = readFileSync(pathToPage, 'utf8')
+                const currentHtml = await readFile(pathToPage, 'utf8')
                 const patchedHtml = patchTagPageTitles(currentHtml, slug, tag, titlePatches)
                 if (patchedHtml === undefined || patchedHtml === currentHtml) return undefined
                 return writeKnownChanged({ ctx, content: patchedHtml, slug, ext: '.html' })

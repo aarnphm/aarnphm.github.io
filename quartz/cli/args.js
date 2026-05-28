@@ -41,6 +41,11 @@ export const BuildArgv = {
     number: true,
     describe: 'print markdown, html, and emitter spans at or above this many milliseconds',
   },
+  allBuildSpans: {
+    boolean: true,
+    default: false,
+    describe: 'print every markdown, html, and emitter span',
+  },
 }
 
 export const StatsArgv = { ...CommonArgv }

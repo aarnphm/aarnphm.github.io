@@ -368,7 +368,7 @@ const AttentionCircuitsImpl: QuartzMdxComponent<Props> = ({ caption }) => (
     <Props_ />
     {caption ? (
       <figcaption class="acir-caption">
-        <MathText text={caption} />
+        <MathText text={caption} mathClass="acir-math" />
       </figcaption>
     ) : null}
   </figure>

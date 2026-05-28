@@ -2,7 +2,7 @@
 date: '2026-05-27'
 description: tiled IO-aware attention kernel, recomputes softmax denominators on-the-fly, avoids materialising the full attention matrix.
 id: attention-flash
-modified: 2026-05-27 23:17:40 GMT-04:00
+modified: 2026-05-28 13:10:10 GMT-04:00
 seealso:
   - '[[thoughts/Attention|main stage]]'
   - '[[thoughts/tree attention|tree attention]]'
@@ -35,50 +35,50 @@ Only the current tile's $K,V$ blocks ever leave global memory. After processing 
 \usepackage{tikz}
 \begin{document}
 \begin{tikzpicture}[
-  font=\sffamily\small,
+  font=\small,
   block/.style={draw=black, rounded corners=2pt, minimum width=2.6cm, minimum height=0.7cm, inner sep=2pt},
   hbm/.style={block, fill=gray!10},
   sram/.style={block, fill=cyan!20},
   tile/.style={draw=black, fill=orange!30, minimum width=0.6cm, minimum height=0.6cm, inner sep=0pt},
   arr/.style={->, >=latex, thick}
 ]
+  \path[use as bounding box] (-1.8, -0.3) rectangle (6.9, 5.7);
+
   % HBM column (left)
   \node[hbm] (q) at (0, 4.5) {$Q\in \mathbb{R}^{L\times d}$};
   \node[hbm] (k) at (0, 3.5) {$K\in \mathbb{R}^{L\times d}$};
   \node[hbm] (v) at (0, 2.5) {$V\in \mathbb{R}^{L\times d}$};
   \node[hbm] (o) at (0, 1.5) {$O\in \mathbb{R}^{L\times d}$};
-  \node[font=\sffamily\bfseries, anchor=south] at (0, 5.1) {HBM (slow)};
+  \node[font=\bfseries, anchor=south] at (0, 5.1) {HBM (slow)};
 
   % SRAM tiles (right)
-  \node[font=\sffamily\bfseries] at (5.4, 5.1) {SRAM (fast)};
+  \node[font=\bfseries] at (5.4, 5.1) {SRAM (fast)};
   \node[tile] (qt) at (5.4, 4.5) {$Q_t$};
   \node[tile] (kt) at (5.4, 3.5) {$K_t$};
   \node[tile] (vt) at (5.4, 2.5) {$V_t$};
   \node[tile, minimum width=1.8cm] (stat) at (5.4, 1.5) {$m, l, O_t$};
 
   % arrows from HBM to SRAM
-  \draw[arr] (q) -- (qt) node[midway, above, font=\sffamily\itshape\footnotesize] {load tile};
+  \draw[arr] (q) -- (qt) node[midway, above, font=\itshape\footnotesize] {load tile};
   \draw[arr] (k) -- (kt);
   \draw[arr] (v) -- (vt);
-  \draw[arr] (stat) -- (o) node[midway, below, font=\sffamily\itshape\footnotesize] {write back};
+  \draw[arr] (stat) -- (o) node[midway, below, font=\itshape\footnotesize] {write back};
 
   % inner-loop annotation
-  \node[font=\sffamily\itshape, gray, align=center] at (2.7, 0.6) {outer loop: $K, V$ tiles\\inner loop: $Q$ tiles, online softmax};
+  \node[font=\itshape, gray, align=center] at (2.7, 0.6) {outer loop: $K, V$ tiles\\inner loop: $Q$ tiles, online softmax};
 \end{tikzpicture}
 \end{document}
 ```
 
 ```jsx imports={Zoomable,FlashAttentionTiles}
 <Zoomable label="FlashAttention tile streaming">
-  <FlashAttentionTiles caption="Step through the tile loop: HBM holds the full Q, K, V, O matrices while SRAM streams in one (Q_i, K_j, V_j) tile pair at a time. Each step updates the running maxima m_i, normaliser l_i, and partial output O_i via the online softmax recurrence." />
+  <FlashAttentionTiles caption="Step through the tile loop: HBM holds the full $Q, K, V, O$ matrices while SRAM streams in one $(Q_i, K_j, V_j)$ tile pair at a time. Each step updates the running maxima $m_i$, normaliser $l_i$, and partial output $O_i$ via the online softmax recurrence." />
 </Zoomable>
 ```
 
 - Motivation: eliminate memory bandwidth bottlenecks so that longer contexts fit on commodity GPUs.
 - Extension: variants such as FlashAttention-2/3, xFormers, and Triton kernels specialise for [[thoughts/GPU programming|GPU]] architectures and sparse layouts.
 
-> [!todo]+ future notes
->
-> - Re-derive the online softmax algorithm that maintains running maxima and partition functions per tile.
-> - Benchmark FlashAttention against naive attention under identical hardware to quantify the IO savings.
-> - Explore how FlashAttention integrates with techniques above (e.g., can GQA heads share tiles efficiently?).
+## FlashAttention 2
+
+## FlashAttention 4

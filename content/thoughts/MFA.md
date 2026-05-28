@@ -14,9 +14,19 @@ tags:
 title: Multi-Matrix Factorization Attention
 ---
 
-First proposed in [[thoughts/MoE#Step3|Step3]]
+idea: factorise the query-key circuit with shared low-rank matrices so the number and dimension of attention heads can grow while the KV cache stays near MQA [@hu2024multimatrixfactorizationattention]. Step3 leans on this: 64 query heads at head size 256, on a smaller 32k cache than DeepSeek-V3's [[thoughts/MLA|MLA]] [@stepfun2025step3largeaffordablemodelsystem].
 
-The idea is to approximate the dense attention matrix by factorising it into multiple low-rank products, each specialised for a subset of heads or positions. Instead of computing $QK^T$ directly, we learn bases $U_i V_i^T$ whose weighted sum reconstructs the attention pattern. This reduces quadratic cost to a series of matrix multiplications with much smaller inner dimensions.
+each head still computes ordinary softmax attention; MFA factorises the projections that feed it and leaves the score matrix exact. for head $i$ the score is the bilinear form
+
+$$
+q^{\top} k = (W_{Q,i}\, x_q)^{\top}(W_{K,i}\, x_k) = x_q^{\top}\, C_i\, x_k, \qquad C_i = W_{Q,i}^{\top} W_{K,i},\; \operatorname{rank}(C_i) \le d_h
+$$
+
+so the full attention map $A = \sum_i Q_i K_i^{\top}$ is already a sum of low-rank bases $U_i V_i^{\top}$. MHA pays for $n_h$ such bases in both parameters and KV cache; MFA shares one low-rank factorisation of the QK circuit across heads, so adding heads (more bases, wider $r$) costs parameters rather than cache.
+
+- the cache holds a single shared key/value latent, the way [[thoughts/GQA|MQA]] does; the factorised $Q,K$ recover the head diversity a single shared head throws away
+- MFA-KR (key reuse) re-parameterises the value projection to read the key cache directly as value, trimming the cache a further ~50%
+- reported KV cache: ~56% below [[thoughts/MLA|MLA]], ~93.7% below MHA, at comparable quality
 
 ```jsx imports={Zoomable,MFAFactorBases}
 <Zoomable label="MFA factor basis decomposition">

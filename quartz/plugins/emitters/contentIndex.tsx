@@ -1,7 +1,6 @@
 import { Root } from 'hast'
 import { toHtml } from 'hast-util-to-html'
 import crypto from 'node:crypto'
-import { readFileSync } from 'node:fs'
 import fs from 'node:fs/promises'
 import path from 'path'
 import { ReadTimeResults } from 'reading-time'
@@ -948,7 +947,7 @@ async function writePatchedRootAtomFeed(
   const entries = new Map(previous.entries)
   const slug = 'index' as FullSlug
   const pathToFeed = joinSegments(ctx.argv.output, `${slug}.xml`) as FilePath
-  let content = readFileSync(pathToFeed, 'utf8')
+  let content = await fs.readFile(pathToFeed, 'utf8')
   let patchedAny = false
 
   for (const changedSlug of changedSlugs) {
@@ -1058,7 +1057,7 @@ async function writePatchedSerializedIndexJson(
 ): Promise<{ file: FilePath; cache: SerializedIndexCache } | undefined> {
   const entries = new Map(previous.entries)
   const pathToIndex = joinSegments(ctx.argv.output, `${outputSlug}.json`) as FilePath
-  let content = readFileSync(pathToIndex, 'utf8')
+  let content = await fs.readFile(pathToIndex, 'utf8')
 
   for (const [slug, currentEntry] of updates) {
     const previousEntry = entries.get(slug)
@@ -1148,7 +1147,7 @@ async function writePatchedSearchIndexChunks(
   for (const [id, chunkUpdates] of updatesByChunk) {
     const slug = searchChunkSlug(id)
     const pathToChunk = joinSegments(ctx.argv.output, `${slug}.json`) as FilePath
-    let content = readFileSync(pathToChunk, 'utf8')
+    let content = await fs.readFile(pathToChunk, 'utf8')
 
     for (const [entrySlug, currentEntry] of chunkUpdates) {
       const previousEntry = entries.get(entrySlug)
@@ -1418,6 +1417,7 @@ export const ContentIndex: QuartzEmitterPlugin<Partial<Options>> = userOpts => {
     name: 'ContentIndex',
     async *emit(ctx, content, _resources) {
       const cfg = ctx.cfg.configuration
+      const writesAtom = opts.enableAtom && !ctx.argv.watch
       const linkIndex = buildLinkIndex(ctx, content, opts)
       cachedLinkIndex = new Map(linkIndex)
 
@@ -1484,7 +1484,7 @@ Sitemap: https://${joinSegments(cfg.baseUrl ?? 'https://example.com', 'sitemap.x
         yield writeSiteMap(ctx, cfg, linkIndex)
       }
 
-      if (opts.enableAtom) {
+      if (writesAtom) {
         const rootFeedWrite = await writeRootAtomFeed(ctx, cfg, linkIndex, opts)
         cachedRootAtomFeed = rootFeedWrite.cache
         yield rootFeedWrite.file
@@ -1515,6 +1515,8 @@ Sitemap: https://${joinSegments(cfg.baseUrl ?? 'https://example.com', 'sitemap.x
           folderFeedSlugs.add(write.folderSlug.replace(/^\/+/, ''))
           yield write.file
         }
+      } else {
+        folderFeedSlugs.clear()
       }
 
       addGraphFilePages(ctx, linkIndex)
@@ -1553,6 +1555,7 @@ Sitemap: https://${joinSegments(cfg.baseUrl ?? 'https://example.com', 'sitemap.x
       }
     },
     async *partialEmit(ctx, content, _resources, changeEvents) {
+      const writesAtom = opts.enableAtom && !ctx.argv.watch
       const plan = planPartialContentIndex(changeEvents)
       if (!plan.content && !plan.graph && !plan.search && !plan.security) {
         return
@@ -1575,7 +1578,7 @@ Sitemap: https://${joinSegments(cfg.baseUrl ?? 'https://example.com', 'sitemap.x
           const cfg = ctx.cfg.configuration
           const files: FilePath[] = []
           cachedLinkIndex = new Map(titleUpdate.linkIndex)
-          if (opts.enableAtom) {
+          if (writesAtom) {
             const writesRootFeed =
               feedContainsAnySlug(
                 titleUpdate.linkIndex,
@@ -1683,10 +1686,11 @@ Sitemap: https://${joinSegments(cfg.baseUrl ?? 'https://example.com', 'sitemap.x
         }
 
         const writesRootFeed =
-          feedContainsAnySlug(linkIndex, plan.changedSlugs, opts.atomLimit) ||
-          feedCacheContainsAnySlug(cachedRootAtomFeed, plan.changedSlugs)
+          writesAtom &&
+          (feedContainsAnySlug(linkIndex, plan.changedSlugs, opts.atomLimit) ||
+            feedCacheContainsAnySlug(cachedRootAtomFeed, plan.changedSlugs))
 
-        if (opts.enableAtom && writesRootFeed) {
+        if (writesAtom && writesRootFeed) {
           const rootFeedWrite = await writeRootAtomFeed(
             ctx,
             cfg,
@@ -1739,7 +1743,7 @@ Sitemap: https://${joinSegments(cfg.baseUrl ?? 'https://example.com', 'sitemap.x
           }
         }
 
-        if (opts.enableAtom && !writesRootFeed) {
+        if (writesAtom && !writesRootFeed) {
           const folderFeedMap = buildFolderFeedMap(linkIndex)
           const affectedFeeds = Array.from(plan.affectedFolders).sort((a, b) => a.localeCompare(b))
           const folderWrites = await mapConcurrent(
@@ -1819,7 +1823,7 @@ Sitemap: https://${joinSegments(cfg.baseUrl ?? 'https://example.com', 'sitemap.x
         }
       }
     },
-    externalResources: ({ cfg }) => {
+    externalResources: ({ argv, cfg }) => {
       const additionalHead: StaticResources['additionalHead'] = [
         <link
           rel="stylesheet"
@@ -1830,7 +1834,7 @@ Sitemap: https://${joinSegments(cfg.baseUrl ?? 'https://example.com', 'sitemap.x
         />,
       ]
 
-      if (opts.enableAtom) {
+      if (opts.enableAtom && !argv.watch) {
         additionalHead.push(
           <link
             rel="alternate"

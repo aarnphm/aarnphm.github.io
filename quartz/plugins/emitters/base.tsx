@@ -4,6 +4,7 @@ import { Content, BaseSearchBar, BaseViewSelector } from '../../components'
 import { pageResources, renderPage } from '../../components/renderPage'
 import { QuartzComponentProps } from '../../types/component'
 import { QuartzEmitterPlugin } from '../../types/plugin'
+import { defaultIoConcurrency, mapConcurrent } from '../../util/async-pool'
 import { BaseExpressionDiagnostic, BasesExpressions } from '../../util/base/compiler'
 import {
   BaseRenderPlan,
@@ -12,12 +13,60 @@ import {
 } from '../../util/base/partial-emit'
 import { BaseMetadata } from '../../util/base/render'
 import { BuildCtx } from '../../util/ctx'
-import { pathToRoot, FullSlug } from '../../util/path'
+import { FilePath, pathToRoot, FullSlug } from '../../util/path'
 import { StaticResources } from '../../util/resources'
 import { QuartzPluginData } from '../vfile'
 import { write } from './helpers'
 
-async function* emitBaseViewsForPlan(
+type BaseViewRender = BaseRenderPlan['rendered']['views'][number]
+
+async function emitBaseView(
+  ctx: BuildCtx,
+  baseSlug: FullSlug,
+  plan: BaseRenderPlan,
+  allFiles: QuartzPluginData[],
+  resources: StaticResources,
+  layout: FullPageLayout,
+  renderedView: BaseViewRender,
+): Promise<FilePath> {
+  const { baseData, rendered } = plan
+  const slug = renderedView.slug
+  const fileData: QuartzPluginData = { ...baseData }
+  fileData.slug = slug
+  fileData.htmlAst = renderedView.tree
+  const frontmatter = fileData.frontmatter
+  const title =
+    typeof frontmatter?.title === 'string' && frontmatter.title.length > 0
+      ? frontmatter.title
+      : baseSlug
+  fileData.frontmatter = {
+    ...frontmatter,
+    title: `${title} - ${renderedView.view.name}`,
+    pageLayout: frontmatter?.pageLayout ?? 'default',
+  }
+  fileData.basesMetadata = {
+    baseSlug,
+    currentView: renderedView.view.name,
+    allViews: rendered.allViews,
+  }
+
+  const cfg = ctx.cfg.configuration
+  const externalResources = pageResources(pathToRoot(slug), resources, ctx)
+  const componentData: QuartzComponentProps = {
+    ctx,
+    fileData,
+    externalResources,
+    cfg,
+    children: [],
+    tree: renderedView.tree,
+    allFiles,
+  }
+
+  const content = renderPage(ctx, slug, componentData, layout, externalResources, false)
+  return write({ ctx, content, slug, ext: '.html' })
+}
+
+async function emitBaseViewsForPlan(
   ctx: BuildCtx,
   baseSlug: FullSlug,
   plan: BaseRenderPlan,
@@ -25,44 +74,9 @@ async function* emitBaseViewsForPlan(
   resources: StaticResources,
   layout: FullPageLayout,
 ) {
-  const { baseData, rendered } = plan
-
-  for (const renderedView of rendered.views) {
-    const slug = renderedView.slug
-    const fileData: QuartzPluginData = { ...baseData }
-    fileData.slug = slug
-    fileData.htmlAst = renderedView.tree
-    const frontmatter = fileData.frontmatter
-    const title =
-      typeof frontmatter?.title === 'string' && frontmatter.title.length > 0
-        ? frontmatter.title
-        : baseSlug
-    fileData.frontmatter = {
-      ...frontmatter,
-      title: `${title} - ${renderedView.view.name}`,
-      pageLayout: frontmatter?.pageLayout ?? 'default',
-    }
-    fileData.basesMetadata = {
-      baseSlug,
-      currentView: renderedView.view.name,
-      allViews: rendered.allViews,
-    }
-
-    const cfg = ctx.cfg.configuration
-    const externalResources = pageResources(pathToRoot(slug), resources, ctx)
-    const componentData: QuartzComponentProps = {
-      ctx,
-      fileData,
-      externalResources,
-      cfg,
-      children: [],
-      tree: renderedView.tree,
-      allFiles,
-    }
-
-    const content = renderPage(ctx, slug, componentData, layout, externalResources, false)
-    yield write({ ctx, content, slug, ext: '.html' })
-  }
+  return mapConcurrent(plan.rendered.views, defaultIoConcurrency, renderedView =>
+    emitBaseView(ctx, baseSlug, plan, allFiles, resources, layout, renderedView),
+  )
 }
 
 export const BasePage: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts => {
@@ -90,20 +104,27 @@ export const BasePage: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts =
       if (plan.slugsToRebuild.size === 0) return null
 
       return (async function* () {
-        for (const slug of plan.slugsToRebuild) {
+        const plans = [...plan.slugsToRebuild].flatMap(slug => {
           const basePlan = plan.basePlans.get(slug)
-          if (!basePlan) continue
-          yield* emitBaseViewsForPlan(ctx, slug, basePlan, plan.allFiles, resources, opts)
-        }
+          return basePlan ? ([[slug, basePlan]] as [FullSlug, BaseRenderPlan][]) : []
+        })
+        const files = await mapConcurrent(plans, defaultIoConcurrency, ([slug, basePlan]) =>
+          emitBaseViewsForPlan(ctx, slug, basePlan, plan.allFiles, resources, opts),
+        )
+        yield* files.flat()
       })()
     },
     async *emit(ctx, content, resources) {
       const plan = planBaseViewPartialEmit(content, [], undefined)
       partialState = plan.nextState
 
-      for (const [slug, basePlan] of plan.basePlans) {
-        yield* emitBaseViewsForPlan(ctx, slug, basePlan, plan.allFiles, resources, opts)
-      }
+      const files = await mapConcurrent(
+        [...plan.basePlans],
+        defaultIoConcurrency,
+        ([slug, basePlan]) =>
+          emitBaseViewsForPlan(ctx, slug, basePlan, plan.allFiles, resources, opts),
+      )
+      yield* files.flat()
     },
   }
 }

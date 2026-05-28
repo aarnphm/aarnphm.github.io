@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-05-28 01:53:33 GMT-04:00
+modified: 2026-05-28 18:42:37 GMT-04:00
 permalinks:
   - /website
   - /tweets
@@ -646,6 +646,11 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://irid.space/ -- Institute for Relational Intelligence in Design
+  - [meta]:
+    - date: 05/28/2026
+    - tags: [pedagogy]
+    - importance: 8
 - https://alivetheory.net/ -- alive internet theory
   - [meta]:
     - date: 05/27/2026
@@ -1213,6 +1218,10 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://www.antheatawiah.com/ -- Anthea Tawiah
+  - [meta]:
+    - date: 05/28/2026
+    - tags: [designer, toronto]
 - https://boydkane.com/ -- Boyd Kane
   - [meta]:
     - date: 05/27/2026

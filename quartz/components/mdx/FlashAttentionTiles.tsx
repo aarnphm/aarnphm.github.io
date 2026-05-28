@@ -288,7 +288,7 @@ const FlashAttentionTilesImpl: QuartzMdxComponent<Props> = ({ caption }) => {
       </div>
       {caption ? (
         <figcaption class="fat-caption">
-          <MathText text={caption} />
+          <MathText text={caption} mathClass="fat-math" />
         </figcaption>
       ) : null}
     </figure>

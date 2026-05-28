@@ -129,6 +129,12 @@ export const SemanticIndex: QuartzEmitterPlugin<
     async *partialEmit() {},
     async *emit(ctx, content, _resources) {
       if (!o.enable) return
+      if (ctx.argv.watch && o.aot) {
+        console.log(
+          styleText('yellow', `[emit:Semantic] Skipping embedding text (watch=true, aot=${o.aot})`),
+        )
+        return
+      }
 
       const lines: string[] = []
       for (const [_, file] of content) {
@@ -147,7 +153,7 @@ export const SemanticIndex: QuartzEmitterPlugin<
       })
 
       if (!o.aot) {
-        console.log(styleText('blue', `\n[emit:Semantic] Generating embeddings (aot=${o.aot})...`))
+        console.log(styleText('blue', `[emit:Semantic] Generating embeddings (aot=${o.aot})...`))
 
         await runEmbedBuild(
           joinSegments(ctx.argv.output, 'embeddings-text.jsonl'),

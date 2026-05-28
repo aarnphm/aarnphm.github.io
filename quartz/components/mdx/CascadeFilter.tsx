@@ -119,15 +119,20 @@ const CascadeFilterImpl: QuartzMdxComponent<Props> = ({ caption, tiles = 16 }) =
       data-scores={scoresData}
     >
       <header class="cf-header">
-        <div class="cf-presets" role="radiogroup" aria-label="Attention distribution preset">
+        <div
+          class="cf-tablist"
+          role="tablist"
+          aria-label="attention score distribution"
+          aria-orientation="horizontal"
+        >
           {presets.map(p => (
             <button
               type="button"
-              class="cf-preset"
+              class="cf-tab"
               data-cf-preset={p}
-              role="radio"
-              aria-checked={p === preset ? 'true' : 'false'}
-              aria-label={`${p} attention preset`}
+              role="tab"
+              aria-selected={p === preset ? 'true' : 'false'}
+              tabindex={p === preset ? 0 : -1}
             >
               {p === 'longtail' ? 'long tail' : p}
             </button>
@@ -295,7 +300,7 @@ const CascadeFilterImpl: QuartzMdxComponent<Props> = ({ caption, tiles = 16 }) =
 
       {caption ? (
         <figcaption class="cf-caption">
-          <MathText text={caption} />
+          <MathText text={caption} mathClass="cf-math" />
         </figcaption>
       ) : null}
     </figure>

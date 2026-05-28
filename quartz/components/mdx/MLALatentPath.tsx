@@ -122,15 +122,7 @@ const NODES: N[] = [
     tex: '[\\mathbf{k}_{t,i}^{C};\\mathbf{k}_t^{R}]',
     dim: { k: 'concat', t: 'd_h+d_h^R' },
   },
-  {
-    id: 'out',
-    k: 'attn',
-    cx: CX.o,
-    cy: RY.o,
-    w: 84,
-    h: 38,
-    tex: '\\mathbf{o}_{t,i}',
-  },
+  { id: 'out', k: 'attn', cx: CX.o, cy: RY.o, w: 84, h: 38, tex: '\\mathbf{o}_{t,i}' },
 ]
 
 type E = {
@@ -209,32 +201,13 @@ const EDGES: E[] = [
     ty: RY.k + 8,
     cls: 'mla-edge--concat mla-edge--rope',
   },
-  {
-    fx: CX.c + BW / 2,
-    fy: RY.q,
-    tx: CX.o - 42,
-    ty: RY.o - 8,
-    cls: 'mla-edge--attention',
-  },
-  {
-    fx: CX.c + BW / 2,
-    fy: RY.k,
-    tx: CX.o - 42,
-    ty: RY.o + 8,
-    cls: 'mla-edge--attention',
-  },
-  {
-    fx: CX.p + HW / 2,
-    fy: RY.vc,
-    tx: CX.o - 42,
-    ty: RY.o + 20,
-    cls: 'mla-edge--attention',
-  },
+  { fx: CX.c + BW / 2, fy: RY.q, tx: CX.o - 42, ty: RY.o - 8, cls: 'mla-edge--attention' },
+  { fx: CX.c + BW / 2, fy: RY.k, tx: CX.o - 42, ty: RY.o + 8, cls: 'mla-edge--attention' },
+  { fx: CX.p + HW / 2, fy: RY.vc, tx: CX.o - 42, ty: RY.o + 20, cls: 'mla-edge--attention' },
 ]
 
 type S = {
   k: string
-  tex: string
   labelTex: string
   aria: string
   min: number
@@ -246,7 +219,6 @@ type S = {
 const SLIDERS: S[] = [
   {
     k: 'd',
-    tex: 'd',
     labelTex: '\\text{model dim }d',
     aria: 'model dimension',
     min: 256,
@@ -256,7 +228,6 @@ const SLIDERS: S[] = [
   },
   {
     k: 'nh',
-    tex: 'n_h',
     labelTex: '\\text{heads }n_h',
     aria: 'attention heads',
     min: 4,
@@ -266,7 +237,6 @@ const SLIDERS: S[] = [
   },
   {
     k: 'dh',
-    tex: 'd_h',
     labelTex: '\\text{per-head }d_h',
     aria: 'per-head dimension',
     min: 32,
@@ -276,7 +246,6 @@ const SLIDERS: S[] = [
   },
   {
     k: 'dc',
-    tex: 'd_c',
     labelTex: '\\text{latent }d_c',
     aria: 'KV latent dimension',
     min: 64,
@@ -287,7 +256,6 @@ const SLIDERS: S[] = [
   },
   {
     k: 'dr',
-    tex: 'd_h^R',
     labelTex: '\\text{RoPE }d_h^R',
     aria: 'RoPE duplicate dimension',
     min: 16,
@@ -299,6 +267,7 @@ const SLIDERS: S[] = [
 ]
 
 const EQS = [
+  '\\mathbf{c}_t^Q=W^{DQ}\\mathbf{h}_t,\\quad \\mathbf{q}_{t,i}=[\\mathbf{q}_{t,i}^{C};\\mathbf{q}_{t,i}^{R}]',
   '\\mathbf{c}_t^{KV}=W^{DKV}\\mathbf{h}_t,\\quad \\mathbf{k}_t^{C}=W^{UK}\\mathbf{c}_t^{KV},\\quad \\mathbf{v}_t^{C}=W^{UV}\\mathbf{c}_t^{KV}',
   '\\mathbf{k}_t^{R}=\\mathrm{RoPE}(W^{KR}\\mathbf{h}_t),\\quad \\mathbf{k}_{t,i}=[\\mathbf{k}_{t,i}^{C};\\mathbf{k}_t^{R}]',
   '\\mathbf{o}_{t,i}=\\sum_{j}\\operatorname{softmax}_{j}\\!\\left(\\tfrac{\\mathbf{q}_{t,i}^{\\top}\\mathbf{k}_{j,i}}{\\sqrt{d_h+d_h^R}}\\right)\\mathbf{v}_{j,i}^{C}',
@@ -376,7 +345,7 @@ const MLALatentPathImpl: QuartzMdxComponent<Props> = ({ caption }) => {
           viewBox={`0 0 ${W} ${H}`}
           preserveAspectRatio="xMidYMid meet"
           role="img"
-          aria-label="MLA latent path: h_t projects down to a cached compressed latent c_t^KV and a cached RoPE duplicate k_t^R; per-head K and V are reconstructed on demand from c_t^KV via W^UK and W^UV, then concatenated with k_t^R."
+          aria-label="MLA latent path: h_t branches into a query latent c_t^Q and cached KV latents c_t^KV and k_t^R; per-head q, k, and v projections are reconstructed before attention."
         >
           <defs>
             <marker
@@ -393,7 +362,14 @@ const MLALatentPathImpl: QuartzMdxComponent<Props> = ({ caption }) => {
           </defs>
 
           <rect class="mla-cache-box" x={cx} y={cy} width={BW + 20} height={ch} rx={8} />
-          <FO x={CX.l - 58} y={cy - 22} w={116} h={18} t="\text{cached}" cls="mla-fo--cache-label" />
+          <FO
+            x={CX.l - 58}
+            y={cy - 22}
+            w={116}
+            h={18}
+            t="\text{cached}"
+            cls="mla-fo--cache-label"
+          />
 
           {NODES.map(n => {
             const nx = n.cx - n.w / 2
@@ -454,9 +430,9 @@ const MLALatentPathImpl: QuartzMdxComponent<Props> = ({ caption }) => {
 
         <aside class="mla-side" aria-label="MLA cache readout">
           <div class="mla-card">
-            <h4>
+            <p class="mla-card-label">
               <M t="\text{cached during inference}" />
-            </h4>
+            </p>
             <ul class="mla-cache-list">
               <li>
                 <span class="mla-swatch mla-swatch--cached" aria-hidden="true" />
@@ -468,7 +444,10 @@ const MLALatentPathImpl: QuartzMdxComponent<Props> = ({ caption }) => {
               </li>
             </ul>
             <p class="mla-cache-note">
-              <M t="\mathbf{k}_{t,i}^{C},\mathbf{v}_{t,i}^{C}\leftarrow \mathbf{c}_t^{KV}\quad(\text{reconstructed on demand})" />
+              <MathText
+                text="Reconstruct $k_{t,i}^{C}$ and $v_{t,i}^{C}$ from $c_t^{KV}$ on demand."
+                mathClass="mla-math"
+              />
             </p>
           </div>
 

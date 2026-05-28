@@ -4,6 +4,7 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import test, { describe } from 'node:test'
 import type { BuildCtx } from '../ctx'
+import { resetWriteCache } from '../../plugins/emitters/helpers'
 import {
   extractInlineNotebookAssets,
   notebookAssetDirectory,
@@ -13,6 +14,7 @@ import {
 function makeCtx(): { ctx: BuildCtx; output: string } {
   const output = mkdtempSync(join(tmpdir(), 'notebook-assets-test-'))
   const ctx = {
+    buildId: 'test-build',
     argv: { directory: output, output, verbose: false, serve: false, watch: false },
     cfg: { configuration: { ignorePatterns: [] } },
     allSlugs: [],
@@ -82,6 +84,29 @@ describe('extractInlineNotebookAssets', () => {
       assert.strictEqual(result.extracted.length, 3)
       const hashes = new Set(result.extracted.map(asset => asset.hash))
       assert.strictEqual(hashes.size, 1)
+    } finally {
+      rmSync(output, { recursive: true, force: true })
+    }
+  })
+
+  test('deduplicates writes only within the current build', async () => {
+    const { ctx, output } = makeCtx()
+    try {
+      const uri = bigPngDataUri()
+      const chunk = `<img src="${uri}">`
+      const result = await extractInlineNotebookAssets([chunk], ctx)
+      const extracted = result.extracted[0]
+      const onDisk = join(output, notebookAssetDirectory, `${extracted.hash}.png`)
+      assert.ok(existsSync(onDisk))
+
+      rmSync(join(output, notebookAssetDirectory), { recursive: true, force: true })
+      await extractInlineNotebookAssets([chunk], ctx)
+      assert.strictEqual(existsSync(onDisk), false)
+
+      ctx.buildId = 'next-build'
+      resetWriteCache()
+      await extractInlineNotebookAssets([chunk], ctx)
+      assert.ok(existsSync(onDisk))
     } finally {
       rmSync(output, { recursive: true, force: true })
     }

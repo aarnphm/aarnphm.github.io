@@ -1,3 +1,5 @@
+import katex from 'katex'
+
 export {}
 
 type MlaKey = 'd' | 'nh' | 'dh' | 'dc' | 'dr'
@@ -5,27 +7,42 @@ type MlaState = Record<MlaKey, number>
 
 const mlaKeys: MlaKey[] = ['d', 'nh', 'dh', 'dc', 'dr']
 const mlaLabels: Record<MlaKey, string> = {
-  d: 'model dim',
-  nh: 'heads',
-  dh: 'per-head',
-  dc: 'latent',
-  dr: 'RoPE',
+  d: 'model dimension',
+  nh: 'attention heads',
+  dh: 'per-head dimension',
+  dc: 'KV latent dimension',
+  dr: 'RoPE duplicate dimension',
 }
 
-const mlaFmt = (n: number): string => {
-  if (n >= 1000) return `${(n / 1000).toFixed(n % 1000 === 0 ? 0 : 1)}k`
+const mlaRenderMath = (tex: string): string =>
+  katex.renderToString(tex, {
+    displayMode: false,
+    output: 'html',
+    strict: false,
+    throwOnError: false,
+  })
+
+const mlaFmtTex = (n: number): string => {
+  if (n >= 1000) return `${(n / 1000).toFixed(n % 1000 === 0 ? 0 : 1)}\\mathrm{k}`
   return String(n)
 }
 
-const mlaDimHtml = (key: string, state: MlaState): string => {
+const mlaDimTex = (key: string, state: MlaState): string => {
   const ndh = state.nh * state.dh
-  if (key === 'dc') return `<span class="mla-dyn-math">d<sub>c</sub>=${state.dc}</span>`
-  if (key === 'dr') return `<span class="mla-dyn-math">d<sub>h</sub><sup>R</sup>=${state.dr}</span>`
+  if (key === 'cq') return 'd_c^Q'
+  if (key === 'dc') return `d_c=${state.dc}`
+  if (key === 'dr') return `d_h^R=${state.dr}`
   if (key === 'kc' || key === 'vc') {
-    return `<span class="mla-dyn-math">n<sub>h</sub>d<sub>h</sub>=${ndh}</span>`
+    return `n_h d_h=${ndh}`
+  }
+  if (key === 'qc') {
+    return `n_h d_h=${ndh}`
+  }
+  if (key === 'qr') {
+    return `n_h d_h^R=${state.nh * state.dr}`
   }
   if (key === 'concat') {
-    return `<span class="mla-dyn-math">d<sub>h</sub>+d<sub>h</sub><sup>R</sup>=${state.dh + state.dr}</span>`
+    return `d_h+d_h^R=${state.dh + state.dr}`
   }
   return ''
 }
@@ -44,9 +61,10 @@ const mlaWriteState = (root: HTMLElement, state: MlaState) => {
 }
 
 const mlaUpdateDims = (root: HTMLElement, state: MlaState) => {
-  for (const key of ['dc', 'dr', 'kc', 'vc', 'concat']) {
-    const el = root.querySelector<HTMLElement>(`[data-mla-dim="${key}"]`)
-    if (el) el.innerHTML = mlaDimHtml(key, state)
+  for (const key of ['cq', 'dc', 'dr', 'qc', 'qr', 'kc', 'vc', 'concat']) {
+    for (const el of root.querySelectorAll<HTMLElement>(`[data-mla-dim="${key}"]`)) {
+      el.innerHTML = mlaRenderMath(mlaDimTex(key, state))
+    }
   }
 }
 
@@ -56,19 +74,19 @@ const mlaUpdateReadout = (root: HTMLElement, state: MlaState) => {
   const ratio = mla > 0 ? mha / mla : 0
 
   const mhaEl = root.querySelector<HTMLElement>('[data-mla-mha]')
-  if (mhaEl) mhaEl.textContent = mlaFmt(mha)
+  if (mhaEl) mhaEl.innerHTML = mlaRenderMath(mlaFmtTex(mha))
 
   const mlaEl = root.querySelector<HTMLElement>('[data-mla-mla]')
-  if (mlaEl) mlaEl.textContent = mlaFmt(mla)
+  if (mlaEl) mlaEl.innerHTML = mlaRenderMath(mlaFmtTex(mla))
 
   const ratioEl = root.querySelector<HTMLElement>('[data-mla-ratio]')
-  if (ratioEl) ratioEl.textContent = `${ratio.toFixed(ratio >= 10 ? 0 : 1)}x`
+  if (ratioEl) ratioEl.innerHTML = mlaRenderMath(`${ratio.toFixed(ratio >= 10 ? 0 : 1)}\\times`)
 }
 
 const mlaUpdateValueLabels = (root: HTMLElement, state: MlaState) => {
   for (const k of mlaKeys) {
     const valEl = root.querySelector<HTMLElement>(`[data-mla-value="${k}"]`)
-    if (valEl) valEl.textContent = String(state[k])
+    if (valEl) valEl.innerHTML = mlaRenderMath(String(state[k]))
     const input = root.querySelector<HTMLInputElement>(`[data-mla-input="${k}"]`)
     if (input) {
       input.setAttribute('aria-valuenow', String(state[k]))

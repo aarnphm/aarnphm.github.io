@@ -35,7 +35,8 @@ export type AssetExtractionResult = {
   readonly extracted: ExtractedAsset[]
 }
 
-type NotebookAssetWriteCache = WeakMap<BuildCtx, Set<string>>
+type NotebookAssetWriteState = { buildId: string; keys: Set<string> }
+type NotebookAssetWriteCache = WeakMap<BuildCtx, NotebookAssetWriteState>
 
 declare global {
   var __quartzNotebookAssetWrites: NotebookAssetWriteCache | undefined
@@ -59,22 +60,28 @@ function mimeExtension(mime: string): `.${string}` | undefined {
 
 const writtenAssets = (globalThis.__quartzNotebookAssetWrites ??= new WeakMap<
   BuildCtx,
-  Set<string>
+  NotebookAssetWriteState
 >())
 
 function rememberWritten(ctx: BuildCtx, key: string): boolean {
-  let set = writtenAssets.get(ctx)
-  if (!set) {
-    set = new Set()
-    writtenAssets.set(ctx, set)
+  let state = writtenAssets.get(ctx)
+  if (!state || state.buildId !== ctx.buildId) {
+    state = { buildId: ctx.buildId, keys: new Set() }
+    writtenAssets.set(ctx, state)
   }
-  if (set.has(key)) return false
-  set.add(key)
+  if (state.keys.has(key)) return false
+  state.keys.add(key)
   return true
 }
 
+function errorCode(error: unknown): string | undefined {
+  if (!(error instanceof Error) || !('code' in error)) return undefined
+  const code = error.code
+  return typeof code === 'string' ? code : undefined
+}
+
 function isExistingFileError(error: unknown): boolean {
-  return typeof error === 'object' && error !== null && 'code' in error && error.code === 'EEXIST'
+  return errorCode(error) === 'EEXIST'
 }
 
 async function ensureCachedNotebookAsset(cachePath: FilePath, content: Buffer): Promise<void> {
@@ -83,6 +90,16 @@ async function ensureCachedNotebookAsset(cachePath: FilePath, content: Buffer): 
     await fs.writeFile(cachePath, content, { flag: 'wx' })
   } catch (error) {
     if (!isExistingFileError(error)) throw error
+  }
+}
+
+async function tryLinkCachedNotebookAsset(cachePath: FilePath, dest: FilePath): Promise<boolean> {
+  try {
+    await linkOrCopyFile(cachePath, dest, { hardLink: true })
+    return true
+  } catch (error) {
+    if (errorCode(error) !== 'ENOENT') throw error
+    return false
   }
 }
 
@@ -100,9 +117,11 @@ async function writeExtractedNotebookAsset(
 
   const perf = new PerfTimer()
   const cachePath = path.join(NOTEBOOK_ASSET_CACHE_DIR, `${hash}${ext}`) as FilePath
-  await ensureCachedNotebookAsset(cachePath, content)
   const dest = joinSegments(ctx.argv.output, `${slug}${ext}`) as FilePath
-  await linkOrCopyFile(cachePath, dest, { hardLink: true })
+  if (!(await tryLinkCachedNotebookAsset(cachePath, dest))) {
+    await ensureCachedNotebookAsset(cachePath, content)
+    await linkOrCopyFile(cachePath, dest, { hardLink: true })
+  }
   logBuildSpan(ctx.argv, 'write:notebook-asset', dest, perf.elapsedMs())
 }
 

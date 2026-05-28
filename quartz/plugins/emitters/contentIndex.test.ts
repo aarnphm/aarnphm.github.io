@@ -147,6 +147,36 @@ test('content index partial emit ignores source asset changes', async () => {
   }
 })
 
+test('content index emit skips atom feeds while watching', async () => {
+  const root = await mkdtemp(path.join(tmpdir(), 'quartz-content-index-watch-atom-'))
+  try {
+    const ctx = testCtx(root)
+    ctx.argv.watch = true
+    ctx.allFiles = ['thoughts/note.md' as FilePath]
+    ctx.allSlugs = ['thoughts/note' as FullSlug]
+    const filePath = path.join(ctx.argv.directory, 'thoughts/note.md') as FilePath
+    const content = defaultProcessedContent({
+      slug: 'thoughts/note' as FullSlug,
+      filePath,
+      relativePath: 'thoughts/note.md' as FilePath,
+      frontmatter: { title: 'note', pageLayout: 'default', tags: [] },
+      text: 'hello',
+      links: [],
+    })
+    const plugin = ContentIndex({ enableSecurity: false })
+
+    const emitted = await collectEmitted(plugin.emit(ctx, [content], resources))
+    const paths = outputPaths(ctx, emitted)
+    assert.equal(paths.includes('index.xml'), false)
+    assert.equal(paths.includes('thoughts/index.xml'), false)
+
+    const externalResources = plugin.externalResources?.(ctx)
+    assert.equal(externalResources?.additionalHead?.length, 1)
+  } finally {
+    await rm(root, { recursive: true, force: true })
+  }
+})
+
 test('content index partial emit limits markdown changes to global indexes and affected feeds', async () => {
   const root = await mkdtemp(path.join(tmpdir(), 'quartz-content-index-partial-markdown-'))
   try {

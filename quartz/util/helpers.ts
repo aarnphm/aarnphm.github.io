@@ -19,11 +19,6 @@ export class LCG {
     return Math.floor(this.next() * (max - min) + min)
   }
 
-  // Get a random item from an array
-  choice<T>(array: T[]): T {
-    return array[this.nextInt(0, array.length)]
-  }
-
   // Shuffle array using Fisher-Yates algorithm
   shuffle<T>(array: T[]): T[] {
     const result = [...array]

@@ -2,7 +2,7 @@
 date: '2026-05-27'
 description: block-paged KV cache, virtual-memory-style page tables, hot blocks on device, cold blocks spill to host.
 id: attention-paged
-modified: 2026-05-27 23:18:24 GMT-04:00
+modified: 2026-05-28 13:08:23 GMT-04:00
 seealso:
   - '[[thoughts/Attention|main stage]]'
   - '[[thoughts/radix attention|radix attention]]'
@@ -13,7 +13,7 @@ tags:
   - ml
   - llm
   - technical
-title: paged attention
+title: Paged Attention
 ---
 
 In conjunction with [[thoughts/Continuous batching|continuous batching]], implemented in [[thoughts/vllm|vLLM]]
@@ -42,27 +42,29 @@ where $A_{ij}=(a_{i,(j-1)B+1}, \ldots a_{i,jB})$ is row vector of attention scor
 \usepackage{tikz}
 \begin{document}
 \begin{tikzpicture}[
-  font=\sffamily\small,
+  font=\small,
   logical/.style={draw=black, fill=cyan!20, rounded corners=2pt, minimum width=1.0cm, minimum height=0.55cm, inner sep=2pt},
   physical/.style={draw=black, fill=orange!30, rounded corners=2pt, minimum width=1.0cm, minimum height=0.55cm, inner sep=2pt},
-  pte/.style={draw=black, fill=gray!10, rounded corners=2pt, minimum width=1.4cm, minimum height=0.45cm, inner sep=2pt, font=\sffamily\footnotesize},
+  pte/.style={draw=black, fill=gray!10, rounded corners=2pt, minimum width=1.4cm, minimum height=0.45cm, inner sep=2pt, font=\footnotesize},
   arr/.style={->, >=latex, gray!70, thick}
 ]
+  \path[use as bounding box] (-0.9, -0.6) rectangle (9.0, 4.2);
+
   % logical blocks (sequence view)
-  \node[font=\sffamily\bfseries, anchor=south] at (1.6, 3.7) {logical KV blocks};
+  \node[font=\bfseries, anchor=south] at (1.6, 3.7) {logical KV blocks};
   \foreach \i in {0,1,2,3} {
     \node[logical] (l\i) at (\i*1.1, 3) {block $\i$};
   }
 
   % page table
-  \node[font=\sffamily\bfseries, anchor=south] at (6.3, 3.7) {page table};
+  \node[font=\bfseries, anchor=south] at (6.3, 3.7) {page table};
   \node[pte] (pte0) at (6.3, 3.3) {$0 \to 5$};
   \node[pte] (pte1) at (6.3, 2.8) {$1 \to 2$};
   \node[pte] (pte2) at (6.3, 2.3) {$2 \to 7$};
   \node[pte] (pte3) at (6.3, 1.8) {$3 \to 1$};
 
   % physical blocks (GPU memory)
-  \node[font=\sffamily\bfseries, anchor=south] at (5.0, 0.7) {physical GPU memory};
+  \node[font=\bfseries, anchor=south] at (5.0, 0.7) {physical GPU memory};
   \foreach \i in {0,1,2,3,4,5,6,7} {
     \node[physical, minimum width=0.8cm] (p\i) at (\i*0.95 + 1.5, 0) {$\i$};
   }
