@@ -2,7 +2,7 @@
 date: '2026-05-27'
 description: low-rank factorisation of the attention matrix into multiple shared bases, reducing quadratic cost to a series of smaller MMs.
 id: attention-mfa
-modified: 2026-05-28 01:36:40 GMT-04:00
+modified: 2026-05-28 02:06:43 GMT-04:00
 seealso:
   - '[[thoughts/Attention|main stage]]'
   - '[[thoughts/MoE]]'
@@ -11,7 +11,7 @@ tags:
   - ml
   - llm
   - technical
-title: multi-matrix factorization attention
+title: Multi-Matrix Factorization Attention
 ---
 
 First proposed in [[thoughts/MoE#Step3|Step3]]

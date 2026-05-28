@@ -14,9 +14,12 @@ describe('native runtime pack manifest', () => {
     const manifest = readNativeRuntimePackManifest({
       version: 1,
       runtimes: {
+        c: { worker: 'clang/worker.js', assets: ['clang/bundle.js', 'clang/llvm.core.wasm'] },
+        cpp: { worker: 'clang/worker.js', assets: ['clang/bundle.js', 'clang/llvm.core.wasm'] },
         go: { worker: 'go/worker.js', assets: ['go/main.wasm', 'go/wasm_exec.js'] },
         haskell: { available: false, reason: 'Haskell runtime pack is not shipped yet' },
         ocaml: { worker: 'ocaml/worker.js', assets: ['ocaml/toplevel.js'] },
+        wasm: { worker: 'wasm/worker.js', assets: ['wasm/wabt.mjs'] },
         unknown: { worker: 'nope.js' },
       },
     })
@@ -24,9 +27,12 @@ describe('native runtime pack manifest', () => {
     assert.deepStrictEqual(manifest, {
       version: 1,
       runtimes: {
+        c: { worker: 'clang/worker.js', assets: ['clang/bundle.js', 'clang/llvm.core.wasm'] },
+        cpp: { worker: 'clang/worker.js', assets: ['clang/bundle.js', 'clang/llvm.core.wasm'] },
         go: { worker: 'go/worker.js', assets: ['go/main.wasm', 'go/wasm_exec.js'] },
         haskell: { available: false, reason: 'Haskell runtime pack is not shipped yet' },
         ocaml: { worker: 'ocaml/worker.js', assets: ['ocaml/toplevel.js'] },
+        wasm: { worker: 'wasm/worker.js', assets: ['wasm/wabt.mjs'] },
       },
     })
     const goEntry = manifest.runtimes.go

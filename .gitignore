@@ -210,6 +210,12 @@ content/arena_hast.json
 *.log
 *.lock
 !flake.lock
+!quartz/runtime/native/packs/**/*.wasm
+!quartz/runtime/native/packs/**/*.wasm.gz
+!quartz/runtime/native/packs/**/*.rlib.gz
+!quartz/runtime/native/packs/**/*.so.gz
+!quartz/runtime/native/packs/**/*.tar
+!quartz/runtime/native/packs/**/*.tar.zst
 .pre-commit-config.yaml
 Thumbs.db
 dev

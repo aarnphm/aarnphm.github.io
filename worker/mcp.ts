@@ -2,6 +2,7 @@ import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import { McpAgent } from 'agents/mcp'
 import { z } from 'zod'
 import { semanticSearch } from './semantic'
+import { isRecord } from './type-guards'
 
 type ContentIndexEntry = {
   slug: string
@@ -18,8 +19,9 @@ type ContentIndexEntry = {
 }
 
 type SimplifiedIndex = Record<string, ContentIndexEntry>
+type SearchIndexManifest = { kind: 'quartz-search-index-v1'; chunks: string[] }
 
-const INDEX_PATH = '/static/contentIndex.json'
+const INDEX_PATH = '/static/searchIndex.json'
 
 async function fetchAssetText(path: string): Promise<string> {
   const u = new URL(path.startsWith('/') ? path : `/${path}`, 'https://aarnphm.xyz')
@@ -34,10 +36,30 @@ function getBaseUrl(): string {
 
 let cachedIndex: { data: SimplifiedIndex; ts: number } | null = null
 
+function isSearchIndexManifest(value: unknown): value is SearchIndexManifest {
+  return (
+    isRecord(value) &&
+    value.kind === 'quartz-search-index-v1' &&
+    Array.isArray(value.chunks) &&
+    value.chunks.every(chunk => typeof chunk === 'string')
+  )
+}
+
 async function loadIndex(): Promise<SimplifiedIndex> {
   if (cachedIndex && Date.now() - cachedIndex.ts < 60_000) return cachedIndex.data
   const txt = await fetchAssetText(INDEX_PATH)
-  const data = JSON.parse(txt) as SimplifiedIndex
+  const parsed = JSON.parse(txt) as unknown
+  const data = isSearchIndexManifest(parsed)
+    ? Object.assign(
+        {},
+        ...(await Promise.all(
+          parsed.chunks.map(async chunk => {
+            const chunkText = await fetchAssetText(`/static/${chunk.replace(/^\/+/, '')}`)
+            return JSON.parse(chunkText) as SimplifiedIndex
+          }),
+        )),
+      )
+    : (parsed as SimplifiedIndex)
   cachedIndex = { data, ts: Date.now() }
   return data
 }

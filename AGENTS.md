@@ -10,7 +10,7 @@ This means: no fallbacks, no hacks, no shortcuts. Production-grade, Google-quali
 - Do not write comments.
 - Use `pnpm`, `oxlint`, `oxfmt`, and `tsgo`.
 - Inspect with `fd` and `rg`.
-- Keep new files in `quartz/util` snake-case.
+- Keep new files in `quartz/util` kebab-case.
 - Reuse shared guards and helpers from the owning util module; do not copy `isRecord`, JSON readers, or tiny support functions into call sites.
 - Do not run bundle or build. Inspect the running `dev.ts` process when runtime evidence is needed.
 - Keep secrets in `.env` locally and Cloudflare Secrets in production.

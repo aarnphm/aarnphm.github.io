@@ -14,7 +14,15 @@ import type { NotebookRuntimeOutput } from '../notebook/types'
 import { isRecord, readNumber, readString } from '../../util/type-guards'
 import { AsyncEventQueue } from '../notebook/async-event-queue'
 
-export type NativeRuntimeLanguage = 'go' | 'haskell' | 'mojo' | 'ocaml' | 'rust'
+export type NativeRuntimeLanguage =
+  | 'c'
+  | 'cpp'
+  | 'go'
+  | 'haskell'
+  | 'mojo'
+  | 'ocaml'
+  | 'rust'
+  | 'wasm'
 
 export type NativeRuntimePackAvailableEntry = {
   readonly available?: true
@@ -73,11 +81,14 @@ type RuntimeDebugOutput = NonNullable<Extract<NotebookRuntimeOutput, { type: 'er
 
 const source = 'quartz-notebook-runtime'
 const nativeRuntimeLanguages: readonly NativeRuntimeLanguage[] = [
+  'c',
+  'cpp',
   'go',
   'haskell',
   'mojo',
   'ocaml',
   'rust',
+  'wasm',
 ]
 
 export const emptyNativeRuntimePackManifest: NativeRuntimePackManifest = {
@@ -87,11 +98,14 @@ export const emptyNativeRuntimePackManifest: NativeRuntimePackManifest = {
 
 export function isNativeRuntimeLanguage(value: string): value is NativeRuntimeLanguage {
   switch (value) {
+    case 'c':
+    case 'cpp':
     case 'go':
     case 'haskell':
     case 'mojo':
     case 'ocaml':
     case 'rust':
+    case 'wasm':
       return true
     default:
       return false

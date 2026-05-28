@@ -2,11 +2,14 @@ import assert from 'node:assert'
 import test, { describe, before } from 'node:test'
 import { javascriptBackend } from '../javascript/backend'
 import {
+  cBackend,
+  cppBackend,
   goBackend,
   haskellBackend,
   mojoBackend,
   ocamlBackend,
   rustBackend,
+  wasmBackend,
 } from '../native/backend'
 import { pythonBackend } from '../python/backend'
 import {
@@ -18,6 +21,7 @@ import {
 } from './backend'
 import {
   nextNotebookCellId,
+  notebookRuntimeKernelLanguages,
   notebookRunAndAdvanceKey,
   notebookRunKey,
   notebookRuntimePreloadLanguages,
@@ -62,21 +66,36 @@ describe('Notebook runtime keyboard commands', () => {
     assert.strictEqual(nextNotebookCellId(cells, 'missing'), undefined)
   })
 
-  test('deduplicates executable runtime preload languages in notebook order', () => {
-    assert.deepStrictEqual(
-      notebookRuntimePreloadLanguages({
-        language: 'python',
-        cells: [
-          { language: 'python' },
-          { language: 'javascript' },
-          { language: 'rust' },
-          { language: 'js' },
-          { language: 'haskell' },
-          { language: 'wat' },
-        ],
-      }),
-      ['python', 'javascript', 'rust', 'haskell'],
-    )
+  test('deduplicates executable runtime languages and skips lazy preload entries', () => {
+    const payload = {
+      language: 'python',
+      cells: [
+        { language: 'python' },
+        { language: 'javascript' },
+        { language: 'rust' },
+        { language: 'js' },
+        { language: 'haskell' },
+        { language: 'wat' },
+        { language: 'cpp' },
+        { language: 'c++' },
+      ],
+    }
+
+    assert.deepStrictEqual(notebookRuntimeKernelLanguages(payload), [
+      'python',
+      'javascript',
+      'rust',
+      'haskell',
+      'wasm',
+      'cpp',
+    ])
+    assert.deepStrictEqual(notebookRuntimePreloadLanguages(payload), [
+      'python',
+      'javascript',
+      'rust',
+      'haskell',
+      'wasm',
+    ])
   })
 })
 
@@ -94,6 +113,11 @@ describe('LanguageBackend registry', () => {
     assert.strictEqual(backendFor('.mjs'), javascriptBackend)
     assert.strictEqual(backendFor('rust'), rustBackend)
     assert.strictEqual(backendFor('.rs'), rustBackend)
+    assert.strictEqual(backendFor('c'), cBackend)
+    assert.strictEqual(backendFor('.c'), cBackend)
+    assert.strictEqual(backendFor('cpp'), cppBackend)
+    assert.strictEqual(backendFor('c++'), cppBackend)
+    assert.strictEqual(backendFor('.cpp'), cppBackend)
     assert.strictEqual(backendFor('mojo'), mojoBackend)
     assert.strictEqual(backendFor('.mojo'), mojoBackend)
     assert.strictEqual(backendFor('haskell'), haskellBackend)
@@ -104,6 +128,9 @@ describe('LanguageBackend registry', () => {
     assert.strictEqual(backendFor('go'), goBackend)
     assert.strictEqual(backendFor('golang'), goBackend)
     assert.strictEqual(backendFor('.go'), goBackend)
+    assert.strictEqual(backendFor('wasm'), wasmBackend)
+    assert.strictEqual(backendFor('wat'), wasmBackend)
+    assert.strictEqual(backendFor('.wat'), wasmBackend)
   })
 
   test('resolves a backend by shell magic', () => {
@@ -114,6 +141,11 @@ describe('LanguageBackend registry', () => {
     assert.strictEqual(backendForShellMagic('javascript-shell'), javascriptBackend)
     assert.strictEqual(backendForShellMagic('rust-shell'), rustBackend)
     assert.strictEqual(backendForShellMagic('rust'), undefined)
+    assert.strictEqual(backendForShellMagic('c-shell'), cBackend)
+    assert.strictEqual(backendForShellMagic('c'), undefined)
+    assert.strictEqual(backendForShellMagic('cpp-shell'), cppBackend)
+    assert.strictEqual(backendForShellMagic('c++-shell'), cppBackend)
+    assert.strictEqual(backendForShellMagic('cpp'), undefined)
     assert.strictEqual(backendForShellMagic('mojo-shell'), mojoBackend)
     assert.strictEqual(backendForShellMagic('haskell-shell'), haskellBackend)
     assert.strictEqual(backendForShellMagic('haskell'), undefined)
@@ -121,6 +153,9 @@ describe('LanguageBackend registry', () => {
     assert.strictEqual(backendForShellMagic('ocaml'), undefined)
     assert.strictEqual(backendForShellMagic('go-shell'), goBackend)
     assert.strictEqual(backendForShellMagic('go'), undefined)
+    assert.strictEqual(backendForShellMagic('wasm-shell'), wasmBackend)
+    assert.strictEqual(backendForShellMagic('wat-shell'), wasmBackend)
+    assert.strictEqual(backendForShellMagic('wasm'), undefined)
   })
 
   test('returns undefined for unregistered languages', () => {
@@ -154,6 +189,12 @@ describe('LanguageBackend registry', () => {
       pythonBackend.moduleResolver?.importNames('import foo\nfrom bar import baz'),
       ['foo', 'bar'],
     )
+    assert.deepStrictEqual(
+      pythonBackend.moduleResolver?.importNames(
+        'from IPython.utils.frame import extract_module_locals\nimport js\nimport pyodide\nimport foo',
+      ),
+      ['foo'],
+    )
     assert.match(
       pythonBackend.moduleResolver?.moduleSource(
         JSON.stringify({ cells: [{ cell_type: 'code', source: 'x = 1' }] }),
@@ -186,7 +227,16 @@ describe('LanguageBackend registry', () => {
   })
 
   test('native browser backends boot through self-hosted runtime packs', async () => {
-    for (const backend of [rustBackend, mojoBackend, haskellBackend, ocamlBackend, goBackend]) {
+    for (const backend of [
+      rustBackend,
+      cBackend,
+      cppBackend,
+      mojoBackend,
+      haskellBackend,
+      ocamlBackend,
+      goBackend,
+      wasmBackend,
+    ]) {
       const accepted = backend.canExecute('main = print "hi"')
       assert.strictEqual(accepted.ok, true)
       const kernel = await backend.kernelFactory({
