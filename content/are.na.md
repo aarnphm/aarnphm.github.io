@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-05-28 18:42:37 GMT-04:00
+modified: 2026-05-28 19:22:28 GMT-04:00
 permalinks:
   - /website
   - /tweets
@@ -1218,6 +1218,10 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://www.lewtan.dev/ -- Devin Lewtan
+  - [meta]:
+    - date: 05/28/2026
+    - tags: [brand, designer]
 - https://www.antheatawiah.com/ -- Anthea Tawiah
   - [meta]:
     - date: 05/28/2026
@@ -2411,6 +2415,10 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://www.talentoperatoros.io/mapping-global-ai-workforce-density -- Mapping Global AI workforce
+  - [meta]:
+    - date: 05/28/2026
+    - tags: [visualisation, talent density]
 - https://www.nytimes.com/2026/03/29/opinion/ai-claude-chatgpt-gemini-mcluhan.html -- I Saw Something New in San Francisco, Ezra Klein
   - [meta]:
     - date: 05/27/2026
@@ -5949,6 +5957,10 @@ title: are.na
 
 ## life is literature
 
+- https://bird.onethreenine.net/ -- apartment bird
+  - [meta]:
+    - date: 05/28/2026
+    - tags: [interesting, bird]
 - https://archive.fo/20260313093942/https://www.theaustralian.com.au/business/technology/tech-boss-uses-ai-and-chatgpt-to-create-cancer-vaccine-for-his-dying-dog/news-story/292a21bcbe93efa17810bfcfcdfadbf7 -- Using ChatGPT to create vaccine to save his dying dogs
   - [meta]:
     - date: 05/27/2026

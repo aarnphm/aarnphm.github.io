@@ -1,19 +1,9 @@
 @use '../../styles/variables.scss' as *;
 @use '../../styles/mixin.scss' as *;
+@use './figure.scss' as *;
 
 .multi-head-attention {
-  container-type: inline-size;
-  container-name: mha-figure;
-  margin: 1.75rem 0;
-  content-visibility: auto;
-  contain-intrinsic-size: auto 42rem;
-  box-sizing: border-box;
-  padding: 1.5rem 1.75rem;
-  border-radius: var(--radius-7-2);
-  border: 1px solid var(--mha-frame-border);
-  background: color-mix(in srgb, var(--light) 94%, transparent);
-  color: var(--dark);
-  --mha-frame-border: color-mix(in srgb, var(--gray) 34%, transparent);
+  @include figure-frame('mha-figure', 42rem);
 
   --mha-line: color-mix(in srgb, var(--gray) 24%, transparent);
   --mha-surface-shadow:
@@ -36,12 +26,9 @@
   --mha-link: color-mix(in srgb, var(--mha-stroke) 55%, transparent);
   --mha-link-concat: color-mix(in srgb, var(--mha-concat-edge) 75%, transparent);
   --mha-score-cell: color-mix(in srgb, var(--mha-salmon) 70%, var(--dark) 30%);
-
-  box-shadow: none;
 }
 
 :root[saved-theme='dark'] .multi-head-attention {
-  --mha-frame-border: color-mix(in srgb, var(--gray) 46%, transparent);
   --mha-input-bg: color-mix(in srgb, var(--lightgray) 35%, var(--dark));
   --mha-head-bg: color-mix(in srgb, var(--lightgray) 28%, var(--dark));
   --mha-accent-bg: color-mix(in srgb, var(--mha-salmon) 36%, var(--lightgray));
@@ -211,22 +198,10 @@
   }
 
   .mha-fo {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
+    @include figure-fo;
     justify-content: center;
-    color: var(--dark);
-    line-height: 1;
     overflow: visible;
     pointer-events: none;
-    .katex {
-      color: inherit;
-      font-size: 1em;
-    }
-    .katex-display {
-      margin: 0;
-    }
   }
   .mha-fo--input {
     font-size: 14px;
@@ -383,12 +358,7 @@
 }
 
 .mha-math {
-  display: inline-block;
-  color: inherit;
-  .katex {
-    color: inherit;
-    font-size: 0.95em;
-  }
+  @include figure-inline-math;
 }
 
 .mha-math--display {
@@ -558,16 +528,10 @@
 }
 
 .mha-caption {
-  margin-top: 0.9rem;
-  color: color-mix(in srgb, var(--gray) 70%, var(--dark) 30%);
-  font-size: 0.78rem;
-  line-height: 1.45;
-  text-align: left;
-  text-wrap: pretty;
+  @include figure-caption;
 
   .mha-math {
-    margin: 0 0.22em;
-    vertical-align: -0.03em;
+    @include figure-caption-math-gap;
   }
 }
 
@@ -588,11 +552,4 @@
   .mha-readout {
     font-size: 0.78rem;
   }
-}
-
-.zoomable.is-zoomed > .zoomable-content > .multi-head-attention {
-  padding: 1.5rem 1.75rem;
-  border: 1px solid var(--mha-frame-border);
-  border-radius: var(--radius-7-2);
-  background: color-mix(in srgb, var(--light) 94%, transparent);
 }

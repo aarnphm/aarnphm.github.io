@@ -1,0 +1,108 @@
+@use '../../styles/variables.scss' as *;
+@use '../../styles/mixin.scss' as *;
+
+@mixin figure-palette {
+  --fig-salmon: #fdb2a2;
+  --fig-sage: #cdd597;
+  --fig-frame-border: color-mix(in srgb, var(--gray) 34%, transparent);
+  --fig-stroke: color-mix(in srgb, var(--darkgray) 70%, transparent);
+  --fig-stroke-soft: color-mix(in srgb, var(--gray) 45%, transparent);
+  --fig-div: color-mix(in srgb, var(--gray) 28%, transparent);
+  --fig-note: color-mix(in srgb, var(--darkgray) 78%, var(--dark) 22%);
+  --fig-line: color-mix(in srgb, var(--gray) 24%, transparent);
+  --fig-panel-shadow: 0 0 0 1px color-mix(in srgb, var(--gray) 18%, transparent) inset;
+  --fig-caption-fg: color-mix(in srgb, var(--gray) 70%, var(--dark) 30%);
+  --fig-surface: color-mix(in srgb, var(--light) 96%, transparent);
+}
+
+@mixin figure-frame(
+  $container,
+  $intrinsic,
+  $bg: color-mix(in srgb, var(--light) 94%, transparent),
+  $zoom: true
+) {
+  container-type: inline-size;
+  container-name: #{$container};
+  margin: 1.75rem 0;
+  content-visibility: auto;
+  contain-intrinsic-size: auto $intrinsic;
+  box-sizing: border-box;
+  padding: 1.5rem 1.75rem;
+  border-radius: var(--radius-7-2);
+  border: 1px solid var(--fig-frame-border);
+  box-shadow: none;
+  background: $bg;
+  color: var(--dark);
+
+  @include figure-palette;
+
+  :root[saved-theme='dark'] & {
+    --fig-frame-border: color-mix(in srgb, var(--gray) 46%, transparent);
+  }
+
+  @if $zoom {
+    .zoomable.is-zoomed > .zoomable-content > & {
+      padding: 1.5rem 1.75rem;
+      border: 1px solid var(--fig-frame-border);
+      border-radius: var(--radius-7-2);
+      background: $bg;
+    }
+  }
+}
+
+@mixin figure-caption {
+  margin-top: 0.9rem;
+  color: var(--fig-caption-fg);
+  font-size: 0.78rem;
+  line-height: 1.45;
+  text-align: left;
+  text-wrap: pretty;
+}
+
+@mixin figure-caption-math-gap {
+  margin: 0 0.22em;
+  vertical-align: -0.03em;
+}
+
+@mixin figure-inline-math($katex: 0.95em) {
+  display: inline-block;
+  color: inherit;
+
+  .katex {
+    color: inherit;
+    font-size: $katex;
+  }
+}
+
+@mixin figure-fo {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  line-height: 1;
+  color: var(--dark);
+
+  .katex {
+    color: inherit;
+    font-size: 1em;
+  }
+  .katex-display {
+    margin: 0;
+  }
+}
+
+@mixin figure-panel($bg: var(--fig-surface), $shadow: var(--fig-panel-shadow)) {
+  border: 0;
+  border-radius: var(--radius-7-2);
+  background: $bg;
+  box-shadow: $shadow;
+}
+
+@mixin figure-card-heading($size: 0.72rem) {
+  margin: 0 0 0.5rem;
+  font-size: $size;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--fig-note);
+}

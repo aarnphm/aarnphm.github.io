@@ -1,3 +1,7 @@
+import katex from 'katex'
+
+export {}
+
 type Preset = 'uniform' | 'spiky' | 'longtail'
 
 type CascadeState = {
@@ -47,8 +51,17 @@ const readScores = (root: HTMLElement): Record<Preset, number[]> | null => {
   }
 }
 
-const formatRecall = (r: number): string => `${Math.round(r * 100)}%`
-const formatSpeedup = (s: number): string => (Number.isFinite(s) ? `${s.toFixed(1)}x` : 'inf')
+const cfRenderMath = (tex: string): string =>
+  katex.renderToString(tex, {
+    displayMode: false,
+    output: 'html',
+    strict: false,
+    throwOnError: false,
+  })
+
+const cfRecallTex = (r: number): string => `${Math.round(r * 100)}\\%`
+const cfSpeedupTex = (s: number): string =>
+  Number.isFinite(s) ? `${s.toFixed(1)}\\times` : '\\infty'
 
 const renderCascade = (state: CascadeState) => {
   const { threshold, preset, scores, n, barH } = state
@@ -85,13 +98,15 @@ const renderCascade = (state: CascadeState) => {
   if (state.tauFo) {
     state.tauFo.setAttribute('y', String(lineY - 22))
   }
-  state.tauReadout.textContent = threshold.toFixed(2)
+  state.tauReadout.innerHTML = cfRenderMath(threshold.toFixed(2))
   state.slider.setAttribute('aria-valuenow', threshold.toFixed(2))
   state.slider.setAttribute('aria-valuetext', `tau equals ${threshold.toFixed(2)}`)
   state.root.style.setProperty('--cf-tau', threshold.toFixed(3))
-  state.statKept.textContent = String(kept)
-  state.statSpeedup.textContent = kept > 0 ? formatSpeedup(n / kept) : 'inf'
-  state.statRecall.textContent = totalMass > 0 ? formatRecall(keptMass / totalMass) : '0%'
+  state.statKept.innerHTML = cfRenderMath(String(kept))
+  state.statSpeedup.innerHTML = cfRenderMath(kept > 0 ? cfSpeedupTex(n / kept) : '\\infty')
+  state.statRecall.innerHTML = cfRenderMath(
+    totalMass > 0 ? cfRecallTex(keptMass / totalMass) : '0\\%',
+  )
 }
 
 const setupCascade = (root: HTMLElement): (() => void) | null => {

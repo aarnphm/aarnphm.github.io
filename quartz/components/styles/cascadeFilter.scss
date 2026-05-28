@@ -1,26 +1,15 @@
 @use '../../styles/variables.scss' as *;
 @use '../../styles/mixin.scss' as *;
+@use './figure.scss' as *;
 
 .cascade-filter {
-  container-type: inline-size;
-  container-name: cf-figure;
-  margin: 1.75rem 0;
-  content-visibility: auto;
-  contain-intrinsic-size: auto 34rem;
-  box-sizing: border-box;
-  padding: 1.5rem 1.75rem;
-  border-radius: var(--radius-7-2);
-  border: 1px solid var(--cf-frame-border);
-  box-shadow: none;
-  background: color-mix(in srgb, var(--light) 94%, transparent);
-  color: var(--dark);
+  @include figure-frame('cf-figure', 34rem, $zoom: false);
   display: grid;
   grid-template-columns: minmax(0, 2.5fr) minmax(220px, 1fr);
   grid-template-areas: 'header header' 'stage sidebar' 'caption caption';
   gap: 1.1rem 1.5rem;
   --cf-stroke-soft: color-mix(in srgb, var(--gray) 45%, transparent);
   --cf-divider: color-mix(in srgb, var(--gray) 30%, transparent);
-  --cf-frame-border: color-mix(in srgb, var(--gray) 34%, transparent);
   --cf-note-fg: color-mix(in srgb, var(--darkgray) 78%, var(--dark) 22%);
   --cf-frame-bg: color-mix(in srgb, var(--lightgray) 40%, var(--light));
   --cf-keep: #fdb2a2;
@@ -32,7 +21,6 @@
   --cf-tab-active: color-mix(in srgb, var(--cf-keep) 24%, var(--cf-tab-surface));
 }
 :root[saved-theme='dark'] .cascade-filter {
-  --cf-frame-border: color-mix(in srgb, var(--gray) 46%, transparent);
   --cf-frame-bg: color-mix(in srgb, var(--lightgray) 22%, var(--dark));
   --cf-keep-bg: color-mix(in srgb, #fdb2a2 26%, var(--lightgray));
   --cf-drop: color-mix(in srgb, var(--lightgray) 60%, var(--dark));
@@ -152,9 +140,14 @@
 }
 
 .cf-slider-value {
-  font-variant-numeric: tabular-nums;
+  display: inline-block;
+  min-width: 2.8em;
+  text-align: right;
   color: var(--dark);
-  min-width: 2.4ch;
+  .katex {
+    color: inherit;
+    font-size: 0.95em;
+  }
 }
 
 .cf-stage {
@@ -245,21 +238,10 @@
 }
 
 .cf-fo {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
+  @include figure-fo;
   color: var(--cf-note-fg);
   font-size: 12px;
-  line-height: 1;
   overflow: visible;
-  .katex {
-    color: inherit;
-    font-size: 1em;
-  }
-  .katex-display {
-    margin: 0;
-  }
 }
 .cf-fo--tau {
   color: var(--cf-keep);
@@ -296,16 +278,11 @@
 .cf-card {
   padding: 0.75rem 0.9rem;
   border-radius: 6px;
-  border: 1px solid var(--cf-frame-border);
+  border: 1px solid var(--fig-frame-border);
   box-shadow: none;
   background: color-mix(in srgb, var(--light) 96%, transparent);
   h4 {
-    margin: 0 0 0.5rem;
-    font-size: 0.72rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    color: var(--cf-note-fg);
+    @include figure-card-heading;
   }
 }
 
@@ -323,13 +300,16 @@
     margin: 0;
     display: inline-flex;
     align-items: baseline;
-    gap: 0.25rem;
+    gap: 0.3rem;
     color: var(--dark);
-    font-variant-numeric: tabular-nums;
   }
   .cf-stat-of {
     color: var(--cf-note-fg);
-    font-size: 0.78rem;
+    font-size: 0.9em;
+  }
+  .katex {
+    color: inherit;
+    font-size: 0.95em;
   }
 }
 
@@ -341,12 +321,7 @@
 }
 
 .cf-math {
-  display: inline-block;
-  color: inherit;
-  .katex {
-    color: inherit;
-    font-size: 0.95em;
-  }
+  @include figure-inline-math;
   .katex-display {
     margin: 0.15rem 0;
     text-align: left;
@@ -373,18 +348,12 @@
 }
 
 .cf-caption {
+  @include figure-caption;
   grid-area: caption;
-  margin: 0.9rem 0 0;
-  color: color-mix(in srgb, var(--gray) 70%, var(--dark) 30%);
-  font-size: 0.78rem;
-  line-height: 1.45;
-  text-align: left;
-  text-wrap: pretty;
   display: inline-block;
 
   .cf-math {
-    margin: 0 0.22em;
-    vertical-align: -0.03em;
+    @include figure-caption-math-gap;
   }
 }
 
@@ -423,7 +392,7 @@
   width: min(100%, 1100px);
   margin: auto;
   padding: 1.5rem 1.75rem;
-  border: 1px solid var(--cf-frame-border);
+  border: 1px solid var(--fig-frame-border);
   border-radius: var(--radius-7-2);
   background: color-mix(in srgb, var(--light) 94%, transparent);
 }

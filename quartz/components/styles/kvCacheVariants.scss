@@ -1,20 +1,10 @@
 @use '../../styles/variables.scss' as *;
 @use '../../styles/mixin.scss' as *;
+@use './figure.scss' as *;
 
 .kv-cache-variants {
-  container-type: inline-size;
-  container-name: kvc-figure;
-  margin: 1.75rem 0;
-  content-visibility: auto;
-  contain-intrinsic-size: auto 22rem;
-  padding: 1.5rem 1.75rem;
-  border-radius: var(--radius-7-2);
-  border: 1px solid var(--kvc-frame-border);
-  box-shadow: none;
-  background: transparent;
-  color: var(--dark);
+  @include figure-frame('kvc-figure', 22rem, $bg: transparent, $zoom: false);
 
-  --kvc-frame-border: color-mix(in srgb, var(--gray) 34%, transparent);
   --kvc-stroke: color-mix(in srgb, var(--darkgray) 70%, transparent);
   --kvc-soft: color-mix(in srgb, var(--gray) 50%, transparent);
   --kvc-div: color-mix(in srgb, var(--gray) 32%, transparent);
@@ -149,23 +139,10 @@
   }
 
   .kvc-fo {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
+    @include figure-fo;
     justify-content: center;
-    color: var(--dark);
-    line-height: 1;
     overflow: visible;
     pointer-events: none;
-
-    .katex {
-      color: inherit;
-      font-size: 1em;
-    }
-    .katex-display {
-      margin: 0;
-    }
   }
 
   .kvc-fo--title {
@@ -219,25 +196,14 @@
 }
 
 .kvc-caption {
-  margin-top: 0.9rem;
-  color: color-mix(in srgb, var(--gray) 70%, var(--dark) 30%);
-  font-size: 0.78rem;
-  line-height: 1.45;
-  text-align: left;
-  text-wrap: pretty;
+  @include figure-caption;
   display: inline-block;
 }
 
 .kvc-math {
-  display: inline-block;
-  color: inherit;
+  @include figure-inline-math;
   margin: 0 0.2em;
   vertical-align: -0.03em;
-
-  .katex {
-    color: inherit;
-    font-size: 0.95em;
-  }
 }
 
 @container kvc-figure (max-width: 560px) {
