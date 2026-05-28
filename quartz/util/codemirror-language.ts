@@ -4,9 +4,11 @@ import { javascript } from '@codemirror/lang-javascript'
 import { python } from '@codemirror/lang-python'
 import { rust } from '@codemirror/lang-rust'
 import { StreamLanguage } from '@codemirror/language'
+import { c, cpp } from '@codemirror/legacy-modes/mode/clike'
 import { haskell } from '@codemirror/legacy-modes/mode/haskell'
 import { oCaml } from '@codemirror/legacy-modes/mode/mllike'
 import { shell } from '@codemirror/legacy-modes/mode/shell'
+import { wast } from '@codemirror/legacy-modes/mode/wast'
 import { zig } from 'codemirror-lang-zig'
 
 export function codemirrorCodeLanguage(language: string | undefined): Extension {
@@ -20,6 +22,11 @@ export function codemirrorCodeLanguage(language: string | undefined): Extension 
   if (name === 'tsx') return javascript({ typescript: true, jsx: true })
   if (name === 'go' || name === 'golang') return go()
   if (name === 'rust' || name === 'rs') return rust()
+  if (name === 'c') return StreamLanguage.define(c)
+  if (name === 'cpp' || name === 'c++' || name === 'cxx') return StreamLanguage.define(cpp)
+  if (name === 'wasm' || name === 'wat' || name === 'webassembly') {
+    return StreamLanguage.define(wast)
+  }
   if (
     name === 'haskell' ||
     name === 'hs' ||

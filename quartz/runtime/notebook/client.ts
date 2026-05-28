@@ -241,6 +241,13 @@ export function nextNotebookCellId(
 }
 
 export function notebookRuntimePreloadLanguages(payload: NotebookRuntimePreloadPayload): string[] {
+  return notebookRuntimeKernelLanguages(payload).filter(language => {
+    const backend = backendFor(language)
+    return backend?.preload !== false
+  })
+}
+
+export function notebookRuntimeKernelLanguages(payload: NotebookRuntimePreloadPayload): string[] {
   const languages: string[] = []
   const seen = new Set<string>()
   for (const cell of payload.cells) {
@@ -1335,7 +1342,7 @@ class NotebookRuntime {
   }
 
   private kernelSnapshots(): NotebookKernelSnapshot[] {
-    return notebookRuntimePreloadLanguages(this.payload).map(language => {
+    return notebookRuntimeKernelLanguages(this.payload).map(language => {
       const backend = backendFor(language)
       const backendName = backend?.name ?? language
       const presence = this.kernelPresence(backendName)
@@ -1522,7 +1529,7 @@ class NotebookRuntime {
     this.destroyRuntime()
     this.running = false
     this.runningCellId = undefined
-    for (const language of notebookRuntimePreloadLanguages(this.payload)) {
+    for (const language of notebookRuntimeKernelLanguages(this.payload)) {
       const backend = backendFor(language)
       this.setKernelPresence(backend?.name ?? language, 'stopped')
     }
@@ -2028,6 +2035,17 @@ class NotebookRuntime {
         ? this.assets[backend.workerAssetKey]
         : this.assets.workerUrl,
       resolveAsset: (request, runtimeFile) => this.resolveAsset(request, runtimeFile),
+      status: text => {
+        if (
+          this.disposed ||
+          this.runtimeEpoch !== epoch ||
+          this.kernelEpoch(backend.name) !== kernelEpoch
+        ) {
+          return
+        }
+        this.setKernelPresence(backend.name, 'warming', text)
+        this.setStatus(text)
+      },
     })
     try {
       await kernel.init({

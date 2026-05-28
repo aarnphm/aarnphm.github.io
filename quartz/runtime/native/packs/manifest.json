@@ -1,6 +1,30 @@
 {
   "version": 1,
   "runtimes": {
+    "c": {
+      "worker": "clang/worker.js",
+      "assets": [
+        "clang/browser-wasi-shim.mjs",
+        "clang/bundle.js",
+        "clang/llvm-resources.tar",
+        "clang/llvm.core.wasm",
+        "clang/llvm.core2.wasm",
+        "clang/llvm.core3.wasm",
+        "clang/llvm.core4.wasm"
+      ]
+    },
+    "cpp": {
+      "worker": "clang/worker.js",
+      "assets": [
+        "clang/browser-wasi-shim.mjs",
+        "clang/bundle.js",
+        "clang/llvm-resources.tar",
+        "clang/llvm.core.wasm",
+        "clang/llvm.core2.wasm",
+        "clang/llvm.core3.wasm",
+        "clang/llvm.core4.wasm"
+      ]
+    },
     "go": { "worker": "go/worker.js", "assets": ["go/wasm_exec.js", "go/yaegi.wasm"] },
     "haskell": {
       "worker": "haskell/worker.js",
@@ -51,6 +75,10 @@
         "rust/lib/rustlib/x86_64-unknown-linux-gnu/lib/libunicode_width-19a0dcd589fa0877.rlib.gz",
         "rust/lib/rustlib/x86_64-unknown-linux-gnu/lib/libunwind-747b693f90af9445.rlib.gz"
       ]
+    },
+    "wasm": {
+      "worker": "wasm/worker.js",
+      "assets": ["wasm/browser-wasi-shim.mjs", "wasm/wabt.mjs"]
     }
   }
 }

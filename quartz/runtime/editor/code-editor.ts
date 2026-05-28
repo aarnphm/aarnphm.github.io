@@ -201,6 +201,15 @@ async function notebookHighlightJsLanguage(
   if (name === 'rust' || name === 'rs') {
     return { name: 'rust', define: (await import('highlight.js/lib/languages/rust')).default }
   }
+  if (name === 'c') {
+    return { name: 'c', define: (await import('highlight.js/lib/languages/c')).default }
+  }
+  if (name === 'cpp' || name === 'c++' || name === 'cxx') {
+    return { name: 'cpp', define: (await import('highlight.js/lib/languages/cpp')).default }
+  }
+  if (name === 'wasm' || name === 'wat' || name === 'webassembly') {
+    return { name: 'wasm', define: (await import('highlight.js/lib/languages/wasm')).default }
+  }
   if (name === 'haskell' || name === 'hs') {
     return { name: 'haskell', define: (await import('highlight.js/lib/languages/haskell')).default }
   }

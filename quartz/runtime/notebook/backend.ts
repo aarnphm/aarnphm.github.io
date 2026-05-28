@@ -38,6 +38,7 @@ type LanguageBackendBase = {
   readonly shellMagics: readonly string[]
   readonly workerAssetKey?: keyof NotebookRuntimeAssets
   readonly defaultIndexUrl?: string
+  readonly preload?: boolean
   readonly canExecute: (source: string) => CanExecuteResult
   readonly editor?: {
     readonly languageExtension?: () => Promise<Extension>

@@ -14,6 +14,7 @@ type NativeLanguageSpec = {
   readonly fileExts: readonly string[]
   readonly aliases: readonly string[]
   readonly shellMagics: readonly string[]
+  readonly preload?: boolean
 }
 
 function nativeBackend(spec: NativeLanguageSpec): ExecutableLanguageBackend {
@@ -31,6 +32,22 @@ export const rustBackend = nativeBackend({
   fileExts: ['.rs'],
   aliases: ['rust', 'rs'],
   shellMagics: ['rust-shell', 'rs-shell'],
+})
+
+export const cBackend = nativeBackend({
+  name: 'c',
+  fileExts: ['.c', '.h'],
+  aliases: ['c'],
+  shellMagics: ['c-shell'],
+  preload: false,
+})
+
+export const cppBackend = nativeBackend({
+  name: 'cpp',
+  fileExts: ['.cc', '.cpp', '.cxx', '.hh', '.hpp', '.hxx'],
+  aliases: ['cpp', 'c++', 'cxx'],
+  shellMagics: ['cpp-shell', 'c++-shell', 'cxx-shell'],
+  preload: false,
 })
 
 export const mojoBackend = nativeBackend({
@@ -61,8 +78,18 @@ export const goBackend = nativeBackend({
   shellMagics: ['go-shell', 'golang-shell'],
 })
 
+export const wasmBackend = nativeBackend({
+  name: 'wasm',
+  fileExts: ['.wasm', '.wat'],
+  aliases: ['wasm', 'wat', 'webassembly'],
+  shellMagics: ['wasm-shell', 'wat-shell'],
+})
+
 registerBackend(rustBackend)
+registerBackend(cBackend)
+registerBackend(cppBackend)
 registerBackend(mojoBackend)
 registerBackend(haskellBackend)
 registerBackend(ocamlBackend)
 registerBackend(goBackend)
+registerBackend(wasmBackend)

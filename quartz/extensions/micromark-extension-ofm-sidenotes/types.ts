@@ -1,4 +1,4 @@
-import type { Node, PhrasingContent, BlockContent } from 'mdast'
+import type { Parent, PhrasingContent, BlockContent } from 'mdast'
 import type { Point } from 'unist'
 
 declare module 'micromark-util-types' {
@@ -42,23 +42,23 @@ export interface SidenoteData {
   content: string
 }
 
-export interface Sidenote extends Node {
+export interface Sidenote extends Parent {
   type: 'sidenote'
   value: string
   children: PhrasingContent[]
   position?: { start: Point; end: Point }
-  properties?: Record<string, any>
+  properties?: Record<string, unknown>
 }
 
-export interface SidenoteReference extends Node {
+export interface SidenoteReference extends Parent {
   type: 'sidenoteReference'
   label: string
   labelNodes?: PhrasingContent[]
-  children?: PhrasingContent[]
-  properties?: Record<string, any>
+  children: PhrasingContent[]
+  properties?: Record<string, unknown>
 }
 
-export interface SidenoteDefinition extends Node {
+export interface SidenoteDefinition extends Parent {
   type: 'sidenoteDefinition'
   label: string
   labelNodes?: PhrasingContent[]
@@ -77,12 +77,18 @@ declare module 'mdast' {
     label?: string
   }
 
-  interface StaticPhrasingContentMap {
+  interface PhrasingContentMap {
     sidenote: Sidenote
     sidenoteReference: SidenoteReference
   }
 
-  interface StaticBlockContentMap {
+  interface BlockContentMap {
+    sidenoteDefinition: SidenoteDefinition
+  }
+
+  interface RootContentMap {
+    sidenote: Sidenote
+    sidenoteReference: SidenoteReference
     sidenoteDefinition: SidenoteDefinition
   }
 }

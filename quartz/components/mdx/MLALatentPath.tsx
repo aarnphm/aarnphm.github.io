@@ -9,17 +9,17 @@ import { registerMdxComponent, type QuartzMdxComponent } from './registry'
 
 type Props = { caption?: string }
 
-const W = 720
-const H = 360
+const W = 760
+const H = 420
 const BW = 92
-const BH = 46
-const HW = 130
-const HH = 34
-const CX = { i: 56, l: 246, p: 470, c: 642 }
-const RY = { c: 96, r: 248, kc: 58, vc: 134 }
-const YM = (RY.c + RY.r) / 2
+const BH = 42
+const HW = 136
+const HH = 32
+const CX = { i: 54, l: 188, p: 370, c: 558, o: 704 }
+const RY = { q: 78, qC: 40, qR: 116, c: 232, r: 320, kc: 198, vc: 270, k: 232, o: 174 }
+const YM = (RY.q + RY.c) / 2
 
-type Kind = 'input' | 'cached' | 'head' | 'concat'
+type Kind = 'input' | 'query' | 'cached' | 'head' | 'concat' | 'attn'
 type N = {
   id: string
   k: Kind
@@ -32,6 +32,16 @@ type N = {
 }
 const NODES: N[] = [
   { id: 'input', k: 'input', cx: CX.i, cy: YM, w: BW, h: BH, tex: '\\mathbf{h}_t' },
+  {
+    id: 'cq',
+    k: 'query',
+    cx: CX.l,
+    cy: RY.q,
+    w: BW,
+    h: BH,
+    tex: '\\mathbf{c}_t^{Q}',
+    dim: { k: 'cq', t: 'd_c^Q' },
+  },
   {
     id: 'c',
     k: 'cached',
@@ -51,6 +61,26 @@ const NODES: N[] = [
     h: BH,
     tex: '\\mathbf{k}_t^{R}',
     dim: { k: 'dr', t: 'd_h^R' },
+  },
+  {
+    id: 'qc',
+    k: 'head',
+    cx: CX.p,
+    cy: RY.qC,
+    w: HW,
+    h: HH,
+    tex: '\\{\\mathbf{q}_{t,1}^{C},\\dots,\\mathbf{q}_{t,n_h}^{C}\\}',
+    dim: { k: 'qc', t: 'n_h d_h' },
+  },
+  {
+    id: 'qr',
+    k: 'head',
+    cx: CX.p,
+    cy: RY.qR,
+    w: HW,
+    h: HH,
+    tex: '\\{\\mathbf{q}_{t,1}^{R},\\dots,\\mathbf{q}_{t,n_h}^{R}\\}',
+    dim: { k: 'qr', t: 'n_h d_h^R' },
   },
   {
     id: 'kc',
@@ -73,14 +103,33 @@ const NODES: N[] = [
     dim: { k: 'vc', t: 'n_h d_h' },
   },
   {
-    id: 'concat',
+    id: 'qcat',
     k: 'concat',
     cx: CX.c,
-    cy: YM,
+    cy: RY.q,
+    w: BW,
+    h: BH,
+    tex: '\\mathbf{q}_{t,i}',
+    dim: { k: 'concat', t: 'd_h+d_h^R' },
+  },
+  {
+    id: 'kcat',
+    k: 'concat',
+    cx: CX.c,
+    cy: RY.k,
     w: BW,
     h: BH,
     tex: '[\\mathbf{k}_{t,i}^{C};\\mathbf{k}_t^{R}]',
     dim: { k: 'concat', t: 'd_h+d_h^R' },
+  },
+  {
+    id: 'out',
+    k: 'attn',
+    cx: CX.o,
+    cy: RY.o,
+    w: 84,
+    h: 38,
+    tex: '\\mathbf{o}_{t,i}',
   },
 ]
 
@@ -95,17 +144,40 @@ type E = {
 const EDGES: E[] = [
   {
     fx: CX.i + BW / 2,
-    fy: YM - 8,
+    fy: YM - 12,
     tx: CX.l - BW / 2,
-    ty: RY.c,
-    lbl: { tex: 'W^{DKV}', dx: -28, dy: -56, w: 70 },
+    ty: RY.q,
+    lbl: { tex: 'W^{DQ}', dx: -34, dy: -42, w: 70 },
   },
   {
     fx: CX.i + BW / 2,
-    fy: YM + 8,
+    fy: YM + 4,
+    tx: CX.l - BW / 2,
+    ty: RY.c,
+    lbl: { tex: 'W^{DKV}', dx: -34, dy: -8, w: 70 },
+  },
+  {
+    fx: CX.i + BW / 2,
+    fy: YM + 20,
     tx: CX.l - BW / 2,
     ty: RY.r,
-    lbl: { tex: 'W^{KR},\\,\\mathrm{RoPE}', dx: -38, dy: 40, w: 100 },
+    lbl: { tex: 'W^{KR},\\,\\mathrm{RoPE}', dx: -42, dy: 42, w: 110 },
+    cls: 'mla-edge--rope',
+  },
+  {
+    fx: CX.l + BW / 2,
+    fy: RY.q - 8,
+    tx: CX.p - HW / 2,
+    ty: RY.qC,
+    lbl: { tex: 'W^{UQ}', dx: -22, dy: -24 },
+  },
+  {
+    fx: CX.l + BW / 2,
+    fy: RY.q + 8,
+    tx: CX.p - HW / 2,
+    ty: RY.qR,
+    lbl: { tex: 'W^{QR},\\,\\mathrm{RoPE}', dx: -42, dy: 12, w: 110 },
+    cls: 'mla-edge--rope',
   },
   {
     fx: CX.l + BW / 2,
@@ -121,20 +193,50 @@ const EDGES: E[] = [
     ty: RY.vc,
     lbl: { tex: 'W^{UV}', dx: -22, dy: 6 },
   },
-  { fx: CX.p + HW / 2, fy: RY.kc, tx: CX.c - BW / 2, ty: YM - 6, cls: 'mla-edge--concat' },
+  { fx: CX.p + HW / 2, fy: RY.qC, tx: CX.c - BW / 2, ty: RY.q - 8, cls: 'mla-edge--concat' },
+  {
+    fx: CX.p + HW / 2,
+    fy: RY.qR,
+    tx: CX.c - BW / 2,
+    ty: RY.q + 8,
+    cls: 'mla-edge--concat mla-edge--rope',
+  },
+  { fx: CX.p + HW / 2, fy: RY.kc, tx: CX.c - BW / 2, ty: RY.k - 8, cls: 'mla-edge--concat' },
   {
     fx: CX.l + BW / 2,
     fy: RY.r,
     tx: CX.c - BW / 2,
-    ty: YM + 6,
+    ty: RY.k + 8,
     cls: 'mla-edge--concat mla-edge--rope',
+  },
+  {
+    fx: CX.c + BW / 2,
+    fy: RY.q,
+    tx: CX.o - 42,
+    ty: RY.o - 8,
+    cls: 'mla-edge--attention',
+  },
+  {
+    fx: CX.c + BW / 2,
+    fy: RY.k,
+    tx: CX.o - 42,
+    ty: RY.o + 8,
+    cls: 'mla-edge--attention',
+  },
+  {
+    fx: CX.p + HW / 2,
+    fy: RY.vc,
+    tx: CX.o - 42,
+    ty: RY.o + 20,
+    cls: 'mla-edge--attention',
   },
 ]
 
 type S = {
   k: string
   tex: string
-  lbl: string
+  labelTex: string
+  aria: string
   min: number
   max: number
   step: number
@@ -142,11 +244,58 @@ type S = {
   accent?: boolean
 }
 const SLIDERS: S[] = [
-  { k: 'd', tex: 'd', lbl: 'model dim', min: 256, max: 8192, step: 256, def: 4096 },
-  { k: 'nh', tex: 'n_h', lbl: 'heads', min: 4, max: 128, step: 1, def: 32 },
-  { k: 'dh', tex: 'd_h', lbl: 'per-head', min: 32, max: 256, step: 16, def: 128 },
-  { k: 'dc', tex: 'd_c', lbl: 'latent', min: 64, max: 1024, step: 64, def: 512, accent: true },
-  { k: 'dr', tex: 'd_h^R', lbl: 'RoPE', min: 16, max: 128, step: 16, def: 64, accent: true },
+  {
+    k: 'd',
+    tex: 'd',
+    labelTex: '\\text{model dim }d',
+    aria: 'model dimension',
+    min: 256,
+    max: 8192,
+    step: 256,
+    def: 4096,
+  },
+  {
+    k: 'nh',
+    tex: 'n_h',
+    labelTex: '\\text{heads }n_h',
+    aria: 'attention heads',
+    min: 4,
+    max: 128,
+    step: 1,
+    def: 32,
+  },
+  {
+    k: 'dh',
+    tex: 'd_h',
+    labelTex: '\\text{per-head }d_h',
+    aria: 'per-head dimension',
+    min: 32,
+    max: 256,
+    step: 16,
+    def: 128,
+  },
+  {
+    k: 'dc',
+    tex: 'd_c',
+    labelTex: '\\text{latent }d_c',
+    aria: 'KV latent dimension',
+    min: 64,
+    max: 1024,
+    step: 64,
+    def: 512,
+    accent: true,
+  },
+  {
+    k: 'dr',
+    tex: 'd_h^R',
+    labelTex: '\\text{RoPE }d_h^R',
+    aria: 'RoPE duplicate dimension',
+    min: 16,
+    max: 128,
+    step: 16,
+    def: 64,
+    accent: true,
+  },
 ]
 
 const EQS = [
@@ -164,6 +313,13 @@ const tex = (t: string, d = false): string =>
     strict: false,
     throwOnError: false,
   })
+
+const countTex = (n: number): string => {
+  if (n >= 1000) return `${(n / 1000).toFixed(n % 1000 === 0 ? 0 : 1)}\\mathrm{k}`
+  return String(n)
+}
+
+const ratioTex = (n: number): string => `${n.toFixed(n >= 10 ? 0 : 1)}\\times`
 
 const FO: FunctionalComponent<{
   x: number
@@ -237,14 +393,7 @@ const MLALatentPathImpl: QuartzMdxComponent<Props> = ({ caption }) => {
           </defs>
 
           <rect class="mla-cache-box" x={cx} y={cy} width={BW + 20} height={ch} rx={8} />
-          <FO
-            x={CX.l - 45}
-            y={cy - 22}
-            w={90}
-            h={18}
-            t="\mathrm{KV}\ \text{cache}"
-            cls="mla-fo--cache-label"
-          />
+          <FO x={CX.l - 58} y={cy - 22} w={116} h={18} t="\text{cached}" cls="mla-fo--cache-label" />
 
           {NODES.map(n => {
             const nx = n.cx - n.w / 2
@@ -305,7 +454,9 @@ const MLALatentPathImpl: QuartzMdxComponent<Props> = ({ caption }) => {
 
         <aside class="mla-side" aria-label="MLA cache readout">
           <div class="mla-card">
-            <h4>cached</h4>
+            <h4>
+              <M t="\text{cached during inference}" />
+            </h4>
             <ul class="mla-cache-list">
               <li>
                 <span class="mla-swatch mla-swatch--cached" aria-hidden="true" />
@@ -317,34 +468,43 @@ const MLALatentPathImpl: QuartzMdxComponent<Props> = ({ caption }) => {
               </li>
             </ul>
             <p class="mla-cache-note">
-              per-head <M t="\mathbf{k}_{t,i}^{C},\mathbf{v}_{t,i}^{C}" /> are reconstructed on
-              demand and never touch HBM.
+              <M t="\mathbf{k}_{t,i}^{C},\mathbf{v}_{t,i}^{C}\leftarrow \mathbf{c}_t^{KV}\quad(\text{reconstructed on demand})" />
             </p>
           </div>
 
           <dl class="mla-readout" data-mla-readout>
             <div class="mla-readout-row">
               <dt>
-                MHA <M t="2 \cdot n_h \cdot d_h" />
+                <M t="\mathrm{MHA}\quad 2\,n_h\,d_h" />
               </dt>
-              <dd data-mla-mha class="mla-readout-val">
-                {2 * def.nh * def.dh}
-              </dd>
+              <dd
+                data-mla-mha
+                class="mla-readout-val"
+                dangerouslySetInnerHTML={{ __html: tex(countTex(2 * def.nh * def.dh)) }}
+              />
             </div>
             <div class="mla-readout-row">
               <dt>
-                MLA <M t="d_c + d_h^R" />
+                <M t="\mathrm{MLA}\quad d_c+d_h^R" />
               </dt>
-              <dd data-mla-mla class="mla-readout-val mla-readout-val--accent">
-                {def.dc + def.dr}
-              </dd>
+              <dd
+                data-mla-mla
+                class="mla-readout-val mla-readout-val--accent"
+                dangerouslySetInnerHTML={{ __html: tex(countTex(def.dc + def.dr)) }}
+              />
             </div>
             <div class="mla-readout-row">
-              <dt>compression</dt>
+              <dt>
+                <M t="\text{compression}" />
+              </dt>
               <dd>
-                <span data-mla-ratio class="mla-readout-val mla-readout-val--big">
-                  {((2 * def.nh * def.dh) / (def.dc + def.dr)).toFixed(1)}x
-                </span>
+                <span
+                  data-mla-ratio
+                  class="mla-readout-val mla-readout-val--big"
+                  dangerouslySetInnerHTML={{
+                    __html: tex(ratioTex((2 * def.nh * def.dh) / (def.dc + def.dr))),
+                  }}
+                />
               </dd>
             </div>
           </dl>
@@ -355,7 +515,7 @@ const MLALatentPathImpl: QuartzMdxComponent<Props> = ({ caption }) => {
         {SLIDERS.map(s => (
           <div class="mla-control">
             <label class="mla-label" for={`mla-${s.k}`}>
-              <M t={s.tex} /> {s.lbl}
+              <M t={s.labelTex} />
             </label>
             <input
               id={`mla-${s.k}`}
@@ -369,11 +529,13 @@ const MLALatentPathImpl: QuartzMdxComponent<Props> = ({ caption }) => {
               aria-valuemin={s.min}
               aria-valuemax={s.max}
               aria-valuenow={s.def}
-              aria-valuetext={`${s.lbl} ${s.def}`}
+              aria-valuetext={`${s.aria} ${s.def}`}
             />
-            <span class={`mla-value${s.accent ? ' mla-value--accent' : ''}`} data-mla-value={s.k}>
-              {s.def}
-            </span>
+            <span
+              class={`mla-value${s.accent ? ' mla-value--accent' : ''}`}
+              data-mla-value={s.k}
+              dangerouslySetInnerHTML={{ __html: tex(String(s.def)) }}
+            />
           </div>
         ))}
       </div>
@@ -383,8 +545,7 @@ const MLALatentPathImpl: QuartzMdxComponent<Props> = ({ caption }) => {
           <M t={e} d />
         ))}
         <p class="mla-bet">
-          <M t="d_c+d_h^R\ \ll\ 2\,n_h\,d_h" />: the joint low-rank bet. Shrink <M t="d_c" /> until
-          reconstruction bends; cache size collapses with it.
+          <M t="d_c+d_h^R\ll2\,n_h\,d_h\quad\Rightarrow\quad\text{cache bytes per token shrink}" />
         </p>
       </div>
 

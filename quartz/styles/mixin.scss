@@ -54,7 +54,7 @@
 
 @mixin stableRangeControl(
   $track-color: color-mix(in srgb, var(--rose) 64%, var(--light)),
-  $thumb-color: color-mix(in srgb, var(--rose) 82%, var(--light)),
+  $thumb-color: color-mix(in srgb, var(--love) 82%, var(--light)),
   $track-ring: color-mix(in srgb, var(--lime) 22%, transparent),
   $thumb-halo: color-mix(in srgb, var(--love) 96%, transparent),
   $thumb-shadow: color-mix(in srgb, var(--dark) 18%, transparent)

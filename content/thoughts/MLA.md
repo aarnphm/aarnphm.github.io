@@ -2,17 +2,18 @@
 date: '2026-05-27'
 description: low-rank joint compression of attention K,V (and Q), cache only the latent and RoPE-carrying duplicate.
 id: attention-mla
-modified: 2026-05-27 23:18:59 GMT-04:00
+modified: 2026-05-28 02:06:22 GMT-04:00
 seealso:
   - '[[thoughts/Attention|main stage]]'
   - '[[thoughts/GQA|GQA]]'
-  - '[[thoughts/Compression]]'
-  - '[[thoughts/RoPE]]'
+  - '[[thoughts/Compression|Compression]]'
+  - '[[thoughts/RoPE|RoPE]]'
+  - '[[lectures/3/quantisation basics#multi-latent attention|quantization math]]'
 tags:
   - ml
   - llm
   - technical
-title: multi-head latent attention
+title: Multi-Head Latent Attention
 ---
 
 ![[thoughts/images/mla-comparison.webp]]
@@ -108,5 +109,3 @@ $$
 >     \mathbf{u}_t &= \mathbf{W}^O [o_{t,1}; o_{t,2}; \dots; o_{t, n_h}] \quad \tag{11}
 > \end{align}
 > $$
-
-![[lectures/3/quantisation basics#multi-latent attention]]

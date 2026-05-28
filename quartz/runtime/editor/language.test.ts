@@ -13,13 +13,16 @@ describe('CodeMirror language extensions', () => {
     const languages = [
       'python',
       'javascript',
+      'c',
+      'cpp',
       'go',
       'rust',
       'haskell',
       'ocaml',
       'mojo',
+      'wasm',
       'bash',
-    ] as const
+    ]
 
     for (const language of languages) {
       const extension = await notebookCodeEditorLanguageExtension(language)
@@ -28,7 +31,7 @@ describe('CodeMirror language extensions', () => {
   })
 
   test('markdown code editor loads runtime and shell languages', () => {
-    const languages = ['rust', 'haskell', 'ocaml', 'mojo', 'bash'] as const
+    const languages = ['c', 'cpp', 'wasm', 'rust', 'haskell', 'ocaml', 'mojo', 'bash']
 
     for (const language of languages) {
       const extension = codemirrorCodeLanguage(language)

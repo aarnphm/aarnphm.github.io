@@ -2,7 +2,7 @@
 date: '2026-05-27'
 description: reduce KV heads to a fraction of query heads, share K,V across groups for cheaper decode-time cache reuse
 id: attention-gqa
-modified: 2026-05-27 23:00:43 GMT-04:00
+modified: 2026-05-28 02:06:34 GMT-04:00
 seealso:
   - '[[thoughts/Attention|main stage]]'
   - '[[thoughts/MLA|MLA]]'
@@ -11,7 +11,7 @@ tags:
   - ml
   - llm
   - technical
-title: group-query attention
+title: Group-Query Attention
 ---
 
 idea: reduce number of KV heads $n_k$ to a fraction $n_k^{'} = \frac{n_q}{k}$ of number of query heads $n_q$ (evenly dividing the query heads into $n_k$ groups with $r$ heads)

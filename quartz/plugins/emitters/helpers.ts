@@ -121,14 +121,21 @@ export const write = async ({ ctx, slug, ext, content }: WriteOptions): Promise<
   const perf = new PerfTimer()
   const pathToPage = joinSegments(ctx.argv.output, slug + ext) as FilePath
   const dir = path.dirname(pathToPage)
+  const dirWrite = ensureOutputDir(dir)
+  if (dirWrite) await dirWrite
   const cacheEntry = contentCacheEntry(content)
+  if (!ctx.incremental) {
+    await fs.promises.writeFile(pathToPage, content)
+    cacheWrittenContent(pathToPage, cacheEntry)
+    logBuildSpan(ctx.argv, 'write', pathToPage, perf.elapsedMs())
+    return pathToPage
+  }
+
   const cachedStatus = cacheEntry ? cachedContentStatus(pathToPage, cacheEntry) : undefined
   if (isCachedSame(cachedStatus)) {
     logBuildSpan(ctx.argv, 'write:skip', pathToPage, perf.elapsedMs())
     return pathToPage
   }
-  const dirWrite = ensureOutputDir(dir)
-  if (dirWrite) await dirWrite
   if (cachedStatus === 'changed' && canWriteCachedContent(content)) {
     writeCachedContent(pathToPage, content)
     cacheWrittenContent(pathToPage, cacheEntry)
