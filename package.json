@@ -180,7 +180,7 @@
     "zod": "^4.4.3"
   },
   "devDependencies": {
-    "@cloudflare/workers-types": "^4.20260527.1",
+    "@cloudflare/workers-types": "^4.20260528.1",
     "@types/d3": "^7.4.3",
     "@types/d3-drag": "^3.0.7",
     "@types/d3-force": "^3.0.10",
@@ -195,8 +195,8 @@
     "@types/unist": "^3.0.3",
     "@types/ws": "^8.18.1",
     "@types/yargs": "^17.0.35",
-    "@typescript/native-preview": "7.0.0-dev.20260527.1",
-    "ai": "^6.0.191",
+    "@typescript/native-preview": "7.0.0-dev.20260527.2",
+    "ai": "^6.0.192",
     "bibtex-tidy": "^1.14.0",
     "drizzle-kit": "^0.31.10",
     "esbuild": "^0.28.0",
