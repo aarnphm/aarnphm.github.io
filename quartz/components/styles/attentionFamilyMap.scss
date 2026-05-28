@@ -1,0 +1,407 @@
+@use '../../styles/variables.scss' as *;
+
+.attention-family-map {
+  container-type: inline-size;
+  container-name: afm-figure;
+  margin: 1.75rem 0;
+  content-visibility: auto;
+  contain-intrinsic-size: auto 42rem;
+  padding: 0;
+  border-radius: 0;
+  border: 0;
+  background: transparent;
+  color: var(--dark);
+
+  --afm-line: color-mix(in srgb, var(--gray) 24%, transparent);
+  --afm-surface-shadow:
+    0 0 0 1px var(--afm-line) inset, 0 18px 46px color-mix(in srgb, var(--dark) 7%, transparent);
+  --afm-panel-shadow: 0 0 0 1px color-mix(in srgb, var(--gray) 18%, transparent) inset;
+  --afm-salmon: #fdb2a2;
+  --afm-sage: #cdd597;
+  --afm-note-fg: color-mix(in srgb, var(--darkgray) 78%, var(--dark) 22%);
+  --afm-card-bg: color-mix(in srgb, var(--light) 70%, transparent);
+  --afm-card-bg-hover: color-mix(in srgb, var(--light) 92%, transparent);
+  --afm-chip-bg: color-mix(in srgb, var(--gray) 10%, var(--light));
+  --afm-chip-fg: color-mix(in srgb, var(--dark) 80%, var(--gray) 20%);
+  --afm-detail-bg: color-mix(in srgb, var(--light) 96%, transparent);
+  --afm-detail-shadow: 0 8px 24px color-mix(in srgb, var(--dark) 14%, transparent);
+
+  box-shadow: none;
+}
+
+:root[saved-theme='dark'] .attention-family-map {
+  --afm-card-bg: color-mix(in srgb, var(--lightgray) 38%, transparent);
+  --afm-card-bg-hover: color-mix(in srgb, var(--lightgray) 55%, transparent);
+  --afm-chip-bg: color-mix(in srgb, var(--lightgray) 50%, transparent);
+  --afm-chip-fg: color-mix(in srgb, var(--light) 85%, var(--gray) 15%);
+  --afm-detail-bg: color-mix(in srgb, var(--lightgray) 62%, transparent);
+  --afm-detail-shadow: 0 8px 24px color-mix(in srgb, #000 38%, transparent);
+}
+
+.afm-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 1rem;
+  align-items: stretch;
+}
+
+.afm-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  min-width: 0;
+  padding: 1rem 1.1rem 1.05rem;
+  border-radius: var(--radius-7-2);
+  border: 0;
+  background: var(--afm-card-bg);
+  box-shadow: var(--afm-panel-shadow);
+  overflow: hidden;
+  transition:
+    background var(--transition-normal),
+    box-shadow var(--transition-normal),
+    transform var(--transition-normal);
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0 0 auto;
+    height: 2px;
+    background: color-mix(in srgb, var(--afm-accent, var(--gray)) 72%, var(--gray) 28%);
+  }
+
+  &--memory,
+  &--sparsity {
+    --afm-accent: var(--afm-salmon);
+  }
+  &--kernel,
+  &--parallelism {
+    --afm-accent: var(--afm-sage);
+  }
+
+  &:hover {
+    background: var(--afm-card-bg-hover);
+    box-shadow:
+      0 0 0 1px color-mix(in srgb, var(--afm-accent) 38%, var(--gray) 24%) inset,
+      0 10px 22px color-mix(in srgb, var(--afm-accent) 10%, transparent);
+    transform: translateY(-1px);
+  }
+}
+
+.afm-card-head {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.afm-card-title {
+  margin: 0;
+  font-size: 1rem;
+  line-height: 1.2;
+  font-weight: 600;
+  color: var(--dark);
+  letter-spacing: -0.005em;
+}
+
+.afm-card-pitch {
+  margin: 0;
+  font-size: 0.82rem;
+  line-height: 1.45;
+  color: var(--afm-note-fg);
+  font-style: italic;
+}
+
+.afm-card-bottleneck {
+  margin: 0;
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  font-size: 0.7rem;
+  line-height: 1.3;
+  color: color-mix(in srgb, var(--gray) 60%, var(--dark) 40%);
+}
+
+.afm-card-bottleneck-label {
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-family: var(--codeFont);
+  font-weight: 600;
+  color: color-mix(in srgb, var(--afm-accent) 65%, var(--gray) 35%);
+}
+
+.afm-card-bottleneck-value {
+  font-family: var(--codeFont);
+  color: var(--afm-note-fg);
+}
+
+.afm-chip-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.afm-chip-item {
+  margin: 0;
+  padding: 0;
+  &::before {
+    content: none;
+  }
+}
+
+.afm-chip {
+  position: relative;
+  display: inline-flex;
+  flex-direction: column;
+  padding: 0.32rem 0.55rem;
+  border-radius: var(--radius-6);
+  border: 0;
+  background: var(--afm-chip-bg);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--afm-accent) 24%, var(--gray) 28%) inset;
+  color: var(--afm-chip-fg);
+  text-decoration: none;
+  font-size: 0.78rem;
+  line-height: 1.25;
+  min-height: 2.5rem;
+  transition:
+    background var(--transition-normal),
+    box-shadow var(--transition-normal),
+    transform var(--transition-normal);
+
+  &:hover,
+  &:focus-visible {
+    background: color-mix(in srgb, var(--afm-accent) 28%, var(--light));
+    box-shadow:
+      0 0 0 1px color-mix(in srgb, var(--afm-accent) 56%, var(--gray) 24%) inset,
+      0 8px 18px color-mix(in srgb, var(--afm-accent) 12%, transparent);
+    transform: translateY(-1px);
+    text-decoration: none;
+  }
+
+  &:focus-visible {
+    outline: 2px solid color-mix(in srgb, var(--afm-accent) 70%, var(--dark) 30%);
+    outline-offset: 2px;
+  }
+}
+
+.afm-chip-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.afm-chip-name {
+  font-weight: 600;
+  letter-spacing: -0.005em;
+  color: var(--dark);
+}
+
+.afm-chip-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.12rem 0.4rem;
+  border-radius: var(--radius-4);
+  background-color: color-mix(in srgb, var(--afm-accent) 22%, var(--light));
+  color: color-mix(in srgb, var(--dark) 78%, var(--afm-accent) 22%);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--afm-accent) 34%, transparent) inset;
+  font-family: var(--codeFont);
+  font-size: 0.58rem;
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: 0.01em;
+  transition:
+    background-color var(--transition-normal),
+    color var(--transition-normal),
+    box-shadow var(--transition-normal);
+
+  &:hover {
+    background-color: color-mix(in srgb, var(--afm-accent) 38%, var(--light));
+    color: color-mix(in srgb, var(--dark) 78%, var(--afm-accent) 22%);
+    box-shadow: 0 0 0 1px color-mix(in srgb, var(--afm-accent) 44%, transparent) inset;
+  }
+
+  [saved-theme='dark'] & {
+    background-color: var(--highlight);
+    color: var(--dark);
+  }
+
+  .katex {
+    color: inherit;
+    font-size: 0.95em;
+  }
+}
+
+.afm-chip-detail {
+  position: absolute;
+  z-index: 4;
+  top: calc(100% + 0.4rem);
+  left: 0;
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  padding: 0.65rem 0.75rem;
+  min-width: 14rem;
+  max-width: 22rem;
+  border-radius: var(--radius-7-2);
+  border: 0;
+  background: var(--afm-detail-bg);
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--afm-accent) 24%, var(--gray) 24%) inset,
+    var(--afm-detail-shadow);
+  font-size: 0.8rem;
+  line-height: 1.5;
+  color: var(--dark);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-4px);
+  transition:
+    opacity var(--transition-normal),
+    transform var(--transition-normal);
+  pointer-events: none;
+}
+
+.afm-chip:hover .afm-chip-detail,
+.afm-chip:focus-visible .afm-chip-detail {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.afm-chip-pitch {
+  color: var(--afm-note-fg);
+  font-style: italic;
+}
+
+.afm-chip-signature {
+  font-size: 0.82rem;
+  color: color-mix(in srgb, var(--dark) 90%, var(--afm-accent) 10%);
+  .katex {
+    color: inherit;
+    font-size: 1em;
+  }
+}
+
+.afm-math {
+  display: inline-flex;
+  align-items: center;
+  line-height: 1;
+  .katex {
+    line-height: 1;
+  }
+  .katex-display {
+    margin: 0;
+  }
+}
+
+.afm-legend {
+  margin: 1rem 0 0;
+  padding: 0.75rem 0 0;
+  box-shadow: 0 -1px 0 var(--afm-line);
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+  gap: 0.6rem 1rem;
+}
+
+.afm-legend-item {
+  display: grid;
+  grid-template-columns: 0.6rem auto 1fr;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0;
+  font-size: 0.72rem;
+  color: var(--afm-note-fg);
+
+  &[data-axis='memory'],
+  &[data-axis='sparsity'] {
+    --afm-accent: var(--afm-salmon);
+  }
+  &[data-axis='kernel'],
+  &[data-axis='parallelism'] {
+    --afm-accent: var(--afm-sage);
+  }
+}
+
+.afm-legend-swatch {
+  display: inline-block;
+  width: 0.6rem;
+  height: 0.6rem;
+  border-radius: var(--radius-circle);
+  background: color-mix(in srgb, var(--afm-accent) 75%, var(--gray) 25%);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--afm-accent) 72%, var(--dark) 12%) inset;
+}
+
+.afm-legend-term {
+  margin: 0;
+  font-family: var(--codeFont);
+  font-weight: 600;
+  font-size: 0.7rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--afm-accent) 60%, var(--dark) 40%);
+}
+
+.afm-legend-desc {
+  margin: 0;
+  color: var(--afm-note-fg);
+}
+
+.afm-caption {
+  margin-top: 0.85rem;
+  color: color-mix(in srgb, var(--gray) 70%, var(--dark) 30%);
+  font-size: 0.85rem;
+  text-align: center;
+}
+
+@container afm-figure (max-width: 720px) {
+  .attention-family-map {
+    padding: 1.2rem 1.2rem;
+  }
+  .afm-grid {
+    grid-template-columns: 1fr;
+    gap: 0.85rem;
+  }
+  .afm-card {
+    padding: 0.9rem 1rem;
+  }
+
+  .afm-chip-detail {
+    position: static;
+    opacity: 1;
+    visibility: visible;
+    transform: none;
+    box-shadow: none;
+    background: color-mix(in srgb, var(--afm-accent) 8%, transparent);
+    box-shadow: 0 0 0 1px color-mix(in srgb, var(--afm-accent) 16%, transparent) inset;
+    margin-top: 0.3rem;
+  }
+
+  .afm-chip {
+    width: 100%;
+  }
+  .afm-chip-row {
+    justify-content: space-between;
+    width: 100%;
+  }
+}
+
+@container afm-figure (max-width: 420px) {
+  .afm-card-title {
+    font-size: 0.95rem;
+  }
+  .afm-card-pitch {
+    font-size: 0.78rem;
+  }
+  .afm-legend {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media all and ($mobile) {
+  .attention-family-map {
+    margin: 1.25rem 0;
+  }
+}

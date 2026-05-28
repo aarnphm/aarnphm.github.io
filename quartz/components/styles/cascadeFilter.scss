@@ -1,0 +1,377 @@
+@use '../../styles/variables.scss' as *;
+@use '../../styles/mixin.scss' as *;
+
+.cascade-filter {
+  container-type: inline-size;
+  container-name: cf-figure;
+  margin: 1.75rem 0;
+  content-visibility: auto;
+  contain-intrinsic-size: auto 34rem;
+  padding: 0;
+  border-radius: 0;
+  border: 0;
+  box-shadow: none;
+  background: transparent;
+  color: var(--dark);
+  display: grid;
+  grid-template-columns: minmax(0, 3.1fr) minmax(0, 1fr);
+  grid-template-areas: 'header header' 'stage sidebar' 'caption caption';
+  gap: 1.1rem 1.5rem;
+  --cf-stroke-soft: color-mix(in srgb, var(--gray) 45%, transparent);
+  --cf-divider: color-mix(in srgb, var(--gray) 30%, transparent);
+  --cf-note-fg: color-mix(in srgb, var(--darkgray) 78%, var(--dark) 22%);
+  --cf-frame-bg: color-mix(in srgb, var(--lightgray) 40%, var(--light));
+  --cf-keep: #fdb2a2;
+  --cf-keep-bg: color-mix(in srgb, #fdb2a2 38%, var(--light));
+  --cf-good: #cdd597;
+  --cf-drop: color-mix(in srgb, var(--gray) 38%, var(--light));
+}
+:root[saved-theme='dark'] .cascade-filter {
+  --cf-frame-bg: color-mix(in srgb, var(--lightgray) 22%, var(--dark));
+  --cf-keep-bg: color-mix(in srgb, #fdb2a2 26%, var(--lightgray));
+  --cf-drop: color-mix(in srgb, var(--lightgray) 60%, var(--dark));
+}
+
+.cf-header {
+  grid-area: header;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.25rem;
+  flex-wrap: wrap;
+}
+
+.cf-presets {
+  display: inline-flex;
+  gap: 0.4rem;
+  padding: 0.25rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--lightgray) 35%, transparent);
+  border: 0;
+  box-shadow: 0 0 0 1px var(--cf-divider) inset;
+}
+
+.cf-preset {
+  padding: 0.32rem 0.85rem;
+  border-radius: 999px;
+  border: none;
+  background: transparent;
+  color: var(--cf-note-fg);
+  font-family: var(--bodyFont);
+  font-size: 0.8rem;
+  text-transform: lowercase;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  transition:
+    background 160ms ease,
+    color 160ms ease;
+  &:hover {
+    color: var(--dark);
+  }
+  &[aria-checked='true'] {
+    background: color-mix(in srgb, var(--cf-keep) 28%, var(--light));
+    color: var(--dark);
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--cf-keep) 60%, transparent);
+  }
+}
+
+.cf-slider-wrap {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.65rem;
+  font-family: var(--bodyFont);
+  font-size: 0.85rem;
+  color: var(--cf-note-fg);
+}
+.cf-slider-label {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.3rem;
+}
+
+.cf-slider {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 180px;
+  height: 4px;
+  border-radius: 999px;
+  background: linear-gradient(
+    to right,
+    var(--cf-keep) 0%,
+    var(--cf-keep) calc(var(--cf-tau, 0.5) * 100%),
+    var(--cf-divider) calc(var(--cf-tau, 0.5) * 100%),
+    var(--cf-divider) 100%
+  );
+  outline: none;
+  cursor: pointer;
+  &::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--light);
+    border: 2px solid var(--cf-keep);
+    cursor: grab;
+    transition: transform 120ms ease;
+  }
+  &::-moz-range-thumb {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--light);
+    border: 2px solid var(--cf-keep);
+    cursor: grab;
+  }
+  &:active::-webkit-slider-thumb {
+    transform: scale(1.12);
+    cursor: grabbing;
+  }
+}
+
+.cf-slider-value {
+  font-variant-numeric: tabular-nums;
+  color: var(--dark);
+  min-width: 2.4ch;
+}
+
+.cf-stage {
+  grid-area: stage;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  min-width: 0;
+}
+.cf-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  min-width: 0;
+}
+.cf-panel-title {
+  margin: 0;
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--cf-note-fg);
+}
+
+.cf-svg {
+  width: 100%;
+  height: auto;
+  display: block;
+  overflow: visible;
+  .cf-tile-frame {
+    fill: var(--cf-frame-bg);
+    stroke: var(--cf-stroke-soft);
+    stroke-width: 0.75;
+    transition: opacity 220ms ease;
+  }
+  .cf-tile-bar {
+    fill: var(--cf-keep);
+    transition:
+      fill 220ms ease,
+      y 220ms ease,
+      height 220ms ease,
+      opacity 220ms ease;
+  }
+  .cf-tile-group.is-drop {
+    .cf-tile-bar {
+      fill: var(--cf-drop);
+      opacity: 0.55;
+    }
+    .cf-tile-frame {
+      opacity: 0.45;
+    }
+    .cf-fo--tile-idx {
+      opacity: 0.5;
+    }
+  }
+  .cf-threshold-line {
+    stroke: var(--cf-keep);
+    stroke-width: 1.4;
+    stroke-dasharray: 4 3;
+    transition:
+      y1 240ms ease,
+      y2 240ms ease;
+  }
+  .cf-fine-tile {
+    fill: var(--cf-keep-bg);
+    stroke: var(--cf-keep);
+    stroke-width: 1;
+    transition:
+      fill 260ms ease,
+      stroke 260ms ease,
+      opacity 260ms ease,
+      transform 260ms ease;
+    transform-origin: center;
+    transform-box: fill-box;
+  }
+  .cf-fine-group.is-drop {
+    .cf-fine-tile {
+      fill: transparent;
+      stroke: var(--cf-stroke-soft);
+      stroke-dasharray: 3 3;
+      opacity: 0.22;
+      transform: scale(0.6);
+    }
+    .cf-fo--fine-label {
+      opacity: 0.18;
+    }
+  }
+}
+
+.cf-fo {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  color: var(--cf-note-fg);
+  font-size: 12px;
+  line-height: 1;
+  overflow: visible;
+  .katex {
+    color: inherit;
+    font-size: 1em;
+  }
+  .katex-display {
+    margin: 0;
+  }
+}
+.cf-fo--tau {
+  color: var(--cf-keep);
+  font-weight: 600;
+  justify-content: flex-end;
+}
+.cf-fo--formula {
+  color: var(--dark);
+  font-size: 13px;
+  justify-content: flex-start;
+}
+.cf-fo--tile-idx {
+  justify-content: center;
+  color: var(--cf-note-fg);
+  font-size: 10px;
+  transition: opacity 220ms ease;
+}
+.cf-fo--fine-label {
+  justify-content: center;
+  color: var(--dark);
+  font-size: 10px;
+  font-weight: 600;
+  transition: opacity 260ms ease;
+}
+
+.cf-sidebar {
+  grid-area: sidebar;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  min-width: 0;
+}
+
+.cf-card {
+  padding: 0.75rem 0.9rem;
+  border-radius: var(--radius-7-2);
+  border: 0;
+  box-shadow: 0 0 0 1px var(--cf-divider) inset;
+  background: color-mix(in srgb, var(--light) 96%, transparent);
+  h4 {
+    margin: 0 0 0.5rem;
+    font-size: 0.72rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--cf-note-fg);
+  }
+}
+
+.cf-stats {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.25rem 0.7rem;
+  font-family: var(--bodyFont);
+  font-size: 0.85rem;
+  margin: 0;
+  dt {
+    color: var(--cf-note-fg);
+  }
+  dd {
+    margin: 0;
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.25rem;
+    color: var(--dark);
+    font-variant-numeric: tabular-nums;
+  }
+  .cf-stat-of {
+    color: var(--cf-note-fg);
+    font-size: 0.78rem;
+  }
+}
+
+.cf-card-note {
+  margin: 0.45rem 0 0;
+  color: var(--cf-note-fg);
+  font-size: 0.78rem;
+  line-height: 1.5;
+}
+
+.cf-math {
+  color: inherit;
+  .katex {
+    color: inherit;
+  }
+  .katex-display {
+    margin: 0.15rem 0;
+    text-align: left;
+    & > .katex {
+      text-align: left;
+    }
+  }
+}
+.cf-math--inline {
+  display: inline-block;
+}
+.cf-math--display {
+  display: block;
+}
+
+.cf-caption {
+  grid-area: caption;
+  margin: 0.3rem 0 0;
+  color: color-mix(in srgb, var(--gray) 70%, var(--dark) 30%);
+  font-size: 0.85rem;
+  text-align: center;
+}
+
+@container cf-figure (max-width: 720px) {
+  .cascade-filter {
+    grid-template-columns: 1fr;
+    grid-template-areas: 'header' 'stage' 'sidebar' 'caption';
+  }
+  .cf-sidebar {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+  .cf-card {
+    flex: 1 1 220px;
+  }
+}
+@container cf-figure (max-width: 460px) {
+  .cascade-filter {
+    padding: 0;
+  }
+  .cf-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.7rem;
+  }
+  .cf-slider {
+    width: 100%;
+  }
+  .cf-presets {
+    align-self: flex-start;
+  }
+}

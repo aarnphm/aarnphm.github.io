@@ -21,7 +21,7 @@ import { resolveAsset, resolveExtractedStaticResource } from '../util/asset-mani
 import { compileBaseConfig } from '../util/base/compile'
 import { renderBaseViewsForFile } from '../util/base/render'
 import { clone } from '../util/clone'
-import { BuildCtx } from '../util/ctx'
+import { BuildCtx, renderDataFor } from '../util/ctx'
 import { htmlToJsx } from '../util/jsx'
 import { classNames } from '../util/lang'
 import {
@@ -40,6 +40,7 @@ import {
   resolveRelative,
   slugifyFilePath,
 } from '../util/path'
+import { logBuildSpan, PerfTimer } from '../util/perf'
 import { encryptContent } from '../util/protected'
 import {
   splitCssBundles,
@@ -191,7 +192,6 @@ function headerElement(
               h(
                 '.collapsible-header-content',
                 {
-                  ['data-references']: `${buttonId}-toggle`,
                   ['data-level']: `${rank}`,
                   ['data-heading-id']: node.properties.id, // HACK: This assumes that rehype-slug already runs this target
                 },
@@ -806,6 +806,14 @@ export const pageResources = (
   staticResources: StaticResources,
   ctx: BuildCtx,
 ) => {
+  if (ctx.pageResourceCacheBuildId !== ctx.buildId) {
+    ctx.pageResourceCacheBuildId = ctx.buildId
+    ctx.pageResourceCache = new Map()
+  }
+  const cacheKey = `${baseDir}`
+  const cached = ctx.pageResourceCache?.get(cacheKey)
+  if (cached) return cached
+
   const asset = (logicalPath: string) => joinSegments(baseDir, resolveAsset(ctx, logicalPath))
   const extractedAsset = (key: string) =>
     joinSegments(baseDir, resolveExtractedStaticResource(ctx, key))
@@ -843,7 +851,7 @@ export const pageResources = (
     }
   }
 
-  return {
+  const resources = {
     css: [...css],
     js: [
       { src: asset('prescript.js'), loadTime: 'beforeDOMReady', contentType: 'external' },
@@ -851,13 +859,13 @@ export const pageResources = (
         loadTime: 'beforeDOMReady',
         contentType: 'inline',
         spaPreserve: true,
-        script: `const lazyFetchJson = url => { let promise; const load = () => promise ??= fetch(url).then(data => data.json()); return { then: (onFulfilled, onRejected) => load().then(onFulfilled, onRejected), catch: onRejected => load().catch(onRejected), finally: onFinally => load().finally(onFinally), get [Symbol.toStringTag]() { return "Promise" } } }; const fetchData = lazyFetchJson("${joinSegments(baseDir, 'static/contentIndex.json')}")`,
+        script: `const lazyFetchJson = (url, loader) => { let promise; const load = () => promise ??= (loader ?? (target => fetch(target).then(data => data.json())))(url); return { then: (onFulfilled, onRejected) => load().then(onFulfilled, onRejected), catch: onRejected => load().catch(onRejected), finally: onFinally => load().finally(onFinally), get [Symbol.toStringTag]() { return "Promise" } } }; const loadSearchIndex = async url => { const data = await fetch(url).then(resp => resp.json()); if (!data || data.kind !== "quartz-search-index-v1" || !Array.isArray(data.chunks)) return data; const base = new URL(url, window.location.href); const chunks = await Promise.all(data.chunks.map(chunk => fetch(new URL(chunk, base)).then(resp => resp.json()))); return Object.assign({}, ...chunks) }; const fetchData = lazyFetchJson("${joinSegments(baseDir, 'static/contentIndex.json')}")`,
       },
       {
         loadTime: 'beforeDOMReady',
         contentType: 'inline',
         spaPreserve: true,
-        script: `const fetchSearchData = lazyFetchJson("${joinSegments(baseDir, 'static/searchIndex.json')}")`,
+        script: `const fetchSearchData = lazyFetchJson("${joinSegments(baseDir, 'static/searchIndex.json')}", loadSearchIndex)`,
       },
       {
         loadTime: 'beforeDOMReady',
@@ -876,6 +884,9 @@ export const pageResources = (
     ],
     additionalHead: staticResources.additionalHead,
   } satisfies StaticResources
+
+  ctx.pageResourceCache!.set(cacheKey, resources)
+  return resources
 }
 
 const defaultTranscludeOpts: TranscludeOptions = {
@@ -1020,6 +1031,7 @@ export function transcludeFinal(
   userOpts?: Partial<TranscludeOptions>,
 ): Root {
   const { cfg, allFiles, fileData } = componentData
+  const renderData = renderDataFor(componentData.ctx, allFiles)
   // NOTE: return early these cases, we probably don't want to transclude them anw
   if (fileData.frontmatter?.poem || fileData.frontmatter?.menu) return root
 
@@ -1237,13 +1249,13 @@ export function transcludeFinal(
       visited.add(visitKey)
 
       let baseViewSlug: FullSlug | undefined
-      let page = allFiles.find(f => f.slug === transcludeTarget)
+      let page = renderData.bySlug.get(transcludeTarget)
       if (!page) {
-        const baseMatches = allFiles
-          .filter(f => f.bases && f.slug && transcludeTarget.startsWith(`${f.slug}/`))
-          .sort((a, b) => (b.slug?.length ?? 0) - (a.slug?.length ?? 0))
-        if (baseMatches.length > 0) {
-          page = baseMatches[0]
+        const baseMatch = renderData.baseFiles.find(
+          f => f.slug && transcludeTarget.startsWith(`${f.slug}/`),
+        )
+        if (baseMatch) {
+          page = baseMatch
           baseViewSlug = transcludeTarget
         }
       }
@@ -1913,6 +1925,7 @@ export function renderPage(
   isBoxy: boolean = false,
   userOptions?: RenderPageOptions,
 ): string {
+  const renderPerf = new PerfTimer()
   // make a deep copy of the tree so we don't remove the transclusion references
   // for the file cached in contentMap in build.ts
   const root = clone(componentData.tree) as Root
@@ -2057,6 +2070,7 @@ export function renderPage(
   if (mergedFootnotes) orderedNodes.push({ order: footnoteOrder, node: mergedFootnotes })
   orderedNodes.sort((a, b) => a.order - b.order)
   retrievalNodes.push(...orderedNodes.map(entry => entry.node))
+  logBuildSpan(ctx.argv, 'render:prepare', slug, renderPerf.elapsedMs())
 
   componentData.tree = tree
   updateTocDataFromTree(tree, componentData)
@@ -2150,8 +2164,9 @@ export function renderPage(
   const isCanvas = componentData.fileData.filePath?.endsWith('.canvas') ?? false
 
   const contentAttrs = { 'data-plain': !isBoxy }
+  renderPerf.addEvent('preact')
 
-  return (
+  const html =
     `<!DOCTYPE html>` +
     render(
       <html lang={lang}>
@@ -2264,7 +2279,10 @@ export function renderPage(
         {/* End Cloudflare Web Analytics */}
       </html>,
     )
-  )
+
+  logBuildSpan(ctx.argv, 'render:preact', slug, renderPerf.elapsedMs('preact'))
+  logBuildSpan(ctx.argv, 'render:total', slug, renderPerf.elapsedMs())
+  return html
 }
 
 function updateStreamDataFromTree(tree: Root, componentData: QuartzComponentProps): void {

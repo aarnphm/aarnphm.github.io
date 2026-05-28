@@ -374,7 +374,11 @@ document.addEventListener('nav', e => {
       if (!isActive) return resolved
       data = resolved
       idDataMap = Object.keys(resolved) as FullSlug[]
-      await fillDocument(resolved)
+      const searchData =
+        typeof fetchSearchData === 'undefined'
+          ? resolved
+          : await fetchSearchData.catch(() => resolved)
+      await fillDocument(searchData)
       if (!isActive) return resolved
       if (actionType === 'quick_open' && container?.classList.contains('active')) {
         getRecentItems()

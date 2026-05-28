@@ -162,6 +162,19 @@ function setupToc() {
   let hovering = false
   let touchedMetrics: TocButtonMetric[] = []
   let nextTouchedMetrics: TocButtonMetric[] = []
+  let scrollEndTimer = 0
+
+  const setTocScrolling = (scrolling: boolean) => {
+    pageContent?.classList.toggle('toc-scrolling', scrolling)
+  }
+
+  const clearTocScrolling = () => {
+    if (scrollEndTimer !== 0) {
+      window.clearTimeout(scrollEndTimer)
+      scrollEndTimer = 0
+    }
+    setTocScrolling(false)
+  }
 
   const refreshTocGeometry = () => {
     navViewportTop = nav.getBoundingClientRect().top
@@ -189,6 +202,7 @@ function setupToc() {
   const onMouseLeave = () => {
     hovering = false
     toc.classList.remove('is-hovering')
+    clearTocScrolling()
     if (frame !== 0) {
       cancelAnimationFrame(frame)
       frame = 0
@@ -247,10 +261,24 @@ function setupToc() {
     scheduleHover()
   }
 
+  const onPageScroll = () => {
+    if (!hovering) return
+
+    setTocScrolling(true)
+    if (scrollEndTimer !== 0) {
+      window.clearTimeout(scrollEndTimer)
+    }
+    scrollEndTimer = window.setTimeout(() => {
+      scrollEndTimer = 0
+      setTocScrolling(false)
+    }, 140)
+  }
+
   nav.addEventListener('click', onClick, { signal })
   nav.addEventListener('mouseenter', onMouseEnter, { signal })
   nav.addEventListener('mouseleave', onMouseLeave, { signal })
   nav.addEventListener('pointermove', onPointerMove, { passive: true, signal })
+  window.addEventListener('scroll', onPageScroll, { passive: true, signal })
   nav.addEventListener(
     'scroll',
     () => {
@@ -272,6 +300,7 @@ function setupToc() {
     activeButton = null
     toc.classList.remove('is-hovering')
     setTocHovering(pageContent, false)
+    clearTocScrolling()
     hideTocLabel(toc)
     resetTocButtons(buttons)
     touchedMetrics.length = 0
@@ -296,15 +325,13 @@ function cacheTocEntries() {
 }
 
 function resetTocPageContentClasses() {
-  document.documentElement.classList.remove('toc-hovering')
   document.querySelectorAll<HTMLElement>('.page-content.has-minimal-toc').forEach(pageContent => {
-    pageContent.classList.remove('has-minimal-toc', 'toc-hovering', 'toc-dense')
+    pageContent.classList.remove('has-minimal-toc', 'toc-hovering', 'toc-scrolling', 'toc-dense')
   })
 }
 
 function setTocHovering(pageContent: HTMLElement | null | undefined, hovering: boolean) {
   pageContent?.classList.toggle('toc-hovering', hovering)
-  document.documentElement.classList.toggle('toc-hovering', hovering)
 }
 
 function resetTocButtons(buttons?: NodeListOf<HTMLButtonElement>) {

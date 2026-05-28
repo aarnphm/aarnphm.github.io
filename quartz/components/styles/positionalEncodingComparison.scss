@@ -1,0 +1,353 @@
+@use '../../styles/variables.scss' as *;
+@use '../../styles/mixin.scss' as *;
+
+.positional-encoding-comparison {
+  container-type: inline-size;
+  container-name: pec-figure;
+  margin: 1.75rem 0;
+  content-visibility: auto;
+  contain-intrinsic-size: auto 38rem;
+  padding: 0;
+  border-radius: 0;
+  border: 0;
+  background: transparent;
+  color: var(--dark);
+  --pec-line: color-mix(in srgb, var(--gray) 24%, transparent);
+  --pec-surface-shadow:
+    0 0 0 1px var(--pec-line) inset, 0 18px 46px color-mix(in srgb, var(--dark) 7%, transparent);
+  --pec-panel-shadow: 0 0 0 1px color-mix(in srgb, var(--gray) 18%, transparent) inset;
+  --pec-note: color-mix(in srgb, var(--darkgray) 78%, var(--dark) 22%);
+  --pec-div: color-mix(in srgb, var(--gray) 28%, transparent);
+  --pec-pos: #fdb2a2;
+  --pec-neg: color-mix(in srgb, var(--gray) 70%, var(--dark) 30%);
+  --pec-neutral: #cdd597;
+  --pec-grid: color-mix(in srgb, var(--gray) 24%, transparent);
+  --pec-panel-bg: color-mix(in srgb, var(--light) 96%, transparent);
+
+  box-shadow: none;
+}
+
+:root[saved-theme='dark'] .positional-encoding-comparison {
+  --pec-pos: color-mix(in srgb, #fdb2a2 65%, var(--lightgray));
+  --pec-neutral: color-mix(in srgb, #cdd597 55%, var(--lightgray));
+  --pec-grid: color-mix(in srgb, var(--gray) 18%, transparent);
+  --pec-panel-bg: color-mix(in srgb, var(--lightgray) 12%, var(--dark));
+}
+
+.pec-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.pec-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  padding: 0.85rem 0.9rem 0.95rem;
+  border-radius: var(--radius-7-2);
+  border: 0;
+  background: var(--pec-panel-bg);
+  box-shadow: var(--pec-panel-shadow);
+  min-width: 0;
+}
+
+.pec-panel-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.pec-panel-title {
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--dark);
+  letter-spacing: -0.01em;
+}
+
+.pec-panel-tag {
+  font-family: var(--codeFont);
+  font-size: 0.72rem;
+  color: var(--pec-note);
+  padding: 0.1rem 0.45rem;
+  box-shadow: 0 0 0 1px var(--pec-div) inset;
+  border-radius: var(--radius-6);
+  white-space: nowrap;
+}
+
+.pec-panel-vis {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border: 0;
+  border-radius: 4px;
+  background: var(--light);
+  box-shadow: var(--pec-panel-shadow);
+  overflow: hidden;
+}
+
+.pec-panel-vis svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.pec-cell {
+  stroke: var(--pec-grid);
+  stroke-width: 0.02;
+}
+
+.pec-clock {
+  fill: none;
+  stroke: var(--pec-div);
+  stroke-width: 0.04;
+}
+
+.pec-clock-hand {
+  stroke: var(--pec-pos);
+  stroke-width: 0.12;
+  stroke-linecap: round;
+}
+
+.pec-clock-bg {
+  fill: color-mix(in srgb, var(--pec-neutral) 22%, transparent);
+}
+
+.pec-axis-label {
+  font-size: 0.72rem;
+  color: var(--pec-note);
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--codeFont);
+
+  span {
+    line-height: 1;
+  }
+}
+
+.pec-panel-math {
+  padding-top: 0.45rem;
+  box-shadow: 0 -1px 0 var(--pec-line);
+  color: var(--pec-note);
+  font-size: 0.78rem;
+  line-height: 1.5;
+  .katex-display {
+    margin: 0.15rem 0;
+  }
+  .katex {
+    font-size: 0.95em;
+    color: var(--dark);
+  }
+}
+
+.pec-panel-caption {
+  color: var(--pec-note);
+  font-size: 0.78rem;
+  line-height: 1.45;
+}
+
+.pec-logit-mode {
+  position: absolute;
+  inset: 0;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 0.65rem;
+  background: color-mix(in srgb, var(--light) 92%, transparent);
+  backdrop-filter: blur(4px);
+  text-align: center;
+  font-size: 0.78rem;
+  color: var(--dark);
+  line-height: 1.5;
+  .katex {
+    font-size: 0.95em;
+  }
+}
+
+.positional-encoding-comparison[data-pec-logit='true'] .pec-logit-mode {
+  display: flex;
+}
+
+.pec-controls {
+  margin-top: 1.25rem;
+  padding-top: 1rem;
+  box-shadow: 0 -1px 0 var(--pec-line);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 1rem 1.5rem;
+  align-items: center;
+}
+
+.pec-control {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  min-width: 0;
+}
+
+.pec-label {
+  color: var(--pec-note);
+  font-size: 0.85rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  white-space: nowrap;
+}
+
+.pec-length-toggle {
+  display: inline-flex;
+  gap: 0.25rem;
+  padding: 0.15rem;
+  border-radius: var(--radius-6);
+  background: color-mix(in srgb, var(--lightgray) 50%, transparent);
+  box-shadow: 0 0 0 1px var(--pec-div) inset;
+}
+
+.pec-length-btn {
+  appearance: none;
+  border: none;
+  background: transparent;
+  color: var(--pec-note);
+  font: inherit;
+  font-size: 0.8rem;
+  font-variant-numeric: tabular-nums;
+  min-height: 2.5rem;
+  padding: 0.2rem 0.75rem;
+  border-radius: var(--radius-6);
+  cursor: pointer;
+  transition:
+    background 120ms ease-out,
+    color 120ms ease-out,
+    transform 120ms ease-out;
+
+  &:hover {
+    color: var(--dark);
+  }
+  &.is-active {
+    background: var(--light);
+    color: var(--dark);
+    box-shadow: 0 0 0 1px var(--pec-div);
+  }
+  &:active {
+    transform: scale(0.96);
+  }
+}
+
+.pec-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  color: var(--pec-note);
+  font-size: 0.85rem;
+  user-select: none;
+
+  input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+  }
+}
+
+.pec-switch-track {
+  position: relative;
+  width: 2.2rem;
+  height: 1.15rem;
+  border-radius: var(--radius-6);
+  background: color-mix(in srgb, var(--lightgray) 60%, transparent);
+  box-shadow: 0 0 0 1px var(--pec-div) inset;
+  transition:
+    background 140ms ease-out,
+    box-shadow 140ms ease-out;
+}
+
+.pec-switch-thumb {
+  position: absolute;
+  top: 50%;
+  left: 0.15rem;
+  width: 0.85rem;
+  height: 0.85rem;
+  border-radius: 50%;
+  background: var(--light);
+  box-shadow: 0 0 0 1px var(--pec-div) inset;
+  transform: translateY(-50%);
+  transition: left 140ms ease-out;
+}
+
+.pec-switch input:checked + .pec-switch-track {
+  background: color-mix(in srgb, var(--pec-pos) 55%, var(--light));
+  .pec-switch-thumb {
+    left: calc(2.2rem - 0.85rem - 0.15rem);
+  }
+}
+
+.pec-extrap {
+  margin-top: 1rem;
+  padding: 0.85rem 1rem;
+  border-radius: var(--radius-7-2);
+  border: 0;
+  background: color-mix(in srgb, var(--light) 96%, transparent);
+  box-shadow: var(--pec-panel-shadow);
+  color: var(--pec-note);
+  font-size: 0.82rem;
+  line-height: 1.55;
+
+  dl {
+    margin: 0.5rem 0 0;
+    display: grid;
+    grid-template-columns: minmax(6rem, auto) minmax(0, 1fr);
+    gap: 0.25rem 0.75rem;
+  }
+  dt {
+    font-weight: 600;
+    color: var(--dark);
+    font-variant-numeric: tabular-nums;
+  }
+  dd {
+    margin: 0;
+  }
+}
+
+.pec-extrap-title {
+  font-weight: 600;
+  color: var(--dark);
+  font-size: 0.88rem;
+}
+
+.pec-intuition {
+  margin: 1rem 0 0;
+  color: var(--pec-note);
+  font-size: 0.85rem;
+  line-height: 1.55;
+  .katex {
+    color: var(--dark);
+    font-size: 0.95em;
+  }
+}
+
+.pec-caption {
+  margin-top: 0.9rem;
+  color: color-mix(in srgb, var(--gray) 70%, var(--dark) 30%);
+  font-size: 0.85rem;
+  text-align: center;
+}
+
+@container pec-figure (max-width: 720px) {
+  .pec-controls {
+    grid-template-columns: 1fr;
+  }
+  .pec-extrap dl {
+    grid-template-columns: 1fr;
+    gap: 0.15rem 0;
+  }
+}
+
+@container pec-figure (max-width: 520px) {
+  .pec-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .positional-encoding-comparison {
+    padding: 0;
+  }
+}

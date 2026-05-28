@@ -1,0 +1,312 @@
+@use '../../styles/variables.scss' as *;
+@use '../../styles/mixin.scss' as *;
+
+.sliding-window-mask {
+  container-type: inline-size;
+  container-name: swm-figure;
+  margin: 1.75rem 0;
+  content-visibility: auto;
+  contain-intrinsic-size: auto 38rem;
+  padding: 0;
+  border-radius: 0;
+  border: 0;
+  box-shadow: none;
+  background: transparent;
+  color: var(--dark);
+  --swm-note: color-mix(in srgb, var(--darkgray) 78%, var(--dark) 22%);
+  --swm-div: color-mix(in srgb, var(--gray) 28%, transparent);
+  --swm-window: #fdb2a2;
+  --swm-window-bg: color-mix(in srgb, #fdb2a2 78%, var(--light));
+  --swm-global-bg: color-mix(in srgb, #cdd597 78%, var(--light));
+  --swm-masked-bg: color-mix(in srgb, var(--lightgray) 65%, var(--light));
+  --swm-grid: color-mix(in srgb, var(--gray) 24%, transparent);
+}
+
+:root[saved-theme='dark'] .sliding-window-mask {
+  --swm-window-bg: color-mix(in srgb, #fdb2a2 45%, var(--lightgray));
+  --swm-global-bg: color-mix(in srgb, #cdd597 45%, var(--lightgray));
+  --swm-masked-bg: color-mix(in srgb, var(--lightgray) 38%, var(--dark));
+  --swm-grid: color-mix(in srgb, var(--gray) 18%, transparent);
+}
+
+.swm-stage {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+  gap: 1.5rem;
+  align-items: start;
+}
+
+.swm-grid-wrap {
+  display: grid;
+  grid-template: minmax(0, 1fr) auto / auto minmax(0, 1fr);
+  gap: 0.5rem;
+  min-width: 0;
+}
+
+.swm-graph {
+  grid-area: 1 / 2;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  display: block;
+  border: 0;
+  box-shadow: 0 0 0 1px var(--swm-div) inset;
+  border-radius: 4px;
+  background: var(--light);
+
+  .swm-cell {
+    stroke: var(--swm-grid);
+    stroke-width: 0.04;
+    transition: fill 120ms ease-out;
+  }
+  .swm-cell--window {
+    fill: var(--swm-window-bg);
+  }
+  .swm-cell--global {
+    fill: var(--swm-global-bg);
+  }
+  .swm-cell--masked {
+    fill: var(--swm-masked-bg);
+  }
+}
+
+.swm-axis {
+  color: var(--swm-note);
+  font-size: 0.78rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  .katex {
+    font-size: 1em;
+  }
+}
+
+.swm-axis--x {
+  grid-area: 2 / 2;
+}
+.swm-axis--y {
+  grid-area: 1 / 1;
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+}
+
+.swm-side {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  min-width: 0;
+}
+
+.swm-legend {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  color: var(--swm-note);
+  font-size: 0.85rem;
+}
+
+.swm-legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.swm-swatch {
+  display: inline-block;
+  width: 0.9rem;
+  height: 0.9rem;
+  border-radius: 2px;
+  border: 0;
+  box-shadow: 0 0 0 1px var(--swm-div) inset;
+
+  &.swm-swatch--window {
+    background: var(--swm-window-bg);
+  }
+  &.swm-swatch--global {
+    background: var(--swm-global-bg);
+  }
+  &.swm-swatch--masked {
+    background: var(--swm-masked-bg);
+  }
+}
+
+.swm-formula,
+.swm-intuition {
+  padding: 0.85rem 1rem;
+  border-radius: var(--radius-7-2);
+  border: 0;
+  box-shadow: 0 0 0 1px var(--swm-div) inset;
+  background: color-mix(in srgb, var(--light) 96%, transparent);
+  color: var(--dark);
+  .katex-display {
+    margin: 0;
+  }
+}
+
+.swm-formula {
+  overflow-x: auto;
+}
+
+.swm-intuition {
+  margin: 1rem 0 0;
+  color: var(--swm-note);
+  font-size: 0.88rem;
+  line-height: 1.55;
+  .swm-math {
+    color: var(--dark);
+  }
+}
+
+.swm-readout {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  color: var(--swm-note);
+  font-size: 0.85rem;
+}
+
+.swm-readout-row {
+  display: grid;
+  grid-template-columns: minmax(8rem, 1fr) minmax(0, 1.2fr);
+  gap: 0.6rem;
+  align-items: baseline;
+  margin: 0;
+
+  dt {
+    color: var(--swm-note);
+    font-weight: 500;
+  }
+  dd {
+    margin: 0;
+    color: var(--dark);
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.35rem;
+    flex-wrap: wrap;
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+.swm-readout-val {
+  font-weight: 600;
+  &.swm-readout-val--big {
+    font-size: 1.1rem;
+  }
+  &.swm-readout-val--muted {
+    color: var(--swm-note);
+    font-weight: 500;
+  }
+  &.swm-readout-val--mono {
+    font-family: var(--codeFont);
+    font-size: 0.85rem;
+  }
+}
+
+.swm-readout-eq {
+  color: var(--swm-note);
+  font-weight: 400;
+}
+
+.swm-controls {
+  margin-top: 1.25rem;
+  padding-top: 1rem;
+  box-shadow: 0 -1px 0 var(--swm-div);
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem 1.5rem;
+  align-items: center;
+}
+
+.swm-control {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  min-width: 0;
+  .swm-slider {
+    flex: 1 1 auto;
+    min-width: 0;
+    @include stableRangeControl;
+  }
+}
+
+.swm-label {
+  color: var(--swm-note);
+  font-size: 0.85rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  white-space: nowrap;
+}
+
+.swm-slider-value {
+  font-variant-numeric: tabular-nums;
+  color: var(--dark);
+  font-weight: 600;
+  min-width: 1.5rem;
+  text-align: right;
+}
+
+.swm-toggle {
+  display: inline-flex;
+  gap: 0.25rem;
+  padding: 0.15rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--lightgray) 50%, transparent);
+  border: 0;
+  box-shadow: 0 0 0 1px var(--swm-div) inset;
+}
+
+.swm-toggle-btn {
+  appearance: none;
+  border: none;
+  background: transparent;
+  color: var(--swm-note);
+  font: inherit;
+  font-size: 0.8rem;
+  padding: 0.2rem 0.7rem;
+  border-radius: 999px;
+  cursor: pointer;
+  transition:
+    background 120ms ease-out,
+    color 120ms ease-out;
+
+  &:hover {
+    color: var(--dark);
+  }
+  &.is-active {
+    background: var(--light);
+    color: var(--dark);
+    box-shadow: 0 0 0 1px var(--swm-div);
+  }
+}
+
+.swm-caption {
+  margin-top: 0.9rem;
+  color: color-mix(in srgb, var(--gray) 70%, var(--dark) 30%);
+  font-size: 0.85rem;
+  text-align: center;
+}
+
+.swm-math .katex {
+  color: inherit;
+  font-size: 1em;
+}
+
+@container swm-figure (max-width: 680px) {
+  .swm-stage {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .swm-controls {
+    grid-template-columns: 1fr;
+  }
+}
+
+@container swm-figure (max-width: 440px) {
+  .sliding-window-mask {
+    padding: 0;
+  }
+  .swm-readout-row {
+    grid-template-columns: 1fr;
+    gap: 0.25rem;
+  }
+}

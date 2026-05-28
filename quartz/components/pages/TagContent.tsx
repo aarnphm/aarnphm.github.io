@@ -20,6 +20,59 @@ interface TagContentOptions {
 
 const defaultOptions: TagContentOptions = { numPages: 10 }
 
+function collectTagIndex(allFiles: QuartzPluginData[]): {
+  tagItemMap: Map<string, QuartzPluginData[]>
+  tagContentMap: Map<string, QuartzPluginData>
+} {
+  const tagItemMap = new Map<string, QuartzPluginData[]>()
+  const tagContentMap = new Map<string, QuartzPluginData>()
+  for (const file of allFiles) {
+    if (file.slug?.startsWith('tags/')) {
+      tagContentMap.set(file.slug.slice('tags/'.length), file)
+    }
+
+    for (const tag of (file.frontmatter?.tags ?? []).flatMap(getAllSegmentPrefixes)) {
+      const pages = tagItemMap.get(tag)
+      if (pages) {
+        pages.push(file)
+      } else {
+        tagItemMap.set(tag, [file])
+      }
+    }
+  }
+  return { tagItemMap, tagContentMap }
+}
+
+function tagIndexData(
+  value: unknown,
+):
+  | { tagItemMap: Map<string, QuartzPluginData[]>; tagContentMap: Map<string, QuartzPluginData> }
+  | undefined {
+  if (typeof value !== 'object' || value === null) return undefined
+  if (!('tagItemMap' in value) || !('tagContentMap' in value)) return undefined
+  if (!(value.tagItemMap instanceof Map) || !(value.tagContentMap instanceof Map)) return undefined
+  return { tagItemMap: value.tagItemMap, tagContentMap: value.tagContentMap }
+}
+
+function pagesWithTag(allFiles: QuartzPluginData[], tag: string): QuartzPluginData[] {
+  const pages: QuartzPluginData[] = []
+  for (const file of allFiles) {
+    for (const candidate of file.frontmatter?.tags ?? []) {
+      if (getAllSegmentPrefixes(candidate).includes(tag)) {
+        pages.push(file)
+        break
+      }
+    }
+  }
+  return pages
+}
+
+function explicitTagPageFiles(value: unknown): QuartzPluginData[] | undefined {
+  return Array.isArray(value)
+    ? value.filter((file): file is QuartzPluginData => Boolean(file))
+    : undefined
+}
+
 export default ((opts?: Partial<TagContentOptions>) => {
   const options: TagContentOptions = { ...defaultOptions, ...opts }
 
@@ -35,10 +88,6 @@ export default ((opts?: Partial<TagContentOptions>) => {
     }
 
     const tag = simplifySlug(slug.slice('tags/'.length) as FullSlug)
-    const allPagesWithTag = (tag: string) =>
-      allFiles.filter(file =>
-        (file.frontmatter?.tags ?? []).flatMap(getAllSegmentPrefixes).includes(tag),
-      )
 
     const content =
       (tree as Root).children.length === 0
@@ -47,15 +96,9 @@ export default ((opts?: Partial<TagContentOptions>) => {
     const cssClasses: string[] = fileData.frontmatter?.cssclasses ?? []
     const classes = ['popover-hint', 'full-col', ...cssClasses].join(' ')
     if (tag === '/') {
-      const tags = [
-        ...new Set(
-          allFiles.flatMap(data => data.frontmatter?.tags ?? []).flatMap(getAllSegmentPrefixes),
-        ),
-      ].sort((a, b) => a.localeCompare(b))
-      const tagItemMap: Map<string, QuartzPluginData[]> = new Map()
-      for (const tag of tags) {
-        tagItemMap.set(tag, allPagesWithTag(tag))
-      }
+      const providedTagIndexData = tagIndexData(props.tagIndexData)
+      const { tagItemMap, tagContentMap } = providedTagIndexData ?? collectTagIndex(allFiles)
+      const tags = [...tagItemMap.keys()].sort((a, b) => a.localeCompare(b))
       return (
         <div class={classes}>
           <article>
@@ -68,7 +111,7 @@ export default ((opts?: Partial<TagContentOptions>) => {
               const pages = tagItemMap.get(tag)!
               const listProps = { ...props, allFiles: pages }
 
-              const contentPage = allFiles.filter(file => file.slug === `tags/${tag}`).at(0)
+              const contentPage = tagContentMap.get(tag)
 
               const root = contentPage?.htmlAst
               const content =
@@ -98,7 +141,12 @@ export default ((opts?: Partial<TagContentOptions>) => {
                         </>
                       )}
                     </p>
-                    <PageList limit={options.numPages} {...listProps} sort={opts?.sort} />
+                    <PageList
+                      limit={options.numPages}
+                      {...listProps}
+                      sort={opts?.sort}
+                      presorted={Boolean(providedTagIndexData)}
+                    />
                   </div>
                 </div>
               )
@@ -107,7 +155,7 @@ export default ((opts?: Partial<TagContentOptions>) => {
         </div>
       )
     } else {
-      const pages = allPagesWithTag(tag)
+      const pages = explicitTagPageFiles(props.tagPageFiles) ?? pagesWithTag(allFiles, tag)
       const listProps = { ...props, allFiles: pages }
 
       return (
@@ -117,7 +165,7 @@ export default ((opts?: Partial<TagContentOptions>) => {
             <p>{i18n(cfg.locale).pages.tagContent.itemsUnderTag({ count: pages.length })}</p>
             <PageListSearch {...props} />
             <div>
-              <PageList {...listProps} sort={opts?.sort} />
+              <PageList {...listProps} sort={opts?.sort} presorted={Boolean(props.tagPageFiles)} />
             </div>
           </div>
         </div>

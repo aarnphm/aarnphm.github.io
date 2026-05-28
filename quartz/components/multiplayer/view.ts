@@ -30,6 +30,15 @@ const parseCommentHash = () => {
   }
 }
 
+async function loadMultiplayerSearchData() {
+  if (typeof fetchSearchData === 'undefined') return fetchData
+  try {
+    return await fetchSearchData
+  } catch {
+    return fetchData
+  }
+}
+
 export const mountMultiplayer = ({ dispatch, state, services }: MountDeps) => {
   const cleanups: Array<() => void> = []
   const addCleanup = (cleanup: () => void) => {
@@ -42,7 +51,7 @@ export const mountMultiplayer = ({ dispatch, state, services }: MountDeps) => {
   const init = async () => {
     dispatch({ type: 'nav.enter', pageId: getCommentPageId() })
 
-    const data = await fetchData
+    const data = await loadMultiplayerSearchData()
     const { populateSearchIndex } = await import('../scripts/search-index')
     await populateSearchIndex(data)
 

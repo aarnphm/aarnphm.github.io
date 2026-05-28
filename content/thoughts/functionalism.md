@@ -51,24 +51,6 @@ pain, belief, [[thoughts/Attention|attention]]—each defined by what they do, n
 >
 > Understanding is the ability to transform meanings correctly. A concept is a rule for moving between language-games. Proof-terms make the rule explicit. [@fuenmayor2019computationalhermeneutic]
 
-## variants
-
-- **machine-state functionalism.** mental states = rows in a state transition table.
-  - Input + current state → output + next state.
-    - Thermostat, computer, brain—same formalism.
-    - [@levin2024functionalism]
-- **analytic functionalism.** conceptual/semantic analysis fixes a role via ramsey-lewis definitions
-  - mental terms are defined by their place in a commonsense/folk-psychology network. [@levin2024functionalism]
-- **psycho-functionalism.** empirical cognitive science supplies the base theory of internal states, letting laboratory constraints determine which roles matter. [@levin2024functionalism]
-- **role vs realizer functionalism.** role functionalism identifies mental kinds with second-order roles
-  - realizer functionalism identifies them with whatever first-order state realizes that role in a system—distinct carving of kinds with practical consequences. [@levin2024functionalism]
-- **homuncular functionalism.** decompose a complex role into simpler sub-roles executed by “dumber” subsystems
-  - explanation improves by functional factorization.
-- **predictive functionalism.** active inference and hierarchical bayesian schemes treat minds as precision-tuned generative controllers
-  - functional profiles are prior/posterior update operators. [@parr2018computationalneuropsychology]
-- **teleosemantic precision psychiatry.** clinical functionalism ties mental categories to normatively optimal control of physiological and social niches, embedding value and error statistics inside the role description. [@friston2017computationalnosology]
-- **autopoietic functionalism.** systems qualify as minded when their functional organization maintains self-producing markov blankets that couple internal dynamics to niche signals. [@allen2018autopoiesis]
-
 ## critique
 
 from a [[thoughts/Philosophy and Kant|Kant]] perspective, functionalism presupposes a "unified subject" to individuate roles, but roles are supposed to _define_ what a subject is:
@@ -84,19 +66,6 @@ energy and timing constraints challenge pure substrate independence:
 > [!warning] qualia deficit
 >
 > functional duplicates risk diverging over first-person givenness unless role-specifications incorporate phenomenal invariants. [@mccormick2003kantfunctionalism]
-
-### objections
-
-- absent or inverted qualia: same role, different feel; role underdetermines phenomenology. [@shoemaker1982invertedspectrum]
-- china brain: a nation-simulated controller could realize the role; does that entail consciousness. [@block1978troublesfunctionalism]
-- [[thoughts/chinese room]]: syntax isn’t semantics. [@searle1980minds]
-- [[thoughts/knowledge argument]]: mary learns something new despite complete functional/physical knowledge. [@jackson1982epiphenomenalqualia; @jackson1986whatmary]
-- [[thoughts/philosophical zombies|zombies]]: functional duplicates without experience are conceivable. [@chalmers1996consciousmind]
-- liberalism vs chauvinism: roles too loose over-include, too tight exclude.
-- triviality/disjunction worry: permissive role descriptions collapse explanatory power. [@levin2024functionalism]
-- holism and fixation: roles are fixed by networks of roles, risking circularity. [@levin2024functionalism]
-- narrow vs wide content: externalist content can outrun internal role specs. [@levin2024functionalism]
-- implementation sensitivity: some temporal and dynamical constraints may be constitutive. [@levin2024functionalism]
 
 ## notes
 

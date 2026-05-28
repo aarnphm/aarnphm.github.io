@@ -22,14 +22,14 @@
 
 .zoomable-trigger {
   position: absolute;
-  top: 0.65rem;
-  right: 0.65rem;
+  top: 0.6rem;
+  right: 0.6rem;
   z-index: 2;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 30px;
-  height: 30px;
+  width: 26px;
+  height: 26px;
   margin: 0;
   padding: 0;
   background: color-mix(in srgb, var(--light) 88%, transparent);
@@ -43,14 +43,21 @@
     opacity 0.18s ease,
     transform 0.18s ease,
     color 0.18s ease,
-    background 0.18s ease;
+    background 0.18s ease,
+    border-color 0.18s ease;
   -webkit-appearance: none;
   appearance: none;
   font: inherit;
 
+  &::before {
+    content: '';
+    position: absolute;
+    inset: -7px;
+  }
+
   & > svg {
-    width: 16px;
-    height: 16px;
+    width: 14px;
+    height: 14px;
     display: block;
   }
 
@@ -60,8 +67,8 @@
     justify-content: center;
 
     & > svg {
-      width: 16px;
-      height: 16px;
+      width: 14px;
+      height: 14px;
       display: block;
     }
   }
@@ -74,16 +81,22 @@
   &:focus-visible {
     color: var(--dark);
     background: var(--light);
+    border-color: color-mix(in srgb, var(--gray) 52%, transparent);
     outline: none;
   }
 
   &:focus-visible {
-    box-shadow: 0 0 0 2px color-mix(in srgb, var(--secondary) 70%, transparent);
+    outline: 2px solid color-mix(in srgb, var(--secondary) 55%, transparent);
+    outline-offset: 2px;
+  }
+
+  &:active {
+    transform: translateY(0) scale(0.96);
   }
 }
 
-.zoomable:hover > .zoomable-trigger,
-.zoomable:focus-within > .zoomable-trigger,
+.zoomable > .zoomable-trigger:hover,
+.zoomable > .zoomable-trigger:focus-visible,
 .zoomable.is-zoomed > .zoomable-trigger {
   opacity: 1;
   transform: translateY(0);
@@ -95,9 +108,9 @@
   z-index: 1000;
   margin: 0;
   background: var(--light);
-  border: 1px solid color-mix(in srgb, var(--gray) 28%, transparent);
   border-radius: var(--radius-7-2, 10px);
   box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--gray) 24%, transparent) inset,
     0 30px 80px color-mix(in srgb, var(--dark) 30%, transparent),
     0 8px 24px color-mix(in srgb, var(--dark) 16%, transparent);
   padding: 1.5rem 1.5rem 1rem;
@@ -116,7 +129,7 @@
 
   & > .zoomable-content > figure {
     margin: 0;
-    border: none;
+    border: 0;
     box-shadow: none;
     background: var(--light);
     padding: 0;
@@ -200,10 +213,5 @@
   .zoomable.is-zoomed {
     inset: 2vh 2vw;
     padding: 1rem;
-  }
-
-  .zoomable-trigger {
-    opacity: 1;
-    transform: none;
   }
 }

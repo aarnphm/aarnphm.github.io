@@ -1,0 +1,430 @@
+@use '../../styles/variables.scss' as *;
+@use '../../styles/mixin.scss' as *;
+
+.ring-rotation {
+  container-type: inline-size;
+  container-name: rr-figure;
+  margin: 1.75rem 0;
+  content-visibility: auto;
+  contain-intrinsic-size: auto 34rem;
+  padding: 0;
+  border-radius: 0;
+  border: 0;
+  box-shadow: none;
+  background: transparent;
+  color: var(--dark);
+
+  --rr-stroke: color-mix(in srgb, var(--darkgray) 70%, transparent);
+  --rr-stroke-soft: color-mix(in srgb, var(--gray) 45%, transparent);
+  --rr-note-fg: color-mix(in srgb, var(--darkgray) 78%, var(--dark) 22%);
+  --rr-salmon: #fdb2a2;
+  --rr-sage: #cdd597;
+  --rr-cell-empty: color-mix(in srgb, var(--gray) 18%, transparent);
+  --rr-cell-fill: color-mix(in srgb, var(--rr-sage) 80%, transparent);
+  --rr-cell-pulse: color-mix(in srgb, var(--rr-salmon) 85%, transparent);
+  --rr-token-fill: var(--rr-salmon);
+  --rr-chip-bg: color-mix(in srgb, var(--rr-sage) 35%, var(--light));
+  --rr-chip-bg-active: color-mix(in srgb, var(--rr-salmon) 70%, var(--light));
+}
+
+:root[saved-theme='dark'] .ring-rotation {
+  --rr-cell-empty: color-mix(in srgb, var(--lightgray) 28%, transparent);
+  --rr-cell-fill: color-mix(in srgb, var(--rr-sage) 55%, var(--lightgray));
+  --rr-chip-bg: color-mix(in srgb, var(--rr-sage) 22%, var(--lightgray));
+  --rr-chip-bg-active: color-mix(in srgb, var(--rr-salmon) 45%, var(--lightgray));
+}
+
+.rr-stage {
+  display: grid;
+  grid-template-columns: minmax(280px, 1fr) minmax(0, 1.05fr);
+  gap: 1.5rem;
+  align-items: center;
+}
+
+.rr-graph {
+  width: 100%;
+  max-width: 380px;
+  aspect-ratio: 1 / 1;
+  display: block;
+  margin: 0 auto;
+
+  .rr-ring-track {
+    fill: none;
+    stroke: var(--rr-stroke-soft);
+    stroke-width: 1.2;
+    stroke-dasharray: 4 4;
+  }
+
+  .rr-ring-flow {
+    fill: none;
+    stroke: var(--rr-stroke);
+    stroke-width: 1.4;
+    opacity: 0.55;
+  }
+
+  .rr-arrowhead {
+    fill: var(--rr-stroke);
+  }
+
+  .rr-node-disc {
+    fill: var(--light);
+    stroke: var(--rr-stroke);
+    stroke-width: 1.2;
+    transition: stroke 160ms ease;
+  }
+
+  .rr-node[data-rr-active='true'] .rr-node-disc {
+    stroke: var(--rr-salmon);
+    stroke-width: 1.8;
+  }
+
+  .rr-slice-chip {
+    fill: var(--rr-chip-bg);
+    stroke: var(--rr-stroke-soft);
+    stroke-width: 1;
+    transition:
+      fill 160ms ease,
+      stroke 160ms ease;
+  }
+
+  .rr-slice-chip[data-rr-chip-traveling='true'] {
+    fill: var(--rr-chip-bg-active);
+    stroke: var(--rr-salmon);
+  }
+
+  .rr-token {
+    fill: var(--rr-token-fill);
+    stroke: color-mix(in srgb, var(--rr-salmon) 70%, var(--dark));
+    stroke-width: 1.2;
+    opacity: 0;
+    transition: opacity 140ms ease;
+  }
+
+  .rr-token[data-rr-token-visible='true'] {
+    opacity: 1;
+  }
+
+  [data-rr-token-text] {
+    opacity: 0;
+    transition: opacity 140ms ease;
+    pointer-events: none;
+  }
+
+  [data-rr-token-text][data-rr-token-visible='true'] {
+    opacity: 1;
+  }
+
+  .rr-fo {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--dark);
+    font-size: 12px;
+    line-height: 1;
+    overflow: visible;
+
+    .katex {
+      color: inherit;
+      font-size: 1em;
+    }
+
+    .katex-display {
+      margin: 0;
+    }
+  }
+
+  .rr-fo--chip {
+    font-size: 11px;
+  }
+
+  .rr-fo--node {
+    font-size: 13px;
+  }
+
+  .rr-fo--token {
+    font-size: 10px;
+  }
+
+  .rr-dyn-math {
+    font-family: KaTeX_Math, 'Times New Roman', serif;
+    font-style: italic;
+    line-height: 1;
+  }
+
+  sub {
+    font-size: 0.68em;
+    line-height: 0;
+  }
+}
+
+.rr-side {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  min-width: 0;
+}
+
+.rr-matrix {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.rr-matrix-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem;
+  color: var(--rr-note-fg);
+  font-size: 0.82rem;
+}
+
+.rr-matrix-title {
+  font-weight: 600;
+  color: var(--dark);
+}
+
+.rr-matrix-sub {
+  font-style: italic;
+  font-size: 0.75rem;
+}
+
+.rr-matrix-grid {
+  display: grid;
+  grid-template-columns: repeat(var(--rr-p, 4), minmax(0, 1fr));
+  gap: 4px;
+  width: 100%;
+  max-width: 220px;
+}
+
+.rr-cell {
+  display: block;
+  aspect-ratio: 1 / 1;
+  border-radius: 3px;
+  background: var(--rr-cell-empty);
+  transition:
+    background 220ms ease,
+    transform 220ms ease;
+}
+
+.rr-cell[data-rr-state='filled'] {
+  background: var(--rr-cell-fill);
+}
+
+.rr-cell[data-rr-state='pulse'] {
+  background: var(--rr-cell-pulse);
+  transform: scale(1.12);
+}
+
+.rr-cell[data-rr-state='diag'] {
+  background: var(--rr-cell-fill);
+  outline: 1px solid color-mix(in srgb, var(--rr-stroke) 50%, transparent);
+  outline-offset: -1px;
+}
+
+.rr-readout {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin: 0;
+  padding: 0.75rem 0.9rem;
+  background: color-mix(in srgb, var(--light) 80%, transparent);
+  border: 0;
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--gray) 25%, transparent) inset;
+  border-radius: 6px;
+  font-size: 0.82rem;
+  color: var(--rr-note-fg);
+}
+
+.rr-readout-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: baseline;
+  gap: 0.5rem;
+  margin: 0;
+}
+
+.rr-readout-row > dt {
+  margin: 0;
+  font-weight: 500;
+}
+
+.rr-readout-row > dd {
+  margin: 0;
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.35rem;
+  color: var(--dark);
+  font-variant-numeric: tabular-nums;
+}
+
+.rr-readout-eq {
+  color: var(--rr-note-fg);
+}
+
+.rr-readout-val {
+  font-weight: 600;
+}
+
+.rr-readout-val--big {
+  font-size: 1rem;
+}
+
+.rr-math {
+  display: inline-block;
+  color: inherit;
+
+  .katex {
+    color: inherit;
+    font-size: 0.95em;
+  }
+}
+
+.rr-controls {
+  margin-top: 1.1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.rr-control {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.rr-control--slider {
+  flex: 1 1 220px;
+}
+
+.rr-label {
+  color: var(--rr-note-fg);
+  font-size: 0.82rem;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.rr-slider {
+  flex: 1 1 auto;
+  min-width: 0;
+  @include stableRangeControl;
+}
+
+.rr-slider-value {
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  min-width: 1.4ch;
+  text-align: right;
+}
+
+.rr-control--buttons {
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+
+.rr-btn {
+  appearance: none;
+  border: 0;
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--rr-stroke) 40%, transparent) inset;
+  background: color-mix(in srgb, var(--light) 96%, transparent);
+  color: var(--dark);
+  font-family: var(--bodyFont);
+  font-size: 0.82rem;
+  padding: 0.32rem 0.75rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition:
+    background 140ms ease,
+    box-shadow 140ms ease,
+    color 140ms ease;
+}
+
+.rr-btn:hover:not(:disabled) {
+  box-shadow: 0 0 0 1px var(--rr-salmon) inset;
+  background: color-mix(in srgb, var(--rr-salmon) 12%, var(--light));
+}
+
+.rr-btn:focus-visible {
+  outline: 2px solid var(--rr-salmon);
+  outline-offset: 2px;
+}
+
+.rr-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.rr-btn--primary {
+  background: color-mix(in srgb, var(--rr-salmon) 28%, var(--light));
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--rr-salmon) 60%, transparent) inset;
+}
+
+.rr-intuition {
+  margin: 1.1rem 0 0;
+  padding: 0.75rem 0.9rem;
+  box-shadow: 2px 0 0 var(--rr-salmon) inset;
+  color: var(--rr-note-fg);
+  font-size: 0.88rem;
+  line-height: 1.5;
+
+  strong {
+    color: var(--dark);
+    font-weight: 600;
+  }
+}
+
+.rr-caption {
+  margin-top: 0.9rem;
+  color: color-mix(in srgb, var(--gray) 70%, var(--dark) 30%);
+  font-size: 0.85rem;
+  text-align: center;
+}
+
+@container rr-figure (max-width: 720px) {
+  .rr-stage {
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+  }
+
+  .rr-graph {
+    max-width: 320px;
+  }
+
+  .rr-matrix-grid {
+    max-width: 260px;
+    margin: 0 auto;
+  }
+
+  .rr-readout {
+    font-size: 0.8rem;
+  }
+}
+
+@container rr-figure (max-width: 440px) {
+  .ring-rotation {
+    padding: 0;
+  }
+
+  .rr-controls {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.75rem;
+  }
+
+  .rr-control--slider,
+  .rr-control--buttons {
+    width: 100%;
+  }
+
+  .rr-control--buttons {
+    justify-content: space-between;
+  }
+
+  .rr-btn {
+    flex: 1 1 auto;
+  }
+}

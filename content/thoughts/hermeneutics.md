@@ -17,7 +17,7 @@ tags:
 title: hermeneutics
 ---
 
-Understanding is not finding; it's making. You enter another's world not by observing from outside but by participating. The hermeneutic circle: you can't grasp the whole without the parts, can't grasp the parts without the whole. You're always already inside.
+The hermeneutic circle: you can't grasp the whole without the parts, can't grasp the parts without the whole. You're always already inside.
 
 > [!summary] tl;dr
 >
@@ -44,13 +44,6 @@ Axel Honneth: self-realization depends on being recognized. [@honneth1995struggl
 Interpretive justice: who gets to interpret whom? Whose framework counts as legitimate? Hermeneutics can perpetuate power (imposing interpretation) or resist it (recognizing interpretive authority, expanding horizons).
 
 For [[/posts/love|love]] as hermeneutic commitment, see [[thoughts/love#hermeneutics|this section]].
-
-## what it's not
-
-- projecting your needs onto them and calling it understanding.
-- "reading their mind" or claiming privileged access.
-- understanding _about_ them (facts, categories) instead of understanding _them_ (their horizon).
-- assuming understanding is stable. People change. Your fusion of horizons must be redone, continuously. This is why love is a practice, not a possession.
 
 ## connection to [[thoughts/functionalism|functionalism]]
 

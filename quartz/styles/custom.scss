@@ -365,6 +365,10 @@ body {
   padding-top: var(--sidepanel-padding);
 }
 
+#quartz-root > .page-body-grid > .page-header:has(> .byline) {
+  overflow-x: clip;
+}
+
 .page-footer,
 .byline {
   border: 0px solid var(--lightgray);
@@ -418,6 +422,31 @@ body {
     flex-grow: 1;
     flex-direction: column;
     justify-content: space-between;
+  }
+}
+
+#quartz-root > .page-body-grid > .page-header > .byline {
+  position: relative;
+  border-top-width: 0;
+  border-bottom-width: 0;
+
+  &::before,
+  &::after {
+    content: '';
+    position: absolute;
+    left: -100vw;
+    right: -100vw;
+    height: 1px;
+    background: var(--lightgray);
+    pointer-events: none;
+  }
+
+  &::before {
+    top: 0;
+  }
+
+  &::after {
+    bottom: 0;
   }
 }
 

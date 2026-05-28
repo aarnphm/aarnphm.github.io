@@ -42,13 +42,16 @@
   isolation: isolate;
 }
 
-:root.toc-hovering body::before {
+.page-content.has-minimal-toc.toc-hovering::before {
   content: '';
   position: fixed;
   inset: 0;
   z-index: 100000;
   pointer-events: none;
   background: color-mix(in srgb, var(--light) 56%, transparent);
+}
+
+.page-content.has-minimal-toc.toc-hovering:not(.toc-scrolling)::before {
   -webkit-backdrop-filter: blur(4px);
   backdrop-filter: blur(4px);
 }

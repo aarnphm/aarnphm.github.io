@@ -3,7 +3,7 @@ date: '2026-05-25'
 description: "\U0001F9E9 \U0001F6E4️\U0001F6E5️\U0001F698 \U0001F6D5 \U0001F6F7"
 id: queries
 layout: letter
-modified: 2026-05-25 20:53:51 GMT-04:00
+modified: 2026-05-27 22:34:03 GMT-04:00
 seealso:
   - '[[puzzle]]'
   - '[[thoughts/craft]]'
@@ -72,8 +72,7 @@ check(solve())
 
 > [!hint]- hint
 >
-> - First intuition for implementing `sb` is to use recursion to walk pass all the node within the tree. There is a way for recursion-free for finding the path here.
->   This is beacuse we are using Stern-Brocot tree.
+> - First intuition for implementing `sb` is to use recursion to walk pass all the node within the tree. There is a way for recursion-free for finding the path here (check out some nice properties of Stern-Brocot tree).
 > - There are quite a bit of prime factorization algorithm out-there, but I will leave this exercise to the reader.
 
 ---
@@ -166,7 +165,7 @@ main = putStrLn (check solve)
 > [!hint]- hint
 >
 > - The rule is one byte: write `110` in binary and index it by the neighbourhood $4*l + 2*c + r$.
-> - The only real trap is the ring wrapping around; Haskell's `mod` already lands `0` next to `63` for you.
+> - The only real trap is the ring wrapping around, especially in Haskell's `mod`.
 
 ---
 
@@ -265,7 +264,7 @@ func main() {
 > [!hint]- hint
 >
 > - Suitors propose down their lists; each courted party keeps the best offer so far and turns away the rest. You can read more about [the stable marriage problem](https://en.wikipedia.org/wiki/Stable_marriage_problem) and why deferred acceptance always terminates.
-> - With the suitors proposing, the matching you reach is suitor-optimal. Convincing yourself no pair wants to defect I will leave to the reader.
+> - With the suitors proposing, the matching you reach is suitor-optimal. Regarding decision for no defect among pairs, I will leave to the reader.
 
 ---
 
@@ -362,7 +361,314 @@ println!("{}", check(solve()));
 > [!hint]- hint
 >
 > - You can read more about [the perceptron](https://en.wikipedia.org/wiki/Perceptron) and Novikoff's bound, which says a separable set gets learned in finitely many updates.
-> - The sweep order is fixed and you start from zero, so the fixed point is unique. Proving it actually converges I will leave to the reader.
+> - The sweep order is fixed and you start from zero, so the fixed point is unique. You should be able to prove for convergence here.
+
+---
+
+## THE _LYNDON_ LOCK
+
+_combinatorics, de Bruijn sequences, bit manipulation_, approx: 30 min
+
+A tape of length $256$ can be made so every possible byte appears exactly once as a cyclic window. This is a binary [de Bruijn sequence](https://en.wikipedia.org/wiki/De_Bruijn_sequence) $B(2,8)$. You can find one by walking an Eulerian cycle in the overlap graph. There is also the smaller door: concatenate Lyndon words whose lengths divide $8$, the Fredricksen-Kessler-Maiorana construction.
+
+Your task, is to ==generate the lexicographic binary de Bruijn tape $B(2,8)$ and score its cyclic byte windows==. The algorithm is as follows:
+
+1. Keep an integer array $a$ indexed from $1$, and run `db(t, p)`.
+2. If $t > 8$ and $8 \bmod p = 0$, append $a_1 \dots a_p$ to the tape.
+3. Otherwise set $a_t = a_{t-p}$ and recurse as `db(t + 1, p)`. Then for every $j = a_{t-p}+1 \dots 1$, set $a_t = j$ and recurse as `db(t + 1, t)`.
+4. The resulting tape has exactly $256$ bits.
+5. For each offset $i = 0 \dots 255$, read the cyclic 8-bit window starting at $i$, most-significant bit first, into byte $b$.
+6. Add $(i + 1)(b + 1)w + 17\,\mathrm{popcount}(b)$ modulo $10^9 + 7$, where $w = 31$ if $b$ is prime and $w = 1$ otherwise.
+
+```c shell
+#include <stdint.h>
+#include <stdio.h>
+
+#define N 8
+#define L 256
+#define MOD 1000000007ULL
+
+static uint64_t fingerprint(uint64_t answer) {
+  uint64_t x = answer ^ 0x4C796E646F6E21ULL;
+  for (int i = 0; i < 200; i++) {
+    x += 0x9E3779B97F4A7C15ULL;
+    x = (x ^ (x >> 30)) * 0xBF58476D1CE4E5B9ULL;
+    x = (x ^ (x >> 27)) * 0x94D049BB133111EBULL;
+    x = x ^ (x >> 31);
+  }
+  return x;
+}
+
+static const char* check(uint64_t answer) {
+  return fingerprint(answer) == 5978584659902441109ULL ? "correct" : "nope";
+}
+
+static int is_prime(int x) {
+  if (x < 2) {
+    return 0;
+  }
+  for (int d = 2; d * d <= x; d++) {
+    if (x % d == 0) {
+      return 0;
+    }
+  }
+  return 1;
+}
+
+static int popcount8(int x) {
+  int n = 0;
+  while (x != 0) {
+    n += x & 1;
+    x >>= 1;
+  }
+  return n;
+}
+
+static void make_tape(int tape[L]) {
+  (void)tape;
+  /* TODO: generate B(2, 8) into tape using the FKM recursion above */
+}
+
+static int byte_at(const int tape[L], int start) {
+  int b = 0;
+  for (int j = 0; j < N; j++) {
+    b = (b << 1) | tape[(start + j) & (L - 1)];
+  }
+  return b;
+}
+
+static uint64_t solve(void) {
+  int tape[L] = {0};
+  make_tape(tape);
+
+  uint64_t acc = 0;
+  for (int i = 0; i < L; i++) {
+    int b = byte_at(tape, i);
+    uint64_t weight = is_prime(b) ? 31ULL : 1ULL;
+    uint64_t term = (uint64_t)(i + 1) * (uint64_t)(b + 1) * weight;
+    term += 17ULL * (uint64_t)popcount8(b);
+    acc = (acc + term) % MOD;
+  }
+  return acc;
+}
+
+int main(void) {
+  puts(check(solve()));
+  return 0;
+}
+```
+
+> [!hint]- hint
+>
+> - If your tape length is not exactly $256$, the recursion is appending at the wrong time. The test is `N % p == 0`, and the appended block is `a[1]` through `a[p]`.
+> - The cyclic read matters. Offset $252$ reads four bits from the end and four from the beginning.
+
+---
+
+## THE _MEX_ FLOOR
+
+_combinatorial game theory, memoization_, approx: 35 min
+
+A heap of stones is a game if the move is bad enough. In Grundy's game, one move splits a heap of size $n$ into two unequal nonempty heaps. A heap of size $1$ or $2$ is dead.
+
+The [Sprague-Grundy theorem](https://en.wikipedia.org/wiki/Sprague%E2%80%93Grundy_theorem) says every finite impartial game secretly behaves like a Nim heap of some size. The size is the mex of the option nimbers, where an option from $n$ is every unordered split $a + (n-a)$ with $a < n-a$.
+
+Your task, is to ==compute the Grundy numbers for the listed heaps and fold the transcript into one 64-bit answer==. The algorithm is as follows:
+
+1. Let $g(1) = g(2) = 0$.
+2. For $n \ge 3$, collect $g(a) \oplus g(n-a)$ over every $1 \le a < n-a$.
+3. Set $g(n)$ to the smallest nonnegative integer missing from that set.
+4. For the fixed pile list, update the rolling answer exactly as in `solve`.
+
+```cpp shell
+#include <cstdint>
+#include <iostream>
+#include <vector>
+
+using u64 = std::uint64_t;
+
+const std::vector<int> PILES = {
+    17,  19,  23,  29,  31,  37,  41,  43,  47,  53,
+    59,  61,  67,  71,  73,  79,  83,  89,  97,  101,
+    109, 113, 127, 131, 137, 149, 157, 163, 173, 179,
+};
+
+u64 fingerprint(u64 answer) {
+  u64 x = answer ^ 0x4772756e64794d45ULL;
+  for (int i = 0; i < 200; i++) {
+    x += 0x9E3779B97F4A7C15ULL;
+    x = (x ^ (x >> 30)) * 0xBF58476D1CE4E5B9ULL;
+    x = (x ^ (x >> 27)) * 0x94D049BB133111EBULL;
+    x = x ^ (x >> 31);
+  }
+  return x;
+}
+
+const char *check(u64 answer) {
+  return fingerprint(answer) == 12628298746904206824ULL ? "correct" : "nope";
+}
+
+int mex(const std::vector<int> &values) {
+  bool seen[64] = {};
+  for (int value : values) {
+    if (0 <= value && value < 64) {
+      seen[value] = true;
+    }
+  }
+  for (int i = 0; i < 64; i++) {
+    if (!seen[i]) {
+      return i;
+    }
+  }
+  return 64;
+}
+
+int grundy(int n, std::vector<int> &memo) {
+  (void)n;
+  (void)memo;
+  return 0;
+}
+
+u64 solve() {
+  std::vector<int> memo(180, -1);
+  u64 answer = 0;
+  int nim = 0;
+
+  for (int pile : PILES) {
+    int g = grundy(pile, memo);
+    nim ^= g;
+    answer = answer * 1315423911ULL + (u64)((pile << 8) | g);
+    answer ^= answer >> 23;
+  }
+
+  answer ^= (u64)nim << 56;
+  return answer;
+}
+
+int main() {
+  std::cout << check(solve()) << "\n";
+}
+```
+
+> [!hint]- hint
+>
+> - The split is unordered. Checking both `a, n-a` and `n-a, a` changes nothing except your runtime and your patience.
+> - Memoize `grundy(n)`. The recursion is small, but recomputing the same heap tree is wasteful.
+
+---
+
+## THE _CALKIN_ LOCK
+
+_wasm, bit-twiddling, number theory_, approx: 45 min
+
+There is an infinite binary tree whose root is $1/1$. Every node $a/b$ has left child $a/(a+b)$ and right child $(a+b)/b$. Number the nodes in breadth-first order starting at $1$, and every positive rational appears exactly once.
+
+Your task, is to ==implement `cw_den(n)`, the denominator of the $n$th fraction in this breadth-first order==. The checker feeds your function a fixed battery of inputs and folds the denominators into one 32-bit fingerprint.
+
+No need to imports, heap, strings, or host help. (think of opcodes)
+
+```wasm shell
+(module
+  (func $cw_den (param $n i32) (result i32)
+    i32.const 0
+  )
+
+  (func $mix (param $h i32) (param $x i32) (result i32)
+    (local $t i32)
+    local.get $h
+    local.get $x
+    i32.xor
+    i32.const 0x45d9f3b
+    i32.mul
+    local.tee $t
+    i32.const 16
+    i32.shr_u
+    local.get $t
+    i32.xor
+    i32.const 0x45d9f3b
+    i32.mul
+    local.tee $t
+    i32.const 16
+    i32.shr_u
+    local.get $t
+    i32.xor)
+
+  (func $case (param $h i32) (param $n i32) (result i32)
+    local.get $h
+    local.get $n
+    call $cw_den
+    call $mix)
+
+  (func (export "main") (result i32)
+    (local $h i32)
+    i32.const 0x6d2b79f5
+    local.set $h
+    local.get $h
+    i32.const 1
+    call $case
+    local.set $h
+    local.get $h
+    i32.const 2
+    call $case
+    local.set $h
+    local.get $h
+    i32.const 3
+    call $case
+    local.set $h
+    local.get $h
+    i32.const 4
+    call $case
+    local.set $h
+    local.get $h
+    i32.const 5
+    call $case
+    local.set $h
+    local.get $h
+    i32.const 6
+    call $case
+    local.set $h
+    local.get $h
+    i32.const 7
+    call $case
+    local.set $h
+    local.get $h
+    i32.const 10
+    call $case
+    local.set $h
+    local.get $h
+    i32.const 25
+    call $case
+    local.set $h
+    local.get $h
+    i32.const 42
+    call $case
+    local.set $h
+    local.get $h
+    i32.const 123
+    call $case
+    local.set $h
+    local.get $h
+    i32.const 255
+    call $case
+    local.set $h
+    local.get $h
+    i32.const 31337
+    call $case
+    local.set $h
+    local.get $h
+    i32.const 65535
+    call $case
+    local.set $h
+    local.get $h
+    i32.const 0x1e63ccaa
+    i32.eq)
+)
+```
+
+> [!hint]- hint
+>
+> - Start with `a = 1`, `b = 1`. Find the highest set bit of `n`, shift the mask right once, then walk bits downward. `0` updates `b = a + b`; `1` updates `a = a + b`.
+> - If `1..7` works and `10` or `25` fails, your bit order is probably backwards. The path is consumed from high bit to low bit after dropping the leading one.
 
 ---
 
@@ -507,4 +813,4 @@ async function check(answer) {
 > [!hint]- hint
 >
 > - Side k runs from corner k to corner $(k+1) \bmod 2m$ when dir = +1, reversed when dir = -1.
-> - A union-find over the $2m$ corners gives you $V$; the word is scrambled on purpose, so you have to count it. The rest I will leave to the reader.
+> - A union-find over the $2m$ corners gives you $V$; you will also have to manually count it.

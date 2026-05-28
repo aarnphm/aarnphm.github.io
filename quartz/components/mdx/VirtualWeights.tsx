@@ -1,6 +1,7 @@
 import katex from 'katex'
 import { type FunctionalComponent } from 'preact'
 import { customMacros, katexOptions } from '../../cfg'
+import { MathText } from '../../util/math-text'
 import style from '../styles/virtualWeights.scss'
 import { registerMdxComponent, type QuartzMdxComponent } from './registry'
 
@@ -18,7 +19,7 @@ function renderMath(tex: string): string {
   return katex.renderToString(tex, {
     ...katexOptions,
     displayMode: false,
-    output: 'htmlAndMathml',
+    output: 'html',
     macros: customMacros,
     strict: false,
     throwOnError: false,
@@ -67,15 +68,11 @@ const Layer: FunctionalComponent<LayerProps> = ({ k, topY, arrowId, emphasis }) 
         <MathFO x={55} y={botY - 12} w={40} h={24} tex={`W^{${k}}_I`} />
 
         <circle class="vw-node" cx="30" cy={topY} r="7" />
-        <text class="vw-node-text" x="30" y={topY}>
-          +
-        </text>
+        <MathFO x={22} y={topY - 8} w={16} h={16} tex="+" cls="vw-fo--node" />
       </g>
 
       <rect class={dotsClass} x="130" y={midY - 12} width="40" height="24" rx="3" />
-      <text class="vw-box-text vw-box-text--sm" x="150" y={midY}>
-        …
-      </text>
+      <MathFO x={130} y={midY - 12} w={40} h={24} tex="\cdots" cls="vw-fo--dots" />
     </g>
   )
 }
@@ -183,18 +180,18 @@ const VirtualWeightsImpl: QuartzMdxComponent<Props> = ({ caption }) => (
     <div class="vw-panels">
       <section class="vw-panel">
         <p class="vw-panel-title">
-          The residual stream is modified by a sequence of MLP and attention layers “reading from”
-          and “writing to” it with linear operations.
+          The residual stream is modified by a sequence of MLP and attention layers "reading from"
+          and "writing to" it with linear operations.
         </p>
         <div class="vw-stage">
           <Panel kind="reading" arrowId="vw-arrow-r" />
           <div class="vw-callouts vw-callouts--reading">
             <p class="vw-callout">
-              Each layer <strong>“writes”</strong> to the residual stream by adding a linear
+              Each layer <strong>"writes"</strong> to the residual stream by adding a linear
               projection of its results.
             </p>
             <p class="vw-callout">
-              Each layer <strong>“reads”</strong> from the residual stream with a linear projection.
+              Each layer <strong>"reads"</strong> from the residual stream with a linear projection.
             </p>
           </div>
         </div>
@@ -202,13 +199,13 @@ const VirtualWeightsImpl: QuartzMdxComponent<Props> = ({ caption }) => (
 
       <section class="vw-panel">
         <p class="vw-panel-title">
-          Because all these operations are linear, we can “multiply through” the residual stream.
+          Because all these operations are linear, we can "multiply through" the residual stream.
         </p>
         <div class="vw-stage">
           <Panel kind="virtual" arrowId="vw-arrow-v" />
           <div class="vw-callouts vw-callouts--virtual">
             <p class="vw-callout">
-              Multiplying out the weights reveals “virtual weights” implicitly connecting each pair
+              Multiplying out the weights reveals "virtual weights" implicitly connecting each pair
               of layers.
             </p>
             <p class="vw-callout">
@@ -219,7 +216,11 @@ const VirtualWeightsImpl: QuartzMdxComponent<Props> = ({ caption }) => (
         </div>
       </section>
     </div>
-    {caption ? <figcaption class="vw-caption">{caption}</figcaption> : null}
+    {caption ? (
+      <figcaption class="vw-caption">
+        <MathText text={caption} />
+      </figcaption>
+    ) : null}
   </figure>
 )
 

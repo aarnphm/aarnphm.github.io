@@ -1,0 +1,378 @@
+@use '../../styles/variables.scss' as *;
+@use '../../styles/mixin.scss' as *;
+
+.mla-latent-path {
+  container-type: inline-size;
+  container-name: mla-figure;
+  margin: 1.75rem 0;
+  content-visibility: auto;
+  contain-intrinsic-size: auto 36rem;
+  padding: 0;
+  border-radius: 0;
+  border: 0;
+  box-shadow: none;
+  background: transparent;
+  color: var(--dark);
+  --mla-stroke: color-mix(in srgb, var(--darkgray) 70%, transparent);
+  --mla-div: color-mix(in srgb, var(--gray) 28%, transparent);
+  --mla-note: color-mix(in srgb, var(--darkgray) 78%, var(--dark) 22%);
+  --mla-salmon: #fdb2a2;
+  --mla-sage: #cdd597;
+  --mla-cached-bg: color-mix(in srgb, var(--mla-salmon) 70%, var(--light));
+  --mla-cached-edge: color-mix(in srgb, var(--mla-salmon) 90%, var(--dark));
+  --mla-head-bg: color-mix(in srgb, var(--mla-sage) 65%, var(--light));
+  --mla-head-edge: color-mix(in srgb, var(--mla-sage) 90%, var(--dark));
+  --mla-neutral-bg: color-mix(in srgb, var(--lightgray) 55%, var(--light));
+  --mla-concat-bg: color-mix(in srgb, var(--lightgray) 30%, var(--light));
+}
+
+:root[saved-theme='dark'] .mla-latent-path {
+  --mla-cached-bg: color-mix(in srgb, var(--mla-salmon) 40%, var(--lightgray));
+  --mla-head-bg: color-mix(in srgb, var(--mla-sage) 32%, var(--lightgray));
+  --mla-neutral-bg: color-mix(in srgb, var(--lightgray) 35%, var(--dark));
+  --mla-concat-bg: color-mix(in srgb, var(--lightgray) 22%, var(--dark));
+}
+
+.mla-stage {
+  display: grid;
+  grid-template-columns: minmax(0, 1.55fr) minmax(220px, 1fr);
+  gap: 1.5rem;
+  align-items: stretch;
+}
+
+.mla-graph {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 720 / 360;
+  display: block;
+
+  .mla-arrowhead {
+    fill: var(--mla-stroke);
+  }
+
+  .mla-cache-box {
+    fill: color-mix(in srgb, var(--mla-salmon) 10%, transparent);
+    stroke: var(--mla-cached-edge);
+    stroke-width: 1.2;
+    stroke-dasharray: 5 3;
+  }
+
+  .mla-box {
+    stroke-width: 1.2;
+    transition:
+      fill 200ms ease,
+      stroke 200ms ease;
+  }
+  .mla-box--input {
+    fill: var(--mla-neutral-bg);
+    stroke: var(--mla-stroke);
+  }
+  .mla-box--cached {
+    fill: var(--mla-cached-bg);
+    stroke: var(--mla-cached-edge);
+  }
+  .mla-box--head {
+    fill: var(--mla-head-bg);
+    stroke: var(--mla-head-edge);
+  }
+  .mla-box--concat {
+    fill: var(--mla-concat-bg);
+    stroke: var(--mla-stroke);
+    stroke-dasharray: 3 2;
+  }
+
+  .mla-edge {
+    fill: none;
+    stroke: var(--mla-stroke);
+    stroke-width: 1.2;
+    opacity: 0.85;
+  }
+  .mla-edge--concat {
+    stroke-width: 1;
+    stroke-dasharray: 3 2;
+    opacity: 0.7;
+  }
+  .mla-edge--rope {
+    stroke: var(--mla-cached-edge);
+  }
+
+  .mla-fo {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--dark);
+    line-height: 1;
+    overflow: visible;
+    pointer-events: none;
+    .katex {
+      color: inherit;
+      font-size: 1em;
+    }
+    .katex-display {
+      margin: 0;
+    }
+  }
+  .mla-fo--node {
+    font-size: 13px;
+  }
+  .mla-fo--head {
+    font-size: 10.5px;
+  }
+  .mla-fo--edge {
+    font-size: 11px;
+    color: var(--mla-note);
+    font-style: italic;
+  }
+  .mla-fo--cache-label {
+    color: var(--mla-cached-edge);
+    font-size: 12px;
+  }
+  .mla-fo--dim {
+    color: var(--mla-note);
+    font-size: 12px;
+    font-variant-numeric: tabular-nums;
+
+    .mla-dyn-math {
+      font-family: KaTeX_Math, 'Times New Roman', serif;
+      font-style: italic;
+      line-height: 1;
+    }
+
+    sub,
+    sup {
+      font-size: 0.68em;
+      line-height: 0;
+    }
+
+    sup {
+      margin-left: 0.04em;
+    }
+  }
+}
+
+.mla-side {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  min-width: 0;
+}
+
+.mla-card {
+  padding: 0.85rem 0.95rem;
+  border-radius: var(--radius-7-2);
+  border: 0;
+  box-shadow: 0 0 0 1px var(--mla-div) inset;
+  background: color-mix(in srgb, var(--light) 96%, transparent);
+
+  h4 {
+    margin: 0 0 0.5rem;
+    font-size: 0.78rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--mla-note);
+  }
+}
+
+.mla-cache-list {
+  margin: 0 0 0.55rem;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+
+  li {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    color: var(--dark);
+    font-size: 0.86rem;
+  }
+}
+
+.mla-swatch {
+  display: inline-block;
+  width: 0.85rem;
+  height: 0.85rem;
+  border-radius: 2px;
+  border: 0;
+  box-shadow: 0 0 0 1px var(--mla-cached-edge) inset;
+}
+.mla-swatch--cached {
+  background: var(--mla-cached-bg);
+}
+
+.mla-cache-note {
+  margin: 0;
+  color: var(--mla-note);
+  font-size: 0.78rem;
+  line-height: 1.45;
+}
+
+.mla-readout {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin: 0;
+  padding: 0.8rem 0.95rem;
+  background: color-mix(in srgb, var(--light) 80%, transparent);
+  border: 0;
+  box-shadow: 0 0 0 1px var(--mla-div) inset;
+  border-radius: 6px;
+  font-size: 0.82rem;
+  color: var(--mla-note);
+}
+
+.mla-readout-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: baseline;
+  gap: 0.5rem;
+  margin: 0;
+
+  dt {
+    margin: 0;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.35rem;
+  }
+  dd {
+    margin: 0;
+    color: var(--dark);
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+.mla-readout-eq {
+  font-size: 0.7rem;
+  color: var(--mla-note);
+  font-variant-numeric: tabular-nums;
+}
+.mla-readout-val {
+  font-weight: 600;
+}
+.mla-readout-val--accent {
+  color: var(--mla-cached-edge);
+}
+.mla-readout-val--big {
+  font-size: 1rem;
+  letter-spacing: 0.02em;
+}
+
+.mla-math {
+  display: inline-block;
+  color: inherit;
+  .katex {
+    color: inherit;
+    font-size: 0.95em;
+  }
+}
+
+.mla-math--display {
+  display: block;
+  .katex-display {
+    margin: 0;
+    overflow-x: auto;
+    overflow-y: hidden;
+    text-align: left;
+    & > .katex {
+      text-align: left;
+    }
+  }
+}
+
+.mla-controls {
+  margin-top: 1.1rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 0.65rem 1rem;
+}
+
+.mla-control {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-rows: auto auto;
+  align-items: center;
+  column-gap: 0.5rem;
+  row-gap: 0.25rem;
+}
+
+.mla-label {
+  grid-column: 1 / 3;
+  color: var(--mla-note);
+  font-size: 0.8rem;
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.35rem;
+}
+
+.mla-slider {
+  grid-column: 1 / 2;
+  min-width: 0;
+  @include stableRangeControl;
+}
+
+.mla-value {
+  grid-column: 2 / 3;
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  min-width: 4ch;
+  text-align: right;
+  color: var(--dark);
+}
+.mla-value--accent {
+  color: var(--mla-cached-edge);
+}
+
+.mla-eqs {
+  margin-top: 1rem;
+  padding: 0.85rem 1rem;
+  border-radius: var(--radius-7-2);
+  border: 0;
+  box-shadow: 0 0 0 1px var(--mla-div) inset;
+  background: color-mix(in srgb, var(--light) 96%, transparent);
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  color: var(--dark);
+}
+
+.mla-bet {
+  margin: 0.2rem 0 0;
+  padding: 0.55rem 0.75rem;
+  box-shadow: 2px 0 0 var(--mla-salmon) inset;
+  background: color-mix(in srgb, var(--mla-salmon) 6%, transparent);
+  color: var(--mla-note);
+  font-size: 0.86rem;
+  line-height: 1.5;
+}
+
+.mla-caption {
+  margin-top: 0.9rem;
+  color: color-mix(in srgb, var(--gray) 70%, var(--dark) 30%);
+  font-size: 0.85rem;
+  text-align: center;
+}
+
+@container mla-figure (max-width: 760px) {
+  .mla-stage {
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+  }
+  .mla-controls {
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  }
+}
+
+@container mla-figure (max-width: 440px) {
+  .mla-latent-path {
+    padding: 0;
+  }
+  .mla-controls {
+    grid-template-columns: 1fr;
+  }
+}
