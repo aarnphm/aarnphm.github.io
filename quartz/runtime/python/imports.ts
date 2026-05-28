@@ -1,4 +1,12 @@
-const ignoredImports = new Set(['import_ipynb', 'jax', 'nbimporter', 'torch'])
+const ignoredImports = new Set([
+  'import_ipynb',
+  'ipython',
+  'jax',
+  'js',
+  'nbimporter',
+  'pyodide',
+  'torch',
+])
 
 export function extractPythonImports(source: string): string[] {
   const names = new Set<string>()
@@ -19,6 +27,8 @@ export function extractPythonImports(source: string): string[] {
       names.add(fromMatch[1])
     }
   }
-  for (const ignored of ignoredImports) names.delete(ignored)
+  for (const name of names) {
+    if (ignoredImports.has(name.toLowerCase())) names.delete(name)
+  }
   return [...names]
 }
