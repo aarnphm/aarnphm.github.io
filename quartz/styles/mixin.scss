@@ -72,8 +72,8 @@
   }
 
   &::-webkit-slider-thumb {
-    width: 1rem;
-    height: 1rem;
+    width: 0.72rem;
+    height: 0.72rem;
     margin-top: -0.35rem;
     appearance: none;
     border: 0;
@@ -96,8 +96,8 @@
   }
 
   &::-moz-range-thumb {
-    width: 1rem;
-    height: 1rem;
+    width: 0.72rem;
+    height: 0.72rem;
     border: 0;
     border-radius: 999px;
     background: $thumb-color;

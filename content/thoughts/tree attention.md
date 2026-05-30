@@ -2,7 +2,7 @@
 date: '2026-05-27'
 description: softmax reduction over a communication tree, log p stages across p devices instead of linear ring traversal.
 id: attention-tree
-modified: 2026-05-27 23:19:19 GMT-04:00
+modified: 2026-05-29 13:27:41 GMT-04:00
 seealso:
   - '[[thoughts/Attention|main stage]]'
   - '[[thoughts/ring attention|ring attention]]'
@@ -11,7 +11,7 @@ tags:
   - ml
   - llm
   - technical
-title: tree attention
+title: Tree Attention
 ---
 
 Tree Attention [@shyam2025treeattentiontopologyawaredecoding] derives an energy formulation of attention and evaluates the softmax reduction through a communication tree. Keys and values are sharded along the sequence dimension; each query reduces over shards in $\log p$ stages for $p$ devices, cutting communication steps relative to the linear pipeline used in RingAttention. The method stays exact and can reuse single-GPU kernels such as FlashAttention-2, yielding up to $4\times$ decoder speedups on Llama-scale models while lowering peak memory traffic.

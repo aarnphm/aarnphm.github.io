@@ -2,7 +2,7 @@
 date: '2025-08-20'
 description: a function on a real or complex vector space that returns non-negative reals while satisfying the standard axioms.
 id: norm
-modified: 2026-05-09 17:51:52 GMT-04:00
+modified: 2026-05-29 11:37:24 GMT-04:00
 tags:
   - math
 title: norm
@@ -32,9 +32,15 @@ $$
 
 this establishes $\lVert x + y \rVert_p \le \lVert x \rVert_p + \lVert y \rVert_p$.
 
-### absolute homogeneity
+### absolute homogeneity of $\ell_p$
 
-let $p$ be any norm and $\lambda \in f$. write $\lambda = r e^{i\theta}$ with $r = |\lambda| \ge 0$. if $r = 0$ then $p(\lambda x) = p(0) = 0 = r p(x)$. otherwise, set $y = e^{-i\theta} x$; by the triangle inequality applied to $y$ and multiple copies of itself we obtain $p(n y) \le n p(y)$ for any integer $n$. scaling by rationals and continuity of multiplication extend this to real scalars, yielding $p(\lambda x) = r p(x)$.
+for a scalar $\lambda \in f$ and $x \in \mathbb{r}^n$, pull the scalar out of every term:
+
+$$
+\lVert \lambda x \rVert_p = \left(\sum_i |\lambda x_i|^p\right)^{1/p} = \left(|\lambda|^p \sum_i |x_i|^p\right)^{1/p} = |\lambda|\left(\sum_i |x_i|^p\right)^{1/p} = |\lambda|\,\lVert x \rVert_p.
+$$
+
+homogeneity is a defining axiom, so for an abstract norm it is assumed, not proven; subadditivity alone never forces it (the triangle inequality only gives $p(\lambda x) \le |\lambda|\,p(x)$ for integer $\lambda$). the computation above just checks that the concrete $\ell_p$ formula honours said axiom.
 
 ### positive definiteness of $\ell_p$
 

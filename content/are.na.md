@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-05-28 19:22:28 GMT-04:00
+modified: 2026-05-29 18:01:52 GMT-04:00
 permalinks:
   - /website
   - /tweets
@@ -4407,6 +4407,10 @@ title: are.na
   - view: list
   - json: true
 
+- https://www.math.toronto.edu/ivan/mat327/?resources -- MATH327 Topology
+  - [meta]:
+    - date: 05/29/2026
+    - tags: [topology, lecture notes]
 - https://www.youtube.com/watch?v=ErJp91YBXbo -- Stochastic Calculus
   - [meta]:
     - date: 05/27/2026
@@ -8255,6 +8259,10 @@ title: are.na
 
 ## arts
 
+- https://www.miergallery.com/exhibitions/marin-majic3/selected-works -- Nino Mier Gallery
+  - [meta]:
+    - date: 05/29/2026
+    - tags: [painting]
 - https://www.ssavaart.com/sketchbooks -- Venice Sketchbook
   - [meta]:
     - date: 03/12/2026

@@ -1,6 +1,6 @@
 import { Cite } from '@citation-js/core'
 import { XMLParser } from 'fast-xml-parser'
-import fs from 'node:fs'
+import fs from 'node:fs/promises'
 import type { QuartzEmitterPlugin } from '../../types/plugin'
 import { joinSegments, QUARTZ } from '../../util/path'
 import {
@@ -34,16 +34,16 @@ interface Options {
 
 const citationsCacheFile = joinSegments(QUARTZ, '.quartz-cache', 'citations.json')
 
-function readCachePayload(): CitationsCachePayload {
-  if (!fs.existsSync(citationsCacheFile)) {
+async function readCachePayload(): Promise<CitationsCachePayload> {
+  try {
+    const raw = await fs.readFile(citationsCacheFile, 'utf8')
+    return JSON.parse(raw) as CitationsCachePayload
+  } catch {
     return { papers: {}, documents: {} }
   }
-
-  const raw = fs.readFileSync(citationsCacheFile, 'utf8')
-  return JSON.parse(raw) as CitationsCachePayload
 }
 
-hydrateCache(readCachePayload())
+const hydrateCacheOnLoad = readCachePayload().then(payload => hydrateCache(payload))
 
 function documentsEqual(a: Map<string, string[]>, b: Map<string, string[]>): boolean {
   if (a.size !== b.size) return false
@@ -153,7 +153,12 @@ export async function ensureBibEntries(ids: Iterable<string>, bibliography: stri
   const normalizedIds = Array.from(
     new Set(Array.from(ids, id => normalizeArxivId(id)).filter(Boolean)),
   ).sort((a, b) => a.localeCompare(b))
-  const fileContent = fs.existsSync(bibliography) ? fs.readFileSync(bibliography, 'utf8') : ''
+  let fileContent = ''
+  try {
+    fileContent = await fs.readFile(bibliography, 'utf8')
+  } catch {
+    fileContent = ''
+  }
   const libItems = fileContent.trim()
     ? (new Cite(fileContent, { generateGraph: false }).data as any[])
     : []
@@ -270,7 +275,7 @@ export async function ensureBibEntries(ids: Iterable<string>, bibliography: stri
 
   if (newEntries.length > 0) {
     const prefix = fileContent.trim().length ? '\n\n' : ''
-    fs.appendFileSync(bibliography, `${prefix}${newEntries.join('\n\n')}\n`)
+    await fs.appendFile(bibliography, `${prefix}${newEntries.join('\n\n')}\n`)
     console.log(`[citations] appended ${newEntries.length} new entries to ${bibliography}`)
   }
 }
@@ -280,6 +285,7 @@ export const Bibliography: QuartzEmitterPlugin<Partial<Options>> = opts => {
   return {
     name: 'Bibliography',
     async *emit(ctx, content) {
+      await hydrateCacheOnLoad
       const documents = new Map<string, string[]>()
       for (const [, file] of content) {
         const ids = file.data.citations?.arxivIds

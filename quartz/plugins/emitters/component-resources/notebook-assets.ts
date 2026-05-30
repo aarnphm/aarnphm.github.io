@@ -1,6 +1,6 @@
 import { build as bundle, type Plugin } from 'esbuild'
 import { globby } from 'globby'
-import { existsSync } from 'node:fs'
+import { existsSync as fileExistsSync } from 'node:fs'
 import fs from 'node:fs/promises'
 import { createRequire } from 'node:module'
 import path from 'path'
@@ -141,10 +141,10 @@ function pyrightInternalSourcePath(importPath: string): string {
     basedpyrightInternalSourceDir(),
     importPath.slice('pyright-internal/'.length),
   )
-  if (existsSync(sourcePath)) return sourcePath
+  if (fileExistsSync(sourcePath)) return sourcePath
   for (const ext of ['.ts', '.tsx', '.js', '.json']) {
     const candidate = `${sourcePath}${ext}`
-    if (existsSync(candidate)) return candidate
+    if (fileExistsSync(candidate)) return candidate
   }
   return sourcePath
 }
@@ -415,8 +415,12 @@ async function readNativeRuntimeGitDir(): Promise<string> {
 async function readNativeRuntimeGitCommonDir(): Promise<string> {
   const gitDir = await readNativeRuntimeGitDir()
   const commonDirPath = path.join(gitDir, 'commondir')
-  if (!existsSync(commonDirPath)) return gitDir
-  const commonDir = (await fs.readFile(commonDirPath, 'utf8')).trim()
+  let commonDir: string
+  try {
+    commonDir = (await fs.readFile(commonDirPath, 'utf8')).trim()
+  } catch {
+    return gitDir
+  }
   return path.resolve(gitDir, commonDir)
 }
 
@@ -432,7 +436,10 @@ async function readNativeRuntimePackGitLfsObject(
     pointer.oid.slice(2, 4),
     pointer.oid,
   )
-  if (!existsSync(objectPath)) {
+  let content: Buffer
+  try {
+    content = await fs.readFile(objectPath)
+  } catch {
     throw new Error(
       `native runtime pack asset ${filename} is a Git LFS pointer; run git lfs pull --include=${path.join(
         notebookNativeRuntimePacksDir,
@@ -440,7 +447,6 @@ async function readNativeRuntimePackGitLfsObject(
       )}`,
     )
   }
-  const content = await fs.readFile(objectPath)
   if (content.byteLength !== pointer.size) {
     throw new Error(`native runtime pack asset ${filename} Git LFS object size is invalid`)
   }

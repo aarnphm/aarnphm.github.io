@@ -5,11 +5,11 @@ import satori, { SatoriOptions } from 'satori'
 import sharp from 'sharp'
 import { i18n } from '../../i18n'
 import { QuartzEmitterPlugin } from '../../types/plugin'
+import { copyFile } from '../../util/copy-file'
 import { BuildCtx } from '../../util/ctx'
 import { getIconCode } from '../../util/emoji'
 import { loadEmoji } from '../../util/emoji-node'
 import { unescapeHTML } from '../../util/escape'
-import { linkOrCopyFile } from '../../util/link-or-copy-file'
 import { ImageOptions, SocialImageOptions, defaultImage, getSatoriFonts } from '../../util/og'
 import { FilePath, FullSlug, QUARTZ, getFileExtension, joinSegments } from '../../util/path'
 import { QuartzPluginData } from '../vfile'
@@ -151,9 +151,7 @@ async function processOgImage(
     await ensureCachedOgImage(cachePath, content)
   }
 
-  return linkOrCopyFile(cachePath, dest, {
-    hardLink: ctx.argv.watch && process.env.CF_PAGES !== '1',
-  })
+  return copyFile(cachePath, dest)
 }
 
 export const CustomOgImagesEmitterName = 'CustomOgImages'

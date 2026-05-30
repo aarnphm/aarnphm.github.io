@@ -156,14 +156,15 @@ export const write = async ({ ctx, slug, ext, content }: WriteOptions): Promise<
   const perf = new PerfTimer()
   const pathToPage = joinSegments(ctx.argv.output, slug + ext) as FilePath
   const dir = path.dirname(pathToPage)
-  await ensureOutputDir(dir)
+  const cacheEntry = ctx.incremental || ctx.argv.watch ? contentCacheEntry(content) : undefined
   if (ctx.cleanOutput) {
+    await ensureOutputDir(dir)
     await fs.promises.writeFile(pathToPage, content)
     logBuildSpan(ctx.argv, 'write', pathToPage, perf.elapsedMs())
     return pathToPage
   }
-  const cacheEntry = ctx.incremental || ctx.argv.watch ? contentCacheEntry(content) : undefined
   if (!ctx.incremental) {
+    await ensureOutputDir(dir)
     await fs.promises.writeFile(pathToPage, content)
     cacheWrittenContent(pathToPage, cacheEntry)
     logBuildSpan(ctx.argv, 'write', pathToPage, perf.elapsedMs())
@@ -176,6 +177,7 @@ export const write = async ({ ctx, slug, ext, content }: WriteOptions): Promise<
     return pathToPage
   }
   if (cachedStatus === 'changed' && canWriteCachedContent(content)) {
+    await ensureOutputDir(dir)
     await fs.promises.writeFile(pathToPage, content)
     cacheWrittenContent(pathToPage, cacheEntry)
     logBuildSpan(ctx.argv, 'write', pathToPage, perf.elapsedMs())
@@ -185,6 +187,7 @@ export const write = async ({ ctx, slug, ext, content }: WriteOptions): Promise<
     logBuildSpan(ctx.argv, 'write:skip', pathToPage, perf.elapsedMs())
     return pathToPage
   }
+  await ensureOutputDir(dir)
   await fs.promises.writeFile(pathToPage, content)
   cacheWrittenContent(pathToPage, cacheEntry)
   logBuildSpan(ctx.argv, 'write', pathToPage, perf.elapsedMs())

@@ -99,11 +99,9 @@ test('static partial emit copies only changed quartz static files', async () => 
   }
 })
 
-test('Cloudflare Pages watch static partial emit writes regular files', async () => {
-  const root = await mkdtemp(path.join(tmpdir(), 'quartz-static-partial-cf-pages-'))
-  const previousCfPages = process.env.CF_PAGES
+test('watch static partial emit writes regular files', async () => {
+  const root = await mkdtemp(path.join(tmpdir(), 'quartz-static-partial-watch-'))
   try {
-    process.env.CF_PAGES = '1'
     const ctx = testCtx(root)
     ctx.argv.watch = true
     const plugin = Static()
@@ -118,11 +116,6 @@ test('Cloudflare Pages watch static partial emit writes regular files', async ()
     assert.deepEqual(emitted, [expected])
     assert.equal((await lstat(expected)).isSymbolicLink(), false)
   } finally {
-    if (previousCfPages === undefined) {
-      delete process.env.CF_PAGES
-    } else {
-      process.env.CF_PAGES = previousCfPages
-    }
     await rm(root, { recursive: true, force: true })
   }
 })

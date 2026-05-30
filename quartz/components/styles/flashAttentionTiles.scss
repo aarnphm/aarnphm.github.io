@@ -34,7 +34,7 @@
 .fat-graph {
   width: 100%;
   height: auto;
-  aspect-ratio: 720 / 460;
+  aspect-ratio: 720 / 492;
   display: block;
 
   .fat-fo--axis {
@@ -43,6 +43,7 @@
     font-weight: 600;
   }
   .fat-fo--block-label {
+    justify-content: flex-end;
     font-size: 12px;
     font-weight: 600;
     color: var(--fat-note-fg);
@@ -58,12 +59,6 @@
   .fat-fo--tile {
     font-size: 11.5px;
     color: var(--dark);
-    gap: 0.15em;
-    flex-wrap: wrap;
-    small {
-      font-size: 0.8em;
-      color: var(--fat-note-fg);
-    }
   }
   .fat-fo--caption-line {
     color: var(--fat-note-fg);
@@ -164,9 +159,9 @@
   color: var(--fat-note-fg);
   font-family: var(--bodyFont);
   font-size: 0.85rem;
-  strong {
+  .katex {
     color: var(--dark);
-    font-weight: 600;
+    font-size: 0.95em;
   }
 }
 
@@ -183,9 +178,6 @@
   border: 0;
   box-shadow: 0 0 0 1px var(--fat-divider) inset;
   background: color-mix(in srgb, var(--light) 96%, transparent);
-  h4 {
-    @include figure-card-heading(0.82rem);
-  }
 }
 
 .fat-stats {
@@ -200,14 +192,32 @@
   }
   dd {
     margin: 0;
-    font-variant-numeric: tabular-nums;
+  }
+  .katex {
+    color: inherit;
+    font-size: 0.95em;
   }
 }
 
 .fat-recurrence {
   display: flex;
   flex-direction: column;
-  gap: 0.45rem;
+  gap: 0.3rem;
+  margin-top: 1rem;
+  padding: 0.85rem 1.1rem;
+  border-radius: var(--radius-7-2);
+  box-shadow: 0 0 0 1px var(--fat-divider) inset;
+  background: color-mix(in srgb, var(--light) 96%, transparent);
+
+  .fat-math {
+    display: block;
+  }
+  .katex-display {
+    margin: 0.2rem 0;
+    text-align: center;
+    overflow-x: auto;
+    overflow-y: hidden;
+  }
 }
 
 .fat-math {
@@ -227,12 +237,14 @@
 
 .fat-ratio {
   margin: 0;
+  min-width: 0;
+  overflow-x: auto;
   font-family: var(--bodyFont);
   font-size: 0.85rem;
   color: var(--fat-note-fg);
-  strong {
+  .katex {
     color: var(--dark);
-    font-variant-numeric: tabular-nums;
+    font-size: 0.92em;
   }
 }
 
@@ -254,5 +266,8 @@
 @container fat-figure (max-width: 460px) {
   .flash-attention-tiles {
     padding: 0;
+  }
+  .fat-recurrence .katex {
+    font-size: 0.82em;
   }
 }

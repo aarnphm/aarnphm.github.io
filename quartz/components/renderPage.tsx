@@ -665,6 +665,41 @@ const getFootnotesList = (node: Element) =>
 const getBibList = (node: Element) =>
   (node.children as Element[]).filter(val => val.tagName === 'ul')[0]
 
+type RenderTreeFeatures = {
+  hasTranscludeBlockquote: boolean
+  hasReferences: boolean
+  hasFootnotes: boolean
+}
+
+function collectRenderTreeFeatures(root: Root): RenderTreeFeatures {
+  const features: RenderTreeFeatures = {
+    hasTranscludeBlockquote: false,
+    hasReferences: false,
+    hasFootnotes: false,
+  }
+  visit(root, 'element', node => {
+    if (node.tagName === 'blockquote') {
+      const className = node.properties?.className
+      const classes = Array.isArray(className) ? className : className ? [className] : []
+      if (classes.includes('transclude')) {
+        features.hasTranscludeBlockquote = true
+      }
+    } else if (node.tagName === 'section') {
+      if (node.properties?.dataReferences === '') {
+        features.hasReferences = true
+      }
+      if (node.properties?.dataFootnotes === '') {
+        features.hasFootnotes = true
+      }
+    }
+
+    if (features.hasTranscludeBlockquote && features.hasReferences && features.hasFootnotes) {
+      return EXIT
+    }
+  })
+  return features
+}
+
 type FootnoteInfo = {
   originalHref: string
   index: number
@@ -1031,7 +1066,6 @@ export function transcludeFinal(
   userOpts?: Partial<TranscludeOptions>,
 ): Root {
   const { cfg, allFiles, fileData } = componentData
-  const renderData = renderDataFor(componentData.ctx, allFiles)
   // NOTE: return early these cases, we probably don't want to transclude them anw
   if (fileData.frontmatter?.poem || fileData.frontmatter?.menu) return root
 
@@ -1057,6 +1091,7 @@ export function transcludeFinal(
 
   const { dynalist, skipTranscludes } = opts
   const notebookRuntimeTranscludes = new Map<string, number>()
+  const features = collectRenderTreeFeatures(root)
 
   const pruneLeadingHeading = (nodes: ElementContent[]): ElementContent[] => {
     let removed = false
@@ -1225,17 +1260,20 @@ export function transcludeFinal(
     return true
   }
 
-  // NOTE: process transcludes in componentData
-  visit(root, { tagName: 'blockquote' }, node => {
-    const classNames = (node.properties?.className ?? []) as string[]
-    const url = node.properties.dataUrl as string
-    const alias = (
-      node.properties?.dataEmbedAlias !== 'undefined'
-        ? node.properties?.dataEmbedAlias
-        : node.properties?.dataBlock
-    ) as string
+  if (features.hasTranscludeBlockquote) {
+    const renderData = renderDataFor(componentData.ctx, allFiles)
+    visit(root, { tagName: 'blockquote' }, node => {
+      const classNames = (node.properties?.className ?? []) as string[]
+      const url = node.properties.dataUrl as string
+      const alias = (
+        node.properties?.dataEmbedAlias !== 'undefined'
+          ? node.properties?.dataEmbedAlias
+          : node.properties?.dataBlock
+      ) as string
 
-    if (classNames.includes('transclude')) {
+      if (!classNames.includes('transclude')) {
+        return
+      }
       if (skipTranscludes) {
         return
       }
@@ -1463,6 +1501,7 @@ export function transcludeFinal(
               { type: 'text', value: '\n' },
             )
             root.children.push(footnoteSection)
+            features.hasFootnotes = true
           } else {
             visit(footnoteSection, { tagName: 'ol' }, (node: Element) => {
               node.children.push(...filteredFootnotes)
@@ -1484,6 +1523,7 @@ export function transcludeFinal(
               { type: 'text', value: '\n' },
             )
             root.children.push(bibSection)
+            features.hasReferences = true
           } else {
             visit(bibSection, { tagName: 'ul' }, (node: Element) => {
               node.children.push(...filteredBibs)
@@ -1573,8 +1613,8 @@ export function transcludeFinal(
           node.children = validChildren
         }
       }
-    }
-  })
+    })
+  }
 
   // NOTE: handling collapsible nodes
   if (shouldProcessHeaders(fileData, dynalist, slug)) {
@@ -1582,8 +1622,12 @@ export function transcludeFinal(
   }
 
   // NOTE: We then merge all references and footnotes to final items
-  mergeReferences(root)
-  mergeFootnotes(root)
+  if (features.hasReferences) {
+    mergeReferences(root)
+  }
+  if (features.hasFootnotes) {
+    mergeFootnotes(root)
+  }
 
   // NOTE: Update the file's reading time with transcluded content
   if (fileData.readingTime) {
