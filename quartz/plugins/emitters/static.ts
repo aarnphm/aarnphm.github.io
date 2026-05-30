@@ -9,6 +9,7 @@ import { logBuildSpan, PerfTimer } from '../../util/perf'
 
 const staticPath = joinSegments(QUARTZ, 'static')
 const staticPathPrefix = `${staticPath}/`
+let staticFileCache: FilePath[] | undefined
 
 function staticRelativePath(changeEvent: ChangeEvent): FilePath | undefined {
   if (!changeEvent.path.startsWith(staticPathPrefix)) {
@@ -25,12 +26,21 @@ async function copyStaticFile(output: string, fp: FilePath): Promise<FilePath> {
   return copyFileFast(src, dest)
 }
 
+export function resetStaticFileCache(): void {
+  staticFileCache = undefined
+}
+
+async function staticFiles(ignorePatterns: string[]): Promise<FilePath[]> {
+  staticFileCache ??= await glob('**', staticPath, ignorePatterns)
+  return staticFileCache
+}
+
 export const Static: QuartzEmitterPlugin = () => ({
   name: 'Static',
   async *emit({ argv, cfg }, _content, _resources) {
     const outputStaticPath = joinSegments(argv.output, 'static')
     const globPerf = new PerfTimer()
-    const fps = await glob('**', staticPath, cfg.configuration.ignorePatterns)
+    const fps = await staticFiles(cfg.configuration.ignorePatterns)
     logBuildSpan(argv, 'static:glob', `${fps.length} files`, globPerf.elapsedMs())
     await fs.mkdir(outputStaticPath, { recursive: true })
     const copyPerf = new PerfTimer()
@@ -48,6 +58,7 @@ export const Static: QuartzEmitterPlugin = () => ({
       if (!fp) {
         continue
       }
+      resetStaticFileCache()
 
       if (changeEvent.type === 'delete') {
         const dest = joinSegments(argv.output, 'static', fp) as FilePath

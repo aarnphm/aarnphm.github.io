@@ -1,0 +1,167 @@
+import fs from 'node:fs/promises'
+import { AdaptiveRateLimiter, fetchWithRetry } from '../plugins/stores/citations'
+import {
+  normalizeSport,
+  RawStravaActivity,
+  StravaRawCache,
+  StravaStreams,
+} from '../plugins/stores/strava'
+import { joinSegments, QUARTZ } from '../util/path'
+
+const TOKEN_URL = 'https://www.strava.com/oauth/token'
+const API = 'https://www.strava.com/api/v3'
+const PER_PAGE = 200
+const cacheFile = joinSegments(QUARTZ, '.quartz-cache', 'strava.json')
+const limiter = new AdaptiveRateLimiter(1500, 60_000)
+
+interface TokenResponse {
+  access_token: string
+  refresh_token: string
+}
+
+async function readCache(): Promise<StravaRawCache | null> {
+  try {
+    return JSON.parse(await fs.readFile(cacheFile, 'utf8')) as StravaRawCache
+  } catch {
+    return null
+  }
+}
+
+async function refresh(
+  clientId: string,
+  clientSecret: string,
+  refreshToken: string,
+): Promise<TokenResponse> {
+  const body = new URLSearchParams({
+    client_id: clientId,
+    client_secret: clientSecret,
+    grant_type: 'refresh_token',
+    refresh_token: refreshToken,
+  })
+  const res = await fetchWithRetry(TOKEN_URL, { method: 'POST', body }, limiter)
+  if (!res) throw new Error('token refresh failed (network/auth)')
+  return (await res.json()) as TokenResponse
+}
+
+async function resolveToken(
+  prev: StravaRawCache | null,
+): Promise<{ access: string; refreshToken: string }> {
+  const clientId = process.env.STRAVA_CLIENT_ID
+  const clientSecret = process.env.STRAVA_CLIENT_SECRET
+  const refreshToken = prev?.auth.refreshToken || process.env.STRAVA_REFRESH_TOKEN
+  if (clientId && clientSecret && refreshToken) {
+    const token = await refresh(clientId, clientSecret, refreshToken)
+    if (token.refresh_token !== refreshToken) console.log('[strava] refresh token rotated')
+    return { access: token.access_token, refreshToken: token.refresh_token }
+  }
+  const direct = process.env.STRAVA_ACCESS_TOKEN
+  if (direct) {
+    console.log('[strava] using STRAVA_ACCESS_TOKEN directly (no client_id for refresh flow)')
+    return { access: direct, refreshToken: refreshToken ?? '' }
+  }
+  throw new Error(
+    'need STRAVA_CLIENT_ID + STRAVA_CLIENT_SECRET + STRAVA_REFRESH_TOKEN, or STRAVA_ACCESS_TOKEN',
+  )
+}
+
+function mapActivity(raw: Record<string, unknown>): RawStravaActivity {
+  return {
+    id: raw.id as number,
+    name: String(raw.name ?? ''),
+    sportType: String(raw.sport_type ?? raw.type ?? ''),
+    distance: Number(raw.distance ?? 0),
+    movingTime: Number(raw.moving_time ?? 0),
+    elapsedTime: Number(raw.elapsed_time ?? 0),
+    totalElevationGain: Number(raw.total_elevation_gain ?? 0),
+    startDate: String(raw.start_date ?? ''),
+    startDateLocal: String(raw.start_date_local ?? raw.start_date ?? ''),
+    averageSpeed: Number(raw.average_speed ?? 0),
+    averageHeartrate:
+      raw.average_heartrate === undefined ? undefined : Number(raw.average_heartrate),
+  }
+}
+
+async function fetchActivities(
+  token: string,
+  after: number,
+): Promise<{ activities: RawStravaActivity[]; athleteId: number }> {
+  const headers = { Authorization: `Bearer ${token}` }
+  const activities: RawStravaActivity[] = []
+  let athleteId = 0
+  for (let page = 1; ; page++) {
+    const url = `${API}/athlete/activities?after=${after}&per_page=${PER_PAGE}&page=${page}`
+    const res = await fetchWithRetry(url, { headers }, limiter)
+    if (!res) throw new Error(`activity fetch failed at page ${page}`)
+    const batch = (await res.json()) as Record<string, unknown>[]
+    if (!Array.isArray(batch) || batch.length === 0) break
+    for (const raw of batch) {
+      const athlete = raw.athlete as { id?: number } | undefined
+      if (athlete?.id) athleteId = athlete.id
+      activities.push(mapActivity(raw))
+    }
+    console.log(`[strava] page ${page}: ${batch.length} activities`)
+    if (batch.length < PER_PAGE) break
+  }
+  return { activities, athleteId }
+}
+
+async function fetchStreams(token: string, id: number): Promise<StravaStreams | null> {
+  const headers = { Authorization: `Bearer ${token}` }
+  const url = `${API}/activities/${id}/streams?keys=latlng,altitude,distance&key_by_type=true`
+  const res = await fetchWithRetry(url, { headers }, limiter)
+  if (!res) return null
+  const data = (await res.json()) as Record<string, { data?: unknown[] }>
+  return {
+    latlng: (data.latlng?.data as [number, number][]) ?? [],
+    altitude: (data.altitude?.data as number[]) ?? [],
+    distance: (data.distance?.data as number[]) ?? [],
+  }
+}
+
+async function main(): Promise<void> {
+  const prev = await readCache()
+  const { access, refreshToken } = await resolveToken(prev)
+  const { activities, athleteId } = await fetchActivities(access, prev?.lastActivityStart ?? 0)
+
+  const merged: Record<string, RawStravaActivity> = { ...prev?.activities }
+  for (const a of activities) merged[String(a.id)] = a
+
+  let lastActivityStart = prev?.lastActivityStart ?? 0
+  for (const a of Object.values(merged)) {
+    const epoch = Math.floor(Date.parse(a.startDate) / 1000)
+    if (Number.isFinite(epoch) && epoch > lastActivityStart) lastActivityStart = epoch
+  }
+
+  const streams: Record<string, StravaStreams> = { ...prev?.streams }
+  const needStreams = Object.values(merged)
+    .filter(a => normalizeSport(a.sportType) !== null && !streams[String(a.id)])
+    .sort((x, y) => y.startDate.localeCompare(x.startDate))
+  for (const a of needStreams) {
+    const s = await fetchStreams(access, a.id)
+    if (s) streams[String(a.id)] = s
+  }
+  if (needStreams.length > 0)
+    console.log(`[strava] fetched streams for ${needStreams.length} activities`)
+
+  const cache: StravaRawCache = {
+    athleteId: athleteId || prev?.athleteId || 0,
+    auth: { refreshToken, obtainedAt: Date.now() },
+    lastSync: Date.now(),
+    lastActivityStart,
+    activities: Object.fromEntries(
+      Object.entries(merged).sort(([a], [b]) => Number(a) - Number(b)),
+    ),
+    streams,
+  }
+
+  await fs.mkdir(joinSegments(QUARTZ, '.quartz-cache'), { recursive: true })
+  await fs.writeFile(cacheFile, JSON.stringify(cache, null, 2))
+  console.log(
+    `[strava] wrote ${Object.keys(merged).length} activities (+${activities.length} new) → ${cacheFile}`,
+  )
+}
+
+main().catch(err => {
+  console.error(`[strava] sync failed: ${err instanceof Error ? err.message : err}`)
+  process.exit(1)
+})

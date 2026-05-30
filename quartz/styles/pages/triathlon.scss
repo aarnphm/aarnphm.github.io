@@ -1,0 +1,35 @@
+@use '../variables.scss' as *;
+
+body[data-layout='triathlon'] {
+  .grid {
+    --layout-reading-column: 3 / -3;
+    --layout-wide-column: 3 / -3;
+    --layout-side-column: 3 / -3;
+    --layout-control-column: var(--layout-wide-column);
+    --layout-search-column: var(--layout-wide-column);
+  }
+
+  & section[class~='header'],
+  & .page-footer,
+  & #stacked-notes-container {
+    display: none;
+  }
+
+  & .collapse-rail {
+    width: 0;
+
+    & > .collapse-line {
+      width: 0;
+    }
+  }
+
+  & .page-body-grid,
+  & .page-content {
+    border: 0;
+  }
+
+  & .triathlon {
+    margin-inline: auto;
+    width: 100%;
+  }
+}

@@ -239,6 +239,7 @@ const config: QuartzConfig = {
       Plugin.StreamPage(),
       Plugin.StreamIndex(),
       Plugin.Masonry(),
+      Plugin.Strava(),
       Plugin.CanvasPage(),
       Plugin.NotebookViewer({ runtime: { enabled: true } }),
       Plugin.NotebookPagesManifest(),

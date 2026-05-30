@@ -48,6 +48,7 @@ export type ContentLayout =
   | 'L->EAT'
   | 'A|L'
   | 'L'
+  | 'triathlon'
 export type ContentDetails = {
   slug: string
   title: string

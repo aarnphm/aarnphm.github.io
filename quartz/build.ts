@@ -9,11 +9,13 @@ import sourceMapSupport from 'source-map-support'
 import { styleText } from 'util'
 import cfg from '../quartz.config'
 import { resetWriteCache } from './plugins/emitters/helpers'
+import { resetStaticFileCache } from './plugins/emitters/static'
 import { emitContent } from './processors/emit'
 import { filterContent } from './processors/filter'
 import { parseMarkdown } from './processors/parse'
 import { resetCopyFileCache } from './util/copy-file'
 import { Argv, BuildCtx } from './util/ctx'
+import { emitQuartzDevEvent } from './util/dev-events'
 import { glob, toPosixPath } from './util/glob'
 import { FilePath, joinSegments, slugifyFilePath } from './util/path'
 import { PerfTimer } from './util/perf'
@@ -35,11 +37,27 @@ const syncCtxFiles = (ctx: BuildCtx, allFiles: FilePath[]) => {
 }
 
 type BuildData = { ctx: BuildCtx; ignored: GlobbyFilterFunction; mut: Mutex }
+type BuildReason = 'initial' | 'source'
 type RebuildQueue = { running: boolean; requested: boolean }
 
 type WatchRuntime = { dispose(): Promise<void> }
 
-async function buildQuartz(argv: Argv, mut: Mutex, clientRefresh: () => void) {
+function describeBuildError(err: unknown): string {
+  if (err instanceof Error) return err.message
+  if (typeof err === 'string') return err
+  try {
+    return JSON.stringify(err)
+  } catch {
+    return String(err)
+  }
+}
+
+async function buildQuartz(
+  argv: Argv,
+  mut: Mutex,
+  clientRefresh: () => void,
+  reason: BuildReason = 'initial',
+) {
   let gitCommitSha: string | undefined
 
   if (argv.serve || argv.watch) {
@@ -80,9 +98,12 @@ async function buildQuartz(argv: Argv, mut: Mutex, clientRefresh: () => void) {
 
   const release = await mut.acquire()
   try {
+    emitQuartzDevEvent({ type: 'build:start', epoch: ctx.buildId, reason })
     perf.addEvent('clean')
+    emitQuartzDevEvent({ type: 'public:remove:start', epoch: ctx.buildId })
     await rm(output, { recursive: true, force: true })
     resetCopyFileCache()
+    resetStaticFileCache()
     resetWriteCache()
     console.log(`Removed \`${output}\` in ${perf.timeSince('clean')}`)
 
@@ -103,6 +124,19 @@ async function buildQuartz(argv: Argv, mut: Mutex, clientRefresh: () => void) {
     console.log(
       styleText('green', `Done processing ${markdownPaths.length} files in ${perf.timeSince()}`),
     )
+    emitQuartzDevEvent({
+      type: 'build:ready',
+      epoch: ctx.buildId,
+      files: markdownPaths.length,
+      elapsedMs: perf.elapsedMs(),
+    })
+  } catch (err) {
+    emitQuartzDevEvent({
+      type: 'build:error',
+      epoch: ctx.buildId,
+      message: describeBuildError(err),
+    })
+    throw err
   } finally {
     release()
   }
@@ -197,10 +231,11 @@ async function rebuild(clientRefresh: () => void, buildData: BuildData) {
 
   const release = await mut.acquire()
   let shouldRefresh = false
+  let buildId = randomIdNonSecure()
 
   try {
-    const buildId = randomIdNonSecure()
     ctx.buildId = buildId
+    emitQuartzDevEvent({ type: 'build:start', epoch: buildId, reason: 'content' })
 
     const perf = new PerfTimer()
     perf.addEvent('rebuild')
@@ -221,8 +256,15 @@ async function rebuild(clientRefresh: () => void, buildData: BuildData) {
 
     await emitContent(ctx, processedFiles)
     console.log(styleText('green', `Done rebuilding in ${perf.timeSince()}`))
+    emitQuartzDevEvent({
+      type: 'build:ready',
+      epoch: buildId,
+      files: markdownPaths.length,
+      elapsedMs: perf.elapsedMs(),
+    })
     shouldRefresh = ctx.buildId === buildId
   } catch (err) {
+    emitQuartzDevEvent({ type: 'build:error', epoch: buildId, message: describeBuildError(err) })
     trace('Failed to rebuild Quartz content', err as Error)
   } finally {
     release()
@@ -233,9 +275,9 @@ async function rebuild(clientRefresh: () => void, buildData: BuildData) {
   }
 }
 
-export default async (argv: Argv, mut: Mutex, clientRefresh: () => void) => {
+export default async (argv: Argv, mut: Mutex, clientRefresh: () => void, reason?: BuildReason) => {
   try {
-    return await buildQuartz(argv, mut, clientRefresh)
+    return await buildQuartz(argv, mut, clientRefresh, reason)
   } catch (err) {
     trace('\nExiting Quartz due to a fatal error', err as Error)
   }

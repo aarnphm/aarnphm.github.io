@@ -2,7 +2,7 @@
 date: '2026-05-27'
 description: tiled IO-aware attention kernel, recomputes softmax denominators on-the-fly, avoids materialising the full attention matrix.
 id: attention-flash
-modified: 2026-05-29 13:26:52 GMT-04:00
+modified: 2026-05-29 22:31:05 GMT-04:00
 seealso:
   - '[[thoughts/Attention|main stage]]'
   - '[[thoughts/tree attention|tree attention]]'
@@ -11,7 +11,7 @@ tags:
   - ml
   - llm
   - technical
-title: FlashAttention
+title: Flash Attention
 ---
 
 FlashAttention [@dao2022flashattentionfastmemoryefficientexact] reframes attention as a tiled matrix multiplication that keeps intermediate results in high-speed SRAM rather than slower GPU DRAM. Recomputing softmax denominators on-the-fly avoids materialising the full attention matrix. As sequence lengths grow, attention becomes more IO-bound than FLOP-bound, so this optimisation yields both speedups and numerical stability (via online normalisation). See also FlashAttention-2 [@dao2023flashattention2fasterattentionbetter] and FlashAttention-3 [@shah2024flashattention3fastaccurateattention].
@@ -91,7 +91,9 @@ Only the current tile's $K,V$ blocks ever leave global memory. After processing 
 \end{document}
 ```
 
-Each lane is a level of the [[thoughts/GPU programming|GPU]] memory hierarchy. SRAM moves data $\approx 13\times$ faster than HBM (19 vs 1.5 TB/s) yet holds $\approx 2000\times$ less (20 MB vs 40 GB), so the full $Q, K, V, O$ token matrices live down in the HBM lane while only the active $B_m \times d$ tile sits up in SRAM. FlashAttention loads tiles up, runs the whole softmax on-chip, and touches HBM again only to store $O$ and stream the next $K, V$ block; the interactive view below steps through that loop.
+full $Q, K, V, O$ token matrices live down in the HBM lane while only the active $B_m \times d$ tile sits up in SRAM.
+
+FlashAttention loads tiles up, runs the whole softmax on-chip, and touches HBM again only to store $O$ and stream the next $K, V$ block.
 
 ```jsx imports={Zoomable,FlashAttentionTiles}
 <Zoomable label="FlashAttention tile streaming">
@@ -100,8 +102,8 @@ Each lane is a level of the [[thoughts/GPU programming|GPU]] memory hierarchy. S
 ```
 
 ```jsx imports={Zoomable,FlashDataFlow}
-<Zoomable label="FlashAttention data flow">
-  <FlashDataFlow caption="FA-1 transfers and computes serially; FA-2 splits queries across SMs to stream tiles in parallel; FA-3 overlaps the next tile's load (producer, TMA) with the current tile's compute (consumer, WGMMA), so HBM latency hides under the matmul." />
+<Zoomable label="FlashAttention data movement">
+  <FlashDataFlow caption="The same online-softmax kernel ($S = QK^{\top}$, $P = \mathrm{softmax}(S)$, $O \mathrel{{+}{=}} PV$) under four memory schedules. FA-1 reads-modifies-writes each $O_i$ (with stats $m_i, \ell_i$) through HBM $T_c$ times; FA-2 swaps the loop so $O_i$ stays resident and is written once while query blocks run in parallel across SMs; FA-3 overlaps TMA loads with WGMMA compute through a circular SMEM buffer on Hopper; FA-4 runs fully-asynchronous $\texttt{tcgen05}$ matmuls with accumulators in Blackwell's TMEM, hiding the MMA under a polynomial-exp softmax. Each tab carries its generation's GPU and on-chip memory hierarchy." />
 </Zoomable>
 ```
 
@@ -115,7 +117,7 @@ The $m/\ell/O$ recurrence computes the same softmax as the batched form, one til
 With numerically-stable (safe) softmax. For a logit vector $x \in \mathbb{R}^{V}$, exponentiating directly overflows: $e^{x_i}$ exceeds the FP16 ceiling ($\approx 65504$) once $x_i > 11$, and FP32 near $x_i \approx 88$. Subtracting the row maximum $m_V = \max_k x_k$ forces every exponent to be non-positive, so each $e^{(\cdot)} \in (0,1]$:
 
 $$
-y_i = \frac{e^{x_i - m_V}}{\sum_{j=1}^{V} e^{x_j - m_V}}, \qquad m_V = \max_{k} x_k .
+y_i = \frac{e^{x_i - m_V}}{\sum_{j=1}^{V} e^{x_j - m_V}}, \qquad m_V = \max_{k} x_k
 $$
 
 Computed literally this is three passes over $x$: one for the maximum $m_V$, one for the denominator $\ell_V = \sum_j e^{x_j - m_V}$, one to normalise. The denominator pass is blocked on the maximum pass, because $\ell_V$ subtracts the _global_ $m_V$, which is unknown until the first pass finishes. That coupling is what forces the re-read.
@@ -214,8 +216,6 @@ which gives $dS_{ij} = P_{ij}(dP_{ij} - D_i)$ block-locally, so the backward als
 
 Recomputation costs more FLOPs, and the kernel runs faster anyway, because attention at these lengths is bounded by HBM bandwidth.
 
-The micro-benchmark makes the point cleanly: at $N=4\text{K}$ on an A100, FlashAttention executes _more_ FLOPs than standard attention (75.2 vs 66.6 GFLOP) while moving $9.2\times$ fewer bytes (4.4 vs 40.3 GB) and finishing $5.7\times$ faster (7.3 vs 41.7 ms)
-
 > If the kernel were compute-bound, more FLOPs would be slower; it is faster, which is the direct evidence that bytes, not FLOPs, were the binding constraint.
 
 We should treat the IO model as first-order, in a sense where growing the block size shrinks HBM traffic but eventually makes the kernel compute-bound; past that crossover, further IO reduction stops buying wall-clock time.
@@ -224,13 +224,24 @@ The forward kernel runs $K,V$ on the outer loop and $Q$ on the inner loop, so ea
 
 The block sizes $B_c = \lceil M/4d\rceil$, $B_r = \min(\lceil M/4d\rceil, d)$ keep $Q_i, K_j, V_j, O_i$ and the $B_r \times B_c$ score tile co-resident in SRAM
 
-End-to-end the kernel trained BERT-large (seq 512) $1.15\times$ faster than the Nvidia MLPerf 1.1 record (17.4 vs 20.0 min) and GPT-2 small (seq 1K) in 2.7 days against HuggingFace's 9.5 ($3.5\times$).
-
 ## FlashAttention 2
 
-FlashAttention-2 [@dao2023flashattention2fasterattentionbetter] keeps the same tiling but spends the GPU better. It defers the $1/l_i$ rescaling to the end of the loop instead of every tile, cutting non-matmul FLOPs (which run $\approx 16\times$ slower than matmul on tensor-core hardware). It parallelises over the query-sequence dimension, not just batch and heads, so a single long sequence still saturates the SMs. And it partitions work inside a threadblock by splitting $Q$ across warps (split-Q) rather than $K$ (split-K): each warp owns whole output rows and never round-trips partial sums through shared memory for a reduction. Together that is $\approx 2\times$ over FlashAttention-1, around 50–73% of A100 peak FP16.
+FlashAttention-2 [@dao2023flashattention2fasterattentionbetter] an improvement from FA1 (I would argue that this was an evolution in design).
 
-The retrospective number that motivates FA-2: FA-1 reached only 30–50% of A100 FP16 peak on the forward pass and 25–35% on the backward, against 80–90% for a well-tuned GEMM, and the loss traced to thread-block and warp work partitioning, not the algorithm. The deferred $1/\ell$ rescaling rewrites the accumulator update to carry only the max-correction $\mathrm{diag}(e^{m^{(j-1)}-m^{(j)}})^{-1}$ inside the loop and apply the single division once at the end, which matters because on A100 a non-matmul FP32 FLOP costs $16\times$ a matmul FLOP (19.5 vs 312 TFLOP/s), so even a small count of softmax ops dominates if it sits in the hot path. It stores one statistic per row, the logsumexp $L = m + \log\ell$, rather than the pair $(m, \ell)$. Causal masking exploits the block structure — column-blocks entirely above the diagonal are skipped, roughly half the work at long $N$, for a $1.7$–$1.8\times$ gain, and the elementwise mask touches only the $\sim 1$ diagonal block per row. Forward hits $\approx 230$ TFLOP/s (73% of peak), backward $\approx 196$ (63%); end-to-end GPT training reaches 225 TFLOP/s/GPU (72% model-FLOPs utilisation), $2.8\times$ over a no-FlashAttention baseline. The loop-order swap (Q outer, K/V inner) is credited to Phil Tillet's Triton fused-attention tutorial.
+- It defers the $1/l_i$ rescaling to the end of the loop instead of every tile, cutting non-matmul FLOPs (which run $\approx 16\times$ slower than matmul on tensor-core hardware).
+- It parallelises over the query-sequence dimension, _in addition to batch and heads_, so a single long sequence still saturates the SMs.
+- It also partitions work inside a threadblock by splitting $Q$ across warps (split-Q) rather than $K$ (split-K):
+  - each warp owns whole output rows and never round-trips partial sums through shared memory for a reduction.
+
+Motivation: FA-1 reached only 30–50% of A100 FP16 peak on the forward pass and 25–35% on the backward, against 80–90% for a well-tuned GEMM, and the loss traced to thread-block and warp work partitioning.
+
+The deferred $1/\ell$ rescaling rewrites the accumulator update to carry only the max-correction $\mathrm{diag}(e^{m^{(j-1)}-m^{(j)}})^{-1}$ inside the loop and apply the single division once at the end, which matters more on A100 given that a non-matmul FP32 FLOP costs $16\times$ a matmul FLOP (19.5 vs 312 TFLOP/s), so even a small count of softmax ops dominates if it sits in the hot path.
+
+It stores one statistic per row, the logsumexp $L = m + \log\ell$, rather than the pair $(m, \ell)$.
+
+Note on _causal masking_: it exploits the block structure via column-blocks entirely above the diagonal are skipped, roughly half the work at long $N$, for a $1.7$–$1.8\times$ gain, and the elementwise mask touches only the $\sim 1$ diagonal block per row.
+
+The loop-order swap (Q outer, K/V inner) is credited to Phil Tillet's Triton fused-attention tutorial.
 
 ```tikz
 \usepackage{tikz}
@@ -284,9 +295,25 @@ The retrospective number that motivates FA-2: FA-1 reached only 30–50% of A100
 
 ## FlashAttention 3
 
-FlashAttention-3 [@shah2024flashattention3fastaccurateattention] targets Hopper (H100) and is built around asynchrony. Warps inside a CTA are specialised: producer warps do nothing but issue [[thoughts/GPU programming|TMA]] loads of $K, V$ tiles from HBM into shared memory, while consumer warps do nothing but run WGMMA matmuls on the tensor cores. Because both run asynchronously, the kernel overlaps the load of tile $t{+}1$ with the compute of tile $t$, and ping-pong scheduling further hides the softmax of one warpgroup under the GEMM of another. Add FP8 with block quantisation and incoherent (Hadamard) processing for accuracy, and it reaches $\approx 740$ TFLOPs in FP16 (75% of H100 peak) and $\approx 1.2$ PFLOPs in FP8, $1.5$–$2\times$ over FlashAttention-2.
+FlashAttention-3 [@shah2024flashattention3fastaccurateattention] targets Hopper (H100) and is built around asynchrony.
 
-FA-3 changes no mathematics — the online-softmax recurrence, the $O(N^2 d)$ compute, and the $O(N)$ memory are inherited verbatim — and exists to lift FA-2's 35% H100 FP16 utilisation toward the hardware ceiling by harvesting three kinds of Hopper asynchrony. Warp specialisation splits a thread block into a producer warpgroup that issues only TMA async copies HBM$\to$SMEM and consumer warpgroups that run only WGMMA, with `setmaxnreg` handing registers from the register-light producer to the math-heavy consumers and a circular SMEM buffer decoupling load latency from compute. The softmax, running one-to-two orders of magnitude below tensor-core throughput, is hidden two ways: inter-warpgroup ping-pong schedules one warpgroup's softmax under the other's GEMMs, and intra-warpgroup two-stage pipelining rotates GEMM0 ($S=QK^\top$ for the next block) against GEMM1 ($O\mathrel{+}=PV$ for the current block) so the current exp runs in the shadow of the next matmul. The FP8 path adds per-block quantisation (one scale per $B_r\times d$ tile, the dominant accuracy lever) and incoherent processing — left/right-multiplying $Q,K$ by a random Hadamard-times-sign orthogonal $M$, which leaves $QK^\top$ exact yet spreads outliers, applied in $O(d\log d)$ via a fast Walsh–Hadamard transform. FP16 forward reaches $\approx 740$ TFLOP/s (75% of the 989-TFLOP dense peak), FP8 close to $1.2$ PFLOP/s with RMSE $2.6\times$ below the per-tensor baseline ($9.1\!\times\!10^{-3}$). The honest caveat: that FP8 error is still $\sim 48\times$ the FP16 error, so the throughput is bought at a real, bounded accuracy cost.
+Warps inside a CTA are specialised: producer warps do nothing but issue [[thoughts/GPU programming|TMA]] loads of $K, V$ tiles from HBM into shared memory, while consumer warps do nothing but run WGMMA matmuls on the tensor cores.
+
+Because both run asynchronously, the kernel overlaps the load of tile $t{+}1$ with the compute of tile $t$, and ping-pong scheduling further hides the softmax of one warpgroup under the GEMM of another.
+
+They also add FP8 with block quantisation and incoherent (Hadamard) processing for accuracy, and it reaches $\approx 740$ TFLOPs in FP16 (75% of H100 peak) and $\approx 1.2$ PFLOPs in FP8, $1.5$–$2\times$ over FlashAttention-2.
+
+FA-3 leverages three kinds of Hopper asynchrony, on top of FlashAttention2:
+
+- Warp specialisation splits a thread block into a producer warpgroup that issues only TMA async copies HBM$\to$SMEM and consumer warpgroups that run only WGMMA, with `setmaxnreg` handing registers from the register-light producer to the math-heavy consumers and a circular SMEM buffer decoupling load latency from compute.
+- softmax running one-to-two orders of magnitude below tensor-core throughput is hidden two ways: inter-warpgroup ping-pong schedules one warpgroup's softmax under the other's GEMMs, and intra-warpgroup two-stage pipelining rotates GEMM0 ($S=QK^\top$ for the next block) against GEMM1 ($O\mathrel{+}=PV$ for the current block) so the current exp runs in the shadow of the next matmul.
+- FP8 path adds per-block quantisation (one scale per $B_r\times d$ tile, the dominant accuracy lever) and incoherent processing — left/right-multiplying $Q,K$ by a random Hadamard-times-sign orthogonal $M$, which leaves $QK^\top$ exact yet spreads outliers, applied in $O(d\log d)$ via a fast Walsh–Hadamard transform.
+
+FP16 forward reaches $\approx 740$ TFLOP/s (75% of the 989-TFLOP dense peak), FP8 close to $1.2$ PFLOP/s with RMSE $2.6\times$ below the per-tensor baseline ($9.1\!\times\!10^{-3}$).
+
+> [!IMPORTANT]
+>
+> FP8 error is still $\sim 48\times$ the FP16 error
 
 ```tikz
 \usepackage{tikz}
@@ -327,9 +354,27 @@ FA-3 changes no mathematics — the online-softmax recurrence, the $O(N^2 d)$ co
 
 ## FlashAttention 4
 
-FlashAttention-4 [@dao2024flashattention4] is the Blackwell (B200) kernel. Blackwell's MMA is fully asynchronous, so the pipeline splits into scheduler warps that drive async loads and matmul dispatch and compute warps that run softmax, with one tile's matmuls overlapping the next tile's softmax. Its sharpest trick: rather than route exponentials through the special-function unit (SFU), it emulates $\exp$ with a polynomial on the FMA units, moving the softmax bottleneck onto the general-purpose compute Blackwell has in surplus. It hits $\approx 1605$ TFLOPs in BF16 (71% utilisation), $\approx 2.7\times$ over the Triton kernel, and is the first attention kernel past the petaflop barrier. It currently runs BF16 only; FP4 and 2-CTA matmuls, Blackwell's headline features, are not yet used.
+FlashAttention-4 [@dao2024flashattention4] is the Blackwell (B200) kernel.
 
-The design premise is asymmetric hardware scaling: from H100 to B200, BF16 tensor-core throughput grows $\approx 2.25\times$ (1 to 2.25 PFLOP/s) while per-SM special-function-unit count and shared-memory bandwidth stay flat, so the matmul stops being the bottleneck and the SFU-bound exp (forward) and SMEM-bound data movement (backward) become binding. The polynomial-exp trick computes $2^x = 2^n \cdot 2^f$ by Cody–Waite range reduction — $n$ is a free exponent-field shift, $2^f$ on $[0,1)$ is a cubic in Horner form, exactly three FMAs (Sollya coefficients $p_0=1.0,\ p_1\!\approx\!0.6951,\ p_2\!\approx\!0.2276,\ p_3\!\approx\!0.0771$) — run on the abundant FP32$\times$2 FMA pipes *in parallel* with the hardware `MUFU.EX2`, summing their throughput while matching SFU output for BF16. Conditional online-softmax rescaling gates the $O$-accumulator correction on $m_j - m_{j-1} > \tau$, accumulating against the stale maximum otherwise, which the Hot Chips talk reports cuts corrections $\approx 10\times$; a dedicated correction warpgroup performs the deferred rescale off the critical path. The forward kernel is a deep warp-specialised pipeline on Blackwell's fully asynchronous `tcgen05.mma` (issued by a single leader thread, `cta_group::1`), with accumulators $S, P, O$ in tensor memory (TMEM, 256 KB/SM); the backward adopts `cta_group::2`, a $256\times256\times16$ tile split across a CTA pair that halves operand-B SMEM traffic and the $dQ$ atomic reductions. It sustains $\approx 1613$ TFLOP/s in BF16 (71% of the 2.25-PFLOP peak), the first attention kernel past a petaflop on a single GPU, $1.1$–$1.3\times$ over cuDNN 9.13 and $2.1$–$2.7\times$ over Triton. FP4 is deliberately unused throughout — it would only speed the matmul, which is no longer the constraint.
+Blackwell's MMA is fully asynchronous, so the pipeline splits into scheduler warps that drive async loads and matmul dispatch and compute warps that run softmax, with one tile's matmuls overlapping the next tile's softmax.
+
+> rather than route exponentials through the special-function unit (SFU), it emulates $\exp$ with a polynomial on the FMA units, moving the softmax bottleneck onto the general-purpose compute Blackwell.
+>
+> It hits $\approx 1605$ TFLOPs in BF16 (71% utilisation), $\approx 2.7\times$ over the Triton kernel.
+
+It currently runs BF16 only; FP4 and 2-CTA matmuls, Blackwell's headline features, are not yet used.
+
+The design premise is asymmetric hardware scaling
+
+- from H100 to B200, BF16 tensor-core throughput grows $\approx 2.25\times$ (1 to 2.25 PFLOP/s) while per-SM special-function-unit count and shared-memory bandwidth stay flat, so the matmul stops being the bottleneck and the SFU-bound exp (forward) and SMEM-bound data movement (backward) become binding.
+- The polynomial-exp trick computes $2^x = 2^n \cdot 2^f$ by Cody–Waite range reduction—$n$ is a free exponent-field shift, $2^f$ on $[0,1)$ is a cubic in Horner form, exactly three FMAs (Sollya coefficients $p_0=1.0,\ p_1\!\approx\!0.6951,\ p_2\!\approx\!0.2276,\ p_3\!\approx\!0.0771$)—run on the abundant FP32$\times$2 FMA pipes _in parallel_ with the hardware `MUFU.EX2`, summing their throughput while matching SFU output for BF16.
+- Conditional online-softmax rescaling gates the $O$-accumulator correction on $m_j - m_{j-1} > \tau$
+  - accumulating against the stale maximum otherwise, which the Hot Chips talk reports cuts corrections $\approx 10\times$
+  - a dedicated correction warpgroup performs the deferred rescale off the critical path.
+    - The forward kernel is a deep warp-specialised pipeline on Blackwell's fully asynchronous `tcgen05.mma` (issued by a single leader thread, `cta_group::1`), with accumulators $S, P, O$ in tensor memory (TMEM, 256 KB/SM);
+    - the backward adopts `cta_group::2`, a $256\times256\times16$ tile split across a CTA pair that halves operand-B SMEM traffic and the $dQ$ atomic reductions.
+      - It sustains $\approx 1613$ TFLOP/s in BF16 (71% of the 2.25-PFLOP peak), the first attention kernel past a petaflop on a single GPU, $1.1$–$1.3\times$ over cuDNN 9.13 and $2.1$–$2.7\times$ over Triton.
+- FP4 is deliberately unused throughout — it would only speed the matmul, which is no longer the constraint.
 
 ```tikz
 \usepackage{tikz}

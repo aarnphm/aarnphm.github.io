@@ -20,6 +20,7 @@
 @use './pages/bases.scss';
 @use './pages/lydia.scss';
 @use './pages/notebook.scss';
+@use './pages/triathlon.scss';
 
 [role='article']:hover {
   border: 1px solid var(--highlight);
