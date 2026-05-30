@@ -70,7 +70,7 @@ const blockTop = (i: number) => HBM_TOP + i * (BLOCK_H + BLOCK_GAP)
 const sramTop = (i: number) => HBM_TOP + i * (SRAM_TILE_H + SRAM_TILE_GAP)
 const SRAM_LEFT = SRAM_X + SRAM_PAD
 const SRAM_INNER = SRAM_W - SRAM_PAD * 2
-const PANEL_TOP = HBM_TOP - 10
+const PANEL_TOP = HBM_TOP - 8
 const PANEL_H = sramTop(BLOCKS.length - 1) + SRAM_TILE_H + SRAM_PAD - PANEL_TOP
 
 const FlashAttentionTilesImpl: QuartzMdxComponent<Props> = ({ caption }) => {
@@ -81,7 +81,7 @@ const FlashAttentionTilesImpl: QuartzMdxComponent<Props> = ({ caption }) => {
         <div>
           <svg
             class="fat-graph"
-            viewBox="0 0 720 460"
+            viewBox="0 0 720 492"
             preserveAspectRatio="xMidYMid meet"
             role="img"
             aria-label="FlashAttention tiled streaming: HBM holds full Q, K, V, O matrices while SRAM holds the active Q_i, K_j, V_j tiles plus running stats m, l, O_i that the online softmax recurrence updates each step."
@@ -100,25 +100,25 @@ const FlashAttentionTilesImpl: QuartzMdxComponent<Props> = ({ caption }) => {
               </marker>
             </defs>
 
-            <foreignObject x={HbmCol - 35} y={8} width={92} height={18}>
+            <foreignObject x={HbmCol - 35} y={4} width={92} height={14}>
               <div
                 class="fat-fo fat-fo--axis"
                 dangerouslySetInnerHTML={{ __html: tex('\\mathrm{HBM}') }}
               />
             </foreignObject>
-            <foreignObject x={HbmCol - 50} y={24} width={120} height={12}>
+            <foreignObject x={HbmCol - 50} y={18} width={120} height={12}>
               <div
                 class="fat-fo fat-fo--sublabel"
                 dangerouslySetInnerHTML={{ __html: tex('\\text{slow, full }L{\\times}d') }}
               />
             </foreignObject>
-            <foreignObject x={SRAM_X + SRAM_W / 2 - 46} y={8} width={92} height={18}>
+            <foreignObject x={SRAM_X + SRAM_W / 2 - 46} y={4} width={92} height={14}>
               <div
                 class="fat-fo fat-fo--axis"
                 dangerouslySetInnerHTML={{ __html: tex('\\mathrm{SRAM}') }}
               />
             </foreignObject>
-            <foreignObject x={SRAM_X + SRAM_W / 2 - 70} y={24} width={140} height={12}>
+            <foreignObject x={SRAM_X + SRAM_W / 2 - 70} y={18} width={140} height={12}>
               <div
                 class="fat-fo fat-fo--sublabel"
                 dangerouslySetInnerHTML={{
@@ -140,7 +140,12 @@ const FlashAttentionTilesImpl: QuartzMdxComponent<Props> = ({ caption }) => {
               const top = blockTop(idx)
               return (
                 <g class="fat-hbm-block" data-fat-block={b.id}>
-                  <foreignObject x={HBM_X} y={top - 18} width={HBM_LABEL_W} height={14}>
+                  <foreignObject
+                    x={HBM_X - 6}
+                    y={top + BLOCK_H / 2 - 9}
+                    width={HBM_LABEL_W}
+                    height={18}
+                  >
                     <div
                       class="fat-fo fat-fo--block-label"
                       dangerouslySetInnerHTML={{ __html: tex(b.label) }}
@@ -250,42 +255,46 @@ const FlashAttentionTilesImpl: QuartzMdxComponent<Props> = ({ caption }) => {
             >
               reset
             </button>
-            <span class="fat-step-readout" data-fat-step-readout>
-              Step <strong>1</strong> / 4
-            </span>
+            <span
+              class="fat-step-readout"
+              data-fat-step-readout
+              dangerouslySetInnerHTML={{
+                __html: tex('\\text{step } 1/4,\\ \\text{outer } j{=}1,\\ \\text{inner } i{=}1'),
+              }}
+            />
           </div>
         </div>
 
         <aside class="fat-sidebar">
           <div class="fat-card">
-            <h4>online softmax recurrence</h4>
-            <div class="fat-recurrence">
-              {RECURRENCE.map(t => (
-                <Math t={t} d cls="fat-math" />
-              ))}
-            </div>
-          </div>
-
-          <div class="fat-card">
-            <h4>SRAM stats (live)</h4>
             <dl class="fat-stats">
               {STATS.map(s => [
                 <dt>
                   <Math t={s.tex} />
                 </dt>,
-                <dd data-fat-stat={s.key}>-</dd>,
+                <dd data-fat-stat={s.key} dangerouslySetInnerHTML={{ __html: tex('\\text{-}') }} />,
               ])}
             </dl>
           </div>
 
           <div class="fat-card">
-            <h4>HBM traffic</h4>
-            <p class="fat-ratio" data-fat-ratio>
-              naive <Math t="O(L^2)" /> vs FlashAttention <Math t="O(Ld)" />
-            </p>
+            <p
+              class="fat-ratio"
+              data-fat-ratio
+              dangerouslySetInnerHTML={{
+                __html: tex('\\text{HBM: streamed in tiles, never } L{\\times}L'),
+              }}
+            />
           </div>
         </aside>
       </div>
+
+      <section class="fat-recurrence" aria-label="online softmax recurrence">
+        {RECURRENCE.map(t => (
+          <Math t={t} d cls="fat-math" />
+        ))}
+      </section>
+
       {caption ? (
         <figcaption class="fat-caption">
           <MathText text={caption} mathClass="fat-math" />

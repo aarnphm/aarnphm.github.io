@@ -6,7 +6,7 @@
   @include figure-frame('cf-figure', 34rem, $zoom: false);
   display: grid;
   grid-template-columns: minmax(0, 2.5fr) minmax(220px, 1fr);
-  grid-template-areas: 'header header' 'stage sidebar' 'caption caption';
+  grid-template-areas: 'header header' 'stage sidebar' 'eq eq' 'caption caption';
   gap: 1.1rem 1.5rem;
   --cf-stroke-soft: color-mix(in srgb, var(--gray) 45%, transparent);
   --cf-divider: color-mix(in srgb, var(--gray) 30%, transparent);
@@ -165,11 +165,12 @@
 }
 .cf-panel-title {
   margin: 0;
-  font-size: 0.78rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
+  font-size: 0.92rem;
   color: var(--cf-note-fg);
+  .katex {
+    color: inherit;
+    font-size: 1em;
+  }
 }
 
 .cf-svg {
@@ -281,8 +282,15 @@
   border: 1px solid var(--fig-frame-border);
   box-shadow: none;
   background: color-mix(in srgb, var(--light) 96%, transparent);
-  h4 {
-    @include figure-card-heading;
+}
+
+.cf-card-title {
+  margin: 0 0 0.5rem;
+  font-size: 0.9rem;
+  color: var(--cf-note-fg);
+  .katex {
+    color: inherit;
+    font-size: 1em;
   }
 }
 
@@ -337,13 +345,31 @@
   display: block;
 }
 
-.cf-card .cf-math--display {
-  .katex {
-    font-size: 0.86em;
+.cf-decomp {
+  grid-area: eq;
+  padding: 0.8rem 1rem;
+  border: 1px solid var(--fig-frame-border);
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--light) 96%, transparent);
+}
+
+.cf-decomp-body {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  column-gap: 1.75rem;
+  row-gap: 0.4rem;
+
+  .cf-math--display {
+    margin: 0;
+    .katex-display {
+      overflow-x: auto;
+      overflow-y: hidden;
+    }
   }
-  .katex-display {
-    overflow-x: auto;
-    overflow-y: hidden;
+  .cf-card-note {
+    margin: 0;
+    flex: 1 1 16rem;
   }
 }
 
@@ -360,7 +386,7 @@
 @container cf-figure (max-width: 720px) {
   .cascade-filter {
     grid-template-columns: 1fr;
-    grid-template-areas: 'header' 'stage' 'sidebar' 'caption';
+    grid-template-areas: 'header' 'stage' 'sidebar' 'eq' 'caption';
   }
   .cf-sidebar {
     flex-direction: row;
@@ -392,7 +418,5 @@
   width: min(100%, 1100px);
   margin: auto;
   padding: 1.5rem 1.75rem;
-  border: 1px solid var(--fig-frame-border);
-  border-radius: var(--radius-7-2);
   background: color-mix(in srgb, var(--light) 94%, transparent);
 }

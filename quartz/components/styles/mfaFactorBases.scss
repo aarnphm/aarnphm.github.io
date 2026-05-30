@@ -1,34 +1,22 @@
 @use '../../styles/variables.scss' as *;
 @use '../../styles/mixin.scss' as *;
+@use './figure.scss' as *;
 
 .mfa-factor-bases {
-  container-type: inline-size;
-  container-name: mfa-figure;
-  margin: 1.75rem 0;
-  content-visibility: auto;
-  contain-intrinsic-size: auto 38rem;
-  padding: 1.5rem 1.75rem;
-  border-radius: var(--radius-7-2);
-  box-shadow: none;
-  background: color-mix(in srgb, var(--light) 94%, transparent);
-  color: var(--dark);
+  @include figure-frame('mfa-figure', 38rem);
+
   --mfa-stroke-soft: color-mix(in srgb, var(--gray) 40%, transparent);
   --mfa-divider: color-mix(in srgb, var(--gray) 28%, transparent);
-  --mfa-frame-border: color-mix(in srgb, var(--gray) 34%, transparent);
   --mfa-note-fg: color-mix(in srgb, var(--darkgray) 78%, var(--dark) 22%);
   --mfa-cell-bg: color-mix(in srgb, var(--lightgray) 35%, var(--light));
   --mfa-neg: color-mix(in srgb, var(--gray) 70%, var(--dark) 30%);
   --mfa-salmon: #fdb2a2;
   --mfa-sage: #cdd597;
-
-  border: 1px solid var(--mfa-frame-border);
-  box-sizing: border-box;
 }
 
 :root[saved-theme='dark'] .mfa-factor-bases {
   --mfa-cell-bg: color-mix(in srgb, var(--lightgray) 22%, var(--dark));
   --mfa-neg: color-mix(in srgb, var(--gray) 55%, var(--light));
-  --mfa-frame-border: color-mix(in srgb, var(--gray) 46%, transparent);
 }
 
 .mfa-stage {
@@ -87,20 +75,11 @@
     }
   }
   .mfa-fo {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
+    @include figure-fo;
     justify-content: center;
-    color: var(--dark);
     font-size: 12px;
-    line-height: 1;
     overflow: visible;
     pointer-events: none;
-    .katex {
-      color: inherit;
-      font-size: 1em;
-    }
   }
   .mfa-fo--sm {
     font-size: 11px;
@@ -126,7 +105,7 @@
   margin: 0;
   padding: 0.8rem 0.95rem;
   background: color-mix(in srgb, var(--light) 80%, transparent);
-  border: 1px solid var(--mfa-frame-border);
+  border: 1px solid var(--fig-frame-border);
   box-shadow: none;
   border-radius: 6px;
   font-size: 0.83rem;
@@ -160,7 +139,7 @@
 .mfa-equation {
   padding: 0.6rem 0.75rem;
   background: color-mix(in srgb, var(--mfa-sage) 8%, transparent);
-  border: 1px solid var(--mfa-frame-border);
+  border: 1px solid var(--fig-frame-border);
   border-radius: 6px;
   font-size: 0.85rem;
   overflow-x: auto;
@@ -170,12 +149,7 @@
 }
 
 .mfa-math {
-  display: inline-block;
-  color: inherit;
-  .katex {
-    color: inherit;
-    font-size: 0.95em;
-  }
+  @include figure-inline-math;
 }
 
 .mfa-math--display {
@@ -337,23 +311,11 @@
 }
 
 .mfa-caption {
-  margin-top: 0.9rem;
-  color: color-mix(in srgb, var(--gray) 70%, var(--dark) 30%);
-  font-size: 0.78rem;
-  line-height: 1.45;
-  text-align: left;
-  text-wrap: pretty;
+  @include figure-caption;
 
   .mfa-math {
-    margin: 0 0.22em;
-    vertical-align: -0.03em;
+    @include figure-caption-math-gap;
   }
-}
-
-.zoomable.is-zoomed > .zoomable-content > .mfa-factor-bases {
-  padding: 1.5rem 1.75rem;
-  border: 1px solid var(--mfa-frame-border);
-  background: color-mix(in srgb, var(--light) 94%, transparent);
 }
 
 @container mfa-figure (max-width: 760px) {

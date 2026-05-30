@@ -43,8 +43,6 @@
   @if $zoom {
     .zoomable.is-zoomed > .zoomable-content > & {
       padding: 1.5rem 1.75rem;
-      border: 1px solid var(--fig-frame-border);
-      border-radius: var(--radius-7-2);
       background: $bg;
     }
   }
@@ -57,6 +55,7 @@
   line-height: 1.45;
   text-align: left;
   text-wrap: pretty;
+  display: inline-block;
 }
 
 @mixin figure-caption-math-gap {

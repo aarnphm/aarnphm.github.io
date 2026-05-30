@@ -4,7 +4,7 @@ import type { BuildCtx } from '../ctx'
 import { write } from '../../plugins/emitters/helpers'
 import { hashAssetContent } from '../asset-manifest'
 import { defaultIoConcurrency, mapConcurrent } from '../async-pool'
-import { linkOrCopyFile } from '../link-or-copy-file'
+import { copyFile } from '../copy-file'
 import { QUARTZ, joinSegments, type FilePath, type FullSlug } from '../path'
 import { logBuildSpan, PerfTimer } from '../perf'
 
@@ -93,9 +93,9 @@ async function ensureCachedNotebookAsset(cachePath: FilePath, content: Buffer): 
   }
 }
 
-async function tryLinkCachedNotebookAsset(cachePath: FilePath, dest: FilePath): Promise<boolean> {
+async function tryCopyCachedNotebookAsset(cachePath: FilePath, dest: FilePath): Promise<boolean> {
   try {
-    await linkOrCopyFile(cachePath, dest, { hardLink: true })
+    await copyFile(cachePath, dest)
     return true
   } catch (error) {
     if (errorCode(error) !== 'ENOENT') throw error
@@ -118,9 +118,9 @@ async function writeExtractedNotebookAsset(
   const perf = new PerfTimer()
   const cachePath = path.join(NOTEBOOK_ASSET_CACHE_DIR, `${hash}${ext}`) as FilePath
   const dest = joinSegments(ctx.argv.output, `${slug}${ext}`) as FilePath
-  if (!(await tryLinkCachedNotebookAsset(cachePath, dest))) {
+  if (!(await tryCopyCachedNotebookAsset(cachePath, dest))) {
     await ensureCachedNotebookAsset(cachePath, content)
-    await linkOrCopyFile(cachePath, dest, { hardLink: true })
+    await copyFile(cachePath, dest)
   }
   logBuildSpan(ctx.argv, 'write:notebook-asset', dest, perf.elapsedMs())
 }

@@ -166,7 +166,10 @@ const CascadeFilterImpl: QuartzMdxComponent<Props> = ({ caption, tiles = 16 }) =
 
       <div class="cf-stage">
         <section class="cf-panel cf-panel--coarse" aria-label="Coarse scorer">
-          <h4 class="cf-panel-title">coarse scorer</h4>
+          <div
+            class="cf-panel-title"
+            dangerouslySetInnerHTML={{ __html: renderMath('\\text{coarse scorer}', false) }}
+          />
           <svg
             class="cf-svg cf-svg--coarse"
             viewBox={`0 0 ${width} ${COARSE_H}`}
@@ -236,7 +239,10 @@ const CascadeFilterImpl: QuartzMdxComponent<Props> = ({ caption, tiles = 16 }) =
         </section>
 
         <section class="cf-panel cf-panel--fine" aria-label="Fine attention">
-          <h4 class="cf-panel-title">fine attention (survivors)</h4>
+          <div
+            class="cf-panel-title"
+            dangerouslySetInnerHTML={{ __html: renderMath('\\text{fine attention (survivors)}', false) }}
+          />
           <svg
             class="cf-svg cf-svg--fine"
             viewBox={`0 0 ${width} ${FINE_H}`}
@@ -272,7 +278,10 @@ const CascadeFilterImpl: QuartzMdxComponent<Props> = ({ caption, tiles = 16 }) =
 
       <aside class="cf-sidebar">
         <div class="cf-card">
-          <h4>live metrics</h4>
+          <div
+            class="cf-card-title"
+            dangerouslySetInnerHTML={{ __html: renderMath('\\text{live metrics}', false) }}
+          />
           <dl class="cf-stats">
             <dt>survivors</dt>
             <dd>
@@ -301,8 +310,14 @@ const CascadeFilterImpl: QuartzMdxComponent<Props> = ({ caption, tiles = 16 }) =
             </dd>
           </dl>
         </div>
-        <div class="cf-card">
-          <h4>decomposition</h4>
+      </aside>
+
+      <section class="cf-decomp" aria-label="Decomposition">
+        <div
+          class="cf-card-title"
+          dangerouslySetInnerHTML={{ __html: renderMath('\\text{decomposition}', false) }}
+        />
+        <div class="cf-decomp-body">
           <MathLabel tex="A(Q,K,V) \approx A(Q,\, K_{\mathcal{S}},\, V_{\mathcal{S}})" display />
           <p class="cf-card-note">
             <MathLabel tex="\mathcal{S} = \{ j : s_j \ge \tau \}" />, speedup{' '}
@@ -310,7 +325,7 @@ const CascadeFilterImpl: QuartzMdxComponent<Props> = ({ caption, tiles = 16 }) =
             <MathLabel tex="= \tfrac{\sum_{j\in\mathcal{S}} s_j}{\sum_j s_j}" />.
           </p>
         </div>
-      </aside>
+      </section>
 
       {caption ? (
         <figcaption class="cf-caption">

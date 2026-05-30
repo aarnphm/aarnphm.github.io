@@ -1,3 +1,5 @@
+import katex from 'katex'
+
 type Vec = [number, number]
 
 const SCORES: number[][] = [
@@ -92,15 +94,22 @@ function computeAllStates(): StepState[] {
 
 const ALL_STATES = computeAllStates()
 const TOTAL_STEPS = ALL_STATES.length
-const NAIVE_BYTES = SEQ_LEN * SEQ_LEN * 4
+
+const fatRenderMath = (t: string): string =>
+  katex.renderToString(t, {
+    displayMode: false,
+    output: 'html',
+    strict: false,
+    throwOnError: false,
+  })
 
 function fmt(v: number, digits = 2): string {
-  if (!Number.isFinite(v)) return '-inf'
+  if (!Number.isFinite(v)) return '-\\infty'
   return v.toFixed(digits)
 }
 
 function fmtVec(v: Vec): string {
-  return `[${fmt(v[0])}, ${fmt(v[1])}]`
+  return `[${fmt(v[0])},\\, ${fmt(v[1])}]`
 }
 
 function setCellState(el: Element, state: 'pending' | 'active' | 'done' | 'faded') {
@@ -147,17 +156,23 @@ function renderStep(root: HTMLElement, idx: number) {
 
   const stepReadout = root.querySelector('[data-fat-step-readout]')
   if (stepReadout) {
-    stepReadout.innerHTML = `Step <strong>${state.step}</strong> / ${TOTAL_STEPS}; outer j=<strong>${state.outerJ + 1}</strong>, inner i=<strong>${state.innerI + 1}</strong>`
+    stepReadout.innerHTML = fatRenderMath(
+      `\\text{step } ${state.step}/${TOTAL_STEPS},\\ \\text{outer } j{=}${state.outerJ + 1},\\ \\text{inner } i{=}${state.innerI + 1}`,
+    )
   }
 
   const sramQ = root.querySelector('[data-fat-sram-q]')
   if (sramQ)
-    sramQ.innerHTML = `<i>Q</i><sub>${state.innerI + 1}</sub> <small>(rows ${state.qRows[0] + 1}-${state.qRows[1] + 1})</small>`
+    sramQ.innerHTML = fatRenderMath(
+      `Q_{${state.innerI + 1}}\\ \\text{(rows ${state.qRows[0] + 1}-${state.qRows[1] + 1})}`,
+    )
   const sramK = root.querySelector('[data-fat-sram-k]')
   if (sramK)
-    sramK.innerHTML = `<i>K</i><sub>${state.outerJ + 1}</sub> <small>(cols ${state.kCols[0] + 1}-${state.kCols[1] + 1})</small>`
+    sramK.innerHTML = fatRenderMath(
+      `K_{${state.outerJ + 1}}\\ \\text{(cols ${state.kCols[0] + 1}-${state.kCols[1] + 1})}`,
+    )
   const sramV = root.querySelector('[data-fat-sram-v]')
-  if (sramV) sramV.innerHTML = `<i>V</i><sub>${state.outerJ + 1}</sub>`
+  if (sramV) sramV.innerHTML = fatRenderMath(`V_{${state.outerJ + 1}}`)
 
   const stats: Record<string, string> = {
     'm-0': fmt(state.m[0]),
@@ -169,13 +184,14 @@ function renderStep(root: HTMLElement, idx: number) {
   }
   for (const [key, val] of Object.entries(stats)) {
     const el = root.querySelector(`[data-fat-stat="${key}"]`)
-    if (el) el.textContent = val
+    if (el) el.innerHTML = fatRenderMath(val)
   }
 
   const ratio = root.querySelector('[data-fat-ratio]')
   if (ratio) {
-    const saved = (NAIVE_BYTES / state.bytesHbm).toFixed(2)
-    ratio.innerHTML = `HBM bytes touched: <strong>${state.bytesHbm}</strong>; naive baseline: <strong>${NAIVE_BYTES}</strong>; ratio <strong>${saved}x</strong>`
+    ratio.innerHTML = fatRenderMath(
+      `\\text{HBM: } ${state.bytesHbm}\\text{ B in tiles, never } L{\\times}L`,
+    )
   }
 
   const prev = root.querySelector<HTMLButtonElement>('[data-fat-prev]')

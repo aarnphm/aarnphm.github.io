@@ -1,6 +1,6 @@
-import fs from 'fs'
 import { Root } from 'hast'
 import { imageSize } from 'image-size'
+import fs from 'node:fs/promises'
 import path from 'path'
 import { Node } from 'unist'
 import { visit } from 'unist-util-visit'
@@ -11,6 +11,7 @@ import { MasonryPage, Footer as FooterConstructor } from '../../components/'
 import { pageResources, renderPage } from '../../components/renderPage'
 import { QuartzComponentProps } from '../../types/component'
 import { QuartzEmitterPlugin } from '../../types/plugin'
+import { defaultIoConcurrency, mapConcurrent } from '../../util/async-pool'
 import { BuildCtx, contentDataFor } from '../../util/ctx'
 import { pathToRoot, slugifyFilePath, FilePath, FullSlug } from '../../util/path'
 import { StaticResources } from '../../util/resources'
@@ -21,9 +22,9 @@ import { write } from './helpers'
 const MaxInputSize = 512 * 1024
 
 async function imageSizeFromFile(filePath: string): Promise<{ width?: number; height?: number }> {
-  let handle: fs.promises.FileHandle | undefined
+  let handle: Awaited<ReturnType<typeof fs.open>> | undefined
   try {
-    handle = await fs.promises.open(path.resolve(filePath), 'r')
+    handle = await fs.open(path.resolve(filePath), 'r')
     const { size } = await handle.stat()
     if (size <= 0) {
       return { width: undefined, height: undefined }
@@ -114,7 +115,6 @@ export const Masonry: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts =>
 }
 
 async function extractImagesFromTree(tree: Node, contentRoot: string): Promise<MasonryImage[]> {
-  const images: MasonryImage[] = []
   const imageNodes: Array<{
     src: string
     alt: string
@@ -138,47 +138,30 @@ async function extractImagesFromTree(tree: Node, contentRoot: string): Promise<M
           height: parseInt(node.properties.height),
           needsSize: false,
         })
-      } else if (fs.existsSync(sourcePath)) {
+      } else {
         imageNodes.push({
           src: imgPath,
           alt: (node.properties.alt as string) || '',
           needsSize: true,
           sourcePath,
         })
-      } else {
-        imageNodes.push({
-          src: imgPath,
-          alt: (node.properties.alt as string) || '',
-          width: 800,
-          height: 600,
-          needsSize: false,
-        })
       }
     }
   })
 
-  await Promise.all(
-    imageNodes.map(async node => {
-      if (node.needsSize && node.sourcePath) {
-        const dimensions = await imageSizeFromFile(node.sourcePath)
-        images.push({
-          src: node.src,
-          alt: node.alt,
-          width: dimensions.width || 800,
-          height: dimensions.height || 600,
-        })
-      } else {
-        images.push({
-          src: node.src,
-          alt: node.alt,
-          width: node.width || 800,
-          height: node.height || 600,
-        })
+  return mapConcurrent(imageNodes, defaultIoConcurrency, async node => {
+    if (node.needsSize && node.sourcePath) {
+      const dimensions = await imageSizeFromFile(node.sourcePath)
+      return {
+        src: node.src,
+        alt: node.alt,
+        width: dimensions.width || 800,
+        height: dimensions.height || 600,
       }
-    }),
-  )
+    }
 
-  return images
+    return { src: node.src, alt: node.alt, width: node.width || 800, height: node.height || 600 }
+  })
 }
 
 function deduplicateImages(images: MasonryImage[]): MasonryImage[] {
@@ -202,29 +185,32 @@ async function extractImagesFromDirectory(
   const fullPath = path.join(contentRoot, dirPath)
   const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.svg']
 
-  const files = fs.readdirSync(fullPath)
+  let files: string[]
+  try {
+    files = await fs.readdir(fullPath)
+  } catch {
+    return []
+  }
   const imageFiles = files.filter(file => {
     const ext = path.extname(file).toLowerCase()
     return imageExtensions.includes(ext)
   })
 
-  const images = await Promise.all(
-    imageFiles.map(async file => {
-      const ext = path.extname(file).toLowerCase()
-      const relativePath = path.join(dirPath, file).replace(/\\/g, '/')
-      const slugifiedPath = slugifyFilePath(relativePath as FilePath, true)
-      const filePath = path.join(fullPath, file)
+  const images = await mapConcurrent(imageFiles, defaultIoConcurrency, async file => {
+    const ext = path.extname(file).toLowerCase()
+    const relativePath = path.join(dirPath, file).replace(/\\/g, '/')
+    const slugifiedPath = slugifyFilePath(relativePath as FilePath, true)
+    const filePath = path.join(fullPath, file)
 
-      const dimensions = await imageSizeFromFile(filePath)
+    const dimensions = await imageSizeFromFile(filePath)
 
-      return {
-        src: `/${slugifiedPath}${ext}`,
-        alt: path.basename(file, ext),
-        width: dimensions.width || 800,
-        height: dimensions.height || 600,
-      }
-    }),
-  )
+    return {
+      src: `/${slugifiedPath}${ext}`,
+      alt: path.basename(file, ext),
+      width: dimensions.width || 800,
+      height: dimensions.height || 600,
+    }
+  })
 
   return images
 }

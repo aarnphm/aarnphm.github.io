@@ -1,5 +1,5 @@
 import { Cite } from '@citation-js/core'
-import fs from 'fs'
+import fs from 'node:fs'
 import path from 'path'
 import { JSX } from 'preact'
 import type { FrontmatterLink } from '../plugins/transformers/frontmatter'
@@ -58,24 +58,36 @@ function getDisplayTitle(
   return fragment.replace(/\.[^/.]+$/, '').replace(/-/g, ' ')
 }
 
-let loadedBib: CitationLibrary | null = null
-function getCitationTitle(bibKey: string): string | undefined {
-  if (!loadedBib) {
-    const bibPath = path.join(process.cwd(), 'content/References.bib')
-    if (fs.existsSync(bibPath)) {
-      const bibContent = fs.readFileSync(bibPath, 'utf8')
-      const parsedBib = new Cite(bibContent, { generateGraph: false })
-      if (isCitationLibrary(parsedBib)) {
-        loadedBib = parsedBib
-      }
-    }
+const citationTitles = readCitationTitles()
+
+function readCitationTitles(): Map<string, string> {
+  const titles = new Map<string, string>()
+  const bibPath = path.join(process.cwd(), 'content/References.bib')
+  let bibContent: string
+  try {
+    bibContent = fs.readFileSync(bibPath, 'utf8')
+  } catch {
+    return titles
   }
 
-  if (loadedBib) {
-    const entry = loadedBib.data.find(item => item.id === bibKey)
-    return typeof entry?.title === 'string' ? entry.title : undefined
+  try {
+    const parsedBib = new Cite(bibContent, { generateGraph: false })
+    if (!isCitationLibrary(parsedBib)) return titles
+
+    for (const entry of parsedBib.data) {
+      if (typeof entry.id === 'string' && typeof entry.title === 'string') {
+        titles.set(entry.id, entry.title)
+      }
+    }
+  } catch {
+    return titles
   }
-  return undefined
+
+  return titles
+}
+
+function getCitationTitle(bibKey: string): string | undefined {
+  return citationTitles.get(bibKey)
 }
 
 export default (() => {

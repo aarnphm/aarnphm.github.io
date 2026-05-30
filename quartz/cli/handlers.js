@@ -4,34 +4,23 @@ import { randomUUID } from 'crypto'
 import esbuild from 'esbuild'
 import { sassPlugin } from 'esbuild-sass-plugin'
 import { promises } from 'fs'
-import fs from 'fs'
 import { globby } from 'globby'
 import http from 'http'
 import { inspect, styleText } from 'node:util'
 import path from 'path'
 import prettyBytes from 'pretty-bytes'
 import serveHandler from 'serve-handler'
-import { WebSocketServer } from 'ws'
+import { WebSocket, WebSocketServer } from 'ws'
 import { version, fp, cacheFile } from './constants.js'
 
 const inlineScriptFilter = /\.inline\.(ts|js)$/
 const sourceWatchWriteStabilityMs = 250
 
 const normalizeWatchedPath = fp => fp.split(path.sep).join('/')
-const isGeneratedSourcePath = fp => {
-  const normalized = normalizeWatchedPath(fp)
-  return (
-    normalized.startsWith('.quartz-cache/') ||
-    normalized.includes('/.quartz-cache/') ||
-    normalized.startsWith('public/') ||
-    normalized.includes('/public/')
-  )
-}
 const isTestSourcePath = fp => {
   const normalized = normalizeWatchedPath(fp)
   return normalized.endsWith('.test.ts') || normalized.endsWith('.test.tsx')
 }
-const shouldIgnoreSourcePath = fp => isTestSourcePath(fp) || isGeneratedSourcePath(fp)
 
 export function formatErrorReason(err) {
   if (typeof err === 'string') {
@@ -158,7 +147,7 @@ export async function handleBuild(argv) {
     return import(`../../${cacheFile}?update=${randomUUID()}`)
   }
 
-  const build = async (clientRefresh, sourcePath) => {
+  const build = async clientRefresh => {
     const buildStart = new Date().getTime()
     lastBuildMs = buildStart
     const release = await buildMutex.acquire()
@@ -168,13 +157,7 @@ export async function handleBuild(argv) {
     }
 
     if (activeBuild) {
-      const sourceSuffix = sourcePath ? ` at ${normalizeWatchedPath(sourcePath)}` : ''
-      console.log(
-        styleText(
-          'yellow',
-          `Detected a source code change${sourceSuffix}, doing a hard rebuild...`,
-        ),
-      )
+      console.log(styleText('yellow', 'Detected a source code change, doing a hard rebuild...'))
       await disposeActiveBuild()
     }
 
@@ -187,8 +170,16 @@ export async function handleBuild(argv) {
 
   let clientRefresh = () => {}
   if (argv.serve) {
-    const connections = []
-    clientRefresh = () => connections.forEach(conn => conn.send('rebuild'))
+    const connections = new Set()
+    clientRefresh = () => {
+      for (const conn of connections) {
+        if (conn.readyState === WebSocket.OPEN) {
+          conn.send('rebuild')
+        } else {
+          connections.delete(conn)
+        }
+      }
+    }
 
     if (argv.baseDir !== '' && !argv.baseDir.startsWith('/')) {
       argv.baseDir = '/' + argv.baseDir
@@ -213,23 +204,36 @@ export async function handleBuild(argv) {
 
       const serve = async () => {
         const release = await buildMutex.acquire()
-        await serveHandler(req, res, {
-          public: argv.output,
-          directoryListing: false,
-          headers: [
-            { source: '**/*.*', headers: [{ key: 'Content-Disposition', value: 'inline' }] },
-            { source: '**/*.webp', headers: [{ key: 'Content-Type', value: 'image/webp' }] },
-            // fixes bug where avif images are displayed as text instead of images (future proof)
-            { source: '**/*.avif', headers: [{ key: 'Content-Type', value: 'image/avif' }] },
-          ],
-        })
-        const status = res.statusCode
-        const statusString =
-          status >= 200 && status < 300
-            ? styleText('green', `[${status}]`)
-            : styleText('red', `[${status}]`)
-        console.log(statusString + styleText('gray', ` ${argv.baseDir}${req.url}`))
-        release()
+        let released = false
+        const releaseBuild = () => {
+          if (released) return
+          released = true
+          release()
+        }
+        res.once('finish', releaseBuild)
+        res.once('close', releaseBuild)
+        try {
+          await serveHandler(req, res, {
+            public: argv.output,
+            directoryListing: false,
+            headers: [
+              { source: '**/*.*', headers: [{ key: 'Content-Disposition', value: 'inline' }] },
+              { source: '**/*.webp', headers: [{ key: 'Content-Type', value: 'image/webp' }] },
+              // fixes bug where avif images are displayed as text instead of images (future proof)
+              { source: '**/*.avif', headers: [{ key: 'Content-Type', value: 'image/avif' }] },
+            ],
+          })
+          const status = res.statusCode
+          const statusString =
+            status >= 200 && status < 300
+              ? styleText('green', `[${status}]`)
+              : styleText('red', `[${status}]`)
+          console.log(statusString + styleText('gray', ` ${argv.baseDir}${req.url}`))
+        } finally {
+          res.off('finish', releaseBuild)
+          res.off('close', releaseBuild)
+          releaseBuild()
+        }
       }
 
       const redirect = newFp => {
@@ -259,9 +263,15 @@ export async function handleBuild(argv) {
           return resolved
         }
       }
-      const existsInOutput = publicPath => {
+      const existsInOutput = async publicPath => {
         const resolved = resolveOutputPath(publicPath)
-        return resolved !== undefined && fs.existsSync(resolved)
+        if (resolved === undefined) return false
+        try {
+          await promises.access(resolved)
+          return true
+        } catch {
+          return false
+        }
       }
 
       let fp = normalizeRequestPath(req.url)
@@ -271,7 +281,7 @@ export async function handleBuild(argv) {
         // /trailing/
         // does /trailing/index.html exist? if so, serve it
         const indexFp = path.posix.join(fp, 'index.html')
-        if (existsInOutput(indexFp)) {
+        if (await existsInOutput(indexFp)) {
           req.url = fp
           return serve()
         }
@@ -281,7 +291,7 @@ export async function handleBuild(argv) {
         if (path.extname(base) === '') {
           base += '.html'
         }
-        if (existsInOutput(base)) {
+        if (await existsInOutput(base)) {
           return redirect(fp.slice(0, -1))
         }
       } else {
@@ -291,14 +301,14 @@ export async function handleBuild(argv) {
         if (path.extname(base) === '') {
           base += '.html'
         }
-        if (existsInOutput(base)) {
+        if (await existsInOutput(base)) {
           req.url = fp
           return serve()
         }
 
         // does /regular/index.html exist? if so, redirect to /regular/
         let indexFp = path.posix.join(fp, 'index.html')
-        if (existsInOutput(indexFp)) {
+        if (await existsInOutput(indexFp)) {
           return redirect(fp + '/')
         }
       }
@@ -308,7 +318,11 @@ export async function handleBuild(argv) {
 
     server.listen(argv.port)
     const wss = new WebSocketServer({ port: argv.wsPort })
-    wss.on('connection', ws => connections.push(ws))
+    wss.on('connection', ws => {
+      connections.add(ws)
+      ws.on('close', () => connections.delete(ws))
+      ws.on('error', () => connections.delete(ws))
+    })
     console.log(
       styleText(
         'cyan',
@@ -334,25 +348,24 @@ export async function handleBuild(argv) {
         'quartz/static/**/*',
         'package.json',
       ],
-      { gitignore: true, ignore: ['**/.quartz-cache/**', 'node_modules/**', 'public/**'] },
+      { gitignore: true, ignore: ['.quartz-cache/**', 'node_modules/**', 'public/**'] },
     )
     chokidar
       .watch(paths, {
         awaitWriteFinish: { stabilityThreshold: sourceWatchWriteStabilityMs },
-        ignored: shouldIgnoreSourcePath,
         ignoreInitial: true,
       })
       .on('add', fp => {
-        if (shouldIgnoreSourcePath(fp)) return
-        return build(clientRefresh, fp)
+        if (isTestSourcePath(fp)) return
+        return build(clientRefresh)
       })
       .on('change', fp => {
-        if (shouldIgnoreSourcePath(fp)) return
-        return build(clientRefresh, fp)
+        if (isTestSourcePath(fp)) return
+        return build(clientRefresh)
       })
       .on('unlink', fp => {
-        if (shouldIgnoreSourcePath(fp)) return
-        return build(clientRefresh, fp)
+        if (isTestSourcePath(fp)) return
+        return build(clientRefresh)
       })
 
     console.log(styleText('gray', 'hint: exit with ctrl+c'))

@@ -13,7 +13,7 @@ title: Sets
 
 A set is a collection of distinct objects, called its _elements_ or _members_. Set theory studies which axiom systems make this idea behave; the working axiom system is [ZFC](https://en.wikipedia.org/wiki/Zermelo–Fraenkel_set_theory).
 
-The field began with Cantor's work on infinite cardinalities. [[thoughts/Wittgenstein#Russell's paradox and the vicious circle principle|Russell's paradox]] is the canonical obstruction you hit when first studying naive set theory: the set $R = \{x \mid x \notin x\}$ both contains and excludes itself. ZFC's axiom of foundation rules this out by forbidding $x \in x$ chains.
+The field began with Cantor's work on infinite cardinalities. [[thoughts/Wittgenstein#Russell's paradox and the vicious circle principle|Russell's paradox]] is the canonical obstruction you hit when first studying naive set theory: the set $R = \{x \mid x \notin x\}$ both contains and excludes itself. ZFC blocks this at the level of comprehension: the axiom of separation only lets you carve a subset $\{x \in A \mid \dots\}$ out of an existing set $A$, so the unrestricted $R$ is never formed. The axiom of foundation additionally forbids $x \in x$ chains.
 
 Sets are the substrate for [[thoughts/algebraic geometry|algebraic structures]] and the mathematical spaces studied in topology.
 

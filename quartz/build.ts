@@ -12,11 +12,11 @@ import { resetWriteCache } from './plugins/emitters/helpers'
 import { emitContent } from './processors/emit'
 import { filterContent } from './processors/filter'
 import { parseMarkdown } from './processors/parse'
+import { resetCopyFileCache } from './util/copy-file'
 import { Argv, BuildCtx } from './util/ctx'
 import { glob, toPosixPath } from './util/glob'
-import { resetLinkOrCopyFileCache } from './util/link-or-copy-file'
 import { FilePath, joinSegments, slugifyFilePath } from './util/path'
-import { flushBuildSpans, PerfTimer } from './util/perf'
+import { PerfTimer } from './util/perf'
 import { randomIdNonSecure } from './util/random'
 import { options } from './util/sourcemap'
 import { trace } from './util/trace'
@@ -27,16 +27,6 @@ const markdownExtensions = new Set(['.md', '.base', '.canvas'])
 
 const isMarkdownPath = (fp: string): boolean => markdownExtensions.has(path.extname(fp))
 
-const normalizeWatchedPath = (directory: string, fp: string): string => {
-  const pathStr = toPosixPath(path.isAbsolute(fp) ? path.relative(directory, fp) : fp)
-  const directoryPath = toPosixPath(directory).replace(/\/$/, '')
-  const directoryPrefix = `${directoryPath}/`
-  return pathStr.startsWith(directoryPrefix) ? pathStr.slice(directoryPrefix.length) : pathStr
-}
-
-const isPathOrChild = (pathStr: string, prefix: string): boolean =>
-  pathStr === prefix || pathStr.startsWith(`${prefix}/`)
-
 const syncCtxFiles = (ctx: BuildCtx, allFiles: FilePath[]) => {
   ctx.allFiles = allFiles
   ctx.allSlugs = allFiles.map(fp => slugifyFilePath(fp))
@@ -44,7 +34,10 @@ const syncCtxFiles = (ctx: BuildCtx, allFiles: FilePath[]) => {
   delete ctx.renderData
 }
 
-type FullBuildKind = 'initial' | 'rebuild'
+type BuildData = { ctx: BuildCtx; ignored: GlobbyFilterFunction; mut: Mutex }
+type RebuildQueue = { running: boolean; requested: boolean }
+
+type WatchRuntime = { dispose(): Promise<void> }
 
 async function buildQuartz(argv: Argv, mut: Mutex, clientRefresh: () => void) {
   let gitCommitSha: string | undefined
@@ -72,6 +65,9 @@ async function buildQuartz(argv: Argv, mut: Mutex, clientRefresh: () => void) {
     gitCommitSha,
   }
 
+  const perf = new PerfTimer()
+  const output = argv.output
+
   const pluginCount = Object.values(cfg.plugins).flat().length
   const pluginNames = (key: 'transformers' | 'filters' | 'emitters') =>
     cfg.plugins[key].map(plugin => plugin.name)
@@ -82,48 +78,16 @@ async function buildQuartz(argv: Argv, mut: Mutex, clientRefresh: () => void) {
     console.log(`  Emitters: ${pluginNames('emitters').join(', ')}`)
   }
 
-  await runFullBuild(ctx, mut, 'initial')
-
-  if (argv.watch) {
-    ctx.incremental = true
-    return startWatching(ctx, mut, clientRefresh)
-  }
-}
-
-async function runFullBuild(
-  ctx: BuildCtx,
-  mut: Mutex,
-  kind: FullBuildKind,
-  shouldRun = () => true,
-): Promise<boolean> {
-  const { argv } = ctx
   const release = await mut.acquire()
   try {
-    if (!shouldRun()) {
-      return false
-    }
-
-    if (kind === 'rebuild') {
-      ctx.buildId = randomIdNonSecure()
-    }
-
-    const perf = new PerfTimer()
-    if (kind === 'rebuild') {
-      perf.addEvent('rebuild')
-      console.log(styleText('yellow', 'Detected change, rebuilding...'))
-    }
-
+    perf.addEvent('clean')
+    await rm(output, { recursive: true, force: true })
+    resetCopyFileCache()
     resetWriteCache()
-    resetLinkOrCopyFileCache()
-    ctx.cleanOutput = kind === 'initial'
-    if (ctx.cleanOutput) {
-      perf.addEvent('clean')
-      await rm(argv.output, { recursive: true, force: true })
-      console.log(`Removed \`${argv.output}\` in ${perf.timeSince('clean')}`)
-    }
+    console.log(`Removed \`${output}\` in ${perf.timeSince('clean')}`)
 
     perf.addEvent('glob')
-    const allFiles = await glob('**/*.*', argv.directory, ctx.cfg.configuration.ignorePatterns)
+    const allFiles = await glob('**/*.*', argv.directory, cfg.configuration.ignorePatterns)
     const markdownPaths = allFiles.filter(isMarkdownPath).sort()
     console.log(
       `Found ${markdownPaths.length} input files from \`${argv.directory}\` in ${perf.timeSince('glob')}`,
@@ -136,85 +100,67 @@ async function runFullBuild(
     const filteredContent = filterContent(ctx, parsedFiles)
 
     await emitContent(ctx, filteredContent)
-    flushBuildSpans(argv)
-    const doneText =
-      kind === 'initial'
-        ? `Done processing ${markdownPaths.length} files in ${perf.timeSince()}`
-        : `Done rebuilding in ${perf.timeSince()}`
-    console.log(styleText('green', doneText))
-    return true
+    console.log(
+      styleText('green', `Done processing ${markdownPaths.length} files in ${perf.timeSince()}`),
+    )
   } finally {
-    ctx.cleanOutput = false
     release()
+  }
+
+  if (argv.watch) {
+    ctx.incremental = true
+    return startWatching(ctx, mut, clientRefresh)
   }
 }
 
-async function startWatching(ctx: BuildCtx, mut: Mutex, clientRefresh: () => void) {
+async function startWatching(
+  ctx: BuildCtx,
+  mut: Mutex,
+  clientRefresh: () => void,
+): Promise<WatchRuntime> {
   const { argv } = ctx
   const ignored = await createIgnoredFilter(ctx)
-  let disposed = false
-  let rebuildInFlight = false
-  let rebuildRequested = false
+  const buildData: BuildData = { ctx, mut, ignored }
 
   const watcher = chokidar.watch('.', {
     awaitWriteFinish: { stabilityThreshold: 250 },
     persistent: true,
     cwd: argv.directory,
-    ignored,
+    ignored: buildData.ignored,
     ignoreInitial: true,
   })
 
-  await new Promise<void>((resolve, reject) => {
-    watcher.once('ready', resolve)
-    watcher.once('error', reject)
-  })
+  const queue: RebuildQueue = { running: false, requested: false }
+  watcher
+    .on('add', fp => {
+      if (buildData.ignored(fp)) return
+      void requestRebuild(queue, clientRefresh, buildData)
+    })
+    .on('change', fp => {
+      if (buildData.ignored(fp)) return
+      void requestRebuild(queue, clientRefresh, buildData)
+    })
+    .on('unlink', fp => {
+      if (buildData.ignored(fp)) return
+      void requestRebuild(queue, clientRefresh, buildData)
+    })
 
-  const rebuild = async () => {
-    if (disposed) return
-    if (rebuildInFlight) {
-      rebuildRequested = true
-      return
-    }
-
-    rebuildInFlight = true
-    try {
-      let shouldRefresh = false
-      do {
-        rebuildRequested = false
-        const didBuild = await runFullBuild(ctx, mut, 'rebuild', () => !disposed)
-        shouldRefresh = shouldRefresh || didBuild
-      } while (rebuildRequested && !disposed)
-
-      if (shouldRefresh && !disposed) {
-        clientRefresh()
-      }
-    } catch (err) {
-      trace('Failed to rebuild Quartz content', err as Error)
-    } finally {
-      rebuildInFlight = false
-    }
-  }
-
-  watcher.on('add', () => void rebuild())
-  watcher.on('change', () => void rebuild())
-  watcher.on('unlink', () => void rebuild())
-
-  return async () => {
-    disposed = true
-    await watcher.close()
+  return {
+    async dispose() {
+      await watcher.close()
+    },
   }
 }
 
 async function createIgnoredFilter(ctx: BuildCtx): Promise<GlobbyFilterFunction> {
   const { argv, cfg } = ctx
   const gitIgnoredMatcher = await isGitIgnored()
-  const outputPath = normalizeWatchedPath(argv.directory, argv.output)
   return fp => {
-    const pathStr = normalizeWatchedPath(argv.directory, fp.toString())
+    const rawPath = fp.toString()
+    const pathStr = toPosixPath(
+      path.isAbsolute(rawPath) ? path.relative(argv.directory, rawPath) : rawPath,
+    )
     if (pathStr.startsWith('.git/')) return true
-    if (isPathOrChild(pathStr, outputPath)) return true
-    if (isPathOrChild(pathStr, '.quartz-cache')) return true
-    if (isPathOrChild(pathStr, 'node_modules')) return true
     if (pathStr.endsWith('.test.ts')) return true
     if (gitIgnoredMatcher(pathStr)) return true
     for (const pattern of cfg.configuration.ignorePatterns) {
@@ -224,6 +170,66 @@ async function createIgnoredFilter(ctx: BuildCtx): Promise<GlobbyFilterFunction>
     }
 
     return false
+  }
+}
+
+async function requestRebuild(
+  queue: RebuildQueue,
+  clientRefresh: () => void,
+  buildData: BuildData,
+) {
+  queue.requested = true
+  if (queue.running) return
+  queue.running = true
+  try {
+    while (queue.requested) {
+      queue.requested = false
+      await rebuild(clientRefresh, buildData)
+    }
+  } finally {
+    queue.running = false
+  }
+}
+
+async function rebuild(clientRefresh: () => void, buildData: BuildData) {
+  const { ctx, mut } = buildData
+  const { argv } = ctx
+
+  const release = await mut.acquire()
+  let shouldRefresh = false
+
+  try {
+    const buildId = randomIdNonSecure()
+    ctx.buildId = buildId
+
+    const perf = new PerfTimer()
+    perf.addEvent('rebuild')
+    console.log(styleText('yellow', 'Detected change, rebuilding...'))
+
+    perf.addEvent('glob')
+    const allFiles = await glob('**/*.*', argv.directory, ctx.cfg.configuration.ignorePatterns)
+    const markdownPaths = allFiles.filter(isMarkdownPath).sort()
+    console.log(
+      `Found ${markdownPaths.length} input files from \`${argv.directory}\` in ${perf.timeSince('glob')}`,
+    )
+
+    const filePaths = markdownPaths.map(fp => joinSegments(argv.directory, fp) as FilePath)
+    syncCtxFiles(ctx, allFiles)
+
+    const parsedFiles = await parseMarkdown(ctx, filePaths)
+    const processedFiles = filterContent(ctx, parsedFiles)
+
+    await emitContent(ctx, processedFiles)
+    console.log(styleText('green', `Done rebuilding in ${perf.timeSince()}`))
+    shouldRefresh = ctx.buildId === buildId
+  } catch (err) {
+    trace('Failed to rebuild Quartz content', err as Error)
+  } finally {
+    release()
+  }
+
+  if (shouldRefresh) {
+    clientRefresh()
   }
 }
 

@@ -1,7 +1,7 @@
 import type { ChildProcessWithoutNullStreams } from 'node:child_process'
+// orchestrates quartz dev rebuilds with wrangler dev resets when public/ is regenerated.
 import { spawn } from 'node:child_process'
 import { access, open, writeFile } from 'node:fs/promises'
-import { availableParallelism } from 'node:os'
 import path from 'node:path'
 import process from 'node:process'
 import { fileURLToPath } from 'node:url'
@@ -33,10 +33,6 @@ const WRANGLER_PORT_OFFSET = 707
 const MAX_BASE_PORT = 65535 - WRANGLER_PORT_OFFSET
 const SLOW_BUILD_THRESHOLD_MS = 100
 const WRANGLER_DEV_NAME = process.env.WRANGLER_DEV_NAME ?? 'portfolio-dev'
-const QUARTZ_UV_THREADPOOL_SIZE =
-  process.env.QUARTZ_UV_THREADPOOL_SIZE ??
-  process.env.UV_THREADPOOL_SIZE ??
-  String(Math.min(Math.max(availableParallelism() * 4, 16), 64))
 
 const runtimeConfig = resolveRuntimeConfig(process.argv.slice(2))
 const totalPnpmDevAttempts = runtimeConfig.pnpmDevRetryLimit + 1
@@ -72,9 +68,6 @@ interface CliOptions {
   force: boolean
   serve: boolean
   bg: boolean
-  verbose: boolean
-  slowBuildThreshold: number | null
-  allBuildSpans: boolean
 }
 
 function assertBasePort(candidate: number): void {
@@ -87,8 +80,7 @@ function assertBasePort(candidate: number): void {
 }
 
 function resolveRuntimeConfig(argv: string[]): RuntimeConfig {
-  const { port, help, retry, force, serve, bg, verbose, slowBuildThreshold, allBuildSpans } =
-    parseCliOptions(argv)
+  const { port, help, retry, force, serve, bg } = parseCliOptions(argv)
   if (help) {
     printHelp()
     process.exit(0)
@@ -103,7 +95,6 @@ function resolveRuntimeConfig(argv: string[]): RuntimeConfig {
     port !== null
       ? `http://localhost:${effectivePort}`
       : (envBaseUrl ?? `http://localhost:${effectivePort}`)
-  const effectiveSlowBuildThreshold = slowBuildThreshold ?? SLOW_BUILD_THRESHOLD_MS
   const pnpmDevArgs = [
     'exec',
     'quartz/bootstrap-cli.mjs',
@@ -112,7 +103,7 @@ function resolveRuntimeConfig(argv: string[]): RuntimeConfig {
     '10',
     serve ? '--serve' : '--watch',
     '--slowBuildThreshold',
-    String(effectiveSlowBuildThreshold),
+    String(SLOW_BUILD_THRESHOLD_MS),
     '--port',
     String(effectivePort),
     '--wsPort',
@@ -120,12 +111,6 @@ function resolveRuntimeConfig(argv: string[]): RuntimeConfig {
   ]
   if (force) {
     pnpmDevArgs.push('--force')
-  }
-  if (verbose) {
-    pnpmDevArgs.push('--verbose')
-  }
-  if (allBuildSpans) {
-    pnpmDevArgs.push('--allBuildSpans')
   }
   const wranglerArgs = [
     'wrangler',
@@ -155,9 +140,6 @@ function parseCliOptions(argv: string[]): CliOptions {
   let retry: number | null = null
   let serve = false
   let bg = false
-  let verbose = false
-  let slowBuildThreshold: number | null = null
-  let allBuildSpans = false
   for (let index = 0; index < argv.length; index += 1) {
     const token = argv[index]
     if (token === '--') {
@@ -192,47 +174,8 @@ function parseCliOptions(argv: string[]): CliOptions {
     if (token.startsWith('--retry=')) {
       retry = parseRetryValue(token.slice('--retry='.length))
     }
-    if (
-      token === '--slowBuildThresholdMs' ||
-      token === '--slowBuildThreshold' ||
-      token === '--slowBuildThreshholdMs' ||
-      token === '--slow-build-threshold'
-    ) {
-      const value = argv[index + 1]
-      if (!value) {
-        failStartup(`missing value for ${token}`)
-      }
-      index += 1
-      slowBuildThreshold = parseSlowBuildThresholdValue(value)
-      continue
-    }
-    if (token.startsWith('--slowBuildThresholdMs=')) {
-      slowBuildThreshold = parseSlowBuildThresholdValue(
-        token.slice('--slowBuildThresholdMs='.length),
-      )
-      continue
-    }
-    if (token.startsWith('--slowBuildThreshold=')) {
-      slowBuildThreshold = parseSlowBuildThresholdValue(token.slice('--slowBuildThreshold='.length))
-      continue
-    }
-    if (token.startsWith('--slowBuildThreshholdMs=')) {
-      slowBuildThreshold = parseSlowBuildThresholdValue(
-        token.slice('--slowBuildThreshholdMs='.length),
-      )
-      continue
-    }
-    if (token.startsWith('--slow-build-threshold=')) {
-      slowBuildThreshold = parseSlowBuildThresholdValue(
-        token.slice('--slow-build-threshold='.length),
-      )
-      continue
-    }
     if (token === '--force') {
       force = true
-    }
-    if (token === '--verbose' || token === '-v') {
-      verbose = true
     }
     if (token === '--serve') {
       serve = true
@@ -240,11 +183,8 @@ function parseCliOptions(argv: string[]): CliOptions {
     if (token === '--bg') {
       bg = true
     }
-    if (token === '--allBuildSpans' || token === '--all-build-spans') {
-      allBuildSpans = true
-    }
   }
-  return { port, help, retry, force, serve, bg, verbose, slowBuildThreshold, allBuildSpans }
+  return { port, help, retry, force, serve, bg }
 }
 
 function parsePortValue(raw: string): number {
@@ -264,14 +204,6 @@ function parseRetryValue(raw: string): number {
   return parsed
 }
 
-function parseSlowBuildThresholdValue(raw: string): number {
-  const parsed = Number(raw)
-  if (!Number.isFinite(parsed) || !Number.isInteger(parsed) || parsed < 0) {
-    failStartup(`invalid slow build threshold: ${raw}`)
-  }
-  return parsed
-}
-
 function printHelp(): void {
   const prefix = formattedLabels.main ?? '[main]'
   const lines = [
@@ -280,9 +212,6 @@ function printHelp(): void {
     'options:',
     '  --port <port>       bind pnpm dev to <port>, websocket to <port+1>, wrangler dev to <port+2>',
     '  --retry <count>     restart pnpm dev up to <count> times when it exits non-zero',
-    '  --slowBuildThresholdMs <ms>  override default slow build warning threshold (default: 100ms)',
-    '  --allBuildSpans     print every Quartz build timing span instead of threshold summaries',
-    '  --verbose, -v        print verbose Quartz build logs',
     '  --force             enforce running all plugins (longer to compile)',
     '  --bg                run process in the background',
     '  --help, -h          show this message',
@@ -460,12 +389,12 @@ async function manageWranglerLoop(): Promise<void> {
         wrangler = null
       })
     }
-    if (wrangler !== null && (!exists || hardRebuildInProgress)) {
-      await stopWrangler(
-        !exists
-          ? 'stopping wrangler while public directory is missing'
-          : 'stopping wrangler while public is regenerated',
-      )
+    const shouldStop = wrangler !== null && (!exists || hardRebuildInProgress)
+    if (shouldStop) {
+      const reason = !exists
+        ? 'stopping wrangler while public directory is missing'
+        : 'stopping wrangler while public is regenerated'
+      await stopWrangler(reason)
     }
     await delay(pollIntervalMs)
   }
@@ -500,7 +429,6 @@ function startProcess(args: string[], label: Label, message?: string): ManagedCh
     cwd: gitRoot,
     env: {
       ...process.env,
-      ...(label === 'quartz' ? { UV_THREADPOOL_SIZE: QUARTZ_UV_THREADPOOL_SIZE } : {}),
       ...(label === 'wrangler' ? { PUBLIC_BASE_URL: runtimeConfig.publicBaseUrl } : {}),
     },
     stdio: ['ignore', 'pipe', 'pipe'],
@@ -631,10 +559,6 @@ function handleChildOutput(label: Label, chunk: Buffer): void {
 function handleQuartzLine(line: string): void {
   const text = stripAnsi(line).trim()
   if (!text) return
-  if (text.includes('doing a hard rebuild...')) {
-    markHardRebuildStart()
-    return
-  }
   if (text.includes('Detected change, rebuilding...')) {
     markRebuildStart()
     return
@@ -665,7 +589,7 @@ function markRebuildStart(): void {
 }
 
 function markHardRebuildStart(): void {
-  if (hardRebuildInProgress) return
+  if (rebuildInProgress) return
   rebuildInProgress = true
   hardRebuildInProgress = true
   void stopWrangler('stopping wrangler while public is regenerated')
