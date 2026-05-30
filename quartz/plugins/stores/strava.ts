@@ -2,6 +2,26 @@ export type Sport = 'swim' | 'bike' | 'run'
 
 export const SPORT_ORDER: readonly Sport[] = ['swim', 'bike', 'run']
 
+export const SPORT_ICON: Record<Sport, string[]> = {
+  run: [
+    'M15 7C16.1046 7 17 6.10457 17 5C17 3.89543 16.1046 3 15 3C13.8954 3 13 3.89543 13 5C13 6.10457 13.8954 7 15 7Z',
+    'M12.6129 8.26709L9.30469 12.4023L13.4399 16.5376L11.3723 21.0863',
+    'M6.41016 9.50741L9.79704 6.19922L12.613 8.26683L15.5078 11.5751H19.2295',
+    'M8.89055 15.7104L7.64998 16.5375H4.3418',
+  ],
+  bike: [
+    'M9 17.5a3.5 3.5 0 1 0-7 0a3.5 3.5 0 1 0 7 0',
+    'M22 17.5a3.5 3.5 0 1 0-7 0a3.5 3.5 0 1 0 7 0',
+    'M16 5a1 1 0 1 0-2 0a1 1 0 1 0 2 0',
+    'M12 17.5V14l-3-3 4-3 2 3h2',
+  ],
+  swim: [
+    'M18 6a2 2 0 1 0-4 0a2 2 0 1 0 4 0',
+    'M3 13l6-2 4 2.5',
+    'M2 18c1.5 1.4 3 1.4 4.5 0s3-1.4 4.5 0 3 1.4 4.5 0',
+  ],
+}
+
 const DAY_MS = 86_400_000
 const WINDOW_DAYS = 364
 
@@ -80,6 +100,7 @@ export interface StravaActivityDetail {
   route: StravaRoutePoint[]
   minAlt: number
   maxAlt: number
+  descentM: number
 }
 
 export interface StravaPayload {
@@ -118,6 +139,28 @@ function round(value: number, dp: number): number {
   return Math.round(value * f) / f
 }
 
+function cleanAltitude(alt: number[]): number[] {
+  const n = alt.length
+  const filled = alt.slice()
+  let last = filled.find(x => x > 0.5) ?? 0
+  for (let i = 0; i < n; i++) {
+    if (filled[i] > 0.5) last = filled[i]
+    else filled[i] = last
+  }
+  const w = 4
+  const out = filled.slice()
+  for (let i = 0; i < n; i++) {
+    let sum = 0
+    let count = 0
+    for (let j = Math.max(0, i - w); j <= Math.min(n - 1, i + w); j++) {
+      sum += filled[j]
+      count++
+    }
+    out[i] = sum / count
+  }
+  return out
+}
+
 function emptyTotals(): StravaSportTotals[] {
   return SPORT_ORDER.map(sport => ({
     sport,
@@ -136,10 +179,21 @@ function projectDetail(
   const route: StravaRoutePoint[] = []
   let minAlt = 0
   let maxAlt = 0
+  let ascentM = 0
+  let descentM = 0
   const latlng = streams?.latlng ?? []
   if (latlng.length >= 2) {
-    const altitude = streams!.altitude
+    const altitude = cleanAltitude(streams!.altitude)
     const distance = streams!.distance
+    let ascent = 0
+    let descent = 0
+    for (let i = 1; i < altitude.length; i++) {
+      const delta = altitude[i] - altitude[i - 1]
+      if (delta > 0) ascent += delta
+      else descent -= delta
+    }
+    ascentM = Math.round(ascent)
+    descentM = Math.round(descent)
     const n = latlng.length
     const stride = Math.max(1, Math.ceil(n / 140))
     const idx: number[] = []
@@ -182,11 +236,12 @@ function projectDetail(
     date: a.startDateLocal.slice(0, 10),
     distanceKm: round(a.distance / 1000, 1),
     movingTimeS: a.movingTime,
-    elevationM: Math.round(a.totalElevationGain),
+    elevationM: ascentM,
     avgHr: a.averageHeartrate ? Math.round(a.averageHeartrate) : null,
     route,
     minAlt,
     maxAlt,
+    descentM,
   }
 }
 
