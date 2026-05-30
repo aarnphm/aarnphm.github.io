@@ -3,7 +3,7 @@ import type {
   QuartzComponentConstructor,
   QuartzComponentProps,
 } from '../../types/component'
-import { emptyPayload, SPORT_ORDER, type Sport } from '../../plugins/stores/strava'
+import { emptyPayload, SPORT_ICON, SPORT_ORDER, type Sport } from '../../plugins/stores/strava'
 import { classNames } from '../../util/lang'
 import { joinSegments, pathToRoot } from '../../util/path'
 // @ts-ignore
@@ -11,29 +11,30 @@ import script from '../scripts/triathlon.inline'
 import style from '../styles/triathlon.scss'
 
 const SPORT_LABEL: Record<Sport, string> = { swim: 'swim', bike: 'bike', run: 'run' }
-const SPORT_EMOJI: Record<Sport, string> = { swim: '🏊', bike: '🚴', run: '🏃' }
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 const KM_TO_MI = 0.621371
-const BASELINE = 4
-
 const FT_PER_KM = 3280.84
+const PX_PER_MIN = 2.4
+const MAX_BAR = 260
+const MIN_SEG = 3
+const GAP_PX = 2
+
+const CONVERSIONS: [string, string][] = [
+  ['pace', '/100m × 16.09 → /mi'],
+  ['dist', 'km × 0.621 → mi'],
+]
+const TRI_DISTANCES: [string, string, string, string][] = [
+  ['sprint', '0.75', '20', '5'],
+  ['olympic', '1.5', '40', '10'],
+  ['70.3', '1.9', '90', '21.1'],
+  ['ironman', '3.8', '180', '42.2'],
+]
 
 const miles = (km: number): string => Math.round(km * KM_TO_MI).toLocaleString('en-US')
-const dist = (km: number): string => {
+const dist = (km: number, sport: Sport): string => {
+  if (sport === 'swim') return `${Math.round(km * 1000).toLocaleString('en-US')} m`
   const mi = km * KM_TO_MI
   return mi < 1 ? `${Math.round(km * FT_PER_KM)} ft` : `${mi.toFixed(1)} mi`
-}
-
-const clock = (totalSeconds: number): string => {
-  const m = Math.floor(totalSeconds / 60)
-  const s = Math.round(totalSeconds % 60)
-  return `${m}:${s.toString().padStart(2, '0')}`
-}
-
-const rate = (sport: Sport, km: number, seconds: number): string => {
-  const mi = km * KM_TO_MI
-  if (sport === 'bike') return `${(mi / (seconds / 3600)).toFixed(1)}mph`
-  return `${clock(seconds / mi)}/mi`
 }
 
 const ordinal = (d: number): string => {
@@ -46,10 +47,17 @@ const prettyDate = (iso: string): string => {
   return `${MONTHS[(m ?? 1) - 1]} ${d}${ordinal(d ?? 1)}`
 }
 
+const Icon = ({ sport, cls }: { sport: Sport; cls: string }) => (
+  <svg class={cls} viewBox="0 0 24 24" fill="none" aria-hidden="true">
+    {SPORT_ICON[sport].map(d => (
+      <path d={d} />
+    ))}
+  </svg>
+)
+
 export default (() => {
   const TriathlonPage: QuartzComponent = ({ fileData, displayClass }: QuartzComponentProps) => {
     const payload = fileData.stravaPayload ?? emptyPayload()
-    const peak = payload.days.reduce((m, d) => Math.max(m, d.durationS), 1)
     const profile = `https://www.strava.com/athletes/${payload.athleteId || ''}`
 
     return (
@@ -72,31 +80,28 @@ export default (() => {
           >
             {payload.days.map(d => {
               const rest = d.items.length === 0
-              const h = rest ? BASELINE : Math.max(BASELINE, (d.durationS / peak) * 100)
+              const segRaw = d.items.map(it => Math.max(MIN_SEG, (it.durationS / 60) * PX_PER_MIN))
+              const gaps = Math.max(0, d.items.length - 1) * GAP_PX
+              const rawTotal = segRaw.reduce((a, b) => a + b, 0)
+              const scale = rawTotal + gaps > MAX_BAR ? (MAX_BAR - gaps) / rawTotal : 1
               return (
                 <span
                   class={rest ? 'tri-bar' : 'tri-bar tri-bar--day'}
-                  style={`height:${h.toFixed(2)}%`}
                   data-ids={rest ? undefined : d.items.map(i => i.id).join(',')}
-                  data-readout={
-                    rest
-                      ? 'Rest'
-                      : d.items
-                          .map(
-                            i =>
-                              `${SPORT_EMOJI[i.sport]}|${dist(i.distanceKm)}|${rate(i.sport, i.distanceKm, i.durationS)}`,
-                          )
-                          .join(';')
-                  }
                   data-date={prettyDate(d.date)}
-                />
+                >
+                  {rest ? (
+                    <span class="tri-seg" style={`height:${MIN_SEG}px`} />
+                  ) : (
+                    segRaw.map(s => (
+                      <span class="tri-seg" style={`height:${(s * scale).toFixed(1)}px`} />
+                    ))
+                  )}
+                </span>
               )
             })}
           </div>
-          <div class="tri-info" aria-hidden="true">
-            <span class="tri-date" />
-            <span class="tri-readout" />
-          </div>
+          <aside class="tri-pop" aria-hidden="true" />
         </div>
 
         <div class="tri-foot">
@@ -104,20 +109,41 @@ export default (() => {
             const t = payload.totals.find(x => x.sport === sport)
             return (
               <span class="tri-leg">
-                <span class="tri-leg-emoji">{SPORT_EMOJI[sport]}</span>
-                {SPORT_LABEL[sport]} · {dist(t?.distanceKm ?? 0)} · {t?.count ?? 0}
+                <Icon sport={sport} cls="tri-ico tri-leg-ico" />
+                {SPORT_LABEL[sport]} · {dist(t?.distanceKm ?? 0, sport)} · {t?.count ?? 0}
               </span>
             )
           })}
         </div>
 
-        <div class="tri-scrim" aria-hidden="true" />
-        <aside class="tri-panel" aria-hidden="true">
-          <button class="tri-panel-close" type="button" aria-label="Close">
-            ×
-          </button>
-          <div class="tri-panel-body" />
-        </aside>
+        <div class="tri-note">
+          <div class="tri-conv">
+            {CONVERSIONS.flatMap(([k, v]) => [
+              <span class="tri-conv-k">{k}</span>,
+              <span class="tri-conv-v">{v}</span>,
+            ])}
+          </div>
+          <table class="tri-cheat">
+            <thead>
+              <tr>
+                <th>km</th>
+                <th>swim</th>
+                <th>bike</th>
+                <th>run</th>
+              </tr>
+            </thead>
+            <tbody>
+              {TRI_DISTANCES.map(([label, s, b, r]) => (
+                <tr>
+                  <th>{label}</th>
+                  <td>{s}</td>
+                  <td>{b}</td>
+                  <td>{r}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </article>
     )
   }

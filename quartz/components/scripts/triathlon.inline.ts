@@ -1,10 +1,10 @@
-import type { Sport, StravaActivityDetail } from '../../plugins/stores/strava'
+import { type Sport, SPORT_ICON, type StravaActivityDetail } from '../../plugins/stores/strava'
 
 export {}
 
 const SVGNS = 'http://www.w3.org/2000/svg'
 const KM_TO_MI = 0.621371
-const EMOJI: Record<Sport, string> = { swim: '🏊', bike: '🚴', run: '🏃' }
+const FT_PER_KM = 3280.84
 
 const el = (tag: string, cls?: string, text?: string): HTMLElement => {
   const e = document.createElement(tag)
@@ -19,11 +19,15 @@ const svg = (tag: string, attrs: Record<string, string | number>): SVGElement =>
   return e
 }
 
-const miles1 = (km: number): string => (km * KM_TO_MI).toFixed(1)
+const dist = (km: number, sport: Sport): string => {
+  if (sport === 'swim') return `${Math.round(km * 1000).toLocaleString('en-US')} m`
+  const mi = km * KM_TO_MI
+  return mi < 1 ? `${Math.round(km * FT_PER_KM)} ft` : `${mi.toFixed(1)} mi`
+}
 const dur = (s: number): string => {
   const h = Math.floor(s / 3600)
   const m = Math.round((s % 3600) / 60)
-  return h > 0 ? `${h}h${m.toString().padStart(2, '0')}` : `${m}m`
+  return h > 0 ? `${h}h${m.toString().padStart(2, '0')}'` : `${m}'`
 }
 const clock = (s: number): string =>
   `${Math.floor(s / 60)}:${Math.round(s % 60)
@@ -36,21 +40,10 @@ const rate = (sport: Sport, km: number, s: number): string => {
   return `${clock(s / mi)} /mi`
 }
 
-const renderReadout = (container: HTMLElement, raw: string): void => {
-  container.replaceChildren()
-  if (!raw || raw === 'Rest') {
-    container.appendChild(el('span', 'tri-r-rest', 'Rest'))
-    return
-  }
-  for (const row of raw.split(';')) {
-    const [emoji, dist, rt] = row.split('|')
-    container.append(
-      el('span', 'tri-r-emoji', emoji ?? ''),
-      el('span', 'tri-r-dist', dist ?? ''),
-      el('span', 'tri-r-sep', '·'),
-      el('span', 'tri-r-rate', rt ?? ''),
-    )
-  }
+const buildIcon = (sport: Sport): SVGElement => {
+  const s = svg('svg', { class: 'tri-ico', viewBox: '0 0 24 24', fill: 'none' })
+  for (const d of SPORT_ICON[sport]) s.appendChild(svg('path', { d }))
+  return s
 }
 
 const buildRoute = (route: StravaActivityDetail['route']): SVGElement => {
@@ -69,7 +62,7 @@ const buildRoute = (route: StravaActivityDetail['route']): SVGElement => {
   return s
 }
 
-const buildElevation = (d: StravaActivityDetail): SVGElement => {
+const buildElevation = (d: StravaActivityDetail): HTMLElement => {
   const w = 100
   const h = 30
   const pad = 2
@@ -87,32 +80,63 @@ const buildElevation = (d: StravaActivityDetail): SVGElement => {
   const s = svg('svg', { class: 'tri-elev', viewBox: `0 0 ${w} ${h}`, preserveAspectRatio: 'none' })
   s.appendChild(svg('path', { d: area, class: 'tri-elev-area' }))
   s.appendChild(svg('path', { d: line, class: 'tri-elev-line' }))
-  return s
+  const wrap = el('div', 'tri-elev-wrap')
+  const cap = el('div', 'tri-elev-cap')
+  cap.append(
+    el('span', 'tri-elev-d', `+${d.elevationM} m`),
+    el('span', 'tri-elev-d', `−${d.descentM} m`),
+    el('span', 'tri-elev-range', `${Math.round(d.minAlt)}–${Math.round(d.maxAlt)} m`),
+  )
+  wrap.append(s, cap)
+  return wrap
 }
 
-const stat = (label: string, value: string): HTMLElement => {
-  const s = el('div', 'tri-act-stat')
-  s.append(el('span', 'tri-act-stat-v', value), el('span', 'tri-act-stat-k', label))
-  return s
+const buildPool = (d: StravaActivityDetail): HTMLElement => {
+  const lengths = Math.max(1, Math.round((d.distanceKm * 1000) / 25))
+  const wrap = el('div', 'tri-pool-wrap')
+  const s = svg('svg', {
+    class: 'tri-route tri-pool',
+    viewBox: '0 0 100 56',
+    preserveAspectRatio: 'xMidYMid meet',
+  })
+  s.appendChild(
+    svg('rect', { x: 6, y: 12, width: 88, height: 32, rx: 16, ry: 16, class: 'tri-pool-lane' }),
+  )
+  s.appendChild(svg('line', { x1: 22, y1: 28, x2: 78, y2: 28, class: 'tri-pool-mid' }))
+  wrap.append(s, el('span', 'tri-pool-cap', `${lengths} × 25m`))
+  return wrap
+}
+
+const statRow = (label: string, value: string): HTMLElement => {
+  const tr = document.createElement('tr')
+  tr.append(el('th', 'tri-act-stat-k', label), el('td', 'tri-act-stat-v', value))
+  return tr
 }
 
 const renderDetail = (d: StravaActivityDetail): HTMLElement => {
   const wrap = el('section', 'tri-act')
   const head = el('div', 'tri-act-head')
-  head.append(el('span', 'tri-act-emoji', EMOJI[d.sport]), el('span', 'tri-act-name', d.name))
+  head.appendChild(buildIcon(d.sport))
   wrap.appendChild(head)
 
-  const stats = el('div', 'tri-act-stats')
-  stats.append(
-    stat('distance', `${miles1(d.distanceKm)} mi`),
-    stat('time', dur(d.movingTimeS)),
-    stat(d.sport === 'bike' ? 'speed' : 'pace', rate(d.sport, d.distanceKm, d.movingTimeS)),
-    stat('elevation', `${d.elevationM.toLocaleString('en-US')} m`),
+  const stats = el('table', 'tri-act-stats')
+  const body = document.createElement('tbody')
+  body.append(
+    statRow('distance', dist(d.distanceKm, d.sport)),
+    statRow('time', dur(d.movingTimeS)),
+    statRow(d.sport === 'bike' ? 'speed' : 'pace', rate(d.sport, d.distanceKm, d.movingTimeS)),
   )
-  if (d.avgHr) stats.append(stat('avg hr', `${d.avgHr} bpm`))
+  if (d.sport !== 'swim')
+    body.appendChild(statRow('elevation', `${d.elevationM.toLocaleString('en-US')} m`))
+  if (d.avgHr) body.appendChild(statRow('avg hr', `${d.avgHr} bpm`))
+  stats.appendChild(body)
   wrap.appendChild(stats)
 
-  if (d.route.length >= 2) {
+  if (d.sport === 'swim') {
+    const figs = el('div', 'tri-act-figs')
+    figs.appendChild(buildPool(d))
+    wrap.appendChild(figs)
+  } else if (d.route.length >= 2) {
     const figs = el('div', 'tri-act-figs')
     figs.append(buildRoute(d.route), buildElevation(d))
     wrap.appendChild(figs)
@@ -122,130 +146,131 @@ const renderDetail = (d: StravaActivityDetail): HTMLElement => {
 
 const setup = (root: HTMLElement): (() => void) | null => {
   const barsEl = root.querySelector<HTMLElement>('.tri-bars')
-  const info = root.querySelector<HTMLElement>('.tri-info')
-  const readout = root.querySelector<HTMLElement>('.tri-readout')
-  const dateEl = root.querySelector<HTMLElement>('.tri-date')
-  const panel = root.querySelector<HTMLElement>('.tri-panel')
-  const panelBody = root.querySelector<HTMLElement>('.tri-panel-body')
-  const closeBtn = root.querySelector<HTMLElement>('.tri-panel-close')
-  const scrim = root.querySelector<HTMLElement>('.tri-scrim')
+  const pop = root.querySelector<HTMLElement>('.tri-pop')
   const bars = Array.from(root.querySelectorAll<HTMLElement>('.tri-bar'))
-  if (
-    !barsEl ||
-    !info ||
-    !readout ||
-    !dateEl ||
-    !panel ||
-    !panelBody ||
-    !scrim ||
-    bars.length === 0
-  ) {
-    return null
+  if (!barsEl || !pop || bars.length === 0) return null
+
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  let active: HTMLElement | null = null
+  let activeIdx = -1
+  let details: Record<string, StravaActivityDetail> | null = null
+  let pinned = false
+  let hideTimer = 0
+
+  const buildCard = (bar: HTMLElement): HTMLElement => {
+    const card = el('div', 'tri-pop-card')
+    card.appendChild(el('div', 'tri-pop-date', bar.dataset.date ?? ''))
+    const idsAttr = bar.dataset.ids
+    if (!idsAttr) {
+      card.appendChild(el('div', 'tri-pop-rest', 'Rest'))
+    } else if (details) {
+      for (const id of idsAttr.split(',')) {
+        const d = details[id]
+        if (d) card.appendChild(renderDetail(d))
+      }
+    } else {
+      card.appendChild(el('div', 'tri-pop-rest', '·'))
+    }
+    return card
   }
 
-  let active: HTMLElement | null = null
-  let details: Record<string, StravaActivityDetail> | null = null
+  const place = (cx: number, cy: number) => {
+    const r = pop.getBoundingClientRect()
+    const gap = 18
+    let left = cx + gap
+    if (left + r.width > window.innerWidth - 8) left = cx - gap - r.width
+    left = Math.max(8, left)
+    let top = cy - r.height / 2
+    top = Math.max(8, Math.min(top, window.innerHeight - r.height - 8))
+    pop.style.left = `${left}px`
+    pop.style.top = `${top}px`
+  }
 
-  const nearest = (clientX: number): HTMLElement | null => {
+  const nearest = (clientX: number): number => {
     let best = Infinity
-    let found: HTMLElement | null = null
-    for (const bar of bars) {
+    let found = -1
+    bars.forEach((bar, i) => {
       const r = bar.getBoundingClientRect()
       const d = Math.abs(r.left + r.width / 2 - clientX)
       if (d < best) {
         best = d
-        found = bar
+        found = i
       }
-    }
+    })
     return found
   }
 
-  const activate = (bar: HTMLElement) => {
-    if (bar === active) return
-    if (active) active.classList.remove('tri-bar--active')
-    active = bar
-    bar.classList.add('tri-bar--active')
-    const sr = root.getBoundingClientRect()
-    const br = bar.getBoundingClientRect()
-    const x = br.left - sr.left + br.width / 2
-    const frac = sr.width ? x / sr.width : 0.5
-    info.style.left = `${x}px`
-    info.style.transform = `translateX(${frac > 0.7 ? '-100%' : frac < 0.3 ? '0' : '-50%'})`
-    renderReadout(readout, bar.dataset.readout ?? '')
-    dateEl.textContent = bar.dataset.date ?? ''
+  const showFor = (idx: number, cx: number, cy: number) => {
+    const bar = bars[idx]
+    if (bar !== active) {
+      const dir = activeIdx === -1 ? 0 : Math.sign(idx - activeIdx)
+      if (active) active.classList.remove('tri-bar--active')
+      active = bar
+      activeIdx = idx
+      bar.classList.add('tri-bar--active')
+      const card = buildCard(bar)
+      pop.replaceChildren(card)
+      pop.scrollTop = 0
+      if (!reduce)
+        card.animate(
+          [
+            { opacity: 0, transform: `translateX(${dir * 12}px)` },
+            { opacity: 1, transform: 'none' },
+          ],
+          { duration: 200, easing: 'cubic-bezier(0.22, 1, 0.36, 1)' },
+        )
+    }
+    place(cx, cy)
     root.classList.add('tri-hovering')
   }
 
-  const onMove = (event: MouseEvent) => {
-    const bar = nearest(event.clientX)
-    if (bar) activate(bar)
-  }
-  const onScrub = () => {
+  const hide = () => {
     if (active) active.classList.remove('tri-bar--active')
     active = null
+    activeIdx = -1
+    pinned = false
     root.classList.remove('tri-hovering')
   }
 
-  const closePanel = () => {
-    root.classList.remove('tri-panel-open')
-    panel.setAttribute('aria-hidden', 'true')
-    scrim.setAttribute('aria-hidden', 'true')
+  const onMove = (event: MouseEvent) => {
+    if (pinned) return
+    window.clearTimeout(hideTimer)
+    const idx = nearest(event.clientX)
+    if (idx >= 0) showFor(idx, event.clientX, event.clientY)
+  }
+  const onBarsLeave = () => {
+    if (!pinned) hideTimer = window.setTimeout(hide, 140)
+  }
+  const onPopEnter = () => {
+    window.clearTimeout(hideTimer)
+    pinned = true
+  }
+  const onPopLeave = () => {
+    pinned = false
+    hideTimer = window.setTimeout(hide, 140)
   }
 
-  const showPanel = (ids: string[]) => {
-    panelBody.replaceChildren()
-    if (details) {
-      for (const id of ids) {
-        const d = details[id]
-        if (d) panelBody.appendChild(renderDetail(d))
-      }
-    }
-    root.classList.add('tri-panel-open')
-    panel.setAttribute('aria-hidden', 'false')
-    scrim.setAttribute('aria-hidden', 'false')
-  }
-
-  const openPanel = (bar: HTMLElement) => {
-    const idsAttr = bar.dataset.ids
-    if (!idsAttr) return
-    const ids = idsAttr.split(',')
-    if (details) {
-      showPanel(ids)
-      return
-    }
-    const path = root.dataset.detailPath
-    if (!path) return
+  const path = root.dataset.detailPath
+  if (path)
     fetch(path)
       .then(res => res.json())
       .then((data: Record<string, StravaActivityDetail>) => {
         details = data
-        showPanel(ids)
+        if (active) pop.replaceChildren(buildCard(active))
       })
       .catch(() => {})
-  }
-
-  const onClick = (event: MouseEvent) => {
-    const bar = nearest(event.clientX)
-    if (bar) openPanel(bar)
-  }
-  const onKey = (event: KeyboardEvent) => {
-    if (event.key === 'Escape') closePanel()
-  }
 
   barsEl.addEventListener('mousemove', onMove)
-  barsEl.addEventListener('mouseleave', onScrub)
-  barsEl.addEventListener('click', onClick)
-  scrim.addEventListener('click', closePanel)
-  closeBtn?.addEventListener('click', closePanel)
-  document.addEventListener('keydown', onKey)
+  barsEl.addEventListener('mouseleave', onBarsLeave)
+  pop.addEventListener('mouseenter', onPopEnter)
+  pop.addEventListener('mouseleave', onPopLeave)
 
   return () => {
+    window.clearTimeout(hideTimer)
     barsEl.removeEventListener('mousemove', onMove)
-    barsEl.removeEventListener('mouseleave', onScrub)
-    barsEl.removeEventListener('click', onClick)
-    scrim.removeEventListener('click', closePanel)
-    closeBtn?.removeEventListener('click', closePanel)
-    document.removeEventListener('keydown', onKey)
+    barsEl.removeEventListener('mouseleave', onBarsLeave)
+    pop.removeEventListener('mouseenter', onPopEnter)
+    pop.removeEventListener('mouseleave', onPopLeave)
   }
 }
 
