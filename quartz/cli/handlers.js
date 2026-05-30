@@ -156,6 +156,7 @@ export async function handleBuild(argv) {
       return
     }
 
+    const buildReason = activeBuild ? 'source' : 'initial'
     if (activeBuild) {
       console.log(styleText('yellow', 'Detected a source code change, doing a hard rebuild...'))
       await disposeActiveBuild()
@@ -164,7 +165,7 @@ export async function handleBuild(argv) {
     const { default: buildQuartz } = await rebuildQuartzBundle()
     release()
 
-    activeBuild = await buildQuartz(argv, buildMutex, clientRefresh)
+    activeBuild = await buildQuartz(argv, buildMutex, clientRefresh, buildReason)
     clientRefresh()
   }
 

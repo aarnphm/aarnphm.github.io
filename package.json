@@ -32,6 +32,8 @@
     "swarm": "pnpm exec tsx quartz/scripts/dev.ts",
     "convert": "tsx quartz/scripts/convert.ts",
     "vendor:ocw": "tsx quartz/scripts/vendor-ocw-course.ts",
+    "strava:auth": "tsx --env-file=.env quartz/scripts/auth-strava.ts",
+    "strava:sync": "tsx --env-file=.env quartz/scripts/sync-strava.ts",
     "cf:deploy": "pnpm check && pnpm dlx wrangler deploy",
     "lint": "oxlint",
     "check:codeblocks": "cbfmt --best-effort --check content .github",

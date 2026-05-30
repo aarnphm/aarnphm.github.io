@@ -1,19 +1,29 @@
-import type { ChildProcessWithoutNullStreams } from 'node:child_process'
-// orchestrates quartz dev rebuilds with wrangler dev resets when public/ is regenerated.
+import type { ChildProcessByStdio } from 'node:child_process'
+import type { Readable } from 'node:stream'
 import { spawn } from 'node:child_process'
-import { access, open, writeFile } from 'node:fs/promises'
+import { open, writeFile } from 'node:fs/promises'
+import { createServer } from 'node:net'
 import path from 'node:path'
 import process from 'node:process'
 import { fileURLToPath } from 'node:url'
+import { parseQuartzDevEvent, splitDevEventLines, type QuartzDevEvent } from '../util/dev-events'
+import {
+  applyQuartzDevEvent,
+  createQuartzManagerState,
+  resetQuartzManagerState,
+} from '../util/dev-manager-state'
+import { stopProcessTree } from '../util/process-tree'
 
 const gitRoot = resolveGitRoot()
-const publicDir = path.join(gitRoot, 'public')
 const pollIntervalMs = 500
 const useColor = process.stdout.isTTY && process.stderr.isTTY
 const RESET = '\x1b[0m'
 const labelNames = { main: 'main', quartz: 'quartz', wrangler: 'wrangler' } as const
 type Label = keyof typeof labelNames
-type ManagedChild = ChildProcessWithoutNullStreams & { label: Label }
+type ManagedChild = ChildProcessByStdio<null, Readable, Readable> & {
+  label: Label
+  processGroupId?: number
+}
 const formattedLabels: Record<Label, string> = formatLabels(labelNames)
 let shuttingDown = false
 let lifecycleRegistered = false
@@ -21,18 +31,21 @@ let pnpmDev: ManagedChild | null = null
 let wrangler: ManagedChild | null = null
 let rawInputEnabled = false
 let pnpmDevRetriesRemaining = 0
-let initialBuildComplete = false
-let rebuildInProgress = false
-let hardRebuildInProgress = false
+const managerState = createQuartzManagerState()
 let quartzOutputBuffer = ''
 let wranglerStartNotBefore = 0
+let wranglerBackoffUntil = 0
 let wranglerStopInFlight: Promise<void> | null = null
 const DEFAULT_DEV_PORT = 7373
 const WS_PORT_OFFSET = 1
 const WRANGLER_PORT_OFFSET = 707
 const MAX_BASE_PORT = 65535 - WRANGLER_PORT_OFFSET
 const SLOW_BUILD_THRESHOLD_MS = 100
+const WRANGLER_START_DELAY_MS = 250
+const WRANGLER_PORT_BACKOFF_MS = 1000
+const WRANGLER_EXIT_BACKOFF_MS = 1500
 const WRANGLER_DEV_NAME = process.env.WRANGLER_DEV_NAME ?? 'portfolio-dev'
+const ANSI_ESCAPE_PATTERN = new RegExp(String.raw`\u001b\[[0-9;]*m`, 'g')
 
 const runtimeConfig = resolveRuntimeConfig(process.argv.slice(2))
 const totalPnpmDevAttempts = runtimeConfig.pnpmDevRetryLimit + 1
@@ -68,6 +81,7 @@ interface CliOptions {
   force: boolean
   serve: boolean
   bg: boolean
+  allBuildLogs: boolean
 }
 
 function assertBasePort(candidate: number): void {
@@ -80,7 +94,7 @@ function assertBasePort(candidate: number): void {
 }
 
 function resolveRuntimeConfig(argv: string[]): RuntimeConfig {
-  const { port, help, retry, force, serve, bg } = parseCliOptions(argv)
+  const { port, help, retry, force, serve, bg, allBuildLogs } = parseCliOptions(argv)
   if (help) {
     printHelp()
     process.exit(0)
@@ -102,13 +116,16 @@ function resolveRuntimeConfig(argv: string[]): RuntimeConfig {
     '--concurrency',
     '10',
     serve ? '--serve' : '--watch',
-    '--slowBuildThreshold',
-    String(SLOW_BUILD_THRESHOLD_MS),
     '--port',
     String(effectivePort),
     '--wsPort',
     String(wsPort),
   ]
+  if (allBuildLogs) {
+    pnpmDevArgs.push('--verbose')
+  } else {
+    pnpmDevArgs.push('--slowBuildThreshold', String(SLOW_BUILD_THRESHOLD_MS))
+  }
   if (force) {
     pnpmDevArgs.push('--force')
   }
@@ -140,6 +157,7 @@ function parseCliOptions(argv: string[]): CliOptions {
   let retry: number | null = null
   let serve = false
   let bg = false
+  let allBuildLogs = false
   for (let index = 0; index < argv.length; index += 1) {
     const token = argv[index]
     if (token === '--') {
@@ -183,8 +201,11 @@ function parseCliOptions(argv: string[]): CliOptions {
     if (token === '--bg') {
       bg = true
     }
+    if (token === '--allBuildLogs') {
+      allBuildLogs = true
+    }
   }
-  return { port, help, retry, force, serve, bg }
+  return { port, help, retry, force, serve, bg, allBuildLogs }
 }
 
 function parsePortValue(raw: string): number {
@@ -213,6 +234,7 @@ function printHelp(): void {
     '  --port <port>       bind pnpm dev to <port>, websocket to <port+1>, wrangler dev to <port+2>',
     '  --retry <count>     restart pnpm dev up to <count> times when it exits non-zero',
     '  --force             enforce running all plugins (longer to compile)',
+    '  --allBuildLogs      print all Quartz verbose build logs instead of only slow spans',
     '  --bg                run process in the background',
     '  --help, -h          show this message',
     '',
@@ -281,11 +303,10 @@ async function main(): Promise<void> {
 }
 
 function launchPnpmDev(): void {
-  initialBuildComplete = false
-  rebuildInProgress = false
-  hardRebuildInProgress = false
+  resetQuartzManagerState(managerState)
   quartzOutputBuffer = ''
   wranglerStartNotBefore = 0
+  wranglerBackoffUntil = 0
   void stopWrangler('stopping wrangler while quartz restarts')
   const attempt = runtimeConfig.pnpmDevRetryLimit - pnpmDevRetriesRemaining + 1
   pnpmDev = startProcess(
@@ -370,28 +391,64 @@ function registerLifecycle(): void {
 
 async function manageWranglerLoop(): Promise<void> {
   while (!shuttingDown) {
-    const exists = await pathExists(publicDir)
     const now = Date.now()
     const canStart =
-      exists && wrangler === null && shouldRunWrangler() && now >= wranglerStartNotBefore
+      wrangler === null &&
+      managerState.publicAvailable &&
+      managerState.quartz === 'ready' &&
+      managerState.wrangler !== 'stopping' &&
+      now >= wranglerStartNotBefore &&
+      now >= wranglerBackoffUntil
     if (canStart) {
+      const portAvailable = await isPortAvailable(runtimeConfig.wranglerPort)
+      if (!portAvailable) {
+        managerState.wrangler = 'backoff'
+        wranglerBackoffUntil = Date.now() + WRANGLER_PORT_BACKOFF_MS
+        log(
+          'main',
+          `wrangler port ${runtimeConfig.wranglerPort} is occupied, waiting before retry`,
+          'stderr',
+        )
+        await delay(pollIntervalMs)
+        continue
+      }
+      managerState.wrangler = 'starting'
       wrangler = startProcess(runtimeConfig.wranglerArgs, 'wrangler')
+      const current = wrangler
       wrangler.on('exit', (code, signal) => {
         log(
           'main',
           `wrangler exited with code ${code ?? 'null'} signal ${signal ?? 'null'}`,
           code === 0 && signal === null ? 'stdout' : 'stderr',
         )
-        wrangler = null
+        if (wrangler === current) {
+          wrangler = null
+        }
+        if (shuttingDown) return
+        if (code === 0 && signal === null) {
+          managerState.wrangler = 'stopped'
+          return
+        }
+        if (managerState.publicAvailable && managerState.quartz === 'ready') {
+          managerState.wrangler = 'backoff'
+          wranglerBackoffUntil = Date.now() + WRANGLER_EXIT_BACKOFF_MS
+          return
+        }
+        managerState.wrangler = 'stopped'
       })
       wrangler.on('error', err => {
         log('main', `failed to launch wrangler dev: ${describeError(err)}`, 'stderr')
-        wrangler = null
+        if (wrangler === current) {
+          wrangler = null
+        }
+        managerState.wrangler = 'backoff'
+        wranglerBackoffUntil = Date.now() + WRANGLER_EXIT_BACKOFF_MS
       })
     }
-    const shouldStop = wrangler !== null && (!exists || hardRebuildInProgress)
+    const shouldStop =
+      wrangler !== null && (!managerState.publicAvailable || managerState.quartz === 'building')
     if (shouldStop) {
-      const reason = !exists
+      const reason = !managerState.publicAvailable
         ? 'stopping wrangler while public directory is missing'
         : 'stopping wrangler while public is regenerated'
       await stopWrangler(reason)
@@ -416,7 +473,7 @@ async function shutdown(code: number, signal?: NodeJS.Signals): Promise<void> {
     await stopWrangler('stopping wrangler during shutdown')
   }
   if (pnpmDev) {
-    await stopProcess(pnpmDev)
+    await stopProcessTree(pnpmDev)
     pnpmDev = null
   }
   process.exit(code)
@@ -424,50 +481,30 @@ async function shutdown(code: number, signal?: NodeJS.Signals): Promise<void> {
 
 function startProcess(args: string[], label: Label, message?: string): ManagedChild {
   log('main', message ?? `starting ${label}`)
-  // @ts-ignore
   const proc = spawn('pnpm', args, {
     cwd: gitRoot,
     env: {
       ...process.env,
       ...(label === 'wrangler' ? { PUBLIC_BASE_URL: runtimeConfig.publicBaseUrl } : {}),
     },
+    detached: true,
     stdio: ['ignore', 'pipe', 'pipe'],
   }) as ManagedChild
   proc.label = label
+  proc.processGroupId = proc.pid ?? undefined
   pipeStream(proc)
   return proc
 }
 
-async function stopProcess(child: ManagedChild): Promise<void> {
-  if (child.exitCode !== null || child.signalCode) {
-    return
-  }
-  const exitPromise = once(child, 'exit')
-  child.kill('SIGINT')
-  const first = await Promise.race([
-    exitPromise.then(() => 'exit' as const),
-    delay(3000).then(() => 'timeout' as const),
-  ])
-  if (first === 'timeout' && child.exitCode === null) {
-    child.kill('SIGTERM')
-    const second = await Promise.race([
-      exitPromise.then(() => 'exit' as const),
-      delay(2000).then(() => 'timeout' as const),
-    ])
-    if (second === 'timeout' && child.exitCode === null) {
-      child.kill('SIGKILL')
-      await exitPromise
-    }
-  }
-}
-
-async function pathExists(target: string): Promise<boolean> {
-  try {
-    await access(target)
-    return true
-  } catch {
-    return false
-  }
+function isPortAvailable(port: number): Promise<boolean> {
+  return new Promise(resolve => {
+    const server = createServer()
+    server.once('error', () => resolve(false))
+    server.once('listening', () => {
+      server.close(() => resolve(true))
+    })
+    server.listen(port, '0.0.0.0')
+  })
 }
 
 function pipeStream(child: ManagedChild): void {
@@ -494,10 +531,6 @@ function delay(ms: number): Promise<void> {
   return new Promise(resolve => setTimeout(resolve, ms))
 }
 
-function shouldRunWrangler(): boolean {
-  return initialBuildComplete && !hardRebuildInProgress
-}
-
 function requestWranglerStart(delayMs: number): void {
   const target = Date.now() + delayMs
   if (target > wranglerStartNotBefore) {
@@ -511,11 +544,15 @@ async function stopWrangler(reason: string): Promise<void> {
     await wranglerStopInFlight
     return
   }
+  managerState.wrangler = 'stopping'
   log('main', reason)
   const current = wrangler
-  const stopPromise = stopProcess(current).finally(() => {
+  const stopPromise = stopProcessTree(current).finally(() => {
     if (wrangler === current) {
       wrangler = null
+    }
+    if (managerState.wrangler === 'stopping') {
+      managerState.wrangler = 'stopped'
     }
     wranglerStopInFlight = null
   })
@@ -540,66 +577,45 @@ function handleStdin(data: Buffer): void {
   }
 }
 
-function once(child: ManagedChild, event: 'exit'): Promise<void> {
-  return new Promise(resolve => {
-    child.once(event, () => resolve())
-  })
-}
-
 function handleChildOutput(label: Label, chunk: Buffer): void {
+  if (label === 'wrangler') {
+    handleWranglerOutput(chunk)
+    return
+  }
   if (label !== 'quartz') return
-  quartzOutputBuffer += chunk.toString()
-  const lines = quartzOutputBuffer.split(/\r?\n/)
-  quartzOutputBuffer = lines.pop() ?? ''
-  for (const line of lines) {
+  const parsed = splitDevEventLines(quartzOutputBuffer, chunk.toString())
+  quartzOutputBuffer = parsed.rest
+  for (const line of parsed.lines) {
     handleQuartzLine(line)
   }
 }
 
+function handleWranglerOutput(chunk: Buffer): void {
+  const text = stripAnsi(chunk.toString())
+  if (text.includes(`Ready on http://0.0.0.0:${runtimeConfig.wranglerPort}`)) {
+    managerState.wrangler = 'ready'
+  }
+}
+
 function handleQuartzLine(line: string): void {
-  const text = stripAnsi(line).trim()
-  if (!text) return
-  if (text.includes('Detected change, rebuilding...')) {
-    markRebuildStart()
-    return
-  }
-  if (text.startsWith('Removed `')) {
-    markHardRebuildStart()
-    return
-  }
-  if (text.includes('Done rebuilding in')) {
-    markRebuildEnd()
-    return
-  }
-  if (text.includes('Done processing')) {
-    markInitialBuildComplete()
-  }
+  const event = parseQuartzDevEvent(stripAnsi(line).trim())
+  if (!event) return
+  handleQuartzEvent(event)
 }
 
-function markInitialBuildComplete(): void {
-  initialBuildComplete = true
-  rebuildInProgress = false
-  hardRebuildInProgress = false
-  requestWranglerStart(250)
-}
-
-function markRebuildStart(): void {
-  if (rebuildInProgress) return
-  rebuildInProgress = true
-}
-
-function markHardRebuildStart(): void {
-  if (rebuildInProgress) return
-  rebuildInProgress = true
-  hardRebuildInProgress = true
-  void stopWrangler('stopping wrangler while public is regenerated')
-}
-
-function markRebuildEnd(): void {
-  if (!rebuildInProgress) return
-  rebuildInProgress = false
-  hardRebuildInProgress = false
-  requestWranglerStart(250)
+function handleQuartzEvent(event: QuartzDevEvent): void {
+  const actions = applyQuartzDevEvent(managerState, event, WRANGLER_START_DELAY_MS)
+  for (const action of actions) {
+    switch (action.type) {
+      case 'stop-wrangler':
+        void stopWrangler(action.reason)
+        break
+      case 'schedule-wrangler-start':
+        wranglerBackoffUntil = 0
+        requestWranglerStart(action.delayMs)
+        break
+    }
+  }
 }
 
 function log(label: Label, message: string, stream: 'stdout' | 'stderr' = 'stdout'): void {
@@ -652,6 +668,5 @@ function labelColor(label: Label): string | null {
 }
 
 function stripAnsi(value: string): string {
-  // eslint-disable-next-line no-control-regex
-  return value.replace(/\x1b\[[0-9;]*m/g, '')
+  return value.replace(ANSI_ESCAPE_PATTERN, '')
 }

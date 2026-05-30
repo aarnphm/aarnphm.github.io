@@ -30,6 +30,7 @@ import Content from './pages/Content'
 import FolderContent from './pages/FolderContent'
 import MasonryPage from './pages/MasonryPage'
 import TagContent from './pages/TagContent'
+import TriathlonPage from './pages/TriathlonPage'
 import PageTitle from './PageTitle'
 import Palette from './Palette'
 import Reader from './Reader'
@@ -45,6 +46,7 @@ import TagList from './TagList'
 
 export {
   MasonryPage,
+  TriathlonPage,
   CanvasContainer,
   Flex,
   Palette,

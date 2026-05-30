@@ -241,7 +241,9 @@ const CascadeFilterImpl: QuartzMdxComponent<Props> = ({ caption, tiles = 16 }) =
         <section class="cf-panel cf-panel--fine" aria-label="Fine attention">
           <div
             class="cf-panel-title"
-            dangerouslySetInnerHTML={{ __html: renderMath('\\text{fine attention (survivors)}', false) }}
+            dangerouslySetInnerHTML={{
+              __html: renderMath('\\text{fine attention (survivors)}', false),
+            }}
           />
           <svg
             class="cf-svg cf-svg--fine"
