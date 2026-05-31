@@ -42,12 +42,22 @@ export interface RawStravaActivity {
   startDateLocal: string
   averageSpeed: number
   averageHeartrate?: number
+  maxHeartrate?: number
+  averageWatts?: number
+  weightedAverageWatts?: number
+  maxWatts?: number
+  kilojoules?: number
+  deviceWatts?: boolean
+  averageCadence?: number
+  sufferScore?: number
+  averageTemp?: number
 }
 
 export interface StravaStreams {
   latlng: [number, number][]
   altitude: number[]
   distance: number[]
+  watts?: number[]
 }
 
 export interface StravaRawCache {
@@ -57,6 +67,7 @@ export interface StravaRawCache {
   lastActivityStart: number
   activities: Record<string, RawStravaActivity>
   streams?: Record<string, StravaStreams>
+  geo?: Record<string, string>
 }
 
 export interface StravaSportTotals {
@@ -86,6 +97,7 @@ export interface StravaRoutePoint {
   y: number
   d: number
   alt: number
+  w: number
 }
 
 export interface StravaActivityDetail {
@@ -97,6 +109,16 @@ export interface StravaActivityDetail {
   movingTimeS: number
   elevationM: number
   avgHr: number | null
+  maxHr: number | null
+  avgWatts: number | null
+  npWatts: number | null
+  maxWatts: number | null
+  kilojoules: number | null
+  deviceWatts: boolean
+  avgCadence: number | null
+  sufferScore: number | null
+  avgTemp: number | null
+  location: string | null
   route: StravaRoutePoint[]
   minAlt: number
   maxAlt: number
@@ -175,6 +197,7 @@ function projectDetail(
   a: RawStravaActivity,
   sport: Sport,
   streams: StravaStreams | undefined,
+  geo: string | undefined,
 ): StravaActivityDetail {
   const route: StravaRoutePoint[] = []
   let minAlt = 0
@@ -185,6 +208,7 @@ function projectDetail(
   if (latlng.length >= 2) {
     const altitude = cleanAltitude(streams!.altitude)
     const distance = streams!.distance
+    const watts = streams!.watts ?? []
     let ascent = 0
     let descent = 0
     for (let i = 1; i < altitude.length; i++) {
@@ -226,6 +250,7 @@ function projectDetail(
         y: round((ys[k] - minY) / span + offY, 4),
         d: round((distance[i] ?? 0) / 1000, 3),
         alt: round(alts[k], 1),
+        w: Math.round(watts[i] ?? 0),
       })
     })
   }
@@ -238,6 +263,16 @@ function projectDetail(
     movingTimeS: a.movingTime,
     elevationM: ascentM,
     avgHr: a.averageHeartrate ? Math.round(a.averageHeartrate) : null,
+    maxHr: a.maxHeartrate ? Math.round(a.maxHeartrate) : null,
+    avgWatts: a.averageWatts != null ? Math.round(a.averageWatts) : null,
+    npWatts: a.weightedAverageWatts != null ? Math.round(a.weightedAverageWatts) : null,
+    maxWatts: a.maxWatts != null ? Math.round(a.maxWatts) : null,
+    kilojoules: a.kilojoules != null ? Math.round(a.kilojoules) : null,
+    deviceWatts: a.deviceWatts === true,
+    avgCadence: a.averageCadence != null ? Math.round(a.averageCadence) : null,
+    sufferScore: a.sufferScore != null ? Math.round(a.sufferScore) : null,
+    avgTemp: a.averageTemp != null ? Math.round(a.averageTemp) : null,
+    location: geo ?? null,
     route,
     minAlt,
     maxAlt,
@@ -321,7 +356,12 @@ export function buildPayload(cache: StravaRawCache | null, since?: string): Stra
 
   const details: Record<string, StravaActivityDetail> = {}
   for (const { a, sport } of activities) {
-    details[String(a.id)] = projectDetail(a, sport, cache.streams?.[String(a.id)])
+    details[String(a.id)] = projectDetail(
+      a,
+      sport,
+      cache.streams?.[String(a.id)],
+      cache.geo?.[String(a.id)],
+    )
   }
 
   return {

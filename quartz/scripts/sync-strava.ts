@@ -78,6 +78,16 @@ function mapActivity(raw: Record<string, unknown>): RawStravaActivity {
     averageSpeed: Number(raw.average_speed ?? 0),
     averageHeartrate:
       raw.average_heartrate === undefined ? undefined : Number(raw.average_heartrate),
+    maxHeartrate: raw.max_heartrate === undefined ? undefined : Number(raw.max_heartrate),
+    averageWatts: raw.average_watts === undefined ? undefined : Number(raw.average_watts),
+    weightedAverageWatts:
+      raw.weighted_average_watts === undefined ? undefined : Number(raw.weighted_average_watts),
+    maxWatts: raw.max_watts === undefined ? undefined : Number(raw.max_watts),
+    kilojoules: raw.kilojoules === undefined ? undefined : Number(raw.kilojoules),
+    deviceWatts: raw.device_watts === undefined ? undefined : Boolean(raw.device_watts),
+    averageCadence: raw.average_cadence === undefined ? undefined : Number(raw.average_cadence),
+    sufferScore: raw.suffer_score === undefined ? undefined : Number(raw.suffer_score),
+    averageTemp: raw.average_temp === undefined ? undefined : Number(raw.average_temp),
   }
 }
 
@@ -107,7 +117,7 @@ async function fetchActivities(
 
 async function fetchStreams(token: string, id: number): Promise<StravaStreams | null> {
   const headers = { Authorization: `Bearer ${token}` }
-  const url = `${API}/activities/${id}/streams?keys=latlng,altitude,distance&key_by_type=true`
+  const url = `${API}/activities/${id}/streams?keys=latlng,altitude,distance,watts&key_by_type=true`
   const res = await fetchWithRetry(url, { headers }, limiter)
   if (!res) return null
   const data = (await res.json()) as Record<string, { data?: unknown[] }>
@@ -115,7 +125,29 @@ async function fetchStreams(token: string, id: number): Promise<StravaStreams | 
     latlng: (data.latlng?.data as [number, number][]) ?? [],
     altitude: (data.altitude?.data as number[]) ?? [],
     distance: (data.distance?.data as number[]) ?? [],
+    watts: (data.watts?.data as number[]) ?? [],
   }
+}
+
+async function fetchCity(lat: number, lon: number): Promise<string | null> {
+  const url = `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json&zoom=10&addressdetails=1`
+  const res = await fetchWithRetry(
+    url,
+    { headers: { 'User-Agent': 'aarnphm-garden-strava-sync/1.0' } },
+    limiter,
+  )
+  if (!res) return null
+  const data = (await res.json()) as { address?: Record<string, string> }
+  const a = data.address ?? {}
+  return a.city || a.town || a.village || a.municipality || a.county || a.state || null
+}
+
+function progress(label: string, done: number, total: number): void {
+  const width = 22
+  const filled = Math.round((done / total) * width)
+  const bar = '█'.repeat(filled) + '░'.repeat(width - filled)
+  process.stdout.write(`\r[strava] ${label.padEnd(7)} [${bar}] ${done}/${total}`)
+  if (done >= total) process.stdout.write('\n')
 }
 
 async function main(): Promise<void> {
@@ -133,31 +165,55 @@ async function main(): Promise<void> {
   }
 
   const streams: Record<string, StravaStreams> = { ...prev?.streams }
+  const geo: Record<string, string> = { ...prev?.geo }
+  const writeCache = async (): Promise<void> => {
+    const cache: StravaRawCache = {
+      athleteId: athleteId || prev?.athleteId || 0,
+      auth: { refreshToken, obtainedAt: Date.now() },
+      lastSync: Date.now(),
+      lastActivityStart,
+      activities: Object.fromEntries(
+        Object.entries(merged).sort(([a], [b]) => Number(a) - Number(b)),
+      ),
+      streams,
+      geo,
+    }
+    await fs.mkdir(joinSegments(QUARTZ, '.quartz-cache'), { recursive: true })
+    await fs.writeFile(cacheFile, JSON.stringify(cache, null, 2))
+  }
+
   const needStreams = Object.values(merged)
     .filter(a => normalizeSport(a.sportType) !== null && !streams[String(a.id)])
     .sort((x, y) => y.startDate.localeCompare(x.startDate))
+  let si = 0
   for (const a of needStreams) {
     const s = await fetchStreams(access, a.id)
     if (s) streams[String(a.id)] = s
-  }
-  if (needStreams.length > 0)
-    console.log(`[strava] fetched streams for ${needStreams.length} activities`)
-
-  const cache: StravaRawCache = {
-    athleteId: athleteId || prev?.athleteId || 0,
-    auth: { refreshToken, obtainedAt: Date.now() },
-    lastSync: Date.now(),
-    lastActivityStart,
-    activities: Object.fromEntries(
-      Object.entries(merged).sort(([a], [b]) => Number(a) - Number(b)),
-    ),
-    streams,
+    progress('streams', ++si, needStreams.length)
+    if (si % 8 === 0) await writeCache()
   }
 
-  await fs.mkdir(joinSegments(QUARTZ, '.quartz-cache'), { recursive: true })
-  await fs.writeFile(cacheFile, JSON.stringify(cache, null, 2))
+  const needGeo = Object.values(merged).filter(a => {
+    const s = streams[String(a.id)]
+    return (
+      normalizeSport(a.sportType) !== null &&
+      s !== undefined &&
+      s.latlng.length >= 2 &&
+      !geo[String(a.id)]
+    )
+  })
+  let gi = 0
+  for (const a of needGeo) {
+    const s = streams[String(a.id)]!
+    const city = await fetchCity(s.latlng[0][0], s.latlng[0][1])
+    if (city) geo[String(a.id)] = city
+    progress('geocode', ++gi, needGeo.length)
+    if (gi % 8 === 0) await writeCache()
+  }
+
+  await writeCache()
   console.log(
-    `[strava] wrote ${Object.keys(merged).length} activities (+${activities.length} new) → ${cacheFile}`,
+    `[strava] wrote ${Object.keys(merged).length} activities (+${activities.length} new), ${Object.keys(streams).length} streams, ${Object.keys(geo).length} located → ${cacheFile}`,
   )
 }
 
