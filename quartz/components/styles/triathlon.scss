@@ -300,6 +300,24 @@
   }
 }
 
+.tri-cheat-target {
+  position: relative;
+  color: var(--dark);
+  white-space: nowrap;
+}
+
+.tri-cheat-sticker {
+  position: absolute;
+  bottom: calc(100% - 0.55rem);
+  left: calc(100% + 0.5rem);
+  font-size: 0.95rem;
+  line-height: 1;
+  transform: rotate(-10deg);
+  transform-origin: bottom left;
+  filter: drop-shadow(0 1px 1.5px color-mix(in srgb, var(--dark) 30%, transparent));
+  pointer-events: none;
+}
+
 .tri-cheat {
   width: max-content;
   margin: 0;

@@ -79,6 +79,7 @@ export default (() => {
     const payload = fileData.stravaPayload ?? emptyPayload()
     const profile = `https://www.strava.com/athletes/${payload.athleteId || ''}`
     const location = String(fileData.frontmatter?.['location'] ?? 'Toronto')
+    const target = String(fileData.frontmatter?.['triathlon'] ?? '')
 
     const yearStarts: { year: string; index: number }[] = []
     let lastYear = ''
@@ -189,7 +190,18 @@ export default (() => {
             <tbody>
               {TRI_DISTANCES.map(([label, s, b, r]) => (
                 <tr>
-                  <th>{label}</th>
+                  <th>
+                    {label === target ? (
+                      <span class="tri-cheat-target">
+                        {label}
+                        <span class="tri-cheat-sticker" aria-hidden="true">
+                          🎯
+                        </span>
+                      </span>
+                    ) : (
+                      label
+                    )}
+                  </th>
                   <td data-km={s}>{s}</td>
                   <td data-km={b}>{b}</td>
                   <td data-km={r}>{r}</td>

@@ -1,3 +1,5 @@
+import type { RoughAnnotation } from 'rough-notation/lib/model'
+import { annotate } from 'rough-notation'
 import type { DailyPoint, StravaAnalytics } from '../../plugins/stores/strava-analytics'
 import { type Sport, SPORT_ICON, type StravaActivityDetail } from '../../plugins/stores/strava'
 
@@ -1175,6 +1177,24 @@ const setupCheat = (root: HTMLElement): (() => void) | null => {
   const unit = root.querySelector<HTMLButtonElement>('.tri-cheat-unit')
   const cells = root.querySelectorAll<HTMLElement>('.tri-cheat td[data-km]')
   if (!unit || cells.length === 0) return null
+
+  const target = root.querySelector<HTMLElement>('.tri-cheat-target')
+  let ann: RoughAnnotation | null = null
+  let showTimer = 0
+  if (target) {
+    const color = getComputedStyle(root).getPropertyValue('--tri-accent').trim() || '#fc4c02'
+    ann = annotate(target, {
+      type: 'circle',
+      color,
+      strokeWidth: 1.6,
+      padding: 5,
+      animationDuration: 800,
+      iterations: 2,
+    })
+    const a = ann
+    showTimer = window.setTimeout(() => a.show(), 200)
+  }
+
   let mi = false
   const onClick = () => {
     mi = !mi
@@ -1189,7 +1209,11 @@ const setupCheat = (root: HTMLElement): (() => void) | null => {
     }
   }
   unit.addEventListener('click', onClick)
-  return () => unit.removeEventListener('click', onClick)
+  return () => {
+    window.clearTimeout(showTimer)
+    unit.removeEventListener('click', onClick)
+    ann?.remove()
+  }
 }
 
 document.addEventListener('nav', () => {
