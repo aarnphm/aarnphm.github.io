@@ -11,6 +11,7 @@ import { joinSegments, QUARTZ } from '../util/path'
 const TOKEN_URL = 'https://www.strava.com/oauth/token'
 const API = 'https://www.strava.com/api/v3'
 const PER_PAGE = 200
+const CACHE_VERSION = 1
 const cacheFile = joinSegments(QUARTZ, '.quartz-cache', 'strava.json')
 const limiter = new AdaptiveRateLimiter(1500, 60_000)
 
@@ -153,7 +154,13 @@ function progress(label: string, done: number, total: number): void {
 async function main(): Promise<void> {
   const prev = await readCache()
   const { access, refreshToken } = await resolveToken(prev)
-  const { activities, athleteId } = await fetchActivities(access, prev?.lastActivityStart ?? 0)
+  const stale = (prev?.version ?? 0) < CACHE_VERSION
+  if (stale && prev)
+    console.log('[strava] cache schema bumped → re-pulling all summaries to backfill')
+  const { activities, athleteId } = await fetchActivities(
+    access,
+    stale ? 0 : (prev?.lastActivityStart ?? 0),
+  )
 
   const merged: Record<string, RawStravaActivity> = { ...prev?.activities }
   for (const a of activities) merged[String(a.id)] = a
@@ -168,6 +175,7 @@ async function main(): Promise<void> {
   const geo: Record<string, string> = { ...prev?.geo }
   const writeCache = async (): Promise<void> => {
     const cache: StravaRawCache = {
+      version: CACHE_VERSION,
       athleteId: athleteId || prev?.athleteId || 0,
       auth: { refreshToken, obtainedAt: Date.now() },
       lastSync: Date.now(),

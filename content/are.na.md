@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-05-30 22:27:10 GMT-04:00
+modified: 2026-05-31 00:55:44 GMT-04:00
 permalinks:
   - /website
   - /tweets
@@ -7512,6 +7512,10 @@ title: are.na
 
 ## design
 
+- https://specialforc.es/ -- Special Forces
+  - [meta]:
+    - date: 05/31/2026
+    - tags: [agency]
 - https://wearecollins.com/ -- Collins
   - [meta]:
     - date: 05/30/2026
@@ -8420,6 +8424,10 @@ title: are.na
 
 ## resources
 
+- https://stateofaidesign.com/ -- State of AI Design 2026
+  - [meta]:
+    - date: 05/31/2026
+    - tags: [reports]
 - https://www.tricalculator.com/ -- Triathlon Calculator
   - [meta]:
     - date: 05/30/2026

@@ -1,3 +1,4 @@
+import type { DailyPoint, StravaAnalytics } from '../../plugins/stores/strava-analytics'
 import { type Sport, SPORT_ICON, type StravaActivityDetail } from '../../plugins/stores/strava'
 
 export {}
@@ -46,6 +47,18 @@ const buildIcon = (sport: Sport): SVGElement => {
   return s
 }
 
+const BATTERY = [
+  'M23 10V14',
+  'M1 16V8C1 6.89543 1.89543 6 3 6H18C19.1046 6 20 6.89543 20 8V16C20 17.1046 19.1046 18 18 18H3C1.89543 18 1 17.1046 1 16Z',
+  'M10.1667 9L8.5 12H12.5L10.8333 15',
+]
+
+const buildBattery = (): SVGElement => {
+  const s = svg('svg', { class: 'tri-ico tri-battery', viewBox: '0 0 24 24', fill: 'none' })
+  for (const d of BATTERY) s.appendChild(svg('path', { d }))
+  return s
+}
+
 const buildRoute = (route: StravaActivityDetail['route']): SVGElement => {
   const pad = 6
   const span = 100 - pad * 2
@@ -59,6 +72,7 @@ const buildRoute = (route: StravaActivityDetail['route']): SVGElement => {
     preserveAspectRatio: 'xMidYMid meet',
   })
   s.appendChild(svg('path', { d, class: 'tri-route-path' }))
+  s.appendChild(svg('circle', { class: 'tri-route-cursor', cx: -10, cy: -10, r: 2.6 }))
   return s
 }
 
@@ -80,6 +94,7 @@ const buildElevation = (d: StravaActivityDetail): HTMLElement => {
   const s = svg('svg', { class: 'tri-elev', viewBox: `0 0 ${w} ${h}`, preserveAspectRatio: 'none' })
   s.appendChild(svg('path', { d: area, class: 'tri-elev-area' }))
   s.appendChild(svg('path', { d: line, class: 'tri-elev-line' }))
+  s.appendChild(svg('line', { class: 'tri-elev-cursor', x1: 0, y1: 0, x2: 0, y2: h }))
   const wrap = el('div', 'tri-elev-wrap')
   const cap = el('div', 'tri-elev-cap')
   cap.append(
@@ -139,6 +154,53 @@ const statRow = (label: string, value: string): HTMLElement => {
   return tr
 }
 
+const linkElev = (
+  figs: HTMLElement,
+  routeSvg: SVGElement,
+  elevWrap: HTMLElement,
+  route: StravaActivityDetail['route'],
+): void => {
+  const elevSvg = elevWrap.querySelector<SVGElement>('.tri-elev')
+  const marker = routeSvg.querySelector('.tri-route-cursor')
+  const cursor = elevSvg?.querySelector('.tri-elev-cursor')
+  if (!elevSvg || !marker || !cursor) return
+  const maxD = route[route.length - 1].d || 1
+  const pad = 6
+  const span = 88
+  const readout = el('div', 'tri-fig-readout')
+  figs.appendChild(readout)
+  const onMove = (event: MouseEvent) => {
+    const r = elevSvg.getBoundingClientRect()
+    const frac = Math.min(1, Math.max(0, (event.clientX - r.left) / r.width))
+    const targetD = frac * maxD
+    let i = 0
+    let best = Infinity
+    for (let k = 0; k < route.length; k++) {
+      const dd = Math.abs(route[k].d - targetD)
+      if (dd < best) {
+        best = dd
+        i = k
+      }
+    }
+    const p = route[i]
+    const x = ((p.d / maxD) * 100).toFixed(2)
+    cursor.setAttribute('x1', x)
+    cursor.setAttribute('x2', x)
+    marker.setAttribute('cx', (pad + p.x * span).toFixed(2))
+    marker.setAttribute('cy', (pad + (1 - p.y) * span).toFixed(2))
+    const j0 = Math.max(0, i - 2)
+    const j1 = Math.min(route.length - 1, i + 2)
+    const dKm = route[j1].d - route[j0].d
+    const grade = dKm > 0 ? ((route[j1].alt - route[j0].alt) / (dKm * 1000)) * 100 : 0
+    const g = Math.round(grade * 10) / 10
+    readout.textContent = `${(p.d * KM_TO_MI).toFixed(2)} mi · ${Math.round(p.alt)} m · ${g >= 0 ? '+' : ''}${g.toFixed(1)}%`
+    figs.classList.add('tri-figs--hover')
+  }
+  const onLeave = () => figs.classList.remove('tri-figs--hover')
+  elevSvg.addEventListener('mousemove', onMove)
+  elevSvg.addEventListener('mouseleave', onLeave)
+}
+
 const renderDetail = (d: StravaActivityDetail): HTMLElement => {
   const wrap = el('section', 'tri-act')
   const head = el('div', 'tri-act-head')
@@ -162,7 +224,10 @@ const renderDetail = (d: StravaActivityDetail): HTMLElement => {
     wrap.appendChild(figs)
   } else if (d.route.length >= 2) {
     const figs = el('div', 'tri-act-figs')
-    figs.append(buildRoute(d.route), buildElevation(d))
+    const routeSvg = buildRoute(d.route)
+    const elev = buildElevation(d)
+    figs.append(routeSvg, elev)
+    linkElev(figs, routeSvg, elev, d.route)
     wrap.appendChild(figs)
   }
 
@@ -208,13 +273,32 @@ const setup = (root: HTMLElement): (() => void) | null => {
   let activeIdx = -1
   let details: Record<string, StravaActivityDetail> | null = null
   let pinned = false
+  let locked = false
   let hideTimer = 0
+
+  const scroller = el('div', 'tri-pop-scroll')
+  pop.appendChild(scroller)
+  const updateOverflow = () => {
+    pop.classList.toggle(
+      'tri-pop--more',
+      scroller.scrollHeight - scroller.clientHeight - scroller.scrollTop > 4,
+    )
+  }
+  const setLocked = (on: boolean) => {
+    locked = on
+    barsEl.classList.toggle('tri-bars--locked', on)
+  }
 
   let audio: AudioContext | null = null
   let lastDrop = 0
+  try {
+    audio = new AudioContext()
+    if (navigator.userActivation?.hasBeenActive) void audio.resume()
+  } catch {
+    audio = null
+  }
   const armAudio = () => {
-    if (!audio) audio = new AudioContext()
-    if (audio.state === 'suspended') void audio.resume()
+    if (audio && audio.state === 'suspended') void audio.resume()
   }
   const raindrop = (idx: number) => {
     if (!audio || audio.state !== 'running') return
@@ -236,6 +320,7 @@ const setup = (root: HTMLElement): (() => void) | null => {
     osc.stop(t + 0.15)
   }
   window.addEventListener('pointerdown', armAudio)
+  window.addEventListener('keydown', armAudio)
 
   const buildCard = (bar: HTMLElement): HTMLElement => {
     const card = el('div', 'tri-pop-card')
@@ -248,7 +333,9 @@ const setup = (root: HTMLElement): (() => void) | null => {
     }
     card.appendChild(head)
     if (!idsAttr) {
-      card.appendChild(el('div', 'tri-pop-rest', 'Rest'))
+      const rest = el('div', 'tri-pop-rest')
+      rest.append(buildBattery(), el('span', 'tri-pop-rest-label', 'rest'))
+      card.appendChild(rest)
     } else if (details) {
       for (const id of idsAttr.split(',')) {
         const d = details[id]
@@ -296,8 +383,9 @@ const setup = (root: HTMLElement): (() => void) | null => {
       bar.classList.add('tri-bar--active')
       raindrop(idx)
       const card = buildCard(bar)
-      pop.replaceChildren(card)
-      pop.scrollTop = 0
+      scroller.replaceChildren(card)
+      scroller.scrollTop = 0
+      updateOverflow()
       if (!reduce)
         card.animate(
           [
@@ -311,22 +399,27 @@ const setup = (root: HTMLElement): (() => void) | null => {
     root.classList.add('tri-hovering')
   }
 
+  const setExpanded = (on: boolean) => {
+    for (const a of pop.querySelectorAll('.tri-act')) a.classList.toggle('tri-act--expanded', on)
+    updateOverflow()
+  }
   const hide = () => {
     if (active) active.classList.remove('tri-bar--active')
     active = null
     activeIdx = -1
     pinned = false
+    setLocked(false)
     root.classList.remove('tri-hovering')
   }
 
   const onMove = (event: MouseEvent) => {
-    if (pinned) return
+    if (pinned || locked) return
     window.clearTimeout(hideTimer)
     const idx = nearest(event.clientX)
     if (idx >= 0) showFor(idx, event.clientX, event.clientY)
   }
   const onBarsLeave = () => {
-    if (!pinned) hideTimer = window.setTimeout(hide, 140)
+    if (!pinned && !locked) hideTimer = window.setTimeout(hide, 140)
   }
   const onPopEnter = () => {
     window.clearTimeout(hideTimer)
@@ -334,11 +427,36 @@ const setup = (root: HTMLElement): (() => void) | null => {
   }
   const onPopLeave = () => {
     pinned = false
-    hideTimer = window.setTimeout(hide, 140)
+    if (!locked) hideTimer = window.setTimeout(hide, 140)
+  }
+  const onBarsClick = (event: MouseEvent) => {
+    const idx = nearest(event.clientX)
+    if (idx < 0) return
+    if (locked && bars[idx] === active) {
+      setLocked(false)
+      setExpanded(false)
+    } else {
+      showFor(idx, event.clientX, event.clientY)
+      setLocked(true)
+      setExpanded(true)
+    }
   }
   const onToggle = (event: MouseEvent) => {
     const btn = (event.target as HTMLElement | null)?.closest('.tri-act-toggle')
     btn?.closest('.tri-act')?.classList.toggle('tri-act--expanded')
+  }
+  const dismiss = () => {
+    if (!locked) return
+    setLocked(false)
+    setExpanded(false)
+    hide()
+  }
+  const onDocClick = (event: MouseEvent) => {
+    const t = event.target as Node
+    if (locked && !barsEl.contains(t) && !pop.contains(t)) dismiss()
+  }
+  const onKey = (event: KeyboardEvent) => {
+    if (event.key === 'Escape') dismiss()
   }
 
   const path = root.dataset.detailPath
@@ -347,24 +465,37 @@ const setup = (root: HTMLElement): (() => void) | null => {
       .then(res => res.json())
       .then((data: Record<string, StravaActivityDetail>) => {
         details = data
-        if (active) pop.replaceChildren(buildCard(active))
+        if (active) {
+          scroller.replaceChildren(buildCard(active))
+          if (locked) setExpanded(true)
+          updateOverflow()
+        }
       })
       .catch(() => {})
 
   barsEl.addEventListener('mousemove', onMove)
   barsEl.addEventListener('mouseleave', onBarsLeave)
+  barsEl.addEventListener('click', onBarsClick)
   pop.addEventListener('mouseenter', onPopEnter)
   pop.addEventListener('mouseleave', onPopLeave)
   pop.addEventListener('click', onToggle)
+  scroller.addEventListener('scroll', updateOverflow, { passive: true })
+  document.addEventListener('click', onDocClick)
+  document.addEventListener('keydown', onKey)
 
   return () => {
     window.clearTimeout(hideTimer)
     barsEl.removeEventListener('mousemove', onMove)
     barsEl.removeEventListener('mouseleave', onBarsLeave)
+    barsEl.removeEventListener('click', onBarsClick)
     pop.removeEventListener('mouseenter', onPopEnter)
     pop.removeEventListener('mouseleave', onPopLeave)
     pop.removeEventListener('click', onToggle)
+    scroller.removeEventListener('scroll', updateOverflow)
+    document.removeEventListener('click', onDocClick)
+    document.removeEventListener('keydown', onKey)
     window.removeEventListener('pointerdown', armAudio)
+    window.removeEventListener('keydown', armAudio)
     void audio?.close()
   }
 }
@@ -489,6 +620,578 @@ const setupGear = (root: HTMLElement): (() => void) | null => {
   }
 }
 
+const ANA_W = 100
+const ANA_H = 30
+const RACE_LABEL: Record<string, string> = {
+  sprint: 'sprint',
+  olympic: 'olympic',
+  '70.3': '70.3',
+  ironman: 'ironman',
+}
+
+const clampN = (x: number, lo: number, hi: number): number => Math.min(hi, Math.max(lo, x))
+const polyD = (pts: [number, number][]): string =>
+  pts.map(([x, y], i) => `${i ? 'L' : 'M'} ${x.toFixed(2)} ${y.toFixed(2)}`).join(' ')
+const signed = (n: number): string => (n > 0 ? `+${n}` : `${n}`)
+const hms = (sec: number): string => {
+  const t = Math.max(0, Math.round(sec))
+  const h = Math.floor(t / 3600)
+  const m = Math.floor((t % 3600) / 60)
+  const s = t % 60
+  return h > 0
+    ? `${h}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`
+    : `${m}:${s.toString().padStart(2, '0')}`
+}
+const anaTitle = (text: string): HTMLElement => el('div', 'tri-ana-block-title', text)
+const bySport = <T extends { sport: Sport }>(arr: T[], sport: Sport): T | undefined =>
+  arr.find(x => x.sport === sport)
+const thLabel = (th: { paceLabel: string; unit: string }): string =>
+  th.unit === 'km/h' ? `${th.paceLabel} km/h` : `${th.paceLabel}${th.unit.slice(1)}`
+const buildIconLeg = (sport: Sport): HTMLElement => {
+  const wrap = el('span', `tri-ana-ico tri-leg-${sport}`)
+  wrap.appendChild(buildIcon(sport))
+  return wrap
+}
+const trendDir = (invert: boolean, slope: number | null): number => {
+  if (slope == null || slope === 0) return 0
+  return (invert ? slope < 0 : slope > 0) ? 1 : -1
+}
+
+const buildHeadline = (data: StravaAnalytics): HTMLElement => {
+  const wrap = el('div', 'tri-ana-head')
+  wrap.appendChild(el('div', 'tri-ana-head-line', data.headline || 'training analytics'))
+  const r = data.risk
+  const stats = el('div', 'tri-ana-head-stats')
+  const stat = (k: string, v: string, sub: string, cls: string): HTMLElement => {
+    const c = el('div', 'tri-ana-stat')
+    c.append(
+      el('span', `tri-ana-stat-v ${cls}`, v),
+      el('span', 'tri-ana-stat-k', k),
+      el('span', 'tri-ana-stat-sub', sub),
+    )
+    return c
+  }
+  stats.append(
+    stat('fitness', `${Math.round(r.ctl)}`, 'CTL', ''),
+    stat('form', signed(Math.round(r.tsb)), r.tsbZone, `tri-zone-${r.tsbZone}`),
+    stat(
+      'load',
+      r.acwrState === 'building' ? 'base' : (r.acwr?.toFixed(2) ?? '—'),
+      r.acwrState,
+      `tri-acwr-${r.acwrState}`,
+    ),
+  )
+  wrap.appendChild(stats)
+  return wrap
+}
+
+const buildGauge = (data: StravaAnalytics): HTMLElement => {
+  const block = el('div', 'tri-ana-gauge')
+  block.appendChild(anaTitle('form · ramp'))
+  const r = data.risk
+  const W = 100
+  const H = 12
+  const lo = -40
+  const hi = 25
+  const xf = (v: number): number => ((clampN(v, lo, hi) - lo) / (hi - lo)) * W
+  const s = svg('svg', {
+    class: 'tri-gauge-svg',
+    viewBox: `0 0 ${W} ${H}`,
+    preserveAspectRatio: 'none',
+  })
+  s.appendChild(
+    svg('rect', { x: 0, y: 4, width: xf(-10), height: 4, class: 'tri-gauge-zone tri-gauge-z-low' }),
+  )
+  s.appendChild(
+    svg('rect', {
+      x: xf(-10),
+      y: 4,
+      width: xf(5) - xf(-10),
+      height: 4,
+      class: 'tri-gauge-zone tri-gauge-z-mid',
+    }),
+  )
+  s.appendChild(
+    svg('rect', {
+      x: xf(5),
+      y: 4,
+      width: W - xf(5),
+      height: 4,
+      class: 'tri-gauge-zone tri-gauge-z-high',
+    }),
+  )
+  const k42 = data.meta.method.k42
+  const k7 = data.meta.method.k7
+  let c = r.ctl
+  let a = r.atl
+  for (let i = 0; i < 14; i++) {
+    c = c * (1 - k42)
+    a = a * (1 - k7)
+  }
+  const projTsb = c - a
+  const track = el('div', 'tri-gauge-track')
+  const proj = el('span', 'tri-gauge-proj')
+  proj.style.left = `${clampN(xf(projTsb), 1.5, 98.5)}%`
+  const needle = el('span', 'tri-gauge-needle')
+  needle.style.left = `${clampN(xf(r.tsb), 1.5, 98.5)}%`
+  track.append(s, proj, needle)
+  block.appendChild(track)
+  const chips = el('div', 'tri-gauge-chips')
+  chips.append(
+    el(
+      'span',
+      `tri-ana-chip tri-acwr-${r.acwrState}`,
+      r.acwrState === 'building'
+        ? 'ACWR building base'
+        : `ACWR ${r.acwr?.toFixed(2)} ${r.acwrState}`,
+    ),
+    el('span', 'tri-ana-chip', `ramp ${signed(Math.round((r.rampWeek || 0) * 100))}%`),
+    el(
+      'span',
+      'tri-ana-chip',
+      r.monotony != null ? `monotony ${r.monotony.toFixed(2)}` : 'monotony —',
+    ),
+    el('span', 'tri-ana-chip', r.strain != null ? `strain ${Math.round(r.strain)}` : 'strain —'),
+  )
+  block.appendChild(chips)
+  const cap = el('div', 'tri-elev-cap')
+  cap.appendChild(
+    el(
+      'span',
+      'tri-ana-k',
+      `form ${signed(Math.round(r.tsb))} → ${signed(Math.round(projTsb))} after 14d rest`,
+    ),
+  )
+  block.appendChild(cap)
+  return block
+}
+
+const buildPmc = (data: StravaAnalytics): HTMLElement => {
+  const block = el('div', 'tri-ana-pmc')
+  block.appendChild(anaTitle('fitness · fatigue · form'))
+  const daily = data.daily
+  const n = daily.length
+  if (n < 2) {
+    block.appendChild(el('div', 'tri-ana-empty', 'not enough data'))
+    return block
+  }
+  let maxFit = 1
+  for (const d of daily) {
+    if (d.ctl > maxFit) maxFit = d.ctl
+    if (d.atl > maxFit) maxFit = d.atl
+  }
+  let maxTsb = 8
+  for (const d of daily) {
+    const ab = Math.abs(d.tsb)
+    if (ab > maxTsb) maxTsb = ab
+  }
+  const fitBot = 20
+  const fitTop = 3
+  const tsbBase = 27
+  const tsbAmp = 5.5
+  const x = (i: number): number => (i / (n - 1)) * ANA_W
+  const yFit = (v: number): number => fitBot - (v / maxFit) * (fitBot - fitTop)
+  const yTsb = (v: number): number => tsbBase - (v / maxTsb) * tsbAmp
+  let warmEnd = 0
+  while (warmEnd < n && daily[warmEnd].warmup) warmEnd++
+  const ctlPts = daily.map((d, i) => [x(i), yFit(d.ctl)] as [number, number])
+  const atlPts = daily.map((d, i) => [x(i), yFit(d.atl)] as [number, number])
+  const tsbPts = daily.map((d, i) => [x(i), yTsb(d.tsb)] as [number, number])
+  const s = svg('svg', {
+    class: 'tri-ana-svg tri-pmc-svg',
+    viewBox: `0 0 ${ANA_W} ${ANA_H}`,
+    preserveAspectRatio: 'none',
+  })
+  const areaInner = ctlPts.map(([px, py]) => `L ${px.toFixed(2)} ${py.toFixed(2)}`).join(' ')
+  s.appendChild(
+    svg('path', { d: `M 0 ${fitBot} ${areaInner} L ${ANA_W} ${fitBot} Z`, class: 'tri-elev-area' }),
+  )
+  s.appendChild(svg('line', { x1: 0, y1: tsbBase, x2: ANA_W, y2: tsbBase, class: 'tri-ana-zero' }))
+  s.appendChild(svg('path', { d: polyD(tsbPts), class: 'tri-ana-tsb' }))
+  if (warmEnd > 1)
+    s.appendChild(
+      svg('path', { d: polyD(ctlPts.slice(0, warmEnd)), class: 'tri-elev-line tri-pmc-warm' }),
+    )
+  s.appendChild(
+    svg('path', {
+      d: polyD(ctlPts.slice(Math.max(0, warmEnd - 1))),
+      class: 'tri-elev-line tri-pmc-ctl',
+    }),
+  )
+  s.appendChild(svg('path', { d: polyD(atlPts), class: 'tri-pmc-atl' }))
+  s.appendChild(svg('line', { x1: ANA_W, y1: 0, x2: ANA_W, y2: ANA_H, class: 'tri-pmc-now' }))
+  s.appendChild(svg('line', { x1: 0, y1: 0, x2: 0, y2: ANA_H, class: 'tri-ana-cursor' }))
+  block.appendChild(s)
+  const r = data.risk
+  const cap = el('div', 'tri-elev-cap')
+  cap.append(
+    el('span', 'tri-ana-k', `CTL ${Math.round(r.ctl)}`),
+    el('span', 'tri-ana-k', `ATL ${Math.round(r.atl)}`),
+    el('span', `tri-ana-k tri-zone-${r.tsbZone}`, `TSB ${signed(Math.round(r.tsb))}`),
+  )
+  block.appendChild(cap)
+  return block
+}
+
+const buildCtlSport = (data: StravaAnalytics): HTMLElement => {
+  const block = el('div', 'tri-ana-ctlsport')
+  block.appendChild(anaTitle('fitness by discipline'))
+  const daily = data.daily
+  const n = daily.length
+  if (n < 2) {
+    block.appendChild(el('div', 'tri-ana-empty', 'not enough data'))
+    return block
+  }
+  let mx = 1
+  for (const d of daily) mx = Math.max(mx, d.swimCtl, d.bikeCtl, d.runCtl)
+  const top = 3
+  const bot = 28
+  const x = (i: number): number => (i / (n - 1)) * ANA_W
+  const y = (v: number): number => bot - (v / mx) * (bot - top)
+  const s = svg('svg', {
+    class: 'tri-ana-svg',
+    viewBox: `0 0 ${ANA_W} ${ANA_H}`,
+    preserveAspectRatio: 'none',
+  })
+  const series: { sp: Sport; get: (d: DailyPoint) => number }[] = [
+    { sp: 'swim', get: d => d.swimCtl },
+    { sp: 'bike', get: d => d.bikeCtl },
+    { sp: 'run', get: d => d.runCtl },
+  ]
+  for (const { sp, get } of series) {
+    s.appendChild(
+      svg('path', {
+        d: polyD(daily.map((d, i) => [x(i), y(get(d))])),
+        class: `tri-elev-line tri-line-${sp}`,
+      }),
+    )
+  }
+  block.appendChild(s)
+  const cap = el('div', 'tri-elev-cap')
+  for (const sp of ['swim', 'bike', 'run'] as Sport[]) {
+    const days = bySport(data.thresholds, sp)?.staleDays ?? 0
+    const leg = el('span', `tri-ana-leg tri-leg-${sp}`)
+    leg.append(buildIcon(sp), el('span', 'tri-ana-k', days > 45 ? `${days}d stale` : `${days}d`))
+    cap.appendChild(leg)
+  }
+  block.appendChild(cap)
+  return block
+}
+
+const buildWeekly = (data: StravaAnalytics): HTMLElement => {
+  const block = el('div', 'tri-ana-weekly')
+  block.appendChild(anaTitle('weekly load'))
+  const wk = data.weekly
+  if (!wk.length) {
+    block.appendChild(el('div', 'tri-ana-empty', 'no weeks'))
+    return block
+  }
+  let mx = 1
+  for (const w of wk) if (w.load > mx) mx = w.load
+  const n = wk.length
+  const H = 32
+  const bot = H - 0.5
+  const s = svg('svg', {
+    class: 'tri-ana-svg tri-ana-weekly-svg',
+    viewBox: `0 0 ${n} ${H}`,
+    preserveAspectRatio: 'none',
+  })
+  wk.forEach((w, i) => {
+    if (w.load <= 0) {
+      s.appendChild(
+        svg('rect', { x: i + 0.35, y: bot - 0.5, width: 0.3, height: 0.5, class: 'tri-seg--rest' }),
+      )
+      return
+    }
+    const h = (w.load / mx) * (H - 2)
+    const spike = w.ramp != null && w.ramp > 0.1
+    s.appendChild(
+      svg('rect', {
+        x: i + 0.12,
+        y: bot - h,
+        width: 0.76,
+        height: h,
+        class: spike ? 'tri-seg--load tri-seg--spike' : 'tri-seg--load',
+      }),
+    )
+  })
+  block.appendChild(s)
+  const active = wk.filter(w => w.load > 0).length
+  const cap = el('div', 'tri-elev-cap')
+  cap.append(
+    el('span', 'tri-ana-k', `${active} active wk`),
+    el('span', 'tri-ana-k', `peak ${Math.round(mx)}/wk`),
+  )
+  block.appendChild(cap)
+  return block
+}
+
+const buildReadiness = (data: StravaAnalytics): HTMLElement => {
+  const block = el('div', 'tri-ana-readiness')
+  block.appendChild(anaTitle('race readiness'))
+  if (!data.races.length) {
+    block.appendChild(el('div', 'tri-ana-empty', '—'))
+    return block
+  }
+  for (const r of data.races) {
+    const row = el('div', 'tri-rdy-row')
+    row.appendChild(el('span', 'tri-rdy-label', RACE_LABEL[r.distance] ?? r.distance))
+    const track = el('div', 'tri-rdy-bar')
+    const score = clampN(r.score, 0, 100)
+    const fill = el('div', 'tri-rdy-fill')
+    fill.style.width = `${Math.max(2, score)}%`
+    const bw = Math.min(40, r.bandPct)
+    const band = el('div', 'tri-rdy-band')
+    band.style.left = `${clampN(score - bw / 2, 0, 100 - bw)}%`
+    band.style.width = `${bw}%`
+    track.append(fill, band)
+    row.appendChild(track)
+    const meta = el('span', 'tri-rdy-meta')
+    meta.append(
+      el('span', `tri-rdy-bind tri-leg-${r.bindingLeg}`, r.bindingLeg),
+      el('span', 'tri-rdy-time', hms(r.predictedTotalS)),
+    )
+    row.appendChild(meta)
+    block.appendChild(row)
+  }
+  return block
+}
+
+const buildTrendPanel = (data: StravaAnalytics, sport: Sport): HTMLElement => {
+  const tr = bySport(data.trends, sport)
+  const th = bySport(data.thresholds, sport)
+  const wrap = el('div', `tri-trend-panel${tr?.stale ? ' tri-trend-stale' : ''}`)
+  const head = el('div', 'tri-trend-head')
+  head.append(buildIconLeg(sport), el('span', 'tri-trend-unit', th ? thLabel(th) : sport))
+  if (th) head.appendChild(el('span', `tri-ana-conf tri-conf-${th.conf}`, th.conf))
+  wrap.appendChild(head)
+  if (!tr || tr.method === 'none') {
+    const msg =
+      tr?.note ||
+      (th && th.staleDays > 45 ? `stale · last ${th.staleDays}d ago` : 'not enough data')
+    wrap.appendChild(el('div', 'tri-trend-note', msg))
+    return wrap
+  }
+  const fc = tr.forecast
+  if (fc.length >= 1 && tr.level != null) {
+    const ys = [tr.level, ...fc.flatMap(f => [f.value, f.lo, f.hi])]
+    const ymin = Math.min(...ys)
+    const ymax = Math.max(...ys)
+    const yspan = Math.max(1e-6, ymax - ymin)
+    const top = 4
+    const bot = 24
+    const m = fc.length
+    const xOf = (i: number): number => (i < 0 ? 0 : 8 + (i / Math.max(1, m - 1)) * (ANA_W - 8))
+    const Y = (v: number): number =>
+      tr.invert
+        ? top + ((v - ymin) / yspan) * (bot - top)
+        : bot - ((v - ymin) / yspan) * (bot - top)
+    const s = svg('svg', {
+      class: 'tri-ana-svg tri-trend-svg',
+      viewBox: `0 0 ${ANA_W} ${ANA_H}`,
+      preserveAspectRatio: 'none',
+    })
+    if (m >= 2) {
+      const hiPts = fc.map((f, i) => `${xOf(i).toFixed(2)} ${Y(f.hi).toFixed(2)}`)
+      const loPts = fc.map(
+        (_, i) => `${xOf(m - 1 - i).toFixed(2)} ${Y(fc[m - 1 - i].lo).toFixed(2)}`,
+      )
+      s.appendChild(
+        svg('path', {
+          d: `M ${hiPts.join(' L ')} L ${loPts.join(' L ')} Z`,
+          class: `tri-trend-band tri-fill-${sport}`,
+        }),
+      )
+    }
+    const linePts: [number, number][] = [
+      [xOf(-1), Y(tr.level)],
+      ...fc.map((f, i) => [xOf(i), Y(f.value)] as [number, number]),
+    ]
+    s.appendChild(svg('path', { d: polyD(linePts), class: `tri-trend-proj tri-line-${sport}` }))
+    const track = el('div', 'tri-trend-track')
+    const dot = el('span', `tri-trend-dot tri-bg-${sport}`)
+    dot.style.left = `${clampN((xOf(-1) / ANA_W) * 100, 2, 98)}%`
+    dot.style.top = `${(Y(tr.level) / ANA_H) * 100}%`
+    track.append(s, dot)
+    wrap.appendChild(track)
+  }
+  const dir = trendDir(tr.invert, tr.slopePerWeek)
+  const note = el('div', 'tri-trend-note')
+  note.append(
+    el(
+      'span',
+      `tri-trend-dir tri-dir-${dir > 0 ? 'up' : dir < 0 ? 'down' : 'flat'}`,
+      dir > 0 ? 'faster' : dir < 0 ? 'slower' : 'flat',
+    ),
+    el('span', 'tri-ana-k', `${tr.method} · n=${tr.sampleSize}`),
+  )
+  wrap.appendChild(note)
+  return wrap
+}
+
+const buildTrend = (data: StravaAnalytics): HTMLElement => {
+  const block = el('div', 'tri-ana-trend')
+  block.appendChild(anaTitle('pace trend + forecast'))
+  for (const sport of ['swim', 'bike', 'run'] as Sport[])
+    block.appendChild(buildTrendPanel(data, sport))
+  return block
+}
+
+const buildActions = (data: StravaAnalytics): HTMLElement => {
+  const block = el('div', 'tri-ana-actions')
+  block.appendChild(anaTitle('things to improve'))
+  const banner = el('div', 'tri-actions-head')
+  banner.append(
+    el('span', 'tri-actions-weak', 'weakest'),
+    buildIconLeg(data.weakestSport),
+    el('span', 'tri-ana-k', data.weakestSport),
+  )
+  block.appendChild(banner)
+  if (data.actions.length) {
+    const tbl = el('table', 'tri-act-stats')
+    const body = document.createElement('tbody')
+    data.actions.forEach((a, i) => {
+      const tr = document.createElement('tr')
+      tr.append(
+        el('th', 'tri-act-stat-k', `${i + 1}. ${a.text}`),
+        el('td', 'tri-act-stat-v', a.value),
+      )
+      body.appendChild(tr)
+    })
+    tbl.appendChild(body)
+    block.appendChild(tbl)
+  }
+  const chips = el('div', 'tri-gauge-chips')
+  for (const sport of ['swim', 'bike', 'run'] as Sport[]) {
+    const th = bySport(data.thresholds, sport)
+    if (th)
+      chips.appendChild(
+        el('span', `tri-ana-chip tri-chip-${sport}`, `${sport} ${thLabel(th)} ${th.conf}`),
+      )
+  }
+  block.appendChild(chips)
+  return block
+}
+
+const ANALYTICS_BUILDERS: Record<string, (data: StravaAnalytics) => HTMLElement> = {
+  gauge: buildGauge,
+  pmc: buildPmc,
+  'ctl-sport': buildCtlSport,
+  weekly: buildWeekly,
+  readiness: buildReadiness,
+  trend: buildTrend,
+  actions: buildActions,
+}
+
+const wireScrub = (panel: HTMLElement, pop: HTMLElement, daily: DailyPoint[]): (() => void) => {
+  const svgEl = panel.querySelector<SVGElement>('.tri-pmc-svg')
+  const cursor = svgEl?.querySelector<SVGElement>('.tri-ana-cursor')
+  if (!svgEl || !cursor || daily.length < 2) return () => {}
+  const onMove = (event: MouseEvent) => {
+    const r = svgEl.getBoundingClientRect()
+    const frac = clampN((event.clientX - r.left) / r.width, 0, 1)
+    const d = daily[Math.round(frac * (daily.length - 1))]
+    cursor.setAttribute('x1', `${(frac * ANA_W).toFixed(2)}`)
+    cursor.setAttribute('x2', `${(frac * ANA_W).toFixed(2)}`)
+    pop.replaceChildren(
+      el('span', 'tri-pop-date', d.date),
+      el('span', 'tri-ana-k', `CTL ${Math.round(d.ctl)}`),
+      el('span', 'tri-ana-k', `ATL ${Math.round(d.atl)}`),
+      el('span', 'tri-ana-k', `TSB ${signed(Math.round(d.tsb))}`),
+    )
+    pop.style.left = `${Math.min(event.clientX + 14, window.innerWidth - 150)}px`
+    pop.style.top = `${r.top - 4}px`
+    panel.classList.add('tri-ana-scrubbing')
+  }
+  const onLeave = () => panel.classList.remove('tri-ana-scrubbing')
+  svgEl.addEventListener('mousemove', onMove)
+  svgEl.addEventListener('mouseleave', onLeave)
+  return () => {
+    svgEl.removeEventListener('mousemove', onMove)
+    svgEl.removeEventListener('mouseleave', onLeave)
+  }
+}
+
+const setupAnalytics = (root: HTMLElement): (() => void) | null => {
+  const btn = root.querySelector<HTMLElement>('.tri-analytics-btn')
+  const panel = root.querySelector<HTMLElement>('.tri-analytics')
+  const scrim = root.querySelector<HTMLElement>('.tri-analytics-scrim')
+  const closeBtn = root.querySelector<HTMLElement>('.tri-ana-close')
+  const headline = root.querySelector<HTMLElement>('.tri-ana-headline')
+  const pop = root.querySelector<HTMLElement>('.tri-ana-pop')
+  if (!btn || !panel || !scrim) return null
+
+  let loaded = false
+  let scrubCleanup: (() => void) | null = null
+
+  const render = (data: StravaAnalytics) => {
+    if (headline) headline.replaceChildren(buildHeadline(data))
+    for (const block of Array.from(panel.querySelectorAll<HTMLElement>('.tri-ana-block'))) {
+      const build = ANALYTICS_BUILDERS[block.dataset.chart ?? '']
+      if (build) block.replaceChildren(build(data))
+    }
+    if (pop) scrubCleanup = wireScrub(panel, pop, data.daily)
+  }
+  const load = () => {
+    if (loaded) return
+    loaded = true
+    const path = root.dataset.analyticsPath
+    if (!path) return
+    fetch(path)
+      .then(res => res.json())
+      .then((data: StravaAnalytics) => render(data))
+      .catch(() => {})
+  }
+  const open = () => {
+    root.classList.add('tri-analytics-open')
+    panel.setAttribute('aria-hidden', 'false')
+    scrim.setAttribute('aria-hidden', 'false')
+    load()
+  }
+  const close = () => {
+    root.classList.remove('tri-analytics-open')
+    panel.setAttribute('aria-hidden', 'true')
+    scrim.setAttribute('aria-hidden', 'true')
+  }
+  const onKey = (event: KeyboardEvent) => {
+    if (event.key === 'Escape') close()
+  }
+
+  btn.addEventListener('click', open)
+  closeBtn?.addEventListener('click', close)
+  scrim.addEventListener('click', close)
+  document.addEventListener('keydown', onKey)
+
+  return () => {
+    btn.removeEventListener('click', open)
+    closeBtn?.removeEventListener('click', close)
+    scrim.removeEventListener('click', close)
+    document.removeEventListener('keydown', onKey)
+    scrubCleanup?.()
+  }
+}
+
+const setupCheat = (root: HTMLElement): (() => void) | null => {
+  const unit = root.querySelector<HTMLButtonElement>('.tri-cheat-unit')
+  const cells = root.querySelectorAll<HTMLElement>('.tri-cheat td[data-km]')
+  if (!unit || cells.length === 0) return null
+  let mi = false
+  const onClick = () => {
+    mi = !mi
+    unit.textContent = mi ? 'mi' : 'km'
+    for (const c of cells) {
+      if (!mi) {
+        c.textContent = c.dataset.km ?? ''
+      } else {
+        const v = Number(c.dataset.km) * KM_TO_MI
+        c.textContent = v < 10 ? v.toFixed(2) : v.toFixed(1)
+      }
+    }
+  }
+  unit.addEventListener('click', onClick)
+  return () => unit.removeEventListener('click', onClick)
+}
+
 document.addEventListener('nav', () => {
   const root = document.querySelector<HTMLElement>('.triathlon')
   if (!root) return
@@ -498,4 +1201,8 @@ document.addEventListener('nav', () => {
   if (calcCleanup) window.addCleanup?.(calcCleanup)
   const gearCleanup = setupGear(root)
   if (gearCleanup) window.addCleanup?.(gearCleanup)
+  const cheatCleanup = setupCheat(root)
+  if (cheatCleanup) window.addCleanup?.(cheatCleanup)
+  const anaCleanup = setupAnalytics(root)
+  if (anaCleanup) window.addCleanup?.(anaCleanup)
 })

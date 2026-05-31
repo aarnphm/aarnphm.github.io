@@ -11,6 +11,7 @@
   display: flex;
   align-items: baseline;
   justify-content: flex-end;
+  gap: 1rem;
 }
 
 .tri-total {
@@ -31,24 +32,72 @@
   position: relative;
   display: flex;
   flex: 1 1 auto;
+  align-items: center;
   justify-content: center;
   min-height: 0;
   max-height: 40%;
-  padding-block: 2.5rem 5rem;
+  padding-block: 5rem 0rem;
+  margin-block: 1rem;
+}
+
+.tri-scroll {
+  display: flex;
+  justify-content: safe center;
+  width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scrollbar-width: thin;
+}
+
+.tri-track {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  width: max-content;
 }
 
 .tri-bars {
   display: flex;
   align-items: flex-end;
-  justify-content: center;
   gap: 6px;
-  width: 100%;
-  max-width: calc(var(--tri-days, 60) * 7px);
-  margin-inline: auto;
   cursor:
     url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='13' height='13'%3E%3Cpath d='M6.5 1 L12 6.5 L6.5 12 L1 6.5 Z' fill='none' stroke='%23999' stroke-width='1.4'/%3E%3C/svg%3E")
       6 6,
     crosshair;
+}
+
+.tri-bars.tri-bars--locked {
+  cursor:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='13' height='13'%3E%3Cpath d='M6.5 1 L12 6.5 L6.5 12 L1 6.5 Z' fill='none' stroke='%23fc4c02' stroke-width='1.7'/%3E%3C/svg%3E")
+      6 6,
+    crosshair;
+}
+
+.tri-axis {
+  position: relative;
+  height: 1.15rem;
+  border-top: 1px solid color-mix(in srgb, var(--gray) 45%, transparent);
+}
+
+.tri-axis-year {
+  position: absolute;
+  top: 0;
+  padding-top: 0.4rem;
+  font-family: var(--codeFont);
+  font-size: 0.62rem;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+  color: var(--gray);
+
+  &::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: -7px;
+    width: 1px;
+    height: 7px;
+    background: color-mix(in srgb, var(--gray) 55%, transparent);
+  }
 }
 
 .tri-bar {
@@ -85,10 +134,7 @@
   left: 0;
   z-index: 50;
   width: min(300px, 84vw);
-  max-height: 88vh;
-  overflow-y: auto;
-  overscroll-behavior: contain;
-  scrollbar-width: thin;
+  overflow: hidden;
   opacity: 0;
   visibility: hidden;
   background: color-mix(in srgb, var(--light) 88%, transparent);
@@ -99,6 +145,31 @@
   transition:
     opacity 0.16s ease,
     visibility 0.16s;
+}
+
+.tri-pop-scroll {
+  max-height: 88vh;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: none;
+}
+
+.tri-pop-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.tri-pop--more::after {
+  content: '';
+  position: absolute;
+  inset: auto 0 0;
+  height: 2.4rem;
+  pointer-events: none;
+  border-radius: 0 0 0.55rem 0.55rem;
+  background: linear-gradient(
+    to top,
+    color-mix(in srgb, var(--light) 92%, transparent),
+    transparent
+  );
 }
 
 .tri-hovering .tri-pop {
@@ -135,8 +206,13 @@
 }
 
 .tri-pop-rest {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.55rem;
   font-family: var(--codeFont);
-  font-size: 0.8rem;
+  font-size: 0.62rem;
+  letter-spacing: 0.08em;
   color: var(--gray);
 }
 
@@ -152,6 +228,10 @@
     stroke-linecap: round;
     stroke-linejoin: round;
   }
+}
+
+.tri-battery path {
+  stroke: var(--darkgray);
 }
 
 .tri-foot {
@@ -204,6 +284,20 @@
 
 .tri-conv-k {
   color: var(--darkgray);
+}
+
+.tri-cheat-unit {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  border-bottom: 1px solid transparent;
+
+  &:hover {
+    border-bottom-color: currentColor;
+  }
 }
 
 .tri-cheat {
@@ -337,9 +431,50 @@
 }
 
 .tri-act-figs {
+  position: relative;
   display: flex;
   flex-direction: column;
   gap: 0.6rem;
+}
+
+.tri-route-cursor {
+  fill: var(--tri-accent);
+  stroke: var(--light);
+  stroke-width: 0.6;
+  opacity: 0;
+  transition: opacity 0.1s ease;
+}
+
+.tri-elev-cursor {
+  stroke: var(--tri-accent);
+  stroke-width: 0.8;
+  vector-effect: non-scaling-stroke;
+  opacity: 0;
+}
+
+.tri-fig-readout {
+  position: absolute;
+  top: 0;
+  left: 0;
+  padding: 0.12rem 0.4rem;
+  font-family: var(--codeFont);
+  font-size: 0.6rem;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+  color: var(--dark);
+  background: color-mix(in srgb, var(--light) 82%, transparent);
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+  border-radius: 0.3rem;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.1s ease;
+}
+
+.tri-figs--hover .tri-route-cursor,
+.tri-figs--hover .tri-elev-cursor,
+.tri-figs--hover .tri-fig-readout {
+  opacity: 1;
 }
 
 .tri-route {
@@ -636,9 +771,9 @@
     font-size: 0.6rem;
     text-align: left;
     text-transform: uppercase;
-    letter-spacing: 0.06em;
     color: var(--gray);
     white-space: nowrap;
+    border-bottom-width: 0px;
   }
 
   td {
@@ -648,7 +783,7 @@
 }
 
 .tri-calc-u {
-  padding-left: 1rem;
+  padding-left: 1rem !important;
   padding-right: 1rem;
   font-size: 0.64rem;
   color: color-mix(in srgb, var(--gray) 75%, transparent);
@@ -700,5 +835,613 @@
   }
   .tri-foot {
     font-size: 0.68rem;
+  }
+}
+
+.triathlon {
+  --tri-swim: #3aa99f;
+  --tri-bike: #cdd597;
+  --tri-run: #fdb2a2;
+}
+
+.tri-analytics-btn {
+  padding: 0;
+  background: none;
+  border: 0;
+  font-family: var(--codeFont);
+  font-size: 0.64rem;
+  letter-spacing: 0.03em;
+  color: var(--darkgray);
+  cursor: pointer;
+  border-bottom: 1px solid color-mix(in srgb, var(--gray) 45%, transparent);
+
+  &:hover {
+    color: var(--dark);
+    border-bottom-color: var(--dark);
+  }
+}
+
+.tri-analytics-scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  background: color-mix(in srgb, var(--dark) 16%, transparent);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s ease;
+}
+
+.tri-analytics-open .tri-analytics-scrim {
+  opacity: 1;
+  visibility: visible;
+}
+
+.tri-analytics {
+  position: fixed;
+  top: 0;
+  right: 0;
+  z-index: 61;
+  display: flex;
+  flex-direction: column;
+  width: min(440px, 94vw);
+  height: 100vh;
+  padding: 0;
+  font-family: var(--codeFont);
+  font-variant-numeric: tabular-nums;
+  background: var(--light);
+  border-left: 1px solid color-mix(in srgb, var(--gray) 30%, transparent);
+  box-shadow: -14px 0 44px color-mix(in srgb, var(--dark) 16%, transparent);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateX(100%);
+  transition:
+    transform 0.28s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 0.2s ease,
+    visibility 0.28s;
+}
+
+.tri-analytics-open .tri-analytics {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(0);
+}
+
+.tri-ana-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex: none;
+  padding: 1rem 1.2rem 0.8rem;
+  border-bottom: 1px solid color-mix(in srgb, var(--gray) 22%, transparent);
+}
+
+.tri-ana-title {
+  font-size: 0.8rem;
+  letter-spacing: 0.04em;
+  color: var(--dark);
+}
+
+.tri-ana-close {
+  padding: 0;
+  background: none;
+  border: 0;
+  font-size: 1.3rem;
+  line-height: 1;
+  color: var(--gray);
+  cursor: pointer;
+
+  &:hover {
+    color: var(--dark);
+  }
+}
+
+.tri-ana-body {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  flex: 1 1 auto;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  padding: 1.1rem 1.2rem 2rem;
+}
+
+.tri-ana-block:empty {
+  display: none;
+}
+
+.tri-ana-block-title {
+  font-size: 0.6rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--gray);
+  margin-bottom: 0.5rem;
+}
+
+.tri-ana-empty,
+.tri-trend-note {
+  font-size: 0.66rem;
+  color: color-mix(in srgb, var(--gray) 85%, transparent);
+}
+
+.tri-ana-k {
+  color: var(--gray);
+}
+
+.tri-ana-svg {
+  width: 100%;
+  height: 70px;
+  display: block;
+  overflow: visible;
+}
+
+.tri-ana-head {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+}
+
+.tri-ana-head-line {
+  font-size: 0.78rem;
+  line-height: 1.4;
+  color: var(--dark);
+}
+
+.tri-ana-head-stats {
+  display: flex;
+  gap: 1.6rem;
+}
+
+.tri-ana-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.tri-ana-stat-v {
+  font-size: 1.15rem;
+  line-height: 1;
+  color: var(--dark);
+}
+
+.tri-ana-stat-k {
+  font-size: 0.58rem;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--gray);
+}
+
+.tri-ana-stat-sub {
+  font-size: 0.6rem;
+  color: color-mix(in srgb, var(--gray) 80%, transparent);
+}
+
+.tri-zone-fresh,
+.tri-acwr-ok {
+  color: var(--tri-swim);
+}
+.tri-zone-neutral {
+  color: var(--darkgray);
+}
+.tri-zone-fatigued,
+.tri-acwr-caution {
+  color: color-mix(in srgb, var(--tri-run) 70%, var(--dark));
+}
+.tri-zone-deep,
+.tri-acwr-high {
+  color: #d14d41;
+}
+
+.tri-elev-area {
+  fill: color-mix(in srgb, var(--gray) 22%, transparent);
+}
+
+.tri-pmc-ctl {
+  stroke: var(--dark);
+  stroke-width: 1;
+}
+
+.tri-pmc-warm {
+  stroke: var(--dark);
+  stroke-width: 1;
+  stroke-dasharray: 2 2;
+  opacity: 0.6;
+}
+
+.tri-pmc-atl {
+  fill: none;
+  stroke: var(--tri-accent);
+  stroke-width: 0.7;
+  vector-effect: non-scaling-stroke;
+}
+
+.tri-ana-tsb {
+  fill: none;
+  stroke: color-mix(in srgb, var(--gray) 75%, transparent);
+  stroke-width: 0.6;
+  vector-effect: non-scaling-stroke;
+}
+
+.tri-ana-zero {
+  stroke: color-mix(in srgb, var(--gray) 35%, transparent);
+  stroke-width: 0.4;
+  stroke-dasharray: 2 2;
+}
+
+.tri-pmc-now {
+  stroke: var(--tri-accent);
+  stroke-width: 0.5;
+  opacity: 0.5;
+}
+
+.tri-ana-cursor {
+  stroke: var(--dark);
+  stroke-width: 0.5;
+  opacity: 0;
+}
+
+.tri-ana-scrubbing .tri-ana-cursor {
+  opacity: 0.7;
+}
+
+.tri-line-swim {
+  stroke: var(--tri-swim);
+}
+.tri-line-bike {
+  stroke: color-mix(in srgb, var(--tri-bike) 78%, var(--dark));
+}
+.tri-line-run {
+  stroke: var(--tri-run);
+}
+.tri-line-swim,
+.tri-line-bike,
+.tri-line-run {
+  fill: none;
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+
+.tri-fill-swim {
+  fill: var(--tri-swim);
+}
+.tri-fill-bike {
+  fill: color-mix(in srgb, var(--tri-bike) 78%, var(--dark));
+}
+.tri-fill-run {
+  fill: var(--tri-run);
+}
+
+.tri-leg-swim .tri-ico path {
+  stroke: var(--tri-swim);
+}
+.tri-leg-bike .tri-ico path {
+  stroke: color-mix(in srgb, var(--tri-bike) 78%, var(--dark));
+}
+.tri-leg-run .tri-ico path {
+  stroke: var(--tri-run);
+}
+
+.tri-ana-leg {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+
+  .tri-ico {
+    width: 0.85rem;
+    height: 0.85rem;
+  }
+}
+
+.tri-ana-ico .tri-ico {
+  width: 0.9rem;
+  height: 0.9rem;
+}
+
+.tri-elev-cap {
+  flex-wrap: wrap;
+}
+
+.tri-ana-weekly-svg {
+  height: 56px;
+}
+
+.tri-seg--load {
+  fill: color-mix(in srgb, var(--dark) 70%, transparent);
+}
+
+.tri-seg--spike {
+  fill: var(--tri-accent);
+}
+
+.tri-seg--rest {
+  fill: color-mix(in srgb, var(--gray) 40%, transparent);
+}
+
+.tri-ana-readiness {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+
+.tri-rdy-row {
+  display: grid;
+  grid-template-columns: 3.6rem 1fr auto;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.tri-rdy-label {
+  font-size: 0.64rem;
+  color: var(--darkgray);
+}
+
+.tri-rdy-bar {
+  position: relative;
+  height: 6px;
+  background: color-mix(in srgb, var(--gray) 18%, transparent);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.tri-rdy-fill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  background: var(--tri-accent);
+  border-radius: 3px;
+}
+
+.tri-rdy-band {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  background: repeating-linear-gradient(
+    -45deg,
+    color-mix(in srgb, var(--dark) 28%, transparent) 0 1px,
+    transparent 1px 3px
+  );
+}
+
+.tri-rdy-meta {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  font-size: 0.62rem;
+}
+
+.tri-rdy-bind {
+  text-transform: lowercase;
+}
+.tri-rdy-bind.tri-leg-swim {
+  color: var(--tri-swim);
+}
+.tri-rdy-bind.tri-leg-bike {
+  color: color-mix(in srgb, var(--tri-bike) 78%, var(--dark));
+}
+.tri-rdy-bind.tri-leg-run {
+  color: var(--tri-run);
+}
+
+.tri-rdy-time {
+  color: var(--dark);
+}
+
+.tri-ana-trend {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+
+.tri-trend-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.tri-trend-stale {
+  opacity: 0.5;
+}
+
+.tri-trend-head {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.64rem;
+}
+
+.tri-trend-unit {
+  color: var(--dark);
+}
+
+.tri-ana-conf,
+.tri-trend-dir {
+  font-size: 0.56rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.tri-conf-firm {
+  color: var(--tri-swim);
+}
+.tri-conf-low,
+.tri-conf-prior {
+  color: color-mix(in srgb, var(--gray) 90%, transparent);
+}
+.tri-conf-stale {
+  color: var(--tri-run);
+}
+
+.tri-dir-up {
+  color: var(--tri-swim);
+}
+.tri-dir-down {
+  color: var(--tri-run);
+}
+.tri-dir-flat {
+  color: var(--gray);
+}
+
+.tri-trend-svg {
+  height: 46px;
+}
+
+.tri-trend-band {
+  opacity: 0.18;
+  stroke: none;
+}
+
+.tri-trend-proj {
+  fill: none;
+  stroke-width: 1;
+  stroke-dasharray: 2.5 2;
+  vector-effect: non-scaling-stroke;
+}
+
+.tri-trend-track {
+  position: relative;
+}
+
+.tri-trend-dot {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+.tri-bg-swim {
+  background: var(--tri-swim);
+}
+.tri-bg-bike {
+  background: color-mix(in srgb, var(--tri-bike) 78%, var(--dark));
+}
+.tri-bg-run {
+  background: var(--tri-run);
+}
+
+.tri-trend-note {
+  display: flex;
+  gap: 0.6rem;
+}
+
+.tri-gauge-svg {
+  width: 100%;
+  height: 18px;
+  display: block;
+}
+
+.tri-gauge-z-low {
+  fill: color-mix(in srgb, var(--tri-run) 30%, transparent);
+}
+.tri-gauge-z-mid {
+  fill: color-mix(in srgb, var(--gray) 16%, transparent);
+}
+.tri-gauge-z-high {
+  fill: color-mix(in srgb, var(--tri-swim) 30%, transparent);
+}
+
+.tri-gauge-track {
+  position: relative;
+}
+
+.tri-gauge-needle,
+.tri-gauge-proj {
+  position: absolute;
+  top: 50%;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+.tri-gauge-needle {
+  width: 8px;
+  height: 8px;
+  background: var(--tri-accent);
+}
+
+.tri-gauge-proj {
+  width: 6px;
+  height: 6px;
+  border: 1px solid var(--dark);
+  opacity: 0.6;
+}
+
+.tri-gauge-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-top: 0.6rem;
+}
+
+.tri-ana-chip {
+  padding: 0.12rem 0.45rem;
+  font-size: 0.58rem;
+  color: var(--darkgray);
+  border: 1px solid color-mix(in srgb, var(--gray) 28%, transparent);
+  border-radius: 0.3rem;
+  white-space: nowrap;
+}
+
+.tri-chip-swim {
+  color: var(--tri-swim);
+}
+.tri-chip-bike {
+  color: color-mix(in srgb, var(--tri-bike) 72%, var(--dark));
+}
+.tri-chip-run {
+  color: var(--tri-run);
+}
+
+.tri-ana-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+}
+
+.tri-actions-head {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.66rem;
+  color: var(--dark);
+}
+
+.tri-actions-weak {
+  font-size: 0.56rem;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--gray);
+}
+
+.tri-ana-pop {
+  position: fixed;
+  z-index: 62;
+  display: flex;
+  gap: 0.6rem;
+  padding: 0.4rem 0.6rem;
+  font-family: var(--codeFont);
+  font-size: 0.62rem;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  pointer-events: none;
+  background: color-mix(in srgb, var(--light) 90%, transparent);
+  backdrop-filter: blur(8px);
+  border: 1px solid color-mix(in srgb, var(--gray) 26%, transparent);
+  border-radius: 0.4rem;
+  transform: translateY(-100%);
+  opacity: 0;
+  transition: opacity 0.12s ease;
+}
+
+.tri-ana-scrubbing .tri-ana-pop {
+  opacity: 1;
+}
+
+@media all and (max-width: 48rem) {
+  .tri-analytics {
+    width: 100vw;
+  }
+  .tri-ana-head-stats {
+    gap: 1.1rem;
   }
 }

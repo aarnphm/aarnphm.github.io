@@ -80,47 +80,76 @@ export default (() => {
     const profile = `https://www.strava.com/athletes/${payload.athleteId || ''}`
     const location = String(fileData.frontmatter?.['location'] ?? 'Toronto')
 
+    const yearStarts: { year: string; index: number }[] = []
+    let lastYear = ''
+    payload.days.forEach((d, i) => {
+      const y = d.date.slice(0, 4)
+      if (y !== lastYear) {
+        yearStarts.push({ year: y, index: i })
+        lastYear = y
+      }
+    })
+
     return (
       <article
         class={classNames(displayClass, 'triathlon', 'main-col', 'popover-hint')}
         data-detail-path={joinSegments(pathToRoot(fileData.slug!), 'static/strava-detail.json')}
+        data-analytics-path={joinSegments(
+          pathToRoot(fileData.slug!),
+          'static/strava-analytics.json',
+        )}
         data-location={location}
       >
         <div class="tri-head">
           <a class="tri-total" href={profile} target="_blank" rel="noopener noreferrer">
             {miles(payload.totalKm)}mi
           </a>
+          <a class="tri-total" data-no-popover href="/">
+            home
+          </a>
         </div>
 
         <div class="tri-strip">
-          <div
-            class="tri-bars"
-            role="img"
-            aria-label={`${payload.totalCount} sessions, bar height by duration`}
-            style={`--tri-days:${payload.days.length}`}
-          >
-            {payload.days.map(d => {
-              const rest = d.items.length === 0
-              const segRaw = d.items.map(it => Math.max(MIN_SEG, (it.durationS / 60) * PX_PER_MIN))
-              const gaps = Math.max(0, d.items.length - 1) * GAP_PX
-              const rawTotal = segRaw.reduce((a, b) => a + b, 0)
-              const scale = rawTotal + gaps > MAX_BAR ? (MAX_BAR - gaps) / rawTotal : 1
-              return (
-                <span
-                  class={rest ? 'tri-bar' : 'tri-bar tri-bar--day'}
-                  data-ids={rest ? undefined : d.items.map(i => i.id).join(',')}
-                  data-date={prettyDate(d.date)}
-                >
-                  {rest ? (
-                    <span class="tri-seg" style={`height:${REST_SEG}px`} />
-                  ) : (
-                    segRaw.map(s => (
-                      <span class="tri-seg" style={`height:${(s * scale).toFixed(1)}px`} />
-                    ))
-                  )}
-                </span>
-              )
-            })}
+          <div class="tri-scroll">
+            <div class="tri-track">
+              <div
+                class="tri-bars"
+                role="img"
+                aria-label={`${payload.totalCount} sessions, bar height by duration`}
+              >
+                {payload.days.map(d => {
+                  const rest = d.items.length === 0
+                  const segRaw = d.items.map(it =>
+                    Math.max(MIN_SEG, (it.durationS / 60) * PX_PER_MIN),
+                  )
+                  const gaps = Math.max(0, d.items.length - 1) * GAP_PX
+                  const rawTotal = segRaw.reduce((a, b) => a + b, 0)
+                  const scale = rawTotal + gaps > MAX_BAR ? (MAX_BAR - gaps) / rawTotal : 1
+                  return (
+                    <span
+                      class={rest ? 'tri-bar' : 'tri-bar tri-bar--day'}
+                      data-ids={rest ? undefined : d.items.map(i => i.id).join(',')}
+                      data-date={prettyDate(d.date)}
+                    >
+                      {rest ? (
+                        <span class="tri-seg" style={`height:${REST_SEG}px`} />
+                      ) : (
+                        segRaw.map(s => (
+                          <span class="tri-seg" style={`height:${(s * scale).toFixed(1)}px`} />
+                        ))
+                      )}
+                    </span>
+                  )
+                })}
+              </div>
+              <div class="tri-axis">
+                {yearStarts.map(({ year, index }) => (
+                  <span class="tri-axis-year" style={`left:${index * 7}px`}>
+                    {year}
+                  </span>
+                ))}
+              </div>
+            </div>
           </div>
           <aside class="tri-pop" aria-hidden="true" />
         </div>
@@ -147,7 +176,11 @@ export default (() => {
           <table class="tri-cheat">
             <thead>
               <tr>
-                <th>km</th>
+                <th>
+                  <button class="tri-cheat-unit" type="button">
+                    km
+                  </button>
+                </th>
                 <th>swim</th>
                 <th>bike</th>
                 <th>run</th>
@@ -157,9 +190,9 @@ export default (() => {
               {TRI_DISTANCES.map(([label, s, b, r]) => (
                 <tr>
                   <th>{label}</th>
-                  <td>{s}</td>
-                  <td>{b}</td>
-                  <td>{r}</td>
+                  <td data-km={s}>{s}</td>
+                  <td data-km={b}>{b}</td>
+                  <td data-km={r}>{r}</td>
                 </tr>
               ))}
             </tbody>
@@ -173,17 +206,22 @@ export default (() => {
                 {GEAR.map(([label, items]) => (
                   <div class="tri-gear-row">
                     <span class="tri-gear-k">{label}</span>
-                    <span class="tri-gear-v">{items.join(' · ')}</span>
+                    <span class="tri-gear-v">
+                      {items.flatMap((it, i) => (i === 0 ? [`· ${it}`] : [<br />, `· ${it}`]))}
+                    </span>
                   </div>
                 ))}
               </div>
             </div>
+            <button class="tri-analytics-btn" type="button">
+              analytics
+            </button>
             <button class="tri-calc-btn" type="button">
               calculator
             </button>
             <a
               class="tri-credit"
-              href="https://rauno.me/craft/scroll"
+              href="https://rauno.me/run"
               target="_blank"
               rel="noopener noreferrer"
             >
@@ -313,6 +351,32 @@ export default (() => {
               </tr>
             </tbody>
           </table>
+        </aside>
+
+        <div class="tri-analytics-scrim" aria-hidden="true" />
+        <aside
+          class="tri-analytics"
+          aria-hidden="true"
+          role="dialog"
+          aria-label="triathlon analytics"
+        >
+          <div class="tri-ana-bar">
+            <span class="tri-ana-title">analytics</span>
+            <button class="tri-ana-close" type="button" aria-label="Close">
+              ×
+            </button>
+          </div>
+          <div class="tri-ana-body">
+            <div class="tri-ana-headline" />
+            <div class="tri-ana-block" data-chart="gauge" />
+            <div class="tri-ana-block" data-chart="pmc" />
+            <div class="tri-ana-block" data-chart="ctl-sport" />
+            <div class="tri-ana-block" data-chart="weekly" />
+            <div class="tri-ana-block" data-chart="readiness" />
+            <div class="tri-ana-block" data-chart="trend" />
+            <div class="tri-ana-block" data-chart="actions" />
+          </div>
+          <aside class="tri-ana-pop" aria-hidden="true" />
         </aside>
       </article>
     )

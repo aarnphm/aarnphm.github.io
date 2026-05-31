@@ -11,6 +11,7 @@ import { BuildCtx, contentDataFor } from '../../util/ctx'
 import { FilePath, FullSlug, joinSegments, pathToRoot, QUARTZ } from '../../util/path'
 import { StaticResources } from '../../util/resources'
 import { buildPayload, StravaPayload, StravaRawCache } from '../stores/strava'
+import { buildAnalytics } from '../stores/strava-analytics'
 import { ProcessedContent, QuartzPluginData } from '../vfile'
 import { write } from './helpers'
 
@@ -60,6 +61,14 @@ export const Strava: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts => 
           slug: 'static/strava-detail' as FullSlug,
           ext: '.json',
           content: JSON.stringify(payload.details),
+        }),
+      )
+      files.push(
+        await write({
+          ctx,
+          slug: 'static/strava-analytics' as FullSlug,
+          ext: '.json',
+          content: JSON.stringify(buildAnalytics(cache)),
         }),
       )
       const slug = file.data.slug!
