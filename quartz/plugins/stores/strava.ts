@@ -61,6 +61,7 @@ export interface StravaStreams {
 }
 
 export interface StravaRawCache {
+  version?: number
   athleteId: number
   auth: StravaAuth
   lastSync: number
@@ -156,7 +157,7 @@ export function normalizeSport(sportType: string): Sport | null {
   }
 }
 
-function round(value: number, dp: number): number {
+export function round(value: number, dp: number): number {
   const f = 10 ** dp
   return Math.round(value * f) / f
 }
