@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-05-29 18:01:52 GMT-04:00
+modified: 2026-05-30 22:27:10 GMT-04:00
 permalinks:
   - /website
   - /tweets
@@ -7024,6 +7024,10 @@ title: are.na
 
 ## stream
 
+- https://www.enterportal.xyz/ -- Enterportal
+  - [meta]:
+    - date: 05/30/2026
+    - tags: [masonry, graphics]
 - https://ncatlab.org/nlab/show/HomePage -- nLab
   - [meta]:
     - date: 05/28/2026
@@ -7508,6 +7512,10 @@ title: are.na
 
 ## design
 
+- https://wearecollins.com/ -- Collins
+  - [meta]:
+    - date: 05/30/2026
+    - tags: [studio]
 - https://glimm.dev/ -- glimm.dev
   - [meta]:
     - date: 05/27/2026
@@ -8412,6 +8420,10 @@ title: are.na
 
 ## resources
 
+- https://www.tricalculator.com/ -- Triathlon Calculator
+  - [meta]:
+    - date: 05/30/2026
+    - tags: [tools, training]
 - https://noslopgrenade.com/ -- no slop grenade
   - [meta]:
     - date: 05/25/2026

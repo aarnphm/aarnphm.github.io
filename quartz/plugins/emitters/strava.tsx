@@ -52,7 +52,7 @@ export const Strava: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts => 
     const allFiles = contentDataFor(content)
     for (const [tree, file] of content) {
       if (!isTriathlon(file.data)) continue
-      const since = file.data.frontmatter?.['strava_since']
+      const since = file.data.frontmatter?.['strava']
       const payload = buildPayload(cache, typeof since === 'string' ? since : undefined)
       files.push(
         await write({
