@@ -83,6 +83,26 @@ const configuration: GlobalConfiguration = {
     chunking: { chunkSize: 128, chunkOverlap: 64 },
     vllm: { concurrency: 16, batchSize: 128 },
   },
+  keybinds: {
+    'cmd+/': 'recherche',
+    'cmd+\\': "page d'accueil",
+    'cmd+j': 'curius',
+    'cmd+.': 'arena',
+    'cmd+i': 'stream',
+    'cmd+b': 'lecteur',
+    // 'cmd+g': 'graphique',
+    'cmd+o': 'opener',
+    'cmd+p': 'palette de commandes',
+    "cmd+'": 'aide raccourcis',
+    gh: 'navigation des titres',
+    D: 'mode sombre/clair/système',
+    f: 'mode de sélection de liens',
+    'j/k': 'défiler haut/bas',
+    gg: 'aller au début',
+    G: 'aller à la fin',
+    'ctrl+d/u': 'demi-page haut/bas',
+    'H/M/L': 'haut/milieu/bas du viewport',
+  },
 }
 
 /**
