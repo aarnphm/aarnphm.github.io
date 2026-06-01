@@ -88,6 +88,8 @@ export interface GlobalConfiguration {
   locale: ValidLocale
   /** Semantic search configuration */
   semanticSearch?: Partial<SemanticIndexOptions>
+  //** Keybind aliases */
+  keybinds?: { [key: string]: string }
 }
 
 export interface QuartzConfig {
