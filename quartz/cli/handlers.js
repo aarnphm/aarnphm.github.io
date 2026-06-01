@@ -338,6 +338,11 @@ export async function handleBuild(argv) {
   }
 
   if (argv.watch) {
+    const sourceChanged = (type, fp) => {
+      if (isTestSourcePath(fp)) return
+      console.log(styleText('yellow', `Detected source ${type}: ${normalizeWatchedPath(fp)}`))
+      return build(clientRefresh)
+    }
     const paths = await globby(
       [
         'quartz.config.ts',
@@ -356,18 +361,9 @@ export async function handleBuild(argv) {
         awaitWriteFinish: { stabilityThreshold: sourceWatchWriteStabilityMs },
         ignoreInitial: true,
       })
-      .on('add', fp => {
-        if (isTestSourcePath(fp)) return
-        return build(clientRefresh)
-      })
-      .on('change', fp => {
-        if (isTestSourcePath(fp)) return
-        return build(clientRefresh)
-      })
-      .on('unlink', fp => {
-        if (isTestSourcePath(fp)) return
-        return build(clientRefresh)
-      })
+      .on('add', fp => sourceChanged('add', fp))
+      .on('change', fp => sourceChanged('change', fp))
+      .on('unlink', fp => sourceChanged('unlink', fp))
 
     console.log(styleText('gray', 'hint: exit with ctrl+c'))
   }
