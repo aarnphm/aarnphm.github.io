@@ -264,7 +264,7 @@
   padding: 0.8rem 0.95rem;
   background: color-mix(in srgb, var(--light) 80%, transparent);
   border: 0;
-  border-radius: 6px;
+  border-radius: var(--radius-none);
   box-shadow: var(--mha-panel-shadow);
   font-size: 0.82rem;
   color: var(--mha-note);
@@ -309,7 +309,7 @@
   align-items: flex-start;
   gap: 0.5rem;
   padding: 0.6rem 0.75rem;
-  border-radius: 6px;
+  border-radius: var(--radius-none);
   background: color-mix(in srgb, var(--mha-sage) 10%, transparent);
   box-shadow: 2px 0 0 color-mix(in srgb, var(--mha-concat-edge) 78%, transparent) inset;
   font-size: 0.8rem;
@@ -447,7 +447,7 @@
   font-family: var(--codeFont, ui-monospace, monospace);
   font-size: 0.85rem;
   padding: 0.3rem 0.45rem;
-  border-radius: 4px;
+  border-radius: var(--radius-none);
   border: 0;
   background: color-mix(in srgb, var(--light) 90%, transparent);
   box-shadow: 0 0 0 1px color-mix(in srgb, var(--gray) 36%, transparent) inset;
@@ -468,7 +468,7 @@
   gap: 0.5rem;
   padding: 0.4rem 0.65rem;
   min-height: 2.5rem;
-  border-radius: var(--radius-6);
+  border-radius: var(--radius-none);
   border: 0;
   background: color-mix(in srgb, var(--light) 90%, transparent);
   box-shadow: 0 0 0 1px color-mix(in srgb, var(--gray) 36%, transparent) inset;

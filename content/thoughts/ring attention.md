@@ -2,7 +2,7 @@
 date: '2026-05-27'
 description: sequence sharded across devices in a ring, K,V blocks circulate so each GPU holds only a slice of the cache.
 id: attention-ring
-modified: 2026-05-27 23:18:36 GMT-04:00
+modified: 2026-06-01 00:28:32 GMT-04:00
 seealso:
   - '[[thoughts/Attention|main stage]]'
   - '[[thoughts/tree attention|tree attention]]'
@@ -11,7 +11,7 @@ tags:
   - ml
   - llm
   - technical
-title: ring attention
+title: Ring Attention
 ---
 
 RingAttention [@liu2023ringattentionblockwisetransformers] shards long contexts across devices in a ring pipeline. Striped Attention [@brandon2023stripedattentionfasterring] improves load balance with alternating shard ownership.

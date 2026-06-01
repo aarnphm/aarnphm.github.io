@@ -131,7 +131,7 @@
   align-items: center;
   gap: 0.35rem;
   padding: 0.4rem 0.85rem;
-  border-radius: 999px;
+  border-radius: var(--radius-none);
   border: 0;
   box-shadow: 0 0 0 1px var(--fat-divider) inset;
   background: color-mix(in srgb, var(--light) 92%, transparent);
@@ -174,7 +174,7 @@
 
 .fat-card {
   padding: 0.85rem 1rem;
-  border-radius: var(--radius-7-2);
+  border-radius: var(--radius-none);
   border: 0;
   box-shadow: 0 0 0 1px var(--fat-divider) inset;
   background: color-mix(in srgb, var(--light) 96%, transparent);
@@ -205,7 +205,7 @@
   gap: 0.3rem;
   margin-top: 1rem;
   padding: 0.85rem 1.1rem;
-  border-radius: var(--radius-7-2);
+  border-radius: var(--radius-none);
   box-shadow: 0 0 0 1px var(--fat-divider) inset;
   background: color-mix(in srgb, var(--light) 96%, transparent);
 

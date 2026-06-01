@@ -60,7 +60,7 @@ article:has(.notebook-runtime),
     min-height: 1.5rem;
     padding: 0;
     border: 1px solid color-mix(in srgb, var(--lightgray) 86%, transparent);
-    border-radius: var(--radius-6);
+    border-radius: var(--radius-none);
     background: transparent;
     color: var(--dark);
     cursor: pointer;
@@ -108,7 +108,7 @@ article:has(.notebook-runtime),
     left: 50%;
     max-width: 14rem;
     padding: 0.32rem 0.48rem;
-    border-radius: var(--radius-5);
+    border-radius: var(--radius-none);
     background: var(--dark);
     color: var(--light);
     font-family: var(--bodyFont);
@@ -135,7 +135,7 @@ article:has(.notebook-runtime),
     --notebook-gutter-width: 4.6rem;
     --notebook-action-height: 1.2rem;
     --notebook-shell-padding: 0.55rem;
-    --notebook-inner-radius: var(--radius-5);
+    --notebook-inner-radius: var(--radius-none);
     --notebook-shell-radius: calc(var(--notebook-inner-radius) + var(--notebook-shell-padding));
     --notebook-active-green: var(--background-modifier-success, var(--lime));
     --notebook-error-red: var(--background-modifier-error, var(--color-red, #af3029));
@@ -152,7 +152,7 @@ article:has(.notebook-runtime),
     margin: 0.2rem 0 1.4rem;
     padding: var(--notebook-shell-padding);
     border: 1px solid color-mix(in srgb, var(--lightgray) 78%, transparent);
-    border-radius: var(--notebook-shell-radius);
+    border-radius: var(--radius-none);
     background: var(--light);
     outline: 0;
 
@@ -260,7 +260,7 @@ article:has(.notebook-runtime),
       padding: 0.6rem 0.75rem;
       overflow: auto;
       border: 1px solid var(--lightgray);
-      border-radius: var(--notebook-inner-radius);
+      border-radius: var(--radius-none);
       background: var(--notebook-editor-surface);
       color: var(--dark);
       cursor: text;
@@ -378,7 +378,7 @@ article:has(.notebook-runtime),
         max-width: min(42rem, calc(100vw - 2rem));
         overflow: auto;
         border: 1px solid color-mix(in srgb, var(--lightgray) 82%, transparent);
-        border-radius: var(--radius-3);
+        border-radius: var(--radius-none);
         background: color-mix(in srgb, var(--notebook-editor-surface) 92%, var(--light));
         color: var(--dark);
         box-shadow: 0 0.35rem 1.2rem color-mix(in srgb, var(--dark) 12%, transparent);
@@ -474,7 +474,7 @@ article:has(.notebook-runtime),
     max-width: var(--notebook-language-badge-width);
     padding: 0;
     overflow: hidden;
-    border-radius: var(--radius-2);
+    border-radius: var(--radius-none);
     color: var(--darkgray);
     font-family: var(--codeFont);
     font-size: 0.64rem;
@@ -562,7 +562,7 @@ article:has(.notebook-runtime),
     min-width: 100%;
     height: 0.82rem;
     padding: 0;
-    border-radius: var(--radius-1);
+    border-radius: var(--radius-none);
     color: color-mix(in srgb, var(--notebook-language-color) 88%, var(--dark));
     font-size: 0.5rem;
     font-weight: 700;
@@ -637,7 +637,7 @@ article:has(.notebook-runtime),
     padding: 0.07rem 0.16rem;
     border: 1px solid var(--lightgray);
     border-bottom: 0;
-    border-radius: var(--radius-3) var(--radius-3) 0 0;
+    border-radius: var(--radius-none) var(--radius-none) 0 0;
     background: var(--notebook-code-surface);
     box-shadow: 0 1px 0 var(--notebook-code-surface);
   }
@@ -666,7 +666,7 @@ article:has(.notebook-runtime),
     min-height: 1.75rem;
     padding: 0.2rem 0.55rem;
     border: 1px solid var(--lightgray);
-    border-radius: var(--radius-3);
+    border-radius: var(--radius-none);
     background: transparent;
     color: var(--dark);
     font-family: var(--bodyFont);
@@ -716,7 +716,7 @@ article:has(.notebook-runtime),
     min-height: 1.05rem;
     padding: 0;
     border: 0;
-    border-radius: var(--radius-2);
+    border-radius: var(--radius-none);
     background: transparent;
     color: var(--gray);
     line-height: 0;
@@ -876,7 +876,7 @@ article:has(.notebook-runtime),
     margin: 0 0 1rem;
     overflow: visible;
     border: 1px solid color-mix(in srgb, var(--lightgray) 78%, transparent);
-    border-radius: var(--notebook-inner-radius);
+    border-radius: var(--radius-none);
     background: var(--notebook-output-surface);
   }
 
@@ -931,7 +931,7 @@ article:has(.notebook-runtime),
     border: 1px solid var(--lightgray);
     border-left: 0;
     border-bottom: 0;
-    border-radius: 0 0 0 var(--notebook-inner-radius);
+    border-radius: var(--radius-none);
     background: var(--notebook-output-surface);
     isolation: isolate;
   }
@@ -950,7 +950,7 @@ article:has(.notebook-runtime),
 
   .notebook-output-tabs[data-notebook-output-collapsed] .notebook-output-tablist {
     border: 1px solid var(--lightgray);
-    border-radius: 0 0 0 var(--notebook-inner-radius);
+    border-radius: var(--radius-none);
     box-shadow: none;
   }
 
@@ -1051,7 +1051,7 @@ article:has(.notebook-runtime),
     height: 100%;
     overflow: hidden;
     border: 0;
-    border-radius: calc(var(--notebook-inner-radius) - 1px);
+    border-radius: var(--radius-none);
     background: transparent;
   }
 
@@ -1146,7 +1146,7 @@ article:has(.notebook-runtime),
     margin: 0;
     min-height: 100%;
     border: 0;
-    border-radius: var(--notebook-inner-radius);
+    border-radius: var(--radius-none);
   }
 
   .notebook-output-copy-button,

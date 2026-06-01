@@ -13,7 +13,7 @@
     position: relative;
     background-color: var(--light);
     border: 1px solid var(--lightgray);
-    border-radius: var(--radius-lg);
+    border-radius: var(--radius-none);
     box-shadow: var(--shadow-lg);
     width: min(600px, 80vw);
     max-height: min(600px, 80vh);
@@ -35,7 +35,7 @@
         padding: 1rem 1.5rem;
         border-bottom: 1px solid var(--lightgray);
         background-color: var(--light);
-        border-radius: var(--radius-lg) var(--radius-lg) var(--radius-none) var(--radius-none);
+        border-radius: var(--radius-none);
         display: flex;
         justify-content: space-between;
 
@@ -51,7 +51,7 @@
             width: 100%;
             padding: 0.5rem 0.75rem;
             border: 1px solid var(--lightgray);
-            border-radius: var(--radius-md);
+            border-radius: var(--radius-none);
             background-color: var(--light);
             color: var(--dark);
             font-size: 0.9rem;
@@ -80,7 +80,7 @@
           > kbd {
             background-color: var(--lightgray);
             border: 1px solid var(--gray);
-            border-radius: var(--radius-sm);
+            border-radius: var(--radius-none);
             padding: 0.1rem 0.3rem;
             font-size: 8px;
             font-family: var(--codeFont);
@@ -122,7 +122,7 @@
           mark.key-extmark {
             background-color: rgba(208, 162, 21, 0.4);
             color: white;
-            border-radius: var(--radius-sm);
+            border-radius: var(--radius-none);
             padding: 0.1rem 0.2rem;
             font-weight: bold;
             font-family: var(--codeFont);
@@ -139,7 +139,7 @@
 
         &::-webkit-scrollbar-thumb {
           background-color: var(--gray);
-          border-radius: var(--radius-sm);
+          border-radius: var(--radius-none);
 
           &:hover {
             background-color: var(--darkgray);

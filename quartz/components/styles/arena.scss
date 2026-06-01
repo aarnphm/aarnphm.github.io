@@ -216,7 +216,7 @@ body[data-arena-subpage='true'] {
   align-items: center;
   border: 1px solid transparent;
   padding: 0.25rem;
-  border-radius: var(--radius-6);
+  border-radius: var(--radius-none);
   transition: border-color 0.2s ease;
   cursor: pointer;
 
@@ -228,7 +228,7 @@ body[data-arena-subpage='true'] {
   .arena-channel-row-preview-thumb {
     flex: 0 0 96px;
     aspect-ratio: 16 / 10;
-    border-radius: var(--radius-6);
+    border-radius: var(--radius-none);
     overflow: hidden;
     background: var(--lightgray);
 
@@ -437,7 +437,7 @@ body[data-arena-subpage='true'] {
   flex-direction: row;
   align-items: flex-start;
   min-height: auto;
-  border-radius: var(--radius-6);
+  border-radius: var(--radius-none);
   padding: 0.75rem 1rem;
   gap: 0.75rem;
 }
@@ -706,7 +706,7 @@ body[data-arena-subpage='true'] {
 
   .arena-modal-map-wrapper {
     margin: 0;
-    border-radius: var(--radius-14);
+    border-radius: var(--radius-none);
     overflow: hidden;
     background: var(--lightgray);
     border: 1px solid rgba(15, 23, 42, 0.08);
@@ -752,7 +752,7 @@ body[data-arena-subpage='true'] {
   align-items: stretch;
   min-height: 0;
   border: 1px solid var(--gray);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-none);
   box-sizing: border-box;
 
   .byline,
@@ -816,7 +816,7 @@ body[data-arena-subpage='true'] {
 
   .arena-modal-embed {
     width: 100%;
-    border-radius: var(--radius-12);
+    border-radius: var(--radius-none);
     background: var(--light);
     padding: 1.5rem;
     overflow-y: auto;
@@ -875,7 +875,7 @@ body[data-arena-subpage='true'] {
     display: flex;
     flex-direction: column;
     min-height: 500px;
-    border-radius: var(--radius-md);
+    border-radius: var(--radius-none);
     overflow: hidden;
     gap: 1rem;
   }
@@ -887,7 +887,7 @@ body[data-arena-subpage='true'] {
     padding: 8px 12px;
     background: var(--light);
     border: 1px solid var(--lightgray);
-    border-radius: var(--radius-md);
+    border-radius: var(--radius-none);
     gap: 12px;
     flex-shrink: 0;
 
@@ -906,7 +906,7 @@ body[data-arena-subpage='true'] {
   .arena-pdf-btn {
     background: transparent;
     border: 1px solid var(--gray);
-    border-radius: var(--radius-md);
+    border-radius: var(--radius-none);
     padding: 6px 8px;
     cursor: pointer;
     color: var(--dark);
@@ -946,7 +946,7 @@ body[data-arena-subpage='true'] {
   .arena-pdf-page-input {
     padding: 4px 6px;
     border: 1px solid var(--gray);
-    border-radius: var(--radius-3);
+    border-radius: var(--radius-none);
     text-align: center;
     font-size: 0.85rem;
     background: var(--light);
@@ -1027,7 +1027,7 @@ body[data-arena-subpage='true'] {
     overflow-y: auto;
     overflow-x: hidden;
     padding: 1.5rem;
-    border-radius: var(--radius-md);
+    border-radius: var(--radius-none);
     background: var(--light);
     gap: 1rem;
 
@@ -1042,7 +1042,7 @@ body[data-arena-subpage='true'] {
 
     &::-webkit-scrollbar-thumb {
       background: var(--gray);
-      border-radius: var(--radius-md);
+      border-radius: var(--radius-none);
 
       &:hover {
         background: var(--darkgray);
@@ -1228,7 +1228,7 @@ span.tag-link:hover {
   top: 0px;
   right: 0px;
   gap: 5px;
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-none);
   padding: 5px;
   z-index: var(--z-base);
 }
@@ -1237,7 +1237,7 @@ span.tag-link:hover {
   margin-top: 1rem;
   padding: 0.5rem;
   background: var(--lightgray);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-none);
   border: 1px solid var(--gray);
   width: inherit;
   max-width: 100%;
@@ -1254,7 +1254,7 @@ span.tag-link:hover {
   justify-content: center;
   cursor: pointer;
   padding: 0.25rem;
-  border-radius: var(--radius-3);
+  border-radius: var(--radius-none);
   transition: background-color 0.2s;
   flex-shrink: 0;
 
@@ -1454,7 +1454,7 @@ span.tag-link:hover {
     box-sizing: border-box;
     background-color: var(--light);
     border: 1px solid var(--lightgray);
-    border-radius: var(--radius-lg);
+    border-radius: var(--radius-none);
     box-shadow: var(--shadow-md);
     max-height: 50vh;
     margin-top: 0.5rem;
@@ -1531,7 +1531,7 @@ span.tag-link:hover {
   color: var(--gray);
   background: var(--lightgray);
   padding: 0.25rem 0.5rem;
-  border-radius: var(--radius-3);
+  border-radius: var(--radius-none);
   margin-top: 0.5rem;
 }
 
@@ -1549,7 +1549,7 @@ span.tag-link:hover {
   align-items: center;
   justify-content: center;
   background: var(--light);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-none);
 }
 
 .arena-iframe-error-content {
@@ -1569,7 +1569,7 @@ span.tag-link:hover {
   padding: 0.5rem 1rem;
   background: var(--secondary);
   color: var(--light);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-none);
   text-decoration: none;
   transition: background 0.2s;
 

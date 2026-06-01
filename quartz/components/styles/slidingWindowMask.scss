@@ -50,7 +50,7 @@
   display: block;
   border: 0;
   box-shadow: 0 0 0 1px var(--swm-div) inset;
-  border-radius: 4px;
+  border-radius: var(--radius-none);
   background: var(--light);
 
   .swm-cell {
@@ -114,7 +114,7 @@
   display: inline-block;
   width: 0.9rem;
   height: 0.9rem;
-  border-radius: 2px;
+  border-radius: var(--radius-none);
   border: 0;
   box-shadow: 0 0 0 1px var(--swm-div) inset;
 
@@ -132,7 +132,7 @@
 .swm-formula,
 .swm-intuition {
   padding: 0.85rem 1rem;
-  border-radius: var(--radius-7-2);
+  border-radius: var(--radius-none);
   border: 0;
   box-shadow: 0 0 0 1px var(--swm-div) inset;
   background: color-mix(in srgb, var(--light) 96%, transparent);
@@ -250,7 +250,7 @@
   display: inline-flex;
   gap: 0.25rem;
   padding: 0.15rem;
-  border-radius: 999px;
+  border-radius: var(--radius-none);
   background: color-mix(in srgb, var(--lightgray) 50%, transparent);
   border: 0;
   box-shadow: 0 0 0 1px var(--swm-div) inset;
@@ -264,7 +264,7 @@
   font: inherit;
   font-size: 0.8rem;
   padding: 0.2rem 0.7rem;
-  border-radius: 999px;
+  border-radius: var(--radius-none);
   cursor: pointer;
   transition:
     background 120ms ease-out,

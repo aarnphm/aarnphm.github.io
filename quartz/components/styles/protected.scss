@@ -59,7 +59,7 @@ body:has(.protected-content-wrapper:not(.inline) .password-prompt-overlay[style*
     min-width: 250px;
     padding: 2rem;
     border: 1px solid var(--lightgray);
-    border-radius: var(--radius-12);
+    border-radius: var(--radius-none);
     background-color: var(--light);
     box-shadow: var(--shadow-md);
 

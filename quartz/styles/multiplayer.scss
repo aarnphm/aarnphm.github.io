@@ -74,7 +74,7 @@ $avatar-sm: 24px;
 
 %edit-button-base {
   border: none;
-  border-radius: var(--radius-5);
+  border-radius: var(--radius-none);
   cursor: pointer;
   background: transparent;
   outline: rgba(0, 0, 0, 0.2) solid 1px;
@@ -118,18 +118,17 @@ $avatar-sm: 24px;
 .comment-composer {
   position: absolute;
   z-index: 903;
-  filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.1));
   width: $modal-width;
+  border: 1px solid var(--gray);
 
   .composer-input-wrapper {
     display: flex;
     align-items: center;
     gap: $space-sm;
     background: var(--light);
-    border-radius: var(--radius-24);
+    border-radius: var(--radius-none);
     padding: $space-xs $space-xs $space-xs $space-md;
     min-width: 320px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 
     .composer-input {
       flex: 1;
@@ -181,7 +180,7 @@ $avatar-sm: 24px;
     flex-shrink: 0;
     width: $button-size;
     height: $button-size;
-    border-radius: var(--radius-full);
+    border-radius: var(--radius-none);
     @include button-base;
     background: var(--secondary);
     color: white;
@@ -224,7 +223,7 @@ $avatar-sm: 24px;
 
   .comment-highlight {
     position: absolute;
-    border-radius: var(--radius-md);
+    border-radius: var(--radius-none);
   }
 }
 
@@ -236,7 +235,7 @@ $avatar-sm: 24px;
 
   .comment-selection-highlight {
     position: absolute;
-    border-radius: var(--radius-md);
+    border-radius: var(--radius-none);
     background-color: $selection-highlight;
   }
 }
@@ -266,10 +265,7 @@ $avatar-sm: 24px;
   font-size: $font-xs;
   line-height: $line-xs;
   color: var(--darkgray);
-  border-radius: var(--radius-xl) var(--radius-xl) var(--radius-xl) var(--radius-none);
-  box-shadow:
-    0 3px 6px rgba(0, 0, 0, 0.3),
-    0 0 1px rgba(0, 0, 0, 0.05);
+  border-radius: var(--radius-none) var(--radius-none) var(--radius-none) var(--radius-none);
   transform-origin: bottom left;
   transform: translateY(0);
   transition:
@@ -278,8 +274,7 @@ $avatar-sm: 24px;
     padding var(--expand-animation-time) ease-in-out,
     min-width var(--expand-animation-time) ease-in-out,
     transform var(--expand-animation-time) ease-in-out,
-    border-radius var(--expand-animation-time) ease-in-out,
-    box-shadow var(--expand-animation-time) ease-in-out;
+    border-radius var(--expand-animation-time) ease-in-out;
 
   &.comment-bubble-unread {
     background: $primary-blue;
@@ -363,12 +358,8 @@ $avatar-sm: 24px;
     max-width: 320px;
     max-height: 200px;
     padding: 8px 16px;
-    border-radius: var(--radius-xl) var(--radius-xl) var(--radius-xl) var(--radius-none);
+    border-radius: var(--radius-none) var(--radius-none) var(--radius-none) var(--radius-none);
     transform: translateY(calc(-100% + var(--bubble-collapsed-size)));
-    box-shadow:
-      0 0 0 1px rgba(0, 0, 0, 0.1),
-      0 3px 6px rgba(0, 0, 0, 0.15),
-      0 6px 12px -6px rgba(0, 0, 0, 0.2);
 
     .reply-top {
       .reply-left {
@@ -407,8 +398,7 @@ $avatar-sm: 24px;
   width: $modal-width;
   background: var(--light);
   border: 1px solid var(--lightgray);
-  border-radius: var(--radius-12);
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
+  border-radius: var(--radius-none);
   z-index: 904;
   display: flex;
   flex-direction: column;
@@ -501,7 +491,7 @@ $avatar-sm: 24px;
           flex-shrink: 0;
           width: $avatar-sm;
           height: $avatar-sm;
-          border-radius: var(--radius-circle);
+          border-radius: var(--radius-none);
           background: #8e81a2;
           color: white;
           display: flex;
@@ -550,7 +540,7 @@ $avatar-sm: 24px;
       .avatar {
         width: $avatar-sm;
         height: $avatar-sm;
-        border-radius: var(--radius-circle-full);
+        border-radius: var(--radius-none);
         overflow: hidden;
         display: flex;
         line-height: 30px;
@@ -573,7 +563,7 @@ $avatar-sm: 24px;
       min-height: $space-2xl;
       align-items: center;
       margin: $space-md $space-md $space-md $space-xs;
-      border-radius: var(--radius-13);
+      border-radius: var(--radius-none);
       position: relative;
       background-color: var(--lightgray);
       outline: 0px solid transparent;
@@ -659,7 +649,7 @@ $avatar-sm: 24px;
           width: $button-size;
           height: $button-size;
           min-width: $button-size;
-          border-radius: var(--radius-full);
+          border-radius: var(--radius-none);
           @include button-base;
           background: $primary-blue;
           color: white;
@@ -706,8 +696,7 @@ $avatar-sm: 24px;
 .delete-confirmation-modal {
   background: var(--light);
   border: 1px solid var(--lightgray);
-  border-radius: var(--radius-12);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  border-radius: var(--radius-none);
   padding: $space-xl;
   min-width: 320px;
   display: flex;
@@ -763,7 +752,7 @@ $avatar-sm: 24px;
   background: var(--dark);
   min-width: 80px;
   padding: $space-xs 0;
-  border-radius: var(--radius-13);
+  border-radius: var(--radius-none);
 
   .popover-action {
     width: 100%;
@@ -789,7 +778,7 @@ $avatar-sm: 24px;
       box-sizing: border-box;
       color: var(--light);
       white-space: nowrap;
-      border-radius: var(--radius-5);
+      border-radius: var(--radius-none);
 
       &:hover {
         background: var(--foam);
@@ -820,7 +809,7 @@ body:has(.global-graph-outer.active) {
   min-height: $space-2xl;
   margin-left: $space-2xl;
   margin-top: $space-xs;
-  border-radius: var(--radius-13);
+  border-radius: var(--radius-none);
   position: relative;
   background-color: var(--lightgray);
 
@@ -876,7 +865,7 @@ body:has(.global-graph-outer.active) {
 
 .cm-editor {
   background-color: var(--lightgray);
-  border-radius: var(--radius-13);
+  border-radius: var(--radius-none);
   font-family: var(--bodyFont);
   font-size: $font-md;
   line-height: $line-base;
@@ -916,7 +905,7 @@ body:has(.global-graph-outer.active) {
     font-family: var(--codeFont);
     background: rgba(0, 0, 0, 0.05);
     padding: 2px $space-2xs;
-    border-radius: var(--radius-3);
+    border-radius: var(--radius-none);
   }
 
   .cm-formatting {
@@ -946,13 +935,13 @@ body:has(.global-graph-outer.active) {
     font-family: 'Courier New', monospace;
     background: rgba(0, 0, 0, 0.05);
     padding: 2px $space-2xs;
-    border-radius: var(--radius-3);
+    border-radius: var(--radius-none);
     font-size: 0.9em;
   }
 
   pre {
     background: var(--lightgray);
-    border-radius: var(--radius-6);
+    border-radius: var(--radius-none);
     padding: $space-sm;
     overflow-x: auto;
     margin: $space-xs 0;
@@ -1055,7 +1044,7 @@ body:has(.global-graph-outer.active) {
   text-decoration: none;
   background: rgba($primary-blue, 0.1);
   padding: 1px 4px;
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-none);
   transition: background $transition-fast;
 
   &:hover {

@@ -99,7 +99,7 @@ $canvas-accents: (
   code {
     background: var(--lightgray);
     padding: 0.1em 0.3em;
-    border-radius: var(--radius-3);
+    border-radius: var(--radius-none);
     font-family: var(--codeFont);
     font-size: 0.9em;
   }
@@ -107,7 +107,7 @@ $canvas-accents: (
   pre {
     background: var(--lightgray);
     padding: 0.5em;
-    border-radius: var(--radius-md);
+    border-radius: var(--radius-none);
     overflow-x: auto;
     margin: 0.5em 0;
     code {
@@ -184,7 +184,7 @@ $canvas-accents: (
   min-width: 400px;
   background: $canvas-bg;
   border: 1px solid $canvas-border;
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-none);
   overflow: hidden;
   position: relative;
   box-shadow: $canvas-shadow;
@@ -204,7 +204,7 @@ $canvas-accents: (
     color: $label-color;
     background: $label-bg;
     padding: 4px 10px;
-    border-radius: var(--radius-md);
+    border-radius: var(--radius-none);
     border: 1px solid $label-border;
     z-index: var(--z-sidenote);
     pointer-events: none;
@@ -236,7 +236,7 @@ $canvas-accents: (
   margin: 2rem auto;
   padding: 1.5rem;
   text-align: center;
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-none);
   background: var(--lightgray);
   color: var(--darkgray);
 }
@@ -427,7 +427,7 @@ $canvas-accents: (
   position: absolute;
   background: var(--light);
   border: 1px solid var(--border);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-none);
   padding: 8px 12px;
   max-width: 300px;
   box-shadow: var(--shadow-sm);
@@ -489,7 +489,7 @@ $canvas-accents: (
   position: relative;
   background: var(--light);
   border: 1px solid var(--lightgray);
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-none);
   padding: 16px;
   max-width: 450px;
   width: 90%;
@@ -520,7 +520,7 @@ $canvas-accents: (
   border: none;
   cursor: pointer;
   padding: 6px;
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-none);
   color: var(--gray);
   display: flex;
   align-items: center;
@@ -576,7 +576,7 @@ $canvas-accents: (
   kbd {
     background: var(--lightgray);
     border: 1px solid var(--gray);
-    border-radius: var(--radius-sm);
+    border-radius: var(--radius-none);
     padding: 2px 4px;
     font-family: var(--codeFont);
     font-size: 0.75em;
@@ -603,7 +603,7 @@ $canvas-accents: (
   flex-direction: column;
   background: var(--light);
   border: 1px solid var(--lightgray);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-none);
   box-shadow: var(--shadow-sm);
   pointer-events: all;
   overflow: hidden;

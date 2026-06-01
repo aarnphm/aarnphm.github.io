@@ -23,7 +23,7 @@
     z-index: var(--z-popover);
     visibility: hidden;
     border: 1px solid var(--lightgray);
-    border-radius: var(--radius-lg);
+    border-radius: var(--radius-none);
 
     &.active {
       display: block;
@@ -95,13 +95,13 @@
   background: var(--pine);
   color: var(--light);
   padding: 0.2rem 0.4rem;
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-none);
   font-size: 9px;
   font-weight: bold;
   font-family: var(--codeFont);
   z-index: var(--z-max);
   pointer-events: none;
-  box-shadow: var(--shadow-sm);
+  box-shadow: none;
   text-transform: uppercase;
 }
 

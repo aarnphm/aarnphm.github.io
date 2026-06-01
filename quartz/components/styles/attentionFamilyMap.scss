@@ -42,7 +42,7 @@
   gap: 0.85rem;
   min-width: 0;
   padding: 1rem 1.1rem 1.05rem;
-  border-radius: var(--radius-7-2);
+  border-radius: var(--radius-none);
   border: 0;
   background: var(--afm-card-bg);
   box-shadow: var(--afm-panel-shadow);
@@ -146,7 +146,7 @@
   display: inline-flex;
   flex-direction: column;
   padding: 0.32rem 0.55rem;
-  border-radius: var(--radius-6);
+  border-radius: var(--radius-none);
   border: 0;
   background: var(--afm-chip-bg);
   box-shadow: 0 0 0 1px color-mix(in srgb, var(--afm-accent) 24%, var(--gray) 28%) inset;
@@ -193,7 +193,7 @@
   align-items: center;
   gap: 0.3rem;
   padding: 0.12rem 0.4rem;
-  border-radius: var(--radius-4);
+  border-radius: var(--radius-none);
   background-color: color-mix(in srgb, var(--afm-accent) 22%, var(--light));
   color: color-mix(in srgb, var(--dark) 78%, var(--afm-accent) 22%);
   box-shadow: 0 0 0 1px color-mix(in srgb, var(--afm-accent) 34%, transparent) inset;
@@ -236,7 +236,7 @@
   padding: 0.65rem 0.75rem;
   min-width: 14rem;
   max-width: 22rem;
-  border-radius: var(--radius-7-2);
+  border-radius: var(--radius-none);
   border: 0;
   background: var(--afm-detail-bg);
   box-shadow:
@@ -319,7 +319,7 @@
   display: inline-block;
   width: 0.6rem;
   height: 0.6rem;
-  border-radius: var(--radius-circle);
+  border-radius: var(--radius-none);
   background: color-mix(in srgb, var(--afm-accent) 75%, var(--gray) 25%);
   box-shadow: 0 0 0 1px color-mix(in srgb, var(--afm-accent) 72%, var(--dark) 12%) inset;
 }

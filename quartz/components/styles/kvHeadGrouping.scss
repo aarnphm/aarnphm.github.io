@@ -126,7 +126,7 @@
   background: color-mix(in srgb, var(--light) 80%, transparent);
   border: 1px solid var(--fig-frame-border);
   box-shadow: none;
-  border-radius: 6px;
+  border-radius: var(--radius-none);
   font-size: 0.83rem;
   color: var(--kvg-note-fg);
 }
@@ -168,7 +168,7 @@
   padding: 0.6rem 0.75rem;
   background: color-mix(in srgb, var(--kvg-sage) 8%, transparent);
   border: 1px solid var(--fig-frame-border);
-  border-radius: 6px;
+  border-radius: var(--radius-none);
   font-size: 0.85rem;
   overflow-x: auto;
 
@@ -251,7 +251,7 @@
 .kvg-intuition {
   margin: 1.1rem 0 0;
   padding: 0.75rem 0.9rem;
-  box-shadow: 2px 0 0 var(--kvg-salmon) inset;
+  box-shadow: none;
   color: var(--kvg-note-fg);
   font-size: 0.88rem;
   line-height: 1.5;

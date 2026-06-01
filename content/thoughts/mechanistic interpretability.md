@@ -4,10 +4,10 @@ aliases:
   - mechinterp
   - reveng neural net
   - interp
-date: '2024-10-30'
+date: "2024-10-30"
 description: and reverse engineering neural networks.
 id: mechanistic interpretability
-modified: 2026-05-28 12:49:42 GMT-04:00
+modified: 2026-05-31 23:37:42 GMT-04:00
 permalinks:
   - /mechinterp
   - /interpretability
@@ -120,7 +120,7 @@ $$
 
 ## superposition hypothesis
 
-see also: https://colab.research.google.com/github/anthropics/toy-models-of-superposition/blob/main/toy_models.ipynb
+see also: [toy notebook](https://colab.research.google.com/github/anthropics/toy-models-of-superposition/blob/main/toy_models.ipynb)
 
 a phenomena when a neural network represents _more_ than $n$ features in a $n$-dimensional space
 

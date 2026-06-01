@@ -117,7 +117,7 @@
         padding: 0.1rem 0.4rem;
         background: var(--highlight);
         border: 1px solid var(--lightgray);
-        border-radius: var(--radius-md);
+        border-radius: var(--radius-none);
         font-size: 0.85em;
         color: var(--darkgray);
         white-space: nowrap;
@@ -132,7 +132,7 @@
 
       .base-checkbox {
         --checkbox-size: 15px;
-        --checkbox-radius: var(--radius-md);
+        --checkbox-radius: var(--radius-none);
         --checkbox-border-color: var(--gray);
         --checkbox-border-color-hover: var(--darkgray);
         --checkbox-color: var(--secondary);
@@ -141,7 +141,7 @@
 
         -webkit-appearance: none;
         appearance: none;
-        border-radius: var(--checkbox-radius);
+        border-radius: var(--radius-none);
         border: 1px solid var(--checkbox-border-color);
         flex-shrink: 0;
         padding: 0;
@@ -333,7 +333,7 @@
   flex-direction: column;
   background: var(--light);
   border: 1px solid var(--lightgray);
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-none);
   overflow: hidden;
   transition: all 0.2s ease;
   height: 100%;
@@ -461,7 +461,7 @@
 .base-map {
   height: var(--base-map-height, calc(100vh - 150px));
   min-height: 400px;
-  border-radius: var(--radius-5);
+  border-radius: var(--radius-none);
   overflow: hidden;
   position: relative;
   border: 1px solid var(--lightgray);
@@ -505,7 +505,7 @@
 
 .mapboxgl-popup-content {
   padding: 0;
-  border-radius: var(--radius-5);
+  border-radius: var(--radius-none);
   box-shadow:
     0 4px 12px rgba(27, 33, 48, 0.12),
     0 2px 6px rgba(27, 33, 48, 0.08);
@@ -576,7 +576,7 @@
   border: 1px solid var(--lightgray);
   background: var(--light);
   padding: 1rem;
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-none);
   margin: 1rem 0;
   display: flex;
   flex-direction: column;
@@ -627,7 +627,7 @@
   font-size: 0.85rem;
   background: var(--lightgray);
   padding: 0.2rem 0.4rem;
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-none);
   display: inline-block;
   width: fit-content;
 }

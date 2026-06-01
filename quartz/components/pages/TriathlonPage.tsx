@@ -241,8 +241,6 @@ export default (() => {
             </a>
           </div>
         </div>
-
-        <div class="tri-calc-scrim" aria-hidden="true" />
         <aside
           class="tri-calc"
           aria-hidden="true"

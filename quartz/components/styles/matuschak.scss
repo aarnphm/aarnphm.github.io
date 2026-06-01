@@ -23,7 +23,7 @@
 .view-toggle-slide {
   height: 20px;
   border: 1px solid var(--lightgray);
-  border-radius: var(--radius-24);
+  border-radius: var(--radius-none);
   width: 36px;
   line-height: 1rem;
   position: absolute;
@@ -288,7 +288,7 @@ a {
 
           button[data-stacked-retry] {
             border: 1px solid var(--lightgray);
-            border-radius: var(--radius-8);
+            border-radius: var(--radius-none);
             background: var(--light);
             color: var(--dark);
             cursor: pointer;

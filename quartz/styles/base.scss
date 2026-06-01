@@ -68,7 +68,7 @@ body {
 mark {
   background-color: var(--textHighlight);
   padding: 0 0.1rem;
-  border-radius: var(--radius-5);
+  border-radius: var(--radius-none);
   color: inherit;
 }
 
@@ -264,7 +264,7 @@ input[type='checkbox'] {
   transform: translateY(2px);
   color: var(--secondary);
   border: 1px solid var(--lightgray);
-  border-radius: var(--radius-3);
+  border-radius: var(--radius-none);
   background-color: var(--light);
   position: relative;
   display: inline-block;
@@ -413,7 +413,7 @@ figure {
       padding: 0.1rem 0.5rem;
       border: 1px solid var(--lightgray);
       width: fit-content;
-      border-radius: var(--radius-5);
+      border-radius: var(--radius-none);
       margin-bottom: -0.5rem;
       color: var(--darkgray);
     }
@@ -427,7 +427,7 @@ figure {
 pre {
   font-family: var(--codeFont);
   padding: 0 0.5rem;
-  border-radius: var(--radius-5);
+  border-radius: var(--radius-none);
   overflow-x: auto;
   border: 1px solid var(--lightgray);
   position: relative;
@@ -456,7 +456,7 @@ pre {
 
     & [data-highlighted-chars] {
       background-color: var(--highlight);
-      border-radius: var(--radius-5);
+      border-radius: var(--radius-none);
     }
 
     & > [data-line] {
@@ -568,7 +568,7 @@ tr {
 img {
   max-width: 100%;
   width: 100%;
-  border-radius: var(--radius-5);
+  border-radius: var(--radius-none);
   margin: 0;
   content-visibility: auto;
 }
@@ -593,7 +593,7 @@ hr {
 audio,
 video {
   width: 100%;
-  border-radius: var(--radius-5);
+  border-radius: var(--radius-none);
   margin: 4px 0;
 }
 
@@ -955,7 +955,7 @@ code,
 }
 
 iframe {
-  border-radius: var(--radius-12);
+  border-radius: var(--radius-none);
   border: 1px solid var(--lightgray);
   width: 100%;
 }

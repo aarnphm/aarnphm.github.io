@@ -94,7 +94,7 @@ body[data-slides='true'][data-slug$='/slides'] .page-content {
   bottom: 1rem;
   left: var(--slides-toc-rail-center);
   width: 1px;
-  border-radius: var(--radius-1);
+  border-radius: var(--radius-none);
   background: color-mix(in srgb, var(--gray) 24%, transparent);
   pointer-events: none;
   transform: translateX(-50%);
@@ -119,7 +119,7 @@ body[data-slides='true'][data-slug$='/slides'] .page-content {
   height: 1.7rem;
   color: var(--dark);
   border: 1px solid var(--lightgray);
-  border-radius: var(--radius-6);
+  border-radius: var(--radius-none);
   text-decoration: none;
   transition-property: border-color, color, background-color;
   transition-duration: 160ms;
@@ -233,7 +233,7 @@ body[data-slides='true'][data-slug$='/slides'] .page-content {
   bottom: var(--slides-toc-line-end);
   left: var(--slides-toc-rail-center);
   width: 1px;
-  border-radius: var(--radius-1);
+  border-radius: var(--radius-none);
   background: var(--dark);
   pointer-events: none;
   transform: translateX(-50%) scaleY(var(--slides-toc-progress));
@@ -379,7 +379,7 @@ body[data-slides='true'][data-slug$='/slides'] .page-content {
   color: var(--dark);
   border: 1px solid var(--lightgray);
   padding: 0.25rem 0.75rem;
-  border-radius: var(--radius-6);
+  border-radius: var(--radius-none);
 }
 
 .slides-controls .status {

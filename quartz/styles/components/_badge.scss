@@ -3,7 +3,7 @@
   align-items: center;
   gap: var(--space-1);
   padding: var(--space-1) var(--space-2);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-none);
   font-size: 0.75rem;
   font-weight: 600;
   line-height: 1.2;
@@ -24,7 +24,7 @@
   padding: var(--space-1) var(--space-2);
   background-color: var(--lightgray);
   border: 1px solid var(--gray);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-none);
   font-family: var(--codeFont);
   font-size: 0.6875rem;
   color: var(--darkgray);
@@ -33,12 +33,12 @@
 %badge-status {
   @extend %badge-base;
   padding: 2px 6px;
-  border-radius: var(--radius-full);
+  border-radius: var(--radius-none);
   font-size: 0.625rem;
 }
 
 %badge-pill {
   @extend %badge-base;
-  border-radius: var(--radius-full);
+  border-radius: var(--radius-none);
   padding: var(--space-1) var(--space-3);
 }

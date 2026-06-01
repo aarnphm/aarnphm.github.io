@@ -100,7 +100,7 @@
         .search-mode-toggle {
           display: inline-flex;
           align-items: center;
-          border-radius: var(--radius-full);
+          border-radius: var(--radius-none);
           height: 1.4rem;
           background-color: color-mix(in srgb, var(--darkgray) 12%, transparent);
           margin-right: 1rem;
@@ -110,7 +110,7 @@
             background: transparent;
             font: inherit;
             color: var(--gray);
-            border-radius: var(--radius-full);
+            border-radius: var(--radius-none);
             cursor: pointer;
             transition:
               background-color 0.2s ease,
@@ -272,7 +272,7 @@
               .preview-redacted-blur {
                 position: absolute;
                 inset: 0;
-                border-radius: var(--radius-xl);
+                border-radius: var(--radius-none);
                 background: color-mix(in srgb, var(--lightgray) 65%, transparent);
                 backdrop-filter: blur(12px);
                 z-index: 0;
@@ -367,7 +367,7 @@
             }
 
             ul > li > p {
-              border-radius: var(--radius-lg);
+              border-radius: var(--radius-none);
               background-color: var(--highlight);
               margin: 0 0.1rem;
               line-height: 1.4rem;
@@ -394,8 +394,8 @@
     align-items: center;
     gap: 0.5rem;
     padding: 0.25rem 0.5rem;
-    border-radius: var(--radius-6);
-    border: 1px solid var(--lightgray);
+    border-radius: var(--radius-none);
+    border: 1px solid var(--gray);
     background: var(--light);
     max-width: 16rem;
 
@@ -428,7 +428,7 @@
       font-family: var(--codeFont);
       font-size: 0.75rem;
       padding: 0.15rem 0.4rem;
-      border-radius: var(--radius-md);
+      border-radius: var(--radius-none);
       border: 1px solid var(--lightgray);
       color: var(--gray);
       background: color-mix(in srgb, var(--lightgray) 30%, transparent);

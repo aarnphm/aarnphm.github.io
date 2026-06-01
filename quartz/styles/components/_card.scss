@@ -1,7 +1,7 @@
 %card-base {
   background-color: var(--light);
   border: 1px solid var(--lightgray);
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-none);
 }
 
 %card-elevated {
@@ -29,7 +29,7 @@
   position: absolute;
   background-color: var(--light);
   border: 1px solid var(--lightgray);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-none);
   box-shadow: var(--shadow-sm);
   padding: var(--space-2) var(--space-3);
   font-size: 0.875rem;

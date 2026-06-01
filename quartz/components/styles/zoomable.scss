@@ -34,7 +34,7 @@
   padding: 0;
   background: color-mix(in srgb, var(--light) 88%, transparent);
   border: 1px solid color-mix(in srgb, var(--gray) 32%, transparent);
-  border-radius: 6px;
+  border-radius: var(--radius-none);
   cursor: zoom-in;
   color: var(--darkgray);
   opacity: 0;
@@ -108,7 +108,7 @@
   z-index: 1000;
   margin: 0;
   background: var(--light);
-  border-radius: var(--radius-7-2, 10px);
+  border-radius: var(--radius-none);
   box-shadow:
     0 0 0 1px color-mix(in srgb, var(--gray) 24%, transparent) inset,
     0 30px 80px color-mix(in srgb, var(--dark) 30%, transparent),

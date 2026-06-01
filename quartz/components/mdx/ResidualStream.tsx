@@ -87,7 +87,7 @@ const ResidualStreamImpl: QuartzMdxComponent<Props> = ({ caption, markerId }) =>
           <line class="rs-line" x1="185" y1="207" x2="185" y2="370" />
           <path
             class="rs-line"
-            d="M 185 305 L 115 305 Q 110 305 110 300 L 110 215 Q 110 210 115 210 L 178 210"
+            d="M 185 305 L 115 305 Q 110 305 110 300 L 110 205 Q 110 200 115 200 L 178 200"
             marker-end={`url(#${arrowId})`}
           />
           <rect class="rs-box rs-box-accent" x="50" y="255" width="120" height="30" rx="3" />
@@ -102,7 +102,7 @@ const ResidualStreamImpl: QuartzMdxComponent<Props> = ({ caption, markerId }) =>
           <path class="rs-line" d="M 185 510 L 115 510 Q 110 510 110 505 L 110 478" />
           <path
             class="rs-line"
-            d="M 110 448 L 110 395 Q 110 390 115 390 L 178 390"
+            d="M 110 448 L 110 385 Q 110 380 115 380 L 178 380"
             marker-end={`url(#${arrowId})`}
           />
           <path
@@ -133,7 +133,7 @@ const ResidualStreamImpl: QuartzMdxComponent<Props> = ({ caption, markerId }) =>
             x1="185"
             y1="595"
             x2="185"
-            y2="555"
+            y2="541"
             marker-end={`url(#${arrowId})`}
           />
           <MathFO x={200} y={580} w={40} h={20} tex="x_0" align="start" cls="rs-fo--axis" />
