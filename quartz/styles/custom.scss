@@ -25,7 +25,7 @@
 [role='article']:hover {
   border: 1px solid var(--highlight);
   background: var(--highlight);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-none);
 }
 
 hgroup {
@@ -587,7 +587,7 @@ footer[class~='menu'] {
 
 .callout[data-callout] {
   --callout-color: inherit;
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-none);
 }
 
 .callout[data-callout] .callout-title .callout-icon {
@@ -1102,7 +1102,7 @@ body[data-slug='influence'] {
   background: var(--light);
   border: 1px solid var(--lightgray);
   padding: 4px 8px;
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-none);
   font-size: 0.75em;
   pointer-events: none;
   z-index: 1000;
@@ -1290,4 +1290,16 @@ pre {
     background-color: transparent;
     color: var(--code-normal);
   }
+}
+
+// Footnote reference markers read as the "second ink"
+.data-footnote-ref,
+a[data-footnote-ref] {
+  color: var(--tertiary);
+  font-weight: 600;
+}
+
+// The * * * scene break becomes a vermilion mark instead of muted gray
+hr:after {
+  color: var(--tertiary);
 }

@@ -665,6 +665,11 @@ const getFootnotesList = (node: Element) =>
 const getBibList = (node: Element) =>
   (node.children as Element[]).filter(val => val.tagName === 'ul')[0]
 
+const isTrailingNoteSection = (node: ElementContent): boolean =>
+  node.type === 'element' &&
+  node.tagName === 'section' &&
+  (node.properties?.dataFootnotes != null || node.properties?.dataReferences != null)
+
 type RenderTreeFeatures = {
   hasTranscludeBlockquote: boolean
   hasReferences: boolean
@@ -1241,7 +1246,7 @@ export function transcludeFinal(
     if (fileData.frontmatter?.pageLayout !== 'reflection') {
       children.push(
         h('a', { href: inner.properties?.href, class: 'internal transclude-src' }, [
-          { type: 'text', value: i18n(cfg.locale).components.transcludes.linkToOriginal },
+          { type: 'text', value: fileData.frontmatter?.title ?? i18n(cfg.locale).components.transcludes.linkToOriginal },
         ]),
       )
     }
@@ -1353,7 +1358,7 @@ export function transcludeFinal(
           if (fileData.frontmatter?.pageLayout !== 'reflection') {
             children.push(
               h('a', { href: inner.properties?.href, class: 'internal transclude-src' }, [
-                { type: 'text', value: i18n(cfg.locale).components.transcludes.linkToOriginal },
+                { type: 'text', value: fileData.frontmatter?.title ?? i18n(cfg.locale).components.transcludes.linkToOriginal },
               ]),
             )
           }
@@ -1397,9 +1402,9 @@ export function transcludeFinal(
 
         if (startIdx === undefined) return
 
-        const normalizedSection = (page.htmlAst.children.slice(startIdx, endIdx) as Element[]).map(
-          child => normalizeHastElement(child, slug, transcludeTarget) as ElementContent,
-        )
+        const normalizedSection = (page.htmlAst.children.slice(startIdx, endIdx) as Element[])
+          .filter(child => !isTrailingNoteSection(child))
+          .map(child => normalizeHastElement(child, slug, transcludeTarget) as ElementContent)
 
         const sectionContent = headings ? normalizedSection : pruneLeadingHeading(normalizedSection)
 
@@ -1411,7 +1416,7 @@ export function transcludeFinal(
         if (fileData.frontmatter?.pageLayout !== 'reflection') {
           children.push(
             h('a', { href: inner.properties?.href, class: 'internal transclude-src' }, [
-              { type: 'text', value: i18n(cfg.locale).components.transcludes.linkToOriginal },
+              { type: 'text', value: fileData.frontmatter?.title ?? i18n(cfg.locale).components.transcludes.linkToOriginal },
             ]),
           )
         }
@@ -1445,7 +1450,7 @@ export function transcludeFinal(
           const { properties } = node
           if (checkFootnoteRef(node)) {
             visit(page.htmlAst!, { tagName: 'section' }, node => {
-              if (node.properties.dataFootnotes == '') {
+              if (node.properties?.dataFootnotes != null) {
                 const noteId = (properties.href! as string).replace('#', '')
                 transcludeFootnoteBlock.push(
                   getFootnotesList(node).children.find(
@@ -1600,7 +1605,7 @@ export function transcludeFinal(
         if (fileData.frontmatter?.pageLayout !== 'reflection') {
           children.push(
             h('a', { href: inner.properties?.href, class: 'internal transclude-src' }, [
-              { type: 'text', value: i18n(cfg.locale).components.transcludes.linkToOriginal },
+              { type: 'text', value: fileData.frontmatter?.title ?? i18n(cfg.locale).components.transcludes.linkToOriginal },
             ]),
           )
         }

@@ -23,7 +23,7 @@
   justify-content: center;
   width: var(--btn-size);
   height: var(--btn-size);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-none);
   color: var(--darkgray);
   transition: var(--transition-normal);
 
@@ -53,7 +53,7 @@
   align-items: center;
   justify-content: center;
   padding: var(--space-2) var(--space-4);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-none);
   font-size: 0.875rem;
   font-weight: 500;
   transition: var(--transition-normal);
@@ -74,7 +74,7 @@
   align-items: center;
   justify-content: center;
   padding: var(--space-1) var(--space-2);
-  border-radius: var(--radius-full);
+  border-radius: var(--radius-none);
   font-size: 0.75rem;
   color: var(--gray);
   transition: var(--transition-normal);

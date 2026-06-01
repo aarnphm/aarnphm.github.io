@@ -58,7 +58,7 @@
   font-family: var(--bodyFont);
   font-size: 0.85rem;
   padding: 0.45rem 0.95rem;
-  border-radius: 999px;
+  border-radius: var(--radius-none);
   border: 0;
   box-shadow: 0 0 0 1px var(--rzr-divider) inset;
   background: transparent;
@@ -89,14 +89,14 @@
   display: inline-flex;
   gap: 0.35rem;
   padding: 0.25rem;
-  border-radius: 999px;
+  border-radius: var(--radius-none);
   background: color-mix(in srgb, var(--lightgray) 35%, transparent);
   border: 0;
   box-shadow: 0 0 0 1px var(--rzr-divider) inset;
 }
 .rzr-policy {
   padding: 0.3rem 0.8rem;
-  border-radius: 999px;
+  border-radius: var(--radius-none);
   border: none;
   background: transparent;
   color: var(--rzr-note-fg);
@@ -284,7 +284,7 @@
   align-items: center;
   gap: 0.1rem;
   padding: 0.35rem 0.55rem;
-  border-radius: 6px;
+  border-radius: var(--radius-none);
   border: 0;
   box-shadow: 0 0 0 1px var(--rzr-divider) inset;
   background: color-mix(in srgb, var(--light) 96%, transparent);
@@ -326,7 +326,7 @@
 }
 .rzr-card {
   padding: 0.75rem 0.9rem;
-  border-radius: var(--radius-7-2);
+  border-radius: var(--radius-none);
   border: 0;
   box-shadow: 0 0 0 1px var(--rzr-divider) inset;
   background: color-mix(in srgb, var(--light) 96%, transparent);
@@ -393,7 +393,7 @@
   display: inline-block;
   width: 14px;
   height: 10px;
-  border-radius: 3px;
+  border-radius: var(--radius-none);
   border: 0;
   box-shadow: 0 0 0 1px var(--rzr-stroke-soft) inset;
   &.rzr-swatch--stable {

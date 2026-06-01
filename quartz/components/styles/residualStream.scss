@@ -181,9 +181,10 @@
 .rs-bracket-line {
   width: 8px;
   align-self: stretch;
-  box-shadow: 0 -1px 0 currentColor;
-  box-shadow: -1px 0 0 currentColor inset;
-  box-shadow: 0 1px 0 currentColor;
+  box-shadow:
+    inset -1px 0 0 currentColor,
+    0 -1px 0 currentColor,
+    0 1px 0 currentColor;
 }
 
 .rs-bracket-label {

@@ -1,11 +1,11 @@
 ---
 date: '2026-05-27'
-description: and length extrapolation
+description: absolute, relative, RoPE, ALiBi schemes plus NTK / YaRN / LongRoPE length-extrapolation strategies.
 id: positional embeddings
 modified: 2026-05-27 22:56:10 GMT-04:00
 tags:
   - ml
-  - techincal
+  - technical
 title: positional embeddings
 ---
 

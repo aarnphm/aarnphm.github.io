@@ -19,7 +19,7 @@ $mobile-marker-size: 1.7rem;
 .methodology-tree {
   margin: $tree-margin-y 0;
   padding: $tree-padding-y $tree-padding-x;
-  border-radius: var(--radius-7-2);
+  border-radius: var(--radius-none);
   border: 1px solid color-mix(in srgb, var(--gray) 28%, transparent);
   background: color-mix(in srgb, var(--light) 94%, rgba(255, 255, 255, 0));
 
@@ -112,7 +112,7 @@ $mobile-marker-size: 1.7rem;
       $fg: color-mix(in srgb, var(--dark) 65%, var(--gray) 35%),
       $hover-bg: color-mix(in srgb, var(--gray) 20%, transparent),
       $padding: 0.18rem 0.5rem,
-      $radius: var(--radius-6),
+      $radius: var(--radius-none),
       $font-size: 0.55rem,
       $font-family: var(--codeFont),
       $uppercase: true,
@@ -149,7 +149,7 @@ $mobile-marker-size: 1.7rem;
   .step-line {
     width: $connector-width;
     background: color-mix(in srgb, var(--gray) 22%, transparent);
-    border-radius: var(--radius-1);
+    border-radius: var(--radius-none);
     flex: 1;
     min-height: 0.4rem;
   }
@@ -157,7 +157,7 @@ $mobile-marker-size: 1.7rem;
   .step-node {
     width: 1.1rem;
     height: 1.1rem;
-    border-radius: var(--radius-7-2);
+    border-radius: var(--radius-none);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -234,7 +234,7 @@ $mobile-marker-size: 1.7rem;
         top: 0.55em;
         width: 0.5rem;
         height: 0.5rem;
-        border-radius: var(--radius-circle);
+        border-radius: var(--radius-none);
         background: color-mix(in srgb, var(--foam) 45%, transparent);
         box-shadow: 0 0 0 1px color-mix(in srgb, var(--foam) 70%, transparent);
       }

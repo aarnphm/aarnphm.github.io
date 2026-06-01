@@ -2,7 +2,7 @@
 date: '2026-05-27'
 description: tiled IO-aware attention kernel, recomputes softmax denominators on-the-fly, avoids materialising the full attention matrix.
 id: attention-flash
-modified: 2026-05-29 22:31:05 GMT-04:00
+modified: 2026-06-01 00:31:09 GMT-04:00
 seealso:
   - '[[thoughts/Attention|main stage]]'
   - '[[thoughts/tree attention|tree attention]]'
@@ -103,7 +103,7 @@ FlashAttention loads tiles up, runs the whole softmax on-chip, and touches HBM a
 
 ```jsx imports={Zoomable,FlashDataFlow}
 <Zoomable label="FlashAttention data movement">
-  <FlashDataFlow caption="The same online-softmax kernel ($S = QK^{\top}$, $P = \mathrm{softmax}(S)$, $O \mathrel{{+}{=}} PV$) under four memory schedules. FA-1 reads-modifies-writes each $O_i$ (with stats $m_i, \ell_i$) through HBM $T_c$ times; FA-2 swaps the loop so $O_i$ stays resident and is written once while query blocks run in parallel across SMs; FA-3 overlaps TMA loads with WGMMA compute through a circular SMEM buffer on Hopper; FA-4 runs fully-asynchronous $\texttt{tcgen05}$ matmuls with accumulators in Blackwell's TMEM, hiding the MMA under a polynomial-exp softmax. Each tab carries its generation's GPU and on-chip memory hierarchy." />
+  <FlashDataFlow />
 </Zoomable>
 ```
 

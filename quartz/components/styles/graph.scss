@@ -18,7 +18,7 @@
 
     & > .graph-outer {
       border: 1px solid var(--gray);
-      border-radius: var(--radius-12);
+      border-radius: var(--radius-none);
       box-sizing: border-box;
       height: 250px;
       position: relative;
@@ -41,7 +41,7 @@
         padding: 0.35rem;
         top: 0.25rem;
         right: 0.25rem;
-        border-radius: var(--radius-4);
+        border-radius: var(--radius-none);
         transition: background-color 0.2s ease;
 
         &:hover {

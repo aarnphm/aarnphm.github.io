@@ -20,7 +20,6 @@
   --popover-padding: 1rem;
   --popover-arrow-size: 0.58rem;
   --popover-arrow-inset: calc(var(--popover-padding) - var(--popover-arrow-size) / 2);
-  --popover-shadow-filter: drop-shadow(6px 6px 36px rgba(0, 0, 0, 0.25));
 
   z-index: var(--z-popover);
   position: fixed;
@@ -30,7 +29,7 @@
   left: 0;
   top: 0;
   will-change: transform;
-  filter: var(--popover-shadow-filter);
+  filter: none;
   visibility: hidden;
   opacity: 0;
   transition:
@@ -87,8 +86,8 @@
     width: var(--popover-arrow-size);
     height: var(--popover-arrow-size);
     background: var(--light);
-    border: 1px solid var(--lightgray);
-    border-radius: 0.08rem;
+    border: 1px solid var(--gray);
+    border-radius: var(--radius-none);
     transform: rotate(45deg);
     pointer-events: none;
     opacity: 0;
@@ -107,8 +106,8 @@
     line-height: normal;
     font-size: initial;
     font-family: var(--bodyFont);
-    border: 1px solid var(--lightgray);
-    border-radius: var(--radius-12);
+    border: 1px solid var(--gray);
+    border-radius: var(--radius-none);
     background-color: var(--light);
     overflow: auto;
     overscroll-behavior: contain;
@@ -444,7 +443,7 @@ span.internal.tag-link.lesswrong-popover-tag {
     );
     background-size: 200% 100%;
     animation: skeleton-shimmer 1.5s infinite;
-    border-radius: var(--radius-md);
+    border-radius: var(--radius-none);
   }
 
   .skeleton-title {

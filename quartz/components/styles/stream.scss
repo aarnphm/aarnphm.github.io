@@ -234,7 +234,7 @@
     align-items: center;
     margin-right: 5px;
     text-transform: uppercase;
-    border-radius: var(--radius-6);
+    border-radius: var(--radius-none);
     padding: 2px 4px;
     display: inline;
     cursor: pointer;
@@ -364,7 +364,7 @@
       font-size: 0.9em;
       padding: 0.1em 0.3em;
       background: var(--lightgray);
-      border-radius: var(--radius-3);
+      border-radius: var(--radius-none);
     }
 
     strong {
@@ -548,9 +548,8 @@
       padding: 0.65rem 0.75rem;
       color: var(--darkgray);
       background: var(--light);
-      border: 1px solid var(--lightgray);
-      border-radius: var(--radius-8);
-      box-shadow: var(--shadow-popover);
+      border: 1px solid var(--gray);
+      border-radius: var(--radius-none);
       font-family: var(--bodyFont);
       font-size: 0.78rem;
       line-height: 1.35;

@@ -47,7 +47,7 @@
   overflow: hidden;
   isolation: isolate;
   border: 1px solid var(--cf-tab-border);
-  border-radius: var(--radius-5);
+  border-radius: var(--radius-none);
   background: var(--cf-tab-surface);
 }
 
@@ -104,7 +104,7 @@
   -webkit-appearance: none;
   width: 180px;
   height: 4px;
-  border-radius: 999px;
+  border-radius: var(--radius-none);
   background: linear-gradient(
     to right,
     var(--cf-keep) 0%,
@@ -278,7 +278,7 @@
 
 .cf-card {
   padding: 0.75rem 0.9rem;
-  border-radius: 6px;
+  border-radius: var(--radius-none);
   border: 1px solid var(--fig-frame-border);
   box-shadow: none;
   background: color-mix(in srgb, var(--light) 96%, transparent);
@@ -349,7 +349,7 @@
   grid-area: eq;
   padding: 0.8rem 1rem;
   border: 1px solid var(--fig-frame-border);
-  border-radius: 6px;
+  border-radius: var(--radius-none);
   background: color-mix(in srgb, var(--light) 96%, transparent);
 }
 

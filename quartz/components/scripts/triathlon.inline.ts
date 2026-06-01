@@ -505,9 +505,8 @@ const setup = (root: HTMLElement): (() => void) | null => {
 const setupCalc = (root: HTMLElement): (() => void) | null => {
   const btn = root.querySelector<HTMLElement>('.tri-calc-btn')
   const calc = root.querySelector<HTMLElement>('.tri-calc')
-  const scrim = root.querySelector<HTMLElement>('.tri-calc-scrim')
   const closeBtn = root.querySelector<HTMLElement>('.tri-calc-close')
-  if (!btn || !calc || !scrim) return null
+  if (!btn || !calc) return null
 
   const parseClock = (s: string): number => {
     const parts = s.split(':').map(Number)
@@ -550,13 +549,11 @@ const setupCalc = (root: HTMLElement): (() => void) | null => {
   const open = () => {
     root.classList.add('tri-calc-open')
     calc.setAttribute('aria-hidden', 'false')
-    scrim.setAttribute('aria-hidden', 'false')
     compute()
   }
   const close = () => {
     root.classList.remove('tri-calc-open')
     calc.setAttribute('aria-hidden', 'true')
-    scrim.setAttribute('aria-hidden', 'true')
   }
   const onCalcClick = (event: MouseEvent) => {
     const p = (event.target as HTMLElement | null)?.closest<HTMLElement>('.tri-calc-preset')
@@ -574,7 +571,6 @@ const setupCalc = (root: HTMLElement): (() => void) | null => {
 
   btn.addEventListener('click', open)
   closeBtn?.addEventListener('click', close)
-  scrim.addEventListener('click', close)
   calc.addEventListener('click', onCalcClick)
   calc.addEventListener('input', compute)
   document.addEventListener('keydown', onKey)
@@ -583,7 +579,6 @@ const setupCalc = (root: HTMLElement): (() => void) | null => {
   return () => {
     btn.removeEventListener('click', open)
     closeBtn?.removeEventListener('click', close)
-    scrim.removeEventListener('click', close)
     calc.removeEventListener('click', onCalcClick)
     calc.removeEventListener('input', compute)
     document.removeEventListener('keydown', onKey)
@@ -1117,11 +1112,10 @@ const wireScrub = (panel: HTMLElement, pop: HTMLElement, daily: DailyPoint[]): (
 const setupAnalytics = (root: HTMLElement): (() => void) | null => {
   const btn = root.querySelector<HTMLElement>('.tri-analytics-btn')
   const panel = root.querySelector<HTMLElement>('.tri-analytics')
-  const scrim = root.querySelector<HTMLElement>('.tri-analytics-scrim')
   const closeBtn = root.querySelector<HTMLElement>('.tri-ana-close')
   const headline = root.querySelector<HTMLElement>('.tri-ana-headline')
   const pop = root.querySelector<HTMLElement>('.tri-ana-pop')
-  if (!btn || !panel || !scrim) return null
+  if (!btn || !panel) return null
 
   let loaded = false
   let scrubCleanup: (() => void) | null = null
@@ -1147,13 +1141,11 @@ const setupAnalytics = (root: HTMLElement): (() => void) | null => {
   const open = () => {
     root.classList.add('tri-analytics-open')
     panel.setAttribute('aria-hidden', 'false')
-    scrim.setAttribute('aria-hidden', 'false')
     load()
   }
   const close = () => {
     root.classList.remove('tri-analytics-open')
     panel.setAttribute('aria-hidden', 'true')
-    scrim.setAttribute('aria-hidden', 'true')
   }
   const onKey = (event: KeyboardEvent) => {
     if (event.key === 'Escape') close()
@@ -1161,13 +1153,11 @@ const setupAnalytics = (root: HTMLElement): (() => void) | null => {
 
   btn.addEventListener('click', open)
   closeBtn?.addEventListener('click', close)
-  scrim.addEventListener('click', close)
   document.addEventListener('keydown', onKey)
 
   return () => {
     btn.removeEventListener('click', open)
     closeBtn?.removeEventListener('click', close)
-    scrim.removeEventListener('click', close)
     document.removeEventListener('keydown', onKey)
     scrubCleanup?.()
   }

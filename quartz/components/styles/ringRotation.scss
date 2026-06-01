@@ -202,7 +202,7 @@
 .rr-cell {
   display: block;
   aspect-ratio: 1 / 1;
-  border-radius: 3px;
+  border-radius: var(--radius-none);
   background: var(--rr-cell-empty);
   transition:
     background 220ms ease,
@@ -233,7 +233,7 @@
   background: color-mix(in srgb, var(--light) 80%, transparent);
   border: 0;
   box-shadow: 0 0 0 1px color-mix(in srgb, var(--gray) 25%, transparent) inset;
-  border-radius: 6px;
+  border-radius: var(--radius-none);
   font-size: 0.82rem;
   color: var(--rr-note-fg);
 }
@@ -335,7 +335,7 @@
   font-family: var(--bodyFont);
   font-size: 0.82rem;
   padding: 0.32rem 0.75rem;
-  border-radius: 4px;
+  border-radius: var(--radius-none);
   cursor: pointer;
   transition:
     background 140ms ease,

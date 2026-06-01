@@ -107,7 +107,7 @@
   background: color-mix(in srgb, var(--light) 80%, transparent);
   border: 1px solid var(--fig-frame-border);
   box-shadow: none;
-  border-radius: 6px;
+  border-radius: var(--radius-none);
   font-size: 0.83rem;
   color: var(--mfa-note-fg);
 }
@@ -140,7 +140,7 @@
   padding: 0.6rem 0.75rem;
   background: color-mix(in srgb, var(--mfa-sage) 8%, transparent);
   border: 1px solid var(--fig-frame-border);
-  border-radius: 6px;
+  border-radius: var(--radius-none);
   font-size: 0.85rem;
   overflow-x: auto;
   .katex-display {
@@ -243,7 +243,7 @@
     flex: 0 0 auto;
     width: 0.82rem;
     height: 0.82rem;
-    border-radius: 3px;
+    border-radius: var(--radius-none);
     background: color-mix(in srgb, var(--light) 92%, transparent);
     border: 1px solid color-mix(in srgb, var(--dark) 22%, transparent);
     transition:

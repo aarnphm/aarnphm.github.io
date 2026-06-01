@@ -3,7 +3,6 @@
   inset: 0;
   z-index: var(--z-modal);
   display: none;
-  backdrop-filter: blur(12px);
   background-color: color-mix(in srgb, var(--light) 80%, transparent);
 
   &.active {
@@ -18,9 +17,8 @@
   max-width: 80vw;
   max-height: 80vh;
   background-color: var(--light);
-  border: 1px solid var(--lightgray);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-modal);
+  border: 1px solid var(--gray);
+  border-radius: var(--radius-none);
   overflow: hidden;
 }
 
@@ -33,8 +31,7 @@
   display: none;
   width: min(400px, 90vw);
   background-color: var(--light);
-  border-left: 1px solid var(--lightgray);
-  box-shadow: var(--shadow-modal);
+  border-left: 1px solid var(--gray);
   overflow-y: auto;
 
   &.active {

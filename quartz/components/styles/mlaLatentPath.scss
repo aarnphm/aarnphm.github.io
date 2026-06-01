@@ -139,7 +139,7 @@
 
 .mla-card {
   padding: 0.85rem 0.95rem;
-  border-radius: 6px;
+  border-radius: var(--radius-none);
   border: 1px solid var(--fig-frame-border);
   box-shadow: none;
   background: color-mix(in srgb, var(--light) 96%, transparent);
@@ -179,7 +179,7 @@
   display: inline-block;
   width: 0.85rem;
   height: 0.85rem;
-  border-radius: 2px;
+  border-radius: var(--radius-none);
   border: 1px solid var(--mla-cached-edge);
   box-shadow: none;
 }
@@ -209,7 +209,7 @@
   background: color-mix(in srgb, var(--light) 80%, transparent);
   border: 1px solid var(--fig-frame-border);
   box-shadow: none;
-  border-radius: 6px;
+  border-radius: var(--radius-none);
   font-size: 0.82rem;
   color: var(--mla-note);
 }
@@ -342,7 +342,7 @@
 .mla-eqs {
   margin-top: 1rem;
   padding: 0.85rem 1rem;
-  border-radius: 6px;
+  border-radius: var(--radius-none);
   border: 1px solid var(--fig-frame-border);
   box-shadow: none;
   background: color-mix(in srgb, var(--light) 96%, transparent);

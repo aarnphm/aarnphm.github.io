@@ -10,7 +10,7 @@ import { svgOptions } from '../../components/svg'
 import { QuartzTransformerPlugin } from '../../types/plugin'
 
 export const checkFootnoteRef = ({ type, tagName, properties }: Element) =>
-  type === 'element' && tagName === 'a' && Boolean(properties) && properties.dataFootnoteRef === ''
+  type === 'element' && tagName === 'a' && Boolean(properties) && properties.dataFootnoteRef != null
 
 export const checkFootnoteSection = ({ type, tagName, properties }: Element) =>
   type === 'element' && tagName === 'section' && properties.dataFootnotes == ''

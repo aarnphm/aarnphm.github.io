@@ -46,7 +46,7 @@
   display: inline-block;
   width: 0.95rem;
   height: 0.95rem;
-  border-radius: 2px;
+  border-radius: var(--radius-none);
   flex: none;
 }
 

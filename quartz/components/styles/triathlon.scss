@@ -140,7 +140,7 @@
   background: color-mix(in srgb, var(--light) 88%, transparent);
   backdrop-filter: blur(10px);
   border: 1px solid color-mix(in srgb, var(--gray) 26%, transparent);
-  border-radius: 0.55rem;
+  border-radius: var(--radius-none);
   box-shadow: 0 10px 34px color-mix(in srgb, var(--dark) 13%, transparent);
   transition:
     opacity 0.16s ease,
@@ -164,7 +164,7 @@
   inset: auto 0 0;
   height: 2.4rem;
   pointer-events: none;
-  border-radius: 0 0 0.55rem 0.55rem;
+  border-radius: var(--radius-none);
   background: linear-gradient(
     to top,
     color-mix(in srgb, var(--light) 92%, transparent),
@@ -487,7 +487,7 @@
   background: color-mix(in srgb, var(--light) 90%, transparent);
   backdrop-filter: blur(3px);
   -webkit-backdrop-filter: blur(3px);
-  border-radius: 0.3rem;
+  border-radius: var(--radius-none);
   pointer-events: none;
   opacity: 0;
   transition: opacity 0.1s ease;
@@ -645,7 +645,7 @@
   background: color-mix(in srgb, var(--light) 92%, transparent);
   backdrop-filter: blur(10px);
   border: 1px solid color-mix(in srgb, var(--gray) 26%, transparent);
-  border-radius: 0.5rem;
+  border-radius: var(--radius-none);
   box-shadow: 0 10px 30px color-mix(in srgb, var(--dark) 13%, transparent);
   opacity: 0;
   visibility: hidden;
@@ -686,7 +686,6 @@
   position: fixed;
   inset: 0;
   z-index: 60;
-  background: color-mix(in srgb, var(--dark) 16%, transparent);
   opacity: 0;
   visibility: hidden;
   transition: opacity 0.2s ease;
@@ -712,9 +711,8 @@
   font-family: var(--codeFont);
   font-variant-numeric: tabular-nums;
   background: var(--light);
-  border: 1px solid color-mix(in srgb, var(--gray) 30%, transparent);
-  border-radius: 0.6rem;
-  box-shadow: 0 14px 44px color-mix(in srgb, var(--dark) 18%, transparent);
+  border: 1px solid color-mix(in srgb, var(--gray) 80%, transparent);
+  border-radius: var(--radius-none);
   opacity: 0;
   visibility: hidden;
   transform: translate(-50%, -48%) scale(0.97);
@@ -765,7 +763,7 @@
   padding: 0.2rem 0.55rem;
   background: none;
   border: 1px solid color-mix(in srgb, var(--gray) 30%, transparent);
-  border-radius: 0.3rem;
+  border-radius: var(--radius-none);
   font-family: var(--codeFont);
   font-size: 0.66rem;
   color: var(--darkgray);
@@ -887,7 +885,6 @@
   position: fixed;
   inset: 0;
   z-index: 60;
-  background: color-mix(in srgb, var(--dark) 16%, transparent);
   opacity: 0;
   visibility: hidden;
   transition: opacity 0.2s ease;
@@ -912,7 +909,6 @@
   font-variant-numeric: tabular-nums;
   background: var(--light);
   border-left: 1px solid color-mix(in srgb, var(--gray) 30%, transparent);
-  box-shadow: -14px 0 44px color-mix(in srgb, var(--dark) 16%, transparent);
   opacity: 0;
   visibility: hidden;
   transform: translateX(100%);
@@ -1201,7 +1197,7 @@
   position: relative;
   height: 6px;
   background: color-mix(in srgb, var(--gray) 18%, transparent);
-  border-radius: 3px;
+  border-radius: var(--radius-none);
   overflow: hidden;
 }
 
@@ -1209,7 +1205,7 @@
   position: absolute;
   inset: 0 auto 0 0;
   background: var(--tri-accent);
-  border-radius: 3px;
+  border-radius: var(--radius-none);
 }
 
 .tri-rdy-band {
@@ -1400,7 +1396,7 @@
   font-size: 0.58rem;
   color: var(--darkgray);
   border: 1px solid color-mix(in srgb, var(--gray) 28%, transparent);
-  border-radius: 0.3rem;
+  border-radius: var(--radius-none);
   white-space: nowrap;
 }
 
@@ -1449,7 +1445,7 @@
   background: color-mix(in srgb, var(--light) 90%, transparent);
   backdrop-filter: blur(8px);
   border: 1px solid color-mix(in srgb, var(--gray) 26%, transparent);
-  border-radius: 0.4rem;
+  border-radius: var(--radius-none);
   transform: translateY(-100%);
   opacity: 0;
   transition: opacity 0.12s ease;

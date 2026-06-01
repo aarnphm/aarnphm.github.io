@@ -28,7 +28,7 @@
   contain-intrinsic-size: auto $intrinsic;
   box-sizing: border-box;
   padding: 1.5rem 1.75rem;
-  border-radius: var(--radius-7-2);
+  border-radius: var(--radius-none);
   border: 1px solid var(--fig-frame-border);
   box-shadow: none;
   background: $bg;
@@ -92,7 +92,7 @@
 
 @mixin figure-panel($bg: var(--fig-surface), $shadow: var(--fig-panel-shadow)) {
   border: 0;
-  border-radius: var(--radius-7-2);
+  border-radius: var(--radius-none);
   background: $bg;
   box-shadow: $shadow;
 }

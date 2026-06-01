@@ -56,7 +56,7 @@
 
 .pkt-seq {
   padding: 0.65rem 0.75rem;
-  border-radius: var(--radius-7-2);
+  border-radius: var(--radius-none);
   border: 0;
   box-shadow: 0 0 0 1px var(--pkt-divider) inset;
   background: var(--pkt-card-bg);
@@ -90,7 +90,7 @@
   align-items: center;
   gap: 0.55rem;
   padding: 0.4rem 0.55rem;
-  border-radius: 5px;
+  border-radius: var(--radius-none);
   border: 0;
   box-shadow: 0 0 0 1px var(--pkt-stroke-soft) inset;
   background: var(--pkt-card-bg);
@@ -149,7 +149,7 @@
   display: inline-block;
   width: 8px;
   height: 14px;
-  border-radius: 1.5px;
+  border-radius: var(--radius-none);
   background: color-mix(in srgb, var(--pkt-stroke-soft) 65%, transparent);
   transition: background 160ms ease;
 
@@ -168,7 +168,7 @@
 .pkt-append {
   align-self: flex-start;
   padding: 0.25rem 0.65rem;
-  border-radius: 999px;
+  border-radius: var(--radius-none);
   border: 0;
   box-shadow: 0 0 0 1px var(--pkt-divider) inset;
   background: transparent;
@@ -200,7 +200,7 @@
   background: var(--pkt-card-bg);
   border: 0;
   box-shadow: 0 0 0 1px var(--pkt-divider) inset;
-  border-radius: var(--radius-7-2);
+  border-radius: var(--radius-none);
   overflow: hidden;
 
   th,
@@ -264,7 +264,7 @@
   align-items: center;
   gap: 0.5rem;
   padding: 0.4rem 0.55rem;
-  border-radius: 5px;
+  border-radius: var(--radius-none);
   border: 0;
   box-shadow: 0 0 0 1px var(--pkt-stroke-soft) inset;
   background: var(--pkt-free-bg);
@@ -311,7 +311,7 @@
 
 .pkt-evict {
   padding: 0.15rem 0.5rem;
-  border-radius: 4px;
+  border-radius: var(--radius-none);
   border: 0;
   box-shadow: 0 0 0 1px var(--pkt-divider) inset;
   background: transparent;
@@ -345,7 +345,7 @@
 
 .pkt-card {
   padding: 0.75rem 0.95rem;
-  border-radius: var(--radius-7-2);
+  border-radius: var(--radius-none);
   border: 0;
   box-shadow: 0 0 0 1px var(--pkt-divider) inset;
   background: var(--pkt-card-bg);
@@ -427,7 +427,7 @@
 
 .pkt-reset {
   padding: 0.4rem 0.85rem;
-  border-radius: 999px;
+  border-radius: var(--radius-none);
   border: 0;
   box-shadow: 0 0 0 1px var(--pkt-divider) inset;
   background: transparent;

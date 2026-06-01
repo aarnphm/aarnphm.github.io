@@ -74,11 +74,10 @@ ul#helper {
     flex-direction: column;
     box-sizing: border-box;
 
-    border: 1px solid var(--lightgray);
+    border: 1px solid var(--gray);
     border-radius: var(--radius-none);
     border-top-width: 0px;
     background-color: var(--light);
-    box-shadow: var(--shadow-modal);
     overflow: hidden auto;
     white-space: normal;
 
@@ -231,7 +230,7 @@ ul#helper {
           display: flex;
           justify-content: space-between;
 
-          border-radius: var(--radius-md);
+          border-radius: var(--radius-none);
           white-space: pre-wrap;
           padding-inline-start: 12px;
           padding: 6px 12px;

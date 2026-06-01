@@ -43,7 +43,7 @@
   padding: 0.95rem 1.05rem;
   background: color-mix(in srgb, var(--light) 80%, transparent);
   border: 0;
-  border-radius: var(--radius-7-2);
+  border-radius: var(--radius-none);
   box-shadow: var(--acc-panel-shadow);
   min-width: 0;
 }
@@ -102,7 +102,7 @@
   font-size: 0.82rem;
   padding: 0.25rem 0.4rem;
   border: 0;
-  border-radius: 4px;
+  border-radius: var(--radius-none);
   background: var(--light);
   box-shadow: 0 0 0 1px var(--acc-div) inset;
   color: var(--dark);
@@ -114,7 +114,7 @@
   font-size: 0.74rem;
   color: var(--acc-salmon-edge);
   background: color-mix(in srgb, var(--acc-salmon) 10%, transparent);
-  border-radius: 3px;
+  border-radius: var(--radius-none);
   box-shadow: 2px 0 0 color-mix(in srgb, var(--acc-salmon) 78%, transparent) inset;
   line-height: 1.4;
 }
@@ -128,7 +128,7 @@
 
 .acc-card {
   padding: 0.7rem 0.85rem;
-  border-radius: var(--radius-7-2);
+  border-radius: var(--radius-none);
   border: 0;
   background: var(--acc-card-bg);
   box-shadow: var(--acc-panel-shadow);
@@ -221,7 +221,7 @@
   flex-direction: column;
   gap: 0.45rem;
   padding: 0.85rem 1rem;
-  border-radius: var(--radius-7-2);
+  border-radius: var(--radius-none);
   border: 0;
   background: color-mix(in srgb, var(--light) 90%, transparent);
   box-shadow: var(--acc-panel-shadow);
@@ -243,7 +243,7 @@
 .acc-bar-track {
   position: relative;
   height: 8px;
-  border-radius: 4px;
+  border-radius: var(--radius-none);
   background: var(--acc-track-bg);
   overflow: hidden;
 }
@@ -256,7 +256,7 @@
   position: absolute;
   inset: 0 auto 0 0;
   height: 100%;
-  border-radius: 4px;
+  border-radius: var(--radius-none);
   transition: width 220ms ease;
 }
 

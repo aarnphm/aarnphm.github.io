@@ -20,7 +20,7 @@
   & > #mermaid-space {
     border: 1px solid var(--lightgray);
     background-color: var(--light);
-    border-radius: var(--radius-md);
+    border-radius: var(--radius-none);
     position: fixed;
     top: 50%;
     left: 50%;
@@ -58,7 +58,7 @@
       padding: 8px;
       background: var(--light);
       border: 1px solid var(--lightgray);
-      border-radius: var(--radius-md);
+      border-radius: var(--radius-none);
       box-shadow: var(--shadow-sm);
       z-index: 2;
 
@@ -72,7 +72,7 @@
         border: 1px solid var(--lightgray);
         background: var(--light);
         color: var(--dark);
-        border-radius: var(--radius-md);
+        border-radius: var(--radius-none);
         cursor: pointer;
         font-size: 16px;
         font-family: var(--bodyFont);
