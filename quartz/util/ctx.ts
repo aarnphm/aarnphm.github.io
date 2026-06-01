@@ -1,6 +1,7 @@
 import path from 'path'
 import type { FrontmatterLink } from '../plugins/transformers/frontmatter'
 import type { AssetManifest } from './asset-manifest'
+import type { OutputAssetClaim, OutputAssetManifest } from './output-assets'
 import type { StaticResources } from './resources'
 import { QuartzConfig } from '../cfg'
 import { ProcessedContent, QuartzPluginData } from '../plugins/vfile'
@@ -48,6 +49,9 @@ export interface BuildCtx {
   pageResourceCacheBuildId?: string
   pageResourceCache?: Map<string, StaticResources>
   cleanOutput?: boolean
+  outputAssetManifest?: OutputAssetManifest
+  outputAssetClaims?: OutputAssetClaim[]
+  outputAssetPreserved?: Set<FilePath>
 }
 
 export function trieFromAllFiles(allFiles: QuartzPluginData[]): FileTrieNode<BuildTimeTrieData> {

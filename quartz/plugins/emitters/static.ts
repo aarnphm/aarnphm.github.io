@@ -1,9 +1,8 @@
-import fs from 'node:fs/promises'
 import type { ChangeEvent } from '../../types/plugin'
 import { QuartzEmitterPlugin } from '../../types/plugin'
 import { defaultIoConcurrency, mapConcurrent } from '../../util/async-pool'
-import { copyFile as copyFileFast } from '../../util/copy-file'
 import { glob } from '../../util/glob'
+import { emitOutputAsset, removeOutputAsset, type OutputAssetClaim } from '../../util/output-assets'
 import { FilePath, QUARTZ, joinSegments } from '../../util/path'
 import { logBuildSpan, PerfTimer } from '../../util/perf'
 
@@ -20,10 +19,10 @@ function staticRelativePath(changeEvent: ChangeEvent): FilePath | undefined {
   return relativePath.length > 0 ? (relativePath as FilePath) : undefined
 }
 
-async function copyStaticFile(output: string, fp: FilePath): Promise<FilePath> {
+function staticAssetClaim(output: string, fp: FilePath): OutputAssetClaim {
   const src = joinSegments(staticPath, fp) as FilePath
   const dest = joinSegments(output, 'static', fp) as FilePath
-  return copyFileFast(src, dest)
+  return { owner: 'quartz-static', source: src, output: dest }
 }
 
 export function resetStaticFileCache(): void {
@@ -35,24 +34,29 @@ async function staticFiles(ignorePatterns: string[]): Promise<FilePath[]> {
   return staticFileCache
 }
 
+export async function staticAssetClaims(output: string, ignorePatterns: string[]) {
+  const fps = await staticFiles(ignorePatterns)
+  return fps.map(fp => staticAssetClaim(output, fp))
+}
+
 export const Static: QuartzEmitterPlugin = () => ({
   name: 'Static',
-  async *emit({ argv, cfg }, _content, _resources) {
-    const outputStaticPath = joinSegments(argv.output, 'static')
+  async *emit(ctx, _content, _resources) {
+    const { argv, cfg } = ctx
     const globPerf = new PerfTimer()
     const fps = await staticFiles(cfg.configuration.ignorePatterns)
     logBuildSpan(argv, 'static:glob', `${fps.length} files`, globPerf.elapsedMs())
-    await fs.mkdir(outputStaticPath, { recursive: true })
     const copyPerf = new PerfTimer()
     const files = await mapConcurrent(fps, defaultIoConcurrency, fp =>
-      copyStaticFile(argv.output, fp),
+      emitOutputAsset(ctx, staticAssetClaim(argv.output, fp)),
     )
     logBuildSpan(argv, 'static:copy', `${fps.length} files`, copyPerf.elapsedMs())
     for (const file of files) {
       yield file
     }
   },
-  async *partialEmit({ argv }, _content, _resources, changeEvents) {
+  async *partialEmit(ctx, _content, _resources, changeEvents) {
+    const { argv } = ctx
     for (const changeEvent of changeEvents) {
       const fp = staticRelativePath(changeEvent)
       if (!fp) {
@@ -62,11 +66,11 @@ export const Static: QuartzEmitterPlugin = () => ({
 
       if (changeEvent.type === 'delete') {
         const dest = joinSegments(argv.output, 'static', fp) as FilePath
-        await fs.rm(dest, { force: true })
+        await removeOutputAsset(ctx, dest)
         continue
       }
 
-      yield copyStaticFile(argv.output, fp)
+      yield emitOutputAsset(ctx, staticAssetClaim(argv.output, fp))
     }
   },
 })

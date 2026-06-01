@@ -455,6 +455,10 @@
   gap: 0.6rem;
 }
 
+.tri-act-figs:has(.tri-fig-readout) {
+  padding-top: 1.4rem;
+}
+
 .tri-route-cursor {
   fill: var(--tri-accent);
   stroke: var(--light);
@@ -480,7 +484,7 @@
   font-variant-numeric: tabular-nums;
   letter-spacing: 0.02em;
   color: var(--dark);
-  background: color-mix(in srgb, var(--light) 82%, transparent);
+  background: color-mix(in srgb, var(--light) 90%, transparent);
   backdrop-filter: blur(3px);
   -webkit-backdrop-filter: blur(3px);
   border-radius: 0.3rem;

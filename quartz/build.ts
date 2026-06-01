@@ -1,7 +1,6 @@
 import { Repository } from '@napi-rs/simple-git'
 import { Mutex } from 'async-mutex'
 import chokidar from 'chokidar'
-import { rm } from 'fs/promises'
 import { GlobbyFilterFunction, isGitIgnored } from 'globby'
 import { minimatch } from 'minimatch'
 import path from 'path'
@@ -10,8 +9,9 @@ import { styleText } from 'util'
 import type { ProcessedContent } from './plugins/vfile'
 import type { ChangeEvent } from './types/plugin'
 import cfg from '../quartz.config'
+import { contentAssetClaims } from './plugins/emitters/assets'
 import { resetWriteCache } from './plugins/emitters/helpers'
-import { resetStaticFileCache } from './plugins/emitters/static'
+import { resetStaticFileCache, staticAssetClaims } from './plugins/emitters/static'
 import { emitContent } from './processors/emit'
 import { filterContentResult } from './processors/filter'
 import { parseMarkdown } from './processors/parse'
@@ -19,6 +19,12 @@ import { resetCopyFileCache } from './util/copy-file'
 import { Argv, BuildCtx } from './util/ctx'
 import { emitQuartzDevEvent } from './util/dev-events'
 import { glob, toPosixPath } from './util/glob'
+import {
+  cleanOutputExcept,
+  preservedOutputAssets,
+  readOutputAssetManifest,
+  writeCurrentOutputAssetManifest,
+} from './util/output-assets'
 import { FilePath, joinSegments, slugifyFilePath } from './util/path'
 import { PerfTimer } from './util/perf'
 import { randomIdNonSecure } from './util/random'
@@ -36,6 +42,16 @@ const syncCtxFiles = (ctx: BuildCtx, allFiles: FilePath[]) => {
   ctx.allSlugs = allFiles.map(fp => slugifyFilePath(fp))
   delete ctx.trie
   delete ctx.renderData
+}
+
+async function syncOutputAssetClaims(ctx: BuildCtx, refreshStaticFiles = false): Promise<void> {
+  if (refreshStaticFiles) {
+    resetStaticFileCache()
+  }
+  ctx.outputAssetClaims = [
+    ...contentAssetClaims(ctx),
+    ...(await staticAssetClaims(ctx.argv.output, ctx.cfg.configuration.ignorePatterns)),
+  ]
 }
 
 function processedContentPath(content: ProcessedContent): FilePath | undefined {
@@ -192,16 +208,8 @@ async function buildQuartz(
   const release = await mut.acquire()
   try {
     emitQuartzDevEvent({ type: 'build:start', epoch: ctx.buildId, reason })
-    perf.addEvent('clean')
-    emitQuartzDevEvent({ type: 'public:remove:start', epoch: ctx.buildId })
-    await rm(output, { recursive: true, force: true })
-    resetCopyFileCache()
-    resetStaticFileCache()
-    resetWriteCache()
-    console.log(`Removed \`${output}\` in ${perf.timeSince('clean')}`)
-
     perf.addEvent('glob')
-    const allFiles = await glob('**/*.*', argv.directory, cfg.configuration.ignorePatterns)
+    const allFiles = await glob('**', argv.directory, cfg.configuration.ignorePatterns)
     const markdownPaths = allFiles.filter(isMarkdownPath).sort()
     console.log(
       `Found ${markdownPaths.length} input files from \`${argv.directory}\` in ${perf.timeSince('glob')}`,
@@ -209,12 +217,28 @@ async function buildQuartz(
 
     const filePaths = markdownPaths.map(fp => joinSegments(argv.directory, fp) as FilePath)
     syncCtxFiles(ctx, allFiles)
+    ctx.outputAssetManifest = await readOutputAssetManifest()
+    await syncOutputAssetClaims(ctx, true)
+    const outputAssetClaims = ctx.outputAssetClaims ?? []
+
+    perf.addEvent('clean')
+    emitQuartzDevEvent({ type: 'public:remove:start', epoch: ctx.buildId })
+    ctx.outputAssetPreserved = await preservedOutputAssets(
+      ctx.outputAssetManifest,
+      outputAssetClaims,
+    )
+    await cleanOutputExcept(output, ctx.outputAssetPreserved)
+    resetCopyFileCache()
+    resetWriteCache()
+    console.log(`Cleaned \`${output}\` in ${perf.timeSince('clean')}`)
 
     const parsedFiles = await parseMarkdown(ctx, filePaths)
     const filteredContent = filterContentResult(ctx, parsedFiles).published
     contentByPath = processedContentByPath(filteredContent)
 
     await emitContent(ctx, filteredContent)
+    await writeCurrentOutputAssetManifest(ctx)
+    delete ctx.outputAssetPreserved
     console.log(
       styleText('green', `Done processing ${markdownPaths.length} files in ${perf.timeSince()}`),
     )
@@ -341,7 +365,7 @@ async function rebuild(clientRefresh: () => void, buildData: BuildData) {
     console.log(styleText('yellow', 'Detected change, rebuilding...'))
 
     perf.addEvent('glob')
-    const allFiles = await glob('**/*.*', argv.directory, ctx.cfg.configuration.ignorePatterns)
+    const allFiles = await glob('**', argv.directory, ctx.cfg.configuration.ignorePatterns)
     const markdownPaths = allFiles.filter(isMarkdownPath).sort()
     console.log(
       `Found ${markdownPaths.length} input files from \`${argv.directory}\` in ${perf.timeSince('glob')}`,
@@ -349,6 +373,9 @@ async function rebuild(clientRefresh: () => void, buildData: BuildData) {
 
     const filePaths = markdownPaths.map(fp => joinSegments(argv.directory, fp) as FilePath)
     syncCtxFiles(ctx, allFiles)
+    ctx.outputAssetManifest ??= await readOutputAssetManifest()
+    await syncOutputAssetClaims(ctx)
+    delete ctx.outputAssetPreserved
 
     const parsedFiles = await parseMarkdown(ctx, filePaths)
     const parsedByPath = processedContentByPath(parsedFiles)
@@ -362,6 +389,7 @@ async function rebuild(clientRefresh: () => void, buildData: BuildData) {
     )
 
     await emitContent(ctx, processedFiles, changeEvents)
+    await writeCurrentOutputAssetManifest(ctx)
     buildData.contentByPath = processedByPath
     console.log(styleText('green', `Done rebuilding in ${perf.timeSince()}`))
     emitQuartzDevEvent({
