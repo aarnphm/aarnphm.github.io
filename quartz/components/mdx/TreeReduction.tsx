@@ -243,7 +243,7 @@ const TreeReductionImpl: QuartzMdxComponent<Props> = ({ caption, leaves = 4 }) =
 
       {caption ? (
         <figcaption class="tr-caption">
-          <MathText text={caption} />
+          <MathText text={caption} mathClass="tr-math" />
         </figcaption>
       ) : null}
     </figure>

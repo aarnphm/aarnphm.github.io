@@ -729,7 +729,7 @@ function addProcessedContentToIndex(
     readingTime,
     fileData: file.data,
     layout: file.data.frontmatter!.pageLayout,
-    description: file.data.description,
+    description: file.data.rawDescription ?? file.data.description,
     protected: isProtected,
   })
 

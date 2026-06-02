@@ -1,3 +1,4 @@
+import { isRecord, readString } from '../../util/type-guards'
 import { hostnameMatches } from '../../util/url'
 
 export interface ArxivMeta {
@@ -40,8 +41,12 @@ export const ARXIV_HEADERS = { 'User-Agent': 'curl/8.7.1' }
 
 export const cacheState: CacheState = { documents: new Map(), papers: new Map(), dirty: false }
 
-const ARXIV_URL_REGEX =
-  /^https?:\/\/arxiv\.org\/(?:abs|pdf|html)[/\w.-]*?(\d{4}\.\d{4,5})(?:v\d+)?(?:\.pdf)?(?:[?#].*)?$/i
+const ARXIV_ID_PATTERN = String.raw`(?:\d{4}\.\d{4,5}|[a-z-]+(?:\.[a-z]+)?\/\d{7})`
+const ARXIV_ID_REGEX = new RegExp(`^${ARXIV_ID_PATTERN}(?:v\\d+)?$`, 'i')
+const ARXIV_URL_REGEX = new RegExp(
+  String.raw`^https?:\/\/arxiv\.org\/(?:abs|pdf|html)\/.*?(${ARXIV_ID_PATTERN})(?:v\d+)?(?:\.pdf)?(?:[?#].*)?$`,
+  'i',
+)
 
 export function extractArxivId(url: string): string | null {
   try {
@@ -49,7 +54,7 @@ export function extractArxivId(url: string): string | null {
     if (!hostnameMatches(urlObj, 'arxiv.org')) return null
 
     const match = url.match(ARXIV_URL_REGEX)
-    return match ? match[1] : null
+    return match ? normalizeArxivIdCandidate(match[1]) : null
   } catch {
     return null
   }
@@ -134,6 +139,33 @@ export function synthesizeBibtex(id: string, entry: CachedCitationEntry): string
 
 export function normalizeArxivId(id: string): string {
   return id.replace(/^arxiv:/i, '').replace(/v\d+$/i, '')
+}
+
+export function normalizeArxivIdCandidate(id: string): string | null {
+  const normalized = normalizeArxivId(
+    id
+      .trim()
+      .replace(/^(arxiv:)?(pdf\/)?/i, '')
+      .replace(/\.pdf$/i, ''),
+  )
+  return ARXIV_ID_REGEX.test(normalized) ? normalized : null
+}
+
+export function extractArxivIdFromCitationEntry(entry: unknown): string | null {
+  if (!isRecord(entry)) return null
+
+  const eprint =
+    readString(entry, 'eprint') ?? readString(entry, 'EPRINT') ?? readString(entry, 'Eprint')
+  if (eprint) {
+    const directId = normalizeArxivIdCandidate(eprint)
+    if (directId) return directId
+
+    const urlId = extractArxivId(eprint)
+    if (urlId) return urlId
+  }
+
+  const url = readString(entry, 'url') ?? readString(entry, 'URL')
+  return url ? extractArxivId(url) : null
 }
 
 export function makeBibKey(id: string): string {

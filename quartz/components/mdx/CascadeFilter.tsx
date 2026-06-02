@@ -282,7 +282,7 @@ const CascadeFilterImpl: QuartzMdxComponent<Props> = ({ caption, tiles = 16 }) =
         <div class="cf-card">
           <div
             class="cf-card-title"
-            dangerouslySetInnerHTML={{ __html: renderMath('\\text{live metrics}', false) }}
+            dangerouslySetInnerHTML={{ __html: renderMath('\\text{metrics}', false) }}
           />
           <dl class="cf-stats">
             <dt>survivors</dt>

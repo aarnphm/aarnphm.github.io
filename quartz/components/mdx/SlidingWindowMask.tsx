@@ -126,11 +126,16 @@ const SlidingWindowMaskImpl: QuartzMdxComponent<Props> = ({ caption, length = DE
             <div class="swm-readout-row">
               <dt>active cells</dt>
               <dd>
-                <span data-swm-active class="swm-readout-val swm-readout-val--big">
-                  0
-                </span>
+                <span
+                  data-swm-active
+                  class="swm-readout-val swm-readout-val--big"
+                  dangerouslySetInnerHTML={{ __html: renderMath('0') }}
+                />
                 <span class="swm-readout-eq">/</span>
-                <span class="swm-readout-val swm-readout-val--muted">{L * L}</span>
+                <span
+                  class="swm-readout-val swm-readout-val--muted"
+                  dangerouslySetInnerHTML={{ __html: renderMath(String(L * L)) }}
+                />
               </dd>
             </div>
             <div class="swm-readout-row">
@@ -138,9 +143,11 @@ const SlidingWindowMaskImpl: QuartzMdxComponent<Props> = ({ caption, length = DE
               <dd>
                 <MathLabel tex="\dfrac{\#\text{active}}{L^2}" />
                 <span class="swm-readout-eq">=</span>
-                <span data-swm-ratio class="swm-readout-val">
-                  0%
-                </span>
+                <span
+                  data-swm-ratio
+                  class="swm-readout-val"
+                  dangerouslySetInnerHTML={{ __html: renderMath('0\\%') }}
+                />
               </dd>
             </div>
             <div class="swm-readout-row">
@@ -157,9 +164,11 @@ const SlidingWindowMaskImpl: QuartzMdxComponent<Props> = ({ caption, length = DE
                 <span class="swm-readout-eq">at</span>
                 <MathLabel tex="k=8" />
                 <span class="swm-readout-eq">:</span>
-                <span data-swm-receptive class="swm-readout-val">
-                  16
-                </span>
+                <span
+                  data-swm-receptive
+                  class="swm-readout-val"
+                  dangerouslySetInnerHTML={{ __html: renderMath('16') }}
+                />
               </dd>
             </div>
           </dl>
@@ -185,23 +194,26 @@ const SlidingWindowMaskImpl: QuartzMdxComponent<Props> = ({ caption, length = DE
             aria-valuenow={initialW}
             aria-valuetext={`window radius ${initialW}`}
           />
-          <span class="swm-slider-value" data-swm-w-value>
-            {initialW}
-          </span>
+          <span
+            class="swm-slider-value"
+            data-swm-w-value
+            dangerouslySetInnerHTML={{ __html: renderMath(String(initialW)) }}
+          />
         </div>
 
         <div class="swm-control swm-control--toggle">
           <span class="swm-label">
             dilation <MathLabel tex="d" />
           </span>
-          <div class="swm-toggle" role="radiogroup" aria-label="Dilation factor">
+          <div class="swm-tablist" role="tablist" aria-label="Dilation factor">
             {DILATIONS.map(d => (
               <button
                 type="button"
-                class={`swm-toggle-btn${d === DEFAULT_D ? ' is-active' : ''}`}
+                class={`swm-tab${d === DEFAULT_D ? ' is-active' : ''}`}
                 data-swm-d-btn={String(d)}
-                role="radio"
-                aria-checked={d === DEFAULT_D ? 'true' : 'false'}
+                role="tab"
+                aria-selected={d === DEFAULT_D ? 'true' : 'false'}
+                tabIndex={d === DEFAULT_D ? 0 : -1}
                 aria-label={`dilation ${d}`}
               >
                 {d}
@@ -228,9 +240,11 @@ const SlidingWindowMaskImpl: QuartzMdxComponent<Props> = ({ caption, length = DE
             aria-valuenow={DEFAULT_G}
             aria-valuetext={`${DEFAULT_G} global tokens`}
           />
-          <span class="swm-slider-value" data-swm-g-value>
-            {DEFAULT_G}
-          </span>
+          <span
+            class="swm-slider-value"
+            data-swm-g-value
+            dangerouslySetInnerHTML={{ __html: renderMath(String(DEFAULT_G)) }}
+          />
         </div>
       </div>
 

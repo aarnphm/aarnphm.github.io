@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-05-31 00:55:44 GMT-04:00
+modified: 2026-06-01 19:28:25 GMT-04:00
 permalinks:
   - /website
   - /tweets
@@ -7024,6 +7024,15 @@ title: are.na
 
 ## stream
 
+- https://visualjournal.it/ -- Visual Journal [**]
+  - [meta]:
+    - date: 06/01/2026
+    - tags: [interactive, brand]
+- https://www.are.na/editorial -- Arena's Editorial
+  - [meta]:
+    - date: 06/01/2026
+    - tags: [writing, essays]
+    - pinned: true
 - https://www.enterportal.xyz/ -- Enterportal
   - [meta]:
     - date: 05/30/2026
@@ -7840,6 +7849,20 @@ title: are.na
 
 ## video
 
+- https://www.youtube.com/watch?v=325HdQe4WM4 -- There's an Actual Reason You Can't Recycle Plastic
+  - [meta]:
+    - date: 06/01/2026
+    - tags: [environment]
+    - importance: 8
+    - pinned: true
+- https://www.youtube.com/watch?v=xdTTfZ0EZcc -- A Skill We stopped Teaching
+  - [meta]:
+    - date: 06/01/2026
+    - tags: [epistemology]
+- https://www.youtube.com/watch?v=pXVmkurTOgM -- A Rocket Exploded, We need to do Math
+  - [meta]:
+    - date: 06/01/2026
+    - tags: [environment, analytics]
 - https://www.youtube.com/watch?v=l3SCK6V-BFw -- Golfing and stylistically aligning a proof using Claude Code
   - [meta]:
     - date: 05/25/2026

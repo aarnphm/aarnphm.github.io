@@ -327,7 +327,7 @@ const RadixPrefixTreeImpl: QuartzMdxComponent<Props> = ({ caption }) => (
           <M
             t="\text{reuse}(\pi,\sigma)=\bigoplus_{j=1}^{m}\text{KV}(t_{1:j}) \;\Vert\; \bigoplus_{k=1}^{|\sigma|}\text{attend}(t_{1:m+k})"
             d
-            cls="rpt-math"
+            cls="rpt-math rpt-math--display"
           />
           <p>
             The walk reuses every <M t="\text{KV}(t_{1:j})" /> tile along the matched prefix, then
@@ -337,7 +337,7 @@ const RadixPrefixTreeImpl: QuartzMdxComponent<Props> = ({ caption }) => (
 
         <div class="rpt-card">
           <h4>DFS lower bound</h4>
-          <M t="C \ge \sum_{e \in \text{edges}(T)} |e|" d cls="rpt-math" />
+          <M t="C \ge \sum_{e \in \text{edges}(T)} |e|" d cls="rpt-math rpt-math--display" />
           <p>
             Longest-shared-prefix-first scheduling = DFS over <M t="T" />, which touches each edge
             once. FIFO ordering thrashes; LRU keeps the hot branch resident.
@@ -348,7 +348,7 @@ const RadixPrefixTreeImpl: QuartzMdxComponent<Props> = ({ caption }) => (
 
     {caption ? (
       <figcaption class="rpt-caption">
-        <MathText text={caption} />
+        <MathText text={caption} mathClass="rpt-math" />
       </figcaption>
     ) : null}
   </figure>

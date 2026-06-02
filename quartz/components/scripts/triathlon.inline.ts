@@ -1,9 +1,19 @@
 import type { RoughAnnotation } from 'rough-notation/lib/model'
 import { annotate } from 'rough-notation'
 import type { DailyPoint, StravaAnalytics } from '../../plugins/stores/strava-analytics'
-import { type Sport, SPORT_ICON, type StravaActivityDetail } from '../../plugins/stores/strava'
+import {
+  type ActivityHealth,
+  type Sport,
+  SPORT_ICON,
+  type StravaActivityDetail,
+} from '../../plugins/stores/strava'
 
 export {}
+
+type DetailPayload = {
+  details: Record<string, StravaActivityDetail>
+  health: Record<string, ActivityHealth>
+}
 
 const SVGNS = 'http://www.w3.org/2000/svg'
 const KM_TO_MI = 0.621371
@@ -156,6 +166,31 @@ const statRow = (label: string, value: string): HTMLElement => {
   return tr
 }
 
+const recoveryRows = (h: ActivityHealth): [string, string][] => {
+  const rows: [string, string][] = []
+  if (h.readiness != null) rows.push(['readiness', `${h.readiness}`])
+  if (h.sleepScore != null) rows.push(['sleep', `${h.sleepScore}`])
+  if (h.sleepDurationS != null) rows.push(['slept', dur(h.sleepDurationS)])
+  if (h.hrv != null) rows.push(['hrv', `${h.hrv} ms`])
+  if (h.rhr != null) rows.push(['resting hr', `${h.rhr} bpm`])
+  if (h.tempDeviationC != null)
+    rows.push(['temp Δ', `${h.tempDeviationC > 0 ? '+' : ''}${h.tempDeviationC.toFixed(1)}°C`])
+  return rows
+}
+
+const buildRecovery = (h: ActivityHealth): HTMLElement | null => {
+  const rows = recoveryRows(h)
+  if (rows.length === 0) return null
+  const wrap = el('div', 'tri-act-health')
+  wrap.appendChild(el('span', 'tri-act-health-h', 'recovery'))
+  const table = el('table', 'tri-act-stats')
+  const tbody = document.createElement('tbody')
+  for (const [k, v] of rows) tbody.appendChild(statRow(k, v))
+  table.appendChild(tbody)
+  wrap.appendChild(table)
+  return wrap
+}
+
 const linkElev = (
   figs: HTMLElement,
   routeSvg: SVGElement,
@@ -244,9 +279,11 @@ const renderDetail = (d: StravaActivityDetail): HTMLElement => {
   if (d.maxHr != null) moreRows.push(['max hr', `${d.maxHr} bpm`])
   if (d.sufferScore != null) moreRows.push(['effort', `${d.sufferScore}`])
   if (d.avgTemp != null) moreRows.push(['temp', `${d.avgTemp}°C`])
+
+  const recovery = d.health ? buildRecovery(d.health) : null
   const hasPowerStream = d.deviceWatts && d.route.some(p => p.w > 0)
 
-  if (moreRows.length > 0 || hasPowerStream) {
+  if (moreRows.length > 0 || hasPowerStream || recovery) {
     const toggle = el('button', 'tri-act-toggle')
     toggle.setAttribute('type', 'button')
     const more = el('div', 'tri-act-more')
@@ -258,6 +295,7 @@ const renderDetail = (d: StravaActivityDetail): HTMLElement => {
       more.appendChild(mt)
     }
     if (hasPowerStream) more.appendChild(buildPower(d))
+    if (recovery) more.appendChild(recovery)
     wrap.append(toggle, more)
   }
   return wrap
@@ -274,6 +312,7 @@ const setup = (root: HTMLElement): (() => void) | null => {
   let active: HTMLElement | null = null
   let activeIdx = -1
   let details: Record<string, StravaActivityDetail> | null = null
+  let healthByDate: Record<string, ActivityHealth> = {}
   let pinned = false
   let locked = false
   let hideTimer = 0
@@ -338,6 +377,11 @@ const setup = (root: HTMLElement): (() => void) | null => {
       const rest = el('div', 'tri-pop-rest')
       rest.append(buildBattery(), el('span', 'tri-pop-rest-label', 'rest'))
       card.appendChild(rest)
+      const dh = healthByDate[bar.dataset.dateIso ?? '']
+      if (dh) {
+        const rec = buildRecovery(dh)
+        if (rec) card.appendChild(rec)
+      }
     } else if (details) {
       for (const id of idsAttr.split(',')) {
         const d = details[id]
@@ -465,8 +509,9 @@ const setup = (root: HTMLElement): (() => void) | null => {
   if (path)
     fetch(path)
       .then(res => res.json())
-      .then((data: Record<string, StravaActivityDetail>) => {
-        details = data
+      .then((data: DetailPayload) => {
+        details = data.details
+        healthByDate = data.health ?? {}
         if (active) {
           scroller.replaceChildren(buildCard(active))
           if (locked) setExpanded(true)

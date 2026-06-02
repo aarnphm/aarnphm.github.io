@@ -152,18 +152,24 @@ const SceneFA1 = () => (
   <g class="fdf-scene fdf-scene--fa1">
     <title>FlashAttention-1 serial dataflow</title>
     <HBMTier />
-    <rect class="fdf-tier fdf-tier--chip" x={300} y={88} width={392} height={158} rx={7} />
-    <FoL x={306} cy={80} w={190} tex="\text{on-chip}\,{\cdot}\,\text{one SM}" cls="fdf-fo--label" />
+    <rect class="fdf-tier fdf-tier--chip" x={312} y={132} width={296} height={96} rx={7} />
+    <FoL
+      x={318}
+      cy={122}
+      w={190}
+      tex="\text{on-chip}\,{\cdot}\,\text{one SM}"
+      cls="fdf-fo--label"
+    />
     <Fo cx={232} cy={150} w={96} tex="Q_i\,K_j\,V_j" cls="fdf-fo--flow" />
     <line class="fdf-flow-line" x1={158} y1={165} x2={322} y2={165} marker-end="url(#fdf-ah)" />
     <g class="fdf-lane fdf-lane--s-load">
       <rect class="fdf-pkt fdf-pkt--load" x={158} y={158} width={18} height={14} />
     </g>
     <Kernel x={324} y={150} />
-    <line class="fdf-roundtrip" x1={158} y1={210} x2={300} y2={210} marker-end="url(#fdf-ah)" />
+    <line class="fdf-roundtrip" x1={158} y1={210} x2={312} y2={210} marker-end="url(#fdf-ah)" />
     <line
       class="fdf-roundtrip fdf-roundtrip--out"
-      x1={300}
+      x1={312}
       y1={222}
       x2={158}
       y2={222}
@@ -171,7 +177,7 @@ const SceneFA1 = () => (
     />
     <Fo
       cx={250}
-      cy={240}
+      cy={244}
       w={260}
       tex="\text{read-modify-write }O_i, m_i, \ell_i\ {\times}T_c"
       cls="fdf-fo--flow fdf-fo--warn"
@@ -236,7 +242,7 @@ const SceneFA3 = () => (
   <g class="fdf-scene fdf-scene--fa3">
     <title>FlashAttention-3 asynchronous dataflow</title>
     <HBMTier />
-    <rect class="fdf-tier fdf-tier--chip" x={296} y={90} width={400} height={156} rx={7} />
+    <rect class="fdf-tier fdf-tier--chip" x={296} y={90} width={420} height={156} rx={7} />
     <Fo
       cx={236}
       cy={108}

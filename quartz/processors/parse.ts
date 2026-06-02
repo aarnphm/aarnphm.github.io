@@ -301,6 +301,11 @@ const processedContentCache = (globalThis.__quartzProcessedContentCache ??= {
   content: new Map<FilePath, ProcessedContentCacheEntry>(),
 })
 
+export function resetProcessedContentCache(): void {
+  processedContentCache.sourceSalt = undefined
+  processedContentCache.content.clear()
+}
+
 const processedContentCacheSourcePatterns = [
   'quartz.config.ts',
   'quartz/processors/parse.ts',

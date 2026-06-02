@@ -103,7 +103,6 @@
   font-family: var(--bodyFont);
   font-size: 0.8rem;
   text-transform: lowercase;
-  letter-spacing: 0.02em;
   cursor: pointer;
   transition:
     background 160ms ease,
@@ -139,7 +138,6 @@
   font-size: 0.78rem;
   font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
   color: var(--rzr-note-fg);
 }
 
@@ -313,7 +311,6 @@
 .rzr-history-evicted {
   color: color-mix(in srgb, var(--rzr-salmon) 90%, var(--dark));
   font-size: 0.6rem;
-  letter-spacing: 0.02em;
   margin-top: 0.05rem;
 }
 
@@ -330,12 +327,12 @@
   border: 0;
   box-shadow: 0 0 0 1px var(--rzr-divider) inset;
   background: color-mix(in srgb, var(--light) 96%, transparent);
+
   h4 {
     margin: 0 0 0.5rem;
     font-size: 0.72rem;
     font-weight: 600;
     text-transform: uppercase;
-    letter-spacing: 0.06em;
     color: var(--rzr-note-fg);
   }
 }

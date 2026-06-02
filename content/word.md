@@ -5,7 +5,7 @@ date: '2024-10-10'
 description: a bag of chips/words/vernacular
 id: word
 layout: technical
-modified: 2026-05-27 01:58:54 GMT-04:00
+modified: 2026-06-01 15:44:54 GMT-04:00
 tags:
   - evergreen
 title: lists
@@ -186,3 +186,5 @@ title: lists
 - {{sidenotes[semiotic]: the study of signs}}
 - [[thoughts/sheafification]]
 - {{sidenotes[chauvinist]: a person who displays an aggressive, unreasonable, and fanatical beelif in the superiority of their own group}}
+- peleton
+- domestique

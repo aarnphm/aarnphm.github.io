@@ -2,7 +2,7 @@
 date: '2023-07-29'
 description: a knowledge distillation and learning process
 id: writing
-modified: 2026-05-09 17:51:51 GMT-04:00
+modified: 2026-06-01 17:19:49 GMT-04:00
 seealso:
   - '[[posts|collections of my personal writing]]'
 tags:
@@ -13,7 +13,7 @@ title: Writing
 
 ## why
 
-<div class="w-120">
+<div class="float-right">
 
 ```quotes
 Writing as _crystallised_ thought, a way of expressing the labyrinth of interconnected, messy, and incoherent ideas in my mind. It is a form of [knowledge distillation](https://jzhao.xyz/thoughts/knowledge-distillation)

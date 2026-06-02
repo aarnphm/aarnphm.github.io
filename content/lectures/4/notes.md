@@ -2,7 +2,9 @@
 date: '2025-09-05'
 description: 1/n of acceptance-rejection
 id: notes
-modified: 2026-05-09 17:51:34 GMT-04:00
+modified: 2026-06-01 14:54:50 GMT-04:00
+seealso:
+  - '[[thoughts/Speculative decoding]]'
 tags:
   - workshop
 title: supplement to 0.400
@@ -10,13 +12,11 @@ transclude:
   title: false
 ---
 
-see also [[thoughts/Speculative decoding]], [[hinterland/specdec|indepedent research]]
-
-![[thoughts/Speculative decoding#von Neumann acceptance-rejection]]
+![[thoughts/Speculative decoding#von Neumann acceptance–rejection|von Neumann rejection sampling]]
 
 ### historical inspiration & motivation 🚀
 
-![[thoughts/Autoregressive models#next token prediction]]
+![[thoughts/Autoregressive models#next token prediction|NTP]]
 
 ```mermaid
 flowchart LR

@@ -78,7 +78,7 @@ After $\log p$ levels, the root recovers the exact softmax output $y^{(\log p)}_
 ```jsx imports={Zoomable,TreeReduction}
 <Zoomable label="tree reduction stages">
   <TreeReduction
-    caption="step through the running-max merge: each pulse marks a freshly aggregated (m, z, y) triple along the log-depth path."
+    caption="step through the running-max merge: each pulse marks a freshly aggregated $(m, z, y)$ triple along the $\log$-depth path."
     leaves={4}
   />
 </Zoomable>

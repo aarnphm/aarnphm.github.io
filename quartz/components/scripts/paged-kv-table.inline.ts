@@ -1,4 +1,19 @@
+import katex from 'katex'
+
 export {}
+
+const pktRenderMath = (tex: string): string => {
+  try {
+    return katex.renderToString(tex, {
+      displayMode: false,
+      output: 'html',
+      throwOnError: false,
+      strict: false,
+    })
+  } catch {
+    return tex
+  }
+}
 
 type PktSeqId = 'a' | 'b'
 
@@ -97,7 +112,7 @@ const pktRenderLogical = (root: HTMLElement, state: PktState) => {
         btn.dataset.pktLblock = ''
         btn.dataset.pktSeq = seqId
         btn.innerHTML = `
-          <span class="pkt-lblock-tag">${seqId}<sub>${block.blk}</sub></span>
+          <span class="pkt-lblock-tag">${pktRenderMath(`${seqId}_{${block.blk}}`)}</span>
           <span class="pkt-lblock-cells" aria-hidden="true"></span>
           <span class="pkt-lblock-meta" data-pkt-lblock-meta></span>
         `
@@ -131,7 +146,10 @@ const pktRenderLogical = (root: HTMLElement, state: PktState) => {
         })
       }
       const meta = el.querySelector<HTMLElement>('[data-pkt-lblock-meta]')
-      if (meta) meta.textContent = block.phys !== null ? `to p${block.phys}` : 'paged out'
+      if (meta)
+        meta.innerHTML = pktRenderMath(
+          block.phys !== null ? `\\to p_{${block.phys}}` : '\\text{paged out}',
+        )
     }
   }
 }
@@ -150,9 +168,9 @@ const pktRenderPageTable = (root: HTMLElement, state: PktState) => {
       tr.dataset.pktBlk = String(block.blk)
       tr.dataset.pktPhys = String(block.phys)
       tr.innerHTML = `
-        <td class="pkt-pt-key"><span class="pkt-pt-id">${seq.id}<sub>${block.blk}</sub></span></td>
-        <td class="pkt-pt-arrow" aria-hidden="true">to</td>
-        <td class="pkt-pt-val" data-pkt-pt-val>p${block.phys}</td>
+        <td class="pkt-pt-key"><span class="pkt-pt-id">${pktRenderMath(`${seq.id}_{${block.blk}}`)}</span></td>
+        <td class="pkt-pt-arrow" aria-hidden="true">${pktRenderMath('\\to')}</td>
+        <td class="pkt-pt-val" data-pkt-pt-val>${pktRenderMath(`p_{${block.phys}}`)}</td>
       `
       tbody.appendChild(tr)
     }
@@ -178,7 +196,7 @@ const pktRenderPhysical = (root: HTMLElement, state: PktState, landingPhys?: num
       slot.dataset.pktOccBlk = ''
     }
     const label = slot.querySelector<HTMLElement>('[data-pkt-pblock-label]')
-    if (label) label.textContent = occ ? `${occ.seq}${occ.blk}` : 'free'
+    if (label) label.innerHTML = pktRenderMath(occ ? `${occ.seq}_{${occ.blk}}` : '\\text{free}')
     const evict = slot.querySelector<HTMLButtonElement>('[data-pkt-evict]')
     if (evict) evict.disabled = !occ
     if (landingPhys === idx) {
@@ -193,12 +211,12 @@ const pktRenderReadout = (root: HTMLElement, state: PktState) => {
   const seqB = pktSeqState(state, 'b')
   const tokA = root.querySelector<HTMLElement>('[data-pkt-tokens-a]')
   const tokB = root.querySelector<HTMLElement>('[data-pkt-tokens-b]')
-  if (tokA && seqA) tokA.textContent = String(seqA.tokens)
-  if (tokB && seqB) tokB.textContent = String(seqB.tokens)
+  if (tokA && seqA) tokA.innerHTML = pktRenderMath(String(seqA.tokens))
+  if (tokB && seqB) tokB.innerHTML = pktRenderMath(String(seqB.tokens))
   const alloc = root.querySelector<HTMLElement>('[data-pkt-alloc]')
-  if (alloc) alloc.textContent = String(pktTotalAllocatedBlocks(state))
+  if (alloc) alloc.innerHTML = pktRenderMath(String(pktTotalAllocatedBlocks(state)))
   const frag = root.querySelector<HTMLElement>('[data-pkt-frag]')
-  if (frag) frag.textContent = pktFormatFrag(state)
+  if (frag) frag.innerHTML = pktRenderMath(pktFormatFrag(state).replace('%', '\\%'))
 }
 
 const pktClearActive = (root: HTMLElement) => {

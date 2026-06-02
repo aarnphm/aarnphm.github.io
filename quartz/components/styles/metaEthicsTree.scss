@@ -1,0 +1,374 @@
+@use '../../styles/variables.scss' as *;
+@use '../../styles/mixin.scss' as *;
+@use './figure.scss' as *;
+
+.meta-ethics-tree {
+  @include figure-frame('mep-figure', 38rem);
+
+  --mep-stroke-soft: color-mix(in srgb, var(--gray) 45%, transparent);
+  --mep-divider: color-mix(in srgb, var(--gray) 30%, transparent);
+  --mep-note-fg: color-mix(in srgb, var(--darkgray) 80%, var(--dark) 20%);
+  --mep-cat-fg: color-mix(in srgb, var(--darkgray) 68%, var(--dark) 32%);
+  --mep-q-bg: color-mix(in srgb, var(--light) 98%, transparent);
+  --mep-pos-bg: color-mix(in srgb, var(--fig-sage) 24%, var(--light));
+  --mep-pos-stroke: color-mix(in srgb, var(--fig-sage) 66%, var(--darkgray));
+  --mep-active: #fdb2a2;
+  --mep-active-bg: color-mix(in srgb, #fdb2a2 30%, var(--light));
+  --mep-path-bg: color-mix(in srgb, #fdb2a2 15%, var(--light));
+  --mep-you: color-mix(in srgb, var(--fig-sage) 82%, var(--dark));
+}
+
+:root[saved-theme='dark'] .meta-ethics-tree {
+  --mep-q-bg: color-mix(in srgb, var(--lightgray) 26%, var(--dark));
+  --mep-pos-bg: color-mix(in srgb, var(--fig-sage) 20%, var(--lightgray));
+  --mep-active-bg: color-mix(in srgb, #fdb2a2 22%, var(--lightgray));
+  --mep-path-bg: color-mix(in srgb, #fdb2a2 12%, var(--lightgray));
+}
+
+.mep-stage {
+  display: grid;
+  grid-template-columns: minmax(0, 2.1fr) minmax(216px, 1fr);
+  gap: 1.4rem;
+  align-items: stretch;
+}
+
+.mep-canvas {
+  min-width: 0;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+.mep-svg {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 840 / 600;
+  display: block;
+  overflow: visible;
+
+  .mep-edge {
+    fill: none;
+    stroke: var(--mep-stroke-soft);
+    stroke-width: 1.2;
+    transition:
+      stroke 200ms ease,
+      stroke-width 200ms ease;
+  }
+
+  .mep-edge-group.is-path .mep-edge {
+    stroke: var(--mep-active);
+    stroke-width: 1.9;
+  }
+
+  .mep-edge-label {
+    overflow: visible;
+  }
+
+  .mep-edge-text {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--bodyFont);
+    font-size: 9.5px;
+    font-style: italic;
+    line-height: 1;
+    color: var(--mep-note-fg);
+    transition: color 200ms ease;
+  }
+
+  .mep-edge-group.is-path .mep-edge-text {
+    color: color-mix(in srgb, var(--mep-active) 78%, var(--dark) 22%);
+    font-style: normal;
+  }
+
+  .mep-node--question,
+  .mep-node--category {
+    --mep-fill: var(--mep-q-bg);
+    --mep-stroke-cur: var(--mep-stroke-soft);
+  }
+
+  .mep-node--terminal {
+    --mep-fill: var(--mep-pos-bg);
+    --mep-stroke-cur: var(--mep-pos-stroke);
+  }
+
+  .mep-node.is-path {
+    --mep-fill: var(--mep-path-bg);
+    --mep-stroke-cur: var(--mep-active);
+  }
+
+  .mep-node.is-active {
+    --mep-fill: var(--mep-active-bg);
+    --mep-stroke-cur: var(--mep-active);
+  }
+
+  .mep-box {
+    fill: var(--mep-fill);
+    stroke: var(--mep-stroke-cur);
+    stroke-width: 1;
+    transition:
+      fill 200ms ease,
+      stroke 200ms ease,
+      stroke-width 200ms ease;
+  }
+
+  .mep-node.is-path .mep-box {
+    stroke-width: 1.6;
+  }
+
+  .mep-node.is-active .mep-box {
+    stroke-width: 2;
+    filter: drop-shadow(0 0 4px color-mix(in srgb, var(--mep-active) 45%, transparent));
+  }
+
+  .mep-node--selectable {
+    cursor: pointer;
+  }
+
+  .mep-node--selectable:hover .mep-box {
+    stroke: var(--mep-active);
+  }
+
+  .mep-node--selectable:focus-visible {
+    outline: none;
+  }
+
+  .mep-node--selectable:focus-visible .mep-box {
+    stroke: var(--tertiary);
+    stroke-width: 2;
+  }
+
+  .mep-fo {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    padding: 2px 7px;
+    box-sizing: border-box;
+    text-align: center;
+    line-height: 1.16;
+    overflow: hidden;
+  }
+
+  .mep-cat-name {
+    font-family: var(--bodyFont);
+    font-size: 11px;
+    font-weight: 400;
+    color: var(--dark);
+  }
+
+  .mep-q-text {
+    font-family: var(--bodyFont);
+    font-size: 10px;
+    font-weight: 400;
+    color: var(--mep-note-fg);
+  }
+
+  .mep-pos-name {
+    font-family: var(--bodyFont);
+    font-size: 11px;
+    font-weight: 400;
+    color: var(--dark);
+  }
+
+  .mep-node.is-active .mep-q-text,
+  .mep-node.is-path .mep-q-text {
+    color: var(--dark);
+  }
+
+  .mep-you {
+    fill: var(--mep-you);
+    stroke: var(--light);
+    stroke-width: 1;
+  }
+}
+
+.mep-side {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  min-width: 0;
+}
+
+.mep-card {
+  padding: 0.8rem 0.9rem;
+  border-radius: var(--radius-none);
+  border: 0;
+  box-shadow: 0 0 0 1px var(--mep-divider) inset;
+  background: color-mix(in srgb, var(--light) 96%, transparent);
+
+  & > h4 {
+    margin: 0;
+    font-size: 0.74rem;
+    font-weight: 400;
+    color: var(--mep-note-fg);
+  }
+}
+
+.mep-card--detail {
+  min-height: 6.5rem;
+}
+
+.mep-detail {
+  display: none;
+}
+
+.mep-detail.is-active {
+  display: block;
+}
+
+.mep-detail-name {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  font-size: 0.98rem;
+  font-weight: 400;
+  color: var(--dark);
+}
+
+.mep-mine-tag {
+  font-size: 0.62rem;
+  font-weight: 400;
+  padding: 0.1rem 0.36rem;
+  color: color-mix(in srgb, var(--mep-you) 30%, var(--dark));
+  box-shadow: 0 0 0 1px var(--mep-you) inset;
+}
+
+.mep-sig {
+  @include figure-inline-math(1.04em);
+  display: block;
+  margin: 0.5rem 0 0;
+  color: color-mix(in srgb, var(--mep-active) 70%, var(--dark) 30%);
+}
+
+.mep-gloss {
+  margin: 0.45rem 0 0;
+  font-size: 0.8rem;
+  line-height: 1.5;
+  color: var(--mep-note-fg);
+}
+
+.mep-answers {
+  list-style: none;
+  margin: 0.55rem 0 0;
+  padding: 0;
+  display: none;
+}
+
+.mep-answers.is-active {
+  display: grid;
+  gap: 0.3rem;
+}
+
+.mep-answer {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+  font-size: 0.76rem;
+  box-shadow: 0 1px 0 var(--mep-divider);
+  padding-bottom: 0.26rem;
+
+  &:last-child {
+    box-shadow: none;
+    padding-bottom: 0;
+  }
+}
+
+.mep-answer-q {
+  color: var(--mep-note-fg);
+}
+
+.mep-answer-a {
+  font-weight: 400;
+  color: color-mix(in srgb, var(--mep-active) 72%, var(--dark) 28%);
+}
+
+.mep-reset {
+  align-self: flex-start;
+  padding: 0.34rem 0.7rem;
+  border-radius: var(--radius-none);
+  border: 0;
+  box-shadow: 0 0 0 1px var(--mep-divider) inset;
+  background: transparent;
+  color: var(--mep-note-fg);
+  font-family: var(--bodyFont);
+  font-size: 0.76rem;
+  cursor: pointer;
+  transition:
+    background 160ms ease,
+    color 160ms ease,
+    box-shadow 160ms ease;
+
+  &:hover {
+    background: var(--mep-active-bg);
+    box-shadow: 0 0 0 1px var(--mep-active) inset;
+    color: var(--dark);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--tertiary);
+    outline-offset: 2px;
+  }
+}
+
+.mep-math {
+  @include figure-inline-math(0.95em);
+}
+
+.mep-caption {
+  @include figure-caption;
+
+  .mep-math {
+    @include figure-caption-math-gap;
+  }
+}
+
+@container mep-figure (max-width: 760px) {
+  .mep-stage {
+    grid-template-columns: 1fr;
+    gap: 1.1rem;
+  }
+
+  .mep-side {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: flex-start;
+  }
+
+  .mep-card {
+    flex: 1 1 14rem;
+  }
+
+  .mep-reset {
+    flex-basis: 100%;
+  }
+}
+
+@container mep-figure (max-width: 520px) {
+  .meta-ethics-tree {
+    padding: 0;
+  }
+
+  .mep-svg {
+    .mep-cat-name,
+    .mep-edge-text {
+      font-size: 9px;
+    }
+
+    .mep-q-text,
+    .mep-pos-name {
+      font-size: 10px;
+    }
+  }
+
+  .mep-side {
+    flex-direction: column;
+  }
+}

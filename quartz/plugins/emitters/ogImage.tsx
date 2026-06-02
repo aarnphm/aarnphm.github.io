@@ -7,6 +7,7 @@ import { i18n } from '../../i18n'
 import { QuartzEmitterPlugin } from '../../types/plugin'
 import { copyFile } from '../../util/copy-file'
 import { BuildCtx } from '../../util/ctx'
+import { descriptionToPlainText } from '../../util/description'
 import { getIconCode } from '../../util/emoji'
 import { loadEmoji } from '../../util/emoji-node'
 import { unescapeHTML } from '../../util/escape'
@@ -134,10 +135,12 @@ async function processOgImage(
   const titleSuffix = cfg.pageTitleSuffix ?? ''
   const title =
     (fileData.frontmatter?.title ?? i18n(cfg.locale).propertyDefaults.title) + titleSuffix
-  const description =
+  const rawDescription =
     fileData.frontmatter?.socialDescription ??
+    fileData.rawDescription ??
     fileData.frontmatter?.description ??
     unescapeHTML(fileData.description?.trim() ?? i18n(cfg.locale).propertyDefaults.description)
+  const description = descriptionToPlainText(rawDescription, slug)
   const outputSlug = `${slug}-og-image` as FullSlug
   const dest = joinSegments(ctx.argv.output, `${outputSlug}.webp`) as FilePath
   const signature = ogImageSignature(ctx, fileData, title, description, fullOptions, fontsSignature)

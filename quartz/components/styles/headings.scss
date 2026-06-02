@@ -12,18 +12,13 @@
   > .headings-modal {
     position: relative;
     background-color: var(--light);
-    border: 1px solid var(--lightgray);
+    border: 1px solid var(--tgray);
     border-radius: var(--radius-none);
-    box-shadow: var(--shadow-lg);
     width: min(600px, 80vw);
     max-height: min(600px, 80vh);
     display: flex;
     flex-direction: column;
     outline: none;
-
-    &:focus {
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
-    }
 
     > .headings-modal-content {
       display: flex;
@@ -67,24 +62,6 @@
               border-color: var(--secondary);
               box-shadow: var(--shadow-focus);
             }
-          }
-        }
-
-        > .headings-modal-shortcuts {
-          font-size: 0.75rem;
-          color: var(--gray);
-          display: flex;
-          align-items: center;
-          gap: 0.5rem;
-
-          > kbd {
-            background-color: var(--lightgray);
-            border: 1px solid var(--gray);
-            border-radius: var(--radius-none);
-            padding: 0.1rem 0.3rem;
-            font-size: 8px;
-            font-family: var(--codeFont);
-            color: var(--darkgray);
           }
         }
       }
@@ -180,16 +157,6 @@
               &:focus {
                 border-color: var(--secondary);
               }
-            }
-          }
-
-          > .headings-modal-shortcuts {
-            color: var(--gray);
-
-            > kbd {
-              background-color: var(--darkgray);
-              border-color: var(--gray);
-              color: var(--lightgray);
             }
           }
         }

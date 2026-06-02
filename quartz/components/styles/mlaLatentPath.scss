@@ -248,7 +248,6 @@
 }
 .mla-readout-val--big {
   font-size: 1rem;
-  letter-spacing: 0.02em;
 }
 
 .mla-math {
@@ -308,9 +307,6 @@
     width: 0.78rem;
     height: 0.78rem;
     margin-top: -0.25rem;
-    box-shadow:
-      0 0 0 2px color-mix(in srgb, var(--light) 96%, transparent),
-      0 0.2rem 0.45rem color-mix(in srgb, var(--dark) 14%, transparent);
   }
 
   &::-moz-range-track,
@@ -321,9 +317,6 @@
   &::-moz-range-thumb {
     width: 0.78rem;
     height: 0.78rem;
-    box-shadow:
-      0 0 0 2px color-mix(in srgb, var(--light) 96%, transparent),
-      0 0.2rem 0.45rem color-mix(in srgb, var(--dark) 14%, transparent);
   }
 }
 
@@ -355,7 +348,6 @@
 .mla-bet {
   margin: 0.2rem 0 0;
   padding: 0.55rem 0.75rem;
-  border-left: 2px solid var(--mla-salmon);
   box-shadow: none;
   background: color-mix(in srgb, var(--mla-salmon) 6%, transparent);
   color: var(--mla-note);

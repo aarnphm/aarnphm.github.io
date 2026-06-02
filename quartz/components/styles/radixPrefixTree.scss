@@ -1,18 +1,9 @@
 @use '../../styles/variables.scss' as *;
 @use '../../styles/mixin.scss' as *;
+@use './figure.scss' as *;
 
 .radix-prefix-tree {
-  container-type: inline-size;
-  container-name: rpt-figure;
-  margin: 1.75rem 0;
-  content-visibility: auto;
-  contain-intrinsic-size: auto 34rem;
-  padding: 0;
-  border-radius: 0;
-  border: 0;
-  box-shadow: none;
-  background: transparent;
-  color: var(--dark);
+  @include figure-frame('rpt-figure', 34rem);
 
   --rpt-stroke: color-mix(in srgb, var(--darkgray) 70%, transparent);
   --rpt-stroke-soft: color-mix(in srgb, var(--gray) 45%, transparent);
@@ -53,7 +44,6 @@
   font-size: 0.78rem;
   font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
   color: var(--rpt-note-fg);
 }
 
@@ -389,13 +379,12 @@
 }
 
 .rpt-math {
+  @include figure-inline-math(0.9em);
+}
+
+.rpt-math--display {
   display: block;
   margin: 0.4rem 0 0;
-  color: var(--dark);
-  .katex {
-    color: inherit;
-    font-size: 0.9em;
-  }
   .katex-display {
     margin: 0.15rem 0;
     text-align: left;
@@ -406,10 +395,11 @@
 }
 
 .rpt-caption {
-  margin-top: 0.9rem;
-  color: color-mix(in srgb, var(--gray) 70%, var(--dark) 30%);
-  font-size: 0.85rem;
-  text-align: center;
+  @include figure-caption;
+
+  .rpt-math {
+    @include figure-caption-math-gap;
+  }
 }
 
 @container rpt-figure (max-width: 900px) {

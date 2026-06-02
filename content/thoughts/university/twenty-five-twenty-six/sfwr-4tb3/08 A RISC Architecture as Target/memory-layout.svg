@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 733 545" role="img" aria-labelledby="title desc">
+  <title id="title">RISC-V memory layout</title>
+  <desc id="desc">RISC-V address space showing reserved memory, text, static data, dynamic data, stack, program counter, and stack pointer.</desc>
+  <rect width="733" height="545" fill="#fff"/>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="12" markerHeight="12" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 Z" fill="#000"/>
+    </marker>
+  </defs>
+  <g fill="none" stroke="#000" stroke-width="3">
+    <rect x="478" y="4" width="243" height="534"/>
+    <path d="M478 270h243M478 364h243M478 451h243"/>
+    <path d="M82 34h72" marker-end="url(#arrow)"/>
+    <path d="M74 429h72" marker-end="url(#arrow)"/>
+    <path d="M600 45v85" marker-end="url(#arrow)"/>
+    <path d="M600 223v-79" marker-end="url(#arrow)"/>
+  </g>
+  <g fill="#000" font-family="Times New Roman, Times, serif" font-size="34">
+    <text x="11" y="40">SP</text>
+    <text x="174" y="41">0000 003f ffff fff0<tspan dx="4" dy="7" font-size="18">hex</tspan></text>
+    <text x="134" y="303">0000 0000 1000 0000<tspan dx="4" dy="7" font-size="18">hex</tspan></text>
+    <text x="14" y="441">PC</text>
+    <text x="153" y="438">0000 0000 0040 0000<tspan dx="4" dy="7" font-size="18">hex</tspan></text>
+    <text x="410" y="525">0<tspan dx="4" dy="7" font-size="18">hex</tspan></text>
+  </g>
+  <g fill="#000" font-family="Times New Roman, Times, serif" font-size="37" text-anchor="middle">
+    <text x="599" y="40">Stack</text>
+    <text x="600" y="261">Dynamic Data</text>
+    <text x="600" y="330">Static Data</text>
+    <text x="600" y="421">Text</text>
+    <text x="600" y="505">Reserved</text>
+  </g>
+</svg>

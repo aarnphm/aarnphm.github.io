@@ -255,7 +255,11 @@ from [this test](https://programs.clearerthinking.org/philosophical_beliefs.html
 >
 > beliefs change change overtime, but I think core principles has been the same.
 
-![[thoughts/images/ethics-diagram.webp]]
+```jsx imports={Zoomable,MetaEthicsTree}
+<Zoomable label="meta-ethical positions decision tree">
+  <MetaEthicsTree caption="The Clearer Thinking meta-ethics decision tree, after Tommy Crow. Following my answers (moral claims are truth-apt, some are true, their truth independent of belief) lands on moral objectivism, a sub-branch of the moral realism I tested into. Click any position to trace the questions that lead there." />
+</Zoomable>
+```
 
 - **Abstract Objects: Platonist**
   - abstract ideas exist independently of human thought; numbers and shapes are discovered, not invented. see also [[thoughts/Plato]].

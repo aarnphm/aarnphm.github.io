@@ -70,7 +70,11 @@ export const Description: QuartzTransformerPlugin<Partial<Options>> = userOpts =
             const currentSlug = file.data.slug as FullSlug
             const descriptionLinks: Set<SimpleSlug> = new Set()
 
-            let frontMatterDescription = file.data.frontmatter?.description
+            const rawFrontMatterDescription =
+              typeof file.data.frontmatter?.description === 'string'
+                ? file.data.frontmatter.description
+                : undefined
+            let frontMatterDescription = rawFrontMatterDescription
 
             // Extract and track wikilinks from frontmatter description
             if (typeof frontMatterDescription === 'string') {
@@ -157,6 +161,10 @@ export const Description: QuartzTransformerPlugin<Partial<Options>> = userOpts =
               processedFrontMatterDesc ||
               processedPlainDesc ||
               i18n(cfg.configuration.locale).propertyDefaults.description
+            file.data.rawDescription =
+              rawFrontMatterDescription ||
+              processedPlainDesc ||
+              i18n(cfg.configuration.locale).propertyDefaults.description
 
             // Process abstract with wikilinks support
             let abstractText = file.data.frontmatter?.abstract
@@ -192,6 +200,7 @@ export const Description: QuartzTransformerPlugin<Partial<Options>> = userOpts =
 declare module 'vfile' {
   interface DataMap {
     description: string
+    rawDescription: string
     abstract: string
     text: string
     readingTime: ReadTimeResults

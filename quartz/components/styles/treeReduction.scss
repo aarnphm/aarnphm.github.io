@@ -1,18 +1,9 @@
 @use '../../styles/variables.scss' as *;
 @use '../../styles/mixin.scss' as *;
+@use './figure.scss' as *;
 
 .tree-reduction {
-  container-type: inline-size;
-  container-name: tr-figure;
-  margin: 1.75rem 0;
-  content-visibility: auto;
-  contain-intrinsic-size: auto 34rem;
-  padding: 0;
-  border-radius: 0;
-  border: 0;
-  box-shadow: none;
-  background: transparent;
-  color: var(--dark);
+  @include figure-frame('tr-figure', 34rem);
 
   --tr-stroke: color-mix(in srgb, var(--darkgray) 70%, transparent);
   --tr-stroke-soft: color-mix(in srgb, var(--gray) 45%, transparent);
@@ -200,8 +191,6 @@
     font-size: 0.82rem;
     font-weight: $semiBoldWeight;
     color: var(--tr-note-fg);
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
   }
 
   & > p {
@@ -229,7 +218,6 @@
     & > span:first-child {
       font-size: 0.72rem;
       text-transform: uppercase;
-      letter-spacing: 0.05em;
       color: var(--tr-note-fg);
     }
 
@@ -245,11 +233,16 @@
   }
 }
 
+.tr-math {
+  @include figure-inline-math;
+}
+
 .tr-caption {
-  margin-top: 0.9rem;
-  color: color-mix(in srgb, var(--gray) 70%, var(--dark) 30%);
-  font-size: 0.85rem;
-  text-align: center;
+  @include figure-caption;
+
+  .tr-math {
+    @include figure-caption-math-gap;
+  }
 }
 
 @container tr-figure (max-width: 720px) {

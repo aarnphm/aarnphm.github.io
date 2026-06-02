@@ -93,18 +93,22 @@ const LogicalBlock: FunctionalComponent<{ seq: Seq; blk: number }> = ({ seq, blk
         mapped ? `mapped to physical slot ${phys}` : 'paged out'
       }`}
     >
-      <span class="pkt-lblock-tag">
-        {seq.id}
-        <sub>{blk}</sub>
-      </span>
+      <span
+        class="pkt-lblock-tag"
+        dangerouslySetInnerHTML={{ __html: renderMath(`${seq.id}_{${blk}}`) }}
+      />
       <span class="pkt-lblock-cells" aria-hidden="true">
         {Array.from({ length: BLOCK_SIZE }, (_, i) => (
           <span class={`pkt-tok${i < filled ? ' is-filled' : ''}`} />
         ))}
       </span>
-      <span class="pkt-lblock-meta" data-pkt-lblock-meta>
-        {mapped ? `to p${phys}` : 'paged out'}
-      </span>
+      <span
+        class="pkt-lblock-meta"
+        data-pkt-lblock-meta
+        dangerouslySetInnerHTML={{
+          __html: renderMath(mapped ? `\\to p_{${phys}}` : '\\text{paged out}'),
+        }}
+      />
     </button>
   )
 }
@@ -119,10 +123,14 @@ const PhysicalSlot: FunctionalComponent<{ idx: number }> = ({ idx }) => {
       data-pkt-phys={String(idx)}
       data-pkt-occupied={occ ? 'true' : 'false'}
     >
-      <span class="pkt-pblock-idx">{idx}</span>
-      <span class="pkt-pblock-label" data-pkt-pblock-label>
-        {occ ? `${occ.seq}${occ.blk}` : 'free'}
-      </span>
+      <span class="pkt-pblock-idx" dangerouslySetInnerHTML={{ __html: renderMath(String(idx)) }} />
+      <span
+        class="pkt-pblock-label"
+        data-pkt-pblock-label
+        dangerouslySetInnerHTML={{
+          __html: renderMath(occ ? `${occ.seq}_{${occ.blk}}` : '\\text{free}'),
+        }}
+      />
       <button
         type="button"
         class="pkt-evict"
@@ -144,7 +152,10 @@ const PagedKVTableImpl: QuartzMdxComponent<Props> = ({ caption }) => (
         <div class="pkt-seqs">
           {SEQS.map(seq => (
             <div class={`pkt-seq pkt-seq--${seq.tone}`} aria-label={seq.label}>
-              <span class="pkt-seq-title">{seq.label}</span>
+              <span
+                class="pkt-seq-title"
+                dangerouslySetInnerHTML={{ __html: renderMath(`\\text{${seq.label}}`) }}
+              />
               <div class="pkt-seq-blocks" data-pkt-seq-blocks={seq.id}>
                 {Array.from({ length: seq.blocks }, (_, blk) => (
                   <LogicalBlock seq={seq} blk={blk} />
@@ -173,7 +184,9 @@ const PagedKVTableImpl: QuartzMdxComponent<Props> = ({ caption }) => (
                 <MathLabel tex="(\text{seq},\, b)" />
               </th>
               <th scope="col" aria-hidden="true" />
-              <th scope="col">phys</th>
+              <th scope="col">
+                <MathLabel tex="\text{phys}" />
+              </th>
             </tr>
           </thead>
           <tbody data-pkt-pt-body>
@@ -186,15 +199,18 @@ const PagedKVTableImpl: QuartzMdxComponent<Props> = ({ caption }) => (
                 data-pkt-phys={String(m.phys)}
               >
                 <td class="pkt-pt-key">
-                  <span class="pkt-pt-id">
-                    {m.seq}
-                    <sub>{m.blk}</sub>
-                  </span>
+                  <span
+                    class="pkt-pt-id"
+                    dangerouslySetInnerHTML={{ __html: renderMath(`${m.seq}_{${m.blk}}`) }}
+                  />
                 </td>
                 <td class="pkt-pt-arrow" aria-hidden="true">
-                  to
+                  <MathLabel tex="\to" />
                 </td>
-                <td class="pkt-pt-val">p{m.phys}</td>
+                <td
+                  class="pkt-pt-val"
+                  dangerouslySetInnerHTML={{ __html: renderMath(`p_{${m.phys}}`) }}
+                />
               </tr>
             ))}
           </tbody>
@@ -227,43 +243,65 @@ const PagedKVTableImpl: QuartzMdxComponent<Props> = ({ caption }) => (
         <h4>live readout</h4>
         <dl class="pkt-readout">
           <div class="pkt-readout-row">
-            <dt>tokens (A, B)</dt>
+            <dt>
+              <MathLabel tex="\text{tokens } (A, B)" />
+            </dt>
             <dd>
-              <span data-pkt-tokens-a class="pkt-val">
-                9
-              </span>
+              <span
+                data-pkt-tokens-a
+                class="pkt-val"
+                dangerouslySetInnerHTML={{ __html: renderMath('9') }}
+              />
               <span class="pkt-sep">/</span>
-              <span data-pkt-tokens-b class="pkt-val">
-                5
-              </span>
+              <span
+                data-pkt-tokens-b
+                class="pkt-val"
+                dangerouslySetInnerHTML={{ __html: renderMath('5') }}
+              />
             </dd>
           </div>
           <div class="pkt-readout-row">
-            <dt>allocated blocks</dt>
+            <dt>
+              <MathLabel tex="\text{allocated blocks}" />
+            </dt>
             <dd>
-              <span data-pkt-alloc class="pkt-val">
-                5
-              </span>
+              <span
+                data-pkt-alloc
+                class="pkt-val"
+                dangerouslySetInnerHTML={{ __html: renderMath('5') }}
+              />
               <span class="pkt-sep">/</span>
-              <span class="pkt-muted">{PHYSICAL_SLOTS}</span>
+              <span
+                class="pkt-muted"
+                dangerouslySetInnerHTML={{ __html: renderMath(String(PHYSICAL_SLOTS)) }}
+              />
             </dd>
           </div>
           <div class="pkt-readout-row">
-            <dt>internal fragmentation</dt>
+            <dt>
+              <MathLabel tex="\text{internal fragmentation}" />
+            </dt>
             <dd>
               <MathLabel tex="1 - \dfrac{\text{tokens}}{B\cdot\#\text{blocks}}" />
               <span class="pkt-sep">=</span>
-              <span data-pkt-frag class="pkt-val pkt-val--big">
-                0%
-              </span>
+              <span
+                data-pkt-frag
+                class="pkt-val pkt-val--big"
+                dangerouslySetInnerHTML={{ __html: renderMath('0\\%') }}
+              />
             </dd>
           </div>
           <div class="pkt-readout-row">
-            <dt>contiguous baseline</dt>
+            <dt>
+              <MathLabel tex="\text{contiguous baseline}" />
+            </dt>
             <dd>
-              up to <MathLabel tex="(B-1)/B" />
+              <MathLabel tex="\text{up to } (B-1)/B" />
               <span class="pkt-sep">=</span>
-              <span class="pkt-val pkt-val--muted">75%</span>
+              <span
+                class="pkt-val pkt-val--muted"
+                dangerouslySetInnerHTML={{ __html: renderMath('75\\%') }}
+              />
             </dd>
           </div>
         </dl>

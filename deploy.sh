@@ -10,9 +10,9 @@ git lfs checkout
 
 export GITHUB_SHA="$(git rev-parse HEAD)"
 
-pnpm clean --lockfile && pnpm i && pnpm strava:sync
+pnpm clean --lockfile && pnpm i && pnpm health
 
-EMAIL_EMITTER_ENABLED=1 NODE_ENV=production pnpm exec quartz/bootstrap-cli.mjs build --concurrency 10 --bundleInfo --verbose
+EMAIL_EMITTER_ENABLED=1 NODE_ENV=production pnpm exec quartz/bootstrap-cli.mjs build --concurrency 16 --bundleInfo --verbose
 
 fd --glob "*.ddl" public -x rm
 fd --glob "*.war" public -x rm

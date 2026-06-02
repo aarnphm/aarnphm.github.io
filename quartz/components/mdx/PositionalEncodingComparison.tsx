@@ -146,6 +146,7 @@ const RopePanel: FunctionalComponent<{ length: number }> = ({ length }) => {
   const step = Math.max(1, Math.floor(length / rows))
   const totalDim = ABS_DIM
   const radius = 0.36
+  const handLen = radius * 0.6
   const cells: VNode[] = []
   for (let r = 0; r < rows; r++) {
     const p = r * step
@@ -162,8 +163,8 @@ const RopePanel: FunctionalComponent<{ length: number }> = ({ length }) => {
             class="pec-clock-hand"
             x1={cx}
             y1={cy}
-            x2={cx + radius * Math.cos(angle)}
-            y2={cy + radius * Math.sin(angle)}
+            x2={cx + handLen * Math.cos(angle)}
+            y2={cy + handLen * Math.sin(angle)}
           />
         </g>,
       )
@@ -305,14 +306,15 @@ const PositionalEncodingComparisonImpl: QuartzMdxComponent<Props> = ({
           <span class="pec-label">
             sequence <MathLabel tex="L" />
           </span>
-          <div class="pec-length-toggle" role="radiogroup" aria-label="Panel resolution">
+          <div class="pec-tablist" role="tablist" aria-label="Sequence length">
             {PEC_LENGTHS.map(len => (
               <button
                 type="button"
-                class={`pec-length-btn${len === L ? ' is-active' : ''}`}
+                class={`pec-tab${len === L ? ' is-active' : ''}`}
                 data-pec-length-btn={String(len)}
-                role="radio"
-                aria-checked={len === L ? 'true' : 'false'}
+                role="tab"
+                aria-selected={len === L ? 'true' : 'false'}
+                tabIndex={len === L ? 0 : -1}
                 aria-label={`length ${len}`}
               >
                 {len}

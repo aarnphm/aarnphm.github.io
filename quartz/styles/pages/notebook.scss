@@ -377,11 +377,10 @@ article:has(.notebook-runtime),
         box-sizing: border-box;
         max-width: min(42rem, calc(100vw - 2rem));
         overflow: auto;
-        border: 1px solid color-mix(in srgb, var(--lightgray) 82%, transparent);
+        border: 1px solid color-mix(in srgb, var(--gray) 82%, transparent);
         border-radius: var(--radius-none);
         background: color-mix(in srgb, var(--notebook-editor-surface) 92%, var(--light));
         color: var(--dark);
-        box-shadow: 0 0.35rem 1.2rem color-mix(in srgb, var(--dark) 12%, transparent);
         font-family: var(--codeFont);
         font-size: 0.76rem;
         line-height: 1.45;
@@ -639,12 +638,10 @@ article:has(.notebook-runtime),
     border-bottom: 0;
     border-radius: var(--radius-none) var(--radius-none) 0 0;
     background: var(--notebook-code-surface);
-    box-shadow: 0 1px 0 var(--notebook-code-surface);
   }
 
   .notebook-code-cell[data-notebook-editing] > .notebook-cell-actions {
     background: var(--notebook-editor-surface);
-    box-shadow: 0 1px 0 var(--notebook-editor-surface);
   }
 
   .notebook-execution-prompt {
@@ -800,6 +797,17 @@ article:has(.notebook-runtime),
     fill: #367533;
   }
 
+  .notebook-icon-button .notebook-debug-icon-core {
+    fill: var(--color-orange);
+    stroke: none;
+    opacity: 0;
+    transition: opacity 140ms ease;
+  }
+
+  .notebook-icon-button[aria-pressed='true'] .notebook-debug-icon-core {
+    opacity: 1;
+  }
+
   .notebook-local-source-status {
     display: inline-flex;
     align-items: center;
@@ -951,7 +959,6 @@ article:has(.notebook-runtime),
   .notebook-output-tabs[data-notebook-output-collapsed] .notebook-output-tablist {
     border: 1px solid var(--lightgray);
     border-radius: var(--radius-none);
-    box-shadow: none;
   }
 
   .notebook-output-actions {

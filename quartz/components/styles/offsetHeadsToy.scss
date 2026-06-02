@@ -8,7 +8,7 @@
   --oht-line: color-mix(in srgb, var(--gray) 24%, transparent);
   --oht-surface-shadow:
     0 0 0 1px var(--oht-line) inset, 0 18px 46px color-mix(in srgb, var(--dark) 7%, transparent);
-  --oht-panel-shadow: 0 0 0 1px color-mix(in srgb, var(--gray) 18%, transparent) inset;
+  --oht-panel-shadow: none;
   --oht-note: color-mix(in srgb, var(--darkgray) 78%, var(--dark) 22%);
   --oht-div: color-mix(in srgb, var(--gray) 28%, transparent);
   --oht-head1: #fdb2a2;
@@ -42,7 +42,6 @@
   border-radius: var(--radius-none);
   border: 0;
   background: color-mix(in srgb, var(--light) 96%, transparent);
-  box-shadow: var(--oht-panel-shadow);
 }
 
 .oht-panel-head {
@@ -56,7 +55,6 @@
 .oht-panel-title {
   font-weight: 600;
   color: var(--dark);
-  letter-spacing: 0.005em;
 }
 
 .oht-swatch {
@@ -64,7 +62,6 @@
   width: 0.65rem;
   height: 0.65rem;
   border-radius: 50%;
-  box-shadow: 0 0 0 1px var(--oht-div) inset;
 
   &.oht-swatch--head1 {
     background: var(--oht-head1);
@@ -83,7 +80,6 @@
   display: block;
   border-radius: var(--radius-none);
   background: var(--oht-grid-bg);
-  box-shadow: var(--oht-panel-shadow);
 
   .oht-cell {
     stroke: var(--oht-grid-stroke);
@@ -142,7 +138,6 @@
   border-radius: var(--radius-none);
   border: 0;
   background: color-mix(in srgb, var(--light) 96%, transparent);
-  box-shadow: var(--oht-panel-shadow);
   display: grid;
   grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
   gap: 1rem 1.5rem;
@@ -214,7 +209,6 @@
 .oht-controls {
   margin-top: 1.25rem;
   padding-top: 1rem;
-  box-shadow: 0 -1px 0 var(--oht-line);
   display: grid;
   grid-template-columns: minmax(0, 1.4fr) minmax(0, 1.4fr) minmax(0, auto);
   gap: 1rem 1.5rem;
@@ -263,7 +257,6 @@
   padding: 0.15rem;
   border-radius: var(--radius-none);
   background: color-mix(in srgb, var(--lightgray) 50%, transparent);
-  box-shadow: 0 0 0 1px var(--oht-div) inset;
 }
 
 .oht-toggle-btn {
@@ -291,7 +284,6 @@
   &.is-active {
     background: var(--light);
     color: var(--dark);
-    box-shadow: 0 0 0 1px var(--oht-div);
   }
   &:active {
     transform: scale(0.96);
@@ -314,28 +306,15 @@
   padding: 0.35rem 0.95rem;
   border-radius: var(--radius-none);
   cursor: pointer;
-  box-shadow: 0 0 0 1px var(--oht-div) inset;
   transition:
     background 120ms ease-out,
-    box-shadow 120ms ease-out,
     transform 120ms ease-out;
 
   &:hover {
     background: var(--light);
-    box-shadow:
-      0 0 0 1px color-mix(in srgb, var(--oht-head1) 70%, var(--oht-div)) inset,
-      0 8px 18px color-mix(in srgb, var(--oht-head1) 14%, transparent);
   }
   &:active {
     transform: scale(0.96);
-  }
-  &.oht-btn--primary {
-    box-shadow: 0 0 0 1px color-mix(in srgb, var(--oht-head1) 58%, var(--oht-div)) inset;
-  }
-  &.oht-btn--primary:hover {
-    box-shadow:
-      0 0 0 1px color-mix(in srgb, var(--oht-head1) 70%, var(--oht-div)) inset,
-      0 8px 18px color-mix(in srgb, var(--oht-head1) 14%, transparent);
   }
 }
 

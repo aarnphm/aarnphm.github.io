@@ -131,6 +131,7 @@ export default (() => {
                       class={rest ? 'tri-bar' : 'tri-bar tri-bar--day'}
                       data-ids={rest ? undefined : d.items.map(i => i.id).join(',')}
                       data-date={prettyDate(d.date)}
+                      data-date-iso={d.date}
                     >
                       {rest ? (
                         <span class="tri-seg" style={`height:${REST_SEG}px`} />

@@ -90,7 +90,6 @@
   line-height: 1.2;
   font-weight: 600;
   color: var(--dark);
-  letter-spacing: -0.005em;
 }
 
 .afm-card-pitch {
@@ -113,7 +112,6 @@
 
 .afm-card-bottleneck-label {
   text-transform: uppercase;
-  letter-spacing: 0.06em;
   font-family: var(--codeFont);
   font-weight: 600;
   color: color-mix(in srgb, var(--afm-accent) 65%, var(--gray) 35%);
@@ -184,7 +182,6 @@
 
 .afm-chip-name {
   font-weight: 600;
-  letter-spacing: -0.005em;
   color: var(--dark);
 }
 
@@ -201,7 +198,6 @@
   font-size: 0.58rem;
   font-weight: 600;
   line-height: 1.2;
-  letter-spacing: 0.01em;
   transition:
     background-color var(--transition-normal),
     color var(--transition-normal),
@@ -329,8 +325,6 @@
   font-family: var(--codeFont);
   font-weight: 600;
   font-size: 0.7rem;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
   color: color-mix(in srgb, var(--afm-accent) 60%, var(--dark) 40%);
 }
 
