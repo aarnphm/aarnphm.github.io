@@ -4,7 +4,7 @@ description: softmax reduction over a communication tree, log p stages across p 
 id: attention-tree
 modified: 2026-05-29 13:27:41 GMT-04:00
 seealso:
-  - '[[thoughts/Attention|main stage]]'
+  - '[[thoughts/Attention|Attention]]'
   - '[[thoughts/ring attention|ring attention]]'
   - '[[thoughts/flash attention|FlashAttention]]'
 tags:

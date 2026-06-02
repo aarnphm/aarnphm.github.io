@@ -1,15 +1,20 @@
 ---
 date: '2024-10-10'
-description: '[[thoughts/Compression|compression]] of key-value in [[thoughts/Transformers]] model'
+description: '[[thoughts/Compression|compression]] of key-value in [[thoughts/Transformers|Tranformers]] model'
 id: KV compression
-modified: 2026-05-27 02:48:48 GMT-04:00
+modified: 2026-06-02 15:23:28 GMT-04:00
+seealso:
+  - '[[@li2024snapkvllmknowslooking]]'
+  - '[[@ge2024modeltellsdiscardadaptive]]'
+  - '[[@xiao2024efficientstreaminglanguagemodels]]'
+  - '[[@cai2025pyramidkvdynamickvcache]]'
+socials:
+  lists: https://github.com/October2001/Awesome-KV-Cache-Compression
 tags:
   - ml
   - llm
 title: KV compression
 ---
-
-see also: [github](https://github.com/October2001/Awesome-KV-Cache-Compression)
 
 TLDR: Most algorithm determine importance through aggregating attentions over observed queries [@zhang2023h2oheavyhitteroracleefficient; @liu2023scissorhandsexploitingpersistenceimportance]
 
@@ -63,7 +68,7 @@ https://arxiv.org/abs/2406.02069
 
 ## Snap-KV
 
-https://github.com/FasterDecoding/SnapKV
+[implementation](https://github.com/FasterDecoding/SnapKV)
 
 https://arxiv.org/abs/2404.14469
 
@@ -76,7 +81,7 @@ I &= \text{Top}_{k}(C, k)
 \end{aligned}
 $$
 
-_[hijack for llama_hijack_4_37.py](https://github.com/FasterDecoding/SnapKV/blob/82135ce2cc60f212a9ba918467f3d9c8134e163f/snapkv/monkeypatch/llama_hijack_4_37.py#L19)_
+![[https://github.com/FasterDecoding/SnapKV/blob/82135ce2cc60f212a9ba918467f3d9c8134e163f/snapkv/monkeypatch/llama_hijack_4_37.py#L19]]
 
 > [!important]
 >

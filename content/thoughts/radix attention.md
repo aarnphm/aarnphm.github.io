@@ -4,7 +4,7 @@ description: prefix-tree caching of KV pages with LRU eviction, shared request p
 id: attention-radix
 modified: 2026-06-01 15:08:05 GMT-04:00
 seealso:
-  - '[[thoughts/Attention|main stage]]'
+  - '[[thoughts/Attention|Attention]]'
   - '[[thoughts/Radix tree]]'
   - '[[thoughts/paged attention|paged attention]]'
   - '[[thoughts/KV compression]]'

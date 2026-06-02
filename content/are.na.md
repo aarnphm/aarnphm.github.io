@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-06-01 19:28:25 GMT-04:00
+modified: 2026-06-02 15:19:49 GMT-04:00
 permalinks:
   - /website
   - /tweets
@@ -8294,6 +8294,10 @@ title: are.na
 
 ## arts
 
+- https://rothko.joonas.wtf/ -- Rothko
+  - [meta]:
+    - date: 06/02/2026
+    - tags: [drawings]
 - https://www.miergallery.com/exhibitions/marin-majic3/selected-works -- Nino Mier Gallery
   - [meta]:
     - date: 05/29/2026
@@ -10086,6 +10090,10 @@ title: are.na
   - view: list
   - json: true
 
+- https://arxiv.org/abs/2404.14469
+  - [meta]:
+    - date: 06/02/2026
+    - tags: [kv, compression]
 - https://arxiv.org/abs/2604.03515
   - [meta]:
     - date: 05/25/2026

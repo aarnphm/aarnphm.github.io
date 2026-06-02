@@ -4,7 +4,7 @@ description: block-paged KV cache, virtual-memory-style page tables, hot blocks 
 id: attention-paged
 modified: 2026-05-28 13:08:23 GMT-04:00
 seealso:
-  - '[[thoughts/Attention|main stage]]'
+  - '[[thoughts/Attention|Attention]]'
   - '[[thoughts/radix attention|radix attention]]'
   - '[[thoughts/vllm]]'
   - '[[thoughts/Continuous batching]]'

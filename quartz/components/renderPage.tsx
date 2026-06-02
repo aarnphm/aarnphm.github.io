@@ -1250,7 +1250,7 @@ export function transcludeFinal(
           {
             type: 'text',
             value:
-              fileData.frontmatter?.title ?? i18n(cfg.locale).components.transcludes.linkToOriginal,
+              page.frontmatter?.title ?? i18n(cfg.locale).components.transcludes.linkToOriginal,
           },
         ]),
       )
@@ -1366,7 +1366,7 @@ export function transcludeFinal(
                 {
                   type: 'text',
                   value:
-                    fileData.frontmatter?.title ??
+                    page.frontmatter?.title ??
                     i18n(cfg.locale).components.transcludes.linkToOriginal,
                 },
               ]),
@@ -1429,8 +1429,7 @@ export function transcludeFinal(
               {
                 type: 'text',
                 value:
-                  fileData.frontmatter?.title ??
-                  i18n(cfg.locale).components.transcludes.linkToOriginal,
+                  page.frontmatter?.title ?? i18n(cfg.locale).components.transcludes.linkToOriginal,
               },
             ]),
           )
@@ -1623,8 +1622,7 @@ export function transcludeFinal(
               {
                 type: 'text',
                 value:
-                  fileData.frontmatter?.title ??
-                  i18n(cfg.locale).components.transcludes.linkToOriginal,
+                  page.frontmatter?.title ?? i18n(cfg.locale).components.transcludes.linkToOriginal,
               },
             ]),
           )

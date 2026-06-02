@@ -5,7 +5,7 @@ id: RoPE
 modified: 2026-06-02 09:30:00 GMT-04:00
 seealso:
   - '[[thoughts/positional embeddings|positional embeddings]]'
-  - '[[thoughts/Attention|main stage]]'
+  - '[[thoughts/Attention|Attention]]'
   - '[[thoughts/MLA|MLA]]'
 socials:
   eleuther: https://blog.eleuther.ai/rotary-embeddings/

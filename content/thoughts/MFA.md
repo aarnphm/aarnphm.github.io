@@ -4,7 +4,7 @@ description: low-rank factorisation of the attention matrix into multiple shared
 id: attention-mfa
 modified: 2026-05-28 02:06:43 GMT-04:00
 seealso:
-  - '[[thoughts/Attention|main stage]]'
+  - '[[thoughts/Attention|Attention]]'
   - '[[thoughts/MoE]]'
   - '[[thoughts/MLA|MLA]]'
 tags:
