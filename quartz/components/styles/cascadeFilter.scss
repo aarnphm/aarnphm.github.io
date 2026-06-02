@@ -67,7 +67,6 @@
   font-family: var(--codeFont);
   font-size: 0.72rem;
   line-height: 1;
-  letter-spacing: 0.01em;
   white-space: nowrap;
   transition:
     background-color 140ms ease,
@@ -100,43 +99,17 @@
 }
 
 .cf-slider {
-  appearance: none;
-  -webkit-appearance: none;
   width: 180px;
-  height: 4px;
-  border-radius: var(--radius-none);
-  background: linear-gradient(
-    to right,
-    var(--cf-keep) 0%,
-    var(--cf-keep) calc(var(--cf-tau, 0.5) * 100%),
-    var(--cf-divider) calc(var(--cf-tau, 0.5) * 100%),
-    var(--cf-divider) 100%
-  );
-  outline: none;
   cursor: pointer;
-  &::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    appearance: none;
-    width: 14px;
-    height: 14px;
-    border-radius: 50%;
-    background: var(--light);
-    border: 2px solid var(--cf-keep);
-    cursor: grab;
-    transition: transform 120ms ease;
-  }
-  &::-moz-range-thumb {
-    width: 14px;
-    height: 14px;
-    border-radius: 50%;
-    background: var(--light);
-    border: 2px solid var(--cf-keep);
-    cursor: grab;
-  }
-  &:active::-webkit-slider-thumb {
-    transform: scale(1.12);
-    cursor: grabbing;
-  }
+  @include stableRangeControl(
+    $track-color: linear-gradient(
+        to right,
+        var(--cf-keep) 0%,
+        var(--cf-keep) calc(var(--cf-tau, 0.5) * 100%),
+        var(--cf-divider) calc(var(--cf-tau, 0.5) * 100%),
+        var(--cf-divider) 100%
+      )
+  );
 }
 
 .cf-slider-value {

@@ -13,6 +13,7 @@ import {
   CitationsCachePayload,
   ensurePendingPaper,
   extractArxivId,
+  extractArxivIdFromCitationEntry,
   fetchWithRetry,
   hydrateCache,
   makeBibKey,
@@ -53,19 +54,6 @@ function documentsEqual(a: Map<string, string[]>, b: Map<string, string[]>): boo
     if (!arraysEqual(value, other)) return false
   }
   return true
-}
-
-function extractArxivIdFromEntry(entry: any): string | null {
-  const eprint = entry?.eprint ?? entry?.EPRINT ?? entry?.Eprint
-  if (eprint) return normalizeArxivId(String(eprint))
-
-  const url = entry?.url ?? entry?.URL
-  if (url) {
-    const arxivId = extractArxivId(String(url))
-    if (arxivId) return normalizeArxivId(arxivId)
-  }
-
-  return null
 }
 
 const ARXIV_BATCH_SIZE = 50
@@ -167,7 +155,7 @@ export async function ensureBibEntries(ids: Iterable<string>, bibliography: stri
   const existingKeys = new Set<string>()
   for (const item of libItems) {
     existingKeys.add(item.id)
-    const arxivId = extractArxivIdFromEntry(item)
+    const arxivId = extractArxivIdFromCitationEntry(item)
     if (arxivId) existingArxivIds.add(arxivId)
   }
 
@@ -213,7 +201,7 @@ export async function ensureBibEntries(ids: Iterable<string>, bibliography: stri
     if (!cachedEntry) continue
 
     if (existingArxivIds.has(id)) {
-      const existingItem = libItems.find(item => extractArxivIdFromEntry(item) === id)
+      const existingItem = libItems.find(item => extractArxivIdFromCitationEntry(item) === id)
       const existingKey = existingItem?.id
       const keyChanged = Boolean(existingKey && existingKey !== cachedEntry.bibkey)
       if (!cachedEntry.inBibFile || keyChanged) {

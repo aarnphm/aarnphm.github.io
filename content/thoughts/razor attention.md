@@ -2,7 +2,7 @@
 date: '2026-05-27'
 description: learned per-token KV eviction policy, shaves the least impactful tokens anywhere in the sequence.
 id: attention-razor
-modified: 2026-05-27 23:16:36 GMT-04:00
+modified: 2026-06-01 15:09:00 GMT-04:00
 seealso:
   - '[[thoughts/Attention|main stage]]'
   - '[[thoughts/radix attention|radix attention]]'
@@ -11,7 +11,7 @@ tags:
   - ml
   - llm
   - technical
-title: razor attention
+title: Razor Attention
 ---
 
 RazorAttention [@tang2024razorattentionefficientkvcache] maintains a fixed-size KV cache by scoring tokens with a learned eviction policy. Instead of evicting whole prefixes (like radix trees) or oldest tokens (pure LRU), it "shaves" the least impactful tokens anywhere in the sequence. Importance scores come from lightweight predictors trained to approximate how much each token will contribute to future attention.

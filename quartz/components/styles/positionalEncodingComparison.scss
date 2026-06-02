@@ -1,20 +1,11 @@
 @use '../../styles/variables.scss' as *;
 @use '../../styles/mixin.scss' as *;
+@use './figure.scss' as *;
 
 .positional-encoding-comparison {
-  container-type: inline-size;
-  container-name: pec-figure;
-  margin: 1.75rem 0;
-  content-visibility: auto;
-  contain-intrinsic-size: auto 38rem;
-  padding: 0;
-  border-radius: 0;
-  border: 0;
-  background: transparent;
-  color: var(--dark);
+  @include figure-frame('pec-figure', 38rem);
+
   --pec-line: color-mix(in srgb, var(--gray) 24%, transparent);
-  --pec-surface-shadow:
-    0 0 0 1px var(--pec-line) inset, 0 18px 46px color-mix(in srgb, var(--dark) 7%, transparent);
   --pec-panel-shadow: 0 0 0 1px color-mix(in srgb, var(--gray) 18%, transparent) inset;
   --pec-note: color-mix(in srgb, var(--darkgray) 78%, var(--dark) 22%);
   --pec-div: color-mix(in srgb, var(--gray) 28%, transparent);
@@ -23,8 +14,9 @@
   --pec-neutral: #cdd597;
   --pec-grid: color-mix(in srgb, var(--gray) 24%, transparent);
   --pec-panel-bg: color-mix(in srgb, var(--light) 96%, transparent);
-
-  box-shadow: none;
+  --pec-tab-surface: color-mix(in srgb, var(--light) 86%, var(--lightgray));
+  --pec-tab-border: color-mix(in srgb, var(--lightgray) 78%, transparent);
+  --pec-tab-active: color-mix(in srgb, var(--pec-pos) 24%, var(--pec-tab-surface));
 }
 
 :root[saved-theme='dark'] .positional-encoding-comparison {
@@ -32,6 +24,9 @@
   --pec-neutral: color-mix(in srgb, #cdd597 55%, var(--lightgray));
   --pec-grid: color-mix(in srgb, var(--gray) 18%, transparent);
   --pec-panel-bg: color-mix(in srgb, var(--lightgray) 12%, var(--dark));
+  --pec-tab-surface: color-mix(in srgb, var(--lightgray) 18%, var(--dark));
+  --pec-tab-border: color-mix(in srgb, var(--lightgray) 30%, transparent);
+  --pec-tab-active: color-mix(in srgb, var(--pec-pos) 26%, var(--pec-tab-surface));
 }
 
 .pec-grid {
@@ -60,10 +55,11 @@
 }
 
 .pec-panel-title {
+  font-family: var(--codeFont);
   font-weight: 600;
-  font-size: 0.95rem;
+  font-size: 0.82rem;
   color: var(--dark);
-  letter-spacing: -0.01em;
+  letter-spacing: 0;
 }
 
 .pec-panel-tag {
@@ -106,7 +102,7 @@
 
 .pec-clock-hand {
   stroke: var(--pec-pos);
-  stroke-width: 0.12;
+  stroke-width: 0.085;
   stroke-linecap: round;
 }
 
@@ -195,42 +191,50 @@
   white-space: nowrap;
 }
 
-.pec-length-toggle {
+.pec-tablist {
   display: inline-flex;
-  gap: 0.25rem;
-  padding: 0.15rem;
+  align-items: stretch;
+  height: 1.7rem;
+  overflow: hidden;
+  isolation: isolate;
+  border: 1px solid var(--pec-tab-border);
   border-radius: var(--radius-none);
-  background: color-mix(in srgb, var(--lightgray) 50%, transparent);
-  box-shadow: 0 0 0 1px var(--pec-div) inset;
+  background: var(--pec-tab-surface);
 }
 
-.pec-length-btn {
-  appearance: none;
-  border: none;
-  background: transparent;
-  color: var(--pec-note);
-  font: inherit;
-  font-size: 0.8rem;
-  font-variant-numeric: tabular-nums;
-  min-height: 2.5rem;
-  padding: 0.2rem 0.75rem;
-  border-radius: var(--radius-none);
+.pec-tab {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  height: 100%;
+  min-width: 2.4rem;
+  padding: 0 0.85rem;
+  border: 0;
+  border-radius: 0;
+  background: var(--pec-tab-surface);
+  color: var(--gray);
   cursor: pointer;
+  font-family: var(--codeFont);
+  font-size: 0.72rem;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  white-space: nowrap;
   transition:
-    background 120ms ease-out,
-    color 120ms ease-out,
-    transform 120ms ease-out;
+    background-color 140ms ease,
+    color 140ms ease;
 
-  &:hover {
+  &:not(:disabled):hover {
     color: var(--dark);
   }
+  &:focus-visible {
+    outline: 2px solid color-mix(in srgb, var(--secondary) 50%, transparent);
+    outline-offset: -2px;
+  }
+  &[aria-selected='true'],
   &.is-active {
-    background: var(--light);
+    background: var(--pec-tab-active);
     color: var(--dark);
-    box-shadow: 0 0 0 1px var(--pec-div);
-  }
-  &:active {
-    transform: scale(0.96);
   }
 }
 
@@ -268,7 +272,7 @@
   left: 0.15rem;
   width: 0.85rem;
   height: 0.85rem;
-  border-radius: 50%;
+  border-radius: var(--radius-none);
   background: var(--light);
   box-shadow: 0 0 0 1px var(--pec-div) inset;
   transform: translateY(-50%);
@@ -349,5 +353,16 @@
   }
   .positional-encoding-comparison {
     padding: 0;
+  }
+}
+
+.zoomable.is-zoomed > .zoomable-content > .positional-encoding-comparison {
+  justify-content: flex-start;
+  max-width: 62rem;
+  margin-inline: auto;
+
+  .pec-grid {
+    justify-content: center;
+    grid-template-columns: repeat(2, min(36vh, 26rem));
   }
 }

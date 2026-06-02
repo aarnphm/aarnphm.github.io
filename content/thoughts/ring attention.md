@@ -48,7 +48,7 @@ RingAttention shards a long sequence across multiple devices and circulates key/
 ```jsx imports={Zoomable,RingRotation}
 <Zoomable label="ring attention rotation">
   <RingRotation
-    caption="step the ring, watch each device accrue all p slices while its own cache stays at L/p."
+    caption="step the ring, watch each device accrue all $p$ slices while its own cache stays at $L/p$."
     devices={4}
   />
 </Zoomable>

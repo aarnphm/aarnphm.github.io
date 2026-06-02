@@ -6,18 +6,45 @@ import {
   StravaRawCache,
   StravaStreams,
 } from '../plugins/stores/strava'
+import { upsertEnvLine } from '../util/env-file'
 import { joinSegments, QUARTZ } from '../util/path'
+import { isRecord, readString } from '../util/type-guards'
 
 const TOKEN_URL = 'https://www.strava.com/oauth/token'
-const API = 'https://www.strava.com/api/v3'
+const DEFAULT_API_BASE_URL = 'https://www.strava.com/api/v3'
+const API = normalizeApiBaseUrl(process.env.STRAVA_API_BASE_URL ?? DEFAULT_API_BASE_URL)
 const PER_PAGE = 200
 const CACHE_VERSION = 1
+const ENV_FILE = '.env'
 const cacheFile = joinSegments(QUARTZ, '.quartz-cache', 'strava.json')
 const limiter = new AdaptiveRateLimiter(1500, 60_000)
 
 interface TokenResponse {
   access_token: string
   refresh_token: string
+}
+
+function normalizeApiBaseUrl(value: string): string {
+  return new URL(value).toString().replace(/\/+$/, '')
+}
+
+function apiUrl(path: string, params: Record<string, string | number> = {}): string {
+  const url = new URL(`${API}${path}`)
+  for (const [key, value] of Object.entries(params)) url.searchParams.set(key, String(value))
+  return url.toString()
+}
+
+function authHeaders(token: string): HeadersInit {
+  return { Authorization: `Bearer ${token}` }
+}
+
+async function readTokenResponse(res: Response): Promise<TokenResponse> {
+  const raw: unknown = await res.json()
+  if (!isRecord(raw)) throw new Error('token refresh returned a non-object response')
+  const accessToken = readString(raw, 'access_token')
+  const refreshToken = readString(raw, 'refresh_token')
+  if (!accessToken || !refreshToken) throw new Error('token refresh response missing tokens')
+  return { access_token: accessToken, refresh_token: refreshToken }
 }
 
 async function readCache(): Promise<StravaRawCache | null> {
@@ -41,7 +68,7 @@ async function refresh(
   })
   const res = await fetchWithRetry(TOKEN_URL, { method: 'POST', body }, limiter)
   if (!res) throw new Error('token refresh failed (network/auth)')
-  return (await res.json()) as TokenResponse
+  return readTokenResponse(res)
 }
 
 async function resolveToken(
@@ -49,10 +76,15 @@ async function resolveToken(
 ): Promise<{ access: string; refreshToken: string }> {
   const clientId = process.env.STRAVA_CLIENT_ID
   const clientSecret = process.env.STRAVA_CLIENT_SECRET
-  const refreshToken = prev?.auth.refreshToken || process.env.STRAVA_REFRESH_TOKEN
+  const envRefreshToken = process.env.STRAVA_REFRESH_TOKEN
+  const refreshToken = prev?.auth.refreshToken || envRefreshToken
   if (clientId && clientSecret && refreshToken) {
     const token = await refresh(clientId, clientSecret, refreshToken)
     if (token.refresh_token !== refreshToken) console.log('[strava] refresh token rotated')
+    if (token.refresh_token !== envRefreshToken) {
+      await upsertEnvLine(ENV_FILE, 'STRAVA_REFRESH_TOKEN', token.refresh_token)
+      console.log('[strava] STRAVA_REFRESH_TOKEN updated in .env')
+    }
     return { access: token.access_token, refreshToken: token.refresh_token }
   }
   const direct = process.env.STRAVA_ACCESS_TOKEN
@@ -96,11 +128,11 @@ async function fetchActivities(
   token: string,
   after: number,
 ): Promise<{ activities: RawStravaActivity[]; athleteId: number }> {
-  const headers = { Authorization: `Bearer ${token}` }
+  const headers = authHeaders(token)
   const activities: RawStravaActivity[] = []
   let athleteId = 0
   for (let page = 1; ; page++) {
-    const url = `${API}/athlete/activities?after=${after}&per_page=${PER_PAGE}&page=${page}`
+    const url = apiUrl('/athlete/activities', { after, per_page: PER_PAGE, page })
     const res = await fetchWithRetry(url, { headers }, limiter)
     if (!res) throw new Error(`activity fetch failed at page ${page}`)
     const batch = (await res.json()) as Record<string, unknown>[]
@@ -117,8 +149,11 @@ async function fetchActivities(
 }
 
 async function fetchStreams(token: string, id: number): Promise<StravaStreams | null> {
-  const headers = { Authorization: `Bearer ${token}` }
-  const url = `${API}/activities/${id}/streams?keys=latlng,altitude,distance,watts&key_by_type=true`
+  const headers = authHeaders(token)
+  const url = apiUrl(`/activities/${id}/streams`, {
+    keys: 'latlng,altitude,distance,watts',
+    key_by_type: 'true',
+  })
   const res = await fetchWithRetry(url, { headers }, limiter)
   if (!res) return null
   const data = (await res.json()) as Record<string, { data?: unknown[] }>

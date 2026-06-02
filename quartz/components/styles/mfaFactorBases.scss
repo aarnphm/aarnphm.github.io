@@ -197,9 +197,6 @@
     width: 0.78rem;
     height: 0.78rem;
     margin-top: -0.25rem;
-    box-shadow:
-      0 0 0 2px color-mix(in srgb, var(--light) 96%, transparent),
-      0 0.2rem 0.45rem color-mix(in srgb, var(--dark) 14%, transparent);
   }
 
   &::-moz-range-track,
@@ -210,9 +207,6 @@
   &::-moz-range-thumb {
     width: 0.78rem;
     height: 0.78rem;
-    box-shadow:
-      0 0 0 2px color-mix(in srgb, var(--light) 96%, transparent),
-      0 0.2rem 0.45rem color-mix(in srgb, var(--dark) 14%, transparent);
   }
 }
 

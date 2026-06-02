@@ -1229,7 +1229,7 @@ class NotebookRuntime {
       button.type = 'button'
       button.dataset.notebookReset = ''
       button.classList.add('notebook-toolbar-button')
-      setNotebookIconButton(button, 'revert', 'Reset runtime')
+      setNotebookIconButton(button, 'reset', 'Reset runtime')
     })
     ensureButton('[data-notebook-debug]', button => {
       button.type = 'button'

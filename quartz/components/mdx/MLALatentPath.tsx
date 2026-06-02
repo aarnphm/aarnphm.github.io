@@ -132,6 +132,7 @@ type E = {
   ty: number
   lbl?: { tex: string; dx: number; dy: number; w?: number }
   cls?: string
+  d?: string
 }
 const EDGES: E[] = [
   {
@@ -146,14 +147,14 @@ const EDGES: E[] = [
     fy: YM + 4,
     tx: CX.l - BW / 2,
     ty: RY.c,
-    lbl: { tex: 'W^{DKV}', dx: -34, dy: -8, w: 70 },
+    lbl: { tex: 'W^{DKV}', dx: -62, dy: -8, w: 70 },
   },
   {
     fx: CX.i + BW / 2,
     fy: YM + 20,
     tx: CX.l - BW / 2,
     ty: RY.r,
-    lbl: { tex: 'W^{KR},\\,\\mathrm{RoPE}', dx: -42, dy: 42, w: 110 },
+    lbl: { tex: 'W^{KR}', dx: -40, dy: 6, w: 44 },
     cls: 'mla-edge--rope',
   },
   {
@@ -168,7 +169,7 @@ const EDGES: E[] = [
     fy: RY.q + 8,
     tx: CX.p - HW / 2,
     ty: RY.qR,
-    lbl: { tex: 'W^{QR},\\,\\mathrm{RoPE}', dx: -42, dy: 12, w: 110 },
+    lbl: { tex: 'W^{QR}', dx: -22, dy: 12, w: 44 },
     cls: 'mla-edge--rope',
   },
   {
@@ -200,10 +201,18 @@ const EDGES: E[] = [
     tx: CX.c - BW / 2,
     ty: RY.k + 8,
     cls: 'mla-edge--concat mla-edge--rope',
+    d: 'M 234 320 C 430 322, 512 295, 512 248',
   },
   { fx: CX.c + BW / 2, fy: RY.q, tx: CX.o - 42, ty: RY.o - 8, cls: 'mla-edge--attention' },
   { fx: CX.c + BW / 2, fy: RY.k, tx: CX.o - 42, ty: RY.o + 8, cls: 'mla-edge--attention' },
-  { fx: CX.p + HW / 2, fy: RY.vc, tx: CX.o - 42, ty: RY.o + 20, cls: 'mla-edge--attention' },
+  {
+    fx: CX.p + HW / 2,
+    fy: RY.vc,
+    tx: CX.o - 42,
+    ty: RY.o + 20,
+    cls: 'mla-edge--attention',
+    d: 'M 438 270 C 620 278, 652 244, 662 192',
+  },
 ]
 
 type S = {
@@ -327,7 +336,7 @@ const MLALatentPathImpl: QuartzMdxComponent<Props> = ({ caption }) => {
   const c = NODES.find(n => n.id === 'c')!
   const cx = c.cx - c.w / 2 - 10
   const cy = c.cy - c.h / 2 - 16
-  const ch = RY.r + BH / 2 + 16 - cy
+  const ch = RY.r + BH / 2 + 30 - cy
 
   return (
     <figure
@@ -395,7 +404,7 @@ const MLALatentPathImpl: QuartzMdxComponent<Props> = ({ caption }) => {
                 {n.dim ? (
                   <FO
                     x={n.cx - 55}
-                    y={ny + n.h + 4}
+                    y={n.k === 'concat' ? ny - 22 : ny + n.h + 4}
                     w={110}
                     h={18}
                     t={n.dim.t}
@@ -411,7 +420,7 @@ const MLALatentPathImpl: QuartzMdxComponent<Props> = ({ caption }) => {
             <>
               <path
                 class={`mla-edge ${e.cls ?? ''}`.trim()}
-                d={path(e)}
+                d={e.d ?? path(e)}
                 marker-end={`url(#${aid})`}
               />
               {e.lbl ? (

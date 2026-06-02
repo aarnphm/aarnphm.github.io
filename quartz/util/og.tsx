@@ -8,8 +8,7 @@ import { GlobalConfiguration } from '../cfg'
 import { formatDate, getDate } from '../components/Date'
 import { i18n } from '../i18n'
 import { QuartzPluginData } from '../plugins/vfile'
-import { FullSlug } from '../util/path'
-import { parseWikilink, resolveWikilinkTarget } from '../util/wikilinks'
+import { descriptionToPlainText } from './description'
 import { QUARTZ, joinSegments } from './path'
 import { FontSpecification, getFontSpecificationName, ThemeKey } from './theme'
 
@@ -19,51 +18,8 @@ const defaultBodyWeight = [400]
 const headerFontLocal = joinSegments('static', 'GT-Sectra-Display-Regular.woff')
 const bodyFontLocal = joinSegments('static', 'GT-Sectra-Book.woff')
 
-function stripHtml(text: string): string {
-  let output = ''
-  let inTag = false
-  let quote: string | undefined
-  for (const char of text) {
-    if (inTag) {
-      if (quote) {
-        if (char === quote) quote = undefined
-      } else if (char === '"' || char === "'") {
-        quote = char
-      } else if (char === '>') {
-        inTag = false
-      }
-      continue
-    }
-    if (char === '<') {
-      inTag = true
-      continue
-    }
-    output += char
-  }
-  return output
-}
-
 export const renderDescription = (description: string | undefined, slug: string) => {
-  if (!description) {
-    return ''
-  }
-
-  // Strip HTML tags first for OG image compatibility
-  const cleanDescription = stripHtml(description)
-
-  const parsed = parseWikilink(cleanDescription)
-  if (!parsed) {
-    return cleanDescription
-  }
-
-  const resolved = resolveWikilinkTarget(parsed, slug as FullSlug)
-  if (!resolved) {
-    return parsed.alias ?? parsed.target ?? cleanDescription
-  }
-
-  // For OG images, just return the text without creating anchor elements
-  // Satori has strict layout rules and doesn't handle nested elements well
-  return parsed.alias ?? parsed.target ?? cleanDescription
+  return descriptionToPlainText(description, slug)
 }
 
 export async function getSatoriFonts(
@@ -300,7 +256,6 @@ export const defaultImage: SocialImageOptions['imageStructure'] = ({
   const bodyFont = getFontSpecificationName(cfg.theme.typography.body)
   const headerFont = getFontSpecificationName(cfg.theme.typography.header)
 
-  // Render description as plain text (renderDescription now strips HTML and returns text)
   const descriptionText = renderDescription(description, fileData.slug!) || description
 
   return (

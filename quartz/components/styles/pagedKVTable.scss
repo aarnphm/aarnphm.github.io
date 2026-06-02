@@ -26,6 +26,11 @@
   --pkt-card-bg: color-mix(in srgb, var(--lightgray) 18%, var(--dark));
 }
 
+.paged-kv-table .katex {
+  font-size: 1em;
+  color: inherit;
+}
+
 .pkt-stage {
   display: grid;
   grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.85fr) minmax(0, 1.1fr);
@@ -44,7 +49,6 @@
   font-size: 0.78rem;
   font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
   color: var(--pkt-note-fg);
 }
 
@@ -63,13 +67,6 @@
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
-
-  &--salmon {
-    box-shadow: 3px 0 0 var(--pkt-salmon-edge) inset;
-  }
-  &--sage {
-    box-shadow: 3px 0 0 var(--pkt-sage-edge) inset;
-  }
 }
 
 .pkt-seq-title {
@@ -108,15 +105,6 @@
     box-shadow: 0 0 0 1px var(--pkt-salmon) inset;
     transform: translateX(1px);
   }
-  &--salmon {
-    background: color-mix(in srgb, var(--pkt-salmon-bg) 55%, var(--pkt-card-bg));
-    box-shadow: 0 0 0 1px color-mix(in srgb, var(--pkt-salmon-edge) 45%, var(--pkt-stroke-soft))
-      inset;
-  }
-  &--sage {
-    background: color-mix(in srgb, var(--pkt-sage-bg) 55%, var(--pkt-card-bg));
-    box-shadow: 0 0 0 1px color-mix(in srgb, var(--pkt-sage-edge) 45%, var(--pkt-stroke-soft)) inset;
-  }
   &[data-pkt-mapped='false'] {
     opacity: 0.55;
     background: var(--pkt-free-bg);
@@ -134,10 +122,6 @@
   font-variant-numeric: tabular-nums;
   font-weight: 600;
   font-size: 0.84rem;
-  sub {
-    font-size: 0.62em;
-    font-weight: 500;
-  }
 }
 
 .pkt-lblock-cells {
@@ -207,13 +191,11 @@
   td {
     padding: 0.4rem 0.6rem;
     text-align: left;
-    box-shadow: 0 1px 0 var(--pkt-divider);
   }
   thead th {
     font-size: 0.7rem;
     font-weight: 600;
     text-transform: uppercase;
-    letter-spacing: 0.06em;
     color: var(--pkt-note-fg);
     background: color-mix(in srgb, var(--lightgray) 18%, transparent);
   }
@@ -237,10 +219,6 @@
 
 .pkt-pt-id {
   font-weight: 600;
-  sub {
-    font-size: 0.65em;
-    font-weight: 500;
-  }
 }
 
 .pkt-pt-arrow {
@@ -267,7 +245,7 @@
   border-radius: var(--radius-none);
   border: 0;
   box-shadow: 0 0 0 1px var(--pkt-stroke-soft) inset;
-  background: var(--pkt-free-bg);
+  background: var(--pkt-card-bg);
   font-family: var(--bodyFont);
   font-size: 0.78rem;
   transition:
@@ -275,15 +253,8 @@
     box-shadow 220ms ease,
     transform 220ms ease;
 
-  &--salmon {
-    background: var(--pkt-salmon-bg);
-    box-shadow: 0 0 0 1px var(--pkt-salmon-edge) inset;
-  }
-  &--sage {
-    background: var(--pkt-sage-bg);
-    box-shadow: 0 0 0 1px var(--pkt-sage-edge) inset;
-  }
   &--free {
+    background: var(--pkt-free-bg);
     color: var(--pkt-note-fg);
   }
   &.is-active {
@@ -357,8 +328,6 @@
     margin: 0;
     font-size: 0.72rem;
     font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
     color: var(--pkt-note-fg);
   }
 
@@ -466,7 +435,7 @@
 .pkt-intuition {
   margin: 1.1rem 0 0;
   padding: 0.75rem 0.9rem;
-  box-shadow: 2px 0 0 var(--pkt-sage) inset;
+  box-shadow: 0 0 0 1px var(--pkt-divider) inset;
   color: var(--pkt-note-fg);
   font-size: 0.85rem;
   line-height: 1.5;

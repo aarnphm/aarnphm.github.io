@@ -6,7 +6,6 @@ import {
 } from '../types/component'
 import { toArenaHeadingJsx } from '../util/arena'
 import { classNames } from '../util/lang'
-import { renderDescription } from '../util/og'
 import { resolveRelative, FullSlug } from '../util/path'
 import { StreamUnlockIcon } from './stream/UnlockIcon'
 
@@ -89,9 +88,7 @@ export default ((userOpts?: Options) => {
           {opts.enableDescription && (
             <p
               class="description"
-              dangerouslySetInnerHTML={{
-                __html: renderDescription(fileData.description, slug) ?? '',
-              }}
+              dangerouslySetInnerHTML={{ __html: fileData.description ?? '' }}
             />
           )}
           {isStreamPage && (

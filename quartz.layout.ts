@@ -5,7 +5,12 @@ import * as Component from './quartz/components'
 export const sharedPageComponents: SharedLayout = {
   head: Component.Head(),
   header: [
-    Component.Breadcrumbs({ rootName: '~', spacerSymbol: '/', trailingWindow: 1 }),
+    Component.Breadcrumbs({
+      rootName: '~',
+      spacerSymbol: '/',
+      leadingWindow: 3,
+      trailingWindow: 2,
+    }),
     Component.StackedNotes(),
     Component.Image(),
     Component.Palette(),

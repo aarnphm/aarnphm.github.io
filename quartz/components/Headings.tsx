@@ -15,10 +15,6 @@ export default (() => {
         <div class="headings-modal">
           <div class="headings-modal-content">
             <div class="headings-modal-header">
-              <div class="headings-modal-shortcuts">
-                <kbd>a-z</kbd> sauter • <kbd>j/k</kbd> naviguer • <kbd>↵</kbd> ouvrir •{' '}
-                <kbd>esc</kbd> fermer
-              </div>
             </div>
             <div class="headings-list" />
           </div>

@@ -5,6 +5,7 @@ import {
   QuartzComponentConstructor,
   QuartzComponentProps,
 } from '../types/component'
+import { descriptionToPlainText } from '../util/description'
 import { unescapeHTML } from '../util/escape'
 import { FullSlug, getFileExtension, joinSegments, pathToRoot } from '../util/path'
 import { CSSResourceToStyleElement, JSResourceToScriptElement } from '../util/resources'
@@ -19,10 +20,12 @@ export default (() => {
     const titleSuffix = cfg.pageTitleSuffix ?? ''
     const title =
       (fileData.frontmatter?.title ?? i18n(cfg.locale).propertyDefaults.title) + titleSuffix
-    const description =
+    const rawDescription =
       fileData.frontmatter?.socialDescription ??
+      fileData.rawDescription ??
       fileData.frontmatter?.description ??
       unescapeHTML(fileData.description?.trim() ?? i18n(cfg.locale).propertyDefaults.description)
+    const description = descriptionToPlainText(rawDescription, fileData.slug)
 
     const { css, js, additionalHead } = externalResources
 

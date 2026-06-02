@@ -135,6 +135,7 @@ const pecBuildRope = (host: SVGSVGElement, length: number, _root: HTMLElement) =
       const cx = c + 0.5
       const cy = r + 0.5
       const radius = 0.36
+      const handLen = radius * 0.6
       const bg = document.createElementNS(SVG_NS, 'rect')
       bg.setAttribute('class', 'pec-cell')
       bg.setAttribute('x', String(c))
@@ -159,8 +160,8 @@ const pecBuildRope = (host: SVGSVGElement, length: number, _root: HTMLElement) =
       hand.setAttribute('class', 'pec-clock-hand')
       hand.setAttribute('x1', String(cx))
       hand.setAttribute('y1', String(cy))
-      hand.setAttribute('x2', String(cx + radius * Math.cos(angle)))
-      hand.setAttribute('y2', String(cy + radius * Math.sin(angle)))
+      hand.setAttribute('x2', String(cx + handLen * Math.cos(angle)))
+      hand.setAttribute('y2', String(cy + handLen * Math.sin(angle)))
       host.appendChild(hand)
     }
   }
@@ -188,7 +189,8 @@ const pecUpdateLengthButtons = (root: HTMLElement, length: number) => {
     const value = Number(btn.dataset.pecLengthBtn ?? '0')
     const active = value === length
     btn.classList.toggle('is-active', active)
-    btn.setAttribute('aria-checked', active ? 'true' : 'false')
+    btn.setAttribute('aria-selected', active ? 'true' : 'false')
+    btn.tabIndex = active ? 0 : -1
   }
 }
 
@@ -202,16 +204,39 @@ const pecSetupRoot = (root: HTMLElement) => {
   pecUpdateLengthButtons(root, length)
 
   const handlers: Array<() => void> = []
-  for (const btn of root.querySelectorAll<HTMLButtonElement>('[data-pec-length-btn]')) {
-    const handler = () => {
-      const next = Number(btn.dataset.pecLengthBtn ?? '16')
-      if (!(PEC_LENGTHS as readonly number[]).includes(next)) return
-      pecRenderAll(root, next)
-      pecUpdateLengthButtons(root, next)
-    }
-    btn.addEventListener('click', handler)
-    handlers.push(() => btn.removeEventListener('click', handler))
+  const buttons = Array.from(root.querySelectorAll<HTMLButtonElement>('[data-pec-length-btn]'))
+  const selectAt = (index: number, focus: boolean) => {
+    const btn = buttons[index]
+    if (!btn) return
+    const next = Number(btn.dataset.pecLengthBtn ?? '16')
+    if (!(PEC_LENGTHS as readonly number[]).includes(next)) return
+    pecRenderAll(root, next)
+    pecUpdateLengthButtons(root, next)
+    if (focus) btn.focus()
   }
+  buttons.forEach((btn, index) => {
+    const onClick = () => selectAt(index, false)
+    const onKey = (event: KeyboardEvent) => {
+      const last = buttons.length - 1
+      if (event.key === 'ArrowRight' || event.key === 'ArrowDown') {
+        event.preventDefault()
+        selectAt(index === last ? 0 : index + 1, true)
+      } else if (event.key === 'ArrowLeft' || event.key === 'ArrowUp') {
+        event.preventDefault()
+        selectAt(index === 0 ? last : index - 1, true)
+      } else if (event.key === 'Home') {
+        event.preventDefault()
+        selectAt(0, true)
+      } else if (event.key === 'End') {
+        event.preventDefault()
+        selectAt(last, true)
+      }
+    }
+    btn.addEventListener('click', onClick)
+    btn.addEventListener('keydown', onKey)
+    handlers.push(() => btn.removeEventListener('click', onClick))
+    handlers.push(() => btn.removeEventListener('keydown', onKey))
+  })
 
   const switchInput = root.querySelector<HTMLInputElement>('[data-pec-logit-toggle]')
   const onSwitch = () => {

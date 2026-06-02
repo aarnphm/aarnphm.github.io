@@ -6,7 +6,7 @@ date: '2026-01-17'
 description: my name is Aaron, and on the virtue of friendship
 id: friends
 layout: technical
-modified: 2026-05-09 17:51:32 GMT-04:00
+modified: 2026-06-01 17:19:50 GMT-04:00
 tags:
   - evergreen
   - friend
@@ -48,7 +48,7 @@ Aristotle distinguished three kinds of philia: (1) utility (we exchange value), 
 
 [^1]: this maps onto something karlsson observes: "love is friendship on hard mode." romantic relationships aren't a different category from friendship, they're friendship plus difficulty, plus stakes, plus everything that makes it easier to fuck up.
 
-<div class="w-120">
+<div class="float-right">
 
 ```quotes
 friendships are, by their very nature, made of friction, knowing what's going on in someone's day-to-day life, making plans, rescheduling when someone gets sick, bringing over soup.

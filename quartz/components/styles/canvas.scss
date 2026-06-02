@@ -209,7 +209,6 @@ $canvas-accents: (
     z-index: var(--z-sidenote);
     pointer-events: none;
     opacity: 0.9;
-    letter-spacing: 0.02em;
   }
 }
 
@@ -548,7 +547,6 @@ $canvas-accents: (
     font-size: 0.75rem;
     font-weight: 600;
     text-transform: uppercase;
-    letter-spacing: 0.05em;
     color: var(--gray);
     margin: 0 0 8px 0;
   }

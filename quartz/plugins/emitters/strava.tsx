@@ -10,16 +10,26 @@ import { QuartzEmitterPlugin } from '../../types/plugin'
 import { BuildCtx, contentDataFor } from '../../util/ctx'
 import { FilePath, FullSlug, joinSegments, pathToRoot, QUARTZ } from '../../util/path'
 import { StaticResources } from '../../util/resources'
+import { OuraCache } from '../stores/oura'
 import { buildPayload, StravaPayload, StravaRawCache } from '../stores/strava'
 import { buildAnalytics } from '../stores/strava-analytics'
 import { ProcessedContent, QuartzPluginData } from '../vfile'
 import { write } from './helpers'
 
 const cacheFile = joinSegments(QUARTZ, '.quartz-cache', 'strava.json')
+const ouraCacheFile = joinSegments(QUARTZ, '.quartz-cache', 'oura.json')
 
 async function readCache(): Promise<StravaRawCache | null> {
   try {
     return JSON.parse(await fs.readFile(cacheFile, 'utf8')) as StravaRawCache
+  } catch {
+    return null
+  }
+}
+
+async function readOura(): Promise<OuraCache | null> {
+  try {
+    return JSON.parse(await fs.readFile(ouraCacheFile, 'utf8')) as OuraCache
   } catch {
     return null
   }
@@ -48,19 +58,20 @@ export const Strava: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts => 
     resources: StaticResources,
   ): Promise<FilePath[]> {
     const cache = await readCache()
+    const oura = await readOura()
     const files: FilePath[] = []
 
     const allFiles = contentDataFor(content)
     for (const [tree, file] of content) {
       if (!isTriathlon(file.data)) continue
       const since = file.data.frontmatter?.['strava']
-      const payload = buildPayload(cache, typeof since === 'string' ? since : undefined)
+      const payload = buildPayload(cache, oura, typeof since === 'string' ? since : undefined)
       files.push(
         await write({
           ctx,
           slug: 'static/strava-detail' as FullSlug,
           ext: '.json',
-          content: JSON.stringify(payload.details),
+          content: JSON.stringify({ details: payload.details, health: payload.health }),
         }),
       )
       files.push(

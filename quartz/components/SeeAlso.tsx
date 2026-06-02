@@ -3,6 +3,7 @@ import fs from 'node:fs'
 import path from 'path'
 import { JSX } from 'preact'
 import type { FrontmatterLink } from '../plugins/transformers/frontmatter'
+import { extractArxivIdFromCitationEntry } from '../plugins/stores/citations'
 import {
   QuartzComponent,
   QuartzComponentConstructor,
@@ -26,12 +27,19 @@ interface CitationLibrary {
   data: CitationEntry[]
 }
 
+interface CitationInfo {
+  title?: string
+  href?: string
+  arxivId?: string
+}
+
 interface SeeAlsoTreeNode {
   uniqueId: string
   title: string
   href: string
   labelText: string
   isCitation: boolean
+  arxivId?: string
   targetSlug?: FullSlug
   children: SeeAlsoTreeNode[]
 }
@@ -58,36 +66,40 @@ function getDisplayTitle(
   return fragment.replace(/\.[^/.]+$/, '').replace(/-/g, ' ')
 }
 
-const citationTitles = readCitationTitles()
+const citationInfo = readCitationInfo()
 
-function readCitationTitles(): Map<string, string> {
-  const titles = new Map<string, string>()
+function readCitationInfo(): Map<string, CitationInfo> {
+  const entries = new Map<string, CitationInfo>()
   const bibPath = path.join(process.cwd(), 'content/References.bib')
   let bibContent: string
   try {
     bibContent = fs.readFileSync(bibPath, 'utf8')
   } catch {
-    return titles
+    return entries
   }
 
   try {
     const parsedBib = new Cite(bibContent, { generateGraph: false })
-    if (!isCitationLibrary(parsedBib)) return titles
+    if (!isCitationLibrary(parsedBib)) return entries
 
     for (const entry of parsedBib.data) {
-      if (typeof entry.id === 'string' && typeof entry.title === 'string') {
-        titles.set(entry.id, entry.title)
-      }
+      if (typeof entry.id !== 'string') continue
+
+      const arxivId = extractArxivIdFromCitationEntry(entry) ?? undefined
+      entries.set(entry.id, {
+        ...(typeof entry.title === 'string' ? { title: entry.title } : {}),
+        ...(arxivId ? { arxivId, href: `https://arxiv.org/abs/${arxivId}` } : {}),
+      })
     }
   } catch {
-    return titles
+    return entries
   }
 
-  return titles
+  return entries
 }
 
-function getCitationTitle(bibKey: string): string | undefined {
-  return citationTitles.get(bibKey)
+function getCitationInfo(bibKey: string): CitationInfo | undefined {
+  return citationInfo.get(bibKey)
 }
 
 export default (() => {
@@ -147,14 +159,16 @@ export default (() => {
       let href = '#'
       let minutes: number | undefined
       let childLinks: FrontmatterLink[] = []
+      let arxivId: string | undefined
 
       if (isCitation) {
         const bibKey = targetSlug.substring(1)
-        const citeTitle = getCitationTitle(bibKey)
-        if (citeTitle) {
-          title = citeTitle
+        const citation = getCitationInfo(bibKey)
+        if (citation?.title) {
+          title = citation.title
         }
-        href = `#bib-${bibKey.toLowerCase()}`
+        href = citation?.href ?? `#bib-${bibKey.toLowerCase()}`
+        arxivId = citation?.arxivId
       } else {
         const targetFile = renderData.bySlug.get(targetSlug)
         title = getDisplayTitle(targetSlug, targetFile, link.alias)
@@ -170,6 +184,7 @@ export default (() => {
         href,
         labelText: isCitation ? '[cite]' : formatReadingLabel(minutes),
         isCitation,
+        arxivId,
         targetSlug: isCitation ? undefined : targetSlug,
         children: buildNodes(childLinks, depth + 1),
       }
@@ -208,8 +223,9 @@ export default (() => {
           <span class="seealso-label">{node.labelText}</span>
           <a
             href={node.href}
-            class={node.isCitation ? 'seealso-title' : 'seealso-title internal'}
-            data-no-popover={node.isCitation}
+            class="seealso-title internal"
+            data-bib={node.isCitation && !node.arxivId ? '' : undefined}
+            data-arxiv-id={node.arxivId}
             data-slug={node.targetSlug}
           >
             {node.title}

@@ -1,3 +1,5 @@
+import type { OuraCache, OuraDaily } from './oura'
+
 export type Sport = 'swim' | 'bike' | 'run'
 
 export const SPORT_ORDER: readonly Sport[] = ['swim', 'bike', 'run']
@@ -101,6 +103,8 @@ export interface StravaRoutePoint {
   w: number
 }
 
+export type ActivityHealth = Omit<OuraDaily, 'date'>
+
 export interface StravaActivityDetail {
   id: number
   sport: Sport
@@ -124,6 +128,7 @@ export interface StravaActivityDetail {
   minAlt: number
   maxAlt: number
   descentM: number
+  health: ActivityHealth | null
 }
 
 export interface StravaPayload {
@@ -135,6 +140,7 @@ export interface StravaPayload {
   totals: StravaSportTotals[]
   days: StravaDay[]
   details: Record<string, StravaActivityDetail>
+  health: Record<string, ActivityHealth>
 }
 
 export function normalizeSport(sportType: string): Sport | null {
@@ -194,11 +200,23 @@ function emptyTotals(): StravaSportTotals[] {
   }))
 }
 
+function toHealth(o: OuraDaily): ActivityHealth {
+  return {
+    readiness: o.readiness,
+    sleepScore: o.sleepScore,
+    hrv: o.hrv,
+    rhr: o.rhr,
+    sleepDurationS: o.sleepDurationS,
+    tempDeviationC: o.tempDeviationC,
+  }
+}
+
 function projectDetail(
   a: RawStravaActivity,
   sport: Sport,
   streams: StravaStreams | undefined,
   geo: string | undefined,
+  ouraDay: OuraDaily | undefined,
 ): StravaActivityDetail {
   const route: StravaRoutePoint[] = []
   let minAlt = 0
@@ -278,6 +296,7 @@ function projectDetail(
     minAlt,
     maxAlt,
     descentM,
+    health: ouraDay ? toHealth(ouraDay) : null,
   }
 }
 
@@ -291,10 +310,15 @@ export function emptyPayload(athleteId = 0): StravaPayload {
     totals: emptyTotals(),
     days: [],
     details: {},
+    health: {},
   }
 }
 
-export function buildPayload(cache: StravaRawCache | null, since?: string): StravaPayload {
+export function buildPayload(
+  cache: StravaRawCache | null,
+  oura: OuraCache | null,
+  since?: string,
+): StravaPayload {
   if (!cache) return emptyPayload()
 
   const sinceDay = since && /^\d{4}-\d{2}-\d{2}$/.test(since) ? since : null
@@ -357,13 +381,18 @@ export function buildPayload(cache: StravaRawCache | null, since?: string): Stra
 
   const details: Record<string, StravaActivityDetail> = {}
   for (const { a, sport } of activities) {
+    const day = a.startDateLocal.slice(0, 10)
     details[String(a.id)] = projectDetail(
       a,
       sport,
       cache.streams?.[String(a.id)],
       cache.geo?.[String(a.id)],
+      oura?.days[day],
     )
   }
+
+  const health: Record<string, ActivityHealth> = {}
+  if (oura) for (const [date, o] of Object.entries(oura.days)) health[date] = toHealth(o)
 
   return {
     generatedAt: cache.lastSync,
@@ -377,5 +406,6 @@ export function buildPayload(cache: StravaRawCache | null, since?: string): Stra
     totals: finalized,
     days,
     details,
+    health,
   }
 }

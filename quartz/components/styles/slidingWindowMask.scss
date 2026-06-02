@@ -1,18 +1,10 @@
 @use '../../styles/variables.scss' as *;
 @use '../../styles/mixin.scss' as *;
+@use './figure.scss' as *;
 
 .sliding-window-mask {
-  container-type: inline-size;
-  container-name: swm-figure;
-  margin: 1.75rem 0;
-  content-visibility: auto;
-  contain-intrinsic-size: auto 38rem;
-  padding: 0;
-  border-radius: 0;
-  border: 0;
-  box-shadow: none;
-  background: transparent;
-  color: var(--dark);
+  @include figure-frame('swm-figure', 38rem);
+
   --swm-note: color-mix(in srgb, var(--darkgray) 78%, var(--dark) 22%);
   --swm-div: color-mix(in srgb, var(--gray) 28%, transparent);
   --swm-window: #fdb2a2;
@@ -20,6 +12,9 @@
   --swm-global-bg: color-mix(in srgb, #cdd597 78%, var(--light));
   --swm-masked-bg: color-mix(in srgb, var(--lightgray) 65%, var(--light));
   --swm-grid: color-mix(in srgb, var(--gray) 24%, transparent);
+  --swm-tab-surface: color-mix(in srgb, var(--light) 86%, var(--lightgray));
+  --swm-tab-border: color-mix(in srgb, var(--lightgray) 78%, transparent);
+  --swm-tab-active: color-mix(in srgb, var(--swm-window) 24%, var(--swm-tab-surface));
 }
 
 :root[saved-theme='dark'] .sliding-window-mask {
@@ -27,6 +22,14 @@
   --swm-global-bg: color-mix(in srgb, #cdd597 45%, var(--lightgray));
   --swm-masked-bg: color-mix(in srgb, var(--lightgray) 38%, var(--dark));
   --swm-grid: color-mix(in srgb, var(--gray) 18%, transparent);
+  --swm-tab-surface: color-mix(in srgb, var(--lightgray) 18%, var(--dark));
+  --swm-tab-border: color-mix(in srgb, var(--lightgray) 30%, transparent);
+  --swm-tab-active: color-mix(in srgb, var(--swm-window) 26%, var(--swm-tab-surface));
+}
+
+.sliding-window-mask .katex {
+  font-size: 1em;
+  color: inherit;
 }
 
 .swm-stage {
@@ -246,50 +249,68 @@
   text-align: right;
 }
 
-.swm-toggle {
+.swm-tablist {
   display: inline-flex;
-  gap: 0.25rem;
-  padding: 0.15rem;
+  align-items: stretch;
+  height: 1.7rem;
+  overflow: hidden;
+  isolation: isolate;
+  border: 1px solid var(--swm-tab-border);
   border-radius: var(--radius-none);
-  background: color-mix(in srgb, var(--lightgray) 50%, transparent);
-  border: 0;
-  box-shadow: 0 0 0 1px var(--swm-div) inset;
+  background: var(--swm-tab-surface);
 }
 
-.swm-toggle-btn {
-  appearance: none;
-  border: none;
-  background: transparent;
-  color: var(--swm-note);
-  font: inherit;
-  font-size: 0.8rem;
-  padding: 0.2rem 0.7rem;
-  border-radius: var(--radius-none);
+.swm-tab {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  height: 100%;
+  min-width: 2rem;
+  padding: 0 0.85rem;
+  border: 0;
+  border-radius: 0;
+  background: var(--swm-tab-surface);
+  color: var(--gray);
   cursor: pointer;
+  font-family: var(--codeFont);
+  font-size: 0.72rem;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
   transition:
-    background 120ms ease-out,
-    color 120ms ease-out;
+    background-color 140ms ease,
+    color 140ms ease;
 
-  &:hover {
+  &:not(:disabled):hover {
     color: var(--dark);
   }
+  &:focus-visible {
+    outline: 2px solid color-mix(in srgb, var(--secondary) 50%, transparent);
+    outline-offset: -2px;
+  }
+  &[aria-selected='true'],
   &.is-active {
-    background: var(--light);
+    background: var(--swm-tab-active);
     color: var(--dark);
-    box-shadow: 0 0 0 1px var(--swm-div);
   }
 }
 
 .swm-caption {
-  margin-top: 0.9rem;
-  color: color-mix(in srgb, var(--gray) 70%, var(--dark) 30%);
-  font-size: 0.85rem;
-  text-align: center;
+  @include figure-caption;
+
+  .swm-math {
+    @include figure-caption-math-gap;
+  }
 }
 
-.swm-math .katex {
-  color: inherit;
-  font-size: 1em;
+.swm-math {
+  @include figure-inline-math(1em);
+}
+
+.swm-math--display {
+  display: block;
 }
 
 @container swm-figure (max-width: 680px) {

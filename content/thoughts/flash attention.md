@@ -2,11 +2,13 @@
 date: '2026-05-27'
 description: tiled IO-aware attention kernel, recomputes softmax denominators on-the-fly, avoids materialising the full attention matrix.
 id: attention-flash
-modified: 2026-06-01 00:31:09 GMT-04:00
+modified: 2026-06-01 20:58:36 GMT-04:00
 seealso:
   - '[[thoughts/Attention|main stage]]'
   - '[[thoughts/tree attention|tree attention]]'
   - '[[thoughts/GPU programming]]'
+  - '[[@dao2023flashattention2fasterattentionbetter]]'
+  - '[[@shah2024flashattention3fastaccurateattention]]'
 tags:
   - ml
   - llm
@@ -14,9 +16,15 @@ tags:
 title: Flash Attention
 ---
 
-FlashAttention [@dao2022flashattentionfastmemoryefficientexact] reframes attention as a tiled matrix multiplication that keeps intermediate results in high-speed SRAM rather than slower GPU DRAM. Recomputing softmax denominators on-the-fly avoids materialising the full attention matrix. As sequence lengths grow, attention becomes more IO-bound than FLOP-bound, so this optimisation yields both speedups and numerical stability (via online normalisation). See also FlashAttention-2 [@dao2023flashattention2fasterattentionbetter] and FlashAttention-3 [@shah2024flashattention3fastaccurateattention].
+FlashAttention [@dao2022flashattentionfastmemoryefficientexact] reframes attention as a tiled matrix multiplication that keeps intermediate results in high-speed SRAM rather than slower GPU DRAM.
 
-FlashAttention partitions the logits $S = QK^{\top}/\sqrt{d_h}$ into $B_m \times B_n$ tiles. For each tile $t$ the kernel streams $Q_t$ and $K_t$ into SRAM, updates the running maxima $m$ and partition sums $l$, then accumulates the context contribution:
+Recomputing softmax denominators on-the-fly avoids materialising the full attention matrix.
+
+As sequence lengths $L$ grow, attention becomes more IO-bound than FLOP-bound, so this optimisation yields both speedups and numerical stability (via online normalisation).
+
+FlashAttention partitions the logits $S = QK^{\top}/\sqrt{d_h}$ into $B_m \times B_n$ tiles.
+
+For each tile $t$ the kernel streams $Q_t$ and $K_t$ into SRAM, updates the running maxima $m$ and partition sums $l$, then accumulates the context contribution:
 
 $$
 \begin{aligned}
@@ -112,15 +120,17 @@ FlashAttention loads tiles up, runs the whole softmax on-chip, and touches HBM a
 
 ## Deriving the online softmax
 
-The $m/\ell/O$ recurrence computes the same softmax as the batched form, one tile at a time, and the derivation is worth seeing in full because every term in the $m/\ell/O$ update earns its place.
+The $m/\ell/O$ recurrence computes the same softmax as the batched form per tile, so it is beneficial to look into some of the derivation for the online softmax.
 
-With numerically-stable (safe) softmax. For a logit vector $x \in \mathbb{R}^{V}$, exponentiating directly overflows: $e^{x_i}$ exceeds the FP16 ceiling ($\approx 65504$) once $x_i > 11$, and FP32 near $x_i \approx 88$. Subtracting the row maximum $m_V = \max_k x_k$ forces every exponent to be non-positive, so each $e^{(\cdot)} \in (0,1]$:
+With numerically-stable (safe) softmax, for a logit vector $x \in \mathbb{R}^{V}$, exponentiating directly will result in {{sidenotes[overflows]: $e^{x_i}$ exceeds the FP16 ceiling ($\approx 65504$) once $x_i > 11$, and FP32 near $x_i \approx 88$.}}
+
+Subtracting the row maximum $m_V = \max_k x_k$ forces every exponent to be non-positive, so each $e^{(\cdot)} \in (0,1]$:
 
 $$
 y_i = \frac{e^{x_i - m_V}}{\sum_{j=1}^{V} e^{x_j - m_V}}, \qquad m_V = \max_{k} x_k
 $$
 
-Computed literally this is three passes over $x$: one for the maximum $m_V$, one for the denominator $\ell_V = \sum_j e^{x_j - m_V}$, one to normalise. The denominator pass is blocked on the maximum pass, because $\ell_V$ subtracts the _global_ $m_V$, which is unknown until the first pass finishes. That coupling is what forces the re-read.
+Computed this _requires_ three passes over $x$: one for the maximum $m_V$, one for the denominator $\ell_V = \sum_j e^{x_j - m_V}$, one to normalise. The denominator pass is blocked on the maximum pass, because $\ell_V$ subtracts the _global_ $m_V$, which is unknown until the first pass finishes.
 
 Break it by tracking a _running_ maximum $m_j = \max(m_{j-1}, x_j)$ and defining a surrogate denominator that subtracts $m_j$ rather than $m_V$:
 
@@ -459,5 +469,3 @@ The design premise is asymmetric hardware scaling
 \end{tikzpicture}
 \end{document}
 ```
-
-Forward-pass throughput on each generation's target GPU. Utilisation against that GPU's dense tensor-core peak sits in the prose above (FA-1 $\approx 32\%$, FA-2 $73\%$, FA-3 $75\%$ in FP16 and $61\%$ in FP8, FA-4 $71\%$). The FA-1 bar is reconstructed from FlashAttention-2's retrospective rather than reported directly [@dao2023flashattention2fasterattentionbetter]; the rest are headline numbers from each paper. Absolute throughput climbs $\approx 16\times$ from FA-1 to FA-4, but most of that gain is new silicon (A100 $\to$ H100 $\to$ B200); the kernel's recurring job is to hold utilisation near the ceiling as the ceiling moves.

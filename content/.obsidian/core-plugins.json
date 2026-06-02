@@ -27,7 +27,7 @@
   "publish": false,
   "sync": false,
   "properties": true,
-  "bookmarks": false,
+  "bookmarks": true,
   "webviewer": true,
   "footnotes": true,
   "bases": true

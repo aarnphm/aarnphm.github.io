@@ -1,3 +1,18 @@
+import katex from 'katex'
+
+const swmRenderMath = (tex: string): string => {
+  try {
+    return katex.renderToString(tex, {
+      displayMode: false,
+      output: 'html',
+      throwOnError: false,
+      strict: false,
+    })
+  } catch {
+    return tex
+  }
+}
+
 type Mode = 'window' | 'global' | 'masked'
 
 const DILATIONS = [1, 2, 4] as const
@@ -41,18 +56,19 @@ const renderState = (root: HTMLElement) => {
 
   const total = L * L
   const activeEl = root.querySelector('[data-swm-active]')
-  if (activeEl) activeEl.textContent = String(active)
+  if (activeEl) activeEl.innerHTML = swmRenderMath(String(active))
   const ratioEl = root.querySelector('[data-swm-ratio]')
-  if (ratioEl) ratioEl.textContent = formatPercent(active, total)
+  if (ratioEl) ratioEl.innerHTML = swmRenderMath(formatPercent(active, total).replace('%', '\\%'))
 
   const complexityEl = root.querySelector('[data-swm-complexity]')
   if (complexityEl) {
-    const wTerm = d === 1 ? `${2 * w + 1}` : `~${Math.floor((2 * w) / d) + 1}`
-    complexityEl.textContent = ` = O(L*${wTerm}) + O(L*${g})`
+    const term = d === 1 ? `${2 * w + 1}` : `${Math.floor((2 * w) / d) + 1}`
+    const rel = d === 1 ? '=' : '\\approx'
+    complexityEl.innerHTML = swmRenderMath(`${rel} O(L\\cdot ${term}) + O(L\\cdot ${g})`)
   }
 
   const receptiveEl = root.querySelector('[data-swm-receptive]')
-  if (receptiveEl) receptiveEl.textContent = String(Math.min(8 * w, L))
+  if (receptiveEl) receptiveEl.innerHTML = swmRenderMath(String(Math.min(8 * w, L)))
 
   const wInput = root.querySelector<HTMLInputElement>('[data-swm-w-input]')
   if (wInput) {
@@ -61,7 +77,7 @@ const renderState = (root: HTMLElement) => {
     wInput.setAttribute('aria-valuetext', `window radius ${w}`)
   }
   const wValue = root.querySelector('[data-swm-w-value]')
-  if (wValue) wValue.textContent = String(w)
+  if (wValue) wValue.innerHTML = swmRenderMath(String(w))
 
   const gInput = root.querySelector<HTMLInputElement>('[data-swm-g-input]')
   if (gInput) {
@@ -70,13 +86,14 @@ const renderState = (root: HTMLElement) => {
     gInput.setAttribute('aria-valuetext', `${g} global tokens`)
   }
   const gValue = root.querySelector('[data-swm-g-value]')
-  if (gValue) gValue.textContent = String(g)
+  if (gValue) gValue.innerHTML = swmRenderMath(String(g))
 
   for (const btn of root.querySelectorAll<HTMLButtonElement>('[data-swm-d-btn]')) {
     const value = Number(btn.dataset.swmDBtn ?? '1')
     const isActive = value === d
     btn.classList.toggle('is-active', isActive)
-    btn.setAttribute('aria-checked', isActive ? 'true' : 'false')
+    btn.setAttribute('aria-selected', isActive ? 'true' : 'false')
+    btn.tabIndex = isActive ? 0 : -1
   }
 }
 
@@ -113,16 +130,39 @@ const setupSlidingWindowMask = () => {
       renderState(root)
     }
     const dHandlers: Array<() => void> = []
-    for (const btn of dButtons) {
-      const handler = () => {
-        const value = Number(btn.dataset.swmDBtn ?? '1')
-        if (!DILATIONS.includes(value as (typeof DILATIONS)[number])) return
-        root.dataset.swmD = String(value)
-        renderState(root)
-      }
-      btn.addEventListener('click', handler)
-      dHandlers.push(() => btn.removeEventListener('click', handler))
+    const dButtonsArr = Array.from(dButtons)
+    const selectDilation = (index: number, focus: boolean) => {
+      const btn = dButtonsArr[index]
+      if (!btn) return
+      const value = Number(btn.dataset.swmDBtn ?? '1')
+      if (!DILATIONS.includes(value as (typeof DILATIONS)[number])) return
+      root.dataset.swmD = String(value)
+      renderState(root)
+      if (focus) btn.focus()
     }
+    dButtonsArr.forEach((btn, index) => {
+      const onClick = () => selectDilation(index, false)
+      const onKey = (event: KeyboardEvent) => {
+        const last = dButtonsArr.length - 1
+        if (event.key === 'ArrowRight' || event.key === 'ArrowDown') {
+          event.preventDefault()
+          selectDilation(index === last ? 0 : index + 1, true)
+        } else if (event.key === 'ArrowLeft' || event.key === 'ArrowUp') {
+          event.preventDefault()
+          selectDilation(index === 0 ? last : index - 1, true)
+        } else if (event.key === 'Home') {
+          event.preventDefault()
+          selectDilation(0, true)
+        } else if (event.key === 'End') {
+          event.preventDefault()
+          selectDilation(last, true)
+        }
+      }
+      btn.addEventListener('click', onClick)
+      btn.addEventListener('keydown', onKey)
+      dHandlers.push(() => btn.removeEventListener('click', onClick))
+      dHandlers.push(() => btn.removeEventListener('keydown', onKey))
+    })
 
     wInput?.addEventListener('input', handleW)
     gInput?.addEventListener('input', handleG)

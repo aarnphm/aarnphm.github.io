@@ -250,7 +250,9 @@ function runtimeCompiler() {
 
 function runtimeCompilerArgs(filename) {
   const args = [runtimeCompiler(), filename, '-o', 'main.wasm']
-  if (language === 'cpp') args.push('-lc++abi')
+  if (language === 'cpp') {
+    args.push('-fwasm-exceptions', '-mllvm', '-wasm-use-legacy-eh=false', '-lc++abi', '-lunwind')
+  }
   return args
 }
 
@@ -310,8 +312,15 @@ async function runWasiProgram(wasm) {
   const { instance } = await WebAssembly.instantiate(wasm, {
     wasi_snapshot_preview1: wasi.wasiImport,
   })
-  const exitCode = wasi.start(instance)
-  return { exitCode, stdout, stderr }
+  try {
+    const exitCode = wasi.start(instance)
+    return { exitCode, stdout, stderr }
+  } catch (error) {
+    if (typeof WebAssembly.Exception === 'function' && error instanceof WebAssembly.Exception) {
+      return { exitCode: 1, stdout, stderr, runtimeError: 'terminating: uncaught C++ exception' }
+    }
+    throw error
+  }
 }
 
 async function init(message) {
@@ -354,7 +363,8 @@ async function run(message) {
     const result = await runWasiProgram(compiled.wasm)
     emitCaptured(cellId, 'stdout', result.stdout)
     emitCaptured(cellId, 'stderr', result.stderr)
-    failed = result.exitCode !== 0 || result.stderr.text().length > 0
+    if (result.runtimeError) emitError(cellId, runtimeErrorName(), result.runtimeError)
+    failed = Boolean(result.runtimeError) || result.exitCode !== 0 || result.stderr.text().length > 0
   } catch (error) {
     failed = true
     if (error && typeof error === 'object') {

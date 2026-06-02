@@ -1,4 +1,4 @@
-import type { Extension, Tokenizer, State, Code } from 'micromark-util-types'
+import type { Code, Construct, Extension, State, Tokenizer } from 'micromark-util-types'
 
 const codes = {
   leftCurlyBrace: 123,
@@ -13,6 +13,25 @@ const codes = {
 }
 
 const KEYWORD = 'sidenotes'
+
+const closingBraceSequence: Construct = {
+  partial: true,
+  tokenize(effects, ok, nok) {
+    return start
+
+    function start(code: Code): State | undefined {
+      if (code !== codes.rightCurlyBrace) return nok(code)
+      effects.consume(code)
+      return second
+    }
+
+    function second(code: Code): State | undefined {
+      if (code !== codes.rightCurlyBrace) return nok(code)
+      effects.consume(code)
+      return ok
+    }
+  },
+}
 
 export function sidenote(): Extension {
   const tokenize: Tokenizer = function (effects, ok, nok) {
@@ -181,17 +200,25 @@ export function sidenote(): Extension {
 
     function contentInside(code: Code): State | undefined {
       if (code === codes.rightCurlyBrace) {
-        effects.exit('sidenoteContentChunk')
-        effects.exit('sidenoteContent')
-        return closingBraceFirst(code)
+        return effects.check(closingBraceSequence, contentEnd, contentText)(code)
       }
 
       if (code === codes.eof || code === null) {
         return nok(code)
       }
 
+      return contentText(code)
+    }
+
+    function contentText(code: Code): State | undefined {
       effects.consume(code)
       return contentInside
+    }
+
+    function contentEnd(code: Code): State | undefined {
+      effects.exit('sidenoteContentChunk')
+      effects.exit('sidenoteContent')
+      return closingBraceFirst(code)
     }
 
     function closingBraceFirst(code: Code): State | undefined {

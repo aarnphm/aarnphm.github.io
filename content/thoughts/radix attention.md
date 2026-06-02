@@ -2,7 +2,7 @@
 date: '2026-05-27'
 description: prefix-tree caching of KV pages with LRU eviction, shared request prefixes reuse computed K,V.
 id: attention-radix
-modified: 2026-05-27 22:51:44 GMT-04:00
+modified: 2026-06-01 15:08:05 GMT-04:00
 seealso:
   - '[[thoughts/Attention|main stage]]'
   - '[[thoughts/Radix tree]]'
@@ -12,7 +12,7 @@ tags:
   - ml
   - llm
   - technical
-title: radix attention
+title: Radix Attention
 ---
 
 RadixAttention [@zheng2024sglangefficientexecutionstructured] maintains an LRU eviction policy to keep relevant [[thoughts/KV compression|KV cache]] entries for all requests within a [[thoughts/Radix tree|radix tree]], implemented in https://github.com/sgl-project/sglang and detailed in the SGLang paper and LMSYS blog (Jan 17, 2024).
@@ -58,7 +58,7 @@ _dynamic evolution of the radix tree in response to various requests._
 
 > [!abstract]- explanation of RadixAttention with LRU eviction policy
 >
-> These requests include two chat ses,sions, a batch of few-shot learning inquiries, and a self-consistency sampling. Each tree edge carries a label denoting a substring or a sequence of tokens. The nodes are color-coded to reflect different states: green for newly added nodes, blue for cached nodes accessed during the time point, and red for nodes that have been evicted.
+> These requests include two chat sessions, a batch of few-shot learning inquiries, and a self-consistency sampling. Each tree edge carries a label denoting a substring or a sequence of tokens. The nodes are color-coded to reflect different states: green for newly added nodes, blue for cached nodes accessed during the time point, and red for nodes that have been evicted.
 >
 > [full explanation](https://lmsys.org/blog/2024-01-17-sglang/#backend-automatic-kv-cache-reuse-with-radixattention)
 
@@ -154,7 +154,7 @@ We can show that longest-shared-prefix-first order is equivalent to DFS order by
     _induction_: assume we visit node $y \in T$, and the visited node align with DFS order. Let $P$ denote _path of_ $y \gets \text{root}$.
 
     - Each node that has not been visited has the lowest common ancestor with visited nodes on $P$.
-    - Since nodes on $P$ are cached, a node $z$ that has yet to be visited with lowest common accestor on $P$ will have the _longest shared prefix_
+    - Since nodes on $P$ are cached, a node $z$ that has yet to be visited with lowest common ancestor on $P$ will have the _longest shared prefix_
     - longest-shared-prefix-first order will select $z$, which is a valid DFS
       q.e.d
 

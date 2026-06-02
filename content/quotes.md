@@ -16,7 +16,7 @@ metadata:
     text_line    = { character - newline } ;
     ws           = { " " } ;
     character    = ? any printable ascii except newline ? ;
-modified: 2026-05-25 22:02:02 GMT-04:00
+modified: 2026-06-01 18:13:43 GMT-04:00
 seealso:
   - '[[word|dictionary]]'
   - '[[research|wip]]'
@@ -30,6 +30,10 @@ transclude:
   dynalist: false
   title: false
 ---
+
+> Those who cling to death, live. Those who cling to life, die.
+>
+> John Wick, P4
 
 > We live in a world where ther eis more and more information, and less and less meaning
 >

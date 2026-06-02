@@ -15,11 +15,25 @@ import { version, fp, cacheFile } from './constants.js'
 
 const inlineScriptFilter = /\.inline\.(ts|js)$/
 const sourceWatchWriteStabilityMs = 250
+export const sourceWatchPatterns = [
+  'quartz.config.ts',
+  'quartz.layout.ts',
+  'quartz/**/*.ts',
+  'quartz/**/*.tsx',
+  'quartz/**/*.scss',
+  'quartz/**/*.py',
+  'quartz/cli/*.js',
+  'quartz/static/**/*',
+  'quartz/extensions/**/*',
+  'package.json',
+]
 
 const normalizeWatchedPath = fp => fp.split(path.sep).join('/')
-const isTestSourcePath = fp => {
+export const isTestSourcePath = fp => {
   const normalized = normalizeWatchedPath(fp)
-  return normalized.endsWith('.test.ts') || normalized.endsWith('.test.tsx')
+  return ['.test.ts', '.test.tsx', '.test.js', '.test.jsx'].some(suffix =>
+    normalized.endsWith(suffix),
+  )
 }
 
 export function formatErrorReason(err) {
@@ -343,19 +357,10 @@ export async function handleBuild(argv) {
       console.log(styleText('yellow', `Detected source ${type}: ${normalizeWatchedPath(fp)}`))
       return build(clientRefresh)
     }
-    const paths = await globby(
-      [
-        'quartz.config.ts',
-        'quartz/**/*.ts',
-        'quartz/**/*.tsx',
-        'quartz/**/*.scss',
-        'quartz/**/*.py',
-        'quartz/cli/*.js',
-        'quartz/static/**/*',
-        'package.json',
-      ],
-      { gitignore: true, ignore: ['.quartz-cache/**', 'node_modules/**', 'public/**'] },
-    )
+    const paths = await globby(sourceWatchPatterns, {
+      gitignore: true,
+      ignore: ['.quartz-cache/**', 'node_modules/**', 'public/**'],
+    })
     chokidar
       .watch(paths, {
         awaitWriteFinish: { stabilityThreshold: sourceWatchWriteStabilityMs },

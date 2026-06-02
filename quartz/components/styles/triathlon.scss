@@ -45,6 +45,7 @@
   justify-content: safe center;
   width: 100%;
   overflow-x: auto;
+  overflow-y: hidden;
   overscroll-behavior-x: contain;
   scrollbar-width: thin;
 }
@@ -86,7 +87,6 @@
   font-family: var(--codeFont);
   font-size: 0.62rem;
   font-variant-numeric: tabular-nums;
-  letter-spacing: 0.02em;
   color: var(--gray);
 
   &::before {
@@ -195,7 +195,6 @@
 .tri-pop-date {
   font-family: var(--codeFont);
   font-size: 0.72rem;
-  letter-spacing: 0.02em;
   color: var(--gray);
 }
 
@@ -212,7 +211,6 @@
   gap: 0.55rem;
   font-family: var(--codeFont);
   font-size: 0.62rem;
-  letter-spacing: 0.08em;
   color: var(--gray);
 }
 
@@ -401,7 +399,6 @@
   text-align: left;
   font-size: 0.62rem;
   text-transform: uppercase;
-  letter-spacing: 0.07em;
   color: var(--gray);
   white-space: nowrap;
 }
@@ -421,7 +418,6 @@
   border: 0;
   font-family: var(--codeFont);
   font-size: 0.62rem;
-  letter-spacing: 0.04em;
   color: var(--gray);
   cursor: pointer;
 
@@ -446,6 +442,20 @@
 
 .tri-act--expanded .tri-act-toggle::after {
   content: '− see less';
+}
+
+.tri-act-health {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  padding-top: 0.55rem;
+  border-top: 1px solid color-mix(in srgb, var(--gray) 32%, transparent);
+}
+
+.tri-act-health-h {
+  font-family: var(--codeFont);
+  font-size: 0.56rem;
+  color: var(--gray);
 }
 
 .tri-act-figs {
@@ -482,7 +492,6 @@
   font-family: var(--codeFont);
   font-size: 0.6rem;
   font-variant-numeric: tabular-nums;
-  letter-spacing: 0.02em;
   color: var(--dark);
   background: color-mix(in srgb, var(--light) 90%, transparent);
   backdrop-filter: blur(3px);
@@ -598,7 +607,6 @@
   font-family: var(--codeFont);
   font-size: 0.64rem;
   line-height: 1.4;
-  letter-spacing: 0.03em;
   color: var(--darkgray);
   cursor: pointer;
   border-bottom: 1px solid color-mix(in srgb, var(--gray) 45%, transparent);
@@ -644,9 +652,8 @@
   padding: 0.9rem 1rem;
   background: color-mix(in srgb, var(--light) 92%, transparent);
   backdrop-filter: blur(10px);
-  border: 1px solid color-mix(in srgb, var(--gray) 26%, transparent);
+  border: 1px solid color-mix(in srgb, var(--gray) 72%, transparent);
   border-radius: var(--radius-none);
-  box-shadow: 0 10px 30px color-mix(in srgb, var(--dark) 13%, transparent);
   opacity: 0;
   visibility: hidden;
   transform: translateY(4px);
@@ -674,7 +681,6 @@
 .tri-gear-k {
   font-size: 0.58rem;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
   color: var(--gray);
 }
 
@@ -870,7 +876,6 @@
   border: 0;
   font-family: var(--codeFont);
   font-size: 0.64rem;
-  letter-spacing: 0.03em;
   color: var(--darkgray);
   cursor: pointer;
   border-bottom: 1px solid color-mix(in srgb, var(--gray) 45%, transparent);
@@ -935,7 +940,6 @@
 
 .tri-ana-title {
   font-size: 0.8rem;
-  letter-spacing: 0.04em;
   color: var(--dark);
 }
 
@@ -971,7 +975,6 @@
 .tri-ana-block-title {
   font-size: 0.6rem;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
   color: var(--gray);
   margin-bottom: 0.5rem;
 }
@@ -1025,7 +1028,6 @@
 .tri-ana-stat-k {
   font-size: 0.58rem;
   text-transform: uppercase;
-  letter-spacing: 0.07em;
   color: var(--gray);
 }
 
@@ -1274,7 +1276,6 @@
 .tri-trend-dir {
   font-size: 0.56rem;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
 }
 
 .tri-conf-firm {
@@ -1427,7 +1428,6 @@
 .tri-actions-weak {
   font-size: 0.56rem;
   text-transform: uppercase;
-  letter-spacing: 0.07em;
   color: var(--gray);
 }
 

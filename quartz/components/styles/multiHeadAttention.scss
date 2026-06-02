@@ -71,7 +71,6 @@
     font-family: var(--bodyFont);
     font-size: 10px;
     font-style: italic;
-    letter-spacing: 0.04em;
     dominant-baseline: middle;
   }
 
@@ -222,7 +221,6 @@
     writing-mode: vertical-rl;
     transform: rotate(180deg);
     color: var(--mha-note);
-    letter-spacing: 0.05em;
   }
   .mha-fo--wo {
     font-size: 14px;

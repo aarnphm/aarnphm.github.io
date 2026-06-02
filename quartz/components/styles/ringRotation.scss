@@ -1,18 +1,9 @@
 @use '../../styles/variables.scss' as *;
 @use '../../styles/mixin.scss' as *;
+@use './figure.scss' as *;
 
 .ring-rotation {
-  container-type: inline-size;
-  container-name: rr-figure;
-  margin: 1.75rem 0;
-  content-visibility: auto;
-  contain-intrinsic-size: auto 34rem;
-  padding: 0;
-  border-radius: 0;
-  border: 0;
-  box-shadow: none;
-  background: transparent;
-  color: var(--dark);
+  @include figure-frame('rr-figure', 34rem);
 
   --rr-stroke: color-mix(in srgb, var(--darkgray) 70%, transparent);
   --rr-stroke-soft: color-mix(in srgb, var(--gray) 45%, transparent);
@@ -273,13 +264,7 @@
 }
 
 .rr-math {
-  display: inline-block;
-  color: inherit;
-
-  .katex {
-    color: inherit;
-    font-size: 0.95em;
-  }
+  @include figure-inline-math;
 }
 
 .rr-controls {
@@ -378,10 +363,11 @@
 }
 
 .rr-caption {
-  margin-top: 0.9rem;
-  color: color-mix(in srgb, var(--gray) 70%, var(--dark) 30%);
-  font-size: 0.85rem;
-  text-align: center;
+  @include figure-caption;
+
+  .rr-math {
+    @include figure-caption-math-gap;
+  }
 }
 
 @container rr-figure (max-width: 720px) {

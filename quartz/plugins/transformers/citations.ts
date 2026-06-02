@@ -10,6 +10,7 @@ import { Cite, rehypeCitationGenerator } from 'rehype-citation'
 import { unified } from 'unified'
 import { visit } from 'unist-util-visit'
 import type { QuartzTransformerPlugin } from '../../types/plugin'
+import type { FrontmatterLink } from './frontmatter'
 import { logBuildSpan, PerfTimer } from '../../util/perf'
 import { isRecord } from '../../util/type-guards'
 import { hostnameMatches, parseExternalUrl } from '../../util/url'
@@ -367,6 +368,53 @@ function hasFrontmatterValue(frontmatter: unknown, key: string): boolean {
   return isRecord(frontmatter) && frontmatter[key] !== undefined
 }
 
+function citationKeyFromSlug(slug: string): string | undefined {
+  if (!slug.startsWith('@')) return undefined
+  const key = slug.slice(1).trim()
+  return key.length > 0 ? key : undefined
+}
+
+export function collectSeeAlsoCitationKeys(links: FrontmatterLink[] | undefined): string[] {
+  if (!links) return []
+
+  const keys = new Set<string>()
+  for (const link of links) {
+    const key = citationKeyFromSlug(link.slug)
+    if (key) keys.add(key)
+  }
+
+  return Array.from(keys)
+}
+
+function normalizedNoCite(value: unknown): string[] {
+  if (Array.isArray(value)) {
+    return value.filter((item): item is string => typeof item === 'string')
+  }
+  return typeof value === 'string' ? [value] : []
+}
+
+export function mergeCitationKeysIntoNoCite(frontmatter: unknown, keys: Iterable<string>): boolean {
+  if (!isRecord(frontmatter)) return false
+
+  const originalNoCite = frontmatter.noCite
+  const noCite = normalizedNoCite(frontmatter.noCite)
+  if (noCite.includes('@*')) {
+    frontmatter.noCite = ['@*']
+    return true
+  }
+
+  const merged = new Set(noCite)
+  for (const key of keys) {
+    const normalized = key.trim()
+    if (normalized.length > 0)
+      merged.add(normalized.startsWith('@') ? normalized : `@${normalized}`)
+  }
+
+  if (merged.size === noCite.length && Array.isArray(originalNoCite)) return noCite.length > 0
+  frontmatter.noCite = Array.from(merged)
+  return true
+}
+
 function frontmatterCacheValue(frontmatter: unknown, key: string): string {
   if (!isRecord(frontmatter)) return ''
   const value = frontmatter[key]
@@ -417,12 +465,11 @@ function getLinkType(url: string): LinkType | undefined {
 function createLinkElement(href: string): Element {
   const linkType = getLinkType(href)
   const displayText = linkType ? linkType.label : href
+  const arxivId = extractArxivId(href)
+  const properties: Record<string, string> = { href, target: '_blank', rel: 'noopener noreferrer' }
+  if (arxivId) properties.dataArxivId = arxivId
 
-  return h(
-    'a.csl-external-link',
-    { href, target: '_blank', rel: 'noopener noreferrer' },
-    createTextNode(displayText),
-  )
+  return h('a.csl-external-link', properties, createTextNode(displayText))
 }
 
 function processTextNode(node: HastText): ElementContent[] {
@@ -530,6 +577,10 @@ export const Citations: QuartzTransformerPlugin<Options> = (opts?: Options) => {
           return
         }
         file.data.citationsDisabled = false
+        const seeAlsoCitationKeys = collectSeeAlsoCitationKeys(file.data.frontmatterLinks?.seealso)
+        if (seeAlsoCitationKeys.length > 0) {
+          mergeCitationKeysIntoNoCite(frontmatter, seeAlsoCitationKeys)
+        }
         let hasCitationSyntax = hasFrontmatterValue(frontmatter, 'noCite')
         const arxivNodes: { node: Link; index: number; parent: Parent; id: string }[] = []
 

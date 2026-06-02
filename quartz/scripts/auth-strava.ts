@@ -1,15 +1,31 @@
-import { exec } from 'node:child_process'
+import { spawn } from 'node:child_process'
 import fs from 'node:fs/promises'
 import http from 'node:http'
+import { upsertEnvLine, removeEnvKeys } from '../util/env-file'
+import { joinSegments, QUARTZ } from '../util/path'
+import { isRecord, readString } from '../util/type-guards'
 
 const PORT = 8721
 const REDIRECT = `http://localhost:${PORT}`
 const SCOPE = 'activity:read_all,profile:read_all'
+const AUTHORIZE_URL = 'https://www.strava.com/oauth/authorize'
+const TOKEN_URL = 'https://www.strava.com/oauth/token'
+const REVOKE_URL = 'https://www.strava.com/oauth/revoke'
+const ENV_FILE = '.env'
+const cacheFile = joinSegments(QUARTZ, '.quartz-cache', 'strava.json')
+const STRAVA_TOKEN_KEYS = ['STRAVA_REFRESH_TOKEN', 'STRAVA_ACCESS_TOKEN'] as const
+
+type TokenTypeHint = 'access_token' | 'refresh_token'
 
 interface TokenResponse {
   access_token: string
   refresh_token: string
   expires_at: number
+}
+
+interface RevokeToken {
+  token: string
+  hint: TokenTypeHint
 }
 
 function authorizeUrl(clientId: string): string {
@@ -20,7 +36,13 @@ function authorizeUrl(clientId: string): string {
     approval_prompt: 'force',
     scope: SCOPE,
   })
-  return `https://www.strava.com/oauth/authorize?${params.toString()}`
+  return `${AUTHORIZE_URL}?${params.toString()}`
+}
+
+function openBrowser(url: string): void {
+  const child = spawn('open', [url], { detached: true, stdio: 'ignore' })
+  child.on('error', () => {})
+  child.unref()
 }
 
 function waitForCode(): Promise<string> {
@@ -54,23 +76,50 @@ async function exchange(
     code,
     grant_type: 'authorization_code',
   })
-  const res = await fetch('https://www.strava.com/oauth/token', { method: 'POST', body })
+  const res = await fetch(TOKEN_URL, { method: 'POST', body })
   if (!res.ok) throw new Error(`token exchange failed: ${res.status} ${await res.text()}`)
   return (await res.json()) as TokenResponse
 }
 
 async function writeRefreshToken(refreshToken: string): Promise<void> {
-  let content = ''
+  await upsertEnvLine(ENV_FILE, 'STRAVA_REFRESH_TOKEN', refreshToken)
+}
+
+async function readCachedRefreshToken(): Promise<string | undefined> {
   try {
-    content = await fs.readFile('.env', 'utf8')
+    const parsed: unknown = JSON.parse(await fs.readFile(cacheFile, 'utf8'))
+    if (!isRecord(parsed) || !isRecord(parsed.auth)) return undefined
+    return readString(parsed.auth, 'refreshToken')
   } catch {
-    content = ''
+    return undefined
   }
-  const line = `STRAVA_REFRESH_TOKEN=${refreshToken}`
-  content = /^STRAVA_REFRESH_TOKEN=.*$/m.test(content)
-    ? content.replace(/^STRAVA_REFRESH_TOKEN=.*$/m, line)
-    : `${content.trimEnd()}\n${line}\n`
-  await fs.writeFile('.env', content)
+}
+
+async function resolveRevokeToken(): Promise<RevokeToken> {
+  const cachedRefreshToken = await readCachedRefreshToken()
+  if (cachedRefreshToken) return { token: cachedRefreshToken, hint: 'refresh_token' }
+  const refreshToken = process.env.STRAVA_REFRESH_TOKEN
+  if (refreshToken) return { token: refreshToken, hint: 'refresh_token' }
+  const accessToken = process.env.STRAVA_ACCESS_TOKEN
+  if (accessToken) return { token: accessToken, hint: 'access_token' }
+  throw new Error('set STRAVA_REFRESH_TOKEN or STRAVA_ACCESS_TOKEN before revoking')
+}
+
+async function revoke(
+  clientId: string,
+  clientSecret: string,
+  { token, hint }: RevokeToken,
+): Promise<void> {
+  const body = new URLSearchParams({ token, token_type_hint: hint })
+  const res = await fetch(REVOKE_URL, {
+    method: 'POST',
+    headers: {
+      Authorization: `Basic ${Buffer.from(`${clientId}:${clientSecret}`).toString('base64')}`,
+      'Content-Type': 'application/x-www-form-urlencoded',
+    },
+    body,
+  })
+  if (!res.ok) throw new Error(`token revoke failed: ${res.status} ${await res.text()}`)
 }
 
 async function main(): Promise<void> {
@@ -82,10 +131,18 @@ async function main(): Promise<void> {
     )
   }
 
+  if (process.argv.includes('--revoke')) {
+    await revoke(clientId, clientSecret, await resolveRevokeToken())
+    await removeEnvKeys(ENV_FILE, STRAVA_TOKEN_KEYS)
+    await fs.rm(cacheFile, { force: true })
+    console.log('\n[strava] revoked token and removed local Strava auth/cache.')
+    return
+  }
+
   const url = authorizeUrl(clientId)
   console.log(`\n[strava] opening browser to authorize (scope: ${SCOPE}).`)
   console.log(`if it does not open, visit:\n${url}\n`)
-  exec(`open "${url}"`, () => {})
+  openBrowser(url)
 
   const code = await waitForCode()
   const token = await exchange(clientId, clientSecret, code)

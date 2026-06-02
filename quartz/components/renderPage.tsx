@@ -1246,7 +1246,11 @@ export function transcludeFinal(
     if (fileData.frontmatter?.pageLayout !== 'reflection') {
       children.push(
         h('a', { href: inner.properties?.href, class: 'internal transclude-src' }, [
-          { type: 'text', value: fileData.frontmatter?.title ?? i18n(cfg.locale).components.transcludes.linkToOriginal },
+          {
+            type: 'text',
+            value:
+              fileData.frontmatter?.title ?? i18n(cfg.locale).components.transcludes.linkToOriginal,
+          },
         ]),
       )
     }
@@ -1358,7 +1362,12 @@ export function transcludeFinal(
           if (fileData.frontmatter?.pageLayout !== 'reflection') {
             children.push(
               h('a', { href: inner.properties?.href, class: 'internal transclude-src' }, [
-                { type: 'text', value: fileData.frontmatter?.title ?? i18n(cfg.locale).components.transcludes.linkToOriginal },
+                {
+                  type: 'text',
+                  value:
+                    fileData.frontmatter?.title ??
+                    i18n(cfg.locale).components.transcludes.linkToOriginal,
+                },
               ]),
             )
           }
@@ -1416,7 +1425,12 @@ export function transcludeFinal(
         if (fileData.frontmatter?.pageLayout !== 'reflection') {
           children.push(
             h('a', { href: inner.properties?.href, class: 'internal transclude-src' }, [
-              { type: 'text', value: fileData.frontmatter?.title ?? i18n(cfg.locale).components.transcludes.linkToOriginal },
+              {
+                type: 'text',
+                value:
+                  fileData.frontmatter?.title ??
+                  i18n(cfg.locale).components.transcludes.linkToOriginal,
+              },
             ]),
           )
         }
@@ -1605,7 +1619,12 @@ export function transcludeFinal(
         if (fileData.frontmatter?.pageLayout !== 'reflection') {
           children.push(
             h('a', { href: inner.properties?.href, class: 'internal transclude-src' }, [
-              { type: 'text', value: fileData.frontmatter?.title ?? i18n(cfg.locale).components.transcludes.linkToOriginal },
+              {
+                type: 'text',
+                value:
+                  fileData.frontmatter?.title ??
+                  i18n(cfg.locale).components.transcludes.linkToOriginal,
+              },
             ]),
           )
         }
@@ -1783,9 +1802,8 @@ const ElementComponent = ((enableRecents: boolean = false) => {
           <address class="clickable-container">
             <AliasLink newTab classes={['external']} name="notes" url="https://notes.aarnphm.xyz" />
             <AliasLink isInternal enablePopover={false} name="stream" url="/stream" />
-            <AliasLink isInternal enablePopover={false} name="workshop" url="/lectures" />
-            <AliasLink isInternal enablePopover={false} name="arena" url="/arena" />
-            <AliasLink isInternal enablePopover={false} name="on my mind" url="/thoughts/" />
+            <AliasLink isInternal enablePopover={false} name="are.na" url="/arena" />
+            <AliasLink isInternal enablePopover={false} name="scratchpad" url="/thoughts/" />
             <AliasLink isInternal enablePopover={false} name="writings" url="/posts/" />
           </address>
         </section>,

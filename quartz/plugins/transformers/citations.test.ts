@@ -2,7 +2,11 @@ import type { Element, Root } from 'hast'
 import { h } from 'hastscript'
 import assert from 'node:assert/strict'
 import test from 'node:test'
-import { normalizeCitationBibliography, resolveCitationLocale } from './citations'
+import {
+  mergeCitationKeysIntoNoCite,
+  normalizeCitationBibliography,
+  resolveCitationLocale,
+} from './citations'
 
 test('uses bundled CSL locale when available', () => {
   assert.equal(resolveCitationLocale('fr-FR'), 'fr-FR')
@@ -48,4 +52,24 @@ test('normalizes root-level CSL bibliography into Quartz references section', ()
   assert.ok(entry?.type === 'element')
   assert.equal(entry.tagName, 'li')
   assert.equal(entry.properties.id, 'bib-paper')
+
+  const link = entry.children.find(
+    (child): child is Element => child.type === 'element' && child.tagName === 'a',
+  )
+  assert.ok(link)
+  assert.equal(link.properties.dataArxivId, '1234.5678')
+})
+
+test('merges SeeAlso citation keys into noCite frontmatter', () => {
+  const frontmatter: Record<string, unknown> = { noCite: '@existing' }
+
+  assert.equal(mergeCitationKeysIntoNoCite(frontmatter, ['paper', '@existing']), true)
+  assert.deepEqual(frontmatter.noCite, ['@existing', '@paper'])
+})
+
+test('preserves wildcard noCite when SeeAlso citation keys are present', () => {
+  const frontmatter: Record<string, unknown> = { noCite: '@*' }
+
+  assert.equal(mergeCitationKeysIntoNoCite(frontmatter, ['paper']), true)
+  assert.deepEqual(frontmatter.noCite, ['@*'])
 })

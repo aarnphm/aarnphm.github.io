@@ -14,7 +14,7 @@ import { resetWriteCache } from './plugins/emitters/helpers'
 import { resetStaticFileCache, staticAssetClaims } from './plugins/emitters/static'
 import { emitContent } from './processors/emit'
 import { filterContentResult } from './processors/filter'
-import { parseMarkdown } from './processors/parse'
+import { parseMarkdown, resetProcessedContentCache } from './processors/parse'
 import { resetCopyFileCache } from './util/copy-file'
 import { Argv, BuildCtx } from './util/ctx'
 import { emitQuartzDevEvent } from './util/dev-events'
@@ -217,6 +217,9 @@ async function buildQuartz(
 
     const filePaths = markdownPaths.map(fp => joinSegments(argv.directory, fp) as FilePath)
     syncCtxFiles(ctx, allFiles)
+    if (reason === 'source') {
+      resetProcessedContentCache()
+    }
     ctx.outputAssetManifest = await readOutputAssetManifest()
     await syncOutputAssetClaims(ctx, true)
     const outputAssetClaims = ctx.outputAssetClaims ?? []
