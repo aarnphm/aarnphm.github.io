@@ -90,13 +90,14 @@ Arrow's theorem is more general; it applies beyond one-person-one-vote elections
 Let $A$ be a set of alternatives. A voter's preferences over $A$ are a complete and transitive binary relation $R \subseteq A \times A$ (a total preorder). Interpret $(\mathbf a, \mathbf b) \in R$ as $\mathbf a \succeq \mathbf b$. Define:
 
 - Indifference (symmetric part): $\mathbf a \sim \mathbf b$ iff $(\mathbf a, \mathbf b) \in R$ and $(\mathbf b, \mathbf a) \in R$.
-- Strict preference (asymmetric part): $\mathbf a \succ \mathbf b$ iff $(\mathbf a, \mathbf b) \in R$ and $(\mathbf b, \mathbf a)
-otin R$.
+- Strict preference (asymmetric part): $\mathbf a \succ \mathbf b$ iff $(\mathbf a, \mathbf b) \in R$ and $(\mathbf b, \mathbf a) \notin R$.
 
 Let $\Pi(A)$ be the set of all preferences (rankings, ties allowed) on $A$. For a positive integer $N$, an ordinal social welfare function (SWF) is
-\[
+
+$$
 \mathrm F : \Pi(A)^N \to \Pi(A),
-\]
+$$
+
 which aggregates voters' preferences into a single social preference. A profile $(R_1,\dots,R_N) \in \Pi(A)^N$ is a preference profile.
 
 Arrow's impossibility theorem (for $|A| \ge 3$): There is no SWF satisfying all:
@@ -123,9 +124,7 @@ Auxiliary notion: A coalition is weakly decisive over $(x,y)$ if whenever all in
 
 Assume unrestricted domain, Pareto, IIA, and at least 3 outcomes.
 
-- Field expansion lemma: If a coalition $G$ is weakly decisive over some $(x,y)$ with $x
-e y$, then it is decisive. Sketch: for any $z
-otin \{x,y\}$, by constructing profiles and using IIA and Pareto to obtain $x \succ y \succ z$, infer $x \succ z$; iterate to all pairs.
+- Field expansion lemma: If a coalition $G$ is weakly decisive over some $(x,y)$ with $x \ne y$, then it is decisive. Sketch: for any $z \notin \{x,y\}$, by constructing profiles and using IIA and Pareto to obtain $x \succ y \succ z$, infer $x \succ z$; iterate to all pairs.
 - Group contraction lemma: If a decisive coalition has size $\ge 2$, it has a decisive proper subset. Sketch: partition decisive $G$ into nonempty $G_1,G_2$, design a cyclic profile on distinct $x,y,z$; deduce either $G_1$ or $G_2$ is weakly decisive over some pair, then apply field expansion.
 
 By Pareto, the entire electorate is decisive; repeated contraction yields a size-1 decisive coalition (a dictator).
