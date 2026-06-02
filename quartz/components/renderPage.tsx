@@ -25,9 +25,9 @@ import { BuildCtx, renderDataFor } from '../util/ctx'
 import { htmlToJsx } from '../util/jsx'
 import { classNames } from '../util/lang'
 import {
-  findNotebookCellFrame,
   notebookCellRef,
   notebookCellRuntimeNodes,
+  resolveNotebookCell,
 } from '../util/notebook/transclude'
 import {
   FullSlug,
@@ -1229,10 +1229,11 @@ export function transcludeFinal(
     alias: string,
     transcludeMetadata: Record<string, unknown> | undefined,
   ): boolean => {
-    const cellId = notebookCellRef(blockRef)
-    if (!cellId) return false
-    const cell = findNotebookCellFrame(pageTree, cellId)
-    if (!cell) return false
+    const ref = notebookCellRef(blockRef)
+    if (!ref) return false
+    const resolved = resolveNotebookCell(pageTree, ref)
+    if (!resolved) return false
+    const { id: cellId, frame: cell } = resolved
 
     const children: (ElementContent | null)[] = [
       ...notebookCellRuntimeNodes(pageTree, {

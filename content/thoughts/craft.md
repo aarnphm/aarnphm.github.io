@@ -6,7 +6,7 @@ comments: false
 date: '2021-12-22'
 description: and a celebration for the act of making.
 id: craft
-modified: 2026-05-26 15:18:48 GMT-04:00
+modified: 2026-06-02 02:27:29 GMT-04:00
 permalinks:
   - /thoughts/work
   - /craft
@@ -34,7 +34,7 @@ There is also a [[ideas|backlog]] of unfinished ideas that I might work on, one 
   - Structured outputs compatibility in V0 and V1 engine https://github.com/vllm-project/vllm/pull/12388 https://github.com/vllm-project/vllm/pull/16577 https://github.com/vllm-project/vllm/pull/15317 https://github.com/vllm-project/vllm/pull/10785 https://github.com/vllm-project/vllm/pull/14868
     - Jump-forward decoding https://github.com/vllm-project/vllm/pull/15490
       - source: [[thoughts/structured outputs#jump-forward decoding|design docs]] ^[In practice, jump-forward decoding doesn't add a lot of value given that the overhead of detokenization overweighs the actual benefits of skipping forward a few FSM state.]
-  - Source: [github](https://github.com/vllm-project/vllm), [docs](docs.vllm.ai), [[thoughts/vllm|notes]]
+  - Source: [github](https://github.com/vllm-project/vllm), [docs](https://docs.vllm.ai), [[thoughts/vllm|notes]]
 
 - **Quartz** - :seedling: a fast, batteries-included static-site generator that transforms Markdown content into fully functional websites (2023-) ^quartz
   - A set of [[colophon|tools]] that helps you publish your [[thoughts/Digital garden|digital garden]] and notes as a website for free.
@@ -46,7 +46,7 @@ There is also a [[ideas|backlog]] of unfinished ideas that I might work on, one 
   - Added [LLM-readable source](https://x.com/aarnphm/status/1857955302110376342)
   - Added Jupyter notebook transpilation and [[thoughts/university/twenty-five-twenty-six/sfwr-4tb3/10 Generalized Parsing/00 Generalized Parsing|executions]] (think of it as a scuffed Modal notebook)
     <div class="nolist">
-    - ![[thoughts/Jax#cell-1|example if per-block transclusion runtime]]
+    - ![[thoughts/Jax#code-cell-1|example if per-block transclusion runtime]]
 
     </div>
 

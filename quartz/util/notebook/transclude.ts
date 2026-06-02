@@ -39,6 +39,18 @@ export function findNotebookCellFrame(root: Root, cellId: string): Element | und
   return cell
 }
 
+export function resolveNotebookCell(
+  root: Root,
+  ref: string,
+): { id: string; frame: Element } | undefined {
+  const direct = findNotebookCellFrame(root, ref)
+  if (direct) return { id: ref, frame: direct }
+  const codeRef = `code-${ref}`
+  const fallback = findNotebookCellFrame(root, codeRef)
+  if (fallback) return { id: codeRef, frame: fallback }
+  return undefined
+}
+
 function notebookRuntimeScriptText(root: Root): string | undefined {
   let text: string | undefined
   visit(root, { tagName: 'script' }, node => {

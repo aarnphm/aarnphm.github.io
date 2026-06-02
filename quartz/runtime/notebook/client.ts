@@ -37,6 +37,7 @@ import { notebookLocalSourcesClearedEvent } from '../../util/notebook-source-eve
 import { notebookCellLanguageBadge } from '../../util/notebook/cell-html'
 import { renderOutputHtml } from '../../util/notebook/render/output-to-hast'
 import { isRecord, readString } from '../../util/type-guards'
+import { supportsEagerRuntimePreload } from '../../util/runtime-preload'
 import { configureNotebookRuntimeAssets } from './assets'
 import { backendFor } from './registry'
 import {
@@ -2129,6 +2130,7 @@ class NotebookRuntime {
 
   private scheduleRuntimePreload() {
     if (this.runtimePreload) return
+    if (!supportsEagerRuntimePreload()) return
     scheduleNotebookRuntimePreload(() => {
       if (this.disposed) return
       if (this.running) {

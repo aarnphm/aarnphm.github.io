@@ -13,8 +13,6 @@ title: Writing
 
 ## why
 
-<div class="float-right">
-
 ```quotes
 Writing as _crystallised_ thought, a way of expressing the labyrinth of interconnected, messy, and incoherent ideas in my mind. It is a form of [knowledge distillation](https://jzhao.xyz/thoughts/knowledge-distillation)
 
@@ -56,8 +54,6 @@ Henrik Karlsson, [Reader-generated Essay](https://www.lesswrong.com/posts/ZtMsyM
 ```
 
 At its core, writing endeavours to transmute the [[thoughts/Chaos|chaos]] of [[thoughts/Existentialism|existence]] into discernible narratives, offering a conduit for shared understanding amidst the inherent disarray of life. Such a form of [looseness in mutation](https://subconscious.substack.com/p/hypertext-montage)
-
-</div>
 
 ## as playground.
 

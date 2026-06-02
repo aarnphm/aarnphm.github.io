@@ -16,7 +16,12 @@ import {
 } from './markdown'
 import { parseNotebookDoc } from './parse'
 import { renderRuntimeOutputHtml } from './render/runtime-output-to-hast'
-import { findNotebookCellFrame, notebookCellRef, notebookCellRuntimeNodes } from './transclude'
+import {
+  findNotebookCellFrame,
+  notebookCellRef,
+  notebookCellRuntimeNodes,
+  resolveNotebookCell,
+} from './transclude'
 import { isNotebookParseError, type NotebookDoc } from './types'
 
 function parseNotebook(raw: string, sourcePath: string): NotebookDoc {
@@ -888,6 +893,32 @@ describe('notebook parser', () => {
       payload.cells.map(cell => ({ id: cell.id, source: cell.source })),
       [{ id: 'cell-1', source: 'x = 1' }],
     )
+  })
+
+  test('resolves a notebook cell ref to a code-fence cell id', () => {
+    const frame: Element = {
+      type: 'element',
+      tagName: 'div',
+      properties: { className: ['notebook-code-cell'], dataNotebookCellFrame: 'code-cell-1' },
+      children: [],
+    }
+    const tree: HtmlRoot = { type: 'root', children: [frame] }
+
+    assert.deepStrictEqual(resolveNotebookCell(tree, 'code-cell-1'), { id: 'code-cell-1', frame })
+    assert.deepStrictEqual(resolveNotebookCell(tree, 'cell-1'), { id: 'code-cell-1', frame })
+    assert.strictEqual(resolveNotebookCell(tree, 'cell-2'), undefined)
+  })
+
+  test('prefers a direct cell-id match over the code- fallback', () => {
+    const frame: Element = {
+      type: 'element',
+      tagName: 'div',
+      properties: { className: ['notebook-code-cell'], dataNotebookCellFrame: 'cell-1' },
+      children: [],
+    }
+    const tree: HtmlRoot = { type: 'root', children: [frame] }
+
+    assert.deepStrictEqual(resolveNotebookCell(tree, 'cell-1'), { id: 'cell-1', frame })
   })
 
   test('keeps parsed code fences inside the pre-emitted runtime cell frame', async () => {

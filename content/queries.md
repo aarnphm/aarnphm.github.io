@@ -22,8 +22,8 @@ Feel free to solve any of the following puzzles. If you want to say hi, send you
 Some rules:
 
 - stdlib ONLY. feel free to use any language you prefer locally, but there is also provided language included here in the browser.
-- You should go for no LLM, no Wolfram, no OEIS.
-- Pen, paper, a REPL.
+- I recommend no assistant first (i.e LLM, Wolfram, OEIS, MathExchange), but feel free to read up on any concepts that you didn't know about before.
+- Pen, paper, a REPL, and some hardcore grit.
 
 ## THE _STERN_ WALK
 

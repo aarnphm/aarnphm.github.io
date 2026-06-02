@@ -7,6 +7,7 @@ import {
   notebookRuntimeJavascriptWorkerAsset,
   notebookRuntimeWorkerAsset,
 } from '../../runtime/notebook/assets'
+import { supportsEagerRuntimePreload } from '../../util/runtime-preload'
 
 type NotebookRuntimeModule = {
   mountNotebookRuntime(root: HTMLElement, data: string, assets: NotebookRuntimeAssets): void
@@ -125,6 +126,7 @@ function warmNotebookRuntimeAssets(data: readonly string[]) {
 
 function scheduleNotebookRuntimeWarmup(targets: readonly NotebookRuntimeTarget[]) {
   if (targets.length === 0 || notebookRuntimeWarmup) return
+  if (!supportsEagerRuntimePreload()) return
   const data = targets.map(target => target.text)
   scheduleNotebookRuntimeIdle(() => {
     void warmNotebookRuntimeAssets(data).catch(error => {
