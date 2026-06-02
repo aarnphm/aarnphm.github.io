@@ -1298,6 +1298,10 @@ a[data-footnote-ref] {
   font-weight: 600;
 }
 
+a.internal.transclude-src {
+  font-style: italic;
+}
+
 // The * * * scene break becomes a vermilion mark instead of muted gray
 hr:after {
   color: var(--tertiary);

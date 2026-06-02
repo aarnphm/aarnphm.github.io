@@ -4,7 +4,7 @@ description: tiled IO-aware attention kernel, recomputes softmax denominators on
 id: attention-flash
 modified: 2026-06-01 20:58:36 GMT-04:00
 seealso:
-  - '[[thoughts/Attention|main stage]]'
+  - '[[thoughts/Attention|Attention]]'
   - '[[thoughts/tree attention|tree attention]]'
   - '[[thoughts/GPU programming]]'
   - '[[@dao2023flashattention2fasterattentionbetter]]'

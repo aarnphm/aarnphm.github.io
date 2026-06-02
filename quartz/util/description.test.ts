@@ -22,7 +22,7 @@ test('descriptionToPlainText keeps latex readable for OG descriptions', () => {
 })
 
 test('descriptionToPlainText keeps wikilink aliases as text', () => {
-  assert.equal(descriptionToPlainText('see [[thoughts/Attention|main stage]]'), 'see main stage')
+  assert.equal(descriptionToPlainText('see [[thoughts/Attention|Attention]]'), 'see Attention')
 })
 
 test('processWikilinksToHtml renders description wikilinks as links', () => {

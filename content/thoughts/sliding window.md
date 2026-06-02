@@ -4,7 +4,7 @@ description: each token attends only inside a fixed radius, local pattern droppi
 id: attention-sliding-window
 modified: 2026-06-01 19:11:48 GMT-04:00
 seealso:
-  - '[[thoughts/Attention|main stage]]'
+  - '[[thoughts/Attention|Attention]]'
   - '[[thoughts/flash attention|FlashAttention]]'
   - '[[@beltagy2020longformerlongdocumenttransformer]]'
   - '[[@zaheer2021bigbirdtransformerslonger]]'

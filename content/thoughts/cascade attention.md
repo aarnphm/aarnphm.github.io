@@ -4,7 +4,7 @@ description: two-stage attention filter, cheap scorer prunes key blocks, expensi
 id: attention-cascade
 modified: 2026-05-28 13:03:20 GMT-04:00
 seealso:
-  - '[[thoughts/Attention|main stage]]'
+  - '[[thoughts/Attention|Attention]]'
   - '[[thoughts/flash attention|FlashAttention]]'
 socials:
   blog: https://flashinfer.ai/2024/02/02/cascade-inference.html

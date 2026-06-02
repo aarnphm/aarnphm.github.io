@@ -4,7 +4,7 @@ description: low-rank joint compression of attention K,V (and Q), cache only the
 id: attention-mla
 modified: 2026-05-28 12:27:47 GMT-04:00
 seealso:
-  - '[[thoughts/Attention|main stage]]'
+  - '[[thoughts/Attention|Attention]]'
   - '[[thoughts/GQA|GQA]]'
   - '[[thoughts/Compression|Compression]]'
   - '[[thoughts/RoPE|RoPE]]'

@@ -4,7 +4,7 @@ description: learned per-token KV eviction policy, shaves the least impactful to
 id: attention-razor
 modified: 2026-06-01 15:09:00 GMT-04:00
 seealso:
-  - '[[thoughts/Attention|main stage]]'
+  - '[[thoughts/Attention|Attention]]'
   - '[[thoughts/radix attention|radix attention]]'
   - '[[thoughts/KV compression]]'
 tags:

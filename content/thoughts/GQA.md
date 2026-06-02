@@ -4,7 +4,7 @@ description: reduce KV heads to a fraction of query heads, share K,V across grou
 id: attention-gqa
 modified: 2026-05-28 02:06:34 GMT-04:00
 seealso:
-  - '[[thoughts/Attention|main stage]]'
+  - '[[thoughts/Attention|Attention]]'
   - '[[thoughts/MLA|MLA]]'
   - '[[thoughts/KV compression]]'
 tags:

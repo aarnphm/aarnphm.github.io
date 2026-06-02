@@ -4,7 +4,7 @@ description: sequence sharded across devices in a ring, K,V blocks circulate so 
 id: attention-ring
 modified: 2026-06-01 00:28:32 GMT-04:00
 seealso:
-  - '[[thoughts/Attention|main stage]]'
+  - '[[thoughts/Attention|Attention]]'
   - '[[thoughts/tree attention|tree attention]]'
   - '[[thoughts/flash attention|FlashAttention]]'
 tags:

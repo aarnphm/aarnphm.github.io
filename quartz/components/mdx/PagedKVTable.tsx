@@ -148,7 +148,10 @@ const PagedKVTableImpl: QuartzMdxComponent<Props> = ({ caption }) => (
   <figure class="paged-kv-table" data-paged-kv-table data-pkt-initial={initialState}>
     <div class="pkt-stage">
       <section class="pkt-col" aria-label="Logical KV blocks per sequence">
-        <header class="pkt-col-head">logical KV blocks</header>
+        <header
+          class="pkt-col-head"
+          dangerouslySetInnerHTML={{ __html: renderMath('\\textbf{logical KV blocks}') }}
+        />
         <div class="pkt-seqs">
           {SEQS.map(seq => (
             <div class={`pkt-seq pkt-seq--${seq.tone}`} aria-label={seq.label}>
@@ -176,7 +179,10 @@ const PagedKVTableImpl: QuartzMdxComponent<Props> = ({ caption }) => (
       </section>
 
       <section class="pkt-col" aria-label="Page table">
-        <header class="pkt-col-head">page table</header>
+        <header
+          class="pkt-col-head"
+          dangerouslySetInnerHTML={{ __html: renderMath('\\textbf{page table}') }}
+        />
         <table class="pkt-pt">
           <thead>
             <tr>
@@ -218,7 +224,10 @@ const PagedKVTableImpl: QuartzMdxComponent<Props> = ({ caption }) => (
       </section>
 
       <section class="pkt-col" aria-label="Physical GPU memory">
-        <header class="pkt-col-head">physical memory</header>
+        <header
+          class="pkt-col-head"
+          dangerouslySetInnerHTML={{ __html: renderMath('\\textbf{physical memory}') }}
+        />
         <ol class="pkt-pblocks">
           {Array.from({ length: PHYSICAL_SLOTS }, (_, idx) => (
             <PhysicalSlot idx={idx} />
@@ -229,7 +238,7 @@ const PagedKVTableImpl: QuartzMdxComponent<Props> = ({ caption }) => (
 
     <aside class="pkt-side" aria-label="Per-block attention and fragmentation readout">
       <div class="pkt-card">
-        <h4>per-block attention</h4>
+        <h4 dangerouslySetInnerHTML={{ __html: renderMath('\\textbf{per-block attention}') }} />
         <MathLabel
           display
           tex="A_{ij} = \dfrac{\exp\!\left(q_i^{\top} K_j / \sqrt{d}\right)}{\sum_{t}\exp\!\left(q_i^{\top} K_t / \sqrt{d}\right)}"
@@ -240,7 +249,7 @@ const PagedKVTableImpl: QuartzMdxComponent<Props> = ({ caption }) => (
         </p>
       </div>
       <div class="pkt-card">
-        <h4>live readout</h4>
+        <h4 dangerouslySetInnerHTML={{ __html: renderMath('\\textbf{live readout}') }} />
         <dl class="pkt-readout">
           <div class="pkt-readout-row">
             <dt>
