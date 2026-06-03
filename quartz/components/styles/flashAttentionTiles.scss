@@ -132,19 +132,15 @@
   gap: 0.35rem;
   padding: 0.4rem 0.85rem;
   border-radius: var(--radius-none);
-  border: 0;
-  box-shadow: 0 0 0 1px var(--fat-divider) inset;
+  border: 1px solid var(--gray);
   background: color-mix(in srgb, var(--light) 92%, transparent);
   color: var(--dark);
   font-family: var(--bodyFont);
   font-size: 0.85rem;
   cursor: pointer;
-  transition:
-    background 160ms ease,
-    box-shadow 160ms ease;
+  transition: background 160ms ease;
   &:hover {
     background: color-mix(in srgb, var(--fat-active) 18%, var(--light));
-    box-shadow: 0 0 0 1px var(--fat-active) inset;
   }
   &:disabled {
     opacity: 0.45;
@@ -175,8 +171,7 @@
 .fat-card {
   padding: 0.85rem 1rem;
   border-radius: var(--radius-none);
-  border: 0;
-  box-shadow: 0 0 0 1px var(--fat-divider) inset;
+  border: 1px solid var(--gray);
   background: color-mix(in srgb, var(--light) 96%, transparent);
 }
 
@@ -206,7 +201,6 @@
   margin-top: 1rem;
   padding: 0.85rem 1.1rem;
   border-radius: var(--radius-none);
-  box-shadow: 0 0 0 1px var(--fat-divider) inset;
   background: color-mix(in srgb, var(--light) 96%, transparent);
 
   .fat-math {

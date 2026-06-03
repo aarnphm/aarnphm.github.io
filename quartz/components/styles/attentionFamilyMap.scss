@@ -45,11 +45,9 @@
   border-radius: var(--radius-none);
   border: 0;
   background: var(--afm-card-bg);
-  box-shadow: var(--afm-panel-shadow);
   overflow: hidden;
   transition:
     background var(--transition-normal),
-    box-shadow var(--transition-normal),
     transform var(--transition-normal);
 
   &::before {
@@ -71,9 +69,6 @@
 
   &:hover {
     background: var(--afm-card-bg-hover);
-    box-shadow:
-      0 0 0 1px color-mix(in srgb, var(--afm-accent) 38%, var(--gray) 24%) inset,
-      0 10px 22px color-mix(in srgb, var(--afm-accent) 10%, transparent);
     transform: translateY(-1px);
   }
 }
@@ -147,7 +142,6 @@
   border-radius: var(--radius-none);
   border: 0;
   background: var(--afm-chip-bg);
-  box-shadow: 0 0 0 1px color-mix(in srgb, var(--afm-accent) 24%, var(--gray) 28%) inset;
   color: var(--afm-chip-fg);
   text-decoration: none;
   font-size: 0.78rem;
@@ -155,15 +149,11 @@
   min-height: 2.5rem;
   transition:
     background var(--transition-normal),
-    box-shadow var(--transition-normal),
     transform var(--transition-normal);
 
   &:hover,
   &:focus-visible {
     background: color-mix(in srgb, var(--afm-accent) 28%, var(--light));
-    box-shadow:
-      0 0 0 1px color-mix(in srgb, var(--afm-accent) 56%, var(--gray) 24%) inset,
-      0 8px 18px color-mix(in srgb, var(--afm-accent) 12%, transparent);
     transform: translateY(-1px);
     text-decoration: none;
   }
@@ -193,20 +183,17 @@
   border-radius: var(--radius-none);
   background-color: color-mix(in srgb, var(--afm-accent) 22%, var(--light));
   color: color-mix(in srgb, var(--dark) 78%, var(--afm-accent) 22%);
-  box-shadow: 0 0 0 1px color-mix(in srgb, var(--afm-accent) 34%, transparent) inset;
   font-family: var(--codeFont);
   font-size: 0.58rem;
   font-weight: 600;
   line-height: 1.2;
   transition:
     background-color var(--transition-normal),
-    color var(--transition-normal),
-    box-shadow var(--transition-normal);
+    color var(--transition-normal);
 
   &:hover {
     background-color: color-mix(in srgb, var(--afm-accent) 38%, var(--light));
     color: color-mix(in srgb, var(--dark) 78%, var(--afm-accent) 22%);
-    box-shadow: 0 0 0 1px color-mix(in srgb, var(--afm-accent) 44%, transparent) inset;
   }
 
   [saved-theme='dark'] & {
@@ -235,9 +222,6 @@
   border-radius: var(--radius-none);
   border: 0;
   background: var(--afm-detail-bg);
-  box-shadow:
-    0 0 0 1px color-mix(in srgb, var(--afm-accent) 24%, var(--gray) 24%) inset,
-    var(--afm-detail-shadow);
   font-size: 0.8rem;
   line-height: 1.5;
   color: var(--dark);
@@ -286,7 +270,6 @@
 .afm-legend {
   margin: 1rem 0 0;
   padding: 0.75rem 0 0;
-  box-shadow: 0 -1px 0 var(--afm-line);
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
   gap: 0.6rem 1rem;
@@ -317,7 +300,6 @@
   height: 0.6rem;
   border-radius: var(--radius-none);
   background: color-mix(in srgb, var(--afm-accent) 75%, var(--gray) 25%);
-  box-shadow: 0 0 0 1px color-mix(in srgb, var(--afm-accent) 72%, var(--dark) 12%) inset;
 }
 
 .afm-legend-term {
@@ -358,9 +340,7 @@
     opacity: 1;
     visibility: visible;
     transform: none;
-    box-shadow: none;
     background: color-mix(in srgb, var(--afm-accent) 8%, transparent);
-    box-shadow: 0 0 0 1px color-mix(in srgb, var(--afm-accent) 16%, transparent) inset;
     margin-top: 0.3rem;
   }
 

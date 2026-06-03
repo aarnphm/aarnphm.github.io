@@ -84,7 +84,6 @@
     background: var(--light);
     border: 1px solid var(--lightgray);
     border-radius: var(--radius-none);
-    box-shadow: var(--shadow-md);
     overflow: hidden;
     min-width: 280px;
     display: none;
@@ -114,16 +113,11 @@
         font-size: 0.875rem;
         color: var(--dark);
         outline: none;
-        transition: box-shadow 0.15s ease;
         font-family: var(--bodyFont);
 
         &::placeholder {
           color: var(--gray);
           opacity: 0.7;
-        }
-
-        &:focus {
-          box-shadow: var(--shadow-focus);
         }
 
         &::-webkit-search-cancel-button {

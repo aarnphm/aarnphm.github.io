@@ -199,7 +199,6 @@
   padding: 0.8rem 0.9rem;
   border-radius: var(--radius-none);
   border: 0;
-  box-shadow: 0 0 0 1px var(--mep-divider) inset;
   background: color-mix(in srgb, var(--light) 96%, transparent);
 
   & > h4 {
@@ -238,7 +237,6 @@
   font-weight: 400;
   padding: 0.1rem 0.36rem;
   color: color-mix(in srgb, var(--mep-you) 30%, var(--dark));
-  box-shadow: 0 0 0 1px var(--mep-you) inset;
 }
 
 .mep-sig {
@@ -272,11 +270,9 @@
   justify-content: space-between;
   gap: 0.5rem;
   font-size: 0.76rem;
-  box-shadow: 0 1px 0 var(--mep-divider);
   padding-bottom: 0.26rem;
 
   &:last-child {
-    box-shadow: none;
     padding-bottom: 0;
   }
 }
@@ -295,7 +291,6 @@
   padding: 0.34rem 0.7rem;
   border-radius: var(--radius-none);
   border: 0;
-  box-shadow: 0 0 0 1px var(--mep-divider) inset;
   background: transparent;
   color: var(--mep-note-fg);
   font-family: var(--bodyFont);
@@ -303,12 +298,10 @@
   cursor: pointer;
   transition:
     background 160ms ease,
-    color 160ms ease,
-    box-shadow 160ms ease;
+    color 160ms ease;
 
   &:hover {
     background: var(--mep-active-bg);
-    box-shadow: 0 0 0 1px var(--mep-active) inset;
     color: var(--dark);
   }
 

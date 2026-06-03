@@ -43,7 +43,6 @@
   border-radius: var(--radius-none);
   border: 0;
   background: var(--pec-panel-bg);
-  box-shadow: var(--pec-panel-shadow);
   min-width: 0;
 }
 
@@ -67,19 +66,19 @@
   font-size: 0.72rem;
   color: var(--pec-note);
   padding: 0.1rem 0.45rem;
-  box-shadow: 0 0 0 1px var(--pec-div) inset;
   border-radius: var(--radius-none);
   white-space: nowrap;
 }
 
 .pec-panel-vis {
   position: relative;
+  box-sizing: border-box;
   width: 100%;
   aspect-ratio: 1 / 1;
+  padding: 0.3rem;
   border: 0;
   border-radius: var(--radius-none);
   background: var(--light);
-  box-shadow: var(--pec-panel-shadow);
   overflow: hidden;
 }
 
@@ -124,7 +123,6 @@
 
 .pec-panel-math {
   padding-top: 0.45rem;
-  box-shadow: 0 -1px 0 var(--pec-line);
   color: var(--pec-note);
   font-size: 0.78rem;
   line-height: 1.5;
@@ -168,7 +166,6 @@
 .pec-controls {
   margin-top: 1.25rem;
   padding-top: 1rem;
-  box-shadow: 0 -1px 0 var(--pec-line);
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   gap: 1rem 1.5rem;
@@ -260,10 +257,7 @@
   height: 1.15rem;
   border-radius: var(--radius-none);
   background: color-mix(in srgb, var(--lightgray) 60%, transparent);
-  box-shadow: 0 0 0 1px var(--pec-div) inset;
-  transition:
-    background 140ms ease-out,
-    box-shadow 140ms ease-out;
+  transition: background 140ms ease-out;
 }
 
 .pec-switch-thumb {
@@ -274,7 +268,6 @@
   height: 0.85rem;
   border-radius: var(--radius-none);
   background: var(--light);
-  box-shadow: 0 0 0 1px var(--pec-div) inset;
   transform: translateY(-50%);
   transition: left 140ms ease-out;
 }
@@ -292,7 +285,6 @@
   border-radius: var(--radius-none);
   border: 0;
   background: color-mix(in srgb, var(--light) 96%, transparent);
-  box-shadow: var(--pec-panel-shadow);
   color: var(--pec-note);
   font-size: 0.82rem;
   line-height: 1.55;
@@ -362,7 +354,8 @@
   margin-inline: auto;
 
   .pec-grid {
-    justify-content: center;
-    grid-template-columns: repeat(2, min(36vh, 26rem));
+    width: min(100%, 72vh);
+    margin-inline: auto;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }

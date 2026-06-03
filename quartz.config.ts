@@ -138,6 +138,7 @@ const config: QuartzConfig = {
         enableArxivEmbed: true,
         enableRawEmbed: true,
       }),
+      Plugin.GithubCodeEmbed(),
       Plugin.Description(),
       Plugin.Latex({ renderEngine: 'katex', customMacros, katexOptions }),
       Plugin.GitHub({

@@ -94,9 +94,6 @@
       background: radial-gradient(circle, rgba(255, 220, 180, 0.95), rgba(255, 189, 156, 0.7));
       border-radius: var(--radius-circle);
       animation: particleFall linear forwards;
-      box-shadow:
-        0 0 10px rgba(255, 200, 150, 0.7),
-        0 0 5px rgba(255, 180, 120, 0.5);
 
       &.particle-star {
         width: 8px;
@@ -121,9 +118,6 @@
         width: 4px;
         height: 4px;
         background: rgba(255, 215, 170, 0.9);
-        box-shadow:
-          0 0 6px rgba(255, 200, 150, 0.6),
-          0 0 3px rgba(255, 180, 120, 0.4);
       }
     }
   }

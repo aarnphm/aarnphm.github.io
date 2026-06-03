@@ -54,17 +54,14 @@
   background:
     repeating-linear-gradient(45deg, var(--kvc-hatch) 0 1px, transparent 1px 4px),
     var(--kvc-cached-bg);
-  box-shadow: 0 0 0 1px var(--kvc-cached-edge) inset;
 }
 
 .kvc-swatch--recompute {
   background: var(--kvc-recompute-bg);
-  box-shadow: 0 0 0 1px var(--kvc-recompute-edge) inset;
 }
 
 .kvc-swatch--query {
   background: var(--kvc-query-bg);
-  box-shadow: 0 0 0 1px var(--kvc-soft) inset;
 }
 
 .kvc-stage {

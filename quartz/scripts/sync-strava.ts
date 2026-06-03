@@ -151,7 +151,7 @@ async function fetchActivities(
 async function fetchStreams(token: string, id: number): Promise<StravaStreams | null> {
   const headers = authHeaders(token)
   const url = apiUrl(`/activities/${id}/streams`, {
-    keys: 'latlng,altitude,distance,watts',
+    keys: 'latlng,altitude,distance,watts,heartrate,cadence',
     key_by_type: 'true',
   })
   const res = await fetchWithRetry(url, { headers }, limiter)
@@ -162,6 +162,8 @@ async function fetchStreams(token: string, id: number): Promise<StravaStreams | 
     altitude: (data.altitude?.data as number[]) ?? [],
     distance: (data.distance?.data as number[]) ?? [],
     watts: (data.watts?.data as number[]) ?? [],
+    heartrate: (data.heartrate?.data as number[]) ?? [],
+    cadence: (data.cadence?.data as number[]) ?? [],
   }
 }
 
@@ -226,7 +228,11 @@ async function main(): Promise<void> {
   }
 
   const needStreams = Object.values(merged)
-    .filter(a => normalizeSport(a.sportType) !== null && !streams[String(a.id)])
+    .filter(a => {
+      if (normalizeSport(a.sportType) === null) return false
+      const s = streams[String(a.id)]
+      return !s || s.heartrate === undefined
+    })
     .sort((x, y) => y.startDate.localeCompare(x.startDate))
   let si = 0
   for (const a of needStreams) {

@@ -19,6 +19,31 @@ const MAX_BAR = 300
 const MIN_SEG = 3
 const REST_SEG = 7
 const GAP_PX = 2
+const PACE_MI = [
+  '5:30',
+  '6:00',
+  '6:30',
+  '7:00',
+  '7:30',
+  '8:00',
+  '8:30',
+  '9:00',
+  '9:30',
+  '10:00',
+  '10:30',
+  '11:00',
+]
+const paceKm = (mi: string): string => {
+  const [m = '0', s = '0'] = mi.split(':')
+  const secKm = Math.round((Number(m) * 60 + Number(s)) * KM_TO_MI)
+  return `${Math.floor(secKm / 60)}:${(secKm % 60).toString().padStart(2, '0')}`
+}
+const SWIM_100 = ['1:20', '1:30', '1:40', '1:50', '2:00', '2:10', '2:20', '2:30']
+const swimMi = (p: string): string => {
+  const [m = '0', s = '0'] = p.split(':')
+  const secMi = Math.round((Number(m) * 60 + Number(s)) * 16.0934)
+  return `${Math.floor(secMi / 60)}:${(secMi % 60).toString().padStart(2, '0')}`
+}
 
 const CONVERSIONS: [string, string][] = [
   ['pace', '/100m × 16.09 → /mi'],
@@ -222,6 +247,35 @@ export default (() => {
                     <span class="tri-gear-v">
                       {items.flatMap((it, i) => (i === 0 ? [`· ${it}`] : [<br />, `· ${it}`]))}
                     </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div class="tri-pace-wrap">
+              <button class="tri-pace-btn" type="button">
+                pace
+              </button>
+              <div class="tri-pace" aria-hidden="true">
+                <span class="tri-pace-sec">run</span>
+                <div class="tri-pace-row tri-pace-head">
+                  <span>/mi</span>
+                  <span>/km</span>
+                </div>
+                {PACE_MI.map(mi => (
+                  <div class="tri-pace-row">
+                    <span class="tri-pace-mi">{mi}</span>
+                    <span class="tri-pace-km">{paceKm(mi)}</span>
+                  </div>
+                ))}
+                <span class="tri-pace-sec">swim</span>
+                <div class="tri-pace-row tri-pace-head">
+                  <span>/100m</span>
+                  <span>/mi</span>
+                </div>
+                {SWIM_100.map(p => (
+                  <div class="tri-pace-row">
+                    <span class="tri-pace-mi">{p}</span>
+                    <span class="tri-pace-km">{swimMi(p)}</span>
                   </div>
                 ))}
               </div>

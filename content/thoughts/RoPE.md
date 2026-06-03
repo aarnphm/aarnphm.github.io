@@ -87,12 +87,12 @@ YaRN also rescales the attention temperature by $\sqrt{1 + 0.1\,\log s}$ to comp
 
 [@ding2024longropeextendingllmcontext] keeps YaRN's per-band treatment but searches the per-dimension rescaling factors with an evolutionary loop on a small calibration set, then trains progressively from $L$ to $4L$ to $\dots$ to the target. reported context windows reach $2\text{M}$ tokens with sub-1B parameter-updates.
 
-| scheme | what is rescaled | extra training |
-|---|---|---|
-| position interpolation | all $\theta_i$ uniformly by $s$ | yes, small |
-| NTK-aware | base $b \to b s^{d/(d-2)}$ | none |
-| YaRN | per-band $\theta_i$ + softmax temperature | $\sim 100$ steps |
-| LongRoPE | per-dim $\theta_i$ found by search | progressive, multi-stage |
+| scheme                 | what is rescaled                          | extra training           |
+| ---------------------- | ----------------------------------------- | ------------------------ |
+| position interpolation | all $\theta_i$ uniformly by $s$           | yes, small               |
+| NTK-aware              | base $b \to b s^{d/(d-2)}$                | none                     |
+| YaRN                   | per-band $\theta_i$ + softmax temperature | $\sim 100$ steps         |
+| LongRoPE               | per-dim $\theta_i$ found by search        | progressive, multi-stage |
 
 ## implementation note
 

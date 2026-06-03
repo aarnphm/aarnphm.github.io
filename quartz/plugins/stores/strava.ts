@@ -60,6 +60,8 @@ export interface StravaStreams {
   altitude: number[]
   distance: number[]
   watts?: number[]
+  heartrate?: number[]
+  cadence?: number[]
 }
 
 export interface StravaRawCache {
@@ -101,6 +103,8 @@ export interface StravaRoutePoint {
   d: number
   alt: number
   w: number
+  hr: number
+  cad: number
 }
 
 export type ActivityHealth = Omit<OuraDaily, 'date'>
@@ -128,7 +132,6 @@ export interface StravaActivityDetail {
   minAlt: number
   maxAlt: number
   descentM: number
-  health: ActivityHealth | null
 }
 
 export interface StravaPayload {
@@ -211,12 +214,29 @@ function toHealth(o: OuraDaily): ActivityHealth {
   }
 }
 
+function avgPos(arr: number[]): number | null {
+  let sum = 0
+  let count = 0
+  for (const x of arr) {
+    if (x > 0) {
+      sum += x
+      count++
+    }
+  }
+  return count ? Math.round(sum / count) : null
+}
+
+function maxPos(arr: number[]): number | null {
+  let m = 0
+  for (const x of arr) if (x > m) m = x
+  return m > 0 ? Math.round(m) : null
+}
+
 function projectDetail(
   a: RawStravaActivity,
   sport: Sport,
   streams: StravaStreams | undefined,
   geo: string | undefined,
-  ouraDay: OuraDaily | undefined,
 ): StravaActivityDetail {
   const route: StravaRoutePoint[] = []
   let minAlt = 0
@@ -224,6 +244,8 @@ function projectDetail(
   let ascentM = 0
   let descentM = 0
   const latlng = streams?.latlng ?? []
+  const hrStream = streams?.heartrate ?? []
+  const cadStream = streams?.cadence ?? []
   if (latlng.length >= 2) {
     const altitude = cleanAltitude(streams!.altitude)
     const distance = streams!.distance
@@ -270,6 +292,8 @@ function projectDetail(
         d: round((distance[i] ?? 0) / 1000, 3),
         alt: round(alts[k], 1),
         w: Math.round(watts[i] ?? 0),
+        hr: Math.round(hrStream[i] ?? 0),
+        cad: Math.round(cadStream[i] ?? 0),
       })
     })
   }
@@ -281,14 +305,14 @@ function projectDetail(
     distanceKm: round(a.distance / 1000, 1),
     movingTimeS: a.movingTime,
     elevationM: ascentM,
-    avgHr: a.averageHeartrate ? Math.round(a.averageHeartrate) : null,
-    maxHr: a.maxHeartrate ? Math.round(a.maxHeartrate) : null,
+    avgHr: a.averageHeartrate ? Math.round(a.averageHeartrate) : avgPos(hrStream),
+    maxHr: a.maxHeartrate ? Math.round(a.maxHeartrate) : maxPos(hrStream),
     avgWatts: a.averageWatts != null ? Math.round(a.averageWatts) : null,
     npWatts: a.weightedAverageWatts != null ? Math.round(a.weightedAverageWatts) : null,
     maxWatts: a.maxWatts != null ? Math.round(a.maxWatts) : null,
     kilojoules: a.kilojoules != null ? Math.round(a.kilojoules) : null,
     deviceWatts: a.deviceWatts === true,
-    avgCadence: a.averageCadence != null ? Math.round(a.averageCadence) : null,
+    avgCadence: a.averageCadence != null ? Math.round(a.averageCadence) : avgPos(cadStream),
     sufferScore: a.sufferScore != null ? Math.round(a.sufferScore) : null,
     avgTemp: a.averageTemp != null ? Math.round(a.averageTemp) : null,
     location: geo ?? null,
@@ -296,7 +320,6 @@ function projectDetail(
     minAlt,
     maxAlt,
     descentM,
-    health: ouraDay ? toHealth(ouraDay) : null,
   }
 }
 
@@ -381,13 +404,11 @@ export function buildPayload(
 
   const details: Record<string, StravaActivityDetail> = {}
   for (const { a, sport } of activities) {
-    const day = a.startDateLocal.slice(0, 10)
     details[String(a.id)] = projectDetail(
       a,
       sport,
       cache.streams?.[String(a.id)],
       cache.geo?.[String(a.id)],
-      oura?.days[day],
     )
   }
 

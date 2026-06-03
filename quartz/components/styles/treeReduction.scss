@@ -40,7 +40,6 @@
 
 .tr-btn {
   border: 0;
-  box-shadow: 0 0 0 1px color-mix(in srgb, var(--gray) 38%, transparent) inset;
   background: color-mix(in srgb, var(--light) 98%, transparent);
   color: var(--dark);
   padding: 0.32rem 0.7rem;
@@ -50,12 +49,10 @@
   cursor: pointer;
   transition:
     background 0.15s ease,
-    box-shadow 0.15s ease,
     opacity 0.15s ease;
 
   &:hover:not(:disabled) {
     background: var(--tr-fill-active-soft);
-    box-shadow: 0 0 0 1px color-mix(in srgb, #cdd597 60%, var(--gray) 40%) inset;
   }
 
   &:focus-visible {
@@ -70,7 +67,6 @@
 
   &.tr-btn--primary {
     background: var(--tr-fill-active-soft);
-    box-shadow: 0 0 0 1px color-mix(in srgb, #cdd597 55%, var(--gray) 45%) inset;
   }
 }
 
@@ -183,7 +179,6 @@
   border-radius: var(--radius-none);
   padding: 0.85rem 0.95rem;
   border: 0;
-  box-shadow: 0 0 0 1px color-mix(in srgb, var(--gray) 28%, transparent) inset;
   background: color-mix(in srgb, var(--light) 96%, transparent);
 
   & > h5 {
@@ -213,7 +208,6 @@
     padding: 0.55rem 0.6rem;
     border-radius: var(--radius-none);
     border: 0;
-    box-shadow: 0 0 0 1px color-mix(in srgb, var(--gray) 22%, transparent) inset;
 
     & > span:first-child {
       font-size: 0.72rem;
@@ -229,7 +223,6 @@
 
   & > .tr-complexity-tree {
     background: var(--tr-fill-active-soft);
-    box-shadow: 0 0 0 1px color-mix(in srgb, #cdd597 60%, var(--gray) 40%) inset;
   }
 }
 
