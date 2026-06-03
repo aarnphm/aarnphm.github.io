@@ -19,6 +19,7 @@
 .popover {
   --popover-padding: 1rem;
   --popover-arrow-size: 0.58rem;
+  --popover-arrow-leg: calc(var(--popover-arrow-size) * 0.7071);
   --popover-arrow-inset: calc(var(--popover-padding) - var(--popover-arrow-size) / 2);
 
   z-index: var(--z-popover);
@@ -85,14 +86,87 @@
     position: absolute;
     width: var(--popover-arrow-size);
     height: var(--popover-arrow-size);
-    background: var(--light);
-    border: 1px solid var(--gray);
-    border-radius: var(--radius-none);
-    transform: rotate(45deg);
     pointer-events: none;
     opacity: 0;
-    z-index: -1;
+    z-index: 2;
     transition: opacity 120ms linear;
+
+    &::before,
+    &::after {
+      content: '';
+      position: absolute;
+      width: 0;
+      height: 0;
+      border: var(--popover-arrow-leg) solid transparent;
+    }
+
+    &::after {
+      border-width: calc(var(--popover-arrow-leg) - 1px);
+    }
+  }
+
+  &[data-placement^='bottom'] > .popover-arrow {
+    &::before {
+      bottom: 50%;
+      left: 50%;
+      transform: translateX(-50%);
+      border-bottom-color: var(--gray);
+    }
+
+    &::after {
+      bottom: calc(50% - 1px);
+      left: 50%;
+      transform: translateX(-50%);
+      border-bottom-color: var(--light);
+    }
+  }
+
+  &[data-placement^='top'] > .popover-arrow {
+    &::before {
+      top: 50%;
+      left: 50%;
+      transform: translateX(-50%);
+      border-top-color: var(--gray);
+    }
+
+    &::after {
+      top: calc(50% - 1px);
+      left: 50%;
+      transform: translateX(-50%);
+      border-top-color: var(--light);
+    }
+  }
+
+  &[data-placement^='right'] > .popover-arrow {
+    &::before {
+      right: 50%;
+      top: 50%;
+      transform: translateY(-50%);
+      border-right-color: var(--gray);
+    }
+
+    &::after {
+      right: calc(50% - 1px);
+      top: 50%;
+      transform: translateY(-50%);
+      border-right-color: var(--light);
+    }
+  }
+
+  &[data-placement^='left'] > .popover-arrow {
+    &::before {
+      left: 50%;
+      top: 50%;
+      transform: translateY(-50%);
+      border-left-color: var(--gray);
+    }
+
+    &::after {
+      left: calc(50% - 1px);
+      top: 50%;
+      transform: translateY(-50%);
+      border-left-color: var(--light);
+    }
   }
 
   & > .popover-inner {

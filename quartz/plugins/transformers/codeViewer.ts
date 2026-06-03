@@ -1,3 +1,4 @@
+import type { Element, Root as HastRoot, RootContent as HastRootContent } from 'hast'
 import type { Code, Html, Root, RootContent } from 'mdast'
 import type { Parent } from 'unist'
 import { readFile } from 'fs/promises'
@@ -12,6 +13,17 @@ import {
 } from '../../runtime/notebook/backend'
 import { QuartzTransformerPlugin } from '../../types/plugin'
 import { BuildCtx } from '../../util/ctx'
+import {
+  buildBlobUrl,
+  fetchGithubFileLines,
+  joinFileLines,
+  lineRangeLabel,
+  lineRangeMeta,
+  parseGithubBlobUrl,
+  parseLineRange,
+  type GithubBlobRef,
+  type LineRange,
+} from '../../util/github-embed'
 import {
   notebookCellActions,
   notebookCellControls,
@@ -67,7 +79,7 @@ const DEFAULT_EXTS = new Set<string>([
   '.php',
 ])
 
-function languageFromExt(ext: string): string | undefined {
+export function languageFromExt(ext: string): string | undefined {
   const e = ext.replace(/^\./, '').toLowerCase()
   switch (e) {
     case 'py':
@@ -166,7 +178,17 @@ function html(value: string): Html {
   return { type: 'html', value }
 }
 
-type CodeNodeData = { codeTranscludeTarget?: unknown }
+interface GithubCodeTransclude {
+  ref: GithubBlobRef
+  range: LineRange | null
+  anchorText?: string
+}
+
+type CodeNodeData = {
+  codeTranscludeTarget?: unknown
+  githubCodeTransclude?: GithubCodeTransclude
+  hProperties?: Record<string, string>
+}
 
 type CodeWithViewerData = Code & { data?: CodeNodeData }
 
@@ -181,12 +203,97 @@ function codeTranscludeTarget(node: Code): string | undefined {
   return typeof target === 'string' ? target : undefined
 }
 
+function githubCodeTransclude(node: Code): GithubCodeTransclude | undefined {
+  return (node as CodeWithViewerData).data?.githubCodeTransclude
+}
+
 function hasRootChildren(parent: Parent): parent is Parent & { children: RootContent[] } {
   return Array.isArray(parent.children)
 }
 
 function sourcePathFromFile(fileData: { relativePath?: unknown }, fallback: string): string {
   return typeof fileData.relativePath === 'string' ? fileData.relativePath : fallback
+}
+
+function quotedMetaValue(value: string): string {
+  return value.replace(/"/g, "'")
+}
+
+function titleMeta(title: string): string {
+  return `title="${quotedMetaValue(title)}"`
+}
+
+function githubCodeTitle(ref: GithubBlobRef, range: LineRange | null): string {
+  const base = path.posix.basename(ref.filePath)
+  const label = lineRangeLabel(range)
+  return label
+    ? `${ref.owner}/${ref.repo} · ${base}:${label}`
+    : `${ref.owner}/${ref.repo} · ${base}`
+}
+
+function githubCodeNode(
+  target: string,
+  anchorText: string | undefined,
+  exts: Set<string>,
+): Code | null {
+  const ref = parseGithubBlobUrl(target)
+  if (!ref) return null
+
+  const ext = path.extname(ref.filePath).toLowerCase()
+  if (!ext || !exts.has(ext)) return null
+
+  const range = parseLineRange(anchorText)
+  const lang = languageFromExt(ext)
+  const meta = [titleMeta(githubCodeTitle(ref, range)), lineRangeMeta(range)]
+    .filter(part => part.length > 0)
+    .join(' ')
+  const node: Code = { type: 'code', lang, meta, value: '' }
+  const data = codeNodeData(node)
+  data.githubCodeTransclude = { ref, range, anchorText }
+  data.hProperties = { 'data-github-href': buildBlobUrl(ref, anchorText) }
+  return node
+}
+
+function isHastElement(node: unknown): node is Element {
+  return typeof node === 'object' && node !== null && 'type' in node && node.type === 'element'
+}
+
+function hasHastChildren(parent: unknown): parent is { children: HastRootContent[] } {
+  return (
+    typeof parent === 'object' &&
+    parent !== null &&
+    'children' in parent &&
+    Array.isArray(parent.children)
+  )
+}
+
+function stringProperty(value: unknown): string | undefined {
+  return typeof value === 'string' && value.length > 0 ? value : undefined
+}
+
+function githubHrefForPre(node: Element): string | undefined {
+  if (node.tagName !== 'pre') return undefined
+  for (const child of node.children) {
+    if (!isHastElement(child) || child.tagName !== 'code') continue
+    return stringProperty(
+      child.properties?.['data-github-href'] ?? child.properties?.dataGithubHref,
+    )
+  }
+  return undefined
+}
+
+function hasClass(node: Element, className: string): boolean {
+  const classes = node.properties.className
+  return Array.isArray(classes) && classes.includes(className)
+}
+
+function githubCodeEmbedWrapper(pre: Element, href: string): Element {
+  return {
+    type: 'element',
+    tagName: 'div',
+    properties: { className: ['github-code-embed'], 'data-github-href': href },
+    children: [pre],
+  }
 }
 
 function codeLanguage(node: Code): string {
@@ -256,6 +363,8 @@ type CodeRuntimeBinding = { backend: ExecutableLanguageBackend; options: CodeRun
 
 type CodeRuntimeGroup = CodeRuntimeBinding & { cells: NotebookRuntimeCell[]; inserted: boolean }
 
+type RuntimeCellNode = Html | Code
+
 function shellRuntimeOptions(words: string[]): CodeRuntimeOptions {
   return {
     toolbar: false,
@@ -303,7 +412,7 @@ function runtimePayload(
   return payload
 }
 
-function runtimeCellNodes(cell: NotebookRuntimeCell, node: Code): RootContent[] {
+function runtimeCellNodes(cell: NotebookRuntimeCell, node: Code): RuntimeCellNode[] {
   return [
     html(notebookCellFrameOpen(cell.id, cell.displayLanguage ?? cell.language)),
     html(notebookCellControls(cell).join('\n')),
@@ -347,12 +456,20 @@ export const CodeViewer: QuartzTransformerPlugin<Partial<Options>> = userOpts =>
                 const fp = (data.target ?? '').trim()
                 if (!fp) return
 
+                const remoteCodeNode = githubCodeNode(fp, data.anchorText, exts)
+                if (remoteCodeNode) {
+                  if (!hasRootChildren(parent)) return
+                  parent.children.splice(index, 1, remoteCodeNode)
+                  return [SKIP, index]
+                }
+
+                if (/^https?:\/\//i.test(fp)) return
                 const ext = path.extname(fp).toLowerCase()
                 if (!ext || !exts.has(ext)) return
 
                 const lang = languageFromExt(ext)
                 const base = path.posix.basename(fp)
-                const codeNode: Code = { type: 'code', lang, meta: `title="${base}"`, value: '' }
+                const codeNode: Code = { type: 'code', lang, meta: titleMeta(base), value: '' }
 
                 codeNodeData(codeNode).codeTranscludeTarget = fp
 
@@ -364,6 +481,16 @@ export const CodeViewer: QuartzTransformerPlugin<Partial<Options>> = userOpts =>
 
             const promises: Promise<void>[] = []
             visit(tree, 'code', (node: Code) => {
+              const remote = githubCodeTransclude(node)
+              if (remote) {
+                promises.push(
+                  fetchGithubFileLines(remote.ref.rawUrl).then(lines => {
+                    node.value = joinFileLines(lines)
+                  }),
+                )
+                return
+              }
+
               const target = codeTranscludeTarget(node)
               if (!target) return
               const currentRel = sourcePathFromFile(file.data, file.path)
@@ -374,7 +501,7 @@ export const CodeViewer: QuartzTransformerPlugin<Partial<Options>> = userOpts =>
               node.lang = languageFromExt(ext)
               node.meta = node.meta
                 ? `${node.meta} path="${resolved}"`
-                : `title="${titleBase}" path="${resolved}"`
+                : `${titleMeta(titleBase)} path="${resolved}"`
 
               promises.push(
                 readCodeFile(ctx, resolved).then(content => {
@@ -434,11 +561,31 @@ export const CodeViewer: QuartzTransformerPlugin<Partial<Options>> = userOpts =>
         },
       ]
     },
+    htmlPlugins() {
+      return [
+        () => (tree: HastRoot) => {
+          visit(tree, 'element', (node: Element, index, parent) => {
+            if (index === undefined || !hasHastChildren(parent)) return
+            if (isHastElement(parent) && hasClass(parent, 'github-code-embed')) return
+            const href = githubHrefForPre(node)
+            if (!href) return
+            parent.children[index] = githubCodeEmbedWrapper(node, href)
+            return [SKIP, index]
+          })
+        },
+      ]
+    },
   }
 }
 
 declare module 'vfile' {
   interface DataMap {
     codeDependencies: string[]
+  }
+}
+
+declare module 'mdast' {
+  interface CodeData {
+    githubCodeTransclude?: GithubCodeTransclude
   }
 }

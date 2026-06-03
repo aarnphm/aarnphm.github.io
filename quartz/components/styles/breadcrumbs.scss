@@ -94,7 +94,6 @@ a[data-breadcrumbs] {
   font-style: italic;
   background-color: var(--light);
   border: 1px solid color-mix(in srgb, var(--lightgray) 80%, transparent);
-  box-shadow: var(--shadow-elevated);
   width: max-content;
   z-index: var(--z-overlay);
   position: fixed;

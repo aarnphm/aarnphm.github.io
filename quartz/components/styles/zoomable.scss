@@ -109,10 +109,6 @@
   margin: 0;
   background: var(--light);
   border-radius: var(--radius-none);
-  box-shadow:
-    0 0 0 1px color-mix(in srgb, var(--gray) 24%, transparent) inset,
-    0 30px 80px color-mix(in srgb, var(--dark) 30%, transparent),
-    0 8px 24px color-mix(in srgb, var(--dark) 16%, transparent);
   padding: 1.5rem 1.5rem 1rem;
   overflow: auto;
   display: flex;
@@ -130,7 +126,6 @@
   & > .zoomable-content > figure {
     margin: 0;
     border: 0;
-    box-shadow: none;
     background: var(--light);
     padding: 0;
     flex: 1 1 auto;

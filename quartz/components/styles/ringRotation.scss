@@ -223,7 +223,6 @@
   padding: 0.75rem 0.9rem;
   background: color-mix(in srgb, var(--light) 80%, transparent);
   border: 0;
-  box-shadow: 0 0 0 1px color-mix(in srgb, var(--gray) 25%, transparent) inset;
   border-radius: var(--radius-none);
   font-size: 0.82rem;
   color: var(--rr-note-fg);
@@ -314,7 +313,6 @@
 .rr-btn {
   appearance: none;
   border: 0;
-  box-shadow: 0 0 0 1px color-mix(in srgb, var(--rr-stroke) 40%, transparent) inset;
   background: color-mix(in srgb, var(--light) 96%, transparent);
   color: var(--dark);
   font-family: var(--bodyFont);
@@ -324,12 +322,10 @@
   cursor: pointer;
   transition:
     background 140ms ease,
-    box-shadow 140ms ease,
     color 140ms ease;
 }
 
 .rr-btn:hover:not(:disabled) {
-  box-shadow: 0 0 0 1px var(--rr-salmon) inset;
   background: color-mix(in srgb, var(--rr-salmon) 12%, var(--light));
 }
 
@@ -345,13 +341,11 @@
 
 .rr-btn--primary {
   background: color-mix(in srgb, var(--rr-salmon) 28%, var(--light));
-  box-shadow: 0 0 0 1px color-mix(in srgb, var(--rr-salmon) 60%, transparent) inset;
 }
 
 .rr-intuition {
   margin: 1.1rem 0 0;
   padding: 0.75rem 0.9rem;
-  box-shadow: 2px 0 0 var(--rr-salmon) inset;
   color: var(--rr-note-fg);
   font-size: 0.88rem;
   line-height: 1.5;

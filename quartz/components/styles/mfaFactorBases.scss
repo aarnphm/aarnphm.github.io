@@ -106,7 +106,6 @@
   padding: 0.8rem 0.95rem;
   background: color-mix(in srgb, var(--light) 80%, transparent);
   border: 1px solid var(--fig-frame-border);
-  box-shadow: none;
   border-radius: var(--radius-none);
   font-size: 0.83rem;
   color: var(--mfa-note-fg);
@@ -294,7 +293,6 @@
 .mfa-intuition {
   margin: 1.1rem 0 0;
   padding: 0.75rem 0.9rem;
-  box-shadow: 2px 0 0 var(--mfa-salmon) inset;
   color: var(--mfa-note-fg);
   font-size: 0.88rem;
   line-height: 1.55;

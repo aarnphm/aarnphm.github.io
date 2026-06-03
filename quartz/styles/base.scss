@@ -418,10 +418,34 @@ figure {
       color: var(--darkgray);
     }
 
+    & .github-code-source {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      color: inherit;
+      text-decoration: none;
+
+      & svg {
+        width: 0.85em;
+        height: 0.85em;
+        fill: currentColor;
+      }
+
+      &:hover {
+        background: transparent;
+        color: inherit;
+        text-decoration: underline;
+      }
+    }
+
     & > pre {
       padding: 0;
     }
   }
+}
+
+.github-code-embed {
+  display: contents;
 }
 
 pre {

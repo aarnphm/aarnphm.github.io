@@ -14,8 +14,7 @@ export default (() => {
       <div class={classNames(displayClass, 'headings-modal-container')} style={{ display: 'none' }}>
         <div class="headings-modal">
           <div class="headings-modal-content">
-            <div class="headings-modal-header">
-            </div>
+            <div class="headings-modal-header" />
             <div class="headings-list" />
           </div>
         </div>

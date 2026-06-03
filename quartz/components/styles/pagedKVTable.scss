@@ -62,7 +62,6 @@
   padding: 0.65rem 0.75rem;
   border-radius: var(--radius-none);
   border: 0;
-  box-shadow: 0 0 0 1px var(--pkt-divider) inset;
   background: var(--pkt-card-bg);
   display: flex;
   flex-direction: column;
@@ -89,7 +88,6 @@
   padding: 0.4rem 0.55rem;
   border-radius: var(--radius-none);
   border: 0;
-  box-shadow: 0 0 0 1px var(--pkt-stroke-soft) inset;
   background: var(--pkt-card-bg);
   color: var(--dark);
   font-family: var(--bodyFont);
@@ -98,11 +96,9 @@
   text-align: left;
   transition:
     background 160ms ease,
-    box-shadow 160ms ease,
     transform 160ms ease;
 
   &:hover {
-    box-shadow: 0 0 0 1px var(--pkt-salmon) inset;
     transform: translateX(1px);
   }
   &[data-pkt-mapped='false'] {
@@ -111,9 +107,6 @@
   }
   &.is-active {
     background: color-mix(in srgb, var(--pkt-salmon) 24%, var(--pkt-card-bg));
-    box-shadow:
-      0 0 0 1px var(--pkt-salmon) inset,
-      0 0 0 2px var(--pkt-active-glow);
     transform: translateX(2px);
   }
 }
@@ -154,7 +147,6 @@
   padding: 0.25rem 0.65rem;
   border-radius: var(--radius-none);
   border: 0;
-  box-shadow: 0 0 0 1px var(--pkt-divider) inset;
   background: transparent;
   color: var(--pkt-note-fg);
   font-family: var(--bodyFont);
@@ -162,12 +154,10 @@
   cursor: pointer;
   transition:
     background 160ms ease,
-    box-shadow 160ms ease,
     color 160ms ease;
 
   &:hover {
     background: color-mix(in srgb, var(--pkt-salmon) 18%, var(--light));
-    box-shadow: 0 0 0 1px var(--pkt-salmon) inset;
     color: var(--dark);
   }
   &:disabled {
@@ -183,7 +173,6 @@
   font-size: 0.85rem;
   background: var(--pkt-card-bg);
   border: 0;
-  box-shadow: 0 0 0 1px var(--pkt-divider) inset;
   border-radius: var(--radius-none);
   overflow: hidden;
 
@@ -198,9 +187,6 @@
     text-transform: uppercase;
     color: var(--pkt-note-fg);
     background: color-mix(in srgb, var(--lightgray) 18%, transparent);
-  }
-  tbody tr:last-child td {
-    box-shadow: none;
   }
 }
 
@@ -244,13 +230,11 @@
   padding: 0.4rem 0.55rem;
   border-radius: var(--radius-none);
   border: 0;
-  box-shadow: 0 0 0 1px var(--pkt-stroke-soft) inset;
   background: var(--pkt-card-bg);
   font-family: var(--bodyFont);
   font-size: 0.78rem;
   transition:
     background 220ms ease,
-    box-shadow 220ms ease,
     transform 220ms ease;
 
   &--free {
@@ -258,9 +242,6 @@
     color: var(--pkt-note-fg);
   }
   &.is-active {
-    box-shadow:
-      0 0 0 1px var(--pkt-salmon) inset,
-      0 0 0 2px var(--pkt-active-glow);
     transform: translateY(-1px);
   }
   &.is-landing {
@@ -284,7 +265,6 @@
   padding: 0.15rem 0.5rem;
   border-radius: var(--radius-none);
   border: 0;
-  box-shadow: 0 0 0 1px var(--pkt-divider) inset;
   background: transparent;
   font-family: var(--bodyFont);
   font-size: 0.7rem;
@@ -292,12 +272,10 @@
   cursor: pointer;
   transition:
     background 160ms ease,
-    box-shadow 160ms ease,
     color 160ms ease;
 
   &:hover:not(:disabled) {
     background: color-mix(in srgb, var(--pkt-salmon) 22%, var(--light));
-    box-shadow: 0 0 0 1px var(--pkt-salmon-edge) inset;
     color: var(--dark);
   }
   &:disabled {
@@ -318,7 +296,6 @@
   padding: 0.75rem 0.95rem;
   border-radius: var(--radius-none);
   border: 0;
-  box-shadow: 0 0 0 1px var(--pkt-divider) inset;
   background: var(--pkt-card-bg);
   display: flex;
   flex-direction: column;
@@ -398,7 +375,6 @@
   padding: 0.4rem 0.85rem;
   border-radius: var(--radius-none);
   border: 0;
-  box-shadow: 0 0 0 1px var(--pkt-divider) inset;
   background: transparent;
   color: var(--pkt-note-fg);
   font-family: var(--bodyFont);
@@ -406,12 +382,10 @@
   cursor: pointer;
   transition:
     background 160ms ease,
-    box-shadow 160ms ease,
     color 160ms ease;
 
   &:hover {
     background: color-mix(in srgb, var(--pkt-salmon) 18%, var(--light));
-    box-shadow: 0 0 0 1px var(--pkt-salmon) inset;
     color: var(--dark);
   }
 }
@@ -435,7 +409,6 @@
 .pkt-intuition {
   margin: 1.1rem 0 0;
   padding: 0.75rem 0.9rem;
-  box-shadow: 0 0 0 1px var(--pkt-divider) inset;
   color: var(--pkt-note-fg);
   font-size: 0.85rem;
   line-height: 1.5;
@@ -456,14 +429,12 @@
 @keyframes pkt-land {
   0% {
     transform: translateY(-12px) scale(0.94);
-    box-shadow: 0 0 0 4px var(--pkt-active-glow);
   }
   60% {
     transform: translateY(2px) scale(1.02);
   }
   100% {
     transform: translateY(0) scale(1);
-    box-shadow: 0 0 0 2px transparent;
   }
 }
 

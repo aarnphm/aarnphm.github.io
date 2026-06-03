@@ -36,8 +36,8 @@ import {
 import { notebookLocalSourcesClearedEvent } from '../../util/notebook-source-events'
 import { notebookCellLanguageBadge } from '../../util/notebook/cell-html'
 import { renderOutputHtml } from '../../util/notebook/render/output-to-hast'
-import { isRecord, readString } from '../../util/type-guards'
 import { supportsEagerRuntimePreload } from '../../util/runtime-preload'
+import { isRecord, readString } from '../../util/type-guards'
 import { configureNotebookRuntimeAssets } from './assets'
 import { backendFor } from './registry'
 import {

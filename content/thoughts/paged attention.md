@@ -84,11 +84,11 @@ where $A_{ij}=(a_{i,(j-1)B+1}, \ldots, a_{i,jB})$ is the row vector of attention
 
   \node[hd, minimum width=2.6cm] (h1) at (6.95,0.95) {};
   \node[hd, minimum width=1.2cm, anchor=west] (h2) at (h1.east) {};
-  \node[anchor=base west, font=\ttfamily\scriptsize] at (6.0,0.88) {Physical};
-  \node[anchor=base west, font=\ttfamily\scriptsize] at (6.92,0.88) {block};
-  \node[anchor=base west, font=\ttfamily\scriptsize] at (7.62,0.88) {\#};
-  \node[anchor=base west, font=\ttfamily\scriptsize] at (8.44,0.88) {\#};
-  \node[anchor=base west, font=\ttfamily\scriptsize] at (8.74,0.88) {Filled};
+  \node[anchor=base west, font=\ttfamily\scriptsize] at (6.01,0.88) {Physical};
+  \node[anchor=base west, font=\ttfamily\scriptsize] at (7.04,0.88) {block};
+  \node[anchor=base west, font=\ttfamily\scriptsize] at (7.75,0.88) {\#};
+  \node[anchor=base west, font=\ttfamily\scriptsize] at (8.41,0.88) {\#};
+  \node[anchor=base west, font=\ttfamily\scriptsize] at (8.64,0.88) {Filled};
   \node[td, minimum width=2.6cm] (t0) at (6.95,0.35) {7};
   \node[td, minimum width=1.2cm, anchor=west] (t0f) at (t0.east) {4};
   \node[td, minimum width=2.6cm] (t1) at (6.95,-0.25) {1};

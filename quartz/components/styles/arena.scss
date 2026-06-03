@@ -141,7 +141,6 @@ body[data-arena-subpage='true'] {
 .arena-channel-row {
   padding: 12px;
   border-radius: var(--radius-none);
-  transition: box-shadow 0.4s ease;
   border: 1px solid var(--lightgray);
   transition: border-color 0.2s ease;
   text-decoration: none;
@@ -397,7 +396,6 @@ body[data-arena-subpage='true'] {
   border: 1px solid var(--lightgray);
   border-radius: var(--radius-none);
   overflow: hidden;
-  transition: box-shadow 0.2s ease;
   min-height: 120px;
   display: flex;
   flex-direction: column;
@@ -409,7 +407,6 @@ body[data-arena-subpage='true'] {
 
   &:hover {
     border-color: var(--secondary);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     transform: translateY(-2px);
   }
 
@@ -418,7 +415,6 @@ body[data-arena-subpage='true'] {
 
     &:hover {
       border-color: var(--tertiary);
-      box-shadow: 0 4px 12px rgba(218, 112, 44, 0.2);
     }
   }
 
@@ -428,7 +424,6 @@ body[data-arena-subpage='true'] {
 
     &:hover {
       border-color: var(--secondary);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     }
   }
 }
@@ -710,7 +705,6 @@ body[data-arena-subpage='true'] {
     overflow: hidden;
     background: var(--lightgray);
     border: 1px solid rgba(15, 23, 42, 0.08);
-    box-shadow: 0 14px 32px rgba(15, 23, 42, 0.12);
     height: 100%;
   }
 
@@ -1454,7 +1448,6 @@ span.tag-link:hover {
     background-color: var(--light);
     border: 1px solid var(--lightgray);
     border-radius: var(--radius-none);
-    box-shadow: var(--shadow-md);
     max-height: 50vh;
     margin-top: 0.5rem;
     overflow-y: auto;
@@ -1835,7 +1828,6 @@ span.tag-link:hover {
   .arena-pdf-controls {
     background: var(--dark);
     border-bottom-color: var(--darkgray);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
   }
 
   .arena-pdf-btn {

@@ -35,14 +35,12 @@
   opacity: 0;
   object-fit: cover;
   cursor: pointer;
-  box-shadow: var(--shadow-sm);
 
   &.positioned {
     opacity: 1;
   }
 
   &:hover {
-    box-shadow: var(--shadow-md);
     z-index: 10;
   }
 }
@@ -60,7 +58,6 @@
   font-size: 0.875rem;
   line-height: 1.4;
   color: var(--dark);
-  box-shadow: var(--shadow-sm);
 
   &.visible {
     display: block;

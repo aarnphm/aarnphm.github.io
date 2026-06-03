@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-06-02 15:19:49 GMT-04:00
+modified: 2026-06-02 23:01:48 GMT-04:00
 permalinks:
   - /website
   - /tweets
@@ -7024,6 +7024,14 @@ title: are.na
 
 ## stream
 
+- https://www.inventorypress.com/ -- Inventory Press
+  - [meta]:
+    - date: 06/02/2026
+    - tags: [editorial, visuals]
+- https://www.onomatopee.net/ -- Onomatopee
+  - [meta]:
+    - date: 06/02/2026
+    - tags: [publication, visuals]
 - https://visualjournal.it/ -- Visual Journal [**]
   - [meta]:
     - date: 06/01/2026
@@ -8667,6 +8675,10 @@ title: are.na
 
 ## typography
 
+- https://www.swisstypefaces.com/ -- Swiss typeface
+  - [meta]:
+    - date: 06/02/2026
+    - tags: [foundry]
 - https://www.grillitype.com/typeface/gt-sectra -- GT Sectra
   - [meta]:
     - date: 03/19/2026

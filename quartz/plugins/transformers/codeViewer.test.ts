@@ -1,19 +1,24 @@
+import type { Element, Root as HastRoot } from 'hast'
 import type { Code, Html, Root, RootContent } from 'mdast'
 import { fromMarkdown } from 'mdast-util-from-markdown'
+import { toHast } from 'mdast-util-to-hast'
 import assert from 'node:assert'
 import { mkdir, mkdtemp, writeFile } from 'node:fs/promises'
 import os from 'node:os'
 import nodePath from 'node:path'
 import test, { describe } from 'node:test'
+import { visit } from 'unist-util-visit'
 import { VFile } from 'vfile'
 import type { BuildCtx } from '../../util/ctx'
 import type { FilePath } from '../../util/path'
+import { wikilink, wikilinkFromMarkdown } from '../../extensions/micromark-extension-ofm-wikilinks'
 import { notebookToMarkdownChunks } from '../../util/notebook/markdown'
 import { parseNotebookDoc } from '../../util/notebook/parse'
 import { isNotebookParseError } from '../../util/notebook/types'
 import { CodeViewer } from './codeViewer'
 
 type Transformer = (tree: Root, file: VFile) => Promise<void> | void
+type HtmlTransformer = (tree: HastRoot, file: VFile) => Promise<void> | void
 
 type RuntimePayload = {
   id: string
@@ -51,10 +56,24 @@ function vfile(root: string, rel: string): VFile {
   return file
 }
 
+function fromMarkdownWithWikilinks(value: string): Root {
+  return fromMarkdown(value, {
+    extensions: [wikilink()],
+    mdastExtensions: [wikilinkFromMarkdown()],
+  })
+}
+
 async function runCodeViewer(tree: Root, file: VFile, ctx: BuildCtx) {
   const plugins = CodeViewer().markdownPlugins?.(ctx)
   assert.ok(plugins)
   const createTransformer = plugins[0] as () => Transformer
+  await createTransformer()(tree, file)
+}
+
+async function runCodeViewerHtml(tree: HastRoot, file: VFile, ctx: BuildCtx) {
+  const plugins = CodeViewer().htmlPlugins?.(ctx)
+  assert.ok(plugins)
+  const createTransformer = plugins[0] as () => HtmlTransformer
   await createTransformer()(tree, file)
 }
 
@@ -316,5 +335,48 @@ describe('code viewer runtime cells', () => {
     assert.strictEqual(code.value, 'print("from file")\n')
     assert.deepStrictEqual(file.data.codeDependencies, ['notes/script.py'])
     assert.strictEqual(collectHtml(tree).length, 0)
+  })
+
+  test('transcludes GitHub blob wikilinks as whole-file code blocks with line meta', async () => {
+    const root = await mkdtemp(nodePath.join(os.tmpdir(), 'quartz-code-viewer-'))
+    const sourceUrl = 'https://github.com/aarnphm/garden/blob/main/quartz/util/path.ts#L2-L3'
+    const rawUrl = 'https://raw.githubusercontent.com/aarnphm/garden/main/quartz/util/path.ts'
+    const originalFetch = globalThis.fetch
+    let fetchCount = 0
+    const fakeFetch: typeof fetch = async input => {
+      fetchCount += 1
+      assert.strictEqual(String(input), rawUrl)
+      return new Response('one\ntwo\nthree\n', { status: 200 })
+    }
+    globalThis.fetch = fakeFetch
+
+    try {
+      const tree = fromMarkdownWithWikilinks(`![[${sourceUrl}]]`)
+      const file = vfile(root, 'notes/page.md')
+
+      await runCodeViewer(tree, file, buildCtx(root))
+
+      const [code] = collectCode(tree)
+      assert.strictEqual(fetchCount, 1)
+      assert.strictEqual(code.lang, 'ts')
+      assert.strictEqual(code.value, 'one\ntwo\nthree')
+      assert.strictEqual(code.meta, 'title="aarnphm/garden · path.ts:2-3" showLineNumbers {2-3}')
+      assert.deepStrictEqual(code.data?.hProperties, { 'data-github-href': sourceUrl })
+
+      const hast = toHast(tree, { allowDangerousHtml: true })
+      assert.ok(hast && hast.type === 'root')
+      await runCodeViewerHtml(hast, file, buildCtx(root))
+      let wrapper: Element | undefined
+      visit(hast, 'element', (node: Element) => {
+        if (node.tagName === 'div' && node.properties?.['data-github-href'] === sourceUrl) {
+          wrapper = node
+        }
+      })
+      assert.ok(wrapper)
+      assert.deepStrictEqual(wrapper.properties.className, ['github-code-embed'])
+      assert.strictEqual(file.data.codeDependencies, undefined)
+    } finally {
+      globalThis.fetch = originalFetch
+    }
   })
 })

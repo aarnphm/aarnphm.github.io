@@ -30,7 +30,6 @@
   padding: 1.5rem 1.75rem;
   border-radius: var(--radius-none);
   border: 1px solid var(--fig-frame-border);
-  box-shadow: none;
   background: $bg;
   color: var(--dark);
 
@@ -88,13 +87,6 @@
   .katex-display {
     margin: 0;
   }
-}
-
-@mixin figure-panel($bg: var(--fig-surface), $shadow: var(--fig-panel-shadow)) {
-  border: 0;
-  border-radius: var(--radius-none);
-  background: $bg;
-  box-shadow: $shadow;
 }
 
 @mixin figure-card-heading($size: 0.72rem) {

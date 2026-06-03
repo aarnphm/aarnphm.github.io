@@ -38,7 +38,6 @@
   gap: 1rem;
   margin-bottom: 1.1rem;
   padding-bottom: 0.9rem;
-  box-shadow: 0 1px 0 var(--acir-line);
 }
 
 .acir-circuit-toggle {
@@ -69,18 +68,13 @@
   border: 0;
   background: var(--light);
   color: var(--dark);
-  box-shadow: 0 0 0 1px var(--acir-stroke-soft) inset;
   transition:
     background 120ms ease,
-    box-shadow 120ms ease,
     transform 120ms ease;
 
   &:focus-visible {
     outline: 2px solid var(--acir-stroke);
     outline-offset: 2px;
-  }
-  &:hover:not([aria-pressed='true']) {
-    box-shadow: 0 0 0 1px var(--acir-stroke) inset;
   }
   &:active {
     transform: scale(0.96);
@@ -88,19 +82,12 @@
 
   &.acir-pill--qk[aria-pressed='true'] {
     background: var(--acir-qk-fill);
-    box-shadow:
-      0 0 0 1px color-mix(in srgb, var(--acir-qk) 72%, var(--acir-stroke)) inset,
-      0 8px 18px color-mix(in srgb, var(--acir-qk) 18%, transparent);
   }
   &.acir-pill--ov[aria-pressed='true'] {
     background: var(--acir-ov-fill);
-    box-shadow:
-      0 0 0 1px color-mix(in srgb, var(--acir-ov) 72%, var(--acir-stroke)) inset,
-      0 8px 18px color-mix(in srgb, var(--acir-ov) 18%, transparent);
   }
   &.acir-pill--none[aria-pressed='true'] {
     background: var(--acir-box-soft);
-    box-shadow: 0 0 0 1px var(--acir-stroke) inset;
   }
 }
 
@@ -120,18 +107,12 @@
     border: 0;
     border-radius: var(--radius-none);
     background: color-mix(in srgb, var(--light) 88%, transparent);
-    box-shadow: 0 0 0 1px color-mix(in srgb, var(--darkgray) 48%, transparent) inset;
     cursor: pointer;
-    transition:
-      transform 120ms ease,
-      box-shadow 160ms ease;
+    transition: transform 120ms ease;
   }
 
   input[type='checkbox']:checked {
     background: color-mix(in srgb, var(--darkgray) 82%, var(--light));
-    box-shadow:
-      0 0 0 3px color-mix(in srgb, var(--light) 96%, transparent) inset,
-      0 0 0 1px color-mix(in srgb, var(--dark) 24%, transparent);
   }
 
   input[type='checkbox']:active {
@@ -155,7 +136,6 @@
   border-radius: 0;
   border: 0;
   background: transparent;
-  box-shadow: none;
 }
 
 .acir-panel-title {
@@ -350,7 +330,6 @@
   border-radius: 0;
   border: 0;
   background: transparent;
-  box-shadow: none;
 
   dt {
     margin: 0 0 0.3rem;

@@ -37,7 +37,7 @@
   min-height: 0;
   max-height: 40%;
   padding-block: 5rem 0rem;
-  margin-block: 1rem;
+  margin-block: 1rem 0;
 }
 
 .tri-scroll {
@@ -141,7 +141,6 @@
   backdrop-filter: blur(10px);
   border: 1px solid color-mix(in srgb, var(--gray) 26%, transparent);
   border-radius: var(--radius-none);
-  box-shadow: 0 10px 34px color-mix(in srgb, var(--dark) 13%, transparent);
   transition:
     opacity 0.16s ease,
     visibility 0.16s;
@@ -600,7 +599,8 @@
 }
 
 .tri-calc-btn,
-.tri-gear-btn {
+.tri-gear-btn,
+.tri-pace-btn {
   padding: 0;
   background: none;
   border: 0;
@@ -686,6 +686,84 @@
 
 .tri-gear-v {
   color: var(--dark);
+}
+
+.tri-pace-wrap {
+  position: relative;
+  display: inline-flex;
+}
+
+.tri-pace {
+  position: absolute;
+  bottom: calc(100% + 0.6rem);
+  left: 0;
+  z-index: 40;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  width: 10rem;
+  max-width: 86vw;
+  max-height: 60vh;
+  overflow-y: auto;
+  scrollbar-width: none;
+  padding: 0.9rem 1rem;
+  background: color-mix(in srgb, var(--light) 92%, transparent);
+  backdrop-filter: blur(10px);
+  border: 1px solid color-mix(in srgb, var(--gray) 72%, transparent);
+  border-radius: var(--radius-none);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(4px);
+  transition:
+    opacity 0.16s ease,
+    transform 0.18s ease,
+    visibility 0.16s;
+}
+
+.tri-pace-open .tri-pace {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.tri-pace-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: 1rem;
+  font-size: 0.66rem;
+  line-height: 1.5;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+.tri-pace-head {
+  margin-bottom: 0.15rem;
+  font-size: 0.58rem;
+  text-transform: uppercase;
+  color: var(--gray);
+}
+
+.tri-pace-mi {
+  color: var(--darkgray);
+}
+
+.tri-pace-km {
+  color: var(--dark);
+}
+
+.tri-pace::-webkit-scrollbar {
+  display: none;
+}
+
+.tri-pace-sec {
+  font-size: 0.58rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--darkgray);
+}
+
+.tri-pace-sec:not(:first-child) {
+  margin-top: 0.55rem;
 }
 
 .tri-calc-scrim {

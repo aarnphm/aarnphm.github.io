@@ -10,7 +10,6 @@
   padding: 0;
   border-radius: 0;
   border: 0;
-  box-shadow: none;
   background: transparent;
   color: var(--dark);
 
@@ -146,10 +145,6 @@
     line-height: 1.45;
     font-size: 0.95rem;
   }
-
-  & + .rs-note {
-    box-shadow: 0 -1px 0 var(--rs-divider-soft);
-  }
 }
 
 .rs-note--unembed {
@@ -181,10 +176,6 @@
 .rs-bracket-line {
   width: 8px;
   align-self: stretch;
-  box-shadow:
-    inset -1px 0 0 currentColor,
-    0 -1px 0 currentColor,
-    0 1px 0 currentColor;
 }
 
 .rs-bracket-label {

@@ -65,7 +65,6 @@
   padding: 0.55rem 0.7rem;
   border-radius: var(--radius-none);
   border: 0;
-  box-shadow: 0 0 0 1px var(--rpt-divider) inset;
   background: color-mix(in srgb, var(--light) 98%, transparent);
   color: var(--dark);
   font-family: var(--bodyFont);
@@ -74,12 +73,10 @@
   cursor: pointer;
   transition:
     background 160ms ease,
-    box-shadow 160ms ease,
     transform 120ms ease;
 
   &:hover {
     background: color-mix(in srgb, var(--rpt-match) 14%, var(--light));
-    box-shadow: 0 0 0 1px var(--rpt-match) inset;
   }
 
   &:focus-visible {
@@ -89,7 +86,6 @@
 
   &.is-active {
     background: var(--rpt-match-bg);
-    box-shadow: 0 0 0 1px var(--rpt-match) inset;
   }
 }
 
@@ -115,7 +111,6 @@
   padding: 0.32rem 0.7rem;
   border-radius: var(--radius-none);
   border: 0;
-  box-shadow: 0 0 0 1px var(--rpt-divider) inset;
   background: transparent;
   color: var(--rpt-note-fg);
   font-family: var(--bodyFont);
@@ -335,7 +330,6 @@
   padding: 0.75rem 0.9rem;
   border-radius: var(--radius-none);
   border: 0;
-  box-shadow: 0 0 0 1px var(--rpt-divider) inset;
   background: color-mix(in srgb, var(--light) 96%, transparent);
 
   p {
@@ -358,10 +352,8 @@
     gap: 0.4rem;
     font-family: var(--bodyFont);
     font-size: 0.78rem;
-    box-shadow: 0 1px 0 var(--rpt-divider);
     padding-bottom: 0.24rem;
     &:last-child {
-      box-shadow: none;
       padding-bottom: 0;
     }
   }

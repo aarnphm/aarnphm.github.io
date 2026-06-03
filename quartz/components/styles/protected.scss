@@ -61,7 +61,6 @@ body:has(.protected-content-wrapper:not(.inline) .password-prompt-overlay[style*
     border: 1px solid var(--lightgray);
     border-radius: var(--radius-none);
     background-color: var(--light);
-    box-shadow: var(--shadow-md);
 
     & > p {
       margin: 0 0 1rem;

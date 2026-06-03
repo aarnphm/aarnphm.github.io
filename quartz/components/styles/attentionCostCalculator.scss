@@ -44,7 +44,6 @@
   background: color-mix(in srgb, var(--light) 80%, transparent);
   border: 0;
   border-radius: var(--radius-none);
-  box-shadow: var(--acc-panel-shadow);
   min-width: 0;
 }
 
@@ -104,7 +103,6 @@
   border: 0;
   border-radius: var(--radius-none);
   background: var(--light);
-  box-shadow: 0 0 0 1px var(--acc-div) inset;
   color: var(--dark);
 }
 
@@ -115,7 +113,6 @@
   color: var(--acc-salmon-edge);
   background: color-mix(in srgb, var(--acc-salmon) 10%, transparent);
   border-radius: var(--radius-none);
-  box-shadow: 2px 0 0 color-mix(in srgb, var(--acc-salmon) 78%, transparent) inset;
   line-height: 1.4;
 }
 
@@ -131,29 +128,18 @@
   border-radius: var(--radius-none);
   border: 0;
   background: var(--acc-card-bg);
-  box-shadow: var(--acc-panel-shadow);
   display: flex;
   flex-direction: column;
   gap: 0.35rem;
   min-width: 0;
-  transition:
-    background 220ms ease,
-    box-shadow 220ms ease;
+  transition: background 220ms ease;
 }
 
 .acc-card--salmon {
   background: var(--acc-card-bg-salmon);
-  box-shadow: 0 0 0 1px color-mix(in srgb, var(--acc-salmon) 32%, var(--acc-div)) inset;
 }
 .acc-card--sage {
   background: var(--acc-card-bg-sage);
-  box-shadow: 0 0 0 1px color-mix(in srgb, var(--acc-sage) 32%, var(--acc-div)) inset;
-}
-
-.acc-card--flash {
-  box-shadow:
-    0 0 0 2px color-mix(in srgb, var(--acc-salmon) 48%, transparent),
-    0 12px 24px color-mix(in srgb, var(--acc-salmon) 12%, transparent);
 }
 
 .acc-card-head {
@@ -222,7 +208,6 @@
   border-radius: var(--radius-none);
   border: 0;
   background: color-mix(in srgb, var(--light) 90%, transparent);
-  box-shadow: var(--acc-panel-shadow);
 }
 
 .acc-bar-row {
@@ -282,7 +267,6 @@
   margin: 0.9rem 0 0;
   padding: 0.7rem 0.9rem;
   background: color-mix(in srgb, var(--acc-salmon) 6%, transparent);
-  box-shadow: 2px 0 0 color-mix(in srgb, var(--acc-salmon) 78%, transparent) inset;
   color: var(--dark);
   font-size: 0.85rem;
   line-height: 1.5;

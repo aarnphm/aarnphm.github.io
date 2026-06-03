@@ -3,7 +3,6 @@
 
 $canvas-bg: var(--light);
 $canvas-border: var(--gray);
-$canvas-shadow: var(--shadow-lg);
 $label-bg: var(--light);
 $label-color: var(--gray);
 $label-border: var(--lightgray);
@@ -187,7 +186,6 @@ $canvas-accents: (
   border-radius: var(--radius-none);
   overflow: hidden;
   position: relative;
-  box-shadow: $canvas-shadow;
 
   svg:not(a[data-role='anchor'] *):not([class~='external-icon']):not([data-icon]) {
     width: 100%;
@@ -429,7 +427,6 @@ $canvas-accents: (
   border-radius: var(--radius-none);
   padding: 8px 12px;
   max-width: 300px;
-  box-shadow: var(--shadow-sm);
   font-size: 0.85rem;
   line-height: 1.4;
   z-index: var(--z-modal);
@@ -494,7 +491,6 @@ $canvas-accents: (
   width: 90%;
   max-height: 70vh;
   overflow: auto;
-  box-shadow: var(--shadow-md);
   z-index: var(--z-base);
 }
 
@@ -579,7 +575,6 @@ $canvas-accents: (
     font-family: var(--codeFont);
     font-size: 0.75em;
     color: var(--dark);
-    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.06);
     line-height: 1;
   }
 }
@@ -602,7 +597,6 @@ $canvas-accents: (
   background: var(--light);
   border: 1px solid var(--lightgray);
   border-radius: var(--radius-none);
-  box-shadow: var(--shadow-sm);
   pointer-events: all;
   overflow: hidden;
 }
@@ -820,7 +814,6 @@ $canvas-accents: (
   }
   .canvas-tooltip {
     background: var(--dark);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
   }
 
   .edge-label-bg {
@@ -876,7 +869,6 @@ $canvas-accents: (
       background: var(--darkgray);
       border-color: var(--gray);
       color: var(--light);
-      box-shadow: 0 1px 1px rgba(0, 0, 0, 0.15);
     }
 
     .canvas-help-row:not(:last-child) {

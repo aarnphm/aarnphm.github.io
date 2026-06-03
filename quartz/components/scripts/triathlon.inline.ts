@@ -134,29 +134,38 @@ const buildPool = (d: StravaActivityDetail): HTMLElement => {
   return wrap
 }
 
-const buildPower = (d: StravaActivityDetail): HTMLElement => {
+const buildTrace = (
+  d: StravaActivityDetail,
+  pick: (p: StravaActivityDetail['route'][number]) => number,
+  title: string,
+  cap: (max: number) => string,
+): HTMLElement => {
   const w = 100
   const h = 30
   const pad = 2
   const maxD = d.route[d.route.length - 1].d || 1
-  let maxW = 1
-  for (const p of d.route) if (p.w > maxW) maxW = p.w
+  let max = 1
+  for (const p of d.route) {
+    const v = pick(p)
+    if (v > max) max = v
+  }
   const px = (km: number): number => (km / maxD) * w
-  const py = (watt: number): number => h - pad - (watt / maxW) * (h - 2 * pad)
+  const py = (v: number): number => h - pad - (v / max) * (h - 2 * pad)
   let area = `M 0 ${h} `
   let line = ''
   d.route.forEach((p, i) => {
-    area += `L ${px(p.d).toFixed(2)} ${py(p.w).toFixed(2)} `
-    line += `${i ? 'L' : 'M'} ${px(p.d).toFixed(2)} ${py(p.w).toFixed(2)} `
+    const v = pick(p)
+    area += `L ${px(p.d).toFixed(2)} ${py(v).toFixed(2)} `
+    line += `${i ? 'L' : 'M'} ${px(p.d).toFixed(2)} ${py(v).toFixed(2)} `
   })
   area += `L ${w} ${h} Z`
   const s = svg('svg', { class: 'tri-elev', viewBox: `0 0 ${w} ${h}`, preserveAspectRatio: 'none' })
   s.appendChild(svg('path', { d: area, class: 'tri-elev-area' }))
   s.appendChild(svg('path', { d: line, class: 'tri-elev-line' }))
   const wrap = el('div', 'tri-elev-wrap')
-  const cap = el('div', 'tri-elev-cap')
-  cap.append(el('span', 'tri-elev-range', `${maxW} W peak`))
-  wrap.append(s, cap)
+  const cap2 = el('div', 'tri-elev-cap')
+  cap2.append(el('span', 'tri-elev-d', title), el('span', 'tri-elev-range', cap(max)))
+  wrap.append(s, cap2)
   return wrap
 }
 
@@ -230,7 +239,9 @@ const linkElev = (
     const dKm = route[j1].d - route[j0].d
     const grade = dKm > 0 ? ((route[j1].alt - route[j0].alt) / (dKm * 1000)) * 100 : 0
     const g = Math.round(grade * 10) / 10
-    readout.textContent = `${(p.d * KM_TO_MI).toFixed(2)} mi · ${Math.round(p.alt)} m · ${g >= 0 ? '+' : ''}${g.toFixed(1)}%`
+    readout.textContent =
+      `${(p.d * KM_TO_MI).toFixed(2)} mi · ${Math.round(p.alt)} m · ${g >= 0 ? '+' : ''}${g.toFixed(1)}%` +
+      (p.hr > 0 ? ` · ${p.hr} bpm` : '')
     figs.classList.add('tri-figs--hover')
   }
   const onLeave = () => figs.classList.remove('tri-figs--hover')
@@ -280,10 +291,11 @@ const renderDetail = (d: StravaActivityDetail): HTMLElement => {
   if (d.sufferScore != null) moreRows.push(['effort', `${d.sufferScore}`])
   if (d.avgTemp != null) moreRows.push(['temp', `${d.avgTemp}°C`])
 
-  const recovery = d.health ? buildRecovery(d.health) : null
   const hasPowerStream = d.deviceWatts && d.route.some(p => p.w > 0)
+  const hasHrStream = d.route.some(p => p.hr > 0)
+  const hasCadStream = d.route.some(p => p.cad > 0)
 
-  if (moreRows.length > 0 || hasPowerStream || recovery) {
+  if (moreRows.length > 0 || hasPowerStream || hasHrStream || hasCadStream) {
     const toggle = el('button', 'tri-act-toggle')
     toggle.setAttribute('type', 'button')
     const more = el('div', 'tri-act-more')
@@ -294,8 +306,33 @@ const renderDetail = (d: StravaActivityDetail): HTMLElement => {
       mt.appendChild(mb)
       more.appendChild(mt)
     }
-    if (hasPowerStream) more.appendChild(buildPower(d))
-    if (recovery) more.appendChild(recovery)
+    if (hasHrStream)
+      more.appendChild(
+        buildTrace(
+          d,
+          p => p.hr,
+          'hr',
+          m => `${m} bpm peak`,
+        ),
+      )
+    if (hasPowerStream)
+      more.appendChild(
+        buildTrace(
+          d,
+          p => p.w,
+          'power',
+          m => `${m} W peak`,
+        ),
+      )
+    if (hasCadStream)
+      more.appendChild(
+        buildTrace(
+          d,
+          p => p.cad,
+          'cadence',
+          m => `${m} ${d.sport === 'run' ? 'spm' : 'rpm'} peak`,
+        ),
+      )
     wrap.append(toggle, more)
   }
   return wrap
@@ -377,11 +414,6 @@ const setup = (root: HTMLElement): (() => void) | null => {
       const rest = el('div', 'tri-pop-rest')
       rest.append(buildBattery(), el('span', 'tri-pop-rest-label', 'rest'))
       card.appendChild(rest)
-      const dh = healthByDate[bar.dataset.dateIso ?? '']
-      if (dh) {
-        const rec = buildRecovery(dh)
-        if (rec) card.appendChild(rec)
-      }
     } else if (details) {
       for (const id of idsAttr.split(',')) {
         const d = details[id]
@@ -389,6 +421,11 @@ const setup = (root: HTMLElement): (() => void) | null => {
       }
     } else {
       card.appendChild(el('div', 'tri-pop-rest', '·'))
+    }
+    const dh = healthByDate[bar.dataset.dateIso ?? '']
+    if (dh) {
+      const rec = buildRecovery(dh)
+      if (rec) card.appendChild(rec)
     }
     return card
   }
@@ -630,18 +667,24 @@ const setupCalc = (root: HTMLElement): (() => void) | null => {
   }
 }
 
-const setupGear = (root: HTMLElement): (() => void) | null => {
-  const btn = root.querySelector<HTMLElement>('.tri-gear-btn')
-  const wrap = root.querySelector<HTMLElement>('.tri-gear-wrap')
-  const panel = root.querySelector<HTMLElement>('.tri-gear')
+const setupDropdown = (
+  root: HTMLElement,
+  wrapSel: string,
+  btnSel: string,
+  panelSel: string,
+  openClass: string,
+): (() => void) | null => {
+  const btn = root.querySelector<HTMLElement>(btnSel)
+  const wrap = root.querySelector<HTMLElement>(wrapSel)
+  const panel = root.querySelector<HTMLElement>(panelSel)
   if (!btn || !wrap || !panel) return null
 
   const close = () => {
-    wrap.classList.remove('tri-gear-open')
+    wrap.classList.remove(openClass)
     panel.setAttribute('aria-hidden', 'true')
   }
   const onBtn = () => {
-    const open = wrap.classList.toggle('tri-gear-open')
+    const open = wrap.classList.toggle(openClass)
     panel.setAttribute('aria-hidden', open ? 'false' : 'true')
   }
   const onDocClick = (event: MouseEvent) => {
@@ -1258,8 +1301,22 @@ document.addEventListener('nav', () => {
   if (cleanup) window.addCleanup?.(cleanup)
   const calcCleanup = setupCalc(root)
   if (calcCleanup) window.addCleanup?.(calcCleanup)
-  const gearCleanup = setupGear(root)
+  const gearCleanup = setupDropdown(
+    root,
+    '.tri-gear-wrap',
+    '.tri-gear-btn',
+    '.tri-gear',
+    'tri-gear-open',
+  )
   if (gearCleanup) window.addCleanup?.(gearCleanup)
+  const paceCleanup = setupDropdown(
+    root,
+    '.tri-pace-wrap',
+    '.tri-pace-btn',
+    '.tri-pace',
+    'tri-pace-open',
+  )
+  if (paceCleanup) window.addCleanup?.(paceCleanup)
   const cheatCleanup = setupCheat(root)
   if (cheatCleanup) window.addCleanup?.(cheatCleanup)
   const anaCleanup = setupAnalytics(root)

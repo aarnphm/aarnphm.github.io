@@ -52,7 +52,6 @@
   aspect-ratio: 1 / 1;
   display: block;
   border: 0;
-  box-shadow: 0 0 0 1px var(--swm-div) inset;
   border-radius: var(--radius-none);
   background: var(--light);
 
@@ -119,7 +118,6 @@
   height: 0.9rem;
   border-radius: var(--radius-none);
   border: 0;
-  box-shadow: 0 0 0 1px var(--swm-div) inset;
 
   &.swm-swatch--window {
     background: var(--swm-window-bg);
@@ -137,7 +135,6 @@
   padding: 0.85rem 1rem;
   border-radius: var(--radius-none);
   border: 0;
-  box-shadow: 0 0 0 1px var(--swm-div) inset;
   background: color-mix(in srgb, var(--light) 96%, transparent);
   color: var(--dark);
   .katex-display {
@@ -213,7 +210,6 @@
 .swm-controls {
   margin-top: 1.25rem;
   padding-top: 1rem;
-  box-shadow: 0 -1px 0 var(--swm-div);
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 1rem 1.5rem;

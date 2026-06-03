@@ -6,12 +6,12 @@
 
 %card-elevated {
   @extend %card-base;
-  box-shadow: var(--shadow-md);
+  box-shadow: none;
 }
 
 %card-modal {
   @extend %card-base;
-  box-shadow: var(--shadow-modal);
+  box-shadow: none;
 }
 
 %card-interactive {
@@ -21,7 +21,7 @@
 
   &:hover {
     border-color: var(--gray);
-    box-shadow: var(--shadow-sm);
+    box-shadow: none;
   }
 }
 
@@ -30,7 +30,7 @@
   background-color: var(--light);
   border: 1px solid var(--lightgray);
   border-radius: var(--radius-none);
-  box-shadow: var(--shadow-sm);
+  box-shadow: none;
   padding: var(--space-2) var(--space-3);
   font-size: 0.875rem;
   z-index: var(--z-tooltip);

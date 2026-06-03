@@ -263,7 +263,6 @@
   background: color-mix(in srgb, var(--light) 80%, transparent);
   border: 0;
   border-radius: var(--radius-none);
-  box-shadow: var(--mha-panel-shadow);
   font-size: 0.82rem;
   color: var(--mha-note);
 }
@@ -309,7 +308,6 @@
   padding: 0.6rem 0.75rem;
   border-radius: var(--radius-none);
   background: color-mix(in srgb, var(--mha-sage) 10%, transparent);
-  box-shadow: 2px 0 0 color-mix(in srgb, var(--mha-concat-edge) 78%, transparent) inset;
   font-size: 0.8rem;
   line-height: 1.45;
   color: var(--mha-note);
@@ -337,7 +335,6 @@
 .mha-equation {
   padding: 0.6rem 0.75rem;
   background: color-mix(in srgb, var(--mha-salmon) 6%, transparent);
-  box-shadow: 2px 0 0 color-mix(in srgb, var(--mha-salmon) 78%, transparent) inset;
   font-size: 0.85rem;
   overflow-x: auto;
   display: flex;
@@ -448,7 +445,6 @@
   border-radius: var(--radius-none);
   border: 0;
   background: color-mix(in srgb, var(--light) 90%, transparent);
-  box-shadow: 0 0 0 1px color-mix(in srgb, var(--gray) 36%, transparent) inset;
   color: var(--dark);
   font-variant-numeric: tabular-nums;
   min-width: 0;
@@ -469,22 +465,17 @@
   border-radius: var(--radius-none);
   border: 0;
   background: color-mix(in srgb, var(--light) 90%, transparent);
-  box-shadow: 0 0 0 1px color-mix(in srgb, var(--gray) 36%, transparent) inset;
   color: var(--mha-note);
   font-size: 0.8rem;
   cursor: pointer;
   transition:
     background 160ms ease,
     color 160ms ease,
-    box-shadow 160ms ease,
     transform 160ms ease;
 }
 
 .mha-toggle:hover {
   color: var(--dark);
-  box-shadow:
-    0 0 0 1px color-mix(in srgb, var(--mha-salmon) 48%, var(--mha-stroke)) inset,
-    0 8px 18px color-mix(in srgb, var(--mha-salmon) 12%, transparent);
 }
 
 .mha-toggle:active {
@@ -494,9 +485,6 @@
 .mha-toggle.is-active {
   background: color-mix(in srgb, var(--mha-salmon) 18%, var(--light));
   color: var(--dark);
-  box-shadow:
-    0 0 0 1px color-mix(in srgb, var(--mha-accent-edge) 72%, var(--mha-stroke)) inset,
-    0 8px 18px color-mix(in srgb, var(--mha-salmon) 16%, transparent);
 }
 
 .mha-toggle-dot {
@@ -514,7 +502,6 @@
 .mha-intuition {
   margin: 1.1rem 0 0;
   padding: 0.75rem 0.9rem;
-  box-shadow: 2px 0 0 color-mix(in srgb, var(--mha-salmon) 78%, transparent) inset;
   color: var(--mha-note);
   font-size: 0.86rem;
   line-height: 1.5;
