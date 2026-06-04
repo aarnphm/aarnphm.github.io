@@ -379,8 +379,8 @@ describe('remarkWikilink integration', () => {
 
     test('handles escaped characters', () => {
       const html = processToHTML('[[file\\|name]]')
-      // backslash consumed, pipe part of target
-      assert(html.includes('file|name'))
+      // backslash consumed, pipe acts as alias
+      assert(html.includes('>name</a>'))
     })
 
     test('handles paths with slashes', () => {

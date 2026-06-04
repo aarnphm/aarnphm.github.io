@@ -199,9 +199,9 @@ describe('micromark wikilink extension', () => {
       const wikilink = extractWikilink(tree)
 
       assert(wikilink, 'wikilink node should exist')
-      // backslash is consumed during parsing - this is correct behavior
-      assert.strictEqual(wikilink.data?.wikilink.target, 'file|name')
-      assert.strictEqual(wikilink.data?.wikilink.alias, undefined)
+      // backslash is consumed, and the pipe acts as an alias delimiter
+      assert.strictEqual(wikilink.data?.wikilink.target, 'file')
+      assert.strictEqual(wikilink.data?.wikilink.alias, 'name')
     })
 
     test('handles escaped hash in target', () => {
@@ -219,9 +219,9 @@ describe('micromark wikilink extension', () => {
       const wikilink = extractWikilink(tree)
 
       assert(wikilink, 'wikilink node should exist')
-      // backslash is consumed, pipe is part of target
-      assert.strictEqual(wikilink.data?.wikilink.target, 'file|name')
-      assert.strictEqual(wikilink.data?.wikilink.alias, 'alias')
+      // the first escaped pipe acts as an alias delimiter, the second is just text in the alias
+      assert.strictEqual(wikilink.data?.wikilink.target, 'file')
+      assert.strictEqual(wikilink.data?.wikilink.alias, 'name|alias')
     })
 
     test('handles escaped bracket in alias', () => {

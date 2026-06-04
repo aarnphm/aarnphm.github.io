@@ -187,8 +187,8 @@ const tokenize: Tokenizer = function (this, effects, ok, nok) {
       return anchorMarker(code)
     }
 
-    // unescaped pipe → alias
-    if (code === codes.verticalBar && !previousWasBackslash) {
+    // pipe → alias (even if escaped, for table support)
+    if (code === codes.verticalBar) {
       effects.exit('wikilinkTargetChunk')
       effects.exit('wikilinkTarget')
       previousWasBackslash = false
@@ -315,8 +315,8 @@ const tokenize: Tokenizer = function (this, effects, ok, nok) {
       return anchorOrMetadata(code)
     }
 
-    // unescaped pipe → alias
-    if (code === codes.verticalBar && !previousWasBackslash) {
+    // pipe → alias (even if escaped, for table support)
+    if (code === codes.verticalBar) {
       effects.exit('wikilinkAnchorChunk')
       effects.exit('wikilinkAnchor')
       previousWasBackslash = false

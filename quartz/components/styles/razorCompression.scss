@@ -1,0 +1,270 @@
+@use '../../styles/variables.scss' as *;
+@use '../../styles/mixin.scss' as *;
+@use './figure.scss' as *;
+
+.razor-compression {
+  @include figure-frame('rzc-figure', 32rem);
+
+  --rzc-keep-bg: color-mix(in srgb, var(--fig-sage) 52%, var(--light));
+  --rzc-keep-edge: color-mix(in srgb, var(--fig-sage) 90%, var(--dark));
+  --rzc-drop-bg: color-mix(in srgb, var(--fig-salmon) 40%, var(--light));
+  --rzc-drop-edge: color-mix(in srgb, var(--fig-salmon) 90%, var(--dark));
+  --rzc-sink-bg: color-mix(in srgb, var(--gray) 36%, var(--light));
+  --rzc-sink-edge: color-mix(in srgb, var(--gray) 70%, var(--dark));
+  --rzc-comp-edge: color-mix(in srgb, var(--fig-salmon) 88%, var(--dark));
+}
+
+:root[saved-theme='dark'] .razor-compression {
+  --rzc-keep-bg: color-mix(in srgb, var(--fig-sage) 30%, var(--lightgray));
+  --rzc-drop-bg: color-mix(in srgb, var(--fig-salmon) 26%, var(--lightgray));
+  --rzc-sink-bg: color-mix(in srgb, var(--gray) 40%, var(--lightgray));
+}
+
+.rzc-stage {
+  display: block;
+  min-width: 0;
+}
+
+.rzc-graph {
+  width: 100%;
+  height: auto;
+  display: block;
+  overflow: visible;
+
+  foreignObject {
+    overflow: visible;
+  }
+
+  .rzc-seg {
+    stroke-width: 1.1;
+    transition:
+      x 240ms cubic-bezier(0.4, 0, 0.2, 1),
+      width 240ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .rzc-seg--keep {
+    fill: var(--rzc-keep-bg);
+    stroke: var(--rzc-keep-edge);
+  }
+  .rzc-seg--drop {
+    fill: var(--rzc-drop-bg);
+    stroke: var(--rzc-drop-edge);
+  }
+  .rzc-seg--sink {
+    fill: var(--rzc-sink-bg);
+    stroke: var(--rzc-sink-edge);
+  }
+  .rzc-seg-hatch {
+    stroke: none;
+    transition: width 240ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .rzc-hatch-line {
+    stroke: var(--rzc-drop-edge);
+    stroke-width: 0.7;
+    opacity: 0.5;
+  }
+  .rzc-comp-arrow {
+    fill: none;
+    stroke: var(--rzc-comp-edge);
+    stroke-width: 1.3;
+    stroke-dasharray: 4 3;
+    transition: d 240ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .rzc-arrowhead {
+    fill: var(--rzc-comp-edge);
+  }
+  .rzc-comp-box {
+    fill: color-mix(in srgb, var(--fig-salmon) 16%, var(--light));
+    stroke: var(--rzc-comp-edge);
+    stroke-width: 1.2;
+  }
+}
+
+:root[saved-theme='dark'] .razor-compression .rzc-comp-box {
+  fill: color-mix(in srgb, var(--fig-salmon) 18%, var(--lightgray));
+}
+
+.rzc-fo {
+  @include figure-fo;
+  justify-content: center;
+  overflow: visible;
+  pointer-events: none;
+}
+.rzc-fo--row {
+  justify-content: flex-end;
+  color: var(--fig-note);
+  text-align: right;
+  .katex {
+    font-size: 0.8em;
+  }
+}
+.rzc-fo--inseg {
+  color: color-mix(in srgb, var(--dark) 82%, var(--fig-sage));
+  .katex {
+    font-size: 0.78em;
+  }
+}
+.rzc-fo--drop {
+  color: color-mix(in srgb, var(--dark) 70%, var(--fig-salmon));
+  .katex {
+    font-size: 0.76em;
+  }
+}
+.rzc-fo--comp {
+  .katex {
+    font-size: 0.82em;
+  }
+}
+.rzc-fo--compnote {
+  justify-content: flex-start;
+  color: var(--fig-note);
+  .katex {
+    font-size: 0.74em;
+  }
+}
+
+.rzc-controls {
+  margin-top: 1.2rem;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(220px, 0.85fr);
+  gap: 1.4rem;
+  align-items: start;
+}
+
+.rzc-slider-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  min-width: 0;
+}
+.rzc-slider-label {
+  color: var(--fig-note);
+  font-size: 0.82rem;
+}
+.rzc-slider {
+  width: 100%;
+  min-width: 0;
+  @include stableRangeControl;
+}
+.rzc-ticks {
+  display: flex;
+  justify-content: space-between;
+  font-variant-numeric: tabular-nums;
+}
+.rzc-tick {
+  font-size: 0.74rem;
+  color: var(--fig-note);
+  transition:
+    color 160ms ease,
+    font-weight 160ms ease;
+  .katex {
+    font-size: 1em;
+    color: inherit;
+  }
+  &[data-rzc-active='true'] {
+    color: var(--dark);
+    font-weight: 600;
+  }
+}
+
+.rzc-readout {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  margin: 0;
+  padding: 0.8rem 0.95rem;
+  background: color-mix(in srgb, var(--light) 80%, transparent);
+  border: 1px solid var(--fig-frame-border);
+  border-radius: var(--radius-none);
+  font-size: 0.83rem;
+  color: var(--fig-note);
+}
+.rzc-readout-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: baseline;
+  gap: 0.5rem;
+  margin: 0;
+  > dt {
+    margin: 0;
+    font-weight: 500;
+    .katex {
+      font-size: 0.92em;
+      color: inherit;
+    }
+  }
+  > dd {
+    margin: 0;
+    color: var(--dark);
+    font-variant-numeric: tabular-nums;
+    .katex {
+      font-size: 0.92em;
+      color: inherit;
+    }
+  }
+}
+.rzc-readout-row--hero {
+  margin-top: 0.15rem;
+  padding-top: 0.45rem;
+  border-top: 1px solid var(--fig-div);
+  > dd .katex {
+    font-size: 1.18em;
+  }
+}
+
+.rzc-legend {
+  list-style: none;
+  margin: 1rem 0 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem 1.2rem;
+  font-size: 0.8rem;
+  color: var(--fig-note);
+
+  li {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+  }
+  .katex {
+    font-size: 0.92em;
+    color: inherit;
+  }
+}
+.rzc-swatch {
+  width: 16px;
+  height: 10px;
+  border-radius: var(--radius-none);
+  flex: 0 0 auto;
+  &.rzc-swatch--keep {
+    background: var(--rzc-keep-bg);
+    border: 1px solid var(--rzc-keep-edge);
+  }
+  &.rzc-swatch--drop {
+    background: var(--rzc-drop-bg);
+    border: 1px solid var(--rzc-drop-edge);
+  }
+}
+
+.rzc-math {
+  @include figure-inline-math;
+}
+.rzc-caption {
+  @include figure-caption;
+  .rzc-math {
+    @include figure-caption-math-gap;
+  }
+}
+
+@container rzc-figure (max-width: 560px) {
+  .rzc-controls {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+}
+
+@container rzc-figure (max-width: 440px) {
+  .razor-compression {
+    padding: 1.1rem 1rem;
+  }
+}
