@@ -96,7 +96,7 @@ $${A^i}_j = u^i v_j$$
 
 ### raising and lowering indices
 
-Using metric tensor $g_{\mu u}$:
+Using metric tensor $g_{\mu\nu}$:
 
 - Lower an index: $g_{\mu\sigma} {T^\sigma}_\beta = T_{\mu\beta}$
 - Raise an index: $g^{\mu\sigma} {T_\sigma}^\alpha = T^{\mu\alpha}$

@@ -1,0 +1,34 @@
+{
+  "audience": [],
+  "body": "",
+  "content": "<p>In this lecture, Ian Ball discusses cheap talk, a communication framework between players in which messages do not directly affect the payoffs of the game. Providing and receiving information is free.</p>\n",
+  "content_type": "resource",
+  "draft": false,
+  "file": "/courses/14-12-economic-applications-of-game-theory-fall-2025/mit14_12f25_lec24_1080p_360p_16_9.mp4",
+  "file_size": 191127180,
+  "file_type": "video/mp4",
+  "gdrive_url": "",
+  "image_metadata": { "caption": "", "credit": "", "image-alt": "" },
+  "iscjklanguage": false,
+  "learning_resource_types": ["Lecture Videos"],
+  "level": [],
+  "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+  "resourcetype": "Video",
+  "title": "Lecture 24: Cheap Talk",
+  "uid": "4a586a02-71c7-4cc0-9735-3e0ca4f5981c",
+  "video_files": {
+    "archive_url": "",
+    "video_captions_file": "/courses/14-12-economic-applications-of-game-theory-fall-2025/1_QHQQTy9rOXcj5dmMgh6bFweoZ1FPbES_transcript.webvtt",
+    "video_captions_resource": "",
+    "video_thumbnail_file": "https://img.youtube.com/vi/SsdSpzJ-d7s/default.jpg",
+    "video_transcript_file": "/courses/14-12-economic-applications-of-game-theory-fall-2025/1_QHQQTy9rOXcj5dmMgh6bFweoZ1FPbES_transcript.pdf",
+    "video_transcript_resource": ""
+  },
+  "video_metadata": {
+    "source": "",
+    "video_speakers": "",
+    "video_tags": "14-12-economic-applications-of-game-theory-fall-2025, cheap talk, communication, costless messages, game theory, payoffs",
+    "youtube_description": "MIT 14.12 Economic Applications of Game Theory, Fall 2025 \nInstructor: Ian Ball \nView the complete course: https://ocw.mit.edu/courses/14-12-economic-applications-of-game-theory-fall-2025/\nYouTube Playlist: https://www.youtube.com/playlist?list=PLUl4u3cNGP63quuKvMHCt3cmTmt0O2qpv\n\nIn this lecture, Ian Ball discusses cheap talk, which is a communication framework between players where messages do not directly affect the payoffs of the game. Providing and receiving information is free.\t\t\t\n\nLicense: Creative Commons BY-NC-SA\nMore information at https://ocw.mit.edu/terms\nMore courses at https://ocw.mit.edu\nSupport OCW at http://ow.ly/a1If50zVRlQ\n\nWe encourage constructive comments and discussion on OCW’s YouTube and other social media channels. Personal attacks, hate speech, trolling, and inappropriate comments are not allowed and may be removed. More details at https://ocw.mit.edu/comments.",
+    "youtube_id": "SsdSpzJ-d7s"
+  }
+}

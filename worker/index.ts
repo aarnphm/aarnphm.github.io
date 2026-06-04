@@ -20,7 +20,12 @@ import { handleMentions } from './mentions'
 import { CommentsGitHubHandler, GitHubHandler } from './oauth'
 import { isLocalRequest, resolveBaseUrl } from './request-utils'
 import { handleStackedNoteDataRequest, handleStackedNotesRequest } from './stacked'
-import { cacheHeadersForStaticAsset, isolationHeadersForStaticAsset } from './static-assets'
+import {
+  cacheHeadersForStaticAsset,
+  isolationHeadersForStaticAsset,
+  requestWithoutCache,
+  requestWithoutStaticAssetCache,
+} from './static-assets'
 
 const VERSION = 'version https://git-lfs.github.com/spec/v1\n'
 const MIME = 'application/vnd.git-lfs+json'
@@ -978,7 +983,7 @@ export default {
       base.pathname = targetPath
       base.search = url.search
       base.hash = url.hash
-      const newReq = new Request(base.toString(), request)
+      const newReq = requestWithoutStaticAssetCache(new Request(base.toString(), request), pathname)
       const resp = await env.ASSETS.fetch(newReq)
       return withHeaders(resp, {
         ...cacheHeadersForStaticAsset(pathname, resp.status),
@@ -1034,7 +1039,11 @@ export default {
       }
     }
 
-    const resp = await env.ASSETS.fetch(request)
+    const shouldBypassDocumentCache = localRequest && shouldTreatAsDocument(url.pathname)
+    const assetRequest = shouldBypassDocumentCache
+      ? requestWithoutCache(request)
+      : requestWithoutStaticAssetCache(request, url.pathname)
+    const resp = await env.ASSETS.fetch(assetRequest)
     const staticAssetHeaders = {
       ...cacheHeadersForStaticAsset(url.pathname, resp.status),
       ...isolationHeadersForStaticAsset(url.pathname, resp.status),
@@ -1045,6 +1054,9 @@ export default {
       return withHeaders(resp, {
         ...staticAssetHeaders,
         ...notebookHeaders,
+        ...(shouldBypassDocumentCache
+          ? { 'Cache-Control': 'no-store, no-cache, must-revalidate' }
+          : {}),
         'X-Frame-Options': null,
         'Content-Security-Policy': "frame-ancestors 'self' *",
       })

@@ -9,4 +9,4 @@ tags:
 title: efficient market hypothesis
 ---
 
-states that share prices reflect all available information and consisten alpha generation is impossible.
+states that share prices reflect all available information and consistent alpha generation is impossible.

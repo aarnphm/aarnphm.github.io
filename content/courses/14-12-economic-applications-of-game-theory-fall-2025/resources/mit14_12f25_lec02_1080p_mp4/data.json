@@ -1,0 +1,34 @@
+{
+  "audience": [],
+  "body": "",
+  "content": "<p>In this lecture, Ian Ball discusses interactive decision-making, in which there are multiple players making decisions. He explains extensive-form games, strategy, and strategic-form games.</p>\n",
+  "content_type": "resource",
+  "draft": false,
+  "file": "/courses/14-12-economic-applications-of-game-theory-fall-2025/mit14_12f25_lec02_1080p_360p_16_9.mp4",
+  "file_size": 206138795,
+  "file_type": "video/mp4",
+  "gdrive_url": "",
+  "image_metadata": { "caption": "", "credit": "", "image-alt": "" },
+  "iscjklanguage": false,
+  "learning_resource_types": ["Lecture Videos"],
+  "level": [],
+  "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+  "resourcetype": "Video",
+  "title": "Lecture 2: Representation of Games",
+  "uid": "cace5f16-4df1-45e0-b399-35f7925f99fb",
+  "video_files": {
+    "archive_url": "",
+    "video_captions_file": "/courses/14-12-economic-applications-of-game-theory-fall-2025/10GQXzpGUrxcfhA-IVfXC7ML8f5jviito_transcript.webvtt",
+    "video_captions_resource": "",
+    "video_thumbnail_file": "https://img.youtube.com/vi/JAib42oAiKE/default.jpg",
+    "video_transcript_file": "/courses/14-12-economic-applications-of-game-theory-fall-2025/10GQXzpGUrxcfhA-IVfXC7ML8f5jviito_transcript.pdf",
+    "video_transcript_resource": ""
+  },
+  "video_metadata": {
+    "source": "",
+    "video_speakers": "",
+    "video_tags": "14-12-economic-applications-of-game-theory-fall-2025, extensive-form game, interactive decision-making, strategic-form game, strategy",
+    "youtube_description": "MIT 14.12 Economic Applications of Game Theory, Fall 2025 \nInstructor: Ian Ball \nView the complete course: https://ocw.mit.edu/courses/14-12-economic-applications-of-game-theory-fall-2025/\nYouTube Playlist: https://www.youtube.com/playlist?list=PLUl4u3cNGP63quuKvMHCt3cmTmt0O2qpv\n\nIn this class, Ian Ball discusses interactive decision-making where you have multiple players making decisions. He explains extensive-form games, strategy, and strategic-form games.\t\t\n\nLicense: Creative Commons BY-NC-SA\nMore information at https://ocw.mit.edu/terms\nMore courses at https://ocw.mit.edu\nSupport OCW at http://ow.ly/a1If50zVRlQ\n\nWe encourage constructive comments and discussion on OCW’s YouTube and other social media channels. Personal attacks, hate speech, trolling, and inappropriate comments are not allowed and may be removed. More details at https://ocw.mit.edu/comments.",
+    "youtube_id": "JAib42oAiKE"
+  }
+}

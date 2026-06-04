@@ -11,4 +11,4 @@ title: bordism bicategories
 
 https://arxiv.org/abs/1411.0945
 
-In the context of [[thoughts/manifold]], two manifold are considered _bordant_ if their disjoin union forms the boundary of a higher dimensional manifold.
+In the context of [[thoughts/manifold]], two manifolds are considered _bordant_ if their disjoint union forms the boundary of a higher dimensional manifold.

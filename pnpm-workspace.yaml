@@ -75,6 +75,21 @@ minimumReleaseAgeExclude:
   - vscode-languageserver-types@3.17.6-next.7
   - vscode-languageserver@10.0.0-next.18
   - wrangler@4.95.0
+  - '@cloudflare/workers-types@4.20260603.1'
+  - '@cloudflare/workers-oauth-provider@0.7.2'
+  - '@cloudflare/workers-types@4.20260604.1'
+  - '@typescript/native-preview-darwin-arm64@7.0.0-dev.20260604.1'
+  - '@typescript/native-preview-darwin-x64@7.0.0-dev.20260604.1'
+  - '@typescript/native-preview-linux-arm64@7.0.0-dev.20260604.1'
+  - '@typescript/native-preview-linux-arm@7.0.0-dev.20260604.1'
+  - '@typescript/native-preview-linux-x64@7.0.0-dev.20260604.1'
+  - '@typescript/native-preview-win32-arm64@7.0.0-dev.20260604.1'
+  - '@typescript/native-preview-win32-x64@7.0.0-dev.20260604.1'
+  - '@typescript/native-preview@7.0.0-dev.20260604.1'
+  - marked@18.0.5
+  - miniflare@4.20260603.0
+  - pixi.js@8.19.0
+  - wrangler@4.98.0
 
 onlyBuiltDependencies:
   - '@parcel/watcher'
@@ -90,5 +105,5 @@ onlyBuiltDependencies:
 strictPeerDependencies: true
 
 supportedArchitectures:
-  cpu: [x64, arm64]
-  os: [win32, darwin, current]
+  cpu: [ x64, arm64 ]
+  os: [ win32, darwin, current ]

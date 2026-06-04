@@ -1,0 +1,34 @@
+{
+  "audience": [],
+  "body": "",
+  "content": "<p>In this lecture, Ian Ball explains Nash equilibrium, a game theory idea that describes a situation where each person is choosing the best response to everyone else, so no one gains by changing alone. Using examples like two friends choosing between a Celtics game and a Red Sox game and a hide-and-seek game, the lesson also shows why people sometimes need to randomize their choices to avoid being predictable.</p>\n",
+  "content_type": "resource",
+  "draft": false,
+  "file": "/courses/14-12-economic-applications-of-game-theory-fall-2025/mit14_12f25_lec05_1080p_360p_16_9.mp4",
+  "file_size": 242012502,
+  "file_type": "video/mp4",
+  "gdrive_url": "",
+  "image_metadata": { "caption": "", "credit": "", "image-alt": "" },
+  "iscjklanguage": false,
+  "learning_resource_types": ["Lecture Videos"],
+  "level": [],
+  "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+  "resourcetype": "Video",
+  "title": "Lecture 5: Nash Equilibrium",
+  "uid": "a77772d6-914f-48d2-9da1-25e2f11a0afb",
+  "video_files": {
+    "archive_url": "",
+    "video_captions_file": "/courses/14-12-economic-applications-of-game-theory-fall-2025/1_BO-FLYSFUjDHCCUhzPgQwFoJIAZkxbh_transcript.webvtt",
+    "video_captions_resource": "",
+    "video_thumbnail_file": "https://img.youtube.com/vi/ftCXguW2k4o/default.jpg",
+    "video_transcript_file": "/courses/14-12-economic-applications-of-game-theory-fall-2025/1_BO-FLYSFUjDHCCUhzPgQwFoJIAZkxbh_transcript.pdf",
+    "video_transcript_resource": ""
+  },
+  "video_metadata": {
+    "source": "",
+    "video_speakers": "",
+    "video_tags": "14-12-economic-applications-of-game-theory-fall-2025, backward induction, nash equilibrium, ultimatum game",
+    "youtube_description": "MIT 14.12 Economic Applications of Game Theory, Fall 2025 \nInstructor: Ian Ball \nView the complete course: https://ocw.mit.edu/courses/14-12-economic-applications-of-game-theory-fall-2025/\nYouTube Playlist: https://www.youtube.com/playlist?list=PLUl4u3cNGP63quuKvMHCt3cmTmt0O2qpv\n\nIn this lecture, Ian Ball explains Nash equilibrium, a game theory idea that describes a situation where each person is choosing the best response to everyone else, so no one gains by changing alone. Using examples like two friends choosing between a Celtics game and a Red Sox game and a hide-and-seek game, the lesson also shows why people sometimes need to randomize their choices to avoid being predictable.\t\t\t\n\nLicense: Creative Commons BY-NC-SA\nMore information at https://ocw.mit.edu/terms\nMore courses at https://ocw.mit.edu\nSupport OCW at http://ow.ly/a1If50zVRlQ\n\nWe encourage constructive comments and discussion on OCW’s YouTube and other social media channels. Personal attacks, hate speech, trolling, and inappropriate comments are not allowed and may be removed. More details at https://ocw.mit.edu/comments.",
+    "youtube_id": "ftCXguW2k4o"
+  }
+}

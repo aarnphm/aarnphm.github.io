@@ -1,0 +1,82 @@
+{
+  "audience": [],
+  "course_description": "Game theory is the mathematical analysis of strategic interaction. It is used to analyze situations in which one person’s best decision depends on the decisions taken by others. Examples include traditional games such as chess and poker, but also collusion by cartels, political competition, voting, bargaining, auctions, and evolution. This course will introduce the fundamental tools of game theory and use these tools to analyze applications.",
+  "course_description_html": "Game theory is the mathematical analysis of strategic interaction. It is used to analyze situations in which one person’s best decision depends on the decisions taken by others. Examples include traditional games such as chess and poker, but also collusion by cartels, political competition, voting, bargaining, auctions, and evolution. This course will introduce the fundamental tools of game theory and use these tools to analyze applications.",
+  "course_image": {
+    "content": "e5dfc134-f6e2-4fb5-b395-c092d3a4fde9",
+    "website": "economic-applications-of-game-theory"
+  },
+  "course_image_metadata": {
+    "audience": [],
+    "body": "",
+    "content_type": "resource",
+    "draft": false,
+    "file": "/courses/14-12-economic-applications-of-game-theory-fall-2025/mit14_12_f25_chp.jpg",
+    "file_size": 199137,
+    "file_type": "image/jpeg",
+    "gdrive_url": "",
+    "image_metadata": {
+      "caption": "Chess is a classic example of game theory in action. It shows how decision-making, competition, and planning ahead shape outcomes in strategic interactions. (Image by {{% resource_link \"efcef05c-6ab1-4bff-abac-40f84d3c596a\" \"Csaba Fekete\" %}} on Flickr. License: CC BY-NC-SA).",
+      "credit": "",
+      "image-alt": "A close-up photograph of glass chess pieces on a board. "
+    },
+    "iscjklanguage": false,
+    "learning_resource_types": [],
+    "level": [],
+    "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+    "resourcetype": "Image",
+    "title": "mit14_12_f25_chp.jpg",
+    "uid": "e5dfc134-f6e2-4fb5-b395-c092d3a4fde9",
+    "video_files": {
+      "archive_url": "",
+      "video_captions_file": "",
+      "video_captions_resource": {
+        "content": "",
+        "website": "economic-applications-of-game-theory"
+      },
+      "video_thumbnail_file": "",
+      "video_transcript_file": "",
+      "video_transcript_resource": {
+        "content": "",
+        "website": "economic-applications-of-game-theory"
+      }
+    },
+    "video_metadata": {
+      "source": "",
+      "video_speakers": "",
+      "video_tags": "",
+      "youtube_description": "",
+      "youtube_id": ""
+    }
+  },
+  "course_title": "Economic Applications of Game Theory ",
+  "department_numbers": ["14"],
+  "extra_course_numbers": "",
+  "hide_download": false,
+  "image_src": "/courses/14-12-economic-applications-of-game-theory-fall-2025/mit14_12_f25_chp.jpg",
+  "instructors": [
+    {
+      "first_name": "Ian",
+      "last_name": "Ball",
+      "middle_initial": "",
+      "salutation": "",
+      "title": "Prof. Ian Ball",
+      "uid": "b11c7af4-d930-47de-b2f8-13e68e1ec834",
+      "url": "/search/?q=Prof.+Ian+Ball"
+    }
+  ],
+  "learning_resource_types": ["Exams", "Lecture Videos", "Problem Sets", "Lecture Notes"],
+  "legacy_uid": "",
+  "level": ["Undergraduate"],
+  "mit_learn_topics": [],
+  "primary_course_number": "14.12",
+  "site_short_id": "14.12-fall-2025",
+  "site_uid": "2ac81c7f-e751-49f2-95cb-fb12fdfa1aae",
+  "site_url_path": "courses/14-12-economic-applications-of-game-theory-fall-2025",
+  "term": "Fall",
+  "topics": [
+    ["Social Science", "Economics"],
+    ["Social Science", "Game Theory"]
+  ],
+  "year": "2025"
+}

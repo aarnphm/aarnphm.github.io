@@ -22,8 +22,7 @@ one way of formalizing the idea of the Dirac delta function
 > A **Dirac measure** is a measure $\delta_x$ on a set $X$ (with any $\sigma$-algebra of subsets of $X$) defined for a given $x \in X$ and any (measurable) set $A \subseteq X$ by
 >
 > $$
-> \delta_x(A) = 1_A(x) = \begin{cases}0, & x
-> ot\in A \\ 1, & x \in A\end{cases}
+> \delta_x(A) = 1_A(x) = \begin{cases}0, & x \notin A \\ 1, & x \in A\end{cases}
 > $$
 
 where $1_A$ is the indicator function of $A$ {{sidenotes: The Dirac measure is a probability measure, and in terms of probability it represents the almost sure outcome $x$ in the sample space $X$.<br/><br/>We can also say that the measure is a single atom at $x$. The Dirac measures are the extreme points of the convex set of probability measures on $X$.}}

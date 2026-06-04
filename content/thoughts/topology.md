@@ -2,7 +2,7 @@
 date: '2025-11-01'
 description: evergreen hub for topology study anchored on munkres and mit 18.901.
 id: topology
-modified: 2026-05-24 12:53:26 GMT-04:00
+modified: 2026-06-03 22:44:20 GMT-04:00
 seealso:
   - '[[thoughts/topology/point set|point-set topology]]'
   - '[[thoughts/topology/separation|separation]]'
@@ -26,7 +26,7 @@ title: topology
 I'm using {{sidenotes[munkres' topology]: james munkres, [[thoughts/pdfs/munkres-topology.pdf|Topology]] (2nd ed.)}} and Amstrong's [[library/Basic Topology]]
 
 - foundation:
-  - set theory, logic, proof skills, and metric intuition
+  - [[thoughts/Sets|set theory]], logic, proof skills, and metric intuition
   - see [[thoughts/norm|norm]] for metric-induced topology
 - **phase 1 — point-set core** (weeks 2–5): topological spaces, bases, subspaces, product and quotient topologies (munkres ch. 2–5). track with [[courses/18.901-fall-2004/|mit 18.901]] weeks 1–3.
 - **phase 2 — separation + countability** (weeks 6–7): separation axioms, urysohn lemma, metrization theorems (munkres ch. 16–22). mirror mit 18.901 weeks 4–5.

@@ -28,7 +28,7 @@ The Rayleigh quotient is used in:
 - Eigenvalue algorithms (such as Rayleigh quotient iteration) to obtain eigenvalue approximations from eigenvector approximations
 - Quantum mechanics, where it gives the expectation value of the observable corresponding to operator $M$ for a system whose state is given by $x$
 
-## bounds for Hermitian $m$
+## bounds for Hermitian $M$
 
 For any vector $x$, we have $R(M,x) \in [\lambda_{\min}, \lambda_{\max}]$, where $\lambda_{\min}, \lambda_{\max}$ are respectively the smallest and largest eigenvalues of $M$.
 

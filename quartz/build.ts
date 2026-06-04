@@ -6,8 +6,6 @@ import { minimatch } from 'minimatch'
 import path from 'path'
 import sourceMapSupport from 'source-map-support'
 import { styleText } from 'util'
-import type { ProcessedContent } from './plugins/vfile'
-import type { ChangeEvent } from './types/plugin'
 import cfg from '../quartz.config'
 import { contentAssetClaims } from './plugins/emitters/assets'
 import { resetWriteCache } from './plugins/emitters/helpers'
@@ -15,7 +13,6 @@ import { resetStaticFileCache, staticAssetClaims } from './plugins/emitters/stat
 import { emitContent } from './processors/emit'
 import { filterContentResult } from './processors/filter'
 import { parseMarkdown, resetProcessedContentCache } from './processors/parse'
-import { resetCopyFileCache } from './util/copy-file'
 import { Argv, BuildCtx } from './util/ctx'
 import { emitQuartzDevEvent } from './util/dev-events'
 import { glob, toPosixPath } from './util/glob'
@@ -54,99 +51,9 @@ async function syncOutputAssetClaims(ctx: BuildCtx, refreshStaticFiles = false):
   ]
 }
 
-function processedContentPath(content: ProcessedContent): FilePath | undefined {
-  const file = content[1]
-  const fp = file.data.relativePath ?? file.data.filePath ?? file.path
-  if (typeof fp === 'string' && fp.length > 0) return toPosixPath(fp) as FilePath
-  return undefined
-}
-
-function processedContentByPath(content: ProcessedContent[]): ContentByPath {
-  const entries = new Map<FilePath, ProcessedContent>()
-  for (const item of content) {
-    const fp = processedContentPath(item)
-    if (fp) entries.set(fp, item)
-  }
-  return entries
-}
-
-function coalescePendingEvent(
-  previous: ChangeEvent['type'] | undefined,
-  next: ChangeEvent['type'],
-): ChangeEvent['type'] {
-  if (!previous) return next
-  if (next === 'delete') return 'delete'
-  if (previous === 'add') return 'add'
-  if (previous === 'delete') return 'change'
-  return next
-}
-
-function recordPendingEvent(buildData: BuildData, type: ChangeEvent['type'], fp: string) {
-  const normalized = toPosixPath(fp) as FilePath
-  buildData.pendingEvents.set(
-    normalized,
-    coalescePendingEvent(buildData.pendingEvents.get(normalized), type),
-  )
-}
-
-function takePendingEvents(buildData: BuildData): PendingContentEvent[] {
-  const events = [...buildData.pendingEvents].map(([path, type]) => ({ path, type }))
-  buildData.pendingEvents.clear()
-  return events
-}
-
-function buildChangeEvents(
-  pendingEvents: PendingContentEvent[],
-  previousContent: ContentByPath,
-  parsedContent: ContentByPath,
-  publishedContent: ContentByPath,
-): ChangeEvent[] {
-  const changeEvents: ChangeEvent[] = []
-  for (const pendingEvent of pendingEvents) {
-    const { path, type } = pendingEvent
-    if (!isMarkdownPath(path)) {
-      changeEvents.push({ path, type })
-      continue
-    }
-
-    const current = publishedContent.get(path)
-    const previous = previousContent.get(path)
-    if (type === 'delete') {
-      if (previous) {
-        changeEvents.push({ path, type: 'delete', file: previous[1], previousFile: previous[1] })
-      }
-      continue
-    }
-
-    if (current) {
-      changeEvents.push({
-        path,
-        type: previous ? 'change' : 'add',
-        file: current[1],
-        previousFile: previous?.[1],
-      })
-      continue
-    }
-
-    if (previous && parsedContent.has(path)) {
-      changeEvents.push({ path, type: 'delete', file: previous[1], previousFile: previous[1] })
-    }
-  }
-
-  return changeEvents
-}
-
 type BuildReason = 'initial' | 'source'
 type RebuildQueue = { running: boolean; requested: boolean }
-type PendingContentEvent = { path: FilePath; type: ChangeEvent['type'] }
-type ContentByPath = Map<FilePath, ProcessedContent>
-type BuildData = {
-  ctx: BuildCtx
-  ignored: GlobbyFilterFunction
-  mut: Mutex
-  contentByPath: ContentByPath
-  pendingEvents: Map<FilePath, ChangeEvent['type']>
-}
+type BuildData = { ctx: BuildCtx; ignored: GlobbyFilterFunction; mut: Mutex }
 
 type WatchRuntime = { dispose(): Promise<void> }
 
@@ -158,6 +65,31 @@ function describeBuildError(err: unknown): string {
   } catch {
     return String(err)
   }
+}
+
+function resetGeneratedResourceState(ctx: BuildCtx): void {
+  delete ctx.assetManifest
+  delete ctx.extractedStaticResources
+  delete ctx.pageResourceCacheBuildId
+  delete ctx.pageResourceCache
+}
+
+async function cleanOutputForBuild(
+  ctx: BuildCtx,
+  perf: PerfTimer,
+  refreshStaticFiles: boolean,
+): Promise<void> {
+  resetGeneratedResourceState(ctx)
+  ctx.outputAssetManifest = await readOutputAssetManifest()
+  await syncOutputAssetClaims(ctx, refreshStaticFiles)
+  const outputAssetClaims = ctx.outputAssetClaims ?? []
+
+  perf.addEvent('clean')
+  emitQuartzDevEvent({ type: 'public:remove:start', epoch: ctx.buildId })
+  ctx.outputAssetPreserved = await preservedOutputAssets(ctx.outputAssetManifest, outputAssetClaims)
+  await cleanOutputExcept(ctx.argv.output, ctx.outputAssetPreserved)
+  resetWriteCache()
+  console.log(`Cleaned \`${ctx.argv.output}\` in ${perf.timeSince('clean')}`)
 }
 
 async function buildQuartz(
@@ -192,8 +124,6 @@ async function buildQuartz(
   }
 
   const perf = new PerfTimer()
-  const output = argv.output
-  let contentByPath: ContentByPath = new Map()
 
   const pluginCount = Object.values(cfg.plugins).flat().length
   const pluginNames = (key: 'transformers' | 'filters' | 'emitters') =>
@@ -220,24 +150,10 @@ async function buildQuartz(
     if (reason === 'source') {
       resetProcessedContentCache()
     }
-    ctx.outputAssetManifest = await readOutputAssetManifest()
-    await syncOutputAssetClaims(ctx, true)
-    const outputAssetClaims = ctx.outputAssetClaims ?? []
-
-    perf.addEvent('clean')
-    emitQuartzDevEvent({ type: 'public:remove:start', epoch: ctx.buildId })
-    ctx.outputAssetPreserved = await preservedOutputAssets(
-      ctx.outputAssetManifest,
-      outputAssetClaims,
-    )
-    await cleanOutputExcept(output, ctx.outputAssetPreserved)
-    resetCopyFileCache()
-    resetWriteCache()
-    console.log(`Cleaned \`${output}\` in ${perf.timeSince('clean')}`)
+    await cleanOutputForBuild(ctx, perf, true)
 
     const parsedFiles = await parseMarkdown(ctx, filePaths)
     const filteredContent = filterContentResult(ctx, parsedFiles).published
-    contentByPath = processedContentByPath(filteredContent)
 
     await emitContent(ctx, filteredContent)
     await writeCurrentOutputAssetManifest(ctx)
@@ -264,7 +180,7 @@ async function buildQuartz(
 
   if (argv.watch) {
     ctx.incremental = true
-    return startWatching(ctx, mut, clientRefresh, contentByPath)
+    return startWatching(ctx, mut, clientRefresh)
   }
 }
 
@@ -272,11 +188,10 @@ async function startWatching(
   ctx: BuildCtx,
   mut: Mutex,
   clientRefresh: () => void,
-  contentByPath: ContentByPath,
 ): Promise<WatchRuntime> {
   const { argv } = ctx
   const ignored = await createIgnoredFilter(ctx)
-  const buildData: BuildData = { ctx, mut, ignored, contentByPath, pendingEvents: new Map() }
+  const buildData: BuildData = { ctx, mut, ignored }
 
   const watcher = chokidar.watch('.', {
     awaitWriteFinish: { stabilityThreshold: 250 },
@@ -290,17 +205,14 @@ async function startWatching(
   watcher
     .on('add', fp => {
       if (buildData.ignored(fp)) return
-      recordPendingEvent(buildData, 'add', fp)
       void requestRebuild(queue, clientRefresh, buildData)
     })
     .on('change', fp => {
       if (buildData.ignored(fp)) return
-      recordPendingEvent(buildData, 'change', fp)
       void requestRebuild(queue, clientRefresh, buildData)
     })
     .on('unlink', fp => {
       if (buildData.ignored(fp)) return
-      recordPendingEvent(buildData, 'delete', fp)
       void requestRebuild(queue, clientRefresh, buildData)
     })
 
@@ -356,8 +268,7 @@ async function rebuild(clientRefresh: () => void, buildData: BuildData) {
 
   const release = await mut.acquire()
   let shouldRefresh = false
-  let buildId = randomIdNonSecure()
-  const pendingEvents = takePendingEvents(buildData)
+  const buildId = randomIdNonSecure()
 
   try {
     ctx.buildId = buildId
@@ -376,24 +287,14 @@ async function rebuild(clientRefresh: () => void, buildData: BuildData) {
 
     const filePaths = markdownPaths.map(fp => joinSegments(argv.directory, fp) as FilePath)
     syncCtxFiles(ctx, allFiles)
-    ctx.outputAssetManifest ??= await readOutputAssetManifest()
-    await syncOutputAssetClaims(ctx)
-    delete ctx.outputAssetPreserved
+    await cleanOutputForBuild(ctx, perf, true)
 
     const parsedFiles = await parseMarkdown(ctx, filePaths)
-    const parsedByPath = processedContentByPath(parsedFiles)
     const processedFiles = filterContentResult(ctx, parsedFiles).published
-    const processedByPath = processedContentByPath(processedFiles)
-    const changeEvents = buildChangeEvents(
-      pendingEvents,
-      buildData.contentByPath,
-      parsedByPath,
-      processedByPath,
-    )
 
-    await emitContent(ctx, processedFiles, changeEvents)
+    await emitContent(ctx, processedFiles)
     await writeCurrentOutputAssetManifest(ctx)
-    buildData.contentByPath = processedByPath
+    delete ctx.outputAssetPreserved
     console.log(styleText('green', `Done rebuilding in ${perf.timeSince()}`))
     emitQuartzDevEvent({
       type: 'build:ready',

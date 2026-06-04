@@ -39,7 +39,7 @@ further reading:
 
 ### canonical scaling relations
 
-[@kaplan2020scalinglawsneurallanguage] observed that cross-entropy test loss decreases as a simple inverse power of non-embedding parameters \(N\), dataset tokens \(D\), or compute budget \(C\) when the other two resources are not limiting:
+[@kaplan2020scalinglawsneurallanguage] observed that cross-entropy test loss decreases as a simple inverse power of non-embedding parameters $N$, dataset tokens $D$, or compute budget $C$ when the other two resources are not limiting:
 
 $$
 L(N) \approx L_\infty + aN^{-\alpha_N},\quad L(D) \approx L_\infty + bD^{-\alpha_D},\quad L(C) \approx L_\infty + cC^{-\alpha_C}.
@@ -47,7 +47,7 @@ $$
 
 Typical exponents for dense transformers trained on WebText2 are $\alpha_N\approx\;0.076, \alpha_D\approx 0.095, \alpha_C\approx0.057$, implying diminishing but predictable gains from scaling.
 
-Balancing the terms leads to a compute-efficient frontier in which optimal parameter and token counts grow nearly as \(\sqrt{C}\):
+Balancing the terms leads to a compute-efficient frontier in which optimal parameter and token counts grow nearly as $\sqrt{C}$:
 
 $$
 N_{\text{opt}}(C)=G\left(\frac{C}{6}\right)^{\frac{\eta}{\alpha+\eta}},\qquad D_{\text{opt}}(C)=G^{-1}\left(\frac{C}{6}\right)^{\frac{\alpha}{\alpha+\eta}},

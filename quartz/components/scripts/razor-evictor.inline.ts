@@ -1,4 +1,4 @@
-export {}
+import katex from 'katex'
 
 type RzrPolicy = 'razor' | 'lru' | 'fifo'
 
@@ -117,6 +117,19 @@ function rzrFmt(v: number): string {
   return v.toFixed(2)
 }
 
+function rzrTex(tex: string): string {
+  try {
+    return katex.renderToString(tex, {
+      displayMode: false,
+      output: 'html',
+      throwOnError: false,
+      strict: false,
+    })
+  } catch {
+    return tex
+  }
+}
+
 function rzrRenderSlot(state: RzrState, i: number, marker: 'stable' | 'new' | 'evict' | 'empty') {
   const group = state.slotGroups[i]
   const bar = state.slotBars[i]
@@ -148,10 +161,10 @@ function rzrRenderMetrics(state: RzrState) {
   let totalSeen = 0
   for (const entry of state.history) totalSeen += entry.score
   const mass = totalSeen > 0 ? sum / totalSeen : 0
-  state.statResidents.textContent = String(residents)
-  state.statEvictions.textContent = String(state.evictions)
-  state.statAvg.textContent = rzrFmt(avg)
-  state.statMass.textContent = `${Math.round(mass * 100)}%`
+  state.statResidents.innerHTML = rzrTex(String(residents))
+  state.statEvictions.innerHTML = rzrTex(String(state.evictions))
+  state.statAvg.innerHTML = rzrTex(rzrFmt(avg))
+  state.statMass.innerHTML = rzrTex(`${Math.round(mass * 100)}\\%`)
 }
 
 function rzrRenderHistory(state: RzrState) {
@@ -170,12 +183,15 @@ function rzrRenderHistory(state: RzrState) {
     sc.textContent = rzrFmt(entry.score)
     li.appendChild(tok)
     li.appendChild(sc)
-    if (entry.fate === 'evicted' && entry.evictedToken) {
-      const tag = document.createElement('span')
+    const tag = document.createElement('span')
+    if (entry.fate === 'evicted') {
       tag.className = 'rzr-history-evicted'
-      tag.textContent = `evict ${entry.evictedToken}`
-      li.appendChild(tag)
+      tag.textContent = entry.evictedToken ? `evict ${entry.evictedToken}` : 'evicted'
+    } else {
+      tag.className = 'rzr-history-kept'
+      tag.textContent = 'accepted'
     }
+    li.appendChild(tag)
     list.appendChild(li)
   }
 }

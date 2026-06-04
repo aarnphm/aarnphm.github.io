@@ -42,7 +42,7 @@ Unicode general assigns 21 bits to each codepoint.
 Most tokenizers in modern day [[thoughts/Transformers|LLMs]] uses BPE. Others include WordPiece, SentencePiece. Also known as _subword tokenization_
 
 - Characters?
-  - discrete: follow UTF-8, which is the standard accross the web, but a lot less
+  - discrete: follow UTF-8, which is the standard across the web, but a lot less
 - Words?
   - still discrete, but still expensive
 

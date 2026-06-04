@@ -25,6 +25,6 @@ Coefficient of these combination is referred as _components_ or _coordinates_ of
 > - linear independence:
 >   for every finite subset $\{\mathbf{v}_{1},\ldots,\mathbf{v}_{m}\}$ of $B$, if $\sum_{i=1}^{m} c_i \mathbf{v}_i = 0$ for some $c_{1},\ldots,c_{m}$ in $F$, then $c_{1}=\ldots =c_m=0$
 > - spanning property:
->   for every vector $\mathbf{v}$ in $V$, one can choose $a_{1},\ldots,a_n$ in $F$ and $\mathbf{v}_1,\ldots,\mathbf{v}_n$ in $B$ such that $\mathbf{v} = \sum_{i=1}^{n} a_i \mathbf{v}_n$
+>   for every vector $\mathbf{v}$ in $V$, one can choose $a_{1},\ldots,a_n$ in $F$ and $\mathbf{v}_1,\ldots,\mathbf{v}_n$ in $B$ such that $\mathbf{v} = \sum_{i=1}^{n} a_i \mathbf{v}_i$
 
 [^terminology]: We refer to linear span of a vector.

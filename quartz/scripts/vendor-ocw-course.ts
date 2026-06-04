@@ -40,6 +40,7 @@ type CourseResource = {
   content: string
   resourceType: string
   resourceTypes: string[]
+  youtubeId: string
   localFile: string
   originalFile: string
 }
@@ -55,6 +56,8 @@ type CourseCollection = {
 const defaultCourseRoot = path.join('content', 'courses')
 const contentRoot = path.resolve('content')
 const mitBaseUrl = 'https://ocw.mit.edu/'
+const ocwHost = 'ocw.mit.edu'
+const fetchConcurrency = 8
 const ocwLayout = 'A|L'
 const defaultLicenseName = 'Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International'
 const defaultLicenseUrl = 'https://creativecommons.org/licenses/by-nc-sa/4.0/'
@@ -407,6 +410,7 @@ function parseResource(context: CourseContext, relDir: string, data: JsonRecord)
       firstString([stringValue(data, 'resourcetype'), stringValue(data, 'resource_type')]),
     ).toLowerCase(),
     resourceTypes: resourceTypes(data, relDir),
+    youtubeId: nestedString(data, 'video_metadata', 'youtube_id'),
     localFile,
     originalFile,
   }
@@ -662,7 +666,17 @@ async function pageMarkdown(context: CourseContext, page: CoursePage): Promise<s
 
 async function resourceMarkdown(context: CourseContext, resource: CourseResource): Promise<string> {
   const content = await htmlToMarkdown(context, resource.content)
-  const source = originalAssetUrl(context, resource.originalFile, resource.localFile)
+  const video = resource.youtubeId.length > 0
+  const watchUrl = `https://www.youtube.com/watch?v=${resource.youtubeId}`
+  const source = video
+    ? new URL(`${resource.relDir}/`, context.sourceUrl).toString()
+    : originalAssetUrl(context, resource.originalFile, resource.localFile)
+  const embed = video
+    ? `![${resource.title}](${watchUrl})`
+    : assetEmbed(context, resource.localFile)
+  const assetLine = video
+    ? `- youtube: [${resource.youtubeId}](${watchUrl})`
+    : `- file: [[${context.slug}/static_resources/${resource.localFile}|${resource.localFile}]]`
   return markdownDocument([
     courseFrontmatter(context, {
       title: resource.title,
@@ -674,14 +688,14 @@ async function resourceMarkdown(context: CourseContext, resource: CourseResource
     '',
     `up: ${resourceLink(context, '', context.label)}`,
     '',
-    assetEmbed(context, resource.localFile),
+    embed,
     '',
     content || resource.description,
     '',
     '## metadata',
     '',
     `- type: ${resource.resourceType || 'resource'}`,
-    `- file: [[${context.slug}/static_resources/${resource.localFile}|${resource.localFile}]]`,
+    assetLine,
     `- source: [mit opencourseware](${source})`,
   ])
 }
@@ -762,6 +776,122 @@ function isCourseResource(relDir: string, data: JsonRecord, contentType: string)
   return relDir.startsWith('resources/') && stringValue(data, 'file').length > 0
 }
 
+async function fetchText(url: string): Promise<string> {
+  const response = await fetch(url)
+  if (!response.ok) throw new Error(`fetch ${url} -> ${response.status}`)
+  return response.text()
+}
+
+function isCourseUrl(input: string): boolean {
+  const candidate = /^https?:\/\//i.test(input)
+    ? input
+    : input.startsWith(`${ocwHost}/`)
+      ? `https://${input}`
+      : ''
+  if (candidate.length === 0) return false
+  try {
+    return new URL(candidate).hostname === ocwHost
+  } catch {
+    return false
+  }
+}
+
+function courseSlug(input: string): string {
+  const normalized = /^https?:\/\//i.test(input) ? input : `https://${input}`
+  const match = new URL(normalized).pathname.match(/\/courses\/([^/]+)/)
+  if (!match) throw new Error(`no OCW course slug found in: ${input}`)
+  return match[1]
+}
+
+function isVideoAsset(data: JsonRecord, file: string): boolean {
+  if (stringValue(data, 'file_type').toLowerCase().startsWith('video/')) return true
+  if (stringValue(data, 'resourcetype').toLowerCase() === 'video') return true
+  return /\.(mp4|m4v|mov|webm)$/i.test(strippedUrlPath(file))
+}
+
+async function downloadAsset(courseRoot: string, file: string): Promise<void> {
+  const target = path.join(
+    courseRoot,
+    'static_resources',
+    path.posix.basename(strippedUrlPath(file)),
+  )
+  if (await pathExists(target)) return
+  const response = await fetch(new URL(file.replace(/^\/+/, ''), mitBaseUrl).toString())
+  if (!response.ok) throw new Error(`asset ${file} -> ${response.status}`)
+  await fs.mkdir(path.dirname(target), { recursive: true })
+  await fs.writeFile(target, Buffer.from(await response.arrayBuffer()))
+}
+
+async function downloadNodeAsset(courseRoot: string, data: JsonRecord): Promise<void> {
+  const file = stringValue(data, 'file')
+  if (file.length === 0 || isVideoAsset(data, file)) return
+  await downloadAsset(courseRoot, file)
+}
+
+async function writeFetchedJson(
+  courseRoot: string,
+  relPath: string,
+  body: string,
+): Promise<JsonRecord> {
+  const target = path.join(courseRoot, relPath)
+  await fs.mkdir(path.dirname(target), { recursive: true })
+  await fs.writeFile(target, body, 'utf8')
+  const parsed: unknown = JSON.parse(body)
+  return isRecord(parsed) ? parsed : {}
+}
+
+async function mapWithConcurrency<T>(
+  items: T[],
+  limit: number,
+  run: (item: T) => Promise<void>,
+): Promise<void> {
+  let cursor = 0
+  const workers = Array.from({ length: Math.min(limit, items.length) }, async () => {
+    while (cursor < items.length) {
+      await run(items[cursor++])
+    }
+  })
+  await Promise.all(workers)
+}
+
+async function fetchCourse(input: string): Promise<string> {
+  const slug = courseSlug(input)
+  const base = new URL(`courses/${slug}/`, mitBaseUrl).toString()
+  const courseRoot = path.join(defaultCourseRoot, slug)
+  await fs.mkdir(courseRoot, { recursive: true })
+
+  const rootData = await writeFetchedJson(
+    courseRoot,
+    'data.json',
+    await fetchText(`${base}data.json`),
+  )
+  const contentMapText = await fetchText(`${base}content_map.json`)
+  await fs.writeFile(path.join(courseRoot, 'content_map.json'), contentMapText, 'utf8')
+  const imageMeta = nestedRecord(rootData, 'course_image_metadata')
+  if (imageMeta) await downloadNodeAsset(courseRoot, imageMeta)
+
+  const contentMap: unknown = JSON.parse(contentMapText)
+  const prefix = `courses/${slug}/`
+  const nodePaths = isRecord(contentMap)
+    ? Array.from(
+        new Set(
+          Object.values(contentMap)
+            .filter((value): value is string => typeof value === 'string')
+            .map(value => value.replace(/^\/+/, ''))
+            .filter(value => value.startsWith(prefix))
+            .map(value => value.slice(prefix.length)),
+        ),
+      )
+    : []
+
+  await mapWithConcurrency(nodePaths, fetchConcurrency, async relPath => {
+    const data = await writeFetchedJson(courseRoot, relPath, await fetchText(`${base}${relPath}`))
+    await downloadNodeAsset(courseRoot, data)
+  })
+
+  return courseRoot
+}
+
 async function vendorCourse(courseRoot: string): Promise<void> {
   const rootData = await readJson(path.join(courseRoot, 'data.json'))
   const context = courseContext(courseRoot, rootData)
@@ -826,9 +956,14 @@ async function courseRootsFromPath(inputPath: string): Promise<string[]> {
   return files.map(file => path.join(inputPath, path.dirname(file))).sort()
 }
 
+async function resolveCourseInput(input: string): Promise<string[]> {
+  if (isCourseUrl(input)) return [await fetchCourse(input)]
+  return courseRootsFromPath(input)
+}
+
 async function courseRoots(inputs: string[]): Promise<string[]> {
   const roots = await Promise.all(
-    (inputs.length > 0 ? inputs : [defaultCourseRoot]).map(courseRootsFromPath),
+    (inputs.length > 0 ? inputs : [defaultCourseRoot]).map(resolveCourseInput),
   )
   return uniqueValues(roots.flat().map(root => path.normalize(root)))
 }

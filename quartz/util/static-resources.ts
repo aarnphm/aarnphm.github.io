@@ -27,7 +27,22 @@ export function getStaticResourcesFromPlugins(ctx: BuildCtx) {
       contentType: 'inline',
       script: `
         const socket = new WebSocket('${wsUrl}')
-        socket.addEventListener('message', () => document.location.reload(true))
+        let quartzReloading = false
+        const quartzReloadDelay = ms => new Promise(resolve => setTimeout(resolve, ms))
+        const waitForQuartzReloadTarget = async () => {
+          for (;;) {
+            try {
+              const response = await fetch(window.location.href, { cache: "no-store" })
+              if (response.ok) return
+            } catch {}
+            await quartzReloadDelay(250)
+          }
+        }
+        socket.addEventListener('message', () => {
+          if (quartzReloading) return
+          quartzReloading = true
+          waitForQuartzReloadTarget().then(() => window.location.reload())
+        })
       `,
     })
   }

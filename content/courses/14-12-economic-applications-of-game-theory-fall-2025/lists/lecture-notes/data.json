@@ -1,0 +1,31 @@
+{
+  "content": "",
+  "content_type": "resource-list",
+  "description": "These lecture notes were created by Prof. Muhamet Yildiz and were used in the 2012 version of this class.",
+  "draft": false,
+  "iscjklanguage": false,
+  "learning_resource_types": ["Lecture Notes"],
+  "resources": {
+    "content": [
+      "a59f79ba-fe66-4e6b-a835-897025ce68f7",
+      "78ce79cf-39e5-49bf-89cd-1cc7b698e5c5",
+      "a410f33c-c7af-4b12-83e7-4cf9d69ccbd9",
+      "7e433b43-712b-401d-9566-5b485b02bcc1",
+      "965737b0-86bf-4be7-b7cf-b9b5132ea8a3",
+      "131d0dfe-7546-4715-add8-779f48c8adcc",
+      "0937a5d1-d4f2-43cd-8b1c-d8d41b919577",
+      "0fe50a99-2520-4958-9337-91fac9f97f49",
+      "ce8f970c-6248-4291-b04d-f4426365fc02",
+      "71871d6f-15c6-4547-9151-87c364cbbf57",
+      "72ef1926-0e49-4766-8d1b-5cce99d54575",
+      "14dbee59-5302-4502-9a5b-60bb21b773c2",
+      "ad883beb-a902-4297-8a64-9a26c62413e8",
+      "b665a711-f6ef-485f-9aff-ec28b91d032c",
+      "ffbe06e7-019e-444f-b1a7-d93d5fccc0ea",
+      "b0db319b-1375-4de0-ac2b-3d620092067d"
+    ],
+    "website": "economic-applications-of-game-theory"
+  },
+  "title": "Lecture Notes",
+  "uid": "07ac353f-4721-410c-b2ca-9538e95da19c"
+}

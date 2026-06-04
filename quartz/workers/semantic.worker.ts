@@ -1,8 +1,7 @@
 import { PGlite } from '@electric-sql/pglite'
 import 'onnxruntime-web/webgpu'
 import 'onnxruntime-web/wasm'
-//@ts-ignore
-import { vector as vectorExtension } from '@electric-sql/pglite/vector'
+import { vector as vectorExtension } from '@electric-sql/pglite-pgvector'
 import { env, AutoModel, AutoTokenizer } from '@huggingface/transformers'
 import { init, defaultDevice, numpy as np } from '@jax-js/jax'
 import { dependencies } from '../../package.json'
@@ -69,12 +68,13 @@ const EMBEDDINGS_TABLE = 'semantic_embeddings'
 const INDEX_NAME = 'semantic_embeddings_vec_hnsw'
 const MANIFEST_URL = '/embeddings/manifest.json'
 const CDN_BASE = `https://cdn.jsdelivr.net/npm/@electric-sql/pglite@${dependencies['@electric-sql/pglite'].slice(1)}/dist`
+const PGVECTOR_CDN_BASE = `https://cdn.jsdelivr.net/npm/@electric-sql/pglite-pgvector@${dependencies['@electric-sql/pglite-pgvector'].slice(1)}/dist`
 const ORT_CDN_BASE = `https://cdn.jsdelivr.net/npm/onnxruntime-web@${dependencies['onnxruntime-web'].slice(1)}/dist/`
 const ORT_WASM_PATHS = {
   mjs: `${ORT_CDN_BASE}ort-wasm-simd-threaded.asyncify.mjs`,
   wasm: `${ORT_CDN_BASE}ort-wasm-simd-threaded.asyncify.wasm`,
 }
-const VECTOR_BUNDLE_URL = new URL(`${CDN_BASE}/vector.tar.gz`)
+const VECTOR_BUNDLE_URL = new URL(`${PGVECTOR_CDN_BASE}/vector.tar.gz`)
 
 let state: WorkerState = 'idle'
 let manifest: Manifest | null = null

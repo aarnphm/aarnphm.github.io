@@ -46,6 +46,30 @@ const M: FunctionalComponent<{ t: string; d?: boolean; cls?: string }> = ({ t, d
   <span class={cls} dangerouslySetInnerHTML={{ __html: tex(t, d) }} />
 )
 
+const escTex = (s: string): string =>
+  s.replace(
+    /[\\{}#$%&_^~]/g,
+    c =>
+      ({
+        '\\': '\\textbackslash{}',
+        '{': '\\{',
+        '}': '\\}',
+        '#': '\\#',
+        $: '\\$',
+        '%': '\\%',
+        '&': '\\&',
+        _: '\\_',
+        '^': '\\textasciicircum{}',
+        '~': '\\textasciitilde{}',
+      })[c] ?? c,
+  )
+
+const promptTex = (label: string): string =>
+  label
+    .split('→')
+    .map(part => `\\text{${escTex(part)}}`)
+    .join('\\to')
+
 const NODES: TreeNode[] = [
   { id: 'root', label: 'root', tokens: 0, x: 90, y: 220, branch: 'root' },
   { id: 'a', label: 'chat_a', tokens: 5, x: 240, y: 90, branch: 'chat_a', parent: 'root' },
@@ -68,7 +92,7 @@ const mkSeg = (id: string, label: string, tokens: number, x: number, y: number):
 const PROMPTS: Prompt[] = [
   {
     id: 'p1',
-    label: '#1  chat_a -> turn1 + "explain"',
+    label: '#1  chat_a → turn1 + "explain"',
     branch: 'chat_a',
     matchPath: ['root', 'a', 'a1'],
     newSegments: [mkSeg('a1n', '+explain', 3, 560, 60)],
@@ -104,7 +128,7 @@ const PROMPTS: Prompt[] = [
 const NW = 78
 const NH = 28
 const VW = 680
-const VH = 440
+const VH = 490
 const HALF_W = NW / 2
 const HALF_H = NH / 2
 
@@ -124,12 +148,12 @@ const LEGEND = [
 ] as const
 
 const STATS = [
-  { key: 'last', label: 'last request', initial: '-' },
-  { key: 'cached', label: 'cached prefill', initial: '0' },
-  { key: 'new', label: 'new prefill', initial: '0' },
-  { key: 'hit', label: 'hit rate', initial: '-' },
-  { key: 'cum', label: 'cumulative H', initial: '-' },
-  { key: 'resident', label: 'resident / evicted', initial: '8 / 0' },
+  { key: 'last', label: '\\text{last request}', initial: '\\text{-}' },
+  { key: 'cached', label: '\\text{cached prefill}', initial: '0' },
+  { key: 'new', label: '\\text{new prefill}', initial: '0' },
+  { key: 'hit', label: '\\text{hit rate}', initial: '\\text{-}' },
+  { key: 'cum', label: '\\text{cumulative } H', initial: '\\text{-}' },
+  { key: 'resident', label: '\\text{resident / evicted}', initial: '8\\,/\\,0' },
 ] as const
 
 const labelTex = (label: string): string =>
@@ -189,11 +213,14 @@ const RadixPrefixTreeImpl: QuartzMdxComponent<Props> = ({ caption }) => (
   <figure
     class="radix-prefix-tree"
     data-radix-prefix-tree
-    data-rpt-prompts={JSON.stringify(PROMPTS)}
+    data-rpt-prompts={JSON.stringify(PROMPTS.map(p => ({ ...p, labelTex: promptTex(p.label) })))}
   >
     <div class="rpt-stage">
       <aside class="rpt-prompts" aria-label="Request panel">
-        <h4 class="rpt-card-title">incoming requests</h4>
+        <span
+          class="rpt-card-title"
+          dangerouslySetInnerHTML={{ __html: tex('\\textbf{incoming requests}') }}
+        />
         <ol class="rpt-prompt-list" role="list">
           {PROMPTS.map(p => (
             <li key={p.id}>
@@ -205,7 +232,7 @@ const RadixPrefixTreeImpl: QuartzMdxComponent<Props> = ({ caption }) => (
               >
                 <span class="rpt-prompt-label">{p.label}</span>
                 <span class="rpt-prompt-meta">
-                  branch <code>{p.branch}</code>
+                  branch <span class="rpt-branch">{p.branch}</span>
                 </span>
               </button>
             </li>
@@ -271,7 +298,9 @@ const RadixPrefixTreeImpl: QuartzMdxComponent<Props> = ({ caption }) => (
                   transform={`translate(${s.x - HALF_W}, ${s.y - HALF_H})`}
                   aria-label={`new node ${s.label}, ${s.tokens} tokens, cached after routing`}
                 >
-                  <NodeBox label={s.label} />
+                  <g class="rpt-node-pop">
+                    <NodeBox label={s.label} />
+                  </g>
                 </g>
               </g>
             )),
@@ -311,32 +340,19 @@ const RadixPrefixTreeImpl: QuartzMdxComponent<Props> = ({ caption }) => (
 
       <aside class="rpt-side">
         <div class="rpt-card">
-          <h4>live readout</h4>
+          <span dangerouslySetInnerHTML={{ __html: tex('\\textbf{live readout}') }} />
           <dl class="rpt-stats">
             {STATS.map(s => (
               <div key={s.key}>
-                <dt>{s.label}</dt>
-                <dd data-rpt-stat={s.key}>{s.initial}</dd>
+                <dt dangerouslySetInnerHTML={{ __html: tex(s.label) }} />
+                <dd data-rpt-stat={s.key} dangerouslySetInnerHTML={{ __html: tex(s.initial) }} />
               </div>
             ))}
           </dl>
         </div>
 
         <div class="rpt-card">
-          <h4>reuse decomposition</h4>
-          <M
-            t="\text{reuse}(\pi,\sigma)=\bigoplus_{j=1}^{m}\text{KV}(t_{1:j}) \;\Vert\; \bigoplus_{k=1}^{|\sigma|}\text{attend}(t_{1:m+k})"
-            d
-            cls="rpt-math rpt-math--display"
-          />
-          <p>
-            The walk reuses every <M t="\text{KV}(t_{1:j})" /> tile along the matched prefix, then
-            attends only over freshly added tokens.
-          </p>
-        </div>
-
-        <div class="rpt-card">
-          <h4>DFS lower bound</h4>
+          <span dangerouslySetInnerHTML={{ __html: tex('\\textbf{DFS lower bound}') }} />
           <M t="C \ge \sum_{e \in \text{edges}(T)} |e|" d cls="rpt-math rpt-math--display" />
           <p>
             Longest-shared-prefix-first scheduling = DFS over <M t="T" />, which touches each edge

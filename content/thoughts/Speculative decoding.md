@@ -591,14 +591,14 @@ $$
 
 > [!math] Lemma 3.3
 >
-> $D_{LK}(p,q) = 1 - \sum_{x} \min{p(x), q(x)}$ [^proof-3-3]
+> $D_{LK}(p,q) = 1 - \sum_{x} \min(p(x), q(x))$ [^proof-3-3]
 
 [^proof-3-3]:
     $$
     \begin{aligned}
       D_{LK}(p,q) &= \sum_{x}  |p(x) - M(x)| = \sum_{x} \frac{|p-q|}{2} \\
       &= 1- \sum_{x} \frac{p+q - |p-q|}{2}  \\
-      &= 1 - \sum_{x} \min{p(x), q(x)}
+      &= 1 - \sum_{x} \min(p(x), q(x))
     \end{aligned}
     $$
 
@@ -618,7 +618,7 @@ $$
 
 > [!math] Corollary 3.6
 >
-> $\alpha = 1 - E(D_{LK}(p,q)) = E(min(p,q))$
+> $\alpha = 1 - E(D_{LK}(p,q)) = E(\min(p,q))$
 
 [^proof-3-5]:
     $$
