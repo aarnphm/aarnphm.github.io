@@ -1,0 +1,41 @@
+{
+  "audience": [],
+  "body": "",
+  "content": "",
+  "content_type": "resource",
+  "draft": false,
+  "file": "/courses/14-12-economic-applications-of-game-theory-fall-2025/mit14_12_f25_chp.jpg",
+  "file_size": 199137,
+  "file_type": "image/jpeg",
+  "gdrive_url": "",
+  "image_metadata": {
+    "caption": "Chess is a classic example of game theory in action. It shows how decision-making, competition, and planning ahead shape outcomes in strategic interactions. (Image by {{% resource_link \"efcef05c-6ab1-4bff-abac-40f84d3c596a\" \"Csaba Fekete\" %}} on Flickr. License: CC BY-NC-SA).",
+    "credit": "",
+    "image-alt": "A close-up photograph of glass chess pieces on a board. "
+  },
+  "iscjklanguage": false,
+  "learning_resource_types": [],
+  "level": [],
+  "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+  "resourcetype": "Image",
+  "title": "mit14_12_f25_chp.jpg",
+  "uid": "e5dfc134-f6e2-4fb5-b395-c092d3a4fde9",
+  "video_files": {
+    "archive_url": "",
+    "video_captions_file": "",
+    "video_captions_resource": { "content": "", "website": "economic-applications-of-game-theory" },
+    "video_thumbnail_file": "",
+    "video_transcript_file": "",
+    "video_transcript_resource": {
+      "content": "",
+      "website": "economic-applications-of-game-theory"
+    }
+  },
+  "video_metadata": {
+    "source": "",
+    "video_speakers": "",
+    "video_tags": "",
+    "youtube_description": "",
+    "youtube_id": ""
+  }
+}

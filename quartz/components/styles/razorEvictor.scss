@@ -1,24 +1,15 @@
 @use '../../styles/variables.scss' as *;
 @use '../../styles/mixin.scss' as *;
+@use './figure.scss' as *;
 
 .razor-evictor {
-  container-type: inline-size;
-  container-name: rzr-figure;
-  margin: 1.75rem 0;
-  content-visibility: auto;
-  contain-intrinsic-size: auto 34rem;
-  padding: 0;
-  border-radius: 0;
-  border: 0;
-  background: transparent;
-  color: var(--dark);
-  display: grid;
-  grid-template-columns: minmax(0, 3fr) minmax(0, 1fr);
-  grid-template-areas: 'header header' 'stage sidebar' 'caption caption';
-  gap: 1.1rem 1.5rem;
+  @include figure-frame('rzr-figure', 34rem);
+
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
 
   --rzr-stroke-soft: color-mix(in srgb, var(--gray) 45%, transparent);
-  --rzr-divider: color-mix(in srgb, var(--gray) 30%, transparent);
   --rzr-note-fg: color-mix(in srgb, var(--darkgray) 78%, var(--dark) 22%);
   --rzr-frame-bg: color-mix(in srgb, var(--lightgray) 40%, var(--light));
   --rzr-salmon: #fdb2a2;
@@ -40,7 +31,6 @@
 }
 
 .rzr-header {
-  grid-area: header;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -112,7 +102,6 @@
 }
 
 .rzr-stage {
-  grid-area: stage;
   display: flex;
   flex-direction: column;
   gap: 1rem;
@@ -131,7 +120,6 @@
   margin: 0;
   font-size: 0.78rem;
   font-weight: 600;
-  text-transform: uppercase;
   color: var(--rzr-note-fg);
 }
 
@@ -231,21 +219,10 @@
 }
 
 .rzr-fo {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
+  @include figure-fo;
   color: var(--rzr-note-fg);
   font-size: 12px;
-  line-height: 1;
   overflow: visible;
-  .katex {
-    color: inherit;
-    font-size: 1em;
-  }
-  .katex-display {
-    margin: 0;
-  }
 }
 .rzr-fo--axis {
   justify-content: flex-start;
@@ -256,34 +233,34 @@
   justify-content: center;
   font-size: 9px;
   opacity: 0.6;
-  color: var(--rzr-note-fg);
 }
 
 .rzr-history {
   list-style: none;
   margin: 0;
   padding: 0 0 0.25rem;
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(8, minmax(0, 1fr));
   gap: 0.35rem;
-  overflow-x: auto;
-  scroll-behavior: smooth;
-  scrollbar-width: thin;
 }
 .rzr-history-item {
-  flex: 0 0 auto;
-  display: inline-flex;
+  display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   gap: 0.1rem;
-  padding: 0.35rem 0.55rem;
+  aspect-ratio: 1;
+  min-width: 0;
+  padding: 0.2rem;
   border-radius: var(--radius-none);
-  border: 0;
+  border: 1px solid var(--fig-frame-border);
   background: color-mix(in srgb, var(--light) 96%, transparent);
   font-family: var(--codeFont);
-  font-size: 0.7rem;
-  line-height: 1.2;
+  font-size: 0.62rem;
+  line-height: 1.25;
   color: var(--dark);
-  min-width: 3.4rem;
+  overflow: hidden;
+  text-align: center;
   &.is-kept {
     background: color-mix(in srgb, var(--rzr-sage) 14%, var(--light));
   }
@@ -293,37 +270,63 @@
 }
 .rzr-history-token {
   font-weight: 600;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .rzr-history-score {
   color: var(--rzr-note-fg);
   font-variant-numeric: tabular-nums;
-  font-size: 0.62rem;
+  font-size: 0.58rem;
+}
+.rzr-history-evicted,
+.rzr-history-kept {
+  font-size: 0.52rem;
+  margin-top: 0.05rem;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .rzr-history-evicted {
   color: color-mix(in srgb, var(--rzr-salmon) 90%, var(--dark));
-  font-size: 0.6rem;
-  margin-top: 0.05rem;
+}
+.rzr-history-kept {
+  color: var(--rzr-new-edge);
+}
+
+@container rzr-figure (min-width: 720px) {
+  .rzr-history-item {
+    gap: 0.2rem;
+    padding: 0.45rem;
+    font-size: 0.9rem;
+  }
+  .rzr-history-score {
+    font-size: 0.78rem;
+  }
+  .rzr-history-evicted,
+  .rzr-history-kept {
+    font-size: 0.74rem;
+  }
 }
 
 .rzr-sidebar {
-  grid-area: sidebar;
   display: flex;
-  flex-direction: column;
+  flex-wrap: wrap;
   gap: 0.85rem;
   min-width: 0;
 }
 .rzr-card {
+  flex: 1 1 220px;
+  min-width: 0;
   padding: 0.75rem 0.9rem;
   border-radius: var(--radius-none);
-  border: 0;
+  border: 1px solid var(--fig-frame-border);
   background: color-mix(in srgb, var(--light) 96%, transparent);
 
   h4 {
-    margin: 0 0 0.5rem;
-    font-size: 0.72rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    color: var(--rzr-note-fg);
+    @include figure-card-heading;
   }
 }
 
@@ -348,6 +351,10 @@
   .rzr-stat-of {
     color: var(--rzr-note-fg);
     font-size: 0.78rem;
+  }
+  .katex {
+    font-size: 1em;
+    color: inherit;
   }
 }
 
@@ -394,31 +401,28 @@
 }
 
 .rzr-math {
-  color: inherit;
-  .katex {
-    color: inherit;
-  }
+  @include figure-inline-math;
+}
+.rzr-math--display {
+  display: block;
   .katex-display {
     margin: 0.15rem 0;
+    overflow-x: auto;
+    overflow-y: hidden;
     text-align: left;
     & > .katex {
       text-align: left;
     }
   }
 }
-.rzr-math--inline {
-  display: inline-block;
-}
-.rzr-math--display {
-  display: block;
-}
 
 .rzr-caption {
-  grid-area: caption;
-  margin: 0.3rem 0 0;
-  color: color-mix(in srgb, var(--gray) 70%, var(--dark) 30%);
-  font-size: 0.85rem;
-  text-align: center;
+  @include figure-caption;
+  margin-top: 0;
+
+  .katex {
+    @include figure-caption-math-gap;
+  }
 }
 
 @keyframes rzr-pop {
@@ -446,23 +450,7 @@
   }
 }
 
-@container rzr-figure (max-width: 720px) {
-  .razor-evictor {
-    grid-template-columns: 1fr;
-    grid-template-areas: 'header' 'stage' 'sidebar' 'caption';
-  }
-  .rzr-sidebar {
-    flex-direction: row;
-    flex-wrap: wrap;
-  }
-  .rzr-card {
-    flex: 1 1 200px;
-  }
-}
 @container rzr-figure (max-width: 460px) {
-  .razor-evictor {
-    padding: 0;
-  }
   .rzr-header {
     flex-direction: column;
     align-items: stretch;
@@ -473,5 +461,8 @@
   }
   .rzr-policies {
     align-self: flex-start;
+  }
+  .rzr-card {
+    flex: 1 1 100%;
   }
 }

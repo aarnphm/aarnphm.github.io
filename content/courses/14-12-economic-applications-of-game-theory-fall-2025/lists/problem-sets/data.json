@@ -1,0 +1,25 @@
+{
+  "content": "",
+  "content_type": "resource-list",
+  "description": "Solutions are not available for these problem sets.",
+  "draft": false,
+  "iscjklanguage": false,
+  "learning_resource_types": ["Problem Sets"],
+  "resources": {
+    "content": [
+      "3544a37c-685b-4543-82a4-6cd21e6ecef9",
+      "c5e60818-fe02-48d2-bfaa-00952311e442",
+      "24d27a45-758f-4622-a726-c0384222e8b6",
+      "9995eb58-6358-4f92-9249-06f4bbb6d1e5",
+      "20885041-d1ad-4920-95b1-c70cc112ad50",
+      "87a630a7-5e7f-4fc2-a3f3-ea967a75e16f",
+      "e01b3501-707e-4558-8737-77ed7387e8f9",
+      "4a41d3bb-eff8-4393-89a5-77f51944ad6c",
+      "2967649b-f1ee-4198-a249-9d9fecf5516f",
+      "0dfe34f0-cec3-4396-860d-f669dfd4772b"
+    ],
+    "website": "economic-applications-of-game-theory"
+  },
+  "title": "Problem Sets",
+  "uid": "c5b6c550-333b-4a36-89ab-ce696921ac1f"
+}

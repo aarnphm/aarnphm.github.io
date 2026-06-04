@@ -119,13 +119,13 @@ For convex $f$, the following are **equivalent**:
 - $L$-smooth:
 
   $$
-  \|\nabla f(x)-\nabla f(y)\|_*\le L\|x-\;y\|
+  \|\nabla f(x)-\nabla f(y)\|_*\le L\|x-y\|
   $$
 
-  For convex $f$: $f(y)\le f(x)+\langle\nabla f(x),y-\;x\rangle+\tfrac{L}{2}\|y-\;x\|^2$; and Baillon–Haddad co-coercivity:
+  For convex $f$: $f(y)\le f(x)+\langle\nabla f(x),y-x\rangle+\tfrac{L}{2}\|y-x\|^2$; and Baillon–Haddad co-coercivity:
 
   $$
-  \langle\nabla f(x)-\nabla f(y),x-\;y\rangle \;\ge\; \tfrac{1}{L}\|\nabla f(x)-\nabla f(y)\|_*^2.
+  \langle\nabla f(x)-\nabla f(y),x-y\rangle \;\ge\; \tfrac{1}{L}\|\nabla f(x)-\nabla f(y)\|_*^2.
   $$
 
 - $\mu$-strongly convex:

@@ -1,0 +1,34 @@
+{
+  "audience": [],
+  "body": "",
+  "content": "<p>In this lecture, Ian Ball explains bargaining with incomplete information, a scenario in which at least one party lacks full knowledge of the other&rsquo;s private information. Plea bargains are an example of this.</p>\n",
+  "content_type": "resource",
+  "draft": false,
+  "file": "/courses/14-12-economic-applications-of-game-theory-fall-2025/mit14_12f25_lec23_1080p_360p_16_9.mp4",
+  "file_size": 151042898,
+  "file_type": "video/mp4",
+  "gdrive_url": "",
+  "image_metadata": { "caption": "", "credit": "", "image-alt": "" },
+  "iscjklanguage": false,
+  "learning_resource_types": ["Lecture Videos"],
+  "level": [],
+  "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+  "resourcetype": "Video",
+  "title": "Lecture 23: Bargaining with Incomplete Information",
+  "uid": "a68f09d9-4e64-4256-843e-f940658231e4",
+  "video_files": {
+    "archive_url": "",
+    "video_captions_file": "/courses/14-12-economic-applications-of-game-theory-fall-2025/1bJ7wWPrcMD62yzKU7vqsscR1eco2g_x5_transcript.webvtt",
+    "video_captions_resource": "",
+    "video_thumbnail_file": "https://img.youtube.com/vi/CFELos-uZbE/default.jpg",
+    "video_transcript_file": "/courses/14-12-economic-applications-of-game-theory-fall-2025/1bJ7wWPrcMD62yzKU7vqsscR1eco2g_x5_transcript.pdf",
+    "video_transcript_resource": ""
+  },
+  "video_metadata": {
+    "source": "",
+    "video_speakers": "",
+    "video_tags": "14-12-economic-applications-of-game-theory-fall-2025, bargaining, incomplete information, one-side, plea bargain, screening, signaling, two-sided",
+    "youtube_description": "MIT 14.12 Economic Applications of Game Theory, Fall 2025 \nInstructor: Ian Ball \nView the complete course: https://ocw.mit.edu/courses/14-12-economic-applications-of-game-theory-fall-2025/\nYouTube Playlist: https://www.youtube.com/playlist?list=PLUl4u3cNGP63quuKvMHCt3cmTmt0O2qpv\n\nIn this lecture, Ian Ball explains bargaining with incomplete information, which is a scenario where at least one party lacks full knowledge of the other's private information. Plea bargains are an example of this. \t\t\t\n\nLicense: Creative Commons BY-NC-SA\nMore information at https://ocw.mit.edu/terms\nMore courses at https://ocw.mit.edu\nSupport OCW at http://ow.ly/a1If50zVRlQ\n\nWe encourage constructive comments and discussion on OCW’s YouTube and other social media channels. Personal attacks, hate speech, trolling, and inappropriate comments are not allowed and may be removed. More details at https://ocw.mit.edu/comments.",
+    "youtube_id": "CFELos-uZbE"
+  }
+}

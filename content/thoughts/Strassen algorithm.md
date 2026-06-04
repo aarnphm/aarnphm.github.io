@@ -68,7 +68,7 @@ The **rank** of a bilinear map $\phi: \mathbf{A} \times \mathbf{B} \rightarrow \
 
 $$R(\phi/\mathbf{F}) = \min\left\{r\left|\exists f_i\in\mathbf{A}^*, g_i\in\mathbf{B}^*, w_i\in\mathbf{C}, \phi(\mathbf{a},\mathbf{b}) = \sum_{i=1}^r f_i(\mathbf{a})g_i(\mathbf{b})w_i\right.\right\}$$
 
-Strassen's algorithm proves that $2 \times 2$ matrix multiplication has rank ≤ 7.
+Strassen's algorithm proves that $2 \times 2$ matrix multiplication has rank $\leq 7$.
 
 ### cache behavior
 

@@ -2,12 +2,12 @@
 date: '2026-05-27'
 description: prefix-tree caching of KV pages with LRU eviction, shared request prefixes reuse computed K,V.
 id: attention-radix
-modified: 2026-06-01 15:08:05 GMT-04:00
+modified: 2026-06-04 08:33:45 GMT-04:00
 seealso:
   - '[[thoughts/Attention|Attention]]'
-  - '[[thoughts/Radix tree]]'
-  - '[[thoughts/paged attention|paged attention]]'
-  - '[[thoughts/KV compression]]'
+  - '[[thoughts/Radix tree|Radix tree]]'
+  - '[[thoughts/paged attention|Paged Attention]]'
+  - '[[thoughts/KV compression|KV compression]]'
 tags:
   - ml
   - llm
@@ -15,7 +15,7 @@ tags:
 title: Radix Attention
 ---
 
-RadixAttention [@zheng2024sglangefficientexecutionstructured] maintains an LRU eviction policy to keep relevant [[thoughts/KV compression|KV cache]] entries for all requests within a [[thoughts/Radix tree|radix tree]], implemented in https://github.com/sgl-project/sglang and detailed in the SGLang paper and LMSYS blog (Jan 17, 2024).
+RadixAttention [@zheng2024sglangefficientexecutionstructured] maintains an LRU eviction policy to keep relevant [[thoughts/KV compression|KV cache]] entries for all requests within a [[thoughts/Radix tree|radix tree]], implemented in https://github.com/sgl-project/sglang.
 
 Every request inserts its prefix tokens $\pi = (t_1,\ldots,t_m)$ along the tree; each node stores a pointer to the KV page that realises that prefix. During decoding the runtime walks the tree to find the deepest cached prefix shared with the new suffix $\sigma$ and reuses the cached $K,V$ tensors before appending freshly computed blocks:
 
@@ -46,13 +46,6 @@ The LRU policy keeps the union of active prefixes resident on GPU while evicting
   <RadixPrefixTree caption="Click a request to walk the deepest matching prefix (coral) and watch newly cached tokens append (olive). Prompt #4 falls back to root and evicts the coldest branch under LRU; the readout reports the per-request hit rate $H = 1 - C / \sum |r|$." />
 </Zoomable>
 ```
-
-radix tree setup:
-
-- key: sequence of tokens
-- value: KV cache tensor (stored in GPU in a paged layout)
-
-![[thoughts/images/vllm/radix-attention.webp]]
 
 _dynamic evolution of the radix tree in response to various requests._
 
@@ -156,6 +149,4 @@ We can show that longest-shared-prefix-first order is equivalent to DFS order by
     - Each node that has not been visited has the lowest common ancestor with visited nodes on $P$.
     - Since nodes on $P$ are cached, a node $z$ that has yet to be visited with lowest common ancestor on $P$ will have the _longest shared prefix_
     - longest-shared-prefix-first order will select $z$, which is a valid DFS
-      q.e.d
-
-![[thoughts/structured outputs#compressed FSM for jump-ahead tokens.]]
+      $\boxed{}$

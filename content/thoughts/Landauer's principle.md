@@ -40,7 +40,7 @@ Landauer's principle states that the minimum energy needed to erase one bit of i
 
 $$E \geq k_B T \ln 2$$
 
-where $k_B$ is the Boltzmann constant and $T$ is the temperature in Kelvin. At room temperature, the Landauer limit represents an energy of approximately 0.018 eV (2.9×10⁻²¹ J). As of 2012, modern computers use about a billion times as much energy per operation.
+where $k_B$ is the Boltzmann constant and $T$ is the temperature in Kelvin. At room temperature, the Landauer limit represents an energy of approximately $0.018$ eV ($2.9 \times 10^{-21}$ J). As of 2012, modern computers use about a billion times as much energy per operation.
 
 ## history
 
@@ -54,7 +54,7 @@ In a 2012 article published in _Nature_, a team of physicists from the École no
 
 In 2014, physical experiments tested Landauer's principle and confirmed its predictions.
 
-In 2016, researchers used a laser probe to measure the amount of energy dissipation that resulted when a nanomagnetic bit flipped from off to on. Flipping the bit required about 0.026 eV (4.2×10⁻²¹ J) at 300 K, which is just 44% above the Landauer minimum.
+In 2016, researchers used a laser probe to measure the amount of energy dissipation that resulted when a nanomagnetic bit flipped from off to on. Flipping the bit required about $0.026$ eV ($4.2 \times 10^{-21}$ J) at 300 K, which is just 44% above the Landauer minimum.
 
 A 2018 article published in _Nature Physics_ features a Landauer erasure performed at cryogenic temperatures ($T = 1$ K) on an array of high-spin ($S = 10$) quantum molecular magnets. The array is made to act as a spin register where each nanomagnet encodes a single bit of information. The experiment has laid the foundations for the extension of the validity of the Landauer principle to the quantum realm.
 

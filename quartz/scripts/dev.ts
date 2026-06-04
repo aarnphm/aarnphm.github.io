@@ -161,7 +161,7 @@ function parseCliOptions(argv: string[]): CliOptions {
   for (let index = 0; index < argv.length; index += 1) {
     const token = argv[index]
     if (token === '--') {
-      break
+      continue
     }
     if (token === '--help' || token === '-h') {
       help = true

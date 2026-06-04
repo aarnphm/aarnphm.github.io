@@ -101,7 +101,7 @@
     }
 
     &::after {
-      border-width: calc(var(--popover-arrow-leg) - 1px);
+      border-width: calc(var(--popover-arrow-leg) - 3px);
     }
   }
 

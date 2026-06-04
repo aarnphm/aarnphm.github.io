@@ -1224,6 +1224,7 @@ export function transcludeFinal(
     node: Element,
     pageTree: Root,
     transcludeTarget: FullSlug,
+    pageTitle: string | undefined,
     blockRef: string | undefined,
     inner: Element,
     alias: string,
@@ -1249,8 +1250,7 @@ export function transcludeFinal(
         h('a', { href: inner.properties?.href, class: 'internal transclude-src' }, [
           {
             type: 'text',
-            value:
-              page.frontmatter?.title ?? i18n(cfg.locale).components.transcludes.linkToOriginal,
+            value: pageTitle ?? i18n(cfg.locale).components.transcludes.linkToOriginal,
           },
         ]),
       )
@@ -1343,6 +1343,7 @@ export function transcludeFinal(
           node,
           page.htmlAst,
           transcludeTarget,
+          page.frontmatter?.title,
           blockRef,
           inner,
           alias,

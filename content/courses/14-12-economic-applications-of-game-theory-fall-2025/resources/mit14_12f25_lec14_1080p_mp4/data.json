@@ -1,0 +1,34 @@
+{
+  "audience": [],
+  "body": "",
+  "content": "<p>In this lecture, Ian Ball discusses the folk theorem, which states that in infinitely repeated games, any feasible and individually rational payoff can be sustained as a Nash equilibrium (or subgame perfect equilibrium).</p>\n",
+  "content_type": "resource",
+  "draft": false,
+  "file": "/courses/14-12-economic-applications-of-game-theory-fall-2025/mit14_12f25_lec14_1080p_360p_16_9.mp4",
+  "file_size": 156877566,
+  "file_type": "video/mp4",
+  "gdrive_url": "",
+  "image_metadata": { "caption": "", "credit": "", "image-alt": "" },
+  "iscjklanguage": false,
+  "learning_resource_types": ["Lecture Videos"],
+  "level": [],
+  "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+  "resourcetype": "Video",
+  "title": "Lecture 14: Folk Theorem",
+  "uid": "5a94259d-0ab7-44e2-b430-417ca3e1ccce",
+  "video_files": {
+    "archive_url": "",
+    "video_captions_file": "/courses/14-12-economic-applications-of-game-theory-fall-2025/1w-fQ72fHXz1s7KKHxhZodj026TQQOXzD_transcript.webvtt",
+    "video_captions_resource": "",
+    "video_thumbnail_file": "https://img.youtube.com/vi/3ws34WgJKzk/default.jpg",
+    "video_transcript_file": "/courses/14-12-economic-applications-of-game-theory-fall-2025/1w-fQ72fHXz1s7KKHxhZodj026TQQOXzD_transcript.pdf",
+    "video_transcript_resource": ""
+  },
+  "video_metadata": {
+    "source": "",
+    "video_speakers": "",
+    "video_tags": "14-12-economic-applications-of-game-theory-fall-2025, folk theorem, infinitely repeated games, nash equilibrium, subgame perfect equilibrium",
+    "youtube_description": "MIT 14.12 Economic Applications of Game Theory, Fall 2025 \nInstructor: Ian Ball \nView the complete course: https://ocw.mit.edu/courses/14-12-economic-applications-of-game-theory-fall-2025/\nYouTube Playlist: https://www.youtube.com/playlist?list=PLUl4u3cNGP63quuKvMHCt3cmTmt0O2qpv\n\nThe Folk Theorem states that in infinitely repeated games, any feasible and individually rational payoff can be sustained as a Nash equilibrium (or subgame perfect equilibrium), meaning cooperation, punishment, and a wide range of outcomes become possible when the future matters enough.\t\t\t\t\n\t\t\t\nLicense: Creative Commons BY-NC-SA\nMore information at https://ocw.mit.edu/terms\nMore courses at https://ocw.mit.edu\nSupport OCW at http://ow.ly/a1If50zVRlQ\n\nWe encourage constructive comments and discussion on OCW’s YouTube and other social media channels. Personal attacks, hate speech, trolling, and inappropriate comments are not allowed and may be removed. More details at https://ocw.mit.edu/comments.",
+    "youtube_id": "3ws34WgJKzk"
+  }
+}

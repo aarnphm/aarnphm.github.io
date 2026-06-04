@@ -5,7 +5,7 @@ date: '2024-10-10'
 description: a bag of chips/words/vernacular
 id: word
 layout: technical
-modified: 2026-06-02 13:17:40 GMT-04:00
+modified: 2026-06-03 22:51:07 GMT-04:00
 tags:
   - evergreen
 title: lists
@@ -188,3 +188,6 @@ title: lists
 - {{sidenotes[chauvinist]: a person who displays an aggressive, unreasonable, and fanatical beelif in the superiority of their own group}}
 - peleton
 - domestique
+- fevor
+- {{sidenotes[truculent]: someone who is aggresively self-assertive, defiant, and easily angered}}
+- preclude

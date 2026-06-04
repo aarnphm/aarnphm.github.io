@@ -46,7 +46,3 @@ The choice of $m(X)$ affects the value. For the data set $\{2,2,3,4,14\}$:
   $$
   \frac{|2-2|+|2-2|+|3-2|+|4-2|+|14-2|}{5} = 3.0.
   $$
-
-### Mean absolute deviation around the mean
-
-The mean absolute deviation (MAD), also referred to as the \\"mean deviation\\" or sometimes \\"average absolute deviation\

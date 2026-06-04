@@ -43,7 +43,7 @@ $$
 \delta_j^{(l)} = \sum_k w_{kj}^{(l+1)} \delta_k^{(l+1)} \cdot f'(z_j^{(l)})
 $$
 
-What's happening here is that the network literally "reconstituting"" itself based on discrepancy between what it predicted and what occurred. The gradient itself, can be interpreted as its own process of _becoming_.
+What's happening here is that the network literally "reconstituting" itself based on discrepancy between what it predicted and what occurred. The gradient itself, can be interpreted as its own process of _becoming_.
 
 Every weight update:
 

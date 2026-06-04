@@ -126,6 +126,7 @@ export const customMacros = {
   '\\multicolumn': '#3',
   // Text micro symbol compatibility
   '\\textmu': '\\mu',
+  '\\O': '\\emptyset',
 }
 
 export const katexOptions = { strict: true, throwOnError: true }

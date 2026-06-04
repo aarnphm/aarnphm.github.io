@@ -22,7 +22,7 @@ https://arxiv.org/abs/2507.19427
 
 see also https://zhuanlan.zhihu.com/p/1935657127348793545, https://zhuanlan.zhihu.com/p/1932920900203807997
 
-Proposes [[thoughts/Attention#Multi-Matrix Factorization Attention|MFA]] to reduces KVCache and attention cost -- 22% of DeepSeek V3's per-token attention cost, and Attention-FFN Disaggregation (AFD)
+Proposes [[thoughts/Attention#Multi-Matrix Factorization Attention|MFA]] to reduce KVCache and attention cost -- 22% of DeepSeek V3's per-token attention cost, and Attention-FFN Disaggregation (AFD)
 
 |                                          | Step3                | DeepSeekV3           | Qwen3-235B           | ERNIE4.5             | Qwen3 32B            |
 | ---------------------------------------- | -------------------- | -------------------- | -------------------- | -------------------- | -------------------- |

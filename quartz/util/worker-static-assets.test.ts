@@ -3,6 +3,9 @@ import test from 'node:test'
 import {
   cacheHeadersForStaticAsset,
   isolationHeadersForStaticAsset,
+  requestWithoutCache,
+  requestWithoutStaticAssetCache,
+  shouldBypassStaticAssetCache,
 } from '../../worker/static-assets'
 
 test('marks content-hashed static assets immutable', () => {
@@ -28,9 +31,54 @@ test('keeps the asset manifest volatile', () => {
   })
 })
 
-test('does not cache unhashed assets or misses as immutable', () => {
-  assert.deepEqual(cacheHeadersForStaticAsset('/postscript.js', 200), {})
+test('keeps generated watch css and js volatile', () => {
+  for (const pathname of [
+    '/index.css',
+    '/static/component.css',
+    '/static/resource-style.css',
+    '/static/resource-style-5.css',
+    '/prescript.js',
+    '/postscript.js',
+    '/static/resource-after.js',
+    '/static/resource-after-7.js',
+    '/static/scripts/notebook-runtime.worker.js',
+  ]) {
+    assert.deepEqual(cacheHeadersForStaticAsset(pathname, 200), {
+      'Cache-Control': 'no-store, no-cache, must-revalidate',
+    })
+  }
+})
+
+test('does not cache ordinary assets or misses as immutable', () => {
+  assert.deepEqual(cacheHeadersForStaticAsset('/static/icon.png', 200), {})
   assert.deepEqual(cacheHeadersForStaticAsset('/static/resource-after-47ac7b09.js', 404), {})
+})
+
+test('bypasses validators for volatile generated assets', () => {
+  assert.equal(shouldBypassStaticAssetCache('/index.css'), true)
+  assert.equal(shouldBypassStaticAssetCache('/static/scripts/asset-manifest.json'), true)
+  assert.equal(shouldBypassStaticAssetCache('/static/scripts/script-47ac7b09.js'), false)
+  assert.equal(shouldBypassStaticAssetCache('/static/icon.png'), false)
+
+  const request = new Request('https://example.com/index.css', {
+    headers: { 'If-None-Match': 'etag', 'If-Modified-Since': 'yesterday', 'X-Test': 'keep' },
+  })
+  const bypassed = requestWithoutStaticAssetCache(request, '/index.css')
+
+  assert.equal(bypassed.headers.get('If-None-Match'), null)
+  assert.equal(bypassed.headers.get('If-Modified-Since'), null)
+  assert.equal(bypassed.headers.get('X-Test'), 'keep')
+  assert.equal(requestWithoutStaticAssetCache(request, '/static/icon.png'), request)
+})
+
+test('strips validators from arbitrary local reload requests', () => {
+  const request = new Request('https://example.com/thoughts/radix-attention', {
+    headers: { 'If-None-Match': 'etag', 'If-Modified-Since': 'yesterday' },
+  })
+  const bypassed = requestWithoutCache(request)
+
+  assert.equal(bypassed.headers.get('If-None-Match'), null)
+  assert.equal(bypassed.headers.get('If-Modified-Since'), null)
 })
 
 test('marks first-party scripts loadable under notebook isolation', () => {

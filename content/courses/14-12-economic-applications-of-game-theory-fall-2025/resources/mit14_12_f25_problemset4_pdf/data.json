@@ -1,0 +1,37 @@
+{
+  "audience": [],
+  "body": "",
+  "content": "",
+  "content_type": "resource",
+  "draft": false,
+  "file": "/courses/14-12-economic-applications-of-game-theory-fall-2025/mit14_12_f25_problemset4.pdf",
+  "file_size": 197189,
+  "file_type": "application/pdf",
+  "gdrive_url": "",
+  "image_metadata": { "caption": "", "credit": "", "image-alt": "" },
+  "iscjklanguage": false,
+  "learning_resource_types": ["Problem Sets"],
+  "level": [],
+  "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+  "resourcetype": "Document",
+  "title": "Problem Set 4",
+  "uid": "9995eb58-6358-4f92-9249-06f4bbb6d1e5",
+  "video_files": {
+    "archive_url": "",
+    "video_captions_file": "",
+    "video_captions_resource": { "content": "", "website": "economic-applications-of-game-theory" },
+    "video_thumbnail_file": "",
+    "video_transcript_file": "",
+    "video_transcript_resource": {
+      "content": "",
+      "website": "economic-applications-of-game-theory"
+    }
+  },
+  "video_metadata": {
+    "source": "",
+    "video_speakers": "",
+    "video_tags": "",
+    "youtube_description": "",
+    "youtube_id": ""
+  }
+}

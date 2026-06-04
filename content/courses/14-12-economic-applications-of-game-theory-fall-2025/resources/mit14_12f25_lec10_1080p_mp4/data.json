@@ -1,0 +1,34 @@
+{
+  "audience": [],
+  "body": "",
+  "content": "<p>In this lecture, Ian Ball explains subgame-perfect Nash equilibriums, a strategy profile in which every player&rsquo;s strategy is optimal not just for the game as a whole, but at every possible decision point (subgame) within the game.</p>\n",
+  "content_type": "resource",
+  "draft": false,
+  "file": "/courses/14-12-economic-applications-of-game-theory-fall-2025/mit14_12f25_lec10_1080p_360p_16_9.mp4",
+  "file_size": 201041901,
+  "file_type": "video/mp4",
+  "gdrive_url": "",
+  "image_metadata": { "caption": "", "credit": "", "image-alt": "" },
+  "iscjklanguage": false,
+  "learning_resource_types": ["Lecture Videos"],
+  "level": [],
+  "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+  "resourcetype": "Video",
+  "title": "Lecture 10: Subgame-Perfect Nash Equilibrium",
+  "uid": "874805d2-635f-49ad-be97-98379d975075",
+  "video_files": {
+    "archive_url": "",
+    "video_captions_file": "/courses/14-12-economic-applications-of-game-theory-fall-2025/1k1DgL7gF8wAKJuTIyI3ES_c98089jt_1_transcript.webvtt",
+    "video_captions_resource": "",
+    "video_thumbnail_file": "https://img.youtube.com/vi/byS0I3U3YoQ/default.jpg",
+    "video_transcript_file": "/courses/14-12-economic-applications-of-game-theory-fall-2025/1k1DgL7gF8wAKJuTIyI3ES_c98089jt_1_transcript.pdf",
+    "video_transcript_resource": ""
+  },
+  "video_metadata": {
+    "source": "",
+    "video_speakers": "",
+    "video_tags": "14-12-economic-applications-of-game-theory-fall-2025, backward induction, credibility, nash equilbrium, optimal, sequential rationality, subgame",
+    "youtube_description": "MIT 14.12 Economic Applications of Game Theory, Fall 2025 \nInstructor: Ian Ball \nView the complete course: https://ocw.mit.edu/courses/14-12-economic-applications-of-game-theory-fall-2025/\nYouTube Playlist: https://www.youtube.com/playlist?list=PLUl4u3cNGP63quuKvMHCt3cmTmt0O2qpv\n\nIn this lecture, Ian Ball explains subgame-perfect Nash equilibriums, which is a strategy profile where every player's strategy is optimal not just for the game as a whole, but at every possible decision point (subgame) within the game. \t\t\t\t\n\n\nLicense: Creative Commons BY-NC-SA\nMore information at https://ocw.mit.edu/terms\nMore courses at https://ocw.mit.edu\nSupport OCW at http://ow.ly/a1If50zVRlQ\n\nWe encourage constructive comments and discussion on OCW’s YouTube and other social media channels. Personal attacks, hate speech, trolling, and inappropriate comments are not allowed and may be removed. More details at https://ocw.mit.edu/comments.\n",
+    "youtube_id": "byS0I3U3YoQ"
+  }
+}

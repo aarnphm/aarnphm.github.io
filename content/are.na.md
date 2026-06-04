@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-06-02 23:01:48 GMT-04:00
+modified: 2026-06-04 12:08:10 GMT-04:00
 permalinks:
   - /website
   - /tweets
@@ -143,6 +143,25 @@ title: are.na
 - [meta]:
   - view: list
 
+- https://x.com/iycrtylph/status/2062332680566640666 -- Ted Chiang's AI [[thoughts/Consciousness]]
+  - [meta]:
+    - date: 06/04/2026
+    - tags: [opinion]
+    - seealso: https://www.theatlantic.com/philosophy/2026/06/no-artificial-intelligence-is-not-conscious/687378
+- https://x.com/eliebakouch/status/2061862867553382439 -- Attention Residual and CompleteP
+  - [meta]:
+    - date: 06/03/2026
+    - tags: [efficiency, architecture]
+    - later: true
+- https://x.com/paulg/status/2061842652765761682 -- Writing for clarity
+  - [meta]:
+    - date: 06/03/2026
+    - tags: [writing, tips]
+    - importance: 7
+- https://x.com/typicalmitul/status/2061441043254358110 -- What if we kissed at the 1967 Montreal World Expo
+  - [meta]:
+    - date: 06/03/2026
+    - tags: [life]
 - https://x.com/ch402/status/2058907108725211476 -- Remarks on Magnifica Humanitas
   - [meta]:
     - date: 05/26/2026
@@ -646,6 +665,10 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://www.cosmos.so/
+  - [meta]:
+    - date: 06/03/2026
+    - tags: [links]
 - https://irid.space/ -- Institute for Relational Intelligence in Design
   - [meta]:
     - date: 05/28/2026
@@ -1218,6 +1241,15 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://www.warhol.org/andy-warhols-life/ -- Andy Warhold
+  - [meta]:
+    - date: 06/03/2026
+    - tags: [designer, visuals]
+    - importance: 7
+- https://www.moma.org/artists/3787-agnes-martin -- Agnes Martin
+  - [meta]:
+    - date: 06/03/2026
+    - tags: [painter]
 - https://www.lewtan.dev/ -- Devin Lewtan
   - [meta]:
     - date: 05/28/2026
@@ -2415,6 +2447,10 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://www.are.na/editorial/on-our-api -- On Our API
+  - [meta]:
+    - date: 06/03/2026
+    - tags: [engineering, protocol]
 - https://www.talentoperatoros.io/mapping-global-ai-workforce-density -- Mapping Global AI workforce
   - [meta]:
     - date: 05/28/2026
@@ -4466,6 +4502,8 @@ title: are.na
     - date: 05/25/2026
     - tags: [interpretability]
     - seealso: https://transformer-circuits.pub/2026/nla/index.html
+    - socials:
+      - github: https://github.com/kitft/natural_language_autoencoders
 - https://bair.berkeley.edu/blog/2026/05/08/adaptive-parallel-reasoning/ -- Adaptive Parallel Reasoning
   - [meta]:
     - date: 05/25/2026
@@ -7024,6 +7062,10 @@ title: are.na
 
 ## stream
 
+- https://processpamphlets.com/ -- Process Pamphlets
+  - [meta]:
+    - date: 06/03/2026
+    - tags: [visuals, foundry]
 - https://www.inventorypress.com/ -- Inventory Press
   - [meta]:
     - date: 06/02/2026
@@ -7529,6 +7571,14 @@ title: are.na
 
 ## design
 
+- https://fockups.com/ -- Fucked up mockups
+  - [meta]:
+    - date: 06/03/2026
+    - tags: [digital media]
+- https://myartda.com/ -- Minjeong An
+  - [meta]:
+    - date: 06/03/2026
+    - tags: [designer]
 - https://specialforc.es/ -- Special Forces
   - [meta]:
     - date: 05/31/2026
@@ -7857,6 +7907,24 @@ title: are.na
 
 ## video
 
+- https://www.youtube.com/watch?v=4xWGSUZmkIc -- John Doerr: Ideas are easy, execution is everything.
+  - [meta]:
+    - date: 06/03/2026
+    - tags: [efficiency]
+    - importance: 7
+  - Differentiate policies from Amazon and the rest:
+    - Technical excellence: attract the most amazing talents
+    - Outstanding Founders/Management: Founder-led company and commitment for better execution (speed is everything)
+    - Strategy focus: target a large/unserve market
+    - Execution: ability to execute at speed, as innovation  without _execution is a halluncination_
+    - Reasoning Financing: maintaining a cushion of capital whilst being ruthlessly intellectually honest about risks
+  - Evaluate new fields
+    - Hang out with people that are smarter than you 😃
+- https://www.youtube.com/watch?v=d264viC7ROE -- The Instagramification of Human Experience
+  - [meta]:
+    - date: 06/03/2026
+    - tags: [poets, books, vlogbrother]
+  - Andy Warhol
 - https://www.youtube.com/watch?v=325HdQe4WM4 -- There's an Actual Reason You Can't Recycle Plastic
   - [meta]:
     - date: 06/01/2026
@@ -8853,6 +8921,10 @@ title: are.na
   - view: list
   - json: true
 
+- https://github.com/kitft/natural_language_autoencoders -- NLA
+  - [meta]:
+    - date: 06/03/2026
+    - tags: [interpretability]
 - https://github.com/google-deepmind/gemma_penzai
   - [meta]:
     - date: 01/19/2026
@@ -8862,6 +8934,7 @@ title: are.na
   - [meta]:
     - date: 01/02/2026
     - tags: [kernel]
+    - seealso: https://tridao.me/blog/2026/sonicmoe-blackwell/
 - https://github.com/Noumena-Network/nmoe
   - [meta]:
     - date: 01/02/2026

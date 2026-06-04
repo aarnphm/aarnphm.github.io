@@ -36,15 +36,19 @@
   flex-direction: column;
   gap: 0.75rem;
   min-width: 0;
+  padding: 0.75rem 0.9rem;
 }
 
-.rpt-card-title,
-.rpt-card > h4 {
+.rpt-card-title {
   margin: 0;
-  font-size: 0.78rem;
   font-weight: 600;
-  text-transform: uppercase;
   color: var(--rpt-note-fg);
+}
+
+.rpt-card-title .katex,
+.rpt-card > h4 .katex {
+  font-size: 1em;
+  color: inherit;
 }
 
 .rpt-prompt-list {
@@ -89,28 +93,11 @@
   }
 }
 
-.rpt-prompt-label {
-  font-weight: 600;
-  font-variant-numeric: tabular-nums;
-}
-
-.rpt-prompt-meta {
-  font-size: 0.72rem;
-  color: var(--rpt-note-fg);
-  code {
-    background: none;
-    padding: 0;
-    color: var(--dark);
-    font-family: var(--codeFont);
-    font-size: 0.72rem;
-  }
-}
-
 .rpt-reset {
   align-self: flex-start;
   padding: 0.32rem 0.7rem;
   border-radius: var(--radius-none);
-  border: 0;
+  border: 1px solid var(--gray);
   background: transparent;
   color: var(--rpt-note-fg);
   font-family: var(--bodyFont);
@@ -135,7 +122,7 @@
 .rpt-svg {
   width: 100%;
   height: auto;
-  aspect-ratio: 680 / 440;
+  aspect-ratio: 680 / 490;
   display: block;
 
   .rpt-edge {
@@ -146,6 +133,7 @@
       stroke 220ms ease,
       stroke-width 220ms ease,
       opacity 220ms ease;
+    transition-delay: var(--rpt-delay, 0ms);
     &.is-match {
       stroke: var(--rpt-match);
       stroke-width: 1.8;
@@ -162,6 +150,8 @@
     stroke-width: 1.6;
     stroke-dasharray: 4 3;
     opacity: 0;
+    transition: opacity 200ms ease;
+    transition-delay: var(--rpt-delay, 0ms);
     &.is-visible {
       opacity: 1;
     }
@@ -170,6 +160,7 @@
   .rpt-edge-label {
     overflow: visible;
     transition: opacity 220ms ease;
+    transition-delay: var(--rpt-delay, 0ms);
   }
 
   .rpt-edge-label--new {
@@ -192,7 +183,9 @@
     transition:
       fill 220ms ease,
       stroke 220ms ease,
-      stroke-width 220ms ease;
+      stroke-width 220ms ease,
+      filter 220ms ease;
+    transition-delay: var(--rpt-delay, 0ms);
   }
 
   .rpt-node-label {
@@ -229,11 +222,9 @@
 
   .rpt-node--new {
     opacity: 0;
-    transform-box: fill-box;
-    transform-origin: center;
+    transition-delay: var(--rpt-delay, 0ms);
     &.is-visible {
       opacity: 1;
-      animation: rpt-pop 360ms ease-out;
     }
     .rpt-node-shape {
       fill: var(--rpt-new-bg);
@@ -243,6 +234,16 @@
     .rpt-node-label .rpt-fo {
       color: var(--dark);
     }
+  }
+
+  .rpt-node-pop {
+    transform-box: fill-box;
+    transform-origin: center;
+  }
+
+  .rpt-node--new.is-visible .rpt-node-pop {
+    animation: rpt-pop 360ms ease-out both;
+    animation-delay: var(--rpt-delay, 0ms);
   }
 
   .rpt-arrowhead {
@@ -307,15 +308,12 @@
 @keyframes rpt-pop {
   0% {
     transform: scale(0.6);
-    opacity: 0;
   }
   60% {
     transform: scale(1.06);
-    opacity: 1;
   }
   100% {
     transform: scale(1);
-    opacity: 1;
   }
 }
 
@@ -360,6 +358,11 @@
 
   dt {
     color: var(--rpt-note-fg);
+
+    .katex {
+      font-size: 1em;
+      color: inherit;
+    }
   }
 
   dd {
@@ -367,6 +370,11 @@
     color: var(--dark);
     font-variant-numeric: tabular-nums;
     text-align: right;
+
+    .katex {
+      font-size: 1em;
+      color: inherit;
+    }
   }
 }
 

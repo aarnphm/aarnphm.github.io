@@ -1,4 +1,4 @@
-export {}
+import katex from 'katex'
 
 type RptBranch = 'chat_a' | 'chat_b' | 'few_shot' | 'new' | 'root'
 
@@ -7,6 +7,7 @@ type RptPromptSegment = { id: string; label: string; tokens: number; x: number; 
 type RptPrompt = {
   id: string
   label: string
+  labelTex: string
   branch: RptBranch
   matchPath: string[]
   newSegments: RptPromptSegment[]
@@ -22,6 +23,8 @@ const RPT_BRANCH_NODES: Record<'chat_a' | 'chat_b' | 'few_shot', string[]> = {
   chat_b: ['b', 'b1'],
   few_shot: ['f', 'f1'],
 }
+
+const RPT_STEP_MS = 90
 
 const rptIsBranchKey = (key: string): key is 'chat_a' | 'chat_b' | 'few_shot' =>
   key === 'chat_a' || key === 'chat_b' || key === 'few_shot'
@@ -49,12 +52,15 @@ const rptPathEdges = (path: string[]): string[] => {
 const rptResetVisualState = (root: HTMLElement) => {
   for (const node of root.querySelectorAll<SVGGElement>('[data-rpt-node]')) {
     node.classList.remove('is-match', 'is-pinned', 'is-evicted')
+    node.style.removeProperty('--rpt-delay')
   }
   for (const edge of root.querySelectorAll<SVGPathElement>('[data-rpt-edge]')) {
     edge.classList.remove('is-match', 'is-evicted')
+    edge.style.removeProperty('--rpt-delay')
   }
   for (const group of root.querySelectorAll<SVGGElement>('[data-rpt-new-group]')) {
     group.classList.remove('is-visible')
+    group.style.removeProperty('--rpt-delay')
     const path = group.querySelector<SVGPathElement>('.rpt-edge--new')
     const newNode = group.querySelector<SVGGElement>('.rpt-node--new')
     const label = group.querySelector<SVGForeignObjectElement>('.rpt-edge-label--new')
@@ -93,21 +99,26 @@ const rptApplyPrompt = (
     if (!resident[branch]) rptSetBranchEvicted(root, branch)
   }
 
-  for (const nodeId of prompt.matchPath) {
+  prompt.matchPath.forEach((nodeId, i) => {
     const node = root.querySelector<SVGGElement>(`[data-rpt-node="${nodeId}"]`)
-    node?.classList.add('is-match')
-  }
+    if (!node) return
+    node.style.setProperty('--rpt-delay', `${i * RPT_STEP_MS}ms`)
+    node.classList.add('is-match')
+  })
   const lastMatchedId = prompt.matchPath[prompt.matchPath.length - 1]
   const lastNode = root.querySelector<SVGGElement>(`[data-rpt-node="${lastMatchedId}"]`)
   lastNode?.classList.add('is-pinned')
 
-  for (const edgeKey of rptPathEdges(prompt.matchPath)) {
+  rptPathEdges(prompt.matchPath).forEach((edgeKey, i) => {
     const edge = root.querySelector<SVGPathElement>(`[data-rpt-edge="${edgeKey}"]`)
-    edge?.classList.add('is-match')
-  }
+    if (!edge) return
+    edge.style.setProperty('--rpt-delay', `${(i + 1) * RPT_STEP_MS}ms`)
+    edge.classList.add('is-match')
+  })
 
   const group = root.querySelector<SVGGElement>(`[data-rpt-new-group="${prompt.id}"]`)
   if (group) {
+    group.style.setProperty('--rpt-delay', `${prompt.matchPath.length * RPT_STEP_MS}ms`)
     group.classList.add('is-visible')
     group.querySelector<SVGPathElement>('.rpt-edge--new')?.classList.add('is-visible')
     group.querySelector<SVGGElement>('.rpt-node--new')?.classList.add('is-visible')
@@ -181,6 +192,32 @@ const rptFormatPct = (num: number, denom: number): string => {
   return pct >= 10 ? `${pct.toFixed(0)}%` : `${pct.toFixed(1)}%`
 }
 
+const rptRenderMath = (tex: string): string => {
+  try {
+    return katex.renderToString(tex, {
+      displayMode: false,
+      output: 'html',
+      throwOnError: false,
+      strict: false,
+    })
+  } catch {
+    return tex
+  }
+}
+
+const rptStatTex = (value: string): string => {
+  if (value === '-') return '\\text{-}'
+  if (value.includes('%')) return value.replace('%', '\\%')
+  if (value.includes('/')) return value.replace(/\s*\/\s*/, '\\,/\\,')
+  return value
+}
+
+const rptSetStat = (root: HTMLElement, key: string, value: string) => {
+  const el = root.querySelector<HTMLElement>(`[data-rpt-stat="${key}"]`)
+  if (!el) return
+  el.innerHTML = rptRenderMath(key === 'last' ? value : rptStatTex(value))
+}
+
 const rptUpdateStats = (
   root: HTMLElement,
   prompt: RptPrompt,
@@ -190,32 +227,25 @@ const rptUpdateStats = (
   cumTotal: number,
 ) => {
   const total = cached + prompt.newTokens
-  const set = (key: string, value: string) => {
-    const el = root.querySelector<HTMLElement>(`[data-rpt-stat="${key}"]`)
-    if (el) el.textContent = value
-  }
-  set('last', prompt.label)
-  set('cached', String(cached))
-  set('new', String(prompt.newTokens))
-  set('hit', rptFormatPct(cached, total))
-  set('cum', rptFormatPct(cumCached, cumTotal))
+  rptSetStat(root, 'last', prompt.labelTex)
+  rptSetStat(root, 'cached', String(cached))
+  rptSetStat(root, 'new', String(prompt.newTokens))
+  rptSetStat(root, 'hit', rptFormatPct(cached, total))
+  rptSetStat(root, 'cum', rptFormatPct(cumCached, cumTotal))
   const { resident: r, evicted: e } = rptCountResident(resident)
-  set('resident', `${r} / ${e}`)
+  rptSetStat(root, 'resident', `${r} / ${e}`)
 }
 
 const rptResetStats = (root: HTMLElement) => {
   const reset: Record<string, string> = {
-    last: '-',
+    last: '\\text{-}',
     cached: '0',
     new: '0',
     hit: '-',
     cum: '-',
     resident: '8 / 0',
   }
-  for (const [key, value] of Object.entries(reset)) {
-    const el = root.querySelector<HTMLElement>(`[data-rpt-stat="${key}"]`)
-    if (el) el.textContent = value
-  }
+  for (const [key, value] of Object.entries(reset)) rptSetStat(root, key, value)
 }
 
 const rptSetup = () => {
@@ -227,6 +257,8 @@ const rptSetup = () => {
     const prompts = rptParsePrompts(root)
     if (!prompts.length) continue
     const nodeTokens = rptBuildTokenMap(root)
+
+    rptResetStats(root)
 
     const resident: RptResidentMap = { chat_a: true, chat_b: true, few_shot: true }
     let lru: Array<'chat_a' | 'chat_b' | 'few_shot'> = ['few_shot', 'chat_b', 'chat_a']
