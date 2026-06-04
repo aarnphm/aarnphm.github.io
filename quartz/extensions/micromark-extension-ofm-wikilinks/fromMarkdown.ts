@@ -196,7 +196,10 @@ function enterTarget(this: CompileContext): undefined {
  * captures the target text from buffer.
  */
 function exitTarget(this: CompileContext): undefined {
-  const target = this.resume()
+  let target = this.resume()
+  if (target.endsWith('\\')) {
+    target = target.slice(0, -1)
+  }
   const node = this.stack[this.stack.length - 1] as unknown as Wikilink
   if (node.data?.wikilink) {
     node.data.wikilink.target = target
@@ -223,7 +226,10 @@ function enterAnchor(this: CompileContext): undefined {
  * - applies slugification using github-slugger
  */
 function exitAnchor(this: CompileContext, _token: Token, obsidian: boolean = false): undefined {
-  const anchorText = this.resume()
+  let anchorText = this.resume()
+  if (anchorText.endsWith('\\')) {
+    anchorText = anchorText.slice(0, -1)
+  }
   const node = this.stack[this.stack.length - 1] as unknown as Wikilink
 
   if (node.data?.wikilink) {

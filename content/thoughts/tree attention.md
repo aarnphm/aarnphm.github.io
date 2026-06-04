@@ -2,7 +2,7 @@
 date: '2026-05-27'
 description: softmax reduction over a communication tree, log p stages across p devices instead of linear ring traversal.
 id: attention-tree
-modified: 2026-05-29 13:27:41 GMT-04:00
+modified: 2026-06-04 15:03:29 GMT-04:00
 seealso:
   - '[[thoughts/Attention|Attention]]'
   - '[[thoughts/ring attention|ring attention]]'
@@ -40,40 +40,6 @@ After $\log p$ levels, the root recovers the exact softmax output $y^{(\log p)}_
 
 > [!note] exact yet communication-aware
 > Because every stage rescales by the running maximum, no approximation error accumulates; the tree merely rearranges reductions so latency becomes $\Theta(\log p)$ rounds rather than $\Theta(p)$. The same reduction tree can overlap with pipelined GEMMs to hide latency on NVLink/IB fabrics.
-
-```tikz
-\usepackage{tikz}
-\begin{document}
-\begin{tikzpicture}[
-  font=\sffamily\small,
-  leaf/.style={draw=black, fill=cyan!20, rounded corners=2pt, minimum width=1.6cm, minimum height=0.6cm, inner sep=2pt},
-  inner/.style={draw=black, fill=orange!25, rounded corners=2pt, minimum width=1.8cm, minimum height=0.6cm, inner sep=2pt},
-  root/.style={draw=black, fill=green!25, rounded corners=2pt, minimum width=2.4cm, minimum height=0.6cm, inner sep=2pt},
-  redarrow/.style={->, >=latex, gray!70, thick}
-]
-  \node[leaf] (d0) at (0, 0) {$(m_0, z_0, y_0)$};
-  \node[leaf] (d1) at (2.6, 0) {$(m_1, z_1, y_1)$};
-  \node[leaf] (d2) at (5.2, 0) {$(m_2, z_2, y_2)$};
-  \node[leaf] (d3) at (7.8, 0) {$(m_3, z_3, y_3)$};
-
-  \node[inner] (s1) at (1.3, 1.4) {$(m_{01}, z_{01}, y_{01})$};
-  \node[inner] (s2) at (6.5, 1.4) {$(m_{23}, z_{23}, y_{23})$};
-
-  \node[root] (r) at (3.9, 2.8) {$y / z$};
-
-  \draw[redarrow] (d0) -- (s1);
-  \draw[redarrow] (d1) -- (s1);
-  \draw[redarrow] (d2) -- (s2);
-  \draw[redarrow] (d3) -- (s2);
-  \draw[redarrow] (s1) -- (r);
-  \draw[redarrow] (s2) -- (r);
-
-  \node[anchor=west, font=\sffamily\itshape, gray] at (8.6, 0) {stage 0};
-  \node[anchor=west, font=\sffamily\itshape, gray] at (8.6, 1.4) {stage 1};
-  \node[anchor=west, font=\sffamily\itshape, gray] at (8.6, 2.8) {root};
-\end{tikzpicture}
-\end{document}
-```
 
 ```jsx imports={Zoomable,TreeReduction}
 <Zoomable label="tree reduction stages">

@@ -2,7 +2,7 @@
 date: '2026-05-26'
 description: or just new thing
 id: Sets
-modified: 2026-06-04 14:14:20 GMT-04:00
+modified: 2026-06-04 17:08:14 GMT-04:00
 seealso:
   - '[[thoughts/topology]]'
   - '[[thoughts/pdfs/munkres-topology.pdf|Topology, by Munkres]]'
@@ -25,12 +25,13 @@ Sets are the substrate for [[thoughts/algebraic geometry|algebraic structures]] 
 | $x \not\in A$    | $x$ is not an element/belongs to $A$                                           |
 | $A \subseteq B$  | every element of $A$ is in $B$                                                 |
 | $A \subsetneq B$ | A is a _proper subset_ of B given that $A \subset B$ and A is different from B |
-| $A \cup B$       | union: $\{x \mid x \in A \text{ or } x \in B\}$                                |
-| $A \cap B$       | intersection: $\{x \mid x \in A \text{ and } x \in B\}$                        |
-| $A \setminus B$  | difference: $\{x \in A \mid x \notin B\}$                                      |
-| $\emptyset$      | the empty set                                                                  |
+| $A \cup B$       | [[#($A cup B$)\|union]]: $\{x \mid x \in A \text{ or } x \in B\}$              |
+| $A \cap B$       | [[#($A cap B$)\|intersection]]: $\{x \mid x \in A \text{ and } x \in B\}$      |
+| $A \setminus B$  | [[#difference\|difference]]: $\{x \in A \mid x \notin B\}$                     |
+| $\emptyset$      | the [[#empty\|emptyset]]                                                       |
 | $\mathcal{P}(A)$ | power set: all subsets of $A$                                                  |
 | $A \times B$     | cartesian product                                                              |
+| $\text{not } P$  | negation                                                                       |
 
 > [!NOTE]
 >
@@ -53,12 +54,176 @@ $$
 
 ### contrapositive and converse
 
-_"if...then" would often concern relation between \_statement_, _contrapositive_ or _converse_
+"if...then" would often concern relation between _statement_, _contrapositive_ or _converse_
 
 | logic           | notation                                   |
 | --------------- | ------------------------------------------ |
 | If $P$ then $Q$ | $P \implies Q$                             |
 | contrapositive  | $(\text{not } Q) \implies (\text{not } P)$ |
+| converse        | $Q \implies P$                             |
+
+> note that statement and contrapositive are _logically equivalent_, but converse does not affect about its truthy/falsity of the original state
+>
+> Note that only _iff_ holds if _converse also holds_, i.e $P \iff Q$
+
+## set operations
+
+We can visualize the basic operations and rules of set theory via Venn diagrams
+
+### ($A \cup B$)
+
+The union contains all elements that are in $A$, or in $B$, or in both.
+
+```tikz
+\usepackage{tikz}
+\begin{document}
+\begin{tikzpicture}[scale=1.5]
+  \begin{scope}
+    \clip (0,0) circle (1) (1.2,0) circle (1);
+    \foreach \x in {-2.2,-1.95,...,2.7} {
+      \draw[line width=0.35pt] (\x,-1.3) -- ++(2.6,2.6);
+    }
+  \end{scope}
+  \draw[thick] (0,0) circle (1) node[left=2] {$A$};
+  \draw[thick] (1.2,0) circle (1) node[right=2] {$B$};
+\end{tikzpicture}
+\end{document}
+```
+
+### ($A \cap B$)
+
+The intersection contains all elements that are in both $A$ and $B$.
+
+```tikz
+\usepackage{tikz}
+\begin{document}
+\begin{tikzpicture}[scale=1.5]
+  \begin{scope}
+    \clip (0,0) circle (1);
+    \clip (1.2,0) circle (1);
+    \foreach \x in {-0.6,-0.35,...,1.5} {
+      \draw[line width=0.35pt] (\x,-1.3) -- ++(2.6,2.6);
+    }
+  \end{scope}
+  \draw[thick] (0,0) circle (1) node[left=2] {$A$};
+  \draw[thick] (1.2,0) circle (1) node[right=2] {$B$};
+\end{tikzpicture}
+\end{document}
+```
+
+### ($A \setminus B$)
+
+The difference (or relative complement) contains all elements that are in $A$ but not in $B$.
+
+It is also known as _complement_ of B relative to A, or "complement of B in A"
+
+```tikz
+\usepackage{tikz}
+\definecolor{flexokired}{HTML}{fdb2a2}
+\begin{document}
+\begin{tikzpicture}[scale=1.5]
+  \begin{scope}
+    \clip (0,0) circle (1);
+    \begin{scope}[even odd rule]
+      \clip (-1.3,-1.3) rectangle (2.5,1.3) (1.2,0) circle (1);
+      \foreach \x in {-2.2,-1.95,...,1.5} {
+        \draw[line width=0.35pt] (\x,-1.3) -- ++(2.6,2.6);
+      }
+    \end{scope}
+  \end{scope}
+  \draw[thick] (0,0) circle (1) node[left=2] {$A$};
+  \draw[thick] (1.2,0) circle (1) node[right=2] {$B$};
+  \node[font=\normalsize] at (0.34,-1.28) {$A$};
+  \draw[line width=0.45pt] (0.56,-1.18) -- (0.66,-1.38);
+  \node[font=\normalsize] at (0.9,-1.28) {$B$};
+\end{tikzpicture}
+\end{document}
+```
+
+### distributive
+
+For any three sets $A, B,$ and $C$:
+$$A \cap (B \cup C) = (A \cap B) \cup (A \cap C)$$
+
+```tikz
+\usepackage{tikz}
+\definecolor{flexokigreen}{HTML}{cdd597}
+\begin{document}
+\begin{tikzpicture}[scale=1.2]
+  \begin{scope}
+    \clip (90:0.8) circle (1);
+    \begin{scope}
+      \clip (210:0.8) circle (1);
+      \fill[flexokigreen, opacity=0.8] (-3,-3) rectangle (3,3);
+    \end{scope}
+    \begin{scope}[even odd rule]
+      \clip (210:0.8) circle (1) (-3,-3) rectangle (3,3);
+      \begin{scope}
+        \clip (330:0.8) circle (1);
+        \fill[flexokigreen, opacity=0.8] (-3,-3) rectangle (3,3);
+      \end{scope}
+    \end{scope}
+  \end{scope}
+  \draw[thick] (90:0.8) circle (1) node[above=2] {$A$};
+  \draw[thick] (210:0.8) circle (1) node[below left=2] {$B$};
+  \draw[thick] (330:0.8) circle (1) node[below right=2] {$C$};
+\end{tikzpicture}
+\end{document}
+```
+
+### De Morgan's Laws
+
+For any three sets $A, B,$ and $C$:
+$$A \setminus (B \cup C) = (A \setminus B) \cap (A \setminus C)$$
+
+```tikz
+\usepackage{tikz}
+\definecolor{flexokired}{HTML}{fdb2a2}
+\begin{document}
+\begin{tikzpicture}[scale=1.2]
+  \begin{scope}[even odd rule]
+    \clip (210:0.8) circle (1) (-3,-3) rectangle (3,3);
+    \begin{scope}
+      \clip (330:0.8) circle (1) (-3,-3) rectangle (3,3);
+      \fill[flexokired, opacity=0.5] (90:0.8) circle (1);
+    \end{scope}
+  \end{scope}
+  \draw[thick] (90:0.8) circle (1) node[above=2] {$A$};
+  \draw[thick] (210:0.8) circle (1) node[below left=2] {$B$};
+  \draw[thick] (330:0.8) circle (1) node[below right=2] {$C$};
+\end{tikzpicture}
+\end{document}
+```
+
+> [!IMPORTANT] DeMorgan's laws verbatim
+>
+> _The complement of the union equals the intersection of the complements_
+>
+> _The complement of the intersection equals the union of the complements_
+
+### Power set
+
+> [!IMPORTANT] correct notation
+>
+> a distinction between object $a$, which is an _element of the set_ $A$, and one-element set $\{a\}$, which is a _subset of_ $A$
+>
+> If $A$ is the set $\{a, b, c\}$ then
+>
+> $a \in A,\;\;\;\;\{a\} \subset A,\;\;\;\; \{a\} \in \mathcal{P}(A)$
+
+### Arbitrary Unions and Intersection
+
+_union of the elements of_ $\mathcal{A}$ is defined by
+
+$$
+\bigcup_{A \in \mathcal{A}}\; A = \{x \mid x \in A \text{ for at least one } A \in \mathcal{A}\}
+$$
+
+_intersection of the elements of_ $\mathcal{A}$ is defined by
+
+$$
+\bigcap_{A \in \mathcal{A}}\; A = \{x \mid x \in A \text{ for every } A \in \mathcal{A}\}
+$$
 
 ## open
 

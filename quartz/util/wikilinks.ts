@@ -204,8 +204,6 @@ export function resolveAnchor(anchorText: string): string {
  */
 export function escapeWikilinkForTable(wikilink: string): string {
   let escaped = wikilink
-  // escape hash for headers
-  escaped = escaped.replace('#', '\\#')
   // escape pipe characters if not already escaped
   // regex: match pipe that's not preceded by backslash (or preceded by even number of backslashes)
   escaped = escaped.replace(/((^|[^\\])(\\\\)*)\|/g, '$1\\|')

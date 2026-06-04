@@ -5,7 +5,7 @@ date: '2024-10-10'
 description: a bag of chips/words/vernacular
 id: word
 layout: technical
-modified: 2026-06-03 22:51:07 GMT-04:00
+modified: 2026-06-04 17:58:09 GMT-04:00
 tags:
   - evergreen
 title: lists
@@ -15,6 +15,19 @@ title: lists
   - context transition
   - drill transition
   - continuity [transition](https://x.com/gabriell_lab/status/2058217175047901310)
+  - tween/interpoloation
+  - origin-aware animation
+  - crossfade
+  - morph
+  - layout animation
+  - direction-aware transition
+  - rubber-banding
+  - rippling
+  - asymmetric easing
+  - text morph and clip-path
+  - number ticker
+  - Layout thrashing
+  - Spatial consistency
 - Vim magic
   - `[&|?]curius=\v\d+(,\s*\d+)*//g`
   - `\v\((O[^|]*)\)(\s*\|)/$\1$\2/g`

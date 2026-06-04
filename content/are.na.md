@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-06-04 12:08:10 GMT-04:00
+modified: 2026-06-04 18:06:24 GMT-04:00
 permalinks:
   - /website
   - /tweets
@@ -1241,6 +1241,10 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://en.wikipedia.org/wiki/Douglas_Hofstadter -- Douglas Hofstadter
+  - [meta]:
+    - date: 06/04/2026
+    - tags: [cs, consciousness]
 - https://www.warhol.org/andy-warhols-life/ -- Andy Warhold
   - [meta]:
     - date: 06/03/2026
@@ -2447,6 +2451,16 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://charlesleifer.com/blog/cave-of-forgotten-dreams/ -- Cave of Forgotten Dreams
+  - [meta]:
+    - date: 06/04/2026
+    - tags: [longtermism, teleology, agi]
+- https://www.anthropic.com/institute/recursive-self-improvement -- Anthropic's RSI
+  - [meta]:
+    - date: 06/04/2026
+    - tags: [longtermism, systems]
+    - importance: 9
+    - pinned: true
 - https://www.are.na/editorial/on-our-api -- On Our API
   - [meta]:
     - date: 06/03/2026
@@ -4492,6 +4506,10 @@ title: are.na
   - view: list
   - json: true
 
+- https://situational-awareness.ai/ -- Situational Awareness
+  - [meta]:
+    - date: 06/04/2026
+    - tags: [longtermism, predictive, projection]
 - https://cdn.openai.com/pdf/1625eff6-5ac1-40d8-b1db-5d5cf925de8b/unit-distance-cot.pdf -- Rewritten Chain of Thought for the Solution to the Unit Distance Problem
   - [meta]:
     - date: 05/25/2026
@@ -5688,6 +5706,10 @@ title: are.na
 
 ## opinions
 
+- https://www.reddit.com/r/ChatGPT/comments/1mme3ex/why_do_people_assume_we_liked_4o_because_of_the/ -- Why do people assume we liked 4o because of the over the top praise and glazing?
+  - [meta]:
+    - date: 06/04/2026
+    - tags: [models, behaviour]
 - https://www.nytimes.com/2025/08/02/opinion/artificial-intelligence-enlightenment.html -- A.I. Is Shedding Enlightenment Values
   - [meta]:
     - date: 05/27/2026
@@ -7062,11 +7084,24 @@ title: are.na
 
 ## stream
 
+- https://hci-museum.lisn.upsaclay.fr/ -- A Collection of Innovative Interactions
+  - [meta]:
+    - date: 06/04/2026
+    - tags: [hci]
+    - later: true
+- https://spiral.soot.com/ -- Soot
+  - [meta]:
+    - date: 06/04/2026
+    - tags: [foundry, infinite canvas]
+- https://ko.culturehub.org/ -- CultureHub
+  - [meta]:
+    - date: 06/04/2026
+    - tags: [technologica, arts]
 - https://processpamphlets.com/ -- Process Pamphlets
   - [meta]:
     - date: 06/03/2026
     - tags: [visuals, foundry]
-- https://www.inventorypress.com/ -- Inventory Press
+- https://www.inventorypress.com/ -- Inventory Press [**]
   - [meta]:
     - date: 06/02/2026
     - tags: [editorial, visuals]
@@ -7571,6 +7606,14 @@ title: are.na
 
 ## design
 
+- https://ko.culturehub.org/into-uncertain-weathers -- Into uncertain weathers
+  - [meta]:
+    - date: 06/04/2026
+    - tags: [visuals]
+- https://thisislandscape.com/work/ -- Landscape
+  - [meta]:
+    - date: 06/04/2026
+    - tags: [agency]
 - https://fockups.com/ -- Fucked up mockups
   - [meta]:
     - date: 06/03/2026
@@ -8527,6 +8570,10 @@ title: are.na
 
 ## resources
 
+- http://www.catb.org/jargon/ -- Jargon file resources
+  - [meta]:
+    - date: 06/04/2026
+    - tags: [www, intraweb]
 - https://stateofaidesign.com/ -- State of AI Design 2026
   - [meta]:
     - date: 05/31/2026
@@ -9056,6 +9103,10 @@ title: are.na
 
 ## engineering
 
+- https://9p.io/plan9/index.html -- Plan 9 from Bell Labs
+  - [meta]:
+    - date: 06/04/2026
+    - tags: [archives]
 - https://docs.google.com/presentation/d/1q5g3-Lx2mJxHBmB58nXTLunFfgDWqfIq/edit?slide=id.p1#slide=id.p1 -- When AI starts writing systems code
   - [meta]:
     - date: 05/27/2026
@@ -9668,6 +9719,10 @@ title: are.na
 
 ## organizations
 
+- https://www.sternberg-press.com/ -- Sternberg Press [**]
+  - [meta]:
+    - date: 06/04/2026
+    - tags: [books, prints]
 - https://ponder.ai/ -- Ponder
   - [meta]:
     - date: 05/27/2026
@@ -9838,6 +9893,17 @@ title: are.na
   - view: list
   - json: true
 
+- https://en.wikipedia.org/wiki/L-system -- Lindenmayer system [**]
+  - [meta]:
+    - date: 06/04/2026
+    - tags: [grammar, formal system]
+    - seealso: https://pmc.ncbi.nlm.nih.gov/articles/PMC3979699/
+    - socials:
+      - aip: https://www.aip.org/inside-science/uncovering-da-vincis-rule-of-the-trees
+- https://oeis.org/A036561 -- The Online Encyclopedia of Integer Sequences
+  - [meta]:
+    - date: 06/04/2026
+    - tags: [foundry]
 - https://www.abelianpi.dev/post/lean-prove-1080-sets -- Using Lean to prove 1080 sets
   - [meta]:
     - date: 05/27/2026
@@ -10175,6 +10241,14 @@ title: are.na
   - view: list
   - json: true
 
+- https://arxiv.org/abs/2505.01618
+  - [meta]:
+    - date: 06/04/2026
+    - tags: [architecture, muon]
+- https://arxiv.org/abs/2512.12087
+  - [meta]:
+    - date: 06/04/2026
+    - tags: [kv, systems]
 - https://arxiv.org/abs/2404.14469
   - [meta]:
     - date: 06/02/2026
